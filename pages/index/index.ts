@@ -1,13 +1,13 @@
-import { testBehavior } from './behavior';
+import { mobxBehavior } from './behavior';
 import { behavior as computedBehavior } from 'miniprogram-computed';
-import { testApi } from '../../api/index';
+import { testApi } from '../../apis/index';
 Page({
-  behaviors: [testBehavior, computedBehavior],
+  behaviors: [mobxBehavior, computedBehavior],
   data: {
     someData: 'string1',
   },
   computed: {
-    allSum(data) {
+    allSum(data: { numA: number; numB: number; global: { numA: number; numB: number } }) {
       return data.numA + data.numB + data.global.numA + data.global.numB;
     },
   },
@@ -19,7 +19,7 @@ Page({
   },
 
   onLoad: async function () {
-    console.log(await testApi({ name: 123 }));
+    console.log(await testApi());
   },
   onShow() {
     console.log(this.data);
