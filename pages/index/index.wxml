@@ -1,12 +1,12 @@
 <view class="text-50rpx text-center">Page 中：</view>
 <view class="intro">{{global.numA}} + {{global.numB}} = {{global.sum}}</view>
 <view class="intro">
-  <t-button theme="primary" variant="outline" bind:tap="update">update</t-button>
+  <v-button bind:tap="update">update</v-button>
 </view>
 
 <view class="intro">{{numA}} + {{numB}} = {{sum}}</view>
 <view class="intro">
-  <t-button theme="primary" variant="outline" bind:tap="update_user">update</t-button>
+  <v-button bind:tap="update_user">update</v-button>
 </view>
 
 <view class="intro">AllSum: {{numA}} + {{numB}} + {{global.numA}} + {{global.numB}} = {{allSum}}</view>
@@ -14,12 +14,10 @@
 <component-a />
 <component-b />
 
-<view class="px-50rpx pb-100rpx">
-  <t-button theme="primary" variant="outline" block bind:tap="showdata">show Page data</t-button>
+<view class="px-50rpx pb-50rpx">
+  <v-button block bind:tap="showdata">show Page data</v-button>
 </view>
 
 <view class="px-50rpx pb-100rpx">
-  <text>{{showdata}}</text>
+  <v-button block bind:click="toLog">启动记录</v-button>
 </view>
-
-<t-fab icon="arrow-right" bind:click="toLog"></t-fab>

@@ -1,7 +1,6 @@
 {
   "usingComponents": {
-    "t-button": "tdesign-miniprogram/button/button",
-    "t-fab": "tdesign-miniprogram/fab/fab",
+    "v-button": "@vant/weapp/button/index",
     "component-a": "../../components/component-a/component",
     "component-b": "../../components/component-b/component"
   }

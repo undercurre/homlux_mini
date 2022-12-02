@@ -5,10 +5,21 @@
 - [UnoCSS](https://github.com/MellowCo/unocss-preset-weapp) 功能强大且性能极高的 CSS 引擎
 - [MobX](https://github.com/wechat-miniprogram/mobx-miniprogram-bindings) 官方推荐的全局状态管理库
 - [computed](https://github.com/wechat-miniprogram/computed) 像写Vue一样写computed和watch吧
-- [TDesign](https://tdesign.tencent.com/miniprogram/overview) 腾讯官方组件库，但是还没有发布正式版
 - [Vant](https://vant-contrib.gitee.io/vant-weapp) 轻量、可靠的微信小程序组件库
 
 项目配置了一个分包示例，可以按需求进行修改。
+
+## 项目结构
+```
+HomLux小程序
+├── .husky // git hooks
+├── apis // 后端接口封装
+├── components // 公用组件
+├── packages // 分包目录
+├── pages // 主包的页面
+├── typings // 类型声明文件
+└── utils // 公用方法
+```
 
 ## 使用方法
 1. 使用`npm i`安装依赖
@@ -27,7 +38,3 @@
 ## 注意点
 1. mobx和computed一起使用时，computed的behavior一定要在后面，比如：`behaviors: [testBehavior, computedBehavior]`
 2. mobx配合ts使用会有些小问题，可以看：[解决mobx-miniprogram在TS下的一些小问题](https://wyatex.gitee.io/%E5%89%8D%E7%AB%AF/%E8%A7%A3%E5%86%B3mobx-miniprogram%E5%9C%A8TS%E4%B8%8B%E7%9A%84%E4%B8%80%E4%BA%9B%E5%B0%8F%E9%97%AE%E9%A2%98/)
-
-## TODO
-- [x] 添加wx.request的封装
-- [x] TypeScript支持
