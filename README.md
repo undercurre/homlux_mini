@@ -23,8 +23,9 @@ HomLux小程序
 
 ## 使用方法
 1. 使用`npm i`安装依赖
-2. 在微信开发者工具，点击：工具-构建npm
-3. 开始使用
+2. 运行`npm run unocss`或者`pnpm unocss`监听wxml文件并生成对应wxss
+3. 在微信开发者工具，点击：工具-构建npm
+4. 开始编写代码
 
 > Unocss用法和Tailwind基本一致，可以查看[Tailwind](https://tailwindcss.com/)官方文档进行使用，
 
