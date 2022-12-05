@@ -1,6 +1,6 @@
 {
   "usingComponents": {
-    "v-button": "@vant/weapp/button/index",
+    "van-button": "@vant/weapp/button/index",
     "component-a": "../../components/component-a/component",
     "component-b": "../../components/component-b/component"
   }

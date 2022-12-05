@@ -1,12 +1,12 @@
 <view class="text-50rpx text-center">Page 中：</view>
 <view class="intro">{{global.numA}} + {{global.numB}} = {{global.sum}}</view>
 <view class="intro">
-  <v-button bind:tap="update">update</v-button>
+  <van-button bind:tap="update">update</van-button>
 </view>
 
 <view class="intro">{{numA}} + {{numB}} = {{sum}}</view>
 <view class="intro">
-  <v-button bind:tap="update_user">update</v-button>
+  <van-button bind:tap="update_user">update</van-button>
 </view>
 
 <view class="intro">AllSum: {{numA}} + {{numB}} + {{global.numA}} + {{global.numB}} = {{allSum}}</view>
@@ -15,9 +15,9 @@
 <component-b />
 
 <view class="px-50rpx pb-50rpx">
-  <v-button block bind:tap="showdata">show Page data</v-button>
+  <van-button block bind:tap="showdata">show Page data</van-button>
 </view>
 
 <view class="px-50rpx pb-100rpx">
-  <v-button block bind:click="toLog">启动记录</v-button>
+  <van-button block bind:click="toLog">启动记录</van-button>
 </view>
