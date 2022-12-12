@@ -1,15 +1,21 @@
 {
-  "pages": ["pages/index/index"],
+  "pages": [
+    "pages/login/index",
+    "pages/index/index"
+  ],
   "subpackages": [
     {
       "root": "packages",
-      "pages": ["logs/logs"]
+      "pages": [
+        "logs/logs",
+        "camera/camera"
+      ]
     }
   ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "Weapp-starter",
+    "navigationBarTitleText": "HomLux",
     "navigationBarTextStyle": "black"
   },
   "sitemapLocation": "sitemap.json"

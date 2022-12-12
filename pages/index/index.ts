@@ -1,6 +1,6 @@
 import { mobxBehavior } from './behavior';
 import { behavior as computedBehavior } from 'miniprogram-computed';
-import { testApi } from '../../apis/index';
+
 Page({
   behaviors: [mobxBehavior, computedBehavior],
   data: {
@@ -17,9 +17,14 @@ Page({
       url: '/packages/logs/logs',
     });
   },
+  toCamera() {
+    wx.navigateTo({
+      url: '/packages/camera/camera',
+    });
+  },
 
   onLoad: async function () {
-    console.log(await testApi());
+    
   },
   onShow() {
     console.log(this.data);

@@ -58,7 +58,7 @@ const baseRequest: BaseRequest = function <T, U extends DefaultResponseType<T> =
       // 通用的响应处理方法，可以在下面添加
       requestOption.success = (result) => {
         resolve({
-          isSuccess: Boolean(result.data && result.data.code === 0),
+          isSuccess: Boolean(result.data && Number(result.data.code) === 0),
           code: result.data.code ? result.data.code : -1,
           msg: result.data.msg ? result.data.msg : '',
           data: result.data.data,
@@ -70,7 +70,7 @@ const baseRequest: BaseRequest = function <T, U extends DefaultResponseType<T> =
       requestOption.success = (result) => {
         rowHandler(result);
         resolve({
-          isSuccess: Boolean(result.data && result.data.code === 0),
+          isSuccess: Boolean(result.data && Number(result.data.code) === 0),
           code: result.data.code ? result.data.code : -1,
           msg: result.data.msg ? result.data.msg : '',
           data: result.data.data,

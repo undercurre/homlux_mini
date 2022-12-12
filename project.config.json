@@ -6,7 +6,7 @@
     "urlCheck": true,
     "scopeDataCheck": false,
     "coverView": true,
-    "es6": false,
+    "es6": true,
     "postcss": true,
     "compileHotReLoad": false,
     "lazyloadPlaceholderEnable": false,
@@ -18,13 +18,13 @@
     "uploadWithSourceMap": true,
     "useIsolateContext": true,
     "nodeModules": false,
-    "enhance": false,
+    "enhance": true,
     "useMultiFrameRuntime": true,
     "showShadowRootInWxmlPanel": true,
     "packNpmManually": false,
     "enableEngineNative": false,
     "packNpmRelationList": [],
-    "minifyWXSS": true,
+    "minifyWXSS": false,
     "showES6CompileOption": false,
     "minifyWXML": true,
     "useCompilerPlugins": [
@@ -36,7 +36,7 @@
       "outputPath": ""
     },
     "ignoreDevUnusedFiles": false,
-    "ignoreUploadUnusedFiles": false
+    "ignoreUploadUnusedFiles": true
   },
   "compileType": "miniprogram",
   "condition": {},

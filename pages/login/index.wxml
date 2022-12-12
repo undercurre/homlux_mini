@@ -1,0 +1,14 @@
+<!--pages/login/index.wxml-->
+<view class="flex items-center justify-center h-8_10">
+  <view class="flex items-center">
+    <image class="rounded-999 w-100rpx h-100rpx mr-50rpx" src="https://dummyimage.com/200x200/4A7BF7/FFFFFF&text=Midea"></image>
+    <text class="text-32rpx">美的照明</text>
+  </view>
+</view>
+
+<view class="absolute left-0 bottom-0 p-30rpx">
+  <van-checkbox value="{{ isAgree }}" bind:change="onAgreeClick">我已阅读并同意《美的照明隐私协议》《软件许可及用户服务协议》《已收集个人信息清单》《与第三方共享个人信息清单》和《美的照明权限列表》</van-checkbox>
+  <view class="px-50rpx mt-50rpx mb-30rpx">
+    <van-button bindtap="onLoginClick" type="primary" block round type="info">快速登录</van-button>
+  </view>
+</view>
