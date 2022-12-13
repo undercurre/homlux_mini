@@ -12,7 +12,7 @@
     "unocss:build": "unocss ./**/*.wxml -c unocss.config.js -o unocss.wxss",
     "lint": "eslint . --ext .js,.ts,.wxml --fix",
     "typecheck": "tsc --noEmit --skipLibCheck",
-    "format": "prettier --write ./**/*.{js,wxs,wxml,wxss,json}"
+    "format": "prettier --write ./**/*.{js,ts,wxs,wxml,wxss,json}"
   },
   "lint-staged": {
     "*.{js,ts,wxml,json,wxs,wxss}": [

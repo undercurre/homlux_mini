@@ -4,18 +4,18 @@ declare namespace User {
     /**
      * 头像
      */
-    avatar: null | string;
+    avatar: null | string
     /**
      * 昵称
      */
-    nickname: null | string;
+    nickname: null | string
     /**
      * 手机号
      */
-    phone: null | string;
+    phone: null | string
     /**
      * 令牌
      */
-    token: string;
+    token: string
   }
 }
