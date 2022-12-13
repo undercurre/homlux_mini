@@ -16,7 +16,8 @@
   },
   "lint-staged": {
     "*.{js,ts,wxml,json,wxs,wxss}": [
-      "prettier --write"
+      "prettier --write",
+      "git add"
     ],
     "*.{js,ts,wxml}": [
       "eslint"
