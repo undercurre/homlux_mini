@@ -1,5 +1,0 @@
-<!--packages/camera/camera.wxml-->
-<view class='camera'>
-  <camera wx:if="{{isAuth}}" mode="scanCode" device-position="back" flash="off" bindscancode="handleScan" binderror="error"></camera>
-</view>
-<button class="takePhoto" type="primary" bindtap="takePhoto">拍照</button>

@@ -1,21 +1,20 @@
-import { login } from "../../apis/index"
-import { storage } from "../../utils/storage"
+import { login } from '../../apis/index'
+import { storage } from '../../utils/storage'
 
 // pages/login/index.ts
 Page({
-
   /**
    * 页面的初始数据
    */
   data: {
-    isAgree: false
+    isAgree: false,
   },
 
   onLoginClick() {
     if (!this.data.isAgree) {
       wx.showToast({
         title: '请同意协议',
-        icon: 'none'
+        icon: 'none',
       })
       return
     }
@@ -26,7 +25,7 @@ Page({
         } else {
           console.log('登录失败！' + res.errMsg)
         }
-      }
+      },
     })
   },
 
@@ -44,85 +43,60 @@ Page({
       } else {
         console.log('去首页')
         wx.navigateTo({
-          url: '/pages/index/index'
+          url: '/pages/index/index',
         })
       }
     }
   },
 
-  handleGetPhone() {
+  handleGetPhone() {},
 
-  },
+  handleGetUserInfo() {},
 
-  handleGetUserInfo() {
-
-  },
-
-  onAgreeClick(event: {detail: boolean}) {
+  onAgreeClick(event: { detail: boolean }) {
     console.log(event)
     this.setData({
       isAgree: event.detail,
-    });
+    })
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad() {
-    if (storage.get<string>('token')) {
-      console.log('已经登录过')
-        wx.navigateTo({
-          url: '/pages/index/index'
-        })
-    }
-  },
+  onLoad() {},
 
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
-  onReady() {
-
-  },
+  onReady() {},
 
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow() {
-
-  },
+  onShow() {},
 
   /**
    * 生命周期函数--监听页面隐藏
    */
-  onHide() {
-
-  },
+  onHide() {},
 
   /**
    * 生命周期函数--监听页面卸载
    */
-  onUnload() {
-
-  },
+  onUnload() {},
 
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
-  onPullDownRefresh() {
-
-  },
+  onPullDownRefresh() {},
 
   /**
    * 页面上拉触底事件的处理函数
    */
-  onReachBottom() {
-
-  },
+  onReachBottom() {},
 
   /**
    * 用户点击右上角分享
    */
-  onShareAppMessage() {
-
-  }
+  onShareAppMessage() {},
 })

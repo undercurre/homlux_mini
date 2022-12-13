@@ -21,7 +21,3 @@
 <view class="px-50rpx pb-50rpx">
   <van-button block bind:click="toLog">启动记录</van-button>
 </view>
-
-<view class="px-50rpx pb-100rpx">
-  <van-button block bind:click="toCamera">camera</van-button>
-</view>

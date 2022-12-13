@@ -1,9 +1,9 @@
-import { defaultRequest } from '../utils/index';
+import { defaultRequest } from '../utils/index'
 
 export async function testApi() {
   return await defaultRequest({
     url: '/test',
-  });
+  })
 }
 
 export async function login(js_code: string) {
@@ -11,6 +11,6 @@ export async function login(js_code: string) {
     url: '/login',
     data: {
       js_code,
-    }
-  });
+    },
+  })
 }

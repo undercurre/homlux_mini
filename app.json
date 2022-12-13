@@ -1,15 +1,9 @@
 {
-  "pages": [
-    "pages/login/index",
-    "pages/index/index"
-  ],
+  "pages": ["pages/index/index", "pages/login/index"],
   "subpackages": [
     {
       "root": "packages",
-      "pages": [
-        "logs/logs",
-        "camera/camera"
-      ]
+      "pages": ["logs/logs"]
     }
   ],
   "window": {
