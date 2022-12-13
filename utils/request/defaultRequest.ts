@@ -59,47 +59,45 @@ const baseRequest: BaseRequest = function <
     requestOption.url = config.defaultApiServer[config.env] + requestOption.url
     if (!requestOption.success) {
       // 通用的响应处理方法，可以在下面添加
-      requestOption.success = (result) => {
+      requestOption.success = (result: { data: IAnyObject }) => {
         resolve({
           isSuccess: Boolean(result.data && Number(result.data.code) === 0),
-          code: result.data.code ? result.data.code : -1,
-          msg: result.data.msg ? result.data.msg : '',
+          code: result.data.code ?? -1,
+          msg: result.data.msg ?? '',
           data: result.data.data,
         } as U)
       }
     } else {
-      // 不通用的失败处理方法，可以在请求时在fail传递handler进来
-      const rowHandler = requestOption.success
+      // 传递定制的handler进来，可以将特殊的响应数据处理成ResponseRowData，再在下方转成DefaultResponseType
+      const optionSuccessHandler = requestOption.success
       requestOption.success = (result) => {
-        rowHandler(result)
+        optionSuccessHandler(result)
         resolve({
           isSuccess: Boolean(result.data && Number(result.data.code) === 0),
-          code: result.data.code ? result.data.code : -1,
-          msg: result.data.msg ? result.data.msg : '',
-          data: result.data.data,
+          code: result.data.code ?? -1,
+          msg: result.data.msg ?? '',
+          data: result.data.data ?? {},
         } as U)
       }
     }
     if (!requestOption.fail) {
       // 通用的失败处理方法，可以在下面添加
-      requestOption.fail = (err) => {
+      requestOption.fail = (err: WechatMiniprogram.GeneralCallbackResult) => {
         resolve({
-          isSuccess: true,
+          isSuccess: false,
           code: -1,
           msg: err.errMsg,
-          data: undefined,
         } as U)
       }
     } else {
-      // 不通用的失败处理方法，可以在请求时在fail传递handler进来
-      const handler = requestOption.fail
+      // 传递定制的handler进来，可以在请求时在fail传递handler进来，特殊地对错误进行处理
+      const optionFailHandler = requestOption.fail
       requestOption.fail = (err) => {
-        handler(err)
+        optionFailHandler(err)
         resolve({
-          isSuccess: true,
+          isSuccess: false,
           code: -1,
           msg: err.errMsg,
-          data: undefined,
         } as U)
       }
     }
