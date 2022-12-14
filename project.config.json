@@ -21,9 +21,14 @@
     "enhance": true,
     "useMultiFrameRuntime": true,
     "showShadowRootInWxmlPanel": true,
-    "packNpmManually": false,
+    "packNpmManually": true,
+    "packNpmRelationList": [
+      {
+        "packageJsonPath": "./package.json",
+        "miniprogramNpmDistDir": "./src/"
+      }
+    ],
     "enableEngineNative": false,
-    "packNpmRelationList": [],
     "minifyWXSS": false,
     "showES6CompileOption": false,
     "minifyWXML": true,
@@ -38,6 +43,8 @@
     "ignoreDevUnusedFiles": false,
     "ignoreUploadUnusedFiles": true
   },
+  "srcMiniprogramRoot": "src/",
+  "miniprogramRoot": "src/",
   "compileType": "miniprogram",
   "condition": {},
   "editorSetting": {

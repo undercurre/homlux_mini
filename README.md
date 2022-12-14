@@ -13,16 +13,20 @@
 ```
 HomLux小程序
 ├── .husky // git hooks
-├── apis // 后端接口封装
-├── components // 公用组件
-├── packages // 分包目录
-├── pages // 主包的页面
-├── typings // 类型声明文件
-└── utils // 公用方法
+├── src // 小程序源码
+    ├── apis // 后端接口封装
+    ├── assets // 资源目录
+    ├── components // 公用组件
+    ├── store // 全局状态
+    ├── packages // 分包目录
+    ├── packageXXX // 多个分包可以用packageXXX拆分
+    ├── pages // 主包的页面
+    └── utils // 公用方法
+└── typings // 类型声明文件
 ```
 
 ## 使用方法
-1. 使用`npm i`安装依赖
+1. 使用`npm i`或者`pnpm i`安装依赖
 2. 运行`npm run unocss`或者`pnpm unocss`监听wxml文件并生成对应wxss
 3. 在微信开发者工具，点击：工具-构建npm
 4. 开始编写代码
