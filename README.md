@@ -21,9 +21,10 @@ HomLux小程序
           └── img // 存放图片文件
     ├── components // 公用组件
     ├── store // 全局状态
-    ├── packages // 分包目录
-    ├── packageXXX // 多个分包可以用packageXXX拆分
-    ├── pages // 主包的页面
+    ├── package-distribution // 配网相关页面分包（添加设备、附近设备、连接wifi等）
+    ├── package-mine // 我的相关页面分包（家庭管理、房间管理、设备管理等）
+    ├── package-room // 房间相关页面分包（房间页面控制设备、场景管理等）
+    ├── pages // 主包的页面（小程序主页、登录）
     └── utils // 公用方法
 └── typings // 类型声明文件
 ```
