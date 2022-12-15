@@ -6,6 +6,9 @@
       "pages": ["logs/logs"]
     }
   ],
+  "usingComponents": {
+    "svg-icon": "./components/svg-icon/index"
+  },
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",

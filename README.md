@@ -6,6 +6,7 @@
 - [MobX](https://github.com/wechat-miniprogram/mobx-miniprogram-bindings) 官方推荐的全局状态管理库
 - [computed](https://github.com/wechat-miniprogram/computed) 像写Vue一样写computed和watch吧
 - [Vant](https://vant-contrib.gitee.io/vant-weapp) 轻量、可靠的微信小程序组件库
+- SvgIcon 自实现svg动态加载组件，使用脚本自动从iconify拉取svg标签
 
 项目配置了一个分包示例，可以按需求进行修改。
 
@@ -16,6 +17,8 @@ HomLux小程序
 ├── src // 小程序源码
     ├── apis // 后端接口封装
     ├── assets // 资源目录
+          ├── svg // 存放svg文件
+          └── img // 存放图片文件
     ├── components // 公用组件
     ├── store // 全局状态
     ├── packages // 分包目录
@@ -31,7 +34,9 @@ HomLux小程序
 3. 在微信开发者工具，点击：工具-构建npm
 4. 开始编写代码
 
-> Unocss用法和Tailwind基本一致，可以查看[Tailwind](https://tailwindcss.com/)官方文档进行使用，
+> Unocss用法和Tailwind基本一致，可以查看[Tailwind](https://tailwindcss.com/)官方文档进行使用，微信小程序的class不支持写`%`，所以要用`/`来代替，比如w-50%可以用w-1/2表示
+
+> SvgIcon用法：SvgIcon组件会从globalData读取svg标签，然后动态生成url，并使用css渲染。项目在build/getIconify.ts实现了读取一个json文件里的`iconList`列表，然后生成js/ts文件，然后导入到globalData即可根据svg的名字加载svg。使用svg
 
 ## 项目规范
 1. 主包页面存放在pages目录下，分包页面存放在packages目录下，如果分包内容非常多，可以按照packageXXX再进行区分。

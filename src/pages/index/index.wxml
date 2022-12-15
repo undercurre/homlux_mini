@@ -21,3 +21,17 @@
 <view class="px-50rpx pb-50rpx">
   <van-button block bind:click="toLog">启动记录</van-button>
 </view>
+
+<text>svg展示，开发时删掉:</text>
+
+<view wx:if="{{isLoadedSvg}}">
+  <view>
+    <svg-icon name="line-md:uploading-loop" width="750rpx" height="750rpx"></svg-icon>
+  </view>
+  <view>
+    <svg-icon name="line-md:moon-filled-to-sunny-filled-loop-transition" width="750rpx" height="750rpx"></svg-icon>
+  </view>
+  <view>
+    <svg-icon name="entertainment" width="750rpx" height="580rpx"></svg-icon>
+  </view>
+</view>

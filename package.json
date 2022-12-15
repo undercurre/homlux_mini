@@ -12,7 +12,8 @@
     "unocss:build": "unocss ./**/*.wxml -c unocss.config.js -o src/unocss.wxss",
     "lint": "eslint . --ext .js,.ts,.wxml --fix",
     "typecheck": "tsc --noEmit --skipLibCheck",
-    "format": "prettier --write ./**/*.{js,ts,wxs,wxml,wxss,json}"
+    "format": "prettier --write ./**/*.{js,ts,wxs,wxml,wxss,json}",
+    "getIconify": "esno build/getIconify json=../src/assets/svg/iconify.json path=./src/assets/svg/iconify.ts"
   },
   "lint-staged": {
     "*.{js,ts,wxml,json,wxs,wxss}": [
@@ -36,12 +37,14 @@
   "devDependencies": {
     "@commitlint/cli": "^17.3.0",
     "@commitlint/config-conventional": "^17.3.0",
+    "@types/node": "^18.11.15",
     "@typescript-eslint/eslint-plugin": "^5.46.1",
     "@typescript-eslint/parser": "^5.46.1",
     "eslint": "^8.29.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-wxml": "^0.7.5",
+    "esno": "^0.16.3",
     "husky": "^8.0.2",
     "lint-staged": "^13.1.0",
     "miniprogram-api-typings": "^3.8.1",

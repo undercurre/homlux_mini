@@ -18,6 +18,7 @@ Page({
       })
       return
     }
+    storage.set('token', '1') // todo: 测试代码，需要删掉
     wx.login({
       success: (res) => {
         if (res.code) {
