@@ -2,8 +2,16 @@
   "pages": ["pages/index/index", "pages/login/index"],
   "subpackages": [
     {
-      "root": "packages",
-      "pages": ["logs/logs"]
+      "root": "package-distribution",
+      "pages": ["wifi-connect/index", "device-add/index", "near-device/index"]
+    },
+    {
+      "root": "package-mine",
+      "pages": ["hoom-manage/index", "device-manage/index"]
+    },
+    {
+      "root": "package-room",
+      "pages": ["index/index", "scene/index"]
     }
   ],
   "usingComponents": {

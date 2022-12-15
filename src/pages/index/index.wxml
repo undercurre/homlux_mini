@@ -18,10 +18,6 @@
   <van-button block bind:tap="showdata">show Page data</van-button>
 </view>
 
-<view class="px-50rpx pb-50rpx">
-  <van-button block bind:click="toLog">启动记录</van-button>
-</view>
-
 <text>svg展示，开发时删掉:</text>
 
 <view wx:if="{{isLoadedSvg}}">
