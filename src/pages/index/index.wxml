@@ -1,3 +1,5 @@
+<nav-bar title="我的家庭" style="font-size: 36rpx"> </nav-bar>
+
 <view class="text-50rpx text-center">Page 中：</view>
 <view class="intro">{{global.numA}} + {{global.numB}} = {{global.sum}}</view>
 <view class="intro">
@@ -20,14 +22,17 @@
 
 <text>svg展示，开发时删掉:</text>
 
-<view wx:if="{{isLoadedSvg}}">
-  <view>
-    <svg-icon name="line-md:uploading-loop" width="750rpx" height="750rpx"></svg-icon>
-  </view>
-  <view>
-    <svg-icon name="line-md:moon-filled-to-sunny-filled-loop-transition" width="750rpx" height="750rpx"></svg-icon>
-  </view>
-  <view>
-    <svg-icon name="entertainment" width="750rpx" height="580rpx"></svg-icon>
-  </view>
+<view>
+  <svg-icon load="{{isLoadedSvg}}" name="line-md:uploading-loop" width="750rpx" height="750rpx"></svg-icon>
+</view>
+<view>
+  <svg-icon
+    load="{{isLoadedSvg}}"
+    name="line-md:moon-filled-to-sunny-filled-loop-transition"
+    width="750rpx"
+    height="750rpx"
+  ></svg-icon>
+</view>
+<view>
+  <svg-icon load="{{isLoadedSvg}}" name="entertainment" width="750rpx" height="580rpx"></svg-icon>
 </view>

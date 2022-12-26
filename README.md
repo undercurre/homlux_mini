@@ -14,6 +14,7 @@
 ```
 HomLux小程序
 ├── .husky // git hooks
+├── build // 一些自动化脚本https://github.com/Tencent/Hippy.git
 ├── src // 小程序源码
     ├── apis // 后端接口封装
     ├── assets // 资源目录

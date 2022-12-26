@@ -4,6 +4,10 @@ Component({
    * 组件的属性列表
    */
   properties: {
+    load: {
+      type: Boolean,
+      value: true,
+    },
     name: {
       type: String,
       value: '',
@@ -19,6 +23,11 @@ Component({
     height: {
       type: String,
       value: '1em',
+    },
+    // 是否占位
+    placeholder: {
+      type: Boolean,
+      value: true,
     },
   },
 
@@ -41,10 +50,13 @@ Component({
    */
   methods: {
     loadSvg() {
-      this.setData({
-        iconUrl: this.getGlobalSvg(this.data.name),
-        class: this.data.color ? 'icon' : 'default-icon',
-      })
+      // 由组件使用者控制是否显示icon
+      if (this.data.load) {
+        this.setData({
+          iconUrl: this.getGlobalSvg(this.data.name),
+          class: this.data.color ? 'icon' : 'default-icon',
+        })
+      }
     },
     encodeSvg(svg: string) {
       return svg
@@ -71,7 +83,7 @@ Component({
   },
 
   observers: {
-    'name,color,width,height'() {
+    'name,color,width,height,load'() {
       this.loadSvg()
     },
   },
