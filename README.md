@@ -21,6 +21,7 @@ HomLux小程序
           ├── svg // 存放svg文件
           └── img // 存放图片文件
     ├── components // 公用组件
+    ├── custom-tab-bar // 自定义tabbar
     ├── store // 全局状态
     ├── package-distribution // 配网相关页面分包（添加设备、附近设备、连接wifi等）
     ├── package-mine // 我的相关页面分包（家庭管理、房间管理、设备管理等）

@@ -10,7 +10,8 @@ Page({
     isAgree: false,
   },
 
-  onLoginClick() {
+  onLoginClick(e: { detail: { code: string } }) {
+    console.log(e.detail.code)
     if (!this.data.isAgree) {
       wx.showToast({
         title: '请同意协议',
@@ -18,44 +19,43 @@ Page({
       })
       return
     }
-    storage.set('token', '1') // todo: 测试代码，需要删掉
-    wx.login({
-      success: (res) => {
-        if (res.code) {
-          this.handleLogin(res.code)
-        } else {
-          console.log('登录失败！' + res.errMsg)
-        }
+    wx.getUserInfo({
+      success: (userInfoRes) => {
+        wx.login({
+          success: (res) => {
+            if (res.code) {
+              this.handleLogin({
+                js_code: res.code,
+                phone_code: e.detail.code,
+                nickName: userInfoRes.userInfo.nickName,
+                avatar: userInfoRes.userInfo.avatarUrl,
+              })
+            } else {
+              console.log('登录失败！' + res.errMsg)
+            }
+          },
+        })
       },
     })
+    storage.set('token', '1') // todo: 测试代码，需要删掉
   },
 
-  async handleLogin(js_code: string) {
-    const loginRes = await login(js_code)
+  async handleLogin(data: { js_code: string; phone_code: string; nickName: string; avatar: string }) {
+    const loginRes = await login(data)
     console.log(loginRes)
     if (loginRes.isSuccess && loginRes.data) {
       storage.set('token', loginRes.data.token)
-      if (!loginRes.data.phone) {
-        // 未绑手机号
-        this.handleGetPhone()
-      } else if (!loginRes.data.nickname) {
-        // 未设置名称头像
-        this.handleGetUserInfo()
-      } else {
-        console.log('去首页')
-        wx.navigateTo({
-          url: '/pages/index/index',
-        })
-      }
+      storage.set('phone', loginRes.data.phone)
+      storage.set('nickName', loginRes.data.nickname)
+      storage.set('avatar', loginRes.data.avatar)
+      console.log('去首页')
+      wx.redirectTo({
+        url: '/pages/index/index',
+      })
     }
   },
 
-  handleGetPhone() {},
-
-  handleGetUserInfo() {},
-
   onAgreeClick(event: { detail: boolean }) {
-    console.log(event)
     this.setData({
       isAgree: event.detail,
     })

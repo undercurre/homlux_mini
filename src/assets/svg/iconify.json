@@ -1,4 +1,12 @@
 {
   "discript": "这里定义需要生成的svg名字,名称查看：https://icones.js.org/",
-  "iconList": ["line-md:uploading-loop", "line-md:moon-filled-to-sunny-filled-loop-transition"]
+  "iconList": [
+    "line-md:uploading-loop",
+    "line-md:moon-filled-to-sunny-filled-loop-transition",
+    "ion:ios-arrow-back",
+    "ion:home-outline",
+    "ion:home",
+    "ion:person-circle-outline",
+    "ion:person-circle"
+  ]
 }

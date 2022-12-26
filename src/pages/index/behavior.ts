@@ -6,8 +6,8 @@ export const mobxBehavior = BehaviorWithStore({
     {
       namespace: 'global',
       store: global,
-      fields: ['numA', 'numB', 'sum'],
-      actions: ['update'],
+      fields: ['numA', 'numB', 'sum', 'isLoadedSvg'],
+      actions: ['update', 'setIsLoadSvg'],
     },
     {
       store: user,

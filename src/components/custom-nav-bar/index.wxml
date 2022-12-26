@@ -1,6 +1,6 @@
 <!--components/custom-nav-bar/index.wxml-->
 <view
-  class="fixed w-full"
+  class="fixed w-full left-0 top-0"
   style="height: {{navigationBarAndStatusBarHeight}}; background: {{background}}; z-index: 1000;"
 >
   <!--状态栏占位-->

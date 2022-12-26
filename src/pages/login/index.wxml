@@ -11,9 +11,15 @@
 
 <view class="absolute left-0 bottom-0 p-30rpx">
   <van-checkbox value="{{ isAgree }}" bind:change="onAgreeClick"
-    >我已阅读并同意《美的照明隐私协议》《软件许可及用户服务协议》《已收集个人信息清单》《与第三方共享个人信息清单》和《美的照明权限列表》</van-checkbox
+    >我已阅读并同意《<text style="color: #169bd5">美的照明隐私协议</text>》《<text style="color: #169bd5"
+      >软件许可及用户服务协议</text
+    >》《<text style="color: #169bd5">已收集个人信息清单</text>》《<text style="color: #169bd5"
+      >与第三方共享个人信息清单</text
+    >》和《<text style="color: #169bd5">美的照明权限列表</text>》</van-checkbox
   >
   <view class="px-50rpx mt-50rpx mb-30rpx">
-    <van-button bindtap="onLoginClick" type="primary" block round type="info">快速登录</van-button>
+    <van-button open-type="getPhoneNumber" bindgetphonenumber="onLoginClick" type="primary" block round type="info"
+      >快速登录</van-button
+    >
   </view>
 </view>

@@ -2,11 +2,18 @@ import { observable, runInAction, action } from 'mobx-miniprogram'
 import { delay } from '../utils/index'
 
 export const global = observable({
+  isLoadedSvg: false,
   numA: 1,
   numB: 2,
 
   get sum() {
     return this.numA + this.numB
+  },
+
+  setIsLoadSvg: function () {
+    runInAction(() => {
+      global.isLoadedSvg = true
+    })
   },
 
   // 模拟请求接口异步修改状态

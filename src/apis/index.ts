@@ -6,11 +6,9 @@ export async function testApi() {
   })
 }
 
-export async function login(js_code: string) {
-  return await defaultRequest<User.UserLoginRes>({
+export async function login(data: object) {
+  return await defaultRequest.post<User.UserLoginRes>({
     url: '/login',
-    data: {
-      js_code,
-    },
+    data,
   })
 }
