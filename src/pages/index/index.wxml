@@ -1,42 +1,23 @@
-<nav-bar title="我的家庭" style="font-size: 36rpx"></nav-bar>
+<nav-bar background="transparent">
+  <view slot="left">
+    <text class="absolute top-0 left-32rpx text-hex-1e2c46 text-48rpx font-semibold">我的家庭</text>
+  </view>
+</nav-bar>
 
-<view class="text-50rpx text-center">Page 中：</view>
-<view class="intro">{{global.numA}} + {{global.numB}} = {{global.sum}}</view>
-<view class="intro">
-  <van-button bind:tap="update">update</van-button>
+<view class="fixed left-0 top-0 w-100vw h-100vh" style="z-index: -1" bindtouchstart="handleTouchStart">
+  <image src="/assets/img/home/bg.png" style="width: 100vw; height: 100vh"></image>
 </view>
 
-<view class="intro">{{numA}} + {{numB}} = {{sum}}</view>
-<view class="intro">
-  <van-button bind:tap="update_user">update</van-button>
+<view class="px-24rpx pt-28rpx w-full h-full box-border" bindtouchstart="handleTouchStart">
+  <view class="relative w-full h-80rpx">
+    <view class="bg-hex-ffffff_42 w-244rpx h-80rpx rounded-40rpx flex absolute left-0 top-0">
+      <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx">全开</view>
+      <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx">全关</view>
+    </view>
+    <view class="absolute right-0 top-0" id="addIcon" bindtap="handleDropdown">
+      <image src="/assets/img/home/add.png" style="width: 64rpx; height: 64rpx"></image>
+    </view>
+  </view>
 </view>
 
-<view class="intro">AllSum: {{numA}} + {{numB}} + {{global.numA}} + {{global.numB}} = {{allSum}}</view>
-
-<component-a />
-<component-b />
-
-<view class="px-50rpx pb-50rpx">
-  <van-button block bind:tap="showdata">show Page data</van-button>
-</view>
-
-<view class="px-50rpx pb-50rpx">
-  <van-button block bind:tap="toLogin">login</van-button>
-</view>
-
-<text>svg展示，开发时删掉:</text>
-
-<view>
-  <svg-icon load="{{global.isLoadedSvg}}" name="line-md:uploading-loop" width="750rpx" height="750rpx"></svg-icon>
-</view>
-<view>
-  <svg-icon
-    load="{{global.isLoadedSvg}}"
-    name="line-md:moon-filled-to-sunny-filled-loop-transition"
-    width="750rpx"
-    height="750rpx"
-  ></svg-icon>
-</view>
-<view>
-  <svg-icon load="{{global.isLoadedSvg}}" name="entertainment" width="750rpx" height="580rpx"></svg-icon>
-</view>
+<dropdown-menu x="{{dropdownMenu.x}}" y="{{dropdownMenu.y}}" isShow="{{dropdownMenu.isShow}}"></dropdown-menu>

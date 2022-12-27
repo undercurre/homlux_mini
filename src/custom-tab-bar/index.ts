@@ -22,19 +22,19 @@ ComponentWithStore({
    */
   data: {
     selected: 0,
-    color: '#8A8A8F',
-    selectedColor: '#000000',
+    color: '#E3E4E8',
+    selectedColor: '#1E2C46',
     list: [
       {
         text: '首页',
-        selectedIcon: 'ion:home',
-        unSelectedIcon: 'ion:home-outline',
+        selectedIcon: '/assets/img/tabbar/home-selected.png',
+        unSelectedIcon: '/assets/img/tabbar/home-unselected.png',
         path: '/pages/index/index',
       },
       {
         text: '我的',
-        selectedIcon: 'ion:person-circle',
-        unSelectedIcon: 'ion:person-circle-outline',
+        selectedIcon: '/assets/img/tabbar/mine-selected.png',
+        unSelectedIcon: '/assets/img/tabbar/mine-unselected.png',
         path: '/pages/mine/index',
       },
     ],

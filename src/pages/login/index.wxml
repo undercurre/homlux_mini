@@ -2,23 +2,32 @@
 <view class="flex items-center justify-center h-8_10">
   <view class="flex items-center">
     <image
-      class="rounded-999 w-100rpx h-100rpx mr-50rpx"
+      class="rounded-999 w-120rpx h-120rpx mr-32rpx shadow-xl"
       src="https://dummyimage.com/200x200/4A7BF7/FFFFFF&text=Midea"
     ></image>
-    <text class="text-32rpx">美的照明</text>
+    <text class="text-48rpx font-semibold">美的照明</text>
   </view>
 </view>
 
-<view class="absolute left-0 bottom-0 p-30rpx">
-  <van-checkbox value="{{ isAgree }}" bind:change="onAgreeClick"
-    >我已阅读并同意《<text style="color: #169bd5">美的照明隐私协议</text>》《<text style="color: #169bd5"
-      >软件许可及用户服务协议</text
-    >》《<text style="color: #169bd5">已收集个人信息清单</text>》《<text style="color: #169bd5"
-      >与第三方共享个人信息清单</text
-    >》和《<text style="color: #169bd5">美的照明权限列表</text>》</van-checkbox
-  >
-  <view class="px-50rpx mt-50rpx mb-30rpx">
-    <van-button open-type="getPhoneNumber" bindgetphonenumber="onLoginClick" type="primary" block round type="info"
+<view class="absolute left-0 bottom-0">
+  <view class="mx-74rpx">
+    <van-checkbox class="text-24rpx" value="{{ isAgree }}" bind:change="onAgreeClick"
+      >我已阅读并同意《<text style="color: #169bd5">美的照明隐私协议</text>》《<text style="color: #169bd5"
+        >软件许可及用户服务协议</text
+      >》《<text style="color: #169bd5">已收集个人信息清单</text>》《<text style="color: #169bd5"
+        >与第三方共享个人信息清单</text
+      >》和《<text style="color: #169bd5">美的照明权限列表</text>》</van-checkbox
+    >
+  </view>
+  <view class="px-32rpx mt-50rpx mb-128rpx">
+    <van-button
+      custom-style="border-radius: 20rpx;"
+      open-type="getPhoneNumber"
+      bindgetphonenumber="onLoginClick"
+      type="primary"
+      block
+      disabled="{{!isAgree}}"
+      type="info"
       >快速登录</van-button
     >
   </view>

@@ -1,3 +1,8 @@
 <!--pages/mine/index.wxml-->
-<nav-bar></nav-bar>
-<text>pages/mine/index.wxml</text>
+<nav-bar background="transparent"></nav-bar>
+<view style="z-index: -1" class="fixed left-0 top-0 w-100vw h-100vh">
+  <image src="/assets/img/home/bg.png" style="width: 100vw; height: 100vh"></image>
+</view>
+<view>
+  <text>pages/mine/index.wxml</text>
+</view>
