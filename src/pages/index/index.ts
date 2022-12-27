@@ -12,6 +12,9 @@ Page({
       y: '0px',
       isShow: false,
     },
+    allOnBtnTap: false,
+    allOffBtnTap: false,
+    showAddNewDevice: false,
   },
   computed: {
     allSum(data: { numA: number; numB: number; global: { numA: number; numB: number } }) {
@@ -47,11 +50,39 @@ Page({
     })
   },
   handleTouchStart() {
+    console.log('handleTouchStart', this.data.dropdownMenu)
     this.setData({
       'dropdownMenu.isShow': false,
     })
   },
+  handleAllOn() {
+    this.setData({
+      allOnBtnTap: true,
+    })
+    setTimeout(() => {
+      this.setData({
+        allOnBtnTap: false,
+      })
+    }, 800)
+  },
+  handleAllOff() {
+    this.setData({
+      allOffBtnTap: true,
+    })
+    setTimeout(() => {
+      this.setData({
+        allOffBtnTap: false,
+      })
+    }, 800)
+  },
   handleDropdown() {
+    console.log('handleDropdown', this.data.dropdownMenu)
+    if (this.data.dropdownMenu.isShow) {
+      this.setData({
+        'dropdownMenu.isShow': false,
+      })
+      return
+    }
     wx.createSelectorQuery()
       .select('#addIcon')
       .boundingClientRect()
@@ -63,8 +94,27 @@ Page({
             isShow: true,
           },
         })
-        console.log(res)
       })
+  },
+  handleMenuSelect(e: { detail: 'addDevice' | 'addRoom' | 'inviteFamily' }) {
+    if (e.detail === 'addDevice') {
+      console.log(1)
+      this.setData({
+        showAddNewDevice: true,
+      })
+    } else if (e.detail === 'addRoom') {
+      console.log(2)
+    } else if (e.detail === 'inviteFamily') {
+      console.log(3)
+    }
+    this.setData({
+      'dropdownMenu.isShow': false,
+    })
+  },
+  handleHideAddNewDevice() {
+    this.setData({
+      showAddNewDevice: false,
+    })
   },
   loadSvgData() {
     // 进入首页加载svg，可能因为使用import，onLoad这个回调会变成异步执行

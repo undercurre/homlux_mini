@@ -8,7 +8,7 @@ ComponentWithStore({
 
   storeBindings: {
     store: global,
-    fields: ['isLoadedSvg'],
+    fields: ['showTabbar'],
     actions: {},
   },
 

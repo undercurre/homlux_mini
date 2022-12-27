@@ -3,7 +3,8 @@
     "van-button": "@vant/weapp/button/index",
     "component-a": "../../components/component-a/component",
     "component-b": "../../components/component-b/component",
-    "dropdown-menu": "./components/dropdown-menu/index"
+    "dropdown-menu": "./components/dropdown-menu/index",
+    "add-new-device": "./components/add-new-device/index"
   },
   "navigationStyle": "custom"
 }

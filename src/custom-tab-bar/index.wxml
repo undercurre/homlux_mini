@@ -1,5 +1,5 @@
 <!--custom-tab-bar/index.wxml-->
-<view class="tab-bar fixed left-0 bottom-0 w-full bg-white h-98rpx flex">
+<view class="tab-bar fixed left-0 bottom-0 w-full bg-white h-98rpx flex z-400" style="z-index: 400">
   <view
     class="flex-1 flex justify-center items-center flex-col"
     wx:for="{{list}}"

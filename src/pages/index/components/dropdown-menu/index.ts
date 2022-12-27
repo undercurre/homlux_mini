@@ -29,5 +29,15 @@ Component({
   /**
    * 组件的方法列表
    */
-  methods: {},
+  methods: {
+    handleAddDevice() {
+      this.triggerEvent('select', 'addDevice')
+    },
+    handleAddRoom() {
+      this.triggerEvent('select', 'addRoom')
+    },
+    handleInviteFamily() {
+      this.triggerEvent('select', 'inviteFamily')
+    },
+  },
 })
