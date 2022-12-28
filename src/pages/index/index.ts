@@ -10,10 +10,16 @@ Page({
       y: '0px',
       isShow: false,
     },
+    selectHomeMenu: {
+      x: '0px',
+      y: '0px',
+      isShow: false,
+    },
     allOnBtnTap: false,
     allOffBtnTap: false,
     showAddNewDevice: false,
     showAddNewRoom: false,
+    showHomeSelect: false,
   },
   computed: {
     allSum(data: { numA: number; numB: number; global: { numA: number; numB: number } }) {
@@ -46,7 +52,11 @@ Page({
     // this.toLogin()
   },
   onShow() {
-    console.log(this.data)
+    // 隐藏之前展示的下拉菜单
+    this.setData({
+      'dropdownMenu.isShow': false,
+      'selectHomeMenu.isShow': false,
+    })
   },
   showdata() {
     console.log(this.data)
@@ -60,6 +70,7 @@ Page({
     console.log('handleTouchStart', this.data.dropdownMenu)
     this.setData({
       'dropdownMenu.isShow': false,
+      'selectHomeMenu.isShow': false,
     })
   },
   handleAllOn() {
@@ -84,12 +95,6 @@ Page({
   },
   handleDropdown() {
     console.log('handleDropdown', this.data.dropdownMenu)
-    if (this.data.dropdownMenu.isShow) {
-      this.setData({
-        'dropdownMenu.isShow': false,
-      })
-      return
-    }
     wx.createSelectorQuery()
       .select('#addIcon')
       .boundingClientRect()
@@ -98,8 +103,9 @@ Page({
           dropdownMenu: {
             x: '30rpx',
             y: res[0].bottom + 10 + 'px',
-            isShow: true,
+            isShow: !this.data.dropdownMenu.isShow,
           },
+          'selectHomeMenu.isShow': false,
         })
       })
   },
@@ -132,6 +138,16 @@ Page({
   handleHideAddNewRoom() {
     this.setData({
       showAddNewRoom: false,
+    })
+  },
+  handleShowHomeSelectMenu() {
+    this.setData({
+      selectHomeMenu: {
+        x: '30rpx',
+        y: wx.getStorageSync('statusBarHeight') + wx.getStorageSync('navigationBarHeight') + 16 + 'px',
+        isShow: !this.data.selectHomeMenu.isShow,
+      },
+      'dropdownMenu.isShow': false,
     })
   },
 })

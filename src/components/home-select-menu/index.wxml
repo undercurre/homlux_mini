@@ -1,18 +1,12 @@
 <!--components/home-select-menu/index.wxml-->
-<view class="bg-hex-434343 fixed flex flex-col items-center p-10rpx rounded-32rpx w-256rpx" style="right: {{x}}; top: {{y}}; z-index: 100;" wx:if="{{isShow}}">
-  <view class="flex justify-center items-center" bindtap="handleAddDevice">
-    <image src="/assets/img/home/add-device.png" style="width: 48rpx; height: 48rpx; padding: 24rpx 0"></image>
-    <text class="p-10rpx text-white text-28rpx ml-24rpx">添加设备</text>
+<view class="bg-hex-434343 fixed flex flex-col items-center p-10rpx rounded-32rpx w-320rpx" style="left: {{x}}; top: {{y}}; z-index: 100;" wx:if="{{isShow}}">
+  <view class="flex flex-col justify-center items-center" bindtap="handleAddDevice" wx:for="{{list}}" wx:key="value">
+    <view class="w-320rpx h-96rpx flex items-center">
+      <text class="p-10rpx text-white text-28rpx ml-34rpx">{{item.name}}</text>
+      <view class="text-20rpx text-white bg-hex-488FFF px-16rpx py-8rpx rounded-999 ml-10rpx" wx:if="{{item.isCreator}}">创建</view>
+      <svg-icon class="ml-18rpx" bindtap="handleClear" wx:if="{{item.isSelect && isShow}}" name="icon-park:check" width="40rpx" height="40rpx" color="#d2d2d2" />
+    </view>
+    <view class="bg-hex-717171 w-250rpx h-1rpx" wx:if="{{index != list.length - 1}}"></view>
   </view>
-  <view class="bg-hex-717171 w-208rpx h-1rpx"></view>
-  <view class="flex justify-center items-center" bindtap="handleAddRoom">
-    <image src="/assets/img/home/add-room.png" style="width: 48rpx; height: 48rpx; padding: 24rpx 0"></image>
-    <text class="p-10rpx text-white text-28rpx ml-24rpx">添加房间</text>
-  </view>
-  <view class="bg-hex-717171 w-208rpx h-1rpx"></view>
-  <view class="flex justify-center items-center" bindtap="handleInviteFamily">
-    <image src="/assets/img/home/invite-family.png" style="width: 48rpx; height: 48rpx; padding: 24rpx 0"></image>
-    <text class="p-10rpx text-white text-28rpx ml-24rpx">邀请成员</text>
-  </view>
-  <view class="absolute right-32rpx top-0 w-0 h-0" style="border-bottom: 16rpx solid #434343; border-top: 16rpx solid transparent; border-left: 16rpx solid transparent; border-right: 16rpx solid transparent; top: -32rpx"></view>
+  <view class="arrow absolute left-32rpx top-0 w-0 h-0"></view>
 </view>

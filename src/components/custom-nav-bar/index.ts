@@ -1,7 +1,6 @@
 // components/custom-nav-bar/index.ts
 Component({
   options: {
-    multipleSlots: true,
     styleIsolation: 'apply-shared',
   },
   /**

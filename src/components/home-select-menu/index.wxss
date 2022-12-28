@@ -1,1 +1,15 @@
 /* components/home-select-menu/index.wxss */
+.arrow {
+  border-bottom: 16rpx solid #434343;
+  border-top: 16rpx solid transparent;
+  border-left: 16rpx solid transparent;
+  border-right: 16rpx solid transparent;
+  top: -32rpx;
+}
+.arrow {
+  border-bottom: 16rpx solid #434343;
+  border-top: 16rpx solid transparent;
+  border-left: 16rpx solid transparent;
+  border-right: 16rpx solid transparent;
+  top: -32rpx;
+}

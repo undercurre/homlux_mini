@@ -3,7 +3,7 @@
   <view class="w-full h-full flex items-end">
     <view class="w-750rpx h-710rpx bg-white rounded-t-64rpx relative flex flex-col items-center">
       <view wx:if="{{isShow}}" class="absolute right-48rpx top-40rpx" bind:tap="onClickHide">
-        <svg-icon name="ion:close" width="48rpx" height="48rpx"></svg-icon>
+        <svg-icon name="icon-park:close" width="48rpx" height="48rpx"></svg-icon>
       </view>
       <text class="text-36rpx font-medium mb-18rpx mt-38rpx">添加设备</text>
       <view>

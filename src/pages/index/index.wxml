@@ -1,16 +1,16 @@
 <!-- 导航栏 -->
 <nav-bar background="transparent">
-  <view slot="left">
+  <view bindtap="handleShowHomeSelectMenu">
     <view class="absolute top-8rpx left-32rpx">
       <text class="text-hex-1e2c46 text-48rpx font-semibold">我的家庭</text>
-      <svg-icon class="absolute" style="right: -64rpx; top: 10rpx" load="{{global.isLoadedSvg}}" color="#1E2C46" name="material-symbols:arrow-drop-down-rounded" width="48rpx" height="48rpx" />
+      <svg-icon class="absolute home-select-arrow" load="{{global.isLoadedSvg}}" color="#1E2C46" name="{{selectHomeMenu.isShow?'material-symbols:arrow-drop-up-rounded':'material-symbols:arrow-drop-down-rounded'}}" width="48rpx" height="48rpx" />
     </view>
   </view>
 </nav-bar>
 
 <!-- 背景 -->
 <view class="fixed left-0 top-0 w-100vw h-100vh" style="z-index: -1" bindtouchstart="handleTouchStart">
-  <image src="/assets/img/home/bg.png" style="width: 100vw; height: 100vh"></image>
+  <image src="/assets/img/home/bg.png" class="bg-image"></image>
   <!-- <svg-icon name="room-bg" width="100vw" height="100vh" load="{{global.isLoadedSvg}}"></svg-icon> -->
 </view>
 
@@ -27,7 +27,7 @@
       </view>
     </view>
     <view class="absolute right-24rpx top-0" id="addIcon" bind:tap="handleDropdown">
-      <image src="/assets/img/home/add.png" style="width: 64rpx; height: 64rpx"></image>
+      <image src="/assets/img/home/add.png" class="w-64rpx h-64rpx"></image>
     </view>
     <!-- 顶开上面的内容高度 -->
     <view class="h-100rpx"></view>
@@ -42,6 +42,7 @@
   </view>
 </view>
 
+<home-select-menu x="{{selectHomeMenu.x}}" y="{{selectHomeMenu.y}}" isShow="{{selectHomeMenu.isShow}}" bind:select="handleMenuSelect"></home-select-menu>
 <dropdown-menu x="{{dropdownMenu.x}}" y="{{dropdownMenu.y}}" isShow="{{dropdownMenu.isShow}}" bind:select="handleMenuSelect"></dropdown-menu>
 <add-new-device isShow="{{showAddNewDevice}}" bind:hide="handleHideAddNewDevice"></add-new-device>
 <add-new-room isShow="{{showAddNewRoom}}" bind:hide="handleHideAddNewRoom"></add-new-room>
