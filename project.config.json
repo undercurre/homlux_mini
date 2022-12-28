@@ -27,9 +27,7 @@
     "minifyWXSS": true,
     "showES6CompileOption": false,
     "minifyWXML": true,
-    "useCompilerPlugins": [
-      "typescript"
-    ],
+    "useCompilerPlugins": ["typescript"],
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
@@ -39,7 +37,6 @@
     "ignoreUploadUnusedFiles": false
   },
   "compileType": "miniprogram",
-  "condition": {},
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
@@ -49,5 +46,6 @@
     "ignore": [],
     "include": []
   },
-  "appid": "wxc9c875aa99bcdc13"
+  "appid": "wxd534524a35f2b601",
+  "condition": {}
 }
