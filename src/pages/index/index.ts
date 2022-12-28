@@ -1,8 +1,6 @@
 import { mobxBehavior } from './behavior'
 import { behavior as computedBehavior } from 'miniprogram-computed'
-import { global } from '../../store/index'
 import { storage } from '../../utils/storage'
-import svgs from '../../assets/svg/svgs.js'
 
 Page({
   behaviors: [mobxBehavior, computedBehavior],
@@ -15,20 +13,29 @@ Page({
     allOnBtnTap: false,
     allOffBtnTap: false,
     showAddNewDevice: false,
+    showAddNewRoom: false,
   },
   computed: {
     allSum(data: { numA: number; numB: number; global: { numA: number; numB: number } }) {
       return data.numA + data.numB + data.global.numA + data.global.numB
     },
+    // 家庭是否有设备
+    hasDevice() {
+      return true
+    },
+    // 是否显示全局控制开关（需要有灯）
+    isShowHomeControl() {
+      return true
+    },
   },
 
   onLoad: function () {
+    // 更新tabbar状态
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({
         selected: 0,
       })
     }
-    this.loadSvgData()
     // 如果用户没登陆，或者登录状态过期，需要自动跳转到登录页
     if (!storage.get<string>('token')) {
       console.log('用户未登录')
@@ -98,12 +105,13 @@ Page({
   },
   handleMenuSelect(e: { detail: 'addDevice' | 'addRoom' | 'inviteFamily' }) {
     if (e.detail === 'addDevice') {
-      console.log(1)
       this.setData({
         showAddNewDevice: true,
       })
     } else if (e.detail === 'addRoom') {
-      console.log(2)
+      this.setData({
+        showAddNewRoom: true,
+      })
     } else if (e.detail === 'inviteFamily') {
       console.log(3)
     }
@@ -111,18 +119,19 @@ Page({
       'dropdownMenu.isShow': false,
     })
   },
+  handleAddDevice() {
+    this.setData({
+      showAddNewDevice: true,
+    })
+  },
   handleHideAddNewDevice() {
     this.setData({
       showAddNewDevice: false,
     })
   },
-  loadSvgData() {
-    // 进入首页加载svg，可能因为使用import，onLoad这个回调会变成异步执行
-    // 页面可能会已经渲染，导致在全局找不到svg数据，所以这里需要一个标志用于控制渲染svg
-    if (!getApp().globalData.svgs) {
-      getApp().globalData.svgs = svgs
-    }
-    console.log('svgs', svgs)
-    global.setIsLoadSvg()
+  handleHideAddNewRoom() {
+    this.setData({
+      showAddNewRoom: false,
+    })
   },
 })

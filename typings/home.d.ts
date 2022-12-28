@@ -60,4 +60,11 @@ declare namespace Home {
      */
     room_id: string
   }
+  // 家庭选择下拉菜单项
+  interface DropdownItem {
+    value: string | number
+    name: string
+    isSelect: boolean
+    isCreator: boolean
+  }
 }

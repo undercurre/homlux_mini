@@ -4,7 +4,9 @@
     "component-a": "../../components/component-a/component",
     "component-b": "../../components/component-b/component",
     "dropdown-menu": "./components/dropdown-menu/index",
-    "add-new-device": "./components/add-new-device/index"
+    "room-card": "./components/room-card/index",
+    "add-new-device": "./components/add-new-device/index",
+    "add-new-room": "./components/add-new-room/index"
   },
   "navigationStyle": "custom"
 }
