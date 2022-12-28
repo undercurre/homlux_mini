@@ -1,43 +1,47 @@
+<!-- 导航栏 -->
 <nav-bar background="transparent">
   <view slot="left">
-    <text class="absolute top-5rpx left-32rpx text-hex-1e2c46 text-48rpx font-semibold">我的家庭</text>
+    <view class="absolute top-8rpx left-32rpx">
+      <text class="text-hex-1e2c46 text-48rpx font-semibold">我的家庭</text>
+      <svg-icon class="absolute" style="right: -64rpx; top: 10rpx" load="{{global.isLoadedSvg}}" color="#1E2C46" name="material-symbols:arrow-drop-down-rounded" width="48rpx" height="48rpx" />
+    </view>
   </view>
 </nav-bar>
 
+<!-- 背景 -->
 <view class="fixed left-0 top-0 w-100vw h-100vh" style="z-index: -1" bindtouchstart="handleTouchStart">
   <image src="/assets/img/home/bg.png" style="width: 100vw; height: 100vh"></image>
+  <!-- <svg-icon name="room-bg" width="100vw" height="100vh" load="{{global.isLoadedSvg}}"></svg-icon> -->
 </view>
 
+<!-- 主体内容 -->
 <view class="px-24rpx pt-28rpx w-full h-full box-border">
-  <view class="relative w-full h-80rpx">
-    <view class="bg-hex-ffffff_42 w-244rpx h-80rpx rounded-40rpx flex absolute left-0 top-0">
+  <!-- 有设备时显示 -->
+  <view class="relative w-full" wx:if="{{hasDevice}}">
+    <view class="bg-hex-ffffff_42 w-244rpx h-80rpx rounded-40rpx flex absolute left-0 top-0" wx:if="{{isShowHomeControl}}">
       <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx">
-        <text
-          bindtap="handleAllOn"
-          class="text-hex-2b4067 px-24rpx py-12rpx rounded-999"
-          style="background-color: {{allOnBtnTap ? '#468CFB' : 'transparent'}}; color: {{allOnBtnTap ? '#fff' : '#2b4067'}}"
-          >全开</text
-        >
+        <text bindtap="handleAllOn" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999" style="background-color: {{allOnBtnTap ? '#468CFB' : 'transparent'}}; color: {{allOnBtnTap ? '#fff' : '#2b4067'}}">全开</text>
       </view>
       <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx">
-        <text
-          bindtap="handleAllOff"
-          class="text-hex-2b4067 px-24rpx py-12rpx rounded-999"
-          style="background-color: {{allOffBtnTap ? '#468CFB' : 'transparent'}}; color: {{allOffBtnTap ? '#fff' : '#2b4067'}}"
-          >全关</text
-        >
+        <text bindtap="handleAllOff" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999" style="background-color: {{allOffBtnTap ? '#468CFB' : 'transparent'}}; color: {{allOffBtnTap ? '#fff' : '#2b4067'}}">全关</text>
       </view>
     </view>
     <view class="absolute right-24rpx top-0" id="addIcon" bind:tap="handleDropdown">
       <image src="/assets/img/home/add.png" style="width: 64rpx; height: 64rpx"></image>
     </view>
+    <!-- 顶开上面的内容高度 -->
+    <view class="h-100rpx"></view>
+    <!-- 房间卡片列表 -->
+    <room-card></room-card>
+  </view>
+  <!-- 无设备时显示 -->
+  <view wx:else class="w-full mt-68rpx flex flex-col items-center">
+    <image src="/assets/img/defaultImg/no-device.png" class="w-300rpx h-300rpx"></image>
+    <text class="text-28rpx color-hex-555659 mt-48rpx mb-112rpx">您未添加任何设备</text>
+    <van-button bindtap="handleAddDevice" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-style="color: #fff; border-radius: 20rpx; width: 686rpx; height: 88rpx; border: 0; font-size: 36rpx; font-weight: 400;">立即添加</van-button>
   </view>
 </view>
 
-<dropdown-menu
-  x="{{dropdownMenu.x}}"
-  y="{{dropdownMenu.y}}"
-  isShow="{{dropdownMenu.isShow}}"
-  bind:select="handleMenuSelect"
-></dropdown-menu>
+<dropdown-menu x="{{dropdownMenu.x}}" y="{{dropdownMenu.y}}" isShow="{{dropdownMenu.isShow}}" bind:select="handleMenuSelect"></dropdown-menu>
 <add-new-device isShow="{{showAddNewDevice}}" bind:hide="handleHideAddNewDevice"></add-new-device>
+<add-new-room isShow="{{showAddNewRoom}}" bind:hide="handleHideAddNewRoom"></add-new-room>

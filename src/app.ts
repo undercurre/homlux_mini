@@ -1,7 +1,15 @@
 // app.js
 import { setNavigationBarHeight } from './utils/index'
+import { global } from './store/global'
 App<IAppOption>({
   onLaunch() {
+    // 加载svg，这里不能使用import进行导入，使用import导入会导致报错
+    // @ts-ignore
+    require('./assets/svg/svgs.js', (module) => {
+      this.globalData.svgs = module.default
+      global.setIsLoadSvg()
+    })
+
     // 获取状态栏和顶部栏高度
     setNavigationBarHeight()
 

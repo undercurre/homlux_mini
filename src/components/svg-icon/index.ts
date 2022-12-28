@@ -1,5 +1,8 @@
 // components/icon/icon.ts
 Component({
+  options: {
+    styleIsolation: 'apply-shared',
+  },
   /**
    * 组件的属性列表
    */

@@ -28,6 +28,8 @@
     ]
   },
   "usingComponents": {
+    "van-button": "@vant/weapp/button/index",
+    "van-overlay": "@vant/weapp/overlay/index",
     "nav-bar": "./components/custom-nav-bar/index",
     "svg-icon": "./components/svg-icon/index"
   },
