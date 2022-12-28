@@ -1,0 +1,33 @@
+<!--pages/login/index.wxml-->
+<view class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7" style="z-index: -1"></view>
+<view class="flex items-center justify-center h-8_10">
+  <view class="flex items-center">
+    <image class="rounded-999 w-184rpx h-184rpx" src="/assets/img/login/logo.png"></image>
+    <text class="text-48rpx font-semibold">美的照明</text>
+  </view>
+</view>
+
+<view class="absolute left-0 bottom-0">
+  <view class="mx-74rpx">
+    <van-checkbox class="text-24rpx" value="{{ isAgree }}" bind:change="onAgreeClick"
+      >我已阅读并同意<text style="color: #169bd5">《美的照明隐私协议》</text
+      ><text style="color: #169bd5">《软件许可及用户服务协议》</text
+      ><text style="color: #169bd5">《已收集个人信息清单》</text
+      ><text style="color: #169bd5">《与第三方共享个人信息清单》</text>和<text style="color: #169bd5"
+        >《美的照明权限列表》</text
+      ></van-checkbox
+    >
+  </view>
+  <view class="px-32rpx mt-50rpx mb-128rpx">
+    <van-button
+      custom-style="border-radius: 20rpx;"
+      open-type="getPhoneNumber"
+      bindgetphonenumber="onLoginClick"
+      type="primary"
+      block
+      disabled="{{!isAgree}}"
+      type="info"
+      >快速登录</van-button
+    >
+  </view>
+</view>

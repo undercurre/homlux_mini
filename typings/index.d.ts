@@ -1,8 +1,9 @@
 interface IAppOption {
   globalData: {
-    userInfo?: WechatMiniprogram.UserInfo,
+    userInfo?: WechatMiniprogram.UserInfo
+    svgs?: Record<string, string>
   }
-  userInfoReadyCallback?: WechatMiniprogram.GetUserInfoSuccessCallback,
+  userInfoReadyCallback?: WechatMiniprogram.GetUserInfoSuccessCallback
 }
 
-type IAnyObject = WechatMiniprogram.IAnyObject;
+type IAnyObject = WechatMiniprogram.IAnyObject

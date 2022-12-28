@@ -1,0 +1,41 @@
+{
+  "pages": ["pages/index/index", "pages/login/index", "pages/mine/index"],
+  "subpackages": [
+    {
+      "root": "package-distribution",
+      "pages": ["wifi-connect/index", "device-add/index", "near-device/index"]
+    },
+    {
+      "root": "package-mine",
+      "pages": ["hoom-manage/index", "device-manage/index"]
+    },
+    {
+      "root": "package-room",
+      "pages": ["index/index", "scene/index"]
+    }
+  ],
+  "tabBar": {
+    "custom": true,
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/mine/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "usingComponents": {
+    "nav-bar": "./components/custom-nav-bar/index",
+    "svg-icon": "./components/svg-icon/index"
+  },
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "HomLux",
+    "navigationBarTextStyle": "black"
+  },
+  "sitemapLocation": "sitemap.json"
+}

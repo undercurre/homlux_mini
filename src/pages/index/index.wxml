@@ -1,0 +1,43 @@
+<nav-bar background="transparent">
+  <view slot="left">
+    <text class="absolute top-5rpx left-32rpx text-hex-1e2c46 text-48rpx font-semibold">我的家庭</text>
+  </view>
+</nav-bar>
+
+<view class="fixed left-0 top-0 w-100vw h-100vh" style="z-index: -1" bindtouchstart="handleTouchStart">
+  <image src="/assets/img/home/bg.png" style="width: 100vw; height: 100vh"></image>
+</view>
+
+<view class="px-24rpx pt-28rpx w-full h-full box-border">
+  <view class="relative w-full h-80rpx">
+    <view class="bg-hex-ffffff_42 w-244rpx h-80rpx rounded-40rpx flex absolute left-0 top-0">
+      <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx">
+        <text
+          bindtap="handleAllOn"
+          class="text-hex-2b4067 px-24rpx py-12rpx rounded-999"
+          style="background-color: {{allOnBtnTap ? '#468CFB' : 'transparent'}}; color: {{allOnBtnTap ? '#fff' : '#2b4067'}}"
+          >全开</text
+        >
+      </view>
+      <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx">
+        <text
+          bindtap="handleAllOff"
+          class="text-hex-2b4067 px-24rpx py-12rpx rounded-999"
+          style="background-color: {{allOffBtnTap ? '#468CFB' : 'transparent'}}; color: {{allOffBtnTap ? '#fff' : '#2b4067'}}"
+          >全关</text
+        >
+      </view>
+    </view>
+    <view class="absolute right-24rpx top-0" id="addIcon" bind:tap="handleDropdown">
+      <image src="/assets/img/home/add.png" style="width: 64rpx; height: 64rpx"></image>
+    </view>
+  </view>
+</view>
+
+<dropdown-menu
+  x="{{dropdownMenu.x}}"
+  y="{{dropdownMenu.y}}"
+  isShow="{{dropdownMenu.isShow}}"
+  bind:select="handleMenuSelect"
+></dropdown-menu>
+<add-new-device isShow="{{showAddNewDevice}}" bind:hide="handleHideAddNewDevice"></add-new-device>

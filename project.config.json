@@ -6,7 +6,7 @@
     "urlCheck": true,
     "scopeDataCheck": false,
     "coverView": true,
-    "es6": false,
+    "es6": true,
     "postcss": true,
     "compileHotReLoad": false,
     "lazyloadPlaceholderEnable": false,
@@ -18,13 +18,18 @@
     "uploadWithSourceMap": true,
     "useIsolateContext": true,
     "nodeModules": false,
-    "enhance": false,
+    "enhance": true,
     "useMultiFrameRuntime": true,
     "showShadowRootInWxmlPanel": true,
-    "packNpmManually": false,
+    "packNpmManually": true,
+    "packNpmRelationList": [
+      {
+        "packageJsonPath": "./package.json",
+        "miniprogramNpmDistDir": "./src/"
+      }
+    ],
     "enableEngineNative": false,
-    "packNpmRelationList": [],
-    "minifyWXSS": true,
+    "minifyWXSS": false,
     "showES6CompileOption": false,
     "minifyWXML": true,
     "useCompilerPlugins": ["typescript"],
@@ -34,8 +39,10 @@
       "outputPath": ""
     },
     "ignoreDevUnusedFiles": false,
-    "ignoreUploadUnusedFiles": false
+    "ignoreUploadUnusedFiles": true
   },
+  "srcMiniprogramRoot": "src/",
+  "miniprogramRoot": "src/",
   "compileType": "miniprogram",
   "editorSetting": {
     "tabIndent": "insertSpaces",

@@ -1,0 +1,24 @@
+<!--pages/index/components/add-new-device/index.wxml-->
+<van-overlay show="{{ isShow }}" z-index="10000">
+  <view class="w-full h-full flex items-end">
+    <view class="w-750rpx h-710rpx bg-white rounded-t-64rpx relative flex flex-col items-center">
+      <view wx:if="{{isShow}}" class="absolute right-48rpx top-40rpx" bind:tap="onClickHide">
+        <svg-icon name="ion:close" width="48rpx" height="48rpx"></svg-icon>
+      </view>
+      <text class="text-36rpx font-medium mb-18rpx mt-38rpx">添加设备</text>
+      <view>
+        <text class="text-hex-555659 text-26rpx">扫描设备的二维码或查找</text>
+        <text class="text-hex-448fff text-26rpx ml-16rpx">附近的子设备</text>
+        <text class="text-hex-448fff text-28rpx ml-16rpx font-bold">></text>
+      </view>
+      <camera
+        wx:if="{{isShow}}"
+        mode="scanCode"
+        device-position="back"
+        flash="auto"
+        binderror="error"
+        class="w-640rpx h-416rpx rounded-48rpx mt-48rpx"
+      ></camera>
+    </view>
+  </view>
+</van-overlay>
