@@ -4,15 +4,14 @@ import { global, user } from '../../store/index'
 export const mobxBehavior = BehaviorWithStore({
   storeBindings: [
     {
-      namespace: 'global',
       store: global,
-      fields: ['numA', 'numB', 'sum', 'isLoadedSvg'],
-      actions: ['update', 'setIsLoadSvg', 'setShowTabbar'],
+      fields: ['homeList', 'currentHomeId', 'isLoadedSvg'],
+      actions: ['setIsLoadSvg', 'setShowTabbar'],
     },
     {
       store: user,
-      fields: ['numA', 'numB', 'sum'],
-      actions: ['update_user'],
+      fields: ['userInfo'],
+      actions: [],
     },
   ],
 })

@@ -1,5 +1,8 @@
 // components/home-select-menu/index.ts
 Component({
+  options: {
+    styleIsolation: 'apply-shared',
+  },
   /**
    * 组件的属性列表
    */
@@ -18,7 +21,7 @@ Component({
     },
     list: {
       type: Array,
-      value: [] as Home.DropdownItem[],
+      value: [],
     },
   },
 
@@ -31,8 +34,8 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    test() {
-      this.data.list[0]
+    handleHomeTap(e: { currentTarget: { dataset: { value: number | string } } }) {
+      this.triggerEvent('select', e.currentTarget.dataset.value)
     },
   },
 })

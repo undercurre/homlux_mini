@@ -1,5 +1,6 @@
 // pages/index/components/room-card/index.ts
-Component({
+import { ComponentWithComputed } from 'miniprogram-computed'
+ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
   },
@@ -17,10 +18,21 @@ Component({
     },
     sceneList: {
       type: Array,
+      value: [],
     },
     sceneSelect: {
       type: String,
       value: '',
+    },
+    showScene: {
+      type: Boolean,
+      value: false,
+    },
+  },
+
+  computed: {
+    cardList(data) {
+      return data.sceneList.slice(0, 4)
     },
   },
 
@@ -32,5 +44,9 @@ Component({
   /**
    * 组件的方法列表
    */
-  methods: {},
+  methods: {
+    handleSceneTap(e: { currentTarget: { dataset: { value: string } } }) {
+      this.triggerEvent('sceneSelect', e.currentTarget.dataset.value)
+    },
+  },
 })

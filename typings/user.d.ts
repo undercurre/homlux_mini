@@ -18,4 +18,22 @@ declare namespace User {
      */
     token: string
   }
+  interface UserInfo {
+    /**
+     * 头像
+     */
+    avatar: string
+    /**
+     * 昵称
+     */
+    nickname: string
+    /**
+     * 手机号
+     */
+    phone: string
+    /**
+     * 用户id
+     */
+    id: string
+  }
 }

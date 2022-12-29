@@ -1,3 +1,13 @@
 page {
-  padding-bottom: calc(96rpx + env(safe-area-inset-bottom));
+  margin-bottom: calc(96rpx + env(safe-area-inset-bottom));
+}
+
+.home-select-arrow {
+  right: -64rpx;
+  top: 10rpx;
+}
+
+.bg-image {
+  width: 100vw;
+  height: 100vh;
 }

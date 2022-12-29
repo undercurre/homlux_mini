@@ -1,9 +1,9 @@
 <!--pages/index/components/add-new-device/index.wxml-->
 <van-overlay show="{{ isShow }}" z-index="10000">
-  <view class="w-full h-full flex items-end">
-    <view class="w-750rpx h-1220rpx bg-white rounded-t-64rpx relative flex flex-col items-center">
+  <view class="w-full h-full flex items-end" bindtap="handleOverlayTap">
+    <view class="w-750rpx h-1220rpx bg-white rounded-t-64rpx relative flex flex-col items-center" id="content">
       <view wx:if="{{isShow}}" class="absolute right-48rpx top-40rpx" bind:tap="handleCancel">
-        <svg-icon name="ion:close" width="48rpx" height="48rpx"></svg-icon>
+        <svg-icon name="icon-park:close" width="48rpx" height="48rpx"></svg-icon>
       </view>
       <text class="text-36rpx font-medium mb-18rpx mt-38rpx">添加房间</text>
       <text class="w-full text-left pl-96rpx pt-60rpx text-28rpx text-hex-27282A">房间名称</text>
