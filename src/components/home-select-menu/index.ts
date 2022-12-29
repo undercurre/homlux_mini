@@ -21,27 +21,7 @@ Component({
     },
     list: {
       type: Array,
-      value: [
-        // todo: 测试数据，需要删除
-        {
-          value: 1,
-          name: '我的家庭',
-          isCreator: true,
-          isSelect: true,
-        },
-        {
-          value: 2,
-          name: '7285的家',
-          isCreator: false,
-          isSelect: false,
-        },
-        {
-          value: 3,
-          name: '1235的家',
-          isCreator: false,
-          isSelect: false,
-        },
-      ] as Home.DropdownItem[],
+      value: [],
     },
   },
 
@@ -54,8 +34,8 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    test() {
-      this.data.list[0]
+    handleHomeTap(e: { currentTarget: { dataset: { value: number | string } } }) {
+      this.triggerEvent('select', e.currentTarget.dataset.value)
     },
   },
 })

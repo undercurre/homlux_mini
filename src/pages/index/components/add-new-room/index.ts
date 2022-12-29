@@ -74,6 +74,18 @@ Component({
    * 组件的方法列表
    */
   methods: {
+    handleOverlayTap(e: { detail: { x: number; y: number } }) {
+      console.log(e)
+      this.createSelectorQuery()
+        .select('#content')
+        .boundingClientRect()
+        .exec((res) => {
+          // 判断是否点中蒙层
+          if (e.detail.y < res[0].top) {
+            this.triggerEvent('hide')
+          }
+        })
+    },
     handleCancel() {
       this.triggerEvent('hide')
       this.setData({
@@ -82,7 +94,10 @@ Component({
       })
     },
     handleConfirm() {
-      this.triggerEvent('hide')
+      this.triggerEvent('confirm', {
+        roomName: this.data.roomName,
+        roomIcon: this.data.roomIcon,
+      })
       this.setData({
         roomIcon: '',
         roomName: '',
@@ -94,13 +109,11 @@ Component({
       })
     },
     handleRoomNameInput(value: { detail: { value: string } }) {
-      console.log(value.detail.value)
       this.setData({
         roomName: value.detail.value.slice(0, 5),
       })
     },
     handleIconClick(e: { currentTarget: { dataset: { icon: string } } }) {
-      console.log(e.currentTarget.dataset.icon)
       this.setData({
         roomIcon: e.currentTarget.dataset.icon,
       })

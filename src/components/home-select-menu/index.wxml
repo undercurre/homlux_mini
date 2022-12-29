@@ -1,6 +1,6 @@
 <!--components/home-select-menu/index.wxml-->
-<view class="bg-hex-434343 fixed flex flex-col items-center p-10rpx rounded-32rpx w-320rpx" style="left: {{x}}; top: {{y}}; z-index: 100;" wx:if="{{isShow}}">
-  <view class="flex flex-col justify-center items-center" bindtap="handleAddDevice" wx:for="{{list}}" wx:key="value">
+<view class="bg fixed flex flex-col items-center p-10rpx rounded-32rpx w-320rpx" style="left: {{x}}; top: {{y}}; z-index: 100;" wx:if="{{isShow}}">
+  <view class="flex flex-col justify-center items-center" bindtap="handleHomeTap" wx:for="{{list}}" wx:key="value" data-value="{{item.value}}">
     <view class="w-320rpx h-96rpx flex items-center">
       <text class="p-10rpx text-white text-28rpx ml-34rpx">{{item.name}}</text>
       <view class="text-20rpx text-white bg-hex-488FFF px-16rpx py-8rpx rounded-999 ml-10rpx" wx:if="{{item.isCreator}}">创建</view>

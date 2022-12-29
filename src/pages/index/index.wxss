@@ -1,5 +1,5 @@
 page {
-  padding-bottom: calc(96rpx + env(safe-area-inset-bottom));
+  margin-bottom: calc(96rpx + env(safe-area-inset-bottom));
 }
 
 .home-select-arrow {

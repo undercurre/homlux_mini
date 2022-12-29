@@ -1,8 +1,26 @@
 import { observable, runInAction, action } from 'mobx-miniprogram'
-import { delay } from '../utils/index'
 
 export const global = observable({
   isLoadedSvg: false,
+  homeList: [
+    {
+      home_id: '111',
+      home_name: '7071的家',
+      master_uid: '7071',
+    },
+    {
+      home_id: '112',
+      home_name: '4321的家',
+      master_uid: '4321',
+    },
+    {
+      home_id: '113',
+      home_name: '2314的家',
+      master_uid: '2314',
+    },
+  ] as Home.HomeInfo[],
+  currentHomeId: '111',
+
   numA: 1,
   numB: 2,
 
@@ -13,16 +31,6 @@ export const global = observable({
   setIsLoadSvg: function () {
     runInAction(() => {
       global.isLoadedSvg = true
-    })
-  },
-
-  // 模拟请求接口异步修改状态
-  update: async function () {
-    await delay(1000)
-    runInAction(() => {
-      const sum = this.sum
-      this.numA = this.numB
-      this.numB = sum
     })
   },
 

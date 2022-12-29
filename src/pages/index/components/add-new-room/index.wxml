@@ -1,7 +1,7 @@
 <!--pages/index/components/add-new-device/index.wxml-->
 <van-overlay show="{{ isShow }}" z-index="10000">
-  <view class="w-full h-full flex items-end">
-    <view class="w-750rpx h-1220rpx bg-white rounded-t-64rpx relative flex flex-col items-center">
+  <view class="w-full h-full flex items-end" bindtap="handleOverlayTap">
+    <view class="w-750rpx h-1220rpx bg-white rounded-t-64rpx relative flex flex-col items-center" id="content">
       <view wx:if="{{isShow}}" class="absolute right-48rpx top-40rpx" bind:tap="handleCancel">
         <svg-icon name="icon-park:close" width="48rpx" height="48rpx"></svg-icon>
       </view>
