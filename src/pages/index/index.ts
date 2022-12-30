@@ -252,4 +252,9 @@ Page({
       roomList,
     })
   },
+  handleToRoom(e: { currentTarget: { dataset: { room: string } } }) {
+    wx.navigateTo({
+      url: `/package-room/index/index?room=${e.currentTarget.dataset.room}`,
+    })
+  },
 })

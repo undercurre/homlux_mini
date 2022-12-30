@@ -9,11 +9,18 @@ Component({
   properties: {
     title: {
       type: String,
-      value: '',
     },
     background: {
       type: String,
-      value: '#fff',
+      value: 'transparent',
+    },
+    zIndex: {
+      type: Number,
+      value: 1,
+    },
+    leftArrow: {
+      type: Boolean,
+      value: false,
     },
   },
 
@@ -35,5 +42,9 @@ Component({
   /**
    * 组件的方法列表
    */
-  methods: {},
+  methods: {
+    handleLeftTap() {
+      this.triggerEvent('leftTap')
+    },
+  },
 })

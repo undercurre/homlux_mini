@@ -9,3 +9,7 @@
   padding: 200rpx 0;
   box-sizing: border-box;
 }
+
+.bg-z-index {
+  z-index: -500;
+}

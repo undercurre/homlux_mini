@@ -1,8 +1,6 @@
 {
   "usingComponents": {
     "van-button": "@vant/weapp/button/index",
-    "component-a": "../../components/component-a/component",
-    "component-b": "../../components/component-b/component",
     "dropdown-menu": "./components/dropdown-menu/index",
     "home-select-menu": "../../components/home-select-menu/index",
     "room-card": "./components/room-card/index",

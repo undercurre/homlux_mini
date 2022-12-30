@@ -37,5 +37,10 @@ Component({
     onClickHide() {
       this.triggerEvent('hide')
     },
+    toNearDevice() {
+      wx.navigateTo({
+        url: '/package-distribution/near-device/index',
+      })
+    },
   },
 })

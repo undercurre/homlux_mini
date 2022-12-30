@@ -1,2 +1,6 @@
 <!--package-room/index/index.wxml-->
+<!-- 背景 -->
+<svg-icon name="room-bg" width="100vw" height="100vh" class="fixed bg-z-index"></svg-icon>
+<!-- 标题 -->
+<nav-bar title="{{title}}" left-arrow bind:leftTap="back"></nav-bar>
 <text>package-room/index/index.wxml</text>

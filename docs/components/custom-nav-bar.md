@@ -6,9 +6,18 @@
 
 ## 属性
 
-| 参数 name | 类型   | 必传  | 默认值 | 描述           |
-| --------- | ------ | ----- | ------ | -------------- |
-| title     | string | false | -      | 默认样式的标题 |
+| 参数 name  | 类型    | 必传  | 默认值      | 描述           |
+| ---------- | ------- | ----- | ----------- | -------------- |
+| title      | string  | false | -           | 默认样式的标题 |
+| background | string  | false | transparent | 导航栏默认颜色 |
+| leftArrow  | boolean | false | false       | 是否有左箭头   |
+| zIndex     | number  | false | 1           | 导航栏层级     |
+
+## 事件
+
+| 事件 name    | 类型 | 必传  | 描述               |
+| ------------ | ---- | ----- | ------------------ |
+| bind:leftTap | -    | false | 点击左箭头触发事件 |
 
 ## 插槽
 
