@@ -37,5 +37,10 @@ Component({
     onClickHide() {
       this.triggerEvent('hide')
     },
+    toSearchSubDevice() {
+      wx.redirectTo({
+        url: '/package-distribution/search-subdevice/index',
+      })
+    },
   },
 })

@@ -3,7 +3,7 @@
   "subpackages": [
     {
       "root": "package-distribution",
-      "pages": ["wifi-connect/index", "device-add/index", "near-device/index"]
+      "pages": ["wifi-connect/index", "device-add/index", "search-subdevice/index"]
     },
     {
       "root": "package-mine",
@@ -34,10 +34,9 @@
     "svg-icon": "./components/svg-icon/index"
   },
   "window": {
+    "navigationStyle": "custom",
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "HomLux",
-    "navigationBarTextStyle": "black"
+    "backgroundColor": "#eef2f7"
   },
   "sitemapLocation": "sitemap.json"
 }

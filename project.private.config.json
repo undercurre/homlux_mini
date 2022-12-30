@@ -6,5 +6,27 @@
     "urlCheck": false,
     "bigPackageSizeSupport": true
   },
-  "libVersion": "2.29.0"
+  "libVersion": "2.29.0",
+  "condition": {
+    "plugin": {
+      "list": []
+    },
+    "game": {
+      "list": []
+    },
+    "gamePlugin": {
+      "list": []
+    },
+    "miniprogram": {
+      "list": [
+        {
+          "name": "附近子设备",
+          "pathName": "package-distribution/search-subdevice/index",
+          "query": "",
+          "scene": null,
+          "launchMode": "default"
+        }
+      ]
+    }
+  }
 }

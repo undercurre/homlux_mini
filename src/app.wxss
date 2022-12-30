@@ -9,3 +9,9 @@
   padding: 200rpx 0;
   box-sizing: border-box;
 }
+
+/* 页面容器公共样式 */
+.page-container {
+  min-height: 100vh;
+  background-color: #eef2f7;
+}
