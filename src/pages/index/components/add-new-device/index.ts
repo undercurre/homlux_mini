@@ -37,9 +37,9 @@ Component({
     onClickHide() {
       this.triggerEvent('hide')
     },
-    toNearDevice() {
-      wx.navigateTo({
-        url: '/package-distribution/near-device/index',
+    toSearchSubDevice() {
+      wx.redirectTo({
+        url: '/package-distribution/search-subdevice/index',
       })
     },
   },

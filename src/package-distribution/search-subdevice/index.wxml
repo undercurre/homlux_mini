@@ -1,0 +1,10 @@
+<view class="page-container">
+  <!-- 导航栏 -->
+  <nav-bar background="transparent" title="附近的子设备"></nav-bar>
+
+  <view class="flex flex-col items-center justify-center">
+    <image class="w-300 h-300 mt-128rpx mb-48rpx" src="../../assets/img/search-subdevice/searching.png"></image>
+
+    <text class="text-28 text-black-secondary">正在搜索附近的设备…</text>
+  </view>
+</view>

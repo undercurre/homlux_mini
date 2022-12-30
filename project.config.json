@@ -1,26 +1,34 @@
 {
   "description": "项目配置文件",
   "setting": {
-    "bundle": false,
-    "userConfirmedBundleSwitch": false,
-    "urlCheck": true,
-    "scopeDataCheck": false,
-    "coverView": true,
+    "urlCheck": false,
     "es6": true,
+    "enhance": true,
     "postcss": true,
-    "compileHotReLoad": false,
-    "lazyloadPlaceholderEnable": false,
     "preloadBackgroundData": false,
     "minified": true,
-    "autoAudits": false,
     "newFeature": false,
-    "uglifyFileName": false,
-    "uploadWithSourceMap": true,
-    "useIsolateContext": true,
+    "coverView": true,
     "nodeModules": false,
-    "enhance": true,
-    "useMultiFrameRuntime": true,
+    "autoAudits": false,
     "showShadowRootInWxmlPanel": true,
+    "scopeDataCheck": false,
+    "uglifyFileName": false,
+    "checkInvalidKey": true,
+    "checkSiteMap": true,
+    "uploadWithSourceMap": true,
+    "compileHotReLoad": false,
+    "lazyloadPlaceholderEnable": false,
+    "useMultiFrameRuntime": true,
+    "useApiHook": true,
+    "useApiHostProcess": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    },
+    "useIsolateContext": true,
+    "userConfirmedBundleSwitch": false,
     "packNpmManually": true,
     "packNpmRelationList": [
       {
@@ -28,25 +36,19 @@
         "miniprogramNpmDistDir": "./src/"
       }
     ],
-    "enableEngineNative": false,
     "minifyWXSS": false,
-    "showES6CompileOption": false,
+    "disableUseStrict": false,
     "minifyWXML": true,
+    "showES6CompileOption": false,
     "useCompilerPlugins": [
       "typescript"
     ],
-    "babelSetting": {
-      "ignore": [],
-      "disablePlugins": [],
-      "outputPath": ""
-    },
-    "ignoreDevUnusedFiles": false,
-    "ignoreUploadUnusedFiles": true
+    "ignoreUploadUnusedFiles": true,
+    "ignoreDevUnusedFiles": false
   },
   "srcMiniprogramRoot": "src/",
   "miniprogramRoot": "src/",
   "compileType": "miniprogram",
-  "condition": {},
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
@@ -56,5 +58,6 @@
     "ignore": [],
     "include": []
   },
-  "appid": "wxc9c875aa99bcdc13"
+  "appid": "wxd534524a35f2b601",
+  "condition": {}
 }
