@@ -257,4 +257,11 @@ Page({
       url: `/package-room/index/index?room=${e.currentTarget.dataset.room}`,
     })
   },
+
+  onPullDownRefresh() {
+    console.log('下拉刷新')
+    setTimeout(() => {
+      wx.stopPullDownRefresh()
+    }, 500)
+  },
 })

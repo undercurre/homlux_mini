@@ -7,5 +7,6 @@
     "add-new-device": "./components/add-new-device/index",
     "add-new-room": "./components/add-new-room/index"
   },
+  "enablePullDownRefresh": true,
   "navigationStyle": "custom"
 }
