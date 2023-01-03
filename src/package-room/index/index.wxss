@@ -4,6 +4,10 @@
   box-shadow: 0px 4px 32px 0px rgba(97, 109, 136, 0.1);
 }
 
+.scene-icon {
+  margin-right: -14rpx;
+}
+
 .fav-btn {
   margin-right: 24rpx;
   padding: 0 !important;

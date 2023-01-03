@@ -10,7 +10,14 @@
   <view class="scene-card-bg w-686rpx h-96rpx flex items-center rounded-24rpx mt-24rpx">
     <image src="/assets/img/base/scene.png" class="w-64rpx h-64rpx ml-24rpx"></image>
     <text class="text-32rpx text-hex-333333 font-medium ml-16rpx">场景</text>
-    <view class="flex flex-1 justify-end">
+    <view class="flex flex-1 justify-end items-center">
+      <view class="mr-38rpx flex">
+        <view class="scene-icon p-4rpx bg-hex-fff rounded-999" wx:for="{{sceneListInBar}}" wx:key="value">
+          <view class="bg-gray-secondary rounded-999">
+            <svg-icon name="scene:{{item.value}}" width="52rpx" height="52rpx" />
+          </view>
+        </view>
+      </view>
       <van-button custom-class="fav-btn" type="default">收藏</van-button>
     </view>
   </view>
