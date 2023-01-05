@@ -42,10 +42,6 @@ HomLux小程序
 3. 在微信开发者工具，点击：工具-构建 npm
 4. 开始编写代码
 
-> Unocss 用法和 Tailwind 基本一致，可以查看[Tailwind](https://tailwindcss.com/)官方文档进行使用，微信小程序的 class 不支持写`%`，所以要用`/`来代替，比如 w-50%可以用 w-1/2 表示
-
-> SvgIcon 用法：SvgIcon 组件会从 globalData 读取 svg 标签，然后动态生成 url，并使用 css 渲染。项目在 build/getIconify.ts 实现了读取一个 json 文件里的`iconList`列表，然后生成 js/ts 文件，然后导入到 globalData 即可根据 svg 的名字加载 svg。使用 svg
-
 ## 项目规范
 
 1. 主包页面存放在 pages 目录下，分包页面存放在 packages 目录下，如果分包内容非常多，可以按照 packageXXX 再进行区分。
@@ -61,10 +57,10 @@ HomLux小程序
 | ------ | ------ |
 | `page-container` | 用于一般页面容器 |
 
-3. Unocss用法和Tailwind基本一致，可以查看[Tailwind](https://tailwindcss.com/)官方文档进行使用，微信小程序的class不支持写`%`，所以要用`/`来代替，比如w-50%可以用w-1/2表示
+3. Unocss 用法和 Tailwind 基本一致，可以查看[Tailwind](https://tailwindcss.com/)官方文档进行使用，微信小程序的 class 不支持写`%`，所以要用`/`来代替，比如 w-50%可以用 w-1/2 表示
 
 ### svg图标
-> SvgIcon用法：SvgIcon组件会从globalData读取svg标签，然后动态生成url，并使用css渲染。项目在build/getIconify.ts实现了读取一个json文件里的`iconList`列表，然后生成js/ts文件，然后导入到globalData即可根据svg的名字加载svg。使用svg
+> SvgIcon 用法：SvgIcon 组件会从 globalData 读取 svg 标签，然后动态生成 url，并使用 css 渲染。项目在 build/getIconify.ts 实现了读取一个 json 文件里的`iconList`列表，然后生成 js/ts 文件，然后导入到 globalData 即可根据 svg 的名字加载 svg。使用 svg
 
 请优先使用图标库：https://icones.js.org/collection/icon-park
 
