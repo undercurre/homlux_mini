@@ -1,10 +1,22 @@
-<view class="page-container">
+<view class="page-container {{deviceList.length && 'has-device'}}">
   <!-- 导航栏 -->
   <nav-bar background="transparent" title="附近的子设备"></nav-bar>
 
   <view class="flex flex-col items-center justify-center">
-    <image class="w-300 h-300 mt-128rpx mb-48rpx" src="../../assets/img/search-subdevice/searching.png"></image>
+    <image class="transition-all {{ deviceList.length ? 'w-180 h-180 mb-28rpx' : 'w-300 h-300 mt-128rpx mb-48rpx' }}" src="../../assets/img/search-subdevice/searching.png"></image>
 
-    <text class="text-28 text-black-secondary">正在搜索附近的设备…</text>
+    <text class="text-28 text-black-secondary">正在搜索附近的设备1…</text>
+  </view>
+
+  <view wx:if="deviceList.length" class="px-32rpx pt-86rpx">
+    <view class="flex flex-row items-center justify-between pb-34rpx">
+      <text class="text-26 text-black-secondary">发现附近通电的子设备</text>
+
+      <van-button plain round size="small" color="#555659" custom-style="background-color: transparent;font-size: 26rpx;">全选</van-button>
+    </view>
+
+    <scroll-view scroll-y="true">
+      <view wx:for="{{deviceList}}" class="flex flex-row bg-white rounded-32rpx mb-24rpx"> </view>
+    </scroll-view>
   </view>
 </view>

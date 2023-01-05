@@ -3,12 +3,27 @@ Page({
   /**
    * 页面的初始数据
    */
-  data: {},
+  data: {
+    deviceList: Array<Device.DeviceItem>(),
+  },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad() {},
+  onLoad() {
+    setTimeout(() => {
+      this.setData({
+        deviceList: [
+          {
+            name: '调光灯',
+            icon: '../../assets/img/deviceIcon/icon-1.png',
+            roomId: '',
+            roomName: '客厅',
+          },
+        ],
+      })
+    }, 2000)
+  },
 
   /**
    * 生命周期函数--监听页面初次渲染完成

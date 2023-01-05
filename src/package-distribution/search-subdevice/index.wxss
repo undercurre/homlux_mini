@@ -1,6 +1,1 @@
 /* packages/near-device/index.wxss */
-.img-searching {
-  width: 300rpx;
-  height: 300rpx;
-  margin: 128rpx auto 48rpx;
-}
