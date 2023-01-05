@@ -1,9 +1,8 @@
 import { mobxBehavior } from './behavior'
 import { behavior as computedBehavior } from 'miniprogram-computed'
 import { storage } from '../../utils/storage'
-import { global } from '../../store/index'
+import { global, room } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
-import { sceneMap } from './scene-list'
 
 Page({
   behaviors: [mobxBehavior, computedBehavior],
@@ -23,20 +22,6 @@ Page({
     showAddNewDevice: false,
     showAddNewRoom: false,
     showHomeSelect: false,
-    roomList: [
-      {
-        roomName: '客厅',
-        lightOnNumber: 3,
-        sceneList: [sceneMap['all-on'], sceneMap['all-off'], sceneMap['bright'], sceneMap['mild']],
-        sceneSelect: 'all-on',
-      },
-      {
-        roomName: '卧室',
-        lightOnNumber: 0,
-        sceneList: [sceneMap['all-on'], sceneMap['all-off'], sceneMap['bright'], sceneMap['mild']],
-        sceneSelect: 'all-off',
-      },
-    ], // 测试数据
   },
   computed: {
     selectHomeList(data: {
@@ -245,11 +230,28 @@ Page({
    * 用户点击选择场景
    */
   handleSceneSelect(e: { currentTarget: { dataset: { room: string } }; detail: string }) {
-    const index = this.data.roomList.findIndex((room) => room.roomName === e.currentTarget.dataset.room)
-    const roomList = this.data.roomList
-    roomList[index].sceneSelect = e.detail
-    this.setData({
-      roomList,
+    runInAction(() => {
+      room.roomList = room.roomList.map((item) => {
+        return {
+          ...item,
+          sceneSelect: e.currentTarget.dataset.room === item.roomId ? e.detail : item.sceneSelect,
+        }
+      })
     })
+  },
+  handleToRoom(e: { currentTarget: { dataset: { room: string } } }) {
+    runInAction(() => {
+      room.currentRoomIndex = room.roomList.findIndex((item) => item.roomId === e.currentTarget.dataset.room)
+    })
+    wx.navigateTo({
+      url: `/package-room/index/index`,
+    })
+  },
+
+  onPullDownRefresh() {
+    console.log('下拉刷新')
+    setTimeout(() => {
+      wx.stopPullDownRefresh()
+    }, 500)
   },
 })

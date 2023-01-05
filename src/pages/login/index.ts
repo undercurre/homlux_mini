@@ -1,4 +1,4 @@
-import { login } from '../../apis/index'
+// import { login } from '../../apis/index'
 import { storage } from '../../utils/storage'
 
 // pages/login/index.ts
@@ -11,7 +11,6 @@ Page({
   },
 
   onLoginClick(e: { detail: { code: string } }) {
-    console.log(e.detail.code)
     if (!this.data.isAgree) {
       wx.showToast({
         title: '请同意协议',
@@ -37,22 +36,27 @@ Page({
         })
       },
     })
-    storage.set('token', '1') // todo: 测试代码，需要删掉
   },
 
   async handleLogin(data: { js_code: string; phone_code: string; nickName: string; avatar: string }) {
-    const loginRes = await login(data)
-    console.log(loginRes)
-    if (loginRes.isSuccess && loginRes.data) {
-      storage.set('token', loginRes.data.token)
-      storage.set('phone', loginRes.data.phone)
-      storage.set('nickName', loginRes.data.nickname)
-      storage.set('avatar', loginRes.data.avatar)
-      console.log('去首页')
-      wx.redirectTo({
-        url: '/pages/index/index',
-      })
-    }
+    console.log(data)
+    storage.set('token', 'test')
+    wx.switchTab({
+      url: '/pages/index/index',
+    })
+
+    // const loginRes = await login(data)
+    // console.log(loginRes)
+    // if (loginRes.isSuccess && loginRes.data) {
+    //   storage.set('token', loginRes.data.token)
+    //   storage.set('phone', loginRes.data.phone)
+    //   storage.set('nickName', loginRes.data.nickname)
+    //   storage.set('avatar', loginRes.data.avatar)
+    //   console.log('去首页')
+    //   wx.redirectTo({
+    //     url: '/pages/index/index',
+    //   })
+    // }
   },
 
   onAgreeClick(event: { detail: boolean }) {

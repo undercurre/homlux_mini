@@ -1,14 +1,77 @@
+import { behavior as computedBehavior } from 'miniprogram-computed'
+import { mobxBehavior } from './behavior'
+
 // package-room/index/index.ts
 Page({
+  behaviors: [mobxBehavior, computedBehavior],
   /**
    * 页面的初始数据
    */
-  data: {},
+  data: {
+    deviceList: [
+      // TODO： mock数据，联调后删除
+      {
+        deviceId: '1',
+        deviceName: '筒灯1',
+        deviceType: 'light',
+        isOnline: true,
+        brightness: 50,
+        colorTemperature: 50,
+        power: true,
+      },
+      {
+        deviceId: '2',
+        deviceName: '筒灯2',
+        deviceType: 'light',
+        isOnline: true,
+        brightness: 50,
+        colorTemperature: 50,
+        power: true,
+      },
+      {
+        deviceId: '3',
+        deviceName: '三路开关1',
+        deviceType: 'switch',
+        isOnline: true,
+        linkDeviceId: '1',
+      },
+      {
+        deviceId: '4',
+        deviceName: '三路开关2',
+        deviceType: 'switch',
+        isOnline: true,
+        linkDeviceId: '2',
+      },
+      {
+        deviceId: '5',
+        deviceName: '窗帘',
+        deviceType: 'curtain',
+        isOnline: true,
+        openDeg: 50,
+      },
+    ] as Array<Device.LightInfo | Device.SwitchInfo | Device.CurtainInfo>,
+    selectList: [] as string[],
+  },
+
+  computed: {
+    title(data: { currentRoomIndex: number; roomList: { roomName: string }[] }) {
+      return data.roomList[data.currentRoomIndex].roomName
+    },
+    sceneListInBar(data: { currentRoomIndex: number; roomList: { sceneList: object[] }[] }) {
+      return data.roomList[data.currentRoomIndex].sceneList.slice(0, 4)
+    },
+  },
+
+  back() {
+    wx.navigateBack()
+  },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad() {},
+  onLoad() {
+    console.log(this.data)
+  },
 
   /**
    * 生命周期函数--监听页面初次渲染完成

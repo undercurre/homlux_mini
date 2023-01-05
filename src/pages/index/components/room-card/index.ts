@@ -28,6 +28,10 @@ ComponentWithComputed({
       type: Boolean,
       value: false,
     },
+    svgLoaded: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   computed: {
@@ -47,6 +51,9 @@ ComponentWithComputed({
   methods: {
     handleSceneTap(e: { currentTarget: { dataset: { value: string } } }) {
       this.triggerEvent('sceneSelect', e.currentTarget.dataset.value)
+    },
+    handleCardTap() {
+      this.triggerEvent('cardTap')
     },
   },
 })

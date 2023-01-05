@@ -1,4 +1,4 @@
-import { observable, runInAction, action } from 'mobx-miniprogram'
+import { observable, runInAction } from 'mobx-miniprogram'
 
 export const global = observable({
   isLoadedSvg: false,
@@ -21,23 +21,9 @@ export const global = observable({
   ] as Home.HomeInfo[],
   currentHomeId: '111',
 
-  numA: 1,
-  numB: 2,
-
-  get sum() {
-    return this.numA + this.numB
-  },
-
   setIsLoadSvg: function () {
     runInAction(() => {
       global.isLoadedSvg = true
     })
   },
-
-  // 使用action没办法使用this（TS报错），而且不能像上面runInAction一样使用async封装一下（action放在async函数里应该会丢失响应式）
-  update1: action(() => {
-    const sum = global.sum
-    global.numA = global.numB
-    global.numB = sum
-  }),
 })

@@ -1,5 +1,10 @@
+<!-- 背景 -->
+<view class="bg-z-index fixed left-0 top-0 w-100vw h-100vh" bindtouchstart="hideMenu">
+  <image src="/assets/img/home/bg.png" class="bg-image"></image>
+</view>
+
 <!-- 导航栏 -->
-<nav-bar background="transparent">
+<nav-bar>
   <view bindtap="handleShowHomeSelectMenu">
     <view class="absolute top-8rpx left-32rpx">
       <text class="text-hex-1e2c46 text-48rpx font-semibold">{{currentHomeName}}</text>
@@ -7,12 +12,6 @@
     </view>
   </view>
 </nav-bar>
-
-<!-- 背景 -->
-<view class="fixed left-0 top-0 w-100vw h-100vh" style="z-index: -1" bindtouchstart="hideMenu">
-  <image src="/assets/img/home/bg.png" class="bg-image"></image>
-  <!-- <svg-icon name="room-bg" width="100vw" height="100vh" load="{{isLoadedSvg}}"></svg-icon> -->
-</view>
 
 <!-- 主体内容 -->
 <view class="px-24rpx pt-28rpx w-full h-full box-border" bindtap="hideMenu">
@@ -32,14 +31,14 @@
     <!-- 顶开上面的内容高度 -->
     <view class="h-120rpx"></view>
     <!-- 房间卡片列表 -->
-    <room-card wx:for="{{roomList}}" wx:key="roomName" data-room="{{item.roomName}}" bind:sceneSelect="handleSceneSelect" roomName="{{item.roomName}}" lightOnNumber="{{item.lightOnNumber}}" sceneList="{{item.sceneList}}" sceneSelect="{{item.sceneSelect}}" showScene></room-card>
+    <room-card wx:for="{{roomList}}" wx:key="roomName" data-room="{{item.roomId}}" bind:cardTap="handleToRoom" bind:sceneSelect="handleSceneSelect" svgLoaded="{{isLoadedSvg}}" roomName="{{item.roomName}}" lightOnNumber="{{item.lightOnNumber}}" sceneList="{{item.sceneList}}" sceneSelect="{{item.sceneSelect}}" showScene></room-card>
     <text class="text-24rpx text-hex-aeaeb5">可手动添加更多空间~</text>
   </view>
   <!-- 无设备时显示 -->
   <view wx:else class="w-full mt-68rpx flex flex-col items-center">
     <image src="/assets/img/defaultImg/no-device.png" class="w-300rpx h-300rpx"></image>
     <text class="text-28rpx color-hex-555659 mt-48rpx mb-112rpx">您未添加任何设备</text>
-    <van-button bindtap="handleAddDevice" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-style="color: #fff; border-radius: 20rpx; width: 686rpx; height: 88rpx; border: 0; font-size: 36rpx; font-weight: 400;">立即添加</van-button>
+    <van-button bindtap="handleAddDevice" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-class="add-immediately-btn">立即添加</van-button>
   </view>
 </view>
 

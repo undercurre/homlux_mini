@@ -1,13 +1,15 @@
 <!--pages/index/components/room-card/index.wxml-->
 <view class="card rounded-32rpx w-702rpx">
-  <view class="flex items-center w-full h-104rpx">
+  <view class="flex items-center w-full h-104rpx" bindtap="handleCardTap">
     <text class="text-40rpx font-medium ml-48rpx">{{roomName}}</text>
     <text class="flex-1 ml-20rpx text-28rpx text-hex-b6b7bb">{{ lightOnNumber && showScene ? lightOnNumber + '盏灯亮起' : ''}}</text>
     <image src="/assets/img/home/more.png" class="w-32rpx h-32rpx mr-32rpx"></image>
   </view>
   <view class="grid grid-cols-4 gap-22rpx mx-32rpx mt-8rpx" wx:if="{{showScene}}">
-    <view wx:for="{{sceneList}}" wx:key="value" data-value="{{item.value}}" bindtap="handleSceneTap" class="w-144rpx h-168rpx rounded-24rpx flex flex-col justify-center items-center {{item.value === sceneSelect?'select-bg':'bg-hex-eff0f3'}}">
-      <image src="{{item.value === sceneSelect?item.selectIcon:item.unselectIcon}}" class="w-64rpx h-64rpx"></image>
+    <view wx:for="{{sceneList}}" wx:key="value" data-value="{{item.value}}" bindtap="handleSceneTap" class="w-144rpx h-168rpx rounded-24rpx flex flex-col justify-center items-center {{item.value === sceneSelect?'select-bg':'bg-gray-secondary'}}">
+      <view class="rounded-999" style="background-color: {{item.value === sceneSelect ? 'rgba(255,255,255,.24)' : '#fff'}};">
+        <svg-icon name="scene:{{item.value}}" load="{{svgLoaded}}" width="64rpx" height="64rpx" color="{{item.value === sceneSelect ? '#fff' : ''}}" />
+      </view>
       <text class="text-28rpx mt-20rpx {{item.value === sceneSelect?'text-hex-ffffff':'text-hex-666666'}}">{{item.name}}</text>
     </view>
   </view>

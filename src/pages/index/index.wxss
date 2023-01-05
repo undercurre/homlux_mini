@@ -11,3 +11,13 @@ page {
   width: 100vw;
   height: 100vh;
 }
+
+.add-immediately-btn {
+  color: #fff !important;
+  border-radius: 20rpx !important;
+  width: 686rpx;
+  height: 88rpx;
+  border: 0;
+  font-size: 36rpx !important;
+  font-weight: 400 !important;
+}

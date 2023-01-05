@@ -15,3 +15,7 @@
   min-height: 100vh;
   background-color: #eef2f7;
 }
+
+.bg-z-index {
+  z-index: -500;
+}

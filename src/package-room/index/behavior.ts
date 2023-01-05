@@ -15,7 +15,7 @@ export const mobxBehavior = BehaviorWithStore({
     },
     {
       store: room,
-      fields: ['currentRoomIndex', 'roomList'],
+      fields: ['roomList', 'currentRoomIndex'],
       actions: [],
     },
   ],
