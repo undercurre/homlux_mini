@@ -1,5 +1,5 @@
 <!--components/home-select-menu/index.wxml-->
-<view class="bg fixed flex flex-col items-center p-10rpx rounded-32rpx w-320rpx z-100" style="left: {{x}}; top: {{y}};" wx:if="{{isShow}}">
+<view id="menu" class="bg fixed flex flex-col items-center p-10rpx rounded-32rpx w-320rpx z-100" style="left: {{x}}; top: {{y}};" wx:if="{{isRender}}">
   <view class="flex flex-col justify-center items-center" bindtap="handleHomeTap" wx:for="{{list}}" wx:key="value" data-value="{{item.value}}">
     <view class="w-320rpx h-96rpx flex items-center">
       <text class="p-10rpx text-white text-28rpx ml-34rpx">{{item.name}}</text>

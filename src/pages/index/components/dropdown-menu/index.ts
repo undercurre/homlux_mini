@@ -23,39 +23,9 @@ Component({
           this.setData({
             isRender: true,
           })
-          this.animate(
-            '#menu',
-            [
-              {
-                opacity: 0,
-                scaleY: 0,
-                transformOrigin: '0 0',
-              },
-              {
-                opacity: 1,
-                scaleY: 1,
-              },
-            ],
-            500,
-          )
+          this.showAnimate()
         } else {
-          this.animate(
-            '#menu',
-            [
-              {
-                opacity: 1,
-              },
-              {
-                opacity: 0,
-              },
-            ],
-            500,
-            () => {
-              this.setData({
-                isRender: true,
-              })
-            },
-          )
+          this.hideAnimate()
         }
       },
     },
@@ -80,6 +50,51 @@ Component({
     },
     handleInviteFamily() {
       this.triggerEvent('select', 'inviteFamily')
+    },
+    hideAnimate() {
+      this.animate(
+        '#menu',
+        [
+          {
+            opacity: 1,
+            scaleY: 1,
+            transformOrigin: '0 -16rpx 0',
+            ease: 'ease',
+          },
+          {
+            opacity: 0,
+            scaleY: 0.8,
+            transformOrigin: '0 -16rpx 0',
+            ease: 'ease',
+          },
+        ],
+        100,
+        () => {
+          this.setData({
+            isRender: true,
+          })
+        },
+      )
+    },
+    showAnimate() {
+      this.animate(
+        '#menu',
+        [
+          {
+            opacity: 0,
+            scaleY: 0.8,
+            transformOrigin: '0 -16rpx 0',
+            ease: 'ease',
+          },
+          {
+            opacity: 1,
+            scaleY: 1,
+            transformOrigin: '0 -16rpx 0',
+            ease: 'ease',
+          },
+        ],
+        100,
+      )
     },
   },
 })

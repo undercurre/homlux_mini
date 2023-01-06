@@ -103,7 +103,7 @@ Page({
     const index = this.data.selectList.findIndex((item) => item === e.detail.deviceId)
     if (['light', 'switch'].includes(e.detail.deviceType)) {
       const power = !(this.data.deviceList[index] as Device.LightInfo | Device.SwitchInfo).power
-      const data = {} as Record<string, any>
+      const data = {} as IAnyObject
       data[`deviceList[${index}].power`] = power
       this.setData(data)
     }

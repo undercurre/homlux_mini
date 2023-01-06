@@ -28,11 +28,21 @@ Component({
     handleCardTap() {
       if (this.data.deviceInfo.isOnline) {
         this.triggerEvent('cardTap', this.data.deviceInfo)
+      } else {
+        wx.showToast({
+          icon: 'none',
+          title: '设备已离线',
+        })
       }
     },
     handlePowerTap() {
       if (this.data.deviceInfo.isOnline) {
         this.triggerEvent('powerTap', this.data.deviceInfo)
+      } else {
+        wx.showToast({
+          icon: 'none',
+          title: '设备已离线',
+        })
       }
     },
   },
