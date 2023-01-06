@@ -75,13 +75,13 @@ Component({
    */
   methods: {
     handleOverlayTap(e: { detail: { x: number; y: number } }) {
-      console.log(e)
       this.createSelectorQuery()
         .select('#content')
         .boundingClientRect()
         .exec((res) => {
           // 判断是否点中蒙层
           if (e.detail.y < res[0].top) {
+            // 点中蒙层就隐藏
             this.triggerEvent('hide')
           }
         })

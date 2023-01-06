@@ -1,4 +1,7 @@
 {
   "navigationStyle": "custom",
-  "usingComponents": {}
+  "usingComponents": {
+    "popup-select-light": "./components/device-card/index",
+    "device-card": "./components/device-card/index"
+  }
 }

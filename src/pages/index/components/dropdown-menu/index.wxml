@@ -1,5 +1,5 @@
 <!--pages/index/components/dropdown-menu/index.wxml-->
-<view class="bg fixed flex flex-col items-center p-10rpx rounded-32rpx w-256rpx z-100" style="right: {{x}}; top: {{y}};" wx:if="{{isShow}}">
+<view id="menu" class="bg fixed flex flex-col items-center p-10rpx rounded-32rpx w-256rpx z-100" style="right: {{x}}; top: {{y}};" wx:if="{{isRender}}">
   <view class="flex justify-center items-center" bindtap="handleAddDevice">
     <image src="/assets/img/home/add-device.png" class="w-48rpx h-48rpx py-24rpx"></image>
     <text class="p-10rpx text-white text-28rpx ml-24rpx">添加设备</text>

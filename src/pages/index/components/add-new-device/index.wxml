@@ -7,7 +7,7 @@
       </view>
       <text class="text-36rpx font-medium mb-18rpx mt-38rpx">添加设备</text>
       <view>
-        <text class="text-hex-555659 text-26rpx">扫描设备的二维码或查找</text>
+        <text class="text-black-secondary text-26rpx">扫描设备的二维码或查找</text>
         <text bind:tap="toSearchSubDevice">
           <text class="text-hex-448fff text-26rpx ml-16rpx">附近的子设备</text>
           <text class="text-hex-448fff text-28rpx ml-16rpx font-bold">></text>
