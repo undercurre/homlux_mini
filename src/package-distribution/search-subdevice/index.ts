@@ -1,62 +1,115 @@
 // packages/near-device/index.ts
-Page({
+import { ComponentWithComputed } from 'miniprogram-computed'
+
+type StatusName = 'discover' | 'requesting' | 'finish'
+
+interface PageData {
+  deviceList: Array<Device.DeviceItem>
+  failList: Array<Device.DeviceItem>
+  pageTitle: string
+  status: StatusName
+}
+
+ComponentWithComputed({
   /**
    * 页面的初始数据
    */
   data: {
     deviceList: Array<Device.DeviceItem>(),
+    failList: Array<Device.DeviceItem>(),
+    status: 'discover',
+  } as PageData,
+
+  computed: {
+    pageTitle(data: PageData) {
+      const titleMap = {
+        discover: '附近的子设备',
+        requesting: '添加设备',
+        finish: '添加设备',
+      }
+
+      return titleMap[data.status]
+    },
+    checkedDeviceNum(data: PageData) {
+      return data.deviceList.filter((item) => item.isChecked).length
+    },
   },
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad() {
-    setTimeout(() => {
+  methods: {
+    // 切换选择发现的设备
+    toggleDevice(e: WechatMiniprogram.CustomEvent) {
+      console.log('toggleDevice', e)
+      const index = e.currentTarget.dataset.index as number
+      const item = this.data.deviceList[index]
+
+      item.isChecked = !item.isChecked
+
       this.setData({
-        deviceList: [
-          {
-            name: '调光灯',
-            icon: '../../assets/img/deviceIcon/icon-1.png',
-            roomId: '',
-            roomName: '客厅',
-          },
-        ],
+        deviceList: this.data.deviceList,
       })
-    }, 2000)
+    },
+
+    // 确认添加设备
+    confirmAdd() {
+      this.setData({
+        status: 'requesting',
+      })
+    },
+
+    // 重新添加
+    reAdd() {},
+
+    finish() {},
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {},
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow() {},
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide() {},
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload() {},
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh() {},
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom() {},
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage() {},
+  lifetimes: {
+    // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
+    attached: function () {
+      setTimeout(() => {
+        this.setData({
+          deviceList: [
+            {
+              name: '调光灯',
+              icon: '../../assets/img/deviceIcon/icon-1.png',
+              roomId: '',
+              roomName: '客厅',
+              isChecked: true,
+            },
+            {
+              name: '调光灯22',
+              icon: '../../assets/img/deviceIcon/icon-1.png',
+              roomId: '',
+              roomName: '',
+              isChecked: false,
+            },
+            {
+              name: '调光灯22',
+              icon: '../../assets/img/deviceIcon/icon-1.png',
+              roomId: '',
+              roomName: '',
+              isChecked: false,
+            },
+            {
+              name: '调光灯22',
+              icon: '../../assets/img/deviceIcon/icon-1.png',
+              roomId: '',
+              roomName: '',
+              isChecked: false,
+            },
+          ],
+          failList: [
+            {
+              name: '调光灯',
+              icon: '../../assets/img/deviceIcon/icon-1.png',
+              roomId: '',
+              roomName: '客厅',
+              isChecked: true,
+            },
+          ],
+        })
+      }, 2000)
+    },
+    moved: function () {},
+    detached: function () {},
+  },
 })

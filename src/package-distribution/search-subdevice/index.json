@@ -1,3 +1,6 @@
 {
-  "usingComponents": {}
+  "usingComponents": {
+    "van-checkbox": "@vant/weapp/checkbox/index",
+    "van-progress": "@vant/weapp/progress/index"
+  }
 }

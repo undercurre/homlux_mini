@@ -6,7 +6,7 @@ declare namespace Device {
     icon: string
     roomId: string
     roomName: string
-    isSelected?: string // 是否被选中
+    isChecked?: boolean // 是否被选中
   }
 
   interface DeviceInfoBase {

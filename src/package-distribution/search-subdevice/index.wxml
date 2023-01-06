@@ -1,22 +1,97 @@
-<view class="page-container {{deviceList.length && 'has-device'}}">
+<view class="page-container flex flex-col">
   <!-- 导航栏 -->
-  <nav-bar background="transparent" title="附近的子设备"></nav-bar>
+  <nav-bar background="transparent" title="{{pageTitle}}"></nav-bar>
 
-  <view class="flex flex-col items-center justify-center">
-    <image class="transition-all {{ deviceList.length ? 'w-180 h-180 mb-28rpx' : 'w-300 h-300 mt-128rpx mb-48rpx' }}" src="../../assets/img/search-subdevice/searching.png"></image>
+  <block wx:if="{{status === 'discover'}}">
+    <view class="flex flex-col items-center justify-center">
+      <image class="transition-all {{ deviceList.length ? 'w-180 h-180 mb-28rpx' : 'w-300 h-300 mt-128rpx mb-48rpx' }}" src="../../assets/img/search-subdevice/searching.png"></image>
 
-    <text class="text-28 text-black-secondary">正在搜索附近的设备1…</text>
-  </view>
-
-  <view wx:if="deviceList.length" class="px-32rpx pt-86rpx">
-    <view class="flex flex-row items-center justify-between pb-34rpx">
-      <text class="text-26 text-black-secondary">发现附近通电的子设备</text>
-
-      <van-button plain round size="small" color="#555659" custom-style="background-color: transparent;font-size: 26rpx;">全选</van-button>
+      <text class="text-28 text-black-secondary">正在搜索附近的设备…</text>
     </view>
 
-    <scroll-view scroll-y="true">
-      <view wx:for="{{deviceList}}" class="flex flex-row bg-white rounded-32rpx mb-24rpx"> </view>
-    </scroll-view>
-  </view>
+    <view wx:if="{{deviceList.length}}" class="px-32rpx pt-86rpx pb-128rpx grow flex flex-col">
+      <view class="flex flex-row items-center justify-between pb-34rpx">
+        <text class="text-26 text-black-secondary">发现附近通电的子设备</text>
+
+        <van-button plain round size="small" color="#555659" custom-style="background-color: transparent;font-size: 26rpx;">全选</van-button>
+      </view>
+
+      <scroll-view class="grow h-500" scroll-y="true">
+        <view wx:for="{{deviceList}}" class="flex flex-row items-center bg-white rounded-32rpx mb-24rpx px-24rpx py-40rpx">
+          <van-checkbox use-icon-slot bind:change="toggleDevice" data-index="{{index}}">
+            <image src="{{item.icon}}" class="w-92 h-92 ml-10rpx border-4rpx border-solid border-hex-F6F6F8 rounded-full"></image>
+
+            <image slot="icon" class="w-48 h-48" src="{{ item.isChecked ? '../../assets/img/search-subdevice/checked.png' : '../../assets/img/search-subdevice/unchecked.png' }}" />
+          </van-checkbox>
+
+          <view class="grow pl-32rpx">
+            <view class="flex flex-row items-center">
+              <text class="pr-24rpx text-32 text-black-primary">{{ item.name }}</text>
+
+              <image class="w-48 h-48" src="../../assets/img/base/edit.png"></image>
+            </view>
+
+            <view class="inline-block bg-hex-EFF0F3 rounded-12rpx px-16rpx py-6rpx mt-20rpx">
+              <text class="pr-12rpx text-26 text-black-secondary opacity-95">{{ item.roomName || '选择房间' }}</text>
+
+              <image class="w-32 h-32" src="../../assets/img/base/arrow-down.png"></image>
+            </view>
+          </view>
+
+          <van-button color="linear-gradient(134deg, #468CFB 32%, #6BA3FC 93%)" type="info" round custom-style="height: 64rpx;border-radius: 32rpx;">试一试</van-button>
+        </view>
+      </scroll-view>
+
+      <van-button class="mt-24rpx w-full" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" type="info" round block custom-style="border-radius: 20rpx;font-size: 34rpx;" bind:click="confirmAdd" disabled="{{checkedDeviceNum===0}}">确认添加（已选{{checkedDeviceNum}}个）</van-button>
+    </view>
+  </block>
+
+  <block wx:if="{{status === 'requesting'}}">
+    <view class="sk-circle">
+      <view class="sk-circle1 sk-child"></view>
+      <view class="sk-circle2 sk-child"></view>
+      <view class="sk-circle3 sk-child"></view>
+      <view class="sk-circle4 sk-child"></view>
+      <view class="sk-circle5 sk-child"></view>
+      <view class="sk-circle6 sk-child"></view>
+      <view class="sk-circle7 sk-child"></view>
+      <view class="sk-circle8 sk-child"></view>
+      <view class="sk-circle9 sk-child"></view>
+      <view class="sk-circle10 sk-child"></view>
+      <view class="sk-circle11 sk-child"></view>
+      <view class="sk-circle12 sk-child"></view>
+    </view>
+
+    <view class="text-center">
+      <text class="text-28 text-black-secondary">已添加2/4个设备</text>
+    </view>
+
+    <van-progress wx:if="{{failList.length === 0}}" class="w-400 mt-44rpx mx-auto border-1rpx border-solid border-hex-d3d3d3 rounded-12rpx" percentage="70" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" show-pivot="{{false}}" stroke-width="6" track-color="transparent" />
+
+    <view wx:else class="px-24rpx pt-80rpx pb-128rpx grow flex flex-col">
+      <view class="flex flex-row items-center justify-between pb-24rpx">
+        <text class="text-28 text-hex-000">以下设备添加失败</text>
+
+        <van-button plain round size="small" color="#555659" custom-style="background-color: transparent;font-size: 26rpx;" bind:click="reAdd">重新添加</van-button>
+      </view>
+
+      <scroll-view class="grow h-500" scroll-y="true">
+        <view wx:for="{{failList}}" class="flex flex-row items-center bg-white rounded-32rpx mb-24rpx px-50rpx py-40rpx">
+          <image src="{{item.icon}}" class="w-92 h-92 border-4rpx border-solid border-hex-F6F6F8 rounded-full"></image>
+
+          <view class="pl-32rpx">
+            <view class="flex flex-row items-center">
+              <text class="pr-24rpx text-32 text-black-primary">{{ item.name }}</text>
+            </view>
+
+            <view class="inline-block bg-hex-EFF0F3 rounded-12rpx px-16rpx py-6rpx mt-20rpx">
+              <text class="pr-12rpx text-26 text-black-secondary">{{ item.roomName }}</text>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+
+      <van-button class="mt-24rpx w-full" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" type="info" round block custom-style="border-radius: 20rpx;font-size: 34rpx;" bind:click="finish">完成</van-button>
+    </view>
+  </block>
 </view>
