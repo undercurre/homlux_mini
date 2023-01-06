@@ -1,7 +1,3 @@
-page {
-  margin-bottom: calc(96rpx + env(safe-area-inset-bottom));
-}
-
 .home-select-arrow {
   right: -64rpx;
   top: 10rpx;
@@ -20,4 +16,8 @@ page {
   border: 0;
   font-size: 36rpx !important;
   font-weight: 400 !important;
+}
+
+.tabbar-placeholder {
+  height: calc(96rpx + env(safe-area-inset-bottom) + 32rpx);
 }

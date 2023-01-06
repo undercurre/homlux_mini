@@ -17,11 +17,13 @@ Page({
       y: '0px',
       isShow: false,
     },
+    pageScroll: 0, // 用于让navigation-bar变色
     allOnBtnTap: false,
     allOffBtnTap: false,
     showAddNewDevice: false,
     showAddNewRoom: false,
     showHomeSelect: false,
+    test: 'a' as 'a' | 'b',
   },
   computed: {
     selectHomeList(data: {
@@ -49,6 +51,7 @@ Page({
     },
   },
 
+  // 生命周期或者其他钩子
   onLoad: function () {
     // 更新tabbar状态
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
@@ -64,10 +67,23 @@ Page({
     }
     // this.toLogin()
   },
-  onShow() {
+  onHide() {
     // 隐藏之前展示的下拉菜单
     this.hideMenu()
   },
+  onPullDownRefresh() {
+    console.log('下拉刷新')
+    setTimeout(() => {
+      wx.stopPullDownRefresh()
+    }, 500)
+  },
+  onPageScroll(e: { scrollTop: number }) {
+    this.setData({
+      pageScroll: e.scrollTop,
+    })
+  },
+
+  // 方法
   hideMenu(e?: { detail: { x: number; y: number } }) {
     if (e && e.detail && e.detail.x) {
       wx.createSelectorQuery()
@@ -246,12 +262,5 @@ Page({
     wx.navigateTo({
       url: `/package-room/index/index`,
     })
-  },
-
-  onPullDownRefresh() {
-    console.log('下拉刷新')
-    setTimeout(() => {
-      wx.stopPullDownRefresh()
-    }, 500)
   },
 })

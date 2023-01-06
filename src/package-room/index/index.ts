@@ -1,7 +1,6 @@
 import { behavior as computedBehavior } from 'miniprogram-computed'
 import { mobxBehavior } from './behavior'
 
-// package-room/index/index.ts
 Page({
   behaviors: [mobxBehavior, computedBehavior],
   /**
@@ -32,7 +31,7 @@ Page({
         deviceId: '3',
         deviceName: '三路开关1',
         deviceType: 'switch',
-        isOnline: true,
+        isOnline: false,
         linkDeviceId: '1',
       },
       {
@@ -51,6 +50,7 @@ Page({
       },
     ] as Array<Device.LightInfo | Device.SwitchInfo | Device.CurtainInfo>,
     selectList: [] as string[],
+    selectType: '',
   },
 
   computed: {
@@ -60,51 +60,52 @@ Page({
     sceneListInBar(data: { currentRoomIndex: number; roomList: { sceneList: object[] }[] }) {
       return data.roomList[data.currentRoomIndex].sceneList.slice(0, 4)
     },
-  },
-
-  back() {
-    wx.navigateBack()
+    deviceList(data: { currentRoomIndex: number; roomList: { deviceList: object[] }[] }) {
+      return data.roomList[data.currentRoomIndex].deviceList
+    },
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad() {
-    console.log(this.data)
+  onLoad() {},
+
+  handleSceneTap() {
+    wx.navigateTo({
+      url: '/package-room/scene/index',
+    })
   },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {},
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow() {},
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide() {},
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload() {},
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh() {},
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom() {},
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage() {},
+  back() {
+    wx.navigateBack()
+  },
+  handleCollect() {
+    console.log('收藏')
+  },
+  handleDeviceCardTap(e: { detail: { deviceId: string; deviceType: string } }) {
+    if (this.data.selectList.includes(e.detail.deviceId)) {
+      const index = this.data.selectList.findIndex((item) => item === e.detail.deviceId)
+      this.data.selectList.splice(index, 1)
+      this.setData({
+        selectList: this.data.selectList,
+      })
+    } else if (this.data.selectType && this.data.selectType === e.detail.deviceType) {
+      this.setData({
+        selectList: [...this.data.selectList, e.detail.deviceId],
+      })
+    } else {
+      this.setData({
+        selectList: [e.detail.deviceId],
+        selectType: e.detail.deviceType,
+      })
+    }
+  },
+  handleDevicePowerTap(e: { detail: { deviceId: string; deviceType: string } }) {
+    const index = this.data.selectList.findIndex((item) => item === e.detail.deviceId)
+    if (['light', 'switch'].includes(e.detail.deviceType)) {
+      const power = !(this.data.deviceList[index] as Device.LightInfo | Device.SwitchInfo).power
+      const data = {} as Record<string, any>
+      data[`deviceList[${index}].power`] = power
+      this.setData(data)
+    }
+  },
 })

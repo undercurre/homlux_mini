@@ -6,7 +6,15 @@ Component({
   /**
    * 组件的属性列表
    */
-  properties: {},
+  properties: {
+    isSelect: {
+      type: Boolean,
+      value: false,
+    },
+    deviceInfo: {
+      type: Object,
+    },
+  },
 
   /**
    * 组件的初始数据
@@ -16,5 +24,16 @@ Component({
   /**
    * 组件的方法列表
    */
-  methods: {},
+  methods: {
+    handleCardTap() {
+      if (this.data.deviceInfo.isOnline) {
+        this.triggerEvent('cardTap', this.data.deviceInfo)
+      }
+    },
+    handlePowerTap() {
+      if (this.data.deviceInfo.isOnline) {
+        this.triggerEvent('powerTap', this.data.deviceInfo)
+      }
+    },
+  },
 })

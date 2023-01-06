@@ -1,11 +1,11 @@
 <!-- 背景 -->
 <view class="bg-z-index fixed left-0 top-0 w-100vw h-100vh" bindtouchstart="hideMenu">
-  <image src="/assets/img/home/bg.png" class="bg-image"></image>
+  <image src="/assets/img/home/bg.jpg" class="bg-image"></image>
 </view>
 
 <!-- 导航栏 -->
-<nav-bar>
-  <view bindtap="handleShowHomeSelectMenu">
+<nav-bar background="{{navBarBg}}">
+  <view bindtap="handleShowHomeSelectMenu" wx:if="{{pageScroll < 17}}">
     <view class="absolute top-8rpx left-32rpx">
       <text class="text-hex-1e2c46 text-48rpx font-semibold">{{currentHomeName}}</text>
       <svg-icon class="absolute home-select-arrow" load="{{isLoadedSvg}}" color="#1E2C46" name="{{selectHomeMenu.isShow?'material-symbols:arrow-drop-up-rounded':'material-symbols:arrow-drop-down-rounded'}}" width="48rpx" height="48rpx" />
@@ -31,15 +31,17 @@
     <!-- 顶开上面的内容高度 -->
     <view class="h-120rpx"></view>
     <!-- 房间卡片列表 -->
-    <room-card wx:for="{{roomList}}" wx:key="roomName" data-room="{{item.roomId}}" bind:cardTap="handleToRoom" bind:sceneSelect="handleSceneSelect" svgLoaded="{{isLoadedSvg}}" roomName="{{item.roomName}}" lightOnNumber="{{item.lightOnNumber}}" sceneList="{{item.sceneList}}" sceneSelect="{{item.sceneSelect}}" showScene></room-card>
+    <room-card wx:for="{{roomList}}" wx:key="roomId" data-room="{{item.roomId}}" bind:cardTap="handleToRoom" bind:sceneSelect="handleSceneSelect" svgLoaded="{{isLoadedSvg}}" roomName="{{item.roomName}}" lightOnNumber="{{item.lightOnNumber}}" sceneList="{{item.sceneList}}" sceneSelect="{{item.sceneSelect}}" showScene></room-card>
     <text class="text-24rpx text-hex-aeaeb5">可手动添加更多空间~</text>
   </view>
   <!-- 无设备时显示 -->
   <view wx:else class="w-full mt-68rpx flex flex-col items-center">
     <image src="/assets/img/defaultImg/no-device.png" class="w-300rpx h-300rpx"></image>
-    <text class="text-28rpx color-hex-555659 mt-48rpx mb-112rpx">您未添加任何设备</text>
-    <van-button bindtap="handleAddDevice" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-class="add-immediately-btn">立即添加</van-button>
+    <text class="text-32rpx text-black-secondary mt-44rpx mb-32rpx">尚未添加设备</text>
+    <text class="text-24rpx text-black-secondary mb-224rpx opacity-40">立即添加设备，开启智慧照明</text>
+    <van-button bindtap="handleAddDevice" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-class="add-immediately-btn">添加智能设备</van-button>
   </view>
+  <view class="tabbar-placeholder"></view>
 </view>
 
 <home-select-menu x="{{selectHomeMenu.x}}" y="{{selectHomeMenu.y}}" isShow="{{selectHomeMenu.isShow}}" list="{{selectHomeList}}" bind:select="handleHomeSelect"></home-select-menu>
