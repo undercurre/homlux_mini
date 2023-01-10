@@ -1,4 +1,4 @@
-# 原生微信小程序开发模板
+# HomLux
 
 ## 特性
 
@@ -12,8 +12,7 @@
 
 项目配置了一个分包示例，可以按需求进行修改。
 
-## 项目结构
-
+## 📁 代码结构
 ```
 HomLux小程序
 ├── .husky // git hooks
@@ -43,19 +42,33 @@ HomLux小程序
 3. 在微信开发者工具，点击：工具-构建 npm
 4. 开始编写代码
 
-> Unocss 用法和 Tailwind 基本一致，可以查看[Tailwind](https://tailwindcss.com/)官方文档进行使用，微信小程序的 class 不支持写`%`，所以要用`/`来代替，比如 w-50%可以用 w-1/2 表示
-
-> SvgIcon 用法：SvgIcon 组件会从 globalData 读取 svg 标签，然后动态生成 url，并使用 css 渲染。项目在 build/getIconify.ts 实现了读取一个 json 文件里的`iconList`列表，然后生成 js/ts 文件，然后导入到 globalData 即可根据 svg 的名字加载 svg。使用 svg
-
 ## 项目规范
 
 1. 主包页面存放在 pages 目录下，分包页面存放在 packages 目录下，如果分包内容非常多，可以按照 packageXXX 再进行区分。
 2. 全局状态模型定义存放在 models 目录下，按照业务拆分模块。
 3. 接口调用方式封装在 apis 目录下，可以按照业务区分模块，如果项目比较大有多个后端接口地址，可以归类到不同文件夹进行区分。
 4. 接口通用的请求处理、响应处理、失败处理都封装在 utils/request 目录下，参考`utils/request/defaultRequest.ts`，不通用的数据和逻辑操作通过参数传入。
-5. TS 类型规范，业务相关的类型定义在 typings 目录下，按需使用 namespace 和不同的 d.ts 进行拆分，如果业务复杂，还可以归类到不同文件夹进行区分。
+
+### CSS 样式
+1. 请尽量避免将静态的样式写进 `style` 中，以免影响渲染速度
+2. 公共样式
+
+| 样式名 | 描述 |
+| ------ | ------ |
+| `page-container` | 用于一般页面容器 |
+
+3. Unocss 用法和 Tailwind 基本一致，可以查看[Tailwind](https://tailwindcss.com/)官方文档进行使用，微信小程序的 class 不支持写`%`，所以要用`/`来代替，比如 w-50%可以用 w-1/2 表示
+
+### svg 图标
+> SvgIcon 用法：SvgIcon 组件会从 globalData 读取 svg 标签，然后动态生成 url，并使用 css 渲染。项目在 build/getIconify.ts 实现了读取一个 json 文件里的`iconList`列表，然后生成 js/ts 文件，然后导入到 globalData 即可根据 svg 的名字加载 svg。使用 svg
+
+请优先使用图标库：https://icon-sets.iconify.design/icon-park-outline/
+
+### JS
+1. 接口命名首字母大写
+2. TS类型规范，业务相关的类型定义在typings目录下，按需使用namespace和不同的d.ts进行拆分，如果业务复杂，还可以归类到不同文件夹进行区分。
 
 ## 注意点
 
 1. [mobx 使用注意点](./docs/mobx使用注意点.md)
-2. [svg-icon 组件使用注意点](./docs/copmponents/svg-icon.md)
+2. [svg-icon 组件使用注意点](./docs/components/svg-icon.md)

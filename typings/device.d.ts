@@ -1,5 +1,14 @@
 // TODO：下面结构是开发时用于mock，需要根据接口进行修改
 declare namespace Device {
+  interface DeviceItem {
+    deviceId?: string
+    name: string
+    icon: string
+    roomId: string
+    roomName: string
+    isChecked?: boolean // 是否被选中
+  }
+
   interface DeviceInfoBase {
     deviceId: string
     deviceName: string
