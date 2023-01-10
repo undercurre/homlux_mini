@@ -8,7 +8,7 @@ export async function testApi() {
 
 export async function login(data: object) {
   return await defaultRequest.post<User.UserLoginRes>({
-    url: '/login',
+    url: '/v1/mzgdApi/auth/mzgd/login',
     data,
   })
 }
