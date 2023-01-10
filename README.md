@@ -72,4 +72,4 @@ HomLux小程序
 
 1. [mobx 使用注意点](./docs/mobx使用注意点.md)
 2. [svg-icon 组件使用注意点](./docs/components/svg-icon.md)
-3. [van-button 样式定制]
+3. [van-button 样式定制](./docs/components/van-button.md)

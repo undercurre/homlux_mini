@@ -135,7 +135,6 @@
 
     <text class="w-full text-center pt-48rpx text-28 text-black-secondary">未发现附近设备</text>
 
-
     <view class="px-32rpx pt-128rpx pb-128rpx">
       <van-button type="primary" block size="large" bind:click="finish">返回首页</van-button>
     </view>
