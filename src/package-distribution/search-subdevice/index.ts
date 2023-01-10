@@ -1,7 +1,7 @@
 // packages/near-device/index.ts
 import { ComponentWithComputed } from 'miniprogram-computed'
 
-type StatusName = 'discover' | 'requesting' | 'finish'
+type StatusName = 'discover' | 'requesting' | 'success' | 'error' | 'openBle'
 
 interface PageData {
   deviceList: Array<Device.DeviceItem>
@@ -25,7 +25,9 @@ ComponentWithComputed({
       const titleMap = {
         discover: '附近的子设备',
         requesting: '添加设备',
-        finish: '添加设备',
+        success: '添加设备',
+        error: '附近的子设备',
+        openBle: '附近的子设备',
       }
 
       return titleMap[data.status]
@@ -68,27 +70,27 @@ ComponentWithComputed({
       setTimeout(() => {
         this.setData({
           deviceList: [
-            {
-              name: '调光灯',
-              icon: '../../assets/img/deviceIcon/icon-1.png',
-              roomId: '',
-              roomName: '客厅',
-              isChecked: true,
-            },
-            {
-              name: '调光灯22',
-              icon: '../../assets/img/deviceIcon/icon-1.png',
-              roomId: '',
-              roomName: '',
-              isChecked: false,
-            },
-            {
-              name: '调光灯22',
-              icon: '../../assets/img/deviceIcon/icon-1.png',
-              roomId: '',
-              roomName: '',
-              isChecked: false,
-            },
+            // {
+            //   name: '调光灯',
+            //   icon: '../../assets/img/deviceIcon/icon-1.png',
+            //   roomId: '',
+            //   roomName: '客厅',
+            //   isChecked: true,
+            // },
+            // {
+            //   name: '调光灯22',
+            //   icon: '../../assets/img/deviceIcon/icon-1.png',
+            //   roomId: '',
+            //   roomName: '',
+            //   isChecked: false,
+            // },
+            // {
+            //   name: '调光灯22',
+            //   icon: '../../assets/img/deviceIcon/icon-1.png',
+            //   roomId: '',
+            //   roomName: '',
+            //   isChecked: false,
+            // },
             {
               name: '调光灯22',
               icon: '../../assets/img/deviceIcon/icon-1.png',
@@ -107,7 +109,7 @@ ComponentWithComputed({
             },
           ],
         })
-      }, 2000)
+      }, 1000)
     },
     moved: function () {},
     detached: function () {},
