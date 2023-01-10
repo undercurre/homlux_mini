@@ -13,7 +13,7 @@
       <view class="flex flex-row items-center justify-between pb-34rpx">
         <text class="text-26 text-black-secondary">发现附近通电的子设备</text>
 
-        <van-button plain round size="small" color="#555659" custom-style="background-color: transparent;font-size: 26rpx;">全选</van-button>
+        <van-button plain round type="info" size="small">全选</van-button>
       </view>
 
       <scroll-view class="grow h-500" scroll-y="true">
@@ -38,16 +38,16 @@
             </view>
           </view>
 
-          <van-button color="linear-gradient(134deg, #468CFB 32%, #6BA3FC 93%)" type="info" round custom-style="height: 64rpx;border-radius: 32rpx;">试一试</van-button>
+          <van-button color="linear-gradient(134deg, #468CFB 32%, #6BA3FC 93%)" type="primary" round>试一试</van-button>
         </view>
       </scroll-view>
 
-      <van-button class="mt-24rpx w-full" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" type="info" round block custom-style="border-radius: 20rpx;font-size: 34rpx;" bind:click="confirmAdd" disabled="{{checkedDeviceNum===0}}">确认添加（已选{{checkedDeviceNum}}个）</van-button>
+      <van-button class="mt-24rpx w-full" type="primary" size="large" bind:click="confirmAdd" disabled="{{checkedDeviceNum===0}}">确认添加（已选{{checkedDeviceNum}}个）</van-button>
     </view>
   </block>
 
   <block wx:if="{{status === 'requesting'}}">
-    <view class="sk-circle">
+    <view class="sk-circle mb-60rpx mx-auto {{failList.length === 0 ? 'mt-70rpx' : 'mt-130rpx' }}">
       <view class="sk-circle1 sk-child"></view>
       <view class="sk-circle2 sk-child"></view>
       <view class="sk-circle3 sk-child"></view>
@@ -72,7 +72,7 @@
       <view class="flex flex-row items-center justify-between pb-24rpx">
         <text class="text-28 text-hex-000">以下设备添加失败</text>
 
-        <van-button plain round size="small" color="#555659" custom-style="background-color: transparent;font-size: 26rpx;" bind:click="reAdd">重新添加</van-button>
+        <van-button plain round size="small" type="info" bind:click="reAdd">重新添加</van-button>
       </view>
 
       <scroll-view class="grow h-500" scroll-y="true">
@@ -91,7 +91,53 @@
         </view>
       </scroll-view>
 
-      <van-button class="mt-24rpx w-full" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" type="info" round block custom-style="border-radius: 20rpx;font-size: 34rpx;" bind:click="finish">完成</van-button>
+      <van-button class="mt-24rpx" type="primary" block size="large" bind:click="finish">完成</van-button>
+    </view>
+  </block>
+
+  <view class="grow flex flex-col justify-between" wx:if="{{status === 'success'}}">
+    <view class="flex flex-col items-center">
+      <image class="mt-64rpx w-300 h-300" src="../../assets/img/search-subdevice/add-success.png"></image>
+
+      <text class="w-full text-center pt-48rpx text-28 text-black-secondary">设备添加成功！</text>
+    </view>
+
+    <view class="px-32rpx pt-128rpx pb-128rpx">
+      <van-button type="primary" block size="large" bind:click="finish">完成</van-button>
+    </view>
+  </view>
+
+  <block wx:if="{{status === 'error'}}">
+    <image class="mx-auto w-300 h-300" src="../../assets/img/search-subdevice/no-found.png"></image>
+
+    <text class="w-full text-center pt-48rpx text-28 text-black-secondary">未发现附近设备</text>
+
+    <view class="grow px-88rpx pt-180rpx">
+      <view class="text-28 text-black-primary">
+        <text>请排查一下情况：</text>
+      </view>
+
+      <view class="py-30rpx text-26 text-hex-666 leading-46rpx">
+        <view>
+          <text>1、确保子设备已正常通电</text>
+        </view>
+        <view><text>2、将手机尽量靠近子设备，中间请勿有墙体阻隔</text></view>
+      </view>
+    </view>
+
+    <view class="px-32rpx pt-128rpx pb-128rpx">
+      <van-button type="primary" block size="large" bind:click="finish">返回首页</van-button>
+    </view>
+  </block>
+
+  <block wx:if="{{status === 'openBle'}}">
+    <image class="mx-auto w-300 h-300" src="../../assets/img/search-subdevice/no-found.png"></image>
+
+    <text class="w-full text-center pt-48rpx text-28 text-black-secondary">未发现附近设备</text>
+
+
+    <view class="px-32rpx pt-128rpx pb-128rpx">
+      <van-button type="primary" block size="large" bind:click="finish">返回首页</van-button>
     </view>
   </block>
 </view>

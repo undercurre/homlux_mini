@@ -1,0 +1,26 @@
+page {
+  --button-default-color: #A2A2A2;
+  --button-default-border-color: #A2A2A2;
+  --button-info-border-color: #555659;
+  --button-info-background-color: #555659;
+  --button-primary-background-color: linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%);
+  --button-danger-background-color:  linear-gradient(270deg, #F68AA9 13%, #EF6586 92%);
+  --button-plain-background-color: transparent;
+  --button-small-font-size: 26rpx;
+  --button-small-height: 56rpx;
+  --button-normal-font-size: 28rpx;
+  --button-normal-height: 64rpx;
+  --button-large-font-size: 36rpx;
+  --button-large-height: 88rpx;
+  --button-border-radius: 20rpx;
+  --button-round-border-radius: 32rpx;
+}
+
+.van-button--normal {
+  height: var(--button-normal-height) !important;
+}
+
+.van-button--danger,
+.van-button--primary {
+  border: 0 !important;
+}

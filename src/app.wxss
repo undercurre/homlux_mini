@@ -1,5 +1,7 @@
 /**app.wxss**/
 @import './unocss.wxss';
+@import './vantReset.wxss';
+
 .container {
   height: 100%;
   display: flex;
