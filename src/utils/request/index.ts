@@ -1,1 +1,1 @@
-export * from './defaultRequest'
+export { defaultRequest } from './defaultRequest'

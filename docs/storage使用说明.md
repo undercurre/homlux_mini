@@ -1,6 +1,6 @@
 # storage 使用说明
 
-storage.ts 简单封装了 wx 的 storage 操作 API，默认导出 storage 和 asyncStorage 两个对象，对象的类型是：
+[storage.ts](/src/utils/storage.ts) 简单封装了 wx 的 storage 操作 API，默认导出 storage 和 asyncStorage 两个对象，对象的类型是：
 
 ```ts
 interface Storage {

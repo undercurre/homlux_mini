@@ -4,15 +4,15 @@ declare namespace User {
     /**
      * 头像
      */
-    avatar: string
+    headImageUrl?: string
     /**
      * 昵称
      */
-    nickname: string
+    nickName?: string
     /**
      * 手机号
      */
-    phone: string
+    mobilePhone: string
     /**
      * 令牌
      */

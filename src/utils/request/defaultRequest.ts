@@ -2,26 +2,24 @@ import config from '../../config'
 
 type AnyResType = string | IAnyObject | ArrayBuffer
 
-// 只拓展了一个是否显示loading，可以按需添加
-export type DefaultRequestOptions<T extends AnyResType = AnyResType> = WechatMiniprogram.RequestOption<T> & {
-  loading?: boolean
-}
-
 // 后端默认返回格式
 type ResponseRowData<T extends AnyResType = AnyResType> = {
   code: number
   msg: string
-  data?: T
+  success: boolean
+  result?: T
 }
 
-// 对后端返回值的数据封装
-export type DefaultResponseType<T extends AnyResType = AnyResType> = ResponseRowData<T> & {
-  isSuccess: boolean
+// 可以传入是否展示loading，自定义成功或者失败回调
+export type DefaultRequestOptions<T extends AnyResType = AnyResType> = WechatMiniprogram.RequestOption<T> & {
+  loading?: boolean
+  successHandler?: (result: WechatMiniprogram.RequestSuccessCallbackResult<T>) => ResponseRowData<T>
+  failHandler?: (result: WechatMiniprogram.GeneralCallbackResult) => ResponseRowData<T>
 }
 
 // 基本的请求方法实例
-type BaseRequest = <T extends AnyResType = AnyResType, U extends DefaultResponseType<T> = DefaultResponseType<T>>(
-  requestConfig: DefaultRequestOptions<U>,
+type BaseRequest = <T extends AnyResType = AnyResType, U extends ResponseRowData<T> = ResponseRowData<T>>(
+  requestConfig: DefaultRequestOptions<T>,
 ) => Promise<U>
 
 // 封装好http method的请求实例
@@ -34,8 +32,8 @@ type DefaultRequest = BaseRequest & {
 
 const baseRequest: BaseRequest = function <
   T extends AnyResType = AnyResType,
-  U extends DefaultResponseType<T> = DefaultResponseType<T>,
->(requestOption: DefaultRequestOptions<U>) {
+  U extends ResponseRowData<T> = ResponseRowData<T>,
+>(requestOption: DefaultRequestOptions<T>) {
   return new Promise<U>((resolve) => {
     // 这里配置自定义的header
     const header = {}
@@ -57,47 +55,32 @@ const baseRequest: BaseRequest = function <
     }
     // 请求前这里可以再次对requestOption进行处理
     requestOption.url = config.defaultApiServer[config.env] + requestOption.url
-    if (!requestOption.success) {
-      // 通用的响应处理方法，可以在下面添加
-      requestOption.success = (result: { data: IAnyObject }) => {
-        resolve({
-          isSuccess: Boolean(result.data && Number(result.data.code) === 0),
-          code: result.data.code ?? -1,
-          msg: result.data.msg ?? '',
-          data: result.data.data,
-        } as U)
+
+    // 请求成功回调处理
+    if (requestOption.successHandler) {
+      const handler = requestOption.successHandler
+      requestOption.success = (result) => {
+        const afterProcessResult = handler(result)
+        resolve(afterProcessResult as U)
       }
     } else {
-      // 传递定制的handler进来，可以将特殊的响应数据处理成ResponseRowData，再在下方转成DefaultResponseType
-      const optionSuccessHandler = requestOption.success
       requestOption.success = (result) => {
-        optionSuccessHandler(result)
-        resolve({
-          isSuccess: Boolean(result.data && Number(result.data.code) === 0),
-          code: result.data.code ?? -1,
-          msg: result.data.msg ?? '',
-          data: result.data.data ?? {},
-        } as U)
+        resolve(result.data as ResponseRowData<T> as U)
       }
     }
-    if (!requestOption.fail) {
-      // 通用的失败处理方法，可以在下面添加
-      requestOption.fail = (err: WechatMiniprogram.GeneralCallbackResult) => {
-        resolve({
-          isSuccess: false,
-          code: -1,
-          msg: err.errMsg,
-        } as U)
+
+    // 请求失败回调处理
+    if (requestOption.failHandler) {
+      const handler = requestOption.failHandler
+      requestOption.fail = (err) => {
+        resolve(handler(err) as U)
       }
     } else {
-      // 传递定制的handler进来，可以在请求时在fail传递handler进来，特殊地对错误进行处理
-      const optionFailHandler = requestOption.fail
-      requestOption.fail = (err) => {
-        optionFailHandler(err)
+      requestOption.fail = (result) => {
         resolve({
-          isSuccess: false,
+          success: false,
           code: -1,
-          msg: err.errMsg,
+          msg: result.errMsg,
         } as U)
       }
     }
