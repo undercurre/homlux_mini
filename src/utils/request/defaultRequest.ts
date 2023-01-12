@@ -1,4 +1,5 @@
 import config from '../../config'
+import storage from '../storage'
 
 type AnyResType = string | IAnyObject | ArrayBuffer
 
@@ -36,11 +37,13 @@ const baseRequest: BaseRequest = function <
 >(requestOption: DefaultRequestOptions<T>) {
   return new Promise<U>((resolve) => {
     // 这里配置自定义的header
-    const header = {}
+    const header = {
+      Authentication: 'Bearer ' + storage.get('token', '')
+    }
     if (requestOption.header) {
       requestOption.header = {
-        ...requestOption,
-        header,
+        ...header,
+        ...requestOption.header,
       }
     } else {
       requestOption.header = header
@@ -53,6 +56,7 @@ const baseRequest: BaseRequest = function <
           mask: true,
         })
     }
+
     // 请求前这里可以再次对requestOption进行处理
     requestOption.url = config.defaultApiServer[config.env] + requestOption.url
 
@@ -65,7 +69,7 @@ const baseRequest: BaseRequest = function <
       }
     } else {
       requestOption.success = (result) => {
-        resolve(result.data as ResponseRowData<T> as U)
+        resolve(result.data as unknown as U)
       }
     }
 
