@@ -1,4 +1,4 @@
-// import { login } from '../../apis/index'
+import { login } from '../../apis/index'
 import { storage } from '../../utils/storage'
 
 // pages/login/index.ts
@@ -10,7 +10,7 @@ Page({
     isAgree: false,
   },
 
-  onLoginClick(e: { detail: { code: string } }) {
+  onLoginTap() {
     if (!this.data.isAgree) {
       wx.showToast({
         title: '请同意协议',
@@ -18,45 +18,41 @@ Page({
       })
       return
     }
-    wx.getUserInfo({
-      success: (userInfoRes) => {
-        wx.login({
-          success: (res) => {
-            if (res.code) {
-              this.handleLogin({
-                js_code: res.code,
-                phone_code: e.detail.code,
-                nickName: userInfoRes.userInfo.nickName,
-                avatar: userInfoRes.userInfo.avatarUrl,
-              })
-            } else {
-              console.log('登录失败！' + res.errMsg)
-            }
-          },
-        })
+  },
+
+  onLoginClick(e: { detail: { code: string } }) {
+    wx.login({
+      success: (res) => {
+        if (res.code) {
+          this.handleLogin({
+            jsCode: res.code,
+            code: e.detail.code,
+          })
+        } else {
+          console.log('登录失败！' + res.errMsg)
+        }
       },
     })
   },
 
-  async handleLogin(data: { js_code: string; phone_code: string; nickName: string; avatar: string }) {
-    console.log(data)
-    storage.set('token', 'test')
-    wx.switchTab({
-      url: '/pages/index/index',
-    })
-
-    // const loginRes = await login(data)
-    // console.log(loginRes)
-    // if (loginRes.isSuccess && loginRes.data) {
-    //   storage.set('token', loginRes.data.token)
-    //   storage.set('phone', loginRes.data.phone)
-    //   storage.set('nickName', loginRes.data.nickname)
-    //   storage.set('avatar', loginRes.data.avatar)
-    //   console.log('去首页')
-    //   wx.redirectTo({
-    //     url: '/pages/index/index',
-    //   })
-    // }
+  async handleLogin(data: { jsCode: string; code: string }) {
+    const loginRes = await login(data)
+    if (loginRes.success && loginRes.result) {
+      // 保证下面的res不会出现undefined
+      const res = loginRes.result
+      // 批量缓存返回值
+      ;(['token', 'mobilePhone', 'nickName', 'headImageUrl'] as const).forEach((item) => {
+        // 同样去除undefined
+        const value = res[item]
+        if (value) {
+          storage.set(item, value, null)
+        }
+      })
+      console.log('去首页')
+      wx.redirectTo({
+        url: '/pages/index/index',
+      })
+    }
   },
 
   onAgreeClick(event: { detail: boolean }) {

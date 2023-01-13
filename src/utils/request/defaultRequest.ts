@@ -14,6 +14,7 @@ type ResponseRowData<T extends AnyResType = AnyResType> = {
 // 可以传入是否展示loading，自定义成功或者失败回调
 export type DefaultRequestOptions<T extends AnyResType = AnyResType> = WechatMiniprogram.RequestOption<T> & {
   loading?: boolean
+  log?: boolean
   successHandler?: (result: WechatMiniprogram.RequestSuccessCallbackResult<T>) => ResponseRowData<T>
   failHandler?: (result: WechatMiniprogram.GeneralCallbackResult) => ResponseRowData<T>
 }
@@ -38,7 +39,7 @@ const baseRequest: BaseRequest = function <
   return new Promise<U>((resolve) => {
     // 这里配置自定义的header
     const header = {
-      Authentication: 'Bearer ' + storage.get('token', '')
+      Authentication: 'Bearer ' + storage.get('token', ''),
     }
     if (requestOption.header) {
       requestOption.header = {
@@ -59,6 +60,17 @@ const baseRequest: BaseRequest = function <
 
     // 请求前这里可以再次对requestOption进行处理
     requestOption.url = config.defaultApiServer[config.env] + requestOption.url
+
+    // 后续考虑选择用nanoid生成reqId，但是微信小程序不支持浏览器的crypto API，无法使用nanoid和uuid包。
+    const reqId = Date.now()
+    if (!requestOption.data) {
+      requestOption.data = { reqId }
+    } else if (
+      Object.prototype.toString.call(requestOption.data) === '[object Object]' &&
+      !(requestOption.data as IAnyObject).reqId
+    ) {
+      ;(requestOption.data as IAnyObject).reqId = reqId
+    }
 
     // 请求成功回调处理
     if (requestOption.successHandler) {
@@ -88,6 +100,11 @@ const baseRequest: BaseRequest = function <
         } as U)
       }
     }
+
+    if (requestOption.log !== false) {
+      console.log('请求URL:' + requestOption.url, requestOption)
+    }
+
     wx.request({
       ...requestOption,
       complete() {
