@@ -1,0 +1,5 @@
+<view class="flex flex-col items-center">
+  <image class="transition-all {{ size === 'small' ? 'w-180 h-180 mb-28rpx' : 'w-300 h-300 mt-64rpx mb-48rpx' }}" src="{{ icon }}"></image>
+
+  <text class="text-28 text-black-secondary">{{ text }}</text>
+</view>

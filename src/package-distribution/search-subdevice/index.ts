@@ -3,7 +3,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 type StatusName = 'discover' | 'requesting' | 'success' | 'error' | 'openBle'
 
 interface PageData {
-  isEditDevice: boolean, // 是否编辑设备信息
+  isEditDevice: boolean // 是否编辑设备信息
   deviceList: Array<Device.DeviceItem>
   failList: Array<Device.DeviceItem>
   pageTitle: string
@@ -12,7 +12,7 @@ interface PageData {
 
 ComponentWithComputed({
   options: {
-    addGlobalClass: true
+    addGlobalClass: true,
   },
   /**
    * 页面的初始数据
@@ -64,7 +64,7 @@ ComponentWithComputed({
 
     editDevice() {
       this.setData({
-        isEditDevice: true
+        isEditDevice: true,
       })
     },
 
@@ -147,7 +147,7 @@ ComponentWithComputed({
           // 开始搜索附近的蓝牙外围设备
           wx.startBluetoothDevicesDiscovery({
             allowDuplicatesKey: false,
-          }).then(r => console.log(r))
+          }).then((r) => console.log(r))
         },
         fail: (res) => {
           if (res.errCode !== 10001) return
@@ -164,4 +164,4 @@ ComponentWithComputed({
     moved: function () {},
     detached: function () {},
   },
-});
+})
