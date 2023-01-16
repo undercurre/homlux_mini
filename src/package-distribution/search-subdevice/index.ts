@@ -1,9 +1,9 @@
-// packages/near-device/index.ts
 import { ComponentWithComputed } from 'miniprogram-computed'
 
 type StatusName = 'discover' | 'requesting' | 'success' | 'error' | 'openBle'
 
 interface PageData {
+  isEditDevice: boolean, // 是否编辑设备信息
   deviceList: Array<Device.DeviceItem>
   failList: Array<Device.DeviceItem>
   pageTitle: string
@@ -11,10 +11,14 @@ interface PageData {
 }
 
 ComponentWithComputed({
+  options: {
+    addGlobalClass: true
+  },
   /**
    * 页面的初始数据
    */
   data: {
+    isEditDevice: false,
     deviceList: Array<Device.DeviceItem>(),
     failList: Array<Device.DeviceItem>(),
     status: 'discover',
@@ -58,6 +62,12 @@ ComponentWithComputed({
       })
     },
 
+    editDevice() {
+      this.setData({
+        isEditDevice: true
+      })
+    },
+
     // 重新添加
     reAdd() {},
 
@@ -95,7 +105,7 @@ ComponentWithComputed({
               name: '调光灯22',
               icon: '../../assets/img/deviceIcon/icon-1.png',
               roomId: '',
-              roomName: '',
+              roomName: '客厅',
               isChecked: false,
             },
           ],
@@ -110,8 +120,48 @@ ComponentWithComputed({
           ],
         })
       }, 1000)
+
+      // ArrayBuffer转16进度字符串示例
+      function ab2hex(buffer: ArrayBuffer) {
+        const hexArr = Array.prototype.map.call(new Uint8Array(buffer), function (bit) {
+          return ('00' + bit.toString()).slice(-2)
+        })
+        return hexArr.join('')
+      }
+
+      // 监听扫描到新设备事件
+      wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
+        res.devices
+          .filter((item) => item.localName && item.localName.includes('HOMLUX'))
+          .forEach((device) => {
+            // 这里可以做一些过滤
+            console.log('Device Found', device)
+            console.log(ab2hex(device.advertisData))
+          })
+      })
+
+      // 初始化蓝牙模块
+      wx.openBluetoothAdapter({
+        mode: 'central',
+        success: () => {
+          // 开始搜索附近的蓝牙外围设备
+          wx.startBluetoothDevicesDiscovery({
+            allowDuplicatesKey: false,
+          }).then(r => console.log(r))
+        },
+        fail: (res) => {
+          if (res.errCode !== 10001) return
+          wx.onBluetoothAdapterStateChange((changeRes) => {
+            if (!changeRes.available) return
+            // 开始搜寻附近的蓝牙外围设备
+            wx.startBluetoothDevicesDiscovery({
+              allowDuplicatesKey: false,
+            })
+          })
+        },
+      })
     },
     moved: function () {},
     detached: function () {},
   },
-})
+});

@@ -19,6 +19,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .pb-128rpx{padding-bottom:128rpx;}
 .pb-24rpx{padding-bottom:24rpx;}
 .pb-34rpx{padding-bottom:34rpx;}
+.pb-4rpx{padding-bottom:4rpx;}
 .pl-32rpx{padding-left:32rpx;}
 .pl-96rpx{padding-left:96rpx;}
 .pr-12rpx{padding-right:12rpx;}
@@ -33,7 +34,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .pt-86rpx{padding-top:86rpx;}
 .mx-32rpx{margin-left:32rpx;margin-right:32rpx;}
 .mx-74rpx{margin-left:74rpx;margin-right:74rpx;}
-.mx-auto{margin-left:auto;margin-right:auto;}
 .mb-128rpx{margin-bottom:128rpx;}
 .mb-12rpx{margin-bottom:12rpx;}
 .mb-18rpx{margin-bottom:18rpx;}
@@ -53,7 +53,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .mr-32rpx{margin-right:32rpx;}
 .mr-38rpx{margin-right:38rpx;}
 .mr-44rpx{margin-right:44rpx;}
-.mt-128rpx{margin-top:128rpx;}
 .mt-130rpx{margin-top:130rpx;}
 .mt-16rpx{margin-top:16rpx;}
 .mt-20rpx{margin-top:20rpx;}
@@ -73,8 +72,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .inline-block{display:inline-block;}
 .opacity-40{opacity:0.4;}
 .opacity-95{opacity:0.95;}
-.bg-gray-secondary,
-.bg-hex-EFF0F3{--un-bg-opacity:1;background-color:rgba(239,240,243,var(--un-bg-opacity));}
+.bg-gray-secondary{--un-bg-opacity:1;background-color:rgba(239,240,243,var(--un-bg-opacity));}
 .bg-hex-488FFF{--un-bg-opacity:1;background-color:rgba(72,143,255,var(--un-bg-opacity));}
 .bg-hex-717171{--un-bg-opacity:1;background-color:rgba(113,113,113,var(--un-bg-opacity));}
 .bg-hex-eef2f7{--un-bg-opacity:1;background-color:rgba(238,242,247,var(--un-bg-opacity));}
@@ -161,7 +159,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .h-24rpx{height:24rpx;}
 .h-300,
 .h-300rpx{height:300rpx;}
-.h-32,
 .h-32rpx{height:32rpx;}
 .h-416rpx{height:416rpx;}
 .h-48,
@@ -190,9 +187,8 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .w-256rpx{width:256rpx;}
 .w-300,
 .w-300rpx{width:300rpx;}
-.w-32,
-.w-32rpx{width:32rpx;}
 .w-320rpx{width:320rpx;}
+.w-32rpx{width:32rpx;}
 .w-400{width:400rpx;}
 .w-48,
 .w-48rpx{width:48rpx;}
