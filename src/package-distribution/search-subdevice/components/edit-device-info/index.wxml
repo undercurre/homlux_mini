@@ -1,0 +1,29 @@
+<!--package-distribution/search-subdevice/components/edit-device-info/index.wxml-->
+<van-popup show="{{ show }}" position="bottom" round>
+  <view class="px-32rpx pt-48rpx pb-100rpx text-black-primary">
+    <text class="block pb-66rpx font-medium text-center text-36 leading-48rpx">设备编辑</text>
+
+    <text class="block pl-16rpx pb-32rpx text-28">设备名称</text>
+
+    <van-field model:value="{{ deviceInfo.name }}" placeholder="请输入设备名称" custom-style="border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}">
+    </van-field>
+
+    <text class="block pl-16rpx py-40rpx text-28">选择房间</text>
+
+    <view class="flex flex-row flex-wrap">
+      <text wx:for="{{roomList}}" class="mr-32rpx px-32rpx rounded-28rpx text-28 leading-56rpx {{ item.isCheck ? 'room-checked text-white' : 'bg-hex-DFE1E5 text-black-secondary'}}">{{ item.name }}</text>
+
+      <view class="px-46rpx bg-hex-DFE1E5 rounded-28rpx text-28 leading-56rpx text-black-secondary" bind:tap="addRoom">
+        <svg-icon name="icon-park-outline:plus" color="#555659" height="56rpx"></svg-icon>
+      </view>
+    </view>
+
+    <view class="flex flex-row gap-46rpx pt-88rpx">
+      <van-button class="grow" size="large">取消</van-button>
+
+      <van-button class="grow" size="large" type="primary">确定</van-button>
+    </view>
+  </view>
+</van-popup>
+
+<add-room show="{{ isAddRoom }}"></add-room>

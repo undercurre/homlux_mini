@@ -127,4 +127,4 @@
   </view>
 </view>
 
-<van-popup show="{{ isEditDevice }}" position="bottom" custom-style="height: 20%;">内容</van-popup>
+<edit-device-info show="{{isEditDevice}}"></edit-device-info>
