@@ -8,27 +8,23 @@ Component({
       type: String,
       value: '',
     },
-    showProgress:{
+    showProgress: {
       type: Boolean,
-      default: true
+      default: true,
     },
     percentage: {
       type: Number,
-      default: 0
-    }
+      default: 0,
+    },
   },
 
   /**
    * 组件的初始数据
    */
-  data: {
-
-  },
+  data: {},
 
   /**
    * 组件的方法列表
    */
-  methods: {
-
-  }
+  methods: {},
 })

@@ -8,9 +8,7 @@
       <text class="text-black-secondary text-26 leading-36rpx">智能设备仅支持2.4GHZ的Wi-Fi</text>
 
       <van-field model:value="{{ wifiInfo.name }}" custom-style="margin-bottom: 32rpx;margin-top: 40rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;background-color: transparent;" clearable="{{true}}" readonly>
-        <van-button slot="button" type="primary" plain>
-          切换Wi-Fi
-        </van-button>
+        <van-button slot="button" type="primary" plain> 切换Wi-Fi </van-button>
       </van-field>
 
       <van-field model:value="{{ wifiInfo.pw }}" placeholder="请入Wi-Fi密码" type="" custom-style="border: 2rpx solid #DDDDDD;border-radius: 24rpx;background-color: transparent;" password> </van-field>
@@ -21,5 +19,4 @@
       <van-button class="mx-32rpx" block type="primary" size="large">{{ btnText }}</van-button>
     </view>
   </view>
-
 </view>

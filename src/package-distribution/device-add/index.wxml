@@ -47,9 +47,7 @@
         </view>
       </view>
 
-
       <van-button class="mt-32rpx mx-32rpx" block type="primary" size="large">完成</van-button>
     </block>
   </view>
-
 </view>

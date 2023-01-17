@@ -76,7 +76,7 @@ Component({
   methods: {
     close() {
       this.setData({
-        show: false
+        show: false,
       })
     },
     selectIcon({ currentTarget }: WechatMiniprogram.BaseEvent) {

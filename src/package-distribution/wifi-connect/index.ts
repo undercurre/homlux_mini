@@ -17,8 +17,8 @@ ComponentWithComputed({
     status: 'ready',
     wifiInfo: {
       name: '222',
-      pw: '12'
-    }
+      pw: '12',
+    },
   } as PageData,
 
   computed: {
@@ -37,8 +37,7 @@ ComponentWithComputed({
 
   lifetimes: {
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
-    attached: function () {
-    },
+    attached: function () {},
     moved: function () {},
     detached: function () {},
   },

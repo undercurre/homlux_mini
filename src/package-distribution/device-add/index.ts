@@ -15,17 +15,17 @@ Page({
     stepList: [
       {
         text: '连接设备',
-        isCheck: true
+        isCheck: true,
       },
       {
         text: '设备联网',
-        isCheck: false
+        isCheck: false,
       },
       {
         text: '账号绑定',
-        isCheck: false
-      }
-    ]
+        isCheck: false,
+      },
+    ],
   } as PageData,
 
   /**
