@@ -3,7 +3,22 @@ Page({
   /**
    * 页面的初始数据
    */
-  data: {},
+  data: {
+    managerList: [
+      {
+        icon: '/assets/img/mine/home.png',
+        text: '家庭管理'
+      },
+      {
+        icon: '/assets/img/mine/device.png',
+        text: '设备管理'
+      },
+      {
+        icon: '/assets/img/mine/member.png',
+        text: '成员管理'
+      }
+    ]
+  },
 
   /**
    * 生命周期函数--监听页面加载

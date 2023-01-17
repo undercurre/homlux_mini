@@ -25,6 +25,14 @@ page {
   /* popup start */
   --popup-round-border-radius: 64rpx;
   /* popup end */
+
+  /* cell start */
+  --cell-group-inset-border-radius: 32rpx;
+  --cell-group-inset-padding: 24rpx;
+  --cell-font-size: 32rpx;
+  --cell-text-color: #000;
+  --cell-icon-size: 48rpx;
+   /* cell end */
 }
 
 .van-button--normal {
@@ -38,4 +46,27 @@ page {
 
 .van-button--plain.van-button--primary {
   color: #488fff !important;
+}
+
+
+.van-button--plain.van-button--danger {
+  background-color: #fff !important;
+  color: #FF3849 !important;
+}
+
+
+.van-cell {
+  padding: 40rpx !important;
+  line-height: 1 !important;
+}
+.van-cell:after {
+  border-bottom: 1rpx solid #eef2f7 !important;
+}
+
+.van-icon {
+  font-size: 48rpx !important;
+}
+
+.van-icon-arrow {
+  font-size: 32rpx !important;
 }

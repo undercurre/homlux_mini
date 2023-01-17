@@ -37,6 +37,13 @@
           "name": "添加单个设备",
           "pathName": "package-distribution/device-add/index",
           "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "我的",
+          "pathName": "pages/mine/index",
+          "query": "",
           "scene": null,
           "launchMode": "default"
         }

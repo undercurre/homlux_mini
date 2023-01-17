@@ -3,6 +3,39 @@
 <view style="z-index: -1" class="fixed left-0 top-0 w-100vw h-100vh">
   <image src="/assets/img/home/bg.jpg" style="width: 100vw; height: 100vh"></image>
 </view>
-<view>
-  <text>pages/mine/index.wxml</text>
+
+<view class="my-32rpx px-48rpx flex flex-row items-center">
+  <image class="w-112rpx h-112rpx rounded-full" src="/assets/img/device/light.png" style="background-image: linear-gradient(141deg, #FFFFFF 0%, rgba(255,255,255,0.61) 100%);"></image>
+
+  <view class="flex flex-col pl-40rpx grow">
+    <text class="text-40 text-hex-000 font-medium">Homlux</text>
+    <text class="text-28 text-black-secondary leading-40rpx pt-12rpx">15043889973</text>
+  </view>
+
+  <image class="w-32rpx h-32rpx" src="/assets/img/base/arrow-right-mine.png"></image>
+</view>
+
+<view class="flex flex-row justify-between px-24rpx">
+  <view wx:for="{{managerList}}" class="flex flex-col items-center pt-10rpx pb-24rpx grow">
+    <image src="{{item.icon}}" class="w-64 h-64"></image>
+    <text class="pt-20rpx text-26 text-black-secondary leading-none">{{item.text}}</text>
+  </view>
+</view>
+
+<van-cell-group inset>
+  <van-cell icon="/assets/img/mine/voiceControl.png" title="语音控制" is-link center />
+</van-cell-group>
+
+<van-cell-group inset>
+  <van-cell icon="/assets/img/mine/upgrade.png" title="固件升级" is-link center />
+  <van-cell icon="/assets/img/mine/deviceReplace.png" title="设备替换" is-link center />
+</van-cell-group>
+
+<van-cell-group inset>
+  <van-cell icon="/assets/img/mine/advise.png" title="建议反馈" is-link center />
+  <van-cell icon="/assets/img/mine/about.png" title="关于" is-link center />
+</van-cell-group>
+
+<view class="px-24rpx pb-140rpx">
+  <van-button block type="danger" plain size="large">退出登录</van-button>
 </view>
