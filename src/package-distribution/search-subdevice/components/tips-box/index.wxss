@@ -1,0 +1,4 @@
+/* package-distribution/search-subdevice/components/tips-box/index.wxss */
+:root {
+  height: 100vh;
+}

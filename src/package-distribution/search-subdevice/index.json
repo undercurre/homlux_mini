@@ -1,6 +1,8 @@
 {
   "usingComponents": {
     "van-checkbox": "@vant/weapp/checkbox/index",
-    "van-progress": "@vant/weapp/progress/index"
+    "van-progress": "@vant/weapp/progress/index",
+    "tips-box": "./components/tips-box/index",
+    "edit-device-info": "./components/edit-device-info/index"
   }
 }
