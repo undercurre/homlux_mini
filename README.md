@@ -42,6 +42,13 @@ HomLux小程序
 3. 在微信开发者工具，点击：工具-构建 npm
 4. 开始编写代码
 
+## 组件文档
+
+- [自定义导航栏](docs/components/custom-nav-bar.md)
+- [家庭选择下拉菜单](docs/components/home-select-menu.md)
+- [SVG图标渲染](docs/components/svg-icon.md)
+- [van-button](docs/components/van-button.md)
+
 ## 项目规范
 
 1. 主包页面存放在 pages 目录下，分包页面存放在 packages 目录下，如果分包内容非常多，可以按照 packageXXX 再进行区分。
