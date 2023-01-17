@@ -8,6 +8,15 @@
   },
   "libVersion": "2.29.0",
   "condition": {
+    "plugin": {
+      "list": []
+    },
+    "game": {
+      "list": []
+    },
+    "gamePlugin": {
+      "list": []
+    },
     "miniprogram": {
       "list": [
         {
@@ -16,6 +25,20 @@
           "query": "",
           "launchMode": "default",
           "scene": null
+        },
+        {
+          "name": "连接wifi",
+          "pathName": "package-distribution/wifi-connect/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "添加单个设备",
+          "pathName": "package-distribution/device-add/index",
+          "query": "",
+          "scene": null,
+          "launchMode": "default"
         }
       ]
     }

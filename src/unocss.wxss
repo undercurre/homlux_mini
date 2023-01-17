@@ -2,13 +2,14 @@
 page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-z:0;--un-scale-x:1;--un-scale-y:1;--un-scale-z:1;--un-skew-x:0;--un-skew-y:0;--un-translate-x:0;--un-translate-y:0;--un-translate-z:0;--un-ring-offset-shadow:0 0 rgba(0,0,0,0);--un-ring-shadow:0 0 rgba(0,0,0,0);--un-shadow-inset:var(--un-empty,/*!*/ /*!*/);--un-shadow:0 0 rgba(0,0,0,0);--un-ring-inset:var(--un-empty,/*!*/ /*!*/);--un-ring-offset-width:0px;--un-ring-offset-color:#fff;--un-ring-width:0px;--un-ring-color:rgba(147,197,253,0.5);}
 /* layer: default */
 .p-10rpx{padding:10rpx;}
-.p-32rpx{padding:32rpx;}
 .p-4rpx{padding:4rpx;}
 .px,
 .px-32rpx{padding-left:32rpx;padding-right:32rpx;}
+.px-12rpx{padding-left:12rpx;padding-right:12rpx;}
 .px-16rpx{padding-left:16rpx;padding-right:16rpx;}
 .px-24rpx{padding-left:24rpx;padding-right:24rpx;}
 .px-46rpx{padding-left:46rpx;padding-right:46rpx;}
+.px-48rpx{padding-left:48rpx;padding-right:48rpx;}
 .px-50rpx{padding-left:50rpx;padding-right:50rpx;}
 .px-88rpx{padding-left:88rpx;padding-right:88rpx;}
 .py-12rpx{padding-top:12rpx;padding-bottom:12rpx;}
@@ -28,18 +29,24 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .pb-66rpx{padding-bottom:66rpx;}
 .pl-16rpx{padding-left:16rpx;}
 .pl-32rpx{padding-left:32rpx;}
+.pl-88rpx{padding-left:88rpx;}
 .pl-96rpx{padding-left:96rpx;}
 .pr-12rpx{padding-right:12rpx;}
 .pr-24rpx{padding-right:24rpx;}
+.pr-50rpx{padding-right:50rpx;}
+.pt-112rpx{padding-top:112rpx;}
 .pt-128rpx{padding-top:128rpx;}
 .pt-180rpx{padding-top:180rpx;}
+.pt-24rpx{padding-top:24rpx;}
 .pt-28rpx{padding-top:28rpx;}
 .pt-48rpx{padding-top:48rpx;}
 .pt-60rpx{padding-top:60rpx;}
 .pt-68rpx{padding-top:68rpx;}
+.pt-70rpx{padding-top:70rpx;}
 .pt-80rpx{padding-top:80rpx;}
 .pt-86rpx{padding-top:86rpx;}
 .pt-88rpx{padding-top:88rpx;}
+.pt-90rpx{padding-top:90rpx;}
 .mx-32rpx{margin-left:32rpx;margin-right:32rpx;}
 .mx-74rpx{margin-left:74rpx;margin-right:74rpx;}
 .mb-128rpx{margin-bottom:128rpx;}
@@ -50,12 +57,12 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .mb-28rpx{margin-bottom:28rpx;}
 .mb-32rpx{margin-bottom:32rpx;}
 .mb-48rpx{margin-bottom:48rpx;}
-.mb-60rpx{margin-bottom:60rpx;}
 .ml-10rpx{margin-left:10rpx;}
 .ml-16rpx{margin-left:16rpx;}
 .ml-18rpx{margin-left:18rpx;}
 .ml-20rpx{margin-left:20rpx;}
 .ml-24rpx{margin-left:24rpx;}
+.ml-32rpx{margin-left:32rpx;}
 .ml-34rpx{margin-left:34rpx;}
 .ml-48rpx{margin-left:48rpx;}
 .mr-32rpx{margin-right:32rpx;}
@@ -75,7 +82,9 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .mt-68rpx{margin-top:68rpx;}
 .mt-70rpx{margin-top:70rpx;}
 .mt-74rpx{margin-top:74rpx;}
+.mt-80rpx{margin-top:80rpx;}
 .mt-8rpx{margin-top:8rpx;}
+.mt-96rpx{margin-top:96rpx;}
 .block{display:block;}
 .inline-block{display:inline-block;}
 .opacity-40{opacity:0.4;}
@@ -123,6 +132,8 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .font-bold{font-weight:700;}
 .font-medium{font-weight:500;}
 .font-semibold{font-weight:600;}
+.leading-36rpx{line-height:36rpx;}
+.leading-40rpx{line-height:40rpx;}
 .leading-46rpx{line-height:46rpx;}
 .leading-48rpx{line-height:48rpx;}
 .leading-56rpx{line-height:56rpx;}
@@ -132,6 +143,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .text-black-primary{--un-text-opacity:1;color:rgba(39,40,42,var(--un-text-opacity));}
 .text-black-secondary{--un-text-opacity:1;color:rgba(85,86,89,var(--un-text-opacity));}
 .text-black-tips{--un-text-opacity:1;color:rgba(162,162,162,var(--un-text-opacity));}
+.text-blue{--un-text-opacity:1;color:rgba(72,143,255,var(--un-text-opacity));}
 .text-hex-000{--un-text-opacity:1;color:rgba(0,0,0,var(--un-text-opacity));}
 .text-hex-1e2c46{--un-text-opacity:1;color:rgba(30,44,70,var(--un-text-opacity));}
 .text-hex-2b4067{--un-text-opacity:1;color:rgba(43,64,103,var(--un-text-opacity));}
@@ -180,7 +192,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .h-416rpx{height:416rpx;}
 .h-48,
 .h-48rpx{height:48rpx;}
-.h-500{height:500rpx;}
 .h-64rpx{height:64rpx;}
 .h-710rpx{height:710rpx;}
 .h-72rpx{height:72rpx;}

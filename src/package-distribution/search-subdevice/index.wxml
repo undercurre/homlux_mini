@@ -13,7 +13,7 @@
           <van-button plain round type="info" size="small">全选</van-button>
         </view>
 
-        <scroll-view class="grow h-500" scroll-y="true">
+        <scroll-view class="grow h-300" scroll-y="true">
           <view wx:for="{{deviceList}}" class="flex flex-row items-center bg-white rounded-32rpx mb-24rpx px-24rpx py-40rpx">
             <van-checkbox use-icon-slot bind:change="toggleDevice" data-index="{{index}}">
               <image src="{{item.icon}}" class="w-92 h-92 ml-10rpx border-4rpx border-solid border-hex-F6F6F8 rounded-full"></image>
@@ -40,35 +40,16 @@
     </block>
 
     <block wx:if="{{status === 'requesting'}}">
-      <view class="flex flex-col items-center">
-        <view class="sk-circle mb-60rpx {{failList.length === 0 ? 'mt-70rpx' : 'mt-130rpx' }}">
-          <view class="sk-circle1 sk-child"></view>
-          <view class="sk-circle2 sk-child"></view>
-          <view class="sk-circle3 sk-child"></view>
-          <view class="sk-circle4 sk-child"></view>
-          <view class="sk-circle5 sk-child"></view>
-          <view class="sk-circle6 sk-child"></view>
-          <view class="sk-circle7 sk-child"></view>
-          <view class="sk-circle8 sk-child"></view>
-          <view class="sk-circle9 sk-child"></view>
-          <view class="sk-circle10 sk-child"></view>
-          <view class="sk-circle11 sk-child"></view>
-          <view class="sk-circle12 sk-child"></view>
-        </view>
+        <loading class="{{failList.length === 0 ? 'mt-70rpx' : 'mt-130rpx' }}" text="已添加2/4个设备" show-progress="{{failList.length > 0}}" percentage="{{60}}"></loading>
 
-        <text class="text-28 text-black-secondary">已添加2/4个设备</text>
-
-        <van-progress wx:if="{{failList.length === 0}}" class="w-400 mt-44rpx border-1rpx border-solid border-hex-d3d3d3 rounded-12rpx" percentage="70" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" show-pivot="{{false}}" stroke-width="6" track-color="transparent" />
-      </view>
-
-      <view wx:if="{{failList.length > 0}}" class="px-24rpx pt-80rpx grow flex flex-col">
+      <view wx:if="{{failList.length > 0}}" class="px-24rpx pt-90rpx grow flex flex-col">
         <view class="flex flex-row items-center justify-between pb-24rpx">
           <text class="text-28 text-hex-000">以下设备添加失败</text>
 
           <van-button plain round size="small" type="info" bind:click="reAdd">重新添加</van-button>
         </view>
 
-        <scroll-view class="grow h-500" scroll-y="true">
+        <scroll-view class="grow h-300" scroll-y="true">
           <view wx:for="{{failList}}" class="flex flex-row items-center bg-white rounded-32rpx mb-24rpx px-50rpx py-40rpx">
             <image src="{{item.icon}}" class="w-92 h-92 border-4rpx border-solid border-hex-F6F6F8 rounded-full"></image>
 
@@ -89,11 +70,7 @@
     </block>
 
     <view class="grow flex flex-col justify-between" wx:if="{{status === 'success'}}">
-      <view class="flex flex-col items-center">
-        <image class="mt-64rpx w-300 h-300" src="../../assets/img/search-subdevice/add-success.png"></image>
-
-        <text class="w-full text-center pt-48rpx text-28 text-black-secondary">设备添加成功！</text>
-      </view>
+      <tips-box text="设备添加成功！" icon="/assets/img/search-subdevice/add-success.png"></tips-box>
 
       <van-button class="mx-32rpx mt-24rpx" type="primary" block size="large" bind:click="finish">完成</van-button>
     </view>

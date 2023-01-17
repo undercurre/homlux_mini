@@ -3,6 +3,6 @@
   "styleIsolation": "apply-shared",
   "usingComponents": {
     "van-popup": "@vant/weapp/popup/index",
-    "edit-device-form": "/components/edit-device-form/index"
+    "van-field": "@vant/weapp/field/index"
   }
 }

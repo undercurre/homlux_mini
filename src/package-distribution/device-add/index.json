@@ -1,3 +1,7 @@
 {
-  "usingComponents": {}
+  "usingComponents": {
+    "tips-box": "/components/tips-box/index",
+    "edit-device-form": "/components/edit-device-form/index",
+    "loading": "/components/loading/index"
+  }
 }

@@ -9,6 +9,7 @@ page {
   --button-plain-background-color: transparent;
   --button-small-font-size: 26rpx;
   --button-small-height: 56rpx;
+  --padding-xs: 28rpx;
   --button-normal-font-size: 28rpx;
   --button-normal-height: 64rpx;
   --button-large-font-size: 36rpx;
@@ -33,4 +34,8 @@ page {
 .van-button--danger,
 .van-button--primary {
   border: 0 !important;
+}
+
+.van-button--plain.van-button--primary {
+  color: #488FFF !important;
 }

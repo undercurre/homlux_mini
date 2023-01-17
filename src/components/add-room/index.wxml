@@ -1,18 +1,16 @@
 <!--package-distribution/search-subdevice/components/edit-device-info/index.wxml-->
-<van-popup show="{{ show }}" position="bottom" round>
+<van-popup show="{{ show }}" position="bottom" round bind:close="close">
   <view class="px-32rpx pt-48rpx pb-100rpx text-black-primary">
     <text class="block pb-66rpx font-medium text-center text-36 leading-48rpx">添加房间</text>
 
     <text class="block pl-16rpx pb-32rpx text-28">房间名称</text>
 
-    <van-field model:value="{{ roomInfo.name }}" placeholder="请输入房间名称" custom-style="border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}">
-    </van-field>
+    <van-field model:value="{{ roomInfo.name }}" placeholder="请输入房间名称" custom-style="border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
 
     <text class="block pl-16rpx pb-40rpx pt-68rpx text-28">选择房间图标</text>
 
     <view class="flex flex-row flex-wrap gap-48rpx pl-16rpx">
-      <view wx:for="{{iconList}}" class="box-border p-32rpx bg-hex-F6FAFD rounded-32rpx {{ item.icon === roomInfo.icon ? 'border-4rpx border-solid border-hex-488FFF' : ''}}"
-      data-icon="{{item.icon}}" bind:tap="selectIcon">
+      <view wx:for="{{iconList}}" class="box-border w-128rpx h-128rpx flex justify-center items-center bg-hex-F6FAFD rounded-32rpx {{ item.icon === roomInfo.icon && 'border-4rpx border-solid border-hex-488FFF'}}" data-icon="{{item.icon}}" bind:tap="selectIcon">
         <image class="w-64rpx h-64rpx" src="/assets/img/room/{{item.icon}}.png"></image>
       </view>
     </view>

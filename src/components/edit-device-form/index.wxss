@@ -1,0 +1,3 @@
+.room-checked {
+  background-image: linear-gradient(155deg, #468cfb 6%, #6ba3fc 96%);
+}

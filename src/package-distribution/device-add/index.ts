@@ -1,9 +1,32 @@
-// package-distribution/device-add/index.ts
+type StatusName = 'networking' | 'success' | 'error' | 'bind'
+
+interface PageData {
+  status: StatusName
+  currentStep: string
+}
+
 Page({
   /**
    * 页面的初始数据
    */
-  data: {},
+  data: {
+    status: 'success',
+    currentStep: '连接设备',
+    stepList: [
+      {
+        text: '连接设备',
+        isCheck: true
+      },
+      {
+        text: '设备联网',
+        isCheck: false
+      },
+      {
+        text: '账号绑定',
+        isCheck: false
+      }
+    ]
+  } as PageData,
 
   /**
    * 生命周期函数--监听页面加载

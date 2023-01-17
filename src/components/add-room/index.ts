@@ -7,7 +7,7 @@ Component({
     show: {
       type: Boolean,
       value: false,
-    }
+    },
   },
 
   /**
@@ -16,70 +16,75 @@ Component({
   data: {
     roomInfo: {
       name: '',
-      icon: ''
+      icon: '',
     },
     iconList: [
       {
         icon: 'parents-room',
-        isCheck: true
+        isCheck: true,
       },
       {
         icon: 'restaurant',
-        isCheck: false
+        isCheck: false,
       },
       {
         icon: 'toilet',
-        isCheck: false
+        isCheck: false,
       },
       {
         icon: 'kitchen',
-        isCheck: false
+        isCheck: false,
       },
       {
         icon: 'master-bedroom',
-        isCheck: false
+        isCheck: false,
       },
       {
         icon: 'kids-room',
-        isCheck: false
+        isCheck: false,
       },
       {
         icon: 'drawing-room',
-        isCheck: false
+        isCheck: false,
       },
       {
         icon: 'study-room',
-        isCheck: false
+        isCheck: false,
       },
       {
         icon: 'balcony',
-        isCheck: false
+        isCheck: false,
       },
       {
         icon: 'cloakroom',
-        isCheck: false
+        isCheck: false,
       },
       {
         icon: 'bathroom',
-        isCheck: false
+        isCheck: false,
       },
       {
         icon: 'second-bedroom',
-        isCheck: false
+        isCheck: false,
       },
-    ]
+    ],
   },
 
   /**
    * 组件的方法列表
    */
   methods: {
+    close() {
+      this.setData({
+        show: false
+      })
+    },
     selectIcon({ currentTarget }: WechatMiniprogram.BaseEvent) {
-      console.log('selectIcon', currentTarget);
+      console.log('selectIcon', currentTarget)
       this.data.roomInfo.icon = currentTarget.dataset.icon
       this.setData({
-        roomInfo: this.data.roomInfo
+        roomInfo: this.data.roomInfo,
       })
-    }
-  }
+    },
+  },
 })

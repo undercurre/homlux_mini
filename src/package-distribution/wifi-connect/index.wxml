@@ -1,2 +1,25 @@
-<!--package-distribution/wifi-connect/index.wxml-->
-<text>package-distribution/wifi-connect/index.wxml</text>
+<view class="page-container flex flex-col">
+  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="连接家庭Wi-Fi"></nav-bar>
+
+  <view class="grow flex flex-col justify-between pb-128rpx">
+    <tips-box icon="/assets/img/wifi-connect/connect-wifi.png" text="请连接家庭Wi-Fi以便设备联网"></tips-box>
+
+    <view class="grow px-48rpx pt-112rpx" wx:if="{{ status === 'ready' }}">
+      <text class="text-black-secondary text-26 leading-36rpx">智能设备仅支持2.4GHZ的Wi-Fi</text>
+
+      <van-field model:value="{{ wifiInfo.name }}" custom-style="margin-bottom: 32rpx;margin-top: 40rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;background-color: transparent;" clearable="{{true}}" readonly>
+        <van-button slot="button" type="primary" plain>
+          切换Wi-Fi
+        </van-button>
+      </van-field>
+
+      <van-field model:value="{{ wifiInfo.pw }}" placeholder="请入Wi-Fi密码" type="" custom-style="border: 2rpx solid #DDDDDD;border-radius: 24rpx;background-color: transparent;" password> </van-field>
+    </view>
+
+    <view class="flex flex-col">
+      <text wx:if="{{ status === 'none' }}" class="text-center text-black-secondary text-26 leading-36rpx pb-32rpx">智能设备仅支持2.4GHZ的Wi-Fi</text>
+      <van-button class="mx-32rpx" block type="primary" size="large">{{ btnText }}</van-button>
+    </view>
+  </view>
+
+</view>
