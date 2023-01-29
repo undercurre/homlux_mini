@@ -7,17 +7,17 @@ Page({
     managerList: [
       {
         icon: '/assets/img/mine/home.png',
-        text: '家庭管理'
+        text: '家庭管理',
       },
       {
         icon: '/assets/img/mine/device.png',
-        text: '设备管理'
+        text: '设备管理',
       },
       {
         icon: '/assets/img/mine/member.png',
-        text: '成员管理'
-      }
-    ]
+        text: '成员管理',
+      },
+    ],
   },
 
   /**

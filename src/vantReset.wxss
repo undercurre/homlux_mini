@@ -32,7 +32,7 @@ page {
   --cell-font-size: 32rpx;
   --cell-text-color: #000;
   --cell-icon-size: 48rpx;
-   /* cell end */
+  /* cell end */
 }
 
 .van-button--normal {
@@ -48,12 +48,10 @@ page {
   color: #488fff !important;
 }
 
-
 .van-button--plain.van-button--danger {
   background-color: #fff !important;
-  color: #FF3849 !important;
+  color: #ff3849 !important;
 }
-
 
 .van-cell {
   padding: 40rpx !important;
