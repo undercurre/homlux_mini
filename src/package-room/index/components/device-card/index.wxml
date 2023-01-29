@@ -1,0 +1,16 @@
+<!--package-room/index/components/device-card/index.wxml-->
+<view class="card w-160rpx h-216rpx rounded-32rpx box-border flex flex-col items-center" style="border: {{isSelect ? '3rpx solid #488FFF' : '3rpx solid rgba(0,0,0,0)'}};" bindtap="handleCardTap">
+  <text class="mt-16rpx text-26rpx text-hex-353535">{{deviceInfo.deviceName}}</text>
+  <view class="flex flex-1 flex-col items-center">
+    <image src="/assets/img/device/{{deviceInfo.deviceType}}.png" class="w-72rpx h-72rpx"></image>
+    <text wx:if="{{deviceInfo.deviceType === 'switch'}}" class="text-20rpx text-black-tips">筒灯1</text>
+  </view>
+  <view class="mb-12rpx" catchtap="handlePowerTap">
+    <image wx:if="{{!deviceInfo.isOnline}}" src="/assets/img/base/offline.png" class="w-48rpx h-48rpx"></image>
+    <view wx:else>
+      <image wx:if="{{deviceInfo.deviceType === 'light'}}" src="{{deviceInfo.power ? '/assets/img/base/power-on.png' : '/assets/img/base/power-off.png'}}" class="w-48rpx h-48rpx"></image>
+      <image wx:if="{{deviceInfo.deviceType === 'switch'}}" src="{{deviceInfo.power ? '/assets/img/base/power-on.png' : '/assets/img/base/power-off.png'}}" class="w-48rpx h-48rpx"></image>
+      <image wx:if="{{deviceInfo.deviceType === 'curtain'}}" src="/assets/img/base/close.png" class="w-48rpx h-48rpx"></image>
+    </view>
+  </view>
+</view>
