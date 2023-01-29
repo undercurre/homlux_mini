@@ -10,7 +10,7 @@
       "pages": ["hoom-manage/index", "device-manage/index"]
     },
     {
-      "root": "package-room",
+      "root": "package-room-control",
       "pages": ["index/index", "scene/index"]
     }
   ],

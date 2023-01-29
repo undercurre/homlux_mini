@@ -260,7 +260,7 @@ Page({
       room.currentRoomIndex = room.roomList.findIndex((item) => item.roomId === e.currentTarget.dataset.room)
     })
     wx.navigateTo({
-      url: `/package-room/index/index`,
+      url: `/package-room-control/index/index`,
     })
   },
 })
