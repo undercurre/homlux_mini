@@ -32,6 +32,7 @@
     "van-overlay": "@vant/weapp/overlay/index",
     "nav-bar": "./components/custom-nav-bar/index",
     "home-select-menu": "./components/home-select-menu/index",
+    "add-home": "./components/add-room/index",
     "svg-icon": "./components/svg-icon/index"
   },
   "window": {

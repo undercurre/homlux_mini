@@ -8,16 +8,26 @@ Page({
       {
         icon: '/assets/img/mine/home.png',
         text: '家庭管理',
+        url: '/package-mine/home-manage/index',
       },
       {
         icon: '/assets/img/mine/device.png',
         text: '设备管理',
+        url: '/package-mine/device-manage/index',
       },
       {
         icon: '/assets/img/mine/member.png',
         text: '成员管理',
+        url: '/package-mine/member-manage/index',
       },
     ],
+    urls: {
+      voiceControl: '/package-mine/voice-control/index',
+      ota: '/package-mine/ota/index',
+      deviceReplace: '/package-mine/device-replace/index',
+      feedback: '/package-mine/feedback/index',
+      about: '/package-mine/about/index',
+    },
   },
 
   /**
@@ -31,38 +41,9 @@ Page({
     }
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {},
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow() {},
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide() {},
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload() {},
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh() {},
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom() {},
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage() {},
+  toPage(e: { currentTarget: { dataset: { url: string } } }) {
+    wx.navigateTo({
+      url: e.currentTarget.dataset.url,
+    })
+  },
 })

@@ -7,3 +7,5 @@ interface IAppOption {
 }
 
 type IAnyObject = WechatMiniprogram.IAnyObject
+
+type AnyResType = string | IAnyObject | ArrayBuffer

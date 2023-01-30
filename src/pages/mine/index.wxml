@@ -16,24 +16,24 @@
 </view>
 
 <view class="flex flex-row justify-between px-24rpx">
-  <view wx:for="{{managerList}}" class="flex flex-col items-center pt-10rpx pb-24rpx grow">
+  <view wx:for="{{managerList}}" wx:key="text" class="flex flex-col items-center pt-10rpx pb-24rpx grow" data-url="{{item.url}}" bindtap="toPage">
     <image src="{{item.icon}}" class="w-64 h-64"></image>
     <text class="pt-20rpx text-26 text-black-secondary leading-none">{{item.text}}</text>
   </view>
 </view>
 
 <van-cell-group inset>
-  <van-cell icon="/assets/img/mine/voiceControl.png" title="语音控制" is-link center />
+  <van-cell icon="/assets/img/mine/voiceControl.png" title="语音控制" is-link center data-url="{{urls.voiceControl}}" bind:click="toPage" />
 </van-cell-group>
 
 <van-cell-group inset>
-  <van-cell icon="/assets/img/mine/upgrade.png" title="固件升级" is-link center />
-  <van-cell icon="/assets/img/mine/deviceReplace.png" title="设备替换" is-link center />
+  <van-cell icon="/assets/img/mine/upgrade.png" title="固件升级" is-link center data-url="{{urls.ota}}" bind:click="toPage" />
+  <van-cell icon="/assets/img/mine/deviceReplace.png" title="设备替换" is-link center data-url="{{urls.deviceReplace}}" bind:click="toPage" />
 </van-cell-group>
 
 <van-cell-group inset>
-  <van-cell icon="/assets/img/mine/advise.png" title="建议反馈" is-link center />
-  <van-cell icon="/assets/img/mine/about.png" title="关于" is-link center />
+  <van-cell icon="/assets/img/mine/advise.png" title="建议反馈" is-link center data-url="{{urls.feedback}}" bind:click="toPage" />
+  <van-cell icon="/assets/img/mine/about.png" title="关于" is-link center data-url="{{urls.about}}" bind:click="toPage" />
 </van-cell-group>
 
 <view class="px-24rpx pb-140rpx">

@@ -17,9 +17,7 @@ type MzaiotRequestWithMethod = MzaiotRequest & {
   delete: MzaiotRequest
 }
 
-const mzaiotRequest: MzaiotRequest = function <T extends AnyResType>(
-  options: BaseRequestOptions<T>,
-) {
+const mzaiotRequest: MzaiotRequest = function <T extends AnyResType>(options: BaseRequestOptions<T>) {
   return baseRequest<T>({
     ...options,
     generalSuccessHandler: (result) => result.data,
@@ -28,7 +26,7 @@ const mzaiotRequest: MzaiotRequest = function <T extends AnyResType>(
         code: -1,
         msg: error.errMsg,
         success: false,
-      }) as unknown as T,
+      } as unknown as T),
   }) as unknown as Promise<MzaiotResponseRowData<T>>
 }
 
