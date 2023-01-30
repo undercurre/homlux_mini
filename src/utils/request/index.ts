@@ -1,1 +1,2 @@
-export { defaultRequest } from './defaultRequest'
+export { baseRequest, BaseRequestOptions } from './baseRequest'
+export { mzaiotRequest } from './mzaiotRequest'

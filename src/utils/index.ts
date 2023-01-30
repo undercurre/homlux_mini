@@ -1,5 +1,5 @@
-export * from './request/index'
-export * from './storage'
+export { baseRequest, mzaiotRequest, BaseRequestOptions } from './request/index'
+export { createStorage, storage, asyncStorage } from './storage'
 
 export function delay(ms: number) {
   return new Promise<void>((resolve) => {

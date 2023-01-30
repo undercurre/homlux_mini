@@ -1,13 +1,15 @@
-import { defaultRequest } from '../utils/index'
+import { mzaiotRequest } from '../utils/index'
 
 export async function testApi() {
-  return await defaultRequest({
+  return await mzaiotRequest({
     url: '/test',
   })
 }
 
 export async function login(data: object) {
-  return await defaultRequest.post<User.UserLoginRes>({
+  return await mzaiotRequest.post<User.UserLoginRes>({
+    log: true,
+    loading: true,
     url: '/v1/mzgdApi/auth/mzgd/login',
     data,
   })
