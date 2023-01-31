@@ -79,3 +79,9 @@ export const room = observable({
   ], // 测试数据，需要根据接口进行修改
   currentRoomIndex: 0, // 当前选择的房间，在roomList里的index
 })
+
+export const roomBinding = {
+  store: room,
+  fields: ['roomList', 'currentRoomIndex'],
+  actions: [],
+}

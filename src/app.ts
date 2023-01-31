@@ -1,6 +1,6 @@
 // app.js
 import { setNavigationBarHeight } from './utils/index'
-import { global } from './store/global'
+import { others } from './store/others'
 
 type require = (url: string, cb: (module: IAnyObject) => void) => void
 
@@ -10,7 +10,7 @@ App<IAppOption>({
     const req = require as require
     req('./assets/svg/svgs.js', (module) => {
       this.globalData.svgs = module.default
-      global.setIsLoadSvg()
+      others.setIsLoadSvg()
     })
 
     // 获取状态栏和顶部栏高度

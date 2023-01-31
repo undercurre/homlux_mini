@@ -1,11 +1,10 @@
-import { mobxBehavior } from './behavior'
 import { behavior as computedBehavior } from 'miniprogram-computed'
 import { storage } from '../../utils/storage'
-import { global, room } from '../../store/index'
+import { others, room, othersBinding, roomBinding, userBinding } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
-
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 Page({
-  behaviors: [mobxBehavior, computedBehavior],
+  behaviors: [BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding] }), computedBehavior],
   data: {
     dropdownMenu: {
       x: '0px',
@@ -53,6 +52,7 @@ Page({
 
   // 生命周期或者其他钩子
   onLoad: function () {
+    console.log(this.data)
     // 更新tabbar状态
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({
@@ -83,8 +83,9 @@ Page({
     })
   },
 
-  // 方法
+  // 收起所有菜单
   hideMenu(e?: { detail: { x: number; y: number } }) {
+    this.doHomeSelectArrowAnimation(false, this.data.selectHomeMenu.isShow)
     if (e && e.detail && e.detail.x) {
       wx.createSelectorQuery()
         .select('#addIcon')
@@ -189,17 +190,19 @@ Page({
    * @param e
    */
   handleHomeSelect(e: { detail: string }) {
+    this.doHomeSelectArrowAnimation(false, this.data.selectHomeMenu.isShow)
     this.setData({
       'selectHomeMenu.isShow': false,
     })
     runInAction(() => {
-      global.currentHomeId = e.detail
+      others.currentHomeId = e.detail
     })
   },
   /**
    * 用户点击展示/隐藏家庭选择
    */
   handleShowHomeSelectMenu() {
+    this.doHomeSelectArrowAnimation(!this.data.selectHomeMenu.isShow, this.data.selectHomeMenu.isShow)
     this.setData({
       selectHomeMenu: {
         x: '28rpx',
@@ -262,5 +265,37 @@ Page({
     wx.navigateTo({
       url: '/package-room-control/index/index',
     })
+  },
+  doHomeSelectArrowAnimation(newValue: boolean, oldValue: boolean) {
+    if (newValue === oldValue) {
+      return
+    }
+    if (newValue) {
+      this.animate(
+        '#homeSelectArrow',
+        [
+          {
+            rotateZ: 0,
+          },
+          {
+            rotateZ: 180,
+          },
+        ],
+        200,
+      )
+    } else {
+      this.animate(
+        '#homeSelectArrow',
+        [
+          {
+            rotateZ: 180,
+          },
+          {
+            rotateZ: 0,
+          },
+        ],
+        200,
+      )
+    }
   },
 })

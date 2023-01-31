@@ -1,2 +1,45 @@
-<!--package-mine/device-manage/index.wxml-->
-<text>package-mine/device-manage/index.wxml</text>
+<!-- 背景 -->
+<view class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7" style="z-index: -1"></view>
+<view class="h-100vh flex flex-col ">
+  <!-- 标题 -->
+  <nav-bar title="设备管理" left-arrow bind:leftTap="back"></nav-bar>
+  <view class="flex justify-end w-750rpx mt-36rpx mb-8rpx">
+    <van-button round color="#dfe1e5" custom-class="dropdown-btn">
+      <view class="flex-center">
+        <text class="text-black-primary text-28rpx mr-10rpx">全屋全屋</text>
+        <svg-icon name="icon-park:down" color="#555659" width="32rpx" height="32rpx"></svg-icon>
+      </view>
+    </van-button>
+  </view>
+  <view id="listWrapper" class="flex-1">
+    <scroll-view scroll-y="true" style="height: {{listHeight}}px;">
+      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <view class="list-bottom-placeholder">
+
+      </view>
+    </scroll-view>
+  </view>
+
+</view>

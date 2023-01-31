@@ -1,6 +1,6 @@
 import { configure } from 'mobx-miniprogram'
-export { global } from './global'
-export { user } from './user'
-export { room } from './room'
+export { others, othersBinding } from './others'
+export { user, userBinding } from './user'
+export { room, roomBinding } from './room'
 
 configure({ enforceActions: 'observed' })

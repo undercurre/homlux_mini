@@ -1,13 +1,13 @@
 // custom-tab-bar/index.ts
 import { ComponentWithStore } from 'mobx-miniprogram-bindings'
-import { global } from '../store/index'
+import { others } from '../store/index'
 ComponentWithStore({
   options: {
     styleIsolation: 'apply-shared',
   },
 
   storeBindings: {
-    store: global,
+    store: others,
     fields: ['showTabbar'],
     actions: {},
   },

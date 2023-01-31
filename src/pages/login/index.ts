@@ -49,7 +49,7 @@ Page({
         }
       })
       console.log('去首页')
-      wx.redirectTo({
+      wx.switchTab({
         url: '/pages/index/index',
       })
     }

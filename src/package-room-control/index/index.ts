@@ -1,8 +1,9 @@
 import { behavior as computedBehavior } from 'miniprogram-computed'
-import { mobxBehavior } from './behavior'
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import { othersBinding, userBinding, roomBinding } from '../../store/index'
 
 Page({
-  behaviors: [mobxBehavior, computedBehavior],
+  behaviors: [BehaviorWithStore({storeBindings: [othersBinding, userBinding, roomBinding]}), computedBehavior],
   /**
    * 页面的初始数据
    */
@@ -55,6 +56,7 @@ Page({
 
   computed: {
     title(data: { currentRoomIndex: number; roomList: { roomName: string }[] }) {
+      console.log(data)
       return data.roomList[data.currentRoomIndex].roomName
     },
     sceneListInBar(data: { currentRoomIndex: number; roomList: { sceneList: object[] }[] }) {

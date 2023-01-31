@@ -1,6 +1,6 @@
 import { observable, runInAction } from 'mobx-miniprogram'
 
-export const global = observable({
+export const others = observable({
   isLoadedSvg: false,
   homeList: [
     {
@@ -23,7 +23,13 @@ export const global = observable({
 
   setIsLoadSvg: function () {
     runInAction(() => {
-      global.isLoadedSvg = true
+      others.isLoadedSvg = true
     })
   },
 })
+
+export const othersBinding = {
+  store: others,
+  fields: ['homeList', 'currentHomeId', 'isLoadedSvg'],
+  actions: [],
+}

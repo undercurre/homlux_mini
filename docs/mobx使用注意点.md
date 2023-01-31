@@ -112,13 +112,14 @@ export const mobxBehavior = BehaviorWithStore({
 ```
 
 ```ts
-import { mobxBehavior } from './behavior'
+import { runInAction } from 'mobx-miniprogram'
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { behavior as computedBehavior } from 'miniprogram-computed'
 import { testApi } from '../../api/index'
 import { store } from '../../models/index'
 Page({
   // page和component应该都一样
-  behaviors: [mobxBehavior, computedBehavior], // ！！！computed一定要放在后面（来着官方文档）！！！
+  behaviors: [BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding] }), computedBehavior], // ！！！computed一定要放在后面（来着官方文档）！！！
   computed: {
     allSum(data: { numA: number; numB: number; global: { numA: number; numB: number } }) {
       return data.numA + data.numB + data.global.numA + data.global.numB

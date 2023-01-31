@@ -4,7 +4,7 @@
 
 将存在 globalData 的 svg 渲染到屏幕。
 
-> 注意，需要等待 svg 加载完成再渲染，否则会报错，可以通过 global 里的 isLoadedSvg 判断 svg 是否加载完成
+> 注意，需要等待 svg 加载完成再渲染，否则会报错，可以通过 others 里的 isLoadedSvg 判断 svg 是否加载完成
 
 ## 属性
 

@@ -8,3 +8,10 @@ export const user = observable({
     avatar: 'https://dummyimage.com/200x200/4A7BF7/FFFFFF&text=7071',
   } as User.UserInfo,
 })
+
+export const userBinding = {
+  store: user,
+  fields: ['userInfo'],
+  actions: [],
+}
+
