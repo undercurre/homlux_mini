@@ -3,7 +3,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { othersBinding, userBinding, roomBinding } from '../../store/index'
 
 Page({
-  behaviors: [BehaviorWithStore({storeBindings: [othersBinding, userBinding, roomBinding]}), computedBehavior],
+  behaviors: [BehaviorWithStore({ storeBindings: [othersBinding, userBinding, roomBinding] }), computedBehavior],
   /**
    * 页面的初始数据
    */

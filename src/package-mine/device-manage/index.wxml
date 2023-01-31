@@ -1,6 +1,6 @@
 <!-- 背景 -->
 <view class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7" style="z-index: -1"></view>
-<view class="h-100vh flex flex-col ">
+<view class="h-100vh flex flex-col">
   <!-- 标题 -->
   <nav-bar title="设备管理" left-arrow bind:leftTap="back"></nav-bar>
   <view class="flex justify-end w-750rpx mt-36rpx mb-8rpx">
@@ -36,10 +36,7 @@
       <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
       <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
       <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
-      <view class="list-bottom-placeholder">
-
-      </view>
+      <view class="list-bottom-placeholder"> </view>
     </scroll-view>
   </view>
-
 </view>

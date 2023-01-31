@@ -14,4 +14,3 @@ export const userBinding = {
   fields: ['userInfo'],
   actions: [],
 }
-
