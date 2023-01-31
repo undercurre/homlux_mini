@@ -67,4 +67,15 @@ declare namespace Home {
     isSelect: boolean
     isCreator: boolean
   }
+  interface RoomInState {
+    roomId: string
+    roomName: string
+    lightOnNumber: number
+    sceneList: {
+      value: string
+      name: string
+    }[]
+    deviceList: (Device.LightInfo | Device.SwitchInfo | Device.CurtainInfo)[]
+    sceneSelect: string
+  }
 }

@@ -7,7 +7,7 @@
     },
     {
       "root": "package-mine",
-      "pages": ["hoom-manage/index", "device-manage/index"]
+      "pages": ["hoom-manage/index", "device-manage/index", "device-manage/device-detail/index"]
     },
     {
       "root": "package-room-control",

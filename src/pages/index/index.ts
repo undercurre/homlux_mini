@@ -1,10 +1,13 @@
 import { behavior as computedBehavior } from 'miniprogram-computed'
 import { storage } from '../../utils/storage'
-import { others, room, othersBinding, roomBinding, userBinding } from '../../store/index'
+import { others, room, othersBinding, roomBinding, userBinding, homeBinding } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 Page({
-  behaviors: [BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding] }), computedBehavior],
+  behaviors: [
+    BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding, homeBinding] }),
+    computedBehavior,
+  ],
   data: {
     dropdownMenu: {
       x: '0px',

@@ -1,42 +1,38 @@
 <!-- 背景 -->
 <view class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7" style="z-index: -1"></view>
-<view class="h-100vh flex flex-col">
+<view class="h-100vh flex flex-col" bindtap="handleFullPageTap">
   <!-- 标题 -->
   <nav-bar title="设备管理" left-arrow bind:leftTap="back"></nav-bar>
+  <!-- 下拉菜单按钮 -->
   <view class="flex justify-end w-750rpx mt-36rpx mb-8rpx">
-    <van-button round color="#dfe1e5" custom-class="dropdown-btn">
+    <van-button round color="#dfe1e5" custom-class="dropdown-btn" id="selectRoomBtn" bind:click="showSelectRoomMenu">
       <view class="flex-center">
-        <text class="text-black-primary text-28rpx mr-10rpx">全屋全屋</text>
-        <svg-icon name="icon-park:down" color="#555659" width="32rpx" height="32rpx"></svg-icon>
+        <text class="text-black-primary text-28rpx mr-10rpx">{{currentRoomName}}</text>
+        <svg-icon id="selectRoomArrow" name="icon-park:down" color="#555659" width="32rpx" height="32rpx"></svg-icon>
       </view>
     </van-button>
   </view>
+  <!-- 设备列表 -->
   <view id="listWrapper" class="flex-1">
     <scroll-view scroll-y="true" style="height: {{listHeight}}px;">
-      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
-      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
-      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
-      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
-      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
-      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
-      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
-      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
-      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
-      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
-      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
-      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
-      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
-      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
-      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
-      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
-      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
-      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
-      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
-      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
-      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
-      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
-      <view class="h-100rpx w-100rpx mt-36rpx mb-8rpx bg-hex-000"></view>
+      <van-cell-group inset wx:for="{{deviceList}}" wx:key="deviceId">
+        <van-cell clickable bind:click="handleCardClick" data-index="{{index}}">
+          <view class="flex item-center">
+            <view class="w-96rpx h-96rpx bg-hex-F6FAFD rounded-999 flex-center">
+              <image src="/assets/img/device/light.png" mode="" class="w-72rpx h-72rpx" />
+            </view>
+            <view class="h-96rpx flex flex-col justify-center items-start ml-32rpx">
+              <text class="text-black-primary text-32rpx">{{item.deviceName}}</text>
+              <text class="text-black-secondary text-32rpx mt-8rpx">{{item.roomName}}</text>
+            </view>
+          </view>
+          <view slot="right-icon" class="h-96rpx flex-center">
+            <svg-icon color="#c8c7cc" name="icon-park:right" width="48rpx" height="48rpx"></svg-icon>
+          </view>
+        </van-cell>
+      </van-cell-group>
       <view class="list-bottom-placeholder"> </view>
     </scroll-view>
   </view>
 </view>
+<dropdown-menu x="{{roomSelectMenu.x}}" y="{{roomSelectMenu.y}}" isShow="{{roomSelectMenu.isShow}}" list="{{roomSelectMenuList}}" bind:select="handleRoomSelect"></dropdown-menu>

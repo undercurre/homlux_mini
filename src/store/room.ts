@@ -62,7 +62,7 @@ export const room = observable({
     },
     {
       roomId: '3',
-      roomName: '客厅',
+      roomName: '客厅1',
       lightOnNumber: 3,
       sceneList: [sceneMap['all-on'], sceneMap['all-off'], sceneMap['bright'], sceneMap['mild']],
       deviceList: [],
@@ -70,7 +70,7 @@ export const room = observable({
     },
     {
       roomId: '4',
-      roomName: '卧室',
+      roomName: '卧室1',
       lightOnNumber: 0,
       sceneList: [sceneMap['all-on'], sceneMap['all-off'], sceneMap['bright'], sceneMap['mild']],
       deviceList: [],

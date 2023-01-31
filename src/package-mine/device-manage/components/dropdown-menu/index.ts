@@ -19,6 +19,7 @@ Component({
       type: Boolean,
       value: false,
       observer: function (newVal: boolean) {
+        console.log(this.data)
         if (newVal) {
           this.setData({
             isRender: true,
@@ -28,6 +29,9 @@ Component({
           this.hideAnimate()
         }
       },
+    },
+    list: {
+      type: Array,
     },
   },
 
@@ -42,14 +46,8 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    handleAddDevice() {
-      this.triggerEvent('select', 'addDevice')
-    },
-    handleAddRoom() {
-      this.triggerEvent('select', 'addRoom')
-    },
-    handleInviteFamily() {
-      this.triggerEvent('select', 'inviteFamily')
+    handleRoomSelect(e: { currentTarget: { dataset: { id: string } } }) {
+      this.triggerEvent('select', e.currentTarget.dataset.id)
     },
     hideAnimate() {
       this.animate(
