@@ -1,6 +1,5 @@
 // pages/mine/index.ts
-import { getUrlWithParams } from '../../utils/index'
-Page({
+Component({
   /**
    * 页面的初始数据
    */
@@ -30,21 +29,22 @@ Page({
       about: '/package-mine/about/index',
     },
   },
+  methods: {
+    /**
+     * 生命周期函数--监听页面加载
+     */
+    onLoad() {
+      if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+        this.getTabBar().setData({
+          selected: 1,
+        })
+      }
+    },
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad() {
-    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().setData({
-        selected: 1,
+    toPage(e: { currentTarget: { dataset: { url: string } } }) {
+      wx.navigateTo({
+        url: e.currentTarget.dataset.url,
       })
-    }
-  },
-
-  toPage(e: { currentTarget: { dataset: { url: string } } }) {
-    wx.navigateTo({
-      url: e.currentTarget.dataset.url,
-    })
+    },
   },
 })

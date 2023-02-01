@@ -45,6 +45,13 @@ export const room = observable({
         },
         {
           deviceId: '5',
+          deviceName: '三路开关3',
+          deviceType: 'switch',
+          isOnline: true,
+          linkDeviceId: '2',
+        },
+        {
+          deviceId: '6',
           deviceName: '窗帘',
           deviceType: 'curtain',
           isOnline: true,

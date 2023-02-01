@@ -1,9 +1,11 @@
-import { behavior as computedBehavior } from 'miniprogram-computed'
+import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { othersBinding, userBinding, roomBinding } from '../../store/index'
 
-Page({
-  behaviors: [BehaviorWithStore({ storeBindings: [othersBinding, userBinding, roomBinding] }), computedBehavior],
+type DeviceInfo = Device.LightInfo | Device.SwitchInfo | Device.CurtainInfo
+
+ComponentWithComputed({
+  behaviors: [BehaviorWithStore({ storeBindings: [othersBinding, userBinding, roomBinding] })],
   /**
    * 页面的初始数据
    */
@@ -55,59 +57,105 @@ Page({
   },
 
   computed: {
-    title(data: { currentRoomIndex: number; roomList: { roomName: string }[] }) {
-      console.log(data)
-      return data.roomList[data.currentRoomIndex].roomName
+    title(data) {
+      if (data.currentRoomIndex !== undefined && data.roomList) {
+        return (data.roomList as { roomName: string }[])[data.currentRoomIndex as number].roomName
+      }
+      return ''
     },
-    sceneListInBar(data: { currentRoomIndex: number; roomList: { sceneList: object[] }[] }) {
-      return data.roomList[data.currentRoomIndex].sceneList.slice(0, 4)
+    sceneListInBar(data) {
+      if (data.currentRoomIndex !== undefined && data.roomList) {
+        return (data.roomList as { sceneList: object[] }[])[data.currentRoomIndex as number].sceneList.slice(0, 4)
+      }
+      return []
     },
-    deviceList(data: { currentRoomIndex: number; roomList: { deviceList: object[] }[] }) {
-      return data.roomList[data.currentRoomIndex].deviceList
+    /**
+     * 所有设备列表
+     */
+    deviceList(data) {
+      if (data.currentRoomIndex !== undefined && data.roomList) {
+        return (data.roomList as { deviceList: DeviceInfo[] }[])[data.currentRoomIndex as number].deviceList
+      }
+      return []
+    },
+    /**
+     * 灯具设备列表
+     */
+    lightList(data) {
+      if (data.currentRoomIndex !== undefined && data.roomList) {
+        return (data.roomList as { deviceList: DeviceInfo[] }[])[data.currentRoomIndex as number].deviceList.filter(
+          (device) => device.deviceType === 'light',
+        )
+      }
+      return []
+    },
+    /**
+     * 灯具设备列表
+     */
+    switchList(data) {
+      if (data.currentRoomIndex !== undefined && data.roomList) {
+        return (data.roomList as { deviceList: DeviceInfo[] }[])[data.currentRoomIndex as number].deviceList.filter(
+          (device) => device.deviceType === 'switch',
+        )
+      }
+      return []
+    },
+    /**
+     * 窗帘列表
+     */
+    curtainList(data) {
+      if (data.currentRoomIndex !== undefined && data.roomList) {
+        return (data.roomList as { deviceList: DeviceInfo[] }[])[data.currentRoomIndex as number].deviceList.filter(
+          (device) => device.deviceType === 'curtain',
+        )
+      }
+      return []
     },
   },
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad() {},
+  methods: {
+    /**
+     * 生命周期函数--监听页面加载
+     */
+    onLoad() {},
 
-  handleSceneTap() {
-    wx.navigateTo({
-      url: '/package-room/scene/index',
-    })
-  },
-  back() {
-    wx.navigateBack()
-  },
-  handleCollect() {
-    console.log('收藏')
-  },
-  handleDeviceCardTap(e: { detail: { deviceId: string; deviceType: string } }) {
-    if (this.data.selectList.includes(e.detail.deviceId)) {
+    handleSceneTap() {
+      wx.navigateTo({
+        url: '/package-room-control/scene-list/index',
+      })
+    },
+    back() {
+      wx.navigateBack()
+    },
+    handleCollect() {
+      console.log('收藏')
+    },
+    handleDeviceCardTap(e: { detail: { deviceId: string; deviceType: string } }) {
+      if (this.data.selectList.includes(e.detail.deviceId)) {
+        const index = this.data.selectList.findIndex((item) => item === e.detail.deviceId)
+        this.data.selectList.splice(index, 1)
+        this.setData({
+          selectList: this.data.selectList,
+        })
+      } else if (this.data.selectType && this.data.selectType === e.detail.deviceType) {
+        this.setData({
+          selectList: [...this.data.selectList, e.detail.deviceId],
+        })
+      } else {
+        this.setData({
+          selectList: [e.detail.deviceId],
+          selectType: e.detail.deviceType,
+        })
+      }
+    },
+    handleDevicePowerTap(e: { detail: { deviceId: string; deviceType: string } }) {
       const index = this.data.selectList.findIndex((item) => item === e.detail.deviceId)
-      this.data.selectList.splice(index, 1)
-      this.setData({
-        selectList: this.data.selectList,
-      })
-    } else if (this.data.selectType && this.data.selectType === e.detail.deviceType) {
-      this.setData({
-        selectList: [...this.data.selectList, e.detail.deviceId],
-      })
-    } else {
-      this.setData({
-        selectList: [e.detail.deviceId],
-        selectType: e.detail.deviceType,
-      })
-    }
-  },
-  handleDevicePowerTap(e: { detail: { deviceId: string; deviceType: string } }) {
-    const index = this.data.selectList.findIndex((item) => item === e.detail.deviceId)
-    if (['light', 'switch'].includes(e.detail.deviceType)) {
-      const power = !(this.data.deviceList[index] as Device.LightInfo | Device.SwitchInfo).power
-      const data = {} as IAnyObject
-      data[`deviceList[${index}].power`] = power
-      this.setData(data)
-    }
+      if (['light', 'switch'].includes(e.detail.deviceType)) {
+        const power = !(this.data.deviceList[index] as Device.LightInfo | Device.SwitchInfo).power
+        const data = {} as IAnyObject
+        data[`deviceList[${index}].power`] = power
+        this.setData(data)
+      }
+    },
   },
 })

@@ -1,4 +1,5 @@
 {
+  "component": true,
   "navigationStyle": "custom",
   "usingComponents": {
     "popup-select-light": "./components/device-card/index",

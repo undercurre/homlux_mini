@@ -1,6 +1,7 @@
 import { observable } from 'mobx-miniprogram'
 
 export const home = observable({
+  currentHomeId: '111',
   homeList: [
     {
       home_id: '111',
@@ -18,7 +19,6 @@ export const home = observable({
       master_uid: '2314',
     },
   ] as Home.HomeInfo[],
-  currentHomeId: '111',
 })
 
 export const homeBinding = {

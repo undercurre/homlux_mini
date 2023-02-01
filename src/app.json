@@ -12,13 +12,14 @@
         "home-location/index",
         "room-manage/index",
         "room-detail/index",
+        "ota/index",
         "device-manage/index",
         "device-manage/device-detail/index"
       ]
     },
     {
       "root": "package-room-control",
-      "pages": ["index/index"]
+      "pages": ["index/index", "scene-edit/index", "scene-list/index"]
     }
   ],
   "tabBar": {
@@ -48,9 +49,6 @@
     "navigationStyle": "custom",
     "backgroundTextStyle": "light",
     "backgroundColor": "#eef2f7"
-  },
-  "resolveAlias": {
-    "~/*": "/*"
   },
   "sitemapLocation": "sitemap.json"
 }
