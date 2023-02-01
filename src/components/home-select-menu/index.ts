@@ -1,8 +1,11 @@
-// components/home-select-menu/index.ts
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import { homeBinding, userBinding, home } from '../../store/index'
+import { runInAction } from 'mobx-miniprogram'
 Component({
   options: {
     styleIsolation: 'apply-shared',
   },
+  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, userBinding] })],
   /**
    * 组件的属性列表
    */
@@ -29,10 +32,6 @@ Component({
         }
       },
     },
-    list: {
-      type: Array,
-      value: [],
-    },
   },
 
   /**
@@ -46,8 +45,11 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    handleHomeTap(e: { currentTarget: { dataset: { value: number | string } } }) {
-      this.triggerEvent('select', e.currentTarget.dataset.value)
+    handleHomeTap(e: { currentTarget: { dataset: { value: string } } }) {
+      runInAction(()=>{
+        home.currentHomeId = e.currentTarget.dataset.value
+      })
+      this.triggerEvent('select')
     },
     hideAnimate() {
       this.animate(

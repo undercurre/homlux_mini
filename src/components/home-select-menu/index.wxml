@@ -1,12 +1,12 @@
 <!--components/home-select-menu/index.wxml-->
 <view id="menu" class="bg fixed flex flex-col items-center p-10rpx rounded-32rpx w-320rpx z-100" style="left: {{x}}; top: {{y}};" wx:if="{{isRender}}">
-  <view class="flex flex-col justify-center items-center" bindtap="handleHomeTap" wx:for="{{list}}" wx:key="value" data-value="{{item.value}}">
+  <view class="flex flex-col justify-center items-center" bindtap="handleHomeTap" wx:for="{{homeList}}" wx:key="value" data-value="{{item.home_id}}">
     <view class="w-320rpx h-96rpx flex items-center">
-      <text class="p-10rpx text-white text-28rpx ml-34rpx">{{item.name}}</text>
-      <view class="text-20rpx text-white bg-hex-488FFF px-16rpx py-8rpx rounded-999 ml-10rpx" wx:if="{{item.isCreator}}">创建</view>
-      <svg-icon class="ml-18rpx" bindtap="handleClear" wx:if="{{item.isSelect && isShow}}" name="icon-park:check" width="40rpx" height="40rpx" color="#d2d2d2" />
+      <text class="p-10rpx text-white text-28rpx ml-34rpx">{{item.home_name}}</text>
+      <view class="text-20rpx text-white bg-hex-488FFF px-16rpx py-8rpx rounded-999 ml-10rpx" wx:if="{{item.master_uid === userInfo.id}}">创建</view>
+      <svg-icon class="ml-18rpx" bindtap="handleClear" wx:if="{{item.home_id === currentHomeId && isShow}}" name="icon-park:check" width="40rpx" height="40rpx" color="#d2d2d2" />
     </view>
-    <view class="bg-hex-717171 w-250rpx h-1rpx" wx:if="{{index != list.length - 1}}"></view>
+    <view class="bg-hex-717171 w-250rpx h-1rpx" wx:if="{{index != homeList.length - 1}}"></view>
   </view>
   <view class="arrow absolute left-32rpx top-0 w-0 h-0"></view>
 </view>

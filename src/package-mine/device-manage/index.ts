@@ -1,9 +1,11 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { roomBinding } from '../../store/index'
-import { behavior as computedBehavior } from 'miniprogram-computed'
+import { ComponentWithComputed } from 'miniprogram-computed'
 
-Page({
-  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding] }), computedBehavior],
+type DeviceList = { deviceId: string; deviceName: string; roomName: string; roomId: string }[]
+
+ComponentWithComputed({
+  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding] })],
   /**
    * 页面的初始数据
    */
@@ -18,158 +20,169 @@ Page({
   },
 
   computed: {
-    roomSelectMenuList(data: { roomList: Home.RoomInState[] }) {
-      return [
-        { roomId: '0', roomName: '全屋' },
-        ...data.roomList.map((room) => ({ roomId: room.roomId, roomName: room.roomName })),
-      ]
+    roomSelectMenuList(data) {
+      if (data.roomList) {
+        return [
+          { roomId: '0', roomName: '全屋' },
+          ...(data.roomList as Home.RoomInState[]).map((room) => ({ roomId: room.roomId, roomName: room.roomName })),
+        ]
+      }
+      return []
     },
-    deviceList(data: { roomList: Home.RoomInState[]; roomSelect: string }) {
-      const list: { deviceId: string; deviceName: string; roomName: string; roomId: string }[] = []
-      if (data.roomSelect === '0') {
-        data.roomList.forEach((room) => {
-          room.deviceList.forEach((device) =>
-            list.push({
-              deviceId: device.deviceId,
-              deviceName: device.deviceName,
-              roomName: room.roomName,
-              roomId: room.roomId,
-            }),
-          )
-        })
+    deviceList(data): DeviceList {
+      const roomList = data.roomList as Home.RoomInState[]
+      if (roomList) {
+        const list: DeviceList = []
+        if (data.roomSelect === '0') {
+          roomList.forEach((room) => {
+            room.deviceList.forEach((device) =>
+              list.push({
+                deviceId: device.deviceId,
+                deviceName: device.deviceName,
+                roomName: room.roomName,
+                roomId: room.roomId,
+              }),
+            )
+          })
+          return list
+        }
+        const room = roomList.find((room) => room.roomId === data.roomSelect)
+        room?.deviceList.forEach((device) =>
+          list.push({
+            deviceId: device.deviceId,
+            deviceName: device.deviceName,
+            roomName: room.roomName,
+            roomId: room.roomId,
+          }),
+        )
         return list
       }
-      const room = data.roomList.find((room) => room.roomId === data.roomSelect)
-      room?.deviceList.forEach((device) =>
-        list.push({
-          deviceId: device.deviceId,
-          deviceName: device.deviceName,
-          roomName: room.roomName,
-          roomId: room.roomId,
-        }),
-      )
-      return list
+      return []
     },
-    currentRoomName(data: { roomSelectMenuList: Home.RoomInState[]; roomSelect: string }) {
-      return data.roomSelectMenuList.find((room) => room.roomId === data.roomSelect)?.roomName
+    currentRoomName(data) {
+      return (data.roomSelectMenuList as { roomId: string; roomName: string }[]).find(
+        (room) => room.roomId === data.roomSelect,
+      )?.roomName
     },
   },
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad() {
-    wx.createSelectorQuery()
-      .select('#listWrapper')
-      .boundingClientRect()
-      .exec((res) => {
-        if (res[0] && res[0].height) {
-          this.setData({
-            listHeight: res[0].height,
-          })
-        }
-      })
-    wx.createSelectorQuery()
-      .select('#selectRoomBtn')
-      .boundingClientRect()
-      .exec((res) => {
-        if (res[0]) {
-          this.setData({
-            roomSelectMenu: {
-              x: '20rpx',
-              y: res[0].bottom + 20 + 'px',
-              isShow: false,
-            },
-          })
-        }
-      })
-  },
-
-  back() {
-    wx.navigateBack()
-  },
-
-  handleFullPageTap(e?: { detail: { x: number; y: number } }) {
-    if (e && e.detail && e.detail.x) {
+  methods: {
+    /**
+     * 生命周期函数--监听页面加载
+     */
+    onLoad() {
+      wx.createSelectorQuery()
+        .select('#listWrapper')
+        .boundingClientRect()
+        .exec((res) => {
+          if (res[0] && res[0].height) {
+            this.setData({
+              listHeight: res[0].height,
+            })
+          }
+        })
       wx.createSelectorQuery()
         .select('#selectRoomBtn')
         .boundingClientRect()
         .exec((res) => {
-          // 点中加按钮以外的地方都要隐藏下拉菜单
-          if (
-            e.detail.x > res[0].right ||
-            e.detail.x < res[0].left ||
-            e.detail.y > res[0].bottom ||
-            e.detail.y < res[0].top
-          ) {
-            this.hideSelectRoomMenu()
+          if (res[0]) {
+            this.setData({
+              roomSelectMenu: {
+                x: '20rpx',
+                y: res[0].bottom + 20 + 'px',
+                isShow: false,
+              },
+            })
           }
         })
-    }
-  },
+    },
 
-  handleRoomSelect(e: { detail: string }) {
-    this.setData({
-      roomSelect: e.detail,
-    })
-    this.hideSelectRoomMenu()
-  },
+    back() {
+      wx.navigateBack()
+    },
 
-  handleCardClick(e: { currentTarget: { dataset: { index: string } } }) {
-    const device = (this.data as any).deviceList[e.currentTarget.dataset.index] // todo: 这里后面Page改成Component完善类型
-    console.log(device)
-    wx.navigateTo({
-      url: `/package-mine/device-manage/device-detail/index?deviceId=${device.deviceId}&roomId=${device.roomId}`,
-    })
-  },
+    handleFullPageTap(e?: { detail: { x: number; y: number } }) {
+      if (e && e.detail && e.detail.x) {
+        wx.createSelectorQuery()
+          .select('#selectRoomBtn')
+          .boundingClientRect()
+          .exec((res) => {
+            // 点中加按钮以外的地方都要隐藏下拉菜单
+            if (
+              e.detail.x > res[0].right ||
+              e.detail.x < res[0].left ||
+              e.detail.y > res[0].bottom ||
+              e.detail.y < res[0].top
+            ) {
+              this.hideSelectRoomMenu()
+            }
+          })
+      }
+    },
 
-  showSelectRoomMenu() {
-    if (this.data.roomSelectMenu.isShow) {
-      return this.hideSelectRoomMenu()
-    }
-    this.doSelectRoomArrowAnimation(true, this.data.roomSelectMenu.isShow)
-    this.setData({
-      'roomSelectMenu.isShow': true,
-    })
-  },
+    handleRoomSelect(e: { detail: string }) {
+      this.setData({
+        roomSelect: e.detail,
+      })
+      this.hideSelectRoomMenu()
+    },
 
-  hideSelectRoomMenu() {
-    this.doSelectRoomArrowAnimation(false, this.data.roomSelectMenu.isShow)
-    this.setData({
-      'roomSelectMenu.isShow': false,
-    })
-  },
+    handleCardClick(e: { currentTarget: { dataset: { index: number } } }) {
+      const device = this.data.deviceList[e.currentTarget.dataset.index]
+      console.log(device)
+      wx.navigateTo({
+        url: `/package-mine/device-manage/device-detail/index?deviceId=${device.deviceId}&roomId=${device.roomId}`,
+      })
+    },
 
-  doSelectRoomArrowAnimation(newValue: boolean, oldValue: boolean) {
-    if (newValue === oldValue) {
-      return
-    }
-    if (newValue) {
-      this.animate(
-        '#selectRoomArrow',
-        [
-          {
-            rotateZ: 0,
-          },
-          {
-            rotateZ: 180,
-          },
-        ],
-        200,
-      )
-    } else {
-      this.animate(
-        '#selectRoomArrow',
-        [
-          {
-            rotateZ: 180,
-          },
-          {
-            rotateZ: 0,
-          },
-        ],
-        200,
-      )
-    }
+    showSelectRoomMenu() {
+      if (this.data.roomSelectMenu.isShow) {
+        return this.hideSelectRoomMenu()
+      }
+      this.doSelectRoomArrowAnimation(true, this.data.roomSelectMenu.isShow)
+      this.setData({
+        'roomSelectMenu.isShow': true,
+      })
+    },
+
+    hideSelectRoomMenu() {
+      this.doSelectRoomArrowAnimation(false, this.data.roomSelectMenu.isShow)
+      this.setData({
+        'roomSelectMenu.isShow': false,
+      })
+    },
+
+    doSelectRoomArrowAnimation(newValue: boolean, oldValue: boolean) {
+      if (newValue === oldValue) {
+        return
+      }
+      if (newValue) {
+        this.animate(
+          '#selectRoomArrow',
+          [
+            {
+              rotateZ: 0,
+            },
+            {
+              rotateZ: 180,
+            },
+          ],
+          200,
+        )
+      } else {
+        this.animate(
+          '#selectRoomArrow',
+          [
+            {
+              rotateZ: 180,
+            },
+            {
+              rotateZ: 0,
+            },
+          ],
+          200,
+        )
+      }
+    },
   },
 })
