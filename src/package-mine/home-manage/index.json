@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "home-select-menu": "../../components/home-select-menu/index",
+    "van-cell": "@vant/weapp/cell/index",
+    "van-cell-group": "@vant/weapp/cell-group/index"
+  }
+}

@@ -27,3 +27,20 @@ export function setNavigationBarHeight() {
     wx.setStorageSync('navigationBarHeight', platform === 'android' ? 48 : 40)
   }
 }
+
+/**
+ * 获取拼装参数后的完整url
+ * @param url
+ * @param params
+ */
+export function getUrlWithParams(url: string, params: Object = {}) {
+  let result = ''
+
+  Object.entries(params).forEach(([key, value]) => {
+    console.log(key, value)
+    result += `${key}=${value}&`
+  })
+
+  result = result.substring(0, result.length - 1) //末尾是&
+  return result ? `${url}?${result}` : url
+}

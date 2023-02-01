@@ -8,6 +8,15 @@
   },
   "libVersion": "2.29.0",
   "condition": {
+    "plugin": {
+      "list": []
+    },
+    "game": {
+      "list": []
+    },
+    "gamePlugin": {
+      "list": []
+    },
     "miniprogram": {
       "list": [
         {
@@ -37,6 +46,34 @@
           "query": "",
           "launchMode": "default",
           "scene": null
+        },
+        {
+          "name": "家庭管理",
+          "pathName": "package-mine/home-manage/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "房间列表",
+          "pathName": "package-mine/room-detail/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "房间详情",
+          "pathName": "package-mine/room-detail/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "设置房间位置",
+          "pathName": "package-mine/home-location/index",
+          "query": "",
+          "scene": null,
+          "launchMode": "default"
         }
       ]
     }

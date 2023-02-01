@@ -1,4 +1,5 @@
 // pages/mine/index.ts
+import { getUrlWithParams } from '../../utils/index'
 Page({
   /**
    * 页面的初始数据
