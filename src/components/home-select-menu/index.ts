@@ -46,7 +46,7 @@ Component({
    */
   methods: {
     handleHomeTap(e: { currentTarget: { dataset: { value: string } } }) {
-      runInAction(()=>{
+      runInAction(() => {
         home.currentHomeId = e.currentTarget.dataset.value
       })
       this.triggerEvent('select')

@@ -1,34 +1,17 @@
 {
-  "pages": [
-    "pages/index/index",
-    "pages/login/index",
-    "pages/mine/index"
-  ],
+  "pages": ["pages/index/index", "pages/login/index", "pages/mine/index"],
   "subpackages": [
     {
       "root": "package-distribution",
-      "pages": [
-        "wifi-connect/index",
-        "device-add/index",
-        "search-subdevice/index"
-      ]
+      "pages": ["wifi-connect/index", "device-add/index", "search-subdevice/index"]
     },
     {
       "root": "package-mine",
-      "pages": [
-        "hoom-manage/index",
-        "device-manage/index",
-        "ota/index",
-        "device-manage/device-detail/index"
-      ]
+      "pages": ["hoom-manage/index", "device-manage/index", "ota/index", "device-manage/device-detail/index"]
     },
     {
       "root": "package-room-control",
-      "pages": [
-        "index/index",
-        "scene-edit/index",
-        "scene-list/index"
-      ]
+      "pages": ["index/index", "scene-edit/index", "scene-list/index"]
     }
   ],
   "tabBar": {
