@@ -1,7 +1,7 @@
 // package-mine/hoom-manage/index.ts
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { runInAction } from 'mobx-miniprogram'
+import Dialog from '@vant/weapp/dialog/dialog'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { roomBinding, homeBinding, userBinding } from '../../store/index'
 
@@ -20,6 +20,20 @@ ComponentWithComputed({
       y: '0px',
       isShow: false,
     },
+    homeInfo: {
+      name: ''
+    },
+    isEditName: false,
+    isShowSettig: false,
+    isTransferHome: false,
+    settingActions: [
+      {
+        name: '重命名',
+      },
+      {
+        name: '解散家庭',
+      },
+    ],
   },
 
   computed: {
@@ -98,6 +112,50 @@ ComponentWithComputed({
           200,
         )
       }
+    },
+
+    toSetting() {
+      this.setData({
+        isShowSettig: true
+      })
+    },
+    onCloseSetting() {
+      this.setData({
+        isShowSettig: false
+      })
+    },
+    onSelectSetting(e: WechatMiniprogram.CustomEvent) {
+      console.log('onSelectSetting', e.detail)
+      let name = e.detail.name
+
+      if (name === '重命名') {
+        this.editName()
+      } if (name === '解散家庭') {
+        this.delHome()
+      }
+    },
+    editName() {
+      this.setData({
+        isEditName: true,
+      })
+    },
+    onCloseEditName() {
+      this.setData({
+        isEditName: false,
+      })
+    },
+    async delHome() {
+      let res = await Dialog.confirm({
+        message: '是否解散当前家庭',
+      }).catch(() => 'cancel')
+
+      console.log('delHome', res);
+    },
+
+    toTransferHome() {
+      this.setData({
+        isTransferHome: true,
+      })
     },
   },
 })

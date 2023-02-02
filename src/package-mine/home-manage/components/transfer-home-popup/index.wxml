@@ -1,0 +1,22 @@
+<!--package-distribution/search-subdevice/components/edit-device-info/index.wxml-->
+<van-popup show="{{ show }}" position="bottom" round bind:close="close">
+  <view class="px-32rpx pt-48rpx pb-100rpx text-black-primary">
+    <text class="block pb-100rpx font-medium text-center text-36 leading-48rpx">选择转移对象</text>
+
+    <view>
+      <view wx:for="{{memberList}}" class="rounded-24rpx flex flex-row items-center mb-24rpx pl-32rpx pr-64rpx py-16rpx border-solid leading-44rpx {{item === 1 ? 'border-4rpx border-hex-488FFF' : 'border-2rpx border-hex-ddd'}}">
+        <image class="w-80rpx h-80rpx rounded-full" src="/assets/img/device/light.png"></image>
+
+        <text class="text-32 text-black-primary grow pl-24rpx">用户2</text>
+
+        <text class="text-32 text-black-secondary">用户2</text>
+      </view>
+    </view>
+
+    <view class="flex flex-row gap-46rpx pt-80rpx">
+      <van-button class="grow" size="large" bind:click="close">取消</van-button>
+
+      <van-button class="grow" size="large" type="primary">确定转移</van-button>
+    </view>
+  </view>
+</van-popup>

@@ -27,7 +27,7 @@
     <text class="block pl-48rpx pb-32rpx text-28">房间名称</text>
 
     <view class="mx-32rpx">
-      <van-field model:value="{{ roomInfo.name }}" placeholder="请输入房间名称" custom-style="border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
+      <van-field model:value="{{ roomInfo.name }}" placeholder="请输入房间名称" custom-style="padding: 20rpx 40rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
     </view>
 
     <view class="flex flex-row gap-46rpx pt-80rpx px-32rpx">

@@ -26,6 +26,9 @@ page {
   --popup-round-border-radius: 64rpx;
   /* popup end */
 
+  --action-sheet-item-text-color: #27282A;
+  --action-sheet-cancel-text-color: #27282A;
+
   /* cell start */
   --cell-group-inset-border-radius: 32rpx;
   --cell-group-inset-padding: 24rpx;
@@ -99,3 +102,11 @@ page {
   color: #27282a !important;
 }
 /* 弹窗 end */
+
+/* action-sheet start */
+.van-action-sheet__item:not(:last-child) {
+  border-bottom: 1rpx solid #E5E5E8;
+}
+.van-action-sheet__cancel, .van-action-sheet__item {
+  padding: 32rpx !important;
+}

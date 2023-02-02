@@ -3,13 +3,13 @@
 
   <view class="px-48rpx pt-32rpx pb-48rpx">
     <view class="flex flex-row justify-between">
-      <view bind:tap="handleShowHomeSelectMenu" id="homeName">
+      <view class="relative" bind:tap="handleShowHomeSelectMenu" id="homeName">
         <text class="text-40 text-hex-1E2C46 font-semibold leading-56rpx">{{ currentHomeName }}</text>
 
         <svg-icon id="homeSelectArrow" class="absolute home-select-arrow" load="{{isLoadedSvg}}" color="#1E2C46" name="material-symbols:arrow-drop-down-rounded" width="48rpx" height="48rpx" />
       </view>
 
-      <image class="w-48 h-48" src="/assets/img/home-manage/setting.png"></image>
+      <image class="w-48 h-48" src="/assets/img/home-manage/setting.png" bind:tap="toSetting"></image>
     </view>
 
     <view class="pt-16rpx leading-40rpx text-black-secondary text-28 opacity-75">
@@ -39,7 +39,7 @@
     </view>
 
     <view class="flex flex-row gap-46rpx pt-30rpx pb-128rpx px-32rpx">
-      <van-button class="grow" size="large">转让家庭</van-button>
+      <van-button class="grow" size="large" bind:click="toTransferHome">转让家庭</van-button>
 
       <van-button class="grow" size="large" type="primary">新建家庭</van-button>
     </view>
@@ -47,3 +47,34 @@
 </view>
 
 <home-select-menu x="{{selectHomeMenu.x}}" y="{{selectHomeMenu.y}}" isShow="{{selectHomeMenu.isShow}}" list="{{selectHomeList}}" bind:select="handleHomeSelect"></home-select-menu>
+
+<van-action-sheet
+  show="{{ isShowSettig }}"
+  actions="{{ settingActions }}"
+  cancel-text="取消"
+  bind:close="onCloseSetting"
+  bind:select="onSelectSetting"
+  bind:cancel="onCloseSetting"
+/>
+
+<van-popup round show="{{ isEditName }}" bind:close="onCloseEditName" position="bottom">
+  <view class="pb-100rpx">
+    <text class="block pt-48rpx pb-64rpx text-center leading-50rpx text-36 text-black-primary font-medium">家庭名称</text>
+
+    <text class="block pl-48rpx pb-32rpx text-28">家庭名称</text>
+
+    <view class="mx-32rpx">
+      <van-field model:value="{{ homeInfo.name }}" placeholder="请输入家庭名称" custom-style="padding: 20rpx 40rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
+    </view>
+
+    <view class="flex flex-row gap-46rpx pt-80rpx px-32rpx">
+      <van-button class="grow" size="large" bind:click="onCloseEditName">取消</van-button>
+
+      <van-button class="grow" size="large" type="primary">确定</van-button>
+    </view>
+  </view>
+</van-popup>
+
+<van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />
+
+<transfer-home-popup show="{{isTransferHome}}"></transfer-home-popup>
