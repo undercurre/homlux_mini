@@ -29,10 +29,6 @@
       <van-button catchtap="handleCollect" custom-class="fav-btn" type="default">收藏</van-button>
     </view>
   </view>
-  <!-- 设备卡片 -->
-  <!-- <view class="w-686rpx grid grid-cols-4 gap-x-20rpx gap-y-24rpx mt-34rpx">
-    <device-card wx:for="{{deviceList}}" wx:key="deviceId" bind:powerTap="handleDevicePowerTap" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" is-select="{{module.includes(selectList, item.deviceId)}}" />
-  </view> -->
   <!-- 灯具设备卡片 -->
   <view class="mt-24rpx">
     <text class="text-24rpx text-black-secondary">灯具</text>
@@ -56,4 +52,10 @@
       <device-card wx:for="{{curtainList}}" wx:key="deviceId" bind:powerTap="handleDevicePowerTap" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" is-select="{{module.includes(selectList, item.deviceId)}}" />
     </view>
   </view>
+
+  <!-- 占位，防止内容太贴边 -->
+  <view class="h-32rpx"></view>
 </view>
+
+<!-- 设备控制弹窗 -->
+<device-control-popup></device-control-popup>

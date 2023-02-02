@@ -1,5 +1,5 @@
 // app.js
-import { setNavigationBarHeight } from './utils/index'
+import { setNavigationBarHeight, storage } from './utils/index'
 import { others } from './store/others'
 
 type require = (url: string, cb: (module: IAnyObject) => void) => void
@@ -16,16 +16,15 @@ App<IAppOption>({
     // 获取状态栏和顶部栏高度
     setNavigationBarHeight()
 
-    // 展示本地存储能力
-    const logs = wx.getStorageSync('logs') || []
-    logs.unshift(Date.now())
-    wx.setStorageSync('logs', logs)
-
-    // 登录
-    wx.login({
-      success: (res) => {
-        // 发送 res.code 到后台换取 openId, sessionKey, unionId
-        console.log(res)
+    // 获取rpx和px转换比例、底部bar高度
+    // px转rpx: px / divideRpxByPx,rpx转px：divideRpxByPx * rpx
+    wx.getSystemInfo({
+      success: (result) => {
+        storage.set('divideRpxByPx', result.windowWidth / 750, null)
+        storage.set('bottomBarHeight', result.windowHeight - result.safeArea.bottom, null)
+      },
+      fail: (err) => {
+        console.log(err)
       },
     })
   },

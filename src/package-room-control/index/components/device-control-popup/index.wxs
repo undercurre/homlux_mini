@@ -1,0 +1,52 @@
+var touchY = 0
+var currentHeight = 0
+var bottom = 0 // 组件向下偏移
+
+var bottomBarHeight = 0
+var componentHeight = 0
+var divideRpxByPx = 0
+var minHeight = 0
+
+module.exports = {
+  infoObserver: function (newVal, oldVal, ownerInstance) {
+    currentHeight = 0
+    bottomBarHeight = newVal.bottomBarHeight
+    componentHeight = newVal.componentHeight
+    divideRpxByPx = newVal.divideRpxByPx
+    if (bottomBarHeight === 0) {
+      bottomBarHeight = 32 // 如果没有高度，就给个高度，防止弹窗太贴底部
+    }
+    minHeight = divideRpxByPx * 32 + bottomBarHeight
+    var instance = ownerInstance.selectComponent('#popup')
+    instance.setStyle({
+      bottom: bottom + 'px',
+    })
+  },
+  touchStart: function (e) {
+    touchY = e.touches[0].clientY
+    currentHeight = componentHeight + bottom
+  },
+  touchMove: function (e, ownerInstance) {
+    var now = Date.now()
+    // bottom--
+    // var instance = ownerInstance.selectComponent('#popup')
+    // instance.setStyle({
+    //   bottom: bottom + 'px',
+    // })
+    var offsetY = touchY - e.touches[0].clientY // 位移距离，下滑是负
+    var height = currentHeight + offsetY // 手指滑动后的组件高度
+    if (height > componentHeight) {
+      height = componentHeight
+    } else if (height < minHeight) {
+      height = minHeight
+    }
+    bottom = height - componentHeight
+    var instance = ownerInstance.selectComponent('#popup')
+    instance.setStyle({
+      bottom: bottom + 'px',
+    })
+    console.log('move-time:', offsetY > 0 ? '向上' : '向下', Date.now() - now)
+    return false
+  },
+  bottom: bottom,
+}

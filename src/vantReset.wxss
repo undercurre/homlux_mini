@@ -26,8 +26,8 @@ page {
   --popup-round-border-radius: 64rpx;
   /* popup end */
 
-  --action-sheet-item-text-color: #27282A;
-  --action-sheet-cancel-text-color: #27282A;
+  --action-sheet-item-text-color: #27282a;
+  --action-sheet-cancel-text-color: #27282a;
 
   /* cell start */
   --cell-group-inset-border-radius: 32rpx;
@@ -105,8 +105,9 @@ page {
 
 /* action-sheet start */
 .van-action-sheet__item:not(:last-child) {
-  border-bottom: 1rpx solid #E5E5E8;
+  border-bottom: 1rpx solid #e5e5e8;
 }
-.van-action-sheet__cancel, .van-action-sheet__item {
+.van-action-sheet__cancel,
+.van-action-sheet__item {
   padding: 32rpx !important;
 }

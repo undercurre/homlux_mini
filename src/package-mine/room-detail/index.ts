@@ -1,7 +1,5 @@
-// package-mine/hoom-manage/index.ts
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { runInAction } from 'mobx-miniprogram'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { roomBinding, othersBinding, userBinding } from '../../store/index'

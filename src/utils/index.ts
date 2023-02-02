@@ -33,7 +33,7 @@ export function setNavigationBarHeight() {
  * @param url
  * @param params
  */
-export function getUrlWithParams(url: string, params: Object = {}) {
+export function getUrlWithParams(url: string, params: Record<string, string | number> = {}) {
   let result = ''
 
   Object.entries(params).forEach(([key, value]) => {

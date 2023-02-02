@@ -21,7 +21,7 @@ ComponentWithComputed({
       isShow: false,
     },
     homeInfo: {
-      name: ''
+      name: '',
     },
     isEditName: false,
     isShowSettig: false,
@@ -116,21 +116,22 @@ ComponentWithComputed({
 
     toSetting() {
       this.setData({
-        isShowSettig: true
+        isShowSettig: true,
       })
     },
     onCloseSetting() {
       this.setData({
-        isShowSettig: false
+        isShowSettig: false,
       })
     },
     onSelectSetting(e: WechatMiniprogram.CustomEvent) {
       console.log('onSelectSetting', e.detail)
-      let name = e.detail.name
+      const name = e.detail.name
 
       if (name === '重命名') {
         this.editName()
-      } if (name === '解散家庭') {
+      }
+      if (name === '解散家庭') {
         this.delHome()
       }
     },
@@ -145,11 +146,11 @@ ComponentWithComputed({
       })
     },
     async delHome() {
-      let res = await Dialog.confirm({
+      const res = await Dialog.confirm({
         message: '是否解散当前家庭',
       }).catch(() => 'cancel')
 
-      console.log('delHome', res);
+      console.log('delHome', res)
     },
 
     toTransferHome() {

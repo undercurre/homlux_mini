@@ -17,7 +17,7 @@ Component({
    * 组件的初始数据
    */
   data: {
-    memberList: [1, 2]
+    memberList: [1, 2],
   },
 
   /**
@@ -29,5 +29,5 @@ Component({
         show: false,
       })
     },
-  }
+  },
 })

@@ -28,4 +28,6 @@ declare namespace Device {
   interface CurtainInfo extends DeviceInfoBase {
     openDeg: number
   }
+
+  type DeviceInfo = Device.LightInfo | Device.SwitchInfo | Device.CurtainInfo
 }
