@@ -24,7 +24,7 @@ ComponentWithComputed({
       name: '',
     },
     isEditName: false,
-    isShowSettig: false,
+    isShowSetting: false,
     isTransferHome: false,
     settingActions: [
       {
@@ -116,12 +116,12 @@ ComponentWithComputed({
 
     toSetting() {
       this.setData({
-        isShowSettig: true,
+        isShowSetting: true,
       })
     },
     onCloseSetting() {
       this.setData({
-        isShowSettig: false,
+        isShowSetting: false,
       })
     },
     onSelectSetting(e: WechatMiniprogram.CustomEvent) {

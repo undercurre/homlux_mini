@@ -59,5 +59,6 @@
     "include": []
   },
   "appid": "wxd534524a35f2b601",
-  "condition": {}
+  "condition": {},
+  "projectname": "HomLux"
 }

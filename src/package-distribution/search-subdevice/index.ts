@@ -71,7 +71,11 @@ ComponentWithComputed({
     // 重新添加
     reAdd() {},
 
-    finish() {},
+    finish() {
+      wx.switchTab({
+        url: '/pages/index/index',
+      })
+    },
   },
 
   lifetimes: {

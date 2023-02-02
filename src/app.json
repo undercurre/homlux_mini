@@ -12,6 +12,8 @@
         "home-location/index",
         "room-manage/index",
         "room-detail/index",
+        "member-manage/index",
+        "device-replace/index",
         "ota/index",
         "device-manage/index",
         "device-manage/device-detail/index"

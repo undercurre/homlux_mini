@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "tips-box": "/components/tips-box/index"
+  }
+}
