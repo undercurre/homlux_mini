@@ -26,3 +26,7 @@ page {
 .bg-z-index {
   z-index: -500;
 }
+
+.border-bottom {
+  border-bottom: 1rpx solid #ddd;
+}

@@ -16,6 +16,11 @@ declare namespace Home {
      * 家庭主人
      */
     master_uid: string
+
+    /**
+     * 家庭成员
+     */
+    memberList: Array<number>
   }
 
   // 房间

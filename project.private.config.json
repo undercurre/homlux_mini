@@ -72,6 +72,13 @@
           "name": "设置房间位置",
           "pathName": "package-mine/home-location/index",
           "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "成员管理",
+          "pathName": "package-mine/member-manage/index",
+          "query": "",
           "scene": null,
           "launchMode": "default"
         }
