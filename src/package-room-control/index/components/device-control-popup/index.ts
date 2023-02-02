@@ -30,8 +30,8 @@ ComponentWithComputed({
     },
     curtainInfo: {
       left: 50,
-      right: 50
-    }
+      right: 50,
+    },
   },
 
   computed: {

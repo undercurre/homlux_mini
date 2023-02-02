@@ -57,16 +57,13 @@
               <device-card wx:for="{{curtainList}}" wx:key="deviceId" bind:powerTap="handleDevicePowerTap" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" is-select="{{module.includes(selectList, item.deviceId)}}" />
             </view>
           </view>
-
         </view>
 
         <!-- 占位，防止内容太贴边 -->
         <view class="h-160rpx"></view>
       </scroll-view>
     </view>
-
   </view>
-
 </view>
 
 <!-- 设备控制弹窗 -->

@@ -10,9 +10,7 @@
 <view class="absolute left-0 bottom-0">
   <view class="mx-74rpx">
     <van-checkbox use-icon-slot class="text-24rpx" value="{{ isAgree }}" bind:change="onAgreeClick">
-      <view>
-        我已阅读并同意<text style="color: #169bd5">《美的照明隐私协议》</text><text style="color: #169bd5">《软件许可及用户服务协议》</text><text style="color: #169bd5">《已收集个人信息清单》</text><text style="color: #169bd5">《与第三方共享个人信息清单》</text>和<text style="color: #169bd5">《美的照明权限列表》</text>
-      </view>
+      <view> 我已阅读并同意<text style="color: #169bd5">《美的照明隐私协议》</text><text style="color: #169bd5">《软件许可及用户服务协议》</text><text style="color: #169bd5">《已收集个人信息清单》</text><text style="color: #169bd5">《与第三方共享个人信息清单》</text>和<text style="color: #169bd5">《美的照明权限列表》</text> </view>
       <image class="h-48rpx w-48rpx" slot="icon" src="{{ isAgree ? checkImg : uncheckImg }}" />
     </van-checkbox>
   </view>

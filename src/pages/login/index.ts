@@ -9,7 +9,7 @@ Component({
   data: {
     isAgree: false,
     checkImg: '/assets/img/base/check.png',
-    uncheckImg: '/assets/img/base/uncheck.png'
+    uncheckImg: '/assets/img/base/uncheck.png',
   },
 
   methods: {

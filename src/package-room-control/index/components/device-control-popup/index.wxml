@@ -27,13 +27,13 @@
       <view class="flex flex-col" wx:if="{{lightTab}}">
         <text class="text-32rpx text-black-secondary mt-54rpx ml-32rpx">亮度 | {{lightInfo.brightness}}%</text>
         <view class="ml-32rpx h-88rpx relative flex-center">
-          <image src="/assets/img/device-control/color-bar.png" class="w-686rpx h-24rpx"/>
-          <image src="/assets/img/device-control/btn.png" class="w-88rpx h-88rpx absolute left-100rpx top-0"/>
+          <image src="/assets/img/device-control/color-bar.png" class="w-686rpx h-24rpx" />
+          <image src="/assets/img/device-control/btn.png" class="w-88rpx h-88rpx absolute left-100rpx top-0" />
         </view>
         <text class="text-32rpx text-black-secondary mt-64rpx ml-32rpx">色温 | {{lightInfo.colorTemp}}K</text>
         <view class="ml-32rpx h-88rpx relative flex-center">
-          <image src="/assets/img/device-control/color-bar.png" class="w-686rpx h-24rpx"/>
-          <image src="/assets/img/device-control/btn.png" class="w-88rpx h-88rpx absolute left-200rpx top-0"/>
+          <image src="/assets/img/device-control/color-bar.png" class="w-686rpx h-24rpx" />
+          <image src="/assets/img/device-control/btn.png" class="w-88rpx h-88rpx absolute left-200rpx top-0" />
         </view>
         <view class="flex justify-evenly mt-92rpx">
           <van-button custom-style="width: 328rpx">全开</van-button>
@@ -41,13 +41,9 @@
         </view>
       </view>
       <!-- 开关控制 -->
-      <view wx:if="{{switchTab}}">
-
-      </view>
+      <view wx:if="{{switchTab}}"> </view>
       <!-- 窗帘控制 -->
-      <view wx:if="{{curtainTab}}">
-
-      </view>
+      <view wx:if="{{curtainTab}}"> </view>
     </view>
   </view>
 </view>
