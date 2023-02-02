@@ -3,5 +3,6 @@ export { others, othersBinding } from './others'
 export { user, userBinding } from './user'
 export { room, roomBinding } from './room'
 export { home, homeBinding } from './home'
+export { device, deviceBinding } from './device'
 
 configure({ enforceActions: 'observed' })

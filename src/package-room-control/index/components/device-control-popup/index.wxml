@@ -1,0 +1,8 @@
+<wxs module="wxs" src="./index.wxs"></wxs>
+<view wx:if="{{info.show}}" id="popup" class="fixed left-0 bottom-0 w-750rpx h-752rpx opacity-0" data-bottom="{{wxs.bottom}}" info="{{info}}" change:info="{{wxs.infoObserver}}">
+  <view class="h-36rpx flex-center" bindtouchmove="{{wxs.touchMove}}" bindtouchstart="{{wxs.touchStart}}">
+    <view class="h-8rpx w-76rpx bg-black-tips rounded-999"></view>
+  </view>
+  <view class="w-750rpx h-716rpx rounded-t-64rpx bg-white">
+  </view>
+</view>

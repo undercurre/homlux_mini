@@ -1,59 +1,17 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { othersBinding, userBinding, roomBinding } from '../../store/index'
+import { userBinding, roomBinding, deviceBinding, device } from '../../store/index'
+import { runInAction } from 'mobx-miniprogram'
 
 type DeviceInfo = Device.LightInfo | Device.SwitchInfo | Device.CurtainInfo
 
 ComponentWithComputed({
-  behaviors: [BehaviorWithStore({ storeBindings: [othersBinding, userBinding, roomBinding] })],
+  behaviors: [BehaviorWithStore({ storeBindings: [userBinding, roomBinding, deviceBinding] })],
   /**
    * 页面的初始数据
    */
   data: {
-    deviceList: [
-      // TODO： mock数据，联调后删除
-      {
-        deviceId: '1',
-        deviceName: '筒灯1',
-        deviceType: 'light',
-        isOnline: true,
-        brightness: 50,
-        colorTemperature: 50,
-        power: true,
-      },
-      {
-        deviceId: '2',
-        deviceName: '筒灯2',
-        deviceType: 'light',
-        isOnline: true,
-        brightness: 50,
-        colorTemperature: 50,
-        power: true,
-      },
-      {
-        deviceId: '3',
-        deviceName: '三路开关1',
-        deviceType: 'switch',
-        isOnline: false,
-        linkDeviceId: '1',
-      },
-      {
-        deviceId: '4',
-        deviceName: '三路开关2',
-        deviceType: 'switch',
-        isOnline: true,
-        linkDeviceId: '2',
-      },
-      {
-        deviceId: '5',
-        deviceName: '窗帘',
-        deviceType: 'curtain',
-        isOnline: true,
-        openDeg: 50,
-      },
-    ] as Array<Device.LightInfo | Device.SwitchInfo | Device.CurtainInfo>,
-    selectList: [] as string[],
-    selectType: '',
+    showPopup: false,
   },
 
   computed: {
@@ -111,6 +69,9 @@ ComponentWithComputed({
       }
       return []
     },
+    deviceIdTypeMap(data): Record<string, string> {
+      return Object.fromEntries(data.deviceList.map((device: DeviceInfo) => [device.deviceId, device.deviceType]))
+    },
   },
 
   methods: {
@@ -118,6 +79,14 @@ ComponentWithComputed({
      * 生命周期函数--监听页面加载
      */
     onLoad() {},
+
+    onUnload() {
+      // 退出页面前清理一下选中的列表
+      runInAction(() => {
+        device.selectList = []
+        device.selectType = []
+      })
+    },
 
     handleSceneTap() {
       wx.navigateTo({
@@ -130,32 +99,37 @@ ComponentWithComputed({
     handleCollect() {
       console.log('收藏')
     },
-    handleDeviceCardTap(e: { detail: { deviceId: string; deviceType: string } }) {
-      if (this.data.selectList.includes(e.detail.deviceId)) {
-        const index = this.data.selectList.findIndex((item) => item === e.detail.deviceId)
-        this.data.selectList.splice(index, 1)
-        this.setData({
-          selectList: this.data.selectList,
-        })
-      } else if (this.data.selectType && this.data.selectType === e.detail.deviceType) {
-        this.setData({
-          selectList: [...this.data.selectList, e.detail.deviceId],
+    handleDeviceCardTap(e: { detail: { deviceId: string } }) {
+      if (device.selectList.includes(e.detail.deviceId)) {
+        const index = device.selectList.findIndex((item: string) => item === e.detail.deviceId)
+        device.selectList.splice(index, 1)
+        runInAction(() => {
+          device.selectList = [...device.selectList]
         })
       } else {
-        this.setData({
-          selectList: [e.detail.deviceId],
-          selectType: e.detail.deviceType,
+        runInAction(() => {
+          device.selectList = [...device.selectList, e.detail.deviceId]
         })
       }
+      this.updateSelectType()
     },
     handleDevicePowerTap(e: { detail: { deviceId: string; deviceType: string } }) {
-      const index = this.data.selectList.findIndex((item) => item === e.detail.deviceId)
+      const index = device.selectList.findIndex((item: string) => item === e.detail.deviceId)
       if (['light', 'switch'].includes(e.detail.deviceType)) {
         const power = !(this.data.deviceList[index] as Device.LightInfo | Device.SwitchInfo).power
         const data = {} as IAnyObject
         data[`deviceList[${index}].power`] = power
         this.setData(data)
       }
+    },
+    updateSelectType() {
+      const typeList = new Set()
+      device.selectList.forEach((deviceId: string) => {
+        typeList.add(this.data.deviceIdTypeMap[deviceId])
+      })
+      runInAction(() => {
+        device.selectType = Array.from(typeList) as string[]
+      })
     },
   },
 })
