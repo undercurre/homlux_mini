@@ -16,7 +16,7 @@ module.exports = {
     if (bottomBarHeight === 0) {
       bottomBarHeight = 32 // 如果没有高度，就给个高度，防止弹窗太贴底部
     }
-    minHeight = divideRpxByPx * 32 + bottomBarHeight
+    minHeight = divideRpxByPx * 60 + bottomBarHeight
     var instance = ownerInstance.selectComponent('#popup')
     instance.setStyle({
       bottom: bottom + 'px',

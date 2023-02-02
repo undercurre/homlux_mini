@@ -2,16 +2,18 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { userBinding, roomBinding, deviceBinding, device } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
+import pageBehavior from '../../behaviors/pageBehaviors'
 
 type DeviceInfo = Device.LightInfo | Device.SwitchInfo | Device.CurtainInfo
 
 ComponentWithComputed({
-  behaviors: [BehaviorWithStore({ storeBindings: [userBinding, roomBinding, deviceBinding] })],
+  behaviors: [BehaviorWithStore({ storeBindings: [userBinding, roomBinding, deviceBinding] }), pageBehavior],
   /**
    * 页面的初始数据
    */
   data: {
     showPopup: false,
+    contentHeight: 0,
   },
 
   computed: {
@@ -78,7 +80,18 @@ ComponentWithComputed({
     /**
      * 生命周期函数--监听页面加载
      */
-    onLoad() {},
+    onLoad() {
+      wx.createSelectorQuery()
+        .select('#content')
+        .boundingClientRect()
+        .exec((res) => {
+          if (res[0] && res[0].height) {
+            this.setData({
+              contentHeight: res[0].height,
+            })
+          }
+        })
+    },
 
     onUnload() {
       // 退出页面前清理一下选中的列表
@@ -92,9 +105,6 @@ ComponentWithComputed({
       wx.navigateTo({
         url: '/package-room-control/scene-list/index',
       })
-    },
-    back() {
-      wx.navigateBack()
     },
     handleCollect() {
       console.log('收藏')

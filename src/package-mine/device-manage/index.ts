@@ -1,11 +1,12 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { roomBinding } from '../../store/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
+import pageBehavior from '../../behaviors/pageBehaviors'
 
 type DeviceList = { deviceId: string; deviceName: string; roomName: string; roomId: string }[]
 
 ComponentWithComputed({
-  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding] })],
+  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding] }), pageBehavior],
   /**
    * 页面的初始数据
    */
@@ -95,10 +96,6 @@ ComponentWithComputed({
             })
           }
         })
-    },
-
-    back() {
-      wx.navigateBack()
     },
 
     handleFullPageTap(e?: { detail: { x: number; y: number } }) {

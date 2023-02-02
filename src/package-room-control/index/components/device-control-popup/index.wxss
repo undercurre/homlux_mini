@@ -1,1 +1,11 @@
 /* package-room/index/components/popup-select-light/index.wxss */
+.tab-title-check {
+  color: #27282A;
+  font-weight: 600;
+}
+
+.tab-title-uncheck {
+  color: #555659;
+  font-weight: 400;
+}
+

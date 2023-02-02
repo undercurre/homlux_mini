@@ -1,5 +1,5 @@
 <!--package-mine/device-manage/device-detail/index.wxml-->
 <view class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7" style="z-index: -1"></view>
 <!-- 标题 -->
-<nav-bar title="设备管理" left-arrow bind:leftTap="back"></nav-bar>
+<nav-bar title="设备管理" left-arrow bind:leftTap="goBack"></nav-bar>
 <text>package-mine/device-manage/device-detail/index.wxml</text>

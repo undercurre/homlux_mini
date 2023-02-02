@@ -55,7 +55,6 @@ ComponentWithComputed({
           url: '/pages/login/index',
         })
       }
-      // this.toLogin()
       console.log()
     },
     onHide() {

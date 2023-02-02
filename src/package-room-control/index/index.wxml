@@ -2,59 +2,71 @@
 <wxs module="module" src="./index.wxs"></wxs>
 <!-- 背景 -->
 <svg-icon name="room-bg" width="100vw" height="100vh" class="fixed bg-z-index"></svg-icon>
-<!-- 标题 -->
-<nav-bar title="{{title}}" left-arrow bind:leftTap="back"></nav-bar>
 
-<!-- 无设备 -->
-<view wx:if="{{deviceList.length === 0}}" class="w-full flex flex-col items-center">
-  <image src="/assets/img/room/only-gateway.png" class="w-300rpx h-300rpx mt-64rpx"></image>
-  <text class="text-black-secondary text-28rpx mt-48rpx">智能网关非可控制设备</text>
-  <text class="text-black-secondary text-28rpx">请在“我的-设备管理”中查看</text>
-</view>
+<view class="h-100vh flex flex-col">
+  <!-- 标题 -->
+  <nav-bar title="{{title}}" left-arrow bind:leftTap="goBack"></nav-bar>
 
-<!-- 有设备页面主体 -->
-<view wx:else class="w-full flex flex-col items-center">
-  <!-- 场景 -->
-  <view class="scene-card-bg w-686rpx h-96rpx flex items-center rounded-24rpx mt-24rpx" bindtap="handleSceneTap">
-    <image src="/assets/img/base/scene.png" class="w-64rpx h-64rpx ml-24rpx"></image>
-    <text class="text-32rpx text-hex-333333 font-medium ml-16rpx">场景</text>
-    <view class="flex flex-1 justify-end items-center">
-      <view class="mr-38rpx flex">
-        <view class="scene-icon p-4rpx bg-hex-fff rounded-999" wx:for="{{sceneListInBar}}" wx:key="value">
-          <view class="bg-gray-secondary rounded-999">
-            <svg-icon name="scene:{{item.value}}" width="52rpx" height="52rpx" />
+  <!-- 无设备 -->
+  <view wx:if="{{deviceList.length === 0}}" class="w-full flex flex-col items-center">
+    <image src="/assets/img/room/only-gateway.png" class="w-300rpx h-300rpx mt-64rpx"></image>
+    <text class="text-black-secondary text-28rpx mt-48rpx">智能网关非可控制设备</text>
+    <text class="text-black-secondary text-28rpx">请在“我的-设备管理”中查看</text>
+  </view>
+
+  <!-- 有设备页面主体 -->
+  <view wx:else class="w-full flex flex-1 flex-col items-center">
+    <!-- 场景 -->
+    <view class="scene-card-bg w-686rpx h-96rpx flex items-center rounded-24rpx mt-24rpx" bindtap="handleSceneTap">
+      <image src="/assets/img/base/scene.png" class="w-64rpx h-64rpx ml-24rpx"></image>
+      <text class="text-32rpx text-hex-333333 font-medium ml-16rpx">场景</text>
+      <view class="flex flex-1 justify-end items-center">
+        <view class="mr-38rpx flex">
+          <view class="scene-icon p-4rpx bg-hex-fff rounded-999" wx:for="{{sceneListInBar}}" wx:key="value">
+            <view class="bg-gray-secondary rounded-999">
+              <svg-icon name="scene:{{item.value}}" width="52rpx" height="52rpx" />
+            </view>
           </view>
         </view>
+        <van-button catchtap="handleCollect" custom-class="fav-btn" type="default">收藏</van-button>
       </view>
-      <van-button catchtap="handleCollect" custom-class="fav-btn" type="default">收藏</van-button>
     </view>
-  </view>
-  <!-- 灯具设备卡片 -->
-  <view class="mt-24rpx">
-    <text class="text-24rpx text-black-secondary">灯具</text>
-    <view class="w-686rpx grid grid-cols-4 gap-x-20rpx gap-y-24rpx mt-24rpx">
-      <device-card wx:for="{{lightList}}" wx:key="deviceId" bind:powerTap="handleDevicePowerTap" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" is-select="{{module.includes(selectList, item.deviceId)}}" />
+    <view id="content" class="flex-1">
+      <scroll-view enhanced="{{true}}" show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
+        <view class="flex flex-col items-center w-750rpx">
+          <!-- 灯具设备卡片 -->
+          <view class="mt-24rpx">
+            <text class="text-24rpx text-black-secondary">灯具</text>
+            <view class="w-686rpx grid grid-cols-4 gap-x-20rpx gap-y-24rpx mt-24rpx">
+              <device-card wx:for="{{lightList}}" wx:key="deviceId" bind:powerTap="handleDevicePowerTap" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" is-select="{{module.includes(selectList, item.deviceId)}}" />
+            </view>
+          </view>
+
+          <!-- 开关设备卡片 -->
+          <view class="mt-24rpx">
+            <text class="text-24rpx text-black-secondary">开关面板</text>
+            <view class="w-686rpx grid grid-cols-4 gap-x-20rpx gap-y-24rpx mt-24rpx">
+              <device-card wx:for="{{switchList}}" wx:key="deviceId" bind:powerTap="handleDevicePowerTap" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" is-select="{{module.includes(selectList, item.deviceId)}}" />
+            </view>
+          </view>
+
+          <!-- 窗帘设备卡片 -->
+          <view class="mt-24rpx">
+            <text class="text-24rpx text-black-secondary">窗帘</text>
+            <view class="w-686rpx grid grid-cols-4 gap-x-20rpx gap-y-24rpx mt-24rpx">
+              <device-card wx:for="{{curtainList}}" wx:key="deviceId" bind:powerTap="handleDevicePowerTap" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" is-select="{{module.includes(selectList, item.deviceId)}}" />
+            </view>
+          </view>
+
+        </view>
+
+        <!-- 占位，防止内容太贴边 -->
+        <view class="h-160rpx"></view>
+      </scroll-view>
     </view>
+
   </view>
 
-  <!-- 开关设备卡片 -->
-  <view class="mt-24rpx">
-    <text class="text-24rpx text-black-secondary">开关面板</text>
-    <view class="w-686rpx grid grid-cols-4 gap-x-20rpx gap-y-24rpx mt-24rpx">
-      <device-card wx:for="{{switchList}}" wx:key="deviceId" bind:powerTap="handleDevicePowerTap" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" is-select="{{module.includes(selectList, item.deviceId)}}" />
-    </view>
-  </view>
-
-  <!-- 窗帘设备卡片 -->
-  <view class="mt-24rpx">
-    <text class="text-24rpx text-black-secondary">窗帘</text>
-    <view class="w-686rpx grid grid-cols-4 gap-x-20rpx gap-y-24rpx mt-24rpx">
-      <device-card wx:for="{{curtainList}}" wx:key="deviceId" bind:powerTap="handleDevicePowerTap" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" is-select="{{module.includes(selectList, item.deviceId)}}" />
-    </view>
-  </view>
-
-  <!-- 占位，防止内容太贴边 -->
-  <view class="h-32rpx"></view>
 </view>
 
 <!-- 设备控制弹窗 -->

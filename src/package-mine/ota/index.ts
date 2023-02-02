@@ -1,5 +1,6 @@
-// package-mine/ota/index.ts
+import pageBehavior from '../../behaviors/pageBehaviors'
 Component({
+  behaviors: [pageBehavior],
   /**
    * 组件的属性列表
    */

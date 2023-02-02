@@ -1,7 +1,53 @@
 <wxs module="wxs" src="./index.wxs"></wxs>
-<view wx:if="{{info.show}}" id="popup" class="fixed left-0 bottom-0 w-750rpx h-752rpx opacity-0" data-bottom="{{wxs.bottom}}" info="{{info}}" change:info="{{wxs.infoObserver}}">
-  <view class="h-36rpx flex-center" bindtouchmove="{{wxs.touchMove}}" bindtouchstart="{{wxs.touchStart}}">
-    <view class="h-8rpx w-76rpx bg-black-tips rounded-999"></view>
+<view wx:if="{{isRender}}" id="popup" class="fixed left-0 bottom-0 w-750rpx h-776rpx opacity-0">
+  <view class="h-60rpx flex justify-center items-end" bindtap="handleBarTap">
+    <view wx:if="{{popup}}" class="mb-14rpx h-8rpx w-76rpx bg-black-tips rounded-999"></view>
+    <image wx:else class="mb-36rpx w-76rpx h-24rpx" src="/assets/img/base/popup-arrow.png"></image>
   </view>
-  <view class="w-750rpx h-716rpx rounded-t-64rpx bg-white"> </view>
+  <view class="w-750rpx h-716rpx rounded-t-64rpx bg-white flex flex-col">
+    <view class="h-44rpx"></view>
+    <!-- tab -->
+    <view class="flex justify-evenly">
+      <view class="flex-col-center" bindtap="handleLightTabTap" wx:if="{{lightTab}}">
+        <text class="font-32rpx {{tab === 'light' ? 'tab-title-check' : 'tab-title-uncheck'}}">灯光</text>
+        <view class="w-42rpx h-8rpx mt-4rpx bg-blue rounded-999 {{tab === 'light' ? 'opacity-100' : 'opacity-0'}}"></view>
+      </view>
+      <view class="flex-col-center" bindtap="handleSwitchTabTap" wx:if="{{switchTab}}">
+        <text class="font-32rpx {{tab === 'switch' ? 'tab-title-check' : 'tab-title-uncheck'}}">开关</text>
+        <view class="w-42rpx h-8rpx mt-4rpx bg-blue rounded-999 {{tab === 'switch' ? 'opacity-100' : 'opacity-0'}}"></view>
+      </view>
+      <view class="flex-col-center" bindtap="handleCurtainTabTap" wx:if="{{curtainTab}}">
+        <text class="font-32rpx {{tab === 'curtain' ? 'tab-title-check' : 'tab-title-uncheck'}}">窗帘</text>
+        <view class="w-42rpx h-8rpx mt-4rpx bg-blue rounded-999 {{tab === 'curtain' ? 'opacity-100' : 'opacity-0'}}"></view>
+      </view>
+    </view>
+    <!-- tab内容 -->
+    <view class="flex-1">
+      <!-- 灯光控制 -->
+      <view class="flex flex-col" wx:if="{{lightTab}}">
+        <text class="text-32rpx text-black-secondary mt-54rpx ml-32rpx">亮度 | {{lightInfo.brightness}}%</text>
+        <view class="ml-32rpx h-88rpx relative flex-center">
+          <image src="/assets/img/device-control/color-bar.png" class="w-686rpx h-24rpx"/>
+          <image src="/assets/img/device-control/btn.png" class="w-88rpx h-88rpx absolute left-100rpx top-0"/>
+        </view>
+        <text class="text-32rpx text-black-secondary mt-64rpx ml-32rpx">色温 | {{lightInfo.colorTemp}}K</text>
+        <view class="ml-32rpx h-88rpx relative flex-center">
+          <image src="/assets/img/device-control/color-bar.png" class="w-686rpx h-24rpx"/>
+          <image src="/assets/img/device-control/btn.png" class="w-88rpx h-88rpx absolute left-200rpx top-0"/>
+        </view>
+        <view class="flex justify-evenly mt-92rpx">
+          <van-button custom-style="width: 328rpx">全开</van-button>
+          <van-button custom-style="width: 328rpx">全关</van-button>
+        </view>
+      </view>
+      <!-- 开关控制 -->
+      <view wx:if="{{switchTab}}">
+
+      </view>
+      <!-- 窗帘控制 -->
+      <view wx:if="{{curtainTab}}">
+
+      </view>
+    </view>
+  </view>
 </view>

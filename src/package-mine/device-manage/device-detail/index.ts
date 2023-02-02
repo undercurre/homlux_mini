@@ -1,15 +1,12 @@
-// package-mine/device-manage/device-detail/index.ts
-Page({
+import pageBehavior from '../../../behaviors/pageBehaviors'
+Component({
+  behaviors: [pageBehavior],
   /**
    * 页面的初始数据
    */
   data: {},
 
   methods: {
-    back() {
-      wx.navigateBack()
-    },
-
     /**
      * 生命周期函数--监听页面加载
      */

@@ -8,15 +8,6 @@
   },
   "libVersion": "2.29.0",
   "condition": {
-    "plugin": {
-      "list": []
-    },
-    "game": {
-      "list": []
-    },
-    "gamePlugin": {
-      "list": []
-    },
     "miniprogram": {
       "list": [
         {
@@ -72,8 +63,8 @@
           "name": "设置房间位置",
           "pathName": "package-mine/home-location/index",
           "query": "",
-          "scene": null,
-          "launchMode": "default"
+          "launchMode": "default",
+          "scene": null
         }
       ]
     }

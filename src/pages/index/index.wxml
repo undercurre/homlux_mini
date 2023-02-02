@@ -36,7 +36,7 @@
   </view>
   <!-- 无设备时显示 -->
   <view wx:else class="w-full mt-68rpx flex flex-col items-center">
-    <image src="/assets/img/defaultImg/no-device.png" class="w-300rpx h-300rpx"></image>
+    <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx"></image>
     <text class="text-32rpx text-black-secondary mt-44rpx mb-32rpx">尚未添加设备</text>
     <text class="text-24rpx text-black-secondary mb-224rpx opacity-40">立即添加设备，开启智慧照明</text>
     <van-button bindtap="handleAddDevice" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-class="add-immediately-btn">添加智能设备</van-button>
