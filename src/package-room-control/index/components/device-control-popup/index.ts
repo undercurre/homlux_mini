@@ -31,7 +31,7 @@ ComponentWithComputed({
           ],
           200,
         )
-      } else if(value.length === 0) {
+      } else if (value.length === 0) {
         this.animate(
           '#popup',
           [
@@ -82,7 +82,7 @@ ComponentWithComputed({
           divideRpxByPx,
           componentHeight: divideRpxByPx * 752,
           bottomBarHeight: storage.get<number>('bottomBarHeight') as number,
-          show: false
+          show: false,
         },
       })
     },

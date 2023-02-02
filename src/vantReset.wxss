@@ -26,15 +26,22 @@ page {
   --popup-round-border-radius: 64rpx;
   /* popup end */
 
+  --action-sheet-item-text-color: #27282a;
+  --action-sheet-cancel-text-color: #27282a;
+
   /* cell start */
   --cell-group-inset-border-radius: 32rpx;
   --cell-group-inset-padding: 24rpx;
+  --cell-vertical-padding: 32rpx;
+  --cell-horizontal-padding: 40rpx;
   --cell-font-size: 32rpx;
   --cell-text-color: #000;
+  --cell-line-height: 48rpx;
   --cell-icon-size: 48rpx;
   /* cell end */
 }
 
+/* button start */
 .van-button--normal {
   height: var(--button-normal-height) !important;
 }
@@ -53,10 +60,9 @@ page {
   color: #ff3849 !important;
 }
 
-.van-cell {
-  padding: 40rpx !important;
-  line-height: 1 !important;
-}
+/* button end */
+
+/* cell start */
 .van-cell:after {
   border-bottom: 1rpx solid #eef2f7 !important;
 }
@@ -67,4 +73,41 @@ page {
 
 .van-icon-arrow {
   font-size: 32rpx !important;
+}
+
+/* cell end */
+
+/* 遮罩 start */
+.van-overlay {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* 遮罩 end */
+
+/* 弹窗 start */
+.van-dialog__message {
+  padding: 80rpx 80rpx 90rpx !important;
+}
+
+.van-dialog__message-text {
+  font-size: 36rpx;
+  color: #27282a;
+  font-weight: 500;
+  line-height: 50rpx;
+}
+
+.van-dialog__cancel,
+.van-dialog__confirm {
+  font-size: 34rpx !important;
+  color: #27282a !important;
+}
+/* 弹窗 end */
+
+/* action-sheet start */
+.van-action-sheet__item:not(:last-child) {
+  border-bottom: 1rpx solid #e5e5e8;
+}
+.van-action-sheet__cancel,
+.van-action-sheet__item {
+  padding: 32rpx !important;
 }

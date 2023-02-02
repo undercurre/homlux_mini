@@ -6,6 +6,7 @@ export const room = observable({
     {
       roomId: '1',
       roomName: '客厅',
+      icon: 'balcony',
       lightOnNumber: 3,
       sceneList: [sceneMap['all-on'], sceneMap['all-off'], sceneMap['bright'], sceneMap['mild']],
       deviceList: [
@@ -62,6 +63,7 @@ export const room = observable({
     {
       roomId: '2',
       roomName: '卧室',
+      icon: 'bathroom',
       lightOnNumber: 0,
       sceneList: [sceneMap['all-on'], sceneMap['all-off'], sceneMap['bright'], sceneMap['mild']],
       deviceList: [],
@@ -70,6 +72,7 @@ export const room = observable({
     {
       roomId: '3',
       roomName: '客厅1',
+      icon: 'toilet',
       lightOnNumber: 3,
       sceneList: [sceneMap['all-on'], sceneMap['all-off'], sceneMap['bright'], sceneMap['mild']],
       deviceList: [],
@@ -78,6 +81,16 @@ export const room = observable({
     {
       roomId: '4',
       roomName: '卧室1',
+      icon: 'toilet',
+      lightOnNumber: 0,
+      sceneList: [sceneMap['all-on'], sceneMap['all-off'], sceneMap['bright'], sceneMap['mild']],
+      deviceList: [],
+      sceneSelect: 'all-off',
+    },
+    {
+      roomId: '5',
+      roomName: '卧室',
+      icon: 'toilet',
       lightOnNumber: 0,
       sceneList: [sceneMap['all-on'], sceneMap['all-off'], sceneMap['bright'], sceneMap['mild']],
       deviceList: [],

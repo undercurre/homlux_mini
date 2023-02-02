@@ -3,6 +3,5 @@
   <view class="h-36rpx flex-center" bindtouchmove="{{wxs.touchMove}}" bindtouchstart="{{wxs.touchStart}}">
     <view class="h-8rpx w-76rpx bg-black-tips rounded-999"></view>
   </view>
-  <view class="w-750rpx h-716rpx rounded-t-64rpx bg-white">
-  </view>
+  <view class="w-750rpx h-716rpx rounded-t-64rpx bg-white"> </view>
 </view>

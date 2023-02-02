@@ -1,0 +1,17 @@
+<view class="page-container flex flex-col pb-128rpx">
+  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="房间列表"></nav-bar>
+
+  <view class="grow flex flex-col pt-40rpx">
+    <scroll-view class="grow h-500 px-24rpx box-border">
+      <van-cell-group wx:for="{{roomList}}" inset>
+        <van-cell title="{{item.roomName}}" is-link link-type="navigateTo" url="/package-mine/room-detail/index" label="{{item.deviceList.length}}个设备" center title-style="font-weight: 500;">
+          <view slot="icon" class="bg-hex-F6FAFD rounded-32rpx p-16rpx mr-32rpx">
+            <image class="w-64 h-64" src="/assets/img/room/{{item.icon}}.png"></image>
+          </view>
+        </van-cell>
+      </van-cell-group>
+    </scroll-view>
+
+    <van-button class="mx-32rpx" size="large" type="primary" block>添加房间</van-button>
+  </view>
+</view>
