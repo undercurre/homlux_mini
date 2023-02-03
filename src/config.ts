@@ -1,7 +1,7 @@
 export default {
   env: 'dev', // dev | prod
-  // 主要的后端服务地址
-  defaultApiServer: {
+  // 美智云后端服务地址
+  mzaiotBaseURL: {
     dev: 'http://47.106.94.129:8001',
     prod: 'https://baidu.com',
   },

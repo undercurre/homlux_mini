@@ -25,15 +25,21 @@ type BaseRequest = <T extends AnyResType>(requestOptions: BaseRequestOptions<T>)
 | log                   | 是否打印请求的参数和请求结果                               |
 | successHandler        | 特殊请求接口可以使用 successHandler 对请求成功结果进行处理 |
 | failHandler           | 特殊请求接口可以使用 failHandler 对请求失败结果进行处理    |
-| generalSuccessHandler | 和successHandler类似，主要作用是封装时提供通用的处理回调 |
-| generalFailHandler    | 和failHandler类似，主要作用是封装时提供通用的处理回调 |
+| generalSuccessHandler | 和 successHandler 类似，主要作用是封装时提供通用的处理回调 |
+| generalFailHandler    | 和 failHandler 类似，主要作用是封装时提供通用的处理回调    |
 
-> **注意，xxxHandler和generalXxxHandler是互斥的**，比如传入了successHandler，就不会使用generalSuccessHandler进行处理。
+> **注意，xxxHandler 和 generalXxxHandler 是互斥的**，比如传入了 successHandler，就不会使用 generalSuccessHandler 进行处理。
 
-除了直接调用baseRequest方法，还可以使用类似baseRequest.get的方式，方便的设置请求方法，这时候option传入的method也会失效，因为优先级更低。
+除了直接调用 baseRequest 方法，还可以使用类似 baseRequest.get 的方式，方便的设置请求方法，这时候 option 传入的 method 也会失效，因为优先级更低。
+
+## baseRequest 封装携带的参数
+
+baseRequest 暂时没有对参数进行封装，如果需要封装参数，需要加到此文档
 
 ## mzaiotRequest 使用方式
-mzaiotRequest在baseRequest基础上封装了美智云的通用返回格式：
+
+mzaiotRequest 在 baseRequest 基础上封装了美智云的通用返回格式：
+
 ```ts
 type MzaiotResponseRowData<T extends AnyResType = AnyResType> = {
   code: number
@@ -47,7 +53,7 @@ type MzaiotRequest = <T extends AnyResType>(options: BaseRequestOptions<T>) => P
 // 比如有个业务数据类型：
 type UserInfo = { name: string }
 // 那么只需要这样用
-mzaiotRequest.get<UserInfo>({url: 'xxx'})
+mzaiotRequest.get<UserInfo>({ url: 'xxx' })
 // 就能直接拿到类型：
 // {
 //   code: number
@@ -56,3 +62,19 @@ mzaiotRequest.get<UserInfo>({url: 'xxx'})
 //   result?: UserInfo
 // }
 ```
+
+## mzaiotRequest 封装携带的参数
+
+> 目前 baseRequest 封装了通用 header：
+
+| header | 默认值 | 说明 |
+| - | - | - |
+| Authentication | `'Bearer ' + storage.get('token', '')` | 美智云请求 header |
+
+> 封装了 Url 处理，根据/src/config.ts 的 mzaiotBaseURL 和请求传入的 URL 进行拼接。
+
+> 封装了部分请求参数
+
+| data | 默认值 | 说明 |
+| - | - | - |
+| reqId | Date.now() | 请求 ID，由于小程序不支持安全的随机字符串生成，所以展示先用时间戳作为 id |

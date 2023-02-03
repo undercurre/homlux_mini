@@ -1,4 +1,7 @@
 import { baseRequest, BaseRequestOptions } from './baseRequest'
+import storage from '../storage'
+import config from '../../config'
+
 // 后端默认返回格式
 type MzaiotResponseRowData<T extends AnyResType = AnyResType> = {
   code: number
@@ -18,6 +21,33 @@ type MzaiotRequestWithMethod = MzaiotRequest & {
 }
 
 const mzaiotRequest: MzaiotRequest = function <T extends AnyResType>(options: BaseRequestOptions<T>) {
+  // 按需添加header
+  const header = {
+    Authentication: 'Bearer ' + storage.get('token', ''),
+  }
+  if (options.header) {
+    options.header = {
+      ...header,
+      ...options.header,
+    }
+  } else {
+    options.header = header
+  }
+
+  // 拼接上美智云的基础地址
+  options.url = config.mzaiotBaseURL[config.env] + options.url
+
+  // 后续考虑选择用nanoid生成reqId，但是微信小程序不支持浏览器的crypto API，无法使用nanoid和uuid包。
+  const reqId = Date.now()
+  if (!options.data) {
+    options.data = { reqId }
+  } else if (
+    Object.prototype.toString.call(options.data) === '[object Object]' &&
+    !(options.data as IAnyObject).reqId
+  ) {
+    ;(options.data as IAnyObject).reqId = reqId
+  }
+
   return baseRequest<T>({
     ...options,
     generalSuccessHandler: (result) => result.data,
