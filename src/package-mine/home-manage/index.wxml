@@ -3,10 +3,10 @@
 
   <view class="px-48rpx pt-32rpx pb-48rpx">
     <view class="flex flex-row justify-between">
-      <view class="relative" bind:tap="handleShowHomeSelectMenu" id="homeName">
+      <view class="relative flex flex-row items-center" bind:tap="handleShowHomeSelectMenu" id="homeName">
         <text class="text-40 text-hex-1E2C46 font-semibold leading-56rpx">{{ currentHomeName }}</text>
 
-        <svg-icon id="homeSelectArrow" class="absolute home-select-arrow" load="{{isLoadedSvg}}" color="#1E2C46" name="material-symbols:arrow-drop-down-rounded" width="48rpx" height="48rpx" />
+        <svg-icon id="homeSelectArrow" class="absolute home-select-arrow" color="#1E2C46" name="material-symbols:arrow-drop-down-rounded" width="48rpx" height="48rpx" />
       </view>
 
       <image class="w-48 h-48" src="/assets/img/home-manage/setting.png" bind:tap="toSetting"></image>
