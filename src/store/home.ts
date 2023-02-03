@@ -1,4 +1,4 @@
-import {observable} from 'mobx-miniprogram'
+import { observable } from 'mobx-miniprogram'
 
 export const home = observable({
   currentHomeId: '111',

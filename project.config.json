@@ -40,9 +40,7 @@
     "disableUseStrict": false,
     "minifyWXML": true,
     "showES6CompileOption": false,
-    "useCompilerPlugins": [
-      "typescript"
-    ],
+    "useCompilerPlugins": ["typescript"],
     "ignoreUploadUnusedFiles": true,
     "ignoreDevUnusedFiles": false
   },
