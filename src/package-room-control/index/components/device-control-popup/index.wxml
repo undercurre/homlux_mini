@@ -1,24 +1,23 @@
 <wxs module="wxs" src="./index.wxs"></wxs>
-<view wx:if="{{isRender}}" id="popup" class="fixed left-0 bottom-0 w-750rpx h-776rpx opacity-0">
+<view wx:if="{{isRender}}" id="popup" class="fixed left-0 w-750rpx h-776rpx opacity-0">
   <view class="h-60rpx flex justify-center items-end" bindtap="handleBarTap">
     <view wx:if="{{popup}}" class="mb-14rpx h-8rpx w-76rpx bg-black-tips rounded-999"></view>
     <image wx:else class="mb-36rpx w-76rpx h-24rpx" src="/assets/img/base/popup-arrow.png"></image>
   </view>
   <view class="w-750rpx h-716rpx rounded-t-64rpx bg-white flex flex-col">
-
     <!-- tab -->
     <view class="flex justify-evenly">
-      <view class="flex-col-center" bindtap="handleLightTabTap" wx:if="{{lightTab}}">
+      <view class="flex-col-center" data-tab="light" bindtap="handleTabTap" wx:if="{{lightTab}}">
         <view class="h-44rpx"></view>
         <text class="font-32rpx {{tab === 'light' ? 'tab-title-check' : 'tab-title-uncheck'}}">灯光</text>
         <view class="w-42rpx h-8rpx mt-4rpx bg-blue rounded-999 {{tab === 'light' ? 'opacity-100' : 'opacity-0'}}"></view>
       </view>
-      <view class="flex-col-center" bindtap="handleSwitchTabTap" wx:if="{{switchTab}}">
+      <view class="flex-col-center" data-tab="switch" bindtap="handleTabTap" wx:if="{{switchTab}}">
         <view class="h-44rpx"></view>
         <text class="font-32rpx {{tab === 'switch' ? 'tab-title-check' : 'tab-title-uncheck'}}">开关</text>
         <view class="w-42rpx h-8rpx mt-4rpx bg-blue rounded-999 {{tab === 'switch' ? 'opacity-100' : 'opacity-0'}}"></view>
       </view>
-      <view class="flex-col-center" bindtap="handleCurtainTabTap" wx:if="{{curtainTab}}">
+      <view class="flex-col-center" data-tab="curtain" bindtap="handleTabTap" wx:if="{{curtainTab}}">
         <view class="h-44rpx"></view>
         <text class="font-32rpx {{tab === 'curtain' ? 'tab-title-check' : 'tab-title-uncheck'}}">窗帘</text>
         <view class="w-42rpx h-8rpx mt-4rpx bg-blue rounded-999 {{tab === 'curtain' ? 'opacity-100' : 'opacity-0'}}"></view>
@@ -51,7 +50,7 @@
       <view wx:if="{{tab==='switch'}}">
         <view class="h-22rpx"></view>
         <van-cell-group inset>
-          <van-cell clickable custom-class="switch-cell">
+          <van-cell clickable custom-class="switch-cell" data-link="switch" bind:click="handleSwitchLink">
             <view class="flex flex-col items-start">
               <text class="text-32rpx text-black-primary font-medium h-44rpx">关联智能开关</text>
               <text class="text-26rpx text-black-tips font-normal leading-none mt-12rpx mb-12rpx">通过开关触发场景</text>
@@ -62,7 +61,7 @@
           </van-cell>
         </van-cell-group>
         <van-cell-group inset wx:if="{{!isSelectMultiSwitch}}">
-          <van-cell clickable custom-class="switch-cell">
+          <van-cell clickable custom-class="switch-cell" data-link="light" bind:click="handleSwitchLink">
             <view class="flex flex-col items-start">
               <text class="text-32rpx text-black-primary font-medium h-44rpx">关联智能灯</text>
               <text class="text-26rpx text-black-tips font-normal leading-none mt-12rpx mb-12rpx">与关联的智能灯保持相同开关状态</text>
@@ -73,7 +72,7 @@
           </van-cell>
         </van-cell-group>
         <van-cell-group inset wx:if="{{!isSelectMultiSwitch}}">
-          <van-cell clickable custom-class="switch-cell">
+          <van-cell clickable custom-class="switch-cell" data-link="scene" bind:click="handleSwitchLink">
             <view class="flex flex-col items-start">
               <text class="text-32rpx text-black-primary font-medium h-44rpx">关联场景</text>
               <text class="text-26rpx text-black-tips font-normal leading-none mt-12rpx mb-12rpx">关联后，可通过开关执行场景</text>
@@ -92,7 +91,7 @@
           <image src="/assets/img/device-control/curtain.png" class="w-213rpx h-300rpx absolute left-20rpx top-50rpx" />
           <image src="/assets/img/device-control/curtain-opener.png" class="w-80rpx h-80rpx absolute left-148rpx top-144rpx" />
           <image src="/assets/img/device-control/curtain.png" class="w-213rpx h-300rpx absolute right-20rpx top-50rpx" />
-          <image src="/assets/img/device-control/curtain-opener.png" class="w-80rpx h-80rpx absolute right-148rpx top-144rpx" style="transform: scaleX(-1);" />
+          <image src="/assets/img/device-control/curtain-opener.png" class="w-80rpx h-80rpx absolute right-148rpx top-144rpx" style="transform: scaleX(-1)" />
         </view>
         <text class="text-32rpx text-black-secondary">50%</text>
       </view>

@@ -13,16 +13,21 @@ ComponentWithComputed({
   /**
    * 组件的属性列表
    */
-  properties: {},
+  properties: {
+    popup: {
+      type: Boolean,
+      value: true,
+    },
+  },
 
   /**
    * 组件的初始数据
    */
   data: {
-    _minHeight: 0,
-    _maxHeight: 0,
+    bottom: 0, // 收起来时的bottom值
+    minHeight: 0,
+    componentHeight: 0,
     isRender: false,
-    popup: true, // 是否展开整个popup
     tab: '' as '' | 'light' | 'switch' | 'curtain',
     lightInfo: {
       brightness: 50,
@@ -67,6 +72,11 @@ ComponentWithComputed({
      * @param value 选择列表
      */
     selectList(value) {
+      const from = -this.data.componentHeight
+      const to = this.properties.popup ? 0 : this.data.bottom
+      if (this.data.componentHeight === 0) {
+        return // 这时候还没有第一次渲染，from是0，不能正确执行动画
+      }
       if (value.length > 0 && !this.data.isRender) {
         this.setData({
           isRender: true,
@@ -76,9 +86,11 @@ ComponentWithComputed({
           [
             {
               opacity: 0,
+              bottom: from + 'px',
             },
             {
               opacity: 1,
+              bottom: to + 'px',
             },
           ],
           200,
@@ -89,16 +101,17 @@ ComponentWithComputed({
           [
             {
               opacity: 1,
+              bottom: to + 'px',
             },
             {
               opacity: 0,
+              bottom: -this.data.componentHeight + 'px',
             },
           ],
           200,
           () => {
             this.setData({
               isRender: false,
-              popup: true,
             })
           },
         )
@@ -137,8 +150,12 @@ ComponentWithComputed({
         bottomBarHeight = 32 // 如果没有高度，就给个高度，防止弹窗太贴底部
       }
       minHeight = divideRpxByPx * 60 + bottomBarHeight
-      this.data._minHeight = minHeight
-      this.data._maxHeight = componentHeight
+      this.setData({
+        minHeight: minHeight,
+        componentHeight: componentHeight,
+        bottom: minHeight - componentHeight,
+      })
+      console.log(this.data)
     },
   },
 
@@ -147,41 +164,33 @@ ComponentWithComputed({
    */
   methods: {
     handleBarTap() {
-      console.log(this.data._minHeight, this.data._maxHeight)
-      const from = this.data.popup ? 0 : this.data._minHeight - this.data._maxHeight
-      const to = this.data.popup ? this.data._minHeight - this.data._maxHeight : 0
+      const from = this.properties.popup ? 0 : this.data.bottom
+      const to = this.properties.popup ? this.data.bottom : 0
 
       this.animate(
         '#popup',
         [
           {
             bottom: from + 'px',
+            ease: 'ease-in-out',
           },
           {
             bottom: to + 'px',
+            ease: 'ease-in-out',
           },
         ],
         200,
         () => {
-          this.setData({
-            popup: !this.data.popup,
-          })
+          this.triggerEvent('popMove')
         },
       )
     },
-    handleLightTabTap() {
-      this.setData({
-        tab: 'light',
-      })
+    handleSwitchLink(e: { currentTarget: { dataset: { link: string } } }) {
+      this.triggerEvent('switchLink', e.currentTarget.dataset.link)
     },
-    handleSwitchTabTap() {
+    handleTabTap(e: { currentTarget: { dataset: { tab: 'light' | 'switch' | 'curtain' } } }) {
       this.setData({
-        tab: 'switch',
-      })
-    },
-    handleCurtainTabTap() {
-      this.setData({
-        tab: 'curtain',
+        tab: e.currentTarget.dataset.tab,
       })
     },
     handleBrightnessBarTap(e: unknown) {

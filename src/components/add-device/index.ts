@@ -7,7 +7,7 @@ Component({
    * 组件的属性列表
    */
   properties: {
-    isShow: {
+    show: {
       type: Boolean,
       value: false,
     },

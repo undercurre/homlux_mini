@@ -12,7 +12,9 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
-    showPopup: false,
+    controlPopupUp: true,
+    showLinkPopup: false,
+    linkType: '',
     contentHeight: 0,
   },
 
@@ -143,6 +145,22 @@ ComponentWithComputed({
         data[`deviceList[${index}].power`] = power
         this.setData(data)
       }
+    },
+    handleSwitchLinkPopup(e: { detail: 'switch' | 'light' | 'scene' }) {
+      this.setData({
+        linkType: e.detail,
+        showLinkPopup: true,
+      })
+    },
+    handleLinkPopupClose() {
+      this.setData({
+        showLinkPopup: false,
+      })
+    },
+    handlePopMove() {
+      this.setData({
+        controlPopupUp: !this.data.controlPopupUp,
+      })
     },
     updateSelectType() {
       const typeList = new Set()

@@ -4,7 +4,6 @@
     "van-button": "@vant/weapp/button/index",
     "dropdown-menu": "./components/dropdown-menu/index",
     "room-card": "./components/room-card/index",
-    "add-new-device": "./components/add-new-device/index",
     "add-new-room": "./components/add-new-room/index"
   },
   "enablePullDownRefresh": true,

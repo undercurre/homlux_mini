@@ -42,11 +42,10 @@ Component({
       const loginRes = await login(data)
       if (loginRes.success && loginRes.result) {
         // 保证下面的res不会出现undefined
-        const res = loginRes.result
         // 批量缓存返回值
         ;(['token', 'mobilePhone', 'nickName', 'headImageUrl'] as const).forEach((item) => {
           // 同样去除undefined
-          const value = res[item]
+          const value = (loginRes.result as User.UserLoginRes)[item]
           if (value) {
             storage.set(item, value, null)
           }
