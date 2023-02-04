@@ -53,6 +53,12 @@ ComponentWithComputed({
       }
       return false
     },
+    isSelectMultiSwitch(data) {
+      if ((data as unknown as { selectSwitchList: string[] }).selectSwitchList) {
+        return (data as unknown as { selectSwitchList: string[] }).selectSwitchList.length > 1
+      }
+      return false
+    },
   },
 
   watch: {
@@ -177,6 +183,9 @@ ComponentWithComputed({
       this.setData({
         tab: 'curtain',
       })
+    },
+    handleBrightnessBarTap(e: unknown) {
+      console.log(e)
     },
     doPopupShowAnimation() {},
   },

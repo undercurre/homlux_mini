@@ -5,18 +5,21 @@
     <image wx:else class="mb-36rpx w-76rpx h-24rpx" src="/assets/img/base/popup-arrow.png"></image>
   </view>
   <view class="w-750rpx h-716rpx rounded-t-64rpx bg-white flex flex-col">
-    <view class="h-44rpx"></view>
+
     <!-- tab -->
     <view class="flex justify-evenly">
       <view class="flex-col-center" bindtap="handleLightTabTap" wx:if="{{lightTab}}">
+        <view class="h-44rpx"></view>
         <text class="font-32rpx {{tab === 'light' ? 'tab-title-check' : 'tab-title-uncheck'}}">灯光</text>
         <view class="w-42rpx h-8rpx mt-4rpx bg-blue rounded-999 {{tab === 'light' ? 'opacity-100' : 'opacity-0'}}"></view>
       </view>
       <view class="flex-col-center" bindtap="handleSwitchTabTap" wx:if="{{switchTab}}">
+        <view class="h-44rpx"></view>
         <text class="font-32rpx {{tab === 'switch' ? 'tab-title-check' : 'tab-title-uncheck'}}">开关</text>
         <view class="w-42rpx h-8rpx mt-4rpx bg-blue rounded-999 {{tab === 'switch' ? 'opacity-100' : 'opacity-0'}}"></view>
       </view>
       <view class="flex-col-center" bindtap="handleCurtainTabTap" wx:if="{{curtainTab}}">
+        <view class="h-44rpx"></view>
         <text class="font-32rpx {{tab === 'curtain' ? 'tab-title-check' : 'tab-title-uncheck'}}">窗帘</text>
         <view class="w-42rpx h-8rpx mt-4rpx bg-blue rounded-999 {{tab === 'curtain' ? 'opacity-100' : 'opacity-0'}}"></view>
       </view>
@@ -24,10 +27,10 @@
     <!-- tab内容 -->
     <view class="flex-1">
       <!-- 灯光控制 -->
-      <view class="flex flex-col" wx:if="{{lightTab}}">
+      <view class="flex flex-col" wx:if="{{tab==='light'}}">
         <text class="text-32rpx text-black-secondary mt-54rpx ml-32rpx">亮度 | {{lightInfo.brightness}}%</text>
         <view class="ml-32rpx h-88rpx relative flex-center">
-          <image src="/assets/img/device-control/color-bar.png" class="w-686rpx h-24rpx" />
+          <image src="/assets/img/device-control/color-bar.png" class="w-686rpx h-24rpx" bindtap="handleBrightnessBarTap" />
           <image src="/assets/img/device-control/btn.png" class="w-88rpx h-88rpx absolute left-100rpx top-0" />
         </view>
         <text class="text-32rpx text-black-secondary mt-64rpx ml-32rpx">色温 | {{lightInfo.colorTemp}}K</text>
@@ -36,14 +39,63 @@
           <image src="/assets/img/device-control/btn.png" class="w-88rpx h-88rpx absolute left-200rpx top-0" />
         </view>
         <view class="flex justify-evenly mt-92rpx">
-          <van-button custom-style="width: 328rpx">全开</van-button>
-          <van-button custom-style="width: 328rpx">全关</van-button>
+          <van-button custom-style="width: 328rpx">
+            <text class="text-32rpx">全开</text>
+          </van-button>
+          <van-button custom-style="width: 328rpx">
+            <text class="text-32rpx">全关</text>
+          </van-button>
         </view>
       </view>
       <!-- 开关控制 -->
-      <view wx:if="{{switchTab}}"> </view>
+      <view wx:if="{{tab==='switch'}}">
+        <view class="h-22rpx"></view>
+        <van-cell-group inset>
+          <van-cell clickable custom-class="switch-cell">
+            <view class="flex flex-col items-start">
+              <text class="text-32rpx text-black-primary font-medium h-44rpx">关联智能开关</text>
+              <text class="text-26rpx text-black-tips font-normal leading-none mt-12rpx mb-12rpx">通过开关触发场景</text>
+            </view>
+            <view slot="right-icon" class="h-90rpx flex-center">
+              <svg-icon color="#555659" name="icon-park:right" width="48rpx" height="48rpx"></svg-icon>
+            </view>
+          </van-cell>
+        </van-cell-group>
+        <van-cell-group inset wx:if="{{!isSelectMultiSwitch}}">
+          <van-cell clickable custom-class="switch-cell">
+            <view class="flex flex-col items-start">
+              <text class="text-32rpx text-black-primary font-medium h-44rpx">关联智能灯</text>
+              <text class="text-26rpx text-black-tips font-normal leading-none mt-12rpx mb-12rpx">与关联的智能灯保持相同开关状态</text>
+            </view>
+            <view slot="right-icon" class="h-90rpx flex-center">
+              <svg-icon color="#555659" name="icon-park:right" width="48rpx" height="48rpx"></svg-icon>
+            </view>
+          </van-cell>
+        </van-cell-group>
+        <van-cell-group inset wx:if="{{!isSelectMultiSwitch}}">
+          <van-cell clickable custom-class="switch-cell">
+            <view class="flex flex-col items-start">
+              <text class="text-32rpx text-black-primary font-medium h-44rpx">关联场景</text>
+              <text class="text-26rpx text-black-tips font-normal leading-none mt-12rpx mb-12rpx">关联后，可通过开关执行场景</text>
+            </view>
+            <view slot="right-icon" class="h-90rpx flex-center">
+              <svg-icon color="#555659" name="icon-park:right" width="48rpx" height="48rpx"></svg-icon>
+            </view>
+          </van-cell>
+        </van-cell-group>
+      </view>
       <!-- 窗帘控制 -->
-      <view wx:if="{{curtainTab}}"> </view>
+      <view wx:if="{{tab==='curtain'}}" class="w-full h-full flex-center">
+        <text class="text-32rpx text-black-secondary">50%</text>
+        <view class="w-496rpx h-368rpx relative">
+          <image src="/assets/img/device-control/curtain-bg.png" class="w-496rpx h-368rpx" />
+          <image src="/assets/img/device-control/curtain.png" class="w-213rpx h-300rpx absolute left-20rpx top-50rpx" />
+          <image src="/assets/img/device-control/curtain-opener.png" class="w-80rpx h-80rpx absolute left-148rpx top-144rpx" />
+          <image src="/assets/img/device-control/curtain.png" class="w-213rpx h-300rpx absolute right-20rpx top-50rpx" />
+          <image src="/assets/img/device-control/curtain-opener.png" class="w-80rpx h-80rpx absolute right-148rpx top-144rpx" style="transform: scaleX(-1);" />
+        </view>
+        <text class="text-32rpx text-black-secondary">50%</text>
+      </view>
     </view>
   </view>
 </view>

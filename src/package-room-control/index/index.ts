@@ -109,17 +109,29 @@ ComponentWithComputed({
     handleCollect() {
       console.log('收藏')
     },
-    handleDeviceCardTap(e: { detail: { deviceId: string } }) {
+    handleDeviceCardTap(e: { detail: { deviceId: string; deviceType: string } }) {
       if (device.selectList.includes(e.detail.deviceId)) {
         const index = device.selectList.findIndex((item: string) => item === e.detail.deviceId)
         device.selectList.splice(index, 1)
         runInAction(() => {
           device.selectList = [...device.selectList]
         })
+        if (e.detail.deviceType === 'switch') {
+          const index = device.selectSwitchList.findIndex((item: string) => item === e.detail.deviceId)
+          device.selectSwitchList.splice(index, 1)
+          runInAction(() => {
+            device.selectSwitchList = [...device.selectSwitchList]
+          })
+        }
       } else {
         runInAction(() => {
           device.selectList = [...device.selectList, e.detail.deviceId]
         })
+        if (e.detail.deviceType === 'switch') {
+          runInAction(() => {
+            device.selectSwitchList = [...device.selectSwitchList, e.detail.deviceId]
+          })
+        }
       }
       this.updateSelectType()
     },

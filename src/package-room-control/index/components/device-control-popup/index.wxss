@@ -8,3 +8,9 @@
   color: #555659;
   font-weight: 400;
 }
+
+.switch-cell {
+  border: 2rpx solid #dddddd;
+  border-radius: 32rpx;
+  padding: 24rpx 32rpx;
+}

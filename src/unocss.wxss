@@ -105,6 +105,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .mr-32rpx{margin-right:32rpx;}
 .mr-38rpx{margin-right:38rpx;}
 .mr-44rpx{margin-right:44rpx;}
+.mt-12rpx{margin-top:12rpx;}
 .mt-130rpx{margin-top:130rpx;}
 .mt-16rpx{margin-top:16rpx;}
 .mt-20rpx{margin-top:20rpx;}
@@ -181,6 +182,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .text-48rpx{font-size:48rpx;}
 .font-bold{font-weight:700;}
 .font-medium{font-weight:500;}
+.font-normal{font-weight:400;}
 .font-semibold{font-weight:600;}
 .leading-36rpx{line-height:36rpx;}
 .leading-40rpx{line-height:40rpx;}
@@ -244,10 +246,12 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .h-1rpx{height:1rpx;}
 .h-200{height:200rpx;}
 .h-216rpx{height:216rpx;}
+.h-22rpx{height:22rpx;}
 .h-24rpx{height:24rpx;}
 .h-300,
 .h-300rpx{height:300rpx;}
 .h-32rpx{height:32rpx;}
+.h-368rpx{height:368rpx;}
 .h-416rpx{height:416rpx;}
 .h-44rpx{height:44rpx;}
 .h-48,
@@ -264,6 +268,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .h-80rpx{height:80rpx;}
 .h-88rpx{height:88rpx;}
 .h-8rpx{height:8rpx;}
+.h-90rpx{height:90rpx;}
 .h-92{height:92rpx;}
 .h-96rpx{height:96rpx;}
 .h-98rpx{height:98rpx;}
@@ -278,6 +283,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .wxs{width:180rpx;}
 .w-184rpx{width:184rpx;}
 .w-208rpx{width:208rpx;}
+.w-213rpx{width:213rpx;}
 .w-244rpx{width:244rpx;}
 .w-250rpx{width:250rpx;}
 .w-256rpx{width:256rpx;}
@@ -289,6 +295,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .w-42rpx{width:42rpx;}
 .w-48,
 .w-48rpx{width:48rpx;}
+.w-496rpx{width:496rpx;}
 .w-64,
 .w-64rpx{width:64rpx;}
 .w-640rpx{width:640rpx;}
@@ -315,14 +322,20 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .bottom-0{bottom:0rpx;}
 .left-0{left:0rpx;}
 .left-100rpx{left:100rpx;}
+.left-148rpx{left:148rpx;}
 .left-16rpx{left:16rpx;}
 .left-200rpx{left:200rpx;}
+.left-20rpx{left:20rpx;}
 .left-32rpx{left:32rpx;}
+.right-148rpx{right:148rpx;}
+.right-20rpx{right:20rpx;}
 .right-24rpx{right:24rpx;}
 .right-32rpx{right:32rpx;}
 .right-48rpx{right:48rpx;}
 .top-0{top:0rpx;}
+.top-144rpx{top:144rpx;}
 .top-40rpx{top:40rpx;}
+.top-50rpx{top:50rpx;}
 .top-8rpx{top:8rpx;}
 .z-100{z-index:100;}
 .z-400{z-index:400;}
