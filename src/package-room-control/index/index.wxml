@@ -35,7 +35,7 @@
       <scroll-view enhanced="{{true}}" show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
         <view class="flex flex-col items-center w-750rpx">
           <!-- 灯具设备卡片 -->
-          <view class="mt-24rpx">
+          <view class="mt-24rpx" wx:if="{{lightList && lightList.length>0}}">
             <text class="text-24rpx text-black-secondary">灯具</text>
             <view class="w-686rpx grid grid-cols-4 gap-x-20rpx gap-y-24rpx mt-24rpx">
               <device-card wx:for="{{lightList}}" wx:key="deviceId" bind:powerTap="handleDevicePowerTap" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" is-select="{{module.includes(selectList, item.deviceId)}}" />
@@ -43,7 +43,7 @@
           </view>
 
           <!-- 开关设备卡片 -->
-          <view class="mt-24rpx">
+          <view class="mt-24rpx" wx:if="{{switchList && switchList.length>0}}">
             <text class="text-24rpx text-black-secondary">开关面板</text>
             <view class="w-686rpx grid grid-cols-4 gap-x-20rpx gap-y-24rpx mt-24rpx">
               <device-card wx:for="{{switchList}}" wx:key="deviceId" bind:powerTap="handleDevicePowerTap" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" is-select="{{module.includes(selectList, item.deviceId)}}" />
@@ -51,7 +51,7 @@
           </view>
 
           <!-- 窗帘设备卡片 -->
-          <view class="mt-24rpx">
+          <view class="mt-24rpx" wx:if="{{curtainList && curtainList.length>0}}">
             <text class="text-24rpx text-black-secondary">窗帘</text>
             <view class="w-686rpx grid grid-cols-4 gap-x-20rpx gap-y-24rpx mt-24rpx">
               <device-card wx:for="{{curtainList}}" wx:key="deviceId" bind:powerTap="handleDevicePowerTap" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" is-select="{{module.includes(selectList, item.deviceId)}}" />

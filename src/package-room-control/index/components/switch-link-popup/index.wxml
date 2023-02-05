@@ -1,3 +1,11 @@
 <van-popup show="{{ show }}" z-index="10001" round position="bottom" bind:close="onClickHide">
-  <view class="w-750rpx h-962rpx relative flex flex-col items-center" id="content"> 123 </view>
+  <view class="w-750rpx h-50vh relative flex flex-col items-center" id="content">
+    <text class="h-50rpx text-36rpx text-black-primary mt-44rpx font-medium">{{title}}</text>
+    <view class="flex-1"> </view>
+    <view class="flex justify-center">
+      <van-button>取消</van-button>
+      <van-button class="ml-46rpx">确定</van-button>
+      <view class="h-32rpx"></view>
+    </view>
+  </view>
 </van-popup>
