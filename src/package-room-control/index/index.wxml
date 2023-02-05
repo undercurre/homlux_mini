@@ -67,4 +67,5 @@
 </view>
 
 <!-- 设备控制弹窗 -->
-<device-control-popup></device-control-popup>
+<device-control-popup popup="{{controlPopupUp}}" bind:popMove="handlePopMove" bind:switchLink="handleSwitchLinkPopup"></device-control-popup>
+<switch-link-popup show="{{showLinkPopup}}" linkType="{{linkType}}" bind:close="handleLinkPopupClose"></switch-link-popup>

@@ -12,7 +12,9 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
-    showPopup: false,
+    controlPopupUp: true,
+    showLinkPopup: false,
+    linkType: '',
     contentHeight: 0,
   },
 
@@ -109,17 +111,29 @@ ComponentWithComputed({
     handleCollect() {
       console.log('收藏')
     },
-    handleDeviceCardTap(e: { detail: { deviceId: string } }) {
+    handleDeviceCardTap(e: { detail: { deviceId: string; deviceType: string } }) {
       if (device.selectList.includes(e.detail.deviceId)) {
         const index = device.selectList.findIndex((item: string) => item === e.detail.deviceId)
         device.selectList.splice(index, 1)
         runInAction(() => {
           device.selectList = [...device.selectList]
         })
+        if (e.detail.deviceType === 'switch') {
+          const index = device.selectSwitchList.findIndex((item: string) => item === e.detail.deviceId)
+          device.selectSwitchList.splice(index, 1)
+          runInAction(() => {
+            device.selectSwitchList = [...device.selectSwitchList]
+          })
+        }
       } else {
         runInAction(() => {
           device.selectList = [...device.selectList, e.detail.deviceId]
         })
+        if (e.detail.deviceType === 'switch') {
+          runInAction(() => {
+            device.selectSwitchList = [...device.selectSwitchList, e.detail.deviceId]
+          })
+        }
       }
       this.updateSelectType()
     },
@@ -131,6 +145,22 @@ ComponentWithComputed({
         data[`deviceList[${index}].power`] = power
         this.setData(data)
       }
+    },
+    handleSwitchLinkPopup(e: { detail: 'switch' | 'light' | 'scene' }) {
+      this.setData({
+        linkType: e.detail,
+        showLinkPopup: true,
+      })
+    },
+    handleLinkPopupClose() {
+      this.setData({
+        showLinkPopup: false,
+      })
+    },
+    handlePopMove() {
+      this.setData({
+        controlPopupUp: !this.data.controlPopupUp,
+      })
     },
     updateSelectType() {
       const typeList = new Set()
