@@ -26,6 +26,7 @@ Component({
     onLoginClick(e: { detail: { code: string } }) {
       wx.login({
         success: (res) => {
+          console.log('login', res, e)
           if (res.code) {
             this.handleLogin({
               jsCode: res.code,

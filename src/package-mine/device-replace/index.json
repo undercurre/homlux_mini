@@ -1,5 +1,6 @@
 {
   "usingComponents": {
-    "tips-box": "/components/tips-box/index"
+    "tips-box": "/components/tips-box/index",
+    "steps": "./components/steps/index"
   }
 }

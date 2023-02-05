@@ -57,7 +57,7 @@ HomLux小程序
 1. 主包页面存放在 pages 目录下，分包页面存放在 packages 目录下，如果分包内容非常多，可以按照 packageXXX 再进行区分。
 2. 全局状态模型定义存放在 store 目录下，按照业务拆分模块。
 3. 接口调用方式封装在 apis 目录下，可以按照业务区分模块，如果项目比较大有多个后端接口地址，可以归类到不同文件夹进行区分。
-4. 接口通用的请求处理、响应处理、失败处理都封装在 utils/request 目录下，参考`utils/request/defaultRequest.ts`，不通用的数据和逻辑操作通过参数传入。
+4. 接口通用的请求处理、响应处理、失败处理都封装在 utils/request 目录下，参考`utils/request/defaultRequest.ts`，不通用的数据和逻辑操作通过参数传入。[参考文档](docs/request使用说明.md)
 
 ### CSS 样式
 1. 请尽量避免将静态的样式写进 `style` 中，以免影响渲染速度
@@ -76,7 +76,7 @@ HomLux小程序
 请优先使用图标库：https://icon-sets.iconify.design/icon-park-outline/
 
 ### JS
-1. 接口命名首字母大写
+1. 接口命名首字母大写，建议接口前可以加上I
 2. TS类型规范，业务相关的类型定义在typings目录下，按需使用namespace和不同的d.ts进行拆分，如果业务复杂，还可以归类到不同文件夹进行区分。
 
 ## 注意点
