@@ -1,5 +1,5 @@
 // pages/mine/index.ts
-import { emitter } from "../../utils/eventBus"
+import { emitter } from '../../utils/eventBus'
 
 Component({
   /**
@@ -51,6 +51,6 @@ Component({
 
     loginOut() {
       emitter.emit('loginOut')
-    }
+    },
   },
 })

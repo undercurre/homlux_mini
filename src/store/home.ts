@@ -10,7 +10,7 @@ export const home = observable({
 
   // actions
   updateHomeList: action(async function () {
-    let res = await getHomeList()
+    const res = await getHomeList()
 
     console.log('updateHomeList', res)
 
