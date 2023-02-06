@@ -24,14 +24,19 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    bottom: 0, // 收起来时的bottom值
-    minHeight: 0,
-    componentHeight: 0,
+    _divideRpxByPx: 0,
+    _bottom: 0, // 收起来时的bottom值
+    _minHeight: 0,
+    _componentHeight: 0,
+    _wfullpx: 0,
+    barWidth: 0,
     isRender: false,
     tab: '' as '' | 'light' | 'switch' | 'curtain',
     lightInfo: {
-      brightness: 50,
-      colorTemp: 2000,
+      brightness: 10,
+      colorTemp: 20,
+      maxColorTempK: 6000,
+      minColorTempK: 2400,
     },
     curtainInfo: {
       left: 50,
@@ -40,6 +45,12 @@ ComponentWithComputed({
   },
 
   computed: {
+    colorTempK(data) {
+      return (
+        (data.lightInfo.colorTemp / 100) * (data.lightInfo.maxColorTempK - data.lightInfo.minColorTempK) +
+        data.lightInfo.minColorTempK
+      )
+    },
     lightTab(data) {
       if ((data as unknown as { selectType: SelectTypeList }).selectType) {
         return (data as unknown as { selectType: SelectTypeList }).selectType.includes('light')
@@ -72,9 +83,9 @@ ComponentWithComputed({
      * @param value 选择列表
      */
     selectList(value) {
-      const from = -this.data.componentHeight
-      const to = this.properties.popup ? 0 : this.data.bottom
-      if (this.data.componentHeight === 0) {
+      const from = -this.data._componentHeight
+      const to = this.properties.popup ? 0 : this.data._bottom
+      if (this.data._componentHeight === 0) {
         return // 这时候还没有第一次渲染，from是0，不能正确执行动画
       }
       if (value.length > 0 && !this.data.isRender) {
@@ -105,7 +116,7 @@ ComponentWithComputed({
             },
             {
               opacity: 0,
-              bottom: -this.data.componentHeight + 'px',
+              bottom: -this.data._componentHeight + 'px',
             },
           ],
           200,
@@ -144,18 +155,20 @@ ComponentWithComputed({
         ? (storage.get<number>('divideRpxByPx') as number)
         : 0.5
       let bottomBarHeight = storage.get<number>('bottomBarHeight') as number
-      const componentHeight = 776 * divideRpxByPx
-      let minHeight = 0
+      const _componentHeight = 776 * divideRpxByPx
+      let _minHeight = 0
       if (bottomBarHeight === 0) {
         bottomBarHeight = 32 // 如果没有高度，就给个高度，防止弹窗太贴底部
       }
-      minHeight = divideRpxByPx * 60 + bottomBarHeight
+      _minHeight = divideRpxByPx * 60 + bottomBarHeight
+      this.data._minHeight = _minHeight
+      this.data._componentHeight = _componentHeight
+      this.data._bottom = _minHeight - _componentHeight
+      this.data._wfullpx = divideRpxByPx * 750
+      this.data._divideRpxByPx = divideRpxByPx
       this.setData({
-        minHeight: minHeight,
-        componentHeight: componentHeight,
-        bottom: minHeight - componentHeight,
+        barWidth: 686 * divideRpxByPx,
       })
-      console.log(this.data)
     },
   },
 
@@ -164,8 +177,8 @@ ComponentWithComputed({
    */
   methods: {
     handleBarTap() {
-      const from = this.properties.popup ? 0 : this.data.bottom
-      const to = this.properties.popup ? this.data.bottom : 0
+      const from = this.properties.popup ? 0 : this.data._bottom
+      const to = this.properties.popup ? this.data._bottom : 0
 
       this.animate(
         '#popup',
@@ -193,9 +206,28 @@ ComponentWithComputed({
         tab: e.currentTarget.dataset.tab,
       })
     },
-    handleBrightnessBarTap(e: unknown) {
-      console.log(e)
+    handleBrightChange(e: { detail: number }) {
+      this.setData({
+        'lightInfo.brightness': e.detail,
+      })
     },
+    handleBrightDrag(e: { detail: { value: number } }) {
+      this.setData({
+        'lightInfo.brightness': e.detail.value,
+      })
+    },
+    handleBrightDragEnd() {},
+    handleColorTempChange(e: { detail: number }) {
+      this.setData({
+        'lightInfo.colorTemp': e.detail,
+      })
+    },
+    handleColorTempDrag(e: { detail: { value: number } }) {
+      this.setData({
+        'lightInfo.colorTemp': e.detail.value,
+      })
+    },
+    handleColorTempDragEnd() {},
     doPopupShowAnimation() {},
   },
 })

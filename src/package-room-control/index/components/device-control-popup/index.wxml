@@ -28,14 +28,20 @@
       <!-- 灯光控制 -->
       <view class="flex flex-col" wx:if="{{tab==='light'}}">
         <text class="text-32rpx text-black-secondary mt-54rpx ml-32rpx">亮度 | {{lightInfo.brightness}}%</text>
-        <view class="ml-32rpx h-88rpx relative flex-center">
-          <image src="/assets/img/device-control/color-bar.png" class="w-686rpx h-24rpx" bindtap="handleBrightnessBarTap" />
-          <image src="/assets/img/device-control/btn.png" class="w-88rpx h-88rpx absolute left-100rpx top-0" />
+        <view class="px-32rpx">
+          <view class="h-32rpx"></view>
+          <van-slider bind:change="handleBrightChange" bind:drag="handleBrightDrag" bind:drag-end="handleBrightDragEnd" value="{{lightInfo.brightness}}" min="{{1}}" use-button-slot custom-class="slider-brightness-bar" active-color="rgba(0,0,0,0)" bar-height="24rpx">
+            <image slot="button" src="/assets/img/device-control/btn.png" class="w-88rpx h-88rpx" />
+          </van-slider>
+          <view class="h-32rpx"></view>
         </view>
-        <text class="text-32rpx text-black-secondary mt-64rpx ml-32rpx">色温 | {{lightInfo.colorTemp}}K</text>
-        <view class="ml-32rpx h-88rpx relative flex-center">
-          <image src="/assets/img/device-control/color-bar.png" class="w-686rpx h-24rpx" />
-          <image src="/assets/img/device-control/btn.png" class="w-88rpx h-88rpx absolute left-200rpx top-0" />
+        <text class="text-32rpx text-black-secondary mt-64rpx ml-32rpx">色温 | {{colorTempK}}K</text>
+        <view class="px-32rpx">
+          <view class="h-32rpx"></view>
+          <van-slider bind:change="handleColorTempChange" bind:drag="handleColorTempDrag" bind:drag-end="handleColorTempDragEnd" value="{{lightInfo.colorTemp}}" use-button-slot custom-class="slider-color-temp-bar" active-color="rgba(0,0,0,0)" bar-height="24rpx">
+            <image slot="button" src="/assets/img/device-control/btn.png" class="w-88rpx h-88rpx" />
+          </van-slider>
+          <view class="h-32rpx"></view>
         </view>
         <view class="flex justify-evenly mt-92rpx">
           <van-button custom-style="width: 328rpx">
