@@ -1,10 +1,9 @@
 import { mzaiotRequest } from '../utils/index'
 
-export async function getHomeList(data: object) {
-  return await mzaiotRequest.post<User.UserLoginRes>({
+export async function getHomeList() {
+  return await mzaiotRequest.post<Home.HomeInfo[]>({
     log: true,
     loading: true,
-    url: '/mzgd/user/house/queryHouseList',
-    data,
+    url: '/v1/mzgd/user/house/queryHouseList',
   })
 }

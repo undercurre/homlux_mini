@@ -79,6 +79,13 @@
           "name": "设备替换",
           "pathName": "package-mine/device-replace/index",
           "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "首页",
+          "pathName": "pages/index/index",
+          "query": "",
           "scene": null,
           "launchMode": "default"
         }

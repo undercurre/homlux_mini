@@ -5,7 +5,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-    status: 'success',
+    status: 'networking',
     currentStep: '连接设备',
     stepList: [
       {

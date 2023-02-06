@@ -1,6 +1,6 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { homeBinding, userBinding, home } from '../../store/index'
-import { runInAction } from 'mobx-miniprogram'
+import { homeBinding, userBinding } from '../../store/index'
+
 Component({
   options: {
     styleIsolation: 'apply-shared',
@@ -46,9 +46,7 @@ Component({
    */
   methods: {
     handleHomeTap(e: { currentTarget: { dataset: { value: string } } }) {
-      runInAction(() => {
-        home.currentHomeId = e.currentTarget.dataset.value
-      })
+      console.log('handleHomeTap', e)
       this.triggerEvent('select')
     },
     hideAnimate() {

@@ -79,6 +79,22 @@ HomLux小程序
 1. 接口命名首字母大写，建议接口前可以加上I
 2. TS类型规范，业务相关的类型定义在typings目录下，按需使用namespace和不同的d.ts进行拆分，如果业务复杂，还可以归类到不同文件夹进行区分。
 
+### 跨页面通信
+> 使用第三方库[mitt](https://github.com/developit/mitt)
+
+引用`utils/eventBus` 的 `emitter`， 维护扩展 `Events` 字段——全局事件类型
+
+使用示例
+```ts
+import { emitter } from './utils/eventBus'
+
+emitter.on('loginOut', (e) => {
+  console.log('login-event', e)
+})
+
+emitter.emit('loginOut', '42')
+```
+
 ## 注意点
 
 1. [mobx 使用注意点](./docs/mobx使用注意点.md)
