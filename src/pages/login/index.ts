@@ -45,7 +45,7 @@ Component({
       if (loginRes.success && loginRes.result) {
         // 保证下面的res不会出现undefined
         // 批量缓存返回值
-        ;(['token', 'mobilePhone', 'nickName', 'headImageUrl'] as const).forEach((item) => {
+        (['token', 'mobilePhone', 'nickName', 'headImageUrl'] as const).forEach((item) => {
           // 同样去除undefined
           const value = (loginRes.result as User.UserLoginRes)[item]
           if (value) {
