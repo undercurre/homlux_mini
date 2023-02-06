@@ -1,6 +1,6 @@
 import { baseRequest, BaseRequestOptions } from './baseRequest'
 import storage from '../storage'
-import config from '../../config'
+import { env, mzaiotBaseURL } from '../../config/index'
 
 // 后端默认返回格式
 type MzaiotResponseRowData<T extends AnyResType = AnyResType> = {
@@ -35,7 +35,7 @@ const mzaiotRequest: MzaiotRequest = function <T extends AnyResType>(options: Ba
   }
 
   // 拼接上美智云的基础地址
-  options.url = config.mzaiotBaseURL[config.env] + options.url
+  options.url = mzaiotBaseURL[env] + options.url
 
   // 后续考虑选择用nanoid生成reqId，但是微信小程序不支持浏览器的crypto API，无法使用nanoid和uuid包。
   const reqId = Date.now()

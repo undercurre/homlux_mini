@@ -22,7 +22,7 @@ interface Storage {
 
 同步操作 storage，执行 set、remove，clear 都只会返回 void，相对于 JS 来说就是没有返回值。
 
-导出的 storage 的 set 默认会设置有效期，默认有效期在/src/config.ts 的 storageExpire 设置，**如果不需要有效期则需要在 set 方法传递 null**
+导出的 storage 的 set 默认会设置有效期，默认有效期在/src/config/index.ts 的 storageExpire 设置，**如果不需要有效期则需要在 set 方法传递 null**
 
 get 默认如果没找到 key 或者已经过了有效期，则默认返回 def，如果不传递 def 默认返回 undefined。
 

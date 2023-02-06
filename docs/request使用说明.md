@@ -71,7 +71,7 @@ mzaiotRequest.get<UserInfo>({ url: 'xxx' })
 | - | - | - |
 | Authentication | `'Bearer ' + storage.get('token', '')` | 美智云请求 header |
 
-> 封装了 Url 处理，根据/src/config.ts 的 mzaiotBaseURL 和请求传入的 URL 进行拼接。
+> 封装了 Url 处理，根据/src/config/index.ts 的 mzaiotBaseURL 和请求传入的 URL 进行拼接。
 
 > 封装了部分请求参数
 
