@@ -1,4 +1,4 @@
-import config from '../config'
+import { storageExpire, env } from '../config/index'
 
 interface Storage {
   readonly prefixKey: string
@@ -14,17 +14,18 @@ interface Storage {
   clear(): void | Promise<WechatMiniprogram.GeneralCallbackResult>
 }
 
-export const createStorage = ({
-  prefixKey = '',
-  sync = true,
-  defaultCacheTime = config.storageExpire[config.env],
-} = {}): Storage => {
+export const createStorage = ({ prefixKey = '', sync = true, defaultCacheTime = storageExpire[env] } = {}): Storage => {
   return {
     prefixKey: prefixKey,
     getKey(key: string) {
       return `${this.prefixKey}${key}`.toUpperCase()
     },
-    set(key: string, value: IAnyObject | string | number | boolean, expire = defaultCacheTime, encrypt = false) {
+    set(
+      key: string,
+      value: IAnyObject | string | number | boolean,
+      expire = defaultCacheTime as number,
+      encrypt = false,
+    ) {
       const stringData = JSON.stringify({
         value,
         expire: expire !== null ? new Date().getTime() + expire * 1000 : null,
