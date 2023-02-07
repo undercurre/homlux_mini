@@ -4,7 +4,7 @@
 
 ## baseRequest 使用方式
 
-baseRequest 方法的参数能使用所以的 wx.request 参数，还能传入额外的配置项，baseRequest 类型定义：
+baseRequest 方法的参数能使用所有的 wx.request 参数，还能传入额外的配置项，baseRequest 类型定义：
 
 ```ts
 type BaseRequestOptions<T extends AnyResType> = WechatMiniprogram.RequestOption<T> & {

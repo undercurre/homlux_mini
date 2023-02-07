@@ -1,4 +1,5 @@
 import { mzaiotRequest } from '../utils/index'
+export * from './home'
 
 export async function login(data: object) {
   return await mzaiotRequest.post<User.UserLoginRes>({

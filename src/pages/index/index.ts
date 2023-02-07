@@ -24,8 +24,8 @@ ComponentWithComputed({
   },
   computed: {
     currentHomeName(data) {
-      if (data.homeList) {
-        return (data.homeList as Home.HomeInfo[]).find((item) => item.home_id === data.currentHomeId)?.home_name
+      if (data.currentHomeInfo) {
+        return data.currentHomeInfo?.houseName
       }
       return ''
     },

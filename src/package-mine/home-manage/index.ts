@@ -36,26 +36,13 @@ ComponentWithComputed({
     ],
   },
 
-  computed: {
-    currentHomeName(data) {
-      const homeList: Home.HomeInfo[] = data.homeList
-
-      return homeList?.find((item) => item.home_id === (data.currentHomeId as string))?.home_name
-    },
-    selectHomeList(data): Home.DropdownItem[] {
-      console.log('selectHomeList', data.currentHomeId)
-      return data.homeList?.map((item: Home.HomeInfo) => ({
-        value: item.home_id,
-        name: item.home_name,
-        isSelect: data.currentHomeId === item.home_id,
-        isCreator: data.userInfo?.id === item.master_uid,
-      }))
-    },
-  },
+  computed: {},
 
   lifetimes: {
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
-    attached: function () {},
+    attached: function () {
+      homeBinding.store.updateHomeList()
+    },
     moved: function () {},
     detached: function () {},
   },
@@ -112,6 +99,10 @@ ComponentWithComputed({
           200,
         )
       }
+    },
+
+    handleHomeSelect(e: WechatMiniprogram.BaseEvent) {
+      console.log('handleHomeSelect', e)
     },
 
     toSetting() {

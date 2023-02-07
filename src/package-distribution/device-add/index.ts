@@ -1,16 +1,11 @@
-type StatusName = 'networking' | 'success' | 'error' | 'bind'
-
-interface PageData {
-  status: StatusName
-  currentStep: string
-}
+import { IPageData } from './typings'
 
 Page({
   /**
    * 页面的初始数据
    */
   data: {
-    status: 'success',
+    status: 'networking',
     currentStep: '连接设备',
     stepList: [
       {
@@ -26,7 +21,7 @@ Page({
         isCheck: false,
       },
     ],
-  } as PageData,
+  } as IPageData,
 
   /**
    * 生命周期函数--监听页面加载

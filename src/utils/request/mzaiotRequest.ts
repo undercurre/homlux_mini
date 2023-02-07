@@ -7,7 +7,7 @@ type MzaiotResponseRowData<T extends AnyResType = AnyResType> = {
   code: number
   msg: string
   success: boolean
-  result?: T
+  result: T
 }
 
 type MzaiotRequest = <T extends AnyResType>(options: BaseRequestOptions<T>) => Promise<MzaiotResponseRowData<T>>
@@ -23,7 +23,7 @@ type MzaiotRequestWithMethod = MzaiotRequest & {
 const mzaiotRequest: MzaiotRequest = function <T extends AnyResType>(options: BaseRequestOptions<T>) {
   // 按需添加header
   const header = {
-    Authentication: 'Bearer ' + storage.get('token', ''),
+    Authorization: 'Bearer ' + storage.get('token', ''),
   }
   if (options.header) {
     options.header = {
@@ -39,14 +39,15 @@ const mzaiotRequest: MzaiotRequest = function <T extends AnyResType>(options: Ba
 
   // 后续考虑选择用nanoid生成reqId，但是微信小程序不支持浏览器的crypto API，无法使用nanoid和uuid包。
   const reqId = Date.now()
-  if (!options.data) {
-    options.data = { reqId }
-  } else if (
-    Object.prototype.toString.call(options.data) === '[object Object]' &&
-    !(options.data as IAnyObject).reqId
-  ) {
-    ;(options.data as IAnyObject).reqId = reqId
-  }
+  options.data = Object.assign(
+    {
+      reqId,
+      frontendType: '',
+      systemSource: '',
+      timestamp: reqId,
+    },
+    options.data,
+  )
 
   return baseRequest<T>({
     ...options,

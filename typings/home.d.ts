@@ -7,20 +7,17 @@ declare namespace Home {
     /**
      * 家庭唯一id
      */
-    home_id: string
+    houseId: string
     /**
      * 家庭名称
      */
-    home_name: string
-    /**
-     * 家庭主人
-     */
-    master_uid: string
+    houseName: string
 
-    /**
-     * 家庭成员
-     */
-    memberList: Array<number>
+    // 是否默认家庭
+    defaultHouseFlag: boolean
+
+    // 是否创建者
+    houseCreatorFlag: boolean
   }
 
   // 房间
@@ -28,7 +25,7 @@ declare namespace Home {
     /**
      * 所属家庭
      */
-    home_id?: string
+    houseId?: string
     /**
      * 房间唯一id
      */
@@ -59,7 +56,7 @@ declare namespace Home {
     /**
      * 所属家庭
      */
-    home_id?: string
+    houseId?: string
     /**
      * 所属房间
      */

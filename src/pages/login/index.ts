@@ -26,6 +26,7 @@ Component({
     onLoginClick(e: { detail: { code: string } }) {
       wx.login({
         success: (res) => {
+          console.log('login', res, e)
           if (res.code) {
             this.handleLogin({
               jsCode: res.code,
@@ -39,6 +40,7 @@ Component({
     },
 
     async handleLogin(data: { jsCode: string; code: string }) {
+      console.log('handleLogin', data)
       const loginRes = await login(data)
       if (loginRes.success && loginRes.result) {
         // 保证下面的res不会出现undefined
@@ -47,7 +49,7 @@ Component({
           // 同样去除undefined
           const value = (loginRes.result as User.UserLoginRes)[item]
           if (value) {
-            storage.set(item, value, null)
+            storage.set(item, 'f9992117fd284789bb96bd20b4782988', null)
           }
         })
         console.log('去首页')

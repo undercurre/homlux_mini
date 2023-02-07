@@ -1,5 +1,6 @@
 export { baseRequest, mzaiotRequest, BaseRequestOptions } from './request/index'
 export { createStorage, storage, asyncStorage } from './storage'
+export { emitter } from './eventBus'
 
 export function delay(ms: number) {
   return new Promise<void>((resolve) => {

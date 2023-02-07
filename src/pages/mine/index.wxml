@@ -37,5 +37,5 @@
 </van-cell-group>
 
 <view class="px-24rpx pb-140rpx">
-  <van-button block type="danger" plain size="large">退出登录</van-button>
+  <van-button block type="danger" plain size="large" bind:click="loginOut">退出登录</van-button>
 </view>

@@ -1,4 +1,5 @@
 import { observable, runInAction } from 'mobx-miniprogram'
+import { storage } from '../utils/index'
 
 export const others = observable({
   token: '',
@@ -11,6 +12,7 @@ export const others = observable({
     runInAction(() => {
       others.token = ''
     })
+    storage.remove('token')
     wx.redirectTo({
       url: '/pages/login/index',
     })

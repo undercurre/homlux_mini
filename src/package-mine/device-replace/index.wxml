@@ -2,18 +2,30 @@
   <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="设备替换"></nav-bar>
 
   <view class="grow flex flex-col pt-40rpx">
-    <tips-box text="通过设备替换，可使用新设备替换旧设备，新设备将继承旧设备的以下数据：" icon="/assets/img/device-replace/replace-tips.png"></tips-box>
+    <block wx:if="{{status === 'begin'}}">
+      <tips-box text="通过设备替换，可使用新设备替换旧设备，新设备将继承旧设备的以下数据：" icon="/assets/img/device-replace/replace-tips.png"></tips-box>
 
-    <view class="pt-32rpx px-100rpx">
-      <view class="text-24 leading-46rpx text-black-tips">
-        <text class="block">1.原设备的名称与房间</text>
-        <text class="block">2.原设备的参数设置</text>
-        <text class="block">3.原设备关联的场景及参数</text>
+      <view class="pt-32rpx px-100rpx">
+        <view class="text-24 leading-46rpx text-black-tips">
+          <text class="block">1.原设备的名称与房间</text>
+          <text class="block">2.原设备的参数设置</text>
+          <text class="block">3.原设备关联的场景及参数</text>
+        </view>
+
+        <text class="block pt-64rpx text-black-primary text-28 leading-40rpx">替换完成后，原设备将自动从家庭中解绑</text>
       </view>
+    </block>
 
-      <text class="block pt-64rpx text-black-primary text-28 leading-40rpx">替换完成后，原设备将自动从家庭中解绑</text>
-    </view>
+    <block wx:if="{{status !== 'begin'}}">
+      <steps active="{{1}}"></steps>
+
+      <text class="block text-center pt-60rpx pb-16rpx leading-40rpx text-28 text-black-secondary">选择新设备</text>
+
+      <text class="block text-center pb-80rpx leading-34rpx text-24 text-black-secondary">仅可选择在线，且与旧设备同类别的新设备</text>
+
+      <view class="bg-white mx-24rpx p-60rpx rounded-32rpx"></view>
+    </block>
   </view>
 
-  <van-button class="mx-32rpx" size="large" type="primary" block>开始使用</van-button>
+  <van-button class="mx-32rpx" size="large" type="primary" block bind:click="clickBtn">{{ btnText }}</van-button>
 </view>

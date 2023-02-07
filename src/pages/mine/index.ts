@@ -1,4 +1,6 @@
 // pages/mine/index.ts
+import { emitter } from '../../utils/eventBus'
+
 Component({
   /**
    * 页面的初始数据
@@ -45,6 +47,10 @@ Component({
       wx.navigateTo({
         url: e.currentTarget.dataset.url,
       })
+    },
+
+    loginOut() {
+      emitter.emit('loginOut')
     },
   },
 })

@@ -3,6 +3,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { roomBinding, othersBinding, userBinding } from '../../store/index'
+import { StatusType } from './typings'
 
 ComponentWithComputed({
   options: {
@@ -13,9 +14,20 @@ ComponentWithComputed({
   /**
    * 页面的初始数据
    */
-  data: {},
+  data: {
+    status: 'begin' as StatusType,
+  },
 
-  computed: {},
+  computed: {
+    btnText(data) {
+      const textMap = {
+        begin: '开始使用',
+        first: '下一步',
+      }
+
+      return textMap[data.status]
+    },
+  },
 
   lifetimes: {
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
@@ -24,5 +36,13 @@ ComponentWithComputed({
     detached: function () {},
   },
 
-  methods: {},
+  methods: {
+    clickBtn() {
+      if (this.data.status === 'begin') {
+        this.setData({
+          status: 'first',
+        })
+      }
+    },
+  },
 })
