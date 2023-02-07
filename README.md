@@ -13,6 +13,7 @@
 项目配置了一个分包示例，可以按需求进行修改。
 
 ## 📁 代码结构
+
 ```
 HomLux小程序
 ├── .husky // git hooks
@@ -57,42 +58,56 @@ HomLux小程序
 1. 主包页面存放在 pages 目录下，分包页面存放在 packages 目录下，如果分包内容非常多，可以按照 packageXXX 再进行区分。
 2. 全局状态模型定义存放在 store 目录下，按照业务拆分模块。
 3. 接口调用方式封装在 apis 目录下，可以按照业务区分模块，如果项目比较大有多个后端接口地址，可以归类到不同文件夹进行区分。
-4. 接口通用的请求处理、响应处理、失败处理都封装在 utils/request 目录下，参考`utils/request/defaultRequest.ts`，不通用的数据和逻辑操作通过参数传入。[参考文档](docs/request使用说明.md)
+4. 接口通用的请求处理、响应处理、失败处理都封装在 utils/request 目录下，参考`utils/request/defaultRequest.ts`
+   ，不通用的数据和逻辑操作通过参数传入。[参考文档](docs/request使用说明.md)
 
 ### CSS 样式
+
 1. 请尽量避免将静态的样式写进 `style` 中，以免影响渲染速度
 2. 公共样式
 
-| 样式名 | 描述 |
-| ------ | ------ |
+| 样式名              | 描述       |
+|------------------|----------|
 | `page-container` | 用于一般页面容器 |
 
-3. Unocss 用法和 Tailwind 基本一致，可以查看[Tailwind](https://tailwindcss.com/)官方文档进行使用，微信小程序的 class 不支持写`%`，所以要用`/`来代替，比如 w-50%可以用 w-1/2 表示
+3. Unocss 用法和 Tailwind 基本一致，可以查看[Tailwind](https://tailwindcss.com/)官方文档进行使用，微信小程序的 class
+   不支持写`%`，所以要用`/`来代替，比如 w-50%可以用 w-1/2 表示
 4. `Vant`的`Cell 单元格`样式已根据UI稿调整。可直接使用
 
 ### svg 图标
-> SvgIcon 用法：SvgIcon 组件会从 globalData 读取 svg 标签，然后动态生成 url，并使用 css 渲染。项目在 build/getIconify.ts 实现了读取一个 json 文件里的`iconList`列表，然后生成 js/ts 文件，然后导入到 globalData 即可根据 svg 的名字加载 svg。使用 svg
+
+> SvgIcon 用法：SvgIcon 组件会从 globalData 读取 svg 标签，然后动态生成 url，并使用 css 渲染。项目在 build/getIconify.ts
+> 实现了读取一个 json 文件里的`iconList`列表，然后生成 js/ts 文件，然后导入到 globalData 即可根据 svg 的名字加载 svg。使用
+> svg
 
 请优先使用图标库：https://icon-sets.iconify.design/icon-park-outline/
 
 ### JS
+
 1. 接口命名首字母大写，建议接口前可以加上I
 2. TS类型规范，业务相关的类型定义在typings目录下，按需使用namespace和不同的d.ts进行拆分，如果业务复杂，还可以归类到不同文件夹进行区分。
 
 ### 跨页面通信
-> 使用第三方库[mitt](https://github.com/developit/mitt)
 
-引用`utils/eventBus` 的 `emitter`， 维护扩展 `Events` 字段——全局事件类型
+> 使用mobx-miniprogram包，使用reaction监听store里的状态变化即可，使用示例：
 
-使用示例
-```ts
-import { emitter } from './utils/eventBus'
-
-emitter.on('loginOut', (e) => {
-  console.log('login-event', e)
-})
-
-emitter.emit('loginOut', '42')
+```
+import { reaction } from 'mobx-miniprogram'
+import { store } from './store'
+component({
+    data: {
+        _clean: ()=>{}
+    },
+    methods: {
+        onLoad() {
+            this.data._clean = reaction(()=>store.xxx, (data, reaction)=>{...}) // 监听store里的xxx
+        },
+        onUnload() {
+            // 页面离开时需要执行clean清除副作用，防止内存泄漏
+            this.data._clean()
+        }
+    }
+)
 ```
 
 ## 注意点

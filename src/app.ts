@@ -1,7 +1,6 @@
 // app.js
 import { setNavigationBarHeight, storage } from './utils/index'
 import svgs from './assets/svg/index'
-import { others } from './store/others'
 
 App<IAppOption>({
   onLaunch() {
@@ -24,9 +23,7 @@ App<IAppOption>({
     })
 
     // 如果用户没登陆，或者登录状态过期，需要自动跳转到登录页
-    if (storage.get<string>('token')) {
-      others.setToken(storage.get<string>('token') as string)
-    } else {
+    if (!storage.get<string>('token')) {
       wx.redirectTo({
         url: '/pages/login/index',
       })

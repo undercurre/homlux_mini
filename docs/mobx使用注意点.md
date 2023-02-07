@@ -19,7 +19,7 @@ export const store = observable({
   },
 
   // 模拟请求接口异步修改状态
-  update: async function () {
+  async update() {
     await delay(1000)
     runInAction(() => {
       const sum = this.sum
@@ -27,107 +27,17 @@ export const store = observable({
       this.numB = sum
     })
   },
-
-  // 使用action没办法使用this（TS报错），而且不能像上面runInAction一样使用async封装一下
-  update1: action(() => {
-    const sum = store.sum
-    store.numA = store.numB
-    store.numB = sum
-  }),
-
-  // ！！！像这么写页面不会有响应！！！
-  update2: action(async () => {
-    await delay(1000)
-    const sum = store.sum
-    store.numA = store.numB
-    store.numB = sum
-  }),
 })
 ```
 
 # binding
 
-定义完 store 之后就需要绑定到组件或者页面，这里不能使用手动绑定，不然就会报错：
+定义完 store 之后就需要绑定到组件或者页面
 
 ```ts
-import { createStoreBindings } from 'mobx-miniprogram-bindings'
-
-Page({
-  onLoad() {
-    // TS 这里会产生类型错误！！！
-    this.storeBindings = createStoreBindings(this, {
-      /* 绑定配置（见下文） */
-    })
-  },
-  onUnload() {
-    this.storeBindings.destroyStoreBindings()
-  },
-})
-```
-
-正确的绑定方法如下：
-
-```ts
-import { ComponentWithStore } from 'mobx-miniprogram-bindings'
-import { store } from '../../models'
-ComponentWithStore({
-  storeBindings: {
-    namespace: 'user_store',
-    store: user,
-    fields: {
-      numA: 'numA',
-      numB: (store: typeof user) => {
-        return store.numB
-      },
-      sum: 'sum',
-    },
-    actions: {
-      buttonTap: 'update_user',
-    },
-  },
-})
-```
-
-或者使用 behavior 的方式绑定：
-
-```ts behavior.ts
-import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { store1, store2 } from '../../models/index'
-
-export const mobxBehavior = BehaviorWithStore({
-  storeBindings: [
-    {
-      namespace: 'store2',
-      store: store2,
-      fields: ['numA', 'numB', 'sum'],
-      actions: ['update'],
-    },
-    {
-      store: store1,
-      fields: ['numA', 'numB', 'sum'],
-      actions: ['update_user'],
-    },
-  ],
-})
-```
-
-```ts
-import { runInAction } from 'mobx-miniprogram'
-import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { behavior as computedBehavior } from 'miniprogram-computed'
-import { testApi } from '../../api/index'
-import { store } from '../../models/index'
-Page({
-  // page和component应该都一样
-  behaviors: [BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding] }), computedBehavior], // ！！！computed一定要放在后面（来着官方文档）！！！
-  computed: {
-    allSum(data: { numA: number; numB: number; global: { numA: number; numB: number } }) {
-      return data.numA + data.numB + data.global.numA + data.global.numB
-    },
-  },
-  readStore() {
-    console.log(store) // 现在store里的值和绑定到this.data的值保持一致，但是this.data访问绑定的值无法提供正常的类型推导，如果在ts下，需要保持类型正确目前的方法只能直接读取store
-  },
+import { othersBinding, roomBinding, userBinding, homeBinding } from '../../store/index'
+ComponentWithComputed({
+    behaviors: [BehaviorWithStore({storeBindings: [othersBinding, roomBinding, userBinding, homeBinding]})],
 })
 ```
 
@@ -144,6 +54,8 @@ Page({
     runInAction(() => {
       store.xxx = arg
     })
+    // 或者store里面定义有action,使用store调用action：
+    store.xxx(arg)
   },
 })
 ```

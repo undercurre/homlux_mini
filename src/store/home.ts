@@ -1,7 +1,8 @@
-import { observable, action, runInAction } from 'mobx-miniprogram'
+import { observable, runInAction } from 'mobx-miniprogram'
 import { getHomeList } from '../apis/index'
 
 export const home = observable({
+  test: 1,
   homeList: [] as Home.HomeInfo[],
 
   get currentHomeInfo() {
@@ -9,15 +10,13 @@ export const home = observable({
   },
 
   // actions
-  updateHomeList: action(async function () {
+  async updateHomeList() {
     const res = await getHomeList()
-
-    console.log('updateHomeList', res)
-
     runInAction(() => {
       home.homeList = res.result
+      home.test++
     })
-  }),
+  },
 })
 
 export const homeBinding = {
