@@ -111,7 +111,7 @@ ComponentWithComputed({
     },
     handleCollect() {
       this.setData({
-        showAddScenePopup: true
+        showAddScenePopup: true,
       })
     },
     handleDeviceCardTap(e: { detail: { deviceId: string; deviceType: string } }) {

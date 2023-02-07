@@ -5,6 +5,6 @@
     <text class="text-32rpx text-hex-353535">{{sceneInfo.name}}</text>
   </view>
   <view class="w-48rpx h-48rpx mr-32rpx">
-    <image wx:if="{{select}}" class="w-48rpx h-48rpx" src="/assets/img/base/check.png"/>
+    <image wx:if="{{select}}" class="w-48rpx h-48rpx" src="/assets/img/base/check.png" />
   </view>
 </view>

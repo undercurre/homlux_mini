@@ -18,7 +18,7 @@ Component({
    */
   data: {
     sceneIcon: '',
-    sceneName: ''
+    sceneName: '',
   },
 
   /**
@@ -29,13 +29,13 @@ Component({
       this.triggerEvent('close')
     },
     onConfirm() {
-      // todo: 
+      // todo:
       this.triggerEvent('close')
     },
     handleClear() {
       this.setData({
-        sceneName: ''
+        sceneName: '',
       })
     },
-  }
+  },
 })
