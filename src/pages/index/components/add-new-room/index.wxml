@@ -9,7 +9,7 @@
       <text class="w-full text-left pl-96rpx pt-60rpx text-28rpx text-black-primary">房间名称</text>
       <view class="flex w-654rpx h-96rpx items-center rounded-24rpx px-32rpx py-28rpx box-border mt-32rpx border-2rpx border-gray-primary border-solid">
         <input value="{{roomName}}" bindinput="handleRoomNameInput" class="flex-1" type="text" placeholder="请输入房间名称" />
-        <svg-icon bindtap="handleClear" wx:if="{{isShow}}" name="ion:close-circled" width="40rpx" height="40rpx" color="#d2d2d2" />
+        <svg-icon bindtap="handleClear"  name="ion:close-circled" width="40rpx" height="40rpx" color="#d2d2d2" />
       </view>
       <text class="w-full text-left pl-96rpx pt-68rpx text-28rpx text-black-primary">选择房间图标</text>
       <view class="w-654rpx grid gap-48rpx grid-cols-4 mt-44rpx">

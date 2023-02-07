@@ -2,8 +2,6 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { roomBinding } from '../../../../store/index'
 
-type DeviceInfo = Device.LightInfo | Device.SwitchInfo | Device.CurtainInfo
-
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
@@ -23,7 +21,7 @@ ComponentWithComputed({
           }, 100)
         }
         this.setData({
-          select: '',
+          select: '', // TODO: 根据云端的值设置
         })
       },
     },
@@ -53,9 +51,15 @@ ComponentWithComputed({
     },
     deviceList(data) {
       if (data.currentRoomIndex !== undefined && data.roomList) {
-        return (data.roomList as { deviceList: DeviceInfo[] }[])[data.currentRoomIndex as number].deviceList.filter(
-          (device) => device.deviceType === data.linkType,
+        return data.roomList[data.currentRoomIndex].deviceList.filter(
+          (device: { deviceType: string }) => device.deviceType === data.linkType,
         )
+      }
+      return []
+    },
+    sceneList(data) {
+      if (data.currentRoomIndex !== undefined && data.roomList) {
+        return data.roomList[data.currentRoomIndex].sceneList
       }
       return []
     },
@@ -71,8 +75,12 @@ ComponentWithComputed({
         select: device.detail.deviceId,
       })
     },
+    handleSceneCardTap(scene: { detail: { name: string; value: string } }) {
+      this.setData({
+        select: scene.detail.value,
+      })
+    },
     onClickHide() {
-      console.log(1111)
       this.triggerEvent('close')
     },
     getHeight() {

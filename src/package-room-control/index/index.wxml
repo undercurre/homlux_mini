@@ -28,7 +28,7 @@
             </view>
           </view>
         </view>
-        <van-button catchtap="handleCollect" custom-class="fav-btn" type="default">收藏</van-button>
+        <van-button catchtap="handleCollect" custom-class="fav-btn" type="primary">收藏</van-button>
       </view>
     </view>
     <view id="content" class="flex-1">
@@ -69,3 +69,4 @@
 <!-- 设备控制弹窗 -->
 <device-control-popup popup="{{controlPopupUp}}" bind:popMove="handlePopMove" bind:switchLink="handleSwitchLinkPopup"></device-control-popup>
 <switch-link-popup show="{{showLinkPopup}}" linkType="{{linkType}}" bind:close="handleLinkPopupClose"></switch-link-popup>
+<add-scene-popup show="{{showAddScenePopup}}" />

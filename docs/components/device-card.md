@@ -5,7 +5,7 @@
 | 参数 name   | 类型    | 必传  | 默认值 | 描述           |
 | ----------- | ------- | ----- | ------ | -------------- |
 | deviceInfo  | Object  | true  | -      | 设备信息       |
-| select      | boolean | false | false  | 是否默认选中   |
+| select      | boolean | false | false  | 是否选中       |
 | showControl | boolean | false | false  | 是否有控制功能 |
 
 ## 事件
