@@ -3,7 +3,6 @@
   "navigationStyle": "custom",
   "usingComponents": {
     "device-control-popup": "./components/device-control-popup/index",
-    "switch-link-popup": "./components/switch-link-popup/index",
-    "device-card": "./components/device-card/index"
+    "switch-link-popup": "./components/switch-link-popup/index"
   }
 }

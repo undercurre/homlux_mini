@@ -1,1 +1,5 @@
 /* package-room-control/index/components/switch-link-popup/index.wxss */
+.control-btn {
+  width: 320rpx !important;
+  height: 88rpx !important;
+}

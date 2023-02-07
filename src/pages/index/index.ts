@@ -1,5 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { room, othersBinding, roomBinding, userBinding, homeBinding } from '../../store/index'
+import { room, /* home, */ othersBinding, roomBinding, userBinding, homeBinding } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 ComponentWithComputed({
@@ -48,6 +48,7 @@ ComponentWithComputed({
           selected: 0,
         })
       }
+      // home.updateHomeList()
     },
     onHide() {
       // 隐藏之前展示的下拉菜单

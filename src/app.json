@@ -42,11 +42,13 @@
     "van-overlay": "@vant/weapp/overlay/index",
     "van-cell": "@vant/weapp/cell/index",
     "van-slider": "@vant/weapp/slider/index",
+    "van-popup": "@vant/weapp/popup/index",
     "van-cell-group": "@vant/weapp/cell-group/index",
     "nav-bar": "./components/custom-nav-bar/index",
     "home-select-menu": "./components/home-select-menu/index",
     "add-home": "./components/add-room/index",
-    "svg-icon": "./components/svg-icon/index"
+    "svg-icon": "./components/svg-icon/index",
+    "device-card": "./components/device-card/index"
   },
   "window": {
     "navigationStyle": "custom",
