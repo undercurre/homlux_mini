@@ -1,16 +1,24 @@
 import { observable, runInAction } from 'mobx-miniprogram'
 
 export const others = observable({
-  isLoadedSvg: false,
-  setIsLoadSvg: function () {
+  token: '',
+  setToken: function (token: string) {
     runInAction(() => {
-      others.isLoadedSvg = true
+      others.token = token
+    })
+  },
+  logout() {
+    runInAction(() => {
+      others.token = ''
+    })
+    wx.redirectTo({
+      url: '/pages/login/index',
     })
   },
 })
 
 export const othersBinding = {
   store: others,
-  fields: ['isLoadedSvg'],
-  actions: ['setIsLoadSvg'],
+  fields: ['token'],
+  actions: ['setToken', 'logout'],
 }

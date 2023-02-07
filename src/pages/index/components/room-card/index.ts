@@ -28,10 +28,6 @@ ComponentWithComputed({
       type: Boolean,
       value: false,
     },
-    svgLoaded: {
-      type: Boolean,
-      value: false,
-    },
   },
 
   computed: {

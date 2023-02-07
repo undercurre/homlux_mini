@@ -44,11 +44,11 @@
           <view class="h-32rpx"></view>
         </view>
         <view class="flex justify-evenly mt-92rpx">
-          <van-button custom-style="width: 328rpx">
-            <text class="text-32rpx">全开</text>
+          <van-button custom-style="width: 328rpx !important;height: 80rpx !important;">
+            <text class="text-32rpx text-black-secondary">全开</text>
           </van-button>
-          <van-button custom-style="width: 328rpx">
-            <text class="text-32rpx">全关</text>
+          <van-button custom-style="width: 328rpx !important;height: 80rpx !important;">
+            <text class="text-32rpx text-black-secondary">全关</text>
           </van-button>
         </view>
       </view>

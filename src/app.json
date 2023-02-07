@@ -41,6 +41,7 @@
     "van-button": "@vant/weapp/button/index",
     "van-overlay": "@vant/weapp/overlay/index",
     "van-cell": "@vant/weapp/cell/index",
+    "van-slider": "@vant/weapp/slider/index",
     "van-cell-group": "@vant/weapp/cell-group/index",
     "nav-bar": "./components/custom-nav-bar/index",
     "home-select-menu": "./components/home-select-menu/index",

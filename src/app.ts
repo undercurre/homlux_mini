@@ -1,17 +1,12 @@
 // app.js
 import { setNavigationBarHeight, storage } from './utils/index'
+import svgs from './assets/svg/index'
 import { others } from './store/others'
-
-type require = (url: string, cb: (module: IAnyObject) => void) => void
 
 App<IAppOption>({
   onLaunch() {
     // 加载svg，这里不能使用import进行导入，使用import导入会导致报错
-    const req = require as require
-    req('./assets/svg/svgs.js', (module) => {
-      this.globalData.svgs = module.default
-      others.setIsLoadSvg()
-    })
+    this.globalData.svgs = svgs
 
     // 获取状态栏和顶部栏高度
     setNavigationBarHeight()
@@ -27,6 +22,15 @@ App<IAppOption>({
         console.log(err)
       },
     })
+
+    // 如果用户没登陆，或者登录状态过期，需要自动跳转到登录页
+    if (storage.get<string>('token')) {
+      others.setToken(storage.get<string>('token') as string)
+    } else {
+      wx.redirectTo({
+        url: '/pages/login/index',
+      })
+    }
   },
   globalData: {},
 })
