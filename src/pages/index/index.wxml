@@ -3,49 +3,64 @@
   <image src="/assets/img/home/bg.jpg" class="bg-image"></image>
 </view>
 
-<!-- 导航栏 -->
-<nav-bar background="{{navBarBg}}">
-  <view bindtap="handleShowHomeSelectMenu" wx:if="{{pageScroll < 17}}">
-    <view class="absolute top-8rpx left-32rpx">
-      <text class="text-hex-1e2c46 text-48rpx font-semibold">{{currentHomeName}}</text>
-      <svg-icon id="homeSelectArrow" class="absolute home-select-arrow" color="#1E2C46" name="material-symbols:arrow-drop-down-rounded" width="48rpx" height="48rpx" />
-    </view>
-  </view>
-</nav-bar>
-
-<!-- 主体内容 -->
-<view class="px-24rpx pt-28rpx w-full h-full box-border" bindtap="hideMenu">
-  <!-- 有设备时显示 -->
-  <view class="relative w-full flex flex-col items-center" wx:if="{{hasDevice}}">
-    <view class="bg-hex-ffffff_42 w-244rpx h-80rpx rounded-40rpx flex absolute left-0 top-0" wx:if="{{isShowHomeControl}}">
-      <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx">
-        <text bindtap="handleAllOn" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999" style="background-color: {{allOnBtnTap ? '#468CFB' : 'transparent'}}; color: {{allOnBtnTap ? '#fff' : '#2b4067'}}">全开</text>
-      </view>
-      <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx">
-        <text bindtap="handleAllOff" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999" style="background-color: {{allOffBtnTap ? '#468CFB' : 'transparent'}}; color: {{allOffBtnTap ? '#fff' : '#2b4067'}}">全关</text>
+<view class="h-100vh flex flex-col" bindtap="hideMenu">
+  <!-- 导航栏 -->
+  <nav-bar>
+    <view catchtap="handleShowHomeSelectMenu">
+      <view class="absolute top-8rpx left-32rpx">
+        <text class="text-hex-1e2c46 text-48rpx font-semibold">{{currentHomeName}}</text>
+        <svg-icon id="homeSelectArrow" class="absolute home-select-arrow" color="#1E2C46" name="material-symbols:arrow-drop-down-rounded" width="48rpx" height="48rpx" />
       </view>
     </view>
-    <view data-mark="addIcon" class="absolute right-24rpx top-0" id="addIcon" bind:tap="handleDropdown">
-      <image src="/assets/img/home/add.png" class="w-64rpx h-64rpx"></image>
+  </nav-bar>
+  <view class="flex flex-1 flex-col w-full">
+    <!-- 主体内容 -->
+    <view class="flex flex-1 px-24rpx pt-28rpx w-full h-full box-border">
+      <!-- 有设备时显示 -->
+      <view class="flex-1 flex flex-col items-between w-full" wx:if="{{hasDevice}}">
+        <view class="flex justify-between">
+          <view class="bg-hex-ffffff_42 w-244rpx h-80rpx rounded-40rpx flex" wx:if="{{isShowHomeControl}}">
+            <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx">
+              <text bindtap="handleAllOn" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999" style="background-color: {{allOnBtnTap ? '#468CFB' : 'transparent'}}; color: {{allOnBtnTap ? '#fff' : '#2b4067'}}">全开</text>
+            </view>
+            <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx">
+              <text bindtap="handleAllOff" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999" style="background-color: {{allOffBtnTap ? '#468CFB' : 'transparent'}}; color: {{allOffBtnTap ? '#fff' : '#2b4067'}}">全关</text>
+            </view>
+          </view>
+          <view class="mr-12rpx mt-8rpx" data-mark="addIcon" id="addIcon" bind:tap="handleDropdown">
+            <image src="/assets/img/home/add.png" class="w-64rpx h-64rpx"></image>
+          </view>
+        </view>
+        <!-- 顶开上面的内容高度 -->
+        <view class="h-24rpx"></view>
+        <view class="flex-1" id="content">
+          <scroll-view enhanced	scroll-y show-scrollbar="{{false}}" class="rounded-32rpx" style="height: {{contentHeight}}px;">
+            <!-- 房间卡片列表 -->
+            <room-card wx:for="{{roomList}}" wx:key="roomId" data-room="{{item.roomId}}" bind:cardTap="handleToRoom" bind:sceneSelect="handleSceneSelect" svgLoaded="{{isLoadedSvg}}" roomName="{{item.roomName}}" lightOnNumber="{{item.lightOnNumber}}" sceneList="{{item.sceneList}}" showScene></room-card>
+            <view class="w-full flex-center">
+              <text class="text-24rpx text-hex-aeaeb5">可手动添加更多空间~</text>
+            </view>
+            <!-- 顶开下面的内容高度 -->
+            <view class="h-180rpx"></view>
+          </scroll-view>
+        </view>
+      </view>
+      <!-- 无设备时显示 -->
+      <view wx:else class="w-full mt-68rpx flex flex-col items-center">
+        <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx"></image>
+        <text class="text-32rpx text-black-secondary mt-44rpx mb-32rpx">尚未添加设备</text>
+        <text class="text-24rpx text-black-secondary mb-224rpx opacity-40">立即添加设备，开启智慧照明</text>
+        <van-button bindtap="handleAddDevice" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-class="add-immediately-btn">添加智能设备</van-button>
+      </view>
+      <view class="tabbar-placeholder"></view>
     </view>
-    <!-- 顶开上面的内容高度 -->
-    <view class="h-120rpx"></view>
-    <!-- 房间卡片列表 -->
-    <room-card wx:for="{{roomList}}" wx:key="roomId" data-room="{{item.roomId}}" bind:cardTap="handleToRoom" bind:sceneSelect="handleSceneSelect" svgLoaded="{{isLoadedSvg}}" roomName="{{item.roomName}}" lightOnNumber="{{item.lightOnNumber}}" sceneList="{{item.sceneList}}" sceneSelect="{{item.sceneSelect}}" showScene></room-card>
-    <text class="text-24rpx text-hex-aeaeb5">可手动添加更多空间~</text>
   </view>
-  <!-- 无设备时显示 -->
-  <view wx:else class="w-full mt-68rpx flex flex-col items-center">
-    <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx"></image>
-    <text class="text-32rpx text-black-secondary mt-44rpx mb-32rpx">尚未添加设备</text>
-    <text class="text-24rpx text-black-secondary mb-224rpx opacity-40">立即添加设备，开启智慧照明</text>
-    <van-button bindtap="handleAddDevice" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-class="add-immediately-btn">添加智能设备</van-button>
-  </view>
-  <view class="tabbar-placeholder"></view>
 </view>
+
+
 
 <home-select-menu x="{{selectHomeMenu.x}}" y="{{selectHomeMenu.y}}" isShow="{{selectHomeMenu.isShow}}" bind:select="handleHomeSelect"></home-select-menu>
 <dropdown-menu x="{{dropdownMenu.x}}" y="{{dropdownMenu.y}}" isShow="{{dropdownMenu.isShow}}" bind:select="handleMenuSelect"></dropdown-menu>
-<add-device show="{{showAddNewDevice}}" bind:hide="handleHideAddNewDevice"></add-device>
+<add-device show="{{showAddNewDevice}}" bind:close="handleHideAddNewDevice"></add-device>
 <!-- <add-new-room isShow="{{showAddNewRoom}}" bind:hide="handleHideAddNewRoom" bind:confirm="handleAddRoomConfirm"></add-new-room> -->
-<add-room show="{{showAddNewRoom}}" bind:hide="handleHideAddNewRoom" bind:confirm="handleAddRoomConfirm"></add-room>
+<add-room show="{{showAddNewRoom}}" bind:close="handleHideAddNewRoom"></add-room>

@@ -1,15 +1,7 @@
 // custom-tab-bar/index.ts
-import { ComponentWithStore } from 'mobx-miniprogram-bindings'
-import { others } from '../store/index'
-ComponentWithStore({
+Component({
   options: {
     styleIsolation: 'apply-shared',
-  },
-
-  storeBindings: {
-    store: others,
-    fields: ['showTabbar'],
-    actions: {},
   },
 
   /**

@@ -1,49 +1,59 @@
 // package-room-control/scene-list/index.ts
-Component({
+import { ComponentWithComputed } from 'miniprogram-computed'
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import { roomBinding, scene } from '../../store/index'
+import pageBehavior from '../../behaviors/pageBehaviors'
+import { runInAction } from 'mobx-miniprogram'
+
+ComponentWithComputed({
+  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding] }), pageBehavior],
   /**
    * 页面的初始数据
    */
-  data: {},
+  data: {
+    contentHeight: 0,
+  },
+
+  computed: {
+    sceneList(data) {
+      if (data.currentRoomIndex !== undefined && data.roomList) {
+        return data.roomList[data.currentRoomIndex].sceneList
+      }
+      return []
+    },
+  },
 
   methods: {
     /**
      * 生命周期函数--监听页面加载
      */
-    onLoad() {},
+    onLoad() {
+      wx.createSelectorQuery()
+        .select('#content')
+        .boundingClientRect()
+        .exec((res) => {
+          if (res[0] && res[0].height) {
+            this.setData({
+              contentHeight: res[0].height,
+            })
+          }
+        })
+    },
 
-    /**
-     * 生命周期函数--监听页面初次渲染完成
-     */
-    onReady() {},
+    handleCollect(e: { currentTarget: { dataset: { info: unknown } } }) {
+      console.log(e.currentTarget.dataset.info)
+    },
 
-    /**
-     * 生命周期函数--监听页面显示
-     */
-    onShow() {},
-
-    /**
-     * 生命周期函数--监听页面隐藏
-     */
-    onHide() {},
-
-    /**
-     * 生命周期函数--监听页面卸载
-     */
-    onUnload() {},
-
-    /**
-     * 页面相关事件处理函数--监听用户下拉动作
-     */
-    onPullDownRefresh() {},
-
-    /**
-     * 页面上拉触底事件的处理函数
-     */
-    onReachBottom() {},
-
-    /**
-     * 用户点击右上角分享
-     */
-    onShareAppMessage() {},
+    toSetting(e: { currentTarget: { dataset: { info: Scene.SceneInfo } } }) {
+      runInAction(()=>{
+        scene.selectScene = {
+          ...e.currentTarget.dataset.info
+        }
+      })
+      wx.navigateTo({
+        url: '/package-room-control/scene-edit/index'
+      })
+      console.log(e.currentTarget.dataset.info)
+    },
   },
 })

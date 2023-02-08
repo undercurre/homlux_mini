@@ -4,5 +4,6 @@ export { user, userBinding } from './user'
 export { room, roomBinding } from './room'
 export { home, homeBinding } from './home'
 export { device, deviceBinding } from './device'
+export { scene, sceneBinding } from './scene'
 
 configure({ enforceActions: 'observed' })

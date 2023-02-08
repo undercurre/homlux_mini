@@ -46,7 +46,8 @@
     "van-cell-group": "@vant/weapp/cell-group/index",
     "nav-bar": "./components/custom-nav-bar/index",
     "home-select-menu": "./components/home-select-menu/index",
-    "add-home": "./components/add-room/index",
+    "add-room": "./components/add-room/index",
+    "add-device": "./components/add-device/index",
     "svg-icon": "./components/svg-icon/index",
     "device-card": "./components/device-card/index"
   },

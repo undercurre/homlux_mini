@@ -20,10 +20,6 @@ ComponentWithComputed({
       type: Array,
       value: [],
     },
-    sceneSelect: {
-      type: String,
-      value: '',
-    },
     showScene: {
       type: Boolean,
       value: false,

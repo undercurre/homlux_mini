@@ -12,6 +12,6 @@
         <text class="text-hex-448fff text-28rpx ml-16rpx font-bold">></text>
       </text>
     </view>
-    <camera wx:if="{{ show }}" mode="scanCode" device-position="back" flash="auto" binderror="error" class="w-640rpx h-416rpx rounded-48rpx mt-48rpx"></camera>
+    <camera wx:if="{{ show }}" mode="scanCode" resolution="high" bindscancode="handleScanCode" device-position="back" flash="auto" binderror="error" class="w-640rpx h-416rpx rounded-48rpx mt-48rpx"></camera>
   </view>
 </van-popup>

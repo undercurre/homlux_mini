@@ -8,7 +8,28 @@ export const room = observable({
       roomName: '客厅',
       icon: 'balcony',
       lightOnNumber: 3,
-      sceneList: [sceneMap['all-on'], sceneMap['all-off'], sceneMap['bright'], sceneMap['mild']],
+      sceneList: [
+        {
+          sceneName: sceneMap['all-on'].name,
+          sceneId: '1',
+          sceneIcon:sceneMap['all-on'].value,
+        },
+        {
+          sceneName: sceneMap['all-off'].name,
+          sceneId: '2',
+          sceneIcon:sceneMap['all-off'].value,
+        },
+        {
+          sceneName: sceneMap['bright'].name,
+          sceneId: '3',
+          sceneIcon:sceneMap['bright'].value,
+        },
+        {
+          sceneName: sceneMap['mild'].name,
+          sceneId: '4',
+          sceneIcon:sceneMap['mild'].value,
+        },
+      ] as Scene.SceneInfo[],
       deviceList: [
         // TODO： mock数据，联调后删除
         {
@@ -58,43 +79,14 @@ export const room = observable({
           openDeg: 50,
         },
       ] as Array<Device.LightInfo | Device.SwitchInfo | Device.CurtainInfo>,
-      sceneSelect: 'all-on',
     },
     {
       roomId: '2',
       roomName: '卧室',
       icon: 'bathroom',
       lightOnNumber: 0,
-      sceneList: [sceneMap['all-on'], sceneMap['all-off'], sceneMap['bright'], sceneMap['mild']],
+      sceneList: [],
       deviceList: [],
-      sceneSelect: 'all-off',
-    },
-    {
-      roomId: '3',
-      roomName: '客厅1',
-      icon: 'toilet',
-      lightOnNumber: 3,
-      sceneList: [sceneMap['all-on'], sceneMap['all-off'], sceneMap['bright'], sceneMap['mild']],
-      deviceList: [],
-      sceneSelect: 'all-on',
-    },
-    {
-      roomId: '4',
-      roomName: '卧室1',
-      icon: 'toilet',
-      lightOnNumber: 0,
-      sceneList: [sceneMap['all-on'], sceneMap['all-off'], sceneMap['bright'], sceneMap['mild']],
-      deviceList: [],
-      sceneSelect: 'all-off',
-    },
-    {
-      roomId: '5',
-      roomName: '卧室',
-      icon: 'toilet',
-      lightOnNumber: 0,
-      sceneList: [sceneMap['all-on'], sceneMap['all-off'], sceneMap['bright'], sceneMap['mild']],
-      deviceList: [],
-      sceneSelect: 'all-off',
     },
   ], // 测试数据，需要根据接口进行修改
   currentRoomIndex: 0, // 当前选择的房间，在roomList里的index

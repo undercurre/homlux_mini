@@ -1,3 +1,7 @@
 declare namespace Scene {
-  interface SceneInfo {}
+  interface SceneInfo {
+    sceneName: string
+    sceneId: string
+    sceneIcon: string
+  }
 }

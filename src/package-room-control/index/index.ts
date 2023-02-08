@@ -165,6 +165,11 @@ ComponentWithComputed({
         controlPopupUp: !this.data.controlPopupUp,
       })
     },
+    handleAddScenePopupClose() {
+      this.setData({
+        showAddScenePopup: !this.data.showAddScenePopup,
+      })
+    },
     updateSelectType() {
       const typeList = new Set()
       device.selectList.forEach((deviceId: string) => {

@@ -74,10 +74,12 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    close() {
-      this.setData({
-        show: false,
-      })
+    handleClose() {
+      this.triggerEvent('close')
+    },
+    handleConfirm() {
+      // todo: 添加家庭业务
+      this.triggerEvent('close')
     },
     selectIcon({ currentTarget }: WechatMiniprogram.BaseEvent) {
       console.log('selectIcon', currentTarget)

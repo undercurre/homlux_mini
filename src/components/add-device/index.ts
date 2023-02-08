@@ -16,7 +16,9 @@ Component({
   /**
    * 组件的初始数据
    */
-  data: {},
+  data: {
+    _scanFinish: false,
+  },
 
   /**
    * 组件的方法列表
@@ -35,12 +37,21 @@ Component({
         })
     },
     onClickHide() {
-      this.triggerEvent('hide')
+      this.triggerEvent('close')
     },
     toSearchSubDevice() {
       wx.redirectTo({
         url: '/package-distribution/search-subdevice/index',
       })
+    },
+    handleScanCode(e: { detail: { result: string } }) {
+      // 防止多次触发
+      if (this.data._scanFinish) {
+        return
+      }
+      console.log(e)
+      this.data._scanFinish = true
+      this.triggerEvent('close')
     },
   },
 })

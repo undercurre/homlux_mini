@@ -22,9 +22,9 @@
       <text class="text-32rpx text-hex-333333 font-medium ml-16rpx">场景</text>
       <view class="flex flex-1 justify-end items-center">
         <view class="mr-38rpx flex">
-          <view class="scene-icon p-4rpx bg-hex-fff rounded-999" wx:for="{{sceneListInBar}}" wx:key="value">
+          <view class="scene-icon p-4rpx bg-hex-fff rounded-999" wx:for="{{sceneListInBar}}" wx:key="sceneId">
             <view class="bg-gray-secondary rounded-999">
-              <svg-icon name="scene:{{item.value}}" width="52rpx" height="52rpx" />
+              <svg-icon name="scene:{{item.sceneIcon}}" width="52rpx" height="52rpx" />
             </view>
           </view>
         </view>
@@ -69,4 +69,4 @@
 <!-- 设备控制弹窗 -->
 <device-control-popup popup="{{controlPopupUp}}" bind:popMove="handlePopMove" bind:switchLink="handleSwitchLinkPopup"></device-control-popup>
 <switch-link-popup show="{{showLinkPopup}}" linkType="{{linkType}}" bind:close="handleLinkPopupClose"></switch-link-popup>
-<add-scene-popup show="{{showAddScenePopup}}" />
+<add-scene-popup show="{{showAddScenePopup}}" bind:close="handleAddScenePopupClose" />

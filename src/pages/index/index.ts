@@ -1,5 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { room, /* home, */ othersBinding, roomBinding, userBinding, homeBinding } from '../../store/index'
+import { room, home, othersBinding, roomBinding, userBinding, homeBinding } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 ComponentWithComputed({
@@ -15,7 +15,7 @@ ComponentWithComputed({
       y: '0px',
       isShow: false,
     },
-    pageScroll: 0, // 用于让navigation-bar变色
+    contentHeight: 0,
     allOnBtnTap: false,
     allOffBtnTap: false,
     showAddNewDevice: false,
@@ -25,7 +25,7 @@ ComponentWithComputed({
   computed: {
     currentHomeName(data) {
       if (data.currentHomeInfo) {
-        return data.currentHomeInfo?.houseName
+        return data.currentHomeInfo?.houseName ?? ''
       }
       return ''
     },
@@ -38,6 +38,17 @@ ComponentWithComputed({
       return true
     },
   },
+  watch: {
+    hasDevice(value) {
+      if (value) {
+        this.updateContentHeight()
+      } else {
+        this.setData({
+          contentHeight: 0
+        })
+      }
+    }
+  },
 
   methods: {
     // 生命周期或者其他钩子
@@ -48,7 +59,8 @@ ComponentWithComputed({
           selected: 0,
         })
       }
-      // home.updateHomeList()
+      home.updateHomeList()
+      this.updateContentHeight()
     },
     onHide() {
       // 隐藏之前展示的下拉菜单
@@ -59,11 +71,6 @@ ComponentWithComputed({
       setTimeout(() => {
         wx.stopPullDownRefresh()
       }, 500)
-    },
-    onPageScroll(e: { scrollTop: number }) {
-      this.setData({
-        pageScroll: e.scrollTop,
-      })
     },
 
     // 收起所有菜单
@@ -140,7 +147,7 @@ ComponentWithComputed({
         .exec((res) => {
           this.setData({
             dropdownMenu: {
-              x: '30rpx',
+              x: '20rpx',
               y: res[0].bottom + 10 + 'px',
               isShow: !this.data.dropdownMenu.isShow,
             },
@@ -216,26 +223,18 @@ ComponentWithComputed({
       })
     },
     /**
-     * 确认添加房间
-     */
-    handleAddRoomConfirm(e: { detail: { roomName: string; roomIcon: string } }) {
-      console.log(e)
-      this.setData({
-        showAddNewRoom: false,
-      })
-    },
-    /**
      * 用户点击选择场景
      */
     handleSceneSelect(e: { currentTarget: { dataset: { room: string } }; detail: string }) {
-      runInAction(() => {
-        room.roomList = room.roomList.map((item) => {
-          return {
-            ...item,
-            sceneSelect: e.currentTarget.dataset.room === item.roomId ? e.detail : item.sceneSelect,
-          }
-        })
-      })
+      console.log(e)
+      // runInAction(() => {
+      //   room.roomList = room.roomList.map((item) => {
+      //     return {
+      //       ...item,
+      //       sceneSelect: e.currentTarget.dataset.room === item.roomId ? e.detail : item.sceneSelect,
+      //     }
+      //   })
+      // })
     },
     handleToRoom(e: { currentTarget: { dataset: { room: string } } }) {
       runInAction(() => {
@@ -244,6 +243,18 @@ ComponentWithComputed({
       wx.navigateTo({
         url: '/package-room-control/index/index',
       })
+    },
+    updateContentHeight() {
+      wx.createSelectorQuery()
+        .select('#content')
+        .boundingClientRect()
+        .exec((res) => {
+          if (res[0] && res[0].height) {
+            this.setData({
+              contentHeight: res[0].height,
+            })
+          }
+        })
     },
     doHomeSelectArrowAnimation(newValue: boolean, oldValue: boolean) {
       if (newValue === oldValue) {

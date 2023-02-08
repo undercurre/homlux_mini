@@ -1,2 +1,54 @@
-<!--package-room-control/scene-edit/index.wxml-->
-<text>package-room-control/scene-edit/index.wxml</text>
+<!-- 背景 -->
+<svg-icon name="room-bg" width="100vw" height="100vh" class="fixed bg-z-index"></svg-icon>
+
+<view class="h-100vh flex flex-col">
+  <!-- 标题 -->
+  <nav-bar title="编辑场景" left-arrow bind:leftTap="goBack"></nav-bar>
+
+  <!-- 页面主体 -->
+  <view class="flex-1 flex flex-col">
+    <van-cell-group inset>
+      <van-cell title="场景名称" is-link value="{{sceneName}}" center bind:click="editName"></van-cell>
+    </van-cell-group>
+    <van-cell-group inset>
+      <van-cell title="场景图标" is-link center bind:click="editName">
+        <view class="flex justify-end">
+          <view class="bg-gray-secondary rounded-999 w-52rpx h-52rpx">
+            <svg-icon name="scene:{{sceneIcon}}" width="52rpx" height="52rpx" />
+          </view>
+        </view>
+
+      </van-cell>
+    </van-cell-group>
+    <van-cell-group inset>
+      <van-cell title="关联智能开关" is-link value="客厅筒灯" center bind:click="editName"></van-cell>
+    </van-cell-group>
+    <view class="ml-32rpx mt-48rpx mb-24rpx">
+      <text class="text-24rpx text-black-secondary">此场景执行以下操作</text>
+    </view>
+    <view class="flex-1" id="content">
+      <scroll-view enhanced show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
+        <van-cell-group inset wx:for="{{sceneDevice}}">
+          <van-cell center>
+            <view slot="title" class="flex items-center">
+              <image src="{{item.image}}" class="w-96rpx h-96rpx rounded-999 bg-hex-f6fafd" />
+              <view class="flex flex-col items-start ml-32rpx">
+                <text class="text-32rpx text-black-primary font-medium leading-none mt-10rpx">{{item.title}}</text>
+                <text class="text-28rpx text-black-tips font-normal mt-8rpx">{{item.desc}}</text>
+              </view>
+            </view>
+            <svg-icon slot="right-icon" color="#d2d2d3" name="ion:close-circled" width="48rpx" height="48rpx" catchtap="handleDelete">执行</svg-icon>
+          </van-cell>
+        </van-cell-group>
+      </scroll-view>
+    </view>
+    <view class="mb-86rpx mt-24rpx flex justify-center">
+      <van-button custom-class="control-btn" bind:click="handleDelete">
+        <text class="text-36rpx">取消</text>
+      </van-button>
+      <van-button type="primary" custom-class="control-btn" class="ml-46rpx" bind:click="handleSave">
+        <text class="text-36rpx">确定</text>
+      </van-button>
+    </view>
+  </view>
+</view>
