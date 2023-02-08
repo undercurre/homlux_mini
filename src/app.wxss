@@ -30,3 +30,9 @@ page {
 .border-bottom {
   border-bottom: 1rpx solid #ddd;
 }
+
+.single-text {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}

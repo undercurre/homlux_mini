@@ -1,4 +1,4 @@
-import { scene } from '../../store/index'
+import { sceneStore } from '../../store/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 Component({
   behaviors: [pageBehavior],
@@ -41,9 +41,9 @@ Component({
           if (res[0] && res[0].height) {
             this.setData({
               contentHeight: res[0].height,
-              sceneId: scene.selectScene.sceneId,
-              sceneName: scene.selectScene.sceneName,
-              sceneIcon: scene.selectScene.sceneIcon,
+              sceneId: sceneStore.selectScene.sceneId,
+              sceneName: sceneStore.selectScene.sceneName,
+              sceneIcon: sceneStore.selectScene.sceneIcon,
             })
           }
         })

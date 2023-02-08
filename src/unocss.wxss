@@ -21,6 +21,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .px-48rpx{padding-left:48rpx;padding-right:48rpx;}
 .px-50rpx{padding-left:50rpx;padding-right:50rpx;}
 .px-88rpx{padding-left:88rpx;padding-right:88rpx;}
+.py-10rpx{padding-top:10rpx;padding-bottom:10rpx;}
 .py-12rpx{padding-top:12rpx;padding-bottom:12rpx;}
 .py-16rpx{padding-top:16rpx;padding-bottom:16rpx;}
 .py-20rpx{padding-top:20rpx;padding-bottom:20rpx;}
@@ -102,7 +103,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .ml-20rpx{margin-left:20rpx;}
 .ml-24rpx{margin-left:24rpx;}
 .ml-32rpx{margin-left:32rpx;}
-.ml-34rpx{margin-left:34rpx;}
 .ml-46rpx{margin-left:46rpx;}
 .ml-48rpx{margin-left:48rpx;}
 .mr-10rpx{margin-right:10rpx;}
@@ -225,6 +225,8 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .text-white{--un-text-opacity:1;color:rgba(255,255,255,var(--un-text-opacity));}
 .flex{display:flex;}
 .flex-1{flex:1 1 0%;}
+.shrink{flex-shrink:1;}
+.shrink-0{flex-shrink:0;}
 .grow{flex-grow:1;}
 .flex-row{flex-direction:row;}
 .flex-col{flex-direction:column;}
@@ -294,6 +296,9 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .h-96rpx{height:96rpx;}
 .h-98rpx{height:98rpx;}
 .h-full{height:100%;}
+.max-w-450{max-width:450rpx;}
+.max-w-470rpx{max-width:470rpx;}
+.max-w-520rpx{max-width:520rpx;}
 .w-0{width:0rpx;}
 .w-100vw{width:100vw;}
 .w-112rpx{width:112rpx;}
@@ -306,11 +311,9 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .w-208rpx{width:208rpx;}
 .w-213rpx{width:213rpx;}
 .w-244rpx{width:244rpx;}
-.w-250rpx{width:250rpx;}
 .w-256rpx{width:256rpx;}
 .w-300,
 .w-300rpx{width:300rpx;}
-.w-320rpx{width:320rpx;}
 .w-32rpx{width:32rpx;}
 .w-338rpx{width:338rpx;}
 .w-400{width:400rpx;}
@@ -343,6 +346,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .items-start{align-items:flex-start;}
 .items-end{align-items:flex-end;}
 .items-center{align-items:center;}
+.items-stretch{align-items:stretch;}
 .bottom-0{bottom:0rpx;}
 .bottom-11rpx{bottom:11rpx;}
 .bottom-6rpx{bottom:6rpx;}

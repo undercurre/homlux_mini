@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { userBinding, roomBinding, deviceBinding, device } from '../../store/index'
+import { userBinding, roomBinding, deviceBinding, deviceStore } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
 
@@ -99,8 +99,8 @@ ComponentWithComputed({
     onUnload() {
       // 退出页面前清理一下选中的列表
       runInAction(() => {
-        device.selectList = []
-        device.selectType = []
+        deviceStore.selectList = []
+        deviceStore.selectType = []
       })
     },
 
@@ -115,33 +115,33 @@ ComponentWithComputed({
       })
     },
     handleDeviceCardTap(e: { detail: { deviceId: string; deviceType: string } }) {
-      if (device.selectList.includes(e.detail.deviceId)) {
-        const index = device.selectList.findIndex((item: string) => item === e.detail.deviceId)
-        device.selectList.splice(index, 1)
+      if (deviceStore.selectList.includes(e.detail.deviceId)) {
+        const index = deviceStore.selectList.findIndex((item: string) => item === e.detail.deviceId)
+        deviceStore.selectList.splice(index, 1)
         runInAction(() => {
-          device.selectList = [...device.selectList]
+          deviceStore.selectList = [...deviceStore.selectList]
         })
         if (e.detail.deviceType === 'switch') {
-          const index = device.selectSwitchList.findIndex((item: string) => item === e.detail.deviceId)
-          device.selectSwitchList.splice(index, 1)
+          const index = deviceStore.selectSwitchList.findIndex((item: string) => item === e.detail.deviceId)
+          deviceStore.selectSwitchList.splice(index, 1)
           runInAction(() => {
-            device.selectSwitchList = [...device.selectSwitchList]
+            deviceStore.selectSwitchList = [...deviceStore.selectSwitchList]
           })
         }
       } else {
         runInAction(() => {
-          device.selectList = [...device.selectList, e.detail.deviceId]
+          deviceStore.selectList = [...deviceStore.selectList, e.detail.deviceId]
         })
         if (e.detail.deviceType === 'switch') {
           runInAction(() => {
-            device.selectSwitchList = [...device.selectSwitchList, e.detail.deviceId]
+            deviceStore.selectSwitchList = [...deviceStore.selectSwitchList, e.detail.deviceId]
           })
         }
       }
       this.updateSelectType()
     },
     handleDevicePowerTap(e: { detail: { deviceId: string; deviceType: string } }) {
-      const index = device.selectList.findIndex((item: string) => item === e.detail.deviceId)
+      const index = deviceStore.selectList.findIndex((item: string) => item === e.detail.deviceId)
       if (['light', 'switch'].includes(e.detail.deviceType)) {
         const power = !(this.data.deviceList[index] as Device.LightInfo | Device.SwitchInfo).power
         const data = {} as IAnyObject
@@ -172,11 +172,11 @@ ComponentWithComputed({
     },
     updateSelectType() {
       const typeList = new Set()
-      device.selectList.forEach((deviceId: string) => {
+      deviceStore.selectList.forEach((deviceId: string) => {
         typeList.add(this.data.deviceIdTypeMap[deviceId])
       })
       runInAction(() => {
-        device.selectType = Array.from(typeList) as string[]
+        deviceStore.selectType = Array.from(typeList) as string[]
       })
     },
   },

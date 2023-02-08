@@ -1,7 +1,7 @@
 import { observable } from 'mobx-miniprogram'
 import { sceneMap } from '../config/index'
 
-export const room = observable({
+export const roomStore = observable({
   roomList: [
     {
       roomId: '1',
@@ -93,7 +93,7 @@ export const room = observable({
 })
 
 export const roomBinding = {
-  store: room,
+  store: roomStore,
   fields: ['roomList', 'currentRoomIndex'],
   actions: [],
 }

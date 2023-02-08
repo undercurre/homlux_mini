@@ -1,9 +1,9 @@
 import { observable } from 'mobx-miniprogram'
 
-export const others = observable({})
+export const othersStore = observable({})
 
 export const othersBinding = {
-  store: others,
+  store: othersStore,
   fields: [],
   actions: [],
 }

@@ -1,6 +1,6 @@
 import { observable } from 'mobx-miniprogram'
 
-export const user = observable({
+export const userStore = observable({
   userInfo: {
     id: '7071',
     nickname: '7071',
@@ -10,7 +10,7 @@ export const user = observable({
 })
 
 export const userBinding = {
-  store: user,
+  store: userStore,
   fields: ['userInfo'],
   actions: [],
 }

@@ -1,9 +1,9 @@
 import { configure } from 'mobx-miniprogram'
-export { others, othersBinding } from './others'
-export { user, userBinding } from './user'
-export { room, roomBinding } from './room'
-export { home, homeBinding } from './home'
-export { device, deviceBinding } from './device'
-export { scene, sceneBinding } from './scene'
+export { othersStore, othersBinding } from './othersStore'
+export { userStore, userBinding } from './userStore'
+export { roomStore, roomBinding } from './roomStore'
+export { homeStore, homeBinding } from './home'
+export { deviceStore, deviceBinding } from './deviceStore'
+export { sceneStore, sceneBinding } from './sceneStore'
 
 configure({ enforceActions: 'observed' })

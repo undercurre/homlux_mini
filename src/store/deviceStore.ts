@@ -1,6 +1,6 @@
 import { observable } from 'mobx-miniprogram'
 
-export const device = observable({
+export const deviceStore = observable({
   /**
    * 选了了那些设备
    */
@@ -16,7 +16,7 @@ export const device = observable({
 })
 
 export const deviceBinding = {
-  store: device,
+  store: deviceStore,
   fields: ['selectList', 'selectType', 'selectSwitchList'],
   actions: [],
 }

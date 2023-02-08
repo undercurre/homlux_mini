@@ -1,5 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { room, home, othersBinding, roomBinding, userBinding, homeBinding } from '../../store/index'
+import { roomStore, homeStore, othersBinding, roomBinding, userBinding, homeBinding } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 ComponentWithComputed({
@@ -24,8 +24,8 @@ ComponentWithComputed({
   },
   computed: {
     currentHomeName(data) {
-      if (data.currentHomeInfo) {
-        return data.currentHomeInfo?.houseName ?? ''
+      if (data.currentHomeDetail) {
+        return data.currentHomeDetail?.houseName ?? ''
       }
       return ''
     },
@@ -59,7 +59,7 @@ ComponentWithComputed({
           selected: 0,
         })
       }
-      home.updateHomeList()
+      homeStore.updateHomeList()
       this.updateContentHeight()
     },
     onHide() {
@@ -238,7 +238,7 @@ ComponentWithComputed({
     },
     handleToRoom(e: { currentTarget: { dataset: { room: string } } }) {
       runInAction(() => {
-        room.currentRoomIndex = room.roomList.findIndex((item) => item.roomId === e.currentTarget.dataset.room)
+        roomStore.currentRoomIndex = roomStore.roomList.findIndex((item) => item.roomId === e.currentTarget.dataset.room)
       })
       wx.navigateTo({
         url: '/package-room-control/index/index',

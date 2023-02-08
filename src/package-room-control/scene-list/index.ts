@@ -1,7 +1,7 @@
 // package-room-control/scene-list/index.ts
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { roomBinding, scene } from '../../store/index'
+import { roomBinding, sceneStore } from '../../store/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { runInAction } from 'mobx-miniprogram'
 
@@ -46,7 +46,7 @@ ComponentWithComputed({
 
     toSetting(e: { currentTarget: { dataset: { info: Scene.SceneInfo } } }) {
       runInAction(() => {
-        scene.selectScene = {
+        sceneStore.selectScene = {
           ...e.currentTarget.dataset.info,
         }
       })

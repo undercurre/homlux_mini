@@ -1,5 +1,6 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { homeBinding, userBinding } from '../../store/index'
+import { homeBinding, homeStore, userBinding } from '../../store/index'
+import { updateDefaultHouse } from '../../apis/index'
 
 Component({
   options: {
@@ -45,9 +46,16 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    handleHomeTap(e: { currentTarget: { dataset: { value: string } } }) {
+    async handleHomeTap(e: { currentTarget: { dataset: { value: string } } }) {
+      const houseId = e.currentTarget.dataset.value
+
       console.log('handleHomeTap', e)
-      this.triggerEvent('select')
+      const res = await updateDefaultHouse(houseId)
+
+      if (res.success) {
+        homeStore.updateHomeInfo()
+      }
+      this.triggerEvent('select', { houseId })
     },
     hideAnimate() {
       this.animate(

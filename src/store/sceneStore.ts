@@ -1,6 +1,6 @@
 import { observable } from 'mobx-miniprogram'
 
-export const scene = observable({
+export const sceneStore = observable({
   /**
    * 选了了那些设备
    */
@@ -12,7 +12,7 @@ export const scene = observable({
 })
 
 export const sceneBinding = {
-  store: scene,
+  store: sceneStore,
   fields: ['selectScene'],
   actions: [],
 }

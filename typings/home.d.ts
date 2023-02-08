@@ -20,47 +20,46 @@ declare namespace Home {
     houseCreatorFlag: boolean
   }
 
+  export interface HomeDetail {
+    /**
+     * 家庭唯一id
+     */
+    houseId: string
+    /**
+     * 家庭名称
+     */
+    houseName: string
+
+    // 设备数量
+    deviceCount: number
+
+    // 成员数量
+    userCount: number
+
+    // 家庭位置
+    houseArea: string
+
+    // 房间数量
+    roomCount: number
+
+    // 房间列表
+    roomList: Array<Room>
+  }
+
   // 房间
   interface Room {
     /**
-     * 所属家庭
-     */
-    houseId?: string
-    /**
      * 房间唯一id
      */
-    room_id: string
+    roomId: string
     /**
-     * 房间图片
+     * 房间icon
      */
-    room_image: string
+    roomIcon: string
     /**
      * 房间名称
      */
-    room_name: string
-  }
-  // 设备
-  interface Device {
-    /**
-     * 设备唯一id
-     */
-    device_id: string
-    /**
-     * 设备名
-     */
-    device_name: string
-    /**
-     * 设备状态，0：离线 1：在线
-     */
-    device_status: number
-    /**
-     * 所属家庭
-     */
-    houseId?: string
-    /**
-     * 所属房间
-     */
-    room_id: string
+    roomName: string
   }
   // 家庭选择下拉菜单项
   interface DropdownItem {
