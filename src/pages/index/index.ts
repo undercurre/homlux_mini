@@ -25,8 +25,8 @@ ComponentWithComputed({
   },
   computed: {
     currentHomeName(data) {
-      if (data.currentHomeInfo) {
-        return data.currentHomeInfo?.houseName
+      if (data.currentHomeDetail) {
+        return data.currentHomeDetail?.houseName
       }
       return ''
     },
@@ -54,9 +54,12 @@ ComponentWithComputed({
         wx.redirectTo({
           url: '/pages/login/index',
         })
+
+        return
       }
       // this.toLogin()
       console.log()
+      homeBinding.store.updateHomeInfo()
     },
     onHide() {
       // 隐藏之前展示的下拉菜单

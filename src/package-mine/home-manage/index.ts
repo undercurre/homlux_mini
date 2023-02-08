@@ -2,8 +2,10 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Dialog from '@vant/weapp/dialog/dialog'
+import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { roomBinding, homeBinding, userBinding } from '../../store/index'
+import { saveOrUpdateUserHouseInfo, delUserHouse } from '../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -20,28 +22,35 @@ ComponentWithComputed({
       y: '0px',
       isShow: false,
     },
-    homeInfo: {
-      name: '',
+    // 正在编辑的家庭信息
+    homeInfoEdited: {
+      houseId: '',
+      houseName: '',
     },
     isEditName: false,
     isShowSetting: false,
     isTransferHome: false,
-    settingActions: [
-      {
-        name: '重命名',
-      },
-      {
-        name: '解散家庭',
-      },
-    ],
   },
 
-  computed: {},
+  computed: {
+    settingActions() {
+      const actions = [
+        {
+          name: '重命名',
+        },
+        {
+          name: '解散家庭',
+        },
+      ]
+
+      return actions
+    },
+  },
 
   lifetimes: {
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
-    attached: function () {
-      homeBinding.store.updateHomeList()
+    attached: async function () {
+      await homeBinding.store.updateHomeInfo()
     },
     moved: function () {},
     detached: function () {},
@@ -54,7 +63,6 @@ ComponentWithComputed({
     async handleShowHomeSelectMenu() {
       const query = wx.createSelectorQuery()
       query.select('#homeName').boundingClientRect((res) => {
-        console.log(111, res)
         this.doHomeSelectArrowAnimation(!this.data.selectHomeMenu.isShow, this.data.selectHomeMenu.isShow)
         this.setData({
           selectHomeMenu: {
@@ -110,6 +118,7 @@ ComponentWithComputed({
         isShowSetting: true,
       })
     },
+
     onCloseSetting() {
       this.setData({
         isShowSetting: false,
@@ -126,9 +135,27 @@ ComponentWithComputed({
         this.delHome()
       }
     },
+
+    /**
+     * 创建家庭
+     */
+    createHome() {
+      this.setData({
+        isEditName: true,
+        homeInfoEdited: {
+          houseId: '',
+          houseName: '',
+        },
+      })
+    },
+
     editName() {
       this.setData({
         isEditName: true,
+        homeInfoEdited: {
+          houseId: homeBinding.store.currentHomeDetail.houseId,
+          houseName: homeBinding.store.currentHomeDetail.houseName,
+        },
       })
     },
     onCloseEditName() {
@@ -136,12 +163,58 @@ ComponentWithComputed({
         isEditName: false,
       })
     },
+
+    changeHouseName(e: WechatMiniprogram.CustomEvent) {
+      console.log('changeHouseName', e)
+      this.setData({
+        'homeInfoEdited.houseName': e.detail,
+      })
+    },
+    /**
+     * 确认家庭信息
+     */
+    async confirmHomeInfo() {
+      const { houseName } = this.data.homeInfoEdited
+
+      if (!houseName) {
+        Toast('家庭名称不能为空')
+
+        return
+      }
+
+      if (houseName.length > 15) {
+        Toast('家庭名称不能超过15个字符')
+
+        return
+      }
+
+      this.setData({
+        isEditName: false,
+      })
+
+      const res = await saveOrUpdateUserHouseInfo({ ...this.data.homeInfoEdited, userLocationInfo: '' })
+
+      if (res.success) {
+        Toast(this.data.homeInfoEdited.houseId ? '修改成功' : '新增成功')
+
+        homeBinding.store.updateHomeInfo()
+      }
+    },
+
     async delHome() {
       const res = await Dialog.confirm({
         message: '是否解散当前家庭',
       }).catch(() => 'cancel')
 
       console.log('delHome', res)
+
+      if (res === 'cancel') return
+
+      const delRes = await delUserHouse(homeBinding.store.currentHomeDetail.houseId)
+
+      Toast(delRes.success ? '解散成功' : '解散失败')
+
+      homeBinding.store.updateHomeInfo()
     },
 
     toTransferHome() {

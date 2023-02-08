@@ -8,7 +8,8 @@ export { sceneMap } from './scene'
 export const env: 'dev' | 'prod' = 'dev'
 
 export const mzaiotBaseURL: ConfigWithEnv = {
-  dev: 'http://47.106.94.129:8001',
+  // dev: 'http://10.74.144.9:8013',
+  dev: 'http://47.106.94.129:8001', // sit环境
   prod: 'https://baidu.com',
 }
 

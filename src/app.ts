@@ -1,6 +1,6 @@
 // app.js
 import { setNavigationBarHeight, storage, emitter } from './utils/index'
-import { others } from './store/others'
+import { others } from './store/index'
 
 type require = (url: string, cb: (module: IAnyObject) => void) => void
 

@@ -2,9 +2,9 @@
   <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="家庭管理"></nav-bar>
 
   <view class="px-48rpx pt-32rpx pb-48rpx">
-    <view class="flex flex-row justify-between">
-      <view class="relative flex flex-row items-center" bind:tap="handleShowHomeSelectMenu" id="homeName">
-        <text class="text-40 text-hex-1E2C46 font-semibold leading-56rpx">{{ currentHomeInfo.houseName }}</text>
+    <view class="flex flex-row justify-between items-center">
+      <view class="relative flex flex-row items-center shrink" bind:tap="handleShowHomeSelectMenu" id="homeName">
+        <text class="max-w-520rpx text-40 text-hex-1E2C46 font-semibold leading-56rpx single-text">{{ currentHomeDetail.houseName }}</text>
 
         <svg-icon id="homeSelectArrow" class="absolute home-select-arrow" color="#1E2C46" name="material-symbols:arrow-drop-down-rounded" width="48rpx" height="48rpx" />
       </view>
@@ -13,12 +13,12 @@
     </view>
 
     <view class="pt-16rpx leading-40rpx text-black-secondary text-28 opacity-75">
-      <text>房间8｜设备40｜成员2</text>
+      <text>房间{{ currentHomeDetail.roomCount }}｜设备{{ currentHomeDetail.deviceCount }}｜成员{{ currentHomeDetail.userCount }}</text>
     </view>
   </view>
 
   <van-cell-group inset>
-    <van-cell title="家庭位置" value="内容" is-link center link-type="navigateTo" url="/package-mine/home-location/index" />
+    <van-cell title="家庭位置" value="{{currentHomeDetail.houseArea}}" is-link center link-type="navigateTo" url="/package-mine/home-location/index" />
   </van-cell-group>
 
   <view class="grow flex flex-col justify-between">
@@ -27,9 +27,9 @@
         <van-cell title="房间" is-link link-type="navigateTo" url="/package-mine/room-manage/index" />
 
         <view class="flex flex-row flex-wrap justify-between px-40rpx gap-x-36rpx">
-          <view wx:for="{{ roomList }}" class="flex flex-col">
+          <view wx:for="{{ currentHomeDetail.roomList }}" wx:key="roomId" class="flex flex-col">
             <view class="bg-hex-F6FAFD rounded-32rpx p-32rpx">
-              <image class="w-64 h-64 block" src="/assets/img/room/{{item.icon}}.png"></image>
+              <image class="w-64 h-64 block" src="/assets/img/room/{{item.roomIcon || 'drawing-room'}}.png"></image>
             </view>
 
             <text class="pt-24rpx pb-32rpx text-28 text-center text-black-secondary leading-40rpx">{{item.roomName}}</text>
@@ -41,7 +41,7 @@
     <view class="flex flex-row gap-46rpx pt-30rpx pb-128rpx px-32rpx">
       <van-button class="grow" size="large" bind:click="toTransferHome">转让家庭</van-button>
 
-      <van-button class="grow" size="large" type="primary">新建家庭</van-button>
+      <van-button class="grow" size="large" type="primary" bind:click="createHome">新建家庭</van-button>
     </view>
   </view>
 </view>
@@ -57,13 +57,13 @@
     <text class="block pl-48rpx pb-32rpx text-28">家庭名称</text>
 
     <view class="mx-32rpx">
-      <van-field model:value="{{ homeInfo.name }}" placeholder="请输入家庭名称" custom-style="padding: 20rpx 40rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
+      <van-field model:value="{{ homeInfoEdited.houseName }}" placeholder="请输入家庭名称" custom-style="padding: 20rpx 40rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}" bind:change="changeHouseName"> </van-field>
     </view>
 
     <view class="flex flex-row gap-46rpx pt-80rpx px-32rpx">
       <van-button class="grow" size="large" bind:click="onCloseEditName">取消</van-button>
 
-      <van-button class="grow" size="large" type="primary">确定</van-button>
+      <van-button class="grow" size="large" type="primary" bind:click="confirmHomeInfo">确定</van-button>
     </view>
   </view>
 </van-popup>
@@ -71,3 +71,5 @@
 <van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />
 
 <transfer-home-popup show="{{isTransferHome}}"></transfer-home-popup>
+
+<van-toast id="van-toast" />
