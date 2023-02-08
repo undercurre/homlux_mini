@@ -4,7 +4,7 @@
     <view class="max-w-470rpx h-96rpx flex items-center">
       <text class="p-10rpx text-white text-28rpx single-text">{{item.houseName}}</text>
       <view class="text-20rpx text-white bg-hex-488FFF px-16rpx py-8rpx rounded-999 ml-10rpx shrink-0" wx:if="{{item.houseCreatorFlag}}">创建</view>
-      <svg-icon class="ml-18rpx" bindtap="handleClear" wx:if="{{item.defaultHouseFlag && isShow}}" name="icon-park:check" width="40rpx" height="40rpx" color="#d2d2d2" />
+      <svg-icon class="ml-18rpx" bindtap="handleClear" wx:if="{{item.defaultHouseFlag}}" name="icon-park:check" width="40rpx" height="40rpx" color="#d2d2d2" />
     </view>
     <view class="bg-hex-717171 w-full h-1rpx" wx:if="{{index != homeList.length - 1}}"></view>
   </view>

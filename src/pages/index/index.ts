@@ -238,7 +238,9 @@ ComponentWithComputed({
     },
     handleToRoom(e: { currentTarget: { dataset: { room: string } } }) {
       runInAction(() => {
-        roomStore.currentRoomIndex = roomStore.roomList.findIndex((item) => item.roomId === e.currentTarget.dataset.room)
+        roomStore.currentRoomIndex = roomStore.roomList.findIndex(
+          (item) => item.roomId === e.currentTarget.dataset.room,
+        )
       })
       wx.navigateTo({
         url: '/package-room-control/index/index',
