@@ -44,10 +44,10 @@ ComponentWithComputed({
         this.updateContentHeight()
       } else {
         this.setData({
-          contentHeight: 0
+          contentHeight: 0,
         })
       }
-    }
+    },
   },
 
   methods: {

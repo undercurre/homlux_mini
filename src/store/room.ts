@@ -12,22 +12,22 @@ export const room = observable({
         {
           sceneName: sceneMap['all-on'].name,
           sceneId: '1',
-          sceneIcon:sceneMap['all-on'].value,
+          sceneIcon: sceneMap['all-on'].value,
         },
         {
           sceneName: sceneMap['all-off'].name,
           sceneId: '2',
-          sceneIcon:sceneMap['all-off'].value,
+          sceneIcon: sceneMap['all-off'].value,
         },
         {
           sceneName: sceneMap['bright'].name,
           sceneId: '3',
-          sceneIcon:sceneMap['bright'].value,
+          sceneIcon: sceneMap['bright'].value,
         },
         {
           sceneName: sceneMap['mild'].name,
           sceneId: '4',
-          sceneIcon:sceneMap['mild'].value,
+          sceneIcon: sceneMap['mild'].value,
         },
       ] as Scene.SceneInfo[],
       deviceList: [

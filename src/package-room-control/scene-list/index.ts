@@ -45,13 +45,13 @@ ComponentWithComputed({
     },
 
     toSetting(e: { currentTarget: { dataset: { info: Scene.SceneInfo } } }) {
-      runInAction(()=>{
+      runInAction(() => {
         scene.selectScene = {
-          ...e.currentTarget.dataset.info
+          ...e.currentTarget.dataset.info,
         }
       })
       wx.navigateTo({
-        url: '/package-room-control/scene-edit/index'
+        url: '/package-room-control/scene-edit/index',
       })
       console.log(e.currentTarget.dataset.info)
     },

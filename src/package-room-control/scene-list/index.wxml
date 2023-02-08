@@ -12,11 +12,11 @@
       <van-cell-group inset wx:for="{{sceneList}}" wx:key="value">
         <van-cell clickable center bind:click="toSetting" data-info="{{item}}">
           <view slot="title" class="flex items-center">
-            <image src="/assets/img/scene/{{item.sceneIcon}}.png" class="w-72rpx h-72rpx"/>
+            <image src="/assets/img/scene/{{item.sceneIcon}}.png" class="w-72rpx h-72rpx" />
             <view class="flex flex-col items-start ml-24rpx">
               <text class="text-32rpx text-hex-353535 font-medium leading-none mt-10rpx">{{item.sceneName}}</text>
               <view class="flex items-center mt-16rpx">
-                <image src="/assets/img/base/link.png" class="w-32rpx h-32rpx"/>
+                <image src="/assets/img/base/link.png" class="w-32rpx h-32rpx" />
                 <text class="text-28rpx text-hex-6e6f74 font-normal">一路开关 | 客厅</text>
               </view>
             </view>

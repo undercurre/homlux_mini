@@ -17,7 +17,6 @@
             <svg-icon name="scene:{{sceneIcon}}" width="52rpx" height="52rpx" />
           </view>
         </view>
-
       </van-cell>
     </van-cell-group>
     <van-cell-group inset>
