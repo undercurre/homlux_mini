@@ -14,6 +14,7 @@ ComponentWithComputed({
   data: {
     controlPopupUp: true,
     showLinkPopup: false,
+    showAddScenePopup: false,
     linkType: '',
     contentHeight: 0,
   },
@@ -109,7 +110,9 @@ ComponentWithComputed({
       })
     },
     handleCollect() {
-      console.log('收藏')
+      this.setData({
+        showAddScenePopup: true,
+      })
     },
     handleDeviceCardTap(e: { detail: { deviceId: string; deviceType: string } }) {
       if (device.selectList.includes(e.detail.deviceId)) {

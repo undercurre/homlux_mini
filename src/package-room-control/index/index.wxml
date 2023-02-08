@@ -28,7 +28,7 @@
             </view>
           </view>
         </view>
-        <van-button catchtap="handleCollect" custom-class="fav-btn" type="default">收藏</van-button>
+        <van-button catchtap="handleCollect" custom-class="fav-btn" type="primary">收藏</van-button>
       </view>
     </view>
     <view id="content" class="flex-1">
@@ -38,7 +38,7 @@
           <view class="mt-24rpx" wx:if="{{lightList && lightList.length>0}}">
             <text class="text-24rpx text-black-secondary">灯具</text>
             <view class="w-686rpx grid grid-cols-4 gap-x-20rpx gap-y-24rpx mt-24rpx">
-              <device-card wx:for="{{lightList}}" wx:key="deviceId" bind:powerTap="handleDevicePowerTap" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" is-select="{{module.includes(selectList, item.deviceId)}}" />
+              <device-card showControl wx:for="{{lightList}}" wx:key="deviceId" bind:powerTap="handleDevicePowerTap" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" select="{{module.includes(selectList, item.deviceId)}}" />
             </view>
           </view>
 
@@ -46,7 +46,7 @@
           <view class="mt-24rpx" wx:if="{{switchList && switchList.length>0}}">
             <text class="text-24rpx text-black-secondary">开关面板</text>
             <view class="w-686rpx grid grid-cols-4 gap-x-20rpx gap-y-24rpx mt-24rpx">
-              <device-card wx:for="{{switchList}}" wx:key="deviceId" bind:powerTap="handleDevicePowerTap" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" is-select="{{module.includes(selectList, item.deviceId)}}" />
+              <device-card showControl wx:for="{{switchList}}" wx:key="deviceId" bind:powerTap="handleDevicePowerTap" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" select="{{module.includes(selectList, item.deviceId)}}" />
             </view>
           </view>
 
@@ -54,7 +54,7 @@
           <view class="mt-24rpx" wx:if="{{curtainList && curtainList.length>0}}">
             <text class="text-24rpx text-black-secondary">窗帘</text>
             <view class="w-686rpx grid grid-cols-4 gap-x-20rpx gap-y-24rpx mt-24rpx">
-              <device-card wx:for="{{curtainList}}" wx:key="deviceId" bind:powerTap="handleDevicePowerTap" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" is-select="{{module.includes(selectList, item.deviceId)}}" />
+              <device-card showControl wx:for="{{curtainList}}" wx:key="deviceId" bind:powerTap="handleDevicePowerTap" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" select="{{module.includes(selectList, item.deviceId)}}" />
             </view>
           </view>
         </view>
@@ -69,3 +69,4 @@
 <!-- 设备控制弹窗 -->
 <device-control-popup popup="{{controlPopupUp}}" bind:popMove="handlePopMove" bind:switchLink="handleSwitchLinkPopup"></device-control-popup>
 <switch-link-popup show="{{showLinkPopup}}" linkType="{{linkType}}" bind:close="handleLinkPopupClose"></switch-link-popup>
+<add-scene-popup show="{{showAddScenePopup}}" />

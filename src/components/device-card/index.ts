@@ -1,5 +1,6 @@
 // package-room/index/components/device-card/index.ts
-Component({
+import { ComponentWithComputed } from 'miniprogram-computed'
+ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
   },
@@ -7,12 +8,16 @@ Component({
    * 组件的属性列表
    */
   properties: {
-    isSelect: {
+    select: {
       type: Boolean,
       value: false,
     },
     deviceInfo: {
       type: Object,
+    },
+    showControl: {
+      type: Boolean,
+      value: false,
     },
   },
 
@@ -20,6 +25,14 @@ Component({
    * 组件的初始数据
    */
   data: {},
+
+  computed: {
+    style(data) {
+      return `border: ${data.select ? '3rpx solid #488FFF' : '3rpx solid rgba(0,0,0,0)'};background: ${
+        data.select ? '#fff' : 'linear-gradient(178deg, #f2f5fc 10%, #ffffff 74%)'
+      };`
+    },
+  },
 
   /**
    * 组件的方法列表

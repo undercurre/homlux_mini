@@ -1,16 +1,9 @@
-import { observable, runInAction } from 'mobx-miniprogram'
+import { observable } from 'mobx-miniprogram'
 
-export const others = observable({
-  isLoadedSvg: false,
-  setIsLoadSvg: function () {
-    runInAction(() => {
-      others.isLoadedSvg = true
-    })
-  },
-})
+export const others = observable({})
 
 export const othersBinding = {
   store: others,
-  fields: ['isLoadedSvg'],
-  actions: ['setIsLoadSvg'],
+  fields: [],
+  actions: [],
 }

@@ -1,6 +1,6 @@
-import iconify from './iconify'
-import iconfont from './iconfont'
-import scene from './scene'
+import iconify from './iconify.js'
+import iconfont from './iconfont.js'
+import scene from './scene.js'
 export default {
   ...iconfont,
   ...iconify,

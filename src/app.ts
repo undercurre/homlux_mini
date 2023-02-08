@@ -1,24 +1,12 @@
 // app.js
-import { setNavigationBarHeight, storage, emitter } from './utils/index'
-import { others } from './store/index'
-
-type require = (url: string, cb: (module: IAnyObject) => void) => void
+import { setNavigationBarHeight, storage } from './utils/index'
+import svgs from './assets/svg/index'
+import { homeBinding } from './store/index'
 
 App<IAppOption>({
   onLaunch() {
-    // 监听退出登录事件通知
-    emitter.on('loginOut', (e) => {
-      console.log('login-event', e)
-      storage.remove('TOKEN')
-
-      wx.navigateTo({ url: '/pages/login/index' })
-    })
     // 加载svg，这里不能使用import进行导入，使用import导入会导致报错
-    const req = require as require
-    req('./assets/svg/svgs.js', (module) => {
-      this.globalData.svgs = module.default
-      others.setIsLoadSvg()
-    })
+    this.globalData.svgs = svgs
 
     // 获取状态栏和顶部栏高度
     setNavigationBarHeight()
@@ -34,6 +22,17 @@ App<IAppOption>({
         console.log(err)
       },
     })
+
+    // 如果用户没登陆，或者登录状态过期，需要自动跳转到登录页
+    if (!storage.get<string>('token')) {
+      wx.redirectTo({
+        url: '/pages/login/index',
+      })
+
+      return
+    }
+
+    homeBinding.store.updateHomeInfo()
   },
   globalData: {},
 })

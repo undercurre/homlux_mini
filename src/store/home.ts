@@ -1,4 +1,4 @@
-import { observable, action, runInAction } from 'mobx-miniprogram'
+import { observable, runInAction } from 'mobx-miniprogram'
 import { getHomeList, queryUserHouseInfo } from '../apis/index'
 
 export const homeStore = observable({
@@ -23,10 +23,8 @@ export const homeStore = observable({
   /**
    * 更新家庭列表数据
    */
-  updateHomeList: action(async function () {
+  async updateHomeList() {
     const res = await getHomeList()
-
-    console.log('updateHomeList', res)
 
     if (res.success) {
       runInAction(() => {
@@ -36,12 +34,12 @@ export const homeStore = observable({
     }
 
     return res
-  }),
+  },
 
   /**
    * 更新当前家庭详细信息
    */
-  updateCurrentHomeDetail: action(async function (houseId: string) {
+  async updateCurrentHomeDetail(houseId: string) {
     const res = await queryUserHouseInfo({
       houseId,
     })
@@ -53,7 +51,7 @@ export const homeStore = observable({
         homeStore.currentHomeDetail = Object.assign({ houseId }, res.result)
       })
     }
-  }),
+  },
 })
 
 export const homeBinding = {

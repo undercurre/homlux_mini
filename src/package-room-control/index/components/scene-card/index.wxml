@@ -1,0 +1,10 @@
+<!--package-room-control/index/components/scene-card/index.wxml-->
+<view class="card-shadow w-338rpx h-160rpx rounded-32rpx box-border flex-center" style="{{style}}" bindtap="handleCardTap">
+  <image class="w-72rpx h-72rpx ml-48rpx" src="/assets/img/scene/{{sceneInfo.value}}.png" />
+  <view class="flex-1 flex-center">
+    <text class="text-32rpx text-hex-353535">{{sceneInfo.name}}</text>
+  </view>
+  <view class="w-48rpx h-48rpx mr-32rpx">
+    <image wx:if="{{select}}" class="w-48rpx h-48rpx" src="/assets/img/base/check.png" />
+  </view>
+</view>

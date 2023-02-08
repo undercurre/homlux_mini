@@ -1,6 +1,4 @@
-// pages/mine/index.ts
-import { emitter } from '../../utils/eventBus'
-
+import { logout } from '../../utils/index'
 Component({
   /**
    * 页面的初始数据
@@ -50,7 +48,7 @@ Component({
     },
 
     loginOut() {
-      emitter.emit('loginOut')
+      logout()
     },
   },
 })
