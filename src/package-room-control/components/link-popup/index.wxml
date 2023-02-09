@@ -1,0 +1,30 @@
+<wxs src="./index.wxs" module="module" />
+<van-popup show="{{ show }}" z-index="10001" round position="bottom" bind:close="handleClose">
+  <view class="w-750rpx h-50vh relative flex flex-col items-center">
+    <text class="h-50rpx text-36rpx text-black-primary mt-44rpx font-medium">{{title}}</text>
+    <view class="flex-1" id="content1">
+      <scroll-view enhanced show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
+        <view class="h-78rpx"></view>
+        <view class="w-750rpx flex-col-center">
+          <!-- 场景卡片 -->
+          <view wx:if="{{linkType==='scene'}}" class="w-686rpx grid grid-cols-2 gap-x-20rpx gap-y-24rpx">
+            <scene-card wx:for="{{sceneList}}" wx:key="value" bind:cardTap="handleSceneCardTap" scene-info="{{item}}" select="{{module.includes(select, item.sceneId)}}" />
+          </view>
+          <!-- 设备卡片 -->
+          <view wx:else class="w-686rpx grid grid-cols-4 gap-x-20rpx gap-y-24rpx">
+            <device-card wx:for="{{deviceList}}" wx:key="deviceId" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" select="{{module.includes(select, item.deviceId)}}" />
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+    <view class="flex justify-center">
+      <van-button custom-class="popup-control-btn" bind:click="handleClose">
+        <text class="text-36rpx">取消</text>
+      </van-button>
+      <van-button type="primary" custom-class="popup-control-btn" class="ml-46rpx" bind:click="handleConfirm">
+        <text class="text-36rpx">确定</text>
+      </van-button>
+    </view>
+    <view class="h-32rpx"></view>
+  </view>
+</van-popup>

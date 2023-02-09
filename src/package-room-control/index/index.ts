@@ -13,9 +13,7 @@ ComponentWithComputed({
    */
   data: {
     controlPopupUp: true,
-    showLinkPopup: false,
     showAddScenePopup: false,
-    linkType: '',
     contentHeight: 0,
   },
 
@@ -148,17 +146,6 @@ ComponentWithComputed({
         data[`deviceList[${index}].power`] = power
         this.setData(data)
       }
-    },
-    handleSwitchLinkPopup(e: { detail: 'switch' | 'light' | 'scene' }) {
-      this.setData({
-        linkType: e.detail,
-        showLinkPopup: true,
-      })
-    },
-    handleLinkPopupClose() {
-      this.setData({
-        showLinkPopup: false,
-      })
     },
     handlePopMove() {
       this.setData({

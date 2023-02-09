@@ -36,7 +36,7 @@ Component({
           }
         })
     },
-    onClickHide() {
+    onClickClose() {
       this.triggerEvent('close')
     },
     toSearchSubDevice() {

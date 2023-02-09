@@ -32,7 +32,7 @@
       </view>
     </view>
     <view id="content" class="flex-1">
-      <scroll-view enhanced="{{true}}" show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
+      <scroll-view enhanced show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
         <view class="flex flex-col items-center w-750rpx">
           <!-- 灯具设备卡片 -->
           <view class="mt-24rpx" wx:if="{{lightList && lightList.length>0}}">
@@ -67,6 +67,5 @@
 </view>
 
 <!-- 设备控制弹窗 -->
-<device-control-popup popup="{{controlPopupUp}}" bind:popMove="handlePopMove" bind:switchLink="handleSwitchLinkPopup"></device-control-popup>
-<switch-link-popup show="{{showLinkPopup}}" linkType="{{linkType}}" bind:close="handleLinkPopupClose"></switch-link-popup>
+<device-control-popup popup="{{controlPopupUp}}" bind:popMove="handlePopMove"></device-control-popup>
 <add-scene-popup show="{{showAddScenePopup}}" bind:close="handleAddScenePopupClose" />

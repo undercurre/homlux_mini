@@ -3,7 +3,7 @@ interface ConfigWithEnv {
   prod: string | number | boolean
 }
 
-export { sceneMap } from './scene'
+export { sceneMap, sceneList } from './scene'
 
 export const env: 'dev' | 'prod' = 'dev'
 

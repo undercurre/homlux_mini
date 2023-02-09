@@ -13,15 +13,18 @@ Component({
       value: false,
       observer(value) {
         if (value) {
+          this.setData({
+            icon: this.data.value,
+          })
           setTimeout(() => {
             this.getHeight()
           }, 100)
         }
-        this.setData({
-          sceneIcon: '',
-          sceneName: '',
-        })
       },
+    },
+    value: {
+      type: String,
+      value: '',
     },
   },
 
@@ -29,12 +32,9 @@ Component({
    * 组件的初始数据
    */
   data: {
-    sceneIcon: '',
-    sceneName: '',
+    icon: '',
     contentHeight: 0,
     sceneList,
-    linkList: [] as string[],
-    showLinkPopup: false,
   },
 
   /**
@@ -55,40 +55,19 @@ Component({
     },
     handleClose() {
       this.triggerEvent('close')
-    },
-    handleConfirm() {
-      // todo:
-      this.triggerEvent('close')
-    },
-    handleClear() {
       this.setData({
-        sceneName: '',
+        icon: '',
       })
     },
-    handleSceneNameInput(e: { detail: { value: string } }) {
+    handleConfirm() {
+      this.triggerEvent('confirm', this.data.icon)
       this.setData({
-        sceneName: e.detail.value,
+        icon: '',
       })
     },
     handleSceneIconTap(e: { currentTarget: { dataset: { scene: string } } }) {
       this.setData({
-        sceneIcon: e.currentTarget.dataset.scene,
-      })
-    },
-    handleLinkSwitchPopup() {
-      this.setData({
-        showLinkPopup: true,
-      })
-    },
-    handleLinkPopupClose() {
-      this.setData({
-        showLinkPopup: false,
-      })
-    },
-    handleLinkPopupConfirm(e: { detail: string[] }) {
-      this.setData({
-        showLinkPopup: false,
-        linkList: e.detail,
+        icon: e.currentTarget.dataset.scene,
       })
     },
   },

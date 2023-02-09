@@ -1,0 +1,30 @@
+<van-popup show="{{ show }}" round position="bottom" bind:close="handleClose">
+  <view class="w-750rpx h-962rpx relative flex flex-col items-center">
+    <text class="h-50rpx text-36rpx text-black-primary mt-44rpx font-medium">修改名称</text>
+    <view class="mt-32rpx w-750rpx">
+      <text class="ml-48rpx h-40rpx text-28rpx text-black-primary font-normal">选择场景图标</text>
+    </view>
+
+    <view class="flex-1 w-654rpx" id="content">
+      <scroll-view enhanced show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
+        <view class="h-32rpx"></view>
+        <view class="grid grid-cols-4 gap-x-48rpx gap-y-48rpx">
+          <view data-scene="{{item[0]}}" bindtap="handleSceneIconTap" wx:for="{{sceneList}}" wx:key="index" class="w-128rpx h-128rpx rounded-32rpx bg-hex-f6fafd box-border flex-center" style="border: 4rpx solid {{icon === item[0]?'#488FFF':'transparent'}};">
+            <image class="w-72rpx h-72rpx" src="/assets/img/scene/{{item[0]}}.png" mode="" />
+          </view>
+        </view>
+        <view class="h-32rpx"></view>
+      </scroll-view>
+    </view>
+
+    <view class="flex justify-center">
+      <van-button custom-class="popup-control-btn" bind:click="handleClose">
+        <text class="text-36rpx">取消</text>
+      </van-button>
+      <van-button type="primary" custom-class="popup-control-btn" class="ml-46rpx" bind:click="handleConfirm">
+        <text class="text-36rpx">确定</text>
+      </van-button>
+    </view>
+    <view class="h-32rpx"></view>
+  </view>
+</van-popup>

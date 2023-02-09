@@ -17,6 +17,6 @@ export const deviceStore = observable({
 
 export const deviceBinding = {
   store: deviceStore,
-  fields: ['selectList', 'selectType', 'selectSwitchList'],
+  fields: ['selectList', 'selectType', 'selectSwitchList', 'selectLinkDevice'],
   actions: [],
 }

@@ -132,6 +132,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .mt-8rpx{margin-top:8rpx;}
 .mt-92rpx{margin-top:92rpx;}
 .mt-96rpx{margin-top:96rpx;}
+.mt-98rpx{margin-top:98rpx;}
 .block{display:block;}
 .inline-block{display:inline-block;}
 .opacity-0{opacity:0;}
@@ -145,6 +146,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .bg-gray-primary{--un-bg-opacity:1;background-color:rgba(221,221,221,var(--un-bg-opacity));}
 .bg-gray-secondary{--un-bg-opacity:1;background-color:rgba(239,240,243,var(--un-bg-opacity));}
 .bg-hex-717171{--un-bg-opacity:1;background-color:rgba(113,113,113,var(--un-bg-opacity));}
+.bg-hex-a0bff0{--un-bg-opacity:1;background-color:rgba(160,191,240,var(--un-bg-opacity));}
 .bg-hex-DFE1E5{--un-bg-opacity:1;background-color:rgba(223,225,229,var(--un-bg-opacity));}
 .bg-hex-eef2f7{--un-bg-opacity:1;background-color:rgba(238,242,247,var(--un-bg-opacity));}
 .bg-hex-f6fafd,
@@ -237,7 +239,9 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .gap-48rpx{grid-gap:48rpx;gap:48rpx;}
 .gap-x-20rpx{grid-column-gap:20rpx;column-gap:20rpx;}
 .gap-x-36rpx{grid-column-gap:36rpx;column-gap:36rpx;}
+.gap-x-48rpx{grid-column-gap:48rpx;column-gap:48rpx;}
 .gap-y-24rpx{grid-row-gap:24rpx;row-gap:24rpx;}
+.gap-y-48rpx{grid-row-gap:48rpx;row-gap:48rpx;}
 ._el_sticky{position:sticky !important;}
 .absolute{position:absolute;}
 .fixed{position:fixed;}
@@ -274,6 +278,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .h-50rpx{height:50rpx;}
 .h-50vh{height:50vh;}
 .h-52rpx{height:52rpx;}
+.h-600rpx{height:600rpx;}
 .h-60rpx{height:60rpx;}
 .h-64,
 .h-64rpx{height:64rpx;}
@@ -289,9 +294,11 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .h-88rpx{height:88rpx;}
 .h-90rpx{height:90rpx;}
 .h-92{height:92rpx;}
+.h-962rpx{height:962rpx;}
 .h-96rpx{height:96rpx;}
 .h-98rpx{height:98rpx;}
 .h-full{height:100%;}
+.max-h-70vh{max-height:70vh;}
 .max-w-450{max-width:450rpx;}
 .max-w-470rpx{max-width:470rpx;}
 .max-w-520rpx{max-width:520rpx;}
@@ -321,6 +328,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .w-64,
 .w-64rpx{width:64rpx;}
 .w-640rpx{width:640rpx;}
+.w-654rpx{width:654rpx;}
 .w-686rpx{width:686rpx;}
 .w-702rpx{width:702rpx;}
 .w-72rpx{width:72rpx;}

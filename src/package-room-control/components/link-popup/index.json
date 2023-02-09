@@ -1,6 +1,6 @@
 {
   "component": true,
   "usingComponents": {
-    "scene-card": "../scene-card/index"
+    "scene-card": "./scene-card/index"
   }
 }
