@@ -1,16 +1,9 @@
 <view class="page-container flex flex-col">
-  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="添加设备"></nav-bar>
+  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="添加智能网关"></nav-bar>
 
   <view class="grow flex flex-col pb-128rpx">
-    <block wx:if="{{status === 'networking'}}">
-      <loading class="mt-130rpx" text="请将设备尽量靠近路由器" show-progress="{{true}}" percentage="{{60}}"></loading>
-
-      <view class="flex flex-col items-center pt-70rpx">
-        <view wx:for="{{stepList}}" class="transition flex felx-row items-center text-28 text-black-tips leading-40rpx pb-40rpx">
-          <text class="{{ item.isCheck && 'text-black-secondary'}}">{{item.text}}</text>
-          <svg-icon class="ml-32rpx transition" name="icon-park-solid:check-one" color="{{item.isCheck ? '#488fff' : 'transparent'}}"></svg-icon>
-        </view>
-      </view>
+    <block wx:if="{{status === 'networking' || status === 'linking'}}">
+      <loading class="mt-130rpx" text="{{ loadingText }}" show-progress="{{status !== 'linking'}}" percentage="{{60}}"></loading>
     </block>
 
     <block wx:if="{{status === 'error'}}">
@@ -41,6 +34,8 @@
 
     <van-button bind:click="connectWifi">connectWifi</van-button>
 
-    <van-button bind:click="sendMsg">sendMsg</van-button>
+    <van-button bind:click="queryDeviceOnlineStatus">queryDeviceOnlineStatus</van-button>
   </view>
+
+  <van-button bind:click="toBind">bind</van-button>
 </view>

@@ -8,6 +8,15 @@
   },
   "libVersion": "2.29.0",
   "condition": {
+    "plugin": {
+      "list": []
+    },
+    "game": {
+      "list": []
+    },
+    "gamePlugin": {
+      "list": []
+    },
     "miniprogram": {
       "list": [
         {
@@ -79,6 +88,20 @@
           "query": "",
           "launchMode": "default",
           "scene": null
+        },
+        {
+          "name": "扫码",
+          "pathName": "package-distribution/scan/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "添加智能网关",
+          "pathName": "package-distribution/add-gateway/index",
+          "query": "",
+          "scene": null,
+          "launchMode": "default"
         }
       ]
     }

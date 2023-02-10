@@ -1,10 +1,23 @@
 import { IPageData } from './typings'
+import pageBehaviors from '../../behaviors/pageBehaviors'
 
-Page({
+Component({
+  options: {
+    styleIsolation: 'apply-shared',
+  },
+  behaviors: [pageBehaviors],
   /**
-   * 页面的初始数据
+   * 组件的属性列表
+   */
+  properties: {},
+
+  /**
+   * 组件的初始数据
    */
   data: {
+    deviceType: 'gateway', // 添加设备类型，网关or子设备
+    SSID: 'midea_16_E5FB',
+    password: '12345678',
     status: 'networking',
     currentStep: '连接设备',
     stepList: [
@@ -21,45 +34,14 @@ Page({
         isCheck: false,
       },
     ],
-  } as IPageData,
+  } as WechatMiniprogram.IAnyObject & IPageData,
 
+  lifetimes: {
+    attached() {},
+    detached() {},
+  },
   /**
-   * 生命周期函数--监听页面加载
+   * 组件的方法列表
    */
-  onLoad() {},
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {},
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow() {},
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide() {},
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload() {},
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh() {},
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom() {},
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage() {},
+  methods: {},
 })

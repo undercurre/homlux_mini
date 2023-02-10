@@ -1,0 +1,20 @@
+<view class="relative">
+  <camera mode="scanCode" device-position="back" flash="auto" bindscancode="getQrCodeInfo" class="w-750rpx h-screen"></camera>
+
+  <view class="absolute top-0 left-0 px-32rpx py-64rpx" bind:tap="goBack">
+    <image class="w-48 h-48" src="/assets/img/scan/back.png"></image>
+  </view>
+
+  <view class="absolute bottom-0 left-0 right-0 pb-72rpx flex flex-col items-center text-32">
+    <text class="leading-none text-hex-F4F8FF mb-72rpx">扫描机身或说明书二维码</text>
+    <view class="flex flex-row items-center bg-hex-5A5A5A rounded-32rpx leading-80rpx px-32rpx">
+      <image class="w-28 h-28" src="/assets/img/scan/scaning.png"></image>
+
+      <text class="grow text-hex-F4F8FF px-16rpx">搜索到3个附近的子设备</text>
+
+      <van-button type="primary" size="large" plain>立即添加</van-button>
+    </view>
+  </view>
+</view>
+
+<van-button class="w-full" size="large" type="primary" block bind:click="bindGateway">添加网关</van-button>
