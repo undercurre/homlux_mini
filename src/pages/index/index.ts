@@ -1,5 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { roomStore, homeStore, othersBinding, roomBinding, userBinding, homeBinding } from '../../store/index'
+import { roomStore, othersBinding, roomBinding, userBinding, homeBinding } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 ComponentWithComputed({
@@ -59,7 +59,6 @@ ComponentWithComputed({
           selected: 0,
         })
       }
-      homeStore.updateHomeList()
       this.updateContentHeight()
     },
     onHide() {

@@ -1,12 +1,12 @@
 import { mzaiotRequest } from '../utils/index'
-export * from './home'
-export * from './room'
 
-export async function login(data: object) {
+export async function getRoomList(houseId: string) {
   return await mzaiotRequest.post<User.UserLoginRes>({
     log: true,
     loading: true,
-    url: '/v1/mzgdApi/auth/mzgd/login',
-    data,
+    url: '/v1/mzgd/user/house/queryRoomList',
+    data: {
+      houseId,
+    },
   })
 }
