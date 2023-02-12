@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { roomBinding } from '../../../../store/index'
+import { roomBinding } from '../../../store/index'
 
 ComponentWithComputed({
   options: {
@@ -11,6 +11,9 @@ ComponentWithComputed({
    * 组件的属性列表
    */
   properties: {
+    value: {
+      type: Array,
+    },
     show: {
       type: Boolean,
       value: false,
@@ -21,12 +24,16 @@ ComponentWithComputed({
           }, 100)
         }
         this.setData({
-          select: '', // TODO: 根据云端的值设置
+          select: this.data.value,
         })
       },
     },
     linkType: {
       type: String,
+    },
+    canSelectMulti: {
+      type: Boolean,
+      value: false,
     },
   },
 
@@ -35,7 +42,7 @@ ComponentWithComputed({
    */
   data: {
     contentHeight: 0,
-    select: '',
+    select: [] as string[],
   },
 
   computed: {
@@ -70,18 +77,50 @@ ComponentWithComputed({
    */
   methods: {
     handleDeviceCardTap(device: { detail: { deviceId: string } }) {
-      console.log(device)
-      this.setData({
-        select: device.detail.deviceId,
-      })
+      if (!this.data.canSelectMulti) {
+        this.setData({
+          select: [device.detail.deviceId],
+        })
+        return
+      }
+      console.log(this.data.select)
+      if (this.data.select.includes(device.detail.deviceId)) {
+        const index = this.data.select.findIndex((deviceId) => deviceId === device.detail.deviceId)
+        this.data.select.splice(index, 1)
+        this.setData({
+          select: [...this.data.select],
+        })
+      } else {
+        this.setData({
+          select: [...this.data.select, device.detail.deviceId],
+        })
+      }
+      console.log(this.data.select)
     },
-    handleSceneCardTap(scene: { detail: { name: string; value: string } }) {
-      this.setData({
-        select: scene.detail.value,
-      })
+    handleSceneCardTap(scene: { detail: { sceneId: string } }) {
+      if (!this.data.canSelectMulti) {
+        this.setData({
+          select: [scene.detail.sceneId],
+        })
+        return
+      }
+      if (this.data.select.includes(scene.detail.sceneId)) {
+        const index = this.data.select.findIndex((sceneId) => sceneId === scene.detail.sceneId)
+        this.data.select.splice(index, 1)
+        this.setData({
+          select: [...this.data.select],
+        })
+      } else {
+        this.setData({
+          select: [...this.data.select, scene.detail.sceneId],
+        })
+      }
     },
-    onClickHide() {
+    handleClose() {
       this.triggerEvent('close')
+    },
+    handleConfirm() {
+      this.triggerEvent('confirm', [...this.data.select])
     },
     getHeight() {
       this.createSelectorQuery()

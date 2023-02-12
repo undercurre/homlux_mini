@@ -50,6 +50,7 @@
     "van-cell": "@vant/weapp/cell/index",
     "van-slider": "@vant/weapp/slider/index",
     "van-popup": "@vant/weapp/popup/index",
+    "van-field": "@vant/weapp/field/index",
     "van-cell-group": "@vant/weapp/cell-group/index",
     "nav-bar": "./components/custom-nav-bar/index",
     "home-select-menu": "./components/home-select-menu/index",

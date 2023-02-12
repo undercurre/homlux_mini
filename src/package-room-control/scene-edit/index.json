@@ -1,4 +1,8 @@
 {
   "component": true,
-  "usingComponents": {}
+  "usingComponents": {
+    "link-popup": "../components/link-popup/index",
+    "edit-icon-popup": "./components/edit-icon-popup/index",
+    "edit-name-popup": "./components/edit-name-popup/index"
+  }
 }

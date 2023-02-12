@@ -1,4 +1,6 @@
 {
   "component": true,
-  "usingComponents": {}
+  "usingComponents": {
+    "link-popup": "../../../components/link-popup/index"
+  }
 }

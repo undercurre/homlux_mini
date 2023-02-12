@@ -49,6 +49,11 @@ const mzaiotRequest: MzaiotRequest = function <T extends AnyResType>(options: Ba
     options.data,
   )
 
+  // 调整请求超时时间，默认6秒
+  if (!options.timeout) {
+    options.timeout = 6000
+  }
+
   return baseRequest<T>({
     ...options,
     generalSuccessHandler: (result) => result.data,

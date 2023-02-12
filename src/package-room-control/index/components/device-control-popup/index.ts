@@ -42,6 +42,9 @@ ComponentWithComputed({
       left: 50,
       right: 50,
     },
+    linkType: '',
+    linkList: [] as string[],
+    showLinkPopup: false,
   },
 
   computed: {
@@ -198,8 +201,11 @@ ComponentWithComputed({
         },
       )
     },
-    handleSwitchLink(e: { currentTarget: { dataset: { link: string } } }) {
-      this.triggerEvent('switchLink', e.currentTarget.dataset.link)
+    handleSwitchLinkPopup(e: { currentTarget: { dataset: { link: string } } }) {
+      this.setData({
+        linkType: e.currentTarget.dataset.link,
+        showLinkPopup: true,
+      })
     },
     handleTabTap(e: { currentTarget: { dataset: { tab: 'light' | 'switch' | 'curtain' } } }) {
       this.setData({
@@ -228,6 +234,16 @@ ComponentWithComputed({
       })
     },
     handleColorTempDragEnd() {},
-    doPopupShowAnimation() {},
+    handleLinkPopupClose() {
+      this.setData({
+        showLinkPopup: false,
+      })
+    },
+    handleLinkPopupConfirm(e: { detail: string[] }) {
+      this.setData({
+        showLinkPopup: false,
+        linkList: e.detail,
+      })
+    },
   },
 })

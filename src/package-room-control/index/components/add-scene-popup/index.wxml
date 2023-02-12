@@ -1,25 +1,49 @@
-<van-popup show="{{ show }}" z-index="9000" round position="bottom" bind:close="onClickHide">
-  <view class="w-750rpx h-1220rpx h-max-70vh relative flex flex-col items-center" id="content">
+<van-popup show="{{ show }}" z-index="9000" round position="bottom" bind:close="handleClose">
+  <view class="w-750rpx h-1220rpx max-h-70vh relative flex flex-col items-center">
     <text class="h-50rpx text-36rpx text-black-primary mt-44rpx font-medium">收藏为新场景</text>
     <text class="h-36rpx text-26rpx text-black-tips mt-22rpx font-normal">保存已选设备的状态，便于快速执行</text>
     <view class="mt-32rpx w-750rpx">
       <text class="ml-48rpx h-40rpx text-28rpx text-black-primary font-normal">场景名称</text>
     </view>
     <view class="flex w-686rpx h-96rpx items-center rounded-24rpx px-32rpx py-28rpx box-border mt-32rpx border-2rpx border-gray-primary border-solid">
-      <input value="{{sceneName}}" bindinput="handleRoomNameInput" class="flex-1" type="text" placeholder="自定义场景" />
-      <svg-icon bindtap="handleClear" name="ion:close-circled" width="40rpx" height="40rpx" color="#d2d2d2" />
+      <input value="{{sceneName}}" bindinput="handleSceneNameInput" class="flex-1" type="text" placeholder="自定义场景" />
+      <svg-icon wx:if="{{sceneName}}" bindtap="handleClear" name="ion:close-circled" width="40rpx" height="40rpx" color="#d2d2d2" />
     </view>
     <view class="mt-32rpx w-750rpx">
       <text class="ml-48rpx h-40rpx text-28rpx text-black-primary font-normal">选择场景图标</text>
     </view>
+
+    <view class="flex-1 w-654rpx" id="content">
+      <scroll-view enhanced show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
+        <view class="h-32rpx"></view>
+        <view class="grid grid-cols-4 gap-x-48rpx gap-y-48rpx">
+          <view data-scene="{{item[0]}}" bindtap="handleSceneIconTap" wx:for="{{sceneList}}" wx:key="index" class="w-128rpx h-128rpx rounded-32rpx bg-hex-f6fafd box-border flex-center" style="border: 4rpx solid {{sceneIcon === item[0]?'#488FFF':'transparent'}};">
+            <image class="w-72rpx h-72rpx" src="/assets/img/scene/{{item[0]}}.png" mode="" />
+          </view>
+        </view>
+        <view class="h-32rpx"></view>
+      </scroll-view>
+    </view>
+
+    <van-cell-group inset class="w-750rpx">
+      <van-cell center is-link custom-class="switch-cell" bind:click="handleLinkSwitchPopup" custom-style="border: 2rpx solid #DDDDDD;border-radius: 24px;">
+        <view class="flex flex-col items-start">
+          <text class="text-32rpx text-black-primary font-medium h-44rpx">关联智能开关</text>
+          <text class="text-26rpx text-black-tips font-normal leading-none mt-12rpx mb-12rpx">通过开关触发场景</text>
+        </view>
+      </van-cell>
+    </van-cell-group>
+
     <view class="flex justify-center">
-      <van-button custom-class="control-btn" bind:click="onClickHide">
+      <van-button custom-class="popup-control-btn" bind:click="handleClose">
         <text class="text-36rpx">取消</text>
       </van-button>
-      <van-button type="primary" custom-class="control-btn" class="ml-46rpx" bind:click="onClickHide">
+      <van-button type="primary" custom-class="popup-control-btn" class="ml-46rpx" bind:click="handleConfirm">
         <text class="text-36rpx">确定</text>
       </van-button>
     </view>
     <view class="h-32rpx"></view>
   </view>
 </van-popup>
+
+<link-popup show="{{showLinkPopup}}" linkType="switch" canSelectMulti bind:close="handleLinkPopupClose" bind:confirm="handleLinkPopupConfirm"></link-popup>

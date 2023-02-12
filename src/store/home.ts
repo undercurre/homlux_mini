@@ -1,16 +1,21 @@
 import { observable, runInAction } from 'mobx-miniprogram'
 import { getHomeList, queryUserHouseInfo } from '../apis/index'
+import { roomStore } from './room'
 
 export const homeStore = observable({
   homeList: [] as Home.HomeInfo[],
+
+  // 当前家庭详细信息
+  currentHomeDetail: {} as Home.HomeDetail,
 
   get currentHomeId() {
     return this.homeList.find((item: Home.HomeInfo) => item.defaultHouseFlag)?.houseId || ''
   },
 
-  // 当前家庭详细信息
-  currentHomeDetail: {} as Home.HomeDetail,
-
+  // actions
+  /**
+   * 更新家庭列表同时更新当前信息
+   */
   async updateHomeInfo() {
     const res = await this.updateHomeList()
 
@@ -19,7 +24,6 @@ export const homeStore = observable({
     }
   },
 
-  // actions
   /**
    * 更新家庭列表数据
    */
@@ -28,7 +32,6 @@ export const homeStore = observable({
 
     if (res.success) {
       runInAction(() => {
-        console.log('runInAction')
         homeStore.homeList = res.result
       })
     }
@@ -50,6 +53,7 @@ export const homeStore = observable({
       runInAction(() => {
         homeStore.currentHomeDetail = Object.assign({ houseId }, res.result)
       })
+      roomStore.updateRoomList()
     }
   },
 })

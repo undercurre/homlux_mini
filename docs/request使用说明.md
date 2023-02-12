@@ -73,6 +73,8 @@ mzaiotRequest.get<UserInfo>({ url: 'xxx' })
 
 > 封装了 Url 处理，根据/src/config/index.ts 的 mzaiotBaseURL 和请求传入的 URL 进行拼接。
 
+> 封装了请求超时时间，默认6s。
+
 > 封装了部分请求参数
 
 | data | 默认值 | 说明 |

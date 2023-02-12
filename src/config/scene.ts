@@ -48,3 +48,5 @@ export const sceneMap = {
     name: '阅读',
   },
 }
+
+export const sceneList = Object.entries(sceneMap)

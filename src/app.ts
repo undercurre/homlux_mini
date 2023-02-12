@@ -1,7 +1,7 @@
 // app.js
 import { setNavigationBarHeight, storage } from './utils/index'
 import svgs from './assets/svg/index'
-import { homeBinding } from './store/index'
+import { homeStore } from './store/index'
 
 App<IAppOption>({
   onLaunch() {
@@ -28,11 +28,10 @@ App<IAppOption>({
       wx.redirectTo({
         url: '/pages/login/index',
       })
-
       return
     }
 
-    homeBinding.store.updateHomeInfo()
+    homeStore.updateHomeInfo()
   },
   globalData: {},
 })
