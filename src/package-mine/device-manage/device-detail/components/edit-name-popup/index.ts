@@ -1,5 +1,8 @@
 // package-mine/device-manage/components/edit-name-popup/index.ts
 Component({
+  options: {
+    styleIsolation: 'apply-shared',
+  },
   /**
    * 组件的属性列表
    */

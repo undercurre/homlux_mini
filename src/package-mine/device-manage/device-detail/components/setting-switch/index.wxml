@@ -1,0 +1,7 @@
+<!--package-mine/device-manage/device-detail/components/setting-switch/index.wxml-->
+<view class="h-full bg-hex-000 flex flex-col">
+  <view>
+    <text></text>
+  </view>
+  <text>package-mine/device-manage/device-detail/components/setting-light/index.wxml</text>
+</view>

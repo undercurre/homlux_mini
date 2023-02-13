@@ -1,2 +1,19 @@
-<!--package-mine/device-manage/components/edit-room-popup/index.wxml-->
-<text>package-mine/device-manage/components/edit-room-popup/index.wxml</text>
+<import src="/templates/popup.wxml" />
+<van-popup show="{{ show }}" round position="bottom" bind:close="handleClose">
+  <view class="w-750rpx flex flex-col items-center">
+    <template is="title" data="{{title: '所在房间'}}" />
+    <view class="w-750rpx flex mt-44rpx mb-16rpx">
+      <text class="text-28rpx ml-48rpx">选择房间</text>
+    </view>
+    <view class="w-686rpx">
+      <view class="flex flex-wrap">
+        <view wx:for="{{currentHomeDetail.roomList}}" wx:key="roomId" data-id="{{item.roomId}}" bindtap="handleRoomSelect" class="mt-16rpx mr-32rpx rounded-999 px-40rpx py-10rpx flex flex-center {{item.roomId === roomSelect ? 'bg-select' : 'bg-hex-dfe1e5'}}">
+          <text class="text-28rpx text-normal {{item.roomId === roomSelect ? 'text-white' : 'text-black-secondary'}}">{{item.roomName}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="h-32rpx"></view>
+    <template is="bottom-btn" />
+    <view class="h-32rpx"></view>
+  </view>
+</van-popup>

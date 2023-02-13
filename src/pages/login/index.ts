@@ -1,4 +1,5 @@
 import { login } from '../../apis/index'
+import { homeStore } from '../../store/index'
 import { storage } from '../../utils/storage'
 
 // pages/login/index.ts
@@ -52,7 +53,7 @@ Component({
             storage.set(item, 'f9992117fd284789bb96bd20b4782988', null)
           }
         })
-        console.log('去首页')
+        homeStore.updateHomeInfo()
         wx.switchTab({
           url: '/pages/index/index',
         })

@@ -1,4 +1,3 @@
-<!--package-mine/device-manage/device-detail/index.wxml-->
 <view class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7" style="z-index: -1"></view>
 
 <view class="h-100vh flex flex-col items-center">
@@ -8,10 +7,27 @@
   <!-- 上半部分 -->
   <view class="mt-24rpx w-750rpx">
     <van-cell-group inset>
-      <van-cell is-link bind:click="handleDeviceNameEditPopup" title="设备名称" value="{{title}}"></van-cell>
-      <van-cell is-link bind:click="handleCardClick" title="所在房间" value="{{title}}"></van-cell>
-      <van-cell bind:click="handleCardClick" title="设备名称" value="{{title}}"></van-cell>
-      <van-cell is-link bind:click="handleCardClick" title="设备名称" value="{{title}}"></van-cell>
+      <van-cell is-link bind:click="handleDeviceNameEditPopup" title="设备名称" value="{{deviceName}}"></van-cell>
+      <van-cell is-link bind:click="handleDeviceRoomEditPopup" title="所在房间" value="{{roomName}}"></van-cell>
+      <van-cell title="所属网关" value="智能网关 | 客厅"></van-cell>
+      <van-cell is-link bind:click="handleToOTA" title="固件版本" value="1.1.1.1"></van-cell>
     </van-cell-group>
   </view>
+
+  <!-- 下半部分 -->
+  <view class="flex flex-1">
+    <setting-light />
+    <!-- <setting-curtain />
+    <setting-switch />
+    <setting-gateway /> -->
+  </view>
+
+  <!-- 底部按钮 -->
+  <van-button type="warning" custom-class="delete-btn">
+    <text>删除设备</text>
+  </van-button>
+  <view style="height: 86rpx"></view>
 </view>
+
+<edit-name-popup value="{{deviceName}}" show="{{showEditNamePopup}}" bind:close="handleDeviceNameEditCancel" bind:confirm="handleDeviceNameEditConfirm" />
+<edit-room-popup value="{{roomId}}" show="{{showEditRoomPopup}}" bind:close="handleDeviceRoomEditCancel" bind:confirm="handleDeviceRoomEditConfirm" />

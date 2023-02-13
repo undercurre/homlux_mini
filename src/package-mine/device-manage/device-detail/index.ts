@@ -16,7 +16,14 @@ ComponentWithComputed({
     showEditRoomPopup: false,
   },
 
-  computed: {},
+  computed: {
+    roomName(data) {
+      if (data.roomList) {
+        return data.roomList.find((room: { roomId: string }) => room.roomId === data.roomId)?.roomName
+      }
+      return ''
+    },
+  },
 
   methods: {
     /**
@@ -34,12 +41,47 @@ ComponentWithComputed({
         )?.deviceName
         this.setData({
           deviceName: deviceName ?? '',
+          roomId: room.roomId,
         })
       }
     },
 
     handleDeviceNameEditPopup() {
-      console.log(111)
+      this.setData({
+        showEditNamePopup: true,
+      })
+    },
+    handleDeviceNameEditCancel() {
+      this.setData({
+        showEditNamePopup: false,
+      })
+    },
+    handleDeviceNameEditConfirm(e: { detail: string }) {
+      this.setData({
+        showEditNamePopup: false,
+        deviceName: e.detail,
+      })
+    },
+    handleDeviceRoomEditPopup() {
+      this.setData({
+        showEditRoomPopup: true,
+      })
+    },
+    handleDeviceRoomEditCancel() {
+      this.setData({
+        showEditRoomPopup: false,
+      })
+    },
+    handleDeviceRoomEditConfirm() {
+      this.setData({
+        showEditRoomPopup: false,
+        // deviceName: e.detail
+      })
+    },
+    handleToOTA() {
+      wx.navigateTo({
+        url: '/package-mine/device-manage/ota/index',
+      })
     },
   },
 })
