@@ -1,17 +1,10 @@
-<van-popup show="{{ show }}" round position="bottom" bind:close="onClickClose">
+<import src="/templates/popup.wxml" />
+<van-popup show="{{ show }}" round position="bottom" bind:close="handleClose">
   <view class="w-750rpx h-600rpx relative flex flex-col items-center">
-    <text class="h-50rpx text-36rpx text-black-primary mt-44rpx font-medium">修改名称</text>
+    <template is="title" data="{{title: '修改名称'}}" />
     <view class="flex-1 mt-98rpx w-686rpx">
-      <van-field model:value="{{ name }}" placeholder="自定义场景" custom-style="border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
+      <van-field model:value="{{ name }}" placeholder="自定义场景" custom-style="padding: 28rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
     </view>
-    <view class="flex justify-center">
-      <van-button custom-class="popup-control-btn" bind:click="handleClose">
-        <text class="text-36rpx">取消</text>
-      </van-button>
-      <van-button type="primary" custom-class="popup-control-btn" class="ml-46rpx" bind:click="handleConfirm">
-        <text class="text-36rpx">确定</text>
-      </van-button>
-    </view>
-    <view class="h-32rpx"></view>
+    <template is="bottom-btn" />
   </view>
 </van-popup>

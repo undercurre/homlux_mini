@@ -1,7 +1,8 @@
 <wxs src="./index.wxs" module="module" />
+<import src="/templates/popup.wxml" />
 <van-popup show="{{ show }}" z-index="10001" round position="bottom" bind:close="handleClose">
   <view class="w-750rpx h-50vh relative flex flex-col items-center">
-    <text class="h-50rpx text-36rpx text-black-primary mt-44rpx font-medium">{{title}}</text>
+    <template is="title" data="{{title: title}}" />
     <view class="flex-1" id="content1">
       <scroll-view enhanced show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
         <view class="h-78rpx"></view>
@@ -17,14 +18,6 @@
         </view>
       </scroll-view>
     </view>
-    <view class="flex justify-center">
-      <van-button custom-class="popup-control-btn" bind:click="handleClose">
-        <text class="text-36rpx">取消</text>
-      </van-button>
-      <van-button type="primary" custom-class="popup-control-btn" class="ml-46rpx" bind:click="handleConfirm">
-        <text class="text-36rpx">确定</text>
-      </van-button>
-    </view>
-    <view class="h-32rpx"></view>
+    <template is="bottom-btn" />
   </view>
 </van-popup>

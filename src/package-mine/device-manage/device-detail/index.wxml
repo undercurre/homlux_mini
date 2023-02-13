@@ -3,7 +3,7 @@
 
 <view class="h-100vh flex flex-col items-center">
   <!-- 标题 -->
-  <nav-bar title="{{title}}" left-arrow bind:leftTap="goBack"></nav-bar>
+  <nav-bar title="{{deviceName}}" left-arrow bind:leftTap="goBack"></nav-bar>
 
   <!-- 上半部分 -->
   <view class="mt-24rpx w-750rpx">

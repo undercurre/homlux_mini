@@ -1,0 +1,19 @@
+<van-popup show="{{ show }}" round position="bottom" bind:close="handleClose">
+  <view class="w-750rpx relative flex flex-col items-center">
+    <text class="h-50rpx text-36rpx text-black-primary mt-44rpx font-medium">设备名称</text>
+    <view class="mt-98rpx w-750rpx">
+      <van-field model:value="{{ deviceName }}" placeholder="请输入房间名称" custom-style="padding: 28rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
+    </view>
+    <view class="flex justify-center">
+      <van-button custom-class="popup-control-btn" bind:click="handleClose">
+        <text class="text-36rpx">取消</text>
+      </van-button>
+      <van-button type="primary" custom-class="popup-control-btn" class="ml-46rpx" bind:click="handleConfirm">
+        <text class="text-36rpx">确定</text>
+      </van-button>
+    </view>
+    <view class="h-32rpx"></view>
+  </view>
+</van-popup>
+
+<link-popup show="{{showLinkPopup}}" linkType="switch" canSelectMulti bind:close="handleLinkPopupClose" bind:confirm="handleLinkPopupConfirm"></link-popup>
