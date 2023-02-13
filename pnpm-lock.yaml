@@ -20,6 +20,7 @@ specifiers:
   husky: ^8.0.2
   miniprogram-api-typings: ^3.9.0
   miniprogram-computed: ^4.4.0
+  mitt: ^3.0.0
   mobx-miniprogram: ^4.13.2
   mobx-miniprogram-bindings: ^2.1.5
   prettier: ^2.8.0
@@ -34,6 +35,7 @@ dependencies:
   dayjs: 1.11.7
   fast-deep-equal: 2.0.1
   miniprogram-computed: 4.4.0
+  mitt: 3.0.0
   mobx-miniprogram: 4.13.2
   mobx-miniprogram-bindings: 2.1.5_mobx-miniprogram@4.13.2
   rfdc: 1.3.0
@@ -2186,6 +2188,10 @@ packages:
     dependencies:
       fast-deep-equal: 2.0.1
       rfdc: 1.3.0
+    dev: false
+
+  /mitt/3.0.0:
+    resolution: {integrity: sha512-7dX2/10ITVyqh4aOSVI9gdape+t9l2/8QxHrFmUXu4EEUpdlxl6RudZUPZoc+zuY2hk1j7XxVroIVIan/pD/SQ==}
     dev: false
 
   /mobx-miniprogram-bindings/2.1.5_mobx-miniprogram@4.13.2:
