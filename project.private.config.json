@@ -34,13 +34,6 @@
           "scene": null
         },
         {
-          "name": "添加单个设备",
-          "pathName": "package-distribution/device-add/index",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
           "name": "我的",
           "pathName": "pages/mine/index",
           "query": "",
@@ -97,11 +90,25 @@
           "scene": null
         },
         {
+          "name": "检验添加智能网关",
+          "pathName": "package-distribution/check-gateway/index",
+          "query": "apSSID=midea_16_E5FB&dsn=000016111MSGWZ00288B1539E5FB0000",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "添加智能网关",
           "pathName": "package-distribution/add-gateway/index",
-          "query": "",
+          "query": "wifiSSID=xyh_wifi&apSSID=midea_16_E5FB&method=wifi&dsn=000016111MSGWZ00288B1539E5FB0000",
           "scene": null,
           "launchMode": "default"
+        },
+        {
+          "name": "绑定家庭",
+          "pathName": "package-distribution/bind-home/index",
+          "query": "deviceId=1111&dsn=000016111MSGWZ00288B1539E5FB0000",
+          "launchMode": "default",
+          "scene": null
         }
       ]
     }

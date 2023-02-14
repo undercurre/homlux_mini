@@ -3,7 +3,8 @@ export { createStorage, storage, asyncStorage } from './storage'
 export { logout } from './service'
 export { aesUtil } from './aesUtil'
 export { strUtil } from './strUtil'
-export { wifiProtocol } from './wifiProtocol'
+export { WifiSocket } from './wifiProtocol'
+export { ble } from './bleProtocol'
 
 export function delay(ms: number) {
   return new Promise<void>((resolve) => {
@@ -49,5 +50,5 @@ export function getCurrentPageParams() {
   const pages = getCurrentPages()
   const currentPage = pages[pages.length - 1]
 
-  return currentPage.options
+  return currentPage.options as IAnyObject
 }

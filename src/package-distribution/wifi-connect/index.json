@@ -1,5 +1,6 @@
 {
   "usingComponents": {
+    "van-picker": "@vant/weapp/picker/index",
     "van-field": "@vant/weapp/field/index",
     "tips-box": "/components/tips-box/index"
   }

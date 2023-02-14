@@ -2,11 +2,9 @@
   <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="添加智能网关"></nav-bar>
 
   <view class="grow flex flex-col pb-128rpx">
-    <block wx:if="{{status === 'linking'}}">
-      <loading class="mt-130rpx" text="请将设备尽量靠近路由器" show-progress="{{true}}" percentage="{{percentage}}" step-list="{{stepList}}" active-index="{{activeIndex}}"></loading>
-    </block>
+    <loading class="mt-130rpx" text="正在连接设备，请将手机尽量靠近设备" show-progress="{{false}}"></loading>
 
-    <block wx:if="{{status === 'error'}}">
+    <!-- <block wx:if="{{status === 'error'}}">
       <tips-box text="连接失败！" icon="/assets/img/device-add/error.png"></tips-box>
 
       <view class="grow pl-88rpx pr-50rpx pt-180rpx">
@@ -22,8 +20,16 @@
       </view>
 
       <van-button class="mt-32rpx mx-32rpx" block type="primary" size="large">完成</van-button>
-    </block>
+    </block> -->
+  </view>
+
+  <view class="flex felx-row gap-10rpx">
+    <van-button bind:click="getWifiList">getWifiList</van-button>
+
+    <van-button bind:click="connectWifi">connectWifi</van-button>
   </view>
 </view>
 
-<van-button bind:click="queryDeviceOnlineStatus">queryDeviceOnlineStatus</van-button>
+<van-dialog use-slot title="此设备已绑定" show="{{ isShowForceBindTips }}" show-cancel-button="{{false}}" confirm-button-text="重新扫码" confirm-button-color="#488FFF" bind:close="onClose" bind:confirm="reScan">
+  <text class="block pt-30rpx pb-60rpx text-center leading-48rpx text-28 text-hex-666">如需绑定至新的家庭，请单击网关侧面按键</text>
+</van-dialog>

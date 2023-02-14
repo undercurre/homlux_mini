@@ -23,6 +23,10 @@ App<IAppOption>({
       },
     })
 
+    const appAuthorizeSetting = wx.getAppAuthorizeSetting()
+
+    console.log('appAuthorizeSetting', appAuthorizeSetting)
+
     // 如果用户没登陆，或者登录状态过期，需要自动跳转到登录页
     if (!storage.get<string>('token')) {
       wx.redirectTo({

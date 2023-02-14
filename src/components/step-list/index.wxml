@@ -1,0 +1,6 @@
+<view class="flex flex-col items-center pt-70rpx">
+  <view wx:for="{{list}}" wx:key="text" class="transition flex felx-row items-center text-28 text-black-tips leading-40rpx pb-40rpx">
+    <text class="{{ index <= activeIndex && 'text-black-secondary'}}">{{item.text}}</text>
+    <svg-icon class="ml-32rpx transition" name="icon-park-solid:check-one" color="{{index <= activeIndex ? '#488fff' : 'transparent'}}"></svg-icon>
+  </view>
+</view>

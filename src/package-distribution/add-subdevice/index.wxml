@@ -3,7 +3,7 @@
 
   <view class="grow flex flex-col pb-128rpx">
     <block wx:if="{{status === 'networking'}}">
-      <loading class="mt-130rpx" text="请将设备尽量靠近路由器" show-progress="{{true}}" percentage="{{60}}"></loading>
+      <tips-box class="mt-130rpx" text="请将设备尽量靠近智能网关" show-progress="{{true}}" percentage="{{60}}"></tips-box>
 
       <view class="flex flex-col items-center pt-70rpx">
         <view wx:for="{{stepList}}" class="transition flex felx-row items-center text-28 text-black-tips leading-40rpx pb-40rpx">
@@ -30,17 +30,5 @@
 
       <van-button class="mt-32rpx mx-32rpx" block type="primary" size="large">完成</van-button>
     </block>
-  </view>
-
-  <input class="mb-40rpx" type="text" model:value="{{SSID}}" placeholder="名称" />
-
-  <input class="mb-40rpx" type="text" model:value="{{password}}" placeholder="密码" />
-
-  <view class="flex felx-row gap-10rpx">
-    <van-button bind:click="getWifiList">getWifiList</van-button>
-
-    <van-button bind:click="connectWifi">connectWifi</van-button>
-
-    <van-button bind:click="sendMsg">sendMsg</van-button>
   </view>
 </view>

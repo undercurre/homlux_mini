@@ -1,5 +1,6 @@
 import { IPageData } from './typings'
 import pageBehaviors from '../../behaviors/pageBehaviors'
+import { getCurrentPageParams } from '../../utils/index'
 
 Component({
   options: {
@@ -16,8 +17,6 @@ Component({
    */
   data: {
     deviceType: 'gateway', // 添加设备类型，网关or子设备
-    SSID: 'midea_16_E5FB',
-    password: '12345678',
     status: 'networking',
     currentStep: '连接设备',
     stepList: [
@@ -35,6 +34,14 @@ Component({
       },
     ],
   } as WechatMiniprogram.IAnyObject & IPageData,
+
+  pageLifetimes: {
+    show() {
+      const params = getCurrentPageParams()
+
+      console.log('getCurrentPageParams', params)
+    },
+  },
 
   lifetimes: {
     attached() {},

@@ -1,0 +1,9 @@
+{
+  "component": true,
+  "usingComponents": {
+    "van-dialog": "@vant/weapp/dialog/index",
+    "tips-box": "/components/tips-box/index",
+    "edit-device-form": "/components/edit-device-form/index",
+    "loading": "/components/loading/index"
+  }
+}

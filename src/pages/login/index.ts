@@ -1,5 +1,6 @@
 import { login } from '../../apis/index'
 import { storage } from '../../utils/storage'
+import { homeStore } from '../../store/index'
 
 // pages/login/index.ts
 Component({
@@ -56,10 +57,14 @@ Component({
         wx.switchTab({
           url: '/pages/index/index',
         })
+
+        homeStore.updateHomeInfo()
       }
     },
 
     onAgreeClick(event: { detail: boolean }) {
+      console.log('onAgreeClick', event)
+
       this.setData({
         isAgree: event.detail,
       })

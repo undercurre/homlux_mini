@@ -39,3 +39,5 @@
 <view class="px-24rpx pb-140rpx">
   <van-button block type="danger" plain size="large" bind:click="loginOut">退出登录</van-button>
 </view>
+
+<van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />

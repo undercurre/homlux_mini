@@ -14,6 +14,22 @@ export const strUtil = {
     result = result.substring(0, result.length - 1) //末尾是&
     return result ? `${url}?${result}` : url
   },
+
+  /**
+   * 获取url的拼接参数
+   * @param url
+   */
+  getUrlParams(url: string) {
+    const theRequest: IAnyObject = {}
+    if (url.indexOf('?') != -1) {
+      const queryString = url.substr(url.indexOf('?') + 1)
+      const strs = queryString.split('&')
+      for (let i = 0; i < strs.length; i++) {
+        theRequest[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1])
+      }
+    }
+    return theRequest
+  },
   /**
    * 16进制字符串转ArrayBuffer
    * @param str
