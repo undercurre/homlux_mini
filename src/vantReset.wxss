@@ -46,6 +46,14 @@ page {
   --toast-font-size: 32rpx;
   --toast-line-height: 44rpx;
   /* toast end */
+
+  /* switch start */
+  --switch-height: 50rpx;
+  --switch-width: 96rpx;
+  --switch-node-size: 35rpx;
+  --switch-background-color: #c8c7cc;
+  --switch-on-background-color: #488fff;
+  /* switch end */
 }
 
 /* button start */
@@ -123,3 +131,20 @@ page {
 .van-action-sheet__item {
   padding: 32rpx !important;
 }
+/* action-sheet end */
+
+/* switch start */
+.van-switch {
+  border: none !important;
+}
+.van-switch__node {
+  left: 7.7rpx !important;
+  top: 9rpx !important;
+}
+.van-switch__node {
+  box-shadow: none !important;
+}
+.van-switch--on .van-switch__node {
+  transform: translateX(47rpx) !important;
+}
+/* switch end */

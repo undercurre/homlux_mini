@@ -1,11 +1,13 @@
-<!--package-distribution/search-subdevice/components/edit-device-info/index.wxml-->
+<import src="/templates/popup.wxml" />
 <van-popup show="{{ show }}" z-index="10000" position="bottom" round bind:close="handleClose">
-  <view class="px-32rpx pt-48rpx pb-100rpx text-black-primary">
-    <text class="block pb-66rpx font-medium text-center text-36 leading-48rpx">添加房间</text>
+  <view class="px-32rpx pb-100rpx text-black-primary">
+    <view class="flex-center w-750rpx pb-64rpx">
+      <template is="title" data="{{title: '添加房间'}}" />
+    </view>
 
     <text class="block pl-16rpx pb-32rpx text-28">房间名称</text>
 
-    <van-field model:value="{{ roomInfo.name }}" placeholder="请输入房间名称" custom-style="border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
+    <van-field custom-style="padding: 28rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" model:value="{{ roomInfo.name }}" placeholder="请输入房间名称" clearable="{{true}}"> </van-field>
 
     <text class="block pl-16rpx pb-40rpx pt-68rpx text-28">选择房间图标</text>
 
@@ -14,11 +16,7 @@
         <image class="w-64rpx h-64rpx" src="/assets/img/room/{{item.icon}}.png"></image>
       </view>
     </view>
-
-    <view class="flex flex-row gap-46rpx pt-80rpx">
-      <van-button class="grow" size="large" bindtap="handleClose">取消</van-button>
-
-      <van-button class="grow" size="large" type="primary" bindtap="handleConfirm">确定</van-button>
-    </view>
+    <view class="h-80rpx"></view>
+    <template is="bottom-btn" />
   </view>
 </van-popup>

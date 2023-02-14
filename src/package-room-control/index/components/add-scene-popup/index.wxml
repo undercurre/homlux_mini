@@ -1,13 +1,13 @@
+<import src="/templates/popup.wxml" />
 <van-popup show="{{ show }}" z-index="9000" round position="bottom" bind:close="handleClose">
   <view class="w-750rpx h-1220rpx max-h-70vh relative flex flex-col items-center">
-    <text class="h-50rpx text-36rpx text-black-primary mt-44rpx font-medium">收藏为新场景</text>
+    <template is="title" data="{{title: '收藏为新场景'}}" />
     <text class="h-36rpx text-26rpx text-black-tips mt-22rpx font-normal">保存已选设备的状态，便于快速执行</text>
     <view class="mt-32rpx w-750rpx">
       <text class="ml-48rpx h-40rpx text-28rpx text-black-primary font-normal">场景名称</text>
     </view>
-    <view class="flex w-686rpx h-96rpx items-center rounded-24rpx px-32rpx py-28rpx box-border mt-32rpx border-2rpx border-gray-primary border-solid">
-      <input value="{{sceneName}}" bindinput="handleSceneNameInput" class="flex-1" type="text" placeholder="自定义场景" />
-      <svg-icon wx:if="{{sceneName}}" bindtap="handleClear" name="ion:close-circled" width="40rpx" height="40rpx" color="#d2d2d2" />
+    <view class="mt-32rpx w-686rpx mx-32rpx">
+      <van-field model:value="{{ sceneName }}" placeholder="自定义场景" custom-style="padding: 28rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
     </view>
     <view class="mt-32rpx w-750rpx">
       <text class="ml-48rpx h-40rpx text-28rpx text-black-primary font-normal">选择场景图标</text>
@@ -34,15 +34,7 @@
       </van-cell>
     </van-cell-group>
 
-    <view class="flex justify-center">
-      <van-button custom-class="popup-control-btn" bind:click="handleClose">
-        <text class="text-36rpx">取消</text>
-      </van-button>
-      <van-button type="primary" custom-class="popup-control-btn" class="ml-46rpx" bind:click="handleConfirm">
-        <text class="text-36rpx">确定</text>
-      </van-button>
-    </view>
-    <view class="h-32rpx"></view>
+    <template is="bottom-btn" />
   </view>
 </van-popup>
 

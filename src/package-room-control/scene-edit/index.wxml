@@ -42,8 +42,8 @@
       </scroll-view>
     </view>
     <view class="mb-86rpx mt-24rpx flex justify-center">
-      <van-button custom-class="popup-control-btn" bind:click="handleDelete">
-        <text class="text-36rpx">取消</text>
+      <van-button custom-class="popup-control-btn" custom-style="border: 2rpx solid #A2A2A2;" color="transparent" bind:click="handleDelete">
+        <text class="text-36rpx text-black-tips">删除</text>
       </van-button>
       <van-button type="primary" custom-class="popup-control-btn" class="ml-46rpx" bind:click="handleSave">
         <text class="text-36rpx">确定</text>

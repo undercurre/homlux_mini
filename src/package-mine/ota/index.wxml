@@ -1,7 +1,129 @@
 <!-- 背景 -->
 <view class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7" style="z-index: -1"></view>
-<!-- 标题 -->
-<nav-bar title="固件升级" left-arrow bind:leftTap="goBack"></nav-bar>
-<van-cell-group inset>
-  <van-cell> </van-cell>
-</van-cell-group>
+<view class="h-100vh flex flex-col items-center">
+  <!-- 标题 -->
+  <nav-bar title="固件升级" left-arrow bind:leftTap="goBack"></nav-bar>
+  <van-cell-group inset>
+    <van-cell>
+      <view class="flex flex-col items-start pr-44rpx">
+        <text class="text-34rpx text-black-primary">自动升级</text>
+        <text class="text-28rpx text-black-tips font-normal text-justify">每天凌晨2:00-5:00期间自动升级设备固件。升级期间设备可能无法使用。</text>
+      </view>
+      <view slot="right-icon">
+        <van-switch checked="{{autoUpdate}}" loading="{{isLoading}}" bind:change="onChange" />
+      </view>
+    </van-cell>
+  </van-cell-group>
+
+  <view class="flex justify-between items-center w-686rpx mb-24rpx">
+    <text class="text-28rpx text-black-secondary ml-16rpx">可升级设备</text>
+    <view class="h-56rpx w-164rpx flex-center border-2rpx border-solid border-black-secondary rounded-999">
+      <text class="text-26rpx text-black-secondary">全部升级</text>
+    </view>
+  </view>
+
+  <view class="flex-1 w-750rpx" id="content">
+    <scroll-view enhanced show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
+      <van-cell-group inset>
+        <van-cell>
+          <view class="flex flex-col items-center text-28rpx text-black-primary text-justify">
+            <view class="flex w-full justify-between items-center mb-32rpx">
+              <view class="flex-center">
+                <view class="w-96rpx h-96rpx bg-hex-f6fafd flex-center rounded-999">
+                  <image src="/assets/img/device/light.png" class="w-72rpx h-72rpx" />
+                </view>
+                <view class="ml-32rpx flex flex-col">
+                  <text class="text-32rpx">灯带</text>
+                  <text class="opcaity-80 text-black-secondary">客厅</text>
+                </view>
+              </view>
+              <van-button round type="primary">立刻升级</van-button>
+            </view>
+            <view class="w-686rpx h-1rpx bg-hex-eef2f7"></view>
+            <view class="flex flex-col w-full">
+              <view class="mt-24rpx flex">
+                <text>当前版本：</text>
+                <view class="ml-30rpx">
+                  <text>1.1.1.1</text>
+                </view>
+              </view>
+              <view class="mt-32rpx flex">
+                <text>升级内容：</text>
+                <view class="ml-30rpx">
+                  <text>{{'1、提升设备稳定性\n2、优化数据上报'}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </van-cell>
+      </van-cell-group>
+      <van-cell-group inset>
+        <van-cell>
+          <view class="flex flex-col items-center text-28rpx text-black-primary text-justify">
+            <view class="flex w-full justify-between items-center mb-32rpx">
+              <view class="flex-center">
+                <view class="w-96rpx h-96rpx bg-hex-f6fafd flex-center rounded-999">
+                  <image src="/assets/img/device/light.png" class="w-72rpx h-72rpx" />
+                </view>
+                <view class="ml-32rpx flex flex-col">
+                  <text class="text-32rpx">灯带</text>
+                  <text class="opcaity-80 text-black-secondary">客厅</text>
+                </view>
+              </view>
+              <van-button round type="primary">立刻升级</van-button>
+            </view>
+            <view class="w-686rpx h-1rpx bg-hex-eef2f7"></view>
+            <view class="flex flex-col w-full">
+              <view class="mt-24rpx flex">
+                <text>当前版本：</text>
+                <view class="ml-30rpx">
+                  <text>1.1.1.1</text>
+                </view>
+              </view>
+              <view class="mt-32rpx flex">
+                <text>升级内容：</text>
+                <view class="ml-30rpx">
+                  <text>{{'1、提升设备稳定性\n2、优化数据上报'}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </van-cell>
+      </van-cell-group>
+      <van-cell-group inset>
+        <van-cell>
+          <view class="flex flex-col items-center text-28rpx text-black-primary text-justify">
+            <view class="flex w-full justify-between items-center mb-32rpx">
+              <view class="flex-center">
+                <view class="w-96rpx h-96rpx bg-hex-f6fafd flex-center rounded-999">
+                  <image src="/assets/img/device/light.png" class="w-72rpx h-72rpx" />
+                </view>
+                <view class="ml-32rpx flex flex-col">
+                  <text class="text-32rpx">灯带</text>
+                  <text class="opcaity-80 text-black-secondary">客厅</text>
+                </view>
+              </view>
+              <van-button round type="primary">立刻升级</van-button>
+            </view>
+            <view class="w-686rpx h-1rpx bg-hex-eef2f7"></view>
+            <view class="flex flex-col w-full">
+              <view class="mt-24rpx flex">
+                <text>当前版本：</text>
+                <view class="ml-30rpx">
+                  <text>1.1.1.1</text>
+                </view>
+              </view>
+              <view class="mt-32rpx flex">
+                <text>升级内容：</text>
+                <view class="ml-30rpx">
+                  <text>{{'1、提升设备稳定性\n2、优化数据上报'}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </van-cell>
+      </van-cell-group>
+      <view class="h-64rpx"></view>
+    </scroll-view>
+  </view>
+</view>

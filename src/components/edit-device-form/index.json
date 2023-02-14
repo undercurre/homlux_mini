@@ -2,7 +2,6 @@
   "component": true,
   "styleIsolation": "apply-shared",
   "usingComponents": {
-    "add-room": "/components/add-room/index",
-    "van-field": "@vant/weapp/field/index"
+    "add-room": "/components/add-room/index"
   }
 }

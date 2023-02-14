@@ -1,0 +1,24 @@
+<import src="/templates/popup.wxml" />
+<view class="h-full flex flex-col">
+  <view class="w-750rpx flex mt-16rpx">
+    <text class="ml-48rpx text-black-secondary font-normal text-28rpx">参数设置</text>
+  </view>
+  <view class="mt-24rpx w-750rpx">
+    <van-cell-group inset>
+      <van-cell is-link bind:click="handlePopupShow" data-title="渐亮时长" title="渐亮时长" value="{{pickerColumns[lightUpDefaultValue]}}"></van-cell>
+      <van-cell is-link bind:click="handlePopupShow" data-title="渐暗时长" title="渐暗时长" value="{{pickerColumns[dimmingDefaultValue]}}"></van-cell>
+    </van-cell-group>
+  </view>
+</view>
+
+<van-popup show="{{ showPopup }}" round position="bottom" bind:close="handleClose">
+  <view class="w-750rpx flex flex-col items-center">
+    <template is="title" data="{{title: title}}" />
+    <view class="mt-98rpx w-750rpx">
+      <van-picker columns="{{ pickerColumns }}" default-index="{{ value }}" bind:change="handlePickerChange" />
+    </view>
+    <view class="h-98rpx"></view>
+    <template is="bottom-btn" />
+    <view class="h-32rpx"></view>
+  </view>
+</van-popup>

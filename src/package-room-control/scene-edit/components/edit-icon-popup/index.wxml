@@ -1,6 +1,7 @@
+<import src="/templates/popup.wxml" />
 <van-popup show="{{ show }}" round position="bottom" bind:close="handleClose">
   <view class="w-750rpx h-962rpx relative flex flex-col items-center">
-    <text class="h-50rpx text-36rpx text-black-primary mt-44rpx font-medium">修改名称</text>
+    <template is="title" data="{{title: '修改场景图标'}}" />
     <view class="mt-32rpx w-750rpx">
       <text class="ml-48rpx h-40rpx text-28rpx text-black-primary font-normal">选择场景图标</text>
     </view>
@@ -16,15 +17,6 @@
         <view class="h-32rpx"></view>
       </scroll-view>
     </view>
-
-    <view class="flex justify-center">
-      <van-button custom-class="popup-control-btn" bind:click="handleClose">
-        <text class="text-36rpx">取消</text>
-      </van-button>
-      <van-button type="primary" custom-class="popup-control-btn" class="ml-46rpx" bind:click="handleConfirm">
-        <text class="text-36rpx">确定</text>
-      </van-button>
-    </view>
-    <view class="h-32rpx"></view>
+    <template is="bottom-btn" />
   </view>
 </van-popup>

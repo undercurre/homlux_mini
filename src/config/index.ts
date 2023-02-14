@@ -22,6 +22,6 @@ export const storageExpire: ConfigWithEnv<number> = {
  * 美智云后端websocket地址
  */
 export const mzaiotWSURL: ConfigWithEnv<string> = {
-  dev: 'ws://47.106.94.129:8001/v1/wss/',
+  dev: 'wss://test.meizgd.com/mzaio/v1/wss/',
   prod: 'https://baidu.com',
 }
