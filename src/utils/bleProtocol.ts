@@ -19,4 +19,17 @@ export const ble = {
       protocolVersion: msgStr.substr(24, 2),
     }
   },
+
+  getCheckNum(msgArr: Array<number>) {
+    let sum = 0
+
+    for(let i=0;i < msgArr.length - 1;i++) {
+      sum += msgArr[i]
+    }
+
+    sum = ~sum
+    sum +=1
+
+    return sum
+  }
 }

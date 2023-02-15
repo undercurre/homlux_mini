@@ -23,7 +23,7 @@
 
             <view class="grow pl-32rpx">
               <view class="flex flex-row items-center pb-4rpx" bind:tap="editDevice">
-                <text class="pr-24rpx text-32 text-black-primary">{{ item.mac }}</text>
+                <text class="pr-24rpx text-32 text-black-primary">{{ item.name }}</text>
 
                 <image class="w-48 h-48" src="../../assets/img/base/edit.png"></image>
               </view>
@@ -107,3 +107,8 @@
 </view>
 
 <edit-device-info show="{{isEditDevice}}" bind:close="cancelEditDevice"></edit-device-info>
+
+
+<van-button type="primary" bind:click="openAppAuthorizeSetting">openAppAuthorizeSetting</van-button>
+
+<van-button type="primary" bind:click="openSystemBluetoothSetting">openSystemBluetoothSetting</van-button>

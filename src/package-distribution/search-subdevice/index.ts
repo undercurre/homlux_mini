@@ -48,6 +48,21 @@ ComponentWithComputed({
   },
 
   methods: {
+    openSystemBluetoothSetting() {
+      wx.openSystemBluetoothSetting({
+        success(res) {
+          console.log('openSystemBluetoothSetting', res)
+        },
+      })
+    },
+
+    openAppAuthorizeSetting() {
+      wx.openAppAuthorizeSetting({
+        success(res) {
+          console.log('openAppAuthorizeSetting', res)
+        },
+      })
+    },
     async initBle() {
       wx.onBluetoothAdapterStateChange((changeRes) => {
         console.log('onBluetoothAdapterStateChange', changeRes)
@@ -82,7 +97,7 @@ ComponentWithComputed({
               deviceUuid: device.deviceId,
               mac: msgObj.mac,
               icon: '/assets/img/device/light.png',
-              name: '设备',
+              name: msgObj.mac,
               isCheck: false,
             }
           })
@@ -186,9 +201,47 @@ ComponentWithComputed({
 
       console.log('bleServiceRes', bleServiceRes)
 
-      // const characRes = await wx.getBLEDeviceCharacteristics({})
+      const serviceId = 'BAE55B96-7D19-458D-970C-50613D801BC9'
 
-      // console.log('getBLEDeviceCharacteristics', characRes)
+      const characRes = await wx.getBLEDeviceCharacteristics({
+        deviceId,
+        serviceId,
+      })
+
+      console.log('getBLEDeviceCharacteristics', characRes)
+
+      const characteristicId = characRes.characteristics[0].uuid
+      console.log('characteristicId', characteristicId)
+
+      let cmdArr = [0, 1, 0]
+
+      cmdArr.push(...[5])
+
+      cmdArr.push(ble.getCheckNum(cmdArr))
+
+      cmdArr[2] = cmdArr.length - 1
+      let buffer = new ArrayBuffer(cmdArr.length)
+      let dataView = new DataView(buffer)
+
+      cmdArr.forEach((item, index) => {
+        dataView.setUint8(index, item)
+      })
+       
+      wx.notifyBLECharacteristicValueChange({
+        deviceId,
+        serviceId,
+        characteristicId,
+        state: true,
+      })
+
+      const wirteRes = await wx.writeBLECharacteristicValue({
+        deviceId,
+        serviceId,
+        characteristicId: characteristicId,
+        value: buffer,
+      })
+
+      console.log('wirteRes', wirteRes)
     },
   },
 
