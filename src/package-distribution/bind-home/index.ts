@@ -57,11 +57,12 @@ Component({
         wx.showToast({
           title: '绑定成功',
           icon: 'success',
-          duration: 3000,
-          complete: function() {
-            wx.switchTab({url: '/pages/index/index'})
-          }
+          duration: 2000,
         })
+
+        setTimeout(() => {
+          wx.switchTab({ url: '/pages/index/index' })
+        }, 2000)
       }
     },
   },
