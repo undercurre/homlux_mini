@@ -59,7 +59,11 @@
 </view>
 
 <home-select-menu x="{{selectHomeMenu.x}}" y="{{selectHomeMenu.y}}" isShow="{{selectHomeMenu.isShow}}" bind:select="handleHomeSelect"></home-select-menu>
+
 <dropdown-menu x="{{dropdownMenu.x}}" y="{{dropdownMenu.y}}" isShow="{{dropdownMenu.isShow}}" bind:select="handleMenuSelect"></dropdown-menu>
+
+<add-device show="{{showAddNewDevice}}" bind:hide="handleHideAddNewDevice"></add-device>
+
 <add-device show="{{showAddNewDevice}}" bind:close="handleHideAddNewDevice"></add-device>
 <!-- <add-new-room isShow="{{showAddNewRoom}}" bind:hide="handleHideAddNewRoom" bind:confirm="handleAddRoomConfirm"></add-new-room> -->
 <add-room show="{{showAddNewRoom}}" bind:close="handleHideAddNewRoom"></add-room>

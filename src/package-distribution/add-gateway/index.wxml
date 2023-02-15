@@ -1,0 +1,29 @@
+<view class="page-container flex flex-col">
+  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="添加智能网关"></nav-bar>
+
+  <view class="grow flex flex-col pb-128rpx">
+    <block wx:if="{{status === 'linking'}}">
+      <loading class="mt-130rpx" text="请将设备尽量靠近路由器" show-progress="{{true}}" percentage="{{percentage}}" step-list="{{stepList}}" active-index="{{activeIndex}}"></loading>
+    </block>
+
+    <block wx:if="{{status === 'error'}}">
+      <tips-box text="连接失败！" icon="/assets/img/device-add/error.png"></tips-box>
+
+      <view class="grow pl-88rpx pr-50rpx pt-180rpx">
+        <view class="text-28 text-black-primary">
+          <text>请排查以下原因：</text>
+        </view>
+
+        <view class="flex flex-col py-24rpx text-26 text-hex-666 leading-46rpx">
+          <text>1、确保路由器网络环境正常</text>
+          <text>2、将网管尽可能靠近路由器</text>
+          <text>3、合理摆放网关的位置，避免部分子设备距离过远</text>
+        </view>
+      </view>
+
+      <van-button class="mt-32rpx mx-32rpx" block type="primary" size="large">完成</van-button>
+    </block>
+  </view>
+</view>
+
+<van-button bind:click="queryDeviceOnlineStatus">queryDeviceOnlineStatus</van-button>

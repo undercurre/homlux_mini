@@ -1,5 +1,6 @@
 import { mzaiotRequest } from '../utils/index'
 export * from './home'
+export * from './device'
 export * from './room'
 export * from './device'
 

@@ -162,9 +162,10 @@ ComponentWithComputed({
      */
     handleMenuSelect(e: { detail: 'addDevice' | 'addRoom' | 'inviteFamily' }) {
       if (e.detail === 'addDevice') {
-        this.setData({
-          showAddNewDevice: true,
-        })
+        wx.navigateTo({ url: '/package-distribution/scan/index' })
+        // this.setData({
+        // showAddNewDevice: true,
+        // })
       } else if (e.detail === 'addRoom') {
         this.setData({
           showAddNewRoom: true,

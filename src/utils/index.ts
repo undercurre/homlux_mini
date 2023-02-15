@@ -1,6 +1,10 @@
 export * from './request/index'
 export * from './storage'
 export * from './service'
+export * from './aesUtil'
+export * from './strUtil'
+export * from './wifiProtocol'
+export * from './bleProtocol'
 
 export function delay(ms: number) {
   return new Promise<void>((resolve) => {
@@ -30,18 +34,21 @@ export function setNavigationBarHeight() {
 }
 
 /**
- * 获取拼装参数后的完整url
- * @param url
- * @param params
+ * 获取当前页面url
  */
-export function getUrlWithParams(url: string, params: Record<string, string | number> = {}) {
-  let result = ''
+export function getCurrentPageUrl() {
+  const pages = getCurrentPages()
+  const currentPage = pages[pages.length - 1]
 
-  Object.entries(params).forEach(([key, value]) => {
-    console.log(key, value)
-    result += `${key}=${value}&`
-  })
+  return currentPage.route
+}
 
-  result = result.substring(0, result.length - 1) //末尾是&
-  return result ? `${url}?${result}` : url
+/**
+ * 获取当前页面参数
+ */
+export function getCurrentPageParams() {
+  const pages = getCurrentPages()
+  const currentPage = pages[pages.length - 1]
+
+  return currentPage.options as IAnyObject
 }

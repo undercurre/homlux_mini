@@ -8,11 +8,11 @@
   <image class="w-112rpx h-112rpx rounded-full" src="/assets/img/device/light.png" style="background-image: linear-gradient(141deg, #ffffff 0%, rgba(255, 255, 255, 0.61) 100%)"></image>
 
   <view class="flex flex-col pl-40rpx grow">
-    <text class="text-40 text-hex-000 font-medium">Homlux</text>
-    <text class="text-28 text-black-secondary leading-40rpx pt-12rpx">15043889973</text>
+    <text class="text-40 text-hex-000 font-medium">{{userInfo.nickname}}</text>
+    <text class="text-28 text-black-secondary leading-40rpx pt-12rpx">{{userInfo.phone}}</text>
   </view>
 
-  <image class="w-32rpx h-32rpx" src="/assets/img/base/arrow-right-mine.png"></image>
+  <!-- <image class="w-32rpx h-32rpx" src="/assets/img/base/arrow-right-mine.png"></image> -->
 </view>
 
 <view class="flex flex-row justify-between px-24rpx">
@@ -39,3 +39,5 @@
 <view class="px-24rpx pb-140rpx">
   <van-button block type="danger" plain size="large" bind:click="loginOut">退出登录</van-button>
 </view>
+
+<van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />

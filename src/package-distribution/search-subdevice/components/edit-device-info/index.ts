@@ -18,5 +18,12 @@ Component({
   /**
    * 组件的方法列表
    */
-  methods: {},
+  methods: {
+    close() {
+      this.triggerEvent('close')
+    },
+    confirm() {
+      this.triggerEvent('confirm')
+    },
+  },
 })

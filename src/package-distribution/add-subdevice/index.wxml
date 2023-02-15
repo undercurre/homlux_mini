@@ -3,32 +3,13 @@
 
   <view class="grow flex flex-col pb-128rpx">
     <block wx:if="{{status === 'networking'}}">
-      <loading class="mt-130rpx" text="请将设备尽量靠近路由器" show-progress="{{true}}" percentage="{{60}}"></loading>
+      <tips-box class="mt-130rpx" text="请将设备尽量靠近智能网关" show-progress="{{true}}" percentage="{{60}}"></tips-box>
 
       <view class="flex flex-col items-center pt-70rpx">
         <view wx:for="{{stepList}}" class="transition flex felx-row items-center text-28 text-black-tips leading-40rpx pb-40rpx">
           <text class="{{ item.isCheck && 'text-black-secondary'}}">{{item.text}}</text>
           <svg-icon class="ml-32rpx transition" name="icon-park-solid:check-one" color="{{item.isCheck ? '#488fff' : 'transparent'}}"></svg-icon>
         </view>
-      </view>
-    </block>
-
-    <block wx:if="{{status === 'success'}}">
-      <tips-box text="设备添加成功！" icon="/assets/img/search-subdevice/add-success.png"></tips-box>
-
-      <view class="grow px-48rpx mt-96rpx">
-        <edit-device-form></edit-device-form>
-      </view>
-
-      <view class="flex flex-col items-center pt-24rpx px-32rpx">
-        <view class="flex flex-row items-center text-26 text-black-secondary leading-36rpx">
-          <text>继续添加其他设备，</text>
-          <text class="text-blue">扫码</text>
-          <text class="px-12rpx">搜索</text>
-          <text class="text-blue">附近设备 ></text>
-        </view>
-
-        <van-button class="w-full mt-32rpx" block type="primary" size="large">完成</van-button>
       </view>
     </block>
 

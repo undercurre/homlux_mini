@@ -1,44 +1,112 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-
-type StatusName = 'none' | 'ready' | 'success' | 'error' | 'openBle'
-
-interface PageData {
-  status: StatusName
-}
+import pageBehaviors from '../../behaviors/pageBehaviors'
+import { strUtil, storage, getCurrentPageParams } from '../../utils/index'
 
 ComponentWithComputed({
   options: {
     addGlobalClass: true,
   },
+
+  behaviors: [pageBehaviors],
   /**
    * 页面的初始数据
    */
   data: {
-    status: 'ready',
     wifiInfo: {
-      name: '222',
-      pw: '12',
+      SSID: '',
+      pw: '',
     },
-  } as PageData,
+    wifiList: [] as WechatMiniprogram.WifiInfo[],
+  },
 
-  computed: {
-    btnText(data: PageData) {
-      const btnTextMap = {
-        none: '去连接Wi-Fi',
-        ready: '下一步',
-        success: '添加设备',
-        error: '附近的子设备',
-        openBle: '附近的子设备',
+  computed: {},
+
+  lifetimes: {
+    attached() {
+      const cacheWifiInfo = storage.get('selected_home_wifi') as { SSID: string; pw: string }
+
+      if (cacheWifiInfo) {
+        this.setData({
+          wifiInfo: cacheWifiInfo,
+        })
       }
 
-      return btnTextMap[data.status]
+      this.initWifi()
+
+      const deviceInfo = wx.getDeviceInfo()
+
+      console.log('deviceInfo', deviceInfo)
     },
   },
 
-  lifetimes: {
-    // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
-    attached: function () {},
-    moved: function () {},
-    detached: function () {},
+  pageLifetimes: {
+    show: function () {},
+  },
+
+  methods: {
+    onChange(event: WechatMiniprogram.CustomEvent) {
+      const { value } = event.detail
+
+      console.log('onChange', event)
+
+      this.setData({
+        'wifiInfo.SSID': value.SSID,
+      })
+    },
+
+    async initWifi() {
+      const startRes = await wx.startWifi()
+
+      console.log('startWifi', startRes)
+
+      wx.onGetWifiList((res) => {
+        console.log('onGetWifiList', res)
+
+        this.setData({
+          wifiList: res.wifiList,
+        })
+        console.log('onGetWifiList', res.wifiList.map((item) => item.SSID).join('；；'))
+      })
+    },
+
+    toggleWifi() {
+      this.getWifiList()
+    },
+
+    changeWifiName(e: WechatMiniprogram.CustomEvent) {
+      console.log('changeWifiName', e)
+      this.setData({
+        'wifiInfo.SSID': e.detail,
+      })
+    },
+
+    changePw(e: WechatMiniprogram.CustomEvent) {
+      console.log('changeWifiName', e)
+      this.setData({
+        'wifiInfo.pw': e.detail,
+      })
+    },
+
+    async getWifiList() {
+      const wifiListRes = await wx.getWifiList()
+
+      console.log('getWifiList', wifiListRes)
+    },
+
+    next() {
+      const pageParams = getCurrentPageParams()
+
+      const { SSID, pw } = this.data.wifiInfo
+
+      storage.set('selected_home_wifi', this.data.wifiInfo) // 记住输入过的wifi信息，下次自动回填
+
+      wx.navigateTo({
+        url: strUtil.getUrlWithParams('/package-distribution/add-gateway/index', {
+          ...pageParams,
+          wifiSSID: SSID,
+          wifiPassword: pw,
+        }),
+      })
+    },
   },
 })

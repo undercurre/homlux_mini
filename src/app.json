@@ -3,7 +3,15 @@
   "subpackages": [
     {
       "root": "package-distribution",
-      "pages": ["wifi-connect/index", "device-add/index", "search-subdevice/index"]
+      "pages": [
+        "scan/index",
+        "check-gateway/index",
+        "add-gateway/index",
+        "wifi-connect/index",
+        "add-subdevice/index",
+        "search-subdevice/index",
+        "bind-home/index"
+      ]
     },
     {
       "root": "package-mine",
@@ -57,5 +65,10 @@
     "backgroundTextStyle": "light",
     "backgroundColor": "#eef2f7"
   },
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "networkTimeout": {
+    "request": 10000,
+    "downloadFile": 10000
+  },
+  "debug": true
 }

@@ -1,5 +1,10 @@
+import Dialog from '@vant/weapp/dialog/dialog'
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { logout } from '../../utils/index'
+import { userBinding } from '../../store/index'
+
 Component({
+  behaviors: [BehaviorWithStore({ storeBindings: [userBinding] })],
   /**
    * 页面的初始数据
    */
@@ -47,7 +52,16 @@ Component({
       })
     },
 
-    loginOut() {
+    async loginOut() {
+      const res = await Dialog.confirm({
+        message: '确认退出登录？',
+      }).catch(() => {
+        // on cancel
+        return 'cancel'
+      })
+
+      if (res === 'cancel') return
+
       logout()
     },
   },

@@ -100,6 +100,9 @@ page {
 /* 遮罩 end */
 
 /* 弹窗 start */
+.van-dialog__header {
+  font-size: 36rpx;
+}
 .van-dialog__message {
   padding: 80rpx 80rpx 90rpx !important;
 }
