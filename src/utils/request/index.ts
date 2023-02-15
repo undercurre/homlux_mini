@@ -1,2 +1,2 @@
-export { baseRequest, BaseRequestOptions } from './baseRequest'
-export { mzaiotRequest } from './mzaiotRequest'
+export * from './baseRequest'
+export * from './mzaiotRequest'

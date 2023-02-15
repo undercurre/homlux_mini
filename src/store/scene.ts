@@ -1,6 +1,7 @@
 import { observable } from 'mobx-miniprogram'
 
 export const sceneStore = observable({
+  sceneList: [],
   /**
    * 选了了那些设备
    */

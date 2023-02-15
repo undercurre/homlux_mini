@@ -1,12 +1,10 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { roomBinding } from '../../store/index'
+import { roomBinding, deviceBinding } from '../../store/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehavior from '../../behaviors/pageBehaviors'
 
-type DeviceList = { deviceId: string; deviceName: string; roomName: string; roomId: string }[]
-
 ComponentWithComputed({
-  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding] }), pageBehavior],
+  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, deviceBinding] }), pageBehavior],
   /**
    * 页面的初始数据
    */
@@ -24,46 +22,22 @@ ComponentWithComputed({
     roomSelectMenuList(data) {
       if (data.roomList) {
         return [
-          { roomId: '0', roomName: '全屋' },
-          ...(data.roomList as Home.RoomInState[]).map((room) => ({ roomId: room.roomId, roomName: room.roomName })),
+          // { roomId: '0', roomName: '全屋' }, // 全屋查询未完成
+          ...(data.roomList as Room.RoomItem[]).map((room) => ({
+            roomId: room.roomInfo.roomId,
+            roomName: room.roomInfo.roomName,
+          })),
         ]
       }
       return []
     },
-    deviceList(data): DeviceList {
-      const roomList = data.roomList as Home.RoomInState[]
-      if (roomList) {
-        const list: DeviceList = []
-        if (data.roomSelect === '0') {
-          roomList.forEach((room) => {
-            room.deviceList.forEach((device) =>
-              list.push({
-                deviceId: device.deviceId,
-                deviceName: device.deviceName,
-                roomName: room.roomName,
-                roomId: room.roomId,
-              }),
-            )
-          })
-          return list
-        }
-        const room = roomList.find((room) => room.roomId === data.roomSelect)
-        room?.deviceList.forEach((device) =>
-          list.push({
-            deviceId: device.deviceId,
-            deviceName: device.deviceName,
-            roomName: room.roomName,
-            roomId: room.roomId,
-          }),
-        )
-        return list
-      }
-      return []
-    },
     currentRoomName(data) {
-      return (data.roomSelectMenuList as { roomId: string; roomName: string }[]).find(
-        (room) => room.roomId === data.roomSelect,
-      )?.roomName
+      if (data.roomSelectMenuList) {
+        return (data.roomSelectMenuList as { roomId: string; roomName: string }[]).find(
+          (room) => room.roomId === data.roomSelect,
+        )?.roomName
+      }
+      return ''
     },
   },
 
@@ -96,6 +70,12 @@ ComponentWithComputed({
             })
           }
         })
+      if (roomBinding.store.roomList.length > 0) {
+        this.setData({
+          roomSelect: roomBinding.store.roomList[0].roomInfo.roomId,
+        })
+        deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
+      }
     },
 
     handleFullPageTap(e?: { detail: { x: number; y: number } }) {
@@ -122,6 +102,7 @@ ComponentWithComputed({
         roomSelect: e.detail,
       })
       this.hideSelectRoomMenu()
+      deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
     },
 
     handleCardClick(e: { currentTarget: { dataset: { index: number } } }) {

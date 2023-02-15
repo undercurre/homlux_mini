@@ -19,10 +19,11 @@
       <!-- 有设备时显示 -->
       <view class="flex-1 flex flex-col items-between w-full" wx:if="{{hasDevice}}">
         <view class="flex justify-between">
-          <view class="bg-hex-ffffff_42 w-244rpx h-80rpx rounded-40rpx flex" wx:if="{{isShowHomeControl}}">
+          <view class="bg-hex-ffffff_42 w-244rpx h-80rpx rounded-40rpx flex items-center" wx:if="{{isShowHomeControl}}">
             <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx">
               <text bindtap="handleAllOn" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999" style="background-color: {{allOnBtnTap ? '#468CFB' : 'transparent'}}; color: {{allOnBtnTap ? '#fff' : '#2b4067'}}">全开</text>
             </view>
+            <view class="w-2rpx h-24rpx bg-hex-75829b"></view>
             <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx">
               <text bindtap="handleAllOff" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999" style="background-color: {{allOffBtnTap ? '#468CFB' : 'transparent'}}; color: {{allOffBtnTap ? '#fff' : '#2b4067'}}">全关</text>
             </view>
@@ -36,7 +37,7 @@
         <view class="flex-1" id="content">
           <scroll-view enhanced scroll-y show-scrollbar="{{false}}" class="rounded-32rpx" style="height: {{contentHeight}}px;">
             <!-- 房间卡片列表 -->
-            <room-card wx:for="{{roomList}}" wx:key="roomId" data-room="{{item.roomId}}" bind:cardTap="handleToRoom" bind:sceneSelect="handleSceneSelect" svgLoaded="{{isLoadedSvg}}" roomName="{{item.roomName}}" lightOnNumber="{{item.lightOnNumber}}" sceneList="{{item.sceneList}}" showScene></room-card>
+            <room-card wx:for="{{roomList}}" wx:key="roomId" room-info="{{item}}" data-room="{{item.roomId}}" bind:sceneSelect="handleSceneSelect" showScene></room-card>
             <view class="w-full flex-center">
               <text class="text-24rpx text-hex-aeaeb5">可手动添加更多空间~</text>
             </view>

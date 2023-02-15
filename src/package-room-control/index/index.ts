@@ -4,8 +4,6 @@ import { userBinding, roomBinding, deviceBinding, deviceStore } from '../../stor
 import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
 
-type DeviceInfo = Device.LightInfo | Device.SwitchInfo | Device.CurtainInfo
-
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [userBinding, roomBinding, deviceBinding] }), pageBehavior],
   /**
@@ -31,22 +29,11 @@ ComponentWithComputed({
       return []
     },
     /**
-     * 所有设备列表
-     */
-    deviceList(data) {
-      if (data.currentRoomIndex !== undefined && data.roomList) {
-        return (data.roomList as { deviceList: DeviceInfo[] }[])[data.currentRoomIndex as number].deviceList
-      }
-      return []
-    },
-    /**
      * 灯具设备列表
      */
     lightList(data) {
-      if (data.currentRoomIndex !== undefined && data.roomList) {
-        return (data.roomList as { deviceList: DeviceInfo[] }[])[data.currentRoomIndex as number].deviceList.filter(
-          (device) => device.deviceType === 'light',
-        )
+      if (data.deviceList) {
+        return data.deviceList.filter((device: { deviceType: string }) => device.deviceType === 'light')
       }
       return []
     },
@@ -54,10 +41,8 @@ ComponentWithComputed({
      * 灯具设备列表
      */
     switchList(data) {
-      if (data.currentRoomIndex !== undefined && data.roomList) {
-        return (data.roomList as { deviceList: DeviceInfo[] }[])[data.currentRoomIndex as number].deviceList.filter(
-          (device) => device.deviceType === 'switch',
-        )
+      if (data.deviceList) {
+        return data.deviceList.filter((device: { deviceType: string }) => device.deviceType === 'switch')
       }
       return []
     },
@@ -65,15 +50,21 @@ ComponentWithComputed({
      * 窗帘列表
      */
     curtainList(data) {
-      if (data.currentRoomIndex !== undefined && data.roomList) {
-        return (data.roomList as { deviceList: DeviceInfo[] }[])[data.currentRoomIndex as number].deviceList.filter(
-          (device) => device.deviceType === 'curtain',
-        )
+      if (data.deviceList) {
+        return data.deviceList.filter((device: { deviceType: string }) => device.deviceType === 'curtain')
       }
       return []
     },
     deviceIdTypeMap(data): Record<string, string> {
-      return Object.fromEntries(data.deviceList.map((device: DeviceInfo) => [device.deviceId, device.deviceType]))
+      if (data.deviceList) {
+        return Object.fromEntries(
+          data.deviceList.map((device: { deviceId: string; deviceType: string }) => [
+            device.deviceId,
+            device.deviceType,
+          ]),
+        )
+      }
+      return {}
     },
   },
 
@@ -92,6 +83,7 @@ ComponentWithComputed({
             })
           }
         })
+      deviceStore.updateDeviceList()
     },
 
     onUnload() {
@@ -141,7 +133,7 @@ ComponentWithComputed({
     handleDevicePowerTap(e: { detail: { deviceId: string; deviceType: string } }) {
       const index = deviceStore.selectList.findIndex((item: string) => item === e.detail.deviceId)
       if (['light', 'switch'].includes(e.detail.deviceType)) {
-        const power = !(this.data.deviceList[index] as Device.LightInfo | Device.SwitchInfo).power
+        const power = !(this.data.deviceList[index] as {power: boolean}).power
         const data = {} as IAnyObject
         data[`deviceList[${index}].power`] = power
         this.setData(data)

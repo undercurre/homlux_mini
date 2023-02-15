@@ -63,7 +63,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       const handler = requestOption.successHandler
       requestOption.success = (result) => {
         // 是否打印请求结果
-        if (requestOption.log !== false) {
+        if (requestOption.log) {
           console.log('请求URL:' + requestOption.url + ' 成功，请求结果：', result)
         }
         const afterProcessResult = handler(result)
@@ -72,7 +72,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
     } else {
       // 否则就只使用generalSuccessHandler进行通用处理或者generalSuccessHandler不存在则不处理直接返回
       requestOption.success = (result) => {
-        if (requestOption.log !== false) {
+        if (requestOption.log) {
           console.log('请求URL:' + requestOption.url + ' 成功，请求结果：', result)
         }
         const data = requestOption.generalSuccessHandler ? requestOption.generalSuccessHandler(result) : result.data
@@ -84,14 +84,14 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
     if (requestOption.failHandler) {
       const handler = requestOption.failHandler
       requestOption.fail = (err) => {
-        if (requestOption.log !== false) {
+        if (requestOption.log) {
           console.log('请求URL:' + requestOption.url + ' 失败，失败原因：' + err.errMsg)
         }
         resolve(handler(err))
       }
     } else {
       requestOption.fail = (err) => {
-        if (requestOption.log !== false) {
+        if (requestOption.log) {
           console.log('请求URL:' + requestOption.url + ' 失败，失败原因：' + err.errMsg)
         }
         const data = requestOption.generalFailHandler ? requestOption.generalFailHandler(err) : (err as unknown as T)
@@ -99,7 +99,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       }
     }
 
-    if (requestOption.log !== false) {
+    if (requestOption.log) {
       console.log('请求URL:' + requestOption.url, requestOption)
     }
 

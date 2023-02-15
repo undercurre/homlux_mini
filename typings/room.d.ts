@@ -1,4 +1,20 @@
 declare namespace Room {
+  /**
+   * 家庭查询房间列表，列表项
+   */
+  interface RoomItem {
+    roomInfo: {
+      deviceLightOnNum: number
+      roomIcon: string | null
+      roomId: string
+      roomName: string
+    }
+    roomSceneList: {
+      sceneIcon: string
+      sceneId: string
+      sceneName: string
+    }[]
+  }
   interface RoomInfo {
     deviceInfoList: {
       deviceId: string

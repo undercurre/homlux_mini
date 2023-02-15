@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { roomBinding, roomStore } from '../../../store/index'
+import { roomBinding } from '../../../store/index'
 import pageBehavior from '../../../behaviors/pageBehaviors'
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding] }), pageBehavior],
@@ -29,22 +29,22 @@ ComponentWithComputed({
     /**
      * 生命周期函数--监听页面加载
      */
-    onLoad(value: { roomId: string; deviceId: string }) {
-      this.setData({
-        roomId: value.roomId,
-        deviceId: value.deviceId,
-      })
-      const room = roomStore.roomList.find((room: { roomId: string }) => room.roomId === this.data.roomId)
-      if (room) {
-        const deviceName = room.deviceList.find(
-          (device: { deviceId: string }) => device.deviceId === this.data.deviceId,
-        )?.deviceName
-        this.setData({
-          deviceName: deviceName ?? '',
-          roomId: room.roomId,
-        })
-      }
-    },
+    // onLoad(value: { roomId: string; deviceId: string }) {
+    //   this.setData({
+    //     roomId: value.roomId,
+    //     deviceId: value.deviceId,
+    //   })
+    //   const room = roomStore.roomList.find((room) => room.roomInfo.roomId === this.data.roomId)
+    //   if (room) {
+    //     const deviceName = room.deviceList.find(
+    //       (device: { deviceId: string }) => device.deviceId === this.data.deviceId,
+    //     )?.deviceName
+    //     this.setData({
+    //       deviceName: deviceName ?? '',
+    //       roomId: room.roomId,
+    //     })
+    //   }
+    // },
 
     handleDeviceNameEditPopup() {
       this.setData({

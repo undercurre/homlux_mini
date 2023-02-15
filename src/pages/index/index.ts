@@ -1,6 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { roomStore, othersBinding, roomBinding, userBinding, homeBinding } from '../../store/index'
-import { runInAction } from 'mobx-miniprogram'
+import { othersBinding, roomBinding, userBinding, homeBinding } from '../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding, homeBinding] })],
@@ -31,6 +30,9 @@ ComponentWithComputed({
     },
     // 家庭是否有设备
     hasDevice() {
+      // if (data.currentHomeDetail) {
+      //   const
+      // }
       return true
     },
     // 是否显示全局控制开关（需要有灯）
@@ -235,16 +237,6 @@ ComponentWithComputed({
       //     }
       //   })
       // })
-    },
-    handleToRoom(e: { currentTarget: { dataset: { room: string } } }) {
-      runInAction(() => {
-        roomStore.currentRoomIndex = roomStore.roomList.findIndex(
-          (item) => item.roomId === e.currentTarget.dataset.room,
-        )
-      })
-      wx.navigateTo({
-        url: '/package-room-control/index/index',
-      })
     },
     updateContentHeight() {
       wx.createSelectorQuery()

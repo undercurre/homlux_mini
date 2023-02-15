@@ -1,9 +1,9 @@
 // 家庭
 declare namespace Home {
   /**
-   * home
+   * 家庭列表，列表项
    */
-  export interface HomeInfo {
+  export interface HomeItem {
     /**
      * 家庭唯一id
      */
@@ -13,13 +13,20 @@ declare namespace Home {
      */
     houseName: string
 
-    // 是否默认家庭
+    /**
+     * 是否默认家庭
+     */
     defaultHouseFlag: boolean
 
-    // 是否创建者
+    /**
+     * 是否创建者
+     */
     houseCreatorFlag: boolean
   }
 
+  /**
+   * 家庭详细值
+   */
   export interface HomeDetail {
     /**
      * 家庭唯一id
@@ -30,44 +37,32 @@ declare namespace Home {
      */
     houseName: string
 
-    // 设备数量
+    /**
+     * 设备数量
+     */
     deviceCount: number
 
-    // 成员数量
+    /**
+     * 成员数量
+     */
     userCount: number
 
-    // 家庭位置
+    /**
+     * 家庭位置
+     */
     houseArea: string
 
-    // 房间数量
+    /**
+     * 房间数量
+     */
     roomCount: number
 
-    // 房间列表
-    roomList: Array<Room>
+    /**
+     * 房间列表
+     */
+    roomList: Room.RoomItem[]
   }
 
-  // 房间
-  interface Room {
-    /**
-     * 房间唯一id
-     */
-    roomId: string
-    /**
-     * 房间icon
-     */
-    roomIcon: string
-    /**
-     * 房间名称
-     */
-    roomName: string
-  }
-  // 家庭选择下拉菜单项
-  interface DropdownItem {
-    value: string | number
-    name: string
-    isSelect: boolean
-    isCreator: boolean
-  }
   interface RoomInState {
     roomId: string
     roomName: string
