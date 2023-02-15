@@ -1,7 +1,10 @@
 import Dialog from '@vant/weapp/dialog/dialog'
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { logout } from '../../utils/index'
+import { userBinding } from '../../store/index'
 
 Component({
+  behaviors: [BehaviorWithStore({ storeBindings: [userBinding] })],
   /**
    * 页面的初始数据
    */

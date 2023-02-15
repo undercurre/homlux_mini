@@ -53,8 +53,15 @@ Component({
         deviceName: deviceInfo.deviceName,
       })
 
-      if (res.success) {
-        console.log('bindDevice')
+      if (res.success && res.result.isBind) {
+        wx.showToast({
+          title: '绑定成功',
+          icon: 'success',
+          duration: 3000,
+          complete: function() {
+            wx.switchTab({url: '/pages/index/index'})
+          }
+        })
       }
     },
   },
