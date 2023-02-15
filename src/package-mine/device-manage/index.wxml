@@ -19,7 +19,7 @@
         <van-cell clickable bind:click="handleCardClick" data-index="{{index}}">
           <view class="flex item-center">
             <view class="w-96rpx h-96rpx bg-hex-F6FAFD rounded-999 flex-center">
-              <image src="/assets/img/device/light.png" mode="" class="w-72rpx h-72rpx" />
+              <image src="/assets/img/device/light.png" class="w-72rpx h-72rpx" />
             </view>
             <view class="h-96rpx flex flex-col justify-center items-start ml-32rpx">
               <text class="text-black-primary text-32rpx">{{item.deviceName}}</text>

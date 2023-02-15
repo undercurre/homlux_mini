@@ -1,23 +1,23 @@
 <!--pages/index/components/room-card/index.wxml-->
 <view class="card rounded-32rpx w-702rpx">
   <view class="flex items-center w-full h-104rpx" bindtap="handleCardTap">
-    <text class="text-40rpx font-medium ml-48rpx">{{roomName}}</text>
-    <text class="flex-1 ml-20rpx text-28rpx text-hex-b6b7bb">{{ lightOnNumber && showScene ? lightOnNumber + '盏灯亮起' : ''}}</text>
+    <text class="text-40rpx font-medium ml-48rpx">{{roomInfo.roomInfo.roomName}}</text>
+    <text class="flex-1 ml-20rpx text-28rpx text-hex-b6b7bb">{{ roomInfo.roomInfo.deviceLightOnNum && showScene ? roomInfo.roomInfo.deviceLightOnNum + '盏灯亮起' : ''}}</text>
     <image src="/assets/img/home/more.png" class="w-32rpx h-32rpx mr-32rpx"></image>
   </view>
   <view class="grid grid-cols-4 gap-22rpx mx-32rpx mt-8rpx" wx:if="{{showScene}}">
-    <view wx:for="{{sceneList}}" wx:key="value" data-value="{{item.sceneId}}" bindtap="handleSceneTap" class="relative w-144rpx h-168rpx rounded-24rpx flex flex-col justify-center items-center bg-gray-secondary">
+    <view wx:for="{{roomInfo.roomSceneList}}" wx:key="value" data-value="{{item.sceneId}}" bindtap="handleSceneTap" class="relative w-144rpx h-168rpx rounded-24rpx flex flex-col justify-center items-center bg-gray-secondary">
       <view class="flex-col-center">
         <view class="rounded-999 bg-white">
           <svg-icon name="scene:{{item.sceneIcon}}" width="64rpx" height="64rpx" />
         </view>
         <text class="text-28rpx mt-20rpx text-hex-666666">{{item.sceneName}}</text>
       </view>
-      <view id="effect-{{item.sceneId}}" class="absolute left-0 top-0 bg-blue flex-col-center w-144rpx h-168rpx opacity-0 rounded-24rpx" wx:if="{{item.sceneId===sceneClickId}}">
-        <view class="rounded-999 bg-hex-a0bff0 w-64rpx h-64rpx">
-          <image src="/assets/img/effect/check.png" class="w-64rpx h-64rpx" />
+      <view id="effect-{{item.sceneId}}" class="absolute left-0 top-0 bg-blue flex-col-center w-144rpx h-168rpx opacity-0 rounded-24rpx">
+        <view id="effect-{{item.sceneId}}-svg" class="rounded-999 bg-hex-a0bff0">
+          <svg-icon class="w-64rpx h-64rpx" color="#fff" name="scene:{{item.sceneIcon}}" width="64rpx" height="64rpx" />
         </view>
-        <text class="text-28rpx mt-20rpx text-white">已执行</text>
+        <text class="text-28rpx mt-20rpx text-white">{{item.sceneName}}</text>
       </view>
     </view>
   </view>

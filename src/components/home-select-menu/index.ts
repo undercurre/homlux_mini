@@ -1,12 +1,12 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { homeBinding, homeStore, userBinding } from '../../store/index'
+import { homeBinding, homeStore } from '../../store/index'
 import { updateDefaultHouse } from '../../apis/index'
 
 Component({
   options: {
     styleIsolation: 'apply-shared',
   },
-  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, userBinding] })],
+  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] })],
   /**
    * 组件的属性列表
    */
@@ -79,7 +79,7 @@ Component({
         100,
         () => {
           this.setData({
-            isRender: true,
+            isRender: false,
           })
         },
       )

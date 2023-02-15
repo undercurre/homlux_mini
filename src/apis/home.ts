@@ -4,7 +4,7 @@ import { mzaiotRequest } from '../utils/index'
  * 查询家庭列表
  */
 export async function getHomeList() {
-  return await mzaiotRequest.post<Home.HomeInfo[]>({
+  return await mzaiotRequest.post<Home.HomeItem[]>({
     log: false,
     loading: true,
     url: '/v1/mzgd/user/house/queryHouseList',
