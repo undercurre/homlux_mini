@@ -3,7 +3,7 @@
   <view class="px-32rpx pt-48rpx pb-100rpx text-black-primary">
     <text class="block pb-66rpx font-medium text-center text-36 leading-48rpx">设备编辑</text>
 
-    <edit-device-form></edit-device-form>
+    <edit-device-form device-name="{{deviceName}}" room-id="{{roomId}}" bind:change="change"></edit-device-form>
 
     <view class="flex flex-row gap-46rpx pt-88rpx">
       <van-button class="grow" size="large" bind:click="close">取消</van-button>

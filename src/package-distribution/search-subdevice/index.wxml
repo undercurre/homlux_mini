@@ -10,11 +10,11 @@
         <view class="flex flex-row items-center justify-between pb-34rpx">
           <text class="text-26 text-black-secondary">发现附近通电的子设备</text>
 
-          <van-button plain round type="info" size="small">全选</van-button>
+          <van-button plain round type="info" size="small" bind:click="selectAll">全选</van-button>
         </view>
 
         <scroll-view class="grow h-300" scroll-y="true">
-          <view wx:for="{{deviceList}}" wx:if="deviceUuid" class="flex flex-row items-center bg-white rounded-32rpx mb-24rpx px-24rpx py-40rpx">
+          <view wx:for="{{deviceList}}" wx:key="deviceUuid" class="flex flex-row items-center bg-white rounded-32rpx mb-24rpx px-24rpx py-40rpx">
             <van-checkbox use-icon-slot bind:change="toggleDevice" data-index="{{index}}">
               <image src="{{item.icon}}" class="w-92 h-92 ml-10rpx border-4rpx border-solid border-hex-F6F6F8 rounded-full"></image>
 
@@ -22,17 +22,17 @@
             </van-checkbox>
 
             <view class="grow pl-32rpx">
-              <view class="flex flex-row items-center pb-4rpx" bind:tap="editDevice">
-                <text class="pr-24rpx text-32 text-black-primary">{{ item.name }}</text>
+              <view class="flex flex-row items-center pb-4rpx" bind:tap="editDevice" data-index="{{index}}">
+                <text class="max-w-180 pr-24rpx text-32 text-black-primary single-text">{{ item.name }}</text>
 
                 <image class="w-48 h-48" src="../../assets/img/base/edit.png"></image>
               </view>
 
-              <text class="text-26 text-black-secondary opacity-95">{{ item.roomName }}</text>
+              <text class="text-26 text-black-secondary opacity-95">{{ item.roomName || defaultRoom.roomName }}</text>
             </view>
 
-            <view>
-              <van-button color="linear-gradient(134deg, #468CFB 32%, #6BA3FC 93%)" type="primary" round bind:click="tryControl" data-id="{{item.deviceUuid}}">试一试</van-button>
+            <view class="shrink-0">
+              <van-button color="linear-gradient(134deg, #468CFB 32%, #6BA3FC 93%)" type="primary" round bind:click="tryControl" data-index="{{index}}" data-id="{{item.deviceUuid}}" data-mac="{{item.mac}}">试一试</van-button>
             </view>
           </view>
         </scroll-view>
@@ -41,8 +41,8 @@
       </view>
     </block>
 
-    <block wx:if="{{status === 'requesting'}}">
-      <loading class="{{failList.length === 0 ? 'mt-70rpx' : 'mt-130rpx' }}" text="已添加2/4个设备" show-progress="{{failList.length > 0}}" percentage="{{60}}"></loading>
+    <block wx:if="{{status === 'requesting' && successList.length !== deviceList.length}}">
+      <loading class="{{failList.length === 0 ? 'mt-70rpx' : 'mt-130rpx' }}" text="已添加{{successList.length}}/{{deviceList.length}}个设备" show-progress="{{false}}"></loading>
 
       <view wx:if="{{failList.length > 0}}" class="px-24rpx pt-90rpx grow flex flex-col">
         <view class="flex flex-row items-center justify-between pb-24rpx">
@@ -71,7 +71,7 @@
       </view>
     </block>
 
-    <view class="grow flex flex-col justify-between" wx:if="{{status === 'success'}}">
+    <view class="grow flex flex-col justify-between" wx:if="{{status === 'requesting' && successList.length === deviceList.length}}">
       <tips-box text="设备添加成功！" icon="/assets/img/search-subdevice/add-success.png"></tips-box>
 
       <van-button class="mx-32rpx mt-24rpx" type="primary" block size="large" bind:click="finish">完成</van-button>
@@ -106,9 +106,4 @@
   </view>
 </view>
 
-<edit-device-info show="{{isEditDevice}}" bind:close="cancelEditDevice"></edit-device-info>
-
-
-<van-button type="primary" bind:click="openAppAuthorizeSetting">openAppAuthorizeSetting</van-button>
-
-<van-button type="primary" bind:click="openSystemBluetoothSetting">openSystemBluetoothSetting</van-button>
+<edit-device-info show="{{isEditDevice}}" device-name="{{editDeviceInfo.deviceName}}" room-id="{{editDeviceInfo.roomId}}" bind:close="cancelEditDevice" bind:confirm="confirmEditDevice"></edit-device-info>

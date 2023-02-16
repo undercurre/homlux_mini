@@ -1,37 +1,39 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { ble, strUtil } from '../../utils/index'
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import { bleUtil, strUtil, BleClient } from '../../utils/index'
 import { IBleDevice } from './types'
+import { homeBinding } from '../../store/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
+import { sendCmdAddSsubdevice, bindDevice, queryDeviceOnlineStatus } from '../../apis/index'
 
 type StatusName = 'discover' | 'requesting' | 'success' | 'error' | 'openBle'
-
-interface PageData {
-  isEditDevice: boolean // 是否编辑设备信息
-  deviceList: Array<IBleDevice>
-  failList: Array<IBleDevice>
-  pageTitle: string
-  status: StatusName
-}
 
 ComponentWithComputed({
   options: {
     addGlobalClass: true,
+    pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
   },
 
-  behaviors: [pageBehaviors],
+  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] }), pageBehaviors],
 
   /**
    * 页面的初始数据
    */
   data: {
     isEditDevice: false,
+    editDeviceInfo: {
+      index: -1,
+      deviceId: '',
+      deviceName: '',
+      roomId: '',
+    },
     deviceList: Array<IBleDevice>(),
     failList: Array<IBleDevice>(),
-    status: 'discover',
-  } as PageData,
+    status: 'discover' as StatusName,
+  },
 
   computed: {
-    pageTitle(data: PageData) {
+    pageTitle(data) {
       const titleMap = {
         discover: '附近的子设备',
         requesting: '添加设备',
@@ -42,8 +44,41 @@ ComponentWithComputed({
 
       return titleMap[data.status]
     },
-    checkedDeviceNum(data: PageData) {
+    checkedDeviceNum(data) {
       return data.deviceList.filter((item) => item.isChecked).length
+    },
+    defaultRoom(data) {
+      let list = data.currentHomeDetail?.roomList || []
+      return list[0] || {}
+    },
+    failList(data) {
+      return data.deviceList.filter((item) => item.status === 'fail')
+    },
+    successList(data) {
+      return data.deviceList.filter((item) => item.status === 'success')
+    },
+  },
+
+  lifetimes: {
+    // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
+    ready: function () {
+      this.initBle()
+
+      this.setData({
+        deviceList: JSON.parse(
+          '[{"deviceUuid":"04:CD:15:AE:98:47","mac":"04:CD:15:AE:98:47","icon":"/assets/img/device/light.png","name":"子设备:98:47","isCheck":false,"client":{"key":"midea@homlux9847","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04:CD:15:AE:98:47","deviceUuid":"04:CD:15:AE:98:47"},"roomId":"","roomName":""},{"deviceUuid":"04:CD:15:AE:AA:8D","mac":"04:CD:15:AE:AA:8D","icon":"/assets/img/device/light.png","name":"子设备:AA:8D","isCheck":false,"client":{"key":"midea@homluxAA8D","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04:CD:15:AE:AA:8D","deviceUuid":"04:CD:15:AE:AA:8D"},"roomId":"","roomName":""}]',
+        ),
+      })
+    },
+    moved: function () {},
+    detached: function () {
+      // wx.stopBluetoothDevicesDiscovery()
+    },
+  },
+
+  pageLifetimes: {
+    hide() {
+      // wx.stopBluetoothDevicesDiscovery()
     },
   },
 
@@ -68,43 +103,57 @@ ComponentWithComputed({
         console.log('onBluetoothAdapterStateChange', changeRes)
       })
 
+      // 初始化蓝牙模块
+      const openBleRes = await wx.openBluetoothAdapter({
+        mode: 'central',
+      })
+
+      console.log('openBleRes', openBleRes)
+
       // 监听扫描到新设备事件
       wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
-        if (res.devices.length <= 0) return
+        const deviceList = res.devices.filter((item) => {
+          let flag = false
 
-        const list: IBleDevice[] = res.devices
-          .filter((item) => {
-            let flag = false
+          // localName为homlux_ble且没有被发现过的
+          if (
+            item.localName &&
+            item.localName.includes('homlux_ble') &&
+            this.data.deviceList.findIndex((listItem) => item.deviceId === listItem.deviceUuid) < 0
+          ) {
+            flag = true
+          }
 
-            // localName为homlux_ble且没有被发现过的
-            if (
-              item.localName &&
-              item.localName.includes('homlux_ble') &&
-              this.data.deviceList.findIndex((listItem) => item.deviceId === listItem.deviceUuid) < 0
-            ) {
-              flag = true
-            }
+          return flag
+        })
 
-            return flag
-          })
-          .map((device) => {
-            // 这里可以做一些过滤
-            const dataMsg = strUtil.ab2hex(device.advertisData)
-            const msgObj = ble.transferBroadcastData(dataMsg)
+        if (deviceList.length <= 0) return
 
-            console.log('Device Found', device, dataMsg, msgObj)
-            return {
-              deviceUuid: device.deviceId,
-              mac: msgObj.mac,
-              icon: '/assets/img/device/light.png',
-              name: msgObj.mac,
-              isCheck: false,
-            }
-          })
+        const list: IBleDevice[] = deviceList.map((device) => {
+          // 这里可以做一些过滤
+          const dataMsg = strUtil.ab2hex(device.advertisData)
+          const msgObj = bleUtil.transferBroadcastData(dataMsg)
+
+          console.log('Device Found', device, dataMsg, msgObj)
+
+          return {
+            deviceUuid: device.deviceId,
+            mac: msgObj.mac,
+            icon: '/assets/img/device/light.png',
+            name: '子设备' + msgObj.mac.substr(-4, 4),
+            isCheck: false,
+            client: new BleClient({ mac: msgObj.mac, deviceUuid: device.deviceId }),
+            roomId: '',
+            roomName: '',
+            status: 'waiting',
+          } as IBleDevice
+        })
 
         this.setData({
           deviceList: this.data.deviceList.concat(list),
         })
+
+        console.log('onBluetoothDeviceFound', JSON.stringify(this.data.deviceList))
       })
 
       wx.onBLEConnectionStateChange(function (res) {
@@ -115,18 +164,6 @@ ComponentWithComputed({
           `device ${res.deviceId} state has changed, connected: ${res.connected}`,
         )
       })
-
-      wx.onBLECharacteristicValueChange(function (res) {
-        console.log(`onBLECharacteristicValueChange ${res.characteristicId} has changed, now is ${res.value}`)
-        console.log(strUtil.ab2hex(res.value))
-      })
-
-      // 初始化蓝牙模块
-      const openBleRes = await wx.openBluetoothAdapter({
-        mode: 'central',
-      })
-
-      console.log('openBleRes', openBleRes)
 
       // 开始搜寻附近的蓝牙外围设备
       wx.startBluetoothDevicesDiscovery({
@@ -152,24 +189,99 @@ ComponentWithComputed({
     },
 
     // 确认添加设备
-    confirmAdd() {
+    async confirmAdd() {
+      const res = await sendCmdAddSsubdevice({
+        deviceId: '1676373822174786',
+        expire: 60,
+        buzz: 1,
+      })
+
+      if (!res.success) {
+        return
+      }
+
       this.setData({
         status: 'requesting',
       })
-    },
 
-    editDevice() {
-      this.setData({
-        isEditDevice: true,
+      let list = this.data.deviceList.filter((item) => item.isChecked)
+
+      list.forEach(async (item) => {
+        let res = await item.client.sendCmd({ cmdType: 'control', subType: 'CTL_CONFIG_ZIGBEE_NET' })
+
+        console.log('CTL_CONFIG_ZIGBEE_NET', item.mac, res)
+
+        this.queryDeviceOnlineStatus(item)
       })
     },
 
-    // 重新添加
-    reAdd() {},
+    async queryDeviceOnlineStatus(device: IBleDevice) {
+      const queryRes = await queryDeviceOnlineStatus({ deviceId: device.mac, deviceType: '2' })
 
-    finish() {
-      wx.switchTab({
-        url: '/pages/index/index',
+      console.log('queryDeviceOnlineStatus', queryRes)
+
+      if (queryRes.result.onlineStatus === 0) {
+        setTimeout(() => {
+          this.queryDeviceOnlineStatus(device)
+        }, 3000)
+
+        return
+      }
+
+      const res = await bindDevice({
+        deviceId: device.mac,
+        houseId: homeBinding.store.currentHomeId,
+        roomId: device.roomId,
+        sn: '',
+        deviceName: device.name,
+      })
+
+      if (res.success && res.result.isBind) {
+        device.status = 'success'
+      } else {
+        device.status = 'fail'
+      }
+
+      this.setData({
+        deviceList: this.data.deviceList,
+      })
+    },
+    /**
+     * 编辑设备信息
+     * @param event
+     */
+    editDevice(event: WechatMiniprogram.BaseEvent) {
+      console.log('editDevice', event)
+
+      const { index } = event.currentTarget.dataset
+
+      let item = this.data.deviceList[index]
+
+      console.log('item', item)
+
+      this.setData({
+        isEditDevice: true,
+        editDeviceInfo: {
+          index: index,
+          deviceId: item.deviceUuid,
+          deviceName: item.name,
+          roomId: item.roomId || this.data.defaultRoom.roomId,
+        },
+      })
+    },
+
+    confirmEditDevice(event: WechatMiniprogram.CustomEvent) {
+      console.log('confirmEditDevice', event)
+      let { detail } = event
+      let item = this.data.deviceList[this.data.editDeviceInfo.index]
+
+      item.roomId = detail.roomId
+      item.roomName = detail.roomName
+      item.name = detail.deviceName
+
+      this.setData({
+        isEditDevice: false,
+        deviceList: this.data.deviceList,
       })
     },
 
@@ -183,82 +295,36 @@ ComponentWithComputed({
      * 试一试
      */
     async tryControl(event: WechatMiniprogram.CustomEvent) {
-      const date1 = Date.now()
-      console.log('tryControl', event)
+      const { id } = event.currentTarget.dataset
 
-      const deviceId = event.currentTarget.dataset.id
+      console.log('tryControl', event, id)
 
-      const connectRes = await wx.createBLEConnection({
-        deviceId, // 搜索到设备的 deviceId
+      const bleDeviceItem = this.data.deviceList.find((item) => item.deviceUuid === id) as IBleDevice
+
+      const res = await bleDeviceItem.client.sendCmd({
+        cmdType: 'control',
+        subType: 'haveTry',
       })
 
-      console.log('connectRes', connectRes, Date.now() - date1)
-
-      // 连接成功，获取服务
-      const bleServiceRes = await wx.getBLEDeviceServices({
-        deviceId,
-      })
-
-      console.log('bleServiceRes', bleServiceRes)
-
-      const serviceId = 'BAE55B96-7D19-458D-970C-50613D801BC9'
-
-      const characRes = await wx.getBLEDeviceCharacteristics({
-        deviceId,
-        serviceId,
-      })
-
-      console.log('getBLEDeviceCharacteristics', characRes)
-
-      const characteristicId = characRes.characteristics[0].uuid
-      console.log('characteristicId', characteristicId)
-
-      let cmdArr = [0, 1, 0]
-
-      cmdArr.push(...[5])
-
-      cmdArr.push(ble.getCheckNum(cmdArr))
-
-      cmdArr[2] = cmdArr.length - 1
-      let buffer = new ArrayBuffer(cmdArr.length)
-      let dataView = new DataView(buffer)
-
-      cmdArr.forEach((item, index) => {
-        dataView.setUint8(index, item)
-      })
-       
-      wx.notifyBLECharacteristicValueChange({
-        deviceId,
-        serviceId,
-        characteristicId,
-        state: true,
-      })
-
-      const wirteRes = await wx.writeBLECharacteristicValue({
-        deviceId,
-        serviceId,
-        characteristicId: characteristicId,
-        value: buffer,
-      })
-
-      console.log('wirteRes', wirteRes)
+      console.log('tryControl-res', res)
     },
-  },
 
-  lifetimes: {
-    // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
-    attached: function () {
-      this.initBle()
-    },
-    moved: function () {},
-    detached: function () {
-      // wx.stopBluetoothDevicesDiscovery()
-    },
-  },
+    // 重新添加
+    reAdd() {},
 
-  pageLifetimes: {
-    hide() {
-      // wx.stopBluetoothDevicesDiscovery()
+    finish() {
+      wx.switchTab({
+        url: '/pages/index/index',
+      })
+    },
+
+    selectAll() {
+      this.setData({
+        deviceList: this.data.deviceList.map((item) => ({
+          ...item,
+          isChecked: true,
+        })),
+      })
     },
   },
 })

@@ -12,6 +12,8 @@
       </van-cell-group>
     </scroll-view>
 
-    <van-button class="mx-32rpx" size="large" type="primary" block>添加房间</van-button>
+    <van-button class="mx-32rpx" size="large" type="primary" block bind:click="addRoom">添加房间</van-button>
   </view>
 </view>
+
+<add-room show="{{isAddRoom}}" bind:finish="finishAddRoom"></add-room>

@@ -50,11 +50,11 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
     }
     // 是否显示loading，显示mask用于阻止用户多次点击
     if (requestOption.loading) {
-      // wx.showLoading &&
-      //   wx.showLoading({
-      //     title: '加载中...',
-      //     mask: true,
-      //   })
+      wx.showLoading &&
+        wx.showLoading({
+          title: '加载中...',
+          mask: true,
+        })
     }
 
     // 请求成功回调处理
@@ -106,7 +106,6 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
     wx.request({
       ...requestOption,
       complete() {
-        console.log('req-complete')
         wx.hideLoading && wx.hideLoading()
       },
     })

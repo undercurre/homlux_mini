@@ -21,6 +21,7 @@
         "room-manage/index",
         "room-detail/index",
         "member-manage/index",
+        "accept-invitation/index",
         "device-replace/index",
         "ota/index",
         "device-manage/index",
