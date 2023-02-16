@@ -18,7 +18,7 @@ Component({
    */
   data: {
     isShowGatewayList: false,
-    deviceList: Array<string>()
+    deviceList: Array<string>(),
   },
 
   lifetimes: {
@@ -76,7 +76,7 @@ Component({
         if (deviceList.length <= 0) return
 
         this.setData({
-          deviceList: this.data.deviceList.concat(deviceList.map(item => item.deviceId)),
+          deviceList: this.data.deviceList.concat(deviceList.map((item) => item.deviceId)),
         })
       })
 
@@ -93,7 +93,7 @@ Component({
 
     onCloseGwList() {
       this.setData({
-        isShowGatewayList: false
+        isShowGatewayList: false,
       })
     },
     /**

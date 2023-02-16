@@ -13,29 +13,7 @@ ComponentWithComputed({
   /**
    * 页面的初始数据
    */
-  data: {
-    isEditRole: false,
-    actionList: [
-      {
-        text: '设为管理员',
-        label: '与创建者相同的设备/场景管理权限',
-        isCheck: true,
-      },
-      {
-        text: '成为访客',
-        label: '仅可使用设备与场景',
-        isCheck: false,
-      },
-      {
-        text: '取消管理员',
-        isCheck: false,
-      },
-      {
-        text: '移除该成员',
-        isCheck: false,
-      },
-    ],
-  },
+  data: {},
 
   computed: {},
 
@@ -50,11 +28,6 @@ ComponentWithComputed({
     changeRole() {
       this.setData({
         isEditRole: true,
-      })
-    },
-    cancelChangeRole() {
-      this.setData({
-        isEditRole: false,
       })
     },
   },

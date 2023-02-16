@@ -1,5 +1,5 @@
 <view class="relative">
-  <camera mode="scanCode" device-position="back" flash="auto" bindscancode="getQrCodeInfo" class="w-750rpx h-screen"></camera>
+  <camera mode="scanCode" device-position="back" flash="off" bindscancode="getQrCodeInfo" class="w-750rpx h-screen"></camera>
 
   <view class="absolute top-0 left-0 px-32rpx py-64rpx" bind:tap="goBack">
     <image class="w-48 h-48" src="/assets/img/scan/back.png"></image>
@@ -17,5 +17,4 @@
   </view>
 </view>
 
-<van-popup show="{{ isShowGatewayList }}" bind:close="onCloseGwList">
-</van-popup>
+<van-popup show="{{ isShowGatewayList }}" bind:close="onCloseGwList"> </van-popup>

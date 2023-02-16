@@ -14,7 +14,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
-    isAddRoom: false
+    isAddRoom: false,
   },
 
   computed: {},
@@ -29,14 +29,14 @@ ComponentWithComputed({
   methods: {
     addRoom() {
       this.setData({
-        isAddRoom: true
+        isAddRoom: true,
       })
     },
 
     finishAddRoom() {
       this.setData({
-        isAddRoom: false
+        isAddRoom: false,
       })
-    }
+    },
   },
 })

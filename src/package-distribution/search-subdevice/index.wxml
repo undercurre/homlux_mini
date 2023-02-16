@@ -37,12 +37,12 @@
           </view>
         </scroll-view>
 
-        <van-button class="mt-24rpx" block type="primary" size="large" bind:click="confirmAdd" disabled="{{checkedDeviceNum===0}}">确认添加（已选{{checkedDeviceNum}}个）</van-button>
+        <van-button class="mt-24rpx" block type="primary" size="large" bind:click="confirmAdd" disabled="{{checkedDeviceNum===0}}">确认添加（已选{{selectedList.length}}个）</van-button>
       </view>
     </block>
 
-    <block wx:if="{{status === 'requesting' && successList.length !== deviceList.length}}">
-      <loading class="{{failList.length === 0 ? 'mt-70rpx' : 'mt-130rpx' }}" text="已添加{{successList.length}}/{{deviceList.length}}个设备" show-progress="{{false}}"></loading>
+    <block wx:if="{{status === 'requesting' && successList.length !== selectedList.length}}">
+      <loading class="{{failList.length === 0 ? 'mt-70rpx' : 'mt-130rpx' }}" text="已添加{{successList.length}}/{{selectedList.length}}个设备" show-progress="{{false}}"></loading>
 
       <view wx:if="{{failList.length > 0}}" class="px-24rpx pt-90rpx grow flex flex-col">
         <view class="flex flex-row items-center justify-between pb-24rpx">
@@ -71,7 +71,7 @@
       </view>
     </block>
 
-    <view class="grow flex flex-col justify-between" wx:if="{{status === 'requesting' && successList.length === deviceList.length}}">
+    <view class="grow flex flex-col justify-between" wx:if="{{status === 'requesting' && successList.length === selectedList.length}}">
       <tips-box text="设备添加成功！" icon="/assets/img/search-subdevice/add-success.png"></tips-box>
 
       <van-button class="mx-32rpx mt-24rpx" type="primary" block size="large" bind:click="finish">完成</van-button>

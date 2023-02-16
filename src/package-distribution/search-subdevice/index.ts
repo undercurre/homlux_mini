@@ -4,7 +4,7 @@ import { bleUtil, strUtil, BleClient } from '../../utils/index'
 import { IBleDevice } from './types'
 import { homeBinding } from '../../store/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { sendCmdAddSsubdevice, bindDevice, queryDeviceOnlineStatus } from '../../apis/index'
+import { sendCmdAddSubdevice, bindDevice, queryDeviceOnlineStatus } from '../../apis/index'
 
 type StatusName = 'discover' | 'requesting' | 'success' | 'error' | 'openBle'
 
@@ -44,18 +44,18 @@ ComponentWithComputed({
 
       return titleMap[data.status]
     },
-    checkedDeviceNum(data) {
-      return data.deviceList.filter((item) => item.isChecked).length
-    },
     defaultRoom(data) {
-      let list = data.currentHomeDetail?.roomList || []
+      const list = data.currentHomeDetail?.roomList || []
       return list[0] || {}
     },
+    selectedList(data) {
+      return data.deviceList.filter((item) => item.isChecked) as IBleDevice[]
+    },
     failList(data) {
-      return data.deviceList.filter((item) => item.status === 'fail')
+      return data.selectedList.filter((item: IBleDevice) => item.status === 'fail')
     },
     successList(data) {
-      return data.deviceList.filter((item) => item.status === 'success')
+      return data.selectedList.filter((item: IBleDevice) => item.status === 'success')
     },
   },
 
@@ -64,11 +64,11 @@ ComponentWithComputed({
     ready: function () {
       this.initBle()
 
-      this.setData({
-        deviceList: JSON.parse(
-          '[{"deviceUuid":"04:CD:15:AE:98:47","mac":"04:CD:15:AE:98:47","icon":"/assets/img/device/light.png","name":"子设备:98:47","isCheck":false,"client":{"key":"midea@homlux9847","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04:CD:15:AE:98:47","deviceUuid":"04:CD:15:AE:98:47"},"roomId":"","roomName":""},{"deviceUuid":"04:CD:15:AE:AA:8D","mac":"04:CD:15:AE:AA:8D","icon":"/assets/img/device/light.png","name":"子设备:AA:8D","isCheck":false,"client":{"key":"midea@homluxAA8D","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04:CD:15:AE:AA:8D","deviceUuid":"04:CD:15:AE:AA:8D"},"roomId":"","roomName":""}]',
-        ),
-      })
+      // this.setData({
+      //   deviceList: JSON.parse(
+      //     '[{"deviceUuid":"04:CD:15:AE:98:47","mac":"04:CD:15:AE:98:47","icon":"/assets/img/device/light.png","name":"子设备:98:47","isCheck":false,"client":{"key":"midea@homlux9847","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04:CD:15:AE:98:47","deviceUuid":"04:CD:15:AE:98:47"},"roomId":"","roomName":""},{"deviceUuid":"04:CD:15:AE:AA:8D","mac":"04:CD:15:AE:AA:8D","icon":"/assets/img/device/light.png","name":"子设备:AA:8D","isCheck":false,"client":{"key":"midea@homluxAA8D","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04:CD:15:AE:AA:8D","deviceUuid":"04:CD:15:AE:AA:8D"},"roomId":"","roomName":""}]',
+      //   ),
+      // })
     },
     moved: function () {},
     detached: function () {
@@ -190,24 +190,24 @@ ComponentWithComputed({
 
     // 确认添加设备
     async confirmAdd() {
-      const res = await sendCmdAddSsubdevice({
+      const res = await sendCmdAddSubdevice({
         deviceId: '1676373822174786',
         expire: 60,
         buzz: 1,
       })
 
       if (!res.success) {
-        return
+        // return
       }
 
       this.setData({
         status: 'requesting',
       })
 
-      let list = this.data.deviceList.filter((item) => item.isChecked)
+      const list = this.data.deviceList.filter((item) => item.isChecked)
 
       list.forEach(async (item) => {
-        let res = await item.client.sendCmd({ cmdType: 'control', subType: 'CTL_CONFIG_ZIGBEE_NET' })
+        const res = await item.client.sendCmd({ cmdType: 'control', subType: 'CTL_CONFIG_ZIGBEE_NET' })
 
         console.log('CTL_CONFIG_ZIGBEE_NET', item.mac, res)
 
@@ -216,7 +216,7 @@ ComponentWithComputed({
     },
 
     async queryDeviceOnlineStatus(device: IBleDevice) {
-      const queryRes = await queryDeviceOnlineStatus({ deviceId: device.mac, deviceType: '2' })
+      const queryRes = await queryDeviceOnlineStatus({ deviceId: device.mac, deviceType: '2', sn: '11' })
 
       console.log('queryDeviceOnlineStatus', queryRes)
 
@@ -255,7 +255,7 @@ ComponentWithComputed({
 
       const { index } = event.currentTarget.dataset
 
-      let item = this.data.deviceList[index]
+      const item = this.data.deviceList[index]
 
       console.log('item', item)
 
@@ -272,8 +272,8 @@ ComponentWithComputed({
 
     confirmEditDevice(event: WechatMiniprogram.CustomEvent) {
       console.log('confirmEditDevice', event)
-      let { detail } = event
-      let item = this.data.deviceList[this.data.editDeviceInfo.index]
+      const { detail } = event
+      const item = this.data.deviceList[this.data.editDeviceInfo.index]
 
       item.roomId = detail.roomId
       item.roomName = detail.roomName

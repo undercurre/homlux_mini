@@ -9,24 +9,24 @@ Component({
   properties: {
     deviceName: {
       type: String,
-      value: ''
+      value: '',
     },
     roomId: {
       type: String,
-      value: ''
-    }
+      value: '',
+    },
   },
 
   observers: {
-    'deviceName, roomId': function(deviceName, roomId) {
+    'deviceName, roomId': function (deviceName, roomId) {
       console.log('observers-deviceName', deviceName, roomId)
 
       this.setData({
         deviceInfo: {
           roomId: roomId,
           roomName: '',
-          deviceName: deviceName
-        }
+          deviceName: deviceName,
+        },
       })
     },
   },

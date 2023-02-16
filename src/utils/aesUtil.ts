@@ -4,8 +4,8 @@ import CryptoJS from 'crypto-js'
 export const aesUtil = {
   /**
    * 加密函數
-   * @param data 
-   * @param keyStr 
+   * @param data
+   * @param keyStr
    * @param enc 明文数据格式： Hex：16进制数据，Utf8：文本数据
    */
   encrypt: (data: string, keyStr: string, enc: 'Hex' | 'Utf8' = 'Utf8') => {

@@ -80,6 +80,15 @@ export class WifiSocket {
 
     console.log('initUdpSocket', port)
 
+    if (port === 0) {
+      wx.showModal({
+        content: '端口被占用，无法正常配网，请重启微信',
+        showCancel: false,
+      })
+
+      return
+    }
+
     this.udpClient.onMessage((res) => {
       console.log('udpClient.onMessage', res)
 

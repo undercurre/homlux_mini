@@ -10,19 +10,19 @@ Component({
     },
     deviceName: {
       type: String,
-      value: ''
+      value: '',
     },
     roomId: {
       type: String,
-      value: ''
-    }
+      value: '',
+    },
   },
 
   /**
    * 组件的初始数据
    */
   data: {
-    deviceInfo: {}
+    deviceInfo: {},
   },
 
   /**

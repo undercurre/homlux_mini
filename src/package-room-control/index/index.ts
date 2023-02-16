@@ -133,7 +133,7 @@ ComponentWithComputed({
     handleDevicePowerTap(e: { detail: { deviceId: string; deviceType: string } }) {
       const index = deviceStore.selectList.findIndex((item: string) => item === e.detail.deviceId)
       if (['light', 'switch'].includes(e.detail.deviceType)) {
-        const power = !(this.data.deviceList[index] as {power: boolean}).power
+        const power = !(this.data.deviceList[index] as { power: boolean }).power
         const data = {} as IAnyObject
         data[`deviceList[${index}].power`] = power
         this.setData(data)

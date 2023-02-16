@@ -2,9 +2,9 @@ import { aesUtil, strUtil } from './index'
 
 wx.getConnectedBluetoothDevices({
   services: ['BAE55B96-7D19-458D-970C-50613D801BC9'],
-  success: function(res) {
+  success: function (res) {
     console.log('getConnectedBluetoothDevices', res)
-  }
+  },
 })
 
 // 定义了与BLE通路相关的所有事件/动作/命令的集合；其值域及表示意义为：对HOMLUX设备主控与app之间可能的各种操作的概括分类
@@ -21,7 +21,7 @@ const CmdTypeMap = {
 // CTL_LIGHT_COLOR	 				= 0x04,		//控制灯光色温
 const ControlSubType = {
   haveTry: [0x05],
-  CTL_CONFIG_ZIGBEE_NET: [0x00, 0x00, 0x00, 0x00]
+  CTL_CONFIG_ZIGBEE_NET: [0x00, 0x00, 0x00, 0x00],
 } as const
 
 export class BleClient {
@@ -34,7 +34,7 @@ export class BleClient {
   msgId = 0
 
   constructor(params: { mac: string; deviceUuid: string }) {
-    let { mac, deviceUuid } = params
+    const { mac, deviceUuid } = params
 
     this.mac = mac
     this.deviceUuid = deviceUuid
@@ -68,7 +68,7 @@ export class BleClient {
     const characteristicId = characRes.characteristics[0].uuid
     this.characteristicId = characteristicId
 
-    let notifyRes = await wx.notifyBLECharacteristicValueChange({
+    const notifyRes = await wx.notifyBLECharacteristicValueChange({
       deviceId: this.deviceUuid,
       serviceId: this.serviceId,
       characteristicId,
@@ -82,8 +82,8 @@ export class BleClient {
   async sendCmd(params: { cmdType: keyof typeof CmdTypeMap; subType: keyof typeof ControlSubType }) {
     await this.connect()
 
-    let { cmdType, subType } = params
-    const msgId = ++this.msgId  // 等待回复的指令msgId
+    const { cmdType, subType } = params
+    const msgId = ++this.msgId // 等待回复的指令msgId
     // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
     // 1 byte	     1 byte	   1 byte	          N  bytes	    1 byte
     const cmdArr = [CmdTypeMap[cmdType], msgId, 0x00]
@@ -96,9 +96,9 @@ export class BleClient {
 
     const hexArr = cmdArr.map((item) => item.toString(16).padStart(2, '0').toUpperCase())
 
-    let msg = aesUtil.encrypt(hexArr.join(''), this.key, 'Hex')
+    const msg = aesUtil.encrypt(hexArr.join(''), this.key, 'Hex')
 
-    let buffer = strUtil.hexStringToArrayBuffer(msg)
+    const buffer = strUtil.hexStringToArrayBuffer(msg)
 
     return new Promise<IAnyObject>((resolve) => {
       const listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
@@ -107,13 +107,13 @@ export class BleClient {
           return
         }
 
-        let hex = strUtil.ab2hex(res.value)
+        const hex = strUtil.ab2hex(res.value)
         let msg = aesUtil.decrypt(hex, this.key, 'Hex')
-  
+
         console.log('onBLECharacteristicValueChange-msg', msg)
-        const resMsgId = parseInt(msg.substr(2, 2), 16)  // 收到回复的指令msgId
+        const resMsgId = parseInt(msg.substr(2, 2), 16) // 收到回复的指令msgId
         const packLen = parseInt(msg.substr(4, 2), 16) // 回复消息的Byte Msg Id到Byte Checksum的总长度，单位byte
-        
+
         // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
         // 1 byte	     1 byte	   1 byte	          N  bytes	    1 byte
         console.log('msgId', msgId, 'resMsgId', resMsgId)
@@ -127,11 +127,11 @@ export class BleClient {
         wx.offBLECharacteristicValueChange(listener)
         resolve({
           code: msg.substr(2, 2),
-          cmdType: msg.substr(0, 2)
+          cmdType: msg.substr(0, 2),
         })
         console.log('resolve')
       }
-  
+
       wx.onBLECharacteristicValueChange(listener)
 
       const wirteRes = wx.writeBLECharacteristicValue({
@@ -141,7 +141,7 @@ export class BleClient {
         value: buffer,
         success: () => {
           console.log('wirteRes', wirteRes)
-        }
+        },
       })
     })
   }
@@ -176,7 +176,7 @@ export const bleUtil = {
       sum += msgArr[i]
     }
 
-    let temp = sum.toString(2).padStart(8, '0')
+    const temp = sum.toString(2).padStart(8, '0')
 
     sum = parseInt(this.exchange(temp), 2)
     sum += 1
@@ -185,8 +185,8 @@ export const bleUtil = {
   },
 
   exchange(str: string) {
-    let arr = str.split('')
-    for (var i = 0; i < arr.length; i++) {
+    const arr = str.split('')
+    for (let i = 0; i < arr.length; i++) {
       if (arr[i] === '0') {
         arr[i] = '1'
       } else {
