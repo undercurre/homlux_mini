@@ -206,13 +206,13 @@ ComponentWithComputed({
 
       const list = this.data.deviceList.filter((item) => item.isChecked)
 
-      list.forEach(async (item) => {
+      for (const item of list) {
         const res = await item.client.sendCmd({ cmdType: 'control', subType: 'CTL_CONFIG_ZIGBEE_NET' })
 
         console.log('CTL_CONFIG_ZIGBEE_NET', item.mac, res)
 
         this.queryDeviceOnlineStatus(item)
-      })
+      }
     },
 
     async queryDeviceOnlineStatus(device: IBleDevice) {
