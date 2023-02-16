@@ -1,10 +1,24 @@
 import { mzaiotRequest } from '../utils/index'
 
 /**
+ * 根据家庭id查询全屋的设备
+ */
+export async function queryAllDevice(houseId: string) {
+  return await mzaiotRequest.post<Device.DeviceItem[]>({
+    log: true,
+    loading: true,
+    url: '/v1/device/querySubDeviceInfoByHouseId',
+    data: {
+      houseId,
+    },
+  })
+}
+
+/**
  * 根据家庭id房间id查询房间所有设备
  */
-export async function getDeviceList(houseId: string, roomId: string) {
-  return await mzaiotRequest.post<User.UserLoginRes>({
+export async function queryDeviceList(houseId: string, roomId: string) {
+  return await mzaiotRequest.post<Device.DeviceItem[]>({
     log: true,
     loading: true,
     url: '/v1/device/queryDeviceInfoByRoomId',
@@ -18,8 +32,8 @@ export async function getDeviceList(houseId: string, roomId: string) {
 /**
  * 根据家庭id房间id查询房间除了网关的子设备
  */
-export async function getSubDeviceList(houseId: string, roomId: string) {
-  return await mzaiotRequest.post<User.UserLoginRes>({
+export async function querySubDeviceList(houseId: string, roomId: string) {
+  return await mzaiotRequest.post<Device.DeviceItem[]>({
     log: true,
     loading: true,
     url: '/v1/device/querySubDeviceInfoByRoomId',

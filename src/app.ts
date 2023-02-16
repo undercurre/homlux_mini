@@ -1,27 +1,15 @@
-// app.js
-import { setNavigationBarHeight, storage } from './utils/index'
+import { setNavigationBarAndBottomBarHeight, storage } from './utils/index'
 import svgs from './assets/svg/index'
-import { homeStore } from './store/index'
+import { appOnLaunchService } from './utils/service'
 
 App<IAppOption>({
-  onLaunch() {
-    // 加载svg，这里不能使用import进行导入，使用import导入会导致报错
+  onLaunch(options: WechatMiniprogram.App.LaunchShowOption) {
+    console.log('APP打开参数：', options)
+    // 加载svg数据
     this.globalData.svgs = svgs
 
-    // 获取状态栏和顶部栏高度
-    setNavigationBarHeight()
-
-    // 获取rpx和px转换比例、底部bar高度
-    // px转rpx: px / divideRpxByPx,rpx转px：divideRpxByPx * rpx
-    wx.getSystemInfo({
-      success: (result) => {
-        storage.set('divideRpxByPx', result.windowWidth / 750, null)
-        storage.set('bottomBarHeight', result.windowHeight - result.safeArea.bottom, null)
-      },
-      fail: (err) => {
-        console.log(err)
-      },
-    })
+    // 获取状态栏、顶部栏、底部栏高度
+    setNavigationBarAndBottomBarHeight()
 
     const appAuthorizeSetting = wx.getAppAuthorizeSetting()
 
@@ -34,8 +22,7 @@ App<IAppOption>({
       })
       return
     }
-
-    homeStore.updateHomeInfo()
+    appOnLaunchService()
   },
   globalData: {},
 })

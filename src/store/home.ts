@@ -20,7 +20,9 @@ export const homeStore = observable({
     const res = await this.updateHomeList()
 
     if (res.success) {
-      this.updateCurrentHomeDetail(this.currentHomeId)
+      return await this.updateCurrentHomeDetail(this.currentHomeId)
+    } else {
+      return Promise.reject('获取列表家庭失败')
     }
   },
 
@@ -54,6 +56,9 @@ export const homeStore = observable({
         homeStore.currentHomeDetail = Object.assign({ houseId }, res.result)
       })
       roomStore.updateRoomList()
+      return
+    } else {
+      return Promise.reject('获取家庭信息失败')
     }
   },
 })

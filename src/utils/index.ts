@@ -1,3 +1,4 @@
+import { storage } from './storage'
 export * from './request/index'
 export * from './storage'
 export * from './service'
@@ -14,22 +15,26 @@ export function delay(ms: number) {
   })
 }
 
-export function setNavigationBarHeight() {
-  const { statusBarHeight, platform } = wx.getSystemInfoSync()
+export function setNavigationBarAndBottomBarHeight() {
+  const { statusBarHeight, platform, windowWidth, windowHeight, safeArea } = wx.getSystemInfoSync()
   const { top, height } = wx.getMenuButtonBoundingClientRect()
 
   // 状态栏高度
-  wx.setStorageSync('statusBarHeight', statusBarHeight)
+  storage.set('statusBarHeight', statusBarHeight, null)
   // 胶囊按钮高度 一般是32 如果获取不到就使用32
-  wx.setStorageSync('menuButtonHeight', height ? height : 32)
+  storage.set('menuButtonHeight', height ? height : 32, null)
+  // px和rpx比例 px转rpx: px / divideRpxByPx,rpx转px：divideRpxByPx * rpx
+  storage.set('divideRpxByPx', windowWidth / 750, null)
+  // 底部安全区高度
+  storage.set('bottomBarHeight', windowHeight - safeArea.bottom, null)
 
   // 判断胶囊按钮信息是否成功获取
   if (top && top !== 0 && height && height !== 0) {
     const navigationBarHeight = (top - statusBarHeight) * 2 + height
     // 导航栏高度
-    wx.setStorageSync('navigationBarHeight', navigationBarHeight)
+    storage.set('navigationBarHeight', navigationBarHeight, null)
   } else {
-    wx.setStorageSync('navigationBarHeight', platform === 'android' ? 48 : 40)
+    storage.set('navigationBarHeight', platform === 'android' ? 48 : 40, null)
   }
 }
 

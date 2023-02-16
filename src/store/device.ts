@@ -1,5 +1,5 @@
-import { observable } from 'mobx-miniprogram'
-import { getDeviceList, getSubDeviceList } from '../apis/device'
+import { observable, runInAction } from 'mobx-miniprogram'
+import { queryAllDevice, queryDeviceList, querySubDeviceList } from '../apis/device'
 import { homeStore } from './home'
 import { roomStore } from './room'
 
@@ -21,25 +21,42 @@ export const deviceStore = observable({
    */
   selectSwitchList: [] as string[],
 
+  async updateAllRoomDeviceList(houseId: string = homeStore.currentHomeDetail.houseId) {
+    const res = await queryAllDevice(houseId)
+    if (res.success) {
+      runInAction(() => {
+        deviceStore.deviceList = res.result
+      })
+    }
+  },
+
   async updateDeviceList(
     houseId: string = homeStore.currentHomeDetail.houseId,
     roomId: string = roomStore.roomList[roomStore.currentRoomIndex].roomInfo.roomId,
   ) {
-    const res = await getDeviceList(houseId, roomId)
-    console.log(res)
+    const res = await queryDeviceList(houseId, roomId)
+    if (res.success) {
+      runInAction(() => {
+        deviceStore.deviceList = res.result
+      })
+    }
   },
 
   async updateSubDeviceList(
     houseId: string = homeStore.currentHomeDetail.houseId,
     roomId: string = roomStore.roomList[roomStore.currentRoomIndex].roomInfo.roomId,
   ) {
-    const res = await getSubDeviceList(houseId, roomId)
-    console.log(res)
+    const res = await querySubDeviceList(houseId, roomId)
+    if (res.success) {
+      runInAction(() => {
+        deviceStore.deviceList = res.result
+      })
+    }
   },
 })
 
 export const deviceBinding = {
   store: deviceStore,
-  fields: ['selectList', 'selectType', 'selectSwitchList', 'selectLinkDevice'],
+  fields: ['selectList', 'selectType', 'selectSwitchList', 'deviceList'],
   actions: [],
 }

@@ -103,4 +103,4 @@
   </view>
 </view>
 
-<link-popup show="{{showLinkPopup}}" value="{{linkList}}" linkType="{{linkType}}" canSelectMulti="{{linkType === 'switch'}}" bind:close="handleLinkPopupClose" bind:confirm="handleLinkPopupConfirm" />
+<!-- <link-popup show="{{showLinkPopup}}" value="{{linkList}}" linkType="{{linkType}}" canSelectMulti="{{linkType === 'switch'}}" bind:close="handleLinkPopupClose" bind:confirm="handleLinkPopupConfirm" /> -->

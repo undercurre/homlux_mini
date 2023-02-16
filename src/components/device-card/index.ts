@@ -19,6 +19,9 @@ ComponentWithComputed({
       type: Boolean,
       value: false,
     },
+    deviceType: {
+      type: String,
+    },
   },
 
   /**
@@ -31,6 +34,9 @@ ComponentWithComputed({
       return `border: ${data.select ? '3rpx solid #488FFF' : '3rpx solid rgba(0,0,0,0)'};background: ${
         data.select ? '#fff' : 'linear-gradient(178deg, #f2f5fc 10%, #ffffff 74%)'
       };`
+    },
+    picUrl(data) {
+      return data.deviceInfo.pic ? data.deviceInfo.pic : `/assets/img/device/${data.deviceType}.png`
     },
   },
 

@@ -38,4 +38,4 @@
   </view>
 </van-popup>
 
-<link-popup show="{{showLinkPopup}}" linkType="switch" canSelectMulti bind:close="handleLinkPopupClose" bind:confirm="handleLinkPopupConfirm"></link-popup>
+<!-- <link-popup show="{{showLinkPopup}}" linkType="switch" canSelectMulti bind:close="handleLinkPopupClose" bind:confirm="handleLinkPopupConfirm"></link-popup> -->
