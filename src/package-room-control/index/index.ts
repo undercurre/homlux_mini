@@ -13,45 +13,22 @@ ComponentWithComputed({
     controlPopupUp: true,
     showAddScenePopup: false,
     contentHeight: 0,
+    lightList: [] as Device.DeviceItem[],
+    switchList: [] as Device.DeviceItem[],
+    curtainList: [] as Device.DeviceItem[],
   },
 
   computed: {
     title(data) {
       if (data.currentRoomIndex !== undefined && data.roomList) {
-        return (data.roomList as { roomName: string }[])[data.currentRoomIndex as number].roomName
+        console.log(data.roomList, data.currentRoomIndex, data.roomList[data.currentRoomIndex])
+        return data.roomList[data.currentRoomIndex]?.roomInfo.roomName
       }
       return ''
     },
     sceneListInBar(data) {
       if (data.currentRoomIndex !== undefined && data.roomList) {
-        return (data.roomList as { sceneList: object[] }[])[data.currentRoomIndex as number].sceneList.slice(0, 4)
-      }
-      return []
-    },
-    /**
-     * 灯具设备列表
-     */
-    lightList(data) {
-      if (data.deviceList) {
-        return data.deviceList.filter((device: { deviceType: string }) => device.deviceType === 'light')
-      }
-      return []
-    },
-    /**
-     * 灯具设备列表
-     */
-    switchList(data) {
-      if (data.deviceList) {
-        return data.deviceList.filter((device: { deviceType: string }) => device.deviceType === 'switch')
-      }
-      return []
-    },
-    /**
-     * 窗帘列表
-     */
-    curtainList(data) {
-      if (data.deviceList) {
-        return data.deviceList.filter((device: { deviceType: string }) => device.deviceType === 'curtain')
+        return data.roomList[data.currentRoomIndex]?.roomSceneList.slice(0, 4)
       }
       return []
     },
@@ -68,22 +45,49 @@ ComponentWithComputed({
     },
   },
 
+  watch: {
+    deviceList(value: Device.DeviceItem[]) {
+      const lightList = [] as Device.DeviceItem[]
+      const switchList = [] as Device.DeviceItem[]
+      // const curtainList = [] as Device.DeviceItem[]
+      value.forEach((device) => {
+        if (['0x13'].includes(device.proType)) {
+          // 0x13是灯
+          lightList.push(device)
+        } else if (['0x21'].includes(device.proType)) {
+          // 0x21是开关，需要拆开开关展示
+          // const switch
+          switchList.push(device)
+        }
+        // todo: 添加窗帘的
+      })
+      this.setData({
+        lightList,
+        switchList,
+      })
+      console.log(this.data)
+    },
+  },
+
   methods: {
     /**
      * 生命周期函数--监听页面加载
      */
     onLoad() {
-      wx.createSelectorQuery()
-        .select('#content')
-        .boundingClientRect()
-        .exec((res) => {
-          if (res[0] && res[0].height) {
-            this.setData({
-              contentHeight: res[0].height,
+      deviceStore.updateSubDeviceList().finally(() => {
+        setTimeout(() => {
+          wx.createSelectorQuery()
+            .select('#content')
+            .boundingClientRect()
+            .exec((res) => {
+              if (res[0] && res[0].height) {
+                this.setData({
+                  contentHeight: res[0].height,
+                })
+              }
             })
-          }
-        })
-      deviceStore.updateDeviceList()
+        }, 100)
+      })
     },
 
     onUnload() {
@@ -133,7 +137,7 @@ ComponentWithComputed({
     handleDevicePowerTap(e: { detail: { deviceId: string; deviceType: string } }) {
       const index = deviceStore.selectList.findIndex((item: string) => item === e.detail.deviceId)
       if (['light', 'switch'].includes(e.detail.deviceType)) {
-        const power = !(this.data.deviceList[index] as {power: boolean}).power
+        const power = !(this.data.deviceList[index] as { power: boolean }).power
         const data = {} as IAnyObject
         data[`deviceList[${index}].power`] = power
         this.setData(data)

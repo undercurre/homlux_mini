@@ -102,7 +102,11 @@ ComponentWithComputed({
         roomSelect: e.detail,
       })
       this.hideSelectRoomMenu()
-      deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
+      if (e.detail === '0') {
+        // 查全屋
+      } else {
+        // 查房间
+      }
     },
 
     handleCardClick(e: { currentTarget: { dataset: { index: number } } }) {

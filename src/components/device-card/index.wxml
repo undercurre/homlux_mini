@@ -3,7 +3,7 @@
     <text class="text-26rpx text-hex-353535 font-medium">{{deviceInfo.deviceName}}</text>
   </view>
   <view class="flex-col-center">
-    <image src="/assets/img/device/{{deviceInfo.deviceType}}.png" class="w-72rpx h-72rpx"></image>
+    <image src="{{picUrl}}" class="w-72rpx h-72rpx"></image>
     <view wx:if="{{showControl}}" class="h-28rpx flex items-start">
       <text class="text-20rpx text-black-tips leading-none">{{deviceInfo.deviceType === 'switch'?'筒灯1':''}}</text>
     </view>

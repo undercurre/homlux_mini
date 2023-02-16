@@ -13,18 +13,6 @@ ComponentWithComputed({
     roomInfo: {
       type: Object,
     },
-    roomName: {
-      type: String,
-      value: '',
-    },
-    lightOnNumber: {
-      type: Number,
-      value: 0,
-    },
-    sceneList: {
-      type: Array,
-      value: [],
-    },
     showScene: {
       type: Boolean,
       value: false,
@@ -32,11 +20,11 @@ ComponentWithComputed({
   },
 
   computed: {
-    cardList(data) {
-      return data.sceneList.slice(0, 4)
+    sceneList(data) {
+      return data.roomInfo.roomSceneList.slice(0, 4)
     },
     hasBottomPadding(data) {
-      return data.sceneList.length > 0
+      return data.roomInfo.roomSceneList.length > 0
     },
   },
 
@@ -61,7 +49,7 @@ ComponentWithComputed({
       this.execCardBgAnimationStart(e.currentTarget.dataset.value)
     },
     handleCardTap() {
-      const index = roomStore.roomList.findIndex((room) => room.roomInfo.roomId === this.data.roomInfo.roomId)
+      const index = roomStore.roomList.findIndex((room) => room.roomInfo.roomId === this.data.roomInfo.roomInfo.roomId)
       runInAction(() => {
         roomStore.currentRoomIndex = index
       })

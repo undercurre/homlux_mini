@@ -1,6 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { othersBinding, roomBinding, userBinding, homeBinding } from '../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import { storage } from '../../utils/index'
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding, homeBinding] })],
   data: {
@@ -194,7 +195,11 @@ ComponentWithComputed({
       this.setData({
         selectHomeMenu: {
           x: '28rpx',
-          y: wx.getStorageSync('statusBarHeight') + wx.getStorageSync('navigationBarHeight') + 8 + 'px',
+          y:
+            (storage.get<number>('statusBarHeight') as number) +
+            (storage.get<number>('navigationBarHeight') as number) +
+            8 +
+            'px',
           isShow: !this.data.selectHomeMenu.isShow,
         },
         'dropdownMenu.isShow': false,

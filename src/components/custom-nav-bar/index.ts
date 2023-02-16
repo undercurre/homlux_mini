@@ -1,3 +1,5 @@
+import { storage } from '../../utils/index'
+
 // components/custom-nav-bar/index.ts
 Component({
   options: {
@@ -29,14 +31,16 @@ Component({
    */
   data: {
     // 状态栏高度
-    statusBarHeight: wx.getStorageSync('statusBarHeight') + 'px',
+    statusBarHeight: storage.get<number>('statusBarHeight') + 'px',
     // 导航栏高度
-    navigationBarHeight: wx.getStorageSync('navigationBarHeight') + 'px',
+    navigationBarHeight: storage.get<number>('navigationBarHeight') + 'px',
     // 胶囊按钮高度
-    menuButtonHeight: wx.getStorageSync('menuButtonHeight') + 'px',
+    menuButtonHeight: storage.get<number>('menuButtonHeight') + 'px',
     // 导航栏和状态栏高度
     navigationBarAndStatusBarHeight:
-      wx.getStorageSync('statusBarHeight') + wx.getStorageSync('navigationBarHeight') + 'px',
+      (storage.get<number>('statusBarHeight') as number) +
+      (storage.get<number>('navigationBarHeight') as number) +
+      'px',
   },
 
   /**
