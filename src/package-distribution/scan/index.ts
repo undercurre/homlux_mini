@@ -85,7 +85,7 @@ ComponentWithComputed({
 
       this.setData({
         selectGatewayId: item.deviceId,
-        selectGatewaySn: item.sn
+        selectGatewaySn: item.sn,
       })
     },
 
@@ -145,7 +145,7 @@ ComponentWithComputed({
       this.setData({
         isShowGatewayList: false,
         selectGatewayId: '',
-        selectGatewaySn: ''
+        selectGatewaySn: '',
       })
     },
     /**
@@ -181,11 +181,11 @@ ComponentWithComputed({
      */
     addNearSubdevice() {
       let gatewayId = this.data.selectGatewayId,
-      gatewaySn = this.data.selectGatewaySn
+        gatewaySn = this.data.selectGatewaySn
 
       if (this.data.gatewayList.length === 0) {
         this.setData({
-          isShowNoGatewayTips: true
+          isShowNoGatewayTips: true,
         })
 
         return

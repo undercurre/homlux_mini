@@ -227,7 +227,11 @@ ComponentWithComputed({
     async queryDeviceOnlineStatus(device: IBleDevice) {
       const pageParams = getCurrentPageParams()
 
-      const queryRes = await queryDeviceOnlineStatus({ deviceId: device.zigbeeMac, deviceType: '2', sn: pageParams.gatewaySn })
+      const queryRes = await queryDeviceOnlineStatus({
+        deviceId: device.zigbeeMac,
+        deviceType: '2',
+        sn: pageParams.gatewaySn,
+      })
 
       console.log('queryDeviceOnlineStatus', queryRes)
 
