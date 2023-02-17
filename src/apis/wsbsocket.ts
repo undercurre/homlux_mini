@@ -1,4 +1,5 @@
 import { mzaiotWSURL, env } from '../config/index'
+import { storage } from '../utils/storage'
 
 /**
  * 建立某个房间的webSocket连接
@@ -7,6 +8,6 @@ import { mzaiotWSURL, env } from '../config/index'
 export function connectHouseSocket(houseId: string) {
   return wx.connectSocket({
     url: mzaiotWSURL[env] + houseId,
-    protocols: ['123456'],
+    protocols: [storage.get<string>('token') as string],
   })
 }
