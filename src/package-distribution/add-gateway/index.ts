@@ -93,6 +93,10 @@ Component({
       if ((res as IAnyObject).wifiMsg?.includes('already connected')) {
         await socket.updateGatewayInfo()
 
+        this.setData({
+          activeIndex: 0,
+        })
+
         this.sendBindCmd()
       }
     },
@@ -116,9 +120,7 @@ Component({
 
       console.log('startWifiBind', res)
 
-      this.setData({
-        activeIndex: 0,
-      })
+      this.queryDeviceOnlineStatus()
     },
 
     async queryDeviceOnlineStatus() {
@@ -135,11 +137,20 @@ Component({
           activeIndex: 1,
         })
 
-        wx.navigateTo({
-          url: strUtil.getUrlWithParams('/package-distribution/bind-home/index', {
-            dsn: params.dsn,
-          }),
-        })
+        setTimeout(() => {
+          this.setData({
+            activeIndex: 2,
+          })
+          wx.navigateTo({
+            url: strUtil.getUrlWithParams('/package-distribution/bind-home/index', {
+              dsn: params.dsn,
+            }),
+          })
+        }, 500)
+      } else {
+        setTimeout(() => {
+          this.queryDeviceOnlineStatus()
+        }, 3000)
       }
     },
   },

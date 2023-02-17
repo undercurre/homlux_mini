@@ -6,7 +6,30 @@ Component({
   /**
    * 组件的属性列表
    */
-  properties: {},
+  properties: {
+    deviceName: {
+      type: String,
+      value: '',
+    },
+    roomId: {
+      type: String,
+      value: '',
+    },
+  },
+
+  observers: {
+    'deviceName, roomId': function (deviceName, roomId) {
+      console.log('observers-deviceName', deviceName, roomId)
+
+      this.setData({
+        deviceInfo: {
+          roomId: roomId,
+          roomName: '',
+          deviceName: deviceName,
+        },
+      })
+    },
+  },
 
   /**
    * 组件的初始数据
@@ -15,6 +38,7 @@ Component({
     isAddRoom: false,
     deviceInfo: {
       roomId: '',
+      roomName: '',
       deviceName: '',
     },
     roomList: [],
@@ -29,6 +53,7 @@ Component({
 
       this.setData({
         'deviceInfo.roomId': event.currentTarget.dataset.id,
+        'deviceInfo.roomName': event.currentTarget.dataset.name,
       })
 
       this.triggerEvent('change', Object.assign({}, this.data.deviceInfo))
@@ -44,7 +69,7 @@ Component({
       console.log('changeDeviceName', event)
 
       this.setData({
-        'deviceInfo.deviceName': event.detail,
+        'deviceInfo.deviceName': event.detail.value,
       })
 
       this.triggerEvent('change', Object.assign({}, this.data.deviceInfo))

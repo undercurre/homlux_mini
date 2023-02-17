@@ -106,7 +106,6 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
     wx.request({
       ...requestOption,
       complete() {
-        console.log('req-complete')
         wx.hideLoading && wx.hideLoading()
       },
     })

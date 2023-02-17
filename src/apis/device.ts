@@ -66,8 +66,9 @@ export async function queryDeviceInfoByDeviceId(params: { deviceId: string; hous
 
 /**
  * 查询设备在线离线状态
+ * 设备类型（1:网关 2:子设备 3:wifi
  */
-export async function queryDeviceOnlineStatus(params: { deviceType: string; sn: string }) {
+export async function queryDeviceOnlineStatus(params: { deviceType: '1' | '2' | '3'; sn?: string; deviceId?: string }) {
   // 	"onlineStauts": 在线离线状态(0:离线1:在线
   return await mzaiotRequest.post<{ deviceId: string; onlineStatus: number }>({
     log: false,
@@ -92,5 +93,43 @@ export async function bindDevice(params: {
     loading: true,
     url: '/v1/device/bindDevice',
     data: params,
+  })
+}
+
+/**
+ * 设备控制-下发命令
+ */
+export async function controlDevice(
+  params: {
+    customJson?: IAnyObject
+    deviceId: string
+    method: string
+    topic: string
+    inputData: IAnyObject[]
+  },
+  option?: { loading: boolean },
+) {
+  return await mzaiotRequest.post<IAnyObject>({
+    log: false,
+    loading: option?.loading || false,
+    url: '/v1/device/down',
+    data: params,
+  })
+}
+
+/**
+ * 设备控制-下发命令
+ */
+export async function sendCmdAddSubdevice(params: { deviceId: string; expire: number; buzz: 0 | 1 }) {
+  return await controlDevice({
+    deviceId: params.deviceId,
+    topic: '/subdevice/add',
+    method: 'subdeviceAdd',
+    inputData: [
+      {
+        expire: 60,
+        buzz: 1,
+      },
+    ],
   })
 }

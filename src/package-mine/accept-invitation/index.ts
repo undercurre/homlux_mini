@@ -2,20 +2,18 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { roomBinding, othersBinding, userBinding } from '../../store/index'
+import { homeBinding } from '../../store/index'
 
 ComponentWithComputed({
   options: {
     addGlobalClass: true,
   },
-  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, othersBinding, userBinding] }), pageBehaviors],
+  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] }), pageBehaviors],
 
   /**
    * 页面的初始数据
    */
-  data: {
-    isAddRoom: false,
-  },
+  data: {},
 
   computed: {},
 
@@ -27,15 +25,9 @@ ComponentWithComputed({
   },
 
   methods: {
-    addRoom() {
+    changeRole() {
       this.setData({
-        isAddRoom: true,
-      })
-    },
-
-    finishAddRoom() {
-      this.setData({
-        isAddRoom: false,
+        isEditRole: true,
       })
     },
   },
