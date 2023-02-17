@@ -22,7 +22,7 @@ ComponentWithComputed({
     roomSelectMenuList(data) {
       if (data.roomList) {
         return [
-          // { roomId: '0', roomName: '全屋' }, // 全屋查询未完成
+          { roomId: '0', roomName: '全屋' }, // 全屋查询未完成
           ...(data.roomList as Room.RoomItem[]).map((room) => ({
             roomId: room.roomInfo.roomId,
             roomName: room.roomInfo.roomName,
@@ -104,8 +104,10 @@ ComponentWithComputed({
       this.hideSelectRoomMenu()
       if (e.detail === '0') {
         // 查全屋
+        deviceBinding.store.updateAllRoomDeviceList()
       } else {
         // 查房间
+        deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
       }
     },
 

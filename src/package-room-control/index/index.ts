@@ -1,11 +1,14 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { userBinding, roomBinding, deviceBinding, deviceStore } from '../../store/index'
+import { userBinding, roomBinding, deviceBinding, deviceStore, sceneBinding, sceneStore } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
 
 ComponentWithComputed({
-  behaviors: [BehaviorWithStore({ storeBindings: [userBinding, roomBinding, deviceBinding] }), pageBehavior],
+  behaviors: [
+    BehaviorWithStore({ storeBindings: [userBinding, roomBinding, deviceBinding, sceneBinding] }),
+    pageBehavior,
+  ],
   /**
    * 页面的初始数据
    */
@@ -88,6 +91,7 @@ ComponentWithComputed({
             })
         }, 100)
       })
+      sceneStore.updateSceneList()
     },
 
     onUnload() {

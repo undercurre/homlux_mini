@@ -7,11 +7,7 @@ declare namespace Device {
     gatewayId: string
     gatewayName: string
     methodList: string[]
-    mzgdPropertyDTOList: {
-      name: string
-      propertyId: string
-      propertyValue: string
-    }[]
+    mzgdPropertyDTOList: Record<string, MzgdPropertyDTO[]>
     onLineStatus: number
     orderNum: number
     pic: string
@@ -21,13 +17,20 @@ declare namespace Device {
     switchInfoDTOList: MzgdPanelSwitchInfoDTO[]
     version: string
 
-    // 客户端额外属性
+    // 小程序维护额外属性
     isChecked: boolean
+  }
+
+  interface MzgdPropertyDTO {
+    name: string
+    propertyId: string
+    propertyValue: string
   }
 
   interface MzgdPanelSwitchInfoDTO {
     houseId: string
     isRel: boolean
+    orderNum: number
     panelId: string
     pic: string
     roomId: string

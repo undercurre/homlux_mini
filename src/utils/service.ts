@@ -3,6 +3,7 @@ import { storage } from './storage'
 import { reaction } from 'mobx-miniprogram'
 import { connectHouseSocket } from '../apis/wsbsocket'
 import { homeStore } from '../store/index'
+import { emitter } from './eventBus'
 
 export function logout() {
   storage.remove('token')
@@ -11,11 +12,23 @@ export function logout() {
   })
 }
 
+// WS连接
 let socketTask: WechatMiniprogram.SocketTask | null = null
 
 function createConnect() {
   socketTask = connectHouseSocket(homeStore.currentHomeDetail.houseId)
   socketTask.onClose(onSocketClose)
+  socketTask.onOpen(() => {
+    console.log('socket连接成功')
+  })
+  socketTask.onMessage((e) => {
+    try {
+      console.log('接收到Socket信息：', JSON.parse(e.data as string))
+    } catch (_) {
+      console.log('接收到Socket信息：', e.data)
+    }
+    emitter.emit('wsReceive', e.data as string)
+  })
 }
 
 function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {

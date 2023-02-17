@@ -1,6 +1,6 @@
 import { mzaiotRequest } from '../utils/index'
 
-export async function getSceneList(roomId: string) {
+export async function querySceneList(roomId: string) {
   return await mzaiotRequest.post<User.UserLoginRes>({
     log: true,
     loading: true,

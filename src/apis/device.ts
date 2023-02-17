@@ -7,7 +7,7 @@ export async function queryAllDevice(houseId: string) {
   return await mzaiotRequest.post<Device.DeviceItem[]>({
     log: true,
     loading: true,
-    url: '/v1/device/querySubDeviceInfoByHouseId',
+    url: '/v1/device/queryDeviceInfoByHouseId',
     data: {
       houseId,
     },
