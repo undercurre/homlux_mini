@@ -12,7 +12,7 @@
       <image class="w-48 h-48" src="/assets/img/home-manage/setting.png" bind:tap="toSetting"></image>
     </view>
 
-    <view class="pt-16rpx leading-40rpx text-black-secondary text-28 opacity-75">
+    <view class="pt-16rpx leading-40rpx text-black-59 text-28 opacity-75">
       <text>房间{{ currentHomeDetail.roomCount }}｜设备{{ currentHomeDetail.deviceCount }}｜成员{{ currentHomeDetail.userCount }}</text>
     </view>
   </view>
@@ -32,7 +32,7 @@
               <image class="w-64 h-64 block" src="/assets/img/room/{{item.roomIcon || 'drawing-room'}}.png"></image>
             </view>
 
-            <text class="pt-24rpx pb-32rpx text-28 text-center text-black-secondary leading-40rpx">{{item.roomName}}</text>
+            <text class="pt-24rpx pb-32rpx text-28 text-center text-black-59 leading-40rpx">{{item.roomName}}</text>
           </view>
         </view>
       </view>
@@ -52,7 +52,7 @@
 
 <van-popup round show="{{ isEditName }}" bind:close="onCloseEditName" position="bottom">
   <view class="pb-100rpx">
-    <text class="block pt-48rpx pb-64rpx text-center leading-50rpx text-36 text-black-primary font-medium">家庭名称</text>
+    <text class="block pt-48rpx pb-64rpx text-center leading-50rpx text-36 text-black-2a font-medium">家庭名称</text>
 
     <text class="block pl-48rpx pb-32rpx text-28">家庭名称</text>
 

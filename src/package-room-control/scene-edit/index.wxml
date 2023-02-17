@@ -13,7 +13,7 @@
     <van-cell-group inset>
       <van-cell title="场景图标" is-link center bind:click="handleEditIconShow">
         <view class="flex justify-end">
-          <view class="bg-gray-secondary rounded-999 w-52rpx h-52rpx">
+          <view class="bg-gray-f3 rounded-999 w-52rpx h-52rpx">
             <svg-icon name="scene:{{sceneIcon}}" width="52rpx" height="52rpx" />
           </view>
         </view>
@@ -23,7 +23,7 @@
       <van-cell title="关联智能开关" is-link value="客厅筒灯" center bind:click="handleLinkSwitchPopup"></van-cell>
     </van-cell-group>
     <view class="ml-32rpx mt-48rpx mb-24rpx">
-      <text class="text-24rpx text-black-secondary">此场景执行以下操作</text>
+      <text class="text-24rpx text-black-59">此场景执行以下操作</text>
     </view>
     <view class="flex-1" id="content">
       <scroll-view enhanced show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
@@ -32,7 +32,7 @@
             <view slot="title" class="flex items-center">
               <image src="{{item.image}}" class="w-96rpx h-96rpx rounded-999 bg-hex-f6fafd" />
               <view class="flex flex-col items-start ml-32rpx">
-                <text class="text-32rpx text-black-primary font-medium leading-none mt-10rpx">{{item.title}}</text>
+                <text class="text-32rpx text-black-2a font-medium leading-none mt-10rpx">{{item.title}}</text>
                 <text class="text-28rpx text-black-tips font-normal mt-8rpx">{{item.desc}}</text>
               </view>
             </view>

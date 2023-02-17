@@ -1,5 +1,5 @@
 <template name="title">
-  <text class="h-50rpx text-36rpx text-black-primary mt-44rpx font-medium">{{title}}</text>
+  <text class="h-50rpx text-36rpx text-black-2a mt-44rpx font-medium">{{title}}</text>
 </template>
 <template name="bottom-btn">
   <view class="flex justify-center">

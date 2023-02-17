@@ -12,16 +12,16 @@
           <text class="block">3.原设备关联的场景及参数</text>
         </view>
 
-        <text class="block pt-64rpx text-black-primary text-28 leading-40rpx">替换完成后，原设备将自动从家庭中解绑</text>
+        <text class="block pt-64rpx text-black-2a text-28 leading-40rpx">替换完成后，原设备将自动从家庭中解绑</text>
       </view>
     </block>
 
     <block wx:if="{{status !== 'begin'}}">
       <steps active="{{1}}"></steps>
 
-      <text class="block text-center pt-60rpx pb-16rpx leading-40rpx text-28 text-black-secondary">选择新设备</text>
+      <text class="block text-center pt-60rpx pb-16rpx leading-40rpx text-28 text-black-59">选择新设备</text>
 
-      <text class="block text-center pb-80rpx leading-34rpx text-24 text-black-secondary">仅可选择在线，且与旧设备同类别的新设备</text>
+      <text class="block text-center pb-80rpx leading-34rpx text-24 text-black-59">仅可选择在线，且与旧设备同类别的新设备</text>
 
       <view class="bg-white mx-24rpx p-60rpx rounded-32rpx"></view>
     </block>

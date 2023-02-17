@@ -13,13 +13,13 @@ export default defineConfig({
     colors: {
       blue: '#488fff',
       black: {
-        primary: '#27282A',
-        secondary: '#555659',
+        '2a': '#27282A',
+        '59': '#555659',
         tips: '#a2a2a2',
       },
       gray: {
-        primary: '#ddd',
-        secondary: '#eff0f3',
+        dd: '#ddd',
+        f3: '#eff0f3',
       },
       red: '#ff3849',
       yellow: '#fbbb32',

@@ -4,13 +4,13 @@
     <template is="title" data="{{title: '收藏为新场景'}}" />
     <text class="h-36rpx text-26rpx text-black-tips mt-22rpx font-normal">保存已选设备的状态，便于快速执行</text>
     <view class="mt-32rpx w-750rpx">
-      <text class="ml-48rpx h-40rpx text-28rpx text-black-primary font-normal">场景名称</text>
+      <text class="ml-48rpx h-40rpx text-28rpx text-black-2a font-normal">场景名称</text>
     </view>
     <view class="mt-32rpx w-686rpx mx-32rpx">
       <van-field model:value="{{ sceneName }}" placeholder="自定义场景" custom-style="padding: 28rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
     </view>
     <view class="mt-32rpx w-750rpx">
-      <text class="ml-48rpx h-40rpx text-28rpx text-black-primary font-normal">选择场景图标</text>
+      <text class="ml-48rpx h-40rpx text-28rpx text-black-2a font-normal">选择场景图标</text>
     </view>
 
     <view class="flex-1 w-654rpx" id="content">
@@ -28,7 +28,7 @@
     <van-cell-group inset class="w-750rpx">
       <van-cell center is-link custom-class="switch-cell" bind:click="handleLinkSwitchPopup" custom-style="border: 2rpx solid #DDDDDD;border-radius: 24px;">
         <view class="flex flex-col items-start">
-          <text class="text-32rpx text-black-primary font-medium h-44rpx">关联智能开关</text>
+          <text class="text-32rpx text-black-2a font-medium h-44rpx">关联智能开关</text>
           <text class="text-26rpx text-black-tips font-normal leading-none mt-12rpx mb-12rpx">通过开关触发场景</text>
         </view>
       </van-cell>

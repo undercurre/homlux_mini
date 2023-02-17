@@ -9,7 +9,16 @@ export default Behavior({
      * 返回方法
      */
     goBack: function () {
-      wx.navigateBack()
+      const pages = getCurrentPages()
+
+      console.log('goBack', pages.length)
+      if (pages.length <= 1) {
+        wx.switchTab({
+          url: '/pages/index/index',
+        })
+      } else {
+        wx.navigateBack()
+      }
     },
   },
 })

@@ -7,7 +7,7 @@
   <view class="flex justify-end w-750rpx mt-36rpx mb-8rpx">
     <van-button round color="#dfe1e5" custom-class="dropdown-btn" id="selectRoomBtn" bind:click="showSelectRoomMenu">
       <view class="flex-center">
-        <text class="text-black-primary text-28rpx mr-10rpx">{{currentRoomName}}</text>
+        <text class="text-black-2a text-28rpx mr-10rpx">{{currentRoomName}}</text>
         <svg-icon id="selectRoomArrow" name="icon-park:down" color="#555659" width="32rpx" height="32rpx"></svg-icon>
       </view>
     </van-button>
@@ -22,8 +22,8 @@
               <image src="/assets/img/device/light.png" class="w-72rpx h-72rpx" />
             </view>
             <view class="h-96rpx flex flex-col justify-center items-start ml-32rpx">
-              <text class="text-black-primary text-32rpx">{{item.deviceName}}</text>
-              <text class="text-black-secondary text-32rpx mt-8rpx">{{item.roomName}}</text>
+              <text class="text-black-2a text-32rpx">{{item.deviceName}}</text>
+              <text class="text-black-59 text-32rpx mt-8rpx">{{item.roomName}}</text>
             </view>
           </view>
           <view slot="right-icon" class="h-96rpx flex-center">

@@ -3,6 +3,7 @@ import { BleClient } from '../../utils'
 export interface IBleDevice {
   deviceUuid: string
   mac: string
+  zigbeeMac: string
   name: string
   roomId: string
   roomName: string

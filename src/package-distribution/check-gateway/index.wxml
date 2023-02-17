@@ -8,7 +8,7 @@
       <tips-box text="连接失败！" icon="/assets/img/device-add/error.png"></tips-box>
 
       <view class="grow pl-88rpx pr-50rpx pt-180rpx">
-        <view class="text-28 text-black-primary">
+        <view class="text-28 text-black-2a">
           <text>请排查以下原因：</text>
         </view>
 

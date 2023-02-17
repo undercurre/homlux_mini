@@ -3,7 +3,7 @@ declare namespace Device {
     // 接口返回值属性
     deviceId: string
     deviceName: string
-    deviceType: string
+    deviceType: number
     gatewayId: string
     gatewayName: string
     methodList: string[]
@@ -16,6 +16,7 @@ declare namespace Device {
     roomName: string
     switchInfoDTOList: MzgdPanelSwitchInfoDTO[]
     version: string
+    sn: string
 
     // 小程序维护额外属性
     isChecked: boolean

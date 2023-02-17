@@ -5,7 +5,7 @@
     <tips-box icon="/assets/img/wifi-connect/connect-wifi.png" text="请连接家庭Wi-Fi以便设备联网"></tips-box>
 
     <view class="grow px-48rpx pt-112rpx">
-      <text class="text-black-secondary text-26 leading-36rpx">智能设备仅支持2.4GHZ的Wi-Fi</text>
+      <text class="text-black-59 text-26 leading-36rpx">智能设备仅支持2.4GHZ的Wi-Fi</text>
 
       <van-field value="{{ wifiInfo.SSID }}" custom-style="margin-bottom: 32rpx;margin-top: 40rpx;padding: 16rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;background-color: transparent;" clearable="{{true}}" bind:change="changeWifiName">
         <van-button slot="button" type="primary" plain bind:click="toggleWifi"> 切换Wi-Fi </van-button>

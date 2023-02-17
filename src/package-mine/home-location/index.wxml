@@ -6,12 +6,12 @@
       <van-field value="{{ searchText }}" placeholder="搜索城市" left-icon="/assets/img/home-location/search.png" custom-style="padding: 20rpx 32rpx;background-color: transparent;border-radius: 24rpx;border: 2rpx solid #DDDDDD;" placeholder-style="font-size: 28rpx;color: #A2A2A2;" />
     </view>
 
-    <view class="px-32rpx pb-54rpx text-28 text-black-secondary leading-40rpx">
+    <view class="px-32rpx pb-54rpx text-28 text-black-59 leading-40rpx">
       <text>当前家庭所在位置</text>
-      <text class="text-black-primary font-semibold">佛山市顺德区</text>
+      <text class="text-black-2a font-semibold">佛山市顺德区</text>
     </view>
 
-    <text class="block px-32rpx pb-30rpx text-28 text-black-primary leading-40rpx">选择地区</text>
+    <text class="block px-32rpx pb-30rpx text-28 text-black-2a leading-40rpx">选择地区</text>
   </view>
 
   <scroll-view class="h-200 box-border grow px-24rpx" scroll-y>

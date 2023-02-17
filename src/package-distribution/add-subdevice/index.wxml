@@ -7,7 +7,7 @@
 
       <view class="flex flex-col items-center pt-70rpx">
         <view wx:for="{{stepList}}" class="transition flex felx-row items-center text-28 text-black-tips leading-40rpx pb-40rpx">
-          <text class="{{ item.isCheck && 'text-black-secondary'}}">{{item.text}}</text>
+          <text class="{{ item.isCheck && 'text-black-59'}}">{{item.text}}</text>
           <svg-icon class="ml-32rpx transition" name="icon-park-solid:check-one" color="{{item.isCheck ? '#488fff' : 'transparent'}}"></svg-icon>
         </view>
       </view>
@@ -17,7 +17,7 @@
       <tips-box text="连接失败！" icon="/assets/img/device-add/error.png"></tips-box>
 
       <view class="grow pl-88rpx pr-50rpx pt-180rpx">
-        <view class="text-28 text-black-primary">
+        <view class="text-28 text-black-2a">
           <text>请排查以下原因：</text>
         </view>
 

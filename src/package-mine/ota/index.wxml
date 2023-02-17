@@ -6,7 +6,7 @@
   <van-cell-group inset>
     <van-cell>
       <view class="flex flex-col items-start pr-44rpx">
-        <text class="text-34rpx text-black-primary">自动升级</text>
+        <text class="text-34rpx text-black-2a">自动升级</text>
         <text class="text-28rpx text-black-tips font-normal text-justify">每天凌晨2:00-5:00期间自动升级设备固件。升级期间设备可能无法使用。</text>
       </view>
       <view slot="right-icon">
@@ -16,9 +16,9 @@
   </van-cell-group>
 
   <view class="flex justify-between items-center w-686rpx mb-24rpx">
-    <text class="text-28rpx text-black-secondary ml-16rpx">可升级设备</text>
-    <view class="h-56rpx w-164rpx flex-center border-2rpx border-solid border-black-secondary rounded-999">
-      <text class="text-26rpx text-black-secondary">全部升级</text>
+    <text class="text-28rpx text-black-59 ml-16rpx">可升级设备</text>
+    <view class="h-56rpx w-164rpx flex-center border-2rpx border-solid border-black-59 rounded-999">
+      <text class="text-26rpx text-black-59">全部升级</text>
     </view>
   </view>
 
@@ -26,7 +26,7 @@
     <scroll-view enhanced show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
       <van-cell-group inset>
         <van-cell>
-          <view class="flex flex-col items-center text-28rpx text-black-primary text-justify">
+          <view class="flex flex-col items-center text-28rpx text-black-2a text-justify">
             <view class="flex w-full justify-between items-center mb-32rpx">
               <view class="flex-center">
                 <view class="w-96rpx h-96rpx bg-hex-f6fafd flex-center rounded-999">
@@ -34,7 +34,7 @@
                 </view>
                 <view class="ml-32rpx flex flex-col">
                   <text class="text-32rpx">灯带</text>
-                  <text class="opcaity-80 text-black-secondary">客厅</text>
+                  <text class="opcaity-80 text-black-59">客厅</text>
                 </view>
               </view>
               <van-button round type="primary">立刻升级</van-button>
@@ -59,7 +59,7 @@
       </van-cell-group>
       <van-cell-group inset>
         <van-cell>
-          <view class="flex flex-col items-center text-28rpx text-black-primary text-justify">
+          <view class="flex flex-col items-center text-28rpx text-black-2a text-justify">
             <view class="flex w-full justify-between items-center mb-32rpx">
               <view class="flex-center">
                 <view class="w-96rpx h-96rpx bg-hex-f6fafd flex-center rounded-999">
@@ -67,7 +67,7 @@
                 </view>
                 <view class="ml-32rpx flex flex-col">
                   <text class="text-32rpx">灯带</text>
-                  <text class="opcaity-80 text-black-secondary">客厅</text>
+                  <text class="opcaity-80 text-black-59">客厅</text>
                 </view>
               </view>
               <van-button round type="primary">立刻升级</van-button>
@@ -92,7 +92,7 @@
       </van-cell-group>
       <van-cell-group inset>
         <van-cell>
-          <view class="flex flex-col items-center text-28rpx text-black-primary text-justify">
+          <view class="flex flex-col items-center text-28rpx text-black-2a text-justify">
             <view class="flex w-full justify-between items-center mb-32rpx">
               <view class="flex-center">
                 <view class="w-96rpx h-96rpx bg-hex-f6fafd flex-center rounded-999">
@@ -100,7 +100,7 @@
                 </view>
                 <view class="ml-32rpx flex flex-col">
                   <text class="text-32rpx">灯带</text>
-                  <text class="opcaity-80 text-black-secondary">客厅</text>
+                  <text class="opcaity-80 text-black-59">客厅</text>
                 </view>
               </view>
               <van-button round type="primary">立刻升级</van-button>

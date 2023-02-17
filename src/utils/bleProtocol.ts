@@ -13,6 +13,16 @@ const CmdTypeMap = {
   query: 0x01, // 查询
 } as const
 
+type CmdType = typeof CmdTypeMap
+
+/**
+ * 根据值获取对应的控制类型名称
+ * @param value
+ */
+function getCmdTypeName(value: CmdType[keyof CmdType]) {
+  return Object.entries(CmdTypeMap).find((item) => item[1] === value)![0]
+}
+
 // 控制类子类型枚举
 // CTL_CONFIG_ZIGBEE_NET				= 0x00,		//开启ZigBee配网模式
 // CTL_DEVICE_ONOFF_ON	 			= 0x01,		//控制设备开关开
@@ -40,6 +50,32 @@ export class BleClient {
     this.deviceUuid = deviceUuid
     // 密钥为：midea@homlux0167   (0167为该设备MAC地址后四位
     this.key = `midea@homlux${mac.substr(-4, 4)}`
+
+    const listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
+      console.log('---------constructor-----------start')
+      console.log(`onBLECharacteristicValueChange ${res.deviceId} has changed, now is ${res.value}`, res)
+      if (res.deviceId !== this.deviceUuid) {
+        return
+      }
+
+      const hex = strUtil.ab2hex(res.value)
+      let msg = aesUtil.decrypt(hex, this.key, 'Hex')
+
+      console.log('onBLECharacteristicValueChange-msg', msg)
+      const resMsgId = parseInt(msg.substr(2, 2), 16) // 收到回复的指令msgId
+      const packLen = parseInt(msg.substr(4, 2), 16) // 回复消息的Byte Msg Id到Byte Checksum的总长度，单位byte
+
+      // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
+      // 1 byte	     1 byte	   1 byte	          N  bytes	    1 byte
+      console.log('resMsgId', resMsgId)
+
+      // 仅截取消息参数部分数据，
+      msg = msg.substr(6, (packLen - 3) * 2)
+      console.log('data-res', msg)
+      console.log('---------constructor-----------end')
+    }
+
+    wx.onBLECharacteristicValueChange(listener)
   }
 
   async connect() {
@@ -100,50 +136,84 @@ export class BleClient {
 
     const buffer = strUtil.hexStringToArrayBuffer(msg)
 
-    return new Promise<IAnyObject>((resolve) => {
-      const listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
-        console.log(`onBLECharacteristicValueChange ${res.characteristicId} has changed, now is ${res.value}`, res)
-        if (res.deviceId !== this.deviceUuid) {
-          return
+    return new Promise<{ code: string; success: boolean; cmdType: string; subCmdType: string; resMsg: string }>(
+      (resolve) => {
+        const listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
+          console.log(`onBLECharacteristicValueChange ${res.characteristicId} has changed, now is ${res.value}`, res)
+          if (res.deviceId !== this.deviceUuid) {
+            return
+          }
+
+          const hex = strUtil.ab2hex(res.value)
+          const msg = aesUtil.decrypt(hex, this.key, 'Hex')
+
+          console.log('onBLECharacteristicValueChange-msg', msg)
+          const resMsgId = parseInt(msg.substr(2, 2), 16) // 收到回复的指令msgId
+          const packLen = parseInt(msg.substr(4, 2), 16) // 回复消息的Byte Msg Id到Byte Checksum的总长度，单位byte
+
+          // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
+          // 1 byte	     1 byte	   1 byte	          N  bytes	    1 byte
+          console.log('msgId', msgId, 'resMsgId', resMsgId)
+          if (resMsgId !== msgId) {
+            return
+          }
+
+          // 仅截取消息参数部分数据，
+          const resMsg = msg.substr(6, (packLen - 3) * 2)
+          console.log('data-res', resMsg)
+          wx.offBLECharacteristicValueChange(listener)
+          const code = resMsg.substr(2, 2)
+
+          resolve({
+            code: code,
+            resMsg: resMsg.substr(4),
+            success: code === '00',
+            cmdType: getCmdTypeName(parseInt(msg.substr(0, 2), 16) as CmdType[keyof CmdType]),
+            subCmdType: resMsg.substr(0, 2),
+          })
+          console.log('resolve')
         }
 
-        const hex = strUtil.ab2hex(res.value)
-        let msg = aesUtil.decrypt(hex, this.key, 'Hex')
+        wx.onBLECharacteristicValueChange(listener)
 
-        console.log('onBLECharacteristicValueChange-msg', msg)
-        const resMsgId = parseInt(msg.substr(2, 2), 16) // 收到回复的指令msgId
-        const packLen = parseInt(msg.substr(4, 2), 16) // 回复消息的Byte Msg Id到Byte Checksum的总长度，单位byte
-
-        // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
-        // 1 byte	     1 byte	   1 byte	          N  bytes	    1 byte
-        console.log('msgId', msgId, 'resMsgId', resMsgId)
-        if (resMsgId !== msgId) {
-          return
-        }
-
-        // 仅截取消息参数部分数据，
-        msg = msg.substr(6, (packLen - 3) * 2)
-        console.log('data-res', msg)
-        wx.offBLECharacteristicValueChange(listener)
-        resolve({
-          code: msg.substr(2, 2),
-          cmdType: msg.substr(0, 2),
+        wx.writeBLECharacteristicValue({
+          deviceId: this.deviceUuid,
+          serviceId: this.serviceId,
+          characteristicId: this.characteristicId,
+          value: buffer,
+          success: (res) => {
+            console.log('wirteRes', res)
+          },
         })
-        console.log('resolve')
+      },
+    )
+  }
+
+  async startZigbeeNet() {
+    const res = await this.sendCmd({ cmdType: 'control', subType: 'CTL_CONFIG_ZIGBEE_NET' })
+
+    console.log('startZigbeeNet', this.mac, res)
+
+    let zigbeeMac = ''
+
+    if (res.success) {
+      const macStr = res.resMsg
+      let arr = []
+
+      for (let i = 0; i < macStr.length; i = i + 2) {
+        arr.push(macStr.substr(i, 2).toUpperCase())
       }
 
-      wx.onBLECharacteristicValueChange(listener)
+      arr = arr.reverse()
+      zigbeeMac = arr.join('')
+    }
 
-      const wirteRes = wx.writeBLECharacteristicValue({
-        deviceId: this.deviceUuid,
-        serviceId: this.serviceId,
-        characteristicId: this.characteristicId,
-        value: buffer,
-        success: () => {
-          console.log('wirteRes', wirteRes)
-        },
-      })
-    })
+    return {
+      ...res,
+      result: {
+        zigbeeMac,
+      },
+    }
   }
 }
 
