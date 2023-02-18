@@ -11,7 +11,7 @@
         <van-button slot="button" type="primary" plain bind:click="toggleWifi"> 切换Wi-Fi </van-button>
       </van-field>
 
-      <van-field value="{{ wifiInfo.pw }}" placeholder="请入Wi-Fi密码" type="" custom-style="padding: 16rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;background-color: transparent;" password bind:change="changePw"></van-field>
+      <van-field value="{{ wifiInfo.pw }}" placeholder="请入Wi-Fi密码" type="" custom-style="padding: 16rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;background-color: transparent;" bind:change="changePw"></van-field>
     </view>
 
     <view class="flex flex-col">

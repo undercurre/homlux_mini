@@ -21,51 +21,39 @@ Component({
     iconList: [
       {
         icon: 'parents-room',
-        isCheck: true,
       },
       {
         icon: 'restaurant',
-        isCheck: false,
       },
       {
         icon: 'toilet',
-        isCheck: false,
       },
       {
         icon: 'kitchen',
-        isCheck: false,
       },
       {
         icon: 'master-bedroom',
-        isCheck: false,
       },
       {
         icon: 'kids-room',
-        isCheck: false,
       },
       {
         icon: 'drawing-room',
-        isCheck: false,
       },
       {
         icon: 'study-room',
-        isCheck: false,
       },
       {
         icon: 'balcony',
-        isCheck: false,
       },
       {
         icon: 'cloakroom',
-        isCheck: false,
       },
       {
         icon: 'bathroom',
-        isCheck: false,
       },
       {
         icon: 'second-bedroom',
-        isCheck: false,
       },
     ],
   },
@@ -74,18 +62,25 @@ Component({
    * 组件的方法列表
    */
   methods: {
+    changeRoomName(event: WechatMiniprogram.CustomEvent) {
+      console.log('changeRoomName', event)
+
+      this.setData({
+        'roomInfo.name': event.detail.value
+      })
+    },
+
     handleClose() {
       this.triggerEvent('close')
     },
     handleConfirm() {
       // todo: 添加家庭业务
-      this.triggerEvent('close')
+      this.triggerEvent('confirm')
     },
     selectIcon({ currentTarget }: WechatMiniprogram.BaseEvent) {
       console.log('selectIcon', currentTarget)
-      this.data.roomInfo.icon = currentTarget.dataset.icon
       this.setData({
-        roomInfo: this.data.roomInfo,
+        'roomInfo.icon': currentTarget.dataset.icon,
       })
     },
   },

@@ -17,6 +17,8 @@ export class WifiSocket {
     tcpPort: 6466,
   }
 
+  retryTimes = 3
+
   cmdCallbackMap: IAnyObject = {}
 
   onMessageHandlerList: ((data: IAnyObject) => void)[] = []
@@ -80,7 +82,7 @@ export class WifiSocket {
             wx.offWifiConnected(listen)
             resolve(res)
           }
-        }
+        },
       })
     })
   }
@@ -168,10 +170,7 @@ export class WifiSocket {
     })
   }
 
-  /**
-   * 通过广播更新网关IP地址并与网关建立tcp连接
-   */
-  async updateGatewayInfo() {
+  async sendCmdForDeviceIp() {
     const res = await this.sendCmd({
       topic: '/gateway/net/serverip', //指令名称:获取网关IP
       data: {},
@@ -182,9 +181,28 @@ export class WifiSocket {
 
     if (res.errorCode === 0) {
       this.deviceInfo.ip = res.ip
-
-      await this.initTcpSocket()
     }
+  }
+
+  getDeviceIp() {
+    return new Promise((resolve) => {
+      let interId = setInterval(() => {
+        if (this.deviceInfo.ip) {
+          clearInterval(interId)
+          resolve(true)
+        }
+
+        this.sendCmdForDeviceIp()
+      }, 2000)
+    })
+  }
+  /**
+   * 通过广播更新网关IP地址并与网关建立tcp连接
+   */
+  async updateGatewayInfo() {
+    await this.getDeviceIp()
+
+    await this.initTcpSocket()
   }
 
   /**

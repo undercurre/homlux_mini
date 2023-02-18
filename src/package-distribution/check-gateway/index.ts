@@ -57,7 +57,6 @@ Component({
     },
     hide() {
       console.log('hide')
-      socket.close()
     },
   },
   /**

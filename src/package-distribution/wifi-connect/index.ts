@@ -149,7 +149,7 @@ ComponentWithComputed({
       this.setData({
         selectWifi: {
           SSID: item.SSID,
-          pw: '',
+          pw: item.pw,
         },
       })
     },

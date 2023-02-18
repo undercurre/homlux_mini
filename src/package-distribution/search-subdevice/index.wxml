@@ -13,7 +13,7 @@
           <van-button plain round type="info" size="small" bind:click="selectAll">全选</van-button>
         </view>
 
-        <scroll-view class="grow h-300" scroll-y="true">
+        <scroll-view class="grow h-500" scroll-y="{{true}}">
           <view wx:for="{{deviceList}}" wx:key="deviceUuid" class="flex flex-row items-center bg-white rounded-32rpx mb-24rpx px-24rpx py-40rpx">
             <van-checkbox use-icon-slot bind:change="toggleDevice" data-index="{{index}}">
               <image src="{{item.icon}}" class="w-92 h-92 ml-10rpx border-4rpx border-solid border-hex-F6F6F8 rounded-full"></image>
