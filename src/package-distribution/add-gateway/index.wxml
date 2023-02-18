@@ -26,4 +26,4 @@
   </view>
 </view>
 
-<van-button bind:click="queryDeviceOnlineStatus">queryDeviceOnlineStatus</van-button>
+<!-- <van-button bind:click="queryDeviceOnlineStatus">queryDeviceOnlineStatus</van-button> -->

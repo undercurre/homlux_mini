@@ -2,7 +2,7 @@
   <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="连接家庭Wi-Fi"></nav-bar>
 
   <view class="grow flex flex-col justify-between pb-128rpx">
-    <tips-box icon="/assets/img/wifi-connect/connect-wifi.png" text="请连接家庭Wi-Fi以便设备联网"></tips-box>
+    <tips-box icon="/assets/img/package-distribution/wifi-connect/connect-wifi.png" text="请连接家庭Wi-Fi以便设备联网"></tips-box>
 
     <view class="grow px-48rpx pt-112rpx">
       <text class="text-black-59 text-26 leading-36rpx">智能设备仅支持2.4GHZ的Wi-Fi</text>
@@ -20,4 +20,35 @@
   </view>
 </view>
 
-<van-picker columns="{{ wifiList }}" value-key="SSID" bind:change="onChange" />
+<van-popup show="{{ isShowWifiList }}" bind:close="onCloseWifiList" position="bottom" round>
+  <view class="flex flex-col items-stretch">
+    <text class="block py-40rpx leading-50rpx text-center text-36 opacity-90 text-black-2a font-medium">请选择无线网络</text>
+
+    <scroll-view class="h-500" scroll-y>
+      <view class="pt-20rpx px-32rpx">
+        <view wx:for="{{wifiList}}" wx:key="SSID" class="flex flex-row items-center border-bottom py-32rpx pr-40rpx" data-index="{{index}}" bind:tap="selectWifi">
+          <view class="w-32 h-32">
+            <image wx:if="{{selectWifi.SSID === item.SSID}}" class="w-32 h-32" src="/assets/img/package-distribution/wifi-connect/checked.png"></image>
+          </view>
+          <text class="grow px-32rpx leading-40rpx text-28 text-black-2a font-medium">{{ item.SSID }}</text>
+
+          <view class="flex flex-row">
+            <image wx:if="{{!item.pw}}" class="w-20 h-24 mr-32rpx" src="/assets/img/package-distribution/wifi-connect/lock.png"></image>
+
+            <image wx:if="{{item.signalStrength >= 80}}" class="w-30 h-22" src="/assets/img/package-distribution/wifi-connect/wifi-signal-full.png"></image>
+            <image wx:if="{{item.signalStrength >= 40 && item.signalStrength < 80}}" class="w-30 h-22" src="/assets/img/package-distribution/wifi-connect/wifi-signal-full.png"></image>
+            <image wx:if="{{item.signalStrength < 40}}" class="w-30 h-22" src="/assets/img/package-distribution/wifi-connect/wifi-signal-full.png"></image>
+          </view>
+        </view>
+      </view>
+
+      <van-button wx:if="{{systemWifiList.length === 0}}" class="pt-40rpx" type="primary" plain block bind:click="getWifiList">加载更多</van-button>
+    </scroll-view>
+
+    <view class="flex flex-row gap-46rpx pt-80rpx pb-96rpx px-24rpx">
+      <van-button class="grow" size="large" bind:click="onCloseWifiList">取消</van-button>
+
+      <van-button class="grow" size="large" type="primary" bind:click="confirmWifi">确定</van-button>
+    </view>
+  </view>
+</van-popup>

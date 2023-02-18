@@ -37,7 +37,7 @@ ComponentWithComputed({
   },
 
   lifetimes: {
-    attached() {
+    async attached() {
       reaction(
         () => homeBinding.store.currentHomeDetail.houseId,
         () => {
@@ -48,6 +48,12 @@ ComponentWithComputed({
       const systemSetting = wx.getSystemSetting()
 
       console.log('systemSetting', systemSetting)
+
+      // let authorizeRes = await wx.authorize({
+      //   scope: 'scope.bluetooth'
+      // })
+
+      // console.log('authorizeRes', authorizeRes)
 
       this.initBle()
     },

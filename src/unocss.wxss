@@ -31,6 +31,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .py-20rpx{padding-top:20rpx;padding-bottom:20rpx;}
 .py-24rpx{padding-top:24rpx;padding-bottom:24rpx;}
 .py-30rpx{padding-top:30rpx;padding-bottom:30rpx;}
+.py-32rpx{padding-top:32rpx;padding-bottom:32rpx;}
 .py-40rpx{padding-top:40rpx;padding-bottom:40rpx;}
 .py-64rpx{padding-top:64rpx;padding-bottom:64rpx;}
 .py-6rpx{padding-top:6rpx;padding-bottom:6rpx;}
@@ -62,6 +63,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .pr-12rpx{padding-right:12rpx;}
 .pr-16rpx{padding-right:16rpx;}
 .pr-24rpx{padding-right:24rpx;}
+.pr-40rpx{padding-right:40rpx;}
 .pr-44rpx{padding-right:44rpx;}
 .pr-50rpx{padding-right:50rpx;}
 .pr-64rpx{padding-right:64rpx;}
@@ -254,7 +256,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .grid{display:grid;}
 .grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr));}
 .grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr));}
-.gap-10rpx{grid-gap:10rpx;gap:10rpx;}
 .gap-16rpx{grid-gap:16rpx;gap:16rpx;}
 .gap-22rpx{grid-gap:22rpx;gap:22rpx;}
 .gap-36rpx{grid-gap:36rpx;gap:36rpx;}
@@ -287,13 +288,16 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .h-1rpx{height:1rpx;}
 .h-200{height:200rpx;}
 .h-216rpx{height:216rpx;}
+.h-22,
 .h-22rpx{height:22rpx;}
+.h-24,
 .h-24rpx{height:24rpx;}
 .h-258{height:258rpx;}
 .h-28,
 .h-28rpx{height:28rpx;}
 .h-300,
 .h-300rpx{height:300rpx;}
+.h-32,
 .h-32rpx{height:32rpx;}
 .h-368rpx{height:368rpx;}
 .h-36rpx{height:36rpx;}
@@ -344,6 +348,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .w-180,
 .wxs{width:180rpx;}
 .w-184rpx{width:184rpx;}
+.w-20{width:20rpx;}
 .w-208rpx{width:208rpx;}
 .w-213rpx{width:213rpx;}
 .w-244rpx{width:244rpx;}
@@ -351,8 +356,10 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .w-258{width:258rpx;}
 .w-28{width:28rpx;}
 .w-2rpx{width:2rpx;}
+.w-30{width:30rpx;}
 .w-300,
 .w-300rpx{width:300rpx;}
+.w-32,
 .w-32rpx{width:32rpx;}
 .w-338rpx{width:338rpx;}
 .w-400{width:400rpx;}

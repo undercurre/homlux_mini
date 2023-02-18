@@ -7,6 +7,8 @@ export class WifiSocket {
 
   udpClient: WechatMiniprogram.UDPSocket = wx.createUDPSocket()
 
+  SSID = ''
+
   key: string
 
   deviceInfo = {
@@ -24,12 +26,63 @@ export class WifiSocket {
     if (instance) {
       instance.close()
     }
+
+    this.SSID = params.ssid
+
     this.key = `homlux@midea${params.ssid.substr(-4, 4)}`
 
     this.initUdpSocket()
 
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     instance = this
+  }
+
+  async connect() {
+    const res = await this.connectWifi()
+
+    console.log(`connectWifi${this.SSID}`, res)
+
+    const result = {
+      success: true,
+    }
+
+    if (res.success) {
+      await this.updateGatewayInfo()
+    } else {
+      result.success = false
+    }
+
+    return result
+  }
+
+  connectWifi() {
+    return new Promise<{ success: boolean }>((resolve) => {
+      const res = { success: true }
+
+      const listen = async (onWifiConnectRes: WechatMiniprogram.OnWifiConnectedCallbackResult) => {
+        console.log('onWifiConnected', onWifiConnectRes)
+
+        if (onWifiConnectRes.wifi.SSID === this.SSID) {
+          wx.offWifiConnected(listen)
+          resolve(res)
+        }
+      }
+      wx.onWifiConnected(listen)
+
+      wx.connectWifi({
+        SSID: this.SSID,
+        password: '12345678',
+        partialInfo: false,
+        complete: (connectRes) => {
+          console.log('connectWifi', connectRes)
+
+          if ((connectRes as IAnyObject).wifiMsg?.includes('already connected')) {
+            wx.offWifiConnected(listen)
+            resolve(res)
+          }
+        }
+      })
+    })
   }
 
   initTcpSocket() {
@@ -184,7 +237,7 @@ export class WifiSocket {
   close() {
     this.cmdCallbackMap = {}
     this.onMessageHandlerList = []
-    this.tcpClient.close()
+    this.tcpClient?.close()
     this.udpClient?.close()
     instance = null
   }
