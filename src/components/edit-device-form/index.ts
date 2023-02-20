@@ -1,8 +1,8 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { homeBinding } from '../../store/index'
+import { homeBinding, roomBinding } from '../../store/index'
 
 Component({
-  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] })],
+  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, roomBinding] })],
   /**
    * 组件的属性列表
    */
@@ -41,7 +41,6 @@ Component({
       roomName: '',
       deviceName: '',
     },
-    roomList: [],
   },
 
   /**

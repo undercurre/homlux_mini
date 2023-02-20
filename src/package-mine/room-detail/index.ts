@@ -1,8 +1,10 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
-import pageBehaviors from '../../behaviors/pageBehaviors'
 import Dialog from '@vant/weapp/dialog/dialog'
+import pageBehaviors from '../../behaviors/pageBehaviors'
 import { roomBinding, othersBinding, userBinding } from '../../store/index'
+import { getCurrentPageParams } from '../../utils/index'
+import { delHouseRoom } from '../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -15,9 +17,12 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
-    isEditName: false,
+    isEdit: false,
+    editType: '',
     roomInfo: {
-      name: '客厅1',
+      roomId: '',
+      roomName: '',
+      roomIcon: '',
     },
   },
 
@@ -25,32 +30,71 @@ ComponentWithComputed({
 
   lifetimes: {
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
-    attached: function () {},
+    ready() {
+      const pageParams = getCurrentPageParams()
+
+      console.log('pageParams', pageParams)
+
+      this.setData({
+        roomInfo: {
+          roomId: pageParams.roomId,
+          roomName: pageParams.roomName,
+          roomIcon: pageParams.roomIcon,
+        },
+      })
+    },
     moved: function () {},
     detached: function () {},
   },
 
   methods: {
-    editName() {
+    editRoom(event: WechatMiniprogram.CustomEvent) {
+      const { type } = event.currentTarget.dataset
+
       this.setData({
-        isEditName: true,
+        isEdit: true,
+        editType: type,
       })
     },
     onClose() {
       this.setData({
-        isEditName: false,
+        isEdit: false,
       })
     },
-    delRoom() {
-      Dialog.confirm({
-        message: '弹窗内容',
+
+    finishAddRoom(event: WechatMiniprogram.CustomEvent) {
+      console.log('finishAddRoom', event)
+
+      this.setData({
+        isEdit: false,
+        roomInfo: {
+          roomId: event.detail.roomId,
+          roomName: event.detail.roomName,
+          roomIcon: event.detail.roomIcon,
+        },
       })
-        .then(() => {
-          // on confirm
-        })
-        .catch(() => {
-          // on cancel
-        })
+    },
+
+    async delRoom() {
+      const dialogRes = await Dialog.confirm({
+        message: '确定删除该房间？',
+      }).catch(() => {
+        return 'cancel'
+      })
+
+      console.log('dialogRes', dialogRes)
+
+      if (dialogRes === 'cancel') {
+        return
+      }
+
+      const res = await delHouseRoom(this.data.roomInfo.roomId)
+
+      if (res.success) {
+        roomBinding.store.updateRoomList()
+
+        wx.navigateBack()
+      }
     },
   },
 })

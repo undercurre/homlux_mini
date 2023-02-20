@@ -127,6 +127,7 @@ Component({
         apSSID: pageParams.ssid,
         dsn: pageParams.dsn,
         method: method,
+        deviceName: pageParams.deviceName,
       }
 
       if (method === 'wifi') {

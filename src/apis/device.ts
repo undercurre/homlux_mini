@@ -46,15 +46,14 @@ export async function querySubDeviceList(houseId: string, roomId: string) {
 
 /**
  * 设备管理-根据设备Id获取设备明细
- * roomId可传可不传，传roomId可以减少后端查询时间
  */
-export async function queryDeviceInfoByDeviceId(params: { deviceId: string; roomId?: string }) {
+export async function queryDeviceInfoByDeviceId(deviceId: string) {
   // 	"onlineStauts": 在线离线状态(0:离线1:在线
   return await mzaiotRequest.post<Device.DeviceItem>({
-    log: true,
+    log: false,
     loading: true,
     url: '/v1/device/queryDeviceInfoByDeviceId',
-    data: params,
+    data: { deviceId },
   })
 }
 
@@ -73,6 +72,31 @@ export async function queryDeviceOnlineStatus(params: { deviceType: '1' | '2' | 
 }
 
 /**
+ * 配网-校验子设备mac或productId的合法性并返回品类信息
+ * @param params
+ */
+export async function checkDevice(params: {
+  mac?: string
+  productId: string
+  productIdType: 1 | 2 // 产品id类型，1：扫码配网的pid 2：蓝牙配网的pid
+}) {
+  return await mzaiotRequest.post<{
+    icon: string
+    isValid: boolean
+    mac: string
+    modelId: string
+    proType: string
+    productName: string
+    sn: string
+  }>({
+    log: true,
+    loading: false,
+    url: '/v1/device/checkDevice',
+    data: params,
+  })
+}
+
+/**
  * 配网-绑定
  */
 export async function bindDevice(params: {
@@ -82,7 +106,7 @@ export async function bindDevice(params: {
   deviceId?: string
   deviceName: string
 }) {
-  return await mzaiotRequest.post<{ isBind: boolean; msg: string }>({
+  return await mzaiotRequest.post<{ deviceId: string; isBind: boolean; msg: string }>({
     log: false,
     loading: true,
     url: '/v1/device/bindDevice',

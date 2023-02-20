@@ -1,8 +1,10 @@
-import { addRoom } from '../../apis/index'
-import { homeStore } from '../../store/index'
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import { saveHouseRoomInfo } from '../../apis/index'
+import { homeBinding, roomBinding } from '../../store/index'
 
-// package-distribution/search-subdevice/components/edit-device-info/index.ts
 Component({
+  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] })],
+
   /**
    * 组件的属性列表
    */
@@ -11,14 +13,47 @@ Component({
       type: Boolean,
       value: false,
     },
+    isEditName: {
+      type: Boolean,
+      value: true,
+    },
+    isEditIcon: {
+      type: Boolean,
+      value: true,
+    },
+    roomId: {
+      type: String,
+      default: '',
+    },
+    roomName: {
+      type: String,
+      default: '',
+    },
+    roomIcon: {
+      type: String,
+      default: '',
+    },
+  },
+
+  observers: {
+    'roomName, roomIcon': function (roomName, roomIcon) {
+      this.setData({
+        roomInfo: {
+          name: roomName,
+          icon: roomIcon,
+        },
+      })
+    },
   },
 
   /**
    * 组件的初始数据
    */
   data: {
-    roomName: '',
-    roomIcon: '',
+    roomInfo: {
+      name: '',
+      icon: '',
+    },
     iconList: [
       {
         icon: 'parents-room',
@@ -63,24 +98,39 @@ Component({
    * 组件的方法列表
    */
   methods: {
+    changeRoomName(event: WechatMiniprogram.CustomEvent) {
+      console.log('changeRoomName', event)
+
+      this.setData({
+        'roomInfo.name': event.detail.value,
+      })
+    },
+
     handleClose() {
       this.triggerEvent('close')
     },
     async handleConfirm() {
-      const res = await addRoom({
-        houseId: homeStore.currentHomeDetail.houseId,
-        roomIcon: this.data.roomIcon,
-        roomName: this.data.roomName,
+      const res = await saveHouseRoomInfo({
+        houseId: homeBinding.store.currentHomeId,
+        roomId: this.data.roomId,
+        roomIcon: this.data.roomInfo.icon,
+        roomName: this.data.roomInfo.name,
       })
+
       if (res.success) {
-        homeStore.updateHomeInfo()
-        this.triggerEvent('close')
+        roomBinding.store.updateRoomList()
+
+        this.triggerEvent('confirm', {
+          roomId: this.data.roomId,
+          roomIcon: this.data.roomInfo.icon,
+          roomName: this.data.roomInfo.name,
+        })
       }
     },
     selectIcon({ currentTarget }: WechatMiniprogram.BaseEvent) {
       console.log('selectIcon', currentTarget)
       this.setData({
-        roomIcon: currentTarget.dataset.icon,
+        'roomInfo.icon': currentTarget.dataset.icon,
       })
     },
   },

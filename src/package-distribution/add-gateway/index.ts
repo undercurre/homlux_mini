@@ -1,7 +1,9 @@
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { IPageData } from './typings'
-import { queryDeviceOnlineStatus } from '../../apis/index'
+import { queryDeviceOnlineStatus, bindDevice } from '../../apis/index'
 import { WifiSocket, strUtil, getCurrentPageParams } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
+import { homeBinding, roomBinding } from '../../store/index'
 
 let socket: WifiSocket
 
@@ -10,7 +12,8 @@ Component({
     styleIsolation: 'apply-shared',
     pureDataPattern: /^_/,
   },
-  behaviors: [pageBehaviors],
+
+  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, roomBinding] }), pageBehaviors],
   /**
    * 组件的属性列表
    */
@@ -55,6 +58,7 @@ Component({
 
   pageLifetimes: {
     hide() {
+      console.log('add-gateway-hide')
       socket.close()
       clearTimeout(this.data._interId)
     },
@@ -103,6 +107,29 @@ Component({
       this.queryDeviceOnlineStatus()
     },
 
+    async requestBindDevice() {
+      const params = getCurrentPageParams()
+
+      const res = await bindDevice({
+        deviceId: params.deviceId,
+        houseId: homeBinding.store.currentHomeId,
+        roomId: roomBinding.store.roomList[0].roomId,
+        sn: params.dsn,
+        deviceName: params.deviceName,
+      })
+
+      if (res.success && res.result.isBind) {
+        this.setData({
+          activeIndex: 2,
+        })
+        wx.redirectTo({
+          url: strUtil.getUrlWithParams('/package-distribution/bind-home/index', {
+            deviceId: res.result.deviceId,
+          }),
+        })
+      }
+    },
+
     async queryDeviceOnlineStatus() {
       const params = getCurrentPageParams()
 
@@ -117,16 +144,7 @@ Component({
           activeIndex: 1,
         })
 
-        setTimeout(() => {
-          this.setData({
-            activeIndex: 2,
-          })
-          wx.redirectTo({
-            url: strUtil.getUrlWithParams('/package-distribution/bind-home/index', {
-              dsn: params.dsn,
-            }),
-          })
-        }, 500)
+        this.requestBindDevice()
       } else {
         this.data._interId = setTimeout(() => {
           this.queryDeviceOnlineStatus()

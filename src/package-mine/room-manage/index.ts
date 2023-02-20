@@ -3,6 +3,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { roomBinding } from '../../store/index'
+import { strUtil } from '../../utils/index'
 
 ComponentWithComputed({
   options: {
@@ -27,9 +28,29 @@ ComponentWithComputed({
   },
 
   methods: {
+    editRoom(event: WechatMiniprogram.CustomEvent) {
+      const { index } = event.currentTarget.dataset
+
+      const item = roomBinding.store.roomList[index]
+
+      wx.navigateTo({
+        url: strUtil.getUrlWithParams('/package-mine/room-detail/index', {
+          roomId: item.roomId,
+          roomName: item.roomName,
+          roomIcon: item.roomIcon,
+        }),
+      })
+    },
+
     addRoom() {
       this.setData({
         isAddRoom: true,
+      })
+    },
+
+    cancelAddRoom() {
+      this.setData({
+        isAddRoom: false,
       })
     },
 

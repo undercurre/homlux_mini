@@ -1,10 +1,8 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { getCurrentPageParams } from '../../utils/index'
-import { bindDevice } from '../../apis/index'
+import { getCurrentPageParams, strUtil } from '../../utils/index'
+import { queryDeviceInfoByDeviceId, editDeviceInfo } from '../../apis/index'
 import { homeBinding } from '../../store/index'
-
-const deviceInfo = { deviceName: '', roomId: '' }
 
 Component({
   options: {
@@ -19,10 +17,14 @@ Component({
   /**
    * 组件的初始数据
    */
-  data: {} as WechatMiniprogram.IAnyObject,
+  data: {
+    deviceInfo: { deviceId: '', deviceName: '', roomId: '', sn: '' },
+  },
 
   lifetimes: {
-    attached() {},
+    ready() {
+      this.getDeviceInfo()
+    },
     detached() {},
   },
 
@@ -35,34 +37,58 @@ Component({
    * 组件的方法列表
    */
   methods: {
+    async getDeviceInfo() {
+      const pageParams = getCurrentPageParams()
+
+      const res = await queryDeviceInfoByDeviceId(pageParams.deviceId)
+
+      if (res.success) {
+        this.setData({
+          deviceInfo: {
+            deviceId: pageParams.deviceId,
+            deviceName: res.result.deviceName,
+            sn: res.result.sn,
+            roomId: res.result.roomId,
+          },
+        })
+      }
+    },
+
+    toScan() {
+      wx.navigateBack()
+    },
+
+    toSearchSubdevice() {
+      wx.navigateTo({
+        url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
+          gatewayId: this.data.deviceInfo.deviceId,
+          gatewaySn: this.data.deviceInfo.sn,
+        }),
+      })
+    },
+
     changeDeviceInfo(event: WechatMiniprogram.CustomEvent) {
       console.log('changeDeviceInfo', event)
 
-      deviceInfo.roomId = event.detail.roomId
-      deviceInfo.deviceName = event.detail.deviceName
+      this.setData({
+        'deviceInfo.roomId': event.detail.roomId,
+        'deviceInfo.deviceName': event.detail.deviceName,
+      })
     },
 
-    async requestBindDevice() {
-      const params = getCurrentPageParams()
-
-      const res = await bindDevice({
-        deviceId: params.deviceId,
+    async finish() {
+      let { deviceId, deviceName, roomId } = this.data.deviceInfo
+      // const params = getCurrentPageParams()
+      let res = await editDeviceInfo({
+        deviceId,
+        deviceName,
+        roomId,
         houseId: homeBinding.store.currentHomeId,
-        roomId: deviceInfo.roomId,
-        sn: params.dsn,
-        deviceName: deviceInfo.deviceName,
+        isSwitch: false
       })
 
-      if (res.success && res.result.isBind) {
-        wx.showToast({
-          title: '绑定成功',
-          icon: 'success',
-          duration: 2000,
-        })
-
-        setTimeout(() => {
-          wx.switchTab({ url: '/pages/index/index' })
-        }, 2000)
+      if (res.success) {
+        wx.switchTab({ url: '/pages/index/index' })
       }
     },
   },

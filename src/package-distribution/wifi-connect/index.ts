@@ -78,7 +78,7 @@ ComponentWithComputed({
   },
 
   pageLifetimes: {
-    show: function () {},
+    show() {},
     hide() {},
   },
 

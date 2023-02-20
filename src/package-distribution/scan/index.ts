@@ -4,6 +4,7 @@ import { reaction } from 'mobx-miniprogram'
 import { deviceBinding, homeBinding } from '../../store/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { strUtil } from '../../utils/index'
+import { checkDevice } from '../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -156,29 +157,39 @@ ComponentWithComputed({
     },
     /**
      * 扫码解析
+     * 网关id：1676277426246918    子设备id：5C0272FFFE0E0826    蓝牙id：26
      */
-    getQrCodeInfo(e: WechatMiniprogram.CustomEvent) {
+    async getQrCodeInfo(e: WechatMiniprogram.CustomEvent) {
       wx.vibrateShort({ type: 'heavy' }) // 轻微震动
 
       console.log('getQrCodeInfo', e)
 
-      const sacnUrl = e.detail.result
+      const scanUrl = e.detail.result
 
-      const params = strUtil.getUrlParams(sacnUrl)
+      const params = strUtil.getUrlParams(scanUrl)
 
       console.log('params', params)
 
-      if (params.ssid && params.ssid.includes('midea_16')) {
-        this.bindGateway(params)
+      // 获取云端的产品基本信息
+      const res = await checkDevice({
+        productId: params.pid,
+        productIdType: params.mode === '01' ? 2 : 1,
+      })
+
+      console.log('checkDevice', res)
+
+      if (res.success && res.result.proType === '0x18') {
+        this.bindGateway({
+          ssid: params.ssid,
+          dsn: params.dsn,
+          deviceName: res.result.productName
+        })
       }
     },
 
     bindGateway(params: IAnyObject) {
       wx.navigateTo({
-        url: strUtil.getUrlWithParams('/package-distribution/check-gateway/index', {
-          ssid: params.ssid,
-          dsn: params.dsn,
-        }),
+        url: strUtil.getUrlWithParams('/package-distribution/check-gateway/index', params),
       })
     },
 
