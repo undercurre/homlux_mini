@@ -77,14 +77,14 @@ Component({
     },
 
     async finish() {
-      let { deviceId, deviceName, roomId } = this.data.deviceInfo
+      const { deviceId, deviceName, roomId } = this.data.deviceInfo
       // const params = getCurrentPageParams()
-      let res = await editDeviceInfo({
+      const res = await editDeviceInfo({
         deviceId,
         deviceName,
         roomId,
         houseId: homeBinding.store.currentHomeId,
-        isSwitch: false
+        isSwitch: false,
       })
 
       if (res.success) {

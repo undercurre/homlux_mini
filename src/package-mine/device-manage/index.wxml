@@ -39,6 +39,5 @@
       <view class="list-bottom-placeholder"> </view>
     </scroll-view>
   </view>
-
 </view>
 <dropdown-menu x="{{roomSelectMenu.x}}" y="{{roomSelectMenu.y}}" isShow="{{roomSelectMenu.isShow}}" list="{{roomSelectMenuList}}" bind:select="handleRoomSelect"></dropdown-menu>
