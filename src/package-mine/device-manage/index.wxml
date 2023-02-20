@@ -12,8 +12,13 @@
       </view>
     </van-button>
   </view>
+  <!-- 无设备 -->
+  <view wx:if="{{deviceList.length === 0}}" class="w-750rpx flex-col-center">
+    <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx mt-74rpx"></image>
+    <text class="text-28rpx text-black-59 mt-48rpx">这个房间空空如也</text>
+  </view>
   <!-- 设备列表 -->
-  <view id="listWrapper" class="flex-1">
+  <view id="listWrapper" class="flex-1" wx:if="{{isRender}}">
     <scroll-view scroll-y="true" style="height: {{listHeight}}px;">
       <van-cell-group inset wx:for="{{deviceList}}" wx:key="deviceId">
         <van-cell clickable bind:click="handleCardClick" data-index="{{index}}">
@@ -34,5 +39,6 @@
       <view class="list-bottom-placeholder"> </view>
     </scroll-view>
   </view>
+
 </view>
 <dropdown-menu x="{{roomSelectMenu.x}}" y="{{roomSelectMenu.y}}" isShow="{{roomSelectMenu.isShow}}" list="{{roomSelectMenuList}}" bind:select="handleRoomSelect"></dropdown-menu>

@@ -46,8 +46,9 @@ export async function querySubDeviceList(houseId: string, roomId: string) {
 
 /**
  * 设备管理-根据设备Id获取设备明细
+ * roomId可传可不传，传roomId可以减少后端查询时间
  */
-export async function queryDeviceInfoByDeviceId(params: { deviceId: string; houseId: string; roomId: string }) {
+export async function queryDeviceInfoByDeviceId(params: { deviceId: string; roomId?: string }) {
   // 	"onlineStauts": 在线离线状态(0:离线1:在线
   return await mzaiotRequest.post<Device.DeviceItem>({
     log: true,

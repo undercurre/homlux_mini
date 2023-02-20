@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { homeStore, roomBinding, roomStore } from '../../../store/index'
+import { homeStore, roomBinding } from '../../../store/index'
 import pageBehavior from '../../../behaviors/pageBehaviors'
 import { checkOtaVersion, editDeviceInfo, queryDeviceInfoByDeviceId } from '../../../apis/index'
 ComponentWithComputed({
@@ -83,7 +83,6 @@ ComponentWithComputed({
     },
     async updateDeviceInfo() {
       const res = await queryDeviceInfoByDeviceId({
-        houseId: homeStore.currentHomeDetail.houseId,
         roomId: this.data.roomId,
         deviceId: this.data.deviceId,
       })
@@ -107,7 +106,6 @@ ComponentWithComputed({
         })
         if (res.success) {
           this.updateDeviceInfo()
-          roomStore.updateRoomList()
         }
       }
     },
