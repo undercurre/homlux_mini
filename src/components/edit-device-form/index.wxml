@@ -6,7 +6,7 @@
   <text class="block pl-16rpx py-40rpx text-28">选择房间</text>
 
   <view class="flex flex-row flex-wrap">
-    <text wx:for="{{currentHomeDetail.roomList}}" wx:key="roomId" class="mr-32rpx px-32rpx rounded-28rpx text-28 leading-56rpx {{ item.roomId === deviceInfo.roomId ? 'room-checked text-white' : 'bg-hex-DFE1E5 text-black-59'}}" bind:tap="selectRoom" data-id="{{item.roomId}}" data-name="{{item.roomName}}">{{ item.roomName }}</text>
+    <text wx:for="{{roomList}}" wx:key="roomInfo.roomId" class="mr-32rpx px-32rpx rounded-28rpx text-28 leading-56rpx {{ item.roomInfo.roomId === deviceInfo.roomId ? 'room-checked text-white' : 'bg-hex-DFE1E5 text-black-59'}}" bind:tap="selectRoom" data-id="{{item.roomInfo.roomId}}" data-name="{{item.roomInfo.roomName}}">{{ item.roomInfo.roomName }}</text>
 
     <view class="px-46rpx bg-hex-DFE1E5 rounded-28rpx text-28 leading-56rpx text-black-59" bind:tap="addRoom">
       <svg-icon name="icon-park-outline:plus" color="#555659" height="56rpx"></svg-icon>
@@ -14,4 +14,4 @@
   </view>
 </view>
 
-<add-room show="{{ isAddRoom }}" bind:close="closeAddRoom"></add-room>
+<add-room show="{{ isAddRoom }}" bind:close="closeAddRoom" bind:confirm="closeAddRoom"></add-room>

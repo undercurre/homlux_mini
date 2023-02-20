@@ -51,8 +51,8 @@
           "name": "房间列表",
           "pathName": "package-mine/room-manage/index",
           "query": "",
-          "scene": null,
-          "launchMode": "default"
+          "launchMode": "default",
+          "scene": null
         },
         {
           "name": "房间详情",
@@ -99,9 +99,9 @@
         {
           "name": "添加智能网关",
           "pathName": "package-distribution/add-gateway/index",
-          "query": "wifiSSID=xyh_wifi&apSSID=midea_16_E5FB&method=wifi&dsn=000016111MSGWZ00288B1539E5FB0000",
-          "launchMode": "default",
-          "scene": null
+          "query": "deviceName=智能网关&wifiSSID=xyh_wifi&apSSID=midea_16_E5FB&method=wifi&dsn=000016111MSGWZ00288B1539E5FB0000",
+          "scene": null,
+          "launchMode": "default"
         },
         {
           "name": "绑定家庭",

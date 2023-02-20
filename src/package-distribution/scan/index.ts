@@ -4,6 +4,7 @@ import { reaction } from 'mobx-miniprogram'
 import { deviceBinding, homeBinding } from '../../store/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { strUtil } from '../../utils/index'
+import { checkDevice } from '../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -61,6 +62,12 @@ ComponentWithComputed({
 
   pageLifetimes: {
     show() {
+      // this.getQrCodeInfo({
+      //   detail: {
+      //     result:
+      //       'https://homlux.meizgd.com/homelux/qrCode.html?v=1&mode=02&pid=8d531b6a944a454e9fb15d3cc1f4d55b&ssid=midea_16_E5FB&dsn=000016111MSGWZ00288B1539E5FB0000',
+      //   },
+      // }) // todo: 测试代码
       console.log('show')
     },
     hide() {
@@ -156,17 +163,26 @@ ComponentWithComputed({
     },
     /**
      * 扫码解析
+     * 网关id：1676277426246918    子设备id：5C0272FFFE0E0826    蓝牙id：26
      */
-    getQrCodeInfo(e: WechatMiniprogram.CustomEvent) {
+    async getQrCodeInfo(e: WechatMiniprogram.CustomEvent) {
       wx.vibrateShort({ type: 'heavy' }) // 轻微震动
 
       console.log('getQrCodeInfo', e)
 
-      const sacnUrl = e.detail.result
+      const scanUrl = e.detail.result
 
-      const params = strUtil.getUrlParams(sacnUrl)
+      const params = strUtil.getUrlParams(scanUrl)
 
       console.log('params', params)
+
+      // 获取云端的产品基本信息
+      const res = await checkDevice({
+        productId: params.pid,
+        productIdType: params.mode === '01' ? 2 : 1,
+      })
+
+      console.log('checkDevice', res)
 
       if (params.ssid && params.ssid.includes('midea_16')) {
         this.bindGateway(params)
@@ -178,6 +194,7 @@ ComponentWithComputed({
         url: strUtil.getUrlWithParams('/package-distribution/check-gateway/index', {
           ssid: params.ssid,
           dsn: params.dsn,
+          deviceName: '智能网关',
         }),
       })
     },

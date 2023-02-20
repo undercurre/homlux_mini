@@ -49,7 +49,7 @@ export class WifiSocket {
     }
 
     if (res.success) {
-      await this.updateGatewayInfo()
+      await this.initGatewayInfo()
     } else {
       result.success = false
     }
@@ -177,7 +177,7 @@ export class WifiSocket {
       method: 'UDP',
     })
 
-    console.log('updateGatewayInfo', res)
+    console.log('initGatewayInfo', res)
 
     if (res.errorCode === 0) {
       this.deviceInfo.ip = res.ip
@@ -186,7 +186,7 @@ export class WifiSocket {
 
   getDeviceIp() {
     return new Promise((resolve) => {
-      let interId = setInterval(() => {
+      const interId = setInterval(() => {
         if (this.deviceInfo.ip) {
           clearInterval(interId)
           resolve(true)
@@ -199,7 +199,7 @@ export class WifiSocket {
   /**
    * 通过广播更新网关IP地址并与网关建立tcp连接
    */
-  async updateGatewayInfo() {
+  async initGatewayInfo() {
     await this.getDeviceIp()
 
     await this.initTcpSocket()

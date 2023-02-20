@@ -22,12 +22,12 @@ export const roomStore = observable({
     const res = await getRoomList(homeStore.currentHomeId)
     if (res.success) {
       runInAction(() => {
-        roomStore.roomList = res.result.roomInfoList.map(item => ({
+        roomStore.roomList = res.result.roomInfoList.map((item) => ({
           ...item,
           roomInfo: {
             ...item.roomInfo,
-            roomIcon: item.roomInfo.roomIcon || 'drawing-room'
-          }
+            roomIcon: item.roomInfo.roomIcon || 'drawing-room',
+          },
         }))
       })
     }

@@ -4,7 +4,7 @@
   <view class="grow flex flex-col pt-40rpx">
     <scroll-view class="grow h-500 box-border">
       <van-cell-group wx:for="{{roomList}}" wx:key="roomId" inset>
-        <van-cell title="{{item.roomInfo.roomName}}" is-link link-type="navigateTo" url="/package-mine/room-detail/index" label="{{item.roomInfo.deviceLightOnNum}}个设备" center title-style="font-weight: 500;">
+        <van-cell title="{{item.roomInfo.roomName}}" is-link bind:click="editRoom" data-index="{{index}}" label="{{item.roomInfo.deviceLightOnNum}}个设备" center title-style="font-weight: 500;">
           <view slot="icon" class="bg-hex-F6FAFD rounded-32rpx p-16rpx mr-32rpx">
             <image class="w-64 h-64" src="/assets/img/room/{{item.roomInfo.roomIcon}}.png"></image>
           </view>
@@ -16,4 +16,4 @@
   </view>
 </view>
 
-<add-room show="{{isAddRoom}}" bind:confirm="finishAddRoom" bind:close="finishAddRoom"></add-room>
+<add-room show="{{isAddRoom}}" bind:confirm="finishAddRoom" bind:close="cancelAddRoom"></add-room>

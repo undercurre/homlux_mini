@@ -72,14 +72,12 @@ ComponentWithComputed({
     },
     moved: function () {},
     detached: function () {
-      // wx.stopBluetoothDevicesDiscovery()
+      wx.closeBluetoothAdapter()
     },
   },
 
   pageLifetimes: {
-    hide() {
-      wx.closeBluetoothAdapter()
-    },
+    hide() {},
   },
 
   methods: {

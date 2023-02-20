@@ -4,7 +4,7 @@ export const strUtil = {
    * @param url
    * @param params
    */
-  getUrlWithParams(url: string, params: Record<string, string | number> = {}) {
+  getUrlWithParams(url: string, params: IAnyObject) {
     let result = ''
 
     Object.entries(params).forEach(([key, value]) => {

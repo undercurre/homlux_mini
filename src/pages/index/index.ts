@@ -18,7 +18,6 @@ ComponentWithComputed({
     contentHeight: 0,
     allOnBtnTap: false,
     allOffBtnTap: false,
-    showAddNewDevice: false,
     showAddNewRoom: false,
     showHomeSelect: false,
   },
@@ -164,9 +163,6 @@ ComponentWithComputed({
     handleMenuSelect(e: { detail: 'addDevice' | 'addRoom' | 'inviteFamily' }) {
       if (e.detail === 'addDevice') {
         wx.navigateTo({ url: '/package-distribution/scan/index' })
-        // this.setData({
-        // showAddNewDevice: true,
-        // })
       } else if (e.detail === 'addRoom') {
         this.setData({
           showAddNewRoom: true,
@@ -203,22 +199,6 @@ ComponentWithComputed({
           isShow: !this.data.selectHomeMenu.isShow,
         },
         'dropdownMenu.isShow': false,
-      })
-    },
-    /**
-     * 用户点击添加设备按钮，弹出popup
-     */
-    handleAddDevice() {
-      this.setData({
-        showAddNewDevice: true,
-      })
-    },
-    /**
-     * 隐藏添加设备popup
-     */
-    handleHideAddNewDevice() {
-      this.setData({
-        showAddNewDevice: false,
       })
     },
     /**

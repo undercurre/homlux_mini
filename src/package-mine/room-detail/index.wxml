@@ -1,41 +1,21 @@
 <view class="page-container flex flex-col pb-128rpx pt-40rpx">
   <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="{{roomInfo.name}}"></nav-bar>
 
-  <van-cell-group inset>
-    <van-cell title="房间名称" is-link value="{{roomName}}" center bind:click="editName"> </van-cell>
-  </van-cell-group>
+  <view class="grow">
+    <van-cell-group inset>
+      <van-cell title="房间名称" is-link value="{{roomInfo.roomName}}" center bind:click="editRoom" data-type="name"> </van-cell>
+    </van-cell-group>
 
-  <scroll-view class="grow h-200 px-24rpx box-border">
-    <view class="rounded-32rpx bg-white p-40rpx">
-      <text class="w-full text-32 leading-44rpx text-black-2a">房间图标</text>
-
-      <view class="flex flex-row flex-wrap justify-between gap-36rpx mt-40rpx">
-        <view wx:for="{{ roomList }}" class="bg-hex-F6FAFD rounded-32rpx p-32rpx">
-          <image class="w-64 h-64 block" src="/assets/img/room/{{item.icon}}.png"></image>
-        </view>
-      </view>
-    </view>
-  </scroll-view>
+    <van-cell-group inset>
+      <van-cell title="房间图标" is-link center bind:click="editRoom" data-type="icon">
+        <image class="w-64rpx h-64rpx" src="/assets/img/room/{{roomInfo.roomIcon}}.png"></image>
+      </van-cell>
+    </van-cell-group>
+  </view>
 
   <van-button class="mx-32rpx" size="large" type="danger" block bind:click="delRoom">删除房间</van-button>
 </view>
 
-<van-popup round show="{{ isEditName }}" bind:close="onClose" position="bottom">
-  <view class="pb-100rpx">
-    <text class="block pt-48rpx pb-64rpx text-center leading-50rpx text-36 text-black-2a font-medium">房间名称</text>
-
-    <text class="block pl-48rpx pb-32rpx text-28">房间名称</text>
-
-    <view class="mx-32rpx">
-      <van-field model:value="{{ roomInfo.name }}" placeholder="请输入房间名称" custom-style="padding: 20rpx 40rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
-    </view>
-
-    <view class="flex flex-row gap-46rpx pt-80rpx px-32rpx">
-      <van-button class="grow" size="large">取消</van-button>
-
-      <van-button class="grow" size="large" type="primary">确定</van-button>
-    </view>
-  </view>
-</van-popup>
+<add-room show="{{isEdit}}" is-edit-name="{{editType === 'name'}}" is-edit-icon="{{editType === 'icon'}}" room-id="{{roomInfo.roomId}}" room-name="{{roomInfo.roomName}}" room-icon="{{roomInfo.roomIcon}}" bind:confirm="finishAddRoom" bind:close="onClose"></add-room>
 
 <van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />
