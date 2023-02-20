@@ -19,19 +19,28 @@ ComponentWithComputed({
     lightList: [] as Device.DeviceItem[],
     switchList: [] as Device.DeviceItem[],
     curtainList: [] as Device.DeviceItem[],
+
+    // 拖动排序
+    touchLocation: {
+      x: 0,
+      y: 0,
+    },
+    isLongPress: false,
+    longPressType: '',
+    longPressDevice: {} as Device.DeviceItem,
   },
 
   computed: {
     title(data) {
       if (data.currentRoomIndex !== undefined && data.roomList) {
         console.log(data.roomList, data.currentRoomIndex, data.roomList[data.currentRoomIndex])
-        return data.roomList[data.currentRoomIndex]?.roomInfo.roomName
+        return data.roomList[data.currentRoomIndex]?.roomName
       }
       return ''
     },
     sceneListInBar(data) {
       if (data.currentRoomIndex !== undefined && data.roomList) {
-        return data.roomList[data.currentRoomIndex]?.roomSceneList.slice(0, 4)
+        return data.roomList[data.currentRoomIndex]?.sceneList.slice(0, 4)
       }
       return []
     },
@@ -102,6 +111,35 @@ ComponentWithComputed({
       })
     },
 
+    handleTouchMove(e: { changedTouches: { pageX: number; pageY: number }[] }) {
+      console.log(e)
+      this.setData({
+        touchLocation: {
+          x: e.changedTouches[0].pageX,
+          y: e.changedTouches[0].pageY,
+        },
+      })
+    },
+    handleTouchEnd() {
+      this.setData({
+        isLongPress: false,
+      })
+    },
+    handleDeviceLongPress(e: {
+      currentTarget: { type: string; info: Device.DeviceItem }
+      changedTouches: { pageX: number; pageY: number }[]
+    }) {
+      console.log(e)
+      this.setData({
+        isLongPress: true,
+        touchLocation: {
+          x: e.changedTouches[0].pageX,
+          y: e.changedTouches[0].pageY,
+        },
+        longPressType: e.currentTarget.type,
+        longPressDevice: e.currentTarget.info,
+      })
+    },
     handleSceneTap() {
       wx.navigateTo({
         url: '/package-room-control/scene-list/index',

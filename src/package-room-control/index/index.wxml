@@ -38,7 +38,7 @@
           <view class="mt-24rpx" wx:if="{{lightList && lightList.length>0}}">
             <text class="text-24rpx text-black-59">灯具</text>
             <view class="w-686rpx grid grid-cols-4 gap-x-16rpx gap-y-24rpx mt-24rpx">
-              <device-card showControl device-type="light" wx:for="{{lightList}}" wx:key="deviceId" bind:powerTap="handleDevicePowerTap" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" select="{{module.includes(selectList, item.deviceId)}}" />
+              <device-card showControl device-type="light" wx:for="{{lightList}}" wx:key="deviceId" data-type="light" data-info="{{item}}" bindlongpress="handleDeviceLongPress" bindtouchmove="handleTouchMove" bindtouchend="handleTouchEnd" bind:powerTap="handleDevicePowerTap" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" select="{{module.includes(selectList, item.deviceId)}}" />
             </view>
           </view>
 
@@ -46,7 +46,7 @@
           <view class="mt-24rpx" wx:if="{{switchList && switchList.length>0}}">
             <text class="text-24rpx text-black-59">开关面板</text>
             <view class="w-686rpx grid grid-cols-4 gap-x-16rpx gap-y-24rpx mt-24rpx">
-              <device-card showControl device-type="switch" wx:for="{{switchList}}" wx:key="deviceId" bind:powerTap="handleDevicePowerTap" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" select="{{module.includes(selectList, item.deviceId)}}" />
+              <device-card showControl device-type="switch" wx:for="{{switchList}}" wx:key="deviceId" data-type="light" data-info="{{item}}" bind:powerTap="handleDevicePowerTap" bindtouchend="handleTouchEnd" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" select="{{module.includes(selectList, item.deviceId)}}" />
             </view>
           </view>
 
@@ -54,7 +54,7 @@
           <view class="mt-24rpx" wx:if="{{curtainList && curtainList.length>0}}">
             <text class="text-24rpx text-black-59">窗帘</text>
             <view class="w-686rpx grid grid-cols-4 gap-x-16rpx gap-y-24rpx mt-24rpx">
-              <device-card showControl device-type="curtain" wx:for="{{curtainList}}" wx:key="deviceId" bind:powerTap="handleDevicePowerTap" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" select="{{module.includes(selectList, item.deviceId)}}" />
+              <device-card showControl device-type="curtain" wx:for="{{curtainList}}" wx:key="deviceId" data-type="light" data-info="{{item}}" bind:powerTap="handleDevicePowerTap" bindtouchend="handleTouchEnd" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" select="{{module.includes(selectList, item.deviceId)}}" />
             </view>
           </view>
         </view>

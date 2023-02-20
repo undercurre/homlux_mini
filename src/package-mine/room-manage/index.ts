@@ -35,9 +35,9 @@ ComponentWithComputed({
 
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-mine/room-detail/index', {
-          roomId: item.roomInfo.roomId,
-          roomName: item.roomInfo.roomName,
-          roomIcon: item.roomInfo.roomIcon,
+          roomId: item.roomId,
+          roomName: item.roomName,
+          roomIcon: item.roomIcon,
         }),
       })
     },

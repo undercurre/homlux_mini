@@ -44,7 +44,7 @@ ComponentWithComputed({
       console.log(e.currentTarget.dataset.info)
     },
 
-    toSetting(e: { currentTarget: { dataset: { info: Scene.SceneInfo } } }) {
+    toSetting(e: { currentTarget: { dataset: { info: Scene.SceneItem } } }) {
       runInAction(() => {
         sceneStore.selectScene = {
           ...e.currentTarget.dataset.info,

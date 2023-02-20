@@ -1,8 +1,8 @@
 // service模块存放项目的相关业务代码
 import { storage } from './storage'
-import { reaction } from 'mobx-miniprogram'
+import { reaction, runInAction } from 'mobx-miniprogram'
 import { connectHouseSocket } from '../apis/wsbsocket'
-import { homeStore } from '../store/index'
+import { homeStore, userStore } from '../store/index'
 import { emitter } from './eventBus'
 
 export function logout() {
@@ -55,11 +55,30 @@ export function startWebsocketService() {
   )
 }
 
+function loadUserInfo() {
+  let nickName = '',
+    avatar = ''
+  if (storage.get<string>('nickName')) {
+    nickName = storage.get<string>('nickName') as string
+  } else {
+    nickName = (storage.get<string>('mobilePhone') as string).slice(-4)
+  }
+  if (storage.get<string>('headImageUrl')) {
+    avatar = storage.get<string>('headImageUrl') as string
+  }
+  runInAction(() => {
+    userStore.userInfo.nickname = nickName
+    userStore.userInfo.avatar = avatar
+    userStore.userInfo.phone = storage.get<string>('mobilePhone') as string
+  })
+}
+
 /**
  * 进入小程序时的业务逻辑
  */
 export async function appOnLaunchService() {
   try {
+    loadUserInfo()
     await homeStore.updateHomeInfo()
     startWebsocketService()
   } catch (e) {
