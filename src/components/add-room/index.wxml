@@ -7,12 +7,12 @@
 
     <text class="block pl-16rpx pb-32rpx text-28">房间名称</text>
 
-    <van-field custom-style="padding: 28rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" model:value="{{ roomInfo.name }}" placeholder="请输入房间名称" clearable="{{true}}"> </van-field>
+    <van-field custom-style="padding: 28rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" model:value="{{ roomName }}" placeholder="请输入房间名称" clearable="{{true}}"> </van-field>
 
     <text class="block pl-16rpx pb-40rpx pt-68rpx text-28">选择房间图标</text>
 
     <view class="flex flex-row flex-wrap gap-48rpx pl-16rpx">
-      <view wx:for="{{iconList}}" wx:key="icon" class="box-border w-128rpx h-128rpx flex justify-center items-center bg-hex-F6FAFD rounded-32rpx {{ item.icon === roomInfo.icon && 'border-4rpx border-solid border-hex-488FFF'}}" data-icon="{{item.icon}}" bind:tap="selectIcon">
+      <view wx:for="{{iconList}}" wx:key="icon" class="box-border w-128rpx h-128rpx flex justify-center items-center bg-hex-F6FAFD rounded-32rpx {{ item.icon === roomIcon && 'border-4rpx border-solid border-hex-488FFF'}}" data-icon="{{item.icon}}" bind:tap="selectIcon">
         <image class="w-64rpx h-64rpx" src="/assets/img/room/{{item.icon}}.png"></image>
       </view>
     </view>

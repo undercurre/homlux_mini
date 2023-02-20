@@ -9,7 +9,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
-    roomSelect: '0', // 默认选择全屋
+    roomSelect: '',
     listHeight: 0,
     roomSelectMenu: {
       x: '0px',
@@ -23,9 +23,9 @@ ComponentWithComputed({
       if (data.roomList) {
         return [
           { roomId: '0', roomName: '全屋' }, // 全屋查询未完成
-          ...(data.roomList as Room.RoomItem[]).map((room) => ({
-            roomId: room.roomInfo.roomId,
-            roomName: room.roomInfo.roomName,
+          ...(data.roomList as Room.RoomInfo[]).map((room) => ({
+            roomId: room.roomId,
+            roomName: room.roomName,
           })),
         ]
       }
@@ -72,7 +72,7 @@ ComponentWithComputed({
         })
       if (roomBinding.store.roomList.length > 0) {
         this.setData({
-          roomSelect: roomBinding.store.roomList[0].roomInfo.roomId,
+          roomSelect: roomBinding.store.roomList[0].roomId,
         })
         deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
       }
@@ -115,7 +115,7 @@ ComponentWithComputed({
       const device = this.data.deviceList[e.currentTarget.dataset.index]
       console.log(device)
       wx.navigateTo({
-        url: `/package-mine/device-manage/device-detail/index?deviceId=${device.deviceId}&roomId=${device.roomId}`,
+        url: `/package-mine/device-manage/device-detail/index?deviceId=${device.deviceId}&roomId=${this.data.roomSelect}`,
       })
     },
 

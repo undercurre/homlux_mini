@@ -1,32 +1,57 @@
 declare namespace Room {
   /**
-   * 家庭查询房间列表，列表项
+   * 家庭查询房间列表项
    */
   interface RoomItem {
+    /**
+     * 	房间信息
+     */
     roomInfo: {
+      /**
+       * 灯打开数量
+       */
       deviceLightOnNum: number
+      /**
+       * 	房间icon
+       */
       roomIcon: string | null
+      /**
+       * 房间id
+       */
       roomId: string
+      /**
+       * 房间名称
+       */
       roomName: string
     }
-    roomSceneList: {
-      sceneIcon: string
-      sceneId: string
-      sceneName: string
-    }[]
+    /**
+     * 房间场景列表
+     */
+    roomSceneList: Scene.SceneItem[]
   }
+  /**
+   * 房间信息
+   */
   interface RoomInfo {
-    deviceInfoList: {
-      deviceId: string
-      deviceName: string
-      deviceStatus: string
-      deviceStatusName: string
-    }[]
-    roomInfo: {
-      roomId: string
-      roomIcon: string
-      roomName: string
-    }
-    roomSceneList: Scene.SceneInfo[]
+    /**
+     * 灯打开数量
+     */
+    deviceLightOnNum: number
+    /**
+     * 	房间icon
+     */
+    roomIcon: string | null
+    /**
+     * 房间id
+     */
+    roomId: string
+    /**
+     * 房间名称
+     */
+    roomName: string
+    /**
+     * 房间场景列表
+     */
+    sceneList: Scene.SceneItem[]
   }
 }

@@ -1,7 +1,8 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { roomBinding } from '../../../store/index'
+import { homeStore, roomBinding, roomStore } from '../../../store/index'
 import pageBehavior from '../../../behaviors/pageBehaviors'
+import { checkOtaVersion, editDeviceInfo, queryDeviceInfoByDeviceId } from '../../../apis/index'
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding] }), pageBehavior],
   /**
@@ -9,16 +10,16 @@ ComponentWithComputed({
    */
   data: {
     roomId: '',
-    device: null,
     deviceId: '',
     deviceName: '',
     showEditNamePopup: false,
     showEditRoomPopup: false,
+    deviceInfo: {} as Device.DeviceItem,
   },
 
   computed: {
     roomName(data) {
-      if (data.roomList) {
+      if (data.roomList && data.roomId) {
         return data.roomList.find((room: { roomId: string }) => room.roomId === data.roomId)?.roomName
       }
       return ''
@@ -29,22 +30,17 @@ ComponentWithComputed({
     /**
      * 生命周期函数--监听页面加载
      */
-    // onLoad(value: { roomId: string; deviceId: string }) {
-    //   this.setData({
-    //     roomId: value.roomId,
-    //     deviceId: value.deviceId,
-    //   })
-    //   const room = roomStore.roomList.find((room) => room.roomInfo.roomId === this.data.roomId)
-    //   if (room) {
-    //     const deviceName = room.deviceList.find(
-    //       (device: { deviceId: string }) => device.deviceId === this.data.deviceId,
-    //     )?.deviceName
-    //     this.setData({
-    //       deviceName: deviceName ?? '',
-    //       roomId: room.roomId,
-    //     })
-    //   }
-    // },
+    onLoad({ deviceId, roomId }: { deviceId: string; roomId: string }) {
+      console.log(deviceId, roomId)
+      this.setData({
+        deviceId,
+        roomId,
+      })
+      this.updateDeviceInfo()
+      checkOtaVersion(deviceId).then((res) => {
+        console.log(res)
+      })
+    },
 
     handleDeviceNameEditPopup() {
       this.setData({
@@ -61,6 +57,7 @@ ComponentWithComputed({
         showEditNamePopup: false,
         deviceName: e.detail,
       })
+      this.editDeviceInfo()
     },
     handleDeviceRoomEditPopup() {
       this.setData({
@@ -72,16 +69,47 @@ ComponentWithComputed({
         showEditRoomPopup: false,
       })
     },
-    handleDeviceRoomEditConfirm() {
+    handleDeviceRoomEditConfirm(e: { detail: string }) {
       this.setData({
         showEditRoomPopup: false,
-        // deviceName: e.detail
+        roomId: e.detail,
       })
+      this.editDeviceInfo()
     },
     handleToOTA() {
       wx.navigateTo({
         url: '/package-mine/device-manage/ota/index',
       })
+    },
+    async updateDeviceInfo() {
+      const res = await queryDeviceInfoByDeviceId({
+        houseId: homeStore.currentHomeDetail.houseId,
+        roomId: this.data.roomId,
+        deviceId: this.data.deviceId,
+      })
+      if (res.success) {
+        this.setData({
+          deviceInfo: res.result,
+          deviceName: res.result.deviceName,
+        })
+      }
+    },
+    async editDeviceInfo(isSwitch?: boolean) {
+      if (isSwitch) {
+        //todo
+      } else {
+        const res = await editDeviceInfo({
+          isSwitch: false,
+          deviceId: this.data.deviceId,
+          deviceName: this.data.deviceName,
+          roomId: this.data.roomId,
+          houseId: homeStore.currentHomeDetail.houseId,
+        })
+        if (res.success) {
+          this.updateDeviceInfo()
+          roomStore.updateRoomList()
+        }
+      }
     },
   },
 })

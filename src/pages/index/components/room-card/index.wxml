@@ -1,8 +1,8 @@
 <!--pages/index/components/room-card/index.wxml-->
 <view class="card rounded-32rpx w-702rpx">
   <view class="flex items-center w-full h-104rpx" bindtap="handleCardTap">
-    <text class="text-40rpx font-medium ml-48rpx">{{roomInfo.roomInfo.roomName}}</text>
-    <text class="flex-1 ml-20rpx text-28rpx text-hex-b6b7bb">{{ roomInfo.roomInfo.deviceLightOnNum && showScene ? roomInfo.roomInfo.deviceLightOnNum + '盏灯亮起' : ''}}</text>
+    <text class="text-40rpx font-medium ml-48rpx">{{roomInfo.roomName}}</text>
+    <text class="flex-1 ml-20rpx text-28rpx text-hex-b6b7bb">{{ roomInfo.deviceLightOnNum && showScene ? roomInfo.deviceLightOnNum + '盏灯亮起' : ''}}</text>
     <image src="/assets/img/home/more.png" class="w-32rpx h-32rpx mr-32rpx"></image>
   </view>
   <view class="grid grid-cols-4 gap-22rpx mx-32rpx mt-8rpx" wx:if="{{showScene}}">

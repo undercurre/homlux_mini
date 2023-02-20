@@ -32,7 +32,7 @@ export const deviceStore = observable({
 
   async updateDeviceList(
     houseId: string = homeStore.currentHomeDetail.houseId,
-    roomId: string = roomStore.roomList[roomStore.currentRoomIndex].roomInfo.roomId,
+    roomId: string = roomStore.roomList[roomStore.currentRoomIndex].roomId,
   ) {
     const res = await queryDeviceList(houseId, roomId)
     if (res.success) {
@@ -44,7 +44,7 @@ export const deviceStore = observable({
 
   async updateSubDeviceList(
     houseId: string = homeStore.currentHomeDetail.houseId,
-    roomId: string = roomStore.roomList[roomStore.currentRoomIndex].roomInfo.roomId,
+    roomId: string = roomStore.roomList[roomStore.currentRoomIndex].roomId,
   ) {
     const res = await querySubDeviceList(houseId, roomId)
     if (res.success) {

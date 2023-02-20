@@ -1,7 +1,7 @@
 import { mzaiotRequest } from '../utils/index'
 
 /**
- * 根据家庭id查询全屋的设备
+ * 设备管理-根据家庭id查询全屋的设备
  */
 export async function queryAllDevice(houseId: string) {
   return await mzaiotRequest.post<Device.DeviceItem[]>({
@@ -15,7 +15,7 @@ export async function queryAllDevice(houseId: string) {
 }
 
 /**
- * 根据家庭id房间id查询房间所有设备
+ * 设备管理-根据家庭id房间id查询房间所有设备
  */
 export async function queryDeviceList(houseId: string, roomId: string) {
   return await mzaiotRequest.post<Device.DeviceItem[]>({
@@ -30,7 +30,7 @@ export async function queryDeviceList(houseId: string, roomId: string) {
 }
 
 /**
- * 根据家庭id房间id查询房间除了网关的子设备
+ * 设备控制-根据家庭id房间id查询房间除了网关的子设备
  */
 export async function querySubDeviceList(houseId: string, roomId: string) {
   return await mzaiotRequest.post<Device.DeviceItem[]>({
@@ -45,19 +45,12 @@ export async function querySubDeviceList(houseId: string, roomId: string) {
 }
 
 /**
- * 根据设备Id获取设备明细
+ * 设备管理-根据设备Id获取设备明细
  */
 export async function queryDeviceInfoByDeviceId(params: { deviceId: string; houseId: string; roomId: string }) {
   // 	"onlineStauts": 在线离线状态(0:离线1:在线
-  return await mzaiotRequest.post<{
-    deviceId: string
-    deviceName: string
-    gatewayName: string
-    pic: string
-    roomName: string
-    version: string
-  }>({
-    log: false,
+  return await mzaiotRequest.post<Device.DeviceItem>({
+    log: true,
     loading: true,
     url: '/v1/device/queryDeviceInfoByDeviceId',
     data: params,
@@ -131,5 +124,51 @@ export async function sendCmdAddSubdevice(params: { deviceId: string; expire: nu
         buzz: 1,
       },
     ],
+  })
+}
+
+/**
+ * 检查ota版本
+ */
+export async function checkOtaVersion(deviceId: string) {
+  return await mzaiotRequest.post<IAnyObject>({
+    log: true,
+    url: '/v1/device/checkOtaVersion',
+    data: {
+      deviceId,
+    },
+  })
+}
+
+/**
+ * 设备管理-修改设备的名称、所在房间
+ * isSwitch: true => 编辑开关的名字
+ * isSwitch: false => 编辑设备名字
+ */
+export async function editDeviceInfo(data: {
+  deviceId: string
+  deviceName: string
+  houseId: string
+  roomId: string
+  isSwitch: boolean
+  switchId?: string
+  switchName?: string
+}) {
+  return await mzaiotRequest.post<IAnyObject>({
+    log: true,
+    loading: true,
+    url: '/v1/device/update',
+    data,
+  })
+}
+
+/**
+ * 设备管理-删除设备
+ */
+export async function deleteDevice(data: { deviceId: string; deviceType: string; sn: string; userId: string }) {
+  return await mzaiotRequest.post<IAnyObject>({
+    log: true,
+    url: '/v1/device/delDevice',
+    data,
   })
 }

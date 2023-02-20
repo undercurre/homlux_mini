@@ -6,7 +6,7 @@ export const roomStore = observable({
   /**
    * 当前家庭的房间列表
    */
-  roomList: [] as Room.RoomItem[],
+  roomList: [] as Room.RoomInfo[],
   /**
    * 选择进入了哪个房间，在roomList中的index todo:
    */
@@ -22,7 +22,13 @@ export const roomStore = observable({
     const res = await getRoomList(homeStore.currentHomeId)
     if (res.success) {
       runInAction(() => {
-        roomStore.roomList = res.result.roomInfoList
+        roomStore.roomList = res.result.roomInfoList.map((room) => ({
+          roomId: room.roomInfo.roomId,
+          roomIcon: room.roomInfo.roomIcon,
+          roomName: room.roomInfo.roomName,
+          deviceLightOnNum: room.roomInfo.deviceLightOnNum,
+          sceneList: room.roomSceneList,
+        }))
       })
     }
   },

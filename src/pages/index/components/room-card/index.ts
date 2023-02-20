@@ -21,10 +21,10 @@ ComponentWithComputed({
 
   computed: {
     sceneList(data) {
-      return data.roomInfo.roomSceneList.slice(0, 4)
+      return data.roomInfo.sceneList.slice(0, 4)
     },
     hasBottomPadding(data) {
-      return data.roomInfo.roomSceneList.length > 0
+      return data.roomInfo.sceneList.length > 0
     },
   },
 
@@ -49,7 +49,7 @@ ComponentWithComputed({
       this.execCardBgAnimationStart(e.currentTarget.dataset.value)
     },
     handleCardTap() {
-      const index = roomStore.roomList.findIndex((room) => room.roomInfo.roomId === this.data.roomInfo.roomInfo.roomId)
+      const index = roomStore.roomList.findIndex((room) => room.roomId === this.data.roomInfo.roomId)
       runInAction(() => {
         roomStore.currentRoomIndex = index
       })

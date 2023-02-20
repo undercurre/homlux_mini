@@ -1,3 +1,6 @@
+import { addRoom } from '../../apis/index'
+import { homeStore } from '../../store/index'
+
 // package-distribution/search-subdevice/components/edit-device-info/index.ts
 Component({
   /**
@@ -14,10 +17,8 @@ Component({
    * 组件的初始数据
    */
   data: {
-    roomInfo: {
-      name: '',
-      icon: '',
-    },
+    roomName: '',
+    roomIcon: '',
     iconList: [
       {
         icon: 'parents-room',
@@ -77,15 +78,21 @@ Component({
     handleClose() {
       this.triggerEvent('close')
     },
-    handleConfirm() {
-      // todo: 添加家庭业务
-      this.triggerEvent('close')
+    async handleConfirm() {
+      const res = await addRoom({
+        houseId: homeStore.currentHomeDetail.houseId,
+        roomIcon: this.data.roomIcon,
+        roomName: this.data.roomName,
+      })
+      if (res.success) {
+        homeStore.updateHomeInfo()
+        this.triggerEvent('close')
+      }
     },
     selectIcon({ currentTarget }: WechatMiniprogram.BaseEvent) {
       console.log('selectIcon', currentTarget)
-      this.data.roomInfo.icon = currentTarget.dataset.icon
       this.setData({
-        roomInfo: this.data.roomInfo,
+        roomIcon: currentTarget.dataset.icon,
       })
     },
   },

@@ -10,3 +10,12 @@ export async function getRoomList(houseId: string) {
     },
   })
 }
+
+export async function addRoom(data: { houseId: string; roomIcon: string; roomName: string }) {
+  return await mzaiotRequest.post<object>({
+    log: true,
+    loading: true,
+    url: '/v1/mzgd/user/saveHouseRoomInfo',
+    data,
+  })
+}

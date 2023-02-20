@@ -44,13 +44,12 @@ Component({
       console.log('handleLogin', data)
       const loginRes = await login(data)
       if (loginRes.success && loginRes.result) {
-        // 保证下面的res不会出现undefined
         // 批量缓存返回值
         ;(['token', 'mobilePhone', 'nickName', 'headImageUrl'] as const).forEach((item) => {
-          // 同样去除undefined
           const value = (loginRes.result as User.UserLoginRes)[item]
           if (value) {
-            storage.set(item, 'f9992117fd284789bb96bd20b4782988', null)
+            // storage.set(item, 'f9992117fd284789bb96bd20b4782988', null)
+            storage.set(item, value, null)
           }
         })
         homeStore.updateHomeInfo()
