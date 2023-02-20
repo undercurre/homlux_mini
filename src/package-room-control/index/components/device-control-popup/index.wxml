@@ -27,7 +27,7 @@
     <view class="flex-1">
       <!-- 灯光控制 -->
       <view class="flex flex-col" wx:if="{{tab==='light'}}">
-        <text class="text-32rpx text-black-secondary mt-54rpx ml-32rpx">亮度 | {{lightInfo.brightness}}%</text>
+        <text class="text-32rpx text-black-59 mt-54rpx ml-32rpx">亮度 | {{lightInfo.brightness}}%</text>
         <view class="px-32rpx">
           <view class="h-32rpx"></view>
           <van-slider bind:change="handleBrightChange" bind:drag="handleBrightDrag" bind:drag-end="handleBrightDragEnd" value="{{lightInfo.brightness}}" min="{{1}}" use-button-slot custom-class="slider-brightness-bar" active-color="rgba(0,0,0,0)" bar-height="24rpx">
@@ -35,7 +35,7 @@
           </van-slider>
           <view class="h-32rpx"></view>
         </view>
-        <text class="text-32rpx text-black-secondary mt-64rpx ml-32rpx">色温 | {{colorTempK}}K</text>
+        <text class="text-32rpx text-black-59 mt-64rpx ml-32rpx">色温 | {{colorTempK}}K</text>
         <view class="px-32rpx">
           <view class="h-32rpx"></view>
           <van-slider bind:change="handleColorTempChange" bind:drag="handleColorTempDrag" bind:drag-end="handleColorTempDragEnd" value="{{lightInfo.colorTemp}}" use-button-slot custom-class="slider-color-temp-bar" active-color="rgba(0,0,0,0)" bar-height="24rpx">
@@ -45,10 +45,10 @@
         </view>
         <view class="flex justify-evenly mt-92rpx">
           <van-button custom-style="width: 328rpx !important;height: 80rpx !important;">
-            <text class="text-32rpx text-black-secondary">全开</text>
+            <text class="text-32rpx text-black-59">全开</text>
           </van-button>
           <van-button custom-style="width: 328rpx !important;height: 80rpx !important;">
-            <text class="text-32rpx text-black-secondary">全关</text>
+            <text class="text-32rpx text-black-59">全关</text>
           </van-button>
         </view>
       </view>
@@ -58,7 +58,7 @@
         <van-cell-group inset>
           <van-cell clickable custom-class="switch-cell" data-link="switch" bind:click="handleSwitchLinkPopup">
             <view class="flex flex-col items-start">
-              <text class="text-32rpx text-black-primary font-medium h-44rpx">关联智能开关</text>
+              <text class="text-32rpx text-black-2a font-medium h-44rpx">关联智能开关</text>
               <text class="text-26rpx text-black-tips font-normal leading-none mt-12rpx mb-12rpx">通过开关触发场景</text>
             </view>
             <view slot="right-icon" class="h-90rpx flex-center">
@@ -69,7 +69,7 @@
         <van-cell-group inset wx:if="{{!isSelectMultiSwitch}}">
           <van-cell clickable custom-class="switch-cell" data-link="light" bind:click="handleSwitchLinkPopup">
             <view class="flex flex-col items-start">
-              <text class="text-32rpx text-black-primary font-medium h-44rpx">关联智能灯</text>
+              <text class="text-32rpx text-black-2a font-medium h-44rpx">关联智能灯</text>
               <text class="text-26rpx text-black-tips font-normal leading-none mt-12rpx mb-12rpx">与关联的智能灯保持相同开关状态</text>
             </view>
             <view slot="right-icon" class="h-90rpx flex-center">
@@ -80,7 +80,7 @@
         <van-cell-group inset wx:if="{{!isSelectMultiSwitch}}">
           <van-cell center clickable custom-class="switch-cell" data-link="scene" bind:click="handleSwitchLinkPopup">
             <view class="flex flex-col items-start">
-              <text class="text-32rpx text-black-primary font-medium h-44rpx">关联场景</text>
+              <text class="text-32rpx text-black-2a font-medium h-44rpx">关联场景</text>
               <text class="text-26rpx text-black-tips font-normal leading-none mt-12rpx mb-12rpx">关联后，可通过开关执行场景</text>
             </view>
             <svg-icon slot="right-icon" color="#555659" name="icon-park:right" width="48rpx" height="48rpx"></svg-icon>
@@ -89,7 +89,7 @@
       </view>
       <!-- 窗帘控制 -->
       <view wx:if="{{tab==='curtain'}}" class="w-full h-full flex-center">
-        <text class="text-32rpx text-black-secondary">50%</text>
+        <text class="text-32rpx text-black-59">50%</text>
         <view class="w-496rpx h-368rpx relative">
           <image src="/assets/img/device-control/curtain-bg.png" class="w-496rpx h-368rpx" />
           <image src="/assets/img/device-control/curtain.png" class="w-213rpx h-300rpx absolute left-20rpx top-50rpx" />
@@ -97,7 +97,7 @@
           <image src="/assets/img/device-control/curtain.png" class="w-213rpx h-300rpx absolute right-20rpx top-50rpx" />
           <image src="/assets/img/device-control/curtain-opener.png" class="w-80rpx h-80rpx absolute right-148rpx top-144rpx" style="transform: scaleX(-1)" />
         </view>
-        <text class="text-32rpx text-black-secondary">50%</text>
+        <text class="text-32rpx text-black-59">50%</text>
       </view>
     </view>
   </view>

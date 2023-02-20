@@ -8,7 +8,7 @@
       <tips-box text="连接失败！" icon="/assets/img/device-add/error.png"></tips-box>
 
       <view class="grow pl-88rpx pr-50rpx pt-180rpx">
-        <view class="text-28 text-black-primary">
+        <view class="text-28 text-black-2a">
           <text>请排查以下原因：</text>
         </view>
 
@@ -21,12 +21,6 @@
 
       <van-button class="mt-32rpx mx-32rpx" block type="primary" size="large">完成</van-button>
     </block> -->
-  </view>
-
-  <view class="flex felx-row gap-10rpx">
-    <van-button bind:click="getWifiList">getWifiList</van-button>
-
-    <van-button bind:click="connectWifi">connectWifi</van-button>
   </view>
 </view>
 

@@ -8,7 +8,7 @@ declare namespace Device {
      * 设备类型
      * 1:网关 2:子设备 3:wifi
      */
-    deviceType: string
+    deviceType: number
     gatewayId: string
     gatewayName: string
     /** 方法列表 */
@@ -35,6 +35,7 @@ declare namespace Device {
     roomName: string
     switchInfoDTOList: MzgdPanelSwitchInfoDTO[]
     version: string
+    sn: string
 
     // 小程序维护额外属性
     isChecked: boolean
@@ -51,7 +52,7 @@ declare namespace Device {
     /** 是否已经关联 */
     isRel: boolean
     orderNum: number
-    /** panelId */
+    /** 面板Id */
     panelId: string
     /** 设备图片 */
     pic: string

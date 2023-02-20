@@ -22,51 +22,39 @@ Component({
     iconList: [
       {
         icon: 'parents-room',
-        isCheck: true,
       },
       {
         icon: 'restaurant',
-        isCheck: false,
       },
       {
         icon: 'toilet',
-        isCheck: false,
       },
       {
         icon: 'kitchen',
-        isCheck: false,
       },
       {
         icon: 'master-bedroom',
-        isCheck: false,
       },
       {
         icon: 'kids-room',
-        isCheck: false,
       },
       {
         icon: 'drawing-room',
-        isCheck: false,
       },
       {
         icon: 'study-room',
-        isCheck: false,
       },
       {
         icon: 'balcony',
-        isCheck: false,
       },
       {
         icon: 'cloakroom',
-        isCheck: false,
       },
       {
         icon: 'bathroom',
-        isCheck: false,
       },
       {
         icon: 'second-bedroom',
-        isCheck: false,
       },
     ],
   },

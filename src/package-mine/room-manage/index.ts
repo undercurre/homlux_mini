@@ -2,13 +2,13 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { roomBinding, othersBinding, userBinding } from '../../store/index'
+import { roomBinding } from '../../store/index'
 
 ComponentWithComputed({
   options: {
     addGlobalClass: true,
   },
-  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, othersBinding, userBinding] }), pageBehaviors],
+  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding] }), pageBehaviors],
 
   /**
    * 页面的初始数据

@@ -1,6 +1,6 @@
 <!--package-distribution/search-subdevice/components/edit-device-info/index.wxml-->
 <van-popup show="{{ show }}" position="bottom" round bind:close="close">
-  <view class="px-32rpx pt-48rpx pb-100rpx text-black-primary">
+  <view class="px-32rpx pt-48rpx pb-100rpx text-black-2a">
     <text class="block pb-66rpx font-medium text-center text-36 leading-48rpx">设备编辑</text>
 
     <edit-device-form device-name="{{deviceName}}" room-id="{{roomId}}" bind:change="change"></edit-device-form>

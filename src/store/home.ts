@@ -3,13 +3,13 @@ import { getHomeList, queryUserHouseInfo } from '../apis/index'
 import { roomStore } from './room'
 
 export const homeStore = observable({
-  homeList: [] as Home.HomeItem[],
+  homeList: [] as Home.IHomeItem[],
 
   // 当前家庭详细信息
-  currentHomeDetail: {} as Home.HomeDetail,
+  currentHomeDetail: {} as Home.IHomeDetail,
 
   get currentHomeId() {
-    return this.homeList.find((item: Home.HomeItem) => item.defaultHouseFlag)?.houseId || ''
+    return this.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
   },
 
   // actions

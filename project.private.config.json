@@ -40,7 +40,7 @@
         },
         {
           "name": "房间列表",
-          "pathName": "package-mine/room-detail/index",
+          "pathName": "package-mine/room-manage/index",
           "query": "",
           "launchMode": "default",
           "scene": null

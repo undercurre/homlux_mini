@@ -10,7 +10,7 @@
           <text class="grow text-balck-primary">{{item}}</text>
 
           <view class="flex flex-row items-center">
-            <text class="text-black-secondary pr-16rpx">管理员</text>
+            <text class="text-black-59 pr-16rpx">管理员</text>
             <svg-icon color="#c8c7cc" name="icon-park:right" width="48rpx" height="48rpx"></svg-icon>
           </view>
         </view>
@@ -22,7 +22,7 @@
 </view>
 
 <van-popup show="{{ isEditRole }}" position="bottom" round bind:close="cancelChangeRole">
-  <view class="pt-32rpx pb-96rpx text-black-primary">
+  <view class="pt-32rpx pb-96rpx text-black-2a">
     <view>
       <view wx:for="{{actionList}}" class="flex flex-row items-center px-48rpx py-20rpx leading-44rpx border-bottom">
         <view class="flex flex-col grow">

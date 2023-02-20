@@ -1,13 +1,17 @@
+import { ComponentWithComputed } from 'miniprogram-computed'
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import { reaction } from 'mobx-miniprogram'
+import { deviceBinding, homeBinding } from '../../store/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { strUtil } from '../../utils/index'
 
-let sacnUrl = '' // 正在解析的url
-
-Component({
+ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
+    pureDataPattern: /^_/,
   },
-  behaviors: [pageBehaviors],
+
+  behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding] }), pageBehaviors],
   /**
    * 组件的属性列表
    */
@@ -18,14 +22,38 @@ Component({
    */
   data: {
     isShowGatewayList: false,
-    deviceList: Array<string>(),
+    isShowNoGatewayTips: false,
+    selectGatewayId: '',
+    selectGatewaySn: '',
+    subdeviceList: Array<string>(),
+  },
+
+  computed: {
+    gatewayList(data) {
+      const deviceList: Device.DeviceItem[] = (data as IAnyObject).deviceList
+
+      return deviceList?.filter((item) => item.deviceType === 1)
+    },
   },
 
   lifetimes: {
-    attached() {
+    async attached() {
+      reaction(
+        () => homeBinding.store.currentHomeDetail.houseId,
+        () => {
+          deviceBinding.store.updateAllRoomDeviceList()
+        },
+      )
+
       const systemSetting = wx.getSystemSetting()
 
       console.log('systemSetting', systemSetting)
+
+      // let authorizeRes = await wx.authorize({
+      //   scope: 'scope.bluetooth'
+      // })
+
+      // console.log('authorizeRes', authorizeRes)
 
       this.initBle()
     },
@@ -37,6 +65,7 @@ Component({
     },
     hide() {
       console.log('hide')
+      wx.closeBluetoothAdapter()
     },
   },
 
@@ -44,6 +73,32 @@ Component({
    * 组件的方法列表
    */
   methods: {
+    showGateListPopup() {
+      this.setData({
+        isShowGatewayList: true,
+      })
+    },
+
+    async selectGateway(event: WechatMiniprogram.CustomEvent) {
+      console.log('selectGateway', event)
+      const { index } = event.currentTarget.dataset
+
+      const item = this.data.gatewayList[index]
+
+      if (item.onLineStatus === 0) {
+        return
+      }
+
+      this.setData({
+        selectGatewayId: item.deviceId,
+        selectGatewaySn: item.sn,
+      })
+    },
+
+    confirmGateway() {
+      this.addNearSubdevice()
+    },
+
     async initBle() {
       wx.onBluetoothAdapterStateChange((changeRes) => {
         console.log('onBluetoothAdapterStateChange', changeRes)
@@ -58,14 +113,14 @@ Component({
 
       // 监听扫描到新设备事件
       wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
-        const deviceList = res.devices.filter((item) => {
+        const subdeviceList = res.devices.filter((item) => {
           let flag = false
 
           // localName为homlux_ble且没有被发现过的
           if (
             item.localName &&
             item.localName.includes('homlux_ble') &&
-            this.data.deviceList.findIndex((listItem) => item.deviceId === listItem) < 0
+            this.data.subdeviceList.findIndex((listItem) => item.deviceId === listItem) < 0
           ) {
             flag = true
           }
@@ -73,10 +128,11 @@ Component({
           return flag
         })
 
-        if (deviceList.length <= 0) return
+        if (subdeviceList.length <= 0) return
 
+        console.log('onBluetoothDeviceFound', subdeviceList)
         this.setData({
-          deviceList: this.data.deviceList.concat(deviceList.map((item) => item.deviceId)),
+          subdeviceList: this.data.subdeviceList.concat(subdeviceList.map((item) => item.deviceId)),
         })
       })
 
@@ -94,6 +150,8 @@ Component({
     onCloseGwList() {
       this.setData({
         isShowGatewayList: false,
+        selectGatewayId: '',
+        selectGatewaySn: '',
       })
     },
     /**
@@ -104,7 +162,7 @@ Component({
 
       console.log('getQrCodeInfo', e)
 
-      sacnUrl = e.detail.result
+      const sacnUrl = e.detail.result
 
       const params = strUtil.getUrlParams(sacnUrl)
 
@@ -113,12 +171,6 @@ Component({
       if (params.ssid && params.ssid.includes('midea_16')) {
         this.bindGateway(params)
       }
-    },
-
-    toSearchSubDevice() {
-      wx.redirectTo({
-        url: '/package-distribution/search-subdevice/index',
-      })
     },
 
     bindGateway(params: IAnyObject) {
@@ -134,8 +186,33 @@ Component({
      * 添加附近搜索的子设备
      */
     addNearSubdevice() {
+      let gatewayId = this.data.selectGatewayId,
+        gatewaySn = this.data.selectGatewaySn
+
+      if (this.data.gatewayList.length === 0) {
+        this.setData({
+          isShowNoGatewayTips: true,
+        })
+
+        return
+      }
+
+      if (!gatewayId && this.data.gatewayList.length === 1) {
+        gatewayId = this.data.gatewayList[0].deviceId
+        gatewaySn = this.data.gatewayList[0].sn
+      } else if (!gatewayId) {
+        this.setData({
+          isShowGatewayList: true,
+        })
+
+        return
+      }
+
       wx.navigateTo({
-        url: '/package-distribution/add-subdevice/index',
+        url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
+          gatewayId,
+          gatewaySn,
+        }),
       })
     },
   },

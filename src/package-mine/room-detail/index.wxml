@@ -7,7 +7,7 @@
 
   <scroll-view class="grow h-200 px-24rpx box-border">
     <view class="rounded-32rpx bg-white p-40rpx">
-      <text class="w-full text-32 leading-44rpx text-black-primary">房间图标</text>
+      <text class="w-full text-32 leading-44rpx text-black-2a">房间图标</text>
 
       <view class="flex flex-row flex-wrap justify-between gap-36rpx mt-40rpx">
         <view wx:for="{{ roomList }}" class="bg-hex-F6FAFD rounded-32rpx p-32rpx">
@@ -22,7 +22,7 @@
 
 <van-popup round show="{{ isEditName }}" bind:close="onClose" position="bottom">
   <view class="pb-100rpx">
-    <text class="block pt-48rpx pb-64rpx text-center leading-50rpx text-36 text-black-primary font-medium">房间名称</text>
+    <text class="block pt-48rpx pb-64rpx text-center leading-50rpx text-36 text-black-2a font-medium">房间名称</text>
 
     <text class="block pl-48rpx pb-32rpx text-28">房间名称</text>
 

@@ -1,8 +1,8 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { bleUtil, strUtil, BleClient } from '../../utils/index'
-import { IBleDevice } from './types'
 import { homeBinding } from '../../store/index'
+import { bleUtil, strUtil, BleClient, getCurrentPageParams } from '../../utils/index'
+import { IBleDevice } from './types'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { sendCmdAddSubdevice, bindDevice, queryDeviceOnlineStatus } from '../../apis/index'
 
@@ -64,11 +64,11 @@ ComponentWithComputed({
     ready: function () {
       this.initBle()
 
-      // this.setData({
-      //   deviceList: JSON.parse(
-      //     '[{"deviceUuid":"04:CD:15:AE:98:47","mac":"04:CD:15:AE:98:47","icon":"/assets/img/device/light.png","name":"子设备:98:47","isCheck":false,"client":{"key":"midea@homlux9847","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04:CD:15:AE:98:47","deviceUuid":"04:CD:15:AE:98:47"},"roomId":"","roomName":""},{"deviceUuid":"04:CD:15:AE:AA:8D","mac":"04:CD:15:AE:AA:8D","icon":"/assets/img/device/light.png","name":"子设备:AA:8D","isCheck":false,"client":{"key":"midea@homluxAA8D","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04:CD:15:AE:AA:8D","deviceUuid":"04:CD:15:AE:AA:8D"},"roomId":"","roomName":""}]',
-      //   ),
-      // })
+      this.setData({
+        deviceList: JSON.parse(
+          '[{"deviceUuid":"47","mac":"47","icon":"/assets/img/device/light.png","name":"测试47","isCheck":false,"client":{"key":"midea@homlux9847","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"47","deviceUuid":"47"},"roomId":"","roomName":""}]',
+        ),
+      })
     },
     moved: function () {},
     detached: function () {
@@ -78,7 +78,7 @@ ComponentWithComputed({
 
   pageLifetimes: {
     hide() {
-      // wx.stopBluetoothDevicesDiscovery()
+      wx.closeBluetoothAdapter()
     },
   },
 
@@ -139,6 +139,7 @@ ComponentWithComputed({
           return {
             deviceUuid: device.deviceId,
             mac: msgObj.mac,
+            zigbeeMac: '',
             icon: '/assets/img/device/light.png',
             name: '子设备' + msgObj.mac.substr(-4, 4),
             isCheck: false,
@@ -190,8 +191,12 @@ ComponentWithComputed({
 
     // 确认添加设备
     async confirmAdd() {
+      const pageParams = getCurrentPageParams()
+
+      wx.stopBluetoothDevicesDiscovery()
+
       const res = await sendCmdAddSubdevice({
-        deviceId: '1676373822174786',
+        deviceId: pageParams.gatewayId,
         expire: 60,
         buzz: 1,
       })
@@ -204,19 +209,29 @@ ComponentWithComputed({
         status: 'requesting',
       })
 
-      const list = this.data.deviceList.filter((item) => item.isChecked)
+      const list = this.data.selectedList
 
       for (const item of list) {
-        const res = await item.client.sendCmd({ cmdType: 'control', subType: 'CTL_CONFIG_ZIGBEE_NET' })
-
-        console.log('CTL_CONFIG_ZIGBEE_NET', item.mac, res)
-
-        this.queryDeviceOnlineStatus(item)
+        this.startZigbeeNet(item)
       }
     },
 
+    async startZigbeeNet(bleDevice: IBleDevice) {
+      const res = await bleDevice.client.startZigbeeNet()
+
+      bleDevice.zigbeeMac = res.result.zigbeeMac
+
+      this.queryDeviceOnlineStatus(bleDevice)
+    },
+
     async queryDeviceOnlineStatus(device: IBleDevice) {
-      const queryRes = await queryDeviceOnlineStatus({ deviceId: device.mac, deviceType: '2', sn: '11' })
+      const pageParams = getCurrentPageParams()
+
+      const queryRes = await queryDeviceOnlineStatus({
+        deviceId: device.zigbeeMac,
+        deviceType: '2',
+        sn: pageParams.gatewaySn,
+      })
 
       console.log('queryDeviceOnlineStatus', queryRes)
 
@@ -229,9 +244,9 @@ ComponentWithComputed({
       }
 
       const res = await bindDevice({
-        deviceId: device.mac,
+        deviceId: device.zigbeeMac,
         houseId: homeBinding.store.currentHomeId,
-        roomId: device.roomId,
+        roomId: device.roomId || this.data.defaultRoom.roomId,
         sn: '',
         deviceName: device.name,
       })
@@ -310,7 +325,27 @@ ComponentWithComputed({
     },
 
     // 重新添加
-    reAdd() {},
+    async reAdd() {
+      const res = await sendCmdAddSubdevice({
+        deviceId: '1676373822174786',
+        expire: 60,
+        buzz: 1,
+      })
+
+      if (!res.success) {
+        // return
+      }
+
+      this.setData({
+        status: 'requesting',
+      })
+
+      const list = this.data.failList
+
+      for (const item of list) {
+        this.startZigbeeNet(item)
+      }
+    },
 
     finish() {
       wx.switchTab({

@@ -23,6 +23,10 @@ App<IAppOption>({
       return
     }
     appOnLaunchService()
+
+    const getAppBaseInfo = wx.getAppBaseInfo()
+
+    console.log('getAppBaseInfo', getAppBaseInfo)
   },
   globalData: {},
 })

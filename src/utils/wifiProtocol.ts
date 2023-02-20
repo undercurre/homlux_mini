@@ -7,6 +7,8 @@ export class WifiSocket {
 
   udpClient: WechatMiniprogram.UDPSocket = wx.createUDPSocket()
 
+  SSID = ''
+
   key: string
 
   deviceInfo = {
@@ -14,6 +16,8 @@ export class WifiSocket {
     udpPort: 6266,
     tcpPort: 6466,
   }
+
+  retryTimes = 3
 
   cmdCallbackMap: IAnyObject = {}
 
@@ -24,12 +28,63 @@ export class WifiSocket {
     if (instance) {
       instance.close()
     }
+
+    this.SSID = params.ssid
+
     this.key = `homlux@midea${params.ssid.substr(-4, 4)}`
 
     this.initUdpSocket()
 
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     instance = this
+  }
+
+  async connect() {
+    const res = await this.connectWifi()
+
+    console.log(`connectWifi${this.SSID}`, res)
+
+    const result = {
+      success: true,
+    }
+
+    if (res.success) {
+      await this.updateGatewayInfo()
+    } else {
+      result.success = false
+    }
+
+    return result
+  }
+
+  connectWifi() {
+    return new Promise<{ success: boolean }>((resolve) => {
+      const res = { success: true }
+
+      const listen = async (onWifiConnectRes: WechatMiniprogram.OnWifiConnectedCallbackResult) => {
+        console.log('onWifiConnected', onWifiConnectRes)
+
+        if (onWifiConnectRes.wifi.SSID === this.SSID) {
+          wx.offWifiConnected(listen)
+          resolve(res)
+        }
+      }
+      wx.onWifiConnected(listen)
+
+      wx.connectWifi({
+        SSID: this.SSID,
+        password: '12345678',
+        partialInfo: false,
+        complete: (connectRes) => {
+          console.log('connectWifi', connectRes)
+
+          if ((connectRes as IAnyObject).wifiMsg?.includes('already connected')) {
+            wx.offWifiConnected(listen)
+            resolve(res)
+          }
+        },
+      })
+    })
   }
 
   initTcpSocket() {
@@ -115,10 +170,7 @@ export class WifiSocket {
     })
   }
 
-  /**
-   * 通过广播更新网关IP地址并与网关建立tcp连接
-   */
-  async updateGatewayInfo() {
+  async sendCmdForDeviceIp() {
     const res = await this.sendCmd({
       topic: '/gateway/net/serverip', //指令名称:获取网关IP
       data: {},
@@ -129,9 +181,28 @@ export class WifiSocket {
 
     if (res.errorCode === 0) {
       this.deviceInfo.ip = res.ip
-
-      await this.initTcpSocket()
     }
+  }
+
+  getDeviceIp() {
+    return new Promise((resolve) => {
+      const interId = setInterval(() => {
+        if (this.deviceInfo.ip) {
+          clearInterval(interId)
+          resolve(true)
+        }
+
+        this.sendCmdForDeviceIp()
+      }, 2000)
+    })
+  }
+  /**
+   * 通过广播更新网关IP地址并与网关建立tcp连接
+   */
+  async updateGatewayInfo() {
+    await this.getDeviceIp()
+
+    await this.initTcpSocket()
   }
 
   /**
@@ -184,7 +255,7 @@ export class WifiSocket {
   close() {
     this.cmdCallbackMap = {}
     this.onMessageHandlerList = []
-    this.tcpClient.close()
+    this.tcpClient?.close()
     this.udpClient?.close()
     instance = null
   }

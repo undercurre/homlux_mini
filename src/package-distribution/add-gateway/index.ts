@@ -4,11 +4,11 @@ import { WifiSocket, strUtil, getCurrentPageParams } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 
 let socket: WifiSocket
-let hasBind = false
 
 Component({
   options: {
     styleIsolation: 'apply-shared',
+    pureDataPattern: /^_/,
   },
   behaviors: [pageBehaviors],
   /**
@@ -20,6 +20,7 @@ Component({
    * 组件的初始数据
    */
   data: {
+    _interId: 0,
     status: 'linking',
     currentStep: '连接设备',
     percentage: 0,
@@ -55,6 +56,7 @@ Component({
   pageLifetimes: {
     hide() {
       socket.close()
+      clearTimeout(this.data._interId)
     },
   },
   /**
@@ -66,44 +68,16 @@ Component({
 
       console.log('startWifi', startRes)
 
-      wx.onWifiConnected(async (res) => {
-        console.log('onWifiConnected', res)
+      await socket.connect()
 
-        await socket.updateGatewayInfo()
-
-        this.sendBindCmd()
+      this.setData({
+        activeIndex: 0,
       })
 
-      this.connectWifi()
-    },
-
-    async connectWifi() {
-      const params = getCurrentPageParams()
-
-      const res = await wx
-        .connectWifi({
-          SSID: params.apSSID,
-          password: '12345678',
-          partialInfo: false,
-        })
-        .catch((err) => console.log('connectWifi-err', err))
-
-      console.log('connectWifi', res)
-
-      if ((res as IAnyObject).wifiMsg?.includes('already connected')) {
-        await socket.updateGatewayInfo()
-
-        this.setData({
-          activeIndex: 0,
-        })
-
-        this.sendBindCmd()
-      }
+      this.sendBindCmd()
     },
 
     async sendBindCmd() {
-      if (hasBind) return
-      hasBind = true
       const params = getCurrentPageParams()
 
       const data: IAnyObject = { method: params.method }
@@ -120,6 +94,12 @@ Component({
 
       console.log('startWifiBind', res)
 
+      wx.connectWifi({
+        SSID: params.wifiSSID,
+        password: params.wifiPassword,
+        partialInfo: false,
+      })
+
       this.queryDeviceOnlineStatus()
     },
 
@@ -132,7 +112,7 @@ Component({
 
       console.log('queryDeviceOnlineStatus', res)
 
-      if (res.result.onlineStatus === 1) {
+      if (res.success && res.result.onlineStatus === 1) {
         this.setData({
           activeIndex: 1,
         })
@@ -141,14 +121,14 @@ Component({
           this.setData({
             activeIndex: 2,
           })
-          wx.navigateTo({
+          wx.redirectTo({
             url: strUtil.getUrlWithParams('/package-distribution/bind-home/index', {
               dsn: params.dsn,
             }),
           })
         }, 500)
       } else {
-        setTimeout(() => {
+        this.data._interId = setTimeout(() => {
           this.queryDeviceOnlineStatus()
         }, 3000)
       }

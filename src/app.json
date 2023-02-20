@@ -59,7 +59,8 @@
     "add-room": "./components/add-room/index",
     "add-device": "./components/add-device/index",
     "svg-icon": "./components/svg-icon/index",
-    "device-card": "./components/device-card/index"
+    "device-card": "./components/device-card/index",
+    "van-dialog": "@vant/weapp/dialog/index"
   },
   "window": {
     "navigationStyle": "custom",
@@ -71,5 +72,10 @@
     "request": 10000,
     "downloadFile": 10000
   },
-  "debug": true
+  "debug": true,
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于辅助家庭设备配网"
+    }
+  }
 }

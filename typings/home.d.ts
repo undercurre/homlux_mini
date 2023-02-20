@@ -3,7 +3,7 @@ declare namespace Home {
   /**
    * 家庭列表，列表项
    */
-  export interface HomeItem {
+  export interface IHomeItem {
     /**
      * 家庭唯一id
      */
@@ -27,7 +27,7 @@ declare namespace Home {
   /**
    * 家庭详细值
    */
-  export interface HomeDetail {
+  export interface IHomeDetail {
     /**
      * 家庭唯一id
      */
@@ -60,18 +60,13 @@ declare namespace Home {
     /**
      * 房间列表
      */
-    roomList: Room.RoomItem[]
+    roomList: IRoomInfo[]
   }
 
-  interface RoomInState {
+  export interface IRoomInfo {
+    deviceLightOnNum: number
+    roomIcon: string
     roomId: string
     roomName: string
-    lightOnNumber: number
-    sceneList: {
-      value: string
-      name: string
-    }[]
-    deviceList: (Device.LightInfo | Device.SwitchInfo | Device.CurtainInfo)[]
-    sceneSelect: string
   }
 }

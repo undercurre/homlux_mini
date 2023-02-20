@@ -8,12 +8,12 @@
 
       <view wx:if="{{deviceList.length}}" class="px-32rpx pt-86rpx grow flex flex-col">
         <view class="flex flex-row items-center justify-between pb-34rpx">
-          <text class="text-26 text-black-secondary">发现附近通电的子设备</text>
+          <text class="text-26 text-black-59">发现附近通电的子设备</text>
 
           <van-button plain round type="info" size="small" bind:click="selectAll">全选</van-button>
         </view>
 
-        <scroll-view class="grow h-300" scroll-y="true">
+        <scroll-view class="grow h-500" scroll-y="{{true}}">
           <view wx:for="{{deviceList}}" wx:key="deviceUuid" class="flex flex-row items-center bg-white rounded-32rpx mb-24rpx px-24rpx py-40rpx">
             <van-checkbox use-icon-slot bind:change="toggleDevice" data-index="{{index}}">
               <image src="{{item.icon}}" class="w-92 h-92 ml-10rpx border-4rpx border-solid border-hex-F6F6F8 rounded-full"></image>
@@ -23,12 +23,12 @@
 
             <view class="grow pl-32rpx">
               <view class="flex flex-row items-center pb-4rpx" bind:tap="editDevice" data-index="{{index}}">
-                <text class="max-w-180 pr-24rpx text-32 text-black-primary single-text">{{ item.name }}</text>
+                <text class="max-w-180 pr-24rpx text-32 text-black-2a single-text">{{ item.name }}</text>
 
                 <image class="w-48 h-48" src="../../assets/img/base/edit.png"></image>
               </view>
 
-              <text class="text-26 text-black-secondary opacity-95">{{ item.roomName || defaultRoom.roomName }}</text>
+              <text class="text-26 text-black-59 opacity-95">{{ item.roomName || defaultRoom.roomName }}</text>
             </view>
 
             <view class="shrink-0">
@@ -37,7 +37,7 @@
           </view>
         </scroll-view>
 
-        <van-button class="mt-24rpx" block type="primary" size="large" bind:click="confirmAdd" disabled="{{checkedDeviceNum===0}}">确认添加（已选{{selectedList.length}}个）</van-button>
+        <van-button class="mt-24rpx" block type="primary" size="large" bind:click="confirmAdd" disabled="{{selectedList.length===0}}">确认添加（已选{{selectedList.length}}个）</van-button>
       </view>
     </block>
 
@@ -57,11 +57,11 @@
 
             <view class="pl-32rpx">
               <view class="flex flex-row items-center">
-                <text class="pr-24rpx text-32 text-black-primary">{{ item.name }}</text>
+                <text class="pr-24rpx text-32 text-black-2a">{{ item.name }}</text>
               </view>
 
               <view class="inline-block rounded-12rpx py-6rpx mt-20rpx">
-                <text class="pr-12rpx text-26 text-black-secondary">{{ item.roomName }}</text>
+                <text class="pr-12rpx text-26 text-black-59">{{ item.roomName || defaultRoom.roomName }}</text>
               </view>
             </view>
           </view>
@@ -81,7 +81,7 @@
       <tips-box text="未发现附近设备" icon="/assets/img/search-subdevice/no-found.png"></tips-box>
 
       <view class="grow px-88rpx pt-180rpx">
-        <view class="text-28 text-black-primary">
+        <view class="text-28 text-black-2a">
           <text>请排查一下情况：</text>
         </view>
 

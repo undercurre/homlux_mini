@@ -4,7 +4,7 @@ import { mzaiotRequest } from '../utils/index'
  * 查询家庭列表
  */
 export async function getHomeList() {
-  return await mzaiotRequest.post<Home.HomeItem[]>({
+  return await mzaiotRequest.post<Home.IHomeItem[]>({
     log: false,
     loading: true,
     url: '/v1/mzgd/user/house/queryHouseList',
@@ -15,7 +15,7 @@ export async function getHomeList() {
  * 查询美智用户家庭信息
  */
 export async function queryUserHouseInfo({ houseId = '', defaultHouseFlag = true }) {
-  return await mzaiotRequest.post<Home.HomeDetail>({
+  return await mzaiotRequest.post<Home.IHomeDetail>({
     log: false,
     loading: true,
     url: '/v1/mzgd/user/queryUserHouseInfo',
@@ -38,7 +38,7 @@ export async function saveOrUpdateUserHouseInfo(params: {
     delete params.houseId
   }
 
-  return await mzaiotRequest.post<Home.HomeDetail>({
+  return await mzaiotRequest.post<Home.IHomeDetail>({
     log: false,
     loading: true,
     url: '/v1/mzgd/user/saveOrUpdateUserHouseInfo',
@@ -50,7 +50,7 @@ export async function saveOrUpdateUserHouseInfo(params: {
  * 更新默认家庭
  */
 export async function updateDefaultHouse(houseId: string) {
-  return await mzaiotRequest.post<Home.HomeDetail>({
+  return await mzaiotRequest.post<Home.IHomeDetail>({
     log: false,
     loading: true,
     url: '/v1/mzgd/user/updateDefaultHouse',

@@ -24,7 +24,7 @@ export const roomStore = observable({
       runInAction(() => {
         roomStore.roomList = res.result.roomInfoList.map((room) => ({
           roomId: room.roomInfo.roomId,
-          roomIcon: room.roomInfo.roomIcon,
+          roomIcon: room.roomInfo.roomIcon || 'drawing-room',
           roomName: room.roomInfo.roomName,
           deviceLightOnNum: room.roomInfo.deviceLightOnNum,
           sceneList: room.roomSceneList,

@@ -46,6 +46,8 @@ Component({
     },
     detached() {
       console.log('detached')
+
+      socket.close()
     },
   },
 
@@ -65,43 +67,29 @@ Component({
       console.log('onHide')
     },
     async initWifi() {
+      const authorizeRes = await wx.authorize({
+        scope: 'scope.userLocation',
+      })
+
+      console.log('authorizeRes', authorizeRes)
+
       const startRes = await wx.startWifi()
 
       console.log('startWifi', startRes)
 
       wx.onWifiConnected(async (res) => {
         console.log('onWifiConnected', res)
-
-        await socket.updateGatewayInfo()
-
-        this.getGatewayStatus()
       })
 
-      this.connectWifi()
+      await socket.connect()
+
+      this.getGatewayStatus()
     },
 
     async getWifiList() {
       const wifiListRes = await wx.getWifiList()
 
       console.log('getWifiList', wifiListRes)
-    },
-
-    async connectWifi() {
-      const params = getCurrentPageParams()
-
-      const res = await wx.connectWifi({
-        SSID: params.ssid,
-        password: '12345678',
-        partialInfo: false,
-      })
-
-      console.log('connectWifi', res)
-
-      if ((res as IAnyObject).wifiMsg?.includes('already connected')) {
-        await socket.updateGatewayInfo()
-
-        this.getGatewayStatus()
-      }
     },
 
     /**
@@ -143,12 +131,12 @@ Component({
 
       if (method === 'wifi') {
         // "method":"wifi" //无线配网："wifi"，有线配网:"eth"
-        wx.navigateTo({
+        wx.redirectTo({
           url: strUtil.getUrlWithParams('/package-distribution/wifi-connect/index', params),
         })
       } else if (method === 'eth') {
         // "method":"wifi" //无线配网："wifi"，有线配网:"eth"
-        wx.navigateTo({
+        wx.redirectTo({
           url: strUtil.getUrlWithParams('/package-distribution/add-gateway/index', params),
         })
       }
