@@ -182,7 +182,7 @@ ComponentWithComputed({
         this.bindGateway({
           ssid: params.ssid,
           dsn: params.dsn,
-          deviceName: res.result.productName
+          deviceName: res.result.productName,
         })
       }
     },
