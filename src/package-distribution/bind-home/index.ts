@@ -1,7 +1,7 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { getCurrentPageParams, strUtil } from '../../utils/index'
-import { queryDeviceInfoByDeviceId } from '../../apis/index'
+import { queryDeviceInfoByDeviceId, editDeviceInfo } from '../../apis/index'
 import { homeBinding } from '../../store/index'
 
 Component({
@@ -18,7 +18,7 @@ Component({
    * 组件的初始数据
    */
   data: {
-    deviceInfo: { deviceId: '', deviceName: '', roomId: '' },
+    deviceInfo: { deviceId: '', deviceName: '', roomId: '', sn: '' },
   },
 
   lifetimes: {
@@ -47,6 +47,7 @@ Component({
           deviceInfo: {
             deviceId: pageParams.deviceId,
             deviceName: res.result.deviceName,
+            sn: res.result.sn,
             roomId: res.result.roomId,
           },
         })
@@ -58,12 +59,10 @@ Component({
     },
 
     toSearchSubdevice() {
-      const pageParams = getCurrentPageParams()
-
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
-          gatewayId: pageParams.gatewayId,
-          gatewaySn: pageParams.dsn,
+          gatewayId: this.data.deviceInfo.deviceId,
+          gatewaySn: this.data.deviceInfo.sn,
         }),
       })
     },
@@ -77,10 +76,20 @@ Component({
       })
     },
 
-    async requestBindDevice() {
+    async finish() {
+      let { deviceId, deviceName, roomId } = this.data.deviceInfo
       // const params = getCurrentPageParams()
+      let res = await editDeviceInfo({
+        deviceId,
+        deviceName,
+        roomId,
+        houseId: homeBinding.store.currentHomeId,
+        isSwitch: false
+      })
 
-      wx.switchTab({ url: '/pages/index/index' })
+      if (res.success) {
+        wx.switchTab({ url: '/pages/index/index' })
+      }
     },
   },
 })

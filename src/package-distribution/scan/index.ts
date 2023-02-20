@@ -62,12 +62,6 @@ ComponentWithComputed({
 
   pageLifetimes: {
     show() {
-      // this.getQrCodeInfo({
-      //   detail: {
-      //     result:
-      //       'https://homlux.meizgd.com/homelux/qrCode.html?v=1&mode=02&pid=8d531b6a944a454e9fb15d3cc1f4d55b&ssid=midea_16_E5FB&dsn=000016111MSGWZ00288B1539E5FB0000',
-      //   },
-      // }) // todo: 测试代码
       console.log('show')
     },
     hide() {
@@ -184,18 +178,18 @@ ComponentWithComputed({
 
       console.log('checkDevice', res)
 
-      if (params.ssid && params.ssid.includes('midea_16')) {
-        this.bindGateway(params)
+      if (res.success && res.result.proType === '0x18') {
+        this.bindGateway({
+          ssid: params.ssid,
+          dsn: params.dsn,
+          deviceName: res.result.productName
+        })
       }
     },
 
     bindGateway(params: IAnyObject) {
       wx.navigateTo({
-        url: strUtil.getUrlWithParams('/package-distribution/check-gateway/index', {
-          ssid: params.ssid,
-          dsn: params.dsn,
-          deviceName: '智能网关',
-        }),
+        url: strUtil.getUrlWithParams('/package-distribution/check-gateway/index', params),
       })
     },
 

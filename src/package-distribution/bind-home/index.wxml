@@ -5,20 +5,18 @@
     <tips-box text="设备添加成功！" icon="/assets/img/search-subdevice/add-success.png"></tips-box>
 
     <view class="grow px-48rpx mt-96rpx">
-      <edit-device-form bind:change="changeDeviceInfo"></edit-device-form>
+      <edit-device-form device-name="{{deviceInfo.deviceName}}" room-id="{{deviceInfo.roomId}}" bind:change="changeDeviceInfo"></edit-device-form>
     </view>
 
     <view class="flex flex-col items-center pt-24rpx px-32rpx">
       <view class="flex flex-row items-center text-26 text-black-59 leading-36rpx">
         <text>继续添加其他设备，</text>
         <text class="text-blue" bind:tap="toScan">扫码</text>
-        <block>
-          <text class="px-12rpx">搜索</text>
-          <text class="text-blue">附近设备 ></text>
-        </block>
+        <text class="px-12rpx">搜索</text>
+        <text class="text-blue" bind:tap="toSearchSubdevice">附近设备 ></text>
       </view>
 
-      <van-button class="w-full mt-32rpx" block type="primary" size="large" bind:click="requestBindDevice" disabled="{{!deviceInfo.deviceName}}">完成</van-button>
+      <van-button class="w-full mt-32rpx" block type="primary" size="large" bind:click="finish" disabled="{{!deviceInfo.deviceName}}">完成</van-button>
     </view>
   </view>
 </view>
