@@ -69,4 +69,28 @@ declare namespace Home {
     roomId: string
     roomName: string
   }
+
+  export interface HouseUserItem {
+    /**
+     * 成员权限编码
+     */
+    userHouseAuth: number | string,
+    /**
+     * 成员权限名称
+     */
+    userHouseAuthName: string,
+    /**
+     * 	成员id
+     */
+    userId: string,
+    /**
+     * 成员名称
+     */
+    userName: string
+  }
+
+  export interface HomeMemberInfo {
+    houseUserList: HouseUserItem [],
+    totalElements: number
+  }
 }

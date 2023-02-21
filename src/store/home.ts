@@ -1,5 +1,5 @@
 import { observable, runInAction } from 'mobx-miniprogram'
-import { getHomeList, queryUserHouseInfo } from '../apis/index'
+import { getHomeList, queryUserHouseInfo, queryHouseUserList } from '../apis/index'
 import { roomStore } from './room'
 
 export const homeStore = observable({
@@ -7,6 +7,8 @@ export const homeStore = observable({
 
   // 当前家庭详细信息
   currentHomeDetail: {} as Home.IHomeDetail,
+
+  homeMemberInfo: {} as Home.HomeMemberInfo,
 
   get currentHomeId() {
     return this.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
@@ -61,10 +63,25 @@ export const homeStore = observable({
       return Promise.reject('获取家庭信息失败')
     }
   },
+
+  /**
+   * 更新家庭成员列表
+   */
+  async updateHomeMemberList() {
+    const res = await queryHouseUserList(this.currentHomeId)
+    if (res.success) {
+      runInAction(() => {
+        homeStore.homeMemberInfo = res.result
+      })
+      return
+    } else {
+      return Promise.reject('获取成员信息失败')
+    }
+  }
 })
 
 export const homeBinding = {
   store: homeStore,
   fields: ['homeList', 'currentHomeId', 'currentHomeDetail'],
-  actions: ['updateHomeInfo', 'updateHomeList', 'updateCurrentHomeDetail'],
+  actions: ['updateHomeInfo', 'updateHomeList', 'updateCurrentHomeDetail', 'updateHomeMemberList'],
 }
