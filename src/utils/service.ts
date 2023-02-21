@@ -24,10 +24,12 @@ function createConnect() {
   socketTask.onMessage((e) => {
     try {
       console.log('接收到Socket信息：', JSON.parse(e.data as string))
-    } catch (_) {
+      const res = JSON.parse(e.data as string)
+      emitter.emit('wsReceive', res)
+    } catch (err) {
       console.log('接收到Socket信息：', e.data)
+      console.log('转json失败：', err)
     }
-    emitter.emit('wsReceive', e.data as string)
   })
 }
 

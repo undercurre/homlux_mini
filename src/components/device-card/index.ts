@@ -38,6 +38,18 @@ ComponentWithComputed({
     picUrl(data) {
       return data.deviceInfo.pic ? data.deviceInfo.pic : `/assets/img/device/${data.deviceType}.png`
     },
+    controlBtnPic(data) {
+      if (data.deviceType === 'light') {
+        return data.deviceInfo.mzgdPropertyDTOList['1'].OnOff ? '/assets/img/base/power-on.png' : '/assets/img/base/power-off.png'
+      } else if (data.deviceType === 'switch') {
+        if (data.deviceInfo.isSceneSwitch) {
+          return '/assets/img/base/scene-switch-btn.png'
+        }
+        const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
+        return data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff ? '/assets/img/base/power-on.png' : '/assets/img/base/power-off.png'
+      }
+      return ''
+    }
   },
 
   /**
@@ -45,7 +57,7 @@ ComponentWithComputed({
    */
   methods: {
     handleCardTap() {
-      if (this.data.deviceInfo.isOnline) {
+      if (this.data.deviceInfo.onLineStatus) {
         this.triggerEvent('cardTap', this.data.deviceInfo)
       } else {
         wx.showToast({
@@ -55,7 +67,7 @@ ComponentWithComputed({
       }
     },
     handlePowerTap() {
-      if (this.data.deviceInfo.isOnline) {
+      if (this.data.deviceInfo.onLineStatus) {
         this.triggerEvent('powerTap', this.data.deviceInfo)
       } else {
         wx.showToast({

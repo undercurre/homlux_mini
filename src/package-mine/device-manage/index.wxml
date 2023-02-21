@@ -18,7 +18,7 @@
     <text class="text-28rpx text-black-59 mt-48rpx">这个房间空空如也</text>
   </view>
   <!-- 设备列表 -->
-  <view id="listWrapper" class="flex-1" wx:if="{{isRender}}">
+  <view id="listWrapper" class="flex-1">
     <scroll-view scroll-y="true" style="height: {{listHeight}}px;">
       <van-cell-group inset wx:for="{{deviceList}}" wx:key="deviceId">
         <van-cell clickable bind:click="handleCardClick" data-index="{{index}}">

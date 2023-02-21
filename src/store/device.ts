@@ -9,6 +9,10 @@ export const deviceStore = observable({
    */
   deviceList: [] as Device.DeviceItem[],
   /**
+   * 当前选择的灯具的状态
+   */
+  lightInfo: {} as Record<string, number>,
+  /**
    * 选了了那些设备
    */
   selectList: [] as string[],
@@ -57,6 +61,6 @@ export const deviceStore = observable({
 
 export const deviceBinding = {
   store: deviceStore,
-  fields: ['selectList', 'selectType', 'selectSwitchList', 'deviceList'],
+  fields: ['selectList', 'selectType', 'selectSwitchList', 'deviceList', 'lightInfo'],
   actions: [],
 }
