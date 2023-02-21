@@ -1,6 +1,6 @@
 import { baseRequest, BaseRequestOptions } from './baseRequest'
 import storage from '../storage'
-import { env, mzaiotBaseURL,TOKEN_EXPIRED } from '../../config/index'
+import { env, mzaiotBaseURL, TOKEN_EXPIRED } from '../../config/index'
 
 // 后端默认返回格式
 type MzaiotResponseRowData<T extends AnyResType = AnyResType> = {
@@ -58,9 +58,9 @@ const mzaiotRequest: MzaiotRequest = function <T extends AnyResType>(options: Ba
     ...options,
     generalSuccessHandler: (result) => {
       // token过期，跳转到登录
-      if ((result.data as unknown as {code: number}).code === TOKEN_EXPIRED) {
+      if ((result.data as unknown as { code: number }).code === TOKEN_EXPIRED) {
         wx.redirectTo({
-          url: '/pages/login/index'
+          url: '/pages/login/index',
         })
         return result.data
       }

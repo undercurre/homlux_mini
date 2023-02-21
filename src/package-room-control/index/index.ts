@@ -80,11 +80,11 @@ ComponentWithComputed({
           lightList.push(device)
         } else if (device.proType === proType.switch) {
           // 0x21是开关，需要拆开开关展示
-          device.switchInfoDTOList.forEach((switchItem)=>{
+          device.switchInfoDTOList.forEach((switchItem) => {
             switchList.push({
               ...device,
               mzgdPropertyDTOList: {
-                [switchItem.switchId]: device.mzgdPropertyDTOList[switchItem.switchId]
+                [switchItem.switchId]: device.mzgdPropertyDTOList[switchItem.switchId],
               },
               switchInfoDTOList: [switchItem],
               isSceneSwitch: false, // todo: 需要根据场景判断
