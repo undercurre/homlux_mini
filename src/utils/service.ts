@@ -70,9 +70,9 @@ export function loadUserInfo() {
     avatar = storage.get<string>('headImageUrl') as string
   }
   runInAction(() => {
-    userStore.userInfo.nickname = nickName
-    userStore.userInfo.avatar = avatar
-    userStore.userInfo.phone = storage.get<string>('mobilePhone') as string
+    userStore.userInfo.nickName = nickName
+    userStore.userInfo.headImageUrl = avatar
+    userStore.userInfo.mobilePhone = storage.get<string>('mobilePhone') as string
   })
 }
 
