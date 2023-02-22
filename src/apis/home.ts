@@ -89,3 +89,34 @@ export async function queryHouseUserList({ houseId = ''}) {
     },
   })
 }
+
+/**
+ * 更新家庭成员权限
+ * 家庭成员权限，创建者：1 管理员：2 游客：3
+ */
+export async function updateHouseUserAuth({ userId = '', auth = 3}) {
+  return await mzaiotRequest.post({
+    log: false,
+    loading: true,
+    url: '/v1/mzgd/user/house/updateHouseUserAuth',
+    data: {
+      userId,
+      houseUserAuth: auth
+    },
+  })
+}
+
+/**
+ * 删除家庭成员
+ */
+export async function deleteHouseUser({ houseId = '', userId = '' }) {
+  return await mzaiotRequest.post({
+    log: false,
+    loading: true,
+    url: '/v1/mzgd/user/house/delHouseUser',
+    data: {
+      houseId,
+      userId
+    },
+  })
+}

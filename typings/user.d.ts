@@ -22,18 +22,30 @@ declare namespace User {
     /**
      * 头像
      */
-    avatar: string
+    headImageUrl: string
     /**
      * 昵称
      */
-    nickname: string
+    nickName: string
     /**
      * 手机号
      */
-    phone: string
+    mobilePhone: string
     /**
      * 用户id
      */
-    id: string
+    userId: string,
+    /**
+     * 名称
+     */
+    name: string,
+    /**
+     * 微信id
+     */
+    wxId: string,
+    /**
+     * 性别
+     */
+    sex: number
   }
 }

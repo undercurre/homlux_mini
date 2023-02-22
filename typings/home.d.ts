@@ -74,7 +74,7 @@ declare namespace Home {
     /**
      * 成员权限编码
      */
-    userHouseAuth: number | string,
+    userHouseAuth: number,
     /**
      * 成员权限名称
      */
@@ -86,7 +86,11 @@ declare namespace Home {
     /**
      * 成员名称
      */
-    userName: string
+    userName: string,
+    /**
+     * 成员头像
+     */
+    headImageUrl: string
   }
 
   export interface HomeMemberInfo {
