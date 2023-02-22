@@ -91,8 +91,8 @@
           "name": "添加智能网关",
           "pathName": "package-distribution/add-gateway/index",
           "query": "deviceName=智能网关&wifiSSID=xyh_wifi&apSSID=midea_16_E5FB&method=wifi&dsn=000016111MSGWZ00288B1539E5FB0000",
-          "scene": null,
-          "launchMode": "default"
+          "launchMode": "default",
+          "scene": null
         },
         {
           "name": "绑定家庭",

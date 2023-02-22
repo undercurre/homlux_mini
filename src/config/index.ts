@@ -4,6 +4,8 @@ interface ConfigWithEnv<T> {
 }
 
 export { sceneMap, sceneList } from './scene'
+export * from './code'
+export * from './device'
 
 export const env: 'dev' | 'prod' = 'dev'
 
