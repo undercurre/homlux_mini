@@ -31,7 +31,12 @@ ComponentWithComputed({
     _minHeight: 0,
     _componentHeight: 0,
     _wfullpx: 0,
-    barWidth: 0,
+    _touchStartY: 0,
+    info: {
+      bottomBarHeight: 0,
+      componentHeight: 0,
+      divideRpxByPx: 0,
+    },
     isRender: false,
     tab: '' as '' | 'light' | 'switch' | 'curtain',
     lightInfoInner: {
@@ -197,19 +202,23 @@ ComponentWithComputed({
         ? (storage.get<number>('divideRpxByPx') as number)
         : 0.5
       let bottomBarHeight = storage.get<number>('bottomBarHeight') as number
-      const _componentHeight = 776 * divideRpxByPx
+      const _componentHeight = 716 * divideRpxByPx
       let _minHeight = 0
       if (bottomBarHeight === 0) {
         bottomBarHeight = 32 // 如果没有高度，就给个高度，防止弹窗太贴底部
       }
       _minHeight = divideRpxByPx * 60 + bottomBarHeight
-      this.data._minHeight = _minHeight
-      this.data._componentHeight = _componentHeight
-      this.data._bottom = _minHeight - _componentHeight
-      this.data._wfullpx = divideRpxByPx * 750
-      this.data._divideRpxByPx = divideRpxByPx
+      this.data._minHeight = _minHeight // 最小高度
+      this.data._componentHeight = _componentHeight // 组件高度
+      this.data._bottom = _minHeight - _componentHeight // 组件相对底部高度
+      this.data._wfullpx = divideRpxByPx * 750 // 屏幕宽度
+      this.data._divideRpxByPx = divideRpxByPx // px rpx比率
       this.setData({
-        barWidth: 686 * divideRpxByPx,
+        info: {
+          bottomBarHeight: bottomBarHeight,
+          divideRpxByPx,
+          componentHeight: _componentHeight,
+        },
       })
     },
   },
@@ -219,18 +228,18 @@ ComponentWithComputed({
    */
   methods: {
     handleBarTap() {
-      const from = this.properties.popup ? 0 : this.data._bottom
-      const to = this.properties.popup ? this.data._bottom : 0
+      // const from = this.properties.popup ? 0 : this.data._bottom
+      // const to = this.properties.popup ? this.data._bottom : 0
 
       this.animate(
         '#popup',
         [
           {
-            bottom: from + 'px',
+            // bottom: from + 'px',
             ease: 'ease-in-out',
           },
           {
-            bottom: to + 'px',
+            // bottom: to + 'px',
             ease: 'ease-in-out',
           },
         ],
@@ -342,10 +351,11 @@ ComponentWithComputed({
       })
     },
     handleAllOn() {
-      this.sendDeviceControl('onOff', 1)
+      //todo: 先判断当前tab，再下发控制
+      // this.sendDeviceControl('onOff', 1)
     },
     handleAllOff() {
-      this.sendDeviceControl('onOff', 0)
+      // this.sendDeviceControl('onOff', 0)
     },
     handleLinkPopupClose() {
       this.setData({
