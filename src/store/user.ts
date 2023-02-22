@@ -9,7 +9,7 @@ export const userStore = observable({
     headImageUrl: '',
     name: '',
     wxId: '',
-    sex: 0
+    sex: 0,
   } as User.UserInfo,
 
   async updateUserInfo() {

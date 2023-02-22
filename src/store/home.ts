@@ -1,5 +1,11 @@
 import { observable, runInAction } from 'mobx-miniprogram'
-import { getHomeList, queryUserHouseInfo, queryHouseUserList, updateHouseUserAuth, deleteHouseUser } from '../apis/index'
+import {
+  getHomeList,
+  queryUserHouseInfo,
+  queryHouseUserList,
+  updateHouseUserAuth,
+  deleteHouseUser,
+} from '../apis/index'
 import { roomStore } from './room'
 
 export const homeStore = observable({
@@ -79,12 +85,12 @@ export const homeStore = observable({
     }
   },
 
-    /**
+  /**
    * 更改家庭成员权限
    * 家庭成员权限，创建者：1 管理员：2 游客：3
    */
   async updateMemberAuth(userId: string, auth: number) {
-    const res = await updateHouseUserAuth({userId, auth})
+    const res = await updateHouseUserAuth({ userId, auth })
     if (res.success) {
       runInAction(() => {
         for (let i = 0; i < homeStore.homeMemberInfo.houseUserList.length; i++) {
@@ -106,7 +112,7 @@ export const homeStore = observable({
    * 删除家庭成员
    */
   async deleteMember(userId: string) {
-    const res = await deleteHouseUser({ houseId: this.currentHomeId, userId})
+    const res = await deleteHouseUser({ houseId: this.currentHomeId, userId })
     if (res.success) {
       runInAction(() => {
         for (let i = 0; i < homeStore.homeMemberInfo.houseUserList.length; i++) {
@@ -120,11 +126,18 @@ export const homeStore = observable({
     } else {
       return Promise.reject('删除家庭成员失败')
     }
-  }
+  },
 })
 
 export const homeBinding = {
   store: homeStore,
   fields: ['homeList', 'currentHomeId', 'currentHomeDetail'],
-  actions: ['updateHomeInfo', 'updateHomeList', 'updateCurrentHomeDetail', 'updateHomeMemberList', 'updateMemberAuth', 'deleteMember'],
+  actions: [
+    'updateHomeInfo',
+    'updateHomeList',
+    'updateCurrentHomeDetail',
+    'updateHomeMemberList',
+    'updateMemberAuth',
+    'deleteMember',
+  ],
 }

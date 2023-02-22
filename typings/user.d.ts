@@ -34,15 +34,15 @@ declare namespace User {
     /**
      * 用户id
      */
-    userId: string,
+    userId: string
     /**
      * 名称
      */
-    name: string,
+    name: string
     /**
      * 微信id
      */
-    wxId: string,
+    wxId: string
     /**
      * 性别
      */
