@@ -48,7 +48,6 @@ ComponentWithComputed({
   computed: {
     title(data) {
       if (data.currentRoomIndex !== undefined && data.roomList) {
-        console.log(data.roomList, data.currentRoomIndex, data.roomList[data.currentRoomIndex])
         return data.roomList[data.currentRoomIndex]?.roomName
       }
       return ''
@@ -76,10 +75,8 @@ ComponentWithComputed({
       // const curtainList = [] as Device.DeviceItem[]
       value.forEach((device) => {
         if (device.proType === proType.light) {
-          // 0x13是灯
           lightList.push(device)
         } else if (device.proType === proType.switch) {
-          // 0x21是开关，需要拆开开关展示
           device.switchInfoDTOList.forEach((switchItem) => {
             switchList.push({
               ...device,
@@ -88,6 +85,7 @@ ComponentWithComputed({
               },
               switchInfoDTOList: [switchItem],
               isSceneSwitch: false, // todo: 需要根据场景判断
+              uniId: `${device.deviceId}:${switchItem.switchId}`,
             })
           })
         }
@@ -197,32 +195,38 @@ ComponentWithComputed({
       })
     },
     handleDeviceCardTap(e: { detail: Device.DeviceItem }) {
-      if (deviceStore.selectList.includes(e.detail.deviceId)) {
-        const index = deviceStore.selectList.findIndex((item: string) => item === e.detail.deviceId)
-        deviceStore.selectList.splice(index, 1)
-        runInAction(() => {
-          deviceStore.selectList = [...deviceStore.selectList]
-        })
-        if (e.detail.proType === proType.switch) {
-          const index = deviceStore.selectSwitchList.findIndex((item: string) => item === e.detail.deviceId)
-          deviceStore.selectSwitchList.splice(index, 1)
+      if (e.detail.uniId) {
+        // 开关选择逻辑
+        if (deviceStore.selectList.includes(e.detail.uniId)) {
+          const index = deviceStore.selectList.findIndex((item: string) => item === e.detail.uniId)
+          deviceStore.selectList.splice(index, 1)
           runInAction(() => {
-            deviceStore.selectSwitchList = [...deviceStore.selectSwitchList]
+            deviceStore.selectList = [...deviceStore.selectList]
+          })
+        } else {
+          runInAction(() => {
+            deviceStore.selectList = [...deviceStore.selectList, e.detail.uniId]
           })
         }
       } else {
-        runInAction(() => {
-          deviceStore.selectList = [...deviceStore.selectList, e.detail.deviceId]
-          if (e.detail.proType === proType.switch) {
-            deviceStore.selectSwitchList = [...deviceStore.selectSwitchList, e.detail.deviceId]
-          }
-          if (e.detail.proType === proType.light) {
-            deviceStore.lightInfo = {
-              Level: e.detail.mzgdPropertyDTOList['1'].Level,
-              ColorTemp: e.detail.mzgdPropertyDTOList['1'].ColorTemp,
+        // 灯、窗帘选择逻辑
+        if (deviceStore.selectList.includes(e.detail.deviceId)) {
+          const index = deviceStore.selectList.findIndex((item: string) => item === e.detail.deviceId)
+          deviceStore.selectList.splice(index, 1)
+          runInAction(() => {
+            deviceStore.selectList = [...deviceStore.selectList]
+          })
+        } else {
+          runInAction(() => {
+            deviceStore.selectList = [...deviceStore.selectList, e.detail.deviceId]
+            if (e.detail.proType === proType.light) {
+              deviceStore.lightInfo = {
+                Level: e.detail.mzgdPropertyDTOList['1'].Level,
+                ColorTemp: e.detail.mzgdPropertyDTOList['1'].ColorTemp,
+              }
             }
-          }
-        })
+          })
+        }
       }
       this.updateSelectType()
     },
@@ -245,16 +249,24 @@ ComponentWithComputed({
         },
         { loading: true },
       )
-      // if (res.success) {
-      //   runInAction(() => {
-      //     const deviceList = [...deviceStore.deviceList]
-      //     if (deviceList.find((device) => device.deviceId === e.detail.deviceId)) {
-      //       deviceList.find((device) => device.deviceId === e.detail.deviceId)!.mzgdPropertyDTOList['1'].OnOff =
-      //         e.detail.mzgdPropertyDTOList['1'].OnOff === 1 ? 0 : 1
-      //     }
-      //     deviceStore.deviceList = deviceList
-      //   })
-      // }
+    },
+    async handleSwitchPowerToggle(e: { detail: Device.DeviceItem }) {
+      const ep = e.detail.switchInfoDTOList[0].switchId
+      await controlDevice(
+        {
+          topic: '/subdevice/control',
+          deviceId: e.detail.gatewayId,
+          method: 'lightControl',
+          inputData: [
+            {
+              devId: e.detail.deviceId,
+              ep,
+              OnOff: e.detail.mzgdPropertyDTOList[ep].OnOff === 1 ? 0 : 1,
+            },
+          ],
+        },
+        { loading: true },
+      )
     },
     handlePopMove() {
       this.setData({
@@ -269,6 +281,10 @@ ComponentWithComputed({
     updateSelectType() {
       const typeList = new Set()
       deviceStore.selectList.forEach((deviceId: string) => {
+        if (deviceId.includes(':')) {
+          typeList.add('switch')
+          return
+        }
         typeList.add(this.data.deviceIdTypeMap[deviceId])
       })
       runInAction(() => {

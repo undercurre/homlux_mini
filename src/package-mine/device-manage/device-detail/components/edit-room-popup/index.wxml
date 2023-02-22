@@ -1,4 +1,4 @@
-<import src="/templates/popup.wxml" />
+<import src="/commons/templates/popup.wxml" />
 <van-popup show="{{ show }}" round position="bottom" bind:close="handleClose">
   <view class="w-750rpx flex flex-col items-center">
     <template is="title" data="{{title: '所在房间'}}" />

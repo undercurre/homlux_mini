@@ -41,6 +41,12 @@ declare namespace Device {
     isChecked: boolean
     /** 是否为场景开关 */
     isSceneSwitch?: boolean
+    /**
+     * 如果需要将开关拆分，需要这个id
+     * 格式： deviceId:switchInfoDTOList[0].switchId
+     * 如: xxxxx:1 xxxxx:2
+     */
+    uniId: string
   }
 
   interface MzgdPropertyDTO {

@@ -6,6 +6,7 @@ import { homeStore, userStore } from '../store/index'
 import { emitter } from './eventBus'
 
 export function logout() {
+  storage.remove('mobilePhone')
   storage.remove('token')
   wx.redirectTo({
     url: '/pages/login/index',
@@ -57,7 +58,7 @@ export function startWebsocketService() {
   )
 }
 
-function loadUserInfo() {
+export function loadUserInfo() {
   let nickName = '',
     avatar = ''
   if (storage.get<string>('nickName')) {

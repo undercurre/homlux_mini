@@ -76,8 +76,14 @@ ComponentWithComputed({
       return false
     },
     isSelectMultiSwitch(data) {
-      if (data.selectSwitchList) {
-        return data.selectSwitchList.length > 1
+      if (data.selectList) {
+        let count = 0
+        data.selectList.forEach((deviceId: string) => {
+          if (deviceId.includes(':')) {
+            count++
+          }
+        })
+        return count > 1
       }
       return false
     },

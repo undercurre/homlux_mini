@@ -15,38 +15,38 @@ ComponentWithComputed({
    */
   data: {
     isEditRole: false,
-    memberList: [] as object [],
+    memberList: [] as object[],
     actionList: [
       {
         text: '设为管理员',
         label: '与创建者相同的设备/场景管理权限',
         isCheck: true,
-        isShow: true
+        isShow: true,
       },
       {
         text: '取消管理员',
         isCheck: false,
-        isShow: false
+        isShow: false,
       },
       {
         text: '移除该成员',
         isCheck: false,
-        isShow: true
+        isShow: true,
       },
       {
         text: '成为管理员',
         label: '与创建者相同的设备/场景管理权限',
         isCheck: true,
-        isShow: false
+        isShow: false,
       },
       {
         text: '成为访客',
         label: '仅可使用设备与场景',
         isCheck: false,
-        isShow: false
+        isShow: false,
       },
     ],
-    curPopupClickText: ''
+    curPopupClickText: '',
   },
 
   computed: {},
@@ -64,16 +64,16 @@ ComponentWithComputed({
     initData() {
       homeBinding.store.updateHomeMemberList().then(() => {
         console.log('lmn>>>homeMemberInfo::' + JSON.stringify(homeBinding.store.homeMemberInfo))
-        const result: object [] =  []
+        const result: object[] = []
         if (homeBinding.store.homeMemberInfo.houseUserList) {
           homeBinding.store.homeMemberInfo.houseUserList.forEach((item: Home.HouseUserItem) => {
             result.push({
               icon: '/assets/img/device/light.png',
               name: item.userName,
-              role: item.userHouseAuthName
+              role: item.userHouseAuthName,
             })
           })
-          this.setData({ memberList: result})
+          this.setData({ memberList: result })
         }
       })
     },
@@ -85,7 +85,7 @@ ComponentWithComputed({
     cancelChangeRole() {
       this.setData({
         isEditRole: false,
-        curPopupClickText: ''
+        curPopupClickText: '',
       })
     },
     onPopupClick(data: any) {
@@ -94,7 +94,7 @@ ComponentWithComputed({
       console.log('lmn>>>' + JSON.stringify(item))
     },
     comfirmChangeRole() {
-      this.setData({isEditRole: false })
+      this.setData({ isEditRole: false })
       const text = this.data.curPopupClickText
       // if (text === '设为管理员') {
       //
@@ -108,6 +108,6 @@ ComponentWithComputed({
       //
       // }
       console.log('lmn>>>comfirmChangeRole::' + text)
-    }
+    },
   },
 })

@@ -24,7 +24,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .py-10rpx{padding-top:10rpx;padding-bottom:10rpx;}
 .py-12rpx{padding-top:12rpx;padding-bottom:12rpx;}
 .py-16rpx{padding-top:16rpx;padding-bottom:16rpx;}
-.py-20rpx{padding-top:20rpx;padding-bottom:20rpx;}
 .py-24rpx{padding-top:24rpx;padding-bottom:24rpx;}
 .py-30rpx{padding-top:30rpx;padding-bottom:30rpx;}
 .py-32rpx{padding-top:32rpx;padding-bottom:32rpx;}
@@ -263,7 +262,8 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .absolute{position:absolute;}
 .fixed{position:fixed;}
 .relative{position:relative;}
-.h-0{height:0rpx;}
+.h-0,
+.h-0rpx{height:0rpx;}
 .h-100vh,
 .h-screen{height:100vh;}
 .h-104rpx{height:104rpx;}
@@ -404,4 +404,3 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .box-border{box-sizing:border-box;}
 .transition{transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms;}
 .transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms;}
-.text-overflow{text-overflow: ellipsis}

@@ -78,14 +78,14 @@ export async function delUserHouse(houseId: string) {
 /**
  * 查询家庭成员列表
  */
-export async function queryHouseUserList({ houseId = ''}) {
+export async function queryHouseUserList({ houseId = '' }) {
   return await mzaiotRequest.post<Home.HomeMemberInfo>({
     log: false,
     loading: true,
     url: '/v1/mzgd/user/house/queryHouseUserList',
     data: {
       houseId,
-      pageSize: 50
+      pageSize: 50,
     },
   })
 }

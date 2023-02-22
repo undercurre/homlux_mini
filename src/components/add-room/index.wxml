@@ -1,4 +1,4 @@
-<import src="/templates/popup.wxml" />
+<import src="/commons/templates/popup.wxml" />
 <van-popup show="{{ show }}" z-index="10000" position="bottom" round bind:close="handleClose">
   <view class="px-32rpx text-black-2a">
     <view class="flex-center pb-64rpx">

@@ -1,12 +1,10 @@
 module.exports = {
   includes: function (list, id) {
-    var isInclude = false
     for (var index = 0; index < list.length; index++) {
       if (list[index] === id) {
-        isInclude = true
-        break
+        return true
       }
     }
-    return isInclude
+    return false
   },
 }

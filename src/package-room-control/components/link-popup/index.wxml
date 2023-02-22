@@ -1,5 +1,5 @@
-<wxs src="./index.wxs" module="module" />
-<import src="/templates/popup.wxml" />
+<wxs src="/commons/wxs/util.wxs" module="module" />
+<import src="/commons/templates/popup.wxml" />
 <van-popup show="{{ show }}" z-index="10001" round position="bottom" bind:close="handleClose">
   <view class="w-750rpx h-50vh relative flex flex-col items-center">
     <template is="title" data="{{title: title}}" />

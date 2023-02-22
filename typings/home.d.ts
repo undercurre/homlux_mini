@@ -74,15 +74,15 @@ declare namespace Home {
     /**
      * 成员权限编码
      */
-    userHouseAuth: number | string,
+    userHouseAuth: number | string
     /**
      * 成员权限名称
      */
-    userHouseAuthName: string,
+    userHouseAuthName: string
     /**
      * 	成员id
      */
-    userId: string,
+    userId: string
     /**
      * 成员名称
      */
@@ -90,7 +90,7 @@ declare namespace Home {
   }
 
   export interface HomeMemberInfo {
-    houseUserList: HouseUserItem [],
+    houseUserList: HouseUserItem[]
     totalElements: number
   }
 }

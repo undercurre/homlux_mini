@@ -1,5 +1,6 @@
 import { login } from '../../apis/index'
 import { homeStore } from '../../store/index'
+import { loadUserInfo } from '../../utils/index'
 import { storage } from '../../utils/storage'
 
 // pages/login/index.ts
@@ -52,6 +53,7 @@ Component({
             storage.set(item, value, null)
           }
         })
+        loadUserInfo()
         homeStore.updateHomeInfo()
         wx.switchTab({
           url: '/pages/index/index',

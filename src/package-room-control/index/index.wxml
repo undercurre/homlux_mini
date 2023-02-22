@@ -1,5 +1,5 @@
 <!--package-room/index/index.wxml-->
-<wxs module="module" src="./index.wxs"></wxs>
+<wxs module="module" src="/commons/wxs/util.wxs"></wxs>
 <!-- 背景 -->
 <svg-icon name="room-bg" width="100vw" height="100vh" class="fixed bg-z-index"></svg-icon>
 
@@ -46,7 +46,7 @@
           <view class="mt-24rpx" wx:if="{{switchList && switchList.length>0}}">
             <text class="text-24rpx text-black-59">开关面板</text>
             <view class="w-686rpx grid grid-cols-4 gap-x-16rpx gap-y-24rpx mt-24rpx">
-              <device-card showControl device-type="switch" wx:for="{{switchList}}" wx:key="deviceId" data-type="switch" data-info="{{item}}" bind:powerTap="handleDevicePowerTap" bindtouchend="handleTouchEnd" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" select="{{module.includes(selectList, item.deviceId)}}" />
+              <device-card showControl device-type="switch" wx:for="{{switchList}}" wx:key="uniId" data-type="switch" data-info="{{item}}" bind:powerTap="handleSwitchPowerToggle" bindtouchend="handleTouchEnd" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" select="{{module.includes(selectList, item.uniId)}}" />
             </view>
           </view>
 

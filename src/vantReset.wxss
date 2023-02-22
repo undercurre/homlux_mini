@@ -86,8 +86,17 @@ page {
   font-size: 48rpx !important;
 }
 
+.van-cell__left-icon-wrap {
+  margin-right: 24rpx !important;
+}
+
 .van-icon-arrow {
   font-size: 32rpx !important;
+}
+
+.van-cell__title {
+  font-weight: 400;
+  font-size: 32rpx;
 }
 
 /* cell end */

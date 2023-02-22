@@ -77,7 +77,7 @@ export const homeStore = observable({
     } else {
       return Promise.reject('获取成员信息失败')
     }
-  }
+  },
 })
 
 export const homeBinding = {
