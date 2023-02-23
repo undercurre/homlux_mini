@@ -10,3 +10,12 @@ export async function querySceneList(roomId: string) {
     },
   })
 }
+
+export async function addScene(data: Scene.AddSceneDto) {
+  return await mzaiotRequest.post<IAnyObject>({
+    log: true,
+    loading: true,
+    url: '/v1/mzgd/scene/querySceneListByRoomId',
+    data,
+  })
+}

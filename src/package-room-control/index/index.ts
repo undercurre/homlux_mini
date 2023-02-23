@@ -8,12 +8,24 @@ import {
   sceneBinding,
   sceneStore,
   roomStore,
+  homeStore,
 } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { controlDevice } from '../../apis/index'
+import { controlDevice, saveDeviceOrder } from '../../apis/index'
 import { proName, proType } from '../../config/device'
 import { emitter, WSEventType } from '../../utils/eventBus'
+
+interface ClienRect {
+  id: string // 节点的ID
+  left: number // 节点的左边界坐标
+  right: number // 节点的右边界坐标
+  top: number // 节点的上边界坐标
+  bottom: number // 节点的下边界坐标
+  width: number // 节点的宽度
+  height: number // 节点的高度
+  dataset: Record<string, any> // 节点数据
+}
 
 ComponentWithComputed({
   behaviors: [
@@ -43,6 +55,11 @@ ComponentWithComputed({
     isLongPress: false,
     longPressType: '',
     longPressDevice: {} as Device.DeviceItem,
+    longPressBeginIndex: 0,
+    lightCardElements: [] as ClienRect[],
+    switchCardElements: [] as ClienRect[],
+    curtainCardElements: [] as ClienRect[],
+    tempList: [] as Device.DeviceItem[],
   },
 
   computed: {
@@ -72,7 +89,6 @@ ComponentWithComputed({
     deviceList(value: Device.DeviceItem[]) {
       const lightList = [] as Device.DeviceItem[]
       const switchList = [] as Device.DeviceItem[]
-      // const curtainList = [] as Device.DeviceItem[]
       value.forEach((device) => {
         if (device.proType === proType.light) {
           lightList.push(device)
@@ -91,10 +107,13 @@ ComponentWithComputed({
         }
         // todo: 添加窗帘的
       })
+      lightList.sort((a, b) => a.orderNum - b.orderNum)
+      switchList.sort((a, b) => a.switchInfoDTOList[0].orderNum - b.switchInfoDTOList[0].orderNum)
       this.setData({
         lightList,
         switchList,
       })
+      this.updataCardClienRect()
     },
   },
 
@@ -118,7 +137,7 @@ ComponentWithComputed({
         }, 100)
       })
       sceneStore.updateSceneList()
-      emitter.on('wsReceive', (e) => {
+      emitter.on('wsReceive', async (e) => {
         // 设备相关的消息推送根据条件判断是否刷新
         if (
           typeof e.result.eventData === 'object' &&
@@ -128,7 +147,22 @@ ComponentWithComputed({
           e.result.eventData.roomId &&
           e.result.eventData.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId
         ) {
-          deviceStore.updateSubDeviceList()
+          // 如果是当前房间的设备状态发生变化，更新设备状态
+          // const index = deviceStore.deviceList.findIndex(
+          //   (device) => device.deviceId === (e.result.eventData as Record<string, any>).deviceId,
+          // )
+          // if (index !== -1) {
+          //   const res = await queryDeviceInfoByDeviceId(
+          //     deviceStore.deviceList[index].deviceId,
+          //     deviceStore.deviceList[index].roomId,
+          //   )
+          //   if (res.success) {
+          //     runInAction(() => {
+          //       deviceStore.deviceList[index] = res.result
+          //       deviceStore.deviceList = [...deviceStore.deviceList]
+          //     })
+          //   }
+          // }
         } else if (
           typeof e.result.eventData === 'object' &&
           e.result.eventType === 'room_del' &&
@@ -155,33 +189,171 @@ ComponentWithComputed({
       emitter.off('wsReceive')
     },
 
-    handleTouchMove(e: { changedTouches: { pageX: number; pageY: number }[] }) {
-      console.log(e)
+    updataCardClienRect() {
+      setTimeout(() => {
+        wx.createSelectorQuery()
+          .selectAll('.light-card')
+          .boundingClientRect()
+          .exec((res) => {
+            if (res.length > 0) {
+              this.setData({
+                lightCardElements: res[0],
+              })
+            }
+          })
+        wx.createSelectorQuery()
+          .selectAll('.switch-card')
+          .boundingClientRect()
+          .exec((res) => {
+            if (res.length > 0) {
+              this.setData({
+                switchCardElements: res[0],
+              })
+            }
+          })
+      }, 100)
+    },
+    reorder(e: WechatMiniprogram.TouchEvent) {
+      const x = e.touches[0].pageX
+      const y = e.touches[0].pageY
+      let elementList = [] as ClienRect[]
+      const deviceList = [...this.data.tempList]
+      if (this.data.longPressType === 'light') {
+        elementList = this.data.lightCardElements
+      } else if (this.data.longPressType === 'switch') {
+        elementList = this.data.switchCardElements
+      } else if (this.data.longPressType === 'curtain') {
+        elementList = this.data.curtainCardElements
+      }
+      for (let i = 0; i < elementList.length; i++) {
+        const element = elementList[i]
+        if (x > element.left && x < element.right && y > element.top && y < element.bottom) {
+          const endIndex = element.dataset.index as number
+          const beginIndex = this.data.longPressBeginIndex
+          //向后移动
+          if (beginIndex < endIndex) {
+            const temp = deviceList[beginIndex]
+            for (let j = beginIndex; j < endIndex; j++) {
+              deviceList[j] = deviceList[j + 1]
+            }
+            deviceList[endIndex] = temp
+          }
+          //向前移动
+          if (beginIndex > endIndex) {
+            const temp = deviceList[beginIndex]
+            for (let j = beginIndex; j > endIndex; j--) {
+              deviceList[j] = deviceList[j - 1]
+            }
+            deviceList[endIndex] = temp
+          }
+        }
+      }
+      if (this.data.longPressType === 'light') {
+        this.setData({
+          lightList: deviceList,
+        })
+      } else if (this.data.longPressType === 'switch') {
+        this.setData({
+          switchList: deviceList,
+        })
+      } else if (this.data.longPressType === 'curtain') {
+        this.setData({
+          curtainList: deviceList,
+        })
+      }
+    },
+    saveOrder() {
+      const orderData = {
+        deviceInfoByDeviceVoList: [],
+        type: '0',
+      } as Device.OrderSaveData
+      if (this.data.longPressType === 'light') {
+        this.data.lightList.forEach((device, index) => {
+          if (device.orderNum !== index) {
+            orderData.deviceInfoByDeviceVoList.push({
+              deviceId: device.deviceId,
+              houseId: homeStore.currentHomeDetail.houseId,
+              roomId: roomStore.roomList[roomStore.currentRoomIndex].roomId,
+              orderNum: index.toString(),
+            })
+          }
+        })
+      } else if (this.data.longPressType === 'switch') {
+        orderData.type = '1'
+        console.log(this.data.switchList)
+        this.data.switchList.forEach((device, index) => {
+          if (device.switchInfoDTOList[0].orderNum !== index) {
+            orderData.deviceInfoByDeviceVoList.push({
+              deviceId: device.deviceId,
+              houseId: homeStore.currentHomeDetail.houseId,
+              roomId: roomStore.roomList[roomStore.currentRoomIndex].roomId,
+              orderNum: index.toString(),
+              switchId: device.switchInfoDTOList[0].switchId,
+            })
+          }
+        })
+      }
+      saveDeviceOrder(orderData)
+    },
+    handleTouchMove(e: WechatMiniprogram.TouchEvent) {
       this.setData({
         touchLocation: {
-          x: e.changedTouches[0].pageX,
-          y: e.changedTouches[0].pageY,
+          x: e.touches[0].pageX,
+          y: e.touches[0].pageY,
         },
       })
+      this.reorder(e)
     },
     handleTouchEnd() {
+      if (!this.data.isLongPress) {
+        return
+      }
+      this.updataCardClienRect()
       this.setData({
         isLongPress: false,
       })
+      let orderHasChange = false
+      if (this.data.longPressType === 'light') {
+        this.data.lightList.some((device, index) => {
+          if (device.deviceId !== this.data.tempList[index].deviceId) {
+            orderHasChange = true
+            return true
+          }
+          return false
+        })
+      } else if (this.data.longPressType === 'switch') {
+        this.data.switchList.some((device, index) => {
+          if (device.uniId !== this.data.tempList[index].uniId) {
+            orderHasChange = true
+            return true
+          }
+          return false
+        })
+      }
+      if (orderHasChange) {
+        this.saveOrder()
+      }
     },
     handleDeviceLongPress(e: {
-      currentTarget: { type: string; info: Device.DeviceItem }
-      changedTouches: { pageX: number; pageY: number }[]
+      currentTarget: { dataset: { type: string; info: Device.DeviceItem; index: number } }
+      touches: { pageX: number; pageY: number }[]
     }) {
-      console.log(e)
+      let tempList = [] as Device.DeviceItem[]
+      if (e.currentTarget.dataset.type === 'light') {
+        tempList = [...this.data.lightList]
+      } else if (e.currentTarget.dataset.type === 'switch') {
+        tempList = [...this.data.switchList]
+      }
       this.setData({
         isLongPress: true,
+        longPressBeginIndex: e.currentTarget.dataset.index,
         touchLocation: {
-          x: e.changedTouches[0].pageX,
-          y: e.changedTouches[0].pageY,
+          x: e.touches[0].pageX,
+          y: e.touches[0].pageY,
         },
-        longPressType: e.currentTarget.type,
-        longPressDevice: e.currentTarget.info,
+        longPressType: e.currentTarget.dataset.type,
+        longPressDevice: e.currentTarget.dataset.info,
+        tempList,
       })
     },
     handleSceneTap() {
@@ -195,6 +367,7 @@ ComponentWithComputed({
       })
     },
     handleDeviceCardTap(e: { detail: Device.DeviceItem }) {
+      const deviceMap = deviceStore.deviceMap
       if (e.detail.uniId) {
         // 开关选择逻辑
         if (deviceStore.selectList.includes(e.detail.uniId)) {
@@ -216,6 +389,21 @@ ComponentWithComputed({
           runInAction(() => {
             deviceStore.selectList = [...deviceStore.selectList]
           })
+          // 将面板的灯状态恢复到上一个选中的灯
+          let latestSelectLightId = ''
+          deviceStore.selectList.forEach((deviceId) => {
+            if (deviceMap[deviceId].proType === proType.light) {
+              latestSelectLightId = deviceId
+            }
+          })
+          if (latestSelectLightId) {
+            runInAction(() => {
+              deviceStore.lightInfo = {
+                Level: deviceMap[latestSelectLightId].mzgdPropertyDTOList['1'].Level,
+                ColorTemp: deviceMap[latestSelectLightId].mzgdPropertyDTOList['1'].ColorTemp,
+              }
+            })
+          }
         } else {
           runInAction(() => {
             deviceStore.selectList = [...deviceStore.selectList, e.detail.deviceId]

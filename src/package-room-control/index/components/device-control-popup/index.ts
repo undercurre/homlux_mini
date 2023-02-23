@@ -2,7 +2,7 @@ import { storage } from '../../../../utils/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { deviceBinding, deviceStore } from '../../../../store/index'
-import { proName, proType } from '../../../../config/index'
+import { proType } from '../../../../config/index'
 import { controlDevice } from '../../../../apis/index'
 
 ComponentWithComputed({
@@ -92,30 +92,6 @@ ComponentWithComputed({
       }
       return false
     },
-    deviceIdTypeMap(data): Record<string, string> {
-      if (data.deviceList) {
-        return Object.fromEntries(
-          data.deviceList.map((device: Device.DeviceItem) => [device.deviceId, proName[device.proType]]),
-        )
-      }
-      return {}
-    },
-    deviceIdInfoMap(data): Record<string, Device.DeviceItem> {
-      if (data.deviceList) {
-        return Object.fromEntries(data.deviceList.map((device: Device.DeviceItem) => [device.deviceId, device]))
-      }
-      return {}
-    },
-    lightDeviceMap(data): Record<string, boolean> {
-      if (data.deviceList) {
-        return Object.fromEntries(
-          data.deviceList
-            .filter((device: Device.DeviceItem) => device.proType === proType['light'])
-            .map((device: Device.DeviceItem) => [device.deviceId, true]),
-        )
-      }
-      return {}
-    },
   },
 
   watch: {
@@ -202,7 +178,7 @@ ComponentWithComputed({
         ? (storage.get<number>('divideRpxByPx') as number)
         : 0.5
       let bottomBarHeight = storage.get<number>('bottomBarHeight') as number
-      const _componentHeight = 716 * divideRpxByPx
+      const _componentHeight = 720 * divideRpxByPx
       let _minHeight = 0
       if (bottomBarHeight === 0) {
         bottomBarHeight = 32 // 如果没有高度，就给个高度，防止弹窗太贴底部
@@ -230,7 +206,6 @@ ComponentWithComputed({
     handleBarTap() {
       // const from = this.properties.popup ? 0 : this.data._bottom
       // const to = this.properties.popup ? this.data._bottom : 0
-
       this.animate(
         '#popup',
         [
@@ -260,65 +235,109 @@ ComponentWithComputed({
         tab: e.currentTarget.dataset.tab,
       })
     },
-    async sendDeviceControl(type: 'colorTemp' | 'level' | 'onOff', OnOff?: number) {
+    async switchSendDeviceControl(OnOff: number) {
+      const deviceMap = deviceStore.deviceMap
+      // 按照网关区分
+      const gatewaySelectDeviceMap: Record<string, Device.DeviceItem[]> = {}
+      deviceStore.selectList
+        .filter((id) => id.includes(':'))
+        .forEach((uniId) => {
+          if (gatewaySelectDeviceMap[deviceMap[uniId.split(':')[0]].gatewayId]) {
+            const index = gatewaySelectDeviceMap[deviceMap[uniId.split(':')[0]].gatewayId].findIndex(
+              (device) => device.deviceId === uniId.split(':')[0],
+            )
+            if (index != -1) {
+              gatewaySelectDeviceMap[deviceMap[uniId.split(':')[0]].gatewayId][index].switchInfoDTOList.push({
+                switchId: uniId.split(':')[1],
+              } as unknown as Device.MzgdPanelSwitchInfoDTO)
+            } else {
+              gatewaySelectDeviceMap[deviceMap[uniId.split(':')[0]].gatewayId].push({
+                ...deviceMap[uniId.split(':')[0]],
+                switchInfoDTOList: [{ switchId: uniId.split(':')[1] } as unknown as Device.MzgdPanelSwitchInfoDTO],
+              })
+            }
+          } else {
+            gatewaySelectDeviceMap[deviceMap[uniId.split(':')[0]].gatewayId] = [
+              {
+                ...deviceMap[uniId.split(':')[0]],
+                switchInfoDTOList: [{ switchId: uniId.split(':')[1] } as unknown as Device.MzgdPanelSwitchInfoDTO],
+              },
+            ]
+          }
+        })
+      // 给每个网关的开关下发
+      Object.entries(gatewaySelectDeviceMap).forEach((entries) => {
+        const controlData = [] as Record<string, string | number>[]
+        entries[1].forEach((device) => {
+          device.switchInfoDTOList.forEach((switchInfo) => {
+            controlData.push({
+              devId: device.deviceId,
+              ep: parseInt(switchInfo.switchId),
+              OnOff,
+            })
+          })
+        })
+        controlDevice({
+          topic: '/subdevice/control',
+          deviceId: entries[0],
+          method: 'lightControl',
+          inputData: controlData,
+        })
+      })
+    },
+    async lightSendDeviceControl(type: 'colorTemp' | 'level' | 'onOff', OnOff?: number) {
+      const deviceMap = deviceStore.deviceMap
       // 拿出选中的设备
-      const selectLightdevice: Device.DeviceItem[] = []
+      const selectLightDevice: Device.DeviceItem[] = []
       deviceStore.selectList.forEach((deviceId) => {
-        if (this.data.lightDeviceMap[deviceId]) {
-          selectLightdevice.push(this.data.deviceIdInfoMap[deviceId])
+        if (deviceMap[deviceId].proType === proType.light) {
+          selectLightDevice.push(deviceMap[deviceId])
         }
       })
       // 按照网关区分
       const gatewaySelectDeviceMap: Record<string, Device.DeviceItem[]> = {}
-      selectLightdevice.forEach((device) => {
+      selectLightDevice.forEach((device) => {
         if (gatewaySelectDeviceMap[device.gatewayId]) {
           gatewaySelectDeviceMap[device.gatewayId].push(device)
         } else {
           gatewaySelectDeviceMap[device.gatewayId] = [device]
         }
       })
-      const controlTask = [] as Promise<unknown>[]
       // 给每个网关的灯下发
       Object.entries(gatewaySelectDeviceMap).forEach((entries) => {
         if (type === 'level') {
-          controlTask.push(
-            controlDevice({
-              topic: '/subdevice/control',
-              deviceId: entries[0],
-              method: 'lightControl',
-              inputData: entries[1].map((devive) => ({
-                devId: devive.deviceId,
-                ep: 1,
-                Level: this.data.lightInfoInner.Level,
-              })),
-            }),
-          )
+          controlDevice({
+            topic: '/subdevice/control',
+            deviceId: entries[0],
+            method: 'lightControl',
+            inputData: entries[1].map((devive) => ({
+              devId: devive.deviceId,
+              ep: 1,
+              Level: this.data.lightInfoInner.Level,
+            })),
+          })
         } else if (type === 'colorTemp') {
-          controlTask.push(
-            controlDevice({
-              topic: '/subdevice/control',
-              deviceId: entries[0],
-              method: 'lightControl',
-              inputData: entries[1].map((devive) => ({
-                devId: devive.deviceId,
-                ep: 1,
-                ColorTemp: this.data.lightInfoInner.ColorTemp,
-              })),
-            }),
-          )
+          controlDevice({
+            topic: '/subdevice/control',
+            deviceId: entries[0],
+            method: 'lightControl',
+            inputData: entries[1].map((devive) => ({
+              devId: devive.deviceId,
+              ep: 1,
+              ColorTemp: this.data.lightInfoInner.ColorTemp,
+            })),
+          })
         } else {
-          controlTask.push(
-            controlDevice({
-              topic: '/subdevice/control',
-              deviceId: entries[0],
-              method: 'lightControl',
-              inputData: entries[1].map((devive) => ({
-                devId: devive.deviceId,
-                ep: 1,
-                OnOff,
-              })),
-            }),
-          )
+          controlDevice({
+            topic: '/subdevice/control',
+            deviceId: entries[0],
+            method: 'lightControl',
+            inputData: entries[1].map((devive) => ({
+              devId: devive.deviceId,
+              ep: 1,
+              OnOff,
+            })),
+          })
         }
       })
     },
@@ -331,19 +350,19 @@ ComponentWithComputed({
       this.setData({
         'lightInfoInner.Level': e.detail,
       })
-      this.sendDeviceControl('level')
+      this.lightSendDeviceControl('level')
     },
     handleLevelDragEnd() {
-      this.sendDeviceControl('level')
+      this.lightSendDeviceControl('level')
     },
     handleColorTempDragEnd() {
-      this.sendDeviceControl('colorTemp')
+      this.lightSendDeviceControl('colorTemp')
     },
     handleColorTempChange(e: { detail: number }) {
       this.setData({
         'lightInfoInner.ColorTemp': e.detail,
       })
-      this.sendDeviceControl('colorTemp')
+      this.lightSendDeviceControl('colorTemp')
     },
     handleColorTempDrag(e: { detail: { value: number } }) {
       this.setData({
@@ -351,11 +370,18 @@ ComponentWithComputed({
       })
     },
     handleAllOn() {
-      //todo: 先判断当前tab，再下发控制
-      // this.sendDeviceControl('onOff', 1)
+      if (this.data.tab === 'light') {
+        this.lightSendDeviceControl('onOff', 1)
+      } else if (this.data.tab === 'switch') {
+        this.switchSendDeviceControl(1)
+      }
     },
     handleAllOff() {
-      // this.sendDeviceControl('onOff', 0)
+      if (this.data.tab === 'light') {
+        this.lightSendDeviceControl('onOff', 0)
+      } else if (this.data.tab === 'switch') {
+        this.switchSendDeviceControl(0)
+      }
     },
     handleLinkPopupClose() {
       this.setData({

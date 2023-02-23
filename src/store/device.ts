@@ -21,6 +21,13 @@ export const deviceStore = observable({
    */
   selectType: [] as string[],
 
+  /**
+   * deviceId -> device 映射
+   */
+  get deviceMap(): Record<string, Device.DeviceItem> {
+    return Object.fromEntries(deviceStore.deviceList.map((device: Device.DeviceItem) => [device.deviceId, device]))
+  },
+
   async updateAllRoomDeviceList(houseId: string = homeStore.currentHomeDetail.houseId) {
     const res = await queryAllDevice(houseId)
     if (res.success) {

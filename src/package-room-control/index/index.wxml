@@ -38,7 +38,7 @@
           <view class="mt-24rpx" wx:if="{{lightList && lightList.length>0}}">
             <text class="text-24rpx text-black-59">灯具</text>
             <view class="w-686rpx grid grid-cols-4 gap-x-16rpx gap-y-24rpx mt-24rpx">
-              <device-card showControl device-type="light" wx:for="{{lightList}}" wx:key="deviceId" data-type="light" data-info="{{item}}" bindlongpress="handleDeviceLongPress" bindtouchmove="handleTouchMove" bindtouchend="handleTouchEnd" bind:powerTap="handleLightPowerToggle" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" select="{{module.includes(selectList, item.deviceId)}}" />
+              <device-card class="light-card" showControl device-type="light" wx:for="{{lightList}}" wx:key="deviceId" data-index="{{index}}" data-type="light" data-info="{{item}}" bindlongpress="handleDeviceLongPress" bindtouchmove="handleTouchMove" bindtouchend="handleTouchEnd" bind:powerTap="handleLightPowerToggle" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" select="{{module.includes(selectList, item.deviceId)}}" />
             </view>
           </view>
 
@@ -46,7 +46,7 @@
           <view class="mt-24rpx" wx:if="{{switchList && switchList.length>0}}">
             <text class="text-24rpx text-black-59">开关面板</text>
             <view class="w-686rpx grid grid-cols-4 gap-x-16rpx gap-y-24rpx mt-24rpx">
-              <device-card showControl device-type="switch" wx:for="{{switchList}}" wx:key="uniId" data-type="switch" data-info="{{item}}" bind:powerTap="handleSwitchPowerToggle" bindtouchend="handleTouchEnd" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" select="{{module.includes(selectList, item.uniId)}}" />
+              <device-card class="switch-card" showControl device-type="switch" wx:for="{{switchList}}" wx:key="uniId" data-index="{{index}}" data-type="switch" data-info="{{item}}" bindlongpress="handleDeviceLongPress" bindtouchmove="handleTouchMove" bindtouchend="handleTouchEnd" bind:powerTap="handleSwitchPowerToggle" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" select="{{module.includes(selectList, item.uniId)}}" />
             </view>
           </view>
 
@@ -54,7 +54,7 @@
           <view class="mt-24rpx" wx:if="{{curtainList && curtainList.length>0}}">
             <text class="text-24rpx text-black-59">窗帘</text>
             <view class="w-686rpx grid grid-cols-4 gap-x-16rpx gap-y-24rpx mt-24rpx">
-              <device-card showControl device-type="curtain" wx:for="{{curtainList}}" wx:key="deviceId" data-type="curtain" data-info="{{item}}" bind:powerTap="handleDevicePowerTap" bindtouchend="handleTouchEnd" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" select="{{module.includes(selectList, item.deviceId)}}" />
+              <device-card class="curtain-card" showControl device-type="curtain" wx:for="{{curtainList}}" wx:key="deviceId" data-index="{{index}}" data-type="curtain" data-info="{{item}}" bind:powerTap="handleDevicePowerTap" bindtouchend="handleTouchEnd" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" select="{{module.includes(selectList, item.deviceId)}}" />
             </view>
           </view>
         </view>
@@ -65,6 +65,9 @@
     </view>
   </view>
 </view>
+
+<!-- 滑动排序显示的card -->
+<device-card wx:if="{{isLongPress}}" class="fixed z-1000 opacity-75" style="left: calc({{touchLocation.x}}px - 80rpx); top: calc({{touchLocation.y}}px - 108rpx);" device-type="{{longPressType}}" device-info="{{longPressDevice}}" />
 
 <!-- 设备控制弹窗 -->
 <device-control-popup popup="{{controlPopupUp}}" bind:popMove="handlePopMove"></device-control-popup>

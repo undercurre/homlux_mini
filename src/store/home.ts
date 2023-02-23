@@ -57,8 +57,6 @@ export const homeStore = observable({
       houseId,
     })
 
-    console.log('updateHomeList', res)
-
     if (res.success) {
       runInAction(() => {
         homeStore.currentHomeDetail = Object.assign({ houseId }, res.result)
