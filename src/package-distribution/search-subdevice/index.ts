@@ -4,7 +4,7 @@ import { homeBinding, roomBinding } from '../../store/index'
 import { bleUtil, strUtil, BleClient, getCurrentPageParams } from '../../utils/index'
 import { IBleDevice } from './types'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { sendCmdAddSubdevice, bindDevice, queryDeviceOnlineStatus } from '../../apis/index'
+import { sendCmdAddSubdevice, bindDevice, queryDeviceOnlineStatus, checkDevice } from '../../apis/index'
 
 type StatusName = 'discover' | 'requesting' | 'success' | 'error' | 'openBle'
 
@@ -122,31 +122,8 @@ ComponentWithComputed({
 
         if (deviceList.length <= 0) return
 
-        const list: IBleDevice[] = deviceList.map((device) => {
-          // 这里可以做一些过滤
-          const dataMsg = strUtil.ab2hex(device.advertisData)
-          const msgObj = bleUtil.transferBroadcastData(dataMsg)
-
-          console.log('Device Found', device, dataMsg, msgObj)
-
-          return {
-            deviceUuid: device.deviceId,
-            mac: msgObj.mac,
-            zigbeeMac: '',
-            icon: '/assets/img/device/light.png',
-            name: '子设备' + msgObj.mac.substr(-4, 4),
-            isCheck: false,
-            client: new BleClient({ mac: msgObj.mac, deviceUuid: device.deviceId }),
-            roomId: '',
-            roomName: '',
-            status: 'waiting',
-            requestTimes: 20,
-          } as IBleDevice
-        })
-
-        console.log('onBluetoothDeviceFound', this.data.deviceList.concat(list))
-        this.setData({
-          deviceList: this.data.deviceList.concat(list),
+        deviceList.forEach((device) => {
+          this.handleBleDeviceInfo(device)
         })
       })
 
@@ -169,6 +146,40 @@ ComponentWithComputed({
         },
       })
     },
+
+    async handleBleDeviceInfo(device: WechatMiniprogram.BlueToothDevice) {
+      const dataMsg = strUtil.ab2hex(device.advertisData)
+      const msgObj = bleUtil.transferBroadcastData(dataMsg)
+
+      console.log('Device Found', device, dataMsg, msgObj)
+
+      await checkDevice({
+        mac: msgObj.mac,
+        productId: '26',
+        productIdType: 2,
+      })
+
+      const bleDevice: IBleDevice = {
+        deviceUuid: device.deviceId,
+        mac: msgObj.mac,
+        zigbeeMac: '',
+        icon: '/assets/img/device/light.png',
+        name: '子设备' + msgObj.mac.substr(-4, 4),
+        isChecked: false,
+        client: new BleClient({ mac: msgObj.mac, deviceUuid: device.deviceId }),
+        roomId: '',
+        roomName: '',
+        status: 'waiting',
+        requestTimes: 20,
+      }
+
+      this.data.deviceList.push(bleDevice)
+
+      this.setData({
+        deviceList: this.data.deviceList,
+      })
+    },
+
     // 切换选择发现的设备
     toggleDevice(e: WechatMiniprogram.CustomEvent) {
       console.log('toggleDevice', e)

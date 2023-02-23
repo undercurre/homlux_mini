@@ -1,11 +1,10 @@
-// package-mine/hoom-manage/index.ts
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { roomBinding, homeBinding, userBinding } from '../../store/index'
-import { saveOrUpdateUserHouseInfo, delUserHouse } from '../../apis/index'
+import { saveOrUpdateUserHouseInfo, delUserHouse, quitUserHouse } from '../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -107,8 +106,10 @@ ComponentWithComputed({
       }
     },
 
-    handleHomeSelect(e: WechatMiniprogram.BaseEvent) {
-      console.log('handleHomeSelect', e)
+    hideMenu() {
+      this.setData({
+        'selectHomeMenu.isShow': false,
+      })
     },
 
     toSetting() {
@@ -216,9 +217,31 @@ ComponentWithComputed({
     },
 
     toTransferHome() {
+      if (homeBinding.store.currentHomeDetail.userCount <= 1) {
+        Toast('没有其他成员可供转让')
+
+        return
+      }
+
       this.setData({
         isTransferHome: true,
       })
+    },
+
+    async quitHome() {
+      const res = await Dialog.confirm({
+        message: '是否退出当前家庭',
+      }).catch(() => 'cancel')
+
+      console.log('delHome', res)
+
+      if (res === 'cancel') return
+
+      const delRes = await quitUserHouse(homeBinding.store.currentHomeDetail.houseId)
+
+      Toast(delRes.success ? '退出成功' : '退出失败')
+
+      homeBinding.store.updateHomeInfo()
     },
   },
 })

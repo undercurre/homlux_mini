@@ -26,7 +26,6 @@ Component({
     _interId: 0,
     status: 'linking',
     currentStep: '连接设备',
-    percentage: 0,
     activeIndex: -1,
     stepList: [
       {
@@ -72,7 +71,14 @@ Component({
 
       console.log('startWifi', startRes)
 
-      await socket.connect()
+      const connectRes = await socket.connect()
+
+      if (!connectRes.success) {
+        this.setData({
+          status: 'error',
+        })
+        return
+      }
 
       this.setData({
         activeIndex: 0,
@@ -150,6 +156,12 @@ Component({
           this.queryDeviceOnlineStatus()
         }, 5000)
       }
+    },
+
+    finish() {
+      wx.switchTab({
+        url: '/pages/index/index',
+      })
     },
   },
 })

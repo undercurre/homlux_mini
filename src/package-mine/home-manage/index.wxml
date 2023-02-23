@@ -1,4 +1,4 @@
-<view class="page-container flex flex-col">
+<view class="page-container flex flex-col" bindtap="hideMenu">
   <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="家庭管理"></nav-bar>
 
   <view class="px-48rpx pt-32rpx pb-48rpx">
@@ -9,7 +9,7 @@
         <svg-icon id="homeSelectArrow" class="absolute home-select-arrow" color="#1E2C46" name="material-symbols:arrow-drop-down-rounded" width="48rpx" height="48rpx" />
       </view>
 
-      <image class="w-48 h-48" src="/assets/img/home-manage/setting.png" bind:tap="toSetting"></image>
+      <image wx:if="{{currentHomeDetail.houseUserAuth === 1}}" class="w-48 h-48" src="/assets/img/home-manage/setting.png" bind:tap="toSetting"></image>
     </view>
 
     <view class="pt-16rpx leading-40rpx text-black-59 text-28 opacity-75">
@@ -24,9 +24,9 @@
   <view class="grow flex flex-col justify-between">
     <view>
       <view class="mx-24rpx rounded-32rpx bg-white overflow-hidden">
-        <van-cell title="房间" is-link link-type="navigateTo" url="/package-mine/room-manage/index" />
+        <van-cell title="房间" is-link link-type="navigateTo" url="/package-mine/room-manage/index" border="{{ false }}" />
 
-        <view class="flex flex-row flex-wrap justify-between px-40rpx gap-x-36rpx">
+        <view class="flex flex-row flex-wrap px-40rpx gap-x-36rpx">
           <view wx:for="{{ currentHomeDetail.roomList }}" wx:key="roomId" class="flex flex-col">
             <view class="bg-hex-F6FAFD rounded-32rpx p-32rpx">
               <image class="w-64 h-64 block" src="/assets/img/room/{{item.roomIcon || 'drawing-room'}}.png"></image>
@@ -39,14 +39,16 @@
     </view>
 
     <view class="flex flex-row gap-46rpx pt-30rpx pb-128rpx px-32rpx">
-      <van-button class="grow" size="large" bind:click="toTransferHome">转让家庭</van-button>
+      <van-button class="grow" size="large" bind:click="quitHome" wx:if="{{currentHomeDetail.houseUserAuth !== 1}}">退出家庭</van-button>
+
+      <van-button class="grow" size="large" bind:click="toTransferHome" wx:if="{{currentHomeDetail.houseUserAuth === 1}}">转让家庭</van-button>
 
       <van-button class="grow" size="large" type="primary" bind:click="createHome">新建家庭</van-button>
     </view>
   </view>
 </view>
 
-<home-select-menu x="{{selectHomeMenu.x}}" y="{{selectHomeMenu.y}}" isShow="{{selectHomeMenu.isShow}}" bind:select="handleHomeSelect"></home-select-menu>
+<home-select-menu x="{{selectHomeMenu.x}}" y="{{selectHomeMenu.y}}" isShow="{{selectHomeMenu.isShow}}"></home-select-menu>
 
 <van-action-sheet show="{{ isShowSetting }}" actions="{{ settingActions }}" cancel-text="取消" bind:close="onCloseSetting" bind:select="onSelectSetting" bind:cancel="onCloseSetting" />
 
@@ -70,6 +72,6 @@
 
 <van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />
 
-<transfer-home-popup show="{{isTransferHome}}"></transfer-home-popup>
+<transfer-home-popup wx:if="{{currentHomeDetail.houseUserAuth === 1}}" show="{{isTransferHome}}"></transfer-home-popup>
 
 <van-toast id="van-toast" />

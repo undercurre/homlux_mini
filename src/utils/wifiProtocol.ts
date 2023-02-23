@@ -61,11 +61,18 @@ export class WifiSocket {
     return new Promise<{ success: boolean }>((resolve) => {
       const res = { success: true }
 
+      // 连接热点超时回调
+      const timeId = setTimeout(() => {
+        resolve({ success: false })
+      }, 20000)
+
       const listen = async (onWifiConnectRes: WechatMiniprogram.OnWifiConnectedCallbackResult) => {
         console.log('onWifiConnected', onWifiConnectRes)
 
         if (onWifiConnectRes.wifi.SSID === this.SSID) {
           wx.offWifiConnected(listen)
+
+          clearTimeout(timeId)
           resolve(res)
         }
       }
@@ -80,6 +87,7 @@ export class WifiSocket {
 
           if ((connectRes as IAnyObject).wifiMsg?.includes('already connected')) {
             wx.offWifiConnected(listen)
+            clearTimeout(timeId)
             resolve(res)
           }
         },

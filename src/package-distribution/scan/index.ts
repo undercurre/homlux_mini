@@ -52,6 +52,19 @@ ComponentWithComputed({
         )
       }
 
+      const params = wx.getLaunchOptionsSync()
+      console.log('scanPage', params)
+
+      if (params.scene === 1011) {
+        const scanUrl = decodeURIComponent(params.query.q)
+
+        console.log('scanUrl', scanUrl)
+
+        this.handleScanUrl(scanUrl)
+
+        return
+      }
+
       const authorizeRes = await wx
         .authorize({
           scope: 'scope.userLocation',
@@ -66,8 +79,6 @@ ComponentWithComputed({
 
   pageLifetimes: {
     show() {
-      console.log('scanPage', getCurrentPages(), wx.getLaunchOptionsSync())
-
       console.log('show')
     },
     hide() {
@@ -111,6 +122,10 @@ ComponentWithComputed({
 
     confirmGateway() {
       this.addNearSubdevice()
+
+      this.setData({
+        isShowGatewayList: false,
+      })
     },
 
     async initBle() {
@@ -187,7 +202,11 @@ ComponentWithComputed({
 
       const scanUrl = e.detail.result
 
-      const params = strUtil.getUrlParams(scanUrl)
+      this.handleScanUrl(scanUrl)
+    },
+
+    async handleScanUrl(url: string) {
+      const params = strUtil.getUrlParams(url)
 
       console.log('params', params)
 

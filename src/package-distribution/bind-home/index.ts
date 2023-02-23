@@ -78,7 +78,7 @@ Component({
 
     async finish() {
       const { deviceId, deviceName, roomId } = this.data.deviceInfo
-      // const params = getCurrentPageParams()
+
       const res = await editDeviceInfo({
         deviceId,
         deviceName,
