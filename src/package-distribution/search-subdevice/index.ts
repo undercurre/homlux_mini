@@ -95,9 +95,11 @@ ComponentWithComputed({
       })
 
       // 初始化蓝牙模块
-      const openBleRes = await wx.openBluetoothAdapter({
-        mode: 'central',
-      }).catch(error => error)
+      const openBleRes = await wx
+        .openBluetoothAdapter({
+          mode: 'central',
+        })
+        .catch((error) => error)
 
       console.log('openBleRes', openBleRes)
 
@@ -138,7 +140,7 @@ ComponentWithComputed({
             roomId: '',
             roomName: '',
             status: 'waiting',
-            requestTimes: 20
+            requestTimes: 20,
           } as IBleDevice
         })
 
@@ -146,10 +148,6 @@ ComponentWithComputed({
         this.setData({
           deviceList: this.data.deviceList.concat(list),
         })
-      })
-
-      this.setData({
-        deviceList: JSON.parse('[{"deviceUuid":"77FCE0DC-5789-747E-78C5-56EE3BE7D3B6","mac":"04CD15AE9847","zigbeeMac":"","icon":"/assets/img/device/light.png","name":"子设备9847","isCheck":false,"client":{"key":"midea@homlux9847","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AE9847","deviceUuid":"77FCE0DC-5789-747E-78C5-56EE3BE7D3B6"},"roomId":"","roomName":"","status":"waiting"},{"deviceUuid":"77FCE0DC-5789-747E-78C5-56EE3BE7D3B6","mac":"04CD15AE9847","zigbeeMac":"","icon":"/assets/img/device/light.png","name":"子设备9847","isCheck":false,"client":{"key":"midea@homlux9847","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AE9847","deviceUuid":"77FCE0DC-5789-747E-78C5-56EE3BE7D3B6"},"roomId":"","roomName":"","status":"waiting"},{"deviceUuid":"77FCE0DC-5789-747E-78C5-56EE3BE7D3B6","mac":"04CD15AE9847","zigbeeMac":"","icon":"/assets/img/device/light.png","name":"子设备9847","isCheck":false,"client":{"key":"midea@homlux9847","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AE9847","deviceUuid":"77FCE0DC-5789-747E-78C5-56EE3BE7D3B6"},"roomId":"","roomName":"","status":"waiting"},{"deviceUuid":"77FCE0DC-5789-747E-78C5-56EE3BE7D3B6","mac":"04CD15AE9847","zigbeeMac":"","icon":"/assets/img/device/light.png","name":"子设备9847","isCheck":false,"client":{"key":"midea@homlux9847","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AE9847","deviceUuid":"77FCE0DC-5789-747E-78C5-56EE3BE7D3B6"},"roomId":"","roomName":"","status":"waiting"}]')
       })
 
       wx.onBLEConnectionStateChange(function (res) {
@@ -222,7 +220,7 @@ ComponentWithComputed({
         bleDevice.status = 'fail'
 
         this.setData({
-          deviceList: this.data.deviceList
+          deviceList: this.data.deviceList,
         })
       }
     },
@@ -245,7 +243,7 @@ ComponentWithComputed({
         if (device.requestTimes <= 0) {
           device.status = 'fail'
           this.setData({
-            deviceList: this.data.deviceList
+            deviceList: this.data.deviceList,
           })
 
           return
@@ -367,7 +365,7 @@ ComponentWithComputed({
       }
 
       this.setData({
-        deviceList: this.data.deviceList
+        deviceList: this.data.deviceList,
       })
     },
 

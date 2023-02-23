@@ -32,9 +32,9 @@ ComponentWithComputed({
 
   computed: {
     gatewayList(data) {
-      const deviceList: Device.DeviceItem[] = (data as IAnyObject).deviceList
+      const deviceList: Device.DeviceItem[] = (data as IAnyObject).deviceList || []
 
-      return deviceList?.filter((item) => item.deviceType === 1)
+      return deviceList.filter((item) => item.deviceType === 1)
     },
   },
 
@@ -52,9 +52,11 @@ ComponentWithComputed({
         )
       }
 
-      const authorizeRes = await wx.authorize({
-        scope: 'scope.userLocation',
-      }).catch(err => console.log('authorizeRes-err', err))
+      const authorizeRes = await wx
+        .authorize({
+          scope: 'scope.userLocation',
+        })
+        .catch((err) => console.log('authorizeRes-err', err))
 
       console.log('authorizeRes', authorizeRes)
 
@@ -64,6 +66,8 @@ ComponentWithComputed({
 
   pageLifetimes: {
     show() {
+      console.log('scanPage', getCurrentPages(), wx.getLaunchOptionsSync())
+
       console.log('show')
     },
     hide() {
@@ -71,7 +75,7 @@ ComponentWithComputed({
 
       setTimeout(() => {
         this.setData({
-          _hasScan: false
+          _hasScan: false,
         })
       }, 1000)
 
@@ -176,11 +180,10 @@ ComponentWithComputed({
       console.log('getQrCodeInfo', e, this.data._hasScan)
 
       this.setData({
-        _hasScan: true
+        _hasScan: true,
       })
 
       wx.vibrateLong() // 轻微震动
-
 
       const scanUrl = e.detail.result
 
@@ -218,6 +221,7 @@ ComponentWithComputed({
       let gatewayId = this.data.selectGatewayId,
         gatewaySn = this.data.selectGatewaySn
 
+      console.log('this.data.gatewayList', this.data.gatewayList)
       if (this.data.gatewayList.length === 0) {
         this.setData({
           isShowNoGatewayTips: true,
