@@ -37,11 +37,9 @@ declare namespace Scene {
      * 动作控制集合
      * 例如："controlAction":[{"ep":1,"OnOff":0},{"ep":2,"OnOff":1}]
      */
-    controlAction: string
+    controlAction: Record<string, number>[]
     /** 设备id */
     deviceId: string
-    /** 设备名称 */
-    deviceName: string
     /** 设备类型 */
     deviceType: string
     /** 品类码 */
@@ -61,5 +59,23 @@ declare namespace Scene {
     deviceType: string
     /** 品类码 */
     proType: string
+  }
+  interface AddSceneDto {
+    /**
+     * 条件类型
+     * 0-或，1-与，目前全部传0
+     */
+    conditionType: '0' | '1'
+    deviceActions: DeviceAction[]
+    deviceConditions: DeviceCondition[]
+    houseId: string
+    roomId: string
+    sceneIcon: string
+    sceneName: string
+    /**
+     * 场景类型
+     * 0-没有条件，1-有条件
+     */
+    sceneType: string
   }
 }

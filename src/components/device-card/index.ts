@@ -39,6 +39,9 @@ ComponentWithComputed({
       return data.deviceInfo.pic ? data.deviceInfo.pic : `/assets/img/device/${data.deviceType}.png`
     },
     controlBtnPic(data) {
+      if (!data.showControl) {
+        return ''
+      }
       if (data.deviceType === 'light') {
         return data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
           ? '/assets/img/base/power-on.png'
@@ -51,6 +54,16 @@ ComponentWithComputed({
         return data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff
           ? '/assets/img/base/power-on.png'
           : '/assets/img/base/power-off.png'
+      }
+      return ''
+    },
+    switchName(data) {
+      if (data.deviceType === 'switch') {
+        if (data.deviceInfo.switchInfoDTOList[0].switchName) {
+          return data.deviceInfo.switchInfoDTOList[0].switchName
+        } else {
+          return data.deviceInfo.switchInfoDTOList[0].switchId + '路'
+        }
       }
       return ''
     },

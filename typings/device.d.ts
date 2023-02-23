@@ -71,4 +71,16 @@ declare namespace Device {
     /** 开关名称 */
     switchName: string
   }
+
+  interface OrderSaveData {
+    deviceInfoByDeviceVoList: {
+      deviceId: string
+      houseId: string
+      orderNum: string
+      roomId: string
+      switchId?: string
+    }[]
+    /** 类型:0 子设备顺序 1 按键顺序	 */
+    type: '1' | '0'
+  }
 }

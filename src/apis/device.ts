@@ -46,14 +46,14 @@ export async function querySubDeviceList(houseId: string, roomId: string) {
 
 /**
  * 设备管理-根据设备Id获取设备明细
+ * 传入roomId可减少云端查询步骤
  */
-export async function queryDeviceInfoByDeviceId(deviceId: string) {
-  // 	"onlineStauts": 在线离线状态(0:离线1:在线
+export async function queryDeviceInfoByDeviceId(deviceId: string, roomId?: string) {
   return await mzaiotRequest.post<Device.DeviceItem>({
     log: false,
     loading: true,
     url: '/v1/device/queryDeviceInfoByDeviceId',
-    data: { deviceId },
+    data: { deviceId, roomId },
   })
 }
 
@@ -194,6 +194,18 @@ export async function deleteDevice(data: { deviceId: string; deviceType: string;
   return await mzaiotRequest.post<IAnyObject>({
     log: true,
     url: '/v1/device/delDevice',
+    data,
+  })
+}
+
+/**
+ * 保存设备顺序
+ *
+ */
+export async function saveDeviceOrder(data: Device.OrderSaveData) {
+  return await mzaiotRequest.post<IAnyObject>({
+    log: true,
+    url: '/v1/device/saveDeviceNum',
     data,
   })
 }
