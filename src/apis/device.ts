@@ -108,7 +108,7 @@ export async function bindDevice(params: {
 }) {
   return await mzaiotRequest.post<{ deviceId: string; isBind: boolean; msg: string }>({
     log: false,
-    loading: true,
+    loading: false,
     url: '/v1/device/bindDevice',
     data: params,
   })

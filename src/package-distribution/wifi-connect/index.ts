@@ -96,7 +96,7 @@ ComponentWithComputed({
     async initWifi() {
       const authorizeRes = await wx.authorize({
         scope: 'scope.userLocation',
-      })
+      }).catch(err => console.log('authorizeRes-err', err))
 
       console.log('authorizeRes', authorizeRes)
 

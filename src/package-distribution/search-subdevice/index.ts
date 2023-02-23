@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { homeBinding } from '../../store/index'
+import { homeBinding, roomBinding } from '../../store/index'
 import { bleUtil, strUtil, BleClient, getCurrentPageParams } from '../../utils/index'
 import { IBleDevice } from './types'
 import pageBehaviors from '../../behaviors/pageBehaviors'
@@ -14,7 +14,7 @@ ComponentWithComputed({
     pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
   },
 
-  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] }), pageBehaviors],
+  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, roomBinding] }), pageBehaviors],
 
   /**
    * 页面的初始数据
@@ -28,7 +28,6 @@ ComponentWithComputed({
       roomId: '',
     },
     deviceList: Array<IBleDevice>(),
-    failList: Array<IBleDevice>(),
     status: 'discover' as StatusName,
   },
 
@@ -52,7 +51,7 @@ ComponentWithComputed({
       return data.deviceList.filter((item) => item.isChecked) as IBleDevice[]
     },
     failList(data) {
-      return data.selectedList.filter((item: IBleDevice) => item.status === 'fail')
+      return data.selectedList.filter((item: IBleDevice) => item.status === 'fail') as IBleDevice[]
     },
     successList(data) {
       return data.selectedList.filter((item: IBleDevice) => item.status === 'success')
@@ -63,12 +62,6 @@ ComponentWithComputed({
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
     ready: function () {
       this.initBle()
-
-      this.setData({
-        deviceList: JSON.parse(
-          '[{"deviceUuid":"47","mac":"47","icon":"/assets/img/device/light.png","name":"测试47","isCheck":false,"client":{"key":"midea@homlux9847","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"47","deviceUuid":"47"},"roomId":"","roomName":""}]',
-        ),
-      })
     },
     moved: function () {},
     detached: function () {
@@ -104,7 +97,7 @@ ComponentWithComputed({
       // 初始化蓝牙模块
       const openBleRes = await wx.openBluetoothAdapter({
         mode: 'central',
-      })
+      }).catch(error => error)
 
       console.log('openBleRes', openBleRes)
 
@@ -145,14 +138,18 @@ ComponentWithComputed({
             roomId: '',
             roomName: '',
             status: 'waiting',
+            requestTimes: 20
           } as IBleDevice
         })
 
+        console.log('onBluetoothDeviceFound', this.data.deviceList.concat(list))
         this.setData({
           deviceList: this.data.deviceList.concat(list),
         })
+      })
 
-        console.log('onBluetoothDeviceFound', JSON.stringify(this.data.deviceList))
+      this.setData({
+        deviceList: JSON.parse('[{"deviceUuid":"77FCE0DC-5789-747E-78C5-56EE3BE7D3B6","mac":"04CD15AE9847","zigbeeMac":"","icon":"/assets/img/device/light.png","name":"子设备9847","isCheck":false,"client":{"key":"midea@homlux9847","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AE9847","deviceUuid":"77FCE0DC-5789-747E-78C5-56EE3BE7D3B6"},"roomId":"","roomName":"","status":"waiting"},{"deviceUuid":"77FCE0DC-5789-747E-78C5-56EE3BE7D3B6","mac":"04CD15AE9847","zigbeeMac":"","icon":"/assets/img/device/light.png","name":"子设备9847","isCheck":false,"client":{"key":"midea@homlux9847","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AE9847","deviceUuid":"77FCE0DC-5789-747E-78C5-56EE3BE7D3B6"},"roomId":"","roomName":"","status":"waiting"},{"deviceUuid":"77FCE0DC-5789-747E-78C5-56EE3BE7D3B6","mac":"04CD15AE9847","zigbeeMac":"","icon":"/assets/img/device/light.png","name":"子设备9847","isCheck":false,"client":{"key":"midea@homlux9847","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AE9847","deviceUuid":"77FCE0DC-5789-747E-78C5-56EE3BE7D3B6"},"roomId":"","roomName":"","status":"waiting"},{"deviceUuid":"77FCE0DC-5789-747E-78C5-56EE3BE7D3B6","mac":"04CD15AE9847","zigbeeMac":"","icon":"/assets/img/device/light.png","name":"子设备9847","isCheck":false,"client":{"key":"midea@homlux9847","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AE9847","deviceUuid":"77FCE0DC-5789-747E-78C5-56EE3BE7D3B6"},"roomId":"","roomName":"","status":"waiting"}]')
       })
 
       wx.onBLEConnectionStateChange(function (res) {
@@ -200,7 +197,7 @@ ComponentWithComputed({
       })
 
       if (!res.success) {
-        // return
+        return
       }
 
       this.setData({
@@ -217,9 +214,17 @@ ComponentWithComputed({
     async startZigbeeNet(bleDevice: IBleDevice) {
       const res = await bleDevice.client.startZigbeeNet()
 
-      bleDevice.zigbeeMac = res.result.zigbeeMac
+      if (res.success) {
+        bleDevice.zigbeeMac = res.result.zigbeeMac
 
-      this.queryDeviceOnlineStatus(bleDevice)
+        this.queryDeviceOnlineStatus(bleDevice)
+      } else {
+        bleDevice.status = 'fail'
+
+        this.setData({
+          deviceList: this.data.deviceList
+        })
+      }
     },
 
     async queryDeviceOnlineStatus(device: IBleDevice) {
@@ -234,6 +239,18 @@ ComponentWithComputed({
       console.log('queryDeviceOnlineStatus', queryRes)
 
       if (queryRes.result.onlineStatus === 0) {
+        // 限制最多查询云端设备在线状态次数：device.requestTimes，超过则置为失败
+        device.requestTimes--
+
+        if (device.requestTimes <= 0) {
+          device.status = 'fail'
+          this.setData({
+            deviceList: this.data.deviceList
+          })
+
+          return
+        }
+
         setTimeout(() => {
           this.queryDeviceOnlineStatus(device)
         }, 3000)
@@ -324,14 +341,16 @@ ComponentWithComputed({
 
     // 重新添加
     async reAdd() {
+      const pageParams = getCurrentPageParams()
+
       const res = await sendCmdAddSubdevice({
-        deviceId: '1676373822174786',
+        deviceId: pageParams.gatewayId,
         expire: 60,
         buzz: 1,
       })
 
       if (!res.success) {
-        // return
+        return
       }
 
       this.setData({
@@ -341,11 +360,20 @@ ComponentWithComputed({
       const list = this.data.failList
 
       for (const item of list) {
+        item.status = 'waiting'
+        item.requestTimes = 20
+
         this.startZigbeeNet(item)
       }
+
+      this.setData({
+        deviceList: this.data.deviceList
+      })
     },
 
     finish() {
+      roomBinding.store.updateRoomList()
+
       wx.switchTab({
         url: '/pages/index/index',
       })

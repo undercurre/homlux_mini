@@ -24,6 +24,7 @@ ComponentWithComputed({
   data: {
     isShowGatewayList: false,
     isShowNoGatewayTips: false,
+    _hasScan: false,
     selectGatewayId: '',
     selectGatewaySn: '',
     subdeviceList: Array<string>(),
@@ -39,22 +40,23 @@ ComponentWithComputed({
 
   lifetimes: {
     async attached() {
-      reaction(
-        () => homeBinding.store.currentHomeDetail.houseId,
-        () => {
-          deviceBinding.store.updateAllRoomDeviceList()
-        },
-      )
+      if (homeBinding.store.currentHomeDetail.houseId) {
+        deviceBinding.store.updateAllRoomDeviceList()
+      } else {
+        reaction(
+          () => homeBinding.store.currentHomeDetail.houseId,
+          () => {
+            console.log('reaction-updateAllRoomDeviceList')
+            deviceBinding.store.updateAllRoomDeviceList()
+          },
+        )
+      }
 
-      const systemSetting = wx.getSystemSetting()
+      const authorizeRes = await wx.authorize({
+        scope: 'scope.userLocation',
+      }).catch(err => console.log('authorizeRes-err', err))
 
-      console.log('systemSetting', systemSetting)
-
-      // let authorizeRes = await wx.authorize({
-      //   scope: 'scope.bluetooth'
-      // })
-
-      // console.log('authorizeRes', authorizeRes)
+      console.log('authorizeRes', authorizeRes)
 
       this.initBle()
     },
@@ -66,6 +68,13 @@ ComponentWithComputed({
     },
     hide() {
       console.log('hide')
+
+      setTimeout(() => {
+        this.setData({
+          _hasScan: false
+        })
+      }, 1000)
+
       wx.closeBluetoothAdapter()
     },
   },
@@ -160,9 +169,18 @@ ComponentWithComputed({
      * 网关id：1676277426246918    子设备id：5C0272FFFE0E0826    蓝牙id：26
      */
     async getQrCodeInfo(e: WechatMiniprogram.CustomEvent) {
-      wx.vibrateShort({ type: 'heavy' }) // 轻微震动
+      if (this.data._hasScan) {
+        return
+      }
 
-      console.log('getQrCodeInfo', e)
+      console.log('getQrCodeInfo', e, this.data._hasScan)
+
+      this.setData({
+        _hasScan: true
+      })
+
+      wx.vibrateLong() // 轻微震动
+
 
       const scanUrl = e.detail.result
 

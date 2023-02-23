@@ -11,4 +11,5 @@ export interface IBleDevice {
   client: BleClient
   status: 'waiting' | 'fail' | 'success' // 配网状态
   isChecked?: boolean // 是否被选中
+  requestTimes: number // 查询云端在线次数
 }

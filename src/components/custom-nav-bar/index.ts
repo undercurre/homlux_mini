@@ -24,6 +24,10 @@ Component({
       type: Boolean,
       value: false,
     },
+    leftIcon: {
+      type: String,
+      value: '/assets/img/base/back.png',
+    }
   },
 
   /**

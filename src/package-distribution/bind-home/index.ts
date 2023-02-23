@@ -2,13 +2,13 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { getCurrentPageParams, strUtil } from '../../utils/index'
 import { queryDeviceInfoByDeviceId, editDeviceInfo } from '../../apis/index'
-import { homeBinding } from '../../store/index'
+import { homeBinding, roomBinding } from '../../store/index'
 
 Component({
   options: {
     styleIsolation: 'apply-shared',
   },
-  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] }), pageBehaviors],
+  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, roomBinding] }), pageBehaviors],
   /**
    * 组件的属性列表
    */
@@ -88,6 +88,8 @@ Component({
       })
 
       if (res.success) {
+        roomBinding.store.updateRoomList()
+
         wx.switchTab({ url: '/pages/index/index' })
       }
     },
