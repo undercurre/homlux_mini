@@ -27,17 +27,6 @@ Component({
     status: 'linking',
     currentStep: '连接设备',
     activeIndex: -1,
-    stepList: [
-      {
-        text: '连接设备',
-      },
-      {
-        text: '设备联网',
-      },
-      {
-        text: '账号绑定',
-      },
-    ],
   } as WechatMiniprogram.IAnyObject & IPageData,
 
   lifetimes: {

@@ -2,15 +2,8 @@
   <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="添加设备"></nav-bar>
 
   <view class="grow flex flex-col pb-128rpx">
-    <block wx:if="{{status === 'networking'}}">
-      <tips-box class="mt-130rpx" text="请将设备尽量靠近智能网关" show-progress="{{true}}" percentage="{{60}}"></tips-box>
-
-      <view class="flex flex-col items-center pt-70rpx">
-        <view wx:for="{{stepList}}" class="transition flex felx-row items-center text-28 text-black-tips leading-40rpx pb-40rpx">
-          <text class="{{ item.isCheck && 'text-black-59'}}">{{item.text}}</text>
-          <svg-icon class="ml-32rpx transition" name="icon-park-solid:check-one" color="{{item.isCheck ? '#488fff' : 'transparent'}}"></svg-icon>
-        </view>
-      </view>
+    <block wx:if="{{status === 'linking'}}">
+      <loading class="mt-130rpx" text="请将设备尽量靠近智能网关" show-progress="{{true}}" active-index="{{activeIndex}}"></loading>
     </block>
 
     <block wx:if="{{status === 'error'}}">
@@ -23,12 +16,12 @@
 
         <view class="flex flex-col py-24rpx text-26 text-hex-666 leading-46rpx">
           <text>1、确保路由器网络环境正常</text>
-          <text>2、将网管尽可能靠近路由器</text>
+          <text>2、将网关尽可能靠近路由器</text>
           <text>3、合理摆放网关的位置，避免部分子设备距离过远</text>
         </view>
       </view>
 
-      <van-button class="mt-32rpx mx-32rpx" block type="primary" size="large">完成</van-button>
+      <van-button class="mt-32rpx mx-32rpx" block type="primary" size="large" bind:click="finish">完成</van-button>
     </block>
   </view>
 </view>
