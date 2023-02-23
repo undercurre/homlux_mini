@@ -2,10 +2,6 @@
 @import './unocss.wxss';
 @import './vantReset.wxss';
 
-page {
-  font-family: PingFangSC-Medium;
-}
-
 .container {
   height: 100%;
   display: flex;

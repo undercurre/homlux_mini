@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { homeStore, roomBinding, roomStore } from '../../../store/index'
+import { homeStore, roomBinding } from '../../../store/index'
 import pageBehavior from '../../../behaviors/pageBehaviors'
 import { checkOtaVersion, editDeviceInfo, queryDeviceInfoByDeviceId } from '../../../apis/index'
 ComponentWithComputed({
@@ -31,7 +31,6 @@ ComponentWithComputed({
      * 生命周期函数--监听页面加载
      */
     onLoad({ deviceId, roomId }: { deviceId: string; roomId: string }) {
-      console.log(deviceId, roomId)
       this.setData({
         deviceId,
         roomId,
@@ -53,6 +52,13 @@ ComponentWithComputed({
       })
     },
     handleDeviceNameEditConfirm(e: { detail: string }) {
+      if (!e.detail) {
+        wx.showToast({
+          icon: 'error',
+          title: '设备名称不能为空',
+        })
+        return
+      }
       this.setData({
         showEditNamePopup: false,
         deviceName: e.detail,
@@ -87,6 +93,7 @@ ComponentWithComputed({
         this.setData({
           deviceInfo: res.result,
           deviceName: res.result.deviceName,
+          roomId: res.result.roomId,
         })
       }
     },
@@ -103,7 +110,6 @@ ComponentWithComputed({
         })
         if (res.success) {
           this.updateDeviceInfo()
-          roomStore.updateRoomList()
         }
       }
     },

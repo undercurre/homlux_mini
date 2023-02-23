@@ -9,11 +9,9 @@
     </view>
   </view>
   <view wx:if="{{showControl}}" class="absolute left-0 bottom-6rpx w-160rpx flex-center" catchtap="handlePowerTap">
-    <image wx:if="{{!deviceInfo.isOnline}}" src="/assets/img/base/offline.png" class="w-48rpx h-48rpx"></image>
+    <image wx:if="{{!deviceInfo.onLineStatus}}" src="/assets/img/base/offline.png" class="w-48rpx h-48rpx"></image>
     <view wx:else class="w-48rpx h-48rpx">
-      <image wx:if="{{deviceInfo.deviceType === 'light'}}" src="{{deviceInfo.power ? '/assets/img/base/power-on.png' : '/assets/img/base/power-off.png'}}" class="w-48rpx h-48rpx"></image>
-      <image wx:if="{{deviceInfo.deviceType === 'switch'}}" src="{{deviceInfo.power ? '/assets/img/base/power-on.png' : '/assets/img/base/power-off.png'}}" class="w-48rpx h-48rpx"></image>
-      <image wx:if="{{deviceInfo.deviceType === 'curtain'}}" src="/assets/img/base/close.png" class="w-48rpx h-48rpx"></image>
+      <image src="{{controlBtnPic}}" class="w-48rpx h-48rpx"></image>
     </view>
   </view>
   <view wx:if="{{!showControl && deviceInfo.deviceType === 'switch'}}" class="absolute left-0 bottom-11rpx w-160rpx flex-center">

@@ -9,6 +9,10 @@ export const deviceStore = observable({
    */
   deviceList: [] as Device.DeviceItem[],
   /**
+   * 当前选择的灯具的状态
+   */
+  lightInfo: {} as Record<string, number>,
+  /**
    * 选了了那些设备
    */
   selectList: [] as string[],
@@ -16,10 +20,6 @@ export const deviceStore = observable({
    * 选择了什么类型
    */
   selectType: [] as string[],
-  /**
-   * 选择了多少个开关
-   */
-  selectSwitchList: [] as string[],
 
   async updateAllRoomDeviceList(houseId: string = homeStore.currentHomeDetail.houseId) {
     const res = await queryAllDevice(houseId)
@@ -57,6 +57,6 @@ export const deviceStore = observable({
 
 export const deviceBinding = {
   store: deviceStore,
-  fields: ['selectList', 'selectType', 'selectSwitchList', 'deviceList'],
+  fields: ['selectList', 'selectType', 'deviceList', 'lightInfo'],
   actions: [],
 }

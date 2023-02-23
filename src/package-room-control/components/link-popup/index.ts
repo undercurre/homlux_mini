@@ -1,12 +1,13 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { roomBinding } from '../../../store/index'
+import { proName, proType } from '../../../config/index'
+import { deviceBinding, roomBinding } from '../../../store/index'
 
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
   },
-  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding] })],
+  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, deviceBinding] })],
   /**
    * 组件的属性列表
    */
@@ -43,6 +44,7 @@ ComponentWithComputed({
   data: {
     contentHeight: 0,
     select: [] as string[],
+    deviceListCanSelect: [] as Device.DeviceItem[],
   },
 
   computed: {
@@ -57,10 +59,10 @@ ComponentWithComputed({
       return ''
     },
     deviceList(data) {
-      if (data.currentRoomIndex !== undefined && data.roomList) {
-        return data.roomList[data.currentRoomIndex].deviceList.filter(
-          (device: { deviceType: string }) => device.deviceType === data.linkType,
-        )
+      if (data.deviceList && data.linkType) {
+        console.log(111111)
+        console.log(data.deviceList, data.linkType)
+        return data.deviceList.filter((device: { proType: string }) => proName[device.proType] === data.linkType)
       }
       return []
     },
@@ -69,6 +71,34 @@ ComponentWithComputed({
         return data.roomList[data.currentRoomIndex].sceneList
       }
       return []
+    },
+  },
+
+  watch: {
+    deviceList(value: Device.DeviceItem[]) {
+      const lightList = [] as Device.DeviceItem[]
+      const switchList = [] as Device.DeviceItem[]
+      value.forEach((device) => {
+        if (device.proType === proType.light) {
+          lightList.push(device)
+        } else if (device.proType === proType.switch) {
+          device.switchInfoDTOList.forEach((switchItem) => {
+            switchList.push({
+              ...device,
+              mzgdPropertyDTOList: {
+                [switchItem.switchId]: device.mzgdPropertyDTOList[switchItem.switchId],
+              },
+              switchInfoDTOList: [switchItem],
+              isSceneSwitch: false, // todo: 需要根据场景判断
+              uniId: `${device.deviceId}:${switchItem.switchId}`,
+            })
+          })
+        }
+      })
+      this.setData({
+        lightList,
+        switchList,
+      })
     },
   },
 
@@ -127,7 +157,6 @@ ComponentWithComputed({
         .select('#content1')
         .boundingClientRect()
         .exec((res) => {
-          console.log(res[0])
           if (res[0] && res[0].height) {
             this.setData({
               contentHeight: res[0].height,

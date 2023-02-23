@@ -6,6 +6,7 @@ import { homeStore, userStore } from '../store/index'
 import { emitter } from './eventBus'
 
 export function logout() {
+  storage.remove('mobilePhone')
   storage.remove('token')
   wx.redirectTo({
     url: '/pages/login/index',
@@ -24,10 +25,12 @@ function createConnect() {
   socketTask.onMessage((e) => {
     try {
       console.log('接收到Socket信息：', JSON.parse(e.data as string))
-    } catch (_) {
+      const res = JSON.parse(e.data as string)
+      emitter.emit('wsReceive', res)
+    } catch (err) {
       console.log('接收到Socket信息：', e.data)
+      console.log('转json失败：', err)
     }
-    emitter.emit('wsReceive', e.data as string)
   })
 }
 
@@ -55,7 +58,7 @@ export function startWebsocketService() {
   )
 }
 
-function loadUserInfo() {
+export function loadUserInfo() {
   let nickName = '',
     avatar = ''
   if (storage.get<string>('nickName')) {
@@ -67,9 +70,9 @@ function loadUserInfo() {
     avatar = storage.get<string>('headImageUrl') as string
   }
   runInAction(() => {
-    userStore.userInfo.nickname = nickName
-    userStore.userInfo.avatar = avatar
-    userStore.userInfo.phone = storage.get<string>('mobilePhone') as string
+    userStore.userInfo.nickName = nickName
+    userStore.userInfo.headImageUrl = avatar
+    userStore.userInfo.mobilePhone = storage.get<string>('mobilePhone') as string
   })
 }
 

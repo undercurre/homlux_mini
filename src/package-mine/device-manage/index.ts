@@ -1,7 +1,8 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { roomBinding, deviceBinding } from '../../store/index'
+import { roomBinding, deviceBinding, deviceStore } from '../../store/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehavior from '../../behaviors/pageBehaviors'
+// import { runInAction } from 'mobx-miniprogram'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, deviceBinding] }), pageBehavior],
@@ -74,8 +75,16 @@ ComponentWithComputed({
         this.setData({
           roomSelect: roomBinding.store.roomList[0].roomId,
         })
-        deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
       }
+    },
+
+    // 修改完设备返回该页面也需要更新一次
+    onShow() {
+      if (this.data.roomSelect === '0') {
+        deviceBinding.store.updateAllRoomDeviceList()
+        return
+      }
+      deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
     },
 
     handleFullPageTap(e?: { detail: { x: number; y: number } }) {
@@ -112,10 +121,10 @@ ComponentWithComputed({
     },
 
     handleCardClick(e: { currentTarget: { dataset: { index: number } } }) {
-      const device = this.data.deviceList[e.currentTarget.dataset.index]
+      const device = deviceStore.deviceList[e.currentTarget.dataset.index]
       console.log(device)
       wx.navigateTo({
-        url: `/package-mine/device-manage/device-detail/index?deviceId=${device.deviceId}&roomId=${this.data.roomSelect}`,
+        url: `/package-mine/device-manage/device-detail/index?deviceId=${device.deviceId}`,
       })
     },
 

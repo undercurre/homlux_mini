@@ -27,12 +27,6 @@ module.exports = {
     currentHeight = componentHeight + bottom
   },
   touchMove: function (e, ownerInstance) {
-    var now = Date.now()
-    // bottom--
-    // var instance = ownerInstance.selectComponent('#popup')
-    // instance.setStyle({
-    //   bottom: bottom + 'px',
-    // })
     var offsetY = touchY - e.touches[0].clientY // 位移距离，下滑是负
     var height = currentHeight + offsetY // 手指滑动后的组件高度
     if (height > componentHeight) {
@@ -45,7 +39,6 @@ module.exports = {
     instance.setStyle({
       bottom: bottom + 'px',
     })
-    console.log('move-time:', offsetY > 0 ? '向上' : '向下', Date.now() - now)
     return false
   },
   bottom: bottom,

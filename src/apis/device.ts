@@ -5,7 +5,7 @@ import { mzaiotRequest } from '../utils/index'
  */
 export async function queryAllDevice(houseId: string) {
   return await mzaiotRequest.post<Device.DeviceItem[]>({
-    log: true,
+    log: false,
     loading: true,
     url: '/v1/device/queryDeviceInfoByHouseId',
     data: {
@@ -19,7 +19,7 @@ export async function queryAllDevice(houseId: string) {
  */
 export async function queryDeviceList(houseId: string, roomId: string) {
   return await mzaiotRequest.post<Device.DeviceItem[]>({
-    log: true,
+    log: false,
     loading: true,
     url: '/v1/device/queryDeviceInfoByRoomId',
     data: {
@@ -34,7 +34,7 @@ export async function queryDeviceList(houseId: string, roomId: string) {
  */
 export async function querySubDeviceList(houseId: string, roomId: string) {
   return await mzaiotRequest.post<Device.DeviceItem[]>({
-    log: true,
+    log: false,
     loading: true,
     url: '/v1/device/querySubDeviceInfoByRoomId',
     data: {

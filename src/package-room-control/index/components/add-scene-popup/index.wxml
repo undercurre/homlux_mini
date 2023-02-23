@@ -1,4 +1,4 @@
-<import src="/templates/popup.wxml" />
+<import src="/commons/templates/popup.wxml" />
 <van-popup show="{{ show }}" z-index="9000" round position="bottom" bind:close="handleClose">
   <view class="w-750rpx h-1220rpx max-h-70vh relative flex flex-col items-center">
     <template is="title" data="{{title: '收藏为新场景'}}" />

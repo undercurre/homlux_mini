@@ -18,7 +18,7 @@ declare namespace Device {
      * { 每个endpoint: {属性值} }
      * 单路设备只有一个endpoint：1，比如{ 1: {OnOff: 1} }
      */
-    mzgdPropertyDTOList: Record<string, Record<string, string | number | boolean>>
+    mzgdPropertyDTOList: Record<string, Record<string, number>>
     /**
      * onLineStatus
      * 0:离线 1:在线
@@ -39,6 +39,14 @@ declare namespace Device {
 
     // 小程序维护额外属性
     isChecked: boolean
+    /** 是否为场景开关 */
+    isSceneSwitch?: boolean
+    /**
+     * 如果需要将开关拆分，需要这个id
+     * 格式： deviceId:switchInfoDTOList[0].switchId
+     * 如: xxxxx:1 xxxxx:2
+     */
+    uniId: string
   }
 
   interface MzgdPropertyDTO {

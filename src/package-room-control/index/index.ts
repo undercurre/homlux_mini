@@ -1,8 +1,19 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { userBinding, roomBinding, deviceBinding, deviceStore, sceneBinding, sceneStore } from '../../store/index'
+import {
+  userBinding,
+  roomBinding,
+  deviceBinding,
+  deviceStore,
+  sceneBinding,
+  sceneStore,
+  roomStore,
+} from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
+import { controlDevice } from '../../apis/index'
+import { proName, proType } from '../../config/device'
+import { emitter, WSEventType } from '../../utils/eventBus'
 
 ComponentWithComputed({
   behaviors: [
@@ -19,6 +30,10 @@ ComponentWithComputed({
     lightList: [] as Device.DeviceItem[],
     switchList: [] as Device.DeviceItem[],
     curtainList: [] as Device.DeviceItem[],
+    lightInfo: {
+      Level: 0,
+      ColorTemp: 0,
+    },
 
     // 拖动排序
     touchLocation: {
@@ -33,7 +48,6 @@ ComponentWithComputed({
   computed: {
     title(data) {
       if (data.currentRoomIndex !== undefined && data.roomList) {
-        console.log(data.roomList, data.currentRoomIndex, data.roomList[data.currentRoomIndex])
         return data.roomList[data.currentRoomIndex]?.roomName
       }
       return ''
@@ -47,10 +61,7 @@ ComponentWithComputed({
     deviceIdTypeMap(data): Record<string, string> {
       if (data.deviceList) {
         return Object.fromEntries(
-          data.deviceList.map((device: { deviceId: string; deviceType: string }) => [
-            device.deviceId,
-            device.deviceType,
-          ]),
+          data.deviceList.map((device: Device.DeviceItem) => [device.deviceId, proName[device.proType]]),
         )
       }
       return {}
@@ -63,13 +74,20 @@ ComponentWithComputed({
       const switchList = [] as Device.DeviceItem[]
       // const curtainList = [] as Device.DeviceItem[]
       value.forEach((device) => {
-        if (['0x13'].includes(device.proType)) {
-          // 0x13是灯
+        if (device.proType === proType.light) {
           lightList.push(device)
-        } else if (['0x21'].includes(device.proType)) {
-          // 0x21是开关，需要拆开开关展示
-          // const switch
-          switchList.push(device)
+        } else if (device.proType === proType.switch) {
+          device.switchInfoDTOList.forEach((switchItem) => {
+            switchList.push({
+              ...device,
+              mzgdPropertyDTOList: {
+                [switchItem.switchId]: device.mzgdPropertyDTOList[switchItem.switchId],
+              },
+              switchInfoDTOList: [switchItem],
+              isSceneSwitch: false, // todo: 需要根据场景判断
+              uniId: `${device.deviceId}:${switchItem.switchId}`,
+            })
+          })
         }
         // todo: 添加窗帘的
       })
@@ -77,7 +95,6 @@ ComponentWithComputed({
         lightList,
         switchList,
       })
-      console.log(this.data)
     },
   },
 
@@ -101,6 +118,31 @@ ComponentWithComputed({
         }, 100)
       })
       sceneStore.updateSceneList()
+      emitter.on('wsReceive', (e) => {
+        // 设备相关的消息推送根据条件判断是否刷新
+        if (
+          typeof e.result.eventData === 'object' &&
+          [WSEventType.device_del, WSEventType.device_online_status, WSEventType.device_property].includes(
+            e.result.eventType,
+          ) &&
+          e.result.eventData.roomId &&
+          e.result.eventData.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId
+        ) {
+          deviceStore.updateSubDeviceList()
+        } else if (
+          typeof e.result.eventData === 'object' &&
+          e.result.eventType === 'room_del' &&
+          e.result.eventData.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId
+        ) {
+          // 房间被删除，退出到首页
+          wx.showToast({
+            title: '该房间已被删除',
+          })
+          wx.redirectTo({
+            url: '/pages/index/index',
+          })
+        }
+      })
     },
 
     onUnload() {
@@ -109,6 +151,8 @@ ComponentWithComputed({
         deviceStore.selectList = []
         deviceStore.selectType = []
       })
+      // 解除监听
+      emitter.off('wsReceive')
     },
 
     handleTouchMove(e: { changedTouches: { pageX: number; pageY: number }[] }) {
@@ -150,40 +194,79 @@ ComponentWithComputed({
         showAddScenePopup: true,
       })
     },
-    handleDeviceCardTap(e: { detail: { deviceId: string; deviceType: string } }) {
-      if (deviceStore.selectList.includes(e.detail.deviceId)) {
-        const index = deviceStore.selectList.findIndex((item: string) => item === e.detail.deviceId)
-        deviceStore.selectList.splice(index, 1)
-        runInAction(() => {
-          deviceStore.selectList = [...deviceStore.selectList]
-        })
-        if (e.detail.deviceType === 'switch') {
-          const index = deviceStore.selectSwitchList.findIndex((item: string) => item === e.detail.deviceId)
-          deviceStore.selectSwitchList.splice(index, 1)
+    handleDeviceCardTap(e: { detail: Device.DeviceItem }) {
+      if (e.detail.uniId) {
+        // 开关选择逻辑
+        if (deviceStore.selectList.includes(e.detail.uniId)) {
+          const index = deviceStore.selectList.findIndex((item: string) => item === e.detail.uniId)
+          deviceStore.selectList.splice(index, 1)
           runInAction(() => {
-            deviceStore.selectSwitchList = [...deviceStore.selectSwitchList]
+            deviceStore.selectList = [...deviceStore.selectList]
+          })
+        } else {
+          runInAction(() => {
+            deviceStore.selectList = [...deviceStore.selectList, e.detail.uniId]
           })
         }
       } else {
-        runInAction(() => {
-          deviceStore.selectList = [...deviceStore.selectList, e.detail.deviceId]
-        })
-        if (e.detail.deviceType === 'switch') {
+        // 灯、窗帘选择逻辑
+        if (deviceStore.selectList.includes(e.detail.deviceId)) {
+          const index = deviceStore.selectList.findIndex((item: string) => item === e.detail.deviceId)
+          deviceStore.selectList.splice(index, 1)
           runInAction(() => {
-            deviceStore.selectSwitchList = [...deviceStore.selectSwitchList, e.detail.deviceId]
+            deviceStore.selectList = [...deviceStore.selectList]
+          })
+        } else {
+          runInAction(() => {
+            deviceStore.selectList = [...deviceStore.selectList, e.detail.deviceId]
+            if (e.detail.proType === proType.light) {
+              deviceStore.lightInfo = {
+                Level: e.detail.mzgdPropertyDTOList['1'].Level,
+                ColorTemp: e.detail.mzgdPropertyDTOList['1'].ColorTemp,
+              }
+            }
           })
         }
       }
       this.updateSelectType()
     },
-    handleDevicePowerTap(e: { detail: { deviceId: string; deviceType: string } }) {
-      const index = deviceStore.selectList.findIndex((item: string) => item === e.detail.deviceId)
-      if (['light', 'switch'].includes(e.detail.deviceType)) {
-        const power = !(this.data.deviceList[index] as { power: boolean }).power
-        const data = {} as IAnyObject
-        data[`deviceList[${index}].power`] = power
-        this.setData(data)
-      }
+    async handleDevicePowerTap(e: { detail: Device.DeviceItem }) {
+      console.log(e)
+    },
+    async handleLightPowerToggle(e: { detail: Device.DeviceItem }) {
+      await controlDevice(
+        {
+          topic: '/subdevice/control',
+          deviceId: e.detail.gatewayId,
+          method: 'lightControl',
+          inputData: [
+            {
+              devId: e.detail.deviceId,
+              ep: 1,
+              OnOff: e.detail.mzgdPropertyDTOList['1'].OnOff === 1 ? 0 : 1,
+            },
+          ],
+        },
+        { loading: true },
+      )
+    },
+    async handleSwitchPowerToggle(e: { detail: Device.DeviceItem }) {
+      const ep = e.detail.switchInfoDTOList[0].switchId
+      await controlDevice(
+        {
+          topic: '/subdevice/control',
+          deviceId: e.detail.gatewayId,
+          method: 'lightControl',
+          inputData: [
+            {
+              devId: e.detail.deviceId,
+              ep,
+              OnOff: e.detail.mzgdPropertyDTOList[ep].OnOff === 1 ? 0 : 1,
+            },
+          ],
+        },
+        { loading: true },
+      )
     },
     handlePopMove() {
       this.setData({
@@ -198,6 +281,10 @@ ComponentWithComputed({
     updateSelectType() {
       const typeList = new Set()
       deviceStore.selectList.forEach((deviceId: string) => {
+        if (deviceId.includes(':')) {
+          typeList.add('switch')
+          return
+        }
         typeList.add(this.data.deviceIdTypeMap[deviceId])
       })
       runInAction(() => {

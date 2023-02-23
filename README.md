@@ -29,13 +29,15 @@ HomLux小程序
           ├── pageBehaviors // 页面层级公共代码
           └──  // 
     ├── config // 一些全局公用的配置、数据
+    ├── commons // 公共代码
+          ├── templates // 公共wxml模板
+          └── wxs // 公共wxs module
     ├── custom-tab-bar // 自定义tabbar
     ├── store // 全局状态
     ├── package-distribution // 配网相关页面分包（添加设备、附近设备、连接wifi等）
     ├── package-mine // 我的相关页面分包（家庭管理、房间管理、设备管理等）
     ├── package-room-control // 房间相关页面分包（房间页面控制设备、场景管理等）
     ├── pages // 主包的页面（小程序主页、登录）
-    ├── templates // 公共wxml模板
     └── utils // 公用方法
 └── typings // 类型声明文件
 ```
