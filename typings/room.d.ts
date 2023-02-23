@@ -11,6 +11,9 @@ declare namespace Room {
        * 灯打开数量
        */
       deviceLightOnNum: number
+
+      // 设备数量
+      deviceNum: number
       /**
        * 	房间icon
        */

@@ -1,19 +1,19 @@
-<view class="page-container flex flex-col">
+<view class="page-container flex flex-col h-screen">
   <!-- 导航栏 -->
   <nav-bar leftArrow="{{true}}" bind:leftTap="goBack" background="transparent" title="{{pageTitle}}"></nav-bar>
 
-  <view class="grow flex flex-col justify-between pb-128rpx">
+  <view class="grow shrink flex flex-col justify-between pb-128rpx box-border">
     <block wx:if="{{status === 'discover'}}">
       <tips-box text="正在搜索附近的设备…" icon="/assets/img/search-subdevice/searching.png" size="{{ deviceList.length ? 'small' : 'normal'}}"></tips-box>
 
-      <view wx:if="{{deviceList.length}}" class="px-32rpx pt-86rpx grow flex flex-col">
+      <view wx:if="{{deviceList.length}}" class="px-32rpx pt-86rpx grow shrink flex flex-col">
         <view class="flex flex-row items-center justify-between pb-34rpx">
           <text class="text-26 text-black-59">发现附近通电的子设备</text>
 
           <van-button plain round type="info" size="small" bind:click="selectAll">全选</van-button>
         </view>
 
-        <scroll-view class="grow h-500" scroll-y="{{true}}">
+        <scroll-view class="grow shrink h-500" scroll-y="{{true}}">
           <view wx:for="{{deviceList}}" wx:key="deviceUuid" class="flex flex-row items-center bg-white rounded-32rpx mb-24rpx px-24rpx py-40rpx">
             <van-checkbox use-icon-slot bind:change="toggleDevice" data-index="{{index}}">
               <image src="{{item.icon}}" class="w-92 h-92 ml-10rpx border-4rpx border-solid border-hex-F6F6F8 rounded-full"></image>
@@ -44,15 +44,15 @@
     <block wx:if="{{status === 'requesting' && successList.length !== selectedList.length}}">
       <loading class="{{failList.length === 0 ? 'mt-70rpx' : 'mt-130rpx' }}" text="已添加{{successList.length}}/{{selectedList.length}}个设备" show-progress="{{false}}"></loading>
 
-      <view wx:if="{{failList.length > 0}}" class="px-24rpx pt-90rpx grow flex flex-col">
+      <view wx:if="{{failList.length > 0}}" class="px-24rpx pt-90rpx grow shrink flex flex-col">
         <view class="flex flex-row items-center justify-between pb-24rpx">
           <text class="text-28 text-hex-000">以下设备添加失败</text>
 
           <van-button plain round size="small" type="info" bind:click="reAdd">重新添加</van-button>
         </view>
 
-        <scroll-view class="grow h-300" scroll-y="true">
-          <view wx:for="{{failList}}" class="flex flex-row items-center bg-white rounded-32rpx mb-24rpx px-50rpx py-40rpx">
+        <scroll-view class="grow shrink h-500" scroll-y="{{true}}">
+          <view wx:for="{{failList}}" wx:key="deviceUuid" class="flex flex-row items-center bg-white rounded-32rpx mb-24rpx px-50rpx py-40rpx">
             <image src="{{item.icon}}" class="w-92 h-92 border-4rpx border-solid border-hex-F6F6F8 rounded-full"></image>
 
             <view class="pl-32rpx">

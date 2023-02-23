@@ -20,6 +20,7 @@ Component({
    */
   data: {
     isShowForceBindTips: false,
+    status: 'linking',
   } as IAnyObject,
 
   lifetimes: {
@@ -67,9 +68,11 @@ Component({
       console.log('onHide')
     },
     async initWifi() {
-      const authorizeRes = await wx.authorize({
-        scope: 'scope.userLocation',
-      })
+      const authorizeRes = await wx
+        .authorize({
+          scope: 'scope.userLocation',
+        })
+        .catch((err) => err)
 
       console.log('authorizeRes', authorizeRes)
 
@@ -77,11 +80,14 @@ Component({
 
       console.log('startWifi', startRes)
 
-      wx.onWifiConnected(async (res) => {
-        console.log('onWifiConnected', res)
-      })
+      const connectRes = await socket.connect()
 
-      await socket.connect()
+      if (!connectRes.success) {
+        this.setData({
+          status: 'error',
+        })
+        return
+      }
 
       this.getGatewayStatus()
     },
@@ -141,6 +147,12 @@ Component({
           url: strUtil.getUrlWithParams('/package-distribution/add-gateway/index', params),
         })
       }
+    },
+
+    finish() {
+      wx.switchTab({
+        url: '/pages/index/index',
+      })
     },
   },
 })

@@ -26,7 +26,6 @@ Component({
     _interId: 0,
     status: 'linking',
     currentStep: '连接设备',
-    percentage: 0,
     activeIndex: -1,
     stepList: [
       {
@@ -72,7 +71,14 @@ Component({
 
       console.log('startWifi', startRes)
 
-      await socket.connect()
+      const connectRes = await socket.connect()
+
+      if (!connectRes.success) {
+        this.setData({
+          status: 'error',
+        })
+        return
+      }
 
       this.setData({
         activeIndex: 0,
@@ -105,6 +111,8 @@ Component({
       })
 
       this.queryDeviceOnlineStatus()
+
+      socket.close()
     },
 
     async requestBindDevice() {
@@ -133,11 +141,9 @@ Component({
     async queryDeviceOnlineStatus() {
       const params = getCurrentPageParams()
 
-      console.log('getCurrentPageParams', params)
-
       const res = await queryDeviceOnlineStatus({ sn: params.dsn, deviceType: '1' })
 
-      console.log('queryDeviceOnlineStatus', res)
+      console.log('queryDeviceOnlineStatus', res.success, res.result)
 
       if (res.success && res.result.onlineStatus === 1) {
         this.setData({
@@ -148,8 +154,14 @@ Component({
       } else {
         this.data._interId = setTimeout(() => {
           this.queryDeviceOnlineStatus()
-        }, 3000)
+        }, 5000)
       }
+    },
+
+    finish() {
+      wx.switchTab({
+        url: '/pages/index/index',
+      })
     },
   },
 })

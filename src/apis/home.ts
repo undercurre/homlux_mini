@@ -1,4 +1,5 @@
 import { mzaiotRequest } from '../utils/index'
+import { userBinding } from '../store/index'
 
 /**
  * 查询家庭列表
@@ -71,6 +72,36 @@ export async function delUserHouse(houseId: string) {
     url: '/v1/mzgd/user/house/delUserHouse',
     data: {
       houseId,
+    },
+  })
+}
+
+/**
+ * 退出家庭
+ */
+export async function quitUserHouse(houseId: string) {
+  return await mzaiotRequest.post({
+    log: false,
+    loading: true,
+    url: '/v1/mzgd/user/house/quitUserHouse',
+    data: {
+      houseId,
+      userId: userBinding.store.userInfo.userId,
+    },
+  })
+}
+
+/**
+ * 转让家庭
+ */
+export async function changeUserHouse(params: { houseId: string; changeUserId: string }) {
+  return await mzaiotRequest.post({
+    log: false,
+    loading: true,
+    url: '/v1/mzgd/user/house/changeUserHouse',
+    data: {
+      ...params,
+      creatorUserId: userBinding.store.userInfo.userId,
     },
   })
 }

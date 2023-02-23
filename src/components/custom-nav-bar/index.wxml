@@ -6,7 +6,7 @@
   <view class="flex justify-center items-center w-full relative" style="{{'height:' + navigationBarHeight}}">
     <!-- 左侧内容 -->
     <view wx:if="{{leftArrow}}" class="absolute left-16rpx top-0 bottom-0 flex items-center">
-      <image bindtap="handleLeftTap" src="/assets/img/base/back.png" class="w-48rpx h-48rpx"></image>
+      <image bindtap="handleLeftTap" src="{{leftIcon}}" class="w-48rpx h-48rpx"></image>
     </view>
     <slot></slot>
     <!-- 标题 -->

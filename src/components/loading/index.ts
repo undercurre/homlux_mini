@@ -46,21 +46,22 @@ Component({
   methods: {
     // 构造假进度条
     setProgressPercentage() {
+      const length = 100 / this.data.stepList.length
+
       interId = setInterval(() => {
         const { activeIndex } = this.data
         let { percentage } = this.data
 
-        if (percentage >= 99) {
+        if (percentage >= 100) {
           clearInterval(interId)
+          return
+        }
+
+        if (percentage >= length * (activeIndex + 1)) {
+          return
         }
 
         ++percentage
-
-        if (activeIndex < 0 && percentage > 10) {
-          percentage = 10
-        } else if (activeIndex < 1 && percentage > 33) {
-          percentage = 33
-        }
 
         this.setData({
           percentage: percentage,

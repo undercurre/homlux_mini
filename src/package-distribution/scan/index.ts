@@ -24,6 +24,7 @@ ComponentWithComputed({
   data: {
     isShowGatewayList: false,
     isShowNoGatewayTips: false,
+    _hasScan: false,
     selectGatewayId: '',
     selectGatewaySn: '',
     subdeviceList: Array<string>(),
@@ -31,30 +32,46 @@ ComponentWithComputed({
 
   computed: {
     gatewayList(data) {
-      const deviceList: Device.DeviceItem[] = (data as IAnyObject).deviceList
+      const deviceList: Device.DeviceItem[] = (data as IAnyObject).deviceList || []
 
-      return deviceList?.filter((item) => item.deviceType === 1)
+      return deviceList.filter((item) => item.deviceType === 1)
     },
   },
 
   lifetimes: {
     async attached() {
-      reaction(
-        () => homeBinding.store.currentHomeDetail.houseId,
-        () => {
-          deviceBinding.store.updateAllRoomDeviceList()
-        },
-      )
+      if (homeBinding.store.currentHomeDetail.houseId) {
+        deviceBinding.store.updateAllRoomDeviceList()
+      } else {
+        reaction(
+          () => homeBinding.store.currentHomeDetail.houseId,
+          () => {
+            console.log('reaction-updateAllRoomDeviceList')
+            deviceBinding.store.updateAllRoomDeviceList()
+          },
+        )
+      }
 
-      const systemSetting = wx.getSystemSetting()
+      const params = wx.getLaunchOptionsSync()
+      console.log('scanPage', params)
 
-      console.log('systemSetting', systemSetting)
+      if (params.scene === 1011) {
+        const scanUrl = decodeURIComponent(params.query.q)
 
-      // let authorizeRes = await wx.authorize({
-      //   scope: 'scope.bluetooth'
-      // })
+        console.log('scanUrl', scanUrl)
 
-      // console.log('authorizeRes', authorizeRes)
+        this.handleScanUrl(scanUrl)
+
+        return
+      }
+
+      const authorizeRes = await wx
+        .authorize({
+          scope: 'scope.userLocation',
+        })
+        .catch((err) => console.log('authorizeRes-err', err))
+
+      console.log('authorizeRes', authorizeRes)
 
       this.initBle()
     },
@@ -66,6 +83,13 @@ ComponentWithComputed({
     },
     hide() {
       console.log('hide')
+
+      setTimeout(() => {
+        this.setData({
+          _hasScan: false,
+        })
+      }, 1000)
+
       wx.closeBluetoothAdapter()
     },
   },
@@ -98,6 +122,10 @@ ComponentWithComputed({
 
     confirmGateway() {
       this.addNearSubdevice()
+
+      this.setData({
+        isShowGatewayList: false,
+      })
     },
 
     async initBle() {
@@ -160,13 +188,25 @@ ComponentWithComputed({
      * 网关id：1676277426246918    子设备id：5C0272FFFE0E0826    蓝牙id：26
      */
     async getQrCodeInfo(e: WechatMiniprogram.CustomEvent) {
-      wx.vibrateShort({ type: 'heavy' }) // 轻微震动
+      if (this.data._hasScan) {
+        return
+      }
 
-      console.log('getQrCodeInfo', e)
+      console.log('getQrCodeInfo', e, this.data._hasScan)
+
+      this.setData({
+        _hasScan: true,
+      })
+
+      wx.vibrateLong() // 轻微震动
 
       const scanUrl = e.detail.result
 
-      const params = strUtil.getUrlParams(scanUrl)
+      this.handleScanUrl(scanUrl)
+    },
+
+    async handleScanUrl(url: string) {
+      const params = strUtil.getUrlParams(url)
 
       console.log('params', params)
 
@@ -200,6 +240,7 @@ ComponentWithComputed({
       let gatewayId = this.data.selectGatewayId,
         gatewaySn = this.data.selectGatewaySn
 
+      console.log('this.data.gatewayList', this.data.gatewayList)
       if (this.data.gatewayList.length === 0) {
         this.setData({
           isShowNoGatewayTips: true,

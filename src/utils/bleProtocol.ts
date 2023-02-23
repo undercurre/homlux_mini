@@ -13,15 +13,15 @@ const CmdTypeMap = {
   query: 0x01, // 查询
 } as const
 
-type CmdType = typeof CmdTypeMap
+// type CmdType = typeof CmdTypeMap
 
-/**
- * 根据值获取对应的控制类型名称
- * @param value
- */
-function getCmdTypeName(value: CmdType[keyof CmdType]) {
-  return Object.entries(CmdTypeMap).find((item) => item[1] === value)![0]
-}
+// /**
+//  * 根据值获取对应的控制类型名称
+//  * @param value
+//  */
+// function getCmdTypeName(value: CmdType[keyof CmdType]) {
+//   return Object.entries(CmdTypeMap).find((item) => item[1] === value)![0]
+// }
 
 // 控制类子类型枚举
 // CTL_CONFIG_ZIGBEE_NET				= 0x00,		//开启ZigBee配网模式
@@ -87,14 +87,14 @@ export class BleClient {
       })
       .catch((err) => console.log('connectRes-err', err))
 
-    console.log('connectRes', connectRes, Date.now() - date1)
+    console.log('connectRes', this.mac, connectRes, Date.now() - date1)
 
     // 连接成功，获取服务
-    // const bleServiceRes = await wx.getBLEDeviceServices({
-    //   deviceId,
-    // })
+    const bleServiceRes = await wx.getBLEDeviceServices({
+      deviceId: this.deviceUuid,
+    })
 
-    // console.log('bleServiceRes', bleServiceRes)
+    console.log('bleServiceRes', bleServiceRes)
 
     const characRes = await wx.getBLEDeviceCharacteristics({
       deviceId: this.deviceUuid,
@@ -116,9 +116,13 @@ export class BleClient {
   }
 
   async sendCmd(params: { cmdType: keyof typeof CmdTypeMap; subType: keyof typeof ControlSubType }) {
+    console.log(`-------------sendCmd-------------start: ${this.mac}`)
     await this.connect()
 
     const { cmdType, subType } = params
+
+    console.log(`---cmdType----- ${params.cmdType}--${params.subType}`)
+
     const msgId = ++this.msgId // 等待回复的指令msgId
     // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
     // 1 byte	     1 byte	   1 byte	          N  bytes	    1 byte
@@ -138,6 +142,11 @@ export class BleClient {
 
     return new Promise<{ code: string; success: boolean; cmdType: string; subCmdType: string; resMsg: string }>(
       (resolve) => {
+        // 超时处理
+        const timeId = setTimeout(() => {
+          resolve({ code: '-1', success: false, resMsg: 'request timeout', cmdType: cmdType, subCmdType: subType })
+        }, 6000)
+
         const listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
           console.log(`onBLECharacteristicValueChange ${res.characteristicId} has changed, now is ${res.value}`, res)
           if (res.deviceId !== this.deviceUuid) {
@@ -164,12 +173,14 @@ export class BleClient {
           wx.offBLECharacteristicValueChange(listener)
           const code = resMsg.substr(2, 2)
 
+          clearTimeout(timeId)
+
           resolve({
             code: code,
             resMsg: resMsg.substr(4),
             success: code === '00',
-            cmdType: getCmdTypeName(parseInt(msg.substr(0, 2), 16) as CmdType[keyof CmdType]),
-            subCmdType: resMsg.substr(0, 2),
+            cmdType: cmdType,
+            subCmdType: subType,
           })
           console.log('resolve')
         }
@@ -185,6 +196,8 @@ export class BleClient {
             console.log('wirteRes', res)
           },
         })
+
+        console.log(`-------------sendCmd-------------end：${this.mac}`)
       },
     )
   }

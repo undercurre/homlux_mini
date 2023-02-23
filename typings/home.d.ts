@@ -37,6 +37,9 @@ declare namespace Home {
      */
     houseName: string
 
+    // 用户家庭权限 1：创建者 2：管理员 3：游客
+    houseUserAuth: number
+
     /**
      * 设备数量
      */
