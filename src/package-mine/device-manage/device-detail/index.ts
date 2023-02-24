@@ -3,6 +3,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeStore, roomBinding } from '../../../store/index'
 import pageBehavior from '../../../behaviors/pageBehaviors'
 import { checkOtaVersion, editDeviceInfo, queryDeviceInfoByDeviceId } from '../../../apis/index'
+import { proName } from '../../../config/index'
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding] }), pageBehavior],
   /**
@@ -21,6 +22,12 @@ ComponentWithComputed({
     roomName(data) {
       if (data.roomList && data.roomId) {
         return data.roomList.find((room: { roomId: string }) => room.roomId === data.roomId)?.roomName
+      }
+      return ''
+    },
+    prodType(data) {
+      if (data.deviceInfo.proType) {
+        return proName[data.deviceInfo.proType]
       }
       return ''
     },

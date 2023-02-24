@@ -6,7 +6,7 @@
     <image src="/assets/img/home/more.png" class="w-32rpx h-32rpx mr-32rpx"></image>
   </view>
   <view class="grid grid-cols-4 gap-22rpx mx-32rpx mt-8rpx" wx:if="{{showScene}}">
-    <view wx:for="{{sceneList}}" wx:key="value" data-value="{{item.sceneId}}" bindtap="handleSceneTap" class="relative w-144rpx h-168rpx rounded-24rpx flex flex-col justify-center items-center bg-gray-f3">
+    <view wx:for="{{sceneList}}" wx:key="value" data-value="{{item.sceneId}}" bindtap="handleSceneTap" class="relative w-144rpx h-168rpx rounded-24rpx flex flex-col justify-center items-center bg-hex-eff0f3">
       <view class="flex-col-center">
         <view class="rounded-999 bg-white">
           <svg-icon name="scene:{{item.sceneIcon}}" width="64rpx" height="64rpx" />

@@ -1,6 +1,7 @@
 // pages/index/components/room-card/index.ts
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { runInAction } from 'mobx-miniprogram'
+import { execScene } from '../../../../apis/scene'
 import { roomStore } from '../../../../store/index'
 ComponentWithComputed({
   options: {
@@ -45,6 +46,9 @@ ComponentWithComputed({
       }
       this.setData({
         sceneClickId: e.currentTarget.dataset.value,
+      })
+      execScene(e.currentTarget.dataset.value).then((res) => {
+        console.log(res)
       })
       this.execCardBgAnimationStart(e.currentTarget.dataset.value)
     },

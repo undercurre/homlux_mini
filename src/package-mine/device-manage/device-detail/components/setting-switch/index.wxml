@@ -1,7 +1,31 @@
-<!--package-mine/device-manage/device-detail/components/setting-switch/index.wxml-->
-<view class="h-full bg-hex-000 flex flex-col">
-  <view>
-    <text></text>
+<import src="/commons/templates/popup.wxml" />
+<view class="h-full flex flex-col">
+  <view class="w-750rpx flex mt-16rpx">
+    <text class="ml-48rpx text-black-59 font-normal text-28rpx">按键设置</text>
   </view>
-  <text>package-mine/device-manage/device-detail/components/setting-light/index.wxml</text>
+  <view class="mt-24rpx w-750rpx flex-1" id="content">
+    <scroll-view enhanced show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
+      <van-cell-group inset>
+        <van-cell center is-link wx:for="{{switchList}}" wx:key="switchId" bind:click="handleSwitchClick" data-index="{{index}}" title="{{item.switchName}}">
+          <view slot="icon">
+            <image class="w-96rpx h-96rpx bg-hex-f6fafd mr-32rpx rounded-999" src="{{item.pic}}" />
+          </view>
+        </van-cell>
+      </van-cell-group>
+      <view class="h-8rpx"></view>
+    </scroll-view>
+  </view>
 </view>
+
+<van-popup show="{{ showPopup }}" round position="bottom" bind:close="handleClose">
+  <view class="w-750rpx flex flex-col items-center">
+    <template is="title" data="{{title: '按键设置'}}" />
+    <view class="mt-98rpx w-686rpx">
+      <text class="block pl-16rpx pb-32rpx text-28">房间名称</text>
+      <van-field custom-style="padding: 20rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" model:value="{{ switchName }}" placeholder="请输入按键名称" clearable></van-field>
+    </view>
+    <view class="h-98rpx"></view>
+    <template is="bottom-btn" />
+    <view class="h-32rpx"></view>
+  </view>
+</van-popup>
