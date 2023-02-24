@@ -3,7 +3,7 @@
 
   <view class="grow flex flex-col pb-128rpx">
     <block wx:if="{{status === 'linking'}}">
-      <loading class="mt-130rpx" text="请将设备尽量靠近路由器" show-progress="{{true}}" step-list="{{stepList}}" active-index="{{activeIndex}}"></loading>
+      <loading class="mt-130rpx" text="请将设备尽量靠近路由器" show-progress="{{true}}" active-index="{{activeIndex}}"></loading>
     </block>
 
     <block wx:if="{{status === 'error'}}">
@@ -25,5 +25,3 @@
     </block>
   </view>
 </view>
-
-<van-button bind:click="queryDeviceOnlineStatus">queryDeviceOnlineStatus</van-button>

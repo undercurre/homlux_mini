@@ -100,6 +100,13 @@
           "query": "deviceId=1111&dsn=000016111MSGWZ00288B1539E5FB0000",
           "launchMode": "default",
           "scene": null
+        },
+        {
+          "name": "添加单个子设备",
+          "pathName": "package-distribution/add-subdevice/index",
+          "query": "",
+          "scene": null,
+          "launchMode": "default"
         }
       ]
     }

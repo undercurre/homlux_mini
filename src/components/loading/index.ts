@@ -19,7 +19,17 @@ Component({
     },
     stepList: {
       type: Array,
-      default: [],
+      default: [
+        {
+          text: '连接设备',
+        },
+        {
+          text: '设备联网',
+        },
+        {
+          text: '账号绑定',
+        },
+      ],
     },
     activeIndex: {
       type: Number,
@@ -62,6 +72,10 @@ Component({
         }
 
         ++percentage
+
+        if (percentage < length * activeIndex) {
+          percentage = length * activeIndex
+        }
 
         this.setData({
           percentage: percentage,

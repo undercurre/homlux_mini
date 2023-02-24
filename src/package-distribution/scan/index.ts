@@ -1,6 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { reaction } from 'mobx-miniprogram'
 import { deviceBinding, homeBinding } from '../../store/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { strUtil } from '../../utils/index'
@@ -28,6 +27,7 @@ ComponentWithComputed({
     selectGatewayId: '',
     selectGatewaySn: '',
     subdeviceList: Array<string>(),
+    _deviceInfo: {} as IAnyObject,
   },
 
   computed: {
@@ -40,17 +40,9 @@ ComponentWithComputed({
 
   lifetimes: {
     async attached() {
-      if (homeBinding.store.currentHomeDetail.houseId) {
-        deviceBinding.store.updateAllRoomDeviceList()
-      } else {
-        reaction(
-          () => homeBinding.store.currentHomeDetail.houseId,
-          () => {
-            console.log('reaction-updateAllRoomDeviceList')
-            deviceBinding.store.updateAllRoomDeviceList()
-          },
-        )
-      }
+      await homeBinding.store.updateHomeInfo()
+
+      await deviceBinding.store.updateAllRoomDeviceList()
 
       const params = wx.getLaunchOptionsSync()
       console.log('scanPage', params)
@@ -73,6 +65,10 @@ ComponentWithComputed({
 
       console.log('authorizeRes', authorizeRes)
 
+      this.handleScanUrl(
+        'https://test.meizgd.com/homlux/qrCode.html?v=1&mode=01&ssid=homlux_ble&mac=04CD15AE9847&pid=1CEE3D637F48 33 34  DE 09 7E 4A 71 48 D8 71 65 D3 1A 91 A5 A8 65 D9  A1 B6 35 58 8C D4 5D 28 ',
+      )
+
       this.initBle()
     },
   },
@@ -83,12 +79,6 @@ ComponentWithComputed({
     },
     hide() {
       console.log('hide')
-
-      setTimeout(() => {
-        this.setData({
-          _hasScan: false,
-        })
-      }, 1000)
 
       wx.closeBluetoothAdapter()
     },
@@ -121,7 +111,11 @@ ComponentWithComputed({
     },
 
     confirmGateway() {
-      this.addNearSubdevice()
+      if (this.data._deviceInfo.type === 'single') {
+        this.addSingleSubdevice()
+      } else {
+        this.addNearSubdevice()
+      }
 
       this.setData({
         isShowGatewayList: false,
@@ -209,6 +203,8 @@ ComponentWithComputed({
       const params = strUtil.getUrlParams(url)
 
       console.log('params', params)
+      // const modelId = aesUtil.decrypt(params.pid, `midea@homlux${params.mac.substr(-4)}`, 'Hex')
+      // console.log('modelId', modelId)
 
       // 获取云端的产品基本信息
       const res = await checkDevice({
@@ -218,13 +214,37 @@ ComponentWithComputed({
 
       console.log('checkDevice', res)
 
-      if (res.success && res.result.proType === '0x18') {
+      // if (!res.success) {
+      // }
+
+      this.data._deviceInfo = {
+        type: 'single',
+        proType: res.result.proType,
+        deviceName: res.result.productName,
+        mac: params.mac,
+      }
+
+      if (res.result.proType === '0x18') {
         this.bindGateway({
           ssid: params.ssid,
           dsn: params.dsn,
           deviceName: res.result.productName,
         })
+      } else {
+        const flag = this.checkGateWayInfo()
+
+        if (!flag) {
+          return
+        }
+
+        this.addSingleSubdevice()
       }
+
+      setTimeout(() => {
+        this.setData({
+          _hasScan: false,
+        })
+      }, 1000)
     },
 
     bindGateway(params: IAnyObject) {
@@ -234,11 +254,14 @@ ComponentWithComputed({
     },
 
     /**
-     * 添加附近搜索的子设备
+     * 添加子设备时，检测是否已选择网关信息
      */
-    addNearSubdevice() {
-      let gatewayId = this.data.selectGatewayId,
-        gatewaySn = this.data.selectGatewaySn
+    checkGateWayInfo() {
+      const gatewayId = this.data.selectGatewayId
+
+      if (gatewayId) {
+        return true
+      }
 
       console.log('this.data.gatewayList', this.data.gatewayList)
       if (this.data.gatewayList.length === 0) {
@@ -246,24 +269,55 @@ ComponentWithComputed({
           isShowNoGatewayTips: true,
         })
 
-        return
+        return false
       }
 
-      if (!gatewayId && this.data.gatewayList.length === 1) {
-        gatewayId = this.data.gatewayList[0].deviceId
-        gatewaySn = this.data.gatewayList[0].sn
-      } else if (!gatewayId) {
+      if (this.data.gatewayList.length === 1 && this.data.gatewayList[0].onLineStatus === 1) {
+        this.data.selectGatewayId = this.data.gatewayList[0].deviceId
+        this.data.selectGatewaySn = this.data.gatewayList[0].sn
+      } else {
         this.setData({
           isShowGatewayList: true,
         })
 
+        return false
+      }
+
+      return true
+    },
+    /**
+     * 添加附近搜索的子设备
+     */
+    addNearSubdevice() {
+      this.data._deviceInfo.type = 'near'
+
+      if (!this.checkGateWayInfo()) {
         return
       }
+
+      const gatewayId = this.data.selectGatewayId,
+        gatewaySn = this.data.selectGatewaySn
 
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
           gatewayId,
           gatewaySn,
+        }),
+      })
+    },
+
+    // 添加单个子设备
+    addSingleSubdevice() {
+      const gatewayId = this.data.selectGatewayId,
+        gatewaySn = this.data.selectGatewaySn
+
+      wx.navigateTo({
+        url: strUtil.getUrlWithParams('/package-distribution/add-subdevice/index', {
+          mac: this.data._deviceInfo.mac,
+          gatewayId,
+          gatewaySn,
+          // modelId: modelId,
+          deviceName: this.data._deviceInfo.productName,
         }),
       })
     },
