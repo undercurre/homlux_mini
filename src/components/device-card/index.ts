@@ -39,7 +39,7 @@ ComponentWithComputed({
       return data.deviceInfo.pic ? data.deviceInfo.pic : `/assets/img/device/${data.deviceType}.png`
     },
     controlBtnPic(data) {
-      if (!data.showControl) {
+      if (!data.showControl || !data.deviceInfo.onLineStatus) {
         return ''
       }
       if (data.deviceType === 'light') {
@@ -51,6 +51,9 @@ ComponentWithComputed({
           return '/assets/img/base/scene-switch-btn.png'
         }
         const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
+        if (!data.deviceInfo?.mzgdPropertyDTOList[switchId]) {
+          return ''
+        }
         return data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff
           ? '/assets/img/base/power-on.png'
           : '/assets/img/base/power-off.png'
@@ -74,14 +77,15 @@ ComponentWithComputed({
    */
   methods: {
     handleCardTap() {
-      if (this.data.deviceInfo.onLineStatus) {
-        this.triggerEvent('cardTap', this.data.deviceInfo)
-      } else {
-        wx.showToast({
-          icon: 'none',
-          title: '设备已离线',
-        })
-      }
+      this.triggerEvent('cardTap', this.data.deviceInfo)
+      // if (this.data.deviceInfo.onLineStatus) {
+      //   this.triggerEvent('cardTap', this.data.deviceInfo)
+      // } else {
+      //   wx.showToast({
+      //     icon: 'none',
+      //     title: '设备已离线',
+      //   })
+      // }
     },
     handlePowerTap() {
       if (this.data.deviceInfo.onLineStatus) {

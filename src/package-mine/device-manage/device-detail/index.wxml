@@ -16,12 +16,13 @@
 
   <!-- 下半部分 -->
   <view class="flex flex-1">
-    <setting-light />
-    <!-- <setting-curtain />
-    <setting-switch />
-    <setting-gateway /> -->
+    <setting-light device-info="{{deviceInfo}}" wx:if="{{prodType === 'light'}}" bind:update="updateDeviceInfo" />
+    <!-- <setting-curtain wx:if="{{prodType === 'light'}}" /> -->
+    <setting-switch device-info="{{deviceInfo}}" wx:if="{{prodType === 'switch'}}" bind:update="updateDeviceInfo" />
+    <setting-gateway device-info="{{deviceInfo}}" wx:if="{{prodType === 'gateway'}}" bind:update="updateDeviceInfo" />
   </view>
-
+  <!-- 隔开一点距离 -->
+  <view class="h-24rpx"></view>
   <!-- 底部按钮 -->
   <van-button type="warning" custom-class="delete-btn">
     <text>删除设备</text>

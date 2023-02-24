@@ -1,4 +1,6 @@
+import { queryDeviceOtaUpdateList } from '../../apis/ota'
 import pageBehavior from '../../behaviors/pageBehaviors'
+import { homeStore } from '../../store/index'
 Component({
   behaviors: [pageBehavior],
   /**
@@ -13,6 +15,7 @@ Component({
     autoUpdate: false,
     isLoading: false,
     contentHeight: 0,
+    otaData: [{}], // todo：mock数据，联调时删除
   },
 
   /**
@@ -30,6 +33,9 @@ Component({
             })
           }
         })
+      queryDeviceOtaUpdateList(homeStore.currentHomeDetail.houseId).then((res) => {
+        console.log(res)
+      })
     },
     onChange(e: { detail: boolean }) {
       if (this.data.isLoading) {

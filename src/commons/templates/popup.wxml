@@ -2,7 +2,7 @@
   <text class="h-50rpx text-36rpx text-black-2a mt-44rpx font-medium">{{title}}</text>
 </template>
 <template name="bottom-btn">
-  <view class="flex gap-46rpx justify-center">
+  <view class="flex gap-46rpx justify-center w-686rpx">
     <van-button class="grow" size="large" bind:click="handleClose">{{ cancelText || '取消'}}</van-button>
     <van-button type="primary" class="grow" size="large" bind:click="handleConfirm">{{ confirmText || '确定'}}</van-button>
   </view>

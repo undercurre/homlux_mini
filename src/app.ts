@@ -17,6 +17,7 @@ App<IAppOption>({
 
     // 如果用户没登陆，或者登录状态过期，需要自动跳转到登录页
     if (!storage.get<string>('token')) {
+      // todo: 保存打开参数，登陆后重定向到参数目录
       wx.redirectTo({
         url: '/pages/login/index',
       })

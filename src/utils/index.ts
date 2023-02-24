@@ -16,9 +16,11 @@ export function delay(ms: number) {
 }
 
 export function setNavigationBarAndBottomBarHeight() {
-  const { statusBarHeight, platform, windowWidth, windowHeight, safeArea } = wx.getSystemInfoSync()
+  const { statusBarHeight, platform, windowWidth, windowHeight, safeArea, system } = wx.getSystemInfoSync()
   const { top, height } = wx.getMenuButtonBoundingClientRect()
 
+  // 手机系统
+  storage.set('system', system, null)
   // 状态栏高度
   storage.set('statusBarHeight', statusBarHeight, null)
   // 胶囊按钮高度 一般是32 如果获取不到就使用32

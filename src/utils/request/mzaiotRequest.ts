@@ -42,8 +42,8 @@ const mzaiotRequest: MzaiotRequest = function <T extends AnyResType>(options: Ba
   options.data = Object.assign(
     {
       reqId,
-      frontendType: '',
-      systemSource: '',
+      frontendType: 'WeApp',
+      systemSource: storage.get<string>('system'),
       timestamp: reqId,
     },
     options.data,
