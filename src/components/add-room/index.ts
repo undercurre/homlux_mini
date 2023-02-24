@@ -52,7 +52,7 @@ Component({
   data: {
     roomInfo: {
       name: '',
-      icon: '',
+      icon: 'parents-room',
     },
     iconList: [
       {
@@ -110,6 +110,16 @@ Component({
       this.triggerEvent('close')
     },
     async handleConfirm() {
+      if (!this.data.roomInfo.name) {
+        wx.showToast({ title: '房间名称不能为空', icon: 'none' })
+        return
+      }
+
+      if (this.data.roomInfo.name.length > 5) {
+        wx.showToast({ title: '房间名称不能超过5个字符', icon: 'none' })
+        return
+      }
+
       const res = await saveHouseRoomInfo({
         houseId: homeBinding.store.currentHomeId,
         roomId: this.data.roomId,

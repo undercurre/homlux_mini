@@ -43,6 +43,14 @@ ComponentWithComputed({
     },
 
     addRoom() {
+      if (roomBinding.store.roomList.length === 50) {
+        wx.showToast({
+          title: '一个家庭中最多创建50个房间',
+          icon: 'none'
+        })
+        return
+      }
+
       this.setData({
         isAddRoom: true,
       })

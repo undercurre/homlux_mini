@@ -171,6 +171,7 @@ ComponentWithComputed({
         roomName: '',
         status: 'waiting',
         requestTimes: 20,
+        requesting: false,
       }
 
       this.data.deviceList.push(bleDevice)
@@ -206,6 +207,7 @@ ComponentWithComputed({
       })
 
       if (!res.success) {
+        wx.showToast({ title: res.msg})
         return
       }
 
@@ -340,12 +342,23 @@ ComponentWithComputed({
 
       const bleDeviceItem = this.data.deviceList.find((item) => item.deviceUuid === id) as IBleDevice
 
+      bleDeviceItem.requesting = true
+
+      this.setData({
+        deviceList: this.data.deviceList
+      })
       const res = await bleDeviceItem.client.sendCmd({
         cmdType: 'control',
         subType: 'haveTry',
       })
 
       console.log('tryControl-res', res)
+
+      bleDeviceItem.requesting = false
+
+      this.setData({
+        deviceList: this.data.deviceList
+      })
     },
 
     // 重新添加

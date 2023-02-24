@@ -3,14 +3,14 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { roomBinding, homeBinding, userBinding } from '../../store/index'
+import { roomBinding, homeBinding } from '../../store/index'
 import { saveOrUpdateUserHouseInfo, delUserHouse, quitUserHouse } from '../../apis/index'
 
 ComponentWithComputed({
   options: {
     addGlobalClass: true,
   },
-  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, homeBinding, userBinding] }), pageBehaviors],
+  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, homeBinding] }), pageBehaviors],
 
   /**
    * 页面的初始数据
@@ -44,6 +44,24 @@ ComponentWithComputed({
 
       return actions
     },
+
+    showRoomList(data) {
+      let list = (data.roomList || []) as Room.RoomInfo[]
+
+      list = list.slice(0, 8)
+
+      if (list.length === 8) {
+        list[7] = {
+          deviceLightOnNum: 0,
+          roomIcon: 'more',
+          roomId: '',
+          roomName: '全部',
+          sceneList: []
+        }
+      }
+
+      return list
+    }
   },
 
   lifetimes: {
@@ -243,5 +261,15 @@ ComponentWithComputed({
 
       homeBinding.store.updateHomeInfo()
     },
+
+    clickRoomItem(event: WechatMiniprogram.CustomEvent) {
+      let { icon } = event.currentTarget.dataset
+
+      if (icon === 'more') {
+        wx.navigateTo({
+          url: '/package-mine/room-manage/index'
+        })
+      }
+    }
   },
 })

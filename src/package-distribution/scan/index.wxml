@@ -5,10 +5,10 @@
 
   <view class="absolute bottom-0 left-0 right-0 pb-72rpx flex flex-col items-center text-32">
     <text class="leading-none text-hex-F4F8FF mb-72rpx">扫描机身或说明书二维码</text>
-    <view class="flex flex-row items-center bg-hex-5A5A5A rounded-32rpx leading-80rpx px-32rpx" wx:if="{{subdeviceList.length}}">
+    <view class="flex flex-row items-center bg-hex-5A5A5A rounded-32rpx leading-80rpx px-32rpx">
       <image class="w-28 h-28 rotate" src="/assets/img/scan/scaning.png"></image>
 
-      <text class="grow text-hex-F4F8FF px-16rpx">搜索到{{subdeviceList.length}}个附近的子设备</text>
+      <text class="grow text-hex-F4F8FF px-16rpx">{{subdeviceList.length ? '搜索到个附近的子设备' : '正在搜索附近子设备'}}</text>
 
       <van-button type="primary" size="large" plain bind:click="addNearSubdevice">立即添加</van-button>
     </view>
@@ -19,7 +19,7 @@
   <view class="flex flex-col items-stretch">
     <text class="block pt-40rpx pb-16rpx leading-46rpx text-center text-36 opacity-90 text-black-2a font-medium">选择智能网关</text>
 
-    <text class="block text-center leading-36rpx text-26 text-black-tips">选择自设备要关联的智能网关</text>
+    <text class="block text-center leading-36rpx text-26 text-black-tips">选择子设备要关联的智能网关</text>
 
     <view class="pt-46rpx px-32rpx">
       <view wx:for="{{gatewayList}}" wx:key="deviceId" class="flex flex-row items-center mb-24rpx p-24rpx border-solid rounded-24rpx {{item.deviceId === selectGatewayId ? 'border-4rpx border-blue' : 'border-2rpx border-gray-dd'}}" data-index="{{index}}" bind:tap="selectGateway">

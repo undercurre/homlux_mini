@@ -36,6 +36,9 @@ ComponentWithComputed({
 
       return deviceList.filter((item) => item.deviceType === 1)
     },
+    tipsText(data) {
+      return data.subdeviceList.length ? `搜索到${data.subdeviceList.length}个附近的子设备` : '正在搜索附近子设备'
+    }
   },
 
   lifetimes: {
@@ -61,13 +64,19 @@ ComponentWithComputed({
         .authorize({
           scope: 'scope.userLocation',
         })
-        .catch((err) => console.log('authorizeRes-err', err))
+        .catch((err) => err)
 
       console.log('authorizeRes', authorizeRes)
 
-      this.handleScanUrl(
-        'https://test.meizgd.com/homlux/qrCode.html?v=1&mode=01&ssid=homlux_ble&mac=04CD15AE9847&pid=1CEE3D637F48 33 34  DE 09 7E 4A 71 48 D8 71 65 D3 1A 91 A5 A8 65 D9  A1 B6 35 58 8C D4 5D 28 ',
-      )
+      if (authorizeRes.errno === 103) {
+        wx.openSetting({
+          success (res) {
+            console.log('authSetting', res.authSetting)
+          }
+        })
+
+        return
+      }
 
       this.initBle()
     },
@@ -192,14 +201,16 @@ ComponentWithComputed({
         _hasScan: true,
       })
 
-      wx.vibrateLong() // 轻微震动
-
       const scanUrl = e.detail.result
 
       this.handleScanUrl(scanUrl)
     },
 
     async handleScanUrl(url: string) {
+      wx.showLoading({
+        title: 'loading',
+      })
+
       const params = strUtil.getUrlParams(url)
 
       console.log('params', params)
@@ -224,7 +235,11 @@ ComponentWithComputed({
         mac: params.mac,
       }
 
-      if (res.result.proType === '0x18') {
+      if (!res.success) {
+        wx.showToast({ title: '验证产品信息失败' })
+
+        return
+      } else if (res.result && res.result.proType === '0x18') {
         this.bindGateway({
           ssid: params.ssid,
           dsn: params.dsn,
@@ -239,6 +254,8 @@ ComponentWithComputed({
 
         this.addSingleSubdevice()
       }
+
+      wx.hideLoading()
 
       setTimeout(() => {
         this.setData({

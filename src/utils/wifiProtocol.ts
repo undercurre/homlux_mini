@@ -64,7 +64,7 @@ export class WifiSocket {
       // 连接热点超时回调
       const timeId = setTimeout(() => {
         resolve({ success: false })
-      }, 20000)
+      }, 60000)
 
       const listen = async (onWifiConnectRes: WechatMiniprogram.OnWifiConnectedCallbackResult) => {
         console.log('onWifiConnected', onWifiConnectRes)
@@ -193,13 +193,22 @@ export class WifiSocket {
   }
 
   getDeviceIp() {
+    let times = 3 // 最多请求3次
+
     return new Promise((resolve) => {
       const interId = setInterval(() => {
+        if (times <= 0) {
+          clearInterval(interId)
+          resolve(false)
+
+          return
+        }
         if (this.deviceInfo.ip) {
           clearInterval(interId)
           resolve(true)
         }
 
+        times--
         this.sendCmdForDeviceIp()
       }, 2000)
     })
