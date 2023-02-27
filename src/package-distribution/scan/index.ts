@@ -38,7 +38,7 @@ ComponentWithComputed({
     },
     tipsText(data) {
       return data.subdeviceList.length ? `搜索到${data.subdeviceList.length}个附近的子设备` : '正在搜索附近子设备'
-    }
+    },
   },
 
   lifetimes: {
@@ -70,9 +70,9 @@ ComponentWithComputed({
 
       if (authorizeRes.errno === 103) {
         wx.openSetting({
-          success (res) {
+          success(res) {
             console.log('authSetting', res.authSetting)
-          }
+          },
         })
 
         return

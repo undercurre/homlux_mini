@@ -110,17 +110,17 @@ Component({
           proType: deviceMap[deviceId].proType,
         })),
       )
-      const res = await addScene(newSceneData) 
+      const res = await addScene(newSceneData)
       if (res.success) {
         wx.showToast({
           icon: 'success',
-          title: '收藏成功'
+          title: '收藏成功',
         })
         sceneStore.updateSceneList()
       } else {
         wx.showToast({
           icon: 'error',
-          title: '收藏失败'
+          title: '收藏失败',
         })
       }
       this.triggerEvent('close')

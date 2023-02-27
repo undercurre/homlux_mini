@@ -47,12 +47,12 @@ ComponentWithComputed({
       if (res.success) {
         wx.showToast({
           icon: 'success',
-          title: '执行成功'
+          title: '执行成功',
         })
       } else {
         wx.showToast({
           icon: 'error',
-          title: '执行失败'
+          title: '执行失败',
         })
       }
     },

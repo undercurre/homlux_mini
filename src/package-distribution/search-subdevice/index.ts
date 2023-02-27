@@ -207,7 +207,7 @@ ComponentWithComputed({
       })
 
       if (!res.success) {
-        wx.showToast({ title: res.msg})
+        wx.showToast({ title: res.msg })
         return
       }
 
@@ -345,7 +345,7 @@ ComponentWithComputed({
       bleDeviceItem.requesting = true
 
       this.setData({
-        deviceList: this.data.deviceList
+        deviceList: this.data.deviceList,
       })
       const res = await bleDeviceItem.client.sendCmd({
         cmdType: 'control',
@@ -357,7 +357,7 @@ ComponentWithComputed({
       bleDeviceItem.requesting = false
 
       this.setData({
-        deviceList: this.data.deviceList
+        deviceList: this.data.deviceList,
       })
     },
 

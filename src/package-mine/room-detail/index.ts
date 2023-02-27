@@ -79,7 +79,7 @@ ComponentWithComputed({
       if (roomBinding.store.roomList.length === 1) {
         wx.showToast({
           title: '请至少保留一个房间',
-          icon: 'none'
+          icon: 'none',
         })
         return
       }
@@ -105,7 +105,7 @@ ComponentWithComputed({
       } else {
         wx.showToast({
           title: res.msg,
-          icon: 'error'
+          icon: 'error',
         })
       }
     },

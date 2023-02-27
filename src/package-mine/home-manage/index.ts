@@ -56,12 +56,12 @@ ComponentWithComputed({
           roomIcon: 'more',
           roomId: '',
           roomName: '全部',
-          sceneList: []
+          sceneList: [],
         }
       }
 
       return list
-    }
+    },
   },
 
   lifetimes: {
@@ -263,13 +263,13 @@ ComponentWithComputed({
     },
 
     clickRoomItem(event: WechatMiniprogram.CustomEvent) {
-      let { icon } = event.currentTarget.dataset
+      const { icon } = event.currentTarget.dataset
 
       if (icon === 'more') {
         wx.navigateTo({
-          url: '/package-mine/room-manage/index'
+          url: '/package-mine/room-manage/index',
         })
       }
-    }
+    },
   },
 })

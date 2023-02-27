@@ -191,7 +191,7 @@ export async function editDeviceInfo(data: {
  * 设备管理-删除设备
  * 网关需要传sn，子设备传子设备的deviceId代替sn
  */
-export async function deleteDevice(data: { deviceId: string; deviceType: number; sn: string; }) {
+export async function deleteDevice(data: { deviceId: string; deviceType: number; sn: string }) {
   return await mzaioRequest.post<IAnyObject>({
     log: true,
     url: '/v1/device/delDevice',

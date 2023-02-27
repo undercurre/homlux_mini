@@ -98,26 +98,25 @@ ComponentWithComputed({
     handleDeviceDelete() {
       Dialog.confirm({
         title: '确定删除该设备？',
-      })
-        .then(async () => {
-          const res = await deleteDevice({
-            deviceId: this.data.deviceId,
-            deviceType: this.data.deviceInfo.deviceType,
-            sn: this.data.deviceInfo.proType === proType.gateway ? this.data.deviceInfo.sn : this.data.deviceId,
-          })
-          if (res.success) {
-            wx.showToast({
-              icon: 'success',
-              title: '删除成功',
-            })
-            wx.navigateBack()
-          } else {
-            wx.showToast({
-              icon: 'error',
-              title: '删除失败',
-            })
-          }
+      }).then(async () => {
+        const res = await deleteDevice({
+          deviceId: this.data.deviceId,
+          deviceType: this.data.deviceInfo.deviceType,
+          sn: this.data.deviceInfo.proType === proType.gateway ? this.data.deviceInfo.sn : this.data.deviceId,
         })
+        if (res.success) {
+          wx.showToast({
+            icon: 'success',
+            title: '删除成功',
+          })
+          wx.navigateBack()
+        } else {
+          wx.showToast({
+            icon: 'error',
+            title: '删除失败',
+          })
+        }
+      })
     },
     async updateDeviceInfo() {
       const res = await queryDeviceInfoByDeviceId(this.data.deviceId)
