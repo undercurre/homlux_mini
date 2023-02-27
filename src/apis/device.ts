@@ -46,7 +46,7 @@ export async function querySubDeviceList(houseId: string, roomId: string) {
 
 /**
  * 设备管理-根据设备Id获取设备明细
- * 传入roomId可减少云端查询步骤
+ * roomId可选，传入roomId可减少云端查询步骤
  */
 export async function queryDeviceInfoByDeviceId(deviceId: string, roomId?: string) {
   return await mzaioRequest.post<Device.DeviceItem>({
@@ -189,8 +189,9 @@ export async function editDeviceInfo(data: {
 
 /**
  * 设备管理-删除设备
+ * 网关需要传sn，子设备传子设备的deviceId代替sn
  */
-export async function deleteDevice(data: { deviceId: string; deviceType: string; sn: string; userId: string }) {
+export async function deleteDevice(data: { deviceId: string; deviceType: number; sn: string; }) {
   return await mzaioRequest.post<IAnyObject>({
     log: true,
     url: '/v1/device/delDevice',

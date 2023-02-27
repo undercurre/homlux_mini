@@ -12,7 +12,7 @@ import {
 } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { controlDevice, saveDeviceOrder } from '../../apis/index'
+import { controlDevice, saveDeviceOrder, queryDeviceInfoByDeviceId } from '../../apis/index'
 import { proName, proType } from '../../config/device'
 import { emitter, WSEventType } from '../../utils/eventBus'
 
@@ -26,6 +26,8 @@ interface ClienRect {
   height: number // 节点的高度
   dataset: Record<string, any> // 节点数据
 }
+
+let throttleTimer = 0
 
 ComponentWithComputed({
   behaviors: [
@@ -148,21 +150,19 @@ ComponentWithComputed({
           e.result.eventData.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId
         ) {
           // 如果是当前房间的设备状态发生变化，更新设备状态
-          // const index = deviceStore.deviceList.findIndex(
-          //   (device) => device.deviceId === (e.result.eventData as Record<string, any>).deviceId,
-          // )
-          // if (index !== -1) {
-          //   const res = await queryDeviceInfoByDeviceId(
-          //     deviceStore.deviceList[index].deviceId,
-          //     deviceStore.deviceList[index].roomId,
-          //   )
-          //   if (res.success) {
-          //     runInAction(() => {
-          //       deviceStore.deviceList[index] = res.result
-          //       deviceStore.deviceList = [...deviceStore.deviceList]
-          //     })
-          //   }
-          // }
+          const index = deviceStore.deviceList.findIndex((device) => device.deviceId === e.result.eventData.deviceId)
+          if (index !== -1) {
+            const res = await queryDeviceInfoByDeviceId(
+              deviceStore.deviceList[index].deviceId,
+              deviceStore.deviceList[index].roomId,
+            )
+            if (res.success) {
+              runInAction(() => {
+                deviceStore.deviceList[index] = res.result
+                deviceStore.deviceList = [...deviceStore.deviceList]
+              })
+            }
+          }
         } else if (
           typeof e.result.eventData === 'object' &&
           e.result.eventType === 'room_del' &&
@@ -302,6 +302,13 @@ ComponentWithComputed({
           y: e.touches[0].pageY,
         },
       })
+      // 节流操作，防止触发排序次数太多
+      if (throttleTimer != 0) {
+        return
+      }
+      throttleTimer = setTimeout(() => {
+        throttleTimer = 0
+      }, 100) as unknown as number
       this.reorder(e)
     },
     handleTouchEnd() {

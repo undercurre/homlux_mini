@@ -24,11 +24,12 @@
   <!-- 隔开一点距离 -->
   <view class="h-24rpx"></view>
   <!-- 底部按钮 -->
-  <van-button type="warning" custom-class="delete-btn">
+  <van-button type="warning" custom-class="delete-btn" bind:click="handleDeviceDelete">
     <text>删除设备</text>
   </van-button>
   <view style="height: 86rpx"></view>
 </view>
 
+<van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />
 <edit-name-popup value="{{deviceName}}" show="{{showEditNamePopup}}" bind:close="handleDeviceNameEditCancel" bind:confirm="handleDeviceNameEditConfirm" />
 <edit-room-popup value="{{roomId}}" show="{{showEditRoomPopup}}" bind:close="handleDeviceRoomEditCancel" bind:confirm="handleDeviceRoomEditConfirm" />

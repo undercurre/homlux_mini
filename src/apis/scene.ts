@@ -15,7 +15,7 @@ export async function addScene(data: Scene.AddSceneDto) {
   return await mzaioRequest.post<IAnyObject>({
     log: true,
     loading: true,
-    url: '/v1/mzgd/scene/querySceneListByRoomId',
+    url: '/v1/mzgd/scene/addScene',
     data,
   })
 }

@@ -3,7 +3,7 @@ import mitt, { Emitter } from 'mitt'
 type Events = {
   wsReceive: {
     result: {
-      eventData: string | IAnyObject
+      eventData: IAnyObject
       eventType: keyof typeof WSEventType
     }
   } // 从websocket接受到信息

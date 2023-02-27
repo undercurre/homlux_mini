@@ -2,8 +2,9 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeStore, roomBinding } from '../../../store/index'
 import pageBehavior from '../../../behaviors/pageBehaviors'
-import { checkOtaVersion, editDeviceInfo, queryDeviceInfoByDeviceId } from '../../../apis/index'
-import { proName } from '../../../config/index'
+import { checkOtaVersion, deleteDevice, editDeviceInfo, queryDeviceInfoByDeviceId } from '../../../apis/index'
+import { proName, proType } from '../../../config/index'
+import Dialog from '@vant/weapp/dialog/dialog'
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding] }), pageBehavior],
   /**
@@ -93,6 +94,30 @@ ComponentWithComputed({
       wx.navigateTo({
         url: '/package-mine/device-manage/ota/index',
       })
+    },
+    handleDeviceDelete() {
+      Dialog.confirm({
+        title: '确定删除该设备？',
+      })
+        .then(async () => {
+          const res = await deleteDevice({
+            deviceId: this.data.deviceId,
+            deviceType: this.data.deviceInfo.deviceType,
+            sn: this.data.deviceInfo.proType === proType.gateway ? this.data.deviceInfo.sn : this.data.deviceId,
+          })
+          if (res.success) {
+            wx.showToast({
+              icon: 'success',
+              title: '删除成功',
+            })
+            wx.navigateBack()
+          } else {
+            wx.showToast({
+              icon: 'error',
+              title: '删除失败',
+            })
+          }
+        })
     },
     async updateDeviceInfo() {
       const res = await queryDeviceInfoByDeviceId(this.data.deviceId)

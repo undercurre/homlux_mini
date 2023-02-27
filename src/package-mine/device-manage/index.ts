@@ -47,30 +47,33 @@ ComponentWithComputed({
      * 生命周期函数--监听页面加载
      */
     onLoad() {
-      wx.createSelectorQuery()
-        .select('#listWrapper')
-        .boundingClientRect()
-        .exec((res) => {
-          if (res[0] && res[0].height) {
-            this.setData({
-              listHeight: res[0].height,
-            })
-          }
-        })
-      wx.createSelectorQuery()
-        .select('#selectRoomBtn')
-        .boundingClientRect()
-        .exec((res) => {
-          if (res[0]) {
-            this.setData({
-              roomSelectMenu: {
-                x: '20rpx',
-                y: res[0].bottom + 20 + 'px',
-                isShow: false,
-              },
-            })
-          }
-        })
+      // 防止boundingClientRect获取错误数据
+      setTimeout(() => {
+        wx.createSelectorQuery()
+          .select('#content')
+          .boundingClientRect()
+          .exec((res) => {
+            if (res[0] && res[0].height) {
+              this.setData({
+                listHeight: res[0].height,
+              })
+            }
+          })
+        wx.createSelectorQuery()
+          .select('#selectRoomBtn')
+          .boundingClientRect()
+          .exec((res) => {
+            if (res[0]) {
+              this.setData({
+                roomSelectMenu: {
+                  x: '20rpx',
+                  y: res[0].bottom + 20 + 'px',
+                  isShow: false,
+                },
+              })
+            }
+          })
+      }, 500)
       if (roomBinding.store.roomList.length > 0) {
         this.setData({
           roomSelect: roomBinding.store.roomList[0].roomId,
