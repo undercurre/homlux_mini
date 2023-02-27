@@ -62,7 +62,7 @@ Component({
 
       const connectRes = await socket.connect()
 
-      console.log('连接wifi耗时：', Date.now() - start)
+      console.log('connectRes', connectRes, socket)
 
       if (!connectRes.success) {
         this.setData({

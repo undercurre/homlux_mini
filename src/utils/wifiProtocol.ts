@@ -9,12 +9,15 @@ export class WifiSocket {
 
   SSID = ''
 
-  key: string
+  key: string = ''
+
+  date = Date.now()
 
   deviceInfo = {
     ip: '', // 默认为广播地址
     udpPort: 6266,
     tcpPort: 6466,
+    isConnectTcp: false,
   }
 
   retryTimes = 3
@@ -24,12 +27,17 @@ export class WifiSocket {
   onMessageHandlerList: ((data: IAnyObject) => void)[] = []
 
   constructor(params: { ssid: string }) {
+    if (instance && instance.SSID === params.ssid) {
+      return instance
+    }
     // 防止端口被占用，检查释放之前生成的实例
     if (instance) {
       instance.close()
     }
 
     this.SSID = params.ssid
+
+    this.date = Date.now()
 
     this.key = `homlux@midea${params.ssid.substr(-4, 4)}`
 
@@ -48,10 +56,11 @@ export class WifiSocket {
     console.log('连接wifi时长：', Date.now() - now)
 
     const result = {
+      errCode: res.errCode,
       success: res.success,
     }
 
-    if (res.success) {
+    if (res.success && !this.deviceInfo.isConnectTcp) {
       const initRes = await this.initGatewayInfo()
 
       result.success = initRes.success
@@ -101,8 +110,6 @@ export class WifiSocket {
               msg: '用户拒绝授权链接 Wi-Fi',
             })
           }
-
-          console.log('after-resolve')
         },
       })
     })
@@ -112,6 +119,7 @@ export class WifiSocket {
     return new Promise((resolve) => {
       this.tcpClient.onConnect((res) => {
         console.log('tcpClient.onConnect', res)
+        this.deviceInfo.isConnectTcp = true
         resolve(res)
       })
 
@@ -142,7 +150,11 @@ export class WifiSocket {
       })
 
       this.tcpClient.onError((res) => {
-        console.log('tcpClient.onError', res)
+        console.log('tcpClient.onError', res, res.errMsg.includes('closed'))
+        if (res.errMsg.includes('closed')) {
+          this.deviceInfo.isConnectTcp = false
+          this.tcpClient.close()
+        }
       })
 
       this.tcpClient.onClose((res) => {
@@ -205,6 +217,12 @@ export class WifiSocket {
     let times = 3 // 最多请求3次
 
     return new Promise<boolean>((resolve) => {
+      if (this.deviceInfo.ip) {
+        resolve(true)
+
+        return
+      }
+
       const interId = setInterval(() => {
         if (times <= 0) {
           clearInterval(interId)

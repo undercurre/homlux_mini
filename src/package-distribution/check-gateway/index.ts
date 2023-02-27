@@ -44,8 +44,6 @@ Component({
     },
     detached() {
       console.log('detached')
-
-      socket.close()
     },
   },
 
@@ -61,9 +59,6 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    onHide() {
-      console.log('onHide')
-    },
     async initWifi() {
       const params = getCurrentPageParams()
 
@@ -76,6 +71,11 @@ Component({
       console.log('startWifi', startRes)
 
       const connectRes = await socket.connect()
+
+      if (connectRes.errCode === 12007) {
+        wx.navigateBack()
+        return
+      }
 
       if (!connectRes.success) {
         this.setData({
