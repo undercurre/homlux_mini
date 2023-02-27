@@ -40,7 +40,7 @@ export class WifiSocket {
   }
 
   async connect() {
-    let now = Date.now()
+    const now = Date.now()
 
     const res = await this.connectWifi()
 
@@ -98,7 +98,7 @@ export class WifiSocket {
             resolve({
               errCode: connectRes.errCode,
               success: false,
-              msg: '用户拒绝授权链接 Wi-Fi'
+              msg: '用户拒绝授权链接 Wi-Fi',
             })
           }
 
@@ -233,7 +233,7 @@ export class WifiSocket {
     await this.initTcpSocket()
 
     return {
-      success: res
+      success: res,
     }
   }
 

@@ -112,7 +112,7 @@ ComponentWithComputed({
               console.log('authSetting', res.authSetting)
             },
           })
-  
+
           wx.navigateBack()
           return
         }

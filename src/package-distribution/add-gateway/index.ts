@@ -102,7 +102,7 @@ Component({
       console.log('app-网关耗时：', Date.now() - start)
 
       wx.reportEvent('test', {
-        app_device: Date.now() - start
+        app_device: Date.now() - start,
       })
 
       this.queryDeviceOnlineStatus()
@@ -128,7 +128,7 @@ Component({
 
         console.log('app到云端，添加网关耗时：', Date.now() - start)
         wx.reportEvent('test', {
-          app_cloud: Date.now() - start
+          app_cloud: Date.now() - start,
         })
 
         wx.redirectTo({
@@ -138,7 +138,7 @@ Component({
         })
       } else {
         this.setData({
-          status: 'error'
+          status: 'error',
         })
       }
     },
@@ -161,12 +161,6 @@ Component({
           this.queryDeviceOnlineStatus()
         }, 5000)
       }
-    },
-
-    finish() {
-      wx.switchTab({
-        url: '/pages/index/index',
-      })
     },
   },
 })

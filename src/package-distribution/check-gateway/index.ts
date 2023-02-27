@@ -68,7 +68,7 @@ Component({
       const params = getCurrentPageParams()
 
       console.log('ready', params)
-      
+
       socket = new WifiSocket({ ssid: params.ssid })
 
       const startRes = await wx.startWifi()
@@ -127,7 +127,7 @@ Component({
 
       console.log('网关检查流程耗时：', Date.now() - start)
       wx.reportEvent('test', {
-        check_device: Date.now() - start
+        check_device: Date.now() - start,
       })
       if (method === 'wifi') {
         // "method":"wifi" //无线配网："wifi"，有线配网:"eth"
@@ -140,12 +140,6 @@ Component({
           url: strUtil.getUrlWithParams('/package-distribution/add-gateway/index', params),
         })
       }
-    },
-
-    finish() {
-      wx.switchTab({
-        url: '/pages/index/index',
-      })
     },
   },
 })

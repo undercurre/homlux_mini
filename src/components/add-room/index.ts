@@ -36,7 +36,7 @@ Component({
   },
 
   observers: {
-    'show': function (show) {
+    show: function (show) {
       if (!show) {
         return
       }

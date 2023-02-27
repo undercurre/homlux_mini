@@ -178,7 +178,7 @@ ComponentWithComputed({
 
       setTimeout(() => {
         this.setData({
-          isFocus: true
+          isFocus: true,
         })
       }, 500)
     },
