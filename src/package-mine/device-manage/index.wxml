@@ -18,8 +18,8 @@
     <text class="text-28rpx text-black-59 mt-48rpx">这个房间空空如也</text>
   </view>
   <!-- 设备列表 -->
-  <view id="listWrapper" class="flex-1">
-    <scroll-view scroll-y="true" style="height: {{listHeight}}px;">
+  <view id="content" class="flex-1">
+    <scroll-view scroll-y style="height: {{listHeight}}px;">
       <van-cell-group inset wx:for="{{deviceList}}" wx:key="deviceId">
         <van-cell clickable bind:click="handleCardClick" data-index="{{index}}">
           <view class="flex item-center">
@@ -28,7 +28,7 @@
             </view>
             <view class="h-96rpx flex flex-col justify-center items-start ml-32rpx">
               <text class="text-black-2a text-32rpx">{{item.deviceName}}</text>
-              <text class="text-black-59 text-32rpx mt-8rpx">{{item.roomName}}</text>
+              <text class="text-black-59 text-32rpx mt-8rpx">{{item.roomName}}{{item.onLineStatus ? '' : ' | 离线'}}</text>
             </view>
           </view>
           <view slot="right-icon" class="h-96rpx flex-center">

@@ -1,6 +1,6 @@
 import { addScene } from '../../../../apis/scene'
 import { sceneList } from '../../../../config/index'
-import { deviceStore, homeStore, roomStore } from '../../../../store/index'
+import { deviceStore, homeStore, roomStore, sceneStore } from '../../../../store/index'
 
 Component({
   options: {
@@ -110,7 +110,19 @@ Component({
           proType: deviceMap[deviceId].proType,
         })),
       )
-      await addScene(newSceneData) // todo: 待测试
+      const res = await addScene(newSceneData)
+      if (res.success) {
+        wx.showToast({
+          icon: 'success',
+          title: '收藏成功',
+        })
+        sceneStore.updateSceneList()
+      } else {
+        wx.showToast({
+          icon: 'error',
+          title: '收藏失败',
+        })
+      }
       this.triggerEvent('close')
     },
     handleClear() {

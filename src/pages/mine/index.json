@@ -1,7 +1,5 @@
 {
   "component": true,
-  "usingComponents": {
-    "van-dialog": "@vant/weapp/dialog/index"
-  },
+  "usingComponents": {},
   "navigationStyle": "custom"
 }

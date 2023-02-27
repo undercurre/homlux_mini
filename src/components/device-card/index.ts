@@ -77,15 +77,15 @@ ComponentWithComputed({
    */
   methods: {
     handleCardTap() {
-      this.triggerEvent('cardTap', this.data.deviceInfo)
-      // if (this.data.deviceInfo.onLineStatus) {
-      //   this.triggerEvent('cardTap', this.data.deviceInfo)
-      // } else {
-      //   wx.showToast({
-      //     icon: 'none',
-      //     title: '设备已离线',
-      //   })
-      // }
+      // this.triggerEvent('cardTap', this.data.deviceInfo)
+      if (this.data.deviceInfo.onLineStatus) {
+        this.triggerEvent('cardTap', this.data.deviceInfo)
+      } else {
+        wx.showToast({
+          icon: 'none',
+          title: '设备已离线',
+        })
+      }
     },
     handlePowerTap() {
       if (this.data.deviceInfo.onLineStatus) {

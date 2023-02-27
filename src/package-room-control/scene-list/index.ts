@@ -4,6 +4,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { roomBinding, sceneStore } from '../../store/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { runInAction } from 'mobx-miniprogram'
+import { execScene } from '../../apis/scene'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding] }), pageBehavior],
@@ -38,10 +39,22 @@ ComponentWithComputed({
             })
           }
         })
+      sceneStore.updateSceneList()
     },
 
-    handleCollect(e: { currentTarget: { dataset: { info: unknown } } }) {
-      console.log(e.currentTarget.dataset.info)
+    async handleCollect(e: { currentTarget: { dataset: { info: { sceneId: string } } } }) {
+      const res = await execScene(e.currentTarget.dataset.info.sceneId)
+      if (res.success) {
+        wx.showToast({
+          icon: 'success',
+          title: '执行成功',
+        })
+      } else {
+        wx.showToast({
+          icon: 'error',
+          title: '执行失败',
+        })
+      }
     },
 
     toSetting(e: { currentTarget: { dataset: { info: Scene.SceneItem } } }) {
