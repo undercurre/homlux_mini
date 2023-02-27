@@ -26,7 +26,7 @@
 
 <van-dialog use-slot title="此设备已绑定" show="{{ isShowForceBindTips }}" show-cancel-button="{{false}}" confirm-button-text="重新扫码" confirm-button-color="#488FFF" bind:close="onClose" bind:confirm="reScan">
   <view class="text-center pt-20rpx">
-    <image class="w-258 h-258" src="/assets/img/package-distribution/force-bind.png"></image>
+    <image class="w-210 h-196" src="/assets/img/package-distribution/force-bind.png"></image>
   </view>
   <text class="block pt-30rpx pb-60rpx text-center leading-48rpx text-28 text-hex-666">如需绑定至新的家庭，请单击网关侧面按键</text>
 </van-dialog>

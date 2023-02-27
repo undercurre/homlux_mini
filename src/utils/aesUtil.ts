@@ -9,7 +9,6 @@ export const aesUtil = {
    * @param enc 明文数据格式： Hex：16进制数据，Utf8：文本数据
    */
   encrypt: (data: string, keyStr: string, enc: 'Hex' | 'Utf8' = 'Utf8') => {
-    console.log('encrypt', data, keyStr)
     const key = CryptoJS.enc.Utf8.parse(keyStr)
     const source = CryptoJS.enc[enc].parse(data)
 
@@ -19,8 +18,6 @@ export const aesUtil = {
     })
 
     const res = encryptedObj.ciphertext.toString()
-
-    console.log('encrypt-res', res)
 
     return res
   },

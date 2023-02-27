@@ -8,7 +8,7 @@
     <view class="flex flex-row items-center bg-hex-5A5A5A rounded-32rpx leading-80rpx px-32rpx">
       <image class="w-28 h-28 rotate" src="/assets/img/scan/scaning.png"></image>
 
-      <text class="grow text-hex-F4F8FF px-16rpx">{{subdeviceList.length ? '搜索到个附近的子设备' : '正在搜索附近子设备'}}</text>
+      <text class="grow text-hex-F4F8FF px-16rpx">{{tipsText}}</text>
 
       <van-button type="primary" size="large" plain bind:click="addNearSubdevice">立即添加</van-button>
     </view>

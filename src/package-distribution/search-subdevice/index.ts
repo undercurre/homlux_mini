@@ -141,6 +141,7 @@ ComponentWithComputed({
         // services: ['BAE55B96-7D19-458D-970C-50613D801BC9'],
         allowDuplicatesKey: false,
         powerLevel: 'high',
+        interval: 3000,
         success(res) {
           console.log('startBluetoothDevicesDiscovery', res)
         },
@@ -207,7 +208,7 @@ ComponentWithComputed({
       })
 
       if (!res.success) {
-        wx.showToast({ title: res.msg})
+        wx.showToast({ title: res.msg })
         return
       }
 
@@ -345,7 +346,7 @@ ComponentWithComputed({
       bleDeviceItem.requesting = true
 
       this.setData({
-        deviceList: this.data.deviceList
+        deviceList: this.data.deviceList,
       })
       const res = await bleDeviceItem.client.sendCmd({
         cmdType: 'control',
@@ -357,7 +358,7 @@ ComponentWithComputed({
       bleDeviceItem.requesting = false
 
       this.setData({
-        deviceList: this.data.deviceList
+        deviceList: this.data.deviceList,
       })
     },
 

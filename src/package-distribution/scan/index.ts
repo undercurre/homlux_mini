@@ -38,7 +38,7 @@ ComponentWithComputed({
     },
     tipsText(data) {
       return data.subdeviceList.length ? `搜索到${data.subdeviceList.length}个附近的子设备` : '正在搜索附近子设备'
-    }
+    },
   },
 
   lifetimes: {
@@ -56,24 +56,6 @@ ComponentWithComputed({
         console.log('scanUrl', scanUrl)
 
         this.handleScanUrl(scanUrl)
-
-        return
-      }
-
-      const authorizeRes = await wx
-        .authorize({
-          scope: 'scope.userLocation',
-        })
-        .catch((err) => err)
-
-      console.log('authorizeRes', authorizeRes)
-
-      if (authorizeRes.errno === 103) {
-        wx.openSetting({
-          success (res) {
-            console.log('authSetting', res.authSetting)
-          }
-        })
 
         return
       }
@@ -141,7 +123,7 @@ ComponentWithComputed({
         mode: 'central',
       })
 
-      console.log('openBleRes', openBleRes)
+      console.log('scan-openBleRes', openBleRes)
 
       // 监听扫描到新设备事件
       wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {

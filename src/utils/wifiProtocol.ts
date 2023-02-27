@@ -40,30 +40,33 @@ export class WifiSocket {
   }
 
   async connect() {
+    let now = Date.now()
+
     const res = await this.connectWifi()
 
     console.log(`connectWifi${this.SSID}`, res)
+    console.log('连接wifi时长：', Date.now() - now)
 
     const result = {
-      success: true,
+      success: res.success,
     }
 
     if (res.success) {
-      await this.initGatewayInfo()
-    } else {
-      result.success = false
+      const initRes = await this.initGatewayInfo()
+
+      result.success = initRes.success
     }
 
     return result
   }
 
   connectWifi() {
-    return new Promise<{ success: boolean }>((resolve) => {
-      const res = { success: true }
+    return new Promise<{ errCode: number; success: boolean; msg?: string }>((resolve) => {
+      const res = { success: true, errCode: 0 }
 
       // 连接热点超时回调
       const timeId = setTimeout(() => {
-        resolve({ success: false })
+        resolve({ success: false, errCode: -1 })
       }, 60000)
 
       const listen = async (onWifiConnectRes: WechatMiniprogram.OnWifiConnectedCallbackResult) => {
@@ -89,7 +92,17 @@ export class WifiSocket {
             wx.offWifiConnected(listen)
             clearTimeout(timeId)
             resolve(res)
+          } else if (connectRes.errCode === 12007) {
+            wx.offWifiConnected(listen)
+            clearTimeout(timeId)
+            resolve({
+              errCode: connectRes.errCode,
+              success: false,
+              msg: '用户拒绝授权链接 Wi-Fi'
+            })
           }
+
+          console.log('after-resolve')
         },
       })
     })
@@ -153,8 +166,6 @@ export class WifiSocket {
     }
 
     this.udpClient.onMessage((res) => {
-      console.log('udpClient.onMessage', res)
-
       const reply = decodeCmd(res.message, this.key)
       console.log('reply', reply)
 
@@ -173,8 +184,8 @@ export class WifiSocket {
       console.log('udpClient.onError', res)
     })
 
-    this.udpClient.onClose(() => {
-      console.log('udpClient.onClose')
+    this.udpClient.onClose((res) => {
+      console.log('udpClient.onClose', res)
     })
   }
 
@@ -185,8 +196,6 @@ export class WifiSocket {
       method: 'UDP',
     })
 
-    console.log('initGatewayInfo', res)
-
     if (res.errorCode === 0) {
       this.deviceInfo.ip = res.ip
     }
@@ -195,7 +204,7 @@ export class WifiSocket {
   getDeviceIp() {
     let times = 3 // 最多请求3次
 
-    return new Promise((resolve) => {
+    return new Promise<boolean>((resolve) => {
       const interId = setInterval(() => {
         if (times <= 0) {
           clearInterval(interId)
@@ -206,6 +215,8 @@ export class WifiSocket {
         if (this.deviceInfo.ip) {
           clearInterval(interId)
           resolve(true)
+
+          return
         }
 
         times--
@@ -217,9 +228,13 @@ export class WifiSocket {
    * 通过广播更新网关IP地址并与网关建立tcp连接
    */
   async initGatewayInfo() {
-    await this.getDeviceIp()
+    const res = await this.getDeviceIp()
 
     await this.initTcpSocket()
+
+    return {
+      success: res
+    }
   }
 
   /**
