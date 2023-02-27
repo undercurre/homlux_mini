@@ -93,11 +93,11 @@ Component({
 
       console.log('startWifiBind', res)
 
-      wx.connectWifi({
-        SSID: params.wifiSSID,
-        password: params.wifiPassword,
-        partialInfo: false,
-      })
+      // wx.connectWifi({
+      //   SSID: params.wifiSSID,
+      //   password: params.wifiPassword,
+      //   partialInfo: false,
+      // })
 
       this.queryDeviceOnlineStatus()
 

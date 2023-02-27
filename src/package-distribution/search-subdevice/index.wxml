@@ -67,7 +67,7 @@
           </view>
         </scroll-view>
 
-        <van-button class="mt-24rpx" type="primary" block size="large" bind:click="finish">完成</van-button>
+        <van-button wx:if="{{(successList.length + failList.length ) === selectedList.length}}" class="mt-24rpx" type="primary" block size="large" bind:click="finish">完成</van-button>
       </view>
     </block>
 

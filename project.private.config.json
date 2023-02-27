@@ -97,9 +97,9 @@
         {
           "name": "绑定家庭",
           "pathName": "package-distribution/bind-home/index",
-          "query": "deviceId=1111&dsn=000016111MSGWZ00288B1539E5FB0000",
-          "launchMode": "default",
-          "scene": null
+          "query": "deviceId=1676373822174786",
+          "scene": null,
+          "launchMode": "default"
         },
         {
           "name": "添加单个子设备",

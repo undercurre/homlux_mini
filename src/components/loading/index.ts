@@ -11,15 +11,15 @@ Component({
     },
     showProgress: {
       type: Boolean,
-      default: true,
+      value: true,
     },
     percentage: {
       type: Number,
-      default: 0,
+      value: 0,
     },
     stepList: {
       type: Array,
-      default: [
+      value: [
         {
           text: '连接设备',
         },
@@ -33,7 +33,7 @@ Component({
     },
     activeIndex: {
       type: Number,
-      default: -1,
+      value: -1,
     },
   },
 
