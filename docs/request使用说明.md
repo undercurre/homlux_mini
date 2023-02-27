@@ -1,6 +1,6 @@
 # 请求工具封装说明
 
-请求相关的封装代码存放在`/src/utils/request`下，使用 index.ts 一起导出，[baseRequest](../src/utils/request/baseRequest.ts) 是基础通用封装，[mzaiotRequest](../src/utils/request/mzaiotRequest.ts) 是使用 baseRequest 对美智云进行请求的封装。如果需要对其他服务（返回数据结构和美智云不一样的）就可以再对 baseRequest 进行封装，或者如果请求接口不多的可以直接使用 baseRequest。
+请求相关的封装代码存放在`/src/utils/request`下，使用 index.ts 一起导出，[baseRequest](../src/utils/request/baseRequest.ts) 是基础通用封装，[mzaioRequest](../src/utils/request/mzaioRequest.ts) 是使用 baseRequest 对美智云进行请求的封装。如果需要对其他服务（返回数据结构和美智云不一样的）就可以再对 baseRequest 进行封装，或者如果请求接口不多的可以直接使用 baseRequest。
 
 ## baseRequest 使用方式
 
@@ -36,24 +36,24 @@ type BaseRequest = <T extends AnyResType>(requestOptions: BaseRequestOptions<T>)
 
 baseRequest 暂时没有对参数进行封装，如果需要封装参数，需要加到此文档
 
-## mzaiotRequest 使用方式
+## mzaioRequest 使用方式
 
-mzaiotRequest 在 baseRequest 基础上封装了美智云的通用返回格式：
+mzaioRequest 在 baseRequest 基础上封装了美智云的通用返回格式：
 
 ```ts
-type MzaiotResponseRowData<T extends AnyResType = AnyResType> = {
+type mzaioResponseRowData<T extends AnyResType = AnyResType> = {
   code: number
   msg: string
   success: boolean
   result?: T
 }
 
-type MzaiotRequest = <T extends AnyResType>(options: BaseRequestOptions<T>) => Promise<MzaiotResponseRowData<T>>
+type mzaioRequest = <T extends AnyResType>(options: BaseRequestOptions<T>) => Promise<mzaioResponseRowData<T>>
 
 // 比如有个业务数据类型：
 type UserInfo = { name: string }
 // 那么只需要这样用
-mzaiotRequest.get<UserInfo>({ url: 'xxx' })
+mzaioRequest.get<UserInfo>({ url: 'xxx' })
 // 就能直接拿到类型：
 // {
 //   code: number
@@ -63,7 +63,7 @@ mzaiotRequest.get<UserInfo>({ url: 'xxx' })
 // }
 ```
 
-## mzaiotRequest 封装携带的参数
+## mzaioRequest 封装携带的参数
 
 > 目前 baseRequest 封装了通用 header：
 
@@ -71,7 +71,7 @@ mzaiotRequest.get<UserInfo>({ url: 'xxx' })
 | - | - | - |
 | Authentication | `'Bearer ' + storage.get('token', '')` | 美智云请求 header |
 
-> 封装了 Url 处理，根据/src/config/index.ts 的 mzaiotBaseURL 和请求传入的 URL 进行拼接。
+> 封装了 Url 处理，根据/src/config/index.ts 的 mzaioBaseURL 和请求传入的 URL 进行拼接。
 
 > 封装了请求超时时间，默认6s。
 

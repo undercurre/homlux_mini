@@ -1,11 +1,11 @@
-import { mzaiotRequest } from '../utils/index'
+import { mzaioRequest } from '../utils/index'
 import { userBinding } from '../store/index'
 
 /**
  * 查询家庭列表
  */
 export async function getHomeList() {
-  return await mzaiotRequest.post<Home.IHomeItem[]>({
+  return await mzaioRequest.post<Home.IHomeItem[]>({
     log: false,
     loading: true,
     url: '/v1/mzgd/user/house/queryHouseList',
@@ -16,7 +16,7 @@ export async function getHomeList() {
  * 查询美智用户家庭信息
  */
 export async function queryUserHouseInfo({ houseId = '', defaultHouseFlag = true }) {
-  return await mzaiotRequest.post<Home.IHomeDetail>({
+  return await mzaioRequest.post<Home.IHomeDetail>({
     log: false,
     loading: true,
     url: '/v1/mzgd/user/queryUserHouseInfo',
@@ -39,7 +39,7 @@ export async function saveOrUpdateUserHouseInfo(params: {
     delete params.houseId
   }
 
-  return await mzaiotRequest.post<Home.IHomeDetail>({
+  return await mzaioRequest.post<Home.IHomeDetail>({
     log: false,
     loading: true,
     url: '/v1/mzgd/user/saveOrUpdateUserHouseInfo',
@@ -51,7 +51,7 @@ export async function saveOrUpdateUserHouseInfo(params: {
  * 更新默认家庭
  */
 export async function updateDefaultHouse(houseId: string) {
-  return await mzaiotRequest.post<Home.IHomeDetail>({
+  return await mzaioRequest.post<Home.IHomeDetail>({
     log: false,
     loading: true,
     url: '/v1/mzgd/user/updateDefaultHouse',
@@ -66,7 +66,7 @@ export async function updateDefaultHouse(houseId: string) {
  * 删除或解散家庭
  */
 export async function delUserHouse(houseId: string) {
-  return await mzaiotRequest.post({
+  return await mzaioRequest.post({
     log: false,
     loading: true,
     url: '/v1/mzgd/user/house/delUserHouse',
@@ -80,7 +80,7 @@ export async function delUserHouse(houseId: string) {
  * 退出家庭
  */
 export async function quitUserHouse(houseId: string) {
-  return await mzaiotRequest.post({
+  return await mzaioRequest.post({
     log: false,
     loading: true,
     url: '/v1/mzgd/user/house/quitUserHouse',
@@ -95,7 +95,7 @@ export async function quitUserHouse(houseId: string) {
  * 转让家庭
  */
 export async function changeUserHouse(params: { houseId: string; changeUserId: string }) {
-  return await mzaiotRequest.post({
+  return await mzaioRequest.post({
     log: false,
     loading: true,
     url: '/v1/mzgd/user/house/changeUserHouse',
@@ -110,7 +110,7 @@ export async function changeUserHouse(params: { houseId: string; changeUserId: s
  * 查询家庭成员列表
  */
 export async function queryHouseUserList({ houseId = '' }) {
-  return await mzaiotRequest.post<Home.HomeMemberInfo>({
+  return await mzaioRequest.post<Home.HomeMemberInfo>({
     log: false,
     loading: true,
     url: '/v1/mzgd/user/house/queryHouseUserList',
@@ -126,7 +126,7 @@ export async function queryHouseUserList({ houseId = '' }) {
  * 家庭成员权限，创建者：1 管理员：2 游客：3
  */
 export async function updateHouseUserAuth({ userId = '', auth = 3 }) {
-  return await mzaiotRequest.post({
+  return await mzaioRequest.post({
     log: false,
     loading: true,
     url: '/v1/mzgd/user/house/updateHouseUserAuth',
@@ -141,7 +141,7 @@ export async function updateHouseUserAuth({ userId = '', auth = 3 }) {
  * 删除家庭成员
  */
 export async function deleteHouseUser({ houseId = '', userId = '' }) {
-  return await mzaiotRequest.post({
+  return await mzaioRequest.post({
     log: false,
     loading: true,
     url: '/v1/mzgd/user/house/delHouseUser',

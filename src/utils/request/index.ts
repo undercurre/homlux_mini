@@ -1,2 +1,2 @@
 export * from './baseRequest'
-export * from './mzaiotRequest'
+export * from './mzaioRequest'

@@ -1,7 +1,7 @@
-import { mzaiotRequest } from '../utils/index'
+import { mzaioRequest } from '../utils/index'
 
 export async function getRoomList(houseId: string) {
-  return await mzaiotRequest.post<{ roomInfoList: Room.RoomItem[] }>({
+  return await mzaioRequest.post<{ roomInfoList: Room.RoomItem[] }>({
     log: true,
     loading: true,
     url: '/v1/mzgd/user/house/queryRoomList',
@@ -21,7 +21,7 @@ export async function saveHouseRoomInfo(params: {
   roomId?: string
   roomName: string
 }) {
-  return await mzaiotRequest.post({
+  return await mzaioRequest.post({
     log: true,
     loading: true,
     url: '/v1/mzgd/user/saveHouseRoomInfo',
@@ -34,7 +34,7 @@ export async function saveHouseRoomInfo(params: {
  * @param params
  */
 export async function delHouseRoom(roomId: string) {
-  return await mzaiotRequest.post({
+  return await mzaioRequest.post({
     log: true,
     loading: true,
     url: '/v1/mzgd/user/house/delHouseRoom',

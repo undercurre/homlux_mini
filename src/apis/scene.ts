@@ -1,7 +1,7 @@
-import { mzaiotRequest } from '../utils/index'
+import { mzaioRequest } from '../utils/index'
 
 export async function querySceneList(roomId: string) {
-  return await mzaiotRequest.post<Scene.SceneItem[]>({
+  return await mzaioRequest.post<Scene.SceneItem[]>({
     log: true,
     loading: true,
     url: '/v1/mzgd/scene/querySceneListByRoomId',
@@ -12,7 +12,7 @@ export async function querySceneList(roomId: string) {
 }
 
 export async function addScene(data: Scene.AddSceneDto) {
-  return await mzaiotRequest.post<IAnyObject>({
+  return await mzaioRequest.post<IAnyObject>({
     log: true,
     loading: true,
     url: '/v1/mzgd/scene/querySceneListByRoomId',
@@ -21,7 +21,7 @@ export async function addScene(data: Scene.AddSceneDto) {
 }
 
 export async function execScene(sceneId: string) {
-  return await mzaiotRequest.post<IAnyObject>({
+  return await mzaioRequest.post<IAnyObject>({
     log: true,
     loading: true,
     url: '/v1/mzgd/scene/sceneControl',

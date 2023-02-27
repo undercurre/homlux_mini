@@ -1,26 +1,26 @@
 import { baseRequest, BaseRequestOptions } from './baseRequest'
 import storage from '../storage'
-import { env, mzaiotBaseURL, TOKEN_EXPIRED } from '../../config/index'
+import { env, mzaioBaseURL, TOKEN_EXPIRED } from '../../config/index'
 
 // 后端默认返回格式
-type MzaiotResponseRowData<T extends AnyResType = AnyResType> = {
+type mzaioResponseRowData<T extends AnyResType = AnyResType> = {
   code: number
   msg: string
   success: boolean
   result: T
 }
 
-type MzaiotRequest = <T extends AnyResType>(options: BaseRequestOptions<T>) => Promise<MzaiotResponseRowData<T>>
+type mzaioRequest = <T extends AnyResType>(options: BaseRequestOptions<T>) => Promise<mzaioResponseRowData<T>>
 
 // 封装好http method的请求实例
-type MzaiotRequestWithMethod = MzaiotRequest & {
-  get: MzaiotRequest
-  post: MzaiotRequest
-  put: MzaiotRequest
-  delete: MzaiotRequest
+type mzaioRequestWithMethod = mzaioRequest & {
+  get: mzaioRequest
+  post: mzaioRequest
+  put: mzaioRequest
+  delete: mzaioRequest
 }
 
-const mzaiotRequest: MzaiotRequest = function <T extends AnyResType>(options: BaseRequestOptions<T>) {
+const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: BaseRequestOptions<T>) {
   // 按需添加header
   const header = {
     Authorization: 'Bearer ' + storage.get('token', ''),
@@ -35,7 +35,7 @@ const mzaiotRequest: MzaiotRequest = function <T extends AnyResType>(options: Ba
   }
 
   // 拼接上美智云的基础地址
-  options.url = mzaiotBaseURL[env] + options.url
+  options.url = mzaioBaseURL[env] + options.url
 
   // 后续考虑选择用nanoid生成reqId，但是微信小程序不支持浏览器的crypto API，无法使用nanoid和uuid包。
   const reqId = Date.now()
@@ -72,19 +72,19 @@ const mzaiotRequest: MzaiotRequest = function <T extends AnyResType>(options: Ba
         msg: error.errMsg,
         success: false,
       } as unknown as T),
-  }) as unknown as Promise<MzaiotResponseRowData<T>>
+  }) as unknown as Promise<mzaioResponseRowData<T>>
 }
 
-const mzaiotRequestWithMethod = mzaiotRequest as MzaiotRequestWithMethod
+const mzaioRequestWithMethod = mzaioRequest as mzaioRequestWithMethod
 
 // 仿照axios，添加get post put delete方法
 ;(['get', 'post', 'put', 'delete'] as const).forEach((method) => {
-  mzaiotRequestWithMethod[method] = (options) => {
-    return mzaiotRequest({
+  mzaioRequestWithMethod[method] = (options) => {
+    return mzaioRequest({
       ...options,
       method: method.toUpperCase() as 'GET' | 'POST' | 'PUT' | 'DELETE',
     })
   }
 })
 
-export { mzaiotRequestWithMethod as mzaiotRequest }
+export { mzaioRequestWithMethod as mzaioRequest }

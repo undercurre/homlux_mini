@@ -9,7 +9,7 @@ export * from './device'
 
 export const env: 'dev' | 'prod' = 'dev'
 
-export const mzaiotBaseURL: ConfigWithEnv<string> = {
+export const mzaioBaseURL: ConfigWithEnv<string> = {
   dev: 'https://test.meizgd.com/mzaio', // sit环境
   prod: 'https://baidu.com',
 }
@@ -22,7 +22,7 @@ export const storageExpire: ConfigWithEnv<number> = {
 /**
  * 美智云后端websocket地址
  */
-export const mzaiotWSURL: ConfigWithEnv<string> = {
+export const mzaioWSURL: ConfigWithEnv<string> = {
   dev: 'wss://test.meizgd.com/mzaio/v1/wss/',
   prod: 'https://baidu.com',
 }

@@ -1,4 +1,4 @@
-import { mzaiotWSURL, env } from '../config/index'
+import { mzaioWSURL, env } from '../config/index'
 import { storage } from '../utils/storage'
 
 /**
@@ -7,7 +7,7 @@ import { storage } from '../utils/storage'
  */
 export function connectHouseSocket(houseId: string) {
   return wx.connectSocket({
-    url: mzaiotWSURL[env] + houseId,
+    url: mzaioWSURL[env] + houseId,
     protocols: [storage.get<string>('token') as string],
   })
 }

@@ -1,10 +1,10 @@
-import { mzaiotRequest } from '../utils/index'
+import { mzaioRequest } from '../utils/index'
 
 /**
  * 设备管理-根据家庭id查询全屋的设备
  */
 export async function queryAllDevice(houseId: string) {
-  return await mzaiotRequest.post<Device.DeviceItem[]>({
+  return await mzaioRequest.post<Device.DeviceItem[]>({
     log: false,
     loading: true,
     url: '/v1/device/queryDeviceInfoByHouseId',
@@ -18,7 +18,7 @@ export async function queryAllDevice(houseId: string) {
  * 设备管理-根据家庭id房间id查询房间所有设备
  */
 export async function queryDeviceList(houseId: string, roomId: string) {
-  return await mzaiotRequest.post<Device.DeviceItem[]>({
+  return await mzaioRequest.post<Device.DeviceItem[]>({
     log: false,
     loading: true,
     url: '/v1/device/queryDeviceInfoByRoomId',
@@ -33,7 +33,7 @@ export async function queryDeviceList(houseId: string, roomId: string) {
  * 设备控制-根据家庭id房间id查询房间除了网关的子设备
  */
 export async function querySubDeviceList(houseId: string, roomId: string) {
-  return await mzaiotRequest.post<Device.DeviceItem[]>({
+  return await mzaioRequest.post<Device.DeviceItem[]>({
     log: false,
     loading: true,
     url: '/v1/device/querySubDeviceInfoByRoomId',
@@ -49,7 +49,7 @@ export async function querySubDeviceList(houseId: string, roomId: string) {
  * 传入roomId可减少云端查询步骤
  */
 export async function queryDeviceInfoByDeviceId(deviceId: string, roomId?: string) {
-  return await mzaiotRequest.post<Device.DeviceItem>({
+  return await mzaioRequest.post<Device.DeviceItem>({
     log: false,
     loading: true,
     url: '/v1/device/queryDeviceInfoByDeviceId',
@@ -63,7 +63,7 @@ export async function queryDeviceInfoByDeviceId(deviceId: string, roomId?: strin
  */
 export async function queryDeviceOnlineStatus(params: { deviceType: '1' | '2' | '3'; sn?: string; deviceId?: string }) {
   // 	"onlineStauts": 在线离线状态(0:离线1:在线
-  return await mzaiotRequest.post<{ deviceId: string; onlineStatus: number }>({
+  return await mzaioRequest.post<{ deviceId: string; onlineStatus: number }>({
     log: false,
     loading: false,
     url: '/v1/device/queryDeviceOnlineStatus',
@@ -80,7 +80,7 @@ export async function checkDevice(params: {
   productId: string
   productIdType: 1 | 2 // 产品id类型，1：扫码配网的pid 2：蓝牙配网的pid
 }) {
-  return await mzaiotRequest.post<{
+  return await mzaioRequest.post<{
     icon: string
     isValid: boolean
     mac: string
@@ -106,7 +106,7 @@ export async function bindDevice(params: {
   deviceId?: string
   deviceName: string
 }) {
-  return await mzaiotRequest.post<{ deviceId: string; isBind: boolean; msg: string }>({
+  return await mzaioRequest.post<{ deviceId: string; isBind: boolean; msg: string }>({
     log: false,
     loading: false,
     url: '/v1/device/bindDevice',
@@ -127,7 +127,7 @@ export async function controlDevice(
   },
   option?: { loading: boolean },
 ) {
-  return await mzaiotRequest.post<IAnyObject>({
+  return await mzaioRequest.post<IAnyObject>({
     log: false,
     loading: option?.loading || false,
     url: '/v1/device/down',
@@ -156,7 +156,7 @@ export async function sendCmdAddSubdevice(params: { deviceId: string; expire: nu
  * 检查ota版本
  */
 export async function checkOtaVersion(deviceId: string) {
-  return await mzaiotRequest.post<IAnyObject>({
+  return await mzaioRequest.post<IAnyObject>({
     log: true,
     url: '/v1/device/checkOtaVersion',
     data: {
@@ -179,7 +179,7 @@ export async function editDeviceInfo(data: {
   switchId?: string
   switchName?: string
 }) {
-  return await mzaiotRequest.post<IAnyObject>({
+  return await mzaioRequest.post<IAnyObject>({
     log: true,
     loading: true,
     url: '/v1/device/update',
@@ -191,7 +191,7 @@ export async function editDeviceInfo(data: {
  * 设备管理-删除设备
  */
 export async function deleteDevice(data: { deviceId: string; deviceType: string; sn: string; userId: string }) {
-  return await mzaiotRequest.post<IAnyObject>({
+  return await mzaioRequest.post<IAnyObject>({
     log: true,
     url: '/v1/device/delDevice',
     data,
@@ -203,7 +203,7 @@ export async function deleteDevice(data: { deviceId: string; deviceType: string;
  *
  */
 export async function saveDeviceOrder(data: Device.OrderSaveData) {
-  return await mzaiotRequest.post<IAnyObject>({
+  return await mzaioRequest.post<IAnyObject>({
     log: true,
     url: '/v1/device/saveDeviceNum',
     data,

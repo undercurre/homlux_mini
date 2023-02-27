@@ -105,8 +105,8 @@
           "name": "添加单个子设备",
           "pathName": "package-distribution/add-subdevice/index",
           "query": "",
-          "scene": null,
-          "launchMode": "default"
+          "launchMode": "default",
+          "scene": null
         }
       ]
     }
