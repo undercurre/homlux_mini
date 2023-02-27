@@ -26,6 +26,7 @@ ComponentWithComputed({
       houseId: '',
       houseName: '',
     },
+    isFocus: false,
     isEditName: false,
     isShowSetting: false,
     isTransferHome: false,
@@ -174,6 +175,12 @@ ComponentWithComputed({
           houseName: homeBinding.store.currentHomeDetail.houseName,
         },
       })
+
+      setTimeout(() => {
+        this.setData({
+          isFocus: true,
+        })
+      }, 500)
     },
     onCloseEditName() {
       this.setData({

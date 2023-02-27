@@ -27,12 +27,12 @@
         <van-cell title="房间" is-link link-type="navigateTo" url="/package-mine/room-manage/index" border="{{ false }}" />
 
         <view class="flex flex-row flex-wrap px-40rpx gap-x-36rpx">
-          <view wx:for="{{ showRoomList }}" wx:key="roomId" class="flex flex-col" bind:tap="clickRoomItem" data-icon="{{item.roomIcon}}">
+          <view wx:for="{{ showRoomList }}" wx:key="roomId" class="flex flex-col w-128" bind:tap="clickRoomItem" data-icon="{{item.roomIcon}}">
             <view class="bg-hex-F6FAFD rounded-32rpx p-32rpx">
               <image class="w-64 h-64 block" src="/assets/img/room/{{item.roomIcon}}.png"></image>
             </view>
 
-            <text class="pt-24rpx pb-32rpx text-28 text-center text-black-59 leading-40rpx">{{item.roomName}}</text>
+            <text class="pt-24rpx pb-32rpx text-28 text-center text-black-59 leading-40rpx single-text">{{item.roomName}}</text>
           </view>
         </view>
       </view>
@@ -59,7 +59,7 @@
     <text class="block pl-48rpx pb-32rpx text-28">家庭名称</text>
 
     <view class="mx-32rpx">
-      <van-field model:value="{{ homeInfoEdited.houseName }}" placeholder="请输入家庭名称" custom-style="padding: 20rpx 40rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}" auto-focus="{{true}}" bind:change="changeHouseName"> </van-field>
+      <van-field value="{{ homeInfoEdited.houseName }}" placeholder="请输入家庭名称" custom-style="padding: 20rpx 40rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}" focus="{{isFocus}}" bind:change="changeHouseName"> </van-field>
     </view>
 
     <view class="flex flex-row gap-46rpx pt-80rpx px-32rpx">

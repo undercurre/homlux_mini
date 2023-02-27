@@ -141,6 +141,7 @@ ComponentWithComputed({
         // services: ['BAE55B96-7D19-458D-970C-50613D801BC9'],
         allowDuplicatesKey: false,
         powerLevel: 'high',
+        interval: 3000,
         success(res) {
           console.log('startBluetoothDevicesDiscovery', res)
         },

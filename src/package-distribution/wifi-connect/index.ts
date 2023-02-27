@@ -94,13 +94,29 @@ ComponentWithComputed({
     },
 
     async initWifi() {
-      const authorizeRes = await wx
-        .authorize({
-          scope: 'scope.userLocation',
-        })
-        .catch((err) => console.log('authorizeRes-err', err))
+      // Android 调用前需要 用户授权 scope.userLocation。
+      if (this.data._platform === 'android') {
+        const authorizeRes = await wx
+          .authorize({
+            scope: 'scope.userLocation',
+          })
+          .catch((err) => err)
 
-      console.log('authorizeRes', authorizeRes)
+        console.log('authorizeRes', authorizeRes)
+
+        if (authorizeRes.errno === 103) {
+          wx.showToast({ title: '请打开权限', icon: 'none' })
+
+          wx.openSetting({
+            success(res) {
+              console.log('authSetting', res.authSetting)
+            },
+          })
+
+          wx.navigateBack()
+          return
+        }
+      }
 
       const startRes = await wx.startWifi()
 

@@ -36,11 +36,17 @@ Component({
   },
 
   observers: {
-    'roomName, roomIcon': function (roomName, roomIcon) {
+    show: function (show) {
+      if (!show) {
+        return
+      }
+
+      console.log('observers-roomName, roomIcon', this.data)
+
       this.setData({
         roomInfo: {
-          name: roomName,
-          icon: roomIcon,
+          name: this.data.roomName,
+          icon: this.data.roomIcon || 'parents-room',
         },
       })
     },
@@ -115,8 +121,8 @@ Component({
         return
       }
 
-      if (this.data.roomInfo.name.length > 5) {
-        wx.showToast({ title: '房间名称不能超过5个字符', icon: 'none' })
+      if (this.data.roomInfo.name.length > 6) {
+        wx.showToast({ title: '房间名称不能超过6个字符', icon: 'none' })
         return
       }
 

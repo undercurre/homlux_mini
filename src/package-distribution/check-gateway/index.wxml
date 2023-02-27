@@ -3,30 +3,21 @@
 
   <view class="grow flex flex-col pb-128rpx">
     <loading wx:if="{{status === 'linking'}}" class="mt-130rpx" text="正在连接设备，请将手机尽量靠近设备" step-list="{{[]}}" show-progress="{{false}}"></loading>
-
-    <block wx:if="{{status === 'error'}}">
-      <tips-box text="连接失败！" icon="/assets/img/device-add/error.png"></tips-box>
-
-      <view class="grow pl-88rpx pr-50rpx pt-180rpx">
-        <view class="text-28 text-black-2a">
-          <text>请排查以下原因：</text>
-        </view>
-
-        <view class="flex flex-col py-24rpx text-26 text-hex-666 leading-46rpx">
-          <text>1、确保路由器网络环境正常</text>
-          <text>2、将网关尽可能靠近路由器</text>
-          <text>3、合理摆放网关的位置，避免部分子设备距离过远</text>
-        </view>
-      </view>
-
-      <van-button class="mt-32rpx mx-32rpx" block type="primary" size="large" bind:click="finish">完成</van-button>
-    </block>
   </view>
 </view>
 
-<van-dialog use-slot title="此设备已绑定" show="{{ isShowForceBindTips }}" show-cancel-button="{{false}}" confirm-button-text="重新扫码" confirm-button-color="#488FFF" bind:close="onClose" bind:confirm="reScan">
+<van-dialog use-slot title="此设备已绑定" show="{{ isShowForceBindTips }}" show-cancel-button="{{false}}" confirm-button-text="重新扫码" confirm-button-color="#488FFF" bind:confirm="reScan">
   <view class="text-center pt-20rpx">
-    <image class="w-258 h-258" src="/assets/img/package-distribution/force-bind.png"></image>
+    <image class="w-210 h-196" src="/assets/img/package-distribution/force-bind.png"></image>
   </view>
   <text class="block pt-30rpx pb-60rpx text-center leading-48rpx text-28 text-hex-666">如需绑定至新的家庭，请单击网关侧面按键</text>
+</van-dialog>
+
+<van-dialog use-slot title="设备连接失败" show="{{ status === 'error' }}" show-cancel-button="{{false}}" confirm-button-text="我知道了" confirm-button-color="#488FFF" bind:confirm="goBack">
+  <view class="flex flex-col items-center py-46rpx text-28 text-hex-666 leading-48rpx">
+    <view class="flex flex-col">
+      <text>1.请确定网关是否已通电</text>
+      <text>2.请将手机尽量靠近网关</text>
+    </view>
+  </view>
 </van-dialog>

@@ -2,6 +2,7 @@ import pageBehaviors from '../../behaviors/pageBehaviors'
 import { WifiSocket, getCurrentPageParams, strUtil } from '../../utils/index'
 
 let socket: WifiSocket
+let start = Date.now()
 
 const gatewayStatus = { method: '' }
 
@@ -25,13 +26,9 @@ Component({
 
   lifetimes: {
     ready() {
-      const params = getCurrentPageParams()
-
-      console.log('ready', params)
+      start = Date.now()
 
       this.initWifi()
-
-      socket = new WifiSocket({ ssid: params.ssid })
 
       socket.onMessage((data: IAnyObject) => {
         console.log('socket.onMessage', data)
@@ -68,13 +65,11 @@ Component({
       console.log('onHide')
     },
     async initWifi() {
-      const authorizeRes = await wx
-        .authorize({
-          scope: 'scope.userLocation',
-        })
-        .catch((err) => err)
+      const params = getCurrentPageParams()
 
-      console.log('authorizeRes', authorizeRes)
+      console.log('ready', params)
+
+      socket = new WifiSocket({ ssid: params.ssid })
 
       const startRes = await wx.startWifi()
 
@@ -90,12 +85,6 @@ Component({
       }
 
       this.getGatewayStatus()
-    },
-
-    async getWifiList() {
-      const wifiListRes = await wx.getWifiList()
-
-      console.log('getWifiList', wifiListRes)
     },
 
     /**
@@ -136,6 +125,10 @@ Component({
         deviceName: pageParams.deviceName,
       }
 
+      console.log('网关检查流程耗时：', Date.now() - start)
+      wx.reportEvent('test', {
+        check_device: Date.now() - start,
+      })
       if (method === 'wifi') {
         // "method":"wifi" //无线配网："wifi"，有线配网:"eth"
         wx.redirectTo({
@@ -147,12 +140,6 @@ Component({
           url: strUtil.getUrlWithParams('/package-distribution/add-gateway/index', params),
         })
       }
-    },
-
-    finish() {
-      wx.switchTab({
-        url: '/pages/index/index',
-      })
     },
   },
 })
