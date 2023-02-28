@@ -29,21 +29,10 @@ Component({
       start = Date.now()
 
       this.initWifi()
-
-      socket.onMessage((data: IAnyObject) => {
-        console.log('socket.onMessage', data)
-
-        if (data.topic === '/gateway/net/confirm' && this.data.isShowForceBindTips) {
-          this.setData({
-            isShowForceBindTips: false,
-          })
-
-          this.startBind(gatewayStatus.method)
-        }
-      })
     },
     detached() {
-      console.log('detached')
+      console.log('check-gateway:detached')
+      socket.close()
     },
   },
 
@@ -66,11 +55,25 @@ Component({
 
       socket = new WifiSocket({ ssid: params.ssid })
 
+      socket.onMessage((data: IAnyObject) => {
+        console.log('socket.onMessage', data)
+
+        if (data.topic === '/gateway/net/confirm' && this.data.isShowForceBindTips) {
+          this.setData({
+            isShowForceBindTips: false,
+          })
+
+          this.startBind(gatewayStatus.method)
+        }
+      })
+
       const startRes = await wx.startWifi()
 
       console.log('startWifi', startRes)
 
       const connectRes = await socket.connect()
+
+      console.log(params.ssid + ',connectRes', connectRes)
 
       if (connectRes.errCode === 12007) {
         wx.navigateBack()

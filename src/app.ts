@@ -3,7 +3,11 @@ import svgs from './assets/svg/index'
 import { appOnLaunchService } from './utils/service'
 
 App<IAppOption>({
-  onLaunch(options: WechatMiniprogram.App.LaunchShowOption) {
+  async onLaunch(options: WechatMiniprogram.App.LaunchShowOption) {
+    wx.setEnableDebug({
+      enableDebug: true
+    })
+    
     console.log('APP打开参数：', options)
     // 加载svg数据
     this.globalData.svgs = svgs
@@ -28,6 +32,20 @@ App<IAppOption>({
     const getAppBaseInfo = wx.getAppBaseInfo()
 
     console.log('getAppBaseInfo', getAppBaseInfo)
+
+    const deviceInfo = wx.getDeviceInfo()
+    const systemInfo = wx.getSystemInfoSync()
+
+    console.log('deviceInfo', deviceInfo, 'systemInfo', systemInfo)
   },
+
+  onShow() {
+    console.log('app-onShow')
+  },
+
+  onHide() {
+    console.log('app-onHide')
+  },
+
   globalData: {},
 })

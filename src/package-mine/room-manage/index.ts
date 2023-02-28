@@ -56,13 +56,7 @@ ComponentWithComputed({
       })
     },
 
-    cancelAddRoom() {
-      this.setData({
-        isAddRoom: false,
-      })
-    },
-
-    finishAddRoom() {
+    hideAddRoom() {
       this.setData({
         isAddRoom: false,
       })

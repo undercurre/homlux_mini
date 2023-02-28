@@ -14,4 +14,4 @@
   </view>
 </view>
 
-<add-room show="{{ isAddRoom }}" bind:close="closeAddRoom" bind:confirm="closeAddRoom"></add-room>
+<add-room show="{{ isAddRoom }}" bind:close="closeAddRoom"></add-room>

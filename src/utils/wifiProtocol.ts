@@ -2,6 +2,8 @@ import { aesUtil, strUtil } from '../utils/index'
 
 let instance: WifiSocket | null
 
+const deviceInfo = wx.getDeviceInfo()
+
 export class WifiSocket {
   tcpClient: WechatMiniprogram.TCPSocket = wx.createTCPSocket()
 
@@ -9,7 +11,7 @@ export class WifiSocket {
 
   SSID = ''
 
-  key: string = ''
+  key = ''
 
   date = Date.now()
 
@@ -64,6 +66,7 @@ export class WifiSocket {
       const initRes = await this.initGatewayInfo()
 
       result.success = initRes.success
+      result.errCode = initRes.errCode
     }
 
     return result
@@ -79,7 +82,7 @@ export class WifiSocket {
       }, 60000)
 
       const listen = async (onWifiConnectRes: WechatMiniprogram.OnWifiConnectedCallbackResult) => {
-        console.log('onWifiConnected', onWifiConnectRes)
+        console.log('onWifiConnected-wifiProt', onWifiConnectRes)
 
         if (onWifiConnectRes.wifi.SSID === this.SSID) {
           wx.offWifiConnected(listen)
@@ -94,10 +97,11 @@ export class WifiSocket {
         SSID: this.SSID,
         password: '12345678',
         partialInfo: false,
+        maunal: deviceInfo.platform === 'android' ? true : false,
         complete: (connectRes) => {
           console.log('connectWifi', connectRes)
 
-          if ((connectRes as IAnyObject).wifiMsg?.includes('already connected')) {
+          if ((connectRes as IAnyObject).wifiMsg?.includes('already connected') || (connectRes as IAnyObject).wifi) {
             wx.offWifiConnected(listen)
             clearTimeout(timeId)
             resolve(res)
@@ -239,7 +243,7 @@ export class WifiSocket {
 
         times--
         this.sendCmdForDeviceIp()
-      }, 2000)
+      }, 5000)
     })
   }
   /**
@@ -248,9 +252,12 @@ export class WifiSocket {
   async initGatewayInfo() {
     const res = await this.getDeviceIp()
 
-    await this.initTcpSocket()
+    if (res) {
+      await this.initTcpSocket()
+    }
 
     return {
+      errCode: res ? 0 : -1,
       success: res,
     }
   }
