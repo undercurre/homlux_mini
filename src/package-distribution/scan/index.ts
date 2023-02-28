@@ -50,7 +50,8 @@ ComponentWithComputed({
       const params = wx.getLaunchOptionsSync()
       console.log('scanPage', params)
 
-      if (params.scene === 1011) {
+      // 防止重复判断
+      if (getCurrentPages.length === 1 && params.scene === 1011) {
         const scanUrl = decodeURIComponent(params.query.q)
 
         console.log('scanUrl', scanUrl)
@@ -156,9 +157,9 @@ ComponentWithComputed({
       // 没有打开蓝牙异常处理
       if (openBleRes.errCode === 10001) {
         wx.openAppAuthorizeSetting({
-          success (res) {
+          success(res) {
             console.log(res)
-          }
+          },
         })
 
         return

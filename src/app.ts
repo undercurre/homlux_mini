@@ -5,9 +5,9 @@ import { appOnLaunchService } from './utils/service'
 App<IAppOption>({
   async onLaunch(options: WechatMiniprogram.App.LaunchShowOption) {
     wx.setEnableDebug({
-      enableDebug: true
+      enableDebug: true,
     })
-    
+
     console.log('APP打开参数：', options)
     // 加载svg数据
     this.globalData.svgs = svgs

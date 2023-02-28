@@ -97,7 +97,7 @@ export class WifiSocket {
         SSID: this.SSID,
         password: '12345678',
         partialInfo: false,
-        maunal: deviceInfo.platform === 'android' ? true : false,
+        maunal: deviceInfo.platform === 'android' && deviceInfo.brand === 'HUAWEI' ? true : false,
         complete: (connectRes) => {
           console.log('connectWifi', connectRes)
 
