@@ -48,7 +48,11 @@ ComponentWithComputed({
       Level: 0,
       ColorTemp: 0,
     },
-
+    showAddSceneSuccess: false,
+    sceneTitlePosition: {
+      x: 0,
+      y: 0,
+    },
     // 拖动排序
     touchLocation: {
       x: 0,
@@ -115,7 +119,9 @@ ComponentWithComputed({
         lightList,
         switchList,
       })
-      this.updataCardClienRect()
+      console.log(this.data.lightList, this.data.switchList)
+      this.updataCardClientRect()
+      this.updateSceneBarClientRect()
     },
   },
 
@@ -189,7 +195,24 @@ ComponentWithComputed({
       emitter.off('wsReceive')
     },
 
-    updataCardClienRect() {
+    updateSceneBarClientRect() {
+      setTimeout(() => {
+        wx.createSelectorQuery()
+          .select('#scene-title')
+          .boundingClientRect()
+          .exec((res) => {
+            if (res.length > 0 && res[0]) {
+              this.setData({
+                sceneTitlePosition: {
+                  x: res[0].left,
+                  y: res[0].top,
+                },
+              })
+            }
+          })
+      }, 100)
+    },
+    updataCardClientRect() {
       setTimeout(() => {
         wx.createSelectorQuery()
           .selectAll('.light-card')
@@ -315,7 +338,7 @@ ComponentWithComputed({
       if (!this.data.isLongPress) {
         return
       }
-      this.updataCardClienRect()
+      this.updataCardClientRect()
       this.setData({
         isLongPress: false,
       })
@@ -369,6 +392,13 @@ ComponentWithComputed({
       })
     },
     handleCollect() {
+      if (deviceStore.selectList.length === 0) {
+        wx.showToast({
+          icon: 'none',
+          title: '请先选择设备',
+        })
+        return
+      }
       this.setData({
         showAddScenePopup: true,
       })
@@ -472,6 +502,16 @@ ComponentWithComputed({
       this.setData({
         showAddScenePopup: !this.data.showAddScenePopup,
       })
+    },
+    handleShowAddSceneSuccess() {
+      this.setData({
+        showAddSceneSuccess: true,
+      })
+      setTimeout(() => {
+        this.setData({
+          showAddSceneSuccess: false,
+        })
+      }, 3000)
     },
     updateSelectType() {
       const typeList = new Set()

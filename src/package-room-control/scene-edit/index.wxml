@@ -7,19 +7,19 @@
 
   <!-- 页面主体 -->
   <view class="flex-1 flex flex-col">
-    <van-cell-group inset>
+    <van-cell-group inset custom-class="mb-0_el_">
       <van-cell title="场景名称" is-link value="{{sceneName}}" center bind:click="handleEditNameShow"></van-cell>
     </van-cell-group>
-    <van-cell-group inset>
+    <van-cell-group inset custom-class="mb-0_el_">
       <van-cell title="场景图标" is-link center bind:click="handleEditIconShow">
         <view class="flex justify-end">
-          <view class="bg-gray-f3 rounded-999 w-52rpx h-52rpx">
+          <view class="bg-hex-eff0f3 rounded-999 w-52rpx h-52rpx">
             <svg-icon name="scene:{{sceneIcon}}" width="52rpx" height="52rpx" />
           </view>
         </view>
       </van-cell>
     </van-cell-group>
-    <van-cell-group inset>
+    <van-cell-group inset custom-class="mb-0_el_">
       <van-cell title="关联智能开关" is-link value="客厅筒灯" center bind:click="handleLinkSwitchPopup"></van-cell>
     </van-cell-group>
     <view class="ml-32rpx mt-48rpx mb-24rpx">
@@ -27,7 +27,7 @@
     </view>
     <view class="flex-1" id="content">
       <scroll-view enhanced show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
-        <van-cell-group inset wx:for="{{sceneDevice}}">
+        <van-cell-group inset wx:for="{{sceneDeviceActionsFlatten}}" wx:key="id" custom-class="{{index === 0 ? 'mt-0_el_' : ''}}">
           <van-cell center>
             <view slot="title" class="flex items-center">
               <image src="{{item.image}}" class="w-96rpx h-96rpx rounded-999 bg-hex-f6fafd" />
@@ -36,13 +36,13 @@
                 <text class="text-28rpx text-black-tips font-normal mt-8rpx">{{item.desc}}</text>
               </view>
             </view>
-            <svg-icon slot="right-icon" color="#d2d2d3" name="ion:close-circled" width="48rpx" height="48rpx" catchtap="handleDelete">执行</svg-icon>
+            <svg-icon slot="right-icon" color="#d2d2d3" name="ion:close-circled" width="48rpx" height="48rpx" data-info="{{item}}" data-index="{{index}}" catchtap="handleActionDelete"></svg-icon>
           </van-cell>
         </van-cell-group>
       </scroll-view>
     </view>
     <view class="mb-86rpx mt-24rpx flex justify-center">
-      <van-button custom-class="popup-control-btn" custom-style="border: 2rpx solid #A2A2A2;" color="transparent" bind:click="handleDelete">
+      <van-button custom-class="popup-control-btn" custom-style="border: 2rpx solid #A2A2A2;" color="transparent" bind:click="handleSceneDelete">
         <text class="text-36rpx text-black-tips">删除</text>
       </van-button>
       <van-button type="primary" custom-class="popup-control-btn" class="ml-46rpx" bind:click="handleSave">
@@ -51,6 +51,8 @@
     </view>
   </view>
 </view>
+
+<van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />
 
 <edit-name-popup value="{{sceneName}}" show="{{showEditNamePopup}}" bind:close="handleEditNameClose" bind:confirm="handleEditNameConfirm" />
 <edit-icon-popup value="{{sceneIcon}}" show="{{showEditIconPopup}}" bind:close="handleEditIconClose" bind:confirm="handleEditIconConfirm" />

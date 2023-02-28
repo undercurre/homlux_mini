@@ -60,8 +60,6 @@ ComponentWithComputed({
     },
     deviceList(data) {
       if (data.deviceList && data.linkType) {
-        console.log(111111)
-        console.log(data.deviceList, data.linkType)
         return data.deviceList.filter((device: { proType: string }) => proName[device.proType] === data.linkType)
       }
       return []

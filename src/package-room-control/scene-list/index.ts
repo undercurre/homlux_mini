@@ -1,13 +1,13 @@
 // package-room-control/scene-list/index.ts
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { roomBinding, sceneStore } from '../../store/index'
+import { sceneBinding, sceneStore } from '../../store/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { runInAction } from 'mobx-miniprogram'
 import { execScene } from '../../apis/scene'
 
 ComponentWithComputed({
-  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding] }), pageBehavior],
+  behaviors: [BehaviorWithStore({ storeBindings: [sceneBinding] }), pageBehavior],
   /**
    * 页面的初始数据
    */
@@ -15,14 +15,7 @@ ComponentWithComputed({
     contentHeight: 0,
   },
 
-  computed: {
-    sceneList(data) {
-      if (data.currentRoomIndex !== undefined && data.roomList) {
-        return data.roomList[data.currentRoomIndex].sceneList
-      }
-      return []
-    },
-  },
+  computed: {},
 
   methods: {
     /**
@@ -57,16 +50,14 @@ ComponentWithComputed({
       }
     },
 
-    toSetting(e: { currentTarget: { dataset: { info: Scene.SceneItem } } }) {
+    toSetting(e: { currentTarget: { dataset: { index: number } } }) {
+      console.log(e.currentTarget.dataset.index)
       runInAction(() => {
-        sceneStore.selectScene = {
-          ...e.currentTarget.dataset.info,
-        }
+        sceneStore.selectSceneIndex = e.currentTarget.dataset.index
       })
       wx.navigateTo({
         url: '/package-room-control/scene-edit/index',
       })
-      console.log(e.currentTarget.dataset.info)
     },
   },
 })

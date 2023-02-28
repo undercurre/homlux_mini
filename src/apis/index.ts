@@ -5,6 +5,7 @@ export * from './room'
 export * from './device'
 export * from './user'
 export * from './ota'
+export * from './scene'
 
 export async function login(data: object) {
   return await mzaioRequest.post<User.UserLoginRes>({

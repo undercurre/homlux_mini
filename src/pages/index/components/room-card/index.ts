@@ -22,7 +22,20 @@ ComponentWithComputed({
 
   computed: {
     sceneList(data) {
-      return data.roomInfo.sceneList.slice(0, 4)
+      return data.roomInfo.sceneList.slice(0, 4).map((scene: Scene.SceneBase) => {
+        let sceneName = scene.sceneName
+        if (new RegExp('[\\u4E00-\\u9FFF]+', 'g').test(sceneName)) {
+          // 名字有中文，只能显示四个
+          sceneName = sceneName.slice(0, 4)
+        } else {
+          // 全英文，显示7个
+          sceneName = sceneName.slice(0, 7)
+        }
+        return {
+          ...scene,
+          sceneName,
+        }
+      })
     },
     hasBottomPadding(data) {
       return data.roomInfo.sceneList.length > 0

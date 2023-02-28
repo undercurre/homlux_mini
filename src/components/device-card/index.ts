@@ -39,20 +39,21 @@ ComponentWithComputed({
       return data.deviceInfo.pic ? data.deviceInfo.pic : `/assets/img/device/${data.deviceType}.png`
     },
     controlBtnPic(data) {
-      if (!data.showControl || !data.deviceInfo.onLineStatus) {
-        return ''
+      if (!data.deviceInfo.onLineStatus) {
+        return '/assets/img/base/offline.png'
       }
       if (data.deviceType === 'light') {
         return data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
           ? '/assets/img/base/power-on.png'
           : '/assets/img/base/power-off.png'
       } else if (data.deviceType === 'switch') {
-        if (data.deviceInfo.isSceneSwitch) {
-          return '/assets/img/base/scene-switch-btn.png'
-        }
         const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
-        if (!data.deviceInfo?.mzgdPropertyDTOList[switchId]) {
+        if (data.deviceInfo.mzgdPropertyDTOList[switchId]) {
+          // 设备没有开关属性，不显示
           return ''
+        }
+        if (data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
+          return '/assets/img/base/scene-switch-btn.png'
         }
         return data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff
           ? '/assets/img/base/power-on.png'
@@ -69,6 +70,15 @@ ComponentWithComputed({
         }
       }
       return ''
+    },
+    deviceName(data) {
+      if (new RegExp('[\\u4E00-\\u9FFF]+', 'g').test(data.deviceInfo.deviceName)) {
+        // 存在中文字符，只能显示5个字符
+        return data.deviceInfo.deviceName.slice(0, 5)
+      } else {
+        // 不存在中文字符，只能显示8个字符
+        return data.deviceInfo.deviceName.slice(0, 8)
+      }
     },
   },
 

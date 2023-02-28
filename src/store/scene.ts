@@ -5,13 +5,9 @@ import { roomStore } from './room'
 export const sceneStore = observable({
   sceneList: [] as Scene.SceneItem[],
   /**
-   * 选了了那些设备
+   * 选了哪个场景
    */
-  selectScene: {
-    sceneName: '',
-    sceneId: '',
-    sceneIcon: '',
-  } as Scene.SceneItem,
+  selectSceneIndex: -1,
 
   async updateSceneList(roomId: string = roomStore.roomList[roomStore.currentRoomIndex].roomId) {
     const res = await querySceneList(roomId)
@@ -25,6 +21,6 @@ export const sceneStore = observable({
 
 export const sceneBinding = {
   store: sceneStore,
-  fields: ['selectScene', 'sceneList'],
+  fields: ['selectSceneIndex', 'sceneList'],
   actions: [],
 }

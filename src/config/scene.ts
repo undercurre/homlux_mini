@@ -1,4 +1,8 @@
 export const sceneMap = {
+  general: {
+    value: 'general',
+    name: '通用',
+  },
   'all-on': {
     value: 'all-on',
     name: '全开',
@@ -14,10 +18,6 @@ export const sceneMap = {
   catering: {
     value: 'catering',
     name: '餐饮',
-  },
-  general: {
-    value: 'general',
-    name: '通用',
   },
   'go-home': {
     value: 'go-home',

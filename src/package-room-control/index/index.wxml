@@ -19,11 +19,11 @@
     <!-- 场景 -->
     <view class="scene-card-bg w-686rpx h-96rpx flex items-center rounded-24rpx mt-24rpx" bindtap="handleSceneTap">
       <image src="/assets/img/base/scene.png" class="w-64rpx h-64rpx ml-24rpx"></image>
-      <text class="text-32rpx text-hex-333333 font-medium ml-16rpx">场景</text>
+      <text id="scene-title" class="text-32rpx text-hex-333333 font-medium ml-16rpx">场景</text>
       <view class="flex flex-1 justify-end items-center">
         <view class="mr-38rpx flex">
           <view class="scene-icon p-4rpx bg-hex-fff rounded-999" wx:for="{{sceneListInBar}}" wx:key="sceneId">
-            <view class="bg-gray-f3 rounded-999">
+            <view class="bg-hex-eff0f3 rounded-999">
               <svg-icon name="scene:{{item.sceneIcon}}" width="52rpx" height="52rpx" />
             </view>
           </view>
@@ -66,9 +66,17 @@
   </view>
 </view>
 
+<!-- 收藏场景提示 -->
+<view wx:if="{{showAddSceneSuccess}}" class="flex-center rounded-16rpx px-22rpx py-8rpx fixed bg-hex-000 opacity-73" style="left: {{sceneTitlePosition.x}}px; top: calc({{sceneTitlePosition.y}}px - 60rpx);">
+  <view class="relative">
+    <view class="arrow absolute w-0 h-0"></view>
+  </view>
+  <text class="text-white text-26rpx">您收藏了一个新的场景</text>
+</view>
+
 <!-- 滑动排序显示的card -->
 <device-card wx:if="{{isLongPress}}" class="fixed z-1000 opacity-75" style="left: calc({{touchLocation.x}}px - 80rpx); top: calc({{touchLocation.y}}px - 108rpx);" device-type="{{longPressType}}" device-info="{{longPressDevice}}" />
 
 <!-- 设备控制弹窗 -->
 <device-control-popup popup="{{controlPopupUp}}" bind:popMove="handlePopMove"></device-control-popup>
-<add-scene-popup show="{{showAddScenePopup}}" bind:close="handleAddScenePopupClose" />
+<add-scene-popup show="{{showAddScenePopup}}" bind:close="handleAddScenePopupClose" bind:addSuccess="handleShowAddSceneSuccess" />

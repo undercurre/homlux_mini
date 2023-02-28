@@ -2,7 +2,7 @@ import { storage } from '../../../../utils/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { deviceBinding, deviceStore } from '../../../../store/index'
-import { proType } from '../../../../config/index'
+import { maxColorTempK, minColorTempK, proType } from '../../../../config/index'
 import { controlDevice } from '../../../../apis/index'
 
 ComponentWithComputed({
@@ -42,8 +42,8 @@ ComponentWithComputed({
     lightInfoInner: {
       Level: 10,
       ColorTemp: 20,
-      maxColorTempK: 6000,
-      minColorTempK: 2400,
+      maxColorTempK,
+      minColorTempK,
     },
     curtainInfo: {
       left: 50,

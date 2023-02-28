@@ -51,7 +51,7 @@ export async function querySubDeviceList(houseId: string, roomId: string) {
 export async function queryDeviceInfoByDeviceId(deviceId: string, roomId?: string) {
   return await mzaioRequest.post<Device.DeviceItem>({
     log: false,
-    loading: true,
+    loading: false,
     url: '/v1/device/queryDeviceInfoByDeviceId',
     data: { deviceId, roomId },
   })

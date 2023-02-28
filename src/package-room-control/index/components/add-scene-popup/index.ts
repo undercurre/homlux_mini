@@ -1,5 +1,5 @@
 import { addScene } from '../../../../apis/scene'
-import { sceneList } from '../../../../config/index'
+import { proType, sceneList } from '../../../../config/index'
 import { deviceStore, homeStore, roomStore, sceneStore } from '../../../../store/index'
 
 Component({
@@ -20,7 +20,7 @@ Component({
           }, 100)
         }
         this.setData({
-          sceneIcon: '',
+          sceneIcon: 'general',
           sceneName: '',
         })
       },
@@ -59,6 +59,13 @@ Component({
       this.triggerEvent('close')
     },
     async handleConfirm() {
+      if (!this.data.sceneName) {
+        wx.showToast({
+          icon: 'error',
+          title: '场景名不能为空',
+        })
+        return
+      }
       const newSceneData = {
         conditionType: '0',
         deviceActions: [],
@@ -92,9 +99,16 @@ Component({
               },
             ]
           }
-        } else {
+        } else if (deviceMap[id].proType === proType.light) {
           newSceneData.deviceActions.push({
-            controlAction: [{ ep: 1, OnOff: deviceMap[id].mzgdPropertyDTOList[1].OnOff }],
+            controlAction: [
+              {
+                ep: 1,
+                OnOff: deviceMap[id].mzgdPropertyDTOList[1].OnOff,
+                Level: deviceMap[id].mzgdPropertyDTOList[1].Level,
+                ColorTemp: deviceMap[id].mzgdPropertyDTOList[1].ColorTemp,
+              },
+            ],
             deviceId: id,
             deviceType: deviceMap[id].deviceType.toString(),
             proType: deviceMap[id].proType,
@@ -117,6 +131,7 @@ Component({
           title: '收藏成功',
         })
         sceneStore.updateSceneList()
+        this.triggerEvent('addSuccess')
       } else {
         wx.showToast({
           icon: 'error',

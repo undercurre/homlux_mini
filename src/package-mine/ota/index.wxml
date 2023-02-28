@@ -7,7 +7,7 @@
     <van-cell>
       <view class="flex flex-col items-start pr-44rpx">
         <text class="text-34rpx text-black-2a">自动升级</text>
-        <text class="text-28rpx text-black-tips font-normal text-justify">每天凌晨2:00-5:00期间自动升级设备固件。升级期间设备可能无法使用。</text>
+        <text class="text-28rpx text-black-tips font-normal text-justify mt-24rpx">每天凌晨2:00-5:00期间自动升级设备固件。升级期间设备可能无法使用。</text>
       </view>
       <view slot="right-icon">
         <van-switch checked="{{autoUpdate}}" loading="{{isLoading}}" bind:change="onChange" />
@@ -24,7 +24,7 @@
 
   <view class="flex-1 w-750rpx" id="content">
     <scroll-view enhanced show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
-      <van-cell-group inset>
+      <van-cell-group inset custom-class="mt-0_el_">
         <van-cell>
           <view class="flex flex-col items-center text-28rpx text-black-2a text-justify">
             <view class="flex w-full justify-between items-center mb-32rpx">
@@ -47,7 +47,7 @@
                   <text>1.1.1.1</text>
                 </view>
               </view>
-              <view class="mt-32rpx flex">
+              <view class="mt-16rpx flex">
                 <text>升级内容：</text>
                 <view class="ml-30rpx">
                   <text>{{'1、提升设备稳定性\n2、优化数据上报'}}</text>
@@ -80,7 +80,7 @@
                   <text>1.1.1.1</text>
                 </view>
               </view>
-              <view class="mt-32rpx flex">
+              <view class="mt-16rpx flex">
                 <text>升级内容：</text>
                 <view class="ml-30rpx">
                   <text>{{'1、提升设备稳定性\n2、优化数据上报'}}</text>
@@ -113,7 +113,7 @@
                   <text>1.1.1.1</text>
                 </view>
               </view>
-              <view class="mt-32rpx flex">
+              <view class="mt-16rpx flex">
                 <text>升级内容：</text>
                 <view class="ml-30rpx">
                   <text>{{'1、提升设备稳定性\n2、优化数据上报'}}</text>

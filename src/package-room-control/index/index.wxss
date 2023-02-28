@@ -20,3 +20,11 @@
   font-weight: 500 !important;
   border-radius: 20rpx !important;
 }
+
+.arrow {
+  border-bottom: 12rpx solid transparent;
+  border-top: 12rpx solid #000;
+  border-left: 8rpx solid transparent;
+  border-right: 8rpx solid transparent;
+  top: 24rpx;
+}

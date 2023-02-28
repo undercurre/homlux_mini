@@ -1,6 +1,6 @@
 <view class="card-shadow w-160rpx h-216rpx rounded-32rpx box-border flex-col-center relative" style="{{style}}" bindtap="handleCardTap">
   <view class="absolute left-0 top-8rpx w-160rpx flex-center">
-    <text class="text-26rpx text-hex-353535 font-medium">{{deviceInfo.deviceName}}</text>
+    <text class="text-26rpx text-hex-353535 font-medium">{{deviceName}}</text>
   </view>
   <view class="flex-col-center">
     <image src="{{picUrl}}" class="w-72rpx h-72rpx"></image>
@@ -9,8 +9,7 @@
     </view>
   </view>
   <view wx:if="{{showControl}}" class="absolute left-0 bottom-6rpx w-160rpx flex-center" catchtap="handlePowerTap">
-    <image wx:if="{{!deviceInfo.onLineStatus}}" src="/assets/img/base/offline.png" class="w-48rpx h-48rpx"></image>
-    <view wx:else class="w-48rpx h-48rpx">
+    <view class="w-48rpx h-48rpx">
       <image src="{{controlBtnPic}}" class="w-48rpx h-48rpx"></image>
     </view>
   </view>

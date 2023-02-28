@@ -30,3 +30,23 @@ export async function execScene(sceneId: string) {
     },
   })
 }
+
+export async function deleteScene(sceneId: string) {
+  return await mzaioRequest.post<IAnyObject>({
+    log: true,
+    loading: true,
+    url: '/v1/mzgd/scene/deleteScene',
+    data: {
+      sceneId,
+    },
+  })
+}
+
+export async function updateScene(data: Scene.UpdateSceneDto) {
+  return await mzaioRequest.post<IAnyObject>({
+    log: true,
+    loading: true,
+    url: '/v1/mzgd/scene/updateScene',
+    data,
+  })
+}

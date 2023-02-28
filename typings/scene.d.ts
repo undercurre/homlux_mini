@@ -78,4 +78,22 @@ declare namespace Scene {
      */
     sceneType: string
   }
+  interface UpdateSceneDto {
+    /**
+     * 条件类型
+     * 0-或，1-与，目前全部传0
+     * updateType=3或者updateType=5时，必传
+     */
+    conditionType?: '0' | '1'
+    deviceActions?: DeviceAction[]
+    deviceConditions?: DeviceCondition[]
+    sceneIcon?: string
+    sceneId?: string
+    sceneName?: string
+    /** 更新类型
+     * 1-删除结果 2-取消绑定 3-更新绑定 4-删除结果与取消绑定 5-删除结果与更新绑定
+     * 其他情况传0
+     */
+    updateType: '0' | '1' | '2' | '3' | '4' | '5'
+  }
 }
