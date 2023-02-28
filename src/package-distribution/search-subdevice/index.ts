@@ -250,7 +250,7 @@ ComponentWithComputed({
 
       console.log('queryDeviceOnlineStatus', queryRes)
 
-      if (queryRes.result.onlineStatus === 0) {
+      if (queryRes.result.onlineStatus === 0 || !queryRes.result.deviceId) {
         // 限制最多查询云端设备在线状态次数：device.requestTimes，超过则置为失败
         device.requestTimes--
 

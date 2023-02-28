@@ -25,6 +25,7 @@ Component({
    */
   data: {
     _interId: 0,
+    _queryTimes: 40,
     status: 'linking',
     currentStep: '连接设备',
     activeIndex: -1,
@@ -62,7 +63,7 @@ Component({
 
       const connectRes = await socket.connect()
 
-      console.log('连接wifi耗时：', Date.now() - start)
+      console.log('connectRes', connectRes, socket)
 
       if (!connectRes.success) {
         this.setData({
@@ -150,13 +151,22 @@ Component({
 
       console.log('queryDeviceOnlineStatus', res.result)
 
-      if (res.success && res.result.onlineStatus === 1) {
+      if (res.success && res.result.onlineStatus === 1 && res.result.deviceId) {
         this.setData({
           activeIndex: 1,
         })
 
         this.requestBindDevice()
       } else {
+        this.data._queryTimes--
+
+        if (this.data._queryTimes <= 0) {
+          this.setData({
+            status: 'error',
+          })
+          return
+        }
+
         this.data._interId = setTimeout(() => {
           this.queryDeviceOnlineStatus()
         }, 5000)

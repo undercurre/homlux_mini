@@ -141,6 +141,8 @@ Component({
           roomIcon: this.data.roomInfo.icon,
           roomName: this.data.roomInfo.name,
         })
+
+        this.triggerEvent('close')
       }
     },
     selectIcon({ currentTarget }: WechatMiniprogram.BaseEvent) {

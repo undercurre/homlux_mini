@@ -14,4 +14,4 @@
   <van-button class="mx-32rpx" size="large" type="primary" block bind:click="addRoom">添加房间</van-button>
 </view>
 
-<add-room show="{{isAddRoom}}" bind:confirm="finishAddRoom" bind:close="cancelAddRoom"></add-room>
+<add-room show="{{isAddRoom}}" bind:close="hideAddRoom"></add-room>

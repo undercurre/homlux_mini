@@ -23,7 +23,7 @@ ComponentWithComputed({
   data: {
     isShowGatewayList: false,
     isShowNoGatewayTips: false,
-    _hasScan: false,
+    _isScaning: false,
     selectGatewayId: '',
     selectGatewaySn: '',
     subdeviceList: Array<string>(),
@@ -42,7 +42,7 @@ ComponentWithComputed({
   },
 
   lifetimes: {
-    async attached() {
+    async ready() {
       await homeBinding.store.updateHomeInfo()
 
       await deviceBinding.store.updateAllRoomDeviceList()
@@ -50,7 +50,8 @@ ComponentWithComputed({
       const params = wx.getLaunchOptionsSync()
       console.log('scanPage', params)
 
-      if (params.scene === 1011) {
+      // 防止重复判断
+      if (getCurrentPages.length === 1 && params.scene === 1011) {
         const scanUrl = decodeURIComponent(params.query.q)
 
         console.log('scanUrl', scanUrl)
@@ -79,6 +80,34 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
+    async initWifi() {
+      const deviceInfo = wx.getDeviceInfo()
+
+      console.log('deviceInfo', deviceInfo)
+      // Android 调用前需要 用户授权 scope.userLocation。该权限流程需前置，否则会出现在配网过程连接设备热点导致无法联网，请求失败
+      if (deviceInfo.platform === 'android') {
+        const authorizeRes = await wx
+          .authorize({
+            scope: 'scope.userLocation',
+          })
+          .catch((err) => err)
+
+        console.log('authorizeRes', authorizeRes)
+
+        if (authorizeRes.errno === 103) {
+          wx.showToast({ title: '请打开权限', icon: 'none' })
+
+          wx.openSetting({
+            success(res) {
+              console.log('authSetting', res.authSetting)
+            },
+          })
+
+          wx.navigateBack()
+          return
+        }
+      }
+    },
     showGateListPopup() {
       this.setData({
         isShowGatewayList: true,
@@ -124,6 +153,17 @@ ComponentWithComputed({
       })
 
       console.log('scan-openBleRes', openBleRes)
+
+      // 没有打开蓝牙异常处理
+      if (openBleRes.errCode === 10001) {
+        wx.openAppAuthorizeSetting({
+          success(res) {
+            console.log(res)
+          },
+        })
+
+        return
+      }
 
       // 监听扫描到新设备事件
       wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
@@ -174,14 +214,14 @@ ComponentWithComputed({
      * 网关id：1676277426246918    子设备id：5C0272FFFE0E0826    蓝牙id：26
      */
     async getQrCodeInfo(e: WechatMiniprogram.CustomEvent) {
-      if (this.data._hasScan) {
+      if (this.data._isScaning) {
         return
       }
 
-      console.log('getQrCodeInfo', e, this.data._hasScan)
+      console.log('getQrCodeInfo', e, this.data._isScaning)
 
       this.setData({
-        _hasScan: true,
+        _isScaning: true,
       })
 
       const scanUrl = e.detail.result
@@ -208,20 +248,8 @@ ComponentWithComputed({
 
       console.log('checkDevice', res)
 
-      // if (!res.success) {
-      // }
-
-      this.data._deviceInfo = {
-        type: 'single',
-        proType: res.result.proType,
-        deviceName: res.result.productName,
-        mac: params.mac,
-      }
-
       if (!res.success) {
         wx.showToast({ title: '验证产品信息失败' })
-
-        return
       } else if (res.result && res.result.proType === '0x18') {
         this.bindGateway({
           ssid: params.ssid,
@@ -229,22 +257,29 @@ ComponentWithComputed({
           deviceName: res.result.productName,
         })
       } else {
-        const flag = this.checkGateWayInfo()
-
-        if (!flag) {
-          return
+        this.data._deviceInfo = {
+          type: 'single',
+          proType: res.result.proType,
+          deviceName: res.result.productName,
+          mac: params.mac,
         }
 
-        this.addSingleSubdevice()
+        const flag = this.checkGateWayInfo()
+
+        if (flag) {
+          this.addSingleSubdevice()
+        }
       }
 
       wx.hideLoading()
 
       setTimeout(() => {
         this.setData({
-          _hasScan: false,
+          _isScaning: false,
         })
-      }, 1000)
+
+        console.log('_isScaning', this.data._isScaning)
+      }, 2000)
     },
 
     bindGateway(params: IAnyObject) {
