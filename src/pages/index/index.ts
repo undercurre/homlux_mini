@@ -1,5 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { othersBinding, roomBinding, userBinding, homeBinding } from '../../store/index'
+import { othersBinding, roomBinding, userBinding, homeBinding, homeStore } from '../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { storage } from '../../utils/index'
 ComponentWithComputed({
@@ -67,11 +67,9 @@ ComponentWithComputed({
       // 隐藏之前展示的下拉菜单
       this.hideMenu()
     },
-    onPullDownRefresh() {
-      console.log('下拉刷新')
-      setTimeout(() => {
-        wx.stopPullDownRefresh()
-      }, 500)
+    async onPullDownRefresh() {
+      await homeStore.updateHomeInfo()
+      wx.stopPullDownRefresh()
     },
 
     // 收起所有菜单
@@ -208,20 +206,6 @@ ComponentWithComputed({
       this.setData({
         showAddNewRoom: false,
       })
-    },
-    /**
-     * 用户点击选择场景
-     */
-    handleSceneSelect(e: { currentTarget: { dataset: { room: string } }; detail: string }) {
-      console.log(e)
-      // runInAction(() => {
-      //   room.roomList = room.roomList.map((item) => {
-      //     return {
-      //       ...item,
-      //       sceneSelect: e.currentTarget.dataset.room === item.roomId ? e.detail : item.sceneSelect,
-      //     }
-      //   })
-      // })
     },
     updateContentHeight() {
       wx.createSelectorQuery()

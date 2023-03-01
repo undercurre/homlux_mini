@@ -50,7 +50,7 @@ declare namespace Scene {
      * 绑定控制集合，
      * 例如："controlEvent":[{"ep":2,"ButtonScene":1}]
      */
-    controlEvent: string
+    controlEvent: { ep: number; ButtonScene: number }[]
     /** 设备id */
     deviceId: string
     /** 设备名称 */

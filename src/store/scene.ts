@@ -9,6 +9,20 @@ export const sceneStore = observable({
    */
   selectSceneIndex: -1,
 
+  /**
+   * 关联场景关系映射
+   * sceneId -> switchUniId
+   */
+  get switchSceneMap(): Record<string, string> {
+    const map = {} as Record<string, string>
+    sceneStore.sceneList.forEach((scene) => {
+      scene.deviceConditions.forEach((condition) => {
+        map[scene.sceneId] = `${condition.deviceId}:${condition.controlEvent[0].ep}`
+      })
+    })
+    return map
+  },
+
   async updateSceneList(roomId: string = roomStore.roomList[roomStore.currentRoomIndex].roomId) {
     const res = await querySceneList(roomId)
     if (res.success) {

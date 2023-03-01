@@ -21,14 +21,15 @@ Component({
     sceneId: '',
     sceneName: '',
     sceneIcon: '',
-    linkList: [] as string[],
+    list: [] as Device.DeviceItem[],
+    bindSwitchSelect: [] as string[],
     contentHeight: 0,
     showEditNamePopup: false,
     showEditIconPopup: false,
     showLinkPopup: false,
     sceneInfo: {} as Scene.SceneItem,
     sceneDeviceActionsFlatten: [] as DeviceActionsFlattenItem[], // 将场景里多路的action拍扁
-    sceneDeviceActionsCount: 0, // 原来场景里action个数，用来对比是否删除过actions
+    sceneDeviceActionsDelete: [] as DeviceActionsFlattenItem[],
   },
 
   methods: {
@@ -84,8 +85,8 @@ Component({
               sceneId: sceneStore.sceneList[sceneStore.selectSceneIndex].sceneId,
               sceneName: sceneStore.sceneList[sceneStore.selectSceneIndex].sceneName,
               sceneIcon: sceneStore.sceneList[sceneStore.selectSceneIndex].sceneIcon,
+              switchList: deviceStore.deviceFlattenList.filter((device) => device.proType === proType.switch),
               sceneDeviceActionsFlatten,
-              sceneDeviceActionsCount: sceneDeviceActionsFlatten.length,
             })
           }
         })
@@ -111,9 +112,10 @@ Component({
       })
     },
     handleActionDelete(e: WechatMiniprogram.TouchEvent) {
-      this.data.sceneDeviceActionsFlatten.splice(e.currentTarget.dataset.index, 1)
+      const action = this.data.sceneDeviceActionsFlatten.splice(e.currentTarget.dataset.index, 1)
       this.setData({
         sceneDeviceActionsFlatten: [...this.data.sceneDeviceActionsFlatten],
+        sceneDeviceActionsDelete: [...this.data.sceneDeviceActionsDelete, ...action],
       })
     },
     async handleSave() {
@@ -125,11 +127,11 @@ Component({
       if (this.data.sceneIcon !== sceneStore.sceneList[sceneStore.selectSceneIndex].sceneName) {
         data.sceneIcon = this.data.sceneIcon
       }
-      if (this.data.sceneDeviceActionsFlatten.length !== this.data.sceneDeviceActionsCount) {
-        // 重新转成actions保存更新
+      if (this.data.sceneDeviceActionsDelete.length !== 0) {
+        // 将展开的action组合起来
         const deviceActions = [] as Scene.DeviceAction[]
         const deviceActionsMap = {} as Record<string, Scene.DeviceAction>
-        this.data.sceneDeviceActionsFlatten.forEach((deviceAction) => {
+        this.data.sceneDeviceActionsDelete.forEach((deviceAction) => {
           if (deviceAction.id.includes(':')) {
             // 开关，可能有多路
             const deviceId = deviceAction.id.split(':')[0]

@@ -35,7 +35,7 @@ ComponentWithComputed({
       sceneStore.updateSceneList()
     },
 
-    async handleCollect(e: { currentTarget: { dataset: { info: { sceneId: string } } } }) {
+    async handleExecScene(e: { currentTarget: { dataset: { info: { sceneId: string } } } }) {
       const res = await execScene(e.currentTarget.dataset.info.sceneId)
       if (res.success) {
         wx.showToast({

@@ -1,9 +1,9 @@
 import { storage } from '../../../../utils/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { deviceBinding, deviceStore } from '../../../../store/index'
+import { deviceBinding, deviceStore, sceneStore } from '../../../../store/index'
 import { maxColorTempK, minColorTempK, proType } from '../../../../config/index'
-import { controlDevice } from '../../../../apis/index'
+import { controlDevice, createAssociated, delAssociated, updateAssociated } from '../../../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -49,9 +49,17 @@ ComponentWithComputed({
       left: 50,
       right: 50,
     },
-    linkType: '',
-    linkList: [] as string[],
+    /** 提供给关联选择的列表 */
+    list: [] as (Device.DeviceItem | Scene.SceneItem)[],
+    linkType: '' as '' | 'light' | 'switch' | 'scene',
+    /** 已选中设备 */
+    linkSelectList: [] as string[],
     showLinkPopup: false,
+    relId: {
+      switchRelId: '',
+      lightRelId: '',
+    },
+    selectSwitchUniId: '',
   },
 
   computed: {
@@ -203,32 +211,117 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    handleBarTap() {
-      // const from = this.properties.popup ? 0 : this.data._bottom
-      // const to = this.properties.popup ? this.data._bottom : 0
-      this.animate(
-        '#popup',
-        [
-          {
-            // bottom: from + 'px',
-            ease: 'ease-in-out',
-          },
-          {
-            // bottom: to + 'px',
-            ease: 'ease-in-out',
-          },
-        ],
-        200,
-        () => {
-          this.triggerEvent('popMove')
-        },
+    // handleBarTap() {
+    //   // const from = this.properties.popup ? 0 : this.data._bottom
+    //   // const to = this.properties.popup ? this.data._bottom : 0
+    //   this.animate(
+    //     '#popup',
+    //     [
+    //       {
+    //         // bottom: from + 'px',
+    //         ease: 'ease-in-out',
+    //       },
+    //       {
+    //         // bottom: to + 'px',
+    //         ease: 'ease-in-out',
+    //       },
+    //     ],
+    //     200,
+    //     () => {
+    //       this.triggerEvent('popMove')
+    //     },
+    //   )
+    // },
+    handleLinkPopup(e: { currentTarget: { dataset: { link: 'light' | 'switch' | 'scene' } } }) {
+      const deviceMap = deviceStore.deviceMap
+      const switchUniId = deviceStore.selectList.find((uniId) => uniId.includes(':'))
+      if (!switchUniId) {
+        return
+      }
+      if (e.currentTarget.dataset.link === 'scene') {
+        this.setData({
+          linkType: e.currentTarget.dataset.link,
+          list: [...sceneStore.sceneList],
+          selectList: deviceStore.switchSceneMap[switchUniId] ? [deviceStore.switchSceneMap[switchUniId]] : [],
+          showLinkPopup: true,
+        })
+        return
+      }
+      const switchItem = deviceMap[switchUniId.split(':')[0]].switchInfoDTOList.find(
+        (switchItem) => switchItem.switchId === switchUniId.split(':')[1],
       )
-    },
-    handleSwitchLinkPopup(e: { currentTarget: { dataset: { link: string } } }) {
+      const switchRelId = switchItem?.switchRelId ?? ''
+      const lightRelId = switchItem?.lightRelId ?? ''
+      let linkSelectList = [] as string[]
+      let list = [] as Device.DeviceItem[]
+      if (e.currentTarget.dataset.link === 'light') {
+        list = deviceStore.deviceFlattenList.filter((item) => !item.uniId.includes(':'))
+        linkSelectList = list
+          .filter((device) => device.lightRelId && device.lightRelId === lightRelId)
+          .map((device) => device.deviceId)
+      } else if (e.currentTarget.dataset.link === 'switch') {
+        list = deviceStore.deviceFlattenList
+          .filter((item) => item.uniId.includes(':'))
+          .filter((item) => item.uniId !== switchUniId)
+        linkSelectList = list
+          .filter(
+            (device) =>
+              device.switchInfoDTOList[0].switchRelId && device.switchInfoDTOList[0].switchRelId === switchRelId,
+          )
+          .map((device) => device.uniId)
+      }
       this.setData({
         linkType: e.currentTarget.dataset.link,
+        list,
+        linkSelectList,
+        relId: {
+          switchRelId,
+          lightRelId,
+        },
         showLinkPopup: true,
+        selectSwitchUniId: switchUniId,
       })
+    },
+    handleLinkSelect(e: { detail: string }) {
+      if (this.data.linkSelectList.includes(e.detail)) {
+        const index = this.data.linkSelectList.findIndex((id) => id === e.detail)
+        this.data.linkSelectList.splice(index, 1)
+        this.setData({
+          linkSelectList: [...this.data.linkSelectList],
+        })
+        return
+      }
+      const deviceMap = deviceStore.deviceMap
+      if (this.data.linkType === 'light') {
+        if (deviceMap[e.detail].lightRelId && this.data.relId.lightRelId !== deviceMap[e.detail].lightRelId) {
+          wx.showToast({
+            icon: 'none',
+            title: '设备已被关联',
+          })
+          return
+        }
+        this.setData({
+          linkSelectList: [...this.data.linkSelectList, e.detail],
+        })
+      } else if (this.data.linkType === 'switch') {
+        const switchItem = deviceMap[e.detail.split(':')[0]].switchInfoDTOList.find(
+          (switchItem) => switchItem.switchId === e.detail.split(':')[1],
+        )
+        if (switchItem?.switchRelId && this.data.relId.switchRelId !== switchItem?.switchRelId) {
+          wx.showToast({
+            icon: 'none',
+            title: '设备已被关联',
+          })
+          return
+        }
+        this.setData({
+          linkSelectList: [...this.data.linkSelectList, e.detail],
+        })
+      } else if (this.data.linkType === 'scene') {
+        this.setData({
+          linkSelectList: [e.detail],
+        })
+      }
     },
     handleTabTap(e: { currentTarget: { dataset: { tab: 'light' | 'switch' | 'curtain' } } }) {
       this.setData({
@@ -388,11 +481,59 @@ ComponentWithComputed({
         showLinkPopup: false,
       })
     },
-    handleLinkPopupConfirm(e: { detail: string[] }) {
+    handleLinkPopupConfirm() {
       this.setData({
         showLinkPopup: false,
-        linkList: e.detail,
       })
+      const selectSwitchUniId = this.data.selectSwitchUniId.replace(':', '-') // todo 可能需要将这两个符号前后端统一一下
+      if (this.data.linkType === 'light') {
+        // 关联灯
+        if (this.data.relId.lightRelId && this.data.linkSelectList.length !== 0) {
+          // 更新关联
+          updateAssociated({
+            relType: '0',
+            lightRelId: this.data.relId.lightRelId,
+            deviceIds: [selectSwitchUniId, ...this.data.linkSelectList],
+          })
+        } else if (this.data.relId.lightRelId && this.data.linkSelectList.length === 0) {
+          // 删除关联
+          delAssociated({
+            relType: '0',
+            lightRelId: this.data.relId.lightRelId,
+          })
+        } else if (!this.data.relId.lightRelId && this.data.linkSelectList.length !== 0) {
+          // 创建依赖
+          createAssociated({
+            deviceIds: [selectSwitchUniId, ...this.data.linkSelectList],
+            relType: '0',
+          })
+        }
+      } else if (this.data.linkType === 'switch') {
+        // 关联开关
+        if (this.data.relId.switchRelId && this.data.linkSelectList.length !== 0) {
+          // 更新关联
+          updateAssociated({
+            relType: '1',
+            switchRelId: this.data.relId.switchRelId,
+            deviceIds: [selectSwitchUniId, ...this.data.linkSelectList.map((id) => id.replace(':', '-'))],
+          })
+        } else if (this.data.relId.switchRelId && this.data.linkSelectList.length === 0) {
+          // 删除关联
+          delAssociated({
+            relType: '1',
+            switchRelId: this.data.relId.switchRelId,
+          })
+        } else if (!this.data.relId.switchRelId && this.data.linkSelectList.length !== 0) {
+          // 创建依赖
+          createAssociated({
+            deviceIds: [selectSwitchUniId, ...this.data.linkSelectList.map((id) => id.replace(':', '-'))],
+            relType: '1',
+          })
+        }
+      } else if (this.data.linkType === 'scene') {
+        // todo
+      }
+      deviceStore.updateSubDeviceList()
     },
   },
 })

@@ -210,3 +210,36 @@ export async function saveDeviceOrder(data: Device.OrderSaveData) {
     data,
   })
 }
+
+/**
+ * deviceIds: 关联设备ID:格式 1 按键开关 deviceId-switchId 2 子设备 deviceId
+ * relType: 关联类型: 0:关联灯类型 1:关联开关类型
+ */
+export async function createAssociated(data: { deviceIds: string[]; relType: '0' | '1' }) {
+  return await mzaioRequest.post<IAnyObject>({
+    log: true,
+    url: '/v1/device/createAssociated',
+    data,
+  })
+}
+
+export async function updateAssociated(data: {
+  relType: '0' | '1'
+  lightRelId?: string
+  switchRelId?: string
+  deviceIds: string[]
+}) {
+  return await mzaioRequest.post<IAnyObject>({
+    log: true,
+    url: '/v1/device/updateAssociated',
+    data,
+  })
+}
+
+export async function delAssociated(data: { relType: '0' | '1'; lightRelId?: string; switchRelId?: string }) {
+  return await mzaioRequest.post<IAnyObject>({
+    log: true,
+    url: '/v1/device/delAssociated',
+    data,
+  })
+}

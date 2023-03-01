@@ -9,6 +9,10 @@ declare namespace Device {
      * 1:网关 2:子设备 3:wifi
      */
     deviceType: number
+    /**
+     * 灯如果关联了开关，会有一个关联id
+     */
+    lightRelId: string
     gatewayId: string
     gatewayName: string
     /** 方法列表 */
@@ -39,11 +43,9 @@ declare namespace Device {
 
     // 小程序维护额外属性
     isChecked: boolean
-    /** 是否为场景开关 */
-    isSceneSwitch?: boolean
     /**
      * 如果需要将开关拆分，需要这个id
-     * 格式： deviceId:switchInfoDTOList[0].switchId
+     * 格式： deviceId:switchId
      * 如: xxxxx:1 xxxxx:2
      */
     uniId: string
@@ -59,6 +61,8 @@ declare namespace Device {
     houseId: string
     /** 是否已经关联 */
     isRel: boolean
+    /** 开关关联灯id */
+    lightRelId: string
     orderNum: number
     /** 面板Id */
     panelId: string
@@ -70,6 +74,8 @@ declare namespace Device {
     switchId: string
     /** 开关名称 */
     switchName: string
+    /** 开关关联开关id */
+    switchRelId: string
   }
 
   interface OrderSaveData {

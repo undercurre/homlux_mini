@@ -36,7 +36,12 @@ ComponentWithComputed({
       };`
     },
     picUrl(data) {
-      return data.deviceInfo.pic ? data.deviceInfo.pic : `/assets/img/device/${data.deviceType}.png`
+      if (data.deviceType && data.deviceType === 'switch') {
+        return data.deviceInfo?.switchInfoDTOList[0]?.pic ?? `/assets/img/device/${data.deviceType}.png`
+      } else if (data.deviceType) {
+        return data.deviceInfo?.pic ?? `/assets/img/device/${data.deviceType}.png`
+      }
+      return ''
     },
     controlBtnPic(data) {
       if (!data.deviceInfo.onLineStatus) {
@@ -48,7 +53,7 @@ ComponentWithComputed({
           : '/assets/img/base/power-off.png'
       } else if (data.deviceType === 'switch') {
         const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
-        if (data.deviceInfo.mzgdPropertyDTOList[switchId]) {
+        if (!data.deviceInfo.mzgdPropertyDTOList[switchId]) {
           // 设备没有开关属性，不显示
           return ''
         }

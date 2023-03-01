@@ -92,34 +92,16 @@ ComponentWithComputed({
   },
 
   watch: {
-    deviceList(value: Device.DeviceItem[]) {
-      const lightList = [] as Device.DeviceItem[]
-      const switchList = [] as Device.DeviceItem[]
-      value.forEach((device) => {
-        if (device.proType === proType.light) {
-          lightList.push(device)
-        } else if (device.proType === proType.switch) {
-          device.switchInfoDTOList.forEach((switchItem) => {
-            switchList.push({
-              ...device,
-              mzgdPropertyDTOList: {
-                [switchItem.switchId]: device.mzgdPropertyDTOList[switchItem.switchId],
-              },
-              switchInfoDTOList: [switchItem],
-              isSceneSwitch: false, // todo: 需要根据场景判断
-              uniId: `${device.deviceId}:${switchItem.switchId}`,
-            })
-          })
-        }
-        // todo: 添加窗帘的
-      })
+    deviceList() {
+      const flattenList = deviceStore.deviceFlattenList
+      const lightList = flattenList.filter((device) => device.proType === proType.light)
+      const switchList = flattenList.filter((device) => device.proType === proType.switch)
       lightList.sort((a, b) => a.orderNum - b.orderNum)
       switchList.sort((a, b) => a.switchInfoDTOList[0].orderNum - b.switchInfoDTOList[0].orderNum)
       this.setData({
         lightList,
         switchList,
       })
-      console.log(this.data.lightList, this.data.switchList)
       this.updataCardClientRect()
       this.updateSceneBarClientRect()
     },
@@ -168,6 +150,10 @@ ComponentWithComputed({
                 deviceStore.deviceList = [...deviceStore.deviceList]
               })
             }
+          }
+          {
+            // 可能是新绑的设备，直接更新房间
+            deviceStore.updateSubDeviceList()
           }
         } else if (
           typeof e.result.eventData === 'object' &&

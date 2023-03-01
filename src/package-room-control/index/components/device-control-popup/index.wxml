@@ -59,7 +59,7 @@
       <view wx:if="{{tab==='switch'}}">
         <view class="h-22rpx"></view>
         <van-cell-group inset wx:if="{{!isSelectMultiSwitch}}">
-          <van-cell clickable custom-class="switch-cell" data-link="switch" bind:click="handleSwitchLinkPopup">
+          <van-cell clickable custom-class="switch-cell" data-link="light" bind:click="handleLinkPopup">
             <view class="flex flex-col items-start">
               <text class="text-32rpx text-black-2a font-medium h-44rpx">关联智能开关</text>
               <text class="text-26rpx text-black-tips font-normal leading-none mt-12rpx mb-12rpx">通过开关触发场景</text>
@@ -70,7 +70,7 @@
           </van-cell>
         </van-cell-group>
         <van-cell-group inset wx:if="{{!isSelectMultiSwitch}}">
-          <van-cell clickable custom-class="switch-cell" data-link="light" bind:click="handleSwitchLinkPopup">
+          <van-cell clickable custom-class="switch-cell" data-link="switch" bind:click="handleLinkPopup">
             <view class="flex flex-col items-start">
               <text class="text-32rpx text-black-2a font-medium h-44rpx">关联智能灯</text>
               <text class="text-26rpx text-black-tips font-normal leading-none mt-12rpx mb-12rpx">与关联的智能灯保持相同开关状态</text>
@@ -81,7 +81,7 @@
           </van-cell>
         </van-cell-group>
         <van-cell-group inset wx:if="{{!isSelectMultiSwitch}}">
-          <van-cell center clickable custom-class="switch-cell" data-link="scene" bind:click="handleSwitchLinkPopup">
+          <van-cell center clickable custom-class="switch-cell" data-link="scene" bind:click="handleLinkPopup">
             <view class="flex flex-col items-start">
               <text class="text-32rpx text-black-2a font-medium h-44rpx">关联场景</text>
               <text class="text-26rpx text-black-tips font-normal leading-none mt-12rpx mb-12rpx">关联后，可通过开关执行场景</text>
@@ -106,4 +106,4 @@
   </view>
 </view>
 
-<link-popup show="{{showLinkPopup}}" value="{{linkList}}" linkType="{{linkType}}" canSelectMulti="{{linkType === 'switch'}}" bind:close="handleLinkPopupClose" bind:confirm="handleLinkPopupConfirm" />
+<link-popup show="{{showLinkPopup}}" list="{{list}}" selectList="{{linkSelectList}}" linkType="{{linkType}}" bind:close="handleLinkPopupClose" bind:select="handleLinkSelect" bind:confirm="handleLinkPopupConfirm" />

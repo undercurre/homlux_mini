@@ -6,7 +6,11 @@ Component({
   /**
    * 组件的属性列表
    */
-  properties: {},
+  properties: {
+    deviceInfo: {
+      type: Object,
+    },
+  },
 
   /**
    * 组件的初始数据
@@ -20,11 +24,21 @@ Component({
     value: 0,
   },
 
+  lifetimes: {
+    ready() {
+      console.log('----')
+      console.log(this.properties.deviceInfo)
+    },
+  },
+
   /**
    * 组件的方法列表
    */
   methods: {
     handlePopupShow(e: { currentTarget: { dataset: { title: '渐亮时长' | '渐暗时长' } } }) {
+      if (!this.data.deviceInfo.onLineStatus) {
+        return
+      }
       this.setData({
         title: e.currentTarget.dataset.title,
         showPopup: true,

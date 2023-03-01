@@ -21,7 +21,7 @@
               </view>
             </view>
           </view>
-          <van-button slot="right-icon" catchtap="handleCollect" custom-class="exec-btn" type="default">执行</van-button>
+          <van-button slot="right-icon" data-info="{{item}}" catchtap="handleExecScene" custom-class="exec-btn" type="default">执行</van-button>
         </van-cell>
       </van-cell-group>
       <view class="h-64rpx"></view>

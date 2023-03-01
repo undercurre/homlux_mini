@@ -56,4 +56,4 @@
 
 <edit-name-popup value="{{sceneName}}" show="{{showEditNamePopup}}" bind:close="handleEditNameClose" bind:confirm="handleEditNameConfirm" />
 <edit-icon-popup value="{{sceneIcon}}" show="{{showEditIconPopup}}" bind:close="handleEditIconClose" bind:confirm="handleEditIconConfirm" />
-<link-popup show="{{showLinkPopup}}" value="{{linkList}}" linkType="switch" canSelectMulti bind:close="handleLinkPopupClose" bind:confirm="handleLinkPopupConfirm"></link-popup>
+<link-popup show="{{showLinkPopup}}" list="{{switchList}}" selectList="{{bindSwitchSelect}}" linkType="switch" bind:close="handleLinkPopupClose" bind:select="handleSwitchSelect" bind:confirm="handleLinkPopupConfirm"></link-popup>
