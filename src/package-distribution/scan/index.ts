@@ -47,10 +47,12 @@ ComponentWithComputed({
 
       await deviceBinding.store.updateAllRoomDeviceList()
 
-      const params = wx.getLaunchOptionsSync()
-      console.log('scanPage', params)
+      await this.initWifi()
 
-      // 防止重复判断
+      const params = wx.getLaunchOptionsSync()
+      console.log('scanPage', params, 'wx.getEnterOptionsSync()', wx.getEnterOptionsSync())
+
+      // 防止重复判断,仅通过微信扫码直接进入该界面时判断场景值
       if (getCurrentPages.length === 1 && params.scene === 1011) {
         const scanUrl = decodeURIComponent(params.query.q)
 

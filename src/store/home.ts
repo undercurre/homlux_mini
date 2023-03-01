@@ -30,6 +30,7 @@ export const homeStore = observable({
     if (res.success) {
       return await this.updateCurrentHomeDetail(this.currentHomeId)
     } else {
+      console.log('this.currentHomeId', this.currentHomeId, this.homeList)
       return Promise.reject('获取列表家庭失败')
     }
   },

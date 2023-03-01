@@ -25,7 +25,7 @@ Component({
    */
   data: {
     _interId: 0,
-    _queryTimes: 40,
+    _queryTimes: 50,
     status: 'linking',
     currentStep: '连接设备',
     activeIndex: -1,
@@ -39,15 +39,14 @@ Component({
     detached() {
       console.log('addGateway-detached')
       socket.close()
+      clearTimeout(this.data._interId)
+      wx.stopWifi()
     },
   },
 
   pageLifetimes: {
     hide() {
       console.log('add-gateway-hide')
-      socket.close()
-      clearTimeout(this.data._interId)
-      wx.stopWifi()
     },
   },
   /**

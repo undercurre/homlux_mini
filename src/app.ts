@@ -37,6 +37,10 @@ App<IAppOption>({
     const systemInfo = wx.getSystemInfoSync()
 
     console.log('deviceInfo', deviceInfo, 'systemInfo', systemInfo)
+
+    wx.onNetworkStatusChange(function (res) {
+      console.log('onNetworkStatusChange', res)
+    })
   },
 
   onShow() {

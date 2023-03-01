@@ -73,7 +73,7 @@ Component({
 
       const connectRes = await socket.connect()
 
-      console.log(params.ssid + ',connectRes', connectRes)
+      console.log(params.ssid + '---connectRes', connectRes)
 
       if (connectRes.errCode === 12007) {
         wx.navigateBack()
