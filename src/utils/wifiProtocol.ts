@@ -16,7 +16,7 @@ export class WifiSocket {
   date = Date.now()
 
   deviceInfo = {
-    ip: '', // 默认为广播地址
+    ip: '192.168.11.1', // 网关默认的ip为192.168.11.1
     udpPort: 6266,
     tcpPort: 6466,
     isConnectTcp: false,
@@ -78,6 +78,7 @@ export class WifiSocket {
 
       // 连接热点超时回调
       const timeId = setTimeout(() => {
+        console.log('连接热点超时', new Date(this.date))
         resolve({ success: false, errCode: -1 })
       }, 60000)
 
@@ -250,15 +251,15 @@ export class WifiSocket {
    * 通过广播更新网关IP地址并与网关建立tcp连接
    */
   async initGatewayInfo() {
-    const res = await this.getDeviceIp()
+    // const res = await this.getDeviceIp()
 
-    if (res) {
+    // if (res) {
       await this.initTcpSocket()
-    }
+    // }
 
     return {
-      errCode: res ? 0 : -1,
-      success: res,
+      errCode: 0,
+      success: true,
     }
   }
 

@@ -25,7 +25,7 @@ Component({
    */
   data: {
     _interId: 0,
-    _queryTimes: 40,
+    _queryTimes: 50,
     status: 'linking',
     currentStep: '连接设备',
     activeIndex: -1,
