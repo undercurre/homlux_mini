@@ -161,7 +161,7 @@ export class WifiSocket {
       })
 
       this.tcpClient.onError((res) => {
-        console.log('tcpClient.onError', res, res.errMsg.includes('closed'))
+        console.log('tcpClient.onError', res, res.errMsg.includes('close'))
         if (res.errMsg.includes('closed')) {
           this.deviceInfo.isConnectTcp = false
           this.tcpClient.close()
