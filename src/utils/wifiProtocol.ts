@@ -54,8 +54,7 @@ export class WifiSocket {
 
     const res = await this.connectWifi()
 
-    console.log(`connectWifi${this.SSID}`, res)
-    console.log('连接wifi时长：', Date.now() - now)
+    console.log(`连接wifi:${this.SSID}时长：`, Date.now() - now)
 
     const result = {
       errCode: res.errCode,
@@ -73,14 +72,25 @@ export class WifiSocket {
   }
 
   connectWifi() {
-    return new Promise<{ errCode: number; success: boolean; msg?: string }>((resolve) => {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise<{ errCode: number; success: boolean; msg?: string }>(async (resolve) => {
       const res = { success: true, errCode: 0 }
+
+      const connectedRes = await wx.getConnectedWifi().catch((err) => console.log('getConnectedWifi-err', err))
+
+      console.log('connectedRes', connectedRes)
+
+      if (connectedRes && connectedRes.wifi?.SSID === this.SSID) {
+        console.log(`${this.SSID}已连接`)
+        resolve(res)
+        return
+      }
 
       // 连接热点超时回调
       const timeId = setTimeout(() => {
         console.log('连接热点超时', new Date(this.date))
         resolve({ success: false, errCode: -1 })
-      }, 60000)
+      }, 120000)
 
       const listen = async (onWifiConnectRes: WechatMiniprogram.OnWifiConnectedCallbackResult) => {
         console.log('onWifiConnected-wifiProt', onWifiConnectRes)
@@ -98,10 +108,11 @@ export class WifiSocket {
         SSID: this.SSID,
         password: '12345678',
         partialInfo: false,
-        maunal: deviceInfo.platform === 'android' && deviceInfo.brand === 'HUAWEI' ? true : false,
+        maunal: deviceInfo.system.includes('Android 10'), // Android 微信客户端 7.0.22 以上版本，connectWifi 的实现在 Android 10 及以上的手机无法生效，需要配置 maunal 来连接 wifi。详情参考官方文档
         complete: (connectRes) => {
           console.log('connectWifi', connectRes)
 
+          // todo: 前面已做wifi已连接判断，该判断逻辑可删除
           if ((connectRes as IAnyObject).wifiMsg?.includes('already connected') || (connectRes as IAnyObject).wifi) {
             wx.offWifiConnected(listen)
             clearTimeout(timeId)
@@ -132,11 +143,6 @@ export class WifiSocket {
         console.log('tcpClient.onBindWifi', res)
       })
 
-      this.tcpClient.connect({
-        address: this.deviceInfo.ip,
-        port: this.deviceInfo.tcpPort,
-      })
-
       this.tcpClient.onMessage((res) => {
         console.log('tcpClient.onMessage', res)
 
@@ -164,6 +170,11 @@ export class WifiSocket {
 
       this.tcpClient.onClose((res) => {
         console.log('tcpClient.onClose', res)
+      })
+
+      this.tcpClient.connect({
+        address: this.deviceInfo.ip,
+        port: this.deviceInfo.tcpPort,
       })
     })
   }
@@ -254,7 +265,7 @@ export class WifiSocket {
     // const res = await this.getDeviceIp()
 
     // if (res) {
-      await this.initTcpSocket()
+    await this.initTcpSocket()
     // }
 
     return {

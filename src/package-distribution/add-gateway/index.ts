@@ -39,15 +39,14 @@ Component({
     detached() {
       console.log('addGateway-detached')
       socket.close()
+      clearTimeout(this.data._interId)
+      wx.stopWifi()
     },
   },
 
   pageLifetimes: {
     hide() {
       console.log('add-gateway-hide')
-      socket.close()
-      clearTimeout(this.data._interId)
-      wx.stopWifi()
     },
   },
   /**

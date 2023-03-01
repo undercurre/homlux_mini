@@ -95,6 +95,7 @@ ComponentWithComputed({
 
     async initWifi() {
       const startRes = await wx.startWifi()
+      const pageParams = getCurrentPageParams()
 
       console.log('startWifi', startRes)
 
@@ -110,6 +111,10 @@ ComponentWithComputed({
 
       wx.onWifiConnected(async (res) => {
         console.log('onWifiConnected', res)
+
+        if (!res.wifi.SSID || res.wifi.SSID === pageParams.apSSID) {
+          return
+        }
 
         this.setData({
           wifiInfo: {
