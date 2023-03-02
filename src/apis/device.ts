@@ -175,7 +175,8 @@ export async function editDeviceInfo(data: {
   deviceName: string
   houseId: string
   roomId: string
-  isSwitch: boolean
+  isSwitch?: boolean
+  type?: string
   switchId?: string
   switchName?: string
 }) {

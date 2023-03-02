@@ -251,7 +251,7 @@ ComponentWithComputed({
       console.log('checkDevice', res)
 
       if (!res.success) {
-        wx.showToast({ title: '验证产品信息失败' })
+        wx.showToast({ title: '验证产品信息失败', icon: 'error' })
       } else if (res.result && res.result.proType === '0x18') {
         this.bindGateway({
           ssid: params.ssid,

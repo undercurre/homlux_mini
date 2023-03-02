@@ -21,3 +21,5 @@
     </view>
   </view>
 </van-dialog>
+
+<!-- <van-button class="w-full mt-32rpx" block type="primary" size="large" bind:click="getGatewayStatus">getGatewayStatus</van-button> -->
