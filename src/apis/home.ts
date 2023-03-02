@@ -6,7 +6,7 @@ import { userBinding } from '../store/index'
  */
 export async function getHomeList() {
   return await mzaioRequest.post<Home.IHomeItem[]>({
-    log: false,
+    log: true,
     loading: true,
     url: '/v1/mzgd/user/house/queryHouseList',
   })
@@ -17,7 +17,7 @@ export async function getHomeList() {
  */
 export async function queryUserHouseInfo({ houseId = '', defaultHouseFlag = true }) {
   return await mzaioRequest.post<Home.IHomeDetail>({
-    log: false,
+    log: true,
     loading: true,
     url: '/v1/mzgd/user/queryUserHouseInfo',
     data: {

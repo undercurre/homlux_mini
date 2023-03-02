@@ -72,60 +72,59 @@ export class WifiSocket {
   }
 
   connectWifi() {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise<{ errCode: number; success: boolean; msg?: string }>(async (resolve) => {
+    return new Promise<{ errCode: number; success: boolean; msg?: string }>((resolve) => {
       const res = { success: true, errCode: 0 }
 
-      const connectedRes = await wx.getConnectedWifi().catch((err) => console.log('getConnectedWifi-err', err))
+      wx.getConnectedWifi({
+        complete: (connectedRes) => {
+          console.log('getConnectedWifi：complete', connectedRes)
 
-      console.log('connectedRes', connectedRes)
-
-      if (connectedRes && connectedRes.wifi?.SSID === this.SSID) {
-        console.log(`${this.SSID}已连接`)
-        resolve(res)
-        return
-      }
-
-      // 连接热点超时回调
-      const timeId = setTimeout(() => {
-        console.log('连接热点超时', new Date(this.date))
-        resolve({ success: false, errCode: -1 })
-      }, 120000)
-
-      const listen = async (onWifiConnectRes: WechatMiniprogram.OnWifiConnectedCallbackResult) => {
-        console.log('onWifiConnected-wifiProt', onWifiConnectRes)
-
-        if (onWifiConnectRes.wifi.SSID === this.SSID) {
-          wx.offWifiConnected(listen)
-
-          clearTimeout(timeId)
-          resolve(res)
-        }
-      }
-      wx.onWifiConnected(listen)
-
-      wx.connectWifi({
-        SSID: this.SSID,
-        password: '12345678',
-        partialInfo: false,
-        maunal: deviceInfo.system.includes('Android 10'), // Android 微信客户端 7.0.22 以上版本，connectWifi 的实现在 Android 10 及以上的手机无法生效，需要配置 maunal 来连接 wifi。详情参考官方文档
-        complete: (connectRes) => {
-          console.log('connectWifi', connectRes)
-
-          // todo: 前面已做wifi已连接判断，该判断逻辑可删除
-          if ((connectRes as IAnyObject).wifiMsg?.includes('already connected') || (connectRes as IAnyObject).wifi) {
-            wx.offWifiConnected(listen)
-            clearTimeout(timeId)
+          if (connectedRes && (connectedRes as IAnyObject).wifi?.SSID === this.SSID) {
+            console.log(`${this.SSID}已连接`)
             resolve(res)
-          } else if (connectRes.errCode === 12007) {
-            wx.offWifiConnected(listen)
-            clearTimeout(timeId)
-            resolve({
-              errCode: connectRes.errCode,
-              success: false,
-              msg: '用户拒绝授权链接 Wi-Fi',
-            })
+            return
           }
+
+          const systemVersion = parseInt(deviceInfo.system.toLowerCase().replace(deviceInfo.platform, ''))
+          console.log('systemVersion', systemVersion)
+
+          wx.connectWifi({
+            SSID: this.SSID,
+            password: '12345678',
+            partialInfo: false,
+            maunal: deviceInfo.platform === 'android' && systemVersion >= 10, // Android 微信客户端 7.0.22 以上版本，connectWifi 的实现在 Android 10 及以上的手机无法生效，需要配置 maunal 来连接 wifi。详情参考官方文档
+            complete: (connectRes) => {
+              console.log('connectWifi', connectRes)
+
+              if (connectRes.errCode === 12007) {
+                resolve({
+                  errCode: connectRes.errCode,
+                  success: false,
+                  msg: '用户拒绝授权链接 Wi-Fi',
+                })
+
+                return
+              }
+
+              // 连接热点超时回调
+              const timeId = setTimeout(() => {
+                console.log('连接热点超时', new Date(this.date))
+                resolve({ success: false, errCode: -1 })
+              }, 120000)
+
+              const listen = (onWifiConnectRes: WechatMiniprogram.OnWifiConnectedCallbackResult) => {
+                console.log('onWifiConnected-wifiProt', onWifiConnectRes)
+
+                if (onWifiConnectRes.wifi.SSID === this.SSID) {
+                  wx.offWifiConnected(listen)
+
+                  clearTimeout(timeId)
+                  resolve(res)
+                }
+              }
+              wx.onWifiConnected(listen)
+            },
+          })
         },
       })
     })
