@@ -1,8 +1,9 @@
-import { deviceStore, sceneStore } from '../../store/index'
+import { deviceStore, homeStore, sceneStore } from '../../store/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { maxColorTempK, minColorTempK, proType } from '../../config/index'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { deleteScene, updateScene } from '../../apis/index'
+import { ComponentWithComputed } from 'miniprogram-computed'
 
 interface DeviceActionsFlattenItem {
   id: string
@@ -12,7 +13,7 @@ interface DeviceActionsFlattenItem {
   controlAction: Record<string, number>
 }
 
-Component({
+ComponentWithComputed({
   behaviors: [pageBehavior],
   /**
    * 页面的初始数据
@@ -22,7 +23,6 @@ Component({
     sceneName: '',
     sceneIcon: '',
     list: [] as Device.DeviceItem[],
-    bindSwitchSelect: [] as string[],
     contentHeight: 0,
     showEditNamePopup: false,
     showEditIconPopup: false,
@@ -30,6 +30,22 @@ Component({
     sceneInfo: {} as Scene.SceneItem,
     sceneDeviceActionsFlatten: [] as DeviceActionsFlattenItem[], // 将场景里多路的action拍扁
     sceneDeviceActionsDelete: [] as DeviceActionsFlattenItem[],
+    linkSwitch: '',
+    linkSwitchSelect: [] as string[],
+  },
+
+  computed: {
+    linkSwitchName(data) {
+      if (data.linkSwitch) {
+        const deviceMap = deviceStore.deviceMap
+        const device = deviceMap[data.linkSwitch.split(':')[0]]
+        const switchName = device.switchInfoDTOList.find(
+          (switchItem) => switchItem.switchId === data.linkSwitch.split(':')[1],
+        )?.switchName
+        return device.deviceName.slice(0, 5) + switchName?.slice(0, 4)
+      }
+      return ''
+    },
   },
 
   methods: {
@@ -75,6 +91,10 @@ Component({
           sceneDeviceActionsFlatten.push(action)
         }
       })
+      const sceneId = sceneStore.sceneList[sceneStore.selectSceneIndex].sceneId
+      const linkSwitch = sceneStore.sceneSwitchMap[sceneId] ? sceneStore.sceneSwitchMap[sceneId] : ''
+      console.log('----')
+      console.log(linkSwitch)
       wx.createSelectorQuery()
         .select('#content')
         .boundingClientRect()
@@ -82,11 +102,13 @@ Component({
           if (res[0] && res[0].height) {
             this.setData({
               contentHeight: res[0].height,
-              sceneId: sceneStore.sceneList[sceneStore.selectSceneIndex].sceneId,
+              sceneId,
               sceneName: sceneStore.sceneList[sceneStore.selectSceneIndex].sceneName,
               sceneIcon: sceneStore.sceneList[sceneStore.selectSceneIndex].sceneIcon,
               switchList: deviceStore.deviceFlattenList.filter((device) => device.proType === proType.switch),
               sceneDeviceActionsFlatten,
+              linkSwitch,
+              linkSwitchSelect: linkSwitch ? [linkSwitch] : [],
             })
           }
         })
@@ -98,6 +120,7 @@ Component({
         const res = await deleteScene(this.data.sceneId)
         if (res.success) {
           sceneStore.updateSceneList()
+          homeStore.updateHomeInfo()
           wx.navigateBack()
           wx.showToast({
             icon: 'success',
@@ -120,7 +143,7 @@ Component({
     },
     async handleSave() {
       const deviceMap = deviceStore.deviceMap
-      const data = { sceneId: this.data.sceneId, updateType: '0' } as Scene.UpdateSceneDto
+      const data = { sceneId: this.data.sceneId, updateType: '0', conditionType: '0' } as Scene.UpdateSceneDto
       if (this.data.sceneName !== sceneStore.sceneList[sceneStore.selectSceneIndex].sceneName) {
         data.sceneName = this.data.sceneName
       }
@@ -158,9 +181,30 @@ Component({
         data.deviceActions = deviceActions
         data.updateType = '1'
       }
+      if (this.data.linkSwitch !== sceneStore.sceneSwitchMap[this.data.sceneId]) {
+        // 绑定发生变化
+        if (this.data.linkSwitch) {
+          data.deviceConditions = [
+            {
+              deviceId: this.data.linkSwitch.split(':')[0],
+              controlEvent: [
+                {
+                  ep: Number(this.data.linkSwitch.split(':')[1]),
+                  ButtonScene: 1,
+                },
+              ],
+            },
+          ]
+          data.updateType = data.updateType === '0' ? '3' : '5'
+        } else {
+          // 删除绑定
+          data.updateType = data.updateType === '0' ? '2' : '4'
+        }
+      }
       const res = await updateScene(data)
       if (res.success) {
         await sceneStore.updateSceneList()
+        await homeStore.updateHomeInfo()
         wx.showToast({
           icon: 'success',
           title: '修改成功',
@@ -205,6 +249,25 @@ Component({
         sceneIcon: e.detail,
       })
     },
+    handleSwitchSelect(e: { detail: string }) {
+      console.log(deviceStore.switchSceneMap[e.detail], deviceStore.switchSceneMap[e.detail] !== this.data.sceneId)
+      if (deviceStore.switchSceneMap[e.detail] && deviceStore.switchSceneMap[e.detail] !== this.data.sceneId) {
+        wx.showToast({
+          icon: 'none',
+          title: '开关已绑定场景',
+        })
+        return
+      }
+      if (this.data.linkSwitchSelect[0] === e.detail) {
+        this.setData({
+          linkSwitchSelect: [],
+        })
+        return
+      }
+      this.setData({
+        linkSwitchSelect: [e.detail],
+      })
+    },
     handleLinkSwitchPopup() {
       this.setData({
         showLinkPopup: true,
@@ -215,10 +278,10 @@ Component({
         showLinkPopup: false,
       })
     },
-    handleLinkPopupConfirm(e: { detail: string[] }) {
+    handleLinkPopupConfirm() {
       this.setData({
         showLinkPopup: false,
-        linkList: e.detail,
+        linkSwitch: this.data.linkSwitchSelect[0] ? this.data.linkSwitchSelect[0] : '',
       })
     },
   },

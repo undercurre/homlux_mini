@@ -3,7 +3,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { deviceBinding, deviceStore, sceneStore } from '../../../../store/index'
 import { maxColorTempK, minColorTempK, proType } from '../../../../config/index'
-import { controlDevice, createAssociated, delAssociated, updateAssociated } from '../../../../apis/index'
+import { controlDevice, createAssociated, delAssociated, updateAssociated, updateScene } from '../../../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -242,8 +242,9 @@ ComponentWithComputed({
         this.setData({
           linkType: e.currentTarget.dataset.link,
           list: [...sceneStore.sceneList],
-          selectList: deviceStore.switchSceneMap[switchUniId] ? [deviceStore.switchSceneMap[switchUniId]] : [],
+          linkSelectList: deviceStore.switchSceneMap[switchUniId] ? [deviceStore.switchSceneMap[switchUniId]] : [],
           showLinkPopup: true,
+          selectSwitchUniId: switchUniId,
         })
         return
       }
@@ -323,6 +324,137 @@ ComponentWithComputed({
         })
       }
     },
+    handleLinkPopupClose() {
+      this.setData({
+        showLinkPopup: false,
+      })
+    },
+    async handleLinkPopupConfirm() {
+      this.setData({
+        showLinkPopup: false,
+      })
+      const selectSwitchUniId = this.data.selectSwitchUniId
+      if (this.data.linkType === 'light') {
+        // 关联灯
+        if (this.data.relId.lightRelId && this.data.linkSelectList.length !== 0) {
+          // 更新关联
+          updateAssociated({
+            relType: '0',
+            lightRelId: this.data.relId.lightRelId,
+            deviceIds: [selectSwitchUniId, ...this.data.linkSelectList],
+          })
+        } else if (this.data.relId.lightRelId && this.data.linkSelectList.length === 0) {
+          // 删除关联
+          delAssociated({
+            relType: '0',
+            lightRelId: this.data.relId.lightRelId,
+          })
+        } else if (!this.data.relId.lightRelId && this.data.linkSelectList.length !== 0) {
+          // 创建依赖
+          createAssociated({
+            deviceIds: [selectSwitchUniId, ...this.data.linkSelectList],
+            relType: '0',
+          })
+        }
+      } else if (this.data.linkType === 'switch') {
+        // 关联开关
+        if (this.data.relId.switchRelId && this.data.linkSelectList.length !== 0) {
+          // 更新关联
+          updateAssociated({
+            relType: '1',
+            switchRelId: this.data.relId.switchRelId,
+            deviceIds: [selectSwitchUniId, ...this.data.linkSelectList],
+          })
+        } else if (this.data.relId.switchRelId && this.data.linkSelectList.length === 0) {
+          // 删除关联
+          delAssociated({
+            relType: '1',
+            switchRelId: this.data.relId.switchRelId,
+          })
+        } else if (!this.data.relId.switchRelId && this.data.linkSelectList.length !== 0) {
+          // 创建依赖
+          createAssociated({
+            deviceIds: [selectSwitchUniId, ...this.data.linkSelectList],
+            relType: '1',
+          })
+        }
+      } else if (this.data.linkType === 'scene') {
+        const switchSceneMap = deviceStore.switchSceneMap
+        if (this.data.linkSelectList.length === 0 && switchSceneMap[this.data.selectSwitchUniId]) {
+          // 取消关联
+          updateScene({
+            updateType: '2',
+            sceneId: switchSceneMap[this.data.selectSwitchUniId],
+            conditionType: '0',
+          })
+          return
+        }
+        if (
+          this.data.linkSelectList[0] === switchSceneMap[this.data.selectSwitchUniId] ||
+          (this.data.linkSelectList.length === 0 && !switchSceneMap[this.data.selectSwitchUniId])
+        ) {
+          // 没变化，不执行操作
+          return
+        }
+        const sceneId = this.data.linkSelectList[0]
+        const updateSceneDto = {
+          conditionType: '0',
+          sceneId: sceneId,
+        } as Scene.UpdateSceneDto
+        console.log(switchSceneMap, this.data.selectSwitchUniId, switchSceneMap[this.data.selectSwitchUniId])
+        if (
+          this.data.linkSelectList.length !== 0 &&
+          switchSceneMap[this.data.selectSwitchUniId] &&
+          this.data.linkSelectList[0] !== switchSceneMap[this.data.selectSwitchUniId]
+        ) {
+          // 更新关联，先取消关联当前场景，再关联其他场景
+          const res = await updateScene({
+            conditionType: '0',
+            sceneId: switchSceneMap[this.data.selectSwitchUniId],
+            updateType: '2',
+          })
+          if (!res.success) {
+            wx.showToast({
+              icon: 'error',
+              title: '更新失败',
+            })
+            return
+          }
+          // 关联新的场景
+          updateSceneDto.deviceConditions = [
+            {
+              deviceId: this.data.selectSwitchUniId.split(':')[0],
+              controlEvent: [
+                {
+                  ep: Number(this.data.selectSwitchUniId.split(':')[1]),
+                  ButtonScene: 1,
+                },
+              ],
+            },
+          ]
+          updateSceneDto.updateType = '3'
+          updateScene(updateSceneDto)
+        }
+        if (this.data.linkSelectList.length !== 0 && !switchSceneMap[this.data.selectSwitchUniId]) {
+          // 增加关联
+          updateSceneDto.deviceConditions = [
+            {
+              deviceId: this.data.selectSwitchUniId.split(':')[0],
+              controlEvent: [
+                {
+                  ep: Number(this.data.selectSwitchUniId.split(':')[1]),
+                  ButtonScene: 1,
+                },
+              ],
+            },
+          ]
+          updateSceneDto.updateType = '3'
+          updateScene(updateSceneDto)
+        }
+      }
+      deviceStore.updateSubDeviceList()
+      sceneStore.updateSceneList()
+    },
     handleTabTap(e: { currentTarget: { dataset: { tab: 'light' | 'switch' | 'curtain' } } }) {
       this.setData({
         tab: e.currentTarget.dataset.tab,
@@ -373,7 +505,7 @@ ComponentWithComputed({
         controlDevice({
           topic: '/subdevice/control',
           deviceId: entries[0],
-          method: 'lightControl',
+          method: controlData.length > 1 ? 'panelControl' : 'panelSingleControl',
           inputData: controlData,
         })
       })
@@ -475,65 +607,6 @@ ComponentWithComputed({
       } else if (this.data.tab === 'switch') {
         this.switchSendDeviceControl(0)
       }
-    },
-    handleLinkPopupClose() {
-      this.setData({
-        showLinkPopup: false,
-      })
-    },
-    handleLinkPopupConfirm() {
-      this.setData({
-        showLinkPopup: false,
-      })
-      const selectSwitchUniId = this.data.selectSwitchUniId.replace(':', '-') // todo 可能需要将这两个符号前后端统一一下
-      if (this.data.linkType === 'light') {
-        // 关联灯
-        if (this.data.relId.lightRelId && this.data.linkSelectList.length !== 0) {
-          // 更新关联
-          updateAssociated({
-            relType: '0',
-            lightRelId: this.data.relId.lightRelId,
-            deviceIds: [selectSwitchUniId, ...this.data.linkSelectList],
-          })
-        } else if (this.data.relId.lightRelId && this.data.linkSelectList.length === 0) {
-          // 删除关联
-          delAssociated({
-            relType: '0',
-            lightRelId: this.data.relId.lightRelId,
-          })
-        } else if (!this.data.relId.lightRelId && this.data.linkSelectList.length !== 0) {
-          // 创建依赖
-          createAssociated({
-            deviceIds: [selectSwitchUniId, ...this.data.linkSelectList],
-            relType: '0',
-          })
-        }
-      } else if (this.data.linkType === 'switch') {
-        // 关联开关
-        if (this.data.relId.switchRelId && this.data.linkSelectList.length !== 0) {
-          // 更新关联
-          updateAssociated({
-            relType: '1',
-            switchRelId: this.data.relId.switchRelId,
-            deviceIds: [selectSwitchUniId, ...this.data.linkSelectList.map((id) => id.replace(':', '-'))],
-          })
-        } else if (this.data.relId.switchRelId && this.data.linkSelectList.length === 0) {
-          // 删除关联
-          delAssociated({
-            relType: '1',
-            switchRelId: this.data.relId.switchRelId,
-          })
-        } else if (!this.data.relId.switchRelId && this.data.linkSelectList.length !== 0) {
-          // 创建依赖
-          createAssociated({
-            deviceIds: [selectSwitchUniId, ...this.data.linkSelectList.map((id) => id.replace(':', '-'))],
-            relType: '1',
-          })
-        }
-      } else if (this.data.linkType === 'scene') {
-        // todo
-      }
-      deviceStore.updateSubDeviceList()
     },
   },
 })

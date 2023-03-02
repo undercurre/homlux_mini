@@ -19,6 +19,16 @@ declare namespace Scene {
    */
   interface SceneBase {
     /**
+     * 对应的默认场景
+     * 0：全开 1：全关 2：明亮 3：柔和
+     */
+    defaultType: string
+    /**
+     * 是否默认创建的场景
+     * 0：否 1：是
+     */
+    isDefault: string
+    /**
      * 	场景Icon
      */
     sceneIcon: string
@@ -53,12 +63,6 @@ declare namespace Scene {
     controlEvent: { ep: number; ButtonScene: number }[]
     /** 设备id */
     deviceId: string
-    /** 设备名称 */
-    deviceName: string
-    /** 设备类型 */
-    deviceType: string
-    /** 品类码 */
-    proType: string
   }
   interface AddSceneDto {
     /**

@@ -12,7 +12,7 @@ import {
 } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { controlDevice, saveDeviceOrder, queryDeviceInfoByDeviceId } from '../../apis/index'
+import { controlDevice, saveDeviceOrder, queryDeviceInfoByDeviceId, execScene } from '../../apis/index'
 import { proName, proType } from '../../config/device'
 import { emitter, WSEventType } from '../../utils/eventBus'
 
@@ -44,10 +44,6 @@ ComponentWithComputed({
     lightList: [] as Device.DeviceItem[],
     switchList: [] as Device.DeviceItem[],
     curtainList: [] as Device.DeviceItem[],
-    lightInfo: {
-      Level: 0,
-      ColorTemp: 0,
-    },
     showAddSceneSuccess: false,
     sceneTitlePosition: {
       x: 0,
@@ -76,8 +72,8 @@ ComponentWithComputed({
       return ''
     },
     sceneListInBar(data) {
-      if (data.currentRoomIndex !== undefined && data.roomList) {
-        return data.roomList[data.currentRoomIndex]?.sceneList.slice(0, 4)
+      if (data.sceneList) {
+        return data.sceneList.slice(0, 4)
       }
       return []
     },
@@ -150,8 +146,7 @@ ComponentWithComputed({
                 deviceStore.deviceList = [...deviceStore.deviceList]
               })
             }
-          }
-          {
+          } else {
             // 可能是新绑的设备，直接更新房间
             deviceStore.updateSubDeviceList()
           }
@@ -391,7 +386,7 @@ ComponentWithComputed({
     },
     handleDeviceCardTap(e: { detail: Device.DeviceItem }) {
       const deviceMap = deviceStore.deviceMap
-      if (e.detail.uniId) {
+      if (e.detail.proType === proType.switch) {
         // 开关选择逻辑
         if (deviceStore.selectList.includes(e.detail.uniId)) {
           const index = deviceStore.selectList.findIndex((item: string) => item === e.detail.uniId)
@@ -461,23 +456,30 @@ ComponentWithComputed({
         { loading: true },
       )
     },
-    async handleSwitchPowerToggle(e: { detail: Device.DeviceItem }) {
+    async handleSwitchControlTapToggle(e: { detail: Device.DeviceItem }) {
       const ep = e.detail.switchInfoDTOList[0].switchId
-      await controlDevice(
-        {
-          topic: '/subdevice/control',
-          deviceId: e.detail.gatewayId,
-          method: 'lightControl',
-          inputData: [
-            {
-              devId: e.detail.deviceId,
-              ep,
-              OnOff: e.detail.mzgdPropertyDTOList[ep].OnOff === 1 ? 0 : 1,
-            },
-          ],
-        },
-        { loading: true },
-      )
+      if (e.detail.mzgdPropertyDTOList[ep].ButtonMode && e.detail.mzgdPropertyDTOList[ep].ButtonMode === 2) {
+        const sceneId = deviceStore.switchSceneMap[e.detail.uniId]
+        if (sceneId) {
+          execScene(sceneId)
+        }
+      } else {
+        await controlDevice(
+          {
+            topic: '/subdevice/control',
+            deviceId: e.detail.gatewayId,
+            method: 'panelSingleControl',
+            inputData: [
+              {
+                devId: e.detail.deviceId,
+                ep,
+                OnOff: e.detail.mzgdPropertyDTOList[ep].OnOff === 1 ? 0 : 1,
+              },
+            ],
+          },
+          { loading: true },
+        )
+      }
     },
     handlePopMove() {
       this.setData({

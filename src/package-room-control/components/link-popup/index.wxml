@@ -16,8 +16,10 @@
             <device-card wx:for="{{list}}" wx:key="uniId" bind:cardTap="handleCardTap" device-type="{{linkType === 'light' ? 'light' : 'switch'}}" device-info="{{item}}" select="{{module.includes(selectList, item.uniId)}}" />
           </view>
         </view>
+        <view class="h-32rpx"></view>
       </scroll-view>
     </view>
+    <view class="h-16rpx"></view>
     <template is="bottom-btn" />
   </view>
 </van-popup>

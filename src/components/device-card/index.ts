@@ -104,7 +104,7 @@ ComponentWithComputed({
     },
     handlePowerTap() {
       if (this.data.deviceInfo.onLineStatus) {
-        this.triggerEvent('powerTap', this.data.deviceInfo)
+        this.triggerEvent('controlTap', this.data.deviceInfo)
       } else {
         wx.showToast({
           icon: 'none',

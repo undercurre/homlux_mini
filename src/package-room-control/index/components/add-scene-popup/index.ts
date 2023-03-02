@@ -35,7 +35,9 @@ Component({
     sceneName: '',
     contentHeight: 0,
     sceneList,
-    linkList: [] as string[],
+    list: [] as (Device.DeviceItem | Scene.SceneItem)[],
+    linkSelectList: [] as string[],
+    linkSwitch: '', // 上一个确认的结果保存在这里
     showLinkPopup: false,
   },
 
@@ -74,8 +76,22 @@ Component({
         roomId: roomStore.roomList[roomStore.currentRoomIndex].roomId,
         sceneIcon: this.data.sceneIcon,
         sceneName: this.data.sceneName,
-        sceneType: '0', // todo: 关联没做，先传0测试
+        sceneType: this.data.linkSwitch ? '1' : '0',
       } as Scene.AddSceneDto
+      if (this.data.linkSwitch) {
+        // 绑定了开关
+        newSceneData.deviceConditions = [
+          {
+            deviceId: this.data.linkSwitch.split(':')[0],
+            controlEvent: [
+              {
+                ep: Number(this.data.linkSwitch.split(':')[1]),
+                ButtonScene: 1,
+              },
+            ],
+          },
+        ]
+      }
       // 补充actions
       const deviceMap = deviceStore.deviceMap
       // switch需要特殊处理
@@ -131,6 +147,7 @@ Component({
           title: '收藏成功',
         })
         sceneStore.updateSceneList()
+        homeStore.updateHomeInfo()
         this.triggerEvent('addSuccess')
       } else {
         wx.showToast({
@@ -158,6 +175,10 @@ Component({
     handleLinkSwitchPopup() {
       this.setData({
         showLinkPopup: true,
+        list: deviceStore.deviceFlattenList.filter(
+          (item) => item.uniId.includes(':') && !deviceStore.selectList.includes(item.uniId),
+        ),
+        linkSelectList: this.data.linkSwitch ? [this.data.linkSwitch] : [],
       })
     },
     handleLinkPopupClose() {
@@ -165,10 +186,28 @@ Component({
         showLinkPopup: false,
       })
     },
-    handleLinkPopupConfirm(e: { detail: string[] }) {
+    handleLinkPopupConfirm() {
       this.setData({
         showLinkPopup: false,
-        linkList: e.detail,
+        linkSwitch: this.data.linkSelectList[0] ? this.data.linkSelectList[0] : '',
+      })
+    },
+    handleLinkSelect(e: { detail: string }) {
+      if (deviceStore.switchSceneMap[e.detail]) {
+        wx.showToast({
+          icon: 'none',
+          title: '开关已绑定场景',
+        })
+        return
+      }
+      if (this.data.linkSelectList[0] && this.data.linkSelectList[0] === e.detail) {
+        this.setData({
+          linkSelectList: [],
+        })
+        return
+      }
+      this.setData({
+        linkSelectList: [e.detail],
       })
     },
   },

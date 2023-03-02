@@ -20,7 +20,7 @@
       </van-cell>
     </van-cell-group>
     <van-cell-group inset custom-class="mb-0_el_">
-      <van-cell title="关联智能开关" is-link value="客厅筒灯" center bind:click="handleLinkSwitchPopup"></van-cell>
+      <van-cell title="关联智能开关" is-link value="{{linkSwitchName}}" center bind:click="handleLinkSwitchPopup"></van-cell>
     </van-cell-group>
     <view class="ml-32rpx mt-48rpx mb-24rpx">
       <text class="text-24rpx text-black-59">此场景执行以下操作</text>
@@ -56,4 +56,4 @@
 
 <edit-name-popup value="{{sceneName}}" show="{{showEditNamePopup}}" bind:close="handleEditNameClose" bind:confirm="handleEditNameConfirm" />
 <edit-icon-popup value="{{sceneIcon}}" show="{{showEditIconPopup}}" bind:close="handleEditIconClose" bind:confirm="handleEditIconConfirm" />
-<link-popup show="{{showLinkPopup}}" list="{{switchList}}" selectList="{{bindSwitchSelect}}" linkType="switch" bind:close="handleLinkPopupClose" bind:select="handleSwitchSelect" bind:confirm="handleLinkPopupConfirm"></link-popup>
+<link-popup show="{{showLinkPopup}}" list="{{switchList}}" selectList="{{linkSwitchSelect}}" link-type="switch" bind:close="handleLinkPopupClose" bind:select="handleSwitchSelect" bind:confirm="handleLinkPopupConfirm"></link-popup>

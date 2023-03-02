@@ -9,7 +9,7 @@
   <view id="content" class="flex-1">
     <view class="h-12rpx"></view>
     <scroll-view enhanced="{{true}}" show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
-      <van-cell-group inset wx:for="{{sceneList}}" wx:key="value">
+      <van-cell-group inset wx:for="{{sceneListWithLinkName}}" wx:key="value">
         <van-cell clickable center bind:click="toSetting" data-index="{{index}}">
           <view slot="title" class="flex items-center">
             <image src="/assets/img/scene/{{item.sceneIcon}}.png" class="w-72rpx h-72rpx" />
@@ -17,7 +17,7 @@
               <text class="text-32rpx text-hex-353535 font-medium leading-none mt-10rpx">{{item.sceneName}}</text>
               <view class="flex items-center mt-16rpx">
                 <image src="/assets/img/base/link.png" class="w-32rpx h-32rpx" />
-                <text class="text-28rpx text-hex-6e6f74 font-normal">一路开关 | 客厅</text>
+                <text class="text-28rpx text-hex-6e6f74 font-normal ml-16rpx">{{item.linkName}}</text>
               </view>
             </view>
           </view>

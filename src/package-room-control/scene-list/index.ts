@@ -1,7 +1,7 @@
 // package-room-control/scene-list/index.ts
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { sceneBinding, sceneStore } from '../../store/index'
+import { deviceStore, sceneBinding, sceneStore } from '../../store/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { runInAction } from 'mobx-miniprogram'
 import { execScene } from '../../apis/scene'
@@ -15,7 +15,30 @@ ComponentWithComputed({
     contentHeight: 0,
   },
 
-  computed: {},
+  computed: {
+    sceneListWithLinkName(data) {
+      if (data.sceneList) {
+        const deviceMap = deviceStore.deviceMap
+        return data.sceneList.map((scene: Scene.SceneItem) => {
+          if (scene.deviceConditions?.length > 0) {
+            const device = deviceMap[scene.deviceConditions[0].deviceId]
+            const switchName = device.switchInfoDTOList.find(
+              (switchItem) => switchItem.switchId === scene.deviceConditions[0].controlEvent[0].ep.toString(),
+            )?.switchName
+            return {
+              ...scene,
+              linkName: `${device.deviceName.slice(0, 5)}${switchName?.slice(0, 4)} | ${device.roomName}`,
+            }
+          }
+          return {
+            ...scene,
+            linkName: '',
+          }
+        })
+      }
+      return []
+    },
+  },
 
   methods: {
     /**
