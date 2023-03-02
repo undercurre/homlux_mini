@@ -72,10 +72,8 @@ ComponentWithComputed({
       })
       if (this.data.deviceInfo.switchInfoDTOList[this.data.switchClickIndex].switchName !== this.data.switchName) {
         const res = await editDeviceInfo({
-          isSwitch: true,
+          type: '3',
           deviceId: this.data.deviceInfo.deviceId,
-          deviceName: this.data.deviceInfo.deviceName,
-          roomId: this.data.deviceInfo.roomId,
           houseId: homeStore.currentHomeDetail.houseId,
           switchId: this.data.deviceInfo.switchInfoDTOList[this.data.switchClickIndex].switchId,
           switchName: this.data.switchName,

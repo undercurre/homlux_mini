@@ -166,16 +166,18 @@ export async function checkOtaVersion(deviceId: string) {
 }
 
 /**
- * 设备管理-修改设备的名称、所在房间
- * isSwitch: true => 编辑开关的名字
- * isSwitch: false => 编辑设备名字
+ * 设备管理-修改设备的名称、按键名称、所在房间
+ * type:0 修改设备名字，传入设备名称
+ * 1：修改房间
+ * 2：同时修改设备名字、房间
+ * 3：修改开关名字
  */
 export async function editDeviceInfo(data: {
   deviceId: string
-  deviceName: string
-  houseId: string
-  roomId: string
-  isSwitch: boolean
+  deviceName?: string
+  houseId?: string
+  roomId?: string
+  type?: string
   switchId?: string
   switchName?: string
 }) {

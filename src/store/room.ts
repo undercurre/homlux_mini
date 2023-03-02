@@ -1,5 +1,6 @@
 import { observable, runInAction } from 'mobx-miniprogram'
 import { getRoomList } from '../apis/index'
+import { proType } from '../config/index'
 import { homeStore } from './home'
 
 export const roomStore = observable({
@@ -21,6 +22,18 @@ export const roomStore = observable({
   async updateRoomList() {
     const res = await getRoomList(homeStore.currentHomeId)
     if (res.success) {
+      res.result.roomInfoList.forEach((roomInfo) => {
+        const roomDeviceList = homeStore.homeDeviceList[roomInfo.roomInfo.roomId]
+        const hasSwitch = roomDeviceList?.some((device) => device.proType === proType.switch) ?? false
+        const hasLight = roomDeviceList?.some((device) => device.proType === proType.light) ?? false
+        if (!hasSwitch && !hasLight) {
+          // 四个默认场景都去掉
+          roomInfo.roomSceneList = roomInfo.roomSceneList.filter((scene) => scene.isDefault === '0')
+        } else if (hasSwitch && !hasLight) {
+          // 只有开关，去掉默认的明亮、柔和
+          roomInfo.roomSceneList = roomInfo.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
+        }
+      })
       runInAction(() => {
         roomStore.roomList = res.result.roomInfoList.map((room) => ({
           roomId: room.roomInfo.roomId,

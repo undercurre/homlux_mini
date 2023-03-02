@@ -84,7 +84,7 @@ Component({
         deviceName,
         roomId,
         houseId: homeBinding.store.currentHomeId,
-        isSwitch: false,
+        type: '2',
       })
 
       if (res.success) {

@@ -1,8 +1,10 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { roomBinding, deviceBinding, deviceStore } from '../../store/index'
+import { roomBinding, deviceBinding, deviceStore, roomStore } from '../../store/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehavior from '../../behaviors/pageBehaviors'
-// import { runInAction } from 'mobx-miniprogram'
+import { emitter, WSEventType } from '../../utils/eventBus'
+import { queryDeviceInfoByDeviceId } from '../../apis/index'
+import { runInAction } from 'mobx-miniprogram'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, deviceBinding] }), pageBehavior],
@@ -74,11 +76,80 @@ ComponentWithComputed({
             }
           })
       }, 500)
+      // 刷新一次房间列表
+      roomStore.updateRoomList().then(() => {
+        if (roomStore.roomList.length > 0 && !this.data.roomSelect) {
+          this.setData({
+            roomSelect: roomBinding.store.roomList[0].roomId,
+          })
+          deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
+        }
+      })
       if (roomBinding.store.roomList.length > 0) {
         this.setData({
           roomSelect: roomBinding.store.roomList[0].roomId,
         })
       }
+      // 状态更新推送
+      emitter.on('wsReceive', async (e) => {
+        // 设备相关的消息推送根据条件判断是否刷新
+        if (
+          typeof e.result.eventData === 'object' &&
+          WSEventType.device_online_status === e.result.eventType &&
+          e.result.eventData.roomId &&
+          (e.result.eventData.roomId === this.data.roomSelect || this.data.roomSelect === '0')
+        ) {
+          // 如果是当前房间的设备状态发生变化，更新设备状态
+          const index = deviceStore.deviceList.findIndex((device) => device.deviceId === e.result.eventData.deviceId)
+          if (index !== -1) {
+            const res = await queryDeviceInfoByDeviceId(
+              deviceStore.deviceList[index].deviceId,
+              deviceStore.deviceList[index].roomId,
+            )
+            if (res.success) {
+              runInAction(() => {
+                deviceStore.deviceList[index] = res.result
+                deviceStore.deviceList = [...deviceStore.deviceList]
+              })
+            }
+          } else {
+            // 可能是新绑的设备，直接更新房间
+            deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
+          }
+        } else if (
+          typeof e.result.eventData === 'object' &&
+          WSEventType.device_del === e.result.eventType &&
+          e.result.eventData.roomId &&
+          (e.result.eventData.roomId === this.data.roomSelect || this.data.roomSelect === '0')
+        ) {
+          // 设备被删除，查房间
+          if (this.data.roomSelect === '0') {
+            deviceBinding.store.updateAllRoomDeviceList()
+          } else {
+            deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
+          }
+        } else if (typeof e.result.eventData === 'object' && e.result.eventType === WSEventType.room_del) {
+          await roomStore.updateRoomList()
+          if (this.data.roomSelect === '0') {
+            deviceBinding.store.updateAllRoomDeviceList()
+          } else if (e.result.eventData.roomId === this.data.roomSelect) {
+            // 房间被删了，切到其他房间
+            if (roomStore.roomList.length > 0) {
+              this.setData({
+                roomSelect: roomBinding.store.roomList[0].roomId,
+              })
+              deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
+            } else {
+              this.setData({
+                roomSelect: '',
+              })
+              runInAction(() => {
+                deviceStore.deviceList = []
+              })
+            }
+          }
+        }
+      })
     },
 
     // 修改完设备返回该页面也需要更新一次
@@ -86,8 +157,9 @@ ComponentWithComputed({
       if (this.data.roomSelect === '0') {
         deviceBinding.store.updateAllRoomDeviceList()
         return
+      } else if (this.data.roomSelect) {
+        deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
       }
-      deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
     },
 
     handleFullPageTap(e?: { detail: { x: number; y: number } }) {

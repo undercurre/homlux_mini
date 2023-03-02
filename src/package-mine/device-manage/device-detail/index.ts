@@ -59,7 +59,7 @@ ComponentWithComputed({
         showEditNamePopup: false,
       })
     },
-    handleDeviceNameEditConfirm(e: { detail: string }) {
+    async handleDeviceNameEditConfirm(e: { detail: string }) {
       if (!e.detail) {
         wx.showToast({
           icon: 'error',
@@ -71,7 +71,15 @@ ComponentWithComputed({
         showEditNamePopup: false,
         deviceName: e.detail,
       })
-      this.editDeviceInfo()
+      const res = await editDeviceInfo({
+        type: '0',
+        deviceId: this.data.deviceId,
+        deviceName: this.data.deviceName,
+        houseId: homeStore.currentHomeDetail.houseId,
+      })
+      if (res.success) {
+        this.updateDeviceInfo()
+      }
     },
     handleDeviceRoomEditPopup() {
       this.setData({
@@ -83,16 +91,24 @@ ComponentWithComputed({
         showEditRoomPopup: false,
       })
     },
-    handleDeviceRoomEditConfirm(e: { detail: string }) {
+    async handleDeviceRoomEditConfirm(e: { detail: string }) {
       this.setData({
         showEditRoomPopup: false,
         roomId: e.detail,
       })
-      this.editDeviceInfo()
+      const res = await editDeviceInfo({
+        type: '1',
+        deviceId: this.data.deviceId,
+        roomId: this.data.roomId,
+        houseId: homeStore.currentHomeDetail.houseId,
+      })
+      if (res.success) {
+        this.updateDeviceInfo()
+      }
     },
     handleToOTA() {
       wx.navigateTo({
-        url: '/package-mine/device-manage/ota/index',
+        url: '/package-mine/ota/index',
       })
     },
     handleDeviceDelete() {
@@ -128,20 +144,15 @@ ComponentWithComputed({
         })
       }
     },
-    async editDeviceInfo(isSwitch?: boolean) {
-      if (isSwitch) {
-        //todo
-      } else {
-        const res = await editDeviceInfo({
-          isSwitch: false,
-          deviceId: this.data.deviceId,
-          deviceName: this.data.deviceName,
-          roomId: this.data.roomId,
-          houseId: homeStore.currentHomeDetail.houseId,
-        })
-        if (res.success) {
-          this.updateDeviceInfo()
-        }
+    async editDeviceInfo() {
+      const res = await editDeviceInfo({
+        deviceId: this.data.deviceId,
+        deviceName: this.data.deviceName,
+        roomId: this.data.roomId,
+        houseId: homeStore.currentHomeDetail.houseId,
+      })
+      if (res.success) {
+        this.updateDeviceInfo()
       }
     },
   },
