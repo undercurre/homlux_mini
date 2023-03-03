@@ -4,6 +4,5 @@
     "dropdown-menu": "./components/dropdown-menu/index",
     "room-card": "./components/room-card/index"
   },
-  "enablePullDownRefresh": true,
   "navigationStyle": "custom"
 }

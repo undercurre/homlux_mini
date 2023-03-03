@@ -35,7 +35,7 @@
         <!-- 顶开上面的内容高度 -->
         <view class="h-24rpx"></view>
         <view class="flex-1" id="content">
-          <scroll-view enhanced scroll-y show-scrollbar="{{false}}" class="rounded-32rpx" style="height: {{contentHeight}}px;">
+          <scroll-view enhanced scroll-y show-scrollbar="{{false}}" class="rounded-32rpx" style="height: {{contentHeight}}px;" refresher-triggered="{{isRefresh}}" bindrefresherrefresh="onPullDownRefresh" refresher-enabled>
             <!-- 房间卡片列表 -->
             <room-card wx:for="{{roomList}}" wx:key="roomId" room-info="{{item}}" data-room="{{item.roomId}}" bind:sceneSelect="handleSceneSelect" showScene></room-card>
             <view class="w-full flex-center">

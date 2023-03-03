@@ -13,6 +13,7 @@ ComponentWithComputed({
    */
   data: {
     contentHeight: 0,
+    isRefresh: false,
   },
 
   computed: {
@@ -59,7 +60,13 @@ ComponentWithComputed({
     },
 
     async onPullDownRefresh() {
-      await sceneStore.updateSceneList()
+      try {
+        await sceneStore.updateSceneList()
+      } finally {
+        this.setData({
+          isRefresh: false,
+        })
+      }
       wx.stopPullDownRefresh()
     },
 

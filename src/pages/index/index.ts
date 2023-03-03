@@ -20,6 +20,7 @@ ComponentWithComputed({
     allOffBtnTap: false,
     showAddNewRoom: false,
     showHomeSelect: false,
+    isRefresh: false,
   },
   computed: {
     currentHomeName(data) {
@@ -68,8 +69,13 @@ ComponentWithComputed({
       this.hideMenu()
     },
     async onPullDownRefresh() {
-      await homeStore.updateHomeInfo()
-      wx.stopPullDownRefresh()
+      try {
+        await homeStore.updateHomeInfo()
+      } finally {
+        this.setData({
+          isRefresh: false,
+        })
+      }
     },
 
     // 收起所有菜单
