@@ -8,7 +8,7 @@
   <!-- 页面主体 -->
   <view id="content" class="flex-1">
     <view class="h-12rpx"></view>
-    <scroll-view enhanced="{{true}}" show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;" refresher-triggered="{{isRefresh}}" bindrefresherrefresh="onPullDownRefresh"	refresher-enabled>
+    <scroll-view enhanced="{{true}}" show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;" refresher-triggered="{{isRefresh}}" bindrefresherrefresh="onPullDownRefresh" refresher-enabled>
       <van-cell-group inset wx:for="{{sceneListWithLinkName}}" wx:key="value">
         <van-cell clickable center bind:click="toSetting" data-index="{{index}}">
           <view slot="title" class="flex items-center">
