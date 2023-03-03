@@ -42,7 +42,7 @@ export const deviceStore = observable({
           uniId: device.deviceId,
         })
       } else if (device.proType === proType.switch) {
-        device.switchInfoDTOList.forEach((switchItem) => {
+        device.switchInfoDTOList?.forEach((switchItem) => {
           list.push({
             ...device,
             mzgdPropertyDTOList: {

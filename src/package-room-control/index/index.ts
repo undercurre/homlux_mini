@@ -49,6 +49,7 @@ ComponentWithComputed({
       x: 0,
       y: 0,
     },
+    isRefresh: false,
     // 拖动排序
     touchLocation: {
       x: 0,
@@ -124,6 +125,11 @@ ComponentWithComputed({
       })
       sceneStore.updateSceneList()
       emitter.on('wsReceive', async (e) => {
+        console.log(
+          e.result.eventData.roomId,
+          roomStore.roomList[roomStore.currentRoomIndex].roomId,
+          e.result.eventData.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId,
+        )
         // 设备相关的消息推送根据条件判断是否刷新
         if (
           typeof e.result.eventData === 'object' &&
@@ -167,9 +173,14 @@ ComponentWithComputed({
     },
 
     async onPullDownRefresh() {
-      await deviceStore.updateSubDeviceList()
-      await sceneStore.updateSceneList()
-      wx.stopPullDownRefresh()
+      try {
+        await deviceStore.updateSubDeviceList()
+        await sceneStore.updateSceneList()
+      } finally {
+        this.setData({
+          isRefresh: false,
+        })
+      }
     },
 
     onUnload() {
