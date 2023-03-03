@@ -55,14 +55,14 @@ ComponentWithComputed({
     onLoad() {
       const deviceMap = deviceStore.deviceMap
       const sceneDeviceActionsFlatten = [] as DeviceActionsFlattenItem[]
-      sceneStore.sceneList[sceneStore.selectSceneIndex].deviceActions.forEach((device) => {
+      sceneStore.sceneList[sceneStore.selectSceneIndex].deviceActions?.forEach((device) => {
         if (deviceMap[device.deviceId].proType === proType.switch) {
           // 多路开关
           device.controlAction.forEach((action) => {
             sceneDeviceActionsFlatten.push({
               id: `${device.deviceId}:${action.ep}`,
               title: `${deviceMap[device.deviceId].deviceName} | ${deviceMap[device.deviceId].roomName}`,
-              desc: action.ep ? '打开' : '关闭',
+              desc: action.OnOff ? '打开' : '关闭',
               image:
                 deviceMap[device.deviceId].switchInfoDTOList.find(
                   (switchInfo) => switchInfo.switchId === action.ep.toString(),
@@ -74,7 +74,7 @@ ComponentWithComputed({
           const action = {
             id: `${device.deviceId}`,
             title: `${deviceMap[device.deviceId].deviceName} | ${deviceMap[device.deviceId].roomName}`,
-            desc: device.controlAction[0].ep ? '打开' : '关闭',
+            desc: device.controlAction[0].OnOff ? '打开' : '关闭',
             image: '',
             controlAction: device.controlAction[0],
           }
@@ -93,8 +93,6 @@ ComponentWithComputed({
       })
       const sceneId = sceneStore.sceneList[sceneStore.selectSceneIndex].sceneId
       const linkSwitch = sceneStore.sceneSwitchMap[sceneId] ? sceneStore.sceneSwitchMap[sceneId] : ''
-      console.log('----')
-      console.log(linkSwitch)
       wx.createSelectorQuery()
         .select('#content')
         .boundingClientRect()

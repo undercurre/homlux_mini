@@ -79,10 +79,10 @@ ComponentWithComputed({
     deviceName(data) {
       if (new RegExp('[\\u4E00-\\u9FFF]+', 'g').test(data.deviceInfo.deviceName)) {
         // 存在中文字符，只能显示5个字符
-        return data.deviceInfo.deviceName.slice(0, 5)
+        return data.deviceInfo.deviceName?.slice(0, 5)
       } else {
         // 不存在中文字符，只能显示8个字符
-        return data.deviceInfo.deviceName.slice(0, 8)
+        return data.deviceInfo.deviceName?.slice(0, 8)
       }
     },
   },

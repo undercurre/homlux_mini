@@ -27,7 +27,7 @@ ComponentWithComputed({
             )?.switchName
             return {
               ...scene,
-              linkName: `${device.deviceName.slice(0, 5)}${switchName?.slice(0, 4)} | ${device.roomName}`,
+              linkName: `${device.deviceName?.slice(0, 5)}${switchName?.slice(0, 4)} | ${device.roomName}`,
             }
           }
           return {
@@ -56,6 +56,11 @@ ComponentWithComputed({
           }
         })
       sceneStore.updateSceneList()
+    },
+
+    async onPullDownRefresh() {
+      await sceneStore.updateSceneList()
+      wx.stopPullDownRefresh()
     },
 
     async handleExecScene(e: { currentTarget: { dataset: { info: { sceneId: string } } } }) {

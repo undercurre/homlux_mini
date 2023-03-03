@@ -165,6 +165,12 @@ ComponentWithComputed({
         }
       })
     },
+    
+    async onPullDownRefresh() {
+      await deviceStore.updateSubDeviceList()
+      await sceneStore.updateSceneList()
+      wx.stopPullDownRefresh()
+    },
 
     onUnload() {
       // 退出页面前清理一下选中的列表
