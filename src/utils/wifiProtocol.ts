@@ -18,10 +18,9 @@ export class WifiSocket {
   deviceInfo = {
     ip: '', // 网关默认的ip为192.168.11.1
     udpPort: 6266,
+    isConnectingUdp: false, // 是否正在连接udp
     tcpPort: 6466,
   }
-
-  retryTimes = 3
 
   cmdCallbackMap: IAnyObject = {}
 
@@ -145,10 +144,14 @@ export class WifiSocket {
 
   bindUdp() {
     console.log('bindUdp')
+    if (this.deviceInfo.isConnectingUdp) {
+      return
+    }
 
+    this.deviceInfo.isConnectingUdp = true
     const port = _instance?.udpClient.bind(6366)
 
-    console.log('initUdpSocket', port)
+    console.log('port', port)
 
     if (port === 0) {
       wx.showModal({
@@ -221,6 +224,7 @@ export class WifiSocket {
 
     this.udpClient.onClose((res) => {
       console.log('udpClient.onClose', res)
+      this.deviceInfo.isConnectingUdp = false
     })
 
     wx.onAppHide(this.closeUdp)
