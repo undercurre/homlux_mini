@@ -26,8 +26,6 @@ Component({
 
   lifetimes: {
     ready() {
-      start = Date.now()
-
       this.initWifi()
     },
     detached() {
@@ -49,6 +47,8 @@ Component({
    */
   methods: {
     async initWifi() {
+      start = Date.now()
+
       const params = getCurrentPageParams()
 
       console.log('ready', params)
@@ -69,11 +69,11 @@ Component({
 
       const startRes = await wx.startWifi()
 
-      console.log('startWifi', startRes)
+      console.log('startWifi', startRes, '开启wifi模块用时：', Date.now() - start)
 
       const connectRes = await socket.connect()
 
-      console.log(params.ssid + '---connectRes', connectRes)
+      console.log(params.ssid + '---connectRes', connectRes, '初始化socket连接用时：', Date.now() - start)
 
       if (connectRes.errCode === 12007) {
         wx.navigateBack()
@@ -95,12 +95,14 @@ Component({
          "method":"wifi" //无线配网："wifi"，有线配网:"eth"
      */
     async getGatewayStatus() {
+      const begin = Date.now()
+
       const res = await socket.sendCmd({
         topic: '/gateway/net/status', //指令名称:获取网关IP
         data: {},
       })
 
-      console.log('getGatewayStatus', res)
+      console.log('getGatewayStatus', res, '获取状态耗时：', Date.now() - begin)
 
       // 强制绑定判断标志  "bind":0,  //绑定状态 0：未绑定  1：WIFI已绑定  2:有线已绑定
       if (res.bind !== 0) {
