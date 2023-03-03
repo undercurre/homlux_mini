@@ -69,11 +69,11 @@ Component({
 
       const startRes = await wx.startWifi()
 
-      console.log('startWifi', startRes, '开启wifi模块用时：', Date.now() - start)
+      console.debug('startWifi', startRes, '开启wifi模块用时：', Date.now() - start)
 
       const connectRes = await socket.connect()
 
-      console.log(params.ssid + '---connectRes', connectRes, '初始化socket连接用时：', Date.now() - start)
+      console.debug(params.ssid + '---connectRes', connectRes, '初始化socket连接用时：', Date.now() - start)
 
       if (connectRes.errCode === 12007) {
         wx.navigateBack()
@@ -102,7 +102,7 @@ Component({
         data: {},
       })
 
-      console.log('getGatewayStatus耗时：', Date.now() - begin, Date.now() - start)
+      console.debug('getGatewayStatus耗时：', Date.now() - begin, Date.now() - start)
 
       // 强制绑定判断标志  "bind":0,  //绑定状态 0：未绑定  1：WIFI已绑定  2:有线已绑定
       if (res.bind !== 0) {
@@ -130,7 +130,7 @@ Component({
         deviceName: pageParams.deviceName,
       }
 
-      console.log('网关检查流程耗时：', Date.now() - start)
+      console.debug('网关检查流程耗时：', Date.now() - start)
       wx.reportEvent('test', {
         check_device: Date.now() - start,
       })

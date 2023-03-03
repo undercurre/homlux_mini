@@ -32,7 +32,7 @@
             </view>
 
             <view class="shrink-0">
-              <van-button color="linear-gradient(134deg, #468CFB 32%, #6BA3FC 93%)" type="primary" round bind:click="tryControl" data-index="{{index}}" data-id="{{item.deviceUuid}}" data-mac="{{item.mac}}">试一试</van-button>
+              <van-button color="linear-gradient(134deg, #468CFB 32%, #6BA3FC 93%)" type="primary" round bind:click="tryControl" data-index="{{index}}" data-id="{{item.deviceUuid}}" data-mac="{{item.mac}}" loading="{{item.requesting}}">试一试</van-button>
             </view>
           </view>
         </scroll-view>

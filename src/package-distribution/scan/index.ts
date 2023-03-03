@@ -343,6 +343,12 @@ ComponentWithComputed({
       })
     },
 
+    test() {
+      wx.navigateTo({
+        url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {}),
+      })
+    },
+
     // 添加单个子设备
     addSingleSubdevice() {
       const gatewayId = this.data.selectGatewayId,

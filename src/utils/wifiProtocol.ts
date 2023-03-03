@@ -262,8 +262,8 @@ export class WifiSocket {
       const start = Date.now()
 
       const listen = (res: WechatMiniprogram.GeneralCallbackResult) => {
-        console.debug('tcpClient.onConnect', res)
-        console.log('TCP连接时间：', Date.now() - start)
+        console.log('tcpClient.onConnect', res)
+        console.debug('TCP连接时间：', Date.now() - start)
 
         resolve({ success: true })
         this.tcpClient.offConnect(listen)
@@ -307,7 +307,7 @@ export class WifiSocket {
       const timeId = setTimeout(() => {
         console.log(`${params.method}-超时回复:`, params.topic)
         this.cmdCallbackMap[reqId] && delete this.cmdCallbackMap[reqId]
-        console.log('指令发送-回复时间：', Date.now() - parseInt(reqId))
+        console.debug('指令发送-回复时间：', Date.now() - parseInt(reqId))
         resolve({ errorCode: -1, msg: '请求超时' })
       }, 4000)
       // 由于设备端是异步上报对应的消息回复，通过reqId注册对应命令的消息回调，
@@ -315,7 +315,7 @@ export class WifiSocket {
       this.cmdCallbackMap[reqId] = (data: { errorCode: number } & IAnyObject) => {
         console.log(`${params.method}-res:`, params.topic, data)
         clearTimeout(timeId)
-        console.log('指令发送-回复时间：', Date.now() - parseInt(reqId))
+        console.debug('指令发送-回复时间：', Date.now() - parseInt(reqId))
 
         resolve(data)
       }
