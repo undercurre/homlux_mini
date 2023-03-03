@@ -60,9 +60,12 @@ Component({
 
       socket = new WifiSocket({ ssid: params.apSSID })
 
+      console.log('new WifiSocket用时：',  Date.now() - start)
+
       const connectRes = await socket.connect()
 
       console.log('connectRes', connectRes, socket)
+      console.log('connectRes用时：',  Date.now() - start)
 
       if (!connectRes.success) {
         this.setData({
@@ -81,6 +84,7 @@ Component({
     async sendBindCmd() {
       const params = getCurrentPageParams()
 
+      const begin = Date.now()
       const data: IAnyObject = { method: params.method }
 
       if (params.method === 'wifi') {
@@ -99,7 +103,7 @@ Component({
       //   partialInfo: false,
       // })
 
-      console.log('app-网关耗时：', Date.now() - start)
+      console.log('app-网关耗时：', Date.now() - start, '发送绑定指令耗时：', Date.now() - begin)
 
       wx.reportEvent('test', {
         app_device: Date.now() - start,

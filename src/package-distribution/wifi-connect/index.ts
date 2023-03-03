@@ -166,14 +166,14 @@ ComponentWithComputed({
     changeWifiName(e: WechatMiniprogram.CustomEvent) {
       console.log('changeWifiName', e)
       this.setData({
-        'wifiInfo.SSID': e.detail,
+        'wifiInfo.SSID': e.detail.value,
       })
     },
 
     changePw(e: WechatMiniprogram.CustomEvent) {
       console.log('changeWifiName', e)
       this.setData({
-        'wifiInfo.pw': e.detail,
+        'wifiInfo.pw': e.detail.value,
       })
     },
 

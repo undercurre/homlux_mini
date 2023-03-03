@@ -7,11 +7,11 @@
     <view class="grow px-48rpx pt-112rpx">
       <text class="text-black-59 text-26 leading-36rpx">智能设备仅支持2.4GHZ的Wi-Fi</text>
 
-      <van-field value="{{ wifiInfo.SSID }}" custom-style="margin-bottom: 32rpx;margin-top: 40rpx;padding: 16rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;background-color: transparent;" clearable="{{true}}" bind:change="changeWifiName">
+      <van-field value="{{ wifiInfo.SSID }}" custom-style="margin-bottom: 32rpx;margin-top: 40rpx;padding: 16rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;background-color: transparent;" clearable="{{true}}" bind:blur="changeWifiName">
         <van-button slot="button" type="primary" plain bind:click="toggleWifi"> 切换Wi-Fi </van-button>
       </van-field>
 
-      <van-field value="{{ wifiInfo.pw }}" placeholder="请入Wi-Fi密码" type="" custom-style="padding: 16rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;background-color: transparent;" bind:change="changePw"></van-field>
+      <van-field value="{{ wifiInfo.pw }}" placeholder="请入Wi-Fi密码" type="" custom-style="padding: 16rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;background-color: transparent;" bind:blur="changePw"></van-field>
     </view>
 
     <view class="flex flex-col">
