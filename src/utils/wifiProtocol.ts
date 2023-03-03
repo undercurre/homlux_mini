@@ -66,7 +66,7 @@ export class WifiSocket {
       return { errCode: -1, success: false, msg: 'UDP初始化失败' }
     }
 
-    const ipRes =  await this.getDeviceIp()
+    const ipRes = await this.getDeviceIp()
 
     console.log(`getDeviceIp`, Date.now() - now)
 
@@ -309,7 +309,7 @@ export class WifiSocket {
         this.cmdCallbackMap[reqId] && delete this.cmdCallbackMap[reqId]
         console.log('指令发送-回复时间：', Date.now() - parseInt(reqId))
         resolve({ errorCode: -1, msg: '请求超时' })
-      }, 2000)
+      }, 4000)
       // 由于设备端是异步上报对应的消息回复，通过reqId注册对应命令的消息回调，
       // 后续在消息监听onmessage通过reqId匹配并把对应的回复resolve，达到同步调用的效果
       this.cmdCallbackMap[reqId] = (data: { errorCode: number } & IAnyObject) => {

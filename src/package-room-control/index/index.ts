@@ -165,7 +165,7 @@ ComponentWithComputed({
         }
       })
     },
-    
+
     async onPullDownRefresh() {
       await deviceStore.updateSubDeviceList()
       await sceneStore.updateSceneList()

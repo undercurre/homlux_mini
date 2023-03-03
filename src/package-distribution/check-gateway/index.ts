@@ -102,7 +102,7 @@ Component({
         data: {},
       })
 
-      console.log('getGatewayStatus', res, '获取状态耗时：', Date.now() - begin)
+      console.log('getGatewayStatus耗时：', Date.now() - begin, Date.now() - start)
 
       // 强制绑定判断标志  "bind":0,  //绑定状态 0：未绑定  1：WIFI已绑定  2:有线已绑定
       if (res.bind !== 0) {

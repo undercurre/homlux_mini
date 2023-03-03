@@ -60,12 +60,12 @@ Component({
 
       socket = new WifiSocket({ ssid: params.apSSID })
 
-      console.log('new WifiSocket用时：',  Date.now() - start)
+      console.log('new WifiSocket用时：', Date.now() - start)
 
       const connectRes = await socket.connect()
 
       console.log('connectRes', connectRes, socket)
-      console.log('connectRes用时：',  Date.now() - start)
+      console.log('connectRes用时：', Date.now() - start)
 
       if (!connectRes.success) {
         this.setData({
