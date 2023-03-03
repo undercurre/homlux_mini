@@ -52,7 +52,7 @@ ComponentWithComputed({
     /** 提供给关联选择的列表 */
     list: [] as (Device.DeviceItem | Scene.SceneItem)[],
     linkType: '' as '' | 'light' | 'switch' | 'scene',
-    /** 已选中设备 */
+    /** 已选中设备或场景 */
     linkSelectList: [] as string[],
     showLinkPopup: false,
     relId: {
@@ -329,131 +329,187 @@ ComponentWithComputed({
         showLinkPopup: false,
       })
     },
+    async updateLightAssociate() {
+      const selectSwitchUniId = this.data.selectSwitchUniId
+      // 关联灯
+      if (this.data.relId.lightRelId && this.data.linkSelectList.length !== 0) {
+        const rawLinkDeviceSelectList = (this.data.list as Device.DeviceItem[])
+          .filter((device) => device.lightRelId && device.lightRelId === this.data.relId.lightRelId)
+          .map((device) => device.deviceId)
+        // 更新关联
+        const delAssociateDevice = rawLinkDeviceSelectList.filter(
+          (deviceId) => !this.data.linkSelectList.includes(deviceId),
+        )
+        const addAssociateDevice = this.data.linkSelectList.filter(
+          (deviceId) => !rawLinkDeviceSelectList.includes(deviceId),
+        )
+        if (delAssociateDevice.length !== 0) {
+          // 部分设备删除关联
+          await delAssociated({
+            relType: '0',
+            lightRelId: this.data.relId.lightRelId,
+            deviceIds: delAssociateDevice,
+          })
+        }
+        if (addAssociateDevice.length !== 0) {
+          // 部分设备添加关联
+          await updateAssociated({
+            relType: '0',
+            lightRelId: this.data.relId.lightRelId,
+            deviceIds: addAssociateDevice,
+          })
+        }
+      } else if (this.data.relId.lightRelId && this.data.linkSelectList.length === 0) {
+        // 删除关联
+        await delAssociated({
+          relType: '0',
+          lightRelId: this.data.relId.lightRelId,
+        })
+      } else if (!this.data.relId.lightRelId && this.data.linkSelectList.length !== 0) {
+        // 创建依赖
+        await createAssociated({
+          deviceIds: [selectSwitchUniId, ...this.data.linkSelectList],
+          relType: '0',
+        })
+      }
+    },
+    async updateSwitchAssociate() {
+      const selectSwitchUniId = this.data.selectSwitchUniId
+      // 关联开关
+      if (this.data.relId.switchRelId && this.data.linkSelectList.length !== 0) {
+        const rawLinkDeviceSelectList = (this.data.list as Device.DeviceItem[])
+          .filter(
+            (device) =>
+              device.switchInfoDTOList[0].switchRelId &&
+              device.switchInfoDTOList[0].switchRelId === this.data.relId.switchRelId,
+          )
+          .map((device) => device.uniId)
+        // 更新关联
+        const delAssociateDevice = rawLinkDeviceSelectList.filter(
+          (deviceId) => !this.data.linkSelectList.includes(deviceId),
+        )
+        const addAssociateDevice = this.data.linkSelectList.filter(
+          (deviceId) => !rawLinkDeviceSelectList.includes(deviceId),
+        )
+        if (delAssociateDevice.length !== 0) {
+          // 部分设备删除关联
+          await delAssociated({
+            relType: '1',
+            switchRelId: this.data.relId.switchRelId,
+            deviceIds: delAssociateDevice,
+          })
+        }
+        if (addAssociateDevice.length !== 0) {
+          // 部分设备添加关联
+          await updateAssociated({
+            relType: '1',
+            switchRelId: this.data.relId.switchRelId,
+            deviceIds: addAssociateDevice,
+          })
+        }
+      } else if (this.data.relId.switchRelId && this.data.linkSelectList.length === 0) {
+        // 删除关联
+        await delAssociated({
+          relType: '1',
+          switchRelId: this.data.relId.switchRelId,
+        })
+      } else if (!this.data.relId.switchRelId && this.data.linkSelectList.length !== 0) {
+        // 创建依赖
+        await createAssociated({
+          deviceIds: [selectSwitchUniId, ...this.data.linkSelectList],
+          relType: '1',
+        })
+      }
+    },
+    async updataSceneLink() {
+      const switchSceneMap = deviceStore.switchSceneMap
+      if (this.data.linkSelectList.length === 0 && switchSceneMap[this.data.selectSwitchUniId]) {
+        // 取消关联
+        await updateScene({
+          updateType: '2',
+          sceneId: switchSceneMap[this.data.selectSwitchUniId],
+          conditionType: '0',
+        })
+        return
+      }
+      if (
+        this.data.linkSelectList[0] === switchSceneMap[this.data.selectSwitchUniId] ||
+        (this.data.linkSelectList.length === 0 && !switchSceneMap[this.data.selectSwitchUniId])
+      ) {
+        // 没变化，不执行操作
+        return
+      }
+      const sceneId = this.data.linkSelectList[0]
+      const updateSceneDto = {
+        conditionType: '0',
+        sceneId: sceneId,
+      } as Scene.UpdateSceneDto
+      console.log(switchSceneMap, this.data.selectSwitchUniId, switchSceneMap[this.data.selectSwitchUniId])
+      if (
+        this.data.linkSelectList.length !== 0 &&
+        switchSceneMap[this.data.selectSwitchUniId] &&
+        this.data.linkSelectList[0] !== switchSceneMap[this.data.selectSwitchUniId]
+      ) {
+        // 更新关联，先取消关联当前场景，再关联其他场景
+        const res = await updateScene({
+          conditionType: '0',
+          sceneId: switchSceneMap[this.data.selectSwitchUniId],
+          updateType: '2',
+        })
+        if (!res.success) {
+          wx.showToast({
+            icon: 'error',
+            title: '更新失败',
+          })
+          return
+        }
+        // 关联新的场景
+        updateSceneDto.deviceConditions = [
+          {
+            deviceId: this.data.selectSwitchUniId.split(':')[0],
+            controlEvent: [
+              {
+                ep: Number(this.data.selectSwitchUniId.split(':')[1]),
+                ButtonScene: 1,
+              },
+            ],
+          },
+        ]
+        updateSceneDto.updateType = '3'
+        await updateScene(updateSceneDto)
+        return
+      }
+      if (this.data.linkSelectList.length !== 0 && !switchSceneMap[this.data.selectSwitchUniId]) {
+        // 增加关联
+        updateSceneDto.deviceConditions = [
+          {
+            deviceId: this.data.selectSwitchUniId.split(':')[0],
+            controlEvent: [
+              {
+                ep: Number(this.data.selectSwitchUniId.split(':')[1]),
+                ButtonScene: 1,
+              },
+            ],
+          },
+        ]
+        updateSceneDto.updateType = '3'
+        await updateScene(updateSceneDto)
+      }
+    },
     async handleLinkPopupConfirm() {
       this.setData({
         showLinkPopup: false,
       })
-      const selectSwitchUniId = this.data.selectSwitchUniId
       if (this.data.linkType === 'light') {
-        // 关联灯
-        if (this.data.relId.lightRelId && this.data.linkSelectList.length !== 0) {
-          // 更新关联
-          updateAssociated({
-            relType: '0',
-            lightRelId: this.data.relId.lightRelId,
-            deviceIds: [selectSwitchUniId, ...this.data.linkSelectList],
-          })
-        } else if (this.data.relId.lightRelId && this.data.linkSelectList.length === 0) {
-          // 删除关联
-          delAssociated({
-            relType: '0',
-            lightRelId: this.data.relId.lightRelId,
-          })
-        } else if (!this.data.relId.lightRelId && this.data.linkSelectList.length !== 0) {
-          // 创建依赖
-          createAssociated({
-            deviceIds: [selectSwitchUniId, ...this.data.linkSelectList],
-            relType: '0',
-          })
-        }
+        await this.updateLightAssociate()
+        await deviceStore.updateSubDeviceList()
       } else if (this.data.linkType === 'switch') {
-        // 关联开关
-        if (this.data.relId.switchRelId && this.data.linkSelectList.length !== 0) {
-          // 更新关联
-          updateAssociated({
-            relType: '1',
-            switchRelId: this.data.relId.switchRelId,
-            deviceIds: [selectSwitchUniId, ...this.data.linkSelectList],
-          })
-        } else if (this.data.relId.switchRelId && this.data.linkSelectList.length === 0) {
-          // 删除关联
-          delAssociated({
-            relType: '1',
-            switchRelId: this.data.relId.switchRelId,
-          })
-        } else if (!this.data.relId.switchRelId && this.data.linkSelectList.length !== 0) {
-          // 创建依赖
-          createAssociated({
-            deviceIds: [selectSwitchUniId, ...this.data.linkSelectList],
-            relType: '1',
-          })
-        }
+        await this.updateSwitchAssociate()
+        await deviceStore.updateSubDeviceList()
       } else if (this.data.linkType === 'scene') {
-        const switchSceneMap = deviceStore.switchSceneMap
-        if (this.data.linkSelectList.length === 0 && switchSceneMap[this.data.selectSwitchUniId]) {
-          // 取消关联
-          updateScene({
-            updateType: '2',
-            sceneId: switchSceneMap[this.data.selectSwitchUniId],
-            conditionType: '0',
-          })
-          return
-        }
-        if (
-          this.data.linkSelectList[0] === switchSceneMap[this.data.selectSwitchUniId] ||
-          (this.data.linkSelectList.length === 0 && !switchSceneMap[this.data.selectSwitchUniId])
-        ) {
-          // 没变化，不执行操作
-          return
-        }
-        const sceneId = this.data.linkSelectList[0]
-        const updateSceneDto = {
-          conditionType: '0',
-          sceneId: sceneId,
-        } as Scene.UpdateSceneDto
-        console.log(switchSceneMap, this.data.selectSwitchUniId, switchSceneMap[this.data.selectSwitchUniId])
-        if (
-          this.data.linkSelectList.length !== 0 &&
-          switchSceneMap[this.data.selectSwitchUniId] &&
-          this.data.linkSelectList[0] !== switchSceneMap[this.data.selectSwitchUniId]
-        ) {
-          // 更新关联，先取消关联当前场景，再关联其他场景
-          const res = await updateScene({
-            conditionType: '0',
-            sceneId: switchSceneMap[this.data.selectSwitchUniId],
-            updateType: '2',
-          })
-          if (!res.success) {
-            wx.showToast({
-              icon: 'error',
-              title: '更新失败',
-            })
-            return
-          }
-          // 关联新的场景
-          updateSceneDto.deviceConditions = [
-            {
-              deviceId: this.data.selectSwitchUniId.split(':')[0],
-              controlEvent: [
-                {
-                  ep: Number(this.data.selectSwitchUniId.split(':')[1]),
-                  ButtonScene: 1,
-                },
-              ],
-            },
-          ]
-          updateSceneDto.updateType = '3'
-          updateScene(updateSceneDto)
-        }
-        if (this.data.linkSelectList.length !== 0 && !switchSceneMap[this.data.selectSwitchUniId]) {
-          // 增加关联
-          updateSceneDto.deviceConditions = [
-            {
-              deviceId: this.data.selectSwitchUniId.split(':')[0],
-              controlEvent: [
-                {
-                  ep: Number(this.data.selectSwitchUniId.split(':')[1]),
-                  ButtonScene: 1,
-                },
-              ],
-            },
-          ]
-          updateSceneDto.updateType = '3'
-          updateScene(updateSceneDto)
-        }
+        await this.updataSceneLink()
+        await sceneStore.updateSceneList()
       }
-      deviceStore.updateSubDeviceList()
-      sceneStore.updateSceneList()
     },
     handleTabTap(e: { currentTarget: { dataset: { tab: 'light' | 'switch' | 'curtain' } } }) {
       this.setData({

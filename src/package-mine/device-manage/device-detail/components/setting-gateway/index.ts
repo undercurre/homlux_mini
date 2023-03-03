@@ -25,6 +25,9 @@ Component({
    */
   methods: {
     handleBackup() {
+      if (!this.data.deviceInfo.onLineStatus) {
+        return
+      }
       this.setData({
         backup: true,
       })
@@ -35,6 +38,9 @@ Component({
       }, 3000)
     },
     handleReset() {
+      if (!this.data.deviceInfo.onLineStatus) {
+        return
+      }
       this.setData({
         resetting: true,
       })

@@ -238,7 +238,17 @@ export async function updateAssociated(data: {
   })
 }
 
-export async function delAssociated(data: { relType: '0' | '1'; lightRelId?: string; switchRelId?: string }) {
+/**
+ * 删除整个关联或者部分设备关联
+ * 如果传入deviceIds，删除deviceIds中的关联
+ * 如果不传deviceIds，删除整个lightRelId或者switchRelId关联
+ */
+export async function delAssociated(data: {
+  relType: '0' | '1'
+  lightRelId?: string
+  switchRelId?: string
+  deviceIds?: string[]
+}) {
   return await mzaioRequest.post<IAnyObject>({
     log: true,
     url: '/v1/device/delAssociated',
