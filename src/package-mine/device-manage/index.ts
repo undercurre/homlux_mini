@@ -25,7 +25,7 @@ ComponentWithComputed({
     roomSelectMenuList(data) {
       if (data.roomList) {
         return [
-          { roomId: '0', roomName: '全屋' }, // 全屋查询未完成
+          { roomId: '0', roomName: '全屋' },
           ...(data.roomList as Room.RoomInfo[]).map((room) => ({
             roomId: room.roomId,
             roomName: room.roomName,
@@ -76,20 +76,24 @@ ComponentWithComputed({
             }
           })
       }, 500)
-      // 刷新一次房间列表
-      roomStore.updateRoomList().then(() => {
-        if (roomStore.roomList.length > 0 && !this.data.roomSelect) {
-          this.setData({
-            roomSelect: roomBinding.store.roomList[0].roomId,
-          })
-          deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
-        }
+      this.setData({
+        roomSelect: '0',
       })
-      if (roomBinding.store.roomList.length > 0) {
-        this.setData({
-          roomSelect: roomBinding.store.roomList[0].roomId,
-        })
-      }
+      // 刷新一次房间列表
+      roomStore.updateRoomList()
+      // .then(() => {
+      //   if (roomStore.roomList.length > 0 && !this.data.roomSelect) {
+      //     this.setData({
+      //       roomSelect: roomBinding.store.roomList[0].roomId,
+      //     })
+      //     deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
+      //   }
+      // })
+      // if (roomBinding.store.roomList.length > 0) {
+      //   this.setData({
+      //     roomSelect: roomBinding.store.roomList[0].roomId,
+      //   })
+      // }
       // 状态更新推送
       emitter.on('wsReceive', async (e) => {
         // 设备相关的消息推送根据条件判断是否刷新
@@ -159,6 +163,23 @@ ComponentWithComputed({
         return
       } else if (this.data.roomSelect) {
         deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
+      }
+    },
+
+    async onPullDownRefresh() {
+      try {
+        await roomStore.updateRoomList()
+        if (this.data.roomSelect === '0') {
+          // 查全屋
+          deviceBinding.store.updateAllRoomDeviceList()
+        } else {
+          // 查房间
+          deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
+        }
+      } finally {
+        this.setData({
+          isRefresh: false,
+        })
       }
     },
 
