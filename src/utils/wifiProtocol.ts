@@ -66,7 +66,7 @@ export class WifiSocket {
       return { errCode: -1, success: false, msg: 'UDP初始化失败' }
     }
 
-    const ipRes =  await this.getDeviceIp()
+    const ipRes = await this.getDeviceIp()
 
     console.log(`getDeviceIp`, Date.now() - now)
 

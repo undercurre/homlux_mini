@@ -19,7 +19,7 @@
   </view>
   <!-- 设备列表 -->
   <view id="content" class="flex-1">
-    <scroll-view scroll-y style="height: {{listHeight}}px;">
+    <scroll-view enhanced scroll-y show-scrollbar="{{false}}" style="height: {{listHeight}}px;"  refresher-triggered="{{isRefresh}}" bindrefresherrefresh="onPullDownRefresh" refresher-enabled>
       <van-cell-group inset wx:for="{{deviceList}}" wx:key="deviceId">
         <van-cell clickable bind:click="handleCardClick" data-index="{{index}}">
           <view class="flex item-center">
