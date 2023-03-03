@@ -52,3 +52,5 @@
     <text class="block w-full text-32 text-black-2a">1、MSGW-15</text>
   </view>
 </van-dialog>
+
+<van-button type="primary" size="large" plain bind:click="test">test</van-button>

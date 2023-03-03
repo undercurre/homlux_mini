@@ -339,9 +339,13 @@ ComponentWithComputed({
     async tryControl(event: WechatMiniprogram.CustomEvent) {
       const { id } = event.currentTarget.dataset
 
-      console.log('tryControl', event, id)
+      console.log('tryControl', id)
 
       const bleDeviceItem = this.data.deviceList.find((item) => item.deviceUuid === id) as IBleDevice
+
+      if (bleDeviceItem.requesting) {
+        return
+      }
 
       bleDeviceItem.requesting = true
 

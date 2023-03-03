@@ -60,12 +60,10 @@ Component({
 
       socket = new WifiSocket({ ssid: params.apSSID })
 
-      console.log('new WifiSocket用时：', Date.now() - start)
-
       const connectRes = await socket.connect()
 
       console.log('connectRes', connectRes, socket)
-      console.log('connectRes用时：', Date.now() - start)
+      console.debug('connectRes用时：', Date.now() - start)
 
       if (!connectRes.success) {
         this.setData({
@@ -103,7 +101,7 @@ Component({
       //   partialInfo: false,
       // })
 
-      console.log('app-网关耗时：', Date.now() - start, '发送绑定指令耗时：', Date.now() - begin)
+      console.debug('app-网关耗时：', Date.now() - start, '发送绑定指令耗时：', Date.now() - begin)
 
       wx.reportEvent('test', {
         app_device: Date.now() - start,
@@ -130,7 +128,7 @@ Component({
           activeIndex: 2,
         })
 
-        console.log('app到云端，添加网关耗时：', Date.now() - start)
+        console.debug('app到云端，添加网关耗时：', Date.now() - start)
         wx.reportEvent('test', {
           app_cloud: Date.now() - start,
         })
