@@ -8,7 +8,7 @@
 
       <view wx:if="{{deviceList.length}}" class="px-32rpx pt-86rpx grow shrink flex flex-col">
         <view class="flex flex-row items-center justify-between pb-34rpx">
-          <text class="text-26 text-black-59">发现附近通电的子设备</text>
+          <text class="text-26 text-black-59">发现{{deviceList.length}}附近的设备</text>
 
           <van-button plain round type="info" size="small" bind:click="selectAll">全选</van-button>
         </view>
@@ -23,7 +23,7 @@
 
             <view class="grow pl-32rpx">
               <view class="flex flex-row items-center pb-4rpx" bind:tap="editDevice" data-index="{{index}}">
-                <text class="max-w-180 pr-24rpx text-32 text-black-2a single-text">{{ item.name }}</text>
+                <text class="max-w-200 pr-24rpx text-32 text-black-2a single-text">{{ item.name }}</text>
 
                 <image class="w-48 h-48" src="../../assets/img/base/edit.png"></image>
               </view>
@@ -32,7 +32,7 @@
             </view>
 
             <view class="shrink-0">
-              <van-button color="linear-gradient(134deg, #468CFB 32%, #6BA3FC 93%)" type="primary" round bind:click="tryControl" data-index="{{index}}" data-id="{{item.deviceUuid}}" data-mac="{{item.mac}}" loading="{{item.requesting}}">试一试</van-button>
+              <van-button color="linear-gradient(134deg, #468CFB 32%, #6BA3FC 93%)" type="primary" round bind:click="tryControl" data-index="{{index}}" data-id="{{item.deviceUuid}}" data-mac="{{item.mac}}" loading="{{item.requesting}}" disabled="{{item.requesting}}">试一试</van-button>
             </view>
           </view>
         </scroll-view>
@@ -42,7 +42,7 @@
     </block>
 
     <block wx:if="{{status === 'requesting' && successList.length !== selectedList.length}}">
-      <loading class="{{failList.length === 0 ? 'mt-70rpx' : 'mt-130rpx' }}" text="已添加{{successList.length}}/{{selectedList.length}}个设备" show-progress="{{false}}"></loading>
+      <loading class="{{failList.length === 0 ? 'mt-70rpx' : 'mt-130rpx' }}" text="已添加{{successList.length}}/{{selectedList.length}}个设备" show-progress="{{false}}" stepList="{{[]}}"></loading>
 
       <view wx:if="{{failList.length > 0}}" class="px-24rpx pt-90rpx grow shrink flex flex-col">
         <view class="flex flex-row items-center justify-between pb-24rpx">
