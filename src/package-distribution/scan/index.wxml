@@ -10,7 +10,7 @@
 
       <text class="grow text-hex-F4F8FF px-16rpx">{{tipsText}}</text>
 
-      <van-button type="primary" size="large" plain bind:click="addNearSubdevice" wx:if="{{subdeviceList.length || 1}}">立即添加</van-button>
+      <van-button type="primary" size="large" plain bind:click="addNearSubdevice" wx:if="{{subdeviceList.length}}">立即添加</van-button>
     </view>
   </view>
 </view>
