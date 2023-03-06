@@ -172,24 +172,14 @@ export class WifiSocket {
     this.tcpClient.onMessage((res) => {
       console.log('tcpClient.onMessage', res)
 
-      const reply = decodeCmd(res.message, this.key)
-      console.log('reply', reply)
-
-      const callback = this.cmdCallbackMap[reply.reqId]
-
-      if (callback) {
-        callback(reply.data)
-
-        delete this.cmdCallbackMap[reply.reqId] // 删除已经执行的callback
-      } else {
-        this.onMessageHandlerList.map((handler) => handler(reply))
-      }
+      this.handleReply(res.message)
 
       this.tcpClient.close() // 每次发送完数据，网关都会主动断开TCP连接，app需要配合释放对应tcp资源，否则会影响下一次的连接
     })
 
     this.tcpClient.onError((res) => {
       console.log('tcpClient.onError', res)
+      // 被动关闭socket时释放对应tcp资源
       if (res.errMsg.includes('closed')) {
         this.tcpClient.close()
       }
@@ -204,18 +194,7 @@ export class WifiSocket {
     const port = this.bindUdp()
 
     this.udpClient.onMessage((res) => {
-      const reply = decodeCmd(res.message, this.key)
-      console.log('reply', reply)
-
-      const callback = this.cmdCallbackMap[reply.reqId]
-
-      if (callback) {
-        callback(reply.data)
-
-        delete this.cmdCallbackMap[reply.reqId] // 删除已经执行的callback
-      } else {
-        this.onMessageHandlerList.map((handler) => handler(reply))
-      }
+      this.handleReply(res.message)
     })
 
     this.udpClient.onError((res) => {
@@ -232,6 +211,21 @@ export class WifiSocket {
     wx.onAppShow(this.bindUdp)
 
     return port
+  }
+
+  handleReply(message: ArrayBuffer) {
+    const reply = decodeCmd(message, this.key)
+    console.log('reply', reply)
+
+    const callback = this.cmdCallbackMap[reply.reqId]
+
+    if (callback) {
+      callback(reply.data)
+
+      delete this.cmdCallbackMap[reply.reqId] // 删除已经执行的callback
+    } else {
+      this.onMessageHandlerList.map((handler) => handler(reply))
+    }
   }
 
   async sendCmdForDeviceIp() {

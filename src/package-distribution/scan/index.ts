@@ -32,9 +32,9 @@ ComponentWithComputed({
 
   computed: {
     gatewayList(data) {
-      const deviceList: Device.DeviceItem[] = (data as IAnyObject).deviceList || []
+      const allRoomDeviceList: Device.DeviceItem[] = (data as IAnyObject).allRoomDeviceList || []
 
-      return deviceList.filter((item) => item.deviceType === 1)
+      return allRoomDeviceList.filter((item) => item.deviceType === 1)
     },
     tipsText(data) {
       return data.subdeviceList.length ? `搜索到${data.subdeviceList.length}个附近的子设备` : '正在搜索附近子设备'

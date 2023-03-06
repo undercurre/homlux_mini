@@ -26,7 +26,6 @@ const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: Base
     Authorization: 'Bearer ' + storage.get('token', ''),
   }
 
-  console.debug('Authorization:', storage.get('token', ''))
   if (options.header) {
     options.header = {
       ...header,

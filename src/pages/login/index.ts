@@ -42,9 +42,9 @@ Component({
     },
 
     async handleLogin(data: { jsCode: string; code: string }) {
-      console.log('handleLogin', data)
       const loginRes = await login(data)
       if (loginRes.success && loginRes.result) {
+        console.log('loginRes', loginRes)
         // 批量缓存返回值
         ;(['token', 'mobilePhone', 'nickName', 'headImageUrl'] as const).forEach((item) => {
           const value = (loginRes.result as User.UserLoginRes)[item]
