@@ -5,21 +5,23 @@
     <text class="flex-1 ml-20rpx text-28rpx text-hex-b6b7bb">{{ roomInfo.deviceLightOnNum && showScene ? roomInfo.deviceLightOnNum + '盏灯亮起' : ''}}</text>
     <image src="/assets/img/home/more.png" class="w-32rpx h-32rpx mr-32rpx"></image>
   </view>
-  <view class="grid grid-cols-4 gap-22rpx mx-32rpx mt-8rpx" wx:if="{{showScene}}">
-    <view wx:for="{{sceneList}}" wx:key="value" data-value="{{item.sceneId}}" bindtap="handleSceneTap" class="relative w-144rpx h-168rpx rounded-24rpx flex flex-col justify-center items-center bg-hex-eff0f3">
-      <view class="flex-col-center">
-        <view class="rounded-999 bg-white">
-          <svg-icon name="scene:{{item.sceneIcon}}" width="64rpx" height="64rpx" />
+  <view class="mx-32rpx mt-8rpx" wx:if="{{showScene && sceneList.length > 0}}">
+    <scroll-view enable-flex scroll-x enhanced show-scrollbar="{{false}}" class="w-full h-168rpx flex">
+      <view wx:for="{{sceneList}}" wx:key="value" data-value="{{item.sceneId}}" bindtap="handleSceneTap" class="relative w-144rpx h-168rpx rounded-24rpx flex flex-col justify-center items-center bg-hex-eff0f3 shrink-0 {{index !== 0 ? 'ml-22rpx' : ''}}">
+        <view class="flex-col-center">
+          <view class="rounded-999 bg-white">
+            <svg-icon name="scene:{{item.sceneIcon}}" width="64rpx" height="64rpx" />
+          </view>
+          <text class="text-28rpx mt-20rpx text-hex-666666">{{item.sceneName}}</text>
         </view>
-        <text class="text-28rpx mt-20rpx text-hex-666666">{{item.sceneName}}</text>
-      </view>
-      <view id="effect-{{item.sceneId}}" class="absolute left-0 top-0 bg-blue flex-col-center w-144rpx h-168rpx opacity-0 rounded-24rpx">
-        <view id="effect-{{item.sceneId}}-svg" class="rounded-999 bg-hex-a0bff0">
-          <svg-icon class="w-64rpx h-64rpx" color="#fff" name="scene:{{item.sceneIcon}}" width="64rpx" height="64rpx" />
+        <view id="effect-{{item.sceneId}}" class="absolute left-0 top-0 bg-blue flex-col-center w-144rpx h-168rpx opacity-0 rounded-24rpx">
+          <view id="effect-{{item.sceneId}}-svg" class="rounded-999 bg-hex-a0bff0">
+            <svg-icon class="w-64rpx h-64rpx" color="#fff" name="scene:{{item.sceneIcon}}" width="64rpx" height="64rpx" />
+          </view>
+          <text class="text-28rpx mt-20rpx text-white">{{item.sceneName}}</text>
         </view>
-        <text class="text-28rpx mt-20rpx text-white">{{item.sceneName}}</text>
       </view>
-    </view>
+    </scroll-view>
   </view>
   <view class="h-32rpx" wx:if="{{hasBottomPadding}}"></view>
 </view>

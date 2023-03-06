@@ -1,5 +1,5 @@
 import { observable, runInAction } from 'mobx-miniprogram'
-import { getRoomList } from '../apis/index'
+import { getRoomList, queryAllDevice } from '../apis/index'
 import { proType } from '../config/index'
 import { homeStore } from './home'
 
@@ -12,18 +12,34 @@ export const roomStore = observable({
    * 选择进入了哪个房间，在roomList中的index todo:
    */
   currentRoomIndex: 0,
-  /**
-   * 房间详细信息
-   */
-  // roomDetail: {
+  /** 全屋设备，对应房间id作为key，房间的设备列表作为key */
+  roomDeviceList: {} as Record<string, Device.DeviceItem[]>,
 
-  // },
+  async updataHomeDeviceList() {
+    const res = await queryAllDevice(homeStore.currentHomeDetail.houseId)
+    const list = {} as Record<string, Device.DeviceItem[]>
+    if (res.success) {
+      res.result.forEach((device) => {
+        if (list[device.roomId]) {
+          list[device.roomId].push(device)
+        } else {
+          list[device.roomId] = [device]
+        }
+      })
+      runInAction(() => {
+        roomStore.roomDeviceList = list
+      })
+      return
+    } else {
+      return Promise.reject('获取全屋设备信息失败')
+    }
+  },
 
   async updateRoomList() {
     const res = await getRoomList(homeStore.currentHomeId)
     if (res.success) {
       res.result.roomInfoList.forEach((roomInfo) => {
-        const roomDeviceList = homeStore.homeDeviceList[roomInfo.roomInfo.roomId]
+        const roomDeviceList = roomStore.roomDeviceList[roomInfo.roomInfo.roomId]
         const hasSwitch = roomDeviceList?.some((device) => device.proType === proType.switch) ?? false
         const hasLight = roomDeviceList?.some((device) => device.proType === proType.light) ?? false
         if (!hasSwitch && !hasLight) {

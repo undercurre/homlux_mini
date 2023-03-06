@@ -12,7 +12,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
-    roomSelect: '',
+    roomSelect: '0',
     listHeight: 0,
     roomSelectMenu: {
       x: '0px',
@@ -42,6 +42,13 @@ ComponentWithComputed({
       }
       return ''
     },
+    deviceListCompited(data) {
+      if (data.roomSelect === '0') {
+        return data.allRoomDeviceList
+      } else {
+        return data.deviceList
+      }
+    },
   },
 
   methods: {
@@ -49,6 +56,9 @@ ComponentWithComputed({
      * 生命周期函数--监听页面加载
      */
     onLoad() {
+      // 进入时再清理一次防止上一次清理失败
+      emitter.off('wsReceive')
+      emitter.off('deviceEdit')
       // 防止boundingClientRect获取错误数据
       setTimeout(() => {
         wx.createSelectorQuery()
@@ -76,25 +86,16 @@ ComponentWithComputed({
             }
           })
       }, 500)
-      this.setData({
-        roomSelect: '0',
-      })
-      // 刷新一次房间列表
-      roomStore.updateRoomList()
-      // .then(() => {
-      //   if (roomStore.roomList.length > 0 && !this.data.roomSelect) {
-      //     this.setData({
-      //       roomSelect: roomBinding.store.roomList[0].roomId,
-      //     })
-      //     deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
-      //   }
-      // })
-      // if (roomBinding.store.roomList.length > 0) {
-      //   this.setData({
-      //     roomSelect: roomBinding.store.roomList[0].roomId,
-      //   })
-      // }
+      this.loadData()
       // 状态更新推送
+      emitter.on('deviceEdit', () => {
+        if (this.data.roomSelect === '0') {
+          deviceBinding.store.updateAllRoomDeviceList()
+          return
+        } else if (this.data.roomSelect) {
+          deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
+        }
+      })
       emitter.on('wsReceive', async (e) => {
         // 设备相关的消息推送根据条件判断是否刷新
         if (
@@ -156,14 +157,9 @@ ComponentWithComputed({
       })
     },
 
-    // 修改完设备返回该页面也需要更新一次
-    onShow() {
-      if (this.data.roomSelect === '0') {
-        deviceBinding.store.updateAllRoomDeviceList()
-        return
-      } else if (this.data.roomSelect) {
-        deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
-      }
+    onUnload() {
+      emitter.off('wsReceive')
+      emitter.off('deviceEdit')
     },
 
     async onPullDownRefresh() {
@@ -180,6 +176,16 @@ ComponentWithComputed({
         this.setData({
           isRefresh: false,
         })
+      }
+    },
+
+    async loadData() {
+      await roomStore.updateRoomList()
+      if (this.data.roomSelect === '0') {
+        deviceBinding.store.updateAllRoomDeviceList()
+        return
+      } else if (this.data.roomSelect) {
+        deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
       }
     },
 
@@ -216,11 +222,10 @@ ComponentWithComputed({
       }
     },
 
-    handleCardClick(e: { currentTarget: { dataset: { index: number } } }) {
-      const device = deviceStore.deviceList[e.currentTarget.dataset.index]
-      console.log(device)
+    handleCardClick(e: { currentTarget: { dataset: { deviceId: string } } }) {
+      console.log(e.currentTarget.dataset.deviceId)
       wx.navigateTo({
-        url: `/package-mine/device-manage/device-detail/index?deviceId=${device.deviceId}`,
+        url: `/package-mine/device-manage/device-detail/index?deviceId=${e.currentTarget.dataset.deviceId}`,
       })
     },
 

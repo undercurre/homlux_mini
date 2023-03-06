@@ -5,7 +5,6 @@ import {
   queryHouseUserList,
   updateHouseUserAuth,
   deleteHouseUser,
-  queryAllDevice,
 } from '../apis/index'
 import { roomStore } from './room'
 
@@ -16,9 +15,6 @@ export const homeStore = observable({
   currentHomeDetail: {} as Home.IHomeDetail,
 
   homeMemberInfo: {} as Home.HomeMemberInfo,
-
-  /** 全屋设备，对应房间id作为key，房间的设备列表作为key */
-  homeDeviceList: {} as Record<string, Device.DeviceItem[]>,
 
   get currentHomeId() {
     return this.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
@@ -66,31 +62,11 @@ export const homeStore = observable({
       runInAction(() => {
         homeStore.currentHomeDetail = Object.assign({ houseId }, res.result)
       })
-      await homeStore.updataHomeDeviceList()
-      roomStore.updateRoomList()
+      await roomStore.updataHomeDeviceList()
+      await roomStore.updateRoomList()
       return
     } else {
       return Promise.reject('获取家庭信息失败')
-    }
-  },
-
-  async updataHomeDeviceList() {
-    const res = await queryAllDevice(homeStore.currentHomeDetail.houseId)
-    const list = {} as Record<string, Device.DeviceItem[]>
-    if (res.success) {
-      res.result.forEach((device) => {
-        if (list[device.roomId]) {
-          list[device.roomId].push(device)
-        } else {
-          list[device.roomId] = [device]
-        }
-      })
-      runInAction(() => {
-        homeStore.homeDeviceList = list
-      })
-      return
-    } else {
-      return Promise.reject('获取全屋设备信息失败')
     }
   },
 

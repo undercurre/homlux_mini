@@ -13,15 +13,15 @@
     </van-button>
   </view>
   <!-- 无设备 -->
-  <view wx:if="{{deviceList.length === 0}}" class="w-750rpx flex-col-center">
+  <view wx:if="{{deviceListCompited.length === 0}}" class="w-750rpx flex-col-center">
     <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx mt-74rpx"></image>
     <text class="text-28rpx text-black-59 mt-48rpx">这个房间空空如也</text>
   </view>
   <!-- 设备列表 -->
   <view id="content" class="flex-1">
-    <scroll-view enhanced scroll-y show-scrollbar="{{false}}" style="height: {{listHeight}}px;"  refresher-triggered="{{isRefresh}}" bindrefresherrefresh="onPullDownRefresh" refresher-enabled>
-      <van-cell-group inset wx:for="{{deviceList}}" wx:key="deviceId">
-        <van-cell clickable bind:click="handleCardClick" data-index="{{index}}">
+    <scroll-view enhanced scroll-y show-scrollbar="{{false}}" style="height: {{listHeight}}px;" refresher-triggered="{{isRefresh}}" bindrefresherrefresh="onPullDownRefresh" refresher-enabled>
+      <van-cell-group inset wx:for="{{deviceListCompited}}" wx:key="deviceId">
+        <van-cell clickable bind:click="handleCardClick" data-device-id="{{item.deviceId}}">
           <view class="flex item-center">
             <view class="w-96rpx h-96rpx bg-hex-F6FAFD rounded-999 flex-center">
               <image src="{{item.pic}}" class="w-72rpx h-72rpx" />

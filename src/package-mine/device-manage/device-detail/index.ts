@@ -1,10 +1,11 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { homeStore, roomBinding } from '../../../store/index'
+import { deviceStore, homeStore, roomBinding } from '../../../store/index'
 import pageBehavior from '../../../behaviors/pageBehaviors'
 import { checkOtaVersion, deleteDevice, editDeviceInfo, queryDeviceInfoByDeviceId } from '../../../apis/index'
 import { proName, proType } from '../../../config/index'
 import Dialog from '@vant/weapp/dialog/dialog'
+import { emitter } from '../../../utils/eventBus'
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding] }), pageBehavior],
   /**
@@ -17,6 +18,7 @@ ComponentWithComputed({
     showEditNamePopup: false,
     showEditRoomPopup: false,
     deviceInfo: {} as Device.DeviceItem,
+    gatewayDesc: '',
   },
 
   computed: {
@@ -29,6 +31,22 @@ ComponentWithComputed({
     prodType(data) {
       if (data.deviceInfo.proType) {
         return proName[data.deviceInfo.proType]
+      }
+      return ''
+    },
+    isSubDevice(data) {
+      if (([proType.switch, proType.light] as string[]).includes(data.deviceInfo.proType)) {
+        return true
+      }
+      return false
+    },
+    belongsToGateway(data) {
+      if (data.deviceInfo.gatewayId) {
+        const gateway = deviceStore.allRoomDeviceList.find((device) => device.deviceId === data.deviceInfo.gatewayId)
+        if (gateway) {
+          return `${gateway.deviceName} | ${gateway.roomName}`
+        }
+        return ''
       }
       return ''
     },
@@ -79,6 +97,7 @@ ComponentWithComputed({
       })
       if (res.success) {
         this.updateDeviceInfo()
+        emitter.emit('deviceEdit')
       }
     },
     handleDeviceRoomEditPopup() {
@@ -104,6 +123,8 @@ ComponentWithComputed({
       })
       if (res.success) {
         this.updateDeviceInfo()
+        homeStore.updateHomeInfo()
+        emitter.emit('deviceEdit')
       }
     },
     handleToOTA() {

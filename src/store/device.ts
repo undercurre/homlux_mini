@@ -11,6 +11,10 @@ export const deviceStore = observable({
    */
   deviceList: [] as Device.DeviceItem[],
   /**
+   * 全屋设备
+   */
+  allRoomDeviceList: [] as Device.DeviceItem[],
+  /**
    * 当前选择的灯具的状态
    */
   lightInfo: {} as Record<string, number>,
@@ -105,7 +109,7 @@ export const deviceStore = observable({
     const res = await queryAllDevice(houseId)
     if (res.success) {
       runInAction(() => {
-        deviceStore.deviceList = res.result
+        deviceStore.allRoomDeviceList = res.result
       })
     }
   },
@@ -133,6 +137,6 @@ export const deviceStore = observable({
 
 export const deviceBinding = {
   store: deviceStore,
-  fields: ['selectList', 'selectType', 'deviceList', 'lightInfo'],
+  fields: ['selectList', 'selectType', 'deviceList', 'lightInfo', 'allRoomDeviceList'],
   actions: [],
 }

@@ -7,6 +7,7 @@ type Events = {
       eventType: keyof typeof WSEventType
     }
   } // 从websocket接受到信息
+  deviceEdit: void
 }
 
 export const WSEventType = {
