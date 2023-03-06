@@ -4,7 +4,7 @@ import { homeBinding, roomBinding } from '../../store/index'
 import { bleUtil, strUtil, BleClient, getCurrentPageParams } from '../../utils/index'
 import { IBleDevice } from './types'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { sendCmdAddSubdevice, bindDevice, queryDeviceOnlineStatus, checkDevice } from '../../apis/index'
+import { sendCmdAddSubdevice, bindDevice, queryDeviceOnlineStatus, queryProtypeInfo } from '../../apis/index'
 
 type StatusName = 'discover' | 'requesting' | 'success' | 'error' | 'openBle'
 
@@ -138,7 +138,6 @@ ComponentWithComputed({
 
       // 开始搜寻附近的蓝牙外围设备
       wx.startBluetoothDevicesDiscovery({
-        // services: ['BAE55B96-7D19-458D-970C-50613D801BC9'],
         allowDuplicatesKey: false,
         powerLevel: 'high',
         interval: 3000,
@@ -154,10 +153,9 @@ ComponentWithComputed({
 
       console.log('Device Found', device, dataMsg, msgObj)
 
-      await checkDevice({
-        mac: msgObj.mac,
-        productId: '26',
-        productIdType: 2,
+      await queryProtypeInfo({
+        proType: '0x13',
+        mid: '0x01'
       })
 
       const bleDevice: IBleDevice = {
@@ -352,12 +350,13 @@ ComponentWithComputed({
       this.setData({
         deviceList: this.data.deviceList,
       })
+
       const res = await bleDeviceItem.client.sendCmd({
         cmdType: 'control',
         subType: 'haveTry',
       })
 
-      console.log('tryControl-res', res)
+      console.log('tryControl-res', res)  
 
       bleDeviceItem.requesting = false
 

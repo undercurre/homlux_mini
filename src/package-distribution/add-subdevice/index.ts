@@ -3,7 +3,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, roomBinding } from '../../store/index'
 import { bleUtil, strUtil, BleClient, getCurrentPageParams } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { sendCmdAddSubdevice, bindDevice, queryDeviceOnlineStatus, checkDevice } from '../../apis/index'
+import { sendCmdAddSubdevice, bindDevice, queryDeviceOnlineStatus, queryProtypeInfo } from '../../apis/index'
 import { IBleDevice } from './typings'
 
 type StatusName = 'linking' | 'success' | 'error' | 'openBle'
@@ -110,10 +110,8 @@ ComponentWithComputed({
 
       wx.stopBluetoothDevicesDiscovery()
 
-      await checkDevice({
-        mac: msgObj.mac,
-        productId: '26',
-        productIdType: 2,
+      await queryProtypeInfo({
+        pid: '26',
       })
 
       const bleDevice: IBleDevice = {

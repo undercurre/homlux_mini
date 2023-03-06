@@ -2,8 +2,8 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { deviceBinding, homeBinding } from '../../store/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { strUtil } from '../../utils/index'
-import { checkDevice } from '../../apis/index'
+import { strUtil, bleUtil } from '../../utils/index'
+import { queryProtypeInfo } from '../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -24,6 +24,7 @@ ComponentWithComputed({
     isShowGatewayList: false,
     isShowNoGatewayTips: false,
     _isScaning: false,
+    _isInitBle: false,
     selectGatewayId: '',
     selectGatewaySn: '',
     subdeviceList: Array<string>(),
@@ -62,14 +63,13 @@ ComponentWithComputed({
 
         return
       }
-
-      this.initBle()
     },
   },
 
   pageLifetimes: {
-    show() {
+    async show() {
       console.log('show')
+      this.initBle()
     },
     hide() {
       console.log('hide')
@@ -145,6 +145,19 @@ ComponentWithComputed({
     },
 
     async initBle() {
+      if (this.data._isInitBle) {
+        return
+      }
+
+      // 是否已打开蓝牙
+      const res = await bleUtil.checkBle()
+
+      if (!res) {
+        return
+      }
+
+      this.data._isInitBle = true
+
       wx.onBluetoothAdapterStateChange((changeRes) => {
         console.log('onBluetoothAdapterStateChange', changeRes)
       })
@@ -152,20 +165,9 @@ ComponentWithComputed({
       // 初始化蓝牙模块
       const openBleRes = await wx.openBluetoothAdapter({
         mode: 'central',
-      })
+      }).catch(err => err)
 
       console.log('scan-openBleRes', openBleRes)
-
-      // 没有打开蓝牙异常处理
-      if (openBleRes.errCode === 10001) {
-        wx.openAppAuthorizeSetting({
-          success(res) {
-            console.log(res)
-          },
-        })
-
-        return
-      }
 
       // 监听扫描到新设备事件
       wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
@@ -243,15 +245,24 @@ ComponentWithComputed({
       // console.log('modelId', modelId)
 
       // 获取云端的产品基本信息
-      const res = await checkDevice({
-        productId: params.pid,
-        productIdType: params.mode === '01' ? 2 : 1,
+      const res = await queryProtypeInfo({
+        pid: params.pid,
       })
 
-      console.log('checkDevice', res)
+      console.log('queryProtypeInfo', res)
+
+      setTimeout(() => {
+        this.setData({
+          _isScaning: false,
+        })
+
+        console.log('_isScaning', this.data._isScaning)
+      }, 2000)
 
       if (!res.success) {
         wx.showToast({ title: '验证产品信息失败', icon: 'error' })
+        
+        return
       } else if (res.result && res.result.proType === '0x18') {
         this.bindGateway({
           ssid: params.ssid,
@@ -274,14 +285,6 @@ ComponentWithComputed({
       }
 
       wx.hideLoading()
-
-      setTimeout(() => {
-        this.setData({
-          _isScaning: false,
-        })
-
-        console.log('_isScaning', this.data._isScaning)
-      }, 2000)
     },
 
     bindGateway(params: IAnyObject) {

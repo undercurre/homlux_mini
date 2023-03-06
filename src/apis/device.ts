@@ -72,26 +72,23 @@ export async function queryDeviceOnlineStatus(params: { deviceType: '1' | '2' | 
 }
 
 /**
- * 配网-校验子设备mac或productId的合法性并返回品类信息
+ * 根据产品id查产品信息
  * @param params
  */
-export async function checkDevice(params: {
-  mac?: string
-  productId: string
-  productIdType: 1 | 2 // 产品id类型，1：扫码配网的pid 2：蓝牙配网的pid
+export async function queryProtypeInfo(params: {
+  pid?: string
+  proType?: string,
+  mid?: string
 }) {
   return await mzaioRequest.post<{
     icon: string
-    isValid: boolean
-    mac: string
-    modelId: string
-    proType: string
+    productId: string
     productName: string
-    sn: string
+    proType: string
   }>({
     log: true,
     loading: false,
-    url: '/v1/device/checkDevice',
+    url: '/v1/device/queryProtypeInfo',
     data: params,
   })
 }
@@ -107,7 +104,7 @@ export async function bindDevice(params: {
   deviceName: string
 }) {
   return await mzaioRequest.post<{ deviceId: string; isBind: boolean; msg: string }>({
-    log: false,
+    log: true,
     loading: false,
     url: '/v1/device/bindDevice',
     data: params,
