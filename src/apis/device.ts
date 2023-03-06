@@ -75,11 +75,7 @@ export async function queryDeviceOnlineStatus(params: { deviceType: '1' | '2' | 
  * 根据产品id查产品信息
  * @param params
  */
-export async function queryProtypeInfo(params: {
-  pid?: string
-  proType?: string,
-  mid?: string
-}) {
+export async function queryProtypeInfo(params: { pid?: string; proType?: string; mid?: string }) {
   return await mzaioRequest.post<{
     icon: string
     productId: string

@@ -155,7 +155,7 @@ ComponentWithComputed({
 
       await queryProtypeInfo({
         proType: '0x13',
-        mid: '0x01'
+        mid: '0x01',
       })
 
       const bleDevice: IBleDevice = {
@@ -356,7 +356,7 @@ ComponentWithComputed({
         subType: 'haveTry',
       })
 
-      console.log('tryControl-res', res)  
+      console.log('tryControl-res', res)
 
       bleDeviceItem.requesting = false
 

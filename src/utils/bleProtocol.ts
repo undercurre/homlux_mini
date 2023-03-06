@@ -128,61 +128,61 @@ export class BleClient {
       await this.connect()
 
       const { cmdType, subType } = params
-  
+
       console.log(`---cmdType----- ${params.cmdType}--${params.subType}`)
-  
+
       const msgId = ++this.msgId // 等待回复的指令msgId
       // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
       // 1 byte	     1 byte	   1 byte	          N  bytes	    1 byte
       const cmdArr = [CmdTypeMap[cmdType], msgId, 0x00]
-  
+
       cmdArr.push(...ControlSubType[subType])
-  
+
       cmdArr[2] = cmdArr.length
-  
+
       cmdArr.push(bleUtil.getCheckNum(cmdArr))
-  
+
       const hexArr = cmdArr.map((item) => item.toString(16).padStart(2, '0').toUpperCase())
-  
+
       const msg = aesUtil.encrypt(hexArr.join(''), this.key, 'Hex')
-  
+
       const buffer = strUtil.hexStringToArrayBuffer(msg)
-  
+
       return new Promise<{ code: string; success: boolean; cmdType?: string; subCmdType?: string; resMsg: string }>(
         (resolve) => {
           // 超时处理
           const timeId = setTimeout(() => {
             resolve({ code: '-1', success: false, resMsg: 'request timeout', cmdType: cmdType, subCmdType: subType })
           }, 5000)
-  
+
           const listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
             console.log(`onBLECharacteristicValueChange ${res.characteristicId} has changed, now is ${res.value}`, res)
             if (res.deviceId !== this.deviceUuid) {
               return
             }
-  
+
             const hex = strUtil.ab2hex(res.value)
             const msg = aesUtil.decrypt(hex, this.key, 'Hex')
-  
+
             console.log('onBLECharacteristicValueChange-msg', msg)
             const resMsgId = parseInt(msg.substr(2, 2), 16) // 收到回复的指令msgId
             const packLen = parseInt(msg.substr(4, 2), 16) // 回复消息的Byte Msg Id到Byte Checksum的总长度，单位byte
-  
+
             // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
             // 1 byte	     1 byte	   1 byte	          N  bytes	    1 byte
             console.log('msgId', msgId, 'resMsgId', resMsgId)
             if (resMsgId !== msgId) {
               return
             }
-  
+
             // 仅截取消息参数部分数据，
             const resMsg = msg.substr(6, (packLen - 3) * 2)
             console.log('data-res', resMsg)
             wx.offBLECharacteristicValueChange(listener)
             const code = resMsg.substr(2, 2)
-  
+
             clearTimeout(timeId)
-  
+
             resolve({
               code: code,
               resMsg: resMsg.substr(4),
@@ -192,9 +192,9 @@ export class BleClient {
             })
             console.log('resolve')
           }
-  
+
           wx.onBLECharacteristicValueChange(listener)
-  
+
           wx.writeBLECharacteristicValue({
             deviceId: this.deviceUuid,
             serviceId: this.serviceId,
@@ -204,16 +204,16 @@ export class BleClient {
               console.log('writeRes', res)
             },
           })
-  
+
           console.log(`-------------sendCmd-------------end：${this.mac}`)
         },
       )
-    } catch(err) {
+    } catch (err) {
       return {
         code: -1,
         success: false,
         error: err,
-        resMsg: ''
+        resMsg: '',
       }
     }
   }
@@ -297,7 +297,7 @@ export const bleUtil = {
   },
 
   async checkBle() {
-    let res = wx.getSystemSetting()
+    const res = wx.getSystemSetting()
 
     console.log('getSystemSetting', res)
 
@@ -312,21 +312,21 @@ export const bleUtil = {
         confirmText: '去开启',
         confirmColor: '#27282A',
         // 由于调用openSystemBluetoothSetting接口，必须通过回调方式调用，promise方式会被拒绝
-        success (bleDialogRes) {
+        success(bleDialogRes) {
           console.log('bleDialogRes', bleDialogRes)
           if (bleDialogRes.cancel) {
             return
           }
-  
+
           if (deviceInfo.platform === 'android') {
             wx.openSystemBluetoothSetting()
           } else {
             wx.getWifiList()
           }
-        }
-      });
+        },
+      })
     }
 
     return res.bluetoothEnabled
-  }
+  },
 }

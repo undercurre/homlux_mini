@@ -163,9 +163,11 @@ ComponentWithComputed({
       })
 
       // 初始化蓝牙模块
-      const openBleRes = await wx.openBluetoothAdapter({
-        mode: 'central',
-      }).catch(err => err)
+      const openBleRes = await wx
+        .openBluetoothAdapter({
+          mode: 'central',
+        })
+        .catch((err) => err)
 
       console.log('scan-openBleRes', openBleRes)
 
@@ -261,7 +263,7 @@ ComponentWithComputed({
 
       if (!res.success) {
         wx.showToast({ title: '验证产品信息失败', icon: 'error' })
-        
+
         return
       } else if (res.result && res.result.proType === '0x18') {
         this.bindGateway({
