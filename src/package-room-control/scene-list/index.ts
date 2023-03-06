@@ -4,7 +4,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { deviceStore, sceneBinding, sceneStore } from '../../store/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { runInAction } from 'mobx-miniprogram'
-import { execScene } from '../../apis/scene'
+import { execScene, updateSceneSort } from '../../apis/scene'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [sceneBinding] }), pageBehavior],
@@ -14,30 +14,40 @@ ComponentWithComputed({
   data: {
     contentHeight: 0,
     isRefresh: false,
+    listData: [] as IAnyObject[],
+    pageMetaScrollTop: 0,
+    scrollTop: 0,
   },
 
-  computed: {
-    sceneListWithLinkName(data) {
-      if (data.sceneList) {
+  watch: {
+    sceneList() {
+      if (sceneStore.sceneList) {
+        const listData = [] as IAnyObject[]
         const deviceMap = deviceStore.deviceMap
-        return data.sceneList.map((scene: Scene.SceneItem) => {
+        sceneStore.sceneList.forEach((scene: Scene.SceneItem) => {
           if (scene.deviceConditions?.length > 0) {
             const device = deviceMap[scene.deviceConditions[0].deviceId]
             const switchName = device.switchInfoDTOList.find(
               (switchItem) => switchItem.switchId === scene.deviceConditions[0].controlEvent[0].ep.toString(),
             )?.switchName
-            return {
+            listData.push({
               ...scene,
+              dragId: scene.sceneId,
               linkName: `${device.deviceName?.slice(0, 5)}${switchName?.slice(0, 4)} | ${device.roomName}`,
-            }
+            })
           }
-          return {
+          listData.push({
             ...scene,
+            dragId: scene.sceneId,
             linkName: '',
-          }
+          })
         })
+        this.setData({
+          listData,
+        })
+        const drag = this.selectComponent('#drag')
+        drag.init()
       }
-      return []
     },
   },
 
@@ -46,17 +56,14 @@ ComponentWithComputed({
      * 生命周期函数--监听页面加载
      */
     onLoad() {
-      wx.createSelectorQuery()
-        .select('#content')
-        .boundingClientRect()
-        .exec((res) => {
-          if (res[0] && res[0].height) {
-            this.setData({
-              contentHeight: res[0].height,
-            })
-          }
-        })
       sceneStore.updateSceneList()
+    },
+
+    // 页面滚动
+    onPageScroll(e: { scrollTop: number }) {
+      this.setData({
+        scrollTop: e.scrollTop,
+      })
     },
 
     async onPullDownRefresh() {
@@ -70,8 +77,9 @@ ComponentWithComputed({
       wx.stopPullDownRefresh()
     },
 
-    async handleExecScene(e: { currentTarget: { dataset: { info: { sceneId: string } } } }) {
-      const res = await execScene(e.currentTarget.dataset.info.sceneId)
+    async handleExecScene(e: { detail: Scene.SceneItem }) {
+      // console.log('handleExecScene', e)
+      const res = await execScene(e.detail.sceneId)
       if (res.success) {
         wx.showToast({
           icon: 'success',
@@ -85,14 +93,39 @@ ComponentWithComputed({
       }
     },
 
-    toSetting(e: { currentTarget: { dataset: { index: number } } }) {
-      console.log(e.currentTarget.dataset.index)
+    toSetting(e: { detail: Scene.SceneItem }) {
+      console.log('toSetting', e)
+      const index = sceneStore.sceneList.findIndex((scene) => scene.sceneId === e.detail.sceneId)
       runInAction(() => {
-        sceneStore.selectSceneIndex = e.currentTarget.dataset.index
+        sceneStore.selectSceneIndex = index
       })
       wx.navigateTo({
         url: '/package-room-control/scene-edit/index',
       })
+    },
+
+    // handleChange(e) {
+    //   console.log('handleChange', e)
+    // },
+
+    handleScroll(e: { detail: { scrollTop: number } }) {
+      this.setData({
+        pageMetaScrollTop: e.detail.scrollTop,
+      })
+    },
+
+    handleSortEnd(e: { detail: { listData: Scene.SceneItem[] } }) {
+      console.log('handleSortEnd', e)
+      const sceneSortList = [] as { orderNum: number; sceneId: string }[]
+      e.detail.listData.forEach((item, index) => {
+        if (item.orderNum != index) {
+          sceneSortList.push({
+            orderNum: index,
+            sceneId: item.sceneId,
+          })
+        }
+      })
+      updateSceneSort({ sceneSortList })
     },
   },
 })

@@ -50,3 +50,12 @@ export async function updateScene(data: Scene.UpdateSceneDto) {
     data,
   })
 }
+
+export async function updateSceneSort(data: { sceneSortList: { orderNum: number; sceneId: string }[] }) {
+  return await mzaioRequest.post<IAnyObject>({
+    log: true,
+    loading: true,
+    url: '/v1/mzgd/scene/updateSceneSort',
+    data,
+  })
+}
