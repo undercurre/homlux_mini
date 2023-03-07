@@ -7,6 +7,7 @@ import {
   deleteHouseUser,
   inviteHouseUser
 } from '../apis/index'
+import { deviceStore } from './device'
 import { roomStore } from './room'
 
 export const homeStore = observable({
@@ -63,6 +64,7 @@ export const homeStore = observable({
       runInAction(() => {
         homeStore.currentHomeDetail = Object.assign({ houseId }, res.result)
       })
+      deviceStore.updateAllRoomDeviceList()
       await roomStore.updataHomeDeviceList()
       await roomStore.updateRoomList()
       return

@@ -11,7 +11,7 @@ declare namespace Scene {
     deviceActions: DeviceAction[]
     deviceConditions: DeviceCondition[]
     houseId: string
-    orderNum: string
+    orderNum: number
     roomId: string
   }
   /**

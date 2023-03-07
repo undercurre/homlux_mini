@@ -1,0 +1,15 @@
+<van-cell-group inset>
+  <van-cell clickable center data-item="{{item.data}}" bind:click="handleToSetting">
+    <view slot="title" class="flex items-center">
+      <image src="/assets/img/scene/{{item.data.sceneIcon}}.png" class="w-72rpx h-72rpx" />
+      <view class="flex flex-col items-start ml-24rpx">
+        <text class="text-32rpx text-hex-353535 font-medium leading-none mt-10rpx">{{item.data.sceneName}}</text>
+        <view class="flex items-center mt-16rpx">
+          <image src="/assets/img/base/link.png" class="w-32rpx h-32rpx" />
+          <text class="text-28rpx text-hex-6e6f74 font-normal ml-16rpx">{{item.data.linkName}}</text>
+        </view>
+      </view>
+    </view>
+    <van-button slot="right-icon" data-item="{{item.data}}" catchtap="handleExecScene" custom-class="exec-btn" type="default">执行</van-button>
+  </van-cell>
+</van-cell-group>

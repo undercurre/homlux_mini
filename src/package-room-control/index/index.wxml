@@ -32,7 +32,7 @@
       </view>
     </view>
     <view id="content" class="flex-1">
-      <scroll-view enhanced show-scrollbar="{{false}}" refresher-triggered="{{isRefresh}}" bindrefresherrefresh="onPullDownRefresh" refresher-enabled scroll-y="{{true}}" style="height: {{contentHeight}}px;">
+      <scroll-view enhanced show-scrollbar="{{false}}" refresher-triggered="{{isRefresh}}" bindrefresherrefresh="onPullDownRefresh" refresher-enabled="{{!isLongPress}}" scroll-y="{{!isLongPress}}" style="height: {{contentHeight}}px;">
         <view class="flex flex-col items-center w-750rpx">
           <!-- 灯具设备卡片 -->
           <view class="mt-24rpx" wx:if="{{lightList && lightList.length>0}}">

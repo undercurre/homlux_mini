@@ -1,4 +1,8 @@
 {
   "component": true,
-  "usingComponents": {}
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "cell": "./cell/index",
+    "drag": "../components/drag/index"
+  }
 }

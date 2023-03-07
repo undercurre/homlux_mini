@@ -85,9 +85,13 @@ export class BleClient {
       .createBLEConnection({
         deviceId: this.deviceUuid, // 搜索到设备的 deviceId
       })
-      .catch((err) => console.log('connectRes-err', err))
+      .catch((err: WechatMiniprogram.BluetoothError) => err)
 
-    console.log('connectRes', this.mac, connectRes, Date.now() - date1)
+    console.log('connectRes', this.mac, this.deviceUuid, connectRes, Date.now() - date1)
+
+    if (connectRes.errCode !== 0) {
+      throw connectRes
+    }
 
     // 连接成功，获取服务
     const bleServiceRes = await wx.getBLEDeviceServices({
@@ -113,93 +117,105 @@ export class BleClient {
     })
 
     console.log('notifyRes', notifyRes)
+
+    return connectRes
   }
 
   async sendCmd(params: { cmdType: keyof typeof CmdTypeMap; subType: keyof typeof ControlSubType }) {
     console.log(`-------------sendCmd-------------start: ${this.mac}`)
-    await this.connect()
 
-    const { cmdType, subType } = params
+    try {
+      await this.connect()
 
-    console.log(`---cmdType----- ${params.cmdType}--${params.subType}`)
+      const { cmdType, subType } = params
 
-    const msgId = ++this.msgId // 等待回复的指令msgId
-    // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
-    // 1 byte	     1 byte	   1 byte	          N  bytes	    1 byte
-    const cmdArr = [CmdTypeMap[cmdType], msgId, 0x00]
+      console.log(`---cmdType----- ${params.cmdType}--${params.subType}`)
 
-    cmdArr.push(...ControlSubType[subType])
+      const msgId = ++this.msgId // 等待回复的指令msgId
+      // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
+      // 1 byte	     1 byte	   1 byte	          N  bytes	    1 byte
+      const cmdArr = [CmdTypeMap[cmdType], msgId, 0x00]
 
-    cmdArr[2] = cmdArr.length
+      cmdArr.push(...ControlSubType[subType])
 
-    cmdArr.push(bleUtil.getCheckNum(cmdArr))
+      cmdArr[2] = cmdArr.length
 
-    const hexArr = cmdArr.map((item) => item.toString(16).padStart(2, '0').toUpperCase())
+      cmdArr.push(bleUtil.getCheckNum(cmdArr))
 
-    const msg = aesUtil.encrypt(hexArr.join(''), this.key, 'Hex')
+      const hexArr = cmdArr.map((item) => item.toString(16).padStart(2, '0').toUpperCase())
 
-    const buffer = strUtil.hexStringToArrayBuffer(msg)
+      const msg = aesUtil.encrypt(hexArr.join(''), this.key, 'Hex')
 
-    return new Promise<{ code: string; success: boolean; cmdType: string; subCmdType: string; resMsg: string }>(
-      (resolve) => {
-        // 超时处理
-        const timeId = setTimeout(() => {
-          resolve({ code: '-1', success: false, resMsg: 'request timeout', cmdType: cmdType, subCmdType: subType })
-        }, 6000)
+      const buffer = strUtil.hexStringToArrayBuffer(msg)
 
-        const listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
-          console.log(`onBLECharacteristicValueChange ${res.characteristicId} has changed, now is ${res.value}`, res)
-          if (res.deviceId !== this.deviceUuid) {
-            return
+      return new Promise<{ code: string; success: boolean; cmdType?: string; subCmdType?: string; resMsg: string }>(
+        (resolve) => {
+          // 超时处理
+          const timeId = setTimeout(() => {
+            resolve({ code: '-1', success: false, resMsg: 'request timeout', cmdType: cmdType, subCmdType: subType })
+          }, 5000)
+
+          const listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
+            console.log(`onBLECharacteristicValueChange ${res.characteristicId} has changed, now is ${res.value}`, res)
+            if (res.deviceId !== this.deviceUuid) {
+              return
+            }
+
+            const hex = strUtil.ab2hex(res.value)
+            const msg = aesUtil.decrypt(hex, this.key, 'Hex')
+
+            console.log('onBLECharacteristicValueChange-msg', msg)
+            const resMsgId = parseInt(msg.substr(2, 2), 16) // 收到回复的指令msgId
+            const packLen = parseInt(msg.substr(4, 2), 16) // 回复消息的Byte Msg Id到Byte Checksum的总长度，单位byte
+
+            // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
+            // 1 byte	     1 byte	   1 byte	          N  bytes	    1 byte
+            console.log('msgId', msgId, 'resMsgId', resMsgId)
+            if (resMsgId !== msgId) {
+              return
+            }
+
+            // 仅截取消息参数部分数据，
+            const resMsg = msg.substr(6, (packLen - 3) * 2)
+            console.log('data-res', resMsg)
+            wx.offBLECharacteristicValueChange(listener)
+            const code = resMsg.substr(2, 2)
+
+            clearTimeout(timeId)
+
+            resolve({
+              code: code,
+              resMsg: resMsg.substr(4),
+              success: code === '00',
+              cmdType: cmdType,
+              subCmdType: subType,
+            })
+            console.log('resolve')
           }
 
-          const hex = strUtil.ab2hex(res.value)
-          const msg = aesUtil.decrypt(hex, this.key, 'Hex')
+          wx.onBLECharacteristicValueChange(listener)
 
-          console.log('onBLECharacteristicValueChange-msg', msg)
-          const resMsgId = parseInt(msg.substr(2, 2), 16) // 收到回复的指令msgId
-          const packLen = parseInt(msg.substr(4, 2), 16) // 回复消息的Byte Msg Id到Byte Checksum的总长度，单位byte
-
-          // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
-          // 1 byte	     1 byte	   1 byte	          N  bytes	    1 byte
-          console.log('msgId', msgId, 'resMsgId', resMsgId)
-          if (resMsgId !== msgId) {
-            return
-          }
-
-          // 仅截取消息参数部分数据，
-          const resMsg = msg.substr(6, (packLen - 3) * 2)
-          console.log('data-res', resMsg)
-          wx.offBLECharacteristicValueChange(listener)
-          const code = resMsg.substr(2, 2)
-
-          clearTimeout(timeId)
-
-          resolve({
-            code: code,
-            resMsg: resMsg.substr(4),
-            success: code === '00',
-            cmdType: cmdType,
-            subCmdType: subType,
+          wx.writeBLECharacteristicValue({
+            deviceId: this.deviceUuid,
+            serviceId: this.serviceId,
+            characteristicId: this.characteristicId,
+            value: buffer,
+            success: (res) => {
+              console.log('writeRes', res)
+            },
           })
-          console.log('resolve')
-        }
 
-        wx.onBLECharacteristicValueChange(listener)
-
-        wx.writeBLECharacteristicValue({
-          deviceId: this.deviceUuid,
-          serviceId: this.serviceId,
-          characteristicId: this.characteristicId,
-          value: buffer,
-          success: (res) => {
-            console.log('wirteRes', res)
-          },
-        })
-
-        console.log(`-------------sendCmd-------------end：${this.mac}`)
-      },
-    )
+          console.log(`-------------sendCmd-------------end：${this.mac}`)
+        },
+      )
+    } catch (err) {
+      return {
+        code: -1,
+        success: false,
+        error: err,
+        resMsg: '',
+      }
+    }
   }
 
   async startZigbeeNet() {
@@ -278,5 +294,39 @@ export const bleUtil = {
     }
     str = arr.join('')
     return str
+  },
+
+  async checkBle() {
+    const res = wx.getSystemSetting()
+
+    console.log('getSystemSetting', res)
+
+    // 没有打开蓝牙异常处理
+    if (!res.bluetoothEnabled) {
+      const deviceInfo = wx.getDeviceInfo()
+
+      wx.showModal({
+        content: '“Homlux”想开启您的蓝牙功能用于设备配网',
+        showCancel: true,
+        cancelColor: '#27282A',
+        confirmText: '去开启',
+        confirmColor: '#27282A',
+        // 由于调用openSystemBluetoothSetting接口，必须通过回调方式调用，promise方式会被拒绝
+        success(bleDialogRes) {
+          console.log('bleDialogRes', bleDialogRes)
+          if (bleDialogRes.cancel) {
+            return
+          }
+
+          if (deviceInfo.platform === 'android') {
+            wx.openSystemBluetoothSetting()
+          } else {
+            wx.getWifiList()
+          }
+        },
+      })
+    }
+
+    return res.bluetoothEnabled
   },
 }

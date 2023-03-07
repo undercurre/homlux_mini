@@ -1,11 +1,14 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { othersBinding, roomBinding, userBinding, homeBinding, homeStore } from '../../store/index'
+import { othersBinding, roomBinding, userBinding, homeBinding, deviceBinding, homeStore } from '../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { storage } from '../../utils/index'
+import { proType } from '../../config/index'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
 ComponentWithComputed({
-  behaviors: [BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding, homeBinding] })],
+  behaviors: [
+    BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding, homeBinding, deviceBinding] }),
+  ],
   data: {
     dropdownMenu: {
       x: '0px',
@@ -32,15 +35,25 @@ ComponentWithComputed({
       return ''
     },
     // 家庭是否有设备
-    hasDevice() {
-      // if (data.currentHomeDetail) {
-      //   const
-      // }
-      return true
+    hasDevice(data) {
+      if (data.allRoomDeviceList && data.allRoomDeviceList.length > 0) {
+        return true
+      }
+      return false
     },
-    // 是否显示全局控制开关（需要有灯）
-    isShowHomeControl() {
-      return true
+    // 是否显示全局控制开关（需要有灯或者开关）
+    isShowHomeControl(data) {
+      let hasLightOrSwitch = false
+      if (data.allRoomDeviceList) {
+        data.allRoomDeviceList.some((device: Device.DeviceItem) => {
+          if (([proType.light, proType.switch] as string[]).includes(device.proType)) {
+            hasLightOrSwitch = true
+            return true
+          }
+          return false
+        })
+      }
+      return hasLightOrSwitch
     },
   },
   watch: {
@@ -259,16 +272,18 @@ ComponentWithComputed({
       })
     },
     updateContentHeight() {
-      wx.createSelectorQuery()
-        .select('#content')
-        .boundingClientRect()
-        .exec((res) => {
-          if (res[0] && res[0].height) {
-            this.setData({
-              contentHeight: res[0].height,
-            })
-          }
-        })
+      setTimeout(() => {
+        wx.createSelectorQuery()
+          .select('#content')
+          .boundingClientRect()
+          .exec((res) => {
+            if (res[0] && res[0].height) {
+              this.setData({
+                contentHeight: res[0].height,
+              })
+            }
+          })
+      }, 100)
     },
     doHomeSelectArrowAnimation(newValue: boolean, oldValue: boolean) {
       if (newValue === oldValue) {

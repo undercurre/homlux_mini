@@ -31,7 +31,7 @@ export const sceneStore = observable({
     const res = await querySceneList(roomId)
     if (res.success) {
       runInAction(() => {
-        sceneStore.sceneList = res.result
+        sceneStore.sceneList = res.result.sort((a, b) => a.orderNum - b.orderNum)
       })
     }
   },
