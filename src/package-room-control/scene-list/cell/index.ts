@@ -10,9 +10,6 @@ Component({
     item: {
       type: Object,
       value: {},
-      observer(v) {
-        console.log(v)
-      },
     },
   },
 

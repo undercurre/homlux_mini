@@ -1,5 +1,5 @@
 <wxs module="wxs" src="./index.wxs"></wxs>
-<view wx:if="{{isRender}}" change:info="{{wxs.infoObserver}}" info="{{info}}" id="popup" class="fixed left-0 w-750rpx h-720rpx opacity-0" bindtouchstart="{{wxs.touchStart}}" bindtouchmove="{{wxs.touchMove}}">
+<view wx:if="{{isRender}}" change:info="{{wxs.infoObserver}}" info="{{info}}" id="popup" class="fixed z-200 left-0 w-750rpx h-720rpx opacity-0" bindtouchstart="{{wxs.touchStart}}" bindtouchmove="{{wxs.touchMove}}" bindtouchend="{{wxs.touchEnd}}">
   <!-- <view class="h-60rpx flex justify-center items-end" bindtap="handleBarTap">
     <view class="mb-14rpx h-8rpx w-76rpx bg-black-tips rounded-999"></view>
     <image wx:else class="mb-36rpx w-76rpx h-24rpx" src="/assets/img/base/popup-arrow.png"></image>

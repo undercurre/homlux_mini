@@ -7,6 +7,6 @@
 <nav-bar title="场景" left-arrow bind:leftTap="goBack" style="opacity: {{opacity}};"></nav-bar>
 
 <!-- 页面主体 -->
-<view class="h-12rpx"></view>
-<drag id="drag" list-data="{{listData}}" scroll-top="{{scrollTop}}" item-height="{{174}}" generic:item="cell" bind:toSetting="toSetting" bind:exec="handleExecScene" bind:change="handleChange" bind:sortend="handleSortEnd" bind:scroll="handleScroll"></drag>
+<view class="h-24rpx"></view>
+<drag id="drag" list-data="{{listData}}" scroll-top="{{scrollTop}}" item-height="{{188}}" generic:item="cell" bind:toSetting="toSetting" bind:exec="handleExecScene" bind:change="handleChange" bind:sortend="handleSortEnd" bind:scroll="handleScroll"></drag>
 <view class="h-64rpx"></view>

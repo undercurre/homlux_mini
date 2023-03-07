@@ -15,6 +15,22 @@ export async function queryAllDevice(houseId: string) {
 }
 
 /**
+ * 全屋设备开或者关
+ * 1：开 0：关
+ */
+export async function allDevicePowerControl(houseId: string, onOff: number) {
+  return await mzaioRequest.post<IAnyObject>({
+    log: false,
+    loading: true,
+    url: '/v1/mzgd/user/deviceAllPowerOnOrOff',
+    data: {
+      houseId,
+      onOff,
+    },
+  })
+}
+
+/**
  * 设备管理-根据家庭id房间id查询房间所有设备
  */
 export async function queryDeviceList(houseId: string, roomId: string) {

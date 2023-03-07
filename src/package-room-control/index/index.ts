@@ -71,6 +71,12 @@ ComponentWithComputed({
     },
   },
 
+  watch: {
+    deviceList() {
+      this.updateDeviceList()
+    },
+  },
+
   methods: {
     /**
      * 生命周期函数--监听页面加载
@@ -104,10 +110,12 @@ ComponentWithComputed({
                 deviceStore.deviceList[index] = res.result
                 deviceStore.deviceList = [...deviceStore.deviceList]
               })
+              this.updateDeviceList()
             }
           } else {
             // 可能是新绑的设备，直接更新房间
-            deviceStore.updateSubDeviceList()
+            await deviceStore.updateSubDeviceList()
+            this.updateDeviceList()
           }
         } else if (
           typeof e.result.eventData === 'object' &&
@@ -181,7 +189,11 @@ ComponentWithComputed({
         if (dragLight && lightList.length > 0) {
           dragLight.init()
         }
-      }, 50)
+        const dragSwitch = this.selectComponent('#drag-switch')
+        if (dragSwitch && switchList.length > 0) {
+          dragSwitch.init()
+        }
+      }, 100)
     },
 
     handleScroll(e: { detail: { scrollTop: number } }) {
@@ -232,7 +244,7 @@ ComponentWithComputed({
           // 将面板的灯状态恢复到上一个选中的灯
           let latestSelectLightId = ''
           deviceStore.selectList.forEach((deviceId) => {
-            if (deviceMap[deviceId].proType === proType.light) {
+            if (deviceMap[deviceId]?.proType === proType.light) {
               latestSelectLightId = deviceId
             }
           })
@@ -278,6 +290,8 @@ ComponentWithComputed({
         },
         { loading: true },
       )
+      // 首页需要更新灯光打开个数
+      homeStore.updateCurrentHomeDetail()
     },
     handleLightSortEnd(e: { detail: { listData: Device.DeviceItem[] } }) {
       const orderData = {
@@ -392,6 +406,14 @@ ComponentWithComputed({
       runInAction(() => {
         deviceStore.selectType = Array.from(typeList) as string[]
       })
+    },
+    handleScreenTap() {
+      console.log('handleScreenTap')
+      const deivceControlPopup = this.selectComponent('#device-control-popup')
+      console.log(deivceControlPopup)
+      if (deivceControlPopup) {
+        deivceControlPopup.handlePackUp()
+      }
     },
   },
 })

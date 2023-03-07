@@ -14,7 +14,7 @@
 </view>
 
 <!-- 有设备页面主体 -->
-<view wx:else class="w-full flex flex-col items-center">
+<view wx:else class="w-750rpx flex flex-col items-center">
   <!-- 场景 -->
   <view class="scene-card-bg w-686rpx h-96rpx flex items-center rounded-24rpx mt-24rpx" bindtap="handleSceneTap">
     <image src="/assets/img/base/scene.png" class="w-64rpx h-64rpx ml-24rpx"></image>
@@ -68,9 +68,9 @@
   <text class="text-white text-26rpx">您收藏了一个新的场景</text>
 </view>
 
-<!-- 滑动排序显示的card -->
-<device-card wx:if="{{isLongPress}}" class="fixed z-1000 opacity-75" style="left: calc({{touchLocation.x}}px - 80rpx); top: calc({{touchLocation.y}}px - 108rpx);" device-type="{{longPressType}}" device-info="{{longPressDevice}}" />
+<!-- 全屏幕点击捕获 -->
+<!-- <view class="w-750rpx h-100vh fixed z-100 left-0 top-0" bindtap="handleScreenTap"></view> -->
 
 <!-- 设备控制弹窗 -->
-<device-control-popup popup="{{controlPopupUp}}" bind:popMove="handlePopMove"></device-control-popup>
+<device-control-popup id="device-control-popup" popup="{{controlPopupUp}}" bind:popMove="handlePopMove"></device-control-popup>
 <add-scene-popup show="{{showAddScenePopup}}" bind:close="handleAddScenePopupClose" bind:addSuccess="handleShowAddSceneSuccess" />

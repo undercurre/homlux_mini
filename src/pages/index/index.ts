@@ -5,6 +5,7 @@ import { storage } from '../../utils/index'
 import { proType } from '../../config/index'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
+import { allDevicePowerControl } from '../../apis/index'
 ComponentWithComputed({
   behaviors: [
     BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding, homeBinding, deviceBinding] }),
@@ -178,6 +179,7 @@ ComponentWithComputed({
      */
     handleAllOn() {
       this.hideMenu()
+      allDevicePowerControl(homeStore.currentHomeId, 1)
       this.setData({
         allOnBtnTap: true,
       })
@@ -192,6 +194,7 @@ ComponentWithComputed({
      */
     handleAllOff() {
       this.hideMenu()
+      allDevicePowerControl(homeStore.currentHomeId, 1)
       this.setData({
         allOffBtnTap: true,
       })

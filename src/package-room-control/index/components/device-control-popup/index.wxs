@@ -19,15 +19,15 @@ module.exports = {
     minHeight = divideRpxByPx * 60 + bottomBarHeight
     var instance = ownerInstance.selectComponent('#popup')
     instance.setStyle({
-      bottom: bottom + 'px',
+      bottom: bottom + 'px'
     })
   },
   touchStart: function (e) {
-    touchY = e.touches[0].clientY
+    touchY = e.touches[0].pageY
     currentHeight = componentHeight + bottom
   },
   touchMove: function (e, ownerInstance) {
-    var offsetY = touchY - e.touches[0].clientY // 位移距离，下滑是负
+    var offsetY = touchY - e.touches[0].pageY // 位移距离，下滑是负
     var height = currentHeight + offsetY // 手指滑动后的组件高度
     if (height > componentHeight) {
       height = componentHeight
@@ -37,9 +37,29 @@ module.exports = {
     bottom = height - componentHeight
     var instance = ownerInstance.selectComponent('#popup')
     instance.setStyle({
-      bottom: bottom + 'px',
+      bottom: bottom + 'px'
     })
     return false
   },
-  bottom: bottom,
+  touchEnd: function (e, ownerInstance) {
+    console.log(bottom)
+    if (touchY - e.changedTouches[0].pageY < 0) {
+      console.log('手指下滑，收起')
+      // var instance = ownerInstance.selectComponent('#popup')
+      // instance.setStyle({
+      //   bottom: minHeight - componentHeight + 'px',
+      // })
+      ownerInstance.callMethod('handlePopDown')
+    } else {
+      // 手指上滑，展开
+      console.log('手指上滑，展开')
+      // var instance = ownerInstance.selectComponent('#popup')
+      // instance.setStyle({
+      //   bottom: '0px',
+      // })
+      // bottom
+      ownerInstance.callMethod('handlePopUp')
+    }
+  },
+  bottom: bottom
 }
