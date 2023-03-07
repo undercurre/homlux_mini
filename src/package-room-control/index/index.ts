@@ -110,10 +110,12 @@ ComponentWithComputed({
                 deviceStore.deviceList[index] = res.result
                 deviceStore.deviceList = [...deviceStore.deviceList]
               })
+              this.updateDeviceList()
             }
           } else {
             // 可能是新绑的设备，直接更新房间
-            deviceStore.updateSubDeviceList()
+            await deviceStore.updateSubDeviceList()
+            this.updateDeviceList()
           }
         } else if (
           typeof e.result.eventData === 'object' &&
@@ -188,10 +190,10 @@ ComponentWithComputed({
           dragLight.init()
         }
         const dragSwitch = this.selectComponent('#drag-switch')
-        if (dragSwitch && lightList.length > 0) {
+        if (dragSwitch && switchList.length > 0) {
           dragSwitch.init()
         }
-      }, 50)
+      }, 100)
     },
 
     handleScroll(e: { detail: { scrollTop: number } }) {
@@ -242,7 +244,7 @@ ComponentWithComputed({
           // 将面板的灯状态恢复到上一个选中的灯
           let latestSelectLightId = ''
           deviceStore.selectList.forEach((deviceId) => {
-            if (deviceMap[deviceId].proType === proType.light) {
+            if (deviceMap[deviceId]?.proType === proType.light) {
               latestSelectLightId = deviceId
             }
           })

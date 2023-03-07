@@ -211,25 +211,9 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    handlePackUp() {
-      const from = this.properties.popup ? 0 : this.data._bottom
-      const to = this.properties.popup ? this.data._bottom : 0
-      this.animate(
-        '#popup',
-        [
-          {
-            bottom: from + 'px',
-            // ease: 'ease-in-out',
-          },
-          {
-            bottom: to + 'px',
-            // ease: 'ease-in-out',
-          },
-        ],
-        200,
-        () => {},
-      )
-    },
+    // todo: 实现动画收起展开
+    handlePopUp() {},
+    handlePopDown() {},
     handleLinkPopup(e: { currentTarget: { dataset: { link: 'light' | 'switch' | 'scene' } } }) {
       const deviceMap = deviceStore.deviceMap
       const switchUniId = deviceStore.selectList.find((uniId) => uniId.includes(':'))
