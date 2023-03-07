@@ -54,12 +54,10 @@ Component({
           }
         })
         loadUserInfo()
-        homeStore.updateHomeInfo()
+        await homeStore.updateHomeInfo()
         wx.switchTab({
           url: '/pages/index/index',
         })
-
-        homeStore.updateHomeInfo()
       }
     },
 

@@ -123,7 +123,7 @@ ComponentWithComputed({
       })
       if (res.success) {
         this.updateDeviceInfo()
-        homeStore.updateHomeInfo()
+        homeStore.updateRoomCardList()
         emitter.emit('deviceEdit')
       }
     },

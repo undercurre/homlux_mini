@@ -143,7 +143,7 @@ ComponentWithComputed({
       })
       await updateSceneSort({ sceneSortList })
       this.updateSceneList()
-      homeStore.updateHomeInfo()
+      homeStore.updateRoomCardList()
     },
   },
 })

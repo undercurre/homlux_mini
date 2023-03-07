@@ -19,13 +19,15 @@
       <!-- 有设备时显示 -->
       <view class="flex-1 flex flex-col items-between w-full" wx:if="{{hasDevice}}">
         <view class="flex justify-between">
-          <view class="bg-hex-ffffff_42 w-244rpx h-80rpx rounded-40rpx flex items-center" wx:if="{{isShowHomeControl}}">
-            <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx">
-              <text bindtap="handleAllOn" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999" style="background-color: {{allOnBtnTap ? '#468CFB' : 'transparent'}}; color: {{allOnBtnTap ? '#fff' : '#2b4067'}}">全开</text>
-            </view>
-            <view class="w-2rpx h-24rpx bg-hex-75829b"></view>
-            <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx">
-              <text bindtap="handleAllOff" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999" style="background-color: {{allOffBtnTap ? '#468CFB' : 'transparent'}}; color: {{allOffBtnTap ? '#fff' : '#2b4067'}}">全关</text>
+          <view>
+            <view class="bg-hex-ffffff_42 w-244rpx h-80rpx rounded-40rpx flex items-center" wx:if="{{isShowHomeControl}}">
+              <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx">
+                <text bindtap="handleAllOn" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999" style="background-color: {{allOnBtnTap ? '#468CFB' : 'transparent'}}; color: {{allOnBtnTap ? '#fff' : '#2b4067'}}">全开</text>
+              </view>
+              <view class="w-2rpx h-24rpx bg-hex-75829b"></view>
+              <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx">
+                <text bindtap="handleAllOff" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999" style="background-color: {{allOffBtnTap ? '#468CFB' : 'transparent'}}; color: {{allOffBtnTap ? '#fff' : '#2b4067'}}">全关</text>
+              </view>
             </view>
           </view>
           <view class="mr-12rpx mt-8rpx" data-mark="addIcon" id="addIcon" bind:tap="handleDropdown">

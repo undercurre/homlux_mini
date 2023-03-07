@@ -118,7 +118,7 @@ ComponentWithComputed({
         const res = await deleteScene(this.data.sceneId)
         if (res.success) {
           emitter.emit('sceneEdit')
-          homeStore.updateHomeInfo()
+          homeStore.updateRoomCardList()
           wx.navigateBack()
           wx.showToast({
             icon: 'success',
@@ -195,13 +195,15 @@ ComponentWithComputed({
           ]
           data.updateType = data.updateType === '0' ? '3' : '5'
         } else {
-          // 删除绑定
-          data.updateType = data.updateType === '0' ? '2' : '4'
+          if (sceneStore.sceneSwitchMap[this.data.sceneId]) {
+            // 删除绑定
+            data.updateType = data.updateType === '0' ? '2' : '4'
+          }
         }
       }
       const res = await updateScene(data)
       if (res.success) {
-        await homeStore.updateHomeInfo()
+        homeStore.updateRoomCardList()
         emitter.emit('sceneEdit')
         wx.showToast({
           icon: 'success',

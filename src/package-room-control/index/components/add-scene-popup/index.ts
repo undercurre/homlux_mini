@@ -147,7 +147,7 @@ Component({
           title: '收藏成功',
         })
         sceneStore.updateSceneList()
-        homeStore.updateHomeInfo()
+        homeStore.updateRoomCardList()
         this.triggerEvent('addSuccess')
       } else {
         wx.showToast({

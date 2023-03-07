@@ -74,6 +74,14 @@ export const homeStore = observable({
   },
 
   /**
+   * 更新当前家庭房间卡片列表
+   */
+  async updateRoomCardList() {
+    await roomStore.updataHomeDeviceList()
+    await roomStore.updateRoomList()
+  },
+
+  /**
    * 更新家庭成员列表
    */
   async updateHomeMemberList() {
