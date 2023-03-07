@@ -19,7 +19,13 @@ export const homeStore = observable({
   homeMemberInfo: {} as Home.HomeMemberInfo,
 
   get currentHomeId() {
-    return this.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
+    let houseId = this.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
+
+    if (!houseId && this.homeList.length) {
+      houseId = this.homeList[0].houseId
+    }
+
+    return houseId
   },
 
   // 是否管理员权限+

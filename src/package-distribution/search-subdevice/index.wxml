@@ -4,7 +4,7 @@
 
   <view class="grow shrink flex flex-col justify-between pb-128rpx box-border">
     <block wx:if="{{status === 'discover'}}">
-      <tips-box text="正在搜索附近的设备…" icon="/assets/img/search-subdevice/searching.png" size="{{ deviceList.length ? 'small' : 'normal'}}"></tips-box>
+      <tips-box text="正在搜索附近的设备…" icon="/assets/img/search-subdevice/searching.png" size="{{ deviceList.length ? 180 : 300}}" textStyle="margin-top: 28rpx;"></tips-box>
 
       <view wx:if="{{deviceList.length}}" class="px-32rpx pt-86rpx grow shrink flex flex-col">
         <view class="flex flex-row items-center justify-between pb-34rpx">

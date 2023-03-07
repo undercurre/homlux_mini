@@ -5,8 +5,12 @@ Component({
    */
   properties: {
     size: {
+      type: Number || String,
+      value: 300,
+    },
+    textStyle: {
       type: String,
-      value: 'normal',
+      value: '',
     },
     icon: {
       type: String,

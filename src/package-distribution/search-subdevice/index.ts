@@ -128,7 +128,7 @@ ComponentWithComputed({
       })
 
       wx.onBLEConnectionStateChange((res) => {
-        const item = this.data.deviceList.find(item => item.deviceUuid === res.deviceId) as IBleDevice
+        const item = this.data.deviceList.find((item) => item.deviceUuid === res.deviceId) as IBleDevice
 
         // 该方法回调中可以用于处理连接意外断开等异常情况
         console.log(
@@ -174,7 +174,7 @@ ComponentWithComputed({
         status: 'waiting',
         requestTimes: 20,
         requesting: false,
-        zigbeeRepeatTimes: 3
+        zigbeeRepeatTimes: 3,
       }
 
       this.data.deviceList.push(bleDevice)

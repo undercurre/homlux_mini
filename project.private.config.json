@@ -8,6 +8,15 @@
   },
   "libVersion": "2.29.0",
   "condition": {
+    "plugin": {
+      "list": []
+    },
+    "game": {
+      "list": []
+    },
+    "gamePlugin": {
+      "list": []
+    },
     "miniprogram": {
       "list": [
         {
@@ -98,8 +107,8 @@
           "name": "绑定家庭",
           "pathName": "package-distribution/bind-home/index",
           "query": "deviceId=1676373822174786",
-          "launchMode": "default",
-          "scene": null
+          "scene": null,
+          "launchMode": "default"
         },
         {
           "name": "添加单个子设备",
