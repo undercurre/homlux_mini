@@ -26,6 +26,13 @@ Component({
     },
 
     onLoginClick(e: { detail: { code: string } }) {
+      if (!e.detail.code) {
+        wx.showToast({
+          icon: 'none',
+          title: '取消登录',
+        })
+        return
+      }
       wx.login({
         success: (res) => {
           console.log('login', res, e)
