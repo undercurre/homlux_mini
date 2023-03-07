@@ -19,7 +19,7 @@ export const roomStore = observable({
     const res = await queryAllDevice(homeStore.currentHomeDetail.houseId)
     const list = {} as Record<string, Device.DeviceItem[]>
     if (res.success) {
-      res.result.forEach((device) => {
+      res.result?.forEach((device) => {
         if (list[device.roomId]) {
           list[device.roomId].push(device)
         } else {

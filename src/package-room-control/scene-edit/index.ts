@@ -28,7 +28,6 @@ ComponentWithComputed({
     showEditNamePopup: false,
     showEditIconPopup: false,
     showLinkPopup: false,
-    sceneInfo: {} as Scene.SceneItem,
     sceneDeviceActionsFlatten: [] as DeviceActionsFlattenItem[], // 将场景里多路的action拍扁
     sceneDeviceActionsDelete: [] as DeviceActionsFlattenItem[],
     linkSwitch: '',
@@ -118,7 +117,7 @@ ComponentWithComputed({
       }).then(async () => {
         const res = await deleteScene(this.data.sceneId)
         if (res.success) {
-          sceneStore.updateSceneList()
+          emitter.emit('sceneEdit')
           homeStore.updateHomeInfo()
           wx.navigateBack()
           wx.showToast({
@@ -202,7 +201,6 @@ ComponentWithComputed({
       }
       const res = await updateScene(data)
       if (res.success) {
-        await sceneStore.updateSceneList()
         await homeStore.updateHomeInfo()
         emitter.emit('sceneEdit')
         wx.showToast({

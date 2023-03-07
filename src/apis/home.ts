@@ -125,7 +125,7 @@ export async function queryHouseUserList({ houseId = '' }) {
  * 更新家庭成员权限
  * 家庭成员权限，创建者：1 管理员：2 游客：3
  */
-export async function updateHouseUserAuth({ userId = '', auth = 3, houseId = ''}) {
+export async function updateHouseUserAuth({ userId = '', auth = 3, houseId = '' }) {
   return await mzaioRequest.post({
     log: false,
     loading: true,
@@ -133,7 +133,7 @@ export async function updateHouseUserAuth({ userId = '', auth = 3, houseId = ''}
     data: {
       userId,
       houseUserAuth: auth,
-      houseId
+      houseId,
     },
   })
 }

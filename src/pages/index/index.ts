@@ -101,16 +101,18 @@ ComponentWithComputed({
       const time = storage.get('inviteTime', 0) as string
       if (token && type && houseId && time) {
         console.log(`lmn>>>邀请参数:token=${token}/type=${type}/houseId=${houseId}/time=${time}`)
-          const now = new Date().valueOf()
-          if(now - parseInt(time) > 86400000) {
-            console.log('lmn>>>邀请超时')
-            Dialog.confirm({
-              title: '邀请过期',
-              message: '该邀请已过期，请联系邀请者重新邀请',
-              confirmButtonText: '我知道了',
-            })
-          } else {
-            homeBinding.store.inviteMember(houseId, parseInt(type)).then(() => {
+        const now = new Date().valueOf()
+        if (now - parseInt(time) > 86400000) {
+          console.log('lmn>>>邀请超时')
+          Dialog.confirm({
+            title: '邀请过期',
+            message: '该邀请已过期，请联系邀请者重新邀请',
+            confirmButtonText: '我知道了',
+          })
+        } else {
+          homeBinding.store
+            .inviteMember(houseId, parseInt(type))
+            .then(() => {
               console.log('lmn>>>邀请成功')
               homeBinding.store.updateHomeInfo().then(() => {
                 homeBinding.store.homeList.forEach((item) => {
@@ -121,13 +123,14 @@ ComponentWithComputed({
                 })
                 Toast('您已加入家庭')
               })
-            }).catch(() => {
+            })
+            .catch(() => {
               Toast('加入家庭失败')
             })
-          }
-          storage.remove('inviteType')
-          storage.remove('inviteHouseId')
-          storage.remove('inviteTime')
+        }
+        storage.remove('inviteType')
+        storage.remove('inviteHouseId')
+        storage.remove('inviteTime')
       } else {
         console.log('lmn>>>无效邀请参数')
       }
@@ -143,10 +146,11 @@ ComponentWithComputed({
           .exec((res) => {
             // 点中加按钮以外的地方都要隐藏下拉菜单
             if (
-              e.detail.x > res[0].right ||
-              e.detail.x < res[0].left ||
-              e.detail.y > res[0].bottom ||
-              e.detail.y < res[0].top
+              res[0] &&
+              (e.detail.x > res[0].right ||
+                e.detail.x < res[0].left ||
+                e.detail.y > res[0].bottom ||
+                e.detail.y < res[0].top)
             ) {
               this.setData({
                 'dropdownMenu.isShow': false,
