@@ -2,7 +2,7 @@
   "usingComponents": {
     "van-checkbox": "@vant/weapp/checkbox/index",
     "tips-box": "/components/tips-box/index",
-    "loading": "/components/loading/index",
+    "mz-loading": "/components/mz-loading/index",
     "edit-device-info": "./components/edit-device-info/index"
   }
 }
