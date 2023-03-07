@@ -216,7 +216,7 @@ ComponentWithComputed({
         isEditName: false,
       })
 
-      const res = await saveOrUpdateUserHouseInfo({ ...this.data.homeInfoEdited, userLocationInfo: '' })
+      const res = await saveOrUpdateUserHouseInfo({ ...this.data.homeInfoEdited, userLocationInfo: '11' })
 
       if (res.success) {
         Toast(this.data.homeInfoEdited.houseId ? '修改成功' : '新增成功')

@@ -107,7 +107,10 @@ Component({
         app_device: Date.now() - start,
       })
 
-      this.queryDeviceOnlineStatus()
+      // 防止强绑情况选网关还没断开原有连接，需要延迟查询
+      setTimeout(() => {
+        this.queryDeviceOnlineStatus()
+      }, 3000)
 
       socket.close()
     },

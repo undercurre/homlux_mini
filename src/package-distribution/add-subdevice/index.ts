@@ -22,7 +22,7 @@ ComponentWithComputed({
   data: {
     status: 'linking' as StatusName,
     activeIndex: -1,
-    pageParams: {} as IAnyObject
+    pageParams: {} as IAnyObject,
   },
 
   computed: {
@@ -41,7 +41,9 @@ ComponentWithComputed({
       pageParams.deviceName = pageParams.deviceName || '子设备'
       pageParams.deviceIcon = pageParams.deviceIcon || '/assets/img/device/light.png'
 
-      this.data.pageParams = pageParams
+      this.setData({
+        pageParams,
+      })
       this.initBle()
     },
     detached: function () {
@@ -129,7 +131,7 @@ ComponentWithComputed({
         roomName: '',
         status: 'waiting',
         requestTimes: 20,
-        zigbeeRepeatTimes: 3
+        zigbeeRepeatTimes: 3,
       }
 
       this.confirmAdd(bleDevice)
