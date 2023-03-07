@@ -3,10 +3,10 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, roomBinding } from '../../store/index'
 import { bleUtil, strUtil, BleClient, getCurrentPageParams } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { sendCmdAddSubdevice, bindDevice, queryDeviceOnlineStatus, queryProtypeInfo } from '../../apis/index'
+import { sendCmdAddSubdevice, bindDevice, queryDeviceOnlineStatus } from '../../apis/index'
 import { IBleDevice } from './typings'
 
-type StatusName = 'linking' | 'success' | 'error' | 'openBle'
+type StatusName = 'linking' | 'error'
 
 ComponentWithComputed({
   options: {
@@ -22,6 +22,7 @@ ComponentWithComputed({
   data: {
     status: 'linking' as StatusName,
     activeIndex: -1,
+    pageParams: {} as IAnyObject
   },
 
   computed: {
@@ -34,9 +35,15 @@ ComponentWithComputed({
   lifetimes: {
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
     ready: function () {
+      const pageParams = getCurrentPageParams()
+      console.log('pageParams', pageParams)
+
+      pageParams.deviceName = pageParams.deviceName || '子设备'
+      pageParams.deviceIcon = pageParams.deviceIcon || '/assets/img/device/light.png'
+
+      this.data.pageParams = pageParams
       this.initBle()
     },
-    moved: function () {},
     detached: function () {
       wx.closeBluetoothAdapter()
     },
@@ -89,43 +96,40 @@ ComponentWithComputed({
         // services: ['BAE55B96-7D19-458D-970C-50613D801BC9'],
         allowDuplicatesKey: false,
         powerLevel: 'high',
+        interval: 3000,
         success(res) {
           console.log('startBluetoothDevicesDiscovery', res)
         },
       })
     },
 
+    /**
+     * 检查是否目标设备
+     */
     async handleBleDeviceInfo(device: WechatMiniprogram.BlueToothDevice) {
-      const pageParams = getCurrentPageParams()
-      console.log('pageParams', pageParams)
-
       const dataMsg = strUtil.ab2hex(device.advertisData)
       const msgObj = bleUtil.transferBroadcastData(dataMsg)
 
-      console.log('Device Found', device, dataMsg, msgObj)
-
-      if (pageParams.mac !== msgObj.mac) {
+      if (this.data.pageParams.mac !== msgObj.mac) {
         return
       }
 
-      wx.stopBluetoothDevicesDiscovery()
+      console.log('Device Found', device, dataMsg, msgObj)
 
-      await queryProtypeInfo({
-        pid: '26',
-      })
+      wx.stopBluetoothDevicesDiscovery()
 
       const bleDevice: IBleDevice = {
         deviceUuid: device.deviceId,
         mac: msgObj.mac,
         zigbeeMac: '',
-        icon: '/assets/img/device/light.png',
-        name: '子设备' + msgObj.mac.substr(-4, 4),
-        isChecked: false,
+        icon: this.data.pageParams.deviceIcon || '/assets/img/device/light.png',
+        name: `${this.data.pageParams.deviceName || '子设备'}${msgObj.mac.substr(-4, 4)}`,
         client: new BleClient({ mac: msgObj.mac, deviceUuid: device.deviceId }),
         roomId: '',
         roomName: '',
         status: 'waiting',
         requestTimes: 20,
+        zigbeeRepeatTimes: 3
       }
 
       this.confirmAdd(bleDevice)
@@ -133,10 +137,13 @@ ComponentWithComputed({
 
     // 确认添加设备
     async confirmAdd(bleDevice: IBleDevice) {
-      const pageParams = getCurrentPageParams()
+      this.setData({
+        activeIndex: 0,
+      })
+      this.startZigbeeNet(bleDevice)
 
       const res = await sendCmdAddSubdevice({
-        deviceId: pageParams.gatewayId,
+        deviceId: this.data.pageParams.gatewayId,
         expire: 60,
         buzz: 1,
       })
@@ -148,15 +155,18 @@ ComponentWithComputed({
 
         return
       }
-
-      this.setData({
-        activeIndex: 0,
-      })
-      this.startZigbeeNet(bleDevice)
     },
 
     async startZigbeeNet(bleDevice: IBleDevice) {
+      bleDevice.zigbeeRepeatTimes--
+
       const res = await bleDevice.client.startZigbeeNet()
+
+      // 配网指令允许重发3次
+      if (!res.success && bleDevice.zigbeeRepeatTimes > 0) {
+        this.startZigbeeNet(bleDevice)
+        return
+      }
 
       if (res.success) {
         bleDevice.zigbeeMac = res.result.zigbeeMac
@@ -170,12 +180,10 @@ ComponentWithComputed({
     },
 
     async queryDeviceOnlineStatus(device: IBleDevice) {
-      const pageParams = getCurrentPageParams()
-
       const queryRes = await queryDeviceOnlineStatus({
         deviceId: device.zigbeeMac,
         deviceType: '2',
-        sn: pageParams.gatewaySn,
+        sn: this.data.pageParams.gatewaySn,
       })
 
       console.log('queryDeviceOnlineStatus', queryRes)
@@ -228,8 +236,6 @@ ComponentWithComputed({
     },
 
     finish() {
-      roomBinding.store.updateRoomList()
-
       wx.switchTab({
         url: '/pages/index/index',
       })

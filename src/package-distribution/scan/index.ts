@@ -2,7 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { deviceBinding, homeBinding } from '../../store/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { strUtil, bleUtil } from '../../utils/index'
+import { strUtil, bleUtil, aesUtil } from '../../utils/index'
 import { queryProtypeInfo } from '../../apis/index'
 
 ComponentWithComputed({
@@ -46,8 +46,6 @@ ComponentWithComputed({
     async ready() {
       await homeBinding.store.updateHomeInfo()
 
-      await deviceBinding.store.updateAllRoomDeviceList()
-
       await this.initWifi()
 
       const params = wx.getLaunchOptionsSync()
@@ -59,6 +57,8 @@ ComponentWithComputed({
         'getCurrentPages()',
         getCurrentPages(),
       )
+
+      console.log(11111, aesUtil.encrypt('midea.light.003.002', 'midea@homlux', 'Hex'))
 
       // 防止重复判断,仅通过微信扫码直接进入该界面时判断场景值
       if (getCurrentPages().length === 1 && params.scene === 1011) {
@@ -244,12 +244,12 @@ ComponentWithComputed({
       const params = strUtil.getUrlParams(url)
 
       console.log('params', params)
-      // const modelId = aesUtil.decrypt(params.pid, `midea@homlux${params.mac.substr(-4)}`, 'Hex')
-      // console.log('modelId', modelId)
+      const modelId = aesUtil.decrypt(params.pid, `midea@homluxADEF`, 'Hex')
+      console.log('modelId', modelId)
 
       // 获取云端的产品基本信息
       const res = await queryProtypeInfo({
-        pid: params.pid,
+        pid: params.ssid === 'homlux_ble' ? 'midea.light.003.002' : params.pid,
       })
 
       console.log('queryProtypeInfo', res)
@@ -266,7 +266,7 @@ ComponentWithComputed({
         wx.showToast({ title: '验证产品信息失败', icon: 'error' })
 
         return
-      } else if (res.result && res.result.proType === '0x18') {
+      } else if (res.result && res.result?.proType === '0x18') {
         this.bindGateway({
           ssid: params.ssid,
           dsn: params.dsn,
@@ -277,6 +277,7 @@ ComponentWithComputed({
           type: 'single',
           proType: res.result.proType,
           deviceName: res.result.productName,
+          icon: res.result.icon,
           mac: params.mac,
         }
 
@@ -366,7 +367,8 @@ ComponentWithComputed({
           gatewayId,
           gatewaySn,
           // modelId: modelId,
-          deviceName: this.data._deviceInfo.productName,
+          deviceName: this.data._deviceInfo.deviceName,
+          deviceIcon: this.data._deviceInfo.icon,
         }),
       })
     },

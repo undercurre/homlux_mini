@@ -100,7 +100,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
     }
 
     if (requestOption.log) {
-      console.log('请求URL:' + requestOption.url, requestOption)
+      console.log('请求发起URL:' + requestOption.url, requestOption)
     }
 
     wx.request({
