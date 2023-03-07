@@ -23,6 +23,8 @@ Component({
 
   lifetimes: {
     ready() {
+      homeBinding.store.updateCurrentHomeDetail()
+      
       this.getDeviceInfo()
     },
     detached() {},
@@ -88,7 +90,7 @@ Component({
       })
 
       if (res.success) {
-        roomBinding.store.updateRoomList()
+        homeBinding.store.updateCurrentHomeDetail()
 
         wx.switchTab({ url: '/pages/index/index' })
       }

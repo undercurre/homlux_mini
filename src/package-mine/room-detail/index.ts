@@ -52,7 +52,7 @@ ComponentWithComputed({
       if (!homeBinding.store.isManager) {
         return
       }
-      
+
       const { type } = event.currentTarget.dataset
 
       this.setData({

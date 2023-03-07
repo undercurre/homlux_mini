@@ -51,7 +51,14 @@ ComponentWithComputed({
       await this.initWifi()
 
       const params = wx.getLaunchOptionsSync()
-      console.log('scanPage', params, 'wx.getEnterOptionsSync()', wx.getEnterOptionsSync(), 'getCurrentPages()', getCurrentPages())
+      console.log(
+        'scanPage',
+        params,
+        'wx.getEnterOptionsSync()',
+        wx.getEnterOptionsSync(),
+        'getCurrentPages()',
+        getCurrentPages(),
+      )
 
       // 防止重复判断,仅通过微信扫码直接进入该界面时判断场景值
       if (getCurrentPages().length === 1 && params.scene === 1011) {
