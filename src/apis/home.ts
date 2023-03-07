@@ -125,7 +125,7 @@ export async function queryHouseUserList({ houseId = '' }) {
  * 更新家庭成员权限
  * 家庭成员权限，创建者：1 管理员：2 游客：3
  */
-export async function updateHouseUserAuth({ userId = '', auth = 3 }) {
+export async function updateHouseUserAuth({ userId = '', auth = 3, houseId = ''}) {
   return await mzaioRequest.post({
     log: false,
     loading: true,
@@ -133,6 +133,7 @@ export async function updateHouseUserAuth({ userId = '', auth = 3 }) {
     data: {
       userId,
       houseUserAuth: auth,
+      houseId
     },
   })
 }
@@ -148,6 +149,21 @@ export async function deleteHouseUser({ houseId = '', userId = '' }) {
     data: {
       houseId,
       userId,
+    },
+  })
+}
+
+/**
+ * 邀请家庭成员
+ */
+export async function inviteHouseUser({ houseId = '', auth = 3 }) {
+  return await mzaioRequest.post({
+    log: false,
+    loading: true,
+    url: '/v1/mzgd/user/inviteHouseUser',
+    data: {
+      houseId,
+      houseUserAuth: auth,
     },
   })
 }

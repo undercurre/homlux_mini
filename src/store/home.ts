@@ -5,6 +5,7 @@ import {
   queryHouseUserList,
   updateHouseUserAuth,
   deleteHouseUser,
+  inviteHouseUser
 } from '../apis/index'
 import { roomStore } from './room'
 
@@ -90,7 +91,7 @@ export const homeStore = observable({
    * 家庭成员权限，创建者：1 管理员：2 游客：3
    */
   async updateMemberAuth(userId: string, auth: number) {
-    const res = await updateHouseUserAuth({ userId, auth })
+    const res = await updateHouseUserAuth({userId, auth, houseId: this.currentHomeId})
     if (res.success) {
       runInAction(() => {
         for (let i = 0; i < homeStore.homeMemberInfo.houseUserList.length; i++) {
@@ -125,6 +126,18 @@ export const homeStore = observable({
       return
     } else {
       return Promise.reject('删除家庭成员失败')
+    }
+  },
+
+    /**
+   * 邀请家庭成员
+   */
+  async inviteMember(houseId: string, auth: number) {
+    const res = await inviteHouseUser({ houseId, auth })
+    if (res.success) {
+      return
+    } else {
+      return Promise.reject('邀请家庭成员失败')
     }
   },
 })

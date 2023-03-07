@@ -2,6 +2,8 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { othersBinding, roomBinding, userBinding, homeBinding, homeStore } from '../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { storage } from '../../utils/index'
+import Toast from '@vant/weapp/toast/toast'
+import Dialog from '@vant/weapp/dialog/dialog'
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding, homeBinding] })],
   data: {
@@ -75,6 +77,49 @@ ComponentWithComputed({
         this.setData({
           isRefresh: false,
         })
+      }
+    },
+
+    onShow() {
+      this.inviteMember()
+    },
+
+    inviteMember() {
+      const token = storage.get('token', '')
+      const type = storage.get('inviteType', '') as string
+      const houseId = storage.get('inviteHouseId', '') as string
+      const time = storage.get('inviteTime', 0) as string
+      if (token && type && houseId && time) {
+        console.log(`lmn>>>邀请参数:token=${token}/type=${type}/houseId=${houseId}/time=${time}`)
+          const now = new Date().valueOf()
+          if(now - parseInt(time) > 86400000) {
+            console.log('lmn>>>邀请超时')
+            Dialog.confirm({
+              title: '邀请过期',
+              message: '该邀请已过期，请联系邀请者重新邀请',
+              confirmButtonText: '我知道了',
+            })
+          } else {
+            homeBinding.store.inviteMember(houseId, parseInt(type)).then(() => {
+              console.log('lmn>>>邀请成功')
+              homeBinding.store.updateHomeInfo().then(() => {
+                homeBinding.store.homeList.forEach((item) => {
+                  if (item.houseId == houseId) {
+                    Toast(`您已加入${item.houseName}的家`)
+                    return
+                  }
+                })
+                Toast('您已加入家庭')
+              })
+            }).catch(() => {
+              Toast('加入家庭失败')
+            })
+          }
+          storage.remove('inviteType')
+          storage.remove('inviteHouseId')
+          storage.remove('inviteTime')
+      } else {
+        console.log('lmn>>>无效邀请参数')
       }
     },
 

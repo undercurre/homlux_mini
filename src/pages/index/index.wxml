@@ -64,3 +64,6 @@
 
 <!-- <add-new-room isShow="{{showAddNewRoom}}" bind:hide="handleHideAddNewRoom" bind:confirm="handleAddRoomConfirm"></add-new-room> -->
 <add-room show="{{showAddNewRoom}}" bind:close="handleHideAddNewRoom"></add-room>
+
+<van-toast id="van-toast" />
+<van-dialog id="van-dialog" />
