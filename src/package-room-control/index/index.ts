@@ -181,6 +181,10 @@ ComponentWithComputed({
         if (dragLight && lightList.length > 0) {
           dragLight.init()
         }
+        const dragSwitch = this.selectComponent('#drag-switch')
+        if (dragSwitch && lightList.length > 0) {
+          dragSwitch.init()
+        }
       }, 50)
     },
 
@@ -278,6 +282,8 @@ ComponentWithComputed({
         },
         { loading: true },
       )
+      // 首页需要更新灯光打开个数
+      homeStore.updateCurrentHomeDetail()
     },
     handleLightSortEnd(e: { detail: { listData: Device.DeviceItem[] } }) {
       const orderData = {
@@ -392,6 +398,14 @@ ComponentWithComputed({
       runInAction(() => {
         deviceStore.selectType = Array.from(typeList) as string[]
       })
+    },
+    handleScreenTap() {
+      console.log('handleScreenTap')
+      const deivceControlPopup = this.selectComponent('#device-control-popup')
+      console.log(deivceControlPopup)
+      if (deivceControlPopup) {
+        deivceControlPopup.handlePackUp()
+      }
     },
   },
 })
