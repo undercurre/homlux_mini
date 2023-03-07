@@ -15,8 +15,8 @@ export const roomStore = observable({
   /** 全屋设备，对应房间id作为key，房间的设备列表作为key */
   roomDeviceList: {} as Record<string, Device.DeviceItem[]>,
 
-  async updataHomeDeviceList() {
-    const res = await queryAllDevice(homeStore.currentHomeDetail.houseId)
+  async updataHomeDeviceList(options?: { loading: boolean }) {
+    const res = await queryAllDevice(homeStore.currentHomeDetail.houseId, options)
     const list = {} as Record<string, Device.DeviceItem[]>
     if (res.success) {
       res.result?.forEach((device) => {
@@ -35,8 +35,8 @@ export const roomStore = observable({
     }
   },
 
-  async updateRoomList() {
-    const res = await getRoomList(homeStore.currentHomeId)
+  async updateRoomList(options?: { loading: boolean }) {
+    const res = await getRoomList(homeStore.currentHomeId, options)
     if (res.success) {
       res.result.roomInfoList.forEach((roomInfo) => {
         const roomDeviceList = roomStore.roomDeviceList[roomInfo.roomInfo.roomId]

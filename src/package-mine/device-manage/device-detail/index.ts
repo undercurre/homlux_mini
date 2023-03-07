@@ -156,7 +156,7 @@ ComponentWithComputed({
       })
     },
     async updateDeviceInfo() {
-      const res = await queryDeviceInfoByDeviceId(this.data.deviceId)
+      const res = await queryDeviceInfoByDeviceId({deviceId: this.data.deviceId, roomId: this.data.roomId})
       if (res.success) {
         this.setData({
           deviceInfo: res.result,

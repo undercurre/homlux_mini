@@ -19,7 +19,7 @@ module.exports = {
     minHeight = divideRpxByPx * 60 + bottomBarHeight
     var instance = ownerInstance.selectComponent('#popup')
     instance.setStyle({
-      bottom: bottom + 'px'
+      bottom: bottom + 'px',
     })
   },
   touchStart: function (e) {
@@ -37,7 +37,7 @@ module.exports = {
     bottom = height - componentHeight
     var instance = ownerInstance.selectComponent('#popup')
     instance.setStyle({
-      bottom: bottom + 'px'
+      bottom: bottom + 'px',
     })
     return false
   },
@@ -61,5 +61,5 @@ module.exports = {
       ownerInstance.callMethod('handlePopUp')
     }
   },
-  bottom: bottom
+  bottom: bottom,
 }

@@ -107,10 +107,10 @@ ComponentWithComputed({
           // 如果是当前房间的设备状态发生变化，更新设备状态
           const index = deviceStore.deviceList.findIndex((device) => device.deviceId === e.result.eventData.deviceId)
           if (index !== -1) {
-            const res = await queryDeviceInfoByDeviceId(
-              deviceStore.deviceList[index].deviceId,
-              deviceStore.deviceList[index].roomId,
-            )
+            const res = await queryDeviceInfoByDeviceId({
+              deviceId: deviceStore.deviceList[index].deviceId,
+              roomId: deviceStore.deviceList[index].roomId,
+            })
             if (res.success) {
               runInAction(() => {
                 deviceStore.deviceList[index] = res.result
@@ -224,7 +224,7 @@ ComponentWithComputed({
     },
 
     handleCardClick(e: { currentTarget: { dataset: { deviceId: string } } }) {
-      console.log(e.currentTarget.dataset.deviceId)
+      console.log('handleCardClick', e.currentTarget.dataset.deviceId)
       wx.navigateTo({
         url: `/package-mine/device-manage/device-detail/index?deviceId=${e.currentTarget.dataset.deviceId}`,
       })

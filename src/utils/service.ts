@@ -82,7 +82,7 @@ export function loadUserInfo() {
 export async function appOnLaunchService() {
   try {
     loadUserInfo()
-    await homeStore.updateHomeInfo()
+    await homeStore.updateHomeInfo({ loading: true })
     startWebsocketService()
   } catch (e) {
     console.log('appOnLaunchService-err:', e)
