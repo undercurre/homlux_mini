@@ -8,6 +8,7 @@ type Events = {
     }
   } // 从websocket接受到信息
   deviceEdit: void
+  sceneEdit: void
 }
 
 export const WSEventType = {

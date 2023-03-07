@@ -4,9 +4,9 @@
 <svg-icon name="room-bg" width="100vw" height="100vh" class="fixed bg-z-index"></svg-icon>
 
 <!-- 标题 -->
-<nav-bar title="场景" left-arrow bind:leftTap="goBack" style="opacity: {{scrollTop > 20 ? 0 : 1}};"></nav-bar>
+<nav-bar title="场景" left-arrow bind:leftTap="goBack" style="opacity: {{opacity}};"></nav-bar>
 
 <!-- 页面主体 -->
 <view class="h-12rpx"></view>
-<drag id="drag" list-data="{{listData}}" scroll-top="{{scrollTop}}" item-height="{{195}}" generic:item="cell" bind:toSetting="toSetting" bind:exec="handleExecScene" bind:change="handleChange" bind:sortend="handleSortEnd" bind:scroll="handleScroll"></drag>
+<drag id="drag" list-data="{{listData}}" scroll-top="{{scrollTop}}" item-height="{{174}}" generic:item="cell" bind:toSetting="toSetting" bind:exec="handleExecScene" bind:change="handleChange" bind:sortend="handleSortEnd" bind:scroll="handleScroll"></drag>
 <view class="h-64rpx"></view>

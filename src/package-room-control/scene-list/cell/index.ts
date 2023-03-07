@@ -26,7 +26,6 @@ Component({
    */
   methods: {
     handleExecScene(e: WechatMiniprogram.TouchEvent) {
-      console.log('handleExecScene', e)
       this.triggerEvent('exec', e.currentTarget.dataset.item)
     },
     handleToSetting(e: WechatMiniprogram.TouchEvent) {

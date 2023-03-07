@@ -34,10 +34,7 @@ ComponentWithComputed({
     },
     // 家庭是否有设备
     hasDevice(data) {
-      if (data.allRoomDeviceList && data.allRoomDeviceList.length > 0) {
-        return true
-      }
-      return false
+      return data.allRoomDeviceList && data.allRoomDeviceList.length > 0
     },
     // 是否显示全局控制开关（需要有灯或者开关）
     isShowHomeControl(data) {
@@ -173,13 +170,16 @@ ComponentWithComputed({
           })
         })
     },
+    handleAddDevice() {
+      wx.navigateTo({ url: '/package-distribution/scan/index' })
+    },
     /**
      * 用户点击下拉菜单项
      * @param e
      */
     handleMenuSelect(e: { detail: 'addDevice' | 'addRoom' | 'inviteFamily' }) {
       if (e.detail === 'addDevice') {
-        wx.navigateTo({ url: '/package-distribution/scan/index' })
+        this.handleAddDevice()
       } else if (e.detail === 'addRoom') {
         this.setData({
           showAddNewRoom: true,

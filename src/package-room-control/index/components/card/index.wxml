@@ -1,0 +1,3 @@
+<view class="w-180rpx pb-24rpx flex justify-center">
+  <device-card showControl device-type="{{item.data.type}}" device-info="{{item.data}}" data-item="{{item.data}}" select="{{item.data.select}}" bind:controlTap="handleControlTap" bind:cardTap="handleCardTap" />
+</view>

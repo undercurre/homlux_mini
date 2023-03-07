@@ -8,6 +8,6 @@
   border: 2rpx solid #555659 !important;
   color: #555659 !important;
 }
-.van-cell-group--inset {
+.cell {
   margin: 0 16px !important;
 }

@@ -1,21 +1,21 @@
 /**
  * 版本号比较
  */
-const compareVersion = (v1, v2) => {
-  v1 = v1.split('.')
-  v2 = v2.split('.')
+const compareVersion = (v1: string, v2: string) => {
+  const v1Split = v1.split('.')
+  const v2Split = v2.split('.')
   const len = Math.max(v1.length, v2.length)
 
-  while (v1.length < len) {
-    v1.push('0')
+  while (v1Split.length < len) {
+    v1Split.push('0')
   }
-  while (v2.length < len) {
-    v2.push('0')
+  while (v2Split.length < len) {
+    v2Split.push('0')
   }
 
   for (let i = 0; i < len; i++) {
-    const num1 = parseInt(v1[i])
-    const num2 = parseInt(v2[i])
+    const num1 = parseInt(v1Split[i])
+    const num2 = parseInt(v2Split[i])
 
     if (num1 > num2) {
       return 1
@@ -74,19 +74,19 @@ Component({
     baseData: {},
     pageMetaSupport: false, // 当前版本是否支持 page-meta 标签
     platform: '', // 平台信息
-    listWxs: [], // wxs 传回的最新 list 数据
+    listWxs: [] as IAnyObject[], // wxs 传回的最新 list 数据
     rows: 0, // 行数
 
     /* 渲染数据 */
     wrapStyle: '', // item-wrap 样式
-    list: [], // 渲染数据列
+    list: [] as IAnyObject[], // 渲染数据列
     dragging: false,
   },
   methods: {
     vibrate() {
-      if (this.data.platform !== 'devtools') wx.vibrateShort()
+      if (this.data.platform !== 'devtools') wx.vibrateShort({ type: 'light' })
     },
-    pageScroll(e) {
+    pageScroll(e: { scrollTop: number }) {
       if (this.data.pageMetaSupport) {
         this.triggerEvent('scroll', {
           scrollTop: e.scrollTop,
@@ -98,17 +98,17 @@ Component({
         })
       }
     },
-    drag(e) {
+    drag(e: { dragging: boolean }) {
       this.setData({
         dragging: e.dragging,
       })
     },
-    listChange(e) {
+    listChange(e: { list: IAnyObject[] }) {
       this.data.listWxs = e.list
     },
-    itemClick(e) {
-      let index = e.currentTarget.dataset.index
-      let item = this.data.listWxs[index]
+    itemClick(e: WechatMiniprogram.TouchEvent) {
+      const index = e.currentTarget.dataset.index
+      const item = this.data.listWxs[index]
 
       this.triggerEvent('click', {
         key: item.realKey,
@@ -120,13 +120,13 @@ Component({
      *  初始化获取 dom 信息
      */
     initDom() {
-      let { windowWidth, windowHeight, platform, SDKVersion } = wx.getSystemInfoSync()
-      let remScale = (windowWidth || 375) / 375
+      const { windowWidth, windowHeight, platform, SDKVersion } = wx.getSystemInfoSync()
+      const remScale = (windowWidth || 375) / 375
 
       this.data.pageMetaSupport = compareVersion(SDKVersion, '2.9.0') >= 0
       this.data.platform = platform
 
-      let baseData = {}
+      const baseData = {} as IAnyObject
       baseData.windowHeight = windowHeight
       baseData.realTopSize = (this.data.topSize * remScale) / 2
       baseData.realBottomSize = (this.data.bottomSize * remScale) / 2
@@ -164,7 +164,7 @@ Component({
       // 初始必须为true以绑定wxs中的函数,
       this.setData({ dragging: true })
 
-      let delItem = (item, extraNode) => ({
+      const delItem = (item: IAnyObject, extraNode: boolean) => ({
         id: item.dragId,
         extraNode: extraNode,
         fixed: item.fixed,
@@ -172,14 +172,14 @@ Component({
         data: item,
       })
 
-      let { listData, extraNodes } = this.data
-      let _list = [],
-        _before = [],
-        _after = [],
-        destBefore = [],
-        destAfter = []
+      const { listData, extraNodes } = this.data
+      const _list = [] as IAnyObject[],
+        _before = [] as IAnyObject[],
+        _after = [] as IAnyObject[],
+        destBefore = [] as IAnyObject[],
+        destAfter = [] as IAnyObject[]
 
-      extraNodes.forEach((item, index) => {
+      extraNodes.forEach((item) => {
         if (item.type === 'before') {
           _before.push(delItem(item, true))
         } else if (item.type === 'after') {
@@ -202,9 +202,9 @@ Component({
         })
       })
 
-      let i = 0,
-        columns = this.data.columns
-      let list = (_before.concat(_list, _after) || []).map((item, index) => {
+      let i = 0
+      const columns = this.data.columns
+      const list = (_before.concat(_list, _after) || []).map((item, index) => {
         item.realKey = item.extraNode ? -1 : i++ // 真实顺序
         item.sortKey = index // 整体顺序
         item.tranX = `${(item.sortKey % columns) * 100}%`
@@ -224,16 +224,16 @@ Component({
       // 异步加载数据时候, 延迟执行 initDom 方法, 防止基础库 2.7.1 版本及以下无法正确获取 dom 信息
       setTimeout(() => this.initDom(), 0)
     },
-    handleToSetting(e) {
+    handleToSetting(e: { detail: IAnyObject }) {
       this.triggerEvent('toSetting', e.detail)
     },
-    handleExec(e) {
+    handleExec(e: { detail: IAnyObject }) {
       this.triggerEvent('exec', e.detail)
     },
-    handleControlTap(e) {
+    handleControlTap(e: { detail: IAnyObject }) {
       this.triggerEvent('controlTap', e.detail)
     },
-    handleCardTap(e) {
+    handleCardTap(e: { detail: IAnyObject }) {
       this.triggerEvent('cardTap', e.detail)
     },
   },

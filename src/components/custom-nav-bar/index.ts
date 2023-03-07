@@ -28,6 +28,10 @@ Component({
       type: String,
       value: '/assets/img/base/back.png',
     },
+    disabled: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /**

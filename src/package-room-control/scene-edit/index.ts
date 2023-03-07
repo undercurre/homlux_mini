@@ -4,6 +4,7 @@ import { maxColorTempK, minColorTempK, proType } from '../../config/index'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { deleteScene, updateScene } from '../../apis/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
+import { emitter } from '../../utils/eventBus'
 
 interface DeviceActionsFlattenItem {
   id: string
@@ -203,6 +204,7 @@ ComponentWithComputed({
       if (res.success) {
         await sceneStore.updateSceneList()
         await homeStore.updateHomeInfo()
+        emitter.emit('sceneEdit')
         wx.showToast({
           icon: 'success',
           title: '修改成功',

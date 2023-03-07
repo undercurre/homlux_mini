@@ -16,19 +16,6 @@ import { controlDevice, saveDeviceOrder, queryDeviceInfoByDeviceId, execScene } 
 import { proName, proType } from '../../config/device'
 import { emitter, WSEventType } from '../../utils/eventBus'
 
-interface ClienRect {
-  id: string // 节点的ID
-  left: number // 节点的左边界坐标
-  right: number // 节点的右边界坐标
-  top: number // 节点的上边界坐标
-  bottom: number // 节点的下边界坐标
-  width: number // 节点的宽度
-  height: number // 节点的高度
-  dataset: Record<string, any> // 节点数据
-}
-
-let throttleTimer = 0
-
 ComponentWithComputed({
   behaviors: [
     BehaviorWithStore({ storeBindings: [userBinding, roomBinding, deviceBinding, sceneBinding] }),
@@ -50,18 +37,8 @@ ComponentWithComputed({
       y: 0,
     },
     isRefresh: false,
-    // 拖动排序
-    touchLocation: {
-      x: 0,
-      y: 0,
-    },
-    isLongPress: false,
-    longPressType: '',
-    longPressDevice: {} as Device.DeviceItem,
-    longPressBeginIndex: 0,
-    lightCardElements: [] as ClienRect[],
-    switchCardElements: [] as ClienRect[],
-    curtainCardElements: [] as ClienRect[],
+    pageMetaScrollTop: 0,
+    scrollTop: 0,
     tempList: [] as Device.DeviceItem[],
   },
 
@@ -86,21 +63,11 @@ ComponentWithComputed({
       }
       return {}
     },
-  },
-
-  watch: {
-    deviceList() {
-      const flattenList = deviceStore.deviceFlattenList
-      const lightList = flattenList.filter((device) => device.proType === proType.light)
-      const switchList = flattenList.filter((device) => device.proType === proType.switch)
-      lightList.sort((a, b) => a.orderNum - b.orderNum)
-      switchList.sort((a, b) => a.switchInfoDTOList[0].orderNum - b.switchInfoDTOList[0].orderNum)
-      this.setData({
-        lightList,
-        switchList,
-      })
-      this.updataCardClientRect()
-      this.updateSceneBarClientRect()
+    opacity(data) {
+      if (data.scrollTop) {
+        return 30 - data.scrollTop < 0 ? 0 : (30 - data.scrollTop) / 30
+      }
+      return 1
     },
   },
 
@@ -109,21 +76,7 @@ ComponentWithComputed({
      * 生命周期函数--监听页面加载
      */
     onLoad() {
-      deviceStore.updateSubDeviceList().finally(() => {
-        setTimeout(() => {
-          wx.createSelectorQuery()
-            .select('#content')
-            .boundingClientRect()
-            .exec((res) => {
-              if (res[0] && res[0].height) {
-                this.setData({
-                  contentHeight: res[0].height,
-                })
-              }
-            })
-        }, 100)
-      })
-      sceneStore.updateSceneList()
+      this.onPullDownRefresh()
       emitter.on('wsReceive', async (e) => {
         console.log(
           e.result.eventData.roomId,
@@ -176,11 +129,17 @@ ComponentWithComputed({
       try {
         await deviceStore.updateSubDeviceList()
         await sceneStore.updateSceneList()
+        this.updateDeviceList()
       } finally {
-        this.setData({
-          isRefresh: false,
-        })
+        wx.stopPullDownRefresh()
       }
+    },
+
+    // 页面滚动
+    onPageScroll(e: { scrollTop: number }) {
+      this.setData({
+        scrollTop: e.scrollTop,
+      })
     },
 
     onUnload() {
@@ -193,195 +152,41 @@ ComponentWithComputed({
       emitter.off('wsReceive')
     },
 
-    updateSceneBarClientRect() {
+    updateDeviceList() {
+      const flattenList = deviceStore.deviceFlattenList
+      const lightList = flattenList
+        .filter((device) => device.proType === proType.light)
+        .map((device) => ({
+          ...device,
+          dragId: device.uniId,
+          type: proName[device.proType],
+          select: deviceStore.selectList.includes(device.uniId),
+        }))
+      const switchList = flattenList
+        .filter((device) => device.proType === proType.switch)
+        .map((device) => ({
+          ...device,
+          dragId: device.uniId,
+          type: proName[device.proType],
+          select: deviceStore.selectList.includes(device.uniId),
+        }))
+      lightList.sort((a, b) => a.orderNum - b.orderNum)
+      switchList.sort((a, b) => a.switchInfoDTOList[0].orderNum - b.switchInfoDTOList[0].orderNum)
+      this.setData({
+        lightList,
+        switchList,
+      })
       setTimeout(() => {
-        wx.createSelectorQuery()
-          .select('#scene-title')
-          .boundingClientRect()
-          .exec((res) => {
-            if (res.length > 0 && res[0]) {
-              this.setData({
-                sceneTitlePosition: {
-                  x: res[0].left,
-                  y: res[0].top,
-                },
-              })
-            }
-          })
-      }, 100)
-    },
-    updataCardClientRect() {
-      setTimeout(() => {
-        wx.createSelectorQuery()
-          .selectAll('.light-card')
-          .boundingClientRect()
-          .exec((res) => {
-            if (res.length > 0) {
-              this.setData({
-                lightCardElements: res[0],
-              })
-            }
-          })
-        wx.createSelectorQuery()
-          .selectAll('.switch-card')
-          .boundingClientRect()
-          .exec((res) => {
-            if (res.length > 0) {
-              this.setData({
-                switchCardElements: res[0],
-              })
-            }
-          })
-      }, 100)
-    },
-    reorder(e: WechatMiniprogram.TouchEvent) {
-      const x = e.touches[0].pageX
-      const y = e.touches[0].pageY
-      let elementList = [] as ClienRect[]
-      const deviceList = [...this.data.tempList]
-      if (this.data.longPressType === 'light') {
-        elementList = this.data.lightCardElements
-      } else if (this.data.longPressType === 'switch') {
-        elementList = this.data.switchCardElements
-      } else if (this.data.longPressType === 'curtain') {
-        elementList = this.data.curtainCardElements
-      }
-      for (let i = 0; i < elementList.length; i++) {
-        const element = elementList[i]
-        if (x > element.left && x < element.right && y > element.top && y < element.bottom) {
-          const endIndex = element.dataset.index as number
-          const beginIndex = this.data.longPressBeginIndex
-          //向后移动
-          if (beginIndex < endIndex) {
-            const temp = deviceList[beginIndex]
-            for (let j = beginIndex; j < endIndex; j++) {
-              deviceList[j] = deviceList[j + 1]
-            }
-            deviceList[endIndex] = temp
-          }
-          //向前移动
-          if (beginIndex > endIndex) {
-            const temp = deviceList[beginIndex]
-            for (let j = beginIndex; j > endIndex; j--) {
-              deviceList[j] = deviceList[j - 1]
-            }
-            deviceList[endIndex] = temp
-          }
+        const dragLight = this.selectComponent('#drag-light')
+        if (dragLight && lightList.length > 0) {
+          dragLight.init()
         }
-      }
-      if (this.data.longPressType === 'light') {
-        this.setData({
-          lightList: deviceList,
-        })
-      } else if (this.data.longPressType === 'switch') {
-        this.setData({
-          switchList: deviceList,
-        })
-      } else if (this.data.longPressType === 'curtain') {
-        this.setData({
-          curtainList: deviceList,
-        })
-      }
+      }, 50)
     },
-    saveOrder() {
-      const orderData = {
-        deviceInfoByDeviceVoList: [],
-        type: '0',
-      } as Device.OrderSaveData
-      if (this.data.longPressType === 'light') {
-        this.data.lightList.forEach((device, index) => {
-          if (device.orderNum !== index) {
-            orderData.deviceInfoByDeviceVoList.push({
-              deviceId: device.deviceId,
-              houseId: homeStore.currentHomeDetail.houseId,
-              roomId: roomStore.roomList[roomStore.currentRoomIndex].roomId,
-              orderNum: index.toString(),
-            })
-          }
-        })
-      } else if (this.data.longPressType === 'switch') {
-        orderData.type = '1'
-        console.log(this.data.switchList)
-        this.data.switchList.forEach((device, index) => {
-          if (device.switchInfoDTOList[0].orderNum !== index) {
-            orderData.deviceInfoByDeviceVoList.push({
-              deviceId: device.deviceId,
-              houseId: homeStore.currentHomeDetail.houseId,
-              roomId: roomStore.roomList[roomStore.currentRoomIndex].roomId,
-              orderNum: index.toString(),
-              switchId: device.switchInfoDTOList[0].switchId,
-            })
-          }
-        })
-      }
-      saveDeviceOrder(orderData)
-    },
-    handleTouchMove(e: WechatMiniprogram.TouchEvent) {
+
+    handleScroll(e: { detail: { scrollTop: number } }) {
       this.setData({
-        touchLocation: {
-          x: e.touches[0].pageX,
-          y: e.touches[0].pageY,
-        },
-      })
-      // 节流操作，防止触发排序次数太多
-      if (throttleTimer != 0) {
-        return
-      }
-      throttleTimer = setTimeout(() => {
-        throttleTimer = 0
-      }, 100) as unknown as number
-      this.reorder(e)
-    },
-    handleTouchEnd() {
-      if (!this.data.isLongPress) {
-        return
-      }
-      this.updataCardClientRect()
-      this.setData({
-        isLongPress: false,
-      })
-      let orderHasChange = false
-      if (this.data.longPressType === 'light') {
-        this.data.lightList.some((device, index) => {
-          if (device.deviceId !== this.data.tempList[index].deviceId) {
-            orderHasChange = true
-            return true
-          }
-          return false
-        })
-      } else if (this.data.longPressType === 'switch') {
-        this.data.switchList.some((device, index) => {
-          if (device.uniId !== this.data.tempList[index].uniId) {
-            orderHasChange = true
-            return true
-          }
-          return false
-        })
-      }
-      if (orderHasChange) {
-        this.saveOrder()
-      }
-    },
-    handleDeviceLongPress(e: {
-      currentTarget: { dataset: { type: string; info: Device.DeviceItem; index: number } }
-      touches: { pageX: number; pageY: number }[]
-    }) {
-      let tempList = [] as Device.DeviceItem[]
-      if (e.currentTarget.dataset.type === 'light') {
-        tempList = [...this.data.lightList]
-      } else if (e.currentTarget.dataset.type === 'switch') {
-        tempList = [...this.data.switchList]
-      }
-      this.setData({
-        isLongPress: true,
-        longPressBeginIndex: e.currentTarget.dataset.index,
-        touchLocation: {
-          x: e.touches[0].pageX,
-          y: e.touches[0].pageY,
-        },
-        longPressType: e.currentTarget.dataset.type,
-        longPressDevice: e.currentTarget.dataset.info,
-        tempList,
+        pageMetaScrollTop: e.detail.scrollTop,
       })
     },
     handleSceneTap() {
@@ -452,6 +257,7 @@ ComponentWithComputed({
         }
       }
       this.updateSelectType()
+      this.updateDeviceList()
     },
     async handleDevicePowerTap(e: { detail: Device.DeviceItem }) {
       console.log(e)
@@ -472,6 +278,47 @@ ComponentWithComputed({
         },
         { loading: true },
       )
+    },
+    handleLightSortEnd(e: { detail: { listData: Device.DeviceItem[] } }) {
+      const orderData = {
+        deviceInfoByDeviceVoList: [],
+        type: '0',
+      } as Device.OrderSaveData
+      e.detail.listData.forEach((device, index) => {
+        if (device.orderNum !== index) {
+          orderData.deviceInfoByDeviceVoList.push({
+            deviceId: device.deviceId,
+            houseId: homeStore.currentHomeId,
+            roomId: device.roomId,
+            orderNum: index.toString(),
+          })
+        }
+      })
+      if (orderData.deviceInfoByDeviceVoList.length === 0) {
+        return
+      }
+      saveDeviceOrder(orderData)
+    },
+    handleSwitchSortEnd(e: { detail: { listData: Device.DeviceItem[] } }) {
+      const orderData = {
+        deviceInfoByDeviceVoList: [],
+        type: '1',
+      } as Device.OrderSaveData
+      e.detail.listData.forEach((device, index) => {
+        if (device.switchInfoDTOList[0].orderNum !== index) {
+          orderData.deviceInfoByDeviceVoList.push({
+            deviceId: device.deviceId,
+            houseId: homeStore.currentHomeId,
+            roomId: device.roomId,
+            orderNum: index.toString(),
+            switchId: device.switchInfoDTOList[0].switchId,
+          })
+        }
+      })
+      if (orderData.deviceInfoByDeviceVoList.length === 0) {
+        return
+      }
+      saveDeviceOrder(orderData)
     },
     async handleSwitchControlTapToggle(e: { detail: Device.DeviceItem }) {
       const ep = e.detail.switchInfoDTOList[0].switchId
@@ -509,14 +356,29 @@ ComponentWithComputed({
       })
     },
     handleShowAddSceneSuccess() {
-      this.setData({
-        showAddSceneSuccess: true,
-      })
       setTimeout(() => {
-        this.setData({
-          showAddSceneSuccess: false,
-        })
-      }, 3000)
+        wx.createSelectorQuery()
+          .select('#scene-title')
+          .boundingClientRect()
+          .exec((res) => {
+            if (res.length > 0 && res[0]) {
+              this.setData({
+                sceneTitlePosition: {
+                  x: res[0].left,
+                  y: res[0].top,
+                },
+              })
+              this.setData({
+                showAddSceneSuccess: true,
+              })
+              setTimeout(() => {
+                this.setData({
+                  showAddSceneSuccess: false,
+                })
+              }, 3000)
+            }
+          })
+      }, 100)
     },
     updateSelectType() {
       const typeList = new Set()
