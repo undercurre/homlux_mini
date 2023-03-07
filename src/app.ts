@@ -18,10 +18,6 @@ App<IAppOption>({
     // 获取状态栏、顶部栏、底部栏高度
     setNavigationBarAndBottomBarHeight()
 
-    const appAuthorizeSetting = wx.getAppAuthorizeSetting()
-
-    console.log('appAuthorizeSetting', appAuthorizeSetting)
-
     // 如果用户没登陆，或者登录状态过期，需要自动跳转到登录页
     if (!storage.get<string>('token')) {
       // todo: 保存打开参数，登陆后重定向到参数目录
@@ -32,17 +28,22 @@ App<IAppOption>({
     }
     appOnLaunchService()
 
-    const getAppBaseInfo = wx.getAppBaseInfo()
+    console.log('APP打开参数：', options)
 
-    console.log('getAppBaseInfo', getAppBaseInfo)
-
-    const deviceInfo = wx.getDeviceInfo()
     const systemInfo = wx.getSystemInfoSync()
 
-    console.log('deviceInfo', deviceInfo, 'systemInfo', systemInfo)
+    console.log('systemInfo', systemInfo)
+
+    const appAuthorizeSetting = wx.getAppAuthorizeSetting()
+
+    console.log('appAuthorizeSetting', appAuthorizeSetting)
 
     wx.onNetworkStatusChange(function (res) {
-      console.log('onNetworkStatusChange', res)
+      console.log('监听网络状态变化事件:', res)
+    })
+
+    wx.onNetworkWeakChange(function (res) {
+      console.log('监听弱网状态变化事件:', res)
     })
   },
 

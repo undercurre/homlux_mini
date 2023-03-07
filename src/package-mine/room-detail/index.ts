@@ -2,7 +2,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Dialog from '@vant/weapp/dialog/dialog'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { roomBinding } from '../../store/index'
+import { homeBinding, roomBinding } from '../../store/index'
 import { getCurrentPageParams } from '../../utils/index'
 import { delHouseRoom } from '../../apis/index'
 
@@ -49,6 +49,10 @@ ComponentWithComputed({
 
   methods: {
     editRoom(event: WechatMiniprogram.CustomEvent) {
+      if (!homeBinding.store.isManager) {
+        return
+      }
+      
       const { type } = event.currentTarget.dataset
 
       this.setData({

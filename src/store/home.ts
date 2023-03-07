@@ -22,6 +22,11 @@ export const homeStore = observable({
     return this.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
   },
 
+  // 是否管理员权限+ 
+  get isManager() {
+    return this.currentHomeDetail.houseUserAuth === 1 || this.currentHomeDetail.houseUserAuth === 2
+  },
+
   // actions
   /**
    * 更新家庭列表同时更新当前信息
@@ -146,7 +151,7 @@ export const homeStore = observable({
 
 export const homeBinding = {
   store: homeStore,
-  fields: ['homeList', 'currentHomeId', 'currentHomeDetail'],
+  fields: ['homeList', 'currentHomeId', 'currentHomeDetail', 'isManager'],
   actions: [
     'updateHomeInfo',
     'updateHomeList',
