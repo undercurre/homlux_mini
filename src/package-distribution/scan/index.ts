@@ -51,10 +51,17 @@ ComponentWithComputed({
       await this.initWifi()
 
       const params = wx.getLaunchOptionsSync()
-      console.log('scanPage', params, 'wx.getEnterOptionsSync()', wx.getEnterOptionsSync())
+      console.log(
+        'scanPage',
+        params,
+        'wx.getEnterOptionsSync()',
+        wx.getEnterOptionsSync(),
+        'getCurrentPages()',
+        getCurrentPages(),
+      )
 
       // 防止重复判断,仅通过微信扫码直接进入该界面时判断场景值
-      if (getCurrentPages.length === 1 && params.scene === 1011) {
+      if (getCurrentPages().length === 1 && params.scene === 1011) {
         const scanUrl = decodeURIComponent(params.query.q)
 
         console.log('scanUrl', scanUrl)
@@ -97,13 +104,7 @@ ComponentWithComputed({
         console.log('authorizeRes', authorizeRes)
 
         if (authorizeRes.errno === 103) {
-          wx.showToast({ title: '请打开权限', icon: 'none' })
-
-          wx.openSetting({
-            success(res) {
-              console.log('authSetting', res.authSetting)
-            },
-          })
+          wx.showToast({ title: '请打开位置权限，否则无法正常使用配网', icon: 'none' })
 
           wx.navigateBack()
           return

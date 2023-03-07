@@ -22,6 +22,11 @@ export const homeStore = observable({
     return this.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
   },
 
+  // 是否管理员权限+
+  get isManager() {
+    return this.currentHomeDetail.houseUserAuth === 1 || this.currentHomeDetail.houseUserAuth === 2
+  },
+
   // actions
   /**
    * 更新家庭列表同时更新当前信息
@@ -30,7 +35,7 @@ export const homeStore = observable({
     const res = await this.updateHomeList()
 
     if (res.success) {
-      return await this.updateCurrentHomeDetail(this.currentHomeId)
+      return await this.updateCurrentHomeDetail()
     } else {
       console.log('this.currentHomeId', this.currentHomeId, 'this.homeList', this.homeList)
       return Promise.reject('获取列表家庭失败')
@@ -55,14 +60,14 @@ export const homeStore = observable({
   /**
    * 更新当前家庭详细信息
    */
-  async updateCurrentHomeDetail(houseId: string) {
+  async updateCurrentHomeDetail() {
     const res = await queryUserHouseInfo({
-      houseId,
+      houseId: this.currentHomeId,
     })
 
     if (res.success) {
       runInAction(() => {
-        homeStore.currentHomeDetail = Object.assign({ houseId }, res.result)
+        homeStore.currentHomeDetail = Object.assign({ houseId: this.currentHomeId }, res.result)
       })
       deviceStore.updateAllRoomDeviceList()
       await roomStore.updataHomeDeviceList()
@@ -154,7 +159,7 @@ export const homeStore = observable({
 
 export const homeBinding = {
   store: homeStore,
-  fields: ['homeList', 'currentHomeId', 'currentHomeDetail'],
+  fields: ['homeList', 'currentHomeId', 'currentHomeDetail', 'isManager'],
   actions: [
     'updateHomeInfo',
     'updateHomeList',

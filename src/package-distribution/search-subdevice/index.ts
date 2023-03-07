@@ -398,7 +398,7 @@ ComponentWithComputed({
     },
 
     finish() {
-      roomBinding.store.updateRoomList()
+      homeBinding.store.updateCurrentHomeDetail()
 
       wx.switchTab({
         url: '/pages/index/index',

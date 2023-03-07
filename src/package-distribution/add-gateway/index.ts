@@ -170,7 +170,7 @@ Component({
 
         this.data._interId = setTimeout(() => {
           this.queryDeviceOnlineStatus()
-        }, 5000)
+        }, 3000)
       }
     },
   },

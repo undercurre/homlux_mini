@@ -1,4 +1,4 @@
-<view class="page-container flex flex-col pb-128rpx h-screen">
+<view class="page-container flex flex-col h-screen">
   <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="房间列表"></nav-bar>
 
   <scroll-view class="mt-40rpx grow shrink pb-40rpx h-500 box-border" scroll-y="{{true}}">
@@ -11,7 +11,11 @@
     </van-cell-group>
   </scroll-view>
 
-  <van-button class="mx-32rpx" size="large" type="primary" block bind:click="addRoom">添加房间</van-button>
+  <template wx:if="{{isManager}}">
+    <van-button class="mx-32rpx" size="large" type="primary" block bind:click="addRoom">添加房间</van-button>
+
+    <view style="height: calc(96rpx - env(safe-area-inset-bottom))"></view>
+  </template>
 </view>
 
 <add-room show="{{isAddRoom}}" bind:close="hideAddRoom"></add-room>
