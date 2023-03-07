@@ -9,6 +9,9 @@ App<IAppOption>({
     })
 
     console.log('APP打开参数：', options)
+    if (options.query.type) storage.set('inviteType', options.query.type)
+    if (options.query.houseId) storage.set('inviteHouseId', options.query.houseId)
+    if (options.query.time) storage.set('inviteTime', options.query.time)
     // 加载svg数据
     this.globalData.svgs = svgs
 
