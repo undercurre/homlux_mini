@@ -197,10 +197,11 @@ ComponentWithComputed({
           .exec((res) => {
             // 点中加按钮以外的地方都要隐藏下拉菜单
             if (
-              e.detail.x > res[0].right ||
-              e.detail.x < res[0].left ||
-              e.detail.y > res[0].bottom ||
-              e.detail.y < res[0].top
+              res[0] &&
+              (e.detail.x > res[0].right ||
+                e.detail.x < res[0].left ||
+                e.detail.y > res[0].bottom ||
+                e.detail.y < res[0].top)
             ) {
               this.hideSelectRoomMenu()
             }
