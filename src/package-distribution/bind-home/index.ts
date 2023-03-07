@@ -24,7 +24,7 @@ Component({
   lifetimes: {
     ready() {
       homeBinding.store.updateCurrentHomeDetail()
-      
+
       this.getDeviceInfo()
     },
     detached() {},

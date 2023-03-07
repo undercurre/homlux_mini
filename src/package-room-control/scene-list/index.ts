@@ -68,6 +68,7 @@ ComponentWithComputed({
             dragId: scene.sceneId,
             linkName: `${device.deviceName?.slice(0, 5)}${switchName?.slice(0, 4)} | ${device.roomName}`,
           })
+          return
         }
         listData.push({
           ...scene,

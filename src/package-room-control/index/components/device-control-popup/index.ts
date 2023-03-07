@@ -227,8 +227,7 @@ ComponentWithComputed({
           },
         ],
         200,
-        () => {
-        },
+        () => {},
       )
     },
     handleLinkPopup(e: { currentTarget: { dataset: { link: 'light' | 'switch' | 'scene' } } }) {

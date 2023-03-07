@@ -41,5 +41,9 @@ module.exports = {
     })
     return false
   },
+  touchEnd: function (e, ownerInstance) {
+    console.log(JSON.stringify(e))
+    console.log(JSON.stringify(ownerInstance))
+  },
   bottom: bottom,
 }
