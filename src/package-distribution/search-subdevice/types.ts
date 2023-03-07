@@ -13,4 +13,5 @@ export interface IBleDevice {
   isChecked: boolean // 是否被选中
   requestTimes: number // 查询云端在线次数
   requesting: boolean
+  zigbeeRepeatTimes: number // 配网自动重试次数
 }

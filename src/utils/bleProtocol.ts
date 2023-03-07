@@ -87,9 +87,10 @@ export class BleClient {
       })
       .catch((err: WechatMiniprogram.BluetoothError) => err)
 
-    console.log('connectRes', this.mac, this.deviceUuid, connectRes, Date.now() - date1)
+    console.log(`--mac: ${this.mac}，connectRes`, this.deviceUuid, connectRes, Date.now() - date1)
 
-    if (connectRes.errCode !== 0) {
+    // 判断是否连接蓝牙
+    if (connectRes.errCode !== 0 && connectRes.errCode !== -1) {
       throw connectRes
     }
 
@@ -98,7 +99,7 @@ export class BleClient {
       deviceId: this.deviceUuid,
     })
 
-    console.log('bleServiceRes', bleServiceRes)
+    console.log(`mac: ${this.mac}`, 'bleServiceRes', bleServiceRes)
 
     const characRes = await wx.getBLEDeviceCharacteristics({
       deviceId: this.deviceUuid,
@@ -116,20 +117,18 @@ export class BleClient {
       type: 'notification',
     })
 
-    console.log('notifyRes', notifyRes)
+    console.log(`mac: ${this.mac}`, 'notifyRes', notifyRes)
 
     return connectRes
   }
 
   async sendCmd(params: { cmdType: keyof typeof CmdTypeMap; subType: keyof typeof ControlSubType }) {
-    console.log(`-------------sendCmd-------------start: ${this.mac}`)
-
     try {
       await this.connect()
 
       const { cmdType, subType } = params
 
-      console.log(`---cmdType----- ${params.cmdType}--${params.subType}`)
+      console.log(`Mac：${this.mac}---cmdType----- ${params.cmdType}--${params.subType}`)
 
       const msgId = ++this.msgId // 等待回复的指令msgId
       // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
@@ -150,10 +149,11 @@ export class BleClient {
 
       return new Promise<{ code: string; success: boolean; cmdType?: string; subCmdType?: string; resMsg: string }>(
         (resolve) => {
+          const begin = Date.now()
           // 超时处理
           const timeId = setTimeout(() => {
             resolve({ code: '-1', success: false, resMsg: 'request timeout', cmdType: cmdType, subCmdType: subType })
-          }, 5000)
+          }, 8000)
 
           const listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
             console.log(`onBLECharacteristicValueChange ${res.characteristicId} has changed, now is ${res.value}`, res)
@@ -170,7 +170,6 @@ export class BleClient {
 
             // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
             // 1 byte	     1 byte	   1 byte	          N  bytes	    1 byte
-            console.log('msgId', msgId, 'resMsgId', resMsgId)
             if (resMsgId !== msgId) {
               return
             }
@@ -183,6 +182,8 @@ export class BleClient {
 
             clearTimeout(timeId)
 
+            console.log(`蓝牙指令回复时间${this.mac}： ${Date.now() - begin}`, cmdType, subType)
+
             resolve({
               code: code,
               resMsg: resMsg.substr(4),
@@ -190,7 +191,6 @@ export class BleClient {
               cmdType: cmdType,
               subCmdType: subType,
             })
-            console.log('resolve')
           }
 
           wx.onBLECharacteristicValueChange(listener)
@@ -204,8 +204,6 @@ export class BleClient {
               console.log('writeRes', res)
             },
           })
-
-          console.log(`-------------sendCmd-------------end：${this.mac}`)
         },
       )
     } catch (err) {
@@ -221,7 +219,7 @@ export class BleClient {
   async startZigbeeNet() {
     const res = await this.sendCmd({ cmdType: 'control', subType: 'CTL_CONFIG_ZIGBEE_NET' })
 
-    console.log('startZigbeeNet', this.mac, res)
+    console.log(`mac: ${this.mac}`, 'startZigbeeNet', res)
 
     let zigbeeMac = ''
 

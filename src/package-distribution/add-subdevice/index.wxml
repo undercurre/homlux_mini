@@ -3,7 +3,7 @@
 
   <view class="grow flex flex-col pb-128rpx">
     <block wx:if="{{status === 'linking'}}">
-      <loading class="mt-130rpx" text="请将设备尽量靠近智能网关" show-progress="{{true}}" active-index="{{activeIndex}}"></loading>
+      <mz-loading class="mt-130rpx" text="请将设备尽量靠近智能网关" show-progress="{{true}}" active-index="{{activeIndex}}"></mz-loading>
     </block>
 
     <block wx:if="{{status === 'error'}}">

@@ -127,9 +127,12 @@ ComponentWithComputed({
         })
       })
 
-      wx.onBLEConnectionStateChange(function (res) {
+      wx.onBLEConnectionStateChange((res) => {
+        const item = this.data.deviceList.find(item => item.deviceUuid === res.deviceId) as IBleDevice
+
         // 该方法回调中可以用于处理连接意外断开等异常情况
         console.log(
+          `mac: ${item.mac}`,
           'onBLEConnectionStateChange',
           res,
           `device ${res.deviceId} state has changed, connected: ${res.connected}`,
@@ -171,6 +174,7 @@ ComponentWithComputed({
         status: 'waiting',
         requestTimes: 20,
         requesting: false,
+        zigbeeRepeatTimes: 3
       }
 
       this.data.deviceList.push(bleDevice)
@@ -182,9 +186,10 @@ ComponentWithComputed({
 
     // 切换选择发现的设备
     toggleDevice(e: WechatMiniprogram.CustomEvent) {
-      console.log('toggleDevice', e)
       const index = e.currentTarget.dataset.index as number
       const item = this.data.deviceList[index]
+
+      console.log('toggleDevice', item)
 
       item.isChecked = !item.isChecked
 
@@ -222,7 +227,15 @@ ComponentWithComputed({
     },
 
     async startZigbeeNet(bleDevice: IBleDevice) {
+      bleDevice.zigbeeRepeatTimes--
+
       const res = await bleDevice.client.startZigbeeNet()
+
+      // 配网指令允许重发3次
+      if (!res.success && bleDevice.zigbeeRepeatTimes > 0) {
+        this.startZigbeeNet(bleDevice)
+        return
+      }
 
       if (res.success) {
         bleDevice.zigbeeMac = res.result.zigbeeMac
@@ -369,16 +382,6 @@ ComponentWithComputed({
     async reAdd() {
       const pageParams = getCurrentPageParams()
 
-      const res = await sendCmdAddSubdevice({
-        deviceId: pageParams.gatewayId,
-        expire: 60,
-        buzz: 1,
-      })
-
-      if (!res.success) {
-        return
-      }
-
       this.setData({
         status: 'requesting',
       })
@@ -394,6 +397,12 @@ ComponentWithComputed({
 
       this.setData({
         deviceList: this.data.deviceList,
+      })
+
+      sendCmdAddSubdevice({
+        deviceId: pageParams.gatewayId,
+        expire: 60,
+        buzz: 1,
       })
     },
 
