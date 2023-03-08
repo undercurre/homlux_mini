@@ -240,7 +240,7 @@ ComponentWithComputed({
       this.setData({
         _isScaning: true,
       })
-      
+
       wx.showLoading({
         title: 'loading',
       })
