@@ -2,7 +2,7 @@
 <view class="card rounded-32rpx w-702rpx">
   <view class="flex items-center w-full h-104rpx" bindtap="handleCardTap">
     <text class="text-36rpx font-medium ml-48rpx {{sceneList.length === 0 || !showScene ? 'my-12rpx' : ''}}">{{roomInfo.roomName}}</text>
-    <text class="flex-1 ml-20rpx text-28rpx text-hex-b6b7bb">{{ roomInfo.deviceLightOnNum  ? roomInfo.deviceLightOnNum + '盏灯亮起' : sceneList.length > 0 ? '灯全部关闭' : ''}}</text>
+    <text class="flex-1 ml-20rpx text-28rpx text-hex-b6b7bb">{{ roomInfo.deviceLightOnNum ? roomInfo.deviceLightOnNum + '盏灯亮起' : sceneList.length > 0 ? '灯全部关闭' : ''}}</text>
     <image src="/assets/img/home/more.png" class="w-32rpx h-32rpx mr-32rpx"></image>
   </view>
   <view class="mx-32rpx mt-8rpx" wx:if="{{showScene && sceneList.length > 0}}">

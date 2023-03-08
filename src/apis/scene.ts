@@ -51,7 +51,10 @@ export async function updateScene(data: Scene.UpdateSceneDto, options?: { loadin
   })
 }
 
-export async function updateSceneSort(data: { sceneSortList: { orderNum: number; sceneId: string }[] }, options?: { loading?: boolean }) {
+export async function updateSceneSort(
+  data: { sceneSortList: { orderNum: number; sceneId: string }[] },
+  options?: { loading?: boolean },
+) {
   return await mzaioRequest.post<IAnyObject>({
     log: true,
     loading: options?.loading ?? false,

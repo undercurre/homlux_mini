@@ -14,12 +14,15 @@ export async function getRoomList(houseId: string, options?: { loading?: boolean
 /**
  * 新增或更新房间信息
  */
-export async function saveHouseRoomInfo(data: {
-  houseId: string
-  roomIcon: string
-  roomId?: string
-  roomName: string
-}, options?: { loading?: boolean }) {
+export async function saveHouseRoomInfo(
+  data: {
+    houseId: string
+    roomIcon: string
+    roomId?: string
+    roomName: string
+  },
+  options?: { loading?: boolean },
+) {
   return await mzaioRequest.post({
     log: true,
     loading: options?.loading ?? false,

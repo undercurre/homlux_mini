@@ -190,15 +190,18 @@ export async function checkOtaVersion(deviceId: string, options?: { loading?: bo
  * 2：同时修改设备名字、房间
  * 3：修改开关名字
  */
-export async function editDeviceInfo(data: {
-  deviceId: string
-  deviceName?: string
-  houseId?: string
-  roomId?: string
-  type?: string
-  switchId?: string
-  switchName?: string
-}, options?: { loading?: boolean }) {
+export async function editDeviceInfo(
+  data: {
+    deviceId: string
+    deviceName?: string
+    houseId?: string
+    roomId?: string
+    type?: string
+    switchId?: string
+    switchName?: string
+  },
+  options?: { loading?: boolean },
+) {
   return await mzaioRequest.post<IAnyObject>({
     log: true,
     loading: options?.loading ?? false,
@@ -252,12 +255,15 @@ export async function createAssociated(
   })
 }
 
-export async function updateAssociated(data: {
-  relType: '0' | '1'
-  lightRelId?: string
-  switchRelId?: string
-  deviceIds: string[]
-}, options?: { loading?: boolean }) {
+export async function updateAssociated(
+  data: {
+    relType: '0' | '1'
+    lightRelId?: string
+    switchRelId?: string
+    deviceIds: string[]
+  },
+  options?: { loading?: boolean },
+) {
   return await mzaioRequest.post<IAnyObject>({
     log: true,
     loading: options?.loading ?? false,

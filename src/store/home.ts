@@ -167,9 +167,9 @@ export const homeStore = observable({
     }
   },
 
-  homeInitFinish(){
+  homeInitFinish() {
     homeStore.homePageInit = true
-  }
+  },
 })
 
 export const homeBinding = {

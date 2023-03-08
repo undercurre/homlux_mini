@@ -35,7 +35,7 @@ ComponentWithComputed({
       return ''
     },
     isSubDevice(data) {
-      return ([proType.switch, proType.light] as string[]).includes(data.deviceInfo.proType);
+      return ([proType.switch, proType.light] as string[]).includes(data.deviceInfo.proType)
     },
     belongsToGateway(data) {
       if (data.deviceInfo.gatewayId) {
@@ -155,7 +155,7 @@ ComponentWithComputed({
       })
     },
     async updateDeviceInfo() {
-      const res = await queryDeviceInfoByDeviceId({deviceId: this.data.deviceId, roomId: this.data.roomId})
+      const res = await queryDeviceInfoByDeviceId({ deviceId: this.data.deviceId, roomId: this.data.roomId })
       if (res.success) {
         this.setData({
           deviceInfo: res.result,
