@@ -11,7 +11,7 @@ ComponentWithComputed({
     styleIsolation: 'shared',
     addGlobalClass: true,
   },
-  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding] }), pageBehaviors],
+  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, roomBinding] }), pageBehaviors],
 
   /**
    * 页面的初始数据

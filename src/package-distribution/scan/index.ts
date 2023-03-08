@@ -227,16 +227,20 @@ ComponentWithComputed({
 
       console.log('getQrCodeInfo', e, this.data._isScaning)
 
-      this.setData({
-        _isScaning: true,
-      })
-
       const scanUrl = e.detail.result
+
+      if (!scanUrl.includes('meizgd.com/homlux/qrCode.html')) {
+        return
+      }
 
       this.handleScanUrl(scanUrl)
     },
 
     async handleScanUrl(url: string) {
+      this.setData({
+        _isScaning: true,
+      })
+
       wx.showLoading({
         title: 'loading',
       })

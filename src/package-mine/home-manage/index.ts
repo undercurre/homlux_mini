@@ -5,6 +5,7 @@ import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { roomBinding, homeBinding } from '../../store/index'
 import { saveOrUpdateUserHouseInfo, delUserHouse, quitUserHouse } from '../../apis/index'
+import { strUtil } from '../../utils/index'
 
 ComponentWithComputed({
   options: {
@@ -216,7 +217,7 @@ ComponentWithComputed({
         isEditName: false,
       })
 
-      const res = await saveOrUpdateUserHouseInfo({ ...this.data.homeInfoEdited, userLocationInfo: '11' })
+      const res = await saveOrUpdateUserHouseInfo({ ...this.data.homeInfoEdited, userLocationInfo: '无' })
 
       if (res.success) {
         Toast(this.data.homeInfoEdited.houseId ? '修改成功' : '新增成功')
@@ -253,6 +254,12 @@ ComponentWithComputed({
       })
     },
 
+    closeTransferHome() {
+      this.setData({
+        isTransferHome: false,
+      })
+    },
+
     async quitHome() {
       const res = await Dialog.confirm({
         message: '是否退出当前家庭',
@@ -270,11 +277,21 @@ ComponentWithComputed({
     },
 
     clickRoomItem(event: WechatMiniprogram.CustomEvent) {
-      const { icon } = event.currentTarget.dataset
+      const { index } = event.currentTarget.dataset
 
-      if (icon === 'more') {
+      const item = this.data.showRoomList[index]
+
+      if (item.roomIcon === 'more') {
         wx.navigateTo({
           url: '/package-mine/room-manage/index',
+        })
+      } else {
+        wx.navigateTo({
+          url: strUtil.getUrlWithParams('/package-mine/room-detail/index', {
+            roomId: item.roomId,
+            roomName: item.roomName,
+            roomIcon: item.roomIcon,
+          }),
         })
       }
     },

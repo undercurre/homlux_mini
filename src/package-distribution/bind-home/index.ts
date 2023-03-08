@@ -44,7 +44,7 @@ Component({
 
       console.log('getCurrentPageParams', pageParams)
 
-      const res = await queryDeviceInfoByDeviceId(pageParams.deviceId)
+      const res = await queryDeviceInfoByDeviceId({ deviceId: pageParams.deviceId })
 
       if (res.success) {
         this.setData({
