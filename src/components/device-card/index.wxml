@@ -1,4 +1,4 @@
-<view class="card-shadow w-160rpx h-216rpx rounded-32rpx box-border flex-col-center relative" style="{{style}}" bindtap="handleCardTap">
+<view class="card-shadow w-160rpx h-216rpx rounded-32rpx box-border flex-col-center relative" style="{{style}}" catchtap="handleCardTap">
   <view class="absolute left-0 top-8rpx w-160rpx flex-center">
     <text class="text-26rpx text-hex-353535 font-medium">{{deviceName}}</text>
   </view>
