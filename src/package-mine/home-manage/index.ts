@@ -273,7 +273,7 @@ ComponentWithComputed({
 
         return
       }
-      
+
       if (homeBinding.store.currentHomeDetail.userCount <= 1) {
         wx.showToast({ title: '没有其他成员可供转让', icon: 'none' })
 

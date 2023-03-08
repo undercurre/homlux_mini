@@ -39,11 +39,11 @@ App<IAppOption>({
     console.log('appAuthorizeSetting', appAuthorizeSetting)
 
     wx.onNetworkStatusChange(function (res) {
-      console.log('监听网络状态变化事件:', res)
+      console.log('监听网络状态变化事件:', res, Date().toString())
     })
 
     wx.onNetworkWeakChange(function (res) {
-      console.log('监听弱网状态变化事件:', res)
+      console.log('监听弱网状态变化事件:', res, Date().toString())
     })
   },
 

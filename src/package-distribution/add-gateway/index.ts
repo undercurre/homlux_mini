@@ -4,6 +4,7 @@ import { queryDeviceOnlineStatus, bindDevice } from '../../apis/index'
 import { WifiSocket, strUtil, getCurrentPageParams } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { homeBinding, roomBinding } from '../../store/index'
+import { emitter, WSEventType } from '../../utils/eventBus'
 
 let socket: WifiSocket
 let start = Date.now()
@@ -33,6 +34,9 @@ Component({
 
   lifetimes: {
     ready() {
+      emitter.on('wsReceive', (res) => {
+        console.debug('add-gateway', res, res.result.eventType === WSEventType.device_offline_status)
+      })
       start = Date.now()
       this.initWifi()
     },
@@ -44,11 +48,6 @@ Component({
     },
   },
 
-  pageLifetimes: {
-    hide() {
-      console.log('add-gateway-hide')
-    },
-  },
   /**
    * 组件的方法列表
    */
@@ -110,7 +109,7 @@ Component({
       // 防止强绑情况选网关还没断开原有连接，需要延迟查询
       setTimeout(() => {
         this.queryDeviceOnlineStatus()
-      }, 3000)
+      }, 10000)
 
       socket.close()
     },
