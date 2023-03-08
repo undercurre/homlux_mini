@@ -122,6 +122,12 @@ export class BleClient {
     return connectRes
   }
 
+  async close() {
+    const res = await wx.closeBLEConnection({deviceId: this.deviceUuid}).catch(err => err)
+
+    console.log('closeBLEConnection', res)
+  }
+
   async sendCmd(params: { cmdType: keyof typeof CmdTypeMap; subType: keyof typeof ControlSubType }) {
     try {
       await this.connect()
@@ -156,7 +162,7 @@ export class BleClient {
           }, 8000)
 
           const listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
-            console.log(`onBLECharacteristicValueChange ${res.characteristicId} has changed, now is ${res.value}`, res)
+            console.log(`${this.mac}onBLECharacteristicValueChange ${res.characteristicId} has changed, now is ${res.value}`, res)
             if (res.deviceId !== this.deviceUuid) {
               return
             }
@@ -207,6 +213,7 @@ export class BleClient {
         },
       )
     } catch (err) {
+      console.error('sendCmd-err', err)
       return {
         code: -1,
         success: false,

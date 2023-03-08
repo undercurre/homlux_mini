@@ -87,7 +87,7 @@ ComponentWithComputed({
       wx.onBLEConnectionStateChange(function (res) {
         // 该方法回调中可以用于处理连接意外断开等异常情况
         console.log(
-          'onBLEConnectionStateChange',
+          'onBLEConnectionStateChange-add-subdevice',
           res,
           `device ${res.deviceId} state has changed, connected: ${res.connected}`,
         )
