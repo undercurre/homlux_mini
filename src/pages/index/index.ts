@@ -6,6 +6,8 @@ import { proType } from '../../config/index'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { allDevicePowerControl } from '../../apis/index'
+import { emitter } from '../../utils/eventBus'
+let throttleTimer = 0
 ComponentWithComputed({
   behaviors: [
     BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding, homeBinding, deviceBinding] }),
@@ -54,17 +56,6 @@ ComponentWithComputed({
       return hasLightOrSwitch
     },
   },
-  watch: {
-    hasDevice(value) {
-      if (value) {
-        this.updateContentHeight()
-      } else {
-        this.setData({
-          contentHeight: 0,
-        })
-      }
-    },
-  },
 
   methods: {
     // 生命周期或者其他钩子
@@ -80,6 +71,7 @@ ComponentWithComputed({
     onHide() {
       // 隐藏之前展示的下拉菜单
       this.hideMenu()
+      emitter.off('wsReceive')
     },
     async onPullDownRefresh() {
       try {
@@ -93,6 +85,15 @@ ComponentWithComputed({
 
     onShow() {
       this.inviteMember()
+      emitter.off('wsReceive')
+      emitter.on('wsReceive', () => {
+        if (!throttleTimer) {
+          throttleTimer = setTimeout(() => {
+            homeStore.updateRoomCardList()
+            throttleTimer = 0
+          }, 500) as unknown as number
+        }
+      })
     },
 
     inviteMember() {
@@ -282,18 +283,17 @@ ComponentWithComputed({
       })
     },
     updateContentHeight() {
-      setTimeout(() => {
-        wx.createSelectorQuery()
-          .select('#content')
-          .boundingClientRect()
-          .exec((res) => {
-            if (res[0] && res[0].height) {
-              this.setData({
-                contentHeight: res[0].height,
-              })
-            }
-          })
-      }, 100)
+      wx.createSelectorQuery()
+        .select('#content')
+        .boundingClientRect()
+        .exec((res) => {
+          console.log(res)
+          if (res[0] && res[0].height) {
+            this.setData({
+              contentHeight: res[0].height,
+            })
+          }
+        })
     },
     doHomeSelectArrowAnimation(newValue: boolean, oldValue: boolean) {
       if (newValue === oldValue) {

@@ -18,7 +18,25 @@ ComponentWithComputed({
     popup: {
       type: Boolean,
       value: true,
-      observer() {},
+      observer(value) {
+        const from = this.data._bottom
+        const to = value ? 0 : this.data._minHeight - this.data._componentHeight
+        this.data._bottom = to
+        this.animate(
+          '#popup',
+          [
+            {
+              bottom: from + 'px',
+              ease: 'ease-in-out',
+            },
+            {
+              bottom: to + 'px',
+              ease: 'ease-in-out',
+            },
+          ],
+          200,
+        )
+      },
     },
   },
 
@@ -32,6 +50,7 @@ ComponentWithComputed({
     _componentHeight: 0,
     _wfullpx: 0,
     _touchStartY: 0,
+    _isTouchStart: false,
     info: {
       bottomBarHeight: 0,
       componentHeight: 0,
@@ -197,6 +216,7 @@ ComponentWithComputed({
       this.data._bottom = _minHeight - _componentHeight // 组件相对底部高度
       this.data._wfullpx = divideRpxByPx * 750 // 屏幕宽度
       this.data._divideRpxByPx = divideRpxByPx // px rpx比率
+      console.log('attached', this.data._minHeight, this.data._bottom)
       this.setData({
         info: {
           bottomBarHeight: bottomBarHeight,
@@ -211,9 +231,28 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
+    handleTouchStart(e: WechatMiniprogram.TouchEvent) {
+      if (e.touches.length > 1) {
+        this.data._isTouchStart = false
+        return
+      }
+      this.data._touchStartY = e.touches[0].pageY
+      this.data._isTouchStart = true
+    },
+    handleTouchMove(e: WechatMiniprogram.TouchEvent) {
+      if (e.touches.length > 1 || !this.data._isTouchStart) {
+        this.data._isTouchStart = false
+        return
+      }
+      const isMoveUp = this.data._touchStartY - e.touches[0].pageY > 0
+      console.log('isMoveUp', isMoveUp)
+      this.triggerEvent('popMove', isMoveUp ? 'up' : 'down')
+      this.data._isTouchStart = false
+    },
+    handlePopup() {
+      this.triggerEvent('popMove', 'up')
+    },
     // todo: 实现动画收起展开
-    handlePopUp() {},
-    handlePopDown() {},
     handleLinkPopup(e: { currentTarget: { dataset: { link: 'light' | 'switch' | 'scene' } } }) {
       const deviceMap = deviceStore.deviceMap
       const switchUniId = deviceStore.selectList.find((uniId) => uniId.includes(':'))

@@ -9,18 +9,18 @@ var minHeight = 0
 
 module.exports = {
   infoObserver: function (newVal, oldVal, ownerInstance) {
-    currentHeight = 0
-    bottomBarHeight = newVal.bottomBarHeight
-    componentHeight = newVal.componentHeight
-    divideRpxByPx = newVal.divideRpxByPx
-    if (bottomBarHeight === 0) {
-      bottomBarHeight = 32 // 如果没有高度，就给个高度，防止弹窗太贴底部
-    }
-    minHeight = divideRpxByPx * 60 + bottomBarHeight
-    var instance = ownerInstance.selectComponent('#popup')
-    instance.setStyle({
-      bottom: bottom + 'px',
-    })
+    // currentHeight = 0
+    // bottomBarHeight = newVal.bottomBarHeight
+    // componentHeight = newVal.componentHeight
+    // divideRpxByPx = newVal.divideRpxByPx
+    // if (bottomBarHeight === 0) {
+    //   bottomBarHeight = 32 // 如果没有高度，就给个高度，防止弹窗太贴底部
+    // }
+    // minHeight = divideRpxByPx * 60 + bottomBarHeight
+    // var instance = ownerInstance.selectComponent('#popup')
+    // instance.setStyle({
+    //   bottom: bottom + 'px',
+    // })
   },
   touchStart: function (e) {
     touchY = e.touches[0].pageY
