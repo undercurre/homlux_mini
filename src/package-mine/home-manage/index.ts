@@ -253,6 +253,12 @@ ComponentWithComputed({
       })
     },
 
+    closeTransferHome() {
+      this.setData({
+        isTransferHome: false,
+      })
+    },
+
     async quitHome() {
       const res = await Dialog.confirm({
         message: '是否退出当前家庭',

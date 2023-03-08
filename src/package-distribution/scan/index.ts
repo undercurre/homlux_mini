@@ -233,14 +233,14 @@ ComponentWithComputed({
         return
       }
 
-      this.setData({
-        _isScaning: true,
-      })
-
       this.handleScanUrl(scanUrl)
     },
 
     async handleScanUrl(url: string) {
+      this.setData({
+        _isScaning: true,
+      })
+      
       wx.showLoading({
         title: 'loading',
       })

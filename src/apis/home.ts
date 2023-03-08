@@ -43,7 +43,7 @@ export async function saveOrUpdateUserHouseInfo(
   }
 
   return await mzaioRequest.post<Home.IHomeDetail>({
-    log: false,
+    log: true,
     loading: options?.loading ?? false,
     url: '/v1/mzgd/user/saveOrUpdateUserHouseInfo',
     data: params,
@@ -55,7 +55,7 @@ export async function saveOrUpdateUserHouseInfo(
  */
 export async function updateDefaultHouse(houseId: string, options?: { loading?: boolean }) {
   return await mzaioRequest.post<Home.IHomeDetail>({
-    log: false,
+    log: true,
     loading: options?.loading ?? false,
     url: '/v1/mzgd/user/updateDefaultHouse',
     data: {
@@ -70,7 +70,7 @@ export async function updateDefaultHouse(houseId: string, options?: { loading?: 
  */
 export async function delUserHouse(houseId: string, options?: { loading?: boolean }) {
   return await mzaioRequest.post({
-    log: false,
+    log: true,
     loading: options?.loading ?? false,
     url: '/v1/mzgd/user/house/delUserHouse',
     data: {
@@ -84,7 +84,7 @@ export async function delUserHouse(houseId: string, options?: { loading?: boolea
  */
 export async function quitUserHouse(houseId: string, options?: { loading?: boolean }) {
   return await mzaioRequest.post({
-    log: false,
+    log: true,
     loading: options?.loading ?? false,
     url: '/v1/mzgd/user/house/quitUserHouse',
     data: {
@@ -102,7 +102,7 @@ export async function changeUserHouse(
   options?: { loading?: boolean },
 ) {
   return await mzaioRequest.post({
-    log: false,
+    log: true,
     loading: options?.loading ?? false,
     url: '/v1/mzgd/user/house/changeUserHouse',
     data: {
@@ -117,7 +117,7 @@ export async function changeUserHouse(
  */
 export async function queryHouseUserList({ houseId = '' }, options?: { loading?: boolean }) {
   return await mzaioRequest.post<Home.HomeMemberInfo>({
-    log: false,
+    log: true,
     loading: options?.loading ?? false,
     url: '/v1/mzgd/user/house/queryHouseUserList',
     data: {
@@ -133,7 +133,7 @@ export async function queryHouseUserList({ houseId = '' }, options?: { loading?:
  */
 export async function updateHouseUserAuth({ userId = '', auth = 3, houseId = '' }, options?: { loading?: boolean }) {
   return await mzaioRequest.post({
-    log: false,
+    log: true,
     loading: options?.loading ?? false,
     url: '/v1/mzgd/user/house/updateHouseUserAuth',
     data: {
@@ -149,7 +149,7 @@ export async function updateHouseUserAuth({ userId = '', auth = 3, houseId = '' 
  */
 export async function deleteHouseUser({ houseId = '', userId = '' }, options?: { loading?: boolean }) {
   return await mzaioRequest.post({
-    log: false,
+    log: true,
     loading: options?.loading ?? false,
     url: '/v1/mzgd/user/house/delHouseUser',
     data: {
@@ -164,7 +164,7 @@ export async function deleteHouseUser({ houseId = '', userId = '' }, options?: {
  */
 export async function inviteHouseUser({ houseId = '', auth = 3 }, options?: { loading?: boolean }) {
   return await mzaioRequest.post({
-    log: false,
+    log: true,
     loading: options?.loading ?? false,
     url: '/v1/mzgd/user/inviteHouseUser',
     data: {

@@ -50,9 +50,7 @@ Component({
     },
 
     close() {
-      this.setData({
-        show: false,
-      })
+      this.triggerEvent('close')
     },
 
     async confirm() {
@@ -60,13 +58,11 @@ Component({
 
       const res = await changeUserHouse({ houseId: homeBinding.store.currentHomeId, changeUserId: item.userId })
 
-      this.setData({
-        show: false,
-      })
-
       if (res.success) {
         homeBinding.store.updateHomeInfo()
       }
+
+      this.triggerEvent('close')
     },
   },
 })
