@@ -40,6 +40,7 @@ export const roomStore = observable({
     if (res.success) {
       res.result.roomInfoList.forEach((roomInfo) => {
         const roomDeviceList = roomStore.roomDeviceList[roomInfo.roomInfo.roomId]
+        // 过滤一下默认场景，没灯过滤明亮柔和，没灯没开关全部过滤
         const hasSwitch = roomDeviceList?.some((device) => device.proType === proType.switch) ?? false
         const hasLight = roomDeviceList?.some((device) => device.proType === proType.light) ?? false
         if (!hasSwitch && !hasLight) {
@@ -49,7 +50,26 @@ export const roomStore = observable({
           // 只有开关，去掉默认的明亮、柔和
           roomInfo.roomSceneList = roomInfo.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
         }
+        // 统计多少灯打开（开关不关联灯或者关联场景都算进去）
+        let deviceLightOnNum = 0
+        roomDeviceList?.forEach((device) => {
+          if (device.proType === proType.light && device.mzgdPropertyDTOList['1'].OnOff) {
+            deviceLightOnNum++
+          } else if (device.proType === proType.switch) {
+            device.switchInfoDTOList.forEach((switchItem) => {
+              if (
+                !switchItem.lightRelId &&
+                device.mzgdPropertyDTOList[switchItem.switchId].OnOff &&
+                !device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode
+              ) {
+                deviceLightOnNum++
+              }
+            })
+          }
+        })
+        roomInfo.roomInfo.deviceLightOnNum = deviceLightOnNum
       })
+
       runInAction(() => {
         roomStore.roomList = res.result.roomInfoList.map((room) => ({
           roomId: room.roomInfo.roomId,
