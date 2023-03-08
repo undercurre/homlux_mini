@@ -101,10 +101,10 @@ ComponentWithComputed({
           // 如果是当前房间的设备状态发生变化，更新设备状态
           const index = deviceStore.deviceList.findIndex((device) => device.deviceId === e.result.eventData.deviceId)
           if (index !== -1) {
-            const res = await queryDeviceInfoByDeviceId(
-              deviceStore.deviceList[index].deviceId,
-              deviceStore.deviceList[index].roomId,
-            )
+            const res = await queryDeviceInfoByDeviceId({
+              deviceId: deviceStore.deviceList[index].deviceId,
+              roomId: deviceStore.deviceList[index].roomId,
+            })
             if (res.success) {
               runInAction(() => {
                 deviceStore.deviceList[index] = res.result
@@ -135,8 +135,8 @@ ComponentWithComputed({
 
     async onPullDownRefresh() {
       try {
-        await deviceStore.updateSubDeviceList()
-        await sceneStore.updateSceneList()
+        await deviceStore.updateSubDeviceList(undefined, undefined, { loading: true })
+        sceneStore.updateSceneList()
         this.updateDeviceList()
       } finally {
         wx.stopPullDownRefresh()
@@ -275,21 +275,34 @@ ComponentWithComputed({
       console.log(e)
     },
     async handleLightPowerToggle(e: { detail: Device.DeviceItem }) {
-      await controlDevice(
-        {
-          topic: '/subdevice/control',
-          deviceId: e.detail.gatewayId,
-          method: 'lightControl',
-          inputData: [
-            {
-              devId: e.detail.deviceId,
-              ep: 1,
-              OnOff: e.detail.mzgdPropertyDTOList['1'].OnOff === 1 ? 0 : 1,
-            },
-          ],
-        },
-        { loading: true },
-      )
+      const device = deviceStore.deviceList.find((device) => device.deviceId === e.detail.deviceId)!
+      const OnOff = device.mzgdPropertyDTOList['1'].OnOff
+      runInAction(() => {
+        device.mzgdPropertyDTOList['1'].OnOff = OnOff ? 0 : 1
+        deviceStore.deviceList = [...deviceStore.deviceList]
+      })
+      const res = await controlDevice({
+        topic: '/subdevice/control',
+        deviceId: e.detail.gatewayId,
+        method: 'lightControl',
+        inputData: [
+          {
+            devId: e.detail.deviceId,
+            ep: 1,
+            OnOff: e.detail.mzgdPropertyDTOList['1'].OnOff === 1 ? 0 : 1,
+          },
+        ],
+      })
+      if (!res.success) {
+        runInAction(() => {
+          device.mzgdPropertyDTOList['1'].OnOff = OnOff
+          deviceStore.deviceList = [...deviceStore.deviceList]
+        })
+        wx.showToast({
+          icon: 'error',
+          title: '控制失败',
+        })
+      }
       // 首页需要更新灯光打开个数
       homeStore.updateCurrentHomeDetail()
     },
@@ -342,21 +355,34 @@ ComponentWithComputed({
           execScene(sceneId)
         }
       } else {
-        await controlDevice(
-          {
-            topic: '/subdevice/control',
-            deviceId: e.detail.gatewayId,
-            method: 'panelSingleControl',
-            inputData: [
-              {
-                devId: e.detail.deviceId,
-                ep,
-                OnOff: e.detail.mzgdPropertyDTOList[ep].OnOff === 1 ? 0 : 1,
-              },
-            ],
-          },
-          { loading: true },
-        )
+        const device = deviceStore.deviceList.find((device) => device.deviceId === e.detail.deviceId)!
+        const OnOff = device.mzgdPropertyDTOList[ep].OnOff
+        runInAction(() => {
+          device.mzgdPropertyDTOList[ep].OnOff = OnOff ? 0 : 1
+          deviceStore.deviceList = [...deviceStore.deviceList]
+        })
+        const res = await controlDevice({
+          topic: '/subdevice/control',
+          deviceId: e.detail.gatewayId,
+          method: 'panelSingleControl',
+          inputData: [
+            {
+              devId: e.detail.deviceId,
+              ep,
+              OnOff: e.detail.mzgdPropertyDTOList[ep].OnOff === 1 ? 0 : 1,
+            },
+          ],
+        })
+        if (!res.success) {
+          runInAction(() => {
+            device.mzgdPropertyDTOList[ep].OnOff = OnOff
+            deviceStore.deviceList = [...deviceStore.deviceList]
+          })
+          wx.showToast({
+            icon: 'error',
+            title: '控制失败',
+          })
+        }
       }
     },
     handlePopMove() {

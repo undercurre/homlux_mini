@@ -83,7 +83,7 @@ ComponentWithComputed({
     },
     async onPullDownRefresh() {
       try {
-        await homeStore.updateHomeInfo()
+        await homeStore.updateHomeInfo({ loading: true })
       } finally {
         this.setData({
           isRefresh: false,
@@ -179,7 +179,10 @@ ComponentWithComputed({
      */
     handleAllOn() {
       this.hideMenu()
-      allDevicePowerControl(homeStore.currentHomeId, 1)
+      allDevicePowerControl({
+        houseId: homeStore.currentHomeId,
+        onOff: 1,
+      })
       this.setData({
         allOnBtnTap: true,
       })
@@ -194,7 +197,7 @@ ComponentWithComputed({
      */
     handleAllOff() {
       this.hideMenu()
-      allDevicePowerControl(homeStore.currentHomeId, 1)
+      allDevicePowerControl({ houseId: homeStore.currentHomeId, onOff: 0 })
       this.setData({
         allOffBtnTap: true,
       })

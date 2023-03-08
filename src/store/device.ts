@@ -105,8 +105,8 @@ export const deviceStore = observable({
     return map
   },
 
-  async updateAllRoomDeviceList(houseId: string = homeStore.currentHomeDetail.houseId) {
-    const res = await queryAllDevice(houseId)
+  async updateAllRoomDeviceList(houseId: string = homeStore.currentHomeDetail.houseId, options?: { loading: boolean }) {
+    const res = await queryAllDevice(houseId, options)
     if (res.success) {
       runInAction(() => {
         deviceStore.allRoomDeviceList = res.result
@@ -117,8 +117,9 @@ export const deviceStore = observable({
   async updateDeviceList(
     houseId: string = homeStore.currentHomeDetail.houseId,
     roomId: string = roomStore.roomList[roomStore.currentRoomIndex].roomId,
+    options?: { loading: boolean },
   ) {
-    const res = await queryDeviceList(houseId, roomId)
+    const res = await queryDeviceList({ houseId, roomId }, options)
     runInAction(() => {
       deviceStore.deviceList = res.success ? res.result : []
     })
@@ -127,8 +128,9 @@ export const deviceStore = observable({
   async updateSubDeviceList(
     houseId: string = homeStore.currentHomeDetail.houseId,
     roomId: string = roomStore.roomList[roomStore.currentRoomIndex].roomId,
+    options?: { loading: boolean },
   ) {
-    const res = await querySubDeviceList(houseId, roomId)
+    const res = await querySubDeviceList({ houseId, roomId }, options)
     runInAction(() => {
       deviceStore.deviceList = res.success ? res.result : []
     })

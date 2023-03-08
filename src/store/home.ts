@@ -18,6 +18,8 @@ export const homeStore = observable({
 
   homeMemberInfo: {} as Home.HomeMemberInfo,
 
+  homePageInit: false,
+
   get currentHomeId() {
     let houseId = this.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
 
@@ -37,11 +39,11 @@ export const homeStore = observable({
   /**
    * 更新家庭列表同时更新当前信息
    */
-  async updateHomeInfo() {
-    const res = await this.updateHomeList()
+  async updateHomeInfo(options?: { loading: boolean }) {
+    const res = await this.updateHomeList(options)
 
     if (res.success) {
-      return await this.updateCurrentHomeDetail()
+      return await this.updateCurrentHomeDetail(options)
     } else {
       console.log('this.currentHomeId', this.currentHomeId, 'this.homeList', this.homeList)
       return Promise.reject('获取列表家庭失败')
@@ -51,8 +53,8 @@ export const homeStore = observable({
   /**
    * 更新家庭列表数据
    */
-  async updateHomeList() {
-    const res = await getHomeList()
+  async updateHomeList(options?: { loading: boolean }) {
+    const res = await getHomeList(options)
 
     if (res.success) {
       runInAction(() => {
@@ -66,18 +68,21 @@ export const homeStore = observable({
   /**
    * 更新当前家庭详细信息
    */
-  async updateCurrentHomeDetail() {
-    const res = await queryUserHouseInfo({
-      houseId: this.currentHomeId,
-    })
+  async updateCurrentHomeDetail(options?: { loading: boolean }) {
+    const res = await queryUserHouseInfo(
+      {
+        houseId: this.currentHomeId,
+      },
+      options,
+    )
 
     if (res.success) {
       runInAction(() => {
         homeStore.currentHomeDetail = Object.assign({ houseId: this.currentHomeId }, res.result)
       })
-      deviceStore.updateAllRoomDeviceList()
-      await roomStore.updataHomeDeviceList()
-      await roomStore.updateRoomList()
+      deviceStore.updateAllRoomDeviceList(undefined, options)
+      await roomStore.updataHomeDeviceList(options)
+      await roomStore.updateRoomList(options)
       return
     } else {
       return Promise.reject('获取家庭信息失败')
@@ -160,6 +165,10 @@ export const homeStore = observable({
     } else {
       return Promise.reject('邀请家庭成员失败')
     }
+  },
+
+  homeInitFinish() {
+    homeStore.homePageInit = true
   },
 })
 

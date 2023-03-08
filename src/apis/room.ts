@@ -1,9 +1,9 @@
 import { mzaioRequest } from '../utils/index'
 
-export async function getRoomList(houseId: string) {
+export async function getRoomList(houseId: string, options?: { loading?: boolean }) {
   return await mzaioRequest.post<{ roomInfoList: Room.RoomItem[] }>({
     log: true,
-    loading: true,
+    loading: options?.loading ?? false,
     url: '/v1/mzgd/user/house/queryRoomList',
     data: {
       houseId,
@@ -13,30 +13,31 @@ export async function getRoomList(houseId: string) {
 
 /**
  * 新增或更新房间信息
- * @param params
  */
-export async function saveHouseRoomInfo(params: {
-  houseId: string
-  roomIcon: string
-  roomId?: string
-  roomName: string
-}) {
+export async function saveHouseRoomInfo(
+  data: {
+    houseId: string
+    roomIcon: string
+    roomId?: string
+    roomName: string
+  },
+  options?: { loading?: boolean },
+) {
   return await mzaioRequest.post({
     log: true,
-    loading: true,
+    loading: options?.loading ?? false,
     url: '/v1/mzgd/user/saveHouseRoomInfo',
-    data: params,
+    data: data,
   })
 }
 
 /**
  * 删除房间
- * @param params
  */
-export async function delHouseRoom(roomId: string) {
+export async function delHouseRoom(roomId: string, options?: { loading?: boolean }) {
   return await mzaioRequest.post({
     log: true,
-    loading: true,
+    loading: options?.loading ?? false,
     url: '/v1/mzgd/user/house/delHouseRoom',
     data: { roomId },
   })

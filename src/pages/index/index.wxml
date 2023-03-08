@@ -14,30 +14,30 @@
     </view>
   </nav-bar>
   <view class="flex flex-1 flex-col w-full">
-    <!-- 主体内容 -->
-    <view class="flex flex-1 px-24rpx pt-28rpx w-full h-full box-border">
-      <!-- 有设备时显示 -->
-      <view class="flex-1 flex flex-col items-between w-full" wx:if="{{hasDevice}}">
-        <view class="flex justify-between">
-          <view>
-            <view class="bg-hex-ffffff_42 w-244rpx h-80rpx rounded-40rpx flex items-center" wx:if="{{isShowHomeControl}}">
-              <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx">
-                <text bindtap="handleAllOn" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999" style="background-color: {{allOnBtnTap ? '#468CFB' : 'transparent'}}; color: {{allOnBtnTap ? '#fff' : '#2b4067'}}">全开</text>
-              </view>
-              <view class="w-2rpx h-24rpx bg-hex-75829b"></view>
-              <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx">
-                <text bindtap="handleAllOff" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999" style="background-color: {{allOffBtnTap ? '#468CFB' : 'transparent'}}; color: {{allOffBtnTap ? '#fff' : '#2b4067'}}">全关</text>
-              </view>
-            </view>
+    <view class="flex justify-between px-24rpx pt-28rpx">
+      <view>
+        <view class="bg-hex-ffffff_42 w-244rpx h-80rpx rounded-40rpx flex items-center" wx:if="{{isShowHomeControl}}">
+          <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx">
+            <text bindtap="handleAllOn" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999" style="background-color: {{allOnBtnTap ? '#468CFB' : 'transparent'}}; color: {{allOnBtnTap ? '#fff' : '#2b4067'}}">全开</text>
           </view>
-          <view class="mr-12rpx mt-8rpx" data-mark="addIcon" id="addIcon" bind:tap="handleDropdown">
-            <image src="/assets/img/home/add.png" class="w-64rpx h-64rpx"></image>
+          <view class="w-2rpx h-24rpx bg-hex-75829b"></view>
+          <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx">
+            <text bindtap="handleAllOff" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999" style="background-color: {{allOffBtnTap ? '#468CFB' : 'transparent'}}; color: {{allOffBtnTap ? '#fff' : '#2b4067'}}">全关</text>
           </view>
         </view>
-        <!-- 顶开上面的内容高度 -->
-        <view class="h-24rpx"></view>
-        <view class="flex-1" id="content">
-          <scroll-view enhanced scroll-y show-scrollbar="{{false}}" class="rounded-32rpx" style="height: {{contentHeight}}px;" refresher-triggered="{{isRefresh}}" bindrefresherrefresh="onPullDownRefresh" refresher-enabled>
+      </view>
+      <view class="mr-12rpx mt-8rpx" data-mark="addIcon" id="addIcon" bind:tap="handleDropdown">
+        <image src="/assets/img/home/add.png" class="w-64rpx h-64rpx"></image>
+      </view>
+    </view>
+    <!-- 主体内容 -->
+    <view class="flex flex-1 px-24rpx pt-14rpx w-full h-full box-border" id="content">
+      <scroll-view enhanced scroll-y show-scrollbar="{{false}}" class="rounded-32rpx" style="height: {{contentHeight}}px;" refresher-triggered="{{isRefresh}}" bindrefresherrefresh="onPullDownRefresh" refresher-enabled>
+        <!-- 有设备时显示 -->
+        <view class="flex-1 flex flex-col items-between w-full" wx:if="{{hasDevice}}">
+          <!-- 顶开上面的内容高度 -->
+          <view class="h-24rpx"></view>
+          <view class="flex-1">
             <!-- 房间卡片列表 -->
             <room-card wx:for="{{roomList}}" wx:key="roomId" room-info="{{item}}" data-room="{{item.roomId}}" bind:sceneSelect="handleSceneSelect" showScene></room-card>
             <view class="w-full flex-center">
@@ -45,19 +45,19 @@
             </view>
             <!-- 顶开下面的内容高度 -->
             <view class="h-180rpx"></view>
-          </scroll-view>
+          </view>
         </view>
-      </view>
-      <!-- 无设备时显示 -->
-      <view wx:else class="w-full mt-68rpx flex flex-col items-center">
-        <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx"></image>
-        <text class="text-32rpx text-black-59 mt-44rpx mb-32rpx">尚未添加设备</text>
-        <text class="text-24rpx text-black-59 mb-224rpx opacity-40">立即添加设备，开启智慧照明</text>
-        <van-button bindtap="handleAddDevice" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-class="add-immediately-btn">
-          <text class="text-white text-36rpx font-normal">添加智能设备</text>
-        </van-button>
-      </view>
-      <view class="tabbar-placeholder"></view>
+        <!-- 无设备时显示 -->
+        <view wx:else class="w-full mt-68rpx flex flex-col items-center">
+          <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx"></image>
+          <text class="text-32rpx text-black-59 mt-44rpx mb-32rpx">尚未添加设备</text>
+          <text class="text-24rpx text-black-59 mb-224rpx opacity-40">立即添加设备，开启智慧照明</text>
+          <van-button bindtap="handleAddDevice" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-class="add-immediately-btn" wx:if="{{homePageInit}}">
+            <text class="text-white text-36rpx font-normal">添加智能设备</text>
+          </van-button>
+        </view>
+        <view class="tabbar-placeholder"></view>
+      </scroll-view>
     </view>
   </view>
 </view>

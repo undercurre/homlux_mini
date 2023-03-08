@@ -35,10 +35,7 @@ ComponentWithComputed({
       return ''
     },
     isSubDevice(data) {
-      if (([proType.switch, proType.light] as string[]).includes(data.deviceInfo.proType)) {
-        return true
-      }
-      return false
+      return ([proType.switch, proType.light] as string[]).includes(data.deviceInfo.proType)
     },
     belongsToGateway(data) {
       if (data.deviceInfo.gatewayId) {
@@ -146,6 +143,8 @@ ComponentWithComputed({
             icon: 'success',
             title: '删除成功',
           })
+          homeStore.updateRoomCardList()
+          emitter.emit('deviceEdit')
           wx.navigateBack()
         } else {
           wx.showToast({
@@ -156,7 +155,7 @@ ComponentWithComputed({
       })
     },
     async updateDeviceInfo() {
-      const res = await queryDeviceInfoByDeviceId(this.data.deviceId)
+      const res = await queryDeviceInfoByDeviceId({ deviceId: this.data.deviceId, roomId: this.data.roomId })
       if (res.success) {
         this.setData({
           deviceInfo: res.result,
