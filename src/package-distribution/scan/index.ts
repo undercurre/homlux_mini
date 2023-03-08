@@ -227,11 +227,15 @@ ComponentWithComputed({
 
       console.log('getQrCodeInfo', e, this.data._isScaning)
 
+      const scanUrl = e.detail.result
+
+      if (!scanUrl.includes('meizgd.com/homlux/qrCode.html')) {
+        return
+      }
+
       this.setData({
         _isScaning: true,
       })
-
-      const scanUrl = e.detail.result
 
       this.handleScanUrl(scanUrl)
     },

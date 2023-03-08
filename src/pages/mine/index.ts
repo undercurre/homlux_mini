@@ -55,7 +55,7 @@ Component({
       const res = await wx.showModal({
         content: '确认退出登录？',
         confirmColor: '#27282A',
-        cancelColor: '#27282A'
+        cancelColor: '#27282A',
       })
 
       if (res.cancel) return
