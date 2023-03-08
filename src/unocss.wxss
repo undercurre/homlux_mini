@@ -215,6 +215,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .font-medium{font-weight:500;}
 .font-normal{font-weight:400;}
 .font-semibold{font-weight:600;}
+.leading-0{line-height:0rpx;}
 .leading-34rpx{line-height:34rpx;}
 .leading-36rpx{line-height:36rpx;}
 .leading-40rpx{line-height:40rpx;}

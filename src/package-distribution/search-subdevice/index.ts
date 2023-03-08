@@ -156,17 +156,21 @@ ComponentWithComputed({
 
       console.log('Device Found', device, dataMsg, msgObj)
 
-      await queryProtypeInfo({
-        proType: '0x13',
-        mid: '0x01',
+      const infoRes = await queryProtypeInfo({
+        proType: `0x${msgObj.deviceCategory}`,
+        mid: `0x${msgObj.deviceModel}`,
       })
+
+      if (!infoRes.success) {
+        return
+      }
 
       const bleDevice: IBleDevice = {
         deviceUuid: device.deviceId,
         mac: msgObj.mac,
         zigbeeMac: '',
-        icon: '/assets/img/device/light.png',
-        name: '子设备' + msgObj.mac.substr(-4, 4),
+        icon: infoRes.result.icon || '/assets/img/device/gateway.png',
+        name: infoRes.result.productName + msgObj.mac.substr(-4, 4),
         isChecked: false,
         client: new BleClient({ mac: msgObj.mac, deviceUuid: device.deviceId }),
         roomId: '',
@@ -176,6 +180,8 @@ ComponentWithComputed({
         requesting: false,
         zigbeeRepeatTimes: 3,
       }
+
+      console.log('bleDevice', JSON.stringify(bleDevice))
 
       this.data.deviceList.push(bleDevice)
 
@@ -242,6 +248,8 @@ ComponentWithComputed({
 
         this.queryDeviceOnlineStatus(bleDevice)
       } else {
+
+        console.error(`子设备配网失败：${bleDevice.mac}`, res)
         bleDevice.status = 'fail'
 
         this.setData({

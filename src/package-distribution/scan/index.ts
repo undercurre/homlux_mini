@@ -58,8 +58,6 @@ ComponentWithComputed({
         getCurrentPages(),
       )
 
-      console.log(11111, aesUtil.encrypt('midea.light.003.002', 'midea@homlux', 'Hex'))
-
       // 防止重复判断,仅通过微信扫码直接进入该界面时判断场景值
       if (getCurrentPages().length === 1 && params.scene === 1011) {
         const scanUrl = decodeURIComponent(params.query.q)
@@ -248,8 +246,10 @@ ComponentWithComputed({
       const params = strUtil.getUrlParams(url)
 
       console.log('params', params)
-      const modelId = aesUtil.decrypt(params.pid, `midea@homluxADEF`, 'Hex')
-      console.log('modelId', modelId)
+      let key = `midea@homlux${params.mac.substr(-4)}`
+      const test = aesUtil.encrypt('midea.light.003.002', key)
+      const modelId = aesUtil.decrypt(params.pid, key)
+      console.log('modelId', modelId, 'test', test, aesUtil.decrypt(test, key, 'Hex'))
 
       // 获取云端的产品基本信息
       const res = await queryProtypeInfo({
