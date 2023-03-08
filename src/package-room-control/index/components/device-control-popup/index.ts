@@ -136,6 +136,7 @@ ComponentWithComputed({
       const from = -this.data._componentHeight
       const to = this.properties.popup ? 0 : this.data._bottom
       if (this.data._componentHeight === 0) {
+        this.data._bottom = -this.data._componentHeight
         return // 这时候还没有第一次渲染，from是0，不能正确执行动画
       }
       if (value.length > 0 && !this.data.isRender) {
@@ -592,11 +593,13 @@ ComponentWithComputed({
       const deviceMap = deviceStore.deviceMap
       // 拿出选中的设备
       const selectLightDevice: Device.DeviceItem[] = []
-      deviceStore.selectList.forEach((deviceId) => {
-        if (deviceMap[deviceId].proType === proType.light) {
-          selectLightDevice.push(deviceMap[deviceId])
-        }
-      })
+      deviceStore.selectList
+        .filter((uniId) => !uniId.includes(':'))
+        .forEach((deviceId) => {
+          if (deviceMap[deviceId].proType === proType.light) {
+            selectLightDevice.push(deviceMap[deviceId])
+          }
+        })
       // 按照网关区分
       const gatewaySelectDeviceMap: Record<string, Device.DeviceItem[]> = {}
       selectLightDevice.forEach((device) => {

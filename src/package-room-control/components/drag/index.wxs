@@ -109,6 +109,13 @@ var longPress = function (event, ownerInstance) {
 }
 
 var touchMove = function (event, ownerInstance) {
+  // 防止多指触发
+  console.log('touchMove')
+  console.log(event.touches.length)
+  if (event.touches.length > 2) {
+    ownerInstance.callMethod('drag', { dragging: false })
+    return
+  }
   var ins = event.instance
   var st = ownerInstance.getState()
   var _ = st.baseData

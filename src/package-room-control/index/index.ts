@@ -25,7 +25,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
-    controlPopup: false,
+    controlPopup: true,
     showAddScenePopup: false,
     contentHeight: 0,
     lightList: [] as Device.DeviceItem[],
@@ -40,6 +40,7 @@ ComponentWithComputed({
     pageMetaScrollTop: 0,
     scrollTop: 0,
     tempList: [] as Device.DeviceItem[],
+    selectCount: 0,
   },
 
   computed: {
@@ -74,6 +75,13 @@ ComponentWithComputed({
   watch: {
     deviceList() {
       this.updateDeviceList()
+    },
+    selectList(value) {
+      if (this.data.selectCount === 0 && value.length === 1) {
+        this.setData({
+          controlPopup: true,
+        })
+      }
     },
   },
 
