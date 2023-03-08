@@ -217,6 +217,7 @@ ComponentWithComputed({
     handleLinkPopup(e: { currentTarget: { dataset: { link: 'light' | 'switch' | 'scene' } } }) {
       const deviceMap = deviceStore.deviceMap
       const switchUniId = deviceStore.selectList.find((uniId) => uniId.includes(':'))
+      // 关联设备或者场景，必须要选中一个开关
       if (!switchUniId) {
         return
       }
@@ -238,12 +239,12 @@ ComponentWithComputed({
       let linkSelectList = [] as string[]
       let list = [] as Device.DeviceItem[]
       if (e.currentTarget.dataset.link === 'light') {
-        list = deviceStore.deviceFlattenList.filter((item) => !item.uniId.includes(':'))
+        list = deviceStore.allRoomDeviceFlattenList.filter((item) => !item.uniId.includes(':'))
         linkSelectList = list
           .filter((device) => device.lightRelId && device.lightRelId === lightRelId)
           .map((device) => device.deviceId)
       } else if (e.currentTarget.dataset.link === 'switch') {
-        list = deviceStore.deviceFlattenList
+        list = deviceStore.allRoomDeviceFlattenList
           .filter((item) => item.uniId.includes(':'))
           .filter((item) => item.uniId !== switchUniId)
         linkSelectList = list

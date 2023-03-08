@@ -61,6 +61,30 @@ export const deviceStore = observable({
     return list
   },
 
+  get allRoomDeviceFlattenList() {
+    const list = [] as Device.DeviceItem[]
+    deviceStore.allRoomDeviceList.forEach((device) => {
+      if (device.proType === proType.light) {
+        list.push({
+          ...device,
+          uniId: device.deviceId,
+        })
+      } else if (device.proType === proType.switch) {
+        device.switchInfoDTOList?.forEach((switchItem) => {
+          list.push({
+            ...device,
+            mzgdPropertyDTOList: {
+              [switchItem.switchId]: device.mzgdPropertyDTOList[switchItem.switchId],
+            },
+            switchInfoDTOList: [switchItem],
+            uniId: `${device.deviceId}:${switchItem.switchId}`,
+          })
+        })
+      }
+    })
+    return list
+  },
+
   /**
    * 关联设备关系映射
    * deviceId -> {lightRelId: string}
