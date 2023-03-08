@@ -3,7 +3,7 @@
 
   <view class="flex flex-col">
     <view class="px-24rpx py-30rpx">
-      <van-field value="{{ searchText }}" placeholder="搜索城市" left-icon="/assets/img/home-location/search.png" custom-style="padding: 20rpx 32rpx;background-color: transparent;border-radius: 24rpx;border: 2rpx solid #DDDDDD;" placeholder-style="font-size: 28rpx;color: #A2A2A2;" bind:confirm="onInputConfirm"/>
+      <van-field value="{{ searchText }}" placeholder="搜索城市" left-icon="/assets/img/home-location/search.png" custom-style="padding: 20rpx 32rpx;background-color: transparent;border-radius: 24rpx;border: 2rpx solid #DDDDDD;" placeholder-style="font-size: 28rpx;color: #A2A2A2;" bind:confirm="onInputConfirm" />
     </view>
 
     <view class="px-32rpx pb-54rpx text-28 text-black-59 leading-40rpx">
@@ -12,8 +12,7 @@
     </view>
 
     <view class="h-56rpx w-686rpx ml-24rpx flex flex-row justify-start items-center">
-      <view class="h-56rpx min-w-64 max-w-200 mr-38rpx flex flex-col justify-start items-center" 
-        wx:for="{{indicatorList}}" wx:key="index" data-item="{{item}}" data-index="{{index}}" bind:tap="onIndexClick">
+      <view class="h-56rpx min-w-64 max-w-200 mr-38rpx flex flex-col justify-start items-center" wx:for="{{indicatorList}}" wx:key="index" data-item="{{item}}" data-index="{{index}}" bind:tap="onIndexClick">
         <text class="leading-44rpx max-w-200 text-black-2a font-medium text-28rpx overflow-hidden text-overflow white-space inline-block">{{item.name}}</text>
         <view class="h-4 w-64rpx bg-hex-5A5A5A" wx:if="{{item.isSelected}}"></view>
       </view>
@@ -22,7 +21,7 @@
 
   <scroll-view class="h-200 box-border grow px-24rpx mt-32rpx" scroll-y>
     <view class="bg-white rounded-32rpx overflow-hidden">
-      <van-cell wx:for="{{areaList}}" wx:key="index" title="{{item.fullname}}" data-item="{{item}}" bind:tap="onAreaClick"/>
+      <van-cell wx:for="{{areaList}}" wx:key="index" title="{{item.fullname}}" data-item="{{item}}" bind:tap="onAreaClick" />
     </view>
   </scroll-view>
 

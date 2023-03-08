@@ -266,6 +266,14 @@ ComponentWithComputed({
     },
 
     toTransferHome() {
+      const list = homeBinding.store.homeList.filter((item) => item.houseCreatorFlag)
+
+      if (list.length <= 1) {
+        wx.showToast({ title: '请至少保留一个创建的家庭', icon: 'none' })
+
+        return
+      }
+      
       if (homeBinding.store.currentHomeDetail.userCount <= 1) {
         wx.showToast({ title: '没有其他成员可供转让', icon: 'none' })
 

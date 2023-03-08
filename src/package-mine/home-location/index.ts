@@ -21,15 +21,13 @@ ComponentWithComputed({
     sig: 'W9RrPrVIxGPyuKEzzS76ktDxvN3zxxyJ',
     searchText: '',
     curLocation: '--',
-    indicatorList: [
-      {name: '选择地区', isSelected: true, cidx: []},
-    ],
+    indicatorList: [{ name: '选择地区', isSelected: true, cidx: [] }],
     curIndicatorIndex: 0,
     areaList: [] as any[],
     provinceList: [] as any[],
     cityList: [] as any[],
     townList: [] as any[],
-    curSearchResult: [] as string[]
+    curSearchResult: [] as string[],
   },
 
   computed: {},
@@ -45,35 +43,35 @@ ComponentWithComputed({
   methods: {
     initCityData() {
       const myQQMapWX = new QQMapWX({
-        key: this.data.key
+        key: this.data.key,
       })
       const that = this
       myQQMapWX.getCityList({
         sig: this.data.sig,
-        success: function(res: any) {
+        success: function (res: any) {
           that.setData({
             provinceList: res.result[0],
             cityList: res.result[1],
-            townList: res.result[2]
+            townList: res.result[2],
           })
           that.setProvinceView()
         },
-        fail: function(error: any) {
+        fail: function (error: any) {
           console.log('lmn>>>getCityList()::error=' + JSON.stringify(error))
-        }
+        },
       })
     },
     onInputConfirm(event: any) {
       if (event.detail == '') return
       const myQQMapWX = new QQMapWX({
-        key: this.data.key
+        key: this.data.key,
       })
       const that = this
       myQQMapWX.getSuggestion({
         sig: this.data.sig,
         keyword: event.detail,
         region: event.detail,
-        success: function(res: any) {
+        success: function (res: any) {
           //console.log('lmn>>>success=' + JSON.stringify(res));
           const data = res.data
           if (data.length > 0) {
@@ -120,10 +118,10 @@ ComponentWithComputed({
             Toast('未找到地区')
           }
         },
-        fail: function() {
+        fail: function () {
           Toast('搜索失败')
         },
-      });
+      })
     },
     setViewAfterSearch() {
       const searchList = this.data.curSearchResult
@@ -132,13 +130,11 @@ ComponentWithComputed({
         this.setProvinceView()
         this.setIndicatorItems(0, list)
         this.setCurIndicatorIndex(0)
-      } 
-      else if (searchList.length == 2) {
+      } else if (searchList.length == 2) {
         this.setCityView(list[1].cidx)
         this.setIndicatorItems(0, list)
         this.setCurIndicatorIndex(1)
-      } 
-      else if (searchList.length == 3) {
+      } else if (searchList.length == 3) {
         this.setTownView(list[2].cidx)
         this.setIndicatorItems(0, list)
         this.setCurIndicatorIndex(2)
@@ -155,7 +151,7 @@ ComponentWithComputed({
           if (i == 0) {
             for (let j = 0; j < this.data.provinceList.length; j++) {
               if (this.data.provinceList[j].fullname.indexOf(searchList[0]) != -1) {
-                list.push({name: this.data.provinceList[j].fullname, isSelected: false, cidx: []})
+                list.push({ name: this.data.provinceList[j].fullname, isSelected: false, cidx: [] })
                 if (this.data.provinceList[j].cidx) {
                   cidxTemp = this.data.provinceList[j].cidx
                   isEnd = false
@@ -166,12 +162,11 @@ ComponentWithComputed({
                 break
               }
             }
-          }
-          else if (i == 1) {
+          } else if (i == 1) {
             if (cidxTemp.length == 0) break
             for (let j: number = cidxTemp[0]; j < cidxTemp[1]; j++) {
               if (this.data.cityList[j].fullname.indexOf(searchList[1]) != -1) {
-                list.push({name: this.data.cityList[j].fullname, isSelected: false, cidx: cidxTemp})
+                list.push({ name: this.data.cityList[j].fullname, isSelected: false, cidx: cidxTemp })
                 if (this.data.cityList[j].cidx) {
                   cidxTemp = this.data.cityList[j].cidx
                   isEnd = false
@@ -182,12 +177,11 @@ ComponentWithComputed({
                 break
               }
             }
-          }
-          else if (i == 2) {
+          } else if (i == 2) {
             if (cidxTemp.length == 0) break
             for (let j: number = cidxTemp[0]; j < cidxTemp[1]; j++) {
               if (this.data.townList[j].fullname.indexOf(searchList[2]) != -1) {
-                list.push({name: this.data.townList[j].fullname, isSelected: false, cidx: cidxTemp})
+                list.push({ name: this.data.townList[j].fullname, isSelected: false, cidx: cidxTemp })
                 if (this.data.townList[j].cidx) {
                   cidxTemp = this.data.townList[j].cidx
                   isEnd = false
@@ -201,7 +195,7 @@ ComponentWithComputed({
           }
         }
         if (!isEnd) {
-          list.push({name: '选择地区', isSelected: false, cidx: []})
+          list.push({ name: '选择地区', isSelected: false, cidx: [] })
         }
         return list
       }
@@ -222,35 +216,35 @@ ComponentWithComputed({
     },
     setCurIndicatorIndex(index: number) {
       const list = this.data.indicatorList
-      for(let i = 0; i < list.length; i++) {
+      for (let i = 0; i < list.length; i++) {
         if (i === index) list[i].isSelected = true
         else list[i].isSelected = false
       }
       this.setData({
         indicatorList: list,
-        curIndicatorIndex: index
+        curIndicatorIndex: index,
       })
     },
     setIndicatorItems(startIndex: number, itemList: any[]) {
       const list = this.data.indicatorList
       if (startIndex > 2 || itemList.length === 0) return
       const newList = list.slice(0, startIndex).concat(itemList).slice(0, 3)
-      if (startIndex < newList.length  && startIndex < list.length) newList[startIndex].cidx = list[startIndex].cidx
-      this.setData({indicatorList: newList})
+      if (startIndex < newList.length && startIndex < list.length) newList[startIndex].cidx = list[startIndex].cidx
+      this.setData({ indicatorList: newList })
     },
     setProvinceView() {
       this.setData({
-        areaList: this.data.provinceList
+        areaList: this.data.provinceList,
       })
     },
     setCityView(cidx: number[]) {
       this.setData({
-        areaList: this.data.cityList.slice(cidx[0], cidx[1])
+        areaList: this.data.cityList.slice(cidx[0], cidx[1]),
       })
     },
     setTownView(cidx: number[]) {
       this.setData({
-        areaList: this.data.townList.slice(cidx[0], cidx[1])
+        areaList: this.data.townList.slice(cidx[0], cidx[1]),
       })
     },
     onAreaClick(data: any) {
@@ -258,41 +252,47 @@ ComponentWithComputed({
       if (this.data.curIndicatorIndex === 0) {
         let list
         if (item.cidx !== undefined) {
-          list = [{name: item.fullname, isSelected: false, cidx: []}, {name: '选择地区', isSelected: true, cidx: item.cidx}]
+          list = [
+            { name: item.fullname, isSelected: false, cidx: [] },
+            { name: '选择地区', isSelected: true, cidx: item.cidx },
+          ]
           this.setCityView(item.cidx)
           this.setIndicatorItems(0, list)
           this.setCurIndicatorIndex(1)
         } else {
-          list = [{name: item.fullname, isSelected: false, cidx: []}]
+          list = [{ name: item.fullname, isSelected: false, cidx: [] }]
           this.setIndicatorItems(0, list)
           this.setCurIndicatorIndex(0)
           this.setData({
-            curLocation: item.fullname
+            curLocation: item.fullname,
           })
         }
       } else if (this.data.curIndicatorIndex === 1) {
         let list
         if (item.cidx !== undefined) {
-          list = [{name: item.fullname, isSelected: false, cidx: []}, {name: '选择地区', isSelected: true, cidx: item.cidx}]
+          list = [
+            { name: item.fullname, isSelected: false, cidx: [] },
+            { name: '选择地区', isSelected: true, cidx: item.cidx },
+          ]
           this.setTownView(item.cidx)
           this.setIndicatorItems(1, list)
           this.setCurIndicatorIndex(2)
         } else {
-          list = [{name: item.fullname, isSelected: false, cidx: []}]
+          list = [{ name: item.fullname, isSelected: false, cidx: [] }]
           this.setIndicatorItems(1, list)
           this.setCurIndicatorIndex(1)
           this.setData({
-            curLocation: item.fullname
+            curLocation: item.fullname,
           })
         }
       } else if (this.data.curIndicatorIndex === 2) {
-        const list = [{name: item.fullname, isSelected: false, cidx: []}]
+        const list = [{ name: item.fullname, isSelected: false, cidx: [] }]
         this.setIndicatorItems(2, list)
         this.setCurIndicatorIndex(2)
         this.setData({
-          curLocation: item.fullname
+          curLocation: item.fullname,
         })
       }
-    }
+    },
   },
 })
