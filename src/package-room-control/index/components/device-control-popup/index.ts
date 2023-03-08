@@ -18,7 +18,25 @@ ComponentWithComputed({
     popup: {
       type: Boolean,
       value: true,
-      observer() {},
+      observer(value) {
+        const from = this.data._bottom
+        const to = value ? 0 : this.data._minHeight - this.data._componentHeight
+        this.data._bottom = to
+        this.animate(
+          '#popup',
+          [
+            {
+              bottom: from + 'px',
+              ease: 'ease-in-out',
+            },
+            {
+              bottom: to + 'px',
+              ease: 'ease-in-out',
+            },
+          ],
+          200,
+        )
+      },
     },
   },
 
@@ -32,6 +50,7 @@ ComponentWithComputed({
     _componentHeight: 0,
     _wfullpx: 0,
     _touchStartY: 0,
+    _isTouchStart: false,
     info: {
       bottomBarHeight: 0,
       componentHeight: 0,
@@ -117,6 +136,7 @@ ComponentWithComputed({
       const from = -this.data._componentHeight
       const to = this.properties.popup ? 0 : this.data._bottom
       if (this.data._componentHeight === 0) {
+        this.data._bottom = -this.data._componentHeight
         return // 这时候还没有第一次渲染，from是0，不能正确执行动画
       }
       if (value.length > 0 && !this.data.isRender) {
@@ -197,6 +217,7 @@ ComponentWithComputed({
       this.data._bottom = _minHeight - _componentHeight // 组件相对底部高度
       this.data._wfullpx = divideRpxByPx * 750 // 屏幕宽度
       this.data._divideRpxByPx = divideRpxByPx // px rpx比率
+      console.log('attached', this.data._minHeight, this.data._bottom)
       this.setData({
         info: {
           bottomBarHeight: bottomBarHeight,
@@ -211,12 +232,32 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
+    handleTouchStart(e: WechatMiniprogram.TouchEvent) {
+      if (e.touches.length > 1) {
+        this.data._isTouchStart = false
+        return
+      }
+      this.data._touchStartY = e.touches[0].pageY
+      this.data._isTouchStart = true
+    },
+    handleTouchMove(e: WechatMiniprogram.TouchEvent) {
+      if (e.touches.length > 1 || !this.data._isTouchStart) {
+        this.data._isTouchStart = false
+        return
+      }
+      const isMoveUp = this.data._touchStartY - e.touches[0].pageY > 0
+      console.log('isMoveUp', isMoveUp)
+      this.triggerEvent('popMove', isMoveUp ? 'up' : 'down')
+      this.data._isTouchStart = false
+    },
+    handlePopup() {
+      this.triggerEvent('popMove', 'up')
+    },
     // todo: 实现动画收起展开
-    handlePopUp() {},
-    handlePopDown() {},
     handleLinkPopup(e: { currentTarget: { dataset: { link: 'light' | 'switch' | 'scene' } } }) {
       const deviceMap = deviceStore.deviceMap
       const switchUniId = deviceStore.selectList.find((uniId) => uniId.includes(':'))
+      // 关联设备或者场景，必须要选中一个开关
       if (!switchUniId) {
         return
       }
@@ -238,12 +279,12 @@ ComponentWithComputed({
       let linkSelectList = [] as string[]
       let list = [] as Device.DeviceItem[]
       if (e.currentTarget.dataset.link === 'light') {
-        list = deviceStore.deviceFlattenList.filter((item) => !item.uniId.includes(':'))
+        list = deviceStore.allRoomDeviceFlattenList.filter((item) => !item.uniId.includes(':'))
         linkSelectList = list
           .filter((device) => device.lightRelId && device.lightRelId === lightRelId)
           .map((device) => device.deviceId)
       } else if (e.currentTarget.dataset.link === 'switch') {
-        list = deviceStore.deviceFlattenList
+        list = deviceStore.allRoomDeviceFlattenList
           .filter((item) => item.uniId.includes(':'))
           .filter((item) => item.uniId !== switchUniId)
         linkSelectList = list
@@ -552,11 +593,13 @@ ComponentWithComputed({
       const deviceMap = deviceStore.deviceMap
       // 拿出选中的设备
       const selectLightDevice: Device.DeviceItem[] = []
-      deviceStore.selectList.forEach((deviceId) => {
-        if (deviceMap[deviceId].proType === proType.light) {
-          selectLightDevice.push(deviceMap[deviceId])
-        }
-      })
+      deviceStore.selectList
+        .filter((uniId) => !uniId.includes(':'))
+        .forEach((deviceId) => {
+          if (deviceMap[deviceId].proType === proType.light) {
+            selectLightDevice.push(deviceMap[deviceId])
+          }
+        })
       // 按照网关区分
       const gatewaySelectDeviceMap: Record<string, Device.DeviceItem[]> = {}
       selectLightDevice.forEach((device) => {

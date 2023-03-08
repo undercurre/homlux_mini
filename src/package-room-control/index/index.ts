@@ -15,7 +15,7 @@ import pageBehavior from '../../behaviors/pageBehaviors'
 import { controlDevice, saveDeviceOrder, queryDeviceInfoByDeviceId, execScene } from '../../apis/index'
 import { proName, proType } from '../../config/device'
 import { emitter, WSEventType } from '../../utils/eventBus'
-
+let throttleTimer = 0
 ComponentWithComputed({
   behaviors: [
     BehaviorWithStore({ storeBindings: [userBinding, roomBinding, deviceBinding, sceneBinding] }),
@@ -25,7 +25,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
-    controlPopupUp: true,
+    controlPopup: true,
     showAddScenePopup: false,
     contentHeight: 0,
     lightList: [] as Device.DeviceItem[],
@@ -40,6 +40,7 @@ ComponentWithComputed({
     pageMetaScrollTop: 0,
     scrollTop: 0,
     tempList: [] as Device.DeviceItem[],
+    selectCount: 0,
   },
 
   computed: {
@@ -75,6 +76,13 @@ ComponentWithComputed({
     deviceList() {
       this.updateDeviceList()
     },
+    selectList(value) {
+      if (this.data.selectCount === 0 && value.length === 1) {
+        this.setData({
+          controlPopup: true,
+        })
+      }
+    },
   },
 
   methods: {
@@ -84,11 +92,12 @@ ComponentWithComputed({
     onLoad() {
       this.onPullDownRefresh()
       emitter.on('wsReceive', async (e) => {
-        console.log(
-          e.result.eventData.roomId,
-          roomStore.roomList[roomStore.currentRoomIndex].roomId,
-          e.result.eventData.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId,
-        )
+        if (!throttleTimer) {
+          throttleTimer = setTimeout(() => {
+            homeStore.updateRoomCardList()
+            throttleTimer = 0
+          }, 500) as unknown as number
+        }
         // 设备相关的消息推送根据条件判断是否刷新
         if (
           typeof e.result.eventData === 'object' &&
@@ -385,9 +394,9 @@ ComponentWithComputed({
         }
       }
     },
-    handlePopMove() {
+    handlePopUp(e: { detail: 'up' | 'down' }) {
       this.setData({
-        controlPopupUp: !this.data.controlPopupUp,
+        controlPopup: e.detail === 'up',
       })
     },
     handleAddScenePopupClose() {
@@ -434,11 +443,10 @@ ComponentWithComputed({
       })
     },
     handleScreenTap() {
-      console.log('handleScreenTap')
-      const deivceControlPopup = this.selectComponent('#device-control-popup')
-      console.log(deivceControlPopup)
-      if (deivceControlPopup) {
-        deivceControlPopup.handlePackUp()
+      if (this.data.controlPopup) {
+        this.setData({
+          controlPopup: false,
+        })
       }
     },
   },

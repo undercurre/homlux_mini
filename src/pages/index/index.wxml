@@ -14,7 +14,7 @@
     </view>
   </nav-bar>
   <view class="flex flex-1 flex-col w-full">
-    <view class="flex justify-between px-24rpx pt-28rpx">
+    <view class="flex justify-between px-24rpx pt-28rpx h-80rpx">
       <view>
         <view class="bg-hex-ffffff_42 w-244rpx h-80rpx rounded-40rpx flex items-center" wx:if="{{isShowHomeControl}}">
           <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx">
@@ -26,12 +26,13 @@
           </view>
         </view>
       </view>
-      <view class="mr-12rpx mt-8rpx" data-mark="addIcon" id="addIcon" bind:tap="handleDropdown">
+      <view wx:if="{{hasDevice}}" class="mr-12rpx mt-8rpx" data-mark="addIcon" id="addIcon" bind:tap="handleAddDevice">
         <image src="/assets/img/home/add.png" class="w-64rpx h-64rpx"></image>
       </view>
     </view>
+    <view class="h-14rpx"></view>
     <!-- 主体内容 -->
-    <view class="flex flex-1 px-24rpx pt-14rpx w-full h-full box-border" id="content">
+    <view class="flex flex-1 px-24rpx w-full box-border" id="content">
       <scroll-view enhanced scroll-y show-scrollbar="{{false}}" class="rounded-32rpx" style="height: {{contentHeight}}px;" refresher-triggered="{{isRefresh}}" bindrefresherrefresh="onPullDownRefresh" refresher-enabled>
         <!-- 有设备时显示 -->
         <view class="flex-1 flex flex-col items-between w-full" wx:if="{{hasDevice}}">
@@ -52,7 +53,7 @@
           <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx"></image>
           <text class="text-32rpx text-black-59 mt-44rpx mb-32rpx">尚未添加设备</text>
           <text class="text-24rpx text-black-59 mb-224rpx opacity-40">立即添加设备，开启智慧照明</text>
-          <van-button bindtap="handleAddDevice" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-class="add-immediately-btn" wx:if="{{homePageInit}}">
+          <van-button bindtap="handleAddDevice" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-class="add-immediately-btn" wx:if="{{homePageInit && !hasDevice}}">
             <text class="text-white text-36rpx font-normal">添加智能设备</text>
           </van-button>
         </view>

@@ -42,7 +42,9 @@ Component({
     async getDeviceInfo() {
       const pageParams = getCurrentPageParams()
 
-      const res = await queryDeviceInfoByDeviceId(pageParams.deviceId)
+      console.log('getCurrentPageParams', pageParams)
+
+      const res = await queryDeviceInfoByDeviceId({ deviceId: pageParams.deviceId })
 
       if (res.success) {
         this.setData({

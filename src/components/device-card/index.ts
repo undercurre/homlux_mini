@@ -102,6 +102,7 @@ ComponentWithComputed({
       }
     },
     handlePowerTap() {
+      if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
       if (this.data.deviceInfo.onLineStatus) {
         this.triggerEvent('controlTap', this.data.deviceInfo)
       } else {

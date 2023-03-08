@@ -1,7 +1,6 @@
 {
   "component": true,
   "navigationStyle": "custom",
-  "enablePullDownRefresh": true,
   "usingComponents": {
     "card": "./components/card/index",
     "drag": "../components/drag/index",

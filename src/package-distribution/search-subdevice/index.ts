@@ -133,7 +133,7 @@ ComponentWithComputed({
         // 该方法回调中可以用于处理连接意外断开等异常情况
         console.log(
           `mac: ${item.mac}`,
-          'onBLEConnectionStateChange',
+          'onBLEConnectionStateChange-search-subdevice',
           res,
           `device ${res.deviceId} state has changed, connected: ${res.connected}`,
         )
@@ -222,7 +222,7 @@ ComponentWithComputed({
       const list = this.data.selectedList
 
       for (const item of list) {
-        this.startZigbeeNet(item)
+        await this.startZigbeeNet(item)
       }
     },
 
@@ -248,6 +248,8 @@ ComponentWithComputed({
           deviceList: this.data.deviceList,
         })
       }
+
+      bleDevice.client.close()
     },
 
     async queryDeviceOnlineStatus(device: IBleDevice) {

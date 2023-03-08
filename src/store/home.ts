@@ -7,7 +7,6 @@ import {
   deleteHouseUser,
   inviteHouseUser,
 } from '../apis/index'
-import { deviceStore } from './device'
 import { roomStore } from './room'
 
 export const homeStore = observable({
@@ -80,7 +79,6 @@ export const homeStore = observable({
       runInAction(() => {
         homeStore.currentHomeDetail = Object.assign({ houseId: this.currentHomeId }, res.result)
       })
-      deviceStore.updateAllRoomDeviceList(undefined, options)
       await roomStore.updataHomeDeviceList(options)
       await roomStore.updateRoomList(options)
       return
@@ -168,13 +166,15 @@ export const homeStore = observable({
   },
 
   homeInitFinish() {
-    homeStore.homePageInit = true
+    runInAction(() => {
+      homeStore.homePageInit = true
+    })
   },
 })
 
 export const homeBinding = {
   store: homeStore,
-  fields: ['homeList', 'currentHomeId', 'currentHomeDetail', 'isManager'],
+  fields: ['homeList', 'currentHomeId', 'currentHomeDetail', 'isManager', 'homePageInit'],
   actions: [
     'updateHomeInfo',
     'updateHomeList',

@@ -8,7 +8,8 @@
       <text class="text-20rpx text-black-tips leading-none">{{switchName}}</text>
     </view>
   </view>
-  <view wx:if="{{showControl}}" class="absolute left-0 bottom-6rpx w-160rpx flex-center" catchtap="handlePowerTap">
+  <view wx:if="{{showControl}}" class="absolute left-0 bottom-6rpx w-160rpx flex-col-center" catchtap="handlePowerTap">
+    <view class="h-24rpx"></view>
     <view class="w-48rpx h-48rpx">
       <image src="{{controlBtnPic}}" class="w-48rpx h-48rpx"></image>
     </view>

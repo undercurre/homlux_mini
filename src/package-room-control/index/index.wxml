@@ -3,61 +3,64 @@
 <!-- 背景 -->
 <svg-icon name="room-bg" width="100vw" height="100vh" class="fixed bg-z-index"></svg-icon>
 
-<!-- 标题 -->
-<nav-bar title="{{title}}" left-arrow bind:leftTap="goBack" style="opacity: {{opacity}};" disabled="{{opacity === 0}}"></nav-bar>
+<!-- 全屏幕点击捕获 -->
+<view bindtap="handleScreenTap" class="min-h-100vh">
+  <!-- 标题 -->
+  <nav-bar title="{{title}}" left-arrow bind:leftTap="goBack" style="opacity: {{opacity}};" disabled="{{opacity === 0}}"></nav-bar>
 
-<!-- 无设备 -->
-<view wx:if="{{deviceList.length === 0}}" class="w-full flex flex-col items-center">
-  <image src="/assets/img/room/only-gateway.png" class="w-300rpx h-300rpx mt-64rpx"></image>
-  <text class="text-black-59 text-28rpx mt-48rpx">智能网关非可控制设备</text>
-  <text class="text-black-59 text-28rpx">请在“我的-设备管理”中查看</text>
-</view>
+  <!-- 无设备 -->
+  <view wx:if="{{deviceList.length === 0}}" class="w-full flex flex-col items-center">
+    <image src="/assets/img/room/only-gateway.png" class="w-300rpx h-300rpx mt-64rpx"></image>
+    <text class="text-black-59 text-28rpx mt-48rpx">智能网关非可控制设备</text>
+    <text class="text-black-59 text-28rpx">请在“我的-设备管理”中查看</text>
+  </view>
 
-<!-- 有设备页面主体 -->
-<view wx:else class="w-750rpx flex flex-col items-center">
-  <!-- 场景 -->
-  <view class="scene-card-bg w-686rpx h-96rpx flex items-center rounded-24rpx mt-24rpx" bindtap="handleSceneTap">
-    <image src="/assets/img/base/scene.png" class="w-64rpx h-64rpx ml-24rpx"></image>
-    <text id="scene-title" class="text-32rpx text-hex-333333 font-medium ml-16rpx">场景</text>
-    <view class="flex flex-1 justify-end items-center">
-      <view class="mr-38rpx flex">
-        <view class="scene-icon p-4rpx bg-hex-fff rounded-999" wx:for="{{sceneListInBar}}" wx:key="sceneId">
-          <view class="bg-hex-eff0f3 rounded-999">
-            <svg-icon name="scene:{{item.sceneIcon}}" width="52rpx" height="52rpx" />
+  <!-- 有设备页面主体 -->
+  <view wx:else class="w-750rpx flex flex-col items-center">
+    <!-- 场景 -->
+    <view class="scene-card-bg w-686rpx h-96rpx flex items-center rounded-24rpx mt-24rpx" bindtap="handleSceneTap">
+      <image src="/assets/img/base/scene.png" class="w-64rpx h-64rpx ml-24rpx"></image>
+      <text id="scene-title" class="text-32rpx text-hex-333333 font-medium ml-16rpx">场景</text>
+      <view class="flex flex-1 justify-end items-center">
+        <view class="mr-38rpx flex">
+          <view class="scene-icon p-4rpx bg-hex-fff rounded-999" wx:for="{{sceneListInBar}}" wx:key="sceneId">
+            <view class="bg-hex-eff0f3 rounded-999">
+              <svg-icon name="scene:{{item.sceneIcon}}" width="52rpx" height="52rpx" />
+            </view>
           </view>
         </view>
-      </view>
-      <van-button catchtap="handleCollect" custom-class="fav-btn" type="primary">收藏</van-button>
-    </view>
-  </view>
-  <view class="flex flex-col items-center w-750rpx">
-    <!-- 灯具设备卡片 -->
-    <view class="mt-24rpx" wx:if="{{lightList && lightList.length>0}}">
-      <text class="text-24rpx text-black-59 ml-17rpx">灯具</text>
-      <view class="w-720rpx mt-24rpx">
-        <drag id="drag-light" columns="{{4}}" list-data="{{lightList}}" scroll-top="{{scrollTop}}" item-height="{{240}}" generic:item="card" bind:sortend="handleLightSortEnd" bind:controlTap="handleLightPowerToggle" bind:cardTap="handleDeviceCardTap" bind:scroll="handleScroll"></drag>
+        <van-button catchtap="handleCollect" custom-class="fav-btn" type="primary">收藏</van-button>
       </view>
     </view>
+    <view class="flex flex-col items-center w-750rpx">
+      <!-- 灯具设备卡片 -->
+      <view class="mt-24rpx" wx:if="{{lightList && lightList.length>0}}">
+        <text class="text-24rpx text-black-59 ml-17rpx">灯具</text>
+        <view class="w-720rpx mt-24rpx">
+          <drag id="drag-light" columns="{{4}}" list-data="{{lightList}}" scroll-top="{{scrollTop}}" item-height="{{240}}" generic:item="card" bind:sortend="handleLightSortEnd" bind:controlTap="handleLightPowerToggle" bind:cardTap="handleDeviceCardTap" bind:scroll="handleScroll"></drag>
+        </view>
+      </view>
 
-    <!-- 开关设备卡片 -->
-    <view class="{{lightList && lightList.length > 0 ? '' : 'mt-24rpx'}}" wx:if="{{switchList && switchList.length>0}}">
-      <text class="text-24rpx text-black-59 ml-17rpx">开关面板</text>
-      <view class="w-720rpx mt-24rpx">
-        <drag id="drag-switch" columns="{{4}}" list-data="{{switchList}}" scroll-top="{{scrollTop}}" item-height="{{240}}" generic:item="card" bind:sortend="handleSwitchSortEnd" bind:controlTap="handleSwitchControlTapToggle" bind:cardTap="handleDeviceCardTap" bind:scroll="handleScroll"></drag>
+      <!-- 开关设备卡片 -->
+      <view class="{{lightList && lightList.length > 0 ? '' : 'mt-24rpx'}}" wx:if="{{switchList && switchList.length>0}}">
+        <text class="text-24rpx text-black-59 ml-17rpx">开关面板</text>
+        <view class="w-720rpx mt-24rpx">
+          <drag id="drag-switch" columns="{{4}}" list-data="{{switchList}}" scroll-top="{{scrollTop}}" item-height="{{240}}" generic:item="card" bind:sortend="handleSwitchSortEnd" bind:controlTap="handleSwitchControlTapToggle" bind:cardTap="handleDeviceCardTap" bind:scroll="handleScroll"></drag>
+        </view>
       </view>
-    </view>
 
-    <!-- 窗帘设备卡片 -->
-    <!-- <view class="{{switchList && switchList.length > 0 ? '' : 'mt-24rpx'}}" wx:if="{{curtainList && curtainList.length>0}}">
+      <!-- 窗帘设备卡片 -->
+      <!-- <view class="{{switchList && switchList.length > 0 ? '' : 'mt-24rpx'}}" wx:if="{{curtainList && curtainList.length>0}}">
           <text class="text-24rpx text-black-59">窗帘</text>
           <view class="w-686rpx grid grid-cols-4 gap-x-16rpx gap-y-24rpx mt-24rpx">
             <device-card class="curtain-card" showControl device-type="curtain" wx:for="{{curtainList}}" wx:key="deviceId" data-index="{{index}}" data-type="curtain" data-info="{{item}}" bind:controlTap="handleDevicecontrolTap" bindtouchend="handleTouchEnd" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" select="{{module.includes(selectList, item.deviceId)}}" />
           </view>
         </view> -->
-  </view>
+    </view>
 
-  <!-- 占位，防止内容太贴边 -->
-  <view class="h-160rpx"></view>
+    <!-- 占位，防止内容太贴边 -->
+    <view class="h-160rpx"></view>
+  </view>
 </view>
 
 <!-- 收藏场景提示 -->
@@ -68,9 +71,6 @@
   <text class="text-white text-26rpx">您收藏了一个新的场景</text>
 </view>
 
-<!-- 全屏幕点击捕获 -->
-<!-- <view class="w-750rpx h-100vh fixed z-100 left-0 top-0" bindtap="handleScreenTap"></view> -->
-
 <!-- 设备控制弹窗 -->
-<device-control-popup id="device-control-popup" popup="{{controlPopupUp}}" bind:popMove="handlePopMove"></device-control-popup>
+<device-control-popup popup="{{controlPopup}}" bind:popMove="handlePopUp"></device-control-popup>
 <add-scene-popup show="{{showAddScenePopup}}" bind:close="handleAddScenePopupClose" bind:addSuccess="handleShowAddSceneSuccess" />

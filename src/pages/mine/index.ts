@@ -1,4 +1,3 @@
-import Dialog from '@vant/weapp/dialog/dialog'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { logout } from '../../utils/index'
 import { userBinding } from '../../store/index'
@@ -53,14 +52,13 @@ Component({
     },
 
     async loginOut() {
-      const res = await Dialog.confirm({
-        message: '确认退出登录？',
-      }).catch(() => {
-        // on cancel
-        return 'cancel'
+      const res = await wx.showModal({
+        content: '确认退出登录？',
+        confirmColor: '#27282A',
+        cancelColor: '#27282A',
       })
 
-      if (res === 'cancel') return
+      if (res.cancel) return
 
       logout()
     },
