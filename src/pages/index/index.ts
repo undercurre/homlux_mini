@@ -191,48 +191,32 @@ ComponentWithComputed({
         houseId: homeStore.currentHomeId,
         onOff: 1,
       })
-      console.log('------')
-      this.setData({
-        allOnBtnTap: true,
-      })
-      setTimeout(() => {
-        this.setData({
-          allOnBtnTap: false,
-        })
-      }, 800)
-      console.log('------')
-      // this.animate(
-      //   `#all-on`,
-      //   [
-      //     {
-      //       backgroundColor: 'rgba(0,0,0,0)',
-      //     },
-      //     {
-      //       backgroundColor: 'rgba(70, 140, 251, 255)',
-      //     },
-      //   ],
-      //   30,
-      //   () => {
-      //     console.log('------')
-      //     this.animate(
-      //       `#all-on`,
-      //       [
-      //         {
-      //           backgroundColor: 'rgba(70, 140, 251, 255)',
-      //         },
-      //         {
-      //           backgroundColor: 'rgba(0,0,0,0)',
-      //         },
-      //       ],
-      //       60,
-      //       () => {
-      //         this.setData({
-      //           allOnBtnTap: false,
-      //         })
-      //       },
-      //     )
-      //   },
-      // )
+      this.animate(
+        `#all-on`,
+        [
+          {
+            opacity: 0,
+          },
+          {
+            opacity: 1,
+          },
+        ],
+        30,
+        () => {
+          this.animate(
+            `#all-on`,
+            [
+              {
+                opacity: 1,
+              },
+              {
+                opacity: 0,
+              },
+            ],
+            60,
+          )
+        },
+      )
     },
     /**
      * 点击全屋关按钮
@@ -240,14 +224,32 @@ ComponentWithComputed({
     handleAllOff() {
       this.hideMenu()
       allDevicePowerControl({ houseId: homeStore.currentHomeId, onOff: 0 })
-      this.setData({
-        allOffBtnTap: true,
-      })
-      setTimeout(() => {
-        this.setData({
-          allOffBtnTap: false,
-        })
-      }, 800)
+      this.animate(
+        `#all-off`,
+        [
+          {
+            opacity: 0,
+          },
+          {
+            opacity: 1,
+          },
+        ],
+        30,
+        () => {
+          this.animate(
+            `#all-off`,
+            [
+              {
+                opacity: 1,
+              },
+              {
+                opacity: 0,
+              },
+            ],
+            60,
+          )
+        },
+      )
     },
     /**
      * 点击加号按钮下拉

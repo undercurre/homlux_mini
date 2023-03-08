@@ -14,7 +14,7 @@
       <image src="{{controlBtnPic}}" class="w-48rpx h-48rpx"></image>
     </view>
   </view>
-  <view wx:if="{{!showControl}}" class="absolute left-0 bottom-11rpx w-160rpx flex-center">
+  <view wx:if="{{!showControl}}" class="absolute left-0 bottom-12rpx w-160rpx flex-center">
     <text class="text-20rpx text-black-tips">{{switchName}}</text>
   </view>
 </view>

@@ -17,12 +17,18 @@
     <view class="flex justify-between px-24rpx pt-28rpx h-80rpx">
       <view>
         <view class="bg-hex-ffffff_42 w-244rpx h-80rpx rounded-40rpx flex items-center" wx:if="{{isShowHomeControl}}">
-          <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx">
-            <text bindtap="handleAllOn" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999" style="background-color: {{allOnBtnTap ? '#468CFB' : 'transparent'}}; color: {{allOnBtnTap ? '#fff' : '#2b4067'}}">全开</text>
+          <view bindtap="handleAllOn" class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx relative">
+            <text class="text-hex-2b4067 px-24rpx py-12rpx rounded-999 text-hex-2b4067">全开</text>
+            <view class="absolute left-0 top-0 w-full h-full flex-center">
+              <text id="all-on" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999 text-hex-2b4067 text-white bg-hex-468cfb opacity-0">全开</text>
+            </view>
           </view>
           <view class="w-2rpx h-24rpx bg-hex-75829b"></view>
-          <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx">
-            <text bindtap="handleAllOff" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999" style="background-color: {{allOffBtnTap ? '#468CFB' : 'transparent'}}; color: {{allOffBtnTap ? '#fff' : '#2b4067'}}">全关</text>
+          <view bindtap="handleAllOff" class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx relative">
+            <text class="text-hex-2b4067 px-24rpx py-12rpx rounded-999 text-hex-2b4067">全关</text>
+            <view class="absolute left-0 top-0 w-full h-full flex-center">
+              <text id="all-off" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999 text-hex-2b4067 text-white bg-hex-468cfb opacity-0">全关</text>
+            </view>
           </view>
         </view>
       </view>
@@ -45,7 +51,7 @@
               <text class="text-24rpx text-hex-aeaeb5">可手动添加更多空间~</text>
             </view>
             <!-- 顶开下面的内容高度 -->
-            <view class="h-180rpx"></view>
+            <view class="h-64rpx"></view>
           </view>
         </view>
         <!-- 无设备时显示 -->
