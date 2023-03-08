@@ -35,10 +35,7 @@ ComponentWithComputed({
       return ''
     },
     isSubDevice(data) {
-      if (([proType.switch, proType.light] as string[]).includes(data.deviceInfo.proType)) {
-        return true
-      }
-      return false
+      return ([proType.switch, proType.light] as string[]).includes(data.deviceInfo.proType);
     },
     belongsToGateway(data) {
       if (data.deviceInfo.gatewayId) {
@@ -146,6 +143,8 @@ ComponentWithComputed({
             icon: 'success',
             title: '删除成功',
           })
+          homeStore.updateRoomCardList()
+          emitter.emit('deviceEdit')
           wx.navigateBack()
         } else {
           wx.showToast({

@@ -59,9 +59,14 @@ ComponentWithComputed({
         if (deviceMap[device.deviceId].proType === proType.switch) {
           // 多路开关
           device.controlAction.forEach((action) => {
+            const switchItem = deviceMap[device.deviceId].switchInfoDTOList.find(
+              (item) => item.switchId === String(action.ep),
+            )
             sceneDeviceActionsFlatten.push({
               id: `${device.deviceId}:${action.ep}`,
-              title: `${deviceMap[device.deviceId].deviceName} | ${deviceMap[device.deviceId].roomName}`,
+              title: `${deviceMap[device.deviceId].deviceName}${
+                switchItem?.switchName ? switchItem?.switchName : switchItem?.switchId + '路开关'
+              } | ${deviceMap[device.deviceId].roomName}`,
               desc: action.OnOff ? '打开' : '关闭',
               image:
                 deviceMap[device.deviceId].switchInfoDTOList.find(

@@ -7,7 +7,7 @@
     </view>
     <view class="w-686rpx">
       <view class="flex flex-wrap">
-        <view wx:for="{{currentHomeDetail.roomList}}" wx:key="roomId" data-id="{{item.roomId}}" bindtap="handleRoomSelect" class="mt-16rpx mr-32rpx rounded-999 px-40rpx py-10rpx flex flex-center {{item.roomId === roomSelect ? 'bg-select' : 'bg-hex-dfe1e5'}}">
+        <view wx:for="{{roomList}}" wx:key="roomId" data-id="{{item.roomId}}" bindtap="handleRoomSelect" class="mt-16rpx mr-32rpx rounded-999 px-40rpx py-10rpx flex flex-center {{item.roomId === roomSelect ? 'bg-select' : 'bg-hex-dfe1e5'}}">
           <text class="text-28rpx text-normal {{item.roomId === roomSelect ? 'text-white' : 'text-black-59'}}">{{item.roomName}}</text>
         </view>
       </view>
