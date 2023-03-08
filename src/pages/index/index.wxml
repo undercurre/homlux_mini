@@ -33,7 +33,7 @@
     <view class="h-14rpx"></view>
     <!-- 主体内容 -->
     <view class="flex flex-1 px-24rpx w-full box-border" id="content">
-      <scroll-view enhanced scroll-y show-scrollbar="{{false}}" class="rounded-32rpx" style="height: {{contentHeight}}px;" refresher-triggered="{{isRefresh}}" bindrefresherrefresh="onPullDownRefresh" refresher-enabled>
+      <scroll-view enhanced scroll-y show-scrollbar="{{false}}" class="rounded-32rpx" style="height: {{contentHeight}}px;">
         <!-- 有设备时显示 -->
         <view class="flex-1 flex flex-col items-between w-full" wx:if="{{hasDevice}}">
           <!-- 顶开上面的内容高度 -->

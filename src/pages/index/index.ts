@@ -7,6 +7,7 @@ import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { allDevicePowerControl } from '../../apis/index'
 import { emitter } from '../../utils/eventBus'
+import { updateDefaultHouse } from '../../apis/index'
 let throttleTimer = 0
 ComponentWithComputed({
   behaviors: [
@@ -116,14 +117,17 @@ ComponentWithComputed({
             .inviteMember(houseId, parseInt(type))
             .then(() => {
               console.log('lmn>>>邀请成功')
-              homeBinding.store.updateHomeInfo().then(() => {
-                homeBinding.store.homeList.forEach((item) => {
-                  if (item.houseId == houseId) {
-                    Toast(`您已加入${item.houseName}的家`)
-                    return
-                  }
+              updateDefaultHouse(houseId)
+              .finally(() => {
+                homeBinding.store.updateHomeInfo().then(() => {
+                  homeBinding.store.homeList.forEach((item) => {
+                    if (item.houseId == houseId) {
+                      Toast(`您已加入${item.houseName}的家`)
+                      return
+                    }
+                  })
+                  Toast('您已加入家庭')
                 })
-                Toast('您已加入家庭')
               })
             })
             .catch(() => {
