@@ -222,7 +222,7 @@ ComponentWithComputed({
       if (!res.success) {
         wx.showToast({
           title: this.data.homeInfoEdited.houseId ? '修改失败' : '新增失败',
-          icon: 'none'
+          icon: 'none',
         })
         return
       }
@@ -230,7 +230,7 @@ ComponentWithComputed({
       if (res.success) {
         wx.showToast({
           title: this.data.homeInfoEdited.houseId ? '修改成功' : '新增成功',
-          icon: 'none'
+          icon: 'none',
         })
       }
 
@@ -242,7 +242,7 @@ ComponentWithComputed({
     },
 
     async delHome() {
-      const list = homeBinding.store.homeList.filter(item => item.houseCreatorFlag)
+      const list = homeBinding.store.homeList.filter((item) => item.houseCreatorFlag)
 
       if (list.length <= 1) {
         wx.showToast({ title: '请至少保留一个创建的家庭', icon: 'none' })
@@ -260,7 +260,6 @@ ComponentWithComputed({
 
       const delRes = await delUserHouse(homeBinding.store.currentHomeDetail.houseId)
 
-      
       wx.showToast({ title: delRes.success ? '解散成功' : '解散失败', icon: 'none' })
 
       homeBinding.store.updateHomeInfo()
