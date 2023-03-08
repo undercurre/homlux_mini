@@ -125,11 +125,11 @@ ComponentWithComputed({
     //   console.log('handleChange', e)
     // },
 
-    handleScroll(e: { detail: { scrollTop: number } }) {
-      this.setData({
-        pageMetaScrollTop: e.detail.scrollTop,
-      })
-    },
+    // handleScroll(e: { detail: { scrollTop: number } }) {
+    //   this.setData({
+    //     pageMetaScrollTop: e.detail.scrollTop,
+    //   })
+    // },
 
     async handleSortEnd(e: { detail: { listData: Scene.SceneItem[] } }) {
       console.log('handleSortEnd', e)
