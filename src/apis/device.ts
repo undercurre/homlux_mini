@@ -60,7 +60,7 @@ export async function queryDeviceInfoByDeviceId(
   options?: { loading?: boolean },
 ) {
   return await mzaioRequest.post<Device.DeviceItem>({
-    log: false,
+    log: true,
     loading: options?.loading ?? false,
     url: '/v1/device/queryDeviceInfoByDeviceId',
     data,
