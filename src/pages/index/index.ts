@@ -117,8 +117,7 @@ ComponentWithComputed({
             .inviteMember(houseId, parseInt(type))
             .then(() => {
               console.log('lmn>>>邀请成功')
-              updateDefaultHouse(houseId)
-              .finally(() => {
+              updateDefaultHouse(houseId).finally(() => {
                 homeBinding.store.updateHomeInfo().then(() => {
                   homeBinding.store.homeList.forEach((item) => {
                     if (item.houseId == houseId) {
@@ -143,33 +142,37 @@ ComponentWithComputed({
     },
 
     // 收起所有菜单
-    hideMenu(e?: { detail: { x: number; y: number } }) {
+    hideMenu() {
       this.doHomeSelectArrowAnimation(false, this.data.selectHomeMenu.isShow)
-      if (e && e.detail && e.detail.x) {
-        wx.createSelectorQuery()
-          .select('#addIcon')
-          .boundingClientRect()
-          .exec((res) => {
-            // 点中加按钮以外的地方都要隐藏下拉菜单
-            if (
-              res[0] &&
-              (e.detail.x > res[0].right ||
-                e.detail.x < res[0].left ||
-                e.detail.y > res[0].bottom ||
-                e.detail.y < res[0].top)
-            ) {
-              this.setData({
-                'dropdownMenu.isShow': false,
-                'selectHomeMenu.isShow': false,
-              })
-            }
-          })
-      } else {
-        this.setData({
-          'dropdownMenu.isShow': false,
-          'selectHomeMenu.isShow': false,
-        })
-      }
+      this.setData({
+        'dropdownMenu.isShow': false,
+        'selectHomeMenu.isShow': false,
+      })
+      // if (e && e.detail && e.detail.x) {
+      //   wx.createSelectorQuery()
+      //     .select('#addIcon')
+      //     .boundingClientRect()
+      //     .exec((res) => {
+      //       // 点中加按钮以外的地方都要隐藏下拉菜单
+      //       if (
+      //         res[0] &&
+      //         (e.detail.x > res[0].right ||
+      //           e.detail.x < res[0].left ||
+      //           e.detail.y > res[0].bottom ||
+      //           e.detail.y < res[0].top)
+      //       ) {
+      //         this.setData({
+      //           'dropdownMenu.isShow': false,
+      //           'selectHomeMenu.isShow': false,
+      //         })
+      //       }
+      //     })
+      // } else {
+      //   this.setData({
+      //     'dropdownMenu.isShow': false,
+      //     'selectHomeMenu.isShow': false,
+      //   })
+      // }
     },
     /**
      * 跳转到登录页
@@ -188,6 +191,7 @@ ComponentWithComputed({
         houseId: homeStore.currentHomeId,
         onOff: 1,
       })
+      console.log('------')
       this.setData({
         allOnBtnTap: true,
       })
@@ -196,6 +200,39 @@ ComponentWithComputed({
           allOnBtnTap: false,
         })
       }, 800)
+      console.log('------')
+      // this.animate(
+      //   `#all-on`,
+      //   [
+      //     {
+      //       backgroundColor: 'rgba(0,0,0,0)',
+      //     },
+      //     {
+      //       backgroundColor: 'rgba(70, 140, 251, 255)',
+      //     },
+      //   ],
+      //   30,
+      //   () => {
+      //     console.log('------')
+      //     this.animate(
+      //       `#all-on`,
+      //       [
+      //         {
+      //           backgroundColor: 'rgba(70, 140, 251, 255)',
+      //         },
+      //         {
+      //           backgroundColor: 'rgba(0,0,0,0)',
+      //         },
+      //       ],
+      //       60,
+      //       () => {
+      //         this.setData({
+      //           allOnBtnTap: false,
+      //         })
+      //       },
+      //     )
+      //   },
+      // )
     },
     /**
      * 点击全屋关按钮

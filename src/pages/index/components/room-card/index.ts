@@ -97,46 +97,46 @@ ComponentWithComputed({
         30,
         () => {
           setTimeout(() => {
-            this.execIconEnlargeAnimation(value)
+            this.execCardBgAnimationEnd(value)
           }, 30)
         },
       )
     },
-    execIconEnlargeAnimation(value: string) {
-      console.log(`#effect-${value}-svg`)
-      this.animate(
-        `#effect-${value}-svg`,
-        [
-          {
-            scale: [1, 1],
-          },
-          {
-            scale: [1.3, 1.3],
-          },
-        ],
-        60,
-        () => {
-          this.execIconSmallerAnimation(value)
-        },
-      )
-    },
-    execIconSmallerAnimation(value: string) {
-      this.animate(
-        `#effect-${value}-svg`,
-        [
-          {
-            scale: [1.3, 1.3],
-          },
-          {
-            scale: [1, 1],
-          },
-        ],
-        90,
-        () => {
-          this.execCardBgAnimationEnd(value)
-        },
-      )
-    },
+    // execIconEnlargeAnimation(value: string) {
+    //   console.log(`#effect-${value}-svg`)
+    //   this.animate(
+    //     `#effect-${value}-svg`,
+    //     [
+    //       {
+    //         scale: [1, 1],
+    //       },
+    //       {
+    //         scale: [1.3, 1.3],
+    //       },
+    //     ],
+    //     60,
+    //     () => {
+    //       this.execIconSmallerAnimation(value)
+    //     },
+    //   )
+    // },
+    // execIconSmallerAnimation(value: string) {
+    //   this.animate(
+    //     `#effect-${value}-svg`,
+    //     [
+    //       {
+    //         scale: [1.3, 1.3],
+    //       },
+    //       {
+    //         scale: [1, 1],
+    //       },
+    //     ],
+    //     90,
+    //     () => {
+    //       this.execCardBgAnimationEnd(value)
+    //     },
+    //   )
+    // },
     execCardBgAnimationEnd(value: string) {
       this.animate(
         `#effect-${value}`,
