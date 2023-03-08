@@ -1,12 +1,14 @@
 // pages/index/components/room-card/index.ts
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { runInAction } from 'mobx-miniprogram'
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { execScene } from '../../../../apis/scene'
-import { roomStore } from '../../../../store/index'
+import { roomBinding, roomStore } from '../../../../store/index'
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
   },
+  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding] })],
   /**
    * 组件的属性列表
    */
@@ -17,6 +19,7 @@ ComponentWithComputed({
     showScene: {
       type: Boolean,
       value: false,
+      observer() {},
     },
   },
 
@@ -36,6 +39,12 @@ ComponentWithComputed({
           sceneName,
         }
       })
+    },
+    deviceList(data) {
+      console.log(data.roomInfo)
+      if (data.roomDeviceList) {
+        return data.roomDeviceList[data.roomInfo.roomId]
+      }
     },
     hasBottomPadding(data) {
       return data.roomInfo.sceneList.length > 0

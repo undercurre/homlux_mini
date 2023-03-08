@@ -1,6 +1,7 @@
 import { observable, runInAction } from 'mobx-miniprogram'
 import { getRoomList, queryAllDevice } from '../apis/index'
 import { proType } from '../config/index'
+import { deviceStore } from './device'
 import { homeStore } from './home'
 
 export const roomStore = observable({
@@ -28,6 +29,7 @@ export const roomStore = observable({
       })
       runInAction(() => {
         roomStore.roomDeviceList = list
+        deviceStore.allRoomDeviceList = res.result
       })
       return
     } else {
@@ -86,6 +88,6 @@ export const roomStore = observable({
 
 export const roomBinding = {
   store: roomStore,
-  fields: ['roomList', 'currentRoomIndex'],
+  fields: ['roomList', 'currentRoomIndex', 'roomDeviceList'],
   actions: [],
 }
