@@ -27,7 +27,7 @@
         <van-cell title="房间" is-link link-type="navigateTo" url="/package-mine/room-manage/index" border="{{ false }}" />
 
         <view class="flex flex-row flex-wrap px-40rpx gap-x-36rpx">
-          <view wx:for="{{ showRoomList }}" wx:key="roomId" class="flex flex-col w-128" bind:tap="clickRoomItem" data-icon="{{item.roomIcon}}">
+          <view wx:for="{{ showRoomList }}" wx:key="roomId" class="flex flex-col w-128" bind:tap="clickRoomItem" data-index="{{index}}">
             <view class="bg-hex-F6FAFD rounded-32rpx p-32rpx">
               <image class="w-64 h-64 block" src="/assets/img/room/{{item.roomIcon}}.png"></image>
             </view>

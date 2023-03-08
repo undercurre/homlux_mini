@@ -5,6 +5,7 @@ import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { roomBinding, homeBinding } from '../../store/index'
 import { saveOrUpdateUserHouseInfo, delUserHouse, quitUserHouse } from '../../apis/index'
+import { strUtil } from '../../utils/index'
 
 ComponentWithComputed({
   options: {
@@ -276,11 +277,21 @@ ComponentWithComputed({
     },
 
     clickRoomItem(event: WechatMiniprogram.CustomEvent) {
-      const { icon } = event.currentTarget.dataset
+      const { index } = event.currentTarget.dataset
 
-      if (icon === 'more') {
+      const item = this.data.showRoomList[index]
+
+      if (item.roomIcon === 'more') {
         wx.navigateTo({
           url: '/package-mine/room-manage/index',
+        })
+      } else {
+        wx.navigateTo({
+          url: strUtil.getUrlWithParams('/package-mine/room-detail/index', {
+            roomId: item.roomId,
+            roomName: item.roomName,
+            roomIcon: item.roomIcon,
+          }),
         })
       }
     },
