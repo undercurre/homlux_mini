@@ -20,9 +20,11 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    _timeId: setTimeout(() => {}, 0),
     status: 'linking' as StatusName,
     activeIndex: -1,
     pageParams: {} as IAnyObject,
+    _hasFound: false, // 是否已经找到指定mac设备
   },
 
   computed: {
@@ -99,8 +101,15 @@ ComponentWithComputed({
         allowDuplicatesKey: false,
         powerLevel: 'high',
         interval: 3000,
-        success(res) {
+        success: (res) => {
           console.log('startBluetoothDevicesDiscovery', res)
+          this.data._timeId = setTimeout(() => {
+            if (!this.data._hasFound) {
+              this.setData({
+                status: 'error',
+              })
+            }
+          }, 30000)
         },
       })
     },
@@ -116,6 +125,8 @@ ComponentWithComputed({
         return
       }
 
+      this.data._hasFound = true
+      clearTimeout(this.data._timeId)
       console.log('Device Found', device, dataMsg, msgObj)
 
       wx.stopBluetoothDevicesDiscovery()
