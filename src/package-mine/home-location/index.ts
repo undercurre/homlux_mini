@@ -34,6 +34,7 @@ ComponentWithComputed({
 
   lifetimes: {
     attached: function () {
+      this.updateCurLocation()
       this.initCityData()
     },
     moved: function () {},
@@ -41,6 +42,15 @@ ComponentWithComputed({
   },
 
   methods: {
+    updateCurLocation() {
+      const houseArea = homeBinding.store.currentHomeDetail.houseArea
+      let result: string
+      if (houseArea) result = houseArea
+      else result = '未选择'
+      this.setData({
+        curLocation: result
+      })
+    },
     initCityData() {
       const myQQMapWX = new QQMapWX({
         key: this.data.key,
@@ -263,9 +273,7 @@ ComponentWithComputed({
           list = [{ name: item.fullname, isSelected: false, cidx: [] }]
           this.setIndicatorItems(0, list)
           this.setCurIndicatorIndex(0)
-          this.setData({
-            curLocation: item.fullname,
-          })
+          this.changeHomeLocation()
         }
       } else if (this.data.curIndicatorIndex === 1) {
         let list
@@ -281,18 +289,25 @@ ComponentWithComputed({
           list = [{ name: item.fullname, isSelected: false, cidx: [] }]
           this.setIndicatorItems(1, list)
           this.setCurIndicatorIndex(1)
-          this.setData({
-            curLocation: item.fullname,
-          })
+          this.changeHomeLocation()
         }
       } else if (this.data.curIndicatorIndex === 2) {
         const list = [{ name: item.fullname, isSelected: false, cidx: [] }]
         this.setIndicatorItems(2, list)
         this.setCurIndicatorIndex(2)
-        this.setData({
-          curLocation: item.fullname,
-        })
+        this.changeHomeLocation()
       }
     },
+    changeHomeLocation() {
+      let location: string = ''
+      this.data.indicatorList.forEach((item) => {
+        location += item.name
+      })
+      if (location == '') return
+      homeBinding.store.updateHomeNameOrLocation(undefined, location)
+      .then(() => {
+        this.updateCurLocation()
+      })
+    }
   },
 })
