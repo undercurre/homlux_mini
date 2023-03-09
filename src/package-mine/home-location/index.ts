@@ -6,6 +6,7 @@ import pageBehaviors from '../../behaviors/pageBehaviors'
 import { homeBinding } from '../../store/index'
 import Toast from '@vant/weapp/toast/toast'
 import QQMapWX from '../../utils/qqmap-wx-jssdk'
+import { storage } from '../../utils/storage'
 
 ComponentWithComputed({
   options: {
@@ -46,7 +47,7 @@ ComponentWithComputed({
       const houseArea = homeBinding.store.currentHomeDetail.houseArea
       let result: string
       if (houseArea) result = houseArea
-      else result = '未选择'
+      else result = storage.get('position_location', '') as string || '未选择'
       this.setData({
         curLocation: result
       })
@@ -174,7 +175,7 @@ ComponentWithComputed({
             }
           } else if (i == 1) {
             if (cidxTemp.length == 0) break
-            for (let j: number = cidxTemp[0]; j < cidxTemp[1]; j++) {
+            for (let j: number = cidxTemp[0]; j <= cidxTemp[1]; j++) {
               if (this.data.cityList[j].fullname.indexOf(searchList[1]) != -1) {
                 list.push({ name: this.data.cityList[j].fullname, isSelected: false, cidx: cidxTemp })
                 if (this.data.cityList[j].cidx) {
@@ -189,7 +190,7 @@ ComponentWithComputed({
             }
           } else if (i == 2) {
             if (cidxTemp.length == 0) break
-            for (let j: number = cidxTemp[0]; j < cidxTemp[1]; j++) {
+            for (let j: number = cidxTemp[0]; j <= cidxTemp[1]; j++) {
               if (this.data.townList[j].fullname.indexOf(searchList[2]) != -1) {
                 list.push({ name: this.data.townList[j].fullname, isSelected: false, cidx: cidxTemp })
                 if (this.data.townList[j].cidx) {
@@ -249,12 +250,12 @@ ComponentWithComputed({
     },
     setCityView(cidx: number[]) {
       this.setData({
-        areaList: this.data.cityList.slice(cidx[0], cidx[1]),
+        areaList: this.data.cityList.slice(cidx[0], cidx[1] + 1),
       })
     },
     setTownView(cidx: number[]) {
       this.setData({
-        areaList: this.data.townList.slice(cidx[0], cidx[1]),
+        areaList: this.data.townList.slice(cidx[0], cidx[1] + 1),
       })
     },
     onAreaClick(data: any) {
