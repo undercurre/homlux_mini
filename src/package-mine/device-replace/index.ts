@@ -21,8 +21,8 @@ ComponentWithComputed({
   computed: {
     btnText(data) {
       const textMap = {
-        begin: '开始使用',
-        first: '下一步',
+        introduce: '开始使用',
+        begin: '下一步',
       }
 
       return textMap[data.status]
@@ -38,9 +38,9 @@ ComponentWithComputed({
 
   methods: {
     clickBtn() {
-      if (this.data.status === 'begin') {
+      if (this.data.status === 'introduce') {
         this.setData({
-          status: 'first',
+          status: 'begin',
         })
       }
     },

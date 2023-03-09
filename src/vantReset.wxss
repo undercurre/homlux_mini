@@ -79,7 +79,7 @@ page {
 
 /* cell start */
 .van-cell:after {
-  border-bottom: 1rpx solid #eef2f7 !important;
+  border-bottom: 1rpx solid #ddd !important;
 }
 
 .van-icon {

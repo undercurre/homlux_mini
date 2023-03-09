@@ -64,7 +64,8 @@
   "window": {
     "navigationStyle": "custom",
     "backgroundTextStyle": "light",
-    "backgroundColor": "#eef2f7"
+    "backgroundColor": "#eef2f7",
+    "navigationBarTextStyle": "black"
   },
   "sitemapLocation": "sitemap.json",
   "networkTimeout": {
