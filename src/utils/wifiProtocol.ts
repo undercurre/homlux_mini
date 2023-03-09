@@ -149,7 +149,7 @@ export class WifiSocket {
     }
 
     this.deviceInfo.isConnectingUdp = true
-    const port = _instance?.udpClient.bind(6366)
+    const port = this.udpClient.bind(6366)
 
     console.log('port', port)
 
@@ -164,8 +164,10 @@ export class WifiSocket {
   }
 
   closeUdp() {
-    console.log('closeUdp')
-    _instance?.udpClient.close()
+    console.log('closeUdp', this)
+    if (this.deviceInfo.isConnectingUdp) {
+      this.udpClient.close()
+    }
   }
 
   initTcpSocket() {
@@ -206,9 +208,9 @@ export class WifiSocket {
       this.deviceInfo.isConnectingUdp = false
     })
 
-    wx.onAppHide(this.closeUdp)
+    wx.onAppHide(this.closeUdp.bind(this))
 
-    wx.onAppShow(this.bindUdp)
+    wx.onAppShow(this.bindUdp.bind(this))
 
     return port
   }

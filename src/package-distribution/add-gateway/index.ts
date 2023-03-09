@@ -89,10 +89,12 @@ Component({
         data.passwd = params.wifiPassword
       }
 
-      await socket.sendCmd({
+      const setRes = await socket.sendCmd({
         topic: '/gateway/net/set', //指令名称
         data,
       })
+
+      console.log('setRes', setRes)
 
       // wx.connectWifi({
       //   SSID: params.wifiSSID,
@@ -108,20 +110,20 @@ Component({
 
       // 防止强绑情况选网关还没断开原有连接，需要延迟查询
       setTimeout(() => {
-        this.queryDeviceOnlineStatus()
+        this.queryDeviceOnlineStatus(setRes.sn)
       }, 10000)
 
       socket.close()
     },
 
-    async requestBindDevice() {
+    async requestBindDevice(sn: string) {
       const params = getCurrentPageParams()
 
       const res = await bindDevice({
         deviceId: params.deviceId,
         houseId: homeBinding.store.currentHomeId,
         roomId: roomBinding.store.roomList[0].roomId,
-        sn: params.dsn,
+        sn,
         deviceName: params.deviceName + params.apSSID.substr(-4),
       })
 
@@ -147,10 +149,8 @@ Component({
       }
     },
 
-    async queryDeviceOnlineStatus() {
-      const params = getCurrentPageParams()
-
-      const res = await queryDeviceOnlineStatus({ sn: params.dsn, deviceType: '1' })
+    async queryDeviceOnlineStatus(sn: string) {
+      const res = await queryDeviceOnlineStatus({ sn, deviceType: '1' })
 
       console.log('queryDeviceOnlineStatus', res.result)
 
@@ -159,7 +159,7 @@ Component({
           activeIndex: 1,
         })
 
-        this.requestBindDevice()
+        this.requestBindDevice(sn)
       } else {
         this.data._queryTimes--
 
@@ -171,7 +171,7 @@ Component({
         }
 
         this.data._interId = setTimeout(() => {
-          this.queryDeviceOnlineStatus()
+          this.queryDeviceOnlineStatus(sn)
         }, 3000)
       }
     },
