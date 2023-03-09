@@ -246,7 +246,7 @@ ComponentWithComputed({
       const params = strUtil.getUrlParams(url)
 
       console.log('params', params)
-      let key = `midea@homlux${params.mac.substr(-4)}`
+      const key = `midea@homlux${params.mac.substr(-4)}`
       const test = aesUtil.encrypt('midea.light.003.002', key)
       const modelId = aesUtil.decrypt(params.pid, key)
       console.log('modelId', modelId, 'test', test, aesUtil.decrypt(test, key, 'Hex'))

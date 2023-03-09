@@ -248,7 +248,6 @@ ComponentWithComputed({
 
         this.queryDeviceOnlineStatus(bleDevice)
       } else {
-
         console.error(`子设备配网失败：${bleDevice.mac}`, res)
         bleDevice.status = 'fail'
 
