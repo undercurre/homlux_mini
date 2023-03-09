@@ -55,6 +55,7 @@ export const roomStore = observable({
         // 统计多少灯打开（开关不关联灯或者关联场景都算进去）
         let deviceLightOnNum = 0
         roomDeviceList?.forEach((device) => {
+          if (!device.onLineStatus) return
           if (device.proType === proType.light && device.mzgdPropertyDTOList['1'].OnOff) {
             deviceLightOnNum++
           } else if (device.proType === proType.switch) {

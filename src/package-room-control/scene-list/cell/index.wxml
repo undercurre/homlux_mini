@@ -1,4 +1,4 @@
-<view class="h-188rpx">
+<view class="h-180rpx">
   <van-cell-group inset custom-class="cell">
     <van-cell clickable center data-item="{{item.data}}" bind:click="handleToSetting">
       <view slot="title" class="flex items-center h-100rpx">

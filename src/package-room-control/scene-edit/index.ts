@@ -9,7 +9,7 @@ import { emitter } from '../../utils/eventBus'
 interface DeviceActionsFlattenItem {
   id: string
   title: string
-  desc: string
+  desc: string[]
   image: string
   controlAction: Record<string, number>
 }
@@ -67,7 +67,7 @@ ComponentWithComputed({
               title: `${deviceMap[device.deviceId].deviceName}${
                 switchItem?.switchName ? switchItem?.switchName : switchItem?.switchId + '路开关'
               } | ${deviceMap[device.deviceId].roomName}`,
-              desc: action.OnOff ? '打开' : '关闭',
+              desc: action.OnOff ? ['打开'] : ['关闭'],
               image:
                 deviceMap[device.deviceId].switchInfoDTOList.find(
                   (switchInfo) => switchInfo.switchId === action.ep.toString(),
@@ -79,17 +79,17 @@ ComponentWithComputed({
           const action = {
             id: `${device.deviceId}`,
             title: `${deviceMap[device.deviceId].deviceName} | ${deviceMap[device.deviceId].roomName}`,
-            desc: device.controlAction[0].OnOff ? '打开' : '关闭',
+            desc: device.controlAction[0].OnOff ? ['打开'] : ['关闭'],
             image: '',
             controlAction: device.controlAction[0],
           }
           if (deviceMap[device.deviceId].proType === proType.light) {
             if (typeof device.controlAction[0].Level === 'number') {
-              action.desc += ` 亮度${device.controlAction[0].Level}%`
+              action.desc.push(`亮度${device.controlAction[0].Level}%`)
             }
             if (typeof device.controlAction[0].ColorTemp === 'number') {
               const color = (device.controlAction[0].ColorTemp / 100) * (maxColorTempK - minColorTempK) + minColorTempK
-              action.desc += `色温${color}K`
+              action.desc.push(`色温${color}K`)
             }
             action.image = deviceMap[device.deviceId].pic
           }

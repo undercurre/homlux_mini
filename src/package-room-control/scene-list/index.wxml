@@ -1,12 +1,13 @@
 <page-meta scroll-top="{{pageMetaScrollTop}}"></page-meta>
 
 <!-- 背景 -->
-<svg-icon name="room-bg" width="100vw" height="100vh" class="fixed bg-z-index"></svg-icon>
+<view class="w-100vw h-100vh fixed left-0 top-0 bg-hex-f4f8ff bg-z-index-1"></view>
+<view class="fixed left-0 top-0 w-100vw h-50vh bg-z-index" style="background: linear-gradient(180deg, rgba(87,105,255,0.10) 0%, rgba(87,105,255,0.00) 100%);"></view>
 
 <!-- 标题 -->
 <nav-bar title="场景" left-arrow bind:leftTap="goBack" style="opacity: {{opacity}};"></nav-bar>
 
 <!-- 页面主体 -->
 <view class="h-24rpx"></view>
-<drag id="drag" list-data="{{listData}}" scroll-top="{{scrollTop}}" item-height="{{188}}" generic:item="cell" bind:toSetting="toSetting" bind:exec="handleExecScene" bind:change="handleChange" bind:sortend="handleSortEnd" bind:scroll="handleScroll"></drag>
+<drag id="drag" list-data="{{listData}}" scroll-top="{{scrollTop}}" item-height="{{180}}" generic:item="cell" bind:toSetting="toSetting" bind:exec="handleExecScene" bind:change="handleChange" bind:sortend="handleSortEnd" bind:scroll="handleScroll"></drag>
 <view class="h-64rpx"></view>
