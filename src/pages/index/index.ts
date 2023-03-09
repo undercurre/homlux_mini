@@ -98,12 +98,19 @@ ComponentWithComputed({
     },
 
     inviteMember() {
+      const enterQuery = wx.getEnterOptionsSync().query
       const token = storage.get('token', '')
-      const type = storage.get('inviteType', '') as string
-      const houseId = storage.get('inviteHouseId', '') as string
-      const time = storage.get('inviteTime', 0) as string
+      const type = enterQuery.type as string
+      const houseId = enterQuery.houseId as string
+      const time = enterQuery.time as string
       if (token && type && houseId && time) {
         console.log(`lmn>>>邀请参数:token=${token}/type=${type}/houseId=${houseId}/time=${time}`)
+        homeBinding.store.homeList.forEach((item) => {
+          if (item.houseId == houseId) {
+            console.log('lmn>>>已经在该家庭')
+            return
+          }
+        })
         const now = new Date().valueOf()
         if (now - parseInt(time) > 86400000) {
           console.log('lmn>>>邀请超时')
@@ -133,9 +140,6 @@ ComponentWithComputed({
               Toast('加入家庭失败')
             })
         }
-        storage.remove('inviteType')
-        storage.remove('inviteHouseId')
-        storage.remove('inviteTime')
       } else {
         console.log('lmn>>>无效邀请参数')
       }
