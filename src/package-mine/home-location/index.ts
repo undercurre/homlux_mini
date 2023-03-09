@@ -47,7 +47,7 @@ ComponentWithComputed({
       const houseArea = homeBinding.store.currentHomeDetail.houseArea
       let result: string
       if (houseArea) result = houseArea
-      else result = storage.get('position_location', '') as string || '未选择'
+      else result = (storage.get('position_location', '') as string) || '未选择'
       this.setData({
         curLocation: result,
       })
