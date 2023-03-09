@@ -48,7 +48,7 @@ ComponentWithComputed({
       if (houseArea) result = houseArea
       else result = '未选择'
       this.setData({
-        curLocation: result
+        curLocation: result,
       })
     },
     initCityData() {
@@ -304,10 +304,9 @@ ComponentWithComputed({
         location += item.name
       })
       if (location == '') return
-      homeBinding.store.updateHomeNameOrLocation(undefined, location)
-      .then(() => {
+      homeBinding.store.updateHomeNameOrLocation(undefined, location).then(() => {
         this.updateCurLocation()
       })
-    }
+    },
   },
 })

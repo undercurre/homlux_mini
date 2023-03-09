@@ -28,7 +28,7 @@ export class WifiSocket {
 
   constructor(params: { ssid: string }) {
     if (_instance && _instance.SSID === params.ssid) {
-      console.log('实例重用')
+      console.log('WifiSocket实例重用')
       return _instance
     }
     // 防止端口被占用，检查释放之前生成的实例
@@ -67,7 +67,7 @@ export class WifiSocket {
 
     const ipRes = await this.getDeviceIp()
 
-    console.log(`getDeviceIp`, Date.now() - now)
+    console.log(`getDeviceIp`, Date.now() - now, ipRes)
 
     if (!ipRes.success) {
       return { errCode: -1, success: false, msg: '获取IP失败' }
@@ -143,7 +143,7 @@ export class WifiSocket {
   }
 
   bindUdp() {
-    console.log('bindUdp')
+    console.log('bindUdp', this)
     if (this.deviceInfo.isConnectingUdp) {
       return
     }
@@ -296,18 +296,17 @@ export class WifiSocket {
         data: params.data,
       }
 
-      console.log(`${params.method}-send:`, msgData)
+      console.log(`${params.method}-send: ${params.topic}`, msgData)
 
       const message = aesUtil.encrypt(JSON.stringify(msgData), this.key)
       const sendMsg = strUtil.hexStringToArrayBuffer(message)
 
       // 超时回复处理
       const timeId = setTimeout(() => {
-        console.log(`${params.method}-超时回复:`, params.topic)
+        console.error(`${params.method}-超时回复:`, params.topic)
         this.cmdCallbackMap[reqId] && delete this.cmdCallbackMap[reqId]
-        console.debug('指令发送-回复时间：', Date.now() - parseInt(reqId))
         resolve({ errorCode: -1, msg: '请求超时' })
-      }, 4000)
+      }, 60000)
       // 由于设备端是异步上报对应的消息回复，通过reqId注册对应命令的消息回调，
       // 后续在消息监听onmessage通过reqId匹配并把对应的回复resolve，达到同步调用的效果
       this.cmdCallbackMap[reqId] = (data: { errorCode: number } & IAnyObject) => {

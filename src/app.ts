@@ -6,7 +6,7 @@ App<IAppOption>({
   async onLaunch(options: WechatMiniprogram.App.LaunchShowOption) {
     wx.setEnableDebug({
       enableDebug: true,
-    })
+    }).catch((err) => err)
 
     console.log('APP打开参数：', options)
     // 加载svg数据

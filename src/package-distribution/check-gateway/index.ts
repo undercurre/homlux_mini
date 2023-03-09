@@ -56,7 +56,7 @@ Component({
       socket = new WifiSocket({ ssid: params.ssid })
 
       socket.onMessage((data: IAnyObject) => {
-        console.log('socket.onMessage', data)
+        console.log('WifiSocket.onMessage', data)
 
         if (data.topic === '/gateway/net/confirm' && this.data.isShowForceBindTips) {
           this.setData({

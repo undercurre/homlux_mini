@@ -149,6 +149,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .mt-98rpx{margin-top:98rpx;}
 .block{display:block;}
 .inline-block{display:inline-block;}
+.hidden{display:none;}
 .opacity-0{opacity:0;}
 .opacity-100{opacity:1;}
 .opacity-40{opacity:0.4;}

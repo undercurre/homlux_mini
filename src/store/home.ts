@@ -103,7 +103,7 @@ export const homeStore = observable({
     const params = {
       houseId: this.currentHomeId,
       houseName: name ?? this.currentHomeDetail.houseName,
-      userLocationInfo: location ?? this.currentHomeDetail.houseArea
+      userLocationInfo: location ?? this.currentHomeDetail.houseArea,
     }
     const res = await saveOrUpdateUserHouseInfo(params, { loading: true })
     if (res.success) {

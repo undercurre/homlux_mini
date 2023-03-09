@@ -7,7 +7,7 @@
         <view class="flex flex-row items-center py-16rpx leading-44rpx text-32 {{index < memberList.length - 1 && 'border-bottom'}}" wx:for="{{memberList}}" wx:key="key" data-item="{{item}}" bind:tap="onUserItemClick">
           <image class="w-80rpx h-80rpx mr-24rpx rounded-full" src="{{item.icon || '/assets/img/default-img/default-avatar.png'}}"></image>
 
-          <text class="grow text-balck-primary w-300rpx" style="text-overflow: ellipsis; overflow: hidden;">{{item.name}}</text>
+          <text class="grow text-balck-primary w-300rpx" style="text-overflow: ellipsis; overflow: hidden">{{item.name}}</text>
 
           <view class="flex flex-row items-center">
             <text class="text-black-secondary pr-16rpx">{{item.role}}</text>
