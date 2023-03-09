@@ -1,1 +1,1 @@
-export type StatusType = 'begin' | 'first'
+export type StatusType = 'introduce' | 'begin'

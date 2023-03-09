@@ -16,7 +16,9 @@
         <scroll-view class="grow shrink h-500" scroll-y="{{true}}">
           <view wx:for="{{deviceList}}" wx:key="deviceUuid" class="flex flex-row items-center bg-white rounded-32rpx mb-24rpx px-24rpx py-40rpx">
             <van-checkbox use-icon-slot bind:change="toggleDevice" data-index="{{index}}">
-              <image src="{{item.icon}}" class="w-92 h-92 ml-10rpx border-4rpx border-solid border-hex-F6F6F8 rounded-full"></image>
+              <view class="ml-10rpx border-4rpx border-solid border-hex-F6F6F8 rounded-full leading-0 p-10rpx">
+                <image src="{{item.icon}}" class="w-72 h-72"></image>
+              </view>
 
               <image slot="icon" class="w-48 h-48" src="{{ item.isChecked ? '../../assets/img/search-subdevice/checked.png' : '../../assets/img/search-subdevice/unchecked.png' }}" />
             </van-checkbox>

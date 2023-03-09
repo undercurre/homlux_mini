@@ -2,7 +2,7 @@
   <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="设备替换"></nav-bar>
 
   <view class="grow flex flex-col pt-40rpx">
-    <block wx:if="{{status === 'begin'}}">
+    <block wx:if="{{status === 'introduce'}}">
       <tips-box text="通过设备替换，可使用新设备替换旧设备，新设备将继承旧设备的以下数据：" icon="/assets/img/device-replace/replace-tips.png"></tips-box>
 
       <view class="pt-32rpx px-100rpx">
@@ -16,14 +16,19 @@
       </view>
     </block>
 
-    <block wx:if="{{status !== 'begin'}}">
-      <steps active="{{1}}"></steps>
+    <block wx:if="{{status === 'begin'}}">
+      <steps active="{{step}}"></steps>
 
       <text class="block text-center pt-60rpx pb-16rpx leading-40rpx text-28 text-black-59">选择新设备</text>
 
       <text class="block text-center pb-80rpx leading-34rpx text-24 text-black-59">仅可选择在线，且与旧设备同类别的新设备</text>
 
-      <view class="bg-white mx-24rpx p-60rpx rounded-32rpx"></view>
+      <view class="bg-white mx-24rpx p-60rpx rounded-32rpx">
+        <view class="flex flex-col items-center" bind:tap="addOldDevice">
+          <image class="w-108 h-108" src="/assets/img/device-replace/add.png"></image>
+          <text class="pt-48rpx text-28 leading-40rpx text-black-59">选择设备</text>
+        </view>
+      </view>
     </block>
   </view>
 
