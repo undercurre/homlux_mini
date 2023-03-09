@@ -275,40 +275,41 @@ ComponentWithComputed({
       )
       const switchRelId = switchItem?.switchRelId ?? ''
       const lightRelId = switchItem?.lightRelId ?? ''
-      // let linkSelectList = []
+      let linkSelectList = [] as string[]
       let list = [] as Device.DeviceItem[]
       if (e.currentTarget.dataset.link === 'light') {
         list = deviceStore.allRoomDeviceFlattenList
-          .map((device) => ({
-            // 勾选上关联
-            ...device,
-            isChecked: device.lightRelId !== '' && device.lightRelId === lightRelId,
-          }))
+          // .map((device) => ({
+          //   // 勾选上关联
+          //   ...device,
+          //   isChecked: device.lightRelId !== '' && device.lightRelId === lightRelId,
+          // }))
           .filter((item) => !item.uniId.includes(':'))
-        // linkSelectList = list
-        //   .filter((device) => device.lightRelId && device.lightRelId === lightRelId)
-        //   .map((device) => device.deviceId)
+        linkSelectList = list
+          .filter((device) => device.lightRelId !== '' && device.lightRelId === lightRelId)
+          .map((device) => device.deviceId)
       } else if (e.currentTarget.dataset.link === 'switch') {
         list = deviceStore.allRoomDeviceFlattenList
           .filter((item) => item.uniId.includes(':'))
-          .map((device) => ({
-            ...device,
-            isChecked:
-              device.switchInfoDTOList[0].switchRelId !== '' && device.switchInfoDTOList[0].switchRelId === switchRelId,
-          }))
+          // .map((device) => ({
+          //   ...device,
+          //   isChecked:
+          //     device.switchInfoDTOList[0].switchRelId !== '' && device.switchInfoDTOList[0].switchRelId === switchRelId,
+          // }))
           .filter((item) => item.uniId !== switchUniId)
-        // linkSelectList = list
-        //   .filter(
-        //     (device) =>
-        //       device.switchInfoDTOList[0].switchRelId && device.switchInfoDTOList[0].switchRelId === switchRelId,
-        //   )
-        //   .map((device) => device.uniId)
+        linkSelectList = list
+          .filter(
+            (device) =>
+              device.switchInfoDTOList[0].switchRelId && device.switchInfoDTOList[0].switchRelId === switchRelId,
+          )
+          .map((device) => device.uniId)
       }
       console.log(list)
+      console.log(linkSelectList)
       this.setData({
         linkType: e.currentTarget.dataset.link,
         list,
-        linkSelectList: [],
+        linkSelectList,
         relId: {
           switchRelId,
           lightRelId,
@@ -536,10 +537,12 @@ ComponentWithComputed({
       })
       if (this.data.linkType === 'light') {
         await this.updateLightAssociate()
-        await deviceStore.updateSubDeviceList()
+        deviceStore.updateAllRoomDeviceList()
+        deviceStore.updateSubDeviceList()
       } else if (this.data.linkType === 'switch') {
         await this.updateSwitchAssociate()
-        await deviceStore.updateSubDeviceList()
+        deviceStore.updateAllRoomDeviceList()
+        deviceStore.updateSubDeviceList()
       } else if (this.data.linkType === 'scene') {
         await this.updataSceneLink()
         await sceneStore.updateSceneList()
