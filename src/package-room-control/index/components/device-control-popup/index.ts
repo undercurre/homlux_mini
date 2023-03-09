@@ -206,7 +206,7 @@ ComponentWithComputed({
         ? (storage.get<number>('divideRpxByPx') as number)
         : 0.5
       let bottomBarHeight = storage.get<number>('bottomBarHeight') as number
-      const _componentHeight = 720 * divideRpxByPx
+      const _componentHeight = 840 * divideRpxByPx
       let _minHeight = 0
       if (bottomBarHeight === 0) {
         bottomBarHeight = 32 // 如果没有高度，就给个高度，防止弹窗太贴底部
@@ -253,7 +253,6 @@ ComponentWithComputed({
     handlePopup() {
       this.triggerEvent('popMove', 'up')
     },
-    // todo: 实现动画收起展开
     handleLinkPopup(e: { currentTarget: { dataset: { link: 'light' | 'switch' | 'scene' } } }) {
       const deviceMap = deviceStore.deviceMap
       const switchUniId = deviceStore.selectList.find((uniId) => uniId.includes(':'))
@@ -276,28 +275,40 @@ ComponentWithComputed({
       )
       const switchRelId = switchItem?.switchRelId ?? ''
       const lightRelId = switchItem?.lightRelId ?? ''
-      let linkSelectList = [] as string[]
+      // let linkSelectList = []
       let list = [] as Device.DeviceItem[]
       if (e.currentTarget.dataset.link === 'light') {
-        list = deviceStore.allRoomDeviceFlattenList.filter((item) => !item.uniId.includes(':'))
-        linkSelectList = list
-          .filter((device) => device.lightRelId && device.lightRelId === lightRelId)
-          .map((device) => device.deviceId)
+        list = deviceStore.allRoomDeviceFlattenList
+          .map((device) => ({
+            // 勾选上关联
+            ...device,
+            isChecked: device.lightRelId !== '' && device.lightRelId === lightRelId,
+          }))
+          .filter((item) => !item.uniId.includes(':'))
+        // linkSelectList = list
+        //   .filter((device) => device.lightRelId && device.lightRelId === lightRelId)
+        //   .map((device) => device.deviceId)
       } else if (e.currentTarget.dataset.link === 'switch') {
         list = deviceStore.allRoomDeviceFlattenList
           .filter((item) => item.uniId.includes(':'))
+          .map((device) => ({
+            ...device,
+            isChecked:
+              device.switchInfoDTOList[0].switchRelId !== '' && device.switchInfoDTOList[0].switchRelId === switchRelId,
+          }))
           .filter((item) => item.uniId !== switchUniId)
-        linkSelectList = list
-          .filter(
-            (device) =>
-              device.switchInfoDTOList[0].switchRelId && device.switchInfoDTOList[0].switchRelId === switchRelId,
-          )
-          .map((device) => device.uniId)
+        // linkSelectList = list
+        //   .filter(
+        //     (device) =>
+        //       device.switchInfoDTOList[0].switchRelId && device.switchInfoDTOList[0].switchRelId === switchRelId,
+        //   )
+        //   .map((device) => device.uniId)
       }
+      console.log(list)
       this.setData({
         linkType: e.currentTarget.dataset.link,
         list,
-        linkSelectList,
+        linkSelectList: [],
         relId: {
           switchRelId,
           lightRelId,
@@ -584,7 +595,8 @@ ComponentWithComputed({
         controlDevice({
           topic: '/subdevice/control',
           deviceId: entries[0],
-          method: controlData.length > 1 ? 'panelControl' : 'panelSingleControl',
+          // method: controlData.length > 1 ? 'panelControl' : 'panelSingleControl', // todo: 有问题
+          method: 'panelSingleControl',
           inputData: controlData,
         })
       })

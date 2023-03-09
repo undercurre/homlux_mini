@@ -1,12 +1,11 @@
 <wxs module="wxs" src="./index.wxs"></wxs>
-<view wx:if="{{isRender}}" change:info="{{wxs.infoObserver}}" info="{{info}}" id="popup" class="fixed z-200 left-0 w-750rpx h-720rpx opacity-0" bindtap="handlePopup" bindtouchstart="handleTouchStart" bindtouchmove="handleTouchMove">
-  <!-- <view class="h-60rpx flex justify-center items-end" bindtap="handleBarTap">
-    <view class="mb-14rpx h-8rpx w-76rpx bg-black-tips rounded-999"></view>
-    <image wx:else class="mb-36rpx w-76rpx h-24rpx" src="/assets/img/base/popup-arrow.png"></image>
-  </view> -->
-  <view class="w-750rpx h-720rpx rounded-t-64rpx bg-white flex-col flex">
+<view wx:if="{{isRender}}" change:info="{{wxs.infoObserver}}" info="{{info}}" id="popup" class="fixed z-200 left-0 w-780rpx h-840rpx opacity-0" bindtap="handlePopup" bindtouchstart="handleTouchStart" catchtouchmove="handleTouchMove">
+  <view class="h-60rpx w-750rpx flex-center" style="opacity: {{popup ? 0:1}};">
+    <image class="mb-36rpx w-76rpx h-24rpx" src="/assets/img/base/popup-arrow.png"></image>
+  </view>
+  <view class="w-750rpx h-780rpx rounded-t-64rpx bg-white flex-col flex">
     <view class="flex-center mt-12rpx">
-      <view class="h-8rpx w-76rpx bg-black-tips rounded-999"></view>
+      <view class="h-8rpx w-76rpx bg-black-tips rounded-999" style="opacity: {{popup ? 1:0}};"></view>
     </view>
     <!-- tab -->
     <view class="flex justify-evenly">

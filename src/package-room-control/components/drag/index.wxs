@@ -109,15 +109,28 @@ var longPress = function (event, ownerInstance) {
 }
 
 var touchMove = function (event, ownerInstance) {
-  // 防止多指触发
-  console.log('touchMove')
-  console.log(event.touches.length)
-  if (event.touches.length > 2) {
-    ownerInstance.callMethod('drag', { dragging: false })
-    return
-  }
   var ins = event.instance
   var st = ownerInstance.getState()
+
+  // 如果是两个以上触摸点退出排序
+  if (event.touches.length > 1) {
+    if (!st.dragging) return
+    triggerCustomEvent(st.list, 'sortend', ownerInstance)
+
+    ins.addClass('tran')
+    ins.setStyle({
+      transform: 'translate3d(' + st.list[st.cur].tranX + ',' + st.list[st.cur].tranY + ', 0)',
+    })
+
+    st.preStartKey = -1
+    st.dragging = false
+    ownerInstance.callMethod('drag', { dragging: false })
+    st.cur = -1
+    st.tranX = 0
+    st.tranY = 0
+    return
+  }
+
   var _ = st.baseData
 
   var mTouch = event.changedTouches[0]
