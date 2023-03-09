@@ -5,5 +5,5 @@ export default {
   ...iconfont,
   ...iconify,
   ...scene,
-  'room-bg': `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="375" height="807"><defs><filter id="b" width="186.7%" height="186.7%" x="-43.4%" y="-43.4%" filterUnits="objectBoundingBox"><feGaussianBlur in="SourceGraphic" stdDeviation="50"/></filter><path id="a" d="M0 0h375v807H0z"/></defs><g fill="none" fill-rule="evenodd"><use xlink:href="#a" fill="#F4F8FF"/><circle cx="188" cy="406" r="173" fill="#5769FF" filter="url(#b)" opacity=".12"/><circle cx="123" cy="143" r="173" fill="#5769FF" filter="url(#b)" opacity=".043"/><circle cx="296" cy="471" r="173" fill="#57AEFF" filter="url(#b)" opacity=".043"/></g></svg>`,
+  'room-bg': '<svg xmlns="http://www.w3.org/2000/svg" width="375" height="328"><defs><linearGradient id="a" x1="50%" x2="50%" y1="8.747%" y2="72.963%"><stop offset="0%" stop-color="#5769FF" stop-opacity=".104"/><stop offset="100%" stop-color="#90A2FF" stop-opacity="0"/></linearGradient></defs><path fill="url(#a)" fill-rule="evenodd" d="M0 0h376v450H0z"/></svg>',
 }
