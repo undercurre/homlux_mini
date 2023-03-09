@@ -82,6 +82,9 @@ ComponentWithComputed({
           controlPopup: true,
         })
       }
+      this.setData({
+        selectCount: value.length,
+      })
     },
   },
 
