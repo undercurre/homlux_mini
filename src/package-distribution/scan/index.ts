@@ -237,7 +237,7 @@ ComponentWithComputed({
 
     test() {
       this.setData({
-        isFlash: !this.data.isFlash
+        isFlash: !this.data.isFlash,
       })
     },
 
