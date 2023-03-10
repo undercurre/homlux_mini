@@ -1,5 +1,8 @@
 {
   "component": true,
   "styleIsolation": "apply-shared",
-  "usingComponents": {}
+  "usingComponents": {
+    "device-card": "../../../../components/device-card/index",
+    "room-select": "../../../../components/room-select/index"
+  }
 }

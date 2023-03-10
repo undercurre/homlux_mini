@@ -1,6 +1,7 @@
 {
   "usingComponents": {
     "tips-box": "/components/tips-box/index",
-    "steps": "./components/steps/index"
+    "steps": "./components/steps/index",
+    "select-device": "./components/select-device/index"
   }
 }
