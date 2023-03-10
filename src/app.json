@@ -76,6 +76,12 @@
   "permission": {
     "scope.userLocation": {
       "desc": "本应用访问位置信息，用于发现附近设备及WLAN列表等功能"
+    },
+    "scope.userFuzzyLocation": {
+      "desc": "你的位置信息将用于家庭位置管理"
     }
-  }
+  },
+  "requiredPrivateInfos": [
+    "getFuzzyLocation"
+  ]
 }
