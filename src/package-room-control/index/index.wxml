@@ -75,3 +75,5 @@
 <!-- 设备控制弹窗 -->
 <device-control-popup popup="{{controlPopup}}" bind:popMove="handlePopUp"></device-control-popup>
 <add-scene-popup show="{{showAddScenePopup}}" bind:close="handleAddScenePopupClose" bind:addSuccess="handleShowAddSceneSuccess" />
+
+<van-toast id="van-toast" />

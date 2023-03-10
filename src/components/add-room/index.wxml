@@ -25,3 +25,5 @@
     <template is="bottom-btn" />
   </view>
 </van-popup>
+
+<van-toast id="van-toast" />

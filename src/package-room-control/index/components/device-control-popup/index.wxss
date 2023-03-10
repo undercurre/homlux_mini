@@ -20,5 +20,5 @@
 }
 
 .slider-color-temp-bar {
-  background-image: linear-gradient(90deg, #ffc300 0%, #f7e1cb 30%, #f6e2d1 40%, #5683ff 100%) !important;
+  background-image: linear-gradient(270deg, #c7ecff 8%, #fdeeba 75%, #f9dd9f 100%) !important;
 }

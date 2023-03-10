@@ -4,6 +4,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { deviceBinding, deviceStore, sceneStore } from '../../../../store/index'
 import { maxColorTempK, minColorTempK, proType } from '../../../../config/index'
 import { controlDevice, createAssociated, delAssociated, updateAssociated, updateScene } from '../../../../apis/index'
+import Toast from '@vant/weapp/toast/toast'
 
 ComponentWithComputed({
   options: {
@@ -330,10 +331,7 @@ ComponentWithComputed({
       const deviceMap = deviceStore.deviceMap
       if (this.data.linkType === 'light') {
         if (deviceMap[e.detail].lightRelId && this.data.relId.lightRelId !== deviceMap[e.detail].lightRelId) {
-          wx.showToast({
-            icon: 'none',
-            title: '设备已被关联',
-          })
+          Toast('设备已被关联')
           return
         }
         this.setData({
@@ -344,10 +342,7 @@ ComponentWithComputed({
           (switchItem) => switchItem.switchId === e.detail.split(':')[1],
         )
         if (switchItem?.switchRelId && this.data.relId.switchRelId !== switchItem?.switchRelId) {
-          wx.showToast({
-            icon: 'none',
-            title: '设备已被关联',
-          })
+          Toast('设备已被关联')
           return
         }
         this.setData({
@@ -492,10 +487,7 @@ ComponentWithComputed({
           updateType: '2',
         })
         if (!res.success) {
-          wx.showToast({
-            icon: 'error',
-            title: '更新失败',
-          })
+          Toast('更新失败')
           return
         }
         // 关联新的场景

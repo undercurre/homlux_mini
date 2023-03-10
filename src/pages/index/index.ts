@@ -147,7 +147,7 @@ ComponentWithComputed({
 
     // 收起所有菜单
     hideMenu() {
-      this.doHomeSelectArrowAnimation(false, this.data.selectHomeMenu.isShow)
+      // this.doHomeSelectArrowAnimation(false, this.data.selectHomeMenu.isShow)
       this.setData({
         'dropdownMenu.isShow': false,
         'selectHomeMenu.isShow': false,
@@ -298,7 +298,7 @@ ComponentWithComputed({
      * 用户切换家庭
      */
     handleHomeSelect() {
-      this.doHomeSelectArrowAnimation(false, this.data.selectHomeMenu.isShow)
+      // this.doHomeSelectArrowAnimation(false, this.data.selectHomeMenu.isShow)
       this.setData({
         'selectHomeMenu.isShow': false,
       })
@@ -307,7 +307,7 @@ ComponentWithComputed({
      * 用户点击展示/隐藏家庭选择
      */
     handleShowHomeSelectMenu() {
-      this.doHomeSelectArrowAnimation(!this.data.selectHomeMenu.isShow, this.data.selectHomeMenu.isShow)
+      // this.doHomeSelectArrowAnimation(!this.data.selectHomeMenu.isShow, this.data.selectHomeMenu.isShow)
       this.setData({
         selectHomeMenu: {
           x: '28rpx',

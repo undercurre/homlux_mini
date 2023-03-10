@@ -6,6 +6,7 @@ import pageBehavior from '../../behaviors/pageBehaviors'
 import { runInAction } from 'mobx-miniprogram'
 import { execScene, updateSceneSort } from '../../apis/scene'
 import { emitter } from '../../utils/eventBus'
+import Toast from '@vant/weapp/toast/toast'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [sceneBinding] }), pageBehavior],
@@ -98,15 +99,9 @@ ComponentWithComputed({
       // console.log('handleExecScene', e)
       const res = await execScene(e.detail.sceneId)
       if (res.success) {
-        wx.showToast({
-          icon: 'success',
-          title: '执行成功',
-        })
+        Toast('执行成功')
       } else {
-        wx.showToast({
-          icon: 'error',
-          title: '执行失败',
-        })
+        Toast('执行失败')
       }
     },
 

@@ -15,6 +15,7 @@ import pageBehavior from '../../behaviors/pageBehaviors'
 import { controlDevice, saveDeviceOrder, queryDeviceInfoByDeviceId, execScene } from '../../apis/index'
 import { proName, proType } from '../../config/device'
 import { emitter, WSEventType } from '../../utils/eventBus'
+import Toast from '@vant/weapp/toast/toast'
 let throttleTimer = 0
 ComponentWithComputed({
   behaviors: [
@@ -135,9 +136,7 @@ ComponentWithComputed({
           e.result.eventData.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId
         ) {
           // 房间被删除，退出到首页
-          wx.showToast({
-            title: '该房间已被删除',
-          })
+          homeStore.updateRoomCardList()
           wx.redirectTo({
             url: '/pages/index/index',
           })
@@ -220,10 +219,7 @@ ComponentWithComputed({
     },
     handleCollect() {
       if (deviceStore.selectList.length === 0) {
-        wx.showToast({
-          icon: 'none',
-          title: '请先选择设备',
-        })
+        Toast('请先选择设备')
         return
       }
       this.setData({
@@ -310,10 +306,7 @@ ComponentWithComputed({
           device.mzgdPropertyDTOList['1'].OnOff = OnOff
           deviceStore.deviceList = [...deviceStore.deviceList]
         })
-        wx.showToast({
-          icon: 'error',
-          title: '控制失败',
-        })
+        Toast('控制失败')
       }
       // 首页需要更新灯光打开个数
       homeStore.updateCurrentHomeDetail()
@@ -390,10 +383,7 @@ ComponentWithComputed({
             device.mzgdPropertyDTOList[ep].OnOff = OnOff
             deviceStore.deviceList = [...deviceStore.deviceList]
           })
-          wx.showToast({
-            icon: 'error',
-            title: '控制失败',
-          })
+          Toast('控制失败')
         }
       }
     },

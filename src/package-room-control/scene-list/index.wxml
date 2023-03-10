@@ -11,3 +11,5 @@
 <view class="h-24rpx"></view>
 <drag id="drag" list-data="{{listData}}" scroll-top="{{scrollTop}}" item-height="{{180}}" generic:item="cell" bind:toSetting="toSetting" bind:exec="handleExecScene" bind:change="handleChange" bind:sortend="handleSortEnd" bind:scroll="handleScroll"></drag>
 <view class="h-64rpx"></view>
+
+<van-toast id="van-toast" />

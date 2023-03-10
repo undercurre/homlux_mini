@@ -106,3 +106,5 @@
 </view>
 
 <link-popup show="{{showLinkPopup}}" list="{{list}}" selectList="{{linkSelectList}}" linkType="{{linkType}}" bind:close="handleLinkPopupClose" bind:select="handleLinkSelect" bind:confirm="handleLinkPopupConfirm" />
+
+<van-toast id="van-toast" />

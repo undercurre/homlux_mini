@@ -59,7 +59,8 @@
     "add-room": "./components/add-room/index",
     "svg-icon": "./components/svg-icon/index",
     "device-card": "./components/device-card/index",
-    "van-dialog": "@vant/weapp/dialog/index"
+    "van-dialog": "@vant/weapp/dialog/index",
+    "van-toast": "@vant/weapp/toast/index"
   },
   "window": {
     "navigationStyle": "custom",
