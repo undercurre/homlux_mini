@@ -135,7 +135,6 @@ Component({
 
       const params = {
         apSSID: pageParams.ssid,
-        dsn: pageParams.dsn,
         method: method,
         deviceName: pageParams.deviceName,
       }

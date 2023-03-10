@@ -1,5 +1,5 @@
 <view class="relative h-screen">
-  <camera mode="scanCode" device-position="back" flash="off" bindscancode="getQrCodeInfo" class="w-750rpx h-screen"></camera>
+  <camera mode="scanCode" device-position="back" flash="{{isFlash? 'on' : 'off'}}" bindscancode="getQrCodeInfo" class="w-750rpx h-screen"></camera>
 
   <nav-bar class="absolute" background="transparent" leftArrow="{{true}}" left-icon="/assets/img/scan/back.png" bind:leftTap="goBack"></nav-bar>
 
@@ -52,3 +52,5 @@
     <text class="block w-full text-32 text-black-2a">1、MSGW-15</text>
   </view>
 </van-dialog>
+
+<!-- <van-button type="primary" size="large" plain bind:click="test">test</van-button> -->

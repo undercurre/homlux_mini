@@ -33,7 +33,7 @@ page {
   --cell-group-inset-border-radius: 32rpx;
   --cell-group-inset-padding: 24rpx;
   --cell-vertical-padding: 32rpx;
-  --cell-horizontal-padding: 40rpx;
+  --cell-horizontal-padding: 32rpx;
   --cell-font-size: 32rpx;
   --cell-text-color: #000;
   --cell-line-height: 48rpx;

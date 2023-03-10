@@ -25,6 +25,7 @@ ComponentWithComputed({
     isShowNoGatewayTips: false,
     _isScaning: false,
     _isInitBle: false,
+    isFlash: false,
     selectGatewayId: '',
     selectGatewaySn: '',
     subdeviceList: Array<string>(),
@@ -234,6 +235,12 @@ ComponentWithComputed({
       this.handleScanUrl(scanUrl)
     },
 
+    test() {
+      this.setData({
+        isFlash: !this.data.isFlash
+      })
+    },
+
     async handleScanUrl(url: string) {
       this.setData({
         _isScaning: true,
@@ -277,7 +284,6 @@ ComponentWithComputed({
       } else if (res.result && res.result?.proType === '0x18') {
         this.bindGateway({
           ssid: params.ssid,
-          dsn: params.dsn,
           deviceName: res.result.productName,
         })
       } else {
@@ -355,12 +361,6 @@ ComponentWithComputed({
           gatewayId,
           gatewaySn,
         }),
-      })
-    },
-
-    test() {
-      wx.navigateTo({
-        url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {}),
       })
     },
 
