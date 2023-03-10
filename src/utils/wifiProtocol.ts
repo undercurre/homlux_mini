@@ -258,13 +258,13 @@ export class WifiSocket {
 
         const ipList = ['192.168.11.1', '192.168.33.1']
 
-        for (let ip of ipList) {
-          const connectTcpRes = await this.connectTcp(ip).catch(err => ({ success: false, msg: err }))
+        for (const ip of ipList) {
+          const connectTcpRes = await this.connectTcp(ip).catch((err) => ({ success: false, msg: err }))
 
           console.log('connectTcpRes', connectTcpRes)
           this.tcpClient.close()
 
-          console.info(`尝试连接${ip}：${connectTcpRes.success}`, )
+          console.info(`尝试连接${ip}：${connectTcpRes.success}`)
           if (connectTcpRes.success) {
             this.deviceInfo.ip = ip
             resolve({ success: true })
@@ -279,7 +279,7 @@ export class WifiSocket {
 
   // 创建
   connectTcp(IP?: string) {
-    return new Promise<{ success: boolean, msg?: string }>((resolve) => {
+    return new Promise<{ success: boolean; msg?: string }>((resolve) => {
       const start = Date.now()
 
       const timeId = setTimeout(() => {

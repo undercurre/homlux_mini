@@ -24,7 +24,7 @@
       <text class="block text-center pb-80rpx leading-34rpx text-24 text-black-59">仅可选择在线，且与旧设备同类别的新设备</text>
 
       <view class="bg-white mx-24rpx p-60rpx rounded-32rpx">
-        <view class="flex flex-col items-center" bind:tap="addOldDevice">
+        <view class="flex flex-col items-center" bind:tap="addDevice">
           <image class="w-108 h-108" src="/assets/img/device-replace/add.png"></image>
           <text class="pt-48rpx text-28 leading-40rpx text-black-59">选择设备</text>
         </view>
@@ -34,3 +34,5 @@
 
   <van-button class="mx-32rpx" size="large" type="primary" block bind:click="clickBtn">{{ btnText }}</van-button>
 </view>
+
+<select-device show="{{isSelectDevice}}" bind:close="closeDevicePopup"></select-device>

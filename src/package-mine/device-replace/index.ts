@@ -16,6 +16,7 @@ ComponentWithComputed({
    */
   data: {
     status: 'begin' as StatusType,
+    isSelectDevice: false,
   },
 
   computed: {
@@ -43,6 +44,18 @@ ComponentWithComputed({
           status: 'begin',
         })
       }
+    },
+
+    addDevice() {
+      this.setData({
+        isSelectDevice: true,
+      })
+    },
+
+    closeDevicePopup() {
+      this.setData({
+        isSelectDevice: false,
+      })
     },
   },
 })
