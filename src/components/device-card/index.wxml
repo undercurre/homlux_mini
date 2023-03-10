@@ -18,6 +18,6 @@
     <text wx:if="{{!deviceInfo.onLineStatus && deviceType !== 'switch'}}" class="text-24rpx text-hex-fbbb32">离线</text>
     <text wx:else class="text-20rpx mb-4rpx {{deviceInfo.onLineStatus ? 'text-black-tips' : 'text-hex-fbbb32'}}">{{switchName}}</text>
   </view>
-  <view wx:if="{{ripple}}" class="absolute left-80rpx w-250rpx h-250rpx rounded-999 {{onOff ? 'ripple-on' : 'ripple-off'}}" style="background: {{rippleColor}};animation: ripple 1s ease forwards;"></view>
+  <view wx:if="{{ripple}}" class="absolute left-80rpx w-250rpx h-250rpx rounded-999 {{onOff ? 'ripple-on' : 'ripple-off'}}" style="background: {{rippleColor}};animation: ripple-{{onOff ? 'on' : 'off'}} 1s ease forwards;"></view>
 </view>
 <van-toast id="van-toast" />

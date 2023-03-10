@@ -5,8 +5,7 @@
   </view>
   <view class="mt-24rpx w-750rpx" class="{{!deviceInfo.onLineStatus?'opacity-50':''}}">
     <van-cell-group inset>
-      <van-cell is-link="{{deviceInfo.onLineStatus}}" bind:click="handlePopupShow" data-title="渐亮时长" title="渐亮时长" value="{{deviceInfo.onLineStatus ? pickerColumns[lightUpDefaultValue] : ''}}"></van-cell>
-      <van-cell is-link="{{deviceInfo.onLineStatus}}" bind:click="handlePopupShow" data-title="渐暗时长" title="渐暗时长" value="{{deviceInfo.onLineStatus ? pickerColumns[dimmingDefaultValue] : ''}}"></van-cell>
+      <van-cell is-link="{{deviceInfo.onLineStatus}}" bind:click="handleDurationPopupShow" data-title="渐变时长" title="渐亮时长" value="{{deviceInfo.onLineStatus ? pickerColumns[lightUpDefaultValue] : ''}}"></van-cell>
     </van-cell-group>
   </view>
 </view>

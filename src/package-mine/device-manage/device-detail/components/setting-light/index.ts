@@ -24,13 +24,6 @@ Component({
     value: 0,
   },
 
-  lifetimes: {
-    ready() {
-      console.log('----')
-      console.log(this.properties.deviceInfo)
-    },
-  },
-
   /**
    * 组件的方法列表
    */

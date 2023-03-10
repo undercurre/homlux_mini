@@ -146,6 +146,7 @@ ComponentWithComputed({
 
     async onPullDownRefresh() {
       try {
+        sceneStore.updateAllRoomSceneList()
         await deviceStore.updateSubDeviceList(undefined, undefined, { loading: true })
         sceneStore.updateSceneList()
         this.updateDeviceList()

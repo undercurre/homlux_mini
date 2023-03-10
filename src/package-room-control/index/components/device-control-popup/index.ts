@@ -6,6 +6,8 @@ import { maxColorTempK, minColorTempK, proType } from '../../../../config/index'
 import { controlDevice, createAssociated, delAssociated, updateAssociated, updateScene } from '../../../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
 
+let throttleTimer = 0
+
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
@@ -80,6 +82,8 @@ ComponentWithComputed({
       lightRelId: '',
     },
     selectSwitchUniId: '',
+    allOnPress: false,
+    allOffPress: false,
   },
 
   computed: {
@@ -207,7 +211,7 @@ ComponentWithComputed({
         ? (storage.get<number>('divideRpxByPx') as number)
         : 0.5
       let bottomBarHeight = storage.get<number>('bottomBarHeight') as number
-      const _componentHeight = 840 * divideRpxByPx
+      const _componentHeight = 716 * divideRpxByPx
       let _minHeight = 0
       if (bottomBarHeight === 0) {
         bottomBarHeight = 32 // 如果没有高度，就给个高度，防止弹窗太贴底部
@@ -683,6 +687,18 @@ ComponentWithComputed({
       })
     },
     handleAllOn() {
+      if (throttleTimer) {
+        return
+      }
+      this.setData({
+        allOnPress: true,
+      })
+      throttleTimer = setTimeout(() => {
+        throttleTimer = 0
+        this.setData({
+          allOnPress: false,
+        })
+      }, 900) as unknown as number
       if (this.data.tab === 'light') {
         this.lightSendDeviceControl('onOff', 1)
       } else if (this.data.tab === 'switch') {
@@ -690,6 +706,18 @@ ComponentWithComputed({
       }
     },
     handleAllOff() {
+      if (throttleTimer) {
+        return
+      }
+      this.setData({
+        allOffPress: true,
+      })
+      throttleTimer = setTimeout(() => {
+        throttleTimer = 0
+        this.setData({
+          allOffPress: false,
+        })
+      }, 900) as unknown as number
       if (this.data.tab === 'light') {
         this.lightSendDeviceControl('onOff', 0)
       } else if (this.data.tab === 'switch') {

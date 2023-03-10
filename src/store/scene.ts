@@ -1,9 +1,17 @@
 import { observable, runInAction } from 'mobx-miniprogram'
-import { querySceneList } from '../apis/scene'
+import { querySceneList, querySceneListByHouseId } from '../apis/scene'
+import { homeStore } from './home'
 import { roomStore } from './room'
 
 export const sceneStore = observable({
+  /**
+   * 当前房间的场景
+   */
   sceneList: [] as Scene.SceneItem[],
+  /**
+   * 全屋的场景
+   */
+  allRoomSceneList: [] as Scene.SceneItem[],
   /**
    * 选了哪个场景
    */
@@ -11,6 +19,18 @@ export const sceneStore = observable({
 
   get sceneIdMp(): Record<string, Scene.SceneItem> {
     return Object.fromEntries(sceneStore.sceneList.map((scene) => [scene.sceneId, scene]))
+  },
+
+  get roomSceneList(): Record<string, Scene.SceneItem[]> {
+    const data = {} as Record<string, Scene.SceneItem[]>
+    sceneStore.allRoomSceneList.forEach((scene) => {
+      if (data[scene.roomId]) {
+        data[scene.roomId].push(scene)
+        return
+      }
+      data[scene.roomId] = [scene]
+    })
+    return data
   },
 
   /**
@@ -32,6 +52,15 @@ export const sceneStore = observable({
     if (res.success) {
       runInAction(() => {
         sceneStore.sceneList = res.result.sort((a, b) => a.orderNum - b.orderNum)
+      })
+    }
+  },
+
+  async updateAllRoomSceneList(houseId: string = homeStore.currentHomeId) {
+    const res = await querySceneListByHouseId(houseId)
+    if (res.success) {
+      runInAction(() => {
+        sceneStore.allRoomSceneList = res.result
       })
     }
   },

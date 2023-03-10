@@ -59,7 +59,6 @@ export const roomStore = observable({
         roomDeviceList?.forEach((device) => {
           if (device.proType !== proType.gateway) {
             subDeviceNum++
-            console.log('什么东西', device)
           }
           if (!device.onLineStatus) return
           if (device.proType === proType.light && device.mzgdPropertyDTOList['1'].OnOff) {
