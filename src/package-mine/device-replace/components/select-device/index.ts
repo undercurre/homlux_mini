@@ -22,7 +22,7 @@ Component({
   lifetimes: {
     async ready() {
       await roomBinding.store.updateRoomList()
-      
+
       deviceBinding.store.updateDeviceList()
     },
   },

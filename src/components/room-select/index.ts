@@ -57,7 +57,6 @@ ComponentWithComputed({
       if (this.data.roomSelect === '0') {
         deviceBinding.store.updateAllRoomDeviceList()
       }
-
     },
   },
 

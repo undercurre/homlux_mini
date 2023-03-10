@@ -82,7 +82,5 @@
       "desc": "你的位置信息将用于家庭位置管理"
     }
   },
-  "requiredPrivateInfos": [
-    "getFuzzyLocation"
-  ]
+  "requiredPrivateInfos": ["getFuzzyLocation"]
 }
