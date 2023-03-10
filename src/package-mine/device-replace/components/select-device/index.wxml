@@ -7,6 +7,9 @@
 
     <room-select></room-select>
 
+    <view class="flex flex-row flex-wrap px-40rpx gap-x-36rpx">
+      <device-card wx:for="{{deviceList}}" wx:key="uniId" bind:cardTap="handleCardTap" device-type="{{linkType === 'light' ? 'light' : 'switch'}}" device-info="{{item}}" select="{{module.includes(selectList, item.uniId)}}" />
+    </view>
     <view class="h-80rpx"></view>
     <template is="bottom-btn" />
   </view>

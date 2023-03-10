@@ -16,7 +16,7 @@ ComponentWithComputed({
     roomSelect: '0',
     roomSelectMenu: {
       x: '0px',
-      y: '0px',
+      y: '45px',
       isShow: false,
     },
   },
@@ -56,7 +56,6 @@ ComponentWithComputed({
       await roomBinding.store.updateRoomList()
       if (this.data.roomSelect === '0') {
         deviceBinding.store.updateAllRoomDeviceList()
-        return
       }
     },
   },
