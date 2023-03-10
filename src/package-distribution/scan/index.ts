@@ -103,7 +103,7 @@ ComponentWithComputed({
         console.log('authorizeRes', authorizeRes)
 
         if (authorizeRes.errno === 103) {
-          wx.showToast({ title: '请打开位置权限，否则无法正常使用配网', icon: 'none' })
+          await wx.showModal({ content: '请打开位置权限，否则无法正常使用配网' })
 
           wx.navigateBack()
           return

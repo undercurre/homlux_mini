@@ -142,7 +142,7 @@ export class WifiSocket {
     })
   }
 
-  bindUdp() {
+  bindUdp = () => {
     console.log('bindUdp', this)
     if (this.deviceInfo.isConnectingUdp) {
       return
@@ -163,7 +163,7 @@ export class WifiSocket {
     return port
   }
 
-  closeUdp() {
+  closeUdp = () => {
     console.log('closeUdp', this)
     if (this.deviceInfo.isConnectingUdp) {
       this.udpClient.close()
@@ -208,9 +208,9 @@ export class WifiSocket {
       this.deviceInfo.isConnectingUdp = false
     })
 
-    wx.onAppHide(this.closeUdp.bind(this))
+    wx.onAppHide(this.closeUdp)
 
-    wx.onAppShow(this.bindUdp.bind(this))
+    wx.onAppShow(this.bindUdp)
 
     return port
   }
@@ -250,21 +250,47 @@ export class WifiSocket {
         return
       }
 
-      this.sendCmdForDeviceIp().then(() => {
-        resolve({ success: Boolean(this.deviceInfo.ip) })
+      this.sendCmdForDeviceIp().then(async () => {
+        if (this.deviceInfo.ip) {
+          resolve({ success: true })
+          return
+        }
+
+        const ipList = ['192.168.11.1', '192.168.33.1']
+
+        for (let ip of ipList) {
+          const connectTcpRes = await this.connectTcp(ip).catch(err => ({ success: false, msg: err }))
+
+          console.log('connectTcpRes', connectTcpRes)
+          this.tcpClient.close()
+
+          console.info(`尝试连接${ip}：${connectTcpRes.success}`, )
+          if (connectTcpRes.success) {
+            this.deviceInfo.ip = ip
+            resolve({ success: true })
+            return
+          }
+        }
+
+        resolve({ success: false })
       })
     })
   }
 
   // 创建
-  connectTcp() {
-    return new Promise<{ success: boolean }>((resolve) => {
+  connectTcp(IP?: string) {
+    return new Promise<{ success: boolean, msg?: string }>((resolve) => {
       const start = Date.now()
+
+      const timeId = setTimeout(() => {
+        resolve({ success: false, msg: 'TCP连接超时' })
+      }, 3000)
 
       const listen = (res: WechatMiniprogram.GeneralCallbackResult) => {
         console.log('tcpClient.onConnect', res)
         console.debug('TCP连接时间：', Date.now() - start)
 
+        clearTimeout(timeId)
         resolve({ success: true })
         this.tcpClient.offConnect(listen)
       }
@@ -272,7 +298,7 @@ export class WifiSocket {
       this.tcpClient.onConnect(listen)
 
       this.tcpClient.connect({
-        address: this.deviceInfo.ip,
+        address: IP || this.deviceInfo.ip,
         port: this.deviceInfo.tcpPort,
       })
     })
@@ -283,50 +309,54 @@ export class WifiSocket {
    * @param params
    */
   async sendCmd(params: { topic: string; data: IAnyObject; method?: 'TCP' | 'UDP' }) {
-    params.method = params.method || 'TCP'
+    try {
+      params.method = params.method || 'TCP'
 
-    if (params.method === 'TCP') {
-      await this.connectTcp()
+      if (params.method === 'TCP') {
+        await this.connectTcp()
+      }
+
+      return new Promise<{ errorCode: number } & IAnyObject>((resolve) => {
+        const reqId = Date.now().toString()
+
+        const msgData = {
+          reqId,
+          topic: params.topic, //指令名称:获取网关IP
+          data: params.data,
+        }
+
+        console.log(`${params.method}-send: ${params.topic}`, msgData)
+
+        const message = aesUtil.encrypt(JSON.stringify(msgData), this.key)
+        const sendMsg = strUtil.hexStringToArrayBuffer(message)
+
+        // 超时回复处理
+        const timeId = setTimeout(() => {
+          console.error(`${params.method}-超时回复:`, params.topic)
+          this.cmdCallbackMap[reqId] && delete this.cmdCallbackMap[reqId]
+          resolve({ errorCode: -1, msg: '请求超时' })
+        }, 60000)
+        // 由于设备端是异步上报对应的消息回复，通过reqId注册对应命令的消息回调，
+        // 后续在消息监听onmessage通过reqId匹配并把对应的回复resolve，达到同步调用的效果
+        this.cmdCallbackMap[reqId] = (data: { errorCode: number } & IAnyObject) => {
+          console.log(`${params.method}-res:`, params.topic, data)
+          clearTimeout(timeId)
+          console.debug('指令发送-回复时间：', Date.now() - parseInt(reqId))
+
+          resolve(data)
+        }
+
+        params.method === 'TCP'
+          ? this.tcpClient.write(sendMsg)
+          : this.udpClient.send({
+              address: '255.255.255.255',
+              port: this.deviceInfo.udpPort,
+              message: sendMsg,
+            })
+      })
+    } catch (err) {
+      return { errorCode: -1, msg: err }
     }
-
-    return new Promise<{ errorCode: number } & IAnyObject>((resolve) => {
-      const reqId = Date.now().toString()
-
-      const msgData = {
-        reqId,
-        topic: params.topic, //指令名称:获取网关IP
-        data: params.data,
-      }
-
-      console.log(`${params.method}-send: ${params.topic}`, msgData)
-
-      const message = aesUtil.encrypt(JSON.stringify(msgData), this.key)
-      const sendMsg = strUtil.hexStringToArrayBuffer(message)
-
-      // 超时回复处理
-      const timeId = setTimeout(() => {
-        console.error(`${params.method}-超时回复:`, params.topic)
-        this.cmdCallbackMap[reqId] && delete this.cmdCallbackMap[reqId]
-        resolve({ errorCode: -1, msg: '请求超时' })
-      }, 60000)
-      // 由于设备端是异步上报对应的消息回复，通过reqId注册对应命令的消息回调，
-      // 后续在消息监听onmessage通过reqId匹配并把对应的回复resolve，达到同步调用的效果
-      this.cmdCallbackMap[reqId] = (data: { errorCode: number } & IAnyObject) => {
-        console.log(`${params.method}-res:`, params.topic, data)
-        clearTimeout(timeId)
-        console.debug('指令发送-回复时间：', Date.now() - parseInt(reqId))
-
-        resolve(data)
-      }
-
-      params.method === 'TCP'
-        ? this.tcpClient.write(sendMsg)
-        : this.udpClient.send({
-            address: '255.255.255.255',
-            port: this.deviceInfo.udpPort,
-            message: sendMsg,
-          })
-    })
   }
 
   /**

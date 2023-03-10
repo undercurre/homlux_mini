@@ -217,7 +217,7 @@ ComponentWithComputed({
         isEditName: false,
       })
 
-      const res = await saveOrUpdateUserHouseInfo({ ...this.data.homeInfoEdited, userLocationInfo: '无' })
+      const res = await saveOrUpdateUserHouseInfo({ ...this.data.homeInfoEdited, userLocationInfo: '广东省佛山市顺德区' })
 
       if (!res.success) {
         wx.showToast({
