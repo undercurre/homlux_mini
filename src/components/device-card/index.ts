@@ -1,5 +1,6 @@
-// package-room/index/components/device-card/index.ts
 import { ComponentWithComputed } from 'miniprogram-computed'
+import Toast from '@vant/weapp/toast/toast'
+let throttleTimer = 0
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
@@ -27,30 +28,25 @@ ComponentWithComputed({
   /**
    * 组件的初始数据
    */
-  data: {},
+  data: {
+    ripple: false,
+    onOff: false, // true: on false: off
+  },
 
   computed: {
-    style(data) {
-      return `border: ${data.select ? '3rpx solid #488FFF' : '3rpx solid rgba(0,0,0,0)'};background: ${
-        data.select ? '#fff' : 'linear-gradient(178deg, #f2f5fc 10%, #ffffff 74%)'
-      };`
-    },
     picUrl(data) {
       if (data.deviceType && data.deviceType === 'switch') {
-        return data.deviceInfo?.switchInfoDTOList[0]?.pic ?? `/assets/img/device/${data.deviceType}.png`
+        return data.deviceInfo?.switchInfoDTOList[0]?.pic
       } else if (data.deviceType) {
-        return data.deviceInfo?.pic ?? `/assets/img/device/${data.deviceType}.png`
+        return data.deviceInfo?.pic
       }
       return ''
     },
     controlBtnPic(data) {
-      if (!data.deviceInfo.onLineStatus) {
-        return '/assets/img/base/offline.png'
-      }
       if (data.deviceType === 'light') {
         return data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
-          ? '/assets/img/base/power-on.png'
-          : '/assets/img/base/power-off.png'
+          ? '/assets/img/device-control/power-on.png'
+          : '/assets/img/device-control/power-off.png'
       } else if (data.deviceType === 'switch') {
         const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
         if (!data.deviceInfo.mzgdPropertyDTOList[switchId]) {
@@ -58,11 +54,11 @@ ComponentWithComputed({
           return ''
         }
         if (data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
-          return '/assets/img/base/scene-switch-btn.png'
+          return '/assets/img/device-control/power-on.png'
         }
         return data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff
-          ? '/assets/img/base/power-on.png'
-          : '/assets/img/base/power-off.png'
+          ? '/assets/img/device-control/power-on.png'
+          : '/assets/img/device-control/power-off.png'
       }
       return ''
     },
@@ -96,21 +92,37 @@ ComponentWithComputed({
       if (this.data.deviceInfo.onLineStatus) {
         this.triggerEvent('cardTap', this.data.deviceInfo)
       } else {
-        wx.showToast({
-          icon: 'none',
-          title: '设备已离线',
-        })
+        Toast('设备已离线')
       }
     },
     handlePowerTap() {
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
       if (this.data.deviceInfo.onLineStatus) {
+        if (throttleTimer) {
+          return
+        }
+        let onOff = false
+        if (this.data.deviceType === 'light') {
+          onOff = !this.data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
+        } else if (this.data.deviceType === 'switch') {
+          const switchId = this.data.deviceInfo.switchInfoDTOList[0].switchId
+          if (this.data.deviceInfo.mzgdPropertyDTOList[switchId]) {
+            onOff = !this.data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff
+          }
+        }
+        this.setData({
+          ripple: true,
+          onOff,
+        })
+        throttleTimer = setTimeout(() => {
+          throttleTimer = 0
+          this.setData({
+            ripple: false,
+          })
+        }, 1050) as unknown as number
         this.triggerEvent('controlTap', this.data.deviceInfo)
       } else {
-        wx.showToast({
-          icon: 'none',
-          title: '设备已离线',
-        })
+        Toast('设备已离线')
       }
     },
   },

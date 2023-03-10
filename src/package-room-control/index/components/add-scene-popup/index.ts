@@ -1,6 +1,7 @@
 import { addScene } from '../../../../apis/scene'
 import { proType, sceneList } from '../../../../config/index'
 import { deviceStore, homeStore, roomStore, sceneStore } from '../../../../store/index'
+import Toast from '@vant/weapp/toast/toast'
 
 Component({
   options: {
@@ -34,7 +35,7 @@ Component({
     sceneIcon: '',
     sceneName: '',
     contentHeight: 0,
-    sceneList,
+    sceneList: sceneList.filter((scene) => !scene[1].isDefault),
     list: [] as (Device.DeviceItem | Scene.SceneItem)[],
     linkSelectList: [] as string[],
     linkSwitch: '', // 上一个确认的结果保存在这里
@@ -62,10 +63,7 @@ Component({
     },
     async handleConfirm() {
       if (!this.data.sceneName) {
-        wx.showToast({
-          icon: 'error',
-          title: '场景名不能为空',
-        })
+        Toast('场景名不能为空')
         return
       }
       const newSceneData = {
@@ -142,18 +140,12 @@ Component({
       )
       const res = await addScene(newSceneData)
       if (res.success) {
-        wx.showToast({
-          icon: 'success',
-          title: '收藏成功',
-        })
+        Toast('收藏成功')
         sceneStore.updateSceneList()
         homeStore.updateRoomCardList()
         this.triggerEvent('addSuccess')
       } else {
-        wx.showToast({
-          icon: 'error',
-          title: '收藏失败',
-        })
+        Toast('收藏失败')
       }
       this.triggerEvent('close')
     },
@@ -194,10 +186,7 @@ Component({
     },
     handleLinkSelect(e: { detail: string }) {
       if (deviceStore.switchSceneMap[e.detail]) {
-        wx.showToast({
-          icon: 'none',
-          title: '开关已绑定场景',
-        })
+        Toast('开关已绑定场景')
         return
       }
       if (this.data.linkSelectList[0] && this.data.linkSelectList[0] === e.detail) {

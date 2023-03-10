@@ -2,6 +2,7 @@ import { login } from '../../apis/index'
 import { homeStore } from '../../store/index'
 import { loadUserInfo } from '../../utils/index'
 import { storage } from '../../utils/storage'
+import Toast from '@vant/weapp/toast/toast'
 
 // pages/login/index.ts
 Component({
@@ -17,20 +18,14 @@ Component({
   methods: {
     onLoginTap() {
       if (!this.data.isAgree) {
-        wx.showToast({
-          title: '请同意协议',
-          icon: 'none',
-        })
+        Toast('请同意协议')
         return
       }
     },
 
     onLoginClick(e: { detail: { code: string } }) {
       if (!e.detail.code) {
-        wx.showToast({
-          icon: 'none',
-          title: '取消登录',
-        })
+        Toast('取消登录')
         return
       }
       wx.login({
@@ -42,6 +37,7 @@ Component({
               code: e.detail.code,
             })
           } else {
+            Toast('登录失败！')
             console.log('登录失败！' + res.errMsg)
           }
         },
@@ -65,6 +61,8 @@ Component({
         wx.switchTab({
           url: '/pages/index/index',
         })
+      } else {
+        Toast('登录失败！')
       }
     },
 

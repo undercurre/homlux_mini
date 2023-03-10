@@ -1,6 +1,7 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { saveHouseRoomInfo } from '../../apis/index'
 import { homeBinding, roomBinding } from '../../store/index'
+import Toast from '@vant/weapp/toast/toast'
 
 Component({
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] })],
@@ -117,12 +118,12 @@ Component({
     },
     async handleConfirm() {
       if (!this.data.roomInfo.name) {
-        wx.showToast({ title: '房间名称不能为空', icon: 'none' })
+        Toast('房间名称不能为空')
         return
       }
 
       if (this.data.roomInfo.name.length > 6) {
-        wx.showToast({ title: '房间名称不能超过6个字符', icon: 'none' })
+        Toast('房间名称不能超过6个字符')
         return
       }
 

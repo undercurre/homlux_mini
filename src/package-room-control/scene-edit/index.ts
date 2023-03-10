@@ -1,10 +1,11 @@
 import { deviceStore, homeStore, sceneStore } from '../../store/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { maxColorTempK, minColorTempK, proType } from '../../config/index'
-import Dialog from '@vant/weapp/dialog/dialog'
 import { deleteScene, updateScene } from '../../apis/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { emitter } from '../../utils/eventBus'
+import Dialog from '@vant/weapp/dialog/dialog'
+import Toast from '@vant/weapp/toast/toast'
 
 interface DeviceActionsFlattenItem {
   id: string
@@ -125,15 +126,9 @@ ComponentWithComputed({
           emitter.emit('sceneEdit')
           homeStore.updateRoomCardList()
           wx.navigateBack()
-          wx.showToast({
-            icon: 'success',
-            title: '删除成功',
-          })
+          Toast('删除成功')
         } else {
-          wx.showToast({
-            icon: 'error',
-            title: '删除失败',
-          })
+          Toast('删除失败')
         }
       })
     },
@@ -210,15 +205,9 @@ ComponentWithComputed({
       if (res.success) {
         homeStore.updateRoomCardList()
         emitter.emit('sceneEdit')
-        wx.showToast({
-          icon: 'success',
-          title: '修改成功',
-        })
+        Toast('修改成功')
       } else {
-        wx.showToast({
-          icon: 'error',
-          title: '修改失败',
-        })
+        Toast('修改失败')
       }
     },
     handleEditNameShow() {
@@ -257,10 +246,7 @@ ComponentWithComputed({
     handleSwitchSelect(e: { detail: string }) {
       console.log(deviceStore.switchSceneMap[e.detail], deviceStore.switchSceneMap[e.detail] !== this.data.sceneId)
       if (deviceStore.switchSceneMap[e.detail] && deviceStore.switchSceneMap[e.detail] !== this.data.sceneId) {
-        wx.showToast({
-          icon: 'none',
-          title: '开关已绑定场景',
-        })
+        Toast('开关已绑定场景')
         return
       }
       if (this.data.linkSwitchSelect[0] === e.detail) {
