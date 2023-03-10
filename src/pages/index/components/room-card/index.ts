@@ -15,15 +15,14 @@ ComponentWithComputed({
   properties: {
     roomInfo: {
       type: Object,
-    },
-    showScene: {
-      type: Boolean,
-      value: false,
       observer() {},
     },
   },
 
   computed: {
+    showScene(data) {
+      return data.roomInfo.subDeviceNum > 0
+    },
     sceneList(data) {
       return data.roomInfo.sceneList.map((scene: Scene.SceneBase) => {
         let sceneName = scene.sceneName
@@ -41,13 +40,22 @@ ComponentWithComputed({
       })
     },
     deviceList(data) {
-      console.log(data.roomInfo)
       if (data.roomDeviceList) {
         return data.roomDeviceList[data.roomInfo.roomId]
       }
     },
     hasBottomPadding(data) {
-      return data.roomInfo.sceneList.length > 0
+      return data.roomInfo.subDeviceNum > 0 && data.roomInfo.sceneList.length > 0
+    },
+    desc(data) {
+      if (data.sceneList && data.deviceList) {
+        return data.roomInfo.deviceLightOnNum
+          ? data.roomInfo.deviceLightOnNum + '盏灯亮起'
+          : data.roomInfo.subDeviceNum > 0
+          ? '灯全部关闭'
+          : ''
+      }
+      return ''
     },
   },
 

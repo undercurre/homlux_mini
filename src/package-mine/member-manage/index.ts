@@ -135,11 +135,11 @@ ComponentWithComputed({
             item.isCheck = false
             item.isShow = false
           }
-        }  else if (mySelf == 2) {
+        } else if (mySelf == 2) {
           if (other === 3 && (item.key === 'SET_ADMIN' || item.key === 'DEL_MEM')) {
             item.isCheck = false
             item.isShow = true
-          }  else {
+          } else {
             item.isCheck = false
             item.isShow = false
           }

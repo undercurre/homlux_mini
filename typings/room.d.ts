@@ -11,8 +11,9 @@ declare namespace Room {
        * 灯打开数量
        */
       deviceLightOnNum: number
-
-      // 设备数量
+      /**
+       * 设备数量
+       */
       deviceNum: number
       /**
        * 	房间icon
@@ -26,6 +27,12 @@ declare namespace Room {
        * 房间名称
        */
       roomName: string
+
+      // 下面是小程序端维护的字段
+      /**
+       * 子设备数量
+       */
+      subDeviceNum?: number
     }
     /**
      * 房间场景列表
@@ -39,7 +46,11 @@ declare namespace Room {
     /**
      * 灯打开数量
      */
-    deviceLightOnNum: number
+    deviceLightOnNum?: number
+    /**
+     * 设备数量
+     */
+    deviceNum?: number
     /**
      * 	房间icon
      */
@@ -56,5 +67,11 @@ declare namespace Room {
      * 房间场景列表
      */
     sceneList: Scene.SceneItem[]
+
+    // 下面是小程序端维护的字段
+    /**
+     * 子设备数量
+     */
+    subDeviceNum?: number
   }
 }
