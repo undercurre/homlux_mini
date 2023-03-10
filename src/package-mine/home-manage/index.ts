@@ -90,29 +90,29 @@ ComponentWithComputed({
       const that = this
       wx.getFuzzyLocation({
         type: 'wgs84',
-        success (res) {
+        success(res) {
           const latitude = res.latitude
           const longitude = res.longitude
           myQQMapWX.reverseGeocoder({
             sig: that.data.sig,
             location: {
               latitude: latitude,
-              longitude: longitude
+              longitude: longitude,
             },
-            success: function(res: any) {
+            success: function (res: any) {
               const addr = res.result.address_component
               const result = addr.province + addr.city + addr.district
               that.setData({
-                positionLocation: result
+                positionLocation: result,
               })
               storage.set('position_location', result)
             },
-            fail: function() {
+            fail: function () {
               console.log('lmn>>>getLocation::获取地理位置失败')
-            }
+            },
           })
-        }
-       })
+        },
+      })
     },
     /**
      * 用户点击展示/隐藏家庭选择

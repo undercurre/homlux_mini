@@ -54,7 +54,13 @@ export const roomStore = observable({
         }
         // 统计多少灯打开（开关不关联灯或者关联场景都算进去）
         let deviceLightOnNum = 0
+        // 统计多少个子设备
+        let subDeviceNum = 0
         roomDeviceList?.forEach((device) => {
+          if (device.proType !== proType.gateway) {
+            subDeviceNum++
+            console.log('什么东西', device)
+          }
           if (!device.onLineStatus) return
           if (device.proType === proType.light && device.mzgdPropertyDTOList['1'].OnOff) {
             deviceLightOnNum++
@@ -71,6 +77,7 @@ export const roomStore = observable({
           }
         })
         roomInfo.roomInfo.deviceLightOnNum = deviceLightOnNum
+        roomInfo.roomInfo.subDeviceNum = subDeviceNum
       })
 
       runInAction(() => {
@@ -81,6 +88,7 @@ export const roomStore = observable({
           deviceLightOnNum: room.roomInfo.deviceLightOnNum,
           sceneList: room.roomSceneList,
           deviceNum: room.roomInfo.deviceNum,
+          subDeviceNum: room.roomInfo.subDeviceNum,
         }))
       })
     }

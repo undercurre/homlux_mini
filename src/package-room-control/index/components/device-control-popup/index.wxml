@@ -1,40 +1,27 @@
 <wxs module="wxs" src="./index.wxs"></wxs>
 <view wx:if="{{isRender}}" change:info="{{wxs.infoObserver}}" info="{{info}}" id="popup" class="fixed z-200 left-0 w-780rpx h-840rpx opacity-0" bindtap="handlePopup" bindtouchstart="handleTouchStart" catchtouchmove="handleTouchMove">
-  <view class="h-60rpx w-750rpx flex-center" style="opacity: {{popup ? 0:1}};">
+  <!-- <view class="h-60rpx w-750rpx flex-center" style="opacity: {{popup ? 0:1}};">
     <image class="mb-36rpx w-76rpx h-24rpx" src="/assets/img/base/popup-arrow.png"></image>
-  </view>
+  </view> -->
   <view class="w-750rpx h-780rpx rounded-t-64rpx bg-white flex-col flex">
-    <view class="flex-center mt-12rpx">
-      <view class="h-8rpx w-76rpx bg-black-tips rounded-999" style="opacity: {{popup ? 1:0}};"></view>
+    <view class="flex-center mt-28rpx">
+      <image class="w-60rpx h-20rpx arrow-{{popup ? 'down' : 'up'}}" src="/assets/img/base/popup-down.png"></image>
     </view>
     <!-- tab -->
     <view class="flex justify-evenly">
       <view class="flex-col-center" data-tab="light" bindtap="handleTabTap" wx:if="{{lightTab}}">
-        <view class="h-24rpx"></view>
-        <text class="font-32rpx {{tab === 'light' ? 'tab-title-check' : 'tab-title-uncheck'}}">灯光</text>
-        <view class="w-42rpx h-8rpx mt-4rpx bg-blue rounded-999 {{tab === 'light' ? 'opacity-100' : 'opacity-0'}}"></view>
+        <text class="font-32rpx mt-34rpx mb-20rpx {{tab === 'light' ? 'tab-title-check' : 'tab-title-uncheck'}}">灯光</text>
       </view>
       <view class="flex-col-center" data-tab="switch" bindtap="handleTabTap" wx:if="{{switchTab}}">
-        <view class="h-24rpx"></view>
-        <text class="font-32rpx {{tab === 'switch' ? 'tab-title-check' : 'tab-title-uncheck'}}">开关</text>
-        <view class="w-42rpx h-8rpx mt-4rpx bg-blue rounded-999 {{tab === 'switch' ? 'opacity-100' : 'opacity-0'}}"></view>
+        <text class="font-32rpx mt-34rpx mb-20rpx {{tab === 'switch' ? 'tab-title-check' : 'tab-title-uncheck'}}">开关</text>
       </view>
       <view class="flex-col-center" data-tab="curtain" bindtap="handleTabTap" wx:if="{{curtainTab}}">
-        <view class="h-24rpx"></view>
-        <text class="font-32rpx {{tab === 'curtain' ? 'tab-title-check' : 'tab-title-uncheck'}}">窗帘</text>
-        <view class="w-42rpx h-8rpx mt-4rpx bg-blue rounded-999 {{tab === 'curtain' ? 'opacity-100' : 'opacity-0'}}"></view>
+        <text class="font-32rpx mt-34rpx mb-20rpx {{tab === 'curtain' ? 'tab-title-check' : 'tab-title-uncheck'}}">窗帘</text>
       </view>
     </view>
     <!-- tab内容 -->
     <view class="flex-1 flex flex-col">
-      <view class="flex justify-evenly mt-46rpx">
-        <van-button custom-style="width: 328rpx !important;height: 80rpx !important;" bind:click="handleAllOn">
-          <text class="text-32rpx text-black-59">全开</text>
-        </van-button>
-        <van-button custom-style="width: 328rpx !important;height: 80rpx !important;" bind:click="handleAllOff">
-          <text class="text-32rpx text-black-59">全关</text>
-        </van-button>
-      </view>
+      <view class="h-2rpx w-750rpx bg-hex-eee"></view>
       <!-- 灯光控制 -->
       <view class="flex flex-col" wx:if="{{tab==='light'}}">
         <text class="text-32rpx text-black-59 mt-54rpx ml-32rpx">亮度 | {{lightInfoInner.Level}}%</text>
@@ -100,6 +87,15 @@
           <image src="/assets/img/device-control/curtain-opener.png" class="w-80rpx h-80rpx absolute right-148rpx top-144rpx" style="transform: scaleX(-1)" />
         </view>
         <text class="text-32rpx text-black-59">50%</text>
+      </view>
+      <!-- 全开全关 -->
+      <view class="flex justify-evenly mt-46rpx">
+        <van-button custom-style="width: 328rpx !important;height: 80rpx !important;" bind:click="handleAllOn">
+          <text class="text-32rpx text-black-59">全开</text>
+        </van-button>
+        <van-button custom-style="width: 328rpx !important;height: 80rpx !important;" bind:click="handleAllOff">
+          <text class="text-32rpx text-black-59">全关</text>
+        </van-button>
       </view>
     </view>
   </view>
