@@ -4,6 +4,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .flex-center{display:flex;justify-content:center;align-items:center;}
 .flex-col-center{display:flex;flex-direction:column;justify-content:center;align-items:center;}
 /* layer: default */
+.p-0{padding:0rpx;}
 .p-10rpx{padding:10rpx;}
 .p-16rpx{padding:16rpx;}
 .p-24rpx{padding:24rpx;}
@@ -122,6 +123,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .mr-12rpx{margin-right:12rpx;}
 .mr-16rpx{margin-right:16rpx;}
 .mr-24rpx{margin-right:24rpx;}
+.mr-26rpx{margin-right:26rpx;}
 .mr-32rpx{margin-right:32rpx;}
 .mr-38rpx{margin-right:38rpx;}
 .mt-0_el_{margin-top:0rpx !important;}
@@ -152,6 +154,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .mt-98rpx{margin-top:98rpx;}
 .block{display:block;}
 .inline-block{display:inline-block;}
+.hidden{display:none;}
 .opacity-0{opacity:0;}
 .opacity-100{opacity:1;}
 .opacity-40{opacity:0.4;}
@@ -180,6 +183,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .bg-hex-fff,
 .bg-white{--un-bg-opacity:1;background-color:rgba(255,255,255,var(--un-bg-opacity));}
 .bg-hex-ffffff_42{background-color:rgba(255,255,255,0.42);}
+.bg-transparent{background-color:transparent;}
 .border{border-width:1px;}
 .border-1rpx{border-width:1rpx;}
 .border-2rpx{border-width:2rpx;}
@@ -199,6 +203,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .rounded-40rpx{border-radius:40rpx;}
 .rounded-999{border-radius:7992rpx;}
 .rounded-full{border-radius:9999px;}
+.rounded-none{border-radius:0;}
 .rounded-t-64rpx{border-top-left-radius:64rpx;border-top-right-radius:64rpx;}
 .border-solid{border-style:solid;}
 .text-20rpx{font-size:20rpx;}
@@ -338,7 +343,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .h-840rpx{height:840rpx;}
 .h-88rpx{height:88rpx;}
 .h-90rpx{height:90rpx;}
-.h-92{height:92rpx;}
 .h-962rpx{height:962rpx;}
 .h-96rpx{height:96rpx;}
 .h-98rpx{height:98rpx;}
@@ -398,7 +402,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .w-8{width:8rpx;}
 .w-80rpx{width:80rpx;}
 .w-88rpx{width:88rpx;}
-.w-92{width:92rpx;}
 .w-96rpx{width:96rpx;}
 .w-full{width:100%;}
 .visible{visibility:visible;}

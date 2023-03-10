@@ -139,7 +139,7 @@ export async function controlDevice(
   option?: { loading?: boolean },
 ) {
   return await mzaioRequest.post<IAnyObject>({
-    log: false,
+    log: true,
     loading: option?.loading || false,
     url: '/v1/device/down',
     data: data,

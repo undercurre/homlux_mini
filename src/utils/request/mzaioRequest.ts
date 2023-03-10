@@ -50,9 +50,9 @@ const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: Base
     options.data,
   )
 
-  // 调整请求超时时间，默认6秒
+  // 调整请求超时时间，默认10秒
   if (!options.timeout) {
-    options.timeout = 6000
+    options.timeout = 10000
   }
 
   return baseRequest<T>({

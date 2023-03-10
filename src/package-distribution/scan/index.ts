@@ -25,6 +25,7 @@ ComponentWithComputed({
     isShowNoGatewayTips: false,
     _isScaning: false,
     _isInitBle: false,
+    isFlash: false,
     selectGatewayId: '',
     selectGatewaySn: '',
     subdeviceList: Array<string>(),
@@ -234,6 +235,12 @@ ComponentWithComputed({
       this.handleScanUrl(scanUrl)
     },
 
+    test() {
+      this.setData({
+        isFlash: !this.data.isFlash,
+      })
+    },
+
     async handleScanUrl(url: string) {
       this.setData({
         _isScaning: true,
@@ -246,10 +253,14 @@ ComponentWithComputed({
       const params = strUtil.getUrlParams(url)
 
       console.log('params', params)
-      const key = `midea@homlux${params.mac.substr(-4)}`
-      const test = aesUtil.encrypt('midea.light.003.002', key)
-      const modelId = aesUtil.decrypt(params.pid, key)
-      console.log('modelId', modelId, 'test', test, aesUtil.decrypt(test, key, 'Hex'))
+
+      // 子设备扫码处理，需要解密得到modelId
+      if (params.ssid === 'homlux_ble') {
+        const key = `midea@homlux${params.mac.substr(-4)}`
+        const test = aesUtil.encrypt('midea.light.003.002', key)
+        // const modelId = aesUtil.decrypt(params.pid, key)
+        console.log('test', test, aesUtil.decrypt(test, key, 'Hex'))
+      }
 
       // 获取云端的产品基本信息
       const res = await queryProtypeInfo({
@@ -273,7 +284,6 @@ ComponentWithComputed({
       } else if (res.result && res.result?.proType === '0x18') {
         this.bindGateway({
           ssid: params.ssid,
-          dsn: params.dsn,
           deviceName: res.result.productName,
         })
       } else {
@@ -351,12 +361,6 @@ ComponentWithComputed({
           gatewayId,
           gatewaySn,
         }),
-      })
-    },
-
-    test() {
-      wx.navigateTo({
-        url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {}),
       })
     },
 

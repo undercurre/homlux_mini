@@ -6,6 +6,7 @@ import {
   updateHouseUserAuth,
   deleteHouseUser,
   inviteHouseUser,
+  saveOrUpdateUserHouseInfo,
 } from '../apis/index'
 import { roomStore } from './room'
 
@@ -96,6 +97,23 @@ export const homeStore = observable({
   },
 
   /**
+   * 更新当前家庭名字/位置
+   */
+  async updateHomeNameOrLocation(name?: string, location?: string) {
+    const params = {
+      houseId: this.currentHomeId,
+      houseName: name ?? this.currentHomeDetail.houseName,
+      userLocationInfo: location ?? this.currentHomeDetail.houseArea,
+    }
+    const res = await saveOrUpdateUserHouseInfo(params, { loading: true })
+    if (res.success) {
+      return await this.updateHomeInfo()
+    } else {
+      return Promise.reject('更新当前家庭名字/位置失败')
+    }
+  },
+
+  /**
    * 更新家庭成员列表
    */
   async updateHomeMemberList() {
@@ -182,5 +200,6 @@ export const homeBinding = {
     'updateHomeMemberList',
     'updateMemberAuth',
     'deleteMember',
+    'updateHomeNameOrLocation',
   ],
 }

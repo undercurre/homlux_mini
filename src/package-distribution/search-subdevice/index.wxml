@@ -44,18 +44,20 @@
     </block>
 
     <block wx:if="{{status === 'requesting' && successList.length !== selectedList.length}}">
-      <mz-loading class="{{failList.length === 0 ? 'mt-70rpx' : 'mt-130rpx' }}" text="已添加{{successList.length}}/{{selectedList.length}}个设备" show-progress="{{false}}" stepList="{{[]}}"></mz-loading>
+      <mz-loading wx:if="{{failList.length !== selectedList.length}}" class="{{failList.length === 0 ? 'mt-70rpx' : 'mt-130rpx' }}" text="已添加{{successList.length}}/{{selectedList.length}}个设备" show-progress="{{false}}" stepList="{{[]}}"></mz-loading>
 
       <view wx:if="{{failList.length > 0}}" class="px-24rpx pt-90rpx grow shrink flex flex-col">
         <view class="flex flex-row items-center justify-between pb-24rpx">
-          <text class="text-28 text-hex-000">以下设备添加失败</text>
+          <text class="text-28 text-hex-000">以下{{failList.length}}个设备添加失败</text>
 
           <van-button plain round size="small" type="info" bind:click="reAdd">重新添加</van-button>
         </view>
 
         <scroll-view class="grow shrink h-500" scroll-y="{{true}}">
           <view wx:for="{{failList}}" wx:key="deviceUuid" class="flex flex-row items-center bg-white rounded-32rpx mb-24rpx px-50rpx py-40rpx">
-            <image src="{{item.icon}}" class="w-92 h-92 border-4rpx border-solid border-hex-F6F6F8 rounded-full"></image>
+            <view class="border-4rpx border-solid border-hex-F6F6F8 rounded-full leading-0 p-10rpx">
+              <image src="{{item.icon}}" class="w-72 h-72"></image>
+            </view>
 
             <view class="pl-32rpx">
               <view class="flex flex-row items-center">
