@@ -1,21 +1,43 @@
 <wxs src="/commons/wxs/util.wxs" module="module" />
 <import src="/commons/templates/popup.wxml" />
 <van-popup show="{{ show }}" z-index="10001" round position="bottom" bind:close="handleClose">
-  <view class="w-750rpx h-50vh relative flex flex-col items-center">
+  <view class="w-750rpx h-1000rpx relative flex flex-col items-center">
     <template is="title" data="{{title: title}}" />
+    <scroll-view class="mt-48rpx h-60rpx w-750rpx">
+      <view class="flex min-w-750rpx justify-center">
+        <view wx:for="{{roomList}}" wx:key="roomId" class="flex-col-center ml-48rpx" data-item="{{item}}" bindtap="handleRoomSelect">
+          <text class="text-32rpx text-black-2a">{{item.roomName}}</text>
+          <view class="w-42rpx h-8rpx mt-8rpx bg-hex-488fff rounded-999 {{roomSelect === item.roomId ? 'opacity-100' : 'opacity-0'}}"></view>
+        </view>
+      </view>
+    </scroll-view>
+
     <view class="flex-1" id="content1">
-      <scroll-view enhanced show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
-        <view class="h-78rpx"></view>
-        <view class="w-750rpx flex-col-center">
-          <!-- 场景卡片 -->
+      <scroll-view enhanced show-scrollbar="{{false}}" scroll-x style="height: {{contentHeight}}px; width: 750rpx;" binddragging="handleContentDragging">
+        <view class="flex">
+          <block wx:if="{{linkType==='scene'}}">
+            <view class="w-750rpx flex-center mt-44rpx" wx:for="{{sceneListMatrix}}" wx:for-item="pageList" wx:key="index">
+              <view class="w-686rpx grid grid-cols-2 gap-x-20rpx gap-y-24rpx">
+                <scene-card wx:for="{{pageList}}" wx:key="sceneId" bind:cardTap="handleCardTap" scene-info="{{item}}" select="{{module.includes(selectList, item.sceneId)}}" />
+              </view>
+            </view>
+          </block>
+          <block wx:else>
+            <view class="w-750rpx flex-center" wx:for="{{deviceListMatrix}}" wx:for-item="pageList" wx:key="index">
+              <view class="w-686rpx grid grid-cols-4 gap-x-20rpx gap-y-24rpx">
+                <device-card wx:for="{{pageList}}" wx:key="uniId" bind:cardTap="handleCardTap" device-type="{{linkType === 'light' ? 'light' : 'switch'}}" device-info="{{item}}" select="{{module.includes(selectList, item.uniId)}}" />
+              </view>
+            </view>
+          </block>
+        </view>
+        <!-- <view class="w-750rpx flex-col-center">
           <view wx:if="{{linkType==='scene'}}" class="w-686rpx grid grid-cols-2 gap-x-20rpx gap-y-24rpx">
             <scene-card wx:for="{{list}}" wx:key="sceneId" bind:cardTap="handleCardTap" scene-info="{{item}}" select="{{module.includes(selectList, item.sceneId)}}" />
           </view>
-          <!-- 设备卡片 -->
           <view wx:else class="w-686rpx grid grid-cols-4 gap-x-20rpx gap-y-24rpx">
             <device-card wx:for="{{list}}" wx:key="uniId" bind:cardTap="handleCardTap" device-type="{{linkType === 'light' ? 'light' : 'switch'}}" device-info="{{item}}" select="{{module.includes(selectList, item.uniId)}}" />
           </view>
-        </view>
+        </view> -->
         <view class="h-32rpx"></view>
       </scroll-view>
     </view>

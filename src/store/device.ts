@@ -88,27 +88,58 @@ export const deviceStore = observable({
   /**
    * 关联设备关系映射
    * deviceId -> {lightRelId: string}
-   * lightRelId:switchId -> {switchRelId?: string;lightRelId?: string}
+   * deviceId:switchId -> {switchRelId?: string;lightRelId?: string}
    */
-  get deviceRefMap(): Record<string, { switchRelId?: string; lightRelId?: string }> {
+  get deviceRelMap(): Record<string, { switchRelId?: string; lightRelId?: string }> {
     const map = {} as Record<string, { switchRelId?: string; lightRelId?: string }>
-    deviceStore.deviceList.forEach((device) => {
+    deviceStore.allRoomDeviceFlattenList.forEach((device) => {
       if (device.proType === proType.switch) {
-        device.switchInfoDTOList.forEach((switchItem) => {
-          const ref = {} as { switchRelId?: string; lightRelId?: string }
-          if (switchItem.switchRelId) {
-            ref.switchRelId = switchItem.switchRelId
-          }
-          if (switchItem.lightRelId) {
-            ref.lightRelId = switchItem.lightRelId
-          }
-          if (Object.keys(ref).length !== 0) {
-            map[`${device.deviceId}:${switchItem.switchId}`] = ref
-          }
-        })
+        const ref = {} as { switchRelId?: string; lightRelId?: string }
+        if (device.switchInfoDTOList[0].switchRelId) {
+          ref.switchRelId = device.switchInfoDTOList[0].switchRelId
+        }
+        if (device.switchInfoDTOList[0].lightRelId) {
+          ref.lightRelId = device.switchInfoDTOList[0].lightRelId
+        }
+        if (Object.keys(ref).length !== 0) {
+          map[device.uniId] = ref
+        }
       } else {
         if (device.lightRelId) {
           map[device.deviceId] = { lightRelId: device.lightRelId }
+        }
+      }
+    })
+    return map
+  },
+
+  /**
+   * relId 和设备关联映射
+   */
+  get relDeviceMap(): Record<string, string[]> {
+    const map = {} as Record<string, string[]>
+    deviceStore.allRoomDeviceFlattenList.forEach((device) => {
+      if (device.lightRelId) {
+        if (map[device.lightRelId]) {
+          map[device.lightRelId].push(device.uniId)
+        } else {
+          map[device.lightRelId] = [device.uniId]
+        }
+      }
+      if (device.uniId.includes(':')) {
+        if (device.switchInfoDTOList[0].lightRelId) {
+          if (map[device.switchInfoDTOList[0].lightRelId]) {
+            map[device.switchInfoDTOList[0].lightRelId].push(device.uniId)
+          } else {
+            map[device.switchInfoDTOList[0].lightRelId] = [device.uniId]
+          }
+        }
+        if (device.switchInfoDTOList[0].switchRelId) {
+          if (map[device.switchInfoDTOList[0].switchRelId]) {
+            map[device.switchInfoDTOList[0].switchRelId].push(device.uniId)
+          } else {
+            map[device.switchInfoDTOList[0].switchRelId] = [device.uniId]
+          }
         }
       }
     })
@@ -121,7 +152,7 @@ export const deviceStore = observable({
    */
   get switchSceneMap(): Record<string, string> {
     const map = {} as Record<string, string>
-    sceneStore.sceneList.forEach((scene) => {
+    sceneStore.allRoomSceneList.forEach((scene) => {
       scene.deviceConditions?.forEach((condition) => {
         map[`${condition.deviceId}:${condition.controlEvent[0].ep}`] = scene.sceneId
       })

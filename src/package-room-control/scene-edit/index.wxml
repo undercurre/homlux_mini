@@ -10,7 +10,7 @@
   <view class="flex-1 flex flex-col">
     <van-cell-group inset custom-class="mb-0_el_">
       <van-cell title="场景名称" is-link value="{{sceneName}}" center bind:click="handleEditNameShow"></van-cell>
-      <van-cell title="场景图标" is-link center bind:click="handleEditIconShow">
+      <van-cell title="场景图标" is-link="{{!isDefault}}" center bind:click="handleEditIconShow">
         <view class="flex justify-end">
           <view class="bg-hex-eff0f3 rounded-999 w-52rpx h-52rpx">
             <svg-icon name="scene:{{sceneIcon}}" width="52rpx" height="52rpx" />

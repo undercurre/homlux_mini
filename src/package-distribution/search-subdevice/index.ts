@@ -180,7 +180,9 @@ ComponentWithComputed({
         requesting: false,
         zigbeeRepeatTimes: 3,
       }
-
+      if (`0x${msgObj.deviceModel}` === '0x03') {
+        console.log('---------', infoRes, JSON.stringify(bleDevice))
+      }
       console.log('bleDevice', JSON.stringify(bleDevice))
 
       this.data.deviceList.push(bleDevice)

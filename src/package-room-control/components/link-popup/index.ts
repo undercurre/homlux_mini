@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 // import { proType } from '../../../config/index'
-import { deviceBinding, roomBinding } from '../../../store/index'
+import { deviceBinding, roomBinding, roomStore } from '../../../store/index'
 
 ComponentWithComputed({
   options: {
@@ -42,6 +42,13 @@ ComponentWithComputed({
             this.getHeight()
           }, 100)
         }
+        if (roomStore.roomList.length > 0) {
+          if (!this.data.roomSelect) {
+            this.setData({
+              roomSelect: roomStore.roomList[0].roomId,
+            })
+          }
+        }
       },
     },
     /** 展示类型：light switch scene */
@@ -55,6 +62,7 @@ ComponentWithComputed({
    */
   data: {
     contentHeight: 0,
+    roomSelect: '',
   },
 
   computed: {
@@ -67,6 +75,58 @@ ComponentWithComputed({
         return '关联场景'
       }
       return ''
+    },
+    deviceListMatrix(data: { list: Device.DeviceItem[]; roomSelect: string }) {
+      if (data.list) {
+        let pageCount = 0
+        let deviceCount = 0
+        const pageList = [] as Device.DeviceItem[][]
+        data.list
+          .filter((device) => device.roomId === data.roomSelect)
+          .forEach((device) => {
+            if (pageCount === 0) {
+              deviceCount = 1
+              pageCount++
+              pageList.push([device])
+            } else if (deviceCount === 8) {
+              deviceCount = 1
+              pageCount++
+              pageList.push([device])
+            } else {
+              deviceCount++
+              pageList[pageCount - 1].push(device)
+            }
+          })
+        console.log(pageList)
+        return pageList
+      }
+      return []
+    },
+    sceneListMatrix(data: { list: Scene.SceneItem[]; roomSelect: string }) {
+      if (data.list) {
+        let pageCount = 0
+        let sceneCount = 0
+        const pageList = [] as Scene.SceneItem[][]
+        data.list
+          .filter((scene) => scene.roomId === data.roomSelect)
+          .forEach((scene) => {
+            if (pageCount === 0) {
+              sceneCount = 1
+              pageCount++
+              pageList.push([scene])
+            } else if (sceneCount === 6) {
+              sceneCount = 1
+              pageCount++
+              pageList.push([scene])
+            } else {
+              sceneCount++
+              pageList[pageCount - 1].push(scene)
+            }
+          })
+        console.log(pageList)
+        return pageList
+      }
+      return []
     },
   },
 
@@ -94,6 +154,14 @@ ComponentWithComputed({
             })
           }
         })
+    },
+    handleContentDragging(e: WechatMiniprogram.ScrollViewDragging) {
+      console.log(e.detail.scrollTop)
+    },
+    handleRoomSelect(e: WechatMiniprogram.TouchEvent) {
+      this.setData({
+        roomSelect: e.currentTarget.dataset.item.roomId,
+      })
     },
   },
 })

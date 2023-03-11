@@ -75,6 +75,7 @@ Component({
         sceneIcon: this.data.sceneIcon,
         sceneName: this.data.sceneName,
         sceneType: this.data.linkSwitch ? '1' : '0',
+        orderNum: 0,
       } as Scene.AddSceneDto
       if (this.data.linkSwitch) {
         // 绑定了开关
@@ -90,6 +91,12 @@ Component({
           },
         ]
       }
+      // 将新场景排到最后
+      sceneStore.sceneList.forEach((scene) => {
+        if (scene.orderNum && scene.orderNum >= newSceneData.orderNum) {
+          newSceneData.orderNum = scene.orderNum + 1
+        }
+      })
       // 补充actions
       const deviceMap = deviceStore.deviceMap
       // switch需要特殊处理
@@ -140,7 +147,7 @@ Component({
       )
       const res = await addScene(newSceneData)
       if (res.success) {
-        Toast('收藏成功')
+        sceneStore.updateAllRoomSceneList()
         sceneStore.updateSceneList()
         homeStore.updateRoomCardList()
         this.triggerEvent('addSuccess')

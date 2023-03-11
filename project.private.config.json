@@ -8,15 +8,6 @@
   },
   "libVersion": "2.29.0",
   "condition": {
-    "plugin": {
-      "list": []
-    },
-    "game": {
-      "list": []
-    },
-    "gamePlugin": {
-      "list": []
-    },
     "miniprogram": {
       "list": [
         {
@@ -100,8 +91,8 @@
           "name": "添加智能网关",
           "pathName": "package-distribution/add-gateway/index",
           "query": "deviceName=智能网关&wifiSSID=xyh_wifi&apSSID=midea_16_E5FB&method=wifi",
-          "scene": null,
-          "launchMode": "default"
+          "launchMode": "default",
+          "scene": null
         },
         {
           "name": "绑定家庭",

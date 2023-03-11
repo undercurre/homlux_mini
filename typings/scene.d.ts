@@ -81,6 +81,7 @@ declare namespace Scene {
      * 0-没有条件，1-有条件
      */
     sceneType: string
+    orderNum: number
   }
   interface UpdateSceneDto {
     /**

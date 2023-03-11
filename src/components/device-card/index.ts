@@ -1,5 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
+import { deviceStore, sceneStore } from '../../store/index'
 let throttleTimer = 0
 ComponentWithComputed({
   options: {
@@ -73,12 +74,29 @@ ComponentWithComputed({
       return ''
     },
     deviceName(data) {
-      if (new RegExp('[\\u4E00-\\u9FFF]+', 'g').test(data.deviceInfo.deviceName)) {
+      let name = ''
+      if (data.deviceType === 'switch') {
+        const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
+        if (data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
+          const switchSceneMap = deviceStore.switchSceneMap
+          if (switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]) {
+            const sceneIdMp = sceneStore.sceneIdMp
+            name = sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]].sceneName
+          } else {
+            name = data.deviceInfo.deviceName
+          }
+        } else {
+          name = data.deviceInfo.deviceName
+        }
+      } else {
+        name = data.deviceInfo.deviceName
+      }
+      if (new RegExp('[\\u4E00-\\u9FFF]+', 'g').test(name)) {
         // 存在中文字符，只能显示5个字符
-        return data.deviceInfo.deviceName?.slice(0, 5)
+        return name.slice(0, 5)
       } else {
         // 不存在中文字符，只能显示8个字符
-        return data.deviceInfo.deviceName?.slice(0, 8)
+        return name.slice(0, 8)
       }
     },
   },
@@ -109,6 +127,9 @@ ComponentWithComputed({
           if (this.data.deviceInfo.mzgdPropertyDTOList[switchId]) {
             onOff = !this.data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff
           }
+          if (this.data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
+            onOff = true
+          }
         }
         this.setData({
           ripple: true,
@@ -119,7 +140,7 @@ ComponentWithComputed({
           this.setData({
             ripple: false,
           })
-        }, 1050) as unknown as number
+        }, 550) as unknown as number
         this.triggerEvent('controlTap', this.data.deviceInfo)
       } else {
         Toast('设备已离线')

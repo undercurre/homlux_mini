@@ -50,8 +50,11 @@ export const sceneStore = observable({
   async updateSceneList(roomId: string = roomStore.roomList[roomStore.currentRoomIndex].roomId) {
     const res = await querySceneList(roomId)
     if (res.success) {
+      const list = res.result
+        .filter((scene) => scene.deviceActions && scene.deviceActions.length > 0)
+        .sort((a, b) => a.orderNum - b.orderNum)
       runInAction(() => {
-        sceneStore.sceneList = res.result.sort((a, b) => a.orderNum - b.orderNum)
+        sceneStore.sceneList = list
       })
     }
   },
@@ -59,8 +62,11 @@ export const sceneStore = observable({
   async updateAllRoomSceneList(houseId: string = homeStore.currentHomeId) {
     const res = await querySceneListByHouseId(houseId)
     if (res.success) {
+      const list = res.result
+        .filter((scene) => scene.deviceActions && scene.deviceActions.length > 0)
+        .sort((a, b) => a.orderNum - b.orderNum)
       runInAction(() => {
-        sceneStore.allRoomSceneList = res.result
+        sceneStore.allRoomSceneList = list
       })
     }
   },

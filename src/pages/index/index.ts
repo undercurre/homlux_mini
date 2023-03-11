@@ -86,6 +86,9 @@ ComponentWithComputed({
 
     onShow() {
       this.inviteMember()
+      if (homeStore.currentHomeId) {
+        homeStore.updateRoomCardList()
+      }
       emitter.off('wsReceive')
       emitter.on('wsReceive', () => {
         if (!throttleTimer) {
@@ -334,7 +337,6 @@ ComponentWithComputed({
         .select('#content')
         .boundingClientRect()
         .exec((res) => {
-          console.log(res)
           if (res[0] && res[0].height) {
             this.setData({
               contentHeight: res[0].height,

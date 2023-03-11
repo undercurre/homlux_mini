@@ -25,6 +25,7 @@ ComponentWithComputed({
     sceneName: '',
     sceneIcon: '',
     list: [] as Device.DeviceItem[],
+    isDefault: false,
     contentHeight: 0,
     showEditNamePopup: false,
     showEditIconPopup: false,
@@ -111,6 +112,7 @@ ComponentWithComputed({
               sceneIcon: sceneStore.sceneList[sceneStore.selectSceneIndex].sceneIcon,
               switchList: deviceStore.deviceFlattenList.filter((device) => device.proType === proType.switch),
               sceneDeviceActionsFlatten,
+              isDefault: sceneStore.sceneList[sceneStore.selectSceneIndex].isDefault === '1',
               linkSwitch,
               linkSwitchSelect: linkSwitch ? [linkSwitch] : [],
             })
@@ -227,6 +229,9 @@ ComponentWithComputed({
       })
     },
     handleEditIconShow() {
+      if (this.data.isDefault) {
+        return
+      }
       this.setData({
         showEditIconPopup: true,
       })

@@ -75,7 +75,6 @@ export const homeStore = observable({
       },
       options,
     )
-
     if (res.success) {
       runInAction(() => {
         homeStore.currentHomeDetail = Object.assign({ houseId: this.currentHomeId }, res.result)
