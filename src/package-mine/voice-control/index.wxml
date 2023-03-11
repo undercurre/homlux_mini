@@ -2,8 +2,8 @@
   <nav-bar background="#eef2f7" leftArrow="{{true}}" bind:leftTap="goBack" title="语音控制"></nav-bar>
 
   <van-cell-group inset>
-    <van-cell icon="/assets/img/mine/duer.png" title="小度音箱" label="操作步骤>" center data-url="{{urls.voiceControl}}" bind:click="toPage">
-      <text slot="right-icon" class="right-btn w-78 h-32">前往授权</text>
-    </van-cell>
-  </van-cell-group>
+  <van-cell icon="/assets/img/mine/duer.png" title="小度音箱" label="操作步骤>" center data-url="{{urls.voiceIntro}}" bind:click="toPage">
+    <text slot="right-icon" class="right-btn w-78 h-32">前往授权</text>
+  </van-cell>
+</van-cell-group>
 </view>
