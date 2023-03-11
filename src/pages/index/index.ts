@@ -87,7 +87,7 @@ ComponentWithComputed({
     onShow() {
       setTimeout(() => {
         this.inviteMember()
-      }, 1000);
+      }, 1000)
       if (homeStore.currentHomeId) {
         homeStore.updateRoomCardList()
       }

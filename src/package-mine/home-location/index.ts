@@ -30,7 +30,7 @@ ComponentWithComputed({
     townList: [] as any[],
     curSearchResult: [] as string[],
     isShowPosition: false,
-    curPosition: ''
+    curPosition: '',
   },
 
   computed: {},
@@ -50,7 +50,7 @@ ComponentWithComputed({
       const position = storage.get('position_location', '') as string
       this.setData({
         curLocation: this.data.isShowPosition ? position : houseArea || position,
-        curPosition: position
+        curPosition: position,
       })
       if (!position) this.rePosition()
     },
@@ -90,7 +90,7 @@ ComponentWithComputed({
     },
     onPositionClick() {
       this.setData({
-        isShowPosition: true
+        isShowPosition: true,
       })
       this.updateCurLocation()
       this.changeHomeLocation()
@@ -318,7 +318,7 @@ ComponentWithComputed({
           this.setIndicatorItems(0, list)
           this.setCurIndicatorIndex(0)
           this.setData({
-            isShowPosition: false
+            isShowPosition: false,
           })
           this.changeHomeLocation()
         }
@@ -337,7 +337,7 @@ ComponentWithComputed({
           this.setIndicatorItems(1, list)
           this.setCurIndicatorIndex(1)
           this.setData({
-            isShowPosition: false
+            isShowPosition: false,
           })
           this.changeHomeLocation()
         }
@@ -346,7 +346,7 @@ ComponentWithComputed({
         this.setIndicatorItems(2, list)
         this.setCurIndicatorIndex(2)
         this.setData({
-          isShowPosition: false
+          isShowPosition: false,
         })
         this.changeHomeLocation()
       }

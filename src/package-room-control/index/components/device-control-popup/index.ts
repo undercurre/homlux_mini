@@ -661,16 +661,15 @@ ComponentWithComputed({
       })
       if (this.data.linkType === 'light') {
         await this.updateLightAssociate()
-        deviceStore.updateAllRoomDeviceList()
-        deviceStore.updateSubDeviceList()
       } else if (this.data.linkType === 'switch') {
         await this.updateSwitchAssociate()
-        deviceStore.updateAllRoomDeviceList()
-        deviceStore.updateSubDeviceList()
       } else if (this.data.linkType === 'scene') {
         await this.updataSceneLink()
-        await sceneStore.updateSceneList()
       }
+      sceneStore.updateSceneList()
+      sceneStore.updateAllRoomSceneList()
+      deviceStore.updateSubDeviceList()
+      deviceStore.updateAllRoomDeviceList()
     },
     handleTabTap(e: { currentTarget: { dataset: { tab: 'light' | 'switch' | 'curtain' } } }) {
       this.setData({
