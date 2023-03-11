@@ -25,7 +25,8 @@
         "device-replace/index",
         "ota/index",
         "device-manage/index",
-        "device-manage/device-detail/index"
+        "device-manage/device-detail/index",
+        "voice-control/index"
       ]
     },
     {
