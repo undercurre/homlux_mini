@@ -14,9 +14,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
-    urls: {
-      voiceIntro: '/package-mine/voice-intro/index',
-    },
+
   },
 
   computed: {},
@@ -31,11 +29,7 @@ ComponentWithComputed({
   },
 
   methods: {
-    toPage(e: { currentTarget: { dataset: { url: string } } }) {
-      wx.navigateTo({
-        url: e.currentTarget.dataset.url,
-      })
-    },
+
 
 
 
