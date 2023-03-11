@@ -19,7 +19,7 @@
     </view>
   </view>
 
-  <scroll-view class="h-200 box-border grow px-24rpx mt-32rpx" scroll-y>
+  <scroll-view class="h-1000rpx box-border grow px-24rpx mt-32rpx" scroll-y>
     <view class="bg-white rounded-32rpx" style="overflow: hidden">
       <van-cell wx:for="{{areaList}}" wx:key="index" title="{{item.fullname}}" data-item="{{item}}" bind:tap="onAreaClick" />
     </view>
