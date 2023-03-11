@@ -29,6 +29,8 @@ ComponentWithComputed({
     cityList: [] as any[],
     townList: [] as any[],
     curSearchResult: [] as string[],
+    isShowPosition: false,
+    curPosition: ''
   },
 
   computed: {},
@@ -45,12 +47,53 @@ ComponentWithComputed({
   methods: {
     updateCurLocation() {
       const houseArea = homeBinding.store.currentHomeDetail.houseArea
-      let result: string
-      if (houseArea) result = houseArea
-      else result = (storage.get('position_location', '') as string) || '未选择'
+      const position = storage.get('position_location', '') as string
       this.setData({
-        curLocation: result,
+        curLocation: this.data.isShowPosition ? position : houseArea || position,
+        curPosition: position
       })
+      if (!position) this.rePosition()
+    },
+    rePosition() {
+      const myQQMapWX = new QQMapWX({
+        key: this.data.key,
+      })
+      const that = this
+      wx.getFuzzyLocation({
+        type: 'wgs84',
+        success(res) {
+          const latitude = res.latitude
+          const longitude = res.longitude
+          myQQMapWX.reverseGeocoder({
+            sig: that.data.sig,
+            location: {
+              latitude: latitude,
+              longitude: longitude,
+            },
+            success: function (res: any) {
+              const addr = res.result.address_component
+              const result = addr.province + addr.city + addr.district
+              that.setData({
+                curPosition: result,
+              })
+              storage.set('position_location', result)
+            },
+            fail: function () {
+              console.log('lmn>>>rePosition::获取地理位置失败')
+            },
+          })
+        },
+        fail() {
+          console.log('lmn>>>rePosition::微信定位失败')
+        },
+      })
+    },
+    onPositionClick() {
+      this.setData({
+        isShowPosition: true
+      })
+      this.updateCurLocation()
+      this.changeHomeLocation()
     },
     initCityData() {
       const myQQMapWX = new QQMapWX({
@@ -274,6 +317,9 @@ ComponentWithComputed({
           list = [{ name: item.fullname, isSelected: false, cidx: [] }]
           this.setIndicatorItems(0, list)
           this.setCurIndicatorIndex(0)
+          this.setData({
+            isShowPosition: false
+          })
           this.changeHomeLocation()
         }
       } else if (this.data.curIndicatorIndex === 1) {
@@ -290,20 +336,30 @@ ComponentWithComputed({
           list = [{ name: item.fullname, isSelected: false, cidx: [] }]
           this.setIndicatorItems(1, list)
           this.setCurIndicatorIndex(1)
+          this.setData({
+            isShowPosition: false
+          })
           this.changeHomeLocation()
         }
       } else if (this.data.curIndicatorIndex === 2) {
         const list = [{ name: item.fullname, isSelected: false, cidx: [] }]
         this.setIndicatorItems(2, list)
         this.setCurIndicatorIndex(2)
+        this.setData({
+          isShowPosition: false
+        })
         this.changeHomeLocation()
       }
     },
     changeHomeLocation() {
       let location: string = ''
-      this.data.indicatorList.forEach((item) => {
-        location += item.name
-      })
+      if (this.data.isShowPosition) {
+        location = this.data.curPosition
+      } else {
+        this.data.indicatorList.forEach((item) => {
+          location += item.name
+        })
+      }
       if (location == '') return
       homeBinding.store.updateHomeNameOrLocation(undefined, location).then(() => {
         this.updateCurLocation()
