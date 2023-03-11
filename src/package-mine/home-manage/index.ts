@@ -112,6 +112,9 @@ ComponentWithComputed({
             },
           })
         },
+        fail() {
+          console.log('lmn>>>getLocation::微信定位失败')
+        },
       })
     },
     /**

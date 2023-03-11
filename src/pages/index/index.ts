@@ -85,7 +85,9 @@ ComponentWithComputed({
     },
 
     onShow() {
-      this.inviteMember()
+      setTimeout(() => {
+        this.inviteMember()
+      }, 1000);
       if (homeStore.currentHomeId) {
         homeStore.updateRoomCardList()
       }
@@ -108,12 +110,12 @@ ComponentWithComputed({
       const time = enterQuery.time as string
       if (token && type && houseId && time) {
         console.log(`lmn>>>邀请参数:token=${token}/type=${type}/houseId=${houseId}/time=${time}`)
-        homeBinding.store.homeList.forEach((item) => {
-          if (item.houseId == houseId) {
+        for (let i = 0; i < homeBinding.store.homeList.length; i++) {
+          if (homeBinding.store.homeList[i].houseId == houseId) {
             console.log('lmn>>>已经在该家庭')
             return
           }
-        })
+        }
         const now = new Date().valueOf()
         if (now - parseInt(time) > 86400000) {
           console.log('lmn>>>邀请超时')
