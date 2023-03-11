@@ -14,6 +14,10 @@ ComponentWithComputed({
     BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding, homeBinding, deviceBinding] }),
   ],
   data: {
+    navigationBarAndStatusBarHeight:
+      (storage.get<number>('statusBarHeight') as number) +
+      (storage.get<number>('navigationBarHeight') as number) +
+      'px',
     dropdownMenu: {
       x: '0px',
       y: '0px',

@@ -3,6 +3,6 @@
   "enablePullDownRefresh": true,
   "usingComponents": {
     "cell": "./cell/index",
-    "drag": "../components/drag/index"
+    "drag": "/components/drag/index"
   }
 }

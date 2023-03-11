@@ -1,4 +1,3 @@
 <view class="page-container flex flex-col pb-128rpx">
   <nav-bar background="#eef2f7" leftArrow="{{true}}" bind:leftTap="goBack" title="操作步骤"></nav-bar>
-
 </view>

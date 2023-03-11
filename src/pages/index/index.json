@@ -2,8 +2,7 @@
   "component": true,
   "usingComponents": {
     "room-card": "./components/room-card/index",
-    "van-toast": "@vant/weapp/toast/index",
-    "van-dialog": "@vant/weapp/dialog/index"
+    "drag": "/components/drag/index"
   },
   "navigationStyle": "custom"
 }

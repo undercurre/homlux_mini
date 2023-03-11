@@ -6,6 +6,7 @@ export * from './aesUtil'
 export * from './strUtil'
 export * from './wifiProtocol'
 export * from './bleProtocol'
+export * from './eventBus'
 
 export function delay(ms: number) {
   return new Promise<void>((resolve) => {

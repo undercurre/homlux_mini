@@ -1,6 +1,6 @@
 <view class="h-180rpx">
-  <van-cell-group inset custom-class="cell">
-    <van-cell clickable center data-item="{{item.data}}" bind:click="handleToSetting">
+  <van-cell-group inset custom-class="cell" border="{{ false }}">
+    <van-cell border="{{ false }}" clickable center data-item="{{item.data}}" bind:click="handleToSetting">
       <view slot="title" class="flex items-center h-100rpx">
         <image src="/assets/img/scene/{{item.data.sceneIcon}}.png" class="w-72rpx h-72rpx" />
         <view class="flex flex-col items-start ml-24rpx">

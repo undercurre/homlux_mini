@@ -1,9 +1,9 @@
 /* package-mine/voice-control/index.wxss */
 .right-btn {
-    /* background-image: linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%); */
-    background-color: #468CFB;
-    border-radius: 16px;
-    color: #fff;
-    display: inline-block;
-    font-size: 14px;
+  /* background-image: linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%); */
+  background-color: #468cfb;
+  border-radius: 16px;
+  color: #fff;
+  display: inline-block;
+  font-size: 14px;
 }

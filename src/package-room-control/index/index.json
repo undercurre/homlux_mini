@@ -3,7 +3,7 @@
   "navigationStyle": "custom",
   "usingComponents": {
     "card": "./components/card/index",
-    "drag": "../components/drag/index",
+    "drag": "/components/drag/index",
     "device-control-popup": "./components/device-control-popup/index",
     "add-scene-popup": "./components/add-scene-popup/index"
   }

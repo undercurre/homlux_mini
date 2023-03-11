@@ -13,25 +13,16 @@ ComponentWithComputed({
   /**
    * 页面的初始数据
    */
-  data: {
-
-  },
+  data: {},
 
   computed: {},
 
   lifetimes: {
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
-    attached: function () {
-
-    },
+    attached: function () {},
     moved: function () {},
     detached: function () {},
   },
 
-  methods: {
-
-
-
-
-  },
+  methods: {},
 })

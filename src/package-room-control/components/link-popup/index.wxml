@@ -16,7 +16,7 @@
       <scroll-view enhanced show-scrollbar="{{false}}" scroll-x style="height: {{contentHeight}}px; width: 750rpx;" binddragging="handleContentDragging">
         <view class="flex">
           <block wx:if="{{linkType==='scene'}}">
-            <view class="w-750rpx flex mt-44rpx " wx:for="{{sceneListMatrix}}" wx:for-item="pageList" wx:key="index">
+            <view class="w-750rpx flex mt-44rpx" wx:for="{{sceneListMatrix}}" wx:for-item="pageList" wx:key="index">
               <view class="w-32rpx"></view>
               <view class="w-686rpx grid grid-cols-2 gap-x-20rpx gap-y-24rpx">
                 <scene-card wx:for="{{pageList}}" wx:key="sceneId" bind:cardTap="handleCardTap" scene-info="{{item}}" select="{{module.includes(selectList, item.sceneId)}}" />
@@ -25,7 +25,7 @@
             </view>
           </block>
           <block wx:else>
-            <view class="w-686rpx mt-44rpx  mx-32rpx" wx:for="{{deviceListMatrix}}" wx:for-item="pageList" wx:key="index">
+            <view class="w-686rpx mt-44rpx mx-32rpx" wx:for="{{deviceListMatrix}}" wx:for-item="pageList" wx:key="index">
               <view class="w-686rpx grid grid-cols-4 gap-x-20rpx gap-y-24rpx">
                 <device-card wx:for="{{pageList}}" wx:key="uniId" bind:cardTap="handleCardTap" device-type="{{linkType === 'light' ? 'light' : 'switch'}}" device-info="{{item}}" select="{{module.includes(selectList, item.uniId)}}" />
               </view>

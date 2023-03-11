@@ -5,8 +5,8 @@ import { deviceStore, homeStore, sceneBinding, sceneStore } from '../../store/in
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { runInAction } from 'mobx-miniprogram'
 import { execScene, updateSceneSort } from '../../apis/scene'
-import { emitter } from '../../utils/eventBus'
 import Toast from '@vant/weapp/toast/toast'
+import { storage, emitter } from '../../utils/index'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [sceneBinding] }), pageBehavior],
@@ -14,6 +14,10 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    navigationBarAndStatusBarHeight:
+      (storage.get<number>('statusBarHeight') as number) +
+      (storage.get<number>('navigationBarHeight') as number) +
+      'px',
     isInit: false,
     contentHeight: 0,
     isRefresh: false,
@@ -22,14 +26,7 @@ ComponentWithComputed({
     scrollTop: 0,
   },
 
-  computed: {
-    opacity(data) {
-      if (data.scrollTop) {
-        return 20 - data.scrollTop < 0 ? 0 : (20 - data.scrollTop) / 20
-      }
-      return 1
-    },
-  },
+  computed: {},
 
   methods: {
     /**
