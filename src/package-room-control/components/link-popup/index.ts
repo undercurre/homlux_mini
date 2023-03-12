@@ -1,6 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-// import { proType } from '../../../config/index'
 import { deviceBinding, roomBinding, roomStore } from '../../../store/index'
 
 ComponentWithComputed({

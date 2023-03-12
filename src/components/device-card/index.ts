@@ -79,8 +79,12 @@ ComponentWithComputed({
         const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
         if (data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
           const switchSceneMap = deviceStore.switchSceneMap
-          if (switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]) {
-            const sceneIdMp = sceneStore.sceneIdMp
+          const sceneIdMp = sceneStore.sceneIdMp
+          if (
+            switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`] &&
+            sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]] &&
+            sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]].sceneName
+          ) {
             name = sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]].sceneName
           } else {
             name = data.deviceInfo.deviceName

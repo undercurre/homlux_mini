@@ -1,5 +1,5 @@
 {
-  "pages": ["pages/index/index", "pages/login/index", "pages/mine/index", "pages/protoShow/index"],
+  "pages": ["pages/index/index", "pages/login/index", "pages/mine/index", "pages/protocolShow/index"],
   "subpackages": [
     {
       "root": "package-distribution",

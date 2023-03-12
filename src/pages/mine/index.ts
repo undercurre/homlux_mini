@@ -30,7 +30,7 @@ Component({
       ota: '/package-mine/ota/index',
       deviceReplace: '/package-mine/device-replace/index',
       feedback: '/package-mine/feedback/index',
-      about: '/package-mine/about/index',
+      about: '/pages/protocolShow/index?protocal=userService',
     },
   },
   methods: {

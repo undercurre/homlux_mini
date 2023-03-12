@@ -34,6 +34,12 @@ export const deviceStore = observable({
     return Object.fromEntries(deviceStore.deviceList.map((device: Device.DeviceItem) => [device.deviceId, device]))
   },
 
+  get allRoomDeviceMap(): Record<string, Device.DeviceItem> {
+    return Object.fromEntries(
+      deviceStore.allRoomDeviceList.map((device: Device.DeviceItem) => [device.deviceId, device]),
+    )
+  },
+
   /**
    * 将有多个按键的开关拍扁，保证每个设备和每个按键都是独立一个item，并且uniId唯一
    */

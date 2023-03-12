@@ -29,6 +29,7 @@ ComponentWithComputed({
       type: Boolean,
       value: true,
       observer(value) {
+        this.updateCurrentLinkTypeDesc()
         const from = this.data._bottom
         const to = value ? 0 : this.data._minHeight - this.data._componentHeight
         this.data._bottom = to
@@ -84,6 +85,7 @@ ComponentWithComputed({
     /** 已选中设备或场景 */
     linkSelectList: [] as string[],
     showLinkPopup: false,
+    showSelectLinkPopup: false,
     relId: {
       switchRelId: '',
       lightRelId: '',
@@ -91,6 +93,7 @@ ComponentWithComputed({
     selectSwitchUniId: '',
     allOnPress: false,
     allOffPress: false,
+    currentLinkTypeDesc: '未关联',
   },
 
   computed: {
@@ -145,6 +148,7 @@ ComponentWithComputed({
      * @param value 选择列表
      */
     selectList(value) {
+      this.updateCurrentLinkTypeDesc()
       const from = -this.data._componentHeight
       const to = this.properties.popup ? 0 : this.data._bottom
       if (this.data._componentHeight === 0) {
@@ -207,6 +211,9 @@ ComponentWithComputed({
         })
       }
     },
+    allRoomDeviceList() {
+      this.updateCurrentLinkTypeDesc()
+    },
   },
 
   lifetimes: {
@@ -243,6 +250,25 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
+    updateCurrentLinkTypeDesc() {
+      if (deviceStore.selectList) {
+        let mode = '未关联'
+        const switchUniId = deviceStore.selectList.find((uniId) => uniId.includes(':'))
+        if (switchUniId) {
+          const rel = deviceStore.deviceRelMap[switchUniId]
+          if (rel && rel.lightRelId) {
+            mode = '关联灯'
+          } else if (rel && rel.switchRelId) {
+            mode = '关联开关'
+          } else if (deviceStore.switchSceneMap[switchUniId]) {
+            mode = '关联场景'
+          }
+        }
+        this.setData({
+          currentLinkTypeDesc: mode,
+        })
+      }
+    },
     handleTouchStart(e: WechatMiniprogram.TouchEvent) {
       if (e.touches.length > 1) {
         this.data._isTouchStart = false
@@ -264,16 +290,16 @@ ComponentWithComputed({
     handlePopup() {
       this.triggerEvent('popMove', 'up')
     },
-    handleLinkPopup(e: { currentTarget: { dataset: { link: 'light' | 'switch' | 'scene' } } }) {
-      const deviceMap = deviceStore.deviceMap
+    handleLinkPopup() {
+      const deviceMap = deviceStore.allRoomDeviceMap
       const switchUniId = deviceStore.selectList.find((uniId) => uniId.includes(':'))
       // 关联设备或者场景，必须要选中一个开关
       if (!switchUniId) {
         return
       }
-      if (e.currentTarget.dataset.link === 'scene') {
+      if (this.data.linkType === 'scene') {
         this.setData({
-          linkType: e.currentTarget.dataset.link,
+          linkType: this.data.linkType,
           list: [...sceneStore.allRoomSceneList],
           linkSelectList: deviceStore.switchSceneMap[switchUniId] ? [deviceStore.switchSceneMap[switchUniId]] : [],
           showLinkPopup: true,
@@ -288,12 +314,12 @@ ComponentWithComputed({
       const lightRelId = switchItem?.lightRelId ?? ''
       let linkSelectList = [] as string[]
       let list = [] as Device.DeviceItem[]
-      if (e.currentTarget.dataset.link === 'light') {
+      if (this.data.linkType === 'light') {
         list = deviceStore.allRoomDeviceFlattenList.filter((item) => !item.uniId.includes(':'))
         linkSelectList = list
           .filter((device) => device.lightRelId !== '' && device.lightRelId === lightRelId)
           .map((device) => device.deviceId)
-      } else if (e.currentTarget.dataset.link === 'switch') {
+      } else if (this.data.linkType === 'switch') {
         list = deviceStore.allRoomDeviceFlattenList
           .filter((item) => item.uniId.includes(':'))
           .filter((item) => item.uniId !== switchUniId)
@@ -305,7 +331,7 @@ ComponentWithComputed({
           .map((device) => device.uniId)
       }
       this.setData({
-        linkType: e.currentTarget.dataset.link,
+        linkType: this.data.linkType,
         list,
         linkSelectList,
         relId: {
@@ -325,10 +351,14 @@ ComponentWithComputed({
         })
         return
       }
-      const deviceMap = deviceStore.deviceMap
+      const deviceMap = deviceStore.allRoomDeviceMap
       if (this.data.linkType === 'light') {
         if (deviceMap[e.detail].lightRelId && this.data.relId.lightRelId !== deviceMap[e.detail].lightRelId) {
-          Toast('设备已被关联')
+          // Toast('设备已被关联')
+          wx.showToast({
+            icon: 'none',
+            title: '设备已被关联',
+          })
           return
         }
         this.setData({
@@ -339,7 +369,11 @@ ComponentWithComputed({
           (switchItem) => switchItem.switchId === e.detail.split(':')[1],
         )
         if (switchItem?.switchRelId && this.data.relId.switchRelId !== switchItem?.switchRelId) {
-          Toast('设备已被关联')
+          // Toast('设备已被关联')
+          wx.showToast({
+            icon: 'none',
+            title: '设备已被关联',
+          })
           return
         }
         this.setData({
@@ -350,6 +384,46 @@ ComponentWithComputed({
           linkSelectList: [e.detail],
         })
       }
+    },
+    handleSelectLinkPopup() {
+      const switchUniId = deviceStore.selectList.find((uniId) => uniId.includes(':'))
+      if (switchUniId) {
+        const rel = deviceStore.deviceRelMap[switchUniId]
+        if (rel && rel.lightRelId) {
+          this.setData({
+            linkType: 'light',
+          })
+        } else if (rel && rel.switchRelId) {
+          this.setData({
+            linkType: 'switch',
+          })
+        } else if (deviceStore.switchSceneMap[switchUniId]) {
+          this.setData({
+            linkType: 'scene',
+          })
+        } else {
+          this.setData({
+            linkType: '',
+          })
+        }
+      }
+      this.setData({
+        showSelectLinkPopup: true,
+      })
+    },
+    handleSelectLinkPopupClose() {
+      this.setData({
+        showSelectLinkPopup: false,
+      })
+    },
+    handleSelectLinkPopupConfirm(e: { detail: 'light' | 'switch' | 'scene' }) {
+      this.setData({
+        showSelectLinkPopup: false,
+        linkType: e.detail,
+      })
+      setTimeout(() => {
+        this.handleLinkPopup()
+      }, 500)
     },
     handleLinkPopupClose() {
       this.setData({
@@ -364,8 +438,21 @@ ComponentWithComputed({
       }
       const relId = rel.lightRelId ? rel.lightRelId : rel.switchRelId!
       const relDeviceList = deviceStore.relDeviceMap[relId]
+      const distSwitchList = relDeviceList.filter((uniId) => uniId !== `${deviceId}:${ep}` && uniId.includes(':'))
       if (relDeviceList.length <= 2) {
         // 只剩下2个设备关联，直接删除关联
+        const res = await delAssociated({
+          relType: rel.lightRelId ? '0' : '1',
+          lightRelId: relId,
+          switchRelId: relId,
+        })
+        if (res.success) {
+          return true
+        }
+        Toast('取消关联失败')
+        return false
+      } else if (distSwitchList.length === 0) {
+        // 只剩下一个开关绑灯，直接删除
         const res = await delAssociated({
           relType: rel.lightRelId ? '0' : '1',
           lightRelId: relId,
@@ -568,7 +655,7 @@ ComponentWithComputed({
       if (!switchUniId) {
         return
       }
-      const selectDevice = deviceStore.deviceMap[switchUniId.split(':')[0]]
+      const selectDevice = deviceStore.allRoomDeviceMap[switchUniId.split(':')[0]]
       const switchId = switchUniId.split(':')[1]
       // 先解开开关的其他关联
       const res = await this.removeRel(selectDevice.deviceId, switchId)
@@ -666,10 +753,13 @@ ComponentWithComputed({
       } else if (this.data.linkType === 'scene') {
         await this.updataSceneLink()
       }
-      sceneStore.updateSceneList()
-      sceneStore.updateAllRoomSceneList()
-      deviceStore.updateSubDeviceList()
-      deviceStore.updateAllRoomDeviceList()
+      await Promise.all([
+        sceneStore.updateSceneList(),
+        sceneStore.updateAllRoomSceneList(),
+        deviceStore.updateSubDeviceList(),
+        deviceStore.updateAllRoomDeviceList(),
+      ])
+      this.triggerEvent('updateList')
     },
     handleTabTap(e: { currentTarget: { dataset: { tab: 'light' | 'switch' | 'curtain' } } }) {
       this.setData({
@@ -677,7 +767,7 @@ ComponentWithComputed({
       })
     },
     async switchSendDeviceControl(OnOff: number) {
-      const deviceMap = deviceStore.deviceMap
+      const deviceMap = deviceStore.allRoomDeviceMap
       // 按照网关区分
       const gatewaySelectDeviceMap: Record<string, Device.DeviceItem[]> = {}
       deviceStore.selectList
@@ -728,7 +818,7 @@ ComponentWithComputed({
       })
     },
     async lightSendDeviceControl(type: 'colorTemp' | 'level' | 'onOff', OnOff?: number) {
-      const deviceMap = deviceStore.deviceMap
+      const deviceMap = deviceStore.allRoomDeviceMap
       // 拿出选中的设备
       const selectLightDevice: Device.DeviceItem[] = []
       deviceStore.selectList

@@ -28,7 +28,7 @@
         <view class="px-32rpx">
           <view class="h-32rpx"></view>
           <van-slider data-type-="level" bind:change="handleLevelChange" bind:drag="handleLevelDrag" bind:drag-end="handleLevelDragEnd" value="{{lightInfoInner.Level}}" min="{{1}}" use-button-slot custom-class="slider-brightness-bar" active-color="rgba(0,0,0,0)" bar-height="24rpx">
-            <image slot="button" src="/assets/img/device-control/btn.png" class="w-88rpx h-88rpx" />
+            <image slot="button" src="/assets/img/device-control/btn.png" class="w-88rpx h-88rpx mt-6rpx" />
           </van-slider>
           <view class="h-32rpx"></view>
         </view>
@@ -36,7 +36,7 @@
         <view class="px-32rpx">
           <view class="h-32rpx"></view>
           <van-slider data-type-="colorTemp" bind:change="handleColorTempChange" bind:drag="handleColorTempDrag" bind:drag-end="handleColorTempDragEnd" value="{{lightInfoInner.ColorTemp}}" use-button-slot custom-class="slider-color-temp-bar" active-color="rgba(0,0,0,0)" bar-height="24rpx">
-            <image slot="button" src="/assets/img/device-control/btn.png" class="w-88rpx h-88rpx" />
+            <image slot="button" src="/assets/img/device-control/btn.png" class="w-88rpx h-88rpx mt-6rpx" />
           </van-slider>
           <view class="h-32rpx"></view>
         </view>
@@ -45,6 +45,10 @@
       <view wx:if="{{tab==='switch'}}" class="flex flex-col w-750rpx">
         <view class="h-22rpx"></view>
         <van-cell-group inset wx:if="{{!isSelectMultiSwitch}}">
+          <van-cell is-link title="模式设置" value="{{currentLinkTypeDesc}}" custom-class="switch-cell" bind:click="handleSelectLinkPopup"></van-cell>
+        </van-cell-group>
+        <view class="h-220rpx"></view>
+        <!-- <van-cell-group inset wx:if="{{!isSelectMultiSwitch}}">
           <van-cell clickable custom-class="switch-cell" data-link="switch" bind:click="handleLinkPopup">
             <view class="flex flex-col items-start">
               <text class="text-32rpx text-black-2a font-medium h-44rpx">关联智能开关</text>
@@ -74,7 +78,7 @@
             </view>
             <svg-icon slot="right-icon" color="#555659" name="icon-park:right" width="48rpx" height="48rpx"></svg-icon>
           </van-cell>
-        </van-cell-group>
+        </van-cell-group> -->
       </view>
       <!-- 窗帘控制 -->
       <view wx:if="{{tab==='curtain'}}" class="w-full h-full flex-center">
@@ -108,6 +112,7 @@
   </view>
 </view>
 
+<select-link-popup show="{{showSelectLinkPopup}}" linkType="{{linkType}}" bind:close="handleSelectLinkPopupClose" bind:confirm="handleSelectLinkPopupConfirm"></select-link-popup>
 <link-popup show="{{showLinkPopup}}" list="{{list}}" selectList="{{linkSelectList}}" linkType="{{linkType}}" bind:close="handleLinkPopupClose" bind:select="handleLinkSelect" bind:confirm="handleLinkPopupConfirm" />
 
-<van-toast id="van-toast" />
+<van-toast id="van-toast" zIndex="{{9999}}" />

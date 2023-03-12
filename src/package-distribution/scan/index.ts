@@ -258,8 +258,8 @@ ComponentWithComputed({
       if (params.ssid === 'homlux_ble') {
         const key = `midea@homlux${params.mac.substr(-4)}`
         const test = aesUtil.encrypt('midea.light.003.002', key)
-        // const modelId = aesUtil.decrypt(params.pid, key)
-        console.log('test', test, aesUtil.decrypt(test, key, 'Hex'))
+        const modelId = aesUtil.decrypt(params.pid, key)
+        console.log('test', test, aesUtil.decrypt(test, key, 'Hex'),modelId)
       }
 
       // 获取云端的产品基本信息

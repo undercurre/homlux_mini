@@ -1,0 +1,47 @@
+<import src="/commons/templates/popup.wxml" />
+<van-popup show="{{ show }}" z-index="10001" round position="bottom" bind:close="handleClose">
+  <view class="w-750rpx h-870rpx relative flex flex-col items-center">
+    <view class="flex-center mt-28rpx" style="margin-bottom: -16rpx;">
+      <image class="w-60rpx h-20rpx" src="/assets/img/base/popup-down.png"></image>
+    </view>
+    <template is="title" data="{{title: '模式设置'}}" />
+    <view class="link-switch h-146rpx w-686rpx flex-center mt-32rpx" data-type="switch" bindtap="handleTypeSelect">
+      <view class="w-160rpx flex-center">
+        123
+      </view>
+      <view class="flex-1 flex flex-col item-center">
+        <text class="text-hex-373cdf text-32rpx font-medium">关联开关</text>
+        <text class="text-hex-373cdf text-22rpx opacity-80 mt-12rpx">开关连接到另一开关</text>
+      </view>
+      <view class="mr-40rpx">
+        <image src="/assets/img/base/{{linkTypeInner==='switch'?'check':'uncheck'}}.png" class="w-48rpx h-48rpx" />
+      </view>
+    </view>
+    <view class="link-light h-146rpx w-686rpx flex-center mt-24rpx" data-type="light" bindtap="handleTypeSelect">
+      <view class="w-160rpx flex-center">
+        123
+      </view>
+      <view class="flex-1 flex flex-col item-center">
+        <text class="text-hex-de7e28 text-32rpx font-medium">关联灯光</text>
+        <text class="text-hex-de7e28 text-22rpx opacity-80 mt-12rpx">通过开关连接智能灯</text>
+      </view>
+      <view class="mr-40rpx">
+        <image src="/assets/img/base/{{linkTypeInner==='light'?'check':'uncheck'}}.png" class="w-48rpx h-48rpx" />
+      </view>
+    </view>
+    <view class="link-scene h-146rpx w-686rpx flex-center mt-24rpx" data-type="scene" bindtap="handleTypeSelect">
+      <view class="w-160rpx flex-center">
+        123
+      </view>
+      <view class="flex-1 flex flex-col item-center">
+        <text class="text-hex-1454ae text-32rpx font-medium">关联智能场景</text>
+        <text class="text-hex-1454ae text-22rpx opacity-80 mt-12rpx">通过开关触发场景</text>
+      </view>
+      <view class="mr-40rpx">
+        <image src="/assets/img/base/{{linkTypeInner==='scene'?'check':'uncheck'}}.png" class="w-48rpx h-48rpx" />
+      </view>
+    </view>
+    <view class="h-54rpx"></view>
+    <template is="bottom-btn" />
+  </view>
+</van-popup>

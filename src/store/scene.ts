@@ -18,7 +18,7 @@ export const sceneStore = observable({
   selectSceneIndex: -1,
 
   get sceneIdMp(): Record<string, Scene.SceneItem> {
-    return Object.fromEntries(sceneStore.sceneList.map((scene) => [scene.sceneId, scene]))
+    return Object.fromEntries(sceneStore.allRoomSceneList.map((scene) => [scene.sceneId, scene]))
   },
 
   get roomSceneList(): Record<string, Scene.SceneItem[]> {

@@ -1,6 +1,7 @@
 {
   "component": true,
   "usingComponents": {
-    "link-popup": "../../../components/link-popup/index"
+    "link-popup": "../../../components/link-popup/index",
+    "select-link-popup": "../select-link-popup/index"
   }
 }

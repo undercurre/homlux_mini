@@ -95,6 +95,11 @@ ComponentWithComputed({
      * 生命周期函数--监听页面加载
      */
     onLoad() {
+      runInAction(() => {
+        deviceStore.deviceList = deviceStore.allRoomDeviceList.filter(
+          (device) => device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId,
+        )
+      })
       this.onPullDownRefresh()
       emitter.on('wsReceive', async (e) => {
         if (!throttleTimer) {
@@ -147,9 +152,9 @@ ComponentWithComputed({
 
     async onPullDownRefresh() {
       try {
-        sceneStore.updateAllRoomSceneList()
+        await sceneStore.updateAllRoomSceneList()
         await deviceStore.updateSubDeviceList(undefined, undefined, { loading: true })
-        sceneStore.updateSceneList()
+        await sceneStore.updateSceneList()
         this.updateDeviceList()
       } finally {
         wx.stopPullDownRefresh()

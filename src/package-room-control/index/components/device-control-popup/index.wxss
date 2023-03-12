@@ -10,9 +10,10 @@
 }
 
 .switch-cell {
-  border: 2rpx solid #dddddd;
+  border: 2rpx solid #ddd;
   border-radius: 32rpx;
-  padding: 24rpx 32rpx;
+  padding: 34rpx 32rpx !important;
+  height: 112rpx;
 }
 
 .btn-press {

@@ -73,5 +73,16 @@ Component({
         isAgree: event.detail,
       })
     },
+
+    handlePrivacyPolicyTap() {
+      wx.navigateTo({
+        url: '/pages/protocolShow/index?protocal=privacyPolicy'
+      })
+    },
+    handleUserServicePolicyTap() {
+      wx.navigateTo({
+        url: '/pages/protocolShow/index?protocal=userService'
+      })
+    }
   },
 })
