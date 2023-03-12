@@ -76,13 +76,13 @@ Component({
 
     handlePrivacyPolicyTap() {
       wx.navigateTo({
-        url: '/pages/protocolShow/index?protocal=privacyPolicy'
+        url: '/pages/protocolShow/index?protocal=privacyPolicy',
       })
     },
     handleUserServicePolicyTap() {
       wx.navigateTo({
-        url: '/pages/protocolShow/index?protocal=userService'
+        url: '/pages/protocolShow/index?protocal=userService',
       })
-    }
+    },
   },
 })
