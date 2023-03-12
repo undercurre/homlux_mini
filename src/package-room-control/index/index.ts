@@ -26,6 +26,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    showDeviceOffline: false,
     controlPopup: true,
     showAddScenePopup: false,
     contentHeight: 0,
@@ -172,6 +173,17 @@ ComponentWithComputed({
       emitter.off('wsReceive')
     },
 
+    handleShowDeviceOffline() {
+      this.setData({
+        showDeviceOffline: true,
+      })
+    },
+    handleCloseDeviceOffice() {
+      this.setData({
+        showDeviceOffline: false,
+      })
+    },
+
     updateDeviceList() {
       const flattenList = deviceStore.deviceFlattenList
       const lightList = flattenList
@@ -312,7 +324,7 @@ ComponentWithComputed({
       // 首页需要更新灯光打开个数
       homeStore.updateCurrentHomeDetail()
     },
-    handleLightSortEnd(e: { detail: { listData: Device.DeviceItem[] } }) {
+    async handleLightSortEnd(e: { detail: { listData: Device.DeviceItem[] } }) {
       const orderData = {
         deviceInfoByDeviceVoList: [],
         type: '0',
@@ -330,9 +342,10 @@ ComponentWithComputed({
       if (orderData.deviceInfoByDeviceVoList.length === 0) {
         return
       }
-      saveDeviceOrder(orderData)
+      await saveDeviceOrder(orderData)
+      deviceStore.updateSubDeviceList()
     },
-    handleSwitchSortEnd(e: { detail: { listData: Device.DeviceItem[] } }) {
+    async handleSwitchSortEnd(e: { detail: { listData: Device.DeviceItem[] } }) {
       const orderData = {
         deviceInfoByDeviceVoList: [],
         type: '1',
@@ -351,7 +364,8 @@ ComponentWithComputed({
       if (orderData.deviceInfoByDeviceVoList.length === 0) {
         return
       }
-      saveDeviceOrder(orderData)
+      await saveDeviceOrder(orderData)
+      deviceStore.updateSubDeviceList()
     },
     async handleSwitchControlTapToggle(e: { detail: Device.DeviceItem }) {
       const ep = e.detail.switchInfoDTOList[0].switchId

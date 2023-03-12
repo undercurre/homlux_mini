@@ -11,8 +11,12 @@
 <!-- 标题 -->
 <nav-bar title="场景" z-index="{{113}}" left-arrow bind:leftTap="goBack"></nav-bar>
 
+<view class="mt-32rpx ml-48rpx">
+  <text class="text-hex-555659 text-28rpx">长按可调整首页顺序</text>
+</view>
+
 <!-- 页面主体 -->
-<view class="h-24rpx"></view>
+<view class="h-32rpx"></view>
 <drag id="drag" list-data="{{listData}}" scroll-top="{{scrollTop}}" item-height="{{180}}" generic:item="cell" bind:toSetting="toSetting" bind:exec="handleExecScene" bind:change="handleChange" bind:sortend="handleSortEnd" bind:scroll="handleScroll"></drag>
 <view class="h-64rpx"></view>
 

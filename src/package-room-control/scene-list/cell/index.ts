@@ -16,13 +16,23 @@ Component({
   /**
    * 组件的初始数据
    */
-  data: {},
+  data: {
+    tapAnimate: false,
+  },
 
   /**
    * 组件的方法列表
    */
   methods: {
     handleExecScene(e: WechatMiniprogram.TouchEvent) {
+      this.setData({
+        tapAnimate: true,
+      })
+      setTimeout(() => {
+        this.setData({
+          tapAnimate: false,
+        })
+      }, 700)
       this.triggerEvent('exec', e.currentTarget.dataset.item)
     },
     handleToSetting(e: WechatMiniprogram.TouchEvent) {

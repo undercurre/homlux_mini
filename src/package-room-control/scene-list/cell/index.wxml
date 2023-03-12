@@ -11,7 +11,13 @@
           </view>
         </view>
       </view>
-      <van-button slot="right-icon" data-item="{{item.data}}" catchtap="handleExecScene" custom-class="exec-btn" type="default">执行</van-button>
+      <view slot="right-icon" class="btn-raw w-110rpx h-64rpx relative rounded-24rpx overflow-hidden flex-center" data-item="{{item.data}}" catchtap="handleExecScene">
+        <text class="text-blue text-28rpx">执行</text>
+        <view class="absolute left-0 top-0 opacity-0 w-full h-full flex-center {{tapAnimate?'btn-tap':''}}">
+          <text class="text-hex-fff text-28rpx">执行</text>
+        </view>
+      </view>
+      <!-- <van-button slot="right-icon" data-item="{{item.data}}" catchtap="handleExecScene" custom-class="exec-btn" type="default">执行</van-button> -->
     </van-cell>
   </van-cell-group>
 </view>

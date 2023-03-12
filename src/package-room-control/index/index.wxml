@@ -19,7 +19,8 @@
   <!-- 有设备页面主体 -->
   <view wx:else class="w-750rpx flex flex-col items-center">
     <!-- 场景 -->
-    <view class="scene-card-bg w-686rpx h-96rpx flex items-center rounded-24rpx mt-24rpx" bindtap="handleSceneTap">
+    <view class="scene-card w-686rpx h-96rpx flex items-center rounded-24rpx mt-24rpx relative" bindtap="handleSceneTap">
+      <image src="/assets/img/device-control/scene.png" class="absolute left-0 top-0 w-686rpx h-96rpx scene-card-bg" />
       <image src="/assets/img/base/scene.png" class="w-64rpx h-64rpx ml-24rpx"></image>
       <text id="scene-title" class="text-32rpx text-hex-333333 font-medium ml-16rpx">场景</text>
       <view class="flex flex-1 justify-end items-center">
@@ -38,7 +39,7 @@
       <view class="mt-24rpx" wx:if="{{lightList && lightList.length>0}}">
         <text class="text-24rpx text-black-59 ml-17rpx">灯具</text>
         <view class="w-720rpx mt-24rpx">
-          <drag id="drag-light" columns="{{4}}" list-data="{{lightList}}" scroll-top="{{scrollTop}}" item-height="{{240}}" generic:item="card" bind:sortend="handleLightSortEnd" bind:controlTap="handleLightPowerToggle" bind:cardTap="handleDeviceCardTap" bind:scroll="handleScroll"></drag>
+          <drag id="drag-light" columns="{{4}}" list-data="{{lightList}}" scroll-top="{{scrollTop}}" item-height="{{240}}" generic:item="card" bind:sortend="handleLightSortEnd" bind:controlTap="handleLightPowerToggle" bind:cardTap="handleDeviceCardTap" bind:scroll="handleScroll" bind:offlineTap="handleShowDeviceOffline"></drag>
         </view>
       </view>
 
@@ -46,7 +47,7 @@
       <view class="{{lightList && lightList.length > 0 ? '' : 'mt-24rpx'}}" wx:if="{{switchList && switchList.length>0}}">
         <text class="text-24rpx text-black-59 ml-17rpx">开关面板</text>
         <view class="w-720rpx mt-24rpx">
-          <drag id="drag-switch" columns="{{4}}" list-data="{{switchList}}" scroll-top="{{scrollTop}}" item-height="{{240}}" generic:item="card" bind:sortend="handleSwitchSortEnd" bind:controlTap="handleSwitchControlTapToggle" bind:cardTap="handleDeviceCardTap" bind:scroll="handleScroll"></drag>
+          <drag id="drag-switch" columns="{{4}}" list-data="{{switchList}}" scroll-top="{{scrollTop}}" item-height="{{240}}" generic:item="card" bind:sortend="handleSwitchSortEnd" bind:controlTap="handleSwitchControlTapToggle" bind:cardTap="handleDeviceCardTap" bind:scroll="handleScroll" bind:offlineTap="handleShowDeviceOffline"></drag>
         </view>
       </view>
 
@@ -77,3 +78,6 @@
 <add-scene-popup show="{{showAddScenePopup}}" bind:close="handleAddScenePopupClose" bind:addSuccess="handleShowAddSceneSuccess" />
 
 <van-toast id="van-toast" />
+<van-dialog use-slot title="子设备离线" show="{{ showDeviceOffline }}" bind:close="handleCloseDeviceOffice">
+  <image src="https://img.yzcdn.cn/1.jpg" />
+</van-dialog>

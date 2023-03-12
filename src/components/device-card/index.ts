@@ -106,12 +106,13 @@ ComponentWithComputed({
    */
   methods: {
     handleCardTap() {
-      this.triggerEvent('cardTap', this.data.deviceInfo)
-      // if (this.data.deviceInfo.onLineStatus) {
-      //   this.triggerEvent('cardTap', this.data.deviceInfo)
-      // } else {
-      //   Toast('设备已离线')
-      // }
+      // this.triggerEvent('cardTap', this.data.deviceInfo)
+      if (this.data.deviceInfo.onLineStatus) {
+        this.triggerEvent('cardTap', this.data.deviceInfo)
+      } else {
+        // this.triggerEvent('offlineTap')
+        Toast('设备已离线')
+      }
     },
     handlePowerTap() {
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
@@ -143,6 +144,7 @@ ComponentWithComputed({
         }, 550) as unknown as number
         this.triggerEvent('controlTap', this.data.deviceInfo)
       } else {
+        // this.triggerEvent('offlineTap')
         Toast('设备已离线')
       }
     },

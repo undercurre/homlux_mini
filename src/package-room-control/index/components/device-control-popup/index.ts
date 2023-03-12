@@ -817,6 +817,7 @@ ComponentWithComputed({
       if (throttleTimer) {
         return
       }
+      if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
       this.setData({
         allOnPress: true,
       })
@@ -836,6 +837,7 @@ ComponentWithComputed({
       if (throttleTimer) {
         return
       }
+      if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
       this.setData({
         allOffPress: true,
       })
