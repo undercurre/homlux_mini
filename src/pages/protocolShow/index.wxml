@@ -10,7 +10,7 @@
 <nav-bar title="{{title}}" z-index="{{113}}" left-arrow bind:leftTap="goBack"></nav-bar>
 
 <view class="w-750rpx flex-center">
-  <scroll-view scroll-x scroll-y style="width: calc(100vw - 48rpx);height: calc(100vh - navigationBarAndStatusBarHeight);">
+  <scroll-view scroll-x scroll-y style="width: calc(100vw - 48rpx); height: calc(100vh - navigationBarAndStatusBarHeight)">
     <rich-text nodes="{{doc}}"></rich-text>
   </scroll-view>
 </view>
