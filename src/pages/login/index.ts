@@ -74,14 +74,9 @@ Component({
       })
     },
 
-    handlePrivacyPolicyTap() {
+    toPage(e: WechatMiniprogram.TouchEvent) {
       wx.navigateTo({
-        url: '/pages/protocolShow/index?protocal=privacyPolicy',
-      })
-    },
-    handleUserServicePolicyTap() {
-      wx.navigateTo({
-        url: '/pages/protocolShow/index?protocal=userService',
+        url: '/pages/protocolShow/index?protocal=' + e.currentTarget.dataset.value,
       })
     },
   },

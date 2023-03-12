@@ -38,6 +38,16 @@
       </view>
     </view>
 
+    <view class="block">
+      <van-cell-group inset>
+        <van-cell title="设备管理" is-link center data-url="/package-mine/device-manage/index" bind:click="toPage" />
+      </van-cell-group>
+      <van-cell-group inset>
+        <van-cell title="成员管理" is-link center data-url="/package-mine/member-manage/index" bind:click="toPage" />
+      </van-cell-group>
+    </view>
+
+
     <view class="flex flex-row gap-46rpx pt-30rpx pb-128rpx px-32rpx">
       <van-button class="grow" size="large" bind:click="quitHome" plain wx:if="{{currentHomeDetail.houseUserAuth !== 1}}">退出家庭</van-button>
 

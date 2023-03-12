@@ -11,22 +11,24 @@
     <text class="text-40 text-hex-000 font-medium">{{userInfo.nickName}}</text>
     <text class="text-28 text-black-59 leading-40rpx pt-12rpx">{{userInfo.mobilePhone}}</text>
   </view>
-
   <!-- <image class="w-32rpx h-32rpx" src="/assets/img/base/arrow-right-mine.png"></image> -->
 </view>
 
-<view class="flex flex-row justify-between px-24rpx">
+<!-- <view class="flex flex-row justify-between px-24rpx">
   <view wx:for="{{managerList}}" wx:key="text" class="flex flex-col items-center pt-10rpx pb-24rpx grow" data-url="{{item.url}}" bindtap="toPage">
     <image src="{{item.icon}}" class="w-64 h-64"></image>
     <text class="pt-20rpx text-26 text-black-59 leading-none">{{item.text}}</text>
   </view>
-</view>
+</view> -->
+
+<view class="h-48rpx"></view>
 
 <van-cell-group inset>
-  <van-cell icon="/assets/img/mine/voiceControl.png" title="语音控制" is-link center data-url="{{urls.voiceControl}}" bind:click="toPage" />
+  <van-cell icon="/assets/img/mine/voiceControl.png" title="家庭管理" is-link center data-url="{{urls.homeControl}}" bind:click="toPage" />
 </van-cell-group>
 
 <van-cell-group inset>
+  <van-cell icon="/assets/img/mine/voiceControl.png" title="语音控制" is-link center data-url="{{urls.voiceControl}}" bind:click="toPage" />
   <van-cell icon="/assets/img/mine/upgrade.png" title="固件升级" is-link center data-url="{{urls.ota}}" bind:click="toPage" />
   <van-cell icon="/assets/img/mine/deviceReplace.png" title="设备替换" is-link center data-url="{{urls.deviceReplace}}" bind:click="toPage" />
 </van-cell-group>

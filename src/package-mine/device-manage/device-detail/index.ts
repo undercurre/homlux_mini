@@ -60,7 +60,7 @@ ComponentWithComputed({
       })
       this.updateDeviceInfo()
       checkOtaVersion(deviceId).then((res) => {
-        console.log(res)
+        console.log('ota', res)
       })
     },
 

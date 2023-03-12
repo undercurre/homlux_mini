@@ -1,5 +1,5 @@
 import { storage } from '../../utils/index'
-import { userServiceProtocol, privacyPolicy } from './protocolDoc'
+import { userService, privacyPolicy, userInfoList, authList } from './protocolDoc'
 import pageBehavior from '../../behaviors/pageBehaviors'
 Component({
   behaviors: [pageBehavior],
@@ -28,13 +28,23 @@ Component({
       console.log(e)
       if (e.protocal === 'privacyPolicy') {
         this.setData({
-          title: '用户隐私协议',
+          title: '美的照明隐私协议',
           doc: privacyPolicy,
         })
       } else if (e.protocal === 'userService') {
         this.setData({
-          title: '用户服务协议',
-          doc: userServiceProtocol,
+          title: '软件许可及用户服务协议',
+          doc: userService,
+        })
+      } else if (e.protocal === 'userInfoList') {
+        this.setData({
+          title: '已收集个人信息清单',
+          doc: userInfoList,
+        })
+      } else if (e.protocal === 'authList') {
+        this.setData({
+          title: '美的照明权限列表',
+          doc: authList,
         })
       }
     },

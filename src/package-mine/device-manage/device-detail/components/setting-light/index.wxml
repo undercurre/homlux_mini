@@ -1,4 +1,4 @@
-<import src="/commons/templates/popup.wxml" />
+<!-- <import src="/commons/templates/popup.wxml" />
 <view class="h-full flex flex-col">
   <view class="w-750rpx flex mt-16rpx">
     <text class="ml-48rpx text-black-59 font-normal text-28rpx">参数设置</text>
@@ -20,4 +20,4 @@
     <template is="bottom-btn" />
     <view class="h-32rpx"></view>
   </view>
-</van-popup>
+</van-popup> -->

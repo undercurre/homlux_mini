@@ -1,7 +1,4 @@
 export const privacyPolicy = `
-<p style="text-align:left">
-    <span style=";font-family:宋体;color:red">&nbsp;</span>
-</p>
 <p>
     <strong><span style="font-size:19px;font-family:宋体">引言</span></strong>
 </p>
@@ -486,15 +483,24 @@ export const privacyPolicy = `
 <p class="MsoListParagraph" style="margin-left:66px">
     <span style=";font-family:宋体">8.3<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">如果您对我们的回复不满意，特别是您认为我们的个人信息处理行为损害了您的合法权益，您还可以通过向被告住所地有管辖权的法院提起诉讼来寻求解决方案。</span>
 </p>
+<p style="margin-left:28px">
+    <span style=";font-family:宋体">&nbsp;</span>
+</p>
+<p style="margin-left:28px;text-align:right">
+    <strong><span style=";font-family:宋体">【美智光电】</span></strong>
+</p>
+<p style="margin-left:28px;text-align:right">
+    <strong><span style=";font-family:宋体">更新时间： 2022年10月11日</span></strong>
+</p>
+<p style="margin-left:28px;text-align:right">
+    <strong><span style=";font-family:宋体">生效时间：2022年10月15日</span></strong>
+</p>
 <p>
     <br/>
 </p>
 `
 
-export const userServiceProtocol = `
-<p style="line-height:27px">
-    <span style=";font-family:宋体">&nbsp;</span>
-</p>
+export const userService = `
 <p style="line-height:27px">
     <span style=";font-family:宋体">欢迎您使用美的照明！</span>
 </p>
@@ -1002,7 +1008,299 @@ export const userServiceProtocol = `
 <p style="line-height:27px">
     <span style=";font-family:宋体">13.4</span><span style=";font-family:宋体">本协议签署于广东省佛山市顺德区。</span>
 </p>
+<p style="line-height:27px">
+    <span style=";font-family:宋体">（以下无正文）</span>
+</p>
+<p style="text-align:right;line-height:27px">
+    <strong><span style=";font-family:宋体">美智光电</span></strong>
+</p>
+<p style="text-align:right;line-height:27px">
+    <strong><span style=";font-family:宋体">版本更新时间：2022年10月10日</span></strong>
+</p>
 <p>
     <br/>
 </p>
+`
+
+export const authList = `
+<table width="677">
+    <colgroup>
+        <col width="85" span="2" style=";width:85px"/>
+        <col width="328" style=";width:328px"/>
+        <col width="61" style=";width:61px"/>
+        <col width="117" style=";width:117px"/>
+    </colgroup>
+    <tbody>
+        <tr style="height:39px" class="firstRow">
+            <td width="85" style="">
+                设备权限
+            </td>
+            <td width="85" style="">
+                操作系统
+            </td>
+            <td width="328" style="">
+                对应业务功能与调用权限目的
+            </td>
+            <td width="61" style="">
+                是否询问
+            </td>
+            <td width="117" style="">
+                用户可否关闭权限
+            </td>
+        </tr>
+        <tr style="height:20px">
+            <td width="85" style="">
+                读取短信
+            </td>
+            <td width="85" style="">
+                Android/ios
+            </td>
+            <td width="328" style="">
+                登录帐号时自动获取验证码
+            </td>
+            <td width="61" style="">
+                是
+            </td>
+            <td width="117" style="">
+                是
+            </td>
+        </tr>
+        <tr style="height:20px">
+            <td width="85" style="">
+                拨打电话
+            </td>
+            <td width="85" style="">
+                Android/ios
+            </td>
+            <td width="328" style="">
+                拨打售后电话，拨打维修网点电话
+            </td>
+            <td width="61" style="">
+                是
+            </td>
+            <td width="117" style="">
+                是
+            </td>
+        </tr>
+        <tr style="height:78px">
+            <td width="85" style="">
+                摄像头
+            </td>
+            <td width="85" style="">
+                Android/ios
+            </td>
+            <td width="328" style="">
+                用于家电配网、激活服务卡、滤芯防伪、维修服务、保修政策、保养服务的条码、二维码或图片扫描，购买凭证/建议反馈/维修保养服务的照片或视频拍摄上传
+            </td>
+            <td width="61" style="">
+                是
+            </td>
+            <td width="117" style="">
+                是
+            </td>
+        </tr>
+        <tr style="height:20px">
+            <td width="85" style="">
+                开启闪光灯
+            </td>
+            <td width="85" style="">
+                Android/ios
+            </td>
+            <td width="328" style="">
+                拍摄时光线不足时，打开闪光灯
+            </td>
+            <td width="61" style="">
+                否
+            </td>
+            <td width="117" style="">
+                否
+            </td>
+        </tr>
+        <tr style="height:78px">
+            <td width="85" style="">
+                存储相册（相册权限）
+            </td>
+            <td width="85" style="">
+                Android/ios
+            </td>
+            <td width="328" style="">
+                用于缓存、二维码分享的存储，以及使用更换头像、评论、维保服务、激活服务卡、建议反馈、滤芯防伪时图片/视频/二维码/条码的上传，扫描或识别
+            </td>
+            <td width="61" style="">
+                是
+            </td>
+            <td width="117" style="">
+                是
+            </td>
+        </tr>
+        <tr style="height:58px">
+            <td width="85" style="">
+                读取位置信息
+            </td>
+            <td width="85" style="">
+                Android/ios
+            </td>
+            <td width="328" style="">
+                用于提供收货/维修/安装地址，获取当地是收费标准，添加设备时用于发现附近无线网络或蓝牙列表服务
+            </td>
+            <td width="61" style="">
+                是
+            </td>
+            <td width="117" style="">
+                是
+            </td>
+        </tr>
+        <tr style="height:20px">
+            <td width="85" style="">
+                开启蓝牙
+            </td>
+            <td width="85" style="">
+                Android/ios
+            </td>
+            <td width="328" style="">
+                蓝牙配网和物联网蓝牙设备控制
+            </td>
+            <td width="61" style="">
+                是
+            </td>
+            <td width="117" style="">
+                是
+            </td>
+        </tr>
+        <tr style="height:39px">
+            <td width="85" style="">
+                剪切板
+            </td>
+            <td width="85" style="">
+                Android/ios
+            </td>
+            <td width="328" style="">
+                实现快速填写手机验证码，写入或监控分享口令信息用于 App &nbsp; 内页面跳转
+            </td>
+            <td width="61" style="">
+                否
+            </td>
+            <td width="117" style="">
+                否
+            </td>
+        </tr>
+    </tbody>
+</table>
+<p>
+    <br/>
+</p>
+`
+
+export const userInfoList = `
+<p>
+    <br/>
+</p>
+<table width="507">
+    <colgroup>
+        <col width="188" style=";width:188px"/>
+        <col width="135" style=";width:135px"/>
+        <col width="184" style=";width:184px"/>
+    </colgroup>
+    <tbody>
+        <tr style=";height:78px" class="firstRow">
+            <td colspan="3" width="507" style="">
+                我们收集您的信息以合法、合理、必要为原则，在向您提供某项具体服务时，我们将明确告知您将收集的信息以及用途，来响应您具体的服务请求。根据您选择的服务，我们在以下场景可能收集以下信息的一种或多种。
+            </td>
+        </tr>
+        <tr style="height:18px">
+            <td width="188" style="border-top: none;">
+                场景/业务功能
+            </td>
+            <td width="135" style="border-top: none; border-left: none;">
+                个人信息种类
+            </td>
+            <td width="184" style="border-top: none; border-left: none;">
+                目的
+            </td>
+        </tr>
+        <tr style="height:18px">
+            <td rowspan="2" width="188" style="border-bottom-width: 1px; border-bottom-color: black; border-top: none;">
+                注册和登陆
+            </td>
+            <td width="135" style="border-top: none; border-left: none;">
+                手机号、短信验证码
+            </td>
+            <td width="184" style="border-top: none; border-left: none;">
+                用于注册创建账号
+            </td>
+        </tr>
+        <tr style="height:37px">
+            <td width="135" style="border-top: none; border-left: none;">
+                头像、昵称、OpenID
+            </td>
+            <td width="184" style="border-top: none; border-left: none;">
+                用于完善网络身份标识
+            </td>
+        </tr>
+        <tr style="height:129px">
+            <td rowspan="3" width="188" style="border-bottom-width: 1px; border-bottom-color: black; border-top: none;">
+                物联网设备首次联网或更换网络环境
+            </td>
+            <td width="135" style="border-top: none; border-left: none;">
+                1、通过无线网络连接智能设备:本地保存的信息(无线网络密码)、云端保存的信息(SSID、BSSID、设备ID、设备MAC地址)
+            </td>
+            <td rowspan="3" width="184" style="border-bottom-width: 1px; border-bottom-color: black; border-top: none;">
+                用于智能设备智能化服务，使您可以安全地连接设备，管理设备，使用设备
+            </td>
+        </tr>
+        <tr style="height:147px">
+            <td width="135" style="border-top: none; border-left: none;">
+                2、通过蓝牙建立本地连接后，通过无线网络连接智能设备:本地保存的信息(无线网络密码)、云端保存的信息(SSID、BSSID、设备ID、设备蓝牙MAC)
+            </td>
+        </tr>
+        <tr style="height:55px">
+            <td width="135" style="border-top: none; border-left: none;">
+                3、通过蓝牙直连的智能设备:蓝牙设备MAC,设备ID
+            </td>
+        </tr>
+        <tr style="height:202px">
+            <td rowspan="3" width="188" style="border-bottom-width: 1px; border-bottom-color: black; border-top: none;">
+                使用我们的智能化产品与服务
+            </td>
+            <td width="135" style="border-top: none; border-left: none;">
+                1、小程序设备信息(硬件型号、IESI号码、IDFA、MEI号码或其他唯一设备识符、MAC地址、IP地址操作系统版本、获取用户的软件安装列表敏感信息行为、注册日期以及用于访问服务的设备的设置、设备型号）
+            </td>
+            <td rowspan="3" width="184" style="border-bottom-width: 1px; border-bottom-color: black; border-top: none;">
+                为识别帐号或设备的异常状态、了解或优化产品服务的适配性、提供应用程序版本升级或固件版本升级服务，我们会收集您的使用情况并存储为网络日志信息，增强用户的安全保障
+            </td>
+        </tr>
+        <tr style="height:55px">
+            <td width="135" style="border-top: none; border-left: none;">
+                2、小程序端使用频率、崩贵数据、总体使用情况、性能数据
+            </td>
+        </tr>
+        <tr style="height:92px">
+            <td width="135" style="border-top: none; border-left: none;">
+                3、智能设备运行状态、设备使用频次、电量使用情况、环境温度、环境湿度、网络日志信息
+            </td>
+        </tr>
+        <tr style="height:55px">
+            <td width="188" style="border-top: none;">
+                基于位置的智能化服务
+            </td>
+            <td width="135" style="border-top: none; border-left: none;">
+                位置信息
+            </td>
+            <td width="184" style="border-top: none; border-left: none;">
+                用于提供收货/维修/安装地址，添加设备时用于发现附近无线网络或蓝牙列表服务
+            </td>
+        </tr>
+        <tr style="height:110px">
+            <td width="188" style="border-top: none;">
+                促销促活等各类活动
+            </td>
+            <td width="135" style="border-top: none; border-left: none;">
+                姓名、手机号码、地址、性别、年龄段、收入段、家庭结构、家中产品、生活偏好等信息（具体以活动页面为准）
+            </td>
+            <td width="184" style="border-top: none; border-left: none;">
+                为您发放和寄送相关活动奖品，为您提供产品试用、问卷调查等类似了解您的需求以及筛选我们的目标试用客户
+            </td>
+        </tr>
+    </tbody>
+</table>
 `

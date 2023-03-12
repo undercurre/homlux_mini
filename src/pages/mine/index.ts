@@ -26,11 +26,12 @@ Component({
       },
     ],
     urls: {
+      homeControl: '/package-mine/home-manage/index',
       voiceControl: '/package-mine/voice-control/index',
       ota: '/package-mine/ota/index',
       deviceReplace: '/package-mine/device-replace/index',
       feedback: '/package-mine/feedback/index',
-      about: '/pages/protocolShow/index?protocal=userService',
+      about: '/pages/protocolList/index',
     },
   },
   methods: {
