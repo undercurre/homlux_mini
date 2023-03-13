@@ -9,7 +9,7 @@
   <view class="w-100vw h-100vh absolute left-0 top-0 bg-hex-f4f8ff z-111"></view>
   <view class="absolute left-0 top-0 w-100vw h-50vh z-112" style="background: linear-gradient(180deg, rgba(87, 105, 255, 0.1) 0%, rgba(87, 105, 255, 0) 100%)"></view>
   <!-- 场景 -->
-  <view class="scene-card w-686rpx h-96rpx flex items-center rounded-24rpx mt-24rpx absolute left-32rpx z-114" style="top: {{navigationBarAndStatusBarHeight}};" bindtap="handleSceneTap">
+  <view wx:if="{{deviceList.length>0}}" class="scene-card w-686rpx h-96rpx flex items-center rounded-24rpx mt-24rpx absolute left-32rpx z-114" style="top: {{navigationBarAndStatusBarHeight}};" bindtap="handleSceneTap">
     <image src="/assets/img/device-control/scene.png" class="absolute left-0 top-0 w-686rpx h-96rpx scene-card-bg" />
     <image src="/assets/img/base/scene.png" class="w-64rpx h-64rpx ml-24rpx"></image>
     <text id="scene-title" class="text-32rpx text-hex-333333 font-medium ml-16rpx">场景</text>
