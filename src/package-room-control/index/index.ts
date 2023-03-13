@@ -258,7 +258,7 @@ ComponentWithComputed({
         const divideRpxByPx = storage.get<number>('divideRpxByPx')
           ? (storage.get<number>('divideRpxByPx') as number)
           : 0.5
-        let top =
+        const top =
           (storage.get<number>('statusBarHeight') as number) +
           (storage.get<number>('navigationBarHeight') as number) +
           136 * divideRpxByPx

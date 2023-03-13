@@ -1,9 +1,9 @@
 <import src="/commons/templates/popup.wxml" />
 <van-popup show="{{ show }}" z-index="10001" round position="bottom" bind:close="handleClose">
-  <view class="w-750rpx h-870rpx relative flex flex-col items-center">
-    <view class="flex-center mt-28rpx" style="margin-bottom: -16rpx">
+  <view class="w-750rpx h-800rpx relative flex flex-col items-center" catchtouchmove="black">
+    <!-- <view class="flex-center mt-28rpx" style="margin-bottom: -16rpx">
       <image class="w-60rpx h-20rpx" src="/assets/img/base/popup-down.png"></image>
-    </view>
+    </view> -->
     <template is="title" data="{{title: '模式设置'}}" />
     <view class="link-switch h-146rpx w-686rpx flex-center mt-32rpx" data-type="switch" bindtap="handleTypeSelect">
       <view class="w-160rpx flex-center">

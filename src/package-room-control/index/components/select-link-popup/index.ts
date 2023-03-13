@@ -45,5 +45,6 @@ ComponentWithComputed({
         linkTypeInner: e.currentTarget.dataset.type,
       })
     },
+    black() {},
   },
 })
