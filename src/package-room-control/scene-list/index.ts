@@ -134,6 +134,9 @@ ComponentWithComputed({
           })
         }
       })
+      if (sceneSortList.length === 0) {
+        return
+      }
       await updateSceneSort({ sceneSortList })
       this.updateSceneList()
       homeStore.updateRoomCardList()

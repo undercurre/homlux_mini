@@ -4,11 +4,33 @@
 <view class="w-100vw h-100vh fixed left-0 top-0 bg-hex-f4f8ff bg-z-index-1"></view>
 <view class="fixed left-0 top-0 w-100vw h-50vh bg-z-index" style="background: linear-gradient(180deg, rgba(87, 105, 255, 0.1) 0%, rgba(87, 105, 255, 0) 100%)"></view>
 
+<!-- 遮住顶部 -->
+<view style="height: calc({{navigationBarAndStatusBarHeight}} + 120rpx);" class="fixed left-0 top-0 z-110 overflow-hidden w-750rpx">
+  <view class="w-100vw h-100vh absolute left-0 top-0 bg-hex-f4f8ff z-111"></view>
+  <view class="absolute left-0 top-0 w-100vw h-50vh z-112" style="background: linear-gradient(180deg, rgba(87, 105, 255, 0.1) 0%, rgba(87, 105, 255, 0) 100%)"></view>
+  <!-- 场景 -->
+  <view class="scene-card w-686rpx h-96rpx flex items-center rounded-24rpx mt-24rpx absolute left-32rpx z-114" style="top: {{navigationBarAndStatusBarHeight}};" bindtap="handleSceneTap">
+    <image src="/assets/img/device-control/scene.png" class="absolute left-0 top-0 w-686rpx h-96rpx scene-card-bg" />
+    <image src="/assets/img/base/scene.png" class="w-64rpx h-64rpx ml-24rpx"></image>
+    <text id="scene-title" class="text-32rpx text-hex-333333 font-medium ml-16rpx">场景</text>
+    <view class="flex flex-1 justify-end items-center">
+      <view class="mr-38rpx flex">
+        <view class="scene-icon p-4rpx bg-hex-fff rounded-999" wx:for="{{sceneListInBar}}" wx:key="sceneId">
+          <view class="bg-hex-eff0f3 rounded-999">
+            <svg-icon name="scene:{{item.sceneIcon}}" width="52rpx" height="52rpx" />
+          </view>
+        </view>
+      </view>
+      <van-button catchtap="handleCollect" custom-class="fav-btn" type="primary">收藏</van-button>
+    </view>
+  </view>
+</view>
+
 <!-- 全屏幕点击捕获 -->
 <view bindtouchstart="handleScreenTap" class="min-h-100vh">
   <!-- 标题 -->
-  <nav-bar title="{{title}}" left-arrow bind:leftTap="goBack" style="opacity: {{opacity}};" disabled="{{opacity === 0}}"></nav-bar>
-
+  <nav-bar title="{{title}}" z-index="{{113}}" left-arrow bind:leftTap="goBack" style="opacity: {{opacity}};" disabled="{{opacity === 0}}"></nav-bar>
+  <view class="h-120rpx"></view>
   <!-- 无设备 -->
   <view wx:if="{{deviceList.length === 0}}" class="w-full flex flex-col items-center">
     <image src="/assets/img/room/only-gateway.png" class="w-300rpx h-300rpx mt-64rpx"></image>
@@ -18,22 +40,6 @@
 
   <!-- 有设备页面主体 -->
   <view wx:else class="w-750rpx flex flex-col items-center">
-    <!-- 场景 -->
-    <view class="scene-card w-686rpx h-96rpx flex items-center rounded-24rpx mt-24rpx relative" bindtap="handleSceneTap">
-      <image src="/assets/img/device-control/scene.png" class="absolute left-0 top-0 w-686rpx h-96rpx scene-card-bg" />
-      <image src="/assets/img/base/scene.png" class="w-64rpx h-64rpx ml-24rpx"></image>
-      <text id="scene-title" class="text-32rpx text-hex-333333 font-medium ml-16rpx">场景</text>
-      <view class="flex flex-1 justify-end items-center">
-        <view class="mr-38rpx flex">
-          <view class="scene-icon p-4rpx bg-hex-fff rounded-999" wx:for="{{sceneListInBar}}" wx:key="sceneId">
-            <view class="bg-hex-eff0f3 rounded-999">
-              <svg-icon name="scene:{{item.sceneIcon}}" width="52rpx" height="52rpx" />
-            </view>
-          </view>
-        </view>
-        <van-button catchtap="handleCollect" custom-class="fav-btn" type="primary">收藏</van-button>
-      </view>
-    </view>
     <view class="flex flex-col items-center w-750rpx">
       <!-- 灯具设备卡片 -->
       <view class="mt-24rpx" wx:if="{{lightList && lightList.length>0}}">

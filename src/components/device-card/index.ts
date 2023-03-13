@@ -63,16 +63,16 @@ ComponentWithComputed({
       }
       return ''
     },
-    switchName(data) {
-      if (data.deviceType === 'switch') {
-        if (data.deviceInfo.switchInfoDTOList[0].switchName) {
-          return data.deviceInfo.switchInfoDTOList[0].switchName
-        } else {
-          return data.deviceInfo.switchInfoDTOList[0].switchId + '路'
-        }
-      }
-      return ''
-    },
+    // switchName(data) {
+    //   if (data.deviceType === 'switch') {
+    //     if (data.deviceInfo.switchInfoDTOList[0].switchName) {
+    //       return data.deviceInfo.switchInfoDTOList[0].switchName
+    //     } else {
+    //       return data.deviceInfo.switchInfoDTOList[0].switchId + '路'
+    //     }
+    //   }
+    //   return ''
+    // },
     deviceName(data) {
       let name = ''
       if (data.deviceType === 'switch') {
@@ -87,10 +87,10 @@ ComponentWithComputed({
           ) {
             name = sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]].sceneName
           } else {
-            name = data.deviceInfo.deviceName
+            name = data.deviceInfo.switchInfoDTOList[0].switchName
           }
         } else {
-          name = data.deviceInfo.deviceName
+          name = data.deviceInfo.switchInfoDTOList[0].switchName
         }
       } else {
         name = data.deviceInfo.deviceName

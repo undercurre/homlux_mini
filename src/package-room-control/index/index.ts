@@ -14,8 +14,9 @@ import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { controlDevice, saveDeviceOrder, queryDeviceInfoByDeviceId, execScene } from '../../apis/index'
 import { proName, proType } from '../../config/device'
-import { emitter, WSEventType } from '../../utils/eventBus'
 import Toast from '@vant/weapp/toast/toast'
+import { storage, emitter, WSEventType } from '../../utils/index'
+
 let throttleTimer = 0
 ComponentWithComputed({
   behaviors: [
@@ -26,6 +27,10 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    navigationBarAndStatusBarHeight:
+      (storage.get<number>('statusBarHeight') as number) +
+      (storage.get<number>('navigationBarHeight') as number) +
+      'px',
     showDeviceOffline: false,
     controlPopup: true,
     showAddScenePopup: false,

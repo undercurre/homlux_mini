@@ -6,6 +6,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { emitter } from '../../utils/eventBus'
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
+import { removeRel } from '../utils/index'
 
 interface DeviceActionsFlattenItem {
   id: string
@@ -182,7 +183,12 @@ ComponentWithComputed({
         data.updateType = '1'
       }
       if (this.data.linkSwitch !== sceneStore.sceneSwitchMap[this.data.sceneId]) {
-        // 绑定发生变化
+        // 绑定发生变化，先解除一下开关关联的设备
+        const res = await removeRel(this.data.linkSwitch.split(':')[0], this.data.linkSwitch.split(':')[1])
+        if (!res) {
+          console.log('解除关联失败', res)
+          return
+        }
         if (this.data.linkSwitch) {
           data.deviceConditions = [
             {
