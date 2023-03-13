@@ -22,6 +22,8 @@ export function setNavigationBarAndBottomBarHeight() {
 
   // 手机系统
   storage.set('system', system, null)
+  // 屏幕高度
+  storage.set('windowHeight', windowHeight, null)
   // 状态栏高度
   storage.set('statusBarHeight', statusBarHeight, null)
   // 胶囊按钮高度 一般是32 如果获取不到就使用32

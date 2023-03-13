@@ -6,6 +6,14 @@
   clip-path: border-box;
 }
 
+.show-control-bg {
+  background-image: linear-gradient(178deg, #f2f5fc 10%, #ffffff 74%);
+}
+
+.select-border {
+  border: 4rpx solid #488fff;
+}
+
 .ripple-off {
   background-image: linear-gradient(180deg, #858892 0%, #a0a2ab 96%);
 }
@@ -28,9 +36,23 @@
     opacity: 0;
   }
 }
-@keyframes ripple-off {
+/* @keyframes ripple-off {
   0% {
     transform: translateY(-500rpx) translateX(-50%);
+    opacity: 0.8;
+  }
+  80% {
+    transform: translateY(0) translateX(-50%);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(0) translateX(-50%);
+    opacity: 0;
+  }
+} */
+@keyframes ripple-off {
+  0% {
+    transform: translateY(250rpx) translateX(-50%);
     opacity: 0.8;
   }
   80% {

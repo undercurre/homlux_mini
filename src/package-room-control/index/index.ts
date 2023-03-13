@@ -158,7 +158,7 @@ ComponentWithComputed({
     async onPullDownRefresh() {
       try {
         await sceneStore.updateAllRoomSceneList()
-        await deviceStore.updateSubDeviceList(undefined, undefined, { loading: true })
+        await deviceStore.updateSubDeviceList()
         await sceneStore.updateSceneList()
         this.updateDeviceList()
       } finally {
@@ -258,11 +258,10 @@ ComponentWithComputed({
         const divideRpxByPx = storage.get<number>('divideRpxByPx')
           ? (storage.get<number>('divideRpxByPx') as number)
           : 0.5
-        const top =
-          (storage.get<number>('statusBarHeight') as number) +
-          (storage.get<number>('navigationBarHeight') as number) +
-          136 * divideRpxByPx
-        const scrollTop = this.data.scrollTop + e.detail.clientRect.top - top
+        const windowHeight = storage.get<number>('windowHeight') as number
+        const bottom = windowHeight - 716 * divideRpxByPx
+        const top = bottom - 216 * divideRpxByPx
+        const scrollTop = this.data.scrollTop + e.detail.clientRect.top - top + 4
         wx.pageScrollTo({
           scrollTop,
           duration: 500,

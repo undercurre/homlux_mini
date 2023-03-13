@@ -2,7 +2,7 @@
 import { storage } from './storage'
 import { reaction, runInAction } from 'mobx-miniprogram'
 import { connectHouseSocket } from '../apis/websocket'
-import { homeStore, userStore } from '../store/index'
+import { homeStore, othersStore, userStore } from '../store/index'
 import { emitter } from './eventBus'
 
 export function logout() {
@@ -82,7 +82,8 @@ export function loadUserInfo() {
 export async function appOnLaunchService() {
   try {
     loadUserInfo()
-    await homeStore.updateHomeInfo({ loading: true })
+    await homeStore.updateHomeInfo()
+    othersStore.setIsInit()
     startWebsocketService()
   } catch (e) {
     console.log('appOnLaunchService-err:', e)

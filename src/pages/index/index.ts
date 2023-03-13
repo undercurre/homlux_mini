@@ -18,6 +18,8 @@ ComponentWithComputed({
       (storage.get<number>('statusBarHeight') as number) +
       (storage.get<number>('navigationBarHeight') as number) +
       'px',
+    // 状态栏高度
+    statusBarHeight: storage.get<number>('statusBarHeight') + 'px',
     dropdownMenu: {
       x: '0px',
       y: '0px',
@@ -34,6 +36,7 @@ ComponentWithComputed({
     showAddNewRoom: false,
     showHomeSelect: false,
     isRefresh: false,
+    loading: true,
   },
   computed: {
     currentHomeName(data) {
@@ -59,6 +62,30 @@ ComponentWithComputed({
         })
       }
       return hasLightOrSwitch
+    },
+  },
+
+  watch: {
+    isInit(value) {
+      if (value) {
+        this.animate(
+          '#skeleton',
+          [
+            {
+              opacity: 1,
+            },
+            {
+              opacity: 0,
+            },
+          ],
+          300,
+          () => {
+            this.setData({
+              loading: false,
+            })
+          },
+        )
+      }
     },
   },
 

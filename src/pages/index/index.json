@@ -2,7 +2,8 @@
   "component": true,
   "usingComponents": {
     "room-card": "./components/room-card/index",
-    "drag": "/components/drag/index"
+    "drag": "/components/drag/index",
+    "van-skeleton": "@vant/weapp/skeleton/index"
   },
   "navigationStyle": "custom"
 }

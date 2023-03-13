@@ -1,11 +1,13 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
-import { deviceStore, sceneStore } from '../../store/index'
+import { deviceBinding, deviceStore, sceneBinding, sceneStore } from '../../store/index'
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 let throttleTimer = 0
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
   },
+  behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding, sceneBinding] })],
   /**
    * 组件的属性列表
    */
@@ -55,7 +57,7 @@ ComponentWithComputed({
           return ''
         }
         if (data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
-          return '/assets/img/device-control/power-on.png'
+          return '/assets/img/base/scene-switch-btn.png'
         }
         return data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff
           ? '/assets/img/device-control/power-on.png'

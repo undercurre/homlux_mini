@@ -54,6 +54,9 @@ page {
   --switch-background-color: #c8c7cc;
   --switch-on-background-color: #488fff;
   /* switch end */
+
+  --skeleton-row-height: 64rpx;
+  --skeleton-row-background-color: #fff;
 }
 
 /* button start */
