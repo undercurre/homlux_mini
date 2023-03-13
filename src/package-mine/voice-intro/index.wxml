@@ -1,3 +1,7 @@
-<view class="page-container flex flex-col pb-128rpx">
+<view class="page-container">
   <nav-bar background="#eef2f7" leftArrow="{{true}}" bind:leftTap="goBack" title="操作步骤"></nav-bar>
+
+  <scroll-view>
+    <image class="image-intro m-24rpx" src="/assets/img/mine/intro.png"></image>
+  </scroll-view>
 </view>
