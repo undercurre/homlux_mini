@@ -1,4 +1,4 @@
-// package-mine/hoom-manage/index.ts
+// package-mine/device-replace/index.ts
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
@@ -15,15 +15,17 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
-    status: 'begin' as StatusType,
+    status: 'introduce' as StatusType,
     isSelectDevice: false,
   },
 
   computed: {
-    btnText(data) {
+    rightBtnText(data) {
       const textMap = {
         introduce: '开始使用',
-        begin: '下一步',
+        oldDevice: '下一步',
+        newDevice: '开始替换',
+        processing: ''
       }
 
       return textMap[data.status]
@@ -41,7 +43,7 @@ ComponentWithComputed({
     clickBtn() {
       if (this.data.status === 'introduce') {
         this.setData({
-          status: 'begin',
+          status: 'oldDevice',
         })
       }
     },

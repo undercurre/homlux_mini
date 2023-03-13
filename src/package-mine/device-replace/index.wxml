@@ -16,7 +16,22 @@
       </view>
     </block>
 
-    <block wx:if="{{status === 'begin'}}">
+    <block wx:if="{{status === 'oldDevice'}}">
+      <steps active="{{step}}"></steps>
+
+      <text class="block text-center pt-60rpx pb-16rpx leading-40rpx text-28 text-black-59">选择旧设备</text>
+
+      <text class="block text-center pb-80rpx leading-34rpx text-24 text-black-59">替换完成后，旧设备将自动从家庭中解绑。</text>
+
+      <view class="bg-white mx-24rpx p-60rpx rounded-32rpx">
+        <view class="flex flex-col items-center" bind:tap="addDevice">
+          <image class="w-108 h-108" src="/assets/img/device-replace/add.png"></image>
+          <text class="pt-48rpx text-28 leading-40rpx text-black-59">选择设备</text>
+        </view>
+      </view>
+    </block>
+
+    <block wx:if="{{status === 'newDevice'}}">
       <steps active="{{step}}"></steps>
 
       <text class="block text-center pt-60rpx pb-16rpx leading-40rpx text-28 text-black-59">选择新设备</text>
@@ -32,7 +47,10 @@
     </block>
   </view>
 
-  <van-button class="mx-32rpx" size="large" type="primary" block bind:click="clickBtn">{{ btnText }}</van-button>
+  <view class="flex flex-row">
+    <van-button v-if="{{status === 'newDevice'}}" class="flex-1 mx-32rpx" size="large" type="primary" block bind:click="clickBtn">上一步</van-button>
+    <van-button v-if="{{status !== 'processing'}}" class="flex-1 mx-32rpx" size="large" type="primary" block bind:click="clickBtn">{{ rightBtnText }}</van-button>
+  </view>
 </view>
 
 <select-device show="{{isSelectDevice}}" bind:close="closeDevicePopup"></select-device>
