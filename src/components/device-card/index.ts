@@ -111,12 +111,20 @@ ComponentWithComputed({
   methods: {
     handleCardTap() {
       // this.triggerEvent('cardTap', this.data.deviceInfo)
-      if (this.data.deviceInfo.onLineStatus) {
-        this.triggerEvent('cardTap', this.data.deviceInfo)
-      } else {
-        // this.triggerEvent('offlineTap')
-        Toast('设备已离线')
-      }
+      this.createSelectorQuery()
+        .select('#card')
+        .boundingClientRect()
+        .exec((res) => {
+          if (this.data.deviceInfo.onLineStatus) {
+            this.triggerEvent('cardTap', {
+              ...this.data.deviceInfo,
+              clientRect: res[0],
+            })
+          } else {
+            // this.triggerEvent('offlineTap')
+            Toast('设备已离线')
+          }
+        })
     },
     handlePowerTap() {
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })

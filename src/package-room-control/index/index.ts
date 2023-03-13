@@ -33,6 +33,7 @@ ComponentWithComputed({
       'px',
     showDeviceOffline: false,
     controlPopup: true,
+    popupPlaceholder: false,
     showAddScenePopup: false,
     contentHeight: 0,
     lightList: [] as Device.DeviceItem[],
@@ -71,12 +72,6 @@ ComponentWithComputed({
       }
       return {}
     },
-    opacity(data) {
-      if (data.scrollTop) {
-        return 30 - data.scrollTop < 0 ? 0 : (30 - data.scrollTop) / 30
-      }
-      return 1
-    },
   },
 
   watch: {
@@ -87,6 +82,11 @@ ComponentWithComputed({
       if (this.data.selectCount === 0 && value.length === 1) {
         this.setData({
           controlPopup: true,
+        })
+      }
+      if (value.length === 0) {
+        this.setData({
+          popupPlaceholder: false,
         })
       }
       this.setData({
@@ -249,7 +249,28 @@ ComponentWithComputed({
         showAddScenePopup: true,
       })
     },
-    handleDeviceCardTap(e: { detail: Device.DeviceItem }) {
+    handleDeviceCardTap(e: { detail: Device.DeviceItem & { clientRect: WechatMiniprogram.ClientRect } }) {
+      console.log('handleDeviceCardTap', e.detail)
+      if (deviceStore.selectList.length === 0) {
+        this.setData({
+          popupPlaceholder: true,
+        })
+        const divideRpxByPx = storage.get<number>('divideRpxByPx')
+          ? (storage.get<number>('divideRpxByPx') as number)
+          : 0.5
+        let top =
+          (storage.get<number>('statusBarHeight') as number) +
+          (storage.get<number>('navigationBarHeight') as number) +
+          136 * divideRpxByPx
+        const scrollTop = this.data.scrollTop + e.detail.clientRect.top - top
+        wx.pageScrollTo({
+          scrollTop,
+          duration: 500,
+          fail(res) {
+            console.log('scroll-fail', res)
+          },
+        })
+      }
       const deviceMap = deviceStore.deviceMap
       if (e.detail.proType === proType.switch) {
         // 开关选择逻辑

@@ -137,6 +137,9 @@ Component({
       query.select('.item').boundingClientRect()
       query.select('.item-wrap').boundingClientRect()
       query.exec((res) => {
+        if (!res || !res[0] || !res[1]) {
+          return
+        }
         baseData.itemWidth = res[0].width
         baseData.itemHeight = res[0].height
         baseData.wrapLeft = res[1].left

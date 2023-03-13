@@ -4,8 +4,11 @@
     <image class="mb-36rpx w-76rpx h-24rpx" src="/assets/img/base/popup-arrow.png"></image>
   </view> -->
   <view class="w-750rpx h-716rpx rounded-t-64rpx bg-white flex-col flex">
-    <view class="flex-center mt-28rpx">
+    <!-- <view class="flex-center mt-28rpx">
       <image class="w-60rpx h-20rpx arrow-{{popup ? 'down' : 'up'}}" src="/assets/img/base/popup-down.png"></image>
+    </view> -->
+    <view class="flex-center mt-28rpx h-20rpx">
+      <view class="w-76rpx h-8rpx bg-hex-a2a2a2 rounded-999"></view>
     </view>
     <!-- tab -->
     <view class="flex justify-evenly">

@@ -5,7 +5,7 @@
 <view class="fixed left-0 top-0 w-100vw h-50vh bg-z-index" style="background: linear-gradient(180deg, rgba(87, 105, 255, 0.1) 0%, rgba(87, 105, 255, 0) 100%)"></view>
 
 <!-- 遮住顶部 -->
-<view style="height: calc({{navigationBarAndStatusBarHeight}} + 120rpx);" class="fixed left-0 top-0 z-110 overflow-hidden w-750rpx">
+<view style="height: calc({{navigationBarAndStatusBarHeight}} + 136rpx);" class="fixed left-0 top-0 z-110 overflow-hidden w-750rpx">
   <view class="w-100vw h-100vh absolute left-0 top-0 bg-hex-f4f8ff z-111"></view>
   <view class="absolute left-0 top-0 w-100vw h-50vh z-112" style="background: linear-gradient(180deg, rgba(87, 105, 255, 0.1) 0%, rgba(87, 105, 255, 0) 100%)"></view>
   <!-- 场景 -->
@@ -27,9 +27,9 @@
 </view>
 
 <!-- 全屏幕点击捕获 -->
-<view bindtouchstart="handleScreenTap" class="min-h-100vh">
+<view bindtap="handleScreenTap" bindtouchmove="handleScreenTap" class="min-h-100vh">
   <!-- 标题 -->
-  <nav-bar title="{{title}}" z-index="{{113}}" left-arrow bind:leftTap="goBack" style="opacity: {{opacity}};" disabled="{{opacity === 0}}"></nav-bar>
+  <nav-bar title="{{title}}" z-index="{{113}}" left-arrow bind:leftTap="goBack" disabled="{{opacity === 0}}"></nav-bar>
   <view class="h-120rpx"></view>
   <!-- 无设备 -->
   <view wx:if="{{deviceList.length === 0}}" class="w-full flex flex-col items-center">
@@ -70,6 +70,8 @@
     <view class="h-160rpx"></view>
   </view>
 </view>
+
+<view wx:if="{{popupPlaceholder}}" class="h-100vh"></view>
 
 <!-- 收藏场景提示 -->
 <view wx:if="{{showAddSceneSuccess}}" class="flex-center rounded-16rpx px-22rpx py-8rpx fixed bg-hex-000 opacity-73" style="left: {{sceneTitlePosition.x}}px; top: calc({{sceneTitlePosition.y}}px - 60rpx);">

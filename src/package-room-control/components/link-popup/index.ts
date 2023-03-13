@@ -96,7 +96,6 @@ ComponentWithComputed({
               pageList[pageCount - 1].push(device)
             }
           })
-        console.log(pageList)
         return pageList
       }
       return []
@@ -122,7 +121,6 @@ ComponentWithComputed({
               pageList[pageCount - 1].push(scene)
             }
           })
-        console.log(pageList)
         return pageList
       }
       return []
