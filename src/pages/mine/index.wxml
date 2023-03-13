@@ -24,7 +24,7 @@
 <view class="h-48rpx"></view>
 
 <van-cell-group inset>
-  <van-cell icon="/assets/img/mine/voiceControl.png" title="家庭管理" is-link center data-url="{{urls.homeControl}}" bind:click="toPage" />
+  <van-cell icon="/assets/img/mine/home.png" title="家庭管理" is-link center data-url="{{urls.homeControl}}" bind:click="toPage" />
 </van-cell-group>
 
 <van-cell-group inset>

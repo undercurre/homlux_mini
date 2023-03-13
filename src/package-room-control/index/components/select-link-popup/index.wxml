@@ -6,7 +6,9 @@
     </view>
     <template is="title" data="{{title: '模式设置'}}" />
     <view class="link-switch h-146rpx w-686rpx flex-center mt-32rpx" data-type="switch" bindtap="handleTypeSelect">
-      <view class="w-160rpx flex-center"> </view>
+      <view class="w-160rpx flex-center">
+        <image src="/assets/img/device-control/link-switch.png" class="w-146rpx h-146rpx" />
+      </view>
       <view class="flex-1 flex flex-col item-center">
         <text class="text-hex-373cdf text-32rpx font-medium">关联开关</text>
         <text class="text-hex-373cdf text-22rpx opacity-80 mt-12rpx">开关连接到另一开关</text>
@@ -16,7 +18,9 @@
       </view>
     </view>
     <view class="link-light h-146rpx w-686rpx flex-center mt-24rpx" data-type="light" bindtap="handleTypeSelect">
-      <view class="w-160rpx flex-center"> </view>
+      <view class="w-160rpx flex-center">
+        <image src="/assets/img/device-control/link-light.png" class="w-146rpx h-146rpx" />
+      </view>
       <view class="flex-1 flex flex-col item-center">
         <text class="text-hex-de7e28 text-32rpx font-medium">关联灯光</text>
         <text class="text-hex-de7e28 text-22rpx opacity-80 mt-12rpx">通过开关连接智能灯</text>
@@ -26,7 +30,9 @@
       </view>
     </view>
     <view class="link-scene h-146rpx w-686rpx flex-center mt-24rpx" data-type="scene" bindtap="handleTypeSelect">
-      <view class="w-160rpx flex-center"> </view>
+      <view class="w-160rpx flex-center">
+        <image src="/assets/img/device-control/link-scene.png" class="w-146rpx h-146rpx" />
+      </view>
       <view class="flex-1 flex flex-col item-center">
         <text class="text-hex-1454ae text-32rpx font-medium">关联智能场景</text>
         <text class="text-hex-1454ae text-22rpx opacity-80 mt-12rpx">通过开关触发场景</text>

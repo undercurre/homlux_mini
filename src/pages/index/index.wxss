@@ -19,5 +19,5 @@
 }
 
 .tabbar-placeholder {
-  height: calc(96rpx + env(safe-area-inset-bottom) + 32rpx);
+  height: calc(env(safe-area-inset-bottom) + 64rpx);
 }
