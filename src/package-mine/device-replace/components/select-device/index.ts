@@ -1,7 +1,8 @@
+import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { roomBinding, deviceBinding } from '../../../../store/index'
 
-Component({
+ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, deviceBinding] })],
 
   /**
@@ -17,7 +18,17 @@ Component({
   /**
    * 组件的初始数据
    */
-  data: {},
+  data: {
+    deviceList: Array<Device.DeviceItem>(),
+    checkedDeviceId: '',
+  },
+
+  computed: {
+    // 过滤网关设备
+    wifiDeviceList(data) {
+      return data.deviceList.filter(item => item.deviceType === 2)
+    }
+  },
 
   lifetimes: {
     async ready() {
@@ -32,7 +43,8 @@ Component({
    */
   methods: {
     handleCardTap(event: WechatMiniprogram.CustomEvent) {
-      console.log('changeRoomName', event)
+      console.log('handleCardTap', event.detail)
+      this.setData({checkedDeviceId: event.detail.deviceId})
     },
 
     handleClose() {
