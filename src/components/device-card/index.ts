@@ -2,6 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import { deviceBinding, sceneBinding } from '../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import { proName, proType } from '../../config/index'
 let throttleTimer = 0
 ComponentWithComputed({
   options: {
@@ -23,9 +24,6 @@ ComponentWithComputed({
       type: Boolean,
       value: false,
     },
-    deviceType: {
-      type: String,
-    },
   },
 
   /**
@@ -38,19 +36,19 @@ ComponentWithComputed({
 
   computed: {
     picUrl(data) {
-      if (data.deviceType && data.deviceType === 'switch') {
+      if (data.deviceInfo.proType === proType.switch) {
         return data.deviceInfo?.switchInfoDTOList[0]?.pic
-      } else if (data.deviceType) {
-        return data.deviceInfo?.pic
+      } else if (data.deviceInfo?.pic) {
+        return data.deviceInfo.pic
       }
       return ''
     },
     controlBtnPic(data) {
-      if (data.deviceType === 'light') {
+      if (data.deviceInfo.proType === proType.light) {
         return data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
           ? '/assets/img/device-control/power-on.png'
           : '/assets/img/device-control/power-off.png'
-      } else if (data.deviceType === 'switch') {
+      } else if (data.deviceInfo.proType === proType.switch) {
         const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
         if (!data.deviceInfo.mzgdPropertyDTOList[switchId]) {
           // 设备没有开关属性，不显示
@@ -77,7 +75,7 @@ ComponentWithComputed({
     // },
     deviceName(data) {
       let name = ''
-      if (data.deviceType === 'switch') {
+      if (data.deviceInfo.proType === proType.switch) {
         // const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
         // if (data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
         //   const switchSceneMap = deviceStore.switchSceneMap
@@ -105,6 +103,9 @@ ComponentWithComputed({
         // 不存在中文字符，只能显示8个字符
         return name.slice(0, 8)
       }
+    },
+    deviceType(data) {
+      return proName[data.deviceInfo.proType]
     },
   },
 
@@ -138,9 +139,9 @@ ComponentWithComputed({
           return
         }
         let onOff = false
-        if (this.data.deviceType === 'light') {
+        if (this.data.deviceInfo.proType === proType.light) {
           onOff = !this.data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
-        } else if (this.data.deviceType === 'switch') {
+        } else if (this.data.deviceInfo.proType === proType.switch) {
           const switchId = this.data.deviceInfo.switchInfoDTOList[0].switchId
           if (this.data.deviceInfo.mzgdPropertyDTOList[switchId]) {
             onOff = !this.data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff

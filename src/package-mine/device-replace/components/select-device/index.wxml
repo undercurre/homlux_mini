@@ -8,7 +8,7 @@
     <room-select></room-select>
 
     <view class="flex flex-row flex-wrap px-40rpx gap-x-36rpx">
-      <device-card wx:for="{{wifiDeviceList}}" wx:key="uniId" bind:cardTap="handleCardTap" device-type="{{linkType === 'light' ? 'light' : 'switch'}}" device-info="{{item}}" select="{{checkedDeviceId === item.deviceId}}" class="mb-32rpx" />
+      <device-card wx:for="{{wifiDeviceList}}" wx:key="uniId" bind:cardTap="handleCardTap" device-info="{{item}}" select="{{checkedDeviceId === item.deviceId}}" class="mb-32rpx" />
     </view>
     <view class="h-80rpx"></view>
     <template is="bottom-btn" />
