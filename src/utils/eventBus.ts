@@ -17,6 +17,7 @@ export const WSEventType = {
   device_offline_status: 'device_offline_status', // 设备强绑后离线事件
   device_del: 'device_del',
   room_del: 'room_del',
+  device_replace: 'device_replace'
 }
 
 export const emitter: Emitter<Events> = mitt<Events>()

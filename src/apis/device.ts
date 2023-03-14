@@ -5,7 +5,7 @@ import { mzaioRequest } from '../utils/index'
  */
 export async function queryAllDevice(houseId: string, options?: { loading?: boolean }) {
   return await mzaioRequest.post<Device.DeviceItem[]>({
-    log: true,
+    log: false,
     loading: options?.loading ?? false,
     url: '/v1/device/queryDeviceInfoByHouseId',
     data: {
@@ -290,6 +290,25 @@ export async function delAssociated(
     log: true,
     loading: options?.loading ?? false,
     url: '/v1/device/delAssociated',
+    data,
+  })
+}
+
+/**
+ * 设备替换
+ * 需要在前端验证设备是否可替换
+ */
+export async function deviceReplace(
+  data: {
+    newDevId: string
+    oldDevId: string
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<IAnyObject>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/deviceReplace',
     data,
   })
 }

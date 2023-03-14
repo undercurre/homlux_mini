@@ -1,1 +1,1 @@
-export type StatusType = 'introduce' | 'oldDevice' | 'newDevice' | 'processing'
+export type StatusType = 'introduce' | 'oldDevice' | 'newDevice' | 'processing' | 'replaceFinish' | 'replaceFail'
