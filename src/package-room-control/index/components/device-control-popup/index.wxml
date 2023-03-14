@@ -48,7 +48,7 @@
       <view wx:if="{{tab==='switch'}}" class="flex flex-col w-750rpx">
         <view class="h-22rpx"></view>
         <van-cell-group inset wx:if="{{!isSelectMultiSwitch}}">
-          <van-cell is-link title="模式设置" value="{{currentLinkTypeDesc}}" custom-class="switch-cell" bind:click="handleSelectLinkPopup"></van-cell>
+          <van-cell border="{{false}}" is-link title="模式设置" value="{{currentLinkTypeDesc}}" custom-class="switch-cell" bind:click="handleSelectLinkPopup"></van-cell>
         </van-cell-group>
         <!-- <van-cell-group inset wx:if="{{!isSelectMultiSwitch}}">
           <van-cell clickable custom-class="switch-cell" data-link="switch" bind:click="handleLinkPopup">
