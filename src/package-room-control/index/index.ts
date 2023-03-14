@@ -264,7 +264,7 @@ ComponentWithComputed({
         const scrollTop = this.data.scrollTop + e.detail.clientRect.top - top + 4
         wx.pageScrollTo({
           scrollTop,
-          duration: 500,
+          duration: 200,
           fail(res) {
             console.log('scroll-fail', res)
           },
