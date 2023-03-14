@@ -72,11 +72,11 @@
 <view wx:if="{{loading}}" id="skeleton">
   <view class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7 z-200"></view>
   <view class="fixed z-201 left-0 w-750rpx flex flex-col" style="top: {{statusBarHeight}};">
-    <van-skeleton row="1" row-width="40%" row-class="rounded-28rpx" />
-    <van-skeleton class="mt-32rpx" row="1" row-width="30%" row-class="rounded-32rpx" />
-    <van-skeleton class="mt-32rpx" row="1" row-class="rounded-32rpx h-200rpx_el_" />
-    <van-skeleton class="mt-32rpx" row="1" row-class="rounded-32rpx h-200rpx_el_" />
-    <van-skeleton class="mt-32rpx" row="1" row-class="rounded-32rpx h-200rpx_el_" />
+    <van-skeleton row="1" row-width="40%" row-class="rounded-28rpx h-80rpx_el_" />
+    <van-skeleton class="mt-28rpx" row="1" row-width="240rpx" row-class="rounded-999 h-80rpx_el_" />
+    <van-skeleton class="mt-32rpx" row="1" row-class="rounded-32rpx h-280rpx_el_" />
+    <van-skeleton class="mt-32rpx" row="1" row-class="rounded-32rpx h-280rpx_el_" />
+    <van-skeleton class="mt-32rpx" row="1" row-class="rounded-32rpx h-280rpx_el_" />
   </view>
 </view>
 

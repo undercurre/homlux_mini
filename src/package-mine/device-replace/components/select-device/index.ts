@@ -26,8 +26,8 @@ ComponentWithComputed({
   computed: {
     // 过滤网关设备
     wifiDeviceList(data) {
-      return data.deviceList.filter(item => item.deviceType === 2)
-    }
+      return data.deviceList.filter((item) => item.deviceType === 2)
+    },
   },
 
   lifetimes: {
@@ -44,7 +44,7 @@ ComponentWithComputed({
   methods: {
     handleCardTap(event: WechatMiniprogram.CustomEvent) {
       console.log('handleCardTap', event.detail)
-      this.setData({checkedDeviceId: event.detail.deviceId})
+      this.setData({ checkedDeviceId: event.detail.deviceId })
     },
 
     handleClose() {

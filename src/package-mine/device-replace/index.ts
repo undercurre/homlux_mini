@@ -25,7 +25,7 @@ ComponentWithComputed({
         introduce: '开始使用',
         oldDevice: '下一步',
         newDevice: '开始替换',
-        processing: ''
+        processing: '',
       }
 
       return textMap[data.status]
