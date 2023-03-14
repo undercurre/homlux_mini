@@ -20,7 +20,7 @@ ComponentWithComputed({
    */
   data: {
     deviceList: Array<Device.DeviceItem>(),
-    checkedDeviceId: '',
+    checkedDevice: {},
   },
 
   computed: {
@@ -44,11 +44,15 @@ ComponentWithComputed({
   methods: {
     handleCardTap(event: WechatMiniprogram.CustomEvent) {
       console.log('handleCardTap', event.detail)
-      this.setData({ checkedDeviceId: event.detail.deviceId })
+      this.setData({ checkedDevice: event.detail })
     },
 
     handleClose() {
       this.triggerEvent('close')
     },
+
+    handleConfirm() {
+      this.triggerEvent('confirm', this.data.checkedDevice)
+    }
   },
 })
