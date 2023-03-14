@@ -27,7 +27,7 @@
 </view>
 
 <!-- 全屏幕点击捕获 -->
-<view bindtap="handleScreenTap" bindtouchmove="handleScreenTap" class="min-h-100vh">
+<view bindtap="handleScreenTap" bindtouchmove="handleScreenTap">
   <!-- 标题 -->
   <nav-bar title="{{title}}" z-index="{{113}}" left-arrow bind:leftTap="goBack" disabled="{{opacity === 0}}"></nav-bar>
   <view class="h-120rpx"></view>
@@ -65,13 +65,11 @@
           </view>
         </view> -->
     </view>
-
-    <!-- 占位，防止内容太贴边 -->
-    <view class="h-160rpx"></view>
   </view>
 </view>
 
-<view wx:if="{{popupPlaceholder}}" class="h-100vh"></view>
+<view wx:if="{{popupPlaceholder}}" class="h-716rpx" bindtap="handleScreenTap" bindtouchmove="handleScreenTap"></view>
+<view wx:else class="h-64rpx" bindtap="handleScreenTap" bindtouchmove="handleScreenTap"></view>
 
 <!-- 收藏场景提示 -->
 <view wx:if="{{showAddSceneSuccess}}" class="flex-center rounded-16rpx px-22rpx py-8rpx fixed bg-hex-000 opacity-73" style="left: {{sceneTitlePosition.x}}px; top: calc({{sceneTitlePosition.y}}px - 60rpx);">

@@ -33,10 +33,15 @@ ComponentWithComputed({
      * 生命周期函数--监听页面加载
      */
     onLoad() {
-      this.updateSceneList()
+      this.updateList()
+      sceneStore.updateSceneList().then(() => {
+        this.updateList()
+      })
       emitter.off('sceneEdit')
       emitter.on('sceneEdit', () => {
-        this.updateSceneList()
+        sceneStore.updateSceneList().then(() => {
+          this.updateList()
+        })
       })
     },
 
@@ -51,8 +56,7 @@ ComponentWithComputed({
       })
     },
 
-    async updateSceneList() {
-      await sceneStore.updateSceneList()
+    updateList() {
       const listData = [] as IAnyObject[]
       const deviceMap = deviceStore.deviceMap
       sceneStore.sceneList.forEach((scene: Scene.SceneItem) => {
@@ -138,8 +142,9 @@ ComponentWithComputed({
         return
       }
       await updateSceneSort({ sceneSortList })
-      this.updateSceneList()
+      await sceneStore.updateSceneList()
       homeStore.updateRoomCardList()
+      this.updateList()
     },
   },
 })

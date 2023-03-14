@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
-import { deviceBinding, deviceStore, sceneBinding, sceneStore } from '../../store/index'
+import { deviceBinding, sceneBinding } from '../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 let throttleTimer = 0
 ComponentWithComputed({
@@ -78,22 +78,23 @@ ComponentWithComputed({
     deviceName(data) {
       let name = ''
       if (data.deviceType === 'switch') {
-        const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
-        if (data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
-          const switchSceneMap = deviceStore.switchSceneMap
-          const sceneIdMp = sceneStore.sceneIdMp
-          if (
-            switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`] &&
-            sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]] &&
-            sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]].sceneName
-          ) {
-            name = sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]].sceneName
-          } else {
-            name = data.deviceInfo.switchInfoDTOList[0].switchName
-          }
-        } else {
-          name = data.deviceInfo.switchInfoDTOList[0].switchName
-        }
+        // const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
+        // if (data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
+        //   const switchSceneMap = deviceStore.switchSceneMap
+        //   const sceneIdMp = sceneStore.sceneIdMp
+        //   if (
+        //     switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`] &&
+        //     sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]] &&
+        //     sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]].sceneName
+        //   ) {
+        //     name = sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]].sceneName
+        //   } else {
+        //     name = data.deviceInfo.switchInfoDTOList[0].switchName
+        //   }
+        // } else {
+        //   name = data.deviceInfo.switchInfoDTOList[0].switchName
+        // }
+        name = data.deviceInfo.switchInfoDTOList[0].switchName
       } else {
         name = data.deviceInfo.deviceName
       }
@@ -131,6 +132,8 @@ ComponentWithComputed({
     handlePowerTap() {
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
       if (this.data.deviceInfo.onLineStatus) {
+        this.triggerEvent('controlTap', this.data.deviceInfo)
+        // 执行动画
         if (throttleTimer) {
           return
         }
@@ -143,7 +146,10 @@ ComponentWithComputed({
             onOff = !this.data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff
           }
           if (this.data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
-            onOff = true
+            throttleTimer = setTimeout(() => {
+              throttleTimer = 0
+            }, 550) as unknown as number
+            return
           }
         }
         this.setData({

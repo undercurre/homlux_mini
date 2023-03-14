@@ -57,6 +57,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
         })
     }
 
+    const start = Date.now()
     // 请求成功回调处理
     if (requestOption.successHandler) {
       // 如果有传入successHandler，就只使用successHandler进行特殊处理
@@ -64,7 +65,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       requestOption.success = (result) => {
         // 是否打印请求结果
         if (requestOption.log) {
-          console.log('请求URL:' + requestOption.url + ' 成功，请求结果：', result)
+          console.log('请求URL:' + requestOption.url + ' 成功，请求结果：', result, '\n请求用时:', Date.now() - start)
         }
         const afterProcessResult = handler(result)
         resolve(afterProcessResult)
@@ -73,7 +74,12 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       // 否则就只使用generalSuccessHandler进行通用处理或者generalSuccessHandler不存在则不处理直接返回
       requestOption.success = (result) => {
         if (requestOption.log) {
-          console.log('请求URL:' + requestOption.url + ' 成功，请求结果：', result)
+          console.log(
+            '请求URL:' + requestOption.url + ' 成功，请求结果：',
+            result,
+            '\n请求用时:',
+            Date.now() - start + 'ms',
+          )
         }
         const data = requestOption.generalSuccessHandler ? requestOption.generalSuccessHandler(result) : result.data
         resolve(data)

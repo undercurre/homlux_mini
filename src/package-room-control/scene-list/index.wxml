@@ -14,7 +14,7 @@
 <!-- 没有场景时 -->
 <view wx:if="{{listData.length === 0}}" class="w-750rpx flex-col-center">
   <view class="h-24rpx"></view>
-  <image src="/assets/img/room/only-gateway.png" class="w-300rpx h-300rpx mt-64rpx"></image>
+  <image src="/assets/img/default-image/no-device.png" class="w-300rpx h-300rpx mt-64rpx"></image>
   <text class="text-black-59 text-28rpx mt-48rpx">目前无场景</text>
 </view>
 

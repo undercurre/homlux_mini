@@ -348,10 +348,9 @@ ComponentWithComputed({
       const deviceMap = deviceStore.allRoomDeviceMap
       if (this.data.linkType === 'light') {
         if (deviceMap[e.detail].lightRelId && this.data.relId.lightRelId !== deviceMap[e.detail].lightRelId) {
-          // Toast('设备已被关联')
-          wx.showToast({
-            icon: 'none',
-            title: '设备已被关联',
+          Toast({
+            message: '设备已被关联',
+            zIndex: 99999,
           })
           return
         }
@@ -363,10 +362,9 @@ ComponentWithComputed({
           (switchItem) => switchItem.switchId === e.detail.split(':')[1],
         )
         if (switchItem?.switchRelId && this.data.relId.switchRelId !== switchItem?.switchRelId) {
-          // Toast('设备已被关联')
-          wx.showToast({
-            icon: 'none',
-            title: '设备已被关联',
+          Toast({
+            message: '设备已被关联',
+            zIndex: 99999,
           })
           return
         }
@@ -442,7 +440,10 @@ ComponentWithComputed({
           updateType: '2',
         })
         if (!res.success) {
-          Toast('解除绑定失败')
+          Toast({
+            message: '解除绑定失败',
+            zIndex: 99999,
+          })
           return
         }
       }
@@ -513,7 +514,10 @@ ComponentWithComputed({
           updateType: '2',
         })
         if (!res.success) {
-          Toast('解除绑定失败')
+          Toast({
+            message: '解除绑定失败',
+            zIndex: 99999,
+          })
           return
         }
       }
@@ -620,7 +624,10 @@ ComponentWithComputed({
           updateType: '2',
         })
         if (!res.success) {
-          Toast('更新失败')
+          Toast({
+            message: '更新失败',
+            zIndex: 99999,
+          })
           return
         }
         // 关联新的场景

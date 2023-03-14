@@ -1,4 +1,8 @@
 /* package-room/index/components/popup-select-light/index.wxss */
+.popup-shadow {
+  box-shadow: 0px -4px 32px 0px rgba(97, 109, 136, 0.1);
+}
+
 .tab-title-check {
   color: #27282a;
   font-weight: 600;
@@ -22,7 +26,7 @@
 }
 
 .slider-brightness-bar {
-  background-image: linear-gradient(270deg, #ffffff 0%, #507fff 100%) !important;
+  background-image: linear-gradient(270deg, #dbe5ff 0%, #507fff 100%) !important;
 }
 
 .slider-color-temp-bar {

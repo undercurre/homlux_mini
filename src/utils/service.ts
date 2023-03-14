@@ -82,7 +82,10 @@ export function loadUserInfo() {
 export async function appOnLaunchService() {
   try {
     loadUserInfo()
+    const start = Date.now()
+    console.log('开始时间', start / 1000)
     await homeStore.updateHomeInfo()
+    console.log('加载完成时间', Date.now() / 1000, '用时', (Date.now() - start) / 1000 + 's')
     othersStore.setIsInit()
     startWebsocketService()
   } catch (e) {

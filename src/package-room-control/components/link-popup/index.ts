@@ -160,5 +160,6 @@ ComponentWithComputed({
         roomSelect: e.currentTarget.dataset.item.roomId,
       })
     },
+    black() {},
   },
 })

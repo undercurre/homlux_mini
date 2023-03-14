@@ -3,7 +3,7 @@
   <!-- <view class="h-60rpx w-750rpx flex-center" style="opacity: {{popup ? 0:1}};">
     <image class="mb-36rpx w-76rpx h-24rpx" src="/assets/img/base/popup-arrow.png"></image>
   </view> -->
-  <view class="w-750rpx h-716rpx rounded-t-64rpx bg-white flex-col flex items-center">
+  <view class="popup-shadow w-750rpx h-716rpx rounded-t-64rpx bg-white flex-col flex items-center">
     <!-- <view class="flex-center mt-28rpx">
       <image class="w-60rpx h-20rpx arrow-{{popup ? 'down' : 'up'}}" src="/assets/img/base/popup-down.png"></image>
     </view> -->
@@ -117,4 +117,4 @@
 <select-link-popup show="{{showSelectLinkPopup}}" linkType="{{linkType}}" bind:close="handleSelectLinkPopupClose" bind:confirm="handleSelectLinkPopupConfirm"></select-link-popup>
 <link-popup show="{{showLinkPopup}}" list="{{list}}" selectList="{{linkSelectList}}" linkType="{{linkType}}" bind:close="handleLinkPopupClose" bind:select="handleLinkSelect" bind:confirm="handleLinkPopupConfirm" />
 
-<van-toast id="van-toast" zIndex="{{9999}}" />
+<van-toast id="van-toast" />

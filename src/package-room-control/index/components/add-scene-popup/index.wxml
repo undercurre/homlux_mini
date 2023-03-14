@@ -1,5 +1,5 @@
 <import src="/commons/templates/popup.wxml" />
-<van-popup show="{{ show }}" z-index="9000" round position="bottom" bind:close="handleClose">
+<van-popup show="{{ show }}" z-index="9000" round position="bottom" bind:close="handleClose" catchtouchmove="black">
   <view class="w-750rpx h-1010rpx relative flex flex-col items-center">
     <template is="title" data="{{title: '收藏为新场景'}}" />
     <text class="h-36rpx text-26rpx text-black-tips mt-22rpx font-normal">保存已选设备的状态，便于快速执行</text>
@@ -34,9 +34,8 @@
       </van-cell>
     </van-cell-group>
 
-    <template is="bottom-btn" />
+    <template is="bottom-btn" data="{{disabled: disabled}}" />
   </view>
 </van-popup>
 
 <link-popup show="{{showLinkPopup}}" list="{{list}}" selectList="{{linkSelectList}}" linkType="switch" bind:select="handleLinkSelect" bind:close="handleLinkPopupClose" bind:confirm="handleLinkPopupConfirm"></link-popup>
-<van-toast id="van-toast" />

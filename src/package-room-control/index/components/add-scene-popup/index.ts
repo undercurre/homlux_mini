@@ -2,8 +2,9 @@ import { addScene } from '../../../../apis/scene'
 import { proType, sceneList } from '../../../../config/index'
 import { deviceStore, homeStore, roomStore, sceneStore } from '../../../../store/index'
 import Toast from '@vant/weapp/toast/toast'
+import { ComponentWithComputed } from 'miniprogram-computed'
 
-Component({
+ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
   },
@@ -42,6 +43,12 @@ Component({
     showLinkPopup: false,
   },
 
+  computed: {
+    disabled(data) {
+      return !data.sceneName
+    },
+  },
+
   /**
    * 组件的方法列表
    */
@@ -63,7 +70,10 @@ Component({
     },
     async handleConfirm() {
       if (!this.data.sceneName) {
-        Toast('场景名不能为空')
+        Toast({
+          message: '场景名不能为空',
+          zIndex: 99999,
+        })
         return
       }
       const newSceneData = {
@@ -152,7 +162,10 @@ Component({
         homeStore.updateRoomCardList()
         this.triggerEvent('addSuccess')
       } else {
-        Toast('收藏失败')
+        Toast({
+          message: '收藏失败',
+          zIndex: 99999,
+        })
       }
       this.triggerEvent('close')
     },
@@ -193,7 +206,10 @@ Component({
     },
     handleLinkSelect(e: { detail: string }) {
       if (deviceStore.switchSceneMap[e.detail]) {
-        Toast('开关已绑定场景')
+        Toast({
+          message: '开关已绑定场景',
+          zIndex: 99999,
+        })
         return
       }
       if (this.data.linkSelectList[0] && this.data.linkSelectList[0] === e.detail) {
@@ -206,5 +222,6 @@ Component({
         linkSelectList: [e.detail],
       })
     },
+    black() {},
   },
 })

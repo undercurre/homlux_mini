@@ -1,5 +1,13 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { othersBinding, roomBinding, userBinding, homeBinding, deviceBinding, homeStore } from '../../store/index'
+import {
+  othersBinding,
+  roomBinding,
+  userBinding,
+  homeBinding,
+  deviceBinding,
+  homeStore,
+  othersStore,
+} from '../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { storage } from '../../utils/index'
 import { proType } from '../../config/index'
@@ -8,6 +16,7 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import { allDevicePowerControl } from '../../apis/index'
 import { emitter } from '../../utils/eventBus'
 import { updateDefaultHouse } from '../../apis/index'
+import { reaction } from 'mobx-miniprogram'
 let throttleTimer = 0
 ComponentWithComputed({
   behaviors: [
@@ -65,30 +74,6 @@ ComponentWithComputed({
     },
   },
 
-  watch: {
-    isInit(value) {
-      if (value) {
-        this.animate(
-          '#skeleton',
-          [
-            {
-              opacity: 1,
-            },
-            {
-              opacity: 0,
-            },
-          ],
-          300,
-          () => {
-            this.setData({
-              loading: false,
-            })
-          },
-        )
-      }
-    },
-  },
-
   methods: {
     // 生命周期或者其他钩子
     onLoad: function () {
@@ -99,6 +84,35 @@ ComponentWithComputed({
         })
       }
       this.updateContentHeight()
+      if (othersStore.isInit) {
+        this.setData({
+          loading: false,
+        })
+      }
+      reaction(
+        () => othersStore.isInit,
+        () => {
+          if (othersStore.isInit) {
+            this.animate(
+              '#skeleton',
+              [
+                {
+                  opacity: 1,
+                },
+                {
+                  opacity: 0,
+                },
+              ],
+              300,
+              () => {
+                this.setData({
+                  loading: false,
+                })
+              },
+            )
+          }
+        },
+      )
     },
     onHide() {
       // 隐藏之前展示的下拉菜单
@@ -227,6 +241,7 @@ ComponentWithComputed({
      */
     handleAllOn() {
       this.hideMenu()
+      if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
       allDevicePowerControl({
         houseId: homeStore.currentHomeId,
         onOff: 1,
@@ -263,6 +278,7 @@ ComponentWithComputed({
      */
     handleAllOff() {
       this.hideMenu()
+      if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
       allDevicePowerControl({ houseId: homeStore.currentHomeId, onOff: 0 })
       this.animate(
         `#all-off`,

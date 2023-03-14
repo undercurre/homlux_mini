@@ -25,6 +25,7 @@ Component({
    */
   methods: {
     handleExecScene(e: WechatMiniprogram.TouchEvent) {
+      if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
       this.setData({
         tapAnimate: true,
       })
