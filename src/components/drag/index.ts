@@ -99,6 +99,7 @@ Component({
       }
     },
     drag(e: { dragging: boolean }) {
+      this.triggerEvent('drag', e.dragging)
       this.setData({
         dragging: e.dragging,
       })

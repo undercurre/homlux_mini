@@ -20,7 +20,7 @@ App<IAppOption>({
     if (storage.get<string>('token')) {
       appOnLaunchService()
     } else {
-      othersStore.setIsInit()
+      othersStore.setIsInit(false)
     }
 
     console.log('APP打开参数：', options)

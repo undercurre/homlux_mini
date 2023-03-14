@@ -54,6 +54,9 @@ ComponentWithComputed({
     linkType: {
       type: String,
     },
+    hasReturn: {
+      type: Boolean,
+    },
   },
 
   /**
@@ -139,6 +142,9 @@ ComponentWithComputed({
     },
     handleConfirm() {
       this.triggerEvent('confirm')
+    },
+    handleReturn() {
+      this.triggerEvent('return')
     },
     getHeight() {
       this.createSelectorQuery()

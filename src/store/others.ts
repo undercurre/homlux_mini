@@ -3,9 +3,9 @@ import { observable, runInAction } from 'mobx-miniprogram'
 export const othersStore = observable({
   isInit: false,
 
-  setIsInit() {
+  setIsInit(value: boolean) {
     runInAction(() => {
-      this.isInit = true
+      this.isInit = value
     })
   },
 })

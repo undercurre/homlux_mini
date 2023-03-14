@@ -45,7 +45,7 @@
       <view class="mt-24rpx" wx:if="{{lightList && lightList.length>0}}">
         <text class="text-24rpx text-black-59 ml-17rpx">灯具</text>
         <view class="w-720rpx mt-24rpx">
-          <drag id="drag-light" columns="{{4}}" list-data="{{lightList}}" scroll-top="{{scrollTop}}" item-height="{{240}}" generic:item="card" bind:sortend="handleLightSortEnd" bind:controlTap="handleLightPowerToggle" bind:cardTap="handleDeviceCardTap" bind:scroll="handleScroll" bind:offlineTap="handleShowDeviceOffline"></drag>
+          <drag id="drag-light" columns="{{4}}" list-data="{{lightList}}" scroll-top="{{scrollTop}}" item-height="{{240}}" generic:item="card" bind:sortend="handleLightSortEnd" bind:controlTap="handleLightPowerToggle" bind:cardTap="handleDeviceCardTap" bind:scroll="handleScroll" bind:offlineTap="handleShowDeviceOffline" bind:drag="handleDrag"></drag>
         </view>
       </view>
 

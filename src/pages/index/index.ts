@@ -84,6 +84,7 @@ ComponentWithComputed({
         })
       }
       this.updateContentHeight()
+      console.log('othersStore.isInit', othersStore.isInit)
       if (othersStore.isInit) {
         this.setData({
           loading: false,
@@ -135,6 +136,11 @@ ComponentWithComputed({
       }, 1000)
       if (homeStore.currentHomeId) {
         homeStore.updateRoomCardList()
+      }
+      if (!othersStore.isInit) {
+        this.setData({
+          loading: true,
+        })
       }
       emitter.off('wsReceive')
       emitter.on('wsReceive', () => {

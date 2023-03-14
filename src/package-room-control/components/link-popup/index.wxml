@@ -2,6 +2,9 @@
 <import src="/commons/templates/popup.wxml" />
 <van-popup show="{{ show }}" z-index="10002" round position="bottom" bind:close="handleClose" catchtouchmove="black">
   <view class="w-750rpx h-1000rpx relative flex flex-col items-center">
+    <view wx:if="{{hasReturn}}" class="absolute right-36rpx top-40rpx" bindtap="handleClose">
+      <svg-icon name="icon-park:close" width="48rpx" height="48rpx"></svg-icon>
+    </view>
     <template is="title" data="{{title: title}}" />
     <scroll-view class="mt-48rpx h-60rpx w-750rpx">
       <view class="flex min-w-750rpx justify-center">
@@ -44,6 +47,13 @@
       </scroll-view>
     </view>
     <view class="h-16rpx"></view>
-    <template is="bottom-btn" />
+    <view wx:if="{{hasReturn}}">
+      <view class="flex gap-46rpx justify-center w-686rpx">
+        <van-button class="grow" size="large" bind:click="handleReturn">返回</van-button>
+        <van-button type="primary" class="grow" size="large" bind:click="handleConfirm">确定</van-button>
+      </view>
+      <view style="height: calc(96rpx - env(safe-area-inset-bottom))"></view>
+    </view>
+    <template wx:else is="bottom-btn" />
   </view>
 </van-popup>

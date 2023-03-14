@@ -96,7 +96,7 @@
       </view>
     </view>
     <!-- 全开全关 -->
-    <view class="flex items-center justify-evenly mt-46rpx bg-hex-f9f9f9 w-686rpx h-88rpx rounded-24rpx mb-64rpx">
+    <view class="flex items-center justify-evenly mt-46rpx bg-hex-f0f0f0 w-686rpx h-88rpx rounded-24rpx mb-64rpx">
       <view class="flex-1 flex-center relative h-88rpx" bindtap="handleAllOn">
         <text class="text-32rpx text-hex-1e2c46">全开</text>
         <view wx:if="{{allOnPress}}" class="absolute w-full h-full left-0 top-0 flex-center opacity-0 rounded-24rpx btn-press">
@@ -115,6 +115,6 @@
 </view>
 
 <select-link-popup show="{{showSelectLinkPopup}}" linkType="{{linkType}}" bind:close="handleSelectLinkPopupClose" bind:confirm="handleSelectLinkPopupConfirm"></select-link-popup>
-<link-popup show="{{showLinkPopup}}" list="{{list}}" selectList="{{linkSelectList}}" linkType="{{linkType}}" bind:close="handleLinkPopupClose" bind:select="handleLinkSelect" bind:confirm="handleLinkPopupConfirm" />
+<link-popup has-return show="{{showLinkPopup}}" list="{{list}}" selectList="{{linkSelectList}}" linkType="{{linkType}}" bind:close="handleLinkPopupClose" bind:select="handleLinkSelect" bind:confirm="handleLinkPopupConfirm" bind:return="handleLinkPopupReturn" />
 
 <van-toast id="van-toast" />

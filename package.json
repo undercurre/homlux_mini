@@ -20,6 +20,7 @@
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.6",
     "fast-deep-equal": "^2.0.1",
+    "lottie-miniprogram": "^1.0.12",
     "miniprogram-computed": "^4.4.0",
     "mitt": "^3.0.0",
     "mobx-miniprogram": "^4.13.2",

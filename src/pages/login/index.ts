@@ -1,5 +1,5 @@
 import { login } from '../../apis/index'
-import { homeStore, userStore } from '../../store/index'
+import { homeStore, othersStore, userStore } from '../../store/index'
 import { loadUserInfo } from '../../utils/index'
 import { storage } from '../../utils/storage'
 import Toast from '@vant/weapp/toast/toast'
@@ -60,9 +60,12 @@ Component({
         })
         loadUserInfo()
         userStore.setIsLogin(true)
-        await homeStore.updateHomeInfo()
+        othersStore.setIsInit(false)
         wx.switchTab({
           url: '/pages/index/index',
+        })
+        homeStore.updateHomeInfo().then(() => {
+          othersStore.setIsInit(true)
         })
       } else {
         Toast('登录失败！')

@@ -422,6 +422,12 @@ ComponentWithComputed({
         showLinkPopup: false,
       })
     },
+    handleLinkPopupReturn() {
+      this.setData({
+        showLinkPopup: false,
+      })
+      this.handleSelectLinkPopup()
+    },
     async updateLightAssociate() {
       const selectSwitchUniId = this.data.selectSwitchUniId
       // 先查一下也没有关联开关，有先解开关联

@@ -3,7 +3,7 @@
 <nav-bar left-arrow bind:leftTap="goBack"></nav-bar>
 <view class="flex-col-center mt-128rpx">
   <image class="w-144rpx h-144rpx" src="/assets/img/login/logo.png"></image>
-  <text class="text-48rpx font-semibold mt-48rpx">美的照明</text>
+  <text class="text-48rpx font-semibold mt-48rpx" style="letter-spacing: 8.8rpx">美的照明</text>
 </view>
 
 <view class="absolute left-0 bottom-0">

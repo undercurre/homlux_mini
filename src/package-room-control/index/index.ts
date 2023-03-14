@@ -49,6 +49,8 @@ ComponentWithComputed({
     scrollTop: 0,
     tempList: [] as Device.DeviceItem[],
     selectCount: 0,
+    dragging: false,
+    hasUpdate: false,
   },
 
   computed: {
@@ -92,6 +94,16 @@ ComponentWithComputed({
       this.setData({
         selectCount: value.length,
       })
+    },
+    dragging(value) {
+      if (!value && this.data.hasUpdate) {
+        deviceStore.updateSubDeviceList().then(() => {
+          this.updateDeviceList()
+        })
+        this.setData({
+          hasUpdate: false,
+        })
+      }
     },
   },
 
@@ -195,6 +207,12 @@ ComponentWithComputed({
     },
 
     updateDeviceList() {
+      if (this.data.dragging) {
+        this.setData({
+          hasUpdate: true,
+        })
+        return
+      }
       const flattenList = deviceStore.deviceFlattenList
       const lightList = flattenList
         .filter((device) => device.proType === proType.light)
@@ -227,7 +245,7 @@ ComponentWithComputed({
         if (dragSwitch && switchList.length > 0) {
           dragSwitch.init()
         }
-      }, 100)
+      }, 50)
     },
 
     handleScroll(e: { detail: { scrollTop: number } }) {
@@ -373,7 +391,6 @@ ComponentWithComputed({
         return
       }
       await saveDeviceOrder(orderData)
-      deviceStore.updateSubDeviceList()
     },
     async handleSwitchSortEnd(e: { detail: { listData: Device.DeviceItem[] } }) {
       const orderData = {
@@ -395,7 +412,6 @@ ComponentWithComputed({
         return
       }
       await saveDeviceOrder(orderData)
-      deviceStore.updateSubDeviceList()
     },
     async handleSwitchControlTapToggle(e: { detail: Device.DeviceItem }) {
       const ep = e.detail.switchInfoDTOList[0].switchId
@@ -486,6 +502,12 @@ ComponentWithComputed({
           controlPopup: false,
         })
       }
+    },
+    handleDrag(e: { detail: boolean }) {
+      console.log('drag', e.detail)
+      this.setData({
+        dragging: e.detail,
+      })
     },
   },
 })
