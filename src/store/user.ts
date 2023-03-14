@@ -11,6 +11,13 @@ export const userStore = observable({
     wxId: '',
     sex: 0,
   } as User.UserInfo,
+  isLogin: false,
+
+  setIsLogin(value: boolean) {
+    runInAction(() => {
+      this.isLogin = value
+    })
+  },
 
   async updateUserInfo() {
     const res = await queryUserInfo()
@@ -28,6 +35,6 @@ export const userStore = observable({
 
 export const userBinding = {
   store: userStore,
-  fields: ['userInfo'],
+  fields: ['userInfo', 'isLogin'],
   actions: ['updateUserInfo'],
 }

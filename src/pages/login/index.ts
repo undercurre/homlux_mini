@@ -1,11 +1,13 @@
 import { login } from '../../apis/index'
-import { homeStore } from '../../store/index'
+import { homeStore, userStore } from '../../store/index'
 import { loadUserInfo } from '../../utils/index'
 import { storage } from '../../utils/storage'
 import Toast from '@vant/weapp/toast/toast'
+import pageBehavior from '../../behaviors/pageBehaviors'
 
 // pages/login/index.ts
 Component({
+  behaviors: [pageBehavior],
   /**
    * 页面的初始数据
    */
@@ -57,6 +59,7 @@ Component({
           }
         })
         loadUserInfo()
+        userStore.setIsLogin(true)
         await homeStore.updateHomeInfo()
         wx.switchTab({
           url: '/pages/index/index',

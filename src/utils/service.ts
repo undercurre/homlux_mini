@@ -81,6 +81,7 @@ export function loadUserInfo() {
  */
 export async function appOnLaunchService() {
   try {
+    userStore.setIsLogin(true)
     loadUserInfo()
     const start = Date.now()
     console.log('开始时间', start / 1000)

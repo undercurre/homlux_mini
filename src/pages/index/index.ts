@@ -381,6 +381,11 @@ ComponentWithComputed({
         showAddNewRoom: false,
       })
     },
+    handleToLogin() {
+      wx.navigateTo({
+        url: '/pages/login/index',
+      })
+    },
     updateContentHeight() {
       wx.createSelectorQuery()
         .select('#content')

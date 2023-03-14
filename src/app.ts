@@ -1,6 +1,7 @@
 import { setNavigationBarAndBottomBarHeight, storage } from './utils/index'
 import svgs from './assets/svg/index'
 import { appOnLaunchService } from './utils/service'
+import { othersStore } from './store/index'
 
 App<IAppOption>({
   async onLaunch(options: WechatMiniprogram.App.LaunchShowOption) {
@@ -15,15 +16,12 @@ App<IAppOption>({
     // 获取状态栏、顶部栏、底部栏高度
     setNavigationBarAndBottomBarHeight()
 
-    // 如果用户没登陆，或者登录状态过期，需要自动跳转到登录页
-    if (!storage.get<string>('token')) {
-      // todo: 保存打开参数，登陆后重定向到参数目录
-      wx.redirectTo({
-        url: '/pages/login/index',
-      })
-      return
+    // 如果用户已经登录，开始请求数据
+    if (storage.get<string>('token')) {
+      appOnLaunchService()
+    } else {
+      othersStore.setIsInit()
     }
-    appOnLaunchService()
 
     console.log('APP打开参数：', options)
 

@@ -1,6 +1,6 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { logout } from '../../utils/index'
-import { userBinding } from '../../store/index'
+import { userBinding, userStore } from '../../store/index'
 
 Component({
   behaviors: [BehaviorWithStore({ storeBindings: [userBinding] })],
@@ -62,6 +62,13 @@ Component({
       if (res.cancel) return
 
       logout()
+    },
+    handleUserInfoTap() {
+      if (!userStore.isLogin) {
+        wx.navigateTo({
+          url: '/pages/login/index',
+        })
+      }
     },
   },
 })

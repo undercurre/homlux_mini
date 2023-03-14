@@ -96,7 +96,7 @@ HomLux小程序
 
 ```
 import { reaction } from 'mobx-miniprogram'
-import { store } from './store'
+import { store } from './store/index'
 component({
     data: {
         _clean: ()=>{}

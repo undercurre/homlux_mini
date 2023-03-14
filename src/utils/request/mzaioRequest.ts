@@ -1,6 +1,7 @@
 import { baseRequest, BaseRequestOptions } from './baseRequest'
 import storage from '../storage'
 import { env, mzaioBaseURL, TOKEN_EXPIRED } from '../../config/index'
+import { userStore } from '../../store/index'
 
 // 后端默认返回格式
 type mzaioResponseRowData<T extends AnyResType = AnyResType> = {
@@ -60,8 +61,9 @@ const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: Base
     generalSuccessHandler: (result) => {
       // token过期，跳转到登录
       if ((result.data as unknown as { code: number }).code === TOKEN_EXPIRED) {
-        wx.redirectTo({
-          url: '/pages/login/index',
+        userStore.setIsLogin(false)
+        wx.switchTab({
+          url: '/pages/index/index',
         })
         return result.data
       }

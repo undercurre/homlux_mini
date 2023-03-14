@@ -1,10 +1,9 @@
 <!--pages/login/index.wxml-->
 <view class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7" style="z-index: -1"></view>
-<view class="flex items-center justify-center h-8_10">
-  <view class="flex items-center">
-    <image class="rounded-999 w-184rpx h-184rpx" src="/assets/img/login/logo.png"></image>
-    <text class="text-48rpx font-semibold">美的照明</text>
-  </view>
+<nav-bar left-arrow bind:leftTap="goBack"></nav-bar>
+<view class="flex-col-center mt-128rpx">
+  <image class="w-144rpx h-144rpx" src="/assets/img/login/logo.png"></image>
+  <text class="text-48rpx font-semibold mt-48rpx">美的照明</text>
 </view>
 
 <view class="absolute left-0 bottom-0">
