@@ -10,11 +10,13 @@
 .tab-title-check {
   color: #27282a;
   font-weight: 600;
+  font-size: 32rpx;
 }
 
 .tab-title-uncheck {
   color: #555659;
   font-weight: 400;
+  font-size: 28rpx;
 }
 
 .switch-cell {

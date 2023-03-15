@@ -1,9 +1,13 @@
 <template name="title">
   <text class="h-50rpx text-36rpx text-black-2a mt-44rpx font-medium">{{title}}</text>
 </template>
+<template name="close">
+  <view class="absolute right-40rpx top-44rpx" bindtap="handleClose">
+    <image src="/assets/img/base/close.png" class="w-48rpx h-48rpx" />
+  </view>
+</template>
 <template name="bottom-btn">
   <view class="flex gap-46rpx justify-center w-686rpx">
-    <van-button class="grow" size="large" bind:click="handleClose">{{ cancelText || '取消'}}</van-button>
     <van-button type="primary" class="grow" size="large" disabled="{{disabled}}" bind:click="handleConfirm">{{ confirmText || '确定'}}</van-button>
   </view>
   <view style="height: calc(96rpx - env(safe-area-inset-bottom))"></view>

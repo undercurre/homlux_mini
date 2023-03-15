@@ -2,16 +2,18 @@
 <import src="/commons/templates/popup.wxml" />
 <van-popup show="{{ show }}" z-index="10002" round position="bottom" bind:close="handleClose" catchtouchmove="black">
   <view class="w-750rpx h-1000rpx relative flex flex-col items-center">
-    <view wx:if="{{hasReturn}}" class="absolute right-40rpx top-44rpx" bindtap="handleClose">
-      <image src="/assets/img/base/close.png" class="w-48rpx h-48rpx" />
-    </view>
+    <template is="close" />
     <template is="title" data="{{title: title}}" />
-    <scroll-view class="mt-48rpx h-60rpx w-750rpx">
-      <view class="flex min-w-750rpx justify-center">
-        <view wx:for="{{roomList}}" wx:key="roomId" class="flex-col-center ml-48rpx" data-item="{{item}}" bindtap="handleRoomSelect">
-          <text class="{{roomSelect === item.roomId ? 'text-32rpx text-black-2a' : 'text-28rpx text-hex-555659'}}">{{item.roomName}}</text>
-          <view class="w-42rpx h-8rpx mt-8rpx bg-hex-488fff rounded-999 {{roomSelect === item.roomId ? 'opacity-100' : 'opacity-0'}}"></view>
+    <scroll-view enhanced show-scrollbar="{{false}}" scroll-x class="mt-48rpx h-60rpx w-750rpx flex" enable-flex>
+      <view class="flex">
+        <view class="w-52rpx"></view>
+        <view class="flex min-w-750rpx justify-center">
+          <view wx:for="{{roomList}}" wx:key="roomId" class="flex-col-center {{index!==0?'ml-90rpx': ''}}" data-item="{{item}}" bindtap="handleRoomSelect">
+            <text class="{{roomSelect === item.roomId ? 'text-32rpx text-black-2a' : 'text-28rpx text-hex-555659'}} whitespace-nowrap">{{item.roomName}}</text>
+            <view class="w-42rpx h-8rpx mt-8rpx bg-hex-488fff rounded-999 {{roomSelect === item.roomId ? 'opacity-100' : 'opacity-0'}}"></view>
+          </view>
         </view>
+        <view class="w-52rpx"></view>
       </view>
     </scroll-view>
 
@@ -49,7 +51,7 @@
     <view class="h-16rpx"></view>
     <view wx:if="{{hasReturn}}">
       <view class="flex gap-46rpx justify-center w-686rpx">
-        <van-button class="grow" size="large" bind:click="handleReturn">返回</van-button>
+        <van-button class="grow" size="large" bind:click="handleReturn">上一步</van-button>
         <van-button type="primary" class="grow" size="large" bind:click="handleConfirm">确定</van-button>
       </view>
       <view style="height: calc(96rpx - env(safe-area-inset-bottom))"></view>

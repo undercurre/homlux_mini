@@ -16,7 +16,6 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import { allDevicePowerControl } from '../../apis/index'
 import { emitter } from '../../utils/eventBus'
 import { updateDefaultHouse } from '../../apis/index'
-import { reaction } from 'mobx-miniprogram'
 let throttleTimer = 0
 ComponentWithComputed({
   behaviors: [
@@ -73,6 +72,29 @@ ComponentWithComputed({
       return hasLightOrSwitch
     },
   },
+  watch: {
+    isInit(data) {
+      if (data) {
+        this.animate(
+          '#skeleton',
+          [
+            {
+              opacity: 1,
+            },
+            {
+              opacity: 0,
+            },
+          ],
+          200,
+          () => {
+            this.setData({
+              loading: false,
+            })
+          },
+        )
+      }
+    },
+  },
 
   methods: {
     // 生命周期或者其他钩子
@@ -84,36 +106,11 @@ ComponentWithComputed({
         })
       }
       this.updateContentHeight()
-      console.log('othersStore.isInit', othersStore.isInit)
       if (othersStore.isInit) {
         this.setData({
           loading: false,
         })
       }
-      reaction(
-        () => othersStore.isInit,
-        () => {
-          if (othersStore.isInit) {
-            this.animate(
-              '#skeleton',
-              [
-                {
-                  opacity: 1,
-                },
-                {
-                  opacity: 0,
-                },
-              ],
-              300,
-              () => {
-                this.setData({
-                  loading: false,
-                })
-              },
-            )
-          }
-        },
-      )
     },
     onHide() {
       // 隐藏之前展示的下拉菜单
@@ -333,6 +330,11 @@ ComponentWithComputed({
     },
     handleAddDevice() {
       wx.navigateTo({ url: '/package-distribution/scan/index' })
+    },
+    handleAddRoom() {
+      this.setData({
+        showAddNewRoom: true,
+      })
     },
     /**
      * 用户点击下拉菜单项

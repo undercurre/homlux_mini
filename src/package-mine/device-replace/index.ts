@@ -25,7 +25,7 @@ ComponentWithComputed({
   },
 
   computed: {
-    rightBtnText(data) {
+    nextBtnText(data) {
       const textMap = {
         introduce: '开始使用',
         oldDevice: '下一步',
@@ -36,6 +36,16 @@ ComponentWithComputed({
       }
 
       return textMap[data.status]
+    },
+
+    nextBtnDisabled(data) {
+      if (data.status === 'oldDevice' && !data.oldDeviceItem.deviceId) {
+        return true
+      }
+      if (data.status === 'newDevice' && !data.newDeviceItem.deviceId) {
+        return true
+      }
+      return false
     },
   },
 
@@ -51,11 +61,19 @@ ComponentWithComputed({
   methods: {
     // 左边按钮，在选择新设备时或替换失败出现
     prevBtn() {
-      this.setData({
-        status: 'oldDevice',
-      })
+      if (this.data.status === 'newDevice') {
+        this.setData({
+          status: 'oldDevice',
+        })
+        return
+      }
+      if (this.data.status === 'replaceFail') {
+        this.goBack()
+        return
+      }
     },
-    // 只在前三步出现，暂时逐一判断
+
+    // 暂时逐一判断
     async nextBtn() {
       if (this.data.status === 'introduce') {
         this.setData({
@@ -63,12 +81,15 @@ ComponentWithComputed({
         })
         return
       }
+
       if (this.data.status === 'oldDevice') {
         this.setData({
           status: 'newDevice',
         })
         return
       }
+
+      // 进入开始替换
       if (this.data.status === 'newDevice') {
         this.setData({
           status: 'processing',
@@ -97,13 +118,27 @@ ComponentWithComputed({
 
         emitter.on('wsReceive', async (e) => {
           // TODO 事件能否区分成功与失败？
-          if (e.result.eventType !== 'device_replace') {
+          if (e.result.eventType === 'device_replace') {
             clearTimeout(st)
             this.setData({
               status: 'replaceFinish',
             })
           }
         })
+        return
+      }
+
+      // 重试，返回旧设备选择
+      if (this.data.status === 'replaceFail') {
+        this.setData({
+          status: 'oldDevice',
+        })
+        return
+      }
+
+      // 完成，跳回我的首页
+      if (this.data.status === 'replaceFinish') {
+        this.goBack()
         return
       }
     },

@@ -111,7 +111,12 @@ ComponentWithComputed({
       const deviceMap = deviceStore.deviceMap
       // switch需要特殊处理
       const switchDeviceMap = {} as Record<string, { ep: number; OnOff: number }[]>
-      deviceStore.selectList.forEach((id) => {
+      // 根据是否默认全选添加对应action
+      const selectList =
+        deviceStore.selectList.length > 0
+          ? deviceStore.selectList
+          : deviceStore.deviceFlattenList.map((device) => device.uniId)
+      selectList.forEach((id) => {
         if (id.includes(':')) {
           // 开关
           const deviceId = id.split(':')[0]

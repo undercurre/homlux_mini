@@ -91,7 +91,5 @@ export async function appOnLaunchService() {
     startWebsocketService()
   } catch (e) {
     console.log('appOnLaunchService-err:', e)
-  } finally {
-    homeStore.homeInitFinish()
   }
 }

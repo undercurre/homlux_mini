@@ -54,6 +54,30 @@ ComponentWithComputed({
   },
 
   computed: {
+    roomHasGateway(data) {
+      if (data.allRoomDeviceList) {
+        return (
+          (data.allRoomDeviceList as Device.DeviceItem[]).filter(
+            (device) =>
+              device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
+              device.proType === proType.gateway,
+          ).length > 0
+        )
+      }
+      return false
+    },
+    roomHasSubDevice(data) {
+      if (data.deviceList) {
+        return (
+          (data.allRoomDeviceList as Device.DeviceItem[]).filter(
+            (device) =>
+              device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
+              device.proType !== proType.gateway,
+          ).length > 0
+        )
+      }
+      return false
+    },
     title(data) {
       if (data.currentRoomIndex !== undefined && data.roomList) {
         return data.roomList[data.currentRoomIndex]?.roomName
@@ -124,12 +148,16 @@ ComponentWithComputed({
      * 生命周期函数--监听页面加载
      */
     onLoad() {
+      // 先从已加载数据拿出来
       runInAction(() => {
         deviceStore.deviceList = deviceStore.allRoomDeviceList.filter(
-          (device) => device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId,
+          (device) =>
+            device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
+            device.proType !== proType.gateway,
         )
       })
-      this.onPullDownRefresh()
+      // 再更新一遍数据
+      this.reloadData()
       emitter.on('wsReceive', async (e) => {
         if (!throttleTimer) {
           throttleTimer = setTimeout(() => {
@@ -179,7 +207,7 @@ ComponentWithComputed({
       })
     },
 
-    async onPullDownRefresh() {
+    async reloadData() {
       try {
         await sceneStore.updateAllRoomSceneList()
         await deviceStore.updateSubDeviceList()
@@ -271,10 +299,6 @@ ComponentWithComputed({
       })
     },
     handleCollect() {
-      if (deviceStore.selectList.length === 0) {
-        Toast('请先选择设备')
-        return
-      }
       this.setData({
         showAddScenePopup: true,
       })
@@ -547,6 +571,9 @@ ComponentWithComputed({
       }
       this.updateSelectType()
       this.updateDeviceList()
+    },
+    handleAddDevice() {
+      wx.navigateTo({ url: '/package-distribution/scan/index' })
     },
   },
 })

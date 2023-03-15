@@ -9,7 +9,7 @@
   <view class="w-100vw h-100vh absolute left-0 top-0 bg-hex-f4f8ff z-111"></view>
   <view class="absolute left-0 top-0 w-100vw h-50vh z-112" style="background: linear-gradient(180deg, rgba(87, 105, 255, 0.1) 0%, rgba(87, 105, 255, 0) 100%)"></view>
   <!-- 场景 -->
-  <view wx:if="{{deviceList.length>0}}" class="scene-card w-686rpx h-96rpx flex items-center rounded-24rpx mt-24rpx absolute left-32rpx z-114" style="top: {{navigationBarAndStatusBarHeight}};" bindtap="handleSceneTap">
+  <view wx:if="{{roomHasSubDevice}}" class="scene-card w-686rpx h-96rpx flex items-center rounded-24rpx mt-24rpx absolute left-32rpx z-114" style="top: {{navigationBarAndStatusBarHeight}};" bindtap="handleSceneTap">
     <image src="/assets/img/device-control/scene.png" class="absolute left-0 top-0 w-686rpx h-96rpx scene-card-bg" />
     <image src="/assets/img/base/scene.png" class="w-64rpx h-64rpx ml-24rpx"></image>
     <text id="scene-title" class="text-32rpx text-hex-333333 font-medium ml-16rpx">场景</text>
@@ -31,15 +31,21 @@
   <!-- 标题 -->
   <nav-bar title="{{title}}" z-index="{{113}}" left-arrow bind:leftTap="goBack" disabled="{{opacity === 0}}"></nav-bar>
   <view class="h-120rpx"></view>
-  <!-- 无设备 -->
-  <view wx:if="{{deviceList.length === 0}}" class="w-full flex flex-col items-center">
-    <image src="/assets/img/room/only-gateway.png" class="w-300rpx h-300rpx mt-64rpx"></image>
+  <!-- 房间无子设备,但是有网关 -->
+  <view wx:if="{{roomHasGateway && !roomHasSubDevice}}" class="w-full flex flex-col items-center">
+    <image src="/assets/img/default-img/only-gateway.png" class="w-300rpx h-300rpx mt-64rpx"></image>
     <text class="text-black-59 text-28rpx mt-48rpx">智能网关非可控制设备</text>
     <text class="text-black-59 text-28rpx">请在“我的-设备管理”中查看</text>
   </view>
+  <!-- 家庭无子设备无网关 -->
+  <view wx:if="{{!roomHasGateway && !roomHasSubDevice}}" class="w-full flex flex-col items-center">
+    <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx mt-64rpx"></image>
+    <text class="text-black-59 text-28rpx mt-48rpx">这个房间空空如也</text>
+    <van-button type="primary" class="mt-290rpx w-686rpx" size="large" bind:click="handleAddDevice">添加智能设备</van-button>
+  </view>
 
   <!-- 有设备页面主体 -->
-  <view wx:else class="w-750rpx flex flex-col items-center">
+  <view wx:if="{{roomHasSubDevice}}" class="w-750rpx flex flex-col items-center">
     <view class="flex flex-col items-center w-750rpx">
       <!-- 灯具设备卡片 -->
       <view class="mt-24rpx" wx:if="{{lightList && lightList.length>0}}">
@@ -59,7 +65,7 @@
         <view class="flex justify-between items-center h-44rpx">
           <text class="text-24rpx text-black-59 ml-17rpx">开关面板</text>
           <view class="rounded-999 flex-center px-20rpx py-10rpx cancel-select-btn" data-type="switch" bindtap="handleCancelSelce" wx:if="{{hasSelectSwitch}}">
-            <text class="text-20rpx leading-none text-hex-555659">取消选择</text>
+            <text class="text-20rpx leading-none text-hex-555659">全不选</text>
           </view>
         </view>
         <view class="w-720rpx mt-24rpx">

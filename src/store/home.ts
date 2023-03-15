@@ -18,8 +18,6 @@ export const homeStore = observable({
 
   homeMemberInfo: {} as Home.HomeMemberInfo,
 
-  homePageInit: false,
-
   get currentHomeId() {
     let houseId = this.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
 
@@ -181,17 +179,11 @@ export const homeStore = observable({
       return Promise.reject('邀请家庭成员失败')
     }
   },
-
-  homeInitFinish() {
-    runInAction(() => {
-      homeStore.homePageInit = true
-    })
-  },
 })
 
 export const homeBinding = {
   store: homeStore,
-  fields: ['homeList', 'currentHomeId', 'currentHomeDetail', 'isManager', 'homePageInit'],
+  fields: ['homeList', 'currentHomeId', 'currentHomeDetail', 'isManager'],
   actions: [
     'updateHomeInfo',
     'updateHomeList',
