@@ -46,7 +46,7 @@
         <view class="flex justify-between items-center h-44rpx">
           <text class="text-24rpx text-black-59 ml-17rpx">灯具</text>
           <view class="rounded-999 flex-center px-20rpx py-10rpx cancel-select-btn" data-type="light" bindtap="handleCancelSelce" wx:if="{{hasSelectLight}}">
-            <text class="opacity-50 text-20rpx leading-none">取消选择</text>
+            <text class="text-20rpx leading-none text-hex-555659">全不选</text>
           </view>
         </view>
         <view class="w-720rpx mt-24rpx">
@@ -59,7 +59,7 @@
         <view class="flex justify-between items-center h-44rpx">
           <text class="text-24rpx text-black-59 ml-17rpx">开关面板</text>
           <view class="rounded-999 flex-center px-20rpx py-10rpx cancel-select-btn" data-type="switch" bindtap="handleCancelSelce" wx:if="{{hasSelectSwitch}}">
-            <text class="opacity-50 text-20rpx leading-none">取消选择</text>
+            <text class="text-20rpx leading-none text-hex-555659">取消选择</text>
           </view>
         </view>
         <view class="w-720rpx mt-24rpx">

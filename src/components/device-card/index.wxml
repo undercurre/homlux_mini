@@ -19,8 +19,14 @@
   <view wx:if="{{ripple}}" class="absolute left-80rpx w-250rpx h-250rpx rounded-999 {{onOff ? 'ripple-on' : 'ripple-off'}}" style="background: {{rippleColor}};animation: ripple-{{onOff ? 'on' : 'off'}} 1s ease forwards;"></view>
   <view wx:if="{{showControl}}" class="absolute left-0 bottom-0 w-160rpx flex-col-center" catchtap="handlePowerTap">
     <view class="h-12rpx"></view>
-    <text wx:if="{{!deviceInfo.onLineStatus}}" class="text-24rpx text-hex-fbbb32 mb-18rpx">离线</text>
-    <image wx:else src="{{controlBtnPic}}" class="w-48rpx h-48rpx mb-12rpx"></image>
+    <text wx:if="{{!deviceInfo.onLineStatus}}" class="text-24rpx text-hex-fbbb32 mb-22rpx">离线</text>
+    <view wx:else>
+      <view wx:if="{{isLinkScene}}" class="flex-center mb-22rpx">
+        <image src="/assets/img/base/scene-switch-btn.png" class="w-22rpx h-22rpx mt-4rpx" />
+        <text class="text-blue text-24rpx leading-none ml-4rpx">{{linkSceneName}}</text>
+      </view>
+      <image wx:else src="{{controlBtnPic}}" class="w-48rpx h-48rpx mb-6rpx"></image>
+    </view>
   </view>
   <view wx:else class="absolute left-0 bottom-18rpx w-160rpx flex-center">
     <text wx:if="{{!deviceInfo.onLineStatus && deviceType !== 'switch'}}" class="text-24rpx text-hex-fbbb32">离线</text>
