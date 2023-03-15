@@ -2,7 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { deviceBinding, homeBinding } from '../../store/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { strUtil, bleUtil, aesUtil } from '../../utils/index'
+import { strUtil, bleUtil } from '../../utils/index'
 import { checkDevice, queryProtypeInfo } from '../../apis/index'
 
 ComponentWithComputed({
@@ -250,57 +250,17 @@ ComponentWithComputed({
         title: 'loading',
       })
 
-      const params = strUtil.getUrlParams(url)
+      const pageParams = strUtil.getUrlParams(url)
 
-      console.log('params', params)
-
-      // 子设备根据扫码得到的sn在云端查mac地址
+      console.log('pageParams', pageParams)
 
       // mode 配网方式 （00代表AP配网，01代表蓝牙配网， 02代表AP+有线）
-      if (params.mode === '01') {
+      if (pageParams.mode === '01') {
         // 子设备
-        const res = await checkDevice({ sn: params.sn })
-
-        if (!res.success) {
-          wx.showToast({ title: '验证产品信息失败', icon: 'error' })
-
-          return
-        }
-
-        // 子设备扫码处理，需要解密得到modelId
-        const key = `midea@homlux${res.result.mac.substr(-4)}`
-        const modelId = aesUtil.decrypt(params.pids, key)
-        console.log('test', modelId)
-
-        this.data._deviceInfo = {
-          type: 'single',
-          proType: res.result.proType,
-          deviceName: res.result.productName,
-          icon: res.result.productIcon,
-          mac: res.result.mac,
-        }
-
-        const flag = this.checkGateWayInfo()
-
-        if (flag) {
-          this.addSingleSubdevice()
-        }
-      } else if (params.mode === '02') {
+        await this.bindSubDevice(pageParams)
+      } else if (pageParams.mode === '02') {
         // 网关绑定逻辑
-        const res = await queryProtypeInfo({
-          pid: params.pid,
-        })
-
-        if (!res.success) {
-          wx.showToast({ title: '验证产品信息失败', icon: 'error' })
-
-          return
-        }
-
-        this.bindGateway({
-          ssid: params.ssid,
-          deviceName: res.result.productName,
-        })
+        await this.bindGateway(pageParams)
       }
 
       // 延迟复位扫码状态，防止安卓端短时间重复执行扫码逻辑
@@ -315,10 +275,48 @@ ComponentWithComputed({
       wx.hideLoading()
     },
 
-    bindGateway(params: IAnyObject) {
-      wx.navigateTo({
-        url: strUtil.getUrlWithParams('/package-distribution/check-gateway/index', params),
+    async bindGateway(params: IAnyObject) {
+      const res = await queryProtypeInfo({
+        pid: params.pid,
       })
+
+      if (!res.success) {
+        wx.showToast({ title: '验证产品信息失败', icon: 'error' })
+
+        return
+      }
+
+      wx.navigateTo({
+        url: strUtil.getUrlWithParams('/package-distribution/check-gateway/index', {
+          ssid: params.ssid,
+          deviceName: res.result.productName,
+        }),
+      })
+    },
+
+    async bindSubDevice(params: IAnyObject) {
+      const res = await checkDevice({ dsn: params.sn })
+
+      if (!res.success) {
+        wx.showToast({ title: '验证产品信息失败', icon: 'error' })
+
+        return
+      }
+
+      // 子设备根据扫码得到的sn在云端查mac地址
+      this.data._deviceInfo = {
+        type: 'single',
+        proType: res.result.proType,
+        deviceName: res.result.productName,
+        icon: res.result.productIcon,
+        mac: res.result.mac,
+      }
+
+      const flag = this.checkGateWayInfo()
+
+      if (flag) {
+        this.addSingleSubdevice()
+      }
     },
 
     /**
@@ -384,7 +382,6 @@ ComponentWithComputed({
           mac: this.data._deviceInfo.mac,
           gatewayId,
           gatewaySn,
-          // modelId: modelId,
           deviceName: this.data._deviceInfo.deviceName,
           deviceIcon: this.data._deviceInfo.icon,
         }),
