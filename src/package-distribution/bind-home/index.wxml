@@ -2,7 +2,7 @@
   <nav-bar background="transparent" title="添加设备"></nav-bar>
 
   <view class="grow flex flex-col pb-128rpx">
-    <tips-box text="设备添加成功！" icon="/assets/img/search-subdevice/add-success.png"></tips-box>
+    <tips-box text="设备添加成功！" icon="/assets/img/default-img/success.png"></tips-box>
 
     <view class="grow px-48rpx mt-96rpx">
       <edit-device-form wx:if="{{deviceInfo.roomId}}" device-name="{{deviceInfo.deviceName}}" room-id="{{deviceInfo.roomId}}" bind:change="changeDeviceInfo"></edit-device-form>
