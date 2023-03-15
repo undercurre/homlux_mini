@@ -66,6 +66,7 @@ Component({
         })
         homeStore.updateHomeInfo().then(() => {
           othersStore.setIsInit(true)
+          console.log('isLogin', userStore.isLogin, 'isInit', othersStore.isInit)
         })
       } else {
         Toast('登录失败！')
