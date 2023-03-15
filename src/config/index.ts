@@ -27,3 +27,8 @@ export const mzaioWSURL: ConfigWithEnv<string> = {
   dev: 'wss://test.meizgd.com/mzaio/v1/wss/',
   prod: 'https://baidu.com',
 }
+
+export const QQMapConfig = {
+  key: 'L7HBZ-UZ6EU-7J5VU-BR54O-3ZDG5-6CFIC',
+  sig: 'W9RrPrVIxGPyuKEzzS76ktDxvN3zxxyJ',
+}

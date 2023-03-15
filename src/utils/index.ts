@@ -1,4 +1,6 @@
 import { storage } from './storage'
+import QQMapWX from './qqmap-wx-jssdk'
+import { QQMapConfig } from '../config/index'
 export * from './request/index'
 export * from './storage'
 export * from './service'
@@ -61,4 +63,38 @@ export function getCurrentPageParams() {
   const currentPage = pages[pages.length - 1]
 
   return currentPage.options as IAnyObject
+}
+
+export function getPosition() {
+  const myQQMapWX = new QQMapWX({
+    key: QQMapConfig.key,
+  })
+
+  wx.getFuzzyLocation({
+    type: 'wgs84',
+    success(res) {
+      console.log('getFuzzyLocation', res)
+      const latitude = res.latitude
+      const longitude = res.longitude
+      myQQMapWX.reverseGeocoder({
+        sig: QQMapConfig.sig,
+        location: {
+          latitude: latitude,
+          longitude: longitude,
+        },
+        success(geoCoderRes: IAnyObject) {
+          console.log('reverseGeocoder', geoCoderRes)
+          const addr = geoCoderRes.result.address_component
+          const result = addr.province + addr.city + addr.district
+          storage.set('position_location', result)
+        },
+        fail: function () {
+          console.log('reverseGeocoder:获取地理位置失败')
+        },
+      })
+    },
+    fail() {
+      console.log('getFuzzyLocation::微信定位失败')
+    },
+  })
 }
