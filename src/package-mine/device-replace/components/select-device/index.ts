@@ -13,6 +13,9 @@ ComponentWithComputed({
       type: Boolean,
       value: false,
     },
+    filterDevice: {
+      type: Object,
+    },
   },
 
   /**
@@ -24,9 +27,14 @@ ComponentWithComputed({
   },
 
   computed: {
-    // 过滤网关设备
+    // 过滤网关设备；如传入checkedDevice，则列表只显示相同productId的项，并排除已选择项
     wifiDeviceList(data) {
-      return data.deviceList.filter((item) => item.deviceType === 2)
+      const list = data.deviceList.filter((item) => item.deviceType === 2)
+      const { filterDevice } = data
+      const hasOldDevice = filterDevice && filterDevice.productId
+      return hasOldDevice
+        ? list.filter((item) => item.productId === filterDevice.productId && item.deviceId !== filterDevice.deviceId)
+        : list
     },
   },
 

@@ -3,7 +3,7 @@
 
   <view class="grow flex flex-col pt-40rpx">
     <block wx:if="{{status === 'introduce'}}">
-      <tips-box text="通过设备替换，可使用新设备替换旧设备，新设备将继承旧设备的以下数据：" icon="/assets/img/device-replace/replace-tips.png"></tips-box>
+      <tips-box text="通过设备替换，可使用新设备替换旧设备，新设备将继承旧设备的以下数据：" icon="/assets/img/default-img/new-device-replace.png"></tips-box>
 
       <view class="pt-32rpx px-100rpx">
         <view class="text-24 leading-46rpx text-black-tips">
@@ -21,7 +21,7 @@
       <text class="block text-center pt-60rpx pb-16rpx leading-40rpx text-28 text-black-59">选择旧设备</text>
       <text class="block text-center pb-80rpx leading-34rpx text-24 text-black-59">替换完成后，旧设备将自动从家庭中解绑。</text>
 
-      <view class="bg-white mx-24rpx p-60rpx rounded-32rpx">
+      <view class="bg-white mx-24rpx p-60rpx rounded-32rpx flex justify-center">
         <device-card wx:if="{{ oldDeviceItem && oldDeviceItem.deviceId }}" device-info="{{oldDeviceItem}}" device-type="light" bind:cardTap="addOldDevice" />
 
         <view wx:else class="flex flex-col items-center" bind:tap="addOldDevice">
@@ -36,7 +36,7 @@
       <text class="block text-center pt-60rpx pb-16rpx leading-40rpx text-28 text-black-59">选择新设备</text>
       <text class="block text-center pb-80rpx leading-34rpx text-24 text-black-59">仅可选择在线，且与旧设备同类别的新设备</text>
 
-      <view class="bg-white mx-24rpx p-60rpx rounded-32rpx">
+      <view class="bg-white mx-24rpx p-60rpx rounded-32rpx flex justify-center">
         <device-card wx:if="{{ newDeviceItem && newDeviceItem.deviceId }}" device-info="{{newDeviceItem}}" device-type="light" bind:cardTap="addNewDevice" />
 
         <view wx:else class="flex flex-col items-center" bind:tap="addNewDevice">
@@ -48,25 +48,29 @@
 
     <block wx:if="{{status === 'processing'}}">
       <steps active="{{2}}"></steps>
-      <text class="block text-center pt-60rpx pb-16rpx leading-40rpx text-28 text-black-59">设备替换中</text>
-      <text class="block text-center pb-80rpx leading-34rpx text-24 text-black-59">为确保成功完成替换，请保持网络连接与设备供电</text>
+      <mz-loading class="mt-130rpx text-black-59" text="设备替换中"></mz-loading>
+      <text class="block text-center pb-80rpx leading-48rpx text-24 text-black-tips">为确保成功完成替换，请保持网络连接与设备供电</text>
+
+      <mz-progress show-progress="{{true}}" stepList="{{[]}}"></mz-progress>
+
+      <text class="block text-center pt-20rpx text-24 text-black-tips">预计所需时间30秒</text>
     </block>
 
     <block wx:if="{{status === 'replaceFinish'}}">
       <steps active="{{2}}"></steps>
-      <text class="block text-center pt-60rpx pb-16rpx leading-40rpx text-28 text-black-59">设备替换完成</text>
+      <tips-box text="设备替换完成" icon="/assets/img/default-img/success.png"></tips-box>
     </block>
 
     <block wx:if="{{status === 'replaceFail'}}">
       <steps active="{{2}}"></steps>
-      <text class="block text-center pt-60rpx pb-16rpx leading-40rpx text-28 text-black-59">设备替换失败</text>
+      <tips-box text="设备替换失败" icon="/assets/img/default-img/error.png"></tips-box>
     </block>
   </view>
 
   <view class="flex flex-row">
-    <van-button wx:if="{{status === 'newDevice'}}" class="flex-1 mx-32rpx" size="large" type="primary" block bind:click="prevBtn">上一步</van-button>
-    <van-button wx:if="{{status !== 'processing'}}" class="flex-1 mx-32rpx" size="large" type="primary" block bind:click="nextBtn">{{ rightBtnText }}</van-button>
+    <van-button wx:if="{{status === 'newDevice'}}" class="flex-1 mx-24rpx" size="large" block bind:click="prevBtn">上一步</van-button>
+    <van-button wx:if="{{status !== 'processing'}}" class="flex-1 mx-24rpx" size="large" type="primary" block bind:click="nextBtn" disabled="{{nextBtnDisabled}}">{{ nextBtnText }}</van-button>
   </view>
 </view>
 
-<select-device show="{{isSelectOldDevice || isSelectNewDevice}}" bind:close="closeDevicePopup" bind:confirm="confirmDevicePopup"></select-device>
+<select-device show="{{isSelectOldDevice || isSelectNewDevice}}" bind:close="closeDevicePopup" bind:confirm="confirmDevicePopup" filterDevice="{{ status === 'newDevice' ? oldDeviceItem: null }}"></select-device>

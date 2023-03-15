@@ -7,9 +7,13 @@
 
     <room-select></room-select>
 
-    <view class="flex flex-row flex-wrap px-40rpx gap-x-36rpx">
-      <device-card wx:for="{{wifiDeviceList}}" wx:key="uniId" bind:cardTap="handleCardTap" device-type="light" device-info="{{item}}" select="{{checkedDevice.deviceId === item.deviceId}}" class="mt-32rpx" />
+    <view wx:if="{{wifiDeviceList.length}}" class="grid grid-cols-4 gap-16rpx mt-16rpx">
+      <device-card wx:for="{{wifiDeviceList}}" wx:key="uniId" bind:cardTap="handleCardTap" device-type="light" device-info="{{item}}" select="{{checkedDevice.deviceId === item.deviceId}}" />
     </view>
+    <view wx:else class="popup-empty">
+      <text class="block text-center text-24 text-black-tips">该房间暂无设备</text>
+    </view>
+
     <view class="h-80rpx"></view>
     <template is="bottom-btn" />
   </view>
