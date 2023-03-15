@@ -74,6 +74,18 @@ ComponentWithComputed({
       }
       return {}
     },
+    hasSelectLight(data) {
+      if (data.selectType) {
+        return data.selectType.includes('light')
+      }
+      return false
+    },
+    hasSelectSwitch(data) {
+      if (data.selectType) {
+        return data.selectType.includes('switch')
+      }
+      return false
+    },
   },
 
   watch: {
@@ -508,6 +520,33 @@ ComponentWithComputed({
       this.setData({
         dragging: e.detail,
       })
+    },
+    handleCancelSelce(e: WechatMiniprogram.TouchEvent) {
+      if (e.currentTarget.dataset.type === 'light') {
+        const newSelectList = deviceStore.selectList.filter((uniId) => {
+          if (uniId.includes(':')) {
+            return true
+          } else if (deviceStore.deviceMap[uniId].proType !== proType.light) {
+            return true
+          }
+          return false
+        })
+        runInAction(() => {
+          deviceStore.selectList = newSelectList
+        })
+      } else if (e.currentTarget.dataset.type === 'switch') {
+        const newSelectList = deviceStore.selectList.filter((uniId) => {
+          if (uniId.includes(':')) {
+            return false
+          }
+          return false
+        })
+        runInAction(() => {
+          deviceStore.selectList = newSelectList
+        })
+      }
+      this.updateSelectType()
+      this.updateDeviceList()
     },
   },
 })

@@ -8,8 +8,8 @@ import { emitter } from './eventBus'
 export function logout() {
   storage.remove('mobilePhone')
   storage.remove('token')
-  wx.redirectTo({
-    url: '/pages/login/index',
+  wx.switchTab({
+    url: '/pages/index/index',
   })
 }
 

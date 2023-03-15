@@ -43,7 +43,12 @@
     <view class="flex flex-col items-center w-750rpx">
       <!-- 灯具设备卡片 -->
       <view class="mt-24rpx" wx:if="{{lightList && lightList.length>0}}">
-        <text class="text-24rpx text-black-59 ml-17rpx">灯具</text>
+        <view class="flex justify-between items-center h-44rpx">
+          <text class="text-24rpx text-black-59 ml-17rpx ">灯具</text>
+          <view class="rounded-999 flex-center px-20rpx py-10rpx cancel-select-btn" data-type="light" bindtap="handleCancelSelce" wx:if="{{hasSelectLight}}">
+            <text class="opacity-50 text-20rpx leading-none">取消选择</text>
+          </view>
+        </view>
         <view class="w-720rpx mt-24rpx">
           <drag id="drag-light" columns="{{4}}" list-data="{{lightList}}" scroll-top="{{scrollTop}}" item-height="{{240}}" generic:item="card" bind:sortend="handleLightSortEnd" bind:controlTap="handleLightPowerToggle" bind:cardTap="handleDeviceCardTap" bind:scroll="handleScroll" bind:offlineTap="handleShowDeviceOffline" bind:drag="handleDrag"></drag>
         </view>
@@ -51,7 +56,12 @@
 
       <!-- 开关设备卡片 -->
       <view class="{{lightList && lightList.length > 0 ? '' : 'mt-24rpx'}}" wx:if="{{switchList && switchList.length>0}}">
-        <text class="text-24rpx text-black-59 ml-17rpx">开关面板</text>
+        <view class="flex justify-between items-center h-44rpx">
+          <text class="text-24rpx text-black-59 ml-17rpx">开关面板</text>
+          <view class="rounded-999 flex-center px-20rpx py-10rpx cancel-select-btn" data-type="switch" bindtap="handleCancelSelce" wx:if="{{hasSelectSwitch}}">
+            <text class="opacity-50 text-20rpx leading-none">取消选择</text>
+          </view>
+        </view>
         <view class="w-720rpx mt-24rpx">
           <drag id="drag-switch" columns="{{4}}" list-data="{{switchList}}" scroll-top="{{scrollTop}}" item-height="{{240}}" generic:item="card" bind:sortend="handleSwitchSortEnd" bind:controlTap="handleSwitchControlTapToggle" bind:cardTap="handleDeviceCardTap" bind:scroll="handleScroll" bind:offlineTap="handleShowDeviceOffline"></drag>
         </view>

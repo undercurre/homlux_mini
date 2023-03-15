@@ -1,8 +1,12 @@
 <view class="page-container flex flex-col">
   <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="添加设备"></nav-bar>
 
-  <view class="grow flex flex-col pb-128rpx pt-130rpx">
+  <view class="grow flex flex-col pb-128rpx">
     <block wx:if="{{status === 'linking'}}">
+      <view class="flex-center w-750rpx">
+        <canvas id="canvas" type="2d" class="w-400rpx h-400rpx inline-block"></canvas>
+      </view>
+
       <tips-box text="请将设备尽量靠近智能网关" icon="{{pageParams.deviceIcon}}" size="160"></tips-box>
 
       <mz-progress text="请将设备尽量靠近智能网关" show-progress="{{true}}" active-index="{{activeIndex}}"></mz-progress>

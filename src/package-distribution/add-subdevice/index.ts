@@ -5,6 +5,8 @@ import { bleUtil, strUtil, BleClient, getCurrentPageParams } from '../../utils/i
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { sendCmdAddSubdevice, bindDevice, queryDeviceOnlineStatus } from '../../apis/index'
 import { IBleDevice } from './typings'
+import lottie from 'lottie-miniprogram'
+import { addDevice } from '../../assets/lottie/index'
 
 type StatusName = 'linking' | 'error'
 
@@ -47,6 +49,28 @@ ComponentWithComputed({
         pageParams,
       })
       this.initBle()
+
+      // 加载动画
+      this.createSelectorQuery()
+        .selectAll('#canvas')
+        .node((res) => {
+          const canvas = (res as any)[0].node
+          const context = canvas.getContext('2d')
+
+          canvas.width = 400
+          canvas.height = 400
+
+          lottie.setup(canvas)
+          lottie.loadAnimation({
+            loop: true,
+            autoplay: true,
+            animationData: JSON.parse(addDevice),
+            rendererSettings: {
+              context,
+            },
+          })
+        })
+        .exec()
     },
     detached: function () {
       wx.closeBluetoothAdapter()
@@ -72,7 +96,6 @@ ComponentWithComputed({
       wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
         const deviceList = res.devices.filter((item) => {
           let flag = false
-
           // localName为homlux_ble且没有被发现过的
           if (item.localName && item.localName.includes('homlux_ble')) {
             flag = true
@@ -80,7 +103,7 @@ ComponentWithComputed({
 
           return flag
         })
-
+        console.log('扫到新设备', deviceList)
         deviceList.forEach((item) => {
           this.handleBleDeviceInfo(item)
         })
@@ -120,8 +143,10 @@ ComponentWithComputed({
     async handleBleDeviceInfo(device: WechatMiniprogram.BlueToothDevice) {
       const dataMsg = strUtil.ab2hex(device.advertisData)
       const msgObj = bleUtil.transferBroadcastData(dataMsg)
+      const boardMac = this.data.pageParams.mac.slice(0, 6) + this.data.pageParams.mac.slice(10)
 
-      if (this.data.pageParams.mac !== msgObj.mac) {
+      // 广播的mac是6字节位，需要将云端的8位mac截掉中间两字节位
+      if (boardMac !== msgObj.mac) {
         return
       }
 

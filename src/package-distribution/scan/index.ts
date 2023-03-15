@@ -2,8 +2,8 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { deviceBinding, homeBinding } from '../../store/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { strUtil, bleUtil, aesUtil } from '../../utils/index'
-import { queryProtypeInfo } from '../../apis/index'
+import { strUtil, bleUtil } from '../../utils/index'
+import { checkDevice } from '../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -254,20 +254,24 @@ ComponentWithComputed({
 
       console.log('params', params)
 
-      // 子设备扫码处理，需要解密得到modelId
-      if (params.ssid === 'homlux_ble') {
-        const key = `midea@homlux${params.mac.substr(-4)}`
-        const test = aesUtil.encrypt('midea.light.003.002', key)
-        const modelId = aesUtil.decrypt(params.pid, key)
-        console.log('test', test, aesUtil.decrypt(test, key, 'Hex'), modelId)
-      }
+      // // 子设备扫码处理，需要解密得到modelId
+      // if (params.ssid === 'homlux_ble') {
+      //   const key = `midea@homlux${params.mac.substr(-4)}`
+      //   const test = aesUtil.encrypt('midea.light.003.002', key)
+      //   const modelId = aesUtil.decrypt(params.pid, key)
+      //   console.log('test', test, aesUtil.decrypt(test, key, 'Hex'), modelId)
+      // }
 
-      // 获取云端的产品基本信息
-      const res = await queryProtypeInfo({
-        pid: params.ssid === 'homlux_ble' ? 'midea.light.003.002' : params.pid,
-      })
+      // // 获取云端的产品基本信息
+      // const res = await queryProtypeInfo({
+      //   pid: params.ssid === 'homlux_ble' ? 'midea.light.003.002' : params.pid,
+      // })
 
-      console.log('queryProtypeInfo', res)
+      // console.log('queryProtypeInfo', res)
+
+      // 根据扫码得到的sn查mac地址
+
+      const res = await checkDevice({ sn: params.sn })
 
       setTimeout(() => {
         this.setData({
@@ -281,7 +285,7 @@ ComponentWithComputed({
         wx.showToast({ title: '验证产品信息失败', icon: 'error' })
 
         return
-      } else if (res.result && res.result?.proType === '0x18') {
+      } else if (res.result && res.result?.proType === '0x16') {
         this.bindGateway({
           ssid: params.ssid,
           deviceName: res.result.productName,
@@ -291,8 +295,8 @@ ComponentWithComputed({
           type: 'single',
           proType: res.result.proType,
           deviceName: res.result.productName,
-          icon: res.result.icon,
-          mac: params.mac,
+          icon: res.result.deviceIcon,
+          mac: res.result.mac,
         }
 
         const flag = this.checkGateWayInfo()

@@ -89,4 +89,15 @@ declare namespace Device {
     /** 类型:0 子设备顺序 1 按键顺序	 */
     type: '1' | '0'
   }
+
+  interface MzgdProTypeDTO {
+    deviceIcon: string
+    isValid: boolean
+    mac: string
+    modelId: string
+    proType: string
+    productIcon: string
+    productName: string
+    sn: string
+  }
 }

@@ -312,3 +312,15 @@ export async function deviceReplace(
     data,
   })
 }
+
+/**
+ * 根据sn去查设备的mac、图片、品类
+ */
+export async function checkDevice(data: { sn: string }, options?: { loading?: boolean }) {
+  return await mzaioRequest.post<Device.MzgdProTypeDTO>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/checkDevice',
+    data,
+  })
+}
