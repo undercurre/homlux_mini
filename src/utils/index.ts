@@ -66,35 +66,43 @@ export function getCurrentPageParams() {
 }
 
 export function getPosition() {
-  const myQQMapWX = new QQMapWX({
-    key: QQMapConfig.key,
-  })
+  return new Promise<{ lat: number; lng: number; address: string }>((resolve) => {
+    const myQQMapWX = new QQMapWX({
+      key: QQMapConfig.key,
+    })
 
-  wx.getFuzzyLocation({
-    type: 'wgs84',
-    success(res) {
-      console.log('getFuzzyLocation', res)
-      const latitude = res.latitude
-      const longitude = res.longitude
-      myQQMapWX.reverseGeocoder({
-        sig: QQMapConfig.sig,
-        location: {
-          latitude: latitude,
-          longitude: longitude,
-        },
-        success(geoCoderRes: IAnyObject) {
-          console.log('reverseGeocoder', geoCoderRes)
-          const addr = geoCoderRes.result.address_component
-          const result = addr.province + addr.city + addr.district
-          storage.set('position_location', result)
-        },
-        fail: function () {
-          console.log('reverseGeocoder:获取地理位置失败')
-        },
-      })
-    },
-    fail() {
-      console.log('getFuzzyLocation::微信定位失败')
-    },
+    wx.getFuzzyLocation({
+      type: 'wgs84',
+      success(res) {
+        console.log('getFuzzyLocation', res)
+        const latitude = res.latitude
+        const longitude = res.longitude
+        myQQMapWX.reverseGeocoder({
+          sig: QQMapConfig.sig,
+          location: {
+            latitude: latitude,
+            longitude: longitude,
+          },
+          success(geoCoderRes: IAnyObject) {
+            console.log('reverseGeocoder', geoCoderRes)
+            const addr = geoCoderRes.result.address_component
+            const result = addr.province + addr.city + addr.district
+            storage.set('position_location', result)
+
+            resolve({
+              lat: res.latitude,
+              lng: res.longitude,
+              address: result,
+            })
+          },
+          fail: function () {
+            console.log('reverseGeocoder:获取地理位置失败')
+          },
+        })
+      },
+      fail() {
+        console.log('getFuzzyLocation::微信定位失败')
+      },
+    })
   })
 }
