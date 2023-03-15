@@ -59,18 +59,6 @@ ComponentWithComputed({
   },
 
   methods: {
-    goBack: function () {
-      const pages = getCurrentPages()
-
-      if (pages.length <= 1) {
-        wx.switchTab({
-          url: '/pages/index/index',
-        })
-      } else {
-        wx.navigateBack()
-      }
-    },
-
     // 左边按钮，在选择新设备时或替换失败出现
     prevBtn() {
       if (this.data.status === 'newDevice') {
