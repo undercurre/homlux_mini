@@ -49,9 +49,9 @@
         <!-- 房间卡片列表 -->
         <room-card wx:for="{{roomList}}" wx:key="roomId" room-info="{{item}}" data-room="{{item.roomId}}" bind:sceneSelect="handleSceneSelect"></room-card>
         <view class="w-full flex-center mt-12rpx">
-          <van-button type="default" color="rgba(255,255,255,0.60)" size="small" custom-class="add-room-btn-border" round bind:click="handleAddRoom">
+          <!-- <van-button type="default" color="rgba(255,255,255,0.60)" size="small" custom-class="add-room-btn-border" round bind:click="handleAddRoom">
             <text class="text-26rpx text-hex-555659">添加房间</text>
-          </van-button>
+          </van-button> -->
           <!-- <text class="text-24rpx text-hex-aeaeb5">可手动添加更多空间~</text> -->
         </view>
         <!-- 顶开下面的内容高度 -->
