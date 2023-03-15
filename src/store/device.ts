@@ -171,7 +171,6 @@ export const deviceStore = observable({
     if (res.success) {
       runInAction(() => {
         deviceStore.allRoomDeviceList = res.result ? res.result : []
-        deviceStore.deviceList = res.success ? res.result : []
       })
     }
   },

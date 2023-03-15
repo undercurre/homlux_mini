@@ -51,7 +51,7 @@
     <view class="h-16rpx"></view>
     <view wx:if="{{hasReturn}}">
       <view class="flex gap-46rpx justify-center w-686rpx">
-        <van-button class="grow" size="large" bind:click="handleReturn">返回</van-button>
+        <van-button class="grow" size="large" bind:click="handleReturn">上一步</van-button>
         <van-button type="primary" class="grow" size="large" bind:click="handleConfirm">确定</van-button>
       </view>
       <view style="height: calc(96rpx - env(safe-area-inset-bottom))"></view>
