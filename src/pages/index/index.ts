@@ -331,6 +331,11 @@ ComponentWithComputed({
     handleAddDevice() {
       wx.navigateTo({ url: '/package-distribution/scan/index' })
     },
+    handleAddRoom() {
+      this.setData({
+        showAddNewRoom: true,
+      })
+    },
     /**
      * 用户点击下拉菜单项
      * @param e
