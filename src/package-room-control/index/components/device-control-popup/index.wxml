@@ -13,13 +13,16 @@
     <!-- tab -->
     <view class="flex justify-evenly w-686rpx">
       <view class="flex-col-center" data-tab="light" bindtap="handleTabTap" wx:if="{{lightTab}}">
-        <text class="font-32rpx mt-34rpx mb-20rpx mx-24rpx {{tab === 'light' ? 'tab-title-check' : 'tab-title-uncheck'}}">灯光</text>
+        <text class="mt-34rpx mx-24rpx {{tab === 'light' ? 'tab-title-check' : 'tab-title-uncheck'}}">灯光</text>
+        <view class="w-42rpx mb-20rpx h-8rpx mt-4rpx bg-blue rounded-999 {{tab === 'light' ? 'opacity-100' : 'opacity-0'}}"></view>
       </view>
       <view class="flex-col-center" data-tab="switch" bindtap="handleTabTap" wx:if="{{switchTab}}">
-        <text class="font-32rpx mt-34rpx mb-20rpx mx-24rpx {{tab === 'switch' ? 'tab-title-check' : 'tab-title-uncheck'}}">开关</text>
+        <text class="mt-34rpx mx-24rpx {{tab === 'switch' ? 'tab-title-check' : 'tab-title-uncheck'}}">开关</text>
+        <view class="w-42rpx mb-20rpx h-8rpx mt-4rpx bg-blue rounded-999 {{tab === 'switch' ? 'opacity-100' : 'opacity-0'}}"></view>
       </view>
       <view class="flex-col-center" data-tab="curtain" bindtap="handleTabTap" wx:if="{{curtainTab}}">
-        <text class="font-32rpx mt-34rpx mb-20rpx mx-24rpx {{tab === 'curtain' ? 'tab-title-check' : 'tab-title-uncheck'}}">窗帘</text>
+        <text class="mt-34rpx mx-24rpx {{tab === 'curtain' ? 'tab-title-check' : 'tab-title-uncheck'}}">窗帘</text>
+        <view class="w-42rpx mb-20rpx h-8rpx mt-4rpx bg-blue rounded-999 {{tab === 'curtain' ? 'opacity-100' : 'opacity-0'}}"></view>
       </view>
     </view>
     <!-- tab内容 -->
