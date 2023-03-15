@@ -170,7 +170,8 @@ export const deviceStore = observable({
     const res = await queryAllDevice(houseId, options)
     if (res.success) {
       runInAction(() => {
-        deviceStore.allRoomDeviceList = res.result
+        deviceStore.allRoomDeviceList = res.result ? res.result : []
+        deviceStore.deviceList = res.success ? res.result : []
       })
     }
   },

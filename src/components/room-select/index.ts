@@ -65,6 +65,7 @@ ComponentWithComputed({
    */
   methods: {
     handleRoomSelect(e: { detail: string }) {
+      console.log('roomSelect: ', e.detail)
       this.setData({
         roomSelect: e.detail,
       })
