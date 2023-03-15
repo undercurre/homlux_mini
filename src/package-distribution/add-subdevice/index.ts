@@ -5,8 +5,6 @@ import { bleUtil, strUtil, BleClient, getCurrentPageParams } from '../../utils/i
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { sendCmdAddSubdevice, bindDevice, queryDeviceOnlineStatus } from '../../apis/index'
 import { IBleDevice } from './typings'
-import lottie from 'lottie-miniprogram'
-import { addDevice } from '../../assets/lottie/index'
 
 type StatusName = 'linking' | 'error'
 
@@ -24,7 +22,7 @@ ComponentWithComputed({
   data: {
     _timeId: setTimeout(() => {}, 0),
     status: 'linking' as StatusName,
-    activeIndex: -1,
+    activeIndex: 0,
     pageParams: {} as IAnyObject,
     _hasFound: false, // 是否已经找到指定mac设备
   },
@@ -49,28 +47,6 @@ ComponentWithComputed({
         pageParams,
       })
       this.initBle()
-
-      // 加载动画
-      this.createSelectorQuery()
-        .selectAll('#canvas')
-        .node((res) => {
-          const canvas = (res as any)[0].node
-          const context = canvas.getContext('2d')
-
-          canvas.width = 400
-          canvas.height = 400
-
-          lottie.setup(canvas)
-          lottie.loadAnimation({
-            loop: true,
-            autoplay: true,
-            animationData: JSON.parse(addDevice),
-            rendererSettings: {
-              context,
-            },
-          })
-        })
-        .exec()
     },
     detached: function () {
       wx.closeBluetoothAdapter()
@@ -176,7 +152,7 @@ ComponentWithComputed({
     // 确认添加设备
     async confirmAdd(bleDevice: IBleDevice) {
       this.setData({
-        activeIndex: 0,
+        activeIndex: 1,
       })
       this.startZigbeeNet(bleDevice)
 
@@ -246,7 +222,7 @@ ComponentWithComputed({
       }
 
       this.setData({
-        activeIndex: 1,
+        activeIndex: 2,
       })
 
       const res = await bindDevice({
@@ -259,7 +235,7 @@ ComponentWithComputed({
 
       if (res.success && res.result.isBind) {
         this.setData({
-          activeIndex: 2,
+          activeIndex: 3,
         })
         wx.redirectTo({
           url: strUtil.getUrlWithParams('/package-distribution/bind-home/index', {

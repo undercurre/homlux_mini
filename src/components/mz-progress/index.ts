@@ -7,10 +7,6 @@ Component({
       type: Boolean,
       value: true,
     },
-    percentage: {
-      type: Number,
-      value: 0,
-    },
     stepList: {
       type: Array,
       value: [
@@ -25,6 +21,10 @@ Component({
         },
       ],
     },
+    totalSection: {
+      type: Number,
+      value: -1,
+    },
     activeIndex: {
       type: Number,
       value: -1,
@@ -35,6 +35,7 @@ Component({
    * 组件的初始数据
    */
   data: {
+    percentage: 0,
     interId: null as any,
   },
 
@@ -52,7 +53,8 @@ Component({
   methods: {
     // 构造假进度条
     setProgressPercentage() {
-      const length = 100 / this.data.stepList.length
+      let totalSection = this.data.totalSection > 0 ? this.data.totalSection : this.data.stepList.length
+      const length = 100 / totalSection
 
       this.data.interId = setInterval(() => {
         const { activeIndex, interId } = this.data

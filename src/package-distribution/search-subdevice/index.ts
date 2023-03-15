@@ -5,6 +5,8 @@ import { bleUtil, strUtil, BleClient, getCurrentPageParams } from '../../utils/i
 import { IBleDevice } from './types'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { sendCmdAddSubdevice, bindDevice, queryDeviceOnlineStatus, queryProtypeInfo } from '../../apis/index'
+import lottie from 'lottie-miniprogram'
+import { addDevice } from '../../assets/lottie/index'
 
 type StatusName = 'discover' | 'requesting' | 'success' | 'error' | 'openBle'
 
@@ -74,6 +76,29 @@ ComponentWithComputed({
   },
 
   methods: {
+    startAnimation() {
+      // 加载动画
+      this.createSelectorQuery()
+        .selectAll('#canvas')
+        .node((res) => {
+          const canvas = (res as any)[0].node
+          const context = canvas.getContext('2d')
+
+          canvas.width = 400
+          canvas.height = 400
+
+          lottie.setup(canvas)
+          lottie.loadAnimation({
+            loop: true,
+            autoplay: true,
+            animationData: JSON.parse(addDevice),
+            rendererSettings: {
+              context,
+            },
+          })
+        })
+        .exec()
+    },
     openSystemBluetoothSetting() {
       wx.openSystemBluetoothSetting({
         success(res) {
@@ -125,6 +150,12 @@ ComponentWithComputed({
         deviceList.forEach((device) => {
           this.handleBleDeviceInfo(device)
         })
+      })
+
+      this.setData({
+        deviceList: JSON.parse(
+          '[{"deviceUuid":"086DDD30-219D-6655-AC69-4A0C9036442B","mac":"04CD15AEA756","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/midea.light.003.002-3.png","name":"灯具A756","isChecked":false,"client":{"key":"midea@homluxA756","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEA756","deviceUuid":"086DDD30-219D-6655-AC69-4A0C9036442B"},"roomId":"","roomName":"","status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":3},{"deviceUuid":"086DDD30-219D-6655-AC69-4A0C9036442B","mac":"04CD15AEA756","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/midea.light.003.002-3.png","name":"灯具A756","isChecked":false,"client":{"key":"midea@homluxA756","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEA756","deviceUuid":"086DDD30-219D-6655-AC69-4A0C9036442B"},"roomId":"","roomName":"","status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":3}]',
+        ),
       })
 
       wx.onBLEConnectionStateChange((res) => {
@@ -206,29 +237,37 @@ ComponentWithComputed({
 
     // 确认添加设备
     async confirmAdd() {
-      const pageParams = getCurrentPageParams()
+      try {
+        const pageParams = getCurrentPageParams()
 
-      wx.stopBluetoothDevicesDiscovery()
+        wx.stopBluetoothDevicesDiscovery().catch(err => err)
 
-      const res = await sendCmdAddSubdevice({
-        deviceId: pageParams.gatewayId,
-        expire: 60,
-        buzz: 1,
-      })
+        const res = await sendCmdAddSubdevice({
+          deviceId: pageParams.gatewayId,
+          expire: 60,
+          buzz: 1,
+        })
 
-      if (!res.success) {
-        wx.showToast({ title: res.msg })
-        return
-      }
+        if (!res.success) {
+          wx.showToast({ title: res.msg })
+          return
+        }
 
-      this.setData({
-        status: 'requesting',
-      })
+        this.setData({
+          status: 'requesting',
+        })
 
-      const list = this.data.selectedList
+        setTimeout(() => {
+          this.startAnimation()
+        }, 300)
 
-      for (const item of list) {
-        await this.startZigbeeNet(item)
+        const list = this.data.selectedList
+
+        for (const item of list) {
+          await this.startZigbeeNet(item)
+        }
+      } catch (err) {
+        console.log('confirmAdd-err', err)
       }
     },
 
