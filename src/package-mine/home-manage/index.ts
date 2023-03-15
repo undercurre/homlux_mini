@@ -262,7 +262,7 @@ ComponentWithComputed({
 
       const res = await saveOrUpdateUserHouseInfo({
         ...this.data.homeInfoEdited,
-        userLocationInfo: '广东省佛山市顺德区',
+        userLocationInfo: storage.get('position_location', '') as string,
       })
 
       if (!res.success) {
