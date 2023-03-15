@@ -299,14 +299,6 @@ ComponentWithComputed({
       })
     },
     handleCollect() {
-      if (deviceStore.selectList.length === 0) {
-        // 如果用户没选择则全选
-        runInAction(() => {
-          deviceStore.selectList = deviceStore.deviceFlattenList.map((device) => device.uniId)
-        })
-        this.updateSelectType()
-        this.updateDeviceList()
-      }
       this.setData({
         showAddScenePopup: true,
       })

@@ -74,6 +74,7 @@ ComponentWithComputed({
       if (this.data.sceneClickId) {
         return
       }
+      if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
       this.setData({
         sceneClickId: e.currentTarget.dataset.value,
       })
