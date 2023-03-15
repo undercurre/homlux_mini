@@ -12,7 +12,7 @@
       <view class="flex">
         <view class="w-32rpx"></view>
         <view wx:for="{{sceneList}}" wx:key="value" data-value="{{item.sceneId}}" bindtap="handleSceneTap" class="relative w-144rpx h-168rpx rounded-24rpx flex flex-col justify-center items-center bg-hex-eff0f3 shrink-0 {{index===0?'':'ml-22rpx'}}">
-          <view class=" flex-col-center">
+          <view class="flex-col-center">
             <view class="rounded-999 bg-white">
               <svg-icon name="scene:{{item.sceneIcon}}" width="64rpx" height="64rpx" />
             </view>
@@ -27,7 +27,6 @@
         </view>
         <view class="w-32rpx"></view>
       </view>
-
     </scroll-view>
   </view>
   <view class="h-32rpx" wx:if="{{hasBottomPadding}}"></view>
