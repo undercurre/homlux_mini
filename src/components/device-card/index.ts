@@ -182,7 +182,6 @@ ComponentWithComputed({
             ripple: false,
           })
         }, 550) as unknown as number
-        this.triggerEvent('controlTap', this.data.deviceInfo)
       } else {
         // this.triggerEvent('offlineTap')
         Toast('设备已离线')
