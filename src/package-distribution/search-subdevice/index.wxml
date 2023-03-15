@@ -4,7 +4,7 @@
 
   <view class="grow shrink flex flex-col justify-between pb-128rpx box-border">
     <block wx:if="{{status === 'discover'}}">
-      <tips-box text="正在搜索附近的设备…" icon="/assets/img/search-subdevice/searching.png" size="{{ deviceList.length ? 180 : 300}}" textStyle="margin-top: 28rpx;"></tips-box>
+      <tips-box text="正在搜索附近的设备…" icon="/assets/img/default-img/searching.png" size="{{ deviceList.length ? 180 : 300}}" textStyle="margin-top: 28rpx;"></tips-box>
 
       <view wx:if="{{deviceList.length}}" class="px-32rpx pt-86rpx grow shrink flex flex-col">
         <view class="flex flex-row items-center justify-between pb-34rpx">
@@ -20,7 +20,7 @@
                 <image src="{{item.icon}}" class="w-72 h-72"></image>
               </view>
 
-              <image slot="icon" class="w-48 h-48" src="{{ item.isChecked ? '../../assets/img/search-subdevice/checked.png' : '../../assets/img/search-subdevice/unchecked.png' }}" />
+              <image slot="icon" class="w-48 h-48" src="{{ item.isChecked ? '../../assets/img/base/check.png' : '../../assets/img/bash/uncheck.png' }}" />
             </van-checkbox>
 
             <view class="grow pl-32rpx">
@@ -76,13 +76,13 @@
     </block>
 
     <view class="grow flex flex-col justify-between" wx:if="{{status === 'requesting' && successList.length === selectedList.length}}">
-      <tips-box text="设备添加成功！" icon="/assets/img/search-subdevice/add-success.png"></tips-box>
+      <tips-box text="设备添加成功！" icon="/assets/img/default-img/success.png"></tips-box>
 
       <van-button class="mx-32rpx mt-24rpx" type="primary" block size="large" bind:click="finish">完成</van-button>
     </view>
 
     <block wx:if="{{status === 'error'}}">
-      <tips-box text="未发现附近设备" icon="/assets/img/search-subdevice/no-found.png"></tips-box>
+      <tips-box text="未发现附近设备" icon="/assets/img/default-img/no-found.png"></tips-box>
 
       <view class="grow px-88rpx pt-180rpx">
         <view class="text-28 text-black-2a">
@@ -101,7 +101,7 @@
     </block>
 
     <block wx:if="{{status === 'openBle'}}">
-      <tips-box text="打开手机蓝牙，以便扫描附近智能设备" icon="/assets/img/search-subdevice/open-ble.png"></tips-box>
+      <tips-box text="打开手机蓝牙，以便扫描附近智能设备" icon="/assets/img/default-img/bluetooth-scan.png"></tips-box>
 
       <view class="px-32rpx pt-128rpx">
         <van-button type="primary" block size="large" bind:click="finish">去开启</van-button>
