@@ -64,7 +64,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .pr-44rpx{padding-right:44rpx;}
 .pr-50rpx{padding-right:50rpx;}
 .pr-64rpx{padding-right:64rpx;}
-.pt-10rpx{padding-top:10rpx;}
 .pt-112rpx{padding-top:112rpx;}
 .pt-128rpx{padding-top:128rpx;}
 .pt-12rpx{padding-top:12rpx;}

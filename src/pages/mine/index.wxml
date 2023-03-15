@@ -14,15 +14,6 @@
   <!-- <image class="w-32rpx h-32rpx" src="/assets/img/base/arrow-right-mine.png"></image> -->
 </view>
 
-<!-- <view class="flex flex-row justify-between px-24rpx">
-  <view wx:for="{{managerList}}" wx:key="text" class="flex flex-col items-center pt-10rpx pb-24rpx grow" data-url="{{item.url}}" bindtap="toPage">
-    <image src="{{item.icon}}" class="w-64 h-64"></image>
-    <text class="pt-20rpx text-26 text-black-59 leading-none">{{item.text}}</text>
-  </view>
-</view> -->
-
-<view class="h-48rpx"></view>
-
 <van-cell-group inset>
   <van-cell icon="/assets/img/mine/home.png" title="家庭管理" is-link center data-url="{{urls.homeControl}}" bind:click="toPage" />
 </van-cell-group>
