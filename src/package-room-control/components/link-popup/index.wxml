@@ -2,8 +2,8 @@
 <import src="/commons/templates/popup.wxml" />
 <van-popup show="{{ show }}" z-index="10002" round position="bottom" bind:close="handleClose" catchtouchmove="black">
   <view class="w-750rpx h-1000rpx relative flex flex-col items-center">
-    <view wx:if="{{hasReturn}}" class="absolute right-36rpx top-40rpx" bindtap="handleClose">
-      <svg-icon name="icon-park:close" width="48rpx" height="48rpx"></svg-icon>
+    <view wx:if="{{hasReturn}}" class="absolute right-40rpx top-44rpx" bindtap="handleClose">
+      <image src="/assets/img/base/close.png" class="w-48rpx h-48rpx" />
     </view>
     <template is="title" data="{{title: title}}" />
     <scroll-view class="mt-48rpx h-60rpx w-750rpx">

@@ -11,13 +11,6 @@ ComponentWithComputed({
     show: {
       type: Boolean,
       value: false,
-      observer(val) {
-        if (val) {
-          this.setData({
-            linkTypeInner: this.data.linkType,
-          })
-        }
-      },
     },
     /** 展示类型：light switch scene */
     linkType: {
@@ -25,9 +18,7 @@ ComponentWithComputed({
     },
   },
 
-  data: {
-    linkTypeInner: '',
-  },
+  data: {},
 
   /**
    * 组件的方法列表
@@ -36,14 +27,8 @@ ComponentWithComputed({
     handleClose() {
       this.triggerEvent('close')
     },
-    handleConfirm() {
-      this.triggerEvent('confirm', this.data.linkTypeInner)
-    },
-    handleTypeSelect(e: WechatMiniprogram.TouchEvent) {
-      console.log(e)
-      this.setData({
-        linkTypeInner: e.currentTarget.dataset.type,
-      })
+    handleConfirm(e: WechatMiniprogram.TouchEvent) {
+      this.triggerEvent('confirm', e.currentTarget.dataset.type)
     },
     black() {},
   },

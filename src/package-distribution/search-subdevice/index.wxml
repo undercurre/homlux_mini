@@ -20,7 +20,7 @@
                 <image src="{{item.icon}}" class="w-72 h-72"></image>
               </view>
 
-              <image slot="icon" class="w-48 h-48" src="{{ item.isChecked ? '../../assets/img/base/check.png' : '../../assets/img/bash/uncheck.png' }}" />
+              <image slot="icon" class="w-48 h-48" src="{{ item.isChecked ? '/assets/img/base/check.png' : '/assets/img/base/uncheck.png' }}" />
             </van-checkbox>
 
             <view class="grow pl-32rpx">

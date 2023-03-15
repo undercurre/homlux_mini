@@ -5,7 +5,7 @@
       <text class="text-36rpx font-medium ml-48rpx {{sceneList.length === 0 || !showScene ? 'my-12rpx' : ''}}">{{roomInfo.roomName}}</text>
       <text class="flex-1 ml-20rpx text-28rpx text-hex-b6b7bb">{{ desc }}</text>
     </view>
-    <image src="/assets/img/home/more.png" class="w-32rpx h-32rpx mr-32rpx"></image>
+    <image src="/assets/img/base/arrow-right.png" class="w-32rpx h-32rpx mr-32rpx"></image>
   </view>
   <view class="mx-32rpx mt-8rpx" wx:if="{{showScene && sceneList.length > 0}}">
     <scroll-view enable-flex scroll-x enhanced show-scrollbar="{{false}}" class="w-full h-168rpx flex">

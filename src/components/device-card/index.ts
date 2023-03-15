@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
-import { deviceBinding, sceneBinding } from '../../store/index'
+import { deviceBinding, deviceStore, sceneBinding, sceneStore } from '../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { proName, proType } from '../../config/index'
 let throttleTimer = 0
@@ -43,6 +43,15 @@ ComponentWithComputed({
       }
       return ''
     },
+    isLinkScene(data) {
+      if (!data.deviceInfo || !data.deviceInfo.switchInfoDTOList || !data.deviceInfo.switchInfoDTOList[0]) {
+        return
+      }
+      const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
+      return (
+        data.deviceInfo.proType === proType.switch && data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2
+      )
+    },
     controlBtnPic(data) {
       if (data.deviceInfo.proType === proType.light) {
         return data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
@@ -51,11 +60,8 @@ ComponentWithComputed({
       } else if (data.deviceInfo.proType === proType.switch) {
         const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
         if (!data.deviceInfo.mzgdPropertyDTOList[switchId]) {
-          // 设备没有开关属性，不显示
+          // 万一设备没有开关属性，不显示
           return ''
-        }
-        if (data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
-          return '/assets/img/base/scene-switch-btn.png'
         }
         return data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff
           ? '/assets/img/device-control/power-on.png'
@@ -63,16 +69,29 @@ ComponentWithComputed({
       }
       return ''
     },
-    // switchName(data) {
-    //   if (data.deviceType === 'switch') {
-    //     if (data.deviceInfo.switchInfoDTOList[0].switchName) {
-    //       return data.deviceInfo.switchInfoDTOList[0].switchName
-    //     } else {
-    //       return data.deviceInfo.switchInfoDTOList[0].switchId + '路'
-    //     }
-    //   }
-    //   return ''
-    // },
+    linkSceneName(data) {
+      if (!data.deviceInfo || !data.deviceInfo.switchInfoDTOList || !data.deviceInfo.switchInfoDTOList[0]) {
+        return
+      }
+      const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
+      const switchSceneMap = deviceStore.switchSceneMap
+      const sceneIdMp = sceneStore.sceneIdMp
+      if (
+        switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`] &&
+        sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]] &&
+        sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]].sceneName
+      ) {
+        const sceneName = sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]].sceneName
+        if (new RegExp('[\\u4E00-\\u9FFF]+', 'g').test(sceneName)) {
+          // 名字有中文，只能显示三个字符
+          return sceneName.slice(0, 3)
+        } else {
+          // 全英文，显示4个
+          return sceneName.slice(0, 4)
+        }
+      }
+      return ''
+    },
     deviceName(data) {
       let name = ''
       if (data.deviceInfo.proType === proType.switch) {
