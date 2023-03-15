@@ -44,7 +44,7 @@
       <!-- 灯具设备卡片 -->
       <view class="mt-24rpx" wx:if="{{lightList && lightList.length>0}}">
         <view class="flex justify-between items-center h-44rpx">
-          <text class="text-24rpx text-black-59 ml-17rpx ">灯具</text>
+          <text class="text-24rpx text-black-59 ml-17rpx">灯具</text>
           <view class="rounded-999 flex-center px-20rpx py-10rpx cancel-select-btn" data-type="light" bindtap="handleCancelSelce" wx:if="{{hasSelectLight}}">
             <text class="opacity-50 text-20rpx leading-none">取消选择</text>
           </view>

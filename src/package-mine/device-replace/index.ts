@@ -21,7 +21,7 @@ ComponentWithComputed({
     isSelectOldDevice: false,
     isSelectNewDevice: false,
     oldDeviceItem: <Device.DeviceItem>{},
-    newDeviceItem: <Device.DeviceItem>{}
+    newDeviceItem: <Device.DeviceItem>{},
   },
 
   computed: {
@@ -32,7 +32,7 @@ ComponentWithComputed({
         newDevice: '开始替换',
         processing: '',
         replaceFinish: '完成',
-        replaceFail: '重试'
+        replaceFail: '重试',
       }
 
       return textMap[data.status]
@@ -57,18 +57,18 @@ ComponentWithComputed({
     },
     // 只在前三步出现，暂时逐一判断
     async nextBtn() {
-       if (this.data.status === 'introduce') {
+      if (this.data.status === 'introduce') {
         this.setData({
           status: 'oldDevice',
         })
         return
-      } 
+      }
       if (this.data.status === 'oldDevice') {
         this.setData({
           status: 'newDevice',
         })
         return
-      } 
+      }
       if (this.data.status === 'newDevice') {
         this.setData({
           status: 'processing',
@@ -77,7 +77,7 @@ ComponentWithComputed({
         // 执行替换
         const res = await deviceReplace({
           newDevId: this.data.newDeviceItem.deviceId,
-          oldDevId: this.data.oldDeviceItem.deviceId
+          oldDevId: this.data.oldDeviceItem.deviceId,
         })
         console.log('deviceReplace', res)
 
@@ -97,7 +97,7 @@ ComponentWithComputed({
 
         emitter.on('wsReceive', async (e) => {
           // TODO 事件能否区分成功与失败？
-          if (e.result.eventType !== "device_replace") {
+          if (e.result.eventType !== 'device_replace') {
             clearTimeout(st)
             this.setData({
               status: 'replaceFinish',
@@ -123,21 +123,21 @@ ComponentWithComputed({
     closeDevicePopup() {
       this.setData({
         isSelectOldDevice: false,
-        isSelectNewDevice: false
+        isSelectNewDevice: false,
       })
     },
 
     confirmDevicePopup(event: WechatMiniprogram.CustomEvent<Device.DeviceItem>) {
       if (this.data.isSelectOldDevice) {
         this.setData({
-          oldDeviceItem: event.detail
+          oldDeviceItem: event.detail,
         })
-      } else if(this.data.isSelectNewDevice) {
+      } else if (this.data.isSelectNewDevice) {
         this.setData({
-          newDeviceItem: event.detail
+          newDeviceItem: event.detail,
         })
       }
       this.closeDevicePopup()
-    }
+    },
   },
 })

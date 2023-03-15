@@ -8,7 +8,7 @@
 }
 .cancel-select-btn {
   opacity: 0.35;
-  border: 2rpx solid rgba(151,151,151,1)
+  border: 2rpx solid rgba(151, 151, 151, 1);
 }
 .scene-icon {
   margin-right: -14rpx;
