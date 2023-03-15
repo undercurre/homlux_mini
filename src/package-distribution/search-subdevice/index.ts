@@ -240,7 +240,7 @@ ComponentWithComputed({
       try {
         const pageParams = getCurrentPageParams()
 
-        wx.stopBluetoothDevicesDiscovery().catch(err => err)
+        wx.stopBluetoothDevicesDiscovery().catch((err) => err)
 
         const res = await sendCmdAddSubdevice({
           deviceId: pageParams.gatewayId,

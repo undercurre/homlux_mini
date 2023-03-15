@@ -53,7 +53,7 @@ Component({
   methods: {
     // 构造假进度条
     setProgressPercentage() {
-      let totalSection = this.data.totalSection > 0 ? this.data.totalSection : this.data.stepList.length
+      const totalSection = this.data.totalSection > 0 ? this.data.totalSection : this.data.stepList.length
       const length = 100 / totalSection
 
       this.data.interId = setInterval(() => {
