@@ -2,8 +2,8 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { deviceBinding, homeBinding } from '../../store/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { strUtil, bleUtil } from '../../utils/index'
-import { checkDevice } from '../../apis/index'
+import { strUtil, bleUtil, aesUtil } from '../../utils/index'
+import { checkDevice, queryProtypeInfo } from '../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -254,48 +254,29 @@ ComponentWithComputed({
 
       console.log('params', params)
 
-      // // 子设备扫码处理，需要解密得到modelId
-      // if (params.ssid === 'homlux_ble') {
-      //   const key = `midea@homlux${params.mac.substr(-4)}`
-      //   const test = aesUtil.encrypt('midea.light.003.002', key)
-      //   const modelId = aesUtil.decrypt(params.pid, key)
-      //   console.log('test', test, aesUtil.decrypt(test, key, 'Hex'), modelId)
-      // }
+      // 子设备根据扫码得到的sn在云端查mac地址
 
-      // // 获取云端的产品基本信息
-      // const res = await queryProtypeInfo({
-      //   pid: params.ssid === 'homlux_ble' ? 'midea.light.003.002' : params.pid,
-      // })
+      // mode 配网方式 （00代表AP配网，01代表蓝牙配网， 02代表AP+有线）
+      if (params.mode === '01') {
+        // 子设备
+        const res = await checkDevice({ sn: params.sn })
 
-      // console.log('queryProtypeInfo', res)
+        if (!res.success) {
+          wx.showToast({ title: '验证产品信息失败', icon: 'error' })
 
-      // 根据扫码得到的sn查mac地址
+          return
+        }
 
-      const res = await checkDevice({ sn: params.sn })
+        // 子设备扫码处理，需要解密得到modelId
+        const key = `midea@homlux${res.result.mac.substr(-4)}`
+        const modelId = aesUtil.decrypt(params.pids, key)
+        console.log('test', modelId)
 
-      setTimeout(() => {
-        this.setData({
-          _isScaning: false,
-        })
-
-        console.log('_isScaning', this.data._isScaning)
-      }, 2000)
-
-      if (!res.success) {
-        wx.showToast({ title: '验证产品信息失败', icon: 'error' })
-
-        return
-      } else if (res.result && res.result?.proType === '0x16') {
-        this.bindGateway({
-          ssid: params.ssid,
-          deviceName: res.result.productName,
-        })
-      } else {
         this.data._deviceInfo = {
           type: 'single',
           proType: res.result.proType,
           deviceName: res.result.productName,
-          icon: res.result.deviceIcon,
+          icon: res.result.productIcon,
           mac: res.result.mac,
         }
 
@@ -304,7 +285,32 @@ ComponentWithComputed({
         if (flag) {
           this.addSingleSubdevice()
         }
+      } else if (params.mode === '02') {
+        // 网关绑定逻辑
+        const res = await queryProtypeInfo({
+          pid: params.pid,
+        })
+
+        if (!res.success) {
+          wx.showToast({ title: '验证产品信息失败', icon: 'error' })
+
+          return
+        }
+
+        this.bindGateway({
+          ssid: params.ssid,
+          deviceName: res.result.productName,
+        })
       }
+
+      // 延迟复位扫码状态，防止安卓端短时间重复执行扫码逻辑
+      setTimeout(() => {
+        this.setData({
+          _isScaning: false,
+        })
+
+        console.log('_isScaning', this.data._isScaning)
+      }, 2000)
 
       wx.hideLoading()
     },
