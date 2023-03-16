@@ -2,7 +2,7 @@
 import { storage } from './storage'
 import { reaction, runInAction } from 'mobx-miniprogram'
 import { connectHouseSocket } from '../apis/websocket'
-import { homeStore, othersStore, userStore } from '../store/index'
+import { homeStore, userStore } from '../store/index'
 import { emitter } from './eventBus'
 
 export function logout() {
@@ -85,9 +85,11 @@ export async function appOnLaunchService() {
     loadUserInfo()
     const start = Date.now()
     console.log('开始时间', start / 1000)
-    await homeStore.updateHomeInfo()
+    // await homeStore.updateHomeInfo()
+    // console.log('加载完成时间', Date.now() / 1000, '用时', (Date.now() - start) / 1000 + 's')
+    // othersStore.setIsInit(true)
+    await homeStore.homeInit()
     console.log('加载完成时间', Date.now() / 1000, '用时', (Date.now() - start) / 1000 + 's')
-    othersStore.setIsInit(true)
     startWebsocketService()
   } catch (e) {
     console.log('appOnLaunchService-err:', e)

@@ -1,5 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import { proType } from '../../../config/index'
 import { deviceBinding, roomBinding, roomStore } from '../../../store/index'
 
 ComponentWithComputed({
@@ -77,6 +78,16 @@ ComponentWithComputed({
         return '关联场景'
       }
       return ''
+    },
+    roomListInner(data) {
+      if (data.roomList && data.roomList.length) {
+        return (data.roomList as Room.RoomInfo[]).filter(
+          (room) =>
+            roomStore.roomDeviceList[room.roomId] &&
+            roomStore.roomDeviceList[room.roomId].some((device) => device.proType === proType.switch),
+        )
+      }
+      return []
     },
     deviceListMatrix(data: { list: Device.DeviceItem[]; roomSelect: string }) {
       if (data.list) {

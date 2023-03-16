@@ -166,7 +166,7 @@ export const deviceStore = observable({
     return map
   },
 
-  async updateAllRoomDeviceList(houseId: string = homeStore.currentHomeDetail.houseId, options?: { loading: boolean }) {
+  async updateAllRoomDeviceList(houseId: string = homeStore.currentHomeId, options?: { loading: boolean }) {
     const res = await queryAllDevice(houseId, options)
     if (res.success) {
       runInAction(() => {
@@ -176,7 +176,7 @@ export const deviceStore = observable({
   },
 
   async updateDeviceList(
-    houseId: string = homeStore.currentHomeDetail.houseId,
+    houseId: string = homeStore.currentHomeId,
     roomId: string = roomStore.roomList[roomStore.currentRoomIndex].roomId,
     options?: { loading: boolean },
   ) {
@@ -187,7 +187,7 @@ export const deviceStore = observable({
   },
 
   async updateSubDeviceList(
-    houseId: string = homeStore.currentHomeDetail.houseId,
+    houseId: string = homeStore.currentHomeId,
     roomId: string = roomStore.roomList[roomStore.currentRoomIndex].roomId,
     options?: { loading: boolean },
   ) {
@@ -195,6 +195,28 @@ export const deviceStore = observable({
     runInAction(() => {
       deviceStore.deviceList = res.success ? res.result : []
     })
+  },
+
+  async updataHomeDeviceList(options?: { loading: boolean }) {
+    console.log('请求房间设备：', homeStore.currentHomeId)
+    const res = await queryAllDevice(homeStore.currentHomeId, options)
+    const list = {} as Record<string, Device.DeviceItem[]>
+    if (res.success) {
+      res.result?.forEach((device) => {
+        if (list[device.roomId]) {
+          list[device.roomId].push(device)
+        } else {
+          list[device.roomId] = [device]
+        }
+      })
+      runInAction(() => {
+        roomStore.roomDeviceList = list
+        deviceStore.allRoomDeviceList = res.result
+      })
+      return
+    } else {
+      return Promise.reject('获取全屋设备信息失败')
+    }
   },
 })
 

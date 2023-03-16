@@ -1,7 +1,6 @@
 import { observable, runInAction } from 'mobx-miniprogram'
-import { getRoomList, queryAllDevice } from '../apis/index'
+import { getRoomList } from '../apis/index'
 import { proType } from '../config/index'
-import { deviceStore } from './device'
 import { homeStore } from './home'
 
 export const roomStore = observable({
@@ -15,27 +14,6 @@ export const roomStore = observable({
   currentRoomIndex: 0,
   /** 全屋设备，对应房间id作为key，房间的设备列表作为key */
   roomDeviceList: {} as Record<string, Device.DeviceItem[]>,
-
-  async updataHomeDeviceList(options?: { loading: boolean }) {
-    const res = await queryAllDevice(homeStore.currentHomeDetail.houseId, options)
-    const list = {} as Record<string, Device.DeviceItem[]>
-    if (res.success) {
-      res.result?.forEach((device) => {
-        if (list[device.roomId]) {
-          list[device.roomId].push(device)
-        } else {
-          list[device.roomId] = [device]
-        }
-      })
-      runInAction(() => {
-        roomStore.roomDeviceList = list
-        deviceStore.allRoomDeviceList = res.result
-      })
-      return
-    } else {
-      return Promise.reject('获取全屋设备信息失败')
-    }
-  },
 
   async updateRoomList(options?: { loading: boolean }) {
     const res = await getRoomList(homeStore.currentHomeId, options)
