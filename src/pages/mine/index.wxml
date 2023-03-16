@@ -35,7 +35,7 @@
       </view>
     </button>
   </van-cell>
-  <van-cell icon="/assets/img/mine/about.png" title="关于" is-link center data-url="{{urls.about}}" bind:click="toPage" border="{{false}}"/>
+  <van-cell icon="/assets/img/mine/about.png" title="关于" is-link center data-url="{{urls.about}}" bind:click="toPage" border="{{false}}" />
 </van-cell-group>
 
 <view class="px-24rpx pb-140rpx mt-160rpx" wx:if="{{isLogin}}">
