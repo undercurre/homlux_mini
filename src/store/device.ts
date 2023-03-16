@@ -182,7 +182,7 @@ export const deviceStore = observable({
   ) {
     const res = await queryDeviceList({ houseId, roomId }, options)
     runInAction(() => {
-      deviceStore.deviceList = res.success ? res.result : []
+      deviceStore.deviceList = res.success ? res.result.sort((a, b) => a.deviceId.localeCompare(b.deviceId)) : []
     })
   },
 
@@ -202,13 +202,15 @@ export const deviceStore = observable({
     const res = await queryAllDevice(homeStore.currentHomeId, options)
     const list = {} as Record<string, Device.DeviceItem[]>
     if (res.success) {
-      res.result?.forEach((device) => {
-        if (list[device.roomId]) {
-          list[device.roomId].push(device)
-        } else {
-          list[device.roomId] = [device]
-        }
-      })
+      res.result
+        ?.sort((a, b) => a.deviceId.localeCompare(b.deviceId))
+        .forEach((device) => {
+          if (list[device.roomId]) {
+            list[device.roomId].push(device)
+          } else {
+            list[device.roomId] = [device]
+          }
+        })
       runInAction(() => {
         roomStore.roomDeviceList = list
         deviceStore.allRoomDeviceList = res.result
