@@ -8,15 +8,6 @@
   },
   "libVersion": "2.29.0",
   "condition": {
-    "plugin": {
-      "list": []
-    },
-    "game": {
-      "list": []
-    },
-    "gamePlugin": {
-      "list": []
-    },
     "miniprogram": {
       "list": [
         {
@@ -93,8 +84,8 @@
           "name": "检验添加智能网关",
           "pathName": "package-distribution/check-gateway/index",
           "query": "ssid=midea_16_E5FB",
-          "scene": null,
-          "launchMode": "default"
+          "launchMode": "default",
+          "scene": null
         },
         {
           "name": "添加智能网关",

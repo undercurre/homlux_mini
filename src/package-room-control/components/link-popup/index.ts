@@ -186,9 +186,6 @@ ComponentWithComputed({
           }
         })
     },
-    handleContentDragging(e: WechatMiniprogram.ScrollViewDragging) {
-      console.log(e.detail.scrollTop)
-    },
     handleRoomSelect(e: WechatMiniprogram.TouchEvent) {
       this.setData({
         roomSelect: e.currentTarget.dataset.item.roomId,

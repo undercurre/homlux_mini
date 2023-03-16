@@ -1,4 +1,4 @@
-<view id="card" class="card-shadow card-clip w-160rpx h-216rpx rounded-32rpx flex-col-center relative overflow-hidden" catchtap="handleCardTap">
+<view id="card" class="{{showControl?'card-shadow':''}} card-clip w-160rpx h-216rpx rounded-32rpx flex-col-center relative overflow-hidden" catchtap="handleCardTap">
   <view wx:if="{{select}}" class="w-160rpx h-216rpx absolute left-0 top-0 box-border select-border rounded-32rpx bg-hex-fff"></view>
   <view wx:else class="w-160rpx h-216rpx rounded-32rpx box-border {{showControl?'show-control-bg white-border':'bg-hex-f7f7f7'}}"></view>
   <!-- <view wx:if="{{showControl}}" class="w-160rpx h-216rpx absolute left-0 top-0" style="background: {{select ? '' : ''}};">

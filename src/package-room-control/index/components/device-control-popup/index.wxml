@@ -118,6 +118,6 @@
 </view>
 
 <select-link-popup show="{{showSelectLinkPopup}}" linkType="{{linkType}}" bind:close="handleSelectLinkPopupClose" bind:confirm="handleSelectLinkPopupConfirm"></select-link-popup>
-<link-popup has-return show="{{showLinkPopup}}" list="{{list}}" selectList="{{linkSelectList}}" linkType="{{linkType}}" bind:close="handleLinkPopupClose" bind:select="handleLinkSelect" bind:confirm="handleLinkPopupConfirm" bind:return="handleLinkPopupReturn" />
+<link-popup has-return show="{{showLinkPopup}}" list="{{list}}" selectList="{{linkSelectList}}" linkType="{{selectLinkType}}" bind:close="handleLinkPopupClose" bind:select="handleLinkSelect" bind:confirm="handleLinkPopupConfirm" bind:return="handleLinkPopupReturn" />
 
 <van-toast id="van-toast" />

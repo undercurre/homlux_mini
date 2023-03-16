@@ -10,7 +10,7 @@
       <van-cell is-link bind:click="handleDeviceNameEditPopup" title="设备名称" value="{{deviceName}}"></van-cell>
       <van-cell is-link bind:click="handleDeviceRoomEditPopup" title="所在房间" value="{{roomName}}"></van-cell>
       <van-cell wx:if="{{isSubDevice}}" title="所属网关" value="{{belongsToGateway}}"></van-cell>
-      <van-cell is-link bind:click="handleToOTA" title="固件版本" value="1.1.1.1"></van-cell>
+      <van-cell is-link bind:click="handleToOTA" title="固件版本" value="{{deviceInfo.version}}"></van-cell>
     </van-cell-group>
   </view>
 

@@ -1,7 +1,7 @@
 <wxs src="/commons/wxs/util.wxs" module="module" />
 <import src="/commons/templates/popup.wxml" />
 <van-popup show="{{ show }}" z-index="10002" round position="bottom" bind:close="handleClose" catchtouchmove="black">
-  <view class="w-750rpx h-1000rpx relative flex flex-col items-center">
+  <view class="w-750rpx h-1200rpx relative flex flex-col items-center">
     <template is="close" />
     <template is="title" data="{{title: title}}" />
     <scroll-view enhanced show-scrollbar="{{false}}" scroll-x class="mt-48rpx h-60rpx w-750rpx flex" enable-flex>
@@ -16,10 +16,10 @@
         <view class="w-50rpx"></view>
       </view>
     </scroll-view>
-
+    <view class="h-44rpx"></view>
     <view class="flex-1" id="content1">
-      <scroll-view enhanced show-scrollbar="{{false}}" scroll-x style="height: {{contentHeight}}px; width: 750rpx;" binddragging="handleContentDragging">
-        <view class="flex">
+      <scroll-view enhanced show-scrollbar="{{false}}" scroll-y style="height: {{contentHeight}}px; width: 750rpx;">
+        <!-- <view class="flex">
           <block wx:if="{{linkType==='scene'}}">
             <view class="w-750rpx flex mt-44rpx" wx:for="{{sceneListMatrix}}" wx:for-item="pageList" wx:key="index">
               <view class="w-32rpx"></view>
@@ -36,26 +36,23 @@
               </view>
             </view>
           </block>
-        </view>
-        <!-- <view class="w-750rpx flex-col-center">
-          <view wx:if="{{linkType==='scene'}}" class="w-686rpx grid grid-cols-2 gap-x-20rpx gap-y-24rpx">
-            <scene-card wx:for="{{list}}" wx:key="sceneId" bind:cardTap="handleCardTap" scene-info="{{item}}" select="{{module.includes(selectList, item.sceneId)}}" />
+        </view> -->
+        <view class="w-750rpx flex-col-center">
+          <view wx:if="{{linkType==='scene'}}" class="w-686rpx grid grid-cols-2 gap-x-20rpx">
+            <scene-card class="mt-24rpx" wx:for="{{list}}" wx:key="sceneId" bind:cardTap="handleCardTap" scene-info="{{item}}" select="{{module.includes(selectList, item.sceneId)}}" />
           </view>
           <view wx:else class="w-686rpx grid grid-cols-4 gap-x-20rpx gap-y-24rpx">
             <device-card wx:for="{{list}}" wx:key="uniId" bind:cardTap="handleCardTap" device-type="{{linkType === 'light' ? 'light' : 'switch'}}" device-info="{{item}}" select="{{module.includes(selectList, item.uniId)}}" />
           </view>
-        </view> -->
+        </view>
         <view class="h-32rpx"></view>
       </scroll-view>
     </view>
     <view class="h-16rpx"></view>
-    <view wx:if="{{hasReturn}}">
-      <view class="flex gap-46rpx justify-center w-686rpx">
-        <van-button class="grow" size="large" bind:click="handleReturn">上一步</van-button>
-        <van-button type="primary" class="grow" size="large" bind:click="handleConfirm">确定</van-button>
-      </view>
-      <view style="height: calc(96rpx - env(safe-area-inset-bottom))"></view>
+    <view class="flex gap-46rpx justify-center w-686rpx">
+      <van-button class="grow" size="large" bind:click="{{hasReturn?'handleReturn':'handleClose'}}">上一步</van-button>
+      <van-button type="primary" class="grow" size="large" bind:click="handleConfirm">确定</van-button>
     </view>
-    <template wx:else is="bottom-btn" />
+    <view style="height: calc(96rpx - env(safe-area-inset-bottom))"></view>
   </view>
 </van-popup>
