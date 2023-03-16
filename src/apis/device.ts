@@ -5,7 +5,7 @@ import { mzaioRequest } from '../utils/index'
  */
 export async function queryAllDevice(houseId: string, options?: { loading?: boolean }) {
   return await mzaioRequest.post<Device.DeviceItem[]>({
-    log: false,
+    log: true,
     loading: options?.loading ?? false,
     url: '/v1/device/queryDeviceInfoByHouseId',
     data: {

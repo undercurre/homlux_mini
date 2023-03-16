@@ -61,12 +61,9 @@ Component({
         loadUserInfo()
         userStore.setIsLogin(true)
         othersStore.setIsInit(false)
+        homeStore.homeInit()
         wx.switchTab({
           url: '/pages/index/index',
-        })
-        homeStore.updateHomeInfo().then(() => {
-          othersStore.setIsInit(true)
-          console.log('isLogin', userStore.isLogin, 'isInit', othersStore.isInit)
         })
       } else {
         Toast('登录失败！')

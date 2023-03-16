@@ -54,6 +54,7 @@ export const homeStore = observable({
       // 加载完房间列表就渲染界面
       const roomListPromise = getRoomList(homeStore.currentHomeId).then((res) => {
         if (res.success) {
+          console.log('房间列表加载完成，开始展示', Date.now() / 1000)
           runInAction(() => {
             roomStore.roomList = res.result.roomInfoList.map((room) => ({
               roomId: room.roomInfo.roomId,
