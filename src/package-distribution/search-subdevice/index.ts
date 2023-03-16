@@ -65,11 +65,11 @@ ComponentWithComputed({
     ready: function () {
       this.initBle()
 
-      this.setData({
-        deviceList: JSON.parse(
-          '[{"deviceUuid":"086DDD30-219D-6655-AC69-4A0C9036442B","mac":"04CD15AEA756","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/midea.light.003.002-3.png","name":"灯具A756","isChecked":false,"client":{"key":"midea@homluxA756","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEA756","deviceUuid":"086DDD30-219D-6655-AC69-4A0C9036442B"},"roomId":"","roomName":"","status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":3},{"deviceUuid":"086DDD30-219D-6655-AC69-4A0C9036442B","mac":"04CD15AEA756","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/midea.light.003.002-3.png","name":"灯具A756","isChecked":false,"client":{"key":"midea@homluxA756","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEA756","deviceUuid":"086DDD30-219D-6655-AC69-4A0C9036442B"},"roomId":"","roomName":"","status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":3}]',
-        ),
-      })
+      // this.setData({
+      //   deviceList: JSON.parse(
+      //     '[{"deviceUuid":"086DDD30-219D-6655-AC69-4A0C9036442B","mac":"04CD15AEA756","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/midea.light.003.002-3.png","name":"灯具A756","isChecked":false,"client":{"key":"midea@homluxA756","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEA756","deviceUuid":"086DDD30-219D-6655-AC69-4A0C9036442B"},"roomId":"","roomName":"","status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":3},{"deviceUuid":"086DDD30-219D-6655-AC69-4A0C9036442B","mac":"04CD15AEA756","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/midea.light.003.002-3.png","name":"灯具A756","isChecked":false,"client":{"key":"midea@homluxA756","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEA756","deviceUuid":"086DDD30-219D-6655-AC69-4A0C9036442B"},"roomId":"","roomName":"","status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":3}]',
+      //   ),
+      // })
     },
     moved: function () {},
     detached: function () {
