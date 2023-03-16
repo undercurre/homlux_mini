@@ -50,24 +50,6 @@ ComponentWithComputed({
 
       return actions
     },
-
-    showRoomList(data) {
-      let list = (data.roomList || []) as Room.RoomInfo[]
-
-      list = list.slice(0, 4)
-
-      if (list.length === 4) {
-        list[3] = {
-          deviceLightOnNum: 0,
-          roomIcon: 'more',
-          roomId: '',
-          roomName: '全部',
-          sceneList: [],
-        }
-      }
-
-      return list
-    },
   },
 
   lifetimes: {
@@ -371,12 +353,6 @@ ComponentWithComputed({
           }),
         })
       }
-    },
-
-    toPage(e: { currentTarget: { dataset: { url: string } } }) {
-      wx.navigateTo({
-        url: e.currentTarget.dataset.url,
-      })
     },
   },
 })
