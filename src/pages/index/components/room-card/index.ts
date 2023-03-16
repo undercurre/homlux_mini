@@ -78,10 +78,13 @@ ComponentWithComputed({
       this.setData({
         sceneClickId: e.currentTarget.dataset.value,
       })
-      execScene(e.currentTarget.dataset.value).then((res) => {
-        console.log(res)
-      })
-      this.execCardBgAnimationStart(e.currentTarget.dataset.value)
+      setTimeout(() => {
+        this.setData({
+          sceneClickId: '',
+        })
+      }, 1050)
+      execScene(e.currentTarget.dataset.value)
+      // this.execCardBgAnimationStart(e.currentTarget.dataset.value)
     },
     handleCardTap() {
       const index = roomStore.roomList.findIndex((room) => room.roomId === this.data.roomInfo.roomId)
@@ -92,24 +95,25 @@ ComponentWithComputed({
         url: '/package-room-control/index/index',
       })
     },
-    execCardBgAnimationStart(value: string) {
-      this.animate(
-        `#effect-${value}`,
-        [
-          {
-            opacity: 0,
-          },
-          {
-            opacity: 1,
-          },
-        ],
-        30,
-        () => {
-          setTimeout(() => {
-            this.execCardBgAnimationEnd(value)
-          }, 30)
-        },
-      )
+    execCardBgAnimationStart() {
+      // this.
+      // this.animate(
+      //   `#effect-${value}`,
+      //   [
+      //     {
+      //       opacity: 0,
+      //     },
+      //     {
+      //       opacity: 1,
+      //     },
+      //   ],
+      //   30,
+      //   () => {
+      //     setTimeout(() => {
+      //       this.execCardBgAnimationEnd(value)
+      //     }, 30)
+      //   },
+      // )
     },
     execCardBgAnimationEnd(value: string) {
       this.animate(
