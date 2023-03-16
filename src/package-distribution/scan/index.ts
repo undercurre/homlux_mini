@@ -90,6 +90,13 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
+    test() {
+      wx.scanCode({
+        success (res) {
+          console.log(res)
+        }
+      })
+    },
     async initWifi() {
       const deviceInfo = wx.getDeviceInfo()
 

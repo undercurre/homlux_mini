@@ -18,7 +18,7 @@
   </view>
 
   <van-cell-group inset>
-    <van-cell title="家庭位置" value="{{currentHomeDetail.houseArea || positionLocation}}" is-link center link-type="navigateTo" url="/package-mine/home-location/index" />
+    <van-cell title="家庭位置" value="{{currentHomeDetail.houseArea || positionLocation}}" value-class="single-text" is-link center link-type="navigateTo" url="/package-mine/home-location/index" />
   </van-cell-group>
 
   <view class="grow flex flex-col justify-between">

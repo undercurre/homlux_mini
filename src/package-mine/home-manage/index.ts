@@ -54,10 +54,10 @@ ComponentWithComputed({
     showRoomList(data) {
       let list = (data.roomList || []) as Room.RoomInfo[]
 
-      list = list.slice(0, 8)
+      list = list.slice(0, 4)
 
-      if (list.length === 8) {
-        list[7] = {
+      if (list.length === 4) {
+        list[3] = {
           deviceLightOnNum: 0,
           roomIcon: 'more',
           roomId: '',
