@@ -76,6 +76,7 @@ ComponentWithComputed({
     /** 提供给关联选择的列表 */
     list: [] as (Device.DeviceItem | Scene.SceneItem)[],
     linkType: '' as '' | 'light' | 'switch' | 'scene',
+    selectLinkType: '' as '' | 'light' | 'switch' | 'scene',
     /** 已选中设备或场景 */
     linkSelectList: [] as string[],
     showLinkPopup: false,
@@ -291,9 +292,8 @@ ComponentWithComputed({
       if (!switchUniId) {
         return
       }
-      if (this.data.linkType === 'scene') {
+      if (this.data.selectLinkType === 'scene') {
         this.setData({
-          linkType: this.data.linkType,
           list: [...sceneStore.allRoomSceneList],
           linkSelectList: deviceStore.switchSceneMap[switchUniId] ? [deviceStore.switchSceneMap[switchUniId]] : [],
           showLinkPopup: true,
@@ -308,12 +308,12 @@ ComponentWithComputed({
       const lightRelId = switchItem?.lightRelId ?? ''
       let linkSelectList = [] as string[]
       let list = [] as Device.DeviceItem[]
-      if (this.data.linkType === 'light') {
+      if (this.data.selectLinkType === 'light') {
         list = deviceStore.allRoomDeviceFlattenList.filter((item) => !item.uniId.includes(':'))
         linkSelectList = list
           .filter((device) => device.lightRelId !== '' && device.lightRelId === lightRelId)
           .map((device) => device.deviceId)
-      } else if (this.data.linkType === 'switch') {
+      } else if (this.data.selectLinkType === 'switch') {
         list = deviceStore.allRoomDeviceFlattenList
           .filter((item) => item.uniId.includes(':'))
           .filter((item) => item.uniId !== switchUniId)
@@ -325,7 +325,6 @@ ComponentWithComputed({
           .map((device) => device.uniId)
       }
       this.setData({
-        linkType: this.data.linkType,
         list,
         linkSelectList,
         relId: {
@@ -346,7 +345,7 @@ ComponentWithComputed({
         return
       }
       const deviceMap = deviceStore.allRoomDeviceMap
-      if (this.data.linkType === 'light') {
+      if (this.data.selectLinkType === 'light') {
         if (deviceMap[e.detail].lightRelId && this.data.relId.lightRelId !== deviceMap[e.detail].lightRelId) {
           Toast({
             message: '设备已被关联',
@@ -357,7 +356,7 @@ ComponentWithComputed({
         this.setData({
           linkSelectList: [...this.data.linkSelectList, e.detail],
         })
-      } else if (this.data.linkType === 'switch') {
+      } else if (this.data.selectLinkType === 'switch') {
         const switchItem = deviceMap[e.detail.split(':')[0]].switchInfoDTOList.find(
           (switchItem) => switchItem.switchId === e.detail.split(':')[1],
         )
@@ -371,7 +370,7 @@ ComponentWithComputed({
         this.setData({
           linkSelectList: [...this.data.linkSelectList, e.detail],
         })
-      } else if (this.data.linkType === 'scene') {
+      } else if (this.data.selectLinkType === 'scene') {
         this.setData({
           linkSelectList: [e.detail],
         })
@@ -411,7 +410,7 @@ ComponentWithComputed({
     handleSelectLinkPopupConfirm(e: { detail: 'light' | 'switch' | 'scene' }) {
       this.setData({
         showSelectLinkPopup: false,
-        linkType: e.detail,
+        selectLinkType: e.detail,
       })
       setTimeout(() => {
         this.handleLinkPopup()
@@ -697,11 +696,11 @@ ComponentWithComputed({
       this.setData({
         showLinkPopup: false,
       })
-      if (this.data.linkType === 'light') {
+      if (this.data.selectLinkType === 'light') {
         await this.updateLightAssociate()
-      } else if (this.data.linkType === 'switch') {
+      } else if (this.data.selectLinkType === 'switch') {
         await this.updateSwitchAssociate()
-      } else if (this.data.linkType === 'scene') {
+      } else if (this.data.selectLinkType === 'scene') {
         await this.updataSceneLink()
       }
       await Promise.all([

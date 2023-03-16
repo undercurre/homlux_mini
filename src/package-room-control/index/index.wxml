@@ -21,7 +21,7 @@
           </view>
         </view>
       </view>
-      <van-button catchtap="handleCollect" custom-class="fav-btn" type="primary">收藏</van-button>
+      <van-button catchtap="handleCollect" custom-class="fav-btn" type="primary">创建</van-button>
     </view>
   </view>
 </view>
