@@ -248,7 +248,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .font-normal{font-weight:400;}
 .font-semibold{font-weight:600;}
 .leading-0{line-height:0rpx;}
-.leading-28rpx{line-height:28rpx;}
 .leading-34rpx{line-height:34rpx;}
 .leading-36rpx{line-height:36rpx;}
 .leading-40rpx{line-height:40rpx;}
@@ -429,7 +428,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .w-496rpx{width:496rpx;}
 .w-52rpx{width:52rpx;}
 .w-564{width:564rpx;}
-.w-60,
 .w-60rpx{width:60rpx;}
 .w-64,
 .w-64rpx{width:64rpx;}
