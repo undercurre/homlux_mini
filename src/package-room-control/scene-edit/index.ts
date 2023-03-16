@@ -214,6 +214,7 @@ ComponentWithComputed({
         homeStore.updateRoomCardList()
         emitter.emit('sceneEdit')
         Toast('修改成功')
+        wx.navigateBack()
       } else {
         Toast('修改失败')
       }
