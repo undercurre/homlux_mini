@@ -369,6 +369,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .h-60rpx{height:60rpx;}
 .h-64,
 .h-64rpx{height:64rpx;}
+.h-700rpx{height:700rpx;}
 .h-716rpx{height:716rpx;}
 .h-72,
 .h-72rpx{height:72rpx;}
@@ -380,7 +381,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .h-90rpx{height:90rpx;}
 .h-96,
 .h-96rpx{height:96rpx;}
-.h-962rpx{height:962rpx;}
 .h-98rpx{height:98rpx;}
 .h-full{height:100%;}
 .max-w-200{max-width:200rpx;}

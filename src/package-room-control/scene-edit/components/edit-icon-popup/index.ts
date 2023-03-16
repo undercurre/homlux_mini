@@ -34,7 +34,7 @@ Component({
   data: {
     icon: '',
     contentHeight: 0,
-    sceneList,
+    sceneList: sceneList.filter((scene) => !scene[1].isDefault),
   },
 
   /**
