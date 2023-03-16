@@ -14,6 +14,7 @@ ComponentWithComputed({
    */
   data: {
     isShowWifiTips: false,
+    hasShowWifiTips: false,
     isShowWifiList: false,
     selectWifi: {
       SSID: '',
@@ -84,8 +85,9 @@ ComponentWithComputed({
   },
 
   methods: {
-    toogleWifiTips() {
+    toggleWifiTips() {
       this.setData({
+        hasShowWifiTips: true,
         isShowWifiTips: !this.data.isShowWifiTips,
       })
     },
@@ -132,19 +134,32 @@ ComponentWithComputed({
     },
 
     toggleWifi() {
-      const deviceInfo = wx.getDeviceInfo()
+      const hasList = this.data.cacheWifiList.length > 0 || this.data.systemWifiList.length > 0
 
-      if (this.data.cacheWifiList.length === 0 && deviceInfo.platform === 'android') {
-        this.getWifiList()
-      } else if (this.data.cacheWifiList.length === 0 && deviceInfo.platform === 'ios') {
-        this.toggleWifi()
+      if (hasList) {
+        this.toggleWifiListPopup()
+        return
       }
+
+      this.getWifiList()
     },
 
-    onCloseWifiList() {
+    toggleWifiListPopup() {
       this.setData({
-        isShowWifiList: false,
+        isShowWifiList: !this.data.isShowWifiList,
       })
+    },
+
+    async getWifiList() {
+      const deviceInfo = wx.getDeviceInfo()
+
+      if (deviceInfo.system.toLowerCase().includes('android') || this.data.hasShowWifiTips) {
+        const wifiListRes = await wx.getWifiList()
+
+        console.log('getWifiList', wifiListRes)
+      } else if (deviceInfo.system.toLowerCase().includes('ios')) {
+        this.toggleWifiTips()
+      }
     },
 
     selectWifi(event: WechatMiniprogram.CustomEvent) {
@@ -180,16 +195,6 @@ ComponentWithComputed({
       console.log('changeWifiName', e)
       this.setData({
         'wifiInfo.pw': e.detail.value,
-      })
-    },
-
-    async getWifiList() {
-      const wifiListRes = await wx.getWifiList()
-
-      console.log('getWifiList', wifiListRes)
-
-      this.setData({
-        isShowWifiList: true,
       })
     },
 

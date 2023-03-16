@@ -92,9 +92,9 @@ ComponentWithComputed({
   methods: {
     test() {
       wx.scanCode({
-        success (res) {
+        success(res) {
           console.log(res)
-        }
+        },
       })
     },
     async initWifi() {

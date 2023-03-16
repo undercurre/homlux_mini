@@ -16,7 +16,7 @@
 
       <text class="grow text-hex-F4F8FF px-16rpx">{{tipsText}}</text>
 
-      <van-button type="primary" size="large" plain bind:click="addNearSubdevice" wx:if="{{subdeviceList.length || 1}}">立即添加</van-button>
+      <van-button type="primary" size="large" plain bind:click="addNearSubdevice" wx:if="{{subdeviceList.length}}">立即添加</van-button>
     </view>
 
     <van-button type="primary" size="large" plain bind:click="toggleBleTips" wx:if="{{bleStatus === 'refuse'}}" custom-style="width: 688rpx;background-color: #5A5A5A;border-radiux: 32rpx;">打开蓝牙添加设备</van-button>
@@ -63,4 +63,4 @@
   </view>
 </van-dialog>
 
-<!-- <van-button type="primary" size="large" plain bind:click="test">test</van-button> -->
+<van-button type="primary" size="large" plain bind:click="test">test</van-button>
