@@ -14,7 +14,7 @@
         <text class="text-hex-373cdf text-22rpx opacity-80 mt-12rpx">开关连接到另一开关</text>
       </view>
       <view class="mr-42rpx flex-center">
-        <text class="text-black-tips text-28rpx leading-none">{{linkType==='switch' ? '已关联' : '未关联'}}</text>
+        <text class="text-black-tips text-28rpx leading-none">{{linkType==='switch' ? '已关联' : ''}}</text>
         <image src="/assets/img/base/arrow-right.png" class="w-32rpx h-32rpx" />
       </view>
     </view>
@@ -27,7 +27,7 @@
         <text class="text-hex-de7e28 text-22rpx opacity-80 mt-12rpx">通过开关连接智能灯</text>
       </view>
       <view class="mr-42rpx flex-center">
-        <text class="text-black-tips text-28rpx leading-none">{{linkType==='light' ? '已关联' : '未关联'}}</text>
+        <text class="text-black-tips text-28rpx leading-none">{{linkType==='light' ? '已关联' : ''}}</text>
         <image src="/assets/img/base/arrow-right.png" class="w-32rpx h-32rpx" />
       </view>
     </view>
@@ -40,7 +40,7 @@
         <text class="text-hex-1454ae text-22rpx opacity-80 mt-12rpx">通过开关触发场景</text>
       </view>
       <view class="mr-42rpx flex-center">
-        <text class="text-black-tips text-28rpx leading-none">{{linkType==='scene' ? '已关联' : '未关联'}}</text>
+        <text class="text-black-tips text-28rpx leading-none">{{linkType==='scene' ? '已关联' : ''}}</text>
         <image src="/assets/img/base/arrow-right.png" class="w-32rpx h-32rpx" />
       </view>
     </view>
