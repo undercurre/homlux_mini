@@ -45,7 +45,6 @@ export class BleClient {
     this.key = `midea@homlux${mac.substr(-4, 4)}`
 
     const listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
-      console.log('---------constructor-----------start')
       console.log(`onBLECharacteristicValueChange ${res.deviceId} has changed, now is ${res.value}`, res)
       if (res.deviceId !== this.deviceUuid) {
         return
@@ -54,7 +53,6 @@ export class BleClient {
       const hex = strUtil.ab2hex(res.value)
       let msg = aesUtil.decrypt(hex, this.key, 'Hex')
 
-      console.log('onBLECharacteristicValueChange-msg', msg)
       const resMsgId = parseInt(msg.substr(2, 2), 16) // 收到回复的指令msgId
       const packLen = parseInt(msg.substr(4, 2), 16) // 回复消息的Byte Msg Id到Byte Checksum的总长度，单位byte
 
@@ -64,8 +62,6 @@ export class BleClient {
 
       // 仅截取消息参数部分数据，
       msg = msg.substr(6, (packLen - 3) * 2)
-      console.log('data-res', msg)
-      console.log('---------constructor-----------end')
     }
 
     wx.onBLECharacteristicValueChange(listener)
@@ -178,7 +174,6 @@ export class BleClient {
 
             // 仅截取消息参数部分数据，
             const resMsg = msg.substr(6, (packLen - 3) * 2)
-            console.log('data-res', resMsg)
             wx.offBLECharacteristicValueChange(listener)
             const code = resMsg.substr(2, 2)
 

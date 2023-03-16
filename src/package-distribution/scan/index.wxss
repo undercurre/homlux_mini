@@ -12,3 +12,18 @@
     transform: rotate(360deg);
   }
 }
+
+.ble-tips-box {
+  top: -460rpx;
+  animation: tips-show ease-in-out 0.5s 1 forwards;
+}
+
+@keyframes tips-show {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(460rpx);
+  }
+}

@@ -49,8 +49,6 @@ ComponentWithComputed({
     async ready() {
       await homeBinding.store.updateHomeInfo()
 
-      await this.initWifi()
-
       const params = wx.getLaunchOptionsSync()
       console.log(
         'scanPage',
@@ -60,6 +58,27 @@ ComponentWithComputed({
         'getCurrentPages()',
         getCurrentPages(),
       )
+
+      wx.onBluetoothAdapterStateChange((res) => {
+        console.log('onBluetoothAdapterStateChange-scan', res)
+        this.setData({
+          bleStatus: res.available ? 'open' : 'close',
+        })
+        if (res.available) {
+          this.initBle()
+        }
+      })
+
+      this.initWifi()
+
+      // 是否已打开蓝牙
+      const res = await this.checkBle()
+
+      if (!res) {
+        return
+      } else {
+        this.initBle()
+      }
 
       // 防止重复判断,仅通过微信扫码直接进入该界面时判断场景值
       if (getCurrentPages().length === 1 && params.scene === 1011) {
@@ -77,7 +96,6 @@ ComponentWithComputed({
   pageLifetimes: {
     async show() {
       console.log('show')
-      this.initBle()
     },
     hide() {
       console.log('hide')
@@ -181,6 +199,9 @@ ComponentWithComputed({
               return
             }
 
+            this.setData({
+              isShowOpenBleTips: true,
+            })
             // if (deviceInfo.platform === 'android') {
             //   wx.openSystemBluetoothSetting()
             // } else {
@@ -195,16 +216,6 @@ ComponentWithComputed({
 
     async initBle() {
       if (this.data._isInitBle) {
-        return
-      }
-
-      wx.onBluetoothAdapterStateChange((changeRes) => {
-        console.log('onBluetoothAdapterStateChange', changeRes)
-      })
-      // 是否已打开蓝牙
-      const res = await this.checkBle()
-
-      if (!res) {
         return
       }
 
