@@ -3,17 +3,13 @@
 
   <view class="grow flex flex-col pb-128rpx">
     <block wx:if="{{status === 'linking'}}">
-      <view class="flex-center w-750rpx">
-        <canvas id="canvas" type="2d" class="w-400rpx h-400rpx inline-block"></canvas>
-      </view>
-
       <tips-box text="请将设备尽量靠近智能网关" icon="{{pageParams.deviceIcon}}" size="160"></tips-box>
 
-      <mz-progress text="请将设备尽量靠近智能网关" show-progress="{{true}}" active-index="{{activeIndex}}"></mz-progress>
+      <mz-progress show-progress="{{true}}" active-index="{{activeIndex}}"></mz-progress>
     </block>
 
     <block wx:if="{{status === 'error'}}">
-      <tips-box text="连接失败！" icon="/assets/img/device-add/error.png"></tips-box>
+      <tips-box text="连接失败！" icon="/assets/img/default-img/error.png"></tips-box>
 
       <view class="grow pl-88rpx pr-50rpx pt-180rpx">
         <view class="text-28 text-black-2a">

@@ -1,10 +1,10 @@
 <view class="page-container flex flex-col h-screen">
   <!-- 导航栏 -->
-  <nav-bar leftArrow="{{true}}" bind:leftTap="goBack" background="transparent" title="{{pageTitle}}"></nav-bar>
+  <nav-bar leftArrow="{{status !== 'requesting'}}" bind:leftTap="goBack" background="transparent" title="{{pageTitle}}"></nav-bar>
 
   <view class="grow shrink flex flex-col justify-between pb-128rpx box-border">
     <block wx:if="{{status === 'discover'}}">
-      <tips-box text="正在搜索附近的设备…" icon="/assets/img/default-img/searching.png" size="{{ deviceList.length ? 180 : 300}}" textStyle="margin-top: 28rpx;"></tips-box>
+      <tips-box text="正在搜索附近的设备…" icon="/package-distribution/assets/search-subdevice/search.gif" size="{{ deviceList.length ? 180 : 300}}" textStyle="margin-top: 28rpx;"></tips-box>
 
       <view wx:if="{{deviceList.length}}" class="px-32rpx pt-86rpx grow shrink flex flex-col">
         <view class="flex flex-row items-center justify-between pb-34rpx">
@@ -43,8 +43,18 @@
       </view>
     </block>
 
-    <block wx:if="{{status === 'requesting' && successList.length !== selectedList.length}}">
-      <mz-loading wx:if="{{failList.length !== selectedList.length}}" class="{{failList.length === 0 ? 'mt-70rpx' : 'mt-130rpx' }}" text="已添加{{successList.length}}/{{selectedList.length}}个设备" show-progress="{{false}}" stepList="{{[]}}"></mz-loading>
+    <block wx:if="{{status === 'requesting' && (successList.length + failList.length) !== selectedList.length}}">
+      <view class="flex flex-col items-center">
+        <canvas id="canvas" type="2d" class="w-400rpx h-400rpx inline-block"></canvas>
+
+        <text class="px-100rpx text-28 text-black-59 leading-40rpx">已添加{{successList.length}}/{{selectedList.length}}个设备</text>
+
+        <mz-progress show-progress="{{true}}" active-index="{{successList.length}}" total-section="{{selectedList.length}}" step-list="{{[]}}"></mz-progress>
+      </view>
+    </block>
+
+    <view class="grow flex flex-col justify-between" wx:if="{{status === 'requesting' && (successList.length + failList.length) === selectedList.length}}">
+      <tips-box text="设备添加成功！" icon="/assets/img/default-img/success.png"></tips-box>
 
       <view wx:if="{{failList.length > 0}}" class="px-24rpx pt-90rpx grow shrink flex flex-col">
         <view class="flex flex-row items-center justify-between pb-24rpx">
@@ -59,26 +69,24 @@
               <image src="{{item.icon}}" class="w-72 h-72"></image>
             </view>
 
-            <view class="pl-32rpx">
+            <view class="grow pl-32rpx">
               <view class="flex flex-row items-center">
-                <text class="pr-24rpx text-32 text-black-2a">{{ item.name }}</text>
+                <text class="max-w-200 pr-24rpx text-32 text-black-2a single-text">{{ item.name }}</text>
               </view>
 
               <view class="inline-block rounded-12rpx py-6rpx mt-20rpx">
                 <text class="pr-12rpx text-26 text-black-59">{{ item.roomName || defaultRoom.roomName }}</text>
               </view>
             </view>
+
+            <view class="shrink-0">
+              <van-button color="linear-gradient(134deg, #468CFB 32%, #6BA3FC 93%)" type="primary" round bind:click="tryControl" data-index="{{index}}" data-id="{{item.deviceUuid}}" data-mac="{{item.mac}}" loading="{{item.requesting}}" disabled="{{item.requesting}}">试一试</van-button>
+            </view>
           </view>
         </scroll-view>
 
-        <van-button wx:if="{{(successList.length + failList.length ) === selectedList.length}}" class="mt-24rpx" type="primary" block size="large" bind:click="finish">完成</van-button>
+        <van-button class="mt-24rpx" type="primary" block size="large" bind:click="finish">完成</van-button>
       </view>
-    </block>
-
-    <view class="grow flex flex-col justify-between" wx:if="{{status === 'requesting' && successList.length === selectedList.length}}">
-      <tips-box text="设备添加成功！" icon="/assets/img/default-img/success.png"></tips-box>
-
-      <van-button class="mx-32rpx mt-24rpx" type="primary" block size="large" bind:click="finish">完成</van-button>
     </view>
 
     <block wx:if="{{status === 'error'}}">

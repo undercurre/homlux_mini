@@ -29,7 +29,7 @@ Component({
     _queryTimes: 50,
     status: 'linking',
     currentStep: '连接设备',
-    activeIndex: -1,
+    activeIndex: 0,
   } as WechatMiniprogram.IAnyObject & IPageData,
 
   lifetimes: {
@@ -72,7 +72,7 @@ Component({
       }
 
       this.setData({
-        activeIndex: 0,
+        activeIndex: 1,
       })
 
       this.sendBindCmd()
@@ -129,7 +129,7 @@ Component({
 
       if (res.success && res.result.isBind) {
         this.setData({
-          activeIndex: 2,
+          activeIndex: 3,
         })
 
         console.debug('app到云端，添加网关耗时：', Date.now() - start)
@@ -156,7 +156,7 @@ Component({
 
       if (res.success && res.result.onlineStatus === 1 && res.result.deviceId) {
         this.setData({
-          activeIndex: 1,
+          activeIndex: 2,
         })
 
         this.requestBindDevice(sn)

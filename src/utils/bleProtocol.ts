@@ -296,38 +296,4 @@ export const bleUtil = {
     str = arr.join('')
     return str
   },
-
-  async checkBle() {
-    const res = wx.getSystemSetting()
-
-    console.log('getSystemSetting', res)
-
-    // 没有打开蓝牙异常处理
-    if (!res.bluetoothEnabled) {
-      const deviceInfo = wx.getDeviceInfo()
-
-      wx.showModal({
-        content: '“Homlux”想开启您的蓝牙功能用于设备配网',
-        showCancel: true,
-        cancelColor: '#27282A',
-        confirmText: '去开启',
-        confirmColor: '#27282A',
-        // 由于调用openSystemBluetoothSetting接口，必须通过回调方式调用，promise方式会被拒绝
-        success(bleDialogRes) {
-          console.log('bleDialogRes', bleDialogRes)
-          if (bleDialogRes.cancel) {
-            return
-          }
-
-          if (deviceInfo.platform === 'android') {
-            wx.openSystemBluetoothSetting()
-          } else {
-            wx.getWifiList()
-          }
-        },
-      })
-    }
-
-    return res.bluetoothEnabled
-  },
 }

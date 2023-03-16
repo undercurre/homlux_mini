@@ -22,6 +22,7 @@ Component({
   data: {
     isShowForceBindTips: false,
     status: 'linking',
+    ssid: '',
   } as IAnyObject,
 
   lifetimes: {
@@ -52,6 +53,9 @@ Component({
       const params = getCurrentPageParams()
 
       console.log('ready', params)
+      this.setData({
+        ssid: params.ssid,
+      })
 
       socket = new WifiSocket({ ssid: params.ssid })
 

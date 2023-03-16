@@ -4,16 +4,26 @@
   <nav-bar class="absolute" background="transparent" leftArrow="{{true}}" left-icon="/assets/img/scan/back.png" bind:leftTap="goBack"></nav-bar>
 
   <view class="absolute bottom-0 left-0 right-0 pb-72rpx flex flex-col items-center text-32">
+    <view class="flex flex-col items-center pb-160rpx" bind:tap="toggleFlash">
+      <image class="w-96 h-96 mb-28rpx" src="/assets/img/scan/light.png"></image>
+
+      <text class="text-28 text-black-tips leading-40rpx">{{ isFlash ? '关灯' : '开灯'}}</text>
+    </view>
     <text class="leading-none text-hex-F4F8FF mb-72rpx">扫描机身或说明书二维码</text>
-    <view class="flex flex-row items-center bg-hex-5A5A5A rounded-32rpx leading-80rpx px-32rpx">
+
+    <view class="flex flex-row items-center bg-hex-5A5A5A rounded-32rpx leading-80rpx px-32rpx" wx:if="{{bleStatus === 'open'}}">
       <image class="w-28 h-28 rotate" src="/assets/img/scan/scaning.png"></image>
 
       <text class="grow text-hex-F4F8FF px-16rpx">{{tipsText}}</text>
 
-      <van-button type="primary" size="large" plain bind:click="addNearSubdevice" wx:if="{{subdeviceList.length}}">立即添加</van-button>
+      <van-button type="primary" size="large" plain bind:click="addNearSubdevice" wx:if="{{subdeviceList.length || 1}}">立即添加</van-button>
     </view>
+
+    <van-button type="primary" size="large" plain bind:click="toggleBleTips" wx:if="{{bleStatus === 'refuse'}}" custom-style="width: 688rpx;background-color: #5A5A5A;border-radiux: 32rpx;">打开蓝牙添加设备</van-button>
   </view>
 </view>
+
+<image wx:if="{{isShowOpenBleTips}}" mode="widthFix" bind:tap="toggleBleTips" class="fixed top-0 left-0 w-full" src="/assets/img/scan/open-ble-tips.png"></image>
 
 <van-popup show="{{ isShowGatewayList }}" bind:close="onCloseGwList" position="bottom" round>
   <view class="flex flex-col items-stretch">
@@ -24,7 +34,7 @@
     <view class="pt-46rpx px-32rpx">
       <view wx:for="{{gatewayList}}" wx:key="deviceId" class="flex flex-row items-center mb-24rpx p-24rpx border-solid rounded-24rpx {{item.deviceId === selectGatewayId ? 'border-4rpx border-blue' : 'border-2rpx border-gray-dd'}}" data-index="{{index}}" bind:tap="selectGateway">
         <view class="rounded-full border-4rpx border-solid border-hex-F6F6F8 mr-16rpx p-10rpx">
-          <image class="w-72 h-72" src="/assets/img/device/gateway.png"></image>
+          <image class="w-72 h-72" src="{{item.pic}}"></image>
         </view>
 
         <view>
@@ -43,9 +53,9 @@
   </view>
 </van-popup>
 
-<van-dialog id="van-dialog" use-slot show="{{ isShowNoGatewayTips }}" title="智能筒灯" confirmButtonText="我知道了" confirm-button-color="#488FFF">
+<van-dialog id="van-dialog" use-slot show="{{ isShowNoGatewayTips }}" title="{{deviceInfo.deviceName}}" confirmButtonText="我知道了" confirm-button-color="#488FFF">
   <view class="flex flex-col items-center px-40rpx pb-48rpx leading-48rpx">
-    <image class="w-160 h-160 mb-48rpx mt-28rpx" src="/assets/img/device/light.png"></image>
+    <image class="w-160 h-160 mb-48rpx mt-28rpx" src="{{deviceInfo.icon}}"></image>
 
     <text class="block pb-24rpx text-28 text-hex-666">添加此类网关子设备前，需要先在家庭中添加智能网关，支持的智能网关型号有：</text>
 

@@ -2,7 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { deviceBinding, homeBinding } from '../../store/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { strUtil, bleUtil } from '../../utils/index'
+import { strUtil } from '../../utils/index'
 import { checkDevice, queryProtypeInfo } from '../../apis/index'
 
 ComponentWithComputed({
@@ -21,15 +21,17 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    isShowGatewayList: false,
-    isShowNoGatewayTips: false,
-    _isScaning: false,
-    _isInitBle: false,
+    isShowGatewayList: false, // 是否展示选择网关列表弹窗
+    isShowNoGatewayTips: false, // 是否展示添加网关提示弹窗
+    _isScaning: false, // 是否正在扫码
+    _isInitBle: false, // 是否已经初始化蓝牙
+    isShowOpenBleTips: false, // 是否展示开启蓝牙提示
+    bleStatus: 'close',
     isFlash: false,
     selectGatewayId: '',
     selectGatewaySn: '',
     subdeviceList: Array<string>(),
-    _deviceInfo: {} as IAnyObject,
+    deviceInfo: {} as IAnyObject,
   },
 
   computed: {
@@ -133,7 +135,7 @@ ComponentWithComputed({
     },
 
     confirmGateway() {
-      if (this.data._deviceInfo.type === 'single') {
+      if (this.data.deviceInfo.type === 'single') {
         this.addSingleSubdevice()
       } else {
         this.addNearSubdevice()
@@ -144,23 +146,62 @@ ComponentWithComputed({
       })
     },
 
+    async checkBle() {
+      const res = wx.getSystemSetting()
+
+      console.log('getSystemSetting', res)
+
+      this.setData({
+        bleStatus: res.bluetoothEnabled ? 'open' : 'close',
+      })
+      // 没有打开蓝牙异常处理
+      if (!res.bluetoothEnabled) {
+        // const deviceInfo = wx.getDeviceInfo()
+
+        wx.showModal({
+          content: '“Homlux”想开启您的蓝牙功能用于设备配网',
+          showCancel: true,
+          cancelColor: '#27282A',
+          confirmText: '去开启',
+          confirmColor: '#27282A',
+          // 由于调用openSystemBluetoothSetting接口，必须通过回调方式调用，promise方式会被拒绝
+          success: (bleDialogRes) => {
+            console.log('bleDialogRes', bleDialogRes)
+            if (bleDialogRes.cancel) {
+              this.setData({
+                bleStatus: 'refuse',
+              })
+              return
+            }
+
+            // if (deviceInfo.platform === 'android') {
+            //   wx.openSystemBluetoothSetting()
+            // } else {
+            //   wx.getWifiList()
+            // }
+          },
+        })
+      }
+
+      return res.bluetoothEnabled
+    },
+
     async initBle() {
       if (this.data._isInitBle) {
         return
       }
 
+      wx.onBluetoothAdapterStateChange((changeRes) => {
+        console.log('onBluetoothAdapterStateChange', changeRes)
+      })
       // 是否已打开蓝牙
-      const res = await bleUtil.checkBle()
+      const res = await this.checkBle()
 
       if (!res) {
         return
       }
 
       this.data._isInitBle = true
-
-      wx.onBluetoothAdapterStateChange((changeRes) => {
-        console.log('onBluetoothAdapterStateChange', changeRes)
-      })
 
       // 初始化蓝牙模块
       const openBleRes = await wx
@@ -208,6 +249,12 @@ ComponentWithComputed({
       })
     },
 
+    toggleBleTips() {
+      this.setData({
+        isShowOpenBleTips: !this.data.isShowOpenBleTips,
+      })
+    },
+
     onCloseGwList() {
       this.setData({
         isShowGatewayList: false,
@@ -235,7 +282,7 @@ ComponentWithComputed({
       this.handleScanUrl(scanUrl)
     },
 
-    test() {
+    toggleFlash() {
       this.setData({
         isFlash: !this.data.isFlash,
       })
@@ -304,13 +351,15 @@ ComponentWithComputed({
       }
 
       // 子设备根据扫码得到的sn在云端查mac地址
-      this.data._deviceInfo = {
-        type: 'single',
-        proType: res.result.proType,
-        deviceName: res.result.productName,
-        icon: res.result.productIcon,
-        mac: res.result.mac,
-      }
+      this.setData({
+        deviceInfo: {
+          type: 'single',
+          proType: res.result.proType,
+          deviceName: res.result.productName,
+          icon: res.result.productIcon,
+          mac: res.result.mac,
+        },
+      })
 
       const flag = this.checkGateWayInfo()
 
@@ -355,7 +404,7 @@ ComponentWithComputed({
      * 添加附近搜索的子设备
      */
     addNearSubdevice() {
-      this.data._deviceInfo.type = 'near'
+      this.data.deviceInfo.type = 'near'
 
       if (!this.checkGateWayInfo()) {
         return
@@ -379,11 +428,11 @@ ComponentWithComputed({
 
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/add-subdevice/index', {
-          mac: this.data._deviceInfo.mac,
+          mac: this.data.deviceInfo.mac,
           gatewayId,
           gatewaySn,
-          deviceName: this.data._deviceInfo.deviceName,
-          deviceIcon: this.data._deviceInfo.icon,
+          deviceName: this.data.deviceInfo.deviceName,
+          deviceIcon: this.data.deviceInfo.icon,
         }),
       })
     },

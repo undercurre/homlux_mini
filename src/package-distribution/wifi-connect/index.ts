@@ -13,6 +13,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    isShowWifiTips: false,
     isShowWifiList: false,
     selectWifi: {
       SSID: '',
@@ -83,6 +84,11 @@ ComponentWithComputed({
   },
 
   methods: {
+    toogleWifiTips() {
+      this.setData({
+        isShowWifiTips: !this.data.isShowWifiTips,
+      })
+    },
     onChange(event: WechatMiniprogram.CustomEvent) {
       const { value } = event.detail
 
@@ -106,11 +112,11 @@ ComponentWithComputed({
         this.setData({
           systemWifiList: wifiList,
         })
-        console.log('onGetWifiList', wifiList.map((item) => item.SSID).join('；；'))
+        console.log('onGetWifiList', wifiList.map((item) => item.SSID).join('；'))
       })
 
       wx.onWifiConnected(async (res) => {
-        console.log('onWifiConnected', res)
+        console.log('onWifiConnected-connect-wifi', res)
 
         if (!res.wifi.SSID || res.wifi.SSID === pageParams.apSSID) {
           return
@@ -126,13 +132,13 @@ ComponentWithComputed({
     },
 
     toggleWifi() {
-      if (this.data.cacheWifiList.length === 0) {
-        this.getWifiList()
-      }
+      const deviceInfo = wx.getDeviceInfo()
 
-      this.setData({
-        isShowWifiList: true,
-      })
+      if (this.data.cacheWifiList.length === 0 && deviceInfo.platform === 'android') {
+        this.getWifiList()
+      } else if (this.data.cacheWifiList.length === 0 && deviceInfo.platform === 'ios') {
+        this.toggleWifi()
+      }
     },
 
     onCloseWifiList() {
@@ -181,6 +187,10 @@ ComponentWithComputed({
       const wifiListRes = await wx.getWifiList()
 
       console.log('getWifiList', wifiListRes)
+
+      this.setData({
+        isShowWifiList: true,
+      })
     },
 
     next() {
