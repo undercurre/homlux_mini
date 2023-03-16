@@ -80,12 +80,29 @@ ComponentWithComputed({
       return ''
     },
     roomListInner(data) {
-      if (data.roomList && data.roomList.length) {
-        return (data.roomList as Room.RoomInfo[]).filter(
-          (room) =>
-            roomStore.roomDeviceList[room.roomId] &&
-            roomStore.roomDeviceList[room.roomId].some((device) => device.proType === proType.switch),
-        )
+      if (data.linkType === 'light') {
+        if (data.roomList && data.roomList.length) {
+          return (data.roomList as Room.RoomInfo[]).filter(
+            (room) =>
+              roomStore.roomDeviceList[room.roomId] &&
+              roomStore.roomDeviceList[room.roomId].some((device) => device.proType === proType.light),
+          )
+        }
+        return []
+      } else if (data.linkType === 'switch') {
+        if (data.roomList && data.roomList.length) {
+          return (data.roomList as Room.RoomInfo[]).filter(
+            (room) =>
+              roomStore.roomDeviceList[room.roomId] &&
+              roomStore.roomDeviceList[room.roomId].some((device) => device.proType === proType.switch),
+          )
+        }
+        return []
+      } else if (data.linkType === 'scene') {
+        if (data.roomList && data.roomList.length) {
+          return (data.roomList as Room.RoomInfo[]).filter((room) => room.sceneList.length)
+        }
+        return []
       }
       return []
     },
