@@ -1,5 +1,3 @@
-<page-meta page-style="{{ isAddRoom ? 'overflow: hidden;' : '' }}" />
-
 <view>
   <text class="block pl-16rpx pb-32rpx text-28">设备名称</text>
 

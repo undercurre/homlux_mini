@@ -20,7 +20,7 @@
   </view>
 </view>
 
-<van-popup show="{{ isShowWifiList }}" bind:close="onCloseWifiList" position="bottom" round>
+<van-popup show="{{ isShowWifiList }}" bind:close="toggleWifiListPopup" position="bottom" round>
   <view class="flex flex-col items-stretch">
     <text class="block py-40rpx leading-50rpx text-center text-36 opacity-90 text-black-2a font-medium">请选择无线网络</text>
 
@@ -46,14 +46,14 @@
     </scroll-view>
 
     <view class="flex flex-row gap-46rpx pt-80rpx pb-96rpx px-24rpx">
-      <van-button class="grow" size="large" bind:click="onCloseWifiList">取消</van-button>
+      <van-button class="grow" size="large" bind:click="toggleWifiListPopup">取消</van-button>
 
       <van-button class="grow" size="large" type="primary" bind:click="confirmWifi">确定</van-button>
     </view>
   </view>
 </van-popup>
 
-<van-dialog id="van-dialog" use-slot show="{{ isShowWifiTips }}" show-cancel-button bind:close="toogleWifiTips" confirm-button-color="#488FFF" confirm-button-text="立即前往" bind:confirm="getWifiList" width="654rpx">
+<van-dialog id="van-dialog" use-slot show="{{ isShowWifiTips }}" show-cancel-button bind:close="toggleWifiTips" confirm-button-color="#488FFF" confirm-button-text="立即前往" bind:confirm="getWifiList" width="654rpx">
   <view class="flex flex-col items-center">
     <view class="px-40rpx pt-40rpx pb-16rpx">
       <image class="w-564 h-364" src="/package-distribution/assets/wifi-connect/wifi-tips.png" />

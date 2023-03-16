@@ -84,7 +84,10 @@
             </view>
           </view>
         </scroll-view>
+      </view>
 
+
+      <view class="px-24rpx">
         <van-button class="mt-24rpx" type="primary" block size="large" bind:click="finish">完成</van-button>
       </view>
     </view>
