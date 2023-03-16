@@ -135,7 +135,7 @@ export const homeStore = observable({
       runInAction(() => {
         for (let i = 0; i < homeStore.homeMemberInfo.houseUserList.length; i++) {
           if (userId === homeStore.homeMemberInfo.houseUserList[i].userId) {
-            const map = ['', '创建者', '管理员', '游客']
+            const map = ['', '创建者', '管理员', '访客']
             homeStore.homeMemberInfo.houseUserList[i].userHouseAuth = auth
             homeStore.homeMemberInfo.houseUserList[i].userHouseAuthName = map[auth]
             break
