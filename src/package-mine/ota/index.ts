@@ -34,7 +34,7 @@ Component({
           }
         })
       queryDeviceOtaUpdateList(homeStore.currentHomeDetail.houseId).then((res) => {
-        console.log(res)
+        console.log('Ota列表', res)
       })
     },
     onChange(e: { detail: boolean }) {

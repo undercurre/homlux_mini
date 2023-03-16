@@ -4,7 +4,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { deviceBinding, deviceStore, sceneStore } from '../../../../store/index'
 import { maxColorTempK, minColorTempK, proType } from '../../../../config/index'
 import { controlDevice, createAssociated, delAssociated, updateAssociated, updateScene } from '../../../../apis/index'
-import { transformSwitchToNormal, removeRel } from '../../../utils/index'
+import { transformSwitchToNormal, removeRel, transformSwitchToLinkLight } from '../../../utils/index'
 import Toast from '@vant/weapp/toast/toast'
 
 let throttleTimer = 0
@@ -430,6 +430,7 @@ ComponentWithComputed({
     },
     async updateLightAssociate() {
       const selectSwitchUniId = this.data.selectSwitchUniId
+      const device = deviceStore.allRoomDeviceMap[selectSwitchUniId.split(':')[0]]
       // 先查一下也没有关联开关，有先解开关联
       const rel = deviceStore.deviceRelMap[selectSwitchUniId]
       if (rel && rel.switchRelId) {
@@ -438,7 +439,7 @@ ComponentWithComputed({
           return
         }
       }
-      // 查一下也没有关联场景
+      // 查一下有没有关联场景
       const sceneId = deviceStore.switchSceneMap[selectSwitchUniId]
       if (sceneId) {
         const res = await updateScene({
@@ -482,12 +483,32 @@ ComponentWithComputed({
           })
         }
       } else if (this.data.relId.lightRelId && this.data.linkSelectList.length === 0) {
+        // 先将ButtonMode转成0
+        const isSuccess = await transformSwitchToNormal(
+          device.gatewayId,
+          selectSwitchUniId.split(':')[0],
+          Number(selectSwitchUniId.split(':')[1]),
+        )
+        if (!isSuccess) {
+          return
+        }
         // 删除关联
         await delAssociated({
           relType: '0',
           lightRelId: this.data.relId.lightRelId,
         })
       } else if (!this.data.relId.lightRelId && this.data.linkSelectList.length !== 0) {
+        // 如果当前ButtomMode是0，需要转换成3
+        if (device.mzgdPropertyDTOList[selectSwitchUniId.split(':')[1]].ButtonMode !== 3) {
+          const isSuccess = await transformSwitchToLinkLight(
+            device.gatewayId,
+            selectSwitchUniId.split(':')[0],
+            Number(selectSwitchUniId.split(':')[1]),
+          )
+          if (!isSuccess) {
+            return
+          }
+        }
         // 创建依赖
         await createAssociated({
           deviceIds: [selectSwitchUniId, ...this.data.linkSelectList],
@@ -497,6 +518,7 @@ ComponentWithComputed({
     },
     async updateSwitchAssociate() {
       const selectSwitchUniId = this.data.selectSwitchUniId
+      const device = deviceStore.allRoomDeviceMap[selectSwitchUniId.split(':')[0]]
       // 先查一下也没有关联开关，有先解开关联，然后转成普通开关
       const rel = deviceStore.deviceRelMap[selectSwitchUniId]
       if (rel && rel.switchRelId) {
@@ -505,6 +527,7 @@ ComponentWithComputed({
           return
         }
         const isSuccess = await transformSwitchToNormal(
+          device.gatewayId,
           selectSwitchUniId.split(':')[0],
           Number(selectSwitchUniId.split(':')[1]),
         )
@@ -579,6 +602,7 @@ ComponentWithComputed({
       if (!switchUniId) {
         return
       }
+      const device = deviceStore.allRoomDeviceMap[switchUniId.split(':')[0]]
       const selectDevice = deviceStore.allRoomDeviceMap[switchUniId.split(':')[0]]
       const switchId = switchUniId.split(':')[1]
       // 先解开开关的其他关联
@@ -591,7 +615,7 @@ ComponentWithComputed({
         selectDevice.mzgdPropertyDTOList[switchId].ButtonMode === 1
       ) {
         // 关联灯模式，先转换成0
-        const isSuccess = await transformSwitchToNormal(selectDevice.deviceId, Number(switchId))
+        const isSuccess = await transformSwitchToNormal(device.gatewayId, selectDevice.deviceId, Number(switchId))
         if (!isSuccess) {
           return
         }

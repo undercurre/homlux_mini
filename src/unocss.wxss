@@ -115,6 +115,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .mb-86rpx{margin-bottom:86rpx;}
 .mb-8rpx{margin-bottom:8rpx;}
 .ml-10rpx{margin-left:10rpx;}
+.ml-12rpx{margin-left:12rpx;}
 .ml-16rpx{margin-left:16rpx;}
 .ml-17rpx{margin-left:17rpx;}
 .ml-18rpx{margin-left:18rpx;}

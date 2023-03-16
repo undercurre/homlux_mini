@@ -52,16 +52,17 @@ export async function removeRel(deviceId: string, ep: string) {
   }
 }
 
-export async function transformSwitchToNormal(deviceId: string, ep: number) {
+export async function transformSwitchToNormal(gatewayId: string, deviceId: string, ep: number) {
   // 关联灯模式，先转换成0
   await controlDevice({
-    deviceId: deviceId,
+    deviceId: gatewayId,
     topic: '/subdevice/control',
     method: 'panelModeControl',
     inputData: [
       {
         ButtonMode: 0,
         ep,
+        devId: deviceId,
       },
     ],
   })
@@ -71,6 +72,40 @@ export async function transformSwitchToNormal(deviceId: string, ep: number) {
     })
     if (res.success) {
       if (res.result.mzgdPropertyDTOList[ep].ButtonMode === 0) {
+        return true
+      } else {
+        await delay(500)
+        continue
+      }
+    } else {
+      Toast('获取设备状态失败')
+      return false
+    }
+  }
+  Toast('更新设备状态失败')
+  return false
+}
+
+export async function transformSwitchToLinkLight(gatewayId: string, deviceId: string, ep: number) {
+  // 关联灯模式，需要下发转换成3
+  await controlDevice({
+    deviceId: gatewayId,
+    topic: '/subdevice/control',
+    method: 'panelModeControl',
+    inputData: [
+      {
+        ButtonMode: 3,
+        ep,
+        devId: deviceId,
+      },
+    ],
+  })
+  for (let index = 0; index < 6; index++) {
+    const res = await queryDeviceInfoByDeviceId({
+      deviceId,
+    })
+    if (res.success) {
+      if (res.result.mzgdPropertyDTOList[ep].ButtonMode === 3) {
         return true
       } else {
         await delay(500)
