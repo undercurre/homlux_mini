@@ -1,7 +1,8 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import asyncPool from 'tiny-async-pool'
 import { homeBinding, roomBinding } from '../../store/index'
-import { bleUtil, strUtil, BleClient, getCurrentPageParams, TaskScheduler } from '../../utils/index'
+import { bleUtil, strUtil, BleClient, getCurrentPageParams } from '../../utils/index'
 import { IBleDevice } from './types'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { sendCmdAddSubdevice, bindDevice, queryDeviceOnlineStatus, queryProtypeInfo } from '../../apis/index'
@@ -31,7 +32,6 @@ ComponentWithComputed({
     },
     deviceList: Array<IBleDevice>(),
     status: 'discover' as StatusName,
-    taskScheduler: new TaskScheduler(3),
   },
 
   computed: {
@@ -66,11 +66,11 @@ ComponentWithComputed({
     ready: function () {
       this.initBle()
 
-      this.setData({
-        deviceList: JSON.parse(
-          '[{"deviceUuid":"086DDD30-219D-6655-AC69-4A0C9036442B","mac":"04CD15AEA756","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/midea.light.003.002-3.png","name":"灯具A756","isChecked":false,"client":{"key":"midea@homluxA756","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEA756","deviceUuid":"086DDD30-219D-6655-AC69-4A0C9036442B"},"roomId":"","roomName":"","status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":3},{"deviceUuid":"086DDD30-219D-6655-AC69-4A0C9036442B","mac":"04CD15AEA756","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/midea.light.003.002-3.png","name":"灯具A756","isChecked":false,"client":{"key":"midea@homluxA756","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEA756","deviceUuid":"086DDD30-219D-6655-AC69-4A0C9036442B"},"roomId":"","roomName":"","status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":3}]',
-        ),
-      })
+      // this.setData({
+      //   deviceList: JSON.parse(
+      //     '[{"deviceUuid":"086DDD30-219D-6655-AC69-4A0C9036442B","mac":"04CD15AEA756","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/midea.light.003.002-3.png","name":"灯具A756","isChecked":false,"client":{"key":"midea@homluxA756","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEA756","deviceUuid":"086DDD30-219D-6655-AC69-4A0C9036442B"},"roomId":"","roomName":"","status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":3},{"deviceUuid":"086DDD30-219D-6655-AC69-4A0C9036442B","mac":"04CD15AEA756","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/midea.light.003.002-3.png","name":"灯具A756","isChecked":false,"client":{"key":"midea@homluxA756","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEA756","deviceUuid":"086DDD30-219D-6655-AC69-4A0C9036442B"},"roomId":"","roomName":"","status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":3}]',
+      //   ),
+      // })
     },
     moved: function () {},
     detached: function () {
@@ -274,15 +274,22 @@ ComponentWithComputed({
           item.status = 'waiting'
           item.requestTimes = 20
           item.zigbeeRepeatTimes = 3
-
-          this.data.taskScheduler.addTask(async () => {
-            await this.startZigbeeNet(item)
-          })
         }
 
         this.setData({
           deviceList: this.data.deviceList,
         })
+
+        const iteratorFn = async (item: IBleDevice) => {
+          console.log('开始任务：', item.mac, Date.now())
+          await this.startZigbeeNet(item)
+
+          return item
+        }
+
+        for await (const value of asyncPool(3, list, iteratorFn)) {
+          console.log('asyncPool', value)
+        }
       } catch (err) {
         console.log('beginAddDevice-err', err)
       }
@@ -296,9 +303,7 @@ ComponentWithComputed({
 
       // 配网指令允许重发3次
       if (!res.success && bleDevice.zigbeeRepeatTimes > 0) {
-        this.data.taskScheduler.addTask(async () => {
-          await this.startZigbeeNet(bleDevice)
-        })
+        await this.startZigbeeNet(bleDevice)
 
         return
       }

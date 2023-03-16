@@ -9,7 +9,6 @@ export * from './strUtil'
 export * from './wifiProtocol'
 export * from './bleProtocol'
 export * from './eventBus'
-export * from './TaskScheduler'
 
 export function delay(ms: number) {
   return new Promise<void>((resolve) => {
