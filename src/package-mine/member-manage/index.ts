@@ -56,7 +56,14 @@ ComponentWithComputed({
     curOptionItem: null as any,
     curUser: { userHouseAuth: 0 } as Home.HouseUserItem,
     isNeedShare: false,
-    isAdmin: false
+    isAdmin: false,
+    headIconList: [
+      '/assets/img/member-manage/head1.png',
+      '/assets/img/member-manage/head2.png',
+      '/assets/img/member-manage/head3.png',
+      '/assets/img/member-manage/head4.png'
+    ],
+    popupTitle: '权限管理'
   },
 
   computed: {},
@@ -97,8 +104,9 @@ ComponentWithComputed({
           let isCanEdit = false
           if (curUser?.userId === item.userId) isCanEdit = false
           else isCanEdit = this.canIEditOther(curUser?.userHouseAuth, item.userHouseAuth)
+          const headIndex = Math.floor(Math.random()*4)
           result.push({
-            icon: item.headImageUrl,
+            icon: this.data.headIconList[headIndex],
             name: item.userName,
             role: item.userHouseAuthName,
             id: item.userId,
@@ -154,7 +162,10 @@ ComponentWithComputed({
           item.isShow = false
         }
       })
-      this.setData({ actionList: actionList })
+      this.setData({ 
+        actionList: actionList,
+        popupTitle: '权限管理'
+      })
     },
     configPopupInviteOption() {
       const actionList = this.data.actionList
@@ -167,7 +178,10 @@ ComponentWithComputed({
           item.isShow = false
         }
       })
-      this.setData({ actionList: actionList })
+      this.setData({
+        actionList: actionList,
+        popupTitle: '邀请成员'
+      })
     },
     clearOptionList() {
       const actionList = this.data.actionList

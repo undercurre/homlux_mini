@@ -5,7 +5,7 @@
     <scroll-view show-scrollbar="{{false}}">
       <view class="rounded-32rpx bg-white px-40rpx mx-32rpx">
         <view class="flex flex-row items-center py-16rpx leading-44rpx text-32 {{index < memberList.length - 1 && 'border-bottom'}}" wx:for="{{memberList}}" wx:key="key" data-item="{{item}}" bind:tap="onUserItemClick">
-          <image class="w-80rpx h-80rpx mr-24rpx rounded-full" src="{{item.icon || '/assets/img/default-img/default-avatar.png'}}"></image>
+          <image class="w-80rpx h-80rpx mr-24rpx rounded-full" src="{{item.icon}}"></image>
 
           <text class="grow w-300rpx" style="color: #2a2b2d; text-overflow: ellipsis; overflow: hidden">{{item.name}}</text>
 
@@ -31,6 +31,10 @@
 
 <van-popup show="{{ isEditRole }}" position="bottom" round bind:close="hidePopup">
   <view class="pt-32rpx pb-96rpx">
+    <view class="w-750rpx h-100rpx flex-center">
+      <text class="text-36rpx font-semibold">{{popupTitle}}</text>
+      <image class="absolute w-52rpx h-52rpx" style="top: 64rpx; right: 38rpx;" src="/assets/img/base/close.png" bindtap="hidePopup"></image>
+    </view>
     <view>
       <view wx:for="{{actionList}}" class="flex flex-row items-center px-48rpx leading-44rpx {{item.isShow && 'border-bottom'}}" wx:key="key" bindtap="onPopupClick" data-item="{{item}}">
         <view class="flex flex-col grow justify-center items-start {{item.isShow ? 'h-128rpx': 'h-0rpx'}}">
