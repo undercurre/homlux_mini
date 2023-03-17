@@ -111,11 +111,13 @@ ComponentWithComputed({
       const deviceMap = deviceStore.deviceMap
       // switch需要特殊处理
       const switchDeviceMap = {} as Record<string, { ep: number; OnOff: number }[]>
-      // 根据是否默认全选添加对应action
-      const selectList =
-        deviceStore.selectList.length > 0
-          ? deviceStore.selectList
-          : deviceStore.deviceFlattenList.map((device) => device.uniId)
+      // 将开关加入进请求数据
+      let selectList = deviceStore.deviceFlattenList.map((device) => device.uniId)
+      if (this.data.linkSwitch) {
+        selectList = selectList.filter(uniId=>uniId !== this.data.linkSwitch)
+      }
+      // 排除已经是场景开关的开关
+      selectList = selectList.filter((uniId)=>!deviceStore.switchSceneMap[uniId])
       selectList.forEach((id) => {
         if (id.includes(':')) {
           // 开关
