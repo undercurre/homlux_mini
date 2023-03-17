@@ -2,6 +2,7 @@
 <van-popup show="{{ show }}" z-index="10000" position="bottom" round bind:close="handleClose">
   <view class="flex flex-col px-32rpx text-black-2a popup-wrapper">
     <view class="flex-center pb-32rpx">
+      <template is="close" />
       <template is="title" data="{{ title: '选择旧设备' }}" />
     </view>
 
