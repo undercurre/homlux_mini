@@ -1,6 +1,9 @@
 .room-checked {
   background-image: linear-gradient(155deg, #468cfb 6%, #6ba3fc 96%);
 }
+.popup-wrapper {
+  min-height: 920rpx;
+}
 .popup-empty {
   padding-top: 50rpx;
   min-height: 200rpx;
