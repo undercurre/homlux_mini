@@ -147,8 +147,8 @@ export class BleClient {
           const begin = Date.now()
           // 超时处理
           const timeId = setTimeout(() => {
-            resolve({ code: '-1', success: false, resMsg: 'request timeout', cmdType: cmdType, subCmdType: subType })
-          }, 8000)
+            throw new Error('蓝牙指令回复超时')
+          }, 6000)
 
           const listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
             console.log(

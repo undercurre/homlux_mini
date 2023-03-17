@@ -5,7 +5,7 @@
 
   <view class="absolute bottom-0 left-0 right-0 pb-72rpx flex flex-col items-center text-32">
     <view class="flex flex-col items-center pb-90rpx" bind:tap="toggleFlash">
-      <image class="w-96 h-96 mb-28rpx" src="/package-distribution/assets/scan/light-{{ isFlash ? 'off' : 'on'}}.png"></image>
+      <image class="w-96 h-96 mb-28rpx" src="/package-distribution/assets/scan/light-{{ isFlash ? 'on' : 'off'}}.png"></image>
 
       <text class="text-28 text-black-tips leading-40rpx">轻触{{ isFlash ? '关闭' : '照亮'}}</text>
     </view>

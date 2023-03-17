@@ -41,6 +41,12 @@
       "pages": ["index/index", "scene-edit/index", "scene-list/index"]
     }
   ],
+  "preloadRule": {
+    "pages/index/index": {
+      "network": "all",
+      "packages": ["package-distribution"]
+    }
+  },
   "tabBar": {
     "custom": true,
     "list": [
