@@ -42,4 +42,13 @@ declare namespace Ota {
     /** 版本更新备注 */
     versionDesc: string
   }
+
+  interface DeviceOtaUpdateReqDTO {
+    deviceId: string
+    gatewayId: string
+    otaMd5: string
+    otaProductId: string
+    updateVersion: string
+    updateVersionUrl: string
+  }
 }

@@ -6,10 +6,19 @@ import { mzaioRequest } from '../utils/index'
 export async function queryDeviceOtaUpdateList(houseId: string) {
   return await mzaioRequest.post<{ otaProductList: Ota.OtaProduct[]; otaUpdateList: Ota.OtaUpdate[] }>({
     log: false,
-    loading: true,
+    loading: false,
     url: '/v1/device/queryDeviceOtaUpdateList',
     data: {
       houseId,
     },
+  })
+}
+
+export async function execOtaUpdate(data: { deviceOtaList: Ota.DeviceOtaUpdateReqDTO[] }) {
+  return await mzaioRequest.post<{ otaProductList: Ota.OtaProduct[]; otaUpdateList: Ota.OtaUpdate[] }>({
+    log: false,
+    loading: true,
+    url: '/v1/device/deviceOtaUpdate',
+    data,
   })
 }

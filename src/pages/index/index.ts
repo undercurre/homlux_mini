@@ -148,7 +148,7 @@ ComponentWithComputed({
           throttleTimer = setTimeout(() => {
             homeStore.updateRoomCardList()
             throttleTimer = 0
-          }, 500) as unknown as number
+          }, 500)
         }
       })
     },

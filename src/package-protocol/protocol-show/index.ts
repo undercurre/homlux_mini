@@ -1,5 +1,5 @@
 import { storage } from '../../utils/index'
-import { userService, privacyPolicy, userInfoList, authList } from './protocolDoc'
+import { userService, privacyPolicy, userInfoList, authList } from './protocol-doc'
 import pageBehavior from '../../behaviors/pageBehaviors'
 Component({
   behaviors: [pageBehavior],

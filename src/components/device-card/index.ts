@@ -168,7 +168,7 @@ ComponentWithComputed({
           if (this.data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
             throttleTimer = setTimeout(() => {
               throttleTimer = 0
-            }, 550) as unknown as number
+            }, 550)
             return
           }
         }
@@ -181,7 +181,7 @@ ComponentWithComputed({
           this.setData({
             ripple: false,
           })
-        }, 550) as unknown as number
+        }, 550)
       } else {
         // this.triggerEvent('offlineTap')
         Toast('设备已离线')
