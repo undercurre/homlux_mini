@@ -31,7 +31,7 @@ Component({
       ota: '/package-mine/ota/index',
       deviceReplace: '/package-mine/device-replace/index',
       feedback: '/package-mine/feedback/index',
-      about: '/pages/protocolList/index',
+      about: '/package-protocol/protocol-list/index',
     },
   },
   methods: {
