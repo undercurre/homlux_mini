@@ -56,6 +56,7 @@ ComponentWithComputed({
     curOptionItem: null as any,
     curUser: { userHouseAuth: 0 } as Home.HouseUserItem,
     isNeedShare: false,
+    isAdmin: false
   },
 
   computed: {},
@@ -86,7 +87,12 @@ ComponentWithComputed({
         const curUser = list.find((item: Home.HouseUserItem) => {
           return item.userId === curUserId
         })
-        if (curUser) this.setData({ curUser: curUser })
+        if (curUser) {
+          this.setData({
+            curUser: curUser,
+            isAdmin: curUser.userHouseAuth === 2
+          })
+        } 
         list.forEach((item: Home.HouseUserItem) => {
           let isCanEdit = false
           if (curUser?.userId === item.userId) isCanEdit = false
@@ -196,16 +202,25 @@ ComponentWithComputed({
       this.configPopupInviteOption()
 
       const item = this.data.actionList.find((item) => {
-        return item.key === 'BE_MEM'
+        return item.key === 'BE_VIS'
       })
       this.setData({ curOptionItem: item })
-      this.setPopupOptionPick('BE_MEM')
+      this.setPopupOptionPick('BE_VIS')
 
-      this.setData({
-        isEditRole: true,
-        curClickUserItem: null,
-        isNeedShare: true,
-      })
+      if (this.data.isAdmin) {
+        this.setData({
+          isEditRole: false,
+          curClickUserItem: null,
+          isNeedShare: true,
+        })
+        this.onComfirmClick()
+      } else {
+        this.setData({
+          isEditRole: true,
+          curClickUserItem: null,
+          isNeedShare: true,
+        })
+      }
     },
     onPopupClick(data: any) {
       const item = data.currentTarget.dataset.item
@@ -274,7 +289,7 @@ ComponentWithComputed({
           const type = storage.get('invite_type', '3')
           const time = new Date()
           resolve({
-            title: '邀请您加入',
+            title: '邀请你加入我的家庭',
             path:
               '/pages/index/index?type=' +
               type +
@@ -287,7 +302,7 @@ ComponentWithComputed({
         }, 500)
       })
       return {
-        title: '邀请您加入',
+        title: '邀请你加入我的家庭',
         path: '/pages/index/index?type=visitor',
         imageUrl: '/assets/img/login/logo.png',
         promise,
