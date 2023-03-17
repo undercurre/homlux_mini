@@ -53,7 +53,6 @@
           </view>
         </van-cell>
       </van-cell-group>
-
     </scroll-view>
   </view>
   <view class="mb-64rpx mt-32rpx w-686rpx">

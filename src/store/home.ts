@@ -51,78 +51,60 @@ export const homeStore = observable({
           })
         }
       })
-      // 加载完房间列表就渲染界面
-      const roomListPromise = getRoomList(homeStore.currentHomeId).then((res) => {
-        if (res.success) {
-          console.log('房间列表加载完成，开始展示', Date.now() / 1000)
-          runInAction(() => {
-            roomStore.roomList = res.result.roomInfoList.map((room) => ({
-              roomId: room.roomInfo.roomId,
-              roomIcon: room.roomInfo.roomIcon || 'drawing-room',
-              roomName: room.roomInfo.roomName,
-              deviceLightOnNum: 0,
-              sceneList: [],
-              deviceNum: 0,
-              subDeviceNum: 0,
-            }))
-            othersStore.isInit = true
+      // 全屋房间、设备加载完成，开始渲染
+      const res = await Promise.all([getRoomList(homeStore.currentHomeId), deviceStore.updataHomeDeviceList()])
+      if (res[0].success) {
+        res[0].result.roomInfoList.forEach((roomInfo) => {
+          const roomDeviceList = roomStore.roomDeviceList[roomInfo.roomInfo.roomId]
+          // 过滤一下默认场景，没灯过滤明亮柔和，没灯没开关全部过滤
+          const hasSwitch = roomDeviceList?.some((device) => device.proType === proType.switch) ?? false
+          const hasLight = roomDeviceList?.some((device) => device.proType === proType.light) ?? false
+          if (!hasSwitch && !hasLight) {
+            // 四个默认场景都去掉
+            roomInfo.roomSceneList = roomInfo.roomSceneList.filter((scene) => scene.isDefault === '0')
+          } else if (hasSwitch && !hasLight) {
+            // 只有开关，去掉默认的明亮、柔和
+            roomInfo.roomSceneList = roomInfo.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
+          }
+          // 统计多少灯打开（开关不关联灯或者关联场景都算进去）
+          let deviceLightOnNum = 0
+          // 统计多少个子设备
+          let subDeviceNum = 0
+          roomDeviceList?.forEach((device) => {
+            if (device.proType !== proType.gateway) {
+              subDeviceNum++
+            }
+            if (!device.onLineStatus) return
+            if (device.proType === proType.light && device.mzgdPropertyDTOList['1'].OnOff) {
+              deviceLightOnNum++
+            } else if (device.proType === proType.switch) {
+              device.switchInfoDTOList.forEach((switchItem) => {
+                if (
+                  !switchItem.lightRelId &&
+                  device.mzgdPropertyDTOList[switchItem.switchId].OnOff &&
+                  !device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode
+                ) {
+                  deviceLightOnNum++
+                }
+              })
+            }
           })
-          return res.result
-        } else {
-          return Promise.reject('加载房间列表失败')
-        }
-      })
-      // 全屋设备加载完成，补充缺少的场景、开灯数量
-      const res = await Promise.all([roomListPromise, deviceStore.updataHomeDeviceList()])
-      res[0].roomInfoList.forEach((roomInfo) => {
-        const roomDeviceList = roomStore.roomDeviceList[roomInfo.roomInfo.roomId]
-        // 过滤一下默认场景，没灯过滤明亮柔和，没灯没开关全部过滤
-        const hasSwitch = roomDeviceList?.some((device) => device.proType === proType.switch) ?? false
-        const hasLight = roomDeviceList?.some((device) => device.proType === proType.light) ?? false
-        if (!hasSwitch && !hasLight) {
-          // 四个默认场景都去掉
-          roomInfo.roomSceneList = roomInfo.roomSceneList.filter((scene) => scene.isDefault === '0')
-        } else if (hasSwitch && !hasLight) {
-          // 只有开关，去掉默认的明亮、柔和
-          roomInfo.roomSceneList = roomInfo.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
-        }
-        // 统计多少灯打开（开关不关联灯或者关联场景都算进去）
-        let deviceLightOnNum = 0
-        // 统计多少个子设备
-        let subDeviceNum = 0
-        roomDeviceList?.forEach((device) => {
-          if (device.proType !== proType.gateway) {
-            subDeviceNum++
-          }
-          if (!device.onLineStatus) return
-          if (device.proType === proType.light && device.mzgdPropertyDTOList['1'].OnOff) {
-            deviceLightOnNum++
-          } else if (device.proType === proType.switch) {
-            device.switchInfoDTOList.forEach((switchItem) => {
-              if (
-                !switchItem.lightRelId &&
-                device.mzgdPropertyDTOList[switchItem.switchId].OnOff &&
-                !device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode
-              ) {
-                deviceLightOnNum++
-              }
-            })
-          }
+          roomInfo.roomInfo.deviceLightOnNum = deviceLightOnNum
+          roomInfo.roomInfo.subDeviceNum = subDeviceNum
         })
-        roomInfo.roomInfo.deviceLightOnNum = deviceLightOnNum
-        roomInfo.roomInfo.subDeviceNum = subDeviceNum
-      })
-      runInAction(() => {
-        roomStore.roomList = res[0].roomInfoList.map((room) => ({
-          roomId: room.roomInfo.roomId,
-          roomIcon: room.roomInfo.roomIcon || 'drawing-room',
-          roomName: room.roomInfo.roomName,
-          deviceLightOnNum: room.roomInfo.deviceLightOnNum,
-          sceneList: room.roomSceneList,
-          deviceNum: room.roomInfo.deviceNum,
-          subDeviceNum: room.roomInfo.subDeviceNum,
-        }))
-      })
+        runInAction(() => {
+          roomStore.roomList = res[0].result.roomInfoList.map((room) => ({
+            roomId: room.roomInfo.roomId,
+            roomIcon: room.roomInfo.roomIcon || 'drawing-room',
+            roomName: room.roomInfo.roomName,
+            deviceLightOnNum: room.roomInfo.deviceLightOnNum,
+            sceneList: room.roomSceneList,
+            deviceNum: room.roomInfo.deviceNum,
+            subDeviceNum: room.roomInfo.subDeviceNum,
+          }))
+          othersStore.isInit = true
+        })
+      }
     }
   },
 
