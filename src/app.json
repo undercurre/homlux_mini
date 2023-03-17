@@ -1,9 +1,5 @@
 {
-  "pages": [
-    "pages/index/index",
-    "pages/login/index",
-    "pages/mine/index"
-  ],
+  "pages": ["pages/index/index", "pages/login/index", "pages/mine/index"],
   "subpackages": [
     {
       "root": "package-distribution",

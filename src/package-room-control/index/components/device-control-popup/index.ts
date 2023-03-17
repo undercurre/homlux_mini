@@ -134,8 +134,8 @@ ComponentWithComputed({
   watch: {
     lightInfo(value) {
       this.setData({
-        'lightInfoInner.Level': value.Level,
-        'lightInfoInner.ColorTemp': value.ColorTemp,
+        'lightInfoInner.Level': value.Level ?? 0,
+        'lightInfoInner.ColorTemp': value.ColorTemp ?? 0,
       })
     },
     /**

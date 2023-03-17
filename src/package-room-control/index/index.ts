@@ -79,8 +79,8 @@ ComponentWithComputed({
       return false
     },
     title(data) {
-      if (data.currentRoomIndex !== undefined && data.roomList) {
-        return data.roomList[data.currentRoomIndex]?.roomName
+      if (data.currentRoomIndex && data.roomList) {
+        return data.roomList[data.currentRoomIndex]?.roomName ?? ''
       }
       return ''
     },

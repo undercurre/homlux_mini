@@ -45,7 +45,7 @@ ComponentWithComputed({
     },
     isLinkScene(data) {
       if (!data.deviceInfo || !data.deviceInfo.switchInfoDTOList || !data.deviceInfo.switchInfoDTOList[0]) {
-        return
+        return false
       }
       const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
       return (
@@ -71,7 +71,7 @@ ComponentWithComputed({
     },
     linkSceneName(data) {
       if (!data.deviceInfo || !data.deviceInfo.switchInfoDTOList || !data.deviceInfo.switchInfoDTOList[0]) {
-        return
+        return ''
       }
       const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
       const switchSceneMap = deviceStore.switchSceneMap
