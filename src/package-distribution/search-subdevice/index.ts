@@ -59,6 +59,10 @@ ComponentWithComputed({
     successList(data) {
       return data.selectedList.filter((item: IBleDevice) => item.status === 'success')
     },
+
+    isAllSelected(data) {
+      return data.selectedList.length === data.deviceList.length
+    }
   },
 
   lifetimes: {
@@ -465,11 +469,11 @@ ComponentWithComputed({
       })
     },
 
-    selectAll() {
+    toggleSelectAll() {
       this.setData({
         deviceList: this.data.deviceList.map((item) => ({
           ...item,
-          isChecked: true,
+          isChecked: !this.data.isAllSelected,
         })),
       })
     },

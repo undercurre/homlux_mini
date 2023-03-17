@@ -10,7 +10,7 @@
         <view class="flex flex-row items-center justify-between pb-34rpx">
           <text class="text-26 text-black-59">发现{{deviceList.length}}个附近的设备</text>
 
-          <van-button plain round type="info" size="small" bind:click="selectAll">全选</van-button>
+          <van-button plain round type="info" size="small" bind:click="toggleSelectAll">{{ isAllSelected ? '取消全选' : '全选'}}</van-button>
         </view>
 
         <scroll-view class="grow shrink h-500" scroll-y="{{true}}">
