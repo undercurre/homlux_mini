@@ -62,7 +62,7 @@ ComponentWithComputed({
 
     isAllSelected(data) {
       return data.selectedList.length === data.deviceList.length
-    }
+    },
   },
 
   lifetimes: {
@@ -164,15 +164,14 @@ ComponentWithComputed({
       })
 
       wx.onBLEConnectionStateChange((res) => {
-        const item = this.data.deviceList.find((item) => item.deviceUuid === res.deviceId) as IBleDevice
-
         // 该方法回调中可以用于处理连接意外断开等异常情况
-        console.log(
-          `mac: ${item.mac}`,
-          'onBLEConnectionStateChange-search-subdevice',
-          res,
-          `device ${res.deviceId} state has changed, connected: ${res.connected}`,
-        )
+        if (!res.connected) {
+          const item = this.data.deviceList.find((item) => item.deviceUuid === res.deviceId) as IBleDevice
+          console.log(
+            'onBLEConnectionStateChange-search-subdevice',
+            `device ${item.mac} state has changed, connected: ${res.connected}`,
+          )
+        }
       })
 
       // 开始搜寻附近的蓝牙外围设备
@@ -214,10 +213,8 @@ ComponentWithComputed({
         status: 'waiting',
         requestTimes: 20,
         requesting: false,
-        zigbeeRepeatTimes: 3,
+        zigbeeRepeatTimes: 2,
       }
-
-      console.log('bleDevice', JSON.stringify(bleDevice))
 
       this.data.deviceList.push(bleDevice)
 
@@ -230,8 +227,6 @@ ComponentWithComputed({
     toggleDevice(e: WechatMiniprogram.CustomEvent) {
       const index = e.currentTarget.dataset.index as number
       const item = this.data.deviceList[index]
-
-      console.log('toggleDevice', item)
 
       item.isChecked = !item.isChecked
 
@@ -277,7 +272,7 @@ ComponentWithComputed({
         for (const item of list) {
           item.status = 'waiting'
           item.requestTimes = 20
-          item.zigbeeRepeatTimes = 3
+          item.zigbeeRepeatTimes = 2
         }
 
         this.setData({
@@ -285,14 +280,14 @@ ComponentWithComputed({
         })
 
         const iteratorFn = async (item: IBleDevice) => {
-          console.log('开始任务：', item.mac, Date.now())
+          console.info('开始任务：', item.mac, Date.now())
           await this.startZigbeeNet(item)
 
           return item
         }
 
         for await (const value of asyncPool(3, list, iteratorFn)) {
-          console.log('asyncPool', value)
+          console.info('任务结束：', value.mac)
         }
       } catch (err) {
         console.log('beginAddDevice-err', err)
@@ -300,7 +295,8 @@ ComponentWithComputed({
     },
 
     async startZigbeeNet(bleDevice: IBleDevice) {
-      console.log(`开始子设备配网：${bleDevice.mac}，第${4 - bleDevice.zigbeeRepeatTimes}次`)
+      console.group(`startZigbeeNet:${bleDevice.mac}`, )
+      console.log(`开始子设备配网：${bleDevice.mac}，第${3 - bleDevice.zigbeeRepeatTimes}次`)
       bleDevice.zigbeeRepeatTimes--
 
       const res = await bleDevice.client.startZigbeeNet()
@@ -326,6 +322,8 @@ ComponentWithComputed({
       }
 
       bleDevice.client.close()
+
+      console.groupEnd()
     },
 
     async queryDeviceOnlineStatus(device: IBleDevice) {
@@ -427,8 +425,6 @@ ComponentWithComputed({
      */
     async tryControl(event: WechatMiniprogram.CustomEvent) {
       const { id } = event.currentTarget.dataset
-
-      console.log('tryControl', id)
 
       const bleDeviceItem = this.data.deviceList.find((item) => item.deviceUuid === id) as IBleDevice
 

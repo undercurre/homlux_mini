@@ -84,46 +84,77 @@ export class BleClient {
     }
 
     // 连接成功，获取服务
-    const bleServiceRes = await wx.getBLEDeviceServices({
-      deviceId: this.deviceUuid,
-    })
+    const bleServiceRes = await wx
+      .getBLEDeviceServices({
+        deviceId: this.deviceUuid,
+      })
+      .catch((err) => {
+        throw err
+      })
 
     console.log(`mac: ${this.mac}`, 'bleServiceRes', bleServiceRes)
 
-    const characRes = await wx.getBLEDeviceCharacteristics({
-      deviceId: this.deviceUuid,
-      serviceId: this.serviceId,
-    })
+    const characRes = await wx
+      .getBLEDeviceCharacteristics({
+        deviceId: this.deviceUuid,
+        serviceId: this.serviceId,
+      })
+      .catch((err) => {
+        throw err
+      })
 
     const characteristicId = characRes.characteristics[0].uuid
     this.characteristicId = characteristicId
 
-    const notifyRes = await wx.notifyBLECharacteristicValueChange({
-      deviceId: this.deviceUuid,
-      serviceId: this.serviceId,
-      characteristicId,
-      state: true,
-      type: 'notification',
-    })
+    const notifyRes = await wx
+      .notifyBLECharacteristicValueChange({
+        deviceId: this.deviceUuid,
+        serviceId: this.serviceId,
+        characteristicId,
+        state: true,
+        type: 'notification',
+      })
+      .catch((err) => {
+        throw err
+      })
 
     console.log(`mac: ${this.mac}`, 'notifyRes', notifyRes)
 
     return connectRes
   }
 
+  listenDisconnect() {
+    return new Promise<{ errCode: number; errMsg: string }>((resolve) => {
+      const bleConnectionListener = (res: WechatMiniprogram.OnBLEConnectionStateChangeCallbackResult) => {
+        // 该方法回调中可以用于处理连接意外断开等异常情况
+        if (this.deviceUuid === res.deviceId && !res.connected) {
+          console.error(`蓝牙设备断开：${this.mac}`)
+          wx.offBLEConnectionStateChange(bleConnectionListener)
+          resolve({ errCode: -1, errMsg: '蓝牙设备断开' })
+        }
+      }
+  
+      wx.onBLEConnectionStateChange(bleConnectionListener)
+    })
+  }
+
   async close() {
     const res = await wx.closeBLEConnection({ deviceId: this.deviceUuid }).catch((err) => err)
 
-    console.log('closeBLEConnection', res)
+    console.log('closeBLEConnection', this.mac, res)
   }
 
   async sendCmd(params: { cmdType: keyof typeof CmdTypeMap; subType: keyof typeof ControlSubType }) {
     try {
-      await this.connect()
+      const connectRes = await Promise.race([this.connect(), this.listenDisconnect()])
+
+      if (connectRes.errCode === -1) {
+        throw connectRes
+      }
 
       const { cmdType, subType } = params
 
-      console.log(`Mac：${this.mac}---cmdType----- ${params.cmdType}--${params.subType}`)
+      console.log(`蓝牙指令发起：Mac：${this.mac}---cmdType----- ${params.cmdType}--${params.subType}`)
 
       const msgId = ++this.msgId // 等待回复的指令msgId
       // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
@@ -147,14 +178,11 @@ export class BleClient {
           const begin = Date.now()
           // 超时处理
           const timeId = setTimeout(() => {
-            throw new Error('蓝牙指令回复超时')
+            resolve({ code: '-1', success: false, resMsg: '蓝牙指令回复超时', cmdType: cmdType, subCmdType: subType })
           }, 6000)
 
           const listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
-            console.log(
-              `${this.mac}onBLECharacteristicValueChange ${res.characteristicId} has changed, now is ${res.value}`,
-              res,
-            )
+            console.log(`onBLECharacteristicValueChange ${this.mac}  has changed`)
             if (res.deviceId !== this.deviceUuid) {
               return
             }
@@ -179,7 +207,7 @@ export class BleClient {
 
             clearTimeout(timeId)
 
-            console.log(`蓝牙指令回复时间${this.mac}： ${Date.now() - begin}`, cmdType, subType)
+            console.log(`蓝牙指令回复时间： ${Date.now() - begin} mac: ${this.mac}`, cmdType, subType)
 
             resolve({
               code: code,
@@ -197,14 +225,14 @@ export class BleClient {
             serviceId: this.serviceId,
             characteristicId: this.characteristicId,
             value: buffer,
-            success: (res) => {
+            complete: (res) => {
               console.log('writeRes', res)
-            },
+            }
           })
         },
       )
     } catch (err) {
-      console.error('sendCmd-err', err)
+      console.error('sendCmd-err',this.mac, err)
       return {
         code: -1,
         success: false,

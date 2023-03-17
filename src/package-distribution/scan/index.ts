@@ -26,7 +26,7 @@ ComponentWithComputed({
     _isScaning: false, // 是否正在扫码
     _isInitBle: false, // 是否已经初始化蓝牙
     isShowOpenBleTips: false, // 是否展示开启蓝牙提示
-    bleStatus: 'close',
+    bleStatus: '',
     isFlash: false,
     selectGatewayId: '',
     selectGatewaySn: '',
@@ -192,12 +192,6 @@ ComponentWithComputed({
           // 由于调用openSystemBluetoothSetting接口，必须通过回调方式调用，promise方式会被拒绝
           success: (bleDialogRes) => {
             console.log('bleDialogRes', bleDialogRes)
-            if (bleDialogRes.cancel) {
-              this.setData({
-                bleStatus: 'refuse',
-              })
-              return
-            }
 
             this.setData({
               isShowOpenBleTips: true,
