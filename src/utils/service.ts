@@ -14,12 +14,14 @@ export function logout() {
 }
 
 // WS连接
-let socketTask: WechatMiniprogram.SocketTask | null = null
+export let socketTask: WechatMiniprogram.SocketTask | null = null
+export let socketIsConnect = 0
 
 function createConnect() {
   socketTask = connectHouseSocket(homeStore.currentHomeDetail.houseId)
   socketTask.onClose(onSocketClose)
   socketTask.onOpen(() => {
+    socketIsConnect = 1
     console.log('socket连接成功')
   })
   socketTask.onMessage((e) => {
@@ -36,6 +38,7 @@ function createConnect() {
 
 function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {
   console.log('socket关闭连接', e)
+  socketIsConnect = 0
   if (e.code !== 1000) {
     setTimeout(() => {
       console.log('socket重连')
