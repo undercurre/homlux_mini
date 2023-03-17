@@ -105,7 +105,6 @@ ComponentWithComputed({
     async handleShowHomeSelectMenu() {
       const query = wx.createSelectorQuery()
       query.select('#homeName').boundingClientRect((res) => {
-        this.doHomeSelectArrowAnimation(!this.data.selectHomeMenu.isShow, this.data.selectHomeMenu.isShow)
         this.setData({
           selectHomeMenu: {
             x: `${res.left + 10}px`,
@@ -116,39 +115,6 @@ ComponentWithComputed({
         })
       })
       query.exec()
-    },
-
-    doHomeSelectArrowAnimation(newValue: boolean, oldValue: boolean) {
-      if (newValue === oldValue) {
-        return
-      }
-      if (newValue) {
-        this.animate(
-          '#homeSelectArrow',
-          [
-            {
-              rotateZ: 0,
-            },
-            {
-              rotateZ: 180,
-            },
-          ],
-          200,
-        )
-      } else {
-        this.animate(
-          '#homeSelectArrow',
-          [
-            {
-              rotateZ: 180,
-            },
-            {
-              rotateZ: 0,
-            },
-          ],
-          200,
-        )
-      }
     },
 
     hideMenu() {
