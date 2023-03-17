@@ -1,6 +1,7 @@
 import { queryDeviceOtaUpdateList } from '../../apis/ota'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { homeStore } from '../../store/index'
+import Toast from '@vant/weapp/toast/toast'
 Component({
   behaviors: [pageBehavior],
   /**
@@ -16,6 +17,8 @@ Component({
     isLoading: false,
     contentHeight: 0,
     otaData: [{}], // todo：mock数据，联调时删除
+    otaProductList: [] as Ota.OtaProduct[],
+    otaUpdateList: [] as Ota.OtaUpdate[],
   },
 
   /**
@@ -34,7 +37,14 @@ Component({
           }
         })
       queryDeviceOtaUpdateList(homeStore.currentHomeDetail.houseId).then((res) => {
-        console.log('Ota列表', res)
+        if (res.success) {
+          this.setData({
+            otaProductList: res.result.otaProductList,
+            otaUpdateList: res.result.otaUpdateList,
+          })
+        } else {
+          Toast('查询OTA信息失败')
+        }
       })
     },
     onChange(e: { detail: boolean }) {

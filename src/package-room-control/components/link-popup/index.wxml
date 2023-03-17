@@ -8,7 +8,7 @@
       <view class="flex">
         <view class="w-50rpx"></view>
         <view class="flex min-w-650rpx justify-center">
-          <view wx:for="{{roomListInner}}" wx:key="roomId" class="flex-col-center {{index!==0?'ml-90rpx': ''}}" data-item="{{item}}" bindtap="handleRoomSelect">
+          <view wx:for="{{roomListComputed}}" wx:key="roomId" class="flex-col-center {{index!==0?'ml-90rpx': ''}}" data-item="{{item}}" bindtap="handleRoomSelect">
             <text class="{{roomSelect === item.roomId ? 'text-32rpx text-black-2a' : 'text-28rpx text-hex-555659'}} whitespace-nowrap">{{item.roomName}}</text>
             <view class="w-42rpx h-8rpx mt-8rpx bg-hex-488fff rounded-999 {{roomSelect === item.roomId ? 'opacity-100' : 'opacity-0'}}"></view>
           </view>
@@ -39,10 +39,10 @@
         </view> -->
         <view class="w-750rpx flex-col-center">
           <view wx:if="{{linkType==='scene'}}" class="w-686rpx grid grid-cols-2 gap-x-20rpx">
-            <scene-card class="mt-24rpx" wx:for="{{list}}" wx:key="sceneId" bind:cardTap="handleCardTap" scene-info="{{item}}" select="{{module.includes(selectList, item.sceneId)}}" />
+            <scene-card class="mt-24rpx" wx:for="{{listComputed}}" wx:key="sceneId" bind:cardTap="handleCardTap" scene-info="{{item}}" select="{{module.includes(selectList, item.sceneId)}}" />
           </view>
           <view wx:else class="w-686rpx grid grid-cols-4 gap-x-20rpx gap-y-24rpx">
-            <device-card wx:for="{{list}}" wx:key="uniId" bind:cardTap="handleCardTap" device-type="{{linkType === 'light' ? 'light' : 'switch'}}" device-info="{{item}}" select="{{module.includes(selectList, item.uniId)}}" />
+            <device-card wx:for="{{listComputed}}" wx:key="uniId" bind:cardTap="handleCardTap" device-type="{{linkType === 'light' ? 'light' : 'switch'}}" device-info="{{item}}" select="{{module.includes(selectList, item.uniId)}}" />
           </view>
         </view>
         <view class="h-32rpx"></view>
