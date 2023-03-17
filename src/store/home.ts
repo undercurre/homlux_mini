@@ -227,10 +227,10 @@ export const homeStore = observable({
       runInAction(() => {
         for (let i = 0; i < homeStore.homeMemberInfo.houseUserList.length; i++) {
           if (userId === homeStore.homeMemberInfo.houseUserList[i].userId) {
+            if (homeStore.homeMemberInfo.houseUserList[i].userHouseAuth === 1) continue
             const map = ['', '创建者', '管理员', '访客']
             homeStore.homeMemberInfo.houseUserList[i].userHouseAuth = auth
             homeStore.homeMemberInfo.houseUserList[i].userHouseAuthName = map[auth]
-            break
           }
         }
       })
