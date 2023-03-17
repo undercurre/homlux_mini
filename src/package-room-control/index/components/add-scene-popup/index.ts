@@ -1,8 +1,8 @@
-import { addScene } from '../../../../apis/scene'
+import { addScene, updateScene } from '../../../../apis/scene'
 import { proType, sceneList } from '../../../../config/index'
 import { deviceStore, homeStore, roomStore, sceneStore } from '../../../../store/index'
-import Toast from '@vant/weapp/toast/toast'
 import { ComponentWithComputed } from 'miniprogram-computed'
+import Toast from '@vant/weapp/toast/toast'
 
 ComponentWithComputed({
   options: {
@@ -24,6 +24,7 @@ ComponentWithComputed({
         this.setData({
           sceneIcon: 'general',
           sceneName: '',
+          linkSwitch: '',
         })
       },
     },
@@ -101,6 +102,23 @@ ComponentWithComputed({
           },
         ]
       }
+      const switchSceneMap = deviceStore.switchSceneMap
+      if (switchSceneMap[this.data.linkSwitch]) {
+        // 如果这个开关已经绑定场景，先取消绑定原来的场景
+        const res = await updateScene({
+          conditionType: '0',
+          sceneId: switchSceneMap[this.data.linkSwitch],
+          updateType: '2',
+        })
+        if (!res.success) {
+          Toast({
+            message: '取绑原有场景失败',
+            zIndex: 99999,
+          })
+          return
+        }
+      }
+      await sceneStore.updateAllRoomSceneList()
       // 将新场景排到最后
       sceneStore.sceneList.forEach((scene) => {
         if (scene.orderNum && scene.orderNum >= newSceneData.orderNum) {
@@ -114,10 +132,10 @@ ComponentWithComputed({
       // 将开关加入进请求数据
       let selectList = deviceStore.deviceFlattenList.map((device) => device.uniId)
       if (this.data.linkSwitch) {
-        selectList = selectList.filter(uniId=>uniId !== this.data.linkSwitch)
+        selectList = selectList.filter((uniId) => uniId !== this.data.linkSwitch)
       }
       // 排除已经是场景开关的开关
-      selectList = selectList.filter((uniId)=>!deviceStore.switchSceneMap[uniId])
+      selectList = selectList.filter((uniId) => !deviceStore.switchSceneMap[uniId])
       selectList.forEach((id) => {
         if (id.includes(':')) {
           // 开关
@@ -164,9 +182,13 @@ ComponentWithComputed({
       )
       const res = await addScene(newSceneData)
       if (res.success) {
-        sceneStore.updateAllRoomSceneList()
-        sceneStore.updateSceneList()
-        homeStore.updateRoomCardList()
+        await Promise.all([
+          sceneStore.updateAllRoomSceneList(),
+          sceneStore.updateSceneList(),
+          deviceStore.updateDeviceList(),
+          deviceStore.updateAllRoomDeviceList(),
+          homeStore.updateRoomCardList(),
+        ])
         this.triggerEvent('addSuccess')
       } else {
         Toast({
@@ -212,13 +234,13 @@ ComponentWithComputed({
       })
     },
     handleLinkSelect(e: { detail: string }) {
-      if (deviceStore.switchSceneMap[e.detail]) {
-        Toast({
-          message: '开关已绑定场景',
-          zIndex: 99999,
-        })
-        return
-      }
+      // if (deviceStore.switchSceneMap[e.detail]) {
+      //   Toast({
+      //     message: '开关已绑定场景',
+      //     zIndex: 99999,
+      //   })
+      //   return
+      // }
       if (this.data.linkSelectList[0] && this.data.linkSelectList[0] === e.detail) {
         this.setData({
           linkSelectList: [],
