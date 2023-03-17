@@ -56,6 +56,14 @@ ComponentWithComputed({
     curOptionItem: null as any,
     curUser: { userHouseAuth: 0 } as Home.HouseUserItem,
     isNeedShare: false,
+    isAdmin: false,
+    headIconList: [
+      '/assets/img/member-manage/head1.png',
+      '/assets/img/member-manage/head2.png',
+      '/assets/img/member-manage/head3.png',
+      '/assets/img/member-manage/head4.png'
+    ],
+    popupTitle: '权限管理'
   },
 
   computed: {},
@@ -86,13 +94,19 @@ ComponentWithComputed({
         const curUser = list.find((item: Home.HouseUserItem) => {
           return item.userId === curUserId
         })
-        if (curUser) this.setData({ curUser: curUser })
+        if (curUser) {
+          this.setData({
+            curUser: curUser,
+            isAdmin: curUser.userHouseAuth === 2
+          })
+        } 
         list.forEach((item: Home.HouseUserItem) => {
           let isCanEdit = false
           if (curUser?.userId === item.userId) isCanEdit = false
           else isCanEdit = this.canIEditOther(curUser?.userHouseAuth, item.userHouseAuth)
+          const headIndex = Math.floor(Math.random()*4)
           result.push({
-            icon: item.headImageUrl,
+            icon: this.data.headIconList[headIndex],
             name: item.userName,
             role: item.userHouseAuthName,
             id: item.userId,
@@ -148,7 +162,10 @@ ComponentWithComputed({
           item.isShow = false
         }
       })
-      this.setData({ actionList: actionList })
+      this.setData({ 
+        actionList: actionList,
+        popupTitle: '权限管理'
+      })
     },
     configPopupInviteOption() {
       const actionList = this.data.actionList
@@ -161,7 +178,10 @@ ComponentWithComputed({
           item.isShow = false
         }
       })
-      this.setData({ actionList: actionList })
+      this.setData({
+        actionList: actionList,
+        popupTitle: '邀请成员'
+      })
     },
     clearOptionList() {
       const actionList = this.data.actionList
@@ -196,16 +216,25 @@ ComponentWithComputed({
       this.configPopupInviteOption()
 
       const item = this.data.actionList.find((item) => {
-        return item.key === 'BE_MEM'
+        return item.key === 'BE_VIS'
       })
       this.setData({ curOptionItem: item })
-      this.setPopupOptionPick('BE_MEM')
+      this.setPopupOptionPick('BE_VIS')
 
-      this.setData({
-        isEditRole: true,
-        curClickUserItem: null,
-        isNeedShare: true,
-      })
+      if (this.data.isAdmin) {
+        this.setData({
+          isEditRole: false,
+          curClickUserItem: null,
+          isNeedShare: true,
+        })
+        this.onComfirmClick()
+      } else {
+        this.setData({
+          isEditRole: true,
+          curClickUserItem: null,
+          isNeedShare: true,
+        })
+      }
     },
     onPopupClick(data: any) {
       const item = data.currentTarget.dataset.item
@@ -274,7 +303,7 @@ ComponentWithComputed({
           const type = storage.get('invite_type', '3')
           const time = new Date()
           resolve({
-            title: '邀请您加入',
+            title: '邀请你加入我的家庭',
             path:
               '/pages/index/index?type=' +
               type +
@@ -287,7 +316,7 @@ ComponentWithComputed({
         }, 500)
       })
       return {
-        title: '邀请您加入',
+        title: '邀请你加入我的家庭',
         path: '/pages/index/index?type=visitor',
         imageUrl: '/assets/img/login/logo.png',
         promise,

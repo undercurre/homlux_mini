@@ -1,11 +1,5 @@
 {
-  "pages": [
-    "pages/index/index",
-    "pages/login/index",
-    "pages/mine/index",
-    "pages/protocolShow/index",
-    "pages/protocolList/index"
-  ],
+  "pages": ["pages/index/index", "pages/login/index", "pages/mine/index"],
   "subpackages": [
     {
       "root": "package-distribution",
@@ -39,6 +33,10 @@
     {
       "root": "package-room-control",
       "pages": ["index/index", "scene-edit/index", "scene-list/index"]
+    },
+    {
+      "root": "package-protocol",
+      "pages": ["protocol-show/index", "protocol-list/index"]
     }
   ],
   "preloadRule": {

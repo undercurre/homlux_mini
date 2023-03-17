@@ -18,7 +18,6 @@ ComponentWithComputed({
       (storage.get<number>('statusBarHeight') as number) +
       (storage.get<number>('navigationBarHeight') as number) +
       'px',
-    isInit: false,
     contentHeight: 0,
     isRefresh: false,
     listData: [] as IAnyObject[],

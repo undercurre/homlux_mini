@@ -55,7 +55,10 @@ ComponentWithComputed({
     },
     // 家庭是否有设备
     hasDevice(data) {
-      return data.allRoomDeviceList && data.allRoomDeviceList.length > 0
+      if (data.allRoomDeviceList) {
+        return data.allRoomDeviceList.length
+      }
+      return false
     },
     // 是否显示全局控制开关（需要有灯或者开关）
     isShowHomeControl(data) {
@@ -145,7 +148,7 @@ ComponentWithComputed({
           throttleTimer = setTimeout(() => {
             homeStore.updateRoomCardList()
             throttleTimer = 0
-          }, 500) as unknown as number
+          }, 500)
         }
       })
     },

@@ -79,7 +79,7 @@ ComponentWithComputed({
       }
       return ''
     },
-    roomListInner(data) {
+    roomListComputed(data) {
       if (data.linkType === 'light') {
         if (data.roomList && data.roomList.length) {
           return (data.roomList as Room.RoomInfo[]).filter(
@@ -106,53 +106,13 @@ ComponentWithComputed({
       }
       return []
     },
-    deviceListMatrix(data: { list: Device.DeviceItem[]; roomSelect: string }) {
+    listComputed(data) {
       if (data.list) {
-        let pageCount = 0
-        let deviceCount = 0
-        const pageList = [] as Device.DeviceItem[][]
-        data.list
-          .filter((device) => device.roomId === data.roomSelect)
-          .forEach((device) => {
-            if (pageCount === 0) {
-              deviceCount = 1
-              pageCount++
-              pageList.push([device])
-            } else if (deviceCount === 8) {
-              deviceCount = 1
-              pageCount++
-              pageList.push([device])
-            } else {
-              deviceCount++
-              pageList[pageCount - 1].push(device)
-            }
-          })
-        return pageList
-      }
-      return []
-    },
-    sceneListMatrix(data: { list: Scene.SceneItem[]; roomSelect: string }) {
-      if (data.list) {
-        let pageCount = 0
-        let sceneCount = 0
-        const pageList = [] as Scene.SceneItem[][]
-        data.list
-          .filter((scene) => scene.roomId === data.roomSelect)
-          .forEach((scene) => {
-            if (pageCount === 0) {
-              sceneCount = 1
-              pageCount++
-              pageList.push([scene])
-            } else if (sceneCount === 6) {
-              sceneCount = 1
-              pageCount++
-              pageList.push([scene])
-            } else {
-              sceneCount++
-              pageList[pageCount - 1].push(scene)
-            }
-          })
-        return pageList
+        if (data.linkType === 'scene') {
+          return data.list.filter((scene: Scene.SceneItem) => scene.roomId === data.roomSelect)
+        } else {
+          return data.list.filter((device: Device.DeviceItem) => device.roomId === data.roomSelect)
+        }
       }
       return []
     },

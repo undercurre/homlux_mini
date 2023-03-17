@@ -45,7 +45,7 @@ ComponentWithComputed({
     },
     isLinkScene(data) {
       if (!data.deviceInfo || !data.deviceInfo.switchInfoDTOList || !data.deviceInfo.switchInfoDTOList[0]) {
-        return
+        return false
       }
       const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
       return (
@@ -71,7 +71,7 @@ ComponentWithComputed({
     },
     linkSceneName(data) {
       if (!data.deviceInfo || !data.deviceInfo.switchInfoDTOList || !data.deviceInfo.switchInfoDTOList[0]) {
-        return
+        return ''
       }
       const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
       const switchSceneMap = deviceStore.switchSceneMap
@@ -168,7 +168,7 @@ ComponentWithComputed({
           if (this.data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
             throttleTimer = setTimeout(() => {
               throttleTimer = 0
-            }, 550) as unknown as number
+            }, 550)
             return
           }
         }
@@ -181,7 +181,7 @@ ComponentWithComputed({
           this.setData({
             ripple: false,
           })
-        }, 550) as unknown as number
+        }, 550)
       } else {
         // this.triggerEvent('offlineTap')
         Toast('设备已离线')

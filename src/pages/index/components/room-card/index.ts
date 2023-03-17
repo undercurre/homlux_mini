@@ -39,16 +39,17 @@ ComponentWithComputed({
         }
       })
     },
-    deviceList(data) {
-      if (data.roomDeviceList) {
-        return data.roomDeviceList[data.roomInfo.roomId]
+    deviceListComputed(data) {
+      if (data.roomDeviceList && data.roomInfo && data.roomInfo.roomId) {
+        return data.roomDeviceList[data.roomInfo.roomId] ?? []
       }
+      return []
     },
     hasBottomPadding(data) {
       return data.roomInfo.subDeviceNum > 0 && data.roomInfo.sceneList.length > 0
     },
     desc(data) {
-      if (data.sceneList && data.deviceList) {
+      if (data.sceneList && data.deviceListComputed) {
         return data.roomInfo.deviceLightOnNum
           ? data.roomInfo.deviceLightOnNum + '盏灯亮起'
           : data.roomInfo.subDeviceNum > 0

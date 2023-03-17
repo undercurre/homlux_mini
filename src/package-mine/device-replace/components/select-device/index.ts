@@ -24,17 +24,23 @@ ComponentWithComputed({
   data: {
     deviceList: Array<Device.DeviceItem>(),
     checkedDevice: {},
+    roomSelect: '',
   },
 
   computed: {
     // 过滤网关设备；如传入checkedDevice，则列表只显示相同productId的项，并排除已选择项
     wifiDeviceList(data) {
-      const list = data.deviceList.filter((item) => item.deviceType === 2)
       const { filterDevice } = data
       const hasOldDevice = filterDevice && filterDevice.productId
-      return hasOldDevice
-        ? list.filter((item) => item.productId === filterDevice.productId && item.deviceId !== filterDevice.deviceId)
-        : list
+      return data.deviceList.filter((item) => {
+        const isSubdevice = item.deviceType === 2
+        const isCurrentRoom = data.roomSelect === '' ? true : item.roomId === data.roomSelect
+        const isFilterDevice = hasOldDevice
+          ? item.productId === filterDevice.productId && item.deviceId !== filterDevice.deviceId
+          : true
+
+        return isSubdevice && isCurrentRoom && isFilterDevice
+      })
     },
   },
 
@@ -53,6 +59,10 @@ ComponentWithComputed({
     handleCardTap(event: WechatMiniprogram.CustomEvent) {
       console.log('handleCardTap', event.detail)
       this.setData({ checkedDevice: event.detail })
+    },
+
+    handleRoomSelect(event: { detail: string }) {
+      this.setData({ roomSelect: event.detail })
     },
 
     handleClose() {

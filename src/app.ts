@@ -1,6 +1,13 @@
-import { setNavigationBarAndBottomBarHeight, storage, getPosition, appOnLaunchService } from './utils/index'
+import {
+  setNavigationBarAndBottomBarHeight,
+  storage,
+  getPosition,
+  appOnLaunchService,
+  startWebsocketService,
+} from './utils/index'
 import svgs from './assets/svg/index'
-import { othersStore } from './store/index'
+import { homeStore, othersStore } from './store/index'
+import { socketTask, socketIsConnect } from './utils/index'
 
 App<IAppOption>({
   async onLaunch(options: WechatMiniprogram.App.LaunchShowOption) {
@@ -45,10 +52,20 @@ App<IAppOption>({
 
   onShow() {
     console.log('app-onShow')
+    // 用户热启动app，建立ws连接
+    if (homeStore.currentHomeId) {
+      if (!socketTask || !socketIsConnect) {
+        startWebsocketService()
+      }
+    }
   },
 
   onHide() {
     console.log('app-onHide')
+    // 用户最小化app，断开ws连接
+    if (socketTask) {
+      socketTask.close({ code: 1000 })
+    }
   },
 
   globalData: {},

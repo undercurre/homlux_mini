@@ -11,6 +11,7 @@ Component({
   properties: {
     title: {
       type: String,
+      value: '',
     },
     background: {
       type: String,
