@@ -9,7 +9,7 @@ export const roomStore = observable({
    */
   roomList: [] as Room.RoomInfo[],
   /**
-   * 选择进入了哪个房间，在roomList中的index todo:
+   * 选择进入了哪个房间，在roomList中的index
    */
   currentRoomIndex: 0,
   /** 全屋设备，对应房间id作为key，房间的设备列表作为key */

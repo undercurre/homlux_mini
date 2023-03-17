@@ -46,3 +46,5 @@
 </van-popup>
 
 <link-popup show="{{showLinkPopup}}" list="{{list}}" selectList="{{linkSelectList}}" linkType="switch" bind:select="handleLinkSelect" bind:close="handleLinkPopupClose" bind:confirm="handleLinkPopupConfirm"></link-popup>
+
+<van-toast id="van-toast" />

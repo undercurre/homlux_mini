@@ -495,6 +495,7 @@ ComponentWithComputed({
       })
     },
     handleShowAddSceneSuccess() {
+      this.updateDeviceList()
       setTimeout(() => {
         wx.createSelectorQuery()
           .select('#scene-title')
