@@ -6,7 +6,7 @@ import {
   startWebsocketService,
 } from './utils/index'
 import svgs from './assets/svg/index'
-import { homeStore, othersStore } from './store/index'
+import { homeStore, othersStore, roomStore } from './store/index'
 import { socketTask, socketIsConnect } from './utils/index'
 
 App<IAppOption>({
@@ -55,6 +55,7 @@ App<IAppOption>({
     // 用户热启动app，建立ws连接，并且再更新一次数据
     if (homeStore.currentHomeId) {
       homeStore.updateHomeInfo()
+      roomStore.updateRoomList()
       if (!socketTask || !socketIsConnect) {
         startWebsocketService()
       }
