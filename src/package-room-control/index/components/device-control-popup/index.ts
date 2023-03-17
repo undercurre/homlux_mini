@@ -866,7 +866,7 @@ ComponentWithComputed({
         this.setData({
           allOnPress: false,
         })
-      }, 900) as unknown as number
+      }, 900)
       if (this.data.tab === 'light') {
         this.lightSendDeviceControl('onOff', 1)
       } else if (this.data.tab === 'switch') {
@@ -886,7 +886,7 @@ ComponentWithComputed({
         this.setData({
           allOffPress: false,
         })
-      }, 900) as unknown as number
+      }, 900)
       if (this.data.tab === 'light') {
         this.lightSendDeviceControl('onOff', 0)
       } else if (this.data.tab === 'switch') {

@@ -5,6 +5,7 @@ const https = require('https')
 const fs = require('fs')
 let fromPath = '../src/assets/iconify.json' // json读取位置
 let distPath = './src/assets/iconify.ts' // 文件写入路径
+// @ts-ignore
 process.argv.forEach((argv) => {
   if (argv.split('=')[0] === 'path') {
     distPath = argv.split('=')[1]

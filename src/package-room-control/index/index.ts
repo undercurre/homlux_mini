@@ -163,7 +163,7 @@ ComponentWithComputed({
           throttleTimer = setTimeout(() => {
             homeStore.updateRoomCardList()
             throttleTimer = 0
-          }, 500) as unknown as number
+          }, 500)
         }
         // 设备相关的消息推送根据条件判断是否刷新
         if (

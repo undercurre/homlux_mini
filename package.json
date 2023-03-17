@@ -32,7 +32,6 @@
     "@commitlint/cli": "^17.3.0",
     "@commitlint/config-conventional": "^17.3.0",
     "@types/crypto-js": "^4.1.1",
-    "@types/node": "^18.11.15",
     "@types/tiny-async-pool": "^2.0.0",
     "@typescript-eslint/eslint-plugin": "^5.46.1",
     "@typescript-eslint/parser": "^5.46.1",
