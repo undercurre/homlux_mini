@@ -6,7 +6,7 @@ import {
   startWebsocketService,
 } from './utils/index'
 import svgs from './assets/svg/index'
-import { homeStore, othersStore } from './store/index'
+import { deviceStore, homeStore, othersStore } from './store/index'
 import { socketTask, socketIsConnect } from './utils/index'
 
 App<IAppOption>({
@@ -52,8 +52,10 @@ App<IAppOption>({
 
   onShow() {
     console.log('app-onShow')
-    // 用户热启动app，建立ws连接
+    // 用户热启动app，建立ws连接，并且再更新一次数据
     if (homeStore.currentHomeId) {
+      deviceStore.updateDeviceList()
+      homeStore.updateHomeInfo()
       if (!socketTask || !socketIsConnect) {
         startWebsocketService()
       }
