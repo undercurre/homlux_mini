@@ -861,7 +861,7 @@ ComponentWithComputed({
       this.setData({
         allOnPress: true,
       })
-      throttleTimer = setTimeout(() => {
+      throttleTimer = window.setTimeout(() => {
         throttleTimer = 0
         this.setData({
           allOnPress: false,
@@ -881,7 +881,7 @@ ComponentWithComputed({
       this.setData({
         allOffPress: true,
       })
-      throttleTimer = setTimeout(() => {
+      throttleTimer = window.setTimeout(() => {
         throttleTimer = 0
         this.setData({
           allOffPress: false,

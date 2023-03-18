@@ -166,7 +166,7 @@ ComponentWithComputed({
             onOff = !this.data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff
           }
           if (this.data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
-            throttleTimer = setTimeout(() => {
+            throttleTimer = window.setTimeout(() => {
               throttleTimer = 0
             }, 550)
             return
@@ -176,7 +176,7 @@ ComponentWithComputed({
           ripple: true,
           onOff,
         })
-        throttleTimer = setTimeout(() => {
+        throttleTimer = window.setTimeout(() => {
           throttleTimer = 0
           this.setData({
             ripple: false,

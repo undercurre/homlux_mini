@@ -33,7 +33,7 @@
   <view class="pt-32rpx pb-96rpx">
     <view class="w-750rpx h-100rpx flex-center">
       <text class="text-36rpx font-semibold">{{popupTitle}}</text>
-      <image class="absolute w-52rpx h-52rpx" style="top: 64rpx; right: 38rpx;" src="/assets/img/base/close.png" bindtap="hidePopup"></image>
+      <image class="absolute w-52rpx h-52rpx" style="top: 64rpx; right: 38rpx" src="/assets/img/base/close.png" bindtap="hidePopup"></image>
     </view>
     <view>
       <view wx:for="{{actionList}}" class="flex flex-row items-center px-48rpx leading-44rpx {{item.isShow && 'border-bottom'}}" wx:key="key" bindtap="onPopupClick" data-item="{{item}}">

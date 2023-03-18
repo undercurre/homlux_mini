@@ -133,7 +133,7 @@ export class BleClient {
           resolve({ errCode: -1, errMsg: '蓝牙设备断开' })
         }
       }
-  
+
       wx.onBLEConnectionStateChange(bleConnectionListener)
     })
   }
@@ -227,12 +227,12 @@ export class BleClient {
             value: buffer,
             complete: (res) => {
               console.log('writeRes', res)
-            }
+            },
           })
         },
       )
     } catch (err) {
-      console.error('sendCmd-err',this.mac, err)
+      console.error('sendCmd-err', this.mac, err)
       return {
         code: -1,
         success: false,

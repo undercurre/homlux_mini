@@ -295,7 +295,7 @@ ComponentWithComputed({
     },
 
     async startZigbeeNet(bleDevice: IBleDevice) {
-      console.group(`startZigbeeNet:${bleDevice.mac}`, )
+      console.group(`startZigbeeNet:${bleDevice.mac}`)
       console.log(`开始子设备配网：${bleDevice.mac}，第${3 - bleDevice.zigbeeRepeatTimes}次`)
       bleDevice.zigbeeRepeatTimes--
 

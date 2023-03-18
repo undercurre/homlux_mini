@@ -101,7 +101,7 @@ ComponentWithComputed({
     },
     startPollingQuery() {
       // 下发升级指令成功，轮询直到完成更新
-      this.data._pollingTimer = setInterval(() => {
+      this.data._pollingTimer = window.setInterval(() => {
         queryDeviceOtaUpdateList(homeStore.currentHomeDetail.houseId).then((res) => {
           if (res.success) {
             this.setData({

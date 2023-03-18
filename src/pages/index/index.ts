@@ -145,7 +145,7 @@ ComponentWithComputed({
       emitter.off('wsReceive')
       emitter.on('wsReceive', () => {
         if (!throttleTimer) {
-          throttleTimer = setTimeout(() => {
+          throttleTimer = window.setTimeout(() => {
             homeStore.updateRoomCardList()
             throttleTimer = 0
           }, 500)
