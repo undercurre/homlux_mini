@@ -1,6 +1,6 @@
 <import src="/commons/templates/popup.wxml" />
 <van-popup show="{{ show }}" z-index="10000" position="bottom" round bind:close="handleClose" lock-scroll="{{true}}">
-  <view class="px-32rpx text-black-2a">
+  <view class="px-32rpx text-black-2a" catchtouchmove="{{true}}">
     <view class="flex-center pb-64rpx">
       <template is="title" data="{{title: roomId ? '编辑房间' : '添加房间'}}" />
     </view>
@@ -8,11 +8,11 @@
     <block wx:if="{{isEditName}}">
       <text class="block pl-16rpx pb-32rpx text-28">房间名称</text>
 
-      <van-field custom-style="padding: 20rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" value="{{ roomInfo.name }}" placeholder="请输入房间名称" clearable="{{true}}" bind:blur="changeRoomName"></van-field>
+      <van-field custom-style="padding: 20rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" value="{{ roomInfo.name }}" placeholder="请输入房间名称" clearable="{{true}}" bind:blur="changeRoomName" border="{{false}}"></van-field>
     </block>
 
     <block wx:if="{{isEditIcon}}">
-      <text class="block pl-16rpx pb-40rpx pt-68rpx text-28">选择房间图标</text>
+      <text class="block pl-16rpx pb-40rpx pt-50rpx text-28">选择房间图标</text>
 
       <view class="flex flex-row flex-wrap gap-48rpx pl-16rpx">
         <view wx:for="{{iconList}}" wx:key="icon" class="box-border w-128rpx h-128rpx flex justify-center items-center bg-hex-F6FAFD rounded-32rpx {{ item.icon === roomInfo.icon && 'border-4rpx border-solid border-hex-488FFF'}}" data-icon="{{item.icon}}" bind:tap="selectIcon">

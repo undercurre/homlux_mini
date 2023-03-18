@@ -1,7 +1,7 @@
 <view>
   <text class="block pl-16rpx pb-32rpx text-28">设备名称</text>
 
-  <van-field value="{{ deviceInfo.deviceName }}" placeholder="请输入设备名称" custom-style="padding: 12rpx 40rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;background-color:transparent;" clearable="{{true}}" bind:blur="changeDeviceName"> </van-field>
+  <van-field value="{{ deviceInfo.deviceName }}" placeholder="请输入设备名称" custom-style="padding: 18rpx 40rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;background-color:transparent;" clearable="{{true}}" bind:blur="changeDeviceName" border="{{false}}"> </van-field>
 
   <text class="block pl-16rpx py-40rpx text-28">选择房间</text>
 

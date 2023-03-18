@@ -1,4 +1,4 @@
-<view class="relative h-screen">
+<view class="relative bg-hex-000">
   <camera mode="scanCode" device-position="back" flash="{{isFlash? 'on' : 'off'}}" bindscancode="getQrCodeInfo" class="w-750rpx h-screen"></camera>
 
   <nav-bar class="absolute" background="transparent" leftArrow="{{true}}" left-icon="/package-distribution/assets/scan/back.png" bind:leftTap="goBack"></nav-bar>
@@ -61,4 +61,4 @@
   </view>
 </van-dialog>
 
-<!-- <van-button type="primary" size="large" plain bind:click="test">test</van-button> -->
+<van-button type="primary" size="large" plain bind:click="test">test</van-button>

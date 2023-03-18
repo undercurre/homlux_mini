@@ -1,7 +1,7 @@
 <view class="page-container flex flex-col">
   <nav-bar background="transparent" title="添加设备"></nav-bar>
 
-  <view class="grow flex flex-col pb-128rpx">
+  <view class="grow flex flex-col pb-120rpx">
     <tips-box text="设备添加成功！" icon="/assets/img/default-img/success.png"></tips-box>
 
     <view class="grow px-48rpx mt-96rpx">
