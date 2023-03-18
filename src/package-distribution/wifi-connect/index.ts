@@ -13,6 +13,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    isShowPw: false, // 是否展示密码明文
     isShowWifiTips: false,
     hasShowWifiTips: false,
     isShowWifiList: false,
@@ -195,6 +196,12 @@ ComponentWithComputed({
       console.log('changeWifiName', e)
       this.setData({
         'wifiInfo.pw': e.detail.value,
+      })
+    },
+
+    togglePw() {
+      this.setData({
+        isShowPw: !this.data.isShowPw,
       })
     },
 

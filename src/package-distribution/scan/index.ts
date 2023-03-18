@@ -170,7 +170,7 @@ ComponentWithComputed({
           content: '请开启您的蓝牙功能用于设备配网',
           showCancel: false,
           cancelColor: '#27282A',
-          confirmText: '去开启',
+          confirmText: '知道了',
           confirmColor: '#27282A',
           // 由于调用openSystemBluetoothSetting接口，必须通过回调方式调用，promise方式会被拒绝
           success: (bleDialogRes) => {
