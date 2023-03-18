@@ -49,7 +49,7 @@
 
         <text class="px-100rpx text-28 text-black-59 leading-40rpx">已添加{{successList.length}}/{{selectedList.length}}个设备</text>
 
-        <mz-progress show-progress="{{true}}" active-index="{{successList.length}}" total-section="{{selectedList.length}}" step-list="{{[]}}"></mz-progress>
+        <mz-progress show-progress="{{true}}" active-index="{{successList.length + failList.length}}" total-section="{{selectedList.length}}" step-list="{{[]}}"></mz-progress>
       </view>
     </block>
 

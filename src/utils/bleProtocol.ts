@@ -146,6 +146,7 @@ export class BleClient {
 
   async sendCmd(params: { cmdType: keyof typeof CmdTypeMap; subType: keyof typeof ControlSubType }) {
     try {
+      // 存在蓝牙信号较差的情况，连接蓝牙设备后会中途断开的情况，需要做对应异常处理
       const connectRes = await Promise.race([this.connect(), this.listenDisconnect()])
 
       if (connectRes.errCode === -1) {

@@ -24,7 +24,8 @@ ComponentWithComputed({
     isShowGatewayList: false, // 是否展示选择网关列表弹窗
     isShowNoGatewayTips: false, // 是否展示添加网关提示弹窗
     _isScaning: false, // 是否正在扫码
-    _isInitBle: false, // 是否已经初始化蓝牙
+    _isDiscovering: false, // 是否已经初始化蓝牙
+    isShowOpenBleTips: false, // 是否展示开启蓝牙提示
     bleStatus: '',
     isFlash: false,
     selectGatewayId: '',
@@ -58,26 +59,9 @@ ComponentWithComputed({
         getCurrentPages(),
       )
 
-      wx.onBluetoothAdapterStateChange((res) => {
-        console.log('onBluetoothAdapterStateChange-scan', res)
-        this.setData({
-          bleStatus: res.available ? 'open' : 'close',
-        })
-        if (res.available) {
-          this.initBle()
-        }
-      })
+      this.initBle()
 
       this.initWifi()
-
-      // 是否已打开蓝牙
-      const res = await this.checkBle()
-
-      if (!res) {
-        return
-      } else {
-        this.initBle()
-      }
 
       // 防止重复判断,仅通过微信扫码直接进入该界面时判断场景值
       if (getCurrentPages().length === 1 && params.scene === 1011) {
@@ -107,13 +91,6 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    test() {
-      wx.scanCode({
-        success(res) {
-          console.log(res)
-        },
-      })
-    },
     async initWifi() {
       const deviceInfo = wx.getDeviceInfo()
 
@@ -183,12 +160,23 @@ ComponentWithComputed({
         // const deviceInfo = wx.getDeviceInfo()
 
         wx.showModal({
-          content: '“Homlux”想开启您的蓝牙功能用于设备配网',
+          content: '请开启您的蓝牙功能用于设备配网',
           showCancel: false,
-          confirmText: '确定',
+          cancelColor: '#27282A',
+          confirmText: '去开启',
           confirmColor: '#27282A',
+          // 由于调用openSystemBluetoothSetting接口，必须通过回调方式调用，promise方式会被拒绝
           success: (bleDialogRes) => {
             console.log('bleDialogRes', bleDialogRes)
+
+            this.setData({
+              isShowOpenBleTips: true,
+            })
+            // if (deviceInfo.platform === 'android') {
+            //   wx.openSystemBluetoothSetting()
+            // } else {
+            //   wx.getWifiList()
+            // }
           },
         })
       }
@@ -197,12 +185,6 @@ ComponentWithComputed({
     },
 
     async initBle() {
-      if (this.data._isInitBle) {
-        return
-      }
-
-      this.data._isInitBle = true
-
       // 初始化蓝牙模块
       const openBleRes = await wx
         .openBluetoothAdapter({
@@ -211,6 +193,33 @@ ComponentWithComputed({
         .catch((err) => err)
 
       console.log('scan-openBleRes', openBleRes)
+
+      wx.onBluetoothAdapterStateChange((res) => {
+        console.log('onBluetoothAdapterStateChange-scan', res)
+        this.setData({
+          bleStatus: res.available ? 'open' : 'close',
+        })
+        if (res.available) {
+          this.startDiscoverBle()
+        }
+      })
+
+      // 是否已打开蓝牙
+      const res = await this.checkBle()
+
+      if (!res) {
+        return
+      } else {
+        this.startDiscoverBle()
+      }
+    },
+
+    async startDiscoverBle() {
+      if (this.data._isDiscovering) {
+        return
+      }
+
+      this.data._isDiscovering = true
 
       // 监听扫描到新设备事件
       wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
@@ -246,6 +255,12 @@ ComponentWithComputed({
         success(res) {
           console.log('startBluetoothDevicesDiscovery', res)
         },
+      })
+    },
+
+    toggleBleTips() {
+      this.setData({
+        isShowOpenBleTips: !this.data.isShowOpenBleTips,
       })
     },
 
