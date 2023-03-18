@@ -21,11 +21,11 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
+    isShowPage: false,
     isShowGatewayList: false, // 是否展示选择网关列表弹窗
     isShowNoGatewayTips: false, // 是否展示添加网关提示弹窗
     _isScaning: false, // 是否正在扫码
     _isDiscovering: false, // 是否已经初始化蓝牙
-    isShowOpenBleTips: false, // 是否展示开启蓝牙提示
     bleStatus: '',
     isFlash: false,
     selectGatewayId: '',
@@ -74,16 +74,23 @@ ComponentWithComputed({
         return
       }
     },
+    detached() {
+      wx.closeBluetoothAdapter()
+    },
   },
 
   pageLifetimes: {
     async show() {
-      console.log('show')
+      this.setData({
+        isShowPage: true,
+      })
     },
     hide() {
       console.log('hide')
-
-      wx.closeBluetoothAdapter()
+      // 由于非授权情况下进入页面，摄像头组件已经渲染，即使重新授权页无法正常使用，需要通过wx：if重新触发渲染组件
+      this.setData({
+        isShowPage: false,
+      })
     },
   },
 
@@ -154,7 +161,10 @@ ComponentWithComputed({
       })
     },
 
-    async checkBle() {
+    /**
+     * 检查系统蓝牙开关
+     */
+    async checkSystemBleSwitch() {
       const res = wx.getSystemSetting()
 
       console.log('getSystemSetting', res)
@@ -162,10 +172,8 @@ ComponentWithComputed({
       this.setData({
         bleStatus: res.bluetoothEnabled ? 'open' : 'close',
       })
-      // 没有打开蓝牙异常处理
+      // 没有打开系统蓝牙开关异常处理
       if (!res.bluetoothEnabled) {
-        // const deviceInfo = wx.getDeviceInfo()
-
         wx.showModal({
           content: '请开启您的蓝牙功能用于设备配网',
           showCancel: false,
@@ -179,11 +187,6 @@ ComponentWithComputed({
             this.setData({
               isShowOpenBleTips: true,
             })
-            // if (deviceInfo.platform === 'android') {
-            //   wx.openSystemBluetoothSetting()
-            // } else {
-            //   wx.getWifiList()
-            // }
           },
         })
       }
@@ -191,7 +194,58 @@ ComponentWithComputed({
       return res.bluetoothEnabled
     },
 
+    /**
+     * 检查微信蓝牙权限
+     */
+    async checkBlePermission() {
+      const settingRes = await wx.getSetting()
+
+      return new Promise<boolean>((resolve) => {
+        // 没有打开微信蓝牙授权异常处理
+        console.log('getSetting', settingRes)
+        // res.authSetting = {
+        //   "scope.userInfo": true,
+        //   "scope.userLocation": true
+        // }
+
+        if (!settingRes.authSetting['scope.bluetooth']) {
+          wx.showModal({
+            content: '请授权使用蓝牙，否则无法正常扫码配网',
+            showCancel: true,
+            cancelText: '返回',
+            cancelColor: '#27282A',
+            confirmText: '去设置',
+            confirmColor: '#27282A',
+            success: (res) => {
+              console.log('showModal', res)
+              if (res.cancel) {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                this.goBack() // 拒绝授权摄像头，则退出当前页面
+                resolve(false)
+              }
+
+              wx.openSetting({
+                success: (settingRes) => {
+                  console.log('openSetting', settingRes)
+                  resolve(this.checkBlePermission())
+                },
+              })
+            },
+          })
+        } else {
+          resolve(true)
+        }
+      })
+    },
+
     async initBle() {
+      const permission = await this.checkBlePermission()
+
+      // 优先判断微信授权设置
+      if (!permission) {
+        return
+      }
       // 初始化蓝牙模块
       const openBleRes = await wx
         .openBluetoothAdapter({
@@ -212,7 +266,7 @@ ComponentWithComputed({
       })
 
       // 是否已打开蓝牙
-      const res = await this.checkBle()
+      const res = await this.checkSystemBleSwitch()
 
       if (!res) {
         return
@@ -265,12 +319,6 @@ ComponentWithComputed({
       })
     },
 
-    toggleBleTips() {
-      this.setData({
-        isShowOpenBleTips: !this.data.isShowOpenBleTips,
-      })
-    },
-
     onCloseGwList() {
       this.setData({
         isShowGatewayList: false,
@@ -278,9 +326,45 @@ ComponentWithComputed({
         selectGatewaySn: '',
       })
     },
+
+    // 检查摄像头权限
+    async checkCamera() {
+      const settingRes = await wx.getSetting()
+
+      console.log('getSetting', settingRes)
+      // res.authSetting = {
+      //   "scope.userInfo": true,
+      //   "scope.userLocation": true
+      // }
+
+      if (!settingRes.authSetting['scope.camera']) {
+        wx.showModal({
+          content: '请授权使用摄像头，否则无法正常扫码配网',
+          showCancel: true,
+          cancelText: '返回',
+          cancelColor: '#27282A',
+          confirmText: '去设置',
+          confirmColor: '#27282A',
+          success: (res) => {
+            console.log('showModal', res)
+            if (res.cancel) {
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              this.goBack() // 拒绝授权摄像头，则退出当前页面
+              return
+            }
+
+            wx.openSetting({
+              success: (settingRes) => {
+                console.log('openSetting', settingRes)
+              },
+            })
+          },
+        })
+      }
+    },
     /**
      * 扫码解析
-     * 网关id：1676277426246918    子设备id：5C0272FFFE0E0826    蓝牙id：26
      */
     async getQrCodeInfo(e: WechatMiniprogram.CustomEvent) {
       if (this.data._isScaning) {
@@ -296,6 +380,12 @@ ComponentWithComputed({
       }
 
       this.handleScanUrl(scanUrl)
+    },
+
+    getCameraError(event: WechatMiniprogram.CustomEvent) {
+      console.log('getCameraError', event)
+
+      this.checkCamera()
     },
 
     toggleFlash() {
@@ -429,6 +519,7 @@ ComponentWithComputed({
       const gatewayId = this.data.selectGatewayId,
         gatewaySn = this.data.selectGatewaySn
 
+      wx.closeBluetoothAdapter()
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
           gatewayId,
@@ -442,6 +533,7 @@ ComponentWithComputed({
       const gatewayId = this.data.selectGatewayId,
         gatewaySn = this.data.selectGatewaySn
 
+      wx.closeBluetoothAdapter()
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/add-subdevice/index', {
           mac: this.data.deviceInfo.mac,

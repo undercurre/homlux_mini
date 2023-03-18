@@ -37,10 +37,6 @@ App<IAppOption>({
 
     console.log('systemInfo', systemInfo)
 
-    const appAuthorizeSetting = wx.getAppAuthorizeSetting()
-
-    console.log('appAuthorizeSetting', appAuthorizeSetting)
-
     wx.onNetworkStatusChange(function (res) {
       console.log('监听网络状态变化事件:', res, Date().toString())
     })

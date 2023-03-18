@@ -1,5 +1,5 @@
 <view class="relative bg-hex-000">
-  <camera mode="scanCode" device-position="back" flash="{{isFlash? 'on' : 'off'}}" bindscancode="getQrCodeInfo" class="w-750rpx h-screen"></camera>
+  <camera wx:if="{{isShowPage}}" mode="scanCode" device-position="back" flash="{{isFlash? 'on' : 'off'}}" bind:scancode="getQrCodeInfo" bind:error="getCameraError" class="w-750rpx h-screen"></camera>
 
   <nav-bar class="absolute" background="transparent" leftArrow="{{true}}" left-icon="/package-distribution/assets/scan/back.png" bind:leftTap="goBack"></nav-bar>
 
@@ -19,7 +19,7 @@
       <van-button type="primary" size="large" plain bind:click="addNearSubdevice" wx:if="{{subdeviceList.length || 1}}">立即添加</van-button>
     </view>
 
-    <van-button type="primary" size="large" plain bind:click="checkBle" wx:if="{{bleStatus === 'close'}}" custom-style="width: 688rpx;background-color: #5A5A5A;border-radiux: 32rpx;">打开蓝牙添加设备</van-button>
+    <van-button type="primary" size="large" plain bind:click="checkSystemBleSwitch" wx:if="{{bleStatus === 'close'}}" custom-style="width: 688rpx;background-color: #5A5A5A;border-radiux: 32rpx;">打开蓝牙添加设备</van-button>
   </view>
 </view>
 
