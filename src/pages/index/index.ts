@@ -16,7 +16,7 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import { allDevicePowerControl } from '../../apis/index'
 import { emitter } from '../../utils/eventBus'
 import { updateDefaultHouse } from '../../apis/index'
-let throttleTimer = 0
+let throttleTimer: number | NodeJS.Timeout = 0
 ComponentWithComputed({
   behaviors: [
     BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding, homeBinding, deviceBinding] }),
@@ -145,7 +145,7 @@ ComponentWithComputed({
       emitter.off('wsReceive')
       emitter.on('wsReceive', () => {
         if (!throttleTimer) {
-          throttleTimer = window.setTimeout(() => {
+          throttleTimer = setTimeout(() => {
             homeStore.updateRoomCardList()
             throttleTimer = 0
           }, 500)

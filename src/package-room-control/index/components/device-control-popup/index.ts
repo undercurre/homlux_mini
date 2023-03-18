@@ -7,7 +7,7 @@ import { controlDevice, createAssociated, delAssociated, updateAssociated, updat
 import { transformSwitchToNormal, removeRel, transformSwitchToLinkLight } from '../../../utils/index'
 import Toast from '@vant/weapp/toast/toast'
 
-let throttleTimer = 0
+let throttleTimer: number | NodeJS.Timeout = 0
 
 ComponentWithComputed({
   options: {
@@ -861,7 +861,7 @@ ComponentWithComputed({
       this.setData({
         allOnPress: true,
       })
-      throttleTimer = window.setTimeout(() => {
+      throttleTimer = setTimeout(() => {
         throttleTimer = 0
         this.setData({
           allOnPress: false,
@@ -881,7 +881,7 @@ ComponentWithComputed({
       this.setData({
         allOffPress: true,
       })
-      throttleTimer = window.setTimeout(() => {
+      throttleTimer = setTimeout(() => {
         throttleTimer = 0
         this.setData({
           allOffPress: false,

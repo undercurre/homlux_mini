@@ -25,7 +25,7 @@ Component({
    * 组件的初始数据
    */
   data: {
-    _interId: 0,
+    _interId: 0 as number | NodeJS.Timeout,
     _queryTimes: 50,
     status: 'linking',
     currentStep: '连接设备',
@@ -170,7 +170,7 @@ Component({
           return
         }
 
-        this.data._interId = window.setTimeout(() => {
+        this.data._interId = setTimeout(() => {
           this.queryDeviceOnlineStatus(sn)
         }, 3000)
       }

@@ -17,7 +17,7 @@ import { proName, proType } from '../../config/device'
 import Toast from '@vant/weapp/toast/toast'
 import { storage, emitter, WSEventType } from '../../utils/index'
 
-let throttleTimer = 0
+let throttleTimer: number | NodeJS.Timeout = 0
 ComponentWithComputed({
   behaviors: [
     BehaviorWithStore({ storeBindings: [userBinding, roomBinding, deviceBinding, sceneBinding] }),
@@ -160,7 +160,7 @@ ComponentWithComputed({
       this.reloadData()
       emitter.on('wsReceive', async (e) => {
         if (!throttleTimer) {
-          throttleTimer = window.setTimeout(() => {
+          throttleTimer = setTimeout(() => {
             homeStore.updateRoomCardList()
             throttleTimer = 0
           }, 500)

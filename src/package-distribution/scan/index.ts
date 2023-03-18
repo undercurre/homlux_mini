@@ -25,7 +25,6 @@ ComponentWithComputed({
     isShowNoGatewayTips: false, // 是否展示添加网关提示弹窗
     _isScaning: false, // 是否正在扫码
     _isInitBle: false, // 是否已经初始化蓝牙
-    isShowOpenBleTips: false, // 是否展示开启蓝牙提示
     bleStatus: '',
     isFlash: false,
     selectGatewayId: '',
@@ -185,22 +184,11 @@ ComponentWithComputed({
 
         wx.showModal({
           content: '“Homlux”想开启您的蓝牙功能用于设备配网',
-          showCancel: true,
-          cancelColor: '#27282A',
-          confirmText: '去开启',
+          showCancel: false,
+          confirmText: '确定',
           confirmColor: '#27282A',
-          // 由于调用openSystemBluetoothSetting接口，必须通过回调方式调用，promise方式会被拒绝
           success: (bleDialogRes) => {
             console.log('bleDialogRes', bleDialogRes)
-
-            this.setData({
-              isShowOpenBleTips: true,
-            })
-            // if (deviceInfo.platform === 'android') {
-            //   wx.openSystemBluetoothSetting()
-            // } else {
-            //   wx.getWifiList()
-            // }
           },
         })
       }
@@ -258,12 +246,6 @@ ComponentWithComputed({
         success(res) {
           console.log('startBluetoothDevicesDiscovery', res)
         },
-      })
-    },
-
-    toggleBleTips() {
-      this.setData({
-        isShowOpenBleTips: !this.data.isShowOpenBleTips,
       })
     },
 

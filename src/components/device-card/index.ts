@@ -3,7 +3,7 @@ import Toast from '@vant/weapp/toast/toast'
 import { deviceBinding, deviceStore, sceneBinding, sceneStore } from '../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { proName, proType } from '../../config/index'
-let throttleTimer = 0
+let throttleTimer: number | NodeJS.Timeout = 0
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
@@ -166,7 +166,7 @@ ComponentWithComputed({
             onOff = !this.data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff
           }
           if (this.data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
-            throttleTimer = window.setTimeout(() => {
+            throttleTimer = setTimeout(() => {
               throttleTimer = 0
             }, 550)
             return
@@ -176,7 +176,7 @@ ComponentWithComputed({
           ripple: true,
           onOff,
         })
-        throttleTimer = window.setTimeout(() => {
+        throttleTimer = setTimeout(() => {
           throttleTimer = 0
           this.setData({
             ripple: false,

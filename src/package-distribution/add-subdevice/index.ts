@@ -20,7 +20,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
-    _timeId: 0,
+    _timeId: 0 as number | NodeJS.Timeout,
     status: 'linking' as StatusName,
     activeIndex: 0,
     pageParams: {} as IAnyObject,
@@ -102,7 +102,7 @@ ComponentWithComputed({
         interval: 3000,
         success: (res) => {
           console.log('startBluetoothDevicesDiscovery', res)
-          this.data._timeId = window.setTimeout(() => {
+          this.data._timeId = setTimeout(() => {
             if (!this.data._hasFound) {
               this.setData({
                 status: 'error',

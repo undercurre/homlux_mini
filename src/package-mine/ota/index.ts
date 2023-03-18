@@ -22,7 +22,7 @@ ComponentWithComputed({
     otaUpdateList: [] as Ota.OtaUpdate[],
     isUpdating: false,
     hasUpdate: false,
-    _pollingTimer: 0,
+    _pollingTimer: 0 as (number | NodeJS.Timeout),
   },
 
   computed: {
@@ -101,7 +101,7 @@ ComponentWithComputed({
     },
     startPollingQuery() {
       // 下发升级指令成功，轮询直到完成更新
-      this.data._pollingTimer = window.setInterval(() => {
+      this.data._pollingTimer = setInterval(() => {
         queryDeviceOtaUpdateList(homeStore.currentHomeDetail.houseId).then((res) => {
           if (res.success) {
             this.setData({
