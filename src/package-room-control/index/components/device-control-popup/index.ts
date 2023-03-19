@@ -435,11 +435,12 @@ ComponentWithComputed({
       })
       this.handleSelectLinkPopup()
     },
+    /** 关联灯 */
     async updateLightAssociate() {
       const selectSwitchUniId = this.data.selectSwitchUniId
       const deviceMap = deviceStore.allRoomDeviceMap
       const device = deviceMap[selectSwitchUniId.split(':')[0]]
-      // 先查一下也没有关联开关，有先解开关联
+      // 先查一下有没有关联开关，有先解开关联
       const rel = deviceStore.deviceRelMap[selectSwitchUniId]
       if (rel && rel.switchRelId) {
         const res = await removeRel(selectSwitchUniId.split(':')[0], selectSwitchUniId.split(':')[1])
@@ -447,7 +448,7 @@ ComponentWithComputed({
           return
         }
       }
-      // 查一下有没有关联场景
+      // 查一下有没有关联场景，有先解开关联
       const sceneId = deviceStore.switchSceneMap[selectSwitchUniId]
       if (sceneId) {
         const res = await updateScene({
@@ -462,42 +463,47 @@ ComponentWithComputed({
           return
         }
       }
-      // 关联灯
-      if (this.data.selectLinkType === 'light') {
-        if (this.data.linkSelectList.length === 0) {
-          // 取消所有关联
-          // 先将ButtonMode转成0
-          const isSuccess = await transformSwitchToNormal(
-            device.gatewayId,
-            selectSwitchUniId.split(':')[0],
-            Number(selectSwitchUniId.split(':')[1]),
-          )
-          if (!isSuccess) {
-            return
-          }
+
+      // 取消所有已选的灯的关联
+      if (this.data.linkSelectList.length === 0) {
+        // 先将ButtonMode转成0
+        const isSuccess = await transformSwitchToNormal(
+          device.gatewayId,
+          selectSwitchUniId.split(':')[0],
+          Number(selectSwitchUniId.split(':')[1]),
+        )
+        if (!isSuccess) {
+          return
+        }
+        if (this.data.relId.lightRelId) {
           // 删除关联
           await delAssociated({
             relType: '0',
             lightRelId: this.data.relId.lightRelId,
           })
-        } else {
-          // 是否需要创建新的关联
-          if (this.data.relId.lightRelId) {
-            // 已有关联的，取消其他不同关联的灯
-            this.data.linkSelectList.forEach((uniId) => {
-              if (deviceMap[uniId].lightRelId && deviceMap[uniId].lightRelId !== this.data.relId.lightRelId) {
-                removeLightRel(uniId)
-              }
-            })
-          } else {
-            this.data.linkSelectList.forEach((uniId) => {
-              if (deviceMap[uniId].lightRelId) {
-                removeLightRel(uniId)
-              }
-            })
-          }
         }
+        // 删除关联后不需要执行后续逻辑
+        return
+      } else {
+        // 根据relMap判断关联的数量，执行取消某个灯关联或者删除关联
+        const relDeviceMap = deviceStore.relDeviceMap
+        this.data.linkSelectList.forEach((uniId) => {
+          if (deviceMap[uniId].lightRelId && deviceMap[uniId].lightRelId !== this.data.relId.lightRelId) {
+            const index = relDeviceMap[deviceMap[uniId].lightRelId].findIndex((id) => id === uniId)
+            relDeviceMap[deviceMap[uniId].lightRelId].splice(index, 1)
+            if (relDeviceMap[deviceMap[uniId].lightRelId].length < 2) {
+              // 删除关联
+              delAssociated({
+                relType: '0',
+                lightRelId: deviceMap[uniId].lightRelId,
+              })
+            } else {
+              removeLightRel(uniId)
+            }
+          }
+        })
       }
+
       if (this.data.relId.lightRelId && this.data.linkSelectList.length !== 0) {
         const rawLinkDeviceSelectList = (this.data.list as Device.DeviceItem[])
           .filter((device) => device.lightRelId && device.lightRelId === this.data.relId.lightRelId)
@@ -526,15 +532,6 @@ ComponentWithComputed({
           })
         }
       } else if (this.data.relId.lightRelId && this.data.linkSelectList.length === 0) {
-        // 先将ButtonMode转成0
-        const isSuccess = await transformSwitchToNormal(
-          device.gatewayId,
-          selectSwitchUniId.split(':')[0],
-          Number(selectSwitchUniId.split(':')[1]),
-        )
-        if (!isSuccess) {
-          return
-        }
         // 删除关联
         await delAssociated({
           relType: '0',
@@ -561,12 +558,21 @@ ComponentWithComputed({
     },
     async updateSwitchAssociate() {
       const selectSwitchUniId = this.data.selectSwitchUniId
+      const deviceFlattenMap = deviceStore.deviceFlattenMap
       const device = deviceStore.allRoomDeviceMap[selectSwitchUniId.split(':')[0]]
-      // 先查一下也没有关联开关，有先解开关联，然后转成普通开关
+      // 先查一下有没有关联灯，有先解开关联，然后转成普通开关
       const rel = deviceStore.deviceRelMap[selectSwitchUniId]
-      if (rel && rel.switchRelId) {
-        const res = await removeRel(selectSwitchUniId.split(':')[0], selectSwitchUniId.split(':')[1])
-        if (!res) {
+      if (rel && rel.lightRelId) {
+        // 如果之前是关联灯，直接取消整个关联
+        const res = await delAssociated({
+          relType: '0',
+          lightRelId: rel.lightRelId,
+        })
+        if (!res.success) {
+          Toast({
+            message: '解除绑定失败',
+            zIndex: 99999,
+          })
           return
         }
         const isSuccess = await transformSwitchToNormal(
@@ -575,10 +581,14 @@ ComponentWithComputed({
           Number(selectSwitchUniId.split(':')[1]),
         )
         if (!isSuccess) {
+          Toast({
+            message: '开关转换失败',
+            zIndex: 99999,
+          })
           return
         }
       }
-      // 查一下也没有关联场景
+      // 查一下有没有关联场景，有先解开关联
       const sceneId = deviceStore.switchSceneMap[selectSwitchUniId]
       if (sceneId) {
         const res = await updateScene({
@@ -593,6 +603,48 @@ ComponentWithComputed({
           return
         }
       }
+
+      // 取消所有已选的开关的关联
+      if (this.data.linkSelectList.length === 0) {
+        // 先将ButtonMode转成0
+        const isSuccess = await transformSwitchToNormal(
+          device.gatewayId,
+          selectSwitchUniId.split(':')[0],
+          Number(selectSwitchUniId.split(':')[1]),
+        )
+        if (!isSuccess) {
+          return
+        }
+        if (this.data.relId.switchRelId) {
+          // 删除关联
+          await delAssociated({
+            relType: '0',
+            switchRelId: this.data.relId.switchRelId,
+          })
+        }
+        // 删除关联后不需要执行后续逻辑
+        return
+      } else {
+        // 根据relMap判断关联的数量，执行取消某个灯关联或者删除关联
+        const relDeviceMap = deviceStore.relDeviceMap
+        this.data.linkSelectList.forEach((uniId) => {
+          const switchRelId = deviceFlattenMap[uniId].switchInfoDTOList[0].switchRelId
+          if (switchRelId && switchRelId !== this.data.relId.lightRelId) {
+            const index = relDeviceMap[switchRelId].findIndex((id) => id === uniId)
+            relDeviceMap[switchRelId].splice(index, 1)
+            if (relDeviceMap[switchRelId].length < 2) {
+              // 删除关联
+              delAssociated({
+                relType: '0',
+                switchRelId,
+              })
+            } else {
+              removeLightRel(uniId)
+            }
+          }
+        })
+      }
+
       // 关联开关
       if (this.data.relId.switchRelId && this.data.linkSelectList.length !== 0) {
         const rawLinkDeviceSelectList = (this.data.list as Device.DeviceItem[])

@@ -228,7 +228,6 @@ ComponentWithComputed({
       }
       const res = await updateScene(data)
       if (res.success) {
-        homeStore.updateRoomCardList()
         emitter.emit('sceneEdit')
         Toast('修改成功')
         wx.navigateBack()

@@ -40,6 +40,12 @@ export const deviceStore = observable({
     )
   },
 
+  get deviceFlattenMap() {
+    let map = {} as Record<string, Device.DeviceItem>
+    map = Object.fromEntries(deviceStore.deviceFlattenList.map((device: Device.DeviceItem) => [device.uniId, device]))
+    return map
+  },
+
   /**
    * 将有多个按键的开关拍扁，保证每个设备和每个按键都是独立一个item，并且uniId唯一
    */

@@ -13,6 +13,7 @@ import { proType } from '../config/index'
 import { deviceStore } from './device'
 import { othersStore } from './others'
 import { roomStore } from './room'
+import { sceneStore } from './scene'
 
 export const homeStore = observable({
   homeList: [] as Home.IHomeItem[],
@@ -165,6 +166,7 @@ export const homeStore = observable({
   async updateRoomCardList() {
     await deviceStore.updataHomeDeviceList()
     await roomStore.updateRoomList()
+    await sceneStore.updateAllRoomSceneList()
   },
 
   /**

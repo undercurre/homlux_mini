@@ -38,7 +38,7 @@ ComponentWithComputed({
       })
       emitter.off('sceneEdit')
       emitter.on('sceneEdit', () => {
-        sceneStore.updateSceneList().then(() => {
+        Promise.all([sceneStore.updateAllRoomSceneList(), sceneStore.updateSceneList()]).then(() => {
           this.updateList()
         })
       })
