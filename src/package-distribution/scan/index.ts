@@ -24,8 +24,8 @@ ComponentWithComputed({
     isShowPage: false,
     isShowGatewayList: false, // 是否展示选择网关列表弹窗
     isShowNoGatewayTips: false, // 是否展示添加网关提示弹窗
-    _isScaning: false, // 是否正在扫码
-    _isDiscovering: false, // 是否已经初始化蓝牙
+    isScan: false, // 是否正在扫码
+    _isDiscovering: false, // 是否正在发现蓝牙
     bleStatus: '',
     isFlash: false,
     selectGatewayId: '',
@@ -367,11 +367,11 @@ ComponentWithComputed({
      * 扫码解析
      */
     async getQrCodeInfo(e: WechatMiniprogram.CustomEvent) {
-      if (this.data._isScaning) {
+      if (this.data.isScan) {
         return
       }
 
-      console.log('getQrCodeInfo', e, this.data._isScaning)
+      console.log('getQrCodeInfo', e, this.data.isScan)
 
       const scanUrl = e.detail.result
 
@@ -394,9 +394,20 @@ ComponentWithComputed({
       })
     },
 
+    chooseAlbun() {
+      wx.chooseMedia({
+        count: 1,
+        mediaType: ['image'],
+        sourceType: ['album'],
+        success(res) {
+          console.log('chooseMedia', res)
+        },
+      })
+    },
+
     async handleScanUrl(url: string) {
       this.setData({
-        _isScaning: true,
+        isScan: true,
       })
 
       wx.showLoading({
@@ -419,10 +430,10 @@ ComponentWithComputed({
       // 延迟复位扫码状态，防止安卓端短时间重复执行扫码逻辑
       setTimeout(() => {
         this.setData({
-          _isScaning: false,
+          isScan: false,
         })
 
-        console.log('_isScaning', this.data._isScaning)
+        console.log('isScan', this.data.isScan)
       }, 2000)
 
       wx.hideLoading()
@@ -448,6 +459,11 @@ ComponentWithComputed({
     },
 
     async bindSubDevice(params: IAnyObject) {
+      if (this.data.bleStatus !== 'open') {
+        this.checkSystemBleSwitch()
+        return
+      }
+
       const res = await checkDevice({ dsn: params.sn })
 
       if (!res.success) {
