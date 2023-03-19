@@ -17,6 +17,7 @@ ComponentWithComputed({
     isShowWifiTips: false,
     hasShowWifiTips: false,
     isShowWifiList: false,
+    isRequestSystemWifiList: false,
     selectWifi: {
       SSID: '',
       pw: '',
@@ -110,10 +111,17 @@ ComponentWithComputed({
 
       wx.onGetWifiList((res) => {
         console.log('onGetWifiList', res)
-        const wifiList = res.wifiList.filter((item) => item.SSID) // 过滤空的ssid的wifi
+        const wifiList = res.wifiList.filter((item) => {
+          return item.SSID && this.data.systemWifiList.findIndex((foundItem) => item.SSID === foundItem.SSID) < 0 // 过滤空的ssid的wifi
+        })
+
+        if (!wifiList.length) {
+          return
+        }
 
         this.setData({
-          systemWifiList: wifiList,
+          isRequestSystemWifiList: false,
+          systemWifiList: this.data.systemWifiList.concat(wifiList),
         })
         console.log('onGetWifiList', wifiList.map((item) => item.SSID).join('；'))
       })
@@ -155,6 +163,9 @@ ComponentWithComputed({
       const deviceInfo = wx.getDeviceInfo()
 
       if (deviceInfo.system.toLowerCase().includes('android') || this.data.hasShowWifiTips) {
+        this.setData({
+          isRequestSystemWifiList: true,
+        })
         const wifiListRes = await wx.getWifiList()
 
         console.log('getWifiList', wifiListRes)

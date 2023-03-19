@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import asyncPool from 'tiny-async-pool'
-import { homeBinding, roomBinding } from '../../store/index'
+import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
 import { bleUtil, strUtil, BleClient, getCurrentPageParams } from '../../utils/index'
 import { IBleDevice } from './types'
 import pageBehaviors from '../../behaviors/pageBehaviors'
@@ -68,6 +68,13 @@ ComponentWithComputed({
   lifetimes: {
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
     ready: function () {
+      console.log(
+        '灯数量',
+        deviceBinding.store.allRoomDeviceList.filter((item) => item.proType === '0x13').length,
+        '面板数：',
+        deviceBinding.store.allRoomDeviceList.filter((item) => item.proType === '0x21').length,
+      )
+
       this.initBle()
 
       // this.setData({
