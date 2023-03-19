@@ -3,7 +3,41 @@ import { controlDevice, delAssociated, queryDeviceInfoByDeviceId } from '../../a
 import { deviceStore } from '../../store/index'
 import { delay } from '../../utils/index'
 
-// 解开关联
+// 灯解开关联
+export async function removeLightRel(deviceId: string) {
+  const rel = deviceStore.deviceRelMap[deviceId]
+  if (!rel) {
+    return true
+  }
+  const relDeviceList = deviceStore.relDeviceMap[rel.lightRelId!]
+  const distSwitchList = relDeviceList.filter((uniId) => uniId !== deviceId)
+  if (distSwitchList.length < 2) {
+    // 只剩下一个开关，直接删除
+    const res = await delAssociated({
+      relType: '0',
+      lightRelId: rel.lightRelId!,
+    })
+    if (res.success) {
+      return true
+    }
+    Toast('取消关联失败')
+    return false
+  } else {
+    // 只去除一个灯关联
+    const res = await delAssociated({
+      relType: '0',
+      lightRelId: rel.lightRelId!,
+      deviceIds: [deviceId],
+    })
+    if (res.success) {
+      return true
+    }
+    Toast('取消关联失败')
+    return false
+  }
+}
+
+// 开关解开关联
 export async function removeRel(deviceId: string, ep: string) {
   const rel = deviceStore.deviceRelMap[`${deviceId}:${ep}`]
   if (!rel) {

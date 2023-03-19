@@ -32,6 +32,7 @@ ComponentWithComputed({
       (storage.get<number>('navigationBarHeight') as number) +
       'px',
     showDeviceOffline: false,
+    officeDeviceInfo: {} as Device.DeviceItem,
     controlPopup: true,
     popupPlaceholder: false,
     showAddScenePopup: false,
@@ -235,9 +236,10 @@ ComponentWithComputed({
       emitter.off('wsReceive')
     },
 
-    handleShowDeviceOffline() {
+    handleShowDeviceOffline(e: { detail: Device.DeviceItem }) {
       this.setData({
         showDeviceOffline: true,
+        officeDeviceInfo: e.detail,
       })
     },
     handleCloseDeviceOffice() {
