@@ -23,7 +23,7 @@
         </view>
       </view>
     </view>
-    <view wx:if="{{hasDevice}}" class="mr-36rpx mt-8rpx" data-mark="addIcon" id="addIcon" bind:tap="handleAddDevice">
+    <view wx:if="{{hasDevice}}" class="mr-36rpx mt-8rpx" data-mark="addIcon" id="addIcon" bind:tap="goTo" data-url="/package-distribution/scan/index">
       <image src="/assets/img/home/add.png" class="w-64rpx h-64rpx"></image>
     </view>
   </view>
@@ -49,9 +49,9 @@
         <!-- 房间卡片列表 -->
         <room-card wx:for="{{roomList}}" wx:key="roomId" room-info="{{item}}" data-room="{{item.roomId}}" bind:sceneSelect="handleSceneSelect"></room-card>
         <view class="w-full flex-center mt-12rpx">
-          <!-- <van-button type="default" color="rgba(255,255,255,0.60)" size="small" custom-class="add-room-btn-border" round bind:click="handleAddRoom">
-            <text class="text-26rpx text-hex-555659">添加房间</text>
-          </van-button> -->
+          <van-button type="default" color="rgba(255,255,255,0.60)" size="small" custom-class="round-btn-border" round bind:click="goTo" data-url="/package-mine/room-manage/index">
+            <text class="text-26rpx text-hex-555659">房间管理</text>
+          </van-button>
           <!-- <text class="text-24rpx text-hex-aeaeb5">可手动添加更多空间~</text> -->
         </view>
         <!-- 顶开下面的内容高度 -->
@@ -63,7 +63,7 @@
       <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx"></image>
       <text class="text-32rpx text-black-59 mt-44rpx mb-32rpx">尚未添加设备</text>
       <text class="text-24rpx text-black-59 mb-224rpx opacity-40">立即添加设备，开启智慧照明</text>
-      <van-button bindtap="handleAddDevice" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-class="add-immediately-btn" wx:if="{{isInit && !hasDevice}}">
+      <van-button bind:click="goTo" data-url="/package-distribution/scan/index" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-class="add-immediately-btn" wx:if="{{isInit && !hasDevice}}">
         <text class="text-white text-36rpx font-normal">添加智能设备</text>
       </van-button>
     </view>
@@ -92,7 +92,7 @@
       <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx"></image>
       <text class="text-32rpx text-black-59 mt-44rpx mb-32rpx">尚未登录</text>
       <text class="text-24rpx text-black-59 mb-224rpx opacity-40">登陆即可控制设备，开启智慧照明</text>
-      <van-button bindtap="handleToLogin" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-class="add-immediately-btn">
+      <van-button bind:click="goTo" data-url=" /pages/login/index" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-class="add-immediately-btn">
         <text class="text-white text-36rpx font-normal">前往登录</text>
       </van-button>
     </view>

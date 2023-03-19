@@ -25,7 +25,7 @@ Component({
    * 组件的初始数据
    */
   data: {
-    _interId: 0 as number | NodeJS.Timeout,
+    _interId: 0,
     _queryTimes: 50,
     status: 'linking',
     currentStep: '连接设备',

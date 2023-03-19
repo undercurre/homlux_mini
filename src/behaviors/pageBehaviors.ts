@@ -17,5 +17,11 @@ export default Behavior({
         wx.navigateBack()
       }
     },
+    /**
+     * 跳转到
+     */
+    goTo(e:WechatMiniprogram.TouchEvent) {
+      wx.navigateTo({url: e.currentTarget.dataset.url})
+    }
   },
 })

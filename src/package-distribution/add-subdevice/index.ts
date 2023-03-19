@@ -20,7 +20,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
-    _timeId: 0 as number | NodeJS.Timeout,
+    _timeId: 0,
     status: 'linking' as StatusName,
     activeIndex: 0,
     pageParams: {} as IAnyObject,

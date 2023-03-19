@@ -4,10 +4,10 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { deviceBinding, deviceStore, sceneStore } from '../../../../store/index'
 import { maxColorTempK, minColorTempK, proType } from '../../../../config/index'
 import { controlDevice, createAssociated, delAssociated, updateAssociated, updateScene } from '../../../../apis/index'
-import { transformSwitchToNormal, removeRel, transformSwitchToLinkLight } from '../../../utils/index'
+import { transformSwitchToNormal, removeRel, transformSwitchToLinkLight, removeLightRel } from '../../../utils/index'
 import Toast from '@vant/weapp/toast/toast'
 
-let throttleTimer: number | NodeJS.Timeout = 0
+let throttleTimer = 0
 
 ComponentWithComputed({
   options: {
@@ -344,29 +344,33 @@ ComponentWithComputed({
         })
         return
       }
-      const deviceMap = deviceStore.allRoomDeviceMap
-      if (this.data.selectLinkType === 'light') {
-        if (deviceMap[e.detail].lightRelId && this.data.relId.lightRelId !== deviceMap[e.detail].lightRelId) {
-          Toast({
-            message: '设备已被关联',
-            zIndex: 99999,
-          })
-          return
-        }
-        this.setData({
-          linkSelectList: [...this.data.linkSelectList, e.detail],
-        })
-      } else if (this.data.selectLinkType === 'switch') {
-        const switchItem = deviceMap[e.detail.split(':')[0]].switchInfoDTOList.find(
-          (switchItem) => switchItem.switchId === e.detail.split(':')[1],
-        )
-        if (switchItem?.switchRelId && this.data.relId.switchRelId !== switchItem?.switchRelId) {
-          Toast({
-            message: '设备已被关联',
-            zIndex: 99999,
-          })
-          return
-        }
+      // const deviceMap = deviceStore.allRoomDeviceMap
+      // if (this.data.selectLinkType === 'light') {
+      //   if (deviceMap[e.detail].lightRelId && this.data.relId.lightRelId !== deviceMap[e.detail].lightRelId) {
+      //     Toast({
+      //       message: '设备已被关联',
+      //       zIndex: 99999,
+      //     })
+      //     return
+      //   }
+      //   this.setData({
+      //     linkSelectList: [...this.data.linkSelectList, e.detail],
+      //   })
+      // } else if (this.data.selectLinkType === 'switch') {
+      //   const switchItem = deviceMap[e.detail.split(':')[0]].switchInfoDTOList.find(
+      //     (switchItem) => switchItem.switchId === e.detail.split(':')[1],
+      //   )
+      //   if (switchItem?.switchRelId && this.data.relId.switchRelId !== switchItem?.switchRelId) {
+      //     Toast({
+      //       message: '设备已被关联',
+      //       zIndex: 99999,
+      //     })
+      //     return
+      //   }
+      //   this.setData({
+      //     linkSelectList: [...this.data.linkSelectList, e.detail],
+      //   })
+      if (['light', 'switch'].includes(this.data.selectLinkType)) {
         this.setData({
           linkSelectList: [...this.data.linkSelectList, e.detail],
         })
@@ -429,7 +433,8 @@ ComponentWithComputed({
     },
     async updateLightAssociate() {
       const selectSwitchUniId = this.data.selectSwitchUniId
-      const device = deviceStore.allRoomDeviceMap[selectSwitchUniId.split(':')[0]]
+      const deviceMap = deviceStore.allRoomDeviceMap
+      const device = deviceMap[selectSwitchUniId.split(':')[0]]
       // 先查一下也没有关联开关，有先解开关联
       const rel = deviceStore.deviceRelMap[selectSwitchUniId]
       if (rel && rel.switchRelId) {
@@ -454,6 +459,41 @@ ComponentWithComputed({
         }
       }
       // 关联灯
+      if (this.data.selectLinkType === 'light') {
+        if (this.data.linkSelectList.length === 0) {
+          // 取消所有关联
+          // 先将ButtonMode转成0
+          const isSuccess = await transformSwitchToNormal(
+            device.gatewayId,
+            selectSwitchUniId.split(':')[0],
+            Number(selectSwitchUniId.split(':')[1]),
+          )
+          if (!isSuccess) {
+            return
+          }
+          // 删除关联
+          await delAssociated({
+            relType: '0',
+            lightRelId: this.data.relId.lightRelId,
+          })
+        } else {
+          // 是否需要创建新的关联
+          if (this.data.relId.lightRelId) {
+            // 已有关联的，取消其他不同关联的灯
+            this.data.linkSelectList.forEach((uniId) => {
+              if (deviceMap[uniId].lightRelId && deviceMap[uniId].lightRelId !== this.data.relId.lightRelId) {
+                removeLightRel(uniId)
+              }
+            })
+          } else {
+            this.data.linkSelectList.forEach((uniId) => {
+              if (deviceMap[uniId].lightRelId) {
+                removeLightRel(uniId)
+              }
+            })
+          }
+        }
+      }
       if (this.data.relId.lightRelId && this.data.linkSelectList.length !== 0) {
         const rawLinkDeviceSelectList = (this.data.list as Device.DeviceItem[])
           .filter((device) => device.lightRelId && device.lightRelId === this.data.relId.lightRelId)

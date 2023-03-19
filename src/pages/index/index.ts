@@ -16,10 +16,12 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import { allDevicePowerControl } from '../../apis/index'
 import { emitter } from '../../utils/eventBus'
 import { updateDefaultHouse } from '../../apis/index'
-let throttleTimer: number | NodeJS.Timeout = 0
+import pageBehavior from '../../behaviors/pageBehaviors'
+let throttleTimer = 0
 ComponentWithComputed({
   behaviors: [
     BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding, homeBinding, deviceBinding] }),
+    pageBehavior,
   ],
   data: {
     navigationBarAndStatusBarHeight:
@@ -331,32 +333,6 @@ ComponentWithComputed({
           })
         })
     },
-    handleAddDevice() {
-      wx.navigateTo({ url: '/package-distribution/scan/index' })
-    },
-    handleAddRoom() {
-      this.setData({
-        showAddNewRoom: true,
-      })
-    },
-    /**
-     * 用户点击下拉菜单项
-     * @param e
-     */
-    handleMenuSelect(e: { detail: 'addDevice' | 'addRoom' | 'inviteFamily' }) {
-      if (e.detail === 'addDevice') {
-        this.handleAddDevice()
-      } else if (e.detail === 'addRoom') {
-        this.setData({
-          showAddNewRoom: true,
-        })
-      } else if (e.detail === 'inviteFamily') {
-        console.log(3)
-      }
-      this.setData({
-        'dropdownMenu.isShow': false,
-      })
-    },
     /**
      * 用户切换家庭
      */
@@ -390,11 +366,6 @@ ComponentWithComputed({
     handleHideAddNewRoom() {
       this.setData({
         showAddNewRoom: false,
-      })
-    },
-    handleToLogin() {
-      wx.navigateTo({
-        url: '/pages/login/index',
       })
     },
     updateContentHeight() {

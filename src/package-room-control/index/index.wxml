@@ -84,6 +84,14 @@
   </view>
 </view>
 
+<view class="flex-col-center">
+  <view class="h-20rpx"></view>
+  <van-button type="default" color="rgba(255,255,255,0.60)" size="small" custom-class="round-btn-border" round bind:tap="goTo" data-url="/package-distribution/scan/index">
+    <text class="text-26rpx text-hex-555659">添加设备</text>
+  </van-button>
+</view>
+
+
 <view wx:if="{{popupPlaceholder}}" class="h-716rpx" bindtap="handleScreenTap" bindtouchmove="handleScreenTap"></view>
 <view wx:else class="h-64rpx" bindtap="handleScreenTap" bindtouchmove="handleScreenTap"></view>
 

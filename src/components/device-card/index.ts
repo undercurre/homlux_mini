@@ -3,7 +3,7 @@ import Toast from '@vant/weapp/toast/toast'
 import { deviceBinding, deviceStore, sceneBinding, sceneStore } from '../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { proName, proType } from '../../config/index'
-let throttleTimer: number | NodeJS.Timeout = 0
+let throttleTimer = 0
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
