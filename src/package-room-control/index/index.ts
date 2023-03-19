@@ -80,8 +80,8 @@ ComponentWithComputed({
       return false
     },
     title(data) {
-      if (data.currentRoomIndex && data.roomList) {
-        return data.roomList[data.currentRoomIndex]?.roomName ?? ''
+      if (data.roomList && data.roomList[data.currentRoomIndex]) {
+        return data.roomList[data.currentRoomIndex].roomName
       }
       return ''
     },
