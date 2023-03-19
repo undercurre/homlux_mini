@@ -183,13 +183,30 @@ ComponentWithComputed({
         data.updateType = '1'
       }
       if (this.data.linkSwitch !== sceneStore.sceneSwitchMap[this.data.sceneId]) {
-        // 绑定发生变化，先解除一下开关关联的设备
-        const res = await removeRel(this.data.linkSwitch.split(':')[0], this.data.linkSwitch.split(':')[1])
-        if (!res) {
-          console.log('解除关联失败', res)
-          return
+        if (sceneStore.sceneSwitchMap[this.data.sceneId] && this.data.linkSwitch) {
+          // 解绑原来的场景
+          const res = await updateScene({
+            sceneId: this.data.sceneId,
+            updateType: '2',
+          })
+          if (!res.success) {
+            Toast({
+              message: '解除绑定失败',
+              zIndex: 99999,
+            })
+            return
+          }
         }
         if (this.data.linkSwitch) {
+          // 新的开关如果有关联也需要即开关联
+          const isSuccess = await removeRel(this.data.linkSwitch.split(':')[0], this.data.linkSwitch.split(':')[1])
+          if (!isSuccess) {
+            Toast({
+              message: '解除绑定失败',
+              zIndex: 99999,
+            })
+            return
+          }
           data.deviceConditions = [
             {
               deviceId: this.data.linkSwitch.split(':')[0],
@@ -257,10 +274,6 @@ ComponentWithComputed({
     },
     handleSwitchSelect(e: { detail: string }) {
       console.log(deviceStore.switchSceneMap[e.detail], deviceStore.switchSceneMap[e.detail] !== this.data.sceneId)
-      if (deviceStore.switchSceneMap[e.detail] && deviceStore.switchSceneMap[e.detail] !== this.data.sceneId) {
-        Toast('开关已绑定场景')
-        return
-      }
       if (this.data.linkSwitchSelect[0] === e.detail) {
         this.setData({
           linkSwitchSelect: [],
