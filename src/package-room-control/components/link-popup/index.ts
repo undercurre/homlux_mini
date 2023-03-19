@@ -42,10 +42,10 @@ ComponentWithComputed({
             this.getHeight()
           }, 100)
         }
-        if (roomStore.roomList.length > 0) {
+        if (this.data.roomListComputed.length > 0) {
           if (!this.data.roomSelect) {
             this.setData({
-              roomSelect: roomStore.roomList[0].roomId,
+              roomSelect: this.data.roomListComputed[0].roomId,
             })
           }
         }
@@ -151,6 +151,6 @@ ComponentWithComputed({
         roomSelect: e.currentTarget.dataset.item.roomId,
       })
     },
-    black() {},
+    blank() {},
   },
 })

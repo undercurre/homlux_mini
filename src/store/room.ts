@@ -15,6 +15,10 @@ export const roomStore = observable({
   /** 全屋设备，对应房间id作为key，房间的设备列表作为key */
   roomDeviceList: {} as Record<string, Device.DeviceItem[]>,
 
+  get currentRoom() {
+    return this.roomList[this.currentRoomIndex]
+  },
+
   async updateRoomList(options?: { loading: boolean }) {
     const res = await getRoomList(homeStore.currentHomeId, options)
     if (res.success) {

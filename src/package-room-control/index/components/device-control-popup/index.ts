@@ -381,6 +381,10 @@ ComponentWithComputed({
       }
     },
     handleSelectLinkPopup() {
+      if (this.data.isSelectMultiSwitch) {
+        Toast({ message: '只能单选开关进行关联', zIndex: 9999 })
+        return
+      }
       const switchUniId = deviceStore.selectList.find((uniId) => uniId.includes(':'))
       if (switchUniId) {
         const rel = deviceStore.deviceRelMap[switchUniId]

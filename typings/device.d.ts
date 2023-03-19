@@ -100,4 +100,12 @@ declare namespace Device {
     productName: string
     sn: string
   }
+
+  interface ActionItem {
+    uniId: string
+    name: string
+    desc: string[]
+    pic: string
+    value: IAnyObject
+  }
 }

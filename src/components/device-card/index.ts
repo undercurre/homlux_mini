@@ -138,6 +138,10 @@ ComponentWithComputed({
         .select('#card')
         .boundingClientRect()
         .exec((res) => {
+          // this.triggerEvent('cardTap', {
+          //   ...this.data.deviceInfo,
+          //   clientRect: res[0],
+          // })
           if (this.data.deviceInfo.onLineStatus) {
             this.triggerEvent('cardTap', {
               ...this.data.deviceInfo,
@@ -145,10 +149,6 @@ ComponentWithComputed({
             })
           } else {
             this.triggerEvent('offlineTap', this.data.deviceInfo)
-            // Toast('设备已离线')
-            // this.setData({
-            //   showDeviceOffline: true,
-            // })
           }
         })
     },

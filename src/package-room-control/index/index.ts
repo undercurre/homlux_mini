@@ -13,9 +13,9 @@ import {
 import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { controlDevice, saveDeviceOrder, queryDeviceInfoByDeviceId, execScene } from '../../apis/index'
-import { proName, proType } from '../../config/device'
 import Toast from '@vant/weapp/toast/toast'
 import { storage, emitter, WSEventType } from '../../utils/index'
+import { maxColorTempK, minColorTempK, proName, proType } from '../../config/index'
 
 let throttleTimer = 0
 ComponentWithComputed({
@@ -40,6 +40,8 @@ ComponentWithComputed({
     lightList: [] as Device.DeviceItem[],
     switchList: [] as Device.DeviceItem[],
     curtainList: [] as Device.DeviceItem[],
+    addSceneActions: [] as Device.ActionItem[],
+    showBeforeAddSceneSuccess: false,
     showAddSceneSuccess: false,
     sceneTitlePosition: {
       x: 0,
@@ -189,6 +191,9 @@ ComponentWithComputed({
               })
               this.updateDeviceList()
             }
+            // 可能开关绑定了场景
+            await sceneStore.updateAllRoomSceneList()
+            this.updateDeviceList()
           } else {
             // 可能是新绑的设备，直接更新房间
             await deviceStore.updateSubDeviceList()
@@ -301,8 +306,52 @@ ComponentWithComputed({
       })
     },
     handleCollect() {
+      // 补充actions
+      const deviceMap = deviceStore.deviceMap
+      const currentRoom = roomStore.currentRoom
+      const switchSceneMap = deviceStore.switchSceneMap
+      const addSceneActions = [] as Device.ActionItem[]
+      // 排除已经是场景开关的开关
+      const selectList = deviceStore.deviceFlattenList.filter((device) => !switchSceneMap[device.uniId])
+      selectList.forEach((device) => {
+        if (device.proType === proType.switch) {
+          // 开关
+          const deviceId = device.uniId.split(':')[0]
+          const ep = parseInt(device.uniId.split(':')[1])
+          const OnOff = deviceMap[deviceId].mzgdPropertyDTOList[ep].OnOff
+          addSceneActions.push({
+            uniId: device.uniId,
+            name: device.switchInfoDTOList[0].switchName + ' | ' + currentRoom.roomName,
+            desc: OnOff ? ['打开'] : ['关闭'],
+            pic: device.switchInfoDTOList[0].pic,
+            value: {
+              ep,
+              OnOff,
+            },
+          })
+        } else if (device.proType === proType.light) {
+          const properties = device.mzgdPropertyDTOList['1']
+          const desc = properties.OnOff ? ['打开'] : ['关闭']
+          const color = (properties.ColorTemp / 100) * (maxColorTempK - minColorTempK) + maxColorTempK
+          desc.push(`亮度${properties.Level}%`)
+          desc.push(`色温${color}K`)
+          addSceneActions.push({
+            uniId: device.uniId,
+            name: device.deviceName + ' | ' + currentRoom.roomName,
+            desc,
+            pic: device.pic,
+            value: {
+              ep: 1,
+              OnOff: properties.OnOff,
+              Level: properties.Level,
+              ColorTemp: properties.ColorTemp,
+            },
+          })
+        }
+      })
       this.setData({
-        showAddScenePopup: true,
+        showBeforeAddSceneSuccess: true,
+        addSceneActions,
       })
     },
     handleDeviceCardTap(e: { detail: Device.DeviceItem & { clientRect: WechatMiniprogram.ClientRect } }) {
@@ -493,7 +542,30 @@ ComponentWithComputed({
     },
     handleAddScenePopupClose() {
       this.setData({
-        showAddScenePopup: !this.data.showAddScenePopup,
+        showAddScenePopup: false,
+      })
+    },
+    handleAddScenePopupReturn() {
+      this.setData({
+        showAddScenePopup: false,
+        showBeforeAddSceneSuccess: true,
+      })
+    },
+    handleBeforeAddScenePopupClose() {
+      this.setData({
+        showBeforeAddSceneSuccess: false,
+      })
+    },
+    handleBeforeAddScenePopupNext() {
+      this.setData({
+        showBeforeAddSceneSuccess: false,
+        showAddScenePopup: true,
+      })
+    },
+    handleBeforeAddScenePopupDelete(e: { detail: number }) {
+      this.data.addSceneActions.splice(e.detail, 1)
+      this.setData({
+        addSceneActions: [...this.data.addSceneActions],
       })
     },
     handleShowAddSceneSuccess() {
