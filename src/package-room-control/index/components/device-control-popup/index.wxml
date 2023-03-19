@@ -50,40 +50,9 @@
       <!-- 开关控制 -->
       <view wx:if="{{tab==='switch'}}" class="flex flex-col w-750rpx">
         <view class="h-22rpx"></view>
-        <van-cell-group inset wx:if="{{!isSelectMultiSwitch}}">
-          <van-cell border="{{false}}" is-link title="模式设置" value="{{currentLinkTypeDesc}}" custom-class="switch-cell" bind:click="handleSelectLinkPopup"></van-cell>
+        <van-cell-group inset style="opacity: {{isSelectMultiSwitch?0.5:1}};">
+          <van-cell border="{{false}}" is-link="{{!isSelectMultiSwitch}}" title="模式设置" value="{{currentLinkTypeDesc}}" custom-class="switch-cell" bind:click="handleSelectLinkPopup"></van-cell>
         </van-cell-group>
-        <!-- <van-cell-group inset wx:if="{{!isSelectMultiSwitch}}">
-          <van-cell clickable custom-class="switch-cell" data-link="switch" bind:click="handleLinkPopup">
-            <view class="flex flex-col items-start">
-              <text class="text-32rpx text-black-2a font-medium h-44rpx">关联智能开关</text>
-              <text class="text-26rpx text-black-tips font-normal leading-none mt-12rpx mb-12rpx">通过开关触发场景</text>
-            </view>
-            <view slot="right-icon" class="h-90rpx flex-center">
-              <svg-icon color="#555659" name="icon-park:right" width="48rpx" height="48rpx"></svg-icon>
-            </view>
-          </van-cell>
-        </van-cell-group>
-        <van-cell-group inset wx:if="{{!isSelectMultiSwitch}}">
-          <van-cell clickable custom-class="switch-cell" data-link="light" bind:click="handleLinkPopup">
-            <view class="flex flex-col items-start">
-              <text class="text-32rpx text-black-2a font-medium h-44rpx">关联智能灯</text>
-              <text class="text-26rpx text-black-tips font-normal leading-none mt-12rpx mb-12rpx">与关联的智能灯保持相同开关状态</text>
-            </view>
-            <view slot="right-icon" class="h-90rpx flex-center">
-              <svg-icon color="#555659" name="icon-park:right" width="48rpx" height="48rpx"></svg-icon>
-            </view>
-          </van-cell>
-        </van-cell-group>
-        <van-cell-group inset wx:if="{{!isSelectMultiSwitch}}">
-          <van-cell center clickable custom-class="switch-cell" data-link="scene" bind:click="handleLinkPopup">
-            <view class="flex flex-col items-start">
-              <text class="text-32rpx text-black-2a font-medium h-44rpx">关联场景</text>
-              <text class="text-26rpx text-black-tips font-normal leading-none mt-12rpx mb-12rpx">关联后，可通过开关执行场景</text>
-            </view>
-            <svg-icon slot="right-icon" color="#555659" name="icon-park:right" width="48rpx" height="48rpx"></svg-icon>
-          </van-cell>
-        </van-cell-group> -->
       </view>
       <!-- 窗帘控制 -->
       <view wx:if="{{tab==='curtain'}}" class="w-full h-full flex-center">

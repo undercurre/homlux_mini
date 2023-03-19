@@ -24,8 +24,8 @@
     </view>
     <view class="flex-1" id="content">
       <scroll-view enhanced show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
-        <van-cell-group inset wx:for="{{sceneDeviceActionsFlatten}}" wx:key="id" custom-class="{{index === 0 ? 'mt-0_el_' : ''}}">
-          <van-cell center>
+        <van-cell-group inset border="{{ false }}" wx:for="{{sceneDeviceActionsFlatten}}" wx:key="id" custom-class="{{index === 0 ? 'mt-0_el_' : ''}}">
+          <van-cell center border="{{ false }}">
             <view slot="title" class="flex items-center">
               <image src="{{item.image}}" class="w-96rpx h-96rpx rounded-999 bg-hex-f6fafd" />
               <view class="flex flex-col items-start ml-32rpx">

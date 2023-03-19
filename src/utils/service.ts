@@ -67,7 +67,7 @@ export function loadUserInfo() {
   if (storage.get<string>('nickName')) {
     nickName = storage.get<string>('nickName') as string
   } else {
-    nickName = (storage.get<string>('mobilePhone') as string).slice(-4)
+    nickName = '用户' + (storage.get<string>('mobilePhone') as string).slice(-4)
   }
   if (storage.get<string>('headImageUrl')) {
     avatar = storage.get<string>('headImageUrl') as string

@@ -22,7 +22,7 @@ ComponentWithComputed({
     otaUpdateList: [] as Ota.OtaUpdate[],
     isUpdating: false,
     hasUpdate: false,
-    _pollingTimer: 0 as number | NodeJS.Timeout,
+    _pollingTimer: 0,
   },
 
   computed: {

@@ -1,9 +1,8 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import Toast from '@vant/weapp/toast/toast'
 import { deviceBinding, deviceStore, sceneBinding, sceneStore } from '../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { proName, proType } from '../../config/index'
-let throttleTimer: number | NodeJS.Timeout = 0
+let throttleTimer = 0
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
@@ -32,6 +31,7 @@ ComponentWithComputed({
   data: {
     ripple: false,
     onOff: false, // true: on false: off
+    showDeviceOffline: false,
   },
 
   computed: {
@@ -138,14 +138,17 @@ ComponentWithComputed({
         .select('#card')
         .boundingClientRect()
         .exec((res) => {
+          // this.triggerEvent('cardTap', {
+          //   ...this.data.deviceInfo,
+          //   clientRect: res[0],
+          // })
           if (this.data.deviceInfo.onLineStatus) {
             this.triggerEvent('cardTap', {
               ...this.data.deviceInfo,
               clientRect: res[0],
             })
           } else {
-            // this.triggerEvent('offlineTap')
-            Toast('设备已离线')
+            this.triggerEvent('offlineTap', this.data.deviceInfo)
           }
         })
     },
@@ -183,8 +186,8 @@ ComponentWithComputed({
           })
         }, 550)
       } else {
-        // this.triggerEvent('offlineTap')
-        Toast('设备已离线')
+        this.triggerEvent('offlineTap', this.data.deviceInfo)
+        // Toast('设备已离线')
       }
     },
   },

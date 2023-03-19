@@ -28,6 +28,9 @@ ComponentWithComputed({
         })
       },
     },
+    actions: {
+      type: Array,
+    },
   },
 
   /**
@@ -65,6 +68,9 @@ ComponentWithComputed({
             })
           }
         })
+    },
+    handleReturn() {
+      this.triggerEvent('return')
     },
     handleClose() {
       this.triggerEvent('close')
@@ -127,47 +133,26 @@ ComponentWithComputed({
       })
       // 补充actions
       const deviceMap = deviceStore.deviceMap
+      // 如果选择了关联开关，需要从actions排除
+      const actions = (this.data.actions as Device.ActionItem[]).filter(
+        (action) => action.uniId != this.data.linkSwitch,
+      )
       // switch需要特殊处理
-      const switchDeviceMap = {} as Record<string, { ep: number; OnOff: number }[]>
-      // 将开关加入进请求数据
-      let selectList = deviceStore.deviceFlattenList.map((device) => device.uniId)
-      if (this.data.linkSwitch) {
-        selectList = selectList.filter((uniId) => uniId !== this.data.linkSwitch)
-      }
-      // 排除已经是场景开关的开关
-      selectList = selectList.filter((uniId) => !deviceStore.switchSceneMap[uniId])
-      selectList.forEach((id) => {
-        if (id.includes(':')) {
-          // 开关
-          const deviceId = id.split(':')[0]
-          const ep = parseInt(id.split(':')[1])
-          const OnOff = deviceMap[deviceId].mzgdPropertyDTOList[ep].OnOff
+      const switchDeviceMap = {} as Record<string, IAnyObject[]>
+      actions.forEach((action) => {
+        if (action.uniId.includes(':')) {
+          const deviceId = action.uniId.split(':')[0]
           if (switchDeviceMap[deviceId]) {
-            switchDeviceMap[deviceId].push({
-              ep,
-              OnOff,
-            })
+            switchDeviceMap[deviceId].push(action.value)
           } else {
-            switchDeviceMap[deviceId] = [
-              {
-                ep,
-                OnOff,
-              },
-            ]
+            switchDeviceMap[deviceId] = [action.value]
           }
-        } else if (deviceMap[id].proType === proType.light) {
+        } else if (deviceMap[action.uniId].proType === proType.light) {
           newSceneData.deviceActions.push({
-            controlAction: [
-              {
-                ep: 1,
-                OnOff: deviceMap[id].mzgdPropertyDTOList[1].OnOff,
-                Level: deviceMap[id].mzgdPropertyDTOList[1].Level,
-                ColorTemp: deviceMap[id].mzgdPropertyDTOList[1].ColorTemp,
-              },
-            ],
-            deviceId: id,
-            deviceType: deviceMap[id].deviceType.toString(),
-            proType: deviceMap[id].proType,
+            controlAction: [action.value],
+            deviceId: action.uniId,
+            deviceType: deviceMap[action.uniId].deviceType.toString(),
+            proType: deviceMap[action.uniId].proType,
           })
         }
       })
@@ -182,14 +167,12 @@ ComponentWithComputed({
       )
       const res = await addScene(newSceneData)
       if (res.success) {
-        await Promise.all([
-          sceneStore.updateAllRoomSceneList(),
-          sceneStore.updateSceneList(),
-          deviceStore.updateDeviceList(),
-          deviceStore.updateAllRoomDeviceList(),
-          homeStore.updateRoomCardList(),
-        ])
         this.triggerEvent('addSuccess')
+        sceneStore.updateAllRoomSceneList()
+        sceneStore.updateSceneList()
+        deviceStore.updateDeviceList()
+        deviceStore.updateAllRoomDeviceList()
+        homeStore.updateRoomCardList()
       } else {
         Toast({
           message: '收藏失败',
@@ -216,9 +199,7 @@ ComponentWithComputed({
     handleLinkSwitchPopup() {
       this.setData({
         showLinkPopup: true,
-        list: deviceStore.deviceFlattenList.filter(
-          (item) => item.uniId.includes(':') && !deviceStore.selectList.includes(item.uniId),
-        ),
+        list: deviceStore.deviceFlattenList.filter((item) => item.uniId.includes(':')),
         linkSelectList: this.data.linkSwitch ? [this.data.linkSwitch] : [],
       })
     },
@@ -234,13 +215,6 @@ ComponentWithComputed({
       })
     },
     handleLinkSelect(e: { detail: string }) {
-      // if (deviceStore.switchSceneMap[e.detail]) {
-      //   Toast({
-      //     message: '开关已绑定场景',
-      //     zIndex: 99999,
-      //   })
-      //   return
-      // }
       if (this.data.linkSelectList[0] && this.data.linkSelectList[0] === e.detail) {
         this.setData({
           linkSelectList: [],
@@ -251,6 +225,6 @@ ComponentWithComputed({
         linkSelectList: [e.detail],
       })
     },
-    black() {},
+    blank() {},
   },
 })

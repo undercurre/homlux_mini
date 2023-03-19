@@ -33,3 +33,7 @@
   border-right: 8rpx solid transparent;
   top: 24rpx;
 }
+
+.round-btn-border {
+  border: 1px solid rgba(162, 162, 162, 0.25) !important;
+}

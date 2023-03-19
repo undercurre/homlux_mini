@@ -240,8 +240,8 @@ Component({
     handleCardTap(e: { detail: IAnyObject }) {
       this.triggerEvent('cardTap', e.detail)
     },
-    handleShowDeviceOffline() {
-      this.triggerEvent('offlineTap')
+    handleShowDeviceOffline(e: { detail: IAnyObject }) {
+      this.triggerEvent('offlineTap', e.detail)
     },
   },
   ready() {

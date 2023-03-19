@@ -28,5 +28,8 @@ Component({
     handleCardTap(e: WechatMiniprogram.TouchEvent) {
       this.triggerEvent('cardTap', e.detail)
     },
+    handleOfflineTap(e: WechatMiniprogram.TouchEvent) {
+      this.triggerEvent('offlineTap', e.detail)
+    },
   },
 })
