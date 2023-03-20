@@ -4,8 +4,7 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { roomBinding, homeBinding } from '../../store/index'
 import { saveOrUpdateUserHouseInfo, delUserHouse, quitUserHouse, updateDefaultHouse } from '../../apis/index'
-import { strUtil } from '../../utils/index'
-import QQMapWX from '../../utils/qqmap-wx-jssdk'
+import { strUtil, getPosition } from '../../utils/index'
 import { storage } from '../../utils/storage'
 
 ComponentWithComputed({
@@ -53,8 +52,12 @@ ComponentWithComputed({
   },
 
   lifetimes: {
-    attached: function () {
-      this.getLocation()
+    attached: async function () {
+      const position = await getPosition()
+
+      this.setData({
+        positionLocation: position.address,
+      })
     },
     ready: async function () {
       homeBinding.store.updateHomeMemberList()
@@ -64,41 +67,6 @@ ComponentWithComputed({
   },
 
   methods: {
-    getLocation() {
-      const myQQMapWX = new QQMapWX({
-        key: this.data.key,
-      })
-      // eslint-disable-next-line @typescript-eslint/no-this-alias
-      const that = this
-      wx.getFuzzyLocation({
-        type: 'wgs84',
-        success(res) {
-          const latitude = res.latitude
-          const longitude = res.longitude
-          myQQMapWX.reverseGeocoder({
-            sig: that.data.sig,
-            location: {
-              latitude: latitude,
-              longitude: longitude,
-            },
-            success: function (res: any) {
-              const addr = res.result.address_component
-              const result = addr.province + addr.city + addr.district
-              that.setData({
-                positionLocation: result,
-              })
-              storage.set('position_location', result)
-            },
-            fail: function () {
-              console.log('lmn>>>getLocation::获取地理位置失败')
-            },
-          })
-        },
-        fail() {
-          console.log('lmn>>>getLocation::微信定位失败')
-        },
-      })
-    },
     /**
      * 用户点击展示/隐藏家庭选择
      */

@@ -22,7 +22,7 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    deviceList: Array<Device.DeviceItem>(),
+    allRoomDeviceList: Array<Device.DeviceItem>(),
     checkedDevice: {},
     roomSelect: '',
   },
@@ -32,7 +32,7 @@ ComponentWithComputed({
     wifiDeviceList(data) {
       const { filterDevice } = data
       const hasOldDevice = filterDevice && filterDevice.productId
-      return data.deviceList.filter((item) => {
+      return data.allRoomDeviceList.filter((item) => {
         const isSubdevice = item.deviceType === 2
         const isCurrentRoom = data.roomSelect === '' ? true : item.roomId === data.roomSelect
         const isFilterDevice = hasOldDevice
@@ -48,7 +48,7 @@ ComponentWithComputed({
     async ready() {
       await roomBinding.store.updateRoomList()
 
-      deviceBinding.store.updateDeviceList()
+      deviceBinding.store.updateAllRoomDeviceList()
     },
   },
 

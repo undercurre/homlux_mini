@@ -41,7 +41,7 @@ ComponentWithComputed({
       console.log('pageParams', pageParams)
 
       pageParams.deviceName = pageParams.deviceName || '子设备'
-      pageParams.deviceIcon = pageParams.deviceIcon || '/assets/img/device/light.png'
+      pageParams.deviceIcon = pageParams.deviceIcon || ''
 
       this.setData({
         pageParams,
@@ -123,7 +123,7 @@ ComponentWithComputed({
 
       // 广播的mac是6字节位，需要将云端的8位mac截掉中间两字节位
       if (boardMac !== msgObj.mac) {
-        return
+        return false
       }
 
       this.data._hasFound = true
@@ -136,7 +136,7 @@ ComponentWithComputed({
         deviceUuid: device.deviceId,
         mac: msgObj.mac,
         zigbeeMac: '',
-        icon: this.data.pageParams.deviceIcon || '/assets/img/device/light.png',
+        icon: this.data.pageParams.deviceIcon,
         name: `${this.data.pageParams.deviceName || '子设备'}${msgObj.mac.substr(-4, 4)}`,
         client: new BleClient({ mac: msgObj.mac, deviceUuid: device.deviceId }),
         roomId: '',
@@ -147,6 +147,8 @@ ComponentWithComputed({
       }
 
       this.confirmAdd(bleDevice)
+
+      return true
     },
 
     // 确认添加设备

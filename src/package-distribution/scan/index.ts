@@ -196,9 +196,14 @@ ComponentWithComputed({
 
     /**
      * 检查微信蓝牙权限
+     * isDeny: 是否已拒绝授权，
      */
-    async checkBlePermission() {
-      const settingRes = await wx.getSetting()
+    async checkBlePermission(isDeny?: boolean) {
+      let settingRes: IAnyObject = {}
+      // 若已知未授权，省略查询权限流程，节省时间
+      if (isDeny !== true) {
+        settingRes = await wx.getSetting()
+      }
 
       return new Promise<boolean>((resolve) => {
         // 没有打开微信蓝牙授权异常处理
@@ -208,7 +213,7 @@ ComponentWithComputed({
         //   "scope.userLocation": true
         // }
 
-        if (!settingRes.authSetting['scope.bluetooth']) {
+        if (isDeny || !settingRes.authSetting['scope.bluetooth']) {
           wx.showModal({
             content: '请授权使用蓝牙，否则无法正常扫码配网',
             showCancel: true,
@@ -223,6 +228,8 @@ ComponentWithComputed({
                 // @ts-ignore
                 this.goBack() // 拒绝授权摄像头，则退出当前页面
                 resolve(false)
+
+                return
               }
 
               wx.openSetting({
@@ -240,18 +247,22 @@ ComponentWithComputed({
     },
 
     async initBle() {
-      const permission = await this.checkBlePermission()
-
-      // 优先判断微信授权设置
-      if (!permission) {
-        return
-      }
       // 初始化蓝牙模块
       const openBleRes = await wx
         .openBluetoothAdapter({
           mode: 'central',
         })
-        .catch((err) => err)
+        .catch((err: WechatMiniprogram.BluetoothError) => err)
+
+      // 判断是否授权蓝牙
+      if (openBleRes.errMsg.includes('auth deny')) {
+        const permission = await this.checkBlePermission(true)
+
+        // 优先判断微信授权设置
+        if (!permission) {
+          return
+        }
+      }
 
       console.log('scan-openBleRes', openBleRes)
 
@@ -265,7 +276,7 @@ ComponentWithComputed({
         }
       })
 
-      // 是否已打开蓝牙
+      // 系统是否已打开蓝牙
       const res = await this.checkSystemBleSwitch()
 
       if (!res) {

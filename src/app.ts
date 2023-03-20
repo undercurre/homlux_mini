@@ -1,10 +1,4 @@
-import {
-  setNavigationBarAndBottomBarHeight,
-  storage,
-  getPosition,
-  appOnLaunchService,
-  startWebsocketService,
-} from './utils/index'
+import { setNavigationBarAndBottomBarHeight, storage, appOnLaunchService, startWebsocketService } from './utils/index'
 import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore } from './store/index'
 import { socketTask, socketIsConnect } from './utils/index'
@@ -21,8 +15,6 @@ App<IAppOption>({
 
     // 获取状态栏、顶部栏、底部栏高度
     setNavigationBarAndBottomBarHeight()
-
-    getPosition()
 
     // 如果用户已经登录，开始请求数据
     if (storage.get<string>('token')) {
