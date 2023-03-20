@@ -1,4 +1,4 @@
-<view class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7" style="z-index: -1"></view>
+setting-curtain<view class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7" style="z-index: -1"></view>
 
 <view class="h-100vh flex flex-col items-center">
   <!-- 标题 -->
@@ -17,7 +17,6 @@
   <!-- 下半部分 -->
   <view class="flex flex-1">
     <setting-light device-info="{{deviceInfo}}" wx:if="{{prodType === 'light'}}" bind:update="updateDeviceInfo" />
-    <!-- <setting-curtain wx:if="{{prodType === 'light'}}" /> -->
     <setting-switch device-info="{{deviceInfo}}" wx:if="{{prodType === 'switch'}}" bind:update="updateDeviceInfo" />
     <setting-gateway device-info="{{deviceInfo}}" wx:if="{{prodType === 'gateway'}}" bind:update="updateDeviceInfo" />
   </view>
