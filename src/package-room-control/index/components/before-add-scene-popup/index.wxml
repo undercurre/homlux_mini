@@ -3,7 +3,7 @@
   <view class="w-750rpx h-1200rpx relative flex flex-col items-center">
     <template is="close" />
     <template is="title" data="{{title: '创建场景'}}" />
-    <text class="text-26rpx text-hex-555659 mb-52rpx">将房间内所有设备的状态保存为新场景</text>
+    <text class="text-26rpx text-hex-555659 mb-52rpx mt-24rpx">将{{roomName}}内所有设备的状态保存为新场景</text>
     <view class="flex-1" id="content">
       <scroll-view enhanced show-scrollbar="{{false}}" scroll-y style="height: {{contentHeight}}px; width: 750rpx;">
         <van-cell-group inset wx:for="{{addSceneActions}}" bindtap="handleSceneActionEdit" data-index="{{index}}" custom-class="cell-border" wx:key="uniId" border="{{ false }}">

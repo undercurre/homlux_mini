@@ -3,6 +3,8 @@
   "usingComponents": {
     "link-popup": "../components/link-popup/index",
     "edit-icon-popup": "./components/edit-icon-popup/index",
-    "edit-name-popup": "./components/edit-name-popup/index"
+    "edit-name-popup": "./components/edit-name-popup/index",
+    "scene-light-edit-popup": "../components/scene-light-edit-popup/index",
+    "scene-switch-edit-popup": "../components/scene-switch-edit-popup/index"
   }
 }

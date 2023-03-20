@@ -1,13 +1,14 @@
+import { ComponentWithComputed } from 'miniprogram-computed'
 import { runInAction } from 'mobx-miniprogram'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { maxColorTempK, minColorTempK, proType } from '../../../../config/index'
-import { sceneBinding, sceneStore } from '../../../../store/index'
+import { roomBinding, sceneBinding, sceneStore } from '../../../../store/index'
 
-Component({
+ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
   },
-  behaviors: [BehaviorWithStore({ storeBindings: [sceneBinding] })],
+  behaviors: [BehaviorWithStore({ storeBindings: [sceneBinding, roomBinding] })],
   /**
    * 组件的属性列表
    */
@@ -35,6 +36,15 @@ Component({
     showSceneEditSwitchPopup: false,
     sceneLightEditInfo: {} as IAnyObject,
     sceneSwitchEditInfo: {} as IAnyObject,
+  },
+
+  computed: {
+    roomName(data) {
+      if (data.roomList && data.roomList[data.currentRoomIndex]) {
+        return data.roomList[data.currentRoomIndex].roomName
+      }
+      return ''
+    },
   },
 
   /**
@@ -100,7 +110,7 @@ Component({
       if (sceneStore.addSceneActions[this.data.editIndex].proType === proType.light) {
         if (e.detail.OnOff) {
           const desc = e.detail.OnOff ? ['打开'] : ['关闭']
-          const color = (e.detail.ColorTemp / 100) * (maxColorTempK - minColorTempK) + maxColorTempK
+          const color = (e.detail.ColorTemp / 100) * (maxColorTempK - minColorTempK) + minColorTempK
           desc.push(`亮度${e.detail.Level}%`)
           desc.push(`色温${color}K`)
           sceneStore.addSceneActions[this.data.editIndex].desc = desc

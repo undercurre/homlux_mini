@@ -307,7 +307,6 @@ ComponentWithComputed({
     handleCollect() {
       // 补充actions
       const deviceMap = deviceStore.deviceMap
-      const currentRoom = roomStore.currentRoom
       const switchSceneMap = deviceStore.switchSceneMap
       const addSceneActions = [] as Device.ActionItem[]
       // 排除已经是场景开关的开关
@@ -320,7 +319,7 @@ ComponentWithComputed({
           const OnOff = deviceMap[deviceId].mzgdPropertyDTOList[ep].OnOff
           addSceneActions.push({
             uniId: device.uniId,
-            name: device.switchInfoDTOList[0].switchName + ' | ' + currentRoom.roomName,
+            name: device.switchInfoDTOList[0].switchName + ' | ' + device.deviceName,
             desc: OnOff ? ['打开'] : ['关闭'],
             pic: device.switchInfoDTOList[0].pic,
             proType: device.proType,
@@ -335,7 +334,7 @@ ComponentWithComputed({
           const color = (properties.ColorTemp / 100) * (maxColorTempK - minColorTempK) + maxColorTempK
           const action = {
             uniId: device.uniId,
-            name: device.deviceName + ' | ' + currentRoom.roomName,
+            name: device.deviceName,
             desc,
             pic: device.pic,
             proType: device.proType,
