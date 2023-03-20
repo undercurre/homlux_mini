@@ -80,7 +80,10 @@ export class BleClient {
 
     // 判断是否连接蓝牙
     if (connectRes.errCode !== 0 && connectRes.errCode !== -1) {
-      throw connectRes
+      throw {
+        code: -1,
+        error: connectRes,
+      }
     }
 
     // 连接成功，获取服务
@@ -120,17 +123,20 @@ export class BleClient {
 
     console.log(`mac: ${this.mac}`, 'notifyRes', notifyRes)
 
-    return connectRes
+    return  {
+      code: 0,
+      error: connectRes,
+    }
   }
 
   listenDisconnect() {
-    return new Promise<{ errCode: number; errMsg: string }>((resolve) => {
+    return new Promise<{ code: number; error: string }>((resolve) => {
       const bleConnectionListener = (res: WechatMiniprogram.OnBLEConnectionStateChangeCallbackResult) => {
         // 该方法回调中可以用于处理连接意外断开等异常情况
         if (this.deviceUuid === res.deviceId && !res.connected) {
           console.error(`蓝牙设备断开：${this.mac}`)
           wx.offBLEConnectionStateChange(bleConnectionListener)
-          resolve({ errCode: -1, errMsg: '蓝牙设备断开' })
+          resolve({ code: -1, error: '蓝牙设备断开' })
         }
       }
 
@@ -149,7 +155,7 @@ export class BleClient {
       // 存在蓝牙信号较差的情况，连接蓝牙设备后会中途断开的情况，需要做对应异常处理
       const connectRes = await Promise.race([this.connect(), this.listenDisconnect()])
 
-      if (connectRes.errCode === -1) {
+      if (connectRes.code === -1) {
         throw connectRes
       }
 
