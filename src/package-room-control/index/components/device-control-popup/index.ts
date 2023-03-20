@@ -4,7 +4,12 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { deviceBinding, deviceStore, sceneStore } from '../../../../store/index'
 import { maxColorTempK, minColorTempK, proType } from '../../../../config/index'
 import { controlDevice, createAssociated, delAssociated, updateAssociated, updateScene } from '../../../../apis/index'
-import { transformSwitchToNormal, removeSwitchRel, transformSwitchToLinkLight, removeLightRel } from '../../../utils/index'
+import {
+  transformSwitchToNormal,
+  removeSwitchRel,
+  transformSwitchToLinkLight,
+  removeLightRel,
+} from '../../../utils/index'
 import Toast from '@vant/weapp/toast/toast'
 
 let throttleTimer = 0

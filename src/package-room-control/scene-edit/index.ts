@@ -129,7 +129,6 @@ ComponentWithComputed({
           emitter.emit('sceneEdit')
           homeStore.updateRoomCardList()
           wx.navigateBack()
-          Toast('删除成功')
         } else {
           Toast('删除失败')
         }
@@ -150,6 +149,22 @@ ComponentWithComputed({
       }
       if (this.data.sceneIcon !== sceneStore.sceneList[sceneStore.selectSceneIndex].sceneName) {
         data.sceneIcon = this.data.sceneIcon
+      }
+      if (this.data.sceneDeviceActionsFlatten.length === 0) {
+        // 删完actions按照删除场景处理
+        Dialog.confirm({
+          message: '清空操作将会删除场景，确定删除该场景？',
+        }).then(async () => {
+          const res = await deleteScene(this.data.sceneId)
+          if (res.success) {
+            emitter.emit('sceneEdit')
+            homeStore.updateRoomCardList()
+            wx.navigateBack()
+          } else {
+            Toast('删除失败')
+          }
+        })
+        return
       }
       if (this.data.sceneDeviceActionsDelete.length !== 0) {
         // 将展开的action组合起来
