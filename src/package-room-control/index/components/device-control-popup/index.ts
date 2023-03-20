@@ -4,7 +4,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { deviceBinding, deviceStore, sceneStore } from '../../../../store/index'
 import { maxColorTempK, minColorTempK, proType } from '../../../../config/index'
 import { controlDevice, createAssociated, delAssociated, updateAssociated, updateScene } from '../../../../apis/index'
-import { transformSwitchToNormal, removeRel, transformSwitchToLinkLight, removeLightRel } from '../../../utils/index'
+import { transformSwitchToNormal, removeSwitchRel, transformSwitchToLinkLight, removeLightRel } from '../../../utils/index'
 import Toast from '@vant/weapp/toast/toast'
 
 let throttleTimer = 0
@@ -443,7 +443,7 @@ ComponentWithComputed({
       // 先查一下有没有关联开关，有先解开关联
       const rel = deviceStore.deviceRelMap[selectSwitchUniId]
       if (rel && rel.switchRelId) {
-        const res = await removeRel(selectSwitchUniId.split(':')[0], selectSwitchUniId.split(':')[1])
+        const res = await removeSwitchRel(selectSwitchUniId.split(':')[0], selectSwitchUniId.split(':')[1])
         if (!res) {
           return
         }
@@ -701,7 +701,7 @@ ComponentWithComputed({
       const selectDevice = deviceStore.allRoomDeviceMap[switchUniId.split(':')[0]]
       const switchId = switchUniId.split(':')[1]
       // 先解开开关的其他关联
-      const res = await removeRel(selectDevice.deviceId, switchId)
+      const res = await removeSwitchRel(selectDevice.deviceId, switchId)
       if (!res) {
         return
       }

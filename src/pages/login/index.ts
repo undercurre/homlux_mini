@@ -15,9 +15,18 @@ Component({
     isAgree: false,
     checkImg: '/assets/img/base/check.png',
     uncheckImg: '/assets/img/base/uncheck.png',
+    marginTop: 0,
   },
 
   methods: {
+    onLoad() {
+      const navigationBarAndStatusBarHeight =
+        (storage.get<number>('statusBarHeight') as number) + (storage.get<number>('navigationBarHeight') as number)
+      this.setData({
+        marginTop: 200 - navigationBarAndStatusBarHeight,
+      })
+    },
+
     onLoginTap() {
       if (!this.data.isAgree) {
         Toast('请同意协议')
