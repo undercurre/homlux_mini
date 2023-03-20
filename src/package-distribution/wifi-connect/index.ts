@@ -166,8 +166,14 @@ ComponentWithComputed({
         this.setData({
           isRequestSystemWifiList: true,
         })
-        const wifiListRes = await wx.getWifiList()
+        const wifiListRes = await wx.getWifiList().catch((err) => {
+          this.setData({
+            isRequestSystemWifiList: false,
+          })
+          console.log('getWifiList-catch', err)
+        })
 
+        this.toggleWifiListPopup()
         console.log('getWifiList', wifiListRes)
       } else if (deviceInfo.system.toLowerCase().includes('ios')) {
         this.toggleWifiTips()

@@ -1,7 +1,7 @@
 <view class="page-container flex flex-col" bindtap="hideMenu">
   <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="家庭管理"></nav-bar>
 
-  <view class="px-48rpx pt-32rpx pb-48rpx">
+  <view class="px-48rpx pt-32rpx pb-20rpx">
     <view class="flex flex-row justify-between items-center">
       <view class="relative flex flex-row items-center shrink" bind:tap="handleShowHomeSelectMenu" id="homeName">
         <text class="max-w-520rpx text-40 text-hex-1E2C46 font-semibold leading-56rpx single-text">{{ currentHomeDetail.houseName }}</text>
@@ -19,9 +19,9 @@
 
   <view class="grow flex flex-col justify-between">
     <view>
-      <van-cell-group inset>
+      <!-- <van-cell-group inset>
         <van-cell title="家庭位置" value="{{currentHomeDetail.houseArea || positionLocation}}" value-class="single-text" is-link center link-type="navigateTo" url="/package-mine/home-location/index" border="{{false}}" />
-      </van-cell-group>
+      </van-cell-group> -->
 
       <van-cell-group inset>
         <van-cell title="房间管理" is-link center link-type="navigateTo" url="/package-mine/room-manage/index" />
@@ -53,7 +53,7 @@
     <text class="block pl-48rpx pb-32rpx text-28">家庭名称</text>
 
     <view class="mx-32rpx">
-      <van-field value="{{ homeInfoEdited.houseName }}" placeholder="请输入家庭名称" custom-style="padding: 20rpx 40rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}" focus="{{isFocus}}" bind:change="changeHouseName"> </van-field>
+      <van-field value="{{ homeInfoEdited.houseName }}" placeholder="请输入家庭名称" custom-style="padding: 20rpx 40rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}" focus="{{isFocus}}" bind:change="changeHouseName" border="{{false}}"> </van-field>
     </view>
 
     <view class="flex flex-row gap-46rpx pt-80rpx px-32rpx">

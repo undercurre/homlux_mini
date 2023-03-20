@@ -123,7 +123,7 @@ export class BleClient {
 
     console.log(`mac: ${this.mac}`, 'notifyRes', notifyRes)
 
-    return  {
+    return {
       code: 0,
       error: connectRes,
     }

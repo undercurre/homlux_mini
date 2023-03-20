@@ -4,8 +4,7 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { roomBinding, homeBinding } from '../../store/index'
 import { saveOrUpdateUserHouseInfo, delUserHouse, quitUserHouse, updateDefaultHouse } from '../../apis/index'
-import { strUtil, getPosition } from '../../utils/index'
-import { storage } from '../../utils/storage'
+import { strUtil } from '../../utils/index'
 
 ComponentWithComputed({
   options: {
@@ -17,8 +16,6 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
-    key: 'L7HBZ-UZ6EU-7J5VU-BR54O-3ZDG5-6CFIC',
-    sig: 'W9RrPrVIxGPyuKEzzS76ktDxvN3zxxyJ',
     selectHomeMenu: {
       x: '0px',
       y: '0px',
@@ -33,7 +30,6 @@ ComponentWithComputed({
     isEditName: false,
     isShowSetting: false,
     isTransferHome: false,
-    positionLocation: '',
   },
 
   computed: {
@@ -52,13 +48,6 @@ ComponentWithComputed({
   },
 
   lifetimes: {
-    attached: async function () {
-      const position = await getPosition()
-
-      this.setData({
-        positionLocation: position.address,
-      })
-    },
     ready: async function () {
       homeBinding.store.updateHomeMemberList()
     },
@@ -103,7 +92,6 @@ ComponentWithComputed({
       })
     },
     onSelectSetting(e: WechatMiniprogram.CustomEvent) {
-      console.log('onSelectSetting', e.detail)
       const name = e.detail.name
 
       if (name === '重命名') {
@@ -178,7 +166,7 @@ ComponentWithComputed({
 
       const res = await saveOrUpdateUserHouseInfo({
         ...this.data.homeInfoEdited,
-        userLocationInfo: storage.get('position_location', '') as string,
+        userLocationInfo: '',
       })
 
       if (!res.success) {

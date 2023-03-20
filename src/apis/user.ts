@@ -10,3 +10,31 @@ export async function queryUserInfo() {
     url: '/v1/mzgd/user/queryWxUserInfo',
   })
 }
+
+/**
+ * 解析微信二维码接口
+ */
+export async function queryWxImgQrCode(imgUrl: string) {
+  return await mzaioRequest.post<{ qrCodeUrl: string }>({
+    log: false,
+    loading: true,
+    url: '/v1/mzgd/user/queryWxImgQrCode',
+    data: {
+      imgUrl,
+    },
+  })
+}
+
+/**
+ * 获取oss上传地址接口
+ */
+export async function getUploadFileForOssInfo(fileName: string) {
+  return await mzaioRequest.post<{ certification: string; downloadUrl: string; uploadUrl: string }>({
+    log: false,
+    loading: true,
+    url: '/v1/mzgd/user/uploadFileForOss',
+    data: {
+      fileName,
+    },
+  })
+}
