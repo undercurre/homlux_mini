@@ -6,7 +6,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { emitter } from '../../utils/eventBus'
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
-import { removeRel } from '../utils/index'
+import { removeSwitchRel } from '../utils/index'
 
 interface DeviceActionsFlattenItem {
   id: string
@@ -182,11 +182,14 @@ ComponentWithComputed({
         data.deviceActions = deviceActions
         data.updateType = '1'
       }
-      if (this.data.linkSwitch !== sceneStore.sceneSwitchMap[this.data.sceneId]) {
-        if (sceneStore.sceneSwitchMap[this.data.sceneId] && this.data.linkSwitch) {
-          // 解绑原来的场景
+      if (this.data.linkSwitch) {
+        if (
+          deviceStore.switchSceneMap[this.data.linkSwitch] &&
+          deviceStore.switchSceneMap[this.data.linkSwitch] !== this.data.sceneId
+        ) {
+          // 解绑开关原来的场景
           const res = await updateScene({
-            sceneId: this.data.sceneId,
+            sceneId: deviceStore.switchSceneMap[this.data.linkSwitch],
             updateType: '2',
           })
           if (!res.success) {
@@ -197,34 +200,30 @@ ComponentWithComputed({
             return
           }
         }
-        if (this.data.linkSwitch) {
-          // 新的开关如果有关联也需要即开关联
-          const isSuccess = await removeRel(this.data.linkSwitch.split(':')[0], this.data.linkSwitch.split(':')[1])
-          if (!isSuccess) {
-            Toast({
-              message: '解除绑定失败',
-              zIndex: 99999,
-            })
-            return
-          }
-          data.deviceConditions = [
-            {
-              deviceId: this.data.linkSwitch.split(':')[0],
-              controlEvent: [
-                {
-                  ep: Number(this.data.linkSwitch.split(':')[1]),
-                  ButtonScene: 1,
-                },
-              ],
-            },
-          ]
-          data.updateType = data.updateType === '0' ? '3' : '5'
-        } else {
-          if (sceneStore.sceneSwitchMap[this.data.sceneId]) {
-            // 删除绑定
-            data.updateType = data.updateType === '0' ? '2' : '4'
-          }
+        // 新的开关如果有关联也需要解开关联
+        const isSuccess = await removeSwitchRel(this.data.linkSwitch.split(':')[0], this.data.linkSwitch.split(':')[1])
+        if (!isSuccess) {
+          Toast({
+            message: '解除绑定失败',
+            zIndex: 99999,
+          })
+          return
         }
+        data.deviceConditions = [
+          {
+            deviceId: this.data.linkSwitch.split(':')[0],
+            controlEvent: [
+              {
+                ep: Number(this.data.linkSwitch.split(':')[1]),
+                ButtonScene: 1,
+              },
+            ],
+          },
+        ]
+        data.updateType = data.updateType === '0' ? '3' : '5'
+      } else {
+        // 删除绑定
+        data.updateType = data.updateType === '0' ? '2' : '4'
       }
       const res = await updateScene(data)
       if (res.success) {
@@ -272,7 +271,6 @@ ComponentWithComputed({
       })
     },
     handleSwitchSelect(e: { detail: string }) {
-      console.log(deviceStore.switchSceneMap[e.detail], deviceStore.switchSceneMap[e.detail] !== this.data.sceneId)
       if (this.data.linkSwitchSelect[0] === e.detail) {
         this.setData({
           linkSwitchSelect: [],

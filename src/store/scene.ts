@@ -39,7 +39,7 @@ export const sceneStore = observable({
    */
   get sceneSwitchMap(): Record<string, string> {
     const map = {} as Record<string, string>
-    sceneStore.sceneList.forEach((scene) => {
+    sceneStore.allRoomSceneList.forEach((scene) => {
       scene.deviceConditions?.forEach((condition) => {
         map[scene.sceneId] = `${condition.deviceId}:${condition.controlEvent[0].ep}`
       })

@@ -38,7 +38,7 @@ export async function removeLightRel(deviceId: string) {
 }
 
 // 开关解开关联
-export async function removeRel(deviceId: string, ep: string) {
+export async function removeSwitchRel(deviceId: string, ep: string) {
   const rel = deviceStore.deviceRelMap[`${deviceId}:${ep}`]
   if (!rel) {
     return true
