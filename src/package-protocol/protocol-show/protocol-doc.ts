@@ -1220,7 +1220,7 @@ export const userInfoList = `
         </tr>
         <tr style="height:18px">
             <td rowspan="2" width="188" style="border-bottom-width: 1px; border-bottom-color: black; border-top: none;">
-                注册和登陆
+                注册和登录
             </td>
             <td width="135" style="border-top: none; border-left: none;">
                 手机号、短信验证码
