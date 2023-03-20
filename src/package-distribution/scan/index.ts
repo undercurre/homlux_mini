@@ -223,6 +223,8 @@ ComponentWithComputed({
                 // @ts-ignore
                 this.goBack() // 拒绝授权摄像头，则退出当前页面
                 resolve(false)
+
+                return
               }
 
               wx.openSetting({
@@ -240,18 +242,21 @@ ComponentWithComputed({
     },
 
     async initBle() {
-      const permission = await this.checkBlePermission()
-
-      // 优先判断微信授权设置
-      if (!permission) {
-        return
-      }
       // 初始化蓝牙模块
       const openBleRes = await wx
         .openBluetoothAdapter({
           mode: 'central',
-        })
-        .catch((err) => err)
+        }).catch((err: WechatMiniprogram.BluetoothError) => err)
+
+      // 判断是否授权蓝牙
+      if (openBleRes.errMsg.includes('auth deny')) {
+        const permission = await this.checkBlePermission()
+
+        // 优先判断微信授权设置
+        if (!permission) {
+          return
+        }
+      }
 
       console.log('scan-openBleRes', openBleRes)
 
@@ -265,7 +270,7 @@ ComponentWithComputed({
         }
       })
 
-      // 是否已打开蓝牙
+      // 系统是否已打开蓝牙
       const res = await this.checkSystemBleSwitch()
 
       if (!res) {

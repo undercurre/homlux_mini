@@ -1,5 +1,5 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { logout } from '../../utils/index'
+import { logout, storage } from '../../utils/index'
 import { userBinding, userStore } from '../../store/index'
 
 Component({
@@ -47,6 +47,14 @@ Component({
     },
 
     toPage(e: { currentTarget: { dataset: { url: string } } }) {
+      // 如果用户已经登录，开始请求数据
+      if (!storage.get<string>('token')) {
+        wx.navigateTo({
+          url: '/pages/login/index'
+        })
+        return
+      }
+
       wx.navigateTo({
         url: e.currentTarget.dataset.url,
       })
