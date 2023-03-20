@@ -50,7 +50,7 @@ Component({
       // 如果用户已经登录，开始请求数据
       if (!storage.get<string>('token')) {
         wx.navigateTo({
-          url: '/pages/login/index'
+          url: '/pages/login/index',
         })
         return
       }
