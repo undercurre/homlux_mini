@@ -396,7 +396,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .h-full{height:100%;}
 .max-w-200{max-width:200rpx;}
 .max-w-450{max-width:450rpx;}
-.max-w-470rpx{max-width:470rpx;}
+.max-w-480rpx{max-width:480rpx;}
 .max-w-520rpx{max-width:520rpx;}
 .min-w-64{min-width:64rpx;}
 .min-w-650rpx{min-width:650rpx;}
