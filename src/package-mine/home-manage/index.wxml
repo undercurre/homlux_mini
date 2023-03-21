@@ -19,9 +19,9 @@
 
   <view class="grow flex flex-col justify-between">
     <view>
-      <van-cell-group inset>
+      <!-- <van-cell-group inset>
         <van-cell title="家庭位置" value="{{currentHomeDetail.houseArea || positionLocation}}" value-class="single-text" is-link center link-type="navigateTo" url="/package-mine/home-location/index" border="{{false}}" />
-      </van-cell-group>
+      </van-cell-group> -->
 
       <van-cell-group inset>
         <van-cell title="房间管理" is-link center link-type="navigateTo" url="/package-mine/room-manage/index" />
