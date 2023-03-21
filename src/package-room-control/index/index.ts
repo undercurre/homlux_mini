@@ -438,6 +438,15 @@ ComponentWithComputed({
     async handleLightPowerToggle(e: { detail: Device.DeviceItem }) {
       const device = deviceStore.deviceList.find((device) => device.deviceId === e.detail.deviceId)!
       const OnOff = device.mzgdPropertyDTOList['1'].OnOff
+      // 如果是打开则默认选择设备
+      if (!OnOff) {
+        if (!deviceStore.selectList.includes(e.detail.deviceId)) {
+          runInAction(() => {
+            deviceStore.selectList = [...deviceStore.selectList, e.detail.deviceId]
+          })
+          this.updateSelectType()
+        }
+      }
       runInAction(() => {
         device.mzgdPropertyDTOList['1'].OnOff = OnOff ? 0 : 1
         deviceStore.deviceList = [...deviceStore.deviceList]
@@ -515,6 +524,15 @@ ComponentWithComputed({
       } else {
         const device = deviceStore.deviceList.find((device) => device.deviceId === e.detail.deviceId)!
         const OnOff = device.mzgdPropertyDTOList[ep].OnOff
+        // 如果是打开则默认选择设备
+        if (!OnOff) {
+          if (!deviceStore.selectList.includes(e.detail.uniId)) {
+            runInAction(() => {
+              deviceStore.selectList = [...deviceStore.selectList, e.detail.uniId]
+            })
+            this.updateSelectType()
+          }
+        }
         runInAction(() => {
           device.mzgdPropertyDTOList[ep].OnOff = OnOff ? 0 : 1
           deviceStore.deviceList = [...deviceStore.deviceList]
