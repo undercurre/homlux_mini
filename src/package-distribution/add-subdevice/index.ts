@@ -1,12 +1,13 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { homeBinding, roomBinding } from '../../store/index'
+import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
 import { bleUtil, strUtil, BleClient, getCurrentPageParams } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { sendCmdAddSubdevice, bindDevice, queryDeviceOnlineStatus } from '../../apis/index'
 import { IBleDevice } from './typings'
 
 type StatusName = 'linking' | 'error'
+let deviceNum = 0
 
 ComponentWithComputed({
   options: {
@@ -42,6 +43,8 @@ ComponentWithComputed({
 
       pageParams.deviceName = pageParams.deviceName || '子设备'
       pageParams.deviceIcon = pageParams.deviceIcon || ''
+
+      deviceNum = deviceBinding.store.allRoomDeviceList.filter((item) => item.proType === pageParams.proType).length // 数量
 
       this.setData({
         pageParams,
@@ -232,7 +235,7 @@ ComponentWithComputed({
         houseId: homeBinding.store.currentHomeId,
         roomId: device.roomId || this.data.defaultRoom.roomId,
         sn: '',
-        deviceName: device.name,
+        deviceName: device.name + (deviceNum > 0 ? strUtil.encodeS(++deviceNum) : ''),
       })
 
       if (res.success && res.result.isBind) {

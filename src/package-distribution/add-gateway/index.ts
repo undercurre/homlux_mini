@@ -3,11 +3,12 @@ import { IPageData } from './typings'
 import { queryDeviceOnlineStatus, bindDevice } from '../../apis/index'
 import { WifiSocket, strUtil, getCurrentPageParams } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { homeBinding, roomBinding } from '../../store/index'
+import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
 import { emitter, WSEventType } from '../../utils/eventBus'
 
 let socket: WifiSocket
 let start = Date.now()
+let gatewayNum = 0
 
 Component({
   options: {
@@ -34,9 +35,7 @@ Component({
 
   lifetimes: {
     ready() {
-      emitter.on('wsReceive', (res) => {
-        console.debug('add-gateway', res, res.result.eventType === WSEventType.device_offline_status)
-      })
+      gatewayNum = deviceBinding.store.allRoomDeviceList.filter((item) => item.proType === '0x16').length // 网关数量
       start = Date.now()
       this.initWifi()
     },
@@ -124,7 +123,7 @@ Component({
         houseId: homeBinding.store.currentHomeId,
         roomId: roomBinding.store.roomList[0].roomId,
         sn,
-        deviceName: params.deviceName + params.apSSID.substr(-4),
+        deviceName: params.deviceName + (gatewayNum > 0 ? strUtil.encodeS(++gatewayNum) : ''),
       })
 
       if (res.success && res.result.isBind) {

@@ -636,6 +636,7 @@ ComponentWithComputed({
           gatewaySn,
           deviceName: this.data.deviceInfo.deviceName,
           deviceIcon: this.data.deviceInfo.icon,
+          proType: this.data.deviceInfo.proType,
         }),
       })
     },

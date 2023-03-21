@@ -53,10 +53,12 @@ Component({
             deviceName: res.result.deviceName,
             sn: res.result.sn,
             roomId: res.result.roomId,
-            switchList: res.result.switchInfoDTOList.map((item) => ({
-              switchId: item.switchId,
-              switchName: item.switchName,
-            })),
+            switchList: res.result.switchInfoDTOList
+              ? res.result.switchInfoDTOList.map((item) => ({
+                  switchId: item.switchId,
+                  switchName: item.switchName,
+                }))
+              : [],
           },
         })
       }
@@ -96,16 +98,18 @@ Component({
         type: '2',
       })
 
-      const deviceInfoUpdateVoList = this.data.deviceInfo.switchList.map((item) => {
-        return {
-          deviceId: deviceId,
-          switchId: item.switchId,
-          switchName: item.switchName,
-          type: '3',
-        }
-      })
+      if (this.data.deviceInfo.switchList.length > 1) {
+        const deviceInfoUpdateVoList = this.data.deviceInfo.switchList.map((item) => {
+          return {
+            deviceId: deviceId,
+            switchId: item.switchId,
+            switchName: item.switchName,
+            type: '3',
+          }
+        })
 
-      await batchUpdate({ deviceInfoUpdateVoList })
+        await batchUpdate({ deviceInfoUpdateVoList })
+      }
 
       if (res.success) {
         homeBinding.store.updateCurrentHomeDetail()

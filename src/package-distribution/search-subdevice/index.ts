@@ -17,6 +17,9 @@ import { addDevice } from '../../assets/lottie/index'
 
 type StatusName = 'discover' | 'requesting' | 'success' | 'error' | 'openBle'
 
+let lightNum = 0 // 灯数量
+let panelNum = 0 // 面板数
+
 ComponentWithComputed({
   options: {
     addGlobalClass: true,
@@ -75,20 +78,17 @@ ComponentWithComputed({
   lifetimes: {
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
     ready: function () {
-      console.log(
-        '灯数量',
-        deviceBinding.store.allRoomDeviceList.filter((item) => item.proType === '0x13').length,
-        '面板数：',
-        deviceBinding.store.allRoomDeviceList.filter((item) => item.proType === '0x21').length,
-      )
+      lightNum = deviceBinding.store.allRoomDeviceList.filter((item) => item.proType === '0x13').length // 灯数量
+      panelNum = deviceBinding.store.allRoomDeviceList.filter((item) => item.proType === '0x21').length // 面板数
+      console.log('lightNum', lightNum, panelNum)
 
       this.initBle()
 
-      this.setData({
-        deviceList: JSON.parse(
-          '[{"proType":"0x13","deviceUuid":"04:CD:15:A9:B5:B7","mac":"04CD15A9B5B7","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/midea.light.003.002-3.png","name":"灯具B5B7","isChecked":false,"client":{"key":"midea@homluxB5B7","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15A9B5B7","deviceUuid":"04:CD:15:A9:B5:B7"},"roomId":"","roomName":"","switchList":[],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2}, {"proType":"0x21","deviceUuid":"04:CD:15:AE:AA:8D","mac":"04CD15AEAA8D","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/panel-4.png","name":"面板AA8D","isChecked":false,"client":{"key":"midea@homluxAA8D","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEAA8D","deviceUuid":"04:CD:15:AE:AA:8D"},"roomId":"","roomName":"","switchList":[{"switchId":"1","switchName":"按键1"},{"switchId":"2","switchName":"按键2"}],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2},{"proType":"0x21","deviceUuid":"04:CD:15:AE:B5:3A","mac":"04CD15AEB53A","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/panel-4.png","name":"面板B53A","isChecked":false,"client":{"key":"midea@homluxB53A","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEB53A","deviceUuid":"04:CD:15:AE:B5:3A"},"roomId":"","roomName":"","switchList":[{"switchId":"1","switchName":"按键1"},{"switchId":"2","switchName":"按键2"},{"switchId":"3","switchName":"按键3"},{"switchId":"4","switchName":"按键4"}],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2}]',
-        ),
-      })
+      // this.setData({
+      //   deviceList: JSON.parse(
+      //     '[{"proType":"0x13","deviceUuid":"04:CD:15:A9:B5:B7","mac":"04CD15A9B5B7","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/midea.light.003.002-3.png","name":"灯具B5B7","isChecked":false,"client":{"key":"midea@homluxB5B7","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15A9B5B7","deviceUuid":"04:CD:15:A9:B5:B7"},"roomId":"","roomName":"","switchList":[],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2}, {"proType":"0x21","deviceUuid":"04:CD:15:AE:AA:8D","mac":"04CD15AEAA8D","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/panel-4.png","name":"面板AA8D","isChecked":false,"client":{"key":"midea@homluxAA8D","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEAA8D","deviceUuid":"04:CD:15:AE:AA:8D"},"roomId":"","roomName":"","switchList":[{"switchId":"1","switchName":"按键1"},{"switchId":"2","switchName":"按键2"}],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2},{"proType":"0x21","deviceUuid":"04:CD:15:AE:B5:3A","mac":"04CD15AEB53A","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/panel-4.png","name":"面板B53A","isChecked":false,"client":{"key":"midea@homluxB53A","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEB53A","deviceUuid":"04:CD:15:AE:B5:3A"},"roomId":"","roomName":"","switchList":[{"switchId":"1","switchName":"按键1"},{"switchId":"2","switchName":"按键2"},{"switchId":"3","switchName":"按键3"},{"switchId":"4","switchName":"按键4"}],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2}]',
+      //   ),
+      // })
     },
     moved: function () {},
     detached: function () {
@@ -203,6 +203,8 @@ ComponentWithComputed({
       const dataMsg = strUtil.ab2hex(device.advertisData)
       const msgObj = bleUtil.transferBroadcastData(dataMsg)
 
+      console.log('handleBleDeviceInfo', msgObj, panelNum, lightNum)
+
       const infoRes = await queryProtypeInfo({
         proType: `0x${msgObj.deviceCategory}`,
         mid: `0x${msgObj.deviceModel}`,
@@ -212,13 +214,21 @@ ComponentWithComputed({
         return
       }
 
+      let { switchNum, productName: deviceName } = infoRes.result
+
+      if (msgObj.deviceCategory === '21' && panelNum > 0) {
+        deviceName += strUtil.encodeS(++panelNum)
+      } else if (msgObj.deviceCategory === '13' && lightNum > 0) {
+        deviceName += strUtil.encodeS(++lightNum)
+      }
+
       const bleDevice: IBleDevice = {
         proType: `0x${msgObj.deviceCategory}`,
         deviceUuid: device.deviceId,
         mac: msgObj.mac,
         zigbeeMac: '',
         icon: infoRes.result.icon || '/assets/img/device/gateway.png',
-        name: infoRes.result.productName + msgObj.mac.substr(-4, 4),
+        name: deviceName,
         isChecked: false,
         client: new BleClient({ mac: msgObj.mac, deviceUuid: device.deviceId }),
         roomId: '',
@@ -230,8 +240,8 @@ ComponentWithComputed({
         zigbeeRepeatTimes: 2,
       }
 
-      if (bleDevice.proType === '0x21') {
-        bleDevice.switchList = new Array(3).fill('').map((_item, index) => {
+      if (switchNum > 1 && bleDevice.proType === '0x21') {
+        bleDevice.switchList = new Array(switchNum).fill('').map((_item, index) => {
           const num = index + 1
           return {
             switchId: num.toString(),
