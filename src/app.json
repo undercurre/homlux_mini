@@ -17,7 +17,6 @@
       "root": "package-mine",
       "pages": [
         "home-manage/index",
-        "home-location/index",
         "room-manage/index",
         "room-detail/index",
         "member-manage/index",

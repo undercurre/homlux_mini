@@ -1,9 +1,10 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import dayjs from 'dayjs'
 import { deviceBinding, homeBinding } from '../../store/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { strUtil } from '../../utils/index'
-import { checkDevice, queryProtypeInfo } from '../../apis/index'
+import { checkDevice, queryProtypeInfo, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -41,6 +42,10 @@ ComponentWithComputed({
       return allRoomDeviceList.filter((item) => item.deviceType === 1)
     },
     tipsText(data) {
+      if (data.bleStatus === 'close') {
+        return '打开手机蓝牙发现附近子设备'
+      }
+
       return data.subdeviceList.length ? `搜索到${data.subdeviceList.length}个附近的子设备` : '正在搜索附近子设备'
     },
   },
@@ -124,6 +129,8 @@ ComponentWithComputed({
 
           wx.navigateBack()
           return
+        } else {
+          wx.getSetting()
         }
       }
     },
@@ -175,19 +182,11 @@ ComponentWithComputed({
       // 没有打开系统蓝牙开关异常处理
       if (!res.bluetoothEnabled) {
         wx.showModal({
-          content: '请开启您的蓝牙功能用于设备配网',
+          title: '请打开手机蓝牙',
+          content: '用于发现附近的子设备',
           showCancel: false,
-          cancelColor: '#27282A',
-          confirmText: '知道了',
+          confirmText: '我知道了',
           confirmColor: '#27282A',
-          // 由于调用openSystemBluetoothSetting接口，必须通过回调方式调用，promise方式会被拒绝
-          success: (bleDialogRes) => {
-            console.log('bleDialogRes', bleDialogRes)
-
-            this.setData({
-              isShowOpenBleTips: true,
-            })
-          },
         })
       }
 
@@ -386,10 +385,6 @@ ComponentWithComputed({
 
       const scanUrl = e.detail.result
 
-      if (!scanUrl.includes('meizgd.com/homlux/qrCode.html')) {
-        return
-      }
-
       this.handleScanUrl(scanUrl)
     },
 
@@ -410,19 +405,84 @@ ComponentWithComputed({
         count: 1,
         mediaType: ['image'],
         sourceType: ['album'],
-        success(res) {
-          console.log('chooseMedia', res)
+        success: (res) => {
+          console.log('选择相册：', res)
+
+          const file = res.tempFiles[0]
+
+          const fs = wx.getFileSystemManager()
+
+          fs.readFile({
+            filePath: file.tempFilePath,
+            // encoding: 'binary',
+            success: async (result) => {
+              console.log('readFile', result)
+
+              wx.request({
+                url: 'https://test.meizgd.com/mzaio/v1/mzgd/user/queryWxImgQrCode', //仅为示例，并非真实的接口地址
+                method: 'POST',
+                data: { file: result.data },
+                header: {
+                  'content-type': 'multipart/form-data',
+                  Authorization: 'Bearer 82e26960d90a444186df10502d494e05',
+                },
+                success: async (res) => {
+                  console.log('success', res)
+                },
+                complete(res) {
+                  console.log('complete', res)
+                },
+              })
+
+              // this.uploadFile({ fileUrl: file.tempFilePath, fileSize: file.size, binary: result.data })
+
+              const query = await queryWxImgQrCode(result.data)
+
+              if (query.success) {
+                this.handleScanUrl(query.result.qrCodeUrl)
+              }
+            },
+          })
+        },
+      })
+    },
+
+    async uploadFile(params: { fileUrl: string; fileSize: number; binary: string | ArrayBuffer }) {
+      const { fileUrl, fileSize, binary } = params
+
+      const nameArr = fileUrl.split('/')
+
+      const { result } = await getUploadFileForOssInfo(nameArr[nameArr.length - 1])
+
+      console.log('uploadInfo', result)
+
+      wx.request({
+        url: result.uploadUrl, //仅为示例，并非真实的接口地址
+        method: 'PUT',
+        data: binary,
+        header: {
+          'content-type': 'binary',
+          Certification: result.certification,
+          'X-amz-date': dayjs().subtract(8, 'hour').format('ddd,D MMM YYYY HH:mm:ss [GMT]'), // gmt时间慢8小时
+          'Content-Length': fileSize,
+          'X-amz-acl': 'public-read',
+        },
+        success: async (res) => {
+          console.log('success', res)
+        },
+        complete(res) {
+          console.log('complete', res)
         },
       })
     },
 
     async handleScanUrl(url: string) {
+      if (!url.includes('meizgd.com/homlux/qrCode.html')) {
+        return
+      }
+
       this.setData({
         isScan: true,
-      })
-
-      wx.showLoading({
-        title: 'loading',
       })
 
       const pageParams = strUtil.getUrlParams(url)
@@ -446,11 +506,13 @@ ComponentWithComputed({
 
         console.log('isScan', this.data.isScan)
       }, 2000)
-
-      wx.hideLoading()
     },
 
     async bindGateway(params: IAnyObject) {
+      wx.showLoading({
+        title: 'loading',
+      })
+
       const res = await queryProtypeInfo({
         pid: params.pid,
       })
@@ -467,9 +529,14 @@ ComponentWithComputed({
           deviceName: res.result.productName,
         }),
       })
+      wx.hideLoading()
     },
 
     async bindSubDevice(params: IAnyObject) {
+      wx.showLoading({
+        title: 'loading',
+      })
+
       if (this.data.bleStatus !== 'open') {
         this.checkSystemBleSwitch()
         return
@@ -499,6 +566,7 @@ ComponentWithComputed({
       if (flag) {
         this.addSingleSubdevice()
       }
+      wx.hideLoading()
     },
 
     /**

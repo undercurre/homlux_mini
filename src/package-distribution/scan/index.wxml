@@ -13,15 +13,13 @@
     </view>
 
     <view class="h-400 grow shrink camera-mask flex flex-col items-center justify-between">
-      <view class="inline-block flex flex-row items-center bg-hex-5A5A5A rounded-32rpx leading-74rpx px-28rpx" wx:if="{{bleStatus === 'open'}}">
-        <image class="w-28 h-28 rotate" src="/package-distribution/assets/scan/scaning.png"></image>
+      <view class="inline-block flex flex-row items-center bg-hex-5A5A5A rounded-32rpx leading-74rpx px-28rpx w-min-380">
+        <image wx:if="{{bleStatus === 'open'}}" class="w-28 h-28 rotate" src="/package-distribution/assets/scan/scaning.png"></image>
 
-        <text class="grow text-hex-F4F8FF px-16rpx">{{tipsText}}</text>
+        <text class="grow text-hex-F4F8FF px-16rpx" bind:tap="checkSystemBleSwitch">{{tipsText}}</text>
 
         <van-button class="ml-24rpx" type="primary" size="small" bind:click="addNearSubdevice" wx:if="{{subdeviceList.length || 1}}" custom-style="height: 52rpx;margin-top: -10rpx;">立即添加</van-button>
       </view>
-
-      <van-button class="mt-60rpx" type="primary" size="large" bind:click="checkSystemBleSwitch" wx:if="{{bleStatus === 'close'}}" custom-style="width: 380rpx;background-color: #5A5A5A;border-radiux: 32rpx;">打开蓝牙添加设备</van-button>
 
       <view></view>
 
@@ -79,5 +77,3 @@
     <text class="block w-full text-32 text-black-2a">1、MSGW-15</text>
   </view>
 </van-dialog>
-
-<van-button type="primary" size="large" plain bind:click="test">test</van-button>

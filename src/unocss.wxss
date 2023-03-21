@@ -50,6 +50,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .pb-32rpx{padding-bottom:32rpx;}
 .pb-34rpx{padding-bottom:34rpx;}
 .pb-40rpx{padding-bottom:40rpx;}
+.pb-44rpx{padding-bottom:44rpx;}
 .pb-48rpx{padding-bottom:48rpx;}
 .pb-4rpx{padding-bottom:4rpx;}
 .pb-60rpx{padding-bottom:60rpx;}
@@ -63,7 +64,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .pl-40rpx{padding-left:40rpx;}
 .pl-48rpx{padding-left:48rpx;}
 .pl-88rpx{padding-left:88rpx;}
-.pr-12rpx{padding-right:12rpx;}
 .pr-16rpx{padding-right:16rpx;}
 .pr-24rpx{padding-right:24rpx;}
 .pr-40rpx{padding-right:40rpx;}
@@ -164,7 +164,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .mt-50rpx{margin-top:50rpx;}
 .mt-56rpx{margin-top:56rpx;}
 .mt-5rpx{margin-top:5rpx;}
-.mt-60rpx{margin-top:60rpx;}
 .mt-62rpx{margin-top:62rpx;}
 .mt-64rpx{margin-top:64rpx;}
 .mt-66rpx{margin-top:66rpx;}
@@ -310,8 +309,11 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .flex-wrap{flex-wrap:wrap;}
 .grid{display:grid;}
 .grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr));}
+.grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr));}
 .grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr));}
+.grid-rows-2{grid-template-rows:repeat(2,minmax(0,1fr));}
 .gap-16rpx{grid-gap:16rpx;gap:16rpx;}
+.gap-18rpx{grid-gap:18rpx;gap:18rpx;}
 .gap-32rpx{grid-gap:32rpx;gap:32rpx;}
 .gap-46rpx{grid-gap:46rpx;gap:46rpx;}
 .gap-48rpx{grid-gap:48rpx;gap:48rpx;}
@@ -366,6 +368,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .h-36rpx{height:36rpx;}
 .h-364{height:364rpx;}
 .h-368rpx{height:368rpx;}
+.h-38{height:38rpx;}
 .h-4{height:4rpx;}
 .h-400,
 .h-400rpx{height:400rpx;}
@@ -424,6 +427,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .w-208rpx{width:208rpx;}
 .w-213rpx{width:213rpx;}
 .w-22rpx{width:22rpx;}
+.w-24{width:24rpx;}
 .w-244rpx{width:244rpx;}
 .w-250rpx{width:250rpx;}
 .w-256rpx{width:256rpx;}
@@ -448,6 +452,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .w-50rpx{width:50rpx;}
 .w-52rpx{width:52rpx;}
 .w-564{width:564rpx;}
+.w-60,
 .w-60rpx{width:60rpx;}
 .w-64,
 .w-64rpx{width:64rpx;}
