@@ -26,7 +26,7 @@ ComponentWithComputed({
           } else {
             this.setData({
               OnOff: this.data.lightInfo.OnOff,
-              left: 350
+              left: 350,
             })
           }
         }
