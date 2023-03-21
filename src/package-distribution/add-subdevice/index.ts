@@ -235,7 +235,7 @@ ComponentWithComputed({
         houseId: homeBinding.store.currentHomeId,
         roomId: device.roomId || this.data.defaultRoom.roomId,
         sn: '',
-        deviceName: device.name + (deviceNum > 0 ? strUtil.encodeS(++deviceNum) : ''),
+        deviceName: device.name + (deviceNum > 0 ? ++deviceNum : ''),
       })
 
       if (res.success && res.result.isBind) {

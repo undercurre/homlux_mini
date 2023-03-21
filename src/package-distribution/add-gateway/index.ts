@@ -4,7 +4,6 @@ import { queryDeviceOnlineStatus, bindDevice } from '../../apis/index'
 import { WifiSocket, strUtil, getCurrentPageParams } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
-import { emitter, WSEventType } from '../../utils/eventBus'
 
 let socket: WifiSocket
 let start = Date.now()
@@ -123,7 +122,7 @@ Component({
         houseId: homeBinding.store.currentHomeId,
         roomId: roomBinding.store.roomList[0].roomId,
         sn,
-        deviceName: params.deviceName + (gatewayNum > 0 ? strUtil.encodeS(++gatewayNum) : ''),
+        deviceName: params.deviceName + (gatewayNum > 0 ? ++gatewayNum : ''),
       })
 
       if (res.success && res.result.isBind) {

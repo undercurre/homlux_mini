@@ -96,6 +96,7 @@ export async function queryProtypeInfo(
     productId: string
     productName: string
     proType: string
+    switchNum: number
   }>({
     log: true,
     loading: options?.loading ?? false,

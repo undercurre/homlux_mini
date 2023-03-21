@@ -216,10 +216,13 @@ ComponentWithComputed({
 
       let { switchNum, productName: deviceName } = infoRes.result
 
-      if (msgObj.deviceCategory === '21' && panelNum > 0) {
-        deviceName += strUtil.encodeS(++panelNum)
-      } else if (msgObj.deviceCategory === '13' && lightNum > 0) {
-        deviceName += strUtil.encodeS(++lightNum)
+      if (msgObj.deviceCategory === '21') {
+        ++panelNum
+        deviceName += panelNum > 1 ? panelNum : ''
+        // deviceName += (panelNum > 1 ? strUtil.encodeS(panelNum) : '')
+      } else if (msgObj.deviceCategory === '13') {
+        ++lightNum
+        deviceName += lightNum > 1 ? lightNum : ''
       }
 
       const bleDevice: IBleDevice = {

@@ -18,7 +18,7 @@
 
         <text class="grow text-hex-F4F8FF px-16rpx" bind:tap="checkSystemBleSwitch">{{tipsText}}</text>
 
-        <van-button class="ml-24rpx" type="primary" size="small" bind:click="addNearSubdevice" wx:if="{{subdeviceList.length || 1}}" custom-style="height: 52rpx;margin-top: -8rpx;">立即添加</van-button>
+        <van-button class="ml-24rpx" type="primary" size="small" bind:click="addNearSubdevice" wx:if="{{subdeviceList.length}}" custom-style="height: 52rpx;margin-top: -8rpx;">立即添加</van-button>
       </view>
 
       <view></view>
