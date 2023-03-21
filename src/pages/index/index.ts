@@ -145,8 +145,8 @@ ComponentWithComputed({
         })
       }
       emitter.off('wsReceive')
-      emitter.on('wsReceive', () => {
-        if (!throttleTimer) {
+      emitter.on('wsReceive', (res) => {
+        if (!throttleTimer && res.result.eventType !== 'connect_success_status') {
           throttleTimer = setTimeout(() => {
             homeStore.updateRoomCardList()
             throttleTimer = 0
