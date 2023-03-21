@@ -21,10 +21,12 @@ ComponentWithComputed({
               OnOff: this.data.lightInfo.OnOff,
               Level: this.data.lightInfo.Level ?? 0,
               ColorTemp: this.data.lightInfo.ColorTemp ?? 0,
+              left: 0,
             })
           } else {
             this.setData({
               OnOff: this.data.lightInfo.OnOff,
+              left: 350,
             })
           }
         }
@@ -42,6 +44,7 @@ ComponentWithComputed({
     OnOff: 0,
     Level: 0,
     ColorTemp: 0,
+    left: 0,
   },
 
   computed: {
@@ -75,9 +78,24 @@ ComponentWithComputed({
       )
     },
     handleOnOffChange(e: WechatMiniprogram.TouchEvent) {
+      if (e.currentTarget.dataset.value === this.data.OnOff) {
+        return
+      }
       this.setData({
         OnOff: e.currentTarget.dataset.value,
       })
+      this.animate(
+        '#slider',
+        [
+          {
+            left: this.data.OnOff ? '350rpx' : '0',
+          },
+          {
+            left: this.data.OnOff ? '0' : '350rpx',
+          },
+        ],
+        100,
+      )
     },
     handleLevelDrag(e: { detail: { value: number } }) {
       this.setData({
