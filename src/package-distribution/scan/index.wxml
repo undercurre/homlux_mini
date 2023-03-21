@@ -18,7 +18,7 @@
 
         <text class="grow text-hex-F4F8FF px-16rpx">{{tipsText}}</text>
 
-        <van-button class="ml-24rpx" type="primary" size="small" bind:click="addNearSubdevice" wx:if="{{subdeviceList.length}}" custom-style="height: 52rpx;margin-top: -10rpx;">立即添加</van-button>
+        <van-button class="ml-24rpx" type="primary" size="small" bind:click="addNearSubdevice" wx:if="{{subdeviceList.length || 1}}" custom-style="height: 52rpx;margin-top: -10rpx;">立即添加</van-button>
       </view>
 
       <view></view>
@@ -77,5 +77,3 @@
     <text class="block w-full text-32 text-black-2a">1、MSGW-15</text>
   </view>
 </van-dialog>
-
-<van-button type="primary" size="large" plain bind:click="test">test</van-button>

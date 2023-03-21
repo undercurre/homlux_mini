@@ -1,4 +1,5 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import Toast from '@vant/weapp/toast/toast'
 import { homeBinding, roomBinding } from '../../store/index'
 
 Component({
@@ -7,6 +8,10 @@ Component({
    * 组件的属性列表
    */
   properties: {
+    switchList: {
+      type: Array,
+      value: [],
+    },
     deviceName: {
       type: String,
       value: '',
@@ -18,14 +23,15 @@ Component({
   },
 
   observers: {
-    'deviceName, roomId': function (deviceName, roomId) {
-      console.log('observers-deviceName', deviceName, roomId)
+    'deviceName, roomId, switchList': function (deviceName, roomId, switchList) {
+      console.log('observers-deviceName', deviceName, roomId, switchList)
 
       this.setData({
         deviceInfo: {
           roomId: roomId,
           roomName: '',
           deviceName: deviceName,
+          switchList: switchList,
         },
       })
     },
@@ -36,10 +42,16 @@ Component({
    */
   data: {
     isAddRoom: false,
+    isShowEditSwitch: false,
     deviceInfo: {
       roomId: '',
       roomName: '',
       deviceName: '',
+      switchList: [],
+    },
+    switchInfo: {
+      switchId: '',
+      switchName: '',
     },
   },
 
@@ -62,6 +74,51 @@ Component({
       this.setData({
         isAddRoom: true,
       })
+    },
+
+    editSwitchName(event: WechatMiniprogram.CustomEvent) {
+      const { index } = event.currentTarget.dataset
+
+      const item = this.data.switchList[index]
+
+      console.log(111, index, item)
+
+      this.setData({
+        isShowEditSwitch: true,
+        switchInfo: item,
+      })
+    },
+
+    changeSwitchName(event: WechatMiniprogram.CustomEvent) {
+      console.log('changeSwitchName', event)
+
+      this.setData({
+        'switchInfo.switchName': event.detail.value,
+      })
+    },
+
+    handleClose() {
+      this.setData({
+        isShowEditSwitch: false,
+      })
+    },
+    async handleConfirm() {
+      if (!this.data.switchInfo.switchName) {
+        Toast('按键名称不能为空')
+        return
+      }
+
+      if (this.data.switchInfo.switchName.length > 6) {
+        Toast('按键名称不能超过6个字符')
+        return
+      }
+
+      this.setData({
+        deviceInfo: this.data.deviceInfo,
+      })
+
+      this.triggerEvent('change', Object.assign({}, this.data.deviceInfo))
+      this.handleClose()
     },
 
     changeDeviceName(event: WechatMiniprogram.CustomEvent) {

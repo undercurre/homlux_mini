@@ -1,7 +1,7 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { getCurrentPageParams, strUtil } from '../../utils/index'
-import { queryDeviceInfoByDeviceId, editDeviceInfo } from '../../apis/index'
+import { queryDeviceInfoByDeviceId, editDeviceInfo, batchUpdate } from '../../apis/index'
 import { homeBinding, roomBinding } from '../../store/index'
 
 Component({
@@ -18,7 +18,7 @@ Component({
    * 组件的初始数据
    */
   data: {
-    deviceInfo: { deviceId: '', deviceName: '', roomId: '', sn: '' },
+    deviceInfo: { deviceId: '', deviceName: '', roomId: '', sn: '', switchList: [] as IAnyObject[] },
   },
 
   lifetimes: {
@@ -53,6 +53,10 @@ Component({
             deviceName: res.result.deviceName,
             sn: res.result.sn,
             roomId: res.result.roomId,
+            switchList: res.result.switchInfoDTOList.map((item) => ({
+              switchId: item.switchId,
+              switchName: item.switchName,
+            })),
           },
         })
       }
@@ -77,6 +81,7 @@ Component({
       this.setData({
         'deviceInfo.roomId': event.detail.roomId,
         'deviceInfo.deviceName': event.detail.deviceName,
+        'deviceInfo.switchList': event.detail.switchList,
       })
     },
 
@@ -91,10 +96,23 @@ Component({
         type: '2',
       })
 
+      const deviceInfoUpdateVoList = this.data.deviceInfo.switchList.map((item) => {
+        return {
+          deviceId: deviceId,
+          switchId: item.switchId,
+          switchName: item.switchName,
+          type: '3',
+        }
+      })
+
+      await batchUpdate({ deviceInfoUpdateVoList })
+
       if (res.success) {
         homeBinding.store.updateCurrentHomeDetail()
 
         wx.switchTab({ url: '/pages/index/index' })
+      } else {
+        wx.showToast({ title: '保存失败', icon: 'error' })
       }
     },
   },

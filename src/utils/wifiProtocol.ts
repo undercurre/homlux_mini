@@ -256,6 +256,7 @@ export class WifiSocket {
           return
         }
 
+        // 网关固定IP，优先11.1，ip冲突才会选择33.1
         const ipList = ['192.168.11.1', '192.168.33.1']
 
         for (const ip of ipList) {

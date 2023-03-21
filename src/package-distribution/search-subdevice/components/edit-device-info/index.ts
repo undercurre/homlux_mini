@@ -16,13 +16,17 @@ Component({
       type: String,
       value: '',
     },
+    switchList: {
+      type: Array,
+      value: [],
+    },
   },
 
   /**
    * 组件的初始数据
    */
   data: {
-    deviceInfo: {},
+    deviceInfo: null as null | IAnyObject,
   },
 
   /**
@@ -37,7 +41,11 @@ Component({
       this.triggerEvent('close')
     },
     confirm() {
-      this.triggerEvent('confirm', this.data.deviceInfo)
+      if (this.data.deviceInfo) {
+        this.triggerEvent('confirm', this.data.deviceInfo)
+      }
+
+      this.triggerEvent('close')
     },
   },
 })

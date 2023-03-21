@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 import { deviceBinding, homeBinding } from '../../store/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { strUtil } from '../../utils/index'
-import { checkDevice, queryProtypeInfo, getUploadFileForOssInfo } from '../../apis/index'
+import { checkDevice, queryProtypeInfo, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -129,6 +129,8 @@ ComponentWithComputed({
 
           wx.navigateBack()
           return
+        } else {
+          wx.getSetting()
         }
       }
     },
@@ -383,10 +385,6 @@ ComponentWithComputed({
 
       const scanUrl = e.detail.result
 
-      if (!scanUrl.includes('meizgd.com/homlux/qrCode.html')) {
-        return
-      }
-
       this.handleScanUrl(scanUrl)
     },
 
@@ -417,10 +415,32 @@ ComponentWithComputed({
           fs.readFile({
             filePath: file.tempFilePath,
             // encoding: 'binary',
-            success: (result) => {
+            success: async (result) => {
               console.log('readFile', result)
 
-              this.uploadFile({ fileUrl: file.tempFilePath, fileSize: file.size, binary: result.data })
+              wx.request({
+                url: 'https://test.meizgd.com/mzaio/v1/mzgd/user/queryWxImgQrCode', //仅为示例，并非真实的接口地址
+                method: 'POST',
+                data: { file: result.data },
+                header: {
+                  'content-type': 'multipart/form-data',
+                  Authorization: 'Bearer 82e26960d90a444186df10502d494e05',
+                },
+                success: async (res) => {
+                  console.log('success', res)
+                },
+                complete(res) {
+                  console.log('complete', res)
+                },
+              })
+
+              // this.uploadFile({ fileUrl: file.tempFilePath, fileSize: file.size, binary: result.data })
+
+              const query = await queryWxImgQrCode(result.data)
+
+              if (query.success) {
+                this.handleScanUrl(query.result.qrCodeUrl)
+              }
             },
           })
         },
@@ -441,13 +461,13 @@ ComponentWithComputed({
         method: 'PUT',
         data: binary,
         header: {
-          // 'content-type': 'binary',
+          'content-type': 'binary',
           Certification: result.certification,
-          'X-amz-date': dayjs().subtract(8, 'hour').format('ddd,D MMM YYYY HH:mm:ss [GMT]'),
+          'X-amz-date': dayjs().subtract(8, 'hour').format('ddd,D MMM YYYY HH:mm:ss [GMT]'), // gmt时间慢8小时
           'Content-Length': fileSize,
           'X-amz-acl': 'public-read',
         },
-        success(res) {
+        success: async (res) => {
           console.log('success', res)
         },
         complete(res) {
@@ -457,12 +477,12 @@ ComponentWithComputed({
     },
 
     async handleScanUrl(url: string) {
+      if (!url.includes('meizgd.com/homlux/qrCode.html')) {
+        return
+      }
+
       this.setData({
         isScan: true,
-      })
-
-      wx.showLoading({
-        title: 'loading',
       })
 
       const pageParams = strUtil.getUrlParams(url)
@@ -486,11 +506,13 @@ ComponentWithComputed({
 
         console.log('isScan', this.data.isScan)
       }, 2000)
-
-      wx.hideLoading()
     },
 
     async bindGateway(params: IAnyObject) {
+      wx.showLoading({
+        title: 'loading',
+      })
+
       const res = await queryProtypeInfo({
         pid: params.pid,
       })
@@ -507,9 +529,14 @@ ComponentWithComputed({
           deviceName: res.result.productName,
         }),
       })
+      wx.hideLoading()
     },
 
     async bindSubDevice(params: IAnyObject) {
+      wx.showLoading({
+        title: 'loading',
+      })
+
       if (this.data.bleStatus !== 'open') {
         this.checkSystemBleSwitch()
         return
@@ -539,6 +566,7 @@ ComponentWithComputed({
       if (flag) {
         this.addSingleSubdevice()
       }
+      wx.hideLoading()
     },
 
     /**

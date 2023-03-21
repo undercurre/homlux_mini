@@ -211,6 +211,33 @@ export async function editDeviceInfo(
 }
 
 /**
+ * 批量编辑设备(开关)
+ * @param data
+ * @param options
+ */
+export async function batchUpdate(
+  data: {
+    deviceInfoUpdateVoList: {
+      deviceId: string
+      deviceName?: string
+      houseId?: string
+      roomId?: string
+      type?: string
+      switchId?: string
+      switchName?: string
+    }[]
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<{ isSuccess: boolean }>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/batchUpdate',
+    data,
+  })
+}
+
+/**
  * 设备管理-删除设备
  * 网关需要传sn，子设备传子设备的deviceId代替sn
  */
