@@ -13,9 +13,9 @@
 
 <van-dialog use-slot title="此设备已绑定" show="{{ isShowForceBindTips }}" show-cancel-button="{{false}}" confirm-button-text="取消" confirm-button-color="#488FFF" bind:confirm="reScan">
   <view class="text-center pt-20rpx">
-    <image class="w-274 h-274" src="/package-distribution/assets/check-gateway/force-bind.png"></image>
+    <image class="w-411 h-411" src="/package-distribution/assets/check-gateway/force-bind.png"></image>
   </view>
-  <text class="block pt-30rpx pb-60rpx text-center leading-48rpx text-28 text-hex-666">如需绑定至新的家庭，请单击网关最右侧按键</text>
+  <text class="block pb-60rpx text-center leading-48rpx text-28 text-hex-666">如需绑定至新的家庭，请单击网关最右侧按键</text>
 </van-dialog>
 
 <van-dialog use-slot title="设备连接失败" show="{{ status === 'error' }}" show-cancel-button="{{true}}" confirm-button-text="我知道了" confirm-button-color="#488FFF" bind:confirm="goBack" bind:cancel="cancel">

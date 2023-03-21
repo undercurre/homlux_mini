@@ -24,6 +24,7 @@ page {
 
   /* popup start */
   --popup-round-border-radius: 64rpx;
+  --popup-close-icon-color: #27282A;
   /* popup end */
 
   --action-sheet-item-text-color: #27282a;

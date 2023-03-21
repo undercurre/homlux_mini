@@ -1,5 +1,5 @@
 <!--package-distribution/search-subdevice/components/edit-device-info/index.wxml-->
-<van-popup show="{{ show }}" position="bottom" round bind:close="close">
+<van-popup show="{{ show }}" position="bottom" round bind:close="close" closeable>
   <view class="px-32rpx pt-48rpx pb-40rpx text-black-2a">
     <text class="block pb-66rpx font-medium text-center text-36 leading-48rpx">设备编辑</text>
 
