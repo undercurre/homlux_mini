@@ -167,6 +167,7 @@ ComponentWithComputed({
       const houseId = enterQuery.houseId as string
       const time = enterQuery.time as string
       if (token && type && houseId && time) {
+        storage.set('isTryInvite', 1)
         console.log(`lmn>>>邀请参数:token=${token}/type=${type}/houseId=${houseId}/time=${time}`)
         for (let i = 0; i < homeBinding.store.homeList.length; i++) {
           if (homeBinding.store.homeList[i].houseId == houseId) {
@@ -183,7 +184,6 @@ ComponentWithComputed({
             confirmButtonText: '我知道了',
           })
         } else {
-          storage.set('isTryInvite', 1)
           homeBinding.store
             .inviteMember(houseId, parseInt(type))
             .then(() => {
