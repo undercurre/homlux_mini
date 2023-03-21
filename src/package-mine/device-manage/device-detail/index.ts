@@ -1,8 +1,8 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { deviceStore, homeStore, roomBinding } from '../../../store/index'
+import { deviceStore, homeStore, otaStore, roomBinding } from '../../../store/index'
 import pageBehavior from '../../../behaviors/pageBehaviors'
-import { checkOtaVersion, deleteDevice, editDeviceInfo, queryDeviceInfoByDeviceId } from '../../../apis/index'
+import { deleteDevice, editDeviceInfo, queryDeviceInfoByDeviceId } from '../../../apis/index'
 import { proName, proType } from '../../../config/index'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { emitter } from '../../../utils/eventBus'
@@ -47,6 +47,12 @@ ComponentWithComputed({
       }
       return ''
     },
+    hasOtaUpdate(data) {
+      if (data.deviceInfo.deviceId) {
+        return !!otaStore.deviceVersionInfoMap[data.deviceInfo.deviceId]
+      }
+      return false
+    },
   },
 
   methods: {
@@ -59,9 +65,9 @@ ComponentWithComputed({
         roomId,
       })
       this.updateDeviceInfo()
-      checkOtaVersion(deviceId).then((res) => {
-        console.log('ota', res)
-      })
+      // checkOtaVersion(deviceId).then((res) => {
+      //   console.log('ota', res)
+      // })
     },
 
     handleDeviceNameEditPopup() {

@@ -32,7 +32,7 @@ export async function allDevicePowerControl(data: { houseId: string; onOff: numb
  */
 export async function queryDeviceList(data: { houseId: string; roomId: string }, options?: { loading?: boolean }) {
   return await mzaioRequest.post<Device.DeviceItem[]>({
-    log: false,
+    log: true,
     loading: options?.loading ?? false,
     url: '/v1/device/queryDeviceInfoByRoomId',
     data,
@@ -44,7 +44,7 @@ export async function queryDeviceList(data: { houseId: string; roomId: string },
  */
 export async function querySubDeviceList(data: { houseId: string; roomId: string }, options?: { loading?: boolean }) {
   return await mzaioRequest.post<Device.DeviceItem[]>({
-    log: false,
+    log: true,
     loading: options?.loading ?? false,
     url: '/v1/device/querySubDeviceInfoByRoomId',
     data,
