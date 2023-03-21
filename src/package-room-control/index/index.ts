@@ -40,7 +40,6 @@ ComponentWithComputed({
     lightList: [] as Device.DeviceItem[],
     switchList: [] as Device.DeviceItem[],
     curtainList: [] as Device.DeviceItem[],
-    addSceneActions: [] as Device.ActionItem[],
     showBeforeAddSceneSuccess: false,
     showAddSceneSuccess: false,
     sceneTitlePosition: {
@@ -308,7 +307,6 @@ ComponentWithComputed({
     handleCollect() {
       // 补充actions
       const deviceMap = deviceStore.deviceMap
-      const currentRoom = roomStore.currentRoom
       const switchSceneMap = deviceStore.switchSceneMap
       const addSceneActions = [] as Device.ActionItem[]
       // 排除已经是场景开关的开关
@@ -321,9 +319,10 @@ ComponentWithComputed({
           const OnOff = deviceMap[deviceId].mzgdPropertyDTOList[ep].OnOff
           addSceneActions.push({
             uniId: device.uniId,
-            name: device.switchInfoDTOList[0].switchName + ' | ' + currentRoom.roomName,
+            name: device.switchInfoDTOList[0].switchName + ' | ' + device.deviceName,
             desc: OnOff ? ['打开'] : ['关闭'],
             pic: device.switchInfoDTOList[0].pic,
+            proType: device.proType,
             value: {
               ep,
               OnOff,
@@ -333,25 +332,31 @@ ComponentWithComputed({
           const properties = device.mzgdPropertyDTOList['1']
           const desc = properties.OnOff ? ['打开'] : ['关闭']
           const color = (properties.ColorTemp / 100) * (maxColorTempK - minColorTempK) + maxColorTempK
-          desc.push(`亮度${properties.Level}%`)
-          desc.push(`色温${color}K`)
-          addSceneActions.push({
+          const action = {
             uniId: device.uniId,
-            name: device.deviceName + ' | ' + currentRoom.roomName,
+            name: device.deviceName,
             desc,
             pic: device.pic,
+            proType: device.proType,
             value: {
               ep: 1,
               OnOff: properties.OnOff,
-              Level: properties.Level,
-              ColorTemp: properties.ColorTemp,
-            },
-          })
+            } as IAnyObject,
+          }
+          if (properties.OnOff) {
+            desc.push(`亮度${properties.Level}%`)
+            desc.push(`色温${color}K`)
+            action.value.Level = properties.Level
+            action.value.ColorTemp = properties.ColorTemp
+          }
+          addSceneActions.push(action)
         }
+      })
+      runInAction(() => {
+        sceneStore.addSceneActions = addSceneActions
       })
       this.setData({
         showBeforeAddSceneSuccess: true,
-        addSceneActions,
       })
     },
     handleDeviceCardTap(e: { detail: Device.DeviceItem & { clientRect: WechatMiniprogram.ClientRect } }) {
@@ -560,12 +565,6 @@ ComponentWithComputed({
       this.setData({
         showBeforeAddSceneSuccess: false,
         showAddScenePopup: true,
-      })
-    },
-    handleBeforeAddScenePopupDelete(e: { detail: number }) {
-      this.data.addSceneActions.splice(e.detail, 1)
-      this.setData({
-        addSceneActions: [...this.data.addSceneActions],
       })
     },
     handleShowAddSceneSuccess() {

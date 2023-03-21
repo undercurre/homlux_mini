@@ -43,11 +43,9 @@ ComponentWithComputed({
           }, 100)
         }
         if (this.data.roomListComputed.length > 0) {
-          if (!this.data.roomSelect) {
-            this.setData({
-              roomSelect: this.data.roomListComputed[0].roomId,
-            })
-          }
+          this.setData({
+            roomSelect: this.data.roomListComputed[0].roomId,
+          })
         }
       },
     },

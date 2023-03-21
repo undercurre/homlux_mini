@@ -17,6 +17,11 @@ export const sceneStore = observable({
    */
   selectSceneIndex: -1,
 
+  /**
+   * 准备添加到场景的actions
+   */
+  addSceneActions: [] as Device.ActionItem[],
+
   get sceneIdMp(): Record<string, Scene.SceneItem> {
     return Object.fromEntries(sceneStore.allRoomSceneList.map((scene) => [scene.sceneId, scene]))
   },
@@ -74,6 +79,6 @@ export const sceneStore = observable({
 
 export const sceneBinding = {
   store: sceneStore,
-  fields: ['selectSceneIndex', 'sceneList'],
+  fields: ['selectSceneIndex', 'sceneList', 'allRoomSceneList', 'addSceneActions'],
   actions: [],
 }

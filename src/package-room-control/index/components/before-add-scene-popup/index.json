@@ -1,4 +1,7 @@
 {
   "component": true,
-  "usingComponents": {}
+  "usingComponents": {
+    "scene-light-edit-popup": "../../../components/scene-light-edit-popup/index",
+    "scene-switch-edit-popup": "../../../components/scene-switch-edit-popup/index"
+  }
 }

@@ -16,7 +16,7 @@
       <view class="inline-block flex flex-row items-center bg-hex-5A5A5A rounded-32rpx leading-74rpx px-28rpx w-min-380">
         <image wx:if="{{bleStatus === 'open'}}" class="w-28 h-28 rotate" src="/package-distribution/assets/scan/scaning.png"></image>
 
-        <text class="grow text-hex-F4F8FF px-16rpx">{{tipsText}}</text>
+        <text class="grow text-hex-F4F8FF px-16rpx" bind:tap="checkSystemBleSwitch">{{tipsText}}</text>
 
         <van-button class="ml-24rpx" type="primary" size="small" bind:click="addNearSubdevice" wx:if="{{subdeviceList.length || 1}}" custom-style="height: 52rpx;margin-top: -10rpx;">立即添加</van-button>
       </view>

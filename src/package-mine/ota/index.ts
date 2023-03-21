@@ -1,14 +1,11 @@
-import { execOtaUpdate, queryDeviceOtaUpdateList } from '../../apis/ota'
+import { execOtaUpdate } from '../../apis/ota'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { homeStore } from '../../store/index'
+import { otaBinding, otaStore } from '../../store/index'
 import Toast from '@vant/weapp/toast/toast'
 import { ComponentWithComputed } from 'miniprogram-computed'
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 ComponentWithComputed({
-  behaviors: [pageBehavior],
-  /**
-   * 组件的属性列表
-   */
-  properties: {},
+  behaviors: [BehaviorWithStore({ storeBindings: [otaBinding] }), pageBehavior],
 
   /**
    * 组件的初始数据
@@ -17,9 +14,7 @@ ComponentWithComputed({
     autoUpdate: false,
     isLoading: false,
     contentHeight: 0,
-    otaData: [{}], // todo：mock数据，联调时删除
-    otaProductList: [] as Ota.OtaProduct[],
-    otaUpdateList: [] as Ota.OtaUpdate[],
+    otaData: [{}],
     isUpdating: false,
     hasUpdate: false,
     _pollingTimer: 0,
@@ -28,7 +23,7 @@ ComponentWithComputed({
   computed: {
     remainOtaDevice(data) {
       let count = 0
-      data.otaUpdateList.forEach((device) => {
+      data.otaUpdateList?.forEach((device: Ota.OtaUpdate) => {
         if ([0, 1].includes(device.otaUpdateStatus)) {
           count++
         }
@@ -41,7 +36,7 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    onLoad() {
+    async onLoad() {
       wx.createSelectorQuery()
         .select('#content')
         .boundingClientRect()
@@ -52,21 +47,18 @@ ComponentWithComputed({
             })
           }
         })
-      queryDeviceOtaUpdateList(homeStore.currentHomeDetail.houseId).then((res) => {
-        if (res.success) {
-          this.setData({
-            otaProductList: res.result.otaProductList,
-            otaUpdateList: res.result.otaUpdateList,
-            isUpdating: res.result.otaProductList.some((product) => product.updateStatus === 1),
-            hasUpdate: res.result.otaProductList.length > 0,
-          })
-          if (this.data.isUpdating) {
-            this.startPollingQuery()
-          }
-        } else {
-          Toast('查询OTA信息失败')
+      const isSuccess = await otaStore.updateList()
+      if (isSuccess) {
+        this.setData({
+          isUpdating: otaStore.otaProductList.some((product) => product.updateStatus === 1),
+          hasUpdate: otaStore.otaProductList.length > 0,
+        })
+        if (this.data.isUpdating) {
+          this.startPollingQuery()
         }
-      })
+      } else {
+        Toast('查询OTA信息失败')
+      }
     },
     onUnload() {
       this.stopPolling()
@@ -91,7 +83,7 @@ ComponentWithComputed({
         isUpdating: true,
       })
       execOtaUpdate({
-        deviceOtaList: this.data.otaUpdateList,
+        deviceOtaList: otaStore.otaUpdateList,
       }).then((res) => {
         if (res.success) {
           // 下发升级指令成功，轮询直到完成更新
@@ -101,22 +93,16 @@ ComponentWithComputed({
     },
     startPollingQuery() {
       // 下发升级指令成功，轮询直到完成更新
-      this.data._pollingTimer = setInterval(() => {
-        queryDeviceOtaUpdateList(homeStore.currentHomeDetail.houseId).then((res) => {
-          if (res.success) {
-            this.setData({
-              otaProductList: res.result.otaProductList,
-              otaUpdateList: res.result.otaUpdateList,
-              isUpdating: res.result.otaProductList.some((product) => product.updateStatus === 1),
-              hasUpdate: res.result.otaProductList.length > 0,
-            })
-            if (!this.data.hasUpdate) {
-              this.stopPolling()
-            }
-          } else {
-            Toast('查询OTA信息失败')
-          }
-        })
+      this.data._pollingTimer = setInterval(async () => {
+        const isSuccess = await otaStore.updateList()
+        if (isSuccess) {
+          this.setData({
+            isUpdating: otaStore.otaProductList.some((product) => product.updateStatus === 1),
+            hasUpdate: otaStore.otaProductList.length > 0,
+          })
+        } else {
+          Toast('查询OTA信息失败')
+        }
       }, 5000)
     },
     stopPolling() {

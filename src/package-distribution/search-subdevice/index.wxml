@@ -27,7 +27,7 @@
               <view class="flex flex-row items-center pb-4rpx" bind:tap="editDevice" data-index="{{index}}">
                 <text class="max-w-200 pr-24rpx text-32 text-black-2a single-text">{{ item.name }}</text>
 
-                <image class="w-90 h-57" src="/package-distribution/assets/search-subdevice/edit.png" />
+                <image class="w-60 h-38" src="/package-distribution/assets/search-subdevice/edit.png" />
               </view>
 
               <text class="text-26 text-black-59 opacity-95">{{ item.roomName || defaultRoom.roomName }}</text>
@@ -70,17 +70,17 @@
             </view>
 
             <view class="grow pl-32rpx">
-              <view class="flex flex-row items-center">
+              <view class="flex flex-row items-center pb-4rpx" bind:tap="editDevice" data-index="{{index}}">
                 <text class="max-w-200 pr-24rpx text-32 text-black-2a single-text">{{ item.name }}</text>
+
+                <image class="w-60 h-38" src="/package-distribution/assets/search-subdevice/edit.png" />
               </view>
 
-              <view class="inline-block rounded-12rpx py-6rpx mt-20rpx">
-                <text class="pr-12rpx text-26 text-black-59">{{ item.roomName || defaultRoom.roomName }}</text>
-              </view>
+              <text class="text-26 text-black-59 opacity-95">{{ item.roomName || defaultRoom.roomName }}</text>
             </view>
 
             <view class="shrink-0">
-              <van-button color="linear-gradient(134deg, #468CFB 32%, #6BA3FC 93%)" type="primary" round bind:click="tryControl" data-index="{{index}}" data-id="{{item.deviceUuid}}" data-mac="{{item.mac}}" loading="{{item.requesting}}" disabled="{{item.requesting}}">找一找</van-button>
+              <van-button plain type="primary" size="small" round bind:click="tryControl" data-index="{{index}}" data-id="{{item.deviceUuid}}" data-mac="{{item.mac}}" loading="{{item.requesting}}" disabled="{{item.requesting}}" custom-style="background-color: rgba(72,143,255,0.10);border-radius: 12rpx; font-size: 24rpx; width: 120rpx;padding: 0;">找一找</van-button>
             </view>
           </view>
         </scroll-view>

@@ -5,5 +5,6 @@ export { roomStore, roomBinding } from './room'
 export { homeStore, homeBinding } from './home'
 export { deviceStore, deviceBinding } from './device'
 export { sceneStore, sceneBinding } from './scene'
+export { otaStore, otaBinding } from './ota'
 
 configure({ enforceActions: 'observed' })

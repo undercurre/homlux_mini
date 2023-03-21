@@ -392,7 +392,7 @@ ComponentWithComputed({
       })
 
       if (res.success && res.result.isBind) {
-        await this.editDeviceInfo({deviceId: res.result.deviceId, switchList: device.switchList})
+        await this.editDeviceInfo({ deviceId: res.result.deviceId, switchList: device.switchList })
         device.status = 'success'
       } else {
         device.status = 'fail'

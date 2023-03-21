@@ -145,8 +145,8 @@ ComponentWithComputed({
         })
       }
       emitter.off('wsReceive')
-      emitter.on('wsReceive', () => {
-        if (!throttleTimer) {
+      emitter.on('wsReceive', (res) => {
+        if (!throttleTimer && res.result.eventType !== 'connect_success_status') {
           throttleTimer = setTimeout(() => {
             homeStore.updateRoomCardList()
             throttleTimer = 0
@@ -156,12 +156,18 @@ ComponentWithComputed({
     },
 
     inviteMember() {
+      const isTryInvite = storage.get('isTryInvite', 0)
+      if (isTryInvite === 1) {
+        console.log('lmn>>>已尝试过邀请')
+        return
+      }
       const enterQuery = wx.getEnterOptionsSync().query
       const token = storage.get('token', '')
       const type = enterQuery.type as string
       const houseId = enterQuery.houseId as string
       const time = enterQuery.time as string
       if (token && type && houseId && time) {
+        storage.set('isTryInvite', 1)
         console.log(`lmn>>>邀请参数:token=${token}/type=${type}/houseId=${houseId}/time=${time}`)
         for (let i = 0; i < homeBinding.store.homeList.length; i++) {
           if (homeBinding.store.homeList[i].houseId == houseId) {

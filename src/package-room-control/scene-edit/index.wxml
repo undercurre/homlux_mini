@@ -24,12 +24,12 @@
     </view>
     <view class="flex-1" id="content">
       <scroll-view enhanced show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
-        <van-cell-group inset border="{{ false }}" wx:for="{{sceneDeviceActionsFlatten}}" wx:key="id" custom-class="{{index === 0 ? 'mt-0_el_' : ''}}">
+        <van-cell-group inset border="{{ false }}" wx:for="{{sceneDeviceActionsFlatten}}" wx:key="id" bindtap="handleSceneActionEdit" data-index="{{index}}" custom-class="{{index === 0 ? 'mt-0_el_' : ''}}">
           <van-cell center border="{{ false }}">
             <view slot="title" class="flex items-center">
-              <image src="{{item.image}}" class="w-96rpx h-96rpx rounded-999 bg-hex-f6fafd" />
+              <image src="{{item.pic}}" class="w-96rpx h-96rpx rounded-999 bg-hex-f6fafd" />
               <view class="flex flex-col items-start ml-32rpx">
-                <text class="text-32rpx text-black-2a font-medium leading-none mt-10rpx">{{item.title}}</text>
+                <text class="text-32rpx text-black-2a font-medium leading-none mt-10rpx">{{item.name}}</text>
                 <view class="text-28rpx text-black-tips font-normal mt-8rpx">
                   <text wx:for="{{item.desc}}" wx:key="index" class="{{index !== 0 ? 'ml-16rpx' : ''}}">{{item}}</text>
                 </view>
@@ -56,5 +56,6 @@
 <edit-name-popup value="{{sceneName}}" show="{{showEditNamePopup}}" bind:close="handleEditNameClose" bind:confirm="handleEditNameConfirm" />
 <edit-icon-popup value="{{sceneIcon}}" show="{{showEditIconPopup}}" bind:close="handleEditIconClose" bind:confirm="handleEditIconConfirm" />
 <link-popup show="{{showLinkPopup}}" list="{{switchList}}" selectList="{{linkSwitchSelect}}" link-type="switch" bind:close="handleLinkPopupClose" bind:select="handleSwitchSelect" bind:confirm="handleLinkPopupConfirm"></link-popup>
-
+<scene-light-edit-popup show="{{showSceneEditLightPopup}}" title="{{sceneEditTitle}}" lightInfo="{{sceneLightEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleSceneLightEditPopupClose"></scene-light-edit-popup>
+<scene-switch-edit-popup show="{{showSceneEditSwitchPopup}}" title="{{sceneEditTitle}}" switchInfo="{{sceneSwitchEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleSceneSwitchEditPopupClose"></scene-switch-edit-popup>
 <van-toast id="van-toast" />

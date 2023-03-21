@@ -18,6 +18,7 @@ export const WSEventType = {
   device_del: 'device_del',
   room_del: 'room_del',
   device_replace: 'device_replace',
+  connect_success_status: 'connect_success_status',
 }
 
 export const emitter: Emitter<Events> = mitt<Events>()

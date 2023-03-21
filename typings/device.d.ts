@@ -106,6 +106,7 @@ declare namespace Device {
     name: string
     desc: string[]
     pic: string
+    proType: string
     value: IAnyObject
   }
 }
