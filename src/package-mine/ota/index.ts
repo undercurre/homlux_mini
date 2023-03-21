@@ -23,7 +23,7 @@ ComponentWithComputed({
   computed: {
     remainOtaDevice(data) {
       let count = 0
-      data.otaUpdateList.forEach((device: Ota.OtaUpdate) => {
+      data.otaUpdateList?.forEach((device: Ota.OtaUpdate) => {
         if ([0, 1].includes(device.otaUpdateStatus)) {
           count++
         }
