@@ -156,6 +156,11 @@ ComponentWithComputed({
     },
 
     inviteMember() {
+      const isTryInvite = storage.get('isTryInvite', 0)
+      if (isTryInvite === 1) {
+        console.log('lmn>>>已尝试过邀请')
+        return
+      }
       const enterQuery = wx.getEnterOptionsSync().query
       const token = storage.get('token', '')
       const type = enterQuery.type as string
@@ -178,6 +183,7 @@ ComponentWithComputed({
             confirmButtonText: '我知道了',
           })
         } else {
+          storage.set('isTryInvite', 1)
           homeBinding.store
             .inviteMember(houseId, parseInt(type))
             .then(() => {

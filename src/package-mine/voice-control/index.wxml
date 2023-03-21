@@ -4,8 +4,7 @@
   <van-cell-group inset>
     <van-cell title="小度音箱" center data-url="{{urls.voiceIntro}}" bind:click="toPage" use-label-slot="{{true}}">
       <image slot="icon" class="w-96rpx h-96rpx mr-32rpx" src="/assets/img/mine/duer.png" />
-      <text slot="label" class="text-label">操作步骤 ></text>
-      <text slot="right-icon" class="right-btn w-78 h-32">前往授权</text>
+      <text slot="right-icon" class="text-label">操作步骤 ></text>
     </van-cell>
   </van-cell-group>
 </view>

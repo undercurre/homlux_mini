@@ -52,6 +52,7 @@ App<IAppOption>({
 
   onHide() {
     console.log('app-onHide')
+    storage.remove('isTryInvite')
     // 用户最小化app，断开ws连接
     if (socketTask) {
       socketTask.close({ code: 1000 })
