@@ -23,7 +23,7 @@ Component({
    */
   methods: {
     handleControlTap(e: WechatMiniprogram.TouchEvent) {
-      this.triggerEvent('controlTap', e.currentTarget.dataset.item)
+      this.triggerEvent('controlTap', e.detail)
     },
     handleCardTap(e: WechatMiniprogram.TouchEvent) {
       this.triggerEvent('cardTap', e.detail)

@@ -95,22 +95,6 @@ ComponentWithComputed({
     deviceName(data) {
       let name = ''
       if (data.deviceInfo.proType === proType.switch) {
-        // const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
-        // if (data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
-        //   const switchSceneMap = deviceStore.switchSceneMap
-        //   const sceneIdMp = sceneStore.sceneIdMp
-        //   if (
-        //     switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`] &&
-        //     sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]] &&
-        //     sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]].sceneName
-        //   ) {
-        //     name = sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]].sceneName
-        //   } else {
-        //     name = data.deviceInfo.switchInfoDTOList[0].switchName
-        //   }
-        // } else {
-        //   name = data.deviceInfo.switchInfoDTOList[0].switchName
-        // }
         name = data.deviceInfo.switchInfoDTOList[0].switchName
       } else {
         name = data.deviceInfo.deviceName
@@ -133,15 +117,10 @@ ComponentWithComputed({
    */
   methods: {
     handleCardTap() {
-      // this.triggerEvent('cardTap', this.data.deviceInfo)
       this.createSelectorQuery()
         .select('#card')
         .boundingClientRect()
         .exec((res) => {
-          // this.triggerEvent('cardTap', {
-          //   ...this.data.deviceInfo,
-          //   clientRect: res[0],
-          // })
           if (this.data.deviceInfo.onLineStatus) {
             this.triggerEvent('cardTap', {
               ...this.data.deviceInfo,
@@ -154,41 +133,45 @@ ComponentWithComputed({
     },
     handlePowerTap() {
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
-      if (this.data.deviceInfo.onLineStatus) {
-        this.triggerEvent('controlTap', this.data.deviceInfo)
-        // 执行动画
-        if (throttleTimer) {
-          return
-        }
-        let onOff = false
-        if (this.data.deviceInfo.proType === proType.light) {
-          onOff = !this.data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
-        } else if (this.data.deviceInfo.proType === proType.switch) {
-          const switchId = this.data.deviceInfo.switchInfoDTOList[0].switchId
-          if (this.data.deviceInfo.mzgdPropertyDTOList[switchId]) {
-            onOff = !this.data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff
-          }
-          if (this.data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
+      this.createSelectorQuery()
+        .select('#card')
+        .boundingClientRect()
+        .exec((res) => {
+          if (this.data.deviceInfo.onLineStatus) {
+            this.triggerEvent('controlTap', { ...this.data.deviceInfo, clientRect: res[0] })
+            // 执行动画
+            if (throttleTimer) {
+              return
+            }
+            let onOff = false
+            if (this.data.deviceInfo.proType === proType.light) {
+              onOff = !this.data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
+            } else if (this.data.deviceInfo.proType === proType.switch) {
+              const switchId = this.data.deviceInfo.switchInfoDTOList[0].switchId
+              if (this.data.deviceInfo.mzgdPropertyDTOList[switchId]) {
+                onOff = !this.data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff
+              }
+              if (this.data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
+                throttleTimer = setTimeout(() => {
+                  throttleTimer = 0
+                }, 550)
+                return
+              }
+            }
+            this.setData({
+              ripple: true,
+              onOff,
+            })
             throttleTimer = setTimeout(() => {
               throttleTimer = 0
+              this.setData({
+                ripple: false,
+              })
             }, 550)
-            return
+          } else {
+            this.triggerEvent('offlineTap', this.data.deviceInfo)
           }
-        }
-        this.setData({
-          ripple: true,
-          onOff,
         })
-        throttleTimer = setTimeout(() => {
-          throttleTimer = 0
-          this.setData({
-            ripple: false,
-          })
-        }, 550)
-      } else {
-        this.triggerEvent('offlineTap', this.data.deviceInfo)
-        // Toast('设备已离线')
-      }
     },
   },
 })
