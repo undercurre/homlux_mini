@@ -43,7 +43,7 @@
   <view wx:if="{{roomHasGateway && !roomHasSubDevice}}" class="w-full flex flex-col items-center">
     <image src="/assets/img/default-img/only-gateway.png" class="w-300rpx h-300rpx mt-64rpx"></image>
     <text class="text-black-59 text-28rpx mt-48rpx">智能网关非可控制设备</text>
-    <text data-url="/package-mine/device-manage/index" bindtap="goTo" class="text-black-59 text-28rpx">请在<text class="mx-8rpx text-blue underline decoration-solid decoration-blue">设备关联</text>中查看</text>
+    <text data-url="/package-mine/device-manage/index" bindtap="goTo" class="text-black-59 text-28rpx">请在<text class="mx-8rpx text-blue underline decoration-solid decoration-blue">设备管理</text>中查看</text>
   </view>
   <!-- 家庭无子设备无网关 -->
   <view wx:if="{{!roomHasGateway && !roomHasSubDevice}}" class="w-full flex flex-col items-center">

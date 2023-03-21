@@ -435,9 +435,13 @@ ComponentWithComputed({
     async handleDevicePowerTap(e: { detail: Device.DeviceItem }) {
       console.log(e)
     },
-    async handleLightPowerToggle(e: { detail: Device.DeviceItem }) {
+    async handleLightPowerToggle(e: { detail: Device.DeviceItem & { clientRect: WechatMiniprogram.ClientRect } }) {
       const device = deviceStore.deviceList.find((device) => device.deviceId === e.detail.deviceId)!
       const OnOff = device.mzgdPropertyDTOList['1'].OnOff
+      // 如果是打开则默认选择设备
+      if (!OnOff) {
+        this.handleDeviceCardTap(e)
+      }
       runInAction(() => {
         device.mzgdPropertyDTOList['1'].OnOff = OnOff ? 0 : 1
         deviceStore.deviceList = [...deviceStore.deviceList]
@@ -505,7 +509,10 @@ ComponentWithComputed({
       }
       await saveDeviceOrder(orderData)
     },
-    async handleSwitchControlTapToggle(e: { detail: Device.DeviceItem }) {
+    async handleSwitchControlTapToggle(e: {
+      detail: Device.DeviceItem & { clientRect: WechatMiniprogram.ClientRect }
+    }) {
+      console.log(e)
       const ep = e.detail.switchInfoDTOList[0].switchId
       if (e.detail.mzgdPropertyDTOList[ep].ButtonMode && e.detail.mzgdPropertyDTOList[ep].ButtonMode === 2) {
         const sceneId = deviceStore.switchSceneMap[e.detail.uniId]
@@ -515,6 +522,10 @@ ComponentWithComputed({
       } else {
         const device = deviceStore.deviceList.find((device) => device.deviceId === e.detail.deviceId)!
         const OnOff = device.mzgdPropertyDTOList[ep].OnOff
+        // 如果是打开则默认选择设备
+        if (!OnOff) {
+          this.handleDeviceCardTap(e)
+        }
         runInAction(() => {
           device.mzgdPropertyDTOList[ep].OnOff = OnOff ? 0 : 1
           deviceStore.deviceList = [...deviceStore.deviceList]
