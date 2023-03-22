@@ -53,7 +53,7 @@ export const homeStore = observable({
         }
       })
       // 全屋房间、设备加载完成，开始渲染
-      const res = await Promise.all([getRoomList(homeStore.currentHomeId), deviceStore.updataHomeDeviceList()])
+      const res = await Promise.all([getRoomList(homeStore.currentHomeId), deviceStore.updateAllRoomDeviceList()])
       if (res[0].success) {
         res[0].result.roomInfoList.forEach((roomInfo) => {
           const roomDeviceList = roomStore.roomDeviceList[roomInfo.roomInfo.roomId]
@@ -152,7 +152,7 @@ export const homeStore = observable({
       runInAction(() => {
         homeStore.currentHomeDetail = Object.assign({ houseId: this.currentHomeId }, res.result)
       })
-      await deviceStore.updataHomeDeviceList(options)
+      await deviceStore.updateAllRoomDeviceList(undefined, options)
       await roomStore.updateRoomList(options)
       return
     } else {
@@ -164,7 +164,7 @@ export const homeStore = observable({
    * 更新当前家庭房间卡片列表
    */
   async updateRoomCardList() {
-    await deviceStore.updataHomeDeviceList()
+    await deviceStore.updateAllRoomDeviceList()
     await roomStore.updateRoomList()
     await sceneStore.updateAllRoomSceneList()
   },

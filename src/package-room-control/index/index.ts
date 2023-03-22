@@ -214,8 +214,9 @@ ComponentWithComputed({
 
     async reloadData() {
       try {
-        await sceneStore.updateAllRoomSceneList()
+        await deviceStore.updateAllRoomDeviceList()
         await deviceStore.updateSubDeviceList()
+        await sceneStore.updateAllRoomSceneList()
         await sceneStore.updateSceneList()
         this.updateDeviceList()
       } finally {
