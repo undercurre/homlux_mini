@@ -597,7 +597,7 @@ ComponentWithComputed({
         if (this.data.relId.switchRelId) {
           // 删除关联
           await delAssociated({
-            relType: '0',
+            relType: '1',
             switchRelId: this.data.relId.switchRelId,
           })
         }
@@ -614,7 +614,7 @@ ComponentWithComputed({
             if (relDeviceMap[switchRelId].length < 2) {
               // 删除关联
               delAssociated({
-                relType: '0',
+                relType: '1',
                 switchRelId,
               })
             } else {
