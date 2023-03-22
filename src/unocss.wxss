@@ -288,7 +288,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .text-hex-666,
 .text-hex-666666{--un-text-opacity:1;color:rgba(102,102,102,var(--un-text-opacity));}
 .text-hex-6e6f74{--un-text-opacity:1;color:rgba(110,111,116,var(--un-text-opacity));}
-.text-hex-aeaeb5{--un-text-opacity:1;color:rgba(174,174,181,var(--un-text-opacity));}
 .text-hex-b6b7bb{--un-text-opacity:1;color:rgba(182,183,187,var(--un-text-opacity));}
 .text-hex-de7e28{--un-text-opacity:1;color:rgba(222,126,40,var(--un-text-opacity));}
 .text-hex-F4F8FF{--un-text-opacity:1;color:rgba(244,248,255,var(--un-text-opacity));}

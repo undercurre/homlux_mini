@@ -214,8 +214,9 @@ ComponentWithComputed({
 
     async reloadData() {
       try {
-        await sceneStore.updateAllRoomSceneList()
+        await deviceStore.updateAllRoomDeviceList()
         await deviceStore.updateSubDeviceList()
+        await sceneStore.updateAllRoomSceneList()
         await sceneStore.updateSceneList()
         this.updateDeviceList()
       } finally {
@@ -331,7 +332,7 @@ ComponentWithComputed({
         } else if (device.proType === proType.light) {
           const properties = device.mzgdPropertyDTOList['1']
           const desc = properties.OnOff ? ['打开'] : ['关闭']
-          const color = (properties.ColorTemp / 100) * (maxColorTempK - minColorTempK) + maxColorTempK
+          const color = (properties.ColorTemp / 100) * (maxColorTempK - minColorTempK) + minColorTempK
           const action = {
             uniId: device.uniId,
             name: device.deviceName,

@@ -8,6 +8,7 @@ import {
   inviteHouseUser,
   saveOrUpdateUserHouseInfo,
   getRoomList,
+  updateDefaultHouse,
 } from '../apis/index'
 import { proType } from '../config/index'
 import { deviceStore } from './device'
@@ -53,7 +54,7 @@ export const homeStore = observable({
         }
       })
       // 全屋房间、设备加载完成，开始渲染
-      const res = await Promise.all([getRoomList(homeStore.currentHomeId), deviceStore.updataHomeDeviceList()])
+      const res = await Promise.all([getRoomList(homeStore.currentHomeId), deviceStore.updateAllRoomDeviceList()])
       if (res[0].success) {
         res[0].result.roomInfoList.forEach((roomInfo) => {
           const roomDeviceList = roomStore.roomDeviceList[roomInfo.roomInfo.roomId]
@@ -128,10 +129,16 @@ export const homeStore = observable({
    */
   async updateHomeList(options?: { loading: boolean }) {
     const res = await getHomeList(options)
+    const houseId = homeStore.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
 
     if (res.success) {
       runInAction(() => {
         homeStore.homeList = res.result
+
+        // 首次进入或删除了默认家庭时，默认选中第0个
+        if (!houseId && homeStore.homeList.length) {
+          updateDefaultHouse(homeStore.homeList[0].houseId)
+        }
       })
     }
 
@@ -152,7 +159,7 @@ export const homeStore = observable({
       runInAction(() => {
         homeStore.currentHomeDetail = Object.assign({ houseId: this.currentHomeId }, res.result)
       })
-      await deviceStore.updataHomeDeviceList(options)
+      await deviceStore.updateAllRoomDeviceList(undefined, options)
       await roomStore.updateRoomList(options)
       return
     } else {
@@ -164,7 +171,7 @@ export const homeStore = observable({
    * 更新当前家庭房间卡片列表
    */
   async updateRoomCardList() {
-    await deviceStore.updataHomeDeviceList()
+    await deviceStore.updateAllRoomDeviceList()
     await roomStore.updateRoomList()
     await sceneStore.updateAllRoomSceneList()
   },
@@ -205,7 +212,7 @@ export const homeStore = observable({
    * 更改家庭成员权限
    * 家庭成员权限，创建者：1 管理员：2 游客：3
    */
-  async updateMemberAuth(userId: string, auth: number) {
+  async updateMemberAuth(userId: string, auth: Home.UserRole) {
     const res = await updateHouseUserAuth({ userId, auth, houseId: this.currentHomeId })
     if (res.success) {
       runInAction(() => {

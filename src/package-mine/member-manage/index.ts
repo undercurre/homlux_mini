@@ -274,7 +274,7 @@ ComponentWithComputed({
         this.clearOptionList()
       }, 300)
     },
-    changeUserRole(userId: string, auth: number) {
+    changeUserRole(userId: string, auth: Home.UserRole) {
       homeBinding.store.updateMemberAuth(userId, auth).then(() => {
         this.updateView()
       })

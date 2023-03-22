@@ -1,8 +1,9 @@
+import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, homeStore } from '../../store/index'
 import { updateDefaultHouse } from '../../apis/index'
 
-Component({
+ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
   },
@@ -40,6 +41,16 @@ Component({
    */
   data: {
     isRender: false,
+  },
+
+  computed: {
+    sortedHomeList(data) {
+      if (!data.homeList || !data.homeList.length) {
+        return []
+      }
+  
+      return data.homeList.sort((_: Home.IHomeItem, b: Home.IHomeItem) => b.defaultHouseFlag ? 1 : -1)
+    },
   },
 
   /**

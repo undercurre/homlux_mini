@@ -2,7 +2,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Dialog from '@vant/weapp/dialog/dialog'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { roomBinding, homeBinding } from '../../store/index'
+import { roomBinding, homeBinding, userBinding } from '../../store/index'
 import { saveOrUpdateUserHouseInfo, delUserHouse, quitUserHouse, updateDefaultHouse } from '../../apis/index'
 import { strUtil } from '../../utils/index'
 
@@ -10,7 +10,7 @@ ComponentWithComputed({
   options: {
     addGlobalClass: true,
   },
-  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, homeBinding] }), pageBehaviors],
+  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, homeBinding, userBinding] }), pageBehaviors],
 
   /**
    * 页面的初始数据
@@ -50,6 +50,7 @@ ComponentWithComputed({
   lifetimes: {
     ready: async function () {
       homeBinding.store.updateHomeMemberList()
+      userBinding.store.updateUserInfo()
     },
     moved: function () {},
     detached: function () {},
