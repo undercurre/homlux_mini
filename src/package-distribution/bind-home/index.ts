@@ -1,10 +1,11 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { getCurrentPageParams, strUtil } from '../../utils/index'
 import { queryDeviceInfoByDeviceId, editDeviceInfo, batchUpdate } from '../../apis/index'
 import { homeBinding, roomBinding } from '../../store/index'
 
-Component({
+ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
   },
@@ -18,7 +19,13 @@ Component({
    * 组件的初始数据
    */
   data: {
-    deviceInfo: { deviceId: '', deviceName: '', roomId: '', sn: '', switchList: [] as IAnyObject[] },
+    deviceInfo: { deviceId: '', deviceName: '', roomId: '', proType: '', sn: '', switchList: [] as IAnyObject[] },
+  },
+
+  computed: {
+    isSwitch(data) {
+      return data.deviceInfo.proType === '0x21'
+    }
   },
 
   lifetimes: {
@@ -53,6 +60,7 @@ Component({
             deviceName: res.result.deviceName,
             sn: res.result.sn,
             roomId: res.result.roomId,
+            proType: res.result.proType,
             switchList: res.result.switchInfoDTOList
               ? res.result.switchInfoDTOList.map((item) => ({
                   switchId: item.switchId,

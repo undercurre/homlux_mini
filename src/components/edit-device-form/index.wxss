@@ -4,7 +4,8 @@
 
 .label {
   display: block;
-  padding: 40rpx 0 40rpx 16rpx;
+  padding: 32rpx 0 32rpx 16rpx;
   font-size: 28rpx;
   color: #27282a;
+  line-height: 40rpx;
 }

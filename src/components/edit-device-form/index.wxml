@@ -1,7 +1,7 @@
 <view>
   <text class="label">设备名称</text>
 
-  <van-field value="{{ deviceInfo.deviceName }}" placeholder="请输入设备名称" custom-style="border: 2rpx solid #DDDDDD;border-radius: 24rpx;background-color:transparent;" clearable="{{true}}" bind:blur="changeDeviceName" border="{{false}}"> </van-field>
+  <van-field value="{{ deviceInfo.deviceName }}" placeholder="请输入设备名称" custom-style="padding: 22rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;background-color:transparent;" clearable="{{true}}" bind:blur="changeDeviceName" border="{{false}}"> </van-field>
 
   <block wx:if="{{deviceInfo.switchList.length > 1}}">
     <text class="label">按键名称</text>
