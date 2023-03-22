@@ -13,6 +13,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    type: '',
     isShowPw: false, // 是否展示密码明文
     isShowWifiTips: false,
     hasShowWifiTips: false,
@@ -55,10 +56,23 @@ ComponentWithComputed({
 
       return list
     },
+    pageTitle(data) {
+      let title = ''
+
+      if (data.type === 'changeWifi') {
+        title = '重新联网'
+      } else {
+        title = '连接家庭Wi-Fi'
+      }
+
+      return title
+    }
   },
 
   lifetimes: {
     ready() {
+      const pageParams = getCurrentPageParams()
+
       const deviceInfo = wx.getDeviceInfo()
 
       console.log('deviceInfo', deviceInfo)
@@ -68,6 +82,7 @@ ComponentWithComputed({
       const cacheWifiList = storage.get('cacheWifiList', []) as Array<{ SSID: string; pw: string }>
 
       this.setData({
+        type: pageParams.type || 'select',
         wifiInfo: cacheWifiInfo || {
           SSID: '',
           pw: '',
@@ -106,9 +121,16 @@ ComponentWithComputed({
     async initWifi() {
       const pageParams = getCurrentPageParams()
 
+      const startRes = await wx.startWifi()
+
+      console.log('startRes', startRes, 'pageParams', pageParams)
+
       wx.onGetWifiList((res) => {
         console.log('onGetWifiList-wifi-connect', res)
         const wifiList = res.wifiList.filter((item) => {
+          if (item.frequency) {
+            console.log('frequency', item.SSID, item.frequency)
+          }
           return item.SSID && this.data.systemWifiList.findIndex((foundItem) => item.SSID === foundItem.SSID) < 0 // 过滤空的ssid的wifi
         })
 
@@ -223,7 +245,7 @@ ComponentWithComputed({
     },
 
     next() {
-      const pageParams = getCurrentPageParams()
+      let pageParams = getCurrentPageParams()
 
       const { SSID, pw } = this.data.wifiInfo
 
@@ -243,6 +265,10 @@ ComponentWithComputed({
       storage.set('cacheWifiList', cacheWifiList)
 
       storage.set('selected_home_wifi', this.data.wifiInfo) // 记住输入过的wifi信息，下次自动回填
+
+      if (!pageParams.apSSID && pageParams.sn) {
+        pageParams.apSSID = `midea_16_${(pageParams.sn as string).substr(-8, 4)}`
+      }
 
       wx.redirectTo({
         url: strUtil.getUrlWithParams('/package-distribution/add-gateway/index', {

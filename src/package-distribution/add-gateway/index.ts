@@ -1,5 +1,5 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { IPageData } from './typings'
+import { IPageData, stepListForBind, stepListForChangeWiFi } from './conifg'
 import { queryDeviceOnlineStatus, bindDevice } from '../../apis/index'
 import { WifiSocket, strUtil, getCurrentPageParams } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
@@ -30,6 +30,7 @@ Component({
     status: 'linking',
     currentStep: '连接设备',
     activeIndex: 0,
+    stepList: [],
   } as WechatMiniprogram.IAnyObject & IPageData,
 
   lifetimes: {
@@ -51,11 +52,15 @@ Component({
    */
   methods: {
     async initWifi() {
-      const params = getCurrentPageParams()
+      const { type, apSSID } = getCurrentPageParams()
 
-      console.log('ready', params)
+      console.log('ready', getCurrentPageParams())
+      // 绑定流程和更改wifi的步骤流程不同
+      this.setData({
+        stepList: type === 'changeWifi' ? stepListForChangeWiFi : stepListForBind,
+      })
 
-      socket = new WifiSocket({ ssid: params.apSSID })
+      socket = new WifiSocket({ ssid: apSSID })
 
       const connectRes = await socket.connect()
 
@@ -73,7 +78,11 @@ Component({
         activeIndex: 1,
       })
 
-      this.sendBindCmd()
+      if (type === 'changeWifi') {
+        this.changeWifi()
+      } else {
+        this.sendBindCmd()
+      }
     },
 
     async sendBindCmd() {
@@ -94,12 +103,6 @@ Component({
 
       console.log('setRes', setRes)
 
-      // wx.connectWifi({
-      //   SSID: params.wifiSSID,
-      //   password: params.wifiPassword,
-      //   partialInfo: false,
-      // })
-
       console.debug('app-网关耗时：', Date.now() - start, '发送绑定指令耗时：', Date.now() - begin)
 
       wx.reportEvent('test', {
@@ -109,6 +112,26 @@ Component({
       // 防止强绑情况选网关还没断开原有连接，需要延迟查询
       setTimeout(() => {
         this.queryDeviceOnlineStatus(setRes.sn)
+      }, 10000)
+
+      socket.close()
+    },
+
+    async changeWifi() {
+      const params = getCurrentPageParams()
+
+      const data: IAnyObject = { ssid: params.wifiSSID, passwd: params.wifiPassword }
+
+      const res = await socket.sendCmd({
+        topic: '/gateway/net/change', //指令名称
+        data,
+      })
+
+      console.log('change', res)
+
+      // 防止强绑情况选网关还没断开原有连接，需要延迟查询
+      setTimeout(() => {
+        this.queryDeviceOnlineStatus(params.sn, params.type)
       }, 10000)
 
       socket.close()
@@ -147,7 +170,7 @@ Component({
       }
     },
 
-    async queryDeviceOnlineStatus(sn: string) {
+    async queryDeviceOnlineStatus(sn: string, type?: string) {
       const res = await queryDeviceOnlineStatus({ sn, deviceType: '1' })
 
       console.log('queryDeviceOnlineStatus', res.result)
@@ -157,6 +180,12 @@ Component({
           activeIndex: 2,
         })
 
+        if (type === 'changeWifi') {
+          wx.redirectTo({
+            url: '/package-distribution/change-wifi-success/index',
+          })
+          return
+        }
         this.requestBindDevice(sn)
       } else {
         this.data._queryTimes--
