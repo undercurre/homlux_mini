@@ -205,7 +205,7 @@ export const homeStore = observable({
    * 更改家庭成员权限
    * 家庭成员权限，创建者：1 管理员：2 游客：3
    */
-  async updateMemberAuth(userId: string, auth: number) {
+  async updateMemberAuth(userId: string, auth: Home.UserRole) {
     const res = await updateHouseUserAuth({ userId, auth, houseId: this.currentHomeId })
     if (res.success) {
       runInAction(() => {

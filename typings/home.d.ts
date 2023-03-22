@@ -25,6 +25,18 @@ declare namespace Home {
   }
 
   /**
+   * 成员角色
+   * Creater 1：创建者
+   * Manager 2：管理员
+   * Guest 3：游客
+   */
+  export enum UserRole {
+    Creater,
+    Manager,
+    Guest,
+  }
+
+  /**
    * 家庭详细值
    */
   export interface IHomeDetail {
@@ -38,7 +50,7 @@ declare namespace Home {
     houseName: string
 
     // 用户家庭权限 1：创建者 2：管理员 3：游客
-    houseUserAuth: number
+    houseUserAuth: UserRole
 
     /**
      * 设备数量
