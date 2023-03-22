@@ -844,6 +844,7 @@ ComponentWithComputed({
     },
     async lightSendDeviceControl(type: 'colorTemp' | 'level' | 'onOff', OnOff?: number) {
       const deviceMap = deviceStore.allRoomDeviceMap
+      const currentRoomDeviceMap = deviceStore.deviceMap
       // 拿出选中的设备
       const selectLightDevice: Device.DeviceItem[] = []
       deviceStore.selectList
@@ -853,6 +854,16 @@ ComponentWithComputed({
             selectLightDevice.push(deviceMap[deviceId])
           }
         })
+      // 先改掉缓存中设备的值(创建场景需要新的属性值)
+      selectLightDevice.forEach((device) => {
+        if (type === 'level') {
+          currentRoomDeviceMap[device.deviceId].mzgdPropertyDTOList['1'].Level = this.data.lightInfoInner.Level
+        } else if (type === 'colorTemp') {
+          currentRoomDeviceMap[device.deviceId].mzgdPropertyDTOList['1'].ColorTemp = this.data.lightInfoInner.ColorTemp
+        } else if (type === 'onOff') {
+          currentRoomDeviceMap[device.deviceId].mzgdPropertyDTOList['1'].OnOff = OnOff as number
+        }
+      })
       // 按照网关区分
       const gatewaySelectDeviceMap: Record<string, Device.DeviceItem[]> = {}
       selectLightDevice.forEach((device) => {
