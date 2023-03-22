@@ -128,6 +128,5 @@ ComponentWithComputed({
         showSceneEditSwitchPopup: false,
       })
     },
-    blank() {},
   },
 })

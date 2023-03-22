@@ -225,6 +225,5 @@ ComponentWithComputed({
         linkSelectList: [e.detail],
       })
     },
-    blank() {},
   },
 })

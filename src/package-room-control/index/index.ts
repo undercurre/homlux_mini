@@ -40,7 +40,7 @@ ComponentWithComputed({
     lightList: [] as Device.DeviceItem[],
     switchList: [] as Device.DeviceItem[],
     curtainList: [] as Device.DeviceItem[],
-    showBeforeAddSceneSuccess: false,
+    showBeforeAddScenePopup: false,
     showAddSceneSuccess: false,
     sceneTitlePosition: {
       x: 0,
@@ -356,7 +356,7 @@ ComponentWithComputed({
         sceneStore.addSceneActions = addSceneActions
       })
       this.setData({
-        showBeforeAddSceneSuccess: true,
+        showBeforeAddScenePopup: true,
       })
     },
     handleDeviceCardTap(e: { detail: Device.DeviceItem & { clientRect: WechatMiniprogram.ClientRect } }) {
@@ -564,17 +564,17 @@ ComponentWithComputed({
     handleAddScenePopupReturn() {
       this.setData({
         showAddScenePopup: false,
-        showBeforeAddSceneSuccess: true,
+        showBeforeAddScenePopup: true,
       })
     },
     handleBeforeAddScenePopupClose() {
       this.setData({
-        showBeforeAddSceneSuccess: false,
+        showBeforeAddScenePopup: false,
       })
     },
     handleBeforeAddScenePopupNext() {
       this.setData({
-        showBeforeAddSceneSuccess: false,
+        showBeforeAddScenePopup: false,
         showAddScenePopup: true,
       })
     },
