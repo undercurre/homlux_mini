@@ -42,7 +42,7 @@
   <!-- 主体内容 -->
   <view class="flex flex-1 w-full box-border" id="content">
     <!-- 有设备时显示 -->
-    <view class="flex-1 flex flex-col items-between ml-24rpx" wx:if="{{hasDevice}}">
+    <view class="flex-1 flex flex-col items-between mx-24rpx" wx:if="{{hasDevice}}">
       <!-- 顶开上面的内容高度 -->
       <view class="h-24rpx"></view>
       <view class="flex-1">
@@ -52,7 +52,6 @@
           <van-button type="default" color="rgba(255,255,255,0.60)" size="small" custom-class="round-btn-border" round bind:click="goTo" data-url="/package-mine/room-manage/index">
             <text class="text-26rpx text-hex-555659">房间管理</text>
           </van-button>
-          <!-- <text class="text-24rpx text-hex-aeaeb5">可手动添加更多空间~</text> -->
         </view>
         <!-- 顶开下面的内容高度 -->
         <view class="h-64rpx"></view>

@@ -25,7 +25,7 @@ ComponentWithComputed({
   computed: {
     isSwitch(data) {
       return data.deviceInfo.proType === '0x21'
-    }
+    },
   },
 
   lifetimes: {

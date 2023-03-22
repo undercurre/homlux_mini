@@ -134,7 +134,7 @@ ComponentWithComputed({
     },
     getHeight() {
       this.createSelectorQuery()
-        .select('#content1')
+        .select('#content')
         .boundingClientRect()
         .exec((res) => {
           if (res[0] && res[0].height) {

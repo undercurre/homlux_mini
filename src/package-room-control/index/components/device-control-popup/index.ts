@@ -349,32 +349,6 @@ ComponentWithComputed({
         })
         return
       }
-      // const deviceMap = deviceStore.allRoomDeviceMap
-      // if (this.data.selectLinkType === 'light') {
-      //   if (deviceMap[e.detail].lightRelId && this.data.relId.lightRelId !== deviceMap[e.detail].lightRelId) {
-      //     Toast({
-      //       message: '设备已被关联',
-      //       zIndex: 99999,
-      //     })
-      //     return
-      //   }
-      //   this.setData({
-      //     linkSelectList: [...this.data.linkSelectList, e.detail],
-      //   })
-      // } else if (this.data.selectLinkType === 'switch') {
-      //   const switchItem = deviceMap[e.detail.split(':')[0]].switchInfoDTOList.find(
-      //     (switchItem) => switchItem.switchId === e.detail.split(':')[1],
-      //   )
-      //   if (switchItem?.switchRelId && this.data.relId.switchRelId !== switchItem?.switchRelId) {
-      //     Toast({
-      //       message: '设备已被关联',
-      //       zIndex: 99999,
-      //     })
-      //     return
-      //   }
-      //   this.setData({
-      //     linkSelectList: [...this.data.linkSelectList, e.detail],
-      //   })
       if (['light', 'switch'].includes(this.data.selectLinkType)) {
         this.setData({
           linkSelectList: [...this.data.linkSelectList, e.detail],
@@ -563,7 +537,7 @@ ComponentWithComputed({
     },
     async updateSwitchAssociate() {
       const selectSwitchUniId = this.data.selectSwitchUniId
-      const deviceFlattenMap = deviceStore.deviceFlattenMap
+      const deviceFlattenMap = deviceStore.allRoomDeviceFlattenMap
       const device = deviceStore.allRoomDeviceMap[selectSwitchUniId.split(':')[0]]
       // 先查一下有没有关联灯，有先解开关联，然后转成普通开关
       const rel = deviceStore.deviceRelMap[selectSwitchUniId]

@@ -40,10 +40,8 @@ export const deviceStore = observable({
     )
   },
 
-  get deviceFlattenMap() {
-    let map = {} as Record<string, Device.DeviceItem>
-    map = Object.fromEntries(deviceStore.deviceFlattenList.map((device: Device.DeviceItem) => [device.uniId, device]))
-    return map
+  get deviceFlattenMap(): Record<string, Device.DeviceItem> {
+    return Object.fromEntries(deviceStore.deviceFlattenList.map((device: Device.DeviceItem) => [device.uniId, device]))
   },
 
   /**
@@ -73,6 +71,11 @@ export const deviceStore = observable({
     return list
   },
 
+  get allRoomDeviceFlattenMap(): Record<string, Device.DeviceItem> {
+    return Object.fromEntries(
+      deviceStore.allRoomDeviceFlattenList.map((device: Device.DeviceItem) => [device.uniId, device]),
+    )
+  },
   get allRoomDeviceFlattenList() {
     const list = [] as Device.DeviceItem[]
     deviceStore.allRoomDeviceList.forEach((device) => {
