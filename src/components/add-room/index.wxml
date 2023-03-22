@@ -1,6 +1,6 @@
 <import src="/commons/templates/popup.wxml" />
-<van-popup show="{{ show }}" z-index="10000" position="bottom" round bind:close="handleClose" lock-scroll="{{true}}" closeable custom-style="max-height: 1000rpx;">
-  <view class="px-32rpx text-black-2a" catchtouchmove="{{true}}">
+<van-popup show="{{ show }}" z-index="10000" position="bottom" round bind:close="handleClose" lock-scroll="{{true}}" closeable custom-style="max-height: 1200rpx;">
+  <view class="px-32rpx text-black-2a">
     <view class="flex-center pb-64rpx">
       <template is="title" data="{{title: roomId ? '编辑房间' : '添加房间'}}" />
     </view>
