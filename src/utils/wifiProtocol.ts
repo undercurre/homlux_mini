@@ -11,6 +11,8 @@ export class WifiSocket {
 
   SSID = ''
 
+  pw = '12345678'
+
   key = ''
 
   date = Date.now()
@@ -85,7 +87,7 @@ export class WifiSocket {
       const res = { success: true, errCode: 0 }
 
       wx.getConnectedWifi({
-        complete: (connectedRes) => {
+        complete: async (connectedRes) => {
           console.log('getConnectedWifi：complete', connectedRes)
 
           if (connectedRes && (connectedRes as IAnyObject).wifi?.SSID === this.SSID) {
@@ -96,12 +98,24 @@ export class WifiSocket {
 
           const systemVersion = parseInt(deviceInfo.system.toLowerCase().replace(deviceInfo.platform, ''))
           console.log('systemVersion', deviceInfo.platform, systemVersion)
+          const isAndroid10Plus = deviceInfo.platform === 'android' && systemVersion >= 10 // 判断是否Android10+或者是鸿蒙
+
+          if (isAndroid10Plus) {
+            const modal = await wx.showModal({
+              content: `请到系统设置手动加入“${this.SSID}”，密码：“${this.pw}” ,以连接设备`,
+            })
+
+            if (modal.cancel) {
+              resolve({ success: false, errCode: -1, msg: '用户拒绝' })
+              return
+            }
+          }
 
           wx.connectWifi({
             SSID: this.SSID,
-            password: '12345678',
+            password: this.pw,
             partialInfo: false,
-            maunal: deviceInfo.platform === 'android' && systemVersion >= 10, // Android 微信客户端 7.0.22 以上版本，connectWifi 的实现在 Android 10 及以上的手机无法生效，需要配置 maunal 来连接 wifi。详情参考官方文档
+            maunal: isAndroid10Plus, // Android 微信客户端 7.0.22 以上版本，connectWifi 的实现在 Android 10 及以上的手机无法生效，需要配置 maunal 来连接 wifi。详情参考官方文档
             complete: (connectRes) => {
               console.log('connectWifi', connectRes)
 
@@ -335,7 +349,7 @@ export class WifiSocket {
         const timeId = setTimeout(() => {
           console.error(`${params.method}-超时回复:`, params.topic)
           this.cmdCallbackMap[reqId] && delete this.cmdCallbackMap[reqId]
-          resolve({ errorCode: -1, msg: '请求超时' })
+          resolve({ errorCode: -1, msg: '请求超时', success: false })
         }, 10000)
         // 由于设备端是异步上报对应的消息回复，通过reqId注册对应命令的消息回调，
         // 后续在消息监听onmessage通过reqId匹配并把对应的回复resolve，达到同步调用的效果
@@ -344,7 +358,10 @@ export class WifiSocket {
           clearTimeout(timeId)
           console.debug('指令发送-回复时间：', Date.now() - parseInt(reqId))
 
-          resolve(data)
+          resolve({
+            ...data,
+            success: data.errorCode === 0,
+          })
         }
 
         params.method === 'TCP'
@@ -356,7 +373,7 @@ export class WifiSocket {
             })
       })
     } catch (err) {
-      return { errorCode: -1, msg: err }
+      return { errorCode: -1, msg: err, success: false }
     }
   }
 

@@ -1,4 +1,4 @@
-<view class="page-container flex flex-col pb-128rpx pt-40rpx">
+<view class="page-container flex flex-col pt-40rpx">
   <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="{{roomInfo.roomName}}"></nav-bar>
 
   <view class="grow">

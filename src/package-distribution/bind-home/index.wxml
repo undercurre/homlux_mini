@@ -1,11 +1,11 @@
 <view class="page-container flex flex-col">
   <nav-bar background="transparent" title="添加设备"></nav-bar>
 
-  <view class="grow flex flex-col pb-120rpx">
+  <view class="grow flex flex-col justify-between">
     <tips-box text="设备添加成功！" icon="/assets/img/default-img/success.png" size="{{isSwitch ? 200 : 300}}" text-style="{{isSwitch && 'margin-top: 24rpx;'}}"></tips-box>
 
-    <view class="grow px-24rpx {{ isSwitch ? 'mt-28rpx' : 'mt-96rpx'}}">
-      <edit-device-form wx:if="{{deviceInfo.roomId}}" device-name="{{deviceInfo.deviceName}}" room-id="{{deviceInfo.roomId}}" switch-list="{{deviceInfo.switchList}}" bind:change="changeDeviceInfo"></edit-device-form>
+    <view class="grow px-24rpx mt-28rpx">
+      <edit-device-form wx:if="{{deviceInfo.deviceName}}" device-name="{{deviceInfo.deviceName}}" room-id="{{deviceInfo.roomId}}" switch-list="{{deviceInfo.switchList}}" bind:change="changeDeviceInfo"></edit-device-form>
     </view>
 
     <view class="flex flex-col items-center pt-24rpx px-32rpx">

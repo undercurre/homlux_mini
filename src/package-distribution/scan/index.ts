@@ -3,7 +3,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import dayjs from 'dayjs'
 import { deviceBinding, homeBinding } from '../../store/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { strUtil } from '../../utils/index'
+import { strUtil, bleUtil } from '../../utils/index'
 import { checkDevice, queryProtypeInfo, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
 
 ComponentWithComputed({
@@ -124,13 +124,12 @@ ComponentWithComputed({
 
         console.log('authorizeRes', authorizeRes)
 
+        // 用户拒绝授权处理
         if (authorizeRes.errno === 103) {
           await wx.showModal({ content: '请打开位置权限，否则无法正常使用配网' })
 
           wx.navigateBack()
           return
-        } else {
-          wx.getSetting()
         }
       }
     },
@@ -306,12 +305,20 @@ ComponentWithComputed({
             flag = true
           }
 
+          const dataMsg = strUtil.ab2hex(item.advertisData)
+          const msgObj = bleUtil.transferBroadcastData(dataMsg)
+
+          // 过滤已经配网的设备
+          // 设备网络状态 0x00：未入网   0x01：正在入网   0x02:  已经入网   0x03:  已经连入网，但父节点没有响应
+          if (msgObj.isConfig !== '00') {
+            flag = false
+          }
+
           return flag
         })
 
         if (subdeviceList.length <= 0) return
 
-        console.log('onBluetoothDeviceFound', subdeviceList)
         this.setData({
           subdeviceList: this.data.subdeviceList.concat(subdeviceList.map((item) => item.deviceId)),
         })
@@ -478,6 +485,7 @@ ComponentWithComputed({
 
     async handleScanUrl(url: string) {
       if (!url.includes('meizgd.com/homlux/qrCode.html')) {
+        wx.showToast({ title: '非法二维码', icon: 'none' })
         return
       }
 

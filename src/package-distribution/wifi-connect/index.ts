@@ -58,7 +58,7 @@ ComponentWithComputed({
   },
 
   lifetimes: {
-    attached() {
+    ready() {
       const deviceInfo = wx.getDeviceInfo()
 
       console.log('deviceInfo', deviceInfo)
@@ -104,13 +104,10 @@ ComponentWithComputed({
     },
 
     async initWifi() {
-      const startRes = await wx.startWifi()
       const pageParams = getCurrentPageParams()
 
-      console.log('startWifi', startRes)
-
       wx.onGetWifiList((res) => {
-        console.log('onGetWifiList', res)
+        console.log('onGetWifiList-wifi-connect', res)
         const wifiList = res.wifiList.filter((item) => {
           return item.SSID && this.data.systemWifiList.findIndex((foundItem) => item.SSID === foundItem.SSID) < 0 // 过滤空的ssid的wifi
         })
@@ -127,7 +124,7 @@ ComponentWithComputed({
       })
 
       wx.onWifiConnected(async (res) => {
-        console.log('onWifiConnected-connect-wifi', res)
+        console.log('onWifiConnected-connect-wifi', res, pageParams)
 
         if (!res.wifi.SSID || res.wifi.SSID === pageParams.apSSID) {
           return
@@ -173,8 +170,11 @@ ComponentWithComputed({
           console.log('getWifiList-catch', err)
         })
 
-        this.toggleWifiListPopup()
         console.log('getWifiList', wifiListRes)
+
+        this.setData({
+          isShowWifiList: true,
+        })
       } else if (deviceInfo.system.toLowerCase().includes('ios')) {
         this.toggleWifiTips()
       }

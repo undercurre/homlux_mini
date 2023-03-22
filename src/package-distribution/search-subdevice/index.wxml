@@ -2,7 +2,7 @@
   <!-- 导航栏 -->
   <nav-bar leftArrow="{{status !== 'requesting'}}" bind:leftTap="goBack" background="transparent" title="{{pageTitle}}"></nav-bar>
 
-  <view class="grow shrink flex flex-col justify-between pb-128rpx box-border">
+  <view class="grow shrink flex flex-col justify-between box-border">
     <block wx:if="{{status === 'discover'}}">
       <tips-box text="正在搜索附近的设备…" icon="/package-distribution/assets/search-subdevice/search.gif" size="{{ deviceList.length ? 180 : 300}}" textStyle="margin-top: 28rpx;"></tips-box>
 

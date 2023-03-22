@@ -1,7 +1,7 @@
 <view class="page-container flex flex-col">
   <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="连接家庭Wi-Fi"></nav-bar>
 
-  <view class="grow flex flex-col justify-between pb-128rpx">
+  <view class="grow flex flex-col justify-between">
     <tips-box icon="/package-distribution/assets/wifi-connect/connect-wifi.png" text="请连接家庭Wi-Fi以便设备联网"></tips-box>
 
     <view class="grow px-48rpx pt-112rpx">
@@ -46,7 +46,7 @@
         </view>
       </view>
 
-      <van-button wx:if="{{systemWifiList.length === 0}}" class="pt-40rpx" type="primary" plain block bind:click="getWifiList">加载更多</van-button>
+      <van-button wx:if="{{systemWifiList.length === 0}}" class="mt-40rpx" type="primary" plain block bind:click="getWifiList" loading="{{isRequestSystemWifiList}}" disabled="{{isRequestSystemWifiList}}">加载更多</van-button>
     </scroll-view>
 
     <view class="flex flex-row gap-46rpx pt-80rpx px-24rpx">

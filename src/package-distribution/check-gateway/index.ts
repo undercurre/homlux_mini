@@ -1,3 +1,4 @@
+import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { WifiSocket, getCurrentPageParams, strUtil } from '../../utils/index'
 
@@ -73,6 +74,18 @@ Component({
 
       const startRes = await wx.startWifi()
 
+      const deviceInfo = wx.getDeviceInfo()
+
+      // 无法访问互联网的情况下，wx.getWifiList()调用不成功,猜测微信存在查询外网接口信息的流程，堵塞流程，
+      // 需在可访问外网时先调用一次，后面即使断网，再次调用getWifiList也能正常调用
+      if (deviceInfo.system.toLowerCase().includes('android')) {
+        const wifiListRes = await wx.getWifiList().catch((err) => {
+          console.log('getWifiList-catch', err)
+        })
+
+        console.debug('wifiListRes', wifiListRes)
+      }
+
       console.debug('startWifi', startRes, '开启wifi模块用时：', Date.now() - start)
 
       const connectRes = await socket.connect()
@@ -109,14 +122,17 @@ Component({
          "method":"wifi" //无线配网："wifi"，有线配网:"eth"
      */
     async getGatewayStatus() {
-      const begin = Date.now()
-
       const res = await socket.sendCmd({
         topic: '/gateway/net/status', //指令名称:获取网关IP
         data: {},
       })
 
-      console.debug('getGatewayStatus耗时：', Date.now() - begin, Date.now() - start)
+      console.debug('getGatewayStatus耗时：', Date.now() - start, res)
+
+      if (!res.success) {
+        Toast('查询网关状态失败')
+        return
+      }
 
       // 强制绑定判断标志  "bind":0,  //绑定状态 0：未绑定  1：WIFI已绑定  2:有线已绑定
       if (res.bind !== 0) {
