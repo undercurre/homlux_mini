@@ -8,6 +8,7 @@ import {
   inviteHouseUser,
   saveOrUpdateUserHouseInfo,
   getRoomList,
+  updateDefaultHouse,
 } from '../apis/index'
 import { proType } from '../config/index'
 import { deviceStore } from './device'
@@ -128,10 +129,16 @@ export const homeStore = observable({
    */
   async updateHomeList(options?: { loading: boolean }) {
     const res = await getHomeList(options)
+    const houseId = homeStore.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
 
     if (res.success) {
       runInAction(() => {
         homeStore.homeList = res.result
+
+        // 首次进入或删除了默认家庭时，默认选中第0个
+        if (!houseId && homeStore.homeList.length) {
+          updateDefaultHouse(homeStore.homeList[0].houseId)
+        }
       })
     }
 
