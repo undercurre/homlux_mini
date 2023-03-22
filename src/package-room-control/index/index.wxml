@@ -1,4 +1,4 @@
-<page-meta scroll-top="{{pageMetaScrollTop}}"></page-meta>
+<page-meta page-style="{{ showBeforeAddScenePopup || showAddScenePopup ? 'overflow: hidden;' : '' }}" />
 <wxs module="module" src="/commons/wxs/util.wxs"></wxs>
 <!-- 背景 -->
 <view class="w-100vw h-100vh fixed left-0 top-0 bg-hex-f4f8ff bg-z-index-1"></view>
@@ -104,7 +104,7 @@
 
 <!-- 设备控制弹窗 -->
 <device-control-popup popup="{{controlPopup}}" bind:popMove="handlePopUp" bind:updateList="updateDeviceList"></device-control-popup>
-<before-add-scene-popup show="{{showBeforeAddSceneSuccess}}" bind:close="handleBeforeAddScenePopupClose" bind:next="handleBeforeAddScenePopupNext" bind:delete="handleBeforeAddScenePopupDelete" bind:edit="handleSceneActionEdit" />
+<before-add-scene-popup show="{{showBeforeAddScenePopup}}" bind:close="handleBeforeAddScenePopupClose" bind:next="handleBeforeAddScenePopupNext" bind:delete="handleBeforeAddScenePopupDelete" bind:edit="handleSceneActionEdit" />
 <add-scene-popup actions="{{addSceneActions}}" show="{{showAddScenePopup}}" bind:close="handleAddScenePopupClose" bind:addSuccess="handleShowAddSceneSuccess" bind:return="handleAddScenePopupReturn" />
 
 <van-toast id="van-toast" />

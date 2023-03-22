@@ -214,7 +214,8 @@ ComponentWithComputed({
         return
       }
 
-      let { switchNum, productName: deviceName } = infoRes.result
+      let { productName: deviceName } = infoRes.result
+      const { switchNum } = infoRes.result
 
       if (msgObj.deviceCategory === '21') {
         ++panelNum
