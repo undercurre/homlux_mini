@@ -1,4 +1,4 @@
-<view class="page-container flex flex-col pb-128rpx">
+<view class="page-container flex flex-col">
   <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="设备替换"></nav-bar>
 
   <view class="grow flex flex-col pt-40rpx">

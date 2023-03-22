@@ -190,7 +190,7 @@ ComponentWithComputed({
 
       // 开始搜寻附近的蓝牙外围设备
       wx.startBluetoothDevicesDiscovery({
-        allowDuplicatesKey: false,
+        allowDuplicatesKey: true,
         powerLevel: 'high',
         interval: 3000,
         success(res) {
@@ -203,7 +203,12 @@ ComponentWithComputed({
       const dataMsg = strUtil.ab2hex(device.advertisData)
       const msgObj = bleUtil.transferBroadcastData(dataMsg)
 
-      console.log('handleBleDeviceInfo', msgObj, panelNum, lightNum)
+      console.log('handleBleDeviceInfo', msgObj)
+
+      // 过滤已经配网的设备
+      if (msgObj.isConfig !== '00') {
+        return
+      }
 
       const infoRes = await queryProtypeInfo({
         proType: `0x${msgObj.deviceCategory}`,

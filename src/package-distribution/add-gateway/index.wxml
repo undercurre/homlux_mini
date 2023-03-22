@@ -1,7 +1,7 @@
 <view class="page-container flex flex-col">
   <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="添加智能网关"></nav-bar>
 
-  <view class="grow flex flex-col pb-128rpx">
+  <view class="grow flex flex-col">
     <block wx:if="{{status === 'linking'}}">
       <mz-loading class="mt-130rpx" text="请将设备尽量靠近路由器"></mz-loading>
 

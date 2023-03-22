@@ -13,8 +13,6 @@
 
   <block wx:if="{{isManager}}">
     <van-button class="mx-32rpx" size="large" type="primary" block bind:click="addRoom">添加房间</van-button>
-
-    <view style="height: calc(96rpx - env(safe-area-inset-bottom))"></view>
   </block>
 </view>
 
