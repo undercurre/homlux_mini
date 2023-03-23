@@ -3,6 +3,12 @@
 
   <view class="grow flex flex-col">
     <block wx:if="{{status === 'linking'}}">
+      <view wx:if="{{!isConnectDevice}}" class="flex flex-row items-center justify-center py-30rpx tips-view">
+        <image class="w-36 h-36 mr-16rpx" src="/package-distribution/assets/check-gateway/icon-info.png"></image>
+
+        <text class="text-24 leading-34rpx text-black-2a">请允许微信加入“{{ssid}}”，以便自动连接设备</text>
+      </view>
+
       <mz-loading class="mt-130rpx" text="请将设备尽量靠近路由器"></mz-loading>
 
       <mz-progress show-progress="{{true}}" active-index="{{activeIndex}}" step-list="{{stepList}}"></mz-progress>

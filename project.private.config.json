@@ -20,20 +20,6 @@
     "miniprogram": {
       "list": [
         {
-          "name": "附近子设备",
-          "pathName": "package-distribution/search-subdevice/index",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "连接wifi",
-          "pathName": "package-distribution/wifi-connect/index",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
           "name": "我的",
           "pathName": "pages/mine/index",
           "query": "",
@@ -97,6 +83,13 @@
           "scene": null
         },
         {
+          "name": "连接wifi",
+          "pathName": "package-distribution/wifi-connect/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "添加智能网关",
           "pathName": "package-distribution/add-gateway/index",
           "query": "deviceName=智能网关&wifiSSID=xyh_wifi&apSSID=midea_16_E5FB&method=wifi",
@@ -109,6 +102,13 @@
           "query": "deviceId=04CD15FFFEABADEF",
           "scene": null,
           "launchMode": "default"
+        },
+        {
+          "name": "附近子设备",
+          "pathName": "package-distribution/search-subdevice/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
         },
         {
           "name": "添加单个子设备",

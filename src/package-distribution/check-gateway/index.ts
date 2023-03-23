@@ -22,6 +22,7 @@ Component({
    */
   data: {
     isShowForceBindTips: false,
+    isConnectDevice: false,
     status: 'linking',
     ssid: '',
   } as IAnyObject,
@@ -169,6 +170,10 @@ Component({
         })
         return
       }
+
+      this.setData({
+        isConnectDevice: true,
+      })
 
       this.getGatewayStatus()
     },

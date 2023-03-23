@@ -25,6 +25,8 @@ Component({
    * 组件的初始数据
    */
   data: {
+    apSSID: '',
+    isConnectDevice: false,
     _interId: 0,
     _queryTimes: 50,
     status: 'linking',
@@ -57,6 +59,7 @@ Component({
       console.log('ready', getCurrentPageParams())
       // 绑定流程和更改wifi的步骤流程不同
       this.setData({
+        apSSID: apSSID,
         stepList: type === 'changeWifi' ? stepListForChangeWiFi : stepListForBind,
       })
 
@@ -76,6 +79,7 @@ Component({
 
       this.setData({
         activeIndex: 1,
+        isConnectDevice: true,
       })
 
       if (type === 'changeWifi') {

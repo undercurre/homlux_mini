@@ -2,11 +2,12 @@
   <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="添加智能网关"></nav-bar>
 
   <view class="grow flex flex-col">
-    <view class="flex flex-row items-center justify-center py-30rpx tips-view">
+    <view wx:if="{{!isConnectDevice}}" class="flex flex-row items-center justify-center py-30rpx tips-view">
       <image class="w-36 h-36 mr-16rpx" src="/package-distribution/assets/check-gateway/icon-info.png"></image>
 
       <text class="text-24 leading-34rpx text-black-2a">请允许微信加入“{{ssid}}”，以便自动连接设备</text>
     </view>
+
     <mz-loading wx:if="{{status === 'linking'}}" class="mt-130rpx" text="正在连接设备，请将手机尽量靠近设备" step-list="{{[]}}" show-progress="{{false}}"></mz-loading>
   </view>
 </view>
@@ -27,5 +28,4 @@
   </view>
 </van-dialog>
 
-<van-button class="w-full mt-32rpx" block type="primary" size="large" bind:click="sendCmdForDeviceIp">test</van-button>
 <van-toast id="van-toast" />
