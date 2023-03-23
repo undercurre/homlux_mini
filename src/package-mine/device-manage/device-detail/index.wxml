@@ -18,6 +18,7 @@
           </view>
         </view>
       </van-cell>
+      <van-cell wx:if="{{!isSubDevice}}" title="更改WiFi" is-link link-type="navigateTo" url="/package-distribution/wifi-connect/index?type=changeWifi&sn={{deviceInfo.sn}}"></van-cell>
     </van-cell-group>
   </view>
 
@@ -39,3 +40,4 @@
 <van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />
 <edit-name-popup value="{{deviceName}}" show="{{showEditNamePopup}}" bind:close="handleDeviceNameEditCancel" bind:confirm="handleDeviceNameEditConfirm" />
 <edit-room-popup value="{{roomId}}" show="{{showEditRoomPopup}}" bind:close="handleDeviceRoomEditCancel" bind:confirm="handleDeviceRoomEditConfirm" />
+<van-toast id="van-toast" />

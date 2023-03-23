@@ -10,7 +10,8 @@
         "wifi-connect/index",
         "add-subdevice/index",
         "search-subdevice/index",
-        "bind-home/index"
+        "bind-home/index",
+        "change-wifi-success/index"
       ]
     },
     {

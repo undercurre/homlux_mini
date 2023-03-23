@@ -8,6 +8,15 @@
   },
   "libVersion": "2.30.2",
   "condition": {
+    "plugin": {
+      "list": []
+    },
+    "game": {
+      "list": []
+    },
+    "gamePlugin": {
+      "list": []
+    },
     "miniprogram": {
       "list": [
         {
@@ -97,13 +106,20 @@
         {
           "name": "绑定家庭",
           "pathName": "package-distribution/bind-home/index",
-          "query": "deviceId=04CD15FFFEAEAA8D",
-          "launchMode": "default",
-          "scene": null
+          "query": "deviceId=04CD15FFFEABADEF",
+          "scene": null,
+          "launchMode": "default"
         },
         {
           "name": "添加单个子设备",
           "pathName": "package-distribution/add-subdevice/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "设备管理",
+          "pathName": "package-mine/device-manage/index",
           "query": "",
           "launchMode": "default",
           "scene": null

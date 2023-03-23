@@ -1,5 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import Toast from '@vant/weapp/toast/toast'
 import asyncPool from 'tiny-async-pool'
 import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
 import { bleUtil, strUtil, BleClient, getCurrentPageParams } from '../../utils/index'
@@ -302,7 +303,7 @@ ComponentWithComputed({
         })
 
         if (!res.success) {
-          wx.showToast({ title: res.msg })
+          Toast(res.msg)
           return
         }
 

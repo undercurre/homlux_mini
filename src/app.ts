@@ -23,8 +23,6 @@ App<IAppOption>({
       othersStore.setIsInit(false)
     }
 
-    console.log('APP打开参数：', options)
-
     const systemInfo = wx.getSystemInfoSync()
 
     console.log('systemInfo', systemInfo)
@@ -34,7 +32,7 @@ App<IAppOption>({
     })
 
     wx.onNetworkWeakChange(function (res) {
-      console.log('监听弱网状态变化事件:', res, Date().toString())
+      console.warn('监听弱网状态变化事件:', res)
     })
   },
 

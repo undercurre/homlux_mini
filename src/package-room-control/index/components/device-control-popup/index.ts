@@ -618,7 +618,7 @@ ComponentWithComputed({
                 switchRelId,
               })
             } else {
-              removeSwitchRel(uniId.split(':')[0],uniId.split(':')[1])
+              removeSwitchRel(uniId.split(':')[0], uniId.split(':')[1])
             }
           }
         })

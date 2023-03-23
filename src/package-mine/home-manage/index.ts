@@ -1,6 +1,7 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Dialog from '@vant/weapp/dialog/dialog'
+import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { roomBinding, homeBinding, userBinding } from '../../store/index'
 import { saveOrUpdateUserHouseInfo, delUserHouse, quitUserHouse, updateDefaultHouse } from '../../apis/index'
@@ -150,13 +151,13 @@ ComponentWithComputed({
       const { houseName } = this.data.homeInfoEdited
 
       if (!houseName) {
-        wx.showToast({ title: '家庭名称不能为空', icon: 'none' })
+        Toast('家庭名称不能为空')
 
         return
       }
 
       if (houseName.length > 15) {
-        wx.showToast({ title: '家庭名称不能超过15个字符', icon: 'none' })
+        Toast('家庭名称不能超过15个字符')
 
         return
       }
@@ -171,18 +172,12 @@ ComponentWithComputed({
       })
 
       if (!res.success) {
-        wx.showToast({
-          title: this.data.homeInfoEdited.houseId ? '修改失败' : '新增失败',
-          icon: 'none',
-        })
+        Toast(this.data.homeInfoEdited.houseId ? '修改失败' : '新增失败')
         return
       }
 
       if (res.success) {
-        wx.showToast({
-          title: this.data.homeInfoEdited.houseId ? '修改成功' : '新增成功',
-          icon: 'none',
-        })
+        Toast(this.data.homeInfoEdited.houseId ? '修改成功' : '新增成功')
       }
 
       if (!this.data.homeInfoEdited.houseId) {
@@ -196,7 +191,7 @@ ComponentWithComputed({
       const list = homeBinding.store.homeList.filter((item) => item.houseCreatorFlag)
 
       if (list.length <= 1) {
-        wx.showToast({ title: '请至少保留一个创建的家庭', icon: 'none' })
+        Toast('请至少保留一个创建的家庭')
 
         return
       }
@@ -211,7 +206,7 @@ ComponentWithComputed({
 
       const delRes = await delUserHouse(homeBinding.store.currentHomeDetail.houseId)
 
-      wx.showToast({ title: delRes.success ? '解散成功' : '解散失败', icon: 'none' })
+      Toast(delRes.success ? '解散成功' : '解散失败')
 
       homeBinding.store.updateHomeInfo()
     },
@@ -220,13 +215,13 @@ ComponentWithComputed({
       const list = homeBinding.store.homeList.filter((item) => item.houseCreatorFlag)
 
       if (list.length <= 1) {
-        wx.showToast({ title: '请至少保留一个创建的家庭', icon: 'none' })
+        Toast('请至少保留一个创建的家庭')
 
         return
       }
 
       if (homeBinding.store.currentHomeDetail.userCount <= 1) {
-        wx.showToast({ title: '没有其他成员可供转让', icon: 'none' })
+        Toast('没有其他成员可供转让')
 
         return
       }
@@ -253,7 +248,7 @@ ComponentWithComputed({
 
       const delRes = await quitUserHouse(homeBinding.store.currentHomeDetail.houseId)
 
-      wx.showToast({ title: delRes.success ? '退出成功' : '退出失败', icon: 'none' })
+      Toast(delRes.success ? '退出成功' : '退出失败')
 
       homeBinding.store.updateHomeInfo()
     },

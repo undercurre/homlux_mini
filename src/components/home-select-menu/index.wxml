@@ -1,7 +1,7 @@
 <!--components/home-select-menu/index.wxml-->
 <view id="menu" class="bg fixed flex flex-col items-stretch py-10rpx px-24rpx rounded-32rpx z-120" style="left: {{x}}; top: {{y}};" wx:if="{{isRender}}">
-  <block wx:if="{{homeList.length <= 5}}">
-    <view class="flex flex-col items-start" bindtap="handleHomeTap" wx:for="{{homeList}}" wx:key="houseId" data-value="{{item.houseId}}" data-house="{{item.houseId}}">
+  <block wx:if="{{sortedHomeList.length <= 5}}">
+    <view class="flex flex-col items-start" bindtap="handleHomeTap" wx:for="{{sortedHomeList}}" wx:key="houseId" data-value="{{item.houseId}}" data-house="{{item.houseId}}">
       <view class="max-w-480rpx h-96rpx flex items-center">
         <text class="p-10rpx text-white text-28rpx single-text leading-none">{{item.houseName}}</text>
         <view class="text-20rpx text-white bg-hex-a2a2a2 px-8rpx rounded-999 ml-10rpx shrink-0" wx:if="{{item.houseCreatorFlag}}">创建</view>
@@ -12,7 +12,7 @@
   </block>
   <!-- 超过5个使用滑动 -->
   <scroll-view wx:else enable-flex scroll-y enhanced show-scrollbar="{{false}}" class="h-480rpx items-stretch">
-    <view class="flex flex-col items-start" bindtap="handleHomeTap" wx:for="{{homeList}}" wx:key="houseId" data-value="{{item.houseId}}" data-house="{{item.houseId}}">
+    <view class="flex flex-col items-start" bindtap="handleHomeTap" wx:for="{{sortedHomeList}}" wx:key="houseId" data-value="{{item.houseId}}" data-house="{{item.houseId}}">
       <view class="max-w-480rpx h-96rpx flex items-center">
         <text class="p-10rpx text-white text-28rpx single-text leading-none">{{item.houseName}}</text>
         <view class="text-20rpx text-white bg-hex-a2a2a2 px-8rpx rounded-999 ml-10rpx shrink-0" wx:if="{{item.houseCreatorFlag}}">创建</view>

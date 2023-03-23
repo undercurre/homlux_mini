@@ -17,3 +17,5 @@
 </view>
 
 <add-room show="{{isAddRoom}}" bind:close="hideAddRoom"></add-room>
+
+<van-toast id="van-toast" />

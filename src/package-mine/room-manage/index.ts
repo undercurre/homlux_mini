@@ -1,6 +1,6 @@
-// package-mine/hoom-manage/index.ts
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
+import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { homeBinding, roomBinding } from '../../store/index'
 import { strUtil } from '../../utils/index'
@@ -44,10 +44,7 @@ ComponentWithComputed({
 
     addRoom() {
       if (roomBinding.store.roomList.length === 50) {
-        wx.showToast({
-          title: '一个家庭中最多创建50个房间',
-          icon: 'none',
-        })
+        Toast('一个家庭中最多创建50个房间')
         return
       }
 

@@ -19,3 +19,5 @@
 <add-room show="{{isEdit}}" is-edit-name="{{editType === 'name'}}" is-edit-icon="{{editType === 'icon'}}" room-id="{{roomInfo.roomId}}" room-name="{{roomInfo.roomName}}" room-icon="{{roomInfo.roomIcon}}" bind:confirm="finishAddRoom" bind:close="onClose"></add-room>
 
 <van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />
+
+<van-toast id="van-toast" />
