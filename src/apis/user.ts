@@ -14,17 +14,13 @@ export async function queryUserInfo() {
 /**
  * 解析微信二维码接口
  */
-export async function queryWxImgQrCode(file: ArrayBuffer | string) {
-  console.log('111', file)
+export async function queryWxImgQrCode(imgUrl: string) {
   return await mzaioRequest.post<{ qrCodeUrl: string }>({
-    log: false,
+    log: true,
     loading: true,
     url: '/v1/mzgd/user/queryWxImgQrCode',
-    header: {
-      'content-type': 'multipart/form-data',
-    },
     data: {
-      file,
+      qrCodeDownloadUrl: imgUrl,
     },
   })
 }

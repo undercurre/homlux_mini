@@ -1,12 +1,11 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
+import dayjs from 'dayjs'
 import { deviceBinding, homeBinding } from '../../store/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { strUtil, bleUtil } from '../../utils/index'
-import { checkDevice, queryProtypeInfo } from '../../apis/index'
-
-import { FormData } from '../../lib/formData.js'
+import { checkDevice, queryProtypeInfo, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -68,8 +67,6 @@ ComponentWithComputed({
 
       this.initBle()
 
-      this.initWifi()
-
       // 防止重复判断,仅通过微信扫码直接进入该界面时判断场景值
       if (getCurrentPages().length === 1 && params.scene === 1011) {
         const scanUrl = decodeURIComponent(params.query.q)
@@ -111,29 +108,6 @@ ComponentWithComputed({
           console.log(res)
         },
       })
-    },
-    async initWifi() {
-      const deviceInfo = wx.getDeviceInfo()
-
-      console.log('deviceInfo', deviceInfo)
-      // Android 调用前需要 用户授权 scope.userLocation。该权限流程需前置，否则会出现在配网过程连接设备热点导致无法联网，请求失败
-      if (deviceInfo.platform === 'android') {
-        const authorizeRes = await wx
-          .authorize({
-            scope: 'scope.userLocation',
-          })
-          .catch((err) => err)
-
-        console.log('authorizeRes', authorizeRes)
-
-        // 用户拒绝授权处理
-        if (authorizeRes.errno === 103) {
-          await wx.showModal({ content: '请打开位置权限，否则无法正常使用配网' })
-
-          wx.navigateBack()
-          return
-        }
-      }
     },
     showGateListPopup() {
       this.setData({
@@ -208,10 +182,6 @@ ComponentWithComputed({
       return new Promise<boolean>((resolve) => {
         // 没有打开微信蓝牙授权异常处理
         console.log('getSetting', settingRes)
-        // res.authSetting = {
-        //   "scope.userInfo": true,
-        //   "scope.userLocation": true
-        // }
 
         if (isDeny || !settingRes.authSetting['scope.bluetooth']) {
           wx.showModal({
@@ -412,59 +382,71 @@ ComponentWithComputed({
       })
     },
 
-    chooseAlbun() {
+    chooseAlbum() {
       wx.chooseMedia({
         count: 1,
         mediaType: ['image'],
         sourceType: ['album'],
-        success: (res) => {
+        success: async (res) => {
           console.log('选择相册：', res)
 
           const file = res.tempFiles[0]
 
-          wx.uploadFile({
-            url: 'https://test.meizgd.com/mzaio/v1/mzgd/user/queryWxImgQrCode', //仅为示例，并非真实的接口地址
-            filePath: file.tempFilePath,
-            name: 'file',
-            header: {
-              Authorization: 'Bearer a99780cfbf1c4285a2531fbea132372e',
-            },
-            formData: {
-              reqId: 1679474207490,
-              user: 'test',
-            },
-            success: async (res) => {
-              console.log('success', res)
-            },
-            complete(res) {
-              console.log('complete', res)
-            },
-          })
+          const fs = wx.getFileSystemManager()
+
+          // 微信解析二维码图片大小限制 2M，前端暂时限制1.5M
+          if (file.size > 1500 * 1024) {
+            const compressRes = await wx.compressImage({
+              src: file.tempFilePath,
+              quality: 80,
+            })
+
+            console.log('compressRes', compressRes)
+
+            const stat = fs.statSync(compressRes.tempFilePath, false) as WechatMiniprogram.Stats
+            file.tempFilePath = compressRes.tempFilePath
+            file.size = stat.size
+          }
+
+          const result = fs.readFileSync(file.tempFilePath)
+
+          console.log('readFile', result)
+
+          this.uploadFile({ fileUrl: file.tempFilePath, fileSize: file.size, binary: result })
         },
       })
     },
 
     async uploadFile(params: { fileUrl: string; fileSize: number; binary: string | ArrayBuffer }) {
-      const { fileUrl } = params
+      const { fileUrl, fileSize, binary } = params
 
-      const formData = new FormData()
-      formData.append('reqId', '1679474207499')
-      formData.appendFile('file', fileUrl, '文件名')
-      const data = formData.getData()
+      const nameArr = fileUrl.split('/')
+
+      const { result } = await getUploadFileForOssInfo(nameArr[nameArr.length - 1])
+
+      console.log('uploadInfo', result)
 
       wx.request({
-        url: 'https://test.meizgd.com/mzaio/v1/mzgd/user/queryWxImgQrCode', //仅为示例，并非真实的接口地址
-        method: 'POST',
-        data: data.buffer,
+        url: result.uploadUrl, //仅为示例，并非真实的接口地址
+        method: 'PUT',
+        data: binary,
         header: {
-          'content-type': data.contentType,
-          Authorization: 'Bearer a99780cfbf1c4285a2531fbea132372e',
+          'content-type': 'binary',
+          Certification: result.certification,
+          'X-amz-date': dayjs().subtract(8, 'hour').format('ddd,D MMM YYYY HH:mm:ss [GMT]'), // gmt时间慢8小时
+          'Content-Length': fileSize,
+          'X-amz-acl': 'public-read',
         },
         success: async (res) => {
-          console.log('success', res)
+          console.log('uploadFile-success', res)
+          const query = await queryWxImgQrCode(result.downloadUrl)
+
+          if (query.success) {
+            this.handleScanUrl(query.result.qrCodeUrl)
+          }
         },
         complete(res) {
-          console.log('complete', res)
+          console.log('uploadFile-complete', res)
         },
       })
     },

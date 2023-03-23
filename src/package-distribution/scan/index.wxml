@@ -4,15 +4,20 @@
   <nav-bar class="absolute" background="transparent" leftArrow="{{true}}" left-icon="/package-distribution/assets/scan/back.png" bind:leftTap="goBack"></nav-bar>
 
   <view class="fixed left-0 right-0 top-0 bottom-0 flex flex-col">
-    <view class="grow shrink h-400 camera-mask flex flex-col justify-end items-center">
+    <view class="grow shrink h-200 camera-mask flex flex-col justify-end items-center">
       <text class="leading-44rpx text-32 text-hex-F4F8FF pb-20rpx">扫描机身或说明书二维码</text>
     </view>
 
-    <view class="grow-0 h-580 sqare-area">
-      <view class="scan-line {{ isScan && 'pause'}}"></view>
+    <view class="grow-0 flex flex-row items-stretch leading-0">
+      <view class="camera-mask grow"></view>
+      <view class="relative">
+        <image class="w-586 h-585 opacity-65" src="/package-distribution/assets/scan/scan-area.png"></image>
+        <view class="scan-line {{ isScan && 'pause'}}"></view>
+      </view>
+      <view class="camera-mask grow"></view>
     </view>
 
-    <view class="h-400 grow shrink camera-mask flex flex-col items-center justify-between">
+    <view class="pt-80rpx h-300 grow shrink camera-mask flex flex-col items-center justify-between">
       <view class="inline-block flex flex-row items-center bg-hex-5A5A5A rounded-32rpx leading-74rpx px-28rpx w-min-380">
         <image wx:if="{{bleStatus === 'open'}}" class="w-28 h-28 rotate" src="/package-distribution/assets/scan/scaning.png"></image>
 
@@ -24,7 +29,7 @@
       <view></view>
 
       <view class="box-border w-full pb-80rpx px-120rpx flex flex-row items-center justify-between text-28 text-hex-F4F8FF leading-40rpx">
-        <view class="flex flex-col items-center" bind:tap="chooseAlbun">
+        <view class="flex flex-col items-center" bind:tap="chooseAlbum">
           <image class="w-96 h-96 mb-28rpx" src="/package-distribution/assets/scan/album.png"></image>
 
           <text>相册</text>

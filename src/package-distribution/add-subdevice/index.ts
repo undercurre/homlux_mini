@@ -140,7 +140,7 @@ ComponentWithComputed({
         mac: msgObj.mac,
         zigbeeMac: '',
         icon: this.data.pageParams.deviceIcon,
-        name: `${this.data.pageParams.deviceName || '子设备'}${msgObj.mac.substr(-4, 4)}`,
+        name: this.data.pageParams.deviceName,
         client: new BleClient({ mac: msgObj.mac, deviceUuid: device.deviceId }),
         roomId: '',
         roomName: '',
@@ -233,7 +233,7 @@ ComponentWithComputed({
       const res = await bindDevice({
         deviceId: device.zigbeeMac,
         houseId: homeBinding.store.currentHomeId,
-        roomId: device.roomId || this.data.defaultRoom.roomId,
+        roomId: roomBinding.store.currentRoom.roomId,
         sn: '',
         deviceName: device.name + (deviceNum > 0 ? ++deviceNum : ''),
       })

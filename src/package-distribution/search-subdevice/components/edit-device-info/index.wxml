@@ -1,11 +1,13 @@
 <!--package-distribution/search-subdevice/components/edit-device-info/index.wxml-->
-<van-popup show="{{ show }}" position="bottom" round bind:close="close" closeable custom-style="max-height: 1000rpx;" safe-area-tab-bar>
+<van-popup show="{{ show }}" position="bottom" round bind:close="close" closeable>
   <view class="px-32rpx pt-48rpx text-black-2a">
-    <text class="block pb-66rpx font-medium text-center text-36 leading-48rpx">设备编辑</text>
+    <text class="block font-medium text-center text-36 leading-48rpx">设备编辑</text>
 
-    <edit-device-form device-name="{{deviceName}}" room-id="{{roomId}}" bind:change="change" switch-list="{{switchList}}"></edit-device-form>
+    <scroll-view scroll-y class="{{switchList.length > 1 ? 'h-50vh' : 'h-35vh'}}" enhanced show-scrollbar="{{false}}">
+      <edit-device-form device-name="{{deviceName}}" room-id="{{roomId}}" bind:change="change" switch-list="{{switchList}}"></edit-device-form>
+    </scroll-view>
 
-    <view class="flex flex-row gap-46rpx pt-88rpx">
+    <view class="flex flex-row gap-46rpx pt-88rpx pb-40rpx">
       <van-button class="grow" size="large" type="primary" bind:click="confirm">确定</van-button>
     </view>
   </view>
