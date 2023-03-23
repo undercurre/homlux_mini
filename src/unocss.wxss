@@ -455,7 +455,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .w-60rpx{width:60rpx;}
 .w-64,
 .w-64rpx{width:64rpx;}
-.w-650rpx{width:650rpx;}
 .w-654rpx{width:654rpx;}
 .w-686rpx{width:686rpx;}
 .w-702rpx{width:702rpx;}

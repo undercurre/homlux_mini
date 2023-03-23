@@ -67,8 +67,6 @@ ComponentWithComputed({
 
       this.initBle()
 
-      this.initWifi()
-
       // 防止重复判断,仅通过微信扫码直接进入该界面时判断场景值
       if (getCurrentPages().length === 1 && params.scene === 1011) {
         const scanUrl = decodeURIComponent(params.query.q)
@@ -110,29 +108,6 @@ ComponentWithComputed({
           console.log(res)
         },
       })
-    },
-    async initWifi() {
-      const deviceInfo = wx.getDeviceInfo()
-
-      console.log('deviceInfo', deviceInfo)
-      // Android 调用前需要 用户授权 scope.userLocation。该权限流程需前置，否则会出现在配网过程连接设备热点导致无法联网，请求失败
-      if (deviceInfo.platform === 'android') {
-        const authorizeRes = await wx
-          .authorize({
-            scope: 'scope.userLocation',
-          })
-          .catch((err) => err)
-
-        console.log('authorizeRes', authorizeRes)
-
-        // 用户拒绝授权处理
-        if (authorizeRes.errno === 103) {
-          await wx.showModal({ content: '请打开位置权限，否则无法正常使用配网' })
-
-          wx.navigateBack()
-          return
-        }
-      }
     },
     showGateListPopup() {
       this.setData({
