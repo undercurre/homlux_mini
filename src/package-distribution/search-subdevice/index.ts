@@ -241,8 +241,8 @@ ComponentWithComputed({
         name: deviceName,
         isChecked: false,
         client: new BleClient({ mac: msgObj.mac, deviceUuid: device.deviceId }),
-        roomId: '',
-        roomName: '',
+        roomId: roomBinding.store.currentRoom.roomId,
+        roomName: roomBinding.store.currentRoom.roomName,
         switchList: [],
         status: 'waiting',
         requestTimes: 20,
@@ -406,7 +406,7 @@ ComponentWithComputed({
       const res = await bindDevice({
         deviceId: device.zigbeeMac,
         houseId: homeBinding.store.currentHomeId,
-        roomId: device.roomId || this.data.defaultRoom.roomId,
+        roomId: device.roomId,
         sn: '',
         deviceName: device.name,
       })

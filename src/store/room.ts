@@ -78,6 +78,6 @@ export const roomStore = observable({
 
 export const roomBinding = {
   store: roomStore,
-  fields: ['roomList', 'currentRoomIndex', 'roomDeviceList'],
+  fields: ['roomList', 'currentRoomIndex', 'roomDeviceList', 'currentRoom'],
   actions: [],
 }

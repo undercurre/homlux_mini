@@ -147,7 +147,7 @@ Component({
       const res = await bindDevice({
         deviceId: params.deviceId,
         houseId: homeBinding.store.currentHomeId,
-        roomId: roomBinding.store.roomList[0].roomId,
+        roomId: roomBinding.store.currentRoom.roomId,
         sn,
         deviceName: params.deviceName + (gatewayNum > 0 ? ++gatewayNum : ''),
       })

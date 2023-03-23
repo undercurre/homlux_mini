@@ -233,7 +233,7 @@ ComponentWithComputed({
       const res = await bindDevice({
         deviceId: device.zigbeeMac,
         houseId: homeBinding.store.currentHomeId,
-        roomId: device.roomId || this.data.defaultRoom.roomId,
+        roomId: roomBinding.store.currentRoom.roomId,
         sn: '',
         deviceName: device.name + (deviceNum > 0 ? ++deviceNum : ''),
       })
