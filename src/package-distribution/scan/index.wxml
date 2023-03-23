@@ -29,7 +29,7 @@
       <view></view>
 
       <view class="box-border w-full pb-80rpx px-120rpx flex flex-row items-center justify-between text-28 text-hex-F4F8FF leading-40rpx">
-        <view class="flex flex-col items-center" bind:tap="chooseAlbun">
+        <view class="flex flex-col items-center" bind:tap="chooseAlbum">
           <image class="w-96 h-96 mb-28rpx" src="/package-distribution/assets/scan/album.png"></image>
 
           <text>相册</text>

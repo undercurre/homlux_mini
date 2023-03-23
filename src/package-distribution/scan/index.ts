@@ -411,7 +411,7 @@ ComponentWithComputed({
       })
     },
 
-    chooseAlbun() {
+    chooseAlbum() {
       wx.chooseMedia({
         count: 1,
         mediaType: ['image'],
@@ -419,7 +419,7 @@ ComponentWithComputed({
         success: async (res) => {
           console.log('选择相册：', res)
 
-          let file = res.tempFiles[0]
+          const file = res.tempFiles[0]
 
           const fs = wx.getFileSystemManager()
 
