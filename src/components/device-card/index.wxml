@@ -1,12 +1,6 @@
 <view id="card" class="{{showControl?'card-shadow':''}} card-clip w-160rpx h-216rpx rounded-32rpx flex-col-center relative overflow-hidden" catchtap="handleCardTap">
   <view wx:if="{{select}}" class="w-160rpx h-216rpx absolute left-0 top-0 box-border select-border rounded-32rpx bg-hex-fff"></view>
   <view wx:else class="w-160rpx h-216rpx rounded-32rpx box-border {{showControl?'show-control-bg white-border':'bg-hex-f7f7f7'}}"></view>
-  <!-- <view wx:if="{{showControl}}" class="w-160rpx h-216rpx absolute left-0 top-0" style="background: {{select ? '' : ''}};">
-    <image src="/assets/img/device/device-card{{select?'-select':''}}.png" class="w-160rpx h-216rpx absolute left-0 top-0" />
-  </view>
-  <view wx:else class="w-160rpx h-216rpx absolute left-0 top-0" style="background-color: {{!select?'rgba(0,0,0,0.06)':'transparent'}};">
-    <image wx:if="{{select}}" src="/assets/img/device/device-card-select.png" class="w-160rpx h-216rpx" />
-  </view> -->
   <view class="absolute left-0 top-16rpx w-160rpx flex-center">
     <text class="text-26rpx text-hex-353535 font-medium">{{deviceName}}</text>
   </view>
@@ -17,7 +11,8 @@
     </view>
   </view>
   <view wx:if="{{ripple}}" class="absolute left-80rpx w-250rpx h-250rpx rounded-999 {{onOff ? 'ripple-on' : 'ripple-off'}}" style="animation: ripple-{{onOff ? 'on' : 'off'}} 1s ease forwards;"></view>
-  <view wx:if="{{showControl}}" class="absolute left-0 bottom-0 w-160rpx flex-col-center" catchtap="handlePowerTap">
+
+  <view wx:if="{{showControl && !editMode}}" class="absolute left-0 bottom-0 w-160rpx flex-col-center" catchtap="handlePowerTap">
     <view class="h-12rpx"></view>
     <text wx:if="{{!deviceInfo.onLineStatus}}" class="text-24rpx text-hex-fbbb32 mb-22rpx">离线</text>
     <view wx:else>
@@ -27,6 +22,9 @@
       </view>
       <image wx:else src="{{controlBtnPic}}" class="w-48rpx h-48rpx mb-6rpx"></image>
     </view>
+  </view>
+  <view wx:elif="{{editMode}}" class="absolute w-full left-0 bottom-12rpx flex-center">
+    <image src="/assets/img/base/{{editSelect?'check': 'uncheck'}}.png" class="w-36rpx h-36rpx" />
   </view>
   <view wx:else class="absolute left-0 bottom-18rpx w-160rpx flex-center">
     <text wx:if="{{!deviceInfo.onLineStatus && deviceType !== 'switch'}}" class="text-24rpx text-hex-fbbb32">离线</text>

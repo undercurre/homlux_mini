@@ -89,7 +89,7 @@ var longPress = function (event, ownerInstance) {
   // 如果已经在 drag 中则返回, 防止多指触发 drag 动作, touchstart 事件中有效果
   if (st.dragging) return
   st.dragging = true
-  ownerInstance.callMethod('drag', { dragging: true })
+  ownerInstance.callMethod('drag', { dragging: true, index: st.cur })
 
   // 计算X,Y轴初始位移, 使 item 中心移动到点击处, 单列时候X轴初始不做位移
   st.tranX = _.columns === 1 ? 0 : sTouch.pageX - (_.itemWidth / 2 + _.wrapLeft)

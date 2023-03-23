@@ -143,57 +143,11 @@ ComponentWithComputed({
         'lightInfoInner.ColorTemp': value.ColorTemp ?? 0,
       })
     },
-    /**
-     * 监听选择列表，执行动画
-     * @param value 选择列表
-     */
+    isEditSelectMode(value) {
+      this.popupMove(deviceStore.selectList, value)
+    },
     selectList(value) {
-      this.updateCurrentLinkTypeDesc()
-      const from = -this.data._componentHeight
-      const to = this.properties.popup ? 0 : this.data._bottom
-      if (this.data._componentHeight === 0) {
-        this.data._bottom = -this.data._componentHeight
-        return // 这时候还没有第一次渲染，from是0，不能正确执行动画
-      }
-      if (value.length > 0 && !this.data.isRender) {
-        this.setData({
-          isRender: true,
-        })
-        this.animate(
-          '#popup',
-          [
-            {
-              opacity: 0,
-              bottom: from + 'px',
-            },
-            {
-              opacity: 1,
-              bottom: to + 'px',
-            },
-          ],
-          200,
-        )
-      } else if (value.length === 0) {
-        this.animate(
-          '#popup',
-          [
-            {
-              opacity: 1,
-              bottom: to + 'px',
-            },
-            {
-              opacity: 0,
-              bottom: -this.data._componentHeight + 'px',
-            },
-          ],
-          200,
-          () => {
-            this.setData({
-              isRender: false,
-            })
-          },
-        )
-      }
+      this.popupMove(value, deviceStore.isEditSelectMode)
     },
     /**
      * 监听当前选择类型
@@ -220,7 +174,7 @@ ComponentWithComputed({
     /**
      * 初始化数据
      */
-    attached() {
+    ready() {
       const divideRpxByPx = storage.get<number>('divideRpxByPx')
         ? (storage.get<number>('divideRpxByPx') as number)
         : 0.5
@@ -250,6 +204,78 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
+    popupMove(selectList: string[], isEditMode: boolean) {
+      this.updateCurrentLinkTypeDesc()
+      const from = -this.data._componentHeight
+      const to = this.properties.popup ? 0 : this.data._bottom
+      if (this.data._componentHeight === 0) {
+        this.data._bottom = -this.data._componentHeight
+        return // 这时候还没有第一次渲染，from是0，不能正确执行动画
+      }
+      if (isEditMode) {
+        if (this.data.isRender) {
+          this.animate(
+            '#popup',
+            [
+              {
+                opacity: 1,
+                bottom: to + 'px',
+              },
+              {
+                opacity: 0,
+                bottom: -this.data._componentHeight + 'px',
+              },
+            ],
+            200,
+            () => {
+              this.setData({
+                isRender: false,
+              })
+            },
+          )
+        }
+      } else {
+        if (selectList.length > 0 && !this.data.isRender) {
+          this.setData({
+            isRender: true,
+          })
+          this.animate(
+            '#popup',
+            [
+              {
+                opacity: 0,
+                bottom: from + 'px',
+              },
+              {
+                opacity: 1,
+                bottom: to + 'px',
+              },
+            ],
+            200,
+          )
+        } else if (selectList.length === 0) {
+          this.animate(
+            '#popup',
+            [
+              {
+                opacity: 1,
+                bottom: to + 'px',
+              },
+              {
+                opacity: 0,
+                bottom: -this.data._componentHeight + 'px',
+              },
+            ],
+            200,
+            () => {
+              this.setData({
+                isRender: false,
+              })
+            },
+          )
+        }
+      }
+    },
     updateCurrentLinkTypeDesc() {
       if (deviceStore.selectList) {
         let mode = '未关联'
@@ -958,6 +984,7 @@ ComponentWithComputed({
       } else if (this.data.tab === 'switch') {
         this.switchSendDeviceControl(1)
       }
+      this.triggerEvent('updateList')
     },
     handleAllOff() {
       if (throttleTimer) {

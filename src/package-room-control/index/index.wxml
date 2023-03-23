@@ -77,7 +77,7 @@
           </view>
         </view>
         <view class="w-720rpx mt-24rpx">
-          <drag id="drag-switch" columns="{{4}}" list-data="{{switchList}}" scroll-top="{{scrollTop}}" item-height="{{240}}" generic:item="card" bind:sortend="handleSwitchSortEnd" bind:controlTap="handleSwitchControlTapToggle" bind:cardTap="handleDeviceCardTap" bind:scroll="handleScroll" bind:offlineTap="handleShowDeviceOffline"></drag>
+          <drag id="drag-switch" columns="{{4}}" list-data="{{switchList}}" scroll-top="{{scrollTop}}" item-height="{{240}}" generic:item="card" bind:sortend="handleSwitchSortEnd" bind:controlTap="handleSwitchControlTapToggle" bind:cardTap="handleDeviceCardTap" bind:scroll="handleScroll" bind:offlineTap="handleShowDeviceOffline" bind:drag="handleDrag"></drag>
         </view>
       </view>
 
@@ -106,6 +106,7 @@
 <device-control-popup popup="{{controlPopup}}" bind:popMove="handlePopUp" bind:updateList="updateDeviceList"></device-control-popup>
 <before-add-scene-popup show="{{showBeforeAddScenePopup}}" bind:close="handleBeforeAddScenePopupClose" bind:next="handleBeforeAddScenePopupNext" bind:delete="handleBeforeAddScenePopupDelete" bind:edit="handleSceneActionEdit" />
 <add-scene-popup actions="{{addSceneActions}}" show="{{showAddScenePopup}}" bind:close="handleAddScenePopupClose" bind:addSuccess="handleShowAddSceneSuccess" bind:return="handleAddScenePopupReturn" />
+<batch-edit wx:if="{{isEditSelectMode}}"></batch-edit>
 
 <van-toast id="van-toast" />
 <van-dialog use-slot title="子设备离线" show="{{ showDeviceOffline }}" confirm-button-color="#488FFF" confirmButtonText="我知道了" bind:close="handleCloseDeviceOffice">

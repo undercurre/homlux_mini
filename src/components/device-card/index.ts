@@ -23,6 +23,14 @@ ComponentWithComputed({
       type: Boolean,
       value: false,
     },
+    editMode: {
+      type: Boolean,
+      value: false,
+    },
+    editSelect: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /**
