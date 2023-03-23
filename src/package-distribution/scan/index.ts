@@ -1,12 +1,11 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
+import dayjs from 'dayjs'
 import { deviceBinding, homeBinding } from '../../store/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { strUtil, bleUtil } from '../../utils/index'
-import { checkDevice, queryProtypeInfo } from '../../apis/index'
-
-import { FormData } from '../../lib/formData.js'
+import { checkDevice, queryProtypeInfo, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -417,54 +416,66 @@ ComponentWithComputed({
         count: 1,
         mediaType: ['image'],
         sourceType: ['album'],
-        success: (res) => {
+        success: async (res) => {
           console.log('选择相册：', res)
 
-          const file = res.tempFiles[0]
+          let file = res.tempFiles[0]
 
-          wx.uploadFile({
-            url: 'https://test.meizgd.com/mzaio/v1/mzgd/user/queryWxImgQrCode', //仅为示例，并非真实的接口地址
-            filePath: file.tempFilePath,
-            name: 'file',
-            header: {
-              Authorization: 'Bearer a99780cfbf1c4285a2531fbea132372e',
-            },
-            formData: {
-              reqId: 1679474207490,
-              user: 'test',
-            },
-            success: async (res) => {
-              console.log('success', res)
-            },
-            complete(res) {
-              console.log('complete', res)
-            },
-          })
+          const fs = wx.getFileSystemManager()
+
+          // 微信解析二维码图片大小限制 2M，前端暂时限制1.5M
+          if (file.size > 1500 * 1024) {
+            const compressRes = await wx.compressImage({
+              src: file.tempFilePath,
+              quality: 80,
+            })
+
+            console.log('compressRes', compressRes)
+
+            const stat = fs.statSync(compressRes.tempFilePath, false) as WechatMiniprogram.Stats
+            file.tempFilePath = compressRes.tempFilePath
+            file.size = stat.size
+          }
+
+          const result = fs.readFileSync(file.tempFilePath)
+
+          console.log('readFile', result)
+
+          this.uploadFile({ fileUrl: file.tempFilePath, fileSize: file.size, binary: result })
         },
       })
     },
 
     async uploadFile(params: { fileUrl: string; fileSize: number; binary: string | ArrayBuffer }) {
-      const { fileUrl } = params
+      const { fileUrl, fileSize, binary } = params
 
-      const formData = new FormData()
-      formData.append('reqId', '1679474207499')
-      formData.appendFile('file', fileUrl, '文件名')
-      const data = formData.getData()
+      const nameArr = fileUrl.split('/')
+
+      const { result } = await getUploadFileForOssInfo(nameArr[nameArr.length - 1])
+
+      console.log('uploadInfo', result)
 
       wx.request({
-        url: 'https://test.meizgd.com/mzaio/v1/mzgd/user/queryWxImgQrCode', //仅为示例，并非真实的接口地址
-        method: 'POST',
-        data: data.buffer,
+        url: result.uploadUrl, //仅为示例，并非真实的接口地址
+        method: 'PUT',
+        data: binary,
         header: {
-          'content-type': data.contentType,
-          Authorization: 'Bearer a99780cfbf1c4285a2531fbea132372e',
+          'content-type': 'binary',
+          Certification: result.certification,
+          'X-amz-date': dayjs().subtract(8, 'hour').format('ddd,D MMM YYYY HH:mm:ss [GMT]'), // gmt时间慢8小时
+          'Content-Length': fileSize,
+          'X-amz-acl': 'public-read',
         },
         success: async (res) => {
-          console.log('success', res)
+          console.log('uploadFile-success', res)
+          const query = await queryWxImgQrCode(result.downloadUrl)
+
+          if (query.success) {
+            this.handleScanUrl(query.result.qrCodeUrl)
+          }
         },
         complete(res) {
-          console.log('complete', res)
+          console.log('uploadFile-complete', res)
         },
       })
     },
