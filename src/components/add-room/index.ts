@@ -63,40 +63,52 @@ Component({
     },
     iconList: [
       {
-        icon: 'parents-room',
-      },
-      {
-        icon: 'restaurant',
-      },
-      {
-        icon: 'toilet',
-      },
-      {
-        icon: 'kitchen',
+        icon: 'drawing-room',
+        text: '客厅',
       },
       {
         icon: 'master-bedroom',
-      },
-      {
-        icon: 'kids-room',
-      },
-      {
-        icon: 'drawing-room',
-      },
-      {
-        icon: 'study-room',
-      },
-      {
-        icon: 'balcony',
-      },
-      {
-        icon: 'cloakroom',
-      },
-      {
-        icon: 'bathroom',
+        text: '主卧',
       },
       {
         icon: 'second-bedroom',
+        text: '次卧',
+      },
+      {
+        icon: 'study-room',
+        text: '书房',
+      },
+      {
+        icon: 'restaurant',
+        text: '餐厅',
+      },
+      {
+        icon: 'cloakroom',
+        text: '衣帽间',
+      },
+      {
+        icon: 'bathroom',
+        text: '浴室',
+      },
+      {
+        icon: 'balcony',
+        text: '阳台',
+      },
+      {
+        icon: 'toilet',
+        text: '卫生间',
+      },
+      {
+        icon: 'gallery',
+        text: '走廊',
+      },
+      {
+        icon: 'kitchen',
+        text: '厨房',
+      },
+      {
+        icon: 'parents-room',
+        text: '默认',
       },
     ],
   },

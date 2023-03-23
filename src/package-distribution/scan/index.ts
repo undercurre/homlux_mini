@@ -182,10 +182,6 @@ ComponentWithComputed({
       return new Promise<boolean>((resolve) => {
         // 没有打开微信蓝牙授权异常处理
         console.log('getSetting', settingRes)
-        // res.authSetting = {
-        //   "scope.userInfo": true,
-        //   "scope.userLocation": true
-        // }
 
         if (isDeny || !settingRes.authSetting['scope.bluetooth']) {
           wx.showModal({
