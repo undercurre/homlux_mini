@@ -1,5 +1,6 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
+import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { getCurrentPageParams, strUtil } from '../../utils/index'
 import { queryDeviceInfoByDeviceId, editDeviceInfo, batchUpdate } from '../../apis/index'
@@ -124,7 +125,7 @@ ComponentWithComputed({
 
         wx.switchTab({ url: '/pages/index/index' })
       } else {
-        wx.showToast({ title: '保存失败', icon: 'error' })
+        Toast('保存失败')
       }
     },
   },

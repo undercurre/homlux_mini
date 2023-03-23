@@ -1,11 +1,12 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import Toast from '@vant/weapp/toast/toast'
 import { deviceBinding, homeBinding } from '../../store/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { strUtil, bleUtil } from '../../utils/index'
 import { checkDevice, queryProtypeInfo } from '../../apis/index'
 
-import { FormData } from '../../utils/formData.js'
+import { FormData } from '../../lib/formData.js'
 
 ComponentWithComputed({
   options: {
@@ -421,40 +422,22 @@ ComponentWithComputed({
 
           const file = res.tempFiles[0]
 
-          const fs = wx.getFileSystemManager()
-
-          fs.readFile({
+          wx.uploadFile({
+            url: 'https://test.meizgd.com/mzaio/v1/mzgd/user/queryWxImgQrCode', //仅为示例，并非真实的接口地址
             filePath: file.tempFilePath,
-            // encoding: 'binary',
-            success: async (result) => {
-              console.log('readFile', result, file.tempFilePath)
-
-              wx.uploadFile({
-                url: 'https://test.meizgd.com/mzaio/v1/mzgd/user/queryWxImgQrCode', //仅为示例，并非真实的接口地址
-                filePath: file.tempFilePath,
-                name: 'file',
-                header: {
-                  Authorization: 'Bearer a99780cfbf1c4285a2531fbea132372e',
-                },
-                formData: {
-                  reqId: 1679474207490,
-                  user: 'test',
-                },
-                success: async (res) => {
-                  console.log('success', res)
-                },
-                complete(res) {
-                  console.log('complete', res)
-                },
-              })
-
-              // this.uploadFile({ fileUrl: file.tempFilePath, fileSize: file.size, binary: result.data })
-
-              // const query = await queryWxImgQrCode(result.data)
-
-              // if (query.success) {
-              //   this.handleScanUrl(query.result.qrCodeUrl)
-              // }
+            name: 'file',
+            header: {
+              Authorization: 'Bearer a99780cfbf1c4285a2531fbea132372e',
+            },
+            formData: {
+              reqId: 1679474207490,
+              user: 'test',
+            },
+            success: async (res) => {
+              console.log('success', res)
+            },
+            complete(res) {
+              console.log('complete', res)
             },
           })
         },
@@ -462,12 +445,12 @@ ComponentWithComputed({
     },
 
     async uploadFile(params: { fileUrl: string; fileSize: number; binary: string | ArrayBuffer }) {
-      const { fileUrl, fileSize, binary } = params
+      const { fileUrl } = params
 
-      let formData = new FormData()
+      const formData = new FormData()
       formData.append('reqId', '1679474207499')
       formData.appendFile('file', fileUrl, '文件名')
-      let data = formData.getData()
+      const data = formData.getData()
 
       wx.request({
         url: 'https://test.meizgd.com/mzaio/v1/mzgd/user/queryWxImgQrCode', //仅为示例，并非真实的接口地址
@@ -488,7 +471,7 @@ ComponentWithComputed({
 
     async handleScanUrl(url: string) {
       if (!url.includes('meizgd.com/homlux/qrCode.html')) {
-        wx.showToast({ title: '非法二维码', icon: 'none' })
+        Toast('非法二维码')
         return
       }
 
@@ -529,7 +512,7 @@ ComponentWithComputed({
       })
 
       if (!res.success) {
-        wx.showToast({ title: '验证产品信息失败', icon: 'error' })
+        Toast('验证产品信息失败')
 
         return
       }
@@ -556,7 +539,7 @@ ComponentWithComputed({
       const res = await checkDevice({ dsn: params.sn })
 
       if (!res.success) {
-        wx.showToast({ title: '验证产品信息失败', icon: 'error' })
+        Toast('验证产品信息失败')
 
         return
       }

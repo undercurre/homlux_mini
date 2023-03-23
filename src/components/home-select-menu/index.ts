@@ -48,8 +48,8 @@ ComponentWithComputed({
       if (!data.homeList || !data.homeList.length) {
         return []
       }
-  
-      return data.homeList.sort((_: Home.IHomeItem, b: Home.IHomeItem) => b.defaultHouseFlag ? 1 : -1)
+
+      return data.homeList.sort((_: Home.IHomeItem, b: Home.IHomeItem) => (b.defaultHouseFlag ? 1 : -1))
     },
   },
 

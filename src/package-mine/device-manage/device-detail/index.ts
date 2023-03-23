@@ -1,5 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import Toast from '@vant/weapp/toast/toast'
 import { deviceStore, homeStore, otaStore, roomBinding } from '../../../store/index'
 import pageBehavior from '../../../behaviors/pageBehaviors'
 import { deleteDevice, editDeviceInfo, queryDeviceInfoByDeviceId } from '../../../apis/index'
@@ -82,10 +83,7 @@ ComponentWithComputed({
     },
     async handleDeviceNameEditConfirm(e: { detail: string }) {
       if (!e.detail) {
-        wx.showToast({
-          icon: 'error',
-          title: '设备名称不能为空',
-        })
+        Toast('设备名称不能为空')
         return
       }
       this.setData({
@@ -145,18 +143,12 @@ ComponentWithComputed({
           sn: this.data.deviceInfo.proType === proType.gateway ? this.data.deviceInfo.sn : this.data.deviceId,
         })
         if (res.success) {
-          wx.showToast({
-            icon: 'success',
-            title: '删除成功',
-          })
+          Toast('删除成功')
           homeStore.updateRoomCardList()
           emitter.emit('deviceEdit')
           wx.navigateBack()
         } else {
-          wx.showToast({
-            icon: 'error',
-            title: '删除失败',
-          })
+          Toast('删除失败')
         }
       })
     },

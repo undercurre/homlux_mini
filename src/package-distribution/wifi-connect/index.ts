@@ -66,7 +66,7 @@ ComponentWithComputed({
       }
 
       return title
-    }
+    },
   },
 
   lifetimes: {
@@ -245,7 +245,7 @@ ComponentWithComputed({
     },
 
     next() {
-      let pageParams = getCurrentPageParams()
+      const pageParams = getCurrentPageParams()
 
       const { SSID, pw } = this.data.wifiInfo
 
