@@ -31,6 +31,8 @@ export class BleClient {
   mac: string
   key = ''
 
+  isConnected = false // 是否正在连接
+
   deviceUuid: string
   serviceId = 'BAE55B96-7D19-458D-970C-50613D801BC9'
   characteristicId = ''
@@ -86,6 +88,8 @@ export class BleClient {
       }
     }
 
+    this.isConnected = true
+
     // 连接成功，获取服务
     const bleServiceRes = await wx
       .getBLEDeviceServices({
@@ -129,13 +133,15 @@ export class BleClient {
     }
   }
 
+  // 监听蓝牙设备非主动断开
   listenDisconnect() {
     return new Promise<{ code: number; error: string }>((resolve) => {
       const bleConnectionListener = (res: WechatMiniprogram.OnBLEConnectionStateChangeCallbackResult) => {
         // 该方法回调中可以用于处理连接意外断开等异常情况
-        if (this.deviceUuid === res.deviceId && !res.connected) {
+        if (this.deviceUuid === res.deviceId && !res.connected && this.isConnected) {
           console.error(`蓝牙设备断开：${this.mac}`)
           wx.offBLEConnectionStateChange(bleConnectionListener)
+          this.isConnected = false
           resolve({ code: -1, error: '蓝牙设备断开' })
         }
       }
@@ -147,6 +153,7 @@ export class BleClient {
   async close() {
     const res = await wx.closeBLEConnection({ deviceId: this.deviceUuid }).catch((err) => err)
 
+    this.isConnected = false
     console.log('closeBLEConnection', this.mac, res)
   }
 

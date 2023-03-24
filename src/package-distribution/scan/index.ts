@@ -422,10 +422,10 @@ ComponentWithComputed({
 
       const nameArr = fileUrl.split('/')
 
+      // 获取集团oss上传服务相关信息
       const { result } = await getUploadFileForOssInfo(nameArr[nameArr.length - 1])
 
-      console.log('uploadInfo', result)
-
+      // 上传图片到集团OSS服务
       wx.request({
         url: result.uploadUrl, //仅为示例，并非真实的接口地址
         method: 'PUT',
