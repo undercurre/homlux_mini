@@ -129,13 +129,20 @@ ComponentWithComputed({
         .select('#card')
         .boundingClientRect()
         .exec((res) => {
-          if (this.data.deviceInfo.onLineStatus) {
+          if (this.data.editMode) {
             this.triggerEvent('cardTap', {
               ...this.data.deviceInfo,
               clientRect: res[0],
             })
           } else {
-            this.triggerEvent('offlineTap', this.data.deviceInfo)
+            if (this.data.deviceInfo.onLineStatus) {
+              this.triggerEvent('cardTap', {
+                ...this.data.deviceInfo,
+                clientRect: res[0],
+              })
+            } else {
+              this.triggerEvent('offlineTap', this.data.deviceInfo)
+            }
           }
         })
     },

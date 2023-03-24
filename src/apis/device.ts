@@ -218,15 +218,7 @@ export async function editDeviceInfo(
  */
 export async function batchUpdate(
   data: {
-    deviceInfoUpdateVoList: {
-      deviceId: string
-      deviceName?: string
-      houseId?: string
-      roomId?: string
-      type?: string
-      switchId?: string
-      switchName?: string
-    }[]
+    deviceInfoUpdateVoList: Device.DeviceInfoUpdateVo[]
   },
   options?: { loading?: boolean },
 ) {
@@ -250,6 +242,25 @@ export async function deleteDevice(
     log: true,
     loading: options?.loading ?? false,
     url: '/v1/device/delDevice',
+    data,
+  })
+}
+
+/**
+ * 批量编辑设备(开关)
+ * @param data
+ * @param options
+ */
+export async function batchDeleteDevice(
+  data: {
+    deviceBaseDeviceVoList: Device.DeviceBaseDeviceVo[]
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<{ isSuccess: boolean }>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/batchDelDevice',
     data,
   })
 }

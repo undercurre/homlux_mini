@@ -1,19 +1,21 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { batchUpdate } from '../../../../apis/index'
+import { batchDeleteDevice, batchUpdate } from '../../../../apis/index'
 import { proType } from '../../../../config/index'
-import { deviceBinding, deviceStore } from '../../../../store/index'
+import { deviceBinding, deviceStore, roomBinding } from '../../../../store/index'
+import Toast from '@vant/weapp/toast/toast'
+import Dialog from '@vant/weapp/dialog/dialog'
+import { runInAction } from 'mobx-miniprogram'
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
   },
 
-  behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding] })],
+  behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding, roomBinding] })],
 
   computed: {
     canEditName(data) {
       if (data.editSelect) {
-        console.log('length', data.editSelect.length)
         return data.editSelect.length === 1
       }
       return false
@@ -30,16 +32,53 @@ ComponentWithComputed({
     showEditName: false,
     editName: '',
     editProType: '',
-    showRoomPopup: false,
+    showEditRoom: false,
     roomId: '',
+    showConfirmDelete: false,
   },
 
   /**
    * 组件的方法列表
    */
   methods: {
+    handleDeleteDialog() {
+      Dialog.confirm({
+        title: '确定删除该设备',
+        context: this,
+      })
+        .then(async () => {
+          const set = new Set<string>([])
+          deviceStore.editSelect.forEach((uniId) => {
+            if (uniId.includes(':')) {
+              set.add(uniId.split(':')[0])
+            } else {
+              set.add(uniId)
+            }
+          })
+          const res = await batchDeleteDevice({
+            deviceBaseDeviceVoList: Array.from(set).map((deviceId) => ({
+              deviceId,
+              deviceType: '2',
+            })),
+          })
+          if (res.success) {
+            await Promise.all([deviceStore.updateSubDeviceList(), deviceStore.updateAllRoomDeviceList()])
+            runInAction(() => {
+              deviceStore.isEditSelectMode = false
+            })
+            this.triggerEvent('updateList')
+            this.handleClose()
+          } else {
+            Toast({
+              message: '删除失败',
+              zIndex: 9999,
+            })
+          }
+        })
+        .catch((e) => console.log(e))
+    },
     handleEditNamePopup() {
-      if (this.data.isMultiSelect || !deviceStore.editSelect.length) {
+      if (this.data.isMultiSelect || !deviceStore.editSelect.length || deviceStore.editSelect.length > 1) {
         return
       }
       const uniId = deviceStore.editSelect[0]
@@ -60,15 +99,17 @@ ComponentWithComputed({
       if (!deviceStore.editSelect.length) {
         return
       }
+      const uniId = deviceStore.editSelect[0]
+      const device = deviceStore.allRoomDeviceFlattenMap[uniId]
       this.setData({
-        showEditName: true,
-        deviceName: deviceStore.allRoomDeviceMap[deviceStore.editSelect[0]].deviceName,
+        showEditRoom: true,
+        roomId: device.roomId,
       })
     },
     handleClose() {
       this.setData({
         showEditName: false,
-        showRoomPopup: false,
+        showEditRoom: false,
       })
     },
     async handleConfirm() {
@@ -86,9 +127,14 @@ ComponentWithComputed({
             ],
           })
           if (res.success) {
+            await deviceStore.updateSubDeviceList()
             this.triggerEvent('updateList')
+            this.handleClose()
           } else {
-            //todo: toast
+            Toast({
+              message: '编辑失败',
+              zIndex: 9999,
+            })
           }
         } else {
           const res = await batchUpdate({
@@ -103,12 +149,56 @@ ComponentWithComputed({
           if (res.success) {
             this.triggerEvent('updateList')
           } else {
-            //todo: toast
+            Toast({
+              message: '编辑失败',
+              zIndex: 9999,
+            })
           }
         }
-      } else if (this.data.showRoomPopup) {
-        // todo:
+      } else if (this.data.showEditRoom) {
+        const map = {} as Record<string, Device.DeviceInfoUpdateVo>
+        deviceStore.editSelect.forEach((uniId) => {
+          if (uniId.includes(':')) {
+            const deviceId = uniId.split(':')[0]
+            if (!map[deviceId]) {
+              map[deviceId] = {
+                deviceId,
+                roomId: this.data.roomId,
+                type: '1',
+              }
+            }
+          } else {
+            if (!map[uniId]) {
+              map[uniId] = {
+                deviceId: uniId,
+                roomId: this.data.roomId,
+                type: '1',
+              }
+            }
+          }
+        })
+        const res = await batchUpdate({
+          deviceInfoUpdateVoList: Object.entries(map).map(([_, data]) => data),
+        })
+        if (res.success) {
+          await Promise.all([deviceStore.updateSubDeviceList(), deviceStore.updateAllRoomDeviceList()])
+          runInAction(() => {
+            deviceStore.isEditSelectMode = false
+          })
+          this.triggerEvent('updateList')
+          this.handleClose()
+        } else {
+          Toast({
+            message: '移动失败',
+            zIndex: 9999,
+          })
+        }
       }
+    },
+    handleRoomSelect(e: { currentTarget: { dataset: { id: string } } }) {
+      this.setData({
+        roomId: e.currentTarget.dataset.id,
+      })
     },
   },
 })
