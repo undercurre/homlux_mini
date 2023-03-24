@@ -157,6 +157,7 @@ ComponentWithComputed({
             device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
             device.proType !== proType.gateway,
         )
+        deviceStore.isEditSelectMode = false
       })
       // 再更新一遍数据
       this.reloadData()
@@ -214,10 +215,12 @@ ComponentWithComputed({
 
     async reloadData() {
       try {
-        await deviceStore.updateAllRoomDeviceList()
-        await deviceStore.updateSubDeviceList()
-        await sceneStore.updateAllRoomSceneList()
-        await sceneStore.updateSceneList()
+        await Promise.all([
+          deviceStore.updateAllRoomDeviceList(),
+          deviceStore.updateSubDeviceList(),
+          sceneStore.updateAllRoomSceneList(),
+          sceneStore.updateSceneList(),
+        ])
         this.updateDeviceList()
       } finally {
         wx.stopPullDownRefresh()
@@ -360,7 +363,10 @@ ComponentWithComputed({
         showBeforeAddScenePopup: true,
       })
     },
-    handleDeviceCardTap(e: { detail: Device.DeviceItem & { clientRect: WechatMiniprogram.ClientRect } }) {
+    handleDeviceCardTap(
+      e: { detail: Device.DeviceItem & { clientRect: WechatMiniprogram.ClientRect } },
+      isCheck?: boolean,
+    ) {
       console.log('handleDeviceCardTap', e.detail)
       if (deviceStore.selectList.length === 0) {
         this.setData({
@@ -385,6 +391,7 @@ ComponentWithComputed({
       if (e.detail.proType === proType.switch) {
         // 开关选择逻辑
         if (deviceStore.selectList.includes(e.detail.uniId)) {
+          if (isCheck) return
           const index = deviceStore.selectList.findIndex((item: string) => item === e.detail.uniId)
           deviceStore.selectList.splice(index, 1)
           runInAction(() => {
@@ -398,6 +405,7 @@ ComponentWithComputed({
       } else {
         // 灯、窗帘选择逻辑
         if (deviceStore.selectList.includes(e.detail.deviceId)) {
+          if (isCheck) return
           const index = deviceStore.selectList.findIndex((item: string) => item === e.detail.deviceId)
           deviceStore.selectList.splice(index, 1)
           runInAction(() => {
@@ -441,7 +449,7 @@ ComponentWithComputed({
       const OnOff = device.mzgdPropertyDTOList['1'].OnOff
       // 如果是打开则默认选择设备
       if (!OnOff) {
-        this.handleDeviceCardTap(e)
+        this.handleDeviceCardTap(e, true)
       }
       runInAction(() => {
         device.mzgdPropertyDTOList['1'].OnOff = OnOff ? 0 : 1
@@ -488,6 +496,7 @@ ComponentWithComputed({
         return
       }
       await saveDeviceOrder(orderData)
+      this.reloadData()
     },
     async handleSwitchSortEnd(e: { detail: { listData: Device.DeviceItem[] } }) {
       const orderData = {
@@ -509,11 +518,11 @@ ComponentWithComputed({
         return
       }
       await saveDeviceOrder(orderData)
+      this.reloadData()
     },
     async handleSwitchControlTapToggle(e: {
       detail: Device.DeviceItem & { clientRect: WechatMiniprogram.ClientRect }
     }) {
-      console.log(e)
       const ep = e.detail.switchInfoDTOList[0].switchId
       if (e.detail.mzgdPropertyDTOList[ep].ButtonMode && e.detail.mzgdPropertyDTOList[ep].ButtonMode === 2) {
         const sceneId = deviceStore.switchSceneMap[e.detail.uniId]
@@ -525,7 +534,7 @@ ComponentWithComputed({
         const OnOff = device.mzgdPropertyDTOList[ep].OnOff
         // 如果是打开则默认选择设备
         if (!OnOff) {
-          this.handleDeviceCardTap(e)
+          this.handleDeviceCardTap(e, true)
         }
         runInAction(() => {
           device.mzgdPropertyDTOList[ep].OnOff = OnOff ? 0 : 1
@@ -625,11 +634,16 @@ ComponentWithComputed({
         })
       }
     },
-    handleDrag(e: { detail: boolean }) {
-      console.log('drag', e.detail)
+    handleDrag(e: { detail: { dragging: boolean } & Device.DeviceItem }) {
       this.setData({
-        dragging: e.detail,
+        dragging: e.detail.dragging,
       })
+      if (e.detail.dragging) {
+        runInAction(() => {
+          deviceStore.editSelect = deviceStore.isEditSelectMode ? [] : [e.detail.uniId]
+          deviceStore.isEditSelectMode = !deviceStore.isEditSelectMode
+        })
+      }
     },
     handleCancelSelce(e: WechatMiniprogram.TouchEvent) {
       if (e.currentTarget.dataset.type === 'light') {

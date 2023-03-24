@@ -8,15 +8,6 @@
   },
   "libVersion": "2.30.2",
   "condition": {
-    "plugin": {
-      "list": []
-    },
-    "game": {
-      "list": []
-    },
-    "gamePlugin": {
-      "list": []
-    },
     "miniprogram": {
       "list": [
         {
@@ -100,8 +91,8 @@
           "name": "绑定家庭",
           "pathName": "package-distribution/bind-home/index",
           "query": "deviceId=04CD15FFFEABADEF",
-          "scene": null,
-          "launchMode": "default"
+          "launchMode": "default",
+          "scene": null
         },
         {
           "name": "附近子设备",

@@ -109,4 +109,24 @@ declare namespace Device {
     proType: string
     value: IAnyObject
   }
+
+  /** 批量修改设备 */
+  interface DeviceInfoUpdateVo {
+    deviceId: string
+    deviceName?: string
+    houseId?: string
+    roomId?: string
+    type?: string
+    switchId?: string
+    switchName?: string
+  }
+
+  /** 批量删除设备 */
+  interface DeviceBaseDeviceVo {
+    deviceId: string
+    /** 设备类型（1:网关 2:子设备 3:wifi */
+    deviceType: string
+    /** 网关需要传网关 */
+    sn?: string
+  }
 }

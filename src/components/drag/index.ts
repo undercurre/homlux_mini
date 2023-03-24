@@ -98,8 +98,11 @@ Component({
         })
       }
     },
-    drag(e: { dragging: boolean }) {
-      this.triggerEvent('drag', e.dragging)
+    drag(e: { dragging: boolean; index: number }) {
+      this.triggerEvent('drag', {
+        dragging: e.dragging,
+        ...this.data.listData[e.index],
+      })
       this.setData({
         dragging: e.dragging,
       })

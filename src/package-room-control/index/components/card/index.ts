@@ -1,8 +1,13 @@
-// package-room-control/index/components/card/index.ts
-Component({
+import { ComponentWithComputed } from 'miniprogram-computed'
+import { runInAction } from 'mobx-miniprogram'
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import { deviceBinding, deviceStore } from '../../../../store/index'
+
+ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
   },
+  behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding] })],
   /**
    * 组件的属性列表
    */
@@ -10,6 +15,7 @@ Component({
     item: {
       type: Object,
       value: {},
+      observer() {},
     },
   },
 
@@ -17,6 +23,15 @@ Component({
    * 组件的初始数据
    */
   data: {},
+
+  computed: {
+    isEditSelect(data) {
+      if (data.editSelect && data.item?.data) {
+        return data.editSelect?.includes(data.item?.data?.uniId)
+      }
+      return false
+    },
+  },
 
   /**
    * 组件的方法列表
@@ -26,7 +41,19 @@ Component({
       this.triggerEvent('controlTap', e.detail)
     },
     handleCardTap(e: WechatMiniprogram.TouchEvent) {
-      this.triggerEvent('cardTap', e.detail)
+      if (deviceStore.isEditSelectMode) {
+        runInAction(() => {
+          if (deviceStore.editSelect.includes(this.data.item?.data?.uniId)) {
+            const index = deviceStore.editSelect.findIndex((uniId) => uniId === this.data.item.data.uniId)
+            deviceStore.editSelect.splice(index, 1)
+            deviceStore.editSelect = [...deviceStore.editSelect]
+          } else {
+            deviceStore.editSelect = [...deviceStore.editSelect, this.data.item.data.uniId]
+          }
+        })
+      } else {
+        this.triggerEvent('cardTap', e.detail)
+      }
     },
     handleOfflineTap(e: WechatMiniprogram.TouchEvent) {
       this.triggerEvent('offlineTap', e.detail)
