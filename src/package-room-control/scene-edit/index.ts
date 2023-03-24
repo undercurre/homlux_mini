@@ -37,7 +37,7 @@ ComponentWithComputed({
   computed: {
     linkSwitchName(data) {
       if (data.linkSwitch) {
-        const deviceMap = deviceStore.deviceMap
+        const deviceMap = deviceStore.allRoomDeviceMap
         const device = deviceMap[data.linkSwitch.split(':')[0]]
         const switchName = device.switchInfoDTOList.find(
           (switchItem) => switchItem.switchId === data.linkSwitch.split(':')[1],

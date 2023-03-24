@@ -199,7 +199,7 @@ ComponentWithComputed({
     handleLinkSwitchPopup() {
       this.setData({
         showLinkPopup: true,
-        list: deviceStore.deviceFlattenList.filter((item) => item.uniId.includes(':')),
+        list: deviceStore.allRoomDeviceFlattenList.filter((item) => item.uniId.includes(':')),
         linkSelectList: this.data.linkSwitch ? [this.data.linkSwitch] : [],
       })
     },

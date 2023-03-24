@@ -55,6 +55,7 @@ ComponentWithComputed({
     },
     hasReturn: {
       type: Boolean,
+      value: false,
     },
   },
 
@@ -109,7 +110,7 @@ ComponentWithComputed({
         if (data.linkType === 'scene') {
           console.log(
             data.list.filter((scene: Scene.SceneItem) => {
-              console.log(data.roomSelect,data.list)
+              console.log(data.roomSelect, data.list)
               return scene.roomId === data.roomSelect
             }),
           )

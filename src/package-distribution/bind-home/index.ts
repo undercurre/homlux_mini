@@ -4,7 +4,7 @@ import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { getCurrentPageParams, strUtil } from '../../utils/index'
 import { queryDeviceInfoByDeviceId, editDeviceInfo, batchUpdate } from '../../apis/index'
-import {homeBinding, homeStore, roomBinding} from '../../store/index'
+import { homeBinding, homeStore, roomBinding } from '../../store/index'
 
 ComponentWithComputed({
   options: {

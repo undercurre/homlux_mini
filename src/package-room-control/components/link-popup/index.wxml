@@ -31,9 +31,12 @@
       </scroll-view>
     </view>
     <view class="h-16rpx"></view>
-    <view class="flex w-686rpx">
-      <van-button class="flex-1" size="large" bind:click="{{hasReturn?'handleReturn':'handleClose'}}">上一步</van-button>
+    <view wx:if="{{hasReturn}}" class="flex w-686rpx">
+      <van-button class="flex-1" size="large" bind:click="handleReturn">上一步</van-button>
       <view class="w-46rpx"></view>
+      <van-button type="primary" class="flex-1" size="large" bind:click="handleConfirm">确定</van-button>
+    </view>
+    <view wx:else class="w-686rpx">
       <van-button type="primary" class="flex-1" size="large" bind:click="handleConfirm">确定</van-button>
     </view>
     <view style="height: calc(96rpx - env(safe-area-inset-bottom))"></view>
