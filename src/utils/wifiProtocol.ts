@@ -102,7 +102,8 @@ export class WifiSocket {
 
           if (isAndroid10Plus) {
             const modal = await wx.showModal({
-              content: `请到系统设置手动加入“${this.SSID}”，密码：“${this.pw}” ,以连接设备`,
+              confirmText: '去连接',
+              content: `请到系统设置手动加入\nWiFi:“${this.SSID}”，\n密码：“${this.pw}” \n以连接设备`,
             })
 
             if (modal.cancel) {

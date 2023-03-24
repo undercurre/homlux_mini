@@ -202,7 +202,7 @@ Component({
         }
 
         this.data._interId = setTimeout(() => {
-          this.queryDeviceOnlineStatus(sn)
+          this.queryDeviceOnlineStatus(sn, type)
         }, 3000)
       }
     },

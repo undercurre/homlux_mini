@@ -23,14 +23,14 @@
               <image slot="icon" class="w-48 h-48" src="{{ item.isChecked ? '/assets/img/base/check.png' : '/assets/img/base/uncheck.png' }}" />
             </van-checkbox>
 
-            <view class="grow pl-32rpx">
-              <view class="flex flex-row items-center pb-4rpx" bind:tap="editDevice" data-index="{{index}}">
+            <view class="grow pl-32rpx" bind:tap="editDevice" data-index="{{index}}">
+              <view class="flex flex-row items-center pb-4rpx">
                 <text class="max-w-200 pr-24rpx text-32 text-black-2a single-text">{{ item.name }}</text>
 
                 <image class="w-60 h-38" src="/package-distribution/assets/search-subdevice/edit.png" />
               </view>
 
-              <text class="text-26 text-black-59 opacity-95">{{ item.roomName || defaultRoom.roomName }}</text>
+              <text class="text-26 text-black-59 opacity-95">{{ item.roomName }}</text>
             </view>
 
             <view class="shrink-0">
@@ -69,14 +69,14 @@
               <image src="{{item.icon}}" class="w-72 h-72"></image>
             </view>
 
-            <view class="grow pl-32rpx">
-              <view class="flex flex-row items-center pb-4rpx" bind:tap="editDevice" data-index="{{index}}">
+            <view class="grow pl-32rpx" bind:tap="editDevice" data-index="{{index}}">
+              <view class="flex flex-row items-center pb-4rpx">
                 <text class="max-w-200 pr-24rpx text-32 text-black-2a single-text">{{ item.name }}</text>
 
                 <image class="w-60 h-38" src="/package-distribution/assets/search-subdevice/edit.png" />
               </view>
 
-              <text class="text-26 text-black-59 opacity-95">{{ item.roomName || defaultRoom.roomName }}</text>
+              <text class="text-26 text-black-59 opacity-95">{{ item.roomName }}</text>
             </view>
 
             <view class="shrink-0">
@@ -108,14 +108,6 @@
       </view>
 
       <van-button class="mx-32rpx mt-24rpx" block type="primary" size="large" bind:click="finish">返回首页</van-button>
-    </block>
-
-    <block wx:if="{{status === 'openBle'}}">
-      <tips-box text="打开手机蓝牙，以便扫描附近智能设备" icon="/assets/img/default-img/bluetooth-scan.png"></tips-box>
-
-      <view class="px-32rpx pt-128rpx">
-        <van-button type="primary" block size="large" bind:click="finish">去开启</van-button>
-      </view>
     </block>
   </view>
 </view>

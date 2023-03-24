@@ -16,7 +16,7 @@ import {
 import lottie from 'lottie-miniprogram'
 import { addDevice } from '../../assets/lottie/index'
 
-type StatusName = 'discover' | 'requesting' | 'success' | 'error' | 'openBle'
+type StatusName = 'discover' | 'requesting' | 'success' | 'error'
 
 let lightNum = 0 // 灯数量
 let panelNum = 0 // 面板数
@@ -42,6 +42,9 @@ ComponentWithComputed({
       switchList: [] as ISwitch[],
     },
     deviceList: Array<IBleDevice>(),
+    // 已经发现并需要显示在界面的设备列表，由于deviceList的push变更存在云端接口校验，存在异步过程，
+    // 由于现在发现蓝牙（允许上报重复设备），可能会重复显示设备的情况，需要通过_foundList实时同步的列表过滤重复设备
+    _foundList: Array<string>(),
     status: 'discover' as StatusName,
   },
 
@@ -52,14 +55,9 @@ ComponentWithComputed({
         requesting: '添加设备',
         success: '添加设备',
         error: '附近的子设备',
-        openBle: '附近的子设备',
       }
 
       return titleMap[data.status]
-    },
-    defaultRoom(data) {
-      const list = data.currentHomeDetail?.roomList || []
-      return list[0] || {}
     },
     selectedList(data) {
       return data.deviceList.filter((item) => item.isChecked) as IBleDevice[]
@@ -163,8 +161,9 @@ ComponentWithComputed({
           if (
             item.localName &&
             item.localName.includes('homlux_ble') &&
-            this.data.deviceList.findIndex((listItem) => item.deviceId === listItem.deviceUuid) < 0
+            !this.data._foundList.includes(item.deviceId)
           ) {
+            this.data._foundList.push(item.deviceId)
             flag = true
           }
 
@@ -238,7 +237,7 @@ ComponentWithComputed({
         mac: msgObj.mac,
         zigbeeMac: '',
         icon: infoRes.result.icon || '/assets/img/device/gateway.png',
-        name: deviceName,
+        name: deviceName + `-${msgObj.mac.substr(-4)}`,
         isChecked: false,
         client: new BleClient({ mac: msgObj.mac, deviceUuid: device.deviceId }),
         roomId: roomBinding.store.currentRoom.roomId,
@@ -250,6 +249,7 @@ ComponentWithComputed({
         zigbeeRepeatTimes: 2,
       }
 
+      // 面板需要显示按键信息编辑
       if (switchNum > 1 && bleDevice.proType === '0x21') {
         bleDevice.switchList = new Array(switchNum).fill('').map((_item, index) => {
           const num = index + 1
@@ -459,7 +459,7 @@ ComponentWithComputed({
           index: index,
           deviceId: item.deviceUuid,
           deviceName: item.name,
-          roomId: item.roomId || this.data.defaultRoom.roomId,
+          roomId: item.roomId,
           switchList: item.switchList,
         },
       })

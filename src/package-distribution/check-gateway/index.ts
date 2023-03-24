@@ -98,6 +98,13 @@ Component({
     },
 
     async initWifi() {
+      const params = getCurrentPageParams()
+
+      console.log('initWifi', params)
+      this.setData({
+        ssid: params.ssid,
+      })
+
       const deviceInfo = wx.getDeviceInfo()
 
       console.log('deviceInfo', deviceInfo)
@@ -133,13 +140,6 @@ Component({
       }
 
       console.debug('startWifi', startRes, '开启wifi模块用时：', Date.now() - start)
-
-      const params = getCurrentPageParams()
-
-      console.log('ready', params)
-      this.setData({
-        ssid: params.ssid,
-      })
 
       socket = new WifiSocket({ ssid: params.ssid })
 

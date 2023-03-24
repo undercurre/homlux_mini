@@ -46,9 +46,11 @@ Component({
       }
     },
 
-    toPage(e: { currentTarget: { dataset: { url: string } } }) {
+    toPage(e: { currentTarget: { dataset: { url: string; auth: string } } }) {
+      console.log('e.currentTarget.dataset', e.currentTarget)
+      const { url, auth } = e.currentTarget.dataset
       // 如果用户已经登录，开始请求数据
-      if (!storage.get<string>('token')) {
+      if (auth !== 'no' && !storage.get<string>('token')) {
         wx.navigateTo({
           url: '/pages/login/index',
         })
@@ -56,7 +58,7 @@ Component({
       }
 
       wx.navigateTo({
-        url: e.currentTarget.dataset.url,
+        url: url,
       })
     },
 
