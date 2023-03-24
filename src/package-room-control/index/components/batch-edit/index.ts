@@ -2,10 +2,11 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { batchDeleteDevice, batchUpdate } from '../../../../apis/index'
 import { proType } from '../../../../config/index'
-import { deviceBinding, deviceStore, roomBinding } from '../../../../store/index'
+import { deviceBinding, deviceStore, homeStore, roomBinding } from '../../../../store/index'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { runInAction } from 'mobx-miniprogram'
+import { storage } from '../../../../utils/index'
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
@@ -23,25 +24,111 @@ ComponentWithComputed({
     editNameTitle(data) {
       return data.editProType === proType.switch ? '按键名称' : '设备名称'
     },
+    isAllSelect(data) {
+      if (data.editSelect) {
+        return deviceStore.deviceFlattenList.length === data.editSelect.length
+      }
+      return false
+    },
+  },
+
+  watch: {
+    isEditSelectMode(value) {
+      if (this.data.firstLoad) {
+        this.setData({
+          firstLoad: false,
+        })
+        return
+      }
+      if (value) {
+        this.animate(
+          '#bottom',
+          [
+            {
+              translateY: '100%',
+            },
+            {
+              translateY: '0%',
+            },
+          ],
+          200,
+        )
+        this.animate(
+          '#top',
+          [
+            {
+              translateY: '-100%',
+            },
+            {
+              translateY: '0%',
+            },
+          ],
+          200,
+        )
+      } else {
+        this.animate(
+          '#bottom',
+          [
+            {
+              translateY: '0%',
+            },
+            {
+              translateY: '100%',
+            },
+          ],
+          200,
+        )
+        this.animate(
+          '#top',
+          [
+            {
+              translateY: '0%',
+            },
+            {
+              translateY: '-100%',
+            },
+          ],
+          200,
+        )
+      }
+    },
   },
 
   /**
    * 组件的初始数据
    */
   data: {
+    navigationBarAndStatusBarHeight:
+      (storage.get<number>('statusBarHeight') as number) +
+      (storage.get<number>('navigationBarHeight') as number) +
+      'px',
+    navigationBarHeight: (storage.get<number>('navigationBarHeight') as number) + 'px',
     showEditName: false,
     editName: '',
     editProType: '',
     showEditRoom: false,
     roomId: '',
     showConfirmDelete: false,
+    firstLoad: true,
   },
 
   /**
    * 组件的方法列表
    */
   methods: {
+    handleAllSelectToggle() {
+      runInAction(() => {
+        if (this.data.isAllSelect) {
+          deviceStore.editSelect = []
+        } else {
+          deviceStore.editSelect = deviceStore.deviceFlattenList.map((device) => device.uniId)
+        }
+      })
+    },
     handleDeleteDialog() {
+      if (!deviceStore.editSelect.length) {
+        return
+      }
       Dialog.confirm({
         title: '确定删除该设备',
         context: this,
@@ -121,6 +208,7 @@ ComponentWithComputed({
               {
                 deviceId,
                 switchId,
+                houseId: homeStore.currentHomeId,
                 switchName: this.data.editName,
                 type: '3',
               },
@@ -141,6 +229,7 @@ ComponentWithComputed({
             deviceInfoUpdateVoList: [
               {
                 deviceId: deviceStore.editSelect[0],
+                houseId: homeStore.currentHomeId,
                 deviceName: this.data.editName,
                 type: '0',
               },
@@ -163,6 +252,7 @@ ComponentWithComputed({
             if (!map[deviceId]) {
               map[deviceId] = {
                 deviceId,
+                houseId: homeStore.currentHomeId,
                 roomId: this.data.roomId,
                 type: '1',
               }
@@ -171,6 +261,7 @@ ComponentWithComputed({
             if (!map[uniId]) {
               map[uniId] = {
                 deviceId: uniId,
+                houseId: homeStore.currentHomeId,
                 roomId: this.data.roomId,
                 type: '1',
               }
@@ -198,6 +289,12 @@ ComponentWithComputed({
     handleRoomSelect(e: { currentTarget: { dataset: { id: string } } }) {
       this.setData({
         roomId: e.currentTarget.dataset.id,
+      })
+    },
+    handleExitEdit() {
+      runInAction(() => {
+        deviceStore.isEditSelectMode = false
+        deviceStore.editSelect = []
       })
     },
   },

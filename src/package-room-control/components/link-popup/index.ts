@@ -107,6 +107,12 @@ ComponentWithComputed({
     listComputed(data) {
       if (data.list) {
         if (data.linkType === 'scene') {
+          console.log(
+            data.list.filter((scene: Scene.SceneItem) => {
+              console.log(data.roomSelect,data.list)
+              return scene.roomId === data.roomSelect
+            }),
+          )
           return data.list.filter((scene: Scene.SceneItem) => scene.roomId === data.roomSelect)
         } else {
           return data.list.filter((device: Device.DeviceItem) => device.roomId === data.roomSelect)

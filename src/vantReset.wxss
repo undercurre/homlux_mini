@@ -135,7 +135,7 @@ page {
   color: #27282a !important;
 }
 
-.van-popup__close-icon--top-right  {
+.van-popup__close-icon--top-right {
   top: 40rpx !important;
   right: 60rpx !important;
 }

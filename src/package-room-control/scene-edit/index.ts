@@ -56,6 +56,10 @@ ComponentWithComputed({
       const deviceMap = deviceStore.deviceMap
       const sceneDeviceActionsFlatten = [] as Device.ActionItem[]
       sceneStore.sceneList[sceneStore.selectSceneIndex].deviceActions?.forEach((device) => {
+        if (!deviceMap[device.deviceId]) {
+          console.log('不存在的设备', device)
+          return
+        }
         if (deviceMap[device.deviceId].proType === proType.switch) {
           // 多路开关
           device.controlAction.forEach((action) => {

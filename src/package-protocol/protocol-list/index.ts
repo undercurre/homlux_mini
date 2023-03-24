@@ -14,7 +14,7 @@ Component({
     list: [
       {
         title: '美的照明隐私协议',
-        value: 'userService',
+        value: 'privacyPolicy',
       },
       {
         title: '美的照明权限列表',

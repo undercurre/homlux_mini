@@ -68,10 +68,10 @@ export const sceneStore = observable({
     const res = await querySceneListByHouseId(houseId)
     if (res.success) {
       const list = res.result
-        .filter((scene) => scene.deviceActions && scene.deviceActions.length > 0)
+        .filter((scene) => scene.deviceActions && scene.deviceActions.length)
         .sort((a, b) => a.orderNum - b.orderNum)
       runInAction(() => {
-        sceneStore.allRoomSceneList = list
+        sceneStore.allRoomSceneList = [...list]
       })
     }
   },

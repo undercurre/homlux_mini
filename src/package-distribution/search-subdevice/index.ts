@@ -2,7 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
 import asyncPool from 'tiny-async-pool'
-import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
+import {homeBinding, roomBinding, deviceBinding, homeStore} from '../../store/index'
 import { bleUtil, strUtil, BleClient, getCurrentPageParams } from '../../utils/index'
 import { IBleDevice, ISwitch } from './types'
 import pageBehaviors from '../../behaviors/pageBehaviors'
@@ -432,6 +432,7 @@ ComponentWithComputed({
       const deviceInfoUpdateVoList = switchList.map((item) => {
         return {
           deviceId: deviceId,
+          houseId: homeStore.currentHomeId,
           switchId: item.switchId,
           switchName: item.switchName,
           type: '3',

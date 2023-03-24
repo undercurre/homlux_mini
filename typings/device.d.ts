@@ -114,7 +114,7 @@ declare namespace Device {
   interface DeviceInfoUpdateVo {
     deviceId: string
     deviceName?: string
-    houseId?: string
+    houseId: string
     roomId?: string
     type?: string
     switchId?: string
