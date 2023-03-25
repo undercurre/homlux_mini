@@ -340,18 +340,17 @@ export const bleUtil = {
     console.log('getBleDeviceBaseInfo', msgObj.mac, msgObj.isConfig, bleDevice.RSSI)
 
     const { RSSI } = bleDevice
-    let signal = RSSI > -80 ? (RSSI > -70 ? 'strong' : 'normal') : 'weak'
-
+    const signal = RSSI > -80 ? (RSSI > -70 ? 'strong' : 'normal') : 'weak'
 
     return {
       ...msgObj,
       deviceUuid: bleDevice.deviceId,
       RSSI: bleDevice.RSSI,
-      signal
+      signal,
     }
   },
 
-  onFoundHomluxDevice(options: { success: (deviceList: IBleBaseInfo[]) => void, exclude?: string[] }) {
+  onFoundHomluxDevice(options: { success: (deviceList: IBleBaseInfo[]) => void; exclude?: string[] }) {
     const { success, exclude } = options
     let foundList: string[] = exclude || []
     // 监听扫描到新设备事件
@@ -368,7 +367,7 @@ export const bleUtil = {
 
       console.log('foundList', foundList, 'deviceList', deviceList)
       if (deviceList.length > 0 && success) {
-        foundList = foundList.concat(deviceList.map(item => item.deviceUuid))
+        foundList = foundList.concat(deviceList.map((item) => item.deviceUuid))
         success(deviceList)
       }
     })
