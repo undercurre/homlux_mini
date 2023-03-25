@@ -114,7 +114,7 @@
     <image src="{{officeDeviceInfo.pic}}" class="w-160rpx h-160rpx mt-70rpx" />
     <view class="flex flex-col mt-88rpx">
       <text class="text-hex-666666 text-28rpx">可能的原因：</text>
-      <text class="text-hex-555659 text-24rpx mt-16rpx">1.路由器密码被修改，请为智能网关更改WIFI</text>
+      <text class="text-hex-555659 text-24rpx mt-16rpx">1.路由器密码被修改，建议将智能网关<text class="text-blue underline decoration-solid decoration-blue" bindtap="handleRebindGateway">重新配网</text></text>
       <text class="text-hex-555659 text-24rpx mt-8rpx">2.设备与网关未通电</text>
       <text class="text-hex-555659 text-24rpx mt-8rpx">3.设备与网关距离过远，或有其他遮挡物</text>
       <text class="text-hex-555659 text-24rpx mt-8rpx">4.路由器未通电或网络异常</text>

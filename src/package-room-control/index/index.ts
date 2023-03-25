@@ -678,5 +678,11 @@ ComponentWithComputed({
     handleAddDevice() {
       wx.navigateTo({ url: '/package-distribution/scan/index' })
     },
+    handleRebindGateway() {
+      const gateway = deviceStore.allRoomDeviceMap[this.data.officeDeviceInfo.gatewayId]
+      wx.navigateTo({
+        url: `/package-distribution/wifi-connect/index?type=changeWifi&sn=${gateway.sn}`,
+      })
+    },
   },
 })
