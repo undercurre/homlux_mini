@@ -117,5 +117,6 @@ ComponentWithComputed({
         100,
       )
     },
+    black() {},
   },
 })

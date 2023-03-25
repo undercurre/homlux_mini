@@ -1,5 +1,5 @@
 <!--components/home-select-menu/index.wxml-->
-<view id="menu" class="bg fixed flex flex-col items-stretch py-10rpx px-24rpx rounded-32rpx z-120" style="left: {{x}}; top: {{y}};" wx:if="{{isRender}}">
+<view id="menu" class="bg fixed flex flex-col items-stretch py-10rpx px-24rpx rounded-32rpx z-120" style="left: {{x}}; top: {{y}};" wx:if="{{isRender}}" catchtouchmove="black">
   <block wx:if="{{sortedHomeList.length <= 5}}">
     <view class="flex flex-col items-start" bindtap="handleHomeTap" wx:for="{{sortedHomeList}}" wx:key="houseId" data-value="{{item.houseId}}" data-house="{{item.houseId}}">
       <view class="max-w-480rpx h-96rpx flex items-center">
