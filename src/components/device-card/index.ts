@@ -102,8 +102,13 @@ ComponentWithComputed({
     },
     deviceName(data) {
       let name = ''
+      // 如果是开关，deviceName显示开关名称
       if (data.deviceInfo.proType === proType.switch) {
-        name = data.deviceInfo.switchInfoDTOList[0].switchName
+        name = data.deviceInfo.switchInfoDTOList[0].switchName ?? '按键' + data.deviceInfo.switchInfoDTOList[0].switchId
+        if (new RegExp('[\\u4E00-\\u9FFF]+', 'g').test(name)) {
+          return name.slice(0, 5)
+        }
+        return name
       } else {
         name = data.deviceInfo.deviceName
       }
@@ -117,6 +122,17 @@ ComponentWithComputed({
     },
     deviceType(data) {
       return proName[data.deviceInfo.proType]
+    },
+    /** 开关面板名称 */
+    switchDeviceName(data) {
+      const name = data.deviceInfo.deviceName
+      if (new RegExp('[\\u4E00-\\u9FFF]+', 'g').test(name)) {
+        // 存在中文字符，只能显示5个字符
+        return name.slice(0, 5)
+      } else {
+        // 不存在中文字符，只能显示8个字符
+        return name.slice(0, 8)
+      }
     },
   },
 
@@ -141,7 +157,10 @@ ComponentWithComputed({
                 clientRect: res[0],
               })
             } else {
-              this.triggerEvent('offlineTap', this.data.deviceInfo)
+              this.triggerEvent('offlineTap', {
+                ...this.data.deviceInfo,
+                clientRect: res[0],
+              })
             }
           }
         })
@@ -184,7 +203,10 @@ ComponentWithComputed({
               })
             }, 550)
           } else {
-            this.triggerEvent('offlineTap', this.data.deviceInfo)
+            this.triggerEvent('offlineTap', {
+              ...this.data.deviceInfo,
+              clientRect: res[0],
+            })
           }
         })
     },
