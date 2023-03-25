@@ -57,7 +57,7 @@ ComponentWithComputed({
 
     updateList() {
       const listData = [] as IAnyObject[]
-      const deviceMap = deviceStore.deviceMap
+      const deviceMap = deviceStore.allRoomDeviceMap
       sceneStore.sceneList.forEach((scene: Scene.SceneItem) => {
         if (scene.deviceConditions?.length > 0) {
           const device = deviceMap[scene.deviceConditions[0].deviceId]

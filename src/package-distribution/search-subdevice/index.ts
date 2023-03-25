@@ -2,7 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
 import asyncPool from 'tiny-async-pool'
-import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
+import { homeBinding, roomBinding, deviceBinding, homeStore } from '../../store/index'
 import { bleUtil, IBleBaseInfo, BleClient, getCurrentPageParams, storage } from '../../utils/index'
 import { IBleDevice, ISwitch } from './types'
 import pageBehaviors from '../../behaviors/pageBehaviors'
@@ -210,7 +210,7 @@ ComponentWithComputed({
         RSSI: baseInfo.RSSI,
         zigbeeMac: '',
         icon: infoRes.result.icon || '/assets/img/device/gateway.png',
-        name: deviceName + `-${baseInfo.mac.substr(-4)}`,
+        name: deviceName,
         isChecked: false,
         client: new BleClient({ mac: baseInfo.mac, deviceUuid: baseInfo.deviceUuid }),
         roomId: roomBinding.store.currentRoom.roomId,
@@ -403,6 +403,7 @@ ComponentWithComputed({
       const deviceInfoUpdateVoList = switchList.map((item) => {
         return {
           deviceId: deviceId,
+          houseId: homeStore.currentHomeId,
           switchId: item.switchId,
           switchName: item.switchName,
           type: '3',

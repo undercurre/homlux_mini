@@ -1,26 +1,40 @@
 <import src="/commons/templates/popup.wxml" />
-<view class="popup-shadow fixed left-0 bottom-0 z-300 w-750rpx h-240rpx bg-white">
-  <view class="wh-full flex-center">
-    <view class="flex-col-center flex-1 {{canEditName ?'':'opacity-50'}}" bindtap="handleEditNamePopup">
-      <view class="flex-center w-100rpx h-100rpx bg-hex-f6fafd rounded-999">
-        <image src="/assets/img/device-control/edit.png" class="w-36rpx h-36rpx" />
+<view class="fixed left-0 top-0 z-1000">
+  <view id="top" class="w-750rpx fixed top-0 left-0 bg-white flex items-end top-transform" style="height: {{navigationBarAndStatusBarHeight}};">
+    <view class="w-750rpx flex items-center" style="height: {{navigationBarHeight}};">
+      <view class="flex-center mx-32rpx my-10rpx" bindtap="handleAllSelectToggle">
+        <image src="/assets/img/base/{{isAllSelect?'check':'uncheck'}}.png" class="w-36rpx h-36rpx" />
+        <text class="text-28rpx text-hex-555659 ml-16rpx">全选</text>
       </view>
-      <text class="text-black-tips text-24rpx mt-26rpx">修改名称</text>
-    </view>
-    <view class="flex-col-center flex-1 {{!editSelect.length ?'opacity-50':''}}" bindtap="handleMoveRoomPopup">
-      <view class="flex-center w-100rpx h-100rpx bg-hex-f6fafd rounded-999">
-        <image src="/assets/img/device-control/move.png" class="w-36rpx h-36rpx" />
-      </view>
-      <text class="text-black-tips text-24rpx mt-26rpx">移动房间</text>
-    </view>
-    <view class="flex-col-center flex-1 {{!editSelect.length ?'opacity-50':''}}" bindtap="handleDeleteDialog">
-      <view class="flex-center w-100rpx h-100rpx bg-hex-f6fafd rounded-999">
-        <image src="/assets/img/device-control/del.png" class="w-36rpx h-36rpx" />
-      </view>
-      <text class="text-black-tips text-24rpx mt-26rpx">删除</text>
     </view>
   </view>
 
+  <view id="bottom" class="fixed left-0 bottom-0 popup-shadow bg-white w-750rpx h-368rpx bottom-transform">
+    <view class="w-full h-230rpx flex-center">
+      <view class="flex-col-center flex-1 {{canEditName ?'':'opacity-50'}}" bindtap="handleEditNamePopup">
+        <view class="flex-center w-100rpx h-100rpx bg-hex-f6fafd rounded-999">
+          <image src="/assets/img/device-control/edit.png" class="w-36rpx h-36rpx" />
+        </view>
+        <text class="text-black-tips text-24rpx mt-26rpx">修改名称</text>
+      </view>
+      <view class="flex-col-center flex-1 {{!editSelect.length ?'opacity-50':''}}" bindtap="handleMoveRoomPopup">
+        <view class="flex-center w-100rpx h-100rpx bg-hex-f6fafd rounded-999">
+          <image src="/assets/img/device-control/move.png" class="w-36rpx h-36rpx" />
+        </view>
+        <text class="text-black-tips text-24rpx mt-26rpx">移动房间</text>
+      </view>
+      <view class="flex-col-center flex-1 {{!editSelect.length ?'opacity-50':''}}" bindtap="handleDeleteDialog">
+        <view class="flex-center w-100rpx h-100rpx bg-hex-f6fafd rounded-999">
+          <image src="/assets/img/device-control/del.png" class="w-36rpx h-36rpx" />
+        </view>
+        <text class="text-black-tips text-24rpx mt-26rpx">删除</text>
+      </view>
+    </view>
+    <view class="w-750rpx h-2rpx bg-hex-ddd"></view>
+    <view class="w-full h-136rpx flex-center" bindtap="handleExitEdit">
+      <text class="text-28rpx text-blue mb-8rpx font-semibold">完成</text>
+    </view>
+  </view>
   <van-popup show="{{ showEditName }}" z-index="2000" round position="bottom" bind:close="handleClose">
     <view class="w-750rpx relative flex flex-col items-center">
       <template is="close" />
@@ -53,7 +67,6 @@
       <view class="h-32rpx"></view>
     </view>
   </van-popup>
-
   <van-toast id="van-toast" />
   <van-dialog id="van-dialog" />
 </view>

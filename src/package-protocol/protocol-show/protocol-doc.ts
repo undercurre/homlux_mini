@@ -24,31 +24,31 @@ export const privacyPolicy = `
     <span style=";font-family:宋体">本协议主要向您说明：</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:28px">
-    <span style=";font-family:宋体">1<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">我们收集您哪些信息。</span>
+    <span style=";font-family:宋体">1<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp;&nbsp; </span>我们收集您哪些信息。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:28px">
-    <span style=";font-family:宋体">2<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">我们如何使用您的信息。</span>
+    <span style=";font-family:宋体">2<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp;&nbsp; </span>我们如何使用您的信息。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:28px">
-    <span style=";font-family:宋体">3<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">我们在何种情况下共享您的信息。</span>
+    <span style=";font-family:宋体">3<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp;&nbsp; </span>我们在何种情况下共享您的信息。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:28px">
-    <span style=";font-family:宋体">4<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">我们如何存储您的信息。</span>
+    <span style=";font-family:宋体">4<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp;&nbsp; </span>我们如何存储您的信息。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:28px">
-    <span style=";font-family:宋体">5<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">我们如何保护您的信息。</span>
+    <span style=";font-family:宋体">5<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp;&nbsp; </span>我们如何保护您的信息。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:28px">
-    <span style=";font-family:宋体">6<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">您所享有的权利。</span>
+    <span style=";font-family:宋体">6<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp;&nbsp; </span>您所享有的权利。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:28px">
-    <span style=";font-family:宋体">7<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">个人信息主体注销帐号</span>
+    <span style=";font-family:宋体">7<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp;&nbsp; </span>个人信息主体注销帐号</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:28px">
-    <span style=";font-family:宋体">8<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">未成年人信息如何保护。</span>
+    <span style=";font-family:宋体">8<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp;&nbsp; </span>未成年人信息如何保护。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:28px">
-    <span style=";font-family:宋体">9<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">您如何联系我们</span>
+    <span style=";font-family:宋体">9<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp;&nbsp; </span>您如何联系我们</span>
 </p>
 <p>
     <span style=";font-family:宋体">&nbsp;</span>
@@ -60,37 +60,37 @@ export const privacyPolicy = `
     <span style=";font-family:宋体">我们收集您的信息以合法、合理、必要为原则，在向您提供某项具体服务时，我们将明确告知您将收集的信息以及用途，来响应您具体的服务请求。根据您选择的服务，我们在以下场景可能收集以下信息的一种或多种：</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">1.1<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">首次登录时，需要您授权微信号及手机号来注册您的帐号。我们还需要获取您在腾讯平台的头像、昵称和<strong><span style="text-decoration:underline;">OpenID</span></strong>，我们以此识别您在美智光电小程序的身份。上述方式由您自行选择，如您不提供相关信息，美智光电平台将无法为您提供登录小程序服务。</span>
+    <span style=";font-family:宋体">1.1<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>首次登录时，需要您授权微信号及手机号来注册您的帐号。我们还需要获取您在腾讯平台的头像、昵称和<strong><span style="text-decoration:underline;">OpenID</span></strong>，我们以此识别您在美智光电小程序的身份。上述方式由您自行选择，如您不提供相关信息，美智光电平台将无法为您提供登录小程序服务。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">1.2<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">当您注册成功后，在个人资料栏您可以选择性填写您的个人信息，例如<strong><span style="text-decoration:underline;">您的昵称、头像</span></strong>等相关信息。此类信息由您自行维护，</span><span style=";font-family:宋体">在使用美智光电小程序服务时，可节省填写带来的服务迟延</span><span style=";font-family:宋体">，但我们不会强制要求您填写，您可选择性维护，也可以选择实际使用时再填写。</span>
+    <span style=";font-family:宋体">1.2<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>当您注册成功后，在个人资料栏您可以选择性填写您的个人信息，例如<strong><span style="text-decoration:underline;">您的昵称、头像</span></strong>等相关信息。此类信息由您自行维护，在使用美智光电小程序服务时，可节省填写带来的服务迟延，但我们不会强制要求您填写，您可选择性维护，也可以选择实际使用时再填写。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">1.3<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">在您选择购买、送货或报装、报修服务时，我们会要求您提供<strong><span style="text-decoration:underline;">姓名、联系方式、配送地址、安装地址、维修地址、服务时间</span></strong>，以便处理您的订单与售后问题。如您不据实提供，可能导致您无法享受相关的服务。</span>
+    <span style=";font-family:宋体">1.3<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>在您选择购买、送货或报装、报修服务时，我们会要求您提供<strong><span style="text-decoration:underline;">姓名、联系方式、配送地址、安装地址、维修地址、服务时间</span></strong>，以便处理您的订单与售后问题。如您不据实提供，可能导致您无法享受相关的服务。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">1.4<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">当您在美智光电商城小程序留言或评论时，我们需要收集您的<strong><span style="text-decoration:underline;">昵称、头像、留言和评论内容</span></strong>。您的留言与评论会存储到服务器，我们会对您的美智光电平台帐号及昵称匿名化后才对外展示。但请注意，您公开发布的信息中可能会涉及您或他人的个人信息甚至个人敏感信息，如您在评论时选择上传包含个人信息的图片，请您更加谨慎地考虑，是否在使用我们的服务时共享甚至公开分享相关信息。</span>
+    <span style=";font-family:宋体">1.4<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>当您在美智光电商城小程序留言或评论时，我们需要收集您的<strong><span style="text-decoration:underline;">昵称、头像、留言和评论内容</span></strong>。您的留言与评论会存储到服务器，我们会对您的美智光电平台帐号及昵称匿名化后才对外展示。但请注意，您公开发布的信息中可能会涉及您或他人的个人信息甚至个人敏感信息，如您在评论时选择上传包含个人信息的图片，请您更加谨慎地考虑，是否在使用我们的服务时共享甚至公开分享相关信息。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">1.5<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">为了帮助我们了解美智光电小程序的运行情况，我们会使用移动分析软件例如友盟数据统计SDK。我们可能会记录相关信息，例如您的<strong><span style="text-decoration:underline;">使用频率、崩溃数据、总体使用情况、性能数据</span></strong>等。我们不会将存储于分析软件的信息关联到您的任何个人信息。</span>
+    <span style=";font-family:宋体">1.5<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>为了帮助我们了解美智光电小程序的运行情况，我们会使用移动分析软件例如友盟数据统计SDK。我们可能会记录相关信息，例如您的<strong><span style="text-decoration:underline;">使用频率、崩溃数据、总体使用情况、性能数据</span></strong>等。我们不会将存储于分析软件的信息关联到您的任何个人信息。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">1.6<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">您授权使用美智光电小程序时，我们可能会获取您个人相关的信息，例如微信ID、微信昵称、<strong><span style="text-decoration:underline;">手机号码、微信头像，账号创建时间。</span></strong></span>
+    <span style=";font-family:宋体">1.6<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>您授权使用美智光电小程序时，我们可能会获取您个人相关的信息，例如微信ID、微信昵称、<strong><span style="text-decoration:underline;">手机号码、微信头像，账号创建时间。</span></strong></span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">1.7<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">您在使用美智光电的产品或服务时，我们会自动接收并记录的您的浏览器和计算机上的信息，例如您的<strong><span style="text-decoration:underline;">IP地址、浏览器的商品类型、访问日期和时间、产品下单记录及您需求的网页记录</span></strong>等数据。</span>
+    <span style=";font-family:宋体">1.7<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>您在使用美智光电的产品或服务时，我们会自动接收并记录的您的浏览器和计算机上的信息，例如您的<strong><span style="text-decoration:underline;">IP地址、浏览器的商品类型、访问日期和时间、产品下单记录及您需求的网页记录</span></strong>等数据。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">1.8<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">您在使用美智光电的产品或服务时，我们可能会读取与您位置相关的信息，例如<strong><span style="text-decoration:underline;">设备的GPS信号或附近的WLAN接入点、经纬度信息</span></strong></span>
+    <span style=";font-family:宋体">1.8<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>您在使用美智光电的产品或服务时，我们可能会读取与您位置相关的信息，例如<strong><span style="text-decoration:underline;">设备的GPS信号或附近的WLAN接入点、经纬度信息</span></strong></span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <strong><span style=";font-family:宋体">1.9<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration:underline;"><span style=";font-family:宋体">需要特别注意的是，单独的设备信息、服务日志信息是无法识别特定自然人身份的信息。如果我们将这类非个人信息与其他信息结合用于识别特定自然人身份，或者将其与个人信息结合使用，则在结合使用期间，这类非个人信息将被视为个人信息，除取得您授权或法律法规另有规定外，我们会将这类信息做匿名化、去标识化处理。</span></span></strong>
+    <strong><span style=";font-family:宋体">1.9<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration: underline; font-family: 宋体;">需要特别注意的是，单独的设备信息、服务日志信息是无法识别特定自然人身份的信息。如果我们将这类非个人信息与其他信息结合用于识别特定自然人身份，或者将其与个人信息结合使用，则在结合使用期间，这类非个人信息将被视为个人信息，除取得您授权或法律法规另有规定外，我们会将这类信息做匿名化、去标识化处理。</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
     <strong><span style=";font-family:宋体">1.10<span style="font:9px &#39;Times New Roman&#39;">&nbsp; </span></span></strong><span style=";font-family:宋体">从第三方服务提供商获取您的个人信息在第三方设备管理业务中，我们将与第三方服务提供商进行合作，其中涉及我们从第三方服务提供商处获取您的个人信息。我们将在您绑定第三方帐号的条件下获取您的以下个人信息：第三方帐号的信息，包括您的昵称、头像，用于在美智光电平台中显示；第三方应用上添加的部分设备列表，用于在“美智光电”小程序应用中显示设备；设备及网络信息，包括设备标识符、MAC 地址、设备序列号，用于识别当前所工作的设备以及进行设备安全控制。如我们在开展业务时需进行的个人信息处理活动超出您原本向第三方服务提供商提供个人信息时的授权同意范围，我们将在处理您的该等个人信息前，征得您的明示同意。此外，我们也将会严格遵守相关法律法规的规定，并要求第三方服务提供商保障其提供的信息的合法性。当我们要将信息用于本声明未载明的其它用途时，会事先征求您的同意。当我们要将基于特定目的收集而来的信息用于其他目的时，会事先征求您的同意。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">1.11<span style="font:9px &#39;Times New Roman&#39;">&nbsp; </span></span><span style="font-family:宋体">美智光电小程序可能会调用您的设备权限，以下是调用权限对应的业务功能、我们调用的目的，以及调用权限向您询问的情况。</span>
+    <span style=";font-family:宋体">1.11<span style="font:9px &#39;Times New Roman&#39;">&nbsp; </span>美智光电小程序可能会调用您的设备权限，以下是调用权限对应的业务功能、我们调用的目的，以及调用权限向您询问的情况。</span>
 </p>
 <table width="503">
     <tbody>
@@ -190,7 +190,7 @@ export const privacyPolicy = `
                     <span style=";font-family:宋体">读取相册</span>
                 </p>
                 <p style="text-align:left">
-                    <span style=";font-family:宋体">(</span><span style=";font-family:宋体">图片库)</span>
+                    <span style=";font-family:宋体">(图片库)</span>
                 </p>
             </td>
             <td width="131" style="border-top: none; border-left: none; border-bottom: 1px solid windowtext; border-right: 1px solid windowtext; background: white; padding: 0px 7px;">
@@ -247,133 +247,133 @@ export const privacyPolicy = `
     </tbody>
 </table>
 <p style="margin-left:28px">
-    <strong><span style="text-decoration:underline;"><span style=";font-family:宋体">您可以在设置功能中选择关闭部分或全部权限，从而拒绝我们收集对应的信息。</span></span></strong><span style=";font-family:宋体">使用不同设备时，权限显示方式及关闭方式可能有所不同，具体请联系设备及系统开发商。</span>
+    <strong><span style="text-decoration: underline; font-family: 宋体;">您可以在设置功能中选择关闭部分或全部权限，从而拒绝我们收集对应的信息。</span></strong><span style=";font-family:宋体">使用不同设备时，权限显示方式及关闭方式可能有所不同，具体请联系设备及系统开发商。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">1.12<span style="font:9px &#39;Times New Roman&#39;">&nbsp; </span></span><span style=";font-family:宋体">为提高您使用美智光电平台服务的安全性，保护您或其他用户或公众的人身财产安全免遭侵害，更好地预防钓鱼网站、欺诈、网络漏洞、计算机病毒、网络攻击、网络侵入等安全风险，更准确地识别违反法律法规或美智光电平台相关协议规则的情况，我们可能使用或整合您的帐号信息、设备交互信息、网络日志信息以及我们取得您授权或依据法律共享的信息，来综合判断您账户及交易风险、进行身份验证、检测及防范安全事件，并依法采取必要的记录、审计、分析、处置措施。</span>
+    <span style=";font-family:宋体">1.12<span style="font:9px &#39;Times New Roman&#39;">&nbsp; </span>为提高您使用美智光电平台服务的安全性，保护您或其他用户或公众的人身财产安全免遭侵害，更好地预防钓鱼网站、欺诈、网络漏洞、计算机病毒、网络攻击、网络侵入等安全风险，更准确地识别违反法律法规或美智光电平台相关协议规则的情况，我们可能使用或整合您的帐号信息、设备交互信息、网络日志信息以及我们取得您授权或依据法律共享的信息，来综合判断您账户及交易风险、进行身份验证、检测及防范安全事件，并依法采取必要的记录、审计、分析、处置措施。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">1.13<span style="font:9px &#39;Times New Roman&#39;">&nbsp; </span></span><strong><span style="text-decoration:underline;"><span style=";font-family:宋体">若你提供的信息中含有其他用户的个人信息，在向我们提供这些个人信息之前，您需确保您已经取得合法的授权。</span></span></strong><span style=";font-family:宋体">若我们将信息用于本协议未载明的其他用途，或者将基于特定目的收集而来的信息用于其他目的，或者我们主动从第三方处获取您的个人信息，均会事先获得您的同意。</span>
+    <span style=";font-family:宋体">1.13<span style="font:9px &#39;Times New Roman&#39;">&nbsp; </span></span><strong><span style="text-decoration: underline; font-family: 宋体;">若你提供的信息中含有其他用户的个人信息，在向我们提供这些个人信息之前，您需确保您已经取得合法的授权。</span></strong><span style=";font-family:宋体">若我们将信息用于本协议未载明的其他用途，或者将基于特定目的收集而来的信息用于其他目的，或者我们主动从第三方处获取您的个人信息，均会事先获得您的同意。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <strong><span style=";font-family:宋体">1.14<span style="font:9px &#39;Times New Roman&#39;">&nbsp; </span></span></strong><strong><span style="text-decoration:underline;"><span style=";font-family:宋体">征得授权同意的例外：您充分理解并同意，我们在以下情况下收集、使用您的个人信息无需您的授权同意，且我们可能不会响应您提出的更正/修改、删除、注销、撤回同意、索取信息的请求：</span></span></strong>
+    <strong><span style=";font-family:宋体">1.14<span style="font:9px &#39;Times New Roman&#39;">&nbsp; </span></span></strong><strong><span style="text-decoration: underline; font-family: 宋体;">征得授权同意的例外：您充分理解并同意，我们在以下情况下收集、使用您的个人信息无需您的授权同意，且我们可能不会响应您提出的更正/修改、删除、注销、撤回同意、索取信息的请求：</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <strong><span style=";font-family:宋体">1.14.1<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration:underline;"><span style=";font-family:宋体">与国家安全、国防安全有关的；</span></span></strong>
+    <strong><span style=";font-family:宋体">1.14.1<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration: underline; font-family: 宋体;">与国家安全、国防安全有关的；</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <strong><span style=";font-family:宋体">1.14.2<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration:underline;"><span style=";font-family:宋体;background:white">与公共安全、公共卫生、重大公共利益有关的；</span></span></strong>
+    <strong><span style=";font-family:宋体">1.14.2<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration: underline; font-family: 宋体; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;">与公共安全、公共卫生、重大公共利益有关的；</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <strong><span style=";font-family:宋体">1.14.3<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration:underline;"><span style=";font-family:宋体;background:white">与犯罪侦查、起诉、审判和判决执行等司法或行政执法有关的；</span></span></strong>
+    <strong><span style=";font-family:宋体">1.14.3<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration: underline; font-family: 宋体; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;">与犯罪侦查、起诉、审判和判决执行等司法或行政执法有关的；</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <strong><span style=";font-family:宋体">1.14.4<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration:underline;"><span style=";font-family:宋体;background:white">出于维护您或其他个人的生命、财产等重大合法权益但又很难得到本人同意的；</span></span></strong>
+    <strong><span style=";font-family:宋体">1.14.4<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration: underline; font-family: 宋体; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;">出于维护您或其他个人的生命、财产等重大合法权益但又很难得到本人同意的；</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <strong><span style=";font-family:宋体">1.14.5<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration:underline;"><span style=";font-family:宋体;background:white">您自行向社会公众公开的个人信息；</span></span></strong>
+    <strong><span style=";font-family:宋体">1.14.5<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration: underline; font-family: 宋体; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;">您自行向社会公众公开的个人信息；</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <strong><span style=";font-family:宋体">1.14.6<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration:underline;"><span style=";font-family:宋体;background:white">从合法公开披露的信息中收集个人信息的，如合法的新闻报道、政府信息公开等渠道。</span></span></strong>
+    <strong><span style=";font-family:宋体">1.14.6<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration: underline; font-family: 宋体; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;">从合法公开披露的信息中收集个人信息的，如合法的新闻报道、政府信息公开等渠道。</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <strong><span style=";font-family:宋体">1.14.7<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration:underline;"><span style=";font-family:宋体;background:white">根据与您签订和履行相关协议或其他书面文件所必需的；</span></span></strong>
+    <strong><span style=";font-family:宋体">1.14.7<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration: underline; font-family: 宋体; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;">根据与您签订和履行相关协议或其他书面文件所必需的；</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <strong><span style=";font-family:宋体">1.14.8<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration:underline;"><span style=";font-family:宋体;background:white">用于维护所提供的产品及/或服务的安全稳定运行所必需的，例如发现、处置产品及/或服务的故障；</span></span></strong>
+    <strong><span style=";font-family:宋体">1.14.8<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration: underline; font-family: 宋体; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;">用于维护所提供的产品及/或服务的安全稳定运行所必需的，例如发现、处置产品及/或服务的故障；</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <strong><span style=";font-family:宋体">1.14.9<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration:underline;"><span style=";font-family:宋体;background:white">为合法的新闻报道所必需的；</span></span></strong>
+    <strong><span style=";font-family:宋体">1.14.9<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration: underline; font-family: 宋体; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;">为合法的新闻报道所必需的；</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <strong><span style=";font-family:宋体">1.14.10 </span></strong><strong><span style="text-decoration:underline;"><span style=";font-family:宋体;background:white">学术研究机构基于公共利益开展统计或学术研究所必要，且对外提供学术研究或描述的结果时，对结果中所包含的个人信息进行去标识化处理的；</span></span></strong>
+    <strong><span style=";font-family:宋体">1.14.10 </span></strong><strong><span style="text-decoration: underline; font-family: 宋体; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;">学术研究机构基于公共利益开展统计或学术研究所必要，且对外提供学术研究或描述的结果时，对结果中所包含的个人信息进行去标识化处理的；</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <strong><span style=";font-family:宋体">1.14.11 </span></strong><strong><span style="text-decoration:underline;"><span style=";font-family:宋体;background:white">法律法规规定的其他情形。</span></span></strong>
+    <strong><span style=";font-family:宋体">1.14.11 </span></strong><strong><span style="text-decoration: underline; font-family: 宋体; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;">法律法规规定的其他情形。</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:28px">
-    <strong><span style=";font-family:宋体">2<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span></strong><strong><span style=";font-family:宋体;background:white">我们如何使用您的信息</span></strong>
+    <strong><span style=";font-family:宋体">2<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span></strong><strong><span style="font-family: 宋体; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;">我们如何使用您的信息</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">2.1<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">我们会保持您的个人数据及时更新；安全地存储或销毁它；最小化收集和保留我们需要为您提供服务所需的数据；保护个人信息免遭泄露、滥用、未经授权的访问和披露；采取适当的技术措施保护您个人信息的安全。</span>
+    <span style=";font-family:宋体">2.1<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>我们会保持您的个人数据及时更新；安全地存储或销毁它；最小化收集和保留我们需要为您提供服务所需的数据；保护个人信息免遭泄露、滥用、未经授权的访问和披露；采取适当的技术措施保护您个人信息的安全。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">2.2<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">我们将您的信息用于以下用途：</span>
+    <span style=";font-family:宋体">2.2<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>我们将您的信息用于以下用途：</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <span style=";font-family:宋体">2.2.1 </span><span style=";font-family:宋体">根据我们与您签订的合同向您提供服务（注册、购买、报装、报修、家电激活与控制等）。</span>
+    <span style=";font-family:宋体">2.2.1 根据我们与您签订的合同向您提供服务（注册、购买、报装、报修、家电激活与控制等）。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <span style=";font-family:宋体">2.2.2 </span><span style=";font-family:宋体">实现您的交易或服务请求，包括履行订单；交付、激活或验证产品或服务；参加线上或线下活动；应您的要求进行变更或者提供您请求的信息（例如产品或服务的营销资料、白皮书）；以及提供技术支持。</span>
+    <span style=";font-family:宋体">2.2.2 实现您的交易或服务请求，包括履行订单；交付、激活或验证产品或服务；参加线上或线下活动；应您的要求进行变更或者提供您请求的信息（例如产品或服务的营销资料、白皮书）；以及提供技术支持。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <span style=";font-family:宋体">2.2.3 </span><span style=";font-family:宋体">向您发送有关您可能感兴趣的产品和服务的信息；邀请您参与电商活动（包括促销活动）、市场调查或满意度调查；或向您发送营销信息。如果您不想接收此类信息，则可以按平台提供的退订功能进行退订。</span>
+    <span style=";font-family:宋体">2.2.3 向您发送有关您可能感兴趣的产品和服务的信息；邀请您参与电商活动（包括促销活动）、市场调查或满意度调查；或向您发送营销信息。如果您不想接收此类信息，则可以按平台提供的退订功能进行退订。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <span style=";font-family:宋体">2.2.4 </span><span style=";font-family:宋体">按照我们收集信息时所述的要求提供其他您所要求的服务。</span>
+    <span style=";font-family:宋体">2.2.4 按照我们收集信息时所述的要求提供其他您所要求的服务。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <span style=";font-family:宋体">2.2.5 </span><span style=";font-family:宋体">为了内部管理和后台支持，与全球各地公司的分支机构分享您的联系方式。</span>
+    <span style=";font-family:宋体">2.2.5 为了内部管理和后台支持，与全球各地公司的分支机构分享您的联系方式。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <span style=";font-family:宋体">2.2.6 </span><span style=";font-family:宋体">维持我们储存和处理您个人信息的数据技术系统的完整性和安全性。</span>
+    <span style=";font-family:宋体">2.2.6 维持我们储存和处理您个人信息的数据技术系统的完整性和安全性。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <span style=";font-family:宋体">2.2.7 </span><span style=";font-family:宋体">执行或保护我们的协议或与您签订的合同。</span>
+    <span style=";font-family:宋体">2.2.7 执行或保护我们的协议或与您签订的合同。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <span style=";font-family:宋体">2.2.8 </span><span style=";font-family:宋体">检测和调查信息泄露、非法活动和欺诈行为。</span>
+    <span style=";font-family:宋体">2.2.8 检测和调查信息泄露、非法活动和欺诈行为。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <span style=";font-family:宋体">2.2.9 </span><span style=";font-family:宋体">联系您解决问题。</span>
+    <span style=";font-family:宋体">2.2.9 联系您解决问题。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <span style=";font-family:宋体">2.2.10<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span><span style=";font-family:宋体">经过您许可的其它用途。</span>
+    <span style=";font-family:宋体">2.2.10<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span>经过您许可的其它用途。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">2.3<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">需要注意的是，以上使用方式涵盖了我们使用您信息的主要方式。我们可能时不时地通过更新网站页面、APP版本或设备固件等方式，为用户提供更加多样化的服务。当我们要将信息用于本协议未载明的其他用途时，或要将基于特定目的收集而来的信息用于其他目的时，会以签署协议、弹窗提示、更新本协议等形式再次征求您的同意。</span>
+    <span style=";font-family:宋体">2.3<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>需要注意的是，以上使用方式涵盖了我们使用您信息的主要方式。我们可能时不时地通过更新网站页面、APP版本或设备固件等方式，为用户提供更加多样化的服务。当我们要将信息用于本协议未载明的其他用途时，或要将基于特定目的收集而来的信息用于其他目的时，会以签署协议、弹窗提示、更新本协议等形式再次征求您的同意。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:28px">
     <strong><span style=";font-family:宋体">3<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span></strong><strong><span style=";font-family:宋体">我们在何种情况下共享您的信息</span></strong>
 </p>
 <p>
-    <strong><span style="text-decoration:underline;"><span style=";font-family:宋体;background:white">我们不会与美智光电及美智光电关联企业以外的公司、组织和个人共享您的个人信息。您</span></span></strong><strong><span style="text-decoration:underline;"><span style="font-family:宋体">许可美的通过如下方式进行信息共享：</span></span></strong>
+    <strong><span style="text-decoration: underline; font-family: 宋体; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;">我们不会与美智光电及美智光电关联企业以外的公司、组织和个人共享您的个人信息。您</span></strong><strong><span style="text-decoration: underline; font-family: 宋体;">许可美的通过如下方式进行信息共享：</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <strong><span style=";font-family:宋体">3.1<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration:underline;"><span style=";font-family:宋体">在法定情形下的共享：我们可能会根据法律法规规定、诉讼争议解决需要，或按行政、司法机关依法提出的要求，对外共享您的个人信息。</span></span></strong>
+    <strong><span style=";font-family:宋体">3.1<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration: underline; font-family: 宋体;">在法定情形下的共享：我们可能会根据法律法规规定、诉讼争议解决需要，或按行政、司法机关依法提出的要求，对外共享您的个人信息。</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <strong><span style=";font-family:宋体">3.2<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration:underline;"><span style=";font-family:宋体">获取明确同意的情况下共享：获得您的明确同意后，我们会与其他方共享您的个人信息。</span></span></strong>
+    <strong><span style=";font-family:宋体">3.2<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration: underline; font-family: 宋体;">获取明确同意的情况下共享：获得您的明确同意后，我们会与其他方共享您的个人信息。</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <strong><span style=";font-family:宋体">3.3<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration:underline;"><span style=";font-family:宋体">与关联公司间共享：为便于我们向您提供产品和服务，识别帐号异常，保护其他用户或公众的人身财产安全免遭侵害，您的个人信息可能会与我们的关联公司和/或其指定的服务提供商共享。我们只会共享必要的个人信息，且受本协议中所声明目的的约束，如果我们共享您的个人敏感信息或关联公司改变个人信息的使用及处理目的，将再次征求您的授权同意。</span></span></strong>
+    <strong><span style=";font-family:宋体">3.3<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration: underline; font-family: 宋体;">与关联公司间共享：为便于我们向您提供产品和服务，识别帐号异常，保护其他用户或公众的人身财产安全免遭侵害，您的个人信息可能会与我们的关联公司和/或其指定的服务提供商共享。我们只会共享必要的个人信息，且受本协议中所声明目的的约束，如果我们共享您的个人敏感信息或关联公司改变个人信息的使用及处理目的，将再次征求您的授权同意。</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <strong><span style=";font-family:宋体">3.4<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration:underline;"><span style=";font-family:宋体">与授权合作伙伴共享：我们可能委托授权合作伙伴为您提供某些服务或代表我们履行职能，我们仅会出于本协议声明的合法、正当、必要、特定、明确的目的共享您的信息，授权合作伙伴只能接触到其履行职责所需信息，且不得将此信息用于其他任何目的。此类处理后数据的使用和共享我们无需另行向您通知并征得您的同意。</span></span></strong>
+    <strong><span style=";font-family:宋体">3.4<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration: underline; font-family: 宋体;">与授权合作伙伴共享：我们可能委托授权合作伙伴为您提供某些服务或代表我们履行职能，我们仅会出于本协议声明的合法、正当、必要、特定、明确的目的共享您的信息，授权合作伙伴只能接触到其履行职责所需信息，且不得将此信息用于其他任何目的。此类处理后数据的使用和共享我们无需另行向您通知并征得您的同意。</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px;text-indent:0">
-    <strong><span style="text-decoration:underline;"><span style=";font-family:宋体">目前，我们的授权合作伙伴包括以下类型：</span></span></strong>
+    <strong><span style="text-decoration: underline; font-family: 宋体;">目前，我们的授权合作伙伴包括以下类型：</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <strong><span style=";font-family:宋体">3.4.1 </span></strong><strong><span style="text-decoration:underline;"><span style=";font-family:宋体">广告、分析服务类的授权合作伙伴。请知悉，为向您提供更便捷、优质、个性化的产品及/或服务，提升您的使用体验，我们可能会委托这些合作伙伴处理与广告覆盖面和有效性相关的信息，但不会提供您的个人身份信息，或者我们将这些信息进行去标识化处理，以便它不会识别您个人。这类合作伙伴可能将上述信息与他们合法获取的其他数据相结合，以执行我们委托的广告服务或决策建议。</span></span></strong>
+    <strong><span style=";font-family:宋体">3.4.1 </span></strong><strong><span style="text-decoration: underline; font-family: 宋体;">广告、分析服务类的授权合作伙伴。请知悉，为向您提供更便捷、优质、个性化的产品及/或服务，提升您的使用体验，我们可能会委托这些合作伙伴处理与广告覆盖面和有效性相关的信息，但不会提供您的个人身份信息，或者我们将这些信息进行去标识化处理，以便它不会识别您个人。这类合作伙伴可能将上述信息与他们合法获取的其他数据相结合，以执行我们委托的广告服务或决策建议。</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <strong><span style=";font-family:宋体">3.4.2 </span></strong><strong><span style="text-decoration:underline;"><span style=";font-family:宋体">供应商、服务提供商和其他合作伙伴。我们将信息发送给支持我们业务的供应商、服务提供商和其他合作伙伴，这些支持包括受我们委托提供的技术基础设施服务、分析我们服务的使用方式、衡量服务的有效性、提供客户服务、支付便利或进行学术研究和调查。</span></span></strong>
+    <strong><span style=";font-family:宋体">3.4.2 </span></strong><strong><span style="text-decoration: underline; font-family: 宋体;">供应商、服务提供商和其他合作伙伴。我们将信息发送给支持我们业务的供应商、服务提供商和其他合作伙伴，这些支持包括受我们委托提供的技术基础设施服务、分析我们服务的使用方式、衡量服务的有效性、提供客户服务、支付便利或进行学术研究和调查。</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px;text-indent:28px">
-    <strong><span style="text-decoration:underline;"><span style=";font-family:宋体">为了使您能够使用上述服务及功能，我们的应用中会嵌入授权合作伙伴的SDK或其他类似的应用程序。如您使用美智光电服务时，阿里Push SDK需要读取您的设备识别号，联网相关信息，用于推送/下发通知短信消息；如您使用搜索附近门店时，百度地图SDK需要您打开设备位置权限并获取手机设备所在位置。</span></span></strong>
+    <strong><span style="text-decoration: underline; font-family: 宋体;">为了使您能够使用上述服务及功能，我们的应用中会嵌入授权合作伙伴的SDK或其他类似的应用程序。如您使用美智光电服务时，阿里Push SDK需要读取您的设备识别号，联网相关信息，用于推送/下发通知短信消息；如您使用搜索附近门店时，百度地图SDK需要您打开设备位置权限并获取手机设备所在位置。</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px;text-indent:28px">
-    <strong><span style="text-decoration:underline;"><span style=";font-family:宋体">针对第三方SDK使用，我们将基于不同步用户个人数据为前提，授权合作伙伴获取有关业务信息。同时针对第三方的SDK应用程序接口（API）,软件工具开发包（SDK）我们会进行严格的安全检测，并与合作伙伴签订严格的数据保护协定，令其按照我们的委托目的、服务说明、本隐私政策以及其他任何相关的保密和安全措施来处理个人信息。</span></span></strong>
+    <strong><span style="text-decoration: underline; font-family: 宋体;">针对第三方SDK使用，我们将基于不同步用户个人数据为前提，授权合作伙伴获取有关业务信息。同时针对第三方的SDK应用程序接口（API）,软件工具开发包（SDK）我们会进行严格的安全检测，并与合作伙伴签订严格的数据保护协定，令其按照我们的委托目的、服务说明、本隐私政策以及其他任何相关的保密和安全措施来处理个人信息。</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <strong><span style=";font-family:宋体">3.5<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration:underline;"><span style=";font-family:宋体">我们不会将您的个人信息转让给任何公司、组织和个人，但以下情况除外：</span></span></strong>
+    <strong><span style=";font-family:宋体">3.5<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp; </span></span></strong><strong><span style="text-decoration: underline; font-family: 宋体;">我们不会将您的个人信息转让给任何公司、组织和个人，但以下情况除外：</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <strong><span style=";font-family:宋体">3.5.1 </span></strong><strong><span style="text-decoration:underline;"><span style=";font-family:宋体;background:white">在获取明确同意的情况下转让：获得您的明确同意后，我们会向其他方转让您的个人信息；</span></span></strong>
+    <strong><span style=";font-family:宋体">3.5.1 </span></strong><strong><span style="text-decoration: underline; font-family: 宋体; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;">在获取明确同意的情况下转让：获得您的明确同意后，我们会向其他方转让您的个人信息；</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <strong><span style=";font-family:宋体">3.5.2 </span></strong><strong><span style="text-decoration:underline;"><span style=";font-family:宋体;background:white">在美智光电小程序服务提供者发生合并、收购或破产清算情形，或其他涉及合并、收购或破产清算情形时，如涉及到个人信息转让，我们会要求新的持有您个人信息的公司、组织继续受本协议的约束，否则我们将要求该公司、组织和个人重新向您征求授权同意。</span></span></strong>
+    <strong><span style=";font-family:宋体">3.5.2 </span></strong><strong><span style="text-decoration: underline; font-family: 宋体; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;">在美智光电小程序服务提供者发生合并、收购或破产清算情形，或其他涉及合并、收购或破产清算情形时，如涉及到个人信息转让，我们会要求新的持有您个人信息的公司、组织继续受本协议的约束，否则我们将要求该公司、组织和个人重新向您征求授权同意。</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:28px">
     <strong><span style=";font-family:宋体">4<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span></strong><strong><span style=";font-family:宋体">我们如何存储您的信息</span></strong>
@@ -382,25 +382,25 @@ export const privacyPolicy = `
     <span style=";font-family:宋体">除非法律有另外规定，美智光电平台将按照如下期限保存您的信息：</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">4.1<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">您在使用美智光电平台产品或服务期间，我们将持续为您保存，除非您主动删除美智光电小程序。</span>
+    <span style=";font-family:宋体">4.1<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>您在使用美智光电平台产品或服务期间，我们将持续为您保存，除非您主动删除美智光电小程序。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">4.2<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">当您删除信息或注销美智光电小程序后，美智光电将停止对您个人信息的使用，并在一定期限内删除您的个人信息。</span>
+    <span style=";font-family:宋体">4.2<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>当您删除信息或注销美智光电小程序后，美智光电将停止对您个人信息的使用，并在一定期限内删除您的个人信息。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">4.3<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">您的个人信息经过匿名化与脱敏处理后将形成可以使用的流通数据，美智光电小程序对此数据的保存和使用无需另外征得您的同意。</span>
+    <span style=";font-family:宋体">4.3<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>您的个人信息经过匿名化与脱敏处理后将形成可以使用的流通数据，美智光电小程序对此数据的保存和使用无需另外征得您的同意。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:28px">
     <strong><span style=";font-family:宋体">5<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span></strong><strong><span style=";font-family:宋体">我们如何保护您的信息</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">5.1<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">我们已采取符合业界标准、合理可行的安全防护措施保护您的信息，防止个人信息遭到未经授权访问、公开披露、使用、修改、损坏或丢失。例如，在您的浏览器与服务器之间交换数据时受SSL协议加密保护；我们同时对美智光电平台各网站提供HTTPS协议安全浏览方式；我们会使用加密技术提高个人信息的安全性；我们会使用受信赖的保护机制防止个人信息遭到恶意攻击；我们会部署访问控制机制，尽力确保只有授权人员才可访问个人信息；以及我们会举办安全和隐私保护培训课程，加强员工对于保护个人信息重要性的认识。</span>
+    <span style=";font-family:宋体">5.1<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>我们已采取符合业界标准、合理可行的安全防护措施保护您的信息，防止个人信息遭到未经授权访问、公开披露、使用、修改、损坏或丢失。例如，在您的浏览器与服务器之间交换数据时受SSL协议加密保护；我们同时对美智光电平台各网站提供HTTPS协议安全浏览方式；我们会使用加密技术提高个人信息的安全性；我们会使用受信赖的保护机制防止个人信息遭到恶意攻击；我们会部署访问控制机制，尽力确保只有授权人员才可访问个人信息；以及我们会举办安全和隐私保护培训课程，加强员工对于保护个人信息重要性的认识。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">5.2<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">互联网并非绝对安全的环境，使用美智光电小程序产品或服务时，我们强烈建议您不要使用非美智光电推荐的通信方式发送您的信息。您可以通过我们的服务建立联系和相互分享。当您通过我们的服务创建交流、交易或分享时，您可以自主选择沟通、交易或分享的对象，作为能够看到您的交易内容、联络方式、交流信息或分享内容等相关信息的第三方。</span>
+    <span style=";font-family:宋体">5.2<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>互联网并非绝对安全的环境，使用美智光电小程序产品或服务时，我们强烈建议您不要使用非美智光电推荐的通信方式发送您的信息。您可以通过我们的服务建立联系和相互分享。当您通过我们的服务创建交流、交易或分享时，您可以自主选择沟通、交易或分享的对象，作为能够看到您的交易内容、联络方式、交流信息或分享内容等相关信息的第三方。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">5.3<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体;background:white">在不幸发生个人信息安全事件后，我们将按照法律法规的要求向您告知：安全事件的基本情况和可能的影响、我们已采取或将要采取的处置措施、您可自主防范和降低风险的建议、对您的补救措施等。事件相关情况我们将以邮件、信函、电话、推送通知等方式告知您，难以逐一告知个人信息主体时，我们会采取合理、有效的方式发布公告。同时，我们还将按照监管部门要求，上报个人信息安全事件的处置情况。</span>
+    <span style=";font-family:宋体">5.3<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style="font-family: 宋体; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;">在不幸发生个人信息安全事件后，我们将按照法律法规的要求向您告知：安全事件的基本情况和可能的影响、我们已采取或将要采取的处置措施、您可自主防范和降低风险的建议、对您的补救措施等。事件相关情况我们将以邮件、信函、电话、推送通知等方式告知您，难以逐一告知个人信息主体时，我们会采取合理、有效的方式发布公告。同时，我们还将按照监管部门要求，上报个人信息安全事件的处置情况。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:28px">
     <strong><span style=";font-family:宋体">6<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span></strong><strong><span style=";font-family:宋体">您所享有的权利</span></strong>
@@ -409,46 +409,46 @@ export const privacyPolicy = `
     <span style=";font-family:宋体">您有权利管理您的信息，包括：</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">6.1<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">访问您的个人信息：</span>
+    <span style=";font-family:宋体">6.1<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>访问您的个人信息：</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <span style=";font-family:宋体">6.1.1 </span><span style=";font-family:宋体">帐号信息：如果您希望访问或编辑您的帐户中的个人资料信息、更改您的密码、食谱偏好等，您可以登录您的帐户后通过设置访问您的信息。</span>
+    <span style=";font-family:宋体">6.1.1 帐号信息：如果您希望访问或编辑您的帐户中的个人资料信息、更改您的密码、食谱偏好等，您可以登录您的帐户后通过设置访问您的信息。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <span style=";font-family:宋体">6.1.2 </span><span style=";font-family:宋体">其它个人信息（例如使用商城、售后、报装报修等服务时）：对于您使用我们的产品或服务过程中产生的个人信息，如您需要，可通过第九章的联系方式，与我们取得联系。</span>
+    <span style=";font-family:宋体">6.1.2 其它个人信息（例如使用商城、售后、报装报修等服务时）：对于您使用我们的产品或服务过程中产生的个人信息，如您需要，可通过第九章的联系方式，与我们取得联系。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">6.2<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">更正您的个人信息</span>
+    <span style=";font-family:宋体">6.2<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>更正您的个人信息</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px;text-indent:0">
     <span style=";font-family:宋体">当您发现我们处理您的个人信息有错误时，您有权要求我们做出更正或补充。您可以通过访问个人信息设置页面进行更正或补充说明或者直接联系我们。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">6.3<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">删除您的个人信息</span>
+    <span style=";font-family:宋体">6.3<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>删除您的个人信息</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px;text-indent:0">
     <span style=";font-family:宋体">在下列情况中，您可以联系美智光电小程序客服提出删除个人信息请求：</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <span style=";font-family:宋体">6.3.1 </span><span style=";font-family:宋体">如果我们处理个人信息的行为违反法律法规。</span>
+    <span style=";font-family:宋体">6.3.1 如果我们处理个人信息的行为违反法律法规。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <span style=";font-family:宋体">6.3.2 </span><span style=";font-family:宋体">如果我们收集、使用您的个人信息，却未征得您的明确同意。</span>
+    <span style=";font-family:宋体">6.3.2 如果我们收集、使用您的个人信息，却未征得您的明确同意。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <span style=";font-family:宋体">6.3.3 </span><span style=";font-family:宋体">如果我们处理个人信息的行为严重违反了与您的约定。</span>
+    <span style=";font-family:宋体">6.3.3 如果我们处理个人信息的行为严重违反了与您的约定。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <span style=";font-family:宋体">6.3.4 </span><span style=";font-family:宋体">如果您不需要使用我们的产品与服务，或您主动注销了美智光电美居帐号。</span>
+    <span style=";font-family:宋体">6.3.4 如果您不需要使用我们的产品与服务，或您主动注销了美智光电美居帐号。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <span style=";font-family:宋体">6.3.5 </span><span style=";font-family:宋体">如果永久不需要我们提供产品或服务。</span>
+    <span style=";font-family:宋体">6.3.5 如果永久不需要我们提供产品或服务。</span>
 </p>
 <p style="margin-left:57px">
     <span style=";font-family:宋体">如我们决定响应您的删除请求，我们将停止为您提供产品或服务，根据适用法律的要求删除您的个人信息。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">6.4<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">撤回同意的权利</span>
+    <span style=";font-family:宋体">6.4<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>撤回同意的权利</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px;text-indent:0">
     <span style=";font-family:宋体">在我们依赖您的同意来处理数据时，您在任何时候有权撤回该同意,具体可通过注销美智光电美居帐号的方式，来撤回你的同意。</span>
@@ -457,31 +457,31 @@ export const privacyPolicy = `
     <strong><span style=";font-family:宋体">7<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span></strong><strong><span style=";font-family:宋体">未成年人信息如何保护</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">7.1<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">我们的产品和服务主要面向成年人。对于经法定监护人同意而收集未成年人个人信息的情况，我们只会在受到法律允许、法定监护人明确同意或者保护未成年人所必要的情况下使用或公开披露合法收集到的未成年人的个人信息。</span>
+    <span style=";font-family:宋体">7.1<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>我们的产品和服务主要面向成年人。对于经法定监护人同意而收集未成年人个人信息的情况，我们只会在受到法律允许、法定监护人明确同意或者保护未成年人所必要的情况下使用或公开披露合法收集到的未成年人的个人信息。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">7.2<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">如果我们发现在未事先获得法定监护人同意的情况下收集了未成年人的个人信息，则会设法尽快删除相关数据。如果法定监护人有理由相信未成年人未经他们事先同意而向美智光电平台提交了个人信息，请联系我们以确保删除此类个人信息，并保证未成年人取消订阅任何适用的美智光电服务。</span>
+    <span style=";font-family:宋体">7.2<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>如果我们发现在未事先获得法定监护人同意的情况下收集了未成年人的个人信息，则会设法尽快删除相关数据。如果法定监护人有理由相信未成年人未经他们事先同意而向美智光电平台提交了个人信息，请联系我们以确保删除此类个人信息，并保证未成年人取消订阅任何适用的美智光电服务。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:28px">
     <strong><span style=";font-family:宋体">8<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span></strong><strong><span style=";font-family:宋体">您如何联系我们</span></strong>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">8.1<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">如果您对本隐私协议有任何疑问、意见或建议，或者您想要行使任何权利，或者您有任何要求要与我们讨论，请通过以下方式与我们处理个人信息保护事宜的部门联系：</span>
+    <span style=";font-family:宋体">8.1<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>如果您对本隐私协议有任何疑问、意见或建议，或者您想要行使任何权利，或者您有任何要求要与我们讨论，请通过以下方式与我们处理个人信息保护事宜的部门联系：</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <span style=";font-family:宋体">8.1.1 </span><span style=";font-family:宋体">美智光电平台服务提供者：【美智光电科技股份有限公司】</span>
+    <span style=";font-family:宋体">8.1.1 美智光电平台服务提供者：【美智光电科技股份有限公司】</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <span style=";font-family:宋体">8.1.2 </span><span style=";font-family:宋体">地址：广东省佛山市顺德区北滘镇美的全球创新中心4栋</span>
+    <span style=";font-family:宋体">8.1.2 地址：广东省佛山市顺德区北滘镇美的全球创新中心4栋</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:95px">
-    <span style=";font-family:宋体">8.1.3 </span><span style=";font-family:宋体">电子邮件：</span><a href="mailto:MideaDPO@midea.com"><span style=";font-family:宋体">MideaDPO@midea.com</span></a>
+    <span style=";font-family:宋体">8.1.3 电子邮件：</span><a href="mailto:MideaDPO@midea.com"><span style=";font-family:宋体">MideaDPO@midea.com</span></a>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">8.2<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">为保障安全，您可能需要提供书面请求，或以其他方式证明您的身份。一般情况下，我们将在15天内回复。如果您对我们的回复不满意，特别是我们的个人信息处理行为损害了您的合法权益，您还可以向网信、电信、公安及市监等监管部门进行投诉或举报。</span>
+    <span style=";font-family:宋体">8.2<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>为保障安全，您可能需要提供书面请求，或以其他方式证明您的身份。一般情况下，我们将在15天内回复。如果您对我们的回复不满意，特别是我们的个人信息处理行为损害了您的合法权益，您还可以向网信、电信、公安及市监等监管部门进行投诉或举报。</span>
 </p>
 <p class="MsoListParagraph" style="margin-left:66px">
-    <span style=";font-family:宋体">8.3<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span></span><span style=";font-family:宋体">如果您对我们的回复不满意，特别是您认为我们的个人信息处理行为损害了您的合法权益，您还可以通过向被告住所地有管辖权的法院提起诉讼来寻求解决方案。</span>
+    <span style=";font-family:宋体">8.3<span style="font:9px &#39;Times New Roman&#39;">&nbsp;&nbsp;&nbsp; </span>如果您对我们的回复不满意，特别是您认为我们的个人信息处理行为损害了您的合法权益，您还可以通过向被告住所地有管辖权的法院提起诉讼来寻求解决方案。</span>
 </p>
 <p style="margin-left:28px">
     <span style=";font-family:宋体">&nbsp;</span>
@@ -1203,104 +1203,107 @@ export const userInfoList = `
     </colgroup>
     <tbody>
         <tr style=";height:78px" class="firstRow">
-            <td colspan="3" width="507" style="">
-                我们收集您的信息以合法、合理、必要为原则，在向您提供某项具体服务时，我们将明确告知您将收集的信息以及用途，来响应您具体的服务请求。根据您选择的服务，我们在以下场景可能收集以下信息的一种或多种。
+            <td colspan="3" width="507" style="" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">我们收集您的信息以合法、合理、必要为原则，在向您提供某项具体服务时，我们将明确告知您将收集的信息以及用途，来响应您具体的服务请求。根据您选择的服务，我们在以下场景可能收集以下信息的一种或多种。</span>
             </td>
         </tr>
-        <tr style="height:18px">
-            <td width="188" style="border-top: none;">
-                场景/业务功能
+        <tr style="height:20px">
+            <td width="188" style="border-top: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">场景/业务功能</span>
             </td>
-            <td width="135" style="border-top: none; border-left: none;">
-                个人信息种类
+            <td width="135" style="border-top: none; border-left: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">个人信息种类</span>
             </td>
-            <td width="184" style="border-top: none; border-left: none;">
-                目的
-            </td>
-        </tr>
-        <tr style="height:18px">
-            <td rowspan="2" width="188" style="border-bottom-width: 1px; border-bottom-color: black; border-top: none;">
-                注册和登录
-            </td>
-            <td width="135" style="border-top: none; border-left: none;">
-                手机号、短信验证码
-            </td>
-            <td width="184" style="border-top: none; border-left: none;">
-                用于注册创建账号
+            <td width="184" style="border-top: none; border-left: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">目的</span>
             </td>
         </tr>
-        <tr style="height:37px">
-            <td width="135" style="border-top: none; border-left: none;">
-                头像、昵称、OpenID
+        <tr style="height:20px">
+            <td rowspan="2" width="188" style="border-top: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">注册和登陆</span>
             </td>
-            <td width="184" style="border-top: none; border-left: none;">
-                用于完善网络身份标识
+            <td width="135" style="border-top: none; border-left: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">手机号、短信验证码</span>
             </td>
-        </tr>
-        <tr style="height:129px">
-            <td rowspan="3" width="188" style="border-bottom-width: 1px; border-bottom-color: black; border-top: none;">
-                物联网设备首次联网或更换网络环境
-            </td>
-            <td width="135" style="border-top: none; border-left: none;">
-                1、通过无线网络连接智能设备:本地保存的信息(无线网络密码)、云端保存的信息(SSID、BSSID、设备ID、设备MAC地址)
-            </td>
-            <td rowspan="3" width="184" style="border-bottom-width: 1px; border-bottom-color: black; border-top: none;">
-                用于智能设备智能化服务，使您可以安全地连接设备，管理设备，使用设备
+            <td width="184" style="border-top: none; border-left: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">用于注册创建账号</span>
             </td>
         </tr>
-        <tr style="height:147px">
-            <td width="135" style="border-top: none; border-left: none;">
-                2、通过蓝牙建立本地连接后，通过无线网络连接智能设备:本地保存的信息(无线网络密码)、云端保存的信息(SSID、BSSID、设备ID、设备蓝牙MAC)
+        <tr style="height:38px">
+            <td width="135" style="border-top: none; border-left: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">头像、昵称、OpenID</span>
+            </td>
+            <td width="184" style="border-top: none; border-left: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">用于完善网络身份标识</span>
             </td>
         </tr>
-        <tr style="height:55px">
-            <td width="135" style="border-top: none; border-left: none;">
-                3、通过蓝牙直连的智能设备:蓝牙设备MAC,设备ID
+        <tr style="height:130px">
+            <td rowspan="3" width="188" style="border-top: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">物联网设备首次联网或更换网络环境</span>
+            </td>
+            <td width="135" style="border-top: none; border-left: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">1、通过无线网络连接智能设备:本地保存的信息(无线网络密码)、云端保存的信息(SSID、BSSID、设备ID、设备MAC地址)</span>
+            </td>
+            <td rowspan="3" width="184" style="border-top: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">用于智能设备智能化服务，使您可以安全地连接设备，管理设备，使用设备</span>
             </td>
         </tr>
-        <tr style="height:202px">
-            <td rowspan="3" width="188" style="border-bottom-width: 1px; border-bottom-color: black; border-top: none;">
-                使用我们的智能化产品与服务
-            </td>
-            <td width="135" style="border-top: none; border-left: none;">
-                1、小程序设备信息(硬件型号、IESI号码、IDFA、MEI号码或其他唯一设备识符、MAC地址、IP地址操作系统版本、获取用户的软件安装列表敏感信息行为、注册日期以及用于访问服务的设备的设置、设备型号）
-            </td>
-            <td rowspan="3" width="184" style="border-bottom-width: 1px; border-bottom-color: black; border-top: none;">
-                为识别帐号或设备的异常状态、了解或优化产品服务的适配性、提供应用程序版本升级或固件版本升级服务，我们会收集您的使用情况并存储为网络日志信息，增强用户的安全保障
+        <tr style="height:149px">
+            <td width="135" style="border-top: none; border-left: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">2、通过蓝牙建立本地连接后，通过无线网络连接智能设备:本地保存的信息(无线网络密码)、云端保存的信息(SSID、BSSID、设备ID、设备蓝牙MAC)</span>
             </td>
         </tr>
-        <tr style="height:55px">
-            <td width="135" style="border-top: none; border-left: none;">
-                2、小程序端使用频率、崩贵数据、总体使用情况、性能数据
+        <tr style="height:57px">
+            <td width="135" style="border-top: none; border-left: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">3、通过蓝牙直连的智能设备:蓝牙设备MAC,设备ID</span>
             </td>
         </tr>
-        <tr style="height:92px">
-            <td width="135" style="border-top: none; border-left: none;">
-                3、智能设备运行状态、设备使用频次、电量使用情况、环境温度、环境湿度、网络日志信息
+        <tr style="height:204px">
+            <td rowspan="3" width="188" style="border-top: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">使用我们的智能化产品与服务</span>
+            </td>
+            <td width="135" style="border-top: none; border-left: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">1、小程序设备信息(硬件型号、IESI号码、IDFA、MEI号码或其他唯一设备识符、MAC地址、IP地址操作系统版本、获取用户的软件安装列表敏感信息行为、注册日期以及用于访问服务的设备的设置、设备型号）</span>
+            </td>
+            <td rowspan="3" width="184" style="border-top: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">为识别帐号或设备的异常状态、了解或优化产品服务的适配性、提供应用程序版本升级或固件版本升级服务，我们会收集您的使用情况并存储为网络日志信息，增强用户的安全保障</span>
             </td>
         </tr>
-        <tr style="height:55px">
-            <td width="188" style="border-top: none;">
-                基于位置的智能化服务
-            </td>
-            <td width="135" style="border-top: none; border-left: none;">
-                位置信息
-            </td>
-            <td width="184" style="border-top: none; border-left: none;">
-                用于提供收货/维修/安装地址，添加设备时用于发现附近无线网络或蓝牙列表服务
+        <tr style="height:57px">
+            <td width="135" style="border-top: none; border-left: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">2、小程序端使用频率、崩贵数据、总体使用情况、性能数据</span>
             </td>
         </tr>
-        <tr style="height:110px">
-            <td width="188" style="border-top: none;">
-                促销促活等各类活动
+        <tr style="height:94px">
+            <td width="135" style="border-top: none; border-left: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">3、智能设备运行状态、设备使用频次、电量使用情况、环境温度、环境湿度、网络日志信息</span>
             </td>
-            <td width="135" style="border-top: none; border-left: none;">
-                姓名、手机号码、地址、性别、年龄段、收入段、家庭结构、家中产品、生活偏好等信息（具体以活动页面为准）
+        </tr>
+        <tr style="height:57px">
+            <td width="188" style="border-top: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">基于位置的智能化服务</span>
             </td>
-            <td width="184" style="border-top: none; border-left: none;">
-                为您发放和寄送相关活动奖品，为您提供产品试用、问卷调查等类似了解您的需求以及筛选我们的目标试用客户
+            <td width="135" style="border-top: none; border-left: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">位置信息</span>
+            </td>
+            <td width="184" style="border-top: none; border-left: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">用于提供收货/维修/安装地址，添加设备时用于发现附近无线网络或蓝牙列表服务</span>
+            </td>
+        </tr>
+        <tr style="height:112px">
+            <td width="188" style="border-top: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">促销促活等各类活动</span>
+            </td>
+            <td width="135" style="border-top: none; border-left: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">姓名、手机号码、地址、性别、年龄段、收入段、家庭结构、家中产品、生活偏好等信息（具体以活动页面为准）</span>
+            </td>
+            <td width="184" style="border-top: none; border-left: none;" class="selectTdClass">
+                <span style="background-color: rgb(255, 255, 255);">为您发放和寄送相关活动奖品，为您提供产品试用、问卷调查等类似了解您的需求以及筛选我们的目标试用客户</span>
             </td>
         </tr>
     </tbody>
 </table>
+<p>
+    <br/>
+</p>
 `

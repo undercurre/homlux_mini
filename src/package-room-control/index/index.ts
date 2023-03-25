@@ -157,7 +157,7 @@ ComponentWithComputed({
             device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
             device.proType !== proType.gateway,
         )
-        deviceStore.isEditSelectMode = false
+        deviceStore.editSelect = []
       })
       // 再更新一遍数据
       this.reloadData()
@@ -239,6 +239,7 @@ ComponentWithComputed({
       runInAction(() => {
         deviceStore.selectList = []
         deviceStore.selectType = []
+        deviceStore.isEditSelectMode = false
       })
       // 解除监听
       emitter.off('wsReceive')
@@ -640,8 +641,10 @@ ComponentWithComputed({
       })
       if (e.detail.dragging) {
         runInAction(() => {
-          deviceStore.editSelect = deviceStore.isEditSelectMode ? [] : [e.detail.uniId]
-          deviceStore.isEditSelectMode = !deviceStore.isEditSelectMode
+          if (!deviceStore.editSelect.length) {
+            deviceStore.editSelect = [e.detail.uniId]
+          }
+          deviceStore.isEditSelectMode = true
         })
       }
     },

@@ -324,6 +324,7 @@ ComponentWithComputed({
         return
       }
       if (this.data.selectLinkType === 'scene') {
+        console.log('sceneStore.allRoomSceneList', sceneStore.allRoomSceneList)
         this.setData({
           list: [...sceneStore.allRoomSceneList],
           linkSelectList: deviceStore.switchSceneMap[switchUniId] ? [deviceStore.switchSceneMap[switchUniId]] : [],
@@ -634,7 +635,7 @@ ComponentWithComputed({
         const relDeviceMap = deviceStore.relDeviceMap
         this.data.linkSelectList.forEach((uniId) => {
           const switchRelId = deviceFlattenMap[uniId].switchInfoDTOList[0].switchRelId
-          if (switchRelId && switchRelId !== this.data.relId.lightRelId) {
+          if (switchRelId && switchRelId !== this.data.relId.switchRelId) {
             const index = relDeviceMap[switchRelId].findIndex((id) => id === uniId)
             relDeviceMap[switchRelId].splice(index, 1)
             if (relDeviceMap[switchRelId].length < 2) {
