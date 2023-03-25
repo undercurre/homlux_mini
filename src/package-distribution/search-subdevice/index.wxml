@@ -14,10 +14,14 @@
         </view>
 
         <scroll-view class="grow shrink h-500" scroll-y="{{true}}">
-          <view wx:for="{{deviceList}}" wx:key="deviceUuid" class="flex flex-row items-center bg-white rounded-32rpx mb-24rpx px-24rpx py-40rpx">
+          <view wx:for="{{deviceList}}" wx:key="deviceUuid" class="flex flex-row items-center bg-white rounded-32rpx mb-24rpx px-24rpx py-20rpx">
             <van-checkbox use-icon-slot bind:change="toggleDevice" data-index="{{index}}">
-              <view class="ml-10rpx border-4rpx border-solid border-hex-F6F6F8 rounded-full leading-0 p-10rpx">
+              <view class="relative ml-10rpx my-20rpx border-4rpx border-solid border-hex-F6F6F8 rounded-full leading-0 p-10rpx">
                 <image src="{{item.icon}}" class="w-72 h-72"></image>
+
+                <view class="signal-box bottom-0 leading-0 rounded-14rpx {{ item.signal === 'weak' ? 'bg-hex-FFF4F4' : 'bg-hex-F4F8FF'}}">
+                  <image src="/package-distribution/assets/search-subdevice/signal-{{ item.signal }}.png" class="w-46 h-28"></image>
+                </view>
               </view>
 
               <image slot="icon" class="w-48 h-48" src="{{ item.isChecked ? '/assets/img/base/check.png' : '/assets/img/base/uncheck.png' }}" />
@@ -65,8 +69,12 @@
 
         <scroll-view class="grow shrink h-500" scroll-y="{{true}}">
           <view wx:for="{{failList}}" wx:key="deviceUuid" class="flex flex-row items-center bg-white rounded-32rpx mb-24rpx px-50rpx py-40rpx">
-            <view class="border-4rpx border-solid border-hex-F6F6F8 rounded-full leading-0 p-10rpx">
+            <view class="relative my-20rpx border-4rpx border-solid border-hex-F6F6F8 rounded-full leading-0 p-10rpx">
               <image src="{{item.icon}}" class="w-72 h-72"></image>
+
+              <view class="signal-box bottom-0 leading-0 rounded-14rpx {{ item.signal === 'weak' ? 'bg-hex-FFF4F4' : 'bg-hex-F4F8FF'}}">
+                <image src="/package-distribution/assets/search-subdevice/signal-{{ item.signal }}.png" class="w-46 h-28"></image>
+              </view>
             </view>
 
             <view class="grow pl-32rpx" bind:tap="editDevice" data-index="{{index}}">

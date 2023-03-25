@@ -4,7 +4,7 @@ import Toast from '@vant/weapp/toast/toast'
 import dayjs from 'dayjs'
 import { deviceBinding, homeBinding } from '../../store/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { strUtil, bleUtil } from '../../utils/index'
+import { strUtil, bleUtil, IBleBaseInfo, storage } from '../../utils/index'
 import { checkDevice, queryProtypeInfo, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
 
 ComponentWithComputed({
@@ -32,7 +32,7 @@ ComponentWithComputed({
     isFlash: false,
     selectGatewayId: '',
     selectGatewaySn: '',
-    subdeviceList: Array<string>(),
+    subdeviceList: Array<IBleBaseInfo>(),
     deviceInfo: {} as IAnyObject,
   },
 
@@ -264,45 +264,18 @@ ComponentWithComputed({
       this.data._isDiscovering = true
 
       // 监听扫描到新设备事件
-      wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
-        const subdeviceList = res.devices.filter((item) => {
-          let flag = false
-
-          // localName为homlux_ble且没有被发现过的
-          if (
-            item.localName &&
-            item.localName.includes('homlux_ble') &&
-            this.data.subdeviceList.findIndex((listItem) => item.deviceId === listItem) < 0
-          ) {
-            flag = true
-          } else {
-            return false
-          }
-
-          const dataMsg = strUtil.ab2hex(item.advertisData)
-          const msgObj = bleUtil.transferBroadcastData(dataMsg)
-          console.log('BroadcastData', msgObj)
-
-          // 过滤已经配网的设备
-          // 设备网络状态 0x00：未入网   0x01：正在入网   0x02:  已经入网   0x03:  已经连入网，但父节点没有响应
-          if (msgObj.isConfig !== '00') {
-            flag = false
-          }
-
-          return flag
-        })
-
-        if (subdeviceList.length <= 0) return
-
-        this.setData({
-          subdeviceList: this.data.subdeviceList.concat(subdeviceList.map((item) => item.deviceId)),
-        })
+      bleUtil.onFoundHomluxDevice({
+        success: (list) => {
+          this.setData({
+            subdeviceList: this.data.subdeviceList.concat(list),
+          })
+        },
       })
 
       // 开始搜寻附近的蓝牙外围设备
       wx.startBluetoothDevicesDiscovery({
         // services: ['BAE55B96-7D19-458D-970C-50613D801BC9'],
-        allowDuplicatesKey: false,
+        allowDuplicatesKey: true, // 广播数据的配网状态字段有可能会变化，必须允许上报重复设备
         powerLevel: 'high',
         interval: 3000,
         success(res) {
@@ -591,6 +564,8 @@ ComponentWithComputed({
         gatewaySn = this.data.selectGatewaySn
 
       wx.closeBluetoothAdapter()
+
+      storage.set('foundList', this.data.subdeviceList)
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
           gatewayId,

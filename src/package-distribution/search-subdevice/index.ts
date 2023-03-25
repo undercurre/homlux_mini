@@ -3,7 +3,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
 import asyncPool from 'tiny-async-pool'
 import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
-import { bleUtil, strUtil, BleClient, getCurrentPageParams } from '../../utils/index'
+import { bleUtil, IBleBaseInfo, BleClient, getCurrentPageParams, storage } from '../../utils/index'
 import { IBleDevice, ISwitch } from './types'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import {
@@ -85,7 +85,7 @@ ComponentWithComputed({
 
       // this.setData({
       //   deviceList: JSON.parse(
-      //     '[{"proType":"0x13","deviceUuid":"04:CD:15:A9:B5:B7","mac":"04CD15A9B5B7","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/midea.light.003.002-3.png","name":"灯具B5B7","isChecked":false,"client":{"key":"midea@homluxB5B7","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15A9B5B7","deviceUuid":"04:CD:15:A9:B5:B7"},"roomId":"","roomName":"","switchList":[],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2}, {"proType":"0x21","deviceUuid":"04:CD:15:AE:AA:8D","mac":"04CD15AEAA8D","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/panel-4.png","name":"面板AA8D","isChecked":false,"client":{"key":"midea@homluxAA8D","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEAA8D","deviceUuid":"04:CD:15:AE:AA:8D"},"roomId":"","roomName":"","switchList":[{"switchId":"1","switchName":"按键1"},{"switchId":"2","switchName":"按键2"}],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2},{"proType":"0x21","deviceUuid":"04:CD:15:AE:B5:3A","mac":"04CD15AEB53A","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/panel-4.png","name":"面板B53A","isChecked":false,"client":{"key":"midea@homluxB53A","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEB53A","deviceUuid":"04:CD:15:AE:B5:3A"},"roomId":"","roomName":"","switchList":[{"switchId":"1","switchName":"按键1"},{"switchId":"2","switchName":"按键2"},{"switchId":"3","switchName":"按键3"},{"switchId":"4","switchName":"按键4"}],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2}]',
+      //     '[{"proType":"0x13","deviceUuid":"04:CD:15:A9:B5:B7","mac":"04CD15A9B5B7","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/midea.light.003.002-3.png","name":"灯具B5B7","isChecked":false,"client":{"key":"midea@homluxB5B7","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15A9B5B7","deviceUuid":"04:CD:15:A9:B5:B7"},"roomId":"","roomName":"","switchList":[],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2}, {"proType":"0x21","deviceUuid":"04:CD:15:AE:AA:8D","mac":"04CD15AEAA8D","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/panel-4.png","name":"面板AA8D","isChecked":false,"client":{"key":"midea@homluxAA8D","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEAA8D","deviceUuid":"04:CD:15:AE:AA:8D"},"roomId":"","roomName":"","switchList":[{"switchId":"1","switchName":"按键1"},{"switchId":"2","switchName":"按键2"}],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2},{"proType":"0x21","deviceUuid":"04:CD:15:AE:B5:3A","mac":"04CD15AEB53A","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/panel-4.png","name":"面板B53A","isChecked":false,"client":{"key":"midea@homluxB53A","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEB53A","deviceUuid":"04:CD:15:AE:B5:3A"},"roomId":"","roomName":"","switchList":[{"switchId":"1","switchName":"按键1"},{"switchId":"2","switchName":"按键2"},{"switchId":"3","switchName":"按键3"},{"switchId":"4","switchName":"按键4"}],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2, "signal":"strong"}]',
       //   ),
       // })
     },
@@ -139,8 +139,13 @@ ComponentWithComputed({
       })
     },
     async initBle() {
-      wx.onBluetoothAdapterStateChange((changeRes) => {
-        console.log('onBluetoothAdapterStateChange', changeRes)
+      const foundList = (storage.get('foundList', this.data.subdeviceList) as IBleBaseInfo[]) || []
+
+      console.log('foundList', foundList)
+
+      this.data._foundList = foundList.map((item) => item.deviceUuid)
+      foundList.forEach((item) => {
+        this.handleBleDeviceInfo(item)
       })
 
       // 初始化蓝牙模块
@@ -153,39 +158,15 @@ ComponentWithComputed({
       console.log('openBleRes', openBleRes)
 
       // 监听扫描到新设备事件
-      wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
-        const deviceList = res.devices.filter((item) => {
-          let flag = false
+      bleUtil.onFoundHomluxDevice({
+        success: (list) => {
+          if (list.length <= 0) return
 
-          // localName为homlux_ble且没有被发现过的
-          if (
-            item.localName &&
-            item.localName.includes('homlux_ble') &&
-            !this.data._foundList.includes(item.deviceId)
-          ) {
-            this.data._foundList.push(item.deviceId)
-            flag = true
-          }
-
-          return flag
-        })
-
-        if (deviceList.length <= 0) return
-
-        deviceList.forEach((device) => {
-          this.handleBleDeviceInfo(device)
-        })
-      })
-
-      wx.onBLEConnectionStateChange((res) => {
-        // 该方法回调中可以用于处理连接意外断开等异常情况
-        if (!res.connected) {
-          const item = this.data.deviceList.find((item) => item.deviceUuid === res.deviceId) as IBleDevice
-          console.log(
-            'onBLEConnectionStateChange-search-subdevice',
-            `device ${item.mac} state has changed, connected: ${res.connected}`,
-          )
-        }
+          list.forEach((device) => {
+            this.handleBleDeviceInfo(device)
+          })
+        },
+        exclude: this.data._foundList.concat([]),
       })
 
       // 开始搜寻附近的蓝牙外围设备
@@ -199,20 +180,10 @@ ComponentWithComputed({
       })
     },
 
-    async handleBleDeviceInfo(device: WechatMiniprogram.BlueToothDevice) {
-      const dataMsg = strUtil.ab2hex(device.advertisData)
-      const msgObj = bleUtil.transferBroadcastData(dataMsg)
-
-      console.log('handleBleDeviceInfo', msgObj)
-
-      // 过滤已经配网的设备
-      if (msgObj.isConfig !== '00') {
-        return
-      }
-
+    async handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
       const infoRes = await queryProtypeInfo({
-        proType: `0x${msgObj.deviceCategory}`,
-        mid: `0x${msgObj.deviceModel}`,
+        proType: `0x${baseInfo.deviceCategory}`,
+        mid: `0x${baseInfo.deviceModel}`,
       })
 
       if (!infoRes.success) {
@@ -222,24 +193,26 @@ ComponentWithComputed({
       let { productName: deviceName } = infoRes.result
       const { switchNum } = infoRes.result
 
-      if (msgObj.deviceCategory === '21') {
+      if (baseInfo.deviceCategory === '21') {
         ++panelNum
         deviceName += panelNum > 1 ? panelNum : ''
         // deviceName += (panelNum > 1 ? strUtil.encodeS(panelNum) : '')
-      } else if (msgObj.deviceCategory === '13') {
+      } else if (baseInfo.deviceCategory === '13') {
         ++lightNum
         deviceName += lightNum > 1 ? lightNum : ''
       }
 
       const bleDevice: IBleDevice = {
-        proType: `0x${msgObj.deviceCategory}`,
-        deviceUuid: device.deviceId,
-        mac: msgObj.mac,
+        proType: `0x${baseInfo.deviceCategory}`,
+        deviceUuid: baseInfo.deviceUuid,
+        mac: baseInfo.mac,
+        signal: baseInfo.signal,
+        RSSI: baseInfo.RSSI,
         zigbeeMac: '',
         icon: infoRes.result.icon || '/assets/img/device/gateway.png',
-        name: deviceName + `-${msgObj.mac.substr(-4)}`,
+        name: deviceName + `-${baseInfo.mac.substr(-4)}`,
         isChecked: false,
-        client: new BleClient({ mac: msgObj.mac, deviceUuid: device.deviceId }),
+        client: new BleClient({ mac: baseInfo.mac, deviceUuid: baseInfo.deviceUuid }),
         roomId: roomBinding.store.currentRoom.roomId,
         roomName: roomBinding.store.currentRoom.roomName,
         switchList: [],
@@ -261,8 +234,6 @@ ComponentWithComputed({
       }
 
       this.data.deviceList.push(bleDevice)
-
-      console.log('bleDevice', JSON.stringify(bleDevice))
 
       this.setData({
         deviceList: this.data.deviceList,

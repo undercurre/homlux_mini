@@ -1,7 +1,7 @@
 <view class="page-container flex flex-col">
   <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="添加设备"></nav-bar>
 
-  <view class="grow flex flex-col">
+  <view class="grow flex flex-col pt-140rpx">
     <block wx:if="{{status === 'linking'}}">
       <tips-box text="请将设备尽量靠近智能网关" icon="{{pageParams.deviceIcon}}" size="160"></tips-box>
 

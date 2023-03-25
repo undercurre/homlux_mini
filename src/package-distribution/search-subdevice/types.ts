@@ -4,6 +4,8 @@ export interface IBleDevice {
   proType: string // 品类码
   deviceUuid: string
   mac: string
+  signal: string
+  RSSI: number
   zigbeeMac: string
   name: string
   roomId: string

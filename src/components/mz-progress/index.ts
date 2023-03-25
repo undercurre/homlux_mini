@@ -14,7 +14,7 @@ Component({
           text: '连接设备',
         },
         {
-          text: '设备联网',
+          text: '设备联网中',
         },
         {
           text: '账号绑定',

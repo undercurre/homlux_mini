@@ -151,9 +151,9 @@ export class BleClient {
   }
 
   async close() {
+    this.isConnected = false
     const res = await wx.closeBLEConnection({ deviceId: this.deviceUuid }).catch((err) => err)
 
-    this.isConnected = false
     console.log('closeBLEConnection', this.mac, res)
   }
 
@@ -333,4 +333,57 @@ export const bleUtil = {
     str = arr.join('')
     return str
   },
+
+  getBleDeviceBaseInfo(bleDevice: WechatMiniprogram.BlueToothDevice): IBleBaseInfo {
+    const dataMsg = strUtil.ab2hex(bleDevice.advertisData)
+    const msgObj = bleUtil.transferBroadcastData(dataMsg)
+    console.log('getBleDeviceBaseInfo', msgObj.mac, msgObj.isConfig, bleDevice.RSSI)
+
+    const { RSSI } = bleDevice
+    let signal = RSSI > -80 ? (RSSI > -70 ? 'strong' : 'normal') : 'weak'
+
+
+    return {
+      ...msgObj,
+      deviceUuid: bleDevice.deviceId,
+      RSSI: bleDevice.RSSI,
+      signal
+    }
+  },
+
+  onFoundHomluxDevice(options: { success: (deviceList: IBleBaseInfo[]) => void, exclude?: string[] }) {
+    const { success, exclude } = options
+    let foundList: string[] = exclude || []
+    // 监听扫描到新设备事件
+    wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
+      const deviceList = res.devices
+        .filter((item) => {
+          // localName为homlux_ble且过滤【发现过的】&&【处于未配网】的设备
+          return item.localName && item.localName.includes('homlux_ble') && !foundList.includes(item.deviceId)
+        })
+        .map((item) => bleUtil.getBleDeviceBaseInfo(item))
+        .filter((item) => item.isConfig !== '02')
+      // 过滤已经配网的设备
+      // 设备网络状态 0x00：未入网   0x01：正在入网   0x02:  已经入网
+
+      console.log('foundList', foundList, 'deviceList', deviceList)
+      if (deviceList.length > 0 && success) {
+        foundList = foundList.concat(deviceList.map(item => item.deviceUuid))
+        success(deviceList)
+      }
+    })
+  },
+}
+
+export interface IBleBaseInfo {
+  deviceUuid: string
+  RSSI: number
+  signal: string
+  brand: string
+  isConfig: string
+  mac: string
+  deviceCategory: string
+  deviceModel: string
+  version: string
+  protocolVersion: string
 }
