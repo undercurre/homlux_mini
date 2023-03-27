@@ -59,8 +59,8 @@
       <view class="mt-24rpx" wx:if="{{lightList && lightList.length>0}}">
         <view class="flex justify-between items-center h-44rpx">
           <text class="text-24rpx text-black-59 ml-17rpx">灯具</text>
-          <view class="rounded-999 flex-center px-20rpx py-10rpx cancel-select-btn" data-type="light" bindtap="handleCancelSelce" wx:if="{{hasSelectLight}}">
-            <text class="text-20rpx leading-none text-hex-555659">全不选</text>
+          <view class="rounded-999 flex-center px-20rpx py-10rpx cancel-select-btn" data-type="light" catchtap="handleLightAllSelect">
+            <text class="text-20rpx leading-none text-hex-555659">{{isLightSelectOne?'全不选':'全选'}}</text>
           </view>
         </view>
         <view class="w-720rpx mt-24rpx">
@@ -72,8 +72,8 @@
       <view class="{{lightList && lightList.length > 0 ? '' : 'mt-24rpx'}}" wx:if="{{switchList && switchList.length>0}}">
         <view class="flex justify-between items-center h-44rpx">
           <text class="text-24rpx text-black-59 ml-17rpx">开关面板</text>
-          <view class="rounded-999 flex-center px-20rpx py-10rpx cancel-select-btn" data-type="switch" bindtap="handleCancelSelce" wx:if="{{hasSelectSwitch}}">
-            <text class="text-20rpx leading-none text-hex-555659">全不选</text>
+          <view class="rounded-999 flex-center px-20rpx py-10rpx cancel-select-btn" data-type="switch" catchtap="handleSwitchAllSelect">
+            <text class="text-20rpx leading-none text-hex-555659">{{isSwitchSelectOne?'全不选':'全选'}}</text>
           </view>
         </view>
         <view class="w-720rpx mt-24rpx">
@@ -99,7 +99,7 @@
   </van-button>
 </view>
 
-<view wx:if="{{popupPlaceholder}}" class="h-716rpx" bindtap="handleScreenTap" bindtouchmove="handleScreenTap"></view>
+<view wx:if="{{popupPlaceholder || isEditSelectMode}}" class="h-716rpx" bindtap="handleScreenTap" bindtouchmove="handleScreenTap"></view>
 <view wx:else class="h-64rpx" bindtap="handleScreenTap" bindtouchmove="handleScreenTap"></view>
 
 <!-- 设备控制弹窗 -->
