@@ -9,7 +9,7 @@
     <room-tabs bind:roomSelect="handleRoomSelect"></room-tabs>
 
     <view wx:if="{{wifiDeviceList.length}}" class="grid grid-cols-4 gap-16rpx mt-16rpx flex-1">
-      <device-card wx:for="{{wifiDeviceList}}" wx:key="uniId" bind:cardTap="handleCardTap" device-type="light" device-info="{{item}}" select="{{checkedDevice.deviceId === item.deviceId}}" />
+      <device-card wx:for="{{wifiDeviceList}}" wx:key="uniId" showBtnDetail="{{false}}" bind:cardTap="handleCardTap" device-type="light" device-info="{{item}}" select="{{checkedDevice.deviceId === item.deviceId}}" />
     </view>
     <view wx:else class="popup-empty flex-1">
       <text class="block text-center text-24 text-black-tips">该房间暂无设备</text>

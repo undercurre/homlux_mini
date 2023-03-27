@@ -31,6 +31,11 @@ ComponentWithComputed({
       type: Boolean,
       value: false,
     },
+    // 是否显示按钮名称及图标
+    showBtnDetail: {
+      type: Boolean,
+      value: true,
+    },
   },
 
   /**
@@ -44,7 +49,7 @@ ComponentWithComputed({
 
   computed: {
     picUrl(data) {
-      if (data.deviceInfo.proType === proType.switch) {
+      if (data.deviceInfo.proType === proType.switch && data.showBtnDetail) {
         return data.deviceInfo?.switchInfoDTOList[0]?.pic
       } else if (data.deviceInfo?.pic) {
         return data.deviceInfo.pic
@@ -103,7 +108,7 @@ ComponentWithComputed({
     deviceName(data) {
       let name = ''
       // 如果是开关，deviceName显示开关名称
-      if (data.deviceInfo.proType === proType.switch) {
+      if (data.deviceInfo.proType === proType.switch && data.showBtnDetail) {
         name = data.deviceInfo.switchInfoDTOList[0].switchName ?? '按键' + data.deviceInfo.switchInfoDTOList[0].switchId
         if (new RegExp('[\\u4E00-\\u9FFF]+', 'g').test(name)) {
           return name.slice(0, 5)
