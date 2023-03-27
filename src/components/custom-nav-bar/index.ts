@@ -33,10 +33,10 @@ Component({
       type: Boolean,
       value: false,
     },
-    showHomeIcon: {
+    showGoHome: {
       type: Boolean,
       value: false,
-    }
+    },
   },
 
   /**
@@ -62,6 +62,9 @@ Component({
   methods: {
     handleLeftTap() {
       this.triggerEvent('leftTap')
+    },
+    handleGoHome() {
+      wx.switchTab({ url: '/pages/index/index' })
     },
   },
 })

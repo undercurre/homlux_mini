@@ -2,7 +2,7 @@
 <view class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7" style="z-index: -1"></view>
 <view class="h-100vh flex flex-col" bindtap="handleFullPageTap">
   <!-- 标题 -->
-  <nav-bar title="设备管理" left-arrow bind:leftTap="goBack"></nav-bar>
+  <nav-bar title="设备管理" left-arrow show-go-home bind:leftTap="goBack"></nav-bar>
   <!-- 下拉菜单按钮 -->
   <view class="flex justify-end w-750rpx mt-36rpx mb-8rpx">
     <van-button round color="#dfe1e5" custom-class="dropdown-btn" id="selectRoomBtn" bind:click="showSelectRoomMenu">

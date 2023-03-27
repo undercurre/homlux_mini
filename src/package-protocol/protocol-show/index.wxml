@@ -7,7 +7,7 @@
 </view>
 
 <!-- 标题 -->
-<nav-bar title="{{title}}" z-index="{{113}}" left-arrow bind:leftTap="goBack"></nav-bar>
+<nav-bar title="{{title}}" z-index="{{113}}" left-arrow show-go-home bind:leftTap="goBack"></nav-bar>
 
 <view class="w-750rpx flex-center">
   <scroll-view scroll-x scroll-y style="width: calc(100vw - 48rpx); height: calc(100vh - navigationBarAndStatusBarHeight)">

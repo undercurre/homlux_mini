@@ -1,5 +1,5 @@
 <view class="page-container flex flex-col">
-  <nav-bar background="#eef2f7" leftArrow="{{true}}" bind:leftTap="goBack" title="成员管理"></nav-bar>
+  <nav-bar background="#eef2f7" leftArrow="{{true}}" show-go-home bind:leftTap="goBack" title="成员管理"></nav-bar>
 
   <view class="grow flex flex-col pt-24rpx">
     <scroll-view show-scrollbar="{{false}}">

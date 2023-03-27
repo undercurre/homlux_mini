@@ -4,7 +4,7 @@
 
 <view class="h-100vh flex flex-col">
   <!-- 标题 -->
-  <nav-bar title="编辑场景" left-arrow bind:leftTap="goBack"></nav-bar>
+  <nav-bar title="编辑场景" left-arrow show-go-home bind:leftTap="goBack"></nav-bar>
 
   <!-- 页面主体 -->
   <view class="flex-1 flex flex-col">

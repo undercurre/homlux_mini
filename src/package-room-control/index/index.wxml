@@ -37,7 +37,7 @@
 <!-- 全屏幕点击捕获 -->
 <view bindtap="handleScreenTap" bindtouchmove="handleScreenTap">
   <!-- 标题 -->
-  <nav-bar title="{{title}}" z-index="{{113}}" left-arrow show-home-icon bind:leftTap="goBack" disabled="{{opacity === 0}}"></nav-bar>
+  <nav-bar title="{{title}}" z-index="{{113}}" left-arrow bind:leftTap="goBack" disabled="{{opacity === 0}}"></nav-bar>
   <view class="h-120rpx"></view>
   <!-- 房间无子设备,但是有网关 -->
   <view wx:if="{{roomHasGateway && !roomHasSubDevice}}" class="w-full flex flex-col items-center">

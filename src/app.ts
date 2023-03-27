@@ -1,4 +1,10 @@
-import { setNavigationBarAndBottomBarHeight, storage, appOnLaunchService, startWebsocketService, closeWebSocket } from './utils/index'
+import {
+  setNavigationBarAndBottomBarHeight,
+  storage,
+  appOnLaunchService,
+  startWebsocketService,
+  closeWebSocket,
+} from './utils/index'
 import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore } from './store/index'
 

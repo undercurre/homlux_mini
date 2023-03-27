@@ -1,5 +1,5 @@
 <view class="page-container flex flex-col h-screen">
-  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="房间列表"></nav-bar>
+  <nav-bar background="transparent" leftArrow="{{true}}" show-go-home bind:leftTap="goBack" title="房间列表"></nav-bar>
 
   <scroll-view class="mt-40rpx grow shrink pb-40rpx h-500 box-border" scroll-y="{{true}}">
     <van-cell-group wx:for="{{roomList}}" wx:key="roomId" inset>
