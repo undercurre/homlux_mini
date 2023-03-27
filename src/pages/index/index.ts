@@ -176,12 +176,13 @@ ComponentWithComputed({
           }
         }
         const now = new Date().valueOf()
-        if (now - parseInt(time) > 86400000) {
+        if (now - parseInt(time) > 300000) { //86400000
           console.log('lmn>>>邀请超时')
           Dialog.confirm({
             title: '邀请过期',
             message: '该邀请已过期，请联系邀请者重新邀请',
             confirmButtonText: '我知道了',
+            zIndex: 9999,
           })
         } else {
           homeBinding.store

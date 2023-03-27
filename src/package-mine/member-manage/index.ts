@@ -57,6 +57,7 @@ ComponentWithComputed({
     curUser: { userHouseAuth: 0 } as Home.HouseUserItem,
     isNeedShare: false,
     isAdmin: false,
+    isVisitor: false,
     headIconList: [
       '/assets/img/member-manage/head1.png',
       '/assets/img/member-manage/head2.png',
@@ -96,14 +97,16 @@ ComponentWithComputed({
           this.setData({
             curUser: curUser,
             isAdmin: curUser.userHouseAuth === 2,
+            isVisitor: curUser.userHouseAuth === 3,
           })
         }
         list.forEach((item: Home.HouseUserItem) => {
           let isCanEdit = false
           if (curUser?.userId === item.userId) isCanEdit = false
           else isCanEdit = this.canIEditOther(curUser?.userHouseAuth, item.userHouseAuth)
+          const headIndex = Math.floor(Math.random() * 4)
           result.push({
-            icon: item.headImageUrl,
+            icon: this.data.headIconList[headIndex],
             name: item.userName,
             role: item.userHouseAuthName,
             id: item.userId,
