@@ -58,12 +58,6 @@ ComponentWithComputed({
     isNeedShare: false,
     isAdmin: false,
     isVisitor: false,
-    headIconList: [
-      '/assets/img/member-manage/head1.png',
-      '/assets/img/member-manage/head2.png',
-      '/assets/img/member-manage/head3.png',
-      '/assets/img/member-manage/head4.png',
-    ],
     popupTitle: '权限管理',
   },
 
@@ -104,9 +98,8 @@ ComponentWithComputed({
           let isCanEdit = false
           if (curUser?.userId === item.userId) isCanEdit = false
           else isCanEdit = this.canIEditOther(curUser?.userHouseAuth, item.userHouseAuth)
-          const headIndex = Math.floor(Math.random() * 4)
           result.push({
-            icon: this.data.headIconList[headIndex],
+            icon: item.headImageUrl,
             name: item.userName,
             role: item.userHouseAuthName,
             id: item.userId,
