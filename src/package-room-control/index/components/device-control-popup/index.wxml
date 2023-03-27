@@ -1,12 +1,6 @@
 <wxs module="wxs" src="./index.wxs"></wxs>
 <view wx:if="{{isRender}}" change:info="{{wxs.infoObserver}}" info="{{info}}" id="popup" class="fixed z-200 left-0 w-750rpx h-716rpx opacity-0" bindtap="handlePopup" bindtouchstart="handleTouchStart" catchtouchmove="handleTouchMove">
-  <!-- <view class="h-60rpx w-750rpx flex-center" style="opacity: {{popup ? 0:1}};">
-    <image class="mb-36rpx w-76rpx h-24rpx" src="/assets/img/base/popup-arrow.png"></image>
-  </view> -->
   <view class="popup-shadow w-750rpx h-716rpx rounded-t-64rpx bg-white flex-col flex items-center">
-    <!-- <view class="flex-center mt-28rpx">
-      <image class="w-60rpx h-20rpx arrow-{{popup ? 'down' : 'up'}}" src="/assets/img/base/popup-down.png"></image>
-    </view> -->
     <view class="flex-center mt-28rpx h-20rpx">
       <view class="w-76rpx h-8rpx bg-black-tips rounded-999"></view>
     </view>
@@ -34,7 +28,7 @@
         <view class="px-64rpx">
           <view class="h-32rpx"></view>
           <van-slider data-type="level" bind:change="handleLevelChange" bind:drag="handleLevelDrag" bind:drag-end="handleLevelDragEnd" value="{{lightInfoInner.Level}}" min="{{1}}" use-button-slot custom-class="slider-brightness-bar" active-color="rgba(0,0,0,0)" bar-height="24rpx">
-            <image slot="button" src="/assets/img/device-control/btn.png" class="w-88rpx h-88rpx mt-6rpx" />
+            <image slot="button" src="/package-room-control/assets/img/btn.png" class="w-88rpx h-88rpx mt-6rpx" />
           </van-slider>
           <view class="h-32rpx"></view>
         </view>
@@ -42,7 +36,7 @@
         <view class="px-64rpx">
           <view class="h-32rpx"></view>
           <van-slider data-type="colorTemp" bind:change="handleColorTempChange" bind:drag="handleColorTempDrag" bind:drag-end="handleColorTempDragEnd" value="{{lightInfoInner.ColorTemp}}" use-button-slot custom-class="slider-color-temp-bar" active-color="rgba(0,0,0,0)" bar-height="24rpx">
-            <image slot="button" src="/assets/img/device-control/btn.png" class="w-88rpx h-88rpx mt-6rpx" />
+            <image slot="button" src="/package-room-control/assets/img/btn.png" class="w-88rpx h-88rpx mt-6rpx" />
           </van-slider>
           <view class="h-32rpx"></view>
         </view>
@@ -58,11 +52,11 @@
       <view wx:if="{{tab==='curtain'}}" class="w-full h-full flex-center">
         <text class="text-32rpx text-black-59">50%</text>
         <view class="w-496rpx h-368rpx relative">
-          <image src="/assets/img/device-control/curtain-bg.png" class="w-496rpx h-368rpx" />
-          <image src="/assets/img/device-control/curtain.png" class="w-213rpx h-300rpx absolute left-20rpx top-50rpx" />
-          <image src="/assets/img/device-control/curtain-opener.png" class="w-80rpx h-80rpx absolute left-148rpx top-144rpx" />
-          <image src="/assets/img/device-control/curtain.png" class="w-213rpx h-300rpx absolute right-20rpx top-50rpx" />
-          <image src="/assets/img/device-control/curtain-opener.png" class="w-80rpx h-80rpx absolute right-148rpx top-144rpx" style="transform: scaleX(-1)" />
+          <image src="/package-room-control/assets/img/curtain-bg.png" class="w-496rpx h-368rpx" />
+          <image src="/package-room-control/assets/img/curtain.png" class="w-213rpx h-300rpx absolute left-20rpx top-50rpx" />
+          <image src="/package-room-control/assets/img/curtain-opener.png" class="w-80rpx h-80rpx absolute left-148rpx top-144rpx" />
+          <image src="/package-room-control/assets/img/curtain.png" class="w-213rpx h-300rpx absolute right-20rpx top-50rpx" />
+          <image src="/package-room-control/assets/img/curtain-opener.png" class="w-80rpx h-80rpx absolute right-148rpx top-144rpx" style="transform: scaleX(-1)" />
         </view>
         <text class="text-32rpx text-black-59">50%</text>
       </view>

@@ -19,7 +19,7 @@
       <view class="px-64rpx">
         <view class="h-32rpx"></view>
         <van-slider bind:change="handleLevelChange" bind:drag="handleLevelDrag" disabled="{{!OnOff}}" value="{{Level}}" min="{{1}}" use-button-slot custom-class="slider-brightness-bar" active-color="rgba(0,0,0,0)" bar-height="24rpx">
-          <image slot="button" src="/assets/img/device-control/btn.png" class="w-88rpx h-88rpx mt-6rpx" />
+          <image slot="button" src="/package-room-control/assets/img/btn.png" class="w-88rpx h-88rpx mt-6rpx" />
         </van-slider>
         <view class="h-32rpx"></view>
       </view>
@@ -27,7 +27,7 @@
       <view class="px-64rpx">
         <view class="h-32rpx"></view>
         <van-slider bind:change="handleColorTempChange" bind:drag="handleColorTempDrag" disabled="{{!OnOff}}" value="{{ColorTemp}}" use-button-slot custom-class="slider-color-temp-bar" active-color="rgba(0,0,0,0)" bar-height="24rpx">
-          <image slot="button" src="/assets/img/device-control/btn.png" class="w-88rpx h-88rpx mt-6rpx" />
+          <image slot="button" src="/package-room-control/assets/img/btn.png" class="w-88rpx h-88rpx mt-6rpx" />
         </van-slider>
         <view class="h-32rpx"></view>
       </view>
