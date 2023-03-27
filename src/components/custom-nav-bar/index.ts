@@ -33,6 +33,10 @@ Component({
       type: Boolean,
       value: false,
     },
+    showHomeIcon: {
+      type: Boolean,
+      value: false,
+    }
   },
 
   /**

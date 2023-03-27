@@ -14,10 +14,13 @@ export function logout() {
 }
 
 // WS连接
-export let socketTask: WechatMiniprogram.SocketTask | null = null
-export let socketIsConnect = 0
+let socketTask: WechatMiniprogram.SocketTask | null = null
+let socketIsConnect = 0
 
 function createConnect() {
+  if (!storage.get<string>('token')) {
+    return
+  }
   socketTask = connectHouseSocket(homeStore.currentHomeDetail.houseId)
   socketTask.onClose(onSocketClose)
   socketTask.onOpen(() => {
@@ -59,6 +62,12 @@ export function startWebsocketService() {
       createConnect()
     },
   )
+}
+
+export function closeWebSocket() {
+  if (socketTask && socketIsConnect) {
+    socketTask.close({ code: 1000 })
+  }
 }
 
 export function loadUserInfo() {

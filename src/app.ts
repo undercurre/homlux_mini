@@ -1,7 +1,6 @@
-import { setNavigationBarAndBottomBarHeight, storage, appOnLaunchService, startWebsocketService } from './utils/index'
+import { setNavigationBarAndBottomBarHeight, storage, appOnLaunchService, startWebsocketService, closeWebSocket } from './utils/index'
 import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore } from './store/index'
-import { socketTask, socketIsConnect } from './utils/index'
 
 App<IAppOption>({
   async onLaunch(options: WechatMiniprogram.App.LaunchShowOption) {
@@ -42,9 +41,7 @@ App<IAppOption>({
     if (homeStore.currentHomeId) {
       deviceStore.updateDeviceList()
       homeStore.updateHomeInfo()
-      if (!socketTask || !socketIsConnect) {
-        startWebsocketService()
-      }
+      startWebsocketService()
     }
   },
 
@@ -52,9 +49,7 @@ App<IAppOption>({
     console.log('app-onHide')
     storage.remove('isTryInvite')
     // 用户最小化app，断开ws连接
-    if (socketTask) {
-      socketTask.close({ code: 1000 })
-    }
+    closeWebSocket()
   },
 
   globalData: {},

@@ -6,7 +6,8 @@
   <view class="flex justify-center items-center w-full relative" style="{{'height:' + navigationBarHeight}}">
     <!-- 左侧内容 -->
     <view wx:if="{{leftArrow}}" bindtap="handleLeftTap" class="absolute left-0 top-0 bottom-0 flex items-center">
-      <image src="{{leftIcon}}" class="w-48rpx h-48rpx mx-32rpx"></image>
+      <image src="{{leftIcon}}" class="w-48rpx h-48rpx ml-32rpx"></image>
+      <image src="/assets/img/base/go-home.png" wx:if="{{showHomeIcon}}" class="w-35rpx h-35rpx ml-26rpx"></image>
     </view>
     <slot></slot>
     <!-- 标题 -->
