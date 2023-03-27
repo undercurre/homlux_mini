@@ -2,7 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { batchDeleteDevice, batchUpdate } from '../../../../apis/index'
 import { proType } from '../../../../config/index'
-import { deviceBinding, deviceStore, homeStore, roomBinding } from '../../../../store/index'
+import { deviceBinding, deviceStore, homeStore, roomBinding, roomStore } from '../../../../store/index'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { runInAction } from 'mobx-miniprogram'
@@ -21,12 +21,24 @@ ComponentWithComputed({
       }
       return false
     },
-    editNameTitle(data) {
-      return data.editProType === proType.switch ? '按键名称' : '设备名称'
+    editDeviceNameTitle(data) {
+      return data.editProType === proType.switch ? '面板名称' : '设备名称'
     },
     isAllSelect(data) {
       if (data.editSelect) {
         return deviceStore.deviceFlattenList.length === data.editSelect.length
+      }
+      return false
+    },
+    editNameDisable(data) {
+      if (data.editProType === proType.switch) {
+        return !data.editDeviceName || !data.editSwitchName
+      }
+      return !data.editDeviceName
+    },
+    editRoomDisable(data) {
+      if (roomStore.currentRoom.roomId === data.roomId) {
+        return true
       }
       return false
     },
@@ -104,7 +116,9 @@ ComponentWithComputed({
       'px',
     navigationBarHeight: (storage.get<number>('navigationBarHeight') as number) + 'px',
     showEditName: false,
-    editName: '',
+    isEditSwitchName: false,
+    editDeviceName: '',
+    editSwitchName: '',
     editProType: '',
     showEditRoom: false,
     roomId: '',
@@ -130,7 +144,9 @@ ComponentWithComputed({
         return
       }
       Dialog.confirm({
-        title: '确定删除该设备',
+        message: '确定删除该设备',
+        confirmButtonText: '是',
+        cancelButtonText: '否',
         context: this,
       })
         .then(async () => {
@@ -170,17 +186,22 @@ ComponentWithComputed({
       }
       const uniId = deviceStore.editSelect[0]
       const device = deviceStore.allRoomDeviceFlattenMap[uniId]
-      let name = ''
       if (uniId.includes(':')) {
-        name = deviceStore.allRoomDeviceFlattenMap[uniId].switchInfoDTOList[0].switchName
+        this.setData({
+          showEditName: true,
+          editDeviceName: deviceStore.allRoomDeviceFlattenMap[uniId].deviceName,
+          editSwitchName: deviceStore.allRoomDeviceFlattenMap[uniId].switchInfoDTOList[0].switchName,
+          isEditSwitchName: true,
+          editProType: device.proType,
+        })
       } else {
-        name = device.deviceName
+        this.setData({
+          showEditName: true,
+          editDeviceName: deviceStore.allRoomDeviceFlattenMap[uniId].deviceName,
+          isEditSwitchName: false,
+          editProType: device.proType,
+        })
       }
-      this.setData({
-        showEditName: true,
-        editName: name,
-        editProType: device.proType,
-      })
     },
     handleMoveRoomPopup() {
       if (!deviceStore.editSelect.length) {
@@ -199,28 +220,58 @@ ComponentWithComputed({
         showEditRoom: false,
       })
     },
+    handleExitEdit() {
+      runInAction(() => {
+        deviceStore.isEditSelectMode = false
+        deviceStore.editSelect = []
+      })
+    },
     async handleConfirm() {
       if (this.data.showEditName) {
         if (this.data.editProType === proType.switch) {
           const [deviceId, switchId] = deviceStore.editSelect[0].split(':')
+          const device = deviceStore.allRoomDeviceFlattenMap[deviceStore.editSelect[0]]
+          const deviceInfoUpdateVoList = [] as Device.DeviceInfoUpdateVo[]
+          if (this.data.editSwitchName !== device.switchInfoDTOList[0].switchName) {
+            deviceInfoUpdateVoList.push({
+              deviceId,
+              switchId,
+              houseId: homeStore.currentHomeId,
+              switchName: this.data.editSwitchName,
+              type: '3',
+            })
+          }
+          if (this.data.editDeviceName !== device.deviceName) {
+            deviceInfoUpdateVoList.push({
+              deviceId,
+              deviceName: this.data.editDeviceName,
+              houseId: homeStore.currentHomeId,
+              type: '0',
+            })
+          }
+          if (!deviceInfoUpdateVoList.length) {
+            Toast({
+              message: '修改成功',
+              zIndex: 9999,
+            })
+            this.handleClose()
+            return
+          }
           const res = await batchUpdate({
-            deviceInfoUpdateVoList: [
-              {
-                deviceId,
-                switchId,
-                houseId: homeStore.currentHomeId,
-                switchName: this.data.editName,
-                type: '3',
-              },
-            ],
+            deviceInfoUpdateVoList,
           })
           if (res.success) {
-            await deviceStore.updateSubDeviceList()
-            this.triggerEvent('updateList')
+            Toast({
+              message: '修改成功',
+              zIndex: 9999,
+            })
             this.handleClose()
+            this.handleExitEdit()
+            await Promise.all([deviceStore.updateAllRoomDeviceList(), deviceStore.updateSubDeviceList()])
+            this.triggerEvent('updateList')
           } else {
             Toast({
-              message: '编辑失败',
+              message: '修改失败',
               zIndex: 9999,
             })
           }
@@ -230,71 +281,87 @@ ComponentWithComputed({
               {
                 deviceId: deviceStore.editSelect[0],
                 houseId: homeStore.currentHomeId,
-                deviceName: this.data.editName,
+                deviceName: this.data.editDeviceName,
                 type: '0',
               },
             ],
           })
           if (res.success) {
+            Toast({
+              message: '修改成功',
+              zIndex: 9999,
+            })
+            this.handleClose()
+            this.handleExitEdit()
+            await Promise.all([deviceStore.updateAllRoomDeviceList(), deviceStore.updateSubDeviceList()])
             this.triggerEvent('updateList')
           } else {
             Toast({
-              message: '编辑失败',
+              message: '修改失败',
               zIndex: 9999,
             })
           }
         }
       } else if (this.data.showEditRoom) {
-        const map = {} as Record<string, Device.DeviceInfoUpdateVo>
-        deviceStore.editSelect.forEach((uniId) => {
-          if (uniId.includes(':')) {
-            const deviceId = uniId.split(':')[0]
-            if (!map[deviceId]) {
-              map[deviceId] = {
-                deviceId,
-                houseId: homeStore.currentHomeId,
-                roomId: this.data.roomId,
-                type: '1',
+        const actionFn = async () => {
+          const map = {} as Record<string, Device.DeviceInfoUpdateVo>
+          deviceStore.editSelect.forEach((uniId) => {
+            if (uniId.includes(':')) {
+              const deviceId = uniId.split(':')[0]
+              if (!map[deviceId]) {
+                map[deviceId] = {
+                  deviceId,
+                  houseId: homeStore.currentHomeId,
+                  roomId: this.data.roomId,
+                  type: '1',
+                }
+              }
+            } else {
+              if (!map[uniId]) {
+                map[uniId] = {
+                  deviceId: uniId,
+                  houseId: homeStore.currentHomeId,
+                  roomId: this.data.roomId,
+                  type: '1',
+                }
               }
             }
+          })
+          const res = await batchUpdate({
+            deviceInfoUpdateVoList: Object.entries(map).map(([_, data]) => data),
+          })
+          if (res.success) {
+            this.handleClose()
+            this.handleExitEdit()
+            await Promise.all([deviceStore.updateSubDeviceList(), deviceStore.updateAllRoomDeviceList()])
+            runInAction(() => {
+              deviceStore.isEditSelectMode = false
+            })
+            this.triggerEvent('updateList')
           } else {
-            if (!map[uniId]) {
-              map[uniId] = {
-                deviceId: uniId,
-                houseId: homeStore.currentHomeId,
-                roomId: this.data.roomId,
-                type: '1',
-              }
-            }
+            Toast({
+              message: '移动失败',
+              zIndex: 9999,
+            })
           }
-        })
-        const res = await batchUpdate({
-          deviceInfoUpdateVoList: Object.entries(map).map(([_, data]) => data),
-        })
-        if (res.success) {
-          await Promise.all([deviceStore.updateSubDeviceList(), deviceStore.updateAllRoomDeviceList()])
-          runInAction(() => {
-            deviceStore.isEditSelectMode = false
+        }
+        if (deviceStore.editSelect.some((uniId) => uniId.includes(':'))) {
+          Dialog.confirm({
+            message: '该按键所在的面板将被移动到新的房间是否继续',
+            confirmButtonText: '是',
+            cancelButtonText: '否',
+            context: this,
           })
-          this.triggerEvent('updateList')
-          this.handleClose()
+            .then(actionFn)
+            .catch((e) => console.log(e))
         } else {
-          Toast({
-            message: '移动失败',
-            zIndex: 9999,
-          })
+          actionFn()
         }
       }
     },
     handleRoomSelect(e: { currentTarget: { dataset: { id: string } } }) {
       this.setData({
         roomId: e.currentTarget.dataset.id,
-      })
-    },
-    handleExitEdit() {
-      runInAction(() => {
-        deviceStore.isEditSelectMode = false
-        deviceStore.editSelect = []
       })
     },
   },

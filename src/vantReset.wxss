@@ -60,6 +60,10 @@ page {
   --skeleton-row-height: 64rpx;
   --skeleton-row-background-color: #fff;
   /* skeleton end */
+
+  /* dialog start */
+  --dialog-width: 654rpx;
+  /* dialog end */
 }
 
 /* button start */
