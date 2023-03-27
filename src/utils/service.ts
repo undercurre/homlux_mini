@@ -70,31 +70,13 @@ export function closeWebSocket() {
   }
 }
 
-export function loadUserInfo() {
-  let nickName = '',
-    avatar = ''
-  if (storage.get<string>('nickName')) {
-    nickName = storage.get<string>('nickName') as string
-  } else {
-    nickName = '用户' + (storage.get<string>('mobilePhone') as string).slice(-4)
-  }
-  if (storage.get<string>('headImageUrl')) {
-    avatar = storage.get<string>('headImageUrl') as string
-  }
-  runInAction(() => {
-    userStore.userInfo.nickName = nickName
-    userStore.userInfo.headImageUrl = avatar
-    userStore.userInfo.mobilePhone = storage.get<string>('mobilePhone') as string
-  })
-}
-
 /**
  * 进入小程序时的业务逻辑
  */
 export async function appOnLaunchService() {
   try {
     userStore.setIsLogin(true)
-    loadUserInfo()
+    await userStore.updateUserInfo()
     const start = Date.now()
     console.log('开始时间', start / 1000)
     // await homeStore.updateHomeInfo()

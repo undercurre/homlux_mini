@@ -51,7 +51,6 @@ ComponentWithComputed({
   lifetimes: {
     ready: async function () {
       homeBinding.store.updateHomeMemberList()
-      userBinding.store.updateUserInfo()
     },
     moved: function () {},
     detached: function () {},

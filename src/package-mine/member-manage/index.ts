@@ -72,9 +72,7 @@ ComponentWithComputed({
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
     attached: function () {
       this.updateShareSetting()
-      userBinding.store.updateUserInfo().then(() => {
-        this.initData()
-      })
+      this.initData()
     },
     moved: function () {},
     detached: function () {},
