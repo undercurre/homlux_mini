@@ -25,7 +25,7 @@ ComponentWithComputed({
   data: {
     isShowPage: false,
     isShowGatewayList: false, // 是否展示选择网关列表弹窗
-    isShowNoGatewayTips: true, // 是否展示添加网关提示弹窗
+    isShowNoGatewayTips: false, // 是否展示添加网关提示弹窗
     isScan: false, // 是否正在扫码
     _isDiscovering: false, // 是否正在发现蓝牙
     bleStatus: '',
