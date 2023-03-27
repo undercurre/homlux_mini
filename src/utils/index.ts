@@ -109,7 +109,7 @@ export function getPosition() {
 
 /**
  * 根据数组其中某一个对象的key值来去重
- * @param arr 
+ * @param arr
  * @param key 唯一key
  */
 export function unique(arr: Array<IAnyObject>, key: string) {

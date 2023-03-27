@@ -268,8 +268,8 @@ ComponentWithComputed({
         success: (list) => {
           console.log('onFoundHomluxDevice-scan', list)
 
-          list = list.filter(item => {
-            return !this.data.subdeviceList.find(foundItem => foundItem.deviceUuid === item.deviceUuid)
+          list = list.filter((item) => {
+            return !this.data.subdeviceList.find((foundItem) => foundItem.deviceUuid === item.deviceUuid)
           })
 
           this.setData({

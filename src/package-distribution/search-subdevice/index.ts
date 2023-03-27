@@ -82,11 +82,11 @@ ComponentWithComputed({
 
       this.initBle()
 
-      this.setData({
-        deviceList: JSON.parse(
-          '[{"proType":"0x13","deviceUuid":"04:CD:15:A9:B5:B7","mac":"04CD15A9B5B7","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/midea.light.003.002-3.png","name":"灯具B5B7","isChecked":false,"client":{"key":"midea@homluxB5B7","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15A9B5B7","deviceUuid":"04:CD:15:A9:B5:B7"},"roomId":"","roomName":"","switchList":[],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2}, {"proType":"0x21","deviceUuid":"04:CD:15:AE:AA:8D","mac":"04CD15AEAA8D","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/panel-4.png","name":"面板AA8D","isChecked":false,"client":{"key":"midea@homluxAA8D","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEAA8D","deviceUuid":"04:CD:15:AE:AA:8D"},"roomId":"","roomName":"","switchList":[{"switchId":"1","switchName":"按键1"},{"switchId":"2","switchName":"按键2"}],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2},{"proType":"0x21","deviceUuid":"04:CD:15:AE:B5:3A","mac":"04CD15AEB53A","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/panel-4.png","name":"面板B53A","isChecked":false,"client":{"key":"midea@homluxB53A","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEB53A","deviceUuid":"04:CD:15:AE:B5:3A"},"roomId":"","roomName":"","switchList":[{"switchId":"1","switchName":"按键1"},{"switchId":"2","switchName":"按键2"},{"switchId":"3","switchName":"按键3"},{"switchId":"4","switchName":"按键4"}],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2, "signal":"strong", "RSSI": -85}]',
-        ),
-      })
+      // this.setData({
+      //   deviceList: JSON.parse(
+      //     '[{"proType":"0x13","deviceUuid":"04:CD:15:A9:B5:B7","mac":"04CD15A9B5B7","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/midea.light.003.002-3.png","name":"灯具B5B7","isChecked":false,"client":{"key":"midea@homluxB5B7","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15A9B5B7","deviceUuid":"04:CD:15:A9:B5:B7"},"roomId":"","roomName":"","switchList":[],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2}, {"proType":"0x21","deviceUuid":"04:CD:15:AE:AA:8D","mac":"04CD15AEAA8D","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/panel-4.png","name":"面板AA8D","isChecked":false,"client":{"key":"midea@homluxAA8D","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEAA8D","deviceUuid":"04:CD:15:AE:AA:8D"},"roomId":"","roomName":"","switchList":[{"switchId":"1","switchName":"按键1"},{"switchId":"2","switchName":"按键2"}],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2},{"proType":"0x21","deviceUuid":"04:CD:15:AE:B5:3A","mac":"04CD15AEB53A","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/panel-4.png","name":"面板B53A","isChecked":false,"client":{"key":"midea@homluxB53A","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEB53A","deviceUuid":"04:CD:15:AE:B5:3A"},"roomId":"","roomName":"","switchList":[{"switchId":"1","switchName":"按键1"},{"switchId":"2","switchName":"按键2"},{"switchId":"3","switchName":"按键3"},{"switchId":"4","switchName":"按键4"}],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2, "signal":"strong", "RSSI": -85}]',
+      //   ),
+      // })
     },
     moved: function () {},
     detached: function () {
@@ -162,19 +162,19 @@ ComponentWithComputed({
             if (foundItem) {
               foundItem.RSSI = item.RSSI
               foundItem.signal = item.signal
-            }            
+            }
 
             return !this.data._foundList.includes(item.deviceUuid)
           })
 
           if (list.length <= 0) {
             this.setData({
-              deviceList: this.data.deviceList
+              deviceList: this.data.deviceList,
             })
             return
           }
 
-          this.data._foundList = this.data._foundList.concat(list.map(item => item.deviceUuid))
+          this.data._foundList = this.data._foundList.concat(list.map((item) => item.deviceUuid))
           list.forEach((device) => {
             this.handleBleDeviceInfo(device)
           })

@@ -1,6 +1,6 @@
 // service模块存放项目的相关业务代码
 import { storage } from './storage'
-import { reaction, runInAction } from 'mobx-miniprogram'
+import { reaction } from 'mobx-miniprogram'
 import { connectHouseSocket } from '../apis/websocket'
 import { homeStore, userStore } from '../store/index'
 import { emitter } from './eventBus'
