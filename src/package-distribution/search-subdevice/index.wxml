@@ -34,7 +34,7 @@
                 <image class="w-60 h-38" src="/package-distribution/assets/search-subdevice/edit.png" />
               </view>
 
-              <text class="text-26 text-black-59 opacity-95">{{ item.roomName }}</text>
+              <text class="text-26 text-black-59 opacity-95">{{ item.roomName }} - RSSI: {{item.RSSI}}</text>
             </view>
 
             <view class="shrink-0">
@@ -99,8 +99,8 @@
       </view>
     </view>
 
-    <block wx:if="{{status === 'error'}}">
-      <tips-box text="未发现附近设备" icon="/assets/img/default-img/no-found.png"></tips-box>
+    <block wx:if="{{status === 'requesting' && failList.length === selectedList.length}}">
+      <tips-box text="添加失败！" icon="/assets/img/default-img/no-found.png"></tips-box>
 
       <view class="grow px-88rpx pt-180rpx">
         <view class="text-28 text-black-2a">
@@ -109,9 +109,14 @@
 
         <view class="py-30rpx text-26 text-hex-666 leading-46rpx">
           <view>
-            <text>1、确保子设备已正常通电</text>
+            <text>1、家庭网络是否正常</text>
           </view>
-          <view><text>2、将手机尽量靠近子设备，中间请勿有墙体阻隔</text></view>
+          <view>
+            <text>2、网关是否正常供电，且已连接家庭网络</text>
+          </view>
+          <view>
+            <text>3、子设备是否离网关过远，或被障碍物遮挡</text>
+          </view>
         </view>
       </view>
 

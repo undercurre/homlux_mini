@@ -266,6 +266,12 @@ ComponentWithComputed({
       // 监听扫描到新设备事件
       bleUtil.onFoundHomluxDevice({
         success: (list) => {
+          console.log('onFoundHomluxDevice-scan')
+
+          list = list.filter(item => {
+            return !this.data.subdeviceList.find(foundItem => foundItem.deviceUuid === item.deviceUuid)
+          })
+
           this.setData({
             subdeviceList: this.data.subdeviceList.concat(list),
           })
@@ -274,7 +280,6 @@ ComponentWithComputed({
 
       // 开始搜寻附近的蓝牙外围设备
       wx.startBluetoothDevicesDiscovery({
-        // services: ['BAE55B96-7D19-458D-970C-50613D801BC9'],
         allowDuplicatesKey: true, // 广播数据的配网状态字段有可能会变化，必须允许上报重复设备
         powerLevel: 'high',
         interval: 3000,
@@ -282,6 +287,12 @@ ComponentWithComputed({
           console.log('startBluetoothDevicesDiscovery', res)
         },
       })
+    },
+
+    stopDiscoverBle() {
+      wx.stopBluetoothDevicesDiscovery()
+      wx.offBluetoothDeviceFound()
+      this.data._isDiscovering = false
     },
 
     onCloseGwList() {
@@ -416,10 +427,9 @@ ComponentWithComputed({
 
           if (query.success) {
             this.handleScanUrl(query.result.qrCodeUrl)
+          } else {
+            Toast('非法二维码')
           }
-        },
-        complete(res) {
-          console.log('uploadFile-complete', res)
         },
       })
     },
@@ -566,6 +576,7 @@ ComponentWithComputed({
       wx.closeBluetoothAdapter()
 
       storage.set('foundList', this.data.subdeviceList)
+      this.stopDiscoverBle()
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
           gatewayId,

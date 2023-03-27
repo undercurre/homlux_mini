@@ -95,10 +95,6 @@ ComponentWithComputed({
     },
   },
 
-  pageLifetimes: {
-    hide() {},
-  },
-
   methods: {
     startAnimation() {
       // 加载动画
@@ -160,13 +156,28 @@ ComponentWithComputed({
       // 监听扫描到新设备事件
       bleUtil.onFoundHomluxDevice({
         success: (list) => {
-          if (list.length <= 0) return
+          console.log('onFoundHomluxDevice-search')
+          list = list.filter((item) => {
+            const foundItem = this.data.deviceList.find((foundItem) => foundItem.deviceUuid === item.deviceUuid)
+
+            if (foundItem) {
+              foundItem.RSSI = item.RSSI
+            }
+
+            return !this.data._foundList.includes(item.deviceUuid)
+          })
+
+          if (list.length <= 0) {
+            this.setData({
+              deviceList: this.data.deviceList
+            })
+            return
+          }
 
           list.forEach((device) => {
             this.handleBleDeviceInfo(device)
           })
         },
-        exclude: this.data._foundList.concat([]),
       })
 
       // 开始搜寻附近的蓝牙外围设备

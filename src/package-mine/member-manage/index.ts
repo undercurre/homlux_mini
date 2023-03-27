@@ -102,9 +102,8 @@ ComponentWithComputed({
           let isCanEdit = false
           if (curUser?.userId === item.userId) isCanEdit = false
           else isCanEdit = this.canIEditOther(curUser?.userHouseAuth, item.userHouseAuth)
-          const headIndex = Math.floor(Math.random() * 4)
           result.push({
-            icon: this.data.headIconList[headIndex],
+            icon: item.headImageUrl,
             name: item.userName,
             role: item.userHouseAuthName,
             id: item.userId,
