@@ -31,6 +31,10 @@ ComponentWithComputed({
 
   lifetimes: {
     ready() {
+      // 关闭扫描页面可能开启的蓝牙、wifi资源
+      wx.closeBluetoothAdapter()
+      wx.stopWifi()
+
       homeBinding.store.updateCurrentHomeDetail()
 
       this.getDeviceInfo()

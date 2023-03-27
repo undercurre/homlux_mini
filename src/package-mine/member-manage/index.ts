@@ -58,12 +58,6 @@ ComponentWithComputed({
     isNeedShare: false,
     isAdmin: false,
     isVisitor: false,
-    headIconList: [
-      '/assets/img/member-manage/head1.png',
-      '/assets/img/member-manage/head2.png',
-      '/assets/img/member-manage/head3.png',
-      '/assets/img/member-manage/head4.png',
-    ],
     popupTitle: '权限管理',
   },
 
@@ -73,9 +67,7 @@ ComponentWithComputed({
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
     attached: function () {
       this.updateShareSetting()
-      userBinding.store.updateUserInfo().then(() => {
-        this.initData()
-      })
+      this.initData()
     },
     moved: function () {},
     detached: function () {},
@@ -104,14 +96,10 @@ ComponentWithComputed({
         }
         list.forEach((item: Home.HouseUserItem) => {
           let isCanEdit = false
-          let curUserHead = ''
-          if (curUser?.userId === item.userId) {
-            isCanEdit = false
-            curUserHead = userBinding.store.userInfo.headImageUrl
-          } else isCanEdit = this.canIEditOther(curUser?.userHouseAuth, item.userHouseAuth)
-          const headIndex = Math.floor(Math.random() * 4)
+          if (curUser?.userId === item.userId) isCanEdit = false
+          else isCanEdit = this.canIEditOther(curUser?.userHouseAuth, item.userHouseAuth)
           result.push({
-            icon: curUserHead || this.data.headIconList[headIndex],
+            icon: item.headImageUrl,
             name: item.userName,
             role: item.userHouseAuthName,
             id: item.userId,

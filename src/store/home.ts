@@ -133,10 +133,13 @@ export const homeStore = observable({
     if (res.success) {
       runInAction(() => {
         homeStore.homeList = res.result
+        console.log('updateHomeList store', res.result)
+
         const houseId = homeStore.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
         // 首次进入或删除了默认家庭时，默认选中第0个
         if (!houseId && homeStore.homeList.length) {
           updateDefaultHouse(homeStore.homeList[0].houseId)
+          homeStore.homeList[0].defaultHouseFlag = true
         }
       })
     }

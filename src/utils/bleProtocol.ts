@@ -1,4 +1,4 @@
-import { aesUtil, strUtil } from './index'
+import { aesUtil, strUtil, unique } from './index'
 
 // 定义了与BLE通路相关的所有事件/动作/命令的集合；其值域及表示意义为：对HOMLUX设备主控与app之间可能的各种操作的概括分类
 const CmdTypeMap = {
@@ -337,7 +337,6 @@ export const bleUtil = {
   getBleDeviceBaseInfo(bleDevice: WechatMiniprogram.BlueToothDevice): IBleBaseInfo {
     const dataMsg = strUtil.ab2hex(bleDevice.advertisData)
     const msgObj = bleUtil.transferBroadcastData(dataMsg)
-    console.log('getBleDeviceBaseInfo', msgObj.mac, msgObj.isConfig, bleDevice.RSSI)
 
     const { RSSI } = bleDevice
     const signal = RSSI > -80 ? (RSSI > -70 ? 'strong' : 'normal') : 'weak'
@@ -350,24 +349,23 @@ export const bleUtil = {
     }
   },
 
-  onFoundHomluxDevice(options: { success: (deviceList: IBleBaseInfo[]) => void; exclude?: string[] }) {
-    const { success, exclude } = options
-    let foundList: string[] = exclude || []
+  onFoundHomluxDevice(options: { success: (deviceList: IBleBaseInfo[]) => void }) {
+    const { success } = options
     // 监听扫描到新设备事件
     wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
+      res.devices = unique(res.devices, 'deviceId') as WechatMiniprogram.BlueToothDevice[] // 去重
+
       const deviceList = res.devices
         .filter((item) => {
           // localName为homlux_ble且过滤【发现过的】&&【处于未配网】的设备
-          return item.localName && item.localName.includes('homlux_ble') && !foundList.includes(item.deviceId)
+          return item.localName && item.localName.includes('homlux_ble')
         })
         .map((item) => bleUtil.getBleDeviceBaseInfo(item))
         .filter((item) => item.isConfig !== '02')
       // 过滤已经配网的设备
       // 设备网络状态 0x00：未入网   0x01：正在入网   0x02:  已经入网
 
-      console.log('foundList', foundList, 'deviceList', deviceList)
       if (deviceList.length > 0 && success) {
-        foundList = foundList.concat(deviceList.map((item) => item.deviceUuid))
         success(deviceList)
       }
     })

@@ -1,6 +1,5 @@
 import { login } from '../../apis/index'
 import { homeStore, othersStore, userStore } from '../../store/index'
-import { loadUserInfo } from '../../utils/index'
 import { storage } from '../../utils/storage'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehavior from '../../behaviors/pageBehaviors'
@@ -60,14 +59,14 @@ Component({
       if (loginRes.success && loginRes.result) {
         console.log('loginRes', loginRes)
         // 批量缓存返回值
-        ;(['token', 'mobilePhone', 'nickName', 'headImageUrl'] as const).forEach((item) => {
+        ;(['token'] as const).forEach((item) => {
           const value = (loginRes.result as User.UserLoginRes)[item]
           if (value) {
-            // storage.set(item, 'f9992117fd284789bb96bd20b4782988', null)
             storage.set(item, value, null)
           }
         })
-        loadUserInfo()
+
+        await userStore.updateUserInfo()
         userStore.setIsLogin(true)
         othersStore.setIsInit(false)
         homeStore.homeInit()
