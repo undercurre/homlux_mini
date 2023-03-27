@@ -63,8 +63,8 @@ ComponentWithComputed({
     controlBtnPic(data) {
       if (data.deviceInfo.proType === proType.light) {
         return data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
-          ? '/assets/img/device-control/power-on.png'
-          : '/assets/img/device-control/power-off.png'
+          ? '/assets/img/base/power-on.png'
+          : '/assets/img/base/power-off.png'
       } else if (data.deviceInfo.proType === proType.switch) {
         const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
         if (!data.deviceInfo.mzgdPropertyDTOList[switchId]) {
@@ -72,8 +72,8 @@ ComponentWithComputed({
           return ''
         }
         return data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff
-          ? '/assets/img/device-control/power-on.png'
-          : '/assets/img/device-control/power-off.png'
+          ? '/assets/img/base/power-on.png'
+          : '/assets/img/base/power-off.png'
       }
       return ''
     },

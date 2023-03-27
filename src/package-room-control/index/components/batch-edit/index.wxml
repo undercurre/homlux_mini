@@ -13,19 +13,19 @@
     <view class="w-full h-230rpx flex-center">
       <view class="flex-col-center flex-1 {{canEditName ?'':'opacity-50'}}" bindtap="handleEditNamePopup">
         <view class="flex-center w-100rpx h-100rpx bg-hex-f6fafd rounded-999">
-          <image src="/assets/img/device-control/edit.png" class="w-36rpx h-36rpx" />
+          <image src="/package-room-control/assets/img/edit.png" class="w-36rpx h-36rpx" />
         </view>
         <text class="text-black-tips text-24rpx mt-26rpx">修改名称</text>
       </view>
       <view class="flex-col-center flex-1 {{!editSelect.length ?'opacity-50':''}}" bindtap="handleMoveRoomPopup">
         <view class="flex-center w-100rpx h-100rpx bg-hex-f6fafd rounded-999">
-          <image src="/assets/img/device-control/move.png" class="w-36rpx h-36rpx" />
+          <image src="/package-room-control/assets/img/move.png" class="w-36rpx h-36rpx" />
         </view>
         <text class="text-black-tips text-24rpx mt-26rpx">移动房间</text>
       </view>
       <view class="flex-col-center flex-1 {{!editSelect.length ?'opacity-50':''}}" bindtap="handleDeleteDialog">
         <view class="flex-center w-100rpx h-100rpx bg-hex-f6fafd rounded-999">
-          <image src="/assets/img/device-control/del.png" class="w-36rpx h-36rpx" />
+          <image src="/package-room-control/assets/img/del.png" class="w-36rpx h-36rpx" />
         </view>
         <text class="text-black-tips text-24rpx mt-26rpx">删除</text>
       </view>

@@ -7,7 +7,7 @@
     <template is="title" data="{{title: '模式设置'}}" />
     <view class="link-switch h-146rpx w-686rpx flex-center mt-32rpx" data-type="switch" bindtap="handleConfirm">
       <view class="w-160rpx flex-center">
-        <image src="/assets/img/device-control/link-switch.png" class="w-146rpx h-146rpx" />
+        <image src="/package-room-control/assets/img/link-switch.png" class="w-146rpx h-146rpx" />
       </view>
       <view class="flex-1 flex flex-col item-center">
         <text class="text-hex-373cdf text-32rpx font-medium">关联开关</text>
@@ -20,7 +20,7 @@
     </view>
     <view class="link-light h-146rpx w-686rpx flex-center mt-24rpx" data-type="light" bindtap="handleConfirm">
       <view class="w-160rpx flex-center">
-        <image src="/assets/img/device-control/link-light.png" class="w-146rpx h-146rpx" />
+        <image src="/package-room-control/assets/img/link-light.png" class="w-146rpx h-146rpx" />
       </view>
       <view class="flex-1 flex flex-col item-center">
         <text class="text-hex-de7e28 text-32rpx font-medium">关联灯光</text>
@@ -33,7 +33,7 @@
     </view>
     <view class="link-scene h-146rpx w-686rpx flex-center mt-24rpx" data-type="scene" bindtap="handleConfirm">
       <view class="w-160rpx flex-center">
-        <image src="/assets/img/device-control/link-scene.png" class="w-146rpx h-146rpx" />
+        <image src="/package-room-control/assets/img/link-scene.png" class="w-146rpx h-146rpx" />
       </view>
       <view class="flex-1 flex flex-col item-center">
         <text class="text-hex-1454ae text-32rpx font-medium">关联智能场景</text>
