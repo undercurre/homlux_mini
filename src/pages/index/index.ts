@@ -182,6 +182,7 @@ ComponentWithComputed({
             title: '邀请过期',
             message: '该邀请已过期，请联系邀请者重新邀请',
             confirmButtonText: '我知道了',
+            zIndex: 9999,
           })
         } else {
           homeBinding.store
