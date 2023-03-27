@@ -1,4 +1,4 @@
-import { aesUtil, strUtil } from './index'
+import { aesUtil, strUtil, unique } from './index'
 
 // 定义了与BLE通路相关的所有事件/动作/命令的集合；其值域及表示意义为：对HOMLUX设备主控与app之间可能的各种操作的概括分类
 const CmdTypeMap = {
@@ -353,6 +353,8 @@ export const bleUtil = {
     const { success } = options
     // 监听扫描到新设备事件
     wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
+      res.devices = unique(res.devices, 'deviceId') as WechatMiniprogram.BlueToothDevice[] // 去重
+
       const deviceList = res.devices
         .filter((item) => {
           // localName为homlux_ble且过滤【发现过的】&&【处于未配网】的设备

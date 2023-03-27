@@ -20,6 +20,7 @@
                 <image src="{{item.icon}}" class="w-72 h-72"></image>
 
                 <view class="signal-box bottom-0 leading-0 rounded-14rpx {{ item.signal === 'weak' ? 'bg-hex-FFF4F4' : 'bg-hex-F4F8FF'}}">
+                  <text class="absolute text-24" style="top: -10rpx;">{{item.RSSI}}</text>
                   <image src="/package-distribution/assets/search-subdevice/signal-{{ item.signal }}.png" class="w-46 h-28"></image>
                 </view>
               </view>
@@ -34,7 +35,7 @@
                 <image class="w-60 h-38" src="/package-distribution/assets/search-subdevice/edit.png" />
               </view>
 
-              <text class="text-26 text-black-59 opacity-95">{{ item.roomName }} - RSSI: {{item.RSSI}}</text>
+              <text class="text-26 text-black-59 opacity-95">{{ item.roomName }}</text>
             </view>
 
             <view class="shrink-0">

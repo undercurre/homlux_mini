@@ -266,7 +266,7 @@ ComponentWithComputed({
       // 监听扫描到新设备事件
       bleUtil.onFoundHomluxDevice({
         success: (list) => {
-          console.log('onFoundHomluxDevice-scan')
+          console.log('onFoundHomluxDevice-scan', list)
 
           list = list.filter(item => {
             return !this.data.subdeviceList.find(foundItem => foundItem.deviceUuid === item.deviceUuid)
@@ -572,8 +572,6 @@ ComponentWithComputed({
 
       const gatewayId = this.data.selectGatewayId,
         gatewaySn = this.data.selectGatewaySn
-
-      wx.closeBluetoothAdapter()
 
       storage.set('foundList', this.data.subdeviceList)
       this.stopDiscoverBle()
