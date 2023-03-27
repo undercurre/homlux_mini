@@ -31,7 +31,7 @@ ComponentWithComputed({
       type: Boolean,
       value: false,
     },
-    // 是否显示按钮名称及图标
+    // 是否显示开关按键名称及图标
     showBtnDetail: {
       type: Boolean,
       value: true,
@@ -48,6 +48,9 @@ ComponentWithComputed({
   },
 
   computed: {
+    isSwitch(data) {
+      return data.deviceInfo.proType === proType.switch
+    },
     picUrl(data) {
       if (data.deviceInfo.proType === proType.switch && data.showBtnDetail) {
         return data.deviceInfo?.switchInfoDTOList[0]?.pic
