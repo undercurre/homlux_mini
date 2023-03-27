@@ -7,13 +7,13 @@
     <view class="grow px-48rpx pt-112rpx">
       <text class="text-black-59 text-26 leading-36rpx">智能设备仅支持2.4GHZ的Wi-Fi</text>
 
-      <van-field value="{{ wifiInfo.SSID }}" placeholder="请选择Wi-Fi" custom-style="margin-bottom: 32rpx;margin-top: 40rpx;padding: 16rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;background-color: transparent;" clearable="{{true}}" bind:blur="changeWifiName">
+      <van-field value="{{ wifiInfo.SSID }}" placeholder="请选择Wi-Fi" custom-style="margin-bottom: 32rpx;margin-top: 40rpx;padding: 16rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;background-color: transparent;" clearable="{{true}}" bind:blur="changeWifiName" border="{{false}}">
         <van-button slot="button" type="primary" plain bind:click="toggleWifi" loading="{{isRequestSystemWifiList}}" disabled="{{isRequestSystemWifiList}}"> 切换Wi-Fi </van-button>
       </van-field>
 
-      <van-field value="{{ wifiInfo.pw }}" placeholder="请入Wi-Fi密码" password="{{!isShowPw}}" custom-style="padding: 16rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;background-color: transparent;" bind:blur="changePw" use-button-slot>
+      <van-field value="{{ wifiInfo.pw }}" placeholder="请入Wi-Fi密码" password="{{!isShowPw}}" custom-style="padding: 16rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;background-color: transparent;" bind:blur="changePw" use-button-slot border="{{false}}">
         <van-button slot="button" bind:click="togglePw" type="default" plain custom-style="border: 0;">
-          <svg-icon name="icon-park-outline:preview-{{isShowPw ? 'close-one' : 'open'}}" color="#555659" height="56rpx"></svg-icon>
+          <svg-icon name="icon-park-outline:preview-{{!isShowPw ? 'close-one' : 'open'}}" color="#555659" height="56rpx"></svg-icon>
         </van-button>
       </van-field>
     </view>
@@ -24,7 +24,7 @@
   </view>
 </view>
 
-<van-popup show="{{ isShowWifiList }}" bind:close="toggleWifiListPopup" position="bottom" round>
+<van-popup show="{{ isShowWifiList }}" bind:close="toggleWifiListPopup" position="bottom" round safe-area-inset-bottom>
   <view class="flex flex-col items-stretch">
     <text class="block py-40rpx leading-50rpx text-center text-36 opacity-90 text-black-2a font-medium">请选择无线网络</text>
 
@@ -49,7 +49,7 @@
       <van-button wx:if="{{systemWifiList.length === 0}}" class="mt-40rpx" type="primary" plain block bind:click="getWifiList" loading="{{isRequestSystemWifiList}}" disabled="{{isRequestSystemWifiList}}">加载更多</van-button>
     </scroll-view>
 
-    <view class="flex flex-row gap-46rpx pt-80rpx px-24rpx">
+    <view class="flex flex-row gap-46rpx pb-40rpx pt-80rpx px-24rpx">
       <van-button class="grow" size="large" bind:click="toggleWifiListPopup">取消</van-button>
 
       <van-button class="grow" size="large" type="primary" bind:click="confirmWifi">确定</van-button>
