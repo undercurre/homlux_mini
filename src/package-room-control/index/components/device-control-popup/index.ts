@@ -825,28 +825,31 @@ ComponentWithComputed({
       deviceStore.selectList
         .filter((id) => id.includes(':'))
         .forEach((uniId) => {
-          if (gatewaySelectDeviceMap[deviceMap[uniId.split(':')[0]].gatewayId]) {
-            const index = gatewaySelectDeviceMap[deviceMap[uniId.split(':')[0]].gatewayId].findIndex(
-              (device) => device.deviceId === uniId.split(':')[0],
+          const [deviceId, ep] = uniId.split(':')
+          if (gatewaySelectDeviceMap[deviceMap[deviceId].gatewayId]) {
+            const index = gatewaySelectDeviceMap[deviceMap[deviceId].gatewayId].findIndex(
+              (device) => device.deviceId === deviceId,
             )
             if (index != -1) {
-              gatewaySelectDeviceMap[deviceMap[uniId.split(':')[0]].gatewayId][index].switchInfoDTOList.push({
-                switchId: uniId.split(':')[1],
+              gatewaySelectDeviceMap[deviceMap[deviceId].gatewayId][index].switchInfoDTOList.push({
+                switchId: ep,
               } as unknown as Device.MzgdPanelSwitchInfoDTO)
             } else {
-              gatewaySelectDeviceMap[deviceMap[uniId.split(':')[0]].gatewayId].push({
-                ...deviceMap[uniId.split(':')[0]],
-                switchInfoDTOList: [{ switchId: uniId.split(':')[1] } as unknown as Device.MzgdPanelSwitchInfoDTO],
+              gatewaySelectDeviceMap[deviceMap[deviceId].gatewayId].push({
+                ...deviceMap[deviceId],
+                switchInfoDTOList: [{ switchId: ep } as unknown as Device.MzgdPanelSwitchInfoDTO],
               })
             }
           } else {
-            gatewaySelectDeviceMap[deviceMap[uniId.split(':')[0]].gatewayId] = [
+            gatewaySelectDeviceMap[deviceMap[deviceId].gatewayId] = [
               {
-                ...deviceMap[uniId.split(':')[0]],
-                switchInfoDTOList: [{ switchId: uniId.split(':')[1] } as unknown as Device.MzgdPanelSwitchInfoDTO],
+                ...deviceMap[deviceId],
+                switchInfoDTOList: [{ switchId: ep } as unknown as Device.MzgdPanelSwitchInfoDTO],
               },
             ]
           }
+          // 先改掉缓存中设备的值(创建场景需要新的属性值)
+          deviceStore.deviceMap[deviceId].mzgdPropertyDTOList[ep].OnOff = OnOff
         })
       // 给每个网关的开关下发
       Object.entries(gatewaySelectDeviceMap).forEach((entries) => {

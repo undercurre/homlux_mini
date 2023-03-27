@@ -112,6 +112,36 @@ ComponentWithComputed({
       }
       return false
     },
+    isLightSelectOne(data) {
+      if (data.selectList) {
+        const deviceMap = deviceStore.deviceMap
+        let selectLightNum = 0
+        data.selectList.forEach((uniId: string) => {
+          if (!uniId.includes(':')) {
+            if (deviceMap[uniId].proType === proType.light) {
+              selectLightNum++
+            }
+          }
+        })
+        return !!selectLightNum
+      }
+      return false
+    },
+    isSwitchSelectOne(data) {
+      if (data.selectList) {
+        const deviceMap = deviceStore.deviceFlattenMap
+        let selectSwitchNum = 0
+        data.selectList.forEach((uniId: string) => {
+          if (uniId.includes(':')) {
+            if (deviceMap[uniId].proType === proType.switch) {
+              selectSwitchNum++
+            }
+          }
+        })
+        return !!selectSwitchNum
+      }
+      return false
+    },
   },
 
   watch: {
@@ -157,7 +187,9 @@ ComponentWithComputed({
             device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
             device.proType !== proType.gateway,
         )
+        deviceStore.selectList = []
         deviceStore.editSelect = []
+        deviceStore.isEditSelectMode = false
       })
       // 再更新一遍数据
       this.reloadData()
@@ -399,12 +431,14 @@ ComponentWithComputed({
             deviceStore.selectList = [...deviceStore.selectList]
           })
         } else {
-          runInAction(() => {
-            deviceStore.selectList = [...deviceStore.selectList, e.detail.uniId]
-          })
+          if (isCheck || isCheck === undefined) {
+            runInAction(() => {
+              deviceStore.selectList = [...deviceStore.selectList, e.detail.uniId]
+            })
+          }
         }
-      } else {
-        // 灯、窗帘选择逻辑
+      } else if (e.detail.proType === proType.light) {
+        // 灯选择逻辑
         if (deviceStore.selectList.includes(e.detail.deviceId)) {
           if (isCheck) return
           const index = deviceStore.selectList.findIndex((item: string) => item === e.detail.deviceId)
@@ -428,15 +462,17 @@ ComponentWithComputed({
             })
           }
         } else {
-          runInAction(() => {
-            deviceStore.selectList = [...deviceStore.selectList, e.detail.deviceId]
-            if (e.detail.proType === proType.light) {
-              deviceStore.lightInfo = {
-                Level: e.detail.mzgdPropertyDTOList['1'].Level,
-                ColorTemp: e.detail.mzgdPropertyDTOList['1'].ColorTemp,
+          if (isCheck || isCheck === undefined) {
+            runInAction(() => {
+              deviceStore.selectList = [...deviceStore.selectList, e.detail.deviceId]
+              if (e.detail.proType === proType.light) {
+                deviceStore.lightInfo = {
+                  Level: e.detail.mzgdPropertyDTOList['1'].Level,
+                  ColorTemp: e.detail.mzgdPropertyDTOList['1'].ColorTemp,
+                }
               }
-            }
-          })
+            })
+          }
         }
       }
       this.updateSelectType()
@@ -648,28 +684,87 @@ ComponentWithComputed({
         })
       }
     },
-    handleCancelSelce(e: WechatMiniprogram.TouchEvent) {
-      if (e.currentTarget.dataset.type === 'light') {
-        const newSelectList = deviceStore.selectList.filter((uniId) => {
-          if (uniId.includes(':')) {
-            return true
-          } else if (deviceStore.deviceMap[uniId].proType !== proType.light) {
+    handleLightAllSelect() {
+      const deviceMap = deviceStore.deviceFlattenMap
+      const newList = [] as string[]
+      if (this.data.isLightSelectOne) {
+        // 执行全不选
+        deviceStore.selectList.forEach((uniId) => {
+          if (uniId.includes(':') || deviceMap[uniId].proType !== proType.light) {
+            newList.push(uniId)
+          }
+        })
+      } else {
+        // 执行全选
+        newList.push(...deviceStore.selectList)
+        deviceStore.deviceList.forEach((device) => {
+          if (device.proType === proType.light && !newList.includes(device.deviceId)) {
+            newList.push(device.deviceId)
+          }
+        })
+      }
+      if (!this.data.isLightSelectOne && deviceStore.selectList.length === 0) {
+        this.setData({
+          popupPlaceholder: true,
+          controlPopup: true,
+        })
+      }
+      if (!this.data.isLightSelectOne) {
+        deviceStore.deviceList.some((device) => {
+          if (device.proType === proType.light) {
+            runInAction(() => {
+              deviceStore.lightInfo = {
+                Level: device.mzgdPropertyDTOList['1'].Level,
+                ColorTemp: device.mzgdPropertyDTOList['1'].ColorTemp,
+              }
+            })
             return true
           }
           return false
         })
-        runInAction(() => {
-          deviceStore.selectList = newSelectList
+      }
+      runInAction(() => {
+        deviceStore.selectList = newList
+      })
+      if (!deviceStore.selectList.length) {
+        this.setData({
+          popupPlaceholder: false,
         })
-      } else if (e.currentTarget.dataset.type === 'switch') {
-        const newSelectList = deviceStore.selectList.filter((uniId) => {
-          if (uniId.includes(':')) {
-            return false
+      }
+      this.updateSelectType()
+      this.updateDeviceList()
+    },
+    handleSwitchAllSelect() {
+      const deviceMap = deviceStore.deviceFlattenMap
+      const newList = [] as string[]
+      if (this.data.isSwitchSelectOne) {
+        // 执行全不选
+        deviceStore.selectList.forEach((uniId) => {
+          if (!uniId.includes(':') || deviceMap[uniId].proType !== proType.switch) {
+            newList.push(uniId)
           }
-          return false
         })
-        runInAction(() => {
-          deviceStore.selectList = newSelectList
+      } else {
+        // 执行全选
+        newList.push(...deviceStore.selectList)
+        deviceStore.deviceFlattenList.forEach((device) => {
+          if (device.proType === proType.switch && !newList.includes(device.uniId)) {
+            newList.push(device.uniId)
+          }
+        })
+      }
+      if (!this.data.isLightSelectOne && deviceStore.selectList.length === 0) {
+        this.setData({
+          popupPlaceholder: true,
+          controlPopup: true,
+        })
+      }
+      runInAction(() => {
+        deviceStore.selectList = newList
+      })
+      if (!deviceStore.selectList.length) {
+        this.setData({
+          popupPlaceholder: false,
         })
       }
       this.updateSelectType()
