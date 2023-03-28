@@ -1,11 +1,11 @@
 <import src="/commons/templates/popup.wxml" />
-<van-popup show="{{ show }}" z-index="10000" position="bottom" round bind:close="handleClose" lock-scroll="{{true}}" closeable>
-  <view class="px-32rpx text-black-2a" catchtouchmove="true">
+<van-popup show="{{ show }}" position="bottom" round bind:close="handleClose" lock-scroll="{{true}}" closeable catchtouchmove="true">
+  <view class="px-32rpx text-black-2a">
     <view class="flex-center">
       <template is="title" data="{{title: roomId ? '编辑房间' : '添加房间'}}" />
     </view>
 
-    <scroll-view class="max-h-55vh" scroll-y enhanced show-scrollbar="{{false}}" style="height: {{ (isEditName ? 208 : 0) + (isEditIcon ? 728 : 0)}}rpx;">
+    <scroll-view scroll-y enhanced show-scrollbar="{{false}}" style="height: {{ (isEditName ? 208 : 0) + (isEditIcon ? 728 : 0)}}rpx;">
       <view wx:if="{{isEditName}}">
         <text class="block pl-16rpx pb-24rpx pt-48rpx text-28">房间名称</text>
 
@@ -16,7 +16,7 @@
         <text class="block pl-16rpx pb-28rpx pt-50rpx text-28">选择房间图标</text>
 
         <view class="flex flex-row flex-wrap gap-x-60rpx gap-y-40rpx pl-16rpx">
-          <view wx:for="{{iconList}}" wx:key="icon" class="flex justify-center items-center" data-icon="{{item.icon}}" bind:tap="selectIcon">
+          <view wx:for="{{iconList}}" wx:key="icon" class="flex justify-center items-center" data-icon="{{item.icon}}" data-text="{{item.text}}" bind:tap="selectIcon">
             <view class="flex flex-col items-center">
               <view class="p-24rpx leading-0 bg-hex-F6FAFD rounded-32rpx border-4rpx border-solid {{ item.icon === roomInfo.icon ? ' border-hex-488FFF' : 'border-hex-F6FAFD'}}">
                 <image class="w-64rpx h-64rpx" src="/assets/img/room/{{item.icon}}.png"></image>
@@ -30,6 +30,7 @@
     </scroll-view>
 
     <view class="h-60rpx"></view>
+
     <template is="bottom-btn" />
   </view>
 </van-popup>

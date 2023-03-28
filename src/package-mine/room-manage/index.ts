@@ -43,7 +43,7 @@ ComponentWithComputed({
     },
 
     addRoom() {
-      if (roomBinding.store.roomList.length === 50) {
+      if (roomBinding.store.roomList.length >= 50) {
         Toast('一个家庭中最多创建50个房间')
         return
       }
