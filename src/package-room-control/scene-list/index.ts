@@ -67,7 +67,7 @@ ComponentWithComputed({
           listData.push({
             ...scene,
             dragId: scene.sceneId,
-            linkName: `${device.deviceName?.slice(0, 5)}${switchName?.slice(0, 4)} | ${device.roomName}`,
+            linkName: `${device.deviceName?.slice(0, 5)}${switchName?.slice(0, 4)}`,
           })
           return
         }
@@ -115,17 +115,7 @@ ComponentWithComputed({
         url: '/package-room-control/scene-edit/index',
       })
     },
-
-    // handleChange(e) {
-    //   console.log('handleChange', e)
-    // },
-
-    // handleScroll(e: { detail: { scrollTop: number } }) {
-    //   this.setData({
-    //     pageMetaScrollTop: e.detail.scrollTop,
-    //   })
-    // },
-
+    
     async handleSortEnd(e: { detail: { listData: Scene.SceneItem[] } }) {
       console.log('handleSortEnd', e)
       const sceneSortList = [] as { orderNum: number; sceneId: string }[]
