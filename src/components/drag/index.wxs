@@ -77,10 +77,14 @@ var longPress = function (event, ownerInstance) {
   var st = ownerInstance.getState()
   var _ = st.baseData
 
+  console.log('touchMove', JSON.stringify(st))
   var sTouch = event.changedTouches[0]
   if (!sTouch) return
 
   st.cur = ins.getDataset().index
+
+  // 组件更新中，禁止操作
+  if (st.updating) return
 
   // 初始项是固定项则返回
   var item = st.list[st.cur]
@@ -111,6 +115,24 @@ var longPress = function (event, ownerInstance) {
 var touchMove = function (event, ownerInstance) {
   var ins = event.instance
   var st = ownerInstance.getState()
+
+  // 组件更新中，退出排序
+  if (st.updating && st.dragging) {
+    triggerCustomEvent(st.list, 'sortend', ownerInstance)
+
+    ins.addClass('tran')
+    ins.setStyle({
+      transform: 'translate3d(' + st.list[st.cur].tranX + ',' + st.list[st.cur].tranY + ', 0)',
+    })
+
+    st.preStartKey = -1
+    st.dragging = false
+    ownerInstance.callMethod('drag', { dragging: false })
+    st.cur = -1
+    st.tranX = 0
+    st.tranY = 0
+    return
+  }
 
   // 如果是两个以上触摸点退出排序
   if (event.touches.length > 1) {
@@ -236,10 +258,33 @@ var listObserver = function (newVal, oldVal, ownerInstance, ins) {
   })
 }
 
+var updatingObserver = function (newVal, oldVal, ownerInstance) {
+  var st = ownerInstance.getState()
+  st.updating = newVal
+  if (newVal) {
+    if (!st.dragging) return
+    triggerCustomEvent(st.list, 'sortend', ownerInstance)
+
+    ins.addClass('tran')
+    ins.setStyle({
+      transform: 'translate3d(' + st.list[st.cur].tranX + ',' + st.list[st.cur].tranY + ', 0)',
+    })
+
+    st.preStartKey = -1
+    st.dragging = false
+    ownerInstance.callMethod('drag', { dragging: false })
+    st.cur = -1
+    st.tranX = 0
+    st.tranY = 0
+    return
+  }
+}
+
 module.exports = {
   longPress: longPress,
   touchMove: touchMove,
   touchEnd: touchEnd,
   baseDataObserver: baseDataObserver,
   listObserver: listObserver,
+  updatingObserver: updatingObserver,
 }

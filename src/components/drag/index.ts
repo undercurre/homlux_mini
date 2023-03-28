@@ -81,6 +81,8 @@ Component({
     wrapStyle: '', // item-wrap 样式
     list: [] as IAnyObject[], // 渲染数据列
     dragging: false,
+
+    updating: false, // 正在更新数据，不允许手势操作
   },
   methods: {
     vibrate() {
@@ -99,6 +101,7 @@ Component({
       }
     },
     drag(e: { dragging: boolean; index: number }) {
+      console.log('触发drag', this.data.dragging)
       this.triggerEvent('drag', {
         dragging: e.dragging,
         ...this.data.listData[e.index],
@@ -150,6 +153,7 @@ Component({
         baseData.wrapTop = res[1].top + this.data.scrollTop
         this.setData({
           dragging: false,
+          updating: false,
           baseData,
         })
       })
@@ -169,7 +173,7 @@ Component({
      */
     init() {
       // 初始必须为true以绑定wxs中的函数,
-      this.setData({ dragging: true })
+      this.setData({ dragging: true, updating: true })
 
       const delItem = (item: IAnyObject, extraNode: boolean) => ({
         id: item.dragId,

@@ -325,6 +325,7 @@ ComponentWithComputed({
               deviceStore.isEditSelectMode = false
             })
             this.triggerEvent('updateList')
+            this.triggerEvent('roomMove')
           } else {
             this.showFail()
           }
