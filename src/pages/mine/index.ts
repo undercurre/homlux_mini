@@ -1,9 +1,9 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { logout, storage } from '../../utils/index'
-import { userBinding, userStore, deviceBinding } from '../../store/index'
+import { userBinding, userStore } from '../../store/index'
 
 Component({
-  behaviors: [BehaviorWithStore({ storeBindings: [userBinding, deviceBinding] })],
+  behaviors: [BehaviorWithStore({ storeBindings: [userBinding] })],
   /**
    * 页面的初始数据
    */

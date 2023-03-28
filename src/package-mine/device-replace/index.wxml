@@ -74,3 +74,5 @@
 </view>
 
 <select-device show="{{isSelectOldDevice || isSelectNewDevice}}" bind:close="closeDevicePopup" bind:confirm="confirmDevicePopup" filterDevice="{{ status === 'newDevice' ? oldDeviceItem: null }}"></select-device>
+
+<van-toast id="van-toast" />
