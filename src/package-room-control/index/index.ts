@@ -664,17 +664,19 @@ ComponentWithComputed({
       }
     },
     handleDrag(e: { detail: { dragging: boolean } & Device.DeviceItem }) {
-      this.setData({
-        dragging: e.detail.dragging,
-      })
       if (e.detail.dragging) {
         runInAction(() => {
           if (!deviceStore.editSelect.length) {
             deviceStore.editSelect = [e.detail.uniId]
           }
           deviceStore.isEditSelectMode = true
+          deviceStore.selectList = []
         })
+        this.updateDeviceList()
       }
+      this.setData({
+        dragging: e.detail.dragging,
+      })
     },
     handleLightAllSelect() {
       const deviceMap = deviceStore.deviceFlattenMap
@@ -690,7 +692,7 @@ ComponentWithComputed({
         // 执行全选
         newList.push(...deviceStore.selectList)
         deviceStore.deviceList.forEach((device) => {
-          if (device.proType === proType.light && !newList.includes(device.deviceId)) {
+          if (device.proType === proType.light && !newList.includes(device.deviceId) && device.onLineStatus) {
             newList.push(device.deviceId)
           }
         })
@@ -740,7 +742,7 @@ ComponentWithComputed({
         // 执行全选
         newList.push(...deviceStore.selectList)
         deviceStore.deviceFlattenList.forEach((device) => {
-          if (device.proType === proType.switch && !newList.includes(device.uniId)) {
+          if (device.proType === proType.switch && !newList.includes(device.uniId) && device.onLineStatus) {
             newList.push(device.uniId)
           }
         })

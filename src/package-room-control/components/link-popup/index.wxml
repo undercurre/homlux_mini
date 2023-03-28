@@ -55,5 +55,4 @@
       <view class="h-80rpx"></view>
     </view>
   </van-dialog>
-
 </van-popup>

@@ -29,7 +29,7 @@
 
 <import src="/commons/templates/popup.wxml" />
 <van-popup show="{{ isShowEditSwitch }}" z-index="200" position="bottom" round bind:close="handleClose" lock-scroll="{{true}}" closeable catchtouchmove="true">
-  <view class="px-32rpx text-black-2a relative" >
+  <view class="px-32rpx text-black-2a relative">
     <view class="flex-center pb-64rpx">
       <template is="title" data="{{title: '按键名称'}}" />
     </view>

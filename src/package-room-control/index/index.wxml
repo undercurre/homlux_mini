@@ -59,7 +59,7 @@
       <view class="mt-24rpx" wx:if="{{lightList && lightList.length>0}}">
         <view class="flex justify-between items-center h-44rpx">
           <text class="text-24rpx text-black-59 ml-17rpx">灯具</text>
-          <view class="rounded-999 flex-center px-20rpx py-10rpx cancel-select-btn" data-type="light" catchtap="handleLightAllSelect">
+          <view wx:if="{{!isEditSelectMode}}" class="rounded-999 flex-center px-20rpx py-10rpx cancel-select-btn" data-type="light" catchtap="handleLightAllSelect">
             <text class="text-20rpx leading-none text-hex-555659">{{isLightSelectOne?'全不选':'全选'}}</text>
           </view>
         </view>
@@ -72,7 +72,7 @@
       <view class="{{lightList && lightList.length > 0 ? '' : 'mt-24rpx'}}" wx:if="{{switchList && switchList.length>0}}">
         <view class="flex justify-between items-center h-44rpx">
           <text class="text-24rpx text-black-59 ml-17rpx">开关面板</text>
-          <view class="rounded-999 flex-center px-20rpx py-10rpx cancel-select-btn" data-type="switch" catchtap="handleSwitchAllSelect">
+          <view wx:if="{{!isEditSelectMode}}" class="rounded-999 flex-center px-20rpx py-10rpx cancel-select-btn" data-type="switch" catchtap="handleSwitchAllSelect">
             <text class="text-20rpx leading-none text-hex-555659">{{isSwitchSelectOne?'全不选':'全选'}}</text>
           </view>
         </view>
