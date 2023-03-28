@@ -115,7 +115,7 @@ ComponentWithComputed({
         url: '/package-room-control/scene-edit/index',
       })
     },
-    
+
     async handleSortEnd(e: { detail: { listData: Scene.SceneItem[] } }) {
       console.log('handleSortEnd', e)
       const sceneSortList = [] as { orderNum: number; sceneId: string }[]
