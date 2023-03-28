@@ -1,6 +1,6 @@
 <import src="/commons/templates/popup.wxml" />
 <van-popup show="{{ show }}" z-index="10000" position="bottom" round bind:close="handleClose">
-  <view class="flex flex-col px-32rpx text-black-2a popup-wrapper">
+  <view class="flex flex-col px-32rpx text-black-2a">
     <view class="flex-center pb-32rpx">
       <template is="close" />
       <template is="title" data="{{ title: '选择旧设备' }}" />
@@ -8,14 +8,15 @@
 
     <room-tabs bind:roomSelect="handleRoomSelect"></room-tabs>
 
-    <view wx:if="{{wifiDeviceList.length}}" class="grid grid-cols-4 gap-16rpx mt-16rpx flex-1">
-      <device-card wx:for="{{wifiDeviceList}}" wx:key="uniId" showBtnDetail="{{false}}" bind:cardTap="handleCardTap" device-type="light" device-info="{{item}}" select="{{checkedDevice.deviceId === item.deviceId}}" />
-    </view>
-    <view wx:else class="popup-empty flex-1">
-      <text class="block text-center text-24 text-black-tips">该房间暂无设备</text>
-    </view>
+    <scroll-view enhanced show-scrollbar="{{false}}" scroll-y class="list-wrapper" enable-flex>
+      <view wx:if="{{wifiDeviceList.length}}" class="grid grid-cols-4 gap-16rpx mt-16rpx">
+        <device-card wx:for="{{wifiDeviceList}}" wx:key="uniId" showBtnDetail="{{false}}" bind:cardTap="handleCardTap" device-type="light" device-info="{{item}}" select="{{checkedDevice.deviceId === item.deviceId}}" />
+      </view>
+      <view wx:else class="list-empty flex-1">
+        <text class="block text-center text-24 text-black-tips">该房间暂无设备</text>
+      </view>
+    </scroll-view>
 
-    <view class="h-80rpx"></view>
     <template is="bottom-btn" />
   </view>
 </van-popup>
