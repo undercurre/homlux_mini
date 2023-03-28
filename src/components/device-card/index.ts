@@ -116,7 +116,7 @@ ComponentWithComputed({
         if (new RegExp('[\\u4E00-\\u9FFF]+', 'g').test(name)) {
           return name.slice(0, 5)
         }
-        return name
+        return name.slice(0, 8)
       } else {
         name = data.deviceInfo.deviceName
       }

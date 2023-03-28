@@ -77,7 +77,6 @@ var longPress = function (event, ownerInstance) {
   var st = ownerInstance.getState()
   var _ = st.baseData
 
-  console.log('touchMove', JSON.stringify(st))
   var sTouch = event.changedTouches[0]
   if (!sTouch) return
 
