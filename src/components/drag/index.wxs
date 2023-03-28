@@ -259,15 +259,11 @@ var listObserver = function (newVal, oldVal, ownerInstance, ins) {
 
 var updatingObserver = function (newVal, oldVal, ownerInstance) {
   var st = ownerInstance.getState()
+
   st.updating = newVal
   if (newVal) {
     if (!st.dragging) return
     triggerCustomEvent(st.list, 'sortend', ownerInstance)
-
-    ins.addClass('tran')
-    ins.setStyle({
-      transform: 'translate3d(' + st.list[st.cur].tranX + ',' + st.list[st.cur].tranY + ', 0)',
-    })
 
     st.preStartKey = -1
     st.dragging = false
