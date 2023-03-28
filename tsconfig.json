@@ -20,7 +20,6 @@
     "types": ["miniprogram-api-typings", "crypto-js", "tiny-async-pool"],
     "typeRoots": ["./typings"],
     "paths": {
-      "tdesign-miniprogram/*":["./miniprogram/miniprogram_npm/tdesign-miniprogram/*"],
       "@vant/weapp/*": ["./node_modules/@vant/weapp/dist/*"]
     }
   },
