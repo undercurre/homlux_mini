@@ -222,7 +222,7 @@ ComponentWithComputed({
         RSSI: baseInfo.RSSI,
         zigbeeMac: '',
         icon: infoRes.result.icon || '/assets/img/device/gateway.png',
-        name: deviceName,
+        name: deviceName + `-${baseInfo.mac.substr(-4)}`,
         isChecked: false,
         client: new BleClient({ mac: baseInfo.mac, deviceUuid: baseInfo.deviceUuid }),
         roomId: roomBinding.store.currentRoom.roomId,
@@ -494,6 +494,7 @@ ComponentWithComputed({
       })
 
       console.log('tryControl-res', res)
+      bleDeviceItem.client.close() // 发送指令完毕后需要断开已连接的设备，否则连接数满了之后无法连接新的设备
 
       bleDeviceItem.requesting = false
 

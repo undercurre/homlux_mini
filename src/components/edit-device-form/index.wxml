@@ -1,4 +1,4 @@
-<view>
+<view style="{{customStyle}}">
   <text class="label">设备名称</text>
 
   <van-field value="{{ deviceInfo.deviceName }}" placeholder="请输入设备名称" custom-style="padding: 22rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;background-color:transparent;" clearable="{{true}}" bind:blur="changeDeviceName" border="{{false}}"> </van-field>
@@ -28,8 +28,8 @@
 <add-room show="{{ isAddRoom }}" bind:close="closeAddRoom"></add-room>
 
 <import src="/commons/templates/popup.wxml" />
-<van-popup show="{{ isShowEditSwitch }}" z-index="10000" position="bottom" round bind:close="handleClose" lock-scroll="{{true}}" closeable custom-style="max-height: 1000rpx;">
-  <view class="px-32rpx text-black-2a relative" catchtouchmove="{{true}}">
+<van-popup show="{{ isShowEditSwitch }}" z-index="200" position="bottom" round bind:close="handleClose" lock-scroll="{{true}}" closeable catchtouchmove="true">
+  <view class="px-32rpx text-black-2a relative" >
     <view class="flex-center pb-64rpx">
       <template is="title" data="{{title: '按键名称'}}" />
     </view>

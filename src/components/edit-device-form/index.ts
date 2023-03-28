@@ -12,6 +12,10 @@ Component({
       type: Array,
       value: [],
     },
+    customStyle: {
+      type: String,
+      value: '',
+    },
     deviceName: {
       type: String,
       value: '',
@@ -27,6 +31,8 @@ Component({
       console.log('observers-deviceName', deviceName, roomId, switchList)
 
       this.setData({
+        isAddRoom: false,
+        isShowEditSwitch: false,
         deviceInfo: {
           roomId: roomId,
           roomName: '',
@@ -71,6 +77,11 @@ Component({
     },
 
     addRoom() {
+      if (roomBinding.store.roomList.length >= 50) {
+        Toast('一个家庭中最多创建50个房间')
+        return
+      }
+
       this.setData({
         isAddRoom: true,
       })

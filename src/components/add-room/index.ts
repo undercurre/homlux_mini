@@ -4,6 +4,11 @@ import { homeBinding, roomBinding } from '../../store/index'
 import Toast from '@vant/weapp/toast/toast'
 
 Component({
+  options: {
+    styleIsolation: 'apply-shared',
+    pureDataPattern: /^_/,
+  },
+
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] })],
 
   /**
@@ -57,6 +62,7 @@ Component({
    * 组件的初始数据
    */
   data: {
+    _hasEditName: false,
     roomInfo: {
       name: '',
       icon: 'parents-room',
@@ -124,6 +130,7 @@ Component({
       console.log('changeRoomName', event)
 
       this.setData({
+        _hasEditName: true,
         'roomInfo.name': event.detail.value,
       })
     },
@@ -137,8 +144,18 @@ Component({
         return
       }
 
-      if (this.data.roomInfo.name.length > 6) {
-        Toast('房间名称不能超过6个字符')
+      if (this.data.roomInfo.name.length > 5) {
+        Toast('房间名称不能超过5个字符')
+        return
+      }
+
+      // 过滤表情符号
+      const ranges = ['\ud83c[\udf00-\udfff]', '\ud83d[\udc00-\ude4f]', '\ud83d[\ude80-\udeff]']
+
+      const reg = new RegExp(ranges.join('|'), 'g')
+
+      if (reg.test(this.data.roomInfo.name)) {
+        Toast('房间名称不能包含表情字符')
         return
       }
 
@@ -163,9 +180,17 @@ Component({
     },
     selectIcon({ currentTarget }: WechatMiniprogram.BaseEvent) {
       console.log('selectIcon', currentTarget)
-      this.setData({
-        'roomInfo.icon': currentTarget.dataset.icon,
-      })
+      const { icon, text } = currentTarget.dataset
+      if (this.data._hasEditName) {
+        this.setData({
+          'roomInfo.icon': icon,
+        })
+      } else {
+        this.setData({
+          'roomInfo.icon': icon,
+          'roomInfo.name': text,
+        })
+      }
     },
   },
 })

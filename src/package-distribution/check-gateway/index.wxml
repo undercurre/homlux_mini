@@ -19,7 +19,7 @@
   <text class="block pb-60rpx text-center leading-48rpx text-28 text-hex-666">如需绑定至新的家庭，请单击网关最右侧按键</text>
 </van-dialog>
 
-<van-dialog use-slot title="设备连接失败" show="{{ status === 'error' }}" show-cancel-button="{{true}}" confirm-button-text="我知道了" confirm-button-color="#488FFF" bind:confirm="goBack" bind:cancel="cancel">
+<van-dialog use-slot title="设备连接失败" show="{{ status === 'error' }}" show-cancel-button="{{false}}" confirm-button-text="我知道了" confirm-button-color="#488FFF" bind:confirm="goBack">
   <view class="flex flex-col items-center py-46rpx text-28 text-hex-666 leading-48rpx">
     <view class="flex flex-col">
       <text>1.请确定网关是否已通电</text>

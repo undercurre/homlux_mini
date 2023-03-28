@@ -189,6 +189,8 @@ ComponentWithComputed({
           status: 'error',
         })
       }
+
+      bleDevice.client.close()
     },
 
     async queryDeviceOnlineStatus(device: IBleDevice) {

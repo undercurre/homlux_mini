@@ -182,12 +182,6 @@ Component({
       socket.sendCmdForDeviceIp()
     },
 
-    cancel() {
-      this.setData({
-        status: 'linking',
-      })
-    },
-
     /**
          "bind":0,  //绑定状态 0：未绑定  1：WIFI已绑定  2:有线已绑定
          "method":"wifi" //无线配网："wifi"，有线配网:"eth"

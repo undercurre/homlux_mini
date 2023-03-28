@@ -1,3 +1,5 @@
+<page-meta page-style="{{ isEditDevice ? 'overflow: hidden;' : '' }}" />
+
 <view class="page-container flex flex-col h-screen">
   <!-- 导航栏 -->
   <nav-bar leftArrow="{{status !== 'requesting'}}" bind:leftTap="goBack" background="transparent" title="{{pageTitle}}"></nav-bar>

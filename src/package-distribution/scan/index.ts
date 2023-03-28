@@ -291,12 +291,6 @@ ComponentWithComputed({
       })
     },
 
-    stopDiscoverBle() {
-      wx.stopBluetoothDevicesDiscovery()
-      wx.offBluetoothDeviceFound()
-      this.data._isDiscovering = false
-    },
-
     onCloseGwList() {
       this.setData({
         isShowGatewayList: false,
@@ -576,7 +570,6 @@ ComponentWithComputed({
         gatewaySn = this.data.selectGatewaySn
 
       storage.set('foundList', this.data.subdeviceList)
-      this.stopDiscoverBle()
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
           gatewayId,
@@ -590,7 +583,6 @@ ComponentWithComputed({
       const gatewayId = this.data.selectGatewayId,
         gatewaySn = this.data.selectGatewaySn
 
-      wx.closeBluetoothAdapter()
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/add-subdevice/index', {
           mac: this.data.deviceInfo.mac,
