@@ -34,7 +34,7 @@ ComponentWithComputed({
     selectGatewaySn: '',
     subdeviceList: Array<IBleBaseInfo>(),
     deviceInfo: {
-      icon: '/package-distribution/assets/scan/light.png'
+      icon: '/package-distribution/assets/scan/light.png',
     } as IAnyObject,
   },
 

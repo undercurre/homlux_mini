@@ -3,7 +3,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { roomBinding, homeBinding, userBinding } from '../../store/index'
+import { roomBinding, homeBinding, userBinding, deviceBinding } from '../../store/index'
 import { saveOrUpdateUserHouseInfo, delUserHouse, quitUserHouse, updateDefaultHouse } from '../../apis/index'
 import { strUtil } from '../../utils/index'
 
@@ -11,7 +11,10 @@ ComponentWithComputed({
   options: {
     addGlobalClass: true,
   },
-  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, homeBinding, userBinding] }), pageBehaviors],
+  behaviors: [
+    BehaviorWithStore({ storeBindings: [roomBinding, homeBinding, userBinding, deviceBinding] }),
+    pageBehaviors,
+  ],
 
   /**
    * 页面的初始数据
@@ -187,11 +190,15 @@ ComponentWithComputed({
     },
 
     async delHome() {
-      const list = homeBinding.store.homeList.filter((item) => item.houseCreatorFlag)
+      const allDeviceList = deviceBinding.store.allRoomDeviceList
+      if (allDeviceList && allDeviceList.length > 0) {
+        Toast('家庭存在设备，不允许解散')
+        return
+      }
 
-      if (list.length <= 1) {
+      const homeList = homeBinding.store.homeList.filter((item) => item.houseCreatorFlag)
+      if (homeList.length <= 1) {
         Toast('请至少保留一个创建的家庭')
-
         return
       }
 

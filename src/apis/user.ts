@@ -5,7 +5,7 @@ import { mzaioRequest } from '../utils/index'
  */
 export async function queryUserInfo() {
   return await mzaioRequest.post<User.UserInfo>({
-    log: false,
+    log: true,
     loading: false,
     url: '/v1/mzgd/user/queryWxUserInfo',
   })

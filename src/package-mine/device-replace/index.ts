@@ -1,6 +1,7 @@
 // package-mine/device-replace/index.ts
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
+import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { deviceBinding } from '../../store/index'
 import { StatusType } from './typings'
@@ -145,6 +146,12 @@ ComponentWithComputed({
     },
 
     addOldDevice() {
+      const allRoomDeviceList = deviceBinding.store.allRoomDeviceList
+      if (!allRoomDeviceList || !allRoomDeviceList.length) {
+        Toast('家庭中没有设备')
+        return
+      }
+
       this.setData({
         isSelectOldDevice: true,
       })

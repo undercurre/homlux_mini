@@ -13,6 +13,21 @@ export const userStore = observable({
   } as User.UserInfo,
   isLogin: false,
 
+  logout() {
+    runInAction(() => {
+      this.userInfo = {
+        userId: '',
+        nickName: '',
+        mobilePhone: '',
+        headImageUrl: '',
+        name: '',
+        wxId: '',
+        sex: 0,
+      }
+      this.isLogin = false
+    })
+  },
+
   setIsLogin(value: boolean) {
     runInAction(() => {
       this.isLogin = value

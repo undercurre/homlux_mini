@@ -28,7 +28,12 @@ ComponentWithComputed({
   },
 
   computed: {
-    // 过滤网关设备；如传入checkedDevice，则列表只显示相同productId的项，并排除已选择项
+    /**
+     * @description 待选设备列表
+     * isSubdevice 过滤网关设备；
+     * isCurrentRoom 按房间筛选
+     * isFilterDevice 如传入checkedDevice，则列表只显示相同productId的项，并排除已选择项
+     */
     wifiDeviceList(data) {
       const { filterDevice } = data
       const hasOldDevice = filterDevice && filterDevice.productId

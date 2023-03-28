@@ -1,6 +1,6 @@
 <wxs src="/commons/wxs/util.wxs" module="module" />
 <import src="/commons/templates/popup.wxml" />
-<van-popup show="{{ show }}" z-index="10002" round position="bottom" bind:close="handleClose" catchtouchmove="blank">
+<van-popup show="{{ show }}" z-index="1002" round position="bottom" bind:close="handleClose" catchtouchmove="blank">
   <view class="w-750rpx h-1200rpx relative flex flex-col items-center">
     <template is="close" />
     <template is="title" data="{{title: title}}" />
@@ -24,7 +24,7 @@
             <scene-card class="mt-24rpx" wx:for="{{listComputed}}" wx:key="sceneId" bind:cardTap="handleCardTap" scene-info="{{item}}" select="{{module.includes(selectList, item.sceneId)}}" />
           </view>
           <view wx:else class="w-686rpx grid grid-cols-4 gap-x-20rpx gap-y-24rpx">
-            <device-card wx:for="{{listComputed}}" wx:key="uniId" bind:cardTap="handleCardTap" device-type="{{linkType === 'light' ? 'light' : 'switch'}}" device-info="{{item}}" select="{{module.includes(selectList, item.uniId)}}" />
+            <device-card wx:for="{{listComputed}}" wx:key="uniId" bind:cardTap="handleCardTap" device-type="{{linkType === 'light' ? 'light' : 'switch'}}" device-info="{{item}}" select="{{module.includes(selectList, item.uniId)}}" bind:offlineTap="handleOfflineTap" />
           </view>
         </view>
         <view class="h-32rpx"></view>
@@ -41,4 +41,19 @@
     </view>
     <view style="height: calc(96rpx - env(safe-area-inset-bottom))"></view>
   </view>
+
+  <van-dialog z-index="1003" use-slot title="子设备离线" show="{{ showDeviceOffline }}" confirm-button-color="#488FFF" confirmButtonText="我知道了" bind:close="handleCloseDeviceOffice">
+    <view class="flex-col-center w-full">
+      <image src="{{officeDeviceInfo.pic}}" class="w-160rpx h-160rpx mt-70rpx" />
+      <view class="flex flex-col mt-88rpx">
+        <text class="text-hex-666666 text-28rpx">可能的原因：</text>
+        <text class="text-hex-555659 text-24rpx mt-16rpx">1.路由器密码被修改，建议将智能网关<text class="text-blue underline decoration-solid decoration-blue" bindtap="handleRebindGateway">重新配网</text></text>
+        <text class="text-hex-555659 text-24rpx mt-8rpx">2.设备与网关未通电</text>
+        <text class="text-hex-555659 text-24rpx mt-8rpx">3.设备与网关距离过远，或有其他遮挡物</text>
+        <text class="text-hex-555659 text-24rpx mt-8rpx">4.路由器未通电或网络异常</text>
+      </view>
+      <view class="h-80rpx"></view>
+    </view>
+  </van-dialog>
+
 </van-popup>

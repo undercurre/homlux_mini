@@ -10,15 +10,15 @@
   </scroll-view>
 
   <view class="flex flex-col items-center pt-24rpx px-32rpx">
-      <view class="flex flex-row items-center text-26 text-black-59 leading-36rpx">
-        <text>继续添加其他设备，</text>
-        <text class="text-blue" bind:tap="toScan">扫码</text>
-        <text class="px-12rpx">搜索</text>
-        <text class="text-blue" bind:tap="toSearchSubdevice">附近设备 ></text>
-      </view>
-
-      <van-button class="w-full mt-32rpx" block type="primary" size="large" bind:click="finish" disabled="{{!deviceInfo.deviceName}}">完成</van-button>
+    <view class="flex flex-row items-center text-26 text-black-59 leading-36rpx">
+      <text>继续添加其他设备，</text>
+      <text class="text-blue" bind:tap="toScan">扫码</text>
+      <text class="px-12rpx">搜索</text>
+      <text class="text-blue" bind:tap="toSearchSubdevice">附近设备 ></text>
     </view>
+
+    <van-button class="w-full mt-32rpx" block type="primary" size="large" bind:click="finish" disabled="{{!deviceInfo.deviceName}}">完成</van-button>
+  </view>
 </view>
 
 <van-toast id="van-toast" />

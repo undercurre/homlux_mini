@@ -21,10 +21,12 @@ ComponentWithComputed({
       if (roomList) {
         return [
           { roomId: '', roomName: '全屋' },
-          ...roomList.map((room) => ({
-            roomId: room.roomId,
-            roomName: room.roomName,
-          })),
+          ...roomList
+            .filter((room) => room.subDeviceNum) // 不显示无子设备的房间
+            .map((room) => ({
+              roomId: room.roomId,
+              roomName: room.roomName,
+            })),
         ]
       }
       return []

@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { proType } from '../../../config/index'
-import { deviceBinding, roomBinding, roomStore } from '../../../store/index'
+import { deviceBinding, deviceStore, roomBinding, roomStore } from '../../../store/index'
 
 ComponentWithComputed({
   options: {
@@ -65,6 +65,8 @@ ComponentWithComputed({
   data: {
     contentHeight: 0,
     roomSelect: '',
+    showDeviceOffline: false,
+    officeDeviceInfo: {} as Device.DeviceItem,
   },
 
   computed: {
@@ -154,6 +156,24 @@ ComponentWithComputed({
     handleRoomSelect(e: WechatMiniprogram.TouchEvent) {
       this.setData({
         roomSelect: e.currentTarget.dataset.item.roomId,
+      })
+    },
+    handleOfflineTap(e: { detail: Device.DeviceItem }) {
+      this.setData({
+        showDeviceOffline: true,
+        officeDeviceInfo: e.detail,
+      })
+      this.triggerEvent('offlineTap', e.detail)
+    },
+    handleCloseDeviceOffice() {
+      this.setData({
+        showDeviceOffline: false,
+      })
+    },
+    handleRebindGateway() {
+      const gateway = deviceStore.allRoomDeviceMap[this.data.officeDeviceInfo.gatewayId]
+      wx.navigateTo({
+        url: `/package-distribution/wifi-connect/index?type=changeWifi&sn=${gateway.sn}`,
       })
     },
     blank() {},

@@ -28,7 +28,7 @@
   </view>
   <view wx:else class="absolute left-0 bottom-18rpx w-160rpx flex-center">
     <text wx:if="{{!deviceInfo.onLineStatus && deviceType !== 'switch'}}" class="text-24rpx text-hex-fbbb32">离线</text>
-    <text wx:else class="text-20rpx mb-4rpx {{deviceInfo.onLineStatus ? 'text-black-tips' : 'text-hex-fbbb32'}}">{{deviceInfo.deviceName}}</text>
+    <text wx:elif="{{isSwitch && showBtnDetail}}" class="text-20rpx mb-4rpx {{deviceInfo.onLineStatus ? 'text-black-tips' : 'text-hex-fbbb32'}}">{{deviceInfo.deviceName}}</text>
   </view>
 </view>
 <van-toast id="van-toast" />

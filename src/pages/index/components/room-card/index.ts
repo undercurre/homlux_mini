@@ -3,7 +3,8 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { runInAction } from 'mobx-miniprogram'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { execScene } from '../../../../apis/scene'
-import { roomBinding, roomStore } from '../../../../store/index'
+import { proType } from '../../../../config/index'
+import { deviceStore, roomBinding, roomStore } from '../../../../store/index'
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
@@ -85,55 +86,23 @@ ComponentWithComputed({
         })
       }, 1050)
       execScene(e.currentTarget.dataset.value)
-      // this.execCardBgAnimationStart(e.currentTarget.dataset.value)
     },
     handleCardTap() {
       const index = roomStore.roomList.findIndex((room) => room.roomId === this.data.roomInfo.roomId)
       runInAction(() => {
         roomStore.currentRoomIndex = index
+        deviceStore.deviceList = deviceStore.allRoomDeviceList.filter(
+          (device) =>
+            device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
+            device.proType !== proType.gateway,
+        )
+        deviceStore.selectList = []
+        deviceStore.editSelect = []
+        deviceStore.isEditSelectMode = false
       })
       wx.navigateTo({
         url: '/package-room-control/index/index',
       })
-    },
-    execCardBgAnimationStart() {
-      // this.
-      // this.animate(
-      //   `#effect-${value}`,
-      //   [
-      //     {
-      //       opacity: 0,
-      //     },
-      //     {
-      //       opacity: 1,
-      //     },
-      //   ],
-      //   30,
-      //   () => {
-      //     setTimeout(() => {
-      //       this.execCardBgAnimationEnd(value)
-      //     }, 30)
-      //   },
-      // )
-    },
-    execCardBgAnimationEnd(value: string) {
-      this.animate(
-        `#effect-${value}`,
-        [
-          {
-            opacity: 1,
-          },
-          {
-            opacity: 0,
-          },
-        ],
-        60,
-        () => {
-          this.setData({
-            sceneClickId: '',
-          })
-        },
-      )
     },
   },
 })

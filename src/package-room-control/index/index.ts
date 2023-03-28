@@ -180,17 +180,6 @@ ComponentWithComputed({
      * 生命周期函数--监听页面加载
      */
     onLoad() {
-      // 先从已加载数据拿出来
-      runInAction(() => {
-        deviceStore.deviceList = deviceStore.allRoomDeviceList.filter(
-          (device) =>
-            device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
-            device.proType !== proType.gateway,
-        )
-        deviceStore.selectList = []
-        deviceStore.editSelect = []
-        deviceStore.isEditSelectMode = false
-      })
       // 再更新一遍数据
       this.reloadData()
       emitter.on('wsReceive', async (e) => {
@@ -244,7 +233,6 @@ ComponentWithComputed({
         }
       })
     },
-
     async reloadData() {
       try {
         await Promise.all([
@@ -492,6 +480,7 @@ ComponentWithComputed({
         device.mzgdPropertyDTOList['1'].OnOff = OnOff ? 0 : 1
         deviceStore.deviceList = [...deviceStore.deviceList]
       })
+      this.updateDeviceList()
       const res = await controlDevice({
         topic: '/subdevice/control',
         deviceId: e.detail.gatewayId,
@@ -511,6 +500,7 @@ ComponentWithComputed({
         })
         Toast('控制失败')
       }
+      this.updateDeviceList()
       // 首页需要更新灯光打开个数
       homeStore.updateCurrentHomeDetail()
     },
@@ -577,6 +567,7 @@ ComponentWithComputed({
           device.mzgdPropertyDTOList[ep].OnOff = OnOff ? 0 : 1
           deviceStore.deviceList = [...deviceStore.deviceList]
         })
+        this.updateDeviceList()
         const res = await controlDevice({
           topic: '/subdevice/control',
           deviceId: e.detail.gatewayId,
@@ -596,6 +587,7 @@ ComponentWithComputed({
           })
           Toast('控制失败')
         }
+        this.updateDeviceList()
       }
     },
     handlePopUp(e: { detail: 'up' | 'down' }) {
@@ -778,6 +770,15 @@ ComponentWithComputed({
       wx.navigateTo({
         url: `/package-distribution/wifi-connect/index?type=changeWifi&sn=${gateway.sn}`,
       })
+    },
+    handleRoomMoveSuccess() {
+      const deviceMap = deviceStore.allRoomDeviceFlattenMap
+      runInAction(() => {
+        deviceStore.selectList = deviceStore.selectList.filter(
+          (uniId) => deviceMap[uniId].roomId === roomStore.currentRoom.roomId,
+        )
+      })
+      this.updateSelectType()
     },
   },
 })
