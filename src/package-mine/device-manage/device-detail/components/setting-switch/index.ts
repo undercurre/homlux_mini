@@ -2,7 +2,7 @@ import Toast from '@vant/weapp/toast/toast'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { editDeviceInfo } from '../../../../../apis/device'
 import { homeStore } from '../../../../../store/index'
-import { validateInputName } from '../../../../../utils/validate'
+import { checkInputNameIllegal } from '../../../../../utils/validate'
 
 ComponentWithComputed({
   options: {
@@ -70,7 +70,7 @@ ComponentWithComputed({
     },
     async handleConfirm() {
       // 校验名字合法性
-      if (!validateInputName(this.data.switchName)) {
+      if (checkInputNameIllegal(this.data.switchName)) {
         Toast('按键名称不能用特殊符号或表情')
         return
       }

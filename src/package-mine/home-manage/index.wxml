@@ -48,7 +48,7 @@
 
 <van-popup round show="{{ isEditName }}" bind:close="onCloseEditName" position="bottom">
   <view class="pb-100rpx">
-    <text class="block pt-48rpx pb-64rpx text-center leading-50rpx text-36 text-black-2a font-medium">家庭名称</text>
+    <text class="block pt-48rpx pb-64rpx text-center leading-50rpx text-36 text-black-2a font-medium">{{namingPopupTitle}}</text>
 
     <text class="block pl-48rpx pb-32rpx text-28">家庭名称</text>
 
@@ -59,7 +59,7 @@
     <view class="flex flex-row gap-46rpx pt-80rpx px-32rpx">
       <van-button class="grow" size="large" bind:click="onCloseEditName">取消</van-button>
 
-      <van-button class="grow" size="large" type="primary" bind:click="confirmHomeInfo">确定</van-button>
+      <van-button disabled="{{!homeInfoEdited.houseName}}" class="grow" size="large" type="primary" bind:click="confirmHomeInfo">确定</van-button>
     </view>
   </view>
 </van-popup>

@@ -1,5 +1,5 @@
 import Toast from '@vant/weapp/toast/toast'
-import { validateInputName } from '../../../../utils/index'
+import { checkInputNameIllegal } from '../../../../utils/index'
 
 Component({
   options: {
@@ -45,7 +45,7 @@ Component({
     },
     handleConfirm() {
       // 校验名字合法性
-      if (!validateInputName(this.data.name)) {
+      if (checkInputNameIllegal(this.data.name)) {
         Toast('场景名称不能用特殊符号或表情')
         return
       }
