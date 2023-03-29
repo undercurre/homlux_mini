@@ -1,5 +1,5 @@
 <view class="page-container flex flex-col pt-40rpx">
-  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="{{roomInfo.roomName}}"></nav-bar>
+  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="{{roomInfo.roomName}}" show-go-home></nav-bar>
 
   <view class="grow">
     <van-cell-group inset>
