@@ -89,9 +89,6 @@ ComponentWithComputed({
       // })
     },
     moved: function () {},
-    detached: function () {
-      wx.closeBluetoothAdapter()
-    },
   },
 
   methods: {
@@ -510,6 +507,7 @@ ComponentWithComputed({
 
     finish() {
       homeBinding.store.updateCurrentHomeDetail()
+      wx.closeBluetoothAdapter()
 
       wx.switchTab({
         url: '/pages/index/index',
