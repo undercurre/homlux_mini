@@ -104,7 +104,7 @@ Component({
       console.log('changeSwitchName', event)
 
       this.setData({
-        'switchInfo.switchName': event.detail.value,
+        'switchInfo.switchName': event.detail.value || '',
       })
     },
 
@@ -136,7 +136,7 @@ Component({
       console.log('changeDeviceName', event)
 
       this.setData({
-        'deviceInfo.deviceName': event.detail.value,
+        'deviceInfo.deviceName': event.detail.value || '',
       })
 
       this.triggerEvent('change', Object.assign({}, this.data.deviceInfo))
