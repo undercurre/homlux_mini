@@ -332,7 +332,7 @@ ComponentWithComputed({
         }
         if (deviceStore.editSelect.some((uniId) => uniId.includes(':'))) {
           Dialog.confirm({
-            message: '该按键所在的面板将被移动到新的房间是否继续',
+            message: '按键所在的面板将被移动至新房间，是否继续？',
             confirmButtonText: '是',
             cancelButtonText: '否',
             context: this,
