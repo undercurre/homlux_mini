@@ -83,11 +83,11 @@ ComponentWithComputed({
 
       this.initBle()
 
-      this.setData({
-        deviceList: JSON.parse(
-          '[{"proType":"0x21","deviceUuid":"2405EEB6-EF0D-C8AB-FC47-CA9EE267CFB6","mac":"04CD15AEAEAE","signal":"weak","RSSI":-80,"zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/panel-4.png","name":"四路面板9-AEAE","isChecked":false,"client":{"key":"midea@homluxAEAE","isConnected":false,"serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEAEAE","deviceUuid":"2405EEB6-EF0D-C8AB-FC47-CA9EE267CFB6"},"roomId":"3a7c6a656d3f443bb1676ecaa25d94cd","roomName":"卧室","switchList":[{"switchId":"1","switchName":"按键1"},{"switchId":"2","switchName":"按键2"},{"switchId":"3","switchName":"按键3"},{"switchId":"4","switchName":"按键4"}],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2},{"proType":"0x21","deviceUuid":"2FE9C556-EAC2-CA12-9DE6-DB85643146D1","mac":"04CD15AEB53A","signal":"weak","RSSI":-88,"zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/panel-4.png","name":"四路面板10-B53A","isChecked":false,"client":{"key":"midea@homluxB53A","isConnected":false,"serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEB53A","deviceUuid":"2FE9C556-EAC2-CA12-9DE6-DB85643146D1"},"roomId":"3a7c6a656d3f443bb1676ecaa25d94cd","roomName":"卧室","switchList":[{"switchId":"1","switchName":"按键1"},{"switchId":"2","switchName":"按键2"},{"switchId":"3","switchName":"按键3"},{"switchId":"4","switchName":"按键4"}],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2}]',
-        ),
-      })
+      // this.setData({
+      //   deviceList: JSON.parse(
+      //     '[{"proType":"0x21","deviceUuid":"2405EEB6-EF0D-C8AB-FC47-CA9EE267CFB6","mac":"04CD15AEAEAE","signal":"weak","RSSI":-80,"zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/panel-4.png","name":"四路面板9-AEAE","isChecked":false,"client":{"key":"midea@homluxAEAE","isConnected":false,"serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEAEAE","deviceUuid":"2405EEB6-EF0D-C8AB-FC47-CA9EE267CFB6"},"roomId":"3a7c6a656d3f443bb1676ecaa25d94cd","roomName":"卧室","switchList":[{"switchId":"1","switchName":"按键1"},{"switchId":"2","switchName":"按键2"},{"switchId":"3","switchName":"按键3"},{"switchId":"4","switchName":"按键4"}],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2},{"proType":"0x21","deviceUuid":"2FE9C556-EAC2-CA12-9DE6-DB85643146D1","mac":"04CD15AEB53A","signal":"weak","RSSI":-88,"zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/panel-4.png","name":"四路面板10-B53A","isChecked":false,"client":{"key":"midea@homluxB53A","isConnected":false,"serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEB53A","deviceUuid":"2FE9C556-EAC2-CA12-9DE6-DB85643146D1"},"roomId":"3a7c6a656d3f443bb1676ecaa25d94cd","roomName":"卧室","switchList":[{"switchId":"1","switchName":"按键1"},{"switchId":"2","switchName":"按键2"},{"switchId":"3","switchName":"按键3"},{"switchId":"4","switchName":"按键4"}],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2}]',
+      //   ),
+      // })
     },
     moved: function () {},
   },
