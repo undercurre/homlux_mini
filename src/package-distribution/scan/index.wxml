@@ -18,7 +18,7 @@
     </view>
 
     <view class="pt-80rpx h-300 grow shrink camera-mask flex flex-col items-center justify-between">
-      <view  wx:if="{{bleStatus !== ''}}" class="inline-block flex flex-row items-center bg-hex-5A5A5A rounded-32rpx leading-74rpx px-28rpx w-min-380">
+      <view wx:if="{{bleStatus !== ''}}" class="inline-block flex flex-row items-center bg-hex-5A5A5A rounded-32rpx leading-74rpx px-28rpx w-min-380">
         <image wx:if="{{bleStatus === 'open'}}" class="w-28 h-28 rotate" src="/package-distribution/assets/scan/scaning.png"></image>
 
         <text class="grow text-hex-F4F8FF px-16rpx" bind:tap="checkSystemBleSwitch">{{tipsText}}</text>

@@ -25,7 +25,7 @@ ComponentWithComputed({
     roomSelectMenuList(data) {
       if (data.roomList) {
         return [
-          { roomId: '0', roomName: '全屋' },
+          { roomId: '', roomName: '全屋' },
           ...(data.roomList as Room.RoomInfo[]).map((room) => ({
             roomId: room.roomId,
             roomName: room.roomName,
@@ -218,10 +218,10 @@ ComponentWithComputed({
       this.hideSelectRoomMenu()
       if (e.detail === '0') {
         // 查全屋
-        deviceBinding.store.updateAllRoomDeviceList()
+        deviceBinding.store.updateAllRoomDeviceList(undefined, { loading: true })
       } else {
         // 查房间
-        deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
+        deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect, { loading: true })
       }
     },
 
