@@ -20,13 +20,14 @@
 <van-toast id="van-toast" />
 <van-popup show="{{ showPopup }}" round position="bottom" bind:close="handleClose">
   <view class="w-750rpx flex flex-col items-center">
+    <template is="close" />
     <template is="title" data="{{title: '按键设置'}}" />
     <view class="mt-98rpx w-686rpx">
       <text class="block pl-16rpx pb-32rpx text-28">房间名称</text>
       <van-field custom-style="padding: 20rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" maxlength="{{5}}" model:value="{{ switchName }}" placeholder="请输入按键名称" clearable></van-field>
     </view>
     <view class="h-98rpx"></view>
-    <template is="bottom-btn" />
+    <template is="bottom-btn" data="{{disabled:!switchName}}" />
     <view class="h-32rpx"></view>
   </view>
 </van-popup>
