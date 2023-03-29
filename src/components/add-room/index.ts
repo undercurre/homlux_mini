@@ -2,7 +2,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
 import { saveHouseRoomInfo } from '../../apis/index'
 import { homeBinding, roomBinding } from '../../store/index'
-import { validateInputName } from '../../utils/index'
+import { checkInputNameIllegal } from '../../utils/index'
 
 Component({
   options: {
@@ -146,7 +146,7 @@ Component({
       }
 
       // 校验名字合法性
-      if (!validateInputName(this.data.roomInfo.name)) {
+      if (checkInputNameIllegal(this.data.roomInfo.name)) {
         Toast('名称不能用特殊符号或表情')
         return
       }

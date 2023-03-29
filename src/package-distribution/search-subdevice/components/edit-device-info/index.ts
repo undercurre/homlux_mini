@@ -1,6 +1,5 @@
 import Toast from '@vant/weapp/toast/toast'
-import { roomBinding } from '../../../../store/index'
-import { validateInputName } from '../../../../utils/index'
+import { checkInputNameIllegal } from '../../../../utils/index'
 
 Component({
   /**
@@ -69,7 +68,7 @@ Component({
       }
 
       // 校验名字合法性
-      if (!validateInputName(this.data.deviceInfo?.deviceName)) {
+      if (checkInputNameIllegal(this.data.deviceInfo?.deviceName)) {
         Toast('名称不能用特殊符号或表情')
         return
       }
