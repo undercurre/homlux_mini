@@ -5,7 +5,7 @@ import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { roomBinding, homeBinding, userBinding, deviceBinding } from '../../store/index'
 import { saveOrUpdateUserHouseInfo, delUserHouse, quitUserHouse, updateDefaultHouse } from '../../apis/index'
-import { strUtil } from '../../utils/index'
+import { strUtil, checkInputNameIllegal } from '../../utils/index'
 
 ComponentWithComputed({
   options: {
@@ -48,6 +48,9 @@ ComponentWithComputed({
       ]
 
       return actions
+    },
+    namingPopupTitle(data) {
+      return data.homeInfoEdited.houseId ? '重命名家庭' : '新建家庭'
     },
   },
 
@@ -152,9 +155,8 @@ ComponentWithComputed({
     async confirmHomeInfo() {
       const { houseName } = this.data.homeInfoEdited
 
-      if (!houseName) {
-        Toast('家庭名称不能为空')
-
+      if (checkInputNameIllegal(houseName)) {
+        Toast('家庭名称不能用特殊符号或表情')
         return
       }
 
