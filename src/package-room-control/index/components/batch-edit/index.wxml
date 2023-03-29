@@ -35,6 +35,7 @@
       <text class="text-28rpx text-blue mb-8rpx font-semibold">完成</text>
     </view>
   </view>
+
   <van-popup show="{{ showEditName }}" z-index="2000" round position="bottom" bind:close="handleClose">
     <view class="w-750rpx relative flex flex-col items-center">
       <template is="close" />

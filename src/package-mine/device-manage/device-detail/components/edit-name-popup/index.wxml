@@ -9,4 +9,5 @@
     <template is="bottom-btn" />
     <view class="h-32rpx"></view>
   </view>
+  <van-toast id="van-toast" />
 </van-popup>

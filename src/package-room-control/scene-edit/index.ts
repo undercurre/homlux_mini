@@ -7,7 +7,6 @@ import { emitter } from '../../utils/eventBus'
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
 import { removeSwitchRel } from '../utils/index'
-
 ComponentWithComputed({
   behaviors: [pageBehavior],
   /**

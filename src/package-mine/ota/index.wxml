@@ -2,7 +2,7 @@
 <view class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7" style="z-index: -1"></view>
 <view class="h-100vh flex flex-col items-center">
   <!-- 标题 -->
-  <nav-bar title="固件升级" left-arrow bind:leftTap="goBack"></nav-bar>
+  <nav-bar title="固件升级" show-go-home="{{fromDevice}}" left-arrow bind:leftTap="goBack"></nav-bar>
   <van-cell-group inset>
     <van-cell>
       <view class="flex flex-col items-start pr-44rpx">
@@ -38,7 +38,7 @@
             <view class="w-686rpx h-1rpx bg-hex-eef2f7"></view>
             <view class="flex flex-col w-full">
               <view class="mt-24rpx flex">
-                <text>当前版本：</text>
+                <text>最新版本：</text>
                 <view class="ml-30rpx">
                   <text>{{item.version}}</text>
                 </view>

@@ -17,6 +17,7 @@ ComponentWithComputed({
     otaData: [{}],
     isUpdating: false,
     hasUpdate: false,
+    fromDevice: false,
     _pollingTimer: 0,
   },
 
@@ -36,7 +37,10 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    async onLoad() {
+    async onLoad(params: IAnyObject) {
+      this.setData({
+        fromDevice: !!params.fromDevice,
+      })
       wx.createSelectorQuery()
         .select('#content')
         .boundingClientRect()
