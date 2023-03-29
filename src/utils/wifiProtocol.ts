@@ -266,11 +266,6 @@ export class WifiSocket {
       }
 
       this.sendCmdForDeviceIp().then(async () => {
-        if (this.deviceInfo.ip) {
-          resolve({ success: true })
-          return
-        }
-
         // 网关固定IP，优先11.1，ip冲突才会选择33.1
         const ipList = ['192.168.11.1', '192.168.33.1']
 
@@ -286,6 +281,11 @@ export class WifiSocket {
             resolve({ success: true })
             return
           }
+        }
+
+        if (this.deviceInfo.ip) {
+          resolve({ success: true })
+          return
         }
 
         resolve({ success: false })
