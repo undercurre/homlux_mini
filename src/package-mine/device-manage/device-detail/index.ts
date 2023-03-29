@@ -130,7 +130,7 @@ ComponentWithComputed({
     },
     handleToOTA() {
       wx.navigateTo({
-        url: '/package-mine/ota/index',
+        url: '/package-mine/ota/index?fromDevice=1',
       })
     },
     handleDeviceDelete() {
