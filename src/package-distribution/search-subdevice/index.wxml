@@ -128,6 +128,6 @@
   </view>
 </view>
 
-<edit-device-info show="{{isEditDevice}}" switch-list="{{editDeviceInfo.switchList}}" device-name="{{editDeviceInfo.deviceName}}" room-id="{{editDeviceInfo.roomId}}" bind:close="cancelEditDevice" bind:confirm="confirmEditDevice"></edit-device-info>
+<edit-device-info show="{{isEditDevice}}" switch-list="{{editDeviceInfo.switchList}}" device-name="{{editDeviceInfo.deviceName}}" room-id="{{editDeviceInfo.roomId}}" room-name="{{editDeviceInfo.roomName}}" bind:close="cancelEditDevice" bind:confirm="confirmEditDevice"></edit-device-info>
 
 <van-toast id="van-toast" />

@@ -1,7 +1,8 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import Toast from '@vant/weapp/toast/toast'
 import { saveHouseRoomInfo } from '../../apis/index'
 import { homeBinding, roomBinding } from '../../store/index'
-import Toast from '@vant/weapp/toast/toast'
+import { validateInputName } from '../../utils/index'
 
 Component({
   options: {
@@ -140,22 +141,18 @@ Component({
     },
     async handleConfirm() {
       if (!this.data.roomInfo.name) {
-        Toast('房间名称不能为空')
+        Toast('名称不能为空')
+        return
+      }
+
+      // 校验名字合法性
+      if (!validateInputName(this.data.roomInfo.name)) {
+        Toast('名称不能用特殊符号或表情')
         return
       }
 
       if (this.data.roomInfo.name.length > 5) {
-        Toast('房间名称不能超过5个字符')
-        return
-      }
-
-      // 过滤表情符号
-      const ranges = ['\ud83c[\udf00-\udfff]', '\ud83d[\udc00-\ude4f]', '\ud83d[\ude80-\udeff]']
-
-      const reg = new RegExp(ranges.join('|'), 'g')
-
-      if (reg.test(this.data.roomInfo.name)) {
-        Toast('房间名称不能包含表情字符')
+        Toast('名称不能超过5个字符')
         return
       }
 
