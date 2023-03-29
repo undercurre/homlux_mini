@@ -29,6 +29,13 @@ ComponentWithComputed({
       }
       return ''
     },
+    mac(data) {
+      if (data.deviceInfo.deviceType === 1) {
+        return data.deviceInfo.sn.substring(8, 9) + data.deviceInfo.sn.substring(17, 28)
+      } else {
+        return data.deviceId
+      }
+    },
     prodType(data) {
       if (data.deviceInfo.proType) {
         return proName[data.deviceInfo.proType]
