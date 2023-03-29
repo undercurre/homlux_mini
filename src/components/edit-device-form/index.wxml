@@ -1,7 +1,7 @@
 <view style="{{customStyle}}">
   <text class="label">设备名称</text>
 
-  <van-field value="{{ deviceInfo.deviceName }}" placeholder="请输入设备名称" custom-style="padding: 22rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;background-color:transparent;" clearable="{{true}}" bind:blur="changeDeviceName" border="{{false}}"> </van-field>
+  <van-field value="{{ deviceInfo.deviceName }}" placeholder="请输入设备名称" custom-style="padding: 22rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;background-color:transparent;" clearable="{{true}}" bind:clear="changeDeviceName" bind:blur="changeDeviceName" border="{{false}}"> </van-field>
 
   <block wx:if="{{deviceInfo.switchList.length > 1}}">
     <text class="label">按键名称</text>
@@ -36,7 +36,7 @@
 
     <text class="block pl-16rpx pb-32rpx text-28">按键名称</text>
 
-    <van-field custom-style="padding: 20rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" value="{{ switchInfo.switchName }}" placeholder="请输入按键名称" clearable="{{true}}" bind:blur="changeSwitchName" border="{{false}}"></van-field>
+    <van-field custom-style="padding: 20rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" value="{{ switchInfo.switchName }}" placeholder="请输入按键名称" clearable="{{true}}" bind:clear="changeSwitchName" bind:blur="changeSwitchName" border="{{false}}"></van-field>
     <view class="h-80rpx"></view>
 
     <template is="bottom-btn" />
