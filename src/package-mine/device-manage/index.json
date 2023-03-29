@@ -1,6 +1,6 @@
 {
   "component": true,
   "usingComponents": {
-    "dropdown-menu": "./components/dropdown-menu/index"
+    "room-tabs": "../../components/room-tabs/index"
   }
 }
