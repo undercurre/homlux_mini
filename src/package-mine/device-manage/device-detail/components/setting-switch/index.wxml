@@ -17,6 +17,7 @@
   </view>
 </view>
 
+<van-toast id="van-toast" />
 <van-popup show="{{ showPopup }}" round position="bottom" bind:close="handleClose">
   <view class="w-750rpx flex flex-col items-center">
     <template is="title" data="{{title: '按键设置'}}" />

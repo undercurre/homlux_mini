@@ -1,4 +1,6 @@
-// package-mine/device-manage/components/edit-name-popup/index.ts
+import Toast from '@vant/weapp/toast/toast'
+import { validateInputName } from '../../../../../utils/index'
+
 Component({
   options: {
     styleIsolation: 'apply-shared',
@@ -37,6 +39,11 @@ Component({
       this.triggerEvent('close')
     },
     handleConfirm() {
+      // 校验名字合法性
+      if (!validateInputName(this.data.deviceName)) {
+        Toast('设备名称不能用特殊符号或表情')
+        return
+      }
       this.triggerEvent('confirm', this.data.deviceName)
     },
   },

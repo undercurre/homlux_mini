@@ -6,7 +6,7 @@ import { deviceBinding, deviceStore, homeStore, roomBinding, roomStore } from '.
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { runInAction } from 'mobx-miniprogram'
-import { storage } from '../../../../utils/index'
+import { storage, validateInputName } from '../../../../utils/index'
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
@@ -230,6 +230,15 @@ ComponentWithComputed({
     async handleConfirm() {
       if (this.data.showEditName) {
         if (this.data.editProType === proType.switch) {
+          // 校验名字合法性
+          if (!validateInputName(this.data.editSwitchName)) {
+            Toast('按键名称不能用特殊符号或表情')
+            return
+          }
+          if (!validateInputName(this.data.editDeviceName)) {
+            Toast('设备名称不能用特殊符号或表情')
+            return
+          }
           const [deviceId, switchId] = deviceStore.editSelect[0].split(':')
           const device = deviceStore.allRoomDeviceFlattenMap[deviceStore.editSelect[0]]
           const deviceInfoUpdateVoList = [] as Device.DeviceInfoUpdateVo[]
@@ -268,6 +277,10 @@ ComponentWithComputed({
             this.showFail()
           }
         } else {
+          if (!validateInputName(this.data.editDeviceName)) {
+            Toast('设备名称不能用特殊符号或表情')
+            return
+          }
           const res = await batchUpdate({
             deviceInfoUpdateVoList: [
               {
