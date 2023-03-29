@@ -6,7 +6,7 @@ import { deviceBinding, deviceStore, homeStore, roomBinding, roomStore } from '.
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { runInAction } from 'mobx-miniprogram'
-import { storage, validateInputName } from '../../../../utils/index'
+import { storage, checkInputNameIllegal } from '../../../../utils/index'
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
@@ -231,11 +231,11 @@ ComponentWithComputed({
       if (this.data.showEditName) {
         if (this.data.editProType === proType.switch) {
           // 校验名字合法性
-          if (!validateInputName(this.data.editSwitchName)) {
+          if (checkInputNameIllegal(this.data.editSwitchName)) {
             Toast('按键名称不能用特殊符号或表情')
             return
           }
-          if (!validateInputName(this.data.editDeviceName)) {
+          if (checkInputNameIllegal(this.data.editDeviceName)) {
             Toast('设备名称不能用特殊符号或表情')
             return
           }
@@ -277,7 +277,7 @@ ComponentWithComputed({
             this.showFail()
           }
         } else {
-          if (!validateInputName(this.data.editDeviceName)) {
+          if (checkInputNameIllegal(this.data.editDeviceName)) {
             Toast('设备名称不能用特殊符号或表情')
             return
           }
