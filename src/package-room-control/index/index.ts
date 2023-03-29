@@ -672,7 +672,7 @@ ComponentWithComputed({
           deviceStore.isEditSelectMode = true
           deviceStore.selectList = []
         })
-        this.updateDeviceList()
+        // this.updateDeviceList()
       }
       this.setData({
         dragging: e.detail.dragging,
