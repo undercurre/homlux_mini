@@ -97,35 +97,18 @@ ComponentWithComputed({
         sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]] &&
         sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]].sceneName
       ) {
-        const sceneName = sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]].sceneName
-        if (new RegExp('[\\u4E00-\\u9FFF]+', 'g').test(sceneName)) {
-          // 名字有中文，只能显示三个字符
-          return sceneName.slice(0, 3)
-        } else {
-          // 全英文，显示4个
-          return sceneName.slice(0, 4)
-        }
+        return sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]].sceneName.slice(0, 4)
       }
       return ''
     },
     deviceName(data) {
-      let name = ''
       // 如果是开关，deviceName显示开关名称
       if (data.deviceInfo.proType === proType.switch && data.showBtnDetail) {
-        name = data.deviceInfo.switchInfoDTOList[0].switchName ?? '按键' + data.deviceInfo.switchInfoDTOList[0].switchId
-        if (new RegExp('[\\u4E00-\\u9FFF]+', 'g').test(name)) {
-          return name.slice(0, 5)
-        }
-        return name.slice(0, 8)
-      } else {
-        name = data.deviceInfo.deviceName
-      }
-      if (new RegExp('[\\u4E00-\\u9FFF]+', 'g').test(name)) {
-        // 存在中文字符，只能显示5个字符
+        const name =
+          data.deviceInfo.switchInfoDTOList[0].switchName ?? '按键' + data.deviceInfo.switchInfoDTOList[0].switchId
         return name.slice(0, 5)
       } else {
-        // 不存在中文字符，只能显示8个字符
-        return name.slice(0, 8)
+        return data.deviceInfo.deviceName.slice(0, 5)
       }
     },
     deviceType(data) {
@@ -133,14 +116,7 @@ ComponentWithComputed({
     },
     /** 开关面板名称 */
     switchDeviceName(data) {
-      const name = data.deviceInfo.deviceName
-      if (new RegExp('[\\u4E00-\\u9FFF]+', 'g').test(name)) {
-        // 存在中文字符，只能显示5个字符
-        return name.slice(0, 5)
-      } else {
-        // 不存在中文字符，只能显示8个字符
-        return name.slice(0, 8)
-      }
+      return data.deviceInfo.deviceName.slice(0, 5)
     },
   },
 

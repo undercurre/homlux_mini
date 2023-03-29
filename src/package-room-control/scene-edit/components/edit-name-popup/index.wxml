@@ -4,7 +4,7 @@
     <template is="close" />
     <template is="title" data="{{title: '修改名称'}}" />
     <view class="flex-1 mt-98rpx w-686rpx">
-      <van-field model:value="{{ name }}" placeholder="自定义场景" custom-style="padding: 28rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
+      <van-field model:value="{{ name }}" maxlength="{{4}}" placeholder="自定义场景" custom-style="padding: 28rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
     </view>
     <template is="bottom-btn" />
   </view>

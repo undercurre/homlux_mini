@@ -3,7 +3,7 @@
   <view class="w-750rpx flex flex-col items-center">
     <template is="title" data="{{title: '设备名称'}}" />
     <view class="mt-98rpx w-686rpx">
-      <van-field model:value="{{ deviceName }}" placeholder="请输入房间名称" custom-style="padding: 28rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
+      <van-field model:value="{{ deviceName }}" placeholder="请输入房间名称" custom-style="padding: 28rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}" maxlength="{{5}}"> </van-field>
     </view>
     <view class="h-98rpx"></view>
     <template is="bottom-btn" />
