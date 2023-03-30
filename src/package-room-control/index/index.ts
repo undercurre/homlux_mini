@@ -307,8 +307,7 @@ ComponentWithComputed({
         lightList,
         switchList,
       })
-      setTimeout(() => {
-        const dragLight = this.selectComponent('#drag-light')
+      const dragLight = this.selectComponent('#drag-light')
         if (dragLight && lightList.length > 0) {
           dragLight.init()
         }
@@ -316,7 +315,6 @@ ComponentWithComputed({
         if (dragSwitch && switchList.length > 0) {
           dragSwitch.init()
         }
-      }, 50)
     },
 
     handleScroll(e: { detail: { scrollTop: number } }) {

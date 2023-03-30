@@ -11,10 +11,12 @@ import {
   updateDefaultHouse,
 } from '../apis/index'
 import { proType } from '../config/index'
+import { asyncStorage, storage } from '../utils/index'
 import { deviceStore } from './device'
 import { othersStore } from './others'
 import { roomStore } from './room'
 import { sceneStore } from './scene'
+import { userStore } from './user'
 
 export const homeStore = observable({
   homeList: [] as Home.IHomeItem[],
@@ -44,6 +46,12 @@ export const homeStore = observable({
    * 首页加载逻辑
    */
   async homeInit() {
+    const success = this.loadHomeDataFromStorage()
+    if (success) {
+      runInAction(() => {
+        othersStore.isInit = true
+      })
+    }
     const res = await this.updateHomeList()
     if (res.success) {
       queryUserHouseInfo({ houseId: this.currentHomeId }).then((res) => {
@@ -106,6 +114,7 @@ export const homeStore = observable({
           }))
           othersStore.isInit = true
         })
+        this.homeDataPersistence()
       }
     }
   },
@@ -163,6 +172,7 @@ export const homeStore = observable({
       })
       await deviceStore.updateAllRoomDeviceList(undefined, options)
       await roomStore.updateRoomList(options)
+      this.homeDataPersistence()
       return
     } else {
       return Promise.reject('获取家庭信息失败')
@@ -176,6 +186,7 @@ export const homeStore = observable({
     await deviceStore.updateAllRoomDeviceList()
     await roomStore.updateRoomList()
     await sceneStore.updateAllRoomSceneList()
+    this.homeDataPersistence()
   },
 
   /**
@@ -263,6 +274,50 @@ export const homeStore = observable({
     } else {
       return Promise.reject('邀请家庭成员失败')
     }
+  },
+
+  /**
+   * 缓存主要的初始数据
+   */
+  async homeDataPersistence() {
+    if (!userStore.isLogin) {
+      return
+    }
+    const token = await asyncStorage.get<string>('token')
+    const data = {
+      token,
+      homeData: {
+        homeList: this.homeList,
+        currentHomeDetail: this.currentHomeDetail,
+        roomList: roomStore.roomList,
+        allRoomDeviceList: deviceStore.allRoomDeviceList,
+      },
+    }
+    await asyncStorage.set('homeData', data, 60 * 60 * 24) // 缓存有效期一天
+  },
+
+  /**
+   * 从缓存加载数据，如果成功加载返回true，否则false
+   */
+  loadHomeDataFromStorage() {
+    const token = storage.get<string>('token')
+    if (!token) {
+      return false
+    }
+    const data = storage.get('homeData') as IAnyObject
+    if (!data) {
+      return false
+    } else if (data.token != token) {
+      storage.remove('homeData')
+      return false
+    }
+    runInAction(() => {
+      this.homeList = data.homeData.homeList
+      this.currentHomeDetail = data.homeData.currentHomeDetail
+      roomStore.roomList = data.homeData.roomList
+      deviceStore.allRoomDeviceList = data.homeData.allRoomDeviceList
+    })
+    return true
   },
 })
 
