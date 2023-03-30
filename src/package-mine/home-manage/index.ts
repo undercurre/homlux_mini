@@ -5,7 +5,7 @@ import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { roomBinding, homeBinding, userBinding, deviceBinding, homeStore } from '../../store/index'
 import { saveOrUpdateUserHouseInfo, delUserHouse, quitUserHouse, updateDefaultHouse } from '../../apis/index'
-import { strUtil, checkInputNameIllegal } from '../../utils/index'
+import { strUtil, checkInputNameIllegal, emitter } from '../../utils/index'
 
 ComponentWithComputed({
   options: {
@@ -63,6 +63,16 @@ ComponentWithComputed({
   },
 
   methods: {
+    onLoad() {
+      emitter.on("homeInfoEdit",  () => {
+        homeStore.updateHomeInfo();
+        homeBinding.store.updateHomeMemberList()
+      })
+    },
+    onUnload() {
+      emitter.off("homeInfoEdit")
+    },
+
     /**
      * 用户点击展示/隐藏家庭选择
      */

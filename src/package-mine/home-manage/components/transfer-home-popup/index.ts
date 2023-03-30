@@ -2,6 +2,7 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding } from '../../../../store/index'
 import { changeUserHouse, queryHouseUserList } from '../../../../apis/index'
+import { emitter } from '../../../../utils/eventBus'
 
 Component({
   options: {
@@ -29,6 +30,21 @@ Component({
 
   lifetimes: {
     async attached() {
+      await this.queryHomeUsers();
+
+      emitter.on("homeInfoEdit", () => {
+        this.queryHomeUsers();
+      })
+    },
+    detached() {
+      emitter.off("homeInfoEdit")
+    }
+  },
+  /**
+   * 组件的方法列表
+   */
+  methods: {
+    async queryHomeUsers() {
       const res = await queryHouseUserList({ houseId: homeBinding.store.currentHomeId })
       if (res.success) {
         this.setData({
@@ -36,11 +52,6 @@ Component({
         })
       }
     },
-  },
-  /**
-   * 组件的方法列表
-   */
-  methods: {
     selectUser(event: WechatMiniprogram.CustomEvent) {
       const { index } = event.currentTarget.dataset
 
