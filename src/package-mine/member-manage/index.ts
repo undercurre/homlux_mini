@@ -115,7 +115,6 @@ ComponentWithComputed({
       //创建者：1 管理员：2 游客：3
       if (mySelf === other) return false
       if (mySelf === 1) return true
-      if (mySelf == 2 && other == 3) return true
       return false
     },
     onUserItemClick(data: any) {

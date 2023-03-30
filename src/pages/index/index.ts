@@ -156,6 +156,7 @@ ComponentWithComputed({
     },
 
     inviteMember() {
+      if (wx.getEnterOptionsSync().scene != 1044) return
       const isTryInvite = storage.get('isTryInvite', 0)
       if (isTryInvite === 1) {
         console.log('lmn>>>已尝试过邀请')
