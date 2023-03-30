@@ -2,7 +2,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { getCurrentPageParams, strUtil } from '../../utils/index'
+import { getCurrentPageParams, strUtil, checkInputNameIllegal } from '../../utils/index'
 import { queryDeviceInfoByDeviceId, editDeviceInfo, batchUpdate } from '../../apis/index'
 import { homeBinding, homeStore, roomBinding } from '../../store/index'
 
@@ -102,6 +102,22 @@ ComponentWithComputed({
 
     async finish() {
       const { deviceId, deviceName, roomId } = this.data.deviceInfo
+
+      if (!deviceName) {
+        Toast('名称不能为空')
+        return
+      }
+
+      // 校验名字合法性
+      if (checkInputNameIllegal(deviceName)) {
+        Toast('名称不能用特殊符号或表情')
+        return
+      }
+
+      if (deviceName.length > 5) {
+        Toast('名称不能超过5个字符')
+        return
+      }
 
       const res = await editDeviceInfo({
         deviceId,

@@ -64,6 +64,10 @@ page {
   /* dialog start */
   --dialog-width: 654rpx;
   /* dialog end */
+
+  /* toast start */
+  --toast-max-width: 80%;
+  /* toast start */
 }
 
 /* button start */

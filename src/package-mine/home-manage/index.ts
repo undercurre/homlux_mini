@@ -3,7 +3,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { roomBinding, homeBinding, userBinding, deviceBinding } from '../../store/index'
+import { roomBinding, homeBinding, userBinding, deviceBinding, homeStore } from '../../store/index'
 import { saveOrUpdateUserHouseInfo, delUserHouse, quitUserHouse, updateDefaultHouse } from '../../apis/index'
 import { strUtil, checkInputNameIllegal } from '../../utils/index'
 
@@ -113,6 +113,11 @@ ComponentWithComputed({
      * 创建家庭
      */
     createHome() {
+      const ownerHomeList = homeStore.homeList.filter((home) => home.houseCreatorFlag)
+      if (ownerHomeList.length >= 20) {
+        Toast('每个账号最多可以创建20个家庭')
+        return
+      }
       this.setData({
         isEditName: true,
         homeInfoEdited: {

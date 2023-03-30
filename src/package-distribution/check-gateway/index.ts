@@ -119,7 +119,7 @@ Component({
         console.log('authorizeRes', authorizeRes)
 
         // 用户拒绝授权处理
-        if (authorizeRes.errno === 103) {
+        if (authorizeRes.errno === 103 || authorizeRes.errMsg.includes('auth deny')) {
           const authRes = await this.checkLocationPermission()
           console.log('authRes', authRes)
           if (!authRes) return

@@ -5,7 +5,7 @@
     <tips-box text="设备添加成功！" icon="/assets/img/default-img/success.png" size="{{isSwitch ? 200 : 300}}" text-style="{{isSwitch && 'margin-top: 24rpx;'}}"></tips-box>
 
     <view class="grow px-24rpx mt-28rpx">
-      <edit-device-form wx:if="{{deviceInfo.deviceName}}" device-name="{{deviceInfo.deviceName}}" room-id="{{deviceInfo.roomId}}" switch-list="{{deviceInfo.switchList}}" bind:change="changeDeviceInfo"></edit-device-form>
+      <edit-device-form wx:if="{{deviceInfo.roomId}}" device-name="{{deviceInfo.deviceName}}" room-id="{{deviceInfo.roomId}}" switch-list="{{deviceInfo.switchList}}" bind:change="changeDeviceInfo"></edit-device-form>
     </view>
   </scroll-view>
 
@@ -17,7 +17,7 @@
       <text class="text-blue" bind:tap="toSearchSubdevice">附近设备 ></text>
     </view>
 
-    <van-button class="w-full mt-32rpx" block type="primary" size="large" bind:click="finish" disabled="{{!deviceInfo.deviceName}}">完成</van-button>
+    <van-button class="w-full mt-32rpx" block type="primary" size="large" bind:click="finish" disabled="{{!deviceInfo.roomId}}">完成</van-button>
   </view>
 </view>
 

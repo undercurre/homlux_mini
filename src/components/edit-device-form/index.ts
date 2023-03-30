@@ -1,6 +1,7 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
 import { homeBinding, roomBinding } from '../../store/index'
+import { checkInputNameIllegal } from '../../utils/index'
 
 Component({
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, roomBinding] })],
@@ -24,10 +25,14 @@ Component({
       type: String,
       value: '',
     },
+    roomName: {
+      type: String,
+      value: '',
+    },
   },
 
   observers: {
-    'deviceName, roomId, switchList': function (deviceName, roomId, switchList) {
+    'deviceName, roomId, roomName, switchList': function (deviceName, roomId, roomName, switchList) {
       console.log('observers-deviceName', deviceName, roomId, switchList)
 
       this.setData({
@@ -35,7 +40,7 @@ Component({
         isShowEditSwitch: false,
         deviceInfo: {
           roomId: roomId,
-          roomName: '',
+          roomName: roomName,
           deviceName: deviceName,
           switchList: switchList,
         },
@@ -104,7 +109,7 @@ Component({
       console.log('changeSwitchName', event)
 
       this.setData({
-        'switchInfo.switchName': event.detail.value,
+        'switchInfo.switchName': event.detail.value || '',
       })
     },
 
@@ -115,12 +120,18 @@ Component({
     },
     async handleConfirm() {
       if (!this.data.switchInfo.switchName) {
-        Toast('按键名称不能为空')
+        Toast('名称不能为空')
+        return
+      }
+
+      // 校验名字合法性
+      if (checkInputNameIllegal(this.data.switchInfo.switchName)) {
+        Toast('名称不能用特殊符号或表情')
         return
       }
 
       if (this.data.switchInfo.switchName.length > 6) {
-        Toast('按键名称不能超过6个字符')
+        Toast('名称不能超过6个字符')
         return
       }
 
@@ -136,7 +147,7 @@ Component({
       console.log('changeDeviceName', event)
 
       this.setData({
-        'deviceInfo.deviceName': event.detail.value,
+        'deviceInfo.deviceName': event.detail.value || '',
       })
 
       this.triggerEvent('change', Object.assign({}, this.data.deviceInfo))

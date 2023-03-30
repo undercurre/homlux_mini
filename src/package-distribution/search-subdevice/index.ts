@@ -39,6 +39,7 @@ ComponentWithComputed({
       deviceId: '',
       deviceName: '',
       roomId: '',
+      roomName: '',
       switchList: [] as ISwitch[],
     },
     deviceList: Array<IBleDevice>(),
@@ -84,14 +85,11 @@ ComponentWithComputed({
 
       // this.setData({
       //   deviceList: JSON.parse(
-      //     '[{"proType":"0x13","deviceUuid":"04:CD:15:A9:B5:B7","mac":"04CD15A9B5B7","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/midea.light.003.002-3.png","name":"灯具B5B7","isChecked":false,"client":{"key":"midea@homluxB5B7","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15A9B5B7","deviceUuid":"04:CD:15:A9:B5:B7"},"roomId":"","roomName":"","switchList":[],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2}, {"proType":"0x21","deviceUuid":"04:CD:15:AE:AA:8D","mac":"04CD15AEAA8D","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/panel-4.png","name":"面板AA8D","isChecked":false,"client":{"key":"midea@homluxAA8D","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEAA8D","deviceUuid":"04:CD:15:AE:AA:8D"},"roomId":"","roomName":"","switchList":[{"switchId":"1","switchName":"按键1"},{"switchId":"2","switchName":"按键2"}],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2},{"proType":"0x21","deviceUuid":"04:CD:15:AE:B5:3A","mac":"04CD15AEB53A","zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/panel-4.png","name":"面板B53A","isChecked":false,"client":{"key":"midea@homluxB53A","serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEB53A","deviceUuid":"04:CD:15:AE:B5:3A"},"roomId":"","roomName":"","switchList":[{"switchId":"1","switchName":"按键1"},{"switchId":"2","switchName":"按键2"},{"switchId":"3","switchName":"按键3"},{"switchId":"4","switchName":"按键4"}],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2, "signal":"strong", "RSSI": -85}]',
+      //     '[{"proType":"0x21","deviceUuid":"2405EEB6-EF0D-C8AB-FC47-CA9EE267CFB6","mac":"04CD15AEAEAE","signal":"weak","RSSI":-80,"zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/panel-4.png","name":"四路面板9-AEAE","isChecked":false,"client":{"key":"midea@homluxAEAE","isConnected":false,"serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEAEAE","deviceUuid":"2405EEB6-EF0D-C8AB-FC47-CA9EE267CFB6"},"roomId":"3a7c6a656d3f443bb1676ecaa25d94cd","roomName":"卧室","switchList":[{"switchId":"1","switchName":"按键1"},{"switchId":"2","switchName":"按键2"},{"switchId":"3","switchName":"按键3"},{"switchId":"4","switchName":"按键4"}],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2},{"proType":"0x21","deviceUuid":"2FE9C556-EAC2-CA12-9DE6-DB85643146D1","mac":"04CD15AEB53A","signal":"weak","RSSI":-88,"zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/panel-4.png","name":"四路面板10-B53A","isChecked":false,"client":{"key":"midea@homluxB53A","isConnected":false,"serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEB53A","deviceUuid":"2FE9C556-EAC2-CA12-9DE6-DB85643146D1"},"roomId":"3a7c6a656d3f443bb1676ecaa25d94cd","roomName":"卧室","switchList":[{"switchId":"1","switchName":"按键1"},{"switchId":"2","switchName":"按键2"},{"switchId":"3","switchName":"按键3"},{"switchId":"4","switchName":"按键4"}],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2}]',
       //   ),
       // })
     },
     moved: function () {},
-    detached: function () {
-      wx.closeBluetoothAdapter()
-    },
   },
 
   methods: {
@@ -135,6 +133,8 @@ ComponentWithComputed({
     },
     async initBle() {
       const foundList = (storage.get('foundList', this.data.subdeviceList) as IBleBaseInfo[]) || []
+
+      storage.remove('foundList')
 
       console.log('foundList', foundList)
 
@@ -246,6 +246,7 @@ ComponentWithComputed({
       }
 
       this.data.deviceList.push(bleDevice)
+      console.log('this.data.deviceList', JSON.stringify(this.data.deviceList))
 
       this.setData({
         deviceList: this.data.deviceList,
@@ -408,9 +409,6 @@ ComponentWithComputed({
 
     async editDeviceInfo(data: { deviceId: string; switchList: ISwitch[] }) {
       const { deviceId, switchList } = data
-      // const res = await queryDeviceInfoByDeviceId({ deviceId })
-
-      // let switchListCloud = res.result.switchInfoDTOList
 
       const deviceInfoUpdateVoList = switchList.map((item) => {
         return {
@@ -443,6 +441,7 @@ ComponentWithComputed({
           deviceId: item.deviceUuid,
           deviceName: item.name,
           roomId: item.roomId,
+          roomName: item.roomName,
           switchList: item.switchList,
         },
       })
@@ -510,6 +509,7 @@ ComponentWithComputed({
 
     finish() {
       homeBinding.store.updateCurrentHomeDetail()
+      wx.closeBluetoothAdapter()
 
       wx.switchTab({
         url: '/pages/index/index',
