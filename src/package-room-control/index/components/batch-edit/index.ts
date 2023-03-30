@@ -37,7 +37,7 @@ ComponentWithComputed({
       return !data.editDeviceName
     },
     editRoomDisable(data) {
-      return roomStore.currentRoom.roomId === data.roomId;
+      return roomStore.currentRoom.roomId === data.roomId
     },
   },
 
