@@ -18,6 +18,7 @@ import { storage, emitter, WSEventType } from '../../utils/index'
 import { maxColorTempK, minColorTempK, proName, proType } from '../../config/index'
 
 let throttleTimer = 0
+let hasUpdateInTimer = false
 ComponentWithComputed({
   behaviors: [
     BehaviorWithStore({ storeBindings: [userBinding, roomBinding, deviceBinding, sceneBinding] }),
@@ -184,10 +185,18 @@ ComponentWithComputed({
       this.reloadData()
       emitter.on('wsReceive', async (e) => {
         if (!throttleTimer) {
-          throttleTimer = setTimeout(() => {
-            homeStore.updateRoomCardList()
+          homeStore.updateRoomCardList()
+          this.updateDeviceList()
+          throttleTimer = setTimeout(async () => {
+            if (hasUpdateInTimer) {
+              await homeStore.updateRoomCardList()
+              this.updateDeviceList()
+            }
             throttleTimer = 0
-          }, 500)
+            hasUpdateInTimer = false
+          }, 2000)
+        } else {
+          hasUpdateInTimer = true
         }
         // 设备相关的消息推送根据条件判断是否刷新
         if (
@@ -212,9 +221,6 @@ ComponentWithComputed({
               })
               this.updateDeviceList()
             }
-            // 可能开关绑定了场景
-            await sceneStore.updateAllRoomSceneList()
-            this.updateDeviceList()
           } else {
             // 可能是新绑的设备，直接更新房间
             await deviceStore.updateSubDeviceList()
@@ -308,13 +314,13 @@ ComponentWithComputed({
         switchList,
       })
       const dragLight = this.selectComponent('#drag-light')
-        if (dragLight && lightList.length > 0) {
-          dragLight.init()
-        }
-        const dragSwitch = this.selectComponent('#drag-switch')
-        if (dragSwitch && switchList.length > 0) {
-          dragSwitch.init()
-        }
+      if (dragLight && lightList.length > 0) {
+        dragLight.init()
+      }
+      const dragSwitch = this.selectComponent('#drag-switch')
+      if (dragSwitch && switchList.length > 0) {
+        dragSwitch.init()
+      }
     },
 
     handleScroll(e: { detail: { scrollTop: number } }) {

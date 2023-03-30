@@ -18,6 +18,7 @@ import { emitter } from '../../utils/eventBus'
 import { updateDefaultHouse } from '../../apis/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 let throttleTimer = 0
+let hasUpdateInTimer = false
 ComponentWithComputed({
   behaviors: [
     BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding, homeBinding, deviceBinding] }),
@@ -147,10 +148,16 @@ ComponentWithComputed({
       emitter.off('wsReceive')
       emitter.on('wsReceive', (res) => {
         if (!throttleTimer && res.result.eventType !== 'connect_success_status') {
-          throttleTimer = setTimeout(() => {
-            homeStore.updateRoomCardList()
+          homeStore.updateRoomCardList()
+          throttleTimer = setTimeout(async () => {
+            if (hasUpdateInTimer) {
+              await homeStore.updateRoomCardList()
+            }
             throttleTimer = 0
-          }, 500)
+            hasUpdateInTimer = false
+          }, 2000)
+        } else {
+          hasUpdateInTimer = true
         }
       })
     },
@@ -214,36 +221,10 @@ ComponentWithComputed({
 
     // 收起所有菜单
     hideMenu() {
-      // this.doHomeSelectArrowAnimation(false, this.data.selectHomeMenu.isShow)
       this.setData({
         'dropdownMenu.isShow': false,
         'selectHomeMenu.isShow': false,
       })
-      // if (e && e.detail && e.detail.x) {
-      //   wx.createSelectorQuery()
-      //     .select('#addIcon')
-      //     .boundingClientRect()
-      //     .exec((res) => {
-      //       // 点中加按钮以外的地方都要隐藏下拉菜单
-      //       if (
-      //         res[0] &&
-      //         (e.detail.x > res[0].right ||
-      //           e.detail.x < res[0].left ||
-      //           e.detail.y > res[0].bottom ||
-      //           e.detail.y < res[0].top)
-      //       ) {
-      //         this.setData({
-      //           'dropdownMenu.isShow': false,
-      //           'selectHomeMenu.isShow': false,
-      //         })
-      //       }
-      //     })
-      // } else {
-      //   this.setData({
-      //     'dropdownMenu.isShow': false,
-      //     'selectHomeMenu.isShow': false,
-      //   })
-      // }
     },
     /**
      * 跳转到登录页
