@@ -64,13 +64,13 @@ ComponentWithComputed({
 
   methods: {
     onLoad() {
-      emitter.on("homeInfoEdit",  () => {
-        homeStore.updateHomeInfo();
+      emitter.on('homeInfoEdit', () => {
+        homeStore.updateHomeInfo()
         homeBinding.store.updateHomeMemberList()
       })
     },
     onUnload() {
-      emitter.off("homeInfoEdit")
+      emitter.off('homeInfoEdit')
     },
 
     /**

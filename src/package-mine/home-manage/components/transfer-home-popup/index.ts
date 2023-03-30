@@ -30,15 +30,15 @@ Component({
 
   lifetimes: {
     async attached() {
-      await this.queryHomeUsers();
+      await this.queryHomeUsers()
 
-      emitter.on("homeInfoEdit", () => {
-        this.queryHomeUsers();
+      emitter.on('homeInfoEdit', () => {
+        this.queryHomeUsers()
       })
     },
     detached() {
-      emitter.off("homeInfoEdit")
-    }
+      emitter.off('homeInfoEdit')
+    },
   },
   /**
    * 组件的方法列表
@@ -64,7 +64,7 @@ Component({
       this.triggerEvent('close')
     },
 
-    async confirm() {
+    async handleConfirm() {
       const item = this.data.userList[this.data.selectIndex]
 
       const res = await changeUserHouse({ houseId: homeBinding.store.currentHomeId, changeUserId: item.userId })

@@ -36,9 +36,8 @@
     </view>
   </view>
 
-  <van-popup show="{{ showEditName }}" z-index="2000" round position="bottom" bind:close="handleClose">
+  <van-popup show="{{ showEditName }}" z-index="2000" round position="bottom" bind:close="handleClose" closeable>
     <view class="w-750rpx relative flex flex-col items-center">
-      <template is="close" />
       <template is="title" data="{{title: '修改名称'}}" />
       <block wx:if="{{isEditSwitchName}}">
         <view class="flex w-750rpx">
@@ -58,9 +57,8 @@
     </view>
   </van-popup>
 
-  <van-popup show="{{ showEditRoom }}" round position="bottom" bind:close="handleClose">
+  <van-popup show="{{ showEditRoom }}" round position="bottom" bind:close="handleClose" closeable>
     <view class="w-750rpx flex flex-col items-center">
-      <template is="close" />
       <template is="title" data="{{title: '所在房间'}}" />
       <view class="w-750rpx flex mt-44rpx mb-16rpx">
         <text class="text-28rpx ml-48rpx">选择房间</text>
