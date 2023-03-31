@@ -1,8 +1,10 @@
 // package-mine/home-manage/components/transfer-home/index.ts
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding } from '../../../../store/index'
-import { changeUserHouse, queryHouseUserList } from '../../../../apis/index'
+import { changeUserHouse, queryHouseUserList, quitUserHouse } from '../../../../apis/index'
 import { emitter } from '../../../../utils/eventBus'
+import Dialog from '@vant/weapp/dialog/dialog'
+import Toast from '@vant/weapp/toast/toast'
 
 Component({
   options: {
@@ -64,18 +66,31 @@ Component({
       this.triggerEvent('close')
     },
 
+    /*
+    * 确认转让家庭
+    * 需要二次确认
+    * 转让角色后同时退出家庭
+    **/ 
     async handleConfirm() {
+      this.triggerEvent('close')
+
+      const dialog = await Dialog.confirm({
+        message: '是否转让当前家庭',
+      }).catch(() => 'cancel')
+      if (dialog === 'cancel') return
+
       const item = this.data.userList[this.data.selectIndex]
 
-      const res = await changeUserHouse({ houseId: homeBinding.store.currentHomeId, changeUserId: item.userId })
+      const changeRes = await changeUserHouse({ houseId: homeBinding.store.currentHomeId, changeUserId: item.userId })
 
-      if (res.success) {
-        homeBinding.store.updateHomeInfo()
-
-        emitter.emit('homeInfoEdit')
+      if (!changeRes.success) {
+        Toast('转让失败')
+        return
       }
 
-      this.triggerEvent('close')
+      const delRes = await quitUserHouse(homeBinding.store.currentHomeDetail.houseId)
+      Toast(delRes.success ? '转让成功' : '转让失败')
+      homeBinding.store.updateHomeInfo()
     },
   },
 })
