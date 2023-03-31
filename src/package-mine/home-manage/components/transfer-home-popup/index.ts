@@ -71,6 +71,8 @@ Component({
 
       if (res.success) {
         homeBinding.store.updateHomeInfo()
+
+        emitter.emit('homeInfoEdit')
       }
 
       this.triggerEvent('close')
