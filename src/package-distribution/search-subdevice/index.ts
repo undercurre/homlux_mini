@@ -4,7 +4,7 @@ import { runInAction } from 'mobx-miniprogram'
 import Toast from '@vant/weapp/toast/toast'
 import asyncPool from 'tiny-async-pool'
 import { homeBinding, roomBinding, homeStore } from '../../store/index'
-import { bleDevicesBinding, ISwitch, IBleDevice } from '../store/bleDeviceStore'
+import { bleDevicesBinding, ISwitch, IBleDevice, bleDevicesStore } from '../store/bleDeviceStore'
 import { getCurrentPageParams } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { sendCmdAddSubdevice, bindDevice, queryDeviceOnlineStatus, batchUpdate } from '../../apis/index'
@@ -25,6 +25,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    _timeId: 0,
     isEditDevice: false,
     editDeviceInfo: {
       index: -1,
@@ -71,6 +72,12 @@ ComponentWithComputed({
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
     ready: function () {},
     moved: function () {},
+  },
+
+  pageLifetimes: {
+    hide() {
+      this.stopGwAddMode()
+    }
   },
 
   methods: {
@@ -127,15 +134,55 @@ ComponentWithComputed({
       })
     },
 
+    async startGwAddMode() {
+      const pageParams = getCurrentPageParams()
+      const expireTime = 60
+
+      const res = await sendCmdAddSubdevice({
+        deviceId: pageParams.gatewayId,
+        expire: expireTime,
+        buzz: 1,
+      })
+
+      // 子设备配网阶段，保持网关在配网状态
+      if (res.success) {
+        this.data._timeId = setTimeout(() => {
+          const hasWaitItem = bleDevicesStore.bleDeivceList.findIndex(item => item.status === 'waiting') >= 0 // 检测是否还存在需要配网的设备
+
+          hasWaitItem && this.sendGwAddCmd()
+        }, (expireTime - 10) * 1000)
+      }
+
+      return res
+    },
+
+    async stopGwAddMode() {
+      if (this.data._timeId === 0) {
+        return
+      }
+
+      const pageParams = getCurrentPageParams()
+
+      clearTimeout(this.data._timeId)
+      this.data._timeId = 0
+
+      const res = await sendCmdAddSubdevice({
+        deviceId: pageParams.gatewayId,
+        expire: 0,
+        buzz: 1,
+      })
+
+      // 子设备配网阶段，保持网关在配网状态
+      if (res.success) {
+        console.log('结束网关配网状态')
+      }
+
+      return res
+    },
+
     async beginAddDevice(list: IBleDevice[]) {
       try {
-        const pageParams = getCurrentPageParams()
-
-        const res = await sendCmdAddSubdevice({
-          deviceId: pageParams.gatewayId,
-          expire: 60,
-          buzz: 1,
-        })
+        const res = await this.startGwAddMode()
 
         if (!res.success) {
           Toast(res.msg)
@@ -161,6 +208,8 @@ ComponentWithComputed({
         for await (const value of asyncPool(3, list, iteratorFn)) {
           console.info('任务结束：', value.mac)
         }
+
+        this.stopGwAddMode()
       } catch (err) {
         console.log('beginAddDevice-err', err)
       }

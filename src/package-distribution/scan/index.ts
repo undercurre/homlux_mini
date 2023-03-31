@@ -444,8 +444,8 @@ ComponentWithComputed({
         title: 'loading',
       })
 
-      const res = await queryProtypeInfo({
-        pid: params.pid,
+      const res = await checkDevice({
+        productId: params.pid,
       })
 
       if (!res.success) {

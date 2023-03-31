@@ -136,7 +136,7 @@ export class WifiSocket {
                 if (onWifiConnectRes.wifi.SSID === this.SSID) {
                   console.log('offWifiConnected')
                   wx.offWifiConnected(listen)
-
+                  console.info(`连接wifi:${onWifiConnectRes.wifi.SSID}成功`)
                   clearTimeout(timeId)
                   resolve(res)
                 }
