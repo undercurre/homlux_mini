@@ -7,7 +7,12 @@ ComponentWithComputed({
   /**
    * 组件的属性列表
    */
-  properties: {},
+  properties: {
+    sDeviceList: {
+      type: Array,
+      value: [],
+    },
+  },
 
   /**
    * 组件的初始数据
@@ -16,18 +21,29 @@ ComponentWithComputed({
     roomSelect: '',
   },
   computed: {
-    roomSelectMenuList(data: IAnyObject) {
-      const roomList: Room.RoomInfo[] = data.roomList
+    /**
+     * @description 包括待选设备的房间列表
+     * 默认塞入全局
+     *
+     */
+    roomSelectMenuList(data) {
+      const list = data.sDeviceList?.length ? data.sDeviceList : deviceStore.allRoomDeviceList
+      const deviceList = list.filter((device) => {
+        return device.deviceType === 2
+      })
+
+      const roomList: Pick<Room.RoomInfo, 'roomId' | 'roomName'>[] = []
+      deviceList.forEach(({ roomId, roomName }) => {
+        if (roomList.findIndex((room) => room.roomId === roomId) === -1) {
+          roomList.push({
+            roomId,
+            roomName,
+          })
+        }
+      })
+
       if (roomList) {
-        return [
-          { roomId: '', roomName: '全屋' },
-          ...roomList
-            .filter((room) => room.subDeviceNum) // 不显示无子设备的房间
-            .map((room) => ({
-              roomId: room.roomId,
-              roomName: room.roomName,
-            })),
-        ]
+        return [{ roomId: '', roomName: '全屋' }, ...roomList]
       }
       return []
     },

@@ -3,7 +3,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { deviceBinding } from '../../store/index'
+import { deviceBinding, deviceStore } from '../../store/index'
 import { StatusType } from './typings'
 // import { deviceReplace } from '../../apis/index'
 import { deviceReplace } from 'homlux-sdk'
@@ -27,6 +27,26 @@ ComponentWithComputed({
   },
 
   computed: {
+    /**
+     * @description 待选设备列表
+     * choosingNew 如存在 oldDeviceItem，则当前选取新设备中
+     * isSubdevice 过滤网关设备；
+     *
+     * isFilterDevice 如当前选取新设备中，列表只显示相同productId的项，并排除已选择的旧设备
+     * oldDeviceOrNewAndOnline 如当前选取新设备中，则须排除离线项
+     */
+    computedDeviceList(data) {
+      const choosingNew = data.oldDeviceItem && data.oldDeviceItem.productId
+
+      return deviceStore.allRoomDeviceList.filter((device) => {
+        const isSubdevice = device.deviceType === 2
+        const isFilterDevice = choosingNew
+          ? device.productId === data.oldDeviceItem.productId && device.deviceId !== data.oldDeviceItem.deviceId
+          : true
+        const oldDeviceOrNewAndOnline = choosingNew ? device.onLineStatus : true
+        return isSubdevice && isFilterDevice && oldDeviceOrNewAndOnline
+      })
+    },
     nextBtnText(data) {
       const textMap = {
         introduce: '开始使用',
@@ -163,24 +183,30 @@ ComponentWithComputed({
       })
     },
 
-    closeDevicePopup() {
+    closeOldDevicePopup() {
       this.setData({
         isSelectOldDevice: false,
+      })
+    },
+
+    closeNewDevicePopup() {
+      this.setData({
         isSelectNewDevice: false,
       })
     },
 
-    confirmDevicePopup(event: WechatMiniprogram.CustomEvent<Device.DeviceItem>) {
-      if (this.data.isSelectOldDevice) {
-        this.setData({
-          oldDeviceItem: event.detail,
-        })
-      } else if (this.data.isSelectNewDevice) {
-        this.setData({
-          newDeviceItem: event.detail,
-        })
-      }
-      this.closeDevicePopup()
+    confirmOldDevicePopup(event: WechatMiniprogram.CustomEvent<Device.DeviceItem>) {
+      this.setData({
+        oldDeviceItem: event.detail,
+        isSelectOldDevice: false,
+      })
+    },
+
+    confirmNewDevicePopup(event: WechatMiniprogram.CustomEvent<Device.DeviceItem>) {
+      this.setData({
+        newDeviceItem: event.detail,
+        isSelectNewDevice: false,
+      })
     },
   },
 })

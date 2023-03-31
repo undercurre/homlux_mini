@@ -22,7 +22,7 @@
       <text class="block text-center pb-80rpx leading-34rpx text-24 text-black-59">替换完成后，该设备将自动从家庭中解绑。</text>
 
       <view class="bg-white mx-24rpx p-60rpx rounded-32rpx flex justify-center">
-        <device-card wx:if="{{ oldDeviceItem && oldDeviceItem.deviceId }}" showBtnDetail="{{false}}" device-info="{{oldDeviceItem}}" device-type="light" bind:cardTap="addOldDevice" />
+        <device-card wx:if="{{ oldDeviceItem && oldDeviceItem.deviceId }}" showBtnDetail="{{false}}" device-info="{{oldDeviceItem}}" device-type="light" bind:cardTap="addOldDevice" bind:offlineTap="addOldDevice" />
 
         <view wx:else class="flex flex-col items-center" bind:tap="addOldDevice">
           <image class="w-108 h-108" src="/assets/img/device-replace/add.png"></image>
@@ -73,6 +73,8 @@
   </view>
 </view>
 
-<select-device show="{{isSelectOldDevice || isSelectNewDevice}}" bind:close="closeDevicePopup" bind:confirm="confirmDevicePopup" filterDevice="{{ status === 'newDevice' ? oldDeviceItem: null }}"></select-device>
+<select-device show="{{isSelectOldDevice}}" bind:close="closeOldDevicePopup" bind:confirm="confirmOldDevicePopup"></select-device>
+
+<select-device show="{{isSelectNewDevice}}" bind:close="closeNewDevicePopup" bind:confirm="confirmNewDevicePopup" sDeviceList="{{ computedDeviceList }}"></select-device>
 
 <van-toast id="van-toast" />

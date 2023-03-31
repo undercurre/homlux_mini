@@ -77,7 +77,7 @@ ComponentWithComputed({
   pageLifetimes: {
     hide() {
       this.stopGwAddMode()
-    }
+    },
   },
 
   methods: {
@@ -147,7 +147,7 @@ ComponentWithComputed({
       // 子设备配网阶段，保持网关在配网状态
       if (res.success) {
         this.data._timeId = setTimeout(() => {
-          const hasWaitItem = bleDevicesStore.bleDeivceList.findIndex(item => item.status === 'waiting') >= 0 // 检测是否还存在需要配网的设备
+          const hasWaitItem = bleDevicesStore.bleDeivceList.findIndex((item) => item.status === 'waiting') >= 0 // 检测是否还存在需要配网的设备
 
           hasWaitItem && this.sendGwAddCmd()
         }, (expireTime - 10) * 1000)
