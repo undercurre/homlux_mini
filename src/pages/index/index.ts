@@ -48,6 +48,7 @@ ComponentWithComputed({
     showHomeSelect: false,
     isRefresh: false,
     loading: true,
+    isTryInvite: false,
   },
   computed: {
     currentHomeName(data) {
@@ -163,9 +164,11 @@ ComponentWithComputed({
     },
 
     inviteMember() {
-      if (wx.getEnterOptionsSync().scene != 1044) return
-      const isTryInvite = storage.get('isTryInvite', 0)
-      if (isTryInvite === 1) {
+      if (wx.getEnterOptionsSync().scene != 1044) {
+        console.log('lmn>>>非卡片进入')
+        return
+      }
+      if (this.data.isTryInvite) {
         console.log('lmn>>>已尝试过邀请')
         return
       }
@@ -175,7 +178,9 @@ ComponentWithComputed({
       const houseId = enterQuery.houseId as string
       const time = enterQuery.time as string
       if (token && type && houseId && time) {
-        storage.set('isTryInvite', 1)
+        this.setData({
+          isTryInvite: true
+        })
         console.log(`lmn>>>邀请参数:token=${token}/type=${type}/houseId=${houseId}/time=${time}`)
         for (let i = 0; i < homeBinding.store.homeList.length; i++) {
           if (homeBinding.store.homeList[i].houseId == houseId) {
