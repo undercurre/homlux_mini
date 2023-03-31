@@ -37,10 +37,7 @@ ComponentWithComputed({
       return !data.editDeviceName
     },
     editRoomDisable(data) {
-      if (roomStore.currentRoom.roomId === data.roomId) {
-        return true
-      }
-      return false
+      return roomStore.currentRoom.roomId === data.roomId
     },
   },
 
@@ -165,7 +162,10 @@ ComponentWithComputed({
             })),
           })
           if (res.success) {
-            this.showSuccess()
+            Toast({
+              message: '删除成功',
+              zIndex: 9999,
+            })
             await Promise.all([deviceStore.updateSubDeviceList(), deviceStore.updateAllRoomDeviceList()])
             runInAction(() => {
               deviceStore.isEditSelectMode = false
@@ -260,7 +260,10 @@ ComponentWithComputed({
             })
           }
           if (!deviceInfoUpdateVoList.length) {
-            this.showSuccess()
+            Toast({
+              message: '修改成功',
+              zIndex: 9999,
+            })
             this.handleClose()
             return
           }
@@ -268,13 +271,19 @@ ComponentWithComputed({
             deviceInfoUpdateVoList,
           })
           if (res.success) {
-            this.showSuccess()
+            Toast({
+              message: '修改成功',
+              zIndex: 9999,
+            })
             this.handleClose()
             this.handleExitEdit()
             await Promise.all([deviceStore.updateAllRoomDeviceList(), deviceStore.updateSubDeviceList()])
             this.triggerEvent('updateList')
           } else {
-            this.showFail()
+            Toast({
+              message: '修改失败',
+              zIndex: 9999,
+            })
           }
         } else {
           if (checkInputNameIllegal(this.data.editDeviceName)) {
@@ -292,13 +301,19 @@ ComponentWithComputed({
             ],
           })
           if (res.success) {
-            this.showSuccess()
+            Toast({
+              message: '修改成功',
+              zIndex: 9999,
+            })
             this.handleClose()
             this.handleExitEdit()
             await Promise.all([deviceStore.updateAllRoomDeviceList(), deviceStore.updateSubDeviceList()])
             this.triggerEvent('updateList')
           } else {
-            this.showFail()
+            Toast({
+              message: '修改失败',
+              zIndex: 9999,
+            })
           }
         }
       } else if (this.data.showEditRoom) {
@@ -330,7 +345,10 @@ ComponentWithComputed({
             deviceInfoUpdateVoList: Object.entries(map).map(([_, data]) => data),
           })
           if (res.success) {
-            this.showSuccess()
+            Toast({
+              message: '移动成功',
+              zIndex: 9999,
+            })
             this.handleClose()
             this.handleExitEdit()
             await Promise.all([deviceStore.updateSubDeviceList(), deviceStore.updateAllRoomDeviceList()])
@@ -340,7 +358,10 @@ ComponentWithComputed({
             this.triggerEvent('updateList')
             this.triggerEvent('roomMove')
           } else {
-            this.showFail()
+            Toast({
+              message: '移动失败',
+              zIndex: 9999,
+            })
           }
         }
         if (deviceStore.editSelect.some((uniId) => uniId.includes(':'))) {
@@ -360,18 +381,6 @@ ComponentWithComputed({
     handleRoomSelect(e: { currentTarget: { dataset: { id: string } } }) {
       this.setData({
         roomId: e.currentTarget.dataset.id,
-      })
-    },
-    showSuccess() {
-      Toast({
-        message: '修改成功',
-        zIndex: 9999,
-      })
-    },
-    showFail() {
-      Toast({
-        message: '修改失败',
-        zIndex: 9999,
       })
     },
   },

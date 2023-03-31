@@ -355,7 +355,10 @@ export async function delAssociated(
 /**
  * 根据sn去查设备的mac、图片、品类
  */
-export async function checkDevice(data: { dsn?: string, mac?: string, productId?: string }, options?: { loading?: boolean }) {
+export async function checkDevice(
+  data: { dsn?: string; mac?: string; productId?: string },
+  options?: { loading?: boolean },
+) {
   return await mzaioRequest.post<Device.MzgdProTypeDTO>({
     log: true,
     loading: options?.loading ?? false,

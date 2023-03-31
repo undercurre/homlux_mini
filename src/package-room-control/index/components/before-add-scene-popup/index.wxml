@@ -1,7 +1,6 @@
 <import src="/commons/templates/popup.wxml" />
-<van-popup show="{{ show }}" z-index="2000" round position="bottom" bind:close="handleClose">
+<van-popup show="{{ show }}" z-index="2000" round position="bottom" bind:close="handleClose" closeable>
   <view class="w-750rpx h-1200rpx relative flex flex-col items-center">
-    <template is="close" />
     <template is="title" data="{{title: '创建场景'}}" />
     <text class="text-26rpx text-hex-555659 mb-52rpx mt-24rpx">将{{roomName}}内所有设备的状态保存为新场景</text>
     <view class="flex-1" id="content">

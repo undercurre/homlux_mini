@@ -123,7 +123,8 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
     return
   }
 
-  let { productName: deviceName, proType } = infoRes.result
+  let { productName: deviceName } = infoRes.result
+  const { proType } = infoRes.result
   const { switchNum } = infoRes.result
 
   if (proType === '0x21') {

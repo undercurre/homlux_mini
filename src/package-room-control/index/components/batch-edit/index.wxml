@@ -11,19 +11,19 @@
 
   <view id="bottom" class="fixed left-0 bottom-0 popup-shadow bg-white w-750rpx h-368rpx bottom-transform">
     <view class="w-full h-230rpx flex-center">
-      <view class="flex-col-center flex-1 {{canEditName ?'':'opacity-50'}}" bindtap="handleEditNamePopup">
+      <view class="flex-col-center flex-1 {{canEditName ?'':'opacity-25'}}" bindtap="handleEditNamePopup">
         <view class="flex-center w-100rpx h-100rpx bg-hex-f6fafd rounded-999">
           <image src="/package-room-control/assets/img/edit.png" class="w-36rpx h-36rpx" />
         </view>
         <text class="text-black-tips text-24rpx mt-26rpx">修改名称</text>
       </view>
-      <view class="flex-col-center flex-1 {{!editSelect.length ?'opacity-50':''}}" bindtap="handleMoveRoomPopup">
+      <view class="flex-col-center flex-1 {{!editSelect.length ?'opacity-25':''}}" bindtap="handleMoveRoomPopup">
         <view class="flex-center w-100rpx h-100rpx bg-hex-f6fafd rounded-999">
           <image src="/package-room-control/assets/img/move.png" class="w-36rpx h-36rpx" />
         </view>
         <text class="text-black-tips text-24rpx mt-26rpx">移动房间</text>
       </view>
-      <view class="flex-col-center flex-1 {{!editSelect.length ?'opacity-50':''}}" bindtap="handleDeleteDialog">
+      <view class="flex-col-center flex-1 {{!editSelect.length ?'opacity-25':''}}" bindtap="handleDeleteDialog">
         <view class="flex-center w-100rpx h-100rpx bg-hex-f6fafd rounded-999">
           <image src="/package-room-control/assets/img/del.png" class="w-36rpx h-36rpx" />
         </view>
@@ -36,9 +36,8 @@
     </view>
   </view>
 
-  <van-popup show="{{ showEditName }}" z-index="2000" round position="bottom" bind:close="handleClose">
+  <van-popup show="{{ showEditName }}" z-index="2000" round position="bottom" bind:close="handleClose" closeable>
     <view class="w-750rpx relative flex flex-col items-center">
-      <template is="close" />
       <template is="title" data="{{title: '修改名称'}}" />
       <block wx:if="{{isEditSwitchName}}">
         <view class="flex w-750rpx">
@@ -58,9 +57,8 @@
     </view>
   </van-popup>
 
-  <van-popup show="{{ showEditRoom }}" round position="bottom" bind:close="handleClose">
+  <van-popup show="{{ showEditRoom }}" round position="bottom" bind:close="handleClose" closeable>
     <view class="w-750rpx flex flex-col items-center">
-      <template is="close" />
       <template is="title" data="{{title: '所在房间'}}" />
       <view class="w-750rpx flex mt-44rpx mb-16rpx">
         <text class="text-28rpx ml-48rpx">选择房间</text>

@@ -1,4 +1,4 @@
-import { aesUtil, strUtil, unique } from './index'
+import { aesUtil, strUtil } from './index'
 
 // 定义了与BLE通路相关的所有事件/动作/命令的集合；其值域及表示意义为：对HOMLUX设备主控与app之间可能的各种操作的概括分类
 const CmdTypeMap = {
@@ -25,7 +25,7 @@ const CmdTypeMap = {
 const ControlSubType = {
   haveTry: [0x05],
   CTL_CONFIG_ZIGBEE_NET: [0x00, 0x00, 0x00, 0x00],
-  QUERY_ZIGBEE_STATE: [0x01]
+  QUERY_ZIGBEE_STATE: [0x01],
 } as const
 
 export class BleClient {
@@ -316,7 +316,7 @@ export const bleUtil = {
 
     arr = arr.reverse()
 
-    let zigbeeMac = arr.join('')
+    const zigbeeMac = arr.join('')
 
     return {
       brand: msgStr.substr(0, 4),

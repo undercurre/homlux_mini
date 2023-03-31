@@ -3,3 +3,4 @@ miniprogram_npm
 .idea
 yalc.lock
 .yalc
+project.private.config.json

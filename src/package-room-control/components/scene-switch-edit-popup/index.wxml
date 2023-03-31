@@ -1,7 +1,6 @@
 <import src="/commons/templates/popup.wxml" />
-<van-popup show="{{ show }}" round position="bottom" bind:close="handleClose">
+<van-popup show="{{ show }}" round position="bottom" bind:close="handleClose" closeable>
   <view class="w-750rpx relative flex flex-col items-center">
-    <template is="close" />
     <template is="title" data="{{title: title}}" />
     <view class="flex-col-center mt-62rpx relative">
       <view bindtap="handleOnOffChange" data-value="{{1}}" class="relative box-border w-686rpx h-96rpx rounded-32rpx unselect-card">

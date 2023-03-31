@@ -7,7 +7,6 @@ import { bleDevicesBinding } from '../store/bleDeviceStore'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { strUtil, showLoading, hideLoading } from '../../utils/index'
 import { checkDevice, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
-import { runInAction } from 'mobx-miniprogram'
 
 ComponentWithComputed({
   options: {

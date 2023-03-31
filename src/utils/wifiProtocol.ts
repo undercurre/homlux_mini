@@ -259,7 +259,6 @@ export class WifiSocket {
 
   async getDeviceIp() {
     if (this.deviceInfo.ip) {
-
       return { success: true, msg: '已知IP' }
     }
 

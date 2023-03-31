@@ -4,12 +4,12 @@
   <!-- 标题 -->
   <nav-bar title="设备管理" left-arrow show-go-home bind:leftTap="goBack"></nav-bar>
 
-  <room-tabs bind:roomSelect="handleRoomSelect"></room-tabs>
+  <room-tabs class="px-32rpx" bind:roomSelect="handleRoomSelect"></room-tabs>
 
   <!-- 无设备 -->
-  <view wx:if="{{deviceListCompited.length === 0}}" class="w-750rpx flex-col-center">
-    <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx mt-74rpx"></image>
-    <text class="text-28rpx text-black-59 mt-48rpx">这个房间空空如也</text>
+  <view wx:if="{{deviceListCompited.length === 0}}" class="w-750rpx h-100vh flex-y-center flex-col-center">
+    <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx"></image>
+    <text class="text-28rpx text-black-59 mt-48rpx mb-64rpx">这个房间空空如也</text>
   </view>
   <!-- 设备列表 -->
   <view id="content" class="flex-1">

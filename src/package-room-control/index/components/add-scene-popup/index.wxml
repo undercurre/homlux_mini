@@ -1,7 +1,6 @@
 <import src="/commons/templates/popup.wxml" />
-<van-popup show="{{ show }}" z-index="9000" round position="bottom" bind:close="handleClose">
+<van-popup show="{{ show }}" z-index="1000" round position="bottom" bind:close="handleClose" closeable>
   <view class="w-750rpx h-1200rpx relative flex flex-col items-center">
-    <template is="close" />
     <template is="title" data="{{title: '收藏为新场景'}}" />
     <text class="h-36rpx text-26rpx text-black-tips mt-22rpx font-normal">保存房间内设备的状态，便于快速执行</text>
     <view class="mt-32rpx w-750rpx">

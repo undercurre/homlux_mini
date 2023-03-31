@@ -185,8 +185,8 @@ export const deviceStore = observable({
 
   async updateAllRoomDeviceList(houseId: string = homeStore.currentHomeId, options?: { loading: boolean }) {
     const res = await queryAllDevice(houseId, options)
-    const list = {} as Record<string, Device.DeviceItem[]>
     if (res.success) {
+      const list = {} as Record<string, Device.DeviceItem[]>
       res.result
         ?.sort((a, b) => a.deviceId.localeCompare(b.deviceId))
         .forEach((device) => {
@@ -200,6 +200,8 @@ export const deviceStore = observable({
         roomStore.roomDeviceList = list
         deviceStore.allRoomDeviceList = res.result
       })
+    } else {
+      console.log('加载全屋设备失败！', res)
     }
   },
 

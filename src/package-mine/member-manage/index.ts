@@ -4,6 +4,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { homeBinding, userBinding } from '../../store/index'
 import { storage } from '../../utils/storage'
+import { emitter } from '../../utils/eventBus'
 
 ComponentWithComputed({
   options: {
@@ -114,7 +115,6 @@ ComponentWithComputed({
       //创建者：1 管理员：2 游客：3
       if (mySelf === other) return false
       if (mySelf === 1) return true
-      if (mySelf == 2 && other == 3) return true
       return false
     },
     onUserItemClick(data: any) {
@@ -265,16 +265,19 @@ ComponentWithComputed({
       setTimeout(() => {
         this.setData({ isEditRole: false })
         this.clearOptionList()
+        emitter.emit('homeInfoEdit')
       }, 300)
     },
     changeUserRole(userId: string, auth: Home.UserRole) {
       homeBinding.store.updateMemberAuth(userId, auth).then(() => {
         this.updateView()
+        emitter.emit('homeInfoEdit')
       })
     },
     deleteUser(userId: string) {
       homeBinding.store.deleteMember(userId).then(() => {
         this.updateView()
+        emitter.emit('homeInfoEdit')
       })
     },
     updateShareSetting() {

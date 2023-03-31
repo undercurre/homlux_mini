@@ -18,6 +18,7 @@ import { emitter } from '../../utils/eventBus'
 import { updateDefaultHouse } from '../../apis/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 let throttleTimer = 0
+let hasUpdateInTimer = false
 ComponentWithComputed({
   behaviors: [
     BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding, homeBinding, deviceBinding] }),
@@ -47,6 +48,7 @@ ComponentWithComputed({
     showHomeSelect: false,
     isRefresh: false,
     loading: true,
+    isTryInvite: false,
   },
   computed: {
     currentHomeName(data) {
@@ -147,17 +149,26 @@ ComponentWithComputed({
       emitter.off('wsReceive')
       emitter.on('wsReceive', (res) => {
         if (!throttleTimer && res.result.eventType !== 'connect_success_status') {
-          throttleTimer = setTimeout(() => {
-            homeStore.updateRoomCardList()
+          homeStore.updateRoomCardList()
+          throttleTimer = setTimeout(async () => {
+            if (hasUpdateInTimer) {
+              await homeStore.updateRoomCardList()
+            }
             throttleTimer = 0
-          }, 500)
+            hasUpdateInTimer = false
+          }, 2000)
+        } else {
+          hasUpdateInTimer = true
         }
       })
     },
 
     inviteMember() {
-      const isTryInvite = storage.get('isTryInvite', 0)
-      if (isTryInvite === 1) {
+      if (wx.getEnterOptionsSync().scene != 1044) {
+        console.log('lmn>>>非卡片进入')
+        return
+      }
+      if (this.data.isTryInvite) {
         console.log('lmn>>>已尝试过邀请')
         return
       }
@@ -167,7 +178,9 @@ ComponentWithComputed({
       const houseId = enterQuery.houseId as string
       const time = enterQuery.time as string
       if (token && type && houseId && time) {
-        storage.set('isTryInvite', 1)
+        this.setData({
+          isTryInvite: true,
+        })
         console.log(`lmn>>>邀请参数:token=${token}/type=${type}/houseId=${houseId}/time=${time}`)
         for (let i = 0; i < homeBinding.store.homeList.length; i++) {
           if (homeBinding.store.homeList[i].houseId == houseId) {
@@ -213,36 +226,10 @@ ComponentWithComputed({
 
     // 收起所有菜单
     hideMenu() {
-      // this.doHomeSelectArrowAnimation(false, this.data.selectHomeMenu.isShow)
       this.setData({
         'dropdownMenu.isShow': false,
         'selectHomeMenu.isShow': false,
       })
-      // if (e && e.detail && e.detail.x) {
-      //   wx.createSelectorQuery()
-      //     .select('#addIcon')
-      //     .boundingClientRect()
-      //     .exec((res) => {
-      //       // 点中加按钮以外的地方都要隐藏下拉菜单
-      //       if (
-      //         res[0] &&
-      //         (e.detail.x > res[0].right ||
-      //           e.detail.x < res[0].left ||
-      //           e.detail.y > res[0].bottom ||
-      //           e.detail.y < res[0].top)
-      //       ) {
-      //         this.setData({
-      //           'dropdownMenu.isShow': false,
-      //           'selectHomeMenu.isShow': false,
-      //         })
-      //       }
-      //     })
-      // } else {
-      //   this.setData({
-      //     'dropdownMenu.isShow': false,
-      //     'selectHomeMenu.isShow': false,
-      //   })
-      // }
     },
     /**
      * 跳转到登录页

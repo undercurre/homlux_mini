@@ -4,7 +4,7 @@ import { runInAction } from 'mobx-miniprogram'
 import Toast from '@vant/weapp/toast/toast'
 import asyncPool from 'tiny-async-pool'
 import { homeBinding, roomBinding, homeStore } from '../../store/index'
-import { bleDevicesBinding, ISwitch, IBleDevice, bleDevicesStore } from '../store/bleDeviceStore'
+import { bleDevicesBinding, ISwitch, IBleDevice } from '../store/bleDeviceStore'
 import { getCurrentPageParams } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { sendCmdAddSubdevice, bindDevice, queryDeviceOnlineStatus, batchUpdate } from '../../apis/index'
@@ -349,8 +349,9 @@ ComponentWithComputed({
 
     // 重新添加
     async reAdd() {
-      const failList = bleDevicesBinding.store.bleDeivceList.filter((item: IBleDevice) => item.isChecked && item.status === 'fail')
-
+      const failList = bleDevicesBinding.store.bleDeivceList.filter(
+        (item: IBleDevice) => item.isChecked && item.status === 'fail',
+      )
 
       for (const item of failList) {
         item.status = 'waiting'
