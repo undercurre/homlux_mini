@@ -1,25 +1,17 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import { runInAction } from 'mobx-miniprogram'
 import Toast from '@vant/weapp/toast/toast'
 import asyncPool from 'tiny-async-pool'
-import { homeBinding, roomBinding, deviceBinding, homeStore } from '../../store/index'
-import { bleUtil, IBleBaseInfo, BleClient, getCurrentPageParams, storage } from '../../utils/index'
-import { IBleDevice, ISwitch } from './types'
+import { homeBinding, roomBinding, homeStore } from '../../store/index'
+import { bleDevicesBinding, ISwitch, IBleDevice, bleDevicesStore } from '../store/bleDeviceStore'
+import { getCurrentPageParams } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import {
-  sendCmdAddSubdevice,
-  bindDevice,
-  queryDeviceOnlineStatus,
-  queryProtypeInfo,
-  batchUpdate,
-} from '../../apis/index'
+import { sendCmdAddSubdevice, bindDevice, queryDeviceOnlineStatus, batchUpdate } from '../../apis/index'
 import lottie from 'lottie-miniprogram'
 import { addDevice } from '../../assets/lottie/index'
 
 type StatusName = 'discover' | 'requesting' | 'success' | 'error'
-
-let lightNum = 0 // 灯数量
-let panelNum = 0 // 面板数
 
 ComponentWithComputed({
   options: {
@@ -27,7 +19,7 @@ ComponentWithComputed({
     pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
   },
 
-  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, roomBinding] }), pageBehaviors],
+  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, roomBinding, bleDevicesBinding] }), pageBehaviors],
 
   /**
    * 页面的初始数据
@@ -42,10 +34,6 @@ ComponentWithComputed({
       roomName: '',
       switchList: [] as ISwitch[],
     },
-    deviceList: Array<IBleDevice>(),
-    // 已经发现并需要显示在界面的设备列表，由于deviceList的push变更存在云端接口校验，存在异步过程，
-    // 由于现在发现蓝牙（允许上报重复设备），可能会重复显示设备的情况，需要通过_foundList实时同步的列表过滤重复设备
-    _foundList: Array<string>(),
     status: 'discover' as StatusName,
   },
 
@@ -61,7 +49,9 @@ ComponentWithComputed({
       return titleMap[data.status]
     },
     selectedList(data) {
-      return data.deviceList.filter((item) => item.isChecked) as IBleDevice[]
+      const list = data.bleDeivceList || []
+
+      return list.filter((item: IBleDevice) => item.isChecked)
     },
     failList(data) {
       return data.selectedList.filter((item: IBleDevice) => item.status === 'fail') as IBleDevice[]
@@ -71,24 +61,15 @@ ComponentWithComputed({
     },
 
     isAllSelected(data) {
-      return data.selectedList.length === data.deviceList.length
+      const list = data.bleDeivceList || []
+
+      return data.selectedList.length === list.length
     },
   },
 
   lifetimes: {
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
-    ready: function () {
-      lightNum = deviceBinding.store.allRoomDeviceList.filter((item) => item.proType === '0x13').length // 灯数量
-      panelNum = deviceBinding.store.allRoomDeviceList.filter((item) => item.proType === '0x21').length // 面板数
-
-      this.initBle()
-
-      // this.setData({
-      //   deviceList: JSON.parse(
-      //     '[{"proType":"0x21","deviceUuid":"2405EEB6-EF0D-C8AB-FC47-CA9EE267CFB6","mac":"04CD15AEAEAE","signal":"weak","RSSI":-80,"zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/panel-4.png","name":"四路面板9-AEAE","isChecked":false,"client":{"key":"midea@homluxAEAE","isConnected":false,"serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEAEAE","deviceUuid":"2405EEB6-EF0D-C8AB-FC47-CA9EE267CFB6"},"roomId":"3a7c6a656d3f443bb1676ecaa25d94cd","roomName":"卧室","switchList":[{"switchId":"1","switchName":"按键1"},{"switchId":"2","switchName":"按键2"},{"switchId":"3","switchName":"按键3"},{"switchId":"4","switchName":"按键4"}],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2},{"proType":"0x21","deviceUuid":"2FE9C556-EAC2-CA12-9DE6-DB85643146D1","mac":"04CD15AEB53A","signal":"weak","RSSI":-88,"zigbeeMac":"","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/panel-4.png","name":"四路面板10-B53A","isChecked":false,"client":{"key":"midea@homluxB53A","isConnected":false,"serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AEB53A","deviceUuid":"2FE9C556-EAC2-CA12-9DE6-DB85643146D1"},"roomId":"3a7c6a656d3f443bb1676ecaa25d94cd","roomName":"卧室","switchList":[{"switchId":"1","switchName":"按键1"},{"switchId":"2","switchName":"按键2"},{"switchId":"3","switchName":"按键3"},{"switchId":"4","switchName":"按键4"}],"status":"waiting","requestTimes":20,"requesting":false,"zigbeeRepeatTimes":2}]',
-      //   ),
-      // })
-    },
+    ready: function () {},
     moved: function () {},
   },
 
@@ -116,164 +97,34 @@ ComponentWithComputed({
         })
         .exec()
     },
-    openSystemBluetoothSetting() {
-      wx.openSystemBluetoothSetting({
-        success(res) {
-          console.log('openSystemBluetoothSetting', res)
-        },
-      })
-    },
-
-    openAppAuthorizeSetting() {
-      wx.openAppAuthorizeSetting({
-        success(res) {
-          console.log('openAppAuthorizeSetting', res)
-        },
-      })
-    },
-    async initBle() {
-      const foundList = (storage.get('foundList', this.data.subdeviceList) as IBleBaseInfo[]) || []
-
-      storage.remove('foundList')
-
-      console.log('foundList', foundList)
-
-      this.data._foundList = foundList.map((item) => item.deviceUuid)
-      foundList.forEach((item) => {
-        this.handleBleDeviceInfo(item)
-      })
-
-      // 初始化蓝牙模块
-      const openBleRes = await wx
-        .openBluetoothAdapter({
-          mode: 'central',
-        })
-        .catch((error) => error)
-
-      console.log('openBleRes', openBleRes)
-
-      // 监听扫描到新设备事件
-      bleUtil.onFoundHomluxDevice({
-        success: (list) => {
-          console.log('onFoundHomluxDevice-search', list)
-          list = list.filter((item) => {
-            const foundItem = this.data.deviceList.find((foundItem) => foundItem.deviceUuid === item.deviceUuid)
-
-            if (foundItem) {
-              foundItem.RSSI = item.RSSI
-              foundItem.signal = item.signal
-            }
-
-            return !this.data._foundList.includes(item.deviceUuid)
-          })
-
-          if (list.length <= 0) {
-            this.setData({
-              deviceList: this.data.deviceList,
-            })
-            return
-          }
-
-          this.data._foundList = this.data._foundList.concat(list.map((item) => item.deviceUuid))
-          list.forEach((device) => {
-            this.handleBleDeviceInfo(device)
-          })
-        },
-      })
-
-      // 开始搜寻附近的蓝牙外围设备
-      wx.startBluetoothDevicesDiscovery({
-        allowDuplicatesKey: true,
-        powerLevel: 'high',
-        interval: 3000,
-        success(res) {
-          console.log('startBluetoothDevicesDiscovery-search', res)
-        },
-      })
-    },
-
-    async handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
-      const infoRes = await queryProtypeInfo({
-        proType: `0x${baseInfo.deviceCategory}`,
-        mid: `0x${baseInfo.deviceModel}`,
-      })
-
-      if (!infoRes.success) {
-        return
-      }
-
-      let { productName: deviceName } = infoRes.result
-      const { switchNum } = infoRes.result
-
-      if (baseInfo.deviceCategory === '21') {
-        ++panelNum
-        deviceName += panelNum > 1 ? panelNum : ''
-        // deviceName += (panelNum > 1 ? strUtil.encodeS(panelNum) : '')
-      } else if (baseInfo.deviceCategory === '13') {
-        ++lightNum
-        deviceName += lightNum > 1 ? lightNum : ''
-      }
-
-      const bleDevice: IBleDevice = {
-        proType: `0x${baseInfo.deviceCategory}`,
-        deviceUuid: baseInfo.deviceUuid,
-        mac: baseInfo.mac,
-        signal: baseInfo.signal,
-        RSSI: baseInfo.RSSI,
-        zigbeeMac: '',
-        icon: infoRes.result.icon || '/assets/img/device/gateway.png',
-        name: deviceName + `-${baseInfo.mac.substr(-4)}`,
-        isChecked: false,
-        client: new BleClient({ mac: baseInfo.mac, deviceUuid: baseInfo.deviceUuid }),
-        roomId: roomBinding.store.currentRoom.roomId,
-        roomName: roomBinding.store.currentRoom.roomName,
-        switchList: [],
-        status: 'waiting',
-        requestTimes: 20,
-        requesting: false,
-        zigbeeRepeatTimes: 2,
-      }
-
-      // 面板需要显示按键信息编辑
-      if (switchNum > 1 && bleDevice.proType === '0x21') {
-        bleDevice.switchList = new Array(switchNum).fill('').map((_item, index) => {
-          const num = index + 1
-          return {
-            switchId: num.toString(),
-            switchName: `按键${num}`,
-          }
-        })
-      }
-
-      this.data.deviceList.push(bleDevice)
-      console.log('this.data.deviceList', JSON.stringify(this.data.deviceList))
-
-      this.setData({
-        deviceList: this.data.deviceList,
-      })
-    },
 
     // 切换选择发现的设备
     toggleDevice(e: WechatMiniprogram.CustomEvent) {
       const index = e.currentTarget.dataset.index as number
-      const item = this.data.deviceList[index]
+      const item = bleDevicesBinding.store.bleDeivceList[index]
 
       item.isChecked = !item.isChecked
 
-      this.setData({
-        deviceList: this.data.deviceList,
-      })
+      this.updateBleDeviceListView()
     },
 
     // 确认添加设备
     async confirmAdd() {
       try {
-        wx.stopBluetoothDevicesDiscovery().catch((err) => err)
+        bleDevicesBinding.store.stopBLeDiscovery()
 
-        this.beginAddDevice(this.data.selectedList)
+        const selectedList = bleDevicesBinding.store.bleDeivceList.filter((item: IBleDevice) => item.isChecked)
+
+        this.beginAddDevice(selectedList)
       } catch (err) {
         console.log('confirmAdd-err', err)
       }
+    },
+
+    updateBleDeviceListView() {
+      runInAction(() => {
+        bleDevicesBinding.store.bleDeivceList = bleDevicesBinding.store.bleDeivceList.concat([])
+      })
     },
 
     async beginAddDevice(list: IBleDevice[]) {
@@ -299,18 +150,9 @@ ComponentWithComputed({
           this.startAnimation()
         }, 300)
 
-        for (const item of list) {
-          item.status = 'waiting'
-          item.requestTimes = 20
-          item.zigbeeRepeatTimes = 2
-        }
-
-        this.setData({
-          deviceList: this.data.deviceList,
-        })
-
         const iteratorFn = async (item: IBleDevice) => {
-          console.info('开始任务：', item.mac, Date.now())
+          console.info('开始任务：', item.mac, item)
+
           await this.startZigbeeNet(item)
 
           return item
@@ -327,6 +169,21 @@ ComponentWithComputed({
     async startZigbeeNet(bleDevice: IBleDevice) {
       console.group(`startZigbeeNet:${bleDevice.mac}`)
       console.log(`开始子设备配网：${bleDevice.mac}，第${3 - bleDevice.zigbeeRepeatTimes}次`)
+
+      // 过滤刚出厂设备刚起电时会默认进入配网状态期间，被网关绑定的情况，这种当做成功配网，无需再下发配网指令，否则可能会导致zigbee入网失败
+      if (bleDevice.isConfig !== '02') {
+        const configRes = await bleDevice.client.getBleStatus()
+
+        console.log('configRes', configRes)
+
+        if (configRes.success && configRes.result.isConfig === '02') {
+          this.queryDeviceOnlineStatus(bleDevice)
+          bleDevice.client.close()
+
+          return
+        }
+      }
+
       bleDevice.zigbeeRepeatTimes--
 
       const res = await bleDevice.client.startZigbeeNet()
@@ -339,16 +196,12 @@ ComponentWithComputed({
       }
 
       if (res.success) {
-        bleDevice.zigbeeMac = res.result.zigbeeMac
-
         this.queryDeviceOnlineStatus(bleDevice)
       } else {
         console.error(`子设备配网失败：${bleDevice.mac}`, res)
         bleDevice.status = 'fail'
 
-        this.setData({
-          deviceList: this.data.deviceList,
-        })
+        this.updateBleDeviceListView()
       }
 
       bleDevice.client.close()
@@ -373,9 +226,7 @@ ComponentWithComputed({
 
         if (device.requestTimes <= 0) {
           device.status = 'fail'
-          this.setData({
-            deviceList: this.data.deviceList,
-          })
+          this.updateBleDeviceListView()
 
           return
         }
@@ -397,14 +248,13 @@ ComponentWithComputed({
 
       if (res.success && res.result.isBind) {
         await this.editDeviceInfo({ deviceId: res.result.deviceId, switchList: device.switchList })
+        console.log('123133')
         device.status = 'success'
       } else {
         device.status = 'fail'
       }
 
-      this.setData({
-        deviceList: this.data.deviceList,
-      })
+      this.updateBleDeviceListView()
     },
 
     async editDeviceInfo(data: { deviceId: string; switchList: ISwitch[] }) {
@@ -430,9 +280,7 @@ ComponentWithComputed({
     editDevice(event: WechatMiniprogram.BaseEvent) {
       const { index } = event.currentTarget.dataset
 
-      const item = this.data.deviceList[index]
-
-      console.log('item', item)
+      const item = bleDevicesBinding.store.bleDeivceList[index]
 
       this.setData({
         isEditDevice: true,
@@ -450,7 +298,7 @@ ComponentWithComputed({
     confirmEditDevice(event: WechatMiniprogram.CustomEvent) {
       console.log('confirmEditDevice', event)
       const { detail } = event
-      const item = this.data.deviceList[this.data.editDeviceInfo.index]
+      const item = bleDevicesBinding.store.bleDeivceList[this.data.editDeviceInfo.index]
 
       item.roomId = detail.roomId
       item.roomName = detail.roomName
@@ -459,8 +307,9 @@ ComponentWithComputed({
 
       this.setData({
         isEditDevice: false,
-        deviceList: this.data.deviceList,
       })
+
+      this.updateBleDeviceListView()
     },
 
     cancelEditDevice() {
@@ -475,7 +324,7 @@ ComponentWithComputed({
     async tryControl(event: WechatMiniprogram.CustomEvent) {
       const { id } = event.currentTarget.dataset
 
-      const bleDeviceItem = this.data.deviceList.find((item) => item.deviceUuid === id) as IBleDevice
+      const bleDeviceItem = bleDevicesBinding.store.bleDeivceList.find((item) => item.deviceUuid === id) as IBleDevice
 
       if (bleDeviceItem.requesting) {
         return
@@ -483,12 +332,10 @@ ComponentWithComputed({
 
       bleDeviceItem.requesting = true
 
-      this.setData({
-        deviceList: this.data.deviceList,
-      })
+      this.updateBleDeviceListView()
 
       const res = await bleDeviceItem.client.sendCmd({
-        cmdType: 'control',
+        cmdType: 'DEVICE_CONTROL',
         subType: 'haveTry',
       })
 
@@ -497,14 +344,23 @@ ComponentWithComputed({
 
       bleDeviceItem.requesting = false
 
-      this.setData({
-        deviceList: this.data.deviceList,
-      })
+      this.updateBleDeviceListView()
     },
 
     // 重新添加
     async reAdd() {
-      this.beginAddDevice(this.data.failList)
+      const failList = bleDevicesBinding.store.bleDeivceList.filter((item: IBleDevice) => item.isChecked && item.status === 'fail')
+
+
+      for (const item of failList) {
+        item.status = 'waiting'
+        item.requestTimes = 20
+        item.zigbeeRepeatTimes = 2
+      }
+
+      this.updateBleDeviceListView()
+
+      this.beginAddDevice(failList)
     },
 
     finish() {
@@ -517,11 +373,11 @@ ComponentWithComputed({
     },
 
     toggleSelectAll() {
-      this.setData({
-        deviceList: this.data.deviceList.map((item) => ({
+      runInAction(() => {
+        bleDevicesBinding.store.bleDeivceList = bleDevicesBinding.store.bleDeivceList.map((item) => ({
           ...item,
           isChecked: !this.data.isAllSelected,
-        })),
+        }))
       })
     },
   },

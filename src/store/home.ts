@@ -165,6 +165,7 @@ export const homeStore = observable({
       await roomStore.updateRoomList(options)
       return
     } else {
+      console.error('获取家庭信息失败', res)
       return Promise.reject('获取家庭信息失败')
     }
   },

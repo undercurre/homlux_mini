@@ -113,8 +113,7 @@ ComponentWithComputed({
      * 检查是否目标设备
      */
     async handleBleDeviceInfo(device: WechatMiniprogram.BlueToothDevice) {
-      const dataMsg = strUtil.ab2hex(device.advertisData)
-      const msgObj = bleUtil.transferBroadcastData(dataMsg)
+      const msgObj = bleUtil.transferBroadcastData(device.advertisData)
       const boardMac = this.data.pageParams.mac.slice(0, 6) + this.data.pageParams.mac.slice(10)
 
       // 广播的mac是6字节位，需要将云端的8位mac截掉中间两字节位
@@ -124,7 +123,7 @@ ComponentWithComputed({
 
       this.data._hasFound = true
       clearTimeout(this.data._timeId)
-      console.log('Device Found', device, dataMsg, msgObj)
+      console.log('Device Found', device, msgObj)
 
       wx.stopBluetoothDevicesDiscovery()
 

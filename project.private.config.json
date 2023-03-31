@@ -99,7 +99,7 @@
         {
           "name": "绑定家庭",
           "pathName": "package-distribution/bind-home/index",
-          "query": "deviceId=1679629373118217",
+          "query": "deviceId=1678352507528375",
           "scene": null,
           "launchMode": "default"
         },

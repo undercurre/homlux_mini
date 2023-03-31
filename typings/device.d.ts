@@ -99,6 +99,8 @@ declare namespace Device {
     productIcon: string
     productName: string
     sn: string
+    switchNum: number
+    roomId: string
   }
 
   interface ActionItem {

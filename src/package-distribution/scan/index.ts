@@ -3,9 +3,11 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
 import dayjs from 'dayjs'
 import { deviceBinding, homeBinding } from '../../store/index'
+import { bleDevicesBinding } from '../store/bleDeviceStore'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { strUtil, bleUtil, IBleBaseInfo, storage } from '../../utils/index'
-import { checkDevice, queryProtypeInfo, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
+import { strUtil, showLoading, hideLoading } from '../../utils/index'
+import { checkDevice, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
+import { runInAction } from 'mobx-miniprogram'
 
 ComponentWithComputed({
   options: {
@@ -13,7 +15,7 @@ ComponentWithComputed({
     pureDataPattern: /^_/,
   },
 
-  behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding] }), pageBehaviors],
+  behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding, bleDevicesBinding] }), pageBehaviors],
   /**
    * 组件的属性列表
    */
@@ -32,7 +34,6 @@ ComponentWithComputed({
     isFlash: false,
     selectGatewayId: '',
     selectGatewaySn: '',
-    subdeviceList: Array<IBleBaseInfo>(),
     deviceInfo: {
       icon: '/package-distribution/assets/scan/light.png',
     } as IAnyObject,
@@ -44,17 +45,19 @@ ComponentWithComputed({
 
       return allRoomDeviceList.filter((item) => item.deviceType === 1)
     },
-    tipsText(data) {
+    tipsText(data: IAnyObject) {
       if (data.bleStatus === 'close') {
         return '打开手机蓝牙发现附近子设备'
       }
 
-      return data.subdeviceList.length ? `搜索到${data.subdeviceList.length}个附近的子设备` : '正在搜索附近子设备'
+      return data.bleDeivceList?.length ? `搜索到${data.bleDeivceList.length}个附近的子设备` : '正在搜索附近子设备'
     },
   },
 
   lifetimes: {
     async ready() {
+      showLoading()
+
       await homeBinding.store.updateHomeInfo()
 
       const params = wx.getLaunchOptionsSync()
@@ -66,8 +69,6 @@ ComponentWithComputed({
         'getCurrentPages()',
         getCurrentPages(),
       )
-
-      this.initBle()
 
       // 防止重复判断,仅通过微信扫码直接进入该界面时判断场景值
       if (getCurrentPages().length === 1 && params.scene === 1011) {
@@ -249,6 +250,8 @@ ComponentWithComputed({
       } else {
         this.startDiscoverBle()
       }
+
+      hideLoading()
     },
 
     async startDiscoverBle() {
@@ -258,30 +261,7 @@ ComponentWithComputed({
 
       this.data._isDiscovering = true
 
-      // 监听扫描到新设备事件
-      bleUtil.onFoundHomluxDevice({
-        success: (list) => {
-          console.log('onFoundHomluxDevice-scan', list)
-
-          list = list.filter((item) => {
-            return !this.data.subdeviceList.find((foundItem) => foundItem.deviceUuid === item.deviceUuid)
-          })
-
-          this.setData({
-            subdeviceList: this.data.subdeviceList.concat(list),
-          })
-        },
-      })
-
-      // 开始搜寻附近的蓝牙外围设备
-      wx.startBluetoothDevicesDiscovery({
-        allowDuplicatesKey: true, // 广播数据的配网状态字段有可能会变化，必须允许上报重复设备
-        powerLevel: 'high',
-        interval: 3000,
-        success(res) {
-          console.log('startBluetoothDevicesDiscovery', res)
-        },
-      })
+      bleDevicesBinding.store.startBleDiscovery()
     },
 
     onCloseGwList() {
@@ -297,10 +277,6 @@ ComponentWithComputed({
       const settingRes = await wx.getSetting()
 
       console.log('getSetting', settingRes)
-      // res.authSetting = {
-      //   "scope.userInfo": true,
-      //   "scope.userLocation": true
-      // }
 
       if (!settingRes.authSetting['scope.camera']) {
         wx.showModal({
@@ -347,6 +323,13 @@ ComponentWithComputed({
       console.log('getCameraError', event)
 
       this.checkCamera()
+
+      hideLoading()
+    },
+
+    initCameraDone() {
+      console.log('initCameraDone')
+      this.initBle()
     },
 
     toggleFlash() {
@@ -446,6 +429,7 @@ ComponentWithComputed({
         await this.bindGateway(pageParams)
       }
 
+      hideLoading()
       // 延迟复位扫码状态，防止安卓端短时间重复执行扫码逻辑
       setTimeout(() => {
         this.setData({
@@ -461,8 +445,8 @@ ComponentWithComputed({
         title: 'loading',
       })
 
-      const res = await queryProtypeInfo({
-        pid: params.pid,
+      const res = await checkDevice({
+        productId: params.pid,
       })
 
       if (!res.success) {
@@ -562,7 +546,6 @@ ComponentWithComputed({
       const gatewayId = this.data.selectGatewayId,
         gatewaySn = this.data.selectGatewaySn
 
-      storage.set('foundList', this.data.subdeviceList)
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
           gatewayId,
