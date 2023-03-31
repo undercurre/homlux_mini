@@ -6,7 +6,7 @@ import { deviceBinding, homeBinding } from '../../store/index'
 import { bleDevicesBinding } from '../store/bleDeviceStore'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { strUtil, showLoading, hideLoading } from '../../utils/index'
-import { checkDevice, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
+import { queryProtypeInfo, checkDevice, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -444,8 +444,8 @@ ComponentWithComputed({
         title: 'loading',
       })
 
-      const res = await checkDevice({
-        productId: params.pid,
+      const res = await queryProtypeInfo({
+        pid: params.pid,
       })
 
       if (!res.success) {

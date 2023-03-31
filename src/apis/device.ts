@@ -85,7 +85,7 @@ export async function queryDeviceOnlineStatus(
 }
 
 /**
- * 根据产品id查产品信息
+ * 根据产品id查网关产品信息
  */
 export async function queryProtypeInfo(
   data: { pid?: string; proType?: string; mid?: string },
