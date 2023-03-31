@@ -6,7 +6,7 @@ import { deviceBinding, homeBinding } from '../../store/index'
 import { bleDevicesBinding } from '../store/bleDeviceStore'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { strUtil, showLoading, hideLoading } from '../../utils/index'
-import { queryProtypeInfo, checkDevice, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
+import { checkDevice, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -200,7 +200,7 @@ ComponentWithComputed({
               wx.openSetting({
                 success: (settingRes) => {
                   console.log('openSetting', settingRes)
-                  resolve(this.checkBlePermission())
+                  resolve(settingRes.authSetting['scope.bluetooth'] === true)
                 },
               })
             },
@@ -440,9 +440,7 @@ ComponentWithComputed({
     },
 
     async bindGateway(params: IAnyObject) {
-      wx.showLoading({
-        title: 'loading',
-      })
+      showLoading()
 
       const res = await checkDevice({
         productId: params.pid,
@@ -460,7 +458,7 @@ ComponentWithComputed({
           deviceName: res.result.productName,
         }),
       })
-      wx.hideLoading()
+      hideLoading()
     },
 
     async bindSubDevice(params: IAnyObject) {
@@ -497,7 +495,7 @@ ComponentWithComputed({
       if (flag) {
         this.addSingleSubdevice()
       }
-      wx.hideLoading()
+      hideLoading()
     },
 
     /**

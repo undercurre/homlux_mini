@@ -143,7 +143,7 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
     RSSI: baseInfo.RSSI,
     zigbeeMac: baseInfo.zigbeeMac,
     isConfig: baseInfo.isConfig,
-    icon: infoRes.result.deviceIcon || '/assets/img/device/gateway.png',
+    icon: infoRes.result.productIcon,
     name: deviceName + `-${baseInfo.mac.substr(-4)}`,
     isChecked: false,
     client: new BleClient({ mac: baseInfo.mac, deviceUuid: baseInfo.deviceUuid }),
