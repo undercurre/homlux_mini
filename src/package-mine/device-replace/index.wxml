@@ -22,7 +22,7 @@
       <text class="block text-center pb-80rpx leading-34rpx text-24 text-black-59">替换完成后，该设备将自动从家庭中解绑。</text>
 
       <view class="bg-white mx-24rpx p-60rpx rounded-32rpx flex justify-center">
-        <device-card wx:if="{{ oldDeviceItem && oldDeviceItem.deviceId }}" device-info="{{oldDeviceItem}}" device-type="light" bind:cardTap="addOldDevice" />
+        <device-card wx:if="{{ oldDeviceItem && oldDeviceItem.deviceId }}" showBtnDetail="{{false}}" device-info="{{oldDeviceItem}}" device-type="light" bind:cardTap="addOldDevice" />
 
         <view wx:else class="flex flex-col items-center" bind:tap="addOldDevice">
           <image class="w-108 h-108" src="/assets/img/device-replace/add.png"></image>
@@ -37,7 +37,7 @@
       <text class="block text-center pb-80rpx leading-34rpx text-24 text-black-59">仅可选择在线，且与旧设备同类别的新设备</text>
 
       <view class="bg-white mx-24rpx p-60rpx rounded-32rpx flex justify-center">
-        <device-card wx:if="{{ newDeviceItem && newDeviceItem.deviceId }}" device-info="{{newDeviceItem}}" device-type="light" bind:cardTap="addNewDevice" />
+        <device-card wx:if="{{ newDeviceItem && newDeviceItem.deviceId }}" showBtnDetail="{{false}}" device-info="{{newDeviceItem}}" device-type="light" bind:cardTap="addNewDevice" />
 
         <view wx:else class="flex flex-col items-center" bind:tap="addNewDevice">
           <image class="w-108 h-108" src="/assets/img/device-replace/add.png"></image>
