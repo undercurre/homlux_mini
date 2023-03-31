@@ -167,8 +167,6 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
     })
   }
 
-  console.log('bleDevice', JSON.stringify(bleDevice))
-
   bleDevicesStore.bleDeivceList.push(bleDevice)
 
   runInAction(() => {
