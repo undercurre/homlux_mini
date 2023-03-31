@@ -45,8 +45,7 @@ export const bleDevicesStore = observable({
         if (
           _foundList.find(
             (foundItem) => foundItem.deviceUuid === item.deviceUuid && foundItem.isConfig === item.isConfig,
-          ) ||
-          !['011304CD15B01DAB', '04CD15FFFEAEB442'].includes(item.zigbeeMac)
+          )
         ) {
           return
         }
