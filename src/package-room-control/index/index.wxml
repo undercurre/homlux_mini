@@ -31,7 +31,7 @@
   <view class="relative">
     <view class="arrow absolute w-0 h-0"></view>
   </view>
-  <text class="text-white text-26rpx">您收藏了一个新的场景</text>
+  <text class="text-white text-26rpx">您创建了一个新的场景</text>
 </view>
 
 <!-- 全屏幕点击捕获 -->
