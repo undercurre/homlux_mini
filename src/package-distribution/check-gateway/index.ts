@@ -21,10 +21,12 @@ Component({
    * 组件的初始数据
    */
   data: {
+    isLoading: false,
     isShowForceBindTips: false,
+    isAndroid10Plus: false,
     isConnectDevice: false,
     status: 'linking',
-    ssid: '',
+    ssid: 'Midea_16_E58C',
   } as IAnyObject,
 
   lifetimes: {
@@ -49,6 +51,11 @@ Component({
    * 组件的方法列表
    */
   methods: {
+    copy() {
+      wx.setClipboardData({
+        data: '12345678'
+      })
+    },
     /**
      * 检查微信位置权限
      * isDeny: 是否已拒绝授权，
@@ -101,13 +108,19 @@ Component({
       const params = getCurrentPageParams()
 
       console.log('initWifi', params)
-      this.setData({
-        ssid: params.ssid,
-      })
 
       const deviceInfo = wx.getDeviceInfo()
 
       console.log('deviceInfo', deviceInfo)
+
+      const systemVersion = parseInt(deviceInfo.system.toLowerCase().replace(deviceInfo.platform, ''))
+      const isAndroid10Plus = deviceInfo.platform === 'android' && systemVersion >= 10 // 判断是否Android10+或者是鸿蒙
+
+      this.setData({
+        isAndroid10Plus,
+        ssid: params.ssid,
+      })
+      
       // Android 调用前需要 用户授权 scope.userLocation。该权限流程需前置，否则会出现在配网过程连接设备热点导致无法联网，请求失败
       if (deviceInfo.platform === 'android') {
         const authorizeRes = await wx
@@ -158,7 +171,19 @@ Component({
         }
       })
 
+      if (!isAndroid10Plus) {
+        this.connectWifi()
+      }
+    },
+
+    async connectWifi() {
+      const params = getCurrentPageParams()
+
       const connectRes = await socket.connect()
+
+      this.setData({
+        isLoading: false
+      })
 
       console.debug(params.ssid + '---connectRes', connectRes, '初始化socket连接用时：', Date.now() - start)
 

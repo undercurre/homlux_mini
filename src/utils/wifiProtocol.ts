@@ -100,18 +100,6 @@ export class WifiSocket {
           console.log('systemVersion', deviceInfo.platform, systemVersion)
           const isAndroid10Plus = deviceInfo.platform === 'android' && systemVersion >= 10 // 判断是否Android10+或者是鸿蒙
 
-          if (isAndroid10Plus) {
-            const modal = await wx.showModal({
-              confirmText: '去连接',
-              content: `请到系统设置手动加入\nWiFi:“${this.SSID}”，\n密码：“${this.pw}” \n以连接设备`,
-            })
-
-            if (modal.cancel) {
-              resolve({ success: false, errCode: -1, msg: '用户拒绝' })
-              return
-            }
-          }
-
           wx.connectWifi({
             SSID: this.SSID,
             password: this.pw,
