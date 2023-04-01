@@ -7,7 +7,7 @@
           <text class="text-32rpx text-hex-353535 font-medium mt-5rpx">{{item.data.sceneName}}</text>
           <view class="flex items-center mt-12rpx">
             <!-- <image src="/assets/img/base/link.png" class="w-32rpx h-32rpx" /> -->
-            <text class="text-26rpx text-hex-6e6f74 font-normal truncate">{{item.data.linkName ? item.data.linkName : '暂未关联开关'}}</text>
+            <text class="text-26rpx text-hex-6e6f74 font-normal truncate">{{linkDesc}}</text>
           </view>
         </view>
       </view>
