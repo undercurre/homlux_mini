@@ -7,6 +7,7 @@ import {
   deviceBinding,
   homeStore,
   othersStore,
+  roomStore,
 } from '../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { storage } from '../../utils/index'
@@ -17,6 +18,7 @@ import { allDevicePowerControl } from '../../apis/index'
 import { emitter } from '../../utils/eventBus'
 import { updateDefaultHouse } from '../../apis/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
+import { runInAction } from 'mobx-miniprogram'
 let throttleTimer = 0
 ComponentWithComputed({
   behaviors: [
@@ -154,6 +156,12 @@ ComponentWithComputed({
           }, 2000)
         }
       })
+      // 房间选择恢复默认
+      if (roomStore.currentRoomIndex) {
+        runInAction(() => {
+          roomStore.currentRoomIndex = 0
+        })
+      }
     },
 
     inviteMember() {
