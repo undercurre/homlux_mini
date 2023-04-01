@@ -49,7 +49,7 @@ ComponentWithComputed({
         return '打开手机蓝牙发现附近子设备'
       }
 
-      return data.bleDeivceList?.length ? `搜索到${data.bleDeivceList.length}个附近的子设备` : '正在搜索附近子设备'
+      return data.bleDeviceList?.length ? `搜索到${data.bleDeviceList.length}个附近的子设备` : '正在搜索附近子设备'
     },
   },
 

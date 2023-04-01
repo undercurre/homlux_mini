@@ -7,11 +7,11 @@ let _foundList = [] as IBleBaseInfo[]
 
 console.info('bleDevicesStore')
 export const bleDevicesStore = observable({
-  bleDeivceList: [] as IBleDevice[],
+  bleDeviceList: [] as IBleDevice[],
 
   startBleDiscovery() {
     runInAction(() => {
-      this.bleDeivceList = []
+      this.bleDeviceList = []
 
       _foundList = []
     })
@@ -22,14 +22,14 @@ export const bleDevicesStore = observable({
 
       const deviceList = res.devices
         .filter((item) => {
-          const foundItem = bleDevicesStore.bleDeivceList.find((foundItem) => foundItem.deviceUuid === item.deviceId)
+          const foundItem = bleDevicesStore.bleDeviceList.find((foundItem) => foundItem.deviceUuid === item.deviceId)
 
           if (foundItem) {
             foundItem.RSSI = item.RSSI
             foundItem.signal = getSignalFlag(item.RSSI)
 
             runInAction(() => {
-              bleDevicesStore.bleDeivceList = bleDevicesStore.bleDeivceList.concat([])
+              bleDevicesStore.bleDeviceList = bleDevicesStore.bleDeviceList.concat([])
             })
           }
           // localName为homlux_ble且过滤【发现过的】&&【处于未配网】的设备
@@ -78,7 +78,7 @@ export const bleDevicesStore = observable({
 
 export const bleDevicesBinding = {
   store: bleDevicesStore,
-  fields: ['bleDeivceList'],
+  fields: ['bleDeviceList'],
   actions: [],
 }
 
@@ -116,7 +116,7 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
   // 1、存在接口查询过程，过滤期间重复添加的设备
   // 2、过滤云端存在绑定关系且设备本地状态为02的设备
   if (
-    bleDevicesStore.bleDeivceList.find((foundItem) => foundItem.deviceUuid === baseInfo.deviceUuid) ||
+    bleDevicesStore.bleDeviceList.find((foundItem) => foundItem.deviceUuid === baseInfo.deviceUuid) ||
     (infoRes.result.roomId && baseInfo.isConfig === '02')
   ) {
     return
@@ -167,10 +167,10 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
     })
   }
 
-  bleDevicesStore.bleDeivceList.push(bleDevice)
+  bleDevicesStore.bleDeviceList.push(bleDevice)
 
   runInAction(() => {
-    bleDevicesStore.bleDeivceList = bleDevicesStore.bleDeivceList.concat([])
+    bleDevicesStore.bleDeviceList = bleDevicesStore.bleDeviceList.concat([])
   })
 }
 

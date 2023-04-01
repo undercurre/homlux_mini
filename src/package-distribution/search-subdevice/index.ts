@@ -50,7 +50,7 @@ ComponentWithComputed({
       return titleMap[data.status]
     },
     selectedList(data) {
-      const list = data.bleDeivceList || []
+      const list = data.bleDeviceList || []
 
       return list.filter((item: IBleDevice) => item.isChecked)
     },
@@ -62,7 +62,7 @@ ComponentWithComputed({
     },
 
     isAllSelected(data) {
-      const list = data.bleDeivceList || []
+      const list = data.bleDeviceList || []
 
       return data.selectedList.length === list.length
     },
@@ -108,7 +108,7 @@ ComponentWithComputed({
     // 切换选择发现的设备
     toggleDevice(e: WechatMiniprogram.CustomEvent) {
       const index = e.currentTarget.dataset.index as number
-      const item = bleDevicesBinding.store.bleDeivceList[index]
+      const item = bleDevicesBinding.store.bleDeviceList[index]
 
       item.isChecked = !item.isChecked
 
@@ -120,7 +120,7 @@ ComponentWithComputed({
       try {
         bleDevicesBinding.store.stopBLeDiscovery()
 
-        const selectedList = bleDevicesBinding.store.bleDeivceList.filter((item: IBleDevice) => item.isChecked)
+        const selectedList = bleDevicesBinding.store.bleDeviceList.filter((item: IBleDevice) => item.isChecked)
 
         this.beginAddDevice(selectedList)
       } catch (err) {
@@ -130,7 +130,7 @@ ComponentWithComputed({
 
     updateBleDeviceListView() {
       runInAction(() => {
-        bleDevicesBinding.store.bleDeivceList = bleDevicesBinding.store.bleDeivceList.concat([])
+        bleDevicesBinding.store.bleDeviceList = bleDevicesBinding.store.bleDeviceList.concat([])
       })
     },
 
@@ -147,7 +147,7 @@ ComponentWithComputed({
       // 子设备配网阶段，保持网关在配网状态
       if (res.success) {
         this.data._timeId = setTimeout(() => {
-          const hasWaitItem = bleDevicesStore.bleDeivceList.findIndex((item) => item.status === 'waiting') >= 0 // 检测是否还存在需要配网的设备
+          const hasWaitItem = bleDevicesStore.bleDeviceList.findIndex((item) => item.status === 'waiting') >= 0 // 检测是否还存在需要配网的设备
 
           hasWaitItem && this.startGwAddMode()
         }, (expireTime - 10) * 1000)
@@ -329,7 +329,7 @@ ComponentWithComputed({
     editDevice(event: WechatMiniprogram.BaseEvent) {
       const { index } = event.currentTarget.dataset
 
-      const item = bleDevicesBinding.store.bleDeivceList[index]
+      const item = bleDevicesBinding.store.bleDeviceList[index]
 
       this.setData({
         isEditDevice: true,
@@ -347,7 +347,7 @@ ComponentWithComputed({
     confirmEditDevice(event: WechatMiniprogram.CustomEvent) {
       console.log('confirmEditDevice', event)
       const { detail } = event
-      const item = bleDevicesBinding.store.bleDeivceList[this.data.editDeviceInfo.index]
+      const item = bleDevicesBinding.store.bleDeviceList[this.data.editDeviceInfo.index]
 
       item.roomId = detail.roomId
       item.roomName = detail.roomName
@@ -373,7 +373,7 @@ ComponentWithComputed({
     async tryControl(event: WechatMiniprogram.CustomEvent) {
       const { id } = event.currentTarget.dataset
 
-      const bleDeviceItem = bleDevicesBinding.store.bleDeivceList.find((item) => item.deviceUuid === id) as IBleDevice
+      const bleDeviceItem = bleDevicesBinding.store.bleDeviceList.find((item) => item.deviceUuid === id) as IBleDevice
 
       if (bleDeviceItem.requesting) {
         return
@@ -398,7 +398,7 @@ ComponentWithComputed({
 
     // 重新添加
     async reAdd() {
-      const failList = bleDevicesBinding.store.bleDeivceList.filter(
+      const failList = bleDevicesBinding.store.bleDeviceList.filter(
         (item: IBleDevice) => item.isChecked && item.status === 'fail',
       )
 
@@ -424,7 +424,7 @@ ComponentWithComputed({
 
     toggleSelectAll() {
       runInAction(() => {
-        bleDevicesBinding.store.bleDeivceList = bleDevicesBinding.store.bleDeivceList.map((item) => ({
+        bleDevicesBinding.store.bleDeviceList = bleDevicesBinding.store.bleDeviceList.map((item) => ({
           ...item,
           isChecked: !this.data.isAllSelected,
         }))
