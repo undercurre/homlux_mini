@@ -144,7 +144,7 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
     zigbeeMac: baseInfo.zigbeeMac,
     isConfig: baseInfo.isConfig,
     icon: infoRes.result.productIcon,
-    name: deviceName + `-${baseInfo.mac.substr(-4)}`,
+    name: deviceName + `-${baseInfo.mac.slice(-4)}`,
     isChecked: false,
     client: new BleClient({ mac: baseInfo.mac, deviceUuid: baseInfo.deviceUuid }),
     roomId: roomBinding.store.currentRoom.roomId,

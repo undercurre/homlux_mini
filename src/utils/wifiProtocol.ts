@@ -223,9 +223,10 @@ export class WifiSocket {
       this.deviceInfo.isConnectingUdp = false
     })
 
-    wx.onAppHide(this.closeUdp)
+    // 防止在配网页面直接关闭小程序，导致udp端口没有被占用释放，下次打开时会无法创建同样端口的udp实例，需要在核实时机销毁没用的udp实例
+    // wx.onAppHide(this.closeUdp)
 
-    wx.onAppShow(this.bindUdp)
+    // wx.onAppShow(this.bindUdp)
 
     return port
   }
