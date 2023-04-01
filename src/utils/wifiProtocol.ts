@@ -136,7 +136,7 @@ export class WifiSocket {
                 if (onWifiConnectRes.wifi.SSID === this.SSID) {
                   console.log('offWifiConnected')
                   wx.offWifiConnected(listen)
-
+                  console.info(`连接wifi:${onWifiConnectRes.wifi.SSID}成功`)
                   clearTimeout(timeId)
                   resolve(res)
                 }
@@ -257,40 +257,30 @@ export class WifiSocket {
     }
   }
 
-  getDeviceIp() {
-    return new Promise<{ success: boolean }>((resolve) => {
-      if (this.deviceInfo.ip) {
-        resolve({ success: true })
+  async getDeviceIp() {
+    if (this.deviceInfo.ip) {
+      return { success: true, msg: '已知IP' }
+    }
 
-        return
+    // 网关固定IP，优先11.1，ip冲突才会选择33.1
+    const ipList = ['192.168.11.1', '192.168.33.1']
+
+    for (const ip of ipList) {
+      const connectTcpRes = await this.connectTcp(ip).catch((err) => ({ success: false, msg: err }))
+
+      console.log('connectTcpRes', connectTcpRes)
+      this.tcpClient.close()
+
+      console.info(`尝试连接${ip}：${connectTcpRes.success}`)
+      if (connectTcpRes.success) {
+        this.deviceInfo.ip = ip
+        return { success: true, msg: '固定IP连接成功' }
       }
+    }
 
-      this.sendCmdForDeviceIp().then(async () => {
-        // 网关固定IP，优先11.1，ip冲突才会选择33.1
-        const ipList = ['192.168.11.1', '192.168.33.1']
+    await this.sendCmdForDeviceIp()
 
-        for (const ip of ipList) {
-          const connectTcpRes = await this.connectTcp(ip).catch((err) => ({ success: false, msg: err }))
-
-          console.log('connectTcpRes', connectTcpRes)
-          this.tcpClient.close()
-
-          console.info(`尝试连接${ip}：${connectTcpRes.success}`)
-          if (connectTcpRes.success) {
-            this.deviceInfo.ip = ip
-            resolve({ success: true })
-            return
-          }
-        }
-
-        if (this.deviceInfo.ip) {
-          resolve({ success: true })
-          return
-        }
-
-        resolve({ success: false })
-      })
-    })
+    return { success: Boolean(this.deviceInfo.ip) }
   }
 
   // 创建

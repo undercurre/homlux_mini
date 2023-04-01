@@ -16,6 +16,10 @@ ComponentWithComputed({
     filterDevice: {
       type: Object,
     },
+    sDeviceList: {
+      type: Array,
+      value: [],
+    },
   },
 
   /**
@@ -28,23 +32,22 @@ ComponentWithComputed({
   },
 
   computed: {
+    popupTitle(data) {
+      const { filterDevice } = data
+      const choosingNew = filterDevice && filterDevice.productId
+      return choosingNew ? '选择新设备' : '选择被替换设备'
+    },
+
     /**
      * @description 待选设备列表
-     * isSubdevice 过滤网关设备；
+     * 如传入 deviceList，则使用指定列表；否则显示所有设备
      * isCurrentRoom 按房间筛选
-     * isFilterDevice 如传入checkedDevice，则列表只显示相同productId的项，并排除已选择项
      */
-    wifiDeviceList(data) {
-      const { filterDevice } = data
-      const hasOldDevice = filterDevice && filterDevice.productId
-      return data.allRoomDeviceList.filter((item) => {
-        const isSubdevice = item.deviceType === 2
-        const isCurrentRoom = data.roomSelect === '' ? true : item.roomId === data.roomSelect
-        const isFilterDevice = hasOldDevice
-          ? item.productId === filterDevice.productId && item.deviceId !== filterDevice.deviceId
-          : true
-
-        return isSubdevice && isCurrentRoom && isFilterDevice
+    computedToDeviceList(data) {
+      const list = data.sDeviceList?.length ? data.sDeviceList : data.allRoomDeviceList
+      return list.filter((d) => {
+        const isCurrentRoom = data.roomSelect === '' ? true : d.roomId === data.roomSelect
+        return isCurrentRoom
       })
     },
   },

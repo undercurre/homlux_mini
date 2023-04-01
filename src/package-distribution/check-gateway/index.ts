@@ -118,11 +118,14 @@ Component({
 
         console.log('authorizeRes', authorizeRes)
 
-        // 用户拒绝授权处理
+        // 用户拒绝授权处理，安卓端没有返回errno字段，只能通过errMsg判断
         if (authorizeRes.errno === 103 || authorizeRes.errMsg.includes('auth deny')) {
           const authRes = await this.checkLocationPermission()
           console.log('authRes', authRes)
-          if (!authRes) return
+          if (!authRes) {
+            console.error('授权失败')
+            return
+          }
         }
       }
 

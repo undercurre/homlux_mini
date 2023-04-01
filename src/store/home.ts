@@ -175,6 +175,7 @@ export const homeStore = observable({
       this.homeDataPersistence()
       return
     } else {
+      console.error('获取家庭信息失败', res)
       return Promise.reject('获取家庭信息失败')
     }
   },

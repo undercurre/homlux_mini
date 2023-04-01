@@ -90,9 +90,9 @@
         {
           "name": "绑定家庭",
           "pathName": "package-distribution/bind-home/index",
-          "query": "deviceId=1679629373118217",
-          "launchMode": "default",
-          "scene": null
+          "query": "deviceId=1678352507528375",
+          "scene": null,
+          "launchMode": "default"
         },
         {
           "name": "附近子设备",

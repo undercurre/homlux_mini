@@ -1,5 +1,5 @@
 <view class="relative bg-hex-000">
-  <camera wx:if="{{isShowPage}}" mode="scanCode" device-position="back" flash="{{isFlash? 'on' : 'off'}}" bind:scancode="getQrCodeInfo" bind:error="getCameraError" class="w-750rpx h-screen"></camera>
+  <camera wx:if="{{isShowPage}}" mode="scanCode" device-position="back" flash="{{isFlash? 'on' : 'off'}}" bind:scancode="getQrCodeInfo" bind:error="getCameraError" bind:initdone="initCameraDone" class="w-750rpx h-screen"></camera>
 
   <nav-bar class="absolute" background="transparent" leftArrow="{{true}}" left-icon="/package-distribution/assets/scan/back.png" bind:leftTap="goBack"></nav-bar>
 
@@ -23,7 +23,7 @@
 
         <text class="grow text-hex-F4F8FF px-16rpx" bind:tap="checkSystemBleSwitch">{{tipsText}}</text>
 
-        <van-button class="ml-24rpx" type="primary" size="small" bind:click="addNearSubdevice" wx:if="{{subdeviceList.length}}" custom-style="height: 52rpx;margin-top: -8rpx;">立即添加</van-button>
+        <van-button class="ml-24rpx" type="primary" size="small" bind:click="addNearSubdevice" wx:if="{{bleDeivceList.length}}" custom-style="height: 52rpx;margin-top: -8rpx;">立即添加</van-button>
       </view>
 
       <view></view>

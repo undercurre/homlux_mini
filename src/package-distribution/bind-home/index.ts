@@ -35,8 +35,6 @@ ComponentWithComputed({
       wx.closeBluetoothAdapter()
       wx.stopWifi()
 
-      homeBinding.store.updateCurrentHomeDetail()
-
       this.getDeviceInfo()
     },
     detached() {},

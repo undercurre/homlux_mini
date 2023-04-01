@@ -19,6 +19,7 @@ ComponentWithComputed({
     deviceInfo: {
       type: Object,
     },
+    // 是否显示控制图标（如电源开关）
     showControl: {
       type: Boolean,
       value: false,

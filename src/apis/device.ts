@@ -85,7 +85,7 @@ export async function queryDeviceOnlineStatus(
 }
 
 /**
- * 根据产品id查产品信息
+ * 根据产品id查网关产品信息
  */
 export async function queryProtypeInfo(
   data: { pid?: string; proType?: string; mid?: string },
@@ -355,7 +355,10 @@ export async function delAssociated(
 /**
  * 根据sn去查设备的mac、图片、品类
  */
-export async function checkDevice(data: { dsn: string }, options?: { loading?: boolean }) {
+export async function checkDevice(
+  data: { dsn?: string; mac?: string; productId?: string },
+  options?: { loading?: boolean },
+) {
   return await mzaioRequest.post<Device.MzgdProTypeDTO>({
     log: true,
     loading: options?.loading ?? false,

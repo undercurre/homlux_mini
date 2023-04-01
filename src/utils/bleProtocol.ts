@@ -1,9 +1,9 @@
-import { aesUtil, strUtil, unique } from './index'
+import { aesUtil, strUtil } from './index'
 
 // 定义了与BLE通路相关的所有事件/动作/命令的集合；其值域及表示意义为：对HOMLUX设备主控与app之间可能的各种操作的概括分类
 const CmdTypeMap = {
-  control: 0x00, // 控制
-  query: 0x01, // 查询
+  DEVICE_CONTROL: 0x00, // 控制
+  DEVICE_INFO_QUREY: 0x01, // 查询
 } as const
 
 // type CmdType = typeof CmdTypeMap
@@ -25,6 +25,7 @@ const CmdTypeMap = {
 const ControlSubType = {
   haveTry: [0x05],
   CTL_CONFIG_ZIGBEE_NET: [0x00, 0x00, 0x00, 0x00],
+  QUERY_ZIGBEE_STATE: [0x01],
 } as const
 
 export class BleClient {
@@ -217,16 +218,15 @@ export class BleClient {
             // 仅截取消息参数部分数据，
             const resMsg = msg.substr(6, (packLen - 3) * 2)
             wx.offBLECharacteristicValueChange(listener)
-            const code = resMsg.substr(2, 2)
 
             clearTimeout(timeId)
 
             console.log(`蓝牙指令回复时间： ${Date.now() - begin} mac: ${this.mac}`, cmdType, subType)
 
             resolve({
-              code: code,
-              resMsg: resMsg.substr(4),
-              success: code === '00',
+              code: '0',
+              resMsg: resMsg.substr(2),
+              success: true,
               cmdType: cmdType,
               subCmdType: subType,
             })
@@ -257,14 +257,14 @@ export class BleClient {
   }
 
   async startZigbeeNet() {
-    const res = await this.sendCmd({ cmdType: 'control', subType: 'CTL_CONFIG_ZIGBEE_NET' })
+    const res = await this.sendCmd({ cmdType: 'DEVICE_CONTROL', subType: 'CTL_CONFIG_ZIGBEE_NET' })
 
     console.log(`mac: ${this.mac}`, 'startZigbeeNet', res)
 
     let zigbeeMac = ''
 
     if (res.success) {
-      const macStr = res.resMsg
+      const macStr = res.resMsg.substr(2)
       let arr = []
 
       for (let i = 0; i < macStr.length; i = i + 2) {
@@ -282,11 +282,32 @@ export class BleClient {
       },
     }
   }
+
+  async getBleStatus() {
+    const res = await this.sendCmd({ cmdType: 'DEVICE_CONTROL', subType: 'QUERY_ZIGBEE_STATE' })
+
+    console.log(`mac: ${this.mac}`, 'getBleStatus', res)
+
+    let isConfig = ''
+
+    if (res.success) {
+      isConfig = res.resMsg
+    }
+
+    return {
+      ...res,
+      result: {
+        isConfig,
+      },
+    }
+  }
 }
 
 export const bleUtil = {
-  transferBroadcastData(msgStr: string) {
-    const macStr = msgStr.substr(6, 12)
+  transferBroadcastData(advertisData: ArrayBuffer) {
+    const msgStr = strUtil.ab2hex(advertisData)
+    const macStr = msgStr.substr(6, 16)
+
     let arr = []
 
     for (let i = 0; i < macStr.length; i = i + 2) {
@@ -295,10 +316,13 @@ export const bleUtil = {
 
     arr = arr.reverse()
 
+    const zigbeeMac = arr.join('')
+
     return {
       brand: msgStr.substr(0, 4),
       isConfig: msgStr.substr(4, 2),
-      mac: arr.join(''),
+      mac: zigbeeMac.substr(0, 6) + zigbeeMac.substr(-6, 6),
+      zigbeeMac,
       deviceCategory: msgStr.substr(18, 2),
       deviceModel: msgStr.substr(20, 2),
       version: msgStr.substr(22, 2),
@@ -333,54 +357,4 @@ export const bleUtil = {
     str = arr.join('')
     return str
   },
-
-  getBleDeviceBaseInfo(bleDevice: WechatMiniprogram.BlueToothDevice): IBleBaseInfo {
-    const dataMsg = strUtil.ab2hex(bleDevice.advertisData)
-    const msgObj = bleUtil.transferBroadcastData(dataMsg)
-
-    const { RSSI } = bleDevice
-    const signal = RSSI > -80 ? (RSSI > -70 ? 'strong' : 'normal') : 'weak'
-
-    return {
-      ...msgObj,
-      deviceUuid: bleDevice.deviceId,
-      RSSI: bleDevice.RSSI,
-      signal,
-    }
-  },
-
-  onFoundHomluxDevice(options: { success: (deviceList: IBleBaseInfo[]) => void }) {
-    const { success } = options
-    // 监听扫描到新设备事件
-    wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
-      res.devices = unique(res.devices, 'deviceId') as WechatMiniprogram.BlueToothDevice[] // 去重
-
-      const deviceList = res.devices
-        .filter((item) => {
-          // localName为homlux_ble且过滤【发现过的】&&【处于未配网】的设备
-          return item.localName && item.localName.includes('homlux_ble')
-        })
-        .map((item) => bleUtil.getBleDeviceBaseInfo(item))
-        .filter((item) => item.isConfig !== '02')
-      // 过滤已经配网的设备
-      // 设备网络状态 0x00：未入网   0x01：正在入网   0x02:  已经入网
-
-      if (deviceList.length > 0 && success) {
-        success(deviceList)
-      }
-    })
-  },
-}
-
-export interface IBleBaseInfo {
-  deviceUuid: string
-  RSSI: number
-  signal: string
-  brand: string
-  isConfig: string
-  mac: string
-  deviceCategory: string
-  deviceModel: string
-  version: string
-  protocolVersion: string
 }
