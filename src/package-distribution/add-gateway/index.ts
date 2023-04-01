@@ -141,11 +141,11 @@ Component({
       socket.close()
     },
 
-    async requestBindDevice(sn: string) {
+    async requestBindDevice(sn: string, deviceId: string) {
       const params = getCurrentPageParams()
 
       const res = await bindDevice({
-        deviceId: params.deviceId,
+        deviceId: deviceId,
         houseId: homeBinding.store.currentHomeId,
         roomId: roomBinding.store.currentRoom.roomId,
         sn,
@@ -190,7 +190,7 @@ Component({
           })
           return
         }
-        this.requestBindDevice(sn)
+        this.requestBindDevice(sn, res.result.deviceId)
       } else {
         this.data._queryTimes--
 
