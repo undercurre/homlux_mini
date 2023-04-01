@@ -65,7 +65,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       requestOption.success = (result) => {
         // 是否打印请求结果
         if (requestOption.log) {
-          console.log('请求URL:' + requestOption.url + ' 成功，请求结果：', result, '\n请求用时:', Date.now() - start)
+          console.log('请求URL:' + requestOption.url + ' 成功，参数：', requestOption.data, '，请求结果：', result.data, '\n请求用时:', Date.now() - start)
         }
         const afterProcessResult = handler(result)
         resolve(afterProcessResult)
@@ -75,8 +75,8 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       requestOption.success = (result) => {
         if (requestOption.log) {
           console.log(
-            '请求URL:' + requestOption.url + ' 成功，请求结果：',
-            result,
+            '请求URL:' + requestOption.url + ' 成功，参数：', requestOption.data, '请求结果：',
+            result.data,
             '\n请求用时:',
             Date.now() - start + 'ms',
           )
@@ -91,14 +91,14 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       const handler = requestOption.failHandler
       requestOption.fail = (err) => {
         if (requestOption.log) {
-          console.log('请求URL:' + requestOption.url + ' 失败，失败原因：' + err.errMsg)
+          console.log('请求URL:' + requestOption.url + ' 失败，失败原因：' + err.errMsg, requestOption.data)
         }
         resolve(handler(err))
       }
     } else {
       requestOption.fail = (err) => {
         if (requestOption.log) {
-          console.log('请求URL:' + requestOption.url + ' 失败，失败原因：' + err.errMsg)
+          console.log('请求URL:' + requestOption.url + ' 失败，失败原因：' + err.errMsg, requestOption.data)
         }
         const data = requestOption.generalFailHandler ? requestOption.generalFailHandler(err) : (err as unknown as T)
         resolve(data)
@@ -106,7 +106,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
     }
 
     if (requestOption.log) {
-      console.log('请求发起URL:' + requestOption.url, requestOption)
+      console.log('请求发起URL:' + requestOption.url, requestOption.data)
     }
 
     wx.request({
