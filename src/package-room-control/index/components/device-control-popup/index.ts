@@ -713,7 +713,7 @@ ComponentWithComputed({
       }
       if (
         selectDevice.mzgdPropertyDTOList[switchId].ButtonMode &&
-        selectDevice.mzgdPropertyDTOList[switchId].ButtonMode === 1
+        selectDevice.mzgdPropertyDTOList[switchId].ButtonMode === 3
       ) {
         // 关联灯模式，先转换成0
         const isSuccess = await transformSwitchToNormal(device.gatewayId, selectDevice.deviceId, Number(switchId))

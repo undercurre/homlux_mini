@@ -67,10 +67,10 @@ Component({
     },
 
     /*
-    * 确认转让家庭
-    * 需要二次确认
-    * 转让角色后同时退出家庭
-    **/ 
+     * 确认转让家庭
+     * 需要二次确认
+     * 转让角色后同时退出家庭
+     **/
     async handleConfirm() {
       this.triggerEvent('close')
 

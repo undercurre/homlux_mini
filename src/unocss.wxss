@@ -3,6 +3,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 /* layer: shortcuts */
 .flex-center{display:flex;justify-content:center;align-items:center;}
 .flex-col-center{display:flex;flex-direction:column;justify-content:center;align-items:center;}
+.flex-y-center{display:flex;align-items:center;}
 /* layer: default */
 .p-0{padding:0rpx;}
 .p-10rpx{padding:10rpx;}
@@ -174,7 +175,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .mt-68rpx{margin-top:68rpx;}
 .mt-6rpx{margin-top:6rpx;}
 .mt-70rpx{margin-top:70rpx;}
-.mt-74rpx{margin-top:74rpx;}
 .mt-80rpx{margin-top:80rpx;}
 .mt-88rpx{margin-top:88rpx;}
 .mt-8rpx{margin-top:8rpx;}
