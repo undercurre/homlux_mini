@@ -1,6 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { proType } from '../../../config/index'
 import { deviceBinding, deviceStore, roomBinding, roomStore } from '../../../store/index'
 
 ComponentWithComputed({
@@ -81,31 +80,11 @@ ComponentWithComputed({
       return ''
     },
     roomListComputed(data) {
-      if (data.linkType === 'light') {
-        if (data.roomList && data.roomList.length) {
-          return (data.roomList as Room.RoomInfo[]).filter(
-            (room) =>
-              roomStore.roomDeviceList[room.roomId] &&
-              roomStore.roomDeviceList[room.roomId].some((device) => device.proType === proType.light),
-          )
-        }
-        return []
-      } else if (data.linkType === 'switch') {
-        if (data.roomList && data.roomList.length) {
-          return (data.roomList as Room.RoomInfo[]).filter(
-            (room) =>
-              roomStore.roomDeviceList[room.roomId] &&
-              roomStore.roomDeviceList[room.roomId].some((device) => device.proType === proType.switch),
-          )
-        }
-        return []
-      } else if (data.linkType === 'scene') {
-        if (data.roomList && data.roomList.length) {
-          return (data.roomList as Room.RoomInfo[]).filter((room) => room.sceneList.length)
-        }
-        return []
-      }
-      return []
+      const roomMap = roomStore.roomMap
+      const roomListSet = new Set<string>(data.list.map((item: { roomId: string }) => item.roomId))
+      const roomList = [] as Room.RoomInfo[]
+      roomListSet.forEach((roomId) => roomList.push(roomMap[roomId]))
+      return roomList
     },
     listComputed(data) {
       if (data.list) {

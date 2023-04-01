@@ -19,6 +19,10 @@ export const roomStore = observable({
     return this.roomList[this.currentRoomIndex]
   },
 
+  get roomMap(): Record<string, Room.RoomInfo> {
+    return Object.fromEntries(this.roomList.map((room) => [room.roomId, room]))
+  },
+
   async updateRoomList(options?: { loading: boolean }) {
     const res = await getRoomList(homeStore.currentHomeId, options)
     if (res.success) {
