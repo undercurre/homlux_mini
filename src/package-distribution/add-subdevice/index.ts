@@ -75,19 +75,9 @@ ComponentWithComputed({
 
           return flag
         })
-        console.log('扫到新设备', deviceList)
         deviceList.forEach((item) => {
           this.handleBleDeviceInfo(item)
         })
-      })
-
-      wx.onBLEConnectionStateChange(function (res) {
-        // 该方法回调中可以用于处理连接意外断开等异常情况
-        console.log(
-          'onBLEConnectionStateChange-add-subdevice',
-          res,
-          `device ${res.deviceId} state has changed, connected: ${res.connected}`,
-        )
       })
 
       // 开始搜寻附近的蓝牙外围设备
@@ -114,10 +104,9 @@ ComponentWithComputed({
      */
     async handleBleDeviceInfo(device: WechatMiniprogram.BlueToothDevice) {
       const msgObj = bleUtil.transferBroadcastData(device.advertisData)
-      const boardMac = this.data.pageParams.mac.slice(0, 6) + this.data.pageParams.mac.slice(10)
+      const targetMac = this.data.pageParams.mac // 云端的是zigbee模块的mac
 
-      // 广播的mac是6字节位，需要将云端的8位mac截掉中间两字节位
-      if (boardMac !== msgObj.mac) {
+      if (targetMac !== msgObj.zigbeeMac) {
         return false
       }
 
