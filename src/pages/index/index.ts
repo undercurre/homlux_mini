@@ -18,7 +18,6 @@ import { emitter } from '../../utils/eventBus'
 import { updateDefaultHouse } from '../../apis/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 let throttleTimer = 0
-let hasUpdateInTimer = false
 ComponentWithComputed({
   behaviors: [
     BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding, homeBinding, deviceBinding] }),
@@ -149,16 +148,10 @@ ComponentWithComputed({
       emitter.off('wsReceive')
       emitter.on('wsReceive', (res) => {
         if (!throttleTimer && res.result.eventType !== 'connect_success_status') {
-          homeStore.updateRoomCardList()
           throttleTimer = setTimeout(async () => {
-            if (hasUpdateInTimer) {
-              await homeStore.updateRoomCardList()
-            }
+            homeStore.updateRoomCardList()
             throttleTimer = 0
-            hasUpdateInTimer = false
           }, 2000)
-        } else {
-          hasUpdateInTimer = true
         }
       })
     },

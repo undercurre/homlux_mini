@@ -112,7 +112,9 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
     wx.request({
       ...requestOption,
       complete() {
-        wx.hideLoading && wx.hideLoading()
+        if (requestOption.loading) {
+          wx.hideLoading && wx.hideLoading()
+        }
       },
     })
   })
