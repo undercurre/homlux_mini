@@ -79,11 +79,15 @@ ComponentWithComputed({
       homeBinding.store.updateHomeMemberList().then(() => {
         this.updateView()
       })
+      homeBinding.store.getInviteShareId()
     },
     updateView() {
+      if (homeBinding.store.homeMemberInfo.houseUserList.length === 0) return
       const curUserId = userBinding.store.userInfo.userId
       const result: object[] = []
-      const list = homeBinding.store.homeMemberInfo.houseUserList
+      const list = homeBinding.store.homeMemberInfo.houseUserList.sort((a, b) => {
+        return a.userHouseAuth - b.userHouseAuth
+      })
       if (list) {
         const curUser = list.find((item: Home.HouseUserItem) => {
           return item.userId === curUserId
@@ -306,7 +310,9 @@ ComponentWithComputed({
               '&houseId=' +
               homeBinding.store.currentHomeId +
               '&time=' +
-              time.valueOf(),
+              time.valueOf() +
+              '&shareId=' +
+              homeBinding.store.shareId,
             imageUrl: '/assets/img/login/logo.png',
           })
         }, 500)
