@@ -2,7 +2,7 @@
   <view wx:if="{{select}}" class="w-160rpx h-216rpx absolute left-0 top-0 box-border select-border rounded-32rpx bg-hex-fff"></view>
   <view wx:else class="w-160rpx h-216rpx rounded-32rpx box-border {{showControl?'show-control-bg white-border':'bg-hex-f7f7f7'}}"></view>
   <view class="absolute left-0 top-16rpx w-160rpx flex-center">
-    <text class="text-26rpx text-hex-353535 font-medium">{{deviceName}}</text>
+    <text class="text-26rpx text-hex-353535 font-medium">{{topTitle}}</text>
   </view>
   <view class="absolute left-0 top-0 flex-col-center w-full h-full">
     <image src="{{picUrl}}" class="w-72rpx h-72rpx"></image>
@@ -28,7 +28,7 @@
   </view>
   <view wx:else class="absolute left-0 bottom-18rpx w-160rpx flex-center">
     <text wx:if="{{!deviceInfo.onLineStatus && deviceType !== 'switch'}}" class="text-24rpx text-hex-fbbb32">离线</text>
-    <text wx:elif="{{isSwitch && showBtnDetail}}" class="text-20rpx mb-4rpx {{deviceInfo.onLineStatus ? 'text-black-tips' : 'text-hex-fbbb32'}}">{{deviceInfo.deviceName}}</text>
+    <text wx:elif="{{isSwitch && showBtnDetail}}" class="text-20rpx mb-4rpx {{deviceInfo.onLineStatus ? 'text-black-tips' : 'text-hex-fbbb32'}}">{{bottomDesc}}</text>
   </view>
 </view>
 <van-toast id="van-toast" />

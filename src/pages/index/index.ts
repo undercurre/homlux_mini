@@ -178,11 +178,12 @@ ComponentWithComputed({
       const type = enterQuery.type as string
       const houseId = enterQuery.houseId as string
       const time = enterQuery.time as string
+      const shareId = enterQuery.shareId as string
       if (token && type && houseId && time) {
         this.setData({
           isTryInvite: true,
         })
-        console.log(`lmn>>>邀请参数:token=${token}/type=${type}/houseId=${houseId}/time=${time}`)
+        console.log(`lmn>>>邀请参数:token=${token}/type=${type}/houseId=${houseId}/time=${time}/shareId=${shareId}`)
         for (let i = 0; i < homeBinding.store.homeList.length; i++) {
           if (homeBinding.store.homeList[i].houseId == houseId) {
             console.log('lmn>>>已经在该家庭')
@@ -201,7 +202,7 @@ ComponentWithComputed({
           })
         } else {
           homeBinding.store
-            .inviteMember(houseId, parseInt(type))
+            .inviteMember(houseId, parseInt(type), shareId)
             .then(() => {
               console.log('lmn>>>邀请成功')
               updateDefaultHouse(houseId).finally(() => {

@@ -165,7 +165,7 @@ export async function deleteHouseUser({ houseId = '', userId = '' }, options?: {
 /**
  * 邀请家庭成员
  */
-export async function inviteHouseUser({ houseId = '', auth = 3 }, options?: { loading?: boolean }) {
+export async function inviteHouseUser({ houseId = '', auth = 3, shareId = '' }, options?: { loading?: boolean }) {
   return await mzaioRequest.post({
     log: true,
     loading: options?.loading ?? false,
@@ -173,6 +173,19 @@ export async function inviteHouseUser({ houseId = '', auth = 3 }, options?: { lo
     data: {
       houseId,
       houseUserAuth: auth,
+      shareId,
     },
+  })
+}
+
+/**
+ * 获取分享连接ID
+ */
+export async function getShareId(options?: { loading?: boolean }) {
+  return await mzaioRequest.post<{ shareId: string }>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/user/getShareId',
+    data: {},
   })
 }

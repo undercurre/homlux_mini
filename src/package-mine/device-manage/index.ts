@@ -165,12 +165,12 @@ ComponentWithComputed({
     async onPullDownRefresh() {
       try {
         await roomStore.updateRoomList()
-        if (this.data.roomSelect === '0') {
-          // 查全屋
-          deviceBinding.store.updateAllRoomDeviceList()
-        } else {
+        if (this.data.roomSelect) {
           // 查房间
           deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
+        } else {
+          // 查全屋
+          deviceBinding.store.updateAllRoomDeviceList()
         }
       } finally {
         this.setData({
@@ -216,12 +216,12 @@ ComponentWithComputed({
         roomSelect: e.detail,
       })
       this.hideSelectRoomMenu()
-      if (e.detail === '0') {
-        // 查全屋
-        deviceBinding.store.updateAllRoomDeviceList(undefined, { loading: true })
-      } else {
+      if (this.data.roomSelect) {
         // 查房间
-        deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect, { loading: true })
+        deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
+      } else {
+        // 查全屋
+        deviceBinding.store.updateAllRoomDeviceList()
       }
     },
 

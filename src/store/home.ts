@@ -9,6 +9,7 @@ import {
   saveOrUpdateUserHouseInfo,
   getRoomList,
   updateDefaultHouse,
+  getShareId,
 } from '../apis/index'
 import { proType } from '../config/index'
 import { asyncStorage, storage } from '../utils/index'
@@ -25,6 +26,8 @@ export const homeStore = observable({
   currentHomeDetail: {} as Home.IHomeDetail,
 
   homeMemberInfo: {} as Home.HomeMemberInfo,
+
+  shareId: '',
 
   get currentHomeId() {
     let houseId = this.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
@@ -268,12 +271,27 @@ export const homeStore = observable({
   /**
    * 邀请家庭成员
    */
-  async inviteMember(houseId: string, auth: number) {
-    const res = await inviteHouseUser({ houseId, auth })
+  async inviteMember(houseId: string, auth: number, shareId: string) {
+    const res = await inviteHouseUser({ houseId, auth, shareId })
     if (res.success) {
       return
     } else {
       return Promise.reject('邀请家庭成员失败')
+    }
+  },
+
+  /**
+   * 获取分享连接ID
+   */
+  async getInviteShareId() {
+    const res = await getShareId()
+    if (res.success) {
+      runInAction(() => {
+        homeBinding.store.shareId = res.result.shareId
+      })
+      return
+    } else {
+      return Promise.reject('获取分享连接失败')
     }
   },
 

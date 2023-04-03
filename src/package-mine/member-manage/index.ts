@@ -79,16 +79,28 @@ ComponentWithComputed({
       homeBinding.store.updateHomeMemberList().then(() => {
         this.updateView()
       })
+      homeBinding.store.getInviteShareId()
     },
     updateView() {
+      if (homeBinding.store.homeMemberInfo.houseUserList.length === 0) return
       const curUserId = userBinding.store.userInfo.userId
       const result: object[] = []
-      const list = homeBinding.store.homeMemberInfo.houseUserList
+      const list = homeBinding.store.homeMemberInfo.houseUserList.sort((a, b) => {
+        return a.userHouseAuth - b.userHouseAuth
+      })
       if (list) {
         const curUser = list.find((item: Home.HouseUserItem) => {
           return item.userId === curUserId
         })
         if (curUser) {
+          result.push({
+            icon: curUser.headImageUrl,
+            name: curUser.userName,
+            role: curUser.userHouseAuthName,
+            id: curUser.userId,
+            roleCode: curUser.userHouseAuth,
+            isCanEdit: false,
+          })
           this.setData({
             curUser: curUser,
             isAdmin: curUser.userHouseAuth === 2,
@@ -96,17 +108,17 @@ ComponentWithComputed({
           })
         }
         list.forEach((item: Home.HouseUserItem) => {
-          let isCanEdit = false
-          if (curUser?.userId === item.userId) isCanEdit = false
-          else isCanEdit = this.canIEditOther(curUser?.userHouseAuth, item.userHouseAuth)
-          result.push({
-            icon: item.headImageUrl,
-            name: item.userName,
-            role: item.userHouseAuthName,
-            id: item.userId,
-            roleCode: item.userHouseAuth,
-            isCanEdit: isCanEdit,
-          })
+          if (curUser?.userId !== item.userId) {
+            const isCanEdit = this.canIEditOther(curUser?.userHouseAuth, item.userHouseAuth)
+            result.push({
+              icon: item.headImageUrl,
+              name: item.userName,
+              role: item.userHouseAuthName,
+              id: item.userId,
+              roleCode: item.userHouseAuth,
+              isCanEdit: isCanEdit,
+            })
+          }
         })
         this.setData({ memberList: result })
       }
@@ -306,7 +318,9 @@ ComponentWithComputed({
               '&houseId=' +
               homeBinding.store.currentHomeId +
               '&time=' +
-              time.valueOf(),
+              time.valueOf() +
+              '&shareId=' +
+              homeBinding.store.shareId,
             imageUrl: '/assets/img/login/logo.png',
           })
         }, 500)
