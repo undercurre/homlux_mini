@@ -108,12 +108,12 @@ ComponentWithComputed({
           },
         ]
       }
-      const switchSceneMap = deviceStore.switchSceneMap
-      if (switchSceneMap[this.data.linkSwitch]) {
+      const switchSceneConditionMap = deviceStore.switchSceneConditionMap
+      if (switchSceneConditionMap[this.data.linkSwitch]) {
         // 如果这个开关已经绑定场景，先取消绑定原来的场景
         const res = await updateScene({
           conditionType: '0',
-          sceneId: switchSceneMap[this.data.linkSwitch],
+          sceneId: switchSceneConditionMap[this.data.linkSwitch],
           updateType: '2',
         })
         if (!res.success) {

@@ -65,7 +65,14 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       requestOption.success = (result) => {
         // 是否打印请求结果
         if (requestOption.log) {
-          console.log('请求URL:' + requestOption.url + ' 成功，参数：', requestOption.data, '，请求结果：', result.data, '\n请求用时:', Date.now() - start)
+          console.log(
+            '请求URL:' + requestOption.url + ' 成功，参数：',
+            requestOption.data,
+            '，请求结果：',
+            result.data,
+            '\n请求用时:',
+            Date.now() - start,
+          )
         }
         const afterProcessResult = handler(result)
         resolve(afterProcessResult)
@@ -75,7 +82,9 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       requestOption.success = (result) => {
         if (requestOption.log) {
           console.log(
-            '请求URL:' + requestOption.url + ' 成功，参数：', requestOption.data, '请求结果：',
+            '请求URL:' + requestOption.url + ' 成功，参数：',
+            requestOption.data,
+            '请求结果：',
             result.data,
             '\n请求用时:',
             Date.now() - start + 'ms',

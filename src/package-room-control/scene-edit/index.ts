@@ -23,6 +23,7 @@ ComponentWithComputed({
     showEditIconPopup: false,
     showLinkPopup: false,
     sceneDeviceActionsFlatten: [] as Device.ActionItem[], // 将场景里多路的action拍扁
+    sceneDeviceActionsFlattenMap: {} as Record<string, boolean>,
     linkSwitch: '',
     linkSwitchSelect: [] as string[],
     isEditAction: false,
@@ -54,6 +55,7 @@ ComponentWithComputed({
     onLoad() {
       const deviceMap = deviceStore.deviceMap
       const sceneDeviceActionsFlatten = [] as Device.ActionItem[]
+      const sceneDeviceActionsFlattenMap = {} as Record<string, boolean>
       sceneStore.sceneList[sceneStore.selectSceneIndex].deviceActions?.forEach((device) => {
         if (!deviceMap[device.deviceId]) {
           console.log('不存在的设备', device)
@@ -65,6 +67,7 @@ ComponentWithComputed({
             const switchItem = deviceMap[device.deviceId].switchInfoDTOList.find(
               (item) => item.switchId === String(action.ep),
             )
+            sceneDeviceActionsFlattenMap[`${device.deviceId}:${action.ep}`] = true
             sceneDeviceActionsFlatten.push({
               uniId: `${device.deviceId}:${action.ep}`,
               proType: proType.switch,
@@ -100,10 +103,12 @@ ComponentWithComputed({
             action.proType = proType.light
           }
           sceneDeviceActionsFlatten.push(action)
+          sceneDeviceActionsFlattenMap[`${device.deviceId}`] = true
         }
       })
       const sceneId = sceneStore.sceneList[sceneStore.selectSceneIndex].sceneId
       const linkSwitch = sceneStore.sceneSwitchMap[sceneId] ? sceneStore.sceneSwitchMap[sceneId] : ''
+      const switchList = deviceStore.allRoomDeviceFlattenList.filter((device) => device.proType === proType.switch)
       wx.createSelectorQuery()
         .select('#content')
         .boundingClientRect()
@@ -114,8 +119,9 @@ ComponentWithComputed({
               sceneId,
               sceneName: sceneStore.sceneList[sceneStore.selectSceneIndex].sceneName,
               sceneIcon: sceneStore.sceneList[sceneStore.selectSceneIndex].sceneIcon,
-              switchList: deviceStore.allRoomDeviceFlattenList.filter((device) => device.proType === proType.switch),
+              switchList,
               sceneDeviceActionsFlatten,
+              sceneDeviceActionsFlattenMap,
               isDefault: sceneStore.sceneList[sceneStore.selectSceneIndex].isDefault === '1',
               linkSwitch,
               linkSwitchSelect: linkSwitch ? [linkSwitch] : [],
@@ -138,7 +144,8 @@ ComponentWithComputed({
       })
     },
     handleActionDelete(e: WechatMiniprogram.TouchEvent) {
-      this.data.sceneDeviceActionsFlatten.splice(e.currentTarget.dataset.index, 1)
+      const item = this.data.sceneDeviceActionsFlatten.splice(e.currentTarget.dataset.index, 1)
+      this.data.sceneDeviceActionsFlattenMap[item[0].uniId] = false
       this.setData({
         sceneDeviceActionsFlatten: [...this.data.sceneDeviceActionsFlatten],
         isEditAction: true,
@@ -204,12 +211,12 @@ ComponentWithComputed({
 
       if (this.data.linkSwitch) {
         if (
-          deviceStore.switchSceneMap[this.data.linkSwitch] &&
-          deviceStore.switchSceneMap[this.data.linkSwitch] !== this.data.sceneId
+          deviceStore.switchSceneConditionMap[this.data.linkSwitch] &&
+          deviceStore.switchSceneConditionMap[this.data.linkSwitch] !== this.data.sceneId
         ) {
           // 解绑开关原来的场景
           const res = await updateScene({
-            sceneId: deviceStore.switchSceneMap[this.data.linkSwitch],
+            sceneId: deviceStore.switchSceneConditionMap[this.data.linkSwitch],
             updateType: '2',
           })
           if (!res.success) {
@@ -297,9 +304,22 @@ ComponentWithComputed({
         })
         return
       }
-      this.setData({
-        linkSwitchSelect: [e.detail],
-      })
+      if (this.data.sceneDeviceActionsFlattenMap[e.detail]) {
+        Dialog.confirm({
+          message: '此开关已被其他场景使用，是否需要变更？',
+          cancelButtonText: '取消',
+          confirmButtonText: '变更',
+          zIndex: 2000,
+        }).then(async () => {
+          this.setData({
+            linkSwitchSelect: [e.detail],
+          })
+        })
+      } else {
+        this.setData({
+          linkSwitchSelect: [e.detail],
+        })
+      }
     },
     handleLinkSwitchPopup() {
       this.setData({

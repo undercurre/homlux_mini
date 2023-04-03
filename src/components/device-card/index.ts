@@ -91,14 +91,14 @@ ComponentWithComputed({
         return ''
       }
       const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
-      const switchSceneMap = deviceStore.switchSceneMap
+      const switchSceneConditionMap = deviceStore.switchSceneConditionMap
       const sceneIdMp = sceneStore.sceneIdMp
       if (
-        switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`] &&
-        sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]] &&
-        sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]].sceneName
+        switchSceneConditionMap[`${data.deviceInfo.deviceId}:${switchId}`] &&
+        sceneIdMp[switchSceneConditionMap[`${data.deviceInfo.deviceId}:${switchId}`]] &&
+        sceneIdMp[switchSceneConditionMap[`${data.deviceInfo.deviceId}:${switchId}`]].sceneName
       ) {
-        return sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]].sceneName.slice(0, 4)
+        return sceneIdMp[switchSceneConditionMap[`${data.deviceInfo.deviceId}:${switchId}`]].sceneName.slice(0, 4)
       }
       return ''
     },

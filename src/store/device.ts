@@ -170,10 +170,34 @@ export const deviceStore = observable({
   },
 
   /**
-   * 关联场景关系映射
+   * 关联场景关系映射(deviceActions的关联)
    * switchUniId -> sceneId
    */
-  get switchSceneMap(): Record<string, string> {
+  get switchSceneActionMap(): Record<string, string[]> {
+    const map = {} as Record<string, string[]>
+    sceneStore.allRoomSceneList.forEach((scene) => {
+      scene.deviceActions?.forEach((action) => {
+        if (action.proType === proType.switch) {
+          action.controlAction.forEach((controlData) => {
+            if (map[`${action.deviceId}:${controlData.ep}`]) {
+              if (!map[`${action.deviceId}:${controlData.ep}`].includes(scene.sceneId)) {
+                map[`${action.deviceId}:${controlData.ep}`].push(scene.sceneId)
+              }
+            } else {
+              map[`${action.deviceId}:${controlData.ep}`] = [scene.sceneId]
+            }
+          })
+        }
+      })
+    })
+    return map
+  },
+
+  /**
+   * 关联场景关系映射(deviceConditions的关联)
+   * switchUniId -> sceneId
+   */
+  get switchSceneConditionMap(): Record<string, string> {
     const map = {} as Record<string, string>
     sceneStore.allRoomSceneList.forEach((scene) => {
       scene.deviceConditions?.forEach((condition) => {
