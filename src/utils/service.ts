@@ -22,6 +22,9 @@ function createConnect() {
   if (!storage.get<string>('token')) {
     return
   }
+  if (socketIsConnect) {
+    socketTask?.close({ code: 1000 })
+  }
   socketTask = connectHouseSocket(homeStore.currentHomeDetail.houseId)
   socketTask.onClose(onSocketClose)
   socketTask.onOpen(() => {

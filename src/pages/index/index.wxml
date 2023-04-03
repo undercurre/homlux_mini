@@ -32,7 +32,7 @@
 <nav-bar z-index="{{113}}">
   <view catchtap="handleShowHomeSelectMenu" wx:if="{{currentHomeName}}">
     <view class="absolute top-8rpx left-32rpx">
-      <text class="text-hex-1e2c46 text-48rpx font-semibold single-text block max-w-450">{{currentHomeName}}</text>
+      <text class="text-hex-1e2c46 text-48rpx font-semibold single-text block max-w-330">{{currentHomeName}}</text>
       <svg-icon id="homeSelectArrow" class="absolute home-select-arrow" color="#1E2C46" name="material-symbols:arrow-drop-down-rounded" width="48rpx" height="48rpx" />
     </view>
   </view>

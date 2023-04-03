@@ -4,7 +4,7 @@
   <view class="px-48rpx pt-32rpx pb-20rpx">
     <view class="flex flex-row justify-between items-center">
       <view class="relative flex flex-row items-center shrink" bind:tap="handleShowHomeSelectMenu" id="homeName">
-        <text class="max-w-520rpx text-40 text-hex-1E2C46 font-semibold leading-56rpx single-text">{{ currentHomeDetail.houseName }}</text>
+        <text class="max-w-270rpx text-40 text-hex-1E2C46 font-semibold leading-56rpx single-text">{{ currentHomeDetail.houseName }}</text>
 
         <svg-icon id="homeSelectArrow" class="absolute home-select-arrow" color="#1E2C46" name="material-symbols:arrow-drop-down-rounded" width="48rpx" height="48rpx" />
       </view>

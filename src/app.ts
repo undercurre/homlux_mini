@@ -42,7 +42,11 @@ App<IAppOption>({
   },
 
   onShow() {
-    console.log('app-onShow')
+    console.log('app-onShow', this.globalData)
+    if (this.globalData.firstOnShow) {
+      this.globalData.firstOnShow = false
+      return
+    }
     // 用户热启动app，建立ws连接，并且再更新一次数据
     if (homeStore.currentHomeId && storage.get<string>('token')) {
       deviceStore.updateDeviceList()
@@ -57,5 +61,7 @@ App<IAppOption>({
     closeWebSocket()
   },
 
-  globalData: {},
+  globalData: {
+    firstOnShow: true,
+  },
 })
