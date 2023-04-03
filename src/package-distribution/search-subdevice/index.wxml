@@ -30,7 +30,7 @@
               <image slot="icon" class="w-48 h-48" src="{{ item.isChecked ? '/assets/img/base/check.png' : '/assets/img/base/uncheck.png' }}" />
             </van-checkbox>
 
-            <view class="grow pl-32rpx" bind:tap="editDevice" data-index="{{index}}">
+            <view class="grow pl-32rpx" bind:tap="editDevice" data-id="{{item.deviceUuid}}">
               <view class="flex flex-row items-center pb-4rpx">
                 <text class="max-w-200 pr-24rpx text-32 text-black-2a single-text">{{ item.name }}</text>
 
@@ -41,7 +41,7 @@
             </view>
 
             <view class="shrink-0">
-              <van-button plain type="primary" size="small" round bind:click="tryControl" data-index="{{index}}" data-id="{{item.deviceUuid}}" data-mac="{{item.mac}}" loading="{{item.requesting}}" disabled="{{item.requesting}}" custom-style="background-color: rgba(72,143,255,0.10);border-radius: 12rpx; font-size: 24rpx; width: 120rpx;padding: 0;">找一找</van-button>
+              <van-button plain type="primary" size="small" round bind:click="tryControl" data-id="{{item.deviceUuid}}" loading="{{item.requesting}}" disabled="{{item.requesting}}" custom-style="background-color: rgba(72,143,255,0.10);border-radius: 12rpx; font-size: 24rpx; width: 120rpx;padding: 0;">找一找</van-button>
             </view>
           </view>
         </scroll-view>
@@ -80,7 +80,7 @@
               </view>
             </view>
 
-            <view class="grow pl-32rpx" bind:tap="editDevice" data-index="{{index}}">
+            <view class="grow pl-32rpx" bind:tap="editDevice" data-id="{{item.deviceUuid}}">
               <view class="flex flex-row items-center pb-4rpx">
                 <text class="max-w-200 pr-24rpx text-32 text-black-2a single-text">{{ item.name }}</text>
 
@@ -91,7 +91,7 @@
             </view>
 
             <view class="shrink-0">
-              <van-button plain type="primary" size="small" round bind:click="tryControl" data-index="{{index}}" data-id="{{item.deviceUuid}}" data-mac="{{item.mac}}" loading="{{item.requesting}}" disabled="{{item.requesting}}" custom-style="background-color: rgba(72,143,255,0.10);border-radius: 12rpx; font-size: 24rpx; width: 120rpx;padding: 0;">找一找</van-button>
+              <van-button plain type="primary" size="small" round bind:click="tryControl" data-id="{{item.deviceUuid}}" loading="{{item.requesting}}" disabled="{{item.requesting}}" custom-style="background-color: rgba(72,143,255,0.10);border-radius: 12rpx; font-size: 24rpx; width: 120rpx;padding: 0;">找一找</van-button>
             </view>
           </view>
         </scroll-view>

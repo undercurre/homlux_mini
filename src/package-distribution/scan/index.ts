@@ -85,17 +85,22 @@ ComponentWithComputed({
   },
 
   pageLifetimes: {
-    async show() {
+    show() {
+      console.log('scan-show')
       this.setData({
         isShowPage: true,
       })
+
+      this.data.bleStatus === 'open' && bleDevicesBinding.store.startBleDiscovery()
     },
     hide() {
-      console.log('hide')
+      console.log('scan-hide')
       // 由于非授权情况下进入页面，摄像头组件已经渲染，即使重新授权页无法正常使用，需要通过wx：if重新触发渲染组件
       this.setData({
         isShowPage: false,
       })
+
+      bleDevicesBinding.store.stopBLeDiscovery()
     },
   },
 
@@ -211,6 +216,7 @@ ComponentWithComputed({
     },
 
     async initBle() {
+      bleDevicesBinding.store.reset()
       // 初始化蓝牙模块
       const openBleRes = await wx
         .openBluetoothAdapter({
@@ -230,20 +236,22 @@ ComponentWithComputed({
 
       console.log('scan-openBleRes', openBleRes)
 
-      wx.onBluetoothAdapterStateChange((res) => {
-        console.log('onBluetoothAdapterStateChange-scan', res)
-        this.setData({
-          bleStatus: res.available ? 'open' : 'close',
-        })
-        if (res.available) {
-          this.startDiscoverBle()
-        }
-      })
-
       // 系统是否已打开蓝牙
       const res = await this.checkSystemBleSwitch()
 
       if (!res) {
+        const listen = (res: WechatMiniprogram.OnBluetoothAdapterStateChangeCallbackResult) => {
+          console.log('onBluetoothAdapterStateChange-scan', res)
+          this.setData({
+            bleStatus: res.available ? 'open' : 'close',
+          })
+          if (res.available) {
+            console.log('listen-startDiscoverBle')
+            this.startDiscoverBle()
+            wx.offBluetoothAdapterStateChange(listen)
+          }
+        }
+        wx.onBluetoothAdapterStateChange(listen)
         return
       } else {
         this.startDiscoverBle()
@@ -253,11 +261,6 @@ ComponentWithComputed({
     },
 
     async startDiscoverBle() {
-      if (bleDevicesBinding.store.isDiscovering) {
-        return
-      }
-
-      bleDevicesBinding.store.reset()
       bleDevicesBinding.store.startBleDiscovery()
     },
 

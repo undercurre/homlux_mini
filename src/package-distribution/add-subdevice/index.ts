@@ -57,13 +57,13 @@ ComponentWithComputed({
         console.log('bind_device', data)
 
         if (data.deviceId === this.data.pageParams.mac) {
-          this.queryDeviceOnlineStatus()
+          this.bindBleDeviceToClound()
         }
       })
     },
-    detached: function () {
-      wx.closeBluetoothAdapter()
-    },
+    detached() {
+      wx.stopBluetoothDevicesDiscovery()
+    }
   },
 
   pageLifetimes: {
@@ -196,34 +196,7 @@ ComponentWithComputed({
       bleDevice.client.close()
     },
 
-    async queryDeviceOnlineStatus() {
-      // const queryRes = await queryDeviceOnlineStatus({
-      //   deviceId: device.zigbeeMac,
-      //   deviceType: '2',
-      //   sn: this.data.pageParams.gatewaySn,
-      // })
-
-      // console.log('queryDeviceOnlineStatus', queryRes)
-
-      // if (queryRes.result.onlineStatus === 0) {
-      //   // 限制最多查询云端设备在线状态次数：device.requestTimes，超过则置为失败
-      //   device.requestTimes--
-
-      //   if (device.requestTimes <= 0) {
-      //     this.setData({
-      //       status: 'error',
-      //     })
-
-      //     return
-      //   }
-
-      //   setTimeout(() => {
-      //     this.queryDeviceOnlineStatus(device)
-      //   }, 3000)
-
-      //   return
-      // }
-
+    async bindBleDeviceToClound() {
       this.setData({
         activeIndex: 2,
       })

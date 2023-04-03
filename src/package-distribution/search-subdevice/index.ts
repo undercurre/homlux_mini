@@ -5,9 +5,9 @@ import Toast from '@vant/weapp/toast/toast'
 import asyncPool from 'tiny-async-pool'
 import { homeBinding, roomBinding, homeStore } from '../../store/index'
 import { bleDevicesBinding, ISwitch, IBleDevice, bleDevicesStore } from '../store/bleDeviceStore'
-import { getCurrentPageParams } from '../../utils/index'
+import { getCurrentPageParams, emitter } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { sendCmdAddSubdevice, bindDevice, queryDeviceOnlineStatus, batchUpdate } from '../../apis/index'
+import { sendCmdAddSubdevice, bindDevice, batchUpdate } from '../../apis/index'
 import lottie from 'lottie-miniprogram'
 import { addDevice } from '../../assets/lottie/index'
 
@@ -28,7 +28,7 @@ ComponentWithComputed({
     _timeId: 0,
     isEditDevice: false,
     editDeviceInfo: {
-      index: -1,
+      deviceUuid: '',
       deviceId: '',
       deviceName: '',
       roomId: '',
@@ -70,8 +70,14 @@ ComponentWithComputed({
 
   lifetimes: {
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
-    ready: function () {},
+    ready: function () {
+      bleDevicesBinding.store.startBleDiscovery()
+    },
     moved: function () {},
+    detached() {
+      console.log('附近子设备-detached')
+      bleDevicesBinding.store.stopBLeDiscovery()
+    }
   },
 
   pageLifetimes: {
@@ -129,6 +135,11 @@ ComponentWithComputed({
     },
 
     updateBleDeviceListView() {
+      const hasWaitItem = bleDevicesBinding.store.bleDeviceList.findIndex(item => item.status === 'waiting') >= 0
+      // 若全部执行并等待完毕，则关闭监听
+      if (!hasWaitItem) {
+        emitter.off('bind_device')
+      }
       runInAction(() => {
         bleDevicesBinding.store.bleDeviceList = bleDevicesBinding.store.bleDeviceList.concat([])
       })
@@ -189,6 +200,17 @@ ComponentWithComputed({
           return
         }
 
+        // 监听云端推送，判断哪些子设备绑定成功
+        emitter.on('bind_device', (data) => {
+          console.log('bind_device', data)
+
+          const bleDevice = bleDevicesStore.bleDeviceList.find(item => item.isChecked && item.zigbeeMac === data.deviceId)
+  
+          if (bleDevice) {
+            this.bindBleDeviceToClound(bleDevice)
+          }
+        })
+
         this.setData({
           status: 'requesting',
         })
@@ -226,7 +248,13 @@ ComponentWithComputed({
         console.log('configRes', configRes)
 
         if (configRes.success && configRes.result.isConfig === '02') {
-          this.queryDeviceOnlineStatus(bleDevice)
+          // 等待绑定推送，超时30s
+          setTimeout(() => {
+            if (bleDevice.status === 'waiting') {
+              bleDevice.status = 'fail'
+              this.updateBleDeviceListView()
+            }
+          }, 30000)
           bleDevice.client.close()
 
           return
@@ -245,7 +273,13 @@ ComponentWithComputed({
       }
 
       if (res.success) {
-        this.queryDeviceOnlineStatus(bleDevice)
+        // 等待绑定推送，超时30s
+        setTimeout(() => {
+          if (bleDevice.status === 'waiting') {
+            bleDevice.status = 'fail'
+            this.updateBleDeviceListView()
+          }
+        }, 30000)
       } else {
         console.error(`子设备配网失败：${bleDevice.mac}`, res)
         bleDevice.status = 'fail'
@@ -258,35 +292,7 @@ ComponentWithComputed({
       console.groupEnd()
     },
 
-    async queryDeviceOnlineStatus(device: IBleDevice) {
-      const pageParams = getCurrentPageParams()
-
-      const queryRes = await queryDeviceOnlineStatus({
-        deviceId: device.zigbeeMac,
-        deviceType: '2',
-        sn: pageParams.gatewaySn,
-      })
-
-      console.log('queryDeviceOnlineStatus', queryRes)
-
-      if (queryRes.result.onlineStatus === 0 || !queryRes.result.deviceId) {
-        // 限制最多查询云端设备在线状态次数：device.requestTimes，超过则置为失败
-        device.requestTimes--
-
-        if (device.requestTimes <= 0) {
-          device.status = 'fail'
-          this.updateBleDeviceListView()
-
-          return
-        }
-
-        setTimeout(() => {
-          this.queryDeviceOnlineStatus(device)
-        }, 3000)
-
-        return
-      }
-
+    async bindBleDeviceToClound(device: IBleDevice) {
       const res = await bindDevice({
         deviceId: device.zigbeeMac,
         houseId: homeBinding.store.currentHomeId,
@@ -297,7 +303,6 @@ ComponentWithComputed({
 
       if (res.success && res.result.isBind) {
         await this.editDeviceInfo({ deviceId: res.result.deviceId, switchList: device.switchList })
-        console.log('123133')
         device.status = 'success'
       } else {
         device.status = 'fail'
@@ -327,14 +332,14 @@ ComponentWithComputed({
      * @param event
      */
     editDevice(event: WechatMiniprogram.BaseEvent) {
-      const { index } = event.currentTarget.dataset
+      const { id } = event.currentTarget.dataset
 
-      const item = bleDevicesBinding.store.bleDeviceList[index]
+      const item = bleDevicesBinding.store.bleDeviceList.find(item => item.deviceUuid === id) as IBleDevice
 
       this.setData({
         isEditDevice: true,
         editDeviceInfo: {
-          index: index,
+          deviceUuid: item.deviceUuid,
           deviceId: item.deviceUuid,
           deviceName: item.name,
           roomId: item.roomId,
@@ -347,7 +352,7 @@ ComponentWithComputed({
     confirmEditDevice(event: WechatMiniprogram.CustomEvent) {
       console.log('confirmEditDevice', event)
       const { detail } = event
-      const item = bleDevicesBinding.store.bleDeviceList[this.data.editDeviceInfo.index]
+      const item = bleDevicesBinding.store.bleDeviceList.find(item => item.deviceUuid === this.data.editDeviceInfo.deviceUuid) as IBleDevice
 
       item.roomId = detail.roomId
       item.roomName = detail.roomName
