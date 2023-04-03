@@ -1,7 +1,7 @@
-<view class="page-container flex flex-col">
+<view class="page-container flex flex-col h-screen">
   <nav-bar background="transparent" title="添加设备"></nav-bar>
 
-  <scroll-view class="grow h-400 flex flex-col justify-between" scroll-y>
+  <scroll-view class="box-border h-600 grow flex flex-col justify-between pt-100rpx" scroll-y>
     <tips-box text="设备添加成功！" icon="/assets/img/default-img/success.png" size="{{isSwitch ? 200 : 300}}" text-style="{{isSwitch && 'margin-top: 24rpx;'}}"></tips-box>
 
     <view class="grow px-24rpx mt-28rpx" wx:if="{{deviceInfo.roomId}}">
