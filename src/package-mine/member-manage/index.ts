@@ -93,6 +93,14 @@ ComponentWithComputed({
           return item.userId === curUserId
         })
         if (curUser) {
+          result.push({
+            icon: curUser.headImageUrl,
+            name: curUser.userName,
+            role: curUser.userHouseAuthName,
+            id: curUser.userId,
+            roleCode: curUser.userHouseAuth,
+            isCanEdit: false,
+          })
           this.setData({
             curUser: curUser,
             isAdmin: curUser.userHouseAuth === 2,
@@ -100,17 +108,17 @@ ComponentWithComputed({
           })
         }
         list.forEach((item: Home.HouseUserItem) => {
-          let isCanEdit = false
-          if (curUser?.userId === item.userId) isCanEdit = false
-          else isCanEdit = this.canIEditOther(curUser?.userHouseAuth, item.userHouseAuth)
-          result.push({
-            icon: item.headImageUrl,
-            name: item.userName,
-            role: item.userHouseAuthName,
-            id: item.userId,
-            roleCode: item.userHouseAuth,
-            isCanEdit: isCanEdit,
-          })
+          if (curUser?.userId !== item.userId) {
+            const isCanEdit = this.canIEditOther(curUser?.userHouseAuth, item.userHouseAuth)
+            result.push({
+              icon: item.headImageUrl,
+              name: item.userName,
+              role: item.userHouseAuthName,
+              id: item.userId,
+              roleCode: item.userHouseAuth,
+              isCanEdit: isCanEdit,
+            })
+          }
         })
         this.setData({ memberList: result })
       }
