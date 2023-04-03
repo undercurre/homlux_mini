@@ -336,10 +336,10 @@ ComponentWithComputed({
     handleCollect() {
       // 补充actions
       const deviceMap = deviceStore.deviceMap
-      const switchSceneMap = deviceStore.switchSceneMap
+      const switchSceneConditionMap = deviceStore.switchSceneConditionMap
       const addSceneActions = [] as Device.ActionItem[]
       // 排除已经是场景开关的开关
-      const selectList = deviceStore.deviceFlattenList.filter((device) => !switchSceneMap[device.uniId])
+      const selectList = deviceStore.deviceFlattenList.filter((device) => !switchSceneConditionMap[device.uniId])
       selectList.forEach((device) => {
         if (device.proType === proType.switch) {
           // 开关
@@ -556,7 +556,7 @@ ComponentWithComputed({
     }) {
       const ep = e.detail.switchInfoDTOList[0].switchId
       if (e.detail.mzgdPropertyDTOList[ep].ButtonMode && e.detail.mzgdPropertyDTOList[ep].ButtonMode === 2) {
-        const sceneId = deviceStore.switchSceneMap[e.detail.uniId]
+        const sceneId = deviceStore.switchSceneConditionMap[e.detail.uniId]
         if (sceneId) {
           execScene(sceneId)
         }

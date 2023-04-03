@@ -287,7 +287,7 @@ ComponentWithComputed({
             mode = '关联灯'
           } else if (rel && rel.switchRelId) {
             mode = '关联开关'
-          } else if (deviceStore.switchSceneMap[switchUniId]) {
+          } else if (deviceStore.switchSceneConditionMap[switchUniId]) {
             mode = '关联场景'
           }
         }
@@ -325,10 +325,11 @@ ComponentWithComputed({
         return
       }
       if (this.data.selectLinkType === 'scene') {
-        console.log('sceneStore.allRoomSceneList', sceneStore.allRoomSceneList)
         this.setData({
           list: [...sceneStore.allRoomSceneList],
-          linkSelectList: deviceStore.switchSceneMap[switchUniId] ? [deviceStore.switchSceneMap[switchUniId]] : [],
+          linkSelectList: deviceStore.switchSceneConditionMap[switchUniId]
+            ? [deviceStore.switchSceneConditionMap[switchUniId]]
+            : [],
           showLinkPopup: true,
           selectSwitchUniId: switchUniId,
         })
@@ -383,18 +384,23 @@ ComponentWithComputed({
         })
       } else if (this.data.selectLinkType === 'scene') {
         const sceneId = e.detail
-        const switchSceneMap = deviceStore.switchSceneMap
-        if (switchSceneMap[this.data.selectSwitchUniId] === sceneId) {
+        const switchSceneActionMap = deviceStore.switchSceneActionMap
+        if (switchSceneActionMap[this.data.selectSwitchUniId]?.includes(sceneId)) {
           Dialog.confirm({
             message: '此开关已被其他场景使用，是否需要变更？',
             cancelButtonText: '取消',
             confirmButtonText: '变更',
             zIndex: 2000,
-          }).then(async () => {
-            this.setData({
-              linkSelectList: [e.detail],
-            })
+            context: this,
           })
+            .then(async () => {
+              this.setData({
+                linkSelectList: [e.detail],
+              })
+            })
+            .catch((e) => {
+              console.log('catch', e)
+            })
         } else {
           this.setData({
             linkSelectList: [e.detail],
@@ -418,7 +424,7 @@ ComponentWithComputed({
           this.setData({
             linkType: 'switch',
           })
-        } else if (deviceStore.switchSceneMap[switchUniId]) {
+        } else if (deviceStore.switchSceneConditionMap[switchUniId]) {
           this.setData({
             linkType: 'scene',
           })
@@ -471,7 +477,7 @@ ComponentWithComputed({
         }
       }
       // 查一下有没有关联场景，有先解开关联
-      const sceneId = deviceStore.switchSceneMap[selectSwitchUniId]
+      const sceneId = deviceStore.switchSceneConditionMap[selectSwitchUniId]
       if (sceneId) {
         const res = await updateScene({
           sceneId: sceneId,
@@ -611,7 +617,7 @@ ComponentWithComputed({
         }
       }
       // 查一下有没有关联场景，有先解开关联
-      const sceneId = deviceStore.switchSceneMap[selectSwitchUniId]
+      const sceneId = deviceStore.switchSceneConditionMap[selectSwitchUniId]
       if (sceneId) {
         const res = await updateScene({
           sceneId: sceneId,
@@ -714,7 +720,7 @@ ComponentWithComputed({
       }
     },
     async updataSceneLink() {
-      const switchSceneMap = deviceStore.switchSceneMap
+      const switchSceneConditionMap = deviceStore.switchSceneConditionMap
       const switchUniId = deviceStore.selectList.find((uniId) => uniId.includes(':'))
       if (!switchUniId) {
         return
@@ -737,18 +743,18 @@ ComponentWithComputed({
           return
         }
       }
-      if (this.data.linkSelectList.length === 0 && switchSceneMap[this.data.selectSwitchUniId]) {
+      if (this.data.linkSelectList.length === 0 && switchSceneConditionMap[this.data.selectSwitchUniId]) {
         // 取消关联
         await updateScene({
           updateType: '2',
-          sceneId: switchSceneMap[this.data.selectSwitchUniId],
+          sceneId: switchSceneConditionMap[this.data.selectSwitchUniId],
           conditionType: '0',
         })
         return
       }
       if (
-        this.data.linkSelectList[0] === switchSceneMap[this.data.selectSwitchUniId] ||
-        (this.data.linkSelectList.length === 0 && !switchSceneMap[this.data.selectSwitchUniId])
+        this.data.linkSelectList[0] === switchSceneConditionMap[this.data.selectSwitchUniId] ||
+        (this.data.linkSelectList.length === 0 && !switchSceneConditionMap[this.data.selectSwitchUniId])
       ) {
         // 没变化，不执行操作
         return
@@ -758,16 +764,20 @@ ComponentWithComputed({
         conditionType: '0',
         sceneId: sceneId,
       } as Scene.UpdateSceneDto
-      console.log(switchSceneMap, this.data.selectSwitchUniId, switchSceneMap[this.data.selectSwitchUniId])
+      console.log(
+        switchSceneConditionMap,
+        this.data.selectSwitchUniId,
+        switchSceneConditionMap[this.data.selectSwitchUniId],
+      )
       if (
         this.data.linkSelectList.length !== 0 &&
-        switchSceneMap[this.data.selectSwitchUniId] &&
-        this.data.linkSelectList[0] !== switchSceneMap[this.data.selectSwitchUniId]
+        switchSceneConditionMap[this.data.selectSwitchUniId] &&
+        this.data.linkSelectList[0] !== switchSceneConditionMap[this.data.selectSwitchUniId]
       ) {
         // 更新关联，先取消关联当前场景，再关联其他场景
         const res = await updateScene({
           conditionType: '0',
-          sceneId: switchSceneMap[this.data.selectSwitchUniId],
+          sceneId: switchSceneConditionMap[this.data.selectSwitchUniId],
           updateType: '2',
         })
         if (!res.success) {
@@ -793,7 +803,7 @@ ComponentWithComputed({
         await updateScene(updateSceneDto)
         return
       }
-      if (this.data.linkSelectList.length !== 0 && !switchSceneMap[this.data.selectSwitchUniId]) {
+      if (this.data.linkSelectList.length !== 0 && !switchSceneConditionMap[this.data.selectSwitchUniId]) {
         // 增加关联
         updateSceneDto.deviceConditions = [
           {

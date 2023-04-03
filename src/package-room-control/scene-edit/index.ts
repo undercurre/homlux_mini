@@ -211,12 +211,12 @@ ComponentWithComputed({
 
       if (this.data.linkSwitch) {
         if (
-          deviceStore.switchSceneMap[this.data.linkSwitch] &&
-          deviceStore.switchSceneMap[this.data.linkSwitch] !== this.data.sceneId
+          deviceStore.switchSceneConditionMap[this.data.linkSwitch] &&
+          deviceStore.switchSceneConditionMap[this.data.linkSwitch] !== this.data.sceneId
         ) {
           // 解绑开关原来的场景
           const res = await updateScene({
-            sceneId: deviceStore.switchSceneMap[this.data.linkSwitch],
+            sceneId: deviceStore.switchSceneConditionMap[this.data.linkSwitch],
             updateType: '2',
           })
           if (!res.success) {
