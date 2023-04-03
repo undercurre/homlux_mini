@@ -156,6 +156,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .mt-16rpx{margin-top:16rpx;}
 .mt-20rpx{margin-top:20rpx;}
 .mt-22rpx{margin-top:22rpx;}
+.mt-240rpx{margin-top:240rpx;}
 .mt-24rpx{margin-top:24rpx;}
 .mt-26rpx{margin-top:26rpx;}
 .mt-28rpx{margin-top:28rpx;}

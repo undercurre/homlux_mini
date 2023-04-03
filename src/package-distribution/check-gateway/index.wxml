@@ -1,7 +1,7 @@
 <view class="page-container flex flex-col">
   <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="添加智能网关"></nav-bar>
 
-  <view wx:if="{{!isConnectDevice && !isAndroid10Plus}}" class="grow px-32rpx flex flex-col justify-between">
+  <view wx:if="{{!isConnectDevice && isAndroid10Plus}}" class="grow px-32rpx flex flex-col justify-between">
     <view>
       <text class="block text-40 text-black-2a pt-60rpx">请用手机连接智能网关无线网络</text>
 
@@ -32,7 +32,7 @@
       <text class="text-24 leading-34rpx text-black-2a">请允许微信加入“{{ssid}}”，以便自动连接设备</text>
     </view>
 
-    <mz-loading wx:if="{{status === 'linking'}}" class="mt-130rpx" text="正在连接设备，请将手机尽量靠近设备" step-list="{{[]}}" show-progress="{{false}}"></mz-loading>
+    <mz-loading wx:if="{{status === 'linking'}}" class="mt-240rpx" text="正在连接设备，请将手机尽量靠近设备" step-list="{{[]}}" show-progress="{{false}}"></mz-loading>
   </view>
 </view>
 
