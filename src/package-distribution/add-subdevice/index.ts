@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
-import { bleUtil, strUtil, BleClient, getCurrentPageParams } from '../../utils/index'
+import { bleUtil, strUtil, BleClient, getCurrentPageParams, emitter, WSEventType } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { sendCmdAddSubdevice, bindDevice, queryDeviceOnlineStatus } from '../../apis/index'
 import { IBleDevice } from './typings'
@@ -43,6 +43,23 @@ ComponentWithComputed({
         pageParams,
       })
       this.initBle()
+
+      // 60s超时处理
+      setTimeout(() => {
+        this.setData({
+          status: 'error',
+        })
+
+        emitter.off('bind_device')
+      }, 60000)
+
+      emitter.on('bind_device', (data) => {
+        console.log('bind_device', data)
+
+        if (data.deviceId === this.data.pageParams.mac) {
+          this.queryDeviceOnlineStatus()
+        }
+      })
     },
     detached: function () {
       wx.closeBluetoothAdapter()
@@ -88,13 +105,6 @@ ComponentWithComputed({
         interval: 3000,
         success: (res) => {
           console.log('startBluetoothDevicesDiscovery', res)
-          this.data._timeId = setTimeout(() => {
-            if (!this.data._hasFound) {
-              this.setData({
-                status: 'error',
-              })
-            }
-          }, 30000)
         },
       })
     },
@@ -107,6 +117,11 @@ ComponentWithComputed({
       const targetMac = this.data.pageParams.mac // 云端的是zigbee模块的mac
 
       if (targetMac !== msgObj.zigbeeMac) {
+        return false
+      }
+
+      if (this.data._hasFound) {
+        console.error('重复发现目标蓝牙设备')
         return false
       }
 
@@ -171,7 +186,7 @@ ComponentWithComputed({
       if (res.success) {
         bleDevice.zigbeeMac = res.result.zigbeeMac
 
-        this.queryDeviceOnlineStatus(bleDevice)
+        // this.queryDeviceOnlineStatus(bleDevice)
       } else {
         this.setData({
           status: 'error',
@@ -181,44 +196,44 @@ ComponentWithComputed({
       bleDevice.client.close()
     },
 
-    async queryDeviceOnlineStatus(device: IBleDevice) {
-      const queryRes = await queryDeviceOnlineStatus({
-        deviceId: device.zigbeeMac,
-        deviceType: '2',
-        sn: this.data.pageParams.gatewaySn,
-      })
+    async queryDeviceOnlineStatus() {
+      // const queryRes = await queryDeviceOnlineStatus({
+      //   deviceId: device.zigbeeMac,
+      //   deviceType: '2',
+      //   sn: this.data.pageParams.gatewaySn,
+      // })
 
-      console.log('queryDeviceOnlineStatus', queryRes)
+      // console.log('queryDeviceOnlineStatus', queryRes)
 
-      if (queryRes.result.onlineStatus === 0) {
-        // 限制最多查询云端设备在线状态次数：device.requestTimes，超过则置为失败
-        device.requestTimes--
+      // if (queryRes.result.onlineStatus === 0) {
+      //   // 限制最多查询云端设备在线状态次数：device.requestTimes，超过则置为失败
+      //   device.requestTimes--
 
-        if (device.requestTimes <= 0) {
-          this.setData({
-            status: 'error',
-          })
+      //   if (device.requestTimes <= 0) {
+      //     this.setData({
+      //       status: 'error',
+      //     })
 
-          return
-        }
+      //     return
+      //   }
 
-        setTimeout(() => {
-          this.queryDeviceOnlineStatus(device)
-        }, 3000)
+      //   setTimeout(() => {
+      //     this.queryDeviceOnlineStatus(device)
+      //   }, 3000)
 
-        return
-      }
+      //   return
+      // }
 
       this.setData({
         activeIndex: 2,
       })
 
       const res = await bindDevice({
-        deviceId: device.zigbeeMac,
+        deviceId: this.data.pageParams.mac,
         houseId: homeBinding.store.currentHomeId,
         roomId: roomBinding.store.currentRoom.roomId,
         sn: '',
-        deviceName: device.name + (deviceNum > 0 ? ++deviceNum : ''),
+        deviceName: this.data.pageParams.deviceName + (deviceNum > 0 ? ++deviceNum : ''),
       })
 
       if (res.success && res.result.isBind) {

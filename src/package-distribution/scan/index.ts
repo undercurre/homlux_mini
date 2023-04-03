@@ -28,7 +28,6 @@ ComponentWithComputed({
     isShowGatewayList: false, // 是否展示选择网关列表弹窗
     isShowNoGatewayTips: false, // 是否展示添加网关提示弹窗
     isScan: false, // 是否正在扫码
-    _isDiscovering: false, // 是否正在发现蓝牙
     bleStatus: '',
     isFlash: false,
     selectGatewayId: '',
@@ -254,12 +253,11 @@ ComponentWithComputed({
     },
 
     async startDiscoverBle() {
-      if (this.data._isDiscovering) {
+      if (bleDevicesBinding.store.isDiscovering) {
         return
       }
 
-      this.data._isDiscovering = true
-
+      bleDevicesBinding.store.reset()
       bleDevicesBinding.store.startBleDiscovery()
     },
 
@@ -486,7 +484,7 @@ ComponentWithComputed({
           proType: res.result.proType,
           deviceName: res.result.productName,
           icon: res.result.productIcon,
-          mac: res.result.mac,
+          mac: res.result.mac, // zigbee 的mac
         },
       })
 
