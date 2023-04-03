@@ -11,6 +11,7 @@ import {
   removeLightRel,
 } from '../../../utils/index'
 import Toast from '@vant/weapp/toast/toast'
+import Dialog from '@vant/weapp/dialog/dialog'
 
 let throttleTimer = 0
 
@@ -381,9 +382,24 @@ ComponentWithComputed({
           linkSelectList: [...this.data.linkSelectList, e.detail],
         })
       } else if (this.data.selectLinkType === 'scene') {
-        this.setData({
-          linkSelectList: [e.detail],
-        })
+        const sceneId = e.detail
+        const switchSceneMap = deviceStore.switchSceneMap
+        if (switchSceneMap[this.data.selectSwitchUniId] === sceneId) {
+          Dialog.confirm({
+            message: '此开关已被其他场景使用，是否需要变更？',
+            cancelButtonText: '取消',
+            confirmButtonText: '变更',
+            zIndex: 2000,
+          }).then(async () => {
+            this.setData({
+              linkSelectList: [e.detail],
+            })
+          })
+        } else {
+          this.setData({
+            linkSelectList: [e.detail],
+          })
+        }
       }
     },
     handleSelectLinkPopup() {

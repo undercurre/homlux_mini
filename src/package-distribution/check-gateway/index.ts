@@ -53,7 +53,7 @@ Component({
   methods: {
     copy() {
       wx.setClipboardData({
-        data: '12345678'
+        data: '12345678',
       })
     },
     /**
@@ -120,7 +120,7 @@ Component({
         isAndroid10Plus,
         ssid: params.ssid,
       })
-      
+
       // Android 调用前需要 用户授权 scope.userLocation。该权限流程需前置，否则会出现在配网过程连接设备热点导致无法联网，请求失败
       if (deviceInfo.platform === 'android') {
         const authorizeRes = await wx
@@ -182,7 +182,7 @@ Component({
       const connectRes = await socket.connect()
 
       this.setData({
-        isLoading: false
+        isLoading: false,
       })
 
       console.debug(params.ssid + '---connectRes', connectRes, '初始化socket连接用时：', Date.now() - start)

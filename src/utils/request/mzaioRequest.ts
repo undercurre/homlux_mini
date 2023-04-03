@@ -66,15 +66,19 @@ const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: Base
           url: '/pages/index/index',
         })
         return result.data
+      } else if (!(result.data as unknown as { success: boolean }).success) {
+        console.error('业务响应失败', options, result.data)
       }
       return result.data
     },
-    generalFailHandler: (error) =>
-      ({
+    generalFailHandler: (error) => {
+      console.error('请求失败，原因：', error.errMsg)
+      return {
         code: -1,
         msg: error.errMsg,
         success: false,
-      } as unknown as T),
+      } as unknown as T
+    },
   }) as unknown as Promise<mzaioResponseRowData<T>>
 }
 

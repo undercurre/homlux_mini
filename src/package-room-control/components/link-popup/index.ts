@@ -1,6 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { deviceBinding, deviceStore, roomBinding, roomStore } from '../../../store/index'
+import Toast from '@vant/weapp/toast/toast'
 
 ComponentWithComputed({
   options: {
@@ -40,8 +41,14 @@ ComponentWithComputed({
           setTimeout(() => {
             this.getHeight()
           }, 100)
+          if (!this.data.list.length) {
+            Toast({
+              message: `当前没有可关联的${this.data.linkType === 'scene' ? '场景' : '设备'}`,
+              zIndex: 9999,
+            })
+          }
         }
-        if (this.data.roomListComputed.length > 0) {
+        if (this.data.roomListComputed.length) {
           this.setData({
             roomSelect: this.data.roomListComputed[0].roomId,
           })
