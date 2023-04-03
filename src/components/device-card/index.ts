@@ -102,7 +102,7 @@ ComponentWithComputed({
       }
       return ''
     },
-    deviceName(data) {
+    topTitle(data) {
       // 如果是开关，deviceName显示开关名称
       if (data.deviceInfo.proType === proType.switch && data.showBtnDetail) {
         const name =
@@ -111,6 +111,9 @@ ComponentWithComputed({
       } else {
         return data.deviceInfo.deviceName.slice(0, 5)
       }
+    },
+    bottomDesc(data) {
+      return data.deviceInfo.deviceName.slice(0, 5)
     },
     deviceType(data) {
       return proName[data.deviceInfo.proType]

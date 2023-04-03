@@ -280,7 +280,7 @@ export const homeStore = observable({
     }
   },
 
-    /**
+  /**
    * 获取分享连接ID
    */
   async getInviteShareId() {
