@@ -26,7 +26,7 @@ Component({
     isAndroid10Plus: false,
     isConnectDevice: false,
     status: 'linking',
-    ssid: 'Midea_16_E58C',
+    ssid: '',
   } as IAnyObject,
 
   lifetimes: {
