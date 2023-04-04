@@ -80,14 +80,6 @@
           <drag id="drag-switch" columns="{{4}}" list-data="{{switchList}}" scroll-top="{{scrollTop}}" item-height="{{240}}" generic:item="card" bind:sortend="handleSwitchSortEnd" bind:controlTap="handleSwitchControlTapToggle" bind:cardTap="handleDeviceCardTap" bind:scroll="handleScroll" bind:offlineTap="handleShowDeviceOffline" bind:drag="handleDrag"></drag>
         </view>
       </view>
-
-      <!-- 窗帘设备卡片 -->
-      <!-- <view class="{{switchList && switchList.length > 0 ? '' : 'mt-24rpx'}}" wx:if="{{curtainList && curtainList.length>0}}">
-          <text class="text-24rpx text-black-59">窗帘</text>
-          <view class="w-686rpx grid grid-cols-4 gap-x-16rpx gap-y-24rpx mt-24rpx">
-            <device-card class="curtain-card" showControl device-type="curtain" wx:for="{{curtainList}}" wx:key="deviceId" data-index="{{index}}" data-type="curtain" data-info="{{item}}" bind:controlTap="handleDevicecontrolTap" bindtouchend="handleTouchEnd" bind:cardTap="handleDeviceCardTap" device-info="{{item}}" select="{{module.includes(selectList, item.deviceId)}}" />
-          </view>
-        </view> -->
     </view>
   </view>
 </view>
