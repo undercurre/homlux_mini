@@ -1,8 +1,9 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { runInAction } from 'mobx-miniprogram'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import { findDevice } from '../../../../apis/index'
 import { maxColorTempK, minColorTempK, proType } from '../../../../config/index'
-import { roomBinding, sceneBinding, sceneStore } from '../../../../store/index'
+import { deviceStore, roomBinding, sceneBinding, sceneStore } from '../../../../store/index'
 
 ComponentWithComputed({
   options: {
@@ -76,17 +77,26 @@ ComponentWithComputed({
       })
     },
     handleSceneActionEdit(e: WechatMiniprogram.TouchEvent) {
-      if (sceneStore.addSceneActions[e.currentTarget.dataset.index].proType === proType.light) {
+      const deviceAction = sceneStore.addSceneActions[e.currentTarget.dataset.index]
+      const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
+      const device = allRoomDeviceMap[deviceAction.uniId]
+      if (deviceAction.proType === proType.light) {
+        findDevice({ gatewayId: device.gatewayId, devId: device.deviceId })
         this.setData({
-          sceneEditTitle: sceneStore.addSceneActions[e.currentTarget.dataset.index].name,
-          sceneLightEditInfo: sceneStore.addSceneActions[e.currentTarget.dataset.index].value,
+          sceneEditTitle: deviceAction.name,
+          sceneLightEditInfo: deviceAction.value,
           showSceneEditLightPopup: true,
           editIndex: e.currentTarget.dataset.index,
         })
-      } else if (sceneStore.addSceneActions[e.currentTarget.dataset.index].proType === proType.switch) {
+      } else if (deviceAction.proType === proType.switch) {
+        findDevice({
+          gatewayId: device.gatewayId,
+          devId: device.deviceId,
+          ep: Number(device.switchInfoDTOList[0].switchId),
+        })
         this.setData({
-          sceneEditTitle: sceneStore.addSceneActions[e.currentTarget.dataset.index].name,
-          sceneSwitchEditInfo: sceneStore.addSceneActions[e.currentTarget.dataset.index].value,
+          sceneEditTitle: deviceAction.name,
+          sceneSwitchEditInfo: deviceAction.value,
           showSceneEditSwitchPopup: true,
           editIndex: e.currentTarget.dataset.index,
         })
