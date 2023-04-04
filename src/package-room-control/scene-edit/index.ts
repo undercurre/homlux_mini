@@ -1,7 +1,7 @@
 import { deviceStore, homeStore, sceneStore } from '../../store/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { maxColorTempK, minColorTempK, proType } from '../../config/index'
-import { deleteScene, updateScene } from '../../apis/index'
+import { deleteScene, findDevice, updateScene } from '../../apis/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { emitter } from '../../utils/eventBus'
 import Dialog from '@vant/weapp/dialog/dialog'
@@ -338,7 +338,11 @@ ComponentWithComputed({
       })
     },
     handleSceneActionEdit(e: WechatMiniprogram.TouchEvent) {
+      const deviceAction = this.data.sceneDeviceActionsFlatten[e.currentTarget.dataset.index]
+      const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
+      const device = allRoomDeviceMap[deviceAction.uniId]
       if (this.data.sceneDeviceActionsFlatten[e.currentTarget.dataset.index].proType === proType.light) {
+        findDevice({ gatewayId: device.gatewayId, devId: device.deviceId })
         this.setData({
           sceneEditTitle: this.data.sceneDeviceActionsFlatten[e.currentTarget.dataset.index].name,
           sceneLightEditInfo: this.data.sceneDeviceActionsFlatten[e.currentTarget.dataset.index].value,
@@ -346,6 +350,11 @@ ComponentWithComputed({
           editIndex: e.currentTarget.dataset.index,
         })
       } else if (this.data.sceneDeviceActionsFlatten[e.currentTarget.dataset.index].proType === proType.switch) {
+        findDevice({
+          gatewayId: device.gatewayId,
+          devId: device.deviceId,
+          ep: Number(device.switchInfoDTOList[0].switchId),
+        })
         this.setData({
           sceneEditTitle: this.data.sceneDeviceActionsFlatten[e.currentTarget.dataset.index].name,
           sceneSwitchEditInfo: this.data.sceneDeviceActionsFlatten[e.currentTarget.dataset.index].value,

@@ -85,14 +85,14 @@ export const bleDevicesStore = observable({
 
     wx.offBluetoothAdapterStateChange()
 
-    wx.onBluetoothAdapterStateChange(res => {
+    wx.onBluetoothAdapterStateChange((res) => {
       console.debug('onBluetoothAdapterStateChange-store', res)
-    
+
       runInAction(() => {
         bleDevicesStore.isDiscovering = res.discovering
       })
     })
-  }
+  },
 })
 
 export const bleDevicesBinding = {
