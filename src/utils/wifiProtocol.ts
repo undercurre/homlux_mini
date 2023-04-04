@@ -146,7 +146,7 @@ export class WifiSocket {
   }
 
   bindUdp = () => {
-    console.log('bindUdp', this)
+    console.log('bindUdp')
     if (this.deviceInfo.isConnectingUdp) {
       return
     }
@@ -167,7 +167,7 @@ export class WifiSocket {
   }
 
   closeUdp = () => {
-    console.log('closeUdp', this)
+    console.log('closeUdp')
     if (this.deviceInfo.isConnectingUdp) {
       this.udpClient.close()
     }

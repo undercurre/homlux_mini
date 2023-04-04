@@ -32,7 +32,6 @@ Component({
     status: 'linking',
     currentStep: '连接设备',
     activeIndex: 0,
-    stepList: [],
   } as WechatMiniprogram.IAnyObject & IPageData,
 
   lifetimes: {
