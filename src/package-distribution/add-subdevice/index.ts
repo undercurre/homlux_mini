@@ -58,12 +58,16 @@ ComponentWithComputed({
 
         if (data.deviceId === this.data.pageParams.mac) {
           this.bindBleDeviceToClound()
+          emitter.off('bind_device')
+          clearTimeout(this.data._timeId)
         }
       })
     },
     detached() {
+      emitter.off('bind_device')
+      clearTimeout(this.data._timeId)
       wx.stopBluetoothDevicesDiscovery()
-    }
+    },
   },
 
   pageLifetimes: {

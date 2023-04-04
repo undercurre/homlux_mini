@@ -4,13 +4,6 @@ import { roomBinding, deviceBinding } from '../../store/index'
 import { checkDevice } from '../../apis/index'
 
 let _foundList = [] as IBleBaseInfo[]
-wx.onBluetoothAdapterStateChange(res => {
-  console.debug('onBluetoothAdapterStateChange-store', res)
-
-  runInAction(() => {
-    bleDevicesStore.isDiscovering = res.discovering
-  })
-})
 
 console.info('bleDevicesStore')
 export const bleDevicesStore = observable({
@@ -88,6 +81,16 @@ export const bleDevicesStore = observable({
       this.isDiscovering = false
 
       _foundList = []
+    })
+
+    wx.offBluetoothAdapterStateChange()
+
+    wx.onBluetoothAdapterStateChange(res => {
+      console.debug('onBluetoothAdapterStateChange-store', res)
+    
+      runInAction(() => {
+        bleDevicesStore.isDiscovering = res.discovering
+      })
     })
   }
 })
