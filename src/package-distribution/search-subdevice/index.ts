@@ -227,7 +227,7 @@ ComponentWithComputed({
           return item
         }
 
-        for await (const value of asyncPool(3, list, iteratorFn)) {
+        for await (const value of asyncPool(2, list, iteratorFn)) {
           console.info('任务结束：', value.mac)
         }
 
