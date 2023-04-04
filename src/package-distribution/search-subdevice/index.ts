@@ -77,7 +77,7 @@ ComponentWithComputed({
     detached() {
       console.log('附近子设备-detached')
       bleDevicesBinding.store.stopBLeDiscovery()
-    }
+    },
   },
 
   pageLifetimes: {
@@ -135,7 +135,7 @@ ComponentWithComputed({
     },
 
     updateBleDeviceListView() {
-      const hasWaitItem = bleDevicesBinding.store.bleDeviceList.findIndex(item => item.status === 'waiting') >= 0
+      const hasWaitItem = bleDevicesBinding.store.bleDeviceList.findIndex((item) => item.status === 'waiting') >= 0
       // 若全部执行并等待完毕，则关闭监听
       if (!hasWaitItem) {
         emitter.off('bind_device')
@@ -204,8 +204,10 @@ ComponentWithComputed({
         emitter.on('bind_device', (data) => {
           console.log('bind_device', data)
 
-          const bleDevice = bleDevicesStore.bleDeviceList.find(item => item.isChecked && item.zigbeeMac === data.deviceId)
-  
+          const bleDevice = bleDevicesStore.bleDeviceList.find(
+            (item) => item.isChecked && item.zigbeeMac === data.deviceId,
+          )
+
           if (bleDevice) {
             this.bindBleDeviceToClound(bleDevice)
           }
@@ -334,7 +336,7 @@ ComponentWithComputed({
     editDevice(event: WechatMiniprogram.BaseEvent) {
       const { id } = event.currentTarget.dataset
 
-      const item = bleDevicesBinding.store.bleDeviceList.find(item => item.deviceUuid === id) as IBleDevice
+      const item = bleDevicesBinding.store.bleDeviceList.find((item) => item.deviceUuid === id) as IBleDevice
 
       this.setData({
         isEditDevice: true,
@@ -352,7 +354,9 @@ ComponentWithComputed({
     confirmEditDevice(event: WechatMiniprogram.CustomEvent) {
       console.log('confirmEditDevice', event)
       const { detail } = event
-      const item = bleDevicesBinding.store.bleDeviceList.find(item => item.deviceUuid === this.data.editDeviceInfo.deviceUuid) as IBleDevice
+      const item = bleDevicesBinding.store.bleDeviceList.find(
+        (item) => item.deviceUuid === this.data.editDeviceInfo.deviceUuid,
+      ) as IBleDevice
 
       item.roomId = detail.roomId
       item.roomName = detail.roomName

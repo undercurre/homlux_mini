@@ -52,6 +52,11 @@ ComponentWithComputed({
     namingPopupTitle(data) {
       return data.homeInfoEdited.houseId ? '重命名家庭' : '新建家庭'
     },
+    houseName(data) {
+      return data.currentHomeDetail?.houseName?.length > 6
+        ? data.currentHomeDetail?.houseName.slice(0, 6) + '...'
+        : data.currentHomeDetail?.houseName
+    },
   },
 
   lifetimes: {

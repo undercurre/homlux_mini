@@ -53,8 +53,11 @@ ComponentWithComputed({
   },
   computed: {
     currentHomeName(data) {
-      if (data.currentHomeDetail) {
-        return data.currentHomeDetail?.houseName ?? ''
+      if (data.currentHomeDetail && data.currentHomeDetail.houseName) {
+        if (data.currentHomeDetail.houseName.length > 6) {
+          return data.currentHomeDetail.houseName.slice(0, 6) + '...'
+        }
+        return data.currentHomeDetail?.houseName
       }
       return ''
     },

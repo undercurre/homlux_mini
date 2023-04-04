@@ -48,8 +48,13 @@ ComponentWithComputed({
       if (!data.homeList || !data.homeList.length) {
         return []
       }
-
-      return data.homeList.sort((_: Home.IHomeItem, b: Home.IHomeItem) => (b.defaultHouseFlag ? 1 : -1))
+      const list = (data.homeList as Home.IHomeItem[])
+        .sort((_: Home.IHomeItem, b: Home.IHomeItem) => (b.defaultHouseFlag ? 1 : -1))
+        .map((home) => ({
+          ...home,
+          houseName: home.houseName?.length > 6 ? home.houseName.slice(0, 6) + '...' : home.houseName,
+        }))
+      return list
     },
   },
 
