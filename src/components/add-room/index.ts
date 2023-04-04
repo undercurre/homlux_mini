@@ -63,7 +63,6 @@ Component({
    * 组件的初始数据
    */
   data: {
-    _hasEditName: false,
     roomInfo: {
       name: '',
       icon: 'parents-room',
@@ -131,7 +130,6 @@ Component({
       console.log('changeRoomName', event)
 
       this.setData({
-        _hasEditName: true,
         'roomInfo.name': event.detail || '',
       })
     },
@@ -175,19 +173,15 @@ Component({
         this.triggerEvent('close')
       }
     },
+    /**
+     * @name 图标选中操作
+     */
     selectIcon({ currentTarget }: WechatMiniprogram.BaseEvent) {
       console.log('selectIcon', currentTarget)
-      const { icon, text } = currentTarget.dataset
-      if (this.data._hasEditName) {
-        this.setData({
-          'roomInfo.icon': icon,
-        })
-      } else {
-        this.setData({
-          'roomInfo.icon': icon,
-          'roomInfo.name': text,
-        })
-      }
+      const { icon } = currentTarget.dataset
+      this.setData({
+        'roomInfo.icon': icon,
+      })
     },
   },
 })

@@ -5,8 +5,8 @@ import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { deviceBinding, deviceStore } from '../../store/index'
 import { StatusType } from './typings'
-// import { deviceReplace } from '../../apis/index'
-import { deviceReplace } from 'homlux-sdk'
+import { deviceReplace } from '../../apis/index'
+// import { deviceReplace } from 'homlux-sdk'
 import { emitter } from '../../utils/eventBus'
 
 ComponentWithComputed({
