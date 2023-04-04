@@ -156,7 +156,7 @@ ComponentWithComputed({
           throttleTimer = setTimeout(async () => {
             homeStore.updateRoomCardList()
             throttleTimer = 0
-          }, 2000)
+          }, 500)
         }
       })
       // 房间选择恢复默认

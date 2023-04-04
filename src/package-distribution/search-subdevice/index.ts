@@ -132,7 +132,8 @@ ComponentWithComputed({
     },
 
     updateBleDeviceListView() {
-      const hasWaitItem = bleDevicesBinding.store.bleDeviceList.findIndex((item) => item.isChecked && item.status === 'waiting') >= 0
+      const hasWaitItem =
+        bleDevicesBinding.store.bleDeviceList.findIndex((item) => item.isChecked && item.status === 'waiting') >= 0
       // 若全部执行并等待完毕，则关闭监听、网关配网
       if (!hasWaitItem) {
         this.stopGwAddMode()
