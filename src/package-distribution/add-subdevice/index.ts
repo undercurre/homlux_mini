@@ -1,9 +1,9 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
-import { bleUtil, strUtil, BleClient, getCurrentPageParams, emitter, WSEventType } from '../../utils/index'
+import { bleUtil, strUtil, BleClient, getCurrentPageParams, emitter } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { sendCmdAddSubdevice, bindDevice, queryDeviceOnlineStatus } from '../../apis/index'
+import { sendCmdAddSubdevice, bindDevice } from '../../apis/index'
 import { IBleDevice } from './typings'
 
 type StatusName = 'linking' | 'error'
