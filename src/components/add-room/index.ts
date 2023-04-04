@@ -131,7 +131,7 @@ Component({
       console.log('changeRoomName', event)
 
       this.setData({
-        _hasEditName: true,
+        _hasEditName: !!event.detail, // 如果内容置空，刚已被编辑的状态也置否
         'roomInfo.name': event.detail || '',
       })
     },
@@ -175,12 +175,22 @@ Component({
         this.triggerEvent('close')
       }
     },
+    /**
+     * @name 图标选中操作
+     * 编辑状态，不覆盖房间名称；// HACK 存在房间id，即为编辑状态
+     * 添加状态，已修改过名称，不覆盖房间名称，但如果房间名称为空时则能带出图标名称
+     */
     selectIcon({ currentTarget }: WechatMiniprogram.BaseEvent) {
       console.log('selectIcon', currentTarget)
       const { icon, text } = currentTarget.dataset
-      if (this.data._hasEditName) {
+      if (this.data.roomId) {
         this.setData({
           'roomInfo.icon': icon,
+        })
+      } else if (this.data._hasEditName) {
+        this.setData({
+          'roomInfo.icon': icon,
+          'roomInfo.name': this.data.roomInfo.name || text,
         })
       } else {
         this.setData({

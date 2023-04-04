@@ -21,8 +21,8 @@
               <view class="p-24rpx leading-0 bg-hex-F6FAFD rounded-32rpx border-4rpx border-solid {{ item.icon === roomInfo.icon ? ' border-hex-488FFF' : 'border-hex-F6FAFD'}}">
                 <image class="w-64rpx h-64rpx" src="/assets/img/room/{{item.icon}}.png"></image>
               </view>
-
-              <text class="text-24 pt-8rpx text-black-tips">{{item.text}}</text>
+              <!-- 如果存在roomId，即为编辑状态，不显示图标所带名称 -->
+              <text wx:if="{{!roomId}}" class="text-24 pt-8rpx text-black-tips">{{item.text}}</text>
             </view>
           </view>
         </view>
