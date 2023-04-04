@@ -132,7 +132,7 @@ ComponentWithComputed({
     },
 
     updateBleDeviceListView() {
-      const hasWaitItem = bleDevicesBinding.store.bleDeviceList.findIndex((item) => item.status === 'waiting') >= 0
+      const hasWaitItem = bleDevicesBinding.store.bleDeviceList.findIndex((item) => item.isChecked && item.status === 'waiting') >= 0
       // 若全部执行并等待完毕，则关闭监听、网关配网
       if (!hasWaitItem) {
         this.stopGwAddMode()
@@ -209,6 +209,7 @@ ComponentWithComputed({
           )
 
           if (bleDevice) {
+            console.info(bleDevice.mac, '绑定推送成功')
             this.bindBleDeviceToClound(bleDevice)
           }
         })
@@ -222,7 +223,7 @@ ComponentWithComputed({
         }, 300)
 
         const iteratorFn = async (item: IBleDevice) => {
-          console.info('开始任务：', item.mac, item)
+          console.info('开始蓝牙任务：', item.mac, item)
 
           await this.startZigbeeNet(item)
 
@@ -230,7 +231,7 @@ ComponentWithComputed({
         }
 
         for await (const value of asyncPool(2, list, iteratorFn)) {
-          console.info('任务结束：', value.mac)
+          console.info('蓝牙任务结束：', value.mac)
         }
       } catch (err) {
         console.log('beginAddDevice-err', err)
@@ -253,6 +254,7 @@ ComponentWithComputed({
           setTimeout(() => {
             if (bleDevice.status === 'waiting') {
               bleDevice.status = 'fail'
+              console.error(bleDevice.mac + '绑定监听超时')
               this.updateBleDeviceListView()
             }
           }, timeout * 1000)
@@ -278,6 +280,7 @@ ComponentWithComputed({
         setTimeout(() => {
           if (bleDevice.status === 'waiting') {
             bleDevice.status = 'fail'
+            console.error(bleDevice.mac + '绑定监听超时')
             this.updateBleDeviceListView()
           }
         }, timeout * 1000)

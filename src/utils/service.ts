@@ -33,8 +33,8 @@ function createConnect() {
   })
   socketTask.onMessage((e) => {
     try {
-      // console.log('接收到Socket信息：', JSON.parse(e.data as string))
       const res = JSON.parse(e.data as string)
+      console.log('接收到Socket信息：', res, res.result.eventType)
       emitter.emit('wsReceive', res)
       emitter.emit(res.result.eventType, res.result.eventData)
     } catch (err) {
