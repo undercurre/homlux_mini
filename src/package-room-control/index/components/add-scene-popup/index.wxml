@@ -7,7 +7,7 @@
       <text class="ml-48rpx h-40rpx text-28rpx text-black-2a font-normal">场景名称</text>
     </view>
     <view class="mt-32rpx w-686rpx mx-32rpx">
-      <van-field model:value="{{ sceneName }}" maxlength="{{4}}" placeholder="自定义场景" custom-style="padding: 28rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
+      <van-field model:value="{{ sceneName }}" maxlength="{{15}}" placeholder="自定义场景" custom-style="padding: 28rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
     </view>
     <view class="mt-32rpx w-750rpx">
       <text class="ml-48rpx h-40rpx text-28rpx text-black-2a font-normal">选择场景图标</text>
@@ -18,18 +18,6 @@
         <image class="w-72rpx h-72rpx m-24rpx" src="/assets/img/scene/{{item[0]}}.png" mode="" />
       </view>
     </view>
-
-    <!-- <view class="flex-1 w-654rpx" id="content">
-      <scroll-view enhanced scroll-x style="height: {{contentHeight}}px;">
-        <view class="h-32rpx"></view>
-        <view class="flex">
-          <view data-scene="{{item[0]}}" bindtap="handleSceneIconTap" wx:for="{{sceneList}}" wx:key="index" class="rounded-32rpx bg-hex-f6fafd box-border flex-center {{index !== 0 ? 'ml-48rpx' : ''}}" style="border: 4rpx solid {{sceneIcon === item[0]?'#488FFF':'transparent'}};">
-            <image class="w-72rpx h-72rpx m-24rpx" src="/assets/img/scene/{{item[0]}}.png" mode="" />
-          </view>
-        </view>
-        <view class="h-32rpx"></view>
-      </scroll-view>
-    </view> -->
 
     <van-cell-group inset class="w-750rpx mb-32rpx">
       <van-cell center is-link custom-class="switch-cell" value="{{linkSwitch?'已关联':'未关联'}}" bind:click="handleLinkSwitchPopup" custom-style="border: 2rpx solid #DDDDDD;border-radius: 24px;">

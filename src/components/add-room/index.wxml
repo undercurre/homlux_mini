@@ -9,7 +9,7 @@
       <view wx:if="{{isEditName}}">
         <text class="block pl-16rpx pb-24rpx pt-48rpx text-28">房间名称</text>
 
-        <van-field custom-style="padding: 20rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" value="{{ roomInfo.name }}" placeholder="请输入房间名称" clearable="{{true}}" bind:clear="changeRoomName" bind:blur="changeRoomName" border="{{false}}"></van-field>
+        <van-field custom-style="padding: 20rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" value="{{ roomInfo.name }}" placeholder="请输入房间名称" clearable="{{true}}" bind:clear="changeRoomName" bind:change="changeRoomName" border="{{false}}"></van-field>
       </view>
 
       <view wx:if="{{isEditIcon}}">
@@ -31,7 +31,7 @@
 
     <view class="h-60rpx"></view>
 
-    <template is="bottom-btn" />
+    <template is="bottom-btn" data="{{disabled: !roomInfo.name}}" />
   </view>
 </van-popup>
 

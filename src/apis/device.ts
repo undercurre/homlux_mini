@@ -171,6 +171,31 @@ export async function sendCmdAddSubdevice(
 }
 
 /**
+ * 云端找一找接口
+ * Identify 闪多少秒
+ */
+export async function findDevice(
+  { gatewayId, devId, ep = 1, Identify = 3 }: { gatewayId: string; devId: string; ep?: number; Identify?: number },
+  options?: { loading?: boolean },
+) {
+  return await controlDevice(
+    {
+      topic: '/subdevice/control',
+      deviceId: gatewayId,
+      method: 'deviceFind',
+      inputData: [
+        {
+          devId,
+          ep,
+          Identify,
+        },
+      ],
+    },
+    options,
+  )
+}
+
+/**
  * 检查ota版本
  */
 export async function checkOtaVersion(deviceId: string, options?: { loading?: boolean }) {

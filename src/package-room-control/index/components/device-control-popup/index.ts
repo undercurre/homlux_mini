@@ -3,7 +3,14 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { deviceBinding, deviceStore, sceneStore } from '../../../../store/index'
 import { maxColorTempK, minColorTempK, proType } from '../../../../config/index'
-import { controlDevice, createAssociated, delAssociated, updateAssociated, updateScene } from '../../../../apis/index'
+import {
+  controlDevice,
+  createAssociated,
+  delAssociated,
+  findDevice,
+  updateAssociated,
+  updateScene,
+} from '../../../../apis/index'
 import {
   transformSwitchToNormal,
   removeSwitchRel,
@@ -370,6 +377,7 @@ ComponentWithComputed({
       })
     },
     handleLinkSelect(e: { detail: string }) {
+      const deviceMap = deviceStore.allRoomDeviceFlattenMap
       if (this.data.linkSelectList.includes(e.detail)) {
         const index = this.data.linkSelectList.findIndex((id) => id === e.detail)
         this.data.linkSelectList.splice(index, 1)
@@ -379,6 +387,8 @@ ComponentWithComputed({
         return
       }
       if (['light', 'switch'].includes(this.data.selectLinkType)) {
+        const device = deviceMap[e.detail]
+        this.findDevice(device)
         this.setData({
           linkSelectList: [...this.data.linkSelectList, e.detail],
         })
@@ -1035,6 +1045,9 @@ ComponentWithComputed({
       } else if (this.data.tab === 'switch') {
         this.switchSendDeviceControl(0)
       }
+    },
+    findDevice(device: Device.DeviceItem) {
+      findDevice({ gatewayId: device.gatewayId, devId: device.deviceId })
     },
   },
 })

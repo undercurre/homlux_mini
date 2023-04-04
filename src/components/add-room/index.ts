@@ -132,7 +132,7 @@ Component({
 
       this.setData({
         _hasEditName: true,
-        'roomInfo.name': event.detail.value || '',
+        'roomInfo.name': event.detail || '',
       })
     },
 
