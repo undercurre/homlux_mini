@@ -71,8 +71,6 @@ Component({
    */
   methods: {
     selectRoom(event: WechatMiniprogram.CustomEvent) {
-      console.log('selectRoom', event)
-
       this.setData({
         'deviceInfo.roomId': event.currentTarget.dataset.id,
         'deviceInfo.roomName': event.currentTarget.dataset.name,

@@ -44,6 +44,12 @@ Component({
         Toast('设备名称不能用特殊符号或表情')
         return
       }
+
+      if (this.data.deviceName.length > 6) {
+        Toast('设备名称不能超过6个字符')
+        return
+      }
+
       this.triggerEvent('confirm', this.data.deviceName)
     },
   },

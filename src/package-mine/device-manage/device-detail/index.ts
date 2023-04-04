@@ -93,6 +93,7 @@ ComponentWithComputed({
         Toast('设备名称不能为空')
         return
       }
+
       this.setData({
         showEditNamePopup: false,
         deviceName: e.detail,

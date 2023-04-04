@@ -112,8 +112,8 @@ ComponentWithComputed({
         return
       }
 
-      if (deviceName.length > 5) {
-        Toast('名称不能超过5个字符')
+      if (deviceName.length > 6) {
+        Toast('名称不能超过6个字符')
         return
       }
 

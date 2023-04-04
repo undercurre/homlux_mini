@@ -4,18 +4,25 @@ import { roomBinding, deviceBinding } from '../../store/index'
 import { checkDevice } from '../../apis/index'
 
 let _foundList = [] as IBleBaseInfo[]
+wx.onBluetoothAdapterStateChange(res => {
+  console.debug('onBluetoothAdapterStateChange-store', res)
+
+  runInAction(() => {
+    bleDevicesStore.isDiscovering = res.discovering
+  })
+})
 
 console.info('bleDevicesStore')
 export const bleDevicesStore = observable({
+  isDiscovering: false, // 是否正在搜索蓝牙
+
   bleDeviceList: [] as IBleDevice[],
 
   startBleDiscovery() {
-    runInAction(() => {
-      this.bleDeviceList = []
-
-      _foundList = []
-    })
-
+    if (this.isDiscovering) {
+      console.error('已经正在发现蓝牙')
+      return
+    }
     // 监听扫描到新设备事件
     wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
       res.devices = unique(res.devices, 'deviceId') as WechatMiniprogram.BlueToothDevice[] // 去重
@@ -65,7 +72,7 @@ export const bleDevicesStore = observable({
       powerLevel: 'high',
       interval: 3000,
       success(res) {
-        console.log('startBluetoothDevicesDiscovery', res)
+        console.log('startBluetoothDevicesDiscovery, allowDuplicatesKey: true', res)
       },
     })
   },
@@ -74,6 +81,15 @@ export const bleDevicesStore = observable({
     wx.stopBluetoothDevicesDiscovery()
     wx.offBluetoothDeviceFound()
   },
+
+  reset() {
+    runInAction(() => {
+      this.bleDeviceList = []
+      this.isDiscovering = false
+
+      _foundList = []
+    })
+  }
 })
 
 export const bleDevicesBinding = {

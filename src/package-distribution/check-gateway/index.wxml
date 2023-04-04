@@ -5,7 +5,7 @@
     <view>
       <text class="block text-40 text-black-2a pt-60rpx">请用手机连接智能网关无线网络</text>
 
-      <image class="mt-48rpx mb-70rpx" src=""></image>
+      <image class="mt-48rpx mb-70rpx w-664 h-372" src="/package-distribution/assets/check-gateway/wifi-tips.png"></image>
 
       <view class="flex flex-row items-center">
         <image class="w-40 h-30" src="/package-distribution/assets/check-gateway/icon-wifi.png"></image>
@@ -32,7 +32,7 @@
       <text class="text-24 leading-34rpx text-black-2a">请允许微信加入“{{ssid}}”，以便自动连接设备</text>
     </view>
 
-    <mz-loading wx:if="{{status === 'linking'}}" class="mt-130rpx" text="正在连接设备，请将手机尽量靠近设备" step-list="{{[]}}" show-progress="{{false}}"></mz-loading>
+    <mz-loading wx:if="{{status === 'linking'}}" class="mt-240rpx" text="正在连接设备，请将手机尽量靠近设备" step-list="{{[]}}" show-progress="{{false}}"></mz-loading>
   </view>
 </view>
 

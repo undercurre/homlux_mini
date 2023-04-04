@@ -3,7 +3,7 @@
 
   <view class="grow flex flex-col pt-140rpx">
     <block wx:if="{{status === 'linking'}}">
-      <tips-box text="请将设备尽量靠近智能网关" icon="{{pageParams.deviceIcon}}" size="160"></tips-box>
+      <tips-box text="请将{{pageParams.deviceName}}尽量靠近智能网关" icon="{{pageParams.deviceIcon}}" size="160"></tips-box>
 
       <mz-progress show-progress="{{true}}" active-index="{{activeIndex}}"></mz-progress>
     </block>
