@@ -31,10 +31,6 @@ ComponentWithComputed({
 
   lifetimes: {
     ready() {
-      // 关闭扫描页面可能开启的蓝牙、wifi资源
-      wx.closeBluetoothAdapter()
-      wx.stopWifi()
-
       this.getDeviceInfo()
     },
     detached() {},
@@ -141,6 +137,10 @@ ComponentWithComputed({
 
       if (res.success) {
         homeBinding.store.updateCurrentHomeDetail()
+
+        // 关闭扫描页面可能开启的蓝牙、wifi资源
+        wx.closeBluetoothAdapter()
+        wx.stopWifi()
 
         wx.switchTab({ url: '/pages/index/index' })
       } else {

@@ -161,8 +161,8 @@ export async function sendCmdAddSubdevice(
       method: 'subdeviceAdd',
       inputData: [
         {
-          expire: 60,
-          buzz: 1,
+          expire: data.expire,
+          buzz: data.buzz,
         },
       ],
     },

@@ -74,15 +74,12 @@ ComponentWithComputed({
       bleDevicesBinding.store.startBleDiscovery()
     },
     moved: function () {},
-    detached() {
-      console.log('附近子设备-detached')
-      bleDevicesBinding.store.stopBLeDiscovery()
-    },
   },
 
   pageLifetimes: {
     hide() {
       this.stopGwAddMode()
+      bleDevicesBinding.store.stopBLeDiscovery()
     },
   },
 
@@ -136,9 +133,9 @@ ComponentWithComputed({
 
     updateBleDeviceListView() {
       const hasWaitItem = bleDevicesBinding.store.bleDeviceList.findIndex((item) => item.status === 'waiting') >= 0
-      // 若全部执行并等待完毕，则关闭监听
+      // 若全部执行并等待完毕，则关闭监听、网关配网
       if (!hasWaitItem) {
-        emitter.off('bind_device')
+        this.stopGwAddMode()
       }
       runInAction(() => {
         bleDevicesBinding.store.bleDeviceList = bleDevicesBinding.store.bleDeviceList.concat([])
@@ -188,6 +185,9 @@ ComponentWithComputed({
         console.log('结束网关配网状态')
       }
 
+      emitter.off('bind_device')
+      console.debug('关闭子设备绑定监听')
+
       return res
     },
 
@@ -232,8 +232,6 @@ ComponentWithComputed({
         for await (const value of asyncPool(2, list, iteratorFn)) {
           console.info('任务结束：', value.mac)
         }
-
-        this.stopGwAddMode()
       } catch (err) {
         console.log('beginAddDevice-err', err)
       }
@@ -243,6 +241,7 @@ ComponentWithComputed({
       console.group(`startZigbeeNet:${bleDevice.mac}`)
       console.log(`开始子设备配网：${bleDevice.mac}，第${3 - bleDevice.zigbeeRepeatTimes}次`)
 
+      const timeout = 60 // 等待绑定推送，超时60s
       // 过滤刚出厂设备刚起电时会默认进入配网状态期间，被网关绑定的情况，这种当做成功配网，无需再下发配网指令，否则可能会导致zigbee入网失败
       if (bleDevice.isConfig !== '02') {
         const configRes = await bleDevice.client.getBleStatus()
@@ -250,13 +249,13 @@ ComponentWithComputed({
         console.log('configRes', configRes)
 
         if (configRes.success && configRes.result.isConfig === '02') {
-          // 等待绑定推送，超时30s
+          // 等待绑定推送，超时处理
           setTimeout(() => {
             if (bleDevice.status === 'waiting') {
               bleDevice.status = 'fail'
               this.updateBleDeviceListView()
             }
-          }, 30000)
+          }, timeout * 1000)
           bleDevice.client.close()
 
           return
@@ -281,7 +280,7 @@ ComponentWithComputed({
             bleDevice.status = 'fail'
             this.updateBleDeviceListView()
           }
-        }, 30000)
+        }, timeout * 1000)
       } else {
         console.error(`子设备配网失败：${bleDevice.mac}`, res)
         bleDevice.status = 'fail'
