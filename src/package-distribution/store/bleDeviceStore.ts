@@ -56,9 +56,6 @@ export const bleDevicesStore = observable({
       })
     })
 
-    lightNum = deviceBinding.store.allRoomDeviceList.filter((item) => item.proType === '0x13').length // 灯数量
-    panelNum = deviceBinding.store.allRoomDeviceList.filter((item) => item.proType === '0x21').length // 面板数
-
     // 开始搜寻附近的蓝牙外围设备
     wx.startBluetoothDevicesDiscovery({
       allowDuplicatesKey: true,
@@ -101,9 +98,6 @@ export const bleDevicesBinding = {
   actions: [],
 }
 
-let lightNum = 0 // 灯数量
-let panelNum = 0 // 面板数
-
 function getBleDeviceBaseInfo(bleDevice: WechatMiniprogram.BlueToothDevice): IBleBaseInfo {
   const msgObj = bleUtil.transferBroadcastData(bleDevice.advertisData)
 
@@ -142,17 +136,15 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
   }
 
   let { productName: deviceName } = infoRes.result
-  const { proType } = infoRes.result
-  const { switchNum } = infoRes.result
+  const { proType, switchNum, modelId, productIcon } = infoRes.result
 
-  if (proType === '0x21') {
-    ++panelNum
-    deviceName += panelNum > 1 ? panelNum : ''
-    // deviceName += (panelNum > 1 ? strUtil.encodeS(panelNum) : '')
-  } else if (proType === '0x13') {
-    ++lightNum
-    deviceName += lightNum > 1 ? lightNum : ''
-  }
+  const bindNum = deviceBinding.store.allRoomDeviceList.filter((item) => item.proType === proType && item.productId === modelId).length // 已绑定的相同设备数量
+
+  const newNum = bleDevicesStore.bleDeviceList.filter((item) => item.proType === proType && item.productId === modelId).length // 已新发现的相同设备数量
+
+  const deviceNum = bindNum + newNum // 已有相同设备数量
+
+  deviceName += deviceNum > 0 ? deviceNum + 1 : ''
 
   const bleDevice: IBleDevice = {
     proType: proType,
@@ -162,8 +154,9 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
     RSSI: baseInfo.RSSI,
     zigbeeMac: baseInfo.zigbeeMac,
     isConfig: baseInfo.isConfig,
-    icon: infoRes.result.productIcon,
-    name: deviceName + `-${baseInfo.mac.slice(-4)}`,
+    icon: productIcon,
+    productId: modelId,
+    name: deviceName,
     isChecked: false,
     client: new BleClient({ mac: baseInfo.mac, deviceUuid: baseInfo.deviceUuid }),
     roomId: roomBinding.store.currentRoom.roomId,
@@ -205,6 +198,7 @@ export interface IBleDevice {
   roomId: string
   roomName: string
   icon: string
+  productId: string
   switchList: ISwitch[]
   client: BleClient
   status: 'waiting' | 'fail' | 'success' // 配网状态

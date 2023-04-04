@@ -195,6 +195,7 @@ Component({
         this.data._queryTimes--
 
         if (this.data._queryTimes <= 0) {
+          console.error('配网失败：网关云端状态不在线')
           this.setData({
             status: 'error',
           })

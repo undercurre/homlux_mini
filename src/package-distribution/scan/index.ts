@@ -24,6 +24,7 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
+    hasInitCamera: false,
     isShowPage: false,
     isShowGatewayList: false, // 是否展示选择网关列表弹窗
     isShowNoGatewayTips: false, // 是否展示添加网关提示弹窗
@@ -329,6 +330,9 @@ ComponentWithComputed({
 
     initCameraDone() {
       console.log('initCameraDone')
+      this.setData({
+        hasInitCamera: true
+      })
       this.initBle()
     },
 
