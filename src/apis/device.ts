@@ -362,20 +362,20 @@ export async function delAssociated(
  * 设备替换
  * 需要在前端验证设备是否可替换
  */
-// export async function deviceReplace(
-//   data: {
-//     newDevId: string
-//     oldDevId: string
-//   },
-//   options?: { loading?: boolean },
-// ) {
-//   return await mzaioRequest.post<IAnyObject>({
-//     log: true,
-//     loading: options?.loading ?? false,
-//     url: '/v1/device/deviceReplace',
-//     data,
-//   })
-// }
+export async function deviceReplace(
+  data: {
+    newDevId: string
+    oldDevId: string
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<IAnyObject>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/deviceReplace',
+    data,
+  })
+}
 
 /**
  * 根据sn去查设备的mac、图片、品类
