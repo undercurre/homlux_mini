@@ -14,14 +14,14 @@ Component({
           text: '连接设备',
         },
         {
-          text: '设备联网中',
+          text: '设备联网',
         },
         {
           text: '账号绑定',
         },
       ],
     },
-    totalSection: {
+    stepNum: {
       type: Number,
       value: -1,
     },
@@ -36,7 +36,7 @@ Component({
    */
   data: {
     percentage: 0,
-    interId: null as any,
+    interId: 0,
   },
 
   lifetimes: {
@@ -53,8 +53,8 @@ Component({
   methods: {
     // 构造假进度条
     setProgressPercentage() {
-      const totalSection = this.data.totalSection > 0 ? this.data.totalSection : this.data.stepList.length
-      const length = 100 / totalSection
+      const stepNum = this.data.stepNum > 0 ? this.data.stepNum : this.data.stepList.length
+      const length = 100 / stepNum
 
       this.data.interId = setInterval(() => {
         const { activeIndex, interId } = this.data

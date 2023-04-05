@@ -91,6 +91,8 @@ Component({
       const delRes = await quitUserHouse(homeBinding.store.currentHomeDetail.houseId)
       Toast(delRes.success ? '转让成功' : '转让失败')
       homeBinding.store.updateHomeInfo()
+
+      emitter.emit('homeInfoEdit')
     },
   },
 })

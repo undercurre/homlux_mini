@@ -32,7 +32,6 @@ Component({
     status: 'linking',
     currentStep: '连接设备',
     activeIndex: 0,
-    stepList: [],
   } as WechatMiniprogram.IAnyObject & IPageData,
 
   lifetimes: {
@@ -195,6 +194,7 @@ Component({
         this.data._queryTimes--
 
         if (this.data._queryTimes <= 0) {
+          console.error('配网失败：网关云端状态不在线')
           this.setData({
             status: 'error',
           })

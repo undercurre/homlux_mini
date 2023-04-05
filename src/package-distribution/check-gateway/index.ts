@@ -1,4 +1,3 @@
-import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { WifiSocket, getCurrentPageParams, strUtil } from '../../utils/index'
 
@@ -21,7 +20,7 @@ Component({
    * 组件的初始数据
    */
   data: {
-    isLoading: false,
+    isLoading: true,
     isShowForceBindTips: false,
     isAndroid10Plus: false,
     isConnectDevice: false,
@@ -174,10 +173,18 @@ Component({
       if (!isAndroid10Plus) {
         this.connectWifi()
       }
+
+      this.setData({
+        isLoading: false,
+      })
     },
 
     async connectWifi() {
       const params = getCurrentPageParams()
+
+      this.setData({
+        isLoading: true,
+      })
 
       const connectRes = await socket.connect()
 
@@ -216,14 +223,17 @@ Component({
      */
     async getGatewayStatus() {
       const res = await socket.sendCmd({
-        topic: '/gateway/net/status', //指令名称:获取网关IP
+        topic: '/gateway/net/status',
         data: {},
       })
 
       console.debug('getGatewayStatus耗时：', Date.now() - start, res)
 
       if (!res.success) {
-        Toast('查询网关状态失败')
+        console.error('查询网关状态失败')
+        this.setData({
+          status: 'error',
+        })
         return
       }
 
