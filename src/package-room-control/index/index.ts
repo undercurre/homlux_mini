@@ -328,11 +328,11 @@ ComponentWithComputed({
       }
       if (!updateThrottleTimer) {
         this.updateDeviceListFn()
-        requestThrottleTimer = setTimeout(() => {
+        updateThrottleTimer = setTimeout(() => {
           if (hasUpdateInUpdateTimer) {
             this.updateDeviceListFn()
           }
-          requestThrottleTimer = 0
+          updateThrottleTimer = 0
           hasUpdateInUpdateTimer = false
         }, 500)
       } else {
