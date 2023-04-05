@@ -17,8 +17,12 @@ import Toast from '@vant/weapp/toast/toast'
 import { storage, emitter, WSEventType } from '../../utils/index'
 import { maxColorTempK, minColorTempK, proName, proType } from '../../config/index'
 
-let throttleTimer = 0
-let hasUpdateInTimer = false
+/** 接口请求节流定时器，定时时间2s */
+let requestThrottleTimer = 0
+let hasUpdateInRequestTimer = false
+/** 界面更新节流定时器，定时时间500ms */
+let updateThrottleTimer = 0
+let hasUpdateInUpdateTimer = false
 ComponentWithComputed({
   behaviors: [
     BehaviorWithStore({ storeBindings: [userBinding, roomBinding, deviceBinding, sceneBinding] }),
@@ -184,19 +188,19 @@ ComponentWithComputed({
       // 再更新一遍数据
       this.reloadData()
       emitter.on('wsReceive', async (e) => {
-        if (!throttleTimer) {
+        if (!requestThrottleTimer) {
           homeStore.updateRoomCardList()
           this.updateDeviceList()
-          throttleTimer = setTimeout(async () => {
-            if (hasUpdateInTimer) {
+          requestThrottleTimer = setTimeout(async () => {
+            if (hasUpdateInRequestTimer) {
               await homeStore.updateRoomCardList()
               this.updateDeviceList()
             }
-            throttleTimer = 0
-            hasUpdateInTimer = false
+            requestThrottleTimer = 0
+            hasUpdateInRequestTimer = false
           }, 2000)
         } else {
-          hasUpdateInTimer = true
+          hasUpdateInRequestTimer = true
         }
         // 设备相关的消息推送根据条件判断是否刷新
         if (
@@ -282,14 +286,7 @@ ComponentWithComputed({
         showDeviceOffline: false,
       })
     },
-
-    updateDeviceList() {
-      if (this.data.dragging) {
-        this.setData({
-          hasUpdate: true,
-        })
-        return
-      }
+    updateDeviceListFn() {
       const flattenList = deviceStore.deviceFlattenList
       const lightList = flattenList
         .filter((device) => device.proType === proType.light)
@@ -320,6 +317,26 @@ ComponentWithComputed({
       const dragSwitch = this.selectComponent('#drag-switch')
       if (dragSwitch && switchList.length > 0) {
         dragSwitch.init()
+      }
+    },
+    updateDeviceList() {
+      if (this.data.dragging) {
+        this.setData({
+          hasUpdate: true,
+        })
+        return
+      }
+      if (!updateThrottleTimer) {
+        this.updateDeviceListFn()
+        requestThrottleTimer = setTimeout(() => {
+          if (hasUpdateInUpdateTimer) {
+            this.updateDeviceListFn()
+          }
+          requestThrottleTimer = 0
+          hasUpdateInUpdateTimer = false
+        }, 500)
+      } else {
+        hasUpdateInUpdateTimer = true
       }
     },
 
