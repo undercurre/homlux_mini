@@ -20,6 +20,7 @@ import { updateDefaultHouse } from '../../apis/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { runInAction } from 'mobx-miniprogram'
 let throttleTimer = 0
+let hasUpdateInTimer = false
 ComponentWithComputed({
   behaviors: [
     BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding, homeBinding, deviceBinding] }),
@@ -153,10 +154,16 @@ ComponentWithComputed({
       emitter.off('wsReceive')
       emitter.on('wsReceive', (res) => {
         if (!throttleTimer && res.result.eventType !== 'connect_success_status') {
+          homeStore.updateRoomCardList()
           throttleTimer = setTimeout(async () => {
-            homeStore.updateRoomCardList()
+            if (hasUpdateInTimer) {
+              homeStore.updateRoomCardList()
+              hasUpdateInTimer = false
+            }
             throttleTimer = 0
-          }, 500)
+          }, 1000)
+        } else if (res.result.eventType !== 'connect_success_status') {
+          hasUpdateInTimer = true
         }
       })
       // 房间选择恢复默认
