@@ -138,9 +138,13 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
   let { productName: deviceName } = infoRes.result
   const { proType, switchNum, modelId, productIcon } = infoRes.result
 
-  const bindNum = deviceBinding.store.allRoomDeviceList.filter((item) => item.proType === proType && item.productId === modelId).length // 已绑定的相同设备数量
+  const bindNum = deviceBinding.store.allRoomDeviceList.filter(
+    (item) => item.proType === proType && item.productId === modelId,
+  ).length // 已绑定的相同设备数量
 
-  const newNum = bleDevicesStore.bleDeviceList.filter((item) => item.proType === proType && item.productId === modelId).length // 已新发现的相同设备数量
+  const newNum = bleDevicesStore.bleDeviceList.filter(
+    (item) => item.proType === proType && item.productId === modelId,
+  ).length // 已新发现的相同设备数量
 
   const deviceNum = bindNum + newNum // 已有相同设备数量
 

@@ -1,5 +1,5 @@
 <view class="relative bg-hex-000">
-<!-- 相机没初始化好的情况下，该组件渲染跟随页面显示状态，便于授权成功后重新渲染相机组件，无需重进页面 -->
+  <!-- 相机没初始化好的情况下，该组件渲染跟随页面显示状态，便于授权成功后重新渲染相机组件，无需重进页面 -->
   <camera wx:if="{{hasInitCamera || isShowPage}}" mode="scanCode" device-position="back" flash="{{isFlash? 'on' : 'off'}}" bind:scancode="getQrCodeInfo" bind:error="getCameraError" bind:initdone="initCameraDone" class="w-750rpx h-screen"></camera>
 
   <nav-bar class="absolute" background="transparent" leftArrow="{{true}}" left-icon="/package-distribution/assets/scan/back.png" bind:leftTap="goBack"></nav-bar>

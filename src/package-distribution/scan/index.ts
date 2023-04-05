@@ -331,7 +331,7 @@ ComponentWithComputed({
     initCameraDone() {
       console.log('initCameraDone')
       this.setData({
-        hasInitCamera: true
+        hasInitCamera: true,
       })
       this.initBle()
     },
