@@ -95,8 +95,6 @@ Component({
 
       const item = this.data.switchList[index]
 
-      console.log(111, index, item)
-
       this.setData({
         isShowEditSwitch: true,
         switchInfo: item,
@@ -118,18 +116,18 @@ Component({
     },
     async handleConfirm() {
       if (!this.data.switchInfo.switchName) {
-        Toast('名称不能为空')
+        Toast('按键名称不能为空')
         return
       }
 
       // 校验名字合法性
       if (checkInputNameIllegal(this.data.switchInfo.switchName)) {
-        Toast('名称不能用特殊符号或表情')
+        Toast('按键名称不能用特殊符号或表情')
         return
       }
 
       if (this.data.switchInfo.switchName.length > 6) {
-        Toast('名称不能超过6个字符')
+        Toast('按键名称不能超过6个字符')
         return
       }
 

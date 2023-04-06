@@ -6,7 +6,7 @@
 
   <view class="fixed left-0 right-0 top-0 bottom-0 flex flex-col">
     <view class="grow shrink h-200 camera-mask flex flex-col justify-end items-center">
-      <text class="leading-44rpx text-32 text-hex-F4F8FF pb-20rpx">扫描机身或说明书二维码</text>
+      <text class="leading-44rpx text-32 text-hex-F4F8FF pb-20rpx">扫描机身或说明书上的二维码</text>
     </view>
 
     <view class="grow-0 flex flex-row items-stretch leading-0">
@@ -19,8 +19,8 @@
     </view>
 
     <view class="pt-80rpx h-300 grow shrink camera-mask flex flex-col items-center justify-between">
-      <view wx:if="{{bleStatus !== ''}}" class="inline-block flex flex-row items-center bg-hex-5A5A5A rounded-32rpx leading-74rpx px-28rpx w-min-380">
-        <image wx:if="{{bleStatus === 'open'}}" class="w-28 h-28 rotate" src="/package-distribution/assets/scan/scaning.png"></image>
+      <view wx:if="{{bleStatus === 'discovering' || bleStatus === 'close'}}" class="inline-block flex flex-row items-center bg-hex-5A5A5A rounded-32rpx leading-74rpx px-28rpx w-min-380">
+        <image wx:if="{{bleStatus === 'discovering'}}" class="w-28 h-28 rotate" src="/package-distribution/assets/scan/scaning.png"></image>
 
         <text class="grow text-hex-F4F8FF px-16rpx" bind:tap="checkSystemBleSwitch">{{tipsText}}</text>
 

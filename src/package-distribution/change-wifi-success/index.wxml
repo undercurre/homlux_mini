@@ -1,5 +1,5 @@
 <view class="page-container flex flex-col">
-  <nav-bar background="transparent" title="重新配网"></nav-bar>
+  <nav-bar background="transparent" title="重新联网"></nav-bar>
 
   <view class="grow flex flex-col justify-between">
     <tips-box text="网关已重新联网" icon="/assets/img/default-img/success.png"></tips-box>

@@ -76,7 +76,7 @@ ComponentWithComputed({
     },
 
     toSearchSubdevice() {
-      wx.navigateTo({
+      wx.redirectTo({
         url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
           gatewayId: this.data.deviceInfo.deviceId,
           gatewaySn: this.data.deviceInfo.sn,

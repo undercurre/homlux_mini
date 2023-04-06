@@ -5,7 +5,7 @@ import dayjs from 'dayjs'
 import { deviceBinding, homeBinding } from '../../store/index'
 import { bleDevicesBinding } from '../store/bleDeviceStore'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { strUtil, showLoading, hideLoading } from '../../utils/index'
+import { strUtil, showLoading, hideLoading, delay } from '../../utils/index'
 import { checkDevice, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
 
 ComponentWithComputed({
@@ -55,8 +55,6 @@ ComponentWithComputed({
 
   lifetimes: {
     async ready() {
-      showLoading()
-
       await homeBinding.store.updateHomeInfo()
 
       const params = wx.getLaunchOptionsSync()
@@ -147,6 +145,10 @@ ComponentWithComputed({
      * 检查系统蓝牙开关
      */
     async checkSystemBleSwitch() {
+      if (this.data.bleStatus !== 'close') {
+        return true
+      }
+
       const res = wx.getSystemSetting()
 
       console.log('getSystemSetting', res)
@@ -257,11 +259,12 @@ ComponentWithComputed({
       } else {
         this.startDiscoverBle()
       }
-
-      hideLoading()
     },
 
     async startDiscoverBle() {
+      this.setData({
+        bleStatus: 'discovering'
+      })
       bleDevicesBinding.store.startBleDiscovery()
     },
 
@@ -281,7 +284,7 @@ ComponentWithComputed({
 
       if (!settingRes.authSetting['scope.camera']) {
         wx.showModal({
-          content: '请授权使用摄像头，否则无法正常扫码配网',
+          content: '请授权使用摄像头，用于扫码配网',
           showCancel: true,
           cancelText: '返回',
           cancelColor: '#27282A',
@@ -309,7 +312,7 @@ ComponentWithComputed({
      * 扫码解析
      */
     async getQrCodeInfo(e: WechatMiniprogram.CustomEvent) {
-      if (this.data.isScan) {
+      if (this.data.isScan || this.data.bleStatus !== 'discovering') {
         return
       }
 
@@ -399,12 +402,14 @@ ComponentWithComputed({
         },
         success: async (res) => {
           console.log('uploadFile-success', res)
+          await delay(1000) // 由于有可能图片还没上传完毕，需要延迟调用解析图片接口
+
           const query = await queryWxImgQrCode(result.downloadUrl)
 
           if (query.success) {
             this.handleScanUrl(query.result.qrCodeUrl)
           } else {
-            Toast('非法二维码')
+            Toast(query.msg)
           }
         },
       })
@@ -412,7 +417,7 @@ ComponentWithComputed({
 
     async handleScanUrl(url: string) {
       if (!url.includes('meizgd.com/homlux/qrCode.html')) {
-        Toast('非法二维码')
+        Toast('无效二维码')
         return
       }
 
@@ -470,11 +475,6 @@ ComponentWithComputed({
       wx.showLoading({
         title: 'loading',
       })
-
-      if (this.data.bleStatus !== 'open') {
-        this.checkSystemBleSwitch()
-        return
-      }
 
       const res = await checkDevice({ dsn: params.sn })
 

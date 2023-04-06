@@ -128,8 +128,9 @@ ComponentWithComputed({
       wx.onGetWifiList((res) => {
         console.log('onGetWifiList-wifi-connect', res)
         const wifiList = res.wifiList.filter((item) => {
-          if (item.frequency) {
+          if (item.frequency && item.frequency > 5000) {
             console.log('frequency', item.SSID, item.frequency)
+            return false
           }
           return item.SSID && this.data.systemWifiList.findIndex((foundItem) => item.SSID === foundItem.SSID) < 0 // 过滤空的ssid的wifi
         })
@@ -189,6 +190,11 @@ ComponentWithComputed({
           this.setData({
             isRequestSystemWifiList: false,
           })
+
+          // 安卓端没有打开wifi开关，会获取不到wifi信息
+          if (err.errCode === 12005) {
+            wx.showModal({ content: '请打开WIFI开关', showCancel: false })
+          }
           console.log('getWifiList-catch', err)
         })
 
