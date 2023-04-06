@@ -49,7 +49,7 @@ export function isNumber(val: unknown): val is number {
 /**
  * @description:  是否为AsyncFunction
  */
-export function isAsyncFunction<T = unknown,U = unknown>(val: unknown): val is (...args: U[]) => Promise<T> {
+export function isAsyncFunction<T = unknown, U = unknown>(val: unknown): val is (...args: U[]) => Promise<T> {
   return is(val, 'AsyncFunction')
 }
 
@@ -57,12 +57,7 @@ export function isAsyncFunction<T = unknown,U = unknown>(val: unknown): val is (
  * @description:  是否为promise
  */
 export function isPromise<T = unknown>(val: unknown): val is Promise<T> {
-  return (
-    is(val, 'Promise') &&
-    isObject(val) &&
-    isFunction(val.then) &&
-    isFunction(val.catch)
-  )
+  return is(val, 'Promise') && isObject(val) && isFunction(val.then) && isFunction(val.catch)
 }
 
 /**

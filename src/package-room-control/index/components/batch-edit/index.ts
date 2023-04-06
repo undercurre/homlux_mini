@@ -142,7 +142,7 @@ ComponentWithComputed({
       }
       const hasSwitch = deviceStore.editSelect.some((uniId) => uniId.includes(':'))
       Dialog.confirm({
-        message: hasSwitch ? '该按键所在的面板将被一同删除' : '确定删除该设备',
+        message: hasSwitch ? '该按键所在的面板将被一起删除' : '确定删除该设备',
         confirmButtonText: '是',
         cancelButtonText: '否',
         context: this,
