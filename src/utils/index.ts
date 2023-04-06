@@ -1,4 +1,5 @@
 export * from './request/index'
+export * from './is'
 export * from './storage'
 export * from './service'
 export * from './aesUtil'

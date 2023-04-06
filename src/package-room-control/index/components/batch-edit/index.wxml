@@ -51,7 +51,7 @@
         <text class="text-28rpx text-black-2a ml-48rpx">{{editDeviceNameTitle}}</text>
       </view>
       <view class="flex-1 mt-32rpx w-686rpx mb-126rpx">
-        <van-field model:value="{{ editDeviceName }}" maxlength="{{5}}" placeholder="请输入{{editDeviceNameTitle}}" custom-style="padding: 28rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
+        <van-field model:value="{{ editDeviceName }}" maxlength="{{6}}" placeholder="请输入{{editDeviceNameTitle}}" custom-style="padding: 28rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
       </view>
       <template is="bottom-btn" data="{{disabled: editNameDisable}}" />
     </view>
