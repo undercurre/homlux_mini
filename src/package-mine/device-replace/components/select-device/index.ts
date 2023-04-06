@@ -16,9 +16,8 @@ ComponentWithComputed({
     filterDevice: {
       type: Object,
     },
-    sDeviceList: {
+    list: {
       type: Array,
-      value: [],
     },
   },
 
@@ -28,7 +27,7 @@ ComponentWithComputed({
   data: {
     allRoomDeviceList: Array<Device.DeviceItem>(),
     checkedDevice: {},
-    roomSelect: '',
+    roomSelect: '0',
   },
 
   computed: {
@@ -39,15 +38,27 @@ ComponentWithComputed({
     },
 
     /**
-     * @description 待选设备列表
+     * @description 所有待选设备列表
+     * 如传入 deviceList，则使用指定列表；否则显示所有设备
+     * ! 不按房间筛选
+     */
+    allDeviceList(data) {
+      const list = data.list.length ? data.list : data.allRoomDeviceList
+      return list.filter((d) => d.deviceType === 2)
+    },
+
+    /**
+     * @description 显示待选设备列表
      * 如传入 deviceList，则使用指定列表；否则显示所有设备
      * isCurrentRoom 按房间筛选
      */
-    computedToDeviceList(data) {
-      const list = data.sDeviceList?.length ? data.sDeviceList : data.allRoomDeviceList
+    showDeviceList(data) {
+      const list = data.list.length ? data.list : data.allRoomDeviceList
+
       return list.filter((d) => {
-        const isCurrentRoom = data.roomSelect === '' ? true : d.roomId === data.roomSelect
-        return isCurrentRoom
+        const isSubdevice = d.deviceType === 2
+        const isCurrentRoom = data.roomSelect === '0' ? true : d.roomId === data.roomSelect
+        return isSubdevice && isCurrentRoom
       })
     },
   },

@@ -1,6 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { roomBinding, deviceBinding, deviceStore } from '../../store/index'
+import { emitter } from '../../utils/eventBus'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, deviceBinding] })],
@@ -18,21 +19,18 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    roomSelect: '',
+    roomSelect: '0',
   },
   computed: {
     /**
      * @description 包括待选设备的房间列表
-     * 默认塞入全局
-     *
+     * 默认塞入全部设备
      */
-    roomSelectMenuList(data) {
+    roomMenuList(data) {
       const list = data.sDeviceList?.length ? data.sDeviceList : deviceStore.allRoomDeviceList
-      const deviceList = list.filter((device) => {
-        return device.deviceType === 2
-      })
-
+      const deviceList = list.filter((device) => device.deviceType === 2)
       const roomList: Pick<Room.RoomInfo, 'roomId' | 'roomName'>[] = []
+
       deviceList.forEach(({ roomId, roomName }) => {
         if (roomList.findIndex((room) => room.roomId === roomId) === -1) {
           roomList.push({
@@ -43,7 +41,7 @@ ComponentWithComputed({
       })
 
       if (roomList) {
-        return [{ roomId: '', roomName: '全屋' }, ...roomList]
+        return [{ roomId: '0', roomName: '全屋' }, ...roomList]
       }
       return []
     },
@@ -52,6 +50,13 @@ ComponentWithComputed({
   lifetimes: {
     async ready() {
       deviceStore.updateAllRoomDeviceList()
+
+      emitter.on('deviceEdit', () => {
+        deviceStore.updateAllRoomDeviceList()
+      })
+    },
+    detached() {
+      emitter.off('deviceEdit')
     },
   },
 
