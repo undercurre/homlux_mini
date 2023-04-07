@@ -22,7 +22,7 @@
       </view>
     </view>
 
-    <van-button class="w-full mt-32rpx" block type="primary" size="large" bind:click="connectWifi" loading="{{isLoading}}" disabled="{{isLoading}}">前往连接</van-button>
+    <van-button class="w-full mt-32rpx" block type="primary" size="large" bind:click="connectWifi">前往连接</van-button>
   </view>
 
   <view wx:else class="grow flex flex-col">

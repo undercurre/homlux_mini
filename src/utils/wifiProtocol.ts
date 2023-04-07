@@ -4,11 +4,12 @@ import { aesUtil, strUtil } from '../utils/index'
 let _instance: WifiSocket | null = null
 
 const deviceInfo = wx.getDeviceInfo()
+const tcpClient: WechatMiniprogram.TCPSocket = wx.createTCPSocket()
+
+let udpClient: WechatMiniprogram.UDPSocket | undefined = undefined
 
 export class WifiSocket {
-  tcpClient: WechatMiniprogram.TCPSocket = wx.createTCPSocket()
-
-  udpClient: WechatMiniprogram.UDPSocket = wx.createUDPSocket()
+  time = dayjs().format('HH:mm:ss')
 
   SSID = ''
 
@@ -24,6 +25,10 @@ export class WifiSocket {
     isConnectingUdp: false, // 是否正在连接udp
     tcpPort: 6466,
   }
+
+  queryWifiTimeId = 0 // 查询当前wiFi延时器
+
+  wifiTimeoutTimeId = 0 // wifi超时计时器
 
   cmdCallbackMap: IAnyObject = {}
 
@@ -45,8 +50,12 @@ export class WifiSocket {
 
     this.key = `homlux@midea${params.ssid.substr(-4, 4)}`
 
+    this.queryWifiTimeId = 0
+
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     _instance = this
+
+    console.log('constructor', dayjs().format('HH:mm:ss'))
   }
 
   async connect() {
@@ -54,31 +63,7 @@ export class WifiSocket {
 
     const res = await this.connectWifi()
 
-    console.log(`连接${this.SSID}时长：`, Date.now() - now, res)
-
-    if (!res.success) {
-      return res
-    }
-
-    const port = this.initUdpSocket()
-
-    console.log(`initUdpSocket时长：`, Date.now() - now)
-
-    if (port === 0) {
-      return { errCode: -1, success: false, msg: 'UDP初始化失败' }
-    }
-
-    const ipRes = await this.getDeviceIp()
-
-    console.log(`getDeviceIp`, Date.now() - now, ipRes)
-
-    if (!ipRes.success) {
-      return { errCode: -1, success: false, msg: '获取IP失败' }
-    }
-
-    this.initTcpSocket()
-
-    console.log(`initTcpSocket`, Date.now() - now)
+    console.log(`连接${this.SSID}时长：`, Date.now() - now, res, dayjs().format('HH:mm:ss'))
 
     return res
   }
@@ -87,19 +72,11 @@ export class WifiSocket {
     return new Promise<{ errCode: number; success: boolean; msg?: string }>((resolve) => {
       const res = { success: true, errCode: 0 }
 
-      setInterval(() => {
-        wx.getConnectedWifi({
-          success(successRes) {
-            console.log('getConnectedWifi：successRes', successRes)
-          },
-        })
-      }, 5000)
-
       wx.getConnectedWifi({
-        complete: async (getConnectedRes) => {
-          console.log('getConnectedWifi：complete', getConnectedRes)
+        complete: async (connectedRes) => {
+          console.log('getConnectedWifi：complete', connectedRes, dayjs().format('HH:mm:ss'))
 
-          if (getConnectedRes && (getConnectedRes as IAnyObject).wifi?.SSID === this.SSID) {
+          if (connectedRes && (connectedRes as IAnyObject).wifi?.SSID === this.SSID) {
             console.log(`${this.SSID}已连接`)
             resolve(res)
             return
@@ -127,26 +104,41 @@ export class WifiSocket {
                 return
               }
 
-              const listen = (onWifiConnectRes: WechatMiniprogram.OnWifiConnectedCallbackResult) => {
-                console.log('onWifiConnected-wifiProtcol', onWifiConnectRes)
-
-                if (onWifiConnectRes.wifi.SSID === this.SSID) {
-                  console.log('offWifiConnected')
-                  wx.offWifiConnected(listen)
-                  console.info(`连接wifi:${onWifiConnectRes.wifi.SSID}成功`)
-                  clearTimeout(timeId)
-                  resolve(res)
-                }
+              // 避免重复触发轮询逻辑
+              if (this.queryWifiTimeId !== 0) {
+                return
               }
 
-              wx.onWifiConnected(listen)
-
               // 连接热点超时回调
-              const timeId = setTimeout(() => {
+              this.wifiTimeoutTimeId = setTimeout(() => {
                 console.error('连接热点超时')
-                wx.offWifiConnected(listen)
+                clearTimeout(this.queryWifiTimeId)
+                this.queryWifiTimeId = 0
                 resolve({ success: false, errCode: -1 })
               }, 90000)
+
+
+              const queryWifi = () => {
+                wx.getConnectedWifi({
+                  success: (successRes) => {
+                    console.log('getConnectedWifi：successRes', successRes, dayjs().format('HH:mm:ss'))
+
+                    if (successRes && (successRes as IAnyObject).wifi?.SSID === this.SSID) {
+                      console.info(`连接wifi:${successRes.wifi.SSID}成功`)
+                      resolve(res)
+                      clearTimeout(this.wifiTimeoutTimeId)
+                      this.queryWifiTimeId = 0
+                    } else {
+                      this.queryWifiTimeId = setTimeout(() => {
+                        queryWifi()
+                      }, 2000)
+                    }
+                  },
+                })
+              }
+
+              // 由于onWifiConnected不可靠，在安卓端存在监听不到的情况，改为轮询
+              queryWifi()
             },
           })
         },
@@ -154,14 +146,37 @@ export class WifiSocket {
     })
   }
 
+  async init() {
+    const port = this.initUdpSocket()
+
+    console.log(`initUdpSocket`)
+
+    if (port === 0) {
+      return { errCode: -1, success: false, msg: 'UDP初始化失败' }
+    }
+
+    const ipRes = await this.getDeviceIp()
+
+    console.log(`getDeviceIp`)
+
+    if (!ipRes.success) {
+      return { errCode: -1, success: false, msg: '获取IP失败' }
+    }
+
+    this.initTcpSocket()
+
+    return { errCode: 0, success: true, msg: '' }
+  }
+
   bindUdp = () => {
     console.log('bindUdp', this, dayjs().format('HH:mm:ss'))
     if (this.deviceInfo.isConnectingUdp) {
+      console.log('isConnectingUdp')
       return
     }
 
     this.deviceInfo.isConnectingUdp = true
-    const port = this.udpClient.bind(6366)
+    const port = udpClient?.bind(6366)
 
     console.log('port', port)
 
@@ -178,52 +193,58 @@ export class WifiSocket {
   closeUdp = () => {
     console.log('closeUdp', dayjs().format('HH:mm:ss'))
     if (this.deviceInfo.isConnectingUdp) {
-      this.udpClient.close()
+      udpClient?.close()
     }
   }
 
   initTcpSocket() {
-    this.tcpClient.onMessage((res) => {
-      console.log('tcpClient.onMessage', res)
+    tcpClient.onMessage((res) => {
+      console.log('tcpClient.onMessage', this.time, res)
 
       this.handleReply(res.message)
 
-      this.tcpClient.close() // 每次发送完数据，网关都会主动断开TCP连接，app需要配合释放对应tcp资源，否则会影响下一次的连接
+      tcpClient.close() // 每次发送完数据，网关都会主动断开TCP连接，app需要配合释放对应tcp资源，否则会影响下一次的连接
     })
 
-    this.tcpClient.onError((res) => {
+    tcpClient.onError((res) => {
       console.log('tcpClient.onError', res)
       // 被动关闭socket时释放对应tcp资源
       if (res.errMsg.includes('closed')) {
-        this.tcpClient.close()
+        tcpClient.close()
       }
     })
 
-    this.tcpClient.onClose((res) => {
+    tcpClient.onClose((res) => {
       console.log('tcpClient.onClose', res)
     })
+
+    console.log('initTcpSocket', dayjs().format('HH:mm:ss'))
   }
 
   initUdpSocket() {
+    udpClient = wx.createUDPSocket()
+
     const port = this.bindUdp()
 
-    this.udpClient.onMessage((res) => {
+    udpClient.onMessage((res) => {
       this.handleReply(res.message)
     })
 
-    this.udpClient.onError((res) => {
+    udpClient.onError((res) => {
       console.log('udpClient.onError', res)
     })
 
-    this.udpClient.onClose((res) => {
+    udpClient.onClose((res) => {
       console.log('udpClient.onClose', res)
       this.deviceInfo.isConnectingUdp = false
     })
 
-    // 防止在配网页面直接关闭小程序，导致udp端口没有被占用释放，下次打开时会无法创建同样端口的udp实例，需要在核实时机销毁没用的udp实例
+    // 防止在配网页面直接关闭小程序，导致udp端口没有被占用释放，下次打开时会无法创建同样端口的udp实例，需要在合适时机销毁没用的udp实例
     wx.onAppHide(this.closeUdp)
 
     wx.onAppShow(this.bindUdp)
+
+    console.log('initUdpSocket', dayjs().format('HH:mm:ss'))
 
     return port
   }
@@ -260,50 +281,59 @@ export class WifiSocket {
       return { success: true, msg: '已知IP' }
     }
 
-    // 网关固定IP，优先11.1，ip冲突才会选择33.1
-    const ipList = ['192.168.11.1', '192.168.33.1']
+    await this.sendCmdForDeviceIp()
 
-    for (const ip of ipList) {
-      const connectTcpRes = await this.connectTcp(ip).catch((err) => ({ success: false, msg: err }))
-
-      console.log('connectTcpRes', connectTcpRes)
-      this.tcpClient.close()
-
-      console.info(`尝试连接${ip}：${connectTcpRes.success}`)
-      if (connectTcpRes.success) {
-        this.deviceInfo.ip = ip
-        return { success: true, msg: '固定IP连接成功' }
-      }
+    if (!this.deviceInfo.ip) {
+      await this.sendCmdForDeviceIp()
     }
 
-    await this.sendCmdForDeviceIp()
+    // android端，短时间内连续连接、关闭tcpsocket,会卡死甚至崩溃
+    // 网关固定IP，优先11.1，ip,冲突才会选择33.1
+    // const ipList = ['192.168.11.1', '192.168.33.1']
+
+    // for (const ip of ipList) {
+    //   console.log('ip:', ip)
+    //   const connectTcpRes = await this.connectTcp(ip).catch((err) => ({ success: false, msg: err }))
+
+    //   console.log('connectTcpRes', connectTcpRes)
+
+    //   console.info(`尝试连接${ip}：${connectTcpRes.success}`, dayjs().format('HH:mm:ss'))
+    //   if (connectTcpRes.success) {
+    //     this.deviceInfo.ip = ip
+
+    //     tcpClient.close()
+    //     return { success: true, msg: '固定IP连接成功' }
+    //   }
+    // }
 
     return { success: Boolean(this.deviceInfo.ip) }
   }
 
   // 创建
-  connectTcp(IP?: string) {
+  connectTcp(IP: string) {
     return new Promise<{ success: boolean; msg?: string }>((resolve) => {
       const start = Date.now()
 
       const timeId = setTimeout(() => {
+        tcpClient.offConnect()
         resolve({ success: false, msg: 'TCP连接超时' })
-      }, 3000)
+      }, 10000)
 
       const listen = (res: WechatMiniprogram.GeneralCallbackResult) => {
-        console.log('tcpClient.onConnect', res)
+        console.log('tcpClient.onConnect port：', res)
         console.debug('TCP连接时间：', Date.now() - start)
 
         clearTimeout(timeId)
+        tcpClient.offConnect()
         resolve({ success: true })
-        this.tcpClient.offConnect(listen)
       }
 
-      this.tcpClient.onConnect(listen)
+      tcpClient.onConnect(listen)
 
-      this.tcpClient.connect({
-        address: IP || this.deviceInfo.ip,
+      tcpClient.connect({
+        address: IP,
         port: this.deviceInfo.tcpPort,
+        timeout: 10
       })
     })
   }
@@ -317,10 +347,10 @@ export class WifiSocket {
       params.method = params.method || 'TCP'
 
       if (params.method === 'TCP') {
-        await this.connectTcp()
+        await this.connectTcp(this.deviceInfo.ip)
       }
 
-      return new Promise<{ errorCode: number } & IAnyObject>((resolve) => {
+      return new Promise<{ errorCode: number; success: Boolean } & IAnyObject>((resolve) => {
         const reqId = Date.now().toString()
 
         const msgData = {
@@ -354,8 +384,8 @@ export class WifiSocket {
         }
 
         params.method === 'TCP'
-          ? this.tcpClient.write(sendMsg)
-          : this.udpClient.send({
+          ? tcpClient.write(sendMsg)
+          : udpClient?.send({
               address: '255.255.255.255',
               port: this.deviceInfo.udpPort,
               message: sendMsg,
@@ -369,16 +399,19 @@ export class WifiSocket {
   /**
    * 释放相关资源
    */
-  close() {
+  close(msg?: string) {
     if (!_instance) {
       return
     }
 
-    console.log('socket实例close')
+    console.log('socket实例close', msg)
     this.cmdCallbackMap = {}
     this.onMessageHandlerList = []
-    this.tcpClient.close()
-    this.udpClient.close()
+    tcpClient.close()
+    udpClient?.close()
+
+    clearTimeout(this.queryWifiTimeId)
+    this.queryWifiTimeId = 0
     wx.offAppHide(this.closeUdp)
     wx.offAppShow(this.bindUdp)
     _instance = null

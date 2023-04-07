@@ -31,7 +31,7 @@ export async function queryWxImgQrCode(imgUrl: string) {
 export async function getUploadFileForOssInfo(fileName: string) {
   return await mzaioRequest.post<{ certification: string; downloadUrl: string; uploadUrl: string }>({
     log: false,
-    loading: true,
+    loading: false,
     url: '/v1/mzgd/user/uploadFileForOss',
     data: {
       fileName,

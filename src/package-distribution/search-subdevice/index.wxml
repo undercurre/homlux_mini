@@ -22,7 +22,6 @@
                 <image src="{{item.icon}}" class="w-72 h-72"></image>
 
                 <view class="signal-box bottom-0 leading-0 rounded-14rpx {{ item.signal === 'weak' ? 'bg-hex-FFF4F4' : 'bg-hex-F4F8FF'}}">
-                  <text class="absolute text-24" style="top: -10rpx">{{item.RSSI}}</text>
                   <image src="/package-distribution/assets/search-subdevice/signal-{{ item.signal }}.png" class="w-46 h-28"></image>
                 </view>
               </view>

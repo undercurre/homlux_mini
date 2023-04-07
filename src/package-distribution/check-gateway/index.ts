@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { WifiSocket, getCurrentPageParams, strUtil, showLoading, hideLoading } from '../../utils/index'
 
@@ -20,7 +21,6 @@ Component({
    * 组件的初始数据
    */
   data: {
-    isLoading: false,
     isShowForceBindTips: false,
     isAndroid10Plus: false,
     isConnectDevice: false,
@@ -152,18 +152,6 @@ Component({
 
       socket = new WifiSocket({ ssid: params.ssid })
 
-      socket.onMessage((data: IAnyObject) => {
-        console.log('WifiSocket.onMessage', data)
-
-        if (data.topic === '/gateway/net/confirm' && this.data.isShowForceBindTips) {
-          this.setData({
-            isShowForceBindTips: false,
-          })
-
-          this.startBind(gatewayStatus.method)
-        }
-      })
-
       if (!isAndroid10Plus) {
         this.connectWifi()
       }
@@ -176,8 +164,8 @@ Component({
 
       const connectRes = await socket.connect()
 
-      console.debug(params.ssid + '---connectRes', connectRes, '初始化socket连接用时：', Date.now() - start)
-
+      console.debug(params.ssid + '---connectRes', connectRes)
+      
       if (connectRes.errCode === 12007) {
         wx.navigateBack()
         return
@@ -194,11 +182,8 @@ Component({
         isConnectDevice: true,
       })
 
+      await socket.init()
       this.getGatewayStatus()
-    },
-
-    sendCmdForDeviceIp() {
-      socket.sendCmdForDeviceIp()
     },
 
     /**
@@ -211,7 +196,7 @@ Component({
         data: {},
       })
 
-      console.debug('getGatewayStatus耗时：', Date.now() - start, res)
+      console.debug('getGatewayStatus耗时：', dayjs().format('HH:mm:ss'))
 
       if (!res.success) {
         console.error('查询网关状态失败')
@@ -228,6 +213,18 @@ Component({
         })
 
         gatewayStatus.method = res.method
+
+        socket.onMessage((data: IAnyObject) => {
+          console.log('WifiSocket.onMessage', data)
+  
+          if (data.topic === '/gateway/net/confirm' && this.data.isShowForceBindTips) {
+            this.setData({
+              isShowForceBindTips: false,
+            })
+  
+            this.startBind(gatewayStatus.method)
+          }
+        })
       } else {
         this.startBind(res.method)
       }

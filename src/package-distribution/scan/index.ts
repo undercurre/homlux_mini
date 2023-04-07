@@ -24,6 +24,7 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
+    isShowBleModal: false,
     hasInitCamera: false,
     isShowPage: false,
     isShowGatewayList: false, // 是否展示选择网关列表弹窗
@@ -221,7 +222,6 @@ ComponentWithComputed({
     },
 
     async initBle() {
-      bleDevicesBinding.store.reset()
       // 初始化蓝牙模块
       const openBleRes = await wx
         .openBluetoothAdapter({
@@ -240,6 +240,7 @@ ComponentWithComputed({
       }
 
       console.log('scan-openBleRes', openBleRes)
+      bleDevicesBinding.store.reset()
 
       // 系统是否已打开蓝牙
       const res = await this.checkSystemBleSwitch()
@@ -356,6 +357,7 @@ ComponentWithComputed({
         sourceType: ['album'],
         success: async (res) => {
           console.log('选择相册：', res)
+          showLoading()
 
           const file = res.tempFiles[0]
 
@@ -365,7 +367,7 @@ ComponentWithComputed({
           if (file.size > 1500 * 1024) {
             const compressRes = await wx.compressImage({
               src: file.tempFilePath,
-              quality: 80,
+              quality: 70,
             })
 
             console.log('compressRes', compressRes)
@@ -406,13 +408,14 @@ ComponentWithComputed({
         },
         success: async (res) => {
           console.log('uploadFile-success', res)
-          await delay(1000) // 由于有可能图片还没上传完毕，需要延迟调用解析图片接口
+          await delay(3000) // 由于有可能图片还没上传完毕，需要延迟调用解析图片接口
 
           const query = await queryWxImgQrCode(result.downloadUrl)
 
           if (query.success) {
             this.handleScanUrl(query.result.qrCodeUrl)
           } else {
+            hideLoading()
             Toast(query.msg)
           }
         },
@@ -420,6 +423,7 @@ ComponentWithComputed({
     },
 
     async handleScanUrl(url: string) {
+      showLoading()
       if (!url.includes('meizgd.com/homlux/qrCode.html')) {
         Toast('无效二维码')
         return
@@ -454,8 +458,6 @@ ComponentWithComputed({
     },
 
     async bindGateway(params: IAnyObject) {
-      showLoading()
-
       const res = await checkDevice({
         productId: params.pid,
       })
@@ -472,12 +474,9 @@ ComponentWithComputed({
           deviceName: res.result.productName,
         }),
       })
-      hideLoading()
     },
 
     async bindSubDevice(params: IAnyObject) {
-      showLoading()
-
       const res = await checkDevice({ dsn: params.sn })
 
       if (!res.success) {
@@ -502,7 +501,6 @@ ComponentWithComputed({
       if (flag) {
         this.addSingleSubdevice()
       }
-      hideLoading()
     },
 
     /**

@@ -76,6 +76,8 @@ Component({
         return
       }
 
+      await socket.init()
+
       this.setData({
         activeIndex: 1,
         isConnectDevice: true,
@@ -107,6 +109,13 @@ Component({
       console.log('setRes', setRes)
 
       console.debug('app-网关耗时：', Date.now() - start, '发送绑定指令耗时：', Date.now() - begin)
+
+      if (!setRes.success) {
+        this.setData({
+          status: 'error',
+        })
+        return
+      }
 
       wx.reportEvent('test', {
         app_device: Date.now() - start,
