@@ -84,6 +84,13 @@ ComponentWithComputed({
         })
         return
       }
+      if (this.data.sceneName.length > 15) {
+        Toast({
+          message: '场景名称不能超过15个字符',
+          zIndex: 99999,
+        })
+        return
+      }
       const newSceneData = {
         conditionType: '0',
         deviceActions: [],

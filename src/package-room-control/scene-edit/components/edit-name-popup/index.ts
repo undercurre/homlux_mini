@@ -46,7 +46,17 @@ Component({
     handleConfirm() {
       // 校验名字合法性
       if (checkInputNameIllegal(this.data.name)) {
-        Toast('场景名称不能用特殊符号或表情')
+        Toast({
+          message: '场景名称不能用特殊符号或表情',
+          zIndex: 99999,
+        })
+        return
+      }
+      if (this.data.name.length > 15) {
+        Toast({
+          message: '场景名称不能超过15个字符',
+          zIndex: 99999,
+        })
         return
       }
       this.triggerEvent('confirm', this.data.name)
