@@ -2,3 +2,7 @@
   width: 320rpx !important;
   height: 88rpx !important;
 }
+
+.van-cell__title {
+  flex: unset !important;
+}
