@@ -219,7 +219,7 @@ ComponentWithComputed({
         return
       }
       const isInActions = this.data.actions.some((action: Device.ActionItem) => {
-        return action.uniId === e.detail;
+        return action.uniId === e.detail
       })
       if (isInActions) {
         Dialog.confirm({
