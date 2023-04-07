@@ -5,7 +5,7 @@
     <edit-device-form custom-style="max-height: 60vh;overflow: auto;" device-name="{{deviceName}}" room-id="{{roomId}}" room-name="{{roomName}}" bind:change="change" switch-list="{{switchList}}"></edit-device-form>
 
     <view class="flex flex-row gap-46rpx pt-80rpx pb-40rpx">
-      <van-button class="w-full" size="large" type="primary" bind:click="confirm">确定</van-button>
+      <van-button class="w-full" size="large" type="primary" disabled="{{!deviceName}}" bind:click="confirm">确定</van-button>
     </view>
   </view>
 </van-popup>
