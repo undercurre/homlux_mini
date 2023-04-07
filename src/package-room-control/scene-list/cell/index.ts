@@ -22,13 +22,12 @@ ComponentWithComputed({
       return '暂未关联开关'
     },
     sceneName(data) {
-      console.log(data.item?.data?.sceneName?.length && data.item?.data?.sceneName?.length > 10)
       if (data.item?.data?.sceneName?.length && data.item?.data?.sceneName?.length > 10) {
-        return data.item.data.sceneName.slice(0,10) + '...'
+        return data.item.data.sceneName.slice(0, 10) + '...'
       } else {
         return data.item.data.sceneName
       }
-    }
+    },
   },
 
   /**
