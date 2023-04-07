@@ -24,7 +24,7 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    isShowBleModal: false,
+    isShowPerssionModal: false, // 权限弹窗标志，防止已弹出的情况下，息屏再次触发检测
     hasInitCamera: false,
     isShowPage: false,
     isShowGatewayList: false, // 是否展示选择网关列表弹窗
@@ -178,6 +178,9 @@ ComponentWithComputed({
      * isDeny: 是否已拒绝授权，
      */
     async checkBlePermission(isDeny?: boolean) {
+      if (this.data.isShowPerssionModal) {
+        return
+      }
       let settingRes: IAnyObject = {}
       // 若已知未授权，省略查询权限流程，节省时间
       if (isDeny !== true) {
@@ -189,6 +192,9 @@ ComponentWithComputed({
         console.log('getSetting', settingRes)
 
         if (isDeny || !settingRes.authSetting['scope.bluetooth']) {
+          this.setData({
+            isShowPerssionModal: true
+          })
           wx.showModal({
             content: '请授权使用蓝牙，否则无法正常扫码配网',
             showCancel: true,
@@ -197,6 +203,9 @@ ComponentWithComputed({
             confirmText: '去设置',
             confirmColor: '#27282A',
             success: (res) => {
+              this.setData({
+                isShowPerssionModal: false
+              })
               console.log('showModal', res)
               if (res.cancel) {
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -287,11 +296,17 @@ ComponentWithComputed({
 
     // 检查摄像头权限
     async checkCameraPerssion() {
+      if (this.data.isShowPerssionModal) {
+        return
+      }
       const settingRes = await wx.getSetting()
 
       console.log('getSetting', settingRes)
 
       if (!settingRes.authSetting['scope.camera']) {
+        this.setData({
+          isShowPerssionModal: true
+        })
         wx.showModal({
           content: '请授权使用摄像头，用于扫码配网',
           showCancel: true,
@@ -301,6 +316,9 @@ ComponentWithComputed({
           confirmColor: '#27282A',
           success: (res) => {
             console.log('showModal', res)
+            this.setData({
+              isShowPerssionModal: false
+            })
             if (res.cancel) {
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
