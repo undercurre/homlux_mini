@@ -31,7 +31,7 @@ declare namespace Home {
    * 3：游客
    */
   export type UserRole = 1 | 2 | 3
-  
+
   /**
    * 成员角色
    * 1：创建者
@@ -39,7 +39,7 @@ declare namespace Home {
    * 3：游客
    */
   export const enum TestEnum {
-    Create =  1
+    Create = 1,
   }
 
   /**
@@ -56,7 +56,7 @@ declare namespace Home {
     houseName: string
 
     // 用户家庭权限 1：创建者 2：管理员 3：游客
-    houseUserAuth: 1 | 2 | 3,
+    houseUserAuth: 1 | 2 | 3
 
     /**
      * 设备数量

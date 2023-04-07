@@ -23,7 +23,7 @@ ComponentWithComputed({
     },
     sceneName(data) {
       if (data.item?.data?.sceneName?.length && data.item?.data?.sceneName?.length > 10) {
-        return data.item.data.sceneName.slice(0, 10) + '...'
+        return data.item.data.sceneName.slice(0, 8) + '...'
       } else {
         return data.item.data.sceneName
       }

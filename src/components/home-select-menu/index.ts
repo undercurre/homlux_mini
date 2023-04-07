@@ -54,7 +54,7 @@ ComponentWithComputed({
           ...home,
           houseName: home.houseName?.length > 6 ? home.houseName.slice(0, 6) + '...' : home.houseName,
         }))
-      
+
       return list
     },
   },
