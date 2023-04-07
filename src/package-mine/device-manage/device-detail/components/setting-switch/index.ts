@@ -86,7 +86,7 @@ ComponentWithComputed({
           deviceId: this.data.deviceInfo.deviceId,
           houseId: homeStore.currentHomeDetail.houseId,
           switchId: this.data.deviceInfo.switchInfoDTOList[this.data.switchClickIndex].switchId,
-          switchName: this.data.switchName.slice(0,5),
+          switchName: this.data.switchName.slice(0, 5),
         })
         if (res.success) {
           this.triggerEvent('update')

@@ -267,7 +267,7 @@ ComponentWithComputed({
 
     async startDiscoverBle() {
       this.setData({
-        bleStatus: 'discovering'
+        bleStatus: 'discovering',
       })
       bleDevicesBinding.store.startBleDiscovery()
     },

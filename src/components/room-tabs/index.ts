@@ -29,11 +29,11 @@ ComponentWithComputed({
   lifetimes: {
     async ready() {
       await deviceStore.updateAllRoomDeviceList()
-      this.getRoomMenuList();
+      this.getRoomMenuList()
 
       emitter.on('deviceEdit', async () => {
         await deviceStore.updateAllRoomDeviceList()
-        this.getRoomMenuList();
+        this.getRoomMenuList()
       })
     },
     detached() {
