@@ -3,7 +3,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
 import dayjs from 'dayjs'
 import { deviceBinding, homeBinding } from '../../store/index'
-import { bleDevicesBinding } from '../store/bleDeviceStore'
+import { bleDevicesBinding, bleDevicesStore } from '../store/bleDeviceStore'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { strUtil, showLoading, hideLoading, delay } from '../../utils/index'
 import { checkDevice, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
@@ -222,15 +222,20 @@ ComponentWithComputed({
     },
 
     async initBle() {
+      if (bleDevicesStore.isDiscovering) {
+        return
+      }
       // 初始化蓝牙模块
-      const openBleRes = await wx
+      const openBleRes = (await wx
         .openBluetoothAdapter({
           mode: 'central',
         })
-        .catch((err: WechatMiniprogram.BluetoothError) => err)
+        .catch((err: WechatMiniprogram.BluetoothError) => err)) as IAnyObject
 
-      // 判断是否授权蓝牙
-      if (openBleRes.errMsg.includes('auth deny')) {
+      console.log('scan-openBleRes', openBleRes)
+
+      // 判断是否授权蓝牙 安卓、IOS返回错误格式不一致
+      if (openBleRes.errno === 103 || openBleRes.errMsg.includes('auth deny')) {
         const permission = await this.checkBlePermission(true)
 
         // 优先判断微信授权设置
@@ -239,7 +244,6 @@ ComponentWithComputed({
         }
       }
 
-      console.log('scan-openBleRes', openBleRes)
       bleDevicesBinding.store.reset()
 
       // 系统是否已打开蓝牙
@@ -282,7 +286,7 @@ ComponentWithComputed({
     },
 
     // 检查摄像头权限
-    async checkCamera() {
+    async checkCameraPerssion() {
       const settingRes = await wx.getSetting()
 
       console.log('getSetting', settingRes)
@@ -312,6 +316,8 @@ ComponentWithComputed({
           },
         })
       }
+
+      return settingRes.authSetting['scope.camera']
     },
     /**
      * 扫码解析
@@ -331,13 +337,19 @@ ComponentWithComputed({
     getCameraError(event: WechatMiniprogram.CustomEvent) {
       console.log('getCameraError', event)
 
-      this.checkCamera()
+      this.checkCameraPerssion()
 
       hideLoading()
     },
 
-    initCameraDone() {
+    async initCameraDone() {
       console.log('initCameraDone')
+
+      const flag = await this.checkCameraPerssion()
+
+      if (!flag) {
+        return
+      }
       this.setData({
         hasInitCamera: true,
       })

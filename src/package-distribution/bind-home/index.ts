@@ -5,6 +5,8 @@ import pageBehaviors from '../../behaviors/pageBehaviors'
 import { getCurrentPageParams, strUtil, checkInputNameIllegal } from '../../utils/index'
 import { queryDeviceInfoByDeviceId, editDeviceInfo, batchUpdate } from '../../apis/index'
 import { homeBinding, homeStore, roomBinding } from '../../store/index'
+import { bleDevicesStore } from '../store/bleDeviceStore'
+import { runInAction } from 'mobx-miniprogram'
 
 ComponentWithComputed({
   options: {
@@ -72,10 +74,12 @@ ComponentWithComputed({
     },
 
     toScan() {
+      bleDevicesStore.reset()
       wx.navigateBack()
     },
 
     toSearchSubdevice() {
+      bleDevicesStore.reset()
       wx.redirectTo({
         url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
           gatewayId: this.data.deviceInfo.deviceId,

@@ -193,7 +193,7 @@ ComponentWithComputed({
 
           // 安卓端没有打开wifi开关，会获取不到wifi信息
           if (err.errCode === 12005) {
-            wx.showModal({ content: '请打开WIFI开关', showCancel: false })
+            wx.showModal({ content: '手机WIFI', showCancel: false })
           }
           console.log('getWifiList-catch', err)
         })
