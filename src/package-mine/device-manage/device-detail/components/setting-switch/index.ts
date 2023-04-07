@@ -79,14 +79,15 @@ ComponentWithComputed({
       })
       if (this.data.deviceInfo.switchInfoDTOList[this.data.switchClickIndex].switchName !== this.data.switchName) {
         if (this.data.switchName.length > 5) {
-          Toast('按键名称最长名称5个字')
+          Toast('按键名称不能超过5个字符字')
+          return
         }
         const res = await editDeviceInfo({
           type: '3',
           deviceId: this.data.deviceInfo.deviceId,
           houseId: homeStore.currentHomeDetail.houseId,
           switchId: this.data.deviceInfo.switchInfoDTOList[this.data.switchClickIndex].switchId,
-          switchName: this.data.switchName.slice(0, 5),
+          switchName: this.data.switchName,
         })
         if (res.success) {
           this.triggerEvent('update')

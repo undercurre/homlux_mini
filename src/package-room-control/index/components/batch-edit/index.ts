@@ -240,6 +240,14 @@ ComponentWithComputed({
             Toast('设备名称不能用特殊符号或表情')
             return
           }
+          if (this.data.editSwitchName.length > 5) {
+            Toast('按键名称不能超过5个字符')
+            return
+          }
+          if (this.data.editSwitchName.length > 6) {
+            Toast('面板名称不能超过6个字符')
+            return
+          }
           const [deviceId, switchId] = deviceStore.editSelect[0].split(':')
           const device = deviceStore.allRoomDeviceFlattenMap[deviceStore.editSelect[0]]
           const deviceInfoUpdateVoList = [] as Device.DeviceInfoUpdateVo[]
@@ -289,6 +297,10 @@ ComponentWithComputed({
         } else {
           if (checkInputNameIllegal(this.data.editDeviceName)) {
             Toast('设备名称不能用特殊符号或表情')
+            return
+          }
+          if (this.data.editSwitchName.length > 6) {
+            Toast('设备名称不能超过6个字符')
             return
           }
           const res = await batchUpdate({
