@@ -38,7 +38,7 @@
   <view style="height: 86rpx"></view>
 </view>
 
+<van-toast id="van-toast" />
 <van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />
 <edit-name-popup value="{{deviceName}}" show="{{showEditNamePopup}}" bind:close="handleDeviceNameEditCancel" bind:confirm="handleDeviceNameEditConfirm" />
 <edit-room-popup value="{{roomId}}" show="{{showEditRoomPopup}}" bind:close="handleDeviceRoomEditCancel" bind:confirm="handleDeviceRoomEditConfirm" />
-<van-toast id="van-toast" />

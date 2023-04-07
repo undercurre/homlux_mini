@@ -35,8 +35,9 @@
     </view>
     <view style="height: calc(96rpx - env(safe-area-inset-bottom))"></view>
   </view>
+
+  <link-popup show="{{showLinkPopup}}" list="{{list}}" selectList="{{linkSelectList}}" linkType="switch" bind:select="handleLinkSelect" bind:close="handleLinkPopupClose" bind:confirm="handleLinkPopupConfirm"></link-popup>
+
+  <van-toast id="van-toast" />
+  <van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />
 </van-popup>
-
-<link-popup show="{{showLinkPopup}}" list="{{list}}" selectList="{{linkSelectList}}" linkType="switch" bind:select="handleLinkSelect" bind:close="handleLinkPopupClose" bind:confirm="handleLinkPopupConfirm"></link-popup>
-
-<van-toast id="van-toast" />
