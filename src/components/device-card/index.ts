@@ -107,13 +107,19 @@ ComponentWithComputed({
       if (data.deviceInfo.proType === proType.switch && data.showBtnDetail) {
         const name =
           data.deviceInfo.switchInfoDTOList[0].switchName ?? '按键' + data.deviceInfo.switchInfoDTOList[0].switchId
-        return name.slice(0, 5)
+
+        return name.length > 5 ? name.slice(0, 5) + '...' : name
       } else {
-        return data.deviceInfo.deviceName.slice(0, 5)
+        return data.deviceInfo.deviceName.length > 5
+          ? data.deviceInfo.deviceName.slice(0, 5) + '...'
+          : data.deviceInfo.deviceName
       }
     },
     bottomDesc(data) {
-      return data.deviceInfo.deviceName.slice(0, 5)
+      console.log(data.deviceInfo.deviceName.length > 5)
+      return data.deviceInfo.deviceName.length > 5
+        ? data.deviceInfo.deviceName.slice(0, 5) + '...'
+        : data.deviceInfo.deviceName
     },
     deviceType(data) {
       return proName[data.deviceInfo.proType]

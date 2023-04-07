@@ -400,6 +400,8 @@ ComponentWithComputed({
       })
       runInAction(() => {
         sceneStore.addSceneActions = addSceneActions
+        deviceStore.isEditSelectMode = false
+        deviceStore.editSelect = []
       })
       this.setData({
         showBeforeAddScenePopup: true,
