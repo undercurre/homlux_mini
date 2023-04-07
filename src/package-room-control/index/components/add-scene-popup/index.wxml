@@ -7,7 +7,7 @@
       <text class="ml-48rpx h-40rpx text-28rpx text-black-2a font-normal">场景名称</text>
     </view>
     <view class="mt-32rpx w-686rpx mx-32rpx">
-      <van-field model:value="{{ sceneName }}" maxlength="{{15}}" placeholder="自定义场景" custom-style="padding: 28rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
+      <van-field model:value="{{ sceneName }}" placeholder="自定义场景" custom-style="padding: 28rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
     </view>
     <view class="mt-32rpx w-750rpx">
       <text class="ml-48rpx h-40rpx text-28rpx text-black-2a font-normal">选择场景图标</text>
@@ -35,8 +35,9 @@
     </view>
     <view style="height: calc(96rpx - env(safe-area-inset-bottom))"></view>
   </view>
+
+  <link-popup show="{{showLinkPopup}}" list="{{list}}" selectList="{{linkSelectList}}" linkType="switch" bind:select="handleLinkSelect" bind:close="handleLinkPopupClose" bind:confirm="handleLinkPopupConfirm"></link-popup>
+
+  <van-toast id="van-toast" />
+  <van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />
 </van-popup>
-
-<link-popup show="{{showLinkPopup}}" list="{{list}}" selectList="{{linkSelectList}}" linkType="switch" bind:select="handleLinkSelect" bind:close="handleLinkPopupClose" bind:confirm="handleLinkPopupConfirm"></link-popup>
-
-<van-toast id="van-toast" />

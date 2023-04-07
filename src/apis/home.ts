@@ -131,10 +131,7 @@ export async function queryHouseUserList({ houseId = '' }, options?: { loading?:
  * 更新家庭成员权限
  * 家庭成员权限，创建者：1 管理员：2 游客：3
  */
-export async function updateHouseUserAuth(
-  { userId = '', auth = Home.UserRole.Guest, houseId = '' },
-  options?: { loading?: boolean },
-) {
+export async function updateHouseUserAuth({ userId = '', auth = 3, houseId = '' }, options?: { loading?: boolean }) {
   return await mzaioRequest.post({
     log: true,
     loading: options?.loading ?? false,

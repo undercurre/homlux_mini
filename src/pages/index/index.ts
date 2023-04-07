@@ -83,6 +83,15 @@ ComponentWithComputed({
       }
       return hasLightOrSwitch
     },
+    canAddDevice(data) {
+      if (!data.currentHomeDetail) {
+        return false
+      }
+      return (
+        (data.currentHomeDetail as Home.IHomeDetail).houseUserAuth === 1 ||
+        (data.currentHomeDetail as Home.IHomeDetail).houseUserAuth === 2
+      )
+    },
   },
   watch: {
     isInit(data) {
@@ -353,7 +362,6 @@ ComponentWithComputed({
      * 用户点击展示/隐藏家庭选择
      */
     handleShowHomeSelectMenu() {
-      // this.doHomeSelectArrowAnimation(!this.data.selectHomeMenu.isShow, this.data.selectHomeMenu.isShow)
       this.setData({
         selectHomeMenu: {
           x: '28rpx',

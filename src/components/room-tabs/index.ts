@@ -3,6 +3,8 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { roomBinding, deviceBinding, deviceStore } from '../../store/index'
 import { emitter } from '../../utils/eventBus'
 
+type SimRoomInfo = Pick<Room.RoomInfo, 'roomId' | 'roomName'>
+
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, deviceBinding] })],
   /**
@@ -20,39 +22,18 @@ ComponentWithComputed({
    */
   data: {
     roomSelect: '0',
+    roomMenuList: [] as SimRoomInfo[],
   },
-  computed: {
-    /**
-     * @description 包括待选设备的房间列表
-     * 默认塞入全部设备
-     */
-    roomMenuList(data) {
-      const list = data.sDeviceList?.length ? data.sDeviceList : deviceStore.allRoomDeviceList
-      const deviceList = list.filter((device) => device.deviceType === 2)
-      const roomList: Pick<Room.RoomInfo, 'roomId' | 'roomName'>[] = []
-
-      deviceList.forEach(({ roomId, roomName }) => {
-        if (roomList.findIndex((room) => room.roomId === roomId) === -1) {
-          roomList.push({
-            roomId,
-            roomName,
-          })
-        }
-      })
-
-      if (roomList) {
-        return [{ roomId: '0', roomName: '全屋' }, ...roomList]
-      }
-      return []
-    },
-  },
+  computed: {},
 
   lifetimes: {
     async ready() {
-      deviceStore.updateAllRoomDeviceList()
+      await deviceStore.updateAllRoomDeviceList()
+      this.getRoomMenuList()
 
-      emitter.on('deviceEdit', () => {
-        deviceStore.updateAllRoomDeviceList()
+      emitter.on('deviceEdit', async () => {
+        await deviceStore.updateAllRoomDeviceList()
+        this.getRoomMenuList()
       })
     },
     detached() {
@@ -64,6 +45,28 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
+    /**
+     * @description 包括待选设备的房间列表
+     * 默认塞入全部设备
+     */
+    getRoomMenuList() {
+      const list = this.data.sDeviceList?.length ? this.data.sDeviceList : deviceStore.allRoomDeviceList
+      const deviceList: Device.DeviceItem[] = list.filter((device: Device.DeviceItem) => device.deviceType === 2)
+      const roomList: SimRoomInfo[] = []
+
+      deviceList.forEach(({ roomId, roomName }) => {
+        if (roomList.findIndex((room) => room.roomId === roomId) === -1) {
+          roomList.push({
+            roomId,
+            roomName,
+          })
+        }
+      })
+
+      this.setData({
+        roomMenuList: roomList ? [{ roomId: '0', roomName: '全屋' }, ...roomList] : [],
+      })
+    },
     handleRoomSelect(e: WechatMiniprogram.TouchEvent) {
       const roomSelect = e.currentTarget.dataset.item.roomId
       this.setData({ roomSelect })

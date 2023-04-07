@@ -44,7 +44,14 @@ ComponentWithComputed({
         )?.switchName
         return device.deviceName.slice(0, 5) + switchName?.slice(0, 4)
       }
-      return ''
+      return ' '
+    },
+    showSceneName(data) {
+      console.log(data.sceneName)
+      if (data.sceneName.length > 12) {
+        return data.sceneName.slice(0, 12) + '...'
+      }
+      return data.sceneName
     },
   },
 

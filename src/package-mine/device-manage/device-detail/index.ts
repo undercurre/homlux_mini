@@ -165,7 +165,7 @@ ComponentWithComputed({
       if (res.success) {
         this.setData({
           deviceInfo: res.result,
-          deviceName: res.result.deviceName?.slice(0, 5),
+          deviceName: res.result.deviceName,
           roomId: res.result.roomId,
         })
       }

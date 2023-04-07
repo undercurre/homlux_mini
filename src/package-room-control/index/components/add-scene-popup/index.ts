@@ -3,6 +3,7 @@ import { proType, sceneList } from '../../../../config/index'
 import { deviceStore, homeStore, roomStore, sceneStore } from '../../../../store/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
+import Dialog from '@vant/weapp/dialog/dialog'
 
 ComponentWithComputed({
   options: {
@@ -83,6 +84,13 @@ ComponentWithComputed({
         })
         return
       }
+      if (this.data.sceneName.length > 15) {
+        Toast({
+          message: '场景名称不能超过15个字符',
+          zIndex: 99999,
+        })
+        return
+      }
       const newSceneData = {
         conditionType: '0',
         deviceActions: [],
@@ -133,13 +141,9 @@ ComponentWithComputed({
       })
       // 补充actions
       const deviceMap = deviceStore.deviceMap
-      // 如果选择了关联开关，需要从actions排除
-      const actions = (this.data.actions as Device.ActionItem[]).filter(
-        (action) => action.uniId != this.data.linkSwitch,
-      )
       // switch需要特殊处理
       const switchDeviceMap = {} as Record<string, IAnyObject[]>
-      actions.forEach((action) => {
+      this.data.actions.forEach((action: Device.ActionItem) => {
         if (action.uniId.includes(':')) {
           const deviceId = action.uniId.split(':')[0]
           if (switchDeviceMap[deviceId]) {
@@ -221,9 +225,26 @@ ComponentWithComputed({
         })
         return
       }
-      this.setData({
-        linkSelectList: [e.detail],
+      const isInActions = this.data.actions.some((action: Device.ActionItem) => {
+        return action.uniId === e.detail
       })
+      if (isInActions) {
+        Dialog.confirm({
+          message: '此开关已被其他场景使用，是否需要变更？',
+          cancelButtonText: '取消',
+          confirmButtonText: '变更',
+          context: this,
+          zIndex: 9999,
+        }).then(() => {
+          this.setData({
+            linkSelectList: [e.detail],
+          })
+        })
+      } else {
+        this.setData({
+          linkSelectList: [e.detail],
+        })
+      }
     },
   },
 })
