@@ -126,8 +126,8 @@ Component({
         return
       }
 
-      if (this.data.switchInfo.switchName.length > 6) {
-        Toast('按键名称不能超过6个字符')
+      if (this.data.switchInfo.switchName.length > 5) {
+        Toast('按键名称不能超过5个字符')
         return
       }
 

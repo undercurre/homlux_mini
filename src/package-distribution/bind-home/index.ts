@@ -98,18 +98,18 @@ ComponentWithComputed({
       const { deviceId, deviceName, roomId } = this.data.deviceInfo
 
       if (!deviceName) {
-        Toast('名称不能为空')
+        Toast('设备名称不能为空')
         return
       }
 
       // 校验名字合法性
       if (checkInputNameIllegal(deviceName)) {
-        Toast('名称不能用特殊符号或表情')
+        Toast('设备名称不能用特殊符号或表情')
         return
       }
 
       if (deviceName.length > 6) {
-        Toast('名称不能超过6个字符')
+        Toast('设备名称不能超过6个字符')
         return
       }
 

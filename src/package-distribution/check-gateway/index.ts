@@ -1,5 +1,5 @@
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { WifiSocket, getCurrentPageParams, strUtil } from '../../utils/index'
+import { WifiSocket, getCurrentPageParams, strUtil, showLoading, hideLoading } from '../../utils/index'
 
 let socket: WifiSocket
 let start = 0
@@ -20,7 +20,7 @@ Component({
    * 组件的初始数据
    */
   data: {
-    isLoading: true,
+    isLoading: false,
     isShowForceBindTips: false,
     isAndroid10Plus: false,
     isConnectDevice: false,
@@ -38,14 +38,6 @@ Component({
     },
   },
 
-  pageLifetimes: {
-    show() {
-      console.log('show')
-    },
-    hide() {
-      console.log('hide')
-    },
-  },
   /**
    * 组件的方法列表
    */
@@ -104,6 +96,8 @@ Component({
     },
 
     async initWifi() {
+      showLoading()
+
       const params = getCurrentPageParams()
 
       console.log('initWifi', params)
@@ -120,6 +114,11 @@ Component({
         ssid: params.ssid,
       })
 
+      start = Date.now()
+      const startRes = await wx.startWifi()
+
+      console.debug('startWifi', startRes, '开启wifi模块用时：', Date.now() - start)
+
       // Android 调用前需要 用户授权 scope.userLocation。该权限流程需前置，否则会出现在配网过程连接设备热点导致无法联网，请求失败
       if (deviceInfo.platform === 'android') {
         const authorizeRes = await wx
@@ -134,27 +133,22 @@ Component({
         if (authorizeRes.errno === 103 || authorizeRes.errMsg.includes('auth deny')) {
           const authRes = await this.checkLocationPermission()
           console.log('authRes', authRes)
+
           if (!authRes) {
             console.error('授权失败')
+            hideLoading()
             return
           }
         }
-      }
 
-      start = Date.now()
-      const startRes = await wx.startWifi()
-
-      // 无法访问互联网的情况下，wx.getWifiList()调用不成功,猜测微信存在查询外网接口信息的流程，堵塞流程，
-      // 需在可访问外网时先调用一次，后面即使断网，再次调用getWifiList也能正常调用
-      if (deviceInfo.system.toLowerCase().includes('android')) {
+        // 无法访问互联网的情况下，wx.getWifiList()调用不成功,猜测微信存在查询外网接口信息的流程，堵塞流程，
+        // 需在可访问外网时先调用一次，后面即使断网，再次调用getWifiList也能正常调用
         const wifiListRes = await wx.getWifiList().catch((err) => {
           console.log('getWifiList-catch', err)
         })
 
         console.debug('wifiListRes', wifiListRes)
       }
-
-      console.debug('startWifi', startRes, '开启wifi模块用时：', Date.now() - start)
 
       socket = new WifiSocket({ ssid: params.ssid })
 
@@ -174,23 +168,13 @@ Component({
         this.connectWifi()
       }
 
-      this.setData({
-        isLoading: false,
-      })
+      hideLoading()
     },
 
     async connectWifi() {
       const params = getCurrentPageParams()
 
-      this.setData({
-        isLoading: true,
-      })
-
       const connectRes = await socket.connect()
-
-      this.setData({
-        isLoading: false,
-      })
 
       console.debug(params.ssid + '---connectRes', connectRes, '初始化socket连接用时：', Date.now() - start)
 

@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { aesUtil, strUtil } from '../utils/index'
 
 let _instance: WifiSocket | null = null
@@ -86,11 +87,19 @@ export class WifiSocket {
     return new Promise<{ errCode: number; success: boolean; msg?: string }>((resolve) => {
       const res = { success: true, errCode: 0 }
 
-      wx.getConnectedWifi({
-        complete: async (connectedRes) => {
-          console.log('getConnectedWifi：complete', connectedRes)
+      setInterval(() => {
+        wx.getConnectedWifi({
+          success(successRes) {
+            console.log('getConnectedWifi：successRes', successRes)
+          },
+        })
+      }, 5000)
 
-          if (connectedRes && (connectedRes as IAnyObject).wifi?.SSID === this.SSID) {
+      wx.getConnectedWifi({
+        complete: async (getConnectedRes) => {
+          console.log('getConnectedWifi：complete', getConnectedRes)
+
+          if (getConnectedRes && (getConnectedRes as IAnyObject).wifi?.SSID === this.SSID) {
             console.log(`${this.SSID}已连接`)
             resolve(res)
             return
@@ -119,7 +128,7 @@ export class WifiSocket {
               }
 
               const listen = (onWifiConnectRes: WechatMiniprogram.OnWifiConnectedCallbackResult) => {
-                console.log('onWifiConnected-wifiProt', onWifiConnectRes)
+                console.log('onWifiConnected-wifiProtcol', onWifiConnectRes)
 
                 if (onWifiConnectRes.wifi.SSID === this.SSID) {
                   console.log('offWifiConnected')
@@ -130,14 +139,14 @@ export class WifiSocket {
                 }
               }
 
+              wx.onWifiConnected(listen)
+
               // 连接热点超时回调
               const timeId = setTimeout(() => {
-                console.log('连接热点超时', new Date(this.date))
+                console.error('连接热点超时')
                 wx.offWifiConnected(listen)
                 resolve({ success: false, errCode: -1 })
               }, 90000)
-
-              wx.onWifiConnected(listen)
             },
           })
         },
@@ -146,7 +155,7 @@ export class WifiSocket {
   }
 
   bindUdp = () => {
-    console.log('bindUdp')
+    console.log('bindUdp', this, dayjs().format('HH:mm:ss'))
     if (this.deviceInfo.isConnectingUdp) {
       return
     }
@@ -167,7 +176,7 @@ export class WifiSocket {
   }
 
   closeUdp = () => {
-    console.log('closeUdp')
+    console.log('closeUdp', dayjs().format('HH:mm:ss'))
     if (this.deviceInfo.isConnectingUdp) {
       this.udpClient.close()
     }

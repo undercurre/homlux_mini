@@ -56,27 +56,6 @@ ComponentWithComputed({
   lifetimes: {
     async ready() {
       await homeBinding.store.updateHomeInfo()
-
-      const params = wx.getLaunchOptionsSync()
-      console.log(
-        'scanPage',
-        params,
-        'wx.getEnterOptionsSync()',
-        wx.getEnterOptionsSync(),
-        'getCurrentPages()',
-        getCurrentPages(),
-      )
-
-      // 防止重复判断,仅通过微信扫码直接进入该界面时判断场景值
-      if (getCurrentPages().length === 1 && params.scene === 1011) {
-        const scanUrl = decodeURIComponent(params.query.q)
-
-        console.log('scanUrl', scanUrl)
-
-        this.handleScanUrl(scanUrl)
-
-        return
-      }
     },
     detached() {
       wx.closeBluetoothAdapter()
@@ -107,6 +86,29 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
+    // 检查是否通过微信扫码直接进入该界面时判断场景值
+    checkWxScanEnter() {
+      const params = wx.getLaunchOptionsSync()
+      console.log(
+        'scanPage',
+        params,
+        'wx.getEnterOptionsSync()',
+        wx.getEnterOptionsSync(),
+        'getCurrentPages()',
+        getCurrentPages(),
+      )
+
+      // 防止重复判断,仅通过微信扫码直接进入该界面时判断场景值
+      if (getCurrentPages().length === 1 && params.scene === 1011) {
+        const scanUrl = decodeURIComponent(params.query.q)
+
+        console.log('scanUrl', scanUrl)
+
+        this.handleScanUrl(scanUrl)
+
+        return
+      }
+    },
     showGateListPopup() {
       this.setData({
         isShowGatewayList: true,
@@ -251,6 +253,7 @@ ComponentWithComputed({
           if (res.available) {
             console.log('listen-startDiscoverBle')
             this.startDiscoverBle()
+            this.checkWxScanEnter()
             wx.offBluetoothAdapterStateChange(listen)
           }
         }
@@ -258,6 +261,7 @@ ComponentWithComputed({
         return
       } else {
         this.startDiscoverBle()
+        this.checkWxScanEnter()
       }
     },
 
@@ -472,9 +476,7 @@ ComponentWithComputed({
     },
 
     async bindSubDevice(params: IAnyObject) {
-      wx.showLoading({
-        title: 'loading',
-      })
+      showLoading()
 
       const res = await checkDevice({ dsn: params.sn })
 
