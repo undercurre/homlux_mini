@@ -109,13 +109,12 @@ ComponentWithComputed({
       }
 
       if (deviceName.length > 6) {
-        Toast('设备名称不能超过6个字符')
-        return
+        Toast('设备名称最长名称6个字')
       }
 
       const res = await editDeviceInfo({
         deviceId,
-        deviceName,
+        deviceName: deviceName.slice(0.6),
         roomId,
         houseId: homeBinding.store.currentHomeId,
         type: '2',

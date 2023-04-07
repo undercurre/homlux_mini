@@ -48,7 +48,7 @@ Component({
       if (this.data.deviceName.length > 6) {
         Toast('设备名称最长名称6个字')
       }
-      
+
       this.triggerEvent('confirm', this.data.deviceName.slice(0, 6))
     },
   },
