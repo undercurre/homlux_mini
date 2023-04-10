@@ -4,6 +4,7 @@ import {
   appOnLaunchService,
   startWebsocketService,
   closeWebSocket,
+  setCurrentEnv,
 } from './utils/index'
 import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore } from './store/index'
@@ -17,6 +18,9 @@ App<IAppOption>({
     console.log('APP打开参数：', options)
     // 加载svg数据
     this.globalData.svgs = svgs
+
+    // 设备运行环境
+    setCurrentEnv()
 
     // 获取状态栏、顶部栏、底部栏高度
     setNavigationBarAndBottomBarHeight()

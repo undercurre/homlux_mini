@@ -1,6 +1,6 @@
 import { baseRequest, BaseRequestOptions } from './baseRequest'
 import storage from '../storage'
-import { env, mzaioBaseURL, TOKEN_EXPIRED } from '../../config/index'
+import { getEnv, mzaioBaseURL, TOKEN_EXPIRED } from '../../config/index'
 import { userStore } from '../../store/index'
 
 // 后端默认返回格式
@@ -37,7 +37,7 @@ const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: Base
   }
 
   // 拼接上美智云的基础地址
-  options.url = mzaioBaseURL[env] + options.url
+  options.url = mzaioBaseURL[getEnv()] + options.url
 
   // 后续考虑选择用nanoid生成reqId，但是微信小程序不支持浏览器的crypto API，无法使用nanoid和uuid包。
   const reqId = Date.now()
