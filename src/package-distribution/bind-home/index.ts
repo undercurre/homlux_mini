@@ -6,7 +6,6 @@ import { getCurrentPageParams, strUtil, checkInputNameIllegal } from '../../util
 import { queryDeviceInfoByDeviceId, editDeviceInfo, batchUpdate } from '../../apis/index'
 import { homeBinding, homeStore, roomBinding } from '../../store/index'
 import { bleDevicesStore } from '../store/bleDeviceStore'
-import { runInAction } from 'mobx-miniprogram'
 
 ComponentWithComputed({
   options: {
