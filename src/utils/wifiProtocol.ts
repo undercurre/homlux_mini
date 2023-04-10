@@ -117,7 +117,6 @@ export class WifiSocket {
                 resolve({ success: false, errCode: -1 })
               }, 90000)
 
-
               const queryWifi = () => {
                 wx.getConnectedWifi({
                   success: (successRes) => {
@@ -333,7 +332,7 @@ export class WifiSocket {
       tcpClient.connect({
         address: IP,
         port: this.deviceInfo.tcpPort,
-        timeout: 10
+        timeout: 10,
       })
     })
   }
@@ -350,7 +349,7 @@ export class WifiSocket {
         await this.connectTcp(this.deviceInfo.ip)
       }
 
-      return new Promise<{ errorCode: number; success: Boolean } & IAnyObject>((resolve) => {
+      return new Promise<{ errorCode: number; success: boolean } & IAnyObject>((resolve) => {
         const reqId = Date.now().toString()
 
         const msgData = {

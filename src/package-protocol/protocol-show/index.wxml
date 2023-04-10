@@ -11,7 +11,7 @@
 <view class="h-24rpx"> </view>
 <view class="w-750rpx flex-center">
   <scroll-view scroll-x scroll-y style="width: 100vw; height: calc(100vh - navigationBarAndStatusBarHeight)">
-    <view style="width: calc(100vw - 48rpx); margin-left: 24rpx;">
+    <view style="width: calc(100vw - 48rpx); margin-left: 24rpx">
       <rich-text v-if="{{type === 'doc'}}" nodes="{{doc}}"></rich-text>
     </view>
     <image bindtap="handleImgTap" show-menu-by-longpress v-elif="{{type === 'img'}}" src="{{url}}" style="width: {{width}};height: {{height}};" />

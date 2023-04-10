@@ -165,7 +165,7 @@ Component({
       const connectRes = await socket.connect()
 
       console.debug(params.ssid + '---connectRes', connectRes)
-      
+
       if (connectRes.errCode === 12007) {
         wx.navigateBack()
         return
@@ -216,12 +216,12 @@ Component({
 
         socket.onMessage((data: IAnyObject) => {
           console.log('WifiSocket.onMessage', data)
-  
+
           if (data.topic === '/gateway/net/confirm' && this.data.isShowForceBindTips) {
             this.setData({
               isShowForceBindTips: false,
             })
-  
+
             this.startBind(gatewayStatus.method)
           }
         })
