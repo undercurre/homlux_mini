@@ -1,5 +1,5 @@
 <view class="page-container flex flex-col">
-  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="添加智能网关"></nav-bar>
+  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="{{pageTitle}}"></nav-bar>
 
   <view class="grow flex flex-col">
     <block wx:if="{{status === 'linking'}}">

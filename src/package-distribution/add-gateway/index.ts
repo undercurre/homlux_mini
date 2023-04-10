@@ -1,4 +1,5 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import { ComponentWithComputed } from 'miniprogram-computed'
 import { IPageData, stepListForBind, stepListForChangeWiFi } from './conifg'
 import { queryDeviceOnlineStatus, bindDevice } from '../../apis/index'
 import { WifiSocket, strUtil, getCurrentPageParams } from '../../utils/index'
@@ -9,7 +10,7 @@ let socket: WifiSocket
 let start = Date.now()
 let gatewayNum = 0
 
-Component({
+ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
     pureDataPattern: /^_/,
@@ -25,14 +26,28 @@ Component({
    * 组件的初始数据
    */
   data: {
+    type: '',
     apSSID: '',
     isConnectDevice: false,
     _interId: 0,
     _queryTimes: 50,
     status: 'linking',
-    currentStep: '连接设备',
     activeIndex: 0,
   } as WechatMiniprogram.IAnyObject & IPageData,
+
+  computed: {
+    pageTitle(data) {
+      let title = ''
+
+      if (data.type === 'changeWifi') {
+        title = '重新联网'
+      } else {
+        title = '添加智能网关'
+      }
+
+      return title
+    },
+  },
 
   lifetimes: {
     ready() {
@@ -58,6 +73,7 @@ Component({
       console.log('ready', getCurrentPageParams())
       // 绑定流程和更改wifi的步骤流程不同
       this.setData({
+        type,
         apSSID: apSSID,
         stepList: type === 'changeWifi' ? stepListForChangeWiFi : stepListForBind,
       })
