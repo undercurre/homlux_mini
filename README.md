@@ -122,6 +122,7 @@ component({
 
 1. [computed 使用注意点](./docs/computed使用说明.md)
 2. [lottie 使用注意点](./docs/lottie使用说明.md)
+2. [mitt 使用注意点](./docs/mitt使用说明.md)
 3. [mobx 使用注意点](./docs/mobx使用说明.md)
 4. [request 使用注意点](./docs/request使用说明.md)
 5. [storage 使用注意点](./docs/storage使用说明.md)
