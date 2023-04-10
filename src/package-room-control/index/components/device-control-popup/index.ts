@@ -63,7 +63,8 @@ ComponentWithComputed({
    */
   data: {
     _divideRpxByPx: 0,
-    _bottom: 0, // 收起来时的bottom值
+    /** 收起来时的bottom值 */
+    _bottom: 0,
     _minHeight: 0,
     _componentHeight: 0,
     _wfullpx: 0,
@@ -88,16 +89,20 @@ ComponentWithComputed({
     },
     /** 提供给关联选择的列表 */
     list: [] as (Device.DeviceItem | Scene.SceneItem)[],
+    /** 当前选中的开关，处于是什么关联模式 */
     linkType: '' as '' | 'light' | 'switch' | 'scene',
+    /** 关联弹出框，需要开关去关联什么模式 */
     selectLinkType: '' as '' | 'light' | 'switch' | 'scene',
     /** 已选中设备或场景 */
     linkSelectList: [] as string[],
     showLinkPopup: false,
     showSelectLinkPopup: false,
+    /** 当前选中的开关，关联了什么开关或者灯 */
     relId: {
       switchRelId: '',
       lightRelId: '',
     },
+    /** 选中的开关的的uniId */
     selectSwitchUniId: '',
     allOnPress: false,
     allOffPress: false,

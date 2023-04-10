@@ -26,14 +26,14 @@ Component({
       })
     },
 
-    onLoginTap() {
+    handleLoginTap() {
       if (!this.data.isAgree) {
         Toast('请同意协议')
         return
       }
     },
 
-    onLoginClick(e: { detail: { code: string } }) {
+    handleLoginClick(e: { detail: { code: string } }) {
       if (!e.detail.code) {
         Toast('取消登录')
         return
@@ -42,7 +42,7 @@ Component({
         success: (res) => {
           console.log('login', res, e)
           if (res.code) {
-            this.handleLogin({
+            this.login({
               jsCode: res.code,
               code: e.detail.code,
             })
@@ -54,7 +54,7 @@ Component({
       })
     },
 
-    async handleLogin(data: { jsCode: string; code: string }) {
+    async login(data: { jsCode: string; code: string }) {
       const loginRes = await login(data)
       if (loginRes.success && loginRes.result) {
         console.log('loginRes', loginRes)
