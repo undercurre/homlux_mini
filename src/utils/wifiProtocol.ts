@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { aesUtil, strUtil } from '../utils/index'
+import { aesUtil, delay, strUtil } from '../utils/index'
 
 let _instance: WifiSocket | null = null
 
@@ -83,7 +83,6 @@ export class WifiSocket {
           }
 
           const systemVersion = parseInt(deviceInfo.system.toLowerCase().replace(deviceInfo.platform, ''))
-          console.log('systemVersion', deviceInfo.platform, systemVersion)
           const isAndroid10Plus = deviceInfo.platform === 'android' && systemVersion >= 10 // 判断是否Android10+或者是鸿蒙
 
           wx.connectWifi({
@@ -104,6 +103,7 @@ export class WifiSocket {
                 return
               }
 
+              console.log('queryWifiTimeId', this.queryWifiTimeId, this)
               // 避免重复触发轮询逻辑
               if (this.queryWifiTimeId !== 0) {
                 return
@@ -133,6 +133,9 @@ export class WifiSocket {
                       }, 2000)
                     }
                   },
+                  complete: (res) => {
+                    console.log('query-getConnectedWifi-complete', res)
+                  }
                 })
               }
 
@@ -154,9 +157,11 @@ export class WifiSocket {
       return { errCode: -1, success: false, msg: 'UDP初始化失败' }
     }
 
+    await delay(1000)
+
     const ipRes = await this.getDeviceIp()
 
-    console.log(`getDeviceIp`)
+    console.log(`getDeviceIp`, ipRes)
 
     if (!ipRes.success) {
       return { errCode: -1, success: false, msg: '获取IP失败' }
@@ -208,9 +213,9 @@ export class WifiSocket {
     tcpClient.onError((res) => {
       console.log('tcpClient.onError', res)
       // 被动关闭socket时释放对应tcp资源
-      if (res.errMsg.includes('closed')) {
-        tcpClient.close()
-      }
+      // if (res.errMsg.includes('closed')) {
+      //   tcpClient.close()
+      // }
     })
 
     tcpClient.onClose((res) => {
@@ -282,6 +287,7 @@ export class WifiSocket {
 
     await this.sendCmdForDeviceIp()
 
+    // 获取IP重试，存在第一次获取超时的情况，尤其安卓端比较明显
     if (!this.deviceInfo.ip) {
       await this.sendCmdForDeviceIp()
     }
@@ -358,13 +364,13 @@ export class WifiSocket {
           data: params.data,
         }
 
-        console.log(`${params.method}-send: ${params.topic}`, msgData)
+        console.log(`${params.method}-send: ${params.topic}`, msgData, dayjs().format('HH:mm:ss'))
 
         const message = aesUtil.encrypt(JSON.stringify(msgData), this.key)
         const sendMsg = strUtil.hexStringToArrayBuffer(message)
 
         // 超时回复处理
-        const timeId = setTimeout(() => {
+        const timeoutId = setTimeout(() => {
           console.error(`${params.method}-超时回复:`, params.topic)
           this.cmdCallbackMap[reqId] && delete this.cmdCallbackMap[reqId]
           resolve({ errorCode: -1, msg: '请求超时', success: false })
@@ -373,7 +379,7 @@ export class WifiSocket {
         // 后续在消息监听onmessage通过reqId匹配并把对应的回复resolve，达到同步调用的效果
         this.cmdCallbackMap[reqId] = (data: { errorCode: number } & IAnyObject) => {
           console.log(`${params.method}-res:`, params.topic, data)
-          clearTimeout(timeId)
+          clearTimeout(timeoutId)
           console.debug('指令发送-回复时间：', Date.now() - parseInt(reqId))
 
           resolve({

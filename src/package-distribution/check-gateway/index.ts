@@ -160,30 +160,38 @@ Component({
     },
 
     async connectWifi() {
-      const params = getCurrentPageParams()
+      try {
+        const params = getCurrentPageParams()
 
-      const connectRes = await socket.connect()
+        const connectRes = await socket.connect()
+  
+        console.debug(params.ssid + '---connectRes', connectRes)
+  
+        if (connectRes.errCode === 12007) {
+          wx.navigateBack()
+          return
+        }
+  
+        if (!connectRes.success) {
+          throw connectRes
+        }
+  
+        this.setData({
+          isConnectDevice: true,
+        })
+  
+        const inistRes = await socket.init()
 
-      console.debug(params.ssid + '---connectRes', connectRes)
-
-      if (connectRes.errCode === 12007) {
-        wx.navigateBack()
-        return
-      }
-
-      if (!connectRes.success) {
+        if (!inistRes.success) {
+          throw inistRes
+        }
+  
+        this.getGatewayStatus()
+      } catch {
         this.setData({
           status: 'error',
         })
-        return
       }
-
-      this.setData({
-        isConnectDevice: true,
-      })
-
-      await socket.init()
-      this.getGatewayStatus()
     },
 
     /**

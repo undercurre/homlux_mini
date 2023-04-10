@@ -1,6 +1,6 @@
 <view class="relative bg-hex-000">
   <!-- 相机没初始化好的情况下，该组件渲染跟随页面显示状态，便于授权成功后重新渲染相机组件，无需重进页面 -->
-  <camera wx:if="{{hasInitCamera || isShowPage}}" mode="scanCode" device-position="back" flash="{{isFlash? 'on' : 'off'}}" bind:scancode="getQrCodeInfo" bind:error="getCameraError" bind:initdone="initCameraDone" class="w-750rpx h-screen"></camera>
+  <camera wx:if="{{isShowPage}}" mode="scanCode" device-position="back" flash="{{isFlash? 'on' : 'off'}}" bind:scancode="getQrCodeInfo" bind:error="getCameraError" bind:initdone="initCameraDone" class="w-750rpx h-screen"></camera>
 
   <nav-bar class="absolute" background="transparent" leftArrow="{{true}}" left-icon="/package-distribution/assets/scan/back.png" bind:leftTap="goBack"></nav-bar>
 
@@ -19,12 +19,12 @@
     </view>
 
     <view class="pt-80rpx h-300 grow shrink camera-mask flex flex-col items-center justify-between">
-      <view wx:if="{{bleStatus === 'discovering' || bleStatus === 'close'}}" class="inline-block flex flex-row items-center bg-hex-5A5A5A rounded-32rpx leading-74rpx px-28rpx w-min-380">
-        <image wx:if="{{bleStatus === 'discovering'}}" class="w-28 h-28 rotate" src="/package-distribution/assets/scan/scaning.png"></image>
+      <view wx:if="{{isBlePermit}}" class="inline-block flex flex-row items-center bg-hex-5A5A5A rounded-32rpx leading-74rpx px-28rpx w-min-380">
+        <image wx:if="{{discovering}}" class="w-28 h-28 rotate" src="/package-distribution/assets/scan/scaning.png"></image>
 
         <text class="grow text-hex-F4F8FF px-16rpx" bind:tap="checkSystemBleSwitch">{{tipsText}}</text>
 
-        <van-button class="ml-24rpx" type="primary" size="small" bind:click="addNearSubdevice" wx:if="{{bleDeviceList.length}}" custom-style="height: 52rpx;margin-top: -8rpx;">立即添加</van-button>
+        <van-button class="ml-24rpx" type="primary" size="small" bind:click="addNearSubdevice" wx:if="{{discovering && bleDeviceList.length}}" custom-style="height: 52rpx;margin-top: -8rpx;">立即添加</van-button>
       </view>
 
       <view></view>
@@ -74,7 +74,7 @@
   </view>
 </van-popup>
 
-<van-dialog id="van-dialog" use-slot show="{{ isShowNoGatewayTips }}" title="{{deviceInfo.deviceName}}" confirmButtonText="我知道了" confirm-button-color="#488FFF">
+<van-dialog id="van-dialog" use-slot="{{isShowNoGatewayTips}}" title="{{deviceInfo.deviceName}}" confirm-button-color="#488FFF">
   <view class="flex flex-col items-center px-40rpx pb-48rpx leading-48rpx">
     <image class="w-160 h-160 mb-48rpx mt-28rpx" src="{{deviceInfo.icon}}"></image>
 

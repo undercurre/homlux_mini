@@ -1,6 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
+import Dialog from '@vant/weapp/dialog/dialog'
 import dayjs from 'dayjs'
 import { deviceBinding, homeBinding } from '../../store/index'
 import { bleDevicesBinding, bleDevicesStore } from '../store/bleDeviceStore'
@@ -26,11 +27,11 @@ ComponentWithComputed({
   data: {
     isShowPerssionModal: false, // 权限弹窗标志，防止已弹出的情况下，息屏再次触发检测
     hasInitCamera: false,
+    isBlePermit: false,
     isShowPage: false,
     isShowGatewayList: false, // 是否展示选择网关列表弹窗
     isShowNoGatewayTips: false, // 是否展示添加网关提示弹窗
     isScan: false, // 是否正在扫码
-    bleStatus: '',
     isFlash: false,
     selectGatewayId: '',
     selectGatewaySn: '',
@@ -46,7 +47,7 @@ ComponentWithComputed({
       return allRoomDeviceList.filter((item) => item.deviceType === 1)
     },
     tipsText(data: IAnyObject) {
-      if (data.bleStatus === 'close') {
+      if (!data.available) {
         return '打开手机蓝牙发现附近子设备'
       }
 
@@ -56,6 +57,8 @@ ComponentWithComputed({
 
   lifetimes: {
     async ready() {
+      bleDevicesBinding.store.reset()
+
       await homeBinding.store.updateHomeInfo()
     },
     detached() {
@@ -65,21 +68,20 @@ ComponentWithComputed({
 
   pageLifetimes: {
     show() {
-      console.log('scan-show')
       this.setData({
         isShowPage: true,
       })
 
-      this.data.bleStatus === 'open' && bleDevicesBinding.store.startBleDiscovery()
+      // 蓝牙权限及开关已开情况下
+      this.data.isBlePermit && bleDevicesStore.available && bleDevicesStore.startBleDiscovery()
     },
     hide() {
-      console.log('scan-hide')
       // 由于非授权情况下进入页面，摄像头组件已经渲染，即使重新授权页无法正常使用，需要通过wx：if重新触发渲染组件
       this.setData({
         isShowPage: false,
       })
 
-      bleDevicesBinding.store.stopBLeDiscovery()
+      bleDevicesStore.discovering && bleDevicesStore.stopBLeDiscovery()
     },
   },
 
@@ -148,92 +150,63 @@ ComponentWithComputed({
      * 检查系统蓝牙开关
      */
     async checkSystemBleSwitch() {
-      if (this.data.bleStatus !== 'close') {
-        return true
-      }
-
-      const res = wx.getSystemSetting()
-
-      console.log('getSystemSetting', res)
-
-      this.setData({
-        bleStatus: res.bluetoothEnabled ? 'open' : 'close',
-      })
       // 没有打开系统蓝牙开关异常处理
-      if (!res.bluetoothEnabled) {
-        wx.showModal({
+      if (!bleDevicesStore.available) {
+        Dialog.alert({
           title: '请打开手机蓝牙',
-          content: '用于发现附近的子设备',
-          showCancel: false,
-          confirmText: '我知道了',
-          confirmColor: '#27282A',
+          message: '用于发现附近的子设备',
+          showCancelButton: false,
+          confirmButtonText: '我知道了',
         })
       }
 
-      return res.bluetoothEnabled
+      return bleDevicesStore.available
     },
 
     /**
      * 检查微信蓝牙权限
-     * isDeny: 是否已拒绝授权，
      */
-    async checkBlePermission(isDeny?: boolean) {
-      if (this.data.isShowPerssionModal) {
-        return
-      }
-      let settingRes: IAnyObject = {}
-      // 若已知未授权，省略查询权限流程，节省时间
-      if (isDeny !== true) {
-        settingRes = await wx.getSetting()
-      }
+    async checkBlePermission() {
+      // if (this.data.isShowPerssionModal) {
+      //   return
+      // }
 
-      return new Promise<boolean>((resolve) => {
-        // 没有打开微信蓝牙授权异常处理
-        console.log('getSetting', settingRes)
+      showLoading()
+      // 没有打开微信蓝牙授权异常处理
 
-        if (isDeny || !settingRes.authSetting['scope.bluetooth']) {
-          this.setData({
-            isShowPerssionModal: true
-          })
-          wx.showModal({
-            content: '请授权使用蓝牙，否则无法正常扫码配网',
-            showCancel: true,
-            cancelText: '返回',
-            cancelColor: '#27282A',
-            confirmText: '去设置',
-            confirmColor: '#27282A',
-            success: (res) => {
-              this.setData({
-                isShowPerssionModal: false
-              })
-              console.log('showModal', res)
-              if (res.cancel) {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                this.goBack() // 拒绝授权摄像头，则退出当前页面
-                resolve(false)
-
-                return
-              }
-
-              wx.openSetting({
-                success: (settingRes) => {
-                  console.log('openSetting', settingRes)
-                  resolve(settingRes.authSetting['scope.bluetooth'] === true)
-                },
-              })
-            },
-          })
-        } else {
-          resolve(true)
-        }
+      this.setData({
+        isShowPerssionModal: true,
       })
+
+      Dialog.alert({
+        message: '请授权使用蓝牙，否则无法正常扫码配网',
+        showCancelButton: true,
+        cancelButtonText: '返回',
+        confirmButtonText: '去设置',
+        confirmButtonOpenType: 'openSetting',
+      })
+        .catch(() => {
+          // on cancel
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          this.goBack() // 拒绝授权摄像头，则退出当前页面
+        })
+        .finally(() => {
+          this.setData({
+            isShowPerssionModal: false,
+          })
+        })
+
+      hideLoading()
     },
 
     async initBle() {
-      if (bleDevicesStore.isDiscovering) {
+      if (bleDevicesStore.discovering) {
+        console.debug('已经初始化蓝牙了')
         return
       }
+
+      showLoading()
       // 初始化蓝牙模块
       const openBleRes = (await wx
         .openBluetoothAdapter({
@@ -245,15 +218,15 @@ ComponentWithComputed({
 
       // 判断是否授权蓝牙 安卓、IOS返回错误格式不一致
       if (openBleRes.errno === 103 || openBleRes.errMsg.includes('auth deny')) {
-        const permission = await this.checkBlePermission(true)
+        this.checkBlePermission()
 
         // 优先判断微信授权设置
-        if (!permission) {
-          return
-        }
+        return
       }
 
-      bleDevicesBinding.store.reset()
+      this.setData({
+        isBlePermit: true
+      })
 
       // 系统是否已打开蓝牙
       const res = await this.checkSystemBleSwitch()
@@ -261,12 +234,9 @@ ComponentWithComputed({
       if (!res) {
         const listen = (res: WechatMiniprogram.OnBluetoothAdapterStateChangeCallbackResult) => {
           console.log('onBluetoothAdapterStateChange-scan', res)
-          this.setData({
-            bleStatus: res.available ? 'open' : 'close',
-          })
           if (res.available) {
             console.log('listen-startDiscoverBle')
-            this.startDiscoverBle()
+            bleDevicesStore.startBleDiscovery()
             this.checkWxScanEnter()
             wx.offBluetoothAdapterStateChange(listen)
           }
@@ -274,16 +244,11 @@ ComponentWithComputed({
         wx.onBluetoothAdapterStateChange(listen)
         return
       } else {
-        this.startDiscoverBle()
+        bleDevicesStore.startBleDiscovery()
         this.checkWxScanEnter()
       }
-    },
 
-    async startDiscoverBle() {
-      this.setData({
-        bleStatus: 'discovering',
-      })
-      bleDevicesBinding.store.startBleDiscovery()
+      hideLoading()
     },
 
     onCloseGwList() {
@@ -299,41 +264,38 @@ ComponentWithComputed({
       if (this.data.isShowPerssionModal) {
         return
       }
+
+      showLoading()
       const settingRes = await wx.getSetting()
 
       console.log('getSetting', settingRes)
 
       if (!settingRes.authSetting['scope.camera']) {
         this.setData({
-          isShowPerssionModal: true
+          isShowPerssionModal: true,
         })
-        wx.showModal({
-          content: '请授权使用摄像头，用于扫码配网',
-          showCancel: true,
-          cancelText: '返回',
-          cancelColor: '#27282A',
-          confirmText: '去设置',
-          confirmColor: '#27282A',
-          success: (res) => {
-            console.log('showModal', res)
-            this.setData({
-              isShowPerssionModal: false
-            })
-            if (res.cancel) {
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              this.goBack() // 拒绝授权摄像头，则退出当前页面
-              return
-            }
 
-            wx.openSetting({
-              success: (settingRes) => {
-                console.log('openSetting', settingRes)
-              },
-            })
-          },
+        Dialog.alert({
+          message: '请授权使用摄像头，用于扫码配网',
+          showCancelButton: true,
+          cancelButtonText: '返回',
+          confirmButtonText: '去设置',
+          confirmButtonOpenType: 'openSetting',
         })
+          .catch(() => {
+            // on cancel
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            this.goBack() // 拒绝授权摄像头，则退出当前页面
+          })
+          .finally(() => {
+            this.setData({
+              isShowPerssionModal: false,
+            })
+          })
       }
+
+      hideLoading()
 
       return settingRes.authSetting['scope.camera']
     },
@@ -341,11 +303,11 @@ ComponentWithComputed({
      * 扫码解析
      */
     async getQrCodeInfo(e: WechatMiniprogram.CustomEvent) {
-      if (this.data.isScan || this.data.bleStatus !== 'discovering') {
+      if (this.data.isScan || !bleDevicesStore.discovering) {
         return
       }
 
-      console.log('getQrCodeInfo', e, this.data.isScan)
+      console.log('getQrCodeInfo', e)
 
       const scanUrl = e.detail.result
 
@@ -356,8 +318,6 @@ ComponentWithComputed({
       console.log('getCameraError', event)
 
       this.checkCameraPerssion()
-
-      hideLoading()
     },
 
     async initCameraDone() {
@@ -549,6 +509,12 @@ ComponentWithComputed({
           isShowNoGatewayTips: true,
         })
 
+        Dialog.alert({
+          title: this.data.deviceInfo.deviceName,
+          showCancelButton: false,
+          confirmButtonText: '我知道了',
+        })
+
         return false
       }
 
@@ -570,6 +536,7 @@ ComponentWithComputed({
      */
     addNearSubdevice() {
       this.data.deviceInfo.type = 'near'
+      this.data.deviceInfo.deviceName = '子设备'
 
       if (!this.checkGateWayInfo()) {
         return

@@ -91,10 +91,16 @@ export function getCurrentPageParams() {
 //   })
 // }
 
+let loadingTimeId = 0
 /**
  * 显示loading
  */
 export function showLoading() {
+  // 防止两个相邻接口调用loading，导致loading闪烁出现
+  if (loadingTimeId) {
+    clearTimeout(loadingTimeId)
+    return
+  }
   wx.showLoading({
     title: '加载中...',
     mask: true,
@@ -105,5 +111,8 @@ export function showLoading() {
  * 隐藏loading
  */
 export function hideLoading() {
-  wx.hideLoading()
+  loadingTimeId = setTimeout(() => {
+    wx.hideLoading()
+    loadingTimeId = 0
+  }, 300)
 }

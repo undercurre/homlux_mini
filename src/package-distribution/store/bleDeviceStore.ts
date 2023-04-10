@@ -7,15 +7,23 @@ let _foundList = [] as IBleBaseInfo[]
 
 console.info('bleDevicesStore')
 export const bleDevicesStore = observable({
-  isDiscovering: false, // 是否正在搜索蓝牙
+  available: false, // 是否打开蓝牙开关
+
+  discovering: false, // 是否正在搜索蓝牙
+
+  isStart: false, // 业务字段，标志是否开始了发现蓝牙设备流程，用于蓝牙开关被中途关掉（会终止蓝牙搜索）又打开的情况，恢复蓝牙搜索状态
 
   bleDeviceList: [] as IBleDevice[],
 
   startBleDiscovery() {
-    if (this.isDiscovering) {
-      console.error('已经正在发现蓝牙')
+    if (this.discovering) {
+      console.error('已经正在搜索蓝牙')
       return
     }
+
+    runInAction(() => {
+      this.isStart = true
+    })
     // 监听扫描到新设备事件
     wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
       res.devices = unique(res.devices, 'deviceId') as WechatMiniprogram.BlueToothDevice[] // 去重
@@ -70,12 +78,18 @@ export const bleDevicesStore = observable({
   stopBLeDiscovery() {
     wx.stopBluetoothDevicesDiscovery()
     wx.offBluetoothDeviceFound()
+    runInAction(() => {
+      this.isStart = false
+    })
   },
 
   reset() {
+    const systemSetting = wx.getSystemSetting()
+
     runInAction(() => {
       this.bleDeviceList = []
-      this.isDiscovering = false
+      this.discovering = false
+      this.available = systemSetting.bluetoothEnabled
 
       _foundList = []
     })
@@ -86,7 +100,19 @@ export const bleDevicesStore = observable({
       console.debug('onBluetoothAdapterStateChange-store', res)
 
       runInAction(() => {
-        bleDevicesStore.isDiscovering = res.discovering
+        bleDevicesStore.discovering = res.discovering
+        bleDevicesStore.available = res.available
+
+        if (this.isStart && !res.discovering) {
+          wx.startBluetoothDevicesDiscovery({
+            allowDuplicatesKey: true,
+            powerLevel: 'high',
+            interval: 3000,
+            success() {
+              console.debug('restartBluetoothDevicesDiscovery')
+            },
+          })
+        }
       })
     })
   },
@@ -94,7 +120,7 @@ export const bleDevicesStore = observable({
 
 export const bleDevicesBinding = {
   store: bleDevicesStore,
-  fields: ['bleDeviceList'],
+  fields: ['discovering', 'available', 'bleDeviceList'],
   actions: [],
 }
 
