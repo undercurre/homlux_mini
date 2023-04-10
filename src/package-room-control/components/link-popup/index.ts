@@ -87,10 +87,19 @@ ComponentWithComputed({
       return ''
     },
     roomListComputed(data) {
-      const roomMap = roomStore.roomMap
-      const roomListSet = new Set<string>(data.list.map((item: { roomId: string }) => item.roomId))
       const roomList = [] as Room.RoomInfo[]
-      roomListSet.forEach((roomId) => roomList.push(roomMap[roomId]))
+      // 从roomList遍历，保证房间顺序
+      roomStore.roomList.forEach((room) => {
+        const isIncludes = data.list.some((item: { roomId: string }) => {
+          if (item.roomId === room.roomId) {
+            return true
+          }
+          return false
+        })
+        if (isIncludes) {
+          roomList.push(room)
+        }
+      })
       return roomList
     },
     listComputed(data) {

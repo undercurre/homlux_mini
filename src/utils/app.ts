@@ -1,3 +1,4 @@
+import { setEnv } from '../config/index'
 import { storage } from './storage'
 // import QQMapWX from './qqmap-wx-jssdk'
 // import { QQMapConfig } from '../config/index'
@@ -115,4 +116,19 @@ export function hideLoading() {
     wx.hideLoading()
     loadingTimeId = 0
   }, 300)
+}
+
+/**
+ * 根据小程序当前运行环境设置不同的env配置
+ * 开发版、体验版使用dev配置
+ * 正式版使用prod配置
+ */
+export function setCurrentEnv() {
+  const info = wx.getAccountInfoSync()
+  console.log('当前环境：', info.miniProgram.envVersion)
+  if (['develop', 'trial'].includes(info.miniProgram.envVersion)) {
+    setEnv('dev')
+  } else if (info.miniProgram.envVersion === 'release') {
+    setEnv('prod')
+  }
 }

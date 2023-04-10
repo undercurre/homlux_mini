@@ -3,11 +3,11 @@
 ## 属性
 
 | 参数 name   | 类型    | 必传  | 默认值 | 描述           |
-| ----------- | ------- | ----- | ------ | -------------- |
-| deviceInfo  | Object  | true  | -      | 设备信息       |
-| select      | boolean | false | false  | 是否选中       |
-| showControl | boolean | false | false  | 是否有控制功能 |
-| editMode | boolean | false | false  | 是否处于长按选中模式 |
+| ----------- | ------- | ----- | ------ |--------------|
+| deviceInfo  | Object  | true  | -      | 设备信息         |
+| select      | boolean | false | false  | 是否控制选中       |
+| showControl | boolean | false | false  | 是否有控制功能      |
+| editMode | boolean | false | false  | 是否处于长按选中模式   |
 | editSelect | boolean | false | false  | 处于选中模式中的选中状态 |
 
 ## 事件

@@ -8,7 +8,7 @@ export * from './code'
 export * from './device'
 export * from './light'
 
-export const env: 'dev' | 'prod' = 'dev'
+let env: 'dev' | 'prod' = 'dev'
 
 export const mzaioBaseURL: ConfigWithEnv<string> = {
   dev: 'https://test.meizgd.com/mzaio', // sit环境
@@ -31,4 +31,12 @@ export const mzaioWSURL: ConfigWithEnv<string> = {
 export const QQMapConfig = {
   key: 'L7HBZ-UZ6EU-7J5VU-BR54O-3ZDG5-6CFIC',
   sig: 'W9RrPrVIxGPyuKEzzS76ktDxvN3zxxyJ',
+}
+
+export function getEnv() {
+  return env
+}
+
+export function setEnv(val: 'dev' | 'prod') {
+  env = val
 }

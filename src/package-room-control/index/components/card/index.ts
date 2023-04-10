@@ -14,7 +14,6 @@ ComponentWithComputed({
   properties: {
     item: {
       type: Object,
-      value: {},
       observer() {},
     },
   },
