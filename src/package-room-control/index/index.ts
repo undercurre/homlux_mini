@@ -36,27 +36,35 @@ ComponentWithComputed({
       (storage.get<number>('statusBarHeight') as number) +
       (storage.get<number>('navigationBarHeight') as number) +
       'px',
+    /** 展示点中离线设备弹窗 */
     showDeviceOffline: false,
+    /** 点击的离线设备的信息 */
     officeDeviceInfo: {} as Device.DeviceItem,
+    /** 控制面板 */
     controlPopup: true,
+    /** 弹出控制面板时，页面底部留出空位 */
     popupPlaceholder: false,
     showAddScenePopup: false,
-    contentHeight: 0,
+    /** 灯具展示列表 */
     lightList: [] as Device.DeviceItem[],
+    /** 开关展示列表 */
     switchList: [] as Device.DeviceItem[],
+    /** 窗帘展示列表 */
     curtainList: [] as Device.DeviceItem[],
+    /** 待创建面板的设备选择弹出框 */
     showBeforeAddScenePopup: false,
+    /** 添加场景成功提示 */
     showAddSceneSuccess: false,
+    /** 添加场景成功提示位置 */
     sceneTitlePosition: {
       x: 0,
       y: 0,
     },
-    isRefresh: false,
-    pageMetaScrollTop: 0,
     scrollTop: 0,
-    tempList: [] as Device.DeviceItem[],
+    /** 控制选中个数 */
     selectCount: 0,
     dragging: false,
+    /** 拖动过程中是否有数据更新，拖动完成后判断是否更新列表 */
     hasUpdate: false,
   },
 
@@ -117,6 +125,7 @@ ComponentWithComputed({
       }
       return false
     },
+    /** 是否只控制选中一个灯 */
     isLightSelectOne(data) {
       if (data.selectList) {
         const deviceMap = deviceStore.deviceMap
@@ -132,6 +141,7 @@ ComponentWithComputed({
       }
       return false
     },
+    /** 是否只控制选中一个开关 */
     isSwitchSelectOne(data) {
       if (data.selectList) {
         const deviceMap = deviceStore.deviceFlattenMap
@@ -274,7 +284,6 @@ ComponentWithComputed({
       // 解除监听
       emitter.off('wsReceive')
     },
-
     handleShowDeviceOffline(e: { detail: Device.DeviceItem }) {
       this.setData({
         showDeviceOffline: true,
@@ -319,6 +328,7 @@ ComponentWithComputed({
         dragSwitch.init()
       }
     },
+    /** store设备列表数据更新到界面 */
     updateDeviceList() {
       if (this.data.dragging) {
         this.setData({
@@ -339,17 +349,12 @@ ComponentWithComputed({
         hasUpdateInUpdateTimer = true
       }
     },
-
-    handleScroll(e: { detail: { scrollTop: number } }) {
-      this.setData({
-        pageMetaScrollTop: e.detail.scrollTop,
-      })
-    },
     handleSceneTap() {
       wx.navigateTo({
         url: '/package-room-control/scene-list/index',
       })
     },
+    /** 点击创建场景按钮回调 */
     handleCollect() {
       // 补充actions
       const deviceMap = deviceStore.deviceMap
@@ -415,6 +420,7 @@ ComponentWithComputed({
         this.setData({
           popupPlaceholder: true,
         })
+        // 点击卡片时，弹起的popup不能挡住卡片
         const divideRpxByPx = storage.get<number>('divideRpxByPx')
           ? (storage.get<number>('divideRpxByPx') as number)
           : 0.5
@@ -488,9 +494,7 @@ ComponentWithComputed({
       this.updateSelectType()
       this.updateDeviceList()
     },
-    async handleDevicePowerTap(e: { detail: Device.DeviceItem }) {
-      console.log(e)
-    },
+    /** 灯具开关点击 */
     async handleLightPowerToggle(e: { detail: Device.DeviceItem & { clientRect: WechatMiniprogram.ClientRect } }) {
       const device = deviceStore.deviceList.find((device) => device.deviceId === e.detail.deviceId)!
       const OnOff = device.mzgdPropertyDTOList['1'].OnOff
@@ -569,6 +573,7 @@ ComponentWithComputed({
       await saveDeviceOrder(orderData)
       this.reloadData()
     },
+    /** 面板开关点击 */
     async handleSwitchControlTapToggle(e: {
       detail: Device.DeviceItem & { clientRect: WechatMiniprogram.ClientRect }
     }) {
@@ -678,6 +683,7 @@ ComponentWithComputed({
         deviceStore.selectType = Array.from(typeList) as string[]
       })
     },
+    /** 点击空位收起弹窗 */
     handleScreenTap() {
       if (this.data.controlPopup) {
         this.setData({

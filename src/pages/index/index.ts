@@ -33,22 +33,15 @@ ComponentWithComputed({
       'px',
     // 状态栏高度
     statusBarHeight: storage.get<number>('statusBarHeight') + 'px',
-    dropdownMenu: {
-      x: '0px',
-      y: '0px',
-      isShow: false,
-    },
     selectHomeMenu: {
       x: '0px',
       y: '0px',
       isShow: false,
     },
-    contentHeight: 0,
     allOnBtnTap: false,
     allOffBtnTap: false,
     showAddNewRoom: false,
     showHomeSelect: false,
-    isRefresh: false,
     loading: true,
     isTryInvite: false,
   },
@@ -83,6 +76,7 @@ ComponentWithComputed({
       }
       return hasLightOrSwitch
     },
+    // 判断是否是创建者或者管理员，其他角色不能添加设备
     canAddDevice(data) {
       if (!data.currentHomeDetail) {
         return false
@@ -126,7 +120,6 @@ ComponentWithComputed({
           selected: 0,
         })
       }
-      this.updateContentHeight()
       if (othersStore.isInit) {
         this.setData({
           loading: false,
@@ -138,16 +131,6 @@ ComponentWithComputed({
       this.hideMenu()
       emitter.off('wsReceive')
     },
-    async onPullDownRefresh() {
-      try {
-        await homeStore.updateHomeInfo({ loading: true })
-      } finally {
-        this.setData({
-          isRefresh: false,
-        })
-      }
-    },
-
     onShow() {
       setTimeout(() => {
         this.inviteMember()
@@ -248,7 +231,6 @@ ComponentWithComputed({
     // 收起所有菜单
     hideMenu() {
       this.setData({
-        'dropdownMenu.isShow': false,
         'selectHomeMenu.isShow': false,
       })
     },
@@ -332,24 +314,6 @@ ComponentWithComputed({
       )
     },
     /**
-     * 点击加号按钮下拉
-     */
-    handleDropdown() {
-      wx.createSelectorQuery()
-        .select('#addIcon')
-        .boundingClientRect()
-        .exec((res) => {
-          this.setData({
-            dropdownMenu: {
-              x: '20rpx',
-              y: res[0].bottom + 10 + 'px',
-              isShow: !this.data.dropdownMenu.isShow,
-            },
-            'selectHomeMenu.isShow': false,
-          })
-        })
-    },
-    /**
      * 用户切换家庭
      */
     handleHomeSelect() {
@@ -372,7 +336,6 @@ ComponentWithComputed({
             'px',
           isShow: !this.data.selectHomeMenu.isShow,
         },
-        'dropdownMenu.isShow': false,
       })
     },
     /**
@@ -382,50 +345,6 @@ ComponentWithComputed({
       this.setData({
         showAddNewRoom: false,
       })
-    },
-    updateContentHeight() {
-      wx.createSelectorQuery()
-        .select('#content')
-        .boundingClientRect()
-        .exec((res) => {
-          if (res[0] && res[0].height) {
-            this.setData({
-              contentHeight: res[0].height,
-            })
-          }
-        })
-    },
-    doHomeSelectArrowAnimation(newValue: boolean, oldValue: boolean) {
-      if (newValue === oldValue) {
-        return
-      }
-      if (newValue) {
-        this.animate(
-          '#homeSelectArrow',
-          [
-            {
-              rotateZ: 0,
-            },
-            {
-              rotateZ: 180,
-            },
-          ],
-          200,
-        )
-      } else {
-        this.animate(
-          '#homeSelectArrow',
-          [
-            {
-              rotateZ: 180,
-            },
-            {
-              rotateZ: 0,
-            },
-          ],
-          200,
-        )
-      }
     },
   },
 })

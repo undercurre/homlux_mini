@@ -18,7 +18,7 @@ Component({
     selectedColor: '#1E2C46',
     list: [
       {
-        text: '首页',
+        text: '全屋',
         selectedIcon: '/assets/img/tabbar/home-selected.png',
         unSelectedIcon: '/assets/img/tabbar/home-unselected.png',
         path: '/pages/index/index',

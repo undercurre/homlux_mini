@@ -3,7 +3,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 /* layer: shortcuts */
 .flex-center{display:flex;justify-content:center;align-items:center;}
 .flex-col-center{display:flex;flex-direction:column;justify-content:center;align-items:center;}
-.flex-y-center{display:flex;align-items:center;}
 /* layer: default */
 .p-0{padding:0rpx;}
 .p-10rpx{padding:10rpx;}

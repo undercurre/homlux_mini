@@ -73,6 +73,8 @@ Component({
 
       logout()
     },
+
+    /** 如果没登陆，点击头像去登录 */
     handleUserInfoTap() {
       if (!userStore.isLogin) {
         wx.navigateTo({

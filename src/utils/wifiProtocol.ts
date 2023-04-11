@@ -135,7 +135,7 @@ export class WifiSocket {
                   },
                   complete: (res) => {
                     console.log('query-getConnectedWifi-complete', res)
-                  }
+                  },
                 })
               }
 

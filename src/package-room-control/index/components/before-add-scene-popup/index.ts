@@ -32,7 +32,7 @@ ComponentWithComputed({
   data: {
     editIndex: 0,
     contentHeight: 0,
-    sceneEditTitle: '',
+    actionEditTitle: '',
     showSceneEditLightPopup: false,
     showSceneEditSwitchPopup: false,
     sceneLightEditInfo: {} as IAnyObject,
@@ -83,7 +83,7 @@ ComponentWithComputed({
       if (deviceAction.proType === proType.light) {
         findDevice({ gatewayId: device.gatewayId, devId: device.deviceId })
         this.setData({
-          sceneEditTitle: deviceAction.name,
+          actionEditTitle: deviceAction.name,
           sceneLightEditInfo: deviceAction.value,
           showSceneEditLightPopup: true,
           editIndex: e.currentTarget.dataset.index,
@@ -95,7 +95,7 @@ ComponentWithComputed({
           ep: Number(device.switchInfoDTOList[0].switchId),
         })
         this.setData({
-          sceneEditTitle: deviceAction.name,
+          actionEditTitle: deviceAction.name,
           sceneSwitchEditInfo: deviceAction.value,
           showSceneEditSwitchPopup: true,
           editIndex: e.currentTarget.dataset.index,
