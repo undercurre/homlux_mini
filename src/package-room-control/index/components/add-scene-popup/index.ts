@@ -203,7 +203,13 @@ ComponentWithComputed({
     handleLinkSwitchPopup() {
       this.setData({
         showLinkPopup: true,
-        list: deviceStore.allRoomDeviceFlattenList.filter((item) => item.uniId.includes(':')),
+        list: deviceStore.allRoomDeviceFlattenList.filter((item) => {
+          if (!item.uniId.includes(':')) {
+            return false
+          }
+          // 排除掉已在待创建场景执行动作中的开关
+          return !sceneStore.addSceneActions.some((action) => action.uniId === item.uniId)
+        }),
         linkSelectList: this.data.linkSwitch ? [this.data.linkSwitch] : [],
       })
     },
