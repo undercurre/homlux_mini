@@ -131,7 +131,9 @@ Component({
         return
       }
 
-      const switchItem = this.data.deviceInfo.switchList.find(item => item.switchId === this.data.switchInfo.switchId) as Device.ISwitch
+      const switchItem = this.data.deviceInfo.switchList.find(
+        (item) => item.switchId === this.data.switchInfo.switchId,
+      ) as Device.ISwitch
 
       switchItem.switchName = this.data.switchInfo.switchName
 
