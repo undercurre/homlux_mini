@@ -217,6 +217,7 @@ ComponentWithComputed({
         this.setData({
           activeIndex: 3,
         })
+
         wx.redirectTo({
           url: strUtil.getUrlWithParams('/package-distribution/bind-home/index', {
             deviceId: res.result.deviceId,
