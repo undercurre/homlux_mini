@@ -25,7 +25,6 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    isShowPerssionModal: false, // 权限弹窗标志，防止已弹出的情况下，息屏再次触发检测
     hasInitCamera: false,
     isBlePermit: false,
     isShowPage: false,
@@ -167,16 +166,8 @@ ComponentWithComputed({
      * 检查微信蓝牙权限
      */
     async checkBlePermission() {
-      // if (this.data.isShowPerssionModal) {
-      //   return
-      // }
-
       showLoading()
       // 没有打开微信蓝牙授权异常处理
-
-      this.setData({
-        isShowPerssionModal: true,
-      })
 
       Dialog.alert({
         message: '请授权使用蓝牙，否则无法正常扫码配网',
@@ -184,18 +175,12 @@ ComponentWithComputed({
         cancelButtonText: '返回',
         confirmButtonText: '去设置',
         confirmButtonOpenType: 'openSetting',
+      }).catch(() => {
+        // on cancel
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        this.goBack() // 拒绝授权摄像头，则退出当前页面
       })
-        .catch(() => {
-          // on cancel
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          this.goBack() // 拒绝授权摄像头，则退出当前页面
-        })
-        .finally(() => {
-          this.setData({
-            isShowPerssionModal: false,
-          })
-        })
 
       hideLoading()
     },
@@ -225,7 +210,7 @@ ComponentWithComputed({
       }
 
       this.setData({
-        isBlePermit: true
+        isBlePermit: true,
       })
 
       // 系统是否已打开蓝牙
@@ -261,38 +246,24 @@ ComponentWithComputed({
 
     // 检查摄像头权限
     async checkCameraPerssion() {
-      if (this.data.isShowPerssionModal) {
-        return
-      }
-
       showLoading()
       const settingRes = await wx.getSetting()
 
       console.log('getSetting', settingRes)
 
       if (!settingRes.authSetting['scope.camera']) {
-        this.setData({
-          isShowPerssionModal: true,
-        })
-
         Dialog.alert({
           message: '请授权使用摄像头，用于扫码配网',
           showCancelButton: true,
           cancelButtonText: '返回',
           confirmButtonText: '去设置',
           confirmButtonOpenType: 'openSetting',
+        }).catch(() => {
+          // on cancel
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          this.goBack() // 拒绝授权摄像头，则退出当前页面
         })
-          .catch(() => {
-            // on cancel
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            this.goBack() // 拒绝授权摄像头，则退出当前页面
-          })
-          .finally(() => {
-            this.setData({
-              isShowPerssionModal: false,
-            })
-          })
       }
 
       hideLoading()
