@@ -22,9 +22,10 @@ export class WifiSocket {
   deviceInfo = {
     ip: '', // 网关默认的ip为192.168.11.1
     udpPort: 6266,
-    isConnectingUdp: false, // 是否正在连接udp
     tcpPort: 6466,
   }
+
+  localIp = ''
 
   queryWifiTimeId = 0 // 查询当前wiFi延时器
 
@@ -64,6 +65,8 @@ export class WifiSocket {
     const res = await this.connectWifi()
 
     console.log(`连接${this.SSID}时长：`, Date.now() - now, res, dayjs().format('HH:mm:ss'))
+
+    await this.getLocalIp()
 
     return res
   }
@@ -145,16 +148,31 @@ export class WifiSocket {
     })
   }
 
+  getLocalIp() {
+    return new Promise((resolve, reject) => {
+      wx.getLocalIPAddress({
+        success: (successRes) => {
+          console.debug('getLocalIPAddress-success', successRes)
+  
+          this.localIp = successRes.localip
+
+          resolve(true)
+        },
+        fail: (failRes) => {
+          console.debug('getLocalIPAddress-fail', failRes)
+          reject(false)
+        },
+      })
+  
+    })
+  }
+
   async init() {
     const port = this.initUdpSocket()
-
-    console.log(`initUdpSocket`)
 
     if (port === 0) {
       return { errCode: -1, success: false, msg: 'UDP初始化失败' }
     }
-
-    await delay(1000)
 
     const ipRes = await this.getDeviceIp()
 
@@ -171,12 +189,6 @@ export class WifiSocket {
 
   bindUdp = () => {
     console.log('bindUdp', this, dayjs().format('HH:mm:ss'))
-    if (this.deviceInfo.isConnectingUdp) {
-      console.log('isConnectingUdp')
-      return
-    }
-
-    this.deviceInfo.isConnectingUdp = true
     const port = udpClient?.bind(6366)
 
     console.log('port', port)
@@ -193,9 +205,7 @@ export class WifiSocket {
 
   closeUdp = () => {
     console.log('closeUdp', dayjs().format('HH:mm:ss'))
-    if (this.deviceInfo.isConnectingUdp) {
-      udpClient?.close()
-    }
+    udpClient?.close()
   }
 
   initTcpSocket() {
@@ -237,13 +247,12 @@ export class WifiSocket {
 
     udpClient.onClose((res) => {
       console.log('udpClient.onClose', res)
-      this.deviceInfo.isConnectingUdp = false
     })
 
     // 防止在配网页面直接关闭小程序，导致udp端口没有被占用释放，下次打开时会无法创建同样端口的udp实例，需要在合适时机销毁没用的udp实例
-    wx.onAppHide(this.closeUdp)
+    // wx.onAppHide(this.closeUdp)
 
-    wx.onAppShow(this.bindUdp)
+    // wx.onAppShow(this.bindUdp)
 
     console.log('initUdpSocket', dayjs().format('HH:mm:ss'))
 
@@ -307,6 +316,21 @@ export class WifiSocket {
     //     return { success: true, msg: '固定IP连接成功' }
     //   }
     // }
+
+    // 获取IP失败时，强制默认192.168.11.1
+    if (!this.deviceInfo.ip && this.localIp) {
+      let arr = this.localIp.split('.')
+
+      arr[arr.length - 1] = '1'
+
+      const ip = arr.join('.')
+
+      console.error('获取广播Ip失败，根据本机Ip推断：', ip)
+      this.deviceInfo.ip = ip || '192.168.11.1'
+    } else {
+      console.error('采用默认Ip：', '192.168.11.1')
+      this.deviceInfo.ip = '192.168.11.1'
+    }
 
     return { success: Boolean(this.deviceInfo.ip) }
   }
@@ -414,8 +438,6 @@ export class WifiSocket {
 
     clearTimeout(this.queryWifiTimeId)
     this.queryWifiTimeId = 0
-    wx.offAppHide(this.closeUdp)
-    wx.offAppShow(this.bindUdp)
     _instance = null
   }
 

@@ -71,8 +71,17 @@ ComponentWithComputed({
 
   lifetimes: {
     ready() {
-      if (!this.checkWifiSwitch()) {
-        return
+      if (this.checkWifiSwitch()) {
+        this.initWifi()
+      } else {
+        const interId = setInterval(() => {
+          const systemSetting = wx.getSystemSetting()
+
+          if (systemSetting.wifiEnabled) {
+            clearInterval(interId)
+            this.initWifi()
+          }
+        })
       }
 
       const pageParams = getCurrentPageParams()
@@ -89,8 +98,6 @@ ComponentWithComputed({
         },
         cacheWifiList: cacheWifiList,
       })
-
-      this.initWifi()
     },
   },
 
@@ -105,8 +112,6 @@ ComponentWithComputed({
             message: '请打开手机WIFI',
             showCancelButton: false,
             confirmButtonText: '我知道了',
-          }).finally(() => {
-            this.goBack()
           })
         }
 
@@ -176,6 +181,10 @@ ComponentWithComputed({
     },
 
     toggleWifi() {
+      if (!this.checkWifiSwitch()) {
+        return
+      }
+
       const hasList = this.data.cacheWifiList.length > 0 || this.data.systemWifiList.length > 0
 
       if (hasList) {

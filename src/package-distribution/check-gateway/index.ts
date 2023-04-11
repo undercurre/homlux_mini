@@ -31,7 +31,18 @@ Component({
 
   lifetimes: {
     ready() {
-      this.initWifi()
+      if (this.checkWifiSwitch()) {
+        this.initWifi()
+      } else {
+        const interId = setInterval(() => {
+          const systemSetting = wx.getSystemSetting()
+
+          if (systemSetting.wifiEnabled) {
+            clearInterval(interId)
+            this.initWifi()
+          }
+        })
+      }
     },
     detached() {
       console.debug('check-gateway:detached')
@@ -106,8 +117,6 @@ Component({
             message: '请打开手机WIFI',
             showCancelButton: false,
             confirmButtonText: '我知道了',
-          }).finally(() => {
-            this.goBack()
           })
         }
 
@@ -118,10 +127,6 @@ Component({
     },
 
     async initWifi() {
-      if (!this.checkWifiSwitch()) {
-        return
-      }
-
       showLoading()
 
       const params = getCurrentPageParams()
@@ -185,11 +190,7 @@ Component({
 
     async connectWifi() {
       try {
-        const params = getCurrentPageParams()
-
         const connectRes = await socket.connect()
-
-        console.debug(params.ssid + '---connectRes', connectRes)
 
         if (connectRes.errCode === 12007) {
           wx.navigateBack()
@@ -211,7 +212,8 @@ Component({
         }
 
         this.getGatewayStatus()
-      } catch {
+      } catch (err) {
+        console.log('connectWifi-err', err)
         this.setData({
           status: 'error',
         })
