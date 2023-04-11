@@ -57,7 +57,7 @@
   </view>
 </van-popup>
 
-<van-dialog id="van-dialog" use-slot show="{{ isShowWifiTips }}" show-cancel-button bind:close="toggleWifiTips" confirm-button-color="#488FFF" confirm-button-text="立即前往" bind:confirm="getWifiList" width="654rpx">
+<van-dialog use-slot show="{{ isShowWifiTips }}" show-cancel-button bind:close="toggleWifiTips" confirm-button-color="#488FFF" confirm-button-text="立即前往" bind:confirm="getWifiList" width="654rpx">
   <view class="flex flex-col items-center">
     <view class="px-40rpx pt-40rpx pb-16rpx">
       <image class="w-564 h-364" src="/package-distribution/assets/wifi-connect/wifi-tips.png" />
@@ -66,3 +66,5 @@
     <text class="px-26rpx pb-30rpx text-28 leading-48rpx text-hex-666 text-center">为获取您的家庭WIFI列表，请进入手机系统的无线局域网页面，再返回本页面</text>
   </view>
 </van-dialog>
+
+<van-dialog id="van-dialog" />
