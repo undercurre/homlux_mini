@@ -74,7 +74,7 @@
   </view>
 </van-popup>
 
-<van-dialog id="van-dialog" use-slot="{{isShowNoGatewayTips}}" title="{{deviceInfo.deviceName}}" confirm-button-color="#488FFF">
+<van-dialog id="van-dialog" use-slot="{{isShowNoGatewayTips}}" confirm-button-color="#488FFF">
   <view class="flex flex-col items-center px-40rpx pb-48rpx leading-48rpx">
     <image class="w-160 h-160 mb-48rpx mt-28rpx" src="{{deviceInfo.icon}}"></image>
 

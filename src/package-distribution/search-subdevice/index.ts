@@ -4,7 +4,7 @@ import { runInAction } from 'mobx-miniprogram'
 import Toast from '@vant/weapp/toast/toast'
 import asyncPool from 'tiny-async-pool'
 import { homeBinding, roomBinding, homeStore } from '../../store/index'
-import { bleDevicesBinding, ISwitch, IBleDevice, bleDevicesStore } from '../store/bleDeviceStore'
+import { bleDevicesBinding, IBleDevice, bleDevicesStore } from '../store/bleDeviceStore'
 import { getCurrentPageParams, emitter } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { sendCmdAddSubdevice, bindDevice, batchUpdate } from '../../apis/index'
@@ -33,7 +33,7 @@ ComponentWithComputed({
       deviceName: '',
       roomId: '',
       roomName: '',
-      switchList: [] as ISwitch[],
+      switchList: [] as Device.ISwitch[],
     },
     status: 'discover' as StatusName,
   },
@@ -316,7 +316,7 @@ ComponentWithComputed({
       this.updateBleDeviceListView()
     },
 
-    async editDeviceInfo(data: { deviceId: string; switchList: ISwitch[] }) {
+    async editDeviceInfo(data: { deviceId: string; switchList: Device.ISwitch[] }) {
       const { deviceId, switchList } = data
 
       const deviceInfoUpdateVoList = switchList.map((item) => {

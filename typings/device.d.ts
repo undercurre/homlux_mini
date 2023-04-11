@@ -131,4 +131,10 @@ declare namespace Device {
     /** 网关需要传网关 */
     sn?: string
   }
+
+  // 开关信息
+  interface ISwitch {
+    switchId: string
+    switchName: string
+  }
 }
