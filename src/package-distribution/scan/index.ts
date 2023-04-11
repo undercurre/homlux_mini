@@ -225,7 +225,7 @@ ComponentWithComputed({
       }
 
       this.setData({
-        isBlePermit: true
+        isBlePermit: true,
       })
 
       // 系统是否已打开蓝牙
