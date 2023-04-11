@@ -3,6 +3,10 @@ import { storage } from './storage'
 // import QQMapWX from './qqmap-wx-jssdk'
 // import { QQMapConfig } from '../config/index'
 
+const deviceInfo = wx.getDeviceInfo()
+
+console.log('deviceInfo', deviceInfo)
+
 export function setNavigationBarAndBottomBarHeight() {
   const { statusBarHeight, platform, windowWidth, windowHeight, safeArea, system } = wx.getSystemInfoSync()
   const { top, height } = wx.getMenuButtonBoundingClientRect()
@@ -131,4 +135,8 @@ export function setCurrentEnv() {
   } else if (info.miniProgram.envVersion === 'release') {
     setEnv('prod')
   }
+}
+
+export function isAndroid() {
+  return deviceInfo.platform === 'android'
 }

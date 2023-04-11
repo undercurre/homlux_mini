@@ -58,7 +58,7 @@ Component({
       roomId: '',
       roomName: '',
       deviceName: '',
-      switchList: [],
+      switchList: [] as Device.ISwitch[],
     },
     switchInfo: {
       switchId: '',
@@ -97,7 +97,7 @@ Component({
 
       this.setData({
         isShowEditSwitch: true,
-        switchInfo: item,
+        switchInfo: Object.assign({}, item),
       })
     },
 
@@ -130,6 +130,10 @@ Component({
         Toast('按键名称不能超过5个字符')
         return
       }
+
+      const switchItem = this.data.deviceInfo.switchList.find(item => item.switchId === this.data.switchInfo.switchId) as Device.ISwitch
+
+      switchItem.switchName = this.data.switchInfo.switchName
 
       this.setData({
         deviceInfo: this.data.deviceInfo,

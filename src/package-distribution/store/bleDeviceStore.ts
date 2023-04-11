@@ -229,18 +229,13 @@ export interface IBleDevice {
   roomName: string
   icon: string
   productId: string
-  switchList: ISwitch[]
+  switchList: Device.ISwitch[]
   client: BleClient
   status: 'waiting' | 'fail' | 'success' // 配网状态
   isChecked: boolean // 是否被选中
   requestTimes: number // 查询云端在线次数
   requesting: boolean
   zigbeeRepeatTimes: number // 配网自动重试次数
-}
-
-export interface ISwitch {
-  switchId: string
-  switchName: string
 }
 
 export interface IBleBaseInfo {

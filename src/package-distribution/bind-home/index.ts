@@ -2,10 +2,9 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { getCurrentPageParams, strUtil, checkInputNameIllegal } from '../../utils/index'
+import { getCurrentPageParams, checkInputNameIllegal } from '../../utils/index'
 import { queryDeviceInfoByDeviceId, editDeviceInfo, batchUpdate } from '../../apis/index'
 import { homeBinding, homeStore, roomBinding } from '../../store/index'
-import { bleDevicesStore } from '../store/bleDeviceStore'
 
 ComponentWithComputed({
   options: {
@@ -70,21 +69,6 @@ ComponentWithComputed({
           },
         })
       }
-    },
-
-    toScan() {
-      bleDevicesStore.reset()
-      wx.navigateBack()
-    },
-
-    toSearchSubdevice() {
-      bleDevicesStore.reset()
-      wx.redirectTo({
-        url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
-          gatewayId: this.data.deviceInfo.deviceId,
-          gatewaySn: this.data.deviceInfo.sn,
-        }),
-      })
     },
 
     changeDeviceInfo(event: WechatMiniprogram.CustomEvent) {

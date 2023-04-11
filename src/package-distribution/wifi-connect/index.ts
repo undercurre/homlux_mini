@@ -1,6 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
+import Dialog from '@vant/weapp/dialog/dialog'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { strUtil, storage, getCurrentPageParams } from '../../utils/index'
+import { strUtil, storage, getCurrentPageParams, isAndroid } from '../../utils/index'
 
 ComponentWithComputed({
   options: {
@@ -27,7 +28,6 @@ ComponentWithComputed({
       SSID: '',
       pw: '',
     },
-    _platform: '',
     cacheWifiList: [] as Array<{ SSID: string; pw: string }>,
     systemWifiList: [] as WechatMiniprogram.WifiInfo[],
   },
@@ -45,7 +45,7 @@ ComponentWithComputed({
 
         if (wifiInfo) {
           wifiInfo.frequency = item.frequency
-          wifiInfo.signalStrength = data._platform === 'android' ? item.signalStrength : item.signalStrength * 100
+          wifiInfo.signalStrength = isAndroid() ? item.signalStrength : item.signalStrength * 100
         } else {
           list.push({
             ...item,
@@ -71,11 +71,11 @@ ComponentWithComputed({
 
   lifetimes: {
     ready() {
+      if (!this.checkWifiSwitch()) {
+        return
+      }
+
       const pageParams = getCurrentPageParams()
-
-      const deviceInfo = wx.getDeviceInfo()
-
-      console.log('deviceInfo', deviceInfo)
 
       const cacheWifiInfo = storage.get('selected_home_wifi') as { SSID: string; pw: string }
 
@@ -88,20 +88,33 @@ ComponentWithComputed({
           pw: '',
         },
         cacheWifiList: cacheWifiList,
-        _platform: deviceInfo.platform,
       })
 
       this.initWifi()
     },
-    detached() {},
-  },
-
-  pageLifetimes: {
-    show() {},
-    hide() {},
   },
 
   methods: {
+    checkWifiSwitch() {
+      // 安卓端需要检测wifi开关，否则无法调用wifi接口
+      if (isAndroid()) {
+        const systemSetting = wx.getSystemSetting()
+
+        if (!systemSetting.wifiEnabled) {
+          Dialog.alert({
+            message: '请打开手机WIFI',
+            showCancelButton: false,
+            confirmButtonText: '我知道了',
+          }).finally(() => {
+            this.goBack()
+          })
+        }
+
+        return systemSetting.wifiEnabled
+      }
+
+      return true
+    },
     toggleWifiTips() {
       this.setData({
         hasShowWifiTips: true,
@@ -191,10 +204,6 @@ ComponentWithComputed({
             isRequestSystemWifiList: false,
           })
 
-          // 安卓端没有打开wifi开关，会获取不到wifi信息
-          if (err.errCode === 12005) {
-            wx.showModal({ content: '请打开手机WIFI', showCancel: false })
-          }
           console.log('getWifiList-catch', err)
         })
 

@@ -1,4 +1,4 @@
-import { mzaioRequest } from '../utils/index'
+import { delay, mzaioRequest } from '../utils/index'
 
 /**
  * 设备管理-根据家庭id查询全屋的设备
@@ -118,12 +118,16 @@ export async function bindDevice(
   },
   options?: { loading?: boolean },
 ) {
-  return await mzaioRequest.post<{ deviceId: string; isBind: boolean; msg: string }>({
+  const res = await mzaioRequest.post<{ deviceId: string; isBind: boolean; msg: string }>({
     log: true,
     loading: options?.loading ?? false,
     url: '/v1/device/bindDevice',
     data,
   })
+
+  await delay(1500) // 延迟1.5s，防止绑定后台逻辑还没执行完毕
+
+  return res
 }
 
 /**

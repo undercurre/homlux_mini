@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
+import Dialog from '@vant/weapp/dialog/dialog'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { WifiSocket, getCurrentPageParams, strUtil, showLoading, hideLoading } from '../../utils/index'
+import { WifiSocket, getCurrentPageParams, strUtil, showLoading, hideLoading, isAndroid } from '../../utils/index'
 
 let socket: WifiSocket
 let start = 0
@@ -95,7 +96,32 @@ Component({
       })
     },
 
+    checkWifiSwitch() {
+      // 安卓端需要检测wifi开关，否则无法调用wifi接口
+      if (isAndroid()) {
+        const systemSetting = wx.getSystemSetting()
+
+        if (!systemSetting.wifiEnabled) {
+          Dialog.alert({
+            message: '请打开手机WIFI',
+            showCancelButton: false,
+            confirmButtonText: '我知道了',
+          }).finally(() => {
+            this.goBack()
+          })
+        }
+
+        return systemSetting.wifiEnabled
+      }
+
+      return true
+    },
+
     async initWifi() {
+      if (!this.checkWifiSwitch()) {
+        return
+      }
+
       showLoading()
 
       const params = getCurrentPageParams()
