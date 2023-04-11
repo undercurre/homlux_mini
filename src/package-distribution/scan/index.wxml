@@ -50,7 +50,7 @@
   <view class="flex flex-col items-stretch">
     <text class="block pt-40rpx pb-16rpx leading-46rpx text-center text-36 opacity-90 text-black-2a font-medium">选择智能网关</text>
 
-    <text class="block text-center leading-36rpx text-26 text-black-tips">请选择一个智能网关，用于添加此设备</text>
+    <text class="block text-center leading-36rpx text-26 text-black-tips">请选择一个智能网关，用于添加子设备</text>
 
     <view class="pt-46rpx px-32rpx">
       <view wx:for="{{gatewayList}}" wx:key="deviceId" class="flex flex-row items-center mb-24rpx p-24rpx border-solid rounded-24rpx {{item.deviceId === selectGatewayId ? 'border-4rpx border-blue' : 'border-2rpx border-gray-dd'}}" data-index="{{index}}" bind:tap="selectGateway">
