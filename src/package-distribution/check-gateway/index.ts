@@ -34,8 +34,8 @@ Component({
       this.initWifi()
     },
     detached() {
-      console.log('check-gateway:detached')
-      socket?.close()
+      console.debug('check-gateway:detached')
+      // socket?.close()
     },
   },
 
@@ -130,10 +130,8 @@ Component({
 
       const deviceInfo = wx.getDeviceInfo()
 
-      console.log('deviceInfo', deviceInfo)
-
       const systemVersion = parseInt(deviceInfo.system.toLowerCase().replace(deviceInfo.platform, ''))
-      const isAndroid10Plus = deviceInfo.platform === 'android' && systemVersion >= 10 // 判断是否Android10+或者是鸿蒙
+      const isAndroid10Plus = isAndroid() && systemVersion >= 10 // 判断是否Android10+或者是鸿蒙
 
       this.setData({
         isAndroid10Plus,
@@ -146,7 +144,7 @@ Component({
       console.debug('startWifi', startRes, '开启wifi模块用时：', Date.now() - start)
 
       // Android 调用前需要 用户授权 scope.userLocation。该权限流程需前置，否则会出现在配网过程连接设备热点导致无法联网，请求失败
-      if (deviceInfo.platform === 'android') {
+      if (isAndroid()) {
         const authorizeRes = await wx
           .authorize({
             scope: 'scope.userLocation',

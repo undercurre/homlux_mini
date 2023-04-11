@@ -119,11 +119,11 @@ export class WifiSocket {
 
               const queryWifi = () => {
                 wx.getConnectedWifi({
-                  success: (successRes) => {
-                    console.log('getConnectedWifi：successRes', successRes, dayjs().format('HH:mm:ss'))
+                  complete: (queryRes: IAnyObject) => {
+                    console.log('getConnectedWifi：queryRes', queryRes, dayjs().format('HH:mm:ss'))
 
-                    if (successRes && (successRes as IAnyObject).wifi?.SSID === this.SSID) {
-                      console.info(`连接wifi:${successRes.wifi.SSID}成功`)
+                    if (queryRes && queryRes.wifi?.SSID === this.SSID) {
+                      console.info(`连接wifi:${queryRes.wifi.SSID}成功`)
                       resolve(res)
                       clearTimeout(this.wifiTimeoutTimeId)
                       this.queryWifiTimeId = 0
@@ -132,9 +132,6 @@ export class WifiSocket {
                         queryWifi()
                       }, 2000)
                     }
-                  },
-                  complete: (res) => {
-                    console.log('query-getConnectedWifi-complete', res)
                   },
                 })
               }

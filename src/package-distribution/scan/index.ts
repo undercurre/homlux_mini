@@ -413,8 +413,6 @@ ComponentWithComputed({
         this.setData({
           isScan: false,
         })
-
-        console.log('isScan', this.data.isScan)
       }, 2000)
     },
 
