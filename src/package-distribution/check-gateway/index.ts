@@ -35,7 +35,7 @@ Component({
     },
     detached() {
       console.debug('check-gateway:detached')
-      // socket?.close()
+      socket?.close()
     },
   },
 

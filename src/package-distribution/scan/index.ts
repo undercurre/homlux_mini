@@ -152,8 +152,7 @@ ComponentWithComputed({
       // 没有打开系统蓝牙开关异常处理
       if (!bleDevicesStore.available) {
         Dialog.alert({
-          title: '请打开手机蓝牙',
-          message: '用于发现附近的子设备',
+          message: '请打开手机蓝牙，用于发现附近的子设备',
           showCancelButton: false,
           confirmButtonText: '我知道了',
         })
