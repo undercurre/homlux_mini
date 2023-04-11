@@ -8,6 +8,7 @@ import {
   homeStore,
   othersStore,
   roomStore,
+  deviceStore,
 } from '../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { storage } from '../../utils/index'
@@ -145,6 +146,23 @@ ComponentWithComputed({
       }
       emitter.off('wsReceive')
       emitter.on('wsReceive', (res) => {
+        if (res.result.eventType === 'device_property') {
+          // 如果有传更新的状态数据过来，直接更新store
+          if (res.result.eventData.event && res.result.eventData.deviceId && res.result.eventData.ep) {
+            const device = deviceStore.allRoomDeviceList.find(
+              (device) => device.deviceId === res.result.eventData.deviceId,
+            )
+            if (device) {
+              device.mzgdPropertyDTOList[res.result.eventData.ep] = {
+                ...device.mzgdPropertyDTOList[res.result.eventData.ep],
+                ...res.result.eventData.event,
+              }
+              roomStore.updateRoomCardLightOnNum()
+              // 直接更新store里的数据，更新完退出回调函数
+              return
+            }
+          }
+        }
         if (!throttleTimer && res.result.eventType !== 'connect_success_status') {
           homeStore.updateRoomCardList()
           throttleTimer = setTimeout(async () => {

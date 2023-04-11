@@ -16,7 +16,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .px-100rpx{padding-left:100rpx;padding-right:100rpx;}
 .px-10rpx{padding-left:10rpx;padding-right:10rpx;}
 .px-120rpx{padding-left:120rpx;padding-right:120rpx;}
-.px-12rpx{padding-left:12rpx;padding-right:12rpx;}
 .px-16rpx{padding-left:16rpx;padding-right:16rpx;}
 .px-20rpx{padding-left:20rpx;padding-right:20rpx;}
 .px-22rpx{padding-left:22rpx;padding-right:22rpx;}

@@ -1,6 +1,7 @@
 import { observable, runInAction } from 'mobx-miniprogram'
 import { getRoomList } from '../apis/index'
 import { proType } from '../config/index'
+import { deviceStore } from './device'
 import { homeStore } from './home'
 
 export const roomStore = observable({
@@ -21,6 +22,51 @@ export const roomStore = observable({
 
   get roomMap(): Record<string, Room.RoomInfo> {
     return Object.fromEntries(this.roomList.map((room) => [room.roomId, room]))
+  },
+
+  updateRoomCardLightOnNum() {
+    const list = {} as Record<string, Device.DeviceItem[]>
+    deviceStore.allRoomDeviceList
+      .sort((a, b) => a.deviceId.localeCompare(b.deviceId))
+      .forEach((device) => {
+        if (list[device.roomId]) {
+          list[device.roomId].push(device)
+        } else {
+          list[device.roomId] = [device]
+        }
+      })
+    roomStore.roomList.forEach((roomInfo) => {
+      const roomDeviceList = list[roomInfo.roomId]
+      // 统计多少灯打开（开关不关联灯或者关联场景都算进去）
+      let deviceLightOnNum = 0
+      // 统计多少个子设备
+      let subDeviceNum = 0
+      roomDeviceList?.forEach((device) => {
+        if (device.proType !== proType.gateway) {
+          subDeviceNum++
+        }
+        if (!device.onLineStatus) return
+        if (device.proType === proType.light && device.mzgdPropertyDTOList['1'].OnOff) {
+          deviceLightOnNum++
+        } else if (device.proType === proType.switch) {
+          device.switchInfoDTOList.forEach((switchItem) => {
+            if (
+              !switchItem.lightRelId &&
+              device.mzgdPropertyDTOList[switchItem.switchId].OnOff &&
+              !device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode
+            ) {
+              deviceLightOnNum++
+            }
+          })
+        }
+      })
+      roomInfo.deviceLightOnNum = deviceLightOnNum
+      roomInfo.subDeviceNum = subDeviceNum
+    })
+    runInAction(() => {
+      roomStore.roomDeviceList = list
+      roomStore.roomList = [...roomStore.roomList]
+    })
   },
 
   async updateRoomList(options?: { loading: boolean }) {
