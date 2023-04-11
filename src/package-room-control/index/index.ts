@@ -60,6 +60,10 @@ ComponentWithComputed({
       x: 0,
       y: 0,
     },
+    /** 是否提示用户如何创建场景 */
+    showAddSceneTips: false,
+    /** 场景提示部分位置 */
+    sceneTipsPositionStyle: '',
     scrollTop: 0,
     /** 控制选中个数 */
     selectCount: 0,
@@ -252,6 +256,22 @@ ComponentWithComputed({
           })
         }
       })
+      // 是否点击过场景使用提示的我知道了，如果没点击过就显示
+      const hasKnownUseAddScene = storage.get<boolean>('hasKnownUseAddScene')
+      if (!hasKnownUseAddScene) {
+        this.createSelectorQuery()
+          .select('#scene-card')
+          .boundingClientRect((res) => {
+            console.log('#scene-card', res)
+            if (res) {
+              this.setData({
+                showAddSceneTips: true,
+                sceneTipsPositionStyle: `left: ${res.left}px;top: ${res.top}px;width: ${res.width}px;height: ${res.height}px;`,
+              })
+            }
+          })
+          .exec()
+      }
     },
     async reloadData() {
       try {
@@ -283,6 +303,12 @@ ComponentWithComputed({
       })
       // 解除监听
       emitter.off('wsReceive')
+    },
+    handleKnownAddSceneTap() {
+      storage.set('hasKnownUseAddScene', true, null)
+      this.setData({
+        showAddSceneTips: false,
+      })
     },
     handleShowDeviceOffline(e: { detail: Device.DeviceItem }) {
       this.setData({
