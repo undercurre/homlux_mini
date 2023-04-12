@@ -213,11 +213,14 @@ ComponentWithComputed({
         roomId: device.roomId,
       })
     },
-    handleExitEdit() {
+    handleClose() {
       this.setData({
         showEditName: false,
         showEditRoom: false,
       })
+    },
+    handleExitEdit() {
+      this.handleClose()
       runInAction(() => {
         deviceStore.isEditSelectMode = false
         deviceStore.editSelect = []

@@ -121,7 +121,6 @@ ComponentWithComputed({
       return name.length > 5 ? name.slice(0, 5) + '...' : name
     },
     bottomDesc(data) {
-      console.log(data.deviceInfo.deviceName.length > 5)
       return data.deviceInfo.deviceName.length > 5
         ? data.deviceInfo.deviceName.slice(0, 5) + '...'
         : data.deviceInfo.deviceName
