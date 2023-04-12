@@ -66,6 +66,8 @@ export class WifiSocket {
 
     console.log(`连接${this.SSID}时长：`, Date.now() - now, res, dayjs().format('HH:mm:ss'))
 
+    await delay(500)
+
     await this.getLocalIp()
 
     return res
@@ -154,12 +156,18 @@ export class WifiSocket {
         success: (successRes) => {
           console.debug('getLocalIPAddress-success', successRes)
   
-          this.localIp = successRes.localip
+          // IOS偶现返回ip为unknown
+          if (successRes.localip.includes('.')) {
+            this.localIp = successRes.localip
+            resolve(true)
+          } else {
+            console.error('getLocalIPAddress-fail', successRes)
+            resolve(false)
+          }
 
-          resolve(true)
         },
         fail: (failRes) => {
-          console.debug('getLocalIPAddress-fail', failRes)
+          console.error('getLocalIPAddress-fail', failRes)
           reject(false)
         },
       })
