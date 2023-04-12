@@ -168,11 +168,8 @@ ComponentWithComputed({
               zIndex: 9999,
             })
             await Promise.all([deviceStore.updateSubDeviceList(), deviceStore.updateAllRoomDeviceList()])
-            runInAction(() => {
-              deviceStore.isEditSelectMode = false
-            })
             this.triggerEvent('updateList')
-            this.handleClose()
+            this.handleExitEdit()
           } else {
             Toast({
               message: '删除失败',
@@ -216,13 +213,11 @@ ComponentWithComputed({
         roomId: device.roomId,
       })
     },
-    handleClose() {
+    handleExitEdit() {
       this.setData({
         showEditName: false,
         showEditRoom: false,
       })
-    },
-    handleExitEdit() {
       runInAction(() => {
         deviceStore.isEditSelectMode = false
         deviceStore.editSelect = []
@@ -273,7 +268,7 @@ ComponentWithComputed({
               message: '修改成功',
               zIndex: 9999,
             })
-            this.handleClose()
+            this.handleExitEdit()
             return
           }
           const res = await batchUpdate({
@@ -284,7 +279,6 @@ ComponentWithComputed({
               message: '修改成功',
               zIndex: 9999,
             })
-            this.handleClose()
             this.handleExitEdit()
             await Promise.all([deviceStore.updateAllRoomDeviceList(), deviceStore.updateSubDeviceList()])
             this.triggerEvent('updateList')
@@ -318,7 +312,6 @@ ComponentWithComputed({
               message: '修改成功',
               zIndex: 9999,
             })
-            this.handleClose()
             this.handleExitEdit()
             await Promise.all([deviceStore.updateAllRoomDeviceList(), deviceStore.updateSubDeviceList()])
             this.triggerEvent('updateList')
@@ -362,7 +355,6 @@ ComponentWithComputed({
               message: '移动成功',
               zIndex: 9999,
             })
-            this.handleClose()
             this.handleExitEdit()
             await Promise.all([deviceStore.updateSubDeviceList(), deviceStore.updateAllRoomDeviceList()])
             runInAction(() => {

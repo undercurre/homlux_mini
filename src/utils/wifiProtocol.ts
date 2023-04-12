@@ -327,7 +327,7 @@ export class WifiSocket {
 
     // 获取IP失败时，强制默认192.168.11.1
     if (!this.deviceInfo.ip && this.localIp) {
-      let arr = this.localIp.split('.')
+      const arr = this.localIp.split('.')
 
       arr[arr.length - 1] = '1'
 
