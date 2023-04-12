@@ -24,6 +24,16 @@ ComponentWithComputed({
       type: Boolean,
       value: false,
     },
+    // 是否带投影
+    showShadow: {
+      type: Boolean,
+      value: false,
+    },
+    // 是否带渐变背景
+    showGradientBg: {
+      type: Boolean,
+      value: false,
+    },
     editMode: {
       type: Boolean,
       value: false,
@@ -49,9 +59,6 @@ ComponentWithComputed({
   },
 
   computed: {
-    isSwitch(data) {
-      return data.deviceInfo.proType === proType.switch
-    },
     picUrl(data) {
       if (data.deviceInfo.proType === proType.switch && data.showBtnDetail) {
         return data.deviceInfo?.switchInfoDTOList[0]?.pic
@@ -104,16 +111,14 @@ ComponentWithComputed({
     },
     topTitle(data) {
       // 如果是开关，deviceName显示开关名称
+      let name
       if (data.deviceInfo.proType === proType.switch && data.showBtnDetail) {
-        const name =
-          data.deviceInfo.switchInfoDTOList[0].switchName ?? '按键' + data.deviceInfo.switchInfoDTOList[0].switchId
-
-        return name.length > 5 ? name.slice(0, 5) + '...' : name
+        const switchInfo = data.deviceInfo.switchInfoDTOList[0]
+        name = switchInfo.switchName ?? '按键' + switchInfo.switchId
       } else {
-        return data.deviceInfo.deviceName.length > 5
-          ? data.deviceInfo.deviceName.slice(0, 5) + '...'
-          : data.deviceInfo.deviceName
+        name = data.deviceInfo.deviceName
       }
+      return name.length > 5 ? name.slice(0, 5) + '...' : name
     },
     bottomDesc(data) {
       console.log(data.deviceInfo.deviceName.length > 5)
