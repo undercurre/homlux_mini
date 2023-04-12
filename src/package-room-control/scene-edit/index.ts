@@ -16,16 +16,24 @@ ComponentWithComputed({
     sceneId: '',
     sceneName: '',
     sceneIcon: '',
+    /** 过滤出全屋开关，提供关联开关选择 */
     switchList: [] as Device.DeviceItem[],
+    /** 是否默认场景，默认场景不允许改图标 */
     isDefault: false,
+    /** 列表高度 */
     contentHeight: 0,
     showEditNamePopup: false,
     showEditIconPopup: false,
     showLinkPopup: false,
-    sceneDeviceActionsFlatten: [] as Device.ActionItem[], // 将场景里多路的action拍扁
+    /** 将当前场景里多路的action拍扁 */
+    sceneDeviceActionsFlatten: [] as Device.ActionItem[],
+    /** 开关是否被全家庭场景其中之一收藏 */
     sceneDeviceActionsFlattenMap: {} as Record<string, boolean>,
+    /** 关联弹窗选中的开关确认后的开关uniId */
     linkSwitch: '',
+    /** 关联弹窗展示用的选择列表 */
     linkSwitchSelect: [] as string[],
+    /** 是否修改过action */
     isEditAction: false,
     sceneEditTitle: '',
     showSceneEditLightPopup: false,
@@ -60,57 +68,68 @@ ComponentWithComputed({
      * 生命周期函数--监听页面加载
      */
     onLoad() {
-      const deviceMap = deviceStore.deviceMap
+      const deviceMap = deviceStore.allRoomDeviceMap
       const sceneDeviceActionsFlatten = [] as Device.ActionItem[]
       const sceneDeviceActionsFlattenMap = {} as Record<string, boolean>
-      sceneStore.sceneList[sceneStore.selectSceneIndex].deviceActions?.forEach((device) => {
-        if (!deviceMap[device.deviceId]) {
-          console.log('不存在的设备', device)
-          return
-        }
-        if (deviceMap[device.deviceId].proType === proType.switch) {
-          // 多路开关
-          device.controlAction.forEach((action) => {
-            const switchItem = deviceMap[device.deviceId].switchInfoDTOList.find(
-              (item) => item.switchId === String(action.ep),
-            )
-            sceneDeviceActionsFlattenMap[`${device.deviceId}:${action.ep}`] = true
-            sceneDeviceActionsFlatten.push({
-              uniId: `${device.deviceId}:${action.ep}`,
-              proType: proType.switch,
-              name: `${switchItem?.switchName ? switchItem?.switchName : switchItem?.switchId + '路开关'} | ${
-                deviceMap[device.deviceId].deviceName
-              }`,
-              desc: action.OnOff ? ['打开'] : ['关闭'],
-              pic:
-                deviceMap[device.deviceId].switchInfoDTOList.find(
-                  (switchInfo) => switchInfo.switchId === action.ep.toString(),
-                )?.pic ?? '',
-              value: action,
-            })
+      sceneStore.allRoomSceneList.forEach((scene) => {
+        if (scene.deviceActions) {
+          scene.deviceActions.forEach((actions) => {
+            if (!deviceMap[actions.deviceId]) {
+              console.log('不存在的设备', actions)
+              return
+            }
+            if (deviceMap[actions.deviceId].proType === proType.switch) {
+              // 多路开关
+              actions.controlAction.forEach((action) => {
+                const switchItem = deviceMap[actions.deviceId].switchInfoDTOList.find(
+                  (item) => item.switchId === String(action.ep),
+                )
+                sceneDeviceActionsFlattenMap[`${actions.deviceId}:${action.ep}`] = true
+                // 只将当前选中编辑的场景，拍扁action加入list
+                if (sceneStore.sceneList[sceneStore.selectSceneIndex].sceneId === scene.sceneId) {
+                  sceneDeviceActionsFlatten.push({
+                    uniId: `${actions.deviceId}:${action.ep}`,
+                    proType: proType.switch,
+                    name: `${switchItem?.switchName ? switchItem?.switchName : switchItem?.switchId + '路开关'} | ${
+                      deviceMap[actions.deviceId].deviceName
+                    }`,
+                    desc: action.OnOff ? ['打开'] : ['关闭'],
+                    pic:
+                      deviceMap[actions.deviceId].switchInfoDTOList.find(
+                        (switchInfo) => switchInfo.switchId === action.ep.toString(),
+                      )?.pic ?? '',
+                    value: action,
+                  })
+                }
+              })
+            } else {
+              // 单路设备
+              const action = {
+                uniId: `${actions.deviceId}`,
+                name: `${deviceMap[actions.deviceId].deviceName}`,
+                desc: actions.controlAction[0].OnOff ? ['打开'] : ['关闭'],
+                pic: '',
+                proType: '',
+                value: actions.controlAction[0],
+              }
+              if (sceneStore.sceneList[sceneStore.selectSceneIndex].sceneId === scene.sceneId) {
+                if (deviceMap[actions.deviceId].proType === proType.light) {
+                  if (typeof actions.controlAction[0].Level === 'number') {
+                    action.desc.push(`亮度${actions.controlAction[0].Level}%`)
+                  }
+                  if (typeof actions.controlAction[0].ColorTemp === 'number') {
+                    const color =
+                      (actions.controlAction[0].ColorTemp / 100) * (maxColorTempK - minColorTempK) + minColorTempK
+                    action.desc.push(`色温${color}K`)
+                  }
+                  action.pic = deviceMap[actions.deviceId].pic
+                  action.proType = proType.light
+                }
+                sceneDeviceActionsFlatten.push(action)
+              }
+              sceneDeviceActionsFlattenMap[`${actions.deviceId}`] = true
+            }
           })
-        } else {
-          const action = {
-            uniId: `${device.deviceId}`,
-            name: `${deviceMap[device.deviceId].deviceName}`,
-            desc: device.controlAction[0].OnOff ? ['打开'] : ['关闭'],
-            pic: '',
-            proType: '',
-            value: device.controlAction[0],
-          }
-          if (deviceMap[device.deviceId].proType === proType.light) {
-            if (typeof device.controlAction[0].Level === 'number') {
-              action.desc.push(`亮度${device.controlAction[0].Level}%`)
-            }
-            if (typeof device.controlAction[0].ColorTemp === 'number') {
-              const color = (device.controlAction[0].ColorTemp / 100) * (maxColorTempK - minColorTempK) + minColorTempK
-              action.desc.push(`色温${color}K`)
-            }
-            action.pic = deviceMap[device.deviceId].pic
-            action.proType = proType.light
-          }
-          sceneDeviceActionsFlatten.push(action)
-          sceneDeviceActionsFlattenMap[`${device.deviceId}`] = true
         }
       })
       const sceneId = sceneStore.sceneList[sceneStore.selectSceneIndex].sceneId
