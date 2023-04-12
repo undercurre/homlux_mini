@@ -222,7 +222,7 @@ export class WifiSocket {
 
       this.handleReply(res.message)
 
-      tcpClient.close() // 每次发送完数据，网关都会主动断开TCP连接，app需要配合释放对应tcp资源，否则会影响下一次的连接
+      tcpClient.close()
     })
 
     tcpClient.onError((res) => {
@@ -334,8 +334,10 @@ export class WifiSocket {
       const ip = arr.join('.')
 
       console.error('获取广播Ip失败，根据本机Ip推断：', ip)
-      this.deviceInfo.ip = ip || '192.168.11.1'
-    } else {
+      this.deviceInfo.ip = ip
+    }
+    
+    if (!this.deviceInfo.ip) {
       console.error('采用默认Ip：', '192.168.11.1')
       this.deviceInfo.ip = '192.168.11.1'
     }
