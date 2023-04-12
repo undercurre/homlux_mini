@@ -106,7 +106,7 @@
 
       <view class="grow px-88rpx pt-180rpx">
         <view class="text-28 text-black-2a">
-          <text>请排查一下情况：</text>
+          <text>请排查以下情况：</text>
         </view>
 
         <view class="py-30rpx text-26 text-hex-666 leading-46rpx">
