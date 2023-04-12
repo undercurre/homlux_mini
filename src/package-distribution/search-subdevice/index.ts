@@ -178,7 +178,7 @@ ComponentWithComputed({
       const res = await sendCmdAddSubdevice({
         deviceId: pageParams.gatewayId,
         expire: 0,
-        buzz: 1,
+        buzz: 0,
       })
 
       // 子设备配网阶段，保持网关在配网状态
@@ -231,7 +231,7 @@ ComponentWithComputed({
           return item
         }
 
-        for await (const value of asyncPool(2, list, iteratorFn)) {
+        for await (const value of asyncPool(3, list, iteratorFn)) {
           console.info('蓝牙任务结束：', value.mac)
         }
       } catch (err) {

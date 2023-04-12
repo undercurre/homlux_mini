@@ -43,35 +43,13 @@ ComponentWithComputed({
         pageParams,
       })
       this.initBle()
-
-      // 60s超时处理
-      setTimeout(() => {
-        this.setData({
-          status: 'error',
-        })
-
-        emitter.off('bind_device')
-      }, 60000)
-
-      emitter.on('bind_device', (data) => {
-        console.log('bind_device', data)
-
-        if (data.deviceId === this.data.pageParams.mac) {
-          this.bindBleDeviceToClound()
-          emitter.off('bind_device')
-          clearTimeout(this.data._timeId)
-        }
-      })
     },
     detached() {
       emitter.off('bind_device')
       clearTimeout(this.data._timeId)
       wx.stopBluetoothDevicesDiscovery()
+      this.stopGwAddMode()
     },
-  },
-
-  pageLifetimes: {
-    hide() {},
   },
 
   methods: {
@@ -174,6 +152,44 @@ ComponentWithComputed({
 
         return
       }
+
+      // 60s超时处理
+      this.data._timeId = setTimeout(() => {
+        this.setData({
+          status: 'error',
+        })
+
+        emitter.off('bind_device')
+        console.error(`绑定失败：子设备${this.data.pageParams.mac}，绑定推送监听超时`)
+      }, 60000)
+
+      emitter.on('bind_device', (data) => {
+        console.log('bind_device', data)
+
+        if (data.deviceId === this.data.pageParams.mac) {
+          console.log(`收到绑定推送消息：子设备${this.data.pageParams.mac}`)
+          this.bindBleDeviceToClound()
+          emitter.off('bind_device')
+          clearTimeout(this.data._timeId)
+        }
+      })
+    },
+
+    async stopGwAddMode() {
+      const pageParams = getCurrentPageParams()
+
+      const res = await sendCmdAddSubdevice({
+        deviceId: pageParams.gatewayId,
+        expire: 0,
+        buzz: 0,
+      })
+
+      // 子设备配网阶段，保持网关在配网状态
+      if (res.success) {
+        console.log('结束网关配网状态')
+      }
+
+      return res
     },
 
     async startZigbeeNet(bleDevice: IBleDevice) {
