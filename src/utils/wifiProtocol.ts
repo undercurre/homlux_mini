@@ -23,6 +23,7 @@ export class WifiSocket {
     ip: '', // 网关默认的ip为192.168.11.1
     udpPort: 6266,
     tcpPort: 6466,
+    isConnectTcp: false,
   }
 
   localIp = ''
@@ -155,7 +156,7 @@ export class WifiSocket {
       wx.getLocalIPAddress({
         success: (successRes) => {
           console.debug('getLocalIPAddress-success', successRes)
-  
+
           // IOS偶现返回ip为unknown
           if (successRes.localip.includes('.')) {
             this.localIp = successRes.localip
@@ -164,14 +165,12 @@ export class WifiSocket {
             console.error('getLocalIPAddress-fail', successRes)
             resolve(false)
           }
-
         },
         fail: (failRes) => {
           console.error('getLocalIPAddress-fail', failRes)
           reject(false)
         },
       })
-  
     })
   }
 
@@ -235,6 +234,7 @@ export class WifiSocket {
 
     tcpClient.onClose((res) => {
       console.log('tcpClient.onClose', res)
+      this.deviceInfo.isConnectTcp = false
     })
 
     console.log('initTcpSocket', dayjs().format('HH:mm:ss'))
@@ -336,7 +336,7 @@ export class WifiSocket {
       console.error('获取广播Ip失败，根据本机Ip推断：', ip)
       this.deviceInfo.ip = ip
     }
-    
+
     if (!this.deviceInfo.ip) {
       console.error('采用默认Ip：', '192.168.11.1')
       this.deviceInfo.ip = '192.168.11.1'
@@ -361,6 +361,7 @@ export class WifiSocket {
 
         clearTimeout(timeId)
         tcpClient.offConnect()
+        this.deviceInfo.isConnectTcp = true
         resolve({ success: true })
       }
 
@@ -443,11 +444,24 @@ export class WifiSocket {
     console.log('socket实例close', msg)
     this.cmdCallbackMap = {}
     this.onMessageHandlerList = []
-    tcpClient.close()
+
+    if (this.deviceInfo.isConnectTcp) {
+      tcpClient.close()
+    }
+
     udpClient?.close()
 
-    clearTimeout(this.queryWifiTimeId)
-    this.queryWifiTimeId = 0
+    // 清除相关定时器
+    if (this.queryWifiTimeId !== 0) {
+      clearTimeout(this.queryWifiTimeId)
+      this.queryWifiTimeId = 0
+    }
+
+    if (this.wifiTimeoutTimeId !== 0) {
+      clearTimeout(this.wifiTimeoutTimeId)
+      this.wifiTimeoutTimeId = 0
+    }
+
     _instance = null
   }
 

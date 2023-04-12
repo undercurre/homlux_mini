@@ -389,7 +389,7 @@ export async function checkDevice(
   options?: { loading?: boolean },
 ) {
   return await mzaioRequest.post<Device.MzgdProTypeDTO>({
-    log: true,
+    log: false,
     loading: options?.loading ?? false,
     url: '/v1/device/checkDevice',
     data,

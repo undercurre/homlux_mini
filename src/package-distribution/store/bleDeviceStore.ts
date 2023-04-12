@@ -58,7 +58,6 @@ export const bleDevicesStore = observable({
           return
         }
 
-        console.log('getBleDeviceBaseInfo', item.mac, item)
         _foundList.push(item)
         handleBleDeviceInfo(item)
       })
@@ -148,7 +147,7 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
   })
 
   if (!infoRes.success) {
-    console.error(`${baseInfo.mac}校验接口调用失败`)
+    console.error(`设备${baseInfo.mac}云端不存在注册记录`)
     return
   }
 
@@ -158,8 +157,11 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
     bleDevicesStore.bleDeviceList.find((foundItem) => foundItem.deviceUuid === baseInfo.deviceUuid) ||
     (infoRes.result.roomId && baseInfo.isConfig === '02')
   ) {
+    console.info(`设备${baseInfo.mac}已绑定`)
     return
   }
+
+  console.info(`成功发现设备${baseInfo.mac}`)
 
   let { productName: deviceName } = infoRes.result
   const { proType, switchNum, modelId, productIcon } = infoRes.result
