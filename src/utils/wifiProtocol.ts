@@ -17,8 +17,6 @@ export class WifiSocket {
 
   key = ''
 
-  date = Date.now()
-
   deviceInfo = {
     ip: '', // 网关默认的ip为192.168.11.1
     udpPort: 6266,
@@ -47,8 +45,6 @@ export class WifiSocket {
     }
 
     this.SSID = params.ssid
-
-    this.date = Date.now()
 
     this.key = `homlux@midea${params.ssid.substr(-4, 4)}`
 
@@ -88,7 +84,7 @@ export class WifiSocket {
 
       wx.getConnectedWifi({
         complete: async (connectedRes) => {
-          console.log('getConnectedWifi：complete', connectedRes, dayjs().format('HH:mm:ss'))
+          console.log('获取当前wifi信息：', connectedRes, dayjs().format('HH:mm:ss'))
 
           if (connectedRes && (connectedRes as IAnyObject).wifi?.SSID === this.SSID) {
             console.log(`${this.SSID}已连接`)
@@ -160,7 +156,7 @@ export class WifiSocket {
   }
 
   getLocalIp() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       wx.getLocalIPAddress({
         success: (successRes) => {
           console.debug('getLocalIPAddress-success', successRes, dayjs().format('HH:mm:ss'))
@@ -171,12 +167,12 @@ export class WifiSocket {
             resolve(true)
           } else {
             console.error('getLocalIPAddress-fail', successRes)
-            reject(false)
+            resolve(false)
           }
         },
         fail: (failRes) => {
           console.error('getLocalIPAddress-fail', failRes, dayjs().format('HH:mm:ss'))
-          reject(false)
+          resolve(false)
         },
       })
     })

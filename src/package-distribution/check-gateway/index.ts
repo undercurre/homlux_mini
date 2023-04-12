@@ -226,7 +226,7 @@ Component({
 
         this.getGatewayStatus()
       } catch (err) {
-        console.log('connectWifi-err', err)
+        console.error('connectWifi-err', err)
         this.setData({
           status: 'error',
         })
