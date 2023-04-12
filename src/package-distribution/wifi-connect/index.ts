@@ -30,6 +30,7 @@ ComponentWithComputed({
     },
     cacheWifiList: [] as Array<{ SSID: string; pw: string }>,
     systemWifiList: [] as WechatMiniprogram.WifiInfo[],
+    _wifiSwitchInterId: 0,
   },
 
   computed: {
@@ -74,14 +75,15 @@ ComponentWithComputed({
       if (this.checkWifiSwitch()) {
         this.initWifi()
       } else {
-        const interId = setInterval(() => {
+        this.data._wifiSwitchInterId = setInterval(() => {
           const systemSetting = wx.getSystemSetting()
 
           if (systemSetting.wifiEnabled) {
-            clearInterval(interId)
+            clearInterval(this.data._wifiSwitchInterId)
+            this.data._wifiSwitchInterId = 0
             this.initWifi()
           }
-        })
+        }, 1500)
       }
 
       const pageParams = getCurrentPageParams()
@@ -99,6 +101,11 @@ ComponentWithComputed({
         cacheWifiList: cacheWifiList,
       })
     },
+    detached() {
+      if (this.data._wifiSwitchInterId) {
+        clearInterval(this.data._wifiSwitchInterId)
+      }
+    }
   },
 
   methods: {

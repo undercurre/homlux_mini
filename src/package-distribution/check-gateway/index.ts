@@ -3,7 +3,6 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { WifiSocket, getCurrentPageParams, strUtil, showLoading, hideLoading, isAndroid } from '../../utils/index'
 
-let socket: WifiSocket
 let start = 0
 
 const gatewayStatus = { method: '' }
@@ -11,6 +10,7 @@ const gatewayStatus = { method: '' }
 Component({
   options: {
     styleIsolation: 'apply-shared',
+    pureDataPattern: /^_/,
   },
   behaviors: [pageBehaviors],
   /**
@@ -27,6 +27,8 @@ Component({
     isConnectDevice: false,
     status: 'linking',
     ssid: '',
+    _wifiSwitchInterId: 0,
+    _socket: null as (WifiSocket | null)
   } as IAnyObject,
 
   lifetimes: {
@@ -34,19 +36,24 @@ Component({
       if (this.checkWifiSwitch()) {
         this.initWifi()
       } else {
-        const interId = setInterval(() => {
+        this.data._wifiSwitchInterId = setInterval(() => {
           const systemSetting = wx.getSystemSetting()
 
           if (systemSetting.wifiEnabled) {
-            clearInterval(interId)
+            clearInterval(this.data._wifiSwitchInterId)
+            this.data._wifiSwitchInterId = 0
             this.initWifi()
           }
-        })
+        }, 1500)
       }
     },
     detached() {
       console.debug('check-gateway:detached')
-      socket?.close()
+      this.data._socket?.close()
+
+      if (this.data._wifiSwitchInterId) {
+        clearInterval(this.data._wifiSwitchInterId)
+      }
     },
   },
 
@@ -174,14 +181,19 @@ Component({
         // 需在可访问外网时先调用一次，后面即使断网，再次调用getWifiList也能正常调用
         const wifiListRes = await wx.getWifiList().catch((err) => {
           console.log('getWifiList-catch', err)
+
+          return err
         })
 
         console.debug('wifiListRes', wifiListRes)
       }
 
-      socket = new WifiSocket({ ssid: params.ssid })
+      this.setData({
+        _socket: new WifiSocket({ ssid: params.ssid }),
+      })
 
       if (!isAndroid10Plus) {
+        console.log('isAndroid10Plus', systemVersion)
         this.connectWifi()
       }
 
@@ -189,8 +201,9 @@ Component({
     },
 
     async connectWifi() {
+      console.log('connectWifi-start')
       try {
-        const connectRes = await socket.connect()
+        const connectRes = await this.data._socket.connect()
 
         if (connectRes.errCode === 12007) {
           wx.navigateBack()
@@ -205,7 +218,7 @@ Component({
           isConnectDevice: true,
         })
 
-        const inistRes = await socket.init()
+        const inistRes = await this.data._socket.init()
 
         if (!inistRes.success) {
           throw inistRes
@@ -225,7 +238,7 @@ Component({
          "method":"wifi" //无线配网："wifi"，有线配网:"eth"
      */
     async getGatewayStatus() {
-      const res = await socket.sendCmd({
+      const res = await this.data._socket.sendCmd({
         topic: '/gateway/net/status',
         data: {},
       })
@@ -248,7 +261,7 @@ Component({
 
         gatewayStatus.method = res.method
 
-        socket.onMessage((data: IAnyObject) => {
+        this.data._socket.onMessage((data: IAnyObject) => {
           console.log('WifiSocket.onMessage', data)
 
           if (data.topic === '/gateway/net/confirm' && this.data.isShowForceBindTips) {

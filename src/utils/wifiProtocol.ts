@@ -71,6 +71,14 @@ export class WifiSocket {
 
     await this.getLocalIp()
 
+    if (!this.localIp) {
+      console.info('getLocalIPAddress-第2次')
+
+      await delay(500)
+
+      await this.getLocalIp()
+    }
+
     return res
   }
 
@@ -155,19 +163,19 @@ export class WifiSocket {
     return new Promise((resolve, reject) => {
       wx.getLocalIPAddress({
         success: (successRes) => {
-          console.debug('getLocalIPAddress-success', successRes)
+          console.debug('getLocalIPAddress-success', successRes, dayjs().format('HH:mm:ss'))
 
-          // IOS偶现返回ip为unknown
-          if (successRes.localip.includes('.')) {
+          // IOS偶现返回ip为unknown,安卓可能会获取到0.0.0.0
+          if (successRes.localip.includes('.') && successRes.localip !== '0.0.0.0') {
             this.localIp = successRes.localip
             resolve(true)
           } else {
             console.error('getLocalIPAddress-fail', successRes)
-            resolve(false)
+            reject(false)
           }
         },
         fail: (failRes) => {
-          console.error('getLocalIPAddress-fail', failRes)
+          console.error('getLocalIPAddress-fail', failRes, dayjs().format('HH:mm:ss'))
           reject(false)
         },
       })
