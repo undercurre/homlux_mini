@@ -167,12 +167,9 @@ ComponentWithComputed({
               message: '删除成功',
               zIndex: 9999,
             })
-            await Promise.all([deviceStore.updateSubDeviceList(), deviceStore.updateAllRoomDeviceList()])
-            runInAction(() => {
-              deviceStore.isEditSelectMode = false
-            })
+            await Promise.all([deviceStore.updateSubDeviceList(), homeStore.updateRoomCardList()])
             this.triggerEvent('updateList')
-            this.handleClose()
+            this.handleExitEdit()
           } else {
             Toast({
               message: '删除失败',
@@ -216,13 +213,11 @@ ComponentWithComputed({
         roomId: device.roomId,
       })
     },
-    handleClose() {
+    handleExitEdit() {
       this.setData({
         showEditName: false,
         showEditRoom: false,
       })
-    },
-    handleExitEdit() {
       runInAction(() => {
         deviceStore.isEditSelectMode = false
         deviceStore.editSelect = []
@@ -273,7 +268,7 @@ ComponentWithComputed({
               message: '修改成功',
               zIndex: 9999,
             })
-            this.handleClose()
+            this.handleExitEdit()
             return
           }
           const res = await batchUpdate({
@@ -284,9 +279,8 @@ ComponentWithComputed({
               message: '修改成功',
               zIndex: 9999,
             })
-            this.handleClose()
             this.handleExitEdit()
-            await Promise.all([deviceStore.updateAllRoomDeviceList(), deviceStore.updateSubDeviceList()])
+            await Promise.all([homeStore.updateRoomCardList(), deviceStore.updateSubDeviceList()])
             this.triggerEvent('updateList')
           } else {
             Toast({
@@ -318,9 +312,8 @@ ComponentWithComputed({
               message: '修改成功',
               zIndex: 9999,
             })
-            this.handleClose()
             this.handleExitEdit()
-            await Promise.all([deviceStore.updateAllRoomDeviceList(), deviceStore.updateSubDeviceList()])
+            await Promise.all([homeStore.updateRoomCardList(), deviceStore.updateSubDeviceList()])
             this.triggerEvent('updateList')
           } else {
             Toast({
@@ -362,9 +355,8 @@ ComponentWithComputed({
               message: '移动成功',
               zIndex: 9999,
             })
-            this.handleClose()
             this.handleExitEdit()
-            await Promise.all([deviceStore.updateSubDeviceList(), deviceStore.updateAllRoomDeviceList()])
+            await Promise.all([deviceStore.updateSubDeviceList(), homeStore.updateRoomCardList()])
             runInAction(() => {
               deviceStore.isEditSelectMode = false
             })
