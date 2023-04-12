@@ -22,11 +22,11 @@
       </view>
     </view>
 
-    <van-button class="w-full mt-32rpx" block type="primary" size="large" bind:click="connectWifi">前往连接</van-button>
+    <van-button wx:if="{{ssid}}" class="w-full mt-32rpx" block type="primary" size="large" bind:click="connectWifi">前往连接</van-button>
   </view>
 
   <view wx:else class="grow flex flex-col">
-    <view wx:if="{{!isConnectDevice}}" class="absolute w-full flex flex-row items-center justify-center py-30rpx tips-view">
+    <view wx:if="{{!isConnectDevice && ssid}}" class="absolute w-full flex flex-row items-center justify-center py-30rpx tips-view">
       <image class="w-36 h-36 mr-16rpx" src="/package-distribution/assets/check-gateway/icon-info.png"></image>
 
       <text class="text-24 leading-34rpx text-black-2a">请允许微信加入“{{ssid}}”，以便自动连接设备</text>

@@ -87,7 +87,7 @@ export class WifiSocket {
           console.log('获取当前wifi信息：', connectedRes, dayjs().format('HH:mm:ss'))
 
           if (connectedRes && (connectedRes as IAnyObject).wifi?.SSID === this.SSID) {
-            console.log(`${this.SSID}已连接`)
+            console.log(`检测目标wifi：${this.SSID}已连接`)
             resolve(res)
             return
           }
@@ -101,7 +101,7 @@ export class WifiSocket {
             partialInfo: false,
             maunal: isAndroid10Plus, // Android 微信客户端 7.0.22 以上版本，connectWifi 的实现在 Android 10 及以上的手机无法生效，需要配置 maunal 来连接 wifi。详情参考官方文档
             complete: (connectRes) => {
-              console.log('connectWifi', connectRes)
+              console.log('wx.connectWifi', connectRes)
 
               if (connectRes.errCode === 12007) {
                 resolve({
@@ -130,7 +130,7 @@ export class WifiSocket {
               const queryWifi = () => {
                 wx.getConnectedWifi({
                   complete: (queryRes: IAnyObject) => {
-                    console.log('getConnectedWifi：queryRes', queryRes, dayjs().format('HH:mm:ss'))
+                    console.log('轮询当前wifi：', queryRes, dayjs().format('HH:mm:ss'))
 
                     if (queryRes && queryRes.wifi?.SSID === this.SSID) {
                       console.info(`连接wifi:${queryRes.wifi.SSID}成功`)

@@ -28,7 +28,7 @@ Component({
     status: 'linking',
     ssid: '',
     _wifiSwitchInterId: 0,
-    _socket: null as (WifiSocket | null)
+    _socket: null as WifiSocket | null,
   } as IAnyObject,
 
   lifetimes: {
@@ -148,6 +148,7 @@ Component({
       this.setData({
         isAndroid10Plus,
         ssid: params.ssid,
+        _socket: new WifiSocket({ ssid: params.ssid }),
       })
 
       start = Date.now()
@@ -179,18 +180,10 @@ Component({
 
         // 无法访问互联网的情况下，wx.getWifiList()调用不成功,猜测微信存在查询外网接口信息的流程，堵塞流程，
         // 需在可访问外网时先调用一次，后面即使断网，再次调用getWifiList也能正常调用
-        const wifiListRes = await wx.getWifiList().catch((err) => {
-          console.log('getWifiList-catch', err)
+        const wifiListRes = await wx.getWifiList().catch((err) => err)
 
-          return err
-        })
-
-        console.debug('wifiListRes', wifiListRes)
+        console.log('wifiListRes', wifiListRes)
       }
-
-      this.setData({
-        _socket: new WifiSocket({ ssid: params.ssid }),
-      })
 
       if (!isAndroid10Plus) {
         console.log('isAndroid10Plus', systemVersion)
