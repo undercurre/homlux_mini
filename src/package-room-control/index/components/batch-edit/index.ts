@@ -167,7 +167,7 @@ ComponentWithComputed({
               message: '删除成功',
               zIndex: 9999,
             })
-            await Promise.all([deviceStore.updateSubDeviceList(), deviceStore.updateAllRoomDeviceList()])
+            await Promise.all([deviceStore.updateSubDeviceList(), homeStore.updateRoomCardList()])
             this.triggerEvent('updateList')
             this.handleExitEdit()
           } else {
@@ -280,7 +280,7 @@ ComponentWithComputed({
               zIndex: 9999,
             })
             this.handleExitEdit()
-            await Promise.all([deviceStore.updateAllRoomDeviceList(), deviceStore.updateSubDeviceList()])
+            await Promise.all([homeStore.updateRoomCardList(), deviceStore.updateSubDeviceList()])
             this.triggerEvent('updateList')
           } else {
             Toast({
@@ -313,7 +313,7 @@ ComponentWithComputed({
               zIndex: 9999,
             })
             this.handleExitEdit()
-            await Promise.all([deviceStore.updateAllRoomDeviceList(), deviceStore.updateSubDeviceList()])
+            await Promise.all([homeStore.updateRoomCardList(), deviceStore.updateSubDeviceList()])
             this.triggerEvent('updateList')
           } else {
             Toast({
@@ -356,7 +356,7 @@ ComponentWithComputed({
               zIndex: 9999,
             })
             this.handleExitEdit()
-            await Promise.all([deviceStore.updateSubDeviceList(), deviceStore.updateAllRoomDeviceList()])
+            await Promise.all([deviceStore.updateSubDeviceList(), homeStore.updateRoomCardList()])
             runInAction(() => {
               deviceStore.isEditSelectMode = false
             })
