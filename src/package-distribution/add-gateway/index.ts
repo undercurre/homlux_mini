@@ -168,10 +168,10 @@ ComponentWithComputed({
     async requestBindDevice(sn: string, deviceId: string) {
       const params = getCurrentPageParams()
 
-      const existDevice = deviceBinding.store.allRoomDeviceList.find(item => item.sn === sn)
+      const existDevice = deviceBinding.store.allRoomDeviceList.find((item) => item.sn === sn)
 
       // 强绑情况下，取旧命名
-      let deviceName = existDevice ? existDevice.deviceName : (params.deviceName + (gatewayNum > 0 ? ++gatewayNum : ''))
+      const deviceName = existDevice ? existDevice.deviceName : params.deviceName + (gatewayNum > 0 ? ++gatewayNum : '')
 
       const res = await bindDevice({
         deviceId: deviceId,

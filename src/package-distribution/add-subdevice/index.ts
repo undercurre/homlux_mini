@@ -224,10 +224,10 @@ ComponentWithComputed({
       const { mac } = this.data.pageParams
       let { deviceName } = this.data.pageParams
 
-      const existDevice = deviceBinding.store.allRoomDeviceList.find(item => item.deviceId === mac)
+      const existDevice = deviceBinding.store.allRoomDeviceList.find((item) => item.deviceId === mac)
 
       // 强绑情况下，取旧命名
-      deviceName = existDevice ? existDevice.deviceName : (deviceName + (deviceNum > 0 ? ++deviceNum : ''))
+      deviceName = existDevice ? existDevice.deviceName : deviceName + (deviceNum > 0 ? ++deviceNum : '')
 
       const res = await bindDevice({
         deviceId: this.data.pageParams.mac,

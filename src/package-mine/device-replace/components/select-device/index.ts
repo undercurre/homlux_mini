@@ -18,8 +18,8 @@ ComponentWithComputed({
     },
     popupTitle: {
       type: String,
-      value: '选择被替换设备'
-    }
+      value: '选择被替换设备',
+    },
   },
 
   /**
