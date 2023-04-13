@@ -27,6 +27,9 @@ export const homeStore = observable({
   /** 当前家庭详细信息 */
   currentHomeDetail: {} as Home.IHomeDetail,
 
+  /** 上一次选择的houseId，mobx的reaction不能获取oldValue，需要自己记录 */
+  latestHouseId: '',
+
   homeMemberInfo: {} as Home.HomeMemberInfo,
 
   shareId: '',
@@ -62,6 +65,7 @@ export const homeStore = observable({
       queryUserHouseInfo({ houseId: this.currentHomeId }).then((res) => {
         if (res.success) {
           runInAction(() => {
+            homeStore.latestHouseId = homeStore.currentHomeDetail.houseId ?? ''
             homeStore.currentHomeDetail = Object.assign({ houseId: this.currentHomeId }, res.result)
           })
         }
@@ -412,6 +416,7 @@ export const homeStore = observable({
     }
     runInAction(() => {
       this.homeList = data.homeData.homeList
+      this.latestHouseId = this.currentHomeDetail.houseId ?? ''
       this.currentHomeDetail = data.homeData.currentHomeDetail
       roomStore.roomList = data.homeData.roomList
       deviceStore.allRoomDeviceList = data.homeData.allRoomDeviceList
