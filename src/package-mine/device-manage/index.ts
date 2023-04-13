@@ -24,7 +24,7 @@ ComponentWithComputed({
   computed: {
     deviceListCompited(data) {
       if (data.roomSelect === '0') {
-        return deviceStore.allRoomDeviceList
+        return deviceStore.allRoomDeviceList ? [...deviceStore.allRoomDeviceList] : []
       } else {
         return deviceStore.allRoomDeviceList.filter((d) => d.roomId === data.roomSelect)
       }

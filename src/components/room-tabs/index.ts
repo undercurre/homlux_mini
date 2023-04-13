@@ -10,6 +10,12 @@ ComponentWithComputed({
    * 组件的属性列表
    */
   properties: {
+    // 是否包括网关
+    showGateway: {
+      type: Boolean,
+      value: false,
+    },
+    // 设备列表，名称区别于 deviceList
     sDeviceList: {
       type: Array,
     },
@@ -28,7 +34,9 @@ ComponentWithComputed({
      */
     roomMenuList(data) {
       const list = data.sDeviceList ? data.sDeviceList : deviceStore.allRoomDeviceList
-      const deviceList: Device.DeviceItem[] = list.filter((device: Device.DeviceItem) => device.deviceType === 2)
+      const deviceList: Device.DeviceItem[] = data.showGateway
+        ? list
+        : list.filter((device: Device.DeviceItem) => device.deviceType === 2)
       const roomList: SimRoomInfo[] = []
 
       deviceList.forEach(({ roomId, roomName }) => {

@@ -38,6 +38,7 @@ App<IAppOption>({
     reaction(
       () => homeStore.currentHomeDetail.houseId,
       () => {
+        if (homeStore.currentHomeDetail.houseId === homeStore.latestHouseId) return
         closeWebSocket()
         startWebsocketService()
       },

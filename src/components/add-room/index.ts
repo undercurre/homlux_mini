@@ -2,7 +2,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
 import { saveHouseRoomInfo } from '../../apis/index'
 import { homeBinding, roomBinding } from '../../store/index'
-import { checkInputNameIllegal } from '../../utils/index'
+import { checkInputNameIllegal, emitter } from '../../utils/index'
 
 Component({
   options: {
@@ -171,6 +171,7 @@ Component({
         })
 
         this.triggerEvent('close')
+        emitter.emit('homeInfoEdit')
       }
     },
     /**

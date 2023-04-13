@@ -4,7 +4,7 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { homeBinding, roomBinding } from '../../store/index'
-import { getCurrentPageParams } from '../../utils/index'
+import { emitter, getCurrentPageParams } from '../../utils/index'
 import { delHouseRoom } from '../../apis/index'
 
 ComponentWithComputed({
@@ -102,6 +102,7 @@ ComponentWithComputed({
 
       if (res.success) {
         roomBinding.store.updateRoomList()
+        emitter.emit('homeInfoEdit')
 
         wx.navigateBack()
       } else {
