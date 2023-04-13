@@ -8,7 +8,7 @@
     <room-tabs sDeviceList="{{allDeviceList}}" bind:roomSelect="handleRoomSelect"></room-tabs>
 
     <scroll-view enhanced show-scrollbar="{{false}}" scroll-y class="list-wrapper" enable-flex>
-      <view wx:if="{{showDeviceList.length}}" class="grid grid-cols-4 gap-16rpx mt-16rpx">  
+      <view wx:if="{{showDeviceList.length}}" class="grid grid-cols-4 gap-16rpx mt-16rpx">
         <device-card showShadow showGradientBg wx:for="{{showDeviceList}}" wx:key="deviceId" showBtnDetail="{{false}}" bind:cardTap="handleCardTap" bind:offlineTap="handleCardTap" device-type="light" device-info="{{item}}" select="{{checkedDevice.deviceId === item.deviceId}}" />
       </view>
       <view wx:else class="list-empty flex-1">

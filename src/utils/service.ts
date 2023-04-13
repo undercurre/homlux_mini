@@ -1,6 +1,5 @@
 // service模块存放项目的相关业务代码
 import { storage } from './storage'
-import { reaction } from 'mobx-miniprogram'
 import { connectHouseSocket } from '../apis/websocket'
 import { homeStore, userStore } from '../store/index'
 import { emitter } from './eventBus'
@@ -18,7 +17,7 @@ export function logout() {
 let socketTask: WechatMiniprogram.SocketTask | null = null
 let socketIsConnect = 0
 
-function createConnect() {
+export function startWebsocketService() {
   if (!storage.get<string>('token')) {
     return
   }
@@ -42,7 +41,7 @@ function createConnect() {
       console.log('转json失败：', err)
     }
   })
-  socketTask.onError((err)=>{
+  socketTask.onError((err) => {
     console.error('Socket错误：', err)
     socketIsConnect = 0
   })
@@ -55,23 +54,9 @@ function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {
     console.error('socket异常关闭连接', e)
     setTimeout(() => {
       console.log('socket重连')
-      createConnect()
+      startWebsocketService()
     }, 5000)
   }
-}
-
-/**
- * 开始连接ws，并根据houseId的切换自动断开并重连
- */
-export function startWebsocketService() {
-  createConnect()
-  reaction(
-    () => homeStore.currentHomeDetail.houseId,
-    () => {
-      socketTask?.close({ code: 1000 })
-      createConnect()
-    },
-  )
 }
 
 export function closeWebSocket() {

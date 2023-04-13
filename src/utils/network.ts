@@ -1,4 +1,4 @@
-import { closeWebSocket, startWebsocketService } from "./service"
+import { closeWebSocket, startWebsocketService } from './service'
 
 let isConnectStatus = true
 
@@ -19,5 +19,5 @@ export function networkStatusListen() {
 }
 
 export function isConnect() {
-  return isConnect
+  return isConnectStatus
 }

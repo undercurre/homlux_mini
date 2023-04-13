@@ -9,6 +9,7 @@ import {
 import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore } from './store/index'
 import { networkStatusListen } from './utils/network'
+import { reaction } from 'mobx-miniprogram'
 
 App<IAppOption>({
   async onLaunch(options: WechatMiniprogram.App.LaunchShowOption) {
@@ -32,6 +33,15 @@ App<IAppOption>({
     } else {
       othersStore.setIsInit(false)
     }
+
+    // 监听houseId变化，切换websocket连接
+    reaction(
+      () => homeStore.currentHomeDetail.houseId,
+      () => {
+        closeWebSocket()
+        startWebsocketService()
+      },
+    )
 
     const systemInfo = wx.getSystemInfoSync()
 
