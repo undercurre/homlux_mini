@@ -22,32 +22,11 @@ ComponentWithComputed({
   },
 
   computed: {
-    // 过时代码，暂时保留一段时间
-    // roomSelectMenuList(data) {
-    //   if (data.roomList) {
-    //     return [
-    //       { roomId: '', roomName: '全屋' },
-    //       ...(data.roomList as Room.RoomInfo[]).map((room) => ({
-    //         roomId: room.roomId,
-    //         roomName: room.roomName,
-    //       })),
-    //     ]
-    //   }
-    //   return []
-    // },
-    // currentRoomName(data) {
-    //   if (data.roomSelectMenuList) {
-    //     return (data.roomSelectMenuList as { roomId: string; roomName: string }[]).find(
-    //       (room) => room.roomId === data.roomSelect,
-    //     )?.roomName
-    //   }
-    //   return ''
-    // },
     deviceListCompited(data) {
       if (data.roomSelect === '0') {
-        return data.allRoomDeviceList
+        return deviceStore.allRoomDeviceList
       } else {
-        return data.deviceList
+        return deviceStore.allRoomDeviceList.filter((d) => d.roomId === data.roomSelect)
       }
     },
   },
@@ -217,13 +196,13 @@ ComponentWithComputed({
         roomSelect: e.detail,
       })
       // this.hideSelectRoomMenu()
-      if (this.data.roomSelect === '0') {
-        // 查房间
-        deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
-      } else {
-        // 查全屋
-        deviceBinding.store.updateAllRoomDeviceList()
-      }
+      // if (this.data.roomSelect === '0') {
+      //   // 查房间
+      //   deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
+      // } else {
+      //   // 查全屋
+      //   deviceBinding.store.updateAllRoomDeviceList()
+      // }
     },
 
     handleCardClick(e: { currentTarget: { dataset: { deviceId: string } } }) {
