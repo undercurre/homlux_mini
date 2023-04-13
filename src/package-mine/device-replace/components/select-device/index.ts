@@ -13,12 +13,12 @@ ComponentWithComputed({
       type: Boolean,
       value: false,
     },
+    choosingNew: {
+      type: Boolean,
+      value: false,
+    },
     list: {
       type: Array,
-    },
-    popupTitle: {
-      type: String,
-      value: '选择被替换设备',
     },
   },
 
@@ -32,23 +32,28 @@ ComponentWithComputed({
   },
 
   computed: {
+    popupTitle(data) {
+      const { choosingNew } = data
+      return choosingNew ? '选择新设备' : '选择被替换设备'
+    },
+
     /**
      * @description 所有待选设备列表
-     * 如传入 deviceList，则使用指定列表；否则显示所有设备
+     * 如正在选择新设备，则传入 deviceList，即使用指定列表；否则显示所有设备
      * ! 不按房间筛选
      */
     allDeviceList(data) {
-      const list = data.list.length ? data.list : data.allRoomDeviceList
+      const list = data.choosingNew ? data.list : data.allRoomDeviceList
       return list.filter((d) => d.deviceType === 2)
     },
 
     /**
      * @description 显示待选设备列表
-     * 如传入 deviceList，则使用指定列表；否则显示所有设备
+     * 如正在选择新设备，则传入 deviceList，即使用指定列表；否则显示所有设备
      * isCurrentRoom 按房间筛选
      */
     showDeviceList(data) {
-      const list = data.list.length ? data.list : data.allRoomDeviceList
+      const list = data.choosingNew ? data.list : data.allRoomDeviceList
 
       return list.filter((d) => {
         const isSubdevice = d.deviceType === 2

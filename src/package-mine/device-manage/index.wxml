@@ -4,7 +4,7 @@
   <!-- 标题 -->
   <nav-bar title="设备管理" left-arrow show-go-home bind:leftTap="goBack"></nav-bar>
 
-  <room-tabs class="px-32rpx mt-32rpx" bind:roomSelect="handleRoomSelect"></room-tabs>
+  <room-tabs class="px-32rpx mt-32rpx" sDeviceList="{{deviceListCompited}}" bind:roomSelect="handleRoomSelect"></room-tabs>
 
   <!-- 无设备 -->
   <view wx:if="{{deviceListCompited.length === 0}}" class="w-750rpx h-100vh mt-80rpx flex flex-col items-center">

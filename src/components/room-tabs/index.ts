@@ -1,7 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { roomBinding, deviceBinding, deviceStore } from '../../store/index'
-import { emitter } from '../../utils/eventBus'
 
 type SimRoomInfo = Pick<Room.RoomInfo, 'roomId' | 'roomName'>
 
@@ -13,7 +12,6 @@ ComponentWithComputed({
   properties: {
     sDeviceList: {
       type: Array,
-      value: [],
     },
   },
 
@@ -22,35 +20,14 @@ ComponentWithComputed({
    */
   data: {
     roomSelect: '0',
-    roomMenuList: [] as SimRoomInfo[],
   },
-  computed: {},
-
-  lifetimes: {
-    async ready() {
-      await deviceStore.updateAllRoomDeviceList()
-      this.getRoomMenuList()
-
-      emitter.on('deviceEdit', async () => {
-        await deviceStore.updateAllRoomDeviceList()
-        this.getRoomMenuList()
-      })
-    },
-    detached() {
-      emitter.off('deviceEdit')
-    },
-  },
-
-  /**
-   * 组件的方法列表
-   */
-  methods: {
+  computed: {
     /**
      * @description 包括待选设备的房间列表
      * 默认塞入全部设备
      */
-    getRoomMenuList() {
-      const list = this.data.sDeviceList?.length ? this.data.sDeviceList : deviceStore.allRoomDeviceList
+    roomMenuList(data) {
+      const list = data.sDeviceList ? data.sDeviceList : deviceStore.allRoomDeviceList
       const deviceList: Device.DeviceItem[] = list.filter((device: Device.DeviceItem) => device.deviceType === 2)
       const roomList: SimRoomInfo[] = []
 
@@ -62,11 +39,16 @@ ComponentWithComputed({
           })
         }
       })
-
-      this.setData({
-        roomMenuList: roomList ? [{ roomId: '0', roomName: '全屋' }, ...roomList] : [],
-      })
+      return [{ roomId: '0', roomName: '全屋' }, ...roomList]
     },
+  },
+
+  lifetimes: {},
+
+  /**
+   * 组件的方法列表
+   */
+  methods: {
     handleRoomSelect(e: WechatMiniprogram.TouchEvent) {
       const roomSelect = e.currentTarget.dataset.item.roomId
       this.setData({ roomSelect })
