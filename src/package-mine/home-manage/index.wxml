@@ -9,7 +9,7 @@
         <svg-icon id="homeSelectArrow" class="absolute home-select-arrow" color="#1E2C46" name="material-symbols:arrow-drop-down-rounded" width="48rpx" height="48rpx" />
       </view>
 
-      <image wx:if="{{currentHomeDetail.houseUserAuth === 1}}" class="w-48 h-48" src="/assets/img/home-manage/setting.png" bind:tap="toSetting"></image>
+      <image wx:if="{{isEnabled}}" class="w-48 h-48" src="/assets/img/home-manage/setting.png" bind:tap="toSetting"></image>
     </view>
 
     <view class="pt-16rpx leading-40rpx text-black-59 text-28 opacity-75">
