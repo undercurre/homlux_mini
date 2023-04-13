@@ -383,30 +383,33 @@ ComponentWithComputed({
     },
 
     async handleScanUrl(url: string) {
-      showLoading()
-      if (!url.includes('meizgd.com/homlux/qrCode.html')) {
-        Toast('无效二维码')
-        return
+      try {
+        this.setData({
+          isScan: true,
+        })
+
+        if (!url.includes('meizgd.com/homlux/qrCode.html')) {
+          throw '无效二维码'
+        }
+
+        const pageParams = strUtil.getUrlParams(url)
+
+        console.log('pageParams', pageParams)
+
+        showLoading()
+        // mode 配网方式 （00代表AP配网，01代表蓝牙配网， 02代表AP+有线）
+        if (pageParams.mode === '01') {
+          // 子设备
+          await this.bindSubDevice(pageParams)
+        } else if (pageParams.mode === '02') {
+          // 网关绑定逻辑
+          await this.bindGateway(pageParams)
+        }
+        hideLoading()
+      } catch (err) {
+        Toast(err)
       }
 
-      this.setData({
-        isScan: true,
-      })
-
-      const pageParams = strUtil.getUrlParams(url)
-
-      console.log('pageParams', pageParams)
-
-      // mode 配网方式 （00代表AP配网，01代表蓝牙配网， 02代表AP+有线）
-      if (pageParams.mode === '01') {
-        // 子设备
-        await this.bindSubDevice(pageParams)
-      } else if (pageParams.mode === '02') {
-        // 网关绑定逻辑
-        await this.bindGateway(pageParams)
-      }
-
-      hideLoading()
       // 延迟复位扫码状态，防止安卓端短时间重复执行扫码逻辑
       setTimeout(() => {
         this.setData({
