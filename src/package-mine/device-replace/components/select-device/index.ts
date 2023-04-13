@@ -13,12 +13,13 @@ ComponentWithComputed({
       type: Boolean,
       value: false,
     },
-    filterDevice: {
-      type: Object,
-    },
     list: {
       type: Array,
     },
+    popupTitle: {
+      type: String,
+      value: '选择被替换设备'
+    }
   },
 
   /**
@@ -31,12 +32,6 @@ ComponentWithComputed({
   },
 
   computed: {
-    popupTitle(data) {
-      const { filterDevice } = data
-      const choosingNew = filterDevice && filterDevice.productId
-      return choosingNew ? '选择新设备' : '选择被替换设备'
-    },
-
     /**
      * @description 所有待选设备列表
      * 如传入 deviceList，则使用指定列表；否则显示所有设备
