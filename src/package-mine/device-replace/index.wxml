@@ -75,6 +75,6 @@
 
 <select-device show="{{isSelectOldDevice}}" bind:close="closeOldDevicePopup" bind:confirm="confirmOldDevicePopup"></select-device>
 
-<select-device show="{{isSelectNewDevice}}" bind:close="closeNewDevicePopup" bind:confirm="confirmNewDevicePopup" list="{{ computedDeviceList }}" popupTitle="选择新设备"></select-device>
+<select-device show="{{isSelectNewDevice}}" bind:close="closeNewDevicePopup" bind:confirm="confirmNewDevicePopup" list="{{ computedDeviceList }}" choosingNew="{{true}}"></select-device>
 
 <van-toast id="van-toast" />
