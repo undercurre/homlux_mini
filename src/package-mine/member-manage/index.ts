@@ -5,6 +5,7 @@ import pageBehaviors from '../../behaviors/pageBehaviors'
 import { homeBinding, userBinding } from '../../store/index'
 import { storage } from '../../utils/storage'
 import { emitter } from '../../utils/eventBus'
+import Toast from '@vant/weapp/toast/toast'
 
 ComponentWithComputed({
   options: {
@@ -69,9 +70,18 @@ ComponentWithComputed({
     attached: function () {
       this.updateShareSetting()
       this.initData()
+      emitter.on('wsReceive', (e) => {
+        if (e.result.eventType === 'invite_user_house') {
+          Toast(e.result.eventData)
+          this.initData()
+          emitter.emit('homeInfoEdit')
+        }
+      })
     },
     moved: function () {},
-    detached: function () {},
+    detached: function () {
+      emitter.off('wsReceive')
+    },
   },
 
   methods: {
