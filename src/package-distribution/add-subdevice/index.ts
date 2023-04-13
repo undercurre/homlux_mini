@@ -221,12 +221,20 @@ ComponentWithComputed({
         activeIndex: 2,
       })
 
+      const { mac } = this.data.pageParams
+      let { deviceName } = this.data.pageParams
+
+      const existDevice = deviceBinding.store.allRoomDeviceList.find(item => item.deviceId === mac)
+
+      // 强绑情况下，取旧命名
+      deviceName = existDevice ? existDevice.deviceName : (deviceName + (deviceNum > 0 ? ++deviceNum : ''))
+
       const res = await bindDevice({
         deviceId: this.data.pageParams.mac,
         houseId: homeBinding.store.currentHomeId,
         roomId: roomBinding.store.currentRoom.roomId,
         sn: '',
-        deviceName: this.data.pageParams.deviceName + (deviceNum > 0 ? ++deviceNum : ''),
+        deviceName: deviceName,
       })
 
       if (res.success && res.result.isBind) {
