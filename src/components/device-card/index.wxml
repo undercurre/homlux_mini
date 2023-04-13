@@ -11,7 +11,7 @@
       <text class="text-20rpx text-black-tips leading-none" wx:if="{{deviceType==='switch'}}">{{bottomDesc}}</text>
     </view>
   </view>
-  
+
   <view wx:if="{{ripple}}" class="absolute left-80rpx w-250rpx h-250rpx rounded-999 {{onOff ? 'ripple-on' : 'ripple-off'}}" style="animation: ripple-{{onOff ? 'on' : 'off'}} 1s ease forwards;"></view>
 
   <view wx:if="{{editMode}}" class="absolute w-full left-0 bottom-12rpx flex-center">

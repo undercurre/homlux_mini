@@ -105,7 +105,7 @@ ComponentWithComputed({
       if (this.data._wifiSwitchInterId) {
         clearInterval(this.data._wifiSwitchInterId)
       }
-    }
+    },
   },
 
   methods: {

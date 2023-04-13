@@ -81,7 +81,7 @@ ComponentWithComputed({
     onShow() {
       if (this.data.firstShow) {
         this.setData({
-          firstShow: false
+          firstShow: false,
         })
         return
       }
