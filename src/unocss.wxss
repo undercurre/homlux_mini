@@ -34,7 +34,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .py-12rpx{padding-top:12rpx;padding-bottom:12rpx;}
 .py-16rpx{padding-top:16rpx;padding-bottom:16rpx;}
 .py-20rpx{padding-top:20rpx;padding-bottom:20rpx;}
-.py-24rpx{padding-top:24rpx;padding-bottom:24rpx;}
 .py-30rpx{padding-top:30rpx;padding-bottom:30rpx;}
 .py-32rpx{padding-top:32rpx;padding-bottom:32rpx;}
 .py-40rpx{padding-top:40rpx;padding-bottom:40rpx;}
@@ -63,12 +62,10 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .pl-32rpx{padding-left:32rpx;}
 .pl-40rpx{padding-left:40rpx;}
 .pl-48rpx{padding-left:48rpx;}
-.pl-88rpx{padding-left:88rpx;}
 .pr-16rpx{padding-right:16rpx;}
 .pr-24rpx{padding-right:24rpx;}
 .pr-40rpx{padding-right:40rpx;}
 .pr-44rpx{padding-right:44rpx;}
-.pr-50rpx{padding-right:50rpx;}
 .pr-64rpx{padding-right:64rpx;}
 .pt-100rpx{padding-top:100rpx;}
 .pt-112rpx{padding-top:112rpx;}
