@@ -485,5 +485,7 @@ function decodeCmd(message: ArrayBuffer, key: string) {
 
   const reply = aesUtil.decrypt(msg, key)
 
+  console.log('reply-decrypt', reply)
+
   return JSON.parse(reply) as { topic: string; reqId: string; data: IAnyObject }
 }

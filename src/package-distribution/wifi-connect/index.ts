@@ -79,6 +79,7 @@ ComponentWithComputed({
           const systemSetting = wx.getSystemSetting()
 
           if (systemSetting.wifiEnabled) {
+            Dialog.close()
             clearInterval(this.data._wifiSwitchInterId)
             this.data._wifiSwitchInterId = 0
             this.initWifi()

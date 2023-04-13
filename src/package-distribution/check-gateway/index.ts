@@ -40,6 +40,8 @@ Component({
           const systemSetting = wx.getSystemSetting()
 
           if (systemSetting.wifiEnabled) {
+            console.info('检测到wifi打开，开始初始化')
+            Dialog.close()
             clearInterval(this.data._wifiSwitchInterId)
             this.data._wifiSwitchInterId = 0
             this.initWifi()
@@ -134,16 +136,16 @@ Component({
     },
 
     async initWifi() {
-      showLoading()
-
-      const params = getCurrentPageParams()
-
-      console.log('initWifi', params)
-
       const deviceInfo = wx.getDeviceInfo()
 
       const systemVersion = parseInt(deviceInfo.system.toLowerCase().replace(deviceInfo.platform, ''))
       const isAndroid10Plus = isAndroid() && systemVersion >= 10 // 判断是否Android10+或者是鸿蒙
+
+      isAndroid10Plus && showLoading() // 仅安卓10+需要展示loading，需要展示手动联网提示
+
+      const params = getCurrentPageParams()
+
+      console.log('initWifi', params)
 
       this.setData({
         isAndroid10Plus,
@@ -190,7 +192,7 @@ Component({
         this.connectWifi()
       }
 
-      hideLoading()
+      isAndroid10Plus && hideLoading()
     },
 
     async connectWifi() {
