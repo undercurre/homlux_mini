@@ -29,7 +29,7 @@ function createConnect() {
   socketTask.onClose(onSocketClose)
   socketTask.onOpen(() => {
     socketIsConnect = 1
-    console.log('socket连接成功')
+    console.info('socket连接成功')
   })
   socketTask.onMessage((e) => {
     try {
@@ -48,6 +48,7 @@ function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {
   console.log('socket关闭连接', e)
   socketIsConnect = 0
   if (e.code !== 1000) {
+    console.error('socket异常关闭连接', e)
     setTimeout(() => {
       console.log('socket重连')
       createConnect()

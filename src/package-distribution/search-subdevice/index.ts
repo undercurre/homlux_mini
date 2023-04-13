@@ -255,7 +255,7 @@ ComponentWithComputed({
           setTimeout(() => {
             if (bleDevice.status === 'waiting') {
               bleDevice.status = 'fail'
-              console.error(bleDevice.mac + '绑定监听超时')
+              console.error(bleDevice.mac + '绑定推送监听超时')
               this.updateBleDeviceListView()
             }
           }, timeout * 1000)
