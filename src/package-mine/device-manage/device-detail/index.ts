@@ -164,6 +164,7 @@ ComponentWithComputed({
           Toast('删除成功')
           homeStore.updateRoomCardList()
           emitter.emit('deviceEdit')
+          emitter.emit('homeInfoEdit')
           wx.navigateBack()
         } else {
           Toast('删除失败')
