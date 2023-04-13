@@ -8,6 +8,7 @@ import {
 } from './utils/index'
 import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore } from './store/index'
+import { networkStatusListen } from './utils/network'
 
 App<IAppOption>({
   async onLaunch(options: WechatMiniprogram.App.LaunchShowOption) {
@@ -36,13 +37,8 @@ App<IAppOption>({
 
     console.log('systemInfo', systemInfo)
 
-    wx.onNetworkStatusChange(function (res) {
-      console.log('监听网络状态变化事件:', res, Date().toString())
-    })
-
-    wx.onNetworkWeakChange(function (res) {
-      console.warn('监听弱网状态变化事件:', res)
-    })
+    // 网络监听
+    networkStatusListen()
   },
 
   onShow() {

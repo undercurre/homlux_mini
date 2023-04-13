@@ -42,6 +42,10 @@ function createConnect() {
       console.log('转json失败：', err)
     }
   })
+  socketTask.onError((err)=>{
+    console.error('Socket错误：', err)
+    socketIsConnect = 0
+  })
 }
 
 function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {
