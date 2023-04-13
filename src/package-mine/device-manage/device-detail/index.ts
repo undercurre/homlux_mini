@@ -19,7 +19,7 @@ ComponentWithComputed({
     showEditNamePopup: false,
     showEditRoomPopup: false,
     deviceInfo: {} as Device.DeviceItem,
-    gatewayDesc: '',
+    firstShow: true,
   },
 
   computed: {
@@ -76,6 +76,16 @@ ComponentWithComputed({
       // checkOtaVersion(deviceId).then((res) => {
       //   console.log('ota', res)
       // })
+    },
+
+    onShow() {
+      if (this.data.firstShow) {
+        this.setData({
+          firstShow: false
+        })
+        return
+      }
+      this.updateDeviceInfo()
     },
 
     handleDeviceNameEditPopup() {
