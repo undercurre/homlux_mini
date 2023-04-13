@@ -8,7 +8,7 @@ import {
 } from './utils/index'
 import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore } from './store/index'
-import { networkStatusListen } from './utils/network'
+import { isConnect, networkStatusListen } from './utils/network'
 import { reaction } from 'mobx-miniprogram'
 
 App<IAppOption>({
@@ -58,7 +58,7 @@ App<IAppOption>({
       return
     }
     // 用户热启动app，建立ws连接，并且再更新一次数据
-    if (homeStore.currentHomeId && storage.get<string>('token')) {
+    if (homeStore.currentHomeId && storage.get<string>('token') && isConnect()) {
       deviceStore.updateDeviceList()
       homeStore.updateHomeInfo()
       startWebsocketService()
