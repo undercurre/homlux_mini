@@ -8,6 +8,8 @@ import {
 } from './utils/index'
 import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore } from './store/index'
+import { isConnect, networkStatusListen } from './utils/network'
+import { reaction } from 'mobx-miniprogram'
 
 App<IAppOption>({
   async onLaunch(options: WechatMiniprogram.App.LaunchShowOption) {
@@ -32,17 +34,21 @@ App<IAppOption>({
       othersStore.setIsInit(false)
     }
 
+    // 监听houseId变化，切换websocket连接
+    reaction(
+      () => homeStore.currentHomeDetail.houseId,
+      () => {
+        closeWebSocket()
+        startWebsocketService()
+      },
+    )
+
     const systemInfo = wx.getSystemInfoSync()
 
     console.log('systemInfo', systemInfo)
 
-    wx.onNetworkStatusChange(function (res) {
-      console.log('监听网络状态变化事件:', res, Date().toString())
-    })
-
-    wx.onNetworkWeakChange(function (res) {
-      console.warn('监听弱网状态变化事件:', res)
-    })
+    // 网络监听
+    networkStatusListen()
   },
 
   onShow() {
@@ -52,7 +58,7 @@ App<IAppOption>({
       return
     }
     // 用户热启动app，建立ws连接，并且再更新一次数据
-    if (homeStore.currentHomeId && storage.get<string>('token')) {
+    if (homeStore.currentHomeId && storage.get<string>('token') && isConnect()) {
       deviceStore.updateDeviceList()
       homeStore.updateHomeInfo()
       startWebsocketService()

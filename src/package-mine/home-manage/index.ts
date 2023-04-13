@@ -37,17 +37,26 @@ ComponentWithComputed({
   },
 
   computed: {
-    settingActions() {
-      const actions = [
-        {
+    settingActions(data) {
+      const actions = []
+
+      if (data.isEnabled) {
+        actions.push({
           name: '重命名',
-        },
-        {
+        })
+      }
+
+      if (data.currentHomeDetail?.houseUserAuth === 1) {
+        actions.push({
           name: '解散家庭',
-        },
-      ]
+        })
+      }
 
       return actions
+    },
+    isEnabled(data) {
+      const role = data.currentHomeDetail?.houseUserAuth
+      return role === 1 || role === 2
     },
     namingPopupTitle(data) {
       return data.homeInfoEdited.houseId ? '重命名家庭' : '新建家庭'
@@ -61,24 +70,22 @@ ComponentWithComputed({
 
   lifetimes: {
     ready: async function () {
+      console.log('home manage ==== ready')
       homeStore.updateHomeInfo()
       homeBinding.store.updateHomeMemberList()
-    },
-    moved: function () {},
-    detached: function () {},
-  },
 
-  methods: {
-    onLoad() {
       emitter.on('homeInfoEdit', () => {
         homeStore.updateHomeInfo()
         homeBinding.store.updateHomeMemberList()
       })
     },
-    onUnload() {
+    moved: function () {},
+    detached: function () {
       emitter.off('homeInfoEdit')
     },
+  },
 
+  methods: {
     /**
      * 用户点击展示/隐藏家庭选择
      */

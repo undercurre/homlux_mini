@@ -26,6 +26,7 @@ export const WSEventType = {
   device_replace: 'device_replace',
   connect_success_status: 'connect_success_status',
   bind_device: 'bind_device',
+  invite_user_house: 'invite_user_house', // 用户加入家庭
 }
 
 export const emitter: Emitter<Events> = mitt<Events>()

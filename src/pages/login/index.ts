@@ -58,13 +58,7 @@ Component({
       const loginRes = await login(data)
       if (loginRes.success && loginRes.result) {
         console.log('loginRes', loginRes)
-        // 批量缓存返回值
-        ;(['token'] as const).forEach((item) => {
-          const value = (loginRes.result as User.UserLoginRes)[item]
-          if (value) {
-            storage.set(item, value, null)
-          }
-        })
+        storage.set('token', loginRes.result.token, null)
 
         await userStore.updateUserInfo()
         userStore.setIsLogin(true)
