@@ -63,6 +63,13 @@ Component({
    * 组件的方法列表
    */
   methods: {
+    toErrorStatus() {
+      this.setData({
+        status: 'error',
+      })
+
+      this.data._socket?.close()
+    },
     copy() {
       wx.setClipboardData({
         data: '12345678',
@@ -222,9 +229,7 @@ Component({
         this.getGatewayStatus()
       } catch (err) {
         console.error('connectWifi-err', err)
-        this.setData({
-          status: 'error',
-        })
+        this.toErrorStatus()
       }
     },
 
@@ -242,9 +247,7 @@ Component({
 
       if (!res.success) {
         console.error('查询网关状态失败')
-        this.setData({
-          status: 'error',
-        })
+        this.toErrorStatus()
         return
       }
 

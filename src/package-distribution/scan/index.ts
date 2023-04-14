@@ -25,7 +25,7 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    hasInitCamera: false,
+    needCheckCamera: true, // 是否需要重新检查摄像头权限
     isBlePermit: false,
     isShowPage: false,
     isShowGatewayList: false, // 是否展示选择网关列表弹窗
@@ -168,6 +168,10 @@ ComponentWithComputed({
       showLoading()
       // 没有打开微信蓝牙授权异常处理
 
+      this.setData({
+        needCheckCamera: true,
+      })
+
       Dialog.alert({
         message: '请授权使用蓝牙，否则无法正常扫码配网',
         showCancelButton: true,
@@ -248,9 +252,14 @@ ComponentWithComputed({
       showLoading()
       const settingRes = await wx.getSetting()
 
-      console.log('getSetting', settingRes)
+      console.log('检查摄像头权限', settingRes)
 
       if (!settingRes.authSetting['scope.camera']) {
+        // 跳转过权限设置页均需要重置needCheckCamera状态，回来后需要重新检查摄像头权限
+        this.setData({
+          needCheckCamera: true,
+        })
+
         Dialog.alert({
           message: '请授权使用摄像头，用于扫码配网',
           showCancelButton: true,
@@ -262,6 +271,10 @@ ComponentWithComputed({
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           this.goBack() // 拒绝授权摄像头，则退出当前页面
+        })
+      } else {
+        this.setData({
+          needCheckCamera: false,
         })
       }
 
@@ -292,15 +305,14 @@ ComponentWithComputed({
 
     async initCameraDone() {
       console.log('initCameraDone')
+      if (this.data.needCheckCamera) {
+        const flag = await this.checkCameraPerssion()
 
-      const flag = await this.checkCameraPerssion()
-
-      if (!flag) {
-        return
+        if (!flag) {
+          return
+        }
       }
-      this.setData({
-        hasInitCamera: true,
-      })
+      
       this.initBle()
     },
 
@@ -316,6 +328,9 @@ ComponentWithComputed({
         mediaType: ['image'],
         sourceType: ['album'],
         success: async (res) => {
+          this.setData({
+            isScan: true,
+          })
           console.log('选择相册：', res)
           showLoading()
 
@@ -376,7 +391,10 @@ ComponentWithComputed({
             this.handleScanUrl(query.result.qrCodeUrl)
           } else {
             hideLoading()
-            Toast(query.msg)
+            Toast('无效二维码')
+            this.setData({
+              isScan: false,
+            })
           }
         },
       })
@@ -407,7 +425,7 @@ ComponentWithComputed({
         }
         hideLoading()
       } catch (err) {
-        Toast(err)
+        Toast(err as string)
       }
 
       // 延迟复位扫码状态，防止安卓端短时间重复执行扫码逻辑
@@ -419,9 +437,12 @@ ComponentWithComputed({
     },
 
     async bindGateway(params: IAnyObject) {
-      const res = await checkDevice({
-        productId: params.pid,
-      })
+      const res = await checkDevice(
+        {
+          productId: params.pid,
+        },
+        { loading: false },
+      )
 
       if (!res.success) {
         Toast('验证产品信息失败')
@@ -438,7 +459,7 @@ ComponentWithComputed({
     },
 
     async bindSubDevice(params: IAnyObject) {
-      const res = await checkDevice({ dsn: params.sn })
+      const res = await checkDevice({ dsn: params.sn }, { loading: false })
 
       if (!res.success) {
         Toast('验证产品信息失败')

@@ -43,6 +43,27 @@ ComponentWithComputed({
         pageParams,
       })
       this.initBle()
+
+      // 扫码子设备，60s超时处理，无论是否发现目标子设备
+      this.data._timeId = setTimeout(() => {
+        this.setData({
+          status: 'error',
+        })
+
+        emitter.off('bind_device')
+        console.error(`绑定失败：子设备${this.data.pageParams.mac}，绑定推送监听超时`)
+      }, 60000)
+
+      emitter.on('bind_device', (data) => {
+        console.log('bind_device', data)
+
+        if (data.deviceId === this.data.pageParams.mac) {
+          console.log(`收到绑定推送消息：子设备${this.data.pageParams.mac}`)
+          this.bindBleDeviceToClound()
+          emitter.off('bind_device')
+          clearTimeout(this.data._timeId)
+        }
+      })
     },
     detached() {
       emitter.off('bind_device')
@@ -152,27 +173,6 @@ ComponentWithComputed({
 
         return
       }
-
-      // 60s超时处理
-      this.data._timeId = setTimeout(() => {
-        this.setData({
-          status: 'error',
-        })
-
-        emitter.off('bind_device')
-        console.error(`绑定失败：子设备${this.data.pageParams.mac}，绑定推送监听超时`)
-      }, 60000)
-
-      emitter.on('bind_device', (data) => {
-        console.log('bind_device', data)
-
-        if (data.deviceId === this.data.pageParams.mac) {
-          console.log(`收到绑定推送消息：子设备${this.data.pageParams.mac}`)
-          this.bindBleDeviceToClound()
-          emitter.off('bind_device')
-          clearTimeout(this.data._timeId)
-        }
-      })
     },
 
     async stopGwAddMode() {
