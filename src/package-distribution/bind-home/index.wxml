@@ -10,7 +10,7 @@
   </scroll-view>
 
   <view class="flex flex-col items-center pt-24rpx px-32rpx">
-    <van-button class="w-full" block type="primary" size="large" bind:click="finish" disabled="{{!deviceInfo.roomId}}">完成</van-button>
+    <van-button class="w-full" block type="primary" size="large" bind:click="finish" disabled="{{!deviceInfo.roomId || !deviceInfo.deviceName}}">完成</van-button>
   </view>
 </view>
 
