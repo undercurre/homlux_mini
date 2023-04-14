@@ -56,7 +56,9 @@ Component({
   methods: {
     change(event: WechatMiniprogram.CustomEvent) {
       console.log('edit-device-info-change', event)
-      this.data.deviceInfo = event.detail
+      this.setData({
+        deviceInfo: event.detail,
+      })
     },
     close() {
       this.triggerEvent('close')

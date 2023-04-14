@@ -39,7 +39,7 @@
     <van-field custom-style="padding: 20rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" value="{{ switchInfo.switchName }}" placeholder="请输入按键名称" clearable="{{true}}" bind:clear="changeSwitchName" bind:blur="changeSwitchName" border="{{false}}"></van-field>
     <view class="h-80rpx"></view>
 
-    <template is="bottom-btn" />
+    <template is="bottom-btn" data="{{disabled: !switchInfo.switchName}}" />
   </view>
 </van-popup>
 
