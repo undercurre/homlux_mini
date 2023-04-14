@@ -78,10 +78,15 @@ ComponentWithComputed({
         homeStore.updateHomeInfo()
         homeBinding.store.updateHomeMemberList()
       })
+
+      emitter.on('invite_user_house', () => {
+        homeStore.updateHomeInfo()
+      }) 
     },
     moved: function () {},
     detached: function () {
       emitter.off('homeInfoEdit')
+      emitter.off('invite_user_house')
     },
   },
 

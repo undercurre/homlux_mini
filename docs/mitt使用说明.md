@@ -24,6 +24,7 @@ type Events = {
     deviceEdit: void
     sceneEdit: void
     homeInfoEdit: void
+    invite_user_house: void
 }
 ```
 
