@@ -176,8 +176,10 @@ export const homeStore = observable({
       options,
     )
     if (res.success) {
+      const latestHouseId = homeStore.currentHomeDetail.houseId
       runInAction(() => {
         homeStore.currentHomeDetail = Object.assign({ houseId: this.currentHomeId }, res.result)
+        homeStore.latestHouseId = latestHouseId
       })
       await deviceStore.updateAllRoomDeviceList(undefined, options)
       await roomStore.updateRoomList(options)

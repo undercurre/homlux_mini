@@ -5,7 +5,6 @@ import pageBehaviors from '../../behaviors/pageBehaviors'
 import { homeBinding, userBinding } from '../../store/index'
 import { storage } from '../../utils/storage'
 import { emitter } from '../../utils/eventBus'
-import Toast from '@vant/weapp/toast/toast'
 
 ComponentWithComputed({
   options: {
@@ -73,7 +72,7 @@ ComponentWithComputed({
 
       emitter.on('invite_user_house', () => {
         this.initData()
-      }) 
+      })
     },
     moved: function () {},
     detached: function () {

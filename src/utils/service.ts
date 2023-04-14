@@ -15,7 +15,7 @@ export function logout() {
 
 // WS连接
 let socketTask: WechatMiniprogram.SocketTask | null = null
-let socketIsConnect = 0
+let socketIsConnect = false
 
 export function startWebsocketService() {
   if (!storage.get<string>('token')) {
@@ -23,11 +23,12 @@ export function startWebsocketService() {
   }
   if (socketIsConnect) {
     socketTask?.close({ code: 1000 })
+    socketIsConnect = false
   }
   socketTask = connectHouseSocket(homeStore.currentHomeDetail.houseId)
   socketTask.onClose(onSocketClose)
   socketTask.onOpen(() => {
-    socketIsConnect = 1
+    socketIsConnect = true
     console.info('socket连接成功')
   })
   socketTask.onMessage((e) => {
@@ -41,7 +42,7 @@ export function startWebsocketService() {
       if (res.result.eventType === 'invite_user_house' && res.result.eventData) {
         wx.showToast({
           title: res.result.eventData,
-          icon: 'none'
+          icon: 'none',
         })
       }
     } catch (err) {
@@ -51,13 +52,13 @@ export function startWebsocketService() {
   })
   socketTask.onError((err) => {
     console.error('Socket错误：', err)
-    socketIsConnect = 0
+    socketIsConnect = false
   })
 }
 
 function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {
   console.log('socket关闭连接', e)
-  socketIsConnect = 0
+  socketIsConnect = false
   if (e.code !== 1000) {
     console.error('socket异常关闭连接', e)
     setTimeout(() => {
@@ -70,6 +71,7 @@ function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {
 export function closeWebSocket() {
   if (socketTask && socketIsConnect) {
     socketTask.close({ code: 1000 })
+    socketIsConnect = false
   }
 }
 

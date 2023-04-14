@@ -335,7 +335,6 @@ ComponentWithComputed({
      * 用户切换家庭
      */
     handleHomeSelect() {
-      // this.doHomeSelectArrowAnimation(false, this.data.selectHomeMenu.isShow)
       this.setData({
         'selectHomeMenu.isShow': false,
       })
