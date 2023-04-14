@@ -312,7 +312,7 @@ ComponentWithComputed({
           return
         }
       }
-      
+
       this.initBle()
     },
 

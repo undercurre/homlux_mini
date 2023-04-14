@@ -81,7 +81,7 @@ ComponentWithComputed({
 
       emitter.on('invite_user_house', () => {
         homeStore.updateHomeInfo()
-      }) 
+      })
     },
     moved: function () {},
     detached: function () {

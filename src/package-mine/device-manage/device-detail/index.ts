@@ -195,8 +195,8 @@ ComponentWithComputed({
 
     clickMac() {
       wx.setClipboardData({
-        data: this.data.mac
+        data: this.data.mac,
       })
-    }
+    },
   },
 })
