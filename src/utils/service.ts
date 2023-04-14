@@ -36,6 +36,14 @@ export function startWebsocketService() {
       console.log('接收到Socket信息：', res, res.result.eventType)
       emitter.emit('wsReceive', res)
       emitter.emit(res.result.eventType, res.result.eventData)
+
+      // 全局加上进入家庭的消息提示（暂时方案）
+      if (res.result.eventType === 'invite_user_house' && res.result.eventData) {
+        wx.showToast({
+          title: res.result.eventData,
+          icon: 'none'
+        })
+      }
     } catch (err) {
       console.log('接收到Socket信息：', e.data)
       console.log('转json失败：', err)

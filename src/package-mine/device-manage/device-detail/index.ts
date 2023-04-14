@@ -192,5 +192,11 @@ ComponentWithComputed({
         this.updateDeviceInfo()
       }
     },
+
+    clickMac() {
+      wx.setClipboardData({
+        data: this.data.mac
+      })
+    }
   },
 })

@@ -51,6 +51,7 @@ Component({
       if (res.success) {
         this.setData({
           userList: res.result.houseUserList.filter((item) => item.userHouseAuth !== 1), // 过滤创建者，不能转让给自己
+          selectIndex: -1, // 清空选择记录
         })
       }
     },

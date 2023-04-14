@@ -1,5 +1,5 @@
 <import src="/commons/templates/popup.wxml" />
-<van-popup show="{{ show }}" position="bottom" round bind:close="close" closeable>
+<van-popup show="{{ show }}" position="bottom" round bind:close="close" bind:before-enter="queryHomeUsers" closeable>
   <view class="px-32rpx pt-48rpx text-black-2a flex-col">
     <text class="block pb-100rpx font-medium text-center text-36 leading-48rpx">选择转移对象</text>
 

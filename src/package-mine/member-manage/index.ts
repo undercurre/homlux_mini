@@ -70,17 +70,14 @@ ComponentWithComputed({
     attached: function () {
       this.updateShareSetting()
       this.initData()
-      emitter.on('wsReceive', (e) => {
-        if (e.result.eventType === 'invite_user_house') {
-          Toast(e.result.eventData)
-          this.initData()
-          emitter.emit('homeInfoEdit')
-        }
-      })
+
+      emitter.on('invite_user_house', () => {
+        this.initData()
+      }) 
     },
     moved: function () {},
     detached: function () {
-      emitter.off('wsReceive')
+      emitter.off('invite_user_house')
     },
   },
 

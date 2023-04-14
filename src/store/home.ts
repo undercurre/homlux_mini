@@ -368,7 +368,7 @@ export const homeStore = observable({
    * 获取分享连接ID
    */
   async getInviteShareId() {
-    const res = await getShareId()
+    const res = await getShareId({ houseId: this.currentHomeId })
     if (res.success) {
       runInAction(() => {
         homeBinding.store.shareId = res.result.shareId

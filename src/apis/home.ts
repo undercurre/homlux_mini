@@ -178,11 +178,13 @@ export async function inviteHouseUser({ houseId = '', auth = 3, shareId = '' }, 
 /**
  * 获取分享连接ID
  */
-export async function getShareId(options?: { loading?: boolean }) {
+export async function getShareId({ houseId = '' }, options?: { loading?: boolean }) {
   return await mzaioRequest.post<{ shareId: string }>({
     log: true,
     loading: options?.loading ?? false,
     url: '/v1/mzgd/user/getShareId',
-    data: {},
+    data: {
+      houseId,
+    },
   })
 }
