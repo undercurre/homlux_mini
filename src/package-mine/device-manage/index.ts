@@ -24,9 +24,9 @@ ComponentWithComputed({
   computed: {
     deviceListCompited(data) {
       if (data.roomSelect === '0') {
-        return deviceStore.allRoomDeviceList ? [...deviceStore.allRoomDeviceList] : []
+        return data.allRoomDeviceList ? [...data.allRoomDeviceList] : []
       } else {
-        return deviceStore.allRoomDeviceList.filter((d) => d.roomId === data.roomSelect)
+        return data.allRoomDeviceList.filter((d: Room.RoomInfo) => d.roomId === data.roomSelect)
       }
     },
   },
