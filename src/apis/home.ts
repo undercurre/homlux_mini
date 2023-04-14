@@ -184,7 +184,7 @@ export async function getShareId({ houseId = '' }, options?: { loading?: boolean
     loading: options?.loading ?? false,
     url: '/v1/mzgd/user/getShareId',
     data: {
-      houseId
+      houseId,
     },
   })
 }

@@ -82,7 +82,7 @@ ComponentWithComputed({
           ? '/assets/img/base/power-on.png'
           : '/assets/img/base/power-off.png'
       } else if (data.deviceInfo.proType === proType.switch && data.deviceInfo.switchInfoDTOList[0]) {
-        // ! 保证带有switchInfoDTOList
+        // ! 确保带有switchInfoDTOList
         const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
         if (!data.deviceInfo.mzgdPropertyDTOList[switchId]) {
           // 万一设备没有开关属性，不显示
