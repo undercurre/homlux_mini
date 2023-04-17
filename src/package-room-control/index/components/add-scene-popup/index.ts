@@ -93,7 +93,7 @@ ComponentWithComputed({
         return
       }
       this.setData({
-        isAddingScene: true
+        isAddingScene: true,
       })
       const newSceneData = {
         conditionType: '0',
@@ -134,7 +134,7 @@ ComponentWithComputed({
             zIndex: 99999,
           })
           this.setData({
-            isAddingScene: false
+            isAddingScene: false,
           })
           return
         }
@@ -191,7 +191,7 @@ ComponentWithComputed({
         })
       }
       this.setData({
-        isAddingScene: false
+        isAddingScene: false,
       })
       console.log('setData-isAddingScene', this.data.isAddingScene)
       this.triggerEvent('close')

@@ -53,6 +53,10 @@
           </view>
         </van-cell>
       </van-cell-group>
+      <view wx:if="{{!hasUpdate}}" class="w-750rpx flex-center">
+        <view class="h-284rpx"></view>
+        <text class="text-black-tips text-28rpx">暂无可升级设备</text>
+      </view>
     </scroll-view>
   </view>
   <view class="mb-96rpx mt-32rpx w-686rpx flex-col-center">
