@@ -32,7 +32,14 @@ Component({
   } as IAnyObject,
 
   lifetimes: {
-    ready() {
+    async ready() {
+      const auth = await this.authLocationPermission()
+
+      if (!auth) {
+        console.error('用户位置授权失败')
+        return
+      }
+      
       if (this.checkWifiSwitch()) {
         this.initWifi()
       } else {
@@ -74,6 +81,34 @@ Component({
       wx.setClipboardData({
         data: '12345678',
       })
+    },
+
+    async authLocationPermission() {
+      // Android 调用前需要 用户授权 scope.userLocation。该权限流程需前置，否则会出现在配网过程连接设备热点导致无法联网，请求失败
+      if (isAndroid()) {
+        const authorizeRes = await wx
+          .authorize({
+            scope: 'scope.userLocation',
+          })
+          .catch((err) => err)
+
+        console.log('authorizeRes', authorizeRes)
+
+        // 用户拒绝授权处理，安卓端没有返回errno字段，只能通过errMsg判断
+        if (authorizeRes.errno === 103 || authorizeRes.errMsg.includes('auth deny')) {
+          const authRes = await this.checkLocationPermission()
+          console.log('authRes', authRes)
+
+          if (!authRes) {
+            console.error('授权失败')
+            hideLoading()
+          }
+
+          return authRes
+        }
+      }
+
+      return true
     },
     /**
      * 检查微信位置权限
@@ -165,28 +200,7 @@ Component({
 
       console.debug('startWifi', startRes, '开启wifi模块用时：', Date.now() - start)
 
-      // Android 调用前需要 用户授权 scope.userLocation。该权限流程需前置，否则会出现在配网过程连接设备热点导致无法联网，请求失败
       if (isAndroid()) {
-        const authorizeRes = await wx
-          .authorize({
-            scope: 'scope.userLocation',
-          })
-          .catch((err) => err)
-
-        console.log('authorizeRes', authorizeRes)
-
-        // 用户拒绝授权处理，安卓端没有返回errno字段，只能通过errMsg判断
-        if (authorizeRes.errno === 103 || authorizeRes.errMsg.includes('auth deny')) {
-          const authRes = await this.checkLocationPermission()
-          console.log('authRes', authRes)
-
-          if (!authRes) {
-            console.error('授权失败')
-            hideLoading()
-            return
-          }
-        }
-
         // 无法访问互联网的情况下，wx.getWifiList()调用不成功,猜测微信存在查询外网接口信息的流程，堵塞流程，
         // 需在可访问外网时先调用一次，后面即使断网，再次调用getWifiList也能正常调用
         const wifiListRes = await wx.getWifiList().catch((err) => err)
@@ -238,15 +252,11 @@ Component({
          "method":"wifi" //无线配网："wifi"，有线配网:"eth"
      */
     async getGatewayStatus() {
-      const res = await this.data._socket.sendCmd({
-        topic: '/gateway/net/status',
-        data: {},
-      })
+      const res = await this.data._socket.getGatewayStatus()
 
       console.debug('getGatewayStatus耗时：', dayjs().format('HH:mm:ss'))
 
       if (!res.success) {
-        console.error('查询网关状态失败')
         this.toErrorStatus()
         return
       }

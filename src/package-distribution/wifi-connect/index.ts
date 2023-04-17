@@ -2,6 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import Dialog from '@vant/weapp/dialog/dialog'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { strUtil, storage, getCurrentPageParams, isAndroid } from '../../utils/index'
+import dayjs from 'dayjs'
 
 ComponentWithComputed({
   options: {
@@ -172,20 +173,17 @@ ComponentWithComputed({
         console.log('onGetWifiList', wifiList.map((item) => item.SSID).join('；'))
       })
 
-      wx.onWifiConnected(async (res) => {
-        console.log('onWifiConnected-connect-wifi', res, pageParams)
-
-        if (!res.wifi.SSID || res.wifi.SSID === pageParams.apSSID) {
-          return
-        }
-
-        this.setData({
-          wifiInfo: {
-            SSID: res.wifi.SSID,
-            pw: '',
+      // 若当前没有选择wifi，默认回填当前连接的wifi
+      if (!this.data.wifiInfo.SSID) {
+        wx.getConnectedWifi({
+          success: (res) => {
+            this.setData({
+              'wifiInfo.SSID': res.wifi.SSID
+            })
+            console.log('获取当前wifi信息：', res, dayjs().format('HH:mm:ss'))
           },
         })
-      })
+      }
     },
 
     toggleWifi() {

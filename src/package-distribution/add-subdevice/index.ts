@@ -129,7 +129,6 @@ ComponentWithComputed({
       }
 
       this.data._hasFound = true
-      clearTimeout(this.data._timeId)
       console.log('Device Found', device, msgObj)
 
       wx.stopBluetoothDevicesDiscovery()

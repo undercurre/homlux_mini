@@ -41,6 +41,7 @@ export class WifiSocket {
     }
     // 防止端口被占用，检查释放之前生成的实例
     if (_instance) {
+      console.log('防止端口被占用，检查释放之前生成的实例')
       _instance.close()
     }
 
@@ -230,10 +231,6 @@ export class WifiSocket {
 
     tcpClient.onError((res) => {
       console.log('tcpClient.onError', res)
-      // 被动关闭socket时释放对应tcp资源
-      // if (res.errMsg.includes('closed')) {
-      //   tcpClient.close()
-      // }
     })
 
     tcpClient.onClose((res) => {
@@ -438,6 +435,27 @@ export class WifiSocket {
   }
 
   /**
+         "bind":0,  //绑定状态 0：未绑定  1：WIFI已绑定  2:有线已绑定
+         "method":"wifi" //无线配网："wifi"，有线配网:"eth"
+     */
+  async getGatewayStatus() {
+    const res = await this.sendCmd({
+      topic: '/gateway/net/status',
+      data: {},
+    })
+
+    console.debug('getGatewayStatus：', dayjs().format('HH:mm:ss'))
+
+    if (!res.success) {
+      console.error('查询网关状态失败')
+    }
+
+    // 强制绑定判断标志  "bind":0,  //绑定状态 0：未绑定  1：WIFI已绑定  2:有线已绑定
+
+    return res
+  }
+
+  /**
    * 释放相关资源
    */
   close(msg?: string) {
@@ -450,6 +468,7 @@ export class WifiSocket {
     this.onMessageHandlerList = []
 
     if (this.deviceInfo.isConnectTcp) {
+      console.log('tcpClient.close()', this.deviceInfo.isConnectTcp)
       tcpClient.close()
     }
 
