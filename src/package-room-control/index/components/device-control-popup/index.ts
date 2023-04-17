@@ -599,6 +599,7 @@ ComponentWithComputed({
         })
       }
     },
+    /** 关联开关 */
     async updateSwitchAssociate() {
       const selectSwitchUniId = this.data.selectSwitchUniId
       const deviceFlattenMap = deviceStore.allRoomDeviceFlattenMap
@@ -689,7 +690,7 @@ ComponentWithComputed({
       }
 
       // 关联开关
-      if (this.data.relId.switchRelId && this.data.linkSelectList.length !== 0) {
+      if (this.data.relId.switchRelId && this.data.linkSelectList.length) {
         const rawLinkDeviceSelectList = (this.data.list as Device.DeviceItem[])
           .filter(
             (device) =>
@@ -704,6 +705,34 @@ ComponentWithComputed({
         const addAssociateDevice = this.data.linkSelectList.filter(
           (deviceId) => !rawLinkDeviceSelectList.includes(deviceId),
         )
+        // 需要转模式的列表
+        const needToTransformToNormalList = (this.data.list as Device.DeviceItem[]).filter(
+          (device) => device.switchInfoDTOList[0].lightRelId,
+        )
+        console.log('needToTransformToNormalList', needToTransformToNormalList)
+        if (needToTransformToNormalList.length) {
+          for (let i = 0; i < needToTransformToNormalList.length; i++) {
+            const device = needToTransformToNormalList[i]
+            // 将ButtonMode转成0
+            const isSuccess = await transformSwitchToNormal(
+              device.gatewayId,
+              device.deviceId,
+              Number(device.uniId.split(':')[1]),
+            )
+            if (!isSuccess) {
+              Toast({
+                message: '开关转换失败',
+                zIndex: 99999,
+              })
+              return
+            }
+            // 同时删除关联灯
+            await delAssociated({
+              relType: '0',
+              lightRelId: device.switchInfoDTOList[0].lightRelId,
+            })
+          }
+        }
         if (delAssociateDevice.length !== 0) {
           // 部分设备删除关联
           await delAssociated({
@@ -727,6 +756,34 @@ ComponentWithComputed({
           switchRelId: this.data.relId.switchRelId,
         })
       } else if (!this.data.relId.switchRelId && this.data.linkSelectList.length !== 0) {
+        // 需要转模式的列表
+        const needToTransformToNormalList = (this.data.list as Device.DeviceItem[]).filter(
+          (device) => device.switchInfoDTOList[0].lightRelId,
+        )
+        console.log('needToTransformToNormalList', needToTransformToNormalList)
+        if (needToTransformToNormalList.length) {
+          for (let i = 0; i < needToTransformToNormalList.length; i++) {
+            const device = needToTransformToNormalList[i]
+            // 将ButtonMode转成0
+            const isSuccess = await transformSwitchToNormal(
+              device.gatewayId,
+              device.deviceId,
+              Number(device.uniId.split(':')[1]),
+            )
+            if (!isSuccess) {
+              Toast({
+                message: '开关转换失败',
+                zIndex: 99999,
+              })
+              return
+            }
+            // 同时删除关联灯
+            await delAssociated({
+              relType: '0',
+              lightRelId: device.switchInfoDTOList[0].lightRelId,
+            })
+          }
+        }
         // 创建依赖
         await createAssociated({
           deviceIds: [selectSwitchUniId, ...this.data.linkSelectList],
