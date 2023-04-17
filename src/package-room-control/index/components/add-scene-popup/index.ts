@@ -46,6 +46,7 @@ ComponentWithComputed({
     linkSelectList: [] as string[],
     linkSwitch: '', // 上一个确认的结果保存在这里
     showLinkPopup: false,
+    isAddingScene: false,
   },
 
   computed: {
@@ -91,6 +92,9 @@ ComponentWithComputed({
         })
         return
       }
+      this.setData({
+        isAddingScene: true
+      })
       const newSceneData = {
         conditionType: '0',
         deviceActions: [],
@@ -128,6 +132,9 @@ ComponentWithComputed({
           Toast({
             message: '取绑原有场景失败',
             zIndex: 99999,
+          })
+          this.setData({
+            isAddingScene: false
           })
           return
         }
@@ -183,6 +190,10 @@ ComponentWithComputed({
           zIndex: 99999,
         })
       }
+      this.setData({
+        isAddingScene: false
+      })
+      console.log('setData-isAddingScene', this.data.isAddingScene)
       this.triggerEvent('close')
     },
     handleClear() {
