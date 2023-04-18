@@ -415,7 +415,11 @@ ComponentWithComputed({
       const switchSceneConditionMap = deviceStore.switchSceneConditionMap
       const addSceneActions = [] as Device.ActionItem[]
       // 排除已经是场景开关的开关
-      const selectList = deviceStore.deviceFlattenList.filter((device) => !switchSceneConditionMap[device.uniId])
+      const selectList = deviceStore.deviceFlattenList.filter((device) => !switchSceneConditionMap[device.uniId] && device.onLineStatus)
+      if (!selectList.length) {
+        Toast('所有设备已离线，无法创建场景')
+        return
+      }
       selectList.forEach((device) => {
         if (device.proType === proType.switch) {
           // 开关
