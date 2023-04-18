@@ -1,6 +1,6 @@
-import { execOtaUpdate } from '../../apis/ota'
+import { execOtaUpdate, setOtaSchedule } from '../../apis/ota'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { otaBinding, otaStore } from '../../store/index'
+import { homeStore, otaBinding, otaStore } from '../../store/index'
 import Toast from '@vant/weapp/toast/toast'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
@@ -57,6 +57,7 @@ ComponentWithComputed({
         this.setData({
           isUpdating: otaStore.otaProductList.some((product) => product.updateStatus === 1),
           hasUpdate: otaStore.otaProductList.length > 0,
+          autoUpdate: !!otaStore.jobStatus,
         })
         if (this.data.isUpdating) {
           this.startPollingQuery()
@@ -68,20 +69,22 @@ ComponentWithComputed({
     onUnload() {
       this.stopPolling()
     },
-    // todo: 待云端实现
-    onChange(e: { detail: boolean }) {
+    async onAutoUpdateChange() {
       if (this.data.isLoading) {
         return
       }
       this.setData({
         isLoading: true,
-        autoUpdate: e.detail,
       })
-      setTimeout(() => {
+      const res = await setOtaSchedule({ houseId: homeStore.currentHomeId, jobStatus: this.data.autoUpdate ? 0 : 1 })
+      if (res.success) {
         this.setData({
-          isLoading: !this.data.isLoading,
+          autoUpdate: !this.data.autoUpdate,
         })
-      }, 1000)
+      }
+      this.setData({
+        isLoading: !this.data.isLoading,
+      })
     },
     handleUpdate() {
       this.setData({

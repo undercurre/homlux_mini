@@ -202,6 +202,34 @@ ComponentWithComputed({
       // 再更新一遍数据
       this.reloadData()
       emitter.on('wsReceive', async (e) => {
+        if (e.result.eventType === 'device_property') {
+          // 如果有传更新的状态数据过来，直接更新store
+          if (e.result.eventData.event && e.result.eventData.deviceId && e.result.eventData.ep) {
+            const deviceInHouse = deviceStore.allRoomDeviceList.find(
+              (device) => device.deviceId === e.result.eventData.deviceId,
+            )
+            if (deviceInHouse) {
+              deviceInHouse.mzgdPropertyDTOList[e.result.eventData.ep] = {
+                ...deviceInHouse.mzgdPropertyDTOList[e.result.eventData.ep],
+                ...e.result.eventData.event,
+              }
+              roomStore.updateRoomCardLightOnNum()
+              // 直接更新store里的数据，更新完退出回调函数
+            }
+            const deviceInRoom = deviceStore.deviceList.find(
+              (device) => device.deviceId === e.result.eventData.deviceId,
+            )
+            if (deviceInRoom) {
+              deviceInRoom.mzgdPropertyDTOList[e.result.eventData.ep] = {
+                ...deviceInRoom.mzgdPropertyDTOList[e.result.eventData.ep],
+                ...e.result.eventData.event,
+              }
+              this.updateDeviceList()
+              // 直接更新store里的数据，更新完退出回调函数
+              return
+            }
+          }
+        }
         if (!requestThrottleTimer) {
           homeStore.updateRoomCardList()
           this.updateDeviceList()
