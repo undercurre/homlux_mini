@@ -186,7 +186,7 @@ ComponentWithComputed({
         homeStore.updateRoomCardList()
       } else {
         Toast({
-          message: '收藏失败',
+          message: '创建失败',
           zIndex: 99999,
         })
       }

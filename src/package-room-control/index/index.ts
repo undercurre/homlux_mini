@@ -202,6 +202,34 @@ ComponentWithComputed({
       // 再更新一遍数据
       this.reloadData()
       emitter.on('wsReceive', async (e) => {
+        if (e.result.eventType === 'device_property') {
+          // 如果有传更新的状态数据过来，直接更新store
+          if (e.result.eventData.event && e.result.eventData.deviceId && e.result.eventData.ep) {
+            const deviceInHouse = deviceStore.allRoomDeviceList.find(
+              (device) => device.deviceId === e.result.eventData.deviceId,
+            )
+            if (deviceInHouse) {
+              deviceInHouse.mzgdPropertyDTOList[e.result.eventData.ep] = {
+                ...deviceInHouse.mzgdPropertyDTOList[e.result.eventData.ep],
+                ...e.result.eventData.event,
+              }
+              roomStore.updateRoomCardLightOnNum()
+              // 直接更新store里的数据，更新完退出回调函数
+            }
+            const deviceInRoom = deviceStore.deviceList.find(
+              (device) => device.deviceId === e.result.eventData.deviceId,
+            )
+            if (deviceInRoom) {
+              deviceInRoom.mzgdPropertyDTOList[e.result.eventData.ep] = {
+                ...deviceInRoom.mzgdPropertyDTOList[e.result.eventData.ep],
+                ...e.result.eventData.event,
+              }
+              this.updateDeviceList()
+              // 直接更新store里的数据，更新完退出回调函数
+              return
+            }
+          }
+        }
         if (!requestThrottleTimer) {
           homeStore.updateRoomCardList()
           this.updateDeviceList()
@@ -387,7 +415,11 @@ ComponentWithComputed({
       const switchSceneConditionMap = deviceStore.switchSceneConditionMap
       const addSceneActions = [] as Device.ActionItem[]
       // 排除已经是场景开关的开关
-      const selectList = deviceStore.deviceFlattenList.filter((device) => !switchSceneConditionMap[device.uniId])
+      const selectList = deviceStore.deviceFlattenList.filter((device) => !switchSceneConditionMap[device.uniId] && device.onLineStatus)
+      if (!selectList.length) {
+        Toast('所有设备已离线，无法创建场景')
+        return
+      }
       selectList.forEach((device) => {
         if (device.proType === proType.switch) {
           // 开关

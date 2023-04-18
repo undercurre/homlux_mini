@@ -964,7 +964,6 @@ ComponentWithComputed({
         controlDevice({
           topic: '/subdevice/control',
           deviceId: entries[0],
-          // method: controlData.length > 1 ? 'panelControl' : 'panelSingleControl', // todo: 有问题
           method: 'panelSingleControl',
           inputData: controlData,
         })
