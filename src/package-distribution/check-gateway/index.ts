@@ -39,7 +39,7 @@ Component({
         console.error('用户位置授权失败')
         return
       }
-      
+
       if (this.checkWifiSwitch()) {
         this.initWifi()
       } else {
