@@ -1,20 +1,20 @@
 <view class="page-container flex flex-col">
-  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="添加智能网关"></nav-bar>
+  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="{{pageTitle}}"></nav-bar>
 
   <view wx:if="{{!isConnectDevice && isAndroid10Plus}}" class="grow px-32rpx flex flex-col justify-between">
     <view>
       <text class="block text-40 text-black-2a pt-60rpx">请用手机连接智能网关无线网络</text>
 
-      <image class="mt-48rpx mb-70rpx w-664 h-372" src="/package-distribution/assets/check-gateway/wifi-tips.png"></image>
+      <image class="mt-48rpx mb-70rpx w-664 h-372" src="/package-distribution/assets/link-gateway/wifi-tips.png"></image>
 
       <view class="flex flex-row items-center">
-        <image class="w-40 h-30" src="/package-distribution/assets/check-gateway/icon-wifi.png"></image>
+        <image class="w-40 h-30" src="/package-distribution/assets/link-gateway/icon-wifi.png"></image>
 
-        <text class="px-30rpx leading-56rpx text-40 text-black-2a font-semibold">{{ ssid }}</text>
+        <text class="px-30rpx leading-56rpx text-40 text-black-2a font-semibold">{{ apSSID }}</text>
       </view>
 
       <view class="flex flex-row items-center pt-40rpx">
-        <image class="w-28 h-36" src="/package-distribution/assets/check-gateway/icon-pw.png"></image>
+        <image class="w-28 h-36" src="/package-distribution/assets/link-gateway/icon-pw.png"></image>
 
         <text class="px-30rpx leading-56rpx text-40 text-black-2a font-semibold">12345678</text>
 
@@ -22,23 +22,31 @@
       </view>
     </view>
 
-    <van-button wx:if="{{ssid}}" class="w-full mt-32rpx" block type="primary" size="large" bind:click="connectWifi">前往连接</van-button>
+    <van-button wx:if="{{apSSID}}" class="w-full mt-32rpx" block type="primary" size="large" bind:click="connectWifi">前往连接</van-button>
   </view>
 
   <view wx:else class="grow flex flex-col">
-    <view wx:if="{{!isConnectDevice && ssid}}" class="absolute w-full flex flex-row items-center justify-center py-30rpx tips-view">
-      <image class="w-36 h-36 mr-16rpx" src="/package-distribution/assets/check-gateway/icon-info.png"></image>
+    <view wx:if="{{!isConnectDevice && apSSID}}" class="absolute w-full flex flex-row items-center justify-center py-30rpx tips-view">
+      <image class="w-36 h-36 mr-16rpx" src="/package-distribution/assets/link-gateway/icon-info.png"></image>
 
-      <text class="text-24 leading-34rpx text-black-2a">请允许微信加入“{{ssid}}”，以便自动连接设备</text>
+      <text class="text-24 leading-34rpx text-black-2a">请允许微信加入“{{apSSID}}”，以便自动连接设备</text>
     </view>
 
-    <mz-loading wx:if="{{status === 'linking'}}" class="mt-240rpx" text="正在连接设备，请将手机尽量靠近设备" step-list="{{[]}}" show-progress="{{false}}"></mz-loading>
+    <block wx:if="{{type === 'query'}}">
+      <mz-loading class="mt-240rpx" text="正在连接设备，请将手机尽量靠近设备"></mz-loading>
+    </block>
+
+    <block wx:if="{{type === 'bind' || type === 'changeWifi'}}">
+      <mz-loading class="mt-140rpx" text="请将设备尽量靠近路由器"></mz-loading>
+
+      <mz-progress show-progress="{{true}}" active-index="{{activeIndex}}" step-list="{{stepList}}"></mz-progress>
+    </block>
   </view>
 </view>
 
 <van-dialog use-slot title="此设备已绑定" show="{{ isShowForceBindTips }}" show-cancel-button="{{false}}" confirm-button-text="取消" confirm-button-color="#488FFF" bind:confirm="reScan">
   <view class="text-center pt-20rpx">
-    <image class="w-411 h-411" src="/package-distribution/assets/check-gateway/force-bind.png"></image>
+    <image class="w-411 h-411" src="/package-distribution/assets/link-gateway/force-bind.png"></image>
   </view>
   <text class="block pb-60rpx text-center leading-48rpx text-28 text-hex-666">如需绑定至新的家庭，请单击网关最右侧按键</text>
 </van-dialog>

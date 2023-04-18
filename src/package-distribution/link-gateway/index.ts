@@ -1,13 +1,17 @@
 import dayjs from 'dayjs'
+import { ComponentWithComputed } from 'miniprogram-computed'
 import Dialog from '@vant/weapp/dialog/dialog'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { WifiSocket, getCurrentPageParams, strUtil, showLoading, hideLoading, isAndroid } from '../../utils/index'
+import { queryDeviceOnlineStatus, bindDevice } from '../../apis/index'
+import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
+import { WifiSocket, getCurrentPageParams, strUtil, isAndroid } from '../../utils/index'
+import { stepListForBind, stepListForChangeWiFi } from './conifg'
 
 let start = 0
 
 const gatewayStatus = { method: '' }
 
-Component({
+ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
     pureDataPattern: /^_/,
@@ -22,24 +26,56 @@ Component({
    * 组件的初始数据
    */
   data: {
+    type: '', // query: 校验网关状态，bind: 绑定网关，changeWifi： 更改wifi
     isShowForceBindTips: false,
     isAndroid10Plus: false,
     isConnectDevice: false,
     status: 'linking',
-    ssid: '',
+    apSSID: '',
     _wifiSwitchInterId: 0,
+    _queryCloudTimeId: 0,
+    _queryTimes: 50, // 网关发送绑定指令后查询云端最大次数
+    activeIndex: 0,
+    stepList: [],
     _socket: null as WifiSocket | null,
   } as IAnyObject,
 
+  computed: {
+    pageTitle(data) {
+      let title = ''
+
+      if (data.type === 'changeWifi') {
+        title = '重新联网'
+      } else {
+        title = '添加智能网关'
+      }
+
+      return title
+    },
+  },
+
   lifetimes: {
     async ready() {
-      const auth = await this.authLocationPermission()
+      const pageParams = getCurrentPageParams()
 
-      if (!auth) {
-        console.error('用户位置授权失败')
-        return
+      console.log('ready', pageParams)
+
+      this.setData({
+        type: pageParams.type,
+        apSSID: pageParams.apSSID,
+        stepList: pageParams.type === 'changeWifi' ? stepListForChangeWiFi : stepListForBind, // 绑定流程和更改wifi的步骤流程不同
+      })
+
+      // 仅检验网关信息时校验位置权限
+      if (pageParams.type === 'query') {
+        const auth = await this.authLocationPermission()
+
+        if (!auth) {
+          console.error('用户位置授权失败')
+          return
+        }
       }
-      
+
       if (this.checkWifiSwitch()) {
         this.initWifi()
       } else {
@@ -57,11 +93,16 @@ Component({
       }
     },
     detached() {
-      console.debug('check-gateway:detached')
+      console.debug('link-gateway:detached')
       this.data._socket?.close()
 
+      // 清除定时任务
       if (this.data._wifiSwitchInterId) {
         clearInterval(this.data._wifiSwitchInterId)
+      }
+
+      if (this.data._queryCloudTimeId) {
+        clearTimeout(this.data._queryCloudTimeId)
       }
     },
   },
@@ -79,7 +120,7 @@ Component({
     },
     copy() {
       wx.setClipboardData({
-        data: '12345678',
+        data: this.data._socket.pw,
       })
     },
 
@@ -101,7 +142,6 @@ Component({
 
           if (!authRes) {
             console.error('授权失败')
-            hideLoading()
           }
 
           return authRes
@@ -174,27 +214,12 @@ Component({
         return systemSetting.wifiEnabled
       }
 
+      console.log('wifi开关已打开')
+
       return true
     },
 
     async initWifi() {
-      const deviceInfo = wx.getDeviceInfo()
-
-      const systemVersion = parseInt(deviceInfo.system.toLowerCase().replace(deviceInfo.platform, ''))
-      const isAndroid10Plus = isAndroid() && systemVersion >= 10 // 判断是否Android10+或者是鸿蒙
-
-      isAndroid10Plus && showLoading() // 仅安卓10+需要展示loading，需要展示手动联网提示
-
-      const params = getCurrentPageParams()
-
-      console.log('initWifi', params)
-
-      this.setData({
-        isAndroid10Plus,
-        ssid: params.ssid,
-        _socket: new WifiSocket({ ssid: params.ssid }),
-      })
-
       start = Date.now()
       const startRes = await wx.startWifi()
 
@@ -208,19 +233,34 @@ Component({
         console.log('wifiListRes', wifiListRes)
       }
 
-      if (!isAndroid10Plus) {
+      const deviceInfo = wx.getDeviceInfo()
+
+      const systemVersion = parseInt(deviceInfo.system.toLowerCase().replace(deviceInfo.platform, ''))
+      const isAndroid10Plus = isAndroid() && systemVersion >= 10 // 判断是否Android10+或者是鸿蒙
+
+      this.data._socket = new WifiSocket({ ssid: this.data.apSSID })
+
+      const isConnect = await this.data._socket.isConnectDeviceWifi()
+
+      if (!isAndroid10Plus || isConnect) {
         console.log('isAndroid10Plus', systemVersion)
         this.connectWifi()
       }
 
-      isAndroid10Plus && hideLoading()
+      this.setData({
+        isAndroid10Plus,
+      })
     },
 
     async connectWifi() {
-      console.log('connectWifi-start')
       try {
-        const connectRes = await this.data._socket.connect()
+        const now = Date.now()
 
+        const connectRes = await this.data._socket.connectWifi()
+        
+        console.log(`连接${this.data.apSSID}时长：`, Date.now() - now, connectRes, dayjs().format('HH:mm:ss'))
+
+        // 用户拒绝连接wifi
         if (connectRes.errCode === 12007) {
           wx.navigateBack()
           return
@@ -231,6 +271,7 @@ Component({
         }
 
         this.setData({
+          activeIndex: 1,
           isConnectDevice: true,
         })
 
@@ -240,7 +281,15 @@ Component({
           throw inistRes
         }
 
-        this.getGatewayStatus()
+        const { type } = this.data
+
+        if (type === 'changeWifi') {
+          this.changeWifi()
+        } else if (type === 'bind') {
+          this.sendBindCmd()
+        } else if (type === 'query') {
+          this.getGatewayStatus()
+        }
       } catch (err) {
         console.error('connectWifi-err', err)
         this.toErrorStatus()
@@ -254,20 +303,18 @@ Component({
     async getGatewayStatus() {
       const res = await this.data._socket.getGatewayStatus()
 
-      console.debug('getGatewayStatus耗时：', dayjs().format('HH:mm:ss'))
-
       if (!res.success) {
         this.toErrorStatus()
         return
       }
+
+      gatewayStatus.method = res.method
 
       // 强制绑定判断标志  "bind":0,  //绑定状态 0：未绑定  1：WIFI已绑定  2:有线已绑定
       if (res.bind !== 0) {
         this.setData({
           isShowForceBindTips: true,
         })
-
-        gatewayStatus.method = res.method
 
         this.data._socket.onMessage((data: IAnyObject) => {
           console.log('WifiSocket.onMessage', data)
@@ -277,11 +324,140 @@ Component({
               isShowForceBindTips: false,
             })
 
-            this.startBind(gatewayStatus.method)
+            this.startBind()
           }
         })
       } else {
-        this.startBind(res.method)
+        this.startBind()
+      }
+    },
+
+    async sendBindCmd() {
+      const params = getCurrentPageParams()
+
+      const begin = Date.now()
+      const data: IAnyObject = { method: gatewayStatus.method }
+
+      if (data.method === 'wifi') {
+        data.ssid = params.wifiSSID
+        data.passwd = params.wifiPassword
+      }
+
+      const setRes = await this.data._socket.sendCmd({
+        topic: '/gateway/net/set', //指令名称
+        data,
+      })
+
+      console.debug('app-网关耗时：', Date.now() - start, '发送绑定指令耗时：', Date.now() - begin)
+
+      if (!setRes.success) {
+        this.toErrorStatus()
+        return
+      }
+
+      wx.reportEvent('test', {
+        app_device: Date.now() - start,
+      })
+
+      // 防止强绑情况选网关还没断开原有连接，需要延迟查询
+      this.data._queryCloudTimeId = setTimeout(() => {
+        this.queryDeviceOnlineStatus(setRes.sn)
+      }, 10000)
+
+      this.data._socket.close()
+    },
+
+    async changeWifi() {
+      const params = getCurrentPageParams()
+
+      const data: IAnyObject = { ssid: params.wifiSSID, passwd: params.wifiPassword }
+
+      const res = await this.data._socket.sendCmd({
+        topic: '/gateway/net/change', //指令名称
+        data,
+      })
+
+      console.log('change', res)
+      if (!res.success) {
+        this.toErrorStatus()
+        return
+      }
+
+      // 防止强绑情况选网关还没断开原有连接，需要延迟查询
+      setTimeout(() => {
+        this.queryDeviceOnlineStatus(params.sn, params.type)
+      }, 10000)
+
+      this.data._socket.close()
+    },
+
+    async requestBindDevice(sn: string, deviceId: string) {
+      const params = getCurrentPageParams()
+
+      const existDevice = deviceBinding.store.allRoomDeviceList.find((item) => item.sn === sn)
+
+      let gatewayNum = deviceBinding.store.allRoomDeviceList.filter((item) => item.proType === '0x16').length // 网关数量
+
+      // 强绑情况下，取旧命名
+      const deviceName = existDevice ? existDevice.deviceName : params.deviceName + (gatewayNum > 0 ? ++gatewayNum : '')
+
+      const res = await bindDevice({
+        deviceId: deviceId,
+        houseId: homeBinding.store.currentHomeId,
+        roomId: roomBinding.store.currentRoom.roomId,
+        sn,
+        deviceName: deviceName,
+      })
+
+      if (res.success && res.result.isBind) {
+        this.setData({
+          activeIndex: 3,
+        })
+
+        console.debug('app到云端，添加网关耗时：', Date.now() - start)
+        wx.reportEvent('test', {
+          app_cloud: Date.now() - start,
+        })
+
+        wx.redirectTo({
+          url: strUtil.getUrlWithParams('/package-distribution/bind-home/index', {
+            deviceId: res.result.deviceId,
+          }),
+        })
+      } else {
+        this.toErrorStatus()
+      }
+    },
+
+    async queryDeviceOnlineStatus(sn: string, type?: string) {
+      const res = await queryDeviceOnlineStatus({ sn, deviceType: '1' })
+
+      console.log('queryDeviceOnlineStatus', res.result)
+
+      if (res.success && res.result.onlineStatus === 1 && res.result.deviceId) {
+        this.setData({
+          activeIndex: 2,
+        })
+
+        if (type === 'changeWifi') {
+          wx.redirectTo({
+            url: '/package-distribution/change-wifi-success/index',
+          })
+          return
+        }
+        this.requestBindDevice(sn, res.result.deviceId)
+      } else {
+        this.data._queryTimes--
+
+        if (this.data._queryTimes <= 0) {
+          console.error('配网失败：网关云端状态不在线')
+          this.toErrorStatus()
+          return
+        }
+
+        this.data._queryCloudTimeId = setTimeout(() => {
+          this.queryDeviceOnlineStatus(sn, type)
+        }, 3000)
       }
     },
 
@@ -289,12 +465,12 @@ Component({
       wx.navigateBack()
     },
 
-    startBind(method: string) {
+    startBind() {
       const pageParams = getCurrentPageParams()
 
       const params = {
-        apSSID: pageParams.ssid,
-        method: method,
+        apSSID: pageParams.apSSID,
+        method: gatewayStatus.method,
         deviceName: pageParams.deviceName,
       }
 
@@ -302,16 +478,17 @@ Component({
       wx.reportEvent('test', {
         check_device: Date.now() - start,
       })
-      if (method === 'wifi') {
+      if (gatewayStatus.method === 'wifi') {
         // "method":"wifi" //无线配网："wifi"，有线配网:"eth"
         wx.redirectTo({
           url: strUtil.getUrlWithParams('/package-distribution/wifi-connect/index', params),
         })
-      } else if (method === 'eth') {
+      } else if (gatewayStatus.method === 'eth') {
         // "method":"wifi" //无线配网："wifi"，有线配网:"eth"
-        wx.redirectTo({
-          url: strUtil.getUrlWithParams('/package-distribution/add-gateway/index', params),
+        this.setData({
+          type: 'bind'
         })
+        this.sendBindCmd()
       }
     },
   },

@@ -8,6 +8,15 @@
   },
   "libVersion": "2.25.4",
   "condition": {
+    "plugin": {
+      "list": []
+    },
+    "game": {
+      "list": []
+    },
+    "gamePlugin": {
+      "list": []
+    },
     "miniprogram": {
       "list": [
         {
@@ -68,10 +77,10 @@
         },
         {
           "name": "检验添加智能网关",
-          "pathName": "package-distribution/check-gateway/index",
-          "query": "ssid=midea_16_E5FB",
-          "launchMode": "default",
-          "scene": null
+          "pathName": "package-distribution/link-gateway/index",
+          "query": "apSSID=midea_16_E5FB&type=bind",
+          "scene": null,
+          "launchMode": "default"
         },
         {
           "name": "连接wifi",
@@ -82,7 +91,7 @@
         },
         {
           "name": "添加智能网关",
-          "pathName": "package-distribution/add-gateway/index",
+          "pathName": "package-distribution/link-gateway/index",
           "query": "deviceName=智能网关&wifiSSID=xyh_wifi&apSSID=midea_16_E5FB&method=wifi",
           "launchMode": "default",
           "scene": null

@@ -62,6 +62,7 @@ ComponentWithComputed({
     },
     detached() {
       wx.closeBluetoothAdapter()
+      wx.stopWifi()
     },
   },
 
@@ -451,9 +452,10 @@ ComponentWithComputed({
       }
 
       wx.navigateTo({
-        url: strUtil.getUrlWithParams('/package-distribution/check-gateway/index', {
-          ssid: params.ssid,
+        url: strUtil.getUrlWithParams('/package-distribution/link-gateway/index', {
+          apSSID: params.ssid,
           deviceName: res.result.productName,
+          type: 'query',
         }),
       })
     },

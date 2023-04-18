@@ -5,8 +5,7 @@
       "root": "package-distribution",
       "pages": [
         "scan/index",
-        "check-gateway/index",
-        "add-gateway/index",
+        "link-gateway/index",
         "wifi-connect/index",
         "add-subdevice/index",
         "search-subdevice/index",

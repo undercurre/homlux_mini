@@ -15,7 +15,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
-    type: '',
+    type: '', // bind: 绑定网关，changeWifi： 更改wifi
     isShowPw: false, // 是否展示密码明文
     isShowWifiTips: false,
     hasShowWifiTips: false,
@@ -90,12 +90,14 @@ ComponentWithComputed({
 
       const pageParams = getCurrentPageParams()
 
+      console.log('ready', pageParams)
+
       const cacheWifiInfo = storage.get('selected_home_wifi') as { SSID: string; pw: string }
 
       const cacheWifiList = storage.get('cacheWifiList', []) as Array<{ SSID: string; pw: string }>
 
       this.setData({
-        type: pageParams.type || 'select',
+        type: pageParams.type || 'bind',
         wifiInfo: cacheWifiInfo || {
           SSID: '',
           pw: '',
@@ -107,6 +109,8 @@ ComponentWithComputed({
       if (this.data._wifiSwitchInterId) {
         clearInterval(this.data._wifiSwitchInterId)
       }
+
+      wx.offGetWifiList()
     },
   },
 
@@ -146,17 +150,15 @@ ComponentWithComputed({
     },
 
     async initWifi() {
-      const pageParams = getCurrentPageParams()
-
       const startRes = await wx.startWifi()
 
-      console.log('startRes', startRes, 'pageParams', pageParams)
+      console.log('startRes', startRes)
 
       wx.onGetWifiList((res) => {
         console.log('onGetWifiList-wifi-connect', res)
         const wifiList = res.wifiList.filter((item) => {
+          // 过滤5gwifi,仅安卓端有效
           if (item.frequency && item.frequency > 5000) {
-            console.log('frequency', item.SSID, item.frequency)
             return false
           }
           return item.SSID && this.data.systemWifiList.findIndex((foundItem) => item.SSID === foundItem.SSID) < 0 // 过滤空的ssid的wifi
@@ -170,7 +172,6 @@ ComponentWithComputed({
           isRequestSystemWifiList: false,
           systemWifiList: this.data.systemWifiList.concat(wifiList),
         })
-        console.log('onGetWifiList', wifiList.map((item) => item.SSID).join('；'))
       })
 
       // 若当前没有选择wifi，默认回填当前连接的wifi
@@ -301,10 +302,11 @@ ComponentWithComputed({
       }
 
       wx.redirectTo({
-        url: strUtil.getUrlWithParams('/package-distribution/add-gateway/index', {
+        url: strUtil.getUrlWithParams('/package-distribution/link-gateway/index', {
           ...pageParams,
           wifiSSID: SSID,
           wifiPassword: pw,
+          type: this.data.type,
         }),
       })
     },

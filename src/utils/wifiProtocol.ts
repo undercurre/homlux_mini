@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { aesUtil, delay, strUtil } from '../utils/index'
+import { aesUtil, strUtil } from '../utils/index'
 
 let _instance: WifiSocket | null = null
 
@@ -57,125 +57,79 @@ export class WifiSocket {
     console.log('constructor', dayjs().format('HH:mm:ss'))
   }
 
-  async connect() {
-    const now = Date.now()
+  async isConnectDeviceWifi() {
+    const connectedRes = await wx.getConnectedWifi()
 
-    const res = await this.connectWifi()
+    console.log('获取当前wifi信息：', connectedRes, dayjs().format('HH:mm:ss'))
 
-    console.log(`连接${this.SSID}时长：`, Date.now() - now, res, dayjs().format('HH:mm:ss'))
+    if (connectedRes && (connectedRes as IAnyObject).wifi?.SSID === this.SSID) {
+      console.log(`检测目标wifi：${this.SSID}已连接`)
+      return true
+    } else {
+      return false
+    }
+  }
 
-    await delay(500)
+  async connectWifi() {
+    const successRes = { success: true, errCode: 0 }
 
-    await this.getLocalIp()
+    const isConnect = await this.isConnectDeviceWifi()
 
-    if (!this.localIp) {
-      console.info('getLocalIPAddress-第2次')
-
-      await delay(500)
-
-      await this.getLocalIp()
+    if (isConnect) {
+      return successRes
     }
 
-    return res
-  }
+    const systemVersion = parseInt(deviceInfo.system.toLowerCase().replace(deviceInfo.platform, ''))
+    const isAndroid10Plus = deviceInfo.platform === 'android' && systemVersion >= 10 // 判断是否Android10+或者是鸿蒙
 
-  connectWifi() {
-    return new Promise<{ errCode: number; success: boolean; msg?: string }>((resolve) => {
-      const res = { success: true, errCode: 0 }
-
-      wx.getConnectedWifi({
-        complete: async (connectedRes) => {
-          console.log('获取当前wifi信息：', connectedRes, dayjs().format('HH:mm:ss'))
-
-          if (connectedRes && (connectedRes as IAnyObject).wifi?.SSID === this.SSID) {
-            console.log(`检测目标wifi：${this.SSID}已连接`)
-            resolve(res)
-            return
-          }
-
-          const systemVersion = parseInt(deviceInfo.system.toLowerCase().replace(deviceInfo.platform, ''))
-          const isAndroid10Plus = deviceInfo.platform === 'android' && systemVersion >= 10 // 判断是否Android10+或者是鸿蒙
-
-          wx.connectWifi({
-            SSID: this.SSID,
-            password: this.pw,
-            partialInfo: false,
-            maunal: isAndroid10Plus, // Android 微信客户端 7.0.22 以上版本，connectWifi 的实现在 Android 10 及以上的手机无法生效，需要配置 maunal 来连接 wifi。详情参考官方文档
-            complete: (connectRes) => {
-              console.log('wx.connectWifi', connectRes)
-
-              if (connectRes.errCode === 12007) {
-                resolve({
-                  errCode: connectRes.errCode,
-                  success: false,
-                  msg: '用户拒绝授权链接 Wi-Fi',
-                })
-
-                return
-              }
-
-              console.log('queryWifiTimeId', this.queryWifiTimeId, this)
-              // 避免重复触发轮询逻辑
-              if (this.queryWifiTimeId !== 0) {
-                return
-              }
-
-              // 连接热点超时回调
-              this.wifiTimeoutTimeId = setTimeout(() => {
-                console.error('连接热点超时')
-                clearTimeout(this.queryWifiTimeId)
-                this.queryWifiTimeId = 0
-                resolve({ success: false, errCode: -1 })
-              }, 90000)
-
-              const queryWifi = () => {
-                wx.getConnectedWifi({
-                  complete: (queryRes: IAnyObject) => {
-                    console.log('轮询当前wifi：', queryRes, dayjs().format('HH:mm:ss'))
-
-                    if (queryRes && queryRes.wifi?.SSID === this.SSID) {
-                      console.info(`连接wifi:${queryRes.wifi.SSID}成功`)
-                      resolve(res)
-                      clearTimeout(this.wifiTimeoutTimeId)
-                      this.queryWifiTimeId = 0
-                    } else {
-                      this.queryWifiTimeId = setTimeout(() => {
-                        queryWifi()
-                      }, 2000)
-                    }
-                  },
-                })
-              }
-
-              // 由于onWifiConnected不可靠，在安卓端存在监听不到的情况，改为轮询
-              queryWifi()
-            },
-          })
-        },
-      })
+    const connectRes = await wx.connectWifi({
+      SSID: this.SSID,
+      password: this.pw,
+      partialInfo: false,
+      maunal: isAndroid10Plus, // Android 微信客户端 7.0.22 以上版本，connectWifi 的实现在 Android 10 及以上的手机无法生效，需要配置 maunal 来连接 wifi。详情参考官方文档
     })
-  }
 
-  getLocalIp() {
-    return new Promise((resolve) => {
-      wx.getLocalIPAddress({
-        success: (successRes) => {
-          console.debug('getLocalIPAddress-success', successRes, dayjs().format('HH:mm:ss'))
+    console.log('wx.connectWifi', connectRes)
 
-          // IOS偶现返回ip为unknown,安卓可能会获取到0.0.0.0
-          if (successRes.localip.includes('.') && successRes.localip !== '0.0.0.0') {
-            this.localIp = successRes.localip
-            resolve(true)
-          } else {
-            console.error('getLocalIPAddress-fail', successRes)
-            resolve(false)
-          }
-        },
-        fail: (failRes) => {
-          console.error('getLocalIPAddress-fail', failRes, dayjs().format('HH:mm:ss'))
-          resolve(false)
-        },
-      })
+    if (connectRes.errCode === 12007) {
+      return {
+        errCode: connectRes.errCode,
+        success: false,
+        msg: '用户拒绝授权链接 Wi-Fi',
+      }
+    }
+
+    console.log('queryWifiTimeId', this.queryWifiTimeId, this)
+    // 避免重复触发轮询逻辑
+    if (this.queryWifiTimeId !== 0) {
+      return successRes
+    }
+
+    return new Promise<{ errCode: number; success: boolean; msg?: string }>((resolve) => {
+      // 连接热点超时回调
+      this.wifiTimeoutTimeId = setTimeout(() => {
+        console.error('连接热点超时:60s')
+        clearTimeout(this.queryWifiTimeId)
+        this.queryWifiTimeId = 0
+        resolve({ success: false, errCode: -1 })
+      }, 60000)
+
+      const queryWifi = async () => {
+        const isConnected = await this.isConnectDeviceWifi()
+
+        if (isConnected) {
+          resolve(successRes)
+          clearTimeout(this.wifiTimeoutTimeId)
+          this.queryWifiTimeId = 0
+        } else {
+          this.queryWifiTimeId = setTimeout(() => {
+            queryWifi()
+          }, 1500)
+        }
+      }
+
+      // 由于onWifiConnected不可靠，在安卓端存在监听不到的情况，改为轮询
+      queryWifi()
     })
   }
 
@@ -222,11 +176,7 @@ export class WifiSocket {
 
   initTcpSocket() {
     tcpClient.onMessage((res) => {
-      console.log('tcpClient.onMessage', this.time, res)
-
       this.handleReply(res.message)
-
-      tcpClient.close()
     })
 
     tcpClient.onError((res) => {
@@ -270,8 +220,6 @@ export class WifiSocket {
 
   handleReply(message: ArrayBuffer) {
     const reply = decodeCmd(message, this.key)
-    console.log('reply', reply)
-
     const callback = this.cmdCallbackMap[reply.reqId]
 
     if (callback) {
@@ -294,7 +242,36 @@ export class WifiSocket {
       this.deviceInfo.ip = res.ip
     }
   }
+  
+  /**
+   * 获取手机IP
+   */
+  getLocalIp() {
+    return new Promise((resolve) => {
+      wx.getLocalIPAddress({
+        success: (successRes) => {
+          console.debug('getLocalIPAddress-success', successRes, dayjs().format('HH:mm:ss'))
 
+          // IOS偶现返回ip为unknown,安卓可能会获取到0.0.0.0
+          if (successRes.localip.includes('.') && successRes.localip !== '0.0.0.0') {
+            this.localIp = successRes.localip
+            resolve(true)
+          } else {
+            console.error('getLocalIPAddress-fail', successRes)
+            resolve(false)
+          }
+        },
+        fail: (failRes) => {
+          console.error('getLocalIPAddress-fail', failRes, dayjs().format('HH:mm:ss'))
+          resolve(false)
+        },
+      })
+    })
+  }
+
+  /**
+   * 获取网关IP
+   */
   async getDeviceIp() {
     if (this.deviceInfo.ip) {
       return { success: true, msg: '已知IP' }
@@ -305,6 +282,28 @@ export class WifiSocket {
     // 获取IP重试，存在第一次获取超时的情况，尤其安卓端比较明显
     if (!this.deviceInfo.ip) {
       await this.sendCmdForDeviceIp()
+    }
+
+    // udp获取ip失败的情况，从本机Ip推断网关IP
+    if (!this.deviceInfo.ip) {
+      await this.getLocalIp()
+
+      if (!this.localIp) {
+        console.info('getLocalIPAddress-第2次')
+
+        await this.getLocalIp()
+      }
+
+      if (this.localIp) {
+        const arr = this.localIp.split('.')
+
+        arr[arr.length - 1] = '1'
+
+        const ip = arr.join('.')
+
+        console.error('获取广播Ip失败，根据本机Ip推断：', ip)
+        this.deviceInfo.ip = ip
+      }
     }
 
     // android端，短时间内连续连接、关闭tcpsocket,会卡死甚至崩溃
@@ -327,17 +326,6 @@ export class WifiSocket {
     // }
 
     // 获取IP失败时，强制默认192.168.11.1
-    if (!this.deviceInfo.ip && this.localIp) {
-      const arr = this.localIp.split('.')
-
-      arr[arr.length - 1] = '1'
-
-      const ip = arr.join('.')
-
-      console.error('获取广播Ip失败，根据本机Ip推断：', ip)
-      this.deviceInfo.ip = ip
-    }
-
     if (!this.deviceInfo.ip) {
       console.error('采用默认Ip：', '192.168.11.1')
       this.deviceInfo.ip = '192.168.11.1'
@@ -384,7 +372,7 @@ export class WifiSocket {
     try {
       params.method = params.method || 'TCP'
 
-      if (params.method === 'TCP') {
+      if (params.method === 'TCP' && !this.deviceInfo.isConnectTcp) {
         await this.connectTcp(this.deviceInfo.ip)
       }
 
@@ -503,8 +491,6 @@ function decodeCmd(message: ArrayBuffer, key: string) {
   const msg = strUtil.ab2hex(message)
 
   const reply = aesUtil.decrypt(msg, key)
-
-  console.log('reply-decrypt', reply)
 
   return JSON.parse(reply) as { topic: string; reqId: string; data: IAnyObject }
 }

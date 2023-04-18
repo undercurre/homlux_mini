@@ -1,9 +1,3 @@
-type StatusName = 'linking' | 'networking' | 'success' | 'error' | 'bind'
-
-export interface IPageData {
-  status: StatusName
-}
-
 export const stepListForBind = [
   {
     text: '连接设备',
