@@ -242,7 +242,7 @@ export class WifiSocket {
       this.deviceInfo.ip = res.ip
     }
   }
-  
+
   /**
    * 获取手机IP
    */

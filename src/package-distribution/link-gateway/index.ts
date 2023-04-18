@@ -257,7 +257,7 @@ ComponentWithComputed({
         const now = Date.now()
 
         const connectRes = await this.data._socket.connectWifi()
-        
+
         console.log(`连接${this.data.apSSID}时长：`, Date.now() - now, connectRes, dayjs().format('HH:mm:ss'))
 
         // 用户拒绝连接wifi
@@ -486,7 +486,7 @@ ComponentWithComputed({
       } else if (gatewayStatus.method === 'eth') {
         // "method":"wifi" //无线配网："wifi"，有线配网:"eth"
         this.setData({
-          type: 'bind'
+          type: 'bind',
         })
         this.sendBindCmd()
       }

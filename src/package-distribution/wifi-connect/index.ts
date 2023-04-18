@@ -179,7 +179,7 @@ ComponentWithComputed({
         wx.getConnectedWifi({
           success: (res) => {
             this.setData({
-              'wifiInfo.SSID': res.wifi.SSID
+              'wifiInfo.SSID': res.wifi.SSID,
             })
             console.log('获取当前wifi信息：', res, dayjs().format('HH:mm:ss'))
           },
