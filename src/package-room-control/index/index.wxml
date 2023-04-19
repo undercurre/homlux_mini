@@ -77,7 +77,7 @@
           </view>
         </view>
         <view class="w-720rpx mt-24rpx">
-          <drag id="drag-light" columns="{{4}}" list-data="{{lightList}}" scroll-top="{{scrollTop}}" item-height="{{240}}" generic:item="card" bind:sortend="handleLightSortEnd" bind:controlTap="handleLightPowerToggle" bind:cardTap="handleDeviceCardTap" bind:scroll="handleScroll" bind:offlineTap="handleShowDeviceOffline" bind:drag="handleDrag"></drag>
+          <drag id="drag-light" columns="{{4}}" list-data="{{lightList}}" scroll-top="{{scrollTop}}" item-height="{{240}}" generic:item="card" bind:sortend="handleLightSortEnd" bind:controlTap="handleLightPowerToggle" bind:cardTap="handleDeviceCardTap" bind:offlineTap="handleShowDeviceOffline" bind:drag="handleDrag"></drag>
         </view>
       </view>
 
@@ -90,7 +90,7 @@
           </view>
         </view>
         <view class="w-720rpx mt-24rpx">
-          <drag id="drag-switch" columns="{{4}}" list-data="{{switchList}}" scroll-top="{{scrollTop}}" item-height="{{240}}" generic:item="card" bind:sortend="handleSwitchSortEnd" bind:controlTap="handleSwitchControlTapToggle" bind:cardTap="handleDeviceCardTap" bind:scroll="handleScroll" bind:offlineTap="handleShowDeviceOffline" bind:drag="handleDrag"></drag>
+          <drag id="drag-switch" columns="{{4}}" list-data="{{switchList}}" scroll-top="{{scrollTop}}" item-height="{{240}}" generic:item="card" bind:sortend="handleSwitchSortEnd" bind:controlTap="handleSwitchControlTapToggle" bind:cardTap="handleDeviceCardTap" bind:offlineTap="handleShowDeviceOffline" bind:drag="handleDrag"></drag>
         </view>
       </view>
     </view>

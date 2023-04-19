@@ -415,7 +415,9 @@ ComponentWithComputed({
       const switchSceneConditionMap = deviceStore.switchSceneConditionMap
       const addSceneActions = [] as Device.ActionItem[]
       // 排除已经是场景开关的开关
-      const selectList = deviceStore.deviceFlattenList.filter((device) => !switchSceneConditionMap[device.uniId] && device.onLineStatus)
+      const selectList = deviceStore.deviceFlattenList.filter(
+        (device) => !switchSceneConditionMap[device.uniId] && device.onLineStatus,
+      )
       if (!selectList.length) {
         Toast('所有设备已离线，无法创建场景')
         return
@@ -556,10 +558,6 @@ ComponentWithComputed({
     async handleLightPowerToggle(e: { detail: Device.DeviceItem & { clientRect: WechatMiniprogram.ClientRect } }) {
       const device = deviceStore.deviceList.find((device) => device.deviceId === e.detail.deviceId)!
       const OnOff = device.mzgdPropertyDTOList['1'].OnOff
-      // 如果是打开则默认选择设备
-      if (!OnOff) {
-        this.handleDeviceCardTap(e, true)
-      }
       runInAction(() => {
         device.mzgdPropertyDTOList['1'].OnOff = OnOff ? 0 : 1
         deviceStore.deviceList = [...deviceStore.deviceList]
@@ -644,10 +642,6 @@ ComponentWithComputed({
       } else {
         const device = deviceStore.deviceList.find((device) => device.deviceId === e.detail.deviceId)!
         const OnOff = device.mzgdPropertyDTOList[ep].OnOff
-        // 如果是打开则默认选择设备
-        if (!OnOff) {
-          this.handleDeviceCardTap(e, true)
-        }
         runInAction(() => {
           device.mzgdPropertyDTOList[ep].OnOff = OnOff ? 0 : 1
           deviceStore.deviceList = [...deviceStore.deviceList]
