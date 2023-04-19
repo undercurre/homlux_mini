@@ -415,6 +415,7 @@ export class WifiSocket {
               address: '255.255.255.255',
               port: this.deviceInfo.udpPort,
               message: sendMsg,
+              setBroadcast: true,
             })
       })
     } catch (err) {
@@ -456,7 +457,7 @@ export class WifiSocket {
     this.onMessageHandlerList = []
 
     if (this.deviceInfo.isConnectTcp) {
-      console.log('tcpClient.close()', this.deviceInfo.isConnectTcp)
+      console.log('tcpClient.close()')
       tcpClient.close()
     }
 

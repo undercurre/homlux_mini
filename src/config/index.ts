@@ -12,7 +12,7 @@ let env: 'dev' | 'prod' = 'dev'
 
 export const mzaioBaseURL: ConfigWithEnv<string> = {
   dev: 'https://test.meizgd.com/mzaio', // sit环境
-  prod: 'https://baidu.com',
+  prod: 'https://mzaio.meizgd.com/mzaio',
 }
 
 export const storageExpire: ConfigWithEnv<number> = {
@@ -25,7 +25,7 @@ export const storageExpire: ConfigWithEnv<number> = {
  */
 export const mzaioWSURL: ConfigWithEnv<string> = {
   dev: 'wss://test.meizgd.com/mzaio/v1/wss/',
-  prod: 'https://baidu.com',
+  prod: 'wss://mzaio.meizgd.com/mzaio/v1/wss/',
 }
 
 export const QQMapConfig = {
