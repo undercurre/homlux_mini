@@ -174,75 +174,6 @@ export class WifiSocket {
     udpClient?.close()
   }
 
-  initTcpSocket() {
-    tcpClient.onMessage((res) => {
-      this.handleReply(res.message)
-    })
-
-    tcpClient.onError((res) => {
-      console.log('tcpClient.onError', res)
-    })
-
-    tcpClient.onClose((res) => {
-      console.log('tcpClient.onClose', res)
-      this.deviceInfo.isConnectTcp = false
-    })
-
-    console.log('initTcpSocket', dayjs().format('HH:mm:ss'))
-  }
-
-  initUdpSocket() {
-    udpClient = wx.createUDPSocket()
-
-    const port = this.bindUdp()
-
-    udpClient.onMessage((res) => {
-      this.handleReply(res.message)
-    })
-
-    udpClient.onError((res) => {
-      console.log('udpClient.onError', res)
-    })
-
-    udpClient.onClose((res) => {
-      console.log('udpClient.onClose', res)
-    })
-
-    // 防止在配网页面直接关闭小程序，导致udp端口没有被占用释放，下次打开时会无法创建同样端口的udp实例，需要在合适时机销毁没用的udp实例
-    // wx.onAppHide(this.closeUdp)
-
-    // wx.onAppShow(this.bindUdp)
-
-    console.log('initUdpSocket', dayjs().format('HH:mm:ss'))
-
-    return port
-  }
-
-  handleReply(message: ArrayBuffer) {
-    const reply = decodeCmd(message, this.key)
-    const callback = this.cmdCallbackMap[reply.reqId]
-
-    if (callback) {
-      callback(reply.data)
-
-      delete this.cmdCallbackMap[reply.reqId] // 删除已经执行的callback
-    } else {
-      this.onMessageHandlerList.map((handler) => handler(reply))
-    }
-  }
-
-  async sendCmdForDeviceIp() {
-    const res = await this.sendCmd({
-      topic: '/gateway/net/serverip', //指令名称:获取网关IP
-      data: {},
-      method: 'UDP',
-    })
-
-    if (res.errorCode === 0) {
-      this.deviceInfo.ip = res.ip
-    }
-  }
-
   /**
    * 获取手机IP
    */
@@ -345,7 +276,7 @@ export class WifiSocket {
       }, 10000)
 
       const listen = (res: WechatMiniprogram.GeneralCallbackResult) => {
-        console.log('tcpClient.onConnect port：', res)
+        console.log(IP, 'tcpClient.onConnect port：', res)
         console.debug('TCP连接时间：', Date.now() - start)
 
         clearTimeout(timeId)
@@ -362,6 +293,85 @@ export class WifiSocket {
         timeout: 10,
       })
     })
+  }
+
+  initTcpSocket() {
+    tcpClient.onMessage((res) => {
+      this.handleReply(res.message)
+    })
+
+    tcpClient.onError((res) => {
+      console.log('tcpClient.onError', res)
+
+      // tcp连接被设备端主动关闭的情况处理
+      if (res.errMsg.includes('close') && this.deviceInfo.isConnectTcp) {
+        this.deviceInfo.isConnectTcp = false
+        tcpClient.close()
+      }
+    })
+
+    tcpClient.onClose((res) => {
+      console.log('tcpClient.onClose', res)
+      this.deviceInfo.isConnectTcp = false
+    })
+
+    console.log('initTcpSocket', dayjs().format('HH:mm:ss'))
+  }
+
+  closeTcp() {
+    tcpClient.close()
+  }
+
+  initUdpSocket() {
+    udpClient = wx.createUDPSocket()
+
+    const port = this.bindUdp()
+
+    udpClient.onMessage((res) => {
+      this.handleReply(res.message)
+    })
+
+    udpClient.onError((res) => {
+      console.log('udpClient.onError', res)
+    })
+
+    udpClient.onClose((res) => {
+      console.log('udpClient.onClose', res)
+    })
+
+    // 防止在配网页面直接关闭小程序，导致udp端口没有被占用释放，下次打开时会无法创建同样端口的udp实例，需要在合适时机销毁没用的udp实例
+    // wx.onAppHide(this.closeUdp)
+
+    // wx.onAppShow(this.bindUdp)
+
+    console.log('initUdpSocket', dayjs().format('HH:mm:ss'))
+
+    return port
+  }
+
+  handleReply(message: ArrayBuffer) {
+    const reply = decodeCmd(message, this.key)
+    const callback = this.cmdCallbackMap[reply.reqId]
+
+    if (callback) {
+      callback(reply.data)
+
+      delete this.cmdCallbackMap[reply.reqId] // 删除已经执行的callback
+    } else {
+      this.onMessageHandlerList.map((handler) => handler(reply))
+    }
+  }
+
+  async sendCmdForDeviceIp() {
+    const res = await this.sendCmd({
+      topic: '/gateway/net/serverip', //指令名称:获取网关IP
+      data: {},
+      method: 'UDP',
+    })
+
+    if (res.errorCode === 0) {
+      this.deviceInfo.ip = res.ip
+    }
   }
 
   /**
