@@ -58,7 +58,7 @@ export class WifiSocket {
   }
 
   async isConnectDeviceWifi() {
-    const connectedRes = await wx.getConnectedWifi().catch(err => err)
+    const connectedRes = await wx.getConnectedWifi().catch((err) => err)
 
     console.log('获取当前wifi信息：', connectedRes, dayjs().format('HH:mm:ss'))
 
@@ -82,12 +82,14 @@ export class WifiSocket {
     const systemVersion = parseInt(deviceInfo.system.toLowerCase().replace(deviceInfo.platform, ''))
     const isAndroid10Plus = deviceInfo.platform === 'android' && systemVersion >= 10 // 判断是否Android10+或者是鸿蒙
 
-    const connectRes = await wx.connectWifi({
-      SSID: this.SSID,
-      password: this.pw,
-      partialInfo: false,
-      maunal: isAndroid10Plus, // Android 微信客户端 7.0.22 以上版本，connectWifi 的实现在 Android 10 及以上的手机无法生效，需要配置 maunal 来连接 wifi。详情参考官方文档
-    }).catch(err => err)
+    const connectRes = await wx
+      .connectWifi({
+        SSID: this.SSID,
+        password: this.pw,
+        partialInfo: false,
+        maunal: isAndroid10Plus, // Android 微信客户端 7.0.22 以上版本，connectWifi 的实现在 Android 10 及以上的手机无法生效，需要配置 maunal 来连接 wifi。详情参考官方文档
+      })
+      .catch((err) => err)
 
     console.log('wx.connectWifi', connectRes)
 
