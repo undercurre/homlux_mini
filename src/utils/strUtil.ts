@@ -1,11 +1,4 @@
-// import Nzh from 'nzh'
-
-// const nzhcn = Nzh.cn
-
 export const strUtil = {
-  // encodeS(num: number) {
-  //   return nzhcn.encodeS(num)
-  // },
   /**
    * 获取拼装参数后的完整url
    * @param url

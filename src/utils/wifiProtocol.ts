@@ -110,9 +110,10 @@ export class WifiSocket {
     return new Promise<{ errCode: number; success: boolean; msg?: string }>((resolve) => {
       // 连接热点超时回调
       this.wifiTimeoutTimeId = setTimeout(() => {
-        console.error('连接热点超时:60s')
+        console.error('连接热点超时:60s', this.queryWifiTimeId)
         clearTimeout(this.queryWifiTimeId)
         this.queryWifiTimeId = 0
+        this.wifiTimeoutTimeId = 0
         resolve({ success: false, errCode: -1 })
       }, 60000)
 
@@ -123,7 +124,8 @@ export class WifiSocket {
           resolve(successRes)
           clearTimeout(this.wifiTimeoutTimeId)
           this.queryWifiTimeId = 0
-        } else {
+        } else if (this.wifiTimeoutTimeId) {
+          // 关闭小程序后，过一段时间重启，连接热点超时，this.queryWifiTimeId延时器没有成功取消，需要通过this.queryWifiTimeId标识过滤取消
           this.queryWifiTimeId = setTimeout(() => {
             queryWifi()
           }, 1500)
@@ -330,6 +332,7 @@ export class WifiSocket {
     const port = this.bindUdp()
 
     udpClient.onMessage((res) => {
+      console.log('udpClient.onMessage', res)
       this.handleReply(res.message)
     })
 
