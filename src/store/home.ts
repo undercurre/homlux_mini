@@ -65,7 +65,8 @@ export const homeStore = observable({
         }
       })
       // 全屋房间、设备加载
-      this.updateRoomCardList()
+      await this.updateRoomCardList()
+      othersStore.setIsInit(true)
     }
   },
 
