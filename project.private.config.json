@@ -8,15 +8,6 @@
   },
   "libVersion": "2.25.4",
   "condition": {
-    "plugin": {
-      "list": []
-    },
-    "game": {
-      "list": []
-    },
-    "gamePlugin": {
-      "list": []
-    },
     "miniprogram": {
       "list": [
         {
@@ -79,8 +70,8 @@
           "name": "检验添加智能网关",
           "pathName": "package-distribution/link-gateway/index",
           "query": "apSSID=midea_16_E5FB&type=bind",
-          "scene": null,
-          "launchMode": "default"
+          "launchMode": "default",
+          "scene": null
         },
         {
           "name": "连接wifi",

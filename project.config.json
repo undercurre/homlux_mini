@@ -44,7 +44,8 @@
       "typescript"
     ],
     "ignoreUploadUnusedFiles": true,
-    "ignoreDevUnusedFiles": false
+    "ignoreDevUnusedFiles": false,
+    "condition": false
   },
   "srcMiniprogramRoot": "src/",
   "miniprogramRoot": "src/",
