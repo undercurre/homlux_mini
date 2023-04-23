@@ -288,9 +288,10 @@ ComponentWithComputed({
         await Promise.all([
           deviceStore.updateAllRoomDeviceList(),
           deviceStore.updateSubDeviceList(),
-          sceneStore.updateAllRoomSceneList(),
           sceneStore.updateSceneList(),
         ])
+        // todo: updateAllRoomSceneList如果放在Promise.all里面会导致列表跳动两次，需要找到根本原因
+        sceneStore.updateAllRoomSceneList()
         this.updateDeviceList()
       } finally {
         wx.stopPullDownRefresh()
