@@ -38,8 +38,6 @@ App<IAppOption>({
     reaction(
       () => homeStore.currentHomeDetail.houseId,
       () => {
-        console.log('房间切换，上一个房间:', homeStore.latestHouseId, '当前房间', homeStore.currentHomeDetail.houseId)
-        if (homeStore.currentHomeDetail.houseId === homeStore.latestHouseId) return
         closeWebSocket()
         startWebsocketService()
       },

@@ -45,7 +45,7 @@ declare namespace Device {
     isChecked: boolean
     /**
      * 如果需要将开关拆分，需要这个id
-     * 格式： deviceId:switchId
+     * 格式： deviceId:ep
      * 如: xxxxx:1 xxxxx:2
      */
     uniId: string

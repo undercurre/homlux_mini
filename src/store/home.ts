@@ -11,14 +11,12 @@ import {
   updateDefaultHouse,
   getShareId,
   queryAllDevice,
-  querySceneListByHouseId,
 } from '../apis/index'
 import { proType } from '../config/index'
 import { asyncStorage, storage } from '../utils/index'
 import { deviceStore } from './device'
 import { othersStore } from './others'
 import { roomStore } from './room'
-import { sceneStore } from './scene'
 import { userStore } from './user'
 
 export const homeStore = observable({
@@ -26,9 +24,6 @@ export const homeStore = observable({
 
   /** 当前家庭详细信息 */
   currentHomeDetail: {} as Home.IHomeDetail,
-
-  /** 上一次选择的houseId，mobx的reaction不能获取oldValue，需要自己记录 */
-  latestHouseId: '',
 
   homeMemberInfo: {} as Home.HomeMemberInfo,
 
@@ -65,66 +60,13 @@ export const homeStore = observable({
       queryUserHouseInfo({ houseId: this.currentHomeId }).then((res) => {
         if (res.success) {
           runInAction(() => {
-            homeStore.latestHouseId = homeStore.currentHomeDetail.houseId ?? ''
             homeStore.currentHomeDetail = Object.assign({ houseId: this.currentHomeId }, res.result)
           })
         }
       })
-      // 全屋房间、设备加载完成，开始渲染
-      const res = await Promise.all([getRoomList(homeStore.currentHomeId), deviceStore.updateAllRoomDeviceList()])
-      if (res[0].success) {
-        res[0].result.roomInfoList.forEach((roomInfo) => {
-          const roomDeviceList = roomStore.roomDeviceList[roomInfo.roomInfo.roomId]
-          // 过滤一下默认场景，没灯过滤明亮柔和，没灯没开关全部过滤
-          const hasSwitch = roomDeviceList?.some((device) => device.proType === proType.switch) ?? false
-          const hasLight = roomDeviceList?.some((device) => device.proType === proType.light) ?? false
-          if (!hasSwitch && !hasLight) {
-            // 四个默认场景都去掉
-            roomInfo.roomSceneList = roomInfo.roomSceneList.filter((scene) => scene.isDefault === '0')
-          } else if (hasSwitch && !hasLight) {
-            // 只有开关，去掉默认的明亮、柔和
-            roomInfo.roomSceneList = roomInfo.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
-          }
-          // 统计多少灯打开（开关不关联灯或者关联场景都算进去）
-          let deviceLightOnNum = 0
-          // 统计多少个子设备
-          let subDeviceNum = 0
-          roomDeviceList?.forEach((device) => {
-            if (device.proType !== proType.gateway) {
-              subDeviceNum++
-            }
-            if (!device.onLineStatus) return
-            if (device.proType === proType.light && device.mzgdPropertyDTOList['1'].OnOff) {
-              deviceLightOnNum++
-            } else if (device.proType === proType.switch) {
-              device.switchInfoDTOList.forEach((switchItem) => {
-                if (
-                  !switchItem.lightRelId &&
-                  device.mzgdPropertyDTOList[switchItem.switchId].OnOff &&
-                  !device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode
-                ) {
-                  deviceLightOnNum++
-                }
-              })
-            }
-          })
-          roomInfo.roomInfo.deviceLightOnNum = deviceLightOnNum
-          roomInfo.roomInfo.subDeviceNum = subDeviceNum
-        })
-        runInAction(() => {
-          roomStore.roomList = res[0].result.roomInfoList.map((room) => ({
-            roomId: room.roomInfo.roomId,
-            roomIcon: room.roomInfo.roomIcon || 'drawing-room',
-            roomName: room.roomInfo.roomName,
-            deviceLightOnNum: room.roomInfo.deviceLightOnNum,
-            sceneList: room.roomSceneList,
-            deviceNum: room.roomInfo.deviceNum,
-            subDeviceNum: room.roomInfo.subDeviceNum,
-          }))
-          othersStore.isInit = true
-        })
-        this.homeDataPersistence()
-      }
+      // 全屋房间、设备加载
+      await this.updateRoomCardList()
+      othersStore.setIsInit(true)
     }
   },
 
@@ -176,10 +118,8 @@ export const homeStore = observable({
       options,
     )
     if (res.success) {
-      const latestHouseId = homeStore.currentHomeDetail.houseId
       runInAction(() => {
         homeStore.currentHomeDetail = Object.assign({ houseId: this.currentHomeId }, res.result)
-        homeStore.latestHouseId = latestHouseId
       })
       await deviceStore.updateAllRoomDeviceList(undefined, options)
       await roomStore.updateRoomList(options)
@@ -196,11 +136,7 @@ export const homeStore = observable({
    */
   async updateRoomCardList(options?: { loading: boolean }) {
     const homeId = homeStore.currentHomeId
-    const data = await Promise.all([
-      queryAllDevice(homeId, options),
-      getRoomList(homeId, options),
-      querySceneListByHouseId(homeId, options),
-    ])
+    const data = await Promise.all([queryAllDevice(homeId, options), getRoomList(homeId, options)])
     if (data[0].success) {
       const list = {} as Record<string, Device.DeviceItem[]>
       data[0].result
@@ -266,14 +202,6 @@ export const homeStore = observable({
           deviceNum: room.roomInfo.deviceNum,
           subDeviceNum: room.roomInfo.subDeviceNum,
         }))
-      })
-    }
-    if (data[2].success) {
-      const list = data[2].result
-        .filter((scene) => scene.deviceActions && scene.deviceActions.length)
-        .sort((a, b) => a.orderNum - b.orderNum)
-      runInAction(() => {
-        sceneStore.allRoomSceneList = [...list]
       })
     }
     this.homeDataPersistence()
@@ -418,7 +346,6 @@ export const homeStore = observable({
     }
     runInAction(() => {
       this.homeList = data.homeData.homeList
-      this.latestHouseId = this.currentHomeDetail.houseId ?? ''
       this.currentHomeDetail = data.homeData.currentHomeDetail
       roomStore.roomList = data.homeData.roomList
       deviceStore.allRoomDeviceList = data.homeData.allRoomDeviceList

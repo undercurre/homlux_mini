@@ -1,3 +1,5 @@
+// 源码：https://github.com/wxp-ui/wxp-ui/#drag-%E7%BB%84%E4%BB%B6
+
 /**
  * 版本号比较
  */

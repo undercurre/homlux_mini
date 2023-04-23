@@ -12,7 +12,7 @@ import {
 } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { controlDevice, saveDeviceOrder, queryDeviceInfoByDeviceId, execScene } from '../../apis/index'
+import { controlDevice, saveDeviceOrder, execScene } from '../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
 import { storage, emitter, WSEventType } from '../../utils/index'
 import { maxColorTempK, minColorTempK, proName, proType } from '../../config/index'
@@ -202,83 +202,65 @@ ComponentWithComputed({
       // 再更新一遍数据
       this.reloadData()
       emitter.on('wsReceive', async (e) => {
-        if (e.result.eventType === 'device_property') {
+        if (e.result.eventType === WSEventType.device_property) {
           // 如果有传更新的状态数据过来，直接更新store
-          if (e.result.eventData.event && e.result.eventData.deviceId && e.result.eventData.ep) {
-            const deviceInHouse = deviceStore.allRoomDeviceList.find(
-              (device) => device.deviceId === e.result.eventData.deviceId,
-            )
-            if (deviceInHouse) {
-              deviceInHouse.mzgdPropertyDTOList[e.result.eventData.ep] = {
-                ...deviceInHouse.mzgdPropertyDTOList[e.result.eventData.ep],
-                ...e.result.eventData.event,
-              }
-              roomStore.updateRoomCardLightOnNum()
-              // 直接更新store里的数据，更新完退出回调函数
+          const deviceInHouse = deviceStore.allRoomDeviceList.find(
+            (device) => device.deviceId === e.result.eventData.deviceId,
+          )
+          if (deviceInHouse) {
+            deviceInHouse.mzgdPropertyDTOList[e.result.eventData.ep] = {
+              ...deviceInHouse.mzgdPropertyDTOList[e.result.eventData.ep],
+              ...e.result.eventData.event,
             }
-            const deviceInRoom = deviceStore.deviceList.find(
-              (device) => device.deviceId === e.result.eventData.deviceId,
-            )
-            if (deviceInRoom) {
-              deviceInRoom.mzgdPropertyDTOList[e.result.eventData.ep] = {
-                ...deviceInRoom.mzgdPropertyDTOList[e.result.eventData.ep],
-                ...e.result.eventData.event,
-              }
-              this.updateDeviceList()
-              // 直接更新store里的数据，更新完退出回调函数
-              return
+            roomStore.updateRoomCardLightOnNum()
+            // 直接更新store里的数据，更新完退出回调函数
+          }
+          const deviceInRoom = deviceStore.deviceList.find((device) => device.deviceId === e.result.eventData.deviceId)
+          if (deviceInRoom) {
+            deviceInRoom.mzgdPropertyDTOList[e.result.eventData.ep] = {
+              ...deviceInRoom.mzgdPropertyDTOList[e.result.eventData.ep],
+              ...e.result.eventData.event,
             }
+            this.updateDeviceList()
+            // 直接更新store里的数据，更新完退出回调函数
+            return
           }
         }
-        if (!requestThrottleTimer) {
-          homeStore.updateRoomCardList()
-          this.updateDeviceList()
-          requestThrottleTimer = setTimeout(async () => {
-            if (hasUpdateInRequestTimer) {
-              await homeStore.updateRoomCardList()
-              this.updateDeviceList()
-            }
-            requestThrottleTimer = 0
-            hasUpdateInRequestTimer = false
-          }, 2000)
-        } else {
-          hasUpdateInRequestTimer = true
-        }
-        // 设备相关的消息推送根据条件判断是否刷新
+        // 如果是设备状态推送，而且本地数据没有该设备信息，之前全部更新
         if (
-          typeof e.result.eventData === 'object' &&
-          [WSEventType.device_del, WSEventType.device_online_status, WSEventType.device_property].includes(
-            e.result.eventType,
-          ) &&
-          e.result.eventData.roomId &&
-          e.result.eventData.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId
+          [
+            WSEventType.device_del,
+            WSEventType.device_replace,
+            WSEventType.device_property,
+            WSEventType.device_online_status,
+            WSEventType.device_offline_status,
+          ].includes(e.result.eventType)
         ) {
-          // 如果是当前房间的设备状态发生变化，更新设备状态
-          const index = deviceStore.deviceList.findIndex((device) => device.deviceId === e.result.eventData.deviceId)
-          if (index !== -1) {
-            const res = await queryDeviceInfoByDeviceId({
-              deviceId: deviceStore.deviceList[index].deviceId,
-              roomId: deviceStore.deviceList[index].roomId,
-            })
-            if (res.success) {
-              runInAction(() => {
-                deviceStore.deviceList[index] = res.result
-                deviceStore.deviceList = [...deviceStore.deviceList]
-              })
-              this.updateDeviceList()
+          if (!requestThrottleTimer) {
+            homeStore.updateRoomCardList()
+            // 如果是当前房间，更新当前房间的状态
+            if (e.result.eventData.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId) {
+              this.reloadData()
             }
+            requestThrottleTimer = setTimeout(async () => {
+              if (hasUpdateInRequestTimer) {
+                await homeStore.updateRoomCardList()
+                if (e.result.eventData.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId) {
+                  this.reloadData()
+                }
+              }
+              requestThrottleTimer = 0
+              hasUpdateInRequestTimer = false
+            }, 2000)
           } else {
-            // 可能是新绑的设备，直接更新房间
-            await deviceStore.updateSubDeviceList()
-            this.updateDeviceList()
+            hasUpdateInRequestTimer = true
           }
         } else if (
-          typeof e.result.eventData === 'object' &&
           e.result.eventType === 'room_del' &&
           e.result.eventData.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId
         ) {
           // 房间被删除，退出到首页
-          homeStore.updateRoomCardList()
+          await homeStore.updateRoomCardList()
           wx.redirectTo({
             url: '/pages/index/index',
           })
@@ -306,9 +288,10 @@ ComponentWithComputed({
         await Promise.all([
           deviceStore.updateAllRoomDeviceList(),
           deviceStore.updateSubDeviceList(),
-          sceneStore.updateAllRoomSceneList(),
           sceneStore.updateSceneList(),
         ])
+        // todo: updateAllRoomSceneList如果放在Promise.all里面会导致列表跳动两次，需要找到根本原因
+        sceneStore.updateAllRoomSceneList()
         this.updateDeviceList()
       } finally {
         wx.stopPullDownRefresh()
@@ -367,6 +350,7 @@ ComponentWithComputed({
           type: proName[device.proType],
           select: deviceStore.selectList.includes(device.uniId),
         }))
+      // 接口返回开关面板数据以设备为一个整体，需要前端拆开后排序
       lightList.sort((a, b) => a.orderNum - b.orderNum)
       switchList.sort((a, b) => a.switchInfoDTOList[0].orderNum - b.switchInfoDTOList[0].orderNum)
       this.setData({
