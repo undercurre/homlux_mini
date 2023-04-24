@@ -5,7 +5,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { homeBinding } from '../../store/index'
 import Toast from '@vant/weapp/toast/toast'
-import QQMapWX from '../../utils/qqmap-wx-jssdk'
+import QQMapWX from '../../lib/qqmap-wx-jssdk'
 import { storage } from '../../utils/storage'
 
 ComponentWithComputed({

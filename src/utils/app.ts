@@ -1,6 +1,6 @@
 import { setEnv } from '../config/index'
 import { storage } from './storage'
-// import QQMapWX from './qqmap-wx-jssdk'
+// import QQMapWX from '../lib/qqmap-wx-jssdk'
 // import { QQMapConfig } from '../config/index'
 
 const deviceInfo = wx.getDeviceInfo()
