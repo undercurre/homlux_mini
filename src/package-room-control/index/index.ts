@@ -289,9 +289,8 @@ ComponentWithComputed({
           deviceStore.updateAllRoomDeviceList(),
           deviceStore.updateSubDeviceList(),
           sceneStore.updateSceneList(),
+          sceneStore.updateAllRoomSceneList()
         ])
-        // todo: updateAllRoomSceneList如果放在Promise.all里面会导致列表跳动两次，需要找到根本原因
-        sceneStore.updateAllRoomSceneList()
         this.updateDeviceList()
       } finally {
         wx.stopPullDownRefresh()
@@ -357,14 +356,17 @@ ComponentWithComputed({
         lightList,
         switchList,
       })
-      const dragLight = this.selectComponent('#drag-light')
-      if (dragLight && lightList.length > 0) {
-        dragLight.init()
-      }
-      const dragSwitch = this.selectComponent('#drag-switch')
-      if (dragSwitch && switchList.length > 0) {
-        dragSwitch.init()
-      }
+      // 不能立刻执行init，否则会因为拖拽排序反复抖动
+      setTimeout(() => {
+        const dragLight = this.selectComponent('#drag-light')
+        if (dragLight && lightList.length > 0) {
+          dragLight.init()
+        }
+        const dragSwitch = this.selectComponent('#drag-switch')
+        if (dragSwitch && switchList.length > 0) {
+          dragSwitch.init()
+        }
+      }, 100);
     },
     /** store设备列表数据更新到界面 */
     updateDeviceList() {
@@ -589,7 +591,7 @@ ComponentWithComputed({
         return
       }
       await saveDeviceOrder(orderData)
-      this.reloadData()
+      deviceStore.updateSubDeviceList()
     },
     async handleSwitchSortEnd(e: { detail: { listData: Device.DeviceItem[] } }) {
       const orderData = {
