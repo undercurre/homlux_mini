@@ -12,12 +12,11 @@ import { isConnect, networkStatusListen } from './utils/network'
 import { reaction } from 'mobx-miniprogram'
 
 App<IAppOption>({
-  async onLaunch(options: WechatMiniprogram.App.LaunchShowOption) {
+  async onLaunch() {
     wx.setEnableDebug({
       enableDebug: true,
     }).catch((err) => err)
 
-    console.log('APP打开参数：', options)
     // 加载svg数据
     this.globalData.svgs = svgs
 
@@ -42,10 +41,6 @@ App<IAppOption>({
         startWebsocketService()
       },
     )
-
-    const systemInfo = wx.getSystemInfoSync()
-
-    console.log('systemInfo', systemInfo)
 
     // 网络监听
     networkStatusListen()
