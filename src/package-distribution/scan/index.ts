@@ -195,7 +195,6 @@ ComponentWithComputed({
         return
       }
 
-      showLoading()
       // 初始化蓝牙模块
       const openBleRes = (await wx
         .openBluetoothAdapter({
@@ -231,13 +230,10 @@ ComponentWithComputed({
           }
         }
         wx.onBluetoothAdapterStateChange(listen)
-        return
       } else {
         bleDevicesStore.startBleDiscovery()
         this.checkWxScanEnter()
       }
-
-      hideLoading()
     },
 
     onCloseGwList() {

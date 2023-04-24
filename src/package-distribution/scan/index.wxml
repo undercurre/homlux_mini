@@ -13,7 +13,7 @@
       <view class="camera-mask grow"></view>
       <view class="relative">
         <image class="w-586 h-585 opacity-65" src="/package-distribution/assets/scan/scan-area.png"></image>
-        <view class="scan-line {{ isScan && 'pause'}}"></view>
+        <view wx:if="{{discovering}}" class="scan-line {{ isScan && 'pause'}}"></view>
       </view>
       <view class="camera-mask grow"></view>
     </view>
