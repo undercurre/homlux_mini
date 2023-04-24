@@ -9,7 +9,7 @@ import { getCurrentPageParams, emitter } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { sendCmdAddSubdevice, bindDevice, batchUpdate } from '../../apis/index'
 import lottie from 'lottie-miniprogram'
-import { addDevice } from '../../assets/lottie/index'
+import { addDevice } from '../assets/search-subdevice/lottie/index'
 
 type StatusName = 'discover' | 'requesting' | 'success' | 'error'
 
@@ -225,6 +225,12 @@ ComponentWithComputed({
 
         const iteratorFn = async (item: IBleDevice) => {
           console.info('开始蓝牙任务：', item.mac, item)
+
+          wx.reportEvent('add_device', {
+            pro_type: item.proType,
+            model_id: item.productId,
+            add_type: 'discover',
+          })
 
           await this.startZigbeeNet(item)
 

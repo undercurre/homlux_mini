@@ -447,6 +447,12 @@ ComponentWithComputed({
         return
       }
 
+      wx.reportEvent('add_device', {
+        pro_type: res.result.proType,
+        model_id: res.result.modelId,
+        add_type: 'qrcode',
+      })
+
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/link-gateway/index', {
           apSSID: params.ssid,
@@ -548,6 +554,14 @@ ComponentWithComputed({
       const gatewayId = this.data.selectGatewayId,
         gatewaySn = this.data.selectGatewaySn
 
+      const { proType, modelId } = this.data.deviceInfo
+
+      wx.reportEvent('add_device', {
+        pro_type: proType,
+        model_id: modelId,
+        add_type: 'qrcode',
+      })
+
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/add-subdevice/index', {
           mac: this.data.deviceInfo.mac,
@@ -555,7 +569,7 @@ ComponentWithComputed({
           gatewaySn,
           deviceName: this.data.deviceInfo.deviceName,
           deviceIcon: this.data.deviceInfo.icon,
-          proType: this.data.deviceInfo.proType,
+          proType: proType,
         }),
       })
     },
