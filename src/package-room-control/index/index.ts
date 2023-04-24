@@ -289,7 +289,7 @@ ComponentWithComputed({
           deviceStore.updateAllRoomDeviceList(),
           deviceStore.updateSubDeviceList(),
           sceneStore.updateSceneList(),
-          sceneStore.updateAllRoomSceneList()
+          sceneStore.updateAllRoomSceneList(),
         ])
         this.updateDeviceList()
       } finally {
@@ -366,7 +366,7 @@ ComponentWithComputed({
         if (dragSwitch && switchList.length > 0) {
           dragSwitch.init()
         }
-      }, 100);
+      }, 100)
     },
     /** store设备列表数据更新到界面 */
     updateDeviceList() {
