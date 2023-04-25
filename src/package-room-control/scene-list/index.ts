@@ -106,14 +106,17 @@ ComponentWithComputed({
     },
 
     toSetting(e: { detail: Scene.SceneItem }) {
-      console.log('toSetting', e)
-      const index = sceneStore.sceneList.findIndex((scene) => scene.sceneId === e.detail.sceneId)
-      runInAction(() => {
-        sceneStore.selectSceneIndex = index
-      })
-      wx.navigateTo({
-        url: '/package-room-control/scene-edit/index',
-      })
+      if (this.data.isCreator || this.data.isAdmin) {
+        const index = sceneStore.sceneList.findIndex((scene) => scene.sceneId === e.detail.sceneId)
+        runInAction(() => {
+          sceneStore.selectSceneIndex = index
+        })
+        wx.navigateTo({
+          url: '/package-room-control/scene-edit/index',
+        })
+      } else {
+        Toast('您当前身份为访客，无法编辑场景')
+      }
     },
 
     async handleSortEnd(e: { detail: { listData: Scene.SceneItem[] } }) {

@@ -1,7 +1,6 @@
-export default Behavior({
-  behaviors: [],
-  properties: {},
-  data: {},
+import { BehaviorWithComputed } from 'miniprogram-computed'
+import { userRole } from '../config/home'
+export default BehaviorWithComputed({
   methods: {
     /**
      * 返回方法
@@ -17,6 +16,11 @@ export default Behavior({
         wx.navigateBack()
       }
     },
+    goHome() {
+      wx.switchTab({
+        url: '/pages/index/index',
+      })
+    },
     /**
      * 跳转到
      */
@@ -29,14 +33,34 @@ export default Behavior({
     onShareAppMessage() {
       return {
         title: '欢迎使用美的照明Homlux',
-        path: '/pages/index',
+        path: '/pages/index/index',
       }
     },
     onShareTimeline() {
       return {
         title: '欢迎使用美的照明Homlux',
-        path: '/pages/index',
+        path: '/pages/index/index',
       }
+    },
+  },
+  computed: {
+    isCreator(data) {
+      if (data.currentHomeDetail) {
+        return data.currentHomeDetail.houseUserAuth === userRole.creator
+      }
+      return false
+    },
+    isAdmin(data) {
+      if (data.currentHomeDetail) {
+        return data.currentHomeDetail.houseUserAuth === userRole.admin
+      }
+      return false
+    },
+    isVisitor(data) {
+      if (data.currentHomeDetail) {
+        return data.currentHomeDetail.houseUserAuth === userRole.visitor
+      }
+      return true
     },
   },
 })
