@@ -29,13 +29,13 @@ export default Behavior({
     onShareAppMessage() {
       return {
         title: '欢迎使用美的照明Homlux',
-        path: '/pages/index',
+        path: '/pages/index/index',
       }
     },
     onShareTimeline() {
       return {
         title: '欢迎使用美的照明Homlux',
-        path: '/pages/index',
+        path: '/pages/index/index',
       }
     },
   },
