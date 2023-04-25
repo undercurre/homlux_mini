@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { aesUtil, strUtil } from '../utils/index'
+import { aesUtil, delay, strUtil } from '../utils/index'
 
 let _instance: WifiSocket | null = null
 
@@ -143,6 +143,9 @@ export class WifiSocket {
     if (port === 0) {
       return { errCode: -1, success: false, msg: 'UDP初始化失败' }
     }
+
+    // 延时请求，有可能手机刚加入wifi，还没成功分配好IP
+    await delay(1000)
 
     const ipRes = await this.getDeviceIp()
 
