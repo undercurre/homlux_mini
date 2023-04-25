@@ -6,7 +6,7 @@
   <view class="mt-24rpx w-750rpx flex-1" id="content">
     <scroll-view enhanced show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
       <van-cell-group inset>
-        <van-cell center is-link wx:for="{{switchList}}" wx:key="switchId" bind:click="handleSwitchClick" data-index="{{index}}" title="{{item.switchName}}">
+        <van-cell center is-link="{{canEditDevice}}" wx:for="{{switchList}}" wx:key="switchId" bind:click="handleSwitchClick" data-index="{{index}}" title="{{item.switchName}}">
           <view slot="icon">
             <image class="w-96rpx h-96rpx bg-hex-f6fafd mr-32rpx rounded-999" src="{{item.pic}}" />
           </view>

@@ -15,6 +15,9 @@ ComponentWithComputed({
     deviceInfo: {
       type: Object,
     },
+    canEditDevice: {
+      type: Boolean,
+    }
   },
 
   /**
@@ -56,7 +59,7 @@ ComponentWithComputed({
    */
   methods: {
     handleSwitchClick(e: WechatMiniprogram.TouchEvent) {
-      console.log(e.currentTarget.dataset.index)
+      if (!this.data.canEditDevice) return
       this.setData({
         showPopup: true,
         switchClickIndex: e.currentTarget.dataset.index,

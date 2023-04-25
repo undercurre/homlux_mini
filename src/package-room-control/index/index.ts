@@ -4,8 +4,9 @@ import {
   userBinding,
   roomBinding,
   deviceBinding,
-  deviceStore,
   sceneBinding,
+  homeBinding,
+  deviceStore,
   sceneStore,
   roomStore,
   homeStore,
@@ -25,7 +26,7 @@ let updateThrottleTimer = 0
 let hasUpdateInUpdateTimer = false
 ComponentWithComputed({
   behaviors: [
-    BehaviorWithStore({ storeBindings: [userBinding, roomBinding, deviceBinding, sceneBinding] }),
+    BehaviorWithStore({ storeBindings: [userBinding, roomBinding, deviceBinding, sceneBinding, homeBinding] }),
     pageBehavior,
   ],
   /**

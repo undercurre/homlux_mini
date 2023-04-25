@@ -7,10 +7,10 @@
   <!-- 上半部分 -->
   <view class="mt-24rpx w-750rpx">
     <van-cell-group inset>
-      <van-cell is-link bind:click="handleDeviceNameEditPopup" title="设备名称" value="{{deviceName}}"></van-cell>
-      <van-cell is-link bind:click="handleDeviceRoomEditPopup" title="所在房间" value="{{roomName}}"></van-cell>
+      <van-cell is-link="{{canEditDevice}}" bind:click="handleDeviceNameEditPopup" title="设备名称" value="{{deviceName}}"></van-cell>
+      <van-cell is-link="{{canEditDevice}}" bind:click="handleDeviceRoomEditPopup" title="所在房间" value="{{roomName}}"></van-cell>
       <van-cell wx:if="{{isSubDevice}}" title="所属网关" value="{{belongsToGateway}}" value-class="longValue" title-class="shortTitle"></van-cell>
-      <van-cell is-link bind:click="handleToOTA" value="{{deviceInfo.version}}">
+      <van-cell is-link="{{canEditDevice}}" bind:click="handleToOTA" value="{{deviceInfo.version}}">
         <view slot="title" class="flex items-center">
           <text class="text-32rpx">固件版本</text>
           <view class="rounded-999 bg-red flex-center px-10rpx py-6rpx ml-20rpx" wx:if="{{hasOtaUpdate}}">
@@ -18,24 +18,24 @@
           </view>
         </view>
       </van-cell>
-      <van-cell wx:if="{{!isSubDevice}}" title="更改WiFi" is-link link-type="navigateTo" url="/package-distribution/wifi-connect/index?type=changeWifi&sn={{deviceInfo.sn}}"></van-cell>
+      <van-cell wx:if="{{!isSubDevice}}" title="更改WiFi" is-link="{{canEditDevice}}" link-type="navigateTo" url="/package-distribution/wifi-connect/index?type=changeWifi&sn={{deviceInfo.sn}}"></van-cell>
       <van-cell title="Mac 地址" value="{{mac}}" bind:click="clickMac"></van-cell>
     </van-cell-group>
   </view>
 
   <!-- 下半部分 -->
   <view class="flex flex-1">
-    <setting-light device-info="{{deviceInfo}}" wx:if="{{prodType === 'light'}}" bind:update="updateDeviceInfo" />
-    <setting-switch device-info="{{deviceInfo}}" wx:if="{{prodType === 'switch'}}" bind:update="updateDeviceInfo" />
-    <setting-gateway device-info="{{deviceInfo}}" wx:if="{{prodType === 'gateway'}}" bind:update="updateDeviceInfo" />
+    <setting-light can-edit-device="{{canEditDevice}}" device-info="{{deviceInfo}}" wx:if="{{prodType === 'light'}}" bind:update="updateDeviceInfo" />
+    <setting-switch can-edit-device="{{canEditDevice}}" device-info="{{deviceInfo}}" wx:if="{{prodType === 'switch'}}" bind:update="updateDeviceInfo" />
+    <setting-gateway can-edit-device="{{canEditDevice}}" device-info="{{deviceInfo}}" wx:if="{{prodType === 'gateway'}}" bind:update="updateDeviceInfo" />
   </view>
   <!-- 隔开一点距离 -->
   <view class="h-24rpx"></view>
   <!-- 底部按钮 -->
-  <van-button type="warning" custom-class="delete-btn" bind:click="handleDeviceDelete">
+  <van-button wx-if="{{canEditDevice}}" type="warning" custom-class="delete-btn" bind:click="handleDeviceDelete">
     <text>删除设备</text>
   </van-button>
-  <view style="height: 86rpx"></view>
+  <view wx-if="{{canEditDevice}}" style="height: 86rpx"></view>
 </view>
 
 <van-toast id="van-toast" />
