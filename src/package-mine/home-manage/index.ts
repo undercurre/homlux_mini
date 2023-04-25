@@ -141,9 +141,9 @@ ComponentWithComputed({
      * 创建家庭
      */
     createHome() {
-      const ownerHomeList = homeStore.homeList.filter((home) => home.houseCreatorFlag)
-      if (ownerHomeList.length >= 20) {
-        Toast('每个账号最多可以创建20个家庭')
+      // const ownerHomeList = homeStore.homeList.filter((home) => home.houseCreatorFlag)
+      if (homeStore.homeList.length >= 20) {
+        Toast('每个账号最多可以存在20个家庭')
         return
       }
       this.setData({
