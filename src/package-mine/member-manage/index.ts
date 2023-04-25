@@ -55,7 +55,7 @@ ComponentWithComputed({
     ],
     curClickUserItem: null as any,
     curOptionItem: null as any,
-    curUser: { userHouseAuth: 0 } as Home.HouseUserItem,
+    curUser: { userHouseAuth: 3 } as Home.HouseUserItem,
     isNeedShare: false,
     isAdmin: false,
     isVisitor: false,

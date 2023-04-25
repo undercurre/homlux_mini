@@ -79,13 +79,7 @@ ComponentWithComputed({
     },
     // 判断是否是创建者或者管理员，其他角色不能添加设备
     canAddDevice(data) {
-      if (!data.currentHomeDetail) {
-        return false
-      }
-      return (
-        (data.currentHomeDetail as Home.IHomeDetail).houseUserAuth === 1 ||
-        (data.currentHomeDetail as Home.IHomeDetail).houseUserAuth === 2
-      )
+      return data.isCreator || data.isAdmin
     },
   },
   watch: {

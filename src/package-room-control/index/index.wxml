@@ -62,7 +62,7 @@
   <view wx:if="{{!roomHasGateway && !roomHasSubDevice}}" class="w-full flex flex-col items-center">
     <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx mt-64rpx"></image>
     <text class="text-black-59 text-28rpx mt-48rpx">这个房间空空如也</text>
-    <van-button type="primary" class="mt-290rpx w-686rpx" size="large" bind:click="handleAddDevice">添加智能设备</van-button>
+    <van-button wx-if="{{canAddDevice}}" type="primary" class="mt-290rpx w-686rpx" size="large" bind:click="handleAddDevice">添加智能设备</van-button>
   </view>
 
   <!-- 有设备页面主体 -->

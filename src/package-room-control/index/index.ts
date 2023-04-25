@@ -161,6 +161,10 @@ ComponentWithComputed({
       }
       return false
     },
+    // 判断是否是创建者或者管理员，其他角色不能添加设备
+    canAddDevice(data) {
+      return data.isCreator || data.isAdmin
+    },
   },
 
   watch: {
@@ -735,7 +739,8 @@ ComponentWithComputed({
           if (!deviceStore.editSelect.length) {
             deviceStore.editSelect = [e.detail.uniId]
           }
-          deviceStore.isEditSelectMode = true
+          // 只有创建者或者管理员能够进入编辑模式
+          deviceStore.isEditSelectMode = this.data.isCreator || this.data.isAdmin
           deviceStore.selectList = []
         })
         // this.updateDeviceList()

@@ -30,17 +30,13 @@ declare namespace Home {
    * 2：管理员
    * 3：游客
    */
-  export type UserRole = 1 | 2 | 3
-
-  /**
-   * 成员角色
-   * 1：创建者
-   * 2：管理员
-   * 3：游客
-   */
-  export const enum TestEnum {
-    Create = 1,
+  export interface UserRoleMap {
+    creator: 1
+    admin: 2
+    visitor: 3
   }
+
+  export type UserRole = ValueOf<UserRoleMap>
 
   /**
    * 家庭详细值
@@ -55,8 +51,8 @@ declare namespace Home {
      */
     houseName: string
 
-    // 用户家庭权限 1：创建者 2：管理员 3：游客
-    houseUserAuth: 1 | 2 | 3
+    // 用户家庭权限
+    houseUserAuth: UserRole
 
     /**
      * 设备数量
@@ -95,7 +91,7 @@ declare namespace Home {
     /**
      * 成员权限编码
      */
-    userHouseAuth: number
+    userHouseAuth: UserRole
     /**
      * 成员权限名称
      */
