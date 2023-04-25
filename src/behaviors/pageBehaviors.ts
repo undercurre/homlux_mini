@@ -1,7 +1,6 @@
-export default Behavior({
-  behaviors: [],
-  properties: {},
-  data: {},
+import { BehaviorWithComputed } from 'miniprogram-computed'
+import { userRole } from '../config/home'
+export default BehaviorWithComputed({
   methods: {
     /**
      * 返回方法
@@ -16,6 +15,11 @@ export default Behavior({
       } else {
         wx.navigateBack()
       }
+    },
+    goHome() {
+      wx.switchTab({
+        url: '/pages/index/index',
+      })
     },
     /**
      * 跳转到
@@ -37,6 +41,26 @@ export default Behavior({
         title: '欢迎使用美的照明Homlux',
         path: '/pages/index/index',
       }
+    },
+  },
+  computed: {
+    isCreator(data) {
+      if (data.currentHomeDetail) {
+        return data.currentHomeDetail.houseUserAuth === userRole.creator
+      }
+      return false
+    },
+    isAdmin(data) {
+      if (data.currentHomeDetail) {
+        return data.currentHomeDetail.houseUserAuth === userRole.admin
+      }
+      return false
+    },
+    isVisitor(data) {
+      if (data.currentHomeDetail) {
+        return data.currentHomeDetail.houseUserAuth === userRole.visitor
+      }
+      return true
     },
   },
 })
