@@ -63,7 +63,7 @@ ComponentWithComputed({
     },
     canEditDevice(data) {
       return data.isCreator || data.isAdmin
-    }
+    },
   },
 
   methods: {

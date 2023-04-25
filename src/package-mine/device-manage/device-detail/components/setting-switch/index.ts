@@ -17,7 +17,7 @@ ComponentWithComputed({
     },
     canEditDevice: {
       type: Boolean,
-    }
+    },
   },
 
   /**

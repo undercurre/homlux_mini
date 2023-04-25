@@ -12,7 +12,7 @@ Component({
     },
     canEditDevice: {
       type: Boolean,
-    }
+    },
   },
 
   /**
