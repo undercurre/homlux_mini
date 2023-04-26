@@ -245,11 +245,11 @@ ComponentWithComputed({
       if (!isAndroid10Plus || isConnect) {
         console.log('isAndroid10Plus', systemVersion)
         this.connectWifi()
+      } else {
+        this.setData({
+          isAndroid10Plus,
+        })
       }
-
-      this.setData({
-        isAndroid10Plus,
-      })
     },
 
     async connectWifi() {
