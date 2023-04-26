@@ -56,6 +56,14 @@ ComponentWithComputed({
 
   lifetimes: {
     async ready() {
+      wx.onNetworkStatusChange(function (res) {
+        console.debug('onNetworkStatusChange', res)
+      })
+
+      wx.onNetworkWeakChange(function (res) {
+        console.debug('onNetworkWeakChange', res)
+      })
+
       bleDevicesBinding.store.reset()
 
       await homeBinding.store.updateHomeInfo()
@@ -449,6 +457,7 @@ ComponentWithComputed({
         return
       }
 
+      console.log('checkDevice', res)
       wx.reportEvent('add_device', {
         pro_type: res.result.proType,
         model_id: res.result.modelId,

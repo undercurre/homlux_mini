@@ -136,9 +136,7 @@ export class WifiSocket {
           clearTimeout(this.wifiTimeoutTimeId)
           this.queryWifiTimeId = 0
 
-          const initRes = await this.init()
-
-          resolve(initRes)
+          resolve(successRes)
         } else if (this.wifiTimeoutTimeId) {
           // 关闭小程序后，过一段时间重启，连接热点超时，this.queryWifiTimeId延时器没有成功取消，需要通过this.queryWifiTimeId标识过滤取消
           this.queryWifiTimeId = setTimeout(() => {

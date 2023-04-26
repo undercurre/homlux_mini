@@ -275,6 +275,12 @@ ComponentWithComputed({
           throw connectRes
         }
 
+        const initRes = await this.data._socket.init()
+
+        if (!initRes.success) {
+          throw initRes
+        }
+
         this.setData({
           activeIndex: 1,
           isConnectDevice: true,

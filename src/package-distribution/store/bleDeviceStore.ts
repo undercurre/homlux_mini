@@ -153,19 +153,19 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
   }
 
   // 1、存在接口查询过程，过滤期间重复添加的设备
-  // 2、过滤云端存在绑定关系且设备本地状态为02的设备
+  // 2、过滤云端存在房间绑定关系且设备本地状态为02(已绑定状态)的设备
   if (
     bleDevicesStore.bleDeviceList.find((foundItem) => foundItem.deviceUuid === baseInfo.deviceUuid) ||
     (infoRes.result.roomId && baseInfo.isConfig === '02')
   ) {
-    console.info(`设备${baseInfo.mac}已绑定`)
+    console.info(`${infoRes.result.productName}：${baseInfo.mac}已绑定`)
     return
   }
 
-  console.info(`成功发现设备${baseInfo.mac}`)
-
   let { productName: deviceName } = infoRes.result
   const { proType, switchNum, modelId, productIcon } = infoRes.result
+
+  console.info(`成功发现${deviceName}：${baseInfo.mac}`)
 
   const bindNum = deviceBinding.store.allRoomDeviceList.filter(
     (item) => item.proType === proType && item.productId === modelId,
