@@ -151,7 +151,18 @@ ComponentWithComputed({
                 ...device.mzgdPropertyDTOList[res.result.eventData.ep],
                 ...res.result.eventData.event,
               }
-              roomStore.updateRoomCardLightOnNum()
+              if (!throttleTimer) {
+                roomStore.updateRoomCardLightOnNum()
+                throttleTimer = setTimeout(async () => {
+                  if (hasUpdateInTimer) {
+                    roomStore.updateRoomCardLightOnNum()
+                    hasUpdateInTimer = false
+                  }
+                  throttleTimer = 0
+                }, 1000)
+              } else {
+                hasUpdateInTimer = true
+              }
               // 直接更新store里的数据，更新完退出回调函数
               return
             }

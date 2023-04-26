@@ -1,12 +1,12 @@
 import { execOtaUpdate, setOtaSchedule } from '../../apis/ota'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { homeStore, otaBinding, otaStore } from '../../store/index'
+import { homeBinding, homeStore, otaBinding, otaStore } from '../../store/index'
 import Toast from '@vant/weapp/toast/toast'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { getEnv } from '../../config/index'
 ComponentWithComputed({
-  behaviors: [BehaviorWithStore({ storeBindings: [otaBinding] }), pageBehavior],
+  behaviors: [BehaviorWithStore({ storeBindings: [otaBinding, homeBinding] }), pageBehavior],
 
   /**
    * 组件的初始数据
@@ -31,6 +31,9 @@ ComponentWithComputed({
         }
       })
       return count
+    },
+    canOTA(data) {
+      return data.isCreator || data.isAdmin
     },
   },
 

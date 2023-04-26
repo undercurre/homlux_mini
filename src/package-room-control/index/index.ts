@@ -4,8 +4,9 @@ import {
   userBinding,
   roomBinding,
   deviceBinding,
-  deviceStore,
   sceneBinding,
+  homeBinding,
+  deviceStore,
   sceneStore,
   roomStore,
   homeStore,
@@ -25,7 +26,7 @@ let updateThrottleTimer = 0
 let hasUpdateInUpdateTimer = false
 ComponentWithComputed({
   behaviors: [
-    BehaviorWithStore({ storeBindings: [userBinding, roomBinding, deviceBinding, sceneBinding] }),
+    BehaviorWithStore({ storeBindings: [userBinding, roomBinding, deviceBinding, sceneBinding, homeBinding] }),
     pageBehavior,
   ],
   /**
@@ -400,6 +401,10 @@ ComponentWithComputed({
     },
     /** 点击创建场景按钮回调 */
     handleCollect() {
+      if (this.data.isVisitor) {
+        Toast('仅创建者与管理员可创建场景')
+        return
+      }
       // 补充actions
       const deviceMap = deviceStore.deviceMap
       const switchSceneConditionMap = deviceStore.switchSceneConditionMap

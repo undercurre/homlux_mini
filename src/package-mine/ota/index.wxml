@@ -10,7 +10,7 @@
         <text class="text-28rpx text-black-tips font-normal text-justify mt-24rpx">每天凌晨1:00期间自动升级所有设备固件。升级完成时，设备将短暂重启</text>
       </view>
       <view slot="right-icon">
-        <van-switch checked="{{autoUpdate}}" loading="{{isLoading}}" bind:change="onAutoUpdateChange" />
+        <van-switch checked="{{autoUpdate}}" loading="{{isLoading}}" disabled="{{!canOTA}}" bind:change="onAutoUpdateChange" />
       </view>
     </van-cell>
   </van-cell-group>
@@ -59,7 +59,7 @@
       </view>
     </scroll-view>
   </view>
-  <view class="mb-96rpx mt-32rpx w-686rpx flex-col-center">
+  <view wx:if="{{canOTA}}" class="mb-96rpx mt-32rpx w-686rpx flex-col-center">
     <text class="text-24rpx text-black-tips mb-24rpx {{isUpdating?'':'opacity-0'}}">升级完成时，设备将短暂重启</text>
     <van-button class="w-686rpx" type="primary" size="large" disabled="{{isUpdating || !hasUpdate}}" bind:click="handleUpdate" bindlongpress="handleUpdateForce">{{isUpdating?'剩余'+remainOtaDevice+'个设备...':'立即升级'}}</van-button>
   </view>

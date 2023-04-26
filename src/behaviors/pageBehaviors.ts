@@ -16,11 +16,6 @@ export default BehaviorWithComputed({
         wx.navigateBack()
       }
     },
-    goHome() {
-      wx.switchTab({
-        url: '/pages/index/index',
-      })
-    },
     /**
      * 跳转到
      */

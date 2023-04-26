@@ -1,14 +1,14 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
-import { deviceStore, homeStore, otaStore, roomBinding } from '../../../store/index'
+import { deviceStore, homeBinding, homeStore, otaStore, roomBinding } from '../../../store/index'
 import pageBehavior from '../../../behaviors/pageBehaviors'
 import { deleteDevice, editDeviceInfo, queryDeviceInfoByDeviceId } from '../../../apis/index'
 import { proName, proType } from '../../../config/index'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { emitter } from '../../../utils/eventBus'
 ComponentWithComputed({
-  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding] }), pageBehavior],
+  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, homeBinding] }), pageBehavior],
   /**
    * 页面的初始数据
    */
@@ -61,6 +61,9 @@ ComponentWithComputed({
       }
       return false
     },
+    canEditDevice(data) {
+      return data.isCreator || data.isAdmin
+    },
   },
 
   methods: {
@@ -89,6 +92,7 @@ ComponentWithComputed({
     },
 
     handleDeviceNameEditPopup() {
+      if (!this.data.canEditDevice) return
       this.setData({
         showEditNamePopup: true,
       })
@@ -120,6 +124,7 @@ ComponentWithComputed({
       }
     },
     handleDeviceRoomEditPopup() {
+      if (!this.data.canEditDevice) return
       this.setData({
         showEditRoomPopup: true,
       })
@@ -147,11 +152,13 @@ ComponentWithComputed({
       }
     },
     handleToOTA() {
+      if (!this.data.canEditDevice) return
       wx.navigateTo({
         url: '/package-mine/ota/index?fromDevice=1',
       })
     },
     handleDeviceDelete() {
+      if (!this.data.canEditDevice) return
       Dialog.confirm({
         title: '确定删除该设备？',
       }).then(async () => {
