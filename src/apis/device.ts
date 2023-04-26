@@ -22,7 +22,7 @@ export async function allDevicePowerControl(data: { houseId: string; onOff: numb
   return await mzaioRequest.post<IAnyObject>({
     log: false,
     loading: options?.loading ?? false,
-    url: '/v1/mzgd/user/deviceAllPowerOnOrOff',
+    url: '/v1/device/deviceControlByHouseId',
     data: data,
   })
 }

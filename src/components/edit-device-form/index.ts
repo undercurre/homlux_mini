@@ -1,7 +1,7 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
 import { homeBinding, roomBinding, roomStore } from '../../store/index'
-import { checkInputNameIllegal, getCurrentPageUrl } from '../../utils/index'
+import { checkInputNameIllegal } from '../../utils/index'
 
 Component({
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, roomBinding] })],
