@@ -256,13 +256,18 @@ ComponentWithComputed({
       try {
         const now = Date.now()
 
-        const connectRes = await this.data._socket.connectWifi()
+        const connectRes = await this.data._socket.connect()
 
         console.log(`连接${this.data.apSSID}时长：`, Date.now() - now, connectRes, dayjs().format('HH:mm:ss'))
 
-        // 用户拒绝连接wifi
+        // 针对IOS用户 加入网关热点wifi的系统弹窗的取消操作
         if (connectRes.errCode === 12007) {
           wx.navigateBack()
+          return
+        }
+
+        // 重复请求_socket.connect()接口
+        if (connectRes.errCode === -2) {
           return
         }
 
@@ -274,12 +279,6 @@ ComponentWithComputed({
           activeIndex: 1,
           isConnectDevice: true,
         })
-
-        const inistRes = await this.data._socket.init()
-
-        if (!inistRes.success) {
-          throw inistRes
-        }
 
         const { type } = this.data
 

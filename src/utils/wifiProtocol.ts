@@ -72,14 +72,6 @@ export class WifiSocket {
   }
 
   async connectWifi() {
-    const successRes = { success: true, errCode: 0 }
-
-    const isConnect = await this.isConnectDeviceWifi()
-
-    if (isConnect) {
-      return successRes
-    }
-
     const systemVersion = parseInt(deviceInfo.system.toLowerCase().replace(deviceInfo.platform, ''))
     const isAndroid10Plus = deviceInfo.platform === 'android' && systemVersion >= 10 // 判断是否Android10+或者是鸿蒙
 
@@ -94,18 +86,37 @@ export class WifiSocket {
 
     console.log('wx.connectWifi', connectRes)
 
-    if (connectRes.errCode === 12007) {
+    return {
+      ...connectRes,
+      success: connectRes.errCode === 0
+    }
+  }
+
+  async connect() {
+    console.log('queryWifiTimeId', this.queryWifiTimeId, this)
+    // 兼容Android10+,避免重复触发轮询wifi逻辑
+    if (this.queryWifiTimeId !== 0) {
+      await this.connectWifi()
+
       return {
-        errCode: connectRes.errCode,
+        errCode: -2,
         success: false,
-        msg: '用户拒绝授权链接 Wi-Fi',
+        msg: '重复请求：已经正在等待连接网关热点',
       }
     }
 
-    console.log('queryWifiTimeId', this.queryWifiTimeId, this)
-    // 避免重复触发轮询逻辑
-    if (this.queryWifiTimeId !== 0) {
+    const successRes = { success: true, errCode: 0 }
+
+    const isConnect = await this.isConnectDeviceWifi()
+
+    if (isConnect) {
       return successRes
+    }
+
+    const connectWifiRes = await this.connectWifi()
+
+    if (!connectWifiRes.success) {
+      return connectWifiRes
     }
 
     return new Promise<{ errCode: number; success: boolean; msg?: string }>((resolve) => {
@@ -122,9 +133,12 @@ export class WifiSocket {
         const isConnected = await this.isConnectDeviceWifi()
 
         if (isConnected) {
-          resolve(successRes)
           clearTimeout(this.wifiTimeoutTimeId)
           this.queryWifiTimeId = 0
+
+          const initRes = await this.init()
+
+          resolve(initRes)
         } else if (this.wifiTimeoutTimeId) {
           // 关闭小程序后，过一段时间重启，连接热点超时，this.queryWifiTimeId延时器没有成功取消，需要通过this.queryWifiTimeId标识过滤取消
           this.queryWifiTimeId = setTimeout(() => {
@@ -133,7 +147,7 @@ export class WifiSocket {
         }
       }
 
-      // 由于onWifiConnected不可靠，在安卓端存在监听不到的情况，改为轮询
+      // 由于onWifiConnected不可靠，在安卓端存在监听不到的情况，改为轮询getConnectedWifi
       queryWifi()
     })
   }
@@ -145,7 +159,7 @@ export class WifiSocket {
       return { errCode: -1, success: false, msg: 'UDP初始化失败' }
     }
 
-    // 延时请求，有可能手机刚加入wifi，还没成功分配好IP
+    // 延时请求，有可能手机刚加入wifi，还没成功分配好IP，实测IOS需要延时更长
     await delay(isAndroid() ? 1000 : 2000)
 
     const ipRes = await this.getDeviceIp()
@@ -158,7 +172,7 @@ export class WifiSocket {
 
     this.initTcpSocket()
 
-    return { errCode: 0, success: true, msg: '' }
+    return { errCode: 0, success: true, msg: '初始化成功' }
   }
 
   bindUdp = () => {
