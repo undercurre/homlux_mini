@@ -51,6 +51,7 @@ declare namespace Room {
      * 设备数量
      */
     deviceNum?: number
+
     /**
      * 	房间icon
      */

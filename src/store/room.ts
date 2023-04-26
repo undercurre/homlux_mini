@@ -63,6 +63,7 @@ export const roomStore = observable({
       roomInfo.deviceLightOnNum = deviceLightOnNum
       roomInfo.subDeviceNum = subDeviceNum
     })
+
     runInAction(() => {
       roomStore.roomDeviceList = list
       roomStore.roomList = [...roomStore.roomList]

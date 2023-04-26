@@ -73,11 +73,6 @@ declare namespace Home {
      * 房间数量
      */
     roomCount: number
-
-    /**
-     * 房间列表
-     */
-    roomList: IRoomInfo[]
   }
 
   export interface IRoomInfo {

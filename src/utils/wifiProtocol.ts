@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import { aesUtil, delay, strUtil } from '../utils/index'
+import { isAndroid } from './app'
 
 let _instance: WifiSocket | null = null
 
@@ -145,7 +146,7 @@ export class WifiSocket {
     }
 
     // 延时请求，有可能手机刚加入wifi，还没成功分配好IP
-    await delay(1000)
+    await delay(isAndroid() ? 1000 : 2000)
 
     const ipRes = await this.getDeviceIp()
 
@@ -335,7 +336,6 @@ export class WifiSocket {
     const port = this.bindUdp()
 
     udpClient.onMessage((res) => {
-      console.log('udpClient.onMessage', res)
       this.handleReply(res.message)
     })
 

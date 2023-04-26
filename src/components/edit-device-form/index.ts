@@ -1,7 +1,7 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
-import { homeBinding, roomBinding } from '../../store/index'
-import { checkInputNameIllegal } from '../../utils/index'
+import { homeBinding, roomBinding, roomStore } from '../../store/index'
+import { checkInputNameIllegal, getCurrentPageUrl } from '../../utils/index'
 
 Component({
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, roomBinding] })],
@@ -71,9 +71,11 @@ Component({
    */
   methods: {
     selectRoom(event: WechatMiniprogram.CustomEvent) {
+      const roomInfo = roomStore.roomList[event.currentTarget.dataset.index]
+
       this.setData({
-        'deviceInfo.roomId': event.currentTarget.dataset.id,
-        'deviceInfo.roomName': event.currentTarget.dataset.name,
+        'deviceInfo.roomId': roomInfo.roomId,
+        'deviceInfo.roomName': roomInfo.roomName,
       })
 
       this.triggerEvent('change', Object.assign({}, this.data.deviceInfo))

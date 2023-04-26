@@ -419,6 +419,8 @@ ComponentWithComputed({
         } else if (pageParams.mode === '02') {
           // 网关绑定逻辑
           await this.bindGateway(pageParams)
+        } else {
+          throw '无效二维码'
         }
         hideLoading()
       } catch (err) {

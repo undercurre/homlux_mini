@@ -83,6 +83,7 @@ export const bleDevicesStore = observable({
   },
 
   reset() {
+    console.log('重置蓝牙store')
     const systemSetting = wx.getSystemSetting()
 
     runInAction(() => {
