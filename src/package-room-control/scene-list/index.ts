@@ -1,7 +1,7 @@
 // package-room-control/scene-list/index.ts
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { deviceStore, homeStore, sceneBinding, sceneStore } from '../../store/index'
+import { deviceStore, homeBinding, homeStore, sceneBinding, sceneStore } from '../../store/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { runInAction } from 'mobx-miniprogram'
 import { execScene, updateSceneSort } from '../../apis/scene'
@@ -9,7 +9,7 @@ import Toast from '@vant/weapp/toast/toast'
 import { storage, emitter } from '../../utils/index'
 
 ComponentWithComputed({
-  behaviors: [BehaviorWithStore({ storeBindings: [sceneBinding] }), pageBehavior],
+  behaviors: [BehaviorWithStore({ storeBindings: [sceneBinding, homeBinding] }), pageBehavior],
   /**
    * 页面的初始数据
    */

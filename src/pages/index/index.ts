@@ -269,72 +269,18 @@ ComponentWithComputed({
      * 点击全屋开按钮
      */
     handleAllOn() {
-      this.hideMenu()
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
       allDevicePowerControl({
         houseId: homeStore.currentHomeId,
         onOff: 1,
       })
-      this.animate(
-        `#all-on`,
-        [
-          {
-            opacity: 0,
-          },
-          {
-            opacity: 1,
-          },
-        ],
-        30,
-        () => {
-          this.animate(
-            `#all-on`,
-            [
-              {
-                opacity: 1,
-              },
-              {
-                opacity: 0,
-              },
-            ],
-            60,
-          )
-        },
-      )
     },
     /**
      * 点击全屋关按钮
      */
     handleAllOff() {
-      this.hideMenu()
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
       allDevicePowerControl({ houseId: homeStore.currentHomeId, onOff: 0 })
-      this.animate(
-        `#all-off`,
-        [
-          {
-            opacity: 0,
-          },
-          {
-            opacity: 1,
-          },
-        ],
-        30,
-        () => {
-          this.animate(
-            `#all-off`,
-            [
-              {
-                opacity: 1,
-              },
-              {
-                opacity: 0,
-              },
-            ],
-            60,
-          )
-        },
-      )
     },
     /**
      * 用户切换家庭
