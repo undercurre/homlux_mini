@@ -34,7 +34,7 @@ ComponentWithComputed({
     },
     canOTA(data) {
       return data.isCreator || data.isAdmin
-    }
+    },
   },
 
   /**

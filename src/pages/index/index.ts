@@ -160,6 +160,8 @@ ComponentWithComputed({
                   }
                   throttleTimer = 0
                 }, 1000)
+              } else {
+                hasUpdateInTimer = true
               }
               // 直接更新store里的数据，更新完退出回调函数
               return
