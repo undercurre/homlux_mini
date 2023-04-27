@@ -88,7 +88,7 @@ export class WifiSocket {
 
     return {
       ...connectRes,
-      success: connectRes.errCode === 0,
+      success: connectRes.errCode === 0 || connectRes.errMsg.includes('ok'),
     }
   }
 
