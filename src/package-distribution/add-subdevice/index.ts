@@ -46,6 +46,10 @@ ComponentWithComputed({
 
       // 扫码子设备，60s超时处理，无论是否发现目标子设备
       this.data._timeId = setTimeout(() => {
+        if (!this.data._hasFound) {
+          console.error(`没有发现子设备${this.data.pageParams.mac}`)
+        }
+
         this.setData({
           status: 'error',
         })
@@ -102,8 +106,7 @@ ComponentWithComputed({
 
       // 开始搜寻附近的蓝牙外围设备
       wx.startBluetoothDevicesDiscovery({
-        // services: ['BAE55B96-7D19-458D-970C-50613D801BC9'],
-        allowDuplicatesKey: false,
+        allowDuplicatesKey: true,
         powerLevel: 'high',
         interval: 3000,
         success: (res) => {
@@ -175,6 +178,10 @@ ComponentWithComputed({
     },
 
     async stopGwAddMode() {
+      if (!this.data._hasFound) {
+        return false
+      }
+
       const pageParams = getCurrentPageParams()
 
       const res = await sendCmdAddSubdevice({
