@@ -10,6 +10,7 @@ import pageBehaviors from '../../behaviors/pageBehaviors'
 import { sendCmdAddSubdevice, bindDevice, batchUpdate } from '../../apis/index'
 import lottie from 'lottie-miniprogram'
 import { addDevice } from '../assets/search-subdevice/lottie/index'
+import dayjs from 'dayjs'
 
 type StatusName = 'discover' | 'requesting' | 'success' | 'error'
 
@@ -223,9 +224,12 @@ ComponentWithComputed({
           this.startAnimation()
         }, 300)
 
+        const tempList: string[] = []
+
         const iteratorFn = async (item: IBleDevice) => {
           console.info('开始蓝牙任务：', item.mac, item)
-
+          console.debug('当前蓝牙指令任务：', tempList)
+          tempList.push(item.mac)
           wx.reportEvent('add_device', {
             pro_type: item.proType,
             model_id: item.productId,
@@ -239,7 +243,14 @@ ComponentWithComputed({
 
         for await (const value of asyncPool(3, list, iteratorFn)) {
           console.info('蓝牙任务结束：', value.mac)
+          let index = tempList.findIndex(item => item === value.mac)
+
+          tempList.splice(index, 1)
+
+          console.debug('当前蓝牙指令任务：', tempList)
         }
+
+        console.debug('所有蓝牙指令任务结束', dayjs().format('HH:mm:ss'))
       } catch (err) {
         console.log('beginAddDevice-err', err)
       }
