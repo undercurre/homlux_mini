@@ -114,7 +114,7 @@
 <batch-edit bind:updateList="updateDeviceList" bind:roomMove="handleRoomMoveSuccess"></batch-edit>
 
 <van-toast id="van-toast" />
-<van-dialog use-slot title="子设备离线" show="{{ showDeviceOffline }}" confirm-button-color="#488FFF" confirmButtonText="我知道了" bind:close="handleCloseDeviceOffice">
+<van-dialog use-slot title="{{officeDeviceInfo.deviceName}}离线" show="{{ showDeviceOffline }}" confirm-button-color="#488FFF" confirmButtonText="我知道了" bind:close="handleCloseDeviceOffice">
   <view class="flex-col-center w-full">
     <image src="{{officeDeviceInfo.pic}}" class="w-160rpx h-160rpx mt-70rpx" />
     <view class="flex flex-col mt-88rpx">
