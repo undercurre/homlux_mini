@@ -19,6 +19,11 @@ ComponentWithComputed({
     sDeviceList: {
       type: Array,
     },
+    // 是否显示专门的“离线”页签
+    showOfflineTab: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /**
@@ -47,7 +52,11 @@ ComponentWithComputed({
           })
         }
       })
-      return [{ roomId: '0', roomName: '全屋' }, ...roomList]
+      if (data.showOfflineTab) {
+        return [{ roomId: '0', roomName: '全屋' }, ...roomList, { roomId: '-1', roomName: '离线' }]
+      } else {
+        return [{ roomId: '0', roomName: '全屋' }, ...roomList]
+      }
     },
   },
 

@@ -23,10 +23,14 @@ ComponentWithComputed({
 
   computed: {
     deviceListCompited(data) {
+      const list = data.allRoomDeviceList ? [...data.allRoomDeviceList].sort((a, b) => a.orderNum - b.orderNum) : []
       if (data.roomSelect === '0') {
-        return data.allRoomDeviceList ? [...data.allRoomDeviceList] : []
-      } else {
-        return data.allRoomDeviceList.filter((d: Room.RoomInfo) => d.roomId === data.roomSelect)
+        return list
+      } else if (data.roomSelect === '-1') {
+        return list.filter((d: Device.DeviceItem) => !d.onLineStatus)
+      }
+      else {
+        return list.filter((d: Device.DeviceItem) => d.roomId === data.roomSelect)
       }
     },
   },
