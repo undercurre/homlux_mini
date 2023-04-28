@@ -119,6 +119,12 @@ ComponentWithComputed({
       this.updateBleDeviceListView()
     },
 
+    showMac(e: WechatMiniprogram.CustomEvent) {
+      const mac = e.currentTarget.dataset.mac
+
+      Toast(mac)
+    },
+
     // 确认添加设备
     async confirmAdd() {
       try {
@@ -138,6 +144,8 @@ ComponentWithComputed({
       // 若全部执行并等待完毕，则关闭监听、网关配网
       if (!hasWaitItem) {
         this.stopGwAddMode()
+
+        console.debug('配网结束', dayjs().format('HH:mm:ss'))
       }
       runInAction(() => {
         bleDevicesBinding.store.bleDeviceList = bleDevicesBinding.store.bleDeviceList.concat([])

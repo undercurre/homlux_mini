@@ -16,7 +16,7 @@
         </view>
 
         <scroll-view class="grow shrink h-500" scroll-y="{{true}}">
-          <view wx:for="{{bleDeviceList}}" wx:key="deviceUuid" class="flex flex-row items-center bg-white rounded-32rpx mb-24rpx px-24rpx py-20rpx">
+          <view wx:for="{{bleDeviceList}}" wx:key="deviceUuid" class="flex flex-row items-center bg-white rounded-32rpx mb-24rpx px-24rpx py-20rpx" bind:longpress="showMac" data-mac="{{item.mac}}">
             <van-checkbox use-icon-slot bind:change="toggleDevice" data-index="{{index}}">
               <view class="relative ml-10rpx my-20rpx border-4rpx border-solid border-hex-F6F6F8 rounded-full leading-0 p-10rpx">
                 <image src="{{item.icon}}" class="w-72 h-72"></image>
