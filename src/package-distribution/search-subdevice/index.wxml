@@ -70,7 +70,7 @@
         </view>
 
         <scroll-view class="grow shrink h-500" scroll-y="{{true}}">
-          <view wx:for="{{failList}}" wx:key="deviceUuid" class="flex flex-row items-center bg-white rounded-32rpx mb-24rpx px-50rpx py-40rpx">
+          <view wx:for="{{failList}}" wx:key="deviceUuid" class="flex flex-row items-center bg-white rounded-32rpx mb-24rpx px-50rpx py-40rpx" bind:longpress="showMac" data-mac="{{item.mac}}">
             <view class="relative my-20rpx border-4rpx border-solid border-hex-F6F6F8 rounded-full leading-0 p-10rpx">
               <image src="{{item.icon}}" class="w-72 h-72"></image>
 
