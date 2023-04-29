@@ -29,6 +29,8 @@ const compareVersion = (v1: string, v2: string) => {
   return 0
 }
 
+let listWxs = [] as IAnyObject[] // wxs 传回的最新 list 数据
+
 Component({
   externalClasses: ['item-wrap-class'],
   options: {
@@ -76,14 +78,12 @@ Component({
     baseData: {},
     pageMetaSupport: false, // 当前版本是否支持 page-meta 标签
     platform: '', // 平台信息
-    listWxs: [] as IAnyObject[], // wxs 传回的最新 list 数据
     rows: 0, // 行数
 
     /* 渲染数据 */
     wrapStyle: '', // item-wrap 样式
     list: [] as IAnyObject[], // 渲染数据列
     dragging: false,
-
     updating: false, // 正在更新数据，不允许手势操作
   },
   methods: {
@@ -113,11 +113,11 @@ Component({
       })
     },
     listChange(e: { list: IAnyObject[] }) {
-      this.data.listWxs = e.list
+      listWxs = e.list
     },
     itemClick(e: WechatMiniprogram.TouchEvent) {
       const index = e.currentTarget.dataset.index
-      const item = this.data.listWxs[index]
+      const item = listWxs[index]
 
       this.triggerEvent('click', {
         key: item.realKey,
@@ -173,10 +173,7 @@ Component({
      *  初始化函数
      *  {listData, topSize, bottomSize, itemHeight} 参数改变需要手动调用初始化方法
      */
-    init() {
-      // 初始必须为true以绑定wxs中的函数,
-      this.setData({ dragging: true, updating: true })
-
+    init(device?: Device.DeviceItem) {
       const delItem = (item: IAnyObject, extraNode: boolean) => ({
         id: item.dragId,
         extraNode: extraNode,
@@ -226,12 +223,37 @@ Component({
       })
 
       this.data.rows = Math.ceil(list.length / columns)
+      listWxs = list
 
-      this.setData({
-        list,
-        listWxs: list,
-        wrapStyle: `height: ${this.data.rows * this.data.itemHeight}rpx`,
-      })
+      console.log('drag.init() setData', list)
+
+      if (device) {
+        const item = list.find((l) => l.id === device.deviceId)
+        const index = list.findIndex((l) => l.id === device.deviceId)
+        if (index !== -1) {
+          const diffData = {} as any
+          diffData[`list[${index}].data.onLineStatus`] = item?.data.onLineStatus
+          diffData[`list[${index}].data.select`] = item?.data.select
+          diffData[`list[${index}].data.mzgdPropertyDTOList[1].OnOff`] = item?.data.mzgdPropertyDTOList[1].OnOff
+          console.log('drag init setData diffList', diffData)
+          this.setData(diffData)
+        }
+
+        this.setData({
+          // list,
+          wrapStyle: `height: ${this.data.rows * this.data.itemHeight}rpx`,
+          dragging: true,
+          updating: true,
+        })
+      } else {
+        this.setData({
+          list,
+          wrapStyle: `height: ${this.data.rows * this.data.itemHeight}rpx`,
+          dragging: true,
+          updating: true,
+        })
+      }
+
       if (list.length === 0) return
 
       // 异步加载数据时候, 延迟执行 initDom 方法, 防止基础库 2.7.1 版本及以下无法正确获取 dom 信息
@@ -254,6 +276,7 @@ Component({
     },
   },
   ready() {
-    this.init()
+    // prof: 感觉没什么用，暂时注释
+    // this.init()
   },
 })
