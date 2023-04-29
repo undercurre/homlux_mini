@@ -28,8 +28,7 @@ ComponentWithComputed({
         return list
       } else if (data.roomSelect === '-1') {
         return list.filter((d: Device.DeviceItem) => !d.onLineStatus)
-      }
-      else {
+      } else {
         return list.filter((d: Device.DeviceItem) => d.roomId === data.roomSelect)
       }
     },
