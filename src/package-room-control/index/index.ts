@@ -204,14 +204,9 @@ ComponentWithComputed({
      * 生命周期函数--监听页面加载
      */
     async onLoad() {
-      this.setUpdatePerformanceListener({ withDataPaths: true }, (res) => {
-        console.debug(
-          'setUpdatePerformanceListener',
-          res,
-          res.pendingStartTimestamp - res.updateStartTimestamp,
-          res.updateEndTimestamp - res.updateStartTimestamp,
-        )
-      })
+      // this.setUpdatePerformanceListener({withDataPaths: true}, (res) => {
+      //   console.debug('setUpdatePerformanceListener', res, res.pendingStartTimestamp - res.updateStartTimestamp, res.updateEndTimestamp - res.updateStartTimestamp, dayjs().format('YYYY-MM-DD HH:mm:ss'))
+      // })
       // 再更新一遍数据
       showLoading()
       await this.reloadData()
@@ -781,8 +776,9 @@ ComponentWithComputed({
         })
       }
     },
-    handleDrag(e: { detail: { dragging: boolean } & Device.DeviceItem }) {
-      if (e.detail.dragging) {
+    handleLongpress(e: { detail: { dragging: boolean } & Device.DeviceItem }) {
+      console.log('handleDrag', e)
+      if (!this.data.dragging) {
         runInAction(() => {
           if (!deviceStore.editSelect.length) {
             deviceStore.editSelect = [e.detail.uniId]
@@ -794,7 +790,7 @@ ComponentWithComputed({
         // this.updateDeviceList()
       }
       this.setData({
-        dragging: e.detail.dragging,
+        dragging: true,
       })
     },
     handleLightAllSelect() {

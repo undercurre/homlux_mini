@@ -57,5 +57,8 @@ ComponentWithComputed({
     handleOfflineTap(e: WechatMiniprogram.TouchEvent) {
       this.triggerEvent('offlineTap', e.detail)
     },
+    handleLongPress(e: WechatMiniprogram.TouchEvent) {
+      this.triggerEvent('cardLongpress', e.detail)
+    },
   },
 })
