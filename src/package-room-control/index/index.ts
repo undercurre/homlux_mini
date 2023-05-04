@@ -15,7 +15,7 @@ import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { controlDevice, saveDeviceOrder, execScene } from '../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
-import { storage, emitter, WSEventType } from '../../utils/index'
+import { showLoading, hideLoading, storage, emitter, WSEventType } from '../../utils/index'
 import { maxColorTempK, minColorTempK, proName, proType } from '../../config/index'
 
 /** 接口请求节流定时器，定时时间2s */
@@ -296,6 +296,7 @@ ComponentWithComputed({
       }
     },
     async reloadData() {
+      showLoading()
       try {
         await Promise.all([
           // deviceStore.updateAllRoomDeviceList(),
@@ -307,6 +308,7 @@ ComponentWithComputed({
       } finally {
         wx.stopPullDownRefresh()
       }
+      hideLoading()
     },
 
     // 页面滚动
