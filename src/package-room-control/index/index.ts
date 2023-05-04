@@ -203,8 +203,13 @@ ComponentWithComputed({
      * 生命周期函数--监听页面加载
      */
     onLoad() {
-      this.setUpdatePerformanceListener({withDataPaths: true}, (res) => {
-        console.debug('setUpdatePerformanceListener', res, res.pendingStartTimestamp - res.updateStartTimestamp, res.updateEndTimestamp - res.updateStartTimestamp)
+      this.setUpdatePerformanceListener({ withDataPaths: true }, (res) => {
+        console.debug(
+          'setUpdatePerformanceListener',
+          res,
+          res.pendingStartTimestamp - res.updateStartTimestamp,
+          res.updateEndTimestamp - res.updateStartTimestamp,
+        )
       })
       // 再更新一遍数据
       this.reloadData()
@@ -574,11 +579,13 @@ ComponentWithComputed({
     /** 灯具开关点击 */
     async handleLightPowerToggle(e: { detail: Device.DeviceItem & { clientRect: WechatMiniprogram.ClientRect } }) {
       const device = deviceStore.deviceList.find((device) => device.deviceId === e.detail.deviceId)!
-      const OnOff = device.mzgdPropertyDTOList['1'].OnOff
-      runInAction(() => {
-        device.mzgdPropertyDTOList['1'].OnOff = OnOff ? 0 : 1
-        deviceStore.deviceList = [...deviceStore.deviceList]
-      })
+      const lightIndex = this.data.lightList.findIndex((l) => l.deviceId === e.detail.deviceId)
+      const OldOnOff = device.mzgdPropertyDTOList['1'].OnOff
+
+      const diffData = {} as IAnyObject
+      diffData[`lightList[${lightIndex}].mzgdPropertyDTOList[1].OnOff`] = OldOnOff ? 0 : 1
+      this.setData(diffData)
+
       // prof 疑似重复更新，暂时注释
       // this.updateDeviceList()
       const res = await controlDevice({
@@ -594,10 +601,9 @@ ComponentWithComputed({
         ],
       })
       if (!res.success) {
-        runInAction(() => {
-          device.mzgdPropertyDTOList['1'].OnOff = OnOff
-          deviceStore.deviceList = [...deviceStore.deviceList]
-        })
+        diffData[`lightList[${lightIndex}].mzgdPropertyDTOList[1].OnOff`] = OldOnOff
+        this.setData(diffData)
+
         Toast('控制失败')
       }
       this.updateDeviceList(e.detail)
