@@ -15,7 +15,7 @@ import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { controlDevice, saveDeviceOrder, execScene } from '../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
-import { showLoading, hideLoading, storage, emitter, WSEventType } from '../../utils/index'
+import { storage, emitter, WSEventType } from '../../utils/index'
 import { maxColorTempK, minColorTempK, proName, proType } from '../../config/index'
 
 /** 接口请求节流定时器，定时时间2s */
@@ -72,7 +72,7 @@ ComponentWithComputed({
     dragging: false,
     /** 拖动过程中是否有数据更新，拖动完成后判断是否更新列表 */
     hasUpdate: false,
-    ssList: [] as string[]
+    ssList: [] as string[],
   },
 
   computed: {
@@ -292,7 +292,6 @@ ComponentWithComputed({
       }
     },
     async reloadData() {
-      showLoading()
       try {
         await Promise.all([
           // deviceStore.updateAllRoomDeviceList(),
@@ -304,7 +303,6 @@ ComponentWithComputed({
       } finally {
         wx.stopPullDownRefresh()
       }
-      hideLoading()
     },
 
     // 页面滚动
@@ -527,7 +525,7 @@ ComponentWithComputed({
             deviceStore.selectList = [...deviceStore.selectList]
           })
           this.setData({
-            ssList: [...deviceStore.selectList]
+            ssList: [...deviceStore.selectList],
           })
         } else {
           if (isCheck || isCheck === undefined) {
@@ -543,7 +541,7 @@ ComponentWithComputed({
           const index = deviceStore.selectList.findIndex((item: string) => item === e.detail.deviceId)
           deviceStore.selectList.splice(index, 1)
           this.setData({
-            ssList: [...deviceStore.selectList]
+            ssList: [...deviceStore.selectList],
           })
 
           runInAction(() => {
@@ -567,7 +565,7 @@ ComponentWithComputed({
         } else {
           if (isCheck || isCheck === undefined) {
             this.setData({
-              ssList: [...deviceStore.selectList, e.detail.deviceId]
+              ssList: [...deviceStore.selectList, e.detail.deviceId],
             })
             runInAction(() => {
               deviceStore.selectList = [...deviceStore.selectList, e.detail.deviceId]
