@@ -17,6 +17,7 @@ import { controlDevice, saveDeviceOrder, execScene } from '../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
 import { storage, emitter, WSEventType } from '../../utils/index'
 import { maxColorTempK, minColorTempK, proName, proType } from '../../config/index'
+import dayjs from 'dayjs'
 
 /** 接口请求节流定时器，定时时间2s */
 let requestThrottleTimer = 0
@@ -203,9 +204,9 @@ ComponentWithComputed({
      * 生命周期函数--监听页面加载
      */
     onLoad() {
-      this.setUpdatePerformanceListener({withDataPaths: true}, (res) => {
-        console.debug('setUpdatePerformanceListener', res, res.pendingStartTimestamp - res.updateStartTimestamp, res.updateEndTimestamp - res.updateStartTimestamp)
-      })
+      // this.setUpdatePerformanceListener({withDataPaths: true}, (res) => {
+      //   console.debug('setUpdatePerformanceListener', res, res.pendingStartTimestamp - res.updateStartTimestamp, res.updateEndTimestamp - res.updateStartTimestamp, dayjs().format('YYYY-MM-DD HH:mm:ss'))
+      // })
       // 再更新一遍数据
       this.reloadData()
       emitter.on('wsReceive', async (e) => {
@@ -293,7 +294,7 @@ ComponentWithComputed({
     async reloadData() {
       try {
         await Promise.all([
-          // deviceStore.updateAllRoomDeviceList(),
+          deviceStore.updateAllRoomDeviceList(),
           deviceStore.updateSubDeviceList(),
           sceneStore.updateSceneList(),
           sceneStore.updateAllRoomSceneList(),
@@ -762,8 +763,9 @@ ComponentWithComputed({
         })
       }
     },
-    handleDrag(e: { detail: { dragging: boolean } & Device.DeviceItem }) {
-      if (e.detail.dragging) {
+    handleLongpress(e: { detail: { dragging: boolean } & Device.DeviceItem }) {
+      console.log('handleDrag', e)
+      if (!this.data.dragging) {
         runInAction(() => {
           if (!deviceStore.editSelect.length) {
             deviceStore.editSelect = [e.detail.uniId]
@@ -775,7 +777,7 @@ ComponentWithComputed({
         // this.updateDeviceList()
       }
       this.setData({
-        dragging: e.detail.dragging,
+        dragging: true,
       })
     },
     handleLightAllSelect() {
