@@ -15,7 +15,7 @@ import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { controlDevice, saveDeviceOrder, execScene } from '../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
-import { storage, emitter, WSEventType } from '../../utils/index'
+import { showLoading, hideLoading, storage, emitter, WSEventType } from '../../utils/index'
 import { maxColorTempK, minColorTempK, proName, proType } from '../../config/index'
 import dayjs from 'dayjs'
 
@@ -73,6 +73,7 @@ ComponentWithComputed({
     dragging: false,
     /** 拖动过程中是否有数据更新，拖动完成后判断是否更新列表 */
     hasUpdate: false,
+    ssList: [] as string[]
   },
 
   computed: {
@@ -292,6 +293,7 @@ ComponentWithComputed({
       }
     },
     async reloadData() {
+      showLoading()
       try {
         await Promise.all([
           deviceStore.updateAllRoomDeviceList(),
@@ -303,6 +305,7 @@ ComponentWithComputed({
       } finally {
         wx.stopPullDownRefresh()
       }
+      hideLoading()
     },
 
     // 页面滚动
@@ -524,6 +527,9 @@ ComponentWithComputed({
           runInAction(() => {
             deviceStore.selectList = [...deviceStore.selectList]
           })
+          this.setData({
+            ssList: [...deviceStore.selectList]
+          })
         } else {
           if (isCheck || isCheck === undefined) {
             runInAction(() => {
@@ -537,6 +543,10 @@ ComponentWithComputed({
           if (isCheck) return
           const index = deviceStore.selectList.findIndex((item: string) => item === e.detail.deviceId)
           deviceStore.selectList.splice(index, 1)
+          this.setData({
+            ssList: [...deviceStore.selectList]
+          })
+
           runInAction(() => {
             deviceStore.selectList = [...deviceStore.selectList]
           })
@@ -557,6 +567,9 @@ ComponentWithComputed({
           }
         } else {
           if (isCheck || isCheck === undefined) {
+            this.setData({
+              ssList: [...deviceStore.selectList, e.detail.deviceId]
+            })
             runInAction(() => {
               deviceStore.selectList = [...deviceStore.selectList, e.detail.deviceId]
               if (e.detail.proType === proType.light) {
@@ -575,11 +588,13 @@ ComponentWithComputed({
     /** 灯具开关点击 */
     async handleLightPowerToggle(e: { detail: Device.DeviceItem & { clientRect: WechatMiniprogram.ClientRect } }) {
       const device = deviceStore.deviceList.find((device) => device.deviceId === e.detail.deviceId)!
-      const OnOff = device.mzgdPropertyDTOList['1'].OnOff
-      runInAction(() => {
-        device.mzgdPropertyDTOList['1'].OnOff = OnOff ? 0 : 1
-        deviceStore.deviceList = [...deviceStore.deviceList]
-      })
+      const lightIndex = this.data.lightList.findIndex((l) => l.deviceId === e.detail.deviceId)
+      const OldOnOff = device.mzgdPropertyDTOList['1'].OnOff
+
+      const diffData = {} as IAnyObject
+      diffData[`lightList[${lightIndex}].mzgdPropertyDTOList[1].OnOff`] = OldOnOff ? 0 : 1
+      this.setData(diffData)
+
       // prof 疑似重复更新，暂时注释
       // this.updateDeviceList()
       const res = await controlDevice({
@@ -595,10 +610,9 @@ ComponentWithComputed({
         ],
       })
       if (!res.success) {
-        runInAction(() => {
-          device.mzgdPropertyDTOList['1'].OnOff = OnOff
-          deviceStore.deviceList = [...deviceStore.deviceList]
-        })
+        diffData[`lightList[${lightIndex}].mzgdPropertyDTOList[1].OnOff`] = OldOnOff
+        this.setData(diffData)
+
         Toast('控制失败')
       }
       this.updateDeviceList(e.detail)

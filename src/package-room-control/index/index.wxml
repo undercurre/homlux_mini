@@ -95,10 +95,9 @@
         </view>
         <view class="w-720rpx mt-24rpx">
           <view class="flex flex-row flex-wrap">
-            <card wx:for="{{switchList}}" wx:key="deviceId" item="{{item}}" bind:controlTap="handleSwitchControlTapToggle" bind:cardTap="handleDeviceCardTap" bind:offlineTap="handleShowDeviceOffline">
-            </card>
+            <card wx:for="{{switchList}}" wx:key="deviceId" item="{{item}}" bind:controlTap="handleSwitchControlTapToggle" bind:cardTap="handleDeviceCardTap" bind:offlineTap="handleShowDeviceOffline" bind:cardLongpress="handleLongpress"> </card>
           </view>
-<!--           
+          <!--           
           <drag id="drag-switch" columns="{{4}}" list-data="{{switchList}}" scroll-top="{{scrollTop}}" item-height="{{240}}" generic:item="card" bind:sortend="handleSwitchSortEnd" bind:controlTap="handleSwitchControlTapToggle" bind:cardTap="handleDeviceCardTap" bind:offlineTap="handleShowDeviceOffline" bind:drag="handleDrag"></drag> -->
         </view>
       </view>
@@ -117,7 +116,7 @@
 <view wx:else class="h-64rpx" bindtap="handleScreenTap" bindtouchmove="handleScreenTap"></view>
 
 <!-- 设备控制弹窗 -->
-<device-control-popup popup="{{controlPopup}}" bind:popMove="handlePopUp" bind:updateList="updateDeviceList"></device-control-popup>
+<device-control-popup popup="{{controlPopup}}" ssList="{{ssList}}" bind:popMove="handlePopUp" bind:updateList="updateDeviceList"></device-control-popup>
 <before-add-scene-popup show="{{showBeforeAddScenePopup}}" bind:close="handleBeforeAddScenePopupClose" bind:next="handleBeforeAddScenePopupNext" bind:delete="handleBeforeAddScenePopupDelete" bind:edit="handleSceneActionEdit" />
 <add-scene-popup actions="{{addSceneActions}}" show="{{showAddScenePopup}}" bind:close="handleAddScenePopupClose" bind:addSuccess="handleShowAddSceneSuccess" bind:return="handleAddScenePopupReturn" />
 <batch-edit bind:updateList="updateDeviceList" bind:roomMove="handleRoomMoveSuccess"></batch-edit>
