@@ -140,3 +140,10 @@ export function setCurrentEnv() {
 export function isAndroid() {
   return deviceInfo.platform === 'android'
 }
+
+export function isAndroid10Plus() {
+  const systemVersion = parseInt(deviceInfo.system.toLowerCase().replace(deviceInfo.platform, ''))
+  const isAndroid10Plus = isAndroid() && systemVersion >= 10 // 判断是否Android10+或者是鸿蒙
+
+  return isAndroid10Plus
+}

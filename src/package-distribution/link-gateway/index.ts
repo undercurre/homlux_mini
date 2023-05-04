@@ -4,12 +4,15 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { queryDeviceOnlineStatus, bindDevice } from '../../apis/index'
 import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
-import { WifiSocket, getCurrentPageParams, strUtil, isAndroid } from '../../utils/index'
+import { WifiSocket, getCurrentPageParams, strUtil, isAndroid, isAndroid10Plus } from '../../utils/index'
 import { stepListForBind, stepListForChangeWiFi } from './conifg'
 
 let start = 0
 
 const gatewayStatus = { method: '' }
+
+// 埋点数据存储
+let reportInfo: IAnyObject = {}
 
 ComponentWithComputed({
   options: {
@@ -220,10 +223,11 @@ ComponentWithComputed({
     },
 
     async initWifi() {
-      start = Date.now()
+      reportInfo = {}
+
       const startRes = await wx.startWifi()
 
-      console.debug('startWifi', startRes, '开启wifi模块用时：', Date.now() - start)
+      console.log('startWifi', startRes)
 
       if (isAndroid()) {
         // 无法访问互联网的情况下，wx.getWifiList()调用不成功,猜测微信存在查询外网接口信息的流程，堵塞流程，
@@ -233,17 +237,13 @@ ComponentWithComputed({
         console.log('wifiListRes', wifiListRes)
       }
 
-      const deviceInfo = wx.getDeviceInfo()
-
-      const systemVersion = parseInt(deviceInfo.system.toLowerCase().replace(deviceInfo.platform, ''))
-      const isAndroid10Plus = isAndroid() && systemVersion >= 10 // 判断是否Android10+或者是鸿蒙
+      start = Date.now()
 
       this.data._socket = new WifiSocket({ ssid: this.data.apSSID })
 
       const isConnect = await this.data._socket.isConnectDeviceWifi()
 
-      if (!isAndroid10Plus || isConnect) {
-        console.log('isAndroid10Plus', systemVersion)
+      if (!isAndroid10Plus() || isConnect) {
         this.connectWifi()
       } else {
         this.setData({
@@ -274,6 +274,8 @@ ComponentWithComputed({
         if (!connectRes.success) {
           throw connectRes
         }
+
+        reportInfo.connect_wifi_time = Date.now() - now
 
         const initRes = await this.data._socket.init()
 

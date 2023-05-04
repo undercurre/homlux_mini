@@ -7,7 +7,6 @@ import { sendCmdAddSubdevice, bindDevice } from '../../apis/index'
 import { IBleDevice } from './typings'
 
 type StatusName = 'linking' | 'error'
-let deviceNum = 0
 
 ComponentWithComputed({
   options: {
@@ -36,8 +35,6 @@ ComponentWithComputed({
 
       pageParams.deviceName = pageParams.deviceName || '子设备'
       pageParams.deviceIcon = pageParams.deviceIcon || ''
-
-      deviceNum = deviceBinding.store.allRoomDeviceList.filter((item) => item.proType === pageParams.proType).length // 数量
 
       this.setData({
         pageParams,
@@ -227,13 +224,21 @@ ComponentWithComputed({
         activeIndex: 2,
       })
 
-      const { mac } = this.data.pageParams
+      const { mac, proType, modelId } = this.data.pageParams
       let { deviceName } = this.data.pageParams
 
       const existDevice = deviceBinding.store.allRoomDeviceList.find((item) => item.deviceId === mac)
 
-      // 强绑情况下，取旧命名
-      deviceName = existDevice ? existDevice.deviceName : deviceName + (deviceNum > 0 ? ++deviceNum : '')
+      // 重新绑定同一家庭情况下，取旧命名
+      if (existDevice) {
+        deviceName = existDevice.deviceName
+      } else {
+        let bindNum = deviceBinding.store.allRoomDeviceList.filter(
+          (item) => item.proType === proType && item.productId === modelId,
+        ).length // 已绑定的相同设备数量
+  
+        deviceName = deviceName + (bindNum > 0 ? ++bindNum : '')
+      }
 
       const res = await bindDevice({
         deviceId: this.data.pageParams.mac,

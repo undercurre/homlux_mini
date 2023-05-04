@@ -40,8 +40,8 @@ export const bleDevicesStore = observable({
               bleDevicesStore.bleDeviceList = bleDevicesStore.bleDeviceList.concat([])
             })
           }
-          // localName为homlux_ble且过滤【发现过的】&&【处于未配网】的设备
-          return item.localName && item.localName.includes('homlux_ble') && !foundItem
+          // localName为homlux_ble且过滤【已经显示在列表的】、【蓝牙信号值低于-90】的设备
+          return item.localName && item.localName.includes('homlux_ble') && !foundItem && item.RSSI > -90
         })
         .map((item) => getBleDeviceBaseInfo(item))
       // 过滤已经配网的设备
@@ -49,7 +49,7 @@ export const bleDevicesStore = observable({
       // 但由于丢包情况，设备本地状态不可靠，需要查询云端是否存在该设备的绑定状态（是否存在家庭绑定关系）结合判断是否真正配网
 
       deviceList.forEach(async (item) => {
-        // 配网状态没变化的同一设备不再查询
+        // 设备配网状态没变化的同一设备不再查询
         if (
           _foundList.find(
             (foundItem) => foundItem.deviceUuid === item.deviceUuid && foundItem.isConfig === item.isConfig,

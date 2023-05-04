@@ -236,8 +236,9 @@ ComponentWithComputed({
 
         const iteratorFn = async (item: IBleDevice) => {
           console.info('开始蓝牙任务：', item.mac, item)
-          console.debug('当前蓝牙指令任务：', tempList)
           tempList.push(item.mac)
+          console.debug('当前蓝牙指令任务：', JSON.stringify(tempList), dayjs().format('HH:mm:ss'))
+
           wx.reportEvent('add_device', {
             pro_type: item.proType,
             model_id: item.productId,
@@ -255,7 +256,7 @@ ComponentWithComputed({
 
           tempList.splice(index, 1)
 
-          console.debug('当前蓝牙指令任务：', tempList)
+          console.debug('当前蓝牙指令任务：', JSON.stringify(tempList), dayjs().format('HH:mm:ss'))
         }
 
         console.debug('所有蓝牙指令任务结束', dayjs().format('HH:mm:ss'))
@@ -271,7 +272,7 @@ ComponentWithComputed({
       const timeout = 60 // 等待绑定推送，超时60s
       // 过滤刚出厂设备刚起电时会默认进入配网状态期间，被网关绑定的情况，这种当做成功配网，无需再下发配网指令，否则可能会导致zigbee入网失败
       if (bleDevice.isConfig !== '02') {
-        const configRes = await bleDevice.client.getBleStatus()
+        const configRes = await bleDevice.client.getZigbeeState()
 
         console.log('configRes', configRes)
 
@@ -431,6 +432,22 @@ ComponentWithComputed({
       bleDeviceItem.requesting = false
 
       this.updateBleDeviceListView()
+    },
+
+     /**
+     * 试一试
+     */
+    async getLightState(event: WechatMiniprogram.CustomEvent) {
+      const { id } = event.currentTarget.dataset
+
+      const bleDeviceItem = bleDevicesBinding.store.bleDeviceList.find((item) => item.deviceUuid === id) as IBleDevice
+
+      const res = await bleDeviceItem.client.getZigbeeState()
+
+      // const res = await bleDeviceItem.client.getLightState()
+
+      console.log('getLightState-res', res)
+      bleDeviceItem.client.close() // 发送指令完毕后需要断开已连接的设备，否则连接数满了之后无法连接新的设备
     },
 
     // 重新添加

@@ -26,6 +26,8 @@ const ControlSubType = {
   haveTry: [0x05],
   CTL_CONFIG_ZIGBEE_NET: [0x00, 0x00, 0x00, 0x00],
   QUERY_ZIGBEE_STATE: [0x01],
+  QUREY_ONOFF_STATUS: [0x02],
+  QUREY_LIGHT_STATUS: [0x03],
 } as const
 
 export class BleClient {
@@ -36,7 +38,7 @@ export class BleClient {
 
   deviceUuid: string
   serviceId = 'BAE55B96-7D19-458D-970C-50613D801BC9'
-  characteristicId = ''
+  characteristicId = '372E289F-1F9C-40C9-B7F0-5742FA2A6DA4'
   msgId = 0
 
   constructor(params: { mac: string; deviceUuid: string }) {
@@ -91,7 +93,7 @@ export class BleClient {
 
     this.isConnected = true
 
-    // 连接成功，获取服务
+    // 连接成功，获取服务,IOS无法跳过该接口，否则后续接口会报100004，找不到服务
     const bleServiceRes = await wx
       .getBLEDeviceServices({
         deviceId: this.deviceUuid,
@@ -102,6 +104,7 @@ export class BleClient {
 
     console.log(`mac: ${this.mac}`, 'bleServiceRes', bleServiceRes)
 
+    // IOS无法跳过该接口，否则后续接口会报10005	no characteristic	没有找到指定特征
     const characRes = await wx
       .getBLEDeviceCharacteristics({
         deviceId: this.deviceUuid,
@@ -111,14 +114,13 @@ export class BleClient {
         throw err
       })
 
-    const characteristicId = characRes.characteristics[0].uuid
-    this.characteristicId = characteristicId
+    console.log(`mac: ${this.mac}`, 'characRes', characRes)
 
     const notifyRes = await wx
       .notifyBLECharacteristicValueChange({
         deviceId: this.deviceUuid,
         serviceId: this.serviceId,
-        characteristicId,
+        characteristicId: this.characteristicId,
         state: true,
         type: 'notification',
       })
@@ -283,10 +285,13 @@ export class BleClient {
     }
   }
 
-  async getBleStatus() {
-    const res = await this.sendCmd({ cmdType: 'DEVICE_CONTROL', subType: 'QUERY_ZIGBEE_STATE' })
+  /**
+   * 查询ZigBee网关连接状态
+   */
+  async getZigbeeState() {
+    const res = await this.sendCmd({ cmdType: 'DEVICE_INFO_QUREY', subType: 'QUERY_ZIGBEE_STATE' })
 
-    console.log(`mac: ${this.mac}`, 'getBleStatus', res)
+    console.log(`mac: ${this.mac}`, 'getZigbeeState', res)
 
     let isConfig = ''
 
@@ -299,6 +304,20 @@ export class BleClient {
       result: {
         isConfig,
       },
+    }
+  }
+
+  /**
+   * 查询灯光状态
+   */
+  async getLightState() {
+    const res = await this.sendCmd({ cmdType: 'DEVICE_INFO_QUREY', subType: 'QUREY_LIGHT_STATUS' })
+
+    console.log(`mac: ${this.mac}`, 'getLightState', res)
+
+    return {
+      ...res,
+      result: {},
     }
   }
 }

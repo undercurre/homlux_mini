@@ -581,6 +581,7 @@ ComponentWithComputed({
           deviceName: this.data.deviceInfo.deviceName,
           deviceIcon: this.data.deviceInfo.icon,
           proType: proType,
+          modelId
         }),
       })
     },

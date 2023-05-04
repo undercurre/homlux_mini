@@ -41,6 +41,8 @@
 
             <view class="shrink-0">
               <van-button plain type="primary" size="small" round bind:click="tryControl" data-id="{{item.deviceUuid}}" loading="{{item.requesting}}" disabled="{{item.requesting}}" custom-style="background-color: rgba(72,143,255,0.10);border-radius: 12rpx; font-size: 24rpx; width: 120rpx;padding: 0;">找一找</van-button>
+
+              <!-- <van-button plain type="primary" size="small" round bind:click="getLightState" data-id="{{item.deviceUuid}}"  custom-style="background-color: rgba(72,143,255,0.10);border-radius: 12rpx; font-size: 24rpx; width: 120rpx;padding: 0;">状态</van-button> -->
             </view>
           </view>
         </scroll-view>
