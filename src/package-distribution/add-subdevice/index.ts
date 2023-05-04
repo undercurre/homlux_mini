@@ -236,7 +236,7 @@ ComponentWithComputed({
         let bindNum = deviceBinding.store.allRoomDeviceList.filter(
           (item) => item.proType === proType && item.productId === modelId,
         ).length // 已绑定的相同设备数量
-  
+
         deviceName = deviceName + (bindNum > 0 ? ++bindNum : '')
       }
 

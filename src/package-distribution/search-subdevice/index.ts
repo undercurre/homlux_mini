@@ -434,7 +434,7 @@ ComponentWithComputed({
       this.updateBleDeviceListView()
     },
 
-     /**
+    /**
      * 试一试
      */
     async getLightState(event: WechatMiniprogram.CustomEvent) {
