@@ -24,6 +24,7 @@ let hasUpdateInRequestTimer = false
 /** 界面更新节流定时器，定时时间500ms */
 let updateThrottleTimer = 0
 let hasUpdateInUpdateTimer = false
+
 ComponentWithComputed({
   behaviors: [
     BehaviorWithStore({ storeBindings: [userBinding, roomBinding, deviceBinding, sceneBinding, homeBinding] }),
@@ -192,9 +193,7 @@ ComponentWithComputed({
         deviceStore.updateSubDeviceList().then(() => {
           this.updateDeviceList()
         })
-        this.setData({
-          hasUpdate: false,
-        })
+        this.data.hasUpdate = false
       }
     },
   },
@@ -226,7 +225,7 @@ ComponentWithComputed({
               ...deviceInRoom.mzgdPropertyDTOList[e.result.eventData.ep],
               ...e.result.eventData.event,
             }
-            this.updateDeviceList()
+            this.updateDeviceList(deviceInHouse)
             // 直接更新store里的数据，更新完退出回调函数
             return
           }
@@ -336,7 +335,7 @@ ComponentWithComputed({
         showDeviceOffline: false,
       })
     },
-    updateDeviceListFn() {
+    updateDeviceListFn(device?: Device.DeviceItem) {
       const flattenList = deviceStore.deviceFlattenList
       const lightList = flattenList
         .filter((device) => device.proType === proType.light)
@@ -357,35 +356,55 @@ ComponentWithComputed({
       // 接口返回开关面板数据以设备为一个整体，需要前端拆开后排序
       lightList.sort((a, b) => a.orderNum - b.orderNum)
       switchList.sort((a, b) => a.switchInfoDTOList[0].orderNum - b.switchInfoDTOList[0].orderNum)
-      this.setData({
-        lightList,
-        switchList,
-      })
+
+      console.log('updateDeviceListFn device', device)
+      if (device) {
+        // 更细致的diff方法
+        const diffData = {} as IAnyObject
+
+        if (device.proType === proType.light) {
+          const item = lightList.find((l) => l.deviceId === device.deviceId)
+          const index = lightList.findIndex((l) => l.deviceId === device.deviceId)
+          diffData[`lightList[${index}].onLineStatus`] = item?.onLineStatus
+          diffData[`lightList[${index}].select`] = item?.select
+        } else {
+          const item = switchList.find((s) => s.deviceId === device.deviceId)
+          const index = switchList.findIndex((s) => s.deviceId === device.deviceId)
+          diffData[`switchList[${index}].onLineStatus`] = item?.onLineStatus
+          diffData[`switchList[${index}].select`] = item?.select
+        }
+        console.log('updateDeviceListFn device setData diffList', diffData)
+        this.setData(diffData)
+      } else {
+        this.setData({
+          lightList,
+          switchList,
+        })
+      }
       // 不能立刻执行init，否则会因为拖拽排序反复抖动
       setTimeout(() => {
         const dragLight = this.selectComponent('#drag-light')
         if (dragLight && lightList.length > 0) {
-          dragLight.init()
+          dragLight.init(device)
         }
         const dragSwitch = this.selectComponent('#drag-switch')
         if (dragSwitch && switchList.length > 0) {
-          dragSwitch.init()
+          dragSwitch.init(device)
         }
       }, 100)
     },
     /** store设备列表数据更新到界面 */
-    updateDeviceList() {
+    updateDeviceList(device?: Device.DeviceItem) {
+      // 正在拖拽，先标记更新，拖拽结束后再处理
       if (this.data.dragging) {
-        this.setData({
-          hasUpdate: true,
-        })
+        this.data.hasUpdate = true
         return
       }
       if (!updateThrottleTimer) {
-        this.updateDeviceListFn()
+        this.updateDeviceListFn(device)
         updateThrottleTimer = setTimeout(() => {
           if (hasUpdateInUpdateTimer) {
-            this.updateDeviceListFn()
+            this.updateDeviceListFn(device)
           }
           updateThrottleTimer = 0
           hasUpdateInUpdateTimer = false
@@ -547,7 +566,7 @@ ComponentWithComputed({
         }
       }
       this.updateSelectType()
-      this.updateDeviceList()
+      this.updateDeviceList(e.detail)
     },
     /** 灯具开关点击 */
     async handleLightPowerToggle(e: { detail: Device.DeviceItem & { clientRect: WechatMiniprogram.ClientRect } }) {
@@ -557,7 +576,8 @@ ComponentWithComputed({
         device.mzgdPropertyDTOList['1'].OnOff = OnOff ? 0 : 1
         deviceStore.deviceList = [...deviceStore.deviceList]
       })
-      this.updateDeviceList()
+      // prof 疑似重复更新，暂时注释
+      // this.updateDeviceList()
       const res = await controlDevice({
         topic: '/subdevice/control',
         deviceId: e.detail.gatewayId,
@@ -577,7 +597,7 @@ ComponentWithComputed({
         })
         Toast('控制失败')
       }
-      this.updateDeviceList()
+      this.updateDeviceList(e.detail)
       // 首页需要更新灯光打开个数
       homeStore.updateCurrentHomeDetail()
     },
@@ -641,7 +661,8 @@ ComponentWithComputed({
           device.mzgdPropertyDTOList[ep].OnOff = OnOff ? 0 : 1
           deviceStore.deviceList = [...deviceStore.deviceList]
         })
-        this.updateDeviceList()
+        // prof 疑似重复更新，暂时注释
+        // this.updateDeviceList()
         const res = await controlDevice({
           topic: '/subdevice/control',
           deviceId: e.detail.gatewayId,
@@ -661,7 +682,7 @@ ComponentWithComputed({
           })
           Toast('控制失败')
         }
-        this.updateDeviceList()
+        this.updateDeviceList(e.detail)
       }
     },
     handlePopUp(e: { detail: 'up' | 'down' }) {

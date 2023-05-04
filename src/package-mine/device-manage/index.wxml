@@ -4,7 +4,7 @@
   <!-- 标题 -->
   <nav-bar title="设备管理" left-arrow show-go-home bind:leftTap="goBack"></nav-bar>
 
-  <room-tabs class="px-32rpx mt-32rpx" sDeviceList="{{allRoomDeviceList}}" bind:roomSelect="handleRoomSelect" showGateway="{{true}}"></room-tabs>
+  <room-tabs class="px-32rpx mt-32rpx" sDeviceList="{{allRoomDeviceList}}" bind:roomSelect="handleRoomSelect" showGateway="{{true}}" showOfflineTab="{{true}}"></room-tabs>
 
   <!-- 无设备 -->
   <view wx:if="{{deviceListCompited.length === 0}}" class="w-750rpx h-100vh mt-80rpx flex flex-col items-center">
@@ -22,7 +22,10 @@
             </view>
             <view class="h-96rpx flex flex-col justify-center items-start ml-32rpx">
               <text class="text-black-2a text-32rpx">{{item.deviceName}}</text>
-              <text class="text-black-tips text-28rpx mt-8rpx">{{item.roomName}}{{item.onLineStatus ? '' : ' | 离线'}}</text>
+              <view>
+                <text class="text-black-tips text-28rpx mt-8rpx">{{item.roomName}}{{item.onLineStatus ? '' : ' | '}}</text>
+                <text wx:if="{{!item.onLineStatus}}" class="text-28rpx text-hex-fbbb32">离线</text>
+              </view>
             </view>
           </view>
           <view slot="right-icon" class="h-96rpx flex-center">

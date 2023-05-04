@@ -252,7 +252,7 @@ ComponentWithComputed({
 
         for await (const value of asyncPool(3, list, iteratorFn)) {
           console.info('蓝牙任务结束：', value.mac)
-          let index = tempList.findIndex(item => item === value.mac)
+          const index = tempList.findIndex((item) => item === value.mac)
 
           tempList.splice(index, 1)
 
