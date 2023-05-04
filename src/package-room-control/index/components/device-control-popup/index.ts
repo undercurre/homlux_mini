@@ -56,6 +56,10 @@ ComponentWithComputed({
         )
       },
     },
+    ssList: {
+      type: Array,
+      value: [] as string[]
+    }
   },
 
   /**
@@ -136,9 +140,9 @@ ComponentWithComputed({
       return false
     },
     isSelectMultiSwitch(data) {
-      if (data.selectList) {
+      if (data.ssList) {
         let count = 0
-        data.selectList.forEach((deviceId: string) => {
+        data.ssList.forEach((deviceId: string) => {
           if (deviceId.includes(':')) {
             count++
           }
@@ -157,9 +161,9 @@ ComponentWithComputed({
       })
     },
     isEditSelectMode(value) {
-      this.popupMove(deviceStore.selectList, value)
+      this.popupMove(this.data.ssList, value)
     },
-    selectList(value) {
+    ssList(value) {
       this.popupMove(value, deviceStore.isEditSelectMode)
     },
     /**
@@ -290,7 +294,7 @@ ComponentWithComputed({
       }
     },
     updateCurrentLinkTypeDesc() {
-      if (deviceStore.selectList) {
+      if (this.data.ssList) {
         let mode = '未关联'
         const switchUniId = deviceStore.selectList.find((uniId) => uniId.includes(':'))
         if (switchUniId) {

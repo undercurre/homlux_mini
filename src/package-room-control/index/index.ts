@@ -72,6 +72,7 @@ ComponentWithComputed({
     dragging: false,
     /** 拖动过程中是否有数据更新，拖动完成后判断是否更新列表 */
     hasUpdate: false,
+    ssList: [] as string[]
   },
 
   computed: {
@@ -530,6 +531,9 @@ ComponentWithComputed({
           runInAction(() => {
             deviceStore.selectList = [...deviceStore.selectList]
           })
+          this.setData({
+            ssList: [...deviceStore.selectList]
+          })
         } else {
           if (isCheck || isCheck === undefined) {
             runInAction(() => {
@@ -543,6 +547,10 @@ ComponentWithComputed({
           if (isCheck) return
           const index = deviceStore.selectList.findIndex((item: string) => item === e.detail.deviceId)
           deviceStore.selectList.splice(index, 1)
+          this.setData({
+            ssList: [...deviceStore.selectList]
+          })
+
           runInAction(() => {
             deviceStore.selectList = [...deviceStore.selectList]
           })
@@ -563,6 +571,9 @@ ComponentWithComputed({
           }
         } else {
           if (isCheck || isCheck === undefined) {
+            this.setData({
+              ssList: [...deviceStore.selectList, e.detail.deviceId]
+            })
             runInAction(() => {
               deviceStore.selectList = [...deviceStore.selectList, e.detail.deviceId]
               if (e.detail.proType === proType.light) {
