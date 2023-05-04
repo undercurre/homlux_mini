@@ -17,7 +17,6 @@ import { controlDevice, saveDeviceOrder, execScene } from '../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
 import { showLoading, hideLoading, storage, emitter, WSEventType } from '../../utils/index'
 import { maxColorTempK, minColorTempK, proName, proType } from '../../config/index'
-import dayjs from 'dayjs'
 
 /** 接口请求节流定时器，定时时间2s */
 let requestThrottleTimer = 0
@@ -296,7 +295,7 @@ ComponentWithComputed({
       showLoading()
       try {
         await Promise.all([
-          deviceStore.updateAllRoomDeviceList(),
+          // deviceStore.updateAllRoomDeviceList(),
           deviceStore.updateSubDeviceList(),
           sceneStore.updateSceneList(),
           sceneStore.updateAllRoomSceneList(),
