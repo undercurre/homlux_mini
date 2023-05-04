@@ -41,7 +41,7 @@
   "preloadRule": {
     "pages/index/index": {
       "network": "all",
-      "packages": ["package-distribution"]
+      "packages": ["package-room-control", "package-distribution"]
     }
   },
   "tabBar": {

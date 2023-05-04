@@ -496,6 +496,7 @@ ComponentWithComputed({
       e: { detail: Device.DeviceItem & { clientRect: WechatMiniprogram.ClientRect } },
       isCheck?: boolean,
     ) {
+      console.log('handleDeviceCardTap', e)
       if (deviceStore.selectList.length === 0) {
         this.setData({
           popupPlaceholder: true,
