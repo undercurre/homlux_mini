@@ -58,8 +58,8 @@ ComponentWithComputed({
     },
     ssList: {
       type: Array,
-      value: [] as string[]
-    }
+      value: [] as string[],
+    },
   },
 
   /**
