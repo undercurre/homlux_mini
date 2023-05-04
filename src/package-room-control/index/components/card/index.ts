@@ -37,7 +37,7 @@ ComponentWithComputed({
    */
   methods: {
     handleControlTap(e: WechatMiniprogram.TouchEvent) {
-      this.triggerEvent('controlTap', e.detail)
+      this.triggerEvent('controlTap', Object.assign({}, this.data.item))
     },
     handleCardTap(e: WechatMiniprogram.TouchEvent) {
       if (deviceStore.isEditSelectMode) {
@@ -51,14 +51,15 @@ ComponentWithComputed({
           }
         })
       } else {
-        this.triggerEvent('cardTap', e.detail)
+        this.triggerEvent('cardTap', Object.assign({}, this.data.item))
       }
     },
     handleOfflineTap(e: WechatMiniprogram.TouchEvent) {
-      this.triggerEvent('offlineTap', e.detail)
+      this.triggerEvent('offlineTap', Object.assign({}, this.data.item))
     },
     handleLongPress(e: WechatMiniprogram.TouchEvent) {
-      this.triggerEvent('cardLongpress', e.detail)
+      console.log('handleLongPress', e)
+      this.triggerEvent('cardLongpress', Object.assign({}, this.data.item))
     },
   },
 })

@@ -777,7 +777,7 @@ ComponentWithComputed({
       }
     },
     handleLongpress(e: { detail: { dragging: boolean } & Device.DeviceItem }) {
-      console.log('handleDrag', e)
+      console.log('handleLongpress', e)
       if (!this.data.dragging) {
         runInAction(() => {
           if (!deviceStore.editSelect.length) {
@@ -793,6 +793,13 @@ ComponentWithComputed({
         dragging: true,
       })
     },
+
+    exitEditMode() {
+      this.setData({
+        dragging: false,
+      })
+    },
+
     handleLightAllSelect() {
       const deviceMap = deviceStore.deviceFlattenMap
       const newList = [] as string[]

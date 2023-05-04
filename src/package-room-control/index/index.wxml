@@ -118,7 +118,7 @@
 <device-control-popup popup="{{controlPopup}}" ssList="{{ssList}}" bind:popMove="handlePopUp" bind:updateList="updateDeviceList"></device-control-popup>
 <before-add-scene-popup show="{{showBeforeAddScenePopup}}" bind:close="handleBeforeAddScenePopupClose" bind:next="handleBeforeAddScenePopupNext" bind:delete="handleBeforeAddScenePopupDelete" bind:edit="handleSceneActionEdit" />
 <add-scene-popup actions="{{addSceneActions}}" show="{{showAddScenePopup}}" bind:close="handleAddScenePopupClose" bind:addSuccess="handleShowAddSceneSuccess" bind:return="handleAddScenePopupReturn" />
-<batch-edit bind:updateList="updateDeviceList" bind:roomMove="handleRoomMoveSuccess"></batch-edit>
+<batch-edit bind:updateList="updateDeviceList" bind:roomMove="handleRoomMoveSuccess" bind:close="exitEditMode"></batch-edit>
 
 <van-toast id="van-toast" />
 <van-dialog use-slot title="{{officeDeviceInfo.deviceName}}离线" show="{{ showDeviceOffline }}" confirm-button-color="#488FFF" confirmButtonText="我知道了" bind:close="handleCloseDeviceOffice">
