@@ -15,7 +15,7 @@ import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { controlDevice, saveDeviceOrder, execScene } from '../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
-import { storage, emitter, WSEventType } from '../../utils/index'
+import { showLoading, hideLoading, storage, emitter, WSEventType } from '../../utils/index'
 import { maxColorTempK, minColorTempK, proName, proType } from '../../config/index'
 
 /** 接口请求节流定时器，定时时间2s */
@@ -203,7 +203,7 @@ ComponentWithComputed({
     /**
      * 生命周期函数--监听页面加载
      */
-    onLoad() {
+    async onLoad() {
       this.setUpdatePerformanceListener({ withDataPaths: true }, (res) => {
         console.debug(
           'setUpdatePerformanceListener',
@@ -213,7 +213,9 @@ ComponentWithComputed({
         )
       })
       // 再更新一遍数据
-      this.reloadData()
+      showLoading()
+      await this.reloadData()
+      hideLoading()
       emitter.on('wsReceive', async (e) => {
         if (e.result.eventType === WSEventType.device_property) {
           // 如果有传更新的状态数据过来，直接更新store
