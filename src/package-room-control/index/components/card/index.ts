@@ -25,8 +25,8 @@ ComponentWithComputed({
 
   computed: {
     isEditSelect(data) {
-      if (data.editSelect && data.item?.data) {
-        return data.editSelect?.includes(data.item?.data?.uniId)
+      if (data.editSelect && data.item) {
+        return data.editSelect?.includes(data.item?.uniId)
       }
       return false
     },
@@ -42,12 +42,12 @@ ComponentWithComputed({
     handleCardTap(e: WechatMiniprogram.TouchEvent) {
       if (deviceStore.isEditSelectMode) {
         runInAction(() => {
-          if (deviceStore.editSelect.includes(this.data.item?.data?.uniId)) {
-            const index = deviceStore.editSelect.findIndex((uniId) => uniId === this.data.item.data.uniId)
+          if (deviceStore.editSelect.includes(this.data.item?.uniId)) {
+            const index = deviceStore.editSelect.findIndex((uniId) => uniId === this.data.item.uniId)
             deviceStore.editSelect.splice(index, 1)
             deviceStore.editSelect = [...deviceStore.editSelect]
           } else {
-            deviceStore.editSelect = [...deviceStore.editSelect, this.data.item.data.uniId]
+            deviceStore.editSelect = [...deviceStore.editSelect, this.data.item.uniId]
           }
         })
       } else {

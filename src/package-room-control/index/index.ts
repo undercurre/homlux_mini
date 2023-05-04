@@ -203,6 +203,9 @@ ComponentWithComputed({
      * 生命周期函数--监听页面加载
      */
     onLoad() {
+      this.setUpdatePerformanceListener({withDataPaths: true}, (res) => {
+        console.debug('setUpdatePerformanceListener', res, res.pendingStartTimestamp - res.updateStartTimestamp, res.updateEndTimestamp - res.updateStartTimestamp)
+      })
       // 再更新一遍数据
       this.reloadData()
       emitter.on('wsReceive', async (e) => {
@@ -290,7 +293,7 @@ ComponentWithComputed({
     async reloadData() {
       try {
         await Promise.all([
-          deviceStore.updateAllRoomDeviceList(),
+          // deviceStore.updateAllRoomDeviceList(),
           deviceStore.updateSubDeviceList(),
           sceneStore.updateSceneList(),
           sceneStore.updateAllRoomSceneList(),
