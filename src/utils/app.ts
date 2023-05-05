@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { setEnv } from '../config/index'
 import { storage } from './storage'
 // import QQMapWX from '../lib/qqmap-wx-jssdk'
@@ -146,4 +147,15 @@ export function isAndroid10Plus() {
   const isAndroid10Plus = isAndroid() && systemVersion >= 10 // 判断是否Android10+或者是鸿蒙
 
   return isAndroid10Plus
+}
+
+
+export const Loggger = {
+  log(...args: any[]) {
+    console.log(`【${dayjs().format('HH:mm:ss.SSS')}】`, ...args)
+  },
+
+  error(...args: any[]) {
+    console.error(`【${dayjs().format('HH:mm:ss.SSS')}】`, ...args)
+  }
 }
