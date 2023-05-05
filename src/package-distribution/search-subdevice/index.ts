@@ -138,15 +138,22 @@ ComponentWithComputed({
       }
     },
 
-    updateBleDeviceListView() {
-      const hasWaitItem =
-        bleDevicesBinding.store.bleDeviceList.findIndex((item) => item.isChecked && item.status === 'waiting') >= 0
-      // 若全部执行并等待完毕，则关闭监听、网关配网
-      if (!hasWaitItem) {
-        this.stopGwAddMode()
+    /**
+     * 更新设备列表数据
+     * @param isCheckAddMode 是否需要检查网关配网状态 
+     */
+    updateBleDeviceListView(isCheckAddMode = true) {
+      if (isCheckAddMode) {
+        const hasWaitItem =
+          bleDevicesBinding.store.bleDeviceList.findIndex((item) => item.isChecked && item.status === 'waiting') >= 0
+        // 若全部执行并等待完毕，则关闭监听、网关配网
+        if (!hasWaitItem) {
+          this.stopGwAddMode()
 
-        console.debug('配网结束', dayjs().format('HH:mm:ss'))
+          console.debug('配网结束', dayjs().format('HH:mm:ss'))
+        }
       }
+
       runInAction(() => {
         bleDevicesBinding.store.bleDeviceList = bleDevicesBinding.store.bleDeviceList.concat([])
       })
@@ -419,7 +426,7 @@ ComponentWithComputed({
 
       bleDeviceItem.requesting = true
 
-      this.updateBleDeviceListView()
+      this.updateBleDeviceListView(false)
 
       const res = await bleDeviceItem.client.sendCmd({
         cmdType: 'DEVICE_CONTROL',
@@ -431,7 +438,7 @@ ComponentWithComputed({
 
       bleDeviceItem.requesting = false
 
-      this.updateBleDeviceListView()
+      this.updateBleDeviceListView(false)
     },
 
     /**
