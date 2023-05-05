@@ -18,10 +18,10 @@ export async function queryDeviceOtaUpdateList(houseId: string) {
   })
 }
 
-export async function execOtaUpdate(data: { deviceOtaList: Ota.DeviceOtaUpdateReqDTO[] }) {
+export async function execOtaUpdate(data: { deviceOtaList: Ota.DeviceOtaUpdateReqDTO[] }, options?: { loading?: boolean }) {
   return await mzaioRequest.post<{ otaProductList: Ota.OtaProduct[]; otaUpdateList: Ota.OtaUpdate[] }>({
     log: false,
-    loading: true,
+    loading: options?.loading ?? false,
     url: '/v1/device/deviceOtaUpdate',
     data,
   })

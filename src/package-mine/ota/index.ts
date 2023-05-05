@@ -90,12 +90,13 @@ ComponentWithComputed({
       })
     },
     handleUpdate() {
+      console.log('handleUpdate')
       this.setData({
         isUpdating: true,
       })
       execOtaUpdate({
         deviceOtaList: otaStore.otaUpdateList,
-      }).then((res) => {
+      }, { loading: !this.data.isUpdating }).then((res) => {
         if (res.success) {
           // 下发升级指令成功，轮询直到完成更新
           this.startPollingQuery()
@@ -109,7 +110,7 @@ ComponentWithComputed({
         Toast('测试下发OTA')
         execOtaUpdate({
           deviceOtaList: otaStore.otaUpdateList,
-        }).then((res) => {
+        }, { loading: true }).then((res) => {
           if (res.success && !this.data._pollingTimer) {
             // 下发升级指令成功，轮询直到完成更新
             this.startPollingQuery()
