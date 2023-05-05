@@ -73,7 +73,7 @@ ComponentWithComputed({
       }
       const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
       return (
-        data.deviceInfo.proType === proType.switch && data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2
+        data.deviceInfo.proType === proType.switch && data.deviceInfo.mzgdPropertyDTOList[switchId]?.ButtonMode === 2
       )
     },
     controlBtnPic(data) {
