@@ -309,9 +309,7 @@ ComponentWithComputed({
 
     // 页面滚动
     onPageScroll(e: { scrollTop: number }) {
-      this.setData({
-        scrollTop: e.scrollTop,
-      })
+      this.data.scrollTop = e.scrollTop
     },
 
     onUnload() {
