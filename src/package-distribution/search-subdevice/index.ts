@@ -5,12 +5,11 @@ import Toast from '@vant/weapp/toast/toast'
 import asyncPool from 'tiny-async-pool'
 import { homeBinding, roomBinding, homeStore } from '../../store/index'
 import { bleDevicesBinding, IBleDevice, bleDevicesStore } from '../store/bleDeviceStore'
-import { getCurrentPageParams, emitter } from '../../utils/index'
+import { getCurrentPageParams, emitter, Loggger } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { sendCmdAddSubdevice, bindDevice, batchUpdate } from '../../apis/index'
 import lottie from 'lottie-miniprogram'
 import { addDevice } from '../assets/search-subdevice/lottie/index'
-import dayjs from 'dayjs'
 
 type StatusName = 'discover' | 'requesting' | 'success' | 'error'
 
@@ -134,7 +133,7 @@ ComponentWithComputed({
 
         this.beginAddDevice(selectedList)
       } catch (err) {
-        console.log('confirmAdd-err', err)
+        Loggger.log('confirmAdd-err', err)
       }
     },
 
@@ -150,7 +149,7 @@ ComponentWithComputed({
         if (!hasWaitItem) {
           this.stopGwAddMode()
 
-          console.debug('配网结束', dayjs().format('HH:mm:ss'))
+          Loggger.log('配网结束')
         }
       }
 
@@ -199,11 +198,11 @@ ComponentWithComputed({
 
       // 子设备配网阶段，保持网关在配网状态
       if (res.success) {
-        console.log('结束网关配网状态')
+        Loggger.log('结束网关配网状态')
       }
 
       emitter.off('bind_device')
-      console.debug('关闭子设备绑定监听')
+      Loggger.log('关闭子设备绑定监听')
 
       return res
     },
@@ -219,14 +218,14 @@ ComponentWithComputed({
 
         // 监听云端推送，判断哪些子设备绑定成功
         emitter.on('bind_device', (data) => {
-          console.log('bind_device', data)
+          Loggger.log('bind_device', data)
 
           const bleDevice = bleDevicesStore.bleDeviceList.find(
             (item) => item.isChecked && item.zigbeeMac === data.deviceId,
           )
 
           if (bleDevice) {
-            console.info(bleDevice.mac, '绑定推送成功')
+            Loggger.log(bleDevice.mac, '绑定推送成功')
             this.bindBleDeviceToClound(bleDevice)
           }
         })
@@ -242,9 +241,8 @@ ComponentWithComputed({
         const tempList: string[] = []
 
         const iteratorFn = async (item: IBleDevice) => {
-          console.info('开始蓝牙任务：', item.mac, item)
           tempList.push(item.mac)
-          console.debug('当前蓝牙指令任务：', JSON.stringify(tempList), dayjs().format('HH:mm:ss'))
+          Loggger.log('开始蓝牙任务：', item.mac, '当前蓝牙指令任务：', JSON.stringify(tempList))
 
           wx.reportEvent('add_device', {
             pro_type: item.proType,
@@ -258,23 +256,21 @@ ComponentWithComputed({
         }
 
         for await (const value of asyncPool(3, list, iteratorFn)) {
-          console.info('蓝牙任务结束：', value.mac)
           const index = tempList.findIndex((item) => item === value.mac)
 
           tempList.splice(index, 1)
 
-          console.debug('当前蓝牙指令任务：', JSON.stringify(tempList), dayjs().format('HH:mm:ss'))
+          Loggger.log('蓝牙任务结束：', value.mac, '当前蓝牙指令任务：', JSON.stringify(tempList))
         }
 
-        console.debug('所有蓝牙指令任务结束', dayjs().format('HH:mm:ss'))
+        Loggger.log('所有蓝牙指令任务结束')
       } catch (err) {
-        console.log('beginAddDevice-err', err)
+        Loggger.log('beginAddDevice-err', err)
       }
     },
 
     async startZigbeeNet(bleDevice: IBleDevice) {
-      console.group(`startZigbeeNet:${bleDevice.mac}`)
-      console.log(`开始子设备配网：${bleDevice.mac}，第${3 - bleDevice.zigbeeRepeatTimes}次`)
+      Loggger.log(`开始子设备配网：${bleDevice.mac}，第${3 - bleDevice.zigbeeRepeatTimes}次`)
 
       const timeout = 60 // 等待绑定推送，超时60s
       // 过滤刚出厂设备刚起电时会默认进入配网状态期间，被网关绑定的情况，这种当做成功配网，无需再下发配网指令，否则可能会导致zigbee入网失败
@@ -286,7 +282,7 @@ ComponentWithComputed({
           setTimeout(() => {
             if (bleDevice.status === 'waiting') {
               bleDevice.status = 'fail'
-              console.error(bleDevice.mac + '绑定推送监听超时')
+              Loggger.error(bleDevice.mac + '绑定推送监听超时')
               this.updateBleDeviceListView()
             }
           }, timeout * 1000)
@@ -314,20 +310,18 @@ ComponentWithComputed({
         setTimeout(() => {
           if (bleDevice.status === 'waiting') {
             bleDevice.status = 'fail'
-            console.error(bleDevice.mac + '绑定监听超时')
+            Loggger.error(bleDevice.mac + '绑定监听超时')
             this.updateBleDeviceListView()
           }
         }, timeout * 1000)
       } else {
-        console.error(`子设备配网失败：${bleDevice.mac}`, res)
+        Loggger.error(`子设备配网失败：${bleDevice.mac}`, res)
         bleDevice.status = 'fail'
 
         this.updateBleDeviceListView()
       }
 
       await bleDevice.client.close()
-
-      console.groupEnd()
     },
 
     async bindBleDeviceToClound(device: IBleDevice) {
@@ -388,7 +382,7 @@ ComponentWithComputed({
     },
 
     confirmEditDevice(event: WechatMiniprogram.CustomEvent) {
-      console.log('confirmEditDevice', event)
+      Loggger.log('confirmEditDevice', event)
       const { detail } = event
       const item = bleDevicesBinding.store.bleDeviceList.find(
         (item) => item.deviceUuid === this.data.editDeviceInfo.deviceUuid,
@@ -433,7 +427,7 @@ ComponentWithComputed({
         subType: 'haveTry',
       })
 
-      console.log('tryControl-res', res)
+      Loggger.log('tryControl-res', res)
       bleDeviceItem.client.close() // 发送指令完毕后需要断开已连接的设备，否则连接数满了之后无法连接新的设备
 
       bleDeviceItem.requesting = false
@@ -453,7 +447,7 @@ ComponentWithComputed({
 
       // const res = await bleDeviceItem.client.getLightState()
 
-      console.log('getLightState-res', res)
+      Loggger.log('getLightState-res', res)
       bleDeviceItem.client.close() // 发送指令完毕后需要断开已连接的设备，否则连接数满了之后无法连接新的设备
     },
 
