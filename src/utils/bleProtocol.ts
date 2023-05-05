@@ -38,7 +38,7 @@ export class BleClient {
 
   deviceUuid: string
   serviceId = 'BAE55B96-7D19-458D-970C-50613D801BC9'
-  characteristicId = '372E289F-1F9C-40C9-B7F0-5742FA2A6DA4'
+  characteristicId = '' // 灯具和面板的uid不一致，同类设备的uid是一样的
   msgId = 0
 
   constructor(params: { mac: string; deviceUuid: string }) {
@@ -114,6 +114,9 @@ export class BleClient {
         throw err
       })
 
+    // 取第一个属性（固定，为可写可读可监听），
+    const characteristicId = characRes.characteristics[0].uuid
+    this.characteristicId = characteristicId
     console.log(`mac: ${this.mac}`, 'characRes', characRes)
 
     const notifyRes = await wx
@@ -144,7 +147,6 @@ export class BleClient {
         if (this.deviceUuid === res.deviceId && !res.connected && this.isConnected) {
           console.error(`蓝牙设备断开：${this.mac}`)
           wx.offBLEConnectionStateChange(bleConnectionListener)
-          this.isConnected = false
           resolve({ code: -1, error: '蓝牙设备断开' })
         }
       }
@@ -165,7 +167,9 @@ export class BleClient {
       // 存在蓝牙信号较差的情况，连接蓝牙设备后会中途断开的情况，需要做对应异常处理
       const connectRes = await Promise.race([this.connect(), this.listenDisconnect()])
 
+      console.debug('connectRes', this.mac, connectRes)
       if (connectRes.code === -1) {
+        this.close() // 异常关闭需要主动配合关闭连接closeBLEConnection，否则资源会被占用无法释放，导致无法连接蓝牙设备
         throw connectRes
       }
 
