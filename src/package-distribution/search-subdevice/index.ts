@@ -274,8 +274,6 @@ ComponentWithComputed({
       if (bleDevice.isConfig !== '02') {
         const configRes = await bleDevice.client.getZigbeeState()
 
-        console.log('configRes', configRes)
-
         if (configRes.success && configRes.result.isConfig === '02') {
           // 等待绑定推送，超时处理
           setTimeout(() => {
@@ -285,8 +283,8 @@ ComponentWithComputed({
               this.updateBleDeviceListView()
             }
           }, timeout * 1000)
-          bleDevice.client.close()
 
+          await bleDevice.client.close()
           return
         }
       }
@@ -318,7 +316,7 @@ ComponentWithComputed({
         this.updateBleDeviceListView()
       }
 
-      bleDevice.client.close()
+      await bleDevice.client.close()
 
       console.groupEnd()
     },

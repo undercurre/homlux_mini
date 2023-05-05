@@ -1,4 +1,5 @@
-import { aesUtil, strUtil } from './index'
+import dayjs from 'dayjs'
+import { aesUtil, delay, strUtil } from './index'
 
 // 定义了与BLE通路相关的所有事件/动作/命令的集合；其值域及表示意义为：对HOMLUX设备主控与app之间可能的各种操作的概括分类
 const CmdTypeMap = {
@@ -75,6 +76,8 @@ export class BleClient {
   async connect() {
     const date1 = Date.now()
 
+    console.log(`--mac: ${this.mac}，开始连接蓝牙`, this.deviceUuid)
+
     const connectRes = await wx
       .createBLEConnection({
         deviceId: this.deviceUuid, // 搜索到设备的 deviceId
@@ -93,6 +96,7 @@ export class BleClient {
 
     this.isConnected = true
 
+    // 连接后蓝牙突然断开，下面的接口会无返回也不会报错，需要超时处理
     // 连接成功，获取服务,IOS无法跳过该接口，否则后续接口会报100004，找不到服务
     const bleServiceRes = await wx
       .getBLEDeviceServices({
@@ -139,12 +143,13 @@ export class BleClient {
     }
   }
 
-  // 监听蓝牙设备非主动断开
+  // 监听蓝牙设备非主动断开,该方法暂时弃用
   listenDisconnect() {
     return new Promise<{ code: number; error: string }>((resolve) => {
       const bleConnectionListener = (res: WechatMiniprogram.OnBLEConnectionStateChangeCallbackResult) => {
         // 该方法回调中可以用于处理连接意外断开等异常情况
         if (this.deviceUuid === res.deviceId && !res.connected && this.isConnected) {
+          this.isConnected = false
           console.error(`蓝牙设备断开：${this.mac}`)
           wx.offBLEConnectionStateChange(bleConnectionListener)
           resolve({ code: -1, error: '蓝牙设备断开' })
@@ -156,6 +161,9 @@ export class BleClient {
   }
 
   async close() {
+    if (!this.isConnected) {
+      return
+    }
     this.isConnected = false
     const res = await wx.closeBLEConnection({ deviceId: this.deviceUuid }).catch((err) => err)
 
@@ -164,18 +172,19 @@ export class BleClient {
 
   async sendCmd(params: { cmdType: keyof typeof CmdTypeMap; subType: keyof typeof ControlSubType }) {
     try {
-      // 存在蓝牙信号较差的情况，连接蓝牙设备后会中途断开的情况，需要做对应异常处理
-      const connectRes = await Promise.race([this.connect(), this.listenDisconnect()])
+      if (!this.isConnected) {
+        // 存在蓝牙信号较差的情况，连接蓝牙设备后会中途断开的情况，需要做对应异常处理，超时处理
+        const connectRes = await Promise.race([this.connect(), delay(8000).then(() => ({ code: -1, error: '蓝牙连接超时' }))])
 
-      console.debug('connectRes', this.mac, connectRes)
-      if (connectRes.code === -1) {
-        this.close() // 异常关闭需要主动配合关闭连接closeBLEConnection，否则资源会被占用无法释放，导致无法连接蓝牙设备
-        throw connectRes
+        console.debug('connectRes', this.mac, connectRes)
+        if (connectRes.code === -1) {
+          throw connectRes
+        }
       }
 
       const { cmdType, subType } = params
 
-      console.log(`蓝牙指令发起：Mac：${this.mac}---cmdType----- ${params.cmdType}--${params.subType}`)
+      console.log(`蓝牙指令发起：Mac：${this.mac}---cmdType----- ${params.cmdType}--${params.subType}`, dayjs().format('YYYY-MM-dd HH:mm:ss'))
 
       const msgId = ++this.msgId // 等待回复的指令msgId
       // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
@@ -199,8 +208,9 @@ export class BleClient {
           const begin = Date.now()
           // 超时处理
           const timeId = setTimeout(() => {
+            console.log(`mac: ${this.mac}，蓝牙指令回复超时`, cmdType, subType, dayjs().format('YYYY-MM-dd HH:mm:ss'))
             resolve({ code: '-1', success: false, resMsg: '蓝牙指令回复超时', cmdType: cmdType, subCmdType: subType })
-          }, 6000)
+          }, 10000)
 
           const listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
             console.log(`onBLECharacteristicValueChange ${this.mac}  has changed`)
@@ -227,7 +237,7 @@ export class BleClient {
 
             clearTimeout(timeId)
 
-            console.log(`蓝牙指令回复时间： ${Date.now() - begin} mac: ${this.mac}`, cmdType, subType)
+            console.log(`蓝牙指令回复时间： ${Date.now() - begin} mac: ${this.mac}`, cmdType, subType, dayjs().format('YYYY-MM-dd HH:mm:ss'))
 
             resolve({
               code: '0',
@@ -246,13 +256,14 @@ export class BleClient {
             characteristicId: this.characteristicId,
             value: buffer,
             complete: (res) => {
-              console.log('writeRes', res)
+              console.log('writeRes', `mac: ${this.mac}`, cmdType, subType, res)
             },
           })
         },
       )
     } catch (err) {
       console.error('sendCmd-err', this.mac, err)
+      await this.close() // 异常关闭需要主动配合关闭连接closeBLEConnection，否则资源会被占用无法释放，导致无法连接蓝牙设备
       return {
         code: -1,
         success: false,
