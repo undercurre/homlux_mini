@@ -25,7 +25,8 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
-    _timeId: 0,
+    _addModeTimeId: 0,
+    _bindTimeOutIdMap: {} as IAnyObject, // 等待绑定成功推送的超时等待的timeId集合，key为mac
     isEditDevice: false,
     editDeviceInfo: {
       deviceUuid: '',
@@ -170,7 +171,7 @@ ComponentWithComputed({
 
       // 子设备配网阶段，保持网关在配网状态
       if (res.success) {
-        this.data._timeId = setTimeout(() => {
+        this.data._addModeTimeId = setTimeout(() => {
           const hasWaitItem = bleDevicesStore.bleDeviceList.findIndex((item) => item.status === 'waiting') >= 0 // 检测是否还存在需要配网的设备
 
           hasWaitItem && this.startGwAddMode()
@@ -181,14 +182,14 @@ ComponentWithComputed({
     },
 
     async stopGwAddMode() {
-      if (this.data._timeId === 0) {
+      if (this.data._addModeTimeId === 0) {
         return
       }
 
       const pageParams = getCurrentPageParams()
 
-      clearTimeout(this.data._timeId)
-      this.data._timeId = 0
+      clearTimeout(this.data._addModeTimeId)
+      this.data._addModeTimeId = 0
 
       const res = await sendCmdAddSubdevice({
         deviceId: pageParams.gatewayId,
@@ -226,6 +227,7 @@ ComponentWithComputed({
 
           if (bleDevice) {
             Loggger.log(bleDevice.mac, '绑定推送成功')
+            this.data._bindTimeOutIdMap[bleDevice.mac] && clearTimeout(this.data._bindTimeOutIdMap[bleDevice.mac])
             this.bindBleDeviceToClound(bleDevice)
           }
         })
@@ -279,11 +281,12 @@ ComponentWithComputed({
 
         if (configRes.success && configRes.result.isConfig === '02') {
           // 等待绑定推送，超时处理
-          setTimeout(() => {
+          this.data._bindTimeOutIdMap[bleDevice.mac] = setTimeout(() => {
             if (bleDevice.status === 'waiting') {
               bleDevice.status = 'fail'
               Loggger.error(bleDevice.mac + '绑定推送监听超时')
               this.updateBleDeviceListView()
+              delete this.data._bindTimeOutIdMap[bleDevice.mac]
             }
           }, timeout * 1000)
 
@@ -304,7 +307,7 @@ ComponentWithComputed({
       }
 
       if (res.success) {
-        // 等待绑定推送，超时30s
+        // 等待绑定推送，超时处理
         setTimeout(() => {
           if (bleDevice.status === 'waiting') {
             bleDevice.status = 'fail'
