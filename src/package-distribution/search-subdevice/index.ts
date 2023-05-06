@@ -140,7 +140,7 @@ ComponentWithComputed({
 
     /**
      * 更新设备列表数据
-     * @param isCheckAddMode 是否需要检查网关配网状态 
+     * @param isCheckAddMode 是否需要检查网关配网状态
      */
     updateBleDeviceListView(isCheckAddMode = true) {
       if (isCheckAddMode) {

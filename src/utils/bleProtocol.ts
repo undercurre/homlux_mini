@@ -80,7 +80,7 @@ export class BleClient {
       })
       .catch((err: WechatMiniprogram.BluetoothError) => err)
 
-    Loggger.log(`【${this.mac}】 connect`, this.deviceUuid, connectRes, `连接蓝牙时间： ${Date.now() - date1}ms`, )
+    Loggger.log(`【${this.mac}】 connect`, this.deviceUuid, connectRes, `连接蓝牙时间： ${Date.now() - date1}ms`)
 
     // 判断是否连接蓝牙，0为连接成功，-1为已经连接
     // 避免-1的情况，因为安卓如果重复调用 wx.createBLEConnection 创建连接，有可能导致系统持有同一设备多个连接的实例，导致调用 closeBLEConnection 的时候并不能真正的断开与设备的连接。占用蓝牙资源
@@ -104,7 +104,7 @@ export class BleClient {
       await this.close() // 释放已连接的蓝牙资源
       throw {
         ...initRes,
-        code: -1
+        code: -1,
       }
     }
 
@@ -158,12 +158,12 @@ export class BleClient {
       return {
         success: true,
       }
-    } catch(err) {
+    } catch (err) {
       Loggger.error(`【${this.mac}】`, err)
 
       return {
         success: false,
-        error: err
+        error: err,
       }
     }
   }
@@ -396,7 +396,7 @@ export const bleUtil = {
 }
 
 // 测试代码，可删除
-wx.onBLEConnectionStateChange(function(res) {
+wx.onBLEConnectionStateChange(function (res) {
   // 该方法回调中可以用于处理连接意外断开等异常情况
   if (!res.connected) {
     Loggger.log(`device ${res.deviceId} state has changed, connected: ${res.connected}`)

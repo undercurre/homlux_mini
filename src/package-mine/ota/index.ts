@@ -94,9 +94,12 @@ ComponentWithComputed({
       this.setData({
         isUpdating: true,
       })
-      execOtaUpdate({
-        deviceOtaList: otaStore.otaUpdateList,
-      }, { loading: !this.data.isUpdating }).then((res) => {
+      execOtaUpdate(
+        {
+          deviceOtaList: otaStore.otaUpdateList,
+        },
+        { loading: !this.data.isUpdating },
+      ).then((res) => {
         if (res.success) {
           // 下发升级指令成功，轮询直到完成更新
           this.startPollingQuery()
@@ -108,9 +111,12 @@ ComponentWithComputed({
       if (getEnv() === 'dev') {
         // 测试环境允许强制更新
         Toast('测试下发OTA')
-        execOtaUpdate({
-          deviceOtaList: otaStore.otaUpdateList,
-        }, { loading: true }).then((res) => {
+        execOtaUpdate(
+          {
+            deviceOtaList: otaStore.otaUpdateList,
+          },
+          { loading: true },
+        ).then((res) => {
           if (res.success && !this.data._pollingTimer) {
             // 下发升级指令成功，轮询直到完成更新
             this.startPollingQuery()

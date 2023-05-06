@@ -159,5 +159,5 @@ export const Loggger = {
 
   error(...args: any[]) {
     console.error(`【${dayjs().format('HH:mm:ss.SSS')}】`, ...args)
-  }
+  },
 }
