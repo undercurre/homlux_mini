@@ -149,7 +149,9 @@ export function isAndroid10Plus() {
   return isAndroid10Plus
 }
 
-
+/**
+ * 日志工具
+ */
 export const Loggger = {
   log(...args: any[]) {
     console.log(`【${dayjs().format('HH:mm:ss.SSS')}】`, ...args)
