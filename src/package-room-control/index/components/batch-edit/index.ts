@@ -218,7 +218,7 @@ ComponentWithComputed({
         showEditName: false,
         showEditRoom: false,
       })
-      
+
       this.triggerEvent('close')
     },
     handleExitEdit() {
