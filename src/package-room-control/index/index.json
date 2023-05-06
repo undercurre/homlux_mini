@@ -7,6 +7,8 @@
     "device-control-popup": "./components/device-control-popup/index",
     "before-add-scene-popup": "./components/before-add-scene-popup/index",
     "add-scene-popup": "./components/add-scene-popup/index",
-    "batch-edit": "./components/batch-edit/index"
+    "batch-edit": "./components/batch-edit/index",
+    "recycle-view": "miniprogram-recycle-view/recycle-view",
+    "recycle-item": "miniprogram-recycle-view/recycle-item"
   }
 }

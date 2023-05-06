@@ -28,3 +28,7 @@ export function unique(arr: Array<IAnyObject>, key: string) {
 
   return arr.filter((item) => !res.has(item[key]) && res.set(item[key], 1))
 }
+
+export function rpx2px(rpx: number) {
+  return Math.ceil((rpx / 750) * wx.getSystemInfoSync().windowWidth)
+}

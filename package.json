@@ -22,6 +22,7 @@
     "fast-deep-equal": "^2.0.1",
     "lottie-miniprogram": "^1.0.12",
     "miniprogram-computed": "^4.4.0",
+    "miniprogram-recycle-view": "^0.1.5",
     "mitt": "^3.0.0",
     "mobx-miniprogram": "^4.13.2",
     "mobx-miniprogram-bindings": "^2.1.5",

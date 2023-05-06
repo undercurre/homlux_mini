@@ -296,7 +296,7 @@ ComponentWithComputed({
     updateCurrentLinkTypeDesc() {
       if (this.data.ssList) {
         let mode = '未关联'
-        const switchUniId = deviceStore.selectList.find((uniId) => uniId.includes(':'))
+        const switchUniId = this.data.ssList.find((uniId: string) => uniId.includes(':'))
         if (switchUniId) {
           const rel = deviceStore.deviceRelMap[switchUniId]
           if (rel && rel.lightRelId) {
@@ -335,7 +335,7 @@ ComponentWithComputed({
     },
     handleLinkPopup() {
       const deviceMap = deviceStore.allRoomDeviceMap
-      const switchUniId = deviceStore.selectList.find((uniId) => uniId.includes(':'))
+      const switchUniId = this.data.ssList.find((uniId: string) => uniId.includes(':'))
       // 关联设备或者场景，必须要选中一个开关
       if (!switchUniId) {
         return
@@ -432,7 +432,7 @@ ComponentWithComputed({
         Toast({ message: '只能单选开关进行关联', zIndex: 9999 })
         return
       }
-      const switchUniId = deviceStore.selectList.find((uniId) => uniId.includes(':'))
+      const switchUniId = this.data.ssList.find((uniId: string) => uniId.includes(':'))
       if (switchUniId) {
         const rel = deviceStore.deviceRelMap[switchUniId]
         if (rel && rel.lightRelId) {
@@ -797,7 +797,7 @@ ComponentWithComputed({
     },
     async updataSceneLink() {
       const switchSceneConditionMap = deviceStore.switchSceneConditionMap
-      const switchUniId = deviceStore.selectList.find((uniId) => uniId.includes(':'))
+      const switchUniId = this.data.ssList.find((uniId: string) => uniId.includes(':'))
       if (!switchUniId) {
         return
       }
