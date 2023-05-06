@@ -130,7 +130,7 @@ ComponentWithComputed({
         } else {
           Toast('查询OTA信息失败')
         }
-      }, 5000)
+      }, 30000)
     },
     stopPolling() {
       if (this.data._pollingTimer) {
