@@ -290,8 +290,6 @@ ComponentWithComputed({
           await bleDevice.client.close()
           return
         }
-
-        await bleDevice.client.close()
       }
 
       bleDevice.zigbeeRepeatTimes--
