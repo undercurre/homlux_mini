@@ -301,7 +301,7 @@ ComponentWithComputed({
       bleDevice.zigbeeRepeatTimes--
 
       const res = await bleDevice.client.startZigbeeNet()
-      
+
       if (res.success) {
         // 等待绑定推送，超时处理
         setTimeout(() => {
