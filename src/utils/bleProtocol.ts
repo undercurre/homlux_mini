@@ -143,7 +143,7 @@ export class BleClient {
       this.characteristicId = characteristicId
       Loggger.log(`【${this.mac}】characRes`, characRes)
 
-      const notifyRes = await wx
+      await wx
         .notifyBLECharacteristicValueChange({
           deviceId: this.deviceUuid,
           serviceId: this.serviceId,
@@ -172,6 +172,7 @@ export class BleClient {
     if (!this.isConnected) {
       return
     }
+    Loggger.log(`【${this.mac}】${this.deviceUuid}开始关闭蓝牙连接`)
     this.isConnected = false
     const res = await wx.closeBLEConnection({ deviceId: this.deviceUuid }).catch((err) => err)
 

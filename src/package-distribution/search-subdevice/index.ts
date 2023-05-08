@@ -254,6 +254,10 @@ ComponentWithComputed({
 
           await this.startZigbeeNet(item)
 
+          Loggger.log(item.mac, 'close-start')
+          item.client.close()
+
+          Loggger.log(item.mac, 'close-end')
           return item
         }
 
@@ -290,7 +294,6 @@ ComponentWithComputed({
             }
           }, timeout * 1000)
 
-          await bleDevice.client.close()
           return
         }
       }
@@ -298,14 +301,7 @@ ComponentWithComputed({
       bleDevice.zigbeeRepeatTimes--
 
       const res = await bleDevice.client.startZigbeeNet()
-
-      // 配网指令允许重发3次
-      if (!res.success && bleDevice.zigbeeRepeatTimes > 0) {
-        await this.startZigbeeNet(bleDevice)
-
-        return
-      }
-
+      
       if (res.success) {
         // 等待绑定推送，超时处理
         setTimeout(() => {
@@ -315,14 +311,17 @@ ComponentWithComputed({
             this.updateBleDeviceListView()
           }
         }, timeout * 1000)
-      } else {
+      } else if (bleDevice.zigbeeRepeatTimes === 0) {
         Loggger.error(`子设备配网失败：${bleDevice.mac}`, res)
         bleDevice.status = 'fail'
 
         this.updateBleDeviceListView()
+      } else {
+        // 配网指令允许重发2次
+        await this.startZigbeeNet(bleDevice)
       }
 
-      await bleDevice.client.close()
+      Loggger.log(bleDevice.mac, 'startZigbeeNet-end')
     },
 
     async bindBleDeviceToClound(device: IBleDevice) {
