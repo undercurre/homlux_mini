@@ -37,9 +37,9 @@ ComponentWithComputed({
       value: true,
       observer(value) {
         this.updateCurrentLinkTypeDesc()
-        const from = this.data._bottom
+        const from = this.data._halfHideBottom
         const to = value ? 0 : this.data._minHeight - this.data._componentHeight
-        this.data._bottom = to
+        this.data._halfHideBottom = to
         this.animate(
           '#popup',
           [
@@ -56,7 +56,7 @@ ComponentWithComputed({
         )
       },
     },
-    ssList: {
+    checkedList: {
       type: Array,
       value: [] as string[],
     },
@@ -67,8 +67,7 @@ ComponentWithComputed({
    */
   data: {
     _divideRpxByPx: 0,
-    /** 收起来时的bottom值 */
-    _bottom: 0,
+    _halfHideBottom: 0, // 叠起来在底部时的bottom值
     _minHeight: 0,
     _componentHeight: 0,
     _wfullpx: 0,
@@ -97,7 +96,7 @@ ComponentWithComputed({
     linkType: '' as '' | 'light' | 'switch' | 'scene',
     /** 关联弹出框，需要开关去关联什么模式 */
     selectLinkType: '' as '' | 'light' | 'switch' | 'scene',
-    /** 已选中设备或场景 */
+    /** 已选中设备或场景 TODO */
     linkSelectList: [] as string[],
     showLinkPopup: false,
     showSelectLinkPopup: false,
@@ -140,9 +139,9 @@ ComponentWithComputed({
       return false
     },
     isSelectMultiSwitch(data) {
-      if (data.ssList) {
+      if (data.checkedList) {
         let count = 0
-        data.ssList.forEach((deviceId: string) => {
+        data.checkedList.forEach((deviceId: string) => {
           if (deviceId.includes(':')) {
             count++
           }
@@ -161,9 +160,9 @@ ComponentWithComputed({
       })
     },
     isEditSelectMode(value) {
-      this.popupMove(this.data.ssList, value)
+      this.popupMove(this.data.checkedList, value)
     },
-    ssList(value) {
+    checkedList(value) {
       this.popupMove(value, deviceStore.isEditSelectMode)
     },
     /**
@@ -204,7 +203,7 @@ ComponentWithComputed({
       _minHeight = divideRpxByPx * 60 + bottomBarHeight
       this.data._minHeight = _minHeight // 最小高度
       this.data._componentHeight = _componentHeight // 组件高度
-      this.data._bottom = _minHeight - _componentHeight // 组件相对底部高度
+      this.data._halfHideBottom = _minHeight - _componentHeight // 组件相对底部高度
       this.data._wfullpx = divideRpxByPx * 750 // 屏幕宽度
       this.data._divideRpxByPx = divideRpxByPx // px rpx比率
       this.setData({
@@ -221,26 +220,29 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
+    // TODO: 简化if-else
     popupMove(selectList: string[], isEditMode: boolean) {
       this.updateCurrentLinkTypeDesc()
-      const from = -this.data._componentHeight
-      const to = this.properties.popup ? 0 : this.data._bottom
+      const lower = -this.data._componentHeight + 'px'
+      const upper = `${this.properties.popup ? 0 : this.data._halfHideBottom}px`
       if (this.data._componentHeight === 0) {
-        this.data._bottom = -this.data._componentHeight
+        this.data._halfHideBottom = -this.data._componentHeight
         return // 这时候还没有第一次渲染，from是0，不能正确执行动画
       }
+
       if (isEditMode) {
         if (this.data.isRender) {
+          // 收起
           this.animate(
             '#popup',
             [
               {
                 opacity: 1,
-                bottom: to + 'px',
+                bottom: upper,
               },
               {
                 opacity: 0,
-                bottom: -this.data._componentHeight + 'px',
+                bottom: lower,
               },
             ],
             200,
@@ -256,31 +258,33 @@ ComponentWithComputed({
           this.setData({
             isRender: true,
           })
+          // 打开
           this.animate(
             '#popup',
             [
               {
                 opacity: 0,
-                bottom: from + 'px',
+                bottom: lower,
               },
               {
                 opacity: 1,
-                bottom: to + 'px',
+                bottom: upper,
               },
             ],
             200,
           )
         } else if (selectList.length === 0) {
+          // 收起
           this.animate(
             '#popup',
             [
               {
                 opacity: 1,
-                bottom: to + 'px',
+                bottom: upper,
               },
               {
                 opacity: 0,
-                bottom: -this.data._componentHeight + 'px',
+                bottom: lower,
               },
             ],
             200,
@@ -294,9 +298,9 @@ ComponentWithComputed({
       }
     },
     updateCurrentLinkTypeDesc() {
-      if (this.data.ssList) {
+      if (this.data.checkedList) {
         let mode = '未关联'
-        const switchUniId = this.data.ssList.find((uniId: string) => uniId.includes(':'))
+        const switchUniId = this.data.checkedList.find((uniId: string) => uniId.includes(':'))
         if (switchUniId) {
           const rel = deviceStore.deviceRelMap[switchUniId]
           if (rel && rel.lightRelId) {
@@ -335,7 +339,7 @@ ComponentWithComputed({
     },
     handleLinkPopup() {
       const deviceMap = deviceStore.allRoomDeviceMap
-      const switchUniId = this.data.ssList.find((uniId: string) => uniId.includes(':'))
+      const switchUniId = this.data.checkedList.find((uniId: string) => uniId.includes(':'))
       // 关联设备或者场景，必须要选中一个开关
       if (!switchUniId) {
         return
@@ -432,7 +436,7 @@ ComponentWithComputed({
         Toast({ message: '只能单选开关进行关联', zIndex: 9999 })
         return
       }
-      const switchUniId = this.data.ssList.find((uniId: string) => uniId.includes(':'))
+      const switchUniId = this.data.checkedList.find((uniId: string) => uniId.includes(':'))
       if (switchUniId) {
         const rel = deviceStore.deviceRelMap[switchUniId]
         if (rel && rel.lightRelId) {
@@ -797,7 +801,7 @@ ComponentWithComputed({
     },
     async updataSceneLink() {
       const switchSceneConditionMap = deviceStore.switchSceneConditionMap
-      const switchUniId = this.data.ssList.find((uniId: string) => uniId.includes(':'))
+      const switchUniId = this.data.checkedList.find((uniId: string) => uniId.includes(':'))
       if (!switchUniId) {
         return
       }
@@ -924,9 +928,9 @@ ComponentWithComputed({
       const deviceMap = deviceStore.allRoomDeviceMap
       // 按照网关区分
       const gatewaySelectDeviceMap: Record<string, Device.DeviceItem[]> = {}
-      deviceStore.selectList
-        .filter((id) => id.includes(':'))
-        .forEach((uniId) => {
+      this.data.checkedList
+        .filter((id: string) => id.includes(':'))
+        .forEach((uniId: string) => {
           const [deviceId, ep] = uniId.split(':')
           if (gatewaySelectDeviceMap[deviceMap[deviceId].gatewayId]) {
             const index = gatewaySelectDeviceMap[deviceMap[deviceId].gatewayId].findIndex(
@@ -978,9 +982,9 @@ ComponentWithComputed({
       const currentRoomDeviceMap = deviceStore.deviceMap
       // 拿出选中的设备
       const selectLightDevice: Device.DeviceItem[] = []
-      deviceStore.selectList
-        .filter((uniId) => !uniId.includes(':'))
-        .forEach((deviceId) => {
+      this.data.checkedList
+        .filter((uniId: string) => !uniId.includes(':'))
+        .forEach((deviceId: string) => {
           if (deviceMap[deviceId].proType === proType.light) {
             selectLightDevice.push(deviceMap[deviceId])
           }

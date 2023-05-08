@@ -88,6 +88,8 @@ ComponentWithComputed({
             device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
             device.proType !== proType.gateway,
         )
+        // 进入房间页面前先重置数据
+        // TODO selectList 换成页面作用域后，deviceStore相关可清理
         deviceStore.selectList = []
         deviceStore.editSelect = []
         deviceStore.isEditSelectMode = false

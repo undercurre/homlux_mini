@@ -68,35 +68,18 @@
   <!-- 有设备页面主体 -->
   <view wx:if="{{roomHasSubDevice}}" class="w-750rpx flex flex-col items-center">
     <view class="flex flex-col items-center w-750rpx">
-      <!-- 灯具设备卡片 -->
+      <!-- 设备卡片 -->
       <view class="mt-24rpx">
-        <view class="flex justify-between items-center h-44rpx" wx:if="{{lightList && lightList.length > 0}}">
-          <text class="text-24rpx text-black-59 ml-17rpx">灯具</text>
-          <view wx:if="{{!isEditSelectMode}}" class="rounded-999 flex-center px-20rpx py-10rpx cancel-select-btn" data-type="light" catchtap="handleLightAllSelect">
-            <text class="text-20rpx leading-none text-hex-555659">{{isLightSelectOne?'全不选':'全选'}}</text>
+        <view class="flex justify-between items-center h-44rpx" wx:if="{{recycleList && recycleList.length > 0}}">
+          <text class="text-24rpx text-black-59 ml-17rpx">{{recycleList ? recycleList.length : 0}}个设备</text>
+          <view wx:if="{{!isEditSelectMode}}" class="rounded-999 flex-center px-20rpx py-10rpx cancel-select-btn" data-type="light" catchtap="handleAllSelect">
+            <text class="text-20rpx leading-none text-hex-555659">{{allSelectBtnText}}</text>
           </view>
         </view>
         <view class="w-720rpx mt-24rpx">
-          <recycle-view batch="{{batchSetRecycleData}}" id="lightListId" batch-key="batchSetRecycleData" width="{{recycleWidth}}" height="{{recycleLightHeight}}" show-scrollbar="{{false}}">
-            <recycle-item wx:for="{{lightList}}" wx:key="deivceId">
-              <card item="{{item}}" bind:controlTap="handleLightPowerToggle" bind:cardTap="handleDeviceCardTap" bind:offlineTap="handleShowDeviceOffline" bind:cardLongpress="handleLongpress"> </card>
-            </recycle-item>
-          </recycle-view>
-        </view>
-      </view>
-
-      <!-- 开关设备卡片 -->
-      <view class="{{lightList && lightList.length > 0 ? '' : 'mt-24rpx'}}">
-        <view class="flex justify-between items-center h-44rpx" wx:if="{{switchList && switchList.length > 0}}">
-          <text class="text-24rpx text-black-59 ml-17rpx">开关面板</text>
-          <view wx:if="{{!isEditSelectMode}}" class="rounded-999 flex-center px-20rpx py-10rpx cancel-select-btn" data-type="switch" catchtap="handleSwitchAllSelect">
-            <text class="text-20rpx leading-none text-hex-555659">{{isSwitchSelectOne?'全不选':'全选'}}</text>
-          </view>
-        </view>
-        <view class="w-720rpx mt-24rpx">
-          <recycle-view batch="{{batchSetRecycleData2}}" id="switchListId" batch-key="batchSetRecycleData2" width="{{recycleWidth}}" height="{{recycleSwitchHeight}}">
-            <recycle-item wx:for="{{switchList}}" wx:key="uniId">
-              <card item="{{item}}" bind:controlTap="handleSwitchControlTapToggle" bind:cardTap="handleDeviceCardTap" bind:offlineTap="handleShowDeviceOffline" bind:cardLongpress="handleLongpress"> </card>
+          <recycle-view batch="{{batchSetRecycleData}}" id="recycleListId" batch-key="batchSetRecycleData" width="{{recycleViewWidth}}" height="{{recycleViewHeight}}" show-scrollbar="{{false}}" scroll-with-animation="{{true}}">
+            <recycle-item wx:for="{{recycleList}}" wx:key="deivceId">
+              <card item="{{item}}" bind:controlTap="handleControlTap" bind:cardTap="handleDeviceCardTap" bind:offlineTap="handleShowDeviceOffline" bind:cardLongpress="handleLongpress"> </card>
             </recycle-item>
           </recycle-view>
         </view>
@@ -116,7 +99,7 @@
 <view wx:else class="h-64rpx" bindtap="handleScreenTap" bindtouchmove="handleScreenTap"></view>
 
 <!-- 设备控制弹窗 -->
-<device-control-popup popup="{{controlPopup}}" ssList="{{ssList}}" bind:popMove="handlePopUp" bind:updateList="updateDeviceList"></device-control-popup>
+<device-control-popup popup="{{controlPopup}}" checkedList="{{checkedList}}" bind:popMove="handlePopUp" bind:updateList="updateDeviceList"></device-control-popup>
 <before-add-scene-popup show="{{showBeforeAddScenePopup}}" bind:close="handleBeforeAddScenePopupClose" bind:next="handleBeforeAddScenePopupNext" bind:delete="handleBeforeAddScenePopupDelete" bind:edit="handleSceneActionEdit" />
 <add-scene-popup actions="{{addSceneActions}}" show="{{showAddScenePopup}}" bind:close="handleAddScenePopupClose" bind:addSuccess="handleShowAddSceneSuccess" bind:return="handleAddScenePopupReturn" />
 <batch-edit bind:updateList="updateDeviceList" bind:roomMove="handleRoomMoveSuccess" bind:close="exitEditMode"></batch-edit>
