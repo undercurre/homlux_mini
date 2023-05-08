@@ -247,7 +247,7 @@ ComponentWithComputed({
         this.connectWifi()
       } else {
         this.setData({
-          isAndroid10Plus,
+          isAndroid10Plus: isAndroid10Plus()
         })
       }
     },
