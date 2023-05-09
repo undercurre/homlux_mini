@@ -72,27 +72,30 @@ ComponentWithComputed({
   lifetimes: {
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
     ready: function () {
-      bleDevicesBinding.store.startBleDiscovery()
-    },
-    moved: function () {},
-  },
-
-  pageLifetimes: {
-    hide() {
-      this.stopGwAddMode()
-      bleDevicesBinding.store.stopBLeDiscovery()
-
-      // 离开当前页面时，重置发现的蓝牙设备列表的状态，以免返回扫码页重进当前页面时状态不对
-      bleDevicesStore.bleDeviceList.forEach(item => {
+      // 开始配子设备后，侧滑离开当前页面时，重置发现的蓝牙设备列表的状态，以免返回扫码页重进当前页面时状态不对
+      bleDevicesStore.bleDeviceList.forEach((item) => {
         item.isChecked = false
         item.status = 'waiting'
         item.requestTimes = 20
         item.zigbeeRepeatTimes = 2
       })
 
-      runInAction(() => {
-        this.updateBleDeviceListView(false)
-      })
+      this.updateBleDeviceListView(false)
+      
+      bleDevicesBinding.store.startBleDiscovery()
+    },
+    detached() {
+      Loggger.log('附近子设备页detached', this.data.status)
+      this.stopGwAddMode()
+      bleDevicesBinding.store.stopBLeDiscovery()
+    },
+  },
+
+  pageLifetimes: {
+    hide() {
+      Loggger.log('附近子设备页hide', this.data.status)
+      this.stopGwAddMode()
+      bleDevicesBinding.store.stopBLeDiscovery()
     },
   },
 
@@ -139,6 +142,7 @@ ComponentWithComputed({
 
     // 确认添加设备
     async confirmAdd() {
+      Loggger.log('confirmAdd')
       try {
         bleDevicesBinding.store.stopBLeDiscovery()
 
@@ -288,7 +292,7 @@ ComponentWithComputed({
     },
 
     async startZigbeeNet(bleDevice: IBleDevice) {
-      Loggger.log(`开始子设备配网：${bleDevice.mac}，第${3 - bleDevice.zigbeeRepeatTimes}次`)
+      Loggger.log(`【${bleDevice.mac}】开始子设备配网，第${3 - bleDevice.zigbeeRepeatTimes}次`)
 
       const timeout = 60 // 等待绑定推送，超时60s
       // 过滤刚出厂设备刚起电时会默认进入配网状态期间，被网关绑定的情况，这种当做成功配网，无需再下发配网指令，否则可能会导致zigbee入网失败
@@ -296,6 +300,7 @@ ComponentWithComputed({
         const configRes = await bleDevice.client.getZigbeeState()
 
         if (configRes.success && configRes.result.isConfig === '02') {
+          bleDevice.isConfig = configRes.result.isConfig
           // 等待绑定推送，超时处理
           this.data._bindTimeOutIdMap[bleDevice.mac] = setTimeout(() => {
             if (bleDevice.status === 'waiting') {
@@ -315,6 +320,7 @@ ComponentWithComputed({
       const res = await bleDevice.client.startZigbeeNet()
 
       if (res.success) {
+        bleDevice.isConfig = '02' // 将设备配网状态置为已配网，否则失败重试由于前面判断状态的逻辑无法重新添加成功
         // 等待绑定推送，超时处理
         setTimeout(() => {
           if (bleDevice.status === 'waiting') {

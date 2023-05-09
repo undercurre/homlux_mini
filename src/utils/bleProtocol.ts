@@ -261,6 +261,9 @@ export class BleClient {
             serviceId: this.serviceId,
             characteristicId: this.characteristicId,
             value: buffer,
+            complete: (res) => {
+              Loggger.log(`【${this.mac}】writeBLECharacteristicValue`, res)
+            },
           })
         },
       )
@@ -279,8 +282,6 @@ export class BleClient {
   async startZigbeeNet() {
     const res = await this.sendCmd({ cmdType: 'DEVICE_CONTROL', subType: 'CTL_CONFIG_ZIGBEE_NET' })
 
-    Loggger.log(`【${this.mac}】startZigbeeNet`, res)
-
     let zigbeeMac = ''
 
     if (res.success) {
@@ -295,12 +296,16 @@ export class BleClient {
       zigbeeMac = arr.join('')
     }
 
-    return {
+    const result = {
       ...res,
       result: {
         zigbeeMac,
       },
     }
+
+    Loggger.log(`【${this.mac}】startZigbeeNet`, result)
+
+    return result
   }
 
   /**
@@ -309,20 +314,22 @@ export class BleClient {
   async getZigbeeState() {
     const res = await this.sendCmd({ cmdType: 'DEVICE_INFO_QUREY', subType: 'QUERY_ZIGBEE_STATE' })
 
-    Loggger.log(`【${this.mac}】getZigbeeState`, res)
-
     let isConfig = ''
 
     if (res.success) {
       isConfig = res.resMsg
     }
 
-    return {
+    const result = {
       ...res,
       result: {
         isConfig,
       },
     }
+
+    Loggger.log(`【${this.mac}】getZigbeeState`, result)
+
+    return result
   }
 
   /**

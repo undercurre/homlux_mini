@@ -32,8 +32,10 @@ export const bleDevicesStore = observable({
           const foundItem = bleDevicesStore.bleDeviceList.find((foundItem) => foundItem.deviceUuid === item.deviceId)
 
           if (foundItem) {
-            foundItem.RSSI = item.RSSI
-            foundItem.signal = getSignalFlag(item.RSSI)
+            const baseInfo = getBleDeviceBaseInfo(item)
+            foundItem.RSSI = baseInfo.RSSI
+            foundItem.signal = baseInfo.signal
+            foundItem.isConfig = baseInfo.isConfig
 
             runInAction(() => {
               bleDevicesStore.bleDeviceList = bleDevicesStore.bleDeviceList.concat([])
@@ -48,7 +50,7 @@ export const bleDevicesStore = observable({
       // 但由于丢包情况，设备本地状态不可靠，需要查询云端是否存在该设备的绑定状态（是否存在家庭绑定关系）结合判断是否真正配网
 
       deviceList.forEach(async (item) => {
-        // 设备配网状态没变化的同一设备不再查询
+        // 设备配网状态没变化的同一设备不再查询，防止重复查询同一设备的云端信息接口
         if (
           _foundList.find(
             (foundItem) => foundItem.deviceUuid === item.deviceUuid && foundItem.isConfig === item.isConfig,
@@ -89,9 +91,9 @@ export const bleDevicesStore = observable({
       this.bleDeviceList = []
       this.discovering = false
       this.available = systemSetting.bluetoothEnabled
-
-      _foundList = []
     })
+
+    _foundList = []
 
     wx.offBluetoothAdapterStateChange()
 
@@ -115,6 +117,11 @@ export const bleDevicesStore = observable({
       })
     })
   },
+
+  // 清除缓存信息
+  clearCache() {
+    _foundList = []
+  }
 })
 
 export const bleDevicesBinding = {
