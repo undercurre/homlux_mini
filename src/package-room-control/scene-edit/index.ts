@@ -364,6 +364,9 @@ ComponentWithComputed({
       })
     },
     handleSceneActionEdit(e: WechatMiniprogram.TouchEvent) {
+      if (this.data.isDefault) {
+        return
+      }
       const deviceAction = this.data.sceneDeviceActionsFlatten[e.currentTarget.dataset.index]
       const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
       const device = allRoomDeviceMap[deviceAction.uniId]

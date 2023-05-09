@@ -37,7 +37,7 @@
                 </view>
               </view>
             </view>
-            <svg-icon slot="right-icon" color="#d2d2d3" name="ion:close-circled" width="48rpx" height="48rpx" data-info="{{item}}" data-index="{{index}}" catchtap="handleActionDelete"></svg-icon>
+            <svg-icon wx:if="{{!isDefault}}" slot="right-icon" color="#d2d2d3" name="ion:close-circled" width="48rpx" height="48rpx" data-info="{{item}}" data-index="{{index}}" catchtap="handleActionDelete"></svg-icon>
           </van-cell>
         </van-cell-group>
       </scroll-view>

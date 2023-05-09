@@ -58,6 +58,7 @@ export const sceneStore = observable({
       const list = res.result
         .filter((scene) => scene.deviceActions && scene.deviceActions.length > 0)
         .sort((a, b) => a.orderNum - b.orderNum)
+
       runInAction(() => {
         sceneStore.sceneList = list
       })

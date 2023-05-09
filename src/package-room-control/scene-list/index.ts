@@ -58,6 +58,7 @@ ComponentWithComputed({
     updateList() {
       const listData = [] as IAnyObject[]
       const deviceMap = deviceStore.allRoomDeviceMap
+
       sceneStore.sceneList.forEach((scene: Scene.SceneItem) => {
         if (scene.deviceConditions?.length > 0) {
           const device = deviceMap[scene.deviceConditions[0].deviceId]
@@ -80,8 +81,12 @@ ComponentWithComputed({
       this.setData({
         listData,
       })
-      const drag = this.selectComponent('#drag')
-      drag.init()
+
+      // 防止场景为空，drag为null·
+      if (listData.length) {
+        const drag = this.selectComponent('#drag')
+        drag.init()
+      }
     },
 
     async onPullDownRefresh() {
