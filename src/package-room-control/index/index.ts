@@ -73,6 +73,7 @@ ComponentWithComputed({
     hasUpdate: false,
     checkedList: [] as string[], // 已选择设备的id列表
     lightStatus: {} as Record<string, number>, // 当前选择的灯具的状态
+    checkedType: [] as string[], // 已选择设备的类型
     recycleListInited: false,
   },
 
@@ -122,14 +123,14 @@ ComponentWithComputed({
       return {}
     },
     hasSelectLight(data) {
-      if (data.selectType) {
-        return data.selectType.includes('light')
+      if (data.checkedType) {
+        return data.checkedType.includes('light')
       }
       return false
     },
     hasSelectSwitch(data) {
-      if (data.selectType) {
-        return data.selectType.includes('switch')
+      if (data.checkedType) {
+        return data.checkedType.includes('switch')
       }
       return false
     },
@@ -178,9 +179,10 @@ ComponentWithComputed({
   },
 
   watch: {
-    deviceList() {
-      this.updateDeviceList()
-    },
+    // FIXME 无法跟踪变更源头的监听，但每次变更都可能导致重复更新页面，是否可删除
+    // deviceList() {
+    //   this.updateDeviceList()
+    // },
     // TODO 是否可以取消
     checkedList(value) {
       if (this.data.selectCount === 0 && value.length === 1) {
@@ -197,14 +199,6 @@ ComponentWithComputed({
         selectCount: value.length,
       })
     },
-    // dragging(value) {
-    //   if (!value && this.data.hasUpdate) {
-    //     deviceStore.updateSubDeviceList().then(() => {
-    //       this.updateDeviceList()
-    //     })
-    //     this.data.hasUpdate = false
-    //   }
-    // },
   },
 
   methods: {
@@ -342,7 +336,7 @@ ComponentWithComputed({
       // 退出页面前清理一下选中的列表
       runInAction(() => {
         // deviceStore.selectList = []
-        deviceStore.selectType = []
+        // deviceStore.selectType = []
         deviceStore.isEditSelectMode = false
       })
       // 解除监听
@@ -367,7 +361,7 @@ ComponentWithComputed({
     },
     updateDeviceListFn(device?: Device.DeviceItem) {
       // TODO 彻底解决view晚于method的问题
-      console.log('updateDeviceListFn Begin, current List ==', this.data.recycleList)
+      console.log('Begin of updateDeviceListFn, recycleList===\n', this.data.recycleList)
 
       if (device) {
         // TODO 细致到字段的diff
@@ -376,11 +370,17 @@ ComponentWithComputed({
 
         ctx.update(index, item)
         console.log('after ctx.update', index, item)
-      } else if (!this.data.recycleListInited) {
+      } else {
         const flattenList = deviceStore.deviceFlattenList
 
-        // TODO 已存在列表，重复初始化时的处理
-        // HACK 临时使用recycleListInited标志防止重复初始化
+        // 如果为空则不初始化，否则会recycleList.length===0导致在视图中销毁recycleView导致错误堵塞
+        // TODO review 是否会引起其他问题
+        // TODO 可通过recycleList内部方法，显示空内容彻底解决此问题
+        if (!flattenList.length) {
+          return
+        }
+
+        // HACK 使用recycleListInited标志防止重复初始化
         if (!ctx) {
           return
         }
@@ -394,35 +394,37 @@ ComponentWithComputed({
         // 接口返回开关面板数据以设备为一个整体，需要前端拆开后排序
         _list.sort((a, b) => a.orderNum - b.orderNum) // TODO 链式合到上一行？
         // _list.splice(16) // MOCK
-        console.log(
-          'flattenList to recycleList==',
-          _list.map((d) => ({
-            deviceName: d.deviceName,
-            orderNum: d.orderNum,
-            proType: d.proType,
-          })),
-        )
-        ctx.append(_list)
-        this.data.recycleListInited = true
-      }
-      // 整个列表刷新 TODO review
-      else {
-        // const flattenList = deviceStore.deviceFlattenList
-        // const _list = flattenList
-        // // 接口返回开关面板数据以设备为一个整体，需要前端拆开后排序
-        // _list.sort((a, b) => a.orderNum - b.orderNum) // TODO 链式合到上一行？
-        // console.log('update list')
-        // const diffData = {} as IAnyObject
-        // _list.forEach((device: Device.DeviceItem & { select?: boolean }, index) => {
-        //   const item = {} as IAnyObject
-        //   ;(['select'] as const).forEach((key) => {
-        //     const newVal = device[key]
-        //     if (newVal !== this.data.recycleList[index][key]) {
-        //       item[key] = newVal
-        //     }
-        //   })
-        // })
-        // this.setData(diffData)
+
+        if (!this.data.recycleListInited) {
+          console.log(
+            'recycleListInit flattenList to recycleList===\n',
+            _list
+            // .map((d) => ({
+            //   deviceName: d.deviceName,
+            //   orderNum: d.orderNum,
+            //   proType: d.proType,
+            // })),
+          )
+          ctx.append(_list)
+          this.data.recycleListInited = true
+        }
+        // ! 整个列表刷新，算法需要重点优化，同时寻源，转向精确更新，减少全列表更新
+        // 暂时只更新列表条数一样的情况
+        else {
+          const diffData = {} as IAnyObject
+          _list.forEach((device: Device.DeviceItem & { select?: boolean }, index) => {
+            ;(['deviceName', 'onLineStatus', 'select'] as const).forEach((key) => { // 需要检查的字段 // mzgdPropertyDTOList?
+              const newVal = device[key]
+              if (newVal !== this.data.recycleList[index][key]) {
+                diffData[`recycleList[${index}].${key}`] = newVal
+              }
+            })
+          })
+
+          console.log('update list, diffData', diffData)
+
+          this.setData(diffData)
+        }
       }
     },
     /** store设备列表数据更新到界面 */
@@ -589,7 +591,7 @@ ComponentWithComputed({
           // 将面板的灯状态恢复到上一个选中的灯
           // TODO 可优化，反转遍历？
           let latestSelectLightId = ''
-          deviceStore.selectList.forEach((deviceId) => {
+          this.data.checkedList.forEach((deviceId) => {
             if (deviceMap[deviceId]?.proType === proType.light) {
               latestSelectLightId = deviceId
             }
@@ -657,49 +659,6 @@ ComponentWithComputed({
       this.updateDeviceList(e.detail)
       // 首页需要更新灯光打开个数
       homeStore.updateCurrentHomeDetail()
-    },
-    async handleLightSortEnd(e: { detail: { listData: Device.DeviceItem[] } }) {
-      const orderData = {
-        deviceInfoByDeviceVoList: [],
-        type: '0',
-      } as Device.OrderSaveData
-      e.detail.listData.forEach((device, index) => {
-        if (device.orderNum !== index) {
-          orderData.deviceInfoByDeviceVoList.push({
-            deviceId: device.deviceId,
-            houseId: homeStore.currentHomeId,
-            roomId: device.roomId,
-            orderNum: index.toString(),
-          })
-        }
-      })
-      if (orderData.deviceInfoByDeviceVoList.length === 0) {
-        return
-      }
-      await saveDeviceOrder(orderData)
-      deviceStore.updateSubDeviceList()
-    },
-    async handleSwitchSortEnd(e: { detail: { listData: Device.DeviceItem[] } }) {
-      const orderData = {
-        deviceInfoByDeviceVoList: [],
-        type: '1',
-      } as Device.OrderSaveData
-      e.detail.listData.forEach((device, index) => {
-        if (device.switchInfoDTOList[0].orderNum !== index) {
-          orderData.deviceInfoByDeviceVoList.push({
-            deviceId: device.deviceId,
-            houseId: homeStore.currentHomeId,
-            roomId: device.roomId,
-            orderNum: index.toString(),
-            switchId: device.switchInfoDTOList[0].switchId,
-          })
-        }
-      })
-      if (orderData.deviceInfoByDeviceVoList.length === 0) {
-        return
-      }
-      await saveDeviceOrder(orderData)
-      this.reloadData()
     },
     /** 面板开关点击 TODO diff更新优化 */
     async handleSwitchControlTapToggle(e: {
@@ -804,9 +763,12 @@ ComponentWithComputed({
         }
         typeList.add(this.data.deviceIdTypeMap[deviceId])
       })
-      runInAction(() => {
-        deviceStore.selectType = Array.from(typeList) as string[]
+      this.setData({
+        checkedType: Array.from(typeList) as string[],
       })
+      // runInAction(() => {
+      //   deviceStore.selectType = Array.from(typeList) as string[]
+      // })
     },
     /** 点击空位收起弹窗 */
     handleScreenTap() {
@@ -829,9 +791,9 @@ ComponentWithComputed({
         })
         // this.updateDeviceList()
       }
-      this.setData({
-        dragging: true,
-      })
+      // this.setData({
+      //   dragging: true,
+      // })
     },
 
     exitEditMode() {
@@ -887,43 +849,6 @@ ComponentWithComputed({
       // this.updateDeviceList()
     },
 
-    // TODO refactor
-    handleSwitchAllSelect() {
-      const deviceMap = deviceStore.deviceFlattenMap
-      const newList = [] as string[]
-      if (this.data.isSwitchSelectOne) {
-        // 执行全不选
-        deviceStore.selectList.forEach((uniId) => {
-          if (!uniId.includes(':') || deviceMap[uniId].proType !== proType.switch) {
-            newList.push(uniId)
-          }
-        })
-      } else {
-        // 执行全选
-        newList.push(...deviceStore.selectList)
-        deviceStore.deviceFlattenList.forEach((device) => {
-          if (device.proType === proType.switch && !newList.includes(device.uniId) && device.onLineStatus) {
-            newList.push(device.uniId)
-          }
-        })
-      }
-      if (!this.data.isLightSelectOne && deviceStore.selectList.length === 0) {
-        this.setData({
-          popupPlaceholder: true,
-          controlPopup: true,
-        })
-      }
-      runInAction(() => {
-        deviceStore.selectList = newList
-      })
-      if (!deviceStore.selectList.length) {
-        this.setData({
-          popupPlaceholder: false,
-        })
-      }
-      this.updateSelectType()
-      this.updateDeviceList()
-    },
     handleAddDevice() {
       wx.navigateTo({ url: '/package-distribution/scan/index' })
     },

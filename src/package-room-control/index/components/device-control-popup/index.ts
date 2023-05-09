@@ -60,6 +60,20 @@ ComponentWithComputed({
       type: Array,
       value: [] as string[],
     },
+    lightStatus: {
+      type: Object,
+      value: {} as Record<string, number>,
+      observer(value) {
+        this.setData({
+          'lightInfoInner.Level': value.Level ?? 0,
+          'lightInfoInner.ColorTemp': value.ColorTemp ?? 0,
+        })  
+      }
+    },
+    checkedType: {
+      type: Array,
+      value: [] as string[]
+    }
   },
 
   /**
@@ -121,20 +135,20 @@ ComponentWithComputed({
       )
     },
     lightTab(data) {
-      if (data.selectType) {
-        return data.selectType.includes('light')
+      if (data.checkedType) {
+        return data.checkedType.includes('light')
       }
       return false
     },
     switchTab(data) {
-      if (data.selectType) {
-        return data.selectType.includes('switch')
+      if (data.checkedType) {
+        return data.checkedType.includes('switch')
       }
       return false
     },
     curtainTab(data) {
-      if (data.selectType) {
-        return data.selectType.includes('curtain')
+      if (data.checkedType) {
+        return data.checkedType.includes('curtain')
       }
       return false
     },
@@ -153,12 +167,6 @@ ComponentWithComputed({
   },
 
   watch: {
-    lightInfo(value) {
-      this.setData({
-        'lightInfoInner.Level': value.Level ?? 0,
-        'lightInfoInner.ColorTemp': value.ColorTemp ?? 0,
-      })
-    },
     isEditSelectMode(value) {
       this.popupMove(this.data.checkedList, value)
     },
@@ -167,8 +175,9 @@ ComponentWithComputed({
     },
     /**
      * 监听当前选择类型
+     * TODO 不使用watch？
      */
-    selectType(value) {
+    checkedType(value) {
       if (value.length > 0) {
         if (!value.includes(this.data.tab)) {
           this.setData({
