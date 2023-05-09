@@ -131,9 +131,9 @@ ComponentWithComputed({
     },
 
     showMac(e: WechatMiniprogram.CustomEvent) {
-      const { mac, RSSI } = e.currentTarget.dataset
+      const { mac, rssi } = e.currentTarget.dataset
 
-      Toast(`${mac}  信号：${RSSI}`)
+      Toast(`Mac：${mac}  信号：${rssi}`)
     },
 
     // 确认添加设备
