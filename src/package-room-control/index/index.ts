@@ -183,22 +183,6 @@ ComponentWithComputed({
     // deviceList() {
     //   this.updateDeviceList()
     // },
-    // TODO 是否可以取消
-    checkedList(value) {
-      if (this.data.selectCount === 0 && value.length === 1) {
-        this.setData({
-          controlPopup: true,
-        })
-      }
-      if (value.length === 0) {
-        this.setData({
-          popupPlaceholder: false,
-        })
-      }
-      this.setData({
-        selectCount: value.length,
-      })
-    },
   },
 
   methods: {
@@ -398,7 +382,7 @@ ComponentWithComputed({
         if (!this.data.recycleListInited) {
           console.log(
             'recycleListInit flattenList to recycleList===\n',
-            _list
+            _list,
             // .map((d) => ({
             //   deviceName: d.deviceName,
             //   orderNum: d.orderNum,
@@ -413,7 +397,8 @@ ComponentWithComputed({
         else {
           const diffData = {} as IAnyObject
           _list.forEach((device: Device.DeviceItem & { select?: boolean }, index) => {
-            ;(['deviceName', 'onLineStatus', 'select'] as const).forEach((key) => { // 需要检查的字段 // mzgdPropertyDTOList?
+            ;(['deviceName', 'onLineStatus', 'select'] as const).forEach((key) => {
+              // 需要检查的字段 // mzgdPropertyDTOList?
               const newVal = device[key]
               if (newVal !== this.data.recycleList[index][key]) {
                 diffData[`recycleList[${index}].${key}`] = newVal
@@ -546,9 +531,6 @@ ComponentWithComputed({
 
       // 这是第一个被选中的设备卡片
       if (this.data.checkedList.length === 0) {
-        this.setData({
-          popupPlaceholder: true,
-        })
         // 弹起的popup不能挡住卡片
         const divideRpxByPx = storage.get<number>('divideRpxByPx')
           ? (storage.get<number>('divideRpxByPx') as number)
@@ -574,19 +556,13 @@ ComponentWithComputed({
         const index = this.data.checkedList.findIndex((item: string) => item === e.detail.uniId)
         this.data.checkedList.splice(index, 1)
       }
-      this.setData({
-        checkedList: [...this.data.checkedList],
-      })
 
       // 选择灯卡片时，面板状态的处理
+      const lightStatus = { Level: 0, ColorTemp: 0 }
       if (e.detail.proType === proType.light) {
         if (toCheck) {
-          this.setData({
-            lightStatus: {
-              Level: e.detail.mzgdPropertyDTOList['1'].Level,
-              ColorTemp: e.detail.mzgdPropertyDTOList['1'].ColorTemp,
-            },
-          })
+          lightStatus.Level = e.detail.mzgdPropertyDTOList['1'].Level
+          lightStatus.ColorTemp = e.detail.mzgdPropertyDTOList['1'].ColorTemp
         } else {
           // 将面板的灯状态恢复到上一个选中的灯
           // TODO 可优化，反转遍历？
@@ -597,12 +573,8 @@ ComponentWithComputed({
             }
           })
           if (latestSelectLightId) {
-            this.setData({
-              lightStatus: {
-                Level: deviceMap[latestSelectLightId].mzgdPropertyDTOList['1'].Level,
-                ColorTemp: deviceMap[latestSelectLightId].mzgdPropertyDTOList['1'].ColorTemp,
-              },
-            })
+            lightStatus.Level = deviceMap[latestSelectLightId].mzgdPropertyDTOList['1'].Level
+            lightStatus.ColorTemp = deviceMap[latestSelectLightId].mzgdPropertyDTOList['1'].ColorTemp
           }
         }
       }
@@ -611,11 +583,24 @@ ComponentWithComputed({
       const diffData = {} as IAnyObject
       const index = this.data.recycleList.findIndex((l: Device.DeviceItem) => l.uniId === uniId)
       diffData[`recycleList[${index}].select`] = this.data.checkedList.includes(uniId)
+
+      // 合并前面的数据变化
+      diffData.checkedList = [...this.data.checkedList]
+      diffData.lightStatus = lightStatus
+      if (toCheck && this.data.checkedList.length === 1) {
+        diffData.controlPopup = true
+        diffData.popupPlaceholder = true
+      } else if (!toCheck && this.data.checkedList.length === 0) {
+        diffData.controlPopup = false
+        diffData.popupPlaceholder = false
+      }
+
+      // 更新视图
       this.setData(diffData)
 
       // TODO
       this.updateSelectType()
-      this.updateDeviceList(e.detail)
+      // this.updateDeviceList(e.detail)
     },
     // 卡片点击时，按品类调用对应方法
     handleControlTap(e: { detail: Device.DeviceItem & { clientRect: WechatMiniprogram.ClientRect } }) {
@@ -808,7 +793,7 @@ ComponentWithComputed({
       let popupPlaceholder = false
       let controlPopup = false
 
-      // 如果一个也没选中，则执行全选
+      // 操作前状态是全不选，则执行全选
       const noChecked = !this.data.checkedList || this.data.checkedList.length === 0
       if (noChecked) {
         checkedList = deviceStore.deviceFlattenList.filter((d) => d.onLineStatus).map((d) => d.uniId)
@@ -845,8 +830,6 @@ ComponentWithComputed({
         diffData[`recycleList[${index}].select`] = noChecked
       })
       this.setData(diffData)
-
-      // this.updateDeviceList()
     },
 
     handleAddDevice() {
