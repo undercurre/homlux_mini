@@ -1,11 +1,10 @@
 import { observable, runInAction } from 'mobx-miniprogram'
-import { BleClient, unique, bleUtil } from '../../utils/index'
+import { BleClient, unique, bleUtil, Loggger } from '../../utils/index'
 import { roomBinding, deviceBinding } from '../../store/index'
 import { checkDevice } from '../../apis/index'
 
 let _foundList = [] as IBleBaseInfo[]
 
-console.info('bleDevicesStore')
 export const bleDevicesStore = observable({
   available: false, // 是否打开蓝牙开关
 
@@ -17,7 +16,7 @@ export const bleDevicesStore = observable({
 
   startBleDiscovery() {
     if (this.discovering) {
-      console.error('已经正在搜索蓝牙')
+      Loggger.error('已经正在搜索蓝牙')
       return
     }
 
@@ -69,7 +68,7 @@ export const bleDevicesStore = observable({
       powerLevel: 'high',
       interval: 3000,
       success(res) {
-        console.log('startBluetoothDevicesDiscovery, allowDuplicatesKey: true', res)
+        Loggger.log('startBluetoothDevicesDiscovery, allowDuplicatesKey: true', res)
       },
     })
   },
@@ -83,7 +82,7 @@ export const bleDevicesStore = observable({
   },
 
   reset() {
-    console.log('重置蓝牙store')
+    Loggger.log('重置蓝牙store')
     const systemSetting = wx.getSystemSetting()
 
     runInAction(() => {
@@ -97,7 +96,7 @@ export const bleDevicesStore = observable({
     wx.offBluetoothAdapterStateChange()
 
     wx.onBluetoothAdapterStateChange((res) => {
-      console.debug('onBluetoothAdapterStateChange-store', res)
+      Loggger.log('onBluetoothAdapterStateChange-store', res)
 
       runInAction(() => {
         bleDevicesStore.discovering = res.discovering
@@ -109,7 +108,7 @@ export const bleDevicesStore = observable({
             powerLevel: 'high',
             interval: 3000,
             success() {
-              console.debug('restartBluetoothDevicesDiscovery')
+              Loggger.log('restartBluetoothDevicesDiscovery')
             },
           })
         }
@@ -148,7 +147,7 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
   })
 
   if (!infoRes.success) {
-    console.error(`设备${baseInfo.mac}云端不存在注册记录`)
+    Loggger.error(`设备${baseInfo.mac}云端不存在注册记录`)
     return
   }
 
@@ -158,14 +157,14 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
     bleDevicesStore.bleDeviceList.find((foundItem) => foundItem.deviceUuid === baseInfo.deviceUuid) ||
     (infoRes.result.roomId && baseInfo.isConfig === '02')
   ) {
-    console.info(`${infoRes.result.productName}：${baseInfo.mac}已绑定`)
+    Loggger.log(`${infoRes.result.productName}：${baseInfo.mac}已绑定`)
     return
   }
 
   let { productName: deviceName } = infoRes.result
   const { proType, switchNum, modelId, productIcon } = infoRes.result
 
-  console.info(`成功发现${deviceName}：${baseInfo.mac}`)
+  Loggger.log(`成功发现${deviceName}：${baseInfo.mac}`)
 
   const bindNum = deviceBinding.store.allRoomDeviceList.filter(
     (item) => item.proType === proType && item.productId === modelId,

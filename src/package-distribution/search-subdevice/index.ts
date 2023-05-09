@@ -72,17 +72,6 @@ ComponentWithComputed({
   lifetimes: {
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
     ready: function () {
-      runInAction(() => {
-        // 重置发现的蓝牙设备列表的状态
-        bleDevicesStore.bleDeviceList.forEach(item => {
-          item.isChecked = false
-          item.status = 'waiting'
-          item.requestTimes = 20
-          item.zigbeeRepeatTimes = 2
-        })
-
-        this.updateBleDeviceListView(false)
-      })
       bleDevicesBinding.store.startBleDiscovery()
     },
     moved: function () {},
@@ -92,6 +81,18 @@ ComponentWithComputed({
     hide() {
       this.stopGwAddMode()
       bleDevicesBinding.store.stopBLeDiscovery()
+
+      // 离开当前页面时，重置发现的蓝牙设备列表的状态，以免返回扫码页重进当前页面时状态不对
+      bleDevicesStore.bleDeviceList.forEach(item => {
+        item.isChecked = false
+        item.status = 'waiting'
+        item.requestTimes = 20
+        item.zigbeeRepeatTimes = 2
+      })
+
+      runInAction(() => {
+        this.updateBleDeviceListView(false)
+      })
     },
   },
 
