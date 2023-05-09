@@ -259,6 +259,7 @@ ComponentWithComputed({
               switchName: this.data.editSwitchName,
               type: '3',
             })
+            device.switchInfoDTOList[0].switchName = this.data.editSwitchName // 用于传参，更新视图
           }
           if (this.data.editDeviceName !== device.deviceName) {
             deviceInfoUpdateVoList.push({
@@ -267,6 +268,7 @@ ComponentWithComputed({
               houseId: homeStore.currentHomeId,
               type: '0',
             })
+            device.deviceName = this.data.editDeviceName // 用于传参，更新视图
           }
           if (!deviceInfoUpdateVoList.length) {
             Toast({
@@ -286,7 +288,7 @@ ComponentWithComputed({
             })
             this.handleExitEdit()
             await Promise.all([homeStore.updateRoomCardList(), deviceStore.updateSubDeviceList()])
-            this.triggerEvent('updateList')
+            this.triggerEvent('updateList', device)
           } else {
             Toast({
               message: '修改失败',
@@ -294,6 +296,8 @@ ComponentWithComputed({
             })
           }
         } else {
+          const device = deviceStore.allRoomDeviceFlattenMap[deviceStore.editSelect[0]]
+
           if (checkInputNameIllegal(this.data.editDeviceName)) {
             Toast('设备名称不能用特殊符号或表情')
             return
@@ -319,7 +323,8 @@ ComponentWithComputed({
             })
             this.handleExitEdit()
             await Promise.all([homeStore.updateRoomCardList(), deviceStore.updateSubDeviceList()])
-            this.triggerEvent('updateList')
+            device.deviceName = this.data.editDeviceName // 用于传参，更新视图
+            this.triggerEvent('updateList', device)
           } else {
             Toast({
               message: '修改失败',
