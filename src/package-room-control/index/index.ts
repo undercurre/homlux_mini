@@ -14,7 +14,7 @@ import {
 import { runInAction } from 'mobx-miniprogram'
 import createRecycleContext from 'miniprogram-recycle-view'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { controlDevice, saveDeviceOrder, execScene } from '../../apis/index'
+import { controlDevice, execScene } from '../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
 import { showLoading, hideLoading, storage, emitter, WSEventType, rpx2px } from '../../utils/index'
 import { maxColorTempK, minColorTempK, proName, proType } from '../../config/index'
@@ -66,11 +66,9 @@ ComponentWithComputed({
     /** 场景提示部分位置 */
     sceneTipsPositionStyle: '',
     scrollTop: 0,
-    /** 控制选中个数 */
-    selectCount: 0,
     dragging: false,
     /** 拖动过程中是否有数据更新，拖动完成后判断是否更新列表 */
-    hasUpdate: false,
+    // hasUpdate: false,
     checkedList: [] as string[], // 已选择设备的id列表
     lightStatus: {} as Record<string, number>, // 当前选择的灯具的状态
     checkedType: [] as string[], // 已选择设备的类型
@@ -343,17 +341,23 @@ ComponentWithComputed({
         showDeviceOffline: false,
       })
     },
-    updateDeviceListFn(device?: Device.DeviceItem) {
-      // TODO 彻底解决view晚于method的问题
-      console.log('Begin of updateDeviceListFn, recycleList===\n', this.data.recycleList)
+    /**
+     * @description 初始化或更新设备列表
+     * @param e 设备对象，或包裹设备对象的事件
+     */
+    updateDeviceListFn(e?: Device.DeviceItem & { detail: Device.DeviceItem }) {
+      console.log('Begin of updateDeviceListFn, recycleList==, e==\n', this.data.recycleList, e)
 
-      if (device) {
+      if (e?.deviceId || e?.detail?.deviceId) {
+        const device = e?.deviceId ? e : e.detail
+
         // TODO 细致到字段的diff
-        const item = this.data.recycleList.find((l: Device.DeviceItem) => l.deviceId === device.deviceId)
-        const index = this.data.recycleList.findIndex((l: Device.DeviceItem) => l.deviceId === device.deviceId)
+        const index = this.data.recycleList.findIndex((l: Device.DeviceItem) => l.uniId === device.uniId)
+        const diffData = {} as IAnyObject
+        diffData[`recycleList[${index}]`] = device
+        this.setData(diffData)
 
-        ctx.update(index, item)
-        console.log('after ctx.update', index, item)
+        console.log('after one item update', index, device)
       } else {
         const flattenList = deviceStore.deviceFlattenList
 
@@ -378,17 +382,17 @@ ComponentWithComputed({
         // 接口返回开关面板数据以设备为一个整体，需要前端拆开后排序
         _list.sort((a, b) => a.orderNum - b.orderNum) // TODO 链式合到上一行？
         // _list.splice(16) // MOCK
+        console.log(
+          'updateDeviceListFn _list===\n',
+          _list,
+          // .map((d) => ({
+          //   deviceName: d.deviceName,
+          //   orderNum: d.orderNum,
+          //   proType: d.proType,
+          // })),
+        )
 
         if (!this.data.recycleListInited) {
-          console.log(
-            'recycleListInit flattenList to recycleList===\n',
-            _list,
-            // .map((d) => ({
-            //   deviceName: d.deviceName,
-            //   orderNum: d.orderNum,
-            //   proType: d.proType,
-            // })),
-          )
           ctx.append(_list)
           this.data.recycleListInited = true
         }
@@ -398,12 +402,13 @@ ComponentWithComputed({
           const diffData = {} as IAnyObject
           _list.forEach((device: Device.DeviceItem & { select?: boolean }, index) => {
             ;(['deviceName', 'onLineStatus', 'select'] as const).forEach((key) => {
-              // 需要检查的字段 // mzgdPropertyDTOList?
+              // 需要检查的字段 // mzgdPropertyDTOList? switchInfoDTOList?
               const newVal = device[key]
               if (newVal !== this.data.recycleList[index][key]) {
                 diffData[`recycleList[${index}].${key}`] = newVal
               }
             })
+            // diffData[`recycleList[${index}].switchInfoDTOList`] = device.switchInfoDTOList
           })
 
           console.log('update list, diffData', diffData)
@@ -414,11 +419,6 @@ ComponentWithComputed({
     },
     /** store设备列表数据更新到界面 */
     updateDeviceList(device?: Device.DeviceItem) {
-      // 正在拖拽，先标记更新，拖拽结束后再处理
-      if (this.data.dragging) {
-        this.data.hasUpdate = true
-        return
-      }
       if (!updateThrottleTimer) {
         this.updateDeviceListFn(device)
         updateThrottleTimer = setTimeout(() => {
@@ -763,31 +763,36 @@ ComponentWithComputed({
         })
       }
     },
-    handleLongpress(e: { detail: { dragging: boolean } & Device.DeviceItem }) {
-      console.log('handleLongpress', e)
-      if (!this.data.dragging) {
-        runInAction(() => {
-          if (!deviceStore.editSelect.length) {
-            deviceStore.editSelect = [e.detail.uniId]
-          }
-          // 只有创建者或者管理员能够进入编辑模式
-          deviceStore.isEditSelectMode = this.data.isCreator || this.data.isAdmin
-          // deviceStore.selectList = []
-        })
-        // this.updateDeviceList()
+    // 长按选择，进入编辑状态
+    handleLongpress(e: { detail: Device.DeviceItem }) {
+      // 已是编辑状态，不重复操作
+      if (deviceStore.isEditSelectMode) {
+        return
       }
-      // this.setData({
-      //   dragging: true,
-      // })
-    },
+      console.log('handleLongpress', e)
 
-    exitEditMode() {
-      this.setData({
-        dragging: false,
+      // 选中当前长按卡片
+      runInAction(() => {
+        deviceStore.editSelect = [e.detail.uniId]
+
+        // 只有创建者或者管理员能够进入编辑模式
+        if (this.data.isCreator || this.data.isAdmin) {
+          deviceStore.isEditSelectMode = true
+        }
       })
+
+      // 取消普通选择
+      if (this.data.checkedList?.length) {
+        this.handleAllSelect()
+      }
     },
 
-    // TODO refactor
+    // exitEditMode() {
+    //   this.setData({
+    //     isEditSelectMode: false,
+    //   })
+    // },
+
     handleAllSelect() {
       let checkedList = [] as string[] // 默认全不选
       let popupPlaceholder = false
