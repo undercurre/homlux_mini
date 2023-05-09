@@ -72,6 +72,17 @@ ComponentWithComputed({
   lifetimes: {
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
     ready: function () {
+      runInAction(() => {
+        // 重置发现的蓝牙设备列表的状态
+        bleDevicesStore.bleDeviceList.forEach(item => {
+          item.isChecked = false
+          item.status = 'waiting'
+          item.requestTimes = 20
+          item.zigbeeRepeatTimes = 2
+        })
+
+        this.updateBleDeviceListView(false)
+      })
       bleDevicesBinding.store.startBleDiscovery()
     },
     moved: function () {},
@@ -433,22 +444,6 @@ ComponentWithComputed({
       bleDeviceItem.requesting = false
 
       this.updateBleDeviceListView(false)
-    },
-
-    /**
-     * 试一试
-     */
-    async getLightState(event: WechatMiniprogram.CustomEvent) {
-      const { id } = event.currentTarget.dataset
-
-      const bleDeviceItem = bleDevicesBinding.store.bleDeviceList.find((item) => item.deviceUuid === id) as IBleDevice
-
-      const res = await bleDeviceItem.client.getZigbeeState()
-
-      // const res = await bleDeviceItem.client.getLightState()
-
-      Loggger.log('getLightState-res', res)
-      bleDeviceItem.client.close() // 发送指令完毕后需要断开已连接的设备，否则连接数满了之后无法连接新的设备
     },
 
     // 重新添加

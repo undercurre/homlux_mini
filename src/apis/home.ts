@@ -1,4 +1,4 @@
-import { mzaioRequest } from '../utils/index'
+import { mzaioRequest, Loggger } from '../utils/index'
 import { userBinding } from '../store/index'
 
 /**
@@ -54,6 +54,7 @@ export async function saveOrUpdateUserHouseInfo(
  * 更新默认家庭
  */
 export async function updateDefaultHouse(houseId: string, options?: { loading?: boolean }) {
+  console.debug('切换家庭updateDefaultHouse', houseId)
   return await mzaioRequest.post<Home.IHomeDetail>({
     log: true,
     loading: options?.loading ?? false,
