@@ -130,7 +130,6 @@ export class WifiSocket {
 
         if (isConnected) {
           clearTimeout(this.wifiTimeoutTimeId)
-          this.queryWifiTimeId = 0
 
           resolve(successRes)
         } else if (this.wifiTimeoutTimeId) {
@@ -165,6 +164,9 @@ export class WifiSocket {
     }
 
     this.initTcpSocket()
+
+    // 防止还在初始化socket，用户点击触发了connect方法，导致udp重复初始化
+    this.queryWifiTimeId = 0
 
     return { errCode: 0, success: true, msg: '初始化成功' }
   }

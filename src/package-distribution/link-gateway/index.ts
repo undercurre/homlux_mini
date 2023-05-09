@@ -275,6 +275,11 @@ ComponentWithComputed({
           throw connectRes
         }
 
+        this.setData({
+          activeIndex: 1,
+          isConnectDevice: true,
+        })
+
         reportInfo.connect_wifi_time = Date.now() - now
 
         const initRes = await this.data._socket.init()
@@ -282,11 +287,6 @@ ComponentWithComputed({
         if (!initRes.success) {
           throw initRes
         }
-
-        this.setData({
-          activeIndex: 1,
-          isConnectDevice: true,
-        })
 
         const { type } = this.data
 
