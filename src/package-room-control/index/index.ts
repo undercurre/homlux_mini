@@ -352,7 +352,9 @@ ComponentWithComputed({
         const device = e?.deviceId ? e : e.detail
 
         // TODO 细致到字段的diff
-        const index = this.data.recycleList.findIndex((d: Device.DeviceItem) => d.uniId === device.uniId || d.deviceId === device.deviceId)
+        const index = this.data.recycleList.findIndex(
+          (d: Device.DeviceItem) => d.uniId === device.uniId || d.deviceId === device.deviceId,
+        )
         const diffData = {} as IAnyObject
         diffData[`recycleList[${index}]`] = device
         this.setData(diffData)
