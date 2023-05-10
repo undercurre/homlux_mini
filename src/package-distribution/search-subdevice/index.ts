@@ -91,14 +91,6 @@ ComponentWithComputed({
     },
   },
 
-  pageLifetimes: {
-    hide() {
-      Loggger.log('附近子设备页hide', this.data.status)
-      this.stopGwAddMode()
-      bleDevicesBinding.store.stopBLeDiscovery()
-    },
-  },
-
   methods: {
     startAnimation() {
       // 加载动画
