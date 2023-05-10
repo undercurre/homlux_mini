@@ -48,7 +48,7 @@ ComponentWithComputed({
       (storage.get<number>('windowHeight') as number) -
       (storage.get<number>('statusBarHeight') as number) -
       (storage.get<number>('bottomBarHeight') as number) - // IPX
-      rpx2px(170) - // 创建场景、标题栏
+      rpx2px(210) - // 创建场景、标题栏
       (storage.get<number>('navigationBarHeight') as number),
     /** 展示点中离线设备弹窗 */
     showDeviceOffline: false,
@@ -865,29 +865,32 @@ ComponentWithComputed({
       // })
       this.updateSelectType()
     },
-    recycleViewScroll(e: IAnyObject) {
-      const scrollBottom = e.detail.scrollTop - e.detail.deltaY + this.data.recycleViewHeight
-      // console.log('recycleViewScroll', e, scrollBottom)
+    // recycleViewScroll(e: IAnyObject) {
+    //   const scrollBottom = e.detail.scrollTop - e.detail.deltaY + this.data.recycleViewHeight
+    //   // console.log('recycleViewScroll', e, scrollBottom)
 
-      if (this.data.showLowerBtn && scrollBottom < e.detail.scrollHeight) {
-        this.setData({
-          showLowerBtn: false,
-        })
-      }
-      // 兜底判断（scrollToLower 偶然不触发，加lower-threshold似乎也没有用）
-      else if (!this.data.showLowerBtn && scrollBottom >= e.detail.scrollHeight) {
-        this.setData({
-          showLowerBtn: true,
-        })
-      }
-    },
-    scrollToLower() {
-      // console.log('scrollToLower')
-      if (!this.data.showLowerBtn) {
-        this.setData({
-          showLowerBtn: true,
-        })
-      }
-    },
+    //   if (this.data.showLowerBtn && scrollBottom < e.detail.scrollHeight) {
+    //     this.setData({
+    //       showLowerBtn: false,
+    //     })
+    //   }
+    //   // 兜底判断（scrollToLower 偶然不触发，加lower-threshold似乎也没有用）
+    //   else if (!this.data.showLowerBtn && scrollBottom >= e.detail.scrollHeight) {
+    //     this.setData({
+    //       showLowerBtn: true,
+    //     })
+    //   }
+    // },
+    // scrollToLower() {
+    //   // console.log('scrollToLower')
+    //   if (!this.data.showLowerBtn) {
+    //     this.setData({
+    //       showLowerBtn: true,
+    //     })
+    //   }
+    // },
+    // handleBefore() {
+    //   console.log('handleBefore')
+    // }
   },
 })
