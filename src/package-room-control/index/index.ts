@@ -610,7 +610,6 @@ ComponentWithComputed({
         diffData.controlPopup = true
         diffData.popupPlaceholder = true
       } else if (!toCheck && this.data.checkedList.length === 0) {
-        diffData.controlPopup = false
         diffData.popupPlaceholder = false
       }
 
@@ -813,23 +812,19 @@ ComponentWithComputed({
     // },
 
     handleAllSelect() {
+      const diffData = {} as IAnyObject
       let checkedList = [] as string[] // 默认全不选
-      let popupPlaceholder = false
-      let controlPopup = false
+
+      diffData.popupPlaceholder = false
 
       // 操作前状态是全不选，则执行全选
       const noChecked = !this.data.checkedList || this.data.checkedList.length === 0
       if (noChecked) {
         checkedList = deviceStore.deviceFlattenList.filter((d) => d.onLineStatus).map((d) => d.uniId)
-        popupPlaceholder = true
-        controlPopup = true
+        diffData.popupPlaceholder = true
+        diffData.controlPopup = true
       }
-
-      this.setData({
-        checkedList,
-        popupPlaceholder,
-        controlPopup,
-      })
+      diffData.checkedList = checkedList
 
       // 执行全选，设定第一个灯的状态为弹框状态
       if (!this.data.isLightSelectOne) {
@@ -846,14 +841,13 @@ ComponentWithComputed({
         }
       }
 
-      this.updateSelectType()
-
       // 更新选中状态
-      const diffData = {} as IAnyObject
       this.data.recycleList.forEach((_: Device.DeviceItem, index: number) => {
         diffData[`recycleList[${index}].select`] = noChecked
       })
       this.setData(diffData)
+
+      this.updateSelectType()
     },
 
     handleAddDevice() {
