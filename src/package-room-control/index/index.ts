@@ -44,7 +44,7 @@ ComponentWithComputed({
       (storage.get<number>('navigationBarHeight') as number) +
       'px',
     recycleViewWidth: rpx2px(720), // recycle-view 宽度
-    recycleViewHeight:
+    recycleViewHeight: // rpx2px(232) * 1,
       (storage.get<number>('windowHeight') as number) -
       (storage.get<number>('statusBarHeight') as number) -
       (storage.get<number>('bottomBarHeight') as number) - // IPX
@@ -199,7 +199,7 @@ ComponentWithComputed({
         dataKey: 'recycleList',
         page: this,
         itemSize: {
-          width: rpx2px(76),
+          width: rpx2px(180),
           height: rpx2px(232),
         },
         useInPage: false,
@@ -358,11 +358,17 @@ ComponentWithComputed({
       if (e?.deviceId || e?.detail?.deviceId) {
         const device = e?.deviceId ? e : e.detail
 
-        // TODO 细致到字段的diff
         const index = this.data.recycleList.findIndex(
-          (d: Device.DeviceItem) => d.uniId === device!.uniId || d.deviceId === device!.deviceId,
+          (d: Device.DeviceItem) => {
+            if (d.proType === proType.switch) {
+              return d.uniId === device!.uniId
+            } else {
+              return d.deviceId === device!.deviceId
+            }
+          }
         )
         const diffData = {} as IAnyObject
+        // TODO 细致到字段的diff
         diffData[`recycleList[${index}]`] = device
         this.setData(diffData)
 
@@ -372,16 +378,14 @@ ComponentWithComputed({
 
         // 如果为空则不初始化，否则会recycleList.length===0导致在视图中销毁recycleView导致错误堵塞
         // TODO review 是否会引起其他问题
-        // TODO 可通过recycleList内部方法，显示空内容彻底解决此问题
+        // TODO 可通过recycleList内部方法，显示空内容彻底解决此问题？
         if (!flattenList.length) {
           return
         }
 
-        // HACK 使用recycleListInited标志防止重复初始化
         if (!ctx) {
           return
         }
-        // 初始化
         const _list = flattenList.map((device) => ({
           ...device,
           dragId: device.uniId,
@@ -401,6 +405,7 @@ ComponentWithComputed({
           // })),
         )
 
+        // 初始化
         if (!this.data.recycleListInited) {
           ctx.append(_list)
           this.data.recycleListInited = true
@@ -413,7 +418,8 @@ ComponentWithComputed({
             ;(['deviceName', 'onLineStatus', 'select'] as const).forEach((key) => {
               // 需要检查的字段 // mzgdPropertyDTOList? switchInfoDTOList?
               const newVal = device[key]
-              if (newVal !== this.data.recycleList[index][key]) {
+              const recycleItem = this.data.recycleList[index]
+              if (recycleItem !== recycleItem && newVal !== undefined && newVal !== recycleItem[key]) {
                 diffData[`recycleList[${index}].${key}`] = newVal
               }
             })
