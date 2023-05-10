@@ -866,19 +866,24 @@ ComponentWithComputed({
       this.updateSelectType()
     },
     recycleViewScroll(e: IAnyObject) {
-      const offset = 100 // 每100上报一次，有时刚好在阈值上导致检测不到滚动到底部
-      const scrollBottom = e.detail.scrollTop + this.data.recycleViewHeight
-      console.log('recycleViewScroll', e, scrollBottom)
+      const scrollBottom = e.detail.scrollTop - e.detail.deltaY + this.data.recycleViewHeight
+      // console.log('recycleViewScroll', e, scrollBottom)
 
       if (this.data.showLowerBtn && scrollBottom < e.detail.scrollHeight) {
         this.setData({
           showLowerBtn: false,
         })
-      } else if (!this.data.showLowerBtn && scrollBottom + offset >= e.detail.scrollHeight) {
+      } else if (!this.data.showLowerBtn && scrollBottom >= e.detail.scrollHeight) {
         this.setData({
           showLowerBtn: true,
         })
       }
     },
+    // scrollToLower() {
+    //   console.log('scrollToLower')
+    //   // this.setData({
+    //   //   showLowerBtn: true,
+    //   // })
+    // }
   },
 })
