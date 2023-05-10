@@ -168,6 +168,7 @@ ComponentWithComputed({
             }
           }
         }
+        // FIXME ws消息很多，除了connect_success_status外还应该过滤一下
         if (!throttleTimer && res.result.eventType !== 'connect_success_status') {
           homeStore.updateRoomCardList()
           throttleTimer = setTimeout(async () => {

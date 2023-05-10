@@ -19,15 +19,16 @@ type Events = {
 }
 
 export const WSEventType = {
-  device_property: 'device_property',
+  device_property: 'device_property', // 设备状态更新
   device_online_status: 'device_online_status',
   device_offline_status: 'device_offline_status', // 设备强绑后离线事件
   device_del: 'device_del',
   room_del: 'room_del',
-  device_replace: 'device_replace',
-  connect_success_status: 'connect_success_status',
+  device_replace: 'device_replace', // 设备替换
+  connect_success_status: 'connect_success_status', // webSocket连接已建立成功?
   bind_device: 'bind_device',
   invite_user_house: 'invite_user_house', // 用户加入家庭
+  control_fail: 'control_fail', // 控制失败 TODO 未发现使用逻辑，预留？
 }
 
 export const emitter: Emitter<Events> = mitt<Events>()

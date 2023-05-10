@@ -77,7 +77,7 @@
 
       <!-- 设备卡片列表 -->
       <recycle-view batch="{{batchSetRecycleData}}" id="recycleListId" batch-key="batchSetRecycleData" width="{{recycleViewWidth}}" height="{{recycleViewHeight}}">
-        <recycle-item wx:for="{{recycleList}}" wx:key="deivceId">
+        <recycle-item wx:for="{{recycleList}}" wx:key="uniId">
           <card item="{{item}}" bind:controlTap="handleControlTap" bind:cardTap="handleDeviceCardTap" bind:offlineTap="handleShowDeviceOffline" bind:cardLongpress="handleLongpress"> </card>
         </recycle-item>
 

@@ -295,7 +295,9 @@ ComponentWithComputed({
               zIndex: 9999,
             })
           }
-        } else {
+        }
+        // 修改灯属性
+        else {
           const device = deviceStore.allRoomDeviceFlattenMap[deviceStore.editSelect[0]]
 
           if (checkInputNameIllegal(this.data.editDeviceName)) {
