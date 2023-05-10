@@ -43,6 +43,13 @@ ComponentWithComputed({
       (storage.get<number>('statusBarHeight') as number) +
       (storage.get<number>('navigationBarHeight') as number) +
       'px',
+    recycleViewWidth: rpx2px(720), // recycle-view 宽度
+    recycleViewHeight:
+      (storage.get<number>('windowHeight') as number) -
+      (storage.get<number>('statusBarHeight') as number) -
+      (storage.get<number>('bottomBarHeight') as number) - // IPX
+      rpx2px(210) - // 创建场景、标题栏
+      (storage.get<number>('navigationBarHeight') as number),
     /** 展示点中离线设备弹窗 */
     showDeviceOffline: false,
     /** 点击的离线设备的信息 */
@@ -73,6 +80,7 @@ ComponentWithComputed({
     lightStatus: {} as Record<string, number>, // 当前选择的灯具的状态
     checkedType: [] as string[], // 已选择设备的类型
     recycleListInited: false,
+    showLowerBtn: false,
   },
 
   computed: {
@@ -165,15 +173,12 @@ ComponentWithComputed({
     canAddDevice(data) {
       return data.isCreator || data.isAdmin
     },
-    // ! recycle-view 宽度
-    recycleViewWidth() {
-      return rpx2px(750)
-    },
-    recycleViewHeight(data) {
-      let amount = data.recycleList?.length || 0
-      if (amount > 16) amount = 16
-      return Math.ceil(amount / 4) * rpx2px(232)
-    },
+
+    // recycleViewHeight(data) {
+    //   let amount = data.recycleList?.length || 0
+    //   if (amount > 16) amount = 16
+    //   return Math.ceil(amount / 4) * rpx2px(232)
+    // },
   },
 
   watch: {
@@ -207,6 +212,8 @@ ComponentWithComputed({
       showLoading()
       await this.reloadData()
       hideLoading()
+
+      // ws消息处理
       emitter.on('wsReceive', async (e) => {
         if (e.result.eventType === WSEventType.device_property) {
           // 如果有传更新的状态数据过来，直接更新store
@@ -345,7 +352,7 @@ ComponentWithComputed({
      * @description 初始化或更新设备列表
      * @param e 设备对象，或包裹设备对象的事件
      */
-    updateDeviceListFn(e?: Device.DeviceItem & { detail: Device.DeviceItem }) {
+    updateDeviceListFn(e?: Device.DeviceItem & { detail?: Device.DeviceItem }) {
       console.log('Begin of updateDeviceListFn, recycleList==, e==\n', this.data.recycleList, e)
 
       if (e?.deviceId || e?.detail?.deviceId) {
@@ -353,7 +360,7 @@ ComponentWithComputed({
 
         // TODO 细致到字段的diff
         const index = this.data.recycleList.findIndex(
-          (d: Device.DeviceItem) => d.uniId === device.uniId || d.deviceId === device.deviceId,
+          (d: Device.DeviceItem) => d.uniId === device!.uniId || d.deviceId === device!.deviceId,
         )
         const diffData = {} as IAnyObject
         diffData[`recycleList[${index}]`] = device
@@ -420,7 +427,7 @@ ComponentWithComputed({
       }
     },
     /** store设备列表数据更新到界面 */
-    updateDeviceList(device?: Device.DeviceItem) {
+    updateDeviceList(device?: Device.DeviceItem & { detail?: Device.DeviceItem }) {
       if (!updateThrottleTimer) {
         this.updateDeviceListFn(device)
         updateThrottleTimer = setTimeout(() => {
@@ -858,5 +865,32 @@ ComponentWithComputed({
       // })
       this.updateSelectType()
     },
+    // recycleViewScroll(e: IAnyObject) {
+    //   const scrollBottom = e.detail.scrollTop - e.detail.deltaY + this.data.recycleViewHeight
+    //   // console.log('recycleViewScroll', e, scrollBottom)
+
+    //   if (this.data.showLowerBtn && scrollBottom < e.detail.scrollHeight) {
+    //     this.setData({
+    //       showLowerBtn: false,
+    //     })
+    //   }
+    //   // 兜底判断（scrollToLower 偶然不触发，加lower-threshold似乎也没有用）
+    //   else if (!this.data.showLowerBtn && scrollBottom >= e.detail.scrollHeight) {
+    //     this.setData({
+    //       showLowerBtn: true,
+    //     })
+    //   }
+    // },
+    // scrollToLower() {
+    //   // console.log('scrollToLower')
+    //   if (!this.data.showLowerBtn) {
+    //     this.setData({
+    //       showLowerBtn: true,
+    //     })
+    //   }
+    // },
+    // handleBefore() {
+    //   console.log('handleBefore')
+    // }
   },
 })
