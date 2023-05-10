@@ -873,17 +873,21 @@ ComponentWithComputed({
         this.setData({
           showLowerBtn: false,
         })
-      } else if (!this.data.showLowerBtn && scrollBottom >= e.detail.scrollHeight) {
+      }
+      // 兜底判断（scrollToLower 偶然不触发，加lower-threshold似乎也没有用）
+      else if (!this.data.showLowerBtn && scrollBottom >= e.detail.scrollHeight) {
         this.setData({
           showLowerBtn: true,
         })
       }
     },
-    // scrollToLower() {
-    //   console.log('scrollToLower')
-    //   // this.setData({
-    //   //   showLowerBtn: true,
-    //   // })
-    // }
+    scrollToLower() {
+      // console.log('scrollToLower')
+      if (!this.data.showLowerBtn) {
+        this.setData({
+          showLowerBtn: true,
+        })
+      }
+    },
   },
 })

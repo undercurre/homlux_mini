@@ -69,7 +69,7 @@
   <view wx:if="{{roomHasSubDevice}}" class="w-750rpx flex flex-col items-center">
     <view class="w-720rpx">
       <!-- 设备卡片列表 -->
-      <recycle-view batch="{{batchSetRecycleData}}" id="recycleListId" batch-key="batchSetRecycleData" width="{{recycleViewWidth}}" height="{{recycleViewHeight}}" bindscroll="recycleViewScroll" class="relative">
+      <recycle-view batch="{{batchSetRecycleData}}" id="recycleListId" batch-key="batchSetRecycleData" width="{{recycleViewWidth}}" height="{{recycleViewHeight}}" lower-threshold="{{201}}" bindscroll="recycleViewScroll" bindscrolltolower="scrollToLower" class="relative">
         <view slot="before">
           <view class="flex justify-between items-center h-44rpx" wx:if="{{recycleList && recycleList.length > 0}}">
             <text class="text-24rpx text-black-59 ml-17rpx">{{recycleList ? recycleList.length : 0}}个设备</text>
