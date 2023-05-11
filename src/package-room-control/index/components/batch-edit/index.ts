@@ -60,7 +60,7 @@ ComponentWithComputed({
               translateY: '0%',
             },
           ],
-          200,
+          100,
         )
         this.animate(
           '#top',
@@ -72,7 +72,7 @@ ComponentWithComputed({
               translateY: '0%',
             },
           ],
-          200,
+          100,
         )
       } else {
         this.animate(
@@ -85,7 +85,7 @@ ComponentWithComputed({
               translateY: '100%',
             },
           ],
-          200,
+          100,
         )
         this.animate(
           '#top',
@@ -97,7 +97,7 @@ ComponentWithComputed({
               translateY: '-100%',
             },
           ],
-          200,
+          100,
         )
       }
     },
