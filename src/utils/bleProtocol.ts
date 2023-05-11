@@ -1,3 +1,4 @@
+import { isAndroid } from './app'
 import { aesUtil, delay, strUtil, Loggger } from './index'
 
 // 定义了与BLE通路相关的所有事件/动作/命令的集合；其值域及表示意义为：对HOMLUX设备主控与app之间可能的各种操作的概括分类
@@ -118,7 +119,9 @@ export class BleClient {
     try {
       // 连接后蓝牙突然断开，下面的接口会无返回也不会报错，需要超时处理
       // 连接成功，获取服务,IOS无法跳过该接口，否则后续接口会报100004，找不到服务
-      const bleServiceRes = await wx
+
+      if (!isAndroid()) {
+        const bleServiceRes = await wx
         .getBLEDeviceServices({
           deviceId: this.deviceUuid,
         })
@@ -127,6 +130,7 @@ export class BleClient {
         })
 
       Loggger.log(`【${this.mac}】bleServiceRes`, bleServiceRes)
+      }
 
       // IOS无法跳过该接口，否则后续接口会报10005	no characteristic	没有找到指定特征
       const characRes = await wx
@@ -138,7 +142,7 @@ export class BleClient {
           throw err
         })
 
-      // 取第一个属性（固定，为可写可读可监听），
+      // 取第一个属性（固定，为可写可读可监听），不同品类的子设备的characteristicId不一样，同类的一样
       const characteristicId = characRes.characteristics[0].uuid
       this.characteristicId = characteristicId
       Loggger.log(`【${this.mac}】characRes`, characRes)

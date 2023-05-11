@@ -1,4 +1,4 @@
-import { mzaioRequest, Loggger } from '../utils/index'
+import { mzaioRequest } from '../utils/index'
 import { userBinding } from '../store/index'
 
 /**

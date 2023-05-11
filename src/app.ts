@@ -13,10 +13,6 @@ import { reaction } from 'mobx-miniprogram'
 
 App<IAppOption>({
   async onLaunch() {
-    // wx.setEnableDebug({
-    //   enableDebug: true,
-    // }).catch((err) => err)
-
     // 加载svg数据
     this.globalData.svgs = svgs
 

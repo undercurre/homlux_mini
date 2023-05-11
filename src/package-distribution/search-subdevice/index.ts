@@ -4,7 +4,7 @@ import { runInAction } from 'mobx-miniprogram'
 import Toast from '@vant/weapp/toast/toast'
 import asyncPool from 'tiny-async-pool'
 import { homeBinding, roomBinding, homeStore } from '../../store/index'
-import { bleDevicesBinding, IBleDevice, bleDevicesStore } from '../store/bleDeviceStore'
+import { bleDevicesBinding, IBleDevice, bleDevicesStore, updateBleDeviceList } from '../store/bleDeviceStore'
 import { getCurrentPageParams, emitter, Loggger } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { sendCmdAddSubdevice, bindDevice, batchUpdate } from '../../apis/index'
@@ -26,7 +26,13 @@ ComponentWithComputed({
    */
   data: {
     _addModeTimeId: 0,
-    _bindTimeOutIdMap: {} as IAnyObject, // 等待绑定成功推送的超时等待的timeId集合，key为mac
+    _deviceMap: {} as {
+      [x: string]: {
+        bindTimeoutId: number
+        requestTimes: number // 查询云端在线次数
+        zigbeeRepeatTimes: number // 配网自动重试次数
+      }
+    }, // 发现到的子设备配网数据集合（无关UI展示的），key为mac
     isEditDevice: false,
     editDeviceInfo: {
       deviceUuid: '',
@@ -72,16 +78,17 @@ ComponentWithComputed({
   lifetimes: {
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
     ready: function () {
+      this.setUpdatePerformanceListener({withDataPaths: true}, (res) => {
+        Loggger.log('setUpdatePerformanceListener', res)
+      })
       // 开始配子设备后，侧滑离开当前页面时，重置发现的蓝牙设备列表的状态，以免返回扫码页重进当前页面时状态不对
       bleDevicesStore.bleDeviceList.forEach((item) => {
         item.isChecked = false
         item.status = 'waiting'
-        item.requestTimes = 20
-        item.zigbeeRepeatTimes = 2
       })
 
       this.updateBleDeviceListView(false)
-      
+
       bleDevicesBinding.store.startBleDiscovery()
     },
     detached() {
@@ -157,14 +164,14 @@ ComponentWithComputed({
         // 若全部执行并等待完毕，则关闭监听、网关配网
         if (!hasWaitItem) {
           this.stopGwAddMode()
-
-          Loggger.log('配网结束')
         }
       }
 
-      runInAction(() => {
-        bleDevicesBinding.store.bleDeviceList = bleDevicesBinding.store.bleDeviceList.concat([])
-      })
+      // runInAction(() => {
+      //   bleDevicesBinding.store.bleDeviceList = bleDevicesBinding.store.bleDeviceList.concat([])
+      // })
+
+      updateBleDeviceList()
     },
 
     async startGwAddMode() {
@@ -225,6 +232,14 @@ ComponentWithComputed({
           return
         }
 
+        list.forEach((item) => {
+          this.data._deviceMap[item.mac] = {
+            bindTimeoutId: 0,
+            requestTimes: 20,
+            zigbeeRepeatTimes: 2,
+          }
+        })
+
         // 监听云端推送，判断哪些子设备绑定成功
         emitter.on('bind_device', (data) => {
           Loggger.log('bind_device', data)
@@ -235,7 +250,8 @@ ComponentWithComputed({
 
           if (bleDevice) {
             Loggger.log(bleDevice.mac, '绑定推送成功')
-            this.data._bindTimeOutIdMap[bleDevice.mac] && clearTimeout(this.data._bindTimeOutIdMap[bleDevice.mac])
+            this.data._deviceMap[bleDevice.mac].bindTimeoutId &&
+              clearTimeout(this.data._deviceMap[bleDevice.mac].bindTimeoutId)
             this.bindBleDeviceToClound(bleDevice)
           }
         })
@@ -284,7 +300,7 @@ ComponentWithComputed({
     },
 
     async startZigbeeNet(bleDevice: IBleDevice) {
-      Loggger.log(`【${bleDevice.mac}】开始子设备配网，第${3 - bleDevice.zigbeeRepeatTimes}次`)
+      Loggger.log(`【${bleDevice.mac}】开始子设备配网，第${3 - this.data._deviceMap[bleDevice.mac].zigbeeRepeatTimes}次`)
 
       const timeout = 60 // 等待绑定推送，超时60s
       // 过滤刚出厂设备刚起电时会默认进入配网状态期间，被网关绑定的情况，这种当做成功配网，无需再下发配网指令，否则可能会导致zigbee入网失败
@@ -294,12 +310,11 @@ ComponentWithComputed({
         if (configRes.success && configRes.result.isConfig === '02') {
           bleDevice.isConfig = configRes.result.isConfig
           // 等待绑定推送，超时处理
-          this.data._bindTimeOutIdMap[bleDevice.mac] = setTimeout(() => {
+          this.data._deviceMap[bleDevice.mac].bindTimeoutId = setTimeout(() => {
             if (bleDevice.status === 'waiting') {
               bleDevice.status = 'fail'
               Loggger.error(bleDevice.mac + '绑定推送监听超时')
               this.updateBleDeviceListView()
-              delete this.data._bindTimeOutIdMap[bleDevice.mac]
             }
           }, timeout * 1000)
 
@@ -307,7 +322,7 @@ ComponentWithComputed({
         }
       }
 
-      bleDevice.zigbeeRepeatTimes--
+      this.data._deviceMap[bleDevice.mac].zigbeeRepeatTimes--
 
       const res = await bleDevice.client.startZigbeeNet()
 
@@ -321,7 +336,7 @@ ComponentWithComputed({
             this.updateBleDeviceListView()
           }
         }, timeout * 1000)
-      } else if (bleDevice.zigbeeRepeatTimes === 0) {
+      } else if (this.data._deviceMap[bleDevice.mac].zigbeeRepeatTimes === 0) {
         Loggger.error(`子设备配网失败：${bleDevice.mac}`, res)
         bleDevice.status = 'fail'
 
@@ -407,7 +422,7 @@ ComponentWithComputed({
         isEditDevice: false,
       })
 
-      this.updateBleDeviceListView()
+      this.updateBleDeviceListView(false)
     },
 
     cancelEditDevice() {
@@ -453,11 +468,11 @@ ComponentWithComputed({
 
       for (const item of failList) {
         item.status = 'waiting'
-        item.requestTimes = 20
-        item.zigbeeRepeatTimes = 2
+        this.data._deviceMap[item.mac].requestTimes = 20
+        this.data._deviceMap[item.mac].zigbeeRepeatTimes = 2
       }
 
-      this.updateBleDeviceListView()
+      this.updateBleDeviceListView(false)
 
       this.beginAddDevice(failList)
     },

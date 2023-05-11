@@ -1,9 +1,16 @@
 import { observable, runInAction } from 'mobx-miniprogram'
-import { BleClient, unique, bleUtil, Loggger } from '../../utils/index'
+import { BleClient, unique, bleUtil, Loggger, throttle } from '../../utils/index'
 import { roomBinding, deviceBinding } from '../../store/index'
 import { checkDevice } from '../../apis/index'
 
 let _foundList = [] as IBleBaseInfo[]
+
+export const updateBleDeviceList = throttle(() => {
+  runInAction(() => {
+    bleDevicesStore.bleDeviceList = bleDevicesStore.bleDeviceList.concat([])
+  })
+  Loggger.log('updateBleDeviceList')
+}, 3000)
 
 export const bleDevicesStore = observable({
   available: false, // 是否打开蓝牙开关
@@ -202,9 +209,7 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
     roomName: roomBinding.store.currentRoom.roomName,
     switchList: [],
     status: 'waiting',
-    requestTimes: 20,
     requesting: false,
-    zigbeeRepeatTimes: 2,
   }
 
   // 面板需要显示按键信息编辑
@@ -242,9 +247,7 @@ export interface IBleDevice {
   client: BleClient
   status: 'waiting' | 'fail' | 'success' // 配网状态
   isChecked: boolean // 是否被选中
-  requestTimes: number // 查询云端在线次数
   requesting: boolean // 是否正在发送试一试命令
-  zigbeeRepeatTimes: number // 配网自动重试次数
 }
 
 export interface IBleBaseInfo {
