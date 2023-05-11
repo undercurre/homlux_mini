@@ -230,8 +230,14 @@ ComponentWithComputed({
             // 直接更新store里的数据，更新完退出回调函数
           }
 
-          const uniId = `${e.result.eventData.deviceId}:${e.result.eventData.ep}`
-          const deviceInRoom = this.data.recycleList.find((d: Device.DeviceItem) => d.uniId === uniId)
+          // 定位要更新的设备卡片
+          const deviceInRoom = this.data.recycleList.find((d: Device.DeviceItem) => {
+            if (d.proType === proType.switch) {
+              return d.uniId === `${e.result.eventData.deviceId}:${e.result.eventData.ep}`
+            } else {
+              return d.deviceId === e.result.eventData.deviceId
+            }
+          })
           if (deviceInRoom) {
             deviceInRoom.mzgdPropertyDTOList[e.result.eventData.ep] = {
               ...deviceInRoom.mzgdPropertyDTOList[e.result.eventData.ep],
