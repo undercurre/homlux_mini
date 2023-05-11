@@ -44,6 +44,7 @@ ComponentWithComputed({
       (storage.get<number>('navigationBarHeight') as number) +
       'px',
     recycleViewWidth: rpx2px(720), // recycle-view 宽度
+    // rpx2px(232) * 1,
     recycleViewHeight:
       (storage.get<number>('windowHeight') as number) -
       (storage.get<number>('statusBarHeight') as number) -
@@ -199,7 +200,7 @@ ComponentWithComputed({
         dataKey: 'recycleList',
         page: this,
         itemSize: {
-          width: rpx2px(76),
+          width: rpx2px(180),
           height: rpx2px(232),
         },
         useInPage: false,
@@ -228,13 +229,22 @@ ComponentWithComputed({
             roomStore.updateRoomCardLightOnNum()
             // 直接更新store里的数据，更新完退出回调函数
           }
-          const deviceInRoom = deviceStore.deviceList.find((device) => device.deviceId === e.result.eventData.deviceId)
+
+          // 定位要更新的设备卡片
+          const deviceInRoom = this.data.recycleList.find((d: Device.DeviceItem) => {
+            if (d.proType === proType.switch) {
+              return d.uniId === `${e.result.eventData.deviceId}:${e.result.eventData.ep}`
+            } else {
+              return d.deviceId === e.result.eventData.deviceId
+            }
+          })
           if (deviceInRoom) {
             deviceInRoom.mzgdPropertyDTOList[e.result.eventData.ep] = {
               ...deviceInRoom.mzgdPropertyDTOList[e.result.eventData.ep],
               ...e.result.eventData.event,
             }
-            this.updateDeviceList(deviceInHouse)
+            console.log('deviceInRoom', deviceInRoom)
+            this.updateDeviceList(deviceInRoom)
             // 直接更新store里的数据，更新完退出回调函数
             return
           }
@@ -358,13 +368,19 @@ ComponentWithComputed({
       if (e?.deviceId || e?.detail?.deviceId) {
         const device = e?.deviceId ? e : e.detail
 
-        // TODO 细致到字段的diff
-        const index = this.data.recycleList.findIndex(
-          (d: Device.DeviceItem) => d.uniId === device!.uniId || d.deviceId === device!.deviceId,
-        )
-        const diffData = {} as IAnyObject
-        diffData[`recycleList[${index}]`] = device
-        this.setData(diffData)
+        const index = this.data.recycleList.findIndex((d: Device.DeviceItem) => {
+          if (d.proType === proType.switch) {
+            return d.uniId === device!.uniId
+          } else {
+            return d.deviceId === device!.deviceId
+          }
+        })
+        if (index !== -1) {
+          const diffData = {} as IAnyObject
+          // TODO 细致到字段的diff
+          diffData[`recycleList[${index}]`] = device
+          this.setData(diffData)
+        }
 
         console.log('after one item update', index, device)
       } else {
@@ -372,19 +388,16 @@ ComponentWithComputed({
 
         // 如果为空则不初始化，否则会recycleList.length===0导致在视图中销毁recycleView导致错误堵塞
         // TODO review 是否会引起其他问题
-        // TODO 可通过recycleList内部方法，显示空内容彻底解决此问题
+        // TODO 可通过recycleList内部方法，显示空内容彻底解决此问题？
         if (!flattenList.length) {
           return
         }
 
-        // HACK 使用recycleListInited标志防止重复初始化
         if (!ctx) {
           return
         }
-        // 初始化
         const _list = flattenList.map((device) => ({
           ...device,
-          dragId: device.uniId,
           type: proName[device.proType],
           select: this.data.checkedList.includes(device.uniId),
         }))
@@ -401,19 +414,22 @@ ComponentWithComputed({
           // })),
         )
 
+        // 初始化
         if (!this.data.recycleListInited) {
           ctx.append(_list)
           this.data.recycleListInited = true
         }
-        // ! 整个列表刷新，算法需要重点优化，同时寻源，转向精确更新，减少全列表更新
+        // ! 整个列表刷新，算法需要重点优化
+        // TODO 寻源，转向精确更新，减少全列表更新
         // 暂时只更新列表条数一样的情况
         else {
           const diffData = {} as IAnyObject
+          const rLength = this.data.recycleList.length
           _list.forEach((device: Device.DeviceItem & { select?: boolean }, index) => {
             ;(['deviceName', 'onLineStatus', 'select'] as const).forEach((key) => {
               // 需要检查的字段 // mzgdPropertyDTOList? switchInfoDTOList?
               const newVal = device[key]
-              if (newVal !== this.data.recycleList[index][key]) {
+              if (index < rLength && newVal !== undefined && newVal !== this.data.recycleList[index][key]) {
                 diffData[`recycleList[${index}].${key}`] = newVal
               }
             })
@@ -600,7 +616,6 @@ ComponentWithComputed({
         diffData.controlPopup = true
         diffData.popupPlaceholder = true
       } else if (!toCheck && this.data.checkedList.length === 0) {
-        diffData.controlPopup = false
         diffData.popupPlaceholder = false
       }
 
@@ -803,23 +818,19 @@ ComponentWithComputed({
     // },
 
     handleAllSelect() {
+      const diffData = {} as IAnyObject
       let checkedList = [] as string[] // 默认全不选
-      let popupPlaceholder = false
-      let controlPopup = false
+
+      diffData.popupPlaceholder = false
 
       // 操作前状态是全不选，则执行全选
       const noChecked = !this.data.checkedList || this.data.checkedList.length === 0
       if (noChecked) {
         checkedList = deviceStore.deviceFlattenList.filter((d) => d.onLineStatus).map((d) => d.uniId)
-        popupPlaceholder = true
-        controlPopup = true
+        diffData.popupPlaceholder = true
+        diffData.controlPopup = true
       }
-
-      this.setData({
-        checkedList,
-        popupPlaceholder,
-        controlPopup,
-      })
+      diffData.checkedList = checkedList
 
       // 执行全选，设定第一个灯的状态为弹框状态
       if (!this.data.isLightSelectOne) {
@@ -836,14 +847,13 @@ ComponentWithComputed({
         }
       }
 
-      this.updateSelectType()
-
       // 更新选中状态
-      const diffData = {} as IAnyObject
       this.data.recycleList.forEach((_: Device.DeviceItem, index: number) => {
         diffData[`recycleList[${index}].select`] = noChecked
       })
       this.setData(diffData)
+
+      this.updateSelectType()
     },
 
     handleAddDevice() {

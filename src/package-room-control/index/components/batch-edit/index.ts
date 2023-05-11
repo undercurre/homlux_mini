@@ -60,7 +60,7 @@ ComponentWithComputed({
               translateY: '0%',
             },
           ],
-          200,
+          100,
         )
         this.animate(
           '#top',
@@ -72,7 +72,7 @@ ComponentWithComputed({
               translateY: '0%',
             },
           ],
-          200,
+          100,
         )
       } else {
         this.animate(
@@ -85,7 +85,7 @@ ComponentWithComputed({
               translateY: '100%',
             },
           ],
-          200,
+          100,
         )
         this.animate(
           '#top',
@@ -97,7 +97,7 @@ ComponentWithComputed({
               translateY: '-100%',
             },
           ],
-          200,
+          100,
         )
       }
     },
@@ -295,7 +295,9 @@ ComponentWithComputed({
               zIndex: 9999,
             })
           }
-        } else {
+        }
+        // 修改灯属性
+        else {
           const device = deviceStore.allRoomDeviceFlattenMap[deviceStore.editSelect[0]]
 
           if (checkInputNameIllegal(this.data.editDeviceName)) {
