@@ -1,4 +1,4 @@
-import { storageExpire, getEnv } from '../config/index'
+import { storageExpire } from '../config/index'
 
 interface Storage {
   readonly prefixKey: string
@@ -17,7 +17,7 @@ interface Storage {
 export const createStorage = ({
   prefixKey = '',
   sync = true,
-  defaultCacheTime = storageExpire[getEnv()],
+  defaultCacheTime = storageExpire,
 } = {}): Storage => {
   return {
     prefixKey: prefixKey,

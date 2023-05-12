@@ -1,5 +1,5 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { logout, storage } from '../../utils/index'
+import { logout, storage, setCurrentEnv, Loggger } from '../../utils/index'
 import { userBinding, userStore } from '../../store/index'
 
 Component({
@@ -33,12 +33,19 @@ Component({
       feedback: '/package-mine/feedback/index',
       about: '/package-protocol/protocol-list/index',
     },
+    envVersion: 'release'
   },
   methods: {
     /**
      * 生命周期函数--监听页面加载
      */
     onLoad() {
+      const info = wx.getAccountInfoSync()
+
+      this.setData({
+        envVersion: info.miniProgram.envVersion
+      })
+
       if (typeof this.getTabBar === 'function' && this.getTabBar()) {
         this.getTabBar().setData({
           selected: 1,
@@ -82,5 +89,28 @@ Component({
         })
       }
     },
+
+    toggleEnv() {
+      const envList = ['dev', 'sit', 'prod']
+      wx.showActionSheet({
+        itemList: envList,
+        success (res) {
+          console.log('showActionSheet', res)
+          const env = envList[res.tapIndex] as 'dev' | 'sit' | 'prod'
+
+          setCurrentEnv(env)
+
+          wx.reLaunch({
+            url: '/pages/index/index',
+            complete(res) {
+              Loggger.log('reLaunch', res)
+            }
+          })
+        },
+        fail (res) {
+          console.log(res.errMsg)
+        }
+      })
+    } 
   },
 })

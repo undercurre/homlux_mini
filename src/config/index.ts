@@ -1,5 +1,6 @@
 interface ConfigWithEnv<T> {
   dev: T
+  sit: T
   prod: T
 }
 
@@ -8,24 +9,22 @@ export * from './code'
 export * from './device'
 export * from './light'
 
-let env: 'dev' | 'prod' = 'dev'
+let env: 'dev' | 'sit' | 'prod' = 'dev'
 
 export const mzaioBaseURL: ConfigWithEnv<string> = {
-  dev: 'https://sit.meizgd.com/mzaio',
-  // dev: 'https://test.meizgd.com/mzaio', // 开发环境
+  dev: 'https://test.meizgd.com/mzaio',
+  sit: 'https://sit.meizgd.com/mzaio', // 开发环境
   prod: 'https://mzaio.meizgd.com/mzaio',
 }
 
-export const storageExpire: ConfigWithEnv<number> = {
-  dev: 60 * 60 * 24 * 30,
-  prod: 60 * 60 * 24 * 30,
-}
+export const storageExpire = 60 * 60 * 24 * 30
 
 /**
  * 美智云后端websocket地址
  */
 export const mzaioWSURL: ConfigWithEnv<string> = {
-  dev: 'wss://sit.meizgd.com/mzaio/v1/wss/',
+  dev: 'wss://test.meizgd.com/mzaio/v1/wss/',
+  sit: 'wss://sit.meizgd.com/mzaio/v1/wss/',
   prod: 'wss://mzaio.meizgd.com/mzaio/v1/wss/',
 }
 
@@ -38,6 +37,6 @@ export function getEnv() {
   return env
 }
 
-export function setEnv(val: 'dev' | 'prod') {
+export function setEnv(val: 'dev' | 'sit' | 'prod') {
   env = val
 }

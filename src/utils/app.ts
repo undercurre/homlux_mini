@@ -128,14 +128,25 @@ export function hideLoading() {
  * 开发版、体验版使用dev配置
  * 正式版使用prod配置
  */
-export function setCurrentEnv() {
+export function setCurrentEnv(env?: 'dev' | 'sit' | 'prod') {
   const info = wx.getAccountInfoSync()
-  console.log('当前环境：', info.miniProgram.envVersion)
-  if (['develop', 'trial'].includes(info.miniProgram.envVersion)) {
-    setEnv('dev')
-  } else if (info.miniProgram.envVersion === 'release') {
-    setEnv('prod')
+  let envStr
+
+  envStr = env ?? storage.get('env')
+
+  if (!envStr) {
+    if (info.miniProgram.envVersion === 'develop') {
+      envStr = 'dev'
+    } else if (info.miniProgram.envVersion === 'trial') {
+      envStr = 'sit'
+    } else if (info.miniProgram.envVersion === 'release') {
+      envStr = 'prod'
+    }
   }
+
+  storage.set('env', envStr as 'dev' | 'sit' | 'prod')
+  console.log('当前环境：', envStr)
+  setEnv(envStr as 'dev' | 'sit' | 'prod')
 }
 
 export function isAndroid() {
