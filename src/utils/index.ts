@@ -42,6 +42,7 @@ export function rpx2px(rpx: number) {
  */
 export function throttle(fn: Function, delay: number) {
   let lastTime = 0
+  let timeId = 0
 
   return function () {
     let nowTime = Date.now()
@@ -49,6 +50,11 @@ export function throttle(fn: Function, delay: number) {
     if (nowTime - lastTime > delay) {
       fn()
       lastTime = nowTime
+    } else {
+      clearTimeout(timeId)
+      timeId = setTimeout(() => {
+        fn()
+      }, delay)
     }
   }
 }
