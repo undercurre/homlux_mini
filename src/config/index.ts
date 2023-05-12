@@ -11,7 +11,8 @@ export * from './light'
 let env: 'dev' | 'prod' = 'dev'
 
 export const mzaioBaseURL: ConfigWithEnv<string> = {
-  dev: 'https://test.meizgd.com/mzaio', // sit环境
+  dev: 'https://sit.meizgd.com/mzaio',
+  // dev: 'https://test.meizgd.com/mzaio', // 开发环境
   prod: 'https://mzaio.meizgd.com/mzaio',
 }
 
@@ -24,7 +25,7 @@ export const storageExpire: ConfigWithEnv<number> = {
  * 美智云后端websocket地址
  */
 export const mzaioWSURL: ConfigWithEnv<string> = {
-  dev: 'wss://test.meizgd.com/mzaio/v1/wss/',
+  dev: 'wss://sit.meizgd.com/mzaio/v1/wss/',
   prod: 'wss://mzaio.meizgd.com/mzaio/v1/wss/',
 }
 
