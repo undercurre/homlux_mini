@@ -32,7 +32,7 @@ ComponentWithComputed({
    * 组件的属性列表
    */
   properties: {
-    popup: {
+    controlPopup: {
       type: Boolean,
       value: true,
       observer(value) {
@@ -52,7 +52,7 @@ ComponentWithComputed({
               ease: 'ease-in-out',
             },
           ],
-          200,
+          100,
         )
       },
     },
@@ -233,7 +233,7 @@ ComponentWithComputed({
     popupMove(selectList: string[], isEditMode: boolean) {
       this.updateCurrentLinkTypeDesc()
       const lower = -this.data._componentHeight + 'px'
-      const upper = `${this.properties.popup ? 0 : this.data._halfHideBottom}px`
+      const upper = `${this.properties.controlPopup ? 0 : this.data._halfHideBottom}px`
       if (this.data._componentHeight === 0) {
         this.data._halfHideBottom = -this.data._componentHeight
         return // 这时候还没有第一次渲染，from是0，不能正确执行动画
@@ -254,7 +254,7 @@ ComponentWithComputed({
                 bottom: lower,
               },
             ],
-            200,
+            100,
             () => {
               this.setData({
                 isRender: false,
@@ -280,7 +280,7 @@ ComponentWithComputed({
                 bottom: upper,
               },
             ],
-            200,
+            100,
           )
         } else if (selectList.length === 0) {
           // 收起
@@ -296,7 +296,7 @@ ComponentWithComputed({
                 bottom: lower,
               },
             ],
-            200,
+            100,
             () => {
               this.setData({
                 isRender: false,

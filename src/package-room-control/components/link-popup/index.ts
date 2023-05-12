@@ -154,7 +154,7 @@ ComponentWithComputed({
       })
       this.triggerEvent('offlineTap', e.detail)
     },
-    handleCloseDeviceOffice() {
+    handleCloseDeviceOffline() {
       this.setData({
         showDeviceOffline: false,
       })
