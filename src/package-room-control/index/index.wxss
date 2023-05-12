@@ -55,3 +55,8 @@
   position: absolute;
   z-index: 114;
 }
+
+.skeleton_fix {
+  height:210rpx!important;
+  transform: translateX(-24rpx);
+}

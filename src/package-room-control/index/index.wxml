@@ -51,7 +51,7 @@
 <view bindtap="handleScreenTap" bindtouchmove="handleScreenTap">
   <!-- 标题 -->
   <nav-bar title="{{title}}" z-index="{{113}}" left-arrow bind:leftTap="goBack" disabled="{{opacity === 0}}"></nav-bar>
-  <view class="h-144rpx"></view>
+  <view class="h-136rpx"></view>
   <!-- 房间无子设备,但是有网关 -->
   <view wx:if="{{roomHasGateway && !roomHasSubDevice}}" class="w-full flex flex-col items-center">
     <image src="/assets/img/default-img/only-gateway.png" class="w-300rpx h-300rpx mt-64rpx"></image>
@@ -68,8 +68,8 @@
   <!-- 有设备页面主体 -->
   <view wx:if="{{roomHasSubDevice}}" class="w-750rpx flex flex-col items-center">
     <view class="w-720rpx">
-      <view class="flex justify-between items-center h-44rpx" wx:if="{{devicePageList && devicePageList.length > 0}}">
-        <text class="text-24rpx text-black-59 ml-17rpx">{{devicePageList.length || 0}}个设备</text>
+      <view class="flex justify-between items-center h-44rpx">
+        <text class="text-24rpx text-black-59 ml-17rpx"><!--{{devicePageList.length || 0}}个设备--></text>
         <view wx:if="{{!isEditSelectMode}}" class="rounded-999 flex-center px-20rpx py-10rpx mr-16rpx cancel-select-btn" data-type="light" catchtap="handleAllSelect">
           <text class="text-20rpx leading-none text-hex-555659">{{allSelectBtnText}}</text>
         </view>
@@ -81,6 +81,9 @@
           <card wx:for="{{group}}" wx:key="uniId" item="{{item}}" bind:controlTap="handleControlTap" bind:cardTap="handleDeviceCardTap" bind:offlineTap="handleDeviceCardTap" bind:cardLongpress="handleLongpress"> </card>
         </view>
 
+        <van-skeleton wx:if="{{!deviceListInited}}" row="1" row-width="700rpx" row-class="mt-16rpx rounded-32rpx skeleton_fix" />
+        <van-skeleton wx:if="{{!deviceListInited}}" row="1" row-width="700rpx" row-class="mt-32rpx rounded-32rpx skeleton_fix" />
+
         <!-- 有列表时的添加按钮 -->
         <view class="flex-col-center" wx:if="{{roomHasSubDevice}}">
           <view class="h-20rpx"></view>
@@ -88,7 +91,6 @@
             <text class="text-26rpx text-hex-555659">添加设备</text>
           </van-button>
         </view>
-        <text wx:if="{{showLoadmoreTips}}">上拉加载更多</text>
       </scroll-view>
     </view>
   </view>

@@ -15,7 +15,7 @@ import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { controlDevice, execScene } from '../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
-import { showLoading, hideLoading, storage, emitter, WSEventType, rpx2px } from '../../utils/index'
+import { storage, emitter, WSEventType, rpx2px } from '../../utils/index'
 import { maxColorTempK, minColorTempK, proName, proType, LIST_PAGE } from '../../config/index'
 
 /** 接口请求节流定时器，定时时间2s */
@@ -79,8 +79,7 @@ ComponentWithComputed({
     checkedList: [] as string[], // 已选择设备的id列表
     lightStatus: {} as Record<string, number>, // 当前选择的灯具的状态
     checkedType: [] as string[], // 已选择设备的类型
-    recycleListInited: false,
-    noMoreList: false, // 设备列表是否加载完毕
+    deviceListInited: false, // 设备列表是否初始化完毕
   },
 
   computed: {
@@ -173,10 +172,6 @@ ComponentWithComputed({
     canAddDevice(data) {
       return data.isCreator || data.isAdmin
     },
-    // 是否显示列表底部的加载中提示
-    showLoadmoreTips(data) {
-      return data.recycleListInited && !data.noMoreList
-    },
   },
 
   watch: {
@@ -196,9 +191,7 @@ ComponentWithComputed({
       // })
 
       // 再更新一遍数据
-      // showLoading()
       await this.reloadData()
-      // hideLoading()
 
       // ws消息处理
       emitter.on('wsReceive', async (e) => {
@@ -384,7 +377,7 @@ ComponentWithComputed({
         _list.sort((a, b) => a.orderNum - b.orderNum) // TODO 链式合到上一行？
 
         // 初始化
-        if (!this.data.recycleListInited) {
+        if (!this.data.deviceListInited) {
           // 模拟缓慢渲染的情况
           // const diffData = {} as IAnyObject
           // diffData[`devicePageList[${0}]`] = _list.splice(0, LIST_PAGE)
@@ -400,9 +393,6 @@ ComponentWithComputed({
             const group = _list.splice(0, LIST_PAGE)
             const diffData = {} as IAnyObject
             diffData[`devicePageList[${groupIndex}]`] = group
-            if (_list.length === 0) {
-              diffData.noMoreList = true
-            }
             this.setData(diffData)
           }
 
@@ -416,7 +406,9 @@ ComponentWithComputed({
             // })),
           )
 
-          this.data.recycleListInited = true
+          this.setData({
+            deviceListInited: true
+          })
         }
         // ! 整个列表刷新，算法需要重点优化
         // TODO 寻源，转向精确更新，减少全列表更新
