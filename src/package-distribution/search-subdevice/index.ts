@@ -4,8 +4,8 @@ import { runInAction } from 'mobx-miniprogram'
 import Toast from '@vant/weapp/toast/toast'
 import asyncPool from 'tiny-async-pool'
 import { homeBinding, roomBinding, homeStore } from '../../store/index'
-import { bleDevicesBinding, IBleDevice, bleDevicesStore, updateBleDeviceList } from '../store/bleDeviceStore'
-import { getCurrentPageParams, emitter, Loggger } from '../../utils/index'
+import { bleDevicesBinding, IBleDevice, bleDevicesStore } from '../store/bleDeviceStore'
+import { getCurrentPageParams, emitter, Loggger, throttle } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { sendCmdAddSubdevice, bindDevice, batchUpdate } from '../../apis/index'
 import lottie from 'lottie-miniprogram'
@@ -78,16 +78,13 @@ ComponentWithComputed({
   lifetimes: {
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
     ready: function () {
-      this.setUpdatePerformanceListener({withDataPaths: true}, (res) => {
-        Loggger.log('setUpdatePerformanceListener', res)
-      })
       // 开始配子设备后，侧滑离开当前页面时，重置发现的蓝牙设备列表的状态，以免返回扫码页重进当前页面时状态不对
       bleDevicesStore.bleDeviceList.forEach((item) => {
         item.isChecked = false
         item.status = 'waiting'
       })
 
-      this.updateBleDeviceListView(false)
+      bleDevicesStore.updateBleDeviceList()
 
       bleDevicesBinding.store.startBleDiscovery()
     },
@@ -125,12 +122,13 @@ ComponentWithComputed({
 
     // 切换选择发现的设备
     toggleDevice(e: WechatMiniprogram.CustomEvent) {
+      Loggger.log('toggleDevice')
       const index = e.currentTarget.dataset.index as number
       const item = bleDevicesBinding.store.bleDeviceList[index]
 
       item.isChecked = !item.isChecked
 
-      this.updateBleDeviceListView()
+      bleDevicesStore.updateBleDeviceList()
     },
 
     showMac(e: WechatMiniprogram.CustomEvent) {
@@ -167,12 +165,16 @@ ComponentWithComputed({
         }
       }
 
-      // runInAction(() => {
-      //   bleDevicesBinding.store.bleDeviceList = bleDevicesBinding.store.bleDeviceList.concat([])
-      // })
-
-      updateBleDeviceList()
+      this.updateBleDeviceListThrottle()
     },
+
+    /**
+     * 节流更新蓝牙设备列表，根据实际业务场景使用
+     */
+    updateBleDeviceListThrottle: throttle(() => {
+      bleDevicesStore.updateBleDeviceList()
+      Loggger.log('updateBleDeviceList')
+    }, 3000),
 
     async startGwAddMode() {
       const pageParams = getCurrentPageParams()
@@ -422,7 +424,7 @@ ComponentWithComputed({
         isEditDevice: false,
       })
 
-      this.updateBleDeviceListView(false)
+      bleDevicesStore.updateBleDeviceList()
     },
 
     cancelEditDevice() {
@@ -445,7 +447,7 @@ ComponentWithComputed({
 
       bleDeviceItem.requesting = true
 
-      this.updateBleDeviceListView(false)
+      bleDevicesStore.updateBleDeviceList()
 
       const res = await bleDeviceItem.client.sendCmd({
         cmdType: 'DEVICE_CONTROL',
@@ -457,7 +459,7 @@ ComponentWithComputed({
 
       bleDeviceItem.requesting = false
 
-      this.updateBleDeviceListView(false)
+      bleDevicesStore.updateBleDeviceList()
     },
 
     // 重新添加
@@ -472,7 +474,7 @@ ComponentWithComputed({
         this.data._deviceMap[item.mac].zigbeeRepeatTimes = 2
       }
 
-      this.updateBleDeviceListView(false)
+      bleDevicesStore.updateBleDeviceList()
 
       this.beginAddDevice(failList)
     },

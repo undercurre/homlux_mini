@@ -1,16 +1,9 @@
 import { observable, runInAction } from 'mobx-miniprogram'
-import { BleClient, unique, bleUtil, Loggger, throttle } from '../../utils/index'
+import { BleClient, unique, bleUtil, Loggger } from '../../utils/index'
 import { roomBinding, deviceBinding } from '../../store/index'
 import { checkDevice } from '../../apis/index'
 
 let _foundList = [] as IBleBaseInfo[]
-
-export const updateBleDeviceList = throttle(() => {
-  runInAction(() => {
-    bleDevicesStore.bleDeviceList = bleDevicesStore.bleDeviceList.concat([])
-  })
-  Loggger.log('updateBleDeviceList')
-}, 3000)
 
 export const bleDevicesStore = observable({
   available: false, // 是否打开蓝牙开关
@@ -122,6 +115,12 @@ export const bleDevicesStore = observable({
           })
         }
       })
+    })
+  },
+
+  updateBleDeviceList() {
+    runInAction(() => {
+      this.bleDeviceList = this.bleDeviceList.concat([])
     })
   },
 

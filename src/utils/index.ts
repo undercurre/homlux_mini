@@ -40,21 +40,21 @@ export function rpx2px(rpx: number) {
  * @param fn  要执行的函数
  * @param delay 延迟的时间
  */
-export function throttle(fn: Function, delay: number) {
-  let lastTime = 0
+export function throttle<T extends (...args: any) => any>(func: T, wait: number) {
+  let lastInvokeTime = 0
   let timeId = 0
 
   return function () {
     let nowTime = Date.now()
 
-    if (nowTime - lastTime > delay) {
-      fn()
-      lastTime = nowTime
+    if (nowTime - lastInvokeTime > wait) {
+      func()
+      lastInvokeTime = nowTime
     } else {
       clearTimeout(timeId)
       timeId = setTimeout(() => {
-        fn()
-      }, delay)
+        func()
+      }, wait)
     }
   }
 }
