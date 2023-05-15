@@ -128,25 +128,26 @@ export function hideLoading() {
  * 开发版、体验版使用dev配置
  * 正式版使用prod配置
  */
-export function setCurrentEnv(env?: 'dev' | 'sit' | 'prod') {
+export async function setCurrentEnv(env?: ENV_TYPE) {
   const info = wx.getAccountInfoSync()
-  let envStr
+  const { envVersion } = info.miniProgram
+  const storageKey = `${envVersion}_env`
+  let envStr: ENV_TYPE = env ?? (await storage.get(storageKey))
 
-  envStr = env ?? storage.get('env')
+  // wx的环境名称 --> 云端环境名称
+  const envMap = {
+    develop: 'dev',
+    trial: 'sit',
+    release: 'prod',
+  } as const
 
   if (!envStr) {
-    if (info.miniProgram.envVersion === 'develop') {
-      envStr = 'dev'
-    } else if (info.miniProgram.envVersion === 'trial') {
-      envStr = 'sit'
-    } else if (info.miniProgram.envVersion === 'release') {
-      envStr = 'prod'
-    }
+    envStr = envMap[envVersion]
   }
 
-  storage.set('env', envStr as 'dev' | 'sit' | 'prod')
+  storage.set(storageKey, envStr)
   console.log('当前环境：', envStr)
-  setEnv(envStr as 'dev' | 'sit' | 'prod')
+  setEnv(envStr)
 }
 
 export function isAndroid() {

@@ -51,7 +51,7 @@
 <view bindtap="handleScreenTap" bindtouchmove="handleScreenTap">
   <!-- 标题 -->
   <nav-bar title="{{title}}" z-index="{{113}}" left-arrow bind:leftTap="goBack" disabled="{{opacity === 0}}"></nav-bar>
-  <view class="h-144rpx"></view>
+  <view class="h-136rpx"></view>
   <!-- 房间无子设备,但是有网关 -->
   <view wx:if="{{roomHasGateway && !roomHasSubDevice}}" class="w-full flex flex-col items-center">
     <image src="/assets/img/default-img/only-gateway.png" class="w-300rpx h-300rpx mt-64rpx"></image>
@@ -68,18 +68,23 @@
   <!-- 有设备页面主体 -->
   <view wx:if="{{roomHasSubDevice}}" class="w-750rpx flex flex-col items-center">
     <view class="w-720rpx">
-      <view class="flex justify-between items-center h-44rpx" wx:if="{{recycleList && recycleList.length > 0}}">
-        <text class="text-24rpx text-black-59 ml-17rpx">{{recycleList.length || 0}}个设备</text>
+      <view class="flex justify-between items-center h-44rpx">
+        <text class="text-24rpx text-black-59 ml-17rpx"><!--{{devicePageList.length || 0}}个设备--></text>
         <view wx:if="{{!isEditSelectMode}}" class="rounded-999 flex-center px-20rpx py-10rpx mr-16rpx cancel-select-btn" data-type="light" catchtap="handleAllSelect">
           <text class="text-20rpx leading-none text-hex-555659">{{allSelectBtnText}}</text>
         </view>
       </view>
 
       <!-- 设备卡片列表 -->
-      <recycle-view batch="{{batchSetRecycleData}}" id="recycleListId" batch-key="batchSetRecycleData" width="{{recycleViewWidth}}" height="{{recycleViewHeight}}">
-        <recycle-item wx:for="{{recycleList}}" wx:key="uniId">
-          <card item="{{item}}" bind:controlTap="handleControlTap" bind:cardTap="handleDeviceCardTap" bind:offlineTap="handleShowDeviceOffline" bind:cardLongpress="handleLongpress"> </card>
-        </recycle-item>
+      <scroll-view scroll-y enhanced show-scrollbar="{{false}}" style="height: {{ recycleViewHeight }}px;">
+        <view wx:for="{{devicePageList}}" wx:for-item="group" wx:key="index" class="flex flex-row flex-wrap">
+          <card wx:for="{{group}}" wx:key="uniId" item="{{item}}" bind:controlTap="handleControlTap" bind:cardTap="handleDeviceCardTap" bind:offlineTap="handleDeviceCardTap" bind:cardLongpress="handleLongpress"> </card>
+        </view>
+
+        <van-skeleton wx:if="{{!deviceListInited}}" row="1" row-width="700rpx" row-class="mt-16rpx rounded-32rpx skeleton_fix" />
+        <van-skeleton wx:if="{{!deviceListInited}}" row="1" row-width="700rpx" row-class="mt-32rpx rounded-32rpx skeleton_fix" />
+        <van-skeleton wx:if="{{!deviceListInited}}" row="1" row-width="700rpx" row-class="mt-32rpx rounded-32rpx skeleton_fix" />
+        <van-skeleton wx:if="{{!deviceListInited}}" row="1" row-width="700rpx" row-class="mt-32rpx rounded-32rpx skeleton_fix" />
 
         <!-- 有列表时的添加按钮 -->
         <view class="flex-col-center" wx:if="{{roomHasSubDevice}}">
@@ -88,7 +93,7 @@
             <text class="text-26rpx text-hex-555659">添加设备</text>
           </van-button>
         </view>
-      </recycle-view>
+      </scroll-view>
     </view>
   </view>
 </view>
@@ -98,14 +103,14 @@
 <!-- <view wx:else class="h-64rpx" bindtap="handleScreenTap" bindtouchmove="handleScreenTap"></view> -->
 
 <!-- 设备控制弹窗 -->
-<device-control-popup popup="{{controlPopup}}" checkedList="{{checkedList}}" lightStatus="{{lightStatus}}" checkedType="{{checkedType}}" bind:popMove="handlePopUp" bind:updateList="updateDeviceList"></device-control-popup>
+<device-control-popup controlPopup="{{controlPopup}}" checkedList="{{checkedList}}" lightStatus="{{lightStatus}}" checkedType="{{checkedType}}" bind:popMove="handlePopUp" bind:updateList="updateDeviceList"></device-control-popup>
 
 <before-add-scene-popup show="{{showBeforeAddScenePopup}}" bind:close="handleBeforeAddScenePopupClose" bind:next="handleBeforeAddScenePopupNext" bind:delete="handleBeforeAddScenePopupDelete" bind:edit="handleSceneActionEdit" />
 <add-scene-popup actions="{{addSceneActions}}" show="{{showAddScenePopup}}" bind:close="handleAddScenePopupClose" bind:addSuccess="handleShowAddSceneSuccess" bind:return="handleAddScenePopupReturn" />
 <batch-edit bind:updateList="updateDeviceList" bind:roomMove="handleRoomMoveSuccess" bind:close="exitEditMode"></batch-edit>
 
 <van-toast id="van-toast" />
-<van-dialog use-slot title="{{officeDeviceInfo.deviceName}}离线" show="{{ showDeviceOffline }}" confirm-button-color="#488FFF" confirmButtonText="我知道了" bind:close="handleCloseDeviceOffice">
+<van-dialog use-slot title="{{officeDeviceInfo.deviceName}}离线" show="{{ showDeviceOffline }}" confirm-button-color="#488FFF" confirmButtonText="我知道了" bind:close="handleCloseDeviceOffline">
   <view class="flex-col-center w-full">
     <image src="{{officeDeviceInfo.pic}}" class="w-160rpx h-160rpx mt-70rpx" />
     <view class="flex flex-col mt-88rpx">

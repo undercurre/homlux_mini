@@ -1,13 +1,13 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { deviceBinding, deviceStore, sceneBinding, sceneStore } from '../../store/index'
-import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import { deviceStore, sceneStore } from '../../store/index'
+// import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { proName, proType } from '../../config/index'
 let throttleTimer = 0
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
   },
-  behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding, sceneBinding] })],
+  // behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding] })],
   /**
    * 组件的属性列表
    */
