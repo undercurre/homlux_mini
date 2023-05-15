@@ -33,7 +33,8 @@ Component({
       feedback: '/package-mine/feedback/index',
       about: '/package-protocol/protocol-list/index',
     },
-    envVersion: 'release'
+    envVersion: 'release',
+    curEnv: storage.get('env')
   },
   methods: {
     /**
@@ -94,10 +95,13 @@ Component({
       const envList = ['dev', 'sit', 'prod']
       wx.showActionSheet({
         itemList: envList,
-        success (res) {
+        success: (res) => {
           console.log('showActionSheet', res)
           const env = envList[res.tapIndex] as 'dev' | 'sit' | 'prod'
 
+          if (this.data.curEnv === env) {
+            return
+          }
           setCurrentEnv(env)
 
           wx.reLaunch({
