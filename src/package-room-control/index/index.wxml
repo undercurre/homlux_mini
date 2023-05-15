@@ -78,7 +78,7 @@
       <!-- 设备卡片列表 -->
       <scroll-view scroll-y enhanced show-scrollbar="{{false}}" style="height: {{ recycleViewHeight }}px;">
         <view wx:for="{{devicePageList}}" wx:for-item="group" wx:key="index" class="flex flex-row flex-wrap">
-          <card wx:for="{{group}}" wx:key="uniId" item="{{item}}" bind:controlTap="handleControlTap" bind:cardTap="handleDeviceCardTap" bind:offlineTap="handleDeviceCardTap" bind:cardLongpress="handleLongpress"> </card>
+          <card wx:for="{{group}}" wx:key="uniId" item="{{item}}" bind:controlTap="handleControlTap" bind:cardTap="handleDeviceCardTap" bind:offlineTap="handleShowDeviceOffline" bind:cardLongpress="handleLongpress"> </card>
         </view>
 
         <van-skeleton wx:if="{{!deviceListInited}}" row="1" row-width="700rpx" row-class="mt-16rpx rounded-32rpx skeleton_fix" />

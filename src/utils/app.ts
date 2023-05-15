@@ -128,11 +128,11 @@ export function hideLoading() {
  * 开发版、体验版使用dev配置
  * 正式版使用prod配置
  */
-export async function setCurrentEnv(env?: ENV_TYPE) {
+export function setCurrentEnv(env?: ENV_TYPE) {
   const info = wx.getAccountInfoSync()
   const { envVersion } = info.miniProgram
   const storageKey = `${envVersion}_env`
-  let envStr: ENV_TYPE = env ?? (await storage.get(storageKey))
+  let envStr = env ?? (storage.get(storageKey) as ENV_TYPE)
 
   // wx的环境名称 --> 云端环境名称
   const envMap = {
