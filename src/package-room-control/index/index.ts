@@ -616,6 +616,7 @@ ComponentWithComputed({
         diffData.controlPopup = true
         diffData.popupPlaceholder = true
       } else if (!toCheck && this.data.checkedList.length === 0) {
+        diffData.controlPopup = false
         diffData.popupPlaceholder = false
       }
 
@@ -628,18 +629,16 @@ ComponentWithComputed({
 
     handleAllSelect() {
       const diffData = {} as IAnyObject
-      let checkedList = [] as string[] // 默认全不选
 
       diffData.popupPlaceholder = false
 
       // 操作前状态是全不选，则执行全选
       const toCheckAll = !this.data.checkedList || this.data.checkedList.length === 0
-      if (toCheckAll) {
-        checkedList = deviceStore.deviceFlattenList.filter((d) => d.onLineStatus).map((d) => d.uniId)
-        diffData.popupPlaceholder = true
-        diffData.controlPopup = true
-      }
-      diffData.checkedList = checkedList
+      diffData.checkedList = toCheckAll
+        ? deviceStore.deviceFlattenList.filter((d) => d.onLineStatus).map((d) => d.uniId)
+        : []
+      diffData.popupPlaceholder = toCheckAll
+      diffData.controlPopup = toCheckAll
 
       // 执行全选，设定第一个灯的状态为弹框状态
       if (!this.data.isLightSelectOne) {
