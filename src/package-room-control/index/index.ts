@@ -344,15 +344,26 @@ ComponentWithComputed({
             }
           })
           if (index !== -1) {
+            const originDevice = this.data.devicePageList[groupIndex][index]
             const diffData = {} as IAnyObject
             // review 细致到字段的diff
-            ;(['deviceName', 'onLineStatus', 'mzgdPropertyDTOList', 'select'] as const).forEach((key) => {
-              // 需要检查的字段 // mzgdPropertyDTOList
+            ;(['deviceName', 'onLineStatus', 'select'] as const).forEach((key) => {
+              // 需要检查的字段
               const newVal = device && device[key]
-              if (newVal !== undefined && newVal !== this.data.devicePageList[groupIndex][index][key]) {
+              if (newVal !== undefined && newVal !== originDevice[key]) {
                 diffData[`devicePageList[${groupIndex}][${index}].${key}`] = newVal
               }
             })
+            // 复合字段需要单独解构处理，补充缺失字段
+            // TODO，精细更新具体字段
+            if (device!.mzgdPropertyDTOList) {
+              const eq = originDevice.proType === proType.light ? 1 : originDevice.uniId.split(':')[1]
+              diffData[`devicePageList[${groupIndex}][${index}].mzgdPropertyDTOList[${eq}]`] = {
+                ...originDevice.mzgdPropertyDTOList[eq],
+                ...device!.mzgdPropertyDTOList[eq],
+              }
+            }
+
             this.setData(diffData)
 
             console.log('[updateDeviceListFn]单个卡片更新完成', groupIndex, index, diffData)
@@ -407,7 +418,7 @@ ComponentWithComputed({
           )
 
           this.setData({
-            deviceListInited: true
+            deviceListInited: true,
           })
         }
         // ! 整个列表刷新，算法需要重点优化
