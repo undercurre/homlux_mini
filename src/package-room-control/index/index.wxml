@@ -83,6 +83,8 @@
 
         <van-skeleton wx:if="{{!deviceListInited}}" row="1" row-width="700rpx" row-class="mt-16rpx rounded-32rpx skeleton_fix" />
         <van-skeleton wx:if="{{!deviceListInited}}" row="1" row-width="700rpx" row-class="mt-32rpx rounded-32rpx skeleton_fix" />
+        <van-skeleton wx:if="{{!deviceListInited}}" row="1" row-width="700rpx" row-class="mt-32rpx rounded-32rpx skeleton_fix" />
+        <van-skeleton wx:if="{{!deviceListInited}}" row="1" row-width="700rpx" row-class="mt-32rpx rounded-32rpx skeleton_fix" />
 
         <!-- 有列表时的添加按钮 -->
         <view class="flex-col-center" wx:if="{{roomHasSubDevice}}">

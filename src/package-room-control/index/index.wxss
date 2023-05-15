@@ -58,5 +58,5 @@
 
 .skeleton_fix {
   height:210rpx!important;
-  transform: translateX(-24rpx);
+  transform: translateX(-28rpx);
 }
