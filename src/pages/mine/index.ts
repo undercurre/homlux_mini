@@ -34,7 +34,7 @@ Component({
       about: '/package-protocol/protocol-list/index',
     },
     envVersion: 'release',
-    curEnv: storage.get('env')
+    curEnv: 'prod',
   },
   methods: {
     /**
@@ -44,7 +44,8 @@ Component({
       const info = wx.getAccountInfoSync()
 
       this.setData({
-        envVersion: info.miniProgram.envVersion
+        envVersion: info.miniProgram.envVersion,
+        curEnv: storage.get(`${info.miniProgram.envVersion}_env`) as string,
       })
 
       if (typeof this.getTabBar === 'function' && this.getTabBar()) {
@@ -108,13 +109,13 @@ Component({
             url: '/pages/index/index',
             complete(res) {
               Loggger.log('reLaunch', res)
-            }
+            },
           })
         },
-        fail (res) {
+        fail(res) {
           console.log(res.errMsg)
-        }
+        },
       })
-    } 
+    },
   },
 })
