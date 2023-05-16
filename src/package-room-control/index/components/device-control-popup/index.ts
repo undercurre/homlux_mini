@@ -67,13 +67,13 @@ ComponentWithComputed({
         this.setData({
           'lightInfoInner.Level': value.Level ?? 0,
           'lightInfoInner.ColorTemp': value.ColorTemp ?? 0,
-        })  
-      }
+        })
+      },
     },
     checkedType: {
       type: Array,
-      value: [] as string[]
-    }
+      value: [] as string[],
+    },
   },
 
   /**

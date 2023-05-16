@@ -33,8 +33,8 @@ Component({
       feedback: '/package-mine/feedback/index',
       about: '/package-protocol/protocol-list/index',
     },
-    envVersion: 'release',
-    curEnv: storage.get('env')
+    envVersion: 'release', // 当前小程序版本，体验版or 正式环境
+    curEnv: '', // 当前选择的云端环境
   },
   methods: {
     /**
@@ -43,8 +43,12 @@ Component({
     onLoad() {
       const info = wx.getAccountInfoSync()
 
+      const { envVersion } = info.miniProgram
+      const storageKey = `${envVersion}_env`
+
       this.setData({
-        envVersion: info.miniProgram.envVersion
+        envVersion: envVersion,
+        curEnv: storage.get(storageKey) as string,
       })
 
       if (typeof this.getTabBar === 'function' && this.getTabBar()) {
@@ -108,13 +112,13 @@ Component({
             url: '/pages/index/index',
             complete(res) {
               Loggger.log('reLaunch', res)
-            }
+            },
           })
         },
-        fail (res) {
+        fail(res) {
           console.log(res.errMsg)
-        }
+        },
       })
-    } 
+    },
   },
 })

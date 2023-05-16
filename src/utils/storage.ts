@@ -14,11 +14,7 @@ interface Storage {
   clear(): void | Promise<WechatMiniprogram.GeneralCallbackResult>
 }
 
-export const createStorage = ({
-  prefixKey = '',
-  sync = true,
-  defaultCacheTime = storageExpire,
-} = {}): Storage => {
+export const createStorage = ({ prefixKey = '', sync = true, defaultCacheTime = storageExpire } = {}): Storage => {
   return {
     prefixKey: prefixKey,
     getKey(key: string) {

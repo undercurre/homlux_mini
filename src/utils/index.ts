@@ -45,7 +45,7 @@ export function throttle<T extends (...args: any) => any>(func: T, wait: number)
   let timeId = 0
 
   return function () {
-    let nowTime = Date.now()
+    const nowTime = Date.now()
 
     if (nowTime - lastInvokeTime > wait) {
       func()

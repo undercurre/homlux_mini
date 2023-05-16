@@ -302,7 +302,9 @@ ComponentWithComputed({
     },
 
     async startZigbeeNet(bleDevice: IBleDevice) {
-      Loggger.log(`【${bleDevice.mac}】开始子设备配网，第${3 - this.data._deviceMap[bleDevice.mac].zigbeeRepeatTimes}次`)
+      Loggger.log(
+        `【${bleDevice.mac}】开始子设备配网，第${3 - this.data._deviceMap[bleDevice.mac].zigbeeRepeatTimes}次`,
+      )
 
       const timeout = 60 // 等待绑定推送，超时60s
       // 过滤刚出厂设备刚起电时会默认进入配网状态期间，被网关绑定的情况，这种当做成功配网，无需再下发配网指令，否则可能会导致zigbee入网失败

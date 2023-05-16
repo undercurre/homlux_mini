@@ -335,7 +335,7 @@ ComponentWithComputed({
       if (e?.deviceId || e?.detail?.deviceId) {
         const device = e?.deviceId ? e : e.detail
 
-        for (let groupIndex in this.data.devicePageList) {
+        for (const groupIndex in this.data.devicePageList) {
           const index = this.data.devicePageList[groupIndex].findIndex((d: DeviceCard) => {
             if (d.proType === proType.switch) {
               return d.uniId === device!.uniId
@@ -657,7 +657,7 @@ ComponentWithComputed({
       }
 
       // 更新选中状态
-      for (let groupIndex in this.data.devicePageList) {
+      for (const groupIndex in this.data.devicePageList) {
         this.data.devicePageList[groupIndex].forEach((device: DeviceCard, index: number) => {
           // 如果状态已是一样，则不放diff，减少数据的变更
           if (device.select === toCheckAll) {

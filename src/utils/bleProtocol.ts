@@ -122,14 +122,14 @@ export class BleClient {
 
       if (!isAndroid()) {
         const bleServiceRes = await wx
-        .getBLEDeviceServices({
-          deviceId: this.deviceUuid,
-        })
-        .catch((err) => {
-          throw err
-        })
+          .getBLEDeviceServices({
+            deviceId: this.deviceUuid,
+          })
+          .catch((err) => {
+            throw err
+          })
 
-      Loggger.log(`【${this.mac}】bleServiceRes`, bleServiceRes)
+        Loggger.log(`【${this.mac}】bleServiceRes`, bleServiceRes)
       }
 
       // IOS无法跳过该接口，否则后续接口会报10005	no characteristic	没有找到指定特征
