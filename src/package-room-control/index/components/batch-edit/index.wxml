@@ -59,7 +59,7 @@
 
   <van-popup show="{{ showEditRoom }}" round position="bottom" bind:close="handleClose" closeable>
     <view class="w-750rpx flex flex-col items-center">
-      <template is="title" data="{{title: '所在房间'}}" />
+      <template is="title" data="{{title: '选择房间'}}" />
       <view class="w-750rpx flex mt-44rpx mb-16rpx">
         <text class="text-28rpx ml-48rpx">选择房间</text>
       </view>
