@@ -18,8 +18,8 @@
 
 <van-cell-group inset>
   <van-cell icon="/assets/img/mine/voiceControl.png" title="语音控制" is-link center data-url="{{urls.voiceControl}}" bind:click="toPage" />
-  <van-cell icon="/assets/img/mine/upgrade.png" title="固件升级" is-link center data-url="{{urls.ota}}" bind:click="toPage" />
-  <van-cell icon="/assets/img/mine/deviceReplace.png" title="设备替换" is-link center data-url="{{urls.deviceReplace}}" border="{{false}}" bind:click="toPage" />
+  <van-cell wx:if="{{!isVisitor}}" icon="/assets/img/mine/upgrade.png" title="固件升级" is-link center data-url="{{urls.ota}}" bind:click="toPage" />
+  <van-cell wx:if="{{!isVisitor}}" icon="/assets/img/mine/deviceReplace.png" title="设备替换" is-link center data-url="{{urls.deviceReplace}}" border="{{false}}" bind:click="toPage" />
 </van-cell-group>
 
 <van-cell-group inset>
