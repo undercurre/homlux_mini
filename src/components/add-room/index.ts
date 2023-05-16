@@ -123,9 +123,6 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    handleScroll(_: WechatMiniprogram.CustomEvent) {
-      console.log('handleScroll')
-    },
     changeRoomName(event: WechatMiniprogram.CustomEvent) {
       console.log('changeRoomName', event)
 

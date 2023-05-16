@@ -127,7 +127,7 @@ export const bleDevicesStore = observable({
   // 清除缓存信息
   clearCache() {
     _foundList = []
-  }
+  },
 })
 
 export const bleDevicesBinding = {

@@ -34,7 +34,7 @@ Component({
       about: '/package-protocol/protocol-list/index',
     },
     envVersion: 'release', // 当前小程序版本，体验版or 正式环境
-    curEnv: '', // 当前选择的云端环境
+    curEnv: 'prod', // 当前选择的云端环境
   },
   methods: {
     /**
@@ -43,12 +43,9 @@ Component({
     onLoad() {
       const info = wx.getAccountInfoSync()
 
-      const { envVersion } = info.miniProgram
-      const storageKey = `${envVersion}_env`
-
       this.setData({
-        envVersion: envVersion,
-        curEnv: storage.get(storageKey) as string,
+        envVersion: info.miniProgram.envVersion,
+        curEnv: storage.get(`${info.miniProgram.envVersion}_env`) as string,
       })
 
       if (typeof this.getTabBar === 'function' && this.getTabBar()) {

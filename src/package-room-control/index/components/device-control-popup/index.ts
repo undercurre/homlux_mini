@@ -1,7 +1,6 @@
 import { storage } from '../../../../utils/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { deviceBinding, deviceStore, sceneStore } from '../../../../store/index'
+import { deviceStore, sceneStore } from '../../../../store/index'
 import { maxColorTempK, minColorTempK, proType } from '../../../../config/index'
 import {
   controlDevice,
@@ -26,7 +25,6 @@ ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
   },
-  behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding] })],
 
   /**
    * 组件的属性列表
@@ -36,29 +34,22 @@ ComponentWithComputed({
       type: Boolean,
       value: true,
       observer(value) {
+        // controlPopup 变化触发弹窗展开或收起（折叠）
+        console.log('controlPopup %s, trigger popupMove()', value)
         this.updateCurrentLinkTypeDesc()
-        const from = this.data._halfHideBottom
-        const to = value ? 0 : this.data._minHeight - this.data._componentHeight
-        this.data._halfHideBottom = to
-        this.animate(
-          '#popup',
-          [
-            {
-              bottom: from + 'px',
-              ease: 'ease-in-out',
-            },
-            {
-              bottom: to + 'px',
-              ease: 'ease-in-out',
-            },
-          ],
-          100,
-        )
+        this.popupMove()
       },
     },
     checkedList: {
       type: Array,
       value: [] as string[],
+      observer(value) {
+        // 当controlPopup已是false时，则由数量变化为0触发，收起弹窗
+        if (value.length === 0 && !this.data.controlPopup) {
+          console.log('checkedList %s, trigger popupMove()', value)
+          this.popupMove()
+        }
+      },
     },
     lightStatus: {
       type: Object,
@@ -167,12 +158,6 @@ ComponentWithComputed({
   },
 
   watch: {
-    isEditSelectMode(value) {
-      this.popupMove(this.data.checkedList, value)
-    },
-    checkedList(value) {
-      this.popupMove(value, deviceStore.isEditSelectMode)
-    },
     /**
      * 监听当前选择类型
      * TODO 不使用watch？
@@ -230,7 +215,8 @@ ComponentWithComputed({
    */
   methods: {
     // TODO: 简化if-else
-    popupMove(selectList: string[], isEditMode: boolean) {
+    popupMove() {
+      const { checkedList } = this.data
       this.updateCurrentLinkTypeDesc()
       const lower = -this.data._componentHeight + 'px'
       const upper = `${this.properties.controlPopup ? 0 : this.data._halfHideBottom}px`
@@ -239,7 +225,7 @@ ComponentWithComputed({
         return // 这时候还没有第一次渲染，from是0，不能正确执行动画
       }
 
-      if (isEditMode) {
+      if (deviceStore.isEditSelectMode) {
         if (this.data.isRender) {
           // 收起
           this.animate(
@@ -263,7 +249,7 @@ ComponentWithComputed({
           )
         }
       } else {
-        if (selectList.length > 0 && !this.data.isRender) {
+        if (checkedList.length > 0) {
           this.setData({
             isRender: true,
           })
@@ -282,7 +268,7 @@ ComponentWithComputed({
             ],
             100,
           )
-        } else if (selectList.length === 0) {
+        } else if (checkedList.length === 0) {
           // 收起
           this.animate(
             '#popup',

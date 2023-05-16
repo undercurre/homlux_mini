@@ -81,7 +81,6 @@ page {
   border: 0 !important;
 }
 
-
 .van-button--primary {
   background-image: linear-gradient(165deg, #468cfb 0%, #6ba3fc 100%) !important;
 }

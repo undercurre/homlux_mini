@@ -1,5 +1,3 @@
-import { Loggger } from './app'
-
 export * from './request/index'
 export * from './is'
 export * from './storage'
