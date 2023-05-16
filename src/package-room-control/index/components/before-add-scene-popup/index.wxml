@@ -16,7 +16,9 @@
                 </view>
               </view>
             </view>
-            <svg-icon slot="right-icon" color="#d2d2d3" name="ion:close-circled" width="48rpx" height="48rpx" data-info="{{item}}" data-index="{{index}}" catchtap="handleActionDelete"></svg-icon>
+            <view slot="right-icon" class="-mr-32rpx p-20rpx pl-40rpx">
+              <svg-icon color="#d2d2d3" name="ion:close-circled" width="48rpx" height="48rpx" data-info="{{item}}" data-index="{{index}}" catchtap="handleActionDelete"></svg-icon>
+            </view>
           </van-cell>
         </van-cell-group>
       </scroll-view>

@@ -8,6 +8,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .p-0{padding:0rpx;}
 .p-10rpx{padding:10rpx;}
 .p-16rpx{padding:16rpx;}
+.p-20rpx{padding:20rpx;}
 .p-24rpx{padding:24rpx;}
 .p-4rpx{padding:4rpx;}
 .p-60rpx{padding:60rpx;}
@@ -97,6 +98,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .my-10rpx{margin-top:10rpx;margin-bottom:10rpx;}
 .my-12rpx{margin-top:12rpx;margin-bottom:12rpx;}
 .my-20rpx{margin-top:20rpx;margin-bottom:20rpx;}
+.-mr-32rpx{margin-right:-32rpx;}
 .mb-0_el_{margin-bottom:0rpx !important;}
 .mb-126rpx{margin-bottom:126rpx;}
 .mb-128rpx{margin-bottom:128rpx;}
