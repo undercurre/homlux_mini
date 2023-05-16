@@ -15,7 +15,7 @@
           <van-button plain round type="info" size="small" bind:click="toggleSelectAll">{{ isAllSelected ? '取消全选' : '全选'}}</van-button>
         </view>
 
-        <scroll-view class="grow shrink h-500" scroll-y="{{true}}">
+        <scroll-view class="grow shrink h-500" scroll-y="{{true}}" enhanced show-scrollbar="{{false}}">
           <view wx:for="{{bleDeviceList}}" wx:key="deviceUuid" class="flex flex-row items-center bg-white rounded-32rpx mb-24rpx px-24rpx py-20rpx" bind:longpress="showMac" data-mac="{{item.mac}}" data-rssi="{{item.RSSI}}">
             <van-checkbox use-icon-slot bind:change="toggleDevice" data-index="{{index}}">
               <view class="relative ml-10rpx my-20rpx border-4rpx border-solid border-hex-F6F6F8 rounded-full leading-0 p-10rpx">
@@ -40,7 +40,7 @@
             </view>
 
             <view class="shrink-0">
-              <van-button plain type="primary" size="small" round bind:click="tryControl" data-id="{{item.deviceUuid}}" loading="{{item.requesting}}" disabled="{{item.requesting}}" custom-style="background-color: rgba(72,143,255,0.10);border-radius: 12rpx; font-size: 24rpx; width: 120rpx;padding: 0;">找一找</van-button>
+              <van-button plain type="primary" size="small" round bind:click="tryControl" data-id="{{item.deviceUuid}}" loading="{{item.requesting}}" disabled="{{item.requesting}}" custom-style="background: rgba(72,143,255,0.10) !important;border-radius: 12rpx; font-size: 24rpx; width: 120rpx;padding: 0;">找一找</van-button>
 
               <!-- <van-button plain type="primary" size="small" round bind:click="getLightState" data-id="{{item.deviceUuid}}"  custom-style="background-color: rgba(72,143,255,0.10);border-radius: 12rpx; font-size: 24rpx; width: 120rpx;padding: 0;">状态</van-button> -->
             </view>
@@ -71,7 +71,7 @@
           <van-button plain round size="small" type="info" bind:click="reAdd">重新添加</van-button>
         </view>
 
-        <scroll-view class="grow shrink h-500" scroll-y="{{true}}">
+        <scroll-view class="grow shrink h-500" scroll-y="{{true}}" enhanced show-scrollbar="{{false}}">
           <view wx:for="{{failList}}" wx:key="deviceUuid" class="flex flex-row items-center bg-white rounded-32rpx mb-24rpx px-50rpx py-40rpx" bind:longpress="showMac" data-mac="{{item.mac}}" data-rssi="{{item.RSSI}}">
             <view class="relative my-20rpx border-4rpx border-solid border-hex-F6F6F8 rounded-full leading-0 p-10rpx">
               <image src="{{item.icon}}" class="w-72 h-72"></image>
@@ -92,7 +92,7 @@
             </view>
 
             <view class="shrink-0">
-              <van-button plain type="primary" size="small" round bind:click="tryControl" data-id="{{item.deviceUuid}}" loading="{{item.requesting}}" disabled="{{item.requesting}}" custom-style="background-color: rgba(72,143,255,0.10);border-radius: 12rpx; font-size: 24rpx; width: 120rpx;padding: 0;">找一找</van-button>
+              <van-button plain type="primary" size="small" round bind:click="tryControl" data-id="{{item.deviceUuid}}" loading="{{item.requesting}}" disabled="{{item.requesting}}" custom-style="background: rgba(72,143,255,0.10) !important;border-radius: 12rpx; font-size: 24rpx; width: 120rpx;padding: 0;">找一找</van-button>
             </view>
           </view>
         </scroll-view>
