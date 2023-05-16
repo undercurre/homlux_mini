@@ -1,6 +1,7 @@
 import { Loggger, storage } from '../../../../utils/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { deviceStore, sceneStore } from '../../../../store/index'
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import { homeBinding, deviceStore, sceneStore } from '../../../../store/index'
 import { maxColorTempK, minColorTempK, proType } from '../../../../config/index'
 import {
   controlDevice,
@@ -18,10 +19,12 @@ import {
 } from '../../../utils/index'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
+import pageBehavior from '../../../../behaviors/pageBehaviors'
 
 let throttleTimer = 0
 
 ComponentWithComputed({
+  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] }), pageBehavior],
   options: {
     styleIsolation: 'apply-shared',
   },
@@ -154,6 +157,9 @@ ComponentWithComputed({
         return count > 1
       }
       return false
+    },
+    disabledLinkSetting(data) {
+      return data.isSelectMultiSwitch || data.isVisitor
     },
   },
 
@@ -428,8 +434,9 @@ ComponentWithComputed({
       }
     },
     handleSelectLinkPopup() {
-      if (this.data.isSelectMultiSwitch) {
-        Toast({ message: '只能单选开关进行关联', zIndex: 9999 })
+      if (this.data.disabledLinkSetting) {
+        const message = this.data.isSelectMultiSwitch ? '只能单选开关进行关联' : '只能创建者及管理员进行关联'
+        Toast({ message, zIndex: 9999 })
         return
       }
       const switchUniId = this.data.checkedList.find((uniId: string) => uniId.includes(':'))

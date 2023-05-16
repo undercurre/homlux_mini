@@ -44,8 +44,8 @@
       <!-- 开关控制 -->
       <view wx:if="{{tab==='switch'}}" class="flex flex-col w-750rpx">
         <view class="h-22rpx"></view>
-        <van-cell-group inset style="opacity: {{isSelectMultiSwitch?0.5:1}};">
-          <van-cell border="{{false}}" is-link="{{!isSelectMultiSwitch}}" title="模式设置" value="{{currentLinkTypeDesc}}" custom-class="switch-cell" bind:click="handleSelectLinkPopup"></van-cell>
+        <van-cell-group inset style="opacity: {{(disabledLinkSetting)?0.5:1}};">
+          <van-cell border="{{false}}" is-link="{{!disabledLinkSetting}}" title="模式设置" value="{{currentLinkTypeDesc}}" custom-class="switch-cell" bind:click="handleSelectLinkPopup"></van-cell>
         </van-cell-group>
       </view>
       <!-- 窗帘控制 -->
