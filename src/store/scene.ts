@@ -60,7 +60,7 @@ export const sceneStore = observable({
       const hasSwitch = roomDeviceList?.some((device) => device.proType === proType.switch) ?? false
       const hasLight = roomDeviceList?.some((device) => device.proType === proType.light) ?? false
 
-      let list = res.result
+      let list = [...res.result]
       if (!hasSwitch && !hasLight) {
         // 四个默认场景都去掉
         list = list.filter((scene) => scene.isDefault === '0')
