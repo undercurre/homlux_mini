@@ -17,6 +17,7 @@ Component({
   data: {
     homeId: 'd61261d887d74cf9bec90c827615ea8a', // 固定虚拟家庭Id
     roomId: '11e70cffcb4c4af1bf6960994b4d3480',
+    deviceList: [] as IAnyObject[]
   },
 
   lifetimes: {
@@ -71,6 +72,10 @@ Component({
 
       if (res.success) {
         wx.showToast({ title: `${params.deviceName}绑定成功` })
+
+        this.setData({
+          deviceList: this.data.deviceList.concat([{ deviceId: res.result.deviceId, name: params.deviceName }])
+        })
       }
     },
   },
