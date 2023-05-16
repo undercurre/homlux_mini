@@ -1,5 +1,5 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { logout, storage, setCurrentEnv, Loggger } from '../../utils/index'
+import { logout, storage } from '../../utils/index'
 import { userBinding, userStore } from '../../store/index'
 
 Component({
@@ -33,21 +33,12 @@ Component({
       feedback: '/package-mine/feedback/index',
       about: '/package-protocol/protocol-list/index',
     },
-    envVersion: 'release', // 当前小程序版本，体验版or 正式环境
-    curEnv: 'prod', // 当前选择的云端环境
   },
   methods: {
     /**
      * 生命周期函数--监听页面加载
      */
     onLoad() {
-      const info = wx.getAccountInfoSync()
-
-      this.setData({
-        envVersion: info.miniProgram.envVersion,
-        curEnv: storage.get(`${info.miniProgram.envVersion}_env`) as string,
-      })
-
       if (typeof this.getTabBar === 'function' && this.getTabBar()) {
         this.getTabBar().setData({
           selected: 1,
@@ -90,32 +81,6 @@ Component({
           url: '/pages/login/index',
         })
       }
-    },
-
-    toggleEnv() {
-      const envList = ['dev', 'sit', 'prod']
-      wx.showActionSheet({
-        itemList: envList,
-        success: (res) => {
-          console.log('showActionSheet', res)
-          const env = envList[res.tapIndex] as 'dev' | 'sit' | 'prod'
-
-          if (this.data.curEnv === env) {
-            return
-          }
-          setCurrentEnv(env)
-
-          wx.reLaunch({
-            url: '/pages/index/index',
-            complete(res) {
-              Loggger.log('reLaunch', res)
-            },
-          })
-        },
-        fail(res) {
-          console.log(res.errMsg)
-        },
-      })
     },
   },
 })

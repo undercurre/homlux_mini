@@ -34,8 +34,6 @@
     </button>
   </van-cell>
 
-  <van-cell wx:if="{{envVersion !== 'release'}}" icon="/assets/img/mine/about.png" title="切换环境【{{curEnv}}】" is-link center bind:click="toggleEnv" />
-
   <van-cell icon="/assets/img/mine/about.png" title="关于" is-link center data-url="{{urls.about}}" data-auth="no" bind:click="toPage" border="{{false}}" />
 </van-cell-group>
 

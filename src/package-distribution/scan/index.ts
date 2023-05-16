@@ -460,7 +460,7 @@ ComponentWithComputed({
       console.log('checkDevice', res)
       wx.reportEvent('add_device', {
         pro_type: res.result.proType,
-        model_id: res.result.modelId,
+        model_id: params.pid,
         add_type: 'qrcode',
       })
 

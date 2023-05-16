@@ -1,4 +1,4 @@
-import { storage } from '../../../../utils/index'
+import { Loggger, storage } from '../../../../utils/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { deviceStore, sceneStore } from '../../../../store/index'
 import { maxColorTempK, minColorTempK, proType } from '../../../../config/index'
@@ -176,6 +176,7 @@ ComponentWithComputed({
       }
     },
     allRoomDeviceList() {
+      Loggger.log('device-control-popup:watch-allRoomDeviceList')
       this.updateCurrentLinkTypeDesc()
     },
   },

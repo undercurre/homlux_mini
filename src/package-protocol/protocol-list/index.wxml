@@ -5,4 +5,10 @@
 <view class="h-24rpx"> </view>
 <van-cell-group>
   <van-cell wx:for="{{list}}" wx:key="value" title="{{item.title}}" is-link data-value="{{item.value}}" bind:click="handleTap"></van-cell>
+
+  <block wx:if="{{envVersion !== 'release'}}">
+    <van-cell icon="/assets/img/mine/about.png" title="切换环境【{{curEnv}}】" is-link center bind:click="toggleEnv" />
+
+    <van-cell icon="/assets/img/mine/deviceReplace.png" title="添加虚拟设备" is-link center bind:click="addVirtualDevice" />
+  </block>
 </van-cell-group>

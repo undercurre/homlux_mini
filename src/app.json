@@ -35,7 +35,7 @@
     },
     {
       "root": "package-protocol",
-      "pages": ["protocol-show/index", "protocol-list/index"]
+      "pages": ["protocol-show/index", "protocol-list/index", "add-virtual-device/index"]
     }
   ],
   "preloadRule": {
