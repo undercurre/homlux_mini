@@ -159,7 +159,7 @@ ComponentWithComputed({
                     hasUpdateInTimer = false
                   }
                   throttleTimer = 0
-                }, 1000)
+                }, 300)
               } else {
                 hasUpdateInTimer = true
               }
@@ -177,7 +177,7 @@ ComponentWithComputed({
               hasUpdateInTimer = false
             }
             throttleTimer = 0
-          }, 1000)
+          }, 3000)
         } else if (res.result.eventType !== 'connect_success_status') {
           hasUpdateInTimer = true
         }
