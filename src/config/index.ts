@@ -9,7 +9,7 @@ export * from './code'
 export * from './device'
 export * from './light'
 
-let env: 'dev' | 'sit' | 'prod' = 'dev'
+let env: ENV_TYPE = 'dev'
 
 export const mzaioBaseURL: ConfigWithEnv<string> = {
   dev: 'https://test.meizgd.com/mzaio',
@@ -37,6 +37,13 @@ export function getEnv() {
   return env
 }
 
-export function setEnv(val: 'dev' | 'sit' | 'prod') {
+export function setEnv(val: ENV_TYPE) {
   env = val
 }
+
+// wx的环境名称 --> 云端环境名称
+export const envMap = {
+  develop: 'dev',
+  trial: 'sit',
+  release: 'prod',
+} as const

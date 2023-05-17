@@ -21,9 +21,6 @@ import { maxColorTempK, minColorTempK, proName, proType, LIST_PAGE } from '../..
 /** 接口请求节流定时器，定时时间2s */
 let requestThrottleTimer = 0
 let hasUpdateInRequestTimer = false
-/** 界面更新节流定时器，定时时间500ms */
-let updateThrottleTimer = 0
-let hasUpdateInUpdateTimer = false
 
 type DeviceCard = Device.DeviceItem & { select: boolean } & { clientRect: WechatMiniprogram.ClientRect }
 
