@@ -43,7 +43,7 @@ ComponentWithComputed({
       (storage.get<number>('windowHeight') as number) -
       (storage.get<number>('statusBarHeight') as number) -
       (storage.get<number>('bottomBarHeight') as number) - // IPX
-      rpx2px(210) - // 创建场景、标题栏
+      rpx2px(170) - // 创建场景
       (storage.get<number>('navigationBarHeight') as number),
     /** 展示点中离线设备弹窗 */
     showDeviceOffline: false,
@@ -536,53 +536,64 @@ ComponentWithComputed({
       }
 
       // 这是第一个被选中的设备卡片
-      if (this.data.checkedList.length === 0) {
-        // 弹起的popup不能挡住卡片
-        const divideRpxByPx = storage.get<number>('divideRpxByPx')
-          ? (storage.get<number>('divideRpxByPx') as number)
-          : 0.5
-        const windowHeight = storage.get<number>('windowHeight') as number
-        const bottom = windowHeight - 716 * divideRpxByPx
-        const top = bottom - 216 * divideRpxByPx
-        const scrollTop = this.data.scrollTop + e.detail.clientRect.top - top + 4
-        wx.pageScrollTo({
-          scrollTop,
-          duration: 200,
-          fail(res) {
-            console.log('scroll-fail', res)
-          },
-        })
+      // if (this.data.checkedList.length === 0) { // 只能单选，不必再判断
+      // 弹起的popup不能挡住卡片
+      const divideRpxByPx = storage.get<number>('divideRpxByPx')
+        ? (storage.get<number>('divideRpxByPx') as number)
+        : 0.5
+      const windowHeight = storage.get<number>('windowHeight') as number
+      const bottom = windowHeight - 716 * divideRpxByPx
+      const top = bottom - 216 * divideRpxByPx
+      const scrollTop = this.data.scrollTop + e.detail.clientRect.top - top + 4
+      wx.pageScrollTo({
+        scrollTop,
+        duration: 200,
+        fail(res) {
+          console.log('scroll-fail', res)
+        },
+      })
+      // }
+
+      // 取消选择
+      if (toCheck && this.data.checkedList.length) {
+        const oldCheckedId = this.data.checkedList[0]
+        const oldDevice = {} as DeviceCard
+        oldDevice.deviceId = oldCheckedId.split(':')[0]
+        oldDevice.uniId = oldCheckedId
+        oldDevice.select = false
+        this.updateDeviceList(oldDevice)
       }
 
-      const { deviceMap } = deviceStore
+      // const { deviceMap } = deviceStore
       // 选择逻辑
-      if (toCheck) {
-        this.data.checkedList.push(uniId)
-      } else {
-        const index = this.data.checkedList.findIndex((item: string) => item === e.detail.uniId)
-        this.data.checkedList.splice(index, 1)
-      }
+      this.data.checkedList = toCheck ? [uniId] : []
+      // if (toCheck) {
+      //   this.data.checkedList.push(uniId)
+      // } else {
+      //   const index = this.data.checkedList.findIndex((item: string) => item === e.detail.uniId)
+      //   this.data.checkedList.splice(index, 1)
+      // }
 
       // 选择灯卡片时，面板状态的处理
       const lightStatus = { Level: 0, ColorTemp: 0 }
-      if (e.detail.proType === proType.light) {
-        if (toCheck) {
-          lightStatus.Level = e.detail.mzgdPropertyDTOList['1'].Level
-          lightStatus.ColorTemp = e.detail.mzgdPropertyDTOList['1'].ColorTemp
-        } else {
-          // 将面板的灯状态恢复到上一个选中的灯
-          // TODO 可优化，反转遍历？
-          let latestSelectLightId = ''
-          this.data.checkedList.forEach((deviceId) => {
-            if (deviceMap[deviceId]?.proType === proType.light) {
-              latestSelectLightId = deviceId
-            }
-          })
-          if (latestSelectLightId) {
-            lightStatus.Level = deviceMap[latestSelectLightId].mzgdPropertyDTOList['1'].Level
-            lightStatus.ColorTemp = deviceMap[latestSelectLightId].mzgdPropertyDTOList['1'].ColorTemp
-          }
-        }
+      if (toCheck && e.detail.proType === proType.light) {
+        // if (toCheck) {
+        lightStatus.Level = e.detail.mzgdPropertyDTOList['1'].Level
+        lightStatus.ColorTemp = e.detail.mzgdPropertyDTOList['1'].ColorTemp
+        // } else {
+        //   // 将面板的灯状态恢复到上一个选中的灯
+        //   // TODO 可优化，反转遍历？
+        //   let latestSelectLightId = ''
+        //   this.data.checkedList.forEach((deviceId) => {
+        //     if (deviceMap[deviceId]?.proType === proType.light) {
+        //       latestSelectLightId = deviceId
+        //     }
+        //   })
+        //   if (latestSelectLightId) {
+        //     lightStatus.Level = deviceMap[latestSelectLightId].mzgdPropertyDTOList['1'].Level
+        //     lightStatus.ColorTemp = deviceMap[latestSelectLightId].mzgdPropertyDTOList['1'].ColorTemp
+        //   }
+        // }
       }
 
       // 更新选中样式
@@ -596,13 +607,15 @@ ComponentWithComputed({
       // 合并数据变化
       diffData.checkedList = [...this.data.checkedList]
       diffData.lightStatus = lightStatus
-      if (toCheck && this.data.checkedList.length === 1) {
-        diffData.controlPopup = true
-        diffData.popupPlaceholder = true
-      } else if (!toCheck && this.data.checkedList.length === 0) {
-        diffData.controlPopup = false
-        diffData.popupPlaceholder = false
-      }
+      diffData.controlPopup = toCheck
+      diffData.popupPlaceholder = toCheck
+      // if (toCheck && this.data.checkedList.length === 1) {
+      //   diffData.controlPopup = true
+      //   diffData.popupPlaceholder = true
+      // } else if (!toCheck && this.data.checkedList.length === 0) {
+      //   diffData.controlPopup = false
+      //   diffData.popupPlaceholder = false
+      // }
 
       // 更新视图
       this.setData(diffData)
@@ -611,51 +624,53 @@ ComponentWithComputed({
       this.updateSelectType()
     },
 
-    handleAllSelect() {
-      const diffData = {} as IAnyObject
+    // Deserted 多选功能已去掉
+    // handleAllSelect() {
+    //   const diffData = {} as IAnyObject
 
-      diffData.popupPlaceholder = false
+    //   diffData.popupPlaceholder = false
 
-      // 操作前状态是全不选，则执行全选
-      const toCheckAll = !this.data.checkedList || this.data.checkedList.length === 0
-      diffData.checkedList = toCheckAll
-        ? deviceStore.deviceFlattenList.filter((d) => d.onLineStatus).map((d) => d.uniId)
-        : []
-      diffData.popupPlaceholder = toCheckAll
-      diffData.controlPopup = toCheckAll
+    //   // 操作前状态是全不选，则执行全选
+    //   const toCheckAll = !this.data.checkedList || this.data.checkedList.length === 0
+    //   diffData.checkedList = toCheckAll
+    //     ? deviceStore.deviceFlattenList.filter((d) => d.onLineStatus).map((d) => d.uniId)
+    //     : []
+    //   diffData.popupPlaceholder = toCheckAll
+    //   diffData.controlPopup = toCheckAll
 
-      // 执行全选，设定第一个灯的状态为弹框状态
-      if (!this.data.isLightSelectOne) {
-        for (const device of deviceStore.deviceList) {
-          if (device.proType === proType.light) {
-            this.setData({
-              lightStatus: {
-                Level: device.mzgdPropertyDTOList['1'].Level,
-                ColorTemp: device.mzgdPropertyDTOList['1'].ColorTemp,
-              },
-            })
-            break
-          }
-        }
-      }
+    //   // 执行全选，设定第一个灯的状态为弹框状态
+    //   if (!this.data.isLightSelectOne) {
+    //     for (const device of deviceStore.deviceList) {
+    //       if (device.proType === proType.light) {
+    //         this.setData({
+    //           lightStatus: {
+    //             Level: device.mzgdPropertyDTOList['1'].Level,
+    //             ColorTemp: device.mzgdPropertyDTOList['1'].ColorTemp,
+    //           },
+    //         })
+    //         break
+    //       }
+    //     }
+    //   }
 
-      // 更新选中状态
-      for (const groupIndex in this.data.devicePageList) {
-        this.data.devicePageList[groupIndex].forEach((device: DeviceCard, index: number) => {
-          // 如果状态已是一样，则不放diff，减少数据的变更
-          if (device.select === toCheckAll) {
-            return
-          }
-          diffData[`devicePageList[${groupIndex}][${index}].select`] = toCheckAll
-        })
-      }
+    //   // 更新选中状态
+    //   for (const groupIndex in this.data.devicePageList) {
+    //     this.data.devicePageList[groupIndex].forEach((device: DeviceCard, index: number) => {
+    //       // 如果状态已是一样，则不放diff，减少数据的变更
+    //       if (device.select === toCheckAll) {
+    //         return
+    //       }
+    //       diffData[`devicePageList[${groupIndex}][${index}].select`] = toCheckAll
+    //     })
+    //   }
 
-      this.setData(diffData)
+    //   this.setData(diffData)
 
-      this.updateSelectType()
-    },
+    //   this.updateSelectType()
+    // },
 
     // 卡片点击时，按品类调用对应方法
+
     handleControlTap(e: { detail: DeviceCard }) {
       if (e.detail.proType === proType.light) {
         this.handleLightPowerToggle(e)
@@ -826,9 +841,9 @@ ComponentWithComputed({
       })
 
       // 取消普通选择
-      if (this.data.checkedList?.length) {
-        this.handleAllSelect()
-      }
+      // if (this.data.checkedList?.length) {
+      //   this.handleAllSelect()
+      // }
     },
 
     // exitEditMode() {

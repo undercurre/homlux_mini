@@ -68,13 +68,6 @@
   <!-- 有设备页面主体 -->
   <view wx:if="{{roomHasSubDevice}}" class="w-750rpx flex flex-col items-center">
     <view class="w-720rpx">
-      <view class="flex justify-between items-center h-44rpx">
-        <text class="text-24rpx text-black-59 ml-17rpx"><!--{{devicePageList.length || 0}}个设备--></text>
-        <view wx:if="{{!isEditSelectMode}}" class="rounded-999 flex-center px-20rpx py-10rpx mr-16rpx cancel-select-btn" data-type="light" catchtap="handleAllSelect">
-          <text class="text-20rpx leading-none text-hex-555659">{{allSelectBtnText}}</text>
-        </view>
-      </view>
-
       <!-- 设备卡片列表 -->
       <scroll-view scroll-y enhanced show-scrollbar="{{false}}" style="height: {{ recycleViewHeight }}px;">
         <view wx:for="{{devicePageList}}" wx:for-item="group" wx:key="index" class="flex flex-row flex-wrap">
@@ -98,7 +91,7 @@
   </view>
 </view>
 
-<view wx:if="{{popupPlaceholder || isEditSelectMode}}" class="h-716rpx" bindtap="handleScreenTap" bindtouchmove="handleScreenTap"></view>
+<view wx:if="{{popupPlaceholder || isEditSelectMode}}" class="h-600rpx" bindtap="handleScreenTap" bindtouchmove="handleScreenTap"></view>
 <!-- 影响滚动列表的体验，暂时注释 -->
 <!-- <view wx:else class="h-64rpx" bindtap="handleScreenTap" bindtouchmove="handleScreenTap"></view> -->
 

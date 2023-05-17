@@ -196,7 +196,7 @@ ComponentWithComputed({
         ? (storage.get<number>('divideRpxByPx') as number)
         : 0.5
       let bottomBarHeight = storage.get<number>('bottomBarHeight') as number
-      const _componentHeight = 716 * divideRpxByPx
+      const _componentHeight = 600 * divideRpxByPx
       let _minHeight = 0
       if (bottomBarHeight === 0) {
         bottomBarHeight = 32 // 如果没有高度，就给个高度，防止弹窗太贴底部
