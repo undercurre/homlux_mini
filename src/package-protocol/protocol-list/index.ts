@@ -43,7 +43,7 @@ Component({
         envVersion: info.miniProgram.envVersion,
         curEnv: storage.get(`${info.miniProgram.envVersion}_env`) as string,
       })
-    }
+    },
   },
   /**
    * 组件的方法列表
@@ -88,6 +88,6 @@ Component({
       wx.navigateTo({
         url: '/package-protocol/add-virtual-device/index',
       })
-    }
+    },
   },
 })
