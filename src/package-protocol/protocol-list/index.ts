@@ -1,7 +1,7 @@
 // pages/protocalList/index.ts
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { storage, setCurrentEnv, Loggger } from '../../utils/index'
-import env from '../../config/env'
+import meta from '../../config/meta'
 
 Component({
   behaviors: [pageBehavior],
@@ -40,9 +40,9 @@ Component({
 
   lifetimes: {
     ready() {
-      if (env && env.datetime) {
+      if (meta?.datetime) {
         this.setData({
-          releaseTime: env.datetime,
+          releaseTime: meta.datetime,
         })
       }
       const info = wx.getAccountInfoSync()
