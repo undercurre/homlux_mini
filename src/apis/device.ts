@@ -395,3 +395,18 @@ export async function checkDevice(
     data,
   })
 }
+
+/**
+ * 根据面板ID和面板开关获取关联的灯
+ */
+export async function getRelLampInfo(
+  data: { primaryDeviceId: string; primarySwitchId: string },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<{ lampRelList: Device.IMzgdLampRelGetDTO[] }>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/getRelLampInfo',
+    data,
+  })
+}

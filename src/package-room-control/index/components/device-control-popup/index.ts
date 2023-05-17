@@ -9,6 +9,7 @@ import {
   findDevice,
   updateAssociated,
   updateScene,
+  getRelLampInfo,
 } from '../../../../apis/index'
 import {
   transformSwitchToNormal,
@@ -24,6 +25,7 @@ let throttleTimer = 0
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
+    pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
   },
 
   /**
@@ -36,19 +38,23 @@ ComponentWithComputed({
       observer(value) {
         // controlPopup 变化触发弹窗展开或收起（折叠）
         console.log('controlPopup %s, trigger popupMove()', value)
-        this.updateCurrentLinkTypeDesc()
         this.popupMove()
+
+        this.updateCurrentLinkTypeDesc()
       },
     },
     checkedList: {
       type: Array,
       value: [] as string[],
       observer(value) {
+        Loggger.log('checkedList', value)
         // 当controlPopup已是false时，则由数量变化为0触发，收起弹窗
         if (value.length === 0 && !this.data.controlPopup) {
           console.log('checkedList %s, trigger popupMove()', value)
           this.popupMove()
         }
+
+        this.updateCurrentLinkTypeDesc()
       },
     },
     lightStatus: {
@@ -115,6 +121,9 @@ ComponentWithComputed({
     allOnPress: false,
     allOffPress: false,
     currentLinkTypeDesc: '未关联',
+    switchInfo: {
+      lampRelList: Array<Device.IMzgdLampRelGetDTO>(),
+    },
   },
 
   computed: {
@@ -175,10 +184,10 @@ ComponentWithComputed({
         })
       }
     },
-    allRoomDeviceList() {
-      Loggger.log('device-control-popup:watch-allRoomDeviceList')
-      this.updateCurrentLinkTypeDesc()
-    },
+    // allRoomDeviceList() {
+    //   Loggger.log('device-control-popup:watch-allRoomDeviceList')
+    //   this.updateCurrentLinkTypeDesc()
+    // },
   },
 
   lifetimes: {
@@ -218,7 +227,6 @@ ComponentWithComputed({
     // TODO: 简化if-else
     popupMove() {
       const { checkedList } = this.data
-      this.updateCurrentLinkTypeDesc()
       const lower = -this.data._componentHeight + 'px'
       const upper = `${this.properties.controlPopup ? 0 : this.data._halfHideBottom}px`
       if (this.data._componentHeight === 0) {
@@ -293,24 +301,53 @@ ComponentWithComputed({
         }
       }
     },
-    updateCurrentLinkTypeDesc() {
-      if (this.data.checkedList) {
-        let mode = '未关联'
-        const switchUniId = this.data.checkedList.find((uniId: string) => uniId.includes(':'))
-        if (switchUniId) {
-          const rel = deviceStore.deviceRelMap[switchUniId]
-          if (rel && rel.lightRelId) {
-            mode = '关联灯'
-          } else if (rel && rel.switchRelId) {
-            mode = '关联开关'
-          } else if (deviceStore.switchSceneConditionMap[switchUniId]) {
-            mode = '关联场景'
-          }
-        }
+
+    async updateLamoRelInfo(deviceId: string, switchId: string) {
+      const res = await getRelLampInfo({
+        primaryDeviceId: deviceId,
+        primarySwitchId: switchId,
+      })
+
+      if (res.success) {
         this.setData({
-          currentLinkTypeDesc: mode,
+          'switchInfo.lampRelList': res.result.lampRelList,
         })
       }
+    },
+    /**
+     * 选择的设备为单个开关时触发更新【开关关联信息】
+     */
+    async updateCurrentLinkTypeDesc() {
+      // 仅选择一个开关面板时触发
+      if (!this.data.controlPopup || !this.data.switchTab || this.data.checkedList.length !== 1) {
+        return
+      }
+      Loggger.log('updateCurrentLinkTypeDesc')
+      const switchUniId = this.data.checkedList[0]
+      const unidArr = switchUniId.split(':')
+
+      let mode = '未关联'
+
+      if (switchUniId) {
+        const rel = deviceStore.deviceRelMap[switchUniId]
+
+        // 优先判断场景关联信息（已有数据）
+        if (deviceStore.switchSceneConditionMap[switchUniId]) {
+          mode = '关联场景'
+          return
+        }
+
+        await Promise.all([this.updateLamoRelInfo(unidArr[0], unidArr[1])])
+
+        if (rel && rel.lightRelId) {
+          mode = '关联灯'
+        } else if (rel && rel.switchRelId) {
+          mode = '关联开关'
+        }
+      }
+      this.setData({
+        currentLinkTypeDesc: mode,
+      })
     },
     handleTouchStart(e: WechatMiniprogram.TouchEvent) {
       if (e.touches.length > 1) {
