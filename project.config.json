@@ -64,7 +64,6 @@
   "condition": {},
   "scripts": {
     "beforeCompile": "node ./build/releaseTime.js",
-    "beforePreview": "node ./build/releaseTime.js",
-    "beforeUpload": "node ./build/releaseTime.js"
+    "beforePreview": "node ./build/releaseTime.js"
   }
 }
