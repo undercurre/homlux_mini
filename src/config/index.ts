@@ -1,9 +1,3 @@
-interface ConfigWithEnv<T> {
-  dev: T
-  sit: T
-  prod: T
-}
-
 export * from './scene'
 export * from './code'
 export * from './device'

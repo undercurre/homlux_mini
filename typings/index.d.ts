@@ -13,6 +13,8 @@ type AnyResType = string | IAnyObject | ArrayBuffer
 
 type ENV_TYPE = 'dev' | 'sit' | 'prod'
 
+type ConfigWithEnv<T> = Record<ENV_TYPE, T>
+
 /**
  * 声名 Behaviors 方法类型
  * 报错的问题
