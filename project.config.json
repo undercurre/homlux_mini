@@ -61,5 +61,10 @@
   },
   "appid": "wxd534524a35f2b601",
   "projectname": "HomLux",
-  "condition": {}
+  "condition": {},
+  "scripts": {
+    "beforeCompile": "node ./build/releaseTime.js",
+    "beforePreview": "node ./build/releaseTime.js",
+    "beforeUpload": "node ./build/releaseTime.js"
+  }
 }

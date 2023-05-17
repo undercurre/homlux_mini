@@ -1,6 +1,8 @@
 // pages/protocalList/index.ts
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { storage, setCurrentEnv, Loggger } from '../../utils/index'
+import env from '../../config/env'
+
 Component({
   behaviors: [pageBehavior],
   /**
@@ -33,10 +35,16 @@ Component({
 
     envVersion: 'release', // 当前小程序版本，体验版or 正式环境
     curEnv: 'prod', // 当前选择的云端环境
+    releaseTime: '', // 版本上传时间
   },
 
   lifetimes: {
     ready() {
+      if (env && env.datetime) {
+        this.setData({
+          releaseTime: env.datetime,
+        })
+      }
       const info = wx.getAccountInfoSync()
 
       this.setData({
