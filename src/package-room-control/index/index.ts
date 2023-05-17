@@ -15,7 +15,7 @@ import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { controlDevice, execScene } from '../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
-import { storage, emitter, WSEventType, rpx2px } from '../../utils/index'
+import { storage, emitter, WSEventType, rpx2px, _get } from '../../utils/index'
 import { maxColorTempK, minColorTempK, proName, proType, LIST_PAGE } from '../../config/index'
 
 /** 接口请求节流定时器，定时时间2s */
@@ -328,8 +328,8 @@ ComponentWithComputed({
      * @description 初始化或更新设备列表
      * @param e 设备对象，或包裹设备对象的事件
      */
-    async updateDeviceListFn(e?: DeviceCard & { detail?: DeviceCard }) {
-      console.log('[updateDeviceListFn]列表更新开始', e || '不带参数')
+    async updateDeviceList(e?: DeviceCard & { detail?: DeviceCard }) {
+      console.log('[updateDeviceList]', e || '不带参数')
 
       // 单项更新
       if (e?.deviceId || e?.detail?.deviceId) {
@@ -347,27 +347,28 @@ ComponentWithComputed({
             const originDevice = this.data.devicePageList[groupIndex][index]
             const diffData = {} as IAnyObject
             // review 细致到字段的diff
-            ;(['deviceName', 'onLineStatus', 'select'] as const).forEach((key) => {
-              // 需要检查的字段
-              const newVal = device && device[key]
-              if (newVal !== undefined && newVal !== originDevice[key]) {
+            const renderList = ['deviceName', 'onLineStatus', 'select'] // 需要刷新界面的字段
+
+            // 子设备状态，目前只更新开关状态
+            if (device!.mzgdPropertyDTOList) {
+              const eq = originDevice.proType === proType.light ? 1 : originDevice.uniId.split(':')[1]
+              renderList.push(`mzgdPropertyDTOList[${eq}].OnOff`)
+            }
+            renderList.forEach((key) => {
+              const newVal = _get(device!, key)
+              const originVal = _get(originDevice, key)
+              // 进一步检查，过滤确实有更新的字段
+              if (newVal !== undefined && newVal !== originVal) {
                 diffData[`devicePageList[${groupIndex}][${index}].${key}`] = newVal
               }
             })
-            // 复合字段需要单独解构处理，补充缺失字段
-            // TODO，精细更新具体字段
-            if (device!.mzgdPropertyDTOList) {
-              const eq = originDevice.proType === proType.light ? 1 : originDevice.uniId.split(':')[1]
-              diffData[`devicePageList[${groupIndex}][${index}].mzgdPropertyDTOList[${eq}]`] = {
-                ...originDevice.mzgdPropertyDTOList[eq],
-                ...device!.mzgdPropertyDTOList[eq],
-              }
+
+            if (Object.keys(diffData).length) {
+              this.setData(diffData)
+              console.log('[updateDeviceList, %s, %s]单个卡片更新完成', groupIndex, index, diffData)
+            } else {
+              console.log('[updateDeviceList, %s, %s]diffData为空，不必更新', groupIndex, index)
             }
-
-            this.setData(diffData)
-
-            console.log('[updateDeviceListFn]单个卡片更新完成', groupIndex, index, diffData)
-
             break // 找到就中断
           }
         }
@@ -408,7 +409,7 @@ ComponentWithComputed({
           }
 
           console.log(
-            '[updateDeviceListFn]列表初始化完成',
+            '[updateDeviceList]列表初始化完成',
             this.data.devicePageList,
             // .map((d) => ({
             //   deviceName: d.deviceName,
@@ -442,21 +443,7 @@ ComponentWithComputed({
         }
       }
     },
-    /** store设备列表数据更新到界面 */
-    updateDeviceList(device?: DeviceCard & { detail?: DeviceCard }) {
-      if (!updateThrottleTimer) {
-        this.updateDeviceListFn(device)
-        updateThrottleTimer = setTimeout(() => {
-          if (hasUpdateInUpdateTimer) {
-            this.updateDeviceListFn(device)
-          }
-          updateThrottleTimer = 0
-          hasUpdateInUpdateTimer = false
-        }, 500)
-      } else {
-        hasUpdateInUpdateTimer = true
-      }
-    },
+
     handleSceneTap() {
       wx.navigateTo({
         url: '/package-room-control/scene-list/index',

@@ -18,7 +18,7 @@
           </view>
         </view>
       </van-cell>
-      <van-cell wx:if="{{!isSubDevice}}" title="更改WiFi" is-link="{{canEditDevice}}" link-type="navigateTo" url="/package-distribution/wifi-connect/index?type=changeWifi&sn={{deviceInfo.sn}}"></van-cell>
+      <van-cell wx:if="{{!isSubDevice && !isVisitor}}" title="更改WiFi" is-link="{{canEditDevice}}" link-type="navigateTo" url="/package-distribution/wifi-connect/index?type=changeWifi&sn={{deviceInfo.sn}}"></van-cell>
       <van-cell title="Mac 地址" value="{{mac}}" bind:click="clickMac"></van-cell>
     </van-cell-group>
   </view>
