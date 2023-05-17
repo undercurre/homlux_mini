@@ -83,7 +83,6 @@ Component({
     },
 
     async sendCmdAddSubdevice(deviceId: string) {
-
       await sendCmdAddSubdevice({
         deviceId,
         expire: 60,

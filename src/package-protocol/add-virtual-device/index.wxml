@@ -6,7 +6,7 @@
 <van-cell-group>
   <van-cell icon="/assets/img/mine/about.png" title="添加网关" is-link center bind:click="scanCode" />
 
-  <van-cell title="添加子设备" is-link center bind:click="addSubDevice"/>
+  <van-cell title="添加子设备" is-link center bind:click="addSubDevice" />
 
   <van-cell title="打开美居Lite" is-link center bind:click="toMeiju" />
 </van-cell-group>
