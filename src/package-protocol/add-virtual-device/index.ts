@@ -67,7 +67,7 @@ Component({
         .catch((err) => err)
 
       Loggger.log('showActionSheet', action)
-      if (action.tapIndex < 0) {
+      if (action.tapIndex === undefined) {
         return
       }
 
