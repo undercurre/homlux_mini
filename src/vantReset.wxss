@@ -4,6 +4,7 @@ page {
   --button-default-border-color: #a2a2a2;
   --button-info-border-color: #555659;
   --button-info-background-color: #555659;
+  --button-primary-background-color: linear-gradient(165deg, #468cfb 0%, #6ba3fc 100%);
   --button-danger-background-color: linear-gradient(270deg, #f68aa9 13%, #ef6586 92%);
   --button-plain-background-color: transparent;
   --button-small-font-size: 26rpx;
@@ -12,6 +13,8 @@ page {
   --button-normal-font-size: 28rpx;
   --button-normal-height: 64rpx;
   --button-large-font-size: 36rpx;
+  --button-large-height: 88rpx;
+  --button-border-radius: 20rpx;
   --button-round-border-radius: 32rpx;
   /* button end */
 
@@ -68,10 +71,6 @@ page {
 }
 
 /* button start */
-.van-button {
-  border-radius: 20rpx !important;
-}
-
 .van-button--normal {
   height: var(--button-normal-height) !important;
 }
@@ -79,14 +78,6 @@ page {
 .van-button--danger,
 .van-button--primary {
   border: 0 !important;
-}
-
-.van-button--primary {
-  background: linear-gradient(165deg, #468cfb 0%, #6ba3fc 100%) !important;
-}
-
-.van-button--large {
-  height: 88rpx !important;
 }
 
 .van-button--plain.van-button--primary {
@@ -135,7 +126,6 @@ page {
 .van-dialog__header {
   font-size: 36rpx;
 }
-
 .van-dialog__message {
   padding: 80rpx 80rpx 90rpx !important;
 }
@@ -169,25 +159,20 @@ page {
 .van-action-sheet__item {
   padding: 32rpx !important;
 }
-
 /* action-sheet end */
 
 /* switch start */
 .van-switch {
   border: none !important;
 }
-
 .van-switch__node {
   left: 7.7rpx !important;
   top: 9rpx !important;
 }
-
 .van-switch__node {
   box-shadow: none !important;
 }
-
 .van-switch--on .van-switch__node {
   transform: translateX(47rpx) !important;
 }
-
 /* switch end */
