@@ -349,8 +349,11 @@ ComponentWithComputed({
               zIndex: 9999,
             })
             this.handleClose()
-            await Promise.all([deviceStore.updateSubDeviceList(), homeStore.updateRoomCardList()])
-            this.triggerEvent('roomMove')
+            // FIXME 云端加入移动错误上报，临时处理
+            setTimeout(async () => {
+              await Promise.all([deviceStore.updateSubDeviceList(), homeStore.updateRoomCardList()])
+              this.triggerEvent('roomMove')
+            }, 2000)
           } else {
             Toast({
               message: '移动失败',
