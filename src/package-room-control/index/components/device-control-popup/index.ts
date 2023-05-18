@@ -232,71 +232,46 @@ ComponentWithComputed({
         return // 这时候还没有第一次渲染，from是0，不能正确执行动画
       }
 
-      if (deviceStore.isEditSelectMode) {
-        if (this.data.isRender) {
-          // 收起
-          this.animate(
-            '#popup',
-            [
-              {
-                opacity: 1,
-                bottom: upper,
-              },
-              {
-                opacity: 0,
-                bottom: lower,
-              },
-            ],
-            100,
-            () => {
-              this.setData({
-                isRender: false,
-              })
+      if (checkedList.length > 0) {
+        this.setData({
+          isRender: true,
+        })
+        // 打开
+        this.animate(
+          '#popup',
+          [
+            {
+              opacity: 0,
+              bottom: lower,
             },
-          )
-        }
-      } else {
-        if (checkedList.length > 0) {
-          this.setData({
-            isRender: true,
-          })
-          // 打开
-          this.animate(
-            '#popup',
-            [
-              {
-                opacity: 0,
-                bottom: lower,
-              },
-              {
-                opacity: 1,
-                bottom: upper,
-              },
-            ],
-            100,
-          )
-        } else if (checkedList.length === 0) {
-          // 收起
-          this.animate(
-            '#popup',
-            [
-              {
-                opacity: 1,
-                bottom: upper,
-              },
-              {
-                opacity: 0,
-                bottom: lower,
-              },
-            ],
-            100,
-            () => {
-              this.setData({
-                isRender: false,
-              })
+            {
+              opacity: 1,
+              bottom: upper,
             },
-          )
-        }
+          ],
+          100,
+        )
+      } else if (checkedList.length === 0) {
+        // 收起
+        this.animate(
+          '#popup',
+          [
+            {
+              opacity: 1,
+              bottom: upper,
+            },
+            {
+              opacity: 0,
+              bottom: lower,
+            },
+          ],
+          100,
+          () => {
+            this.setData({
+              isRender: false,
+            })
+          },
+        )
       }
     },
     updateCurrentLinkTypeDesc() {

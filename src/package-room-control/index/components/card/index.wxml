@@ -1,3 +1,0 @@
-<view class="w-180rpx pb-16rpx pt-16rpx flex justify-center">
-  <device-card showControl showShadow showGradientBg edit-mode="{{isEditSelectMode}}" edit-select="{{isEditSelect}}" device-info="{{item}}" data-item="{{item}}" select="{{item.select}}" bind:controlTap="handleControlTap" bind:cardTap="handleCardTap" bind:offlineTap="handleOfflineTap" bind:longpress="handleLongPress" />
-</view>

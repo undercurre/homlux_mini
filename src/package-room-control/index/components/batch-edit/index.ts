@@ -5,7 +5,6 @@ import { proType } from '../../../../config/index'
 import { deviceBinding, deviceStore, homeStore, roomBinding, roomStore } from '../../../../store/index'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
-import { runInAction } from 'mobx-miniprogram'
 import { storage, checkInputNameIllegal } from '../../../../utils/index'
 ComponentWithComputed({
   options: {
@@ -14,21 +13,79 @@ ComponentWithComputed({
 
   behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding, roomBinding] })],
 
+  properties: {
+    editSelectList: {
+      type: Array,
+      value: [] as string[],
+    },
+    editSelectMode: {
+      type: Boolean,
+      value: false,
+      observer(value) {
+        if (value) {
+          this.animate(
+            '#bottom',
+            [
+              {
+                translateY: '100%',
+              },
+              {
+                translateY: '0%',
+              },
+            ],
+            100,
+          )
+          this.animate(
+            '#top',
+            [
+              {
+                translateY: '-100%',
+              },
+              {
+                translateY: '0%',
+              },
+            ],
+            100,
+          )
+        } else {
+          this.animate(
+            '#bottom',
+            [
+              {
+                translateY: '0%',
+              },
+              {
+                translateY: '100%',
+              },
+            ],
+            100,
+          )
+          this.animate(
+            '#top',
+            [
+              {
+                translateY: '0%',
+              },
+              {
+                translateY: '-100%',
+              },
+            ],
+            100,
+          )
+        }
+      },
+    },
+  },
+
   computed: {
     canEditName(data) {
-      if (data.editSelect) {
-        return data.editSelect.length === 1
-      }
-      return false
+      return data.editSelectList?.length === 1
     },
     editDeviceNameTitle(data) {
       return data.editProType === proType.switch ? '面板名称' : '设备名称'
     },
     isAllSelect(data) {
-      if (data.editSelect) {
-        return deviceStore.deviceFlattenList.length === data.editSelect.length
-      }
-      return false
+      return deviceStore.deviceFlattenList.length === data.editSelectList.length
     },
     editNameDisable(data) {
       if (data.editProType === proType.switch) {
@@ -38,68 +95,6 @@ ComponentWithComputed({
     },
     editRoomDisable(data) {
       return roomStore.currentRoom.roomId === data.roomId
-    },
-  },
-
-  watch: {
-    isEditSelectMode(value) {
-      if (this.data.firstLoad) {
-        this.setData({
-          firstLoad: false,
-        })
-        return
-      }
-      if (value) {
-        this.animate(
-          '#bottom',
-          [
-            {
-              translateY: '100%',
-            },
-            {
-              translateY: '0%',
-            },
-          ],
-          100,
-        )
-        this.animate(
-          '#top',
-          [
-            {
-              translateY: '-100%',
-            },
-            {
-              translateY: '0%',
-            },
-          ],
-          100,
-        )
-      } else {
-        this.animate(
-          '#bottom',
-          [
-            {
-              translateY: '0%',
-            },
-            {
-              translateY: '100%',
-            },
-          ],
-          100,
-        )
-        this.animate(
-          '#top',
-          [
-            {
-              translateY: '0%',
-            },
-            {
-              translateY: '-100%',
-            },
-          ],
-          100,
-        )
-      }
     },
   },
 
@@ -120,7 +115,6 @@ ComponentWithComputed({
     showEditRoom: false,
     roomId: '',
     showConfirmDelete: false,
-    firstLoad: true,
   },
 
   /**
@@ -128,19 +122,13 @@ ComponentWithComputed({
    */
   methods: {
     handleAllSelectToggle() {
-      runInAction(() => {
-        if (this.data.isAllSelect) {
-          deviceStore.editSelect = []
-        } else {
-          deviceStore.editSelect = deviceStore.deviceFlattenList.map((device) => device.uniId)
-        }
-      })
+      this.triggerEvent('selectAll', !this.data.isAllSelect)
     },
     handleDeleteDialog() {
-      if (!deviceStore.editSelect.length) {
+      if (!this.data.editSelectList.length) {
         return
       }
-      const hasSwitch = deviceStore.editSelect.some((uniId) => uniId.includes(':'))
+      const hasSwitch = this.data.editSelectList.some((uniId: string) => uniId.includes(':'))
       Dialog.confirm({
         message: hasSwitch ? '该按键所在的面板将被一起删除' : '确定删除该设备',
         confirmButtonText: '是',
@@ -149,7 +137,7 @@ ComponentWithComputed({
       })
         .then(async () => {
           const set = new Set<string>([])
-          deviceStore.editSelect.forEach((uniId) => {
+          this.data.editSelectList.forEach((uniId: string) => {
             if (uniId.includes(':')) {
               set.add(uniId.split(':')[0])
             } else {
@@ -169,7 +157,7 @@ ComponentWithComputed({
             })
             await Promise.all([deviceStore.updateSubDeviceList(), homeStore.updateRoomCardList()])
             this.triggerEvent('updateList')
-            this.handleExitEdit()
+            this.handleClose()
           } else {
             Toast({
               message: '删除失败',
@@ -180,10 +168,10 @@ ComponentWithComputed({
         .catch((e) => console.log(e))
     },
     handleEditNamePopup() {
-      if (this.data.isMultiSelect || !deviceStore.editSelect.length || deviceStore.editSelect.length > 1) {
+      if (this.data.editSelectList?.length > 1) {
         return
       }
-      const uniId = deviceStore.editSelect[0]
+      const uniId = this.data.editSelectList[0]
       const device = deviceStore.allRoomDeviceFlattenMap[uniId]
       if (uniId.includes(':')) {
         this.setData({
@@ -203,10 +191,10 @@ ComponentWithComputed({
       }
     },
     handleMoveRoomPopup() {
-      if (!deviceStore.editSelect.length) {
+      if (!this.data.editSelectList.length) {
         return
       }
-      const uniId = deviceStore.editSelect[0]
+      const uniId = this.data.editSelectList[0]
       const device = deviceStore.allRoomDeviceFlattenMap[uniId]
       this.setData({
         showEditRoom: true,
@@ -220,13 +208,6 @@ ComponentWithComputed({
       })
 
       this.triggerEvent('close')
-    },
-    handleExitEdit() {
-      this.handleClose()
-      runInAction(() => {
-        deviceStore.isEditSelectMode = false
-        deviceStore.editSelect = []
-      })
     },
     async handleConfirm() {
       if (this.data.showEditName) {
@@ -248,8 +229,8 @@ ComponentWithComputed({
             Toast('面板名称不能超过6个字符')
             return
           }
-          const [deviceId, switchId] = deviceStore.editSelect[0].split(':')
-          const device = deviceStore.allRoomDeviceFlattenMap[deviceStore.editSelect[0]]
+          const [deviceId, switchId] = this.data.editSelectList[0].split(':')
+          const device = deviceStore.allRoomDeviceFlattenMap[this.data.editSelectList[0]]
           const deviceInfoUpdateVoList = [] as Device.DeviceInfoUpdateVo[]
           if (this.data.editSwitchName !== device.switchInfoDTOList[0].switchName) {
             deviceInfoUpdateVoList.push({
@@ -275,7 +256,7 @@ ComponentWithComputed({
               message: '修改成功',
               zIndex: 9999,
             })
-            this.handleExitEdit()
+            this.handleClose()
             return
           }
           const res = await batchUpdate({
@@ -286,7 +267,7 @@ ComponentWithComputed({
               message: '修改成功',
               zIndex: 9999,
             })
-            this.handleExitEdit()
+            this.handleClose()
             await Promise.all([homeStore.updateRoomCardList(), deviceStore.updateSubDeviceList()])
             this.triggerEvent('updateList', device)
           } else {
@@ -298,7 +279,7 @@ ComponentWithComputed({
         }
         // 修改灯属性
         else {
-          const device = deviceStore.allRoomDeviceFlattenMap[deviceStore.editSelect[0]]
+          const device = deviceStore.allRoomDeviceFlattenMap[this.data.editSelectList[0]]
 
           if (checkInputNameIllegal(this.data.editDeviceName)) {
             Toast('设备名称不能用特殊符号或表情')
@@ -311,7 +292,7 @@ ComponentWithComputed({
           const res = await batchUpdate({
             deviceInfoUpdateVoList: [
               {
-                deviceId: deviceStore.editSelect[0],
+                deviceId: this.data.editSelectList[0],
                 houseId: homeStore.currentHomeId,
                 deviceName: this.data.editDeviceName,
                 type: '0',
@@ -323,7 +304,7 @@ ComponentWithComputed({
               message: '修改成功',
               zIndex: 9999,
             })
-            this.handleExitEdit()
+            this.handleClose()
             await Promise.all([homeStore.updateRoomCardList(), deviceStore.updateSubDeviceList()])
             device.deviceName = this.data.editDeviceName // 用于传参，更新视图
             this.triggerEvent('updateList', device)
@@ -337,7 +318,7 @@ ComponentWithComputed({
       } else if (this.data.showEditRoom) {
         const actionFn = async () => {
           const map = {} as Record<string, Device.DeviceInfoUpdateVo>
-          deviceStore.editSelect.forEach((uniId) => {
+          this.data.editSelectList.forEach((uniId: string) => {
             if (uniId.includes(':')) {
               const deviceId = uniId.split(':')[0]
               if (!map[deviceId]) {
@@ -367,11 +348,8 @@ ComponentWithComputed({
               message: '移动成功',
               zIndex: 9999,
             })
-            this.handleExitEdit()
+            this.handleClose()
             await Promise.all([deviceStore.updateSubDeviceList(), homeStore.updateRoomCardList()])
-            runInAction(() => {
-              deviceStore.isEditSelectMode = false
-            })
             this.triggerEvent('updateList')
             this.triggerEvent('roomMove')
           } else {
@@ -381,7 +359,7 @@ ComponentWithComputed({
             })
           }
         }
-        if (deviceStore.editSelect.some((uniId) => uniId.includes(':'))) {
+        if (this.data.editSelectList.some((uniId: string) => uniId.includes(':'))) {
           Dialog.confirm({
             message: '按键所在的面板将被移动至新房间，是否继续？',
             confirmButtonText: '是',

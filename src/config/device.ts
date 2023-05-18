@@ -1,5 +1,5 @@
 // 设备列表，每次加载的条数 应该为4的倍数
-export const LIST_PAGE = 12
+export const LIST_PAGE = 20
 
 // 设备品类码
 export const proType = {
