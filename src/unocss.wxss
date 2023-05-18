@@ -18,7 +18,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .px-10rpx{padding-left:10rpx;padding-right:10rpx;}
 .px-120rpx{padding-left:120rpx;padding-right:120rpx;}
 .px-16rpx{padding-left:16rpx;padding-right:16rpx;}
-.px-20rpx{padding-left:20rpx;padding-right:20rpx;}
 .px-22rpx{padding-left:22rpx;padding-right:22rpx;}
 .px-24rpx{padding-left:24rpx;padding-right:24rpx;}
 .px-26rpx{padding-left:26rpx;padding-right:26rpx;}
@@ -125,7 +124,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .ml-10rpx{margin-left:10rpx;}
 .ml-12rpx{margin-left:12rpx;}
 .ml-16rpx{margin-left:16rpx;}
-.ml-17rpx{margin-left:17rpx;}
 .ml-18rpx{margin-left:18rpx;}
 .ml-20rpx{margin-left:20rpx;}
 .ml-22rpx{margin-left:22rpx;}
