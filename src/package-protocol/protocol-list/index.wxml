@@ -10,5 +10,7 @@
     <van-cell icon="/assets/img/mine/about.png" title="切换环境【{{curEnv}}】" is-link center bind:click="toggleEnv" />
 
     <van-cell icon="/assets/img/mine/deviceReplace.png" title="添加虚拟设备" is-link center bind:click="addVirtualDevice" />
+
+    <van-cell wx:if="{{releaseTime}}" icon="/assets/img/mine/upgrade.png" title="发布时间" value="{{releaseTime}}" center />
   </block>
 </van-cell-group>

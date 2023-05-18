@@ -11,7 +11,9 @@ type IAnyObject = WechatMiniprogram.IAnyObject
 
 type AnyResType = string | IAnyObject | ArrayBuffer
 
-type ENV_TYPE = 'dev' | 'sit' | 'prod' | undefined
+type ENV_TYPE = 'dev' | 'sit' | 'prod'
+
+type ConfigWithEnv<T> = Record<ENV_TYPE, T>
 
 /**
  * 声名 Behaviors 方法类型

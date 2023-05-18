@@ -6,7 +6,9 @@
 <van-cell-group>
   <van-cell icon="/assets/img/mine/about.png" title="添加网关" is-link center bind:click="scanCode" />
 
-  <van-cell icon="/assets/img/mine/deviceReplace.png" title="添加子设备" is-link center bind:click="addVirtualDevice" />
+  <van-cell title="添加子设备" is-link center bind:click="addSubDevice" />
+
+  <van-cell title="打开美居Lite" is-link center bind:click="toMeiju" />
 </van-cell-group>
 
 <text class="block py-50rpx">添加的设备</text>

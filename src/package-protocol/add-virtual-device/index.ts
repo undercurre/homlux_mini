@@ -1,8 +1,8 @@
 // pages/protocalList/index.ts
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { Loggger, emitter } from '../../utils/index'
-import { queryDeviceOnlineStatus, bindDevice } from '../../apis/index'
-import { homeStore } from '../../store/index'
+import { queryDeviceOnlineStatus, sendCmdAddSubdevice, bindDevice } from '../../apis/index'
+import { deviceStore, homeStore } from '../../store/index'
 
 Component({
   behaviors: [pageBehavior],
@@ -17,7 +17,9 @@ Component({
   data: {
     homeId: 'd61261d887d74cf9bec90c827615ea8a', // 固定虚拟家庭Id
     roomId: '11e70cffcb4c4af1bf6960994b4d3480',
-    deviceList: [] as IAnyObject[]
+    gatewayId: '',
+    _timeId: 0,
+    deviceList: [] as IAnyObject[],
   },
 
   lifetimes: {
@@ -26,12 +28,13 @@ Component({
         emitter.on('bind_device', async (data) => {
           Loggger.log(`收到绑定推送消息：子设备${data.deviceId}`)
 
-          await this.requestBindDevice({deviceId: data.deviceId, deviceName: `网关${data.deviceId.slice(-4)}`})
+          await this.requestBindDevice({ deviceId: data.deviceId, deviceName: `网关${data.deviceId.slice(-4)}` })
         })
       }
     },
     detached() {
       emitter.off('bind_device')
+      clearInterval(this.data._timeId)
       homeStore.updateHomeInfo()
     },
   },
@@ -51,7 +54,40 @@ Component({
 
       const sn = res.result
 
-      await this.requestBindDevice({sn, deviceName: `网关${sn.slice(-8, -4)}`})
+      await this.requestBindDevice({ sn, deviceName: `网关${sn.slice(-8, -4)}` })
+    },
+
+    async addSubDevice() {
+      const list = deviceStore.allRoomDeviceList.filter((item) => item.deviceType === 1)
+
+      const action = await wx
+        .showActionSheet({
+          itemList: list.map((item) => item.deviceName),
+        })
+        .catch((err) => err)
+
+      Loggger.log('showActionSheet', action)
+      if (action.tapIndex < 0) {
+        return
+      }
+
+      this.data.gatewayId = list[action.tapIndex].deviceId
+
+      clearInterval(this.data._timeId)
+
+      this.sendCmdAddSubdevice(this.data.gatewayId)
+
+      this.data._timeId = setInterval(async () => {
+        this.sendCmdAddSubdevice(this.data.gatewayId)
+      }, 50000)
+    },
+
+    async sendCmdAddSubdevice(deviceId: string) {
+      await sendCmdAddSubdevice({
+        deviceId,
+        expire: 60,
+        buzz: 1,
+      })
     },
 
     async requestBindDevice(params: { sn?: string; deviceId?: string; deviceName: string }) {
@@ -74,9 +110,20 @@ Component({
         wx.showToast({ title: `${params.deviceName}绑定成功` })
 
         this.setData({
-          deviceList: this.data.deviceList.concat([{ deviceId: res.result.deviceId, name: params.deviceName }])
+          deviceList: this.data.deviceList.concat([{ deviceId: res.result.deviceId, name: params.deviceName }]),
         })
       }
+    },
+
+    toMeiju() {
+      wx.openEmbeddedMiniProgram({
+        appId: 'wxb12ff482a3185e46',
+        path: 'distribution-network/scan-devices/pages/scan-device/scan-device',
+        // envVersion: 'trial',
+        complete(res) {
+          Loggger.log('openEmbeddedMiniProgram', res)
+        },
+      })
     },
   },
 })

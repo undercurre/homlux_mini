@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { setEnv } from '../config/index'
+import { setEnv, envMap } from '../config/index'
 import { storage } from './storage'
 // import QQMapWX from '../lib/qqmap-wx-jssdk'
 // import { QQMapConfig } from '../config/index'
@@ -133,13 +133,6 @@ export function setCurrentEnv(env?: ENV_TYPE) {
   const { envVersion } = info.miniProgram
   const storageKey = `${envVersion}_env`
   let envStr = env ?? (storage.get(storageKey) as ENV_TYPE)
-
-  // wx的环境名称 --> 云端环境名称
-  const envMap = {
-    develop: 'dev',
-    trial: 'sit',
-    release: 'prod',
-  } as const
 
   if (!envStr) {
     envStr = envMap[envVersion]

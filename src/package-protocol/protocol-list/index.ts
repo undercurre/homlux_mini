@@ -1,6 +1,8 @@
 // pages/protocalList/index.ts
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { storage, setCurrentEnv, Loggger } from '../../utils/index'
+import meta from '../../config/meta'
+
 Component({
   behaviors: [pageBehavior],
   /**
@@ -33,17 +35,23 @@ Component({
 
     envVersion: 'release', // 当前小程序版本，体验版or 正式环境
     curEnv: 'prod', // 当前选择的云端环境
+    releaseTime: '', // 版本上传时间
   },
 
   lifetimes: {
     ready() {
+      if (meta?.datetime) {
+        this.setData({
+          releaseTime: meta.datetime,
+        })
+      }
       const info = wx.getAccountInfoSync()
 
       this.setData({
         envVersion: info.miniProgram.envVersion,
         curEnv: storage.get(`${info.miniProgram.envVersion}_env`) as string,
       })
-    }
+    },
   },
   /**
    * 组件的方法列表
@@ -88,6 +96,6 @@ Component({
       wx.navigateTo({
         url: '/package-protocol/add-virtual-device/index',
       })
-    }
+    },
   },
 })

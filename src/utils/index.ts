@@ -56,3 +56,22 @@ export function throttle<T extends (...args: any) => any>(func: T, wait: number)
     }
   }
 }
+
+/**
+ * @description 类似 lodash.get()
+ * @param obj 引用对象
+ * @param path 路径，可使用[]或.
+ * @param defaultVal 可选，默认为 undefined
+ * @returns 根据对象的字符串路径取值，如果该值不存在则返回默认值defaultVal
+ */
+export function _get(obj: object, path: string, defaultVal = undefined) {
+  // path 处理成统一的.链式格式，并分割成key数组
+  let formatPath = [] as string[]
+  if (Array.isArray(path)) {
+    formatPath = path
+  } else {
+    formatPath = path.replace(/\[/g, '.').replace(/\]/g, '').split('.')
+  }
+
+  return formatPath.reduce((o: any, k) => (o ?? {})[k], obj) ?? defaultVal
+}

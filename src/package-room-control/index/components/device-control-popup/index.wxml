@@ -1,6 +1,6 @@
 <wxs module="wxs" src="./index.wxs"></wxs>
-<view wx:if="{{isRender}}" change:info="{{wxs.infoObserver}}" info="{{info}}" id="popup" class="fixed z-200 left-0 w-750rpx h-716rpx opacity-0" bindtap="handlePopup" bindtouchstart="handleTouchStart" catchtouchmove="handleTouchMove">
-  <view class="popup-shadow w-750rpx h-716rpx rounded-t-64rpx bg-white flex-col flex items-center">
+<view wx:if="{{isRender}}" change:info="{{wxs.infoObserver}}" info="{{info}}" id="popup" class="fixed z-200 left-0 w-750rpx h-600rpx opacity-0" bindtap="handlePopup" bindtouchstart="handleTouchStart" catchtouchmove="handleTouchMove">
+  <view class="popup-shadow w-750rpx h-600rpx rounded-t-64rpx bg-white flex-col flex items-center">
     <view class="flex-center mt-28rpx h-20rpx">
       <view class="w-76rpx h-8rpx bg-black-tips rounded-999"></view>
     </view>
@@ -44,8 +44,8 @@
       <!-- 开关控制 -->
       <view wx:if="{{tab==='switch'}}" class="flex flex-col w-750rpx">
         <view class="h-22rpx"></view>
-        <van-cell-group inset style="opacity: {{isSelectMultiSwitch?0.5:1}};">
-          <van-cell border="{{false}}" is-link="{{!isSelectMultiSwitch}}" title="模式设置" value="{{currentLinkTypeDesc}}" custom-class="switch-cell" bind:click="handleSelectLinkPopup"></van-cell>
+        <van-cell-group inset style="opacity: {{(disabledLinkSetting)?0.5:1}};">
+          <van-cell border="{{false}}" is-link="{{!disabledLinkSetting}}" title="模式设置" value="{{currentLinkTypeDesc}}" custom-class="switch-cell" bind:click="handleSelectLinkPopup"></van-cell>
         </van-cell-group>
       </view>
       <!-- 窗帘控制 -->
@@ -62,7 +62,7 @@
       </view>
     </view>
     <!-- 全开全关 -->
-    <view class="flex items-center justify-evenly mt-46rpx bg-hex-f0f0f0 w-686rpx h-88rpx rounded-24rpx mb-64rpx">
+    <!-- <view class="flex items-center justify-evenly mt-46rpx bg-hex-f0f0f0 w-686rpx h-88rpx rounded-24rpx mb-64rpx">
       <view class="flex-1 flex-center relative h-88rpx" bindtap="handleAllOn">
         <text class="text-32rpx text-hex-1e2c46">全开</text>
         <view wx:if="{{allOnPress}}" class="absolute w-full h-full left-0 top-0 flex-center opacity-0 rounded-24rpx btn-press">
@@ -76,7 +76,7 @@
           <text class="text-32rpx text-hex-fff">全关</text>
         </view>
       </view>
-    </view>
+    </view> -->
   </view>
 
   <select-link-popup show="{{showSelectLinkPopup}}" linkType="{{linkType}}" bind:close="handleSelectLinkPopupClose" bind:confirm="handleSelectLinkPopupConfirm"></select-link-popup>
