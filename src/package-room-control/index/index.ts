@@ -375,67 +375,40 @@ ComponentWithComputed({
           return
         }
 
-        const _list = flattenList.map((device) => ({
-          ...device,
-          type: proName[device.proType],
-          select: this.data.checkedList.includes(device.uniId),
-        }))
-        // 接口返回开关面板数据以设备为一个整体，需要前端拆开后排序
-        _list.sort((a, b) => a.orderNum - b.orderNum) // TODO 链式合到上一行？
+        const _list = flattenList
+          .map((device) => ({
+            ...device,
+            type: proName[device.proType],
+            select: this.data.checkedList.includes(device.uniId),
+            editSelect: this.data.editSelectList.includes(device.uniId),
+          }))
+          // 接口返回开关面板数据以设备为一个整体，需要前端拆开后排序
+          .sort((a, b) => a.orderNum - b.orderNum)
 
-        // 初始化
         if (!this.data.deviceListInited) {
-          // 模拟缓慢渲染的情况
-          // const diffData = {} as IAnyObject
-          // diffData[`devicePageList[${0}]`] = _list.splice(0, LIST_PAGE)
-          // this.setData(diffData)
-
-          // setTimeout(() => {
-          //   diffData[`devicePageList[${1}]`] = _list.splice(0, LIST_PAGE)
-          //   diffData.noMoreList = true
-          //   this.setData(diffData)
-          // }, 3000)
-
-          for (let groupIndex = 0; _list.length > 0; ++groupIndex) {
-            const group = _list.splice(0, LIST_PAGE)
-            const diffData = {} as IAnyObject
-            diffData[`devicePageList[${groupIndex}]`] = group
-            this.setData(diffData)
-          }
-
-          console.log(
-            '[updateDeviceList]列表初始化完成',
-            this.data.devicePageList,
-            // .map((d) => ({
-            //   deviceName: d.deviceName,
-            //   orderNum: d.orderNum,
-            //   proType: d.proType,
-            // })),
-          )
-
-          this.setData({
-            deviceListInited: true,
-          })
+          console.log('[updateDeviceList]列表初始化')
         }
-        // ! 整个列表刷新，算法需要重点优化
-        // TODO 寻源，转向精确更新，减少全列表更新
-        // 暂时只更新列表条数一样的情况
+        // !! 整个列表刷新
         else {
-          // const diffData = {} as IAnyObject
-          // const rLength = this.data.devicePageList.length
-          // _list.forEach((device: DeviceCard & { select?: boolean }, index) => {
-          //   ;(['deviceName', 'onLineStatus', 'select'] as const).forEach((key) => {
-          //     // 需要检查的字段 // mzgdPropertyDTOList? switchInfoDTOList?
-          //     const newVal = device[key]
-          //     if (index < rLength && newVal !== undefined && newVal !== this.data.devicePageList[index][key]) {
-          //       diffData[`devicePageList[${index}].${key}`] = newVal
-          //     }
-          //   })
-          //   // diffData[`devicePageList[${index}].switchInfoDTOList`] = device.switchInfoDTOList
-          // })
-          console.log('【temp deserted】update list')
-          // this.setData(diffData)
+          this.setData({
+            devicePageList: [], // 清空
+            deviceListInited: false,
+          })
+          console.log('[updateDeviceList]列表刷新')
         }
+
+        // 分页加载
+        for (let groupIndex = 0; _list.length > 0; ++groupIndex) {
+          const group = _list.splice(0, LIST_PAGE)
+          const diffData = {} as IAnyObject
+          diffData[`devicePageList[${groupIndex}]`] = group
+          this.setData(diffData)
+        }
+
+        this.setData({
+          deviceListInited: true,
+        })
+        console.log('[updateDeviceList]列表更新完成', this.data.devicePageList)
       }
     },
 
@@ -826,15 +799,8 @@ ComponentWithComputed({
         url: `/package-distribution/wifi-connect/index?type=changeWifi&sn=${gateway.sn}`,
       })
     },
-    // TODO review
     handleRoomMoveSuccess() {
-      // const deviceMap = deviceStore.allRoomDeviceFlattenMap
-      // runInAction(() => {
-      //   deviceStore.selectList = deviceStore.selectList.filter(
-      //     (uniId) => deviceMap[uniId].roomId === roomStore.currentRoom.roomId,
-      //   )
-      // })
-      this.updateSelectType()
+      this.updateDeviceList()
     },
   },
 })

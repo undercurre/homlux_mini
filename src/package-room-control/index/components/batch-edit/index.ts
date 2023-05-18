@@ -350,7 +350,6 @@ ComponentWithComputed({
             })
             this.handleClose()
             await Promise.all([deviceStore.updateSubDeviceList(), homeStore.updateRoomCardList()])
-            this.triggerEvent('updateList')
             this.triggerEvent('roomMove')
           } else {
             Toast({
