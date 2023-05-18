@@ -71,7 +71,7 @@
       <!-- 设备卡片列表 -->
       <scroll-view scroll-y enhanced show-scrollbar="{{false}}" style="height: {{ recycleViewHeight }}px;">
         <view wx:for="{{devicePageList}}" wx:for-item="group" wx:key="index" class="flex flex-row flex-wrap">
-          <card wx:for="{{group}}" wx:key="uniId" item="{{item}}" bind:controlTap="handleControlTap" bind:cardTap="handleDeviceCardTap" bind:offlineTap="handleShowDeviceOffline" bind:cardLongpress="handleLongpress"> </card>
+          <device-card wx:for="{{group}}" wx:key="uniId" class="w-180rpx pb-16rpx pt-16rpx flex justify-center" showControl showShadow showGradientBg edit-mode="{{editSelectMode}}" edit-select="{{item.editSelect}}" device-info="{{item}}" data-item="{{item}}" select="{{item.select}}" bind:controlTap="handleControlTap" bind:cardTap="handleCardTap" bind:offlineTap="handleShowDeviceOffline" bind:longPress="handleLongpress" />
         </view>
 
         <van-skeleton wx:if="{{!deviceListInited}}" row="1" row-width="700rpx" row-class="mt-16rpx rounded-32rpx skeleton_fix" />
@@ -91,7 +91,7 @@
   </view>
 </view>
 
-<view wx:if="{{popupPlaceholder || isEditSelectMode}}" class="h-600rpx" bindtap="handleScreenTap" bindtouchmove="handleScreenTap"></view>
+<view wx:if="{{popupPlaceholder || editSelectMode}}" class="h-600rpx" bindtap="handleScreenTap" bindtouchmove="handleScreenTap"></view>
 <!-- 影响滚动列表的体验，暂时注释 -->
 <!-- <view wx:else class="h-64rpx" bindtap="handleScreenTap" bindtouchmove="handleScreenTap"></view> -->
 
@@ -100,7 +100,7 @@
 
 <before-add-scene-popup show="{{showBeforeAddScenePopup}}" bind:close="handleBeforeAddScenePopupClose" bind:next="handleBeforeAddScenePopupNext" bind:delete="handleBeforeAddScenePopupDelete" bind:edit="handleSceneActionEdit" />
 <add-scene-popup actions="{{addSceneActions}}" show="{{showAddScenePopup}}" bind:close="handleAddScenePopupClose" bind:addSuccess="handleShowAddSceneSuccess" bind:return="handleAddScenePopupReturn" />
-<batch-edit bind:updateList="updateDeviceList" bind:roomMove="handleRoomMoveSuccess" bind:close="exitEditMode"></batch-edit>
+<batch-edit bind:updateList="updateDeviceList" bind:roomMove="handleRoomMoveSuccess" bind:close="exitEditMode" bind:selectAll="editSelectAll" editSelectMode="{{editSelectMode}}" editSelectList="{{editSelectList}}"></batch-edit>
 
 <van-toast id="van-toast" />
 <van-dialog use-slot title="{{officeDeviceInfo.deviceName}}离线" show="{{ showDeviceOffline }}" confirm-button-color="#488FFF" confirmButtonText="我知道了" bind:close="handleCloseDeviceOffline">

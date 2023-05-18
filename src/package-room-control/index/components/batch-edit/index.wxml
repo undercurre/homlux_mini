@@ -17,13 +17,13 @@
         </view>
         <text class="text-black-tips text-24rpx mt-26rpx">修改名称</text>
       </view>
-      <view class="flex-col-center flex-1 {{!editSelect.length ?'opacity-25':''}}" bindtap="handleMoveRoomPopup">
+      <view class="flex-col-center flex-1 {{!editSelectList.length ?'opacity-25':''}}" bindtap="handleMoveRoomPopup">
         <view class="flex-center w-100rpx h-100rpx bg-hex-f6fafd rounded-999">
           <image src="/package-room-control/assets/img/move.png" class="w-36rpx h-36rpx" />
         </view>
         <text class="text-black-tips text-24rpx mt-26rpx">移动房间</text>
       </view>
-      <view class="flex-col-center flex-1 {{!editSelect.length ?'opacity-25':''}}" bindtap="handleDeleteDialog">
+      <view class="flex-col-center flex-1 {{!editSelectList.length ?'opacity-25':''}}" bindtap="handleDeleteDialog">
         <view class="flex-center w-100rpx h-100rpx bg-hex-f6fafd rounded-999">
           <image src="/package-room-control/assets/img/del.png" class="w-36rpx h-36rpx" />
         </view>
@@ -31,7 +31,7 @@
       </view>
     </view>
     <view class="w-750rpx h-2rpx bg-hex-ddd"></view>
-    <view class="w-full h-136rpx flex-center" bindtap="handleExitEdit">
+    <view class="w-full h-136rpx flex-center" bindtap="handleClose">
       <text class="text-28rpx text-blue mb-8rpx font-semibold">完成</text>
     </view>
   </view>
