@@ -542,23 +542,6 @@ ComponentWithComputed({
       const isChecked = this.data.checkedList.includes(uniId) // 点击卡片前，卡片是否选中
       const toCheck = !isChecked // 本次点击需执行的选中状态
 
-      // 这是第一个被选中的设备卡片
-      // 弹起的popup不能挡住卡片
-      const divideRpxByPx = storage.get<number>('divideRpxByPx')
-        ? (storage.get<number>('divideRpxByPx') as number)
-        : 0.5
-      const windowHeight = storage.get<number>('windowHeight') as number
-      const bottom = windowHeight - 716 * divideRpxByPx
-      const top = bottom - 216 * divideRpxByPx
-      const scrollTop = this.data.scrollTop + e.detail.clientRect.top - top + 4
-      wx.pageScrollTo({
-        scrollTop,
-        duration: 200,
-        fail(res) {
-          console.log('scroll-fail', res)
-        },
-      })
-
       // 取消选择
       if (toCheck && this.data.checkedList.length) {
         const oldCheckedId = this.data.checkedList[0]
@@ -598,6 +581,22 @@ ComponentWithComputed({
 
       // TODO
       this.updateSelectType()
+
+      // 弹起的popup不能挡住卡片
+      const divideRpxByPx = storage.get<number>('divideRpxByPx')
+        ? (storage.get<number>('divideRpxByPx') as number)
+        : 0.5
+      const windowHeight = storage.get<number>('windowHeight') as number
+      const bottom = windowHeight - 716 * divideRpxByPx
+      const top = bottom - 216 * divideRpxByPx
+      const scrollTop = this.data.scrollTop + e.detail.clientRect.top - top + 4
+      wx.pageScrollTo({
+        scrollTop,
+        duration: 200,
+        fail(res) {
+          console.log('scroll-fail', res)
+        },
+      })
     },
 
     // 卡片点击时，按品类调用对应方法
