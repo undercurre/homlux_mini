@@ -1,4 +1,4 @@
-import { Loggger, storage } from '../../../../utils/index'
+import { Loggger, storage, throttle } from '../../../../utils/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, deviceStore, sceneStore } from '../../../../store/index'
@@ -1024,11 +1024,11 @@ ComponentWithComputed({
         }
       })
     },
-    handleLevelDrag(e: { detail: { value: number } }) {
+    handleLevelDrag: throttle(function (this: any, e: { detail: { value: number } }) {
       this.setData({
         'lightInfoInner.Level': e.detail.value,
       })
-    },
+    }),
     handleLevelChange(e: { detail: number }) {
       this.setData({
         'lightInfoInner.Level': e.detail,
@@ -1047,11 +1047,11 @@ ComponentWithComputed({
       })
       this.lightSendDeviceControl('colorTemp')
     },
-    handleColorTempDrag(e: { detail: { value: number } }) {
+    handleColorTempDrag: throttle(function (this: any, e: { detail: { value: number } }) {
       this.setData({
         'lightInfoInner.ColorTemp': e.detail.value,
       })
-    },
+    }),
     handleAllOn() {
       if (throttleTimer) {
         return

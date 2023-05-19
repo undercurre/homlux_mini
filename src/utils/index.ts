@@ -35,24 +35,20 @@ export function rpx2px(rpx: number) {
 
 /**
  * 节流函数
- * @param fn  要执行的函数
- * @param delay 延迟的时间
+ * @param fn 要执行的函数
+ * @param wait 延迟的时间
+ * @param immediate 第一次是否立即执行
+ * FIXME 实际引用时，this类型无法推导，暂时直接在参数中指定为 any
  */
-export function throttle<T extends (...args: any) => any>(func: T, wait: number) {
-  let lastInvokeTime = 0
-  let timeId = 0
+export function throttle<T extends (...args: any) => any>(fn: T, wait = 500, immediate = true) {
+  let lastInvoke = 0
 
-  return function () {
-    const nowTime = Date.now()
+  return function (this: any, ...args: any[]) {
+    const current = Date.now()
 
-    if (nowTime - lastInvokeTime > wait) {
-      func()
-      lastInvokeTime = nowTime
-    } else {
-      clearTimeout(timeId)
-      timeId = setTimeout(() => {
-        func()
-      }, wait)
+    if ((immediate && lastInvoke === 0) || current - lastInvoke > wait) {
+      fn.apply(this, args)
+      lastInvoke = current
     }
   }
 }
