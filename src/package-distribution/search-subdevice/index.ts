@@ -359,7 +359,11 @@ ComponentWithComputed({
       })
 
       if (res.success && res.result.isBind) {
-        await this.editDeviceInfo({ deviceId: res.result.deviceId, switchList: device.switchList })
+        // 仅2-4路面板需要更改按键名称
+        if (device.switchList.length > 1) {
+          await this.editDeviceInfo({ deviceId: res.result.deviceId, switchList: device.switchList })
+        }
+
         device.status = 'success'
       } else {
         device.status = 'fail'
