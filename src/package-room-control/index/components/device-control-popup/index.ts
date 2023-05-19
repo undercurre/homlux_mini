@@ -1,8 +1,8 @@
-import { Logger, storage } from '../../../../utils/index'
+import { Logger, storage, throttle } from '../../../../utils/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, deviceStore, sceneStore } from '../../../../store/index'
-import { maxColorTempK, minColorTempK, proType } from '../../../../config/index'
+import { maxColorTempK, minColorTempK, colorTempKRange, proType } from '../../../../config/index'
 import {
   controlDevice,
   createAssociated,
@@ -47,10 +47,23 @@ ComponentWithComputed({
       type: Array,
       value: [] as string[],
       observer(value) {
-        // 当controlPopup已是false时，则由数量变化为0触发，收起弹窗
+        // 当controlPopup已是false时，则数量变化为0触发，收起弹窗
         if (value.length === 0 && !this.data.controlPopup) {
           console.log('checkedList %s, trigger popupMove()', value)
           this.popupMove()
+        }
+        // 色温范围计算
+        else if (value.length) {
+          const deviceId = this.data.checkedList[0]
+          const deviceMap = deviceStore.allRoomDeviceMap
+          const { productId } = deviceMap[deviceId]
+          const [minColorTempK, maxColorTempK] = colorTempKRange[productId]
+          console.log([minColorTempK, maxColorTempK])
+
+          this.setData({
+            minColorTempK,
+            maxColorTempK,
+          })
         }
       },
     },
@@ -91,9 +104,9 @@ ComponentWithComputed({
     lightInfoInner: {
       Level: 10,
       ColorTemp: 20,
-      maxColorTempK,
-      minColorTempK,
     },
+    maxColorTempK,
+    minColorTempK,
     curtainInfo: {
       left: 50,
       right: 50,
@@ -122,11 +135,7 @@ ComponentWithComputed({
 
   computed: {
     colorTempK(data) {
-      return (
-        (data.lightInfoInner.ColorTemp / 100) *
-          (data.lightInfoInner.maxColorTempK - data.lightInfoInner.minColorTempK) +
-        data.lightInfoInner.minColorTempK
-      )
+      return (data.lightInfoInner.ColorTemp / 100) * (data.maxColorTempK - data.minColorTempK) + data.minColorTempK
     },
     lightTab(data) {
       if (data.checkedType) {
@@ -1024,11 +1033,11 @@ ComponentWithComputed({
         }
       })
     },
-    handleLevelDrag(e: { detail: { value: number } }) {
+    handleLevelDrag: throttle(function (this: any, e: { detail: { value: number } }) {
       this.setData({
         'lightInfoInner.Level': e.detail.value,
       })
-    },
+    }),
     handleLevelChange(e: { detail: number }) {
       this.setData({
         'lightInfoInner.Level': e.detail,
@@ -1047,11 +1056,11 @@ ComponentWithComputed({
       })
       this.lightSendDeviceControl('colorTemp')
     },
-    handleColorTempDrag(e: { detail: { value: number } }) {
+    handleColorTempDrag: throttle(function (this: any, e: { detail: { value: number } }) {
       this.setData({
         'lightInfoInner.ColorTemp': e.detail.value,
       })
-    },
+    }),
     handleAllOn() {
       if (throttleTimer) {
         return

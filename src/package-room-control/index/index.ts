@@ -348,6 +348,8 @@ ComponentWithComputed({
             if (device!.mzgdPropertyDTOList) {
               const eq = originDevice.proType === proType.light ? 1 : originDevice.uniId.split(':')[1]
               renderList.push(`mzgdPropertyDTOList[${eq}].OnOff`)
+              renderList.push(`mzgdPropertyDTOList[${eq}].Level`) // 暂不在界面上体现，只是统一更新数据
+              renderList.push(`mzgdPropertyDTOList[${eq}].ColorTemp`) // 暂不在界面上体现
             }
             renderList.forEach((key) => {
               const newVal = _get(device!, key)
@@ -521,6 +523,10 @@ ComponentWithComputed({
       console.log('handleCardEditSelect', list)
     },
 
+    /**
+     * @description 编辑状态全选/全不选
+     * @param e
+     */
     editSelectAll(e: { detail: boolean }) {
       const toCheckAll = e.detail
       const diffData = {} as IAnyObject
@@ -787,6 +793,7 @@ ComponentWithComputed({
         editSelectMode: false,
         editSelectList: [],
       })
+      this.editSelectAll({ detail: false })
     },
 
     handleAddDevice() {
