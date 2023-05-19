@@ -6,7 +6,7 @@ import dayjs from 'dayjs'
 import { deviceBinding, homeBinding } from '../../store/index'
 import { bleDevicesBinding, bleDevicesStore } from '../store/bleDeviceStore'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { strUtil, showLoading, hideLoading, delay } from '../../utils/index'
+import { strUtil, showLoading, hideLoading, delay, Logger } from '../../utils/index'
 import { checkDevice, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
 
 ComponentWithComputed({
@@ -56,14 +56,6 @@ ComponentWithComputed({
 
   lifetimes: {
     async ready() {
-      wx.onNetworkStatusChange(function (res) {
-        console.debug('onNetworkStatusChange', res)
-      })
-
-      wx.onNetworkWeakChange(function (res) {
-        console.debug('onNetworkWeakChange', res)
-      })
-
       bleDevicesBinding.store.reset()
 
       await homeBinding.store.updateHomeInfo()
@@ -199,7 +191,6 @@ ComponentWithComputed({
 
     async initBle() {
       if (bleDevicesStore.discovering) {
-        console.debug('已经初始化蓝牙了')
         return
       }
 
@@ -417,7 +408,7 @@ ComponentWithComputed({
 
         const pageParams = strUtil.getUrlParams(url)
 
-        console.log('pageParams', pageParams)
+        console.log('scanParams', pageParams)
 
         showLoading()
         // mode 配网方式 （00代表AP配网，01代表蓝牙配网， 02代表AP+有线）
@@ -476,6 +467,7 @@ ComponentWithComputed({
     async bindSubDevice(params: IAnyObject) {
       const res = await checkDevice({ dsn: params.sn }, { loading: false })
 
+      Logger.log('checkDevice', res)
       if (!res.success) {
         Toast('验证产品信息失败')
 

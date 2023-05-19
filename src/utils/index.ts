@@ -9,6 +9,7 @@ export * from './bleProtocol'
 export * from './eventBus'
 export * from './validate'
 export * from './app'
+export * from './log'
 
 export function delay(ms: number) {
   return new Promise<void>((resolve) => {

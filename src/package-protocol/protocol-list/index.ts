@@ -1,6 +1,6 @@
 // pages/protocalList/index.ts
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { storage, setCurrentEnv, Loggger } from '../../utils/index'
+import { storage, setCurrentEnv, Logger } from '../../utils/index'
 import meta from '../../config/meta'
 
 Component({
@@ -82,7 +82,7 @@ Component({
           wx.reLaunch({
             url: '/pages/index/index',
             complete(res) {
-              Loggger.log('reLaunch', res)
+              Logger.log('reLaunch', res)
             },
           })
         },

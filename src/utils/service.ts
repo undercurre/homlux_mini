@@ -3,6 +3,7 @@ import { storage } from './storage'
 import { connectHouseSocket } from '../apis/websocket'
 import { homeStore, userStore } from '../store/index'
 import { emitter } from './eventBus'
+import { Logger } from './log'
 
 export function logout() {
   storage.remove('mobilePhone')
@@ -29,7 +30,7 @@ export function startWebsocketService() {
   socketTask.onClose(onSocketClose)
   socketTask.onOpen(() => {
     socketIsConnect = true
-    console.info('socket连接成功')
+    Logger.log('socket连接成功')
   })
   socketTask.onMessage((e) => {
     try {
@@ -46,23 +47,22 @@ export function startWebsocketService() {
         })
       }
     } catch (err) {
-      console.log('接收到Socket信息：', e.data)
-      console.log('转json失败：', err)
+      console.error('接收到Socket信息：', e.data)
+      console.error('转json失败：', err)
     }
   })
   socketTask.onError((err) => {
-    console.error('Socket错误：', err)
-    socketIsConnect = false
+    Logger.error('Socket错误onError：', err)
   })
 }
 
 function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {
-  console.log('socket关闭连接', e)
+  Logger.log('socket关闭连接', e)
   socketIsConnect = false
   if (e.code !== 1000) {
-    console.error('socket异常关闭连接', e)
+    Logger.error('socket异常关闭连接', e)
     setTimeout(() => {
-      console.log('socket重连')
+      Logger.log('socket重连')
       startWebsocketService()
     }, 5000)
   }

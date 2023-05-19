@@ -1,5 +1,5 @@
 import { isAndroid } from './app'
-import { aesUtil, delay, strUtil, Loggger } from './index'
+import { aesUtil, delay, strUtil, Logger } from './index'
 
 // 定义了与BLE通路相关的所有事件/动作/命令的集合；其值域及表示意义为：对HOMLUX设备主控与app之间可能的各种操作的概括分类
 const CmdTypeMap = {
@@ -73,7 +73,7 @@ export class BleClient {
   async connect() {
     const date1 = Date.now()
 
-    Loggger.log(`【${this.mac}】开始连接蓝牙`, this.deviceUuid)
+    Logger.log(`【${this.mac}】开始连接蓝牙`, this.deviceUuid)
 
     const connectRes = await wx
       .createBLEConnection({
@@ -81,7 +81,7 @@ export class BleClient {
       })
       .catch((err: WechatMiniprogram.BluetoothError) => err)
 
-    Loggger.log(`【${this.mac}】 connect`, this.deviceUuid, connectRes, `连接蓝牙时间： ${Date.now() - date1}ms`)
+    Logger.log(`【${this.mac}】 connect`, this.deviceUuid, connectRes, `连接蓝牙时间： ${Date.now() - date1}ms`)
 
     // 判断是否连接蓝牙，0为连接成功，-1为已经连接
     // 避免-1的情况，因为安卓如果重复调用 wx.createBLEConnection 创建连接，有可能导致系统持有同一设备多个连接的实例，导致调用 closeBLEConnection 的时候并不能真正的断开与设备的连接。占用蓝牙资源
@@ -100,7 +100,7 @@ export class BleClient {
       delay(3000).then(() => ({ success: false, error: '获取蓝牙服务信息超时' })),
     ])
 
-    Loggger.log(`【${this.mac}]initRes`, initRes)
+    Logger.log(`【${this.mac}]initRes`, initRes)
     if (!initRes.success) {
       await this.close() // 释放已连接的蓝牙资源
       throw {
@@ -129,7 +129,7 @@ export class BleClient {
             throw err
           })
 
-        Loggger.log(`【${this.mac}】bleServiceRes`, bleServiceRes)
+        Logger.log(`【${this.mac}】bleServiceRes`, bleServiceRes)
       }
 
       // IOS无法跳过该接口，否则后续接口会报10005	no characteristic	没有找到指定特征
@@ -145,7 +145,7 @@ export class BleClient {
       // 取第一个属性（固定，为可写可读可监听），不同品类的子设备的characteristicId不一样，同类的一样
       const characteristicId = characRes.characteristics[0].uuid
       this.characteristicId = characteristicId
-      Loggger.log(`【${this.mac}】characRes`, characRes)
+      Logger.log(`【${this.mac}】characRes`, characRes)
 
       await wx
         .notifyBLECharacteristicValueChange({
@@ -163,7 +163,7 @@ export class BleClient {
         success: true,
       }
     } catch (err) {
-      Loggger.error(`【${this.mac}】`, err)
+      Logger.error(`【${this.mac}】`, err)
 
       return {
         success: false,
@@ -176,11 +176,11 @@ export class BleClient {
     if (!this.isConnected) {
       return
     }
-    Loggger.log(`【${this.mac}】${this.deviceUuid}开始关闭蓝牙连接`)
+    Logger.log(`【${this.mac}】${this.deviceUuid}开始关闭蓝牙连接`)
     this.isConnected = false
     const res = await wx.closeBLEConnection({ deviceId: this.deviceUuid }).catch((err) => err)
 
-    Loggger.log(`【${this.mac}】closeBLEConnection`, res)
+    Logger.log(`【${this.mac}】closeBLEConnection`, res)
   }
 
   async sendCmd(params: { cmdType: keyof typeof CmdTypeMap; subType: keyof typeof ControlSubType }) {
@@ -188,7 +188,7 @@ export class BleClient {
       if (!this.isConnected) {
         const connectRes = await this.connect()
 
-        Loggger.log(`【${this.mac}】connect`, connectRes)
+        Logger.log(`【${this.mac}】connect`, connectRes)
         if (connectRes.code === -1) {
           throw connectRes
         }
@@ -196,7 +196,7 @@ export class BleClient {
 
       const { cmdType, subType } = params
 
-      Loggger.log(`【${this.mac}】蓝牙指令发起，cmdType： ${params.cmdType}--${params.subType}`)
+      Logger.log(`【${this.mac}】蓝牙指令发起，cmdType： ${params.cmdType}--${params.subType}`)
 
       const msgId = ++this.msgId // 等待回复的指令msgId
       // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
@@ -220,7 +220,7 @@ export class BleClient {
           const begin = Date.now()
           // 超时处理
           const timeId = setTimeout(() => {
-            Loggger.log(`【${this.mac}】蓝牙指令回复超时`, cmdType, subType)
+            Logger.log(`【${this.mac}】蓝牙指令回复超时`, cmdType, subType)
             resolve({ code: '-1', success: false, resMsg: '蓝牙指令回复超时', cmdType: cmdType, subCmdType: subType })
           }, 6000)
 
@@ -247,7 +247,7 @@ export class BleClient {
 
             clearTimeout(timeId)
 
-            Loggger.log(`【${this.mac}】 蓝牙指令回复时间： ${Date.now() - begin}ms`, cmdType, subType)
+            Logger.log(`【${this.mac}】 蓝牙指令回复时间： ${Date.now() - begin}ms`, cmdType, subType)
 
             resolve({
               code: '0',
@@ -266,13 +266,13 @@ export class BleClient {
             characteristicId: this.characteristicId,
             value: buffer,
             complete: (res) => {
-              Loggger.log(`【${this.mac}】writeBLECharacteristicValue`, res)
+              Logger.log(`【${this.mac}】writeBLECharacteristicValue`, res)
             },
           })
         },
       )
     } catch (err) {
-      Loggger.error(`【${this.mac}】sendCmd-err`, err)
+      Logger.error(`【${this.mac}】sendCmd-err`, err)
       await this.close() // 异常关闭需要主动配合关闭连接closeBLEConnection，否则资源会被占用无法释放，导致无法连接蓝牙设备
       return {
         code: -1,
@@ -307,7 +307,7 @@ export class BleClient {
       },
     }
 
-    Loggger.log(`【${this.mac}】startZigbeeNet`, result)
+    Logger.log(`【${this.mac}】startZigbeeNet`, result)
 
     return result
   }
@@ -331,7 +331,7 @@ export class BleClient {
       },
     }
 
-    Loggger.log(`【${this.mac}】getZigbeeState`, result)
+    Logger.log(`【${this.mac}】getZigbeeState`, result)
 
     return result
   }
@@ -342,7 +342,7 @@ export class BleClient {
   async getLightState() {
     const res = await this.sendCmd({ cmdType: 'DEVICE_INFO_QUREY', subType: 'QUREY_LIGHT_STATUS' })
 
-    Loggger.log(`【${this.mac}】getLightState`, res)
+    Logger.log(`【${this.mac}】getLightState`, res)
 
     return {
       ...res,
@@ -411,6 +411,6 @@ export const bleUtil = {
 wx.onBLEConnectionStateChange(function (res) {
   // 该方法回调中可以用于处理连接意外断开等异常情况
   if (!res.connected) {
-    Loggger.log(`device ${res.deviceId} state has changed, connected: ${res.connected}`)
+    Logger.log(`device ${res.deviceId} state has changed, connected: ${res.connected}`)
   }
 })

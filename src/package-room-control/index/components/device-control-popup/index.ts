@@ -1,4 +1,4 @@
-import { Loggger, storage } from '../../../../utils/index'
+import { Logger, storage } from '../../../../utils/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, deviceStore, sceneStore } from '../../../../store/index'
@@ -182,7 +182,7 @@ ComponentWithComputed({
       }
     },
     allRoomDeviceList() {
-      Loggger.log('device-control-popup:watch-allRoomDeviceList')
+      Logger.log('device-control-popup:watch-allRoomDeviceList')
       this.updateCurrentLinkTypeDesc()
     },
   },

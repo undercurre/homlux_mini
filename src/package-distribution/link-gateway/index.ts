@@ -390,7 +390,7 @@ ComponentWithComputed({
         return
       }
 
-      // 防止强绑情况选网关还没断开原有连接，需要延迟查询
+      // 防止强绑情况网关还没断开原有连接，需要延迟查询
       setTimeout(() => {
         this.queryDeviceOnlineStatus(params.sn, params.type)
       }, 10000)
