@@ -58,7 +58,6 @@ ComponentWithComputed({
           const deviceMap = deviceStore.allRoomDeviceMap
           const { productId } = deviceMap[deviceId]
           const [minColorTempK, maxColorTempK] = colorTempKRange[productId]
-          console.log([minColorTempK, maxColorTempK])
 
           this.setData({
             minColorTempK,
