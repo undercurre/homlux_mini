@@ -43,6 +43,7 @@ export function rpx2px(rpx: number) {
  */
 export function throttle<T extends (...args: any) => any>(fn: T, wait = 500, immediate = true) {
   let lastInvoke = 0
+  let timeId = 0
 
   return function (this: any, ...args: any[]) {
     const current = Date.now()
@@ -50,6 +51,11 @@ export function throttle<T extends (...args: any) => any>(fn: T, wait = 500, imm
     if ((immediate && lastInvoke === 0) || current - lastInvoke > wait) {
       fn.apply(this, args)
       lastInvoke = current
+    } else {
+      clearTimeout(timeId)
+      timeId = setTimeout(() => {
+        fn.apply(this, args)
+      }, wait)
     }
   }
 }

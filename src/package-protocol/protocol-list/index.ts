@@ -35,7 +35,9 @@ Component({
 
     envVersion: 'release', // 当前小程序版本，体验版or 正式环境
     curEnv: 'prod', // 当前选择的云端环境
+    version: '', // 生产环境版本号
     releaseTime: '', // 版本上传时间
+    showVersion: false, // 是否显示版本号
   },
 
   lifetimes: {
@@ -50,6 +52,7 @@ Component({
       this.setData({
         envVersion: info.miniProgram.envVersion,
         curEnv: storage.get(`${info.miniProgram.envVersion}_env`) as string,
+        version: info.miniProgram.version,
       })
     },
   },
@@ -95,6 +98,12 @@ Component({
     addVirtualDevice() {
       wx.navigateTo({
         url: '/package-protocol/add-virtual-device/index',
+      })
+    },
+    titlePress() {
+      console.log('titlePress triggered, ver: ', this.data.version || this.data.releaseTime)
+      this.setData({
+        showVersion: !this.data.showVersion,
       })
     },
   },
