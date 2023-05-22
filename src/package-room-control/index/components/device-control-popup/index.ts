@@ -55,6 +55,9 @@ ComponentWithComputed({
         // 色温范围计算
         else if (value.length) {
           const deviceId = this.data.checkedList[0]
+          if (deviceId.indexOf(':') !== -1) {
+            return // 排除面板
+          }
           const deviceMap = deviceStore.allRoomDeviceMap
           const { productId } = deviceMap[deviceId]
           const [minColorTempK, maxColorTempK] = colorTempKRange[productId]
