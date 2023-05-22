@@ -1,6 +1,6 @@
 // pages/protocalList/index.ts
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { Loggger, emitter } from '../../utils/index'
+import { Logger, emitter } from '../../utils/index'
 import { queryDeviceOnlineStatus, sendCmdAddSubdevice, bindDevice } from '../../apis/index'
 import { deviceStore, homeStore } from '../../store/index'
 
@@ -26,9 +26,9 @@ Component({
     ready() {
       if (homeStore.currentHomeId === this.data.homeId) {
         emitter.on('bind_device', async (data) => {
-          Loggger.log(`收到绑定推送消息：子设备${data.deviceId}`)
+          Logger.log(`收到绑定推送消息：子设备${data.deviceId}`)
 
-          await this.requestBindDevice({ deviceId: data.deviceId, deviceName: `网关${data.deviceId.slice(-4)}` })
+          await this.requestBindDevice({ deviceId: data.deviceId, deviceName: `子设备${data.deviceId.slice(-4)}` })
         })
       }
     },
@@ -50,7 +50,7 @@ Component({
         })
         .catch((err) => err)
 
-      Loggger.log('scanCode', res)
+      Logger.log('scanCode', res)
 
       const sn = res.result
 
@@ -66,7 +66,6 @@ Component({
         })
         .catch((err) => err)
 
-      Loggger.log('showActionSheet', action)
       if (action.tapIndex === undefined) {
         return
       }
@@ -121,7 +120,7 @@ Component({
         path: 'distribution-network/scan-devices/pages/scan-device/scan-device',
         // envVersion: 'trial',
         complete(res) {
-          Loggger.log('openEmbeddedMiniProgram', res)
+          Logger.log('openEmbeddedMiniProgram', res)
         },
       })
     },

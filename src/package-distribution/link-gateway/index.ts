@@ -1,6 +1,5 @@
 import dayjs from 'dayjs'
 import { ComponentWithComputed } from 'miniprogram-computed'
-import Dialog from '@vant/weapp/dialog/dialog'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { queryDeviceOnlineStatus, bindDevice } from '../../apis/index'
 import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
@@ -35,7 +34,6 @@ ComponentWithComputed({
     isConnectDevice: false,
     status: 'linking',
     apSSID: '',
-    _wifiSwitchInterId: 0,
     _queryCloudTimeId: 0,
     _queryTimes: 50, // 网关发送绑定指令后查询云端最大次数
     activeIndex: 0,
@@ -79,30 +77,11 @@ ComponentWithComputed({
         }
       }
 
-      if (this.checkWifiSwitch()) {
-        this.initWifi()
-      } else {
-        this.data._wifiSwitchInterId = setInterval(() => {
-          const systemSetting = wx.getSystemSetting()
-
-          if (systemSetting.wifiEnabled) {
-            console.info('检测到wifi打开，开始初始化')
-            Dialog.close()
-            clearInterval(this.data._wifiSwitchInterId)
-            this.data._wifiSwitchInterId = 0
-            this.initWifi()
-          }
-        }, 1500)
-      }
+      this.initWifi()
     },
     detached() {
       console.debug('link-gateway:detached')
       this.data._socket?.close()
-
-      // 清除定时任务
-      if (this.data._wifiSwitchInterId) {
-        clearInterval(this.data._wifiSwitchInterId)
-      }
 
       if (this.data._queryCloudTimeId) {
         clearTimeout(this.data._queryCloudTimeId)
@@ -199,27 +178,6 @@ ComponentWithComputed({
           resolve(true)
         }
       })
-    },
-
-    checkWifiSwitch() {
-      // 安卓端需要检测wifi开关，否则无法调用wifi接口
-      if (isAndroid()) {
-        const systemSetting = wx.getSystemSetting()
-
-        if (!systemSetting.wifiEnabled) {
-          Dialog.alert({
-            message: '请打开手机WIFI',
-            showCancelButton: false,
-            confirmButtonText: '我知道了',
-          })
-        }
-
-        return systemSetting.wifiEnabled
-      }
-
-      console.log('wifi开关已打开')
-
-      return true
     },
 
     async initWifi() {
@@ -390,7 +348,7 @@ ComponentWithComputed({
         return
       }
 
-      // 防止强绑情况选网关还没断开原有连接，需要延迟查询
+      // 防止强绑情况网关还没断开原有连接，需要延迟查询
       setTimeout(() => {
         this.queryDeviceOnlineStatus(params.sn, params.type)
       }, 10000)

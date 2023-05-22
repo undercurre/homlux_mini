@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
-import { bleUtil, strUtil, BleClient, getCurrentPageParams, emitter } from '../../utils/index'
+import { bleUtil, strUtil, BleClient, getCurrentPageParams, emitter, Logger } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { sendCmdAddSubdevice, bindDevice } from '../../apis/index'
 import { IBleDevice } from './typings'
@@ -166,6 +166,7 @@ ComponentWithComputed({
       })
 
       if (!res.success) {
+        Logger.error('网关下发指令失败', res)
         this.setData({
           status: 'error',
         })

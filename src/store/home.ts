@@ -13,7 +13,7 @@ import {
   queryAllDevice,
 } from '../apis/index'
 import { proType } from '../config/index'
-import { asyncStorage, storage, Loggger } from '../utils/index'
+import { asyncStorage, storage, Logger } from '../utils/index'
 import { deviceStore } from './device'
 import { othersStore } from './others'
 import { roomStore } from './room'
@@ -98,7 +98,7 @@ export const homeStore = observable({
         const houseId = homeStore.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
         // 首次进入或删除了默认家庭时，默认选中第0个
         if (!houseId && homeStore.homeList.length) {
-          Loggger.error('默认家庭为空，设置默认家庭')
+          Logger.error('默认家庭为空，设置默认家庭')
           updateDefaultHouse(homeStore.homeList[0].houseId)
           homeStore.homeList[0].defaultHouseFlag = true
         }

@@ -14,26 +14,6 @@ export const deviceStore = observable({
    * 全屋设备
    */
   allRoomDeviceList: [] as Device.DeviceItem[],
-  /**
-   * 当前选择的灯具的状态
-   */
-  lightInfo: {} as Record<string, number>,
-  /**
-   * 选了了那些设备
-   */
-  selectList: [] as string[],
-  /**
-   * 选择了什么类型
-   */
-  selectType: [] as string[],
-  /**
-   * 是否是长按选中模式
-   */
-  isEditSelectMode: false,
-  /**
-   * 长按选中模式中选择的设备
-   */
-  editSelect: [] as string[],
 
   /**
    * deviceId -> device 映射
@@ -254,14 +234,6 @@ export const deviceStore = observable({
 
 export const deviceBinding = {
   store: deviceStore,
-  fields: [
-    'selectList',
-    'selectType',
-    'deviceList',
-    'lightInfo',
-    'allRoomDeviceList',
-    'isEditSelectMode',
-    'editSelect',
-  ],
+  fields: ['deviceList', 'allRoomDeviceList'],
   actions: [],
 }

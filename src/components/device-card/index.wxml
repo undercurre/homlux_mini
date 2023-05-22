@@ -1,4 +1,4 @@
-<view id="card" class="{{showShadow?'card-shadow':''}} card-clip w-160rpx h-216rpx rounded-32rpx flex-col-center relative overflow-hidden" catchtap="handleCardTap">
+<view id="card" class="{{showShadow?'card-shadow':''}} card-clip w-160rpx h-216rpx rounded-32rpx flex-col-center relative overflow-hidden" catchtap="handleCardTap" bind:longpress="handleLongPress">
   <view wx:if="{{select}}" class="w-160rpx h-216rpx absolute left-0 top-0 box-border select-border rounded-32rpx bg-hex-fff"></view>
   <view wx:else class="w-160rpx h-216rpx rounded-32rpx box-border {{showGradientBg?'show-control-bg white-border':'bg-hex-f7f7f7'}}"></view>
   <view class="absolute left-0 top-16rpx w-160rpx flex-center">

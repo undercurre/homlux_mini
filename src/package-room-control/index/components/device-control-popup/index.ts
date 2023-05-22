@@ -1,8 +1,8 @@
-import { Loggger, storage } from '../../../../utils/index'
+import { Logger, storage, throttle } from '../../../../utils/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, deviceStore, sceneStore } from '../../../../store/index'
-import { maxColorTempK, minColorTempK, proType } from '../../../../config/index'
+import { maxColorTempK, minColorTempK, colorTempKRange, proType } from '../../../../config/index'
 import {
   controlDevice,
   createAssociated,
@@ -49,11 +49,24 @@ ComponentWithComputed({
       type: Array,
       value: [] as string[],
       observer(value) {
-        Loggger.log('checkedList', value)
+        Logger.log('checkedList', value)
         // 当controlPopup已是false时，则由数量变化为0触发，收起弹窗
         if (value.length === 0 && !this.data.controlPopup) {
           console.log('checkedList %s, trigger popupMove()', value)
           this.popupMove()
+        }
+        // 色温范围计算
+        else if (value.length) {
+          const deviceId = this.data.checkedList[0]
+          const deviceMap = deviceStore.allRoomDeviceMap
+          const { productId } = deviceMap[deviceId]
+          const [minColorTempK, maxColorTempK] = colorTempKRange[productId]
+          console.log([minColorTempK, maxColorTempK])
+
+          this.setData({
+            minColorTempK,
+            maxColorTempK,
+          })
         }
       },
     },
@@ -75,7 +88,7 @@ ComponentWithComputed({
 
   observers: {
     'checkedList, controlPopup': function (checkedList, controlPopup) {
-      Loggger.log('checkedList, controlPopup', checkedList, controlPopup)
+      Logger.log('checkedList, controlPopup', checkedList, controlPopup)
       this.updateLinkInfo()
     },
   },
@@ -101,9 +114,9 @@ ComponentWithComputed({
     lightInfoInner: {
       Level: 10,
       ColorTemp: 20,
-      maxColorTempK,
-      minColorTempK,
     },
+    maxColorTempK,
+    minColorTempK,
     curtainInfo: {
       left: 50,
       right: 50,
@@ -138,11 +151,7 @@ ComponentWithComputed({
 
   computed: {
     colorTempK(data) {
-      return (
-        (data.lightInfoInner.ColorTemp / 100) *
-          (data.lightInfoInner.maxColorTempK - data.lightInfoInner.minColorTempK) +
-        data.lightInfoInner.minColorTempK
-      )
+      return (data.lightInfoInner.ColorTemp / 100) * (data.maxColorTempK - data.minColorTempK) + data.minColorTempK
     },
     lightTab(data) {
       if (data.checkedType) {
@@ -197,7 +206,7 @@ ComponentWithComputed({
       }
     },
     // allRoomDeviceList() {
-    //   Loggger.log('device-control-popup:watch-allRoomDeviceList')
+    //   Logger.log('device-control-popup:watch-allRoomDeviceList')
     //   this.updateLinkInfo()
     // },
   },
@@ -208,7 +217,7 @@ ComponentWithComputed({
      */
     ready() {
       this.setUpdatePerformanceListener({ withDataPaths: true }, (res) => {
-        Loggger.log('setUpdatePerformanceListener', res)
+        Logger.log('setUpdatePerformanceListener', res)
       })
 
       const divideRpxByPx = storage.get<number>('divideRpxByPx')
@@ -250,71 +259,46 @@ ComponentWithComputed({
         return // 这时候还没有第一次渲染，from是0，不能正确执行动画
       }
 
-      if (deviceStore.isEditSelectMode) {
-        if (this.data.isRender) {
-          // 收起
-          this.animate(
-            '#popup',
-            [
-              {
-                opacity: 1,
-                bottom: upper,
-              },
-              {
-                opacity: 0,
-                bottom: lower,
-              },
-            ],
-            100,
-            () => {
-              this.setData({
-                isRender: false,
-              })
+      if (checkedList.length > 0) {
+        this.setData({
+          isRender: true,
+        })
+        // 打开
+        this.animate(
+          '#popup',
+          [
+            {
+              opacity: 0,
+              bottom: lower,
             },
-          )
-        }
-      } else {
-        if (checkedList.length > 0) {
-          this.setData({
-            isRender: true,
-          })
-          // 打开
-          this.animate(
-            '#popup',
-            [
-              {
-                opacity: 0,
-                bottom: lower,
-              },
-              {
-                opacity: 1,
-                bottom: upper,
-              },
-            ],
-            100,
-          )
-        } else if (checkedList.length === 0) {
-          // 收起
-          this.animate(
-            '#popup',
-            [
-              {
-                opacity: 1,
-                bottom: upper,
-              },
-              {
-                opacity: 0,
-                bottom: lower,
-              },
-            ],
-            100,
-            () => {
-              this.setData({
-                isRender: false,
-              })
+            {
+              opacity: 1,
+              bottom: upper,
             },
-          )
-        }
+          ],
+          100,
+        )
+      } else if (checkedList.length === 0) {
+        // 收起
+        this.animate(
+          '#popup',
+          [
+            {
+              opacity: 1,
+              bottom: upper,
+            },
+            {
+              opacity: 0,
+              bottom: lower,
+            },
+          ],
+          100,
+          () => {
+            this.setData({
+              isRender: false,
+            })
+          },
+        )
       }
     },
 
@@ -367,7 +351,7 @@ ComponentWithComputed({
      * 选择的设备为单个开关时触发更新【开关关联信息】
      */
     async updateLinkInfo() {
-      Loggger.log('updateLinkInfo')
+      Logger.log('updateLinkInfo')
       // 仅选择一个开关面板时触发
       if (!this.data.controlPopup || !this.data.checkedList[0]?.includes(':')) {
         return
@@ -1108,11 +1092,11 @@ ComponentWithComputed({
         }
       })
     },
-    handleLevelDrag(e: { detail: { value: number } }) {
+    handleLevelDrag: throttle(function (this: any, e: { detail: { value: number } }) {
       this.setData({
         'lightInfoInner.Level': e.detail.value,
       })
-    },
+    }),
     handleLevelChange(e: { detail: number }) {
       this.setData({
         'lightInfoInner.Level': e.detail,
@@ -1131,11 +1115,11 @@ ComponentWithComputed({
       })
       this.lightSendDeviceControl('colorTemp')
     },
-    handleColorTempDrag(e: { detail: { value: number } }) {
+    handleColorTempDrag: throttle(function (this: any, e: { detail: { value: number } }) {
       this.setData({
         'lightInfoInner.ColorTemp': e.detail.value,
       })
-    },
+    }),
     handleAllOn() {
       if (throttleTimer) {
         return

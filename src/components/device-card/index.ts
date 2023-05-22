@@ -209,5 +209,16 @@ ComponentWithComputed({
           }
         })
     },
+    handleLongPress() {
+      this.createSelectorQuery()
+        .select('#card')
+        .boundingClientRect()
+        .exec((res) => {
+          this.triggerEvent('longPress', {
+            ...this.data.deviceInfo,
+            clientRect: res[0],
+          })
+        })
+    },
   },
 })

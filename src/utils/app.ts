@@ -1,4 +1,3 @@
-import dayjs from 'dayjs'
 import { setEnv, envMap } from '../config/index'
 import { storage } from './storage'
 // import QQMapWX from '../lib/qqmap-wx-jssdk'
@@ -154,15 +153,22 @@ export function isAndroid10Plus() {
   return isAndroid10Plus
 }
 
-/**
- * 日志工具
- */
-export const Loggger = {
-  log(...args: any[]) {
-    console.log(`【${dayjs().format('HH:mm:ss.SSS')}】`, ...args)
-  },
+export function checkWifiSwitch() {
+  // 安卓端需要检测wifi开关，否则无法调用wifi接口
+  if (isAndroid()) {
+    const systemSetting = wx.getSystemSetting()
 
-  error(...args: any[]) {
-    console.error(`【${dayjs().format('HH:mm:ss.SSS')}】`, ...args)
-  },
+    if (!systemSetting.wifiEnabled) {
+      wx.showModal({
+        content: '请打开手机WIFI',
+        showCancel: false,
+        confirmText: '我知道了',
+        confirmColor: '#488FFF',
+      })
+    }
+
+    return systemSetting.wifiEnabled
+  }
+
+  return true
 }

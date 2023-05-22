@@ -67,13 +67,6 @@
           "scene": null
         },
         {
-          "name": "检验添加智能网关",
-          "pathName": "package-distribution/link-gateway/index",
-          "query": "apSSID=midea_16_E5FB&type=bind",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
           "name": "连接wifi",
           "pathName": "package-distribution/wifi-connect/index",
           "query": "",
