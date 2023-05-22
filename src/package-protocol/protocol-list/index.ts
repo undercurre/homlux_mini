@@ -52,7 +52,7 @@ Component({
       this.setData({
         envVersion: info.miniProgram.envVersion,
         curEnv: storage.get(`${info.miniProgram.envVersion}_env`) as string,
-        version: info.miniProgram.version
+        version: info.miniProgram.version,
       })
     },
   },
@@ -103,7 +103,7 @@ Component({
     titlePress() {
       console.log('titlePress triggered, ver: ', this.data.version || this.data.releaseTime)
       this.setData({
-        showVersion: !this.data.showVersion
+        showVersion: !this.data.showVersion,
       })
     },
   },

@@ -13,5 +13,4 @@
 
   <van-cell wx:if="{{envVersion === 'release' && version}}" title="版本号" value="{{version}}" center />
   <van-cell wx:elif="{{envVersion !== 'release' && releaseTime}}" icon="/assets/img/mine/upgrade.png" title="发布时间" value="{{releaseTime}}" center />
-
 </van-cell-group>
