@@ -11,6 +11,7 @@ import {
   updateAssociated,
   updateScene,
   getRelLampInfo,
+  getRelDeviceInfo,
 } from '../../../../apis/index'
 import {
   transformSwitchToNormal,
@@ -42,8 +43,6 @@ ComponentWithComputed({
         // controlPopup 变化触发弹窗展开或收起（折叠）
         console.log('controlPopup %s, trigger popupMove()', value)
         this.popupMove()
-
-        this.updateCurrentLinkTypeDesc()
       },
     },
     checkedList: {
@@ -56,8 +55,6 @@ ComponentWithComputed({
           console.log('checkedList %s, trigger popupMove()', value)
           this.popupMove()
         }
-
-        this.updateCurrentLinkTypeDesc()
       },
     },
     lightStatus: {
@@ -73,6 +70,13 @@ ComponentWithComputed({
     checkedType: {
       type: Array,
       value: [] as string[],
+    },
+  },
+
+  observers: {
+    'checkedList, controlPopup': function (checkedList, controlPopup) {
+      Loggger.log('checkedList, controlPopup', checkedList, controlPopup)
+      this.updateLinkInfo()
     },
   },
 
@@ -107,9 +111,9 @@ ComponentWithComputed({
     /** 提供给关联选择的列表 */
     list: [] as (Device.DeviceItem | Scene.SceneItem)[],
     /** 当前选中的开关，处于是什么关联模式 */
-    linkType: '' as '' | 'light' | 'switch' | 'scene',
+    linkType: 'none' as 'none' | 'light' | 'switch' | 'scene',
     /** 关联弹出框，需要开关去关联什么模式 */
-    selectLinkType: '' as '' | 'light' | 'switch' | 'scene',
+    selectLinkType: 'none' as 'none' | 'light' | 'switch' | 'scene',
     /** 已选中设备或场景 TODO */
     linkSelectList: [] as string[],
     showLinkPopup: false,
@@ -123,9 +127,12 @@ ComponentWithComputed({
     selectSwitchUniId: '',
     allOnPress: false,
     allOffPress: false,
-    currentLinkTypeDesc: '未关联',
-    switchInfo: {
-      lampRelList: Array<Device.IMzgdLampRelGetDTO>(),
+    _switchRelInfo: {} as {
+      [x: string]: {
+        lampRelList: Array<Device.IMzgdLampRelGetDTO>
+        primaryRelSwitchList: Array<Device.IMzgdRelGetDTO>
+        secondRelDeviceInfo: Array<Device.IMzgdRelGetDTO>
+      }
     },
   },
 
@@ -155,20 +162,19 @@ ComponentWithComputed({
       }
       return false
     },
-    isSelectMultiSwitch(data) {
-      if (data.checkedList) {
-        let count = 0
-        data.checkedList.forEach((deviceId: string) => {
-          if (deviceId.includes(':')) {
-            count++
-          }
-        })
-        return count > 1
-      }
-      return false
-    },
     disabledLinkSetting(data) {
-      return data.isSelectMultiSwitch || data.isVisitor
+      return data.isVisitor
+    },
+
+    linkTypeDesc(data) {
+      const descMap = {
+        light: '关联灯',
+        switch: '关联开关',
+        scene: '关联场景',
+        none: '未关联',
+      }
+
+      return descMap[data.linkType]
     },
   },
 
@@ -192,7 +198,7 @@ ComponentWithComputed({
     },
     // allRoomDeviceList() {
     //   Loggger.log('device-control-popup:watch-allRoomDeviceList')
-    //   this.updateCurrentLinkTypeDesc()
+    //   this.updateLinkInfo()
     // },
   },
 
@@ -201,6 +207,10 @@ ComponentWithComputed({
      * 初始化数据
      */
     ready() {
+      this.setUpdatePerformanceListener({withDataPaths: true}, (res) => {
+        Loggger.log('setUpdatePerformanceListener', res)
+      })
+
       const divideRpxByPx = storage.get<number>('divideRpxByPx')
         ? (storage.get<number>('divideRpxByPx') as number)
         : 0.5
@@ -308,51 +318,83 @@ ComponentWithComputed({
       }
     },
 
+    /**
+     * 根据面板ID和面板开关获取关联的灯
+     */
     async updateLamoRelInfo(deviceId: string, switchId: string) {
+      const relInfo = this.data._switchRelInfo[`${deviceId}:${switchId}`]
+
+      // 已存在关联信息，不再查询云端
+      if (relInfo.lampRelList) {
+        return
+      }
+      
       const res = await getRelLampInfo({
         primaryDeviceId: deviceId,
         primarySwitchId: switchId,
       })
 
       if (res.success) {
-        this.setData({
-          'switchInfo.lampRelList': res.result.lampRelList,
-        })
+        relInfo.lampRelList = res.result.lampRelList
+        this.data._switchRelInfo[`${deviceId}:${switchId}`] = relInfo
+      }
+    },
+
+    /**
+     * 根据面板ID和面板开关获取主动、被动的面板开关
+     */
+    async getRelSwitchInfo(deviceId: string, switchId: string) {
+      const relInfo = this.data._switchRelInfo[`${deviceId}:${switchId}`]
+
+      // 已存在关联信息，不再查询云端
+      if (relInfo.primaryRelSwitchList) {
+        return
+      }
+      
+      const res = await getRelDeviceInfo({
+        primaryDeviceId: deviceId,
+        primarySwitchId: switchId,
+      })
+
+      if (res.success) {
+        relInfo.primaryRelSwitchList = res.result.primaryRelDeviceInfo
+        relInfo.secondRelDeviceInfo = res.result.secondRelDeviceInfo
+
+        this.data._switchRelInfo[`${deviceId}:${switchId}`] = relInfo
       }
     },
     /**
      * 选择的设备为单个开关时触发更新【开关关联信息】
      */
-    async updateCurrentLinkTypeDesc() {
+    async updateLinkInfo() {
+      Loggger.log('updateLinkInfo')
       // 仅选择一个开关面板时触发
-      if (!this.data.controlPopup || !this.data.switchTab || this.data.checkedList.length !== 1) {
+      if (!this.data.controlPopup || !this.data.checkedList[0]?.includes(':')) {
         return
       }
-      Loggger.log('updateCurrentLinkTypeDesc')
       const switchUniId = this.data.checkedList[0]
-      const unidArr = switchUniId.split(':')
+      const [deviceId, switchId] = switchUniId.split(':')
+      const switchRelInfo = this.data._switchRelInfo[switchUniId]
 
-      let mode = '未关联'
+      let linkType = 'none' as 'none' | 'light' | 'switch' | 'scene'
 
-      if (switchUniId) {
-        const rel = deviceStore.deviceRelMap[switchUniId]
+      // 优先判断场景关联信息（已有数据）
+      if (deviceStore.switchSceneConditionMap[switchUniId]) {
+        linkType = 'scene'
+      } else {
+        this.data._switchRelInfo[`${deviceId}:${switchId}`] = this.data._switchRelInfo[`${deviceId}:${switchId}`] || {} // 初始化
 
-        // 优先判断场景关联信息（已有数据）
-        if (deviceStore.switchSceneConditionMap[switchUniId]) {
-          mode = '关联场景'
-          return
-        }
+        await Promise.all([this.updateLamoRelInfo(deviceId, switchId), this.getRelSwitchInfo(deviceId, switchId)])
 
-        await Promise.all([this.updateLamoRelInfo(unidArr[0], unidArr[1])])
-
-        if (rel && rel.lightRelId) {
-          mode = '关联灯'
-        } else if (rel && rel.switchRelId) {
-          mode = '关联开关'
+        if (switchRelInfo && switchRelInfo.lampRelList.length) {
+          linkType = 'light'
+        } else if (switchRelInfo && switchRelInfo.primaryRelSwitchList.length) {
+          linkType = 'switch'
         }
       }
+
       this.setData({
-        currentLinkTypeDesc: mode,
+        linkType: linkType,
       })
     },
     handleTouchStart(e: WechatMiniprogram.TouchEvent) {
@@ -378,7 +420,7 @@ ComponentWithComputed({
     },
     handleLinkPopup() {
       const deviceMap = deviceStore.allRoomDeviceMap
-      const switchUniId = this.data.checkedList.find((uniId: string) => uniId.includes(':'))
+      const switchUniId = this.data.checkedList[0]
       // 关联设备或者场景，必须要选中一个开关
       if (!switchUniId) {
         return
@@ -472,31 +514,11 @@ ComponentWithComputed({
     },
     handleSelectLinkPopup() {
       if (this.data.disabledLinkSetting) {
-        const message = this.data.isSelectMultiSwitch ? '只能单选开关进行关联' : '只能创建者及管理员进行关联'
+        const message = '只能创建者及管理员进行关联'
         Toast({ message, zIndex: 9999 })
         return
       }
-      const switchUniId = this.data.checkedList.find((uniId: string) => uniId.includes(':'))
-      if (switchUniId) {
-        const rel = deviceStore.deviceRelMap[switchUniId]
-        if (rel && rel.lightRelId) {
-          this.setData({
-            linkType: 'light',
-          })
-        } else if (rel && rel.switchRelId) {
-          this.setData({
-            linkType: 'switch',
-          })
-        } else if (deviceStore.switchSceneConditionMap[switchUniId]) {
-          this.setData({
-            linkType: 'scene',
-          })
-        } else {
-          this.setData({
-            linkType: '',
-          })
-        }
-      }
+
       this.setData({
         showSelectLinkPopup: true,
       })

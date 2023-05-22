@@ -410,3 +410,18 @@ export async function getRelLampInfo(
     data,
   })
 }
+
+/**
+ * 根据面板ID和面板开关获取主动、被动的面板开关
+ */
+export async function getRelDeviceInfo(
+  data: { primaryDeviceId: string; primarySwitchId: string },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<{ primaryRelDeviceInfo: Device.IMzgdRelGetDTO[], secondRelDeviceInfo: Device.IMzgdRelGetDTO[] }>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/getRelDeviceInfo',
+    data,
+  })
+}

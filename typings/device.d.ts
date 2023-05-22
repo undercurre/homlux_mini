@@ -143,4 +143,11 @@ declare namespace Device {
     lampDeviceId: string
     relId: string
   }
+
+  // 关联的面板ID,开关id,关系id
+  interface IMzgdRelGetDTO {
+    deviceId: string
+    switchId: string
+    relId: string
+  }
 }
