@@ -344,13 +344,13 @@ ComponentWithComputed({
             // review 细致到字段的diff
             const renderList = ['deviceName', 'onLineStatus', 'select', 'editSelect'] // 需要刷新界面的字段
 
-            // 子设备状态，目前只更新开关状态
-            if (device!.mzgdPropertyDTOList) {
-              const eq = originDevice.proType === proType.light ? 1 : originDevice.uniId.split(':')[1]
-              renderList.push(`mzgdPropertyDTOList[${eq}].OnOff`)
-              renderList.push(`mzgdPropertyDTOList[${eq}].Level`) // 暂不在界面上体现，只是统一更新数据
-              renderList.push(`mzgdPropertyDTOList[${eq}].ColorTemp`) // 暂不在界面上体现
-            }
+            // deserted 精确到字段的方法，或因数据结构太深，会导致mzgdPropertyDTOList下部分字段丢失
+            // if (device!.mzgdPropertyDTOList) {
+            // const eq = originDevice.proType === proType.light ? 1 : originDevice.uniId.split(':')[1]
+            // renderList.push(`mzgdPropertyDTOList[${eq}].OnOff`)
+            // renderList.push(`mzgdPropertyDTOList[${eq}].Level`) // 暂不在界面上体现，只是统一更新数据
+            // renderList.push(`mzgdPropertyDTOList[${eq}].ColorTemp`) // 暂不在界面上体现
+            // }
             renderList.forEach((key) => {
               const newVal = _get(device!, key)
               const originVal = _get(originDevice, key)
@@ -359,6 +359,16 @@ ComponentWithComputed({
                 diffData[`devicePageList[${groupIndex}][${index}].${key}`] = newVal
               }
             })
+
+            // 如果mzgdPropertyDTOList字段存在，则全部覆盖更新
+            if (device!.mzgdPropertyDTOList) {
+              const eq = originDevice.proType === proType.light ? 1 : originDevice.uniId.split(':')[1]
+              const newVal = {
+                ...originDevice.mzgdPropertyDTOList[eq],
+                ...device?.mzgdPropertyDTOList[eq]
+              }
+              diffData[`devicePageList[${groupIndex}][${index}].mzgdPropertyDTOList[${eq}]`] = newVal
+            }
 
             if (Object.keys(diffData).length) {
               this.setData(diffData)
