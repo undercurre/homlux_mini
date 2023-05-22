@@ -152,3 +152,23 @@ export function isAndroid10Plus() {
 
   return isAndroid10Plus
 }
+
+export function checkWifiSwitch() {
+  // 安卓端需要检测wifi开关，否则无法调用wifi接口
+  if (isAndroid()) {
+    const systemSetting = wx.getSystemSetting()
+
+    if (!systemSetting.wifiEnabled) {
+      wx.showModal({
+        content: '请打开手机WIFI',
+        showCancel: false,
+        confirmText: '我知道了',
+        confirmColor: '#488FFF',
+      })
+    }
+
+    return systemSetting.wifiEnabled
+  }
+
+  return true
+}

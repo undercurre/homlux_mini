@@ -6,7 +6,7 @@ import dayjs from 'dayjs'
 import { deviceBinding, homeBinding } from '../../store/index'
 import { bleDevicesBinding, bleDevicesStore } from '../store/bleDeviceStore'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { strUtil, showLoading, hideLoading, delay, Logger } from '../../utils/index'
+import { checkWifiSwitch, strUtil, showLoading, hideLoading, delay, Logger } from '../../utils/index'
 import { checkDevice, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
 
 ComponentWithComputed({
@@ -445,6 +445,11 @@ ComponentWithComputed({
       if (!res.success) {
         Toast('验证产品信息失败')
 
+        return
+      }
+
+      // 预校验wifi开关是否打开
+      if (!checkWifiSwitch()) {
         return
       }
 

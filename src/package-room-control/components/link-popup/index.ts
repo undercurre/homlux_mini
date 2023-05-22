@@ -2,6 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { deviceBinding, deviceStore, roomBinding, roomStore } from '../../../store/index'
 import Toast from '@vant/weapp/toast/toast'
+import { checkWifiSwitch } from '../../../utils/index'
 
 ComponentWithComputed({
   options: {
@@ -160,6 +161,11 @@ ComponentWithComputed({
       })
     },
     handleRebindGateway() {
+      // 预校验wifi开关是否打开
+      if (!checkWifiSwitch()) {
+        return
+      }
+
       const gateway = deviceStore.allRoomDeviceMap[this.data.officeDeviceInfo.gatewayId]
       wx.navigateTo({
         url: `/package-distribution/wifi-connect/index?type=changeWifi&sn=${gateway.sn}`,

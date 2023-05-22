@@ -6,7 +6,7 @@ import pageBehavior from '../../../behaviors/pageBehaviors'
 import { deleteDevice, editDeviceInfo, queryDeviceInfoByDeviceId } from '../../../apis/index'
 import { proName, proType } from '../../../config/index'
 import Dialog from '@vant/weapp/dialog/dialog'
-import { emitter } from '../../../utils/eventBus'
+import { emitter, checkWifiSwitch } from '../../../utils/index'
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, homeBinding] }), pageBehavior],
   /**
@@ -203,6 +203,17 @@ ComponentWithComputed({
     clickMac() {
       wx.setClipboardData({
         data: this.data.mac,
+      })
+    },
+
+    toChangeWifi() {
+      // 预校验wifi开关是否打开
+      if (!checkWifiSwitch()) {
+        return
+      }
+
+      wx.navigateTo({
+        url: `/package-distribution/wifi-connect/index?type=changeWifi&sn=${this.data.deviceInfo.sn}`
       })
     },
   },
