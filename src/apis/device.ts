@@ -418,7 +418,10 @@ export async function getRelDeviceInfo(
   data: { primaryDeviceId: string; primarySwitchId: string },
   options?: { loading?: boolean },
 ) {
-  return await mzaioRequest.post<{ primaryRelDeviceInfo: Device.IMzgdRelGetDTO[], secondRelDeviceInfo: Device.IMzgdRelGetDTO[] }>({
+  return await mzaioRequest.post<{
+    primaryRelDeviceInfo: Device.IMzgdRelGetDTO[]
+    secondRelDeviceInfo: Device.IMzgdRelGetDTO[]
+  }>({
     log: true,
     loading: options?.loading ?? false,
     url: '/v1/device/getRelDeviceInfo',

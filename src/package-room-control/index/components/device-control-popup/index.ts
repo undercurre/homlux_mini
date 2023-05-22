@@ -207,7 +207,7 @@ ComponentWithComputed({
      * 初始化数据
      */
     ready() {
-      this.setUpdatePerformanceListener({withDataPaths: true}, (res) => {
+      this.setUpdatePerformanceListener({ withDataPaths: true }, (res) => {
         Loggger.log('setUpdatePerformanceListener', res)
       })
 
@@ -328,7 +328,7 @@ ComponentWithComputed({
       if (relInfo.lampRelList) {
         return
       }
-      
+
       const res = await getRelLampInfo({
         primaryDeviceId: deviceId,
         primarySwitchId: switchId,
@@ -350,7 +350,7 @@ ComponentWithComputed({
       if (relInfo.primaryRelSwitchList) {
         return
       }
-      
+
       const res = await getRelDeviceInfo({
         primaryDeviceId: deviceId,
         primarySwitchId: switchId,
