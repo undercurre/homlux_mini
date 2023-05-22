@@ -59,7 +59,8 @@ export function startWebsocketService() {
 function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {
   Logger.log('socket关闭连接', e)
   socketIsConnect = false
-  if (e.code !== 1000) {
+  // 4001: token校验不通过
+  if (e.code !== 1000 && e.code !== 4001) {
     Logger.error('socket异常关闭连接', e)
     setTimeout(() => {
       Logger.log('socket重连')
