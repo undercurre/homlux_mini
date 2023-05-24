@@ -388,7 +388,7 @@ ComponentWithComputed({
               }
             })
 
-            // 如果mzgdPropertyDTOList字段存在，则全部覆盖更新
+            // 如果mzgdPropertyDTOList、switchInfoDTOList字段存在，则覆盖更新
             if (device!.mzgdPropertyDTOList) {
               const eq = originDevice.proType === proType.light ? 1 : originDevice.uniId.split(':')[1]
               const newVal = {
@@ -396,6 +396,13 @@ ComponentWithComputed({
                 ...device?.mzgdPropertyDTOList[eq],
               }
               diffData[`devicePageList[${groupIndex}][${index}].mzgdPropertyDTOList[${eq}]`] = newVal
+            }
+            if (device!.switchInfoDTOList) {
+              const newVal = {
+                ...originDevice.switchInfoDTOList[0],
+                ...device?.switchInfoDTOList[0],
+              }
+              diffData[`devicePageList[${groupIndex}][${index}].switchInfoDTOList[0]`] = newVal
             }
 
             if (Object.keys(diffData).length) {
