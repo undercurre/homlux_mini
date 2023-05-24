@@ -52,6 +52,7 @@ export const deviceStore = observable({
             },
             switchInfoDTOList: [switchItem],
             uniId: `${device.deviceId}:${switchItem.switchId}`,
+            orderNum: switchItem.orderNum,
           })
         })
       }
