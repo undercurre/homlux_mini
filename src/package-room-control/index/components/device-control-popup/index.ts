@@ -129,7 +129,7 @@ ComponentWithComputed({
     _switchRelInfo: {
       switchUniId: '', // 当前记录关联信息的面板，清空了才会重新更新数据
       lampRelList: Array<Device.IMzgdLampRelGetDTO>(), // 当前面板的灯关联数据
-      switchRelList: Array<Device.IMzgdRelGetDTO>() // 当前面板的关联面板数据
+      switchRelList: Array<Device.IMzgdRelGetDTO>(), // 当前面板的关联面板数据
     },
     _allSwitchLampRelList: Array<Device.IMzgdLampDeviceInfoDTO>(), // 家庭所有面板的灯关联关系数据
   },
@@ -405,9 +405,7 @@ ComponentWithComputed({
         )
 
         // 合并主动和被动关联的开关列表数据，并去重，作为已选列表
-        linkSelectList = relInfo.switchRelList.map(
-          (device) => `${device.deviceId}:${device.switchId}`,
-        )
+        linkSelectList = relInfo.switchRelList.map((device) => `${device.deviceId}:${device.switchId}`)
       }
       this.setData({
         list,
@@ -415,13 +413,14 @@ ComponentWithComputed({
         showLinkPopup: true,
       })
     },
-    handleLinkSelect(e: { detail: string }) {
+    async handleLinkSelect(e: { detail: string }) {
       const deviceMap = deviceStore.allRoomDeviceFlattenMap
       const switchUniId = this.data.checkedList[0]
+      const selectId = e.detail
 
       // 取消选择逻辑
-      if (this.data.linkSelectList.includes(e.detail)) {
-        const index = this.data.linkSelectList.findIndex((id) => id === e.detail)
+      if (this.data.linkSelectList.includes(selectId)) {
+        const index = this.data.linkSelectList.findIndex((id) => id === selectId)
         this.data.linkSelectList.splice(index, 1)
         this.setData({
           linkSelectList: [...this.data.linkSelectList],
@@ -429,18 +428,38 @@ ComponentWithComputed({
         return
       }
 
+      const switchSceneConditionMap = deviceStore.switchSceneConditionMap
+
       if (['light', 'switch'].includes(this.data.selectLinkType)) {
-        const device = deviceMap[e.detail]
+        const device = deviceMap[selectId]
         this.findDevice(device)
 
+        const linkScene = switchSceneConditionMap[selectId]
+        const lampRelList = this.data._allSwitchLampRelList.filter(
+          (item) => `${item.panelId}:${item.switchId}` === selectId,
+        ) // 指定面板的灯关联关系列表
+
+        if (this.data.selectLinkType === 'switch' && (linkScene || lampRelList.length)) {
+          const dialogRes = await Dialog.confirm({
+            message: `此开关已关联${linkScene ? '场景' : '灯具'}，是否取消关联？`,
+            cancelButtonText: '取消',
+            confirmButtonText: '确定',
+            zIndex: 2000,
+            context: this,
+          }).then(() => true).catch(() => false)
+
+          if (!dialogRes) {
+            return
+          }
+        }
+
         this.setData({
-          linkSelectList: [...this.data.linkSelectList, e.detail],
+          linkSelectList: [...this.data.linkSelectList, selectId],
         })
       } else if (this.data.selectLinkType === 'scene') {
-        const sceneId = e.detail
         const switchSceneActionMap = deviceStore.switchSceneActionMap
 
-        if (switchSceneActionMap[switchUniId]?.includes(sceneId)) {
+        if (switchSceneActionMap[switchUniId]?.includes(selectId)) {
           Dialog.confirm({
             message: '此开关已被其他场景使用，是否需要变更？',
             cancelButtonText: '取消',
@@ -450,7 +469,7 @@ ComponentWithComputed({
           })
             .then(async () => {
               this.setData({
-                linkSelectList: [e.detail],
+                linkSelectList: [selectId],
               })
             })
             .catch((e) => {
@@ -458,7 +477,7 @@ ComponentWithComputed({
             })
         } else {
           this.setData({
-            linkSelectList: [e.detail],
+            linkSelectList: [selectId],
           })
         }
       }
@@ -512,7 +531,6 @@ ComponentWithComputed({
       const switchUniId = this.data.checkedList[0]
       const [deviceId, switchId] = switchUniId.split(':')
       const switchSceneConditionMap = deviceStore.switchSceneConditionMap
-      Logger.log('switchSceneConditionMap', switchSceneConditionMap)
 
       // 遍历linkSelectList所选择的面板，是否存在已有关联，若是存在灯关联或者场景关联，则删除
       for (const uniId of this.data.linkSelectList) {
@@ -634,8 +652,7 @@ ComponentWithComputed({
       } else if (this.data.linkType === 'switch') {
         // 删除面板和面板的关联数据
         res = await delSwitchAndSwitchAssociated({
-          relIds: this.data._switchRelInfo.switchRelList.map((item) => item.relId)
-            .join(','),
+          relIds: this.data._switchRelInfo.switchRelList.map((item) => item.relId).join(','),
         })
       } else if (this.data.linkType === 'scene') {
         // 删除场景关联
