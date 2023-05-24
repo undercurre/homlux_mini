@@ -1,4 +1,4 @@
-import { Logger, storage, throttle, unique } from '../../../../utils/index'
+import { Logger, storage, throttle, showLoading, hideLoading } from '../../../../utils/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, deviceStore, sceneStore, homeStore } from '../../../../store/index'
@@ -126,11 +126,10 @@ ComponentWithComputed({
     showSelectLinkPopup: false,
     allOnPress: false,
     allOffPress: false,
-    _switchRelInfo: {} as {
-      switchUniId: '' // 当前记录关联信息的面板，清空了才会重新更新数据
-      lampRelList: Array<Device.IMzgdLampRelGetDTO> // 当前面板的灯关联数据
-      primaryRelSwitchList: Array<Device.IMzgdRelGetDTO> // 当前面板的主动关联面板数据
-      secondRelDeviceInfo: Array<Device.IMzgdRelGetDTO> // 当前面板的被动关联数据
+    _switchRelInfo: {
+      switchUniId: '', // 当前记录关联信息的面板，清空了才会重新更新数据
+      lampRelList: Array<Device.IMzgdLampRelGetDTO>(), // 当前面板的灯关联数据
+      switchRelList: Array<Device.IMzgdRelGetDTO>() // 当前面板的关联面板数据
     },
     _allSwitchLampRelList: Array<Device.IMzgdLampDeviceInfoDTO>(), // 家庭所有面板的灯关联关系数据
   },
@@ -308,8 +307,7 @@ ComponentWithComputed({
       })
 
       if (res.success) {
-        this.data._switchRelInfo.primaryRelSwitchList = res.result.primaryRelDeviceInfo
-        this.data._switchRelInfo.secondRelDeviceInfo = res.result.secondRelDeviceInfo
+        this.data._switchRelInfo.switchRelList = res.result.primaryRelDeviceInfo.concat(res.result.secondRelDeviceInfo)
       }
     },
     /**
@@ -342,7 +340,7 @@ ComponentWithComputed({
 
         if (switchRelInfo && switchRelInfo.lampRelList.length) {
           linkType = 'light'
-        } else if (switchRelInfo && switchRelInfo.primaryRelSwitchList.length) {
+        } else if (switchRelInfo && switchRelInfo.switchRelList.length) {
           linkType = 'switch'
         }
       }
@@ -407,7 +405,7 @@ ComponentWithComputed({
         )
 
         // 合并主动和被动关联的开关列表数据，并去重，作为已选列表
-        linkSelectList = unique([...relInfo.primaryRelSwitchList, ...relInfo.secondRelDeviceInfo], 'deviceId').map(
+        linkSelectList = relInfo.switchRelList.map(
           (device) => `${device.deviceId}:${device.switchId}`,
         )
       }
@@ -567,7 +565,7 @@ ComponentWithComputed({
     async updataSceneLink() {
       const switchSceneConditionMap = deviceStore.switchSceneConditionMap
       const switchUniId = this.data.checkedList[0]
-      const [deviceId] = switchUniId.split(':')
+      const [deviceId, switchId] = switchUniId.split(':')
 
       if (this.data.linkSelectList[0] === switchSceneConditionMap[switchUniId]) {
         // 选择没变化，不执行操作
@@ -607,7 +605,7 @@ ComponentWithComputed({
           deviceId,
           controlEvent: [
             {
-              ep: Number(switchUniId),
+              ep: Number(switchId),
               ButtonScene: 1,
             },
           ],
@@ -636,8 +634,7 @@ ComponentWithComputed({
       } else if (this.data.linkType === 'switch') {
         // 删除面板和面板的关联数据
         res = await delSwitchAndSwitchAssociated({
-          relIds: [...this.data._switchRelInfo.primaryRelSwitchList, ...this.data._switchRelInfo.secondRelDeviceInfo]
-            .map((item) => item.relId)
+          relIds: this.data._switchRelInfo.switchRelList.map((item) => item.relId)
             .join(','),
         })
       } else if (this.data.linkType === 'scene') {
@@ -702,6 +699,7 @@ ComponentWithComputed({
       // 1、若面板已存在关联且与新关联数据的类型不一致
       // 2、已选择的列表为空时即清空原有绑定关系
       // 执行删除已有关联操作
+      showLoading()
       if (
         this.data.linkType !== 'none' &&
         (this.data.linkType !== this.data.selectLinkType || this.data.linkSelectList.length === 0)
@@ -709,6 +707,7 @@ ComponentWithComputed({
         const delRes = await this.deleteAssocite()
 
         if (!delRes?.success) {
+          hideLoading()
           return
         }
       }
@@ -720,7 +719,7 @@ ComponentWithComputed({
       }
 
       await Promise.all([
-        sceneStore.updateSceneList(),
+        // sceneStore.updateSceneList(),
         sceneStore.updateAllRoomSceneList(),
         deviceStore.updateSubDeviceList(),
         // deviceStore.updateAllRoomDeviceList(),
@@ -729,6 +728,8 @@ ComponentWithComputed({
       this.data._switchRelInfo.switchUniId = '' // 置空标志位，否则不会更新数据
       this.updateLinkInfo()
       this.triggerEvent('updateList')
+
+      hideLoading()
     },
     handleTabTap(e: { currentTarget: { dataset: { tab: 'light' | 'switch' | 'curtain' } } }) {
       this.setData({

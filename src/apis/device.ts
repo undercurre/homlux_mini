@@ -482,10 +482,7 @@ export async function editSwitchAndSwitchAssociated(
  * 删除面板和面板关联
  * @param relIds 面板关联Id,逗号分隔 )
  */
-export async function delSwitchAndSwitchAssociated(
-  data: { relIds: string },
-  options?: { loading?: boolean },
-) {
+export async function delSwitchAndSwitchAssociated(data: { relIds: string }, options?: { loading?: boolean }) {
   return await mzaioRequest.post({
     log: true,
     loading: options?.loading ?? false,
@@ -497,10 +494,7 @@ export async function delSwitchAndSwitchAssociated(
 /**
  * 根据家庭id获取面板是否已经关联过灯
  */
-export async function getLampDeviceByHouseId(
-  data: { houseId: string },
-  options?: { loading?: boolean },
-) {
+export async function getLampDeviceByHouseId(data: { houseId: string }, options?: { loading?: boolean }) {
   return await mzaioRequest.post<Array<Device.IMzgdLampDeviceInfoDTO>>({
     log: true,
     loading: options?.loading ?? false,

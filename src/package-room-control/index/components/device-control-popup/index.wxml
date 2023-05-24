@@ -79,7 +79,7 @@
     </view> -->
   </view>
 
-<!-- 关联类型选择弹窗 -->
+  <!-- 关联类型选择弹窗 -->
   <select-link-popup show="{{showSelectLinkPopup}}" linkType="{{linkType}}" bind:close="handleSelectLinkPopupClose" bind:confirm="handleSelectLinkPopupConfirm"></select-link-popup>
 
   <!-- 关联列表（场景列表 or 设备列表）弹窗 -->
