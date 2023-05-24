@@ -1,41 +1,6 @@
 import Toast from '@vant/weapp/toast/toast'
-import { controlDevice, delAssociated, queryDeviceInfoByDeviceId } from '../../apis/index'
+import { delAssociated } from '../../apis/index'
 import { deviceStore } from '../../store/index'
-import { delay } from '../../utils/index'
-
-// 灯解开关联
-export async function removeLightRel(deviceId: string) {
-  const rel = deviceStore.deviceRelMap[deviceId]
-  if (!rel) {
-    return true
-  }
-  const relDeviceList = deviceStore.relDeviceMap[rel.lightRelId!]
-  const distSwitchList = relDeviceList.filter((uniId) => uniId !== deviceId)
-  if (distSwitchList.length < 2) {
-    // 只剩下一个开关，直接删除
-    const res = await delAssociated({
-      relType: '0',
-      lightRelId: rel.lightRelId!,
-    })
-    if (res.success) {
-      return true
-    }
-    Toast('取消关联失败')
-    return false
-  } else {
-    // 只去除一个灯关联
-    const res = await delAssociated({
-      relType: '0',
-      lightRelId: rel.lightRelId!,
-      deviceIds: [deviceId],
-    })
-    if (res.success) {
-      return true
-    }
-    Toast('取消关联失败')
-    return false
-  }
-}
 
 // 开关解开关联
 export async function removeSwitchRel(deviceId: string, ep: string) {
@@ -84,72 +49,4 @@ export async function removeSwitchRel(deviceId: string, ep: string) {
     Toast('取消关联失败')
     return false
   }
-}
-
-export async function transformSwitchToNormal(gatewayId: string, deviceId: string, ep: number) {
-  // 关联灯模式，先转换成0
-  await controlDevice({
-    deviceId: gatewayId,
-    topic: '/subdevice/control',
-    method: 'panelModeControl',
-    inputData: [
-      {
-        ButtonMode: 0,
-        ep,
-        devId: deviceId,
-      },
-    ],
-  })
-  for (let index = 0; index < 6; index++) {
-    const res = await queryDeviceInfoByDeviceId({
-      deviceId,
-    })
-    if (res.success) {
-      if (res.result.mzgdPropertyDTOList[ep].ButtonMode === 0) {
-        return true
-      } else {
-        await delay(500)
-        continue
-      }
-    } else {
-      Toast('获取设备状态失败')
-      return false
-    }
-  }
-  Toast('更新设备状态失败')
-  return false
-}
-
-export async function transformSwitchToLinkLight(gatewayId: string, deviceId: string, ep: number) {
-  // 关联灯模式，需要下发转换成3
-  await controlDevice({
-    deviceId: gatewayId,
-    topic: '/subdevice/control',
-    method: 'panelModeControl',
-    inputData: [
-      {
-        ButtonMode: 3,
-        ep,
-        devId: deviceId,
-      },
-    ],
-  })
-  for (let index = 0; index < 6; index++) {
-    const res = await queryDeviceInfoByDeviceId({
-      deviceId,
-    })
-    if (res.success) {
-      if (res.result.mzgdPropertyDTOList[ep].ButtonMode === 3) {
-        return true
-      } else {
-        await delay(500)
-        continue
-      }
-    } else {
-      Toast('获取设备状态失败')
-      return false
-    }
-  }
-  Toast('更新设备状态失败')
-  return false
 }

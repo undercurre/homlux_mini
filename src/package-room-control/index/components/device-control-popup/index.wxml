@@ -79,7 +79,10 @@
     </view> -->
   </view>
 
+<!-- 关联类型选择弹窗 -->
   <select-link-popup show="{{showSelectLinkPopup}}" linkType="{{linkType}}" bind:close="handleSelectLinkPopupClose" bind:confirm="handleSelectLinkPopupConfirm"></select-link-popup>
+
+  <!-- 关联列表（场景列表 or 设备列表）弹窗 -->
   <link-popup has-return show="{{showLinkPopup}}" list="{{list}}" selectList="{{linkSelectList}}" linkType="{{selectLinkType}}" bind:close="handleLinkPopupClose" bind:select="handleLinkSelect" bind:confirm="handleLinkPopupConfirm" bind:return="handleLinkPopupReturn" />
 
   <van-toast id="van-toast" />

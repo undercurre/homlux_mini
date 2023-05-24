@@ -150,4 +150,10 @@ declare namespace Device {
     switchId: string
     relId: string
   }
+
+  interface IMzgdLampDeviceInfoDTO {
+    panelId: string
+    switchId: string
+    lampDeviceId: string
+  }
 }

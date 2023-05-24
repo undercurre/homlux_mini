@@ -428,3 +428,83 @@ export async function getRelDeviceInfo(
     data,
   })
 }
+
+/**
+ * 编辑面板和灯关联
+ * @param lampDevices 关联设备ID:格式 deviceId, 灯Id,逗号分隔 )
+ * @param primaryDeviceId
+ * @param primarySwitchId
+ */
+export async function editLampAndSwitchAssociated(
+  data: { lampDevices: string; primaryDeviceId: string; primarySwitchId: string },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/editLampAndSwitchAssociated',
+    data,
+  })
+}
+
+/**
+ * 删除面板和灯关联
+ */
+export async function delLampAndSwitchAssociated(
+  data: { deviceId: string; switchId: string; relIds: string },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/delLampAndSwitchAssociated',
+    data,
+  })
+}
+
+/**
+ * 编辑面板和面板关联
+ * @param secondSwitchs 关联设备ID:格式 deviceId-switch, 逗号分隔
+ */
+export async function editSwitchAndSwitchAssociated(
+  data: { primaryDeviceId: string; primarySwitchId: string; secondSwitchs: string },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/editSwitchAndSwitchAssociated',
+    data,
+  })
+}
+
+/**
+ * 删除面板和面板关联
+ * @param relIds 面板关联Id,逗号分隔 )
+ */
+export async function delSwitchAndSwitchAssociated(
+  data: { relIds: string },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/delSwitchAndSwitchAssociated',
+    data,
+  })
+}
+
+/**
+ * 根据家庭id获取面板是否已经关联过灯
+ */
+export async function getLampDeviceByHouseId(
+  data: { houseId: string },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<Array<Device.IMzgdLampDeviceInfoDTO>>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/getLampDeviceByHouseId',
+    data,
+  })
+}
