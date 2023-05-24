@@ -47,9 +47,10 @@ function getPos(index: number): Record<'x' | 'y', string> {
  * @returns index
  */
 function getIndex(x: number, y: number) {
+  const maxIndex = deviceStore.deviceFlattenList.length - 1 // 防止越界
   const ix = Math.floor((x + CARD_W / 2) / CARD_W)
   const iy = Math.floor((y + CARD_H / 2) / CARD_H)
-  return ix + 4 * iy
+  return Math.min(ix + 4 * iy, maxIndex)
 }
 
 ComponentWithComputed({
@@ -206,7 +207,7 @@ ComponentWithComputed({
     // 可移动区域高度
     movableViewStyle() {
       return `height: ${Math.ceil(deviceStore.deviceFlattenList.length / 4) * 236}rpx;
-        width: 750px;`
+        width: 600rpx;`
     },
   },
 
