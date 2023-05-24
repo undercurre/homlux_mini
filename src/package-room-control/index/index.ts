@@ -469,15 +469,17 @@ ComponentWithComputed({
       const orderNum = e.currentTarget.dataset.ordernum // ! 注意大小写
       const groupIndex = e.currentTarget.dataset.group
       const index = e.currentTarget.dataset.index
-      this.setData({
-        isMoving: true,
-        placeholder: {
-          ...getPos(orderNum),
-          orderNum,
-          groupIndex,
-          index,
-        },
-      })
+
+      const diffData = {} as IAnyObject
+      diffData.isMoving = true
+      diffData.placeholder = {
+        ...getPos(orderNum),
+        orderNum,
+        groupIndex,
+        index,
+      }
+
+      this.setData(diffData)
     },
 
     /**
