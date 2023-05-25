@@ -72,12 +72,12 @@
       <scroll-view scroll-y enhanced show-scrollbar="{{false}}" style="height: {{ scrollViewHeight }}px;">
         <movable-area style="{{movableViewStyle}}">
           <movable-view wx:if="{{isMoving}}" x="{{placeholder.x}}" y="{{placeholder.y}}" direction="all" class="z-1">
-            <view class="w-160rpx h-216rpx rounded-32rpx ml-10rpx mt-16rpx bg-hex-ddd opacity-75"></view>
+            <view class="w-160rpx h-216rpx rounded-32rpx ml-10rpx mt-16rpx border border-solid border-blue opacity-25"></view>
           </movable-view>
 
           <view wx:for="{{devicePageList}}" wx:for-item="group" wx:key="g" wx:for-index="g" class="flex flex-row flex-wrap">
             <movable-view wx:for="{{group}}" wx:key="uniId" data-index="{{i}}" data-group="{{g}}" data-ordernum="{{item.orderNum}}" wx:for-index="i" x="{{item.x}}" y="{{item.y}}" direction="all" bind:longpress="movableTouchStart" bind:touchend="movableTouchEnd" bind:change="movableChange" class="{{ i === placeholder.index && g === placeholder.groupIndex ? 'z-100' : 'z-1' }}" disabled="{{!isMoving}}">
-              <device-card class="w-180rpx pb-16rpx pt-16rpx flex justify-center {{isMoving && (i !== placeholder.index || g !== placeholder.groupIndex) ? 'shake' : ''}}" showControl showShadow showGradientBg edit-mode="{{editSelectMode}}" edit-select="{{item.editSelect}}" device-info="{{item}}" data-item="{{item}}" select="{{item.select}}" bind:controlTap="handleControlTap" bind:cardTap="handleCardTap" bind:offlineTap="handleShowDeviceOffline" bind:longPress="handleLongpress" />
+              <device-card class="w-180rpx pb-16rpx pt-16rpx flex justify-center {{editSelectMode && (i !== placeholder.index || g !== placeholder.groupIndex) ? 'shake' : ''}}" showControl showShadow showGradientBg edit-mode="{{editSelectMode}}" edit-select="{{item.editSelect}}" device-info="{{item}}" data-item="{{item}}" select="{{item.select}}" bind:controlTap="handleControlTap" bind:cardTap="handleCardTap" bind:offlineTap="handleShowDeviceOffline" bind:longPress="handleLongpress" />
             </movable-view>
           </view>
         </movable-area>
@@ -88,8 +88,7 @@
         <van-skeleton wx:if="{{!deviceListInited}}" row="1" row-width="700rpx" row-class="mt-32rpx rounded-32rpx skeleton_fix" />
 
         <!-- 有列表时的添加按钮 -->
-        <view class="flex-col-center" wx:if="{{roomHasSubDevice}}">
-          <view class="h-20rpx"></view>
+        <view class="flex-col-center py-20rpx" wx:if="{{roomHasSubDevice}}">
           <van-button wx-if="{{canAddDevice}}" type="default" color="rgba(255,255,255,0.60)" size="small" custom-class="round-btn-border" round bind:tap="goTo" data-url="/package-distribution/scan/index">
             <text class="text-26rpx text-hex-555659">添加设备</text>
           </van-button>
@@ -99,7 +98,8 @@
   </view>
 </view>
 
-<view wx:if="{{popupPlaceholder || editSelectMode}}" class="h-600rpx" bindtap="handleScreenTap" bindtouchmove="handleScreenTap"></view>
+<view wx:if="{{ controlPopup }}" class="h-600rpx" bindtap="handleScreenTap" bindtouchmove="handleScreenTap"></view>
+<view wx:if="{{ editSelectMode }}" class="h-368rpx"></view>
 <!-- 影响滚动列表的体验，暂时注释 -->
 <!-- <view wx:else class="h-64rpx" bindtap="handleScreenTap" bindtouchmove="handleScreenTap"></view> -->
 

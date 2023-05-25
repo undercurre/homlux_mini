@@ -66,20 +66,12 @@ ComponentWithComputed({
       (storage.get<number>('statusBarHeight') as number) +
       (storage.get<number>('navigationBarHeight') as number) +
       'px',
-    scrollViewHeight:
-      (storage.get<number>('windowHeight') as number) -
-      (storage.get<number>('statusBarHeight') as number) -
-      (storage.get<number>('bottomBarHeight') as number) - // IPX
-      rpx2px(170) - // 创建场景
-      (storage.get<number>('navigationBarHeight') as number),
     /** 展示点中离线设备弹窗 */
     showDeviceOffline: false,
     /** 点击的离线设备的信息 */
     officeDeviceInfo: {} as DeviceCard,
     /** 控制面板 */
     controlPopup: false,
-    /** 弹出控制面板时，页面底部留出空位 */
-    popupPlaceholder: false,
     showAddScenePopup: false,
     // 设备卡片列表，二维数组
     devicePageList: [] as DeviceCard[][],
@@ -204,6 +196,22 @@ ComponentWithComputed({
     canAddDevice(data) {
       return data.isCreator || data.isAdmin
     },
+    // 可滚动区域高度
+    scrollViewHeight(data) {
+      let baseHeight =
+        (storage.get<number>('windowHeight') as number) -
+        (storage.get<number>('statusBarHeight') as number) -
+        (storage.get<number>('bottomBarHeight') as number) - // IPX
+        rpx2px(140) - // 创建场景
+        (storage.get<number>('navigationBarHeight') as number)
+      if (data.controlPopup) {
+        baseHeight -= rpx2px(600)
+      } else if (data.editSelectMode) {
+        baseHeight -= rpx2px(368)
+      }
+      return baseHeight
+    },
+
     // 可移动区域高度
     movableViewStyle() {
       return `height: ${Math.ceil(deviceStore.deviceFlattenList.length / 4) * 236}rpx;
@@ -491,15 +499,14 @@ ComponentWithComputed({
       const targetOrder = getIndex(e.detail.x, e.detail.y)
       if (this.data.placeholder.orderNum !== targetOrder && e.detail.source === 'touch') {
         const oldOrder = this.data.placeholder.orderNum
-        console.log('%d-->%d', oldOrder, targetOrder, e)
+        console.log('movableChange: %d-->%d', oldOrder, targetOrder, e)
 
         // 更新placeholder的位置
+        const dPos = getPos(targetOrder)
         const diffData = {} as IAnyObject
-        diffData.placeholder = {
-          ...this.data.placeholder,
-          ...getPos(targetOrder),
-          orderNum: targetOrder,
-        }
+        diffData[`placeholder.orderNum`] = targetOrder
+        diffData[`placeholder.x`] = dPos.x
+        diffData[`placeholder.y`] = dPos.y
 
         // 更新联动卡片的位置
         let moveCount = 0
@@ -535,7 +542,7 @@ ComponentWithComputed({
         const index = this.data.placeholder.index
         diffData[`devicePageList[${groupIndex}][${index}].orderNum`] = targetOrder
 
-        // console.log(diffData)
+        console.log(diffData)
 
         this.setData(diffData)
       }
@@ -554,8 +561,12 @@ ComponentWithComputed({
       // 修正卡片位置
       diffData[`devicePageList[${groupIndex}][${index}].x`] = dpos.x
       diffData[`devicePageList[${groupIndex}][${index}].y`] = dpos.y
+      diffData[`placeholder.orderNum`] = -1
+      diffData[`placeholder.index`] = -1
+      diffData[`placeholder.groupIndex`] = -1
       this.setData(diffData)
       this.data.hasMoved = true
+      console.log('movableTouchEnd:', diffData)
     },
     async handleSortEnd() {
       const deviceOrderData = {
@@ -765,7 +776,6 @@ ComponentWithComputed({
       diffData.checkedList = [...this.data.checkedList]
       diffData.lightStatus = lightStatus
       diffData.controlPopup = toCheck
-      diffData.popupPlaceholder = toCheck
 
       // 更新视图
       this.setData(diffData)
@@ -963,7 +973,6 @@ ComponentWithComputed({
       if (this.data.checkedList?.length) {
         diffData.checkedList = []
         diffData.controlPopup = false
-        diffData.popupPlaceholder = false
       }
       this.setData(diffData)
       device.select = false
