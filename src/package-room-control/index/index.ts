@@ -487,13 +487,13 @@ ComponentWithComputed({
         groupIndex,
         index,
       }
+      console.log('movableTouchStart:', diffData)
 
       this.setData(diffData)
     },
 
     /**
      * 拖拽时触发的卡片移动效果
-     * 节流时间为0，不延迟，但在同一个移动动画结束前，不会再执行新的
      */
     movableChange: throttle(function (this: any, e: WechatMiniprogram.TouchEvent) {
       const targetOrder = getIndex(e.detail.x, e.detail.y)
@@ -546,7 +546,7 @@ ComponentWithComputed({
 
         this.setData(diffData)
       }
-    }, 0),
+    }, 100),
 
     movableTouchEnd() {
       if (!this.data.isMoving) {
