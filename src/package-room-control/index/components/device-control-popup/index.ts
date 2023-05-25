@@ -1,4 +1,4 @@
-import { Logger, storage, throttle, showLoading, hideLoading } from '../../../../utils/index'
+import { Logger, isArrEqual, storage, throttle, showLoading, hideLoading } from '../../../../utils/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, deviceStore, sceneStore, homeStore } from '../../../../store/index'
@@ -446,7 +446,9 @@ ComponentWithComputed({
             confirmButtonText: '确定',
             zIndex: 2000,
             context: this,
-          }).then(() => true).catch(() => false)
+          })
+            .then(() => true)
+            .catch(() => false)
 
           if (!dialogRes) {
             return
@@ -460,26 +462,24 @@ ComponentWithComputed({
         const switchSceneActionMap = deviceStore.switchSceneActionMap
 
         if (switchSceneActionMap[switchUniId]?.includes(selectId)) {
-          Dialog.confirm({
+          const dialogRes = await Dialog.confirm({
             message: '此开关已被其他场景使用，是否需要变更？',
             cancelButtonText: '取消',
             confirmButtonText: '变更',
             zIndex: 2000,
             context: this,
           })
-            .then(async () => {
-              this.setData({
-                linkSelectList: [selectId],
-              })
-            })
-            .catch((e) => {
-              console.log('catch', e)
-            })
-        } else {
-          this.setData({
-            linkSelectList: [selectId],
-          })
+            .then(() => true)
+            .catch(() => false)
+
+          if (!dialogRes) {
+            return
+          }
         }
+
+        this.setData({
+          linkSelectList: [selectId],
+        })
       }
     },
     handleSelectLinkPopup() {
@@ -702,11 +702,17 @@ ComponentWithComputed({
       })
       const switchUniId = this.data.checkedList[0]
       const switchSceneConditionMap = deviceStore.switchSceneConditionMap
+      const lampRelList = this.data._allSwitchLampRelList.map(
+        (item) => `${item.panelId}:${item.switchId}`) // 指定面板的灯关联关系列表
+        const switchRelList = this.data._switchRelInfo.switchRelList.map(
+          (item) => `${item.deviceId}:${item.switchId}`) // 指定面板的灯关联关系列表
 
       // 选择没变化，不执行操作
       if (
         (this.data.linkType === 'none' && this.data.linkSelectList.length === 0) ||
-        (this.data.linkType === 'scene' && this.data.linkSelectList[0] === switchSceneConditionMap[switchUniId])
+        (this.data.linkType === 'scene' && this.data.linkSelectList[0] === switchSceneConditionMap[switchUniId]) || 
+        (this.data.linkType === 'light' && isArrEqual(this.data.linkSelectList, lampRelList)) || 
+        (this.data.linkType === 'switch' && isArrEqual(this.data.linkSelectList, switchRelList))
       ) {
         Logger.log('关联关系没发生变化，不执行操作')
         return

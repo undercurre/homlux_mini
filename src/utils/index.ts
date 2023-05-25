@@ -30,6 +30,23 @@ export function unique(arr: Array<IAnyObject>, key: string) {
   return arr.filter((item) => !res.has(item[key]) && res.set(item[key], 1))
 }
 
+/**
+ * 判断两个数组是否相等，元素顺序可以不同
+ * @param a 
+ * @param b 
+ */
+export function isArrEqual(a: Array<any>, b: Array<any>) {
+  let m = new Map()
+  a.forEach((o) => m.set(o, (m.get(o) || 0) + 1))
+  b.forEach((o) => m.set(o, (m.get(o) || 0) - 1))
+  for (var value of m.values()) {
+    if (value !== 0) {
+      return false
+    }
+  }
+  return true
+}
+
 export function rpx2px(rpx: number) {
   return Math.ceil((rpx / 750) * wx.getSystemInfoSync().windowWidth)
 }
