@@ -400,7 +400,7 @@ ComponentWithComputed({
 
       if (this.data.sceneDeviceActionsFlattenMap[switchUnid]) {
         const dialigRes = await Dialog.confirm({
-          message: '此开关已被其他场景使用，是否需要变更？',
+          message: '此开关已作为其他场景的执行动作，确定变更？',
           cancelButtonText: '取消',
           confirmButtonText: '变更',
           zIndex: 2000,
