@@ -32,14 +32,14 @@ export function unique(arr: Array<IAnyObject>, key: string) {
 
 /**
  * 判断两个数组是否相等，元素顺序可以不同
- * @param a 
- * @param b 
+ * @param a
+ * @param b
  */
 export function isArrEqual(a: Array<any>, b: Array<any>) {
-  let m = new Map()
+  const m = new Map()
   a.forEach((o) => m.set(o, (m.get(o) || 0) + 1))
   b.forEach((o) => m.set(o, (m.get(o) || 0) - 1))
-  for (var value of m.values()) {
+  for (const value of m.values()) {
     if (value !== 0) {
       return false
     }

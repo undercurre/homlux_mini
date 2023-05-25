@@ -546,6 +546,7 @@ ComponentWithComputed({
             Toast('删除场景关联失败')
           }
 
+          // 若存在场景关联，则不可能存在灯关联，无需判断后面的逻辑
           return
         }
 
@@ -565,6 +566,7 @@ ComponentWithComputed({
 
           if (!res.success) {
             Toast('删除面板已有的灯关联失败')
+            return
           }
         }
       }
@@ -702,16 +704,14 @@ ComponentWithComputed({
       })
       const switchUniId = this.data.checkedList[0]
       const switchSceneConditionMap = deviceStore.switchSceneConditionMap
-      const lampRelList = this.data._allSwitchLampRelList.map(
-        (item) => `${item.panelId}:${item.switchId}`) // 指定面板的灯关联关系列表
-        const switchRelList = this.data._switchRelInfo.switchRelList.map(
-          (item) => `${item.deviceId}:${item.switchId}`) // 指定面板的灯关联关系列表
+      const lampRelList = this.data._allSwitchLampRelList.map((item) => `${item.panelId}:${item.switchId}`) // 指定面板的灯关联关系列表
+      const switchRelList = this.data._switchRelInfo.switchRelList.map((item) => `${item.deviceId}:${item.switchId}`) // 指定面板的灯关联关系列表
 
       // 选择没变化，不执行操作
       if (
         (this.data.linkType === 'none' && this.data.linkSelectList.length === 0) ||
-        (this.data.linkType === 'scene' && this.data.linkSelectList[0] === switchSceneConditionMap[switchUniId]) || 
-        (this.data.linkType === 'light' && isArrEqual(this.data.linkSelectList, lampRelList)) || 
+        (this.data.linkType === 'scene' && this.data.linkSelectList[0] === switchSceneConditionMap[switchUniId]) ||
+        (this.data.linkType === 'light' && isArrEqual(this.data.linkSelectList, lampRelList)) ||
         (this.data.linkType === 'switch' && isArrEqual(this.data.linkSelectList, switchRelList))
       ) {
         Logger.log('关联关系没发生变化，不执行操作')
