@@ -45,7 +45,7 @@
       <view wx:if="{{tab==='switch'}}" class="flex flex-col w-750rpx">
         <view class="h-22rpx"></view>
         <van-cell-group inset style="opacity: {{(disabledLinkSetting)?0.5:1}};">
-          <van-cell border="{{false}}" is-link="{{!disabledLinkSetting}}" title="模式设置" value="{{currentLinkTypeDesc}}" custom-class="switch-cell" bind:click="handleSelectLinkPopup"></van-cell>
+          <van-cell border="{{false}}" is-link="{{!disabledLinkSetting}}" title="模式设置" value="{{linkTypeDesc}}" custom-class="switch-cell" bind:click="handleSelectLinkPopup"></van-cell>
         </van-cell-group>
       </view>
       <!-- 窗帘控制 -->
@@ -79,7 +79,10 @@
     </view> -->
   </view>
 
+  <!-- 关联类型选择弹窗 -->
   <select-link-popup show="{{showSelectLinkPopup}}" linkType="{{linkType}}" bind:close="handleSelectLinkPopupClose" bind:confirm="handleSelectLinkPopupConfirm"></select-link-popup>
+
+  <!-- 关联列表（场景列表 or 设备列表）弹窗 -->
   <link-popup has-return show="{{showLinkPopup}}" list="{{list}}" selectList="{{linkSelectList}}" linkType="{{selectLinkType}}" bind:close="handleLinkPopupClose" bind:select="handleLinkSelect" bind:confirm="handleLinkPopupConfirm" bind:return="handleLinkPopupReturn" />
 
   <van-toast id="van-toast" />
