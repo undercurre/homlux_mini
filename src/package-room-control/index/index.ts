@@ -541,10 +541,10 @@ ComponentWithComputed({
         const groupIndex = this.data.placeholder.groupIndex
         const index = this.data.placeholder.index
         diffData[`devicePageList[${groupIndex}][${index}].orderNum`] = targetOrder
-
         console.log(diffData)
-
         this.setData(diffData)
+
+        this.data.hasMoved = true
       }
     }, 100),
 
@@ -565,10 +565,9 @@ ComponentWithComputed({
       diffData[`placeholder.index`] = -1
       diffData[`placeholder.groupIndex`] = -1
       this.setData(diffData)
-      this.data.hasMoved = true
       console.log('movableTouchEnd:', diffData)
     },
-    async handleSortEnd() {
+    async handleSortSaving() {
       const deviceOrderData = {
         deviceInfoByDeviceVoList: [],
         type: '0',
@@ -989,7 +988,7 @@ ComponentWithComputed({
       })
       this.editSelectAll({ detail: false })
       if (this.data.hasMoved) {
-        this.handleSortEnd()
+        this.handleSortSaving()
       }
     },
 
