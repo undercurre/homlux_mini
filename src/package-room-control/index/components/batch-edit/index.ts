@@ -5,7 +5,10 @@ import { proType } from '../../../../config/index'
 import { deviceBinding, deviceStore, homeStore, roomBinding, roomStore } from '../../../../store/index'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
-import { storage, checkInputNameIllegal } from '../../../../utils/index'
+import { storage, checkInputNameIllegal, emitter, WSEventType, showLoading, hideLoading } from '../../../../utils/index'
+
+let timeId: number
+
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
@@ -115,6 +118,38 @@ ComponentWithComputed({
     showEditRoom: false,
     roomId: '',
     showConfirmDelete: false,
+    moveWaitlist: [] as string[],
+    moveFailCount: 0,
+  },
+
+  lifetimes: {
+    ready() {
+      emitter.on('wsReceive', ({ result }) => {
+        if (result.eventType === WSEventType.group_device_result_status) {
+          if (result.eventData.errCode !== 0) {
+            this.data.moveFailCount++
+          }
+          const deviceId = result.eventData.devId
+          const uniId = `${result.eventData.devId}:${result.eventData.ep}`
+          const finishedIndex = this.data.moveWaitlist.findIndex((item) => item === deviceId || item === uniId)
+          this.data.moveWaitlist.splice(finishedIndex, 1)
+
+          if (!this.data.moveWaitlist.length) {
+            if (this.data.moveFailCount) {
+              this.handleBatchMove()
+            } else {
+              this.handleMoveFinish()
+            }
+          }
+        }
+      })
+    },
+    detached() {
+      emitter.off('wsReceive')
+      if (timeId) {
+        clearTimeout(timeId)
+      }
+    },
   },
 
   /**
@@ -208,6 +243,95 @@ ComponentWithComputed({
       })
 
       this.triggerEvent('close')
+    },
+    handleBatchMove() {
+      const actionFn = async () => {
+        this.data.moveFailCount = 0 // 清空失败计数
+        const map = {} as Record<string, Device.DeviceInfoUpdateVo>
+        this.data.moveWaitlist.forEach((uniId: string) => {
+          if (uniId.includes(':')) {
+            const deviceId = uniId.split(':')[0]
+            if (!map[deviceId]) {
+              map[deviceId] = {
+                deviceId,
+                houseId: homeStore.currentHomeId,
+                roomId: this.data.roomId,
+                type: '1',
+              }
+            }
+          } else {
+            if (!map[uniId]) {
+              map[uniId] = {
+                deviceId: uniId,
+                houseId: homeStore.currentHomeId,
+                roomId: this.data.roomId,
+                type: '1',
+              }
+            }
+          }
+        })
+        const res = await batchUpdate({
+          deviceInfoUpdateVoList: Object.entries(map).map(([_, data]) => data),
+        })
+        if (res.success) {
+          // 可能存在快速收到ws通知，不用等待
+          if (!this.data.moveWaitlist.length) {
+            return
+          }
+
+          // TODO 只有WIFI设备时，不需要超时检测逻辑
+          // 超时后检查云端上报，是否已成功移动完毕
+          const TIME_OUT =
+            this.data.moveWaitlist.length > 80 ? 120000 : Math.max(3000, this.data.moveWaitlist.length * 1000)
+
+          showLoading()
+          timeId = setTimeout(async () => {
+            hideLoading()
+
+            Dialog.confirm({
+              message: '部分设备未成功移动，是否重试',
+              confirmButtonText: '是',
+              cancelButtonText: '否',
+              context: this,
+            })
+              .then(actionFn) // ! 有条件递归执行
+              .catch((e) => console.log(e))
+          }, TIME_OUT)
+        } else {
+          Toast({
+            message: '移动失败',
+            zIndex: 9999,
+          })
+        }
+      }
+      const hasSwitch = this.data.moveWaitlist.some((uniId: string) => uniId.includes(':'))
+      if (hasSwitch && !this.data.moveFailCount) {
+        Dialog.confirm({
+          message: '按键所在的面板将被移动至新房间，是否继续？',
+          confirmButtonText: '是',
+          cancelButtonText: '否',
+          context: this,
+        })
+          .then(actionFn)
+          .catch((e) => console.log(e))
+      }
+      // 如果不包含面板设备，或者是失败重试，刚不必询问直接执行
+      else {
+        actionFn()
+      }
+    },
+    async handleMoveFinish() {
+      hideLoading()
+
+      if (timeId) {
+        clearTimeout(timeId)
+      }
+      await Promise.all([deviceStore.updateSubDeviceList(), homeStore.updateRoomCardList()])
+      this.triggerEvent('roomMove')
+      Toast({
+        message: '移动成功',
+        zIndex: 9999,
+      })
     },
     async handleConfirm() {
       if (this.data.showEditName) {
@@ -316,63 +440,9 @@ ComponentWithComputed({
           }
         }
       } else if (this.data.showEditRoom) {
-        const actionFn = async () => {
-          const map = {} as Record<string, Device.DeviceInfoUpdateVo>
-          this.data.editSelectList.forEach((uniId: string) => {
-            if (uniId.includes(':')) {
-              const deviceId = uniId.split(':')[0]
-              if (!map[deviceId]) {
-                map[deviceId] = {
-                  deviceId,
-                  houseId: homeStore.currentHomeId,
-                  roomId: this.data.roomId,
-                  type: '1',
-                }
-              }
-            } else {
-              if (!map[uniId]) {
-                map[uniId] = {
-                  deviceId: uniId,
-                  houseId: homeStore.currentHomeId,
-                  roomId: this.data.roomId,
-                  type: '1',
-                }
-              }
-            }
-          })
-          const res = await batchUpdate({
-            deviceInfoUpdateVoList: Object.entries(map).map(([_, data]) => data),
-          })
-          if (res.success) {
-            Toast({
-              message: '移动成功',
-              zIndex: 9999,
-            })
-            this.handleClose()
-            // FIXME 云端加入移动错误上报，临时处理
-            setTimeout(async () => {
-              await Promise.all([deviceStore.updateSubDeviceList(), homeStore.updateRoomCardList()])
-              this.triggerEvent('roomMove')
-            }, 2000)
-          } else {
-            Toast({
-              message: '移动失败',
-              zIndex: 9999,
-            })
-          }
-        }
-        if (this.data.editSelectList.some((uniId: string) => uniId.includes(':'))) {
-          Dialog.confirm({
-            message: '按键所在的面板将被移动至新房间，是否继续？',
-            confirmButtonText: '是',
-            cancelButtonText: '否',
-            context: this,
-          })
-            .then(actionFn)
-            .catch((e) => console.log(e))
-        } else {
-          actionFn()
-        }
+        this.data.moveWaitlist = [...this.data.editSelectList]
+        this.handleBatchMove()
+        this.handleClose()
       }
     },
     handleRoomSelect(e: { currentTarget: { dataset: { id: string } } }) {

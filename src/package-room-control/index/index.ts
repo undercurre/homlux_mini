@@ -566,8 +566,15 @@ ComponentWithComputed({
       diffData[`placeholder.groupIndex`] = -1
       this.setData(diffData)
       console.log('movableTouchEnd:', diffData)
+
+      this.handleSortSaving()
     },
     async handleSortSaving() {
+      if (!this.data.hasMoved) {
+        return
+      }
+      this.data.hasMoved = false
+
       const deviceOrderData = {
         deviceInfoByDeviceVoList: [],
         type: '0',
@@ -987,9 +994,6 @@ ComponentWithComputed({
         editSelectList: [],
       })
       this.editSelectAll({ detail: false })
-      if (this.data.hasMoved) {
-        this.handleSortSaving()
-      }
     },
 
     handleAddDevice() {
