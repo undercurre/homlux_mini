@@ -567,7 +567,7 @@ ComponentWithComputed({
       this.setData(diffData)
       console.log('movableTouchEnd:', diffData)
 
-        this.handleSortSaving()
+      this.handleSortSaving()
     },
     async handleSortSaving() {
       if (!this.data.hasMoved) {
