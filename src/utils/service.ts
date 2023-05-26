@@ -35,7 +35,7 @@ export function startWebsocketService() {
   socketTask.onMessage((e) => {
     try {
       const res = JSON.parse(e.data as string)
-      console.log('接收到Socket信息：', res, res.result.eventType)
+      console.log('接收到socket信息：', res, res.result.eventType)
       emitter.emit('wsReceive', res)
       emitter.emit(res.result.eventType, res.result.eventData)
 
@@ -47,12 +47,16 @@ export function startWebsocketService() {
         })
       }
     } catch (err) {
-      console.error('接收到Socket信息：', e.data)
+      console.error('接收到socket信息：', e.data)
       console.error('转json失败：', err)
     }
   })
   socketTask.onError((err) => {
-    Logger.error('Socket错误onError：', err)
+    Logger.error('socket错误onError：', err)
+    setTimeout(() => {
+      Logger.log('socket重连')
+      startWebsocketService()
+    }, 5000)
   })
 }
 
