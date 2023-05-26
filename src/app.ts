@@ -5,6 +5,7 @@ import {
   startWebsocketService,
   closeWebSocket,
   setCurrentEnv,
+  Logger,
 } from './utils/index'
 import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore } from './store/index'
@@ -40,6 +41,11 @@ App<IAppOption>({
 
     // 网络监听
     networkStatusListen()
+
+    // 监听内存不足告警事件
+    wx.onMemoryWarning(function () {
+      Logger.error('onMemoryWarningReceive')
+    })
   },
 
   onShow() {

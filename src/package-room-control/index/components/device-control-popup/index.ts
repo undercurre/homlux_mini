@@ -20,6 +20,13 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import pageBehavior from '../../../../behaviors/pageBehaviors'
 
 let throttleTimer = 0
+// 关联类型文描映射
+const descMap = {
+  light: '关联灯具',
+  switch: '关联开关',
+  scene: '关联场景',
+  none: '未关联',
+}
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] }), pageBehavior],
@@ -161,13 +168,6 @@ ComponentWithComputed({
     },
 
     linkTypeDesc(data) {
-      const descMap = {
-        light: '关联灯',
-        switch: '关联开关',
-        scene: '关联场景',
-        none: '未关联',
-      }
-
       return descMap[data.linkType]
     },
   },
@@ -543,7 +543,7 @@ ComponentWithComputed({
           })
 
           if (!res.success) {
-            Toast('删除场景关联失败')
+            Toast({ message: '删除场景关联失败', zIndex: 9999 })
           }
 
           // 若存在场景关联，则不可能存在灯关联，无需判断后面的逻辑
@@ -565,7 +565,7 @@ ComponentWithComputed({
           })
 
           if (!res.success) {
-            Toast('删除面板已有的灯关联失败')
+            Toast({ message: '删除面板已有的灯关联失败', zIndex: 9999 })
             return
           }
         }
@@ -706,13 +706,14 @@ ComponentWithComputed({
       const switchSceneConditionMap = deviceStore.switchSceneConditionMap
       const lampRelList = this.data._allSwitchLampRelList.map((item) => `${item.panelId}:${item.switchId}`) // 指定面板的灯关联关系列表
       const switchRelList = this.data._switchRelInfo.switchRelList.map((item) => `${item.deviceId}:${item.switchId}`) // 指定面板的灯关联关系列表
+      const { linkType, selectLinkType, linkSelectList } = this.data
 
       // 选择没变化，不执行操作
       if (
-        (this.data.linkType === 'none' && this.data.linkSelectList.length === 0) ||
-        (this.data.linkType === 'scene' && this.data.linkSelectList[0] === switchSceneConditionMap[switchUniId]) ||
-        (this.data.linkType === 'light' && isArrEqual(this.data.linkSelectList, lampRelList)) ||
-        (this.data.linkType === 'switch' && isArrEqual(this.data.linkSelectList, switchRelList))
+        (linkType === 'none' && linkSelectList.length === 0) ||
+        (linkType === 'scene' && linkSelectList[0] === switchSceneConditionMap[switchUniId]) ||
+        (linkType === 'light' && isArrEqual(linkSelectList, lampRelList)) ||
+        (linkType === 'switch' && isArrEqual(linkSelectList, switchRelList))
       ) {
         Logger.log('关联关系没发生变化，不执行操作')
         return
@@ -722,11 +723,25 @@ ComponentWithComputed({
       // 1、若面板已存在关联且与新关联数据的类型不一致
       // 2、已选择的列表为空时即清空原有绑定关系
       // 执行删除已有关联操作
-      showLoading()
-      if (
-        this.data.linkType !== 'none' &&
-        (this.data.linkType !== this.data.selectLinkType || this.data.linkSelectList.length === 0)
-      ) {
+      if (linkType !== 'none' && (linkType !== selectLinkType || linkSelectList.length === 0)) {
+        // 变更绑定类型的情况下弹框确认
+        if (linkType !== selectLinkType) {
+          const dialogRes = await Dialog.confirm({
+            message: `此开关已${descMap[linkType]}，是否变更？`,
+            cancelButtonText: '取消',
+            confirmButtonText: '确定',
+            zIndex: 2000,
+            context: this,
+          })
+            .then(() => true)
+            .catch(() => false)
+
+          if (!dialogRes) {
+            return
+          }
+        }
+
+        showLoading()
         const delRes = await this.deleteAssocite()
 
         if (!delRes?.success) {
@@ -735,9 +750,10 @@ ComponentWithComputed({
         }
       }
 
+      showLoading()
       // 编辑新增新的绑定关系数据
       // 若选择的数据linkSelectList为空,无需执行编辑操作
-      if (this.data.linkSelectList.length > 0) {
+      if (linkSelectList.length > 0) {
         await this.editAssocite()
       }
 

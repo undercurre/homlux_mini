@@ -181,7 +181,7 @@ ComponentWithComputed({
           homeStore.updateRoomCardList()
           wx.navigateBack()
         } else {
-          Toast('删除失败')
+          Toast({ message: '删除失败', zIndex: 9999 })
         }
       })
     },
@@ -213,7 +213,7 @@ ComponentWithComputed({
             homeStore.updateRoomCardList()
             wx.navigateBack()
           } else {
-            Toast('删除失败')
+            Toast({ message: '删除失败', zIndex: 9999 })
           }
         })
         return
@@ -283,7 +283,7 @@ ComponentWithComputed({
           })
 
           if (!res.success) {
-            Toast('删除面板已有的灯关联失败')
+            Toast({ message: '删除面板已有的灯关联失败', zIndex: 9999 })
             return
           }
         }
@@ -296,7 +296,7 @@ ComponentWithComputed({
           })
 
           if (!res.success) {
-            Toast('删除面板已有的开关关联失败')
+            Toast({ message: '删除面板已有的开关关联失败', zIndex: 9999 })
             return
           }
         }
@@ -321,10 +321,10 @@ ComponentWithComputed({
       const res = await updateScene(data)
       if (res.success) {
         emitter.emit('sceneEdit')
-        Toast('修改成功')
+        Toast({ message: '修改成功', zIndex: 9999 })
         wx.navigateBack()
       } else {
-        Toast('修改失败')
+        Toast({ message: '修改失败', zIndex: 9999 })
       }
     },
     handleEditNameShow() {
@@ -365,6 +365,12 @@ ComponentWithComputed({
     },
     async handleSwitchSelect(e: { detail: string }) {
       const switchUnid = e.detail
+      const { sceneDeviceActionsFlatten } = this.data
+
+      if (sceneDeviceActionsFlatten.find((item) => item.uniId === switchUnid)) {
+        Toast({ message: '无法选择，此开关已是当前场景的执行设备', zIndex: 9999 })
+        return
+      }
 
       if (this.data.linkSwitchSelect[0] === switchUnid) {
         this.setData({
@@ -388,19 +394,26 @@ ComponentWithComputed({
       ])
 
       if (!res[0].success || !res[1].success) {
-        Toast('查询设备信息失败')
+        Toast({ message: '查询设备信息失败', zIndex: 9999 })
         return
       }
 
       const lampRelList = res[0].result.lampRelList
       const switchRelList = res[1].result.primaryRelDeviceInfo.concat(res[1].result.secondRelDeviceInfo)
+      const switchSceneConditionMap = deviceStore.switchSceneConditionMap
+      let linkDesc = ''
 
-      this.data._linkSwitchRefInfo.lampRelList = lampRelList
-      this.data._linkSwitchRefInfo.switchRelList = switchRelList
+      if (lampRelList.length) {
+        linkDesc = '灯具'
+      } else if (switchRelList.length) {
+        linkDesc = '开关'
+      } else if (switchSceneConditionMap[switchUnid]) {
+        linkDesc = '其他场景'
+      }
 
-      if (this.data.sceneDeviceActionsFlattenMap[switchUnid]) {
+      if (linkDesc) {
         const dialigRes = await Dialog.confirm({
-          message: '此开关已作为其他场景的执行动作，确定变更？',
+          message: `此开关已关联${linkDesc}，确定变更？`,
           cancelButtonText: '取消',
           confirmButtonText: '变更',
           zIndex: 2000,
@@ -410,6 +423,23 @@ ComponentWithComputed({
 
         if (!dialigRes) return
       }
+
+      this.data._linkSwitchRefInfo.lampRelList = lampRelList
+      this.data._linkSwitchRefInfo.switchRelList = switchRelList
+
+      // 该弹窗逻辑暂不完善，无完美解决方案，暂时屏蔽
+      // if (this.data.sceneDeviceActionsFlattenMap[switchUnid]) {
+      //   const dialigRes = await Dialog.confirm({
+      //     message: '此开关已作为其他场景的执行动作，确定变更？',
+      //     cancelButtonText: '取消',
+      //     confirmButtonText: '变更',
+      //     zIndex: 2000,
+      //   })
+      //     .then(() => true)
+      //     .catch(() => false)
+
+      //   if (!dialigRes) return
+      // }
 
       this.setData({
         linkSwitchSelect: [switchUnid],

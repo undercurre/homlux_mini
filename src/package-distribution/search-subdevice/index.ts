@@ -89,7 +89,6 @@ ComponentWithComputed({
       bleDevicesBinding.store.startBleDiscovery()
     },
     detached() {
-      Logger.log('附近子设备页detached', this.data.status)
       this.stopGwAddMode()
       bleDevicesBinding.store.stopBLeDiscovery()
     },
