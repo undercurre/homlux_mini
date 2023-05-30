@@ -12,7 +12,7 @@ export const Logger = {
   },
   log(...args: any[]) {
     console.log(`【${dayjs().format('HH:mm:ss.SSS')}】`, ...args)
-    log.info(`【${dayjs().format('HH:mm:ss.SSS')}】`, args)
+    log.info(args)
   },
   error(...args: any[]) {
     console.error(`【${dayjs().format('HH:mm:ss.SSS')}】`, ...args)

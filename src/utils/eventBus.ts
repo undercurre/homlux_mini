@@ -29,7 +29,7 @@ export const WSEventType = {
   bind_device: 'bind_device',
   invite_user_house: 'invite_user_house', // 用户加入家庭
   control_fail: 'control_fail', // 控制失败 TODO 未发现使用逻辑，预留？
-  scene_device_result_status : 'scene_device_result_status ', // 创建、编辑场景结果（成功或失败）
+  scene_device_result_status: 'scene_device_result_status ', // 创建、编辑场景结果（成功或失败）
   group_device_result_status: 'group_device_result_status', // 移动房间结果（成功或失败）
 }
 

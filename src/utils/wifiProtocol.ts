@@ -4,7 +4,7 @@ import { isAndroid, isAndroid10Plus } from './app'
 
 let _instance: WifiSocket | null = null
 
-const tcpClient: WechatMiniprogram.TCPSocket = wx.createTCPSocket()
+let tcpClient: WechatMiniprogram.TCPSocket | null = null
 
 let udpClient: WechatMiniprogram.UDPSocket | undefined = undefined
 
@@ -289,7 +289,7 @@ export class WifiSocket {
       const start = Date.now()
 
       const timeId = setTimeout(() => {
-        tcpClient.offConnect()
+        tcpClient?.offConnect()
         resolve({ success: false, msg: 'TCP连接超时' })
       }, 10000)
 
@@ -298,14 +298,14 @@ export class WifiSocket {
         console.debug('TCP连接时间：', Date.now() - start)
 
         clearTimeout(timeId)
-        tcpClient.offConnect()
+        tcpClient?.offConnect()
         this.deviceInfo.isConnectTcp = true
         resolve({ success: true })
       }
 
-      tcpClient.onConnect(listen)
+      tcpClient?.onConnect(listen)
 
-      tcpClient.connect({
+      tcpClient?.connect({
         address: IP,
         port: this.deviceInfo.tcpPort,
         timeout: 10,
@@ -314,21 +314,24 @@ export class WifiSocket {
   }
 
   initTcpSocket() {
-    tcpClient.onMessage((res) => {
+    // 安卓端，如果tcp实例连接失败过，再重新调用connect接口可能会出现小程序闪退。新的连接需要使用新实例避免该问题
+    tcpClient = wx.createTCPSocket()
+
+    tcpClient?.onMessage((res) => {
       this.handleReply(res.message)
     })
 
-    tcpClient.onError((res) => {
+    tcpClient?.onError((res) => {
       console.log('tcpClient.onError', res)
 
       // tcp连接被设备端主动关闭的情况处理
       if (res.errMsg.includes('close') && this.deviceInfo.isConnectTcp) {
         this.deviceInfo.isConnectTcp = false
-        tcpClient.close()
+        tcpClient?.close()
       }
     })
 
-    tcpClient.onClose((res) => {
+    tcpClient?.onClose((res) => {
       console.log('tcpClient.onClose', res)
       this.deviceInfo.isConnectTcp = false
     })
@@ -337,7 +340,7 @@ export class WifiSocket {
   }
 
   closeTcp() {
-    tcpClient.close()
+    tcpClient?.close()
   }
 
   initUdpSocket() {
@@ -438,7 +441,7 @@ export class WifiSocket {
         }
 
         params.method === 'TCP'
-          ? tcpClient.write(sendMsg)
+          ? tcpClient?.write(sendMsg)
           : udpClient?.send({
               address: '255.255.255.255',
               port: this.deviceInfo.udpPort,
@@ -486,7 +489,7 @@ export class WifiSocket {
 
     if (this.deviceInfo.isConnectTcp) {
       console.log('tcpClient.close()')
-      tcpClient.close()
+      tcpClient?.close()
     }
 
     udpClient?.close()
