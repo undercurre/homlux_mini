@@ -51,9 +51,9 @@ export const roomStore = observable({
         } else if (device.proType === proType.switch) {
           device.switchInfoDTOList.forEach((switchItem) => {
             if (
-              !switchItem.lightRelId &&
+              // !switchItem.lightRelId &&
               device.mzgdPropertyDTOList[switchItem.switchId].OnOff &&
-              !device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode
+              device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode === 0
             ) {
               deviceLightOnNum++
             }
