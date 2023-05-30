@@ -897,7 +897,7 @@ ComponentWithComputed({
         }
       })
     },
-    handleLevelDrag: throttle(function (this: any, e: { detail: { value: number } }) {
+    handleLevelDrag: throttle(function (this: IAnyObject, e: { detail: { value: number } }) {
       this.setData({
         'lightInfoInner.Level': e.detail.value,
       })
@@ -920,7 +920,7 @@ ComponentWithComputed({
       })
       this.lightSendDeviceControl('colorTemp')
     },
-    handleColorTempDrag: throttle(function (this: any, e: { detail: { value: number } }) {
+    handleColorTempDrag: throttle(function (this: IAnyObject, e: { detail: { value: number } }) {
       this.setData({
         'lightInfoInner.ColorTemp': e.detail.value,
       })

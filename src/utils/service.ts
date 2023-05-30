@@ -17,6 +17,7 @@ export function logout() {
 // WS连接
 let socketTask: WechatMiniprogram.SocketTask | null = null
 let socketIsConnect = false
+let connectTimeId = 0 // 连接socket的延时器
 
 export function startWebsocketService() {
   if (!storage.get<string>('token')) {
@@ -53,7 +54,9 @@ export function startWebsocketService() {
   })
   socketTask.onError((err) => {
     Logger.error('socket错误onError：', err)
-    setTimeout(() => {
+    // 防止重复收到error事件，重复触发重连
+    connectTimeId = setTimeout(() => {
+      clearTimeout(connectTimeId)
       Logger.log('socket重连')
       startWebsocketService()
     }, 5000)
@@ -66,7 +69,8 @@ function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {
   // 4001: token校验不通过
   if (e.code !== 1000 && e.code !== 4001) {
     Logger.error('socket异常关闭连接', e)
-    setTimeout(() => {
+    connectTimeId = setTimeout(() => {
+      clearTimeout(connectTimeId)
       Logger.log('socket重连')
       startWebsocketService()
     }, 5000)

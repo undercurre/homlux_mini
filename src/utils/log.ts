@@ -6,15 +6,15 @@ const log = wx.getRealtimeLogManager()
 //  * 日志工具
 //  */
 export const Logger = {
-  debug(...args: any[]) {
+  debug(...args: unknown[]) {
     console.debug(`【${dayjs().format('HH:mm:ss.SSS')}】`, ...args)
     log.warn(args)
   },
-  log(...args: any[]) {
+  log(...args: unknown[]) {
     console.log(`【${dayjs().format('HH:mm:ss.SSS')}】`, ...args)
-    log.info(`【${dayjs().format('HH:mm:ss.SSS')}】`, args)
+    log.info(args)
   },
-  error(...args: any[]) {
+  error(...args: unknown[]) {
     console.error(`【${dayjs().format('HH:mm:ss.SSS')}】`, ...args)
     log.error(args)
   },

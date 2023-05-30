@@ -35,7 +35,7 @@ export function unique(arr: Array<IAnyObject>, key: string) {
  * @param a
  * @param b
  */
-export function isArrEqual(a: Array<any>, b: Array<any>) {
+export function isArrEqual(a: Array<unknown>, b: Array<unknown>) {
   const m = new Map()
   a.forEach((o) => m.set(o, (m.get(o) || 0) + 1))
   b.forEach((o) => m.set(o, (m.get(o) || 0) - 1))
@@ -58,11 +58,11 @@ export function rpx2px(rpx: number) {
  * @param immediate 第一次是否立即执行
  * FIXME 实际引用时，this类型无法推导，暂时直接在参数中指定为 any
  */
-export function throttle<T extends (...args: any) => any>(fn: T, wait = 500, immediate = true) {
+export function throttle<T extends (...args: any[]) => unknown>(fn: T, wait = 500, immediate = true) {
   let lastInvoke = 0
   let timeId = 0
 
-  return function (this: any, ...args: any[]) {
+  return function (this: IAnyObject, ...args: unknown[]) {
     const current = Date.now()
 
     if ((immediate && lastInvoke === 0) || current - lastInvoke > wait) {
@@ -93,5 +93,5 @@ export function _get(obj: object, path: string, defaultVal = undefined) {
     formatPath = path.replace(/\[/g, '.').replace(/\]/g, '').split('.')
   }
 
-  return formatPath.reduce((o: any, k) => (o ?? {})[k], obj) ?? defaultVal
+  return formatPath.reduce((o: IAnyObject, k) => (o ?? {})[k], obj) ?? defaultVal
 }

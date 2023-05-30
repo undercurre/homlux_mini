@@ -495,7 +495,7 @@ ComponentWithComputed({
     /**
      * 拖拽时触发的卡片移动效果
      */
-    movableChange: throttle(function (this: any, e: WechatMiniprogram.TouchEvent) {
+    movableChange: throttle(function (this: IAnyObject, e: WechatMiniprogram.TouchEvent) {
       const targetOrder = getIndex(e.detail.x, e.detail.y)
       if (this.data.placeholder.orderNum !== targetOrder && e.detail.source === 'touch') {
         const oldOrder = this.data.placeholder.orderNum
