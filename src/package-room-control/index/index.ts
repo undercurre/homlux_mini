@@ -1014,11 +1014,9 @@ ComponentWithComputed({
 
       // 取消普通选择
       if (this.data.checkedList?.length) {
-        diffData.checkedList = []
-        diffData.controlPopup = false
+        this.handleScreenTap()
       }
       this.setData(diffData)
-      device.select = false
       device.editSelect = true
       this.updateDeviceList(device)
 
