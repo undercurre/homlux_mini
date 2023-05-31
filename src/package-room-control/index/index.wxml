@@ -46,7 +46,7 @@
   <view wx:if="{{roomHasSubDevice}}" class="w-750rpx flex flex-col items-center">
     <view class="w-720rpx">
       <!-- 设备卡片列表 -->
-      <scroll-view scroll-y enhanced show-scrollbar="{{false}}" style="height: {{ scrollViewHeight }}px;" bindscroll="onPageScroll">
+      <scroll-view scroll-y enhanced show-scrollbar="{{false}}" style="height: {{ scrollViewHeight }}px;" bindscroll="onPageScroll" scroll-top="{{scrollTop}}" scroll-with-animation="{{true}}">
         <!-- 场景 -->
         <view id="scene-card" wx:if="{{roomHasSubDevice}}" class="scene-card w-686rpx h-96rpx flex items-center rounded-24rpx mt-20rpx ml-16rpx mb-12rpx relative z-114" bindtap="handleSceneTap">
           <image src="/package-room-control/assets/img/scene.png" class="absolute left-0 top-0 w-686rpx h-96rpx scene-card-bg" />

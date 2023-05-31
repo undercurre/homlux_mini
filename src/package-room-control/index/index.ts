@@ -809,27 +809,21 @@ ComponentWithComputed({
       diffData.lightStatus = lightStatus
       diffData.controlPopup = toCheck
 
-      // 更新视图
-      this.setData(diffData)
-
-      // TODO
-      this.updateSelectType()
-
-      // 弹起的popup不能挡住卡片
+      // 弹起popup后，选中卡片滚动到视图中央，以免被遮挡
       const divideRpxByPx = storage.get<number>('divideRpxByPx')
         ? (storage.get<number>('divideRpxByPx') as number)
         : 0.5
       const windowHeight = storage.get<number>('windowHeight') as number
       const bottom = windowHeight - 716 * divideRpxByPx
       const top = bottom - 216 * divideRpxByPx
-      const scrollTop = this.data.scrollTop + e.detail.clientRect.top - top + 4
-      wx.pageScrollTo({
-        scrollTop,
-        duration: 200,
-        fail(res) {
-          console.log('scroll-fail', res)
-        },
-      })
+
+      diffData.scrollTop = this.data.scrollTop + e.detail.clientRect.top - top + 4
+
+      // 更新视图
+      this.setData(diffData)
+
+      // TODO
+      this.updateSelectType()
     },
 
     // 卡片点击时，按品类调用对应方法
