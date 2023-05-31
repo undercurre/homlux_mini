@@ -203,7 +203,6 @@ ComponentWithComputed({
         (storage.get<number>('windowHeight') as number) -
         (storage.get<number>('statusBarHeight') as number) -
         (storage.get<number>('bottomBarHeight') as number) - // IPX
-        rpx2px(140) - // 创建场景
         (storage.get<number>('navigationBarHeight') as number)
       if (data.controlPopup) {
         baseHeight -= rpx2px(600)
@@ -342,8 +341,13 @@ ComponentWithComputed({
     },
 
     // 页面滚动
-    onPageScroll(e: { scrollTop: number }) {
-      this.data.scrollTop = e.scrollTop
+    onPageScroll(e: { detail: { scrollTop: number } }) {
+      this.data.scrollTop = e.detail.scrollTop
+      if (e.detail.scrollTop !== 0) {
+        this.setData({
+          showAddSceneTips: false,
+        })
+      }
     },
 
     onUnload() {
