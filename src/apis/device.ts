@@ -85,27 +85,6 @@ export async function queryDeviceOnlineStatus(
 }
 
 /**
- * 根据产品id查网关产品信息
- */
-export async function queryProtypeInfo(
-  data: { pid?: string; proType?: string; mid?: string },
-  options?: { loading?: boolean },
-) {
-  return await mzaioRequest.post<{
-    icon: string
-    productId: string
-    productName: string
-    proType: string
-    switchNum: number
-  }>({
-    log: true,
-    loading: options?.loading ?? false,
-    url: '/v1/device/queryProtypeInfo',
-    data,
-  })
-}
-
-/**
  * 配网-绑定
  */
 export async function bindDevice(
