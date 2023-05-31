@@ -29,6 +29,7 @@ type DeviceCard = Device.DeviceItem & {
   type: string
   select: boolean
   editSelect: boolean
+  linkSceneName: string
 }
 
 /**
@@ -235,9 +236,6 @@ ComponentWithComputed({
       //   console.debug('setUpdatePerformanceListener', res, res.pendingStartTimestamp - res.updateStartTimestamp, res.updateEndTimestamp - res.updateStartTimestamp, dayjs().format('YYYY-MM-DD HH:mm:ss'))
       // })
 
-      // 再更新一遍数据
-      await this.reloadData()
-
       // ws消息处理
       emitter.on('wsReceive', async (e) => {
         if (e.result.eventType === WSEventType.device_property) {
@@ -323,6 +321,12 @@ ComponentWithComputed({
           .exec()
       }
     },
+
+    async onShow() {
+      // 再更新一遍数据
+      await this.reloadData()
+    },
+
     async reloadData() {
       try {
         await Promise.all([
@@ -362,6 +366,23 @@ ComponentWithComputed({
       this.setData({
         showDeviceOffline: false,
       })
+    },
+    // 根据场景信息，比较出关联场景名字
+    getLinkSceneName(device: Device.DeviceItem) {
+      if (device?.proType !== proType.switch || !device.switchInfoDTOList || !device.switchInfoDTOList[0]) {
+        return ''
+      }
+      const switchId = device.switchInfoDTOList[0].switchId
+      const switchSceneConditionMap = deviceStore.switchSceneConditionMap
+      const sceneIdMp = sceneStore.sceneIdMp
+      if (
+        switchSceneConditionMap[`${device.deviceId}:${switchId}`] &&
+        sceneIdMp[switchSceneConditionMap[`${device.deviceId}:${switchId}`]] &&
+        sceneIdMp[switchSceneConditionMap[`${device.deviceId}:${switchId}`]].sceneName
+      ) {
+        return sceneIdMp[switchSceneConditionMap[`${device.deviceId}:${switchId}`]].sceneName.slice(0, 4)
+      }
+      return ''
     },
     /**
      * @description 初始化或更新设备列表
@@ -444,6 +465,7 @@ ComponentWithComputed({
             type: proName[device.proType],
             select: this.data.checkedList.includes(device.uniId),
             editSelect: this.data.editSelectList.includes(device.uniId),
+            linkSceneName: this.getLinkSceneName(device),
           }))
 
         if (!this.data.deviceListInited) {

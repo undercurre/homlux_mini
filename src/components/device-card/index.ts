@@ -1,13 +1,10 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { deviceStore, sceneStore } from '../../store/index'
-// import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { proName, proType } from '../../config/index'
 let throttleTimer = 0
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
   },
-  // behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding] })],
   /**
    * 组件的属性列表
    */
@@ -67,15 +64,6 @@ ComponentWithComputed({
       }
       return ''
     },
-    isLinkScene(data) {
-      if (!data.deviceInfo || !data.deviceInfo.switchInfoDTOList || !data.deviceInfo.switchInfoDTOList[0]) {
-        return false
-      }
-      const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
-      return (
-        data.deviceInfo.proType === proType.switch && data.deviceInfo.mzgdPropertyDTOList[switchId]?.ButtonMode === 2
-      )
-    },
     controlBtnPic(data) {
       if (data.deviceInfo.proType === proType.light) {
         return data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
@@ -91,22 +79,6 @@ ComponentWithComputed({
         return data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff
           ? '/assets/img/base/power-on.png'
           : '/assets/img/base/power-off.png'
-      }
-      return ''
-    },
-    linkSceneName(data) {
-      if (!data.deviceInfo || !data.deviceInfo.switchInfoDTOList || !data.deviceInfo.switchInfoDTOList[0]) {
-        return ''
-      }
-      const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
-      const switchSceneConditionMap = deviceStore.switchSceneConditionMap
-      const sceneIdMp = sceneStore.sceneIdMp
-      if (
-        switchSceneConditionMap[`${data.deviceInfo.deviceId}:${switchId}`] &&
-        sceneIdMp[switchSceneConditionMap[`${data.deviceInfo.deviceId}:${switchId}`]] &&
-        sceneIdMp[switchSceneConditionMap[`${data.deviceInfo.deviceId}:${switchId}`]].sceneName
-      ) {
-        return sceneIdMp[switchSceneConditionMap[`${data.deviceInfo.deviceId}:${switchId}`]].sceneName.slice(0, 4)
       }
       return ''
     },
