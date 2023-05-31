@@ -90,67 +90,6 @@ export const deviceStore = observable({
   },
 
   /**
-   * 关联设备关系映射
-   * deviceId -> {lightRelId: string}
-   * deviceId:switchId -> {switchRelId?: string;lightRelId?: string}
-   */
-  get deviceRelMap(): Record<string, { switchRelId?: string; lightRelId?: string }> {
-    const map = {} as Record<string, { switchRelId?: string; lightRelId?: string }>
-    deviceStore.allRoomDeviceFlattenList.forEach((device) => {
-      if (device.proType === proType.switch) {
-        const ref = {} as { switchRelId?: string; lightRelId?: string }
-        if (device.switchInfoDTOList[0].switchRelId) {
-          ref.switchRelId = device.switchInfoDTOList[0].switchRelId
-        }
-        if (device.switchInfoDTOList[0].lightRelId) {
-          ref.lightRelId = device.switchInfoDTOList[0].lightRelId
-        }
-        if (Object.keys(ref).length !== 0) {
-          map[device.uniId] = ref
-        }
-      } else {
-        if (device.lightRelId) {
-          map[device.deviceId] = { lightRelId: device.lightRelId }
-        }
-      }
-    })
-    return map
-  },
-
-  /**
-   * relId 和设备关联映射
-   */
-  get relDeviceMap(): Record<string, string[]> {
-    const map = {} as Record<string, string[]>
-    deviceStore.allRoomDeviceFlattenList.forEach((device) => {
-      if (device.lightRelId) {
-        if (map[device.lightRelId]) {
-          map[device.lightRelId].push(device.uniId)
-        } else {
-          map[device.lightRelId] = [device.uniId]
-        }
-      }
-      if (device.uniId.includes(':')) {
-        if (device.switchInfoDTOList[0].lightRelId) {
-          if (map[device.switchInfoDTOList[0].lightRelId]) {
-            map[device.switchInfoDTOList[0].lightRelId].push(device.uniId)
-          } else {
-            map[device.switchInfoDTOList[0].lightRelId] = [device.uniId]
-          }
-        }
-        if (device.switchInfoDTOList[0].switchRelId) {
-          if (map[device.switchInfoDTOList[0].switchRelId]) {
-            map[device.switchInfoDTOList[0].switchRelId].push(device.uniId)
-          } else {
-            map[device.switchInfoDTOList[0].switchRelId] = [device.uniId]
-          }
-        }
-      }
-    })
-    return map
-  },
-
-  /**
    * 关联场景关系映射(deviceActions的关联)
    * switchUniId -> sceneId
    */
