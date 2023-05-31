@@ -389,7 +389,7 @@ ComponentWithComputed({
      * @param e 设备对象，或包裹设备对象的事件
      */
     async updateDeviceList(e?: DeviceCard & { detail?: DeviceCard }) {
-      console.log('[updateDeviceList Begin]', e?.detail || '')
+      console.log('[updateDeviceList Begin]', e?.detail ?? e ?? '')
 
       // 单项更新
       if (e?.deviceId || e?.detail?.deviceId) {
@@ -974,11 +974,26 @@ ComponentWithComputed({
     },
     /** 点击空位收起弹窗 */
     handleScreenTap() {
-      if (this.data.controlPopup) {
-        this.setData({
-          controlPopup: false,
-        })
+      if (!this.data.controlPopup) {
+        return
       }
+
+      // 更新选中状态样式
+      const deviceId = this.data.checkedList[0]
+      const device = {
+        deviceId,
+        uniId: deviceId,
+        select: false,
+      } as DeviceCard
+      device.deviceId = this.data.checkedList[0]
+      device.uniId = this.data.checkedList[0]
+      this.updateDeviceList(device)
+
+      // 收起弹窗
+      this.setData({
+        checkedList: [],
+        controlPopup: false,
+      })
     },
     // 长按选择，进入编辑状态
     handleLongpress(e: { detail: DeviceCard }) {
