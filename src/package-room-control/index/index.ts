@@ -627,6 +627,12 @@ ComponentWithComputed({
         Toast('仅创建者与管理员可创建场景')
         return
       }
+
+      wx.navigateTo({
+        url: '/package-room-control/scene-create/index',
+      })
+
+      return
       // 补充actions
       const deviceMap = deviceStore.deviceMap
       const switchSceneConditionMap = deviceStore.switchSceneConditionMap
