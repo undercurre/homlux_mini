@@ -85,27 +85,6 @@ export async function queryDeviceOnlineStatus(
 }
 
 /**
- * 根据产品id查网关产品信息
- */
-export async function queryProtypeInfo(
-  data: { pid?: string; proType?: string; mid?: string },
-  options?: { loading?: boolean },
-) {
-  return await mzaioRequest.post<{
-    icon: string
-    productId: string
-    productName: string
-    proType: string
-    switchNum: number
-  }>({
-    log: true,
-    loading: options?.loading ?? false,
-    url: '/v1/device/queryProtypeInfo',
-    data,
-  })
-}
-
-/**
  * 配网-绑定
  */
 export async function bindDevice(
@@ -303,61 +282,6 @@ export async function saveDeviceOrder(data: Device.OrderSaveData, options?: { lo
     log: true,
     loading: options?.loading ?? false,
     url: '/v1/device/saveDeviceNum',
-    data,
-  })
-}
-
-/**
- * deviceIds: 关联设备ID:格式 1 按键开关 deviceId-switchId 2 子设备 deviceId
- * relType: 关联类型: 0:关联灯类型 1:关联开关类型
- */
-export async function createAssociated(
-  data: { deviceIds: string[]; relType: '0' | '1' },
-  options?: { loading?: boolean },
-) {
-  return await mzaioRequest.post<IAnyObject>({
-    log: true,
-    loading: options?.loading ?? false,
-    url: '/v1/device/createAssociated',
-    data,
-  })
-}
-
-export async function updateAssociated(
-  data: {
-    relType: '0' | '1'
-    lightRelId?: string
-    switchRelId?: string
-    deviceIds: string[]
-  },
-  options?: { loading?: boolean },
-) {
-  return await mzaioRequest.post<IAnyObject>({
-    log: true,
-    loading: options?.loading ?? false,
-    url: '/v1/device/updateAssociated',
-    data,
-  })
-}
-
-/**
- * 删除整个关联或者部分设备关联
- * 如果传入deviceIds，删除deviceIds中的关联
- * 如果不传deviceIds，删除整个lightRelId或者switchRelId关联
- */
-export async function delAssociated(
-  data: {
-    relType: '0' | '1'
-    lightRelId?: string
-    switchRelId?: string
-    deviceIds?: string[]
-  },
-  options?: { loading?: boolean },
-) {
-  return await mzaioRequest.post<IAnyObject>({
-    log: true,
-    loading: options?.loading ?? false,
-    url: '/v1/device/delAssociated',
     data,
   })
 }

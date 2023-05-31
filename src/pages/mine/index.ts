@@ -31,7 +31,6 @@ Component({
       voiceControl: '/package-mine/voice-control/index',
       ota: '/package-mine/ota/index',
       deviceReplace: '/package-mine/device-replace/index',
-      auth: '/package-mine/auth/index',
       feedback: '/package-mine/feedback/index',
       about: '/package-protocol/protocol-list/index',
     },

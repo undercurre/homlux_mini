@@ -12,7 +12,6 @@ declare namespace Device {
     /**
      * 灯如果关联了开关，会有一个关联id
      */
-    lightRelId: string
     gatewayId: string
     gatewayName: string
     /** 方法列表 */
@@ -59,10 +58,6 @@ declare namespace Device {
 
   interface MzgdPanelSwitchInfoDTO {
     houseId: string
-    /** 是否已经关联 */
-    isRel: boolean
-    /** 开关关联灯id */
-    lightRelId: string
     orderNum: number
     /** 面板Id */
     panelId: string
@@ -74,8 +69,6 @@ declare namespace Device {
     switchId: string
     /** 开关名称 */
     switchName: string
-    /** 开关关联开关id */
-    switchRelId: string
   }
 
   interface OrderSaveData {
