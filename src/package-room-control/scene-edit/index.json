@@ -1,7 +1,7 @@
 {
   "component": true,
   "usingComponents": {
-    "link-popup": "../components/link-popup/index",
+    "select-card-popup": "../../components/select-card-popup/index",
     "edit-icon-popup": "./components/edit-icon-popup/index",
     "edit-name-popup": "./components/edit-name-popup/index",
     "scene-light-edit-popup": "../components/scene-light-edit-popup/index",

@@ -170,6 +170,19 @@ ComponentWithComputed({
     linkTypeDesc(data) {
       return descMap[data.linkType]
     },
+
+    selectCardPopupTitle(data) {
+      let title = ''
+
+      if (data.selectLinkType === 'light') {
+        title = '关联智能灯'
+      } else if (data.selectLinkType === 'switch') {
+        title = '关联智能开关'
+      } else if (data.selectLinkType === 'scene') {
+        title = '关联场景'
+      }
+      return title
+    },
   },
 
   watch: {
@@ -413,6 +426,7 @@ ComponentWithComputed({
         showLinkPopup: true,
       })
     },
+
     async handleLinkSelect(e: { detail: string }) {
       const deviceMap = deviceStore.allRoomDeviceFlattenMap
       const switchUniId = this.data.checkedList[0]

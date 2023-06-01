@@ -3,6 +3,10 @@ Component({
    * 组件的属性列表
    */
   properties: {
+    size: {
+      type: Number,
+      value: 60,
+    },
     text: {
       type: String,
       value: '',

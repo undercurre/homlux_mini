@@ -1,14 +1,8 @@
 import { deviceStore, homeStore, sceneStore } from '../../store/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { maxColorTempK, minColorTempK, proType } from '../../config/index'
+import { proType } from '../../config/index'
 import {
-  deleteScene,
   findDevice,
-  updateScene,
-  getRelLampInfo,
-  getRelDeviceInfo,
-  delLampAndSwitchAssociated,
-  delSwitchAndSwitchAssociated,
 } from '../../apis/index'
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
@@ -27,7 +21,14 @@ Component({
    * 组件的初始数据
    */
   data: {
+    cacaheDeviceList: [], // 缓存选中前的设备状态
     deviceList: [],
+  },
+
+  lifetimes: {
+    ready() {
+
+    },
   },
 
   /**

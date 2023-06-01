@@ -107,6 +107,13 @@
           "query": "",
           "launchMode": "default",
           "scene": null
+        },
+        {
+          "name": "创建场景",
+          "pathName": "package-room-control/scene-create/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
         }
       ]
     }

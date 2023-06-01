@@ -36,7 +36,7 @@
     <view style="height: calc(96rpx - env(safe-area-inset-bottom))"></view>
   </view>
 
-  <link-popup show="{{showLinkPopup}}" list="{{list}}" selectList="{{linkSelectList}}" linkType="switch" bind:select="handleLinkSelect" bind:close="handleLinkPopupClose" bind:confirm="handleLinkPopupConfirm"></link-popup>
+  <select-card-popup show="{{showLinkPopup}}" title="关联智能开关" showCancel="{{false}}" list="{{list}}" selectList="{{linkSelectList}}" bind:select="handleLinkSelect" bind:close="handleLinkPopupClose" bind:confirm="handleLinkPopupConfirm"></select-card-popup>
 
   <van-toast id="van-toast" />
   <van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />
