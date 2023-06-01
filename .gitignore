@@ -6,4 +6,4 @@ yalc.lock
 project.private.config.json
 
 # 自动生成的文件
-/src/config/meta.ts
+src/meta.ts

@@ -22,6 +22,7 @@
         "member-manage/index",
         "accept-invitation/index",
         "device-replace/index",
+        "auth/index",
         "ota/index",
         "device-manage/index",
         "device-manage/device-detail/index",

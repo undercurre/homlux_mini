@@ -231,7 +231,7 @@ Component({
         const item = list.find((l) => l.id === device.deviceId)
         const index = list.findIndex((l) => l.id === device.deviceId)
         if (index !== -1) {
-          const diffData = {} as any
+          const diffData = {} as IAnyObject
           diffData[`list[${index}].data.onLineStatus`] = item?.data.onLineStatus
           diffData[`list[${index}].data.select`] = item?.data.select
           diffData[`list[${index}].data.mzgdPropertyDTOList[1].OnOff`] = item?.data.mzgdPropertyDTOList[1].OnOff

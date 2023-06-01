@@ -1,7 +1,7 @@
 // pages/protocalList/index.ts
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { storage, setCurrentEnv, Logger } from '../../utils/index'
-import meta from '../../config/meta'
+import meta from '../../meta'
 
 Component({
   behaviors: [pageBehavior],

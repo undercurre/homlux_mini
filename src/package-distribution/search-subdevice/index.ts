@@ -89,7 +89,6 @@ ComponentWithComputed({
       bleDevicesBinding.store.startBleDiscovery()
     },
     detached() {
-      Logger.log('附近子设备页detached', this.data.status)
       this.stopGwAddMode()
       bleDevicesBinding.store.stopBLeDiscovery()
     },
@@ -101,7 +100,7 @@ ComponentWithComputed({
       this.createSelectorQuery()
         .selectAll('#canvas')
         .node((res) => {
-          const canvas = (res as any)[0].node
+          const canvas = (res as IAnyObject)[0].node
           const context = canvas.getContext('2d')
 
           canvas.width = 400

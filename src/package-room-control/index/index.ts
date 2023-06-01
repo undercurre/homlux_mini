@@ -13,17 +13,45 @@ import {
 } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { controlDevice, execScene } from '../../apis/index'
+import { controlDevice, execScene, saveDeviceOrder } from '../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
-import { storage, emitter, WSEventType, rpx2px, _get } from '../../utils/index'
-import { maxColorTempK, minColorTempK, proName, proType, LIST_PAGE } from '../../config/index'
+import { storage, emitter, WSEventType, rpx2px, _get, throttle } from '../../utils/index'
+import { maxColorTempK, minColorTempK, proName, proType, LIST_PAGE, CARD_W, CARD_H } from '../../config/index'
 
 /** 接口请求节流定时器，定时时间2s */
 let requestThrottleTimer = 0
 let hasUpdateInRequestTimer = false
 
-type DeviceCard = Device.DeviceItem & { select: boolean; editSelect: boolean } & {
-  clientRect: WechatMiniprogram.ClientRect
+type DeviceCard = Device.DeviceItem & {
+  x: string
+  y: string
+  orderNum: number
+  type: string
+  select: boolean
+  editSelect: boolean
+  linkSceneName: string
+}
+
+/**
+ * 根据index计算坐标位置
+ * @returns {x, y}
+ */
+function getPos(index: number): Record<'x' | 'y', string> {
+  // console.log('getPos', index)
+  const x = `${(index % 4) * CARD_W}px`
+  const y = `${Math.floor(index / 4) * CARD_H}px`
+  return { x, y }
+}
+
+/**
+ * 根据坐标位置计算index
+ * @returns index
+ */
+function getIndex(x: number, y: number) {
+  const maxIndex = deviceStore.deviceFlattenList.length - 1 // 防止越界
+  const ix = Math.floor((x + CARD_W / 2) / CARD_W)
+  const iy = Math.floor((y + CARD_H / 2) / CARD_H)
+  return Math.min(ix + 4 * iy, maxIndex)
 }
 
 ComponentWithComputed({
@@ -39,22 +67,12 @@ ComponentWithComputed({
       (storage.get<number>('statusBarHeight') as number) +
       (storage.get<number>('navigationBarHeight') as number) +
       'px',
-    recycleViewWidth: rpx2px(720), // recycle-view 宽度
-    // rpx2px(232) * 1,
-    recycleViewHeight:
-      (storage.get<number>('windowHeight') as number) -
-      (storage.get<number>('statusBarHeight') as number) -
-      (storage.get<number>('bottomBarHeight') as number) - // IPX
-      rpx2px(170) - // 创建场景
-      (storage.get<number>('navigationBarHeight') as number),
     /** 展示点中离线设备弹窗 */
     showDeviceOffline: false,
     /** 点击的离线设备的信息 */
     officeDeviceInfo: {} as DeviceCard,
     /** 控制面板 */
     controlPopup: false,
-    /** 弹出控制面板时，页面底部留出空位 */
-    popupPlaceholder: false,
     showAddScenePopup: false,
     // 设备卡片列表，二维数组
     devicePageList: [] as DeviceCard[][],
@@ -72,15 +90,21 @@ ComponentWithComputed({
     /** 场景提示部分位置 */
     sceneTipsPositionStyle: '',
     scrollTop: 0,
-    dragging: false,
-    /** 拖动过程中是否有数据更新，拖动完成后判断是否更新列表 */
-    // hasUpdate: false,
     checkedList: [] as string[], // 已选择设备的id列表
     editSelectList: [] as string[], // 编辑状态下，已勾选的设备id列表
     editSelectMode: false, // 是否编辑状态
     lightStatus: {} as Record<string, number>, // 当前选择的灯具的状态
     checkedType: [] as string[], // 已选择设备的类型
     deviceListInited: false, // 设备列表是否初始化完毕
+    isMoving: false, // 是否正在拖拽中
+    hasMoved: false, // 排序变更过
+    placeholder: {
+      orderNum: -1, // 占位符当前对应的排序
+      index: -1, // 占位符当前对应元素的数据索引
+      groupIndex: -1,
+      x: '',
+      y: '',
+    },
   },
 
   computed: {
@@ -173,6 +197,26 @@ ComponentWithComputed({
     canAddDevice(data) {
       return data.isCreator || data.isAdmin
     },
+    // 可滚动区域高度
+    scrollViewHeight(data) {
+      let baseHeight =
+        (storage.get<number>('windowHeight') as number) -
+        (storage.get<number>('statusBarHeight') as number) -
+        (storage.get<number>('bottomBarHeight') as number) - // IPX
+        (storage.get<number>('navigationBarHeight') as number)
+      if (data.controlPopup) {
+        baseHeight -= rpx2px(600)
+      } else if (data.editSelectMode) {
+        baseHeight -= rpx2px(368)
+      }
+      return baseHeight
+    },
+
+    // 可移动区域高度
+    movableViewStyle() {
+      return `height: ${Math.ceil(deviceStore.deviceFlattenList.length / 4) * 236}rpx;
+        width: 600rpx;`
+    },
   },
 
   watch: {
@@ -190,9 +234,6 @@ ComponentWithComputed({
       // this.setUpdatePerformanceListener({withDataPaths: true}, (res) => {
       //   console.debug('setUpdatePerformanceListener', res, res.pendingStartTimestamp - res.updateStartTimestamp, res.updateEndTimestamp - res.updateStartTimestamp, dayjs().format('YYYY-MM-DD HH:mm:ss'))
       // })
-
-      // 再更新一遍数据
-      await this.reloadData()
 
       // ws消息处理
       emitter.on('wsReceive', async (e) => {
@@ -279,6 +320,12 @@ ComponentWithComputed({
           .exec()
       }
     },
+
+    async onShow() {
+      // 再更新一遍数据
+      await this.reloadData()
+    },
+
     async reloadData() {
       try {
         await Promise.all([
@@ -294,8 +341,13 @@ ComponentWithComputed({
     },
 
     // 页面滚动
-    onPageScroll(e: { scrollTop: number }) {
-      this.data.scrollTop = e.scrollTop
+    onPageScroll(e: { detail: { scrollTop: number } }) {
+      this.data.scrollTop = e.detail.scrollTop
+      if (e.detail.scrollTop !== 0) {
+        this.setData({
+          showAddSceneTips: false,
+        })
+      }
     },
 
     onUnload() {
@@ -319,12 +371,29 @@ ComponentWithComputed({
         showDeviceOffline: false,
       })
     },
+    // 根据场景信息，比较出关联场景名字
+    getLinkSceneName(device: Device.DeviceItem) {
+      if (device?.proType !== proType.switch || !device.switchInfoDTOList || !device.switchInfoDTOList[0]) {
+        return ''
+      }
+      const switchId = device.switchInfoDTOList[0].switchId
+      const switchSceneConditionMap = deviceStore.switchSceneConditionMap
+      const sceneIdMp = sceneStore.sceneIdMp
+      if (
+        switchSceneConditionMap[`${device.deviceId}:${switchId}`] &&
+        sceneIdMp[switchSceneConditionMap[`${device.deviceId}:${switchId}`]] &&
+        sceneIdMp[switchSceneConditionMap[`${device.deviceId}:${switchId}`]].sceneName
+      ) {
+        return sceneIdMp[switchSceneConditionMap[`${device.deviceId}:${switchId}`]].sceneName.slice(0, 4)
+      }
+      return ''
+    },
     /**
      * @description 初始化或更新设备列表
      * @param e 设备对象，或包裹设备对象的事件
      */
     async updateDeviceList(e?: DeviceCard & { detail?: DeviceCard }) {
-      console.log('[updateDeviceList]', e || '不带参数')
+      console.log('[updateDeviceList Begin]', e?.detail ?? e ?? '')
 
       // 单项更新
       if (e?.deviceId || e?.detail?.deviceId) {
@@ -344,13 +413,6 @@ ComponentWithComputed({
             // review 细致到字段的diff
             const renderList = ['deviceName', 'onLineStatus', 'select', 'editSelect'] // 需要刷新界面的字段
 
-            // deserted 精确到字段的方法，或因数据结构太深，会导致mzgdPropertyDTOList下部分字段丢失
-            // if (device!.mzgdPropertyDTOList) {
-            // const eq = originDevice.proType === proType.light ? 1 : originDevice.uniId.split(':')[1]
-            // renderList.push(`mzgdPropertyDTOList[${eq}].OnOff`)
-            // renderList.push(`mzgdPropertyDTOList[${eq}].Level`) // 暂不在界面上体现，只是统一更新数据
-            // renderList.push(`mzgdPropertyDTOList[${eq}].ColorTemp`) // 暂不在界面上体现
-            // }
             renderList.forEach((key) => {
               const newVal = _get(device!, key)
               const originVal = _get(originDevice, key)
@@ -360,7 +422,7 @@ ComponentWithComputed({
               }
             })
 
-            // 如果mzgdPropertyDTOList字段存在，则全部覆盖更新
+            // 如果mzgdPropertyDTOList、switchInfoDTOList字段存在，则覆盖更新
             if (device!.mzgdPropertyDTOList) {
               const eq = originDevice.proType === proType.light ? 1 : originDevice.uniId.split(':')[1]
               const newVal = {
@@ -368,6 +430,13 @@ ComponentWithComputed({
                 ...device?.mzgdPropertyDTOList[eq],
               }
               diffData[`devicePageList[${groupIndex}][${index}].mzgdPropertyDTOList[${eq}]`] = newVal
+            }
+            if (device!.switchInfoDTOList) {
+              const newVal = {
+                ...originDevice.switchInfoDTOList[0],
+                ...device?.switchInfoDTOList[0],
+              }
+              diffData[`devicePageList[${groupIndex}][${index}].switchInfoDTOList[0]`] = newVal
             }
 
             if (Object.keys(diffData).length) {
@@ -388,14 +457,20 @@ ComponentWithComputed({
         }
 
         const _list = flattenList
-          .map((device) => ({
+          // 接口返回开关面板数据以设备为一个整体，需要前端拆开后排序
+          // 先排序再映射字段
+          .sort((a, b) => a.orderNum - b.orderNum)
+          .map((device, index) => ({
             ...device,
+            ...getPos(index),
+            // !! 整理orderNum，从0开始
+            // TRICK 排序过程orderNum代替index使用，而不必改变数组的真实索引
+            orderNum: index,
             type: proName[device.proType],
             select: this.data.checkedList.includes(device.uniId),
             editSelect: this.data.editSelectList.includes(device.uniId),
+            linkSceneName: this.getLinkSceneName(device),
           }))
-          // 接口返回开关面板数据以设备为一个整体，需要前端拆开后排序
-          .sort((a, b) => a.orderNum - b.orderNum)
 
         if (!this.data.deviceListInited) {
           console.log('[updateDeviceList]列表初始化')
@@ -421,6 +496,149 @@ ComponentWithComputed({
           deviceListInited: true,
         })
         console.log('[updateDeviceList]列表更新完成', this.data.devicePageList)
+      }
+    },
+
+    // 开始拖拽，初始化placeholder
+    movableTouchStart(e: WechatMiniprogram.TouchEvent) {
+      const orderNum = e.currentTarget.dataset.ordernum // ! 注意大小写
+      const groupIndex = e.currentTarget.dataset.group
+      const index = e.currentTarget.dataset.index
+
+      const diffData = {} as IAnyObject
+      diffData.isMoving = true
+      diffData.placeholder = {
+        ...getPos(orderNum),
+        orderNum,
+        groupIndex,
+        index,
+      }
+      console.log('movableTouchStart:', diffData)
+
+      this.setData(diffData)
+    },
+
+    /**
+     * 拖拽时触发的卡片移动效果
+     */
+    movableChange: throttle(function (this: IAnyObject, e: WechatMiniprogram.TouchEvent) {
+      const targetOrder = getIndex(e.detail.x, e.detail.y)
+      if (this.data.placeholder.orderNum !== targetOrder && e.detail.source === 'touch') {
+        const oldOrder = this.data.placeholder.orderNum
+        console.log('movableChange: %d-->%d', oldOrder, targetOrder, e)
+
+        // 更新placeholder的位置
+        const dPos = getPos(targetOrder)
+        const diffData = {} as IAnyObject
+        diffData[`placeholder.orderNum`] = targetOrder
+        diffData[`placeholder.x`] = dPos.x
+        diffData[`placeholder.y`] = dPos.y
+
+        // 更新联动卡片的位置
+        let moveCount = 0
+        for (const groupIndex in this.data.devicePageList) {
+          const group = this.data.devicePageList[groupIndex]
+          for (const index in group) {
+            const _orderNum = group[index].orderNum
+            const isForward = oldOrder < targetOrder
+            if (
+              (isForward && _orderNum > oldOrder && _orderNum <= targetOrder) ||
+              (!isForward && _orderNum >= targetOrder && _orderNum < oldOrder)
+            ) {
+              ++moveCount
+              const dOrderNum = isForward ? _orderNum - 1 : _orderNum + 1
+              const dpos = getPos(dOrderNum)
+              diffData[`devicePageList[${groupIndex}][${index}].x`] = dpos.x
+              diffData[`devicePageList[${groupIndex}][${index}].y`] = dpos.y
+              diffData[`devicePageList[${groupIndex}][${index}].orderNum`] = dOrderNum
+
+              // 减少遍历消耗
+              if (moveCount >= Math.abs(targetOrder - oldOrder)) {
+                break
+              }
+            }
+            if (moveCount >= Math.abs(targetOrder - oldOrder)) {
+              break
+            }
+          }
+        }
+
+        // 更新被拖拽卡片的排序num
+        const groupIndex = this.data.placeholder.groupIndex
+        const index = this.data.placeholder.index
+        diffData[`devicePageList[${groupIndex}][${index}].orderNum`] = targetOrder
+        console.log(diffData)
+        this.setData(diffData)
+
+        this.data.hasMoved = true
+      }
+    }, 100),
+
+    movableTouchEnd() {
+      if (!this.data.isMoving) {
+        return
+      }
+      const groupIndex = this.data.placeholder.groupIndex
+      const index = this.data.placeholder.index
+      const dpos = getPos(this.data.placeholder.orderNum)
+
+      const diffData = {} as IAnyObject
+      diffData.isMoving = false
+      // 修正卡片位置
+      diffData[`devicePageList[${groupIndex}][${index}].x`] = dpos.x
+      diffData[`devicePageList[${groupIndex}][${index}].y`] = dpos.y
+      diffData[`placeholder.orderNum`] = -1
+      diffData[`placeholder.index`] = -1
+      diffData[`placeholder.groupIndex`] = -1
+      this.setData(diffData)
+      console.log('movableTouchEnd:', diffData)
+
+      this.handleSortSaving()
+    },
+    async handleSortSaving() {
+      if (!this.data.hasMoved) {
+        return
+      }
+      this.data.hasMoved = false
+
+      const deviceOrderData = {
+        deviceInfoByDeviceVoList: [],
+        type: '0',
+      } as Device.OrderSaveData
+      const switchOrderData = {
+        deviceInfoByDeviceVoList: [],
+        type: '1',
+      } as Device.OrderSaveData
+
+      for (const groupIndex in this.data.devicePageList) {
+        const group = this.data.devicePageList[groupIndex]
+        for (const index in group) {
+          const device = group[index]
+          if (device.proType !== proType.switch) {
+            deviceOrderData.deviceInfoByDeviceVoList.push({
+              deviceId: device.deviceId,
+              houseId: homeStore.currentHomeId,
+              roomId: device.roomId,
+              orderNum: String(device.orderNum),
+            })
+          }
+          // 若开关按键参与排序，需要按 type: '1' 再保存
+          else {
+            switchOrderData.deviceInfoByDeviceVoList.push({
+              deviceId: device.deviceId,
+              houseId: homeStore.currentHomeId,
+              roomId: device.roomId,
+              orderNum: String(device.orderNum),
+              switchId: device.switchInfoDTOList[0].switchId,
+            })
+          }
+        }
+      }
+      if (deviceOrderData.deviceInfoByDeviceVoList.length) {
+        await saveDeviceOrder(deviceOrderData)
+      }
+      if (switchOrderData.deviceInfoByDeviceVoList.length) {
+        await saveDeviceOrder(switchOrderData)
       }
     },
 
@@ -503,7 +721,7 @@ ComponentWithComputed({
      * @name 根据是否编辑状态，选择卡片点击事件
      * @param e 设备属性
      */
-    handleCardTap(e: { detail: DeviceCard }) {
+    handleCardTap(e: { detail: DeviceCard & { clientRect: WechatMiniprogram.ClientRect } }) {
       if (this.data.editSelectMode) {
         this.handleCardEditSelect(e)
       } else {
@@ -553,7 +771,7 @@ ComponentWithComputed({
       this.setData(diffData)
     },
 
-    handleCardCommonTap(e: { detail: DeviceCard }) {
+    handleCardCommonTap(e: { detail: DeviceCard & { clientRect: WechatMiniprogram.ClientRect } }) {
       const { uniId } = e.detail // 灯的 deviceId===uniId
       const isChecked = this.data.checkedList.includes(uniId) // 点击卡片前，卡片是否选中
       const toCheck = !isChecked // 本次点击需执行的选中状态
@@ -590,29 +808,22 @@ ComponentWithComputed({
       diffData.checkedList = [...this.data.checkedList]
       diffData.lightStatus = lightStatus
       diffData.controlPopup = toCheck
-      diffData.popupPlaceholder = toCheck
 
-      // 更新视图
-      this.setData(diffData)
-
-      // TODO
-      this.updateSelectType()
-
-      // 弹起的popup不能挡住卡片
+      // 弹起popup后，选中卡片滚动到视图中央，以免被遮挡
       const divideRpxByPx = storage.get<number>('divideRpxByPx')
         ? (storage.get<number>('divideRpxByPx') as number)
         : 0.5
       const windowHeight = storage.get<number>('windowHeight') as number
       const bottom = windowHeight - 716 * divideRpxByPx
       const top = bottom - 216 * divideRpxByPx
-      const scrollTop = this.data.scrollTop + e.detail.clientRect.top - top + 4
-      wx.pageScrollTo({
-        scrollTop,
-        duration: 200,
-        fail(res) {
-          console.log('scroll-fail', res)
-        },
-      })
+
+      diffData.scrollTop = this.data.scrollTop + e.detail.clientRect.top - top + 4
+
+      // 更新视图
+      this.setData(diffData)
+
+      // TODO
+      this.updateSelectType()
     },
 
     // 卡片点击时，按品类调用对应方法
@@ -761,11 +972,26 @@ ComponentWithComputed({
     },
     /** 点击空位收起弹窗 */
     handleScreenTap() {
-      if (this.data.controlPopup) {
-        this.setData({
-          controlPopup: false,
-        })
+      if (!this.data.controlPopup) {
+        return
       }
+
+      // 更新选中状态样式
+      const deviceId = this.data.checkedList[0]
+      const device = {
+        deviceId,
+        uniId: deviceId,
+        select: false,
+      } as DeviceCard
+      device.deviceId = this.data.checkedList[0]
+      device.uniId = this.data.checkedList[0]
+      this.updateDeviceList(device)
+
+      // 收起弹窗
+      this.setData({
+        checkedList: [],
+        controlPopup: false,
+      })
     },
     // 长按选择，进入编辑状态
     handleLongpress(e: { detail: DeviceCard }) {
@@ -786,12 +1012,9 @@ ComponentWithComputed({
 
       // 取消普通选择
       if (this.data.checkedList?.length) {
-        diffData.checkedList = []
-        diffData.controlPopup = false
-        diffData.popupPlaceholder = false
+        this.handleScreenTap()
       }
       this.setData(diffData)
-      device.select = false
       device.editSelect = true
       this.updateDeviceList(device)
 

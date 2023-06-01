@@ -89,7 +89,7 @@ ComponentWithComputed({
     },
     roomListComputed(data) {
       const roomList = [] as Room.RoomInfo[]
-      // 从roomList遍历，保证房间顺序
+      // 从roomList遍历，保证房间顺序， 仅显示list的数据所在的房间列表
       roomStore.roomList.forEach((room) => {
         const isIncludes = data.list.some((item: { roomId: string }) => {
           if (item.roomId === room.roomId) {

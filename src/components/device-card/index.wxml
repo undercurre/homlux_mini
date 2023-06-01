@@ -21,9 +21,9 @@
     <view class="h-12rpx"></view>
     <text wx:if="{{!deviceInfo.onLineStatus}}" class="text-24rpx text-hex-fbbb32 mb-22rpx">离线</text>
     <view wx:else>
-      <view wx:if="{{isLinkScene}}" class="flex-center mb-22rpx">
+      <view wx:if="{{deviceInfo.linkSceneName}}" class="flex-center mb-22rpx">
         <image src="/assets/img/base/scene-switch-btn.png" class="w-22rpx h-22rpx mt-4rpx" />
-        <text class="text-blue text-24rpx leading-none ml-4rpx">{{linkSceneName}}</text>
+        <text class="text-blue text-24rpx leading-none ml-4rpx">{{deviceInfo.linkSceneName}}</text>
       </view>
       <image wx:else src="{{controlBtnPic}}" class="w-48rpx h-48rpx mb-6rpx"></image>
     </view>
