@@ -24,6 +24,12 @@ Component({
         path: '/pages/index/index',
       },
       {
+        text: '自动化',
+        selectedIcon: '/assets/img/tabbar/automation-selected.png',
+        unSelectedIcon: '/assets/img/tabbar/automation-unselected.png',
+        path: '/pages/automation/index',
+      },
+      {
         text: '我的',
         selectedIcon: '/assets/img/tabbar/mine-selected.png',
         unSelectedIcon: '/assets/img/tabbar/mine-unselected.png',

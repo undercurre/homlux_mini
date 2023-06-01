@@ -1,0 +1,58 @@
+<!--pages/automation/index.wxml-->
+<nav-bar background="transparent"></nav-bar>
+<!-- 背景 -->
+<view class="bg-z-index fixed left-0 top-0 w-100vw h-100vh">
+  <image src="/assets/img/home/bg.jpg" class="bg-image"></image>
+</view>
+<view class="flex flex-col" bindtap="hideMenu">
+  <!-- 主体内容 -->
+
+  <view class="flex flex-1 w-full box-border" id="content">
+    <!-- 有自动化场景时显示 -->
+    <view class="flex-1 flex flex-col items-between" wx:if="{{true}}">
+      <view style="height: calc(96rpx + {{navigationBarAndStatusBarHeight}});" class="w-full fixed left-0 top-0 z-110 overflow-hidden" catchtap="handleShowHomeSelectMenu">
+        <image src="/assets/img/home/bg.jpg" class="bg-image absolute z-111"></image>
+        <view class="absolute left-0 w-638rpx h-96rpx flex justify-between items-center mx-56rpx z-112" style="top:{{navigationBarAndStatusBarHeight}}">
+          <view class="flex flex-row justify-center items-center z-112">
+            <text class="text-hex-1e2c46 text-48rpx font-semibold">{{'全部'}}</text>
+            <svg-icon id="homeSelectArrow" class="home-select-arrow" color="#1E2C46" name="material-symbols:arrow-drop-down-rounded" width="48rpx" height="48rpx" />
+          </view>
+          <view class="flex flex-row justify-center items-center z-112">
+            <image src="/assets/img/automation/auto-scene-log.png" class="w-64rpx h-64rpx mr-32rpx"></image>
+            <image src="/assets/img/automation/auto-scene-add.png" class="w-64rpx h-64rpx"></image>
+          </view>
+        </view>
+      </view>
+      <!-- 顶开上面的内容高度 -->
+      <view class="h-96rpx"></view>
+      <view class="flex-1">
+        <!-- 房间卡片列表 -->
+        <van-cell-group wx:for="{{autoSceneList}}" wx:key="name" inset>
+          <van-cell title="{{item.name}}" data-index="{{index}}" label="{{item.desc}}" center title-style="font-weight: 500;" border="{{false}}">
+            <view slot="icon" class="rounded-32rpx p-16rpx mr-32rpx">
+              <image class="w-72 h-72" src="/assets/img/scene/{{item.icon}}.png"></image>
+            </view>
+            <view slot="right-icon">
+              <van-switch checked="{{item.onoff}}" bind:change="onAutoUpdateChange" />
+            </view>
+          </van-cell>
+        </van-cell-group>
+        <!-- 顶开下面的内容高度 -->
+        <view class="h-32rpx"></view>
+      </view>
+    </view>
+
+    <!-- 无自动化场景时显示 -->
+    <view wx:else class="w-full mt-68rpx flex flex-col items-center">
+      <view style="height: 114rpx"></view>
+
+      <image src="/assets/img/default-img/link-wifi.png" class="w-300rpx h-300rpx"></image>
+      <text class="text-32rpx text-black-59 mt-44rpx mb-32rpx">尚未设置自动化</text>
+      <text class="text-24rpx text-black-59 mb-224rpx opacity-40">通过传感器、时间灯条件自动控制灯光与窗帘</text>
+      <van-button bind:click="goTo" data-url="/package-distribution/scan/index" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-class="add-immediately-btn" wx:if="{{true}}">
+        <text class="text-white text-36rpx font-normal">立即创建</text>
+      </van-button>
+    </view>
+  </view>
+</view>
+<view class="tabbar-placeholder"></view>

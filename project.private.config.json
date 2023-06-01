@@ -107,6 +107,13 @@
           "query": "",
           "launchMode": "default",
           "scene": null
+        },
+        {
+          "name": "自动化",
+          "pathName": "pages/automation/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
         }
       ]
     }

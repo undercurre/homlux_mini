@@ -365,7 +365,7 @@ ComponentWithComputed({
               const eq = originDevice.proType === proType.light ? 1 : originDevice.uniId.split(':')[1]
               const newVal = {
                 ...originDevice.mzgdPropertyDTOList[eq],
-                ...device?.mzgdPropertyDTOList[eq]
+                ...device?.mzgdPropertyDTOList[eq],
               }
               diffData[`devicePageList[${groupIndex}][${index}].mzgdPropertyDTOList[${eq}]`] = newVal
             }
