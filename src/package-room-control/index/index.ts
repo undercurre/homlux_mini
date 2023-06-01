@@ -29,6 +29,7 @@ type DeviceCard = Device.DeviceItem & {
   type: string
   select: boolean
   editSelect: boolean
+  linkSceneName: string
 }
 
 /**
@@ -202,7 +203,6 @@ ComponentWithComputed({
         (storage.get<number>('windowHeight') as number) -
         (storage.get<number>('statusBarHeight') as number) -
         (storage.get<number>('bottomBarHeight') as number) - // IPX
-        rpx2px(140) - // 创建场景
         (storage.get<number>('navigationBarHeight') as number)
       if (data.controlPopup) {
         baseHeight -= rpx2px(600)
@@ -234,9 +234,6 @@ ComponentWithComputed({
       // this.setUpdatePerformanceListener({withDataPaths: true}, (res) => {
       //   console.debug('setUpdatePerformanceListener', res, res.pendingStartTimestamp - res.updateStartTimestamp, res.updateEndTimestamp - res.updateStartTimestamp, dayjs().format('YYYY-MM-DD HH:mm:ss'))
       // })
-
-      // 再更新一遍数据
-      await this.reloadData()
 
       // ws消息处理
       emitter.on('wsReceive', async (e) => {
@@ -323,6 +320,12 @@ ComponentWithComputed({
           .exec()
       }
     },
+
+    async onShow() {
+      // 再更新一遍数据
+      await this.reloadData()
+    },
+
     async reloadData() {
       try {
         await Promise.all([
@@ -338,8 +341,13 @@ ComponentWithComputed({
     },
 
     // 页面滚动
-    onPageScroll(e: { scrollTop: number }) {
-      this.data.scrollTop = e.scrollTop
+    onPageScroll(e: { detail: { scrollTop: number } }) {
+      this.data.scrollTop = e.detail.scrollTop
+      if (e.detail.scrollTop !== 0) {
+        this.setData({
+          showAddSceneTips: false,
+        })
+      }
     },
 
     onUnload() {
@@ -363,12 +371,29 @@ ComponentWithComputed({
         showDeviceOffline: false,
       })
     },
+    // 根据场景信息，比较出关联场景名字
+    getLinkSceneName(device: Device.DeviceItem) {
+      if (device?.proType !== proType.switch || !device.switchInfoDTOList || !device.switchInfoDTOList[0]) {
+        return ''
+      }
+      const switchId = device.switchInfoDTOList[0].switchId
+      const switchSceneConditionMap = deviceStore.switchSceneConditionMap
+      const sceneIdMp = sceneStore.sceneIdMp
+      if (
+        switchSceneConditionMap[`${device.deviceId}:${switchId}`] &&
+        sceneIdMp[switchSceneConditionMap[`${device.deviceId}:${switchId}`]] &&
+        sceneIdMp[switchSceneConditionMap[`${device.deviceId}:${switchId}`]].sceneName
+      ) {
+        return sceneIdMp[switchSceneConditionMap[`${device.deviceId}:${switchId}`]].sceneName.slice(0, 4)
+      }
+      return ''
+    },
     /**
      * @description 初始化或更新设备列表
      * @param e 设备对象，或包裹设备对象的事件
      */
     async updateDeviceList(e?: DeviceCard & { detail?: DeviceCard }) {
-      console.log('[updateDeviceList Begin]', e?.detail || '')
+      console.log('[updateDeviceList Begin]', e?.detail ?? e ?? '')
 
       // 单项更新
       if (e?.deviceId || e?.detail?.deviceId) {
@@ -444,6 +469,7 @@ ComponentWithComputed({
             type: proName[device.proType],
             select: this.data.checkedList.includes(device.uniId),
             editSelect: this.data.editSelectList.includes(device.uniId),
+            linkSceneName: this.getLinkSceneName(device),
           }))
 
         if (!this.data.deviceListInited) {
@@ -789,27 +815,21 @@ ComponentWithComputed({
       diffData.lightStatus = lightStatus
       diffData.controlPopup = toCheck
 
-      // 更新视图
-      this.setData(diffData)
-
-      // TODO
-      this.updateSelectType()
-
-      // 弹起的popup不能挡住卡片
+      // 弹起popup后，选中卡片滚动到视图中央，以免被遮挡
       const divideRpxByPx = storage.get<number>('divideRpxByPx')
         ? (storage.get<number>('divideRpxByPx') as number)
         : 0.5
       const windowHeight = storage.get<number>('windowHeight') as number
       const bottom = windowHeight - 716 * divideRpxByPx
       const top = bottom - 216 * divideRpxByPx
-      const scrollTop = this.data.scrollTop + e.detail.clientRect.top - top + 4
-      wx.pageScrollTo({
-        scrollTop,
-        duration: 200,
-        fail(res) {
-          console.log('scroll-fail', res)
-        },
-      })
+
+      diffData.scrollTop = this.data.scrollTop + e.detail.clientRect.top - top + 4
+
+      // 更新视图
+      this.setData(diffData)
+
+      // TODO
+      this.updateSelectType()
     },
 
     // 卡片点击时，按品类调用对应方法
@@ -958,11 +978,26 @@ ComponentWithComputed({
     },
     /** 点击空位收起弹窗 */
     handleScreenTap() {
-      if (this.data.controlPopup) {
-        this.setData({
-          controlPopup: false,
-        })
+      if (!this.data.controlPopup) {
+        return
       }
+
+      // 更新选中状态样式
+      const deviceId = this.data.checkedList[0]
+      const device = {
+        deviceId,
+        uniId: deviceId,
+        select: false,
+      } as DeviceCard
+      device.deviceId = this.data.checkedList[0]
+      device.uniId = this.data.checkedList[0]
+      this.updateDeviceList(device)
+
+      // 收起弹窗
+      this.setData({
+        checkedList: [],
+        controlPopup: false,
+      })
     },
     // 长按选择，进入编辑状态
     handleLongpress(e: { detail: DeviceCard }) {
@@ -983,11 +1018,9 @@ ComponentWithComputed({
 
       // 取消普通选择
       if (this.data.checkedList?.length) {
-        diffData.checkedList = []
-        diffData.controlPopup = false
+        this.handleScreenTap()
       }
       this.setData(diffData)
-      device.select = false
       device.editSelect = true
       this.updateDeviceList(device)
 
