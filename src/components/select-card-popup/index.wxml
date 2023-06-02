@@ -36,7 +36,7 @@
     <view class="flex w-686rpx gap-x-46rpx">
       <van-button wx:if="{{showCancel}}" class="flex-1" size="large" bind:click="handleCancel">{{ cancelText }}</van-button>
 
-      <van-button wx:if="{{showConfirm}}" type="primary" class="flex-1" size="large" bind:click="handleConfirm">{{ confirmlText }}</van-button>
+      <van-button wx:if="{{showConfirm}}" type="primary" class="flex-1" size="large" bind:click="handleConfirm">{{ confirmText }}</van-button>
     </view>
 
     <view style="height: 28rpx"></view>

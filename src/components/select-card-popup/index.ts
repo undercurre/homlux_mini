@@ -59,7 +59,7 @@ ComponentWithComputed({
       type: Boolean,
       value: true,
     },
-    confirmlText: {
+    confirmText: {
       type: String,
       value: '确定',
     },
