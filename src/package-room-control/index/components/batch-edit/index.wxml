@@ -13,19 +13,25 @@
     <view class="w-full h-230rpx flex-center">
       <view class="flex-col-center flex-1 {{canEditName ?'':'opacity-25'}}" bindtap="handleEditNamePopup">
         <view class="flex-center w-100rpx h-100rpx bg-hex-f6fafd rounded-999">
-          <image src="/package-room-control/assets/img/edit.png" class="w-36rpx h-36rpx" />
+          <image src="/package-room-control/assets/img/edit.png" class="w-48rpx h-48rpx" />
         </view>
         <text class="text-black-tips text-24rpx mt-26rpx">修改名称</text>
       </view>
       <view class="flex-col-center flex-1 {{!editSelectList.length ?'opacity-25':''}}" bindtap="handleMoveRoomPopup">
         <view class="flex-center w-100rpx h-100rpx bg-hex-f6fafd rounded-999">
-          <image src="/package-room-control/assets/img/move.png" class="w-36rpx h-36rpx" />
+          <image src="/package-room-control/assets/img/move.png" class="w-48rpx h-48rpx" />
         </view>
         <text class="text-black-tips text-24rpx mt-26rpx">移动房间</text>
       </view>
+      <view class="flex-col-center flex-1 {{!editSelectList.length ?'opacity-25':''}}" bindtap="handleCreateGroup">
+        <view class="flex-center w-100rpx h-100rpx bg-hex-f6fafd rounded-999">
+          <image src="/package-room-control/assets/img/group.png" class="w-48rpx h-48rpx" />
+        </view>
+        <text class="text-black-tips text-24rpx mt-26rpx">创建分组</text>
+      </view>
       <view class="flex-col-center flex-1 {{!editSelectList.length ?'opacity-25':''}}" bindtap="handleDeleteDialog">
         <view class="flex-center w-100rpx h-100rpx bg-hex-f6fafd rounded-999">
-          <image src="/package-room-control/assets/img/del.png" class="w-36rpx h-36rpx" />
+          <image src="/package-room-control/assets/img/del.png" class="w-48rpx h-48rpx" />
         </view>
         <text class="text-black-tips text-24rpx mt-26rpx">删除</text>
       </view>
@@ -60,10 +66,7 @@
   <van-popup show="{{ showEditRoom }}" round position="bottom" bind:close="handleClose" closeable>
     <view class="w-750rpx flex flex-col items-center">
       <template is="title" data="{{title: '选择房间'}}" />
-      <view class="w-750rpx flex mt-44rpx mb-16rpx">
-        <text class="text-28rpx ml-48rpx">选择房间</text>
-      </view>
-      <view class="w-686rpx min-h-240rpx">
+      <view class="w-686rpx min-h-240rpx mt-16rpx">
         <view class="flex flex-wrap">
           <view wx:for="{{roomList}}" wx:key="roomId" data-id="{{item.roomId}}" bindtap="handleRoomSelect" class="mt-16rpx mr-32rpx rounded-999 px-40rpx py-10rpx flex flex-center {{item.roomId === roomId ? 'bg-select' : 'bg-hex-dfe1e5'}}">
             <text class="text-28rpx text-normal {{item.roomId === roomId ? 'text-white' : 'text-black-59'}}">{{item.roomName}}</text>

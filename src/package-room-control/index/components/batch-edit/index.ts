@@ -236,6 +236,14 @@ ComponentWithComputed({
         roomId: device.roomId,
       })
     },
+    handleCreateGroup() {
+      wx.navigateTo({
+        url: '/package-room-control/group/index',
+        success: (res) => {
+          res.eventChannel.emit('createGroup', { lightList: this.data.editSelectList })
+        },
+      })
+    },
     handleClose() {
       this.setData({
         showEditName: false,

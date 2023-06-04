@@ -1,2 +1,1 @@
-<!-- <web-view src="https://test.meizgd.com"></web-view> -->
-<web-view src="https://api-prod.smartmidea.net/v2/open/oauth2/authorize?client_id=a1b362741f4a510d44c086b85ab5a872&state=1&response_type=code&redirect_uri=https://test.meizgd.com/mzaio/v1/external/mzgd/auth/bd58e76cfeac4079bdcaa01592a97c3d"></web-view>
+<web-view src="{{webviewSrc}}" bindload="onWebviewLoad"></web-view>
