@@ -109,7 +109,6 @@ ComponentWithComputed({
                     name: `${switchItem?.switchName ? switchItem?.switchName : switchItem?.switchId + '路开关'} | ${
                       deviceMap[actions.deviceId].deviceName
                     }`,
-                    desc: action.OnOff ? ['打开'] : ['关闭'],
                     pic:
                       deviceMap[actions.deviceId].switchInfoDTOList.find(
                         (switchInfo) => switchInfo.switchId === action.ep.toString(),
@@ -505,19 +504,6 @@ ComponentWithComputed({
       this.data.sceneDeviceActionsFlatten[this.data.editIndex].value = {
         ep: this.data.sceneDeviceActionsFlatten[this.data.editIndex].value.ep,
         ...e.detail,
-      }
-      if (this.data.sceneDeviceActionsFlatten[this.data.editIndex].proType === proType.light) {
-        if (e.detail.OnOff) {
-          const desc = e.detail.OnOff ? ['打开'] : ['关闭']
-          const color = (e.detail.ColorTemp / 100) * (maxColorTempK - minColorTempK) + minColorTempK
-          desc.push(`亮度${e.detail.Level}%`)
-          desc.push(`色温${color}K`)
-          this.data.sceneDeviceActionsFlatten[this.data.editIndex].desc = desc
-        } else {
-          this.data.sceneDeviceActionsFlatten[this.data.editIndex].desc = ['关闭']
-        }
-      } else if (this.data.sceneDeviceActionsFlatten[this.data.editIndex].proType === proType.switch) {
-        this.data.sceneDeviceActionsFlatten[this.data.editIndex].desc = e.detail.OnOff ? ['打开'] : ['关闭']
       }
       this.setData({
         showSceneEditLightPopup: false,

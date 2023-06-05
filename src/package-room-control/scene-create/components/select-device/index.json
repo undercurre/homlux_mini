@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "select-card-popup": "../../../../components/select-card-popup/index"
+  }
+}

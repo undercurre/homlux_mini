@@ -1,6 +1,7 @@
 {
   "component": true,
   "usingComponents": {
-    "select-card-popup": "../../components/select-card-popup/index"
+    "select-device": "./components/select-device/index",
+    "edit-info": "./components/edit-info/index"
   }
 }

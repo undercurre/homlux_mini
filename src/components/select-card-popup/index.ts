@@ -16,6 +16,14 @@ ComponentWithComputed({
     title: {
       type: String,
     },
+
+    /**
+     * 弹窗标题
+     */
+    titleLeftBtnText: {
+      type: String,
+      value: '',
+    },
     /**
      * 展示的列表
      * cardType 是 switch light 传入 Device.DeviceItem[]
@@ -144,5 +152,8 @@ ComponentWithComputed({
       })
     },
     blank() {},
+    clickTitleLeftBtn() {
+      this.triggerEvent('clickTitleLeftBtn')
+    },
   },
 })

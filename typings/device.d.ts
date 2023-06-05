@@ -99,7 +99,6 @@ declare namespace Device {
   interface ActionItem {
     uniId: string
     name: string
-    desc: string[]
     pic: string
     proType: string
     value: IAnyObject

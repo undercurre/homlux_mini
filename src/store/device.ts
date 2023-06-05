@@ -174,6 +174,6 @@ export const deviceStore = observable({
 
 export const deviceBinding = {
   store: deviceStore,
-  fields: ['deviceList', 'allRoomDeviceList'],
+  fields: ['deviceList', 'allRoomDeviceList', 'deviceFlattenList'],
   actions: [],
 }
