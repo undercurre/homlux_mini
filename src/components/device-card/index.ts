@@ -9,7 +9,17 @@ ComponentWithComputed({
    * 组件的属性列表
    */
   properties: {
+    // 单选
     select: {
+      type: Boolean,
+      value: false,
+    },
+    editMode: {
+      type: Boolean,
+      value: false,
+    },
+    // 编辑模式选择，可多选
+    editSelect: {
       type: Boolean,
       value: false,
     },
@@ -28,14 +38,6 @@ ComponentWithComputed({
     },
     // 是否带渐变背景
     showGradientBg: {
-      type: Boolean,
-      value: false,
-    },
-    editMode: {
-      type: Boolean,
-      value: false,
-    },
-    editSelect: {
       type: Boolean,
       value: false,
     },
