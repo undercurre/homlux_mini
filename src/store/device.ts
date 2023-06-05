@@ -38,12 +38,7 @@ export const deviceStore = observable({
   get deviceFlattenList() {
     const list = [] as Device.DeviceItem[]
     deviceStore.deviceList.forEach((device) => {
-      if (device.proType === proType.light) {
-        list.push({
-          ...device,
-          uniId: device.deviceId,
-        })
-      } else if (device.proType === proType.switch) {
+      if (device.proType === proType.switch) {
         device.switchInfoDTOList?.forEach((switchItem) => {
           list.push({
             ...device,
@@ -54,6 +49,13 @@ export const deviceStore = observable({
             uniId: `${device.deviceId}:${switchItem.switchId}`,
             orderNum: switchItem.orderNum,
           })
+        })
+      }
+      // 包括proType.light在内，所有设备都用这种方案插值
+      else {
+        list.push({
+          ...device,
+          uniId: device.deviceId,
         })
       }
     })
