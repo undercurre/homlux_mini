@@ -686,6 +686,7 @@ ComponentWithComputed({
       this.setData({
         editSelectList: list,
       })
+      device.select = false
       device.editSelect = toCheck
       this.updateDeviceList(device)
 
