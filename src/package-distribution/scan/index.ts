@@ -7,7 +7,7 @@ import { deviceBinding, homeBinding } from '../../store/index'
 import { bleDevicesBinding, bleDevicesStore } from '../store/bleDeviceStore'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { checkWifiSwitch, strUtil, showLoading, hideLoading, delay, Logger } from '../../utils/index'
-import { checkDevice, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
+import { checkDevice, getUploadFileForOssInfo, queryWxImgQrCode, authQrcode } from '../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -418,6 +418,14 @@ ComponentWithComputed({
         } else if (pageParams.mode === '02') {
           // 网关绑定逻辑
           await this.bindGateway(pageParams)
+        } else if (pageParams.mode === '10') {
+          const authRes = await authQrcode(pageParams.code)
+
+          if (authRes.success) {
+            Toast('授权成功')
+          } else {
+            Toast('授权失败')
+          }
         } else {
           throw '无效二维码'
         }
