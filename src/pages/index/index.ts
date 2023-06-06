@@ -39,7 +39,8 @@ function getPos(index: number): number {
  * @returns index
  */
 function getIndex(y: number) {
-  return Math.floor((y + ROOM_CARD_M / 2) / ROOM_CARD_M)
+  const maxIndex = roomStore.roomList.length - 1 // 防止越界
+  return Math.min(maxIndex, Math.floor((y + ROOM_CARD_M / 2) / ROOM_CARD_M))
 }
 
 ComponentWithComputed({
@@ -224,7 +225,7 @@ ComponentWithComputed({
      * @description 生成房间位置
      * @param isMoving 是否正在拖动
      */
-    renewRoomPos(isMoving: boolean = false) {
+    renewRoomPos(isMoving = false) {
       const currentIndex = this.data.placeholder.index
       const roomPos = {} as Record<string, PosType>
       let accumulatedY = 0
@@ -462,11 +463,11 @@ ComponentWithComputed({
       Object.keys(this.data.roomPos).forEach((roomId) => {
         roomSortList.push({
           roomId,
-          sort: this.data.roomPos[roomId].index + 1
+          sort: this.data.roomPos[roomId].index + 1,
         })
       })
 
       updateRoomSort(roomSortList)
-    }
+    },
   },
 })
