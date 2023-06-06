@@ -48,7 +48,7 @@ export async function authQrcode(qrcode: string) {
     loading: false,
     url: '/v1/mzgd/user/mzgdUserQrcodeAuthorize',
     data: {
-      qrcode
-    }
+      qrcode,
+    },
   })
 }
