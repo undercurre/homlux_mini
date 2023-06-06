@@ -42,3 +42,15 @@ export async function delHouseRoom(roomId: string, options?: { loading?: boolean
     data: { roomId },
   })
 }
+
+/**
+ * 房间排序
+ */
+export async function updateRoomSort(roomSortList: Room.RoomSort[], options?: { loading?: boolean }) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/user/updateRoomSort',
+    data: { roomSortList },
+  })
+}

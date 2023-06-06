@@ -212,7 +212,7 @@ ComponentWithComputed({
     },
 
     // 可移动区域高度
-    movableViewStyle() {
+    movableAreaStyle() {
       return `height: ${Math.ceil(deviceStore.deviceFlattenList.length / 4) * 236}rpx;
         width: 600rpx;`
     },
