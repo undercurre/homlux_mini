@@ -60,6 +60,11 @@ ComponentWithComputed({
       y: '0px',
       isShow: false,
     },
+    addMenu: {
+      x: '0px',
+      y: '0px',
+      isShow: false,
+    },
     allOnBtnTap: false,
     allOffBtnTap: false,
     showAddNewRoom: false,
@@ -313,6 +318,7 @@ ComponentWithComputed({
     hideMenu() {
       this.setData({
         'selectHomeMenu.isShow': false,
+        'addMenu.isShow': false,
       })
     },
     /**
@@ -370,6 +376,20 @@ ComponentWithComputed({
     handleHideAddNewRoom() {
       this.setData({
         showAddNewRoom: false,
+      })
+    },
+
+    showAddMenu() {
+      this.setData({
+        addMenu: {
+          x: '460rpx',
+          y:
+            (storage.get<number>('statusBarHeight') as number) +
+            (storage.get<number>('navigationBarHeight') as number) +
+            50 +
+            'px',
+          isShow: !this.data.addMenu.isShow,
+        },
       })
     },
 

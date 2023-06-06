@@ -27,7 +27,7 @@
       </view>
     </view>
 
-    <view wx:if="{{hasDevice && canAddDevice}}" class="mr-36rpx mt-8rpx" data-mark="addIcon" id="addIcon" bind:tap="goTo" data-url="/package-distribution/scan/index">
+    <view wx:if="{{hasDevice && canAddDevice}}" class="mr-36rpx mt-8rpx" data-mark="addIcon" id="addIcon" catchtap="showAddMenu">
       <image src="/assets/img/home/add.png" class="w-64rpx h-64rpx"></image>
     </view>
   </view>
@@ -105,6 +105,7 @@
 </view>
 
 <home-select-menu x="{{selectHomeMenu.x}}" y="{{selectHomeMenu.y}}" isShow="{{selectHomeMenu.isShow}}" bind:select="handleHomeSelect"></home-select-menu>
+<add-menu x="{{addMenu.x}}" y="{{addMenu.y}}" isShow="{{addMenu.isShow}}"></add-menu>
 <add-room show="{{showAddNewRoom}}" bind:close="handleHideAddNewRoom"></add-room>
 <van-toast id="van-toast" />
 <van-dialog id="van-dialog" />
