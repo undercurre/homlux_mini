@@ -243,7 +243,7 @@ ComponentWithComputed({
             y: currentIndex === index ? this.data.roomPos[room.roomId].y : accumulatedY,
           }
           // 若场景列表为空，或正在拖动，则使用 ROOM_CARD_M
-          accumulatedY += room.sceneList.length && !isMoving ? ROOM_CARD_H : ROOM_CARD_M
+          accumulatedY += room.subDeviceNum && room.sceneList.length && !isMoving ? ROOM_CARD_H : ROOM_CARD_M
         })
 
       this.setData({

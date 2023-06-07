@@ -47,7 +47,7 @@ ComponentWithComputed({
       {
         title: '添加自动化',
         key: 'auto',
-        icon: 'auto'
+        icon: 'auto',
       },
       {
         title: '连接其它平台',
