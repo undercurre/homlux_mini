@@ -1,0 +1,30 @@
+<view class="page-container flex flex-col">
+  <!-- 标题 -->
+  <nav-bar title="创建场景" left-arrow show-go-home bind:leftTap="cancel"></nav-bar>
+
+  <text class="block leading-40rpx text-28 text-hex-555659 py-48rpx px-32rpx">正在将场景配置下发至灯具（{{finishNum}}/{{deviceList.length}}）…</text>
+
+  <!-- 设备卡片列表 -->
+  <scroll-view scroll-y enhanced show-scrollbar="{{false}}" class="h-50vh grow px-24rpx pb-16rpx box-border">
+    <view wx:for="{{deviceList}}" class="bg-white px-48rpx py-32rpx mb-24rpx rounded-32rpx flex flex-row items-center">
+      <image src="https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/midea.hlight.001.001.png" class="h-96 w-96 rounded-full" />
+
+      <view class="grow px-32rpx flex flex-col">
+        <text class="pb-8rpx leading-44rpx text-32 text-hex-27282A font-medium">{{ item.deviceName }}</text>
+
+        <text class="leading-40rpx text-28 text-hex-A2A2A2">{{ item.roomName }}{{ item.onLineStatus === 1 && ' | 离线' }}</text>
+      </view>
+
+      <image wx:if="{{item.status === 'success'}}" src="/assets/img/base/check.png" class="h-48 w-48" />
+
+      <image wx:if="{{item.status === 'fail'}}" src="/assets/img/base/check.png" class="h-48 w-48" />
+
+      <mz-loading wx:if="{{item.status === 'loading'}}" size="24"></mz-loading>
+    </view>
+  </scroll-view>
+
+  <view class="flex flex-row gap-x-46rpx px-32rpx">
+    <van-button class="w-full" size="large" bind:click="ignoreError">跳过</van-button>
+    <van-button class="w-full" type="primary" size="large" disabled="{{!selectList.length}}" bind:click="finish">重试</van-button>
+  </view>
+</view>

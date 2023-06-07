@@ -7,7 +7,7 @@ import { homeStore } from '../store/index'
  * @param houseId 家庭id
  */
 export function connectHouseSocket(houseId: string) {
-  console.info('连接家庭socket: ', houseId, homeStore.currentHomeDetail)
+  console.info('连接家庭socket: ', houseId, homeStore.currentHomeDetail.houseName)
   return wx.connectSocket({
     url: mzaioWSURL[getEnv()] + houseId,
     protocols: [storage.get<string>('token') as string],

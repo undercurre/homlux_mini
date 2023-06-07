@@ -5,3 +5,8 @@
 <select-device class="grow" wx:if="{{ step === 'selectDevice'}}" bind:cancel="cancelCreate" bind:confirm="confirmSelect"></select-device>
 
 <edit-info class="grow" wx:if="{{ step === 'editInfo'}}" bind:cancel="cancelEdit" bind:confirm="confirmEdit"></edit-info>
+
+<request-list wx:if="{{ step === 'requesting'}}" deviceList="{{deviceList}}"></request-list>
+
+<van-toast id="van-toast" />
+<van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />

@@ -1,1 +1,4 @@
-/* package-room-control/scene-create/components/edit-info/index.wxss */
+.scene-cell {
+  position: relative;
+  overflow: visible !important;
+}

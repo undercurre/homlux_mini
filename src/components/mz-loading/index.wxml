@@ -14,5 +14,5 @@
     <view class="sk-circle12 sk-child"></view>
   </view>
 
-  <text class="mt-80rpx text-28 text-black-59">{{ text }}</text>
+  <text wx:if="{{text}}" class="mt-80rpx text-28 text-black-59">{{ text }}</text>
 </view>

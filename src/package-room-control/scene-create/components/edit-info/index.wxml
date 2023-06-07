@@ -1,36 +1,34 @@
 <view class="page-container flex flex-col">
   <!-- 标题 -->
-  <nav-bar title="创建场景" left-arrow show-go-home bind:leftTap="cancelCreate"></nav-bar>
+  <nav-bar title="创建场景" left-arrow show-go-home bind:leftTap="handleReturn"></nav-bar>
 
-  <text class="h-36rpx text-26rpx text-black-tips mt-22rpx font-normal">保存房间内设备的状态，便于快速执行</text>
-  <view class="mt-32rpx w-750rpx">
-    <text class="ml-48rpx h-40rpx text-28rpx text-black-2a font-normal">场景名称</text>
-  </view>
-  <view class="mt-32rpx w-686rpx mx-32rpx">
-    <van-field model:value="{{ sceneName }}" placeholder="自定义场景" custom-style="padding: 28rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
-  </view>
-  <view class="mt-32rpx w-750rpx">
-    <text class="ml-48rpx h-40rpx text-28rpx text-black-2a font-normal">选择场景图标</text>
+  <view class="grow">
+    <text class="pl-48rpx leading-40rpx text-28 text-hex-555659 mt-66rpx mb-8rpx">必选项</text>
+
+    <van-cell-group inset>
+      <van-cell center is-link title="场景名称" bind:click="editName">
+        <text class="{{confirmInfo.sceneName ? 'text-hex-555659' : 'text-hex-A2A2A2'}}">{{confirmInfo.sceneName || '请输入'}}</text>
+      </van-cell>
+
+      <van-cell center is-link title="场景图标" bind:click="editIcon" value-class="scene-cell">
+        <image wx:if="{{confirmInfo.sceneIcon}}" src="/assets/img/scene/{{confirmInfo.sceneIcon}}-gray.png" class="absolute right-0 -top-35rpx w-72 h-72"></image>
+
+        <text wx:else>请选择</text>
+      </van-cell>
+    </van-cell-group>
+
+    <text class="mt-32rpx pl-48rpx leading-40rpx text-28 text-hex-555659 mb-8rpx">非必选项</text>
+
+    <van-cell-group inset>
+      <van-cell center is-link title="关联智能开关" label="可通过开关触发场景" bind:click="handleLinkSwitchPopup">
+        <text class="{{confirmInfo.linkSwitch ? 'text-hex-555659' : 'text-hex-A2A2A2'}}">{{confirmInfo.linkSwitch || '请选择'}}</text>
+      </van-cell>
+    </van-cell-group>
   </view>
 
-  <view class="w-686rpx grid grid-cols-4 gap-x-48rpx gap-y-32rpx mt-32rpx mb-32rpx">
-    <view data-scene="{{item[0]}}" bindtap="handleSceneIconTap" wx:for="{{sceneList}}" wx:key="index" class="w-128rpx h-128rpx rounded-32rpx bg-hex-f6fafd box-border flex-center" style="border: 4rpx solid {{sceneIcon === item[0]?'#488FFF':'transparent'}};">
-      <image class="w-72rpx h-72rpx m-24rpx" src="/assets/img/scene/{{item[0]}}.png" mode="" />
-    </view>
-  </view>
-
-  <van-cell-group inset class="w-750rpx mb-32rpx">
-    <van-cell center is-link custom-class="switch-cell" value="{{linkSwitch?'已关联':'未关联'}}" bind:click="handleLinkSwitchPopup" custom-style="border: 2rpx solid #DDDDDD;border-radius: 24px;">
-      <view class="flex flex-col items-start" slot="title">
-        <text class="text-32rpx text-black-2a font-medium h-44rpx">关联智能开关</text>
-        <text class="text-26rpx text-black-tips font-normal leading-none mt-12rpx mb-12rpx">通过开关触发场景</text>
-      </view>
-    </van-cell>
-  </van-cell-group>
-
-  <view class="flex w-686rpx">
+  <view class="flex gap-x-46rpx px-32rpx">
     <van-button class="flex-1" size="large" bind:click="handleReturn">上一步</van-button>
-    <view class="w-46rpx"></view>
+
     <van-button disabled="{{!sceneName || isAddingScene}}" type="primary" class="flex-1" size="large" bind:click="handleConfirm">确定</van-button>
   </view>
 </view>
@@ -39,3 +37,39 @@
 
 <van-toast id="van-toast" />
 <van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />
+
+<van-popup round show="{{ isEditName }}" bind:close="onCloseEditName" closeable position="bottom">
+  <view class="pb-96rpx">
+    <text class="block pt-48rpx pb-64rpx text-center leading-50rpx text-36 text-black-2a font-medium">场景名称</text>
+
+    <view class="mx-32rpx">
+      <van-field model:value="{{ sceneName }}" placeholder="请输入场景名称" custom-style="padding: 20rpx 40rpx;border-radius: 24rpx;background-color: #F9FBFE;" clearable="{{true}}" focus="{{isFocusNameInput}}" border="{{false}}"> </van-field>
+    </view>
+
+    <view class="flex flex-row gap-46rpx pt-80rpx px-32rpx">
+      <van-button disabled="{{!sceneName}}" class="grow" size="large" type="primary" bind:click="confirmName">确定</van-button>
+    </view>
+  </view>
+</van-popup>
+
+<van-popup round show="{{ isShowIconPopup }}" bind:close="onCloseEditIcon" closeable position="bottom">
+  <view class="pb-96rpx">
+    <text class="block pt-48rpx pb-48rpx text-center leading-50rpx text-36 text-black-2a font-medium">场景图标</text>
+
+    <view class="mx-48rpx">
+      <text class="block leading-40rpx text-28 text-hex-555659 pb-32rpx">选择场景图标</text>
+
+      <view class="grid grid-cols-4 gap-48rpx">
+        <view class="box-border w-128rpx h-128rpx flex justify-center items-center leading-0 bg-hex-F6FAFD border-4rpx border-solid {{sceneIcon === item[0] ? 'border-hex-488FFF' : 'border-hex-F6FAFD'}} rounded-32rpx" wx:for="{{sceneList}}" wx:key="index" data-scene="{{item[0]}}" bind:tap="handleSceneIconTap">
+          <image src="/assets/img/scene/{{item[0]}}.png" class="w-72 h-72" />
+        </view>
+      </view>
+    </view>
+
+    <view class="flex flex-row gap-46rpx pt-80rpx px-32rpx">
+      <van-button disabled="{{!sceneIcon}}" class="grow" size="large" type="primary" bind:click="confirmIcon">确定</van-button>
+    </view>
+  </view>
+</van-popup>
+
+<select-card-popup show="{{showLinkPopup}}" title="关联智能开关" showCancel="{{false}}" list="{{list}}" selectList="{{linkSelectList}}" bind:select="handleLinkSelect" bind:close="handleLinkPopupClose" bind:confirm="handleLinkPopupConfirm"></select-card-popup>

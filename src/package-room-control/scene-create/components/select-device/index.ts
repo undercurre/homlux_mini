@@ -1,6 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { deviceStore } from '../../../../store/index'
 import { findDevice } from '../../../../apis/index'
+import { proType } from '../../../../config/index'
 
 ComponentWithComputed({
   options: {
@@ -16,6 +17,8 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
+    showSceneEditLightPopup: false,
+    showSceneEditSwitchPopup: false,
     allDeviceList: [] as Device.DeviceItem[], // 可选的设备列表
     showDeviceListPopup: false,
     _cacheDeviceStatusMap: {} as IAnyObject, // 缓存选中前的设备状态集合
@@ -24,6 +27,7 @@ ComponentWithComputed({
   },
 
   computed: {
+    // 场景包含的设备的卡片数据
     showDeviceList(data) {
       return deviceStore.deviceFlattenList.filter((item) => data.selectList.includes(item.uniId))
     },
@@ -102,8 +106,100 @@ ComponentWithComputed({
       })
     },
 
+    cancelCreate() {
+      this.triggerEvent('cancel')
+    },
+
     next() {
-      this.triggerEvent('confirm', { selectList: this.data.selectList })
+      // 补充actions
+      const deviceMap = deviceStore.deviceMap
+      const addSceneActions = [] as Device.ActionItem[]
+      const { selectList } = this.data
+
+      const selectDeviceList = deviceStore.deviceFlattenList.filter((device) => selectList.includes(device.uniId))
+
+      selectDeviceList.forEach((device) => {
+        if (device.proType === proType.switch) {
+          // 开关
+          const deviceId = device.uniId.split(':')[0]
+          const ep = parseInt(device.uniId.split(':')[1])
+          const OnOff = deviceMap[deviceId].mzgdPropertyDTOList[ep].OnOff
+          addSceneActions.push({
+            uniId: device.uniId,
+            name: device.switchInfoDTOList[0].switchName + ' | ' + device.deviceName,
+            pic: device.switchInfoDTOList[0].pic,
+            proType: device.proType,
+            value: {
+              ep,
+              OnOff,
+            },
+          })
+        } else if (device.proType === proType.light) {
+          const properties = device.mzgdPropertyDTOList['1']
+          // const color = (properties.ColorTemp / 100) * (maxColorTempK - minColorTempK) + minColorTempK
+          const action = {
+            uniId: device.uniId,
+            name: device.deviceName,
+            pic: device.pic,
+            proType: device.proType,
+            value: {
+              ep: 1,
+              OnOff: properties.OnOff,
+            } as IAnyObject,
+          }
+          if (properties.OnOff) {
+            action.value.Level = properties.Level
+            action.value.ColorTemp = properties.ColorTemp
+          }
+          addSceneActions.push(action)
+        }
+      })
+
+      this.triggerEvent('confirm', { sceneActions: addSceneActions, deviceList: this.data.showDeviceList })
+    },
+
+    handleCardTap(e: WechatMiniprogram.CustomEvent) {
+      console.log('handleCardTap', e)
+      const device = e.detail as Device.DeviceItem
+
+      if (device.proType === proType.light) {
+        findDevice({ gatewayId: device.gatewayId, devId: device.deviceId })
+        this.setData({
+          actionEditTitle: device.deviceName,
+          sceneLightEditInfo: device.mzgdPropertyDTOList[1],
+          showSceneEditLightPopup: true,
+        })
+      } else if (device.proType === proType.switch) {
+        const [, switchId] = device.uniId.split(':')
+
+        findDevice({
+          gatewayId: device.gatewayId,
+          devId: device.deviceId,
+          ep: Number(switchId),
+        })
+        this.setData({
+          actionEditTitle: device.deviceName,
+          sceneSwitchEditInfo: device.mzgdPropertyDTOList[1],
+          showSceneEditSwitchPopup: true,
+        })
+      }
+    },
+    handleSceneLightEditPopupClose() {
+      this.setData({
+        showSceneEditLightPopup: false,
+      })
+    },
+    handleSceneSwitchEditPopupClose() {
+      this.setData({
+        showSceneEditSwitchPopup: false,
+      })
+    },
+    handleSceneEditConfirm(e: { detail: IAnyObject }) {
+      console.log('handleSceneEditConfirm', e.detail)
+      this.setData({
+        showSceneEditLightPopup: false,
+        showSceneEditSwitchPopup: false,
+      })
     },
   },
 })

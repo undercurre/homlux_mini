@@ -19,9 +19,13 @@
 
   <view class="flex flex-row gap-x-46rpx px-32rpx">
     <van-button class="w-full" size="large" bind:click="cancelCreate">取消</van-button>
-    <van-button class="w-full" type="primary" size="large" bind:click="next">下一步</van-button>
+    <van-button class="w-full" type="primary" size="large" disabled="{{!selectList.length}}" bind:click="next">下一步</van-button>
   </view>
 </view>
 
 <!-- 设备列表弹窗 -->
 <select-card-popup title="选择设备" titleLeftBtnText="全选" show="{{showDeviceListPopup}}" list="{{allDeviceList}}" selectList="{{cacheSelectList}}" bind:close="closeDeviceListPopup" bind:select="handleDeviceSelect" bind:confirm="handleLDeviceSelectConfirm" bind:cancel="closeDeviceListPopup" bind:clickTitleLeftBtn="clickTitleLeftBtn"></select-card-popup>
+
+<scene-light-edit-popup z-index="{{101}}" show="{{showSceneEditLightPopup}}" title="{{actionEditTitle}}" lightInfo="{{sceneLightEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleSceneLightEditPopupClose"></scene-light-edit-popup>
+
+<scene-switch-edit-popup z-index="{{101}}" show="{{showSceneEditSwitchPopup}}" title="{{actionEditTitle}}" switchInfo="{{sceneSwitchEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleSceneSwitchEditPopupClose"></scene-switch-edit-popup>
