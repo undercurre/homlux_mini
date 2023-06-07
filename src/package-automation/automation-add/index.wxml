@@ -1,0 +1,53 @@
+<!-- 背景 -->
+<view class="w-100vw h-100vh fixed left-0 top-0 bg-hex-f4f8ff bg-z-index-1"></view>
+<view class="fixed left-0 top-0 w-100vw h-50vh bg-z-index" style="background: linear-gradient(180deg, rgba(87, 105, 255, 0.1) 0%, rgba(87, 105, 255, 0) 100%)"></view>
+<view class="h-100vh flex flex-col items-center">
+  <!-- 标题 -->
+  <nav-bar title="创建自动化" left-arrow bind:leftTap="goBack"></nav-bar>
+
+  <view class="flex-1 w-750rpx" id="content">
+    <scroll-view scroll-y="{{true}}" class="w-full" style="height: {{contentHeight}}px;">
+      <view class="h-32rpx"></view>
+      <view class="flex flex-row items-center justify-between mx-32rpx">
+        <view class="h-110rpx w-110rpx relative bg-hex-fff rounded-55rpx" bindtap="handleEditIconShow">
+          <image class="absolute top-15 left-16 h-80rpx w-80rpx" src="/assets/img/auto-scene/{{sceneIcon}}.png" />
+          <view class="absolute bottom-0 left-15 h-32rpx w-80rpx border-1rpx border-solid border-hex-488FFF bg-white leading-28rpx text-center rounded-18rpx">
+            <text class="text-22rpx text-hex-488FFF">编辑</text>
+          </view>
+        </view>
+        <van-field value="{{  }}" size="large" placeholder="给场景取个名字" clearable="{{true}}" custom-style="padding: 24rpx 40rpx;border-radius: 32rpx;width:530rpx;height:96rpx;text-align:center;" bind:change="changeAutoSceneName" border="{{false}}"> </van-field>
+      </view>
+      <view class="mt-64rpx mb-36rpx mx-48rpx">
+        <text class="text-40rpx font-medium text-hex-1a1a1c">如果</text>
+      </view>
+      <van-cell-group inset>
+        <van-cell border="{{false}}" clickable="{{true}}" bind:click="handleConditionShow">
+          <view class="flex items-center justify-center">
+            <view class="flex flex-row items-center h-96rpx">
+              <image class="w-56 h-56 mr-38rpx" src="/assets/img/base/add.png"></image>
+              <text class="text-32rpx text-hex-555659">添加条件</text>
+            </view>
+          </view>
+        </van-cell>
+      </van-cell-group>
+      <view class="mt-64rpx mb-36rpx mx-48rpx">
+        <text class="text-40rpx font-medium text-hex-1a1a1c">就执行</text>
+      </view>
+      <van-cell-group inset>
+        <van-cell border="{{false}}" clickable="{{true}}">
+          <view class="flex items-center justify-center">
+            <view class="flex flex-row items-center h-96rpx">
+              <image class="w-56 h-56 mr-38rpx" src="/assets/img/base/add.png"></image>
+              <text class="text-32rpx text-hex-555659">执行任务</text>
+            </view>
+          </view>
+        </van-cell>
+      </van-cell-group>
+      <view class="h-11111rpx"></view>
+    </scroll-view>
+  </view>
+</view>
+<add-condition-popup show="{{showEditConditionPopup}}" bind:close="handleConditionClose" bind:conditionClicked="onConditionClicked" />
+<edit-icon-popup value="{{sceneIcon}}" show="{{showEditIconPopup}}" bind:close="handleEditIconClose" bind:confirm="handleEditIconConfirm" />
+<edit-period-popup show="{{showPeriodPopup}}" bind:close="handlePeriodClose" bind:confirm="handlePeriodConfirm" />
+<van-toast id="van-toast" />

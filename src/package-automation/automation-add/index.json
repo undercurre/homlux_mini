@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "usingComponents": {
+    "edit-icon-popup": "./components/edit-icon-popup/index",
+    "edit-period-popup": "./components/edit-period-popup/index",
+    "add-condition-popup": "./components/add-condition-popup/index"
+  }
+}

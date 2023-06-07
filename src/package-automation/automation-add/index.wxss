@@ -1,0 +1,6 @@
+/* package-automation/automation-add/index.wxss */
+
+.pickerq {
+  background-color: transparent !important;
+  height: 888rpx !important;
+}

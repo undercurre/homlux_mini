@@ -23,10 +23,10 @@ ComponentWithComputed({
         { id: 0, name: '客厅无人关闭模式客...', desc: '上午12:00', icon: 'mild', isSuccess: '已执行' },
         { id: 1, name: '客厅无人关闭模式', desc: '上午12:00', icon: 'mild', isSuccess: '执行失败' },
       ],
-      // '4月30日': [
-      //   { id: 0, name: '客厅无人关闭模式客...', desc: '上午12:00', icon: 'mild', isSuccess: '已执行' },
-      //   { id: 1, name: '客厅无人关闭模式', desc: '上午12:00', icon: 'mild', isSuccess: '执行失败' },
-      // ],
+      '4月30日': [
+        { id: 0, name: '客厅无人关闭模式客...', desc: '上午12:00', icon: 'mild', isSuccess: '已执行' },
+        { id: 1, name: '客厅无人关闭模式', desc: '上午12:00', icon: 'mild', isSuccess: '执行失败' },
+      ],
     },
     isUpdating: false,
     hasUpdate: false,

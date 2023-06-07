@@ -26,12 +26,7 @@ Component({
     ],
     urls: {
       automationLog: '/package-automation/automation-log/index',
-      voiceControl: '/package-mine/voice-control/index',
-      ota: '/package-mine/ota/index',
-      deviceReplace: '/package-mine/device-replace/index',
-      auth: '/package-mine/auth/index',
-      feedback: '/package-mine/feedback/index',
-      about: '/package-protocol/protocol-list/index',
+      automationAdd: '/package-automation/automation-add/index',
     },
     // 导航栏和状态栏高度
     navigationBarAndStatusBarHeight:
