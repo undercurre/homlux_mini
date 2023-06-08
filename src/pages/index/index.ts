@@ -11,17 +11,38 @@ import {
   deviceStore,
 } from '../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { storage } from '../../utils/index'
-import { proType } from '../../config/index'
+import { storage, throttle } from '../../utils/index'
+import { proType, ROOM_CARD_H, ROOM_CARD_M } from '../../config/index'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
-import { allDevicePowerControl } from '../../apis/index'
+import { allDevicePowerControl, updateRoomSort } from '../../apis/index'
 import { emitter } from '../../utils/eventBus'
 import { updateDefaultHouse } from '../../apis/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { runInAction } from 'mobx-miniprogram'
 let throttleTimer = 0
 let hasUpdateInTimer = false
+
+type PosType = Record<'index' | 'y', number>
+
+/**
+ * 根据index计算坐标位置
+ * @returns {x, y}
+ */
+function getPos(index: number): number {
+  return index * ROOM_CARD_M
+}
+
+/**
+ * 根据坐标位置计算index
+ * TODO 防止超界
+ * @returns index
+ */
+function getIndex(y: number) {
+  const maxIndex = roomStore.roomList.length - 1 // 防止越界
+  return Math.min(maxIndex, Math.floor((y + ROOM_CARD_M / 2) / ROOM_CARD_M))
+}
+
 ComponentWithComputed({
   behaviors: [
     BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding, homeBinding, deviceBinding] }),
@@ -39,12 +60,25 @@ ComponentWithComputed({
       y: '0px',
       isShow: false,
     },
+    addMenu: {
+      x: '0px',
+      y: '0px',
+      isShow: false,
+    },
     allOnBtnTap: false,
     allOffBtnTap: false,
     showAddNewRoom: false,
     showHomeSelect: false,
     loading: true,
     isTryInvite: false,
+    isMoving: false,
+    hasMoved: false,
+    roomPos: {} as Record<string, PosType>,
+    accumulatedY: 0, // 可移动区域高度
+    placeholder: {
+      y: 0,
+      index: -1,
+    } as PosType,
   },
   computed: {
     currentHomeName(data) {
@@ -188,6 +222,34 @@ ComponentWithComputed({
           roomStore.currentRoomIndex = 0
         })
       }
+
+      this.renewRoomPos()
+    },
+
+    /**
+     * @description 生成房间位置
+     * @param isMoving 是否正在拖动
+     */
+    renewRoomPos(isMoving = false) {
+      const currentIndex = this.data.placeholder.index
+      const roomPos = {} as Record<string, PosType>
+      let accumulatedY = 0
+      roomStore.roomList
+        .sort((a, b) => this.data.roomPos[a.roomId]?.index - this.data.roomPos[b.roomId]?.index)
+        .forEach((room, index) => {
+          roomPos[room.roomId] = {
+            index,
+            // 正在拖的卡片，不改变位置
+            y: currentIndex === index ? this.data.roomPos[room.roomId].y : accumulatedY,
+          }
+          // 若场景列表为空，或正在拖动，则使用 ROOM_CARD_M
+          accumulatedY += room.subDeviceNum && room.sceneList.length && !isMoving ? ROOM_CARD_H : ROOM_CARD_M
+        })
+
+      this.setData({
+        roomPos,
+        accumulatedY,
+      })
     },
 
     inviteMember() {
@@ -256,6 +318,7 @@ ComponentWithComputed({
     hideMenu() {
       this.setData({
         'selectHomeMenu.isShow': false,
+        'addMenu.isShow': false,
       })
     },
     /**
@@ -314,6 +377,117 @@ ComponentWithComputed({
       this.setData({
         showAddNewRoom: false,
       })
+    },
+
+    showAddMenu() {
+      this.setData({
+        addMenu: {
+          x: '460rpx',
+          y:
+            (storage.get<number>('statusBarHeight') as number) +
+            (storage.get<number>('navigationBarHeight') as number) +
+            50 +
+            'px',
+          isShow: !this.data.addMenu.isShow,
+        },
+      })
+    },
+
+    // 开始拖拽，初始化placeholder
+    movableTouchStart(e: WechatMiniprogram.TouchEvent) {
+      wx.vibrateShort({ type: 'heavy' })
+
+      const rid = e.currentTarget.dataset.rid
+      const index = this.data.roomPos[rid].index
+
+      const diffData = {} as IAnyObject
+      diffData.isMoving = true
+      diffData.placeholder = {
+        index,
+        y: getPos(index),
+      }
+
+      console.log('movableTouchStart:', diffData)
+
+      this.setData(diffData)
+
+      this.renewRoomPos(true)
+    },
+
+    /**
+     * 拖拽时触发的卡片移动效果
+     */
+    movableChange: throttle(function (this: IAnyObject, e: WechatMiniprogram.TouchEvent) {
+      const targetOrder = getIndex(e.detail.y)
+      if (this.data.placeholder.index !== targetOrder && e.detail.source === 'touch') {
+        const oldOrder = this.data.placeholder.index
+        console.log('movableChange: %d-->%d', oldOrder, targetOrder, e)
+
+        // 更新placeholder的位置
+        const isForward = oldOrder < targetOrder
+        const diffData = {} as IAnyObject
+        diffData[`placeholder.index`] = targetOrder
+        diffData[`placeholder.y`] = getPos(targetOrder)
+
+        // 更新联动卡片的位置
+        let moveCount = 0
+        for (const room of roomStore.roomList) {
+          const _orderNum = this.data.roomPos[room.roomId].index
+          if (
+            (isForward && _orderNum > oldOrder && _orderNum <= targetOrder) ||
+            (!isForward && _orderNum >= targetOrder && _orderNum < oldOrder)
+          ) {
+            ++moveCount
+            const dOrderNum = isForward ? _orderNum - 1 : _orderNum + 1
+            diffData[`roomPos.${room.roomId}.y`] = getPos(dOrderNum)
+            diffData[`roomPos.${room.roomId}.index`] = dOrderNum
+
+            // 减少遍历消耗
+            if (moveCount >= Math.abs(targetOrder - oldOrder)) {
+              break
+            }
+          }
+        }
+
+        // 更新被拖拽卡片的排序num
+        diffData[`roomPos.${e.currentTarget.dataset.rid}.index`] = targetOrder
+
+        console.log('movableChange', diffData)
+        this.setData(diffData)
+
+        this.data.hasMoved = true
+      }
+    }, 0),
+
+    movableTouchEnd(e: WechatMiniprogram.TouchEvent) {
+      if (!this.data.isMoving) {
+        return
+      }
+      const dpos = this.data.placeholder.y
+
+      const diffData = {} as IAnyObject
+      diffData.isMoving = false
+      // 修正卡片位置
+      diffData[`roomPos.${e.currentTarget.dataset.rid}.y`] = dpos
+      diffData[`placeholder.index`] = -1
+      this.setData(diffData)
+      console.log('movableTouchEnd:', diffData)
+
+      this.renewRoomPos()
+
+      this.handleSortSaving()
+    },
+
+    handleSortSaving() {
+      const roomSortList = [] as Room.RoomSort[]
+      Object.keys(this.data.roomPos).forEach((roomId) => {
+        roomSortList.push({
+          roomId,
+          sort: this.data.roomPos[roomId].index + 1,
+        })
+      })
+
+      updateRoomSort(roomSortList)
     },
   },
 })

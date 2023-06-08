@@ -17,6 +17,14 @@ export default BehaviorWithComputed({
       }
     },
     /**
+     * 返回首页
+     */
+    goBackHome: function () {
+      wx.switchTab({
+        url: '/pages/index/index',
+      })
+    },
+    /**
      * 跳转到
      */
     goTo(e: WechatMiniprogram.TouchEvent) {

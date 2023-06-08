@@ -5,7 +5,7 @@ import { proType } from '../../../../config/index'
 import { deviceBinding, deviceStore, homeStore, roomBinding, roomStore } from '../../../../store/index'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
-import { storage, checkInputNameIllegal, emitter, WSEventType, showLoading, hideLoading } from '../../../../utils/index'
+import { storage, checkInputNameIllegal, emitter, showLoading, hideLoading } from '../../../../utils/index'
 
 let timeId: number
 
@@ -123,29 +123,8 @@ ComponentWithComputed({
   },
 
   lifetimes: {
-    ready() {
-      emitter.on('wsReceive', ({ result }) => {
-        if (result.eventType === WSEventType.group_device_result_status) {
-          if (result.eventData.errCode !== 0) {
-            this.data.moveFailCount++
-          }
-          const deviceId = result.eventData.devId
-          const uniId = `${result.eventData.devId}:${result.eventData.ep}`
-          const finishedIndex = this.data.moveWaitlist.findIndex((item) => item === deviceId || item === uniId)
-          this.data.moveWaitlist.splice(finishedIndex, 1)
-
-          if (!this.data.moveWaitlist.length) {
-            if (this.data.moveFailCount) {
-              this.handleBatchMove()
-            } else {
-              this.handleMoveFinish()
-            }
-          }
-        }
-      })
-    },
+    ready() {},
     detached() {
-      emitter.off('wsReceive')
       if (timeId) {
         clearTimeout(timeId)
       }
@@ -340,6 +319,8 @@ ComponentWithComputed({
         message: '移动成功',
         zIndex: 9999,
       })
+
+      emitter.off('group_device_result_status')
     },
     async handleConfirm() {
       if (this.data.showEditName) {
@@ -451,6 +432,24 @@ ComponentWithComputed({
         this.data.moveWaitlist = [...this.data.editSelectList]
         this.handleBatchMove()
         this.handleClose()
+
+        emitter.on('group_device_result_status', ( result ) => {
+          if (result.errCode !== 0) {
+            this.data.moveFailCount++
+          }
+          const deviceId = result.devId
+          const uniId = `${result.devId}:${result.ep}`
+          const finishedIndex = this.data.moveWaitlist.findIndex((item) => item === deviceId || item === uniId)
+          this.data.moveWaitlist.splice(finishedIndex, 1)
+
+          if (!this.data.moveWaitlist.length) {
+            if (this.data.moveFailCount) {
+              this.handleBatchMove()
+            } else {
+              this.handleMoveFinish()
+            }
+          }
+        })
       }
     },
     handleRoomSelect(e: { currentTarget: { dataset: { id: string } } }) {
