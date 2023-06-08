@@ -1,4 +1,4 @@
-import { storage } from '../../utils/index'
+import { storage } from '../../../utils/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 
 const MEIJU_DOMAIN = 'https://api-prod.smartmidea.net'
@@ -10,9 +10,11 @@ ComponentWithComputed({
    */
   data: {
     // token
-    // webviewSrc: 'https://test.meizgd.com/meiju/index.html?code=w2C7DW7ij1OSJQ04hB7NQppNvN4IxScz&state=1',
-    // webviewSrc: 'http://localhost:5000/meiju/?code=w2C7DW7ij1OSJQ04hB7NQppNvN4IxScz&state=1',
-    webviewSrc: 'https://api-prod.smartmidea.net/v2/open/oauth2/authorize?client_id=a1b362741f4a510d44c086b85ab5a872&state=1&response_type=code&redirect_uri=https://test.meizgd.com/meiju/index.html',
+    // webviewSrc: 'https://test.meizgd.com/meiju/index.html?code=1o2SoIiK13ARIPwJdpDSPhCV5AJCJ4bK&state=1',
+    // webviewSrc: 'http://localhost:5000/meiju/index.html?code=1o2SoIiK13ARIPwJdpDSPhCV5AJCJ4bK&state=1',
+    // webviewSrc: 'http://localhost:5500/index.html?code=1o2SoIiK13ARIPwJdpDSPhCV5AJCJ4bK&state=1',
+    webviewSrc:
+      'https://api-prod.smartmidea.net/v2/open/oauth2/authorize?client_id=a1b362741f4a510d44c086b85ab5a872&state=1&response_type=code&redirect_uri=https://test.meizgd.com/meiju/index.html',
   },
 
   methods: {
@@ -28,6 +30,9 @@ ComponentWithComputed({
           webviewSrc,
         })
       }
+    },
+    onMessage(e: { detail: { data: IAnyObject } }) {
+      console.log('onMessage', e.detail.data)
     },
   },
 })
