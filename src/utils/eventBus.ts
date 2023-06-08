@@ -16,7 +16,11 @@ type Events = {
   sceneEdit: void
   homeInfoEdit: void
   invite_user_house: void
-  scene_device_result_status: void
+  scene_device_result_status: {
+    devId: string
+    ep: number
+    sceneId: string
+  }
 }
 
 export const WSEventType = {

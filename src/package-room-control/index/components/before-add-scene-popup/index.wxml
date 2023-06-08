@@ -1,29 +1,29 @@
 <import src="/commons/templates/popup.wxml" />
 <van-popup show="{{ show }}" z-index="2000" round position="bottom" bind:close="handleClose" closeable>
-  <view class="w-750rpx h-1200rpx relative flex flex-col items-center">
+  <view class="w-750rpx h-1200rpx relative flex flex-col items-center bg-hex-F9FBFE">
     <template is="title" data="{{title: '创建场景'}}" />
     <text class="text-26rpx text-hex-555659 mb-52rpx mt-24rpx">将{{roomName}}内所有设备的状态保存为新场景</text>
     <view class="flex-1" id="content">
-      <scroll-view enhanced show-scrollbar="{{false}}" scroll-y style="height: {{contentHeight}}px; width: 750rpx;">
-        <van-cell-group inset wx:for="{{addSceneActions}}" bindtap="handleSceneActionEdit" data-index="{{index}}" custom-class="cell-border" wx:key="uniId" border="{{ false }}">
-          <van-cell center border="{{ false }}">
-            <view slot="title" class="flex items-center">
-              <image src="{{item.pic}}" class="w-96rpx h-96rpx rounded-999 bg-hex-f6fafd" />
-              <view class="flex flex-col items-start ml-32rpx">
-                <text class="text-32rpx text-black-2a font-medium leading-none mt-10rpx">{{item.name}}</text>
-                <view class="text-28rpx text-black-tips font-normal mt-8rpx">
-                  <text wx:for="{{item.desc}}" wx:key="index" class="{{index !== 0 ? 'ml-16rpx' : ''}}">{{item}}</text>
-                </view>
-              </view>
+      <scroll-view class="box-border px-24rpx" enhanced show-scrollbar="{{false}}" scroll-y style="height: {{contentHeight}}px; width: 750rpx;">
+        <view class="flex flex-row items-center bg-white rounded-32rpx px-40rpx py-32rpx mb-24rpx relative" wx:for="{{addSceneActions}}" bindtap="handleSceneActionEdit" data-index="{{index}}" wx:key="uniId">
+          <view class="w-96rpx h-96rpx box-border rounded-full bg-hex-f6fafd p-12rpx">
+            <image src="{{item.pic}}" class="w-72rpx h-72rpx" />
+          </view>
+
+          <view class="flex flex-col items-start ml-32rpx">
+            <text class="text-36 text-black-2a font-medium leading-50rpx">{{item.name}}</text>
+            <view class="flex flex-row gap-x-20rpx text-28 text-black-tips mt-22rpx leading-56rpx">
+              <text class="px-24rpx bg-hex-F4F5F8 rounded-32rpx" wx:for="{{item.desc}}" wx:key="index">{{item}}</text>
             </view>
-            <view slot="right-icon" class="-mr-32rpx p-20rpx pl-40rpx">
-              <svg-icon color="#d2d2d3" name="ion:close-circled" width="48rpx" height="48rpx" data-info="{{item}}" data-index="{{index}}" catchtap="handleActionDelete"></svg-icon>
-            </view>
-          </van-cell>
-        </van-cell-group>
+          </view>
+
+          <view class="px-20rpx py-16rpx absolute right-0 top-0" catchtap="handleActionDelete" data-index="{{index}}">
+            <image src="/assets/img/base/close-gray.png" class="w-40 h-40" />
+          </view>
+        </view>
       </scroll-view>
     </view>
-    <view class="h-24rpx"></view>
+    <view class="h-96rpx"></view>
     <view class="w-686rpx">
       <van-button type="primary" size="large" disabled="{{addSceneActions.length === 0}}" bind:click="handleNext">下一步</van-button>
     </view>

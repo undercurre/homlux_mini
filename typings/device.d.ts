@@ -48,6 +48,9 @@ declare namespace Device {
      * 如: xxxxx:1 xxxxx:2
      */
     uniId: string
+
+    // 设备状态字段，前端使用
+    status?: string
   }
 
   interface MzgdPropertyDTO {
@@ -99,6 +102,7 @@ declare namespace Device {
   interface ActionItem {
     uniId: string
     name: string
+    desc: string[]
     pic: string
     proType: string
     value: IAnyObject

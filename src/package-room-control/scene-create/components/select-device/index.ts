@@ -129,6 +129,7 @@ ComponentWithComputed({
             name: device.switchInfoDTOList[0].switchName + ' | ' + device.deviceName,
             pic: device.switchInfoDTOList[0].pic,
             proType: device.proType,
+            desc: [],
             value: {
               ep,
               OnOff,
@@ -142,6 +143,7 @@ ComponentWithComputed({
             name: device.deviceName,
             pic: device.pic,
             proType: device.proType,
+            desc: [],
             value: {
               ep: 1,
               OnOff: properties.OnOff,

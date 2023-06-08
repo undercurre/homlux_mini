@@ -11,11 +11,12 @@ import {
   roomStore,
   homeStore,
 } from '../../store/index'
+import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { controlDevice, execScene, saveDeviceOrder } from '../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
 import { storage, emitter, WSEventType, rpx2px, _get, throttle } from '../../utils/index'
-import { proName, proType, LIST_PAGE, CARD_W, CARD_H } from '../../config/index'
+import { maxColorTempK, minColorTempK, proName, proType, LIST_PAGE, CARD_W, CARD_H } from '../../config/index'
 
 /** 接口请求节流定时器，定时时间2s */
 let requestThrottleTimer = 0
@@ -653,8 +654,79 @@ ComponentWithComputed({
         return
       }
 
-      wx.navigateTo({
-        url: '/package-room-control/scene-create/index',
+      // 补充actions
+      const deviceMap = deviceStore.deviceMap
+      const addSceneActions = [] as Device.ActionItem[]
+
+      // 排除已经是场景开关的开关
+      // ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
+      let deviceList = [] as Device.DeviceItem[]
+
+      for (const list of this.data.devicePageList) {
+        deviceList = deviceList.concat(list)
+      }
+
+      const selectList = deviceList.filter((device) => {
+        let [, switchId] = device.uniId.split(':')
+
+        switchId = switchId ?? 1
+
+        return device.mzgdPropertyDTOList[switchId].ButtonMode !== 2 && device.onLineStatus
+      })
+
+      if (!selectList.length) {
+        Toast('所有设备已离线，无法创建场景')
+        return
+      }
+
+      selectList.forEach((device) => {
+        if (device.proType === proType.switch) {
+          // 开关
+          const deviceId = device.uniId.split(':')[0]
+          const ep = parseInt(device.uniId.split(':')[1])
+          const OnOff = deviceMap[deviceId].mzgdPropertyDTOList[ep].OnOff
+          addSceneActions.push({
+            uniId: device.uniId,
+            name: device.switchInfoDTOList[0].switchName + ' | ' + device.deviceName,
+            desc: OnOff ? ['打开'] : ['关闭'],
+            pic: device.switchInfoDTOList[0].pic,
+            proType: device.proType,
+            value: {
+              ep,
+              OnOff,
+            },
+          })
+        } else if (device.proType === proType.light) {
+          const properties = device.mzgdPropertyDTOList['1']
+          const desc = properties.OnOff ? ['打开'] : ['关闭']
+          const color = (properties.ColorTemp / 100) * (maxColorTempK - minColorTempK) + minColorTempK
+          const action = {
+            uniId: device.uniId,
+            name: device.deviceName,
+            desc,
+            pic: device.pic,
+            proType: device.proType,
+            value: {
+              ep: 1,
+              OnOff: properties.OnOff,
+            } as IAnyObject,
+          }
+          if (properties.OnOff) {
+            desc.push(`亮度${properties.Level}%`)
+            desc.push(`色温${color}K`)
+            action.value.Level = properties.Level
+            action.value.ColorTemp = properties.ColorTemp
+          }
+          addSceneActions.push(action)
+        }
+      })
+      runInAction(() => {
+        sceneStore.addSceneActions = addSceneActions
+      })
+      this.setData({
+        editSelectMode: false,
+        editSelectList: [],
+        showBeforeAddScenePopup: true,
       })
     },
 
@@ -871,30 +943,35 @@ ComponentWithComputed({
       })
     },
     handleShowAddSceneSuccess() {
-      this.updateDeviceList()
-      setTimeout(() => {
-        wx.createSelectorQuery()
-          .select('#scene-title')
-          .boundingClientRect()
-          .exec((res) => {
-            if (res.length > 0 && res[0]) {
-              this.setData({
-                sceneTitlePosition: {
-                  x: res[0].left,
-                  y: res[0].top,
-                },
-              })
-              this.setData({
-                showAddSceneSuccess: true,
-              })
-              setTimeout(() => {
-                this.setData({
-                  showAddSceneSuccess: false,
-                })
-              }, 3000)
-            }
-          })
-      }, 100)
+      this.setData({
+        showAddSceneSuccess: false,
+      })
+
+      wx.navigateTo({
+        url: '/package-room-control/scene-request-list/index',
+      })
+
+      // this.updateDeviceList()
+      // setTimeout(() => {
+      //   wx.createSelectorQuery()
+      //     .select('#scene-title')
+      //     .boundingClientRect()
+      //     .exec((res) => {
+      //       if (res.length > 0 && res[0]) {
+      //         this.setData({
+      //           sceneTitlePosition: {
+      //             x: res[0].left,
+      //             y: res[0].top,
+      //           },
+      //         })
+      //         setTimeout(() => {
+      //           this.setData({
+      //             showAddSceneSuccess: false,
+      //           })
+      //         }, 3000)
+      //       }
+      //     })
+      // }, 100)
     },
     updateSelectType() {
       const typeList = new Set()

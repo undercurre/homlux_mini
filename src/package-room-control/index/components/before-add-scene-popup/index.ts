@@ -2,7 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { runInAction } from 'mobx-miniprogram'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { findDevice } from '../../../../apis/index'
-import { proType } from '../../../../config/index'
+import { maxColorTempK, minColorTempK, proType } from '../../../../config/index'
 import { deviceStore, roomBinding, sceneBinding, sceneStore } from '../../../../store/index'
 
 ComponentWithComputed({
@@ -116,6 +116,19 @@ ComponentWithComputed({
       sceneStore.addSceneActions[this.data.editIndex].value = {
         ep: sceneStore.addSceneActions[this.data.editIndex].value.ep,
         ...e.detail,
+      }
+      if (sceneStore.addSceneActions[this.data.editIndex].proType === proType.light) {
+        if (e.detail.OnOff) {
+          const desc = e.detail.OnOff ? ['打开'] : ['关闭']
+          const color = (e.detail.ColorTemp / 100) * (maxColorTempK - minColorTempK) + minColorTempK
+          desc.push(`亮度${e.detail.Level}%`)
+          desc.push(`色温${color}K`)
+          sceneStore.addSceneActions[this.data.editIndex].desc = desc
+        } else {
+          sceneStore.addSceneActions[this.data.editIndex].desc = ['关闭']
+        }
+      } else if (sceneStore.addSceneActions[this.data.editIndex].proType === proType.switch) {
+        sceneStore.addSceneActions[this.data.editIndex].desc = e.detail.OnOff ? ['打开'] : ['关闭']
       }
       runInAction(() => {
         sceneStore.addSceneActions = [...sceneStore.addSceneActions]
