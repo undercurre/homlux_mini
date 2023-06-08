@@ -28,11 +28,5 @@ ComponentWithComputed({
     detached: function () {},
   },
 
-  methods: {
-    toPage(e: { currentTarget: { dataset: { url: string } } }) {
-      wx.navigateTo({
-        url: e.currentTarget.dataset.url,
-      })
-    },
-  },
+  methods: {},
 })

@@ -1,8 +1,8 @@
 <view class="page-container flex flex-col">
-  <nav-bar background="#eef2f7" leftArrow="{{true}}" bind:leftTap="goBack" title="语音控制"></nav-bar>
+  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="语音控制"></nav-bar>
 
   <van-cell-group inset>
-    <van-cell title="小度音箱" center data-url="{{urls.voiceIntro}}" bind:click="toPage" use-label-slot="{{true}}">
+    <van-cell title="小度音箱" center data-url="{{urls.voiceIntro}}" bind:click="goTo" use-label-slot="{{true}}">
       <image slot="icon" class="w-96rpx h-96rpx mr-32rpx" src="/assets/img/mine/duer.png" />
       <text slot="right-icon" class="text-label">操作步骤 ></text>
     </van-cell>
