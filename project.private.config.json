@@ -114,6 +114,13 @@
           "query": "",
           "launchMode": "default",
           "scene": null
+        },
+        {
+          "name": "屏端授权页面",
+          "pathName": "package-auth/auth-screen/index",
+          "query": "token=111",
+          "launchMode": "default",
+          "scene": null
         }
       ]
     }
