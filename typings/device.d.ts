@@ -6,7 +6,7 @@ declare namespace Device {
     deviceName: string
     /**
      * 设备类型
-     * 1:网关 2:子设备 3:wifi 4灯组
+     * 1:网关 2:子设备 3:wifi, 4:灯组
      */
     deviceType: number
     /**
@@ -30,7 +30,13 @@ declare namespace Device {
     orderNum: number
     /** 设备图片 */
     pic: string
-    /** 品类码 */
+    /**
+     * 品类码
+     * light: '0x13',
+     * switch: '0x21',
+     * curtain: '0x14',
+     * gateway: '0x16',
+     */
     proType: string
     /** 产品Id */
     productId: string

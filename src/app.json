@@ -97,6 +97,9 @@
   "permission": {
     "scope.userLocation": {
       "desc": "本应用访问位置信息，用于发现附近设备及WLAN列表等功能"
+    },
+    "scope.userFuzzyLocation": {
+      "desc": "本应用访问位置信息，用于获取天气信息提示等功能"
     }
   },
   "requiredPrivateInfos": ["getFuzzyLocation"]

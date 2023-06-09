@@ -17,15 +17,15 @@ export async function getMeijuHomeList(code?: string) {
 
 /**
  * 美居用户设备授权（同时返回美居设备列表）
- * @param houseId
- * @param roomId 不需要，暂时随便传值
+ * @param houseId 美居家庭id
+ * @param homLuxHouseId Homlux 家庭id
  */
-export async function bindMeiju(houseId: string) {
+export async function bindMeiju({ houseId, homLuxHouseId }: { houseId: string; homLuxHouseId: string }) {
   return await mzaioRequest.post<Auth.MeijuDevice[]>({
     log: false,
     loading: false,
     url: '/v1/thirdparty/midea/device/bindHouseRoom',
-    data: { houseId, roomId: 'xxx' },
+    data: { houseId, homLuxHouseId },
   })
 }
 
@@ -44,24 +44,24 @@ export async function getMeijuDeviceList() {
 /**
  * 同步美居设备列表
  */
-export async function syncMeijuDeviceList() {
+export async function syncMeijuDeviceList(homLuxHouseId: string) {
   return await mzaioRequest.post<Auth.MeijuDevice[]>({
     log: false,
     loading: false,
     url: '/v1/thirdparty/midea/device/syncMideaDevice',
-    data: {},
+    data: { homLuxHouseId },
   })
 }
 
 /**
  * 查询第三方授权
  */
-export async function queryUserThirdPartyInfo() {
+export async function queryUserThirdPartyInfo(homLuxHouseId: string) {
   return await mzaioRequest.post<Auth.AuthItem[]>({
     log: false,
     loading: false,
     url: '/v1/thirdparty/midea/device/queryUserThirdPartyInfo',
-    data: {},
+    data: { homLuxHouseId },
   })
 }
 

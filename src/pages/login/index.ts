@@ -42,9 +42,17 @@ Component({
         success: (res) => {
           console.log('login', res, e)
           if (res.code) {
-            this.login({
-              jsCode: res.code,
-              code: e.detail.code,
+            wx.getFuzzyLocation({
+              type: 'wgs84',
+              success: (loc) => {
+                console.log('getFuzzyLocation', loc)
+                this.login({
+                  jsCode: res.code,
+                  code: e.detail.code,
+                  latitude: loc.latitude,
+                  longitude: loc.longitude,
+                })
+              },
             })
           } else {
             Toast('登录失败！')
@@ -54,7 +62,7 @@ Component({
       })
     },
 
-    async login(data: { jsCode: string; code: string }) {
+    async login(data: { jsCode: string; code: string; latitude: number; longitude: number }) {
       const loginRes = await login(data)
       if (loginRes.success && loginRes.result) {
         console.log('loginRes', loginRes)

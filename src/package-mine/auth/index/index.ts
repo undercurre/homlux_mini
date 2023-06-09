@@ -1,10 +1,13 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
 import { queryUserThirdPartyInfo } from '../../../apis/index'
+import { homeBinding } from '../../../store/index'
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 
 // package-mine/auth/index.ts
 ComponentWithComputed({
-  behaviors: [pageBehaviors],
+  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] }), pageBehaviors],
+
   /**
    * 页面的初始数据
    */
@@ -21,13 +24,13 @@ ComponentWithComputed({
       return data.authList.length && data.authList[0].authStatus === 1
     },
     meijuLinkText(data) {
-      return data.authList.length && data.authList[0].authStatusName
+      return data.authList.length ? data.authList[0].authStatusName : ''
     },
   },
 
   methods: {
     async onLoad() {
-      const res = await queryUserThirdPartyInfo()
+      const res = await queryUserThirdPartyInfo(this.data.currentHomeId)
 
       if (res.success) {
         this.setData({
