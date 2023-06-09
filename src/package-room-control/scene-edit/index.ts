@@ -472,7 +472,8 @@ ComponentWithComputed({
       const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
       const device = allRoomDeviceMap[deviceAction.uniId]
       if (this.data.sceneDeviceActionsFlatten[e.currentTarget.dataset.index].proType === proType.light) {
-        findDevice({ gatewayId: device.gatewayId, devId: device.deviceId })
+        device.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId })
+        
         this.setData({
           sceneEditTitle: this.data.sceneDeviceActionsFlatten[e.currentTarget.dataset.index].name,
           sceneLightEditInfo: this.data.sceneDeviceActionsFlatten[e.currentTarget.dataset.index].value,

@@ -469,8 +469,9 @@ ComponentWithComputed({
           }
         }
 
+        // 灯具关联，只允许关联1个
         this.setData({
-          linkSelectList: [...this.data.linkSelectList, selectId],
+          linkSelectList: this.data.selectLinkType === 'switch' ? [...this.data.linkSelectList, selectId] : [selectId],
         })
       } else if (this.data.selectLinkType === 'scene') {
         const switchSceneActionMap = deviceStore.switchSceneActionMap
