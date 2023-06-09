@@ -61,7 +61,7 @@ ComponentWithComputed({
       isShow: false,
     },
     addMenu: {
-      x: '0px',
+      right: '0px',
       y: '0px',
       isShow: false,
     },
@@ -110,10 +110,6 @@ ComponentWithComputed({
         })
       }
       return hasLightOrSwitch
-    },
-    // 判断是否是创建者或者管理员，其他角色不能添加设备
-    canAddDevice(data) {
-      return data.isCreator || data.isAdmin
     },
   },
   watch: {
@@ -382,7 +378,7 @@ ComponentWithComputed({
     showAddMenu() {
       this.setData({
         addMenu: {
-          x: '460rpx',
+          right: '25rpx',
           y:
             (storage.get<number>('statusBarHeight') as number) +
             (storage.get<number>('navigationBarHeight') as number) +

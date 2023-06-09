@@ -1,4 +1,4 @@
-<view id="addMenu" class="bg fixed flex flex-col items-stretch py-10rpx px-24rpx rounded-32rpx z-120" style="left: {{x}}; top: {{y}};" wx:if="{{isRender}}" catchtouchmove="black">
+<view id="addMenu" class="bg fixed flex flex-col items-stretch py-10rpx px-24rpx rounded-32rpx z-120" style="right: {{right}}; top: {{y}};" wx:if="{{isRender}}" catchtouchmove="black">
   <view class="flex flex-col items-start" bindtap="addMenuTap" wx:for="{{menuList}}" wx:key="key" data-url="{{item.url}}">
     <view class="h-96rpx flex items-center">
       <image src="/assets/img/base/{{item.icon}}.png" class="w-48rpx h-48rpx"></image>

@@ -1,6 +1,10 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
+import { homeBinding } from '../../../../store/index'
+import pageBehavior from '../../../../behaviors/pageBehaviors'
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 
 ComponentWithComputed({
+  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] }), pageBehavior],
   options: {
     styleIsolation: 'apply-shared',
   },
@@ -8,7 +12,7 @@ ComponentWithComputed({
    * 组件的属性列表
    */
   properties: {
-    x: {
+    right: {
       type: String,
       value: '0',
     },
@@ -37,28 +41,38 @@ ComponentWithComputed({
    */
   data: {
     isRender: false,
-    menuList: [
-      {
-        title: '添加设备',
-        key: 'device',
-        icon: 'add',
-        url: '/package-distribution/scan/index',
-      },
-      {
-        title: '添加自动化',
-        key: 'auto',
-        icon: 'auto',
-      },
-      {
-        title: '连接其它平台',
-        key: 'platform',
-        icon: 'auth',
-        url: '/package-mine/auth/index/index',
-      },
-    ],
   },
 
-  computed: {},
+  computed: {
+    menuList(data) {
+      const list = []
+      if (data.isCreator || data.isAdmin) {
+        list.push({
+          title: '添加设备',
+          key: 'device',
+          icon: 'add',
+          url: '/package-distribution/scan/index',
+        })
+      }
+      if (data.isCreator) {
+        list.push(
+          {
+            title: '添加自动化',
+            key: 'auto',
+            icon: 'auto',
+          },
+          {
+            title: '连接其它平台',
+            key: 'platform',
+            icon: 'auth',
+            url: '/package-mine/auth/index/index',
+          },
+        )
+      }
+
+      return list
+    },
+  },
 
   /**
    * 组件的方法列表
