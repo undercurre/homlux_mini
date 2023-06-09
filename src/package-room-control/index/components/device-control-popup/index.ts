@@ -411,7 +411,7 @@ ComponentWithComputed({
       if (this.data.selectLinkType === 'light') {
         list = deviceStore.allRoomDeviceFlattenList.filter((item) => item.proType === proType.light)
 
-        linkSelectList = relInfo.lampRelList.map((device) => device.lampDeviceId)
+        linkSelectList = relInfo.lampRelList.map((device) => device.lampDeviceId.replace('group-', ''))
       } else if (this.data.selectLinkType === 'switch') {
         list = deviceStore.allRoomDeviceFlattenList.filter(
           (item) => item.proType === proType.switch && item.uniId !== switchUniId,
@@ -698,6 +698,13 @@ ComponentWithComputed({
       let res
 
       if (this.data.selectLinkType === 'light') {
+        const deviceMap = deviceStore.allRoomDeviceMap
+        const device = deviceMap[this.data.linkSelectList[0]]
+
+        if (device.deviceType === 4) {
+          this.data.linkSelectList[0] = 'group-' + this.data.linkSelectList[0]
+        }
+
         // 编辑和灯的关联数据
         res = await editLampAndSwitchAssociated({
           primaryDeviceId: deviceId,
