@@ -17,8 +17,9 @@
         </view>
         <van-field value="{{  }}" size="large" placeholder="给场景取个名字" clearable="{{true}}" custom-style="padding: 24rpx 40rpx;border-radius: 32rpx;width:530rpx;height:96rpx;text-align:center;" bind:change="changeAutoSceneName" border="{{false}}"> </van-field>
       </view>
-      <view class="mt-64rpx mb-36rpx mx-48rpx">
-        <text class="text-40rpx font-medium text-hex-1a1a1c">如果</text>
+      <view class="h-48rpx mt-64rpx mb-36rpx mx-48rpx flex justify-between align-center">
+        <text class="text-40rpx font-medium text-hex-1a1a1c leading-48rpx">如果</text>
+        <image class="w-48 h-48" src="/assets/img/base/add.png" bindtap="handleConditionShow"></image>
       </view>
       <van-cell-group inset>
         <van-cell border="{{false}}" clickable="{{true}}" bind:click="handleConditionShow">
@@ -30,15 +31,16 @@
           </view>
         </van-cell>
       </van-cell-group>
-      <view class="mt-64rpx mb-36rpx mx-48rpx">
-        <text class="text-40rpx font-medium text-hex-1a1a1c">就执行</text>
+      <view class="h-48rpx mt-64rpx mb-36rpx mx-48rpx flex justify-between align-center">
+        <text class="text-40rpx font-medium text-hex-1a1a1c leading-48rpx">就执行</text>
+        <image class="w-48 h-48" src="/assets/img/base/add.png" bindtap="handleActionShow"></image>
       </view>
       <van-cell-group inset>
-        <van-cell border="{{false}}" clickable="{{true}}">
+        <van-cell border="{{false}}" clickable="{{true}}" bind:click="handleActionShow">
           <view class="flex items-center justify-center">
             <view class="flex flex-row items-center h-96rpx">
               <image class="w-56 h-56 mr-38rpx" src="/assets/img/base/add.png"></image>
-              <text class="text-32rpx text-hex-555659">执行任务</text>
+              <text class="text-32rpx text-hex-555659">执行动作</text>
             </view>
           </view>
         </van-cell>
@@ -47,7 +49,10 @@
     </scroll-view>
   </view>
 </view>
+
 <add-condition-popup show="{{showEditConditionPopup}}" bind:close="handleConditionClose" bind:conditionClicked="onConditionClicked" />
+<add-action-popup show="{{showEditActionPopup}}" bind:close="handleActionClose" bind:actionClicked="onActionClicked" />
 <edit-icon-popup value="{{sceneIcon}}" show="{{showEditIconPopup}}" bind:close="handleEditIconClose" bind:confirm="handleEditIconConfirm" />
 <edit-period-popup show="{{showPeriodPopup}}" bind:close="handlePeriodClose" bind:confirm="handlePeriodConfirm" />
+<edit-delay-popup show="{{showDelayPopup}}" bind:close="handleDelayClose" bind:confirm="handleDelayConfirm" />
 <van-toast id="van-toast" />

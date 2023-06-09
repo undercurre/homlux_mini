@@ -16,7 +16,9 @@ ComponentWithComputed({
     contentHeight: 0,
     showEditIconPopup: false,
     showEditConditionPopup: false, //展示添加条件popup
+    showEditActionPopup: false, //展示添加执行动作popup
     showPeriodPopup: false, //展示周期popup
+    showDelayPopup: false, //展示延时popup
     fromDevice: false,
     formatter(type: string, value: string) {
       if (type === 'hour') {
@@ -100,6 +102,32 @@ ComponentWithComputed({
     handlePeriodClose() {
       this.setData({
         showPeriodPopup: false,
+      })
+    },
+    handleActionShow() {
+      this.setData({
+        showEditActionPopup: true,
+      })
+    },
+    handleActionClose() {
+      this.setData({
+        showEditActionPopup: false,
+      })
+    },
+    onActionClicked(e: { detail: number }) {
+      console.log(e.detail)
+      if (e.detail === 2) {
+        this.setData({
+          showDelayPopup: true,
+        })
+      }
+      this.setData({
+        showEditActionPopup: false,
+      })
+    },
+    handleDelayClose() {
+      this.setData({
+        showDelayPopup: false,
       })
     },
   },

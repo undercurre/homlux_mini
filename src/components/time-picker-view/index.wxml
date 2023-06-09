@@ -1,15 +1,15 @@
 <view>
   <view class="h-270rpx w-750rpx relative">
     <view class="absolute w-686rpx h-90rpx top-90rpx bg-hex-f9fbfe mx-32rpx rounded-32rpx">
-      <text class="absolute top-29rpx left-264rpx text-28rpx text-hex-666666">时</text>
-      <text class="absolute top-29rpx left-494rpx text-28rpx text-hex-666666">分</text>
+      <text class="absolute top-29rpx left-264rpx text-28rpx text-hex-666666">{{colFirUnit}}</text>
+      <text class="absolute top-29rpx left-494rpx text-28rpx text-hex-666666">{{colSecUnit}}</text>
     </view>
     <picker-view indicator-class="picker-selected" indicator-style="height: 50px;" class="w-full h-270rpx" value="{{value}}" bindchange="bindChange">
       <picker-view-column>
-        <view wx:for="{{hours}}" style="padding-left: 124rpx; line-height: 50px; text-align: center; font-weight: 500; font-size: 40rpx">{{item}}</view>
+        <view wx:for="{{colFir}}" style="padding-left: 124rpx; line-height: 50px; text-align: center; font-weight: 500; font-size: 40rpx">{{item}}</view>
       </picker-view-column>
       <picker-view-column>
-        <view wx:for="{{minutes}}" style="padding-right: 164rpx; line-height: 50px; text-align: center; font-weight: 500; font-size: 38rpx">{{item}}</view>
+        <view wx:for="{{colSec}}" style="padding-right: 164rpx; line-height: 50px; text-align: center; font-weight: 500; font-size: 38rpx">{{item}}</view>
       </picker-view-column>
     </picker-view>
   </view>
