@@ -2,9 +2,12 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
 import { bindMeiju, getMeijuDeviceList, syncMeijuDeviceList, delDeviceSubscribe } from '../../../apis/index'
 import { delay } from '../../../utils/index'
+import { homeBinding } from '../../../store/index'
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 
 ComponentWithComputed({
-  behaviors: [pageBehaviors],
+  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] }), pageBehaviors],
+
   /**
    * 页面的初始数据
    */
@@ -17,10 +20,10 @@ ComponentWithComputed({
 
   methods: {
     async onLoad(query: { homeId: string }) {
-      console.log('device list onload', query)
+      console.log('device list onload', query, this.data.currentHomeId)
       // 带 homeId，未绑定
       if (query?.homeId) {
-        const res = await bindMeiju(query.homeId)
+        const res = await bindMeiju({ houseId: query.homeId, homLuxHouseId: this.data.currentHomeId })
 
         if (res.success) {
           const deviceList = res.result
@@ -54,7 +57,7 @@ ComponentWithComputed({
     },
 
     async syncMeijuDevice() {
-      const res = await syncMeijuDeviceList()
+      const res = await syncMeijuDeviceList(this.data.currentHomeId)
       if (res.success) {
         const deviceList = res.result
         this.setData({

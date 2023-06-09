@@ -1,7 +1,7 @@
-import { storage } from '../../../utils/index'
+// import { storage } from '../../../utils/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 
-const MEIJU_DOMAIN = 'https://api-prod.smartmidea.net'
+// const MEIJU_DOMAIN = 'https://api-prod.smartmidea.net'
 
 // package-mine/auth/index.ts
 ComponentWithComputed({
@@ -22,14 +22,14 @@ ComponentWithComputed({
       const src = e.detail.src
       console.log('bindload', src)
       // 已在美智h5页面范围，并且未带token，则更新webviewSrc
-      if (src.indexOf(MEIJU_DOMAIN) === -1 && src.indexOf('tr=') === -1) {
-        // token 反转发送，稍提高安全性
-        const tr = String(storage.get<string>('token')).split('').reverse().join('')
-        const webviewSrc = `${src}&tr=${tr}`
-        this.setData({
-          webviewSrc,
-        })
-      }
+      // if (src.indexOf(MEIJU_DOMAIN) === -1 && src.indexOf('tr=') === -1) {
+      //   // token 反转发送，稍提高安全性
+      //   const tr = String(storage.get<string>('token')).split('').reverse().join('')
+      //   const webviewSrc = `${src}&tr=${tr}`
+      //   this.setData({
+      //     webviewSrc,
+      //   })
+      // }
     },
     onMessage(e: { detail: { data: IAnyObject } }) {
       console.log('onMessage', e.detail.data)
