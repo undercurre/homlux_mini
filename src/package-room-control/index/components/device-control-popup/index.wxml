@@ -1,11 +1,11 @@
 <wxs module="wxs" src="./index.wxs"></wxs>
-<view wx:if="{{isRender}}" change:info="{{wxs.infoObserver}}" info="{{info}}" id="popup" class="fixed z-200 left-0 w-750rpx h-600rpx opacity-0" bindtap="handlePopup" bindtouchstart="handleTouchStart" catchtouchmove="handleTouchMove">
+<view wx:if="{{isRender}}" change:info="{{wxs.infoObserver}}" info="{{info}}" id="popup" class="fixed z-200 left-0 w-750rpx h-600rpx opacity-0" bindtouchstart="handleTouchStart" catchtouchmove="handleTouchMove">
   <view class="popup-shadow w-750rpx h-600rpx rounded-t-64rpx bg-white flex-col flex items-center">
     <view class="flex-center mt-28rpx h-20rpx">
       <view class="w-76rpx h-8rpx bg-black-tips rounded-999"></view>
     </view>
     <!-- tab -->
-    <view class="flex justify-evenly w-686rpx">
+    <view class="flex justify-evenly w-686rpx relative">
       <view class="flex-col-center" data-tab="light" bindtap="handleTabTap" wx:if="{{lightTab}}">
         <text class="mt-34rpx mx-24rpx {{tab === 'light' ? 'tab-title-check' : 'tab-title-uncheck'}}">灯光</text>
         <view class="w-42rpx mb-20rpx h-8rpx mt-4rpx bg-blue rounded-999 {{tab === 'light' ? 'opacity-100' : 'opacity-0'}}"></view>
@@ -17,6 +17,12 @@
       <view class="flex-col-center" data-tab="curtain" bindtap="handleTabTap" wx:if="{{curtainTab}}">
         <text class="mt-34rpx mx-24rpx {{tab === 'curtain' ? 'tab-title-check' : 'tab-title-uncheck'}}">窗帘</text>
         <view class="w-42rpx mb-20rpx h-8rpx mt-4rpx bg-blue rounded-999 {{tab === 'curtain' ? 'opacity-100' : 'opacity-0'}}"></view>
+      </view>
+      <view class="left-20rpx top-16rpx absolute" bind:tap="toDetail">
+        <image class="w-48 h-48" src="/assets/img/home-manage/setting.png"></image>
+      </view>
+      <view class="absolute right-20rpx top-16rpx" bindtap="handleClose">
+        <image src="/assets/img/base/close.png" class="w-48rpx h-48rpx" />
       </view>
     </view>
     <!-- tab内容 -->

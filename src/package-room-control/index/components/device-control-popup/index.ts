@@ -380,8 +380,8 @@ ComponentWithComputed({
       this.triggerEvent('popMove', isMoveUp ? 'up' : 'down')
       this.data._isTouchStart = false
     },
-    handlePopup() {
-      this.triggerEvent('popMove', 'up')
+    handleClose() {
+      this.triggerEvent('popMove', 'down')
     },
     handleLinkPopup() {
       const switchUniId = this.data.checkedList[0]
@@ -983,5 +983,10 @@ ComponentWithComputed({
     findDevice(device: Device.DeviceItem) {
       findDevice({ gatewayId: device.gatewayId, devId: device.deviceId })
     },
+    toDetail() {
+      wx.navigateTo({
+        url: `/package-mine/device-manage/device-detail/index?deviceId=${this.data.checkedList[0]}`,
+      })
+    }
   },
 })
