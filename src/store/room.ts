@@ -20,10 +20,6 @@ export const roomStore = observable({
     return this.roomList[this.currentRoomIndex]
   },
 
-  get roomMap(): Record<string, Room.RoomInfo> {
-    return Object.fromEntries(this.roomList.map((room) => [room.roomId, room]))
-  },
-
   updateRoomCardLightOnNum() {
     const list = {} as Record<string, Device.DeviceItem[]>
     deviceStore.allRoomDeviceList
@@ -99,7 +95,6 @@ export const roomStore = observable({
           } else if (device.proType === proType.switch) {
             device.switchInfoDTOList.forEach((switchItem) => {
               if (
-                !switchItem.lightRelId &&
                 device.mzgdPropertyDTOList[switchItem.switchId].OnOff &&
                 !device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode
               ) {

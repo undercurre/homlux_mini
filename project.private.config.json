@@ -109,6 +109,20 @@
           "scene": null
         },
         {
+          "name": "创建场景",
+          "pathName": "package-room-control/scene-create/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "屏端授权页面",
+          "pathName": "package-auth/auth-screen/index",
+          "query": "token=111",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "自动化",
           "pathName": "pages/automation/index",
           "query": "",

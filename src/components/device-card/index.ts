@@ -9,7 +9,17 @@ ComponentWithComputed({
    * 组件的属性列表
    */
   properties: {
+    // 单选
     select: {
+      type: Boolean,
+      value: false,
+    },
+    editMode: {
+      type: Boolean,
+      value: false,
+    },
+    // 编辑模式选择，可多选
+    editSelect: {
       type: Boolean,
       value: false,
     },
@@ -31,14 +41,6 @@ ComponentWithComputed({
       type: Boolean,
       value: false,
     },
-    editMode: {
-      type: Boolean,
-      value: false,
-    },
-    editSelect: {
-      type: Boolean,
-      value: false,
-    },
     // 是否显示开关按键名称及图标
     showBtnDetail: {
       type: Boolean,
@@ -57,6 +59,9 @@ ComponentWithComputed({
 
   computed: {
     picUrl(data) {
+      if (data.deviceInfo.deviceType === 4) {
+        return '/assets/img/device/group.png'
+      }
       if (data.deviceInfo.proType === proType.switch && data.showBtnDetail) {
         return data.deviceInfo?.switchInfoDTOList[0]?.pic
       } else if (data.deviceInfo?.pic) {

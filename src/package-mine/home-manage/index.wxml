@@ -46,7 +46,7 @@
 
 <van-action-sheet show="{{ isShowSetting }}" actions="{{ settingActions }}" cancel-text="取消" bind:close="onCloseSetting" bind:select="onSelectSetting" bind:cancel="onCloseSetting" />
 
-<van-popup round show="{{ isEditName }}" bind:close="onCloseEditName" position="bottom">
+<van-popup round show="{{ isEditName }}" bind:close="onCloseEditName" position="bottom" closeable>
   <view class="pb-100rpx">
     <text class="block pt-48rpx pb-64rpx text-center leading-50rpx text-36 text-black-2a font-medium">{{namingPopupTitle}}</text>
 

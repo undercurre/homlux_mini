@@ -11,11 +11,21 @@ type Events = {
       eventType: keyof typeof WSEventType
     }
   }
+  group_device_result_status: {
+    devId: string
+    ep: number
+    errCode: number
+  }
   // 从websocket接受到信息 end
   deviceEdit: void
   sceneEdit: void
   homeInfoEdit: void
   invite_user_house: void
+  scene_device_result_status: {
+    devId: string
+    ep: number
+    sceneId: string
+  }
 }
 
 export const WSEventType = {

@@ -18,11 +18,15 @@ ComponentWithComputed({
       type: Object,
       observer() {},
     },
+    isMoving: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   computed: {
     showScene(data) {
-      return data.roomInfo.subDeviceNum > 0
+      return !data.isMoving && data.roomInfo.subDeviceNum > 0
     },
     sceneList(data) {
       return data.roomInfo.sceneList.map((scene: Scene.SceneBase) => {
@@ -39,7 +43,7 @@ ComponentWithComputed({
       return []
     },
     hasBottomPadding(data) {
-      return data.roomInfo.subDeviceNum > 0 && data.roomInfo.sceneList.length > 0
+      return data.roomInfo.subDeviceNum > 0 && data.roomInfo.sceneList.length > 0 && !data.isMoving
     },
     desc(data) {
       if (data.sceneList && data.deviceListComputed) {

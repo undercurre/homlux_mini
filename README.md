@@ -47,7 +47,7 @@ HomLux小程序
 ```
 ## 环境定义
 微信的环境名称，与代码中美智云的对应名称有所出入，映射关系如下：
-```JSON
+```json
 {
   develop: 'dev',
   trial: 'sit',
@@ -77,6 +77,7 @@ HomLux小程序
 - [家庭选择下拉菜单](docs/components/home-select-menu.md)
 - [SVG图标渲染](docs/components/svg-icon.md)
 - [van-button](docs/components/van-button.md)
+- [设备或者场景选择弹窗](docs/components/select-card-popup.md)
 
 ## 项目规范
 

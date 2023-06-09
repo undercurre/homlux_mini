@@ -8,6 +8,7 @@
 <view style="height: calc(120rpx + {{navigationBarAndStatusBarHeight}});" class="fixed left-0 top-0 z-110 overflow-hidden w-750rpx" bindtap="hideMenu">
   <image src="/assets/img/home/bg.jpg" class="bg-image absolute z-111"></image>
   <view class="w-750rpx flex justify-between pt-28rpx left-0 absolute z-112" style="top: {{navigationBarAndStatusBarHeight}};">
+    <!-- 全屋开关 -->
     <view class="ml-24rpx">
       <view class="bg-hex-ffffff_42 w-244rpx h-80rpx rounded-40rpx flex items-center" wx:if="{{isShowHomeControl}}">
         <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx relative">
@@ -25,7 +26,8 @@
         </view>
       </view>
     </view>
-    <view wx:if="{{hasDevice && canAddDevice}}" class="mr-36rpx mt-8rpx" data-mark="addIcon" id="addIcon" bind:tap="goTo" data-url="/package-distribution/scan/index">
+
+    <view wx:if="{{isCreator || isAdmin}}" class="mr-36rpx mt-8rpx" data-mark="addIcon" id="addIcon" catchtap="showAddMenu">
       <image src="/assets/img/home/add.png" class="w-64rpx h-64rpx"></image>
     </view>
   </view>
@@ -47,17 +49,19 @@
     <view class="flex-1 flex flex-col items-between mx-24rpx" wx:if="{{hasDevice}}">
       <!-- 顶开上面的内容高度 -->
       <view class="h-24rpx"></view>
-      <view class="flex-1">
+      <movable-area style="height: {{accumulatedY}}px; width: 702rpx;">
         <!-- 房间卡片列表 -->
-        <room-card wx:for="{{roomList}}" wx:key="roomId" room-info="{{item}}" data-room="{{item.roomId}}" bind:sceneSelect="handleSceneSelect"></room-card>
-        <view class="w-full flex-center mt-12rpx">
-          <van-button type="default" color="rgba(255,255,255,0.60)" size="small" custom-class="round-btn-border" round bind:click="goTo" data-url="/package-mine/room-manage/index">
-            <text class="text-26rpx text-hex-555659">房间管理</text>
-          </van-button>
-        </view>
-        <!-- 顶开下面的内容高度 -->
-        <view class="h-64rpx"></view>
+        <movable-view wx:for="{{roomList}}" wx:key="roomId" data-index="{{index}}" data-rid="{{item.roomId}}" class="w-702rpx {{item.sceneList.length && !isMoving ? 'h-336rpx' : 'h-152rpx'}}" y="{{roomPos[item.roomId].y}}" direction="vertical" bind:longpress="movableTouchStart" bind:touchend="movableTouchEnd" bind:change="movableChange" class="{{ roomPos[item.roomId].index === placeholder.index ? 'z-100' : (isMoving ? 'opacity-50' : 'opacity-100 z-1') }}" disabled="{{!isMoving}}">
+          <room-card room-info="{{item}}" data-room="{{item.roomId}}" isMoving="{{isMoving}}" bind:sceneSelect="handleSceneSelect"></room-card>
+        </movable-view>
+      </movable-area>
+      <view class="w-full flex-center mt-12rpx">
+        <van-button type="default" color="rgba(255,255,255,0.60)" size="small" custom-class="round-btn-border" round bind:click="goTo" data-url="/package-mine/room-manage/index">
+          <text class="text-26rpx text-hex-555659">房间管理</text>
+        </van-button>
       </view>
+      <!-- 顶开下面的内容高度 -->
+      <view class="h-64rpx"></view>
     </view>
     <!-- 无设备时显示 -->
     <view wx:else class="w-full mt-68rpx flex flex-col items-center">
@@ -101,6 +105,7 @@
 </view>
 
 <home-select-menu x="{{selectHomeMenu.x}}" y="{{selectHomeMenu.y}}" isShow="{{selectHomeMenu.isShow}}" bind:select="handleHomeSelect"></home-select-menu>
+<add-menu right="{{addMenu.right}}" y="{{addMenu.y}}" isShow="{{addMenu.isShow}}"></add-menu>
 <add-room show="{{showAddNewRoom}}" bind:close="handleHideAddNewRoom"></add-room>
 <van-toast id="van-toast" />
 <van-dialog id="van-dialog" />

@@ -38,3 +38,17 @@ export async function getUploadFileForOssInfo(fileName: string) {
     },
   })
 }
+
+/**
+ * 美智用户二维码确认授权接口
+ */
+export async function authQrcode(qrcode: string) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: false,
+    url: '/v1/mzgd/user/mzgdUserQrcodeAuthorize',
+    data: {
+      qrcode,
+    },
+  })
+}

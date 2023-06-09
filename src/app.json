@@ -22,7 +22,10 @@
         "member-manage/index",
         "accept-invitation/index",
         "device-replace/index",
-        "auth/index",
+        "auth/index/index",
+        "auth/meiju/index",
+        "auth/home-list/index",
+        "auth/device-list/index",
         "ota/index",
         "device-manage/index",
         "device-manage/device-detail/index",
@@ -32,11 +35,15 @@
     },
     {
       "root": "package-room-control",
-      "pages": ["index/index", "scene-edit/index", "scene-list/index"]
+      "pages": ["index/index", "scene-edit/index", "scene-request-list/index", "scene-list/index", "group/index"]
     },
     {
       "root": "package-protocol",
       "pages": ["protocol-show/index", "protocol-list/index", "add-virtual-device/index"]
+    },
+    {
+      "root": "package-auth",
+      "pages": ["auth-screen/index"]
     },
     {
       "root": "package-automation",
@@ -75,13 +82,13 @@
     "van-popup": "@vant/weapp/popup/index",
     "van-field": "@vant/weapp/field/index",
     "van-cell-group": "@vant/weapp/cell-group/index",
+    "van-dialog": "@vant/weapp/dialog/index",
+    "van-toast": "@vant/weapp/toast/index",
     "nav-bar": "./components/custom-nav-bar/index",
     "home-select-menu": "./components/home-select-menu/index",
     "add-room": "./components/add-room/index",
     "svg-icon": "./components/svg-icon/index",
-    "device-card": "./components/device-card/index",
-    "van-dialog": "@vant/weapp/dialog/index",
-    "van-toast": "@vant/weapp/toast/index"
+    "device-card": "./components/device-card/index"
   },
   "window": {
     "navigationStyle": "custom",

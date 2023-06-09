@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "usingComponents": {
+    "select-device": "./components/select-device/index",
+    "edit-info": "./components/edit-info/index",
+    "request-list": "./components/request-list/index"
+  }
+}

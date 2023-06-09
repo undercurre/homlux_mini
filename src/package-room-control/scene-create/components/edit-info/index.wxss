@@ -1,0 +1,4 @@
+.scene-cell {
+  position: relative;
+  overflow: visible !important;
+}

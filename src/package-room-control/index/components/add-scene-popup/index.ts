@@ -1,9 +1,10 @@
-import { addScene, updateScene } from '../../../../apis/scene'
-import { proType, sceneList } from '../../../../config/index'
-import { deviceStore, homeStore, roomStore, sceneStore } from '../../../../store/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
+import { updateScene } from '../../../../apis/scene'
+import { proType, sceneList } from '../../../../config/index'
+import { deviceStore, homeStore, roomStore, sceneStore } from '../../../../store/index'
+import { storage } from '../../../../utils/index'
 
 ComponentWithComputed({
   options: {
@@ -92,6 +93,7 @@ ComponentWithComputed({
         })
         return
       }
+
       this.setData({
         isAddingScene: true,
       })
@@ -128,9 +130,10 @@ ComponentWithComputed({
           sceneId: switchSceneConditionMap[this.data.linkSwitch],
           updateType: '2',
         })
+
         if (!res.success) {
           Toast({
-            message: '取绑原有场景失败',
+            message: '取消绑定原有场景失败',
             zIndex: 99999,
           })
           this.setData({
@@ -140,12 +143,13 @@ ComponentWithComputed({
         }
       }
       await sceneStore.updateAllRoomSceneList()
-      // 将新场景排到最后
+      // 将新场景排到最后,orderNum可能存在跳号的情况
       sceneStore.sceneList.forEach((scene) => {
         if (scene.orderNum && scene.orderNum >= newSceneData.orderNum) {
           newSceneData.orderNum = scene.orderNum + 1
         }
       })
+
       // 补充actions
       const deviceMap = deviceStore.deviceMap
       // switch需要特殊处理
@@ -176,26 +180,17 @@ ComponentWithComputed({
           proType: deviceMap[deviceId].proType,
         })),
       )
-      const res = await addScene(newSceneData)
-      if (res.success) {
-        this.triggerEvent('addSuccess')
-        sceneStore.updateAllRoomSceneList()
-        sceneStore.updateSceneList()
-        deviceStore.updateDeviceList()
-        deviceStore.updateAllRoomDeviceList()
-        homeStore.updateRoomCardList()
-      } else {
-        Toast({
-          message: '创建失败',
-          zIndex: 99999,
-        })
-      }
+
+      storage.set('scene_data', newSceneData)
+
       this.setData({
         isAddingScene: false,
       })
-      console.log('setData-isAddingScene', this.data.isAddingScene)
+
       this.triggerEvent('close')
+      this.triggerEvent('confirm')
     },
+
     handleClear() {
       this.setData({
         sceneName: '',
@@ -212,15 +207,22 @@ ComponentWithComputed({
       })
     },
     handleLinkSwitchPopup() {
+      const list = deviceStore.allRoomDeviceFlattenList.filter((item) => {
+        if (!item.uniId.includes(':')) {
+          return false
+        }
+        // 排除掉已在待创建场景执行动作中的开关
+        return !sceneStore.addSceneActions.some((action) => action.uniId === item.uniId)
+      })
+
+      if (list.length <= 0) {
+        Toast('没有可关联的智能开关')
+        return
+      }
+
       this.setData({
         showLinkPopup: true,
-        list: deviceStore.allRoomDeviceFlattenList.filter((item) => {
-          if (!item.uniId.includes(':')) {
-            return false
-          }
-          // 排除掉已在待创建场景执行动作中的开关
-          return !sceneStore.addSceneActions.some((action) => action.uniId === item.uniId)
-        }),
+        list,
         linkSelectList: this.data.linkSwitch ? [this.data.linkSwitch] : [],
       })
     },

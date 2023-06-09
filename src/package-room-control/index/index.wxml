@@ -64,14 +64,14 @@
           </view>
         </view>
 
-        <movable-area style="{{movableViewStyle}}">
+        <movable-area style="{{movableAreaStyle}}">
           <!-- <movable-view wx:if="{{isMoving}}" x="{{placeholder.x}}" y="{{placeholder.y}}" direction="all" class="z-1">
             <view class="w-160rpx h-216rpx rounded-32rpx ml-10rpx mt-16rpx border border-solid border-blue opacity-25"></view>
           </movable-view> -->
 
           <view wx:for="{{devicePageList}}" wx:for-item="group" wx:key="g" wx:for-index="g" class="flex flex-row flex-wrap">
-            <movable-view wx:for="{{group}}" wx:key="uniId" data-index="{{i}}" data-group="{{g}}" data-ordernum="{{item.orderNum}}" wx:for-index="i" x="{{item.x}}" y="{{item.y}}" direction="all" bind:longpress="movableTouchStart" bind:touchend="movableTouchEnd" bind:change="movableChange" class="{{ i === placeholder.index && g === placeholder.groupIndex ? 'z-100' : 'z-1' }}" disabled="{{!isMoving}}">
-              <device-card class="w-180rpx pb-16rpx pt-16rpx flex justify-center {{editSelectMode && (i !== placeholder.index || g !== placeholder.groupIndex) ? 'shake' : ''}}" showControl showShadow showGradientBg edit-mode="{{editSelectMode}}" edit-select="{{item.editSelect}}" device-info="{{item}}" data-item="{{item}}" select="{{item.select}}" bind:controlTap="handleControlTap" bind:cardTap="handleCardTap" bind:offlineTap="handleShowDeviceOffline" bind:longPress="handleLongpress" />
+            <movable-view wx:for="{{group}}" wx:key="uniId" data-index="{{index}}" data-group="{{g}}" data-ordernum="{{item.orderNum}}" x="{{item.x}}" y="{{item.y}}" direction="all" bind:longpress="movableTouchStart" bind:touchend="movableTouchEnd" bind:change="movableChange" class="{{ index === placeholder.index && g === placeholder.groupIndex ? 'z-100' : 'z-1' }}" disabled="{{!isMoving}}">
+              <device-card class="w-180rpx pb-16rpx pt-16rpx flex justify-center {{editSelectMode && (index !== placeholder.index || g !== placeholder.groupIndex) ? 'shake' : ''}}" showControl showShadow showGradientBg edit-mode="{{editSelectMode}}" edit-select="{{item.editSelect}}" device-info="{{item}}" data-item="{{item}}" select="{{item.select}}" bind:controlTap="handleControlTap" bind:cardTap="handleCardTap" bind:offlineTap="handleShowDeviceOffline" bind:longPress="handleLongpress" />
             </movable-view>
           </view>
         </movable-area>
@@ -99,10 +99,13 @@
 <device-control-popup controlPopup="{{controlPopup}}" checkedList="{{checkedList}}" lightStatus="{{lightStatus}}" checkedType="{{checkedType}}" bind:popMove="handlePopUp" bind:updateList="updateDeviceList"></device-control-popup>
 
 <before-add-scene-popup show="{{showBeforeAddScenePopup}}" bind:close="handleBeforeAddScenePopupClose" bind:next="handleBeforeAddScenePopupNext" bind:delete="handleBeforeAddScenePopupDelete" bind:edit="handleSceneActionEdit" />
-<add-scene-popup actions="{{addSceneActions}}" show="{{showAddScenePopup}}" bind:close="handleAddScenePopupClose" bind:addSuccess="handleShowAddSceneSuccess" bind:return="handleAddScenePopupReturn" />
+
+<add-scene-popup actions="{{addSceneActions}}" show="{{showAddScenePopup}}" bind:close="handleAddScenePopupClose" bind:confirm="handleShowAddSceneSuccess" bind:return="handleAddScenePopupReturn" />
+
 <batch-edit bind:updateList="updateDeviceList" bind:roomMove="handleRoomMoveSuccess" bind:close="exitEditMode" bind:selectAll="editSelectAll" editSelectMode="{{editSelectMode}}" editSelectList="{{editSelectList}}"></batch-edit>
 
 <van-toast id="van-toast" />
+
 <van-dialog use-slot title="{{officeDeviceInfo.deviceName}}离线" show="{{ showDeviceOffline }}" confirm-button-color="#488FFF" confirmButtonText="我知道了" bind:close="handleCloseDeviceOffline">
   <view class="flex-col-center w-full">
     <image src="{{officeDeviceInfo.pic}}" class="w-160rpx h-160rpx mt-70rpx" />

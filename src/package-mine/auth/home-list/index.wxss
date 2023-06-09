@@ -1,0 +1,7 @@
+/* package-mine/auth/index.wxss */
+.text-label {
+  color: #488fff;
+}
+.list-bottom-placeholder {
+  height: calc(env(safe-area-inset-bottom) + 32rpx);
+}

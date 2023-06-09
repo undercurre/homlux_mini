@@ -213,7 +213,7 @@ ComponentWithComputed({
     },
 
     // 可移动区域高度
-    movableViewStyle() {
+    movableAreaStyle() {
       return `height: ${Math.ceil(deviceStore.deviceFlattenList.length / 4) * 236}rpx;
         width: 600rpx;`
     },
@@ -459,7 +459,7 @@ ComponentWithComputed({
         const _list = flattenList
           // 接口返回开关面板数据以设备为一个整体，需要前端拆开后排序
           // 先排序再映射字段
-          .sort((a, b) => a.orderNum - b.orderNum)
+          .sort((a, b) => a.orderNum - b.orderNum && parseInt(a.deviceId) - parseInt(b.deviceId))
           .map((device, index) => ({
             ...device,
             ...getPos(index),
@@ -653,19 +653,32 @@ ComponentWithComputed({
         Toast('仅创建者与管理员可创建场景')
         return
       }
+
       // 补充actions
       const deviceMap = deviceStore.deviceMap
-      const switchSceneConditionMap = deviceStore.switchSceneConditionMap
       const addSceneActions = [] as Device.ActionItem[]
+
       // 排除已经是场景开关的开关
-      // TODO 是否可以优化？
-      const selectList = deviceStore.deviceFlattenList.filter(
-        (device) => !switchSceneConditionMap[device.uniId] && device.onLineStatus,
-      )
+      // ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
+      let deviceList = [] as Device.DeviceItem[]
+
+      for (const list of this.data.devicePageList) {
+        deviceList = deviceList.concat(list)
+      }
+
+      const selectList = deviceList.filter((device) => {
+        let [, switchId] = device.uniId.split(':')
+
+        switchId = switchId ?? 1
+
+        return device.mzgdPropertyDTOList[switchId].ButtonMode !== 2 && device.onLineStatus
+      })
+
       if (!selectList.length) {
         Toast('所有设备已离线，无法创建场景')
         return
       }
+
       selectList.forEach((device) => {
         if (device.proType === proType.switch) {
           // 开关
@@ -745,6 +758,7 @@ ComponentWithComputed({
       this.setData({
         editSelectList: list,
       })
+      device.select = false
       device.editSelect = toCheck
       this.updateDeviceList(device)
 
@@ -929,30 +943,35 @@ ComponentWithComputed({
       })
     },
     handleShowAddSceneSuccess() {
-      this.updateDeviceList()
-      setTimeout(() => {
-        wx.createSelectorQuery()
-          .select('#scene-title')
-          .boundingClientRect()
-          .exec((res) => {
-            if (res.length > 0 && res[0]) {
-              this.setData({
-                sceneTitlePosition: {
-                  x: res[0].left,
-                  y: res[0].top,
-                },
-              })
-              this.setData({
-                showAddSceneSuccess: true,
-              })
-              setTimeout(() => {
-                this.setData({
-                  showAddSceneSuccess: false,
-                })
-              }, 3000)
-            }
-          })
-      }, 100)
+      this.setData({
+        showAddSceneSuccess: false,
+      })
+
+      wx.navigateTo({
+        url: '/package-room-control/scene-request-list/index',
+      })
+
+      // this.updateDeviceList()
+      // setTimeout(() => {
+      //   wx.createSelectorQuery()
+      //     .select('#scene-title')
+      //     .boundingClientRect()
+      //     .exec((res) => {
+      //       if (res.length > 0 && res[0]) {
+      //         this.setData({
+      //           sceneTitlePosition: {
+      //             x: res[0].left,
+      //             y: res[0].top,
+      //           },
+      //         })
+      //         setTimeout(() => {
+      //           this.setData({
+      //             showAddSceneSuccess: false,
+      //           })
+      //         }, 3000)
+      //       }
+      //     })
+      // }, 100)
     },
     updateSelectType() {
       const typeList = new Set()

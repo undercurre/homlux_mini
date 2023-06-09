@@ -75,4 +75,12 @@ declare namespace Room {
      */
     subDeviceNum?: number
   }
+
+  /**
+   * 房间排序
+   */
+  interface RoomSort {
+    roomId: string
+    sort: number
+  }
 }

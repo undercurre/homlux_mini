@@ -170,7 +170,6 @@ ComponentWithComputed({
      */
     updateBleDeviceListThrottle: throttle(() => {
       bleDevicesStore.updateBleDeviceList()
-      Logger.log('updateBleDeviceList')
     }, 3000),
 
     async startGwAddMode() {

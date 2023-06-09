@@ -6,13 +6,12 @@ declare namespace Device {
     deviceName: string
     /**
      * 设备类型
-     * 1:网关 2:子设备 3:wifi
+     * 1:网关 2:子设备 3:wifi, 4:灯组
      */
     deviceType: number
     /**
      * 灯如果关联了开关，会有一个关联id
      */
-    lightRelId: string
     gatewayId: string
     gatewayName: string
     /** 方法列表 */
@@ -31,7 +30,13 @@ declare namespace Device {
     orderNum: number
     /** 设备图片 */
     pic: string
-    /** 品类码 */
+    /**
+     * 品类码
+     * light: '0x13',
+     * switch: '0x21',
+     * curtain: '0x14',
+     * gateway: '0x16',
+     */
     proType: string
     /** 产品Id */
     productId: string
@@ -49,6 +54,9 @@ declare namespace Device {
      * 如: xxxxx:1 xxxxx:2
      */
     uniId: string
+
+    // 设备状态字段，前端使用
+    status?: string
   }
 
   interface MzgdPropertyDTO {
@@ -59,10 +67,6 @@ declare namespace Device {
 
   interface MzgdPanelSwitchInfoDTO {
     houseId: string
-    /** 是否已经关联 */
-    isRel: boolean
-    /** 开关关联灯id */
-    lightRelId: string
     orderNum: number
     /** 面板Id */
     panelId: string
@@ -74,8 +78,6 @@ declare namespace Device {
     switchId: string
     /** 开关名称 */
     switchName: string
-    /** 开关关联开关id */
-    switchRelId: string
   }
 
   interface OrderSaveData {

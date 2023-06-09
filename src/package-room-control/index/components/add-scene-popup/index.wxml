@@ -7,7 +7,7 @@
       <text class="ml-48rpx h-40rpx text-28rpx text-black-2a font-normal">场景名称</text>
     </view>
     <view class="mt-32rpx w-686rpx mx-32rpx">
-      <van-field model:value="{{ sceneName }}" placeholder="自定义场景" custom-style="padding: 28rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
+      <van-field model:value="{{ sceneName }}" placeholder="自定义场景" custom-style="padding: 28rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}" border="{{false}}"> </van-field>
     </view>
     <view class="mt-32rpx w-750rpx">
       <text class="ml-48rpx h-40rpx text-28rpx text-black-2a font-normal">选择场景图标</text>
@@ -20,7 +20,7 @@
     </view>
 
     <van-cell-group inset class="w-750rpx mb-32rpx">
-      <van-cell center is-link custom-class="switch-cell" value="{{linkSwitch?'已关联':'未关联'}}" bind:click="handleLinkSwitchPopup" custom-style="border: 2rpx solid #DDDDDD;border-radius: 24px;">
+      <van-cell center is-link custom-class="switch-cell" value="{{linkSwitch?'已关联':'未关联'}}" bind:click="handleLinkSwitchPopup" custom-style="border: 2rpx solid #DDDDDD;border-radius: 24px;" border="{{false}}">
         <view class="flex flex-col items-start" slot="title">
           <text class="text-32rpx text-black-2a font-medium h-44rpx">关联智能开关</text>
           <text class="text-26rpx text-black-tips font-normal leading-none mt-12rpx mb-12rpx">通过开关触发场景</text>
@@ -36,7 +36,7 @@
     <view style="height: calc(96rpx - env(safe-area-inset-bottom))"></view>
   </view>
 
-  <link-popup show="{{showLinkPopup}}" list="{{list}}" selectList="{{linkSelectList}}" linkType="switch" bind:select="handleLinkSelect" bind:close="handleLinkPopupClose" bind:confirm="handleLinkPopupConfirm"></link-popup>
+  <select-card-popup show="{{showLinkPopup}}" title="关联智能开关" showCancel="{{false}}" list="{{list}}" selectList="{{linkSelectList}}" bind:select="handleLinkSelect" bind:close="handleLinkPopupClose" bind:confirm="handleLinkPopupConfirm"></select-card-popup>
 
   <van-toast id="van-toast" />
   <van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />

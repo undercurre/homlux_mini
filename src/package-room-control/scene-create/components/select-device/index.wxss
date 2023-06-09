@@ -1,0 +1,11 @@
+.btn-add {
+  width: 160rpx;
+  height: 216rpx;
+  background-image: linear-gradient(178deg, #f2f5fc 10%, #ffffff 74%);
+  box-shadow: 0 4rpx 32rpx 0 rgba(97, 109, 136, 0.1);
+  border-radius: 32rpx;
+}
+
+.btn-add:active {
+  opacity: 0.7;
+}

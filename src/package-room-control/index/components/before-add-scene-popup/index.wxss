@@ -1,4 +1,0 @@
-/* package-room-control/index/components/before-add-scene-popup/index.wxss */
-.cell-border {
-  border: 2rpx solid #dddddd;
-}

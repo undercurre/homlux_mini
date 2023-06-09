@@ -1,22 +1,33 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { deviceBinding, deviceStore, roomBinding, roomStore } from '../../../store/index'
-import Toast from '@vant/weapp/toast/toast'
-import { checkWifiSwitch } from '../../../utils/index'
+import { deviceStore, roomStore } from '../../store/index'
+import { checkWifiSwitch } from '../../utils/index'
 
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
   },
-  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, deviceBinding] })],
   /**
    * 组件的属性列表
    */
   properties: {
     /**
+     * 弹窗标题
+     */
+    title: {
+      type: String,
+    },
+
+    /**
+     * 弹窗标题
+     */
+    titleLeftBtnText: {
+      type: String,
+      value: '',
+    },
+    /**
      * 展示的列表
-     * linkType 是 switch light 传入 Device.DeviceItem[]
-     * linkType 是 scene 传入 Scene.SceneItem[]
+     * cardType 是 switch light 传入 Device.DeviceItem[]
+     * cardType 是 scene 传入 Scene.SceneItem[]
      */
     list: {
       type: Array,
@@ -28,27 +39,10 @@ ComponentWithComputed({
     selectList: {
       type: Array,
     },
-    /**
-     * 选中的场景id
-     */
-    selectSceneId: {
-      type: String,
-    },
     show: {
       type: Boolean,
       value: false,
-      observer(val) {
-        if (val) {
-          setTimeout(() => {
-            this.getHeight()
-          }, 100)
-          if (!this.data.list.length) {
-            Toast({
-              message: `当前没有可关联的${this.data.linkType === 'scene' ? '场景' : '设备'}`,
-              zIndex: 9999,
-            })
-          }
-        }
+      observer() {
         if (this.data.roomListComputed.length) {
           this.setData({
             roomSelect: this.data.roomListComputed[0].roomId,
@@ -57,12 +51,25 @@ ComponentWithComputed({
       },
     },
     /** 展示类型：light switch scene */
-    linkType: {
+    cardType: {
       type: String,
+      value: 'device',
     },
-    hasReturn: {
+    showCancel: {
       type: Boolean,
-      value: false,
+      value: true,
+    },
+    cancelText: {
+      type: String,
+      value: '上一步',
+    },
+    showConfirm: {
+      type: Boolean,
+      value: true,
+    },
+    confirmText: {
+      type: String,
+      value: '确定',
     },
   },
 
@@ -70,23 +77,12 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    contentHeight: 0,
     roomSelect: '',
     showDeviceOffline: false,
     officeDeviceInfo: {} as Device.DeviceItem,
   },
 
   computed: {
-    title(data) {
-      if (data.linkType === 'light') {
-        return '关联智能灯'
-      } else if (data.linkType === 'switch') {
-        return '关联智能开关'
-      } else if (data.linkType === 'scene') {
-        return '关联场景'
-      }
-      return ''
-    },
     roomListComputed(data) {
       const roomList = [] as Room.RoomInfo[]
       // 从roomList遍历，保证房间顺序， 仅显示list的数据所在的房间列表
@@ -105,11 +101,7 @@ ComponentWithComputed({
     },
     listComputed(data) {
       if (data.list) {
-        if (data.linkType === 'scene') {
-          return data.list.filter((scene: Scene.SceneItem) => scene.roomId === data.roomSelect)
-        } else {
-          return data.list.filter((device: Device.DeviceItem) => device.roomId === data.roomSelect)
-        }
+        return data.list.filter((item: Scene.SceneItem | Device.DeviceItem) => item.roomId === data.roomSelect)
       }
       return []
     },
@@ -119,8 +111,8 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    handleCardTap(e: { detail: { uniId?: string; sceneId?: string } }) {
-      this.triggerEvent('select', this.data.linkType === 'scene' ? e.detail.sceneId : e.detail.uniId)
+    async handleCardTap(e: { detail: { uniId?: string; sceneId?: string } }) {
+      this.triggerEvent('select', e.detail.sceneId || e.detail.uniId)
     },
     handleClose() {
       this.triggerEvent('close')
@@ -128,20 +120,8 @@ ComponentWithComputed({
     handleConfirm() {
       this.triggerEvent('confirm')
     },
-    handleReturn() {
-      this.triggerEvent('return')
-    },
-    getHeight() {
-      this.createSelectorQuery()
-        .select('#content')
-        .boundingClientRect()
-        .exec((res) => {
-          if (res[0] && res[0].height) {
-            this.setData({
-              contentHeight: res[0].height,
-            })
-          }
-        })
+    handleCancel() {
+      this.triggerEvent('cancel')
     },
     handleRoomSelect(e: WechatMiniprogram.TouchEvent) {
       this.setData({
@@ -172,5 +152,8 @@ ComponentWithComputed({
       })
     },
     blank() {},
+    clickTitleLeftBtn() {
+      this.triggerEvent('clickTitleLeftBtn')
+    },
   },
 })
