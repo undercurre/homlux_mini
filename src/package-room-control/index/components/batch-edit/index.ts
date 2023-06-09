@@ -433,7 +433,7 @@ ComponentWithComputed({
         this.handleBatchMove()
         this.handleClose()
 
-        emitter.on('group_device_result_status', ( result ) => {
+        emitter.on('group_device_result_status', (result) => {
           if (result.errCode !== 0) {
             this.data.moveFailCount++
           }

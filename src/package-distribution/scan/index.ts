@@ -421,8 +421,8 @@ ComponentWithComputed({
         } else if (pageParams.mode === '10') {
           wx.redirectTo({
             url: strUtil.getUrlWithParams('/package-auth/auth-screen/index', {
-              code: pageParams.code
-            })
+              code: pageParams.code,
+            }),
           })
         } else {
           throw '无效二维码'
