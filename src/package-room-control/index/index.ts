@@ -917,10 +917,10 @@ ComponentWithComputed({
         }
       }
     },
-    handlePopUp(e: { detail: 'up' | 'down' }) {
-      this.setData({
-        controlPopup: e.detail === 'up',
-      })
+    handlePopMove(e: { detail: 'up' | 'down' }) {
+      if (e.detail === 'down') {
+        this.cancelCheckAndPops()
+      }
     },
     handleAddScenePopupClose() {
       this.setData({
@@ -991,8 +991,12 @@ ComponentWithComputed({
       //   deviceStore.selectType = Array.from(typeList) as string[]
       // })
     },
-    /** 点击空位收起弹窗 */
+    /** 点击空位的操作 */
     handleScreenTap() {
+      this.cancelCheckAndPops()
+    },
+    /** 取消单选，收起弹窗 */
+    cancelCheckAndPops() {
       if (!this.data.controlPopup) {
         return
       }

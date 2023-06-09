@@ -96,7 +96,7 @@
 <view wx:if="{{ editSelectMode }}" class="h-368rpx"></view>
 
 <!-- 设备控制弹窗 -->
-<device-control-popup controlPopup="{{controlPopup}}" checkedList="{{checkedList}}" lightStatus="{{lightStatus}}" checkedType="{{checkedType}}" bind:popMove="handlePopUp" bind:updateList="updateDeviceList"></device-control-popup>
+<device-control-popup controlPopup="{{controlPopup}}" checkedList="{{checkedList}}" lightStatus="{{lightStatus}}" checkedType="{{checkedType}}" bind:popMove="handlePopMove" bind:updateList="updateDeviceList"></device-control-popup>
 
 <before-add-scene-popup show="{{showBeforeAddScenePopup}}" bind:close="handleBeforeAddScenePopupClose" bind:next="handleBeforeAddScenePopupNext" bind:delete="handleBeforeAddScenePopupDelete" bind:edit="handleSceneActionEdit" />
 
