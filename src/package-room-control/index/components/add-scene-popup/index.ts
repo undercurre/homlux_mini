@@ -166,7 +166,7 @@ ComponentWithComputed({
           newSceneData.deviceActions.push({
             controlAction: [action.value],
             deviceId: action.uniId,
-            deviceType: deviceMap[action.uniId].deviceType.toString(),
+            deviceType: deviceMap[action.uniId].deviceType,
             proType: deviceMap[action.uniId].proType,
           })
         }
@@ -176,7 +176,7 @@ ComponentWithComputed({
         ...Object.entries(switchDeviceMap).map(([deviceId, actions]) => ({
           controlAction: actions,
           deviceId: deviceId,
-          deviceType: deviceMap[deviceId].deviceType.toString(),
+          deviceType: deviceMap[deviceId].deviceType,
           proType: deviceMap[deviceId].proType,
         })),
       )

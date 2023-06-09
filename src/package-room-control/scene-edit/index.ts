@@ -110,6 +110,7 @@ ComponentWithComputed({
                       deviceMap[actions.deviceId].deviceName
                     }`,
                     desc: action.OnOff ? ['打开'] : ['关闭'],
+                    deviceType: action.deviceType,
                     pic:
                       deviceMap[actions.deviceId].switchInfoDTOList.find(
                         (switchInfo) => switchInfo.switchId === action.ep.toString(),
@@ -126,6 +127,7 @@ ComponentWithComputed({
                 desc: actions.controlAction[0].OnOff ? ['打开'] : ['关闭'],
                 pic: '',
                 proType: '',
+                deviceType: actions.deviceType,
                 value: actions.controlAction[0],
               }
               if (sceneStore.sceneList[sceneStore.selectSceneIndex].sceneId === scene.sceneId) {
@@ -233,7 +235,7 @@ ComponentWithComputed({
               deviceActionsMap[deviceId] = {
                 controlAction: [deviceAction.value],
                 deviceId,
-                deviceType: String(deviceMap[deviceId].deviceType),
+                deviceType: deviceMap[deviceId].deviceType,
                 proType: deviceMap[deviceId].proType,
               }
             }
@@ -241,7 +243,7 @@ ComponentWithComputed({
             deviceActionsMap[deviceAction.uniId] = {
               controlAction: [deviceAction.value],
               deviceId: deviceAction.uniId,
-              deviceType: String(deviceMap[deviceAction.uniId].deviceType),
+              deviceType: deviceMap[deviceAction.uniId].deviceType,
               proType: deviceMap[deviceAction.uniId].proType,
             }
           }

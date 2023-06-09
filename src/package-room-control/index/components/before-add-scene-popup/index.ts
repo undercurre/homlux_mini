@@ -80,8 +80,10 @@ ComponentWithComputed({
       const deviceAction = sceneStore.addSceneActions[e.currentTarget.dataset.index]
       const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
       const device = allRoomDeviceMap[deviceAction.uniId]
-      if (deviceAction.proType === proType.light) {
-        findDevice({ gatewayId: device.gatewayId, devId: device.deviceId })
+      if (deviceAction.proType === proType.light || deviceAction.deviceType === 4) {
+        // 目前仅子设备单控支持闪烁指令
+        deviceAction.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId })
+
         this.setData({
           actionEditTitle: deviceAction.name,
           sceneLightEditInfo: deviceAction.value,

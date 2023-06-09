@@ -658,7 +658,7 @@ ComponentWithComputed({
       const deviceMap = deviceStore.deviceMap
       const addSceneActions = [] as Device.ActionItem[]
 
-      // 排除已经是场景开关的开关
+      // 排除已经是场景开关的开关或者离线的设备
       // ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
       let deviceList = [] as Device.DeviceItem[]
 
@@ -691,12 +691,13 @@ ComponentWithComputed({
             desc: OnOff ? ['打开'] : ['关闭'],
             pic: device.switchInfoDTOList[0].pic,
             proType: device.proType,
+            deviceType: device.deviceType,
             value: {
               ep,
               OnOff,
             },
           })
-        } else if (device.proType === proType.light) {
+        } else if (device.proType === proType.light || device.deviceType === 4) {
           const properties = device.mzgdPropertyDTOList['1']
           const desc = properties.OnOff ? ['打开'] : ['关闭']
           const color = (properties.ColorTemp / 100) * (maxColorTempK - minColorTempK) + minColorTempK
@@ -706,6 +707,7 @@ ComponentWithComputed({
             desc,
             pic: device.pic,
             proType: device.proType,
+            deviceType: device.deviceType,
             value: {
               ep: 1,
               OnOff: properties.OnOff,

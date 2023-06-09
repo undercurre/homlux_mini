@@ -51,7 +51,7 @@ declare namespace Scene {
     /** 设备id */
     deviceId: string
     /** 设备类型 */
-    deviceType: string
+    deviceType: number
     /** 品类码 */
     proType: string
   }
@@ -59,6 +59,7 @@ declare namespace Scene {
     /**
      * 绑定控制集合，
      * 例如："controlEvent":[{"ep":2,"ButtonScene":1}]
+     * ButtonScene 电控所需参数，目前固定为1
      */
     controlEvent: { ep: number; ButtonScene: number }[]
     /** 设备id */
@@ -70,7 +71,11 @@ declare namespace Scene {
      * 0-或，1-与，目前全部传0
      */
     conditionType: '0' | '1'
+
+    // 结果集合
     deviceActions: DeviceAction[]
+
+    // 条件集合
     deviceConditions: DeviceCondition[]
     houseId: string
     roomId: string

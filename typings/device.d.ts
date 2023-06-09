@@ -6,7 +6,7 @@ declare namespace Device {
     deviceName: string
     /**
      * 设备类型
-     * 1:网关 2:子设备 3:wifi
+     * 1:网关 2:子设备 3:wifi 4灯组
      */
     deviceType: number
     /**
@@ -105,6 +105,7 @@ declare namespace Device {
     desc: string[]
     pic: string
     proType: string
+    deviceType: number
     value: IAnyObject
   }
 
