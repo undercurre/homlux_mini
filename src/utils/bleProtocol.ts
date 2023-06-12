@@ -1,5 +1,4 @@
-import { isAndroid } from './app'
-import { aesUtil, delay, strUtil, Logger } from './index'
+import { aesUtil, delay, strUtil, Logger, isAndroid } from './index'
 
 // 定义了与BLE通路相关的所有事件/动作/命令的集合；其值域及表示意义为：对HOMLUX设备主控与app之间可能的各种操作的概括分类
 const CmdTypeMap = {
@@ -159,6 +158,11 @@ export class BleClient {
           throw err
         })
 
+      // 收到延迟，安卓平台上，在调用 wx.notifyBLECharacteristicValueChange 成功后立即调用本接口，在部分机型上会发生 10008 系统错误
+      if (isAndroid()) {
+        await delay(500)
+      }
+
       return {
         success: true,
       }
@@ -265,10 +269,14 @@ export class BleClient {
             serviceId: this.serviceId,
             characteristicId: this.characteristicId,
             value: buffer,
-            complete: (res) => {
-              Logger.log(`【${this.mac}】writeBLECharacteristicValue`, res)
-            },
           })
+            .then((res) => {
+              Logger.log(`【${this.mac}】writeBLECharacteristicValue`, res)
+            })
+            .catch((err) => {
+              Logger.error(`【${this.mac}】writeBLECharacteristicValue-err`, err)
+              throw err
+            })
         },
       )
     } catch (err) {
