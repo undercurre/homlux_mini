@@ -136,7 +136,7 @@ ComponentWithComputed({
     },
     roomList() {
       this.renewRoomPos()
-    }
+    },
   },
 
   methods: {
