@@ -995,6 +995,6 @@ ComponentWithComputed({
       wx.navigateTo({
         url: `/package-mine/device-manage/device-detail/index?deviceId=${this.data.checkedList[0]}`,
       })
-    }
+    },
   },
 })
