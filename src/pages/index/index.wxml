@@ -104,7 +104,7 @@
   </view>
 </view>
 
-<home-select-menu x="{{selectHomeMenu.x}}" y="{{selectHomeMenu.y}}" isShow="{{selectHomeMenu.isShow}}" bind:select="handleHomeSelect"></home-select-menu>
+<home-select-menu x="{{selectHomeMenu.x}}" y="{{selectHomeMenu.y}}" isShow="{{selectHomeMenu.isShow}}" bind:select="handleHomeSelect" bind:afterSelected="renewRoomPos"></home-select-menu>
 <add-menu right="{{addMenu.right}}" y="{{addMenu.y}}" isShow="{{addMenu.isShow}}"></add-menu>
 <add-room show="{{showAddNewRoom}}" bind:close="handleHideAddNewRoom"></add-room>
 <van-toast id="van-toast" />
