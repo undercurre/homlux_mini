@@ -84,12 +84,22 @@ ComponentWithComputed({
     canEditName(data) {
       return data.editSelectList?.length === 1
     },
-    canChangeGroup(data) {
+    canMoveRoom(data) {
+      return (
+        data.editSelectList?.length &&
+        data.editSelectList.every((uId: string) => {
+          const deviceId = uId.split(':')[0] // 不管有没有:
+          const device = deviceStore.deviceMap[deviceId]
+          return [2, 3].includes(device.deviceType)
+        })
+      )
+    },
+    canGroup(data) {
       return (
         data.editSelectList?.length &&
         data.editSelectList.every((deviceId: string) => {
           const device = deviceStore.deviceMap[deviceId]
-          return device.deviceType === 2 || device.deviceType === 3
+          return deviceId.indexOf(':') === -1 && [2, 3].includes(device.deviceType)
         })
       )
     },

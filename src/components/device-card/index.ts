@@ -71,7 +71,8 @@ ComponentWithComputed({
       if (data.deviceInfo.proType === proType.curtain) {
         return data.deviceInfo.mzgdPropertyDTOList['1'].curtain_position === '0'
           ? '/assets/img/base/curtain-close.png'
-          : '/assets/img/base/curtain-open.png'      }
+          : '/assets/img/base/curtain-open.png'
+      }
       // 灯及灯组
       else if (data.deviceInfo.proType === proType.light) {
         return data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
