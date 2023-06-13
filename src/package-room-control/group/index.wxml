@@ -10,13 +10,13 @@
   <view id="content" class="flex-1">
     <view wx:if="{{status === 'naming'}}">
       <view class="mx-32rpx my-20rpx">
-        <text class="text-40">设置名称</text>
+        <text class="text-40rpx">设置名称</text>
       </view>
       <view class="mx-32rpx mb-32rpx">
         <van-field value="{{ groupName }}" placeholder="请输入分组名称" custom-style="padding: 30rpx 40rpx;border-radius: 24rpx;" clearable="{{true}}" focus="{{isFocus}}" bind:change="changeGroupName" border="{{false}}"> </van-field>
 
-        <view class="flex flex-wrap">
-          <view wx:for="{{presetNames}}" wx:key="index" bindtap="handlePreset" class="mt-16rpx mr-32rpx rounded-999 px-40rpx py-10rpx flex flex-center {{groupName === item ? 'bg-select' : 'text-black-59'}}" data-value="{{item}}">
+        <view class="flex flex-wrap mt-32rpx">
+          <view wx:for="{{presetNames}}" wx:key="index" bindtap="handlePreset" class="mt-16rpx mr-32rpx rounded-999 px-40rpx py-10rpx flex flex-center {{groupName === item ? 'bg-select' : 'bg-hex-dfe1e5'}}" data-value="{{item}}">
             <text class="text-28rpx text-normal {{groupName === item ? 'text-white' : 'text-black-59'}}">{{item}}</text>
           </view>
         </view>
@@ -49,8 +49,8 @@
         </van-cell>
       </van-cell-group>
     </scroll-view>
-
-    <view class="flex flex-row">
+  </view>
+  <view class="flex flex-row">
       <van-button wx:if="{{status === 'hasFailure'}}" class="flex-1 mx-24rpx" size="large" block bind:click="">跳过</van-button>
       <van-button wx:if="{{status === 'hasFailure'}}" class="flex-1 mx-24rpx" size="large" block bind:click="" type="primary">重试</van-button>
       <van-button wx:if="{{status === 'allSuccess'}}" class="flex-1 mx-24rpx" size="large" block bind:click="toRename" type="primary">下一步</van-button>
@@ -58,5 +58,4 @@
     </view>
 
     <view class="list-bottom-placeholder"> </view>
-  </view>
 </view>

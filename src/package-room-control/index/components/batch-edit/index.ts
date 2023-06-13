@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { batchDeleteDevice, batchUpdate } from '../../../../apis/index'
+import { batchDeleteDevice, batchUpdate, renameGroup } from '../../../../apis/index'
 import { proType } from '../../../../config/index'
 import { deviceBinding, deviceStore, homeStore, roomBinding, roomStore } from '../../../../store/index'
 import Toast from '@vant/weapp/toast/toast'
@@ -422,16 +422,24 @@ ComponentWithComputed({
             Toast('设备名称不能超过6个字符')
             return
           }
-          const res = await batchUpdate({
-            deviceInfoUpdateVoList: [
-              {
-                deviceId: this.data.editSelectList[0],
-                houseId: homeStore.currentHomeId,
-                deviceName: this.data.editDeviceName,
-                type: '0',
-              },
-            ],
-          })
+          const res =
+            device.deviceType === 4
+              ? // 灯组
+                await renameGroup({
+                  groupId: this.data.editSelectList[0],
+                  groupName: this.data.editDeviceName,
+                })
+              : // 单灯
+                await batchUpdate({
+                  deviceInfoUpdateVoList: [
+                    {
+                      deviceId: this.data.editSelectList[0],
+                      houseId: homeStore.currentHomeId,
+                      deviceName: this.data.editDeviceName,
+                      type: '0',
+                    },
+                  ],
+                })
           if (res.success) {
             Toast({
               message: '修改成功',

@@ -11,7 +11,7 @@ ComponentWithComputed({
   data: {
     deviceList: [] as Device.DeviceItem[],
     status: 'processing' as StatusType,
-    groupName: '',
+    groupName: '灯组',
     groupId: '',
     presetNames: ['筒灯', '射灯', '吊灯', '灯组'],
   },
