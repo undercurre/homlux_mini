@@ -13,20 +13,17 @@
       <view wx:if="{{show}}" id="slider" class="onoff-slider z-1" style="left: {{left}}rpx;"></view>
     </view>
 
-    <view class="mt-46rpx w-750rpx">
-      <text class="text-32rpx text-black-59 mt-37rpx ml-64rpx">亮度 | {{levelShow}}%</text>
-      <view class="px-64rpx">
-        <view class="h-32rpx"></view>
+    <view class="w-full box-border mt-64rpx px-40rpx">
+      <text class="text-32rpx text-black-59">亮度 | {{levelShow}}%</text>
+      <view class="pt-28rpx">
         <mz-slider bind:change="handleLevelChange" bind:drag="handleLevelDrag" disabled="{{!OnOff}}" value="{{Level}}" min="{{1}}" active-color="linear-gradient(90deg, rgba(80,127,255,0.90) 5%, rgba(116,153,255,0.18) 100%)"> </mz-slider>
-        <view class="h-32rpx"></view>
       </view>
-      <text class="text-32rpx text-black-59 mt-56rpx ml-64rpx">色温 | {{colorTempShow}}K</text>
-      <view class="px-64rpx">
-        <view class="h-32rpx"></view>
+
+      <text class="block text-32rpx text-black-59 pt-48rpx">色温 | {{colorTempShow}}K</text>
+      <view class="pt-28rpx">
         <mz-slider bind:change="handleColorTempChange" bind:drag="handleColorTempDrag" disabled="{{!OnOff}}" value="{{ColorTemp}}" use-button-slot custom-class="slider-color-temp-bar" buttonLeft="{{64}}" active-color="rgba(0,0,0,0)">
           <view slot="button" class="slidr-button w-52rpx h-52rpx rounded-52rpx border-3rpx border-white border-solid mr-42rpx" />
         </mz-slider>
-        <view class="h-32rpx"></view>
       </view>
     </view>
     <view class="h-96rpx"></view>
