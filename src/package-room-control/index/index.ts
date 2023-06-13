@@ -458,6 +458,8 @@ ComponentWithComputed({
 
         const _list = flattenList
           // 接口返回开关面板数据以设备为一个整体，需要前端拆开后排序
+          // 排除灯组
+          .filter((device) => !deviceStore.lightsInGroup.includes(device.deviceId))
           // 先排序再映射字段
           .sort((a, b) => a.orderNum - b.orderNum && parseInt(a.deviceId) - parseInt(b.deviceId))
           .map((device, index) => ({

@@ -57,6 +57,9 @@ declare namespace Device {
 
     // 设备状态字段，前端使用
     status?: string
+
+    // 灯分组，包含的列表数据
+    groupDeviceList?: GroupDTO[]
   }
 
   interface MzgdPropertyDTO {

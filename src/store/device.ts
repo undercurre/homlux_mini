@@ -66,6 +66,19 @@ export const deviceStore = observable({
     return list
   },
 
+  /**
+   * 在灯组中的灯ID
+   */
+  get lightsInGroup() {
+    const list = [] as string[]
+    deviceStore.deviceList.forEach((device) => {
+      if (device.deviceType === 4) {
+        list.push(...device.groupDeviceList!.map((device) => device.deviceId))
+      }
+    })
+    return list
+  },
+
   get allRoomDeviceFlattenMap(): Record<string, Device.DeviceItem> {
     return Object.fromEntries(
       deviceStore.allRoomDeviceFlattenList.map((device: Device.DeviceItem) => [device.uniId, device]),
