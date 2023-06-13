@@ -512,9 +512,9 @@ export async function groupControl(
   data: {
     groupId: string
     controlAction: {
-      OnOff?: 0 | 1,
-      Level?: number,
-      ColorTemp?: number,
+      OnOff?: 0 | 1
+      Level?: number
+      ColorTemp?: number
     }[]
   },
   options?: { loading?: boolean },

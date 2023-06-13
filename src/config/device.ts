@@ -19,6 +19,7 @@ export const proType = {
 
 export const proName: Record<string, string> = {
   '0x13': 'light',
+  '0x14': 'curtain',
   '0x21': 'switch',
   '0x16': 'gateway',
 } as const

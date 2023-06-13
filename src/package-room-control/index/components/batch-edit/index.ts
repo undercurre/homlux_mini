@@ -85,10 +85,13 @@ ComponentWithComputed({
       return data.editSelectList?.length === 1
     },
     canChangeGroup(data) {
-      return data.editSelectList?.length && data.editSelectList.every((deviceId: string) => {
-        const device = deviceStore.deviceMap[deviceId]
-        return device.deviceType === 2 || device.deviceType === 3
-      })
+      return (
+        data.editSelectList?.length &&
+        data.editSelectList.every((deviceId: string) => {
+          const device = deviceStore.deviceMap[deviceId]
+          return device.deviceType === 2 || device.deviceType === 3
+        })
+      )
     },
     editDeviceNameTitle(data) {
       return data.editProType === proType.switch ? '面板名称' : '设备名称'
