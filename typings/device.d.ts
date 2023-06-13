@@ -159,4 +159,6 @@ declare namespace Device {
     switchId: string
     lampDeviceId: string
   }
+
+  type GroupDTO = Pick<DeviceItem, 'deviceId' | 'deviceType' | 'proType'>
 }

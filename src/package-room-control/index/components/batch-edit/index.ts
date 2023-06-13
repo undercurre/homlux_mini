@@ -84,6 +84,12 @@ ComponentWithComputed({
     canEditName(data) {
       return data.editSelectList?.length === 1
     },
+    canChangeGroup(data) {
+      return data.editSelectList?.length && data.editSelectList.every((deviceId: string) => {
+        const device = deviceStore.deviceMap[deviceId]
+        return device.deviceType === 2 || device.deviceType === 3
+      })
+    },
     editDeviceNameTitle(data) {
       return data.editProType === proType.switch ? '面板名称' : '设备名称'
     },
@@ -138,6 +144,7 @@ ComponentWithComputed({
     handleAllSelectToggle() {
       this.triggerEvent('selectAll', !this.data.isAllSelect)
     },
+    // TODO 处理分组解散的交互提示
     handleDeleteDialog() {
       if (!this.data.editSelectList.length) {
         return
@@ -161,7 +168,7 @@ ComponentWithComputed({
           const res = await batchDeleteDevice({
             deviceBaseDeviceVoList: Array.from(set).map((deviceId) => ({
               deviceId,
-              deviceType: '2',
+              deviceType: String(deviceStore.deviceMap[deviceId].deviceType),
             })),
           })
           if (res.success) {

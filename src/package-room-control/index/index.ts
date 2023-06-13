@@ -13,7 +13,7 @@ import {
 } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { controlDevice, execScene, saveDeviceOrder } from '../../apis/index'
+import { controlDevice, groupControl, execScene, saveDeviceOrder } from '../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
 import { storage, emitter, WSEventType, rpx2px, _get, throttle } from '../../utils/index'
 import { maxColorTempK, minColorTempK, proName, proType, LIST_PAGE, CARD_W, CARD_H } from '../../config/index'
@@ -850,7 +850,7 @@ ComponentWithComputed({
         this.handleSwitchControlTapToggle(e)
       }
     },
-    /** 灯具开关点击 */
+    /** 灯具、灯组开关点击 */
     async handleLightPowerToggle(e: { detail: DeviceCard }) {
       // 即时改变视图，提升操作手感
       const device = { ...e.detail }
@@ -859,18 +859,26 @@ ComponentWithComputed({
       device.mzgdPropertyDTOList[1].OnOff = newOnOff
       this.updateDeviceList(device)
 
-      const res = await controlDevice({
-        topic: '/subdevice/control',
-        deviceId: e.detail.gatewayId,
-        method: 'lightControl',
-        inputData: [
-          {
-            devId: e.detail.deviceId,
-            ep: 1,
-            OnOff: newOnOff,
-          },
-        ],
-      })
+      const res =
+        device.deviceType === 4
+          ? // 灯组控制
+            await groupControl({
+              groupId: e.detail.deviceId,
+              controlAction: [{ OnOff: newOnOff }],
+            })
+          : // 单灯控制
+            await controlDevice({
+              topic: '/subdevice/control',
+              deviceId: e.detail.gatewayId,
+              method: 'lightControl',
+              inputData: [
+                {
+                  devId: e.detail.deviceId,
+                  ep: 1,
+                  OnOff: newOnOff,
+                },
+              ],
+            })
       if (!res.success) {
         device.mzgdPropertyDTOList[1].OnOff = OldOnOff
         this.updateDeviceList(device)
