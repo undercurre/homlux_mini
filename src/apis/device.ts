@@ -313,7 +313,7 @@ export async function deleteDevice(
 }
 
 /**
- * 批量编辑设备(开关)
+ * 批量编辑设备（包括灯组）
  * @param data
  * @param options
  */
@@ -481,6 +481,106 @@ export async function getLampDeviceByHouseId(data: { houseId: string }, options?
     log: true,
     loading: options?.loading ?? false,
     url: '/v1/device/getLampDeviceByHouseId',
+    data,
+  })
+}
+
+/**
+ * 增加分组
+ */
+export async function addGroup(
+  data: {
+    applianceGroupDtoList: Device.GroupDTO[]
+    groupName: string
+    houseId: string
+    roomId: string
+    userId?: string
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<{ groupId: string }>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/scene/addGroup',
+    data,
+  })
+}
+
+/**
+ * 查询分组详情
+ */
+export async function queryGroup(
+  data: {
+    groupId: string
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<{
+    groupDeviceList: Device.DeviceItem[]
+    groupName: string
+    roomId: string
+    roomName: string
+  }>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/scene/queryGroupByGroupId',
+    data,
+  })
+}
+
+/**
+ * 解散分组
+ */
+export async function delGroup(
+  data: {
+    groupId: string
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/scene/delGroup',
+    data,
+  })
+}
+
+/**
+ * 分组重命名
+ */
+export async function renameGroup(
+  data: {
+    groupId: string
+    groupName: string
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/scene/groupRename',
+    data,
+  })
+}
+
+/**
+ * 分组重控制
+ */
+export async function groupControl(
+  data: {
+    groupId: string
+    controlAction: {
+      OnOff?: 0 | 1
+      Level?: number
+      ColorTemp?: number
+    }[]
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/scene/groupControl',
     data,
   })
 }

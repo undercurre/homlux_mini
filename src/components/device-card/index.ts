@@ -59,9 +59,6 @@ ComponentWithComputed({
 
   computed: {
     picUrl(data) {
-      if (data.deviceInfo.deviceType === 4) {
-        return '/assets/img/device/group.png'
-      }
       if (data.deviceInfo.proType === PRO_TYPE.switch && data.showBtnDetail) {
         return data.deviceInfo?.switchInfoDTOList[0]?.pic
       } else if (data.deviceInfo?.pic) {
@@ -70,11 +67,20 @@ ComponentWithComputed({
       return ''
     },
     controlBtnPic(data) {
-      if (data.deviceInfo.proType === PRO_TYPE.light) {
+      // 窗帘，位置大于0即为开启
+      if (data.deviceInfo.proType === PRO_TYPE.curtain) {
+        return data.deviceInfo.mzgdPropertyDTOList['1'].curtain_position === '0'
+          ? '/assets/img/base/curtain-close.png'
+          : '/assets/img/base/curtain-open.png'
+      }
+      // 灯及灯组
+      else if (data.deviceInfo.proType === PRO_TYPE.light) {
         return data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
           ? '/assets/img/base/power-on.png'
           : '/assets/img/base/power-off.png'
-      } else if (data.deviceInfo.proType === PRO_TYPE.switch && data.deviceInfo.switchInfoDTOList[0]) {
+      }
+      // 面板
+      else if (data.deviceInfo.proType === PRO_TYPE.switch && data.deviceInfo.switchInfoDTOList[0]) {
         // ! 确保带有switchInfoDTOList
         const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
         if (!data.deviceInfo.mzgdPropertyDTOList[switchId]) {

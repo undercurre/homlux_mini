@@ -994,8 +994,13 @@ ComponentWithComputed({
       findDevice({ gatewayId: device.gatewayId, devId: device.deviceId })
     },
     toDetail() {
+      const deviceId = this.data.checkedList[0]
+      const deviceMap = deviceStore.allRoomDeviceMap
+      const { deviceType } = deviceMap[deviceId]
+      const pageName = deviceType === 4 ? 'group-detail' : 'device-detail'
+
       wx.navigateTo({
-        url: `/package-mine/device-manage/device-detail/index?deviceId=${this.data.checkedList[0]}`,
+        url: `/package-mine/device-manage/${pageName}/index?deviceId=${deviceId}`,
       })
     },
   },

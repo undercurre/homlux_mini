@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { batchDeleteDevice, batchUpdate } from '../../../../apis/index'
 import { PRO_TYPE } from '../../../../config/index'
+import { batchDeleteDevice, batchUpdate, renameGroup } from '../../../../apis/index'
 import { deviceBinding, deviceStore, homeStore, roomBinding, roomStore } from '../../../../store/index'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
@@ -84,6 +84,25 @@ ComponentWithComputed({
     canEditName(data) {
       return data.editSelectList?.length === 1
     },
+    canMoveRoom(data) {
+      return (
+        data.editSelectList?.length &&
+        data.editSelectList.every((uId: string) => {
+          const deviceId = uId.split(':')[0] // 不管有没有:
+          const device = deviceStore.deviceMap[deviceId]
+          return [2, 3].includes(device.deviceType)
+        })
+      )
+    },
+    canGroup(data) {
+      return (
+        data.editSelectList?.length &&
+        data.editSelectList.every((deviceId: string) => {
+          const device = deviceStore.deviceMap[deviceId]
+          return deviceId.indexOf(':') === -1 && [2, 3].includes(device.deviceType)
+        })
+      )
+    },
     editDeviceNameTitle(data) {
       return data.editProType === PRO_TYPE.switch ? '面板名称' : '设备名称'
     },
@@ -138,6 +157,7 @@ ComponentWithComputed({
     handleAllSelectToggle() {
       this.triggerEvent('selectAll', !this.data.isAllSelect)
     },
+    // TODO 处理分组解散的交互提示
     handleDeleteDialog() {
       if (!this.data.editSelectList.length) {
         return
@@ -161,7 +181,7 @@ ComponentWithComputed({
           const res = await batchDeleteDevice({
             deviceBaseDeviceVoList: Array.from(set).map((deviceId) => ({
               deviceId,
-              deviceType: '2',
+              deviceType: String(deviceStore.deviceMap[deviceId].deviceType),
             })),
           })
           if (res.success) {
@@ -402,16 +422,24 @@ ComponentWithComputed({
             Toast('设备名称不能超过6个字符')
             return
           }
-          const res = await batchUpdate({
-            deviceInfoUpdateVoList: [
-              {
-                deviceId: this.data.editSelectList[0],
-                houseId: homeStore.currentHomeId,
-                deviceName: this.data.editDeviceName,
-                type: '0',
-              },
-            ],
-          })
+          const res =
+            device.deviceType === 4
+              ? // 灯组
+                await renameGroup({
+                  groupId: this.data.editSelectList[0],
+                  groupName: this.data.editDeviceName,
+                })
+              : // 单灯
+                await batchUpdate({
+                  deviceInfoUpdateVoList: [
+                    {
+                      deviceId: this.data.editSelectList[0],
+                      houseId: homeStore.currentHomeId,
+                      deviceName: this.data.editDeviceName,
+                      type: '0',
+                    },
+                  ],
+                })
           if (res.success) {
             Toast({
               message: '修改成功',
