@@ -1,0 +1,10 @@
+<view class="custom-class mz-slider {{ disabled ? 'mz-slider--disabled' :'' }}" style="{{ wrapperStyle }};height:{{barHeight}}rpx" bind:tap="onClick">
+  <view class="mz-slider-bar" style="{{ barStyle }}">
+    <view class="mz-slider-button-wrapper" style="height:{{barHeight}}rpx" bind:touchstart="onTouchStart" catch:touchmove="onTouchMove" bind:touchend="onTouchEnd" bind:touchcancel="onTouchEnd">
+      <view class="button">
+        <slot wx:if="{{ useButtonSlot }}" name="button"></slot>
+        <view wx:else class="mz-slider-button" />
+      </view>
+    </view>
+  </view>
+</view>

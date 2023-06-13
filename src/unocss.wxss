@@ -232,6 +232,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .border{border-width:1px;}
 .border-1rpx{border-width:1rpx;}
 .border-2rpx{border-width:2rpx;}
+.border-3rpx{border-width:3rpx;}
 .border-4rpx{border-width:4rpx;}
 .border-8rpx{border-width:8rpx;}
 .border-blue,
@@ -250,6 +251,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .rounded-28rpx{border-radius:28rpx;}
 .rounded-32rpx{border-radius:32rpx;}
 .rounded-40rpx{border-radius:40rpx;}
+.rounded-52rpx{border-radius:52rpx;}
 .rounded-999{border-radius:7992rpx;}
 .rounded-full{border-radius:9999px;}
 .rounded-none{border-radius:0;}

@@ -55,6 +55,13 @@ ComponentWithComputed({
       'px',
     // 状态栏高度
     statusBarHeight: storage.get<number>('statusBarHeight') + 'px',
+    // 可滚动区域高度
+    scrollViewHeight:
+      (storage.get<number>('windowHeight') as number) -
+      (storage.get<number>('statusBarHeight') as number) -
+      (storage.get<number>('bottomBarHeight') as number) - // IPX
+      90 - // 开关、添加按钮
+      (storage.get<number>('navigationBarHeight') as number),
     selectHomeMenu: {
       x: '0px',
       y: '0px',
