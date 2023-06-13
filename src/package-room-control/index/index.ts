@@ -484,7 +484,7 @@ ComponentWithComputed({
           console.log('[updateDeviceList]列表刷新')
         }
 
-        // 分页加载
+        // 拆分为二维数组，以便分页渲染
         for (let groupIndex = 0; _list.length > 0; ++groupIndex) {
           const group = _list.splice(0, LIST_PAGE)
           const diffData = {} as IAnyObject
