@@ -1,6 +1,6 @@
 import { deviceStore, homeStore, sceneStore } from '../../store/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { maxColorTempK, minColorTempK, proType } from '../../config/index'
+import { maxColorTempK, minColorTempK, PRO_TYPE } from '../../config/index'
 import {
   deleteScene,
   findDevice,
@@ -94,7 +94,7 @@ ComponentWithComputed({
               console.log('不存在的设备', actions)
               return
             }
-            if (deviceMap[actions.deviceId].proType === proType.switch) {
+            if (deviceMap[actions.deviceId].proType === PRO_TYPE.switch) {
               // 多路开关
               actions.controlAction.forEach((action) => {
                 const switchItem = deviceMap[actions.deviceId].switchInfoDTOList.find(
@@ -105,7 +105,7 @@ ComponentWithComputed({
                 if (sceneStore.sceneList[sceneStore.selectSceneIndex].sceneId === scene.sceneId) {
                   sceneDeviceActionsFlatten.push({
                     uniId: `${actions.deviceId}:${action.ep}`,
-                    proType: proType.switch,
+                    proType: PRO_TYPE.switch,
                     name: `${switchItem?.switchName ? switchItem?.switchName : switchItem?.switchId + '路开关'} | ${
                       deviceMap[actions.deviceId].deviceName
                     }`,
@@ -131,7 +131,7 @@ ComponentWithComputed({
                 value: actions.controlAction[0],
               }
               if (sceneStore.sceneList[sceneStore.selectSceneIndex].sceneId === scene.sceneId) {
-                if (deviceMap[actions.deviceId].proType === proType.light) {
+                if (deviceMap[actions.deviceId].proType === PRO_TYPE.light) {
                   if (typeof actions.controlAction[0].Level === 'number') {
                     action.desc.push(`亮度${actions.controlAction[0].Level}%`)
                   }
@@ -141,7 +141,7 @@ ComponentWithComputed({
                     action.desc.push(`色温${color}K`)
                   }
                   action.pic = deviceMap[actions.deviceId].pic
-                  action.proType = proType.light
+                  action.proType = PRO_TYPE.light
                 }
                 sceneDeviceActionsFlatten.push(action)
               }
@@ -152,7 +152,7 @@ ComponentWithComputed({
       })
       const sceneId = sceneStore.sceneList[sceneStore.selectSceneIndex].sceneId
       const linkSwitch = sceneStore.sceneSwitchMap[sceneId] ? sceneStore.sceneSwitchMap[sceneId] : ''
-      const switchList = deviceStore.allRoomDeviceFlattenList.filter((device) => device.proType === proType.switch)
+      const switchList = deviceStore.allRoomDeviceFlattenList.filter((device) => device.proType === PRO_TYPE.switch)
       wx.createSelectorQuery()
         .select('#content')
         .boundingClientRect()
@@ -471,7 +471,7 @@ ComponentWithComputed({
       const deviceAction = this.data.sceneDeviceActionsFlatten[e.currentTarget.dataset.index]
       const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
       const device = allRoomDeviceMap[deviceAction.uniId]
-      if (this.data.sceneDeviceActionsFlatten[e.currentTarget.dataset.index].proType === proType.light) {
+      if (this.data.sceneDeviceActionsFlatten[e.currentTarget.dataset.index].proType === PRO_TYPE.light) {
         device.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId })
 
         this.setData({
@@ -480,7 +480,7 @@ ComponentWithComputed({
           showSceneEditLightPopup: true,
           editIndex: e.currentTarget.dataset.index,
         })
-      } else if (this.data.sceneDeviceActionsFlatten[e.currentTarget.dataset.index].proType === proType.switch) {
+      } else if (this.data.sceneDeviceActionsFlatten[e.currentTarget.dataset.index].proType === PRO_TYPE.switch) {
         findDevice({
           gatewayId: device.gatewayId,
           devId: device.deviceId,
@@ -509,7 +509,7 @@ ComponentWithComputed({
         ep: this.data.sceneDeviceActionsFlatten[this.data.editIndex].value.ep,
         ...e.detail,
       }
-      if (this.data.sceneDeviceActionsFlatten[this.data.editIndex].proType === proType.light) {
+      if (this.data.sceneDeviceActionsFlatten[this.data.editIndex].proType === PRO_TYPE.light) {
         if (e.detail.OnOff) {
           const desc = e.detail.OnOff ? ['打开'] : ['关闭']
           const color = (e.detail.ColorTemp / 100) * (maxColorTempK - minColorTempK) + minColorTempK
@@ -519,7 +519,7 @@ ComponentWithComputed({
         } else {
           this.data.sceneDeviceActionsFlatten[this.data.editIndex].desc = ['关闭']
         }
-      } else if (this.data.sceneDeviceActionsFlatten[this.data.editIndex].proType === proType.switch) {
+      } else if (this.data.sceneDeviceActionsFlatten[this.data.editIndex].proType === PRO_TYPE.switch) {
         this.data.sceneDeviceActionsFlatten[this.data.editIndex].desc = e.detail.OnOff ? ['打开'] : ['关闭']
       }
       this.setData({

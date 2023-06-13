@@ -4,7 +4,7 @@ import Toast from '@vant/weapp/toast/toast'
 import { deviceStore, homeBinding, homeStore, otaStore, roomBinding } from '../../../store/index'
 import pageBehavior from '../../../behaviors/pageBehaviors'
 import { deleteDevice, editDeviceInfo, queryDeviceInfoByDeviceId } from '../../../apis/index'
-import { proName, proType } from '../../../config/index'
+import { proName, PRO_TYPE } from '../../../config/index'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { emitter, checkWifiSwitch } from '../../../utils/index'
 ComponentWithComputed({
@@ -43,7 +43,7 @@ ComponentWithComputed({
       return ''
     },
     isSubDevice(data) {
-      return ([proType.switch, proType.light] as string[]).includes(data.deviceInfo.proType)
+      return ([PRO_TYPE.switch, PRO_TYPE.light] as string[]).includes(data.deviceInfo.proType)
     },
     belongsToGateway(data) {
       if (data.deviceInfo.gatewayId) {
@@ -165,7 +165,7 @@ ComponentWithComputed({
         const res = await deleteDevice({
           deviceId: this.data.deviceId,
           deviceType: this.data.deviceInfo.deviceType,
-          sn: this.data.deviceInfo.proType === proType.gateway ? this.data.deviceInfo.sn : this.data.deviceId,
+          sn: this.data.deviceInfo.proType === PRO_TYPE.gateway ? this.data.deviceInfo.sn : this.data.deviceId,
         })
         if (res.success) {
           Toast('删除成功')

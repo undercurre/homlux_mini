@@ -10,7 +10,7 @@ export const ROOM_CARD_H = rpx2px(336)
 export const ROOM_CARD_M = rpx2px(152) // 折叠后高度
 
 // 设备品类码
-export const proType = {
+export const PRO_TYPE = {
   light: '0x13',
   switch: '0x21',
   curtain: '0x14',

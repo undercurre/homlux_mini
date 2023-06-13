@@ -4,7 +4,7 @@ import pageBehavior from '../../behaviors/pageBehaviors'
 import { storage, emitter } from '../../utils/index'
 import { addScene, retryScene } from '../../apis/index'
 import { sceneStore, deviceStore, homeStore } from '../../store/index'
-import { proType } from '../../config/index'
+import { PRO_TYPE } from '../../config/index'
 
 ComponentWithComputed({
   options: {
@@ -41,7 +41,7 @@ ComponentWithComputed({
       const selectIdList = [] as string[]
 
       for (const item of sceneData.deviceActions) {
-        if (item.proType === proType.switch) {
+        if (item.proType === PRO_TYPE.switch) {
           for (const epItem of item.controlAction) {
             selectIdList.push(`${item.deviceId}:${epItem.ep}`)
           }
@@ -123,7 +123,7 @@ ComponentWithComputed({
           (actionItem) => actionItem.deviceId === device.deviceId,
         ) as Scene.DeviceAction
 
-        if (device.proType === proType.light) {
+        if (device.proType === PRO_TYPE.light) {
           deviceActions.push(action)
         }
       })

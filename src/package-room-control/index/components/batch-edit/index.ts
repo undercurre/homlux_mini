@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { batchDeleteDevice, batchUpdate } from '../../../../apis/index'
-import { proType } from '../../../../config/index'
+import { PRO_TYPE } from '../../../../config/index'
 import { deviceBinding, deviceStore, homeStore, roomBinding, roomStore } from '../../../../store/index'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
@@ -85,13 +85,13 @@ ComponentWithComputed({
       return data.editSelectList?.length === 1
     },
     editDeviceNameTitle(data) {
-      return data.editProType === proType.switch ? '面板名称' : '设备名称'
+      return data.editProType === PRO_TYPE.switch ? '面板名称' : '设备名称'
     },
     isAllSelect(data) {
       return deviceStore.deviceFlattenList.length === data.editSelectList.length
     },
     editNameDisable(data) {
-      if (data.editProType === proType.switch) {
+      if (data.editProType === PRO_TYPE.switch) {
         return !data.editDeviceName || !data.editSwitchName
       }
       return !data.editDeviceName
@@ -324,7 +324,7 @@ ComponentWithComputed({
     },
     async handleConfirm() {
       if (this.data.showEditName) {
-        if (this.data.editProType === proType.switch) {
+        if (this.data.editProType === PRO_TYPE.switch) {
           // 校验名字合法性
           if (checkInputNameIllegal(this.data.editSwitchName)) {
             Toast('按键名称不能用特殊符号或表情')

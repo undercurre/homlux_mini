@@ -1,4 +1,5 @@
 import { delay, mzaioRequest } from '../utils/index'
+import { PRO_TYPE } from '../config/index'
 
 /**
  * 设备管理-根据家庭id查询全屋的设备
@@ -117,7 +118,8 @@ export async function controlDevice(
     customJson?: IAnyObject
     deviceId: string
     method: string
-    topic: string
+    deviceType?: string
+    topic?: string
     inputData: IAnyObject[]
   },
   option?: { loading?: boolean },
@@ -128,6 +130,62 @@ export async function controlDevice(
     url: '/v1/device/down',
     data: data,
   })
+}
+
+/**
+ * 下发控制设备，使用子设备属性作为标准，目前兼容控制子设备、wifi灯
+ * @param data 
+ * @param option 
+ */
+export async function sendDevice(
+  data: {
+    proType: string
+    deviceType: number
+    deviceId: string
+    gatewayId?: string
+    ep?: number
+    property: IAnyObject
+  },
+  option?: { loading?: boolean },
+) {
+  const property = data.property
+  let params
+
+  if (data.proType === PRO_TYPE.light && data.deviceType === 3) {
+    const power = property.OnOff ? 'on' : 'off'
+    const downData = property.OnOff
+      ? {
+          power,
+          brightness: Math.round((property.Level / 100) * 255),
+          color_temperature: Math.round((property.ColorTemp / 100) * 255),
+        }
+      : {
+          power,
+        }
+
+    params = {
+      deviceId: data.deviceId,
+      deviceType: data.deviceType + '',
+      method: 'wifiLampControl',
+      inputData: [downData],
+    }
+  } else {
+    params = {
+      topic: '/subdevice/control',
+      deviceId: data.gatewayId as string,
+      deviceType: data.deviceType + '',
+      method: data.proType === PRO_TYPE.light ? 'lightControl' : 'panelSingleControl',
+      inputData: [
+        {
+          devId: data.deviceId,
+          ep: data.ep,
+          ...property,
+        },
+      ],
+    }
+  }
+
+  return await controlDevice(params, option)
 }
 
 /**

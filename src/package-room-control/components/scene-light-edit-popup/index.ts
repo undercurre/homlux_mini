@@ -1,9 +1,13 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { maxColorTempK, minColorTempK } from '../../../config/index'
+import Toast from '@vant/weapp/toast/toast'
+import { throttle } from '../../../utils/index'
+import { sendDevice } from '../../../apis/index'
+import { PRO_TYPE } from '../../../config/index'
 
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
+    pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
   },
   /**
    * 组件的属性列表
@@ -11,6 +15,11 @@ ComponentWithComputed({
   properties: {
     title: {
       type: String,
+    },
+    // 是否下发控制命令
+    isControl: {
+      type: Boolean,
+      value: true,
     },
     show: {
       type: Boolean,
@@ -34,6 +43,14 @@ ComponentWithComputed({
     },
     lightInfo: {
       type: Object,
+      value: {
+        deviceType: 0,
+        OnOff: 0,
+        Level: 1,
+        ColorTemp: 0,
+        maxColorTemp: 6500,
+        minColorTemp: 2700,
+      },
     },
   },
 
@@ -52,7 +69,9 @@ ComponentWithComputed({
       return data.Level
     },
     colorTempShow(data) {
-      return (data.ColorTemp / 100) * (maxColorTempK - minColorTempK) + minColorTempK
+      const { maxColorTemp, minColorTemp } = data.lightInfo
+
+      return (data.ColorTemp / 100) * (maxColorTemp - minColorTemp) + minColorTemp
     },
   },
 
@@ -60,12 +79,60 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
+    controlSubDevice: throttle(async function (this: IAnyObject) {
+      const lightInfo = this.data.lightInfo
+      const property = this.data.OnOff
+        ? {
+            OnOff: this.data.OnOff,
+            Level: this.data.Level,
+            ColorTemp: this.data.ColorTemp,
+          }
+        : {
+            OnOff: this.data.OnOff,
+          }
+
+      const res = await sendDevice({
+        deviceId: lightInfo.deviceId,
+        deviceType: lightInfo.deviceType,
+        proType: PRO_TYPE.light,
+        property,
+      })
+
+      if (!res.success) {
+        Toast('控制失败')
+        return
+      }
+    }, 1000),
+
     handleClose() {
       this.triggerEvent('close')
     },
     handleConfirm() {
+      if (this.data.isControl) {
+        this.controlSubDevice()
+      }
+
       this.triggerEvent(
         'confirm',
+        this.data.OnOff
+          ? {
+              OnOff: this.data.OnOff,
+              Level: this.data.Level,
+              ColorTemp: this.data.ColorTemp,
+            }
+          : {
+              OnOff: this.data.OnOff,
+            },
+      )
+    },
+
+    handleChange() {
+      if (this.data.isControl) {
+        this.controlSubDevice()
+      }
+
+      this.triggerEvent(
+        'change',
         this.data.OnOff
           ? {
               OnOff: this.data.OnOff,
@@ -84,6 +151,8 @@ ComponentWithComputed({
       this.setData({
         OnOff: e.currentTarget.dataset.value,
       })
+
+      this.handleConfirm()
       this.animate(
         '#slider',
         [
@@ -101,21 +170,28 @@ ComponentWithComputed({
       this.setData({
         Level: e.detail.value,
       })
+
+      this.handleChange()
     },
     handleLevelChange(e: { detail: number }) {
       this.setData({
         Level: e.detail,
       })
+
+      this.handleConfirm()
     },
     handleColorTempChange(e: { detail: number }) {
       this.setData({
         ColorTemp: e.detail,
       })
+
+      this.handleConfirm()
     },
     handleColorTempDrag(e: { detail: { value: number } }) {
       this.setData({
         ColorTemp: e.detail.value,
       })
+      this.handleChange()
     },
   },
 })

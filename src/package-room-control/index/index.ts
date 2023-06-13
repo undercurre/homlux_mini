@@ -16,7 +16,7 @@ import pageBehavior from '../../behaviors/pageBehaviors'
 import { controlDevice, execScene, saveDeviceOrder } from '../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
 import { storage, emitter, WSEventType, rpx2px, _get, throttle } from '../../utils/index'
-import { maxColorTempK, minColorTempK, proName, proType, LIST_PAGE, CARD_W, CARD_H } from '../../config/index'
+import { proName, PRO_TYPE, LIST_PAGE, CARD_W, CARD_H } from '../../config/index'
 
 /** 接口请求节流定时器，定时时间2s */
 let requestThrottleTimer = 0
@@ -114,7 +114,7 @@ ComponentWithComputed({
           (data.allRoomDeviceList as DeviceCard[]).filter(
             (device) =>
               device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
-              device.proType === proType.gateway,
+              device.proType === PRO_TYPE.gateway,
           ).length > 0
         )
       }
@@ -126,7 +126,7 @@ ComponentWithComputed({
           (data.allRoomDeviceList as DeviceCard[]).filter(
             (device) =>
               device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
-              device.proType !== proType.gateway,
+              device.proType !== PRO_TYPE.gateway,
           ).length > 0
         )
       }
@@ -174,7 +174,7 @@ ComponentWithComputed({
         return false
       }
       const { deviceMap } = deviceStore
-      return data.checkedList.some((uniId) => uniId.indexOf(':') === -1 && deviceMap[uniId].proType === proType.light)
+      return data.checkedList.some((uniId) => uniId.indexOf(':') === -1 && deviceMap[uniId].proType === PRO_TYPE.light)
     },
     /** 是否只控制选中一个开关 */
     // TODO 代码可删除
@@ -184,7 +184,7 @@ ComponentWithComputed({
         let selectSwitchNum = 0
         data.checkedList.forEach((uniId: string) => {
           if (uniId.includes(':')) {
-            if (deviceMap[uniId].proType === proType.switch) {
+            if (deviceMap[uniId].proType === PRO_TYPE.switch) {
               selectSwitchNum++
             }
           }
@@ -373,7 +373,7 @@ ComponentWithComputed({
     },
     // 根据场景信息，比较出关联场景名字
     getLinkSceneName(device: Device.DeviceItem) {
-      if (device?.proType !== proType.switch || !device.switchInfoDTOList || !device.switchInfoDTOList[0]) {
+      if (device?.proType !== PRO_TYPE.switch || !device.switchInfoDTOList || !device.switchInfoDTOList[0]) {
         return ''
       }
       const switchId = device.switchInfoDTOList[0].switchId
@@ -401,7 +401,7 @@ ComponentWithComputed({
 
         for (const groupIndex in this.data.devicePageList) {
           const index = this.data.devicePageList[groupIndex].findIndex((d: DeviceCard) => {
-            if (d.proType === proType.switch) {
+            if (d.proType === PRO_TYPE.switch) {
               return d.uniId === device!.uniId
             } else {
               return d.deviceId === device!.deviceId
@@ -424,7 +424,7 @@ ComponentWithComputed({
 
             // 如果mzgdPropertyDTOList、switchInfoDTOList字段存在，则覆盖更新
             if (device!.mzgdPropertyDTOList) {
-              const eq = originDevice.proType === proType.light ? 1 : originDevice.uniId.split(':')[1]
+              const eq = originDevice.proType === PRO_TYPE.light ? 1 : originDevice.uniId.split(':')[1]
               const newVal = {
                 ...originDevice.mzgdPropertyDTOList[eq],
                 ...device?.mzgdPropertyDTOList[eq],
@@ -614,7 +614,7 @@ ComponentWithComputed({
         const group = this.data.devicePageList[groupIndex]
         for (const index in group) {
           const device = group[index]
-          if (device.proType !== proType.switch) {
+          if (device.proType !== PRO_TYPE.switch) {
             deviceOrderData.deviceInfoByDeviceVoList.push({
               deviceId: device.deviceId,
               houseId: homeStore.currentHomeId,
@@ -680,7 +680,7 @@ ComponentWithComputed({
       }
 
       selectList.forEach((device) => {
-        if (device.proType === proType.switch) {
+        if (device.proType === PRO_TYPE.switch) {
           // 开关
           const deviceId = device.uniId.split(':')[0]
           const ep = parseInt(device.uniId.split(':')[1])
@@ -697,10 +697,12 @@ ComponentWithComputed({
               OnOff,
             },
           })
-        } else if (device.proType === proType.light || device.deviceType === 4) {
+        } else if (device.proType === PRO_TYPE.light) {
           const properties = device.mzgdPropertyDTOList['1']
           const desc = properties.OnOff ? ['打开'] : ['关闭']
-          const color = (properties.ColorTemp / 100) * (maxColorTempK - minColorTempK) + minColorTempK
+          const { maxColorTemp, minColorTemp, ColorTemp } = properties // 色温范围
+          const color = (ColorTemp / 100) * (maxColorTemp - minColorTemp) + minColorTemp
+
           const action = {
             uniId: device.uniId,
             name: device.deviceName,
@@ -710,9 +712,10 @@ ComponentWithComputed({
             deviceType: device.deviceType,
             value: {
               ep: 1,
-              OnOff: properties.OnOff,
+              ...properties,
             } as IAnyObject,
           }
+
           if (properties.OnOff) {
             desc.push(`亮度${properties.Level}%`)
             desc.push(`色温${color}K`)
@@ -807,7 +810,7 @@ ComponentWithComputed({
 
       // 选择灯卡片时，面板状态的处理
       const lightStatus = { Level: 0, ColorTemp: 0 }
-      if (toCheck && e.detail.proType === proType.light) {
+      if (toCheck && e.detail.proType === PRO_TYPE.light) {
         lightStatus.Level = e.detail.mzgdPropertyDTOList['1'].Level
         lightStatus.ColorTemp = e.detail.mzgdPropertyDTOList['1'].ColorTemp
       }
@@ -844,7 +847,7 @@ ComponentWithComputed({
 
     // 卡片点击时，按品类调用对应方法
     handleControlTap(e: { detail: DeviceCard }) {
-      if (e.detail.proType === proType.light) {
+      if (e.detail.proType === PRO_TYPE.light) {
         this.handleLightPowerToggle(e)
       } else {
         this.handleSwitchControlTapToggle(e)

@@ -2,7 +2,7 @@ import { Logger, isArrEqual, storage, throttle, showLoading, hideLoading } from 
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, deviceStore, sceneStore, homeStore } from '../../../../store/index'
-import { maxColorTempK, minColorTempK, colorTempKRange, proType } from '../../../../config/index'
+import { maxColorTempK, minColorTempK, colorTempKRange, PRO_TYPE } from '../../../../config/index'
 import {
   controlDevice,
   findDevice,
@@ -409,12 +409,12 @@ ComponentWithComputed({
       const relInfo = this.data._switchRelInfo
 
       if (this.data.selectLinkType === 'light') {
-        list = deviceStore.allRoomDeviceFlattenList.filter((item) => item.proType === proType.light)
+        list = deviceStore.allRoomDeviceFlattenList.filter((item) => item.proType === PRO_TYPE.light)
 
         linkSelectList = relInfo.lampRelList.map((device) => device.lampDeviceId.replace('group-', ''))
       } else if (this.data.selectLinkType === 'switch') {
         list = deviceStore.allRoomDeviceFlattenList.filter(
-          (item) => item.proType === proType.switch && item.uniId !== switchUniId,
+          (item) => item.proType === PRO_TYPE.switch && item.uniId !== switchUniId,
         )
 
         // 合并主动和被动关联的开关列表数据，并去重，作为已选列表
@@ -446,7 +446,7 @@ ComponentWithComputed({
 
       if (['light', 'switch'].includes(this.data.selectLinkType)) {
         const device = deviceMap[selectId]
-        this.findDevice(device)
+        device.deviceType === 2 && this.findDevice(device)
 
         const linkScene = switchSceneConditionMap[selectId]
         const lampRelList = this.data._allSwitchLampRelList.filter(
@@ -726,7 +726,9 @@ ComponentWithComputed({
       })
       const switchUniId = this.data.checkedList[0]
       const switchSceneConditionMap = deviceStore.switchSceneConditionMap
-      const lampRelList = this.data._allSwitchLampRelList.map((item) => `${item.panelId}:${item.switchId}`) // 指定面板的灯关联关系列表
+      const lampRelList = this.data._switchRelInfo.lampRelList.map(
+        (item) => `${item.lampDeviceId.replace('group-', '')}`,
+      ) // 指定面板的灯关联关系列表
       const switchRelList = this.data._switchRelInfo.switchRelList.map((item) => `${item.deviceId}:${item.switchId}`) // 指定面板的灯关联关系列表
       const { linkType, selectLinkType, linkSelectList } = this.data
 
@@ -858,7 +860,7 @@ ComponentWithComputed({
       this.data.checkedList
         .filter((uniId: string) => !uniId.includes(':'))
         .forEach((deviceId: string) => {
-          if (deviceMap[deviceId].proType === proType.light) {
+          if (deviceMap[deviceId].proType === PRO_TYPE.light) {
             selectLightDevice.push(deviceMap[deviceId])
           }
         })

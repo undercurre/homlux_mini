@@ -1,9 +1,10 @@
 import { observable, runInAction } from 'mobx-miniprogram'
 import { queryAllDevice, queryDeviceList, querySubDeviceList } from '../apis/device'
-import { proType } from '../config/index'
+import { PRO_TYPE } from '../config/index'
 import { homeStore } from './home'
 import { roomStore } from './room'
 import { sceneStore } from './scene'
+import { transferDeviceProperty } from '../utils/index'
 
 export const deviceStore = observable({
   /**
@@ -38,7 +39,7 @@ export const deviceStore = observable({
   get deviceFlattenList() {
     const list = [] as Device.DeviceItem[]
     deviceStore.deviceList.forEach((device) => {
-      if (device.proType === proType.switch) {
+      if (device.proType === PRO_TYPE.switch) {
         device.switchInfoDTOList?.forEach((switchItem) => {
           list.push({
             ...device,
@@ -52,10 +53,13 @@ export const deviceStore = observable({
         })
       }
       // 包括proType.light在内，所有非网关设备都用这种方案插值
-      else if (device.proType !== proType.gateway) {
+      else if (device.proType !== PRO_TYPE.gateway) {
         list.push({
           ...device,
           uniId: device.deviceId,
+          mzgdPropertyDTOList: {
+            1: transferDeviceProperty(device.proType, device.mzgdPropertyDTOList[1]),
+          },
         })
       }
     })
@@ -70,7 +74,7 @@ export const deviceStore = observable({
   get allRoomDeviceFlattenList() {
     const list = [] as Device.DeviceItem[]
     deviceStore.allRoomDeviceList.forEach((device) => {
-      if (device.proType === proType.switch) {
+      if (device.proType === PRO_TYPE.switch) {
         device.switchInfoDTOList?.forEach((switchItem) => {
           list.push({
             ...device,
@@ -83,10 +87,13 @@ export const deviceStore = observable({
         })
       }
       // 包括proType.light在内，所有非网关设备都用这种方案插值
-      else if (device.proType !== proType.gateway) {
+      else if (device.proType !== PRO_TYPE.gateway) {
         list.push({
           ...device,
           uniId: device.deviceId,
+          mzgdPropertyDTOList: {
+            1: transferDeviceProperty(device.proType, device.mzgdPropertyDTOList[1]),
+          },
         })
       }
     })
@@ -101,7 +108,7 @@ export const deviceStore = observable({
     const map = {} as Record<string, string[]>
     sceneStore.allRoomSceneList.forEach((scene) => {
       scene.deviceActions?.forEach((action) => {
-        if (action.proType === proType.switch) {
+        if (action.proType === PRO_TYPE.switch) {
           action.controlAction.forEach((controlData) => {
             if (map[`${action.deviceId}:${controlData.ep}`]) {
               if (!map[`${action.deviceId}:${controlData.ep}`].includes(scene.sceneId)) {

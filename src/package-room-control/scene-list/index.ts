@@ -60,22 +60,21 @@ ComponentWithComputed({
       const deviceMap = deviceStore.allRoomDeviceMap
 
       sceneStore.sceneList.forEach((scene: Scene.SceneItem) => {
+        let linkName = ''
         if (scene.deviceConditions?.length > 0) {
           const device = deviceMap[scene.deviceConditions[0].deviceId]
           const switchName = device.switchInfoDTOList.find(
             (switchItem) => switchItem.switchId === scene.deviceConditions[0].controlEvent[0].ep.toString(),
           )?.switchName
-          listData.push({
-            ...scene,
-            dragId: scene.sceneId,
-            linkName: `${switchName} | ${device.deviceName}`,
-          })
-          return
+
+          linkName = `${switchName} | ${device.deviceName}`
         }
+
         listData.push({
           ...scene,
           dragId: scene.sceneId,
-          linkName: '',
+          linkName,
+          sceneIcon: scene.sceneIcon + '-gray',
         })
       })
       this.setData({

@@ -2,9 +2,9 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { updateScene } from '../../../../apis/scene'
-import { proType, sceneList } from '../../../../config/index'
+import { PRO_TYPE, sceneList } from '../../../../config/index'
 import { deviceStore, homeStore, roomStore, sceneStore } from '../../../../store/index'
-import { storage } from '../../../../utils/index'
+import { storage, toWifiProperty } from '../../../../utils/index'
 
 ComponentWithComputed({
   options: {
@@ -155,6 +155,8 @@ ComponentWithComputed({
       // switch需要特殊处理
       const switchDeviceMap = {} as Record<string, IAnyObject[]>
       this.data.actions.forEach((action: Device.ActionItem) => {
+        const device = deviceMap[action.uniId]
+
         if (action.uniId.includes(':')) {
           const deviceId = action.uniId.split(':')[0]
           if (switchDeviceMap[deviceId]) {
@@ -162,9 +164,14 @@ ComponentWithComputed({
           } else {
             switchDeviceMap[deviceId] = [action.value]
           }
-        } else if (deviceMap[action.uniId].proType === proType.light) {
+        } else if (deviceMap[action.uniId].proType === PRO_TYPE.light) {
+          let property = action.value
+
+          if (device.deviceType === 3) {
+            property = toWifiProperty(device.proType, property)
+          }
           newSceneData.deviceActions.push({
-            controlAction: [action.value],
+            controlAction: [property],
             deviceId: action.uniId,
             deviceType: deviceMap[action.uniId].deviceType,
             proType: deviceMap[action.uniId].proType,

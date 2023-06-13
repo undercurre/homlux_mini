@@ -3,7 +3,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { runInAction } from 'mobx-miniprogram'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { execScene } from '../../../../apis/scene'
-import { proType } from '../../../../config/index'
+import { PRO_TYPE } from '../../../../config/index'
 import { deviceStore, roomBinding, roomStore } from '../../../../store/index'
 ComponentWithComputed({
   options: {
@@ -90,7 +90,7 @@ ComponentWithComputed({
         deviceStore.deviceList = deviceStore.allRoomDeviceList.filter(
           (device) =>
             device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
-            device.proType !== proType.gateway,
+            device.proType !== PRO_TYPE.gateway,
         )
       })
       wx.navigateTo({

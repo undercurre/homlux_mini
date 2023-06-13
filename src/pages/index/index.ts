@@ -12,7 +12,7 @@ import {
 } from '../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { storage, throttle } from '../../utils/index'
-import { proType, ROOM_CARD_H, ROOM_CARD_M } from '../../config/index'
+import { PRO_TYPE, ROOM_CARD_H, ROOM_CARD_M } from '../../config/index'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { allDevicePowerControl, updateRoomSort } from '../../apis/index'
@@ -102,7 +102,7 @@ ComponentWithComputed({
       let hasLightOrSwitch = false
       if (data.allRoomDeviceList) {
         data.allRoomDeviceList.some((device: Device.DeviceItem) => {
-          if (([proType.light, proType.switch] as string[]).includes(device.proType)) {
+          if (([PRO_TYPE.light, PRO_TYPE.switch] as string[]).includes(device.proType)) {
             hasLightOrSwitch = true
             return true
           }
