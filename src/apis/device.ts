@@ -150,42 +150,64 @@ export async function sendDevice(
 ) {
   const property = data.property
   let params
+  let promise
 
-  if (data.proType === PRO_TYPE.light && data.deviceType === 3) {
-    const power = property.OnOff ? 'on' : 'off'
-    const downData = property.OnOff
-      ? {
-          power,
-          brightness: Math.round((property.Level / 100) * 255),
-          color_temperature: Math.round((property.ColorTemp / 100) * 255),
-        }
-      : {
-          power,
+  switch (data.deviceType) {
+    case 2:
+      params = {
+        topic: '/subdevice/control',
+        deviceId: data.gatewayId as string,
+        deviceType: data.deviceType,
+        method: data.proType === PRO_TYPE.light ? 'lightControl' : 'panelSingleControl',
+        inputData: [
+          {
+            devId: data.deviceId,
+            ep: data.ep,
+            ...property,
+          },
+        ],
+      }
+      promise = controlDevice(params, option)
+      break
+
+    case 3:
+      if (data.proType === PRO_TYPE.light) {
+        const power = property.OnOff ? 'on' : 'off'
+        const downData = property.OnOff
+          ? {
+              power,
+              brightness: Math.round((property.Level / 100) * 255),
+              color_temperature: Math.round((property.ColorTemp / 100) * 255),
+            }
+          : {
+              power,
+            }
+
+        params = {
+          deviceId: data.deviceId,
+          deviceType: data.deviceType,
+          method: 'wifiLampControl',
+          inputData: [downData],
         }
 
-    params = {
-      deviceId: data.deviceId,
-      deviceType: data.deviceType,
-      method: 'wifiLampControl',
-      inputData: [downData],
-    }
-  } else {
-    params = {
-      topic: '/subdevice/control',
-      deviceId: data.gatewayId as string,
-      deviceType: data.deviceType,
-      method: data.proType === PRO_TYPE.light ? 'lightControl' : 'panelSingleControl',
-      inputData: [
+        promise = controlDevice(params, option)
+      }
+
+      break
+
+    case 4:
+      promise = groupControl(
         {
-          devId: data.deviceId,
-          ep: data.ep,
-          ...property,
+          groupId: data.deviceId,
+          controlAction: [data.property],
         },
-      ],
-    }
+        option,
+      )
+
+      break
   }
 
-  return await controlDevice(params, option)
+  return promise || { success: false }
 }
 
 /**
