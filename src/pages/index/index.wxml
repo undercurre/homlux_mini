@@ -46,11 +46,11 @@
   <!-- 主体内容 -->
   <view class="flex flex-1 w-full box-border" id="content">
     <!-- 有设备时显示 -->
-    <view class="flex-1 flex flex-col items-between mx-24rpx" wx:if="{{hasDevice}}">
+    <scroll-view scroll-y enhanced show-scrollbar="{{false}}" class="flex flex-col items-between mx-24rpx" wx:if="{{hasDevice}}" style="height: {{scrollViewHeight}}px;">
       <!-- 顶开上面的内容高度 -->
       <view class="h-24rpx"></view>
+      <!-- 房间卡片列表 -->
       <movable-area style="height: {{accumulatedY}}px; width: 702rpx;">
-        <!-- 房间卡片列表 -->
         <movable-view wx:for="{{roomList}}" wx:key="roomId" data-index="{{index}}" data-rid="{{item.roomId}}" class="w-702rpx {{item.sceneList.length && !isMoving ? 'h-336rpx' : 'h-152rpx'}}" y="{{roomPos[item.roomId].y}}" direction="vertical" bind:longpress="movableTouchStart" bind:touchend="movableTouchEnd" bind:change="movableChange" class="{{ roomPos[item.roomId].index === placeholder.index ? 'z-100' : (isMoving ? 'opacity-50' : 'opacity-100 z-1') }}" disabled="{{!isMoving}}">
           <room-card room-info="{{item}}" data-room="{{item.roomId}}" isMoving="{{isMoving}}" bind:sceneSelect="handleSceneSelect"></room-card>
         </movable-view>
@@ -62,7 +62,7 @@
       </view>
       <!-- 顶开下面的内容高度 -->
       <view class="h-64rpx"></view>
-    </view>
+    </scroll-view>
     <!-- 无设备时显示 -->
     <view wx:else class="w-full mt-68rpx flex flex-col items-center">
       <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx"></image>
@@ -104,7 +104,7 @@
   </view>
 </view>
 
-<home-select-menu x="{{selectHomeMenu.x}}" y="{{selectHomeMenu.y}}" isShow="{{selectHomeMenu.isShow}}" bind:select="handleHomeSelect"></home-select-menu>
+<home-select-menu x="{{selectHomeMenu.x}}" y="{{selectHomeMenu.y}}" isShow="{{selectHomeMenu.isShow}}" bind:select="handleHomeSelect" bind:afterSelected="renewRoomPos"></home-select-menu>
 <add-menu right="{{addMenu.right}}" y="{{addMenu.y}}" isShow="{{addMenu.isShow}}"></add-menu>
 <add-room show="{{showAddNewRoom}}" bind:close="handleHideAddNewRoom"></add-room>
 <van-toast id="van-toast" />

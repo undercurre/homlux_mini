@@ -10,6 +10,7 @@ export * from './eventBus'
 export * from './validate'
 export * from './app'
 export * from './log'
+export * from './deviceModel'
 
 export function delay(ms: number) {
   return new Promise<void>((resolve) => {

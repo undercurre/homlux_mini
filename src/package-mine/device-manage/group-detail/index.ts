@@ -3,7 +3,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
 import { deviceStore, homeBinding, homeStore, otaStore, roomBinding } from '../../../store/index'
 import pageBehavior from '../../../behaviors/pageBehaviors'
-import { deleteDevice, editDeviceInfo, queryDeviceInfoByDeviceId } from '../../../apis/index'
+import { delGroup, editDeviceInfo, queryGroup } from '../../../apis/index'
 import { proName, PRO_TYPE } from '../../../config/index'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { emitter, checkWifiSwitch } from '../../../utils/index'
@@ -75,10 +75,7 @@ ComponentWithComputed({
         deviceId,
         roomId,
       })
-      this.updateDeviceInfo()
-      // checkOtaVersion(deviceId).then((res) => {
-      //   console.log('ota', res)
-      // })
+      this.updateGroupInfo()
     },
 
     onShow() {
@@ -88,7 +85,7 @@ ComponentWithComputed({
         })
         return
       }
-      this.updateDeviceInfo()
+      this.updateGroupInfo()
     },
 
     handleDeviceNameEditPopup() {
@@ -119,7 +116,7 @@ ComponentWithComputed({
         houseId: homeStore.currentHomeDetail.houseId,
       })
       if (res.success) {
-        this.updateDeviceInfo()
+        this.updateGroupInfo()
         emitter.emit('deviceEdit')
       }
     },
@@ -146,7 +143,7 @@ ComponentWithComputed({
         houseId: homeStore.currentHomeDetail.houseId,
       })
       if (res.success) {
-        this.updateDeviceInfo()
+        this.updateGroupInfo()
         homeStore.updateRoomCardList()
         emitter.emit('deviceEdit')
       }
@@ -160,12 +157,10 @@ ComponentWithComputed({
     handleDeviceDelete() {
       if (!this.data.canEditDevice) return
       Dialog.confirm({
-        title: '确定删除该设备？',
+        title: '确定解散该灯组？',
       }).then(async () => {
-        const res = await deleteDevice({
-          deviceId: this.data.deviceId,
-          deviceType: this.data.deviceInfo.deviceType,
-          sn: this.data.deviceInfo.proType === PRO_TYPE.gateway ? this.data.deviceInfo.sn : this.data.deviceId,
+        const res = await delGroup({
+          groupId: this.data.deviceId,
         })
         if (res.success) {
           Toast('删除成功')
@@ -178,12 +173,11 @@ ComponentWithComputed({
         }
       })
     },
-    async updateDeviceInfo() {
-      const res = await queryDeviceInfoByDeviceId({ deviceId: this.data.deviceId, roomId: this.data.roomId })
+    async updateGroupInfo() {
+      const res = await queryGroup({ groupId: this.data.deviceId })
       if (res.success) {
         this.setData({
-          deviceInfo: res.result,
-          deviceName: res.result.deviceName,
+          deviceName: res.result.groupName,
           roomId: res.result.roomId,
         })
       }
@@ -196,7 +190,7 @@ ComponentWithComputed({
         houseId: homeStore.currentHomeDetail.houseId,
       })
       if (res.success) {
-        this.updateDeviceInfo()
+        this.updateGroupInfo()
       }
     },
 

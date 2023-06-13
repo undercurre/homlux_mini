@@ -3,7 +3,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { queryDeviceOnlineStatus, bindDevice } from '../../apis/index'
 import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
-import { WifiSocket, getCurrentPageParams, strUtil, isAndroid, isAndroid10Plus } from '../../utils/index'
+import { WifiSocket, getCurrentPageParams, strUtil, isAndroid, isAndroid10Plus, Logger } from '../../utils/index'
 import { stepListForBind, stepListForChangeWiFi } from './conifg'
 
 let start = 0
@@ -59,7 +59,7 @@ ComponentWithComputed({
     async ready() {
       const pageParams = getCurrentPageParams()
 
-      console.log('ready', pageParams)
+      Logger.log('ready', pageParams)
 
       this.setData({
         type: pageParams.type,
@@ -72,7 +72,7 @@ ComponentWithComputed({
         const auth = await this.authLocationPermission()
 
         if (!auth) {
-          console.error('用户位置授权失败')
+          Logger.error('用户位置授权失败')
           return
         }
       }
@@ -80,7 +80,7 @@ ComponentWithComputed({
       this.initWifi()
     },
     detached() {
-      console.debug('link-gateway:detached')
+      Logger.debug('link-gateway:detached')
       this.data._socket?.close()
 
       if (this.data._queryCloudTimeId) {
@@ -115,15 +115,15 @@ ComponentWithComputed({
           })
           .catch((err) => err)
 
-        console.log('authorizeRes', authorizeRes)
+        Logger.log('authorizeRes', authorizeRes)
 
         // 用户拒绝授权处理，安卓端没有返回errno字段，只能通过errMsg判断
         if (authorizeRes.errno === 103 || authorizeRes.errMsg.includes('auth deny')) {
           const authRes = await this.checkLocationPermission()
-          console.log('authRes', authRes)
+          Logger.log('authRes', authRes)
 
           if (!authRes) {
-            console.error('授权失败')
+            Logger.error('授权失败')
           }
 
           return authRes
@@ -145,7 +145,7 @@ ComponentWithComputed({
 
       return new Promise<boolean>((resolve) => {
         // 没有打开微信蓝牙授权异常处理
-        console.log('getSetting', settingRes)
+        Logger.log('getSetting', settingRes)
 
         if (isDeny || !settingRes.authSetting['scope.userLocation']) {
           wx.showModal({
@@ -156,7 +156,7 @@ ComponentWithComputed({
             confirmText: '去设置',
             confirmColor: '#27282A',
             success: (res) => {
-              console.log('showModal', res)
+              Logger.log('showModal', res)
               if (res.cancel) {
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
@@ -168,7 +168,7 @@ ComponentWithComputed({
 
               wx.openSetting({
                 success: (settingRes) => {
-                  console.log('openSetting', settingRes)
+                  Logger.log('openSetting', settingRes)
                   resolve(this.checkLocationPermission())
                 },
               })
@@ -185,14 +185,14 @@ ComponentWithComputed({
 
       const startRes = await wx.startWifi()
 
-      console.log('startWifi', startRes)
+      Logger.log('startWifi', startRes)
 
       if (isAndroid()) {
         // 无法访问互联网的情况下，wx.getWifiList()调用不成功,猜测微信存在查询外网接口信息的流程，堵塞流程，
         // 需在可访问外网时先调用一次，后面即使断网，再次调用getWifiList也能正常调用
         const wifiListRes = await wx.getWifiList().catch((err) => err)
 
-        console.log('wifiListRes', wifiListRes)
+        Logger.log('wifiListRes', wifiListRes)
       }
 
       start = Date.now()
@@ -216,7 +216,7 @@ ComponentWithComputed({
 
         const connectRes = await this.data._socket.connect()
 
-        console.log(`连接${this.data.apSSID}时长：`, Date.now() - now, connectRes, dayjs().format('HH:mm:ss'))
+        Logger.log(`连接${this.data.apSSID}时长：`, Date.now() - now, connectRes, dayjs().format('HH:mm:ss'))
 
         // 针对IOS用户 加入网关热点wifi的系统弹窗的取消操作
         if (connectRes.errCode === 12007) {
@@ -256,7 +256,7 @@ ComponentWithComputed({
           this.getGatewayStatus()
         }
       } catch (err) {
-        console.error('connectWifi-err', err)
+        Logger.error('connectWifi-err', err)
         this.toErrorStatus()
       }
     },
@@ -282,7 +282,7 @@ ComponentWithComputed({
         })
 
         this.data._socket.onMessage((data: IAnyObject) => {
-          console.log('WifiSocket.onMessage', data)
+          Logger.log('WifiSocket.onMessage', data)
 
           if (data.topic === '/gateway/net/confirm' && this.data.isShowForceBindTips) {
             this.setData({
@@ -313,7 +313,7 @@ ComponentWithComputed({
         data,
       })
 
-      console.debug('app-网关耗时：', Date.now() - start, '发送绑定指令耗时：', Date.now() - begin)
+      Logger.debug('app-网关耗时：', Date.now() - start, '发送绑定指令耗时：', Date.now() - begin)
 
       if (!setRes.success) {
         this.toErrorStatus()
@@ -342,7 +342,7 @@ ComponentWithComputed({
         data,
       })
 
-      console.log('change', res)
+      Logger.log('change', res)
       if (!res.success) {
         this.toErrorStatus()
         return
@@ -379,7 +379,7 @@ ComponentWithComputed({
           activeIndex: 3,
         })
 
-        console.debug('app到云端，添加网关耗时：', Date.now() - start)
+        Logger.debug('app到云端，添加网关耗时：', Date.now() - start)
         wx.reportEvent('test', {
           app_cloud: Date.now() - start,
         })
@@ -397,7 +397,7 @@ ComponentWithComputed({
     async queryDeviceOnlineStatus(sn: string, type?: string) {
       const res = await queryDeviceOnlineStatus({ sn, deviceType: '1' })
 
-      console.log('queryDeviceOnlineStatus', res.result)
+      Logger.log('queryDeviceOnlineStatus', res.result)
 
       if (res.success && res.result.onlineStatus === 1 && res.result.deviceId) {
         this.setData({
@@ -415,7 +415,7 @@ ComponentWithComputed({
         this.data._queryTimes--
 
         if (this.data._queryTimes <= 0) {
-          console.error('配网失败：网关云端状态不在线')
+          Logger.error('配网失败：网关云端状态不在线')
           this.toErrorStatus()
           return
         }
@@ -439,7 +439,7 @@ ComponentWithComputed({
         deviceName: pageParams.deviceName,
       }
 
-      console.debug('网关检查流程耗时：', Date.now() - start)
+      Logger.debug('网关检查流程耗时：', Date.now() - start)
       wx.reportEvent('test', {
         check_device: Date.now() - start,
       })

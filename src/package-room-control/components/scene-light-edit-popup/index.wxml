@@ -29,7 +29,8 @@
         <view class="h-32rpx"></view>
       </view>
     </view>
-    <view class="h-56rpx"></view>
-    <template is="bottom-btn" />
+    <view class="h-96rpx"></view>
   </view>
 </van-popup>
+
+<van-toast id="van-toast" />

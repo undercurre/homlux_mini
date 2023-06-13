@@ -16,27 +16,28 @@ export function logout() {
 
 // WS连接
 let socketTask: WechatMiniprogram.SocketTask | null = null
-let socketIsConnect = false
+let socketIsConnect = false // socket是否处于连接状态
 let connectTimeId = 0 // 连接socket的延时器
 
-export function startWebsocketService() {
+export async function startWebsocketService() {
   if (!storage.get<string>('token')) {
     return
   }
   if (socketIsConnect) {
-    socketTask?.close({ code: 1000 })
-    socketIsConnect = false
+    const closeRes = await socketTask?.close({ code: 1000 })
+
+    Logger.log('closeRes', closeRes)
   }
   socketTask = connectHouseSocket(homeStore.currentHomeDetail.houseId)
   socketTask.onClose(onSocketClose)
-  socketTask.onOpen(() => {
+  socketTask.onOpen((res) => {
     socketIsConnect = true
-    Logger.log('socket连接成功')
+    Logger.log('socket连接成功', res)
   })
   socketTask.onMessage((e) => {
     try {
       const res = JSON.parse(e.data as string)
-      console.log('接收到socket信息：', res, res.result.eventType)
+      console.log('接收到socket信息：', res.result.eventType, res)
       emitter.emit('wsReceive', res)
       emitter.emit(res.result.eventType, res.result.eventData)
 
@@ -48,8 +49,8 @@ export function startWebsocketService() {
         })
       }
     } catch (err) {
-      console.error('接收到socket信息：', e.data)
-      console.error('转json失败：', err)
+      Logger.error('接收到socket信息：', e.data)
+      Logger.error('转json失败：', err)
     }
   })
   socketTask.onError((err) => {
@@ -59,7 +60,7 @@ export function startWebsocketService() {
       clearTimeout(connectTimeId)
       Logger.log('socket重连')
       startWebsocketService()
-    }, 5000)
+    }, 10000)
   })
 }
 
@@ -96,6 +97,6 @@ export async function appOnLaunchService() {
     console.log('加载完成时间', Date.now() / 1000, '用时', (Date.now() - start) / 1000 + 's')
     startWebsocketService()
   } catch (e) {
-    console.log('appOnLaunchService-err:', e)
+    Logger.error('appOnLaunchService-err:', e)
   }
 }

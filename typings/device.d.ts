@@ -21,7 +21,7 @@ declare namespace Device {
      * { 每个endpoint: {属性值} }
      * 单路设备只有一个endpoint：1，比如{ 1: {OnOff: 1} }
      */
-    mzgdPropertyDTOList: Record<string, Record<string, number>>
+    mzgdPropertyDTOList: Record<string, IAnyObject>
     /**
      * onLineStatus
      * 0:离线 1:在线
@@ -159,4 +159,6 @@ declare namespace Device {
     switchId: string
     lampDeviceId: string
   }
+
+  type GroupDTO = Pick<DeviceItem, 'deviceId' | 'deviceType' | 'proType'>
 }

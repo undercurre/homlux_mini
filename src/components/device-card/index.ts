@@ -1,5 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { proName, proType } from '../../config/index'
+import { proName, PRO_TYPE } from '../../config/index'
 let throttleTimer = 0
 ComponentWithComputed({
   options: {
@@ -59,10 +59,7 @@ ComponentWithComputed({
 
   computed: {
     picUrl(data) {
-      if (data.deviceInfo.deviceType === 4) {
-        return '/assets/img/device/group.png'
-      }
-      if (data.deviceInfo.proType === proType.switch && data.showBtnDetail) {
+      if (data.deviceInfo.proType === PRO_TYPE.switch && data.showBtnDetail) {
         return data.deviceInfo?.switchInfoDTOList[0]?.pic
       } else if (data.deviceInfo?.pic) {
         return data.deviceInfo.pic
@@ -70,11 +67,20 @@ ComponentWithComputed({
       return ''
     },
     controlBtnPic(data) {
-      if (data.deviceInfo.proType === proType.light) {
+      // 窗帘，位置大于0即为开启
+      if (data.deviceInfo.proType === PRO_TYPE.curtain) {
+        return data.deviceInfo.mzgdPropertyDTOList['1'].curtain_position === '0'
+          ? '/assets/img/base/curtain-close.png'
+          : '/assets/img/base/curtain-open.png'
+      }
+      // 灯及灯组
+      else if (data.deviceInfo.proType === PRO_TYPE.light) {
         return data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
           ? '/assets/img/base/power-on.png'
           : '/assets/img/base/power-off.png'
-      } else if (data.deviceInfo.proType === proType.switch && data.deviceInfo.switchInfoDTOList[0]) {
+      }
+      // 面板
+      else if (data.deviceInfo.proType === PRO_TYPE.switch && data.deviceInfo.switchInfoDTOList[0]) {
         // ! 确保带有switchInfoDTOList
         const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
         if (!data.deviceInfo.mzgdPropertyDTOList[switchId]) {
@@ -90,7 +96,7 @@ ComponentWithComputed({
     topTitle(data) {
       // 如果是开关，deviceName显示开关名称
       let name
-      if (data.deviceInfo.proType === proType.switch && data.showBtnDetail) {
+      if (data.deviceInfo.proType === PRO_TYPE.switch && data.showBtnDetail) {
         const switchInfo = data.deviceInfo.switchInfoDTOList[0]
         name = switchInfo.switchName ?? '按键' + switchInfo.switchId
       } else {
@@ -154,9 +160,9 @@ ComponentWithComputed({
               return
             }
             let onOff = false
-            if (this.data.deviceInfo.proType === proType.light) {
+            if (this.data.deviceInfo.proType === PRO_TYPE.light) {
               onOff = !this.data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
-            } else if (this.data.deviceInfo.proType === proType.switch) {
+            } else if (this.data.deviceInfo.proType === PRO_TYPE.switch) {
               const switchId = this.data.deviceInfo.switchInfoDTOList[0].switchId
               if (this.data.deviceInfo.mzgdPropertyDTOList[switchId]) {
                 onOff = !this.data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff

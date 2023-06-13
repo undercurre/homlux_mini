@@ -12,7 +12,7 @@ import {
 } from '../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { storage, throttle } from '../../utils/index'
-import { proType, ROOM_CARD_H, ROOM_CARD_M } from '../../config/index'
+import { PRO_TYPE, ROOM_CARD_H, ROOM_CARD_M } from '../../config/index'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { allDevicePowerControl, updateRoomSort } from '../../apis/index'
@@ -55,6 +55,13 @@ ComponentWithComputed({
       'px',
     // 状态栏高度
     statusBarHeight: storage.get<number>('statusBarHeight') + 'px',
+    // 可滚动区域高度
+    scrollViewHeight:
+      (storage.get<number>('windowHeight') as number) -
+      (storage.get<number>('statusBarHeight') as number) -
+      (storage.get<number>('bottomBarHeight') as number) - // IPX
+      90 - // 开关、添加按钮
+      (storage.get<number>('navigationBarHeight') as number),
     selectHomeMenu: {
       x: '0px',
       y: '0px',
@@ -102,7 +109,7 @@ ComponentWithComputed({
       let hasLightOrSwitch = false
       if (data.allRoomDeviceList) {
         data.allRoomDeviceList.some((device: Device.DeviceItem) => {
-          if (([proType.light, proType.switch] as string[]).includes(device.proType)) {
+          if (([PRO_TYPE.light, PRO_TYPE.switch] as string[]).includes(device.proType)) {
             hasLightOrSwitch = true
             return true
           }
@@ -134,6 +141,9 @@ ComponentWithComputed({
         )
       }
     },
+    roomList() {
+      this.renewRoomPos()
+    },
   },
 
   methods: {
@@ -156,13 +166,10 @@ ComponentWithComputed({
       this.hideMenu()
       emitter.off('wsReceive')
     },
-    onShow() {
+    async onShow() {
       setTimeout(() => {
         this.inviteMember()
       }, 1000)
-      if (homeStore.currentHomeId) {
-        homeStore.updateRoomCardList()
-      }
       if (!othersStore.isInit) {
         this.setData({
           loading: true,
@@ -218,8 +225,6 @@ ComponentWithComputed({
           roomStore.currentRoomIndex = 0
         })
       }
-
-      this.renewRoomPos()
     },
 
     /**
@@ -239,7 +244,7 @@ ComponentWithComputed({
             y: currentIndex === index ? this.data.roomPos[room.roomId].y : accumulatedY,
           }
           // 若场景列表为空，或正在拖动，则使用 ROOM_CARD_M
-          accumulatedY += room.subDeviceNum && room.sceneList.length && !isMoving ? ROOM_CARD_H : ROOM_CARD_M
+          accumulatedY += !room.subDeviceNum || !room.sceneList.length || isMoving === true ? ROOM_CARD_M : ROOM_CARD_H
         })
 
       this.setData({

@@ -1,16 +1,11 @@
-import { closeWebSocket, startWebsocketService } from './service'
+import { Logger } from './log'
 
 let isConnectStatus = true
 
 export function networkStatusListen() {
   wx.onNetworkStatusChange(function (res) {
-    console.log('监听网络状态变化事件:', res, Date().toString())
+    Logger.log('监听网络状态变化事件:', res)
     isConnectStatus = res.isConnected
-    if (isConnectStatus) {
-      startWebsocketService()
-    } else {
-      closeWebSocket()
-    }
   })
 
   wx.onNetworkWeakChange(function (res) {

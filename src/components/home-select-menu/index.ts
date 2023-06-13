@@ -67,12 +67,13 @@ ComponentWithComputed({
       const houseId = e.currentTarget.dataset.value
 
       console.log('handleHomeTap', e)
+      this.triggerEvent('select', { houseId })
       const res = await updateDefaultHouse(houseId)
 
       if (res.success) {
-        homeStore.updateHomeInfo()
+        await homeStore.updateHomeInfo()
       }
-      this.triggerEvent('select', { houseId })
+      this.triggerEvent('afterSelected', { houseId })
     },
     hideAnimate() {
       this.animate(

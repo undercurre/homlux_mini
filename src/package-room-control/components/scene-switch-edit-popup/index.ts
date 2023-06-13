@@ -52,6 +52,8 @@ ComponentWithComputed({
       this.setData({
         OnOff: e.currentTarget.dataset.value,
       })
+
+      this.handleConfirm()
       this.animate(
         '#slider',
         [
