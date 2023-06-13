@@ -59,9 +59,6 @@ ComponentWithComputed({
 
   computed: {
     picUrl(data) {
-      if (data.deviceInfo.deviceType === 4) {
-        return '/assets/img/device/group.png'
-      }
       if (data.deviceInfo.proType === proType.switch && data.showBtnDetail) {
         return data.deviceInfo?.switchInfoDTOList[0]?.pic
       } else if (data.deviceInfo?.pic) {
