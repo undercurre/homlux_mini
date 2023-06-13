@@ -25,7 +25,7 @@
       <text class="text-24rpx text-black-59">此场景执行以下操作</text>
     </view>
     <view class="flex-1" id="content">
-      <scroll-view  class="box-border px-24rpx" enhanced show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
+      <scroll-view class="box-border px-24rpx" enhanced show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
         <view class="flex flex-row items-center bg-hex-F9FBFE rounded-32rpx px-40rpx py-32rpx mb-24rpx relative" wx:for="{{sceneDeviceActionsFlatten}}" bindtap="handleSceneActionEdit" data-index="{{index}}" wx:key="uniId">
           <view class="w-96 h-96 rounded-full bg-hex-F9FBFE p-12rpx box-border">
             <image src="{{item.pic}}" class="w-72 h-72" />

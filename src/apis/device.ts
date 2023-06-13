@@ -118,7 +118,7 @@ export async function controlDevice(
     customJson?: IAnyObject
     deviceId: string
     method: string
-    deviceType?: string
+    deviceType?: number
     topic?: string
     inputData: IAnyObject[]
   },
@@ -134,8 +134,8 @@ export async function controlDevice(
 
 /**
  * 下发控制设备，使用子设备属性作为标准，目前兼容控制子设备、wifi灯
- * @param data 
- * @param option 
+ * @param data
+ * @param option
  */
 export async function sendDevice(
   data: {
@@ -165,7 +165,7 @@ export async function sendDevice(
 
     params = {
       deviceId: data.deviceId,
-      deviceType: data.deviceType + '',
+      deviceType: data.deviceType,
       method: 'wifiLampControl',
       inputData: [downData],
     }
@@ -173,7 +173,7 @@ export async function sendDevice(
     params = {
       topic: '/subdevice/control',
       deviceId: data.gatewayId as string,
-      deviceType: data.deviceType + '',
+      deviceType: data.deviceType,
       method: data.proType === PRO_TYPE.light ? 'lightControl' : 'panelSingleControl',
       inputData: [
         {
