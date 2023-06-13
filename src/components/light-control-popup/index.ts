@@ -1,8 +1,8 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
-import { throttle } from '../../../utils/index'
-import { sendDevice } from '../../../apis/index'
-import { PRO_TYPE } from '../../../config/index'
+import { throttle } from '../../utils/index'
+import { sendDevice } from '../../apis/index'
+import { PRO_TYPE } from '../../config/index'
 
 ComponentWithComputed({
   options: {

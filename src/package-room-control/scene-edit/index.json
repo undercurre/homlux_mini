@@ -4,7 +4,7 @@
     "select-card-popup": "../../components/select-card-popup/index",
     "edit-icon-popup": "./components/edit-icon-popup/index",
     "edit-name-popup": "./components/edit-name-popup/index",
-    "scene-light-edit-popup": "../components/scene-light-edit-popup/index",
-    "scene-switch-edit-popup": "../components/scene-switch-edit-popup/index"
+    "light-control-popup": "../../components/light-control-popup/index",
+    "switch-control-popup": "../../components/switch-control-popup/index"
   }
 }
