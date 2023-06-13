@@ -20,6 +20,10 @@ export const roomStore = observable({
     return this.roomList[this.currentRoomIndex]
   },
 
+  /**
+   * 更新房间开灯数量
+   * ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
+   */
   updateRoomCardLightOnNum() {
     const list = {} as Record<string, Device.DeviceItem[]>
     deviceStore.allRoomDeviceList
