@@ -7,11 +7,11 @@ export function transferDeviceProperty(proType: string, properties: IAnyObject) 
     // 子设备和wifi设备属性不一致,以子设备属性为标准转换
     return {
       ...properties,
-      ColorTemp: properties.ColorTemp || properties.color_temperature,
+      ColorTemp: properties.ColorTemp ?? properties.color_temperature,
       maxColorTemp,
       minColorTemp,
-      OnOff: properties.OnOff || (properties.power === 'off' ? 0 : 1),
-      Level: properties.Level || properties.brightness,
+      OnOff: properties.OnOff ?? (properties.power === 'off' ? 0 : 1),
+      Level: properties.Level ?? properties.brightness,
     }
   }
 
