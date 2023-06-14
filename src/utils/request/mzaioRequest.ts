@@ -64,7 +64,7 @@ const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: Base
         logout()
         return result.data
       } else if (!(result.data as unknown as { success: boolean }).success) {
-        console.error('业务响应失败', options, result.data)
+        console.error('接口已响应，但返回异常', options, result.data)
       }
       return result.data
     },
