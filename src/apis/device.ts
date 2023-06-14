@@ -529,6 +529,24 @@ export async function addGroup(
 }
 
 /**
+ * 更新分组
+ */
+export async function updateGroup(
+  data: {
+    applianceGroupDtoList: Device.GroupDTO[]
+    groupId: string
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/scene/uptGroup',
+    data,
+  })
+}
+
+/**
  * 查询分组详情
  */
 export async function queryGroup(
