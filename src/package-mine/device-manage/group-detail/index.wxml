@@ -16,7 +16,9 @@
   <view class="flex flex-1 flex-col w-full">
     <view class="flex flex-row justify-between px-48rpx mt-24rpx">
       <text class="text-32rpx">灯具·{{deviceInfo.groupDeviceList.length}}</text>
-      <image src="/assets/img/home/add.png" class="w-48rpx h-48rpx"></image>
+      <view wx:if="{{isCreator || isAdmin}}" catchtap="handleAddLightPopup">
+        <image src="/assets/img/home/add.png" class="w-48rpx h-48rpx"></image>
+      </view>
     </view>
     <view class="w-full">
       <van-cell-group wx:for="{{deviceInfo.groupDeviceList}}" wx:key="deviceId" inset>
@@ -52,3 +54,4 @@
 <van-toast id="van-toast" />
 <van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />
 <edit-name-popup value="{{deviceName}}" show="{{showEditNamePopup}}" bind:close="handleDeviceNameEditCancel" bind:confirm="handleDeviceNameEditConfirm" />
+<select-device show="{{showAddLightPopup}}" bind:close="handleAddLightCancel" list="{{lightListToAdd}}" bind:confirm="addLightToGroup"></select-device>

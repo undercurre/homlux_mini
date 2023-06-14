@@ -1,10 +1,10 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
-import { homeBinding, homeStore, roomBinding } from '../../../store/index'
+import { homeBinding, homeStore, roomBinding, deviceStore } from '../../../store/index'
 import pageBehavior from '../../../behaviors/pageBehaviors'
-import { delGroup, queryGroup, renameGroup } from '../../../apis/index'
-import { proName } from '../../../config/index'
+import { delGroup, queryGroup, renameGroup, updateGroup } from '../../../apis/index'
+import { proName, PRO_TYPE } from '../../../config/index'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { emitter } from '../../../utils/index'
 ComponentWithComputed({
@@ -17,9 +17,8 @@ ComponentWithComputed({
     groupId: '',
     deviceName: '',
     showEditNamePopup: false,
-    showEditRoomPopup: false,
+    showAddLightPopup: false,
     deviceInfo: {} as Device.DeviceItem,
-    firstShow: true,
   },
 
   computed: {
@@ -38,6 +37,17 @@ ComponentWithComputed({
     canEditDevice(data) {
       return data.isCreator || data.isAdmin
     },
+    /**
+     * @description 可被添加到灯组的单灯列表
+     * 不能已在灯组中
+     */
+    lightListToAdd() {
+      const { deviceFlattenList, lightsInGroup } = deviceStore
+      return deviceFlattenList.filter(
+        (device) =>
+          device.proType === PRO_TYPE.light && device.deviceType !== 4 && !lightsInGroup.includes(device.deviceId),
+      )
+    },
   },
 
   methods: {
@@ -49,17 +59,10 @@ ComponentWithComputed({
         groupId: deviceId,
         roomId,
       })
-      this.updateGroupInfo()
     },
 
     onShow() {
-      if (this.data.firstShow) {
-        this.setData({
-          firstShow: false,
-        })
-        return
-      }
-      this.updateGroupInfo()
+      this.queryGroupInfo()
     },
 
     handleDeviceNameEditPopup() {
@@ -71,6 +74,17 @@ ComponentWithComputed({
     handleDeviceNameEditCancel() {
       this.setData({
         showEditNamePopup: false,
+      })
+    },
+    handleAddLightPopup() {
+      if (!this.data.canEditDevice) return
+      this.setData({
+        showAddLightPopup: true,
+      })
+    },
+    handleAddLightCancel() {
+      this.setData({
+        showAddLightPopup: false,
       })
     },
     async handleDeviceNameEditConfirm(e: { detail: string }) {
@@ -88,20 +102,9 @@ ComponentWithComputed({
         groupName: this.data.deviceName,
       })
       if (res.success) {
-        this.updateGroupInfo()
+        this.queryGroupInfo()
         emitter.emit('deviceEdit')
       }
-    },
-    handleDeviceRoomEditPopup() {
-      if (!this.data.canEditDevice) return
-      this.setData({
-        showEditRoomPopup: true,
-      })
-    },
-    handleDeviceRoomEditCancel() {
-      this.setData({
-        showEditRoomPopup: false,
-      })
     },
     handleGroupDelete() {
       if (!this.data.canEditDevice) return
@@ -122,7 +125,8 @@ ComponentWithComputed({
         }
       })
     },
-    async updateGroupInfo() {
+    // 查询分组详情
+    async queryGroupInfo() {
       const res = await queryGroup({ groupId: this.data.groupId })
       if (res.success) {
         this.setData({
@@ -132,5 +136,18 @@ ComponentWithComputed({
         })
       }
     },
+    // 更新分组（增加灯）
+    addLightToGroup(e: { detail: Device.DeviceItem }) {
+      console.log('add', e)
+      const { groupDeviceList = [] } = this.data.deviceInfo
+      updateGroup({
+        applianceGroupDtoList: [...groupDeviceList, e.detail],
+        groupId: this.data.groupId,
+      })
+
+      this.setData({
+        showAddLightPopup: false,
+      })
+    }
   },
 })
