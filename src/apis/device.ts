@@ -537,12 +537,7 @@ export async function queryGroup(
   },
   options?: { loading?: boolean },
 ) {
-  return await mzaioRequest.post<{
-    groupDeviceList: Device.DeviceItem[]
-    groupName: string
-    roomId: string
-    roomName: string
-  }>({
+  return await mzaioRequest.post<Device.DeviceItem>({
     log: true,
     loading: options?.loading ?? false,
     url: '/v1/mzgd/scene/queryGroupByGroupId',
@@ -551,7 +546,7 @@ export async function queryGroup(
 }
 
 /**
- * 解散分组
+ * 解散灯组
  */
 export async function delGroup(
   data: {

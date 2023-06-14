@@ -8,19 +8,43 @@
   <view class="mt-24rpx w-750rpx">
     <van-cell-group inset>
       <van-cell is-link="{{canEditDevice}}" bind:click="handleDeviceNameEditPopup" title="设备名称" value="{{deviceName}}"></van-cell>
-      <van-cell title="所在房间" value="{{roomName}}"></van-cell>
+      <van-cell title="所在房间" value="{{roomName}}" border="{{false}}"></van-cell>
     </van-cell-group>
   </view>
 
   <!-- 下半部分 -->
-  <view class="flex flex-1">
-    <setting-light can-edit-device="{{canEditDevice}}" device-info="{{deviceInfo}}" wx:if="{{prodType === 'light'}}" bind:update="updateDeviceInfo" />
+  <view class="flex flex-1 flex-col w-full">
+    <view class="flex flex-row justify-between px-48rpx mt-24rpx">
+      <text class="text-32rpx">灯具·{{deviceInfo.groupDeviceList.length}}</text>
+      <image src="/assets/img/home/add.png" class="w-48rpx h-48rpx"></image>
+    </view>
+    <view class="w-full">
+      <van-cell-group wx:for="{{deviceInfo.groupDeviceList}}" wx:key="deviceId" inset>
+        <van-cell data-device-id="{{item.deviceId}}" border="{{false}}">
+          <view class="flex item-center">
+            <view class="w-96rpx h-96rpx bg-hex-F6FAFD rounded-999 flex-center">
+              <image src="{{item.devicePic}}" class="w-72rpx h-72rpx" />
+            </view>
+            <view class="h-96rpx flex flex-col justify-center items-start ml-32rpx">
+              <text class="text-black-2a text-32rpx">{{item.deviceName}}</text>
+              <view>
+                <text class="text-black-tips text-28rpx mt-8rpx">{{roomName}}{{deviceInfo.onLineStatus ? '' : ' | '}}</text>
+                <text wx:if="{{!deviceInfo.onLineStatus}}" class="text-28rpx text-hex-fbbb32">离线</text>
+              </view>
+            </view>
+          </view>
+          <view slot="right-icon" class="h-96rpx">
+            <svg-icon color="#c8c7cc" name="icon-park:close" width="32rpx" height="32rpx"></svg-icon>
+          </view>
+        </van-cell>
+      </van-cell-group>
+    </view>
   </view>
   <!-- 隔开一点距离 -->
   <view class="h-24rpx"></view>
   <!-- 底部按钮 -->
-  <van-button wx-if="{{canEditDevice}}" type="warning" custom-class="delete-btn" bind:click="handleDeviceDelete">
-    <text>解散分组</text>
+  <van-button wx-if="{{canEditDevice}}" type="warning" custom-class="delete-btn" bind:click="handleGroupDelete">
+    <text>解散灯组</text>
   </van-button>
   <view wx-if="{{canEditDevice}}" style="height: 86rpx"></view>
 </view>

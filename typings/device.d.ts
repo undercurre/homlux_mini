@@ -60,6 +60,7 @@ declare namespace Device {
 
     // 灯分组，包含的列表数据
     groupDeviceList?: GroupDTO[]
+    groupName?: string
   }
 
   interface MzgdPropertyDTO {
