@@ -4,7 +4,9 @@
     <view class="flex-center pb-32rpx">
       <template is="title" data="{{ title: popupTitle }}" />
     </view>
-
+    <view class="py-10rpx pl-10rpx">
+      <text class="text-32rpx text-black-59 font-semibold">{{currentRoom.roomName}}</text>
+    </view>
     <scroll-view enhanced show-scrollbar="{{false}}" scroll-y class="list-wrapper" enable-flex>
       <view wx:if="{{list.length}}" class="grid grid-cols-4 gap-16rpx mt-16rpx">
         <device-card showShadow showGradientBg wx:for="{{list}}" wx:key="deviceId" bind:cardTap="handleCardTap" bind:offlineTap="handleCardTap" device-info="{{item}}" select="{{checkedDevice.deviceId === item.deviceId}}" />

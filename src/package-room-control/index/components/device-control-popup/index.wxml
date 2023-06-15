@@ -1,24 +1,19 @@
 <wxs module="wxs" src="./index.wxs"></wxs>
 <view wx:if="{{isRender}}" change:info="{{wxs.infoObserver}}" info="{{info}}" id="popup" class="fixed z-200 left-0 w-750rpx h-600rpx opacity-0" bindtouchstart="handleTouchStart" catchtouchmove="handleTouchMove">
-  <view class="popup-shadow w-750rpx h-600rpx rounded-t-64rpx bg-white flex-col flex items-center">
-    <view class="flex-center mt-28rpx h-20rpx">
-      <view class="w-76rpx h-8rpx bg-black-tips rounded-999"></view>
-    </view>
+  <view class="popup-shadow w-750rpx h-600rpx rounded-t-64rpx bg-white flex-col flex items-center py-20rpx">
     <!-- tab -->
-    <view class="flex justify-evenly w-686rpx relative">
+    <view class="flex justify-evenly w-686rpx mt-10rpx relative">
       <view class="flex-col-center" data-tab="light" bindtap="handleTabTap" wx:if="{{lightTab}}">
-        <text class="mt-34rpx mx-24rpx {{tab === 'light' ? 'tab-title-check' : 'tab-title-uncheck'}}">灯光</text>
-        <view class="w-42rpx mb-20rpx h-8rpx mt-4rpx bg-blue rounded-999 {{tab === 'light' ? 'opacity-100' : 'opacity-0'}}"></view>
+        <text class="mx-24rpx mt-16rpx tab-title">灯光</text>
       </view>
       <view class="flex-col-center" data-tab="switch" bindtap="handleTabTap" wx:if="{{switchTab}}">
-        <text class="mt-34rpx mx-24rpx {{tab === 'switch' ? 'tab-title-check' : 'tab-title-uncheck'}}">开关</text>
-        <view class="w-42rpx mb-20rpx h-8rpx mt-4rpx bg-blue rounded-999 {{tab === 'switch' ? 'opacity-100' : 'opacity-0'}}"></view>
+        <text class="mx-24rpx mt-16rpx tab-title">开关</text>
       </view>
       <view class="flex-col-center" data-tab="curtain" bindtap="handleTabTap" wx:if="{{curtainTab}}">
-        <text class="mt-34rpx mx-24rpx {{tab === 'curtain' ? 'tab-title-check' : 'tab-title-uncheck'}}">窗帘</text>
-        <view class="w-42rpx mb-20rpx h-8rpx mt-4rpx bg-blue rounded-999 {{tab === 'curtain' ? 'opacity-100' : 'opacity-0'}}"></view>
+        <text class="mx-24rpx mt-16rpx tab-title">窗帘</text>
       </view>
-      <view class="left-20rpx top-16rpx absolute" bind:tap="toDetail">
+      <!-- 设置、关闭按钮 -->
+      <view class="absolute left-20rpx top-16rpx" bind:tap="toDetail">
         <image class="w-48 h-48" src="/assets/img/home-manage/setting.png"></image>
       </view>
       <view class="absolute right-20rpx top-16rpx" bindtap="handleClose">
@@ -26,25 +21,18 @@
       </view>
     </view>
     <!-- tab内容 -->
-    <view class="flex flex-col items-center flex-1">
-      <view class="h-2rpx w-750rpx bg-hex-eee"></view>
+    <view class="flex flex-col items-center flex-1 pt-10rpx">
       <!-- 灯光控制 -->
       <view class="flex flex-col w-750rpx" wx:if="{{tab==='light'}}">
-        <text class="text-32rpx text-black-59 mt-70rpx ml-90rpx">亮度 | {{lightInfoInner.Level}}%</text>
-        <view class="px-88rpx">
-          <view class="h-32rpx"></view>
-          <van-slider data-type="level" bind:change="handleLevelChange" bind:drag="handleLevelDrag" bind:drag-end="handleLevelDragEnd" value="{{lightInfoInner.Level}}" min="{{1}}" use-button-slot custom-class="slider-brightness-bar" active-color="rgba(0,0,0,0)" bar-height="24rpx">
-            <image slot="button" src="/package-room-control/assets/img/btn.png" class="w-88rpx h-88rpx mt-6rpx" />
-          </van-slider>
-          <view class="h-32rpx"></view>
+        <text class="text-32rpx text-black-59 mt-70rpx ml-48rpx">亮度 | {{lightInfoInner.Level}}%</text>
+        <view class="pl-48rpx py-32rpx">
+          <mz-slider bind:change="handleLevelChange" bind:drag="handleLevelDrag" bind:drag-end="handleLevelDragEnd" disabled="{{!lightStatus.OnOff}}" value="{{lightInfoInner.Level}}" min="{{1}}" active-color="linear-gradient(90deg, rgba(80,127,255,0.90) 5%, rgba(116,153,255,0.18) 100%)" barWidth="650"> </mz-slider>
         </view>
-        <text class="text-32rpx text-black-59 mt-50rpx ml-90rpx">色温 | {{colorTempK}}K</text>
-        <view class="px-88rpx">
-          <view class="h-32rpx"></view>
-          <van-slider data-type="colorTemp" bind:change="handleColorTempChange" bind:drag="handleColorTempDrag" bind:drag-end="handleColorTempDragEnd" value="{{lightInfoInner.ColorTemp}}" use-button-slot custom-class="slider-color-temp-bar" active-color="rgba(0,0,0,0)" bar-height="24rpx">
-            <image slot="button" src="/package-room-control/assets/img/btn.png" class="w-88rpx h-88rpx mt-6rpx" />
-          </van-slider>
-          <view class="h-32rpx"></view>
+        <text class="text-32rpx text-black-59 mt-20rpx ml-48rpx">色温 | {{colorTempK}}K</text>
+        <view class="pl-48rpx py-32rpx">
+          <mz-slider bind:change="handleColorTempChange" bind:drag="handleColorTempDrag" bind:drag-end="handleColorTempDragEnd" disabled="{{!lightStatus.OnOff}}" value="{{ColorTemp}}" use-button-slot custom-class="slider-color-temp-bar" buttonLeft="{{64}}" active-color="rgba(0,0,0,0)" barWidth="650">
+            <view slot="button" class="slidr-button w-52rpx h-52rpx rounded-52rpx border-3rpx border-white border-solid mr-42rpx" />
+          </mz-slider>
         </view>
       </view>
       <!-- 开关控制 -->
@@ -67,22 +55,6 @@
         <text class="text-32rpx text-black-59">50%</text>
       </view>
     </view>
-    <!-- 全开全关 -->
-    <!-- <view class="flex items-center justify-evenly mt-46rpx bg-hex-f0f0f0 w-686rpx h-88rpx rounded-24rpx mb-64rpx">
-      <view class="flex-1 flex-center relative h-88rpx" bindtap="handleAllOn">
-        <text class="text-32rpx text-hex-1e2c46">全开</text>
-        <view wx:if="{{allOnPress}}" class="absolute w-full h-full left-0 top-0 flex-center opacity-0 rounded-24rpx btn-press">
-          <text class="text-32rpx text-hex-fff">全开</text>
-        </view>
-      </view>
-      <view class="w-2rpx h-43rpx bg-hex-e7e7e7"></view>
-      <view class="flex-1 flex-center relative h-88rpx" bindtap="handleAllOff">
-        <text class="text-32rpx text-hex-1e2c46">全关</text>
-        <view wx:if="{{allOffPress}}" class="absolute w-full h-full left-0 top-0 flex-center opacity-0 rounded-24rpx btn-press" id="all-off">
-          <text class="text-32rpx text-hex-fff">全关</text>
-        </view>
-      </view>
-    </view> -->
   </view>
 
   <!-- 关联类型选择弹窗 -->

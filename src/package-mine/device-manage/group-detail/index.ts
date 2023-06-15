@@ -14,6 +14,7 @@ ComponentWithComputed({
    */
   data: {
     roomId: '',
+    roomName: '',
     groupId: '',
     deviceName: '',
     showEditNamePopup: false,
@@ -22,12 +23,6 @@ ComponentWithComputed({
   },
 
   computed: {
-    roomName(data) {
-      if (data.roomList && data.roomId) {
-        return data.roomList.find((room: { roomId: string }) => room.roomId === data.roomId)?.roomName
-      }
-      return ''
-    },
     prodType(data) {
       if (data.deviceInfo.proType) {
         return proName[data.deviceInfo.proType]
@@ -38,7 +33,9 @@ ComponentWithComputed({
       return data.isCreator || data.isAdmin
     },
     isShowDeleteBtn(data) {
-      return data.canEditDevice && data.deviceInfo.groupDeviceList!.length > 1
+      return (
+        data.canEditDevice && data.deviceInfo?.groupDeviceList?.length && data.deviceInfo.groupDeviceList.length > 1
+      )
     },
     /**
      * @description 可被添加到灯组的单灯列表
@@ -57,10 +54,9 @@ ComponentWithComputed({
     /**
      * 生命周期函数--监听页面加载
      */
-    onLoad({ deviceId, roomId }: { deviceId: string; roomId: string }) {
+    onLoad({ deviceId }: { deviceId: string }) {
       this.setData({
         groupId: deviceId,
-        roomId,
       })
     },
 
@@ -113,43 +109,47 @@ ComponentWithComputed({
       if (!this.data.canEditDevice) return
       Dialog.confirm({
         title: '确定解散该灯组？',
-      }).then(async () => {
-        const res = await delGroup({
-          groupId: this.data.groupId,
-        })
-        if (res.success) {
-          Toast('删除成功')
-          homeStore.updateRoomCardList()
-          emitter.emit('deviceEdit')
-          emitter.emit('homeInfoEdit')
-          wx.navigateBack()
-        } else {
-          Toast('删除失败')
-        }
       })
+        .then(async () => {
+          const res = await delGroup({
+            groupId: this.data.groupId,
+          })
+          if (res.success) {
+            Toast('删除成功')
+            homeStore.updateRoomCardList()
+            emitter.emit('deviceEdit')
+            emitter.emit('homeInfoEdit')
+            wx.navigateBack()
+          } else {
+            Toast('删除失败')
+          }
+        })
+        .catch(() => {})
     },
     toDeleteLight(e: { currentTarget: { dataset: { deviceId: string } } }) {
       Dialog.confirm({
         title: '确定将该灯从当前灯组移除？',
-      }).then(async () => {
-        const { groupDeviceList = [] } = this.data.deviceInfo
-        const index = groupDeviceList.findIndex((device) => device.deviceId === e.currentTarget.dataset.deviceId)
-        groupDeviceList.splice(index, 1)
-        const res = await updateGroup({
-          applianceGroupDtoList: groupDeviceList,
-          groupId: this.data.groupId,
-        })
-
-        if (res.success) {
-          Toast('删除成功')
-          homeStore.updateRoomCardList()
-          emitter.emit('deviceEdit')
-          emitter.emit('homeInfoEdit')
-          wx.navigateBack()
-        } else {
-          Toast('删除失败')
-        }
       })
+        .then(async () => {
+          const { groupDeviceList = [] } = this.data.deviceInfo
+          const index = groupDeviceList.findIndex((device) => device.deviceId === e.currentTarget.dataset.deviceId)
+          groupDeviceList.splice(index, 1)
+          const res = await updateGroup({
+            applianceGroupDtoList: groupDeviceList,
+            groupId: this.data.groupId,
+          })
+
+          if (res.success) {
+            Toast('删除成功')
+            homeStore.updateRoomCardList()
+            emitter.emit('deviceEdit')
+            emitter.emit('homeInfoEdit')
+            wx.navigateBack()
+          } else {
+            Toast('删除失败')
+          }
+        })
+        .catch(() => {})
     },
     // 查询分组详情
     async queryGroupInfo() {
@@ -159,6 +159,7 @@ ComponentWithComputed({
           deviceInfo: res.result,
           deviceName: res.result.groupName,
           roomId: res.result.roomId,
+          roomName: res.result.roomName,
         })
       }
     },

@@ -2,7 +2,7 @@ import { Logger, isArrEqual, storage, throttle, showLoading, hideLoading } from 
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, deviceStore, sceneStore, homeStore } from '../../../../store/index'
-import { maxColorTempK, minColorTempK, colorTempKRange, PRO_TYPE } from '../../../../config/index'
+import { maxColorTemp, minColorTemp, PRO_TYPE } from '../../../../config/index'
 import {
   controlDevice,
   findDevice,
@@ -67,12 +67,11 @@ ComponentWithComputed({
             return // 排除面板
           }
           const deviceMap = deviceStore.deviceMap
-          const { productId } = deviceMap[deviceId]
-          const [minColorTempK, maxColorTempK] = colorTempKRange[productId]
+          const { minColorTemp, maxColorTemp } = deviceMap[deviceId].mzgdPropertyDTOList[1].colorTempRange!
 
           this.setData({
-            minColorTempK,
-            maxColorTempK,
+            minColorTemp,
+            maxColorTemp,
           })
         }
       },
@@ -115,8 +114,8 @@ ComponentWithComputed({
       Level: 10,
       ColorTemp: 20,
     },
-    maxColorTempK,
-    minColorTempK,
+    maxColorTemp,
+    minColorTemp,
     curtainInfo: {
       left: 50,
       right: 50,
@@ -143,7 +142,7 @@ ComponentWithComputed({
 
   computed: {
     colorTempK(data) {
-      return (data.lightInfoInner.ColorTemp / 100) * (data.maxColorTempK - data.minColorTempK) + data.minColorTempK
+      return (data.lightInfoInner.ColorTemp / 100) * (data.maxColorTemp - data.minColorTemp) + data.minColorTemp
     },
     lightTab(data) {
       if (data.checkedType) {
@@ -1002,6 +1001,8 @@ ComponentWithComputed({
       wx.navigateTo({
         url: `/package-mine/device-manage/${pageName}/index?deviceId=${deviceId}`,
       })
+
+      this.triggerEvent('popMove', 'down')
     },
   },
 })
