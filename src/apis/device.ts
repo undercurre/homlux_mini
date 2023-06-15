@@ -29,18 +29,6 @@ export async function allDevicePowerControl(data: { houseId: string; onOff: numb
 }
 
 /**
- * 设备管理-根据家庭id房间id查询房间所有设备
- */
-export async function queryDeviceList(data: { houseId: string; roomId: string }, options?: { loading?: boolean }) {
-  return await mzaioRequest.post<Device.DeviceItem[]>({
-    log: true,
-    loading: options?.loading ?? false,
-    url: '/v1/device/queryDeviceInfoByRoomId',
-    data,
-  })
-}
-
-/**
  * 设备控制-根据家庭id房间id查询房间除了网关的子设备
  */
 export async function querySubDeviceList(data: { houseId: string; roomId: string }, options?: { loading?: boolean }) {

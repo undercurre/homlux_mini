@@ -3,8 +3,8 @@ import { isNullOrUnDef } from './index'
 
 /**
  *  子设备和wifi设备属性不一致,以子设备属性为标准转换
- * @param proType 
- * @param properties 
+ * @param proType
+ * @param properties
  */
 export function transferDeviceProperty(proType: string, properties: IAnyObject) {
   const result = {} as IAnyObject

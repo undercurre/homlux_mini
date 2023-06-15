@@ -86,7 +86,7 @@ ComponentWithComputed({
         }
       })
 
-      let promise = pageParams.sceneId
+      const promise = pageParams.sceneId
         ? updateScene(sceneData as Scene.UpdateSceneDto)
         : addScene(sceneData as Scene.AddSceneDto)
 

@@ -329,13 +329,13 @@ ComponentWithComputed({
         })
         deviceActions.push(...Object.values(deviceActionsMap))
         data.deviceActions = deviceActions
-        data.updateType = data.updateType === '0' ? '1' : (data.updateType === '2' ? '4': '5')
+        data.updateType = data.updateType === '0' ? '1' : data.updateType === '2' ? '4' : '5'
 
         storage.set('scene_data', data)
 
         // 需要更新结果的情况，需要跳转页面等待上报结果
         wx.redirectTo({
-          url: strUtil.getUrlWithParams('/package-room-control/scene-request-list/index', { sceneId: data.sceneId })
+          url: strUtil.getUrlWithParams('/package-room-control/scene-request-list/index', { sceneId: data.sceneId }),
         })
 
         return

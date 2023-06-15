@@ -38,7 +38,7 @@ ComponentWithComputed({
           this.updateList()
         })
       })
-    }
+    },
   },
 
   methods: {
