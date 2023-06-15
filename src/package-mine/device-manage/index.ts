@@ -111,7 +111,7 @@ ComponentWithComputed({
             }
           } else {
             // 可能是新绑的设备，直接更新房间
-            deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
+            deviceBinding.store.updateSubDeviceList(undefined, this.data.roomSelect)
           }
         } else if (
           typeof e.result.eventData === 'object' &&

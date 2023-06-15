@@ -19,6 +19,8 @@ import {
   transferDeviceProperty,
   toPropertyDesc,
   toWifiProperty,
+  storage,
+  strUtil,
 } from '../../utils/index'
 
 ComponentWithComputed({
@@ -56,7 +58,7 @@ ComponentWithComputed({
     /** 关联弹窗展示用的选择列表 */
     linkSwitchSelect: [] as string[],
     /** 是否修改过action */
-    isEditAction: false,
+    _isEditAction: false,
     sceneEditTitle: '',
     showSceneEditLightPopup: false,
     showSceneEditSwitchPopup: false,
@@ -85,11 +87,8 @@ ComponentWithComputed({
     },
   },
 
-  methods: {
-    /**
-     * 生命周期函数--监听页面加载
-     */
-    onLoad() {
+  lifetimes: {
+    ready() {
       const pageParams = getCurrentPageParams()
 
       const deviceMap = deviceStore.allRoomDeviceMap
@@ -120,7 +119,7 @@ ComponentWithComputed({
               proType: PRO_TYPE.switch,
               name: `${action.deviceName} | ${actions.deviceName}`,
               desc: toPropertyDesc(actions.proType, action),
-              deviceType: action.deviceType,
+              deviceType: actions.deviceType,
               pic: action.devicePic as string,
               value: action,
             })
@@ -169,6 +168,9 @@ ComponentWithComputed({
           }
         })
     },
+  },
+
+  methods: {
     handleSceneDelete() {
       Dialog.confirm({
         message: '确定删除该场景？',
@@ -188,7 +190,7 @@ ComponentWithComputed({
       this.data.sceneDeviceActionsFlattenMap[item[0].uniId] = false
       this.setData({
         sceneDeviceActionsFlatten: [...this.data.sceneDeviceActionsFlatten],
-        isEditAction: true,
+        _isEditAction: true,
       })
     },
     async handleSave() {
@@ -220,47 +222,6 @@ ComponentWithComputed({
       }
       if (this.data.sceneIcon !== this.data._sceneInfo.sceneIcon) {
         data.sceneIcon = this.data.sceneIcon
-      }
-
-      if (this.data.isEditAction) {
-        // 将展开的action组合起来
-        const deviceActions = [] as Scene.DeviceAction[]
-        const deviceActionsMap = {} as Record<string, Scene.DeviceAction>
-
-        this.data.sceneDeviceActionsFlatten.forEach((deviceAction) => {
-          if (deviceAction.proType === PRO_TYPE.switch) {
-            // 开关，可能有多路
-            const deviceId = deviceAction.uniId.split(':')[0]
-            if (deviceActionsMap[deviceId]) {
-              deviceActionsMap[deviceId].controlAction.push(deviceAction.value)
-            } else {
-              deviceActionsMap[deviceId] = {
-                controlAction: [deviceAction.value],
-                deviceId,
-                deviceType: deviceAction.deviceType,
-                devicePic: '',
-                deviceName: '',
-                proType: deviceAction.proType,
-              }
-            }
-          } else {
-            deviceActionsMap[deviceAction.uniId] = {
-              controlAction: [
-                deviceAction.deviceType === 3
-                  ? toWifiProperty(deviceAction.proType, deviceAction.value)
-                  : deviceAction.value,
-              ],
-              deviceId: deviceAction.uniId,
-              devicePic: '',
-              deviceName: '',
-              deviceType: deviceAction.deviceType,
-              proType: deviceAction.proType,
-            }
-          }
-        })
-        deviceActions.push(...Object.values(deviceActionsMap))
-        data.deviceActions = deviceActions
-        data.updateType = '1'
       }
 
       if (this.data.linkSwitch) {
@@ -324,10 +285,60 @@ ComponentWithComputed({
             ],
           },
         ]
-        data.updateType = data.updateType === '0' ? '3' : '5'
-      } else {
+        data.updateType = '3'
+      } else if (!this.data.linkSwitch && this.data._sceneInfo.deviceConditions) {
         // 删除绑定
-        data.updateType = data.updateType === '0' ? '2' : '4'
+        data.updateType = '2'
+      }
+
+      if (this.data._isEditAction) {
+        // 将展开的action组合起来
+        const deviceActions = [] as Scene.DeviceAction[]
+        const deviceActionsMap = {} as Record<string, Scene.DeviceAction>
+
+        this.data.sceneDeviceActionsFlatten.forEach((deviceAction) => {
+          if (deviceAction.proType === PRO_TYPE.switch) {
+            // 开关，可能有多路
+            const deviceId = deviceAction.uniId.split(':')[0]
+            if (deviceActionsMap[deviceId]) {
+              deviceActionsMap[deviceId].controlAction.push(deviceAction.value)
+            } else {
+              deviceActionsMap[deviceId] = {
+                controlAction: [deviceAction.value],
+                deviceId,
+                deviceType: deviceAction.deviceType,
+                devicePic: '',
+                deviceName: '',
+                proType: deviceAction.proType,
+              }
+            }
+          } else {
+            deviceActionsMap[deviceAction.uniId] = {
+              controlAction: [
+                deviceAction.deviceType === 3
+                  ? toWifiProperty(deviceAction.proType, deviceAction.value)
+                  : deviceAction.value,
+              ],
+              deviceId: deviceAction.uniId,
+              devicePic: '',
+              deviceName: '',
+              deviceType: deviceAction.deviceType,
+              proType: deviceAction.proType,
+            }
+          }
+        })
+        deviceActions.push(...Object.values(deviceActionsMap))
+        data.deviceActions = deviceActions
+        data.updateType = data.updateType === '0' ? '1' : (data.updateType === '2' ? '4': '5')
+
+        storage.set('scene_data', data)
+
+        // 需要更新结果的情况，需要跳转页面等待上报结果
+        wx.redirectTo({
+          url: strUtil.getUrlWithParams('/package-room-control/scene-request-list/index', { sceneId: data.sceneId })
+        })
+
+        return
       }
 
       const res = await updateScene(data)
@@ -540,9 +551,7 @@ ComponentWithComputed({
       actionItem.desc = toPropertyDesc(actionItem.proType, actionItem.value)
 
       this.setData({
-        showSceneEditLightPopup: false,
-        showSceneEditSwitchPopup: false,
-        isEditAction: true,
+        _isEditAction: true,
         sceneDeviceActionsFlatten: [...this.data.sceneDeviceActionsFlatten],
       })
     },

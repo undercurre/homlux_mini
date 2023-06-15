@@ -1,5 +1,5 @@
 import { observable, runInAction } from 'mobx-miniprogram'
-import { queryAllDevice, queryDeviceList, querySubDeviceList } from '../apis/device'
+import { queryAllDevice, querySubDeviceList } from '../apis/device'
 import { PRO_TYPE } from '../config/index'
 import { homeStore } from './home'
 import { roomStore } from './room'
@@ -54,6 +54,7 @@ export const deviceStore = observable({
       }
       // 包括proType.light在内，所有非网关设备都用这种方案插值
       else if (device.proType !== PRO_TYPE.gateway) {
+        console.log('device', device)
         list.push({
           ...device,
           uniId: device.deviceId,
@@ -171,17 +172,6 @@ export const deviceStore = observable({
     } else {
       console.log('加载全屋设备失败！', res)
     }
-  },
-
-  async updateDeviceList(
-    houseId: string = homeStore.currentHomeId,
-    roomId: string = roomStore.roomList[roomStore.currentRoomIndex].roomId,
-    options?: { loading: boolean },
-  ) {
-    const res = await queryDeviceList({ houseId, roomId }, options)
-    runInAction(() => {
-      deviceStore.deviceList = res.success ? res.result.sort((a, b) => a.deviceId.localeCompare(b.deviceId)) : []
-    })
   },
 
   async updateSubDeviceList(

@@ -1,8 +1,8 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { storage, emitter } from '../../utils/index'
-import { addScene, retryScene } from '../../apis/index'
+import { storage, emitter, getCurrentPageParams } from '../../utils/index'
+import { addScene, retryScene, updateScene } from '../../apis/index'
 import { sceneStore, deviceStore, homeStore } from '../../store/index'
 import { PRO_TYPE } from '../../config/index'
 
@@ -19,7 +19,7 @@ ComponentWithComputed({
    */
   data: {
     sceneId: '',
-    _sceneData: {} as Scene.AddSceneDto,
+    _sceneData: {} as Scene.AddSceneDto | Scene.UpdateSceneDto,
     deviceList: Array<Device.DeviceItem>(),
   },
 
@@ -34,13 +34,23 @@ ComponentWithComputed({
 
   lifetimes: {
     async ready() {
-      const sceneData = storage.get('scene_data') as Scene.AddSceneDto
+      const pageParams = getCurrentPageParams()
+      const sceneData = storage.get('scene_data') as Scene.AddSceneDto | Scene.UpdateSceneDto
 
       console.log('sceneData', sceneData)
 
       const selectIdList = [] as string[]
 
-      for (const item of sceneData.deviceActions) {
+      for (const item of sceneData.deviceActions as Scene.DeviceAction[]) {
+        // 去除后端不需要的字段
+        for (const epItem of item.controlAction) {
+          delete epItem.colorTempRange
+          delete epItem.maxColorTemp
+          delete epItem.minColorTemp
+          delete epItem.deviceName
+          delete epItem.devicePic
+        }
+
         if (item.proType === PRO_TYPE.switch) {
           for (const epItem of item.controlAction) {
             selectIdList.push(`${item.deviceId}:${epItem.ep}`)
@@ -76,17 +86,23 @@ ComponentWithComputed({
         }
       })
 
-      const res = await addScene(sceneData)
+      let promise = pageParams.sceneId
+        ? updateScene(sceneData as Scene.UpdateSceneDto)
+        : addScene(sceneData as Scene.AddSceneDto)
+
+      const res = await promise
+
       if (res.success) {
         setTimeout(() => {
           this.data.deviceList.forEach((item) => {
-            if (item.status === 'loading') {
+            if (item.status === 'waiting') {
               item.status = 'fail'
             }
           })
 
           this.setData({
             deviceList,
+            sceneId: pageParams.sceneId || res.result.sceneId,
           })
         }, 30000)
       } else {
@@ -100,7 +116,7 @@ ComponentWithComputed({
       emitter.off('scene_device_result_status')
       sceneStore.updateAllRoomSceneList()
       sceneStore.updateSceneList()
-      deviceStore.updateDeviceList()
+      deviceStore.updateSubDeviceList()
       deviceStore.updateAllRoomDeviceList()
       homeStore.updateRoomCardList()
     },
@@ -118,8 +134,8 @@ ComponentWithComputed({
 
       // 由于云端场景下发逻辑，仅zigbee灯会存在场景下发失败的情况，暂时只考虑灯的重试处理逻辑
       failList.forEach((device) => {
-        device.status = 'loading'
-        const action = _sceneData.deviceActions.find(
+        device.status = 'waiting'
+        const action = (_sceneData.deviceActions as Scene.DeviceAction[]).find(
           (actionItem) => actionItem.deviceId === device.deviceId,
         ) as Scene.DeviceAction
 
@@ -140,7 +156,7 @@ ComponentWithComputed({
       if (res.success) {
         setTimeout(() => {
           this.data.deviceList.forEach((item) => {
-            if (item.status === 'loading') {
+            if (item.status === 'waiting') {
               item.status = 'fail'
             }
           })
