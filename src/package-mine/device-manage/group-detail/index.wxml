@@ -30,8 +30,8 @@
             <view class="h-96rpx flex flex-col justify-center items-start ml-32rpx">
               <text class="text-black-2a text-32rpx">{{item.deviceName}}</text>
               <view>
-                <text class="text-black-tips text-28rpx mt-8rpx">{{roomName}}{{deviceInfo.onLineStatus ? '' : ' | '}}</text>
-                <text wx:if="{{!deviceInfo.onLineStatus}}" class="text-28rpx text-hex-fbbb32">离线</text>
+                <text class="text-black-tips text-28rpx mt-8rpx">{{roomName}}{{item.onLineStatus ? '' : ' | '}}</text>
+                <text wx:if="{{!item.onLineStatus}}" class="text-28rpx text-hex-fbbb32">离线</text>
               </view>
             </view>
           </view>

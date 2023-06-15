@@ -1001,6 +1001,8 @@ ComponentWithComputed({
       wx.navigateTo({
         url: `/package-mine/device-manage/${pageName}/index?deviceId=${deviceId}`,
       })
+
+      this.triggerEvent('popMove', 'down')
     },
   },
 })
