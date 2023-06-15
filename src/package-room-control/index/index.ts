@@ -23,7 +23,6 @@ import {
   _get,
   throttle,
   toPropertyDesc,
-  transferDeviceProperty,
 } from '../../utils/index'
 import { proName, PRO_TYPE, LIST_PAGE, CARD_W, CARD_H } from '../../config/index'
 
@@ -709,7 +708,7 @@ ComponentWithComputed({
             },
           })
         } else if (device.proType === PRO_TYPE.light) {
-          const properties = transferDeviceProperty(device.proType, device.mzgdPropertyDTOList['1'])
+          const properties = device.mzgdPropertyDTOList['1']
           const desc = toPropertyDesc(device.proType, properties)
 
           const action = {
