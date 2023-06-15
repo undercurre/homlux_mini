@@ -384,10 +384,6 @@ ComponentWithComputed({
     },
     handleLinkPopup() {
       const switchUniId = this.data.checkedList[0]
-      // 关联设备或者场景，必须要选中一个开关
-      if (!switchUniId) {
-        return
-      }
 
       // 关联场景显示逻辑
       if (this.data.selectLinkType === 'scene') {

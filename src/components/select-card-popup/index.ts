@@ -48,7 +48,8 @@ ComponentWithComputed({
 
           if (this.data.selectList.length) {
             const selectItem = this.data.list.find(
-              (item: Device.DeviceItem & Scene.SceneItem) => item.sceneId === this.data.selectList[0] || item.uniId === this.data.selectList[0]
+              (item: Device.DeviceItem & Scene.SceneItem) =>
+                item.sceneId === this.data.selectList[0] || item.uniId === this.data.selectList[0],
             )
 
             roomSelect = selectItem.roomId
