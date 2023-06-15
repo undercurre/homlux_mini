@@ -10,7 +10,7 @@
     <view class="left-curtain w-140rpx h-332rpx absolute top-0 left-84rpx"></view>
     <view class="left-curtain w-140rpx h-332rpx absolute top-0 left-112rpx"></view>
     <view class="left-curtain w-140rpx h-332rpx absolute top-0 left-140rpx">
-    <view class="curtain-handle right-10rpx"></view>
+      <view class="curtain-handle right-10rpx"></view>
     </view>
 
     <view class="right-curtain w-140rpx h-332rpx absolute top-0 right-0"></view>
@@ -19,8 +19,7 @@
     <view class="right-curtain w-140rpx h-332rpx absolute top-0 right-84rpx"></view>
     <view class="right-curtain w-140rpx h-332rpx absolute top-0 right-112rpx"></view>
     <view class="right-curtain w-140rpx h-332rpx absolute top-0 right-140rpx">
-    <view class="curtain-handle left-10rpx"></view>
-    </view>   
-
+      <view class="curtain-handle left-10rpx"></view>
+    </view>
   </view>
 </view>
