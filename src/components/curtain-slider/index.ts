@@ -43,7 +43,6 @@ Component({
       this.setData({
         value: e.value,
       })
-      console.log(this.data.value)
     },
   },
 })

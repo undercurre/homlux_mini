@@ -5,13 +5,15 @@ var leftCurtains = null
 var rightCurtains = null
 var value = 0
 var step = 1
-var inited = false
 var timer = null
 
-function onTouchstart(event, ins) {
+function onTouchstart(event, ownerInstance) {
   var touch = event.touches[0] || event.changedTouches[0]
   var clientX = touch.clientX
-  pageInfo = ins.getBoundingClientRect()
+  pageInfo = ownerInstance.getBoundingClientRect()
+  curtainContainerInfo = ownerInstance.selectComponent('.curtain-container').getBoundingClientRect()
+  leftCurtains = ownerInstance.selectAllComponents('.left-curtain')
+  rightCurtains = ownerInstance.selectAllComponents('.right-curtain')
   if (touch.clientX > pageInfo.width / 2) {
     isTouchRight = true
   } else {
@@ -80,15 +82,11 @@ module.exports = {
   onTouchmove: onTouchmove,
   onTouchend: onTouchend,
   valueObserver: function (newValue, oldValue, ownerInstance, instance) {
-    if (!curtainContainerInfo || !leftCurtains || !rightCurtains) {
-      curtainContainerInfo = ownerInstance.selectComponent('.curtain-container').getBoundingClientRect()
-      leftCurtains = ownerInstance.selectAllComponents('.left-curtain')
-      rightCurtains = ownerInstance.selectAllComponents('.right-curtain')
-    }
+    curtainContainerInfo = ownerInstance.selectComponent('.curtain-container').getBoundingClientRect()
+    leftCurtains = ownerInstance.selectAllComponents('.left-curtain')
+    rightCurtains = ownerInstance.selectAllComponents('.right-curtain')
     value = newValue
-    if (inited || oldValue === undefined) return
     changeCurtainStyle(((value / 100) * (curtainContainerInfo.width - curtainContainerInfo.width / 10)) / 2)
-    inited = true
   },
   stepObserver: function (newValue, oldValue, ownerInstance, instance) {
     step = newValue
