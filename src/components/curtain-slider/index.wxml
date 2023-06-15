@@ -3,7 +3,7 @@
 
 <view class="w-full h-full relative flex flex-1 justify-center items-center bg-white" change:value="{{handler.valueObserver}}" value="{{value}}" change:step="{{handler.stepObserver}}" step="{{step}}">
   <text class="text-36rpx text-hex-1e2c46 font-medium absolute z-100 top-46rpx">{{value}}%</text>
-  <view class="w-560rpx h-332rpx relative curtain-container overflow-hidden" bind:touchstart="{{handler.onTouchstart}}" bindtouchmove="{{handler.onTouchmove}}" bind:touchend="{{handler.onTouchend}}" bind:touchcancel="onTouchEnd">
+  <view class="w-560rpx h-332rpx relative curtain-container overflow-hidden rounded-24rpx" bind:touchstart="{{handler.onTouchstart}}" bindtouchmove="{{handler.onTouchmove}}" bind:touchend="{{handler.onTouchend}}" bind:touchcancel="onTouchEnd">
     <view class="left-curtain w-140rpx h-332rpx absolute top-0 left-0"></view>
     <view class="left-curtain w-140rpx h-332rpx absolute top-0 left-28rpx"></view>
     <view class="left-curtain w-140rpx h-332rpx absolute top-0 left-56rpx"></view>
