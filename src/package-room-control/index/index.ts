@@ -13,7 +13,7 @@ import {
 } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { controlDevice, groupControl, execScene, saveDeviceOrder } from '../../apis/index'
+import { sendDevice, execScene, saveDeviceOrder } from '../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
 import {
   storage,
@@ -850,88 +850,47 @@ ComponentWithComputed({
     },
 
     // 卡片点击时，按品类调用对应方法
-    handleControlTap(e: { detail: DeviceCard }) {
-      if (e.detail.proType === PRO_TYPE.light) {
-        this.handleLightPowerToggle(e)
-      } else {
-        this.handleSwitchControlTapToggle(e)
-      }
-    },
-    /** 灯具、灯组开关点击 */
-    async handleLightPowerToggle(e: { detail: DeviceCard }) {
-      // 即时改变视图，提升操作手感
+    async handleControlTap(e: { detail: DeviceCard }) {
       const device = { ...e.detail }
-      const OldOnOff = device.mzgdPropertyDTOList[1].OnOff
+      const ep = device.switchInfoDTOList ? device.switchInfoDTOList[0].switchId : 1
+
+      // 若面板关联场景
+      if (e.detail.proType === PRO_TYPE.switch && device.mzgdPropertyDTOList[ep].ButtonMode === 2) {
+        const sceneId = deviceStore.switchSceneConditionMap[device.uniId]
+        if (sceneId) {
+          execScene(sceneId)
+        }
+        return
+      }
+
+      const OldOnOff = device.mzgdPropertyDTOList[ep].OnOff
       const newOnOff = OldOnOff ? 0 : 1
-      device.mzgdPropertyDTOList[1].OnOff = newOnOff
+
+      // 即时改变视图，提升操作手感
+      device.mzgdPropertyDTOList[ep].OnOff = newOnOff
       this.updateDeviceList(device)
 
-      const res =
-        device.deviceType === 4
-          ? // 灯组控制
-            await groupControl({
-              groupId: e.detail.deviceId,
-              controlAction: [{ OnOff: newOnOff }],
-            })
-          : // 单灯控制
-            await controlDevice({
-              topic: '/subdevice/control',
-              deviceId: e.detail.gatewayId,
-              method: 'lightControl',
-              inputData: [
-                {
-                  devId: e.detail.deviceId,
-                  ep: 1,
-                  OnOff: newOnOff,
-                },
-              ],
-            })
+      const res = await sendDevice({
+        proType: device.proType,
+        deviceType: device.deviceType,
+        deviceId: device.deviceId,
+        ep,
+        gatewayId: device.gatewayId,
+        property: { OnOff: newOnOff },
+      })
+
       if (!res.success) {
-        device.mzgdPropertyDTOList[1].OnOff = OldOnOff
+        device.mzgdPropertyDTOList[ep].OnOff = OldOnOff
         this.updateDeviceList(device)
         Toast('控制失败')
       }
 
       // 首页需要更新灯光打开个数
-      // review 偶现数量延迟或不准确的问题
-      homeStore.updateCurrentHomeDetail()
-    },
-    /** 面板开关点击 TODO diff更新优化 */
-    async handleSwitchControlTapToggle(e: { detail: DeviceCard }) {
-      const device = { ...e.detail }
-      const ep = device.switchInfoDTOList[0].switchId
-
-      if (device.mzgdPropertyDTOList[ep].ButtonMode === 2) {
-        const sceneId = deviceStore.switchSceneConditionMap[device.uniId]
-        if (sceneId) {
-          execScene(sceneId)
-        }
-      } else {
-        // 即时改变视图，提升操作手感
-        const OldOnOff = device.mzgdPropertyDTOList[ep].OnOff
-        const newOnOff = OldOnOff ? 0 : 1
-        device.mzgdPropertyDTOList[ep].OnOff = newOnOff
-        this.updateDeviceList(device)
-
-        const res = await controlDevice({
-          topic: '/subdevice/control',
-          deviceId: e.detail.gatewayId,
-          method: 'panelSingleControl',
-          inputData: [
-            {
-              devId: e.detail.deviceId,
-              ep,
-              OnOff: newOnOff,
-            },
-          ],
-        })
-        if (!res.success) {
-          device.mzgdPropertyDTOList[ep].OnOff = OldOnOff
-          this.updateDeviceList(device)
-          Toast('控制失败')
-        }
+      if ((device.proType = PRO_TYPE.light)) {
+        homeStore.updateCurrentHomeDetail()
       }
     },
+
     handlePopMove(e: { detail: 'up' | 'down' }) {
       if (e.detail === 'down') {
         this.cancelCheckAndPops()

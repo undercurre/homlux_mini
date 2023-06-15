@@ -29,7 +29,7 @@ export async function allDevicePowerControl(data: { houseId: string; onOff: numb
 }
 
 /**
- * 设备控制-根据家庭id房间id查询房间除了网关的子设备
+ * 设备控制-根据家庭id房间id查询房间的子设备
  */
 export async function querySubDeviceList(data: { houseId: string; roomId: string }, options?: { loading?: boolean }) {
   return await mzaioRequest.post<Device.DeviceItem[]>({
@@ -131,7 +131,7 @@ export async function sendDevice(
     deviceType: number
     deviceId: string
     gatewayId?: string
-    ep?: number
+    ep?: number | string
     property: IAnyObject
   },
   option?: { loading?: boolean },
