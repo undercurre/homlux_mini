@@ -1,12 +1,12 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
-import { deviceStore, homeBinding, homeStore, otaStore, roomBinding } from '../../../store/index'
+import { homeBinding, homeStore, roomBinding, deviceStore } from '../../../store/index'
 import pageBehavior from '../../../behaviors/pageBehaviors'
-import { delGroup, editDeviceInfo, queryGroup } from '../../../apis/index'
+import { delGroup, queryGroup, renameGroup, updateGroup } from '../../../apis/index'
 import { proName, PRO_TYPE } from '../../../config/index'
 import Dialog from '@vant/weapp/dialog/dialog'
-import { emitter, checkWifiSwitch } from '../../../utils/index'
+import { emitter } from '../../../utils/index'
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, homeBinding] }), pageBehavior],
   /**
@@ -14,12 +14,11 @@ ComponentWithComputed({
    */
   data: {
     roomId: '',
-    deviceId: '',
+    groupId: '',
     deviceName: '',
     showEditNamePopup: false,
-    showEditRoomPopup: false,
+    showAddLightPopup: false,
     deviceInfo: {} as Device.DeviceItem,
-    firstShow: true,
   },
 
   computed: {
@@ -29,40 +28,28 @@ ComponentWithComputed({
       }
       return ''
     },
-    mac(data) {
-      if (data.deviceInfo.deviceType === 1) {
-        return data.deviceInfo.sn.substring(8, 9) + data.deviceInfo.sn.substring(17, 28)
-      } else {
-        return data.deviceId
-      }
-    },
     prodType(data) {
       if (data.deviceInfo.proType) {
         return proName[data.deviceInfo.proType]
       }
       return ''
     },
-    isSubDevice(data) {
-      return ([PRO_TYPE.switch, PRO_TYPE.light] as string[]).includes(data.deviceInfo.proType)
-    },
-    belongsToGateway(data) {
-      if (data.deviceInfo.gatewayId) {
-        const gateway = deviceStore.allRoomDeviceList.find((device) => device.deviceId === data.deviceInfo.gatewayId)
-        if (gateway) {
-          return `${gateway.deviceName} | ${gateway.roomName}`
-        }
-        return ''
-      }
-      return ''
-    },
-    hasOtaUpdate(data) {
-      if (data.deviceInfo.deviceId) {
-        return !!otaStore.deviceVersionInfoMap[data.deviceInfo.deviceId]
-      }
-      return false
-    },
     canEditDevice(data) {
       return data.isCreator || data.isAdmin
+    },
+    isShowDeleteBtn(data) {
+      return data.canEditDevice && data.deviceInfo.groupDeviceList!.length > 1
+    },
+    /**
+     * @description 可被添加到灯组的单灯列表
+     * 不能已在灯组中
+     */
+    lightListToAdd() {
+      const { deviceFlattenList, lightsInGroup } = deviceStore
+      return deviceFlattenList.filter(
+        (device) =>
+          device.proType === PRO_TYPE.light && device.deviceType !== 4 && !lightsInGroup.includes(device.deviceId),
+      )
     },
   },
 
@@ -72,20 +59,13 @@ ComponentWithComputed({
      */
     onLoad({ deviceId, roomId }: { deviceId: string; roomId: string }) {
       this.setData({
-        deviceId,
+        groupId: deviceId,
         roomId,
       })
-      this.updateGroupInfo()
     },
 
     onShow() {
-      if (this.data.firstShow) {
-        this.setData({
-          firstShow: false,
-        })
-        return
-      }
-      this.updateGroupInfo()
+      this.queryGroupInfo()
     },
 
     handleDeviceNameEditPopup() {
@@ -99,9 +79,20 @@ ComponentWithComputed({
         showEditNamePopup: false,
       })
     },
+    handleAddLightPopup() {
+      if (!this.data.canEditDevice) return
+      this.setData({
+        showAddLightPopup: true,
+      })
+    },
+    handleAddLightCancel() {
+      this.setData({
+        showAddLightPopup: false,
+      })
+    },
     async handleDeviceNameEditConfirm(e: { detail: string }) {
       if (!e.detail) {
-        Toast('设备名称不能为空')
+        Toast('灯组名称不能为空')
         return
       }
 
@@ -109,58 +100,22 @@ ComponentWithComputed({
         showEditNamePopup: false,
         deviceName: e.detail,
       })
-      const res = await editDeviceInfo({
-        type: '0',
-        deviceId: this.data.deviceId,
-        deviceName: this.data.deviceName,
-        houseId: homeStore.currentHomeDetail.houseId,
+      const res = await renameGroup({
+        groupId: this.data.groupId,
+        groupName: this.data.deviceName,
       })
       if (res.success) {
-        this.updateGroupInfo()
+        this.queryGroupInfo()
         emitter.emit('deviceEdit')
       }
     },
-    handleDeviceRoomEditPopup() {
-      if (!this.data.canEditDevice) return
-      this.setData({
-        showEditRoomPopup: true,
-      })
-    },
-    handleDeviceRoomEditCancel() {
-      this.setData({
-        showEditRoomPopup: false,
-      })
-    },
-    async handleDeviceRoomEditConfirm(e: { detail: string }) {
-      this.setData({
-        showEditRoomPopup: false,
-        roomId: e.detail,
-      })
-      const res = await editDeviceInfo({
-        type: '1',
-        deviceId: this.data.deviceId,
-        roomId: this.data.roomId,
-        houseId: homeStore.currentHomeDetail.houseId,
-      })
-      if (res.success) {
-        this.updateGroupInfo()
-        homeStore.updateRoomCardList()
-        emitter.emit('deviceEdit')
-      }
-    },
-    handleToOTA() {
-      if (!this.data.canEditDevice) return
-      wx.navigateTo({
-        url: '/package-mine/ota/index?fromDevice=1',
-      })
-    },
-    handleDeviceDelete() {
+    handleGroupDelete() {
       if (!this.data.canEditDevice) return
       Dialog.confirm({
         title: '确定解散该灯组？',
       }).then(async () => {
         const res = await delGroup({
-          groupId: this.data.deviceId,
+          groupId: this.data.groupId,
         })
         if (res.success) {
           Toast('删除成功')
@@ -173,41 +128,50 @@ ComponentWithComputed({
         }
       })
     },
-    async updateGroupInfo() {
-      const res = await queryGroup({ groupId: this.data.deviceId })
+    toDeleteLight(e: { currentTarget: { dataset: { deviceId: string } } }) {
+      Dialog.confirm({
+        title: '确定将该灯从当前灯组移除？',
+      }).then(async () => {
+        const { groupDeviceList = [] } = this.data.deviceInfo
+        const index = groupDeviceList.findIndex((device) => device.deviceId === e.currentTarget.dataset.deviceId)
+        groupDeviceList.splice(index, 1)
+        const res = await updateGroup({
+          applianceGroupDtoList: groupDeviceList,
+          groupId: this.data.groupId,
+        })
+
+        if (res.success) {
+          Toast('删除成功')
+          homeStore.updateRoomCardList()
+          emitter.emit('deviceEdit')
+          emitter.emit('homeInfoEdit')
+          wx.navigateBack()
+        } else {
+          Toast('删除失败')
+        }
+      })
+    },
+    // 查询分组详情
+    async queryGroupInfo() {
+      const res = await queryGroup({ groupId: this.data.groupId })
       if (res.success) {
         this.setData({
+          deviceInfo: res.result,
           deviceName: res.result.groupName,
           roomId: res.result.roomId,
         })
       }
     },
-    async editDeviceInfo() {
-      const res = await editDeviceInfo({
-        deviceId: this.data.deviceId,
-        deviceName: this.data.deviceName,
-        roomId: this.data.roomId,
-        houseId: homeStore.currentHomeDetail.houseId,
+    // 更新分组（增加灯）
+    addLightToGroup(e: { detail: Device.DeviceItem }) {
+      const { groupDeviceList = [] } = this.data.deviceInfo
+      updateGroup({
+        applianceGroupDtoList: [...groupDeviceList, e.detail],
+        groupId: this.data.groupId,
       })
-      if (res.success) {
-        this.updateGroupInfo()
-      }
-    },
 
-    clickMac() {
-      wx.setClipboardData({
-        data: this.data.mac,
-      })
-    },
-
-    toChangeWifi() {
-      // 预校验wifi开关是否打开
-      if (!checkWifiSwitch()) {
-        return
-      }
-
-      wx.navigateTo({
-        url: `/package-distribution/wifi-connect/index?type=changeWifi&sn=${this.data.deviceInfo.sn}`,
+      this.setData({
+        showAddLightPopup: false,
       })
     },
   },

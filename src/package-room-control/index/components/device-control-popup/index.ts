@@ -66,7 +66,7 @@ ComponentWithComputed({
           if (deviceId.indexOf(':') !== -1) {
             return // 排除面板
           }
-          const deviceMap = deviceStore.allRoomDeviceMap
+          const deviceMap = deviceStore.deviceMap
           const { productId } = deviceMap[deviceId]
           const [minColorTempK, maxColorTempK] = colorTempKRange[productId]
 
@@ -995,7 +995,7 @@ ComponentWithComputed({
     },
     toDetail() {
       const deviceId = this.data.checkedList[0]
-      const deviceMap = deviceStore.allRoomDeviceMap
+      const deviceMap = deviceStore.deviceMap
       const { deviceType } = deviceMap[deviceId]
       const pageName = deviceType === 4 ? 'group-detail' : 'device-detail'
 

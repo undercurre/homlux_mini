@@ -4,7 +4,7 @@ import pageBehaviors from '../../behaviors/pageBehaviors'
 import { deviceStore, homeBinding, roomBinding } from '../../store/index'
 import { emitter } from '../../utils/index'
 import { StatusType } from './typings'
-import { addGroup, renameGroup } from '../../apis/device'
+import { addGroup, renameGroup, delGroup, updateGroup } from '../../apis/device'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, roomBinding] }), pageBehaviors],
@@ -55,10 +55,29 @@ ComponentWithComputed({
           // 若这是最后一个上报，则变更页面状态
           if (this.data.failedList.length + this.data.successList.length === this.data.deviceList.length - 1) {
             diffData.status = this.data.failedList.length || !isSuccess ? 'hasFailure' : 'allSuccess'
+
+            if (diffData.status === 'hasFailure') {
+              this.setData({
+                showGroupFailTips: true,
+              })
+            }
           }
 
           this.setData(diffData)
+
+          // 如果全部失败，则清空分组
+          if (this.data.failedList.length === this.data.deviceList.length) {
+            delGroup({ groupId: this.data.groupId })
+            this.setData({
+              groupId: '',
+            })
+          }
         })
+      })
+    },
+    handleCloseDialog() {
+      this.setData({
+        showGroupFailTips: false,
       })
     },
     async addGroup() {
@@ -74,6 +93,30 @@ ComponentWithComputed({
       })
       if (res.success) {
         this.data.groupId = res.result.groupId
+      }
+    },
+
+    retryGroup() {
+      // 重新生成列表并设置状态为进行中
+      const deviceList = this.data.deviceList.map((device) => ({
+        ...device,
+        status: 'processing',
+      }))
+      this.setData({
+        deviceList,
+      })
+
+      if (!this.data.groupId) {
+        this.addGroup()
+      } else {
+        updateGroup({
+          applianceGroupDtoList: this.data.deviceList.map((device) => ({
+            deviceId: device.deviceId,
+            deviceType: device.deviceType,
+            proType: device.proType,
+          })),
+          groupId: this.data.groupId,
+        })
       }
     },
 
@@ -95,14 +138,20 @@ ComponentWithComputed({
       })
     },
 
+    endGroup() {
+      emitter.off('group_device_result_status')
+
+      wx.switchTab({
+        url: '/pages/index/index',
+      })
+    },
+
     finishBtn() {
       renameGroup({
         groupId: this.data.groupId,
         groupName: this.data.groupName,
       })
-      wx.switchTab({
-        url: '/pages/index/index',
-      })
+      this.endGroup()
     },
   },
 })

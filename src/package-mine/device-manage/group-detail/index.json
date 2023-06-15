@@ -2,6 +2,6 @@
   "component": true,
   "usingComponents": {
     "edit-name-popup": "./components/edit-name-popup/index",
-    "setting-group": "./components/setting-group/index"
+    "select-device": "./components/select-device/index"
   }
 }
