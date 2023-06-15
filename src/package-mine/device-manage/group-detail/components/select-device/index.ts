@@ -23,16 +23,13 @@ ComponentWithComputed({
    */
   data: {
     checkedDevice: {},
-    popupTitle: '选择智能灯'
+    popupTitle: '选择智能灯',
   },
 
-  computed: {
-
-  },
+  computed: {},
 
   lifetimes: {
-    async ready() {
-    },
+    async ready() {},
   },
 
   /**

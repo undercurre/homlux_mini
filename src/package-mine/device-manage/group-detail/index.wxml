@@ -35,7 +35,7 @@
               </view>
             </view>
           </view>
-          <view slot="right-icon" class="h-96rpx">
+          <view slot="right-icon" wx:if="{{isShowDeleteBtn}}" class="h-96rpx" catchtap="toDeleteLight" data-device-id="{{item.deviceId}}">
             <svg-icon color="#c8c7cc" name="icon-park:close" width="32rpx" height="32rpx"></svg-icon>
           </view>
         </van-cell>
