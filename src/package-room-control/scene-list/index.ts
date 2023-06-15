@@ -1,12 +1,11 @@
 // package-room-control/scene-list/index.ts
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import Toast from '@vant/weapp/toast/toast'
 import { deviceStore, homeBinding, homeStore, sceneBinding, sceneStore } from '../../store/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { runInAction } from 'mobx-miniprogram'
 import { execScene, updateSceneSort } from '../../apis/scene'
-import Toast from '@vant/weapp/toast/toast'
-import { storage, emitter } from '../../utils/index'
+import { storage, emitter, strUtil } from '../../utils/index'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [sceneBinding, homeBinding] }), pageBehavior],
@@ -111,12 +110,8 @@ ComponentWithComputed({
 
     toSetting(e: { detail: Scene.SceneItem }) {
       if (this.data.isCreator || this.data.isAdmin) {
-        const index = sceneStore.sceneList.findIndex((scene) => scene.sceneId === e.detail.sceneId)
-        runInAction(() => {
-          sceneStore.selectSceneIndex = index
-        })
         wx.navigateTo({
-          url: '/package-room-control/scene-edit/index',
+          url: strUtil.getUrlWithParams('/package-room-control/scene-edit/index', { sceneId: e.detail.sceneId }),
         })
       } else {
         Toast('您当前身份为访客，无法编辑场景')

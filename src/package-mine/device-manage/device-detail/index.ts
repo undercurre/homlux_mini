@@ -188,17 +188,6 @@ ComponentWithComputed({
         })
       }
     },
-    async editDeviceInfo() {
-      const res = await editDeviceInfo({
-        deviceId: this.data.deviceId,
-        deviceName: this.data.deviceName,
-        roomId: this.data.roomId,
-        houseId: homeStore.currentHomeDetail.houseId,
-      })
-      if (res.success) {
-        this.updateDeviceInfo()
-      }
-    },
 
     clickMac() {
       wx.setClipboardData({

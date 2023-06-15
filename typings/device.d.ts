@@ -1,4 +1,17 @@
 declare namespace Device {
+  // 设备属性
+  interface mzgdPropertyDTO {
+    ColorTemp?: number // 色温
+    Level?: number // 亮度
+    OnOff?: number // 关 0 | 开 1
+    colorTempRange?: {
+      // 色温值范围
+      maxColorTemp: number
+      minColorTemp: number
+    }
+    ButtonMode?: number // 0 普通面板或者关联开关 2 场景 3 关联灯
+    ButtonScene?: number
+  }
   /** 设备列表项 */
   interface DeviceItem {
     // 接口返回值属性
@@ -21,7 +34,7 @@ declare namespace Device {
      * { 每个endpoint: {属性值} }
      * 单路设备只有一个endpoint：1，比如{ 1: {OnOff: 1} }
      */
-    mzgdPropertyDTOList: Record<string, IAnyObject>
+    mzgdPropertyDTOList: Record<string, mzgdPropertyDTO>
     /**
      * onLineStatus
      * 0:离线 1:在线
@@ -60,6 +73,7 @@ declare namespace Device {
 
     // 灯分组，包含的列表数据
     groupDeviceList?: GroupDTO[]
+    groupName?: string
   }
 
   interface MzgdPropertyDTO {
