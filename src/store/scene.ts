@@ -13,10 +13,6 @@ export const sceneStore = observable({
    * 全屋的场景
    */
   allRoomSceneList: [] as Scene.SceneItem[],
-  /**
-   * 选了哪个场景
-   */
-  selectSceneIndex: -1,
 
   /**
    * 准备添加到场景的actions
@@ -93,6 +89,6 @@ export const sceneStore = observable({
 
 export const sceneBinding = {
   store: sceneStore,
-  fields: ['selectSceneIndex', 'sceneList', 'allRoomSceneList', 'addSceneActions'],
+  fields: ['sceneList', 'allRoomSceneList', 'addSceneActions'],
   actions: [],
 }

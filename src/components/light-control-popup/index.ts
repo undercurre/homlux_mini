@@ -41,9 +41,20 @@ ComponentWithComputed({
         }
       },
     },
+    /**
+     * lightInfo数据结构
+     * {
+    deviceType: number
+    deviceId: string
+    gatewayId?: string
+    ep?: number
+    property: IAnyObject
+  }
+     */
     lightInfo: {
       type: Object,
       value: {
+        ep: 1,
         deviceType: 0,
         OnOff: 0,
         Level: 1,
@@ -93,8 +104,10 @@ ComponentWithComputed({
 
       const res = await sendDevice({
         deviceId: lightInfo.deviceId,
+        gatewayId: lightInfo.gatewayId,
         deviceType: lightInfo.deviceType,
         proType: PRO_TYPE.light,
+        ep: 1,
         property,
       })
 

@@ -2,8 +2,9 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { runInAction } from 'mobx-miniprogram'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { findDevice, sendDevice } from '../../../../apis/index'
-import { maxColorTempK, minColorTempK, PRO_TYPE } from '../../../../config/index'
+import { PRO_TYPE } from '../../../../config/index'
 import { deviceStore, roomBinding, sceneBinding, sceneStore } from '../../../../store/index'
+import { toPropertyDesc } from '../../../../utils/index'
 
 ComponentWithComputed({
   options: {
@@ -120,7 +121,12 @@ ComponentWithComputed({
         })
         this.setData({
           actionEditTitle: deviceAction.name,
-          sceneSwitchEditInfo: deviceAction.value,
+          sceneSwitchEditInfo: {
+            ...deviceAction.value,
+            deviceType: deviceAction.deviceType,
+            gatewayId: device.gatewayId,
+            deviceId: device.deviceId,
+          },
           showSceneEditSwitchPopup: true,
           editIndex: e.currentTarget.dataset.index,
         })
@@ -161,23 +167,13 @@ ComponentWithComputed({
         }
       }
 
-      sceneStore.addSceneActions[this.data.editIndex].value = {
-        ep: sceneStore.addSceneActions[this.data.editIndex].value.ep,
+      deviceAction.value = {
+        ...deviceAction.value,
         ...previewData,
       }
-      if (sceneStore.addSceneActions[this.data.editIndex].proType === PRO_TYPE.light) {
-        if (previewData.OnOff) {
-          const desc = previewData.OnOff ? ['打开'] : ['关闭']
-          const color = (previewData.ColorTemp / 100) * (maxColorTempK - minColorTempK) + minColorTempK
-          desc.push(`亮度${previewData.Level}%`)
-          desc.push(`色温${color}K`)
-          sceneStore.addSceneActions[this.data.editIndex].desc = desc
-        } else {
-          sceneStore.addSceneActions[this.data.editIndex].desc = ['关闭']
-        }
-      } else if (sceneStore.addSceneActions[this.data.editIndex].proType === PRO_TYPE.switch) {
-        sceneStore.addSceneActions[this.data.editIndex].desc = previewData.OnOff ? ['打开'] : ['关闭']
-      }
+
+      deviceAction.desc = toPropertyDesc(deviceAction.proType, deviceAction.value)
+
       runInAction(() => {
         sceneStore.addSceneActions = [...sceneStore.addSceneActions]
       })

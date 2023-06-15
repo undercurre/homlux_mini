@@ -15,7 +15,16 @@ import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { controlDevice, groupControl, execScene, saveDeviceOrder } from '../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
-import { storage, emitter, WSEventType, rpx2px, _get, throttle } from '../../utils/index'
+import {
+  storage,
+  emitter,
+  WSEventType,
+  rpx2px,
+  _get,
+  throttle,
+  toPropertyDesc,
+  transferDeviceProperty,
+} from '../../utils/index'
 import { proName, PRO_TYPE, LIST_PAGE, CARD_W, CARD_H } from '../../config/index'
 
 /** 接口请求节流定时器，定时时间2s */
@@ -657,7 +666,6 @@ ComponentWithComputed({
       }
 
       // 补充actions
-      const deviceMap = deviceStore.deviceMap
       const addSceneActions = [] as Device.ActionItem[]
 
       // 排除已经是场景开关的开关或者离线的设备
@@ -684,13 +692,14 @@ ComponentWithComputed({
       selectList.forEach((device) => {
         if (device.proType === PRO_TYPE.switch) {
           // 开关
-          const deviceId = device.uniId.split(':')[0]
           const ep = parseInt(device.uniId.split(':')[1])
-          const OnOff = deviceMap[deviceId].mzgdPropertyDTOList[ep].OnOff
+          const OnOff = device.mzgdPropertyDTOList[ep].OnOff
+          const desc = toPropertyDesc(device.proType, device.mzgdPropertyDTOList[ep])
+
           addSceneActions.push({
             uniId: device.uniId,
             name: device.switchInfoDTOList[0].switchName + ' | ' + device.deviceName,
-            desc: OnOff ? ['打开'] : ['关闭'],
+            desc: desc,
             pic: device.switchInfoDTOList[0].pic,
             proType: device.proType,
             deviceType: device.deviceType,
@@ -700,10 +709,8 @@ ComponentWithComputed({
             },
           })
         } else if (device.proType === PRO_TYPE.light) {
-          const properties = device.mzgdPropertyDTOList['1']
-          const desc = properties.OnOff ? ['打开'] : ['关闭']
-          const { maxColorTemp, minColorTemp, ColorTemp } = properties // 色温范围
-          const color = (ColorTemp / 100) * (maxColorTemp - minColorTemp) + minColorTemp
+          const properties = transferDeviceProperty(device.proType, device.mzgdPropertyDTOList['1'])
+          const desc = toPropertyDesc(device.proType, properties)
 
           const action = {
             uniId: device.uniId,
@@ -718,12 +725,6 @@ ComponentWithComputed({
             } as IAnyObject,
           }
 
-          if (properties.OnOff) {
-            desc.push(`亮度${properties.Level}%`)
-            desc.push(`色温${color}K`)
-            action.value.Level = properties.Level
-            action.value.ColorTemp = properties.ColorTemp
-          }
           addSceneActions.push(action)
         }
       })

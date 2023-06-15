@@ -47,9 +47,14 @@ declare namespace Scene {
      * 动作控制集合
      * 例如："controlAction":[{"ep":1,"OnOff":0},{"ep":2,"OnOff":1}]
      */
-    controlAction: Record<string, number>[]
+    controlAction: IAnyObject[]
     /** 设备id */
     deviceId: string
+    // 设备名称
+    deviceName?: string
+
+    // 设备图片
+    devicePic?: string
     /** 设备类型 */
     deviceType: number
     /** 品类码 */
