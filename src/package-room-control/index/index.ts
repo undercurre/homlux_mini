@@ -812,10 +812,12 @@ ComponentWithComputed({
       this.data.checkedList = toCheck ? [uniId] : []
 
       // 选择灯卡片时，面板状态的处理
-      const lightStatus = { Level: 0, ColorTemp: 0 }
+      const lightStatus = { Level: 0, ColorTemp: 0, OnOff: 0 }
       if (toCheck && e.detail.proType === PRO_TYPE.light) {
-        lightStatus.Level = e.detail.mzgdPropertyDTOList['1'].Level
-        lightStatus.ColorTemp = e.detail.mzgdPropertyDTOList['1'].ColorTemp
+        const prop = e.detail.mzgdPropertyDTOList['1']
+        lightStatus.Level = prop.Level!
+        lightStatus.ColorTemp = prop.ColorTemp!
+        lightStatus.OnOff = prop.OnOff!
       }
 
       // 更新选中样式

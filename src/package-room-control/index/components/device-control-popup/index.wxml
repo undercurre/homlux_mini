@@ -2,7 +2,7 @@
 <view wx:if="{{isRender}}" change:info="{{wxs.infoObserver}}" info="{{info}}" id="popup" class="fixed z-200 left-0 w-750rpx h-600rpx opacity-0" bindtouchstart="handleTouchStart" catchtouchmove="handleTouchMove">
   <view class="popup-shadow w-750rpx h-600rpx rounded-t-64rpx bg-white flex-col flex items-center py-20rpx">
     <!-- tab -->
-    <view class="flex justify-evenly w-686rpx relative">
+    <view class="flex justify-evenly w-686rpx mt-10rpx relative">
       <view class="flex-col-center" data-tab="light" bindtap="handleTabTap" wx:if="{{lightTab}}">
         <text class="mx-24rpx mt-16rpx tab-title">灯光</text>
       </view>
@@ -24,21 +24,15 @@
     <view class="flex flex-col items-center flex-1 pt-10rpx">
       <!-- 灯光控制 -->
       <view class="flex flex-col w-750rpx" wx:if="{{tab==='light'}}">
-        <text class="text-32rpx text-black-59 mt-70rpx ml-90rpx">亮度 | {{lightInfoInner.Level}}%</text>
-        <view class="px-88rpx">
-          <view class="h-32rpx"></view>
-          <van-slider data-type="level" bind:change="handleLevelChange" bind:drag="handleLevelDrag" bind:drag-end="handleLevelDragEnd" value="{{lightInfoInner.Level}}" min="{{1}}" use-button-slot custom-class="slider-brightness-bar" active-color="rgba(0,0,0,0)" bar-height="24rpx">
-            <image slot="button" src="/package-room-control/assets/img/btn.png" class="w-88rpx h-88rpx mt-6rpx" />
-          </van-slider>
-          <view class="h-32rpx"></view>
+        <text class="text-32rpx text-black-59 mt-70rpx ml-48rpx">亮度 | {{lightInfoInner.Level}}%</text>
+        <view class="pl-48rpx py-32rpx">
+          <mz-slider bind:change="handleLevelChange" bind:drag="handleLevelDrag" bind:drag-end="handleLevelDragEnd" disabled="{{!lightStatus.OnOff}}" value="{{lightInfoInner.Level}}" min="{{1}}" active-color="linear-gradient(90deg, rgba(80,127,255,0.90) 5%, rgba(116,153,255,0.18) 100%)" barWidth="650"> </mz-slider>
         </view>
-        <text class="text-32rpx text-black-59 mt-50rpx ml-90rpx">色温 | {{colorTempK}}K</text>
-        <view class="px-88rpx">
-          <view class="h-32rpx"></view>
-          <van-slider data-type="colorTemp" bind:change="handleColorTempChange" bind:drag="handleColorTempDrag" bind:drag-end="handleColorTempDragEnd" value="{{lightInfoInner.ColorTemp}}" use-button-slot custom-class="slider-color-temp-bar" active-color="rgba(0,0,0,0)" bar-height="24rpx">
-            <image slot="button" src="/package-room-control/assets/img/btn.png" class="w-88rpx h-88rpx mt-6rpx" />
-          </van-slider>
-          <view class="h-32rpx"></view>
+        <text class="text-32rpx text-black-59 mt-20rpx ml-48rpx">色温 | {{colorTempK}}K</text>
+        <view class="pl-48rpx py-32rpx">
+          <mz-slider bind:change="handleColorTempChange" bind:drag="handleColorTempDrag" bind:drag-end="handleColorTempDragEnd" disabled="{{!lightStatus.OnOff}}" value="{{ColorTemp}}" use-button-slot custom-class="slider-color-temp-bar" buttonLeft="{{64}}" active-color="rgba(0,0,0,0)" barWidth="650">
+            <view slot="button" class="slidr-button w-52rpx h-52rpx rounded-52rpx border-3rpx border-white border-solid mr-42rpx" />
+          </mz-slider>
         </view>
       </view>
       <!-- 开关控制 -->
