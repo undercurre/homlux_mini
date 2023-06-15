@@ -1,0 +1,96 @@
+var isTouchRight = false
+var pageInfo = null
+var curtainContainerInfo = null
+var leftCurtains = null
+var rightCurtains = null
+var value = 0
+var step = 1
+var inited = false
+var timer = null
+
+function onTouchstart(event, ins) {
+  var touch = event.touches[0] || event.changedTouches[0]
+  var clientX = touch.clientX
+  pageInfo = ins.getBoundingClientRect()
+  if (touch.clientX > pageInfo.width / 2) {
+    isTouchRight = true
+  } else {
+    isTouchRight = false
+  }
+
+  var offsetX = Math.abs(
+    Math.min(pageInfo.width / 2 - clientX, (curtainContainerInfo.width - curtainContainerInfo.width / 10) / 2),
+  )
+  changeCurtainStyle(offsetX)
+}
+function onTouchmove(event, ownerInstance) {
+  var touch = event.touches[0] || event.changedTouches[0]
+  var clientX = touch.clientX
+
+  if (isTouchRight) {
+    //触控右边
+    changeCurtainStyle(
+      calcDragDis(clientX - pageInfo.width / 2, 0, (curtainContainerInfo.width - curtainContainerInfo.width / 10) / 2),
+    )
+  } else {
+    //触控左边
+    changeCurtainStyle(
+      calcDragDis(pageInfo.width / 2 - clientX, 0, (curtainContainerInfo.width - curtainContainerInfo.width / 10) / 2),
+    )
+  }
+  if (timer) return
+  timer = ownerInstance.setTimeout(function () {
+    ownerInstance.callMethod('valueChange', { value })
+    timer = null
+  }, 100)
+}
+
+function onTouchend(event, ownerInstance) {
+  ownerInstance.callMethod('valueChange', { value })
+}
+
+function changeCurtainStyle(dragDis) {
+  leftCurtains.forEach(function (item, index) {
+    item.setStyle({
+      transform: 'translateX(-' + dragDis + 'px)',
+    })
+  })
+  rightCurtains.forEach(function (item, index) {
+    item.setStyle({
+      transform: 'translateX(' + dragDis + 'px)',
+    })
+  })
+  value = parseInt(((dragDis * 4) / (curtainContainerInfo.width - curtainContainerInfo.width / 10) / 2) * 100)
+}
+
+function calcDragDis(value, min, max) {
+  if (value >= min) {
+    if (value < max) {
+      return value
+    } else {
+      return max
+    }
+  } else {
+    return min
+  }
+}
+
+module.exports = {
+  onTouchstart: onTouchstart,
+  onTouchmove: onTouchmove,
+  onTouchend: onTouchend,
+  valueObserver: function (newValue, oldValue, ownerInstance, instance) {
+    if (!curtainContainerInfo || !leftCurtains || !rightCurtains) {
+      curtainContainerInfo = ownerInstance.selectComponent('.curtain-container').getBoundingClientRect()
+      leftCurtains = ownerInstance.selectAllComponents('.left-curtain')
+      rightCurtains = ownerInstance.selectAllComponents('.right-curtain')
+    }
+    value = newValue
+    if (inited || oldValue === undefined) return
+    changeCurtainStyle(((value / 100) * (curtainContainerInfo.width - curtainContainerInfo.width / 10)) / 2)
+    inited = true
+  },
+  stepObserver: function (newValue, oldValue, ownerInstance, instance) {
+    step = newValue
+  },
+}
