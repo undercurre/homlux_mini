@@ -67,7 +67,7 @@ ComponentWithComputed({
           }
         })
     },
-    async handleClose() {
+    handleClose() {
       this.triggerEvent('close')
 
       const { _cacheDeviceMap } = this.data
@@ -75,7 +75,7 @@ ComponentWithComputed({
       console.log('handleClose', _cacheDeviceMap)
 
       for (const cacheDevice of Object.values(_cacheDeviceMap)) {
-        await sendDevice({
+        sendDevice({
           deviceId: cacheDevice.deviceId,
           gatewayId: cacheDevice.gatewayId,
           proType: cacheDevice.proType,

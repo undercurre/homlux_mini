@@ -91,6 +91,7 @@ export const deviceStore = observable({
         device.switchInfoDTOList?.forEach((switchItem) => {
           list.push({
             ...device,
+            property: device.mzgdPropertyDTOList[switchItem.switchId],
             mzgdPropertyDTOList: {
               [switchItem.switchId]: device.mzgdPropertyDTOList[switchItem.switchId],
             },
@@ -104,6 +105,7 @@ export const deviceStore = observable({
         list.push({
           ...device,
           uniId: device.deviceId,
+          property: transferDeviceProperty(device.proType, device.mzgdPropertyDTOList[1]),
           mzgdPropertyDTOList: {
             1: transferDeviceProperty(device.proType, device.mzgdPropertyDTOList[1]),
           },

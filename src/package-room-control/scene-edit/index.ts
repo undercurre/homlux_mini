@@ -10,6 +10,7 @@ import {
   updateScene,
   getRelLampInfo,
   getRelDeviceInfo,
+  sendDevice,
   delLampAndSwitchAssociated,
   delSwitchAndSwitchAssociated,
 } from '../../apis/index'
@@ -33,6 +34,7 @@ ComponentWithComputed({
    */
   data: {
     _sceneInfo: {} as Scene.SceneItem,
+    _cacheDeviceMap: {} as IAnyObject, // 缓存设备设置预览前的设备状态，用于退出时恢复
     sceneName: '',
     sceneIcon: '',
     /** 过滤出全屋开关，提供关联开关选择 */
@@ -171,6 +173,24 @@ ComponentWithComputed({
   },
 
   methods: {
+    handleExit() {
+      const { _cacheDeviceMap } = this.data
+
+      console.log('handleClose', _cacheDeviceMap)
+
+      for (const cacheDevice of Object.values(_cacheDeviceMap)) {
+        sendDevice({
+          deviceId: cacheDevice.deviceId,
+          gatewayId: cacheDevice.gatewayId,
+          proType: cacheDevice.proType,
+          deviceType: cacheDevice.deviceType,
+          ep: cacheDevice.ep,
+          property: cacheDevice.property,
+        })
+      }
+
+      this.goBack()
+    },
     handleSceneDelete() {
       Dialog.confirm({
         message: '确定删除该场景？',
@@ -541,7 +561,24 @@ ComponentWithComputed({
       })
     },
     handleSceneEditConfirm(e: { detail: IAnyObject }) {
+      const { _cacheDeviceMap } = this.data
       const actionItem = this.data.sceneDeviceActionsFlatten[this.data.editIndex]
+      const device = deviceStore.allRoomDeviceFlattenMap[actionItem.uniId]
+
+      if (!_cacheDeviceMap[actionItem.uniId]) {
+        const oldProperty = device.property
+
+        _cacheDeviceMap[actionItem.uniId] = {
+          gatewayId: device.gatewayId,
+          deviceId: device.deviceId,
+          proType: device.proType,
+          deviceType: device.deviceType,
+          ep: actionItem.value.ep,
+          property: {
+            ...oldProperty,
+          },
+        }
+      }
 
       actionItem.value = {
         ...actionItem.value,
