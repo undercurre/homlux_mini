@@ -54,10 +54,11 @@ Component({
                 })
               },
               fail: (msg) => {
-                if (msg.errMsg.indexOf('deny') !== -1) {
-                  Toast('地理位置访问失败，请手动设置\n系统访问地理位置的权限')
-                }
-              }
+                console.log(msg)
+                // if (msg.errMsg.indexOf('deny') !== -1) {
+                //   Toast('地理位置访问失败，请手动设置\n系统访问地理位置的权限')
+                // }
+              },
             })
           } else {
             Toast('登录失败！')
