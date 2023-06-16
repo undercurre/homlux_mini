@@ -2,36 +2,38 @@
   <!-- 单选和编辑选择，选中状态均使用描边样式 -->
   <view wx:if="{{select || editSelect}}" class="w-160rpx h-216rpx absolute left-0 top-0 box-border select-border rounded-32rpx bg-hex-fff"></view>
   <view wx:else class="w-160rpx h-216rpx rounded-32rpx box-border {{showGradientBg?'show-control-bg white-border':'bg-hex-f7f7f7'}}"></view>
+
+  <!-- 顶部标题 -->
   <view class="absolute left-0 top-16rpx w-160rpx flex-center">
     <text class="text-26rpx text-hex-353535 font-medium">{{topTitle}}</text>
   </view>
 
-  <view class="absolute left-0 bottom-12rpx flex-col-center w-full h-full">
+  <!-- 设备图标 -->
+  <view class="absolute left-0 pb-24rpx flex-col-center w-full h-full">
     <image src="{{picUrl}}" class="w-72rpx h-72rpx"></image>
   </view>
 
+  <!-- 点击开关时的动画 -->
   <view wx:if="{{ripple}}" class="absolute left-80rpx w-250rpx h-250rpx rounded-999 {{onOff ? 'ripple-on' : 'ripple-off'}}" style="animation: ripple-{{onOff ? 'on' : 'off'}} 1s ease forwards;"></view>
 
-  <!-- 编辑模式不再显示复选圆圈 -->
-  <!-- <view wx:if="{{editMode}}" class="absolute w-full left-0 bottom-12rpx flex-center">
-    <image src="/assets/img/base/{{editSelect?'check': 'uncheck'}}.png" class="w-36rpx h-36rpx" />
-  </view> -->
-  <view wx:if="{{showControl}}" class="absolute left-0 bottom-0 w-160rpx flex-col-center" catchtap="handlePowerTap">
-    <view class="h-40rpx flex items-start">
-      <text class="text-20rpx mt-10rpx text-black-tips" wx:if="{{deviceType==='switch'}}">{{bottomDesc}}</text>
-    </view>
-    <text wx:if="{{!deviceInfo.onLineStatus}}" class="text-24rpx text-hex-fbbb32 mb-22rpx">离线</text>
-    <view wx:else>
-      <view wx:if="{{deviceInfo.linkSceneName}}" class="flex-center mb-22rpx">
-        <image src="/assets/img/base/scene-switch-btn.png" class="w-22rpx h-22rpx mt-4rpx" />
-        <text class="text-blue text-24rpx leading-none ml-4rpx">{{deviceInfo.linkSceneName}}</text>
-      </view>
-      <image wx:else src="{{controlBtnPic}}" class="w-48rpx h-48rpx mb-6rpx"></image>
-    </view>
+  <!-- 附加描述，暂时只用于显示面板名称 -->
+  <view catchtap="handleMiddleTap" class="absolute text-center w-full top-100rpx mt-12rpx" wx:if="{{deviceType==='switch' && (showControl || showBtnDetail)}}">
+    <text class="text-20rpx text-black-tips">{{bottomDesc}}</text>
   </view>
-  <view wx:else class="absolute left-0 bottom-18rpx w-160rpx flex flex-col flex-center">
-    <text wx:if="{{deviceType === 'switch' && showBtnDetail}}" class="text-20rpx mb-4rpx text-black-tips">{{bottomDesc}}</text>
-    <text wx:if="{{!deviceInfo.onLineStatus}}" class="text-24rpx text-hex-fbbb32">离线</text>
+
+  <!-- 控制按钮、场景关联 -->
+  <view wx:if="{{showControl && deviceInfo.onLineStatus}}" class="absolute left-0 bottom-0 w-160rpx flex-col-center" catchtap="handlePowerTap">
+    <view wx:if="{{deviceInfo.linkSceneName}}" class="flex-center mb-22rpx">
+      <image src="/assets/img/base/scene-switch-btn.png" class="w-22rpx h-22rpx mt-4rpx" />
+      <text class="text-blue text-24rpx leading-none ml-4rpx">{{deviceInfo.linkSceneName}}</text>
+    </view>
+    <image wx:else src="{{controlBtnPic}}" class="w-48rpx h-48rpx mb-12rpx"></image>
+  </view>
+
+  <!-- 离线文字 -->
+  <view wx:if="{{!deviceInfo.onLineStatus}}" class="absolute left-0 bottom-24rpx w-160rpx flex flex-col flex-center">
+    <text class="text-24rpx text-hex-fbbb32">离线</text>
   </view>
 </view>
+
 <van-toast id="van-toast" />

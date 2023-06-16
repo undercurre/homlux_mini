@@ -147,7 +147,22 @@ ComponentWithComputed({
           }
         })
     },
+    /**
+     * 处理中部位置点击时的事件，优化交互手感
+     */
+    handleMiddleTap() {
+      if (this.data.showControl && this.data.deviceInfo.onLineStatus) {
+        this.handlePowerTap()
+      } else {
+        this.handleCardTap()
+      }
+    },
     handlePowerTap() {
+      // 如果关联了面板，或者设备离线，刚转为点击卡片
+      if (this.data.deviceInfo.linkSceneName || !this.data.deviceInfo.onLineStatus) {
+        this.handleCardTap()
+        return
+      }
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
       this.createSelectorQuery()
         .select('#card')
