@@ -21,12 +21,12 @@ ComponentWithComputed({
       type: Array,
       observer(value) {
         this.setData({
-          lightList: value.map(device => ({
+          lightList: value.map((device) => ({
             ...device,
-            select: false
-          }))
+            select: false,
+          })),
         })
-      }
+      },
     },
   },
 
@@ -40,8 +40,8 @@ ComponentWithComputed({
 
   computed: {
     checkedList(data) {
-      return data.lightList.filter(device => device.select)
-    }
+      return data.lightList.filter((device) => device.select)
+    },
   },
 
   lifetimes: {
@@ -52,11 +52,11 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    handleCardTap(e: { currentTarget: { dataset: {index: number}}}) {
+    handleCardTap(e: { currentTarget: { dataset: { index: number } } }) {
       const { index } = e.currentTarget.dataset
       const oldSelect = this.data.lightList[index].select
       this.setData({
-        [`lightList[${index}].select`]: !oldSelect
+        [`lightList[${index}].select`]: !oldSelect,
       })
     },
 

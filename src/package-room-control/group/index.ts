@@ -40,7 +40,7 @@ ComponentWithComputed({
         this.setData({
           deviceList,
           groupId: data.groupId,
-          groupName: data.groupName ?? '灯组'
+          groupName: data.groupName ?? '灯组',
         })
 
         // 开始创建\更新分组

@@ -99,6 +99,7 @@ export const roomStore = observable({
           } else if (device.proType === PRO_TYPE.switch) {
             device.switchInfoDTOList.forEach((switchItem) => {
               if (
+                device.mzgdPropertyDTOList && // 避免个别设备未上报数据导致的整个页面异常
                 device.mzgdPropertyDTOList[switchItem.switchId].OnOff &&
                 !device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode
               ) {
