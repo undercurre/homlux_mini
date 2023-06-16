@@ -164,11 +164,18 @@ ComponentWithComputed({
       }
     },
     // 更新分组（增加灯）
-    addLightToGroup(e: { detail: Device.DeviceItem }) {
+    addLightToGroup(e: { detail: Device.DeviceItem[] }) {
       const { groupDeviceList = [] } = this.data.deviceInfo
-      updateGroup({
-        applianceGroupDtoList: [...groupDeviceList, e.detail],
-        groupId: this.data.groupId,
+
+      wx.navigateTo({
+        url: '/package-room-control/group/index',
+        success: (res) => {
+          res.eventChannel.emit('createGroup', {
+            lightList: [...groupDeviceList, ...e.detail].map((device) => device.deviceId),
+            groupId: this.data.groupId,
+            groupName: this.data.deviceName
+          })
+        },
       })
 
       this.setData({

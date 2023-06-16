@@ -4,7 +4,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, deviceStore, sceneStore, homeStore } from '../../../../store/index'
 import { maxColorTemp, minColorTemp, PRO_TYPE } from '../../../../config/index'
 import {
-  controlDevice,
+  sendDevice,
   findDevice,
   getLampDeviceByHouseId,
   updateScene,
@@ -19,7 +19,6 @@ import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
 import pageBehavior from '../../../../behaviors/pageBehaviors'
 
-let throttleTimer = 0
 // 关联类型文描映射
 const descMap = {
   light: '关联灯具',
@@ -794,127 +793,35 @@ ComponentWithComputed({
         tab: e.currentTarget.dataset.tab,
       })
     },
-    async switchSendDeviceControl(OnOff: number) {
-      const deviceMap = deviceStore.allRoomDeviceMap
-      // 按照网关区分
-      const gatewaySelectDeviceMap: Record<string, Device.DeviceItem[]> = {}
-      this.data.checkedList
-        .filter((id: string) => id.includes(':'))
-        .forEach((uniId: string) => {
-          const [deviceId, ep] = uniId.split(':')
-          if (gatewaySelectDeviceMap[deviceMap[deviceId].gatewayId]) {
-            const index = gatewaySelectDeviceMap[deviceMap[deviceId].gatewayId].findIndex(
-              (device) => device.deviceId === deviceId,
-            )
-            if (index != -1) {
-              gatewaySelectDeviceMap[deviceMap[deviceId].gatewayId][index].switchInfoDTOList.push({
-                switchId: ep,
-              } as unknown as Device.MzgdPanelSwitchInfoDTO)
-            } else {
-              gatewaySelectDeviceMap[deviceMap[deviceId].gatewayId].push({
-                ...deviceMap[deviceId],
-                switchInfoDTOList: [{ switchId: ep } as unknown as Device.MzgdPanelSwitchInfoDTO],
-              })
-            }
-          } else {
-            gatewaySelectDeviceMap[deviceMap[deviceId].gatewayId] = [
-              {
-                ...deviceMap[deviceId],
-                switchInfoDTOList: [{ switchId: ep } as unknown as Device.MzgdPanelSwitchInfoDTO],
-              },
-            ]
-          }
-          // 先改掉缓存中设备的值(创建场景需要新的属性值)
-          deviceStore.deviceMap[deviceId].mzgdPropertyDTOList[ep].OnOff = OnOff
-        })
-      // 给每个网关的开关下发
-      Object.entries(gatewaySelectDeviceMap).forEach((entries) => {
-        const controlData = [] as Record<string, string | number>[]
-        entries[1].forEach((device) => {
-          device.switchInfoDTOList.forEach((switchInfo) => {
-            controlData.push({
-              devId: device.deviceId,
-              ep: parseInt(switchInfo.switchId),
-              OnOff,
-            })
-          })
-        })
-        controlDevice({
-          topic: '/subdevice/control',
-          deviceId: entries[0],
-          method: 'panelSingleControl',
-          inputData: controlData,
-        })
+    async lightSendDeviceControl(type: 'ColorTemp' | 'Level') {
+      const deviceId = this.data.checkedList[0]
+      const device = JSON.parse(JSON.stringify(deviceStore.deviceMap[deviceId])) // 深拷贝，以免影响store中的源数据
+      if (deviceId.indexOf(':') !== -1 || device.proType !== PRO_TYPE.light) {
+        return
+      }
+
+      const oldValue = device.mzgdPropertyDTOList[1][type]
+
+      // 即时改变devicePageList，以便场景引用
+      device.mzgdPropertyDTOList[1][type] = this.data.lightInfoInner[type]
+      this.triggerEvent('updateList', device)
+
+      const res = await sendDevice({
+        proType: device.proType,
+        deviceType: device.deviceType,
+        gatewayId: device.gatewayId,
+        deviceId,
+        ep: 1,
+        property: {
+          [type]: this.data.lightInfoInner[type],
+        },
       })
-    },
-    async lightSendDeviceControl(type: 'colorTemp' | 'level' | 'onOff', OnOff?: number) {
-      const deviceMap = deviceStore.allRoomDeviceMap
-      const currentRoomDeviceMap = deviceStore.deviceMap
-      // 拿出选中的设备
-      const selectLightDevice: Device.DeviceItem[] = []
-      this.data.checkedList
-        .filter((uniId: string) => !uniId.includes(':'))
-        .forEach((deviceId: string) => {
-          if (deviceMap[deviceId].proType === PRO_TYPE.light) {
-            selectLightDevice.push(deviceMap[deviceId])
-          }
-        })
-      // 先改掉缓存中设备的值(创建场景需要新的属性值)
-      selectLightDevice.forEach((device) => {
-        if (type === 'level') {
-          currentRoomDeviceMap[device.deviceId].mzgdPropertyDTOList['1'].Level = this.data.lightInfoInner.Level
-        } else if (type === 'colorTemp') {
-          currentRoomDeviceMap[device.deviceId].mzgdPropertyDTOList['1'].ColorTemp = this.data.lightInfoInner.ColorTemp
-        } else if (type === 'onOff') {
-          currentRoomDeviceMap[device.deviceId].mzgdPropertyDTOList['1'].OnOff = OnOff as number
-        }
-      })
-      // 按照网关区分
-      const gatewaySelectDeviceMap: Record<string, Device.DeviceItem[]> = {}
-      selectLightDevice.forEach((device) => {
-        if (gatewaySelectDeviceMap[device.gatewayId]) {
-          gatewaySelectDeviceMap[device.gatewayId].push(device)
-        } else {
-          gatewaySelectDeviceMap[device.gatewayId] = [device]
-        }
-      })
-      // 给每个网关的灯下发
-      Object.entries(gatewaySelectDeviceMap).forEach((entries) => {
-        if (type === 'level') {
-          controlDevice({
-            topic: '/subdevice/control',
-            deviceId: entries[0],
-            method: 'lightControl',
-            inputData: entries[1].map((devive) => ({
-              devId: devive.deviceId,
-              ep: 1,
-              Level: this.data.lightInfoInner.Level,
-            })),
-          })
-        } else if (type === 'colorTemp') {
-          controlDevice({
-            topic: '/subdevice/control',
-            deviceId: entries[0],
-            method: 'lightControl',
-            inputData: entries[1].map((devive) => ({
-              devId: devive.deviceId,
-              ep: 1,
-              ColorTemp: this.data.lightInfoInner.ColorTemp,
-            })),
-          })
-        } else {
-          controlDevice({
-            topic: '/subdevice/control',
-            deviceId: entries[0],
-            method: 'lightControl',
-            inputData: entries[1].map((devive) => ({
-              devId: devive.deviceId,
-              ep: 1,
-              OnOff,
-            })),
-          })
-        }
-      })
+
+      if (!res.success) {
+        device.mzgdPropertyDTOList[1][type] = oldValue
+        this.triggerEvent('updateList', device)
+        Toast('控制失败')
+      }
     },
     handleLevelDrag: throttle(function (this: IAnyObject, e: { detail: { value: number } }) {
       this.setData({
@@ -925,66 +832,26 @@ ComponentWithComputed({
       this.setData({
         'lightInfoInner.Level': e.detail,
       })
-      this.lightSendDeviceControl('level')
+      this.lightSendDeviceControl('Level')
     },
     handleLevelDragEnd() {
-      this.lightSendDeviceControl('level')
+      this.lightSendDeviceControl('Level')
     },
     handleColorTempDragEnd() {
-      this.lightSendDeviceControl('colorTemp')
+      this.lightSendDeviceControl('ColorTemp')
     },
     handleColorTempChange(e: { detail: number }) {
       this.setData({
         'lightInfoInner.ColorTemp': e.detail,
       })
-      this.lightSendDeviceControl('colorTemp')
+      this.lightSendDeviceControl('ColorTemp')
     },
     handleColorTempDrag: throttle(function (this: IAnyObject, e: { detail: { value: number } }) {
       this.setData({
         'lightInfoInner.ColorTemp': e.detail.value,
       })
     }),
-    handleAllOn() {
-      if (throttleTimer) {
-        return
-      }
-      if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
-      this.setData({
-        allOnPress: true,
-      })
-      throttleTimer = setTimeout(() => {
-        throttleTimer = 0
-        this.setData({
-          allOnPress: false,
-        })
-      }, 900)
-      if (this.data.tab === 'light') {
-        this.lightSendDeviceControl('onOff', 1)
-      } else if (this.data.tab === 'switch') {
-        this.switchSendDeviceControl(1)
-      }
-      this.triggerEvent('updateList')
-    },
-    handleAllOff() {
-      if (throttleTimer) {
-        return
-      }
-      if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
-      this.setData({
-        allOffPress: true,
-      })
-      throttleTimer = setTimeout(() => {
-        throttleTimer = 0
-        this.setData({
-          allOffPress: false,
-        })
-      }, 900)
-      if (this.data.tab === 'light') {
-        this.lightSendDeviceControl('onOff', 0)
-      } else if (this.data.tab === 'switch') {
-        this.switchSendDeviceControl(0)
-      }
-    },
+
     findDevice(device: Device.DeviceItem) {
       findDevice({ gatewayId: device.gatewayId, devId: device.deviceId })
     },
