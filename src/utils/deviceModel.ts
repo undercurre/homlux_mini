@@ -45,7 +45,7 @@ export function toWifiProperty(proType: string, properties: IAnyObject) {
   const result = {} as IAnyObject
 
   if (proType === PRO_TYPE.light) {
-    result.power = properties.OnOff ? 'on' : 'off'
+    !isNullOrUnDef(properties.OnOff) && (result.power = properties.OnOff ? 'on' : 'off')
 
     !isNullOrUnDef(properties.ColorTemp) && (result.color_temperature = Math.round((properties.ColorTemp * 255) / 100))
 

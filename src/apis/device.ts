@@ -1,4 +1,4 @@
-import { delay, mzaioRequest } from '../utils/index'
+import { delay, mzaioRequest, toWifiProperty } from '../utils/index'
 import { PRO_TYPE } from '../config/index'
 
 /**
@@ -160,16 +160,7 @@ export async function sendDevice(
 
     case 3:
       if (data.proType === PRO_TYPE.light) {
-        const power = property.OnOff ? 'on' : 'off'
-        const downData = property.OnOff
-          ? {
-              power,
-              brightness: Math.round((property.Level / 100) * 255),
-              color_temperature: Math.round((property.ColorTemp / 100) * 255),
-            }
-          : {
-              power,
-            }
+        const downData = toWifiProperty(data.proType, property)
 
         params = {
           deviceId: data.deviceId,

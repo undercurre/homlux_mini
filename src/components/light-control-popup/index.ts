@@ -90,17 +90,8 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    controlSubDevice: throttle(async function (this: IAnyObject) {
+    controlSubDevice: throttle(async function (this: IAnyObject, property: IAnyObject) {
       const lightInfo = this.data.lightInfo
-      const property = this.data.OnOff
-        ? {
-            OnOff: this.data.OnOff,
-            Level: this.data.Level,
-            ColorTemp: this.data.ColorTemp,
-          }
-        : {
-            OnOff: this.data.OnOff,
-          }
 
       const res = await sendDevice({
         deviceId: lightInfo.deviceId,
@@ -121,10 +112,6 @@ ComponentWithComputed({
       this.triggerEvent('close')
     },
     handleConfirm() {
-      if (this.data.isControl) {
-        this.controlSubDevice()
-      }
-
       this.triggerEvent(
         'confirm',
         this.data.OnOff
@@ -140,10 +127,6 @@ ComponentWithComputed({
     },
 
     handleChange() {
-      if (this.data.isControl) {
-        this.controlSubDevice()
-      }
-
       this.triggerEvent(
         'change',
         this.data.OnOff
@@ -165,6 +148,10 @@ ComponentWithComputed({
         OnOff: e.currentTarget.dataset.value,
       })
 
+      if (this.data.isControl) {
+        this.controlSubDevice({ OnOff: this.data.OnOff })
+      }
+
       this.handleConfirm()
       this.animate(
         '#slider',
@@ -184,12 +171,20 @@ ComponentWithComputed({
         Level: e.detail.value,
       })
 
+      if (this.data.isControl) {
+        this.controlSubDevice({ Level: this.data.Level })
+      }
+
       this.handleChange()
     },
     handleLevelChange(e: { detail: number }) {
       this.setData({
         Level: e.detail,
       })
+
+      if (this.data.isControl) {
+        this.controlSubDevice({ Level: this.data.Level })
+      }
 
       this.handleConfirm()
     },
@@ -198,12 +193,18 @@ ComponentWithComputed({
         ColorTemp: e.detail,
       })
 
+      if (this.data.isControl) {
+        this.controlSubDevice({ ColorTemp: this.data.ColorTemp })
+      }
+
       this.handleConfirm()
     },
     handleColorTempDrag(e: { detail: { value: number } }) {
       this.setData({
         ColorTemp: e.detail.value,
       })
+
+      this.controlSubDevice({ ColorTemp: this.data.ColorTemp })
       this.handleChange()
     },
   },
