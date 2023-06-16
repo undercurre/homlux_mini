@@ -46,13 +46,13 @@ export const roomStore = observable({
           subDeviceNum++
         }
         if (!device.onLineStatus) return
-        if (device.proType === PRO_TYPE.light && device.mzgdPropertyDTOList['1'].OnOff) {
+        if (device.proType === PRO_TYPE.light && device.mzgdPropertyDTOList['1']?.OnOff) {
           deviceLightOnNum++
         } else if (device.proType === PRO_TYPE.switch) {
           device.switchInfoDTOList.forEach((switchItem) => {
             if (
-              // !switchItem.lightRelId &&
-              device.mzgdPropertyDTOList[switchItem.switchId].OnOff &&
+              device.mzgdPropertyDTOList && // 避免个别设备未上报数据导致的整个页面异常
+              device.mzgdPropertyDTOList[switchItem.switchId]?.OnOff &&
               device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode === 0
             ) {
               deviceLightOnNum++
@@ -100,7 +100,7 @@ export const roomStore = observable({
             device.switchInfoDTOList.forEach((switchItem) => {
               if (
                 device.mzgdPropertyDTOList && // 避免个别设备未上报数据导致的整个页面异常
-                device.mzgdPropertyDTOList[switchItem.switchId].OnOff &&
+                device.mzgdPropertyDTOList[switchItem.switchId]?.OnOff &&
                 !device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode
               ) {
                 deviceLightOnNum++
