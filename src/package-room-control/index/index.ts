@@ -861,6 +861,9 @@ ComponentWithComputed({
       // 即时改变视图，提升操作手感
       device.mzgdPropertyDTOList[ep].OnOff = newOnOff
       this.updateDeviceList(device)
+      this.setData({
+        'lightStatus.OnOff': newOnOff
+      })
 
       const res = await sendDevice({
         proType: device.proType,
@@ -874,6 +877,9 @@ ComponentWithComputed({
       if (!res.success) {
         device.mzgdPropertyDTOList[ep].OnOff = OldOnOff
         this.updateDeviceList(device)
+        this.setData({
+          'lightStatus.OnOff': OldOnOff
+        })
         Toast('控制失败')
       }
 
