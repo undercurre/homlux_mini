@@ -862,7 +862,7 @@ ComponentWithComputed({
       device.mzgdPropertyDTOList[ep].OnOff = newOnOff
       this.updateDeviceList(device)
       this.setData({
-        'lightStatus.OnOff': newOnOff
+        'lightStatus.OnOff': newOnOff,
       })
 
       const res = await sendDevice({
@@ -878,7 +878,7 @@ ComponentWithComputed({
         device.mzgdPropertyDTOList[ep].OnOff = OldOnOff
         this.updateDeviceList(device)
         this.setData({
-          'lightStatus.OnOff': OldOnOff
+          'lightStatus.OnOff': OldOnOff,
         })
         Toast('控制失败')
       }
