@@ -2,6 +2,10 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { roomBinding, deviceBinding } from '../../../../../store/index'
 
+type DeviceCard = Device.DeviceItem & {
+  select: boolean
+}
+
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, deviceBinding] })],
 
@@ -15,6 +19,14 @@ ComponentWithComputed({
     },
     list: {
       type: Array,
+      observer(value) {
+        this.setData({
+          lightList: value.map((device) => ({
+            ...device,
+            select: false,
+          })),
+        })
+      },
     },
   },
 
@@ -22,11 +34,15 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    checkedDevice: {},
+    lightList: [] as DeviceCard[],
     popupTitle: '选择智能灯',
   },
 
-  computed: {},
+  computed: {
+    checkedList(data) {
+      return data.lightList.filter((device) => device.select)
+    },
+  },
 
   lifetimes: {
     async ready() {},
@@ -36,9 +52,12 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    handleCardTap(event: WechatMiniprogram.CustomEvent) {
-      console.log('handleCardTap', event.detail)
-      this.setData({ checkedDevice: event.detail })
+    handleCardTap(e: { currentTarget: { dataset: { index: number } } }) {
+      const { index } = e.currentTarget.dataset
+      const oldSelect = this.data.lightList[index].select
+      this.setData({
+        [`lightList[${index}].select`]: !oldSelect,
+      })
     },
 
     handleClose() {
@@ -46,7 +65,7 @@ ComponentWithComputed({
     },
 
     handleConfirm() {
-      this.triggerEvent('confirm', this.data.checkedDevice)
+      this.triggerEvent('confirm', this.data.checkedList)
     },
   },
 })

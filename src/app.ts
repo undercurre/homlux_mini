@@ -53,7 +53,7 @@ App<IAppOption>({
     }
     // 用户热启动app，建立ws连接，并且再更新一次数据
     if (homeStore.currentHomeId && storage.get<string>('token') && isConnect()) {
-      deviceStore.updateDeviceList()
+      deviceStore.updateSubDeviceList()
       homeStore.updateHomeInfo()
       startWebsocketService()
     }

@@ -1,4 +1,4 @@
-import { delay, mzaioRequest } from '../utils/index'
+import { delay, mzaioRequest, toWifiProperty } from '../utils/index'
 import { PRO_TYPE } from '../config/index'
 
 /**
@@ -29,19 +29,7 @@ export async function allDevicePowerControl(data: { houseId: string; onOff: numb
 }
 
 /**
- * 设备管理-根据家庭id房间id查询房间所有设备
- */
-export async function queryDeviceList(data: { houseId: string; roomId: string }, options?: { loading?: boolean }) {
-  return await mzaioRequest.post<Device.DeviceItem[]>({
-    log: true,
-    loading: options?.loading ?? false,
-    url: '/v1/device/queryDeviceInfoByRoomId',
-    data,
-  })
-}
-
-/**
- * 设备控制-根据家庭id房间id查询房间除了网关的子设备
+ * 设备控制-根据家庭id房间id查询房间的子设备
  */
 export async function querySubDeviceList(data: { houseId: string; roomId: string }, options?: { loading?: boolean }) {
   return await mzaioRequest.post<Device.DeviceItem[]>({
@@ -143,7 +131,7 @@ export async function sendDevice(
     deviceType: number
     deviceId: string
     gatewayId?: string
-    ep?: number
+    ep?: number | string
     property: IAnyObject
   },
   option?: { loading?: boolean },
@@ -172,16 +160,7 @@ export async function sendDevice(
 
     case 3:
       if (data.proType === PRO_TYPE.light) {
-        const power = property.OnOff ? 'on' : 'off'
-        const downData = property.OnOff
-          ? {
-              power,
-              brightness: Math.round((property.Level / 100) * 255),
-              color_temperature: Math.round((property.ColorTemp / 100) * 255),
-            }
-          : {
-              power,
-            }
+        const downData = toWifiProperty(data.proType, property)
 
         params = {
           deviceId: data.deviceId,

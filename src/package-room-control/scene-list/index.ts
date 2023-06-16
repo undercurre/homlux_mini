@@ -26,11 +26,8 @@ ComponentWithComputed({
 
   computed: {},
 
-  methods: {
-    /**
-     * 生命周期函数--监听页面加载
-     */
-    onLoad() {
+  lifetimes: {
+    ready() {
       this.updateList()
       sceneStore.updateSceneList().then(() => {
         this.updateList()
@@ -42,7 +39,9 @@ ComponentWithComputed({
         })
       })
     },
+  },
 
+  methods: {
     onUnload() {
       emitter.off('sceneEdit')
     },

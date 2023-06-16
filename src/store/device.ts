@@ -1,5 +1,5 @@
 import { observable, runInAction } from 'mobx-miniprogram'
-import { queryAllDevice, queryDeviceList, querySubDeviceList } from '../apis/device'
+import { queryAllDevice, querySubDeviceList } from '../apis/device'
 import { PRO_TYPE } from '../config/index'
 import { homeStore } from './home'
 import { roomStore } from './room'
@@ -91,6 +91,7 @@ export const deviceStore = observable({
         device.switchInfoDTOList?.forEach((switchItem) => {
           list.push({
             ...device,
+            property: device.mzgdPropertyDTOList[switchItem.switchId],
             mzgdPropertyDTOList: {
               [switchItem.switchId]: device.mzgdPropertyDTOList[switchItem.switchId],
             },
@@ -104,6 +105,7 @@ export const deviceStore = observable({
         list.push({
           ...device,
           uniId: device.deviceId,
+          property: transferDeviceProperty(device.proType, device.mzgdPropertyDTOList[1]),
           mzgdPropertyDTOList: {
             1: transferDeviceProperty(device.proType, device.mzgdPropertyDTOList[1]),
           },
@@ -171,17 +173,6 @@ export const deviceStore = observable({
     } else {
       console.log('加载全屋设备失败！', res)
     }
-  },
-
-  async updateDeviceList(
-    houseId: string = homeStore.currentHomeId,
-    roomId: string = roomStore.roomList[roomStore.currentRoomIndex].roomId,
-    options?: { loading: boolean },
-  ) {
-    const res = await queryDeviceList({ houseId, roomId }, options)
-    runInAction(() => {
-      deviceStore.deviceList = res.success ? res.result.sort((a, b) => a.deviceId.localeCompare(b.deviceId)) : []
-    })
   },
 
   async updateSubDeviceList(

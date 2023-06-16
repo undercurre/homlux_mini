@@ -35,6 +35,9 @@ declare namespace Device {
      * 单路设备只有一个endpoint：1，比如{ 1: {OnOff: 1} }
      */
     mzgdPropertyDTOList: Record<string, mzgdPropertyDTO>
+
+    // 设备属性
+    property?: IAnyObject
     /**
      * onLineStatus
      * 0:离线 1:在线

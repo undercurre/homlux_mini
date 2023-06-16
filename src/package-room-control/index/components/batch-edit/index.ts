@@ -84,22 +84,36 @@ ComponentWithComputed({
     canEditName(data) {
       return data.editSelectList?.length === 1
     },
+    /**
+     * @description 当前选项是否可以移动房间
+     * 设备数量不能为0
+     * 设备均为子设备或WIFI设备
+     * 设备均在线
+     */
     canMoveRoom(data) {
       return (
         data.editSelectList?.length &&
         data.editSelectList.every((uId: string) => {
           const deviceId = uId.split(':')[0] // 不管有没有:
           const device = deviceStore.deviceMap[deviceId]
-          return [2, 3].includes(device.deviceType)
+          return [2, 3].includes(device.deviceType) && device.onLineStatus === 1
         })
       )
     },
+    /**
+     * @description 当前选项是否可以分组
+     * 设备数量大于1
+     * 设备均为灯具
+     * 设备均为子设备或WIFI设备
+     * 设备均在线
+     */
     canGroup(data) {
       return (
         data.editSelectList?.length &&
+        data.editSelectList.length > 1 &&
         data.editSelectList.every((deviceId: string) => {
           const device = deviceStore.deviceMap[deviceId]
-          return deviceId.indexOf(':') === -1 && [2, 3].includes(device.deviceType)
+          return device.proType === PRO_TYPE.light && [2, 3].includes(device.deviceType) && device.onLineStatus === 1
         })
       )
     },
@@ -236,12 +250,14 @@ ComponentWithComputed({
       })
     },
     handleCreateGroup() {
+      const lightList = this.data.editSelectList
       wx.navigateTo({
         url: '/package-room-control/group/index',
         success: (res) => {
-          res.eventChannel.emit('createGroup', { lightList: this.data.editSelectList })
+          res.eventChannel.emit('createGroup', { lightList })
         },
       })
+      this.triggerEvent('close')
     },
     handleClose() {
       this.setData({

@@ -32,11 +32,6 @@ ComponentWithComputed({
     canEditDevice(data) {
       return data.isCreator || data.isAdmin
     },
-    isShowDeleteBtn(data) {
-      return (
-        data.canEditDevice && data.deviceInfo?.groupDeviceList?.length && data.deviceInfo.groupDeviceList.length > 1
-      )
-    },
     /**
      * @description 可被添加到灯组的单灯列表
      * 不能已在灯组中
@@ -127,11 +122,18 @@ ComponentWithComputed({
         .catch(() => {})
     },
     toDeleteLight(e: { currentTarget: { dataset: { deviceId: string } } }) {
+      const { groupDeviceList = [] } = this.data.deviceInfo
+
+      // 如果只剩下一个灯，刚直接解散灯组
+      if (groupDeviceList.length < 2) {
+        this.handleGroupDelete()
+        return
+      }
+
       Dialog.confirm({
         title: '确定将该灯从当前灯组移除？',
       })
         .then(async () => {
-          const { groupDeviceList = [] } = this.data.deviceInfo
           const index = groupDeviceList.findIndex((device) => device.deviceId === e.currentTarget.dataset.deviceId)
           groupDeviceList.splice(index, 1)
           const res = await updateGroup({
@@ -164,11 +166,18 @@ ComponentWithComputed({
       }
     },
     // 更新分组（增加灯）
-    addLightToGroup(e: { detail: Device.DeviceItem }) {
+    addLightToGroup(e: { detail: Device.DeviceItem[] }) {
       const { groupDeviceList = [] } = this.data.deviceInfo
-      updateGroup({
-        applianceGroupDtoList: [...groupDeviceList, e.detail],
-        groupId: this.data.groupId,
+
+      wx.navigateTo({
+        url: '/package-room-control/group/index',
+        success: (res) => {
+          res.eventChannel.emit('createGroup', {
+            lightList: [...groupDeviceList, ...e.detail].map((device) => device.deviceId),
+            groupId: this.data.groupId,
+            groupName: this.data.deviceName,
+          })
+        },
       })
 
       this.setData({
