@@ -236,12 +236,14 @@ ComponentWithComputed({
       })
     },
     handleCreateGroup() {
+      const lightList = this.data.editSelectList
       wx.navigateTo({
         url: '/package-room-control/group/index',
         success: (res) => {
-          res.eventChannel.emit('createGroup', { lightList: this.data.editSelectList })
+          res.eventChannel.emit('createGroup', { lightList })
         },
       })
+      this.triggerEvent('close')
     },
     handleClose() {
       this.setData({

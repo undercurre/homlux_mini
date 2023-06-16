@@ -11,7 +11,7 @@ ComponentWithComputed({
   data: {
     deviceList: [] as Device.DeviceItem[],
     status: 'processing' as StatusType,
-    groupName: '灯组',
+    groupName: '',
     groupId: '',
     presetNames: ['筒灯', '射灯', '吊灯', '灯组'],
   },
@@ -39,10 +39,16 @@ ComponentWithComputed({
 
         this.setData({
           deviceList,
+          groupId: data.groupId,
+          groupName: data.groupName ?? '灯组'
         })
 
-        // 开始创建分组
-        this.addGroup()
+        // 开始创建\更新分组
+        if (!this.data.groupId) {
+          this.addGroup()
+        } else {
+          this.updateGroup()
+        }
 
         // 监听创建结果
         emitter.on('group_device_result_status', (result) => {
@@ -96,6 +102,17 @@ ComponentWithComputed({
       }
     },
 
+    updateGroup() {
+      updateGroup({
+        applianceGroupDtoList: this.data.deviceList.map((device) => ({
+          deviceId: device.deviceId,
+          deviceType: device.deviceType,
+          proType: device.proType,
+        })),
+        groupId: this.data.groupId,
+      })
+    },
+
     retryGroup() {
       // 重新生成列表并设置状态为进行中
       const deviceList = this.data.deviceList.map((device) => ({
@@ -109,14 +126,7 @@ ComponentWithComputed({
       if (!this.data.groupId) {
         this.addGroup()
       } else {
-        updateGroup({
-          applianceGroupDtoList: this.data.deviceList.map((device) => ({
-            deviceId: device.deviceId,
-            deviceType: device.deviceType,
-            proType: device.proType,
-          })),
-          groupId: this.data.groupId,
-        })
+        this.updateGroup()
       }
     },
 
@@ -140,10 +150,7 @@ ComponentWithComputed({
 
     endGroup() {
       emitter.off('group_device_result_status')
-
-      wx.switchTab({
-        url: '/pages/index/index',
-      })
+      wx.navigateBack()
     },
 
     finishBtn() {
