@@ -40,20 +40,7 @@
     opacity: 0;
   }
 }
-/* @keyframes ripple-off {
-  0% {
-    transform: translateY(-500rpx) translateX(-50%);
-    opacity: 0.8;
-  }
-  80% {
-    transform: translateY(0) translateX(-50%);
-    opacity: 0.3;
-  }
-  100% {
-    transform: translateY(0) translateX(-50%);
-    opacity: 0;
-  }
-} */
+
 @keyframes ripple-off {
   0% {
     transform: translateY(250rpx) translateX(-50%);
