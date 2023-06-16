@@ -14,5 +14,4 @@
       <text slot="right-icon" class="text-label">操作步骤 ></text>
     </van-cell>
   </van-cell-group>
-
 </view>
