@@ -37,7 +37,8 @@
   </view>
 
   <select-card-popup show="{{showLinkPopup}}" title="关联智能开关" showCancel="{{false}}" list="{{list}}" selectList="{{linkSelectList}}" bind:select="handleLinkSelect" bind:close="handleLinkPopupClose" bind:confirm="handleLinkPopupConfirm"></select-card-popup>
-
-  <van-toast id="van-toast" />
-  <van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />
 </van-popup>
+
+<van-toast id="van-toast" />
+
+<van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />
