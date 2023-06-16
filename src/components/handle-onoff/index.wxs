@@ -1,0 +1,13 @@
+module.exports = {
+  showObserver: function (newValue, oldValue, ownerInstance, instance) {
+    if (newValue && newValue.show) {
+      ownerInstance.setTimeout(function () {
+        var wrapper = ownerInstance.selectComponent('.button').getBoundingClientRect()
+        var sliderWrapper = ownerInstance.selectComponent('.onoff-slider-wrapper')
+        sliderWrapper.setStyle({
+          width: wrapper.width + 'px',
+        })
+      }, 100)
+    }
+  },
+}
