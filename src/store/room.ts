@@ -3,6 +3,7 @@ import { getRoomList } from '../apis/index'
 import { PRO_TYPE } from '../config/index'
 import { deviceStore } from './device'
 import { homeStore } from './home'
+import { deviceCount } from '../utils/index'
 
 export const roomStore = observable({
   /**
@@ -37,29 +38,8 @@ export const roomStore = observable({
       })
     roomStore.roomList.forEach((roomInfo) => {
       const roomDeviceList = list[roomInfo.roomId]
-      // 统计多少灯打开（开关不关联灯或者关联场景都算进去）
-      let deviceLightOnNum = 0
-      // 统计多少个子设备
-      let subDeviceNum = 0
-      roomDeviceList?.forEach((device) => {
-        if (device.proType !== PRO_TYPE.gateway) {
-          subDeviceNum++
-        }
-        if (!device.onLineStatus) return
-        if (device.proType === PRO_TYPE.light && device.mzgdPropertyDTOList['1']?.OnOff) {
-          deviceLightOnNum++
-        } else if (device.proType === PRO_TYPE.switch) {
-          device.switchInfoDTOList.forEach((switchItem) => {
-            if (
-              device.mzgdPropertyDTOList && // 避免个别设备未上报数据导致的整个页面异常
-              device.mzgdPropertyDTOList[switchItem.switchId]?.OnOff &&
-              device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode === 0
-            ) {
-              deviceLightOnNum++
-            }
-          })
-        }
-      })
+      const { deviceLightOnNum, subDeviceNum } = deviceCount(roomDeviceList)
+
       roomInfo.deviceLightOnNum = deviceLightOnNum
       roomInfo.subDeviceNum = subDeviceNum
     })
@@ -85,29 +65,9 @@ export const roomStore = observable({
           // 只有开关，去掉默认的明亮、柔和
           roomInfo.roomSceneList = roomInfo.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
         }
-        // 统计多少灯打开（开关不关联灯或者关联场景都算进去）
-        let deviceLightOnNum = 0
-        // 统计多少个子设备
-        let subDeviceNum = 0
-        roomDeviceList?.forEach((device) => {
-          if (device.proType !== PRO_TYPE.gateway) {
-            subDeviceNum++
-          }
-          if (!device.onLineStatus) return
-          if (device.proType === PRO_TYPE.light && device.mzgdPropertyDTOList['1'].OnOff) {
-            deviceLightOnNum++
-          } else if (device.proType === PRO_TYPE.switch) {
-            device.switchInfoDTOList.forEach((switchItem) => {
-              if (
-                device.mzgdPropertyDTOList && // 避免个别设备未上报数据导致的整个页面异常
-                device.mzgdPropertyDTOList[switchItem.switchId]?.OnOff &&
-                !device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode
-              ) {
-                deviceLightOnNum++
-              }
-            })
-          }
-        })
+        
+        const { deviceLightOnNum, subDeviceNum } = deviceCount(roomDeviceList)
+
         roomInfo.roomInfo.deviceLightOnNum = deviceLightOnNum
         roomInfo.roomInfo.subDeviceNum = subDeviceNum
       })
