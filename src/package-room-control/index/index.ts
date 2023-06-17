@@ -424,7 +424,7 @@ ComponentWithComputed({
 
             // 如果mzgdPropertyDTOList、switchInfoDTOList字段存在，则覆盖更新
             if (device!.mzgdPropertyDTOList) {
-              const eq = originDevice.proType === PRO_TYPE.light ? 1 : originDevice.uniId.split(':')[1]
+              const eq = originDevice.proType === PRO_TYPE.switch ? originDevice.uniId.split(':')[1] : 1
               const newVal = {
                 ...originDevice.mzgdPropertyDTOList[eq],
                 ...device?.mzgdPropertyDTOList[eq],
@@ -847,7 +847,7 @@ ComponentWithComputed({
       const ep = device.switchInfoDTOList ? device.switchInfoDTOList[0].switchId : 1
 
       // 若面板关联场景
-      if (e.detail.proType === PRO_TYPE.switch && device.mzgdPropertyDTOList[ep].ButtonMode === 2) {
+      if (device.proType === PRO_TYPE.switch && device.mzgdPropertyDTOList[ep].ButtonMode === 2) {
         const sceneId = deviceStore.switchSceneConditionMap[device.uniId]
         if (sceneId) {
           execScene(sceneId)
@@ -855,6 +855,28 @@ ComponentWithComputed({
         return
       }
 
+      if (device.proType === PRO_TYPE.curtain) {
+        const OldPosition = device.mzgdPropertyDTOList[1].curtain_position
+        const NewPosition = Number(OldPosition) > 0 ? '0' : '100'
+        const NewStatus = Number(OldPosition) > 0 ? 'close' : 'open'
+  
+        // 即时改变视图，提升操作手感
+        device.mzgdPropertyDTOList[1].curtain_position = NewPosition
+        this.updateDeviceList(device)
+        const res = await sendDevice({
+          proType: device.proType,
+          deviceType: device.deviceType,
+          deviceId: device.deviceId,
+          property: { curtain_position: NewPosition, curtain_status: NewStatus },
+        })
+
+        if (!res.success) {
+          Toast('控制失败')
+        }
+        return
+      }
+
+      // 灯和面板
       const OldOnOff = device.mzgdPropertyDTOList[ep].OnOff
       const newOnOff = OldOnOff ? 0 : 1
 
@@ -884,9 +906,7 @@ ComponentWithComputed({
       }
 
       // 首页需要更新灯光打开个数
-      if ((device.proType = PRO_TYPE.light)) {
-        homeStore.updateCurrentHomeDetail()
-      }
+      homeStore.updateCurrentHomeDetail()
     },
 
     handlePopMove(e: { detail: 'up' | 'down' }) {

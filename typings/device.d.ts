@@ -14,6 +14,9 @@ declare namespace Device {
     }
     ButtonMode?: number
     ButtonScene?: number
+    curtain_position?: string
+    curtain_status?: string
+    curtain_direction?: 'positive' | 'negative'
   }
   /** 设备列表项 */
   interface DeviceItem {

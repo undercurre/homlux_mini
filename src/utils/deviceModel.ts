@@ -32,6 +32,10 @@ export function transferDeviceProperty(proType: string, properties: IAnyObject) 
       result.Level = properties.Level ?? Math.round((properties.brightness / 255) * 100)
     }
   }
+  // 目前只有WIFI窗帘一种，全部直接显示即可
+  else if (proType === PRO_TYPE.curtain) {
+    return properties
+  }
 
   return result
 }

@@ -139,6 +139,6 @@ export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
   return {
     deviceLightOnNum,
     subDeviceNum,
-    lightNum
+    lightNum,
   }
 }

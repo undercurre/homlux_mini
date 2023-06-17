@@ -170,6 +170,17 @@ export async function sendDevice(
         }
 
         promise = controlDevice(params, option)
+      } else if (data.proType === PRO_TYPE.curtain) {
+        const downData = property
+
+        params = {
+          deviceId: data.deviceId,
+          deviceType: data.deviceType,
+          method: 'wifiCurtainControl',
+          inputData: [downData],
+        }
+
+        promise = controlDevice(params, option)
       }
 
       break
