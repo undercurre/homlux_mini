@@ -38,10 +38,11 @@ export const roomStore = observable({
       })
     roomStore.roomList.forEach((roomInfo) => {
       const roomDeviceList = list[roomInfo.roomId]
-      const { deviceLightOnNum, subDeviceNum } = deviceCount(roomDeviceList)
+      const { deviceLightOnNum, subDeviceNum, lightNum } = deviceCount(roomDeviceList)
 
       roomInfo.deviceLightOnNum = deviceLightOnNum
       roomInfo.subDeviceNum = subDeviceNum
+      roomInfo.lightNum = lightNum
     })
 
     runInAction(() => {
@@ -65,11 +66,12 @@ export const roomStore = observable({
           // 只有开关，去掉默认的明亮、柔和
           roomInfo.roomSceneList = roomInfo.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
         }
-        
-        const { deviceLightOnNum, subDeviceNum } = deviceCount(roomDeviceList)
+
+        const { deviceLightOnNum, subDeviceNum, lightNum } = deviceCount(roomDeviceList)
 
         roomInfo.roomInfo.deviceLightOnNum = deviceLightOnNum
         roomInfo.roomInfo.subDeviceNum = subDeviceNum
+        roomInfo.roomInfo.lightNum = lightNum
       })
 
       runInAction(() => {

@@ -1,7 +1,13 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
-import { updateScene, getRelLampInfo, getRelDeviceInfo, delLampAndSwitchAssociated, delSwitchAndSwitchAssociated } from '../../../../apis/index'
+import {
+  updateScene,
+  getRelLampInfo,
+  getRelDeviceInfo,
+  delLampAndSwitchAssociated,
+  delSwitchAndSwitchAssociated,
+} from '../../../../apis/index'
 import { PRO_TYPE, sceneList } from '../../../../config/index'
 import { deviceStore, homeStore, roomStore, sceneStore } from '../../../../store/index'
 import { storage, toWifiProperty } from '../../../../utils/index'

@@ -1,5 +1,8 @@
 declare namespace Device {
-  // 设备属性
+  /**
+   * @description 设备属性
+   * @param ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
+   */
   interface mzgdPropertyDTO {
     ColorTemp?: number // 色温
     Level?: number // 亮度
@@ -9,7 +12,7 @@ declare namespace Device {
       maxColorTemp: number
       minColorTemp: number
     }
-    ButtonMode?: number // 0 普通面板或者关联开关 2 场景 3 关联灯
+    ButtonMode?: number
     ButtonScene?: number
   }
   /** 设备列表项 */

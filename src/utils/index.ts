@@ -101,6 +101,7 @@ export function _get(obj: object, path: string, defaultVal = undefined) {
 
 /**
  * @description 设备数量统计
+ * @param ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
  * @returns {
  *  deviceLightOnNum: 统计多少灯打开（开关不关联灯或者关联场景都算进去）
  *  subDeviceNum: 子设备数; 统计多少个子设备
@@ -110,10 +111,14 @@ export function _get(obj: object, path: string, defaultVal = undefined) {
 export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
   let deviceLightOnNum = 0
   let subDeviceNum = 0
-  
+  let lightNum = 0
+
   list?.forEach((device) => {
     if (device.proType !== PRO_TYPE.gateway) {
       subDeviceNum++
+    }
+    if (device.proType === PRO_TYPE.light || device.proType === PRO_TYPE.switch) {
+      lightNum++
     }
     if (!device.onLineStatus) return
     if (device.proType === PRO_TYPE.light && device.mzgdPropertyDTOList['1'].OnOff) {
@@ -133,6 +138,7 @@ export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
 
   return {
     deviceLightOnNum,
-    subDeviceNum
+    subDeviceNum,
+    lightNum
   }
 }

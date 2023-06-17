@@ -49,7 +49,7 @@ ComponentWithComputed({
       if (data.sceneList && data.deviceListComputed) {
         return data.roomInfo.deviceLightOnNum
           ? data.roomInfo.deviceLightOnNum + '盏灯亮起'
-          : data.roomInfo.subDeviceNum > 0
+          : data.roomInfo.lightNum > 0
           ? '灯全部关闭'
           : ''
       }
