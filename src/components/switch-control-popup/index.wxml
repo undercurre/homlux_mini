@@ -1,16 +1,13 @@
-<import src="/commons/templates/popup.wxml" />
 <van-popup show="{{ show }}" round position="bottom" bind:close="handleClose" closeable>
-  <view class="w-750rpx relative flex flex-col items-center">
-    <template is="title" data="{{title: title}}" />
-    <view class="flex-col-center mt-62rpx relative">
-      <view bindtap="handleOnOffChange" data-value="{{1}}" class="relative box-border w-686rpx h-96rpx rounded-32rpx unselect-card">
-        <text class="absolute-center text-32rpx z-2 {{OnOff?'text-blue':'text-black-2a'}}">开灯</text>
-      </view>
-      <view bindtap="handleOnOffChange" data-value="{{0}}" class="relative mt-24rpx box-border w-686rpx h-96rpx rounded-32rpx unselect-card">
-        <text class="absolute-center text-32rpx z-2 {{OnOff?'text-black-2a':'text-blue'}}">关灯</text>
-      </view>
-      <view wx:if="{{show}}" id="slider" class="slider z-1" style="top: {{top}}rpx;"></view>
+  <view class="w-750rpx relative flex flex-col">
+    <view class="mt-44rpx text-center">
+      <text class="h-50rpx text-36rpx text-black-2a font-medium">{{title}}</text>
     </view>
+
+    <view class="mt-64rpx px-32rpx">
+      <handle-onoff show="{{show}}" vertical="{{true}}" OnOff="{{OnOff === 1}}" bind:OnOffChange="handleOnOffChange"></handle-onoff>
+    </view>
+
     <view class="h-96rpx"></view>
   </view>
 </van-popup>

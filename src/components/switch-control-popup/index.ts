@@ -86,28 +86,14 @@ ComponentWithComputed({
 
       this.triggerEvent('confirm', { OnOff: this.data.OnOff })
     },
-    handleOnOffChange(e: WechatMiniprogram.TouchEvent) {
-      if (e.currentTarget.dataset.value === this.data.OnOff) {
-        return
-      }
+    handleOnOffChange(e: WechatMiniprogram.CustomEvent) {
+      const OnOff = e.detail ? 1 : 0
+
       this.setData({
-        OnOff: e.currentTarget.dataset.value,
+        OnOff,
       })
 
       this.handleConfirm()
-
-      this.animate(
-        '#slider',
-        [
-          {
-            top: this.data.OnOff ? '120rpx' : '0',
-          },
-          {
-            top: this.data.OnOff ? '0' : '120rpx',
-          },
-        ],
-        100,
-      )
     },
   },
 })

@@ -1,6 +1,7 @@
 {
   "component": true,
   "usingComponents": {
-    "mz-slider": "/components/mz-slider/index"
+    "mz-slider": "/components/mz-slider/index",
+    "handle-onoff": "/components/handle-onoff/index"
   }
 }

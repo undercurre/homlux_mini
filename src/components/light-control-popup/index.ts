@@ -140,12 +140,11 @@ ComponentWithComputed({
             },
       )
     },
-    handleOnOffChange(e: WechatMiniprogram.TouchEvent) {
-      if (e.currentTarget.dataset.value === this.data.OnOff) {
-        return
-      }
+    handleOnOffChange(e: WechatMiniprogram.CustomEvent) {
+      const OnOff = e.detail ? 1 : 0
+
       this.setData({
-        OnOff: e.currentTarget.dataset.value,
+        OnOff: OnOff
       })
 
       if (this.data.isControl) {
@@ -153,18 +152,6 @@ ComponentWithComputed({
       }
 
       this.handleConfirm()
-      this.animate(
-        '#slider',
-        [
-          {
-            left: this.data.OnOff ? '350rpx' : '0',
-          },
-          {
-            left: this.data.OnOff ? '0' : '350rpx',
-          },
-        ],
-        100,
-      )
     },
     handleLevelDrag(e: { detail: { value: number } }) {
       this.setData({

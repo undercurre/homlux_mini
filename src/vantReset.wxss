@@ -42,7 +42,7 @@ page {
   /* cell end */
 
   /* toast start */
-  --toast-background-color: rgba(30, 44, 70, 0.6);
+  --toast-background-color: rgba(0, 0, 0, 0.72);
   --toast-border-radius: 46rpx;
   --toast-font-size: 32rpx;
   --toast-line-height: 44rpx;
@@ -126,6 +126,7 @@ page {
 .van-dialog__header {
   font-size: 36rpx;
 }
+
 .van-dialog__message {
   padding: 80rpx 80rpx 90rpx !important;
 }
@@ -159,20 +160,25 @@ page {
 .van-action-sheet__item {
   padding: 32rpx !important;
 }
+
 /* action-sheet end */
 
 /* switch start */
 .van-switch {
   border: none !important;
 }
+
 .van-switch__node {
   left: 7.7rpx !important;
   top: 9rpx !important;
 }
+
 .van-switch__node {
   box-shadow: none !important;
 }
+
 .van-switch--on .van-switch__node {
   transform: translateX(47rpx) !important;
 }
+
 /* switch end */

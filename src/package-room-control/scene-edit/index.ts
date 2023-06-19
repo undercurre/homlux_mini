@@ -566,7 +566,12 @@ ComponentWithComputed({
       const device = deviceStore.allRoomDeviceFlattenMap[actionItem.uniId]
 
       if (!_cacheDeviceMap[actionItem.uniId]) {
-        const oldProperty = device.property
+        const oldProperty = {
+          ...device.property
+        }
+
+        delete oldProperty.minColorTemp
+        delete oldProperty.maxColorTemp
 
         _cacheDeviceMap[actionItem.uniId] = {
           gatewayId: device.gatewayId,
@@ -574,9 +579,7 @@ ComponentWithComputed({
           proType: device.proType,
           deviceType: device.deviceType,
           ep: actionItem.value.ep,
-          property: {
-            ...oldProperty,
-          },
+          property: oldProperty,
         }
       }
 

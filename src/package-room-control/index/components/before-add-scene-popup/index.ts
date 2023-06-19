@@ -155,15 +155,20 @@ ComponentWithComputed({
       const previewData = e.detail
 
       if (!_cacheDeviceMap[deviceAction.uniId]) {
+        const property = {
+          ...deviceAction.value,
+        }
+        
+        delete property.minColorTemp
+        delete property.maxColorTemp
+
         _cacheDeviceMap[deviceAction.uniId] = {
           gatewayId: device.gatewayId,
           deviceId: device.deviceId,
           proType: device.proType,
           deviceType: device.deviceType,
           ep: deviceAction.value.ep,
-          property: {
-            ...deviceAction.value,
-          },
+          property,
         }
       }
 
