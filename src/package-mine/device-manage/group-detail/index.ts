@@ -45,7 +45,7 @@ ComponentWithComputed({
     },
     canAddDevice(data) {
       return data.canEditDevice && data.lightListToAdd?.length
-    }
+    },
   },
 
   methods: {

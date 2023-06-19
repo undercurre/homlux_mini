@@ -856,18 +856,20 @@ ComponentWithComputed({
       }
 
       if (device.proType === PRO_TYPE.curtain) {
+        const isPositive = device.mzgdPropertyDTOList['1'].curtain_direction === 'positive'
         const OldPosition = device.mzgdPropertyDTOList[1].curtain_position
-        const NewPosition = Number(OldPosition) > 0 ? '0' : '100'
-        const NewStatus = Number(OldPosition) > 0 ? 'close' : 'open'
+        const NewPosition = isPositive 
+          ? (Number(OldPosition) > 0 ? '0' : '100')
+          : (Number(OldPosition) < 100 ? '100' : '0')
 
         // 即时改变视图，提升操作手感
-        device.mzgdPropertyDTOList[1].curtain_position = NewPosition
-        this.updateDeviceList(device)
+        // device.mzgdPropertyDTOList[1].curtain_position = NewPosition
+        // this.updateDeviceList(device)
         const res = await sendDevice({
           proType: device.proType,
           deviceType: device.deviceType,
           deviceId: device.deviceId,
-          property: { curtain_position: NewPosition, curtain_status: NewStatus },
+          property: { curtain_position: NewPosition },
         })
 
         if (!res.success) {

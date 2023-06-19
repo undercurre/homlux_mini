@@ -1,6 +1,9 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { proName, PRO_TYPE } from '../../config/index'
+
+const CONTROL_INTERVAL = 5000 // 开关操作间隔时间
 let throttleTimer = 0
+
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
@@ -55,6 +58,7 @@ ComponentWithComputed({
     ripple: false,
     onOff: false, // true: on false: off
     showDeviceOffline: false,
+    isProcessing: false
   },
 
   computed: {
@@ -69,9 +73,17 @@ ComponentWithComputed({
     controlBtnPic(data) {
       // 窗帘，位置大于0即为开启
       if (data.deviceInfo.proType === PRO_TYPE.curtain) {
-        return data.deviceInfo.mzgdPropertyDTOList['1'].curtain_position === '0'
-          ? '/assets/img/base/curtain-close.png'
-          : '/assets/img/base/curtain-open.png'
+        const pos = data.deviceInfo.mzgdPropertyDTOList['1'].curtain_position
+        const isPositive = data.deviceInfo.mzgdPropertyDTOList['1'].curtain_direction === 'positive'
+        const isClosed = isPositive ? pos === '0' : pos === '100'
+        if (data.isProcessing) {
+          return isClosed
+          ? '/assets/img/base/curtain-opening.png'
+          : '/assets/img/base/curtain-closing.png'
+        }
+        return isClosed
+          ? '/assets/img/base/curtain-open.png'
+          : '/assets/img/base/curtain-close.png'
       }
       // 灯及灯组
       else if (data.deviceInfo.proType === PRO_TYPE.light) {
@@ -185,7 +197,15 @@ ComponentWithComputed({
               if (this.data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
                 throttleTimer = setTimeout(() => {
                   throttleTimer = 0
-                }, 550)
+                  this.setData({
+                    isProcessing: false
+                  })  
+                }, CONTROL_INTERVAL)
+
+                this.setData({
+                  isProcessing: true
+                })
+                
                 return
               }
             }
@@ -197,8 +217,12 @@ ComponentWithComputed({
               throttleTimer = 0
               this.setData({
                 ripple: false,
+                isProcessing: false
               })
-            }, 550)
+            }, CONTROL_INTERVAL)
+            this.setData({
+              isProcessing: true
+            })
           } else {
             this.triggerEvent('offlineTap', {
               ...this.data.deviceInfo,
