@@ -16,7 +16,7 @@
   <view class="flex flex-1 flex-col w-full">
     <view class="flex flex-row justify-between px-48rpx mt-24rpx">
       <text class="text-32rpx">灯具·{{deviceInfo.groupDeviceList.length}}</text>
-      <view wx:if="{{isCreator || isAdmin}}" catchtap="handleAddLightPopup">
+      <view wx:if="{{canAddDevice}}" catchtap="handleAddLightPopup">
         <image src="/assets/img/home/add.png" class="w-48rpx h-48rpx"></image>
       </view>
     </view>

@@ -35,7 +35,7 @@ ComponentWithComputed({
           ...deviceStore.deviceMap[deviceId],
           status: 'processing',
         }))
-        console.log(data.lightList, deviceList)
+        console.log(data.lightList, deviceList, deviceStore.deviceMap)
 
         this.setData({
           deviceList,
