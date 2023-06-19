@@ -859,7 +859,7 @@ ComponentWithComputed({
         const OldPosition = device.mzgdPropertyDTOList[1].curtain_position
         const NewPosition = Number(OldPosition) > 0 ? '0' : '100'
         const NewStatus = Number(OldPosition) > 0 ? 'close' : 'open'
-  
+
         // 即时改变视图，提升操作手感
         device.mzgdPropertyDTOList[1].curtain_position = NewPosition
         this.updateDeviceList(device)
