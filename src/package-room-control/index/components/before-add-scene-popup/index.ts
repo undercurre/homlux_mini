@@ -158,7 +158,7 @@ ComponentWithComputed({
         const property = {
           ...deviceAction.value,
         }
-        
+
         delete property.minColorTemp
         delete property.maxColorTemp
 

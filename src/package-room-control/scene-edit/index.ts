@@ -567,7 +567,7 @@ ComponentWithComputed({
 
       if (!_cacheDeviceMap[actionItem.uniId]) {
         const oldProperty = {
-          ...device.property
+          ...device.property,
         }
 
         delete oldProperty.minColorTemp

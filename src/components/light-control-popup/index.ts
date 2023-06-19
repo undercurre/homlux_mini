@@ -144,7 +144,7 @@ ComponentWithComputed({
       const OnOff = e.detail ? 1 : 0
 
       this.setData({
-        OnOff: OnOff
+        OnOff: OnOff,
       })
 
       if (this.data.isControl) {
