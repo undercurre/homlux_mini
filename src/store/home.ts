@@ -183,6 +183,7 @@ export const homeStore = observable({
           sceneList: room.roomSceneList,
           deviceNum: room.roomInfo.deviceNum,
           subDeviceNum: room.roomInfo.subDeviceNum,
+          lightNum: room.roomInfo.lightNum,
         }))
       })
     }

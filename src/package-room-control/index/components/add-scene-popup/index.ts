@@ -212,17 +212,24 @@ ComponentWithComputed({
           } else {
             switchDeviceMap[deviceId] = [action.value]
           }
-        } else if (deviceMap[action.uniId].proType === PRO_TYPE.light) {
+        } else {
           let property = action.value
 
           if (device.deviceType === 3) {
             property = toWifiProperty(device.proType, property)
           }
+
+          if (device.proType === PRO_TYPE.curtain) {
+            property = {
+              curtain_position: property.curtain_position,
+            }
+          }
+
           newSceneData.deviceActions.push({
             controlAction: [property],
             deviceId: action.uniId,
-            deviceType: deviceMap[action.uniId].deviceType,
-            proType: deviceMap[action.uniId].proType,
+            deviceType: device.deviceType,
+            proType: device.proType,
           })
         }
       })

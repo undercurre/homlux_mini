@@ -32,15 +32,17 @@
 
 @keyframes effect {
   0% {
-    opacity: 0;
+    color: #2b4067;
   }
   30% {
-    opacity: 1;
+    color: #fff;
+    background-color: #468cfb;
   }
   40% {
-    opacity: 1;
+    color: #fff;
+    background-color: #468cfb;
   }
   100% {
-    opacity: 0;
+    color: #2b4067;
   }
 }

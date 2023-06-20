@@ -181,9 +181,12 @@ ComponentWithComputed({
       if (!this.data.wifiInfo.SSID) {
         wx.getConnectedWifi({
           success: (res) => {
-            this.setData({
-              'wifiInfo.SSID': res.wifi.SSID,
-            })
+            // 过滤网关热点
+            if (!res.wifi.SSID?.includes('midea_16')) {
+              this.setData({
+                'wifiInfo.SSID': res.wifi.SSID,
+              })
+            }
           },
         })
       }

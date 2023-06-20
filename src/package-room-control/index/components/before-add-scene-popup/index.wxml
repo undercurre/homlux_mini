@@ -30,9 +30,11 @@
     <view style="height: calc(96rpx - env(safe-area-inset-bottom))"></view>
   </view>
 
-  <light-control-popup z-index="{{101}}" show="{{showSceneEditLightPopup}}" title="{{actionEditTitle}}" lightInfo="{{sceneLightEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleSceneLightEditPopupClose"></light-control-popup>
+  <light-control-popup show="{{popupType === '0x13'}}" title="{{actionEditTitle}}" lightInfo="{{sceneEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleEditPopupClose"></light-control-popup>
 
-  <switch-control-popup z-index="{{101}}" show="{{showSceneEditSwitchPopup}}" title="{{actionEditTitle}}" switchInfo="{{sceneSwitchEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleSceneSwitchEditPopupClose"></switch-control-popup>
+  <switch-control-popup show="{{popupType === '0x21'}}" title="{{actionEditTitle}}" switchInfo="{{sceneEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleEditPopupClose"></switch-control-popup>
+
+  <curtain-control-popup show="{{popupType === '0x14'}}" title="{{actionEditTitle}}" deviceInfo="{{sceneEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleEditPopupClose"></curtain-control-popup>
 </van-popup>
 
 <van-toast id="van-toast" />

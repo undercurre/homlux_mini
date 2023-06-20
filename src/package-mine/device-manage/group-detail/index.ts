@@ -43,6 +43,9 @@ ComponentWithComputed({
           device.proType === PRO_TYPE.light && device.deviceType !== 4 && !lightsInGroup.includes(device.deviceId),
       )
     },
+    canAddDevice(data) {
+      return data.canEditDevice && data.lightListToAdd?.length
+    },
   },
 
   methods: {

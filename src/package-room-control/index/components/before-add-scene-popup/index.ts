@@ -35,10 +35,8 @@ ComponentWithComputed({
     editIndex: 0,
     contentHeight: 0,
     actionEditTitle: '',
-    showSceneEditLightPopup: false,
-    showSceneEditSwitchPopup: false,
-    sceneLightEditInfo: {} as IAnyObject,
-    sceneSwitchEditInfo: {} as IAnyObject,
+    popupType: '', // 编辑的设备类型
+    sceneEditInfo: {} as IAnyObject,
     _cacheDeviceMap: {} as IAnyObject, // 缓存设备设置预览前的设备状态，用于退出时恢复
   },
 
@@ -98,48 +96,25 @@ ComponentWithComputed({
       const deviceAction = sceneStore.addSceneActions[e.currentTarget.dataset.index]
       const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
       const device = allRoomDeviceMap[deviceAction.uniId]
-      if (deviceAction.proType === PRO_TYPE.light) {
-        // 目前仅子设备单控支持闪烁指令
-        deviceAction.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId })
 
-        this.setData({
-          actionEditTitle: deviceAction.name,
-          sceneLightEditInfo: {
-            ...deviceAction.value,
-            deviceType: deviceAction.deviceType,
-            gatewayId: device.gatewayId,
-            deviceId: device.deviceId,
-          },
-          showSceneEditLightPopup: true,
-          editIndex: e.currentTarget.dataset.index,
-        })
-      } else if (deviceAction.proType === PRO_TYPE.switch) {
-        findDevice({
-          gatewayId: device.gatewayId,
-          devId: device.deviceId,
-          ep: Number(device.switchInfoDTOList[0].switchId),
-        })
-        this.setData({
-          actionEditTitle: deviceAction.name,
-          sceneSwitchEditInfo: {
-            ...deviceAction.value,
-            deviceType: deviceAction.deviceType,
-            gatewayId: device.gatewayId,
-            deviceId: device.deviceId,
-          },
-          showSceneEditSwitchPopup: true,
-          editIndex: e.currentTarget.dataset.index,
-        })
-      }
-    },
-    handleSceneLightEditPopupClose() {
+      // 目前仅子设备单控支持闪烁指令
+      deviceAction.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId })
+
       this.setData({
-        showSceneEditLightPopup: false,
+        actionEditTitle: deviceAction.name,
+        sceneEditInfo: {
+          ...deviceAction.value,
+          deviceType: deviceAction.deviceType,
+          gatewayId: device.gatewayId,
+          deviceId: device.deviceId,
+        },
+        popupType: deviceAction.proType,
+        editIndex: e.currentTarget.dataset.index,
       })
     },
-    handleSceneSwitchEditPopupClose() {
+    handleEditPopupClose() {
       this.setData({
-        showSceneEditSwitchPopup: false,
+        popupType: '',
       })
     },
 
@@ -155,15 +130,24 @@ ComponentWithComputed({
       const previewData = e.detail
 
       if (!_cacheDeviceMap[deviceAction.uniId]) {
+        let property = {
+          ...deviceAction.value,
+        }
+
+        delete property.minColorTemp
+        delete property.maxColorTemp
+
+        if (deviceAction.proType === PRO_TYPE.curtain) {
+          property = { curtain_position: deviceAction.value.curtain_position }
+        }
+
         _cacheDeviceMap[deviceAction.uniId] = {
           gatewayId: device.gatewayId,
           deviceId: device.deviceId,
           proType: device.proType,
           deviceType: device.deviceType,
           ep: deviceAction.value.ep,
-          property: {
-            ...deviceAction.value,
-          },
+          property,
         }
       }
 

@@ -1,4 +1,6 @@
 {
   "component": true,
-  "usingComponents": {}
+  "usingComponents": {
+    "handle-onoff": "/components/handle-onoff/index"
+  }
 }

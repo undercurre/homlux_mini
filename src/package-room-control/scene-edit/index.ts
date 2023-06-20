@@ -48,8 +48,6 @@ ComponentWithComputed({
     showLinkPopup: false,
     /** 将当前场景里多路的action拍扁 */
     sceneDeviceActionsFlatten: [] as Device.ActionItem[],
-    /** 开关是否被全家庭场景其中之一收藏 */
-    sceneDeviceActionsFlattenMap: {} as Record<string, boolean>,
     /** 关联弹窗选中的开关确认后的开关uniId */
     linkSwitch: '',
     /** 关联选中的开关的已有关联绑定信息 */
@@ -62,10 +60,8 @@ ComponentWithComputed({
     /** 是否修改过action */
     _isEditAction: false,
     sceneEditTitle: '',
-    showSceneEditLightPopup: false,
-    showSceneEditSwitchPopup: false,
-    sceneLightEditInfo: {} as IAnyObject,
-    sceneSwitchEditInfo: {} as IAnyObject,
+    showEditPopup: '', // 要展示的编辑弹窗类型
+    sceneEditInfo: {} as IAnyObject,
   },
 
   computed: {
@@ -95,7 +91,6 @@ ComponentWithComputed({
 
       const deviceMap = deviceStore.allRoomDeviceMap
       const sceneDeviceActionsFlatten = [] as Device.ActionItem[]
-      const sceneDeviceActionsFlattenMap = {} as Record<string, boolean>
 
       const sceneInfo = sceneStore.sceneList.find((item) => item.sceneId === pageParams.sceneId) as Scene.SceneItem
 
@@ -114,7 +109,6 @@ ComponentWithComputed({
         if (device.proType === PRO_TYPE.switch) {
           // 多路开关
           actions.controlAction.forEach((action) => {
-            sceneDeviceActionsFlattenMap[`${actions.deviceId}:${action.ep}`] = true
             // 将当前选中编辑的场景，拍扁action加入list
             sceneDeviceActionsFlatten.push({
               uniId: `${actions.deviceId}:${action.ep}`,
@@ -126,11 +120,14 @@ ComponentWithComputed({
               value: action,
             })
           })
-        } else if (device.proType === PRO_TYPE.light) {
-          const property = transferDeviceProperty(actions.proType, {
-            ...actions.controlAction[0],
-            colorTempRange: device.mzgdPropertyDTOList[1].colorTempRange,
-          })
+        } else {
+          let property = actions.controlAction[0]
+
+          if (actions.proType === PRO_TYPE.light) {
+            property.colorTempRange = device.mzgdPropertyDTOList[1].colorTempRange
+          }
+
+          property = transferDeviceProperty(actions.proType, property)
           // 灯光设备
           const action = {
             uniId: `${actions.deviceId}`,
@@ -143,8 +140,6 @@ ComponentWithComputed({
           }
 
           sceneDeviceActionsFlatten.push(action)
-
-          sceneDeviceActionsFlattenMap[`${actions.deviceId}`] = true
         }
       })
 
@@ -162,7 +157,6 @@ ComponentWithComputed({
               sceneIcon: sceneInfo.sceneIcon,
               switchList,
               sceneDeviceActionsFlatten,
-              sceneDeviceActionsFlattenMap,
               isDefault: sceneInfo.isDefault === '1',
               linkSwitch,
               linkSwitchSelect: linkSwitch ? [linkSwitch] : [],
@@ -205,9 +199,7 @@ ComponentWithComputed({
         }
       })
     },
-    handleActionDelete(e: WechatMiniprogram.TouchEvent) {
-      const item = this.data.sceneDeviceActionsFlatten.splice(e.currentTarget.dataset.index, 1)
-      this.data.sceneDeviceActionsFlattenMap[item[0].uniId] = false
+    handleActionDelete() {
       this.setData({
         sceneDeviceActionsFlatten: [...this.data.sceneDeviceActionsFlatten],
         _isEditAction: true,
@@ -470,20 +462,6 @@ ComponentWithComputed({
       this.data._linkSwitchRefInfo.lampRelList = lampRelList
       this.data._linkSwitchRefInfo.switchRelList = switchRelList
 
-      // 该弹窗逻辑暂不完善，无完美解决方案，暂时屏蔽
-      // if (this.data.sceneDeviceActionsFlattenMap[switchUnid]) {
-      //   const dialigRes = await Dialog.confirm({
-      //     message: '此开关已作为其他场景的执行动作，确定变更？',
-      //     cancelButtonText: '取消',
-      //     confirmButtonText: '变更',
-      //     zIndex: 2000,
-      //   })
-      //     .then(() => true)
-      //     .catch(() => false)
-
-      //   if (!dialigRes) return
-      // }
-
       this.setData({
         linkSwitchSelect: [switchUnid],
       })
@@ -516,48 +494,29 @@ ComponentWithComputed({
       const deviceAction = this.data.sceneDeviceActionsFlatten[index]
       const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
       const device = allRoomDeviceMap[deviceAction.uniId]
+      let ep = 1
 
-      if (deviceAction.proType === PRO_TYPE.light) {
-        device.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId })
-
-        this.setData({
-          sceneEditTitle: deviceAction.name,
-          sceneLightEditInfo: {
-            ...deviceAction.value,
-            deviceType: device.deviceType,
-            gatewayId: device.gatewayId,
-            deviceId: device.deviceId,
-          },
-          showSceneEditLightPopup: true,
-          editIndex: index,
-        })
-      } else if (deviceAction.proType === PRO_TYPE.switch) {
-        findDevice({
-          gatewayId: device.gatewayId,
-          devId: device.deviceId,
-          ep: Number(device.switchInfoDTOList[0].switchId),
-        })
-        this.setData({
-          sceneEditTitle: deviceAction.name,
-          sceneSwitchEditInfo: {
-            ...deviceAction.value,
-            deviceType: device.deviceType,
-            gatewayId: device.gatewayId,
-            deviceId: device.deviceId,
-          },
-          showSceneEditSwitchPopup: true,
-          editIndex: index,
-        })
+      if (deviceAction.proType === PRO_TYPE.switch) {
+        ep = Number(device.switchInfoDTOList[0].switchId)
       }
-    },
-    handleSceneLightEditPopupClose() {
+
+      device.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, ep })
+
       this.setData({
-        showSceneEditLightPopup: false,
+        sceneEditTitle: deviceAction.name,
+        sceneEditInfo: {
+          ...deviceAction.value,
+          deviceType: device.deviceType,
+          gatewayId: device.gatewayId,
+          deviceId: device.deviceId,
+        },
+        showEditPopup: device.proType,
+        editIndex: index,
       })
     },
-    handleSceneSwitchEditPopupClose() {
+    handleEditPopupClose() {
       this.setData({
-        showSceneEditSwitchPopup: false,
+        showEditPopup: '',
       })
     },
     handleSceneEditConfirm(e: { detail: IAnyObject }) {
@@ -566,7 +525,16 @@ ComponentWithComputed({
       const device = deviceStore.allRoomDeviceFlattenMap[actionItem.uniId]
 
       if (!_cacheDeviceMap[actionItem.uniId]) {
-        const oldProperty = device.property
+        let oldProperty = {
+          ...device.property,
+        }
+
+        delete oldProperty.minColorTemp
+        delete oldProperty.maxColorTemp
+
+        if (oldProperty.proType === PRO_TYPE.curtain) {
+          oldProperty = { curtain_position: oldProperty.curtain_position }
+        }
 
         _cacheDeviceMap[actionItem.uniId] = {
           gatewayId: device.gatewayId,
@@ -574,9 +542,7 @@ ComponentWithComputed({
           proType: device.proType,
           deviceType: device.deviceType,
           ep: actionItem.value.ep,
-          property: {
-            ...oldProperty,
-          },
+          property: oldProperty,
         }
       }
 
