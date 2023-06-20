@@ -94,6 +94,7 @@ ComponentWithComputed({
     editSelectList: [] as string[], // 编辑状态下，已勾选的设备id列表
     editSelectMode: false, // 是否编辑状态
     lightStatus: {} as Record<string, number>, // 当前选择的灯具的状态
+    curtainStatus: {} as Record<string, string>, // 当前选择的窗帘的状态
     checkedType: [] as string[], // 已选择设备的类型
     deviceListInited: false, // 设备列表是否初始化完毕
     isMoving: false, // 是否正在拖拽中
@@ -789,6 +790,9 @@ ComponentWithComputed({
       const isChecked = this.data.checkedList.includes(uniId) // 点击卡片前，卡片是否选中
       const toCheck = !isChecked // 本次点击需执行的选中状态
 
+      // 选择时的卡片样式渲染
+      const diffData = {} as IAnyObject
+
       // 取消选择
       if (toCheck && this.data.checkedList.length) {
         const oldCheckedId = this.data.checkedList[0]
@@ -803,12 +807,19 @@ ComponentWithComputed({
       this.data.checkedList = toCheck ? [uniId] : []
 
       // 选择灯卡片时，面板状态的处理
-      const lightStatus = { Level: 0, ColorTemp: 0, OnOff: 0 }
-      if (toCheck && e.detail.proType === PRO_TYPE.light) {
+      if (toCheck) {
         const prop = e.detail.mzgdPropertyDTOList['1']
-        lightStatus.Level = prop.Level!
-        lightStatus.ColorTemp = prop.ColorTemp!
-        lightStatus.OnOff = prop.OnOff!
+        if (e.detail.proType === PRO_TYPE.light) {
+          diffData.lightStatus = {
+            Level: prop.Level,
+            ColorTemp: prop.ColorTemp,
+            OnOff: prop.OnOff,
+          }
+        } else if (e.detail.proType === PRO_TYPE.curtain) {
+          diffData.curtainStatus = {
+            position: prop.curtain_position,
+          }
+        }
       }
 
       // 更新选中样式
@@ -816,12 +827,8 @@ ComponentWithComputed({
       device.select = this.data.checkedList.includes(uniId)
       this.updateDeviceList(device)
 
-      // 选择时的卡片样式渲染
-      const diffData = {} as IAnyObject
-
       // 合并数据变化
       diffData.checkedList = [...this.data.checkedList]
-      diffData.lightStatus = lightStatus
       diffData.controlPopup = toCheck
 
       // 弹起popup后，选中卡片滚动到视图中央，以免被遮挡
@@ -856,15 +863,8 @@ ComponentWithComputed({
       }
 
       if (device.proType === PRO_TYPE.curtain) {
-        const isPositive = device.mzgdPropertyDTOList['1'].curtain_direction === 'positive'
         const OldPosition = device.mzgdPropertyDTOList[1].curtain_position
-        const NewPosition = isPositive 
-          ? (Number(OldPosition) > 0 ? '0' : '100')
-          : (Number(OldPosition) < 100 ? '100' : '0')
-
-        // 即时改变视图，提升操作手感
-        // device.mzgdPropertyDTOList[1].curtain_position = NewPosition
-        // this.updateDeviceList(device)
+        const NewPosition = Number(OldPosition) > 0 ? '0' : '100'
         const res = await sendDevice({
           proType: device.proType,
           deviceType: device.deviceType,

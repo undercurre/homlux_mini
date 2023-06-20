@@ -41,6 +41,10 @@
   animation: arrow-down-ani 0.8s ease forwards;
 }
 
+.split {
+  border-left: 1px solid rgba(213,213,213,1);
+}
+
 @keyframes arrow-up-ani {
   0% {
     transform: rotateX(0deg);

@@ -58,7 +58,7 @@ ComponentWithComputed({
     ripple: false,
     onOff: false, // true: on false: off
     showDeviceOffline: false,
-    isProcessing: false
+    isProcessing: false,
   },
 
   computed: {
@@ -74,16 +74,11 @@ ComponentWithComputed({
       // 窗帘，位置大于0即为开启
       if (data.deviceInfo.proType === PRO_TYPE.curtain) {
         const pos = data.deviceInfo.mzgdPropertyDTOList['1'].curtain_position
-        const isPositive = data.deviceInfo.mzgdPropertyDTOList['1'].curtain_direction === 'positive'
-        const isClosed = isPositive ? pos === '0' : pos === '100'
+        const isClosed = pos === '0'
         if (data.isProcessing) {
-          return isClosed
-          ? '/assets/img/base/curtain-opening.png'
-          : '/assets/img/base/curtain-closing.png'
+          return isClosed ? '/assets/img/base/curtain-opening.png' : '/assets/img/base/curtain-closing.png'
         }
-        return isClosed
-          ? '/assets/img/base/curtain-open.png'
-          : '/assets/img/base/curtain-close.png'
+        return isClosed ? '/assets/img/base/curtain-open.png' : '/assets/img/base/curtain-close.png'
       }
       // 灯及灯组
       else if (data.deviceInfo.proType === PRO_TYPE.light) {
@@ -198,14 +193,14 @@ ComponentWithComputed({
                 throttleTimer = setTimeout(() => {
                   throttleTimer = 0
                   this.setData({
-                    isProcessing: false
-                  })  
+                    isProcessing: false,
+                  })
                 }, CONTROL_INTERVAL)
 
                 this.setData({
-                  isProcessing: true
+                  isProcessing: true,
                 })
-                
+
                 return
               }
             }
@@ -217,11 +212,11 @@ ComponentWithComputed({
               throttleTimer = 0
               this.setData({
                 ripple: false,
-                isProcessing: false
+                isProcessing: false,
               })
             }, CONTROL_INTERVAL)
             this.setData({
-              isProcessing: true
+              isProcessing: true,
             })
           } else {
             this.triggerEvent('offlineTap', {
