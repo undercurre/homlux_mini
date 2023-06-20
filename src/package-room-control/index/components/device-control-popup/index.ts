@@ -62,12 +62,13 @@ ComponentWithComputed({
         // 色温范围计算
         else if (value.length) {
           const deviceId = this.data.checkedList[0]
-          if (deviceId.indexOf(':') !== -1) {
-            return // 排除面板
-          }
-          const deviceMap = deviceStore.deviceMap
-          const { minColorTemp, maxColorTemp } = deviceMap[deviceId].mzgdPropertyDTOList[1].colorTempRange!
+          const { deviceMap } = deviceStore
+          const device = deviceMap[deviceId]
 
+          if (device.proType !== PRO_TYPE.light) {
+            return
+          }
+          const { minColorTemp, maxColorTemp } = device.mzgdPropertyDTOList[1].colorTempRange!
           this.setData({
             minColorTemp,
             maxColorTemp,
@@ -82,6 +83,15 @@ ComponentWithComputed({
         this.setData({
           'lightInfoInner.Level': value.Level ?? 0,
           'lightInfoInner.ColorTemp': value.ColorTemp ?? 0,
+        })
+      },
+    },
+    curtainStatus: {
+      type: Object,
+      value: {} as Record<string, string>,
+      observer(value) {
+        this.setData({
+          'curtainInfo.position': value.position ?? 0,
         })
       },
     },
@@ -116,8 +126,7 @@ ComponentWithComputed({
     maxColorTemp,
     minColorTemp,
     curtainInfo: {
-      left: 50,
-      right: 50,
+      position: 0,
     },
     /** 提供给关联选择的列表 */
     list: [] as (Device.DeviceItem | Scene.SceneItem)[],
@@ -866,6 +875,44 @@ ComponentWithComputed({
       })
 
       this.triggerEvent('popMove', 'down')
+    },
+    async curtainControl(property: IAnyObject) {
+      const deviceId = this.data.checkedList[0]
+      const device = deviceStore.deviceMap[deviceId] // 深拷贝，以免影响store中的源数据
+      if (device.proType !== PRO_TYPE.curtain) {
+        return
+      }
+
+      const res = await sendDevice({
+        proType: device.proType,
+        deviceType: device.deviceType,
+        deviceId,
+        property,
+      })
+
+      if (!res.success) {
+        Toast('控制失败')
+      }
+    },
+    openCurtain() {
+      this.curtainControl({
+        curtain_position: '100',
+      })
+    },
+    closeCurtain() {
+      this.curtainControl({
+        curtain_position: '0',
+      })
+    },
+    pauseCurtain() {
+      this.curtainControl({
+        curtain_status: 'stop',
+      })
+    },
+    changeCurtain(e: { detail: number }) {
+      this.curtainControl({
+        curtain_position: e.detail,
+      })
     },
   },
 })

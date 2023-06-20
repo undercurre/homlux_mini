@@ -171,7 +171,7 @@ export async function sendDevice(
 
         promise = controlDevice(params, option)
       } else if (data.proType === PRO_TYPE.curtain) {
-        const downData = property
+        const downData = toWifiProperty(data.proType, property)
 
         params = {
           deviceId: data.deviceId,

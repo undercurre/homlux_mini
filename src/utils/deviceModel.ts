@@ -33,9 +33,16 @@ export function transferDeviceProperty(proType: string, properties: IAnyObject) 
       result.Level = properties.Level ?? Math.round((properties.brightness / 255) * 100)
     }
   }
-  // 目前只有WIFI窗帘一种，全部直接显示即可
+  // 目前只有WIFI窗帘一种
   else if (proType === PRO_TYPE.curtain) {
     return properties
+    // const { curtain_status, curtain_direction, curtain_position: pos } = properties
+    // if (!isNullOrUnDef(pos)) {
+    //   result.curtain_position = curtain_direction === 'reverse' ? 100 - Number(pos) : pos
+    // }
+    // if (isNullOrUnDef(curtain_status)) {
+    //   result.curtain_status = curtain_status
+    // }
   }
 
   return result
@@ -55,6 +62,17 @@ export function toWifiProperty(proType: string, properties: IAnyObject) {
     !isNullOrUnDef(properties.ColorTemp) && (result.color_temperature = Math.round((properties.ColorTemp * 255) / 100))
 
     !isNullOrUnDef(properties.Level) && (result.brightness = Math.round((properties.Level * 255) / 100))
+  }
+  // 窗帘控制
+  else if (proType === PRO_TYPE.curtain) {
+    return properties
+    // const { curtain_status, curtain_direction, curtain_position: pos } = properties
+    // if (!isNullOrUnDef(pos)) {
+    //   result.curtain_position = curtain_direction === 'reverse' ? 100 - Number(pos) : pos
+    // }
+    // if (!isNullOrUnDef(curtain_status)) {
+    //   result.curtain_status = curtain_status
+    // }
   }
 
   return result

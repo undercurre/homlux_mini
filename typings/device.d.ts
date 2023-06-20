@@ -16,7 +16,7 @@ declare namespace Device {
     ButtonScene?: number
     curtain_position?: string
     curtain_status?: string
-    curtain_direction?: 'positive' | 'negative'
+    curtain_direction?: 'positive' | 'reverse' // 窗帘开合方向
   }
   /** 设备列表项 */
   interface DeviceItem {

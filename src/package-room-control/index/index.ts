@@ -94,6 +94,7 @@ ComponentWithComputed({
     editSelectList: [] as string[], // 编辑状态下，已勾选的设备id列表
     editSelectMode: false, // 是否编辑状态
     lightStatus: {} as Record<string, number>, // 当前选择的灯具的状态
+    curtainStatus: {} as Record<string, string>, // 当前选择的窗帘的状态
     checkedType: [] as string[], // 已选择设备的类型
     deviceListInited: false, // 设备列表是否初始化完毕
     isMoving: false, // 是否正在拖拽中
@@ -398,6 +399,7 @@ ComponentWithComputed({
       // 单项更新
       if (e?.deviceId || e?.detail?.deviceId) {
         const device = e?.deviceId ? e : e.detail
+        let originDevice: DeviceCard
 
         for (const groupIndex in this.data.devicePageList) {
           const index = this.data.devicePageList[groupIndex].findIndex((d: DeviceCard) => {
@@ -408,7 +410,7 @@ ComponentWithComputed({
             }
           })
           if (index !== -1) {
-            const originDevice = this.data.devicePageList[groupIndex][index]
+            originDevice = this.data.devicePageList[groupIndex][index]
             const diffData = {} as IAnyObject
             // review 细致到字段的diff
             const renderList = ['deviceName', 'onLineStatus', 'select', 'editSelect'] // 需要刷新界面的字段
@@ -437,6 +439,22 @@ ComponentWithComputed({
                 ...device?.switchInfoDTOList[0],
               }
               diffData[`devicePageList[${groupIndex}][${index}].switchInfoDTOList[0]`] = newVal
+            }
+
+            // 如果控制框为显示状态，且是当前更新项，则同步更新
+            if (this.data.checkedList.includes(device!.deviceId) && device!.select) {
+              const prop = device!.mzgdPropertyDTOList['1']
+              if (originDevice.proType === PRO_TYPE.light) {
+                diffData.lightStatus = {
+                  Level: prop.Level,
+                  ColorTemp: prop.ColorTemp,
+                  OnOff: prop.OnOff,
+                }
+              } else if (originDevice.proType === PRO_TYPE.curtain) {
+                diffData.curtainStatus = {
+                  position: prop.curtain_position,
+                }
+              }
             }
 
             if (Object.keys(diffData).length) {
@@ -789,6 +807,9 @@ ComponentWithComputed({
       const isChecked = this.data.checkedList.includes(uniId) // 点击卡片前，卡片是否选中
       const toCheck = !isChecked // 本次点击需执行的选中状态
 
+      // 选择时的卡片样式渲染
+      const diffData = {} as IAnyObject
+
       // 取消选择
       if (toCheck && this.data.checkedList.length) {
         const oldCheckedId = this.data.checkedList[0]
@@ -803,12 +824,19 @@ ComponentWithComputed({
       this.data.checkedList = toCheck ? [uniId] : []
 
       // 选择灯卡片时，面板状态的处理
-      const lightStatus = { Level: 0, ColorTemp: 0, OnOff: 0 }
-      if (toCheck && e.detail.proType === PRO_TYPE.light) {
+      if (toCheck) {
         const prop = e.detail.mzgdPropertyDTOList['1']
-        lightStatus.Level = prop.Level!
-        lightStatus.ColorTemp = prop.ColorTemp!
-        lightStatus.OnOff = prop.OnOff!
+        if (e.detail.proType === PRO_TYPE.light) {
+          diffData.lightStatus = {
+            Level: prop.Level,
+            ColorTemp: prop.ColorTemp,
+            OnOff: prop.OnOff,
+          }
+        } else if (e.detail.proType === PRO_TYPE.curtain) {
+          diffData.curtainStatus = {
+            position: prop.curtain_position,
+          }
+        }
       }
 
       // 更新选中样式
@@ -816,12 +844,8 @@ ComponentWithComputed({
       device.select = this.data.checkedList.includes(uniId)
       this.updateDeviceList(device)
 
-      // 选择时的卡片样式渲染
-      const diffData = {} as IAnyObject
-
       // 合并数据变化
       diffData.checkedList = [...this.data.checkedList]
-      diffData.lightStatus = lightStatus
       diffData.controlPopup = toCheck
 
       // 弹起popup后，选中卡片滚动到视图中央，以免被遮挡
@@ -858,16 +882,11 @@ ComponentWithComputed({
       if (device.proType === PRO_TYPE.curtain) {
         const OldPosition = device.mzgdPropertyDTOList[1].curtain_position
         const NewPosition = Number(OldPosition) > 0 ? '0' : '100'
-        const NewStatus = Number(OldPosition) > 0 ? 'close' : 'open'
-
-        // 即时改变视图，提升操作手感
-        device.mzgdPropertyDTOList[1].curtain_position = NewPosition
-        this.updateDeviceList(device)
         const res = await sendDevice({
           proType: device.proType,
           deviceType: device.deviceType,
           deviceId: device.deviceId,
-          property: { curtain_position: NewPosition, curtain_status: NewStatus },
+          property: { curtain_position: NewPosition },
         })
 
         if (!res.success) {
@@ -979,9 +998,6 @@ ComponentWithComputed({
       this.setData({
         checkedType: Array.from(typeList) as string[],
       })
-      // runInAction(() => {
-      //   deviceStore.selectType = Array.from(typeList) as string[]
-      // })
     },
     /** 点击空位的操作 */
     handleScreenTap() {

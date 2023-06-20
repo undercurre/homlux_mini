@@ -43,16 +43,14 @@
         </van-cell-group>
       </view>
       <!-- 窗帘控制 -->
-      <view wx:if="{{tab==='curtain'}}" class="w-full h-full flex-center">
-        <text class="text-32rpx text-black-59">50%</text>
-        <view class="w-496rpx h-368rpx relative">
-          <image src="/package-room-control/assets/img/curtain-bg.png" class="w-496rpx h-368rpx" />
-          <image src="/package-room-control/assets/img/curtain.png" class="w-213rpx h-300rpx absolute left-20rpx top-50rpx" />
-          <image src="/package-room-control/assets/img/curtain-opener.png" class="w-80rpx h-80rpx absolute left-148rpx top-144rpx" />
-          <image src="/package-room-control/assets/img/curtain.png" class="w-213rpx h-300rpx absolute right-20rpx top-50rpx" />
-          <image src="/package-room-control/assets/img/curtain-opener.png" class="w-80rpx h-80rpx absolute right-148rpx top-144rpx" style="transform: scaleX(-1)" />
+      <view wx:if="{{tab==='curtain'}}" class="w-full h-full flex-col-center">
+        <curtain-slider value="{{curtainInfo.position}}" bind:change="changeCurtain"></curtain-slider>
+        <view class="flex flex-row justify-center rounded-24rpx bg-hex-eef2f7 w-686rpx h-80rpx items-center mt-28rpx">
+          <text bind:tap="openCurtain" class="px-80rpx text-32">全开</text>
+          <text bind:tap="pauseCurtain" class="px-80rpx text-32 split">暂停</text>
+          <text bind:tap="closeCurtain" class="px-80rpx text-32 split">全关</text>
         </view>
-        <text class="text-32rpx text-black-59">50%</text>
+        <view class="h-80rpx"></view>
       </view>
     </view>
   </view>
