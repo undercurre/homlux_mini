@@ -221,7 +221,7 @@ ComponentWithComputed({
 
           if (device.proType === PRO_TYPE.curtain) {
             property = {
-              curtain_position: property.curtain_position
+              curtain_position: property.curtain_position,
             }
           }
 
