@@ -35,8 +35,7 @@ ComponentWithComputed({
     editIndex: 0,
     contentHeight: 0,
     actionEditTitle: '',
-    showSceneEditLightPopup: false,
-    showSceneEditSwitchPopup: false,
+    popupType: '', // 编辑的设备类型
     sceneLightEditInfo: {} as IAnyObject,
     sceneSwitchEditInfo: {} as IAnyObject,
     _cacheDeviceMap: {} as IAnyObject, // 缓存设备设置预览前的设备状态，用于退出时恢复
@@ -110,7 +109,7 @@ ComponentWithComputed({
             gatewayId: device.gatewayId,
             deviceId: device.deviceId,
           },
-          showSceneEditLightPopup: true,
+          popupType: deviceAction.proType,
           editIndex: e.currentTarget.dataset.index,
         })
       } else if (deviceAction.proType === PRO_TYPE.switch) {
@@ -127,19 +126,14 @@ ComponentWithComputed({
             gatewayId: device.gatewayId,
             deviceId: device.deviceId,
           },
-          showSceneEditSwitchPopup: true,
+          popupType: deviceAction.proType,
           editIndex: e.currentTarget.dataset.index,
         })
       }
     },
-    handleSceneLightEditPopupClose() {
+    handleEditPopupClose() {
       this.setData({
-        showSceneEditLightPopup: false,
-      })
-    },
-    handleSceneSwitchEditPopupClose() {
-      this.setData({
-        showSceneEditSwitchPopup: false,
+        popupType: '',
       })
     },
 

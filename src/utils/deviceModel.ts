@@ -18,6 +18,7 @@ export function transferDeviceProperty(proType: string, properties: IAnyObject) 
     result.OnOff = properties.OnOff ?? (properties.power === 'off' ? 0 : 1)
   }
 
+  // 灯光属性
   if (proType === PRO_TYPE.light) {
     const { maxColorTemp, minColorTemp } = properties.colorTempRange // 色温范围
 

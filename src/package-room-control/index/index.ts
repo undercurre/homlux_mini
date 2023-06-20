@@ -699,7 +699,7 @@ ComponentWithComputed({
               OnOff,
             },
           })
-        } else if (device.proType === PRO_TYPE.light) {
+        } else {
           const properties = device.mzgdPropertyDTOList['1']
           const desc = toPropertyDesc(device.proType, properties)
 
