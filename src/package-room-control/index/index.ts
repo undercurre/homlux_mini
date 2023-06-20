@@ -244,10 +244,12 @@ ComponentWithComputed({
             (device) => device.deviceId === e.result.eventData.deviceId,
           )
           if (deviceInHouse) {
-            deviceInHouse.mzgdPropertyDTOList[e.result.eventData.ep] = {
-              ...deviceInHouse.mzgdPropertyDTOList[e.result.eventData.ep],
-              ...e.result.eventData.event,
-            }
+            runInAction(() => {
+              deviceInHouse.mzgdPropertyDTOList[e.result.eventData.ep] = {
+                ...deviceInHouse.mzgdPropertyDTOList[e.result.eventData.ep],
+                ...e.result.eventData.event,
+              }
+            })
             roomStore.updateRoomCardLightOnNum()
             // 直接更新store里的数据，更新完退出回调函数
           }
