@@ -399,6 +399,7 @@ ComponentWithComputed({
       // 单项更新
       if (e?.deviceId || e?.detail?.deviceId) {
         const device = e?.deviceId ? e : e.detail
+        let originDevice: DeviceCard
 
         for (const groupIndex in this.data.devicePageList) {
           const index = this.data.devicePageList[groupIndex].findIndex((d: DeviceCard) => {
@@ -409,7 +410,7 @@ ComponentWithComputed({
             }
           })
           if (index !== -1) {
-            const originDevice = this.data.devicePageList[groupIndex][index]
+            originDevice = this.data.devicePageList[groupIndex][index]
             const diffData = {} as IAnyObject
             // review 细致到字段的diff
             const renderList = ['deviceName', 'onLineStatus', 'select', 'editSelect'] // 需要刷新界面的字段
@@ -438,6 +439,23 @@ ComponentWithComputed({
                 ...device?.switchInfoDTOList[0],
               }
               diffData[`devicePageList[${groupIndex}][${index}].switchInfoDTOList[0]`] = newVal
+            }
+
+            // 如果控制框为显示状态，且是当前更新项，则同步更新
+            if (this.data.checkedList.includes(device!.deviceId)) {
+              const prop = device!.mzgdPropertyDTOList['1']
+              console.log(this.data.checkedList, device)
+              if (originDevice.proType === PRO_TYPE.light) {
+                diffData.lightStatus = {
+                  Level: prop.Level,
+                  ColorTemp: prop.ColorTemp,
+                  OnOff: prop.OnOff,
+                }
+              } else if (originDevice.proType === PRO_TYPE.curtain) {
+                diffData.curtainStatus = {
+                  position: prop.curtain_position,
+                }
+              }
             }
 
             if (Object.keys(diffData).length) {
@@ -981,9 +999,6 @@ ComponentWithComputed({
       this.setData({
         checkedType: Array.from(typeList) as string[],
       })
-      // runInAction(() => {
-      //   deviceStore.selectType = Array.from(typeList) as string[]
-      // })
     },
     /** 点击空位的操作 */
     handleScreenTap() {
