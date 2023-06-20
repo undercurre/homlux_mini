@@ -48,7 +48,7 @@ ComponentWithComputed({
   },
   observers: {
     value: function (newValue) {
-      console.log('observers-value, roomIcon', newValue, this.data._isWxsHandle)
+      // console.log('observers-value, roomIcon', newValue, this.data._isWxsHandle)
       setTimeout(() => {
         //setTimeout是避免在popup中使用时无法获取（添加手动场景那里的popup）
         Promise.all([getRect(this, '#mz-slider'), getRect(this, '#button')]).then(([mzSlider, button]) => {
