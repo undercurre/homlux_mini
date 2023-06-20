@@ -442,9 +442,8 @@ ComponentWithComputed({
             }
 
             // 如果控制框为显示状态，且是当前更新项，则同步更新
-            if (this.data.checkedList.includes(device!.deviceId)) {
+            if (this.data.checkedList.includes(device!.deviceId) && device!.select) {
               const prop = device!.mzgdPropertyDTOList['1']
-              console.log(this.data.checkedList, device)
               if (originDevice.proType === PRO_TYPE.light) {
                 diffData.lightStatus = {
                   Level: prop.Level,
