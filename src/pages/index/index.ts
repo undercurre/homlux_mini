@@ -184,10 +184,13 @@ ComponentWithComputed({
               (device) => device.deviceId === res.result.eventData.deviceId,
             )
             if (device) {
-              device.mzgdPropertyDTOList[res.result.eventData.ep] = {
-                ...device.mzgdPropertyDTOList[res.result.eventData.ep],
-                ...res.result.eventData.event,
-              }
+              runInAction(() => {
+                device.mzgdPropertyDTOList[res.result.eventData.ep] = {
+                  ...device.mzgdPropertyDTOList[res.result.eventData.ep],
+                  ...res.result.eventData.event,
+                }
+              })
+
               if (!throttleTimer) {
                 roomStore.updateRoomCardLightOnNum()
                 throttleTimer = setTimeout(async () => {

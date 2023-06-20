@@ -18,12 +18,6 @@
             </view>
             <text class="text-28rpx mt-20rpx text-hex-666666">{{item.sceneName}}</text>
           </view>
-          <!-- <view id="effect-{{item.sceneId}}" class="absolute left-0 top-0 bg-blue flex-col-center w-144rpx h-168rpx opacity-0 rounded-24rpx">
-            <view id="effect-{{item.sceneId}}-svg" class="rounded-999 bg-hex-a0bff0">
-              <svg-icon class="w-64rpx h-64rpx" color="#fff" name="scene:{{item.sceneIcon}}" width="64rpx" height="64rpx" />
-            </view>
-            <text class="text-28rpx mt-20rpx text-white">{{item.sceneName}}</text>
-          </view> -->
           <view wx:if="{{sceneClickId === item.sceneId}}" class="absolute left-80rpx w-250rpx h-250rpx rounded-999 ripple-bg" style="animation: ripple-{{onOff ? 'on' : 'off'}} 1s ease forwards;"></view>
         </view>
         <view class="w-32rpx"></view>

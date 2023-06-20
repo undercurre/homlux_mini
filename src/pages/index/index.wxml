@@ -11,18 +11,12 @@
     <!-- 全屋开关 -->
     <view class="ml-24rpx">
       <view class="bg-hex-ffffff_42 w-244rpx h-80rpx rounded-40rpx flex items-center" wx:if="{{isShowHomeControl}}">
-        <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx relative">
-          <text class="text-hex-2b4067 px-24rpx py-12rpx rounded-999 text-hex-2b4067">全开</text>
-          <view class="absolute left-0 top-0 w-full h-full flex-center">
-            <text bindtap="{{handler.handleAllOn}}" id="all-on" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999 text-hex-2b4067 text-white bg-hex-468cfb opacity-0">全开</text>
-          </view>
+        <view class="flex-1 flex justify-center items-center text-28rpx">
+          <text bindtap="{{handler.handleAllOn}}" id="all-on" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999">全开</text>
         </view>
         <view class="w-2rpx h-24rpx bg-hex-75829b"></view>
-        <view class="text-hex-2b4067_62 flex-1 flex justify-center items-center text-28rpx relative">
-          <text class="text-hex-2b4067 px-24rpx py-12rpx rounded-999 text-hex-2b4067">全关</text>
-          <view class="absolute left-0 top-0 w-full h-full flex-center">
-            <text bindtap="{{handler.handleAllOff}}" id="all-off" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999 text-hex-2b4067 text-white bg-hex-468cfb opacity-0">全关</text>
-          </view>
+        <view class="flex-1 flex justify-center items-center text-28rpx">
+          <text bindtap="{{handler.handleAllOff}}" id="all-off" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999">全关</text>
         </view>
       </view>
     </view>

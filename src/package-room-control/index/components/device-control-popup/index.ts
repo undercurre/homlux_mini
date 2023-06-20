@@ -65,7 +65,7 @@ ComponentWithComputed({
           const { deviceMap } = deviceStore
           const device = deviceMap[deviceId]
 
-          if (device.proType !== PRO_TYPE.light) {
+          if (!device || device.proType !== PRO_TYPE.light) {
             return
           }
           const { minColorTemp, maxColorTemp } = device.mzgdPropertyDTOList[1].colorTempRange!
