@@ -64,6 +64,8 @@
 
 <select-card-popup show="{{showLinkPopup}}" showCancel="{{false}}" title="选择智能开关" list="{{switchList}}" selectList="{{linkSwitchSelect}}" bind:close="handleLinkPopupClose" bind:select="handleSwitchSelect" bind:confirm="handleLinkPopupConfirm"></select-card-popup>
 
-<light-control-popup show="{{showSceneEditLightPopup}}" title="{{sceneEditTitle}}" lightInfo="{{sceneLightEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleSceneLightEditPopupClose"></light-control-popup>
+<light-control-popup show="{{showEditPopup === '0x13'}}" title="{{sceneEditTitle}}" lightInfo="{{sceneEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleEditPopupClose"></light-control-popup>
 
-<switch-control-popup show="{{showSceneEditSwitchPopup}}" title="{{sceneEditTitle}}" switchInfo="{{sceneSwitchEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleSceneSwitchEditPopupClose"></switch-control-popup>
+<switch-control-popup show="{{showEditPopup === '0x21'}}" title="{{sceneEditTitle}}" switchInfo="{{sceneEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleEditPopupClose"></switch-control-popup>
+
+<curtain-control-popup show="{{showEditPopup === '0x14'}}" title="{{sceneEditTitle}}" deviceInfo="{{sceneEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleEditPopupClose"></curtain-control-popup>

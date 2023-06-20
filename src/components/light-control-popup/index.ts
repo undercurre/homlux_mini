@@ -30,12 +30,10 @@ ComponentWithComputed({
               OnOff: this.data.lightInfo.OnOff,
               Level: this.data.lightInfo.Level ?? 1,
               ColorTemp: this.data.lightInfo.ColorTemp ?? 0,
-              left: 0,
             })
           } else {
             this.setData({
               OnOff: this.data.lightInfo.OnOff,
-              left: 350,
             })
           }
         }
@@ -72,7 +70,6 @@ ComponentWithComputed({
     OnOff: 0,
     Level: 1,
     ColorTemp: 0,
-    left: 0,
   },
 
   computed: {

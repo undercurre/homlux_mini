@@ -690,6 +690,8 @@ ComponentWithComputed({
 
         switchId = switchId ?? 1
 
+        console.log('deviceList', device)
+
         return device.mzgdPropertyDTOList[switchId].ButtonMode !== 2 && device.onLineStatus
       })
 

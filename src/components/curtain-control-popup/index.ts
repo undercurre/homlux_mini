@@ -25,21 +25,19 @@ ComponentWithComputed({
       observer(value) {
         if (value) {
           this.setData({
-            OnOff: this.data.switchInfo.OnOff,
+            curtain_position: this.data.deviceInfo.curtain_position,
           })
         }
       },
     },
     /**
-     * switchInfo数据结构
+     * deviceInfo数据结构
      * {
     deviceId: string
-    gatewayId: string
-    ep: number
-    OnOff: number
+    curtain_position: number
   }
      */
-    switchInfo: {
+    deviceInfo: {
       type: Object,
     },
   },
@@ -48,7 +46,7 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    OnOff: 0,
+    curtain_position: 0,
   },
 
   /**
@@ -56,15 +54,13 @@ ComponentWithComputed({
    */
   methods: {
     async controlSubDevice() {
-      const switchInfo = this.data.switchInfo
-      const property = { OnOff: this.data.OnOff }
+      const deviceInfo = this.data.deviceInfo
+      const property = { curtain_position: this.data.curtain_position }
 
       const res = await sendDevice({
-        deviceId: switchInfo.deviceId,
-        deviceType: 2,
-        ep: switchInfo.ep,
-        gatewayId: switchInfo.gatewayId,
-        proType: PRO_TYPE.switch,
+        deviceId: deviceInfo.deviceId,
+        deviceType: 3,
+        proType: PRO_TYPE.curtain,
         property,
       })
 
@@ -82,13 +78,13 @@ ComponentWithComputed({
         this.controlSubDevice()
       }
 
-      this.triggerEvent('confirm', { OnOff: this.data.OnOff })
+      this.triggerEvent('confirm', { curtain_position: this.data.curtain_position })
     },
-    handleOnOffChange(e: WechatMiniprogram.CustomEvent) {
-      const OnOff = e.detail ? 1 : 0
-
+    handleChange(e: { detail: number }) {
+      console.log('handleChange', e)
+      const curtain_position = e.detail
       this.setData({
-        OnOff,
+        curtain_position: curtain_position,
       })
 
       this.handleConfirm()

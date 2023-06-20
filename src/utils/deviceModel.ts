@@ -10,7 +10,7 @@ export function transferDeviceProperty(proType: string, properties: IAnyObject) 
   const result = {} as IAnyObject
 
   if (isNullOrUnDef(properties)) {
-    console.error('转换标准属性失败，属性集为空')
+    console.warn('转换标准属性失败，属性集为空')
     return result
   }
   // 开关属性
@@ -93,6 +93,16 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
     if (!isNullOrUnDef(property.ColorTemp)) {
       const color = (property.ColorTemp / 100) * (property.maxColorTemp - property.minColorTemp) + property.minColorTemp
       descList.push(`色温${color}K`)
+    }
+  }
+
+  if (proType === PRO_TYPE.curtain) {
+    if (property.curtain_position === 0) {
+      descList.push(`关闭`)
+    } else if (property.curtain_position === 100) {
+      descList.push(`打开`)
+    } else {
+      descList.push(`开启至${property.curtain_position}%`)
     }
   }
 
