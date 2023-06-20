@@ -35,6 +35,8 @@ ComponentWithComputed({
           } else {
             this.setData({
               OnOff: this.data.lightInfo.OnOff,
+              Level: this.data.lightInfo.Level ?? 1,
+              ColorTemp: this.data.lightInfo.ColorTemp ?? 0,
               left: 350,
             })
           }
@@ -166,9 +168,9 @@ ComponentWithComputed({
         100,
       )
     },
-    handleLevelDrag(e: { detail: { value: number } }) {
+    handleLevelDrag(e: { detail: number }) {
       this.setData({
-        Level: e.detail.value,
+        Level: e.detail,
       })
 
       if (this.data.isControl) {
@@ -199,9 +201,9 @@ ComponentWithComputed({
 
       this.handleConfirm()
     },
-    handleColorTempDrag(e: { detail: { value: number } }) {
+    handleColorTempDrag(e: { detail: number }) {
       this.setData({
-        ColorTemp: e.detail.value,
+        ColorTemp: e.detail,
       })
 
       this.controlSubDevice({ ColorTemp: this.data.ColorTemp })

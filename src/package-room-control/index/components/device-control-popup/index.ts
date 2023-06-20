@@ -823,9 +823,9 @@ ComponentWithComputed({
         Toast('控制失败')
       }
     },
-    handleLevelDrag: throttle(function (this: IAnyObject, e: { detail: { value: number } }) {
+    handleLevelDrag: throttle(function (this: IAnyObject, e: { detail: number }) {
       this.setData({
-        'lightInfoInner.Level': e.detail.value,
+        'lightInfoInner.Level': e.detail,
       })
     }),
     handleLevelChange(e: { detail: number }) {
@@ -846,9 +846,9 @@ ComponentWithComputed({
       })
       this.lightSendDeviceControl('ColorTemp')
     },
-    handleColorTempDrag: throttle(function (this: IAnyObject, e: { detail: { value: number } }) {
+    handleColorTempDrag: throttle(function (this: IAnyObject, e: { detail: number }) {
       this.setData({
-        'lightInfoInner.ColorTemp': e.detail.value,
+        'lightInfoInner.ColorTemp': e.detail,
       })
     }),
 

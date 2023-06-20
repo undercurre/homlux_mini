@@ -1,10 +1,10 @@
-<view class="custom-class mz-slider {{ disabled ? 'mz-slider--disabled' :'' }}" style="{{ wrapperStyle }};height:{{barHeight}}rpx" bind:tap="onClick">
-  <view class="mz-slider-bar" style="{{ barStyle }}">
-    <view class="mz-slider-button-wrapper" style="height:{{barHeight}}rpx" bind:touchstart="onTouchStart" catch:touchmove="onTouchMove" bind:touchend="onTouchEnd" bind:touchcancel="onTouchEnd">
-      <view class="button">
-        <slot wx:if="{{ useButtonSlot }}" name="button"></slot>
-        <view wx:else class="mz-slider-button" />
-      </view>
+<wxs module="handler" src="./index.wxs"></wxs>
+
+<view id="mz-slider" class="custom-class mz-slider {{ disabled ? 'mz-slider--disabled' :'' }}" style="background:{{ inactiveColor }};" bind:touchstart="{{disabled ? '': handler.onTouchstart}}" catch:touchmove="{{disabled ? '': handler.onTouchmove}}" bind:touchend="{{disabled ? '': handler.onTouchend}}">
+  <view class="mz-slider-bar" style="{{sliderBarStyle}} background:{{activeColor}};">
+    <view id="button" class="button px-12rpx">
+      <slot wx:if="{{ useButtonSlot }}" name="button"></slot>
+      <view wx:else class="mz-slider-button" />
     </view>
   </view>
 </view>

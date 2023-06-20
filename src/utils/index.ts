@@ -142,3 +142,19 @@ export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
     lightNum,
   }
 }
+
+export const getRect = function (context: any, selector: string, needAll = false) {
+  return new Promise<any>((resolve, reject) => {
+    wx.createSelectorQuery()
+      .in(context)
+      [needAll ? 'selectAll' : 'select'](selector)
+      .boundingClientRect((rect) => {
+        if (rect) {
+          resolve(rect)
+        } else {
+          reject(rect)
+        }
+      })
+      .exec()
+  })
+}
