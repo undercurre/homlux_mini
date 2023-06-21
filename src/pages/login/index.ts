@@ -58,6 +58,10 @@ Component({
                 // if (msg.errMsg.indexOf('deny') !== -1) {
                 //   Toast('地理位置访问失败，请手动设置\n系统访问地理位置的权限')
                 // }
+                this.login({
+                  jsCode: res.code,
+                  code: e.detail.code,
+                })
               },
             })
           } else {
@@ -68,7 +72,7 @@ Component({
       })
     },
 
-    async login(data: { jsCode: string; code: string; latitude: number; longitude: number }) {
+    async login(data: { jsCode: string; code: string; latitude?: number; longitude?: number }) {
       const loginRes = await login(data)
       if (loginRes.success && loginRes.result) {
         console.log('loginRes', loginRes)

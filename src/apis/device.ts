@@ -278,6 +278,7 @@ export async function editDeviceInfo(
     type?: string
     switchId?: string
     switchName?: string
+    deviceType?: number
   },
   options?: { loading?: boolean },
 ) {

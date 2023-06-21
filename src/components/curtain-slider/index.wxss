@@ -8,11 +8,8 @@
 }
 
 .curtain-handle {
-  width: 8rpx;
-  height: 44rpx;
-  background-image: linear-gradient(-20deg, rgba(255, 255, 255, 0.61) 14%, #ffffff 83%);
-  box-shadow: inset 0 2rpx 5rpx 0 #ffffff;
-  border-radius: 5rpx;
+  width: 14rpx;
+  height: 40rpx;
   position: absolute;
   top: 144rpx;
 }
