@@ -43,6 +43,10 @@ ComponentWithComputed({
       switchList: [] as Device.ISwitch[],
     },
     status: 'discover' as StatusName,
+    flashInfo: {
+      timeId: 0,
+      mac: '',
+    },
   },
 
   computed: {
@@ -89,8 +93,17 @@ ComponentWithComputed({
       bleDevicesBinding.store.startBleDiscovery()
     },
     detached() {
+      console.log('detached')
+      // 退出页面时清除循环执行的代码
+
+      // 终止配网指令下发
       this.stopGwAddMode()
+
+      // 终止蓝牙发现
       bleDevicesBinding.store.stopBLeDiscovery()
+
+      // 清除闪烁指令
+      this.stopFlash()
     },
   },
 
@@ -303,6 +316,7 @@ ComponentWithComputed({
       const timeout = 90 // 等待绑定推送，超时60s
       // 过滤刚出厂设备刚起电时会默认进入配网状态期间，被网关绑定的情况，这种当做成功配网，无需再下发配网指令，否则可能会导致zigbee入网失败
       if (bleDevice.isConfig !== '02') {
+        Logger.log(`【${bleDevice.mac}】检测配网状态：${bleDevice.isConfig}`)
         const configRes = await bleDevice.client.getZigbeeState()
 
         if (configRes.success && configRes.result.isConfig === '02') {
@@ -441,25 +455,56 @@ ComponentWithComputed({
 
       const bleDeviceItem = bleDevicesBinding.store.bleDeviceList.find((item) => item.deviceUuid === id) as IBleDevice
 
-      if (bleDeviceItem.requesting) {
+      const oldMac = this.data.flashInfo.mac
+
+      // 停止之前正在闪烁的设备
+      this.stopFlash()
+
+      if (oldMac === bleDeviceItem.mac) {
         return
       }
 
-      bleDeviceItem.requesting = true
+      this.keepFlash(bleDeviceItem)
+    },
 
-      bleDevicesStore.updateBleDeviceList()
+    // 循环下发闪烁
+    async keepFlash(bleDevice: IBleDevice) {
+      this.setData({
+        'flashInfo.mac': bleDevice.mac,
+      })
+      const res = await bleDevice.client.flash()
 
-      const res = await bleDeviceItem.client.sendCmd({
-        cmdType: 'DEVICE_CONTROL',
-        subType: 'haveTry',
+      console.log('flash', res)
+      if (!res.success) {
+        this.stopFlash()
+        return
+      }
+
+      this.data.flashInfo.timeId = setTimeout(() => {
+        this.keepFlash(bleDevice)
+      }, 5000)
+    },
+
+    /**
+     * 停止闪烁
+     */
+    stopFlash() {
+      console.log('stopFlash')
+      if (!this.data.flashInfo.mac) {
+        return
+      }
+
+      const bleDevice = bleDevicesBinding.store.bleDeviceList.find(
+        (item) => item.mac === this.data.flashInfo.mac,
+      ) as IBleDevice
+
+      bleDevice.client.close()
+
+      this.setData({
+        'flashInfo.mac': '',
       })
 
-      Logger.log('tryControl-res', res)
-      bleDeviceItem.client.close() // 发送指令完毕后需要断开已连接的设备，否则连接数满了之后无法连接新的设备
-
-      bleDeviceItem.requesting = false
-
-      bleDevicesStore.updateBleDeviceList()
+      clearTimeout(this.data.flashInfo.timeId)
     },
 
     // 重新添加
@@ -470,8 +515,6 @@ ComponentWithComputed({
 
       for (const item of failList) {
         item.status = 'waiting'
-        this.data._deviceMap[item.mac].requestTimes = 20
-        this.data._deviceMap[item.mac].zigbeeRepeatTimes = 2
       }
 
       bleDevicesStore.updateBleDeviceList()

@@ -35,7 +35,14 @@ Component({
       const authRes = await authQrcode(pageParams.code)
 
       if (authRes.success) {
-        Toast('授权成功')
+        Toast({
+          message: '授权成功',
+          onClose: () => {
+            wx.switchTab({
+              url: '/pages/index/index',
+            })
+          },
+        })
       } else {
         Toast('授权失败')
       }
