@@ -114,6 +114,7 @@ ComponentWithComputed({
       })
       const res = await editDeviceInfo({
         type: '0',
+        deviceType: this.data.deviceInfo.deviceType,
         deviceId: this.data.deviceId,
         deviceName: this.data.deviceName,
         houseId: homeStore.currentHomeDetail.houseId,
@@ -141,6 +142,7 @@ ComponentWithComputed({
       })
       const res = await editDeviceInfo({
         type: '1',
+        deviceType: this.data.deviceInfo.deviceType,
         deviceId: this.data.deviceId,
         roomId: this.data.roomId,
         houseId: homeStore.currentHomeDetail.houseId,
