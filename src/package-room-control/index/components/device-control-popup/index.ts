@@ -865,7 +865,7 @@ ComponentWithComputed({
       findDevice({ gatewayId: device.gatewayId, devId: device.deviceId })
     },
     toDetail() {
-      const deviceId = this.data.checkedList[0]
+      const deviceId = this.data.checkedList[0].split(':')[0]
       const deviceMap = deviceStore.deviceMap
       const { deviceType } = deviceMap[deviceId]
       const pageName = deviceType === 4 ? 'group-detail' : 'device-detail'
