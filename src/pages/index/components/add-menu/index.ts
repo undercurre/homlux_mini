@@ -56,11 +56,11 @@ ComponentWithComputed({
       }
       if (data.isCreator) {
         list.push(
-          {
-            title: '添加自动化',
-            key: 'auto',
-            icon: 'auto',
-          },
+          // {
+          //   title: '添加自动化',
+          //   key: 'auto',
+          //   icon: 'auto',
+          // },
           {
             title: '连接其它平台',
             key: 'platform',
@@ -81,6 +81,7 @@ ComponentWithComputed({
     async addMenuTap(e: { currentTarget: { dataset: { url: string } } }) {
       const url = e.currentTarget.dataset.url
       wx.navigateTo({ url })
+      // this.hideAnimate()
     },
     hideAnimate() {
       this.animate(

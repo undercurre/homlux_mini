@@ -78,7 +78,7 @@ export class BleClient {
     const connectRes = await wx
       .createBLEConnection({
         deviceId: this.deviceUuid, // 搜索到设备的 deviceId
-        timeout: 8000
+        timeout: 8000,
       })
       .catch((err: WechatMiniprogram.BluetoothError) => err)
 
@@ -280,9 +280,9 @@ export class BleClient {
               throw err
             })
         },
-      ).catch(err => { 
+      ).catch((err) => {
         console.error('Promise-catch', err)
-        throw err 
+        throw err
       })
     } catch (err) {
       Logger.error(`【${this.mac}】sendCmd-err`, err)
@@ -435,9 +435,9 @@ export const bleUtil = {
 wx.onBLEConnectionStateChange(function (res) {
   wx.getConnectedBluetoothDevices({
     services: [],
-    success (res) {
+    success(res) {
       Logger.log('getConnectedBluetoothDevices', res)
-    }
+    },
   })
   // 该方法回调中可以用于处理连接意外断开等异常情况
   if (!res.connected) {
