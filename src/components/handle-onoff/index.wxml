@@ -1,14 +1,12 @@
-<wxs module="util" src="./index.wxs"></wxs>
-
-<view class=" handle-onoff-wrapper overflow-hidden w-full h-full flex relative rounded-32rpx bg-hex-EFF0F3 border-solid border-1rpx border-hex-dadada {{vertical ?'flex-col' :'flex-row'}}" change:show="{{util.showObserver}}" show="{{isShow}}">
-  <view id="slider" class="onoff-slider-wrapper h-96rpx z-1  p-8rpx {{vertical?OnOff?'':'bottom-0':OnOff?'':'right-0'}} " change:OnOff="{{util.OnOffObserver}}" OnOff="{{OnOff}}">
+<view class=" handle-onoff-wrapper overflow-hidden w-full h-full flex relative rounded-32rpx bg-hex-EFF0F3 border-solid border-1rpx border-hex-dadada {{vertical ?'flex-col' :'flex-row'}}">
+  <view id="slider" class="onoff-slider-wrapper h-96rpx z-1 p-8rpx" style="width:{{vertical ? '100%' : '50%'}}; {{OnOff?'top:0;':'bottom:0;'}}; {{OnOff?'left:0;':'right:0;'}}">
     <view class="onoff-slider bg-white h-full"></view>
   </view>
 
-  <view bindtap="handleOnOffChange" data-sliderWidth="{{util.sliderWidth}}" data-value="{{true}}" class="w-full h-96rpx z-2 text-center button">
+  <view bindtap="handleOnOffChange" data-value="{{true}}" class="w-full h-96rpx z-2 text-center button">
     <text class="text-32rpx  leading-96rpx font-medium {{OnOff?'text-blue':'text-black-2a'}}">开灯</text>
   </view>
-  <view bindtap="handleOnOffChange" data-sliderWidth="{{util.sliderWidth}}" data-value="{{false}}" class="w-full h-96rpx z-2 text-center button">
+  <view bindtap="handleOnOffChange" data-value="{{false}}" class="w-full h-96rpx z-2 text-center button">
     <text class="text-32rpx leading-96rpx font-medium {{OnOff?'text-black-2a':'text-blue'}}">关灯</text>
   </view>
 </view>

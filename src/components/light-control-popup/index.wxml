@@ -5,7 +5,7 @@
     </view>
 
     <view class="mt-64rpx px-32rpx">
-      <handle-onoff show="{{show}}" OnOff="{{OnOff === 1}}" bind:OnOffChange="handleOnOffChange"></handle-onoff>
+      <handle-onoff OnOff="{{OnOff === 1}}" bind:change="handleOnOffChange"></handle-onoff>
     </view>
 
     <view class="w-full box-border mt-64rpx px-48rpx">
