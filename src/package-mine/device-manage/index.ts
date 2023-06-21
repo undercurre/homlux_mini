@@ -222,10 +222,13 @@ ComponentWithComputed({
       // }
     },
 
-    handleCardClick(e: { currentTarget: { dataset: { deviceId: string } } }) {
-      console.log('handleCardClick', e.currentTarget.dataset.deviceId)
+    handleCardClick(e: { currentTarget: { dataset: { deviceId: string; deviceType: number } } }) {
+      const { deviceId, deviceType } = e.currentTarget.dataset
+      console.log('handleCardClick', deviceId, deviceType)
+      const pageName = deviceType === 4 ? 'group-detail' : 'device-detail'
+
       wx.navigateTo({
-        url: `/package-mine/device-manage/device-detail/index?deviceId=${e.currentTarget.dataset.deviceId}`,
+        url: `/package-mine/device-manage/${pageName}/index?deviceId=${deviceId}`,
       })
     },
 

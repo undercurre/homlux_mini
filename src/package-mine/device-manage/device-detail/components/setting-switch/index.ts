@@ -87,6 +87,7 @@ ComponentWithComputed({
         }
         const res = await editDeviceInfo({
           type: '3',
+          deviceType: this.data.deviceInfo.deviceType,
           deviceId: this.data.deviceInfo.deviceId,
           houseId: homeStore.currentHomeDetail.houseId,
           switchId: this.data.deviceInfo.switchInfoDTOList[this.data.switchClickIndex].switchId,
