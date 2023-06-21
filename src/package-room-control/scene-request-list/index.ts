@@ -1,10 +1,10 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { storage, emitter } from '../../utils/index'
-import { addScene } from '../../apis/index'
+import { storage, emitter, getCurrentPageParams } from '../../utils/index'
+import { addScene, retryScene, updateScene } from '../../apis/index'
 import { sceneStore, deviceStore, homeStore } from '../../store/index'
-import { proType } from '../../config/index'
+import { PRO_TYPE } from '../../config/index'
 
 ComponentWithComputed({
   options: {
@@ -18,6 +18,8 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
+    sceneId: '',
+    _sceneData: {} as Scene.AddSceneDto | Scene.UpdateSceneDto,
     deviceList: Array<Device.DeviceItem>(),
   },
 
@@ -32,14 +34,24 @@ ComponentWithComputed({
 
   lifetimes: {
     async ready() {
-      const sceneData = storage.get('scene_data') as Scene.AddSceneDto
+      const pageParams = getCurrentPageParams()
+      const sceneData = storage.get('scene_data') as Scene.AddSceneDto | Scene.UpdateSceneDto
 
       console.log('sceneData', sceneData)
 
       const selectIdList = [] as string[]
 
-      for (const item of sceneData.deviceActions) {
-        if (item.proType === proType.switch) {
+      for (const item of sceneData.deviceActions as Scene.DeviceAction[]) {
+        // 去除后端不需要的字段
+        for (const epItem of item.controlAction) {
+          delete epItem.colorTempRange
+          delete epItem.maxColorTemp
+          delete epItem.minColorTemp
+          delete epItem.deviceName
+          delete epItem.devicePic
+        }
+
+        if (item.proType === PRO_TYPE.switch) {
           for (const epItem of item.controlAction) {
             selectIdList.push(`${item.deviceId}:${epItem.ep}`)
           }
@@ -56,6 +68,7 @@ ComponentWithComputed({
         }))
 
       this.setData({
+        _sceneData: sceneData,
         deviceList,
       })
 
@@ -73,32 +86,39 @@ ComponentWithComputed({
         }
       })
 
-      const res = await addScene(sceneData)
+      const promise = pageParams.sceneId
+        ? updateScene(sceneData as Scene.UpdateSceneDto)
+        : addScene(sceneData as Scene.AddSceneDto)
+
+      const res = await promise
+
       if (res.success) {
         setTimeout(() => {
           this.data.deviceList.forEach((item) => {
-            item.status = 'fail'
+            if (item.status === 'waiting') {
+              item.status = 'fail'
+            }
           })
 
           this.setData({
             deviceList,
+            sceneId: pageParams.sceneId || res.result.sceneId,
           })
         }, 30000)
-        sceneStore.updateAllRoomSceneList()
-        sceneStore.updateSceneList()
-        deviceStore.updateDeviceList()
-        deviceStore.updateAllRoomDeviceList()
-        homeStore.updateRoomCardList()
       } else {
         Toast({
           message: '创建失败',
-          zIndex: 99999,
         })
       }
     },
 
     detached() {
       emitter.off('scene_device_result_status')
+      sceneStore.updateAllRoomSceneList()
+      sceneStore.updateSceneList()
+      deviceStore.updateSubDeviceList()
+      deviceStore.updateAllRoomDeviceList()
+      homeStore.updateRoomCardList()
     },
   },
 
@@ -106,8 +126,50 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    ignoreError() {},
+    async retry() {
+      const { _sceneData, sceneId, deviceList } = this.data
+      const deviceActions = [] as Scene.DeviceAction[]
 
-    retry() {},
+      const failList = deviceList.filter((item) => item.status === 'fail')
+
+      // 由于云端场景下发逻辑，仅zigbee灯会存在场景下发失败的情况，暂时只考虑灯的重试处理逻辑
+      failList.forEach((device) => {
+        device.status = 'waiting'
+        const action = (_sceneData.deviceActions as Scene.DeviceAction[]).find(
+          (actionItem) => actionItem.deviceId === device.deviceId,
+        ) as Scene.DeviceAction
+
+        if (device.proType === PRO_TYPE.light) {
+          deviceActions.push(action)
+        }
+      })
+
+      this.setData({
+        deviceList,
+      })
+
+      const res = await retryScene({
+        deviceActions,
+        sceneId,
+      })
+
+      if (res.success) {
+        setTimeout(() => {
+          this.data.deviceList.forEach((item) => {
+            if (item.status === 'waiting') {
+              item.status = 'fail'
+            }
+          })
+
+          this.setData({
+            deviceList,
+          })
+        }, 30000)
+      } else {
+        Toast({
+          message: '重试失败',
+        })
+      }
+    },
   },
 })

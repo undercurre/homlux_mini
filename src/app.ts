@@ -9,7 +9,7 @@ import {
 } from './utils/index'
 import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore } from './store/index'
-import { isConnect, networkStatusListen } from './utils/network'
+import { isConnect } from './utils/network'
 import { reaction } from 'mobx-miniprogram'
 
 App<IAppOption>({
@@ -30,7 +30,7 @@ App<IAppOption>({
       othersStore.setIsInit(false)
     }
 
-    // 监听houseId变化，切换websocket连接
+    // 监听houseId变化，切换websocket连接,切换成对应家庭的sock连接
     reaction(
       () => homeStore.currentHomeDetail.houseId,
       () => {
@@ -38,9 +38,6 @@ App<IAppOption>({
         startWebsocketService()
       },
     )
-
-    // 网络监听
-    networkStatusListen()
 
     // 监听内存不足告警事件
     wx.onMemoryWarning(function () {
@@ -56,7 +53,7 @@ App<IAppOption>({
     }
     // 用户热启动app，建立ws连接，并且再更新一次数据
     if (homeStore.currentHomeId && storage.get<string>('token') && isConnect()) {
-      deviceStore.updateDeviceList()
+      deviceStore.updateSubDeviceList()
       homeStore.updateHomeInfo()
       startWebsocketService()
     }

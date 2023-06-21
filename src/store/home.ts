@@ -12,12 +12,13 @@ import {
   getShareId,
   queryAllDevice,
 } from '../apis/index'
-import { proType } from '../config/index'
+import { PRO_TYPE } from '../config/index'
 import { asyncStorage, storage, Logger } from '../utils/index'
 import { deviceStore } from './device'
 import { othersStore } from './others'
 import { roomStore } from './room'
 import { userStore } from './user'
+import { deviceCount } from '../utils/index'
 
 export const homeStore = observable({
   homeList: [] as Home.IHomeItem[],
@@ -158,8 +159,8 @@ export const homeStore = observable({
       data[1].result.roomInfoList.forEach((roomInfo) => {
         const roomDeviceList = roomStore.roomDeviceList[roomInfo.roomInfo.roomId]
         // 过滤一下默认场景，没灯过滤明亮柔和，没灯没开关全部过滤
-        const hasSwitch = roomDeviceList?.some((device) => device.proType === proType.switch) ?? false
-        const hasLight = roomDeviceList?.some((device) => device.proType === proType.light) ?? false
+        const hasSwitch = roomDeviceList?.some((device) => device.proType === PRO_TYPE.switch) ?? false
+        const hasLight = roomDeviceList?.some((device) => device.proType === PRO_TYPE.light) ?? false
         if (!hasSwitch && !hasLight) {
           // 四个默认场景都去掉
           roomInfo.roomSceneList = roomInfo.roomSceneList.filter((scene) => scene.isDefault === '0')
@@ -167,31 +168,11 @@ export const homeStore = observable({
           // 只有开关，去掉默认的明亮、柔和
           roomInfo.roomSceneList = roomInfo.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
         }
-        // 统计多少灯打开（开关不关联灯或者关联场景都算进去）
-        let deviceLightOnNum = 0
-        // 统计多少个子设备
-        let subDeviceNum = 0
-        roomDeviceList?.forEach((device) => {
-          if (device.proType !== proType.gateway) {
-            subDeviceNum++
-          }
-          if (!device.onLineStatus) return
-          if (device.proType === proType.light && device.mzgdPropertyDTOList['1'].OnOff) {
-            deviceLightOnNum++
-          } else if (device.proType === proType.switch) {
-            device.switchInfoDTOList.forEach((switchItem) => {
-              if (
-                // !switchItem.lightRelId &&
-                device.mzgdPropertyDTOList[switchItem.switchId].OnOff &&
-                device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode === 0
-              ) {
-                deviceLightOnNum++
-              }
-            })
-          }
-        })
+
+        const { deviceLightOnNum, subDeviceNum, lightNum } = deviceCount(roomDeviceList)
         roomInfo.roomInfo.deviceLightOnNum = deviceLightOnNum
         roomInfo.roomInfo.subDeviceNum = subDeviceNum
+        roomInfo.roomInfo.lightNum = lightNum
       })
       runInAction(() => {
         roomStore.roomList = data[1].result.roomInfoList.map((room) => ({
@@ -202,6 +183,7 @@ export const homeStore = observable({
           sceneList: room.roomSceneList,
           deviceNum: room.roomInfo.deviceNum,
           subDeviceNum: room.roomInfo.subDeviceNum,
+          lightNum: room.roomInfo.lightNum,
         }))
       })
     }

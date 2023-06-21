@@ -1,12 +1,11 @@
 // package-room-control/scene-list/index.ts
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import Toast from '@vant/weapp/toast/toast'
 import { deviceStore, homeBinding, homeStore, sceneBinding, sceneStore } from '../../store/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { runInAction } from 'mobx-miniprogram'
 import { execScene, updateSceneSort } from '../../apis/scene'
-import Toast from '@vant/weapp/toast/toast'
-import { storage, emitter } from '../../utils/index'
+import { storage, emitter, strUtil } from '../../utils/index'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [sceneBinding, homeBinding] }), pageBehavior],
@@ -27,11 +26,8 @@ ComponentWithComputed({
 
   computed: {},
 
-  methods: {
-    /**
-     * 生命周期函数--监听页面加载
-     */
-    onLoad() {
+  lifetimes: {
+    ready() {
       this.updateList()
       sceneStore.updateSceneList().then(() => {
         this.updateList()
@@ -43,7 +39,9 @@ ComponentWithComputed({
         })
       })
     },
+  },
 
+  methods: {
     onUnload() {
       emitter.off('sceneEdit')
     },
@@ -60,22 +58,21 @@ ComponentWithComputed({
       const deviceMap = deviceStore.allRoomDeviceMap
 
       sceneStore.sceneList.forEach((scene: Scene.SceneItem) => {
+        let linkName = ''
         if (scene.deviceConditions?.length > 0) {
           const device = deviceMap[scene.deviceConditions[0].deviceId]
           const switchName = device.switchInfoDTOList.find(
             (switchItem) => switchItem.switchId === scene.deviceConditions[0].controlEvent[0].ep.toString(),
           )?.switchName
-          listData.push({
-            ...scene,
-            dragId: scene.sceneId,
-            linkName: `${switchName} | ${device.deviceName}`,
-          })
-          return
+
+          linkName = `${switchName} | ${device.deviceName}`
         }
+
         listData.push({
           ...scene,
           dragId: scene.sceneId,
-          linkName: '',
+          linkName,
+          sceneIcon: scene.sceneIcon + '-gray',
         })
       })
       this.setData({
@@ -112,12 +109,8 @@ ComponentWithComputed({
 
     toSetting(e: { detail: Scene.SceneItem }) {
       if (this.data.isCreator || this.data.isAdmin) {
-        const index = sceneStore.sceneList.findIndex((scene) => scene.sceneId === e.detail.sceneId)
-        runInAction(() => {
-          sceneStore.selectSceneIndex = index
-        })
         wx.navigateTo({
-          url: '/package-room-control/scene-edit/index',
+          url: strUtil.getUrlWithParams('/package-room-control/scene-edit/index', { sceneId: e.detail.sceneId }),
         })
       } else {
         Toast('您当前身份为访客，无法编辑场景')

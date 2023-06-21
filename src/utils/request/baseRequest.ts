@@ -114,10 +114,10 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       }
     }
 
-    if (requestOption.log) {
-      // 调试可能需要拿到token
-      console.log('请求发起URL:' + requestOption.url, requestOption.data, requestOption.header)
-    }
+    // if (requestOption.log) {
+    //   // 调试可能需要拿到token
+    //   console.log('请求发起URL:' + requestOption.url, requestOption.data, requestOption.header)
+    // }
 
     wx.request({
       ...requestOption,

@@ -1,4 +1,23 @@
 declare namespace Device {
+  /**
+   * @description 设备属性
+   * @param ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
+   */
+  interface mzgdPropertyDTO {
+    ColorTemp?: number // 色温
+    Level?: number // 亮度
+    OnOff?: number // 关 0 | 开 1
+    colorTempRange?: {
+      // 色温值范围
+      maxColorTemp: number
+      minColorTemp: number
+    }
+    ButtonMode?: number
+    ButtonScene?: number
+    curtain_position?: string
+    curtain_status?: string
+    curtain_direction?: 'positive' | 'reverse' // 窗帘开合方向
+  }
   /** 设备列表项 */
   interface DeviceItem {
     // 接口返回值属性
@@ -21,7 +40,10 @@ declare namespace Device {
      * { 每个endpoint: {属性值} }
      * 单路设备只有一个endpoint：1，比如{ 1: {OnOff: 1} }
      */
-    mzgdPropertyDTOList: Record<string, Record<string, number>>
+    mzgdPropertyDTOList: Record<string, mzgdPropertyDTO>
+
+    // 设备属性
+    property?: IAnyObject
     /**
      * onLineStatus
      * 0:离线 1:在线
@@ -57,6 +79,10 @@ declare namespace Device {
 
     // 设备状态字段，前端使用
     status?: string
+
+    // 灯分组，包含的列表数据
+    groupDeviceList?: GroupDTO[]
+    groupName?: string
   }
 
   interface MzgdPropertyDTO {
@@ -111,6 +137,7 @@ declare namespace Device {
     desc: string[]
     pic: string
     proType: string
+    deviceType: number
     value: IAnyObject
   }
 
@@ -120,7 +147,8 @@ declare namespace Device {
     deviceName?: string
     houseId: string
     roomId?: string
-    type?: string
+    type?: string // 0 更改开关以外的设备 1 仅更改房间 2 所有都更改 3 仅开关更改
+    deviceType?: number // 1 网关 2 子设备 3wifi设备
     switchId?: string
     switchName?: string
   }
@@ -158,4 +186,6 @@ declare namespace Device {
     switchId: string
     lampDeviceId: string
   }
+
+  type GroupDTO = Pick<DeviceItem, 'deviceId' | 'deviceType' | 'proType'>
 }

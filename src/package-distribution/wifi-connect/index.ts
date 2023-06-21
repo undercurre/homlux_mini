@@ -2,7 +2,6 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import Dialog from '@vant/weapp/dialog/dialog'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { strUtil, storage, getCurrentPageParams, isAndroid } from '../../utils/index'
-import dayjs from 'dayjs'
 
 ComponentWithComputed({
   options: {
@@ -157,11 +156,15 @@ ComponentWithComputed({
       wx.onGetWifiList((res) => {
         console.log('onGetWifiList-wifi-connect', res)
         const wifiList = res.wifiList.filter((item) => {
-          // 过滤5gwifi,仅安卓端有效
+          // 过滤5G信号wifi,仅安卓端有效
           if (item.frequency && item.frequency > 5000) {
             return false
           }
-          return item.SSID && this.data.systemWifiList.findIndex((foundItem) => item.SSID === foundItem.SSID) < 0 // 过滤空的ssid的wifi
+          return (
+            item.SSID &&
+            !item.SSID.includes('midea_16') &&
+            this.data.systemWifiList.findIndex((foundItem) => item.SSID === foundItem.SSID) < 0
+          ) // 过滤空的ssid的wifi以及网关热点
         })
 
         if (!wifiList.length) {
@@ -178,10 +181,12 @@ ComponentWithComputed({
       if (!this.data.wifiInfo.SSID) {
         wx.getConnectedWifi({
           success: (res) => {
-            this.setData({
-              'wifiInfo.SSID': res.wifi.SSID,
-            })
-            console.log('获取当前wifi信息：', res, dayjs().format('HH:mm:ss'))
+            // 过滤网关热点
+            if (!res.wifi.SSID?.includes('midea_16')) {
+              this.setData({
+                'wifiInfo.SSID': res.wifi.SSID,
+              })
+            }
           },
         })
       }

@@ -1,6 +1,9 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { proName, proType } from '../../config/index'
+import { proName, PRO_TYPE } from '../../config/index'
+
+const CONTROL_INTERVAL = 5000 // 开关操作间隔时间
 let throttleTimer = 0
+
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
@@ -55,14 +58,12 @@ ComponentWithComputed({
     ripple: false,
     onOff: false, // true: on false: off
     showDeviceOffline: false,
+    isProcessing: false,
   },
 
   computed: {
     picUrl(data) {
-      if (data.deviceInfo.deviceType === 4) {
-        return '/assets/img/device/group.png'
-      }
-      if (data.deviceInfo.proType === proType.switch && data.showBtnDetail) {
+      if (data.deviceInfo.proType === PRO_TYPE.switch && data.showBtnDetail) {
         return data.deviceInfo?.switchInfoDTOList[0]?.pic
       } else if (data.deviceInfo?.pic) {
         return data.deviceInfo.pic
@@ -70,11 +71,23 @@ ComponentWithComputed({
       return ''
     },
     controlBtnPic(data) {
-      if (data.deviceInfo.proType === proType.light) {
+      // 窗帘，位置大于0即为开启
+      if (data.deviceInfo.proType === PRO_TYPE.curtain) {
+        const pos = data.deviceInfo.mzgdPropertyDTOList['1'].curtain_position
+        const isClosed = pos === '0'
+        if (data.isProcessing) {
+          return isClosed ? '/assets/img/base/curtain-opening.png' : '/assets/img/base/curtain-closing.png'
+        }
+        return isClosed ? '/assets/img/base/curtain-open.png' : '/assets/img/base/curtain-close.png'
+      }
+      // 灯及灯组
+      else if (data.deviceInfo.proType === PRO_TYPE.light) {
         return data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
           ? '/assets/img/base/power-on.png'
           : '/assets/img/base/power-off.png'
-      } else if (data.deviceInfo.proType === proType.switch && data.deviceInfo.switchInfoDTOList[0]) {
+      }
+      // 面板
+      else if (data.deviceInfo.proType === PRO_TYPE.switch && data.deviceInfo.switchInfoDTOList[0]) {
         // ! 确保带有switchInfoDTOList
         const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
         if (!data.deviceInfo.mzgdPropertyDTOList[switchId]) {
@@ -90,7 +103,7 @@ ComponentWithComputed({
     topTitle(data) {
       // 如果是开关，deviceName显示开关名称
       let name
-      if (data.deviceInfo.proType === proType.switch && data.showBtnDetail) {
+      if (data.deviceInfo.proType === PRO_TYPE.switch && data.showBtnDetail) {
         const switchInfo = data.deviceInfo.switchInfoDTOList[0]
         name = switchInfo.switchName ?? '按键' + switchInfo.switchId
       } else {
@@ -141,7 +154,22 @@ ComponentWithComputed({
           }
         })
     },
+    /**
+     * 处理中部位置点击时的事件，优化交互手感
+     */
+    handleMiddleTap() {
+      if (this.data.showControl && this.data.deviceInfo.onLineStatus) {
+        this.handlePowerTap()
+      } else {
+        this.handleCardTap()
+      }
+    },
     handlePowerTap() {
+      // 如果关联了面板，或者设备离线，刚转为点击卡片
+      if (this.data.deviceInfo.linkSceneName || !this.data.deviceInfo.onLineStatus) {
+        this.handleCardTap()
+        return
+      }
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
       this.createSelectorQuery()
         .select('#card')
@@ -154,9 +182,9 @@ ComponentWithComputed({
               return
             }
             let onOff = false
-            if (this.data.deviceInfo.proType === proType.light) {
+            if (this.data.deviceInfo.proType === PRO_TYPE.light) {
               onOff = !this.data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
-            } else if (this.data.deviceInfo.proType === proType.switch) {
+            } else if (this.data.deviceInfo.proType === PRO_TYPE.switch) {
               const switchId = this.data.deviceInfo.switchInfoDTOList[0].switchId
               if (this.data.deviceInfo.mzgdPropertyDTOList[switchId]) {
                 onOff = !this.data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff
@@ -164,7 +192,15 @@ ComponentWithComputed({
               if (this.data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
                 throttleTimer = setTimeout(() => {
                   throttleTimer = 0
-                }, 550)
+                  this.setData({
+                    isProcessing: false,
+                  })
+                }, CONTROL_INTERVAL)
+
+                this.setData({
+                  isProcessing: true,
+                })
+
                 return
               }
             }
@@ -176,8 +212,12 @@ ComponentWithComputed({
               throttleTimer = 0
               this.setData({
                 ripple: false,
+                isProcessing: false,
               })
-            }, 550)
+            }, CONTROL_INTERVAL)
+            this.setData({
+              isProcessing: true,
+            })
           } else {
             this.triggerEvent('offlineTap', {
               ...this.data.deviceInfo,

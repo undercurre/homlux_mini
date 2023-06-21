@@ -10,8 +10,8 @@
         <image src="/package-room-control/assets/img/link-switch.png" class="w-146rpx h-146rpx" />
       </view>
       <view class="flex-1 flex flex-col item-center">
-        <text class="text-hex-373cdf text-32rpx font-medium">关联开关</text>
-        <text class="text-hex-373cdf text-22rpx opacity-80 mt-12rpx">开关连接到另一开关</text>
+        <text class="text-hex-373cdf text-32rpx font-medium">关联智能开关</text>
+        <text class="text-hex-373cdf text-22rpx opacity-80 mt-12rpx">实现双控或多控功能</text>
       </view>
       <view class="mr-42rpx flex-center">
         <text class="text-black-tips text-28rpx leading-none">{{linkType==='switch' ? '已关联' : ''}}</text>
@@ -23,8 +23,8 @@
         <image src="/package-room-control/assets/img/link-light.png" class="w-146rpx h-146rpx" />
       </view>
       <view class="flex-1 flex flex-col item-center">
-        <text class="text-hex-de7e28 text-32rpx font-medium">关联灯光</text>
-        <text class="text-hex-de7e28 text-22rpx opacity-80 mt-12rpx">通过开关连接智能灯</text>
+        <text class="text-hex-de7e28 text-32rpx font-medium">关联智能灯</text>
+        <text class="text-hex-de7e28 text-22rpx opacity-80 mt-12rpx">实现单灯或灯组的开关功能</text>
       </view>
       <view class="mr-42rpx flex-center">
         <text class="text-black-tips text-28rpx leading-none">{{linkType==='light' ? '已关联' : ''}}</text>
@@ -36,8 +36,8 @@
         <image src="/package-room-control/assets/img/link-scene.png" class="w-146rpx h-146rpx" />
       </view>
       <view class="flex-1 flex flex-col item-center">
-        <text class="text-hex-1454ae text-32rpx font-medium">关联智能场景</text>
-        <text class="text-hex-1454ae text-22rpx opacity-80 mt-12rpx">通过开关触发场景</text>
+        <text class="text-hex-1454ae text-32rpx font-medium">关联场景</text>
+        <text class="text-hex-1454ae text-22rpx opacity-80 mt-12rpx">实现智能场景的控制功能</text>
       </view>
       <view class="mr-42rpx flex-center">
         <text class="text-black-tips text-28rpx leading-none">{{linkType==='scene' ? '已关联' : ''}}</text>

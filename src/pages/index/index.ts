@@ -12,16 +12,14 @@ import {
 } from '../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { storage, throttle } from '../../utils/index'
-import { proType, ROOM_CARD_H, ROOM_CARD_M } from '../../config/index'
+import { PRO_TYPE, ROOM_CARD_H, ROOM_CARD_M } from '../../config/index'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { allDevicePowerControl, updateRoomSort } from '../../apis/index'
-import { emitter } from '../../utils/eventBus'
+import { emitter, WSEventType } from '../../utils/eventBus'
 import { updateDefaultHouse } from '../../apis/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { runInAction } from 'mobx-miniprogram'
-let throttleTimer = 0
-let hasUpdateInTimer = false
 
 type PosType = Record<'index' | 'y', number>
 
@@ -55,6 +53,13 @@ ComponentWithComputed({
       'px',
     // 状态栏高度
     statusBarHeight: storage.get<number>('statusBarHeight') + 'px',
+    // 可滚动区域高度
+    scrollViewHeight:
+      (storage.get<number>('windowHeight') as number) -
+      (storage.get<number>('statusBarHeight') as number) -
+      (storage.get<number>('bottomBarHeight') as number) - // IPX
+      90 - // 开关、添加按钮
+      (storage.get<number>('navigationBarHeight') as number),
     selectHomeMenu: {
       x: '0px',
       y: '0px',
@@ -102,7 +107,7 @@ ComponentWithComputed({
       let hasLightOrSwitch = false
       if (data.allRoomDeviceList) {
         data.allRoomDeviceList.some((device: Device.DeviceItem) => {
-          if (([proType.light, proType.switch] as string[]).includes(device.proType)) {
+          if (([PRO_TYPE.light, PRO_TYPE.switch] as string[]).includes(device.proType)) {
             hasLightOrSwitch = true
             return true
           }
@@ -134,6 +139,9 @@ ComponentWithComputed({
         )
       }
     },
+    roomList() {
+      this.renewRoomPos()
+    },
   },
 
   methods: {
@@ -156,13 +164,10 @@ ComponentWithComputed({
       this.hideMenu()
       emitter.off('wsReceive')
     },
-    onShow() {
+    async onShow() {
       setTimeout(() => {
         this.inviteMember()
       }, 1000)
-      if (homeStore.currentHomeId) {
-        homeStore.updateRoomCardList()
-      }
       if (!othersStore.isInit) {
         this.setData({
           loading: true,
@@ -177,50 +182,49 @@ ComponentWithComputed({
               (device) => device.deviceId === res.result.eventData.deviceId,
             )
             if (device) {
-              device.mzgdPropertyDTOList[res.result.eventData.ep] = {
-                ...device.mzgdPropertyDTOList[res.result.eventData.ep],
-                ...res.result.eventData.event,
-              }
-              if (!throttleTimer) {
-                roomStore.updateRoomCardLightOnNum()
-                throttleTimer = setTimeout(async () => {
-                  if (hasUpdateInTimer) {
-                    roomStore.updateRoomCardLightOnNum()
-                    hasUpdateInTimer = false
-                  }
-                  throttleTimer = 0
-                }, 300)
-              } else {
-                hasUpdateInTimer = true
-              }
+              runInAction(() => {
+                device.mzgdPropertyDTOList[res.result.eventData.ep] = {
+                  ...device.mzgdPropertyDTOList[res.result.eventData.ep],
+                  ...res.result.eventData.event,
+                }
+              })
+
+              // 仅为本地更新，暂时取消节流
+              roomStore.updateRoomCardLightOnNum()
+
               // 直接更新store里的数据，更新完退出回调函数
               return
             }
           }
         }
-        // FIXME ws消息很多，除了connect_success_status外还应该过滤一下
-        if (!throttleTimer && res.result.eventType !== 'connect_success_status') {
-          homeStore.updateRoomCardList()
-          throttleTimer = setTimeout(async () => {
-            if (hasUpdateInTimer) {
-              homeStore.updateRoomCardList()
-              hasUpdateInTimer = false
-            }
-            throttleTimer = 0
-          }, 3000)
-        } else if (res.result.eventType !== 'connect_success_status') {
-          hasUpdateInTimer = true
+        // Perf: ws消息很多，改用白名单过滤
+        else if (
+          [
+            WSEventType.device_del,
+            WSEventType.device_replace,
+            WSEventType.device_online_status,
+            WSEventType.device_offline_status,
+            WSEventType.bind_device,
+            WSEventType.scene_device_result_status,
+            WSEventType.group_device_result_status,
+          ].includes(res.result.eventType)
+        ) {
+          this.updateRoomData()
         }
       })
+
       // 房间选择恢复默认
       if (roomStore.currentRoomIndex) {
         runInAction(() => {
           roomStore.currentRoomIndex = 0
         })
       }
-
-      this.renewRoomPos()
     },
+
+    // 节流更新房间卡片信息
+    updateRoomData: throttle(() => {
+      homeStore.updateRoomCardList()
+    }, 3000),
 
     /**
      * @description 生成房间位置
@@ -239,7 +243,7 @@ ComponentWithComputed({
             y: currentIndex === index ? this.data.roomPos[room.roomId].y : accumulatedY,
           }
           // 若场景列表为空，或正在拖动，则使用 ROOM_CARD_M
-          accumulatedY += room.subDeviceNum && room.sceneList.length && !isMoving ? ROOM_CARD_H : ROOM_CARD_M
+          accumulatedY += !room.subDeviceNum || !room.sceneList.length || isMoving === true ? ROOM_CARD_M : ROOM_CARD_H
         })
 
       this.setData({

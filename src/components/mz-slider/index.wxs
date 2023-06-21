@@ -1,0 +1,65 @@
+var value = 0
+var step = 1
+var timer = null
+
+var sliderInfo
+var sliderBar
+var buttonInfo
+
+function onTouchstart(event, ownerInstance) {
+  var touch = event.touches[0] || event.changedTouches[0]
+  sliderInfo = ownerInstance.selectComponent('.mz-slider').getBoundingClientRect()
+  buttonInfo = ownerInstance.selectComponent('.button').getBoundingClientRect()
+  sliderBar = ownerInstance.selectComponent('.mz-slider-bar')
+  changeBarStyle(touch.clientX - sliderInfo.left)
+  ownerInstance.callMethod('touchstart', { value })
+}
+function onTouchmove(event, ownerInstance) {
+  var touch = event.touches[0] || event.changedTouches[0]
+  changeBarStyle(touch.clientX - sliderInfo.left)
+  // ownerInstance.callMethod('valueChange', { value })
+
+  if (timer) return
+  timer = ownerInstance.setTimeout(function () {
+    ownerInstance.callMethod('valueChange', { value })
+    timer = null
+  }, 150)
+}
+
+function onTouchend(event, ownerInstance) {
+  if (timer) {
+    ownerInstance.clearTimeout(timer)
+    timer = null
+  }
+  ownerInstance.callMethod('handleEnd', { value })
+}
+
+function changeBarStyle(clientX) {
+  //脚本设置style优先级比ts里普通style高
+  sliderBar.setStyle({
+    width: calcDragDis(clientX) + 'px',
+  })
+  value = Math.round(
+    (calcDragDis(clientX - buttonInfo.width, 0, sliderInfo.width - buttonInfo.width) /
+      (sliderInfo.width - buttonInfo.width)) *
+      100,
+  )
+}
+
+function calcDragDis(value, min = buttonInfo.width, max = sliderInfo.width) {
+  if (value >= min) {
+    if (value < max) {
+      return value
+    } else {
+      return max
+    }
+  } else {
+    return min
+  }
+}
+
+module.exports = {
+  onTouchstart: onTouchstart,
+  onTouchmove: onTouchmove,
+  onTouchend: onTouchend,
+}

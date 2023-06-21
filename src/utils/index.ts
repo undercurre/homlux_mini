@@ -10,6 +10,9 @@ export * from './eventBus'
 export * from './validate'
 export * from './app'
 export * from './log'
+export * from './deviceModel'
+
+import { PRO_TYPE } from '../config/index'
 
 export function delay(ms: number) {
   return new Promise<void>((resolve) => {
@@ -94,4 +97,64 @@ export function _get(obj: object, path: string, defaultVal = undefined) {
   }
 
   return formatPath.reduce((o: IAnyObject, k) => (o ?? {})[k], obj) ?? defaultVal
+}
+
+/**
+ * @description 设备数量统计
+ * @param ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
+ * @returns {
+ *  deviceLightOnNum: 统计多少灯打开（开关不关联灯或者关联场景都算进去）
+ *  subDeviceNum: 子设备数; 统计多少个子设备
+ *  lightNum: 灯设备数
+ * }
+ */
+export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
+  let deviceLightOnNum = 0
+  let subDeviceNum = 0
+  let lightNum = 0
+
+  list?.forEach((device) => {
+    if (device.proType !== PRO_TYPE.gateway) {
+      subDeviceNum++
+    }
+    if (device.proType === PRO_TYPE.light || device.proType === PRO_TYPE.switch) {
+      lightNum++
+    }
+    if (!device.onLineStatus) return
+    if (device.proType === PRO_TYPE.light && device.mzgdPropertyDTOList['1'].OnOff) {
+      deviceLightOnNum++
+    } else if (device.proType === PRO_TYPE.switch) {
+      device.switchInfoDTOList.forEach((switchItem) => {
+        if (
+          device.mzgdPropertyDTOList && // 避免个别设备未上报数据导致的整个页面异常
+          device.mzgdPropertyDTOList[switchItem.switchId]?.OnOff &&
+          !device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode
+        ) {
+          deviceLightOnNum++
+        }
+      })
+    }
+  })
+
+  return {
+    deviceLightOnNum,
+    subDeviceNum,
+    lightNum,
+  }
+}
+
+export const getRect = function (context: any, selector: string, needAll = false) {
+  return new Promise<any>((resolve, reject) => {
+    wx.createSelectorQuery()
+      .in(context)
+      [needAll ? 'selectAll' : 'select'](selector)
+      .boundingClientRect((rect) => {
+        if (rect) {
+          resolve(rect)
+        } else {
+          reject(rect)
+        }
+      })
+      .exec()
+  })
 }

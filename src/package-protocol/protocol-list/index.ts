@@ -1,6 +1,6 @@
 // pages/protocalList/index.ts
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { storage, setCurrentEnv, Logger } from '../../utils/index'
+import { storage, setCurrentEnv, logout } from '../../utils/index'
 import meta from '../../meta'
 
 Component({
@@ -82,12 +82,7 @@ Component({
           }
           setCurrentEnv(env)
 
-          wx.reLaunch({
-            url: '/pages/index/index',
-            complete(res) {
-              Logger.log('reLaunch', res)
-            },
-          })
+          logout()
         },
         fail(res) {
           console.log(res.errMsg)

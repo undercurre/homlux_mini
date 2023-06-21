@@ -17,13 +17,13 @@
         </view>
         <text class="text-black-tips text-24rpx mt-26rpx">修改名称</text>
       </view>
-      <view class="flex-col-center flex-1 {{!editSelectList.length ?'opacity-25':''}}" bindtap="handleMoveRoomPopup">
+      <view class="flex-col-center flex-1 {{canMoveRoom ?'':'opacity-25'}}" bindtap="handleMoveRoomPopup">
         <view class="flex-center w-100rpx h-100rpx bg-hex-f6fafd rounded-999">
           <image src="/package-room-control/assets/img/move.png" class="w-48rpx h-48rpx" />
         </view>
         <text class="text-black-tips text-24rpx mt-26rpx">移动房间</text>
       </view>
-      <view class="flex-col-center flex-1 {{!editSelectList.length ?'opacity-25':''}}" bindtap="handleCreateGroup">
+      <view class="flex-col-center flex-1 {{canGroup ?'':'opacity-25'}}" bindtap="handleCreateGroup">
         <view class="flex-center w-100rpx h-100rpx bg-hex-f6fafd rounded-999">
           <image src="/package-room-control/assets/img/group.png" class="w-48rpx h-48rpx" />
         </view>

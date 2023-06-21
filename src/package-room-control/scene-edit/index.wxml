@@ -4,7 +4,7 @@
 
 <view class="h-100vh flex flex-col">
   <!-- 标题 -->
-  <nav-bar title="编辑场景" left-arrow show-go-home bind:leftTap="goBack"></nav-bar>
+  <nav-bar title="编辑场景" left-arrow show-go-home bind:leftTap="handleExit"></nav-bar>
 
   <!-- 页面主体 -->
   <view class="flex-1 flex flex-col">
@@ -25,21 +25,23 @@
       <text class="text-24rpx text-black-59">此场景执行以下操作</text>
     </view>
     <view class="flex-1" id="content">
-      <scroll-view enhanced show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
-        <van-cell-group inset border="{{ false }}" wx:for="{{sceneDeviceActionsFlatten}}" wx:key="id" bindtap="handleSceneActionEdit" data-index="{{index}}" custom-class="{{index === 0 ? 'mt-0_el_' : ''}}">
-          <van-cell center border="{{ false }}">
-            <view class="flex items-center">
-              <image src="{{item.pic}}" class="w-96rpx h-96rpx rounded-999 bg-hex-f6fafd" />
-              <view class="flex flex-col items-start ml-32rpx">
-                <text class="text-32rpx text-black-2a font-medium leading-none mt-10rpx">{{item.name}}</text>
-                <view class="text-28rpx text-black-tips font-normal mt-8rpx">
-                  <text wx:for="{{item.desc}}" wx:key="index" class="{{index !== 0 ? 'ml-16rpx' : ''}}">{{item}}</text>
-                </view>
-              </view>
+      <scroll-view class="box-border px-24rpx" enhanced show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
+        <view class="flex flex-row items-center bg-hex-fff rounded-32rpx px-40rpx py-32rpx mb-24rpx relative" wx:for="{{sceneDeviceActionsFlatten}}" bindtap="handleSceneActionEdit" data-index="{{index}}" wx:key="uniId">
+          <view class="w-96 h-96 rounded-full bg-hex-F9FBFE p-12rpx box-border">
+            <image src="{{item.pic}}" class="w-72 h-72" />
+          </view>
+
+          <view class="flex flex-col items-start ml-32rpx">
+            <text class="text-32rpx text-black-2a font-medium leading-none mt-10rpx">{{item.name}}</text>
+            <view class="flex flex-row gap-x-20rpx text-26 text-black-tips mt-22rpx leading-56rpx">
+              <text class="px-24rpx bg-hex-F4F5F8 rounded-32rpx" wx:for="{{item.desc}}" wx:key="index">{{item}}</text>
             </view>
-            <svg-icon wx:if="{{!isDefault}}" slot="right-icon" color="#d2d2d3" name="ion:close-circled" width="48rpx" height="48rpx" data-info="{{item}}" data-index="{{index}}" catchtap="handleActionDelete"></svg-icon>
-          </van-cell>
-        </van-cell-group>
+          </view>
+
+          <view wx:if="{{!isDefault}}" class="px-20rpx py-16rpx absolute right-0 top-0" catchtap="handleActionDelete" data-index="{{index}}" data-info="{{item}}">
+            <image src="/assets/img/base/close-gray.png" class="w-40 h-40" />
+          </view>
+        </view>
       </scroll-view>
     </view>
     <view class="mb-86rpx mt-24rpx flex justify-center">
@@ -62,6 +64,8 @@
 
 <select-card-popup show="{{showLinkPopup}}" showCancel="{{false}}" title="选择智能开关" list="{{switchList}}" selectList="{{linkSwitchSelect}}" bind:close="handleLinkPopupClose" bind:select="handleSwitchSelect" bind:confirm="handleLinkPopupConfirm"></select-card-popup>
 
-<scene-light-edit-popup show="{{showSceneEditLightPopup}}" title="{{sceneEditTitle}}" lightInfo="{{sceneLightEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleSceneLightEditPopupClose"></scene-light-edit-popup>
+<light-control-popup show="{{showEditPopup === '0x13'}}" title="{{sceneEditTitle}}" lightInfo="{{sceneEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleEditPopupClose"></light-control-popup>
 
-<scene-switch-edit-popup show="{{showSceneEditSwitchPopup}}" title="{{sceneEditTitle}}" switchInfo="{{sceneSwitchEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleSceneSwitchEditPopupClose"></scene-switch-edit-popup>
+<switch-control-popup show="{{showEditPopup === '0x21'}}" title="{{sceneEditTitle}}" switchInfo="{{sceneEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleEditPopupClose"></switch-control-popup>
+
+<curtain-control-popup show="{{showEditPopup === '0x14'}}" title="{{sceneEditTitle}}" deviceInfo="{{sceneEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleEditPopupClose"></curtain-control-popup>

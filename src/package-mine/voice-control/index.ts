@@ -15,7 +15,8 @@ ComponentWithComputed({
    */
   data: {
     urls: {
-      voiceIntro: '/package-mine/voice-intro/index',
+      duerIntro: '/package-mine/voice-intro/index?type=duer',
+      miIntro: '/package-mine/voice-intro/index?type=mi',
     },
   },
 

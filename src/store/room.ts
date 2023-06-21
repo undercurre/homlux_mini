@@ -1,8 +1,9 @@
 import { observable, runInAction } from 'mobx-miniprogram'
 import { getRoomList } from '../apis/index'
-import { proType } from '../config/index'
+import { PRO_TYPE } from '../config/index'
 import { deviceStore } from './device'
 import { homeStore } from './home'
+import { deviceCount } from '../utils/index'
 
 export const roomStore = observable({
   /**
@@ -20,6 +21,10 @@ export const roomStore = observable({
     return this.roomList[this.currentRoomIndex]
   },
 
+  /**
+   * 更新房间开灯数量
+   * ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
+   */
   updateRoomCardLightOnNum() {
     const list = {} as Record<string, Device.DeviceItem[]>
     deviceStore.allRoomDeviceList
@@ -33,31 +38,11 @@ export const roomStore = observable({
       })
     roomStore.roomList.forEach((roomInfo) => {
       const roomDeviceList = list[roomInfo.roomId]
-      // 统计多少灯打开（开关不关联灯或者关联场景都算进去）
-      let deviceLightOnNum = 0
-      // 统计多少个子设备
-      let subDeviceNum = 0
-      roomDeviceList?.forEach((device) => {
-        if (device.proType !== proType.gateway) {
-          subDeviceNum++
-        }
-        if (!device.onLineStatus) return
-        if (device.proType === proType.light && device.mzgdPropertyDTOList['1'].OnOff) {
-          deviceLightOnNum++
-        } else if (device.proType === proType.switch) {
-          device.switchInfoDTOList.forEach((switchItem) => {
-            if (
-              // !switchItem.lightRelId &&
-              device.mzgdPropertyDTOList[switchItem.switchId].OnOff &&
-              device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode === 0
-            ) {
-              deviceLightOnNum++
-            }
-          })
-        }
-      })
+      const { deviceLightOnNum, subDeviceNum, lightNum } = deviceCount(roomDeviceList)
+
       roomInfo.deviceLightOnNum = deviceLightOnNum
       roomInfo.subDeviceNum = subDeviceNum
+      roomInfo.lightNum = lightNum
     })
 
     runInAction(() => {
@@ -72,8 +57,8 @@ export const roomStore = observable({
       res.result.roomInfoList.forEach((roomInfo) => {
         const roomDeviceList = roomStore.roomDeviceList[roomInfo.roomInfo.roomId]
         // 过滤一下默认场景，没灯过滤明亮柔和，没灯没开关全部过滤
-        const hasSwitch = roomDeviceList?.some((device) => device.proType === proType.switch) ?? false
-        const hasLight = roomDeviceList?.some((device) => device.proType === proType.light) ?? false
+        const hasSwitch = roomDeviceList?.some((device) => device.proType === PRO_TYPE.switch) ?? false
+        const hasLight = roomDeviceList?.some((device) => device.proType === PRO_TYPE.light) ?? false
         if (!hasSwitch && !hasLight) {
           // 四个默认场景都去掉
           roomInfo.roomSceneList = roomInfo.roomSceneList.filter((scene) => scene.isDefault === '0')
@@ -81,30 +66,12 @@ export const roomStore = observable({
           // 只有开关，去掉默认的明亮、柔和
           roomInfo.roomSceneList = roomInfo.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
         }
-        // 统计多少灯打开（开关不关联灯或者关联场景都算进去）
-        let deviceLightOnNum = 0
-        // 统计多少个子设备
-        let subDeviceNum = 0
-        roomDeviceList?.forEach((device) => {
-          if (device.proType !== proType.gateway) {
-            subDeviceNum++
-          }
-          if (!device.onLineStatus) return
-          if (device.proType === proType.light && device.mzgdPropertyDTOList['1'].OnOff) {
-            deviceLightOnNum++
-          } else if (device.proType === proType.switch) {
-            device.switchInfoDTOList.forEach((switchItem) => {
-              if (
-                device.mzgdPropertyDTOList[switchItem.switchId].OnOff &&
-                !device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode
-              ) {
-                deviceLightOnNum++
-              }
-            })
-          }
-        })
+
+        const { deviceLightOnNum, subDeviceNum, lightNum } = deviceCount(roomDeviceList)
+
         roomInfo.roomInfo.deviceLightOnNum = deviceLightOnNum
         roomInfo.roomInfo.subDeviceNum = subDeviceNum
+        roomInfo.roomInfo.lightNum = lightNum
       })
 
       runInAction(() => {

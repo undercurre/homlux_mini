@@ -33,6 +33,9 @@ declare namespace Room {
        * 子设备数量
        */
       subDeviceNum?: number
+
+      // 灯与面板总数量
+      lightNum?: number
     }
     /**
      * 房间场景列表
@@ -51,6 +54,9 @@ declare namespace Room {
      * 设备数量
      */
     deviceNum?: number
+
+    // 灯与面板总数量
+    lightNum?: number
 
     /**
      * 	房间icon

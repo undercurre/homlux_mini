@@ -1,18 +1,18 @@
 <import src="/commons/templates/popup.wxml" />
 <van-popup show="{{ show }}" z-index="2000" round position="bottom" bind:close="handleClose" closeable>
-  <view class="w-750rpx h-1200rpx relative flex flex-col items-center bg-hex-F9FBFE">
+  <view class="w-750rpx h-1200rpx relative flex flex-col items-center">
     <template is="title" data="{{title: '创建场景'}}" />
     <text class="text-26rpx text-hex-555659 mb-52rpx mt-24rpx">将{{roomName}}内所有设备的状态保存为新场景</text>
     <view class="flex-1" id="content">
       <scroll-view class="box-border px-24rpx" enhanced show-scrollbar="{{false}}" scroll-y style="height: {{contentHeight}}px; width: 750rpx;">
-        <view class="flex flex-row items-center bg-white rounded-32rpx px-40rpx py-32rpx mb-24rpx relative" wx:for="{{addSceneActions}}" bindtap="handleSceneActionEdit" data-index="{{index}}" wx:key="uniId">
+        <view class="flex flex-row items-center bg-hex-F9FBFE rounded-32rpx px-40rpx py-32rpx mb-24rpx relative" wx:for="{{addSceneActions}}" bindtap="handleSceneActionEdit" data-index="{{index}}" wx:key="uniId">
           <view class="w-96rpx h-96rpx box-border rounded-full bg-hex-f6fafd p-12rpx">
             <image src="{{item.pic}}" class="w-72rpx h-72rpx" />
           </view>
 
           <view class="flex flex-col items-start ml-32rpx">
             <text class="text-36 text-black-2a font-medium leading-50rpx">{{item.name}}</text>
-            <view class="flex flex-row gap-x-20rpx text-28 text-black-tips mt-22rpx leading-56rpx">
+            <view class="flex flex-row gap-x-20rpx text-26 text-black-tips mt-22rpx leading-56rpx">
               <text class="px-24rpx bg-hex-F4F5F8 rounded-32rpx" wx:for="{{item.desc}}" wx:key="index">{{item}}</text>
             </view>
           </view>
@@ -29,6 +29,12 @@
     </view>
     <view style="height: calc(96rpx - env(safe-area-inset-bottom))"></view>
   </view>
-  <scene-light-edit-popup z-index="{{101}}" show="{{showSceneEditLightPopup}}" title="{{actionEditTitle}}" lightInfo="{{sceneLightEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleSceneLightEditPopupClose"></scene-light-edit-popup>
-  <scene-switch-edit-popup z-index="{{101}}" show="{{showSceneEditSwitchPopup}}" title="{{actionEditTitle}}" switchInfo="{{sceneSwitchEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleSceneSwitchEditPopupClose"></scene-switch-edit-popup>
+
+  <light-control-popup show="{{popupType === '0x13'}}" title="{{actionEditTitle}}" lightInfo="{{sceneEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleEditPopupClose"></light-control-popup>
+
+  <switch-control-popup show="{{popupType === '0x21'}}" title="{{actionEditTitle}}" switchInfo="{{sceneEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleEditPopupClose"></switch-control-popup>
+
+  <curtain-control-popup show="{{popupType === '0x14'}}" title="{{actionEditTitle}}" deviceInfo="{{sceneEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleEditPopupClose"></curtain-control-popup>
 </van-popup>
+
+<van-toast id="van-toast" />

@@ -1,6 +1,6 @@
 import { observable, runInAction } from 'mobx-miniprogram'
 import { querySceneList, querySceneListByHouseId } from '../apis/scene'
-import { proType } from '../config/device'
+import { PRO_TYPE } from '../config/device'
 import { homeStore } from './home'
 import { roomStore } from './room'
 
@@ -13,10 +13,6 @@ export const sceneStore = observable({
    * 全屋的场景
    */
   allRoomSceneList: [] as Scene.SceneItem[],
-  /**
-   * 选了哪个场景
-   */
-  selectSceneIndex: -1,
 
   /**
    * 准备添加到场景的actions
@@ -57,8 +53,8 @@ export const sceneStore = observable({
     const res = await querySceneList(roomId)
     if (res.success) {
       const roomDeviceList = roomStore.roomDeviceList[roomId]
-      const hasSwitch = roomDeviceList?.some((device) => device.proType === proType.switch) ?? false
-      const hasLight = roomDeviceList?.some((device) => device.proType === proType.light) ?? false
+      const hasSwitch = roomDeviceList?.some((device) => device.proType === PRO_TYPE.switch) ?? false
+      const hasLight = roomDeviceList?.some((device) => device.proType === PRO_TYPE.light) ?? false
 
       let list = [...res.result]
       if (!hasSwitch && !hasLight) {
@@ -93,6 +89,6 @@ export const sceneStore = observable({
 
 export const sceneBinding = {
   store: sceneStore,
-  fields: ['selectSceneIndex', 'sceneList', 'allRoomSceneList', 'addSceneActions'],
+  fields: ['sceneList', 'allRoomSceneList', 'addSceneActions'],
   actions: [],
 }

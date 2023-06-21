@@ -1,8 +1,0 @@
-{
-  "component": true,
-  "usingComponents": {
-    "select-card-popup": "../../../../components/select-card-popup/index",
-    "scene-light-edit-popup": "../../../components/scene-light-edit-popup/index",
-    "scene-switch-edit-popup": "../../../components/scene-switch-edit-popup/index"
-  }
-}

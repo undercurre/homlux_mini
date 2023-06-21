@@ -47,11 +47,16 @@ declare namespace Scene {
      * 动作控制集合
      * 例如："controlAction":[{"ep":1,"OnOff":0},{"ep":2,"OnOff":1}]
      */
-    controlAction: Record<string, number>[]
+    controlAction: IAnyObject[]
     /** 设备id */
     deviceId: string
+    // 设备名称
+    deviceName?: string
+
+    // 设备图片
+    devicePic?: string
     /** 设备类型 */
-    deviceType: string
+    deviceType: number
     /** 品类码 */
     proType: string
   }
@@ -59,6 +64,7 @@ declare namespace Scene {
     /**
      * 绑定控制集合，
      * 例如："controlEvent":[{"ep":2,"ButtonScene":1}]
+     * ButtonScene 电控所需参数，目前固定为1
      */
     controlEvent: { ep: number; ButtonScene: number }[]
     /** 设备id */
@@ -70,7 +76,11 @@ declare namespace Scene {
      * 0-或，1-与，目前全部传0
      */
     conditionType: '0' | '1'
+
+    // 结果集合
     deviceActions: DeviceAction[]
+
+    // 条件集合
     deviceConditions: DeviceCondition[]
     houseId: string
     roomId: string
@@ -96,8 +106,7 @@ declare namespace Scene {
     sceneId?: string
     sceneName?: string
     /** 更新类型
-     * 1-删除结果 2-取消绑定 3-更新绑定 4-删除结果与取消绑定 5-删除结果与更新绑定
-     * 其他情况传0
+     * 0-仅更新名称和icon，1-删除结果 2-取消绑定 3-更新绑定 4-删除结果与取消绑定 5-删除结果与更新绑定
      */
     updateType: '0' | '1' | '2' | '3' | '4' | '5'
   }

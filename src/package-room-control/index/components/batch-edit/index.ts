@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { batchDeleteDevice, batchUpdate } from '../../../../apis/index'
-import { proType } from '../../../../config/index'
+import { PRO_TYPE } from '../../../../config/index'
+import { batchDeleteDevice, batchUpdate, renameGroup } from '../../../../apis/index'
 import { deviceBinding, deviceStore, homeStore, roomBinding, roomStore } from '../../../../store/index'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
@@ -84,14 +84,47 @@ ComponentWithComputed({
     canEditName(data) {
       return data.editSelectList?.length === 1
     },
+    /**
+     * @description 当前选项是否可以移动房间
+     * 设备数量不能为0
+     * 设备均为子设备或WIFI设备
+     * 设备均在线
+     */
+    canMoveRoom(data) {
+      return (
+        data.editSelectList?.length &&
+        data.editSelectList.every((uId: string) => {
+          const deviceId = uId.split(':')[0] // 不管有没有:
+          const device = deviceStore.deviceMap[deviceId]
+          return [2, 3].includes(device.deviceType) && device.onLineStatus === 1
+        })
+      )
+    },
+    /**
+     * @description 当前选项是否可以分组
+     * 设备数量大于1
+     * 设备均为灯具
+     * 设备均为子设备或WIFI设备
+     * 设备均在线
+     */
+    canGroup(data) {
+      return (
+        data.editSelectList?.length &&
+        data.editSelectList.length > 1 &&
+        data.editSelectList.every((deviceId: string) => {
+          const device = deviceStore.deviceMap[deviceId]
+          return device.proType === PRO_TYPE.light && [2, 3].includes(device.deviceType) && device.onLineStatus === 1
+        })
+      )
+    },
     editDeviceNameTitle(data) {
-      return data.editProType === proType.switch ? '面板名称' : '设备名称'
+      return data.editProType === PRO_TYPE.switch ? '面板名称' : '设备名称'
     },
     isAllSelect(data) {
       return deviceStore.deviceFlattenList.length === data.editSelectList.length
     },
     editNameDisable(data) {
-      if (data.editProType === proType.switch) {
+      if (data.editProType === PRO_TYPE.switch) {
         return !data.editDeviceName || !data.editSwitchName
       }
       return !data.editDeviceName
@@ -138,6 +171,7 @@ ComponentWithComputed({
     handleAllSelectToggle() {
       this.triggerEvent('selectAll', !this.data.isAllSelect)
     },
+    // TODO 处理分组解散的交互提示
     handleDeleteDialog() {
       if (!this.data.editSelectList.length) {
         return
@@ -161,7 +195,7 @@ ComponentWithComputed({
           const res = await batchDeleteDevice({
             deviceBaseDeviceVoList: Array.from(set).map((deviceId) => ({
               deviceId,
-              deviceType: '2',
+              deviceType: String(deviceStore.deviceMap[deviceId].deviceType),
             })),
           })
           if (res.success) {
@@ -216,12 +250,14 @@ ComponentWithComputed({
       })
     },
     handleCreateGroup() {
+      const lightList = this.data.editSelectList
       wx.navigateTo({
         url: '/package-room-control/group/index',
         success: (res) => {
-          res.eventChannel.emit('createGroup', { lightList: this.data.editSelectList })
+          res.eventChannel.emit('createGroup', { lightList })
         },
       })
+      this.triggerEvent('close')
     },
     handleClose() {
       this.setData({
@@ -236,24 +272,15 @@ ComponentWithComputed({
         this.data.moveFailCount = 0 // 清空失败计数
         const map = {} as Record<string, Device.DeviceInfoUpdateVo>
         this.data.moveWaitlist.forEach((uniId: string) => {
-          if (uniId.includes(':')) {
-            const deviceId = uniId.split(':')[0]
-            if (!map[deviceId]) {
-              map[deviceId] = {
-                deviceId,
-                houseId: homeStore.currentHomeId,
-                roomId: this.data.roomId,
-                type: '1',
-              }
-            }
-          } else {
-            if (!map[uniId]) {
-              map[uniId] = {
-                deviceId: uniId,
-                houseId: homeStore.currentHomeId,
-                roomId: this.data.roomId,
-                type: '1',
-              }
+          const deviceId = uniId.split(':')[0]
+          const { deviceType } = deviceStore.deviceMap[deviceId]
+          if (!map[deviceId]) {
+            map[deviceId] = {
+              deviceId,
+              houseId: homeStore.currentHomeId,
+              roomId: this.data.roomId,
+              type: '1',
+              deviceType,
             }
           }
         })
@@ -324,7 +351,7 @@ ComponentWithComputed({
     },
     async handleConfirm() {
       if (this.data.showEditName) {
-        if (this.data.editProType === proType.switch) {
+        if (this.data.editProType === PRO_TYPE.switch) {
           // 校验名字合法性
           if (checkInputNameIllegal(this.data.editSwitchName)) {
             Toast('按键名称不能用特殊符号或表情')
@@ -361,6 +388,7 @@ ComponentWithComputed({
               deviceName: this.data.editDeviceName,
               houseId: homeStore.currentHomeId,
               type: '0',
+              deviceType: device.deviceType,
             })
             device.deviceName = this.data.editDeviceName // 用于传参，更新视图
           }
@@ -402,16 +430,25 @@ ComponentWithComputed({
             Toast('设备名称不能超过6个字符')
             return
           }
-          const res = await batchUpdate({
-            deviceInfoUpdateVoList: [
-              {
-                deviceId: this.data.editSelectList[0],
-                houseId: homeStore.currentHomeId,
-                deviceName: this.data.editDeviceName,
-                type: '0',
-              },
-            ],
-          })
+          const res =
+            device.deviceType === 4
+              ? // 灯组
+                await renameGroup({
+                  groupId: this.data.editSelectList[0],
+                  groupName: this.data.editDeviceName,
+                })
+              : // 单灯
+                await batchUpdate({
+                  deviceInfoUpdateVoList: [
+                    {
+                      deviceId: this.data.editSelectList[0],
+                      houseId: homeStore.currentHomeId,
+                      deviceName: this.data.editDeviceName,
+                      type: '0',
+                      deviceType: device.deviceType,
+                    },
+                  ],
+                })
           if (res.success) {
             Toast({
               message: '修改成功',
