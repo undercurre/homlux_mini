@@ -18,10 +18,6 @@ import Toast from '@vant/weapp/toast/toast'
 import { storage, emitter, WSEventType, rpx2px, _get, throttle, toPropertyDesc } from '../../utils/index'
 import { proName, PRO_TYPE, LIST_PAGE, CARD_W, CARD_H } from '../../config/index'
 
-/** 接口请求节流定时器，定时时间2s */
-let requestThrottleTimer = 0
-let hasUpdateInRequestTimer = false
-
 type DeviceCard = Device.DeviceItem & {
   x: string
   y: string
@@ -265,38 +261,18 @@ ComponentWithComputed({
           this.updateDeviceList(deviceInRoom)
           return
         }
-        // 如果是设备状态推送，而且本地数据没有该设备信息，之前全部更新
-        if (
+        // 节流更新本地数据
+        else if (
           [
             WSEventType.device_del,
             WSEventType.device_replace,
-            WSEventType.device_property,
             WSEventType.device_online_status,
             WSEventType.device_offline_status,
           ].includes(e.result.eventType)
         ) {
-          if (!requestThrottleTimer) {
-            homeStore.updateRoomCardList()
-            // 如果是当前房间，更新当前房间的状态
-            // TODO 为何消息推送时要 reloadData?
-            if (e.result.eventData.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId) {
-              this.reloadData()
-            }
-            requestThrottleTimer = setTimeout(async () => {
-              if (hasUpdateInRequestTimer) {
-                await homeStore.updateRoomCardList()
-                if (e.result.eventData.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId) {
-                  this.reloadData()
-                }
-              }
-              requestThrottleTimer = 0
-              hasUpdateInRequestTimer = false
-            }, 2000)
-          } else {
-            hasUpdateInRequestTimer = true
-          }
+          this.updateRoomData(e)
         } else if (
-          e.result.eventType === 'room_del' &&
+          e.result.eventType === WSEventType.room_del &&
           e.result.eventData.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId
         ) {
           // 房间被删除，退出到首页
@@ -342,6 +318,15 @@ ComponentWithComputed({
         wx.stopPullDownRefresh()
       }
     },
+
+    // 节流更新房间各种信息
+    updateRoomData: throttle(function (this: IAnyObject, e) {
+      homeStore.updateRoomCardList()
+      // 如果是当前房间，更新当前房间的状态
+      if (e.result.eventData.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId) {
+        this.reloadData()
+      }
+    }, 2000),
 
     // 页面滚动
     onPageScroll(e: { detail: { scrollTop: number } }) {
