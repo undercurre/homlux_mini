@@ -1,29 +1,29 @@
 var isTouchRight = false
-var pageInfo = null
+var windowWidth = 375
 var curtainContainerInfo = null
 var leftCurtains = null
 var rightCurtains = null
 var value = 0
-var step = 1
 var timer = null
 
 function onTouchstart(event, ownerInstance) {
   var touch = event.touches[0] || event.changedTouches[0]
   var clientX = touch.clientX
-  pageInfo = ownerInstance.getBoundingClientRect()
   curtainContainerInfo = ownerInstance.selectComponent('.curtain-container').getBoundingClientRect()
   leftCurtains = ownerInstance.selectAllComponents('.left-curtain')
   rightCurtains = ownerInstance.selectAllComponents('.right-curtain')
-  if (touch.clientX > pageInfo.width / 2) {
+  if (touch.clientX > windowWidth / 2) {
     isTouchRight = true
   } else {
     isTouchRight = false
   }
 
-  var offsetX = Math.abs(
-    Math.min(pageInfo.width / 2 - clientX, (curtainContainerInfo.width - curtainContainerInfo.width / 10) / 2),
+  var offsetX = Math.min(
+    Math.abs(windowWidth / 2 - clientX),
+    (curtainContainerInfo.width - curtainContainerInfo.width / 10) / 2,
   )
   changeCurtainStyle(offsetX)
+  ownerInstance.callMethod('touchstart', { value })
 }
 function onTouchmove(event, ownerInstance) {
   var touch = event.touches[0] || event.changedTouches[0]
@@ -32,23 +32,27 @@ function onTouchmove(event, ownerInstance) {
   if (isTouchRight) {
     //触控右边
     changeCurtainStyle(
-      calcDragDis(clientX - pageInfo.width / 2, 0, (curtainContainerInfo.width - curtainContainerInfo.width / 10) / 2),
+      calcDragDis(clientX - windowWidth / 2, 0, (curtainContainerInfo.width - curtainContainerInfo.width / 10) / 2),
     )
   } else {
     //触控左边
     changeCurtainStyle(
-      calcDragDis(pageInfo.width / 2 - clientX, 0, (curtainContainerInfo.width - curtainContainerInfo.width / 10) / 2),
+      calcDragDis(windowWidth / 2 - clientX, 0, (curtainContainerInfo.width - curtainContainerInfo.width / 10) / 2),
     )
   }
   if (timer) return
   timer = ownerInstance.setTimeout(function () {
     ownerInstance.callMethod('valueChange', { value })
     timer = null
-  }, 100)
+  }, 150)
 }
 
 function onTouchend(event, ownerInstance) {
-  ownerInstance.callMethod('valueChange', { value })
+  if (timer) {
+    ownerInstance.clearTimeout(timer)
+    timer = null
+  }
+  ownerInstance.callMethod('handleEnd', { value })
 }
 
 function changeCurtainStyle(dragDis) {
@@ -81,14 +85,7 @@ module.exports = {
   onTouchstart: onTouchstart,
   onTouchmove: onTouchmove,
   onTouchend: onTouchend,
-  valueObserver: function (newValue, oldValue, ownerInstance, instance) {
-    curtainContainerInfo = ownerInstance.selectComponent('.curtain-container').getBoundingClientRect()
-    leftCurtains = ownerInstance.selectAllComponents('.left-curtain')
-    rightCurtains = ownerInstance.selectAllComponents('.right-curtain')
-    value = newValue
-    changeCurtainStyle(((value / 100) * (curtainContainerInfo.width - curtainContainerInfo.width / 10)) / 2)
-  },
-  stepObserver: function (newValue, oldValue, ownerInstance, instance) {
-    step = newValue
+  windowWidthObserver: function (newValue, oldValue, ownerInstance, instance) {
+    windowWidth = newValue
   },
 }
