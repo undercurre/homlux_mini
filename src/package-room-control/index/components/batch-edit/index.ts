@@ -272,24 +272,15 @@ ComponentWithComputed({
         this.data.moveFailCount = 0 // 清空失败计数
         const map = {} as Record<string, Device.DeviceInfoUpdateVo>
         this.data.moveWaitlist.forEach((uniId: string) => {
-          if (uniId.includes(':')) {
-            const deviceId = uniId.split(':')[0]
-            if (!map[deviceId]) {
-              map[deviceId] = {
-                deviceId,
-                houseId: homeStore.currentHomeId,
-                roomId: this.data.roomId,
-                type: '1',
-              }
-            }
-          } else {
-            if (!map[uniId]) {
-              map[uniId] = {
-                deviceId: uniId,
-                houseId: homeStore.currentHomeId,
-                roomId: this.data.roomId,
-                type: '1',
-              }
+          const deviceId = uniId.split(':')[0]
+          const { deviceType } = deviceStore.deviceMap[deviceId]
+          if (!map[deviceId]) {
+            map[deviceId] = {
+              deviceId,
+              houseId: homeStore.currentHomeId,
+              roomId: this.data.roomId,
+              type: '1',
+              deviceType,
             }
           }
         })
@@ -397,6 +388,7 @@ ComponentWithComputed({
               deviceName: this.data.editDeviceName,
               houseId: homeStore.currentHomeId,
               type: '0',
+              deviceType: device.deviceType,
             })
             device.deviceName = this.data.editDeviceName // 用于传参，更新视图
           }
@@ -453,6 +445,7 @@ ComponentWithComputed({
                       houseId: homeStore.currentHomeId,
                       deviceName: this.data.editDeviceName,
                       type: '0',
+                      deviceType: device.deviceType,
                     },
                   ],
                 })
