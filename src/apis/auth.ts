@@ -69,12 +69,13 @@ export async function queryUserThirdPartyInfo(houseId: string) {
 
 /**
  * 取消第三方授权
+ * @param houseId Homlux 家庭id
  */
-export async function delDeviceSubscribe() {
+export async function delDeviceSubscribe(houseId: string) {
   return await mzaioRequest.post({
     log: true,
     loading: false,
     url: '/v1/thirdparty/midea/device/delDeviceSubscribe',
-    data: {},
+    data: { houseId },
   })
 }

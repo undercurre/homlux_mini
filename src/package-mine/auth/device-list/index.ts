@@ -4,6 +4,7 @@ import { bindMeiju, getMeijuDeviceList, syncMeijuDeviceList, delDeviceSubscribe 
 import { delay } from '../../../utils/index'
 import { homeBinding } from '../../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import Toast from '@vant/weapp/toast/toast'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] }), pageBehaviors],
@@ -63,11 +64,15 @@ ComponentWithComputed({
         this.setData({
           deviceList,
         })
+        Toast('同步成功')
       }
     },
 
-    debindMeiju() {
-      delDeviceSubscribe()
+    async debindMeiju() {
+      const res = await delDeviceSubscribe(this.data.currentHomeId)
+      if (res.success) {
+        Toast('已解除绑定')
+      }
     },
   },
 })
