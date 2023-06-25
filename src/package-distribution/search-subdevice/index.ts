@@ -236,6 +236,8 @@ ComponentWithComputed({
 
     async beginAddDevice(list: IBleDevice[]) {
       try {
+        this.stopFlash()
+
         const res = await this.startGwAddMode()
 
         if (!res.success) {
@@ -405,6 +407,7 @@ ComponentWithComputed({
      * @param event
      */
     editDevice(event: WechatMiniprogram.BaseEvent) {
+      this.stopFlash()
       const { id } = event.currentTarget.dataset
 
       const item = bleDevicesBinding.store.bleDeviceList.find((item) => item.deviceUuid === id) as IBleDevice
@@ -482,14 +485,13 @@ ComponentWithComputed({
 
       this.data.flashInfo.timeId = setTimeout(() => {
         this.keepFlash(bleDevice)
-      }, 5000)
+      }, 4500)
     },
 
     /**
      * 停止闪烁
      */
     stopFlash() {
-      console.log('stopFlash')
       if (!this.data.flashInfo.mac) {
         return
       }

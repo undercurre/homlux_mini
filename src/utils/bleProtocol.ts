@@ -75,12 +75,16 @@ export class BleClient {
     Logger.log(`【${this.mac}】开始连接蓝牙`, this.deviceUuid)
 
     // 需要设置超时时间，会出现createBLEConnection一直没返回的情况（低概率）
-    const connectRes = await wx
-      .createBLEConnection({
-        deviceId: this.deviceUuid, // 搜索到设备的 deviceId
-        timeout: 8000,
-      })
-      .catch((err: WechatMiniprogram.BluetoothError) => err)
+    // 由于安卓端timeout参数无效，额外增加超时处理
+    const connectRes = await Promise.race([
+      wx
+        .createBLEConnection({
+          deviceId: this.deviceUuid, // 搜索到设备的 deviceId
+          timeout: 8000, // Android 该参数无效
+        })
+        .catch((err: WechatMiniprogram.BluetoothError) => err),
+      delay(8000).then(() => ({ errCode: -2, success: false, error: '连接蓝牙超时' })),
+    ])
 
     Logger.log(`【${this.mac}】 connect`, this.deviceUuid, connectRes, `连接蓝牙时间： ${Date.now() - date1}ms`)
 
@@ -221,16 +225,22 @@ export class BleClient {
 
       const buffer = strUtil.hexStringToArrayBuffer(msg)
 
+      const begin = Date.now()
+
+      let timeId = 0
+
+      let listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
+        Logger.log(`listener-res`, res)
+      }
+
       return new Promise<{ code: string; success: boolean; cmdType?: string; subCmdType?: string; resMsg: string }>(
-        (resolve) => {
-          const begin = Date.now()
+        (resolve, reject) => {
           // 超时处理
-          const timeId = setTimeout(() => {
-            Logger.log(`【${this.mac}】蓝牙指令回复超时`, cmdType, subType)
+          timeId = setTimeout(() => {
             resolve({ code: '-1', success: false, resMsg: '蓝牙指令回复超时', cmdType: cmdType, subCmdType: subType })
           }, 6000)
 
-          const listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
+          listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
             if (res.deviceId !== this.deviceUuid) {
               return
             }
@@ -249,11 +259,6 @@ export class BleClient {
 
             // 仅截取消息参数部分数据，
             const resMsg = msg.substr(6, (packLen - 3) * 2)
-            wx.offBLECharacteristicValueChange(listener)
-
-            clearTimeout(timeId)
-
-            Logger.log(`【${this.mac}】 蓝牙指令回复时间： ${Date.now() - begin}ms`, cmdType, subType)
 
             resolve({
               code: '0',
@@ -277,13 +282,32 @@ export class BleClient {
             })
             .catch((err) => {
               Logger.error(`【${this.mac}】writeBLECharacteristicValue-err`, err)
-              throw err
+              reject(err)
             })
         },
-      ).catch((err) => {
-        console.error('Promise-catch', err)
-        throw err
-      })
+      )
+        .then((res) => {
+          Logger.log(`【${this.mac}】 蓝牙指令回复时间： ${Date.now() - begin}ms`, cmdType, subType)
+
+          return res
+        })
+        .catch(async (err) => {
+          Logger.error(`【${this.mac}】sendCmd-err`, err)
+          
+          await this.close() // 异常关闭需要主动配合关闭连接closeBLEConnection，否则资源会被占用无法释放，导致无法连接蓝牙设备
+
+          return {
+            code: -1,
+            success: false,
+            error: err,
+            resMsg: '',
+          }
+        })
+        .finally(() => {
+          wx.offBLECharacteristicValueChange(listener)
+
+          clearTimeout(timeId)
+        })
     } catch (err) {
       Logger.error(`【${this.mac}】sendCmd-err`, err)
       await this.close() // 异常关闭需要主动配合关闭连接closeBLEConnection，否则资源会被占用无法释放，导致无法连接蓝牙设备
@@ -433,14 +457,15 @@ export const bleUtil = {
 
 // todo: 测试代码，可删除
 wx.onBLEConnectionStateChange(function (res) {
+  // 该方法回调中可以用于处理连接意外断开等异常情况
+  if (!res.connected) {
+    Logger.log(`device ${res.deviceId} state has changed, connected: ${res.connected}`)
+  }
+
   wx.getConnectedBluetoothDevices({
     services: [],
     success(res) {
       Logger.log('getConnectedBluetoothDevices', res)
     },
   })
-  // 该方法回调中可以用于处理连接意外断开等异常情况
-  if (!res.connected) {
-    Logger.log(`device ${res.deviceId} state has changed, connected: ${res.connected}`)
-  }
 })

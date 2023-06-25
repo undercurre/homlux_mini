@@ -79,7 +79,7 @@ ComponentWithComputed({
         )
 
         if (device) {
-          device.status = 'success'
+          device.status = data.errCode === 0 ? 'success' : 'fail'
           this.setData({
             deviceList,
           })
@@ -93,6 +93,10 @@ ComponentWithComputed({
       const res = await promise
 
       if (res.success) {
+        this.setData({
+          sceneId: pageParams.sceneId || res.result.sceneId,
+        })
+
         setTimeout(() => {
           this.data.deviceList.forEach((item) => {
             if (item.status === 'waiting') {
@@ -102,7 +106,6 @@ ComponentWithComputed({
 
           this.setData({
             deviceList,
-            sceneId: pageParams.sceneId || res.result.sceneId,
           })
         }, 30000)
       } else {
