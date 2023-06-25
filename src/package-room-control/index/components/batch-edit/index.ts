@@ -111,7 +111,8 @@ ComponentWithComputed({
       return (
         data.editSelectList?.length &&
         data.editSelectList.length > 1 &&
-        data.editSelectList.every((deviceId: string) => {
+        data.editSelectList.every((uId: string) => {
+          const deviceId = uId.split(':')[0]
           const device = deviceStore.deviceMap[deviceId]
           return device.proType === PRO_TYPE.light && [2, 3].includes(device.deviceType) && device.onLineStatus === 1
         })

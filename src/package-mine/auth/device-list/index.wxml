@@ -27,3 +27,5 @@
 
   <view class="list-bottom-placeholder"> </view>
 </view>
+
+<van-toast id="van-toast" />

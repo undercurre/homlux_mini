@@ -18,6 +18,7 @@ import {
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
 import pageBehavior from '../../../../behaviors/pageBehaviors'
+import { runInAction } from 'mobx-miniprogram'
 
 // 关联类型文描映射
 const descMap = {
@@ -804,7 +805,7 @@ ComponentWithComputed({
     },
     async lightSendDeviceControl(type: 'ColorTemp' | 'Level') {
       const deviceId = this.data.checkedList[0]
-      const device = JSON.parse(JSON.stringify(deviceStore.deviceMap[deviceId])) // 深拷贝，以免影响store中的源数据
+      const device = deviceStore.deviceMap[deviceId]
       if (deviceId.indexOf(':') !== -1 || device.proType !== PRO_TYPE.light) {
         return
       }
@@ -812,7 +813,9 @@ ComponentWithComputed({
       const oldValue = device.mzgdPropertyDTOList[1][type]
 
       // 即时改变devicePageList，以便场景引用
-      device.mzgdPropertyDTOList[1][type] = this.data.lightInfoInner[type]
+      runInAction(() => {
+        device.mzgdPropertyDTOList[1][type] = this.data.lightInfoInner[type]
+      })
       this.triggerEvent('updateList', device)
 
       const res = await sendDevice({
@@ -878,7 +881,7 @@ ComponentWithComputed({
     },
     async curtainControl(property: IAnyObject) {
       const deviceId = this.data.checkedList[0]
-      const device = deviceStore.deviceMap[deviceId] // 深拷贝，以免影响store中的源数据
+      const device = deviceStore.deviceMap[deviceId]
       if (device.proType !== PRO_TYPE.curtain) {
         return
       }
