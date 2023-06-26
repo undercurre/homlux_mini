@@ -66,7 +66,11 @@ ComponentWithComputed({
           }
         } else {
           const property = action.value
-          let ctrlAction = { ep: 1 } as IAnyObject
+          let ctrlAction = {} as IAnyObject
+
+          if (device.deviceType === 2) {
+            ctrlAction.ep = 1
+          }
 
           if (device.proType === PRO_TYPE.light) {
             ctrlAction.OnOff = property.OnOff
@@ -77,7 +81,7 @@ ComponentWithComputed({
             }
 
             if (device.deviceType === 3) {
-              ctrlAction = { ep: 1, ...toWifiProperty(device.proType, ctrlAction) }
+              ctrlAction = toWifiProperty(device.proType, ctrlAction)
             }
           } else if (device.proType === PRO_TYPE.curtain) {
             ctrlAction.curtain_position = property.curtain_position
