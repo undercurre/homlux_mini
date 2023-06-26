@@ -276,6 +276,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .leading-50rpx{line-height:50rpx;}
 .leading-56rpx{line-height:56rpx;}
 .leading-74rpx{line-height:74rpx;}
+.leading-80rpx{line-height:80rpx;}
 .leading-96rpx{line-height:96rpx;}
 .leading-none{line-height:1;}
 .tab{-moz-tab-size:4;-o-tab-size:4;tab-size:4;}

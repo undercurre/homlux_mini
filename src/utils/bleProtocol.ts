@@ -293,7 +293,7 @@ export class BleClient {
         })
         .catch(async (err) => {
           Logger.error(`【${this.mac}】sendCmd-err`, err)
-          
+
           await this.close() // 异常关闭需要主动配合关闭连接closeBLEConnection，否则资源会被占用无法释放，导致无法连接蓝牙设备
 
           return {
