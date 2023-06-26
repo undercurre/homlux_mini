@@ -63,7 +63,7 @@
     <text class="text-24rpx text-black-tips mb-24rpx {{isUpdating?'':'opacity-0'}}">升级完成时，设备将短暂重启</text>
 
     <view class="w-full" bind:tap="handleUpdate">
-      <van-button class="w-686rpx" type="primary" size="large" disabled="{{isUpdating || !hasUpdate}}" bindlongpress="handleUpdateForce">{{isUpdating?'剩余'+remainOtaDevice+'个设备...':'立即升级'}}</van-button>
+      <van-button class="w-686rpx" type="primary" size="large" disabled="{{isUpdating || !hasUpdate}}">{{isUpdating?'剩余'+remainOtaDevice+'个设备...':'立即升级'}}</van-button>
     </view>
   </view>
 </view>

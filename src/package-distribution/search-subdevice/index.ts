@@ -192,7 +192,7 @@ ComponentWithComputed({
       const res = await sendCmdAddSubdevice({
         deviceId: pageParams.gatewayId,
         expire: expireTime,
-        buzz: 1,
+        buzz: this.data._addModeTimeId ? 0 : 1,
       })
 
       // 子设备配网阶段，保持网关在配网状态

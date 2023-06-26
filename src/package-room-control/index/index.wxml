@@ -98,7 +98,7 @@
 <!-- 设备控制弹窗 -->
 <device-control-popup controlPopup="{{controlPopup}}" checkedList="{{checkedList}}" lightStatus="{{lightStatus}}" curtainStatus="{{curtainStatus}}" checkedType="{{checkedType}}" bind:popMove="handlePopMove" bind:updateList="updateDeviceList"></device-control-popup>
 
-<before-add-scene-popup show="{{showBeforeAddScenePopup}}" bind:close="handleBeforeAddScenePopupClose" bind:next="handleBeforeAddScenePopupNext" bind:delete="handleBeforeAddScenePopupDelete" bind:edit="handleSceneActionEdit" />
+<before-add-scene-popup show="{{showBeforeAddScenePopup}}" bind:close="handleBeforeAddScenePopupClose" bind:next="handleBeforeAddScenePopupNext" bind:delete="handleBeforeAddScenePopupDelete" />
 
 <add-scene-popup actions="{{addSceneActions}}" show="{{showAddScenePopup}}" bind:close="handleAddScenePopupClose" bind:confirm="handleShowAddSceneSuccess" bind:return="handleAddScenePopupReturn" />
 
