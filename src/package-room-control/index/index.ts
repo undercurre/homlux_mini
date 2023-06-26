@@ -261,6 +261,18 @@ ComponentWithComputed({
           this.updateDeviceList(deviceInRoom)
           return
         }
+        // 更新在线状态
+        else if (
+          e.result.eventType === WSEventType.screen_online_status_sub_device ||
+          e.result.eventType === WSEventType.screen_online_status_wifi_device
+        ) {
+          const { deviceId, ep, status } = e.result.eventData
+          const device = {} as DeviceCard
+          device.deviceId = deviceId
+          device.uniId = ep ? `${deviceId}:${ep}` : deviceId
+          device.onLineStatus = status
+          this.updateDeviceList(device)
+        }
         // 节流更新本地数据
         else if (
           [
