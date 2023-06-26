@@ -2,6 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { homeBinding } from '../../../../store/index'
 import pageBehavior from '../../../../behaviors/pageBehaviors'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import { delay } from '../../../../utils/index'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] }), pageBehavior],
@@ -80,8 +81,8 @@ ComponentWithComputed({
   methods: {
     async addMenuTap(e: { currentTarget: { dataset: { url: string } } }) {
       const url = e.currentTarget.dataset.url
+      await delay(100) // 等待菜单收起动画完成
       wx.navigateTo({ url })
-      // this.hideAnimate()
     },
     hideAnimate() {
       this.animate(
