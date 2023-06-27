@@ -189,6 +189,7 @@ ComponentWithComputed({
       const pageParams = getCurrentPageParams()
       const expireTime = 60
 
+      Logger.log('网关进入配网模式')
       const res = await sendCmdAddSubdevice({
         deviceId: pageParams.gatewayId,
         expire: expireTime,
@@ -236,6 +237,13 @@ ComponentWithComputed({
 
     async beginAddDevice(list: IBleDevice[]) {
       try {
+        wx.getConnectedBluetoothDevices({
+          services: [],
+          success(res) {
+            Logger.log('getConnectedBluetoothDevices', res)
+          },
+        })
+
         this.stopFlash()
 
         const res = await this.startGwAddMode()
@@ -291,14 +299,12 @@ ComponentWithComputed({
 
           await this.startZigbeeNet(item)
 
-          Logger.log(item.mac, 'close-start')
-          item.client.close()
+          await item.client.close()
 
-          Logger.log(item.mac, 'close-end')
           return item
         }
 
-        for await (const value of asyncPool(3, list, iteratorFn)) {
+        for await (const value of asyncPool(1, list, iteratorFn)) {
           const index = tempList.findIndex((item) => item === value.mac)
 
           tempList.splice(index, 1)

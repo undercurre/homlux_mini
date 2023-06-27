@@ -74,17 +74,14 @@ export class BleClient {
 
     Logger.log(`【${this.mac}】开始连接蓝牙`, this.deviceUuid)
 
-    // 需要设置超时时间，会出现createBLEConnection一直没返回的情况（低概率）
-    // 由于安卓端timeout参数无效，额外增加超时处理
-    const connectRes = await Promise.race([
-      wx
-        .createBLEConnection({
-          deviceId: this.deviceUuid, // 搜索到设备的 deviceId
-          timeout: 8000, // Android 该参数无效
-        })
-        .catch((err: WechatMiniprogram.BluetoothError) => err),
-      delay(8000).then(() => ({ errCode: -2, success: false, error: '连接蓝牙超时' })),
-    ])
+    // 会出现createBLEConnection一直没返回的情况（低概率）
+    // 微信bug，安卓端timeout参数无效
+    const connectRes = await wx
+      .createBLEConnection({
+        deviceId: this.deviceUuid, // 搜索到设备的 deviceId
+        timeout: 8000,
+      })
+      .catch((err: WechatMiniprogram.BluetoothError) => err)
 
     Logger.log(`【${this.mac}】 connect`, this.deviceUuid, connectRes, `连接蓝牙时间： ${Date.now() - date1}ms`)
 
@@ -462,10 +459,12 @@ wx.onBLEConnectionStateChange(function (res) {
     Logger.log(`device ${res.deviceId} state has changed, connected: ${res.connected}`)
   }
 
-  wx.getConnectedBluetoothDevices({
-    services: [],
-    success(res) {
-      Logger.log('getConnectedBluetoothDevices', res)
-    },
-  })
+  setTimeout(() => {
+    wx.getConnectedBluetoothDevices({
+      services: [],
+      success(res) {
+        Logger.log('getConnectedBluetoothDevices', res)
+      },
+    })
+  }, 500)
 })

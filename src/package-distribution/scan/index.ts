@@ -246,7 +246,7 @@ ComponentWithComputed({
     // 检查摄像头权限
     async checkCameraPerssion() {
       showLoading()
-      const settingRes = await wx.getSetting()
+      const settingRes = await wx.getSetting().catch((err) => err)
 
       console.log('检查摄像头权限', settingRes)
 

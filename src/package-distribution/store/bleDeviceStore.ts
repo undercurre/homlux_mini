@@ -26,8 +26,9 @@ export const bleDevicesStore = observable({
     runInAction(() => {
       this.isStart = true
     })
-    // 监听扫描到新设备事件
+    // 监听扫描到新设备事件, 安卓 6.0 及以上版本，无定位权限或定位开关未打开时，无法进行设备搜索
     wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
+      console.log('onBluetoothDeviceFound', res.devices)
       res.devices = unique(res.devices, 'deviceId') as WechatMiniprogram.BlueToothDevice[] // 去重
 
       const deviceList = res.devices
@@ -79,6 +80,7 @@ export const bleDevicesStore = observable({
   },
 
   stopBLeDiscovery() {
+    Logger.log('终止蓝牙发现')
     wx.stopBluetoothDevicesDiscovery()
     wx.offBluetoothDeviceFound()
     runInAction(() => {
