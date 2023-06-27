@@ -1,5 +1,5 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { logout, storage } from '../../utils/index'
+import { logout, storage, strUtil } from '../../utils/index'
 import { userBinding, homeBinding, userStore } from '../../store/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 
@@ -33,6 +33,7 @@ Component({
       deviceReplace: '/package-mine/device-replace/index',
       feedback: '/package-mine/feedback/index',
       about: '/package-protocol/protocol-list/index',
+      deviceCategory: '/package-mine/device-category/index',
     },
   },
   methods: {
@@ -47,9 +48,9 @@ Component({
       }
     },
 
-    toPage(e: { currentTarget: { dataset: { url: string; auth: string } } }) {
+    toPage(e: { currentTarget: { dataset: { url: string; auth: string; param: string } } }) {
       console.log('e.currentTarget.dataset', e.currentTarget)
-      const { url, auth } = e.currentTarget.dataset
+      const { url, auth, param } = e.currentTarget.dataset
       // 如果用户已经登录，开始请求数据
       if (auth !== 'no' && !storage.get<string>('token')) {
         wx.navigateTo({
@@ -59,7 +60,7 @@ Component({
       }
 
       wx.navigateTo({
-        url: url,
+        url: strUtil.getUrlWithParams(url, param === undefined ? {} : { param }),
       })
     },
 

@@ -15,7 +15,7 @@
   <view id="content" class="flex-1">
     <scroll-view enhanced scroll-y show-scrollbar="{{false}}" style="height: {{listHeight}}px;" refresher-triggered="{{isRefresh}}" bindrefresherrefresh="onPullDownRefresh" refresher-enabled>
       <van-cell-group inset wx:for="{{deviceListCompited}}" wx:key="deviceId">
-        <van-cell clickable bind:click="handleCardClick" data-device-id="{{item.deviceId}}"  data-device-type="{{item.deviceType}}">
+        <van-cell clickable bind:click="handleCardClick" data-device-id="{{item.deviceId}}" data-device-type="{{item.deviceType}}">
           <view class="flex item-center">
             <view class="w-96rpx h-96rpx bg-hex-F6FAFD rounded-999 flex-center">
               <image src="{{item.pic}}" class="w-72rpx h-72rpx" />

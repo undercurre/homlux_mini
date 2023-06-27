@@ -104,6 +104,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .my-10rpx{margin-top:10rpx;margin-bottom:10rpx;}
 .my-12rpx{margin-top:12rpx;margin-bottom:12rpx;}
 .my-20rpx{margin-top:20rpx;margin-bottom:20rpx;}
+.my-64rpx{margin-top:64rpx;margin-bottom:64rpx;}
 .mb-0_el_{margin-bottom:0rpx !important;}
 .mb-126rpx{margin-bottom:126rpx;}
 .mb-128rpx{margin-bottom:128rpx;}
@@ -157,6 +158,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .mt-240rpx{margin-top:240rpx;}
 .mt-24rpx{margin-top:24rpx;}
 .mt-26rpx{margin-top:26rpx;}
+.mt-276rpx{margin-top:276rpx;}
 .mt-28rpx{margin-top:28rpx;}
 .mt-290rpx{margin-top:290rpx;}
 .mt-32rpx{margin-top:32rpx;}
