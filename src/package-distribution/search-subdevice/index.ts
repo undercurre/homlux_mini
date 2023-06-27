@@ -473,18 +473,18 @@ ComponentWithComputed({
         return
       }
 
+      this.setData({
+        'flashInfo.mac': bleDeviceItem.mac,
+      })
       this.keepFlash(bleDeviceItem)
     },
 
     // 循环下发闪烁
     async keepFlash(bleDevice: IBleDevice) {
-      this.setData({
-        'flashInfo.mac': bleDevice.mac,
-      })
       const res = await bleDevice.client.flash()
 
       console.log('flash', res)
-      if (!res.success) {
+      if (!res.success || !this.data.flashInfo.mac) {
         this.stopFlash()
         return
       }
