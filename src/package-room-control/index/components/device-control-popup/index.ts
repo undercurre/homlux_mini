@@ -611,21 +611,19 @@ ComponentWithComputed({
         return
       }
 
-      const sceneId = this.data.linkSelectList[0]
+      const newSceneId = this.data.linkSelectList[0]
       const updateSceneDto = {
         conditionType: '0',
-        sceneId: sceneId,
+        sceneId: newSceneId,
       } as Scene.UpdateSceneDto
-      console.log(switchSceneConditionMap, switchUniId, switchSceneConditionMap[switchUniId])
 
-      if (
-        switchSceneConditionMap[switchUniId] &&
-        this.data.linkSelectList[0] !== switchSceneConditionMap[switchUniId]
-      ) {
+      const oldSceneId = switchSceneConditionMap[switchUniId]
+
+      if (oldSceneId && this.data.linkSelectList[0] !== oldSceneId) {
         // 更新场景关联，先取消关联当前场景，再关联其他场景
         const res = await updateScene({
           conditionType: '0',
-          sceneId: switchSceneConditionMap[switchUniId],
+          sceneId: oldSceneId,
           updateType: '2',
         })
 
@@ -636,6 +634,7 @@ ComponentWithComputed({
           })
           return
         }
+        sceneStore.removeCondition(oldSceneId)
       }
 
       // 关联新的场景
@@ -653,6 +652,7 @@ ComponentWithComputed({
       updateSceneDto.updateType = '3'
 
       await updateScene(updateSceneDto)
+      sceneStore.addCondition(updateSceneDto)
     },
 
     /**
@@ -677,13 +677,15 @@ ComponentWithComputed({
         })
       } else if (this.data.linkType === 'scene') {
         // 删除场景关联
-        const sceneId = deviceStore.switchSceneConditionMap[switchUniId]
-        if (sceneId) {
+        const oldSceneId = deviceStore.switchSceneConditionMap[switchUniId]
+        if (oldSceneId) {
           res = await updateScene({
-            sceneId: sceneId,
+            sceneId: oldSceneId,
             updateType: '2',
           })
         }
+
+        sceneStore.removeCondition(oldSceneId)
       }
 
       if (!res?.success) {
@@ -794,7 +796,8 @@ ComponentWithComputed({
 
       this.data._switchRelInfo.switchUniId = '' // 置空标志位，否则不会更新数据
       this.updateLinkInfo()
-      this.triggerEvent('updateList')
+      // 有ws上报，暂时取消整个列表的刷新
+      // this.triggerEvent('updateList')
 
       hideLoading()
     },

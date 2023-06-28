@@ -256,18 +256,30 @@ ComponentWithComputed({
               }
             })
             roomStore.updateRoomCardLightOnNum()
-            // 直接更新store里的数据，更新完退出回调函数
           }
 
           // 组装要更新的设备数据
-          const deviceInRoom = {} as DeviceCard
-          deviceInRoom.deviceId = e.result.eventData.deviceId
-          deviceInRoom.uniId = `${e.result.eventData.deviceId}:${e.result.eventData.ep}`
-          deviceInRoom.mzgdPropertyDTOList = {}
-          deviceInRoom.mzgdPropertyDTOList[e.result.eventData.ep] = {
+          const deviceInRoom = deviceStore.deviceList.find(
+            (device) => device.deviceId === e.result.eventData.deviceId,
+          ) as DeviceCard
+          if (deviceInRoom) {
+            runInAction(() => {
+              deviceInRoom.mzgdPropertyDTOList[e.result.eventData.ep] = {
+                ...deviceInRoom.mzgdPropertyDTOList[e.result.eventData.ep],
+                ...e.result.eventData.event,
+              }
+            })
+          }
+
+          // 组装要更新的设备数据，更新的为flatten列表，结构稍不同
+          const device = {} as DeviceCard
+          device.deviceId = e.result.eventData.deviceId
+          device.uniId = `${e.result.eventData.deviceId}:${e.result.eventData.ep}`
+          device.mzgdPropertyDTOList = {}
+          device.mzgdPropertyDTOList[e.result.eventData.ep] = {
             ...e.result.eventData.event,
           }
-          this.updateDeviceList(deviceInRoom)
+          this.updateDeviceList(device)
           return
         }
         // 更新在线状态
@@ -382,18 +394,22 @@ ComponentWithComputed({
     },
     // 根据场景信息，比较出关联场景名字
     getLinkSceneName(device: Device.DeviceItem) {
-      if (device?.proType !== PRO_TYPE.switch || !device.switchInfoDTOList || !device.switchInfoDTOList[0]) {
+      if (device?.proType !== PRO_TYPE.switch) {
         return ''
       }
-      const switchId = device.switchInfoDTOList[0].switchId
+      const switchId = device.uniId.split(':')[1]
       const switchSceneConditionMap = deviceStore.switchSceneConditionMap
       const sceneIdMp = sceneStore.sceneIdMp
+      const uId = `${device.deviceId}:${switchId}`
+
+      console.log('getLinkSceneName', uId, switchSceneConditionMap, switchSceneConditionMap[uId])
       if (
-        switchSceneConditionMap[`${device.deviceId}:${switchId}`] &&
-        sceneIdMp[switchSceneConditionMap[`${device.deviceId}:${switchId}`]] &&
-        sceneIdMp[switchSceneConditionMap[`${device.deviceId}:${switchId}`]].sceneName
+        switchSceneConditionMap[uId] &&
+        sceneIdMp[switchSceneConditionMap[uId]] &&
+        sceneIdMp[switchSceneConditionMap[uId]].sceneName
       ) {
-        return sceneIdMp[switchSceneConditionMap[`${device.deviceId}:${switchId}`]].sceneName.slice(0, 4)
+        console.log('getLinkSceneName, sceneName===', sceneIdMp[switchSceneConditionMap[uId]].sceneName)
+        return sceneIdMp[switchSceneConditionMap[uId]].sceneName.slice(0, 4)
       }
       return ''
     },
@@ -439,7 +455,10 @@ ComponentWithComputed({
                 ...originDevice.mzgdPropertyDTOList[eq],
                 ...device?.mzgdPropertyDTOList[eq],
               }
+              device!.proType = originDevice.proType // 补充关键字段
+
               diffData[`devicePageList[${groupIndex}][${index}].mzgdPropertyDTOList[${eq}]`] = newVal
+              diffData[`devicePageList[${groupIndex}][${index}].linkSceneName`] = this.getLinkSceneName(device!)
             }
             if (device!.switchInfoDTOList) {
               const newVal = {
@@ -876,6 +895,7 @@ ComponentWithComputed({
     // 卡片点击时，按品类调用对应方法
     async handleControlTap(e: { detail: DeviceCard }) {
       const device = { ...e.detail }
+      console.log('handleControlTap', device, deviceStore.deviceFlattenMap[device.uniId])
       const ep = device.switchInfoDTOList ? device.switchInfoDTOList[0].switchId : 1
 
       // 若面板关联场景
