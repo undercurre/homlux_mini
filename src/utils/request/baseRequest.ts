@@ -82,11 +82,9 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       requestOption.success = (result) => {
         if (requestOption.log) {
           console.log(
-            '请求URL:' + requestOption.url + ' 成功，参数：',
-            requestOption.data,
-            '请求结果：',
+            requestOption.method + ': ' + requestOption.url + ' 成功 请求结果：\n',
             result.data,
-            '\n请求用时:',
+            '\n用时:',
             Date.now() - start + 'ms',
           )
         }
@@ -114,10 +112,10 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       }
     }
 
-    // if (requestOption.log) {
-    //   // 调试可能需要拿到token
-    //   console.log('请求发起URL:' + requestOption.url, requestOption.data, requestOption.header)
-    // }
+    // 请求发起时的提示
+    if (requestOption.log) {
+      console.log('请求发起，URL:' + requestOption.url + ' 参数：\n', requestOption.data, requestOption.header)
+    }
 
     wx.request({
       ...requestOption,

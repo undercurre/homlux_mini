@@ -48,7 +48,7 @@ export async function getMeijuDeviceList() {
 export async function syncMeijuDeviceList(houseId: string) {
   return await mzaioRequest.post<Auth.MeijuDevice[]>({
     log: true,
-    loading: false,
+    loading: true,
     url: '/v1/thirdparty/midea/device/syncMideaDevice',
     data: { houseId },
   })
