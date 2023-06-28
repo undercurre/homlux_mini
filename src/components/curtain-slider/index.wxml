@@ -10,7 +10,7 @@
     <view style="{{leftCurtainStyle}}" class="left-curtain w-140rpx h-332rpx absolute top-0 left-84rpx"></view>
     <view style="{{leftCurtainStyle}}" class="left-curtain w-140rpx h-332rpx absolute top-0 left-112rpx"></view>
     <view style="{{leftCurtainStyle}}" class="left-curtain w-140rpx h-332rpx absolute top-0 left-140rpx">
-      <image src="../../assets/img/base/arrow-right-curtain.png" class="curtain-handle right-7rpx" style="transform:{{value === 100 ? 'scaleX(-1)':unset}}"></image>
+      <image src="../../assets/img/base/arrow-left-curtain.png" class="curtain-handle right-7rpx" style="transform:{{value === 100 ? 'scaleX(-1)':unset}}"></image>
     </view>
 
     <view style="{{rightCurtainStyle}}" class="right-curtain w-140rpx h-332rpx absolute top-0 right-0"></view>
@@ -19,7 +19,7 @@
     <view style="{{rightCurtainStyle}}" class="right-curtain w-140rpx h-332rpx absolute top-0 right-84rpx"></view>
     <view style="{{rightCurtainStyle}}" class="right-curtain w-140rpx h-332rpx absolute top-0 right-112rpx"></view>
     <view style="{{rightCurtainStyle}}" class="right-curtain w-140rpx h-332rpx absolute top-0 right-140rpx">
-      <image src="../../assets/img/base/arrow-left-curtain.png" class="curtain-handle left-7rpx" style="transform:{{value === 100 ? 'scaleX(-1)':unset}}"></image>
+      <image src="../../assets/img/base/arrow-right-curtain.png" class="curtain-handle left-7rpx" style="transform:{{value === 100 ? 'scaleX(-1)':unset}}"></image>
     </view>
   </view>
 </view>
