@@ -29,7 +29,7 @@ ComponentWithComputed({
     needCheckCamera: true, // 是否需要重新检查摄像头权限
     isBlePermit: false,
     isShowPage: false,
-    isShowGatewayList: true, // 是否展示选择网关列表弹窗
+    isShowGatewayList: false, // 是否展示选择网关列表弹窗
     isShowNoGatewayTips: false, // 是否展示添加网关提示弹窗
     isScan: false, // 是否正在扫码
     isFlash: false,
