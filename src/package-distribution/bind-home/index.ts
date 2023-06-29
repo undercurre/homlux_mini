@@ -61,12 +61,13 @@ ComponentWithComputed({
             sn: res.result.sn,
             roomId: res.result.roomId,
             proType: res.result.proType,
-            switchList: res.result.proType === PRO_TYPE.switch && res.result.switchInfoDTOList
-              ? res.result.switchInfoDTOList.map((item) => ({
-                  switchId: item.switchId,
-                  switchName: item.switchName,
-                }))
-              : [],
+            switchList:
+              res.result.proType === PRO_TYPE.switch && res.result.switchInfoDTOList
+                ? res.result.switchInfoDTOList.map((item) => ({
+                    switchId: item.switchId,
+                    switchName: item.switchName,
+                  }))
+                : [],
           },
         })
       }
