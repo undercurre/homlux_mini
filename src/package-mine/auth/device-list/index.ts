@@ -72,6 +72,9 @@ ComponentWithComputed({
       const res = await delDeviceSubscribe(this.data.currentHomeId)
       if (res.success) {
         Toast('已解除绑定')
+        wx.switchTab({
+          url: '/pages/index/index',
+        })
       }
     },
   },
