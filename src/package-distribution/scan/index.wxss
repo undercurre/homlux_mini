@@ -1,4 +1,3 @@
-/* package-distribution/scan/index.wxss */
 .rotate {
   animation: rotating linear 2s infinite;
 }

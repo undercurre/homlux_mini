@@ -65,6 +65,10 @@ App<IAppOption>({
     closeWebSocket()
   },
 
+  onError(msg: string) {
+    Logger.error(msg)
+  },
+
   globalData: {
     firstOnShow: true,
   },

@@ -6,7 +6,7 @@ import dayjs from 'dayjs'
 import { deviceBinding, homeBinding } from '../../store/index'
 import { bleDevicesBinding, bleDevicesStore } from '../store/bleDeviceStore'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { checkWifiSwitch, strUtil, showLoading, hideLoading, delay, Logger } from '../../utils/index'
+import { checkWifiSwitch, strUtil, showLoading, hideLoading, delay, Logger, isAndroid } from '../../utils/index'
 import { checkDevice, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
 
 ComponentWithComputed({
@@ -25,6 +25,7 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
+    _listenLocationTimeId: 0, // 监听系统位置信息是否打开的计时器， 0为不存在监听
     needCheckCamera: true, // 是否需要重新检查摄像头权限
     isBlePermit: false,
     isShowPage: false,
@@ -63,6 +64,7 @@ ComponentWithComputed({
     detached() {
       wx.closeBluetoothAdapter()
       wx.stopWifi()
+      clearInterval(this.data._listenLocationTimeId)
     },
   },
 
@@ -305,6 +307,32 @@ ComponentWithComputed({
         const flag = await this.checkCameraPerssion()
 
         if (!flag) {
+          return
+        }
+      }
+
+      // 安卓 6.0 及以上版本，定位开关未打开时，无法进行设备搜索。
+      if (isAndroid() && !this.data._listenLocationTimeId) {
+        const systemSetting = wx.getSystemSetting()
+
+        if (!systemSetting.locationEnabled) {
+          wx.showModal({
+            content: '请打开手机系统的位置信息开关',
+            showCancel: false,
+            confirmText: '我知道了',
+            confirmColor: '#488FFF',
+          })
+
+          this.data._listenLocationTimeId = setInterval(() => {
+            const systemSetting = wx.getSystemSetting()
+
+            if (systemSetting.locationEnabled) {
+              clearInterval(this.data._listenLocationTimeId)
+              this.data._listenLocationTimeId = 0
+              this.initBle()
+            }
+          }, 3000)
+
           return
         }
       }
