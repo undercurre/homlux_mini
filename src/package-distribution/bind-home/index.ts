@@ -5,7 +5,7 @@ import pageBehaviors from '../../behaviors/pageBehaviors'
 import { getCurrentPageParams, checkInputNameIllegal } from '../../utils/index'
 import { queryDeviceInfoByDeviceId, editDeviceInfo, batchUpdate } from '../../apis/index'
 import { homeBinding, homeStore, roomBinding } from '../../store/index'
-import { PRO_TYPE } from '../../config'
+import { PRO_TYPE } from '../../config/index'
 
 ComponentWithComputed({
   options: {
