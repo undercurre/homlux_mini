@@ -53,7 +53,7 @@
     <text class="block pl-48rpx pb-32rpx text-28">家庭名称</text>
 
     <view class="mx-32rpx">
-      <van-field value="{{ homeInfoEdited.houseName }}" placeholder="请输入家庭名称" custom-style="padding: 20rpx 40rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}" focus="{{isFocus}}" bind:change="changeHouseName" border="{{false}}"> </van-field>
+      <van-field value="{{ homeInfoEdited.houseName }}" placeholder="请输入家庭名称" custom-style="padding: 20rpx 40rpx;background-color: #F6FAFD;border-radius: 24rpx;" clearable="{{true}}" focus="{{isFocus}}" bind:change="changeHouseName" border="{{false}}"> </van-field>
     </view>
 
     <view class="flex flex-row gap-46rpx pt-80rpx px-32rpx">
