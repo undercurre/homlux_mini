@@ -82,10 +82,8 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       requestOption.success = (result) => {
         if (requestOption.log) {
           console.log(
-            requestOption.method + ': ' + requestOption.url + ' 成功 请求结果：\n',
+            `${requestOption.method}: ${requestOption.url} 成功，用时 ${Date.now() - start} ms，响应内容：\n`,
             result.data,
-            '\n用时:',
-            Date.now() - start + 'ms',
           )
         }
         const data = requestOption.generalSuccessHandler ? requestOption.generalSuccessHandler(result) : result.data
@@ -98,7 +96,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       const handler = requestOption.failHandler
       requestOption.fail = (err) => {
         if (requestOption.log) {
-          console.log('请求URL:' + requestOption.url + ' 失败，失败原因：' + err.errMsg, requestOption.data)
+          console.log('请求URL:' + requestOption.url + ' 失败，原因：' + err.errMsg, requestOption.data)
         }
         resolve(handler(err))
       }
@@ -114,7 +112,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
 
     // 请求发起时的提示
     if (requestOption.log) {
-      console.log('请求发起，URL:' + requestOption.url + ' 参数：\n', requestOption.data, requestOption.header)
+      console.log('请求发起：' + requestOption.url + ' 参数：\n', requestOption.data, requestOption.header)
     }
 
     wx.request({
