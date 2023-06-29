@@ -455,10 +455,14 @@ ComponentWithComputed({
                 ...originDevice.mzgdPropertyDTOList[eq],
                 ...device?.mzgdPropertyDTOList[eq],
               }
-              device!.proType = originDevice.proType // 补充关键字段
 
               diffData[`devicePageList[${groupIndex}][${index}].mzgdPropertyDTOList[${eq}]`] = newVal
-              diffData[`devicePageList[${groupIndex}][${index}].linkSceneName`] = this.getLinkSceneName(device!)
+
+              // 更新场景关联信息
+              diffData[`devicePageList[${groupIndex}][${index}].linkSceneName`] = this.getLinkSceneName({
+                ...device!,
+                proType: originDevice.proType, // 补充关键字段
+              })
             }
             if (device!.switchInfoDTOList) {
               const newVal = {
