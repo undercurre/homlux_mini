@@ -97,5 +97,6 @@ ComponentWithComputed({
         url: '/package-room-control/index/index',
       })
     },
+    doNothing() {},
   },
 })
