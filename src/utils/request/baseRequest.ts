@@ -81,10 +81,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       // 否则就只使用generalSuccessHandler进行通用处理或者generalSuccessHandler不存在则不处理直接返回
       requestOption.success = (result) => {
         if (requestOption.log) {
-          console.log(
-            `✔ ${requestOption.url} 用时 ${Date.now() - start} ms，响应内容：\n`,
-            result.data,
-          )
+          console.log(`✔ ${requestOption.url} 用时 ${Date.now() - start} ms，响应内容：\n`, result.data)
         }
         const data = requestOption.generalSuccessHandler ? requestOption.generalSuccessHandler(result) : result.data
         resolve(data)
