@@ -94,7 +94,7 @@ ComponentWithComputed({
     // 检查是否通过微信扫码直接进入该界面时判断场景值
     checkWxScanEnter() {
       const params = wx.getLaunchOptionsSync()
-      console.log(
+      Logger.log(
         'scanPage',
         params,
         'wx.getEnterOptionsSync()',
@@ -107,7 +107,7 @@ ComponentWithComputed({
       if (getCurrentPages().length === 1 && params.scene === 1011) {
         const scanUrl = decodeURIComponent(params.query.q)
 
-        console.log('scanUrl', scanUrl)
+        Logger.log('scanUrl', scanUrl)
 
         this.handleScanUrl(scanUrl)
 
@@ -121,7 +121,6 @@ ComponentWithComputed({
     },
 
     async selectGateway(event: WechatMiniprogram.CustomEvent) {
-      console.log('selectGateway', event)
       const { index } = event.currentTarget.dataset
 
       const item = this.data.gatewayList[index]
@@ -203,7 +202,7 @@ ComponentWithComputed({
         })
         .catch((err: WechatMiniprogram.BluetoothError) => err)) as IAnyObject
 
-      console.log('scan-openBleRes', openBleRes)
+      Logger.log('scan-openBleRes', openBleRes)
 
       // 判断是否授权蓝牙 安卓、IOS返回错误格式不一致
       if (openBleRes.errno === 103 || openBleRes.errMsg.includes('auth deny')) {
@@ -222,9 +221,7 @@ ComponentWithComputed({
 
       if (!res) {
         const listen = (res: WechatMiniprogram.OnBluetoothAdapterStateChangeCallbackResult) => {
-          console.log('onBluetoothAdapterStateChange-scan', res)
           if (res.available) {
-            console.log('listen-startDiscoverBle')
             bleDevicesStore.startBleDiscovery()
             this.checkWxScanEnter()
             wx.offBluetoothAdapterStateChange(listen)
@@ -250,7 +247,7 @@ ComponentWithComputed({
       showLoading()
       const settingRes = await wx.getSetting().catch((err) => err)
 
-      console.log('检查摄像头权限', settingRes)
+      Logger.log('检查摄像头权限', settingRes)
 
       if (!settingRes.authSetting['scope.camera']) {
         // 跳转过权限设置页均需要重置needCheckCamera状态，回来后需要重新检查摄像头权限
@@ -288,21 +285,19 @@ ComponentWithComputed({
         return
       }
 
-      console.log('getQrCodeInfo', e)
-
       const scanUrl = e.detail.result
 
       this.handleScanUrl(scanUrl)
     },
 
     getCameraError(event: WechatMiniprogram.CustomEvent) {
-      console.log('getCameraError', event)
+      Logger.error('getCameraError', event)
 
       this.checkCameraPerssion()
     },
 
     async initCameraDone() {
-      console.log('initCameraDone')
+      Logger.log('initCameraDone')
       if (this.data.needCheckCamera) {
         const flag = await this.checkCameraPerssion()
 
@@ -355,7 +350,6 @@ ComponentWithComputed({
           this.setData({
             isScan: true,
           })
-          console.log('选择相册：', res)
           showLoading()
 
           const file = res.tempFiles[0]
@@ -436,7 +430,7 @@ ComponentWithComputed({
 
         const pageParams = strUtil.getUrlParams(url)
 
-        console.log('scanParams', pageParams)
+        Logger.log('scanParams', pageParams)
 
         showLoading()
         // mode 配网方式 （00代表AP配网，01代表蓝牙配网， 02代表AP+有线）
@@ -487,7 +481,7 @@ ComponentWithComputed({
         return
       }
 
-      console.log('checkDevice', res)
+      Logger.log('checkDevice', res)
       wx.reportEvent('add_device', {
         pro_type: res.result.proType,
         model_id: params.pid,
@@ -541,7 +535,6 @@ ComponentWithComputed({
         return true
       }
 
-      console.log('this.data.gatewayList', this.data.gatewayList)
       if (this.data.gatewayList.length === 0) {
         this.setData({
           isShowNoGatewayTips: true,
