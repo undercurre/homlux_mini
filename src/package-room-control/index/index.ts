@@ -301,6 +301,7 @@ ComponentWithComputed({
             WSEventType.device_replace,
             WSEventType.device_online_status,
             WSEventType.device_offline_status,
+            WSEventType.group_device_result_status,
           ].includes(e.result.eventType)
         ) {
           this.updateRoomData(e)
@@ -341,8 +342,9 @@ ComponentWithComputed({
     async reloadData() {
       try {
         await Promise.all([
-          // deviceStore.updateAllRoomDeviceList(),
+          deviceStore.updateAllRoomDeviceList(),
           deviceStore.updateSubDeviceList(),
+          homeStore.updateRoomCardList(),
           sceneStore.updateSceneList(),
           sceneStore.updateAllRoomSceneList(),
         ])
@@ -353,13 +355,9 @@ ComponentWithComputed({
     },
 
     // 节流更新房间各种信息
-    updateRoomData: throttle(function (this: IAnyObject, e) {
-      homeStore.updateRoomCardList()
-      // 如果是当前房间，更新当前房间的状态
-      if (e.result.eventData.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId) {
-        this.reloadData()
-      }
-    }, 2000),
+    updateRoomData: throttle(function (this: IAnyObject) {
+      this.reloadData()
+    }, 3000),
 
     // 页面滚动
     onPageScroll(e: { detail: { scrollTop: number } }) {

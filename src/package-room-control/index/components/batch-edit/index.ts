@@ -295,9 +295,8 @@ ComponentWithComputed({
           }
 
           // TODO 只有WIFI设备时，不需要超时检测逻辑
-          // 超时后检查云端上报，是否已成功移动完毕
-          const TIME_OUT =
-            this.data.moveWaitlist.length > 80 ? 120000 : Math.max(3000, this.data.moveWaitlist.length * 1000)
+          // 超时后检查云端上报，是否已成功移动完毕 5~120s
+          const TIME_OUT = Math.min(Math.max(5000, this.data.moveWaitlist.length * 1000), 120000)
 
           showLoading()
           timeId = setTimeout(async () => {
