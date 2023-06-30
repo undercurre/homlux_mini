@@ -1,68 +1,70 @@
 <wxs module="wxs" src="./index.wxs"></wxs>
-<view wx:if="{{isRender}}" change:info="{{wxs.infoObserver}}" info="{{info}}" id="popup" class="fixed z-200 left-0 w-750rpx h-600rpx opacity-0" bindtouchstart="handleTouchStart" catchtouchmove="handleTouchMove">
-  <view class="popup-shadow w-750rpx h-600rpx rounded-t-64rpx bg-white flex-col flex items-center py-20rpx">
-    <!-- tab -->
-    <view class="flex justify-evenly w-686rpx mt-10rpx relative">
-      <view class="flex-col-center" data-tab="light" bindtap="handleTabTap" wx:if="{{lightTab}}">
-        <text class="mx-24rpx mt-16rpx tab-title">灯光</text>
-      </view>
-      <view class="flex-col-center" data-tab="switch" bindtap="handleTabTap" wx:if="{{switchTab}}">
-        <text class="mx-24rpx mt-16rpx tab-title">开关</text>
-      </view>
-      <view class="flex-col-center" data-tab="curtain" bindtap="handleTabTap" wx:if="{{curtainTab}}">
-        <text class="mx-24rpx mt-16rpx tab-title">窗帘</text>
-      </view>
-      <!-- 设置、关闭按钮 -->
-      <view class="absolute left-20rpx top-16rpx" bind:tap="toDetail">
-        <image class="w-48 h-48" src="/assets/img/home-manage/setting.png"></image>
-      </view>
-      <view class="absolute right-20rpx top-16rpx" bindtap="handleClose">
-        <image src="/assets/img/base/close.png" class="w-48rpx h-48rpx" />
-      </view>
-    </view>
-    <!-- tab内容 -->
-    <view class="flex flex-col items-center flex-1 pt-10rpx">
-      <!-- 灯光控制 -->
-      <view class="flex flex-col w-750rpx" wx:if="{{tab==='light'}}">
-        <text class="text-32rpx text-black-59 mt-70rpx ml-48rpx">亮度 | {{lightInfoInner.Level}}%</text>
-        <view class="px-48rpx pt-28rpx">
-          <mz-slider bind:slideEnd="handleLevelChange" bind:slideChange="handleLevelDrag" disabled="{{!lightStatus.OnOff}}" value="{{lightInfoInner.Level}}" min="{{1}}" active-color="linear-gradient(90deg, rgba(80,127,255,0.8) 5%, rgba(116,153,255,0.18) 100%)"> </mz-slider>
+<van-overlay show="{{ isRender }}" bind:click="handleClose">
+  <view wx:if="{{isRender}}" change:info="{{wxs.infoObserver}}"  catch:tap="handleCardTap" info="{{info}}" id="popup" class="fixed z-200 left-0 w-750rpx h-600rpx opacity-0">
+    <view class="popup-shadow w-750rpx h-600rpx rounded-t-64rpx bg-white flex-col flex items-center py-20rpx">
+      <!-- tab -->
+      <view class="flex justify-evenly w-686rpx mt-10rpx relative">
+        <view class="flex-col-center" data-tab="light" wx:if="{{lightTab}}">
+          <text class="mx-24rpx mt-16rpx tab-title">灯光</text>
         </view>
-        <text class="text-32rpx text-black-59 mt-20rpx ml-48rpx">色温 | {{colorTempK}}K</text>
-        <view class="px-48rpx pt-28rpx">
-          <mz-slider bind:slideEnd="handleColorTempChange" bind:slideChange="handleColorTempDrag" disabled="{{!lightStatus.OnOff}}" value="{{lightInfoInner.ColorTemp}}" use-button-slot custom-class="slider-color-temp-bar" active-color="rgba(0,0,0,0)">
-            <view slot="button" class="slider-button" />
-          </mz-slider>
+        <view class="flex-col-center" data-tab="switch" wx:if="{{switchTab}}">
+          <text class="mx-24rpx mt-16rpx tab-title">开关</text>
+        </view>
+        <view class="flex-col-center" data-tab="curtain" wx:if="{{curtainTab}}">
+          <text class="mx-24rpx mt-16rpx tab-title">窗帘</text>
+        </view>
+        <!-- 设置、关闭按钮 -->
+        <view class="absolute left-20rpx top-16rpx" bind:tap="toDetail">
+          <image class="w-48 h-48" src="/assets/img/home-manage/setting.png"></image>
+        </view>
+        <view class="absolute right-20rpx top-16rpx" bind:tap="handleClose">
+          <image src="/assets/img/base/close.png" class="w-48rpx h-48rpx" />
         </view>
       </view>
-      <!-- 开关控制 -->
-      <view wx:if="{{tab==='switch'}}" class="flex flex-col w-750rpx">
-        <view class="h-22rpx"></view>
-        <van-cell-group inset style="opacity: {{(disabledLinkSetting)?0.5:1}};">
-          <van-cell border="{{false}}" is-link="{{!disabledLinkSetting}}" title="模式设置" value="{{linkTypeDesc}}" custom-class="switch-cell" bind:click="handleSelectLinkPopup"></van-cell>
-        </van-cell-group>
-      </view>
-      <!-- 窗帘控制 -->
-      <view wx:if="{{tab==='curtain'}}" class="w-full h-full flex-col-center">
-        <curtain-slider value="{{curtainInfo.position}}" bind:change="changeCurtain" bind:slideEnd="changeCurtain"></curtain-slider>
-        <view class="flex flex-row justify-evenly rounded-24rpx bg-hex-eef2f7 w-686rpx h-80rpx items-center mt-28rpx">
-          <text bind:tap="openCurtain" class="text-32 text-hex-1e2c46 px-50rpx h-80rpx leading-80rpx rounded-24rpx btn-effect">全开</text>
-          <view class="w-2rpx h-40rpx bg-hex-ddd"></view>
-          <text bind:tap="pauseCurtain" class="text-32 text-hex-1e2c46 px-50rpx h-80rpx leading-80rpx rounded-24rpx btn-effect">暂停</text>
-          <view class="w-2rpx h-40rpx bg-hex-ddd"></view>
-          <text bind:tap="closeCurtain" class="text-32 text-hex-1e2c46 px-50rpx h-80rpx leading-80rpx rounded-24rpx btn-effect">全关</text>
+      <!-- tab内容 -->
+      <view class="flex flex-col items-center flex-1 pt-10rpx">
+        <!-- 灯光控制 -->
+        <view class="flex flex-col w-750rpx" wx:if="{{tab==='light'}}">
+          <text class="text-32rpx text-black-59 mt-70rpx ml-48rpx">亮度 | {{lightInfoInner.Level}}%</text>
+          <view class="px-48rpx pt-28rpx">
+            <mz-slider catch:slideEnd="handleLevelChange" catch:slideChange="handleLevelDrag" disabled="{{!lightStatus.OnOff}}" value="{{lightInfoInner.Level}}" min="{{1}}" active-color="linear-gradient(90deg, rgba(80,127,255,0.8) 5%, rgba(116,153,255,0.18) 100%)"> </mz-slider>
+          </view>
+          <text class="text-32rpx text-black-59 mt-20rpx ml-48rpx">色温 | {{colorTempK}}K</text>
+          <view class="px-48rpx pt-28rpx">
+            <mz-slider catch:slideEnd="handleColorTempChange" catch:slideChange="handleColorTempDrag" disabled="{{!lightStatus.OnOff}}" value="{{lightInfoInner.ColorTemp}}" use-button-slot custom-class="slider-color-temp-bar" active-color="rgba(0,0,0,0)">
+              <view slot="button" class="slider-button" />
+            </mz-slider>
+          </view>
         </view>
-        <view class="h-80rpx"></view>
+        <!-- 开关控制 -->
+        <view wx:if="{{tab==='switch'}}" class="flex flex-col w-750rpx">
+          <view class="h-22rpx"></view>
+          <van-cell-group inset style="opacity: {{(disabledLinkSetting)?0.5:1}};">
+            <van-cell border="{{false}}" is-link="{{!disabledLinkSetting}}" title="模式设置" value="{{linkTypeDesc}}" custom-class="switch-cell" catch:click="handleSelectLinkPopup"></van-cell>
+          </van-cell-group>
+        </view>
+        <!-- 窗帘控制 -->
+        <view wx:if="{{tab==='curtain'}}" class="w-full h-full flex-col-center">
+          <curtain-slider value="{{curtainInfo.position}}" catch:change="changeCurtain" catch:slideEnd="changeCurtain"></curtain-slider>
+          <view class="flex flex-row justify-evenly rounded-24rpx bg-hex-eef2f7 w-686rpx h-80rpx items-center mt-28rpx">
+            <text catch:tap="openCurtain" class="text-32 text-hex-1e2c46 px-50rpx h-80rpx leading-80rpx rounded-24rpx btn-effect">全开</text>
+            <view class="w-2rpx h-40rpx bg-hex-ddd"></view>
+            <text catch:tap="pauseCurtain" class="text-32 text-hex-1e2c46 px-50rpx h-80rpx leading-80rpx rounded-24rpx btn-effect">暂停</text>
+            <view class="w-2rpx h-40rpx bg-hex-ddd"></view>
+            <text catch:tap="closeCurtain" class="text-32 text-hex-1e2c46 px-50rpx h-80rpx leading-80rpx rounded-24rpx btn-effect">全关</text>
+          </view>
+          <view class="h-80rpx"></view>
+        </view>
       </view>
     </view>
   </view>
+</van-overlay>
 
-  <!-- 关联类型选择弹窗 -->
-  <select-link-popup show="{{showSelectLinkPopup}}" linkType="{{linkType}}" bind:close="handleSelectLinkPopupClose" bind:confirm="handleSelectLinkPopupConfirm"></select-link-popup>
+<!-- 关联类型选择弹窗 -->
+<select-link-popup show="{{showSelectLinkPopup}}" linkType="{{linkType}}" catch:close="handleSelectLinkPopupClose" catch:confirm="handleSelectLinkPopupConfirm"></select-link-popup>
 
-  <!-- 关联列表（场景列表 or 设备列表）弹窗 -->
-  <select-card-popup show="{{showLinkPopup}}" title="{{selectCardPopupTitle}}" list="{{list}}" selectList="{{linkSelectList}}" cardType="{{selectLinkType}}" bind:close="handleLinkPopupClose" bind:select="handleLinkSelect" bind:confirm="handleLinkPopupConfirm" bind:cancel="handleLinkPopupReturn" />
+<!-- 关联列表（场景列表 or 设备列表）弹窗 -->
+<select-card-popup show="{{showLinkPopup}}" title="{{selectCardPopupTitle}}" list="{{list}}" selectList="{{linkSelectList}}" cardType="{{selectLinkType}}" catch:close="handleLinkPopupClose" catch:select="handleLinkSelect" catch:confirm="handleLinkPopupConfirm" catch:cancel="handleLinkPopupReturn" />
 
-  <van-toast id="van-toast" />
-  <van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />
-</view>
+<van-toast id="van-toast" />
+<van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />

@@ -4,6 +4,7 @@
     "select-card-popup": "../../../../components/select-card-popup/index",
     "select-link-popup": "../select-link-popup/index",
     "mz-slider": "/components/mz-slider/index",
-    "curtain-slider": "/components/curtain-slider/index"
+    "curtain-slider": "/components/curtain-slider/index",
+    "van-overlay": "@vant/weapp/overlay/index"
   }
 }

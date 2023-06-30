@@ -920,5 +920,6 @@ ComponentWithComputed({
         curtain_position: e.detail,
       })
     },
+    handleCardTap() {}
   },
 })
