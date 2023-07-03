@@ -651,14 +651,17 @@ ComponentWithComputed({
       ]
       updateSceneDto.updateType = '3'
 
-      await updateScene(updateSceneDto)
+      const res = await updateScene(updateSceneDto)
       sceneStore.addCondition(updateSceneDto)
+
+      return res
     },
 
     /**
      * 删除面板的关联关系
      */
     async deleteAssocite() {
+      showLoading()
       const switchUniId = this.data.checkedList[0]
       const [deviceId, switchId] = switchUniId.split(':')
       let res
@@ -695,6 +698,7 @@ ComponentWithComputed({
         })
       }
 
+      hideLoading()
       return res
     },
 
@@ -721,6 +725,10 @@ ComponentWithComputed({
         res = await this.updateSwitchAssociate()
       } else if (this.data.selectLinkType === 'scene') {
         res = await this.updataSceneLink()
+      }
+
+      if (!res?.success) {
+        Toast('更新关联关系失败')
       }
 
       return res
@@ -771,11 +779,9 @@ ComponentWithComputed({
           }
         }
 
-        showLoading()
         const delRes = await this.deleteAssocite()
 
         if (!delRes?.success) {
-          hideLoading()
           return
         }
       }
