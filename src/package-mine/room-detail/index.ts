@@ -5,7 +5,7 @@ import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { homeBinding, roomBinding } from '../../store/index'
 import { emitter, getCurrentPageParams } from '../../utils/index'
-import { delHouseRoom } from '../../apis/index'
+import { delHouseRoom, saveHouseRoomInfo } from '../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -68,8 +68,6 @@ ComponentWithComputed({
     },
 
     finishAddRoom(event: WechatMiniprogram.CustomEvent) {
-      console.log('finishAddRoom', event)
-
       this.setData({
         isEdit: false,
         roomInfo: {
@@ -78,6 +76,23 @@ ComponentWithComputed({
           roomIcon: event.detail.roomIcon,
         },
       })
+    },
+
+    async saveRoomInfo() {
+      const res = await saveHouseRoomInfo({
+        houseId: homeBinding.store.currentHomeId,
+        roomId: this.data.roomInfo.roomId,
+        roomIcon: this.data.roomInfo.roomIcon,
+        roomName: this.data.roomInfo.roomName,
+      })
+
+      if (res.success) {
+        roomBinding.store.updateRoomList()
+        emitter.emit('homeInfoEdit')
+        this.goBack()
+      } else {
+        Toast('保存失败')
+      }
     },
 
     async delRoom() {

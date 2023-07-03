@@ -96,14 +96,13 @@ export function getCurrentPageParams() {
 //   })
 // }
 
-let loadingTimeId = 0
+let loadingNum = 0 // 正在等待loading的个数
 /**
  * 显示loading
  */
 export function showLoading() {
-  // 防止两个相邻接口调用loading，导致loading闪烁出现
-  if (loadingTimeId) {
-    clearTimeout(loadingTimeId)
+  loadingNum++
+  if (loadingNum > 1) {
     return
   }
   wx.showLoading({
@@ -116,9 +115,9 @@ export function showLoading() {
  * 隐藏loading
  */
 export function hideLoading() {
-  loadingTimeId = setTimeout(() => {
-    wx.hideLoading()
-    loadingTimeId = 0
+  loadingNum--
+  setTimeout(() => {
+    loadingNum === 0 && wx.hideLoading()
   }, 300)
 }
 

@@ -7,7 +7,7 @@ let env: ENV_TYPE = 'dev'
 
 export const mzaioBaseURL: ConfigWithEnv<string> = {
   dev: 'https://test.meizgd.com/mzaio',
-  sit: 'https://sit.meizgd.com/mzaio', // 开发环境
+  sit: 'https://sit.meizgd.com/mzaio',
   prod: 'https://mzaio.meizgd.com/mzaio',
 }
 

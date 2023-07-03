@@ -99,10 +99,10 @@ export class BleClient {
     // 存在蓝牙信号较差的情况，连接蓝牙设备后会中途断开的情况，需要做对应异常处理，超时处理
     const initRes = await Promise.race([
       this.initBleService(),
-      delay(3000).then(() => ({ success: false, error: '获取蓝牙服务信息超时' })),
+      delay(6000).then(() => ({ success: false, error: '获取蓝牙服务信息超时' })),
     ])
 
-    Logger.log(`【${this.mac}]initRes`, initRes)
+    Logger.log(`【${this.mac}】initRes`, initRes)
     if (!initRes.success) {
       await this.close() // 释放已连接的蓝牙资源
       throw {
@@ -235,7 +235,7 @@ export class BleClient {
           // 超时处理
           timeId = setTimeout(() => {
             resolve({ code: '-1', success: false, resMsg: '蓝牙指令回复超时', cmdType: cmdType, subCmdType: subType })
-          }, 6000)
+          }, 8000)
 
           listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
             if (res.deviceId !== this.deviceUuid) {
