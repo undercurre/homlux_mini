@@ -19,23 +19,23 @@ ComponentWithComputed({
       {
         icon: '/package-distribution/assets/choose-device/gateway.png',
         name: '智能网关',
-        path: '/package-distribution/scan/index'
+        path: '/package-distribution/scan/index',
       },
       {
         icon: '/package-distribution/assets/choose-device/subdevice.png',
         name: '开关/灯具',
-        path: '/package-distribution/scan/index'
+        path: '/package-distribution/scan/index',
       },
       {
         icon: '/package-distribution/assets/choose-device/screen.png',
         name: '智慧屏',
-        path: '/package-distribution/scan/index'
-      }
+        path: '/package-distribution/scan/index',
+      },
       // {
       //   icon: '/package-distribution/assets/choose-device/sensor.png',
       //   name: '传感器'
       // }
-    ]
+    ],
   },
 
   lifetimes: {
@@ -46,7 +46,5 @@ ComponentWithComputed({
   /**
    * 组件的方法列表
    */
-  methods: {
-
-  },
+  methods: {},
 })

@@ -1,5 +1,5 @@
 <view class="page-container flex flex-col">
-  <nav-bar leftArrow background="transparent"></nav-bar>
+  <nav-bar leftArrow bind:leftTap="goBack" background="transparent"></nav-bar>
 
   <view class="ml-48rpx mt-24rpx">
     <text class="text-40rpx text-hex-27282A font-medium">请选择您想添加的设备类型</text>
