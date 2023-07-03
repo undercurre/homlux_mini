@@ -400,13 +400,11 @@ ComponentWithComputed({
       const sceneIdMp = sceneStore.sceneIdMp
       const uId = `${device.deviceId}:${switchId}`
 
-      console.log('getLinkSceneName', uId, switchSceneConditionMap, switchSceneConditionMap[uId])
       if (
         switchSceneConditionMap[uId] &&
         sceneIdMp[switchSceneConditionMap[uId]] &&
         sceneIdMp[switchSceneConditionMap[uId]].sceneName
       ) {
-        console.log('getLinkSceneName, sceneName===', sceneIdMp[switchSceneConditionMap[uId]].sceneName)
         return sceneIdMp[switchSceneConditionMap[uId]].sceneName.slice(0, 4)
       }
       return ''
@@ -897,7 +895,6 @@ ComponentWithComputed({
     // 卡片点击时，按品类调用对应方法
     async handleControlTap(e: { detail: DeviceCard }) {
       const device = { ...e.detail }
-      console.log('handleControlTap', device, deviceStore.deviceFlattenMap[device.uniId])
       const ep = device.switchInfoDTOList ? device.switchInfoDTOList[0].switchId : 1
 
       // 若面板关联场景

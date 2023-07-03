@@ -1,5 +1,5 @@
 <wxs module="wxs" src="./index.wxs"></wxs>
-<van-overlay show="{{ isRender }}" bind:click="handleClose">
+<van-overlay show="{{ isRender }}" bind:click="handleClose" duration="0">
   <view wx:if="{{isRender}}" change:info="{{wxs.infoObserver}}" catch:tap="handleCardTap" info="{{info}}" id="popup" class="fixed z-200 left-0 w-750rpx h-600rpx opacity-0">
     <view class="popup-shadow w-750rpx h-600rpx rounded-t-64rpx bg-white flex-col flex items-center py-20rpx">
       <!-- tab -->

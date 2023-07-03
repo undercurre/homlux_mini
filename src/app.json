@@ -10,7 +10,8 @@
         "add-subdevice/index",
         "search-subdevice/index",
         "bind-home/index",
-        "change-wifi-success/index"
+        "change-wifi-success/index",
+        "choose-device/index"
       ]
     },
     {

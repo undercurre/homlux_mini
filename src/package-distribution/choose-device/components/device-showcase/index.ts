@@ -1,0 +1,35 @@
+import { ComponentWithComputed } from 'miniprogram-computed'
+
+ComponentWithComputed({
+  options: {
+    styleIsolation: 'apply-shared',
+  },
+  /**
+   * 组件的属性列表
+   */
+  properties: {
+    deviceInfo: {
+      type: Object,
+      value: {},
+    },
+  },
+
+  /**
+   * 组件的初始数据
+   */
+  data: {},
+
+  computed: {},
+
+  /**
+   * 组件的方法列表
+   */
+  methods: {
+    handleCardTap() {
+      console.log(this.data.deviceInfo)
+      wx.navigateTo({
+        url: this.data.deviceInfo.path,
+      })
+    },
+  },
+})
