@@ -1,4 +1,4 @@
-import { Logger, isArrEqual, storage, throttle, showLoading, hideLoading } from '../../../../utils/index'
+import { Logger, isArrEqual, throttle, showLoading, hideLoading } from '../../../../utils/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, deviceStore, sceneStore, homeStore } from '../../../../store/index'
@@ -55,13 +55,8 @@ ComponentWithComputed({
       observer(value) {
         Logger.log('checkedList', value)
         this.updateLinkInfo()
-        // 当controlPopup已是false时，则由数量变化为0触发，收起弹窗
-        if (value.length === 0 && !this.data.controlPopup) {
-          console.log('checkedList %s, trigger popupMove()', value)
-          this.popupMove()
-        }
         // 色温范围计算
-        else if (value.length) {
+        if (value.length) {
           const deviceId = this.data.checkedList[0]
           const { deviceMap } = deviceStore
           const device = deviceMap[deviceId]
@@ -106,19 +101,12 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    _divideRpxByPx: 0,
-    _halfHideBottom: 0, // 叠起来在底部时的bottom值
-    _minHeight: 0,
-    _componentHeight: 0,
-    _wfullpx: 0,
-    _touchStartY: 0,
-    _isTouchStart: false,
     info: {
       bottomBarHeight: 0,
       componentHeight: 0,
       divideRpxByPx: 0,
     },
-    isRender: false,
+    show: false,
     tab: '' as '' | 'light' | 'switch' | 'curtain',
     lightInfoInner: {
       Level: 10,
@@ -218,90 +206,18 @@ ComponentWithComputed({
   },
 
   lifetimes: {
-    /**
-     * 初始化数据
-     */
-    ready() {
-      const divideRpxByPx = storage.get<number>('divideRpxByPx')
-        ? (storage.get<number>('divideRpxByPx') as number)
-        : 0.5
-      let bottomBarHeight = storage.get<number>('bottomBarHeight') as number
-      const _componentHeight = 600 * divideRpxByPx
-      let _minHeight = 0
-      if (bottomBarHeight === 0) {
-        bottomBarHeight = 32 // 如果没有高度，就给个高度，防止弹窗太贴底部
-      }
-      _minHeight = divideRpxByPx * 60 + bottomBarHeight
-      this.data._minHeight = _minHeight // 最小高度
-      this.data._componentHeight = _componentHeight // 组件高度
-      this.data._halfHideBottom = _minHeight - _componentHeight // 组件相对底部高度
-      this.data._wfullpx = divideRpxByPx * 750 // 屏幕宽度
-      this.data._divideRpxByPx = divideRpxByPx // px rpx比率
-      this.setData({
-        info: {
-          bottomBarHeight: bottomBarHeight,
-          divideRpxByPx,
-          componentHeight: _componentHeight,
-        },
-      })
-    },
+    ready() {},
   },
 
   /**
    * 组件的方法列表
    */
   methods: {
-    // TODO: 简化if-else
     popupMove() {
       const { checkedList } = this.data
-      const lower = -this.data._componentHeight + 'px'
-      const upper = `${this.properties.controlPopup ? 0 : this.data._halfHideBottom}px`
-      if (this.data._componentHeight === 0) {
-        this.data._halfHideBottom = -this.data._componentHeight
-        return // 这时候还没有第一次渲染，from是0，不能正确执行动画
-      }
-
-      if (checkedList.length > 0) {
-        this.setData({
-          isRender: true,
-        })
-        // 打开
-        this.animate(
-          '#popup',
-          [
-            {
-              opacity: 0,
-              bottom: lower,
-            },
-            {
-              opacity: 1,
-              bottom: upper,
-            },
-          ],
-          100,
-        )
-      } else if (checkedList.length === 0) {
-        // 收起
-        this.animate(
-          '#popup',
-          [
-            {
-              opacity: 1,
-              bottom: upper,
-            },
-            {
-              opacity: 0,
-              bottom: lower,
-            },
-          ],
-          100,
-          () => {
-            this.setData({
-              isRender: false,
-            })
-          },
-        )
-      }
+      this.setData({
+        show: checkedList.length > 0,
+      })
     },
 
     /**
@@ -369,24 +285,6 @@ ComponentWithComputed({
       this.setData({
         linkType: linkType,
       })
-    },
-    handleTouchStart(e: WechatMiniprogram.TouchEvent) {
-      if (e.touches.length > 1) {
-        this.data._isTouchStart = false
-        return
-      }
-      this.data._touchStartY = e.touches[0].pageY
-      this.data._isTouchStart = true
-    },
-    handleTouchMove(e: WechatMiniprogram.TouchEvent) {
-      if (e.touches.length > 1 || !this.data._isTouchStart) {
-        this.data._isTouchStart = false
-        return
-      }
-      const isMoveUp = this.data._touchStartY - e.touches[0].pageY > 0
-      console.log('isMoveUp', isMoveUp)
-      this.triggerEvent('popMove', isMoveUp ? 'up' : 'down')
-      this.data._isTouchStart = false
     },
     handleClose() {
       this.triggerEvent('popMove', 'down')

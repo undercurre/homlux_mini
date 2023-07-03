@@ -68,7 +68,7 @@ export const roomStore = observable({
         }
 
         const { lightOnCount, endCount, lightCount } = deviceCount(roomDeviceList)
-      
+
         room.roomInfo.lightOnCount = lightOnCount
         room.roomInfo.endCount = endCount
         room.roomInfo.lightCount = lightCount
@@ -83,7 +83,7 @@ export const roomStore = observable({
           deviceNum: room.roomInfo.deviceNum,
           lightOnCount: room.roomInfo.lightOnCount,
           endCount: room.roomInfo.endCount,
-          lightCount: room.roomInfo.lightCount
+          lightCount: room.roomInfo.lightCount,
         }))
       })
     }
