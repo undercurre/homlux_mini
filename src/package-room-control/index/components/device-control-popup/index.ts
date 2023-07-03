@@ -563,10 +563,11 @@ ComponentWithComputed({
 
           if (!res.success) {
             Toast({ message: '删除场景关联失败', zIndex: 9999 })
+            return
           }
 
           // 若存在场景关联，则不可能存在灯关联，无需判断后面的逻辑
-          return
+          continue
         }
 
         const lampRelList = this.data._allSwitchLampRelList.filter(
