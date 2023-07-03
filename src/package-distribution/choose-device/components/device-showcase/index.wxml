@@ -1,0 +1,7 @@
+<view id="card" class="w-300rpx h-264rpx rounded-32rpx flex-col-center overflow-hidden bg-hex-fff" catchtap="handleCardTap">
+  <!-- 设备图标 -->
+  <image src="{{deviceInfo.icon}}" class="w-96rpx h-96rpx"></image>
+
+  <!-- 标题 -->
+  <text class="text-32rpx text-hex-555659 font-medium mt-32rpx">{{deviceInfo.name}}</text>
+</view>
