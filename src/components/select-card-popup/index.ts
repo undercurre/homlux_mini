@@ -39,12 +39,19 @@ ComponentWithComputed({
     selectList: {
       type: Array,
     },
+
+    // 默认显示的房间数据
+    defaultRoomId: {
+      type: String,
+      value: '',
+    },
+
     show: {
       type: Boolean,
       value: false,
       observer() {
         if (this.data.roomListComputed.length) {
-          let roomSelect = this.data.roomListComputed[0].roomId
+          let roomSelect = roomStore.currentRoom?.roomId || this.data.roomListComputed[0].roomId
 
           if (this.data.selectList.length) {
             const selectItem = this.data.list.find(
@@ -53,6 +60,8 @@ ComponentWithComputed({
             )
 
             roomSelect = selectItem.roomId
+          } else if (this.data.defaultRoomId) {
+            roomSelect = this.data.defaultRoomId
           }
           this.setData({
             roomSelect,

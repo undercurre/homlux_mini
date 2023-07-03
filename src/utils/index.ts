@@ -122,7 +122,10 @@ export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
     }
     if (!device.onLineStatus) return
     if (device.proType === PRO_TYPE.light) {
-      if (device.deviceType === 2 && device.mzgdPropertyDTOList['1'].OnOff || device.deviceType === 3 && device.mzgdPropertyDTOList['1'].power === 'on') {
+      if (
+        (device.deviceType === 2 && device.mzgdPropertyDTOList['1'].OnOff) ||
+        (device.deviceType === 3 && device.mzgdPropertyDTOList['1'].power === 'on')
+      ) {
         deviceLightOnNum++
       }
     } else if (device.proType === PRO_TYPE.switch) {
