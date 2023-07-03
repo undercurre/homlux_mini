@@ -1,4 +1,3 @@
-<wxs module="wxs" src="./index.wxs"></wxs>
 <van-popup show="{{ show }}" position="bottom" round closeable catchtouchmove="true" root-portal="{{true}}" bind:close="handleClose">
   <view class="popup-shadow w-750rpx h-600rpx rounded-t-64rpx bg-white flex-col flex items-center py-20rpx">
     <!-- tab -->
