@@ -103,27 +103,30 @@ export function _get(obj: object, path: string, defaultVal = undefined) {
  * @description 设备数量统计
  * @param ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
  * @returns {
- *  deviceLightOnNum: 统计多少灯打开（开关不关联灯或者关联场景都算进去）
- *  subDeviceNum: 子设备数; 统计多少个子设备
- *  lightNum: 灯设备数
+ *  lightOnCount: 统计多少灯打开（多开开关单独计算）（取代云端deviceLightOnNum）
+ *  endCount: 非网关设备数
+ *  lightCount: 灯与面板总数量（不排除关联）
  * }
  */
 export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
-  let deviceLightOnNum = 0
-  let subDeviceNum = 0
-  let lightNum = 0
+  let lightOnCount = 0
+  let endCount = 0
+  let lightCount = 0
 
   list?.forEach((device) => {
     if (device.proType !== PRO_TYPE.gateway) {
-      subDeviceNum++
+      endCount++
     }
     if (device.proType === PRO_TYPE.light || device.proType === PRO_TYPE.switch) {
-      lightNum++
+      lightCount++
     }
     if (!device.onLineStatus) return
     if (device.proType === PRO_TYPE.light) {
-      if (device.deviceType === 2 && device.mzgdPropertyDTOList['1'].OnOff || device.deviceType === 3 && device.mzgdPropertyDTOList['1'].power === 'on') {
-        deviceLightOnNum++
+      if (
+        (device.deviceType === 2 && device.mzgdPropertyDTOList['1'].OnOff) ||
+        (device.deviceType === 3 && device.mzgdPropertyDTOList['1'].power === 'on')
+      ) {
+        lightOnCount++
       }
     } else if (device.proType === PRO_TYPE.switch) {
       device.switchInfoDTOList.forEach((switchItem) => {
@@ -132,16 +135,16 @@ export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
           device.mzgdPropertyDTOList[switchItem.switchId]?.OnOff &&
           !device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode
         ) {
-          deviceLightOnNum++
+          lightOnCount++
         }
       })
     }
   })
 
   return {
-    deviceLightOnNum,
-    subDeviceNum,
-    lightNum,
+    lightOnCount,
+    endCount,
+    lightCount,
   }
 }
 
