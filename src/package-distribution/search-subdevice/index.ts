@@ -464,12 +464,9 @@ ComponentWithComputed({
 
       const bleDeviceItem = bleDevicesBinding.store.bleDeviceList.find((item) => item.deviceUuid === id) as IBleDevice
 
-      const oldMac = this.data.flashInfo.mac
-
       // 停止之前正在闪烁的设备
-      this.stopFlash()
-
-      if (oldMac === bleDeviceItem.mac) {
+      if (this.data.flashInfo.mac === bleDeviceItem.mac) {
+        this.stopFlash()
         return
       }
 
@@ -481,10 +478,15 @@ ComponentWithComputed({
 
     // 循环下发闪烁
     async keepFlash(bleDevice: IBleDevice) {
+      if (bleDevice.mac !== this.data.flashInfo.mac) {
+        bleDevice.client.close()
+        return
+      }
+
       const res = await bleDevice.client.flash()
 
-      console.log('flash', res)
-      if (!res.success || !this.data.flashInfo.mac) {
+      console.log('flash', res, this.data.flashInfo.mac)
+      if (!res.success) {
         this.stopFlash()
         return
       }

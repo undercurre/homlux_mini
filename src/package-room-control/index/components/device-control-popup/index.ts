@@ -53,7 +53,6 @@ ComponentWithComputed({
       type: Array,
       value: [] as string[],
       observer(value) {
-        Logger.log('checkedList', value)
         this.updateLinkInfo()
         // 当controlPopup已是false时，则由数量变化为0触发，收起弹窗
         if (value.length === 0 && !this.data.controlPopup) {
