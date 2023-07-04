@@ -190,7 +190,7 @@ ComponentWithComputed({
               })
 
               // 仅为本地更新，暂时取消节流
-              roomStore.updateRoomCardLightOnNum()
+              this.updateRoomCard()
 
               // 直接更新store里的数据，更新完退出回调函数
               return
@@ -226,6 +226,11 @@ ComponentWithComputed({
     updateRoomData: throttle(() => {
       homeStore.updateRoomCardList()
     }, 3000),
+    
+    // 节流更新房间卡片信息
+    updateRoomCard: throttle(() => {
+      roomStore.updateRoomCardLightOnNum()
+    }, 2000),
 
     /**
      * @description 生成房间位置
