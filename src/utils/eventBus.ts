@@ -44,6 +44,7 @@ export const WSEventType = {
   group_device_result_status: 'group_device_result_status', // 移动房间、创建分组结果
   screen_online_status_sub_device: 'screen_online_status_sub_device', // 子设备在线状态更新
   screen_online_status_wifi_device: 'screen_online_status_wifi_device', // wifi 设备在线状态更新
+  screen_move_sub_device: 'screen_move_sub_device', // 智慧屏设备变更
 }
 
 export const emitter: Emitter<Events> = mitt<Events>()

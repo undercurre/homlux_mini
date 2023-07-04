@@ -92,7 +92,7 @@ ComponentWithComputed({
       if (!this.data.hasUpdate) {
         return
       }
-      
+
       console.log('下发OTA')
       this.setData({
         isUpdating: true,
