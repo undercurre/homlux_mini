@@ -7,6 +7,7 @@ declare namespace Device {
     ColorTemp?: number // 色温
     Level?: number // 亮度
     OnOff?: number // 关 0 | 开 1
+    power?: string // on | off
     colorTempRange?: {
       // 色温值范围
       maxColorTemp: number
@@ -83,6 +84,8 @@ declare namespace Device {
     // 灯分组，包含的列表数据
     groupDeviceList?: GroupDTO[]
     groupName?: string
+
+    isScreenGateway: boolean // 是否智慧屏
   }
 
   interface MzgdPropertyDTO {

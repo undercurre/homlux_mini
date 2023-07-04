@@ -26,7 +26,7 @@ ComponentWithComputed({
 
   computed: {
     showScene(data) {
-      return !data.isMoving && data.roomInfo.subDeviceNum > 0
+      return !data.isMoving && data.roomInfo.endCount > 0
     },
     sceneList(data) {
       return data.roomInfo.sceneList.map((scene: Scene.SceneBase) => {
@@ -43,13 +43,13 @@ ComponentWithComputed({
       return []
     },
     hasBottomPadding(data) {
-      return data.roomInfo.subDeviceNum > 0 && data.roomInfo.sceneList.length > 0 && !data.isMoving
+      return data.roomInfo.endCount > 0 && data.roomInfo.sceneList.length > 0 && !data.isMoving
     },
     desc(data) {
       if (data.sceneList && data.deviceListComputed) {
-        return data.roomInfo.deviceLightOnNum
-          ? data.roomInfo.deviceLightOnNum + '盏灯亮起'
-          : data.roomInfo.lightNum > 0
+        return data.roomInfo.lightOnCount
+          ? data.roomInfo.lightOnCount + '盏灯亮起'
+          : data.roomInfo.lightCount > 0
           ? '灯全部关闭'
           : ''
       }
@@ -97,5 +97,6 @@ ComponentWithComputed({
         url: '/package-room-control/index/index',
       })
     },
+    doNothing() {},
   },
 })

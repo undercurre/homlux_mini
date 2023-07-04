@@ -11,7 +11,7 @@
     <scroll-view enable-flex scroll-x enhanced show-scrollbar="{{false}}" class="w-full h-168rpx flex">
       <view class="flex">
         <view class="w-32rpx"></view>
-        <view wx:for="{{sceneList}}" wx:key="value" data-value="{{item.sceneId}}" catchtap="handleSceneTap" class="overflow-hidden card-clip relative w-144rpx h-168rpx rounded-24rpx flex flex-col justify-center items-center bg-hex-eff0f3 shrink-0 {{index===0?'':'ml-22rpx'}}">
+        <view wx:for="{{sceneList}}" wx:key="value" data-value="{{item.sceneId}}" catch:tap="handleSceneTap" catch:longpress="doNothing" class="overflow-hidden card-clip relative w-144rpx h-168rpx rounded-24rpx flex flex-col justify-center items-center bg-hex-eff0f3 shrink-0 {{index===0?'':'ml-22rpx'}}">
           <view class="flex-col-center">
             <view class="rounded-999 bg-white">
               <svg-icon name="scene:{{item.sceneIcon}}" width="64rpx" height="64rpx" />

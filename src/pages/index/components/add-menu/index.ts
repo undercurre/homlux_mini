@@ -51,16 +51,16 @@ ComponentWithComputed({
           title: '添加设备',
           key: 'device',
           icon: 'add',
-          url: '/package-distribution/scan/index',
+          url: '/package-distribution/choose-device/index',
         })
       }
       if (data.isCreator) {
         list.push(
-          {
-            title: '添加自动化',
-            key: 'auto',
-            icon: 'auto',
-          },
+          // {
+          //   title: '添加自动化',
+          //   key: 'auto',
+          //   icon: 'auto',
+          // },
           {
             title: '连接其它平台',
             key: 'platform',
@@ -80,9 +80,9 @@ ComponentWithComputed({
   methods: {
     async addMenuTap(e: { currentTarget: { dataset: { url: string } } }) {
       const url = e.currentTarget.dataset.url
-      wx.navigateTo({ url })
+      this.hideAnimate(() => wx.navigateTo({ url }))
     },
-    hideAnimate() {
+    hideAnimate(callback?: () => void) {
       this.animate(
         '#addMenu',
         [
@@ -106,6 +106,9 @@ ComponentWithComputed({
           this.setData({
             isRender: false,
           })
+          if (callback) {
+            callback()
+          }
         },
       )
     },

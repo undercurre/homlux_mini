@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Dialog from '@vant/weapp/dialog/dialog'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { strUtil, storage, getCurrentPageParams, isAndroid } from '../../utils/index'
+import { strUtil, storage, getCurrentPageParams, isAndroid, checkWifiSwitch } from '../../utils/index'
 
 ComponentWithComputed({
   options: {
@@ -72,7 +72,7 @@ ComponentWithComputed({
 
   lifetimes: {
     ready() {
-      if (this.checkWifiSwitch()) {
+      if (checkWifiSwitch()) {
         this.initWifi()
       } else {
         this.data._wifiSwitchInterId = setInterval(() => {
@@ -114,24 +114,6 @@ ComponentWithComputed({
   },
 
   methods: {
-    checkWifiSwitch() {
-      // 安卓端需要检测wifi开关，否则无法调用wifi接口
-      if (isAndroid()) {
-        const systemSetting = wx.getSystemSetting()
-
-        if (!systemSetting.wifiEnabled) {
-          Dialog.alert({
-            message: '请打开手机WIFI',
-            showCancelButton: false,
-            confirmButtonText: '我知道了',
-          })
-        }
-
-        return systemSetting.wifiEnabled
-      }
-
-      return true
-    },
     toggleWifiTips() {
       this.setData({
         hasShowWifiTips: true,
@@ -193,7 +175,7 @@ ComponentWithComputed({
     },
 
     toggleWifi() {
-      if (!this.checkWifiSwitch()) {
+      if (!checkWifiSwitch()) {
         return
       }
 

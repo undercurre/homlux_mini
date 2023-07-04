@@ -76,7 +76,7 @@ declare namespace Home {
   }
 
   export interface IRoomInfo {
-    deviceLightOnNum: number
+    lightOnCount: number
     roomIcon: string
     roomId: string
     roomName: string

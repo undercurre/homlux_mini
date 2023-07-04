@@ -29,7 +29,7 @@
 }
 
 .border-bottom {
-  border-bottom: 1rpx solid #ddd;
+  border-bottom: 1rpx solid #eee;
 }
 
 .single-text {

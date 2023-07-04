@@ -2,8 +2,9 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
 import { bindMeiju, getMeijuDeviceList, syncMeijuDeviceList, delDeviceSubscribe } from '../../../apis/index'
 import { delay } from '../../../utils/index'
-import { homeBinding } from '../../../store/index'
+import { homeStore, homeBinding } from '../../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import Toast from '@vant/weapp/toast/toast'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] }), pageBehaviors],
@@ -30,6 +31,7 @@ ComponentWithComputed({
           this.setData({
             deviceList,
           })
+          homeStore.updateRoomCardList()
         }
       }
       // 不带 homeId，从第三方列表页直接进入
@@ -40,6 +42,7 @@ ComponentWithComputed({
           this.setData({
             deviceList,
           })
+          homeStore.updateRoomCardList()
         }
       }
 
@@ -63,11 +66,20 @@ ComponentWithComputed({
         this.setData({
           deviceList,
         })
+        homeStore.updateRoomCardList()
+        Toast('同步成功')
       }
     },
 
-    debindMeiju() {
-      delDeviceSubscribe()
+    async debindMeiju() {
+      const res = await delDeviceSubscribe(this.data.currentHomeId)
+      if (res.success) {
+        Toast('已解除绑定')
+        wx.switchTab({
+          url: '/pages/index/index',
+        })
+        homeStore.updateRoomCardList()
+      }
     },
   },
 })

@@ -1,8 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { proName, PRO_TYPE } from '../../config/index'
 
-const CONTROL_INTERVAL = 5000 // 开关操作间隔时间
-let throttleTimer = 0
+const CONTROL_INTERVAL = 3000 // 开关操作间隔时间
 
 ComponentWithComputed({
   options: {
@@ -59,6 +58,7 @@ ComponentWithComputed({
     onOff: false, // true: on false: off
     showDeviceOffline: false,
     isProcessing: false,
+    _throttleTimer: 0,
   },
 
   computed: {
@@ -165,8 +165,8 @@ ComponentWithComputed({
       }
     },
     handlePowerTap() {
-      // 如果关联了面板，或者设备离线，刚转为点击卡片
-      if (this.data.deviceInfo.linkSceneName || !this.data.deviceInfo.onLineStatus) {
+      // 如果设备离线，刚转为点击卡片
+      if (!this.data.deviceInfo.onLineStatus) {
         this.handleCardTap()
         return
       }
@@ -178,7 +178,7 @@ ComponentWithComputed({
           if (this.data.deviceInfo.onLineStatus) {
             this.triggerEvent('controlTap', { ...this.data.deviceInfo, clientRect: res[0] })
             // 执行动画
-            if (throttleTimer) {
+            if (this.data._throttleTimer) {
               return
             }
             let onOff = false
@@ -190,8 +190,8 @@ ComponentWithComputed({
                 onOff = !this.data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff
               }
               if (this.data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
-                throttleTimer = setTimeout(() => {
-                  throttleTimer = 0
+                this.data._throttleTimer = setTimeout(() => {
+                  this.data._throttleTimer = 0
                   this.setData({
                     isProcessing: false,
                   })
@@ -208,8 +208,8 @@ ComponentWithComputed({
               ripple: true,
               onOff,
             })
-            throttleTimer = setTimeout(() => {
-              throttleTimer = 0
+            this.data._throttleTimer = setTimeout(() => {
+              this.data._throttleTimer = 0
               this.setData({
                 ripple: false,
                 isProcessing: false,

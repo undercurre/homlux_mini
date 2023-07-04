@@ -4,7 +4,6 @@ import { homeBinding, homeStore, otaBinding, otaStore } from '../../store/index'
 import Toast from '@vant/weapp/toast/toast'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { getEnv } from '../../config/index'
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [otaBinding, homeBinding] }), pageBehavior],
 
@@ -90,7 +89,11 @@ ComponentWithComputed({
       })
     },
     handleUpdate() {
-      console.log('handleUpdate')
+      if (!this.data.hasUpdate) {
+        return
+      }
+      
+      console.log('下发OTA')
       this.setData({
         isUpdating: true,
       })
@@ -105,24 +108,6 @@ ComponentWithComputed({
           this.startPollingQuery()
         }
       })
-    },
-    /** 测试环境允许强制下发更新进行测试 */
-    handleUpdateForce() {
-      if (getEnv() === 'dev') {
-        // 测试环境允许强制更新
-        Toast('测试下发OTA')
-        execOtaUpdate(
-          {
-            deviceOtaList: otaStore.otaUpdateList,
-          },
-          { loading: true },
-        ).then((res) => {
-          if (res.success && !this.data._pollingTimer) {
-            // 下发升级指令成功，轮询直到完成更新
-            this.startPollingQuery()
-          }
-        })
-      }
     },
     startPollingQuery() {
       // 下发升级指令成功，轮询直到完成更新

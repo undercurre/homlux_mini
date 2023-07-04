@@ -85,6 +85,26 @@ export const sceneStore = observable({
       })
     }
   },
+
+  addCondition(updateSceneDto: Scene.UpdateSceneDto) {
+    const scene = sceneStore.allRoomSceneList.find(
+      (item) => updateSceneDto.sceneId && item.sceneId === updateSceneDto.sceneId,
+    )
+    if (scene) {
+      runInAction(() => {
+        scene.deviceConditions = updateSceneDto.deviceConditions!
+      })
+    }
+  },
+
+  removeCondition(sceneId: string) {
+    const scene = sceneStore.allRoomSceneList.find((item) => sceneId && item.sceneId === sceneId)
+    if (scene) {
+      runInAction(() => {
+        scene.deviceConditions = []
+      })
+    }
+  },
 })
 
 export const sceneBinding = {

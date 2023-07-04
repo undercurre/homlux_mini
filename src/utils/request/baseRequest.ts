@@ -81,14 +81,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       // 否则就只使用generalSuccessHandler进行通用处理或者generalSuccessHandler不存在则不处理直接返回
       requestOption.success = (result) => {
         if (requestOption.log) {
-          console.log(
-            '请求URL:' + requestOption.url + ' 成功，参数：',
-            requestOption.data,
-            '请求结果：',
-            result.data,
-            '\n请求用时:',
-            Date.now() - start + 'ms',
-          )
+          console.log(`✔ ${requestOption.url} 用时 ${Date.now() - start} ms，响应内容：\n`, result.data)
         }
         const data = requestOption.generalSuccessHandler ? requestOption.generalSuccessHandler(result) : result.data
         resolve(data)
@@ -100,24 +93,24 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       const handler = requestOption.failHandler
       requestOption.fail = (err) => {
         if (requestOption.log) {
-          console.log('请求URL:' + requestOption.url + ' 失败，失败原因：' + err.errMsg, requestOption.data)
+          console.log('✘请求URL:' + requestOption.url + ' 失败，原因：' + err.errMsg, requestOption.data)
         }
         resolve(handler(err))
       }
     } else {
       requestOption.fail = (err) => {
         if (requestOption.log) {
-          console.log('请求URL:' + requestOption.url + ' 失败，失败原因：' + err.errMsg, requestOption.data)
+          console.log('✘请求URL:' + requestOption.url + ' 失败，失败原因：' + err.errMsg, requestOption.data)
         }
         const data = requestOption.generalFailHandler ? requestOption.generalFailHandler(err) : (err as unknown as T)
         resolve(data)
       }
     }
 
-    // if (requestOption.log) {
-    //   // 调试可能需要拿到token
-    //   console.log('请求发起URL:' + requestOption.url, requestOption.data, requestOption.header)
-    // }
+    // 请求发起时的提示
+    if (requestOption.log) {
+      console.log(`☛ ${requestOption.url} 参数：\n`, requestOption.data, requestOption.header)
+    }
 
     wx.request({
       ...requestOption,

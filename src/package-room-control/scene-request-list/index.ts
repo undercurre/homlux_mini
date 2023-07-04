@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { storage, emitter, getCurrentPageParams } from '../../utils/index'
+import { storage, emitter, getCurrentPageParams, toWifiProperty } from '../../utils/index'
 import { addScene, retryScene, updateScene } from '../../apis/index'
 import { sceneStore, deviceStore, homeStore } from '../../store/index'
 import { PRO_TYPE } from '../../config/index'
@@ -36,29 +36,11 @@ ComponentWithComputed({
     async ready() {
       const pageParams = getCurrentPageParams()
       const sceneData = storage.get('scene_data') as Scene.AddSceneDto | Scene.UpdateSceneDto
+      const sceneDeviceActionsFlatten = storage.get('sceneDeviceActionsFlatten') as Device.ActionItem[]
 
-      console.log('sceneData', sceneData)
+      console.log('sceneData', sceneData, 'sceneDeviceActionsFlatten', sceneDeviceActionsFlatten)
 
-      const selectIdList = [] as string[]
-
-      for (const item of sceneData.deviceActions as Scene.DeviceAction[]) {
-        // 去除后端不需要的字段
-        for (const epItem of item.controlAction) {
-          delete epItem.colorTempRange
-          delete epItem.maxColorTemp
-          delete epItem.minColorTemp
-          delete epItem.deviceName
-          delete epItem.devicePic
-        }
-
-        if (item.proType === PRO_TYPE.switch) {
-          for (const epItem of item.controlAction) {
-            selectIdList.push(`${item.deviceId}:${epItem.ep}`)
-          }
-        } else {
-          selectIdList.push(item.deviceId)
-        }
-      }
+      const selectIdList = sceneDeviceActionsFlatten.map((item) => item.uniId)
 
       const deviceList = deviceStore.deviceFlattenList
         .filter((item) => selectIdList.includes(item.uniId))
@@ -66,6 +48,63 @@ ComponentWithComputed({
           ...item,
           status: 'waiting',
         }))
+
+      // 处理发送请求的deviceActions字段数据
+      const deviceMap = deviceStore.deviceMap
+      // switch需要特殊处理
+      const switchDeviceMap = {} as Record<string, IAnyObject[]>
+
+      sceneDeviceActionsFlatten.forEach((action) => {
+        const device = deviceMap[action.uniId]
+
+        if (action.proType === PRO_TYPE.switch) {
+          const deviceId = action.uniId.split(':')[0]
+          if (switchDeviceMap[deviceId]) {
+            switchDeviceMap[deviceId].push(action.value)
+          } else {
+            switchDeviceMap[deviceId] = [action.value]
+          }
+        } else {
+          const property = action.value
+          let ctrlAction = {} as IAnyObject
+
+          if (device.deviceType === 2) {
+            ctrlAction.ep = 1
+          }
+
+          if (device.proType === PRO_TYPE.light) {
+            ctrlAction.OnOff = property.OnOff
+
+            if (property.OnOff === 1) {
+              ctrlAction.ColorTemp = property.ColorTemp
+              ctrlAction.Level = property.Level
+            }
+
+            if (device.deviceType === 3) {
+              ctrlAction = toWifiProperty(device.proType, ctrlAction)
+            }
+          } else if (device.proType === PRO_TYPE.curtain) {
+            ctrlAction.curtain_position = property.curtain_position
+          }
+
+          sceneData?.deviceActions?.push({
+            controlAction: [ctrlAction],
+            deviceId: action.uniId,
+            deviceType: device.deviceType,
+            proType: device.proType,
+          })
+        }
+      })
+
+      // 再将switch放到要发送的数据里面
+      sceneData?.deviceActions?.push(
+        ...Object.entries(switchDeviceMap).map(([deviceId, actions]) => ({
+          controlAction: actions,
+          deviceId: deviceId,
+          deviceType: deviceMap[deviceId].deviceType,
+          proType: deviceMap[deviceId].proType,
+        })),
+      )
 
       this.setData({
         _sceneData: sceneData,
@@ -79,7 +118,7 @@ ComponentWithComputed({
         )
 
         if (device) {
-          device.status = 'success'
+          device.status = data.errCode === 0 ? 'success' : 'fail'
           this.setData({
             deviceList,
           })
@@ -93,6 +132,10 @@ ComponentWithComputed({
       const res = await promise
 
       if (res.success) {
+        this.setData({
+          sceneId: pageParams.sceneId || res.result.sceneId,
+        })
+
         setTimeout(() => {
           this.data.deviceList.forEach((item) => {
             if (item.status === 'waiting') {
@@ -102,7 +145,6 @@ ComponentWithComputed({
 
           this.setData({
             deviceList,
-            sceneId: pageParams.sceneId || res.result.sceneId,
           })
         }, 30000)
       } else {

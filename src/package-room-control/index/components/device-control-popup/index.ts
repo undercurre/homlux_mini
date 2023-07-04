@@ -1,4 +1,4 @@
-import { Logger, isArrEqual, storage, throttle, showLoading, hideLoading } from '../../../../utils/index'
+import { Logger, isArrEqual, throttle, showLoading, hideLoading } from '../../../../utils/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, deviceStore, sceneStore, homeStore } from '../../../../store/index'
@@ -18,6 +18,7 @@ import {
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
 import pageBehavior from '../../../../behaviors/pageBehaviors'
+import { runInAction } from 'mobx-miniprogram'
 
 // 关联类型文描映射
 const descMap = {
@@ -52,15 +53,9 @@ ComponentWithComputed({
       type: Array,
       value: [] as string[],
       observer(value) {
-        Logger.log('checkedList', value)
         this.updateLinkInfo()
-        // 当controlPopup已是false时，则由数量变化为0触发，收起弹窗
-        if (value.length === 0 && !this.data.controlPopup) {
-          console.log('checkedList %s, trigger popupMove()', value)
-          this.popupMove()
-        }
         // 色温范围计算
-        else if (value.length) {
+        if (value.length) {
           const deviceId = this.data.checkedList[0]
           const { deviceMap } = deviceStore
           const device = deviceMap[deviceId]
@@ -105,19 +100,12 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    _divideRpxByPx: 0,
-    _halfHideBottom: 0, // 叠起来在底部时的bottom值
-    _minHeight: 0,
-    _componentHeight: 0,
-    _wfullpx: 0,
-    _touchStartY: 0,
-    _isTouchStart: false,
     info: {
       bottomBarHeight: 0,
       componentHeight: 0,
       divideRpxByPx: 0,
     },
-    isRender: false,
+    show: false,
     tab: '' as '' | 'light' | 'switch' | 'curtain',
     lightInfoInner: {
       Level: 10,
@@ -217,90 +205,18 @@ ComponentWithComputed({
   },
 
   lifetimes: {
-    /**
-     * 初始化数据
-     */
-    ready() {
-      const divideRpxByPx = storage.get<number>('divideRpxByPx')
-        ? (storage.get<number>('divideRpxByPx') as number)
-        : 0.5
-      let bottomBarHeight = storage.get<number>('bottomBarHeight') as number
-      const _componentHeight = 600 * divideRpxByPx
-      let _minHeight = 0
-      if (bottomBarHeight === 0) {
-        bottomBarHeight = 32 // 如果没有高度，就给个高度，防止弹窗太贴底部
-      }
-      _minHeight = divideRpxByPx * 60 + bottomBarHeight
-      this.data._minHeight = _minHeight // 最小高度
-      this.data._componentHeight = _componentHeight // 组件高度
-      this.data._halfHideBottom = _minHeight - _componentHeight // 组件相对底部高度
-      this.data._wfullpx = divideRpxByPx * 750 // 屏幕宽度
-      this.data._divideRpxByPx = divideRpxByPx // px rpx比率
-      this.setData({
-        info: {
-          bottomBarHeight: bottomBarHeight,
-          divideRpxByPx,
-          componentHeight: _componentHeight,
-        },
-      })
-    },
+    ready() {},
   },
 
   /**
    * 组件的方法列表
    */
   methods: {
-    // TODO: 简化if-else
     popupMove() {
       const { checkedList } = this.data
-      const lower = -this.data._componentHeight + 'px'
-      const upper = `${this.properties.controlPopup ? 0 : this.data._halfHideBottom}px`
-      if (this.data._componentHeight === 0) {
-        this.data._halfHideBottom = -this.data._componentHeight
-        return // 这时候还没有第一次渲染，from是0，不能正确执行动画
-      }
-
-      if (checkedList.length > 0) {
-        this.setData({
-          isRender: true,
-        })
-        // 打开
-        this.animate(
-          '#popup',
-          [
-            {
-              opacity: 0,
-              bottom: lower,
-            },
-            {
-              opacity: 1,
-              bottom: upper,
-            },
-          ],
-          100,
-        )
-      } else if (checkedList.length === 0) {
-        // 收起
-        this.animate(
-          '#popup',
-          [
-            {
-              opacity: 1,
-              bottom: upper,
-            },
-            {
-              opacity: 0,
-              bottom: lower,
-            },
-          ],
-          100,
-          () => {
-            this.setData({
-              isRender: false,
-            })
-          },
-        )
-      }
+      this.setData({
+        show: checkedList.length > 0,
+      })
     },
 
     /**
@@ -368,24 +284,6 @@ ComponentWithComputed({
       this.setData({
         linkType: linkType,
       })
-    },
-    handleTouchStart(e: WechatMiniprogram.TouchEvent) {
-      if (e.touches.length > 1) {
-        this.data._isTouchStart = false
-        return
-      }
-      this.data._touchStartY = e.touches[0].pageY
-      this.data._isTouchStart = true
-    },
-    handleTouchMove(e: WechatMiniprogram.TouchEvent) {
-      if (e.touches.length > 1 || !this.data._isTouchStart) {
-        this.data._isTouchStart = false
-        return
-      }
-      const isMoveUp = this.data._touchStartY - e.touches[0].pageY > 0
-      console.log('isMoveUp', isMoveUp)
-      this.triggerEvent('popMove', isMoveUp ? 'up' : 'down')
-      this.data._isTouchStart = false
     },
     handleClose() {
       this.triggerEvent('popMove', 'down')
@@ -562,10 +460,11 @@ ComponentWithComputed({
 
           if (!res.success) {
             Toast({ message: '删除场景关联失败', zIndex: 9999 })
+            return
           }
 
           // 若存在场景关联，则不可能存在灯关联，无需判断后面的逻辑
-          return
+          continue
         }
 
         const lampRelList = this.data._allSwitchLampRelList.filter(
@@ -610,21 +509,19 @@ ComponentWithComputed({
         return
       }
 
-      const sceneId = this.data.linkSelectList[0]
+      const newSceneId = this.data.linkSelectList[0]
       const updateSceneDto = {
         conditionType: '0',
-        sceneId: sceneId,
+        sceneId: newSceneId,
       } as Scene.UpdateSceneDto
-      console.log(switchSceneConditionMap, switchUniId, switchSceneConditionMap[switchUniId])
 
-      if (
-        switchSceneConditionMap[switchUniId] &&
-        this.data.linkSelectList[0] !== switchSceneConditionMap[switchUniId]
-      ) {
+      const oldSceneId = switchSceneConditionMap[switchUniId]
+
+      if (oldSceneId && this.data.linkSelectList[0] !== oldSceneId) {
         // 更新场景关联，先取消关联当前场景，再关联其他场景
         const res = await updateScene({
           conditionType: '0',
-          sceneId: switchSceneConditionMap[switchUniId],
+          sceneId: oldSceneId,
           updateType: '2',
         })
 
@@ -635,6 +532,7 @@ ComponentWithComputed({
           })
           return
         }
+        sceneStore.removeCondition(oldSceneId)
       }
 
       // 关联新的场景
@@ -651,13 +549,17 @@ ComponentWithComputed({
       ]
       updateSceneDto.updateType = '3'
 
-      await updateScene(updateSceneDto)
+      const res = await updateScene(updateSceneDto)
+      sceneStore.addCondition(updateSceneDto)
+
+      return res
     },
 
     /**
      * 删除面板的关联关系
      */
     async deleteAssocite() {
+      showLoading()
       const switchUniId = this.data.checkedList[0]
       const [deviceId, switchId] = switchUniId.split(':')
       let res
@@ -676,13 +578,15 @@ ComponentWithComputed({
         })
       } else if (this.data.linkType === 'scene') {
         // 删除场景关联
-        const sceneId = deviceStore.switchSceneConditionMap[switchUniId]
-        if (sceneId) {
+        const oldSceneId = deviceStore.switchSceneConditionMap[switchUniId]
+        if (oldSceneId) {
           res = await updateScene({
-            sceneId: sceneId,
+            sceneId: oldSceneId,
             updateType: '2',
           })
         }
+
+        sceneStore.removeCondition(oldSceneId)
       }
 
       if (!res?.success) {
@@ -692,6 +596,7 @@ ComponentWithComputed({
         })
       }
 
+      hideLoading()
       return res
     },
 
@@ -718,6 +623,10 @@ ComponentWithComputed({
         res = await this.updateSwitchAssociate()
       } else if (this.data.selectLinkType === 'scene') {
         res = await this.updataSceneLink()
+      }
+
+      if (!res?.success) {
+        Toast('更新关联关系失败')
       }
 
       return res
@@ -768,11 +677,9 @@ ComponentWithComputed({
           }
         }
 
-        showLoading()
         const delRes = await this.deleteAssocite()
 
         if (!delRes?.success) {
-          hideLoading()
           return
         }
       }
@@ -793,7 +700,8 @@ ComponentWithComputed({
 
       this.data._switchRelInfo.switchUniId = '' // 置空标志位，否则不会更新数据
       this.updateLinkInfo()
-      this.triggerEvent('updateList')
+      // 有ws上报，暂时取消整个列表的刷新
+      // this.triggerEvent('updateList')
 
       hideLoading()
     },
@@ -804,7 +712,7 @@ ComponentWithComputed({
     },
     async lightSendDeviceControl(type: 'ColorTemp' | 'Level') {
       const deviceId = this.data.checkedList[0]
-      const device = JSON.parse(JSON.stringify(deviceStore.deviceMap[deviceId])) // 深拷贝，以免影响store中的源数据
+      const device = deviceStore.deviceMap[deviceId]
       if (deviceId.indexOf(':') !== -1 || device.proType !== PRO_TYPE.light) {
         return
       }
@@ -812,7 +720,9 @@ ComponentWithComputed({
       const oldValue = device.mzgdPropertyDTOList[1][type]
 
       // 即时改变devicePageList，以便场景引用
-      device.mzgdPropertyDTOList[1][type] = this.data.lightInfoInner[type]
+      runInAction(() => {
+        device.mzgdPropertyDTOList[1][type] = this.data.lightInfoInner[type]
+      })
       this.triggerEvent('updateList', device)
 
       const res = await sendDevice({
@@ -878,7 +788,7 @@ ComponentWithComputed({
     },
     async curtainControl(property: IAnyObject) {
       const deviceId = this.data.checkedList[0]
-      const device = deviceStore.deviceMap[deviceId] // 深拷贝，以免影响store中的源数据
+      const device = deviceStore.deviceMap[deviceId]
       if (device.proType !== PRO_TYPE.curtain) {
         return
       }
@@ -914,5 +824,6 @@ ComponentWithComputed({
         curtain_position: e.detail,
       })
     },
+    handleCardTap() {},
   },
 })

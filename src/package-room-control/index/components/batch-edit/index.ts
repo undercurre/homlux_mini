@@ -111,7 +111,8 @@ ComponentWithComputed({
       return (
         data.editSelectList?.length &&
         data.editSelectList.length > 1 &&
-        data.editSelectList.every((deviceId: string) => {
+        data.editSelectList.every((uId: string) => {
+          const deviceId = uId.split(':')[0]
           const device = deviceStore.deviceMap[deviceId]
           return device.proType === PRO_TYPE.light && [2, 3].includes(device.deviceType) && device.onLineStatus === 1
         })
@@ -294,9 +295,8 @@ ComponentWithComputed({
           }
 
           // TODO 只有WIFI设备时，不需要超时检测逻辑
-          // 超时后检查云端上报，是否已成功移动完毕
-          const TIME_OUT =
-            this.data.moveWaitlist.length > 80 ? 120000 : Math.max(3000, this.data.moveWaitlist.length * 1000)
+          // 超时后检查云端上报，是否已成功移动完毕 5~120s
+          const TIME_OUT = Math.min(Math.max(5000, this.data.moveWaitlist.length * 1000), 120000)
 
           showLoading()
           timeId = setTimeout(async () => {
@@ -329,7 +329,7 @@ ComponentWithComputed({
           .then(actionFn)
           .catch((e) => console.log(e))
       }
-      // 如果不包含面板设备，或者是失败重试，刚不必询问直接执行
+      // 如果不包含面板设备，或者是失败重试列表为空，刚不必询问直接执行
       else {
         actionFn()
       }
@@ -466,7 +466,7 @@ ComponentWithComputed({
           }
         }
       } else if (this.data.showEditRoom) {
-        this.data.moveWaitlist = [...this.data.editSelectList]
+        this.initMoveWaitlist()
         this.handleBatchMove()
         this.handleClose()
 
@@ -474,9 +474,8 @@ ComponentWithComputed({
           if (result.errCode !== 0) {
             this.data.moveFailCount++
           }
-          const deviceId = result.devId
           const uniId = `${result.devId}:${result.ep}`
-          const finishedIndex = this.data.moveWaitlist.findIndex((item) => item === deviceId || item === uniId)
+          const finishedIndex = this.data.moveWaitlist.findIndex((item) => item === uniId)
           this.data.moveWaitlist.splice(finishedIndex, 1)
 
           if (!this.data.moveWaitlist.length) {
@@ -492,6 +491,20 @@ ComponentWithComputed({
     handleRoomSelect(e: { currentTarget: { dataset: { id: string } } }) {
       this.setData({
         roomId: e.currentTarget.dataset.id,
+      })
+    },
+    // 初始化等待移动的列表
+    initMoveWaitlist() {
+      this.data.editSelectList.forEach((uId: string) => {
+        const deviceId = uId.split(':')[0]
+        const device = deviceStore.deviceMap[deviceId]
+        if (device.deviceType === 2) {
+          for (let eq in device.mzgdPropertyDTOList) {
+            this.data.moveWaitlist.push(`${device.deviceId}:${eq}`)
+          }
+        } else {
+          this.data.moveWaitlist.push(`${device.deviceId}:1`)
+        }
       })
     },
   },
