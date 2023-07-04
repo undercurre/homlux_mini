@@ -279,6 +279,10 @@ ComponentWithComputed({
           device.mzgdPropertyDTOList[e.result.eventData.ep] = {
             ...e.result.eventData.event,
           }
+          // WIFI灯状态更新
+          if (Object.prototype.hasOwnProperty.call(e.result.eventData.event, 'power')) {
+            device.mzgdPropertyDTOList[e.result.eventData.ep].OnOff = e.result.eventData.event.power === 'on' ? 1 : 0
+          }
           this.updateDeviceList(device)
           return
         }
