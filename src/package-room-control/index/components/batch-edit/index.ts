@@ -329,7 +329,7 @@ ComponentWithComputed({
           .then(actionFn)
           .catch((e) => console.log(e))
       }
-      // 如果不包含面板设备，或者是失败重试，刚不必询问直接执行
+      // 如果不包含面板设备，或者是失败重试列表为空，刚不必询问直接执行
       else {
         actionFn()
       }
@@ -466,7 +466,7 @@ ComponentWithComputed({
           }
         }
       } else if (this.data.showEditRoom) {
-        this.data.moveWaitlist = [...this.data.editSelectList]
+        this.initMoveWaitlist()
         this.handleBatchMove()
         this.handleClose()
 
@@ -474,9 +474,8 @@ ComponentWithComputed({
           if (result.errCode !== 0) {
             this.data.moveFailCount++
           }
-          const deviceId = result.devId
           const uniId = `${result.devId}:${result.ep}`
-          const finishedIndex = this.data.moveWaitlist.findIndex((item) => item === deviceId || item === uniId)
+          const finishedIndex = this.data.moveWaitlist.findIndex((item) => item === uniId)
           this.data.moveWaitlist.splice(finishedIndex, 1)
 
           if (!this.data.moveWaitlist.length) {
@@ -492,6 +491,20 @@ ComponentWithComputed({
     handleRoomSelect(e: { currentTarget: { dataset: { id: string } } }) {
       this.setData({
         roomId: e.currentTarget.dataset.id,
+      })
+    },
+    // 初始化等待移动的列表
+    initMoveWaitlist() {
+      this.data.editSelectList.forEach((uId: string) => {
+        const deviceId = uId.split(':')[0]
+        const device = deviceStore.deviceMap[deviceId]
+        if (device.deviceType === 2) {
+          for (let eq in device.mzgdPropertyDTOList) {
+            this.data.moveWaitlist.push(`${device.deviceId}:${eq}`)
+          }
+        } else {
+          this.data.moveWaitlist.push(`${device.deviceId}:1`)
+        }
       })
     },
   },
