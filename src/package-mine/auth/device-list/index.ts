@@ -75,10 +75,13 @@ ComponentWithComputed({
       const res = await delDeviceSubscribe(this.data.currentHomeId)
       if (res.success) {
         Toast('已解除绑定')
+
+        homeStore.updateRoomCardList()
+        await delay(1500)
+
         wx.switchTab({
           url: '/pages/index/index',
         })
-        homeStore.updateRoomCardList()
       }
     },
   },
