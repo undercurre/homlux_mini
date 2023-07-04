@@ -103,9 +103,9 @@ export function _get(obj: object, path: string, defaultVal = undefined) {
  * @description 设备数量统计
  * @param ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
  * @returns {
- *  lightOnCount: 统计多少灯打开（多开开关单独计算）（取代云端deviceLightOnNum）
- *  endCount: 非网关设备数
- *  lightCount: 灯与面板总数量（不排除关联）
+ *  lightOnCount: 统计多少灯打开（多开开关仍分别计数）（取代云端deviceLightOnNum）
+ *  endCount: 非网关设备数（面板按拆分设备计数）
+ *  lightCount: 灯与面板总数量（不排除关联，面板按拆分设备计数）
  * }
  */
 export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
@@ -114,30 +114,38 @@ export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
   let lightCount = 0
 
   list?.forEach((device) => {
-    if (device.proType !== PRO_TYPE.gateway) {
-      endCount++
-    }
-    if (device.proType === PRO_TYPE.light || device.proType === PRO_TYPE.switch) {
-      lightCount++
-    }
-    if (!device.onLineStatus) return
-    if (device.proType === PRO_TYPE.light) {
-      if (
-        (device.deviceType === 2 && device.mzgdPropertyDTOList['1'].OnOff) ||
-        (device.deviceType === 3 && device.mzgdPropertyDTOList['1'].power === 'on')
-      ) {
-        lightOnCount++
-      }
-    } else if (device.proType === PRO_TYPE.switch) {
-      device.switchInfoDTOList.forEach((switchItem) => {
+    switch (device.proType) {
+      case PRO_TYPE.curtain:
+        endCount++
+        break
+      case PRO_TYPE.light:
+        endCount++
+        lightCount++
+        if (!device.onLineStatus) break
         if (
-          device.mzgdPropertyDTOList && // 避免个别设备未上报数据导致的整个页面异常
-          device.mzgdPropertyDTOList[switchItem.switchId]?.OnOff &&
-          !device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode
+          (device.deviceType === 2 && device.mzgdPropertyDTOList['1'].OnOff) ||
+          (device.deviceType === 3 && device.mzgdPropertyDTOList['1'].power === 'on')
         ) {
           lightOnCount++
         }
-      })
+        break
+      case PRO_TYPE.switch:
+        device.switchInfoDTOList.forEach((switchItem) => {
+          endCount++
+          lightCount++
+          if (
+            device.onLineStatus &&
+            device.mzgdPropertyDTOList && // 避免个别设备未上报数据导致的整个页面异常
+            device.mzgdPropertyDTOList[switchItem.switchId]?.OnOff &&
+            !device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode
+          ) {
+            lightOnCount++
+          }
+        })
+        break
+      // 网关及其他类型，不作统计
+      case PRO_TYPE.gateway:
+      default:
     }
   })
 

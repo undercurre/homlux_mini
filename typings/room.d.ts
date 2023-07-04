@@ -32,13 +32,13 @@ declare namespace Room {
        * 下面是小程序端统计的字段
        */
       // 统计多少灯打开（多开开关单独计算）（取代云端deviceLightOnNum）
-      lightOnCount?: number
+      lightOnCount: number
 
       // 非网关设备数
-      endCount?: number
+      endCount: number
 
       // 灯与面板总数量
-      lightCount?: number
+      lightCount: number
     }
     /**
      * 房间场景列表
@@ -79,13 +79,13 @@ declare namespace Room {
      * 下面是小程序端统计的字段
      */
     // 统计多少灯打开（多开开关单独计算）（取代云端deviceLightOnNum）
-    lightOnCount?: number
+    lightOnCount: number
 
     // 非网关设备数
-    endCount?: number
+    endCount: number
 
     // 灯与面板总数量
-    lightCount?: number
+    lightCount: number
   }
 
   /**

@@ -72,6 +72,7 @@ ComponentWithComputed({
       (storage.get<number>('statusBarHeight') as number) +
       (storage.get<number>('navigationBarHeight') as number) +
       'px',
+    movableAreaHeight: 236, // 可移动区域高度
     /** 展示点中离线设备弹窗 */
     showDeviceOffline: false,
     /** 点击的离线设备的信息 */
@@ -217,19 +218,14 @@ ComponentWithComputed({
       }
       return baseHeight
     },
-
-    // 可移动区域高度
-    movableAreaStyle() {
-      return `height: ${Math.ceil(deviceStore.deviceFlattenList.length / 4) * 236}rpx;
-        width: 600rpx;`
-    },
   },
 
   watch: {
-    // FIXME 无法跟踪变更源头的监听，但每次变更都可能导致重复更新页面，是否可删除
-    // deviceList() {
-    //   this.updateDeviceList()
-    // },
+    'currentRoom.endCount'(value) {
+      this.setData({
+        movableAreaHeight: Math.ceil(value / 4) * 236,
+      })
+    },
   },
 
   methods: {
