@@ -55,21 +55,21 @@ ComponentWithComputed({
           url: '/package-distribution/scan/index',
         })
       }
-      // if (data.isCreator) {
-      list.push(
-        // {
-        //   title: '添加自动化',
-        //   key: 'auto',
-        //   icon: 'auto',
-        // },
-        {
-          title: '连接其它平台',
-          key: 'platform',
-          icon: 'auth',
-          url: '/package-mine/auth/index/index',
-        },
-      )
-      // }
+      if (data.isCreator) {
+        list.push(
+          // {
+          //   title: '添加自动化',
+          //   key: 'auto',
+          //   icon: 'auto',
+          // },
+          {
+            title: '连接其它平台',
+            key: 'platform',
+            icon: 'auth',
+            url: '/package-mine/auth/index/index',
+          },
+        )
+      }
 
       return list
     },
