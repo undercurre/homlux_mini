@@ -16,8 +16,8 @@
         <image src="/assets/img/home/bg.jpg" class="bg-image absolute z-111"></image>
         <view class="absolute left-0 w-638rpx h-96rpx flex justify-between items-center mx-56rpx z-112" style="top:{{navigationBarAndStatusBarHeight}}">
           <view class="flex flex-row justify-center items-center z-112">
-            <text class="text-hex-1e2c46 text-48rpx font-semibold">{{'全部'}}</text>
-            <svg-icon id="homeSelectArrow" class="home-select-arrow" color="#1E2C46" name="material-symbols:arrow-drop-down-rounded" width="48rpx" height="48rpx" />
+            <!-- <text class="text-hex-1e2c46 text-48rpx font-semibold">{{'全部'}}</text> -->
+            <!-- <svg-icon id="homeSelectArrow" class="home-select-arrow" color="#1E2C46" name="material-symbols:arrow-drop-down-rounded" width="48rpx" height="48rpx" /> -->
           </view>
           <view class="flex flex-row justify-center items-center z-112">
             <image bind:tap="toPage" data-url="{{urls.automationLog}}" src="/assets/img/automation/auto-scene-log.png" class="w-64rpx h-64rpx mr-32rpx"></image>

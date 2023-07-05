@@ -20,10 +20,11 @@ Component({
   data: {
     radio: '1',
     periodList: [
-      { radio: '0', title: '每天' },
-      { radio: '1', title: '法定工作日' },
-      { radio: '2', title: '法定节假日' },
-      { radio: '3', title: '自定义' },
+      { radio: '0', title: '仅一次' },
+      { radio: '1', title: '每天' },
+      { radio: '2', title: '法定工作日' },
+      { radio: '3', title: '法定节假日' },
+      { radio: '4', title: '自定义' },
     ],
     weekList: [
       { title: '周日', key: 'sun', checked: false },
@@ -40,10 +41,10 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    onClick(event: { currentTarget: { dataset: { name: string } } }) {
-      const { name } = event.currentTarget.dataset
+    onClick(event: { currentTarget: { dataset: { radio: string } } }) {
+      const { radio } = event.currentTarget.dataset
       this.setData({
-        radio: name,
+        radio,
       })
     },
 

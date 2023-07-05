@@ -1,4 +1,4 @@
-declare namespace Scene {
+declare namespace AutoScene {
   /**
    * 查询房间的场景列表项
    */
@@ -13,7 +13,6 @@ declare namespace Scene {
     houseId: string
     orderNum: number
     roomId: string
-    roomName: string
   }
   /**
    * 房间列表里的场景列表项
@@ -42,24 +41,20 @@ declare namespace Scene {
      */
     sceneName: string
   }
-  /** 结果集合 */
-  interface DeviceAction {
-    /**
-     * 动作控制集合
-     * 例如："controlAction":[{"ep":1,"OnOff":0},{"ep":2,"OnOff":1}]
-     */
-    controlAction: IAnyObject[]
-    /** 设备id */
-    deviceId: string
-    // 设备名称
-    deviceName?: string
-
-    // 设备图片
-    devicePic?: string
-    /** 设备类型 */
-    deviceType: number
-    /** 品类码 */
-    proType: string
+  /** 拍扁的结果集合 */
+  interface AutoSceneFlattenAction {
+    /** 设备或场景id */
+    uniId: string
+    // 名称
+    name: string
+    //类型 1-网关，2-子设备，3-wifi设备,4-分组,5-场景,6-延时
+    type: 1 | 2 | 3 | 4 | 5 | 6
+    // 图片
+    pic: string
+    //描述
+    desc: string[]
+    //延时执行
+    delay?: number
   }
   interface DeviceCondition {
     /**

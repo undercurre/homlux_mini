@@ -36,6 +36,10 @@ Component({
       type: String,
       value: '分',
     },
+    value: {
+      type: Array,
+      value: [11, 0],
+    },
   },
   /**
    * 用于监听 properties 和 data 的变化
@@ -45,11 +49,7 @@ Component({
   /**
    * 组件的初始数据
    */
-  data: {
-    hour: '2',
-    minute: '2',
-    value: [11, 0],
-  },
+  data: {},
 
   lifetimes: {
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
@@ -63,12 +63,7 @@ Component({
    */
   methods: {
     bindChange(e: { detail: { value: Array<number> } }) {
-      console.log('bindChange', e)
-      const val = e.detail.value
-      this.setData({
-        hour: this.data.colFir[val[0]],
-        minute: this.data.colSec[val[1]],
-      })
+      this.triggerEvent('change', e.detail.value)
     },
   },
 })

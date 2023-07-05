@@ -30,7 +30,23 @@ Component({
     },
     value: {
       type: Array,
-      value: [6, 0],
+      value: [0, 0],
+    },
+    showCancel: {
+      type: Boolean,
+      value: true,
+    },
+    cancelText: {
+      type: String,
+      value: '上一步',
+    },
+    showConfirm: {
+      type: Boolean,
+      value: true,
+    },
+    confirmText: {
+      type: String,
+      value: '确定',
     },
   },
 
@@ -51,6 +67,13 @@ Component({
     },
     handleConfirm() {
       this.triggerEvent('confirm')
+    },
+    handleCancel() {
+      this.triggerEvent('cancel')
+    },
+    timeChange(e: { detail: number[] }) {
+      console.log('timeChange', e.detail)
+      this.triggerEvent('change', e.detail)
     },
   },
 })

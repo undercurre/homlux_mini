@@ -1,11 +1,13 @@
 <van-radio-group value="{{ radio }}">
   <van-cell-group inset border="{{false}}">
-    <van-cell wx:for="{{periodList}}" wx:key="radio" border="{{index !== periodList.length - 1}}" custom-class="cell-border" custom-style="background-color:#f9fbfe;" clickable data-name="{{item.radio}}" bind:click="onClick">
+    <van-cell wx:for="{{periodList}}" wx:key="radio" border="{{index !== periodList.length - 1}}" custom-class="cell-border" custom-style="background-color:#f9fbfe;" clickable data-radio="{{item.radio}}" bind:click="onClick">
       <view class="flex flex-col">
-        <view class="w-full flex justify-between align-between">
+        <view class="w-full flex justify-between items-center">
           <view class="ml-12rpx"><text class="text-28rpx text-hex-27282a">{{item.title}}</text></view>
           <van-radio name="{{item.radio}}" use-icon-slot>
-            <image class="w-48rpx h-48rpx" slot="icon" src="{{ radio === item.radio ? '/assets/img/base/checked.png' : '' }}" />
+            <view class="flex items-center justify-center">
+              <image class="w-48rpx h-48rpx" slot="icon" src="{{ radio === item.radio ? '/assets/img/base/checked.png' : '' }}" />
+            </view>
           </van-radio>
         </view>
         <view class="flex justify-between mt-32rpx" slot="label" wx:if="{{index === periodList.length - 1 && radio === item.radio}}">
