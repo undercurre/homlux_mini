@@ -102,6 +102,8 @@ let loadingNum = 0 // 正在等待loading的个数
  */
 export function showLoading() {
   loadingNum++
+
+  console.log('showLoading', loadingNum)
   if (loadingNum > 1) {
     return
   }
@@ -115,8 +117,10 @@ export function showLoading() {
  * 隐藏loading
  */
 export function hideLoading() {
-  loadingNum--
+  loadingNum > 0 && loadingNum-- // 防止胡乱调用loadingNum，导致loadingNum为负数
+  
   setTimeout(() => {
+    console.log('hideLoading', loadingNum)
     loadingNum === 0 && wx.hideLoading()
   }, 300)
 }
