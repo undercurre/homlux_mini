@@ -6,7 +6,7 @@
   <!-- 标题 -->
   <nav-bar title="创建场景" left-arrow bind:leftTap="goBack"></nav-bar>
 
-  <text wx:if="{{finishNum !== deviceList.length}}" class="block leading-40rpx text-28 text-hex-555659 pt-48rpx px-32rpx">正在将场景配置下发至设备（{{finishNum}}/{{deviceList.length}}）…</text>
+  <text class="block leading-40rpx text-28 text-hex-555659 pt-48rpx px-32rpx">{{ tipsText }}</text>
 
   <!-- 设备卡片列表 -->
   <scroll-view scroll-y enhanced show-scrollbar="{{false}}" class="h-500 grow px-24rpx mt-48rpx pb-16rpx box-border">
