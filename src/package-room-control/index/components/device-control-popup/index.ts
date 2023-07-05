@@ -306,7 +306,6 @@ ComponentWithComputed({
       let linkSelectList = [] as string[]
       let list = [] as Device.DeviceItem[]
 
-      console.log('allRoomDeviceFlattenList', deviceStore.allRoomDeviceFlattenList)
       const relInfo = this.data._switchRelInfo
 
       if (this.data.selectLinkType === 'light') {

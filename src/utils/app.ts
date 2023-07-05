@@ -118,7 +118,7 @@ export function showLoading() {
  */
 export function hideLoading() {
   loadingNum > 0 && loadingNum-- // 防止胡乱调用loadingNum，导致loadingNum为负数
-  
+
   setTimeout(() => {
     console.log('hideLoading', loadingNum)
     loadingNum === 0 && wx.hideLoading()
