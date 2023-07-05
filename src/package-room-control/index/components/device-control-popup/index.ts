@@ -320,6 +320,12 @@ ComponentWithComputed({
         // 合并主动和被动关联的开关列表数据，并去重，作为已选列表
         linkSelectList = relInfo.switchRelList.map((device) => `${device.deviceId}:${device.switchId}`)
       }
+
+      if (list.length === 0) {
+        Toast('没有可关联的设备')
+        return
+      }
+
       this.setData({
         list,
         linkSelectList,
