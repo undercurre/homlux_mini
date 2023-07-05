@@ -285,8 +285,7 @@ ComponentWithComputed({
           }
         }
         const now = new Date().valueOf()
-        if (now - parseInt(time) > 300000) {
-          //86400000
+        if (now - parseInt(time) > 86400000) {
           console.log('lmn>>>邀请超时')
           Dialog.confirm({
             title: '邀请过期',
