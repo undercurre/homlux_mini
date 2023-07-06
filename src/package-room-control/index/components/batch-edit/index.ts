@@ -318,7 +318,11 @@ ComponentWithComputed({
           })
         }
       }
-      const hasSwitch = this.data.moveWaitlist.some((uniId: string) => uniId.includes(':'))
+      const hasSwitch = this.data.moveWaitlist.some((uniId: string) => {
+        const deviceId = uniId.split(':')[0]
+        const { proType } = deviceStore.deviceMap[deviceId]
+        return proType === PRO_TYPE.switch
+      })
       if (hasSwitch && !this.data.moveFailCount) {
         Dialog.confirm({
           message: '按键所在的面板将被移动至新房间，是否继续？',
