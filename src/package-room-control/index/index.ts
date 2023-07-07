@@ -474,7 +474,7 @@ ComponentWithComputed({
               this.data.checkedList.includes(originDevice!.deviceId) &&
               originDevice!.select
             ) {
-              const prop = device!.mzgdPropertyDTOList['1']
+              const prop = transferDeviceProperty(originDevice.proType, device!.mzgdPropertyDTOList['1'])
               if (originDevice.proType === PRO_TYPE.light) {
                 diffData.lightStatus = {
                   Level: prop.Level,
