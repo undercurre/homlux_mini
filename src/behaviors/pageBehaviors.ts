@@ -37,6 +37,7 @@ export default BehaviorWithComputed({
       return {
         title: '欢迎使用美的照明Homlux',
         path: '/pages/index/index',
+        imageUrl: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/welcome.png',
       }
     },
     onShareTimeline() {

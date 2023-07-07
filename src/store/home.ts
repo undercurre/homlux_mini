@@ -156,34 +156,34 @@ export const homeStore = observable({
       })
     }
     if (data[1].success) {
-      data[1].result.roomInfoList.forEach((roomInfo) => {
-        const roomDeviceList = roomStore.roomDeviceList[roomInfo.roomInfo.roomId]
+      data[1].result.roomInfoList.forEach((room) => {
+        const roomDeviceList = roomStore.roomDeviceList[room.roomInfo.roomId]
         // 过滤一下默认场景，没灯过滤明亮柔和，没灯没开关全部过滤
         const hasSwitch = roomDeviceList?.some((device) => device.proType === PRO_TYPE.switch) ?? false
         const hasLight = roomDeviceList?.some((device) => device.proType === PRO_TYPE.light) ?? false
         if (!hasSwitch && !hasLight) {
           // 四个默认场景都去掉
-          roomInfo.roomSceneList = roomInfo.roomSceneList.filter((scene) => scene.isDefault === '0')
+          room.roomSceneList = room.roomSceneList.filter((scene) => scene.isDefault === '0')
         } else if (hasSwitch && !hasLight) {
           // 只有开关，去掉默认的明亮、柔和
-          roomInfo.roomSceneList = roomInfo.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
+          room.roomSceneList = room.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
         }
 
-        const { deviceLightOnNum, subDeviceNum, lightNum } = deviceCount(roomDeviceList)
-        roomInfo.roomInfo.deviceLightOnNum = deviceLightOnNum
-        roomInfo.roomInfo.subDeviceNum = subDeviceNum
-        roomInfo.roomInfo.lightNum = lightNum
+        const { lightOnCount, endCount, lightCount } = deviceCount(roomDeviceList)
+        room.roomInfo.lightOnCount = lightOnCount
+        room.roomInfo.endCount = endCount
+        room.roomInfo.lightCount = lightCount
       })
       runInAction(() => {
         roomStore.roomList = data[1].result.roomInfoList.map((room) => ({
           roomId: room.roomInfo.roomId,
           roomIcon: room.roomInfo.roomIcon || 'drawing-room',
           roomName: room.roomInfo.roomName,
-          deviceLightOnNum: room.roomInfo.deviceLightOnNum,
+          lightOnCount: room.roomInfo.lightOnCount,
           sceneList: room.roomSceneList,
           deviceNum: room.roomInfo.deviceNum,
-          subDeviceNum: room.roomInfo.subDeviceNum,
-          lightNum: room.roomInfo.lightNum,
+          endCount: room.roomInfo.endCount,
+          lightCount: room.roomInfo.lightCount,
         }))
       })
     }

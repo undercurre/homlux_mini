@@ -19,7 +19,6 @@ import {
   getCurrentPageParams,
   transferDeviceProperty,
   toPropertyDesc,
-  toWifiProperty,
   storage,
   strUtil,
 } from '../../utils/index'
@@ -124,7 +123,10 @@ ComponentWithComputed({
           let property = actions.controlAction[0]
 
           if (actions.proType === PRO_TYPE.light) {
-            property.colorTempRange = device.mzgdPropertyDTOList[1].colorTempRange
+            property = {
+              ...device.mzgdPropertyDTOList[1],
+              ...property,
+            }
           }
 
           property = transferDeviceProperty(actions.proType, property)
@@ -199,7 +201,9 @@ ComponentWithComputed({
         }
       })
     },
-    handleActionDelete() {
+    handleActionDelete(e: WechatMiniprogram.TouchEvent) {
+      this.data.sceneDeviceActionsFlatten.splice(e.currentTarget.dataset.index, 1)
+
       this.setData({
         sceneDeviceActionsFlatten: [...this.data.sceneDeviceActionsFlatten],
         _isEditAction: true,
@@ -304,46 +308,12 @@ ComponentWithComputed({
       }
 
       if (this.data._isEditAction) {
-        // 将展开的action组合起来
-        const deviceActions = [] as Scene.DeviceAction[]
-        const deviceActionsMap = {} as Record<string, Scene.DeviceAction>
-
-        this.data.sceneDeviceActionsFlatten.forEach((deviceAction) => {
-          if (deviceAction.proType === PRO_TYPE.switch) {
-            // 开关，可能有多路
-            const deviceId = deviceAction.uniId.split(':')[0]
-            if (deviceActionsMap[deviceId]) {
-              deviceActionsMap[deviceId].controlAction.push(deviceAction.value)
-            } else {
-              deviceActionsMap[deviceId] = {
-                controlAction: [deviceAction.value],
-                deviceId,
-                deviceType: deviceAction.deviceType,
-                devicePic: '',
-                deviceName: '',
-                proType: deviceAction.proType,
-              }
-            }
-          } else {
-            deviceActionsMap[deviceAction.uniId] = {
-              controlAction: [
-                deviceAction.deviceType === 3
-                  ? toWifiProperty(deviceAction.proType, deviceAction.value)
-                  : deviceAction.value,
-              ],
-              deviceId: deviceAction.uniId,
-              devicePic: '',
-              deviceName: '',
-              deviceType: deviceAction.deviceType,
-              proType: deviceAction.proType,
-            }
-          }
-        })
-        deviceActions.push(...Object.values(deviceActionsMap))
-        data.deviceActions = deviceActions
+        data.deviceActions = []
         data.updateType = data.updateType === '0' ? '1' : data.updateType === '2' ? '4' : '5'
 
+        // 场景动作数据统一在scene-request-list页面处理
         storage.set('scene_data', data)
+        storage.set('sceneDeviceActionsFlatten', this.data.sceneDeviceActionsFlatten)
 
         // 需要更新结果的情况，需要跳转页面等待上报结果
         wx.redirectTo({

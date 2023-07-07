@@ -42,8 +42,15 @@ ComponentWithComputed({
       }
       return ''
     },
+    // 普通网关，排除智慧屏
+    isGateway(data) {
+      return data.deviceInfo.deviceType === 1 && !data.deviceInfo.isScreenGateway
+    },
     isSubDevice(data) {
-      return ([PRO_TYPE.switch, PRO_TYPE.light] as string[]).includes(data.deviceInfo.proType)
+      return data.deviceInfo.deviceType === 2
+    },
+    isSubDeviceOrGateway(data) {
+      return [1, 2].includes(data.deviceInfo.deviceType)
     },
     belongsToGateway(data) {
       if (data.deviceInfo.gatewayId) {

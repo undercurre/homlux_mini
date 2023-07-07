@@ -1,5 +1,6 @@
 // import { storage } from '../../../utils/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
+import { getEnv } from '../../../config/index'
 
 // const MEIJU_DOMAIN = 'https://api-prod.smartmidea.net'
 
@@ -9,12 +10,16 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
-    // token
-    // webviewSrc: 'https://test.meizgd.com/meiju/index.html?code=1o2SoIiK13ARIPwJdpDSPhCV5AJCJ4bK&state=1',
-    // webviewSrc: 'http://localhost:5000/meiju/index.html?code=1o2SoIiK13ARIPwJdpDSPhCV5AJCJ4bK&state=1',
-    // webviewSrc: 'http://localhost:5500/index.html?code=1o2SoIiK13ARIPwJdpDSPhCV5AJCJ4bK&state=1',
-    webviewSrc:
-      'https://api-prod.smartmidea.net/v2/open/oauth2/authorize?client_id=a1b362741f4a510d44c086b85ab5a872&state=1&response_type=code&redirect_uri=https://test.meizgd.com/meiju/index.html',
+    src: {
+      dev: 'https://api-prod.smartmidea.net/v2/open/oauth2/authorize?client_id=a1b362741f4a510d44c086b85ab5a872&state=1&response_type=code&redirect_uri=https://test.meizgd.com/meiju/index.html',
+      sit: 'https://api-prod.smartmidea.net/v2/open/oauth2/authorize?client_id=12a2a9508d6e642f4f6af330f5c9bbff&state=1&response_type=code&redirect_uri=https://sit.meizgd.com/meiju/index.html',
+      prod: '',
+    },
+  },
+  computed: {
+    webviewSrc(data) {
+      return data.src[getEnv()]
+    },
   },
 
   methods: {

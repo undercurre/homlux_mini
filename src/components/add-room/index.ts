@@ -20,6 +20,10 @@ Component({
       type: Boolean,
       value: false,
     },
+    isSave: {
+      type: Boolean,
+      value: true,
+    },
     isEditName: {
       type: Boolean,
       value: true,
@@ -151,25 +155,29 @@ Component({
         return
       }
 
-      const res = await saveHouseRoomInfo({
-        houseId: homeBinding.store.currentHomeId,
-        roomId: this.data.roomId,
-        roomIcon: this.data.roomInfo.icon,
-        roomName: this.data.roomInfo.name,
-      })
-
-      if (res.success) {
-        roomBinding.store.updateRoomList()
-
-        this.triggerEvent('confirm', {
+      if (this.data.isSave) {
+        const res = await saveHouseRoomInfo({
+          houseId: homeBinding.store.currentHomeId,
           roomId: this.data.roomId,
           roomIcon: this.data.roomInfo.icon,
           roomName: this.data.roomInfo.name,
         })
 
-        this.triggerEvent('close')
-        emitter.emit('homeInfoEdit')
+        if (res.success) {
+          roomBinding.store.updateRoomList()
+          emitter.emit('homeInfoEdit')
+        } else {
+          return
+        }
       }
+
+      this.triggerEvent('confirm', {
+        roomId: this.data.roomId,
+        roomIcon: this.data.roomInfo.icon,
+        roomName: this.data.roomInfo.name,
+      })
+
+      this.triggerEvent('close')
     },
     /**
      * @name 图标选中操作

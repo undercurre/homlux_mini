@@ -190,7 +190,7 @@ ComponentWithComputed({
               })
 
               // 仅为本地更新，暂时取消节流
-              roomStore.updateRoomCardLightOnNum()
+              this.updateRoomCard()
 
               // 直接更新store里的数据，更新完退出回调函数
               return
@@ -207,6 +207,7 @@ ComponentWithComputed({
             WSEventType.bind_device,
             WSEventType.scene_device_result_status,
             WSEventType.group_device_result_status,
+            WSEventType.screen_move_sub_device,
           ].includes(res.result.eventType)
         ) {
           this.updateRoomData()
@@ -226,6 +227,11 @@ ComponentWithComputed({
       homeStore.updateRoomCardList()
     }, 3000),
 
+    // 节流更新房间卡片信息
+    updateRoomCard: throttle(() => {
+      roomStore.updateRoomCardLightOnNum()
+    }, 2000),
+
     /**
      * @description 生成房间位置
      * @param isMoving 是否正在拖动
@@ -243,7 +249,7 @@ ComponentWithComputed({
             y: currentIndex === index ? this.data.roomPos[room.roomId].y : accumulatedY,
           }
           // 若场景列表为空，或正在拖动，则使用 ROOM_CARD_M
-          accumulatedY += !room.subDeviceNum || !room.sceneList.length || isMoving === true ? ROOM_CARD_M : ROOM_CARD_H
+          accumulatedY += !room.endCount || !room.sceneList.length || isMoving === true ? ROOM_CARD_M : ROOM_CARD_H
         })
 
       this.setData({
@@ -279,8 +285,7 @@ ComponentWithComputed({
           }
         }
         const now = new Date().valueOf()
-        if (now - parseInt(time) > 300000) {
-          //86400000
+        if (now - parseInt(time) > 86400000) {
           console.log('lmn>>>邀请超时')
           Dialog.confirm({
             title: '邀请过期',

@@ -56,6 +56,8 @@ ComponentWithComputed({
           const index = this.data.deviceList.findIndex((device) => device.deviceId === result.devId)
           const isSuccess = result.errCode === 0
 
+          console.log('emitter====', result.devId, index)
+
           diffData[`deviceList[${index}].status`] = isSuccess ? 'success' : 'failed'
 
           // 若这是最后一个上报，则变更页面状态

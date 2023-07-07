@@ -3,7 +3,7 @@
   <nav-bar title="授权确认" left-arrow bind:leftTap="goBack"></nav-bar>
 
   <view class="flex flex-col items-center grow">
-    <image src="/package-auth/assets/auth-screen/screen-icon.png" class="mt-80rpx w-464 h-360" />
+    <image src="/package-auth/assets/auth-screen/screen-icon.png" class="mt-80rpx w-464 h-412" />
 
     <text class="leading-56rpx text-40 text-hex-000000 font-medium pt-26rpx pb-16rpx">登录智慧屏</text>
 

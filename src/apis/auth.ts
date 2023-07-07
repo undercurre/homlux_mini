@@ -6,7 +6,7 @@ import { mzaioRequest } from '../utils/index'
  */
 export async function getMeijuHomeList(code?: string) {
   return await mzaioRequest.post<{ mideaHouseList: Auth.MeijuHome[] }>({
-    log: false,
+    log: true,
     loading: false,
     url: '/v1/mzgd/user/queryMideaUserHouseInfo',
     data: {
@@ -22,7 +22,7 @@ export async function getMeijuHomeList(code?: string) {
  */
 export async function bindMeiju({ houseId, mideaHouseId }: { houseId: string; mideaHouseId: string }) {
   return await mzaioRequest.post<Auth.MeijuDevice[]>({
-    log: false,
+    log: true,
     loading: false,
     url: '/v1/thirdparty/midea/device/bindHouseRoom',
     data: { houseId, mideaHouseId },
@@ -34,7 +34,7 @@ export async function bindMeiju({ houseId, mideaHouseId }: { houseId: string; mi
  */
 export async function getMeijuDeviceList() {
   return await mzaioRequest.post<Auth.MeijuDevice[]>({
-    log: false,
+    log: true,
     loading: false,
     url: '/v1/thirdparty/midea/device/list',
     data: {},
@@ -47,8 +47,8 @@ export async function getMeijuDeviceList() {
  */
 export async function syncMeijuDeviceList(houseId: string) {
   return await mzaioRequest.post<Auth.MeijuDevice[]>({
-    log: false,
-    loading: false,
+    log: true,
+    loading: true,
     url: '/v1/thirdparty/midea/device/syncMideaDevice',
     data: { houseId },
   })
@@ -60,7 +60,7 @@ export async function syncMeijuDeviceList(houseId: string) {
  */
 export async function queryUserThirdPartyInfo(houseId: string) {
   return await mzaioRequest.post<Auth.AuthItem[]>({
-    log: false,
+    log: true,
     loading: false,
     url: '/v1/thirdparty/midea/device/queryUserThirdPartyInfo',
     data: { houseId },
@@ -69,12 +69,13 @@ export async function queryUserThirdPartyInfo(houseId: string) {
 
 /**
  * 取消第三方授权
+ * @param houseId Homlux 家庭id
  */
-export async function delDeviceSubscribe() {
+export async function delDeviceSubscribe(houseId: string) {
   return await mzaioRequest.post({
-    log: false,
+    log: true,
     loading: false,
     url: '/v1/thirdparty/midea/device/delDeviceSubscribe',
-    data: {},
+    data: { houseId },
   })
 }

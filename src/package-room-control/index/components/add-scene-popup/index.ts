@@ -8,9 +8,9 @@ import {
   delLampAndSwitchAssociated,
   delSwitchAndSwitchAssociated,
 } from '../../../../apis/index'
-import { PRO_TYPE, sceneList } from '../../../../config/index'
+import { sceneList } from '../../../../config/index'
 import { deviceStore, homeStore, roomStore, sceneStore } from '../../../../store/index'
-import { storage, toWifiProperty } from '../../../../utils/index'
+import { storage } from '../../../../utils/index'
 
 ComponentWithComputed({
   options: {
@@ -198,52 +198,8 @@ ComponentWithComputed({
         }
       })
 
-      // 补充actions
-      const deviceMap = deviceStore.deviceMap
-      // switch需要特殊处理
-      const switchDeviceMap = {} as Record<string, IAnyObject[]>
-      this.data.actions.forEach((action: Device.ActionItem) => {
-        const device = deviceMap[action.uniId]
-
-        if (action.uniId.includes(':')) {
-          const deviceId = action.uniId.split(':')[0]
-          if (switchDeviceMap[deviceId]) {
-            switchDeviceMap[deviceId].push(action.value)
-          } else {
-            switchDeviceMap[deviceId] = [action.value]
-          }
-        } else {
-          let property = action.value
-
-          if (device.deviceType === 3) {
-            property = toWifiProperty(device.proType, property)
-          }
-
-          if (device.proType === PRO_TYPE.curtain) {
-            property = {
-              curtain_position: property.curtain_position,
-            }
-          }
-
-          newSceneData.deviceActions.push({
-            controlAction: [property],
-            deviceId: action.uniId,
-            deviceType: device.deviceType,
-            proType: device.proType,
-          })
-        }
-      })
-      // 再将switch放到要发送的数据里面
-      newSceneData.deviceActions.push(
-        ...Object.entries(switchDeviceMap).map(([deviceId, actions]) => ({
-          controlAction: actions,
-          deviceId: deviceId,
-          deviceType: deviceMap[deviceId].deviceType,
-          proType: deviceMap[deviceId].proType,
-        })),
-      )
-
       storage.set('scene_data', newSceneData)
+      storage.set('sceneDeviceActionsFlatten', this.data.actions)
 
       this.setData({
         isAddingScene: false,

@@ -327,14 +327,14 @@ ComponentWithComputed({
               time.valueOf() +
               '&shareId=' +
               homeBinding.store.shareId,
-            imageUrl: '/assets/img/login/logo.png',
+            imageUrl: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/welcome.png',
           })
         }, 500)
       })
       return {
         title: '邀请你加入我的家庭',
         path: '/pages/index/index?type=visitor',
-        imageUrl: '/assets/img/login/logo.png',
+        imageUrl: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/welcome.png',
         promise,
       }
     },

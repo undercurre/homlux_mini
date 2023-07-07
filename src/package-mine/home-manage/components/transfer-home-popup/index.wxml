@@ -1,9 +1,8 @@
-<import src="/commons/templates/popup.wxml" />
 <van-popup show="{{ show }}" position="bottom" round bind:close="close" bind:before-enter="queryHomeUsers" closeable>
-  <view class="px-32rpx pt-48rpx text-black-2a flex-col">
+  <view class="px-32rpx pt-48rpx text-black-2a flex-col box-border">
     <text class="block pb-100rpx font-medium text-center text-36 leading-48rpx">选择转移对象</text>
 
-    <view class="mb-80rpx">
+    <view class="max-h-45vh overflow-auto">
       <view wx:for="{{userList}}" wx:key="userId" class="rounded-24rpx flex flex-row items-center mb-24rpx pl-32rpx pr-64rpx py-16rpx border-solid leading-44rpx {{index === selectIndex ? 'border-4rpx border-hex-488FFF' : 'border-2rpx border-hex-ddd'}}" bind:tap="selectUser" data-index="{{index}}">
         <image class="w-80rpx h-80rpx rounded-full" src="{{ item.headImageUrl ? item.headImageUrl : '/assets/img/default-img/default-avatar.png'}}"></image>
 
@@ -13,6 +12,8 @@
       </view>
     </view>
 
-    <template is="bottom-btn" data="{{disabled: selectIndex < 0,confirmText: '确认转移'}}" />
+    <view class="flex justify-center w-full py-96rpx box-border">
+      <van-button type="primary" class="grow" size="large" disabled="{{selectIndex < 0}}" bind:click="handleConfirm">确认转移</van-button>
+    </view>
   </view>
 </van-popup>

@@ -7,7 +7,7 @@
       <text class="h-50rpx text-36rpx text-black-2a mt-44rpx font-medium">{{title}}</text>
     </view>
 
-    <scroll-view wx:if="{{roomListComputed.length > 1}}" enhanced show-scrollbar="{{false}}" scroll-x class="mt-48rpx h-60rpx w-750rpx flex" enable-flex>
+    <scroll-view enhanced show-scrollbar="{{false}}" scroll-x class="mt-48rpx h-60rpx w-750rpx flex" enable-flex>
       <view class="flex">
         <view class="w-50rpx"></view>
         <view class="flex min-w-650rpx justify-center">

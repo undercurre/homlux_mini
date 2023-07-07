@@ -10,7 +10,7 @@
       <van-cell is-link="{{canEditDevice}}" bind:click="handleDeviceNameEditPopup" title="设备名称" value="{{deviceName}}"></van-cell>
       <van-cell is-link="{{canEditDevice}}" bind:click="handleDeviceRoomEditPopup" title="所在房间" value="{{roomName}}"></van-cell>
       <van-cell wx:if="{{isSubDevice}}" title="所属网关" value="{{belongsToGateway}}" value-class="longValue" title-class="shortTitle"></van-cell>
-      <van-cell is-link="{{canEditDevice}}" bind:click="handleToOTA" value="{{deviceInfo.version}}">
+      <van-cell wx:if="{{isSubDeviceOrGateway}}" is-link="{{canEditDevice}}" bind:click="handleToOTA" value="{{deviceInfo.version}}">
         <view slot="title" class="flex items-center">
           <text class="text-32rpx">固件版本</text>
           <view class="rounded-999 bg-red flex-center px-10rpx py-6rpx ml-20rpx" wx:if="{{hasOtaUpdate}}">
@@ -18,8 +18,8 @@
           </view>
         </view>
       </van-cell>
-      <van-cell wx:if="{{!isSubDevice && !isVisitor}}" title="更改WiFi" is-link="{{canEditDevice}}" bind:click="toChangeWifi"></van-cell>
-      <van-cell title="Mac 地址" value="{{mac}}" bind:click="clickMac"></van-cell>
+      <van-cell wx:if="{{isGateway && !isVisitor}}" title="更改WiFi" is-link="{{canEditDevice}}" bind:click="toChangeWifi"></van-cell>
+      <van-cell wx:if="{{isSubDeviceOrGateway}}" title="Mac 地址" value="{{mac}}" bind:click="clickMac"></van-cell>
     </van-cell-group>
   </view>
 
