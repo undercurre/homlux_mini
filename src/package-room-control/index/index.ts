@@ -1063,16 +1063,19 @@ ComponentWithComputed({
       if (this.data.editSelectMode) {
         return
       }
+      // 只有创建者或者管理员能够进入编辑模式
+      if (!this.data.isCreator && !this.data.isAdmin) {
+        return
+      }
 
       const device = e.detail
       const diffData = {} as IAnyObject
 
+      // 进入编辑模式
+      diffData.editSelectMode = true
+
       // 选中当前长按卡片
       diffData.editSelectList = [device.uniId]
-      // 只有创建者或者管理员能够进入编辑模式
-      if (this.data.isCreator || this.data.isAdmin) {
-        diffData.editSelectMode = true
-      }
 
       // 取消普通选择
       if (this.data.checkedList?.length) {
