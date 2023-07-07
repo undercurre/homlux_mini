@@ -48,6 +48,7 @@ ComponentWithComputed({
       timeId: 0,
       mac: '',
     },
+    repeatTimes: 2, // 自动重试次数
   },
 
   computed: {
@@ -240,15 +241,9 @@ ComponentWithComputed({
 
     async beginAddDevice(list: IBleDevice[]) {
       try {
-        wx.getConnectedBluetoothDevices({
-          services: [],
-          success(res) {
-            Logger.log('getConnectedBluetoothDevices', res)
-          },
-        })
-
         this.stopFlash()
 
+        Logger.log('-------开始子设备配网------')
         const res = await this.startGwAddMode()
 
         if (!res.success) {

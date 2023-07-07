@@ -490,10 +490,10 @@ export const privacyPolicy = `
     <strong><span style=";font-family:宋体">【美智光电】</span></strong>
 </p>
 <p style="margin-left:28px;text-align:right">
-    <strong><span style=";font-family:宋体">更新时间： 2022年10月11日</span></strong>
+    <strong><span style=";font-family:宋体">更新时间： 2023年7月30日</span></strong>
 </p>
 <p style="margin-left:28px;text-align:right">
-    <strong><span style=";font-family:宋体">生效时间：2022年10月15日</span></strong>
+    <strong><span style=";font-family:宋体">生效时间：2023年8月1日</span></strong>
 </p>
 <p>
     <br/>
@@ -1015,7 +1015,7 @@ export const userService = `
     <strong><span style=";font-family:宋体">美智光电</span></strong>
 </p>
 <p style="text-align:right;line-height:27px">
-    <strong><span style=";font-family:宋体">版本更新时间：2022年10月10日</span></strong>
+    <strong><span style=";font-family:宋体">版本更新时间：2023年7月30日</span></strong>
 </p>
 <p>
     <br/>

@@ -102,7 +102,6 @@ export class BleClient {
       delay(10000).then(() => ({ success: false, error: '获取蓝牙服务信息超时' })),
     ])
 
-    Logger.log(`【${this.mac}】initRes`, initRes)
     if (!initRes.success) {
       await this.close() // 释放已连接的蓝牙资源
       throw {
@@ -170,8 +169,6 @@ export class BleClient {
         success: true,
       }
     } catch (err) {
-      Logger.error(`【${this.mac}】`, err)
-
       return {
         success: false,
         error: err,
@@ -278,7 +275,6 @@ export class BleClient {
               Logger.log(`【${this.mac}】writeBLECharacteristicValue`, res)
             })
             .catch((err) => {
-              Logger.error(`【${this.mac}】writeBLECharacteristicValue-err`, err)
               reject(err)
             })
         },
