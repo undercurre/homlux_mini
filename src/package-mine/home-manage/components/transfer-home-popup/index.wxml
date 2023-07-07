@@ -2,13 +2,17 @@
   <view class="px-32rpx pt-48rpx text-black-2a flex-col box-border">
     <text class="block pb-100rpx font-medium text-center text-36 leading-48rpx">选择转移对象</text>
 
-    <view class="max-h-45vh overflow-auto">
-      <view wx:for="{{userList}}" wx:key="userId" class="rounded-24rpx flex flex-row items-center mb-24rpx pl-32rpx pr-64rpx py-16rpx border-solid leading-44rpx {{index === selectIndex ? 'border-4rpx border-hex-488FFF' : 'border-2rpx border-hex-ddd'}}" bind:tap="selectUser" data-index="{{index}}">
-        <image class="w-80rpx h-80rpx rounded-full" src="{{ item.headImageUrl ? item.headImageUrl : '/assets/img/default-img/default-avatar.png'}}"></image>
+    <view class="max-h-45vh overflow-auto px-16rpx">
+      <view wx:for="{{userList}}" wx:key="userId" class="flex flex-row items-center py-40rpx border-0 {{index + 1 === userList.length ? '' : 'border-solid border-b-1rpx border-hex-ddd'}}" bind:tap="selectUser" data-index="{{index}}">
+        <image class="w-92rpx h-92rpx rounded-full" src="{{ item.headImageUrl ? item.headImageUrl : '/assets/img/default-img/default-avatar.png'}}"></image>
 
-        <text class="text-32 text-black-2a grow pl-24rpx">{{ item.userName }}</text>
+        <view class="px-48rpx grow flex flex-col">
+          <text class="text-32 leading-44rpx text-black-2a pb-8rpx">{{ item.userName }}</text>
 
-        <text class="text-32 text-black-59">{{ item.userHouseAuthName }}</text>
+          <text class="text-32 text-black-59 leading-36rpx">{{ item.userHouseAuthName }}</text>
+        </view>
+
+        <image class="w-48 h-48" src="{{ index === selectIndex ? '/assets/img/base/check.png' : '/assets/img/base/uncheck.png' }}" />
       </view>
     </view>
 

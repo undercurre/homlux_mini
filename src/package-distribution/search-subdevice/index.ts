@@ -304,7 +304,7 @@ ComponentWithComputed({
           return item
         }
 
-        for await (const value of asyncPool(1, list, iteratorFn)) {
+        for await (const value of asyncPool(3, list, iteratorFn)) {
           const index = tempList.findIndex((item) => item === value.mac)
 
           tempList.splice(index, 1)
@@ -464,6 +464,10 @@ ComponentWithComputed({
 
       const bleDeviceItem = bleDevicesBinding.store.bleDeviceList.find((item) => item.deviceUuid === id) as IBleDevice
 
+      bleDeviceItem.requesting = true
+
+      bleDevicesStore.updateBleDeviceList()
+
       // 停止之前正在闪烁的设备
       if (this.data.flashInfo.mac === bleDeviceItem.mac) {
         this.stopFlash()
@@ -479,11 +483,18 @@ ComponentWithComputed({
     // 循环下发闪烁
     async keepFlash(bleDevice: IBleDevice) {
       if (bleDevice.mac !== this.data.flashInfo.mac) {
+        bleDevice.requesting = false
+
+        bleDevicesStore.updateBleDeviceList()
         bleDevice.client.close()
         return
       }
 
       const res = await bleDevice.client.flash()
+
+      bleDevice.requesting = false
+
+      bleDevicesStore.updateBleDeviceList()
 
       console.log('flash', res, this.data.flashInfo.mac)
       if (!res.success) {
@@ -507,6 +518,10 @@ ComponentWithComputed({
       const bleDevice = bleDevicesBinding.store.bleDeviceList.find(
         (item) => item.mac === this.data.flashInfo.mac,
       ) as IBleDevice
+
+      bleDevice.requesting = false
+
+      bleDevicesStore.updateBleDeviceList()
 
       bleDevice.client.close()
 

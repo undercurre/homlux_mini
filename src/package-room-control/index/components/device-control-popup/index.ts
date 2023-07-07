@@ -777,7 +777,12 @@ ComponentWithComputed({
     }),
 
     findDevice(device: Device.DeviceItem) {
-      findDevice({ gatewayId: device.gatewayId, devId: device.deviceId })
+      let ep = 1
+      if (device.proType === PRO_TYPE.switch) {
+        ep = Number(device.switchInfoDTOList[0].switchId)
+      }
+
+      findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, ep })
     },
     toDetail() {
       const deviceId = this.data.checkedList[0].split(':')[0]
