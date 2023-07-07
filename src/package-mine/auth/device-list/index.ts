@@ -32,6 +32,8 @@ ComponentWithComputed({
             deviceList,
           })
           homeStore.updateRoomCardList()
+        } else {
+          Toast(res.msg)
         }
       }
       // 不带 homeId，从第三方列表页直接进入
@@ -43,6 +45,8 @@ ComponentWithComputed({
             deviceList,
           })
           homeStore.updateRoomCardList()
+        } else {
+          Toast(res.msg)
         }
       }
 
@@ -68,6 +72,8 @@ ComponentWithComputed({
         })
         homeStore.updateRoomCardList()
         Toast('同步成功')
+      } else {
+        Toast(res.msg)
       }
     },
 
@@ -82,6 +88,8 @@ ComponentWithComputed({
         wx.switchTab({
           url: '/pages/index/index',
         })
+      } else {
+        Toast(res.msg)
       }
     },
   },

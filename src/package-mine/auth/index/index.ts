@@ -3,8 +3,8 @@ import pageBehaviors from '../../../behaviors/pageBehaviors'
 import { queryUserThirdPartyInfo } from '../../../apis/index'
 import { homeBinding } from '../../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import Toast from '@vant/weapp/toast/toast'
 
-// package-mine/auth/index.ts
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] }), pageBehaviors],
 
@@ -36,6 +36,8 @@ ComponentWithComputed({
         this.setData({
           authList: res.result,
         })
+      } else {
+        Toast(res.msg)
       }
     },
     toAuth() {

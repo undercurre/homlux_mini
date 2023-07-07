@@ -2,6 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
 import { getMeijuHomeList } from '../../../apis/index'
 import { delay } from '../../../utils/index'
+import Toast from '@vant/weapp/toast/toast'
 
 type HomeCard = { checked: boolean; index: number } & Auth.MeijuHome
 
@@ -37,6 +38,8 @@ ComponentWithComputed({
         this.setData({
           homeList,
         })
+      } else {
+        Toast(res.msg)
       }
 
       await delay(500)
