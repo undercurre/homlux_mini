@@ -249,6 +249,19 @@ export async function findDevice(
 }
 
 /**
+ * 云端获取网关下的传感器列表（未绑定到家庭的）
+ * @param gatewayId
+ */
+export async function getUnbindSensor(data: { gatewayId: string }, option?: { loading?: boolean }) {
+  return await mzaioRequest.post<Device.ISubDevice[]>({
+    log: true,
+    loading: option?.loading || false,
+    url: '/v1/device/getUnbindSensor',
+    data,
+  })
+}
+
+/**
  * 检查ota版本
  */
 export async function checkOtaVersion(deviceId: string, options?: { loading?: boolean }) {

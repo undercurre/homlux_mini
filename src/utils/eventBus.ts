@@ -4,6 +4,7 @@ type Events = {
   // 从websocket接受到信息 start
   bind_device: {
     deviceId: string
+    proType: string
   } // 绑定子设备
   wsReceive: {
     result: {

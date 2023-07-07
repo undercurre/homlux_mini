@@ -191,4 +191,29 @@ declare namespace Device {
   }
 
   type GroupDTO = Pick<DeviceItem, 'deviceId' | 'deviceType' | 'proType'>
+
+  type ISubDevice = {
+    proType: string // 品类码
+    deviceUuid: string
+    mac: string
+    signal: string
+    RSSI: number
+    zigbeeMac: string
+    isConfig: string
+    name: string
+    roomId: string
+    roomName: string
+    icon: string
+    productId: string
+    switchList: Device.ISwitch[]
+    client: BleClient
+    status: 'waiting' | 'fail' | 'success' // 配网状态
+    isChecked: boolean // 是否被选中
+    requesting: boolean // 是否正在发送试一试命令
+
+    deviceId: string
+    deviceName: string
+    gatewayId: string
+    productName: string
+  }
 }

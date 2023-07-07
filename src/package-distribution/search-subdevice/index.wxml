@@ -21,7 +21,7 @@
               <view class="relative ml-10rpx my-20rpx border-4rpx border-solid border-hex-F6F6F8 rounded-full leading-0 p-10rpx">
                 <image src="{{item.icon}}" class="w-72 h-72"></image>
 
-                <view class="signal-box bottom-0 leading-0 rounded-14rpx {{ item.signal === 'weak' ? 'bg-hex-FFF4F4' : 'bg-hex-F4F8FF'}}">
+                <view wx:if="{{item.proType !== '0xBC'}}" class="signal-box bottom-0 leading-0 rounded-14rpx {{ item.signal === 'weak' ? 'bg-hex-FFF4F4' : 'bg-hex-F4F8FF'}}">
                   <image src="/package-distribution/assets/search-subdevice/signal-{{ item.signal }}.png" class="w-46 h-28"></image>
                 </view>
               </view>
@@ -39,7 +39,7 @@
               <text class="text-26 text-black-59 opacity-95">{{ item.roomName }}</text>
             </view>
 
-            <view class="shrink-0">
+            <view class="shrink-0" wx:if="{{item.proType !== '0xBC'}}">
               <van-button plain type="primary" size="small" round bind:click="tryControl" data-id="{{item.deviceUuid}}" custom-style="background: rgba(72,143,255,0.10) !important;border-radius: 12rpx; font-size: 24rpx; width: 120rpx;padding: 0;">{{ item.mac === flashInfo.mac ? '停止闪烁' : '找一找'}}</van-button>
 
               <!-- <van-button plain type="primary" size="small" round bind:click="getLightState" data-id="{{item.deviceUuid}}"  custom-style="background-color: rgba(72,143,255,0.10);border-radius: 12rpx; font-size: 24rpx; width: 120rpx;padding: 0;">状态</van-button> -->
@@ -76,7 +76,7 @@
             <view class="relative my-20rpx border-4rpx border-solid border-hex-F6F6F8 rounded-full leading-0 p-10rpx">
               <image src="{{item.icon}}" class="w-72 h-72"></image>
 
-              <view class="signal-box bottom-0 leading-0 rounded-14rpx {{ item.signal === 'weak' ? 'bg-hex-FFF4F4' : 'bg-hex-F4F8FF'}}">
+              <view wx:if="{{item.proType !== '0xBC'}}" class="signal-box bottom-0 leading-0 rounded-14rpx {{ item.signal === 'weak' ? 'bg-hex-FFF4F4' : 'bg-hex-F4F8FF'}}">
                 <image src="/package-distribution/assets/search-subdevice/signal-{{ item.signal }}.png" class="w-46 h-28"></image>
               </view>
             </view>

@@ -1,5 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
+import { PRO_TYPE } from '../../config/index'
 import { strUtil } from '../../utils/index'
 
 ComponentWithComputed({
@@ -72,12 +73,15 @@ ComponentWithComputed({
       })
     },
     handleNextStep() {
-      // const gatewayId = this.data.selectGatewayId,
+      // TODO mock data改为真实网关选择
+      const gatewayId = '1678182378474882'
+      const proType = PRO_TYPE.sensor
       // gatewaySn = this.data.selectGatewaySn
 
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
-          // gatewayId,
+          gatewayId,
+          proType,
           // gatewaySn,
         }),
       })
