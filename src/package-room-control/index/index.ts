@@ -209,7 +209,6 @@ ComponentWithComputed({
       let baseHeight =
         (storage.get<number>('windowHeight') as number) -
         (storage.get<number>('statusBarHeight') as number) -
-        (storage.get<number>('bottomBarHeight') as number) - // IPX
         (storage.get<number>('navigationBarHeight') as number)
       if (data.controlPopup) {
         baseHeight -= rpx2px(600)
@@ -475,7 +474,7 @@ ComponentWithComputed({
               this.data.checkedList.includes(originDevice!.deviceId) &&
               originDevice!.select
             ) {
-              const prop = device!.mzgdPropertyDTOList['1']
+              const prop = transferDeviceProperty(originDevice.proType, device!.mzgdPropertyDTOList['1'])
               if (originDevice.proType === PRO_TYPE.light) {
                 diffData.lightStatus = {
                   Level: prop.Level,
@@ -1064,16 +1063,19 @@ ComponentWithComputed({
       if (this.data.editSelectMode) {
         return
       }
+      // 只有创建者或者管理员能够进入编辑模式
+      if (!this.data.isCreator && !this.data.isAdmin) {
+        return
+      }
 
       const device = e.detail
       const diffData = {} as IAnyObject
 
+      // 进入编辑模式
+      diffData.editSelectMode = true
+
       // 选中当前长按卡片
       diffData.editSelectList = [device.uniId]
-      // 只有创建者或者管理员能够进入编辑模式
-      if (this.data.isCreator || this.data.isAdmin) {
-        diffData.editSelectMode = true
-      }
 
       // 取消普通选择
       if (this.data.checkedList?.length) {
