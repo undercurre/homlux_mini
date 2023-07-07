@@ -8,7 +8,24 @@ Component({
   /**
    * 组件的属性列表
    */
-  properties: {},
+  properties: {
+    radio: {
+      type: String,
+      value: '1',
+    },
+    week: {
+      type: String,
+      observer(value) {
+        this.data.weekList.forEach((item) => {
+          if (value.indexOf(item.key) !== -1) {
+            this.setData({
+              [`weekList[${Number(item.key) - 1}].checked`]: true,
+            })
+          }
+        })
+      },
+    },
+  },
   /**
    * 用于监听 properties 和 data 的变化
    */
@@ -18,7 +35,6 @@ Component({
    * 组件的初始数据
    */
   data: {
-    radio: '1',
     periodList: [
       { radio: '0', title: '仅一次' },
       { radio: '1', title: '每天' },
@@ -27,13 +43,13 @@ Component({
       { radio: '4', title: '自定义' },
     ],
     weekList: [
-      { title: '周日', key: 'sun', checked: false },
-      { title: '周一', key: 'mon', checked: true },
-      { title: '周二', key: 'tue', checked: true },
-      { title: '周三', key: 'wed', checked: true },
-      { title: '周四', key: 'thu', checked: true },
-      { title: '周五', key: 'fri', checked: true },
-      { title: '周六', key: 'sat', checked: false },
+      { title: '周日', key: '1', checked: false },
+      { title: '周一', key: '2', checked: false },
+      { title: '周二', key: '3', checked: false },
+      { title: '周三', key: '4', checked: false },
+      { title: '周四', key: '5', checked: false },
+      { title: '周五', key: '6', checked: false },
+      { title: '周六', key: '7', checked: false },
     ],
   },
 
@@ -46,14 +62,24 @@ Component({
       this.setData({
         radio,
       })
+      if (radio === '1') {
+        this.triggerEvent('weekChange', '1,2,3,4,5,6,7')
+      }
+      this.triggerEvent('periodChange', radio)
     },
 
     weekSelect(event: { currentTarget: { dataset: { index: number } } }) {
-      console.log('weekSelect', event)
       const { index } = event.currentTarget.dataset
       this.setData({
         [`weekList[${index}].checked`]: !this.data.weekList[index].checked,
       })
+      const weekList: string[] = []
+      this.data.weekList.forEach((item) => {
+        if (item.checked) {
+          weekList.push(item.key)
+        }
+      })
+      this.triggerEvent('weekChange', weekList.join(','))
     },
   },
 })

@@ -7,6 +7,9 @@
     "add-condition-popup": "./components/add-condition-popup/index",
     "add-action-popup": "./components/add-action-popup/index",
     "select-card-popup": "../../components/select-card-popup/index",
-    "edit-effectiveTime-popup": "./components/edit-effectiveTime-popup/index"
+    "edit-effectiveTime-popup": "./components/edit-effectiveTime-popup/index",
+    "curtain-control-popup": "/components/curtain-control-popup/index",
+    "light-control-popup": "/components/light-control-popup/index",
+    "switch-control-popup": "/components/switch-control-popup/index"
   }
 }

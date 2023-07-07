@@ -4,7 +4,7 @@
       <text class="absolute top-29rpx left-264rpx text-28rpx text-hex-666666">{{colFirUnit}}</text>
       <text class="absolute top-29rpx left-494rpx text-28rpx text-hex-666666">{{colSecUnit}}</text>
     </view>
-    <picker-view indicator-class="picker-selected" indicator-style="height: 50px;" class="w-full h-270rpx" value="{{value}}" bindchange="bindChange">
+    <picker-view immediate-change indicator-class="picker-selected" indicator-style="height: 50px;" class="w-full h-270rpx" value="{{value}}" bindchange="bindChange">
       <picker-view-column>
         <view wx:for="{{colFir}}" style="padding-left: 124rpx; line-height: 50px; text-align: center; font-weight: 500; font-size: 40rpx">{{item}}</view>
       </picker-view-column>

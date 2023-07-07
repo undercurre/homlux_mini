@@ -11,7 +11,7 @@
           </van-radio>
         </view>
         <view class="flex justify-between mt-32rpx" slot="label" wx:if="{{index === periodList.length - 1 && radio === item.radio}}">
-          <view class="w-78rpx h-78rpx bg-white rounded-16rpx leading-78rpx text-center text-24rpx text-hex-666666 border-2rpx border-solid  {{item.checked ? 'border-hex-488FFF':'border-transparent'}}" wx:for="{{weekList}}" wx:key="key" data-index="{{index}}" bindtap="weekSelect"> {{item.title}} </view>
+          <view class="w-78rpx h-78rpx bg-white rounded-16rpx leading-78rpx text-center text-24rpx text-hex-666666 border-2rpx border-solid  {{item.checked ? 'border-hex-488FFF':'border-transparent'}}" wx:for="{{weekList}}" wx:key="key" data-index="{{index}}" catch:tap="weekSelect"> {{item.title}} </view>
         </view>
       </view>
     </van-cell>

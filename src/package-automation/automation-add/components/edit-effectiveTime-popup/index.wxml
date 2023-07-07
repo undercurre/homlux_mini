@@ -7,13 +7,13 @@
 
       <view class="w-full px-11rpx box-border">
         <van-cell-group inset border="{{false}}">
-          <van-cell border="{{true}}" title="开始时间" value="23:59" custom-class="cell-border" custom-style="background-color:#f9fbfe;" clickable bind:click="onClick"></van-cell>
-          <van-cell border="{{false}}" title="结束时间" value="23:59" custom-class="cell-border" custom-style="background-color:#f9fbfe;" clickable bind:click="onClick"> </van-cell>
+          <van-cell border="{{true}}" title="开始时间" value="{{startTime}}" custom-class="cell-border" custom-style="background-color:#f9fbfe;" data-type="start" clickable bind:click="handleTimeShow"></van-cell>
+          <van-cell border="{{false}}" title="结束时间" value="{{endTimeDesc}}" custom-class="cell-border" custom-style="background-color:#f9fbfe;" data-type="end" clickable bind:click="handleTimeShow"> </van-cell>
         </van-cell-group>
       </view>
       <view class="mt-38rpx w-750rpx px-11rpx box-border py-1rpx">
         <text class="ml-58rpx text-32rpx font-medium text-hex-27282a">重复设置</text>
-        <period-select></period-select>
+        <period-select week="{{week}}" radio="{{periodType}}" bind:periodChange="periodChange" bind:weekChange="weekChange"></period-select>
       </view>
     </scroll-view>
 
@@ -22,3 +22,5 @@
     </view>
   </view>
 </van-popup>
+
+<edit-time-popup show="{{showTimePopup}}" type="{{timeType}}" value="{{timeValue}}" bind:change="handleTimeChange" bind:close="handleTimeClose" bind:confirm="handleTimeConfirm" />

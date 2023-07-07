@@ -41,6 +41,19 @@ declare namespace AutoScene {
      */
     sceneName: string
   }
+  /** 拍扁的条件集合 */
+  interface AutoSceneFlattenCondition {
+    /** 设备或场景id */
+    uniId: string
+    // 名称
+    name: string
+    //类型 1-网关，2-子设备，3-wifi设备,4-分组,5-场景,6-延时
+    // type: 1 | 2 | 3 | 4 | 5 | 6
+    // 图片
+    pic: string
+    //描述
+    desc: string[]
+  }
   /** 拍扁的结果集合 */
   interface AutoSceneFlattenAction {
     /** 设备或场景id */
@@ -55,6 +68,8 @@ declare namespace AutoScene {
     desc: string[]
     //延时执行
     delay?: number
+    proType?: string
+    value?: IAnyObject
   }
   interface DeviceCondition {
     /**

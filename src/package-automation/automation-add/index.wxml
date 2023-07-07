@@ -15,7 +15,7 @@
             <text class="text-22rpx text-hex-488FFF">编辑</text>
           </view>
         </view>
-        <van-field value="{{  }}" size="large" placeholder="给场景取个名字" clearable="{{true}}" custom-style="padding: 24rpx 40rpx;border-radius: 32rpx;width:530rpx;height:96rpx;text-align:center;" bind:change="changeAutoSceneName" border="{{false}}"> </van-field>
+        <van-field value="{{sceneName}}" size="large" placeholder="给场景取个名字" clearable="{{true}}" custom-style="padding: 24rpx 40rpx;border-radius: 32rpx;width:530rpx;height:96rpx;text-align:center;" bind:change="changeAutoSceneName" border="{{false}}"> </van-field>
       </view>
       <view class="h-32rpx"></view>
       <van-cell-group inset>
@@ -23,8 +23,8 @@
           <view class="flex items-center justify-between">
             <text class="text-32rpx text-hex-27282A text-left">生效时间</text>
             <view class="flex flex-col items-end">
-              <text class="text-32rpx text-hex-555659 text-right">7:00-8:00</text>
-              <text class="text-24rpx text-hex-a2a2a2 text-right">周一、周二、周四、周一、周二、周四</text>
+              <text wx:if="{{!isAllday}}" class="text-28rpx text-hex-555659 text-right">{{effectiveTime.startTime+'-'+endTimeDesc}}</text>
+              <text class="text-24rpx text-hex-a2a2a2 text-right">{{timePeriodDesc}}</text>
             </view>
           </view>
           <view slot="right-icon" class="flex items-center ml-12rpx">
@@ -37,7 +37,7 @@
         <image class="w-48 h-48" src="/assets/img/base/add.png" bindtap="handleConditionShow"></image>
       </view>
       <van-cell-group inset>
-        <van-cell border="{{false}}" clickable="{{true}}" bind:click="handleConditionShow">
+        <van-cell border="{{false}}" clickable="{{true}}" bind:click="handleConditionShow" wx:if="{{!sceneDeviceConditionsFlatten.length}}">
           <view class="flex items-center justify-center">
             <view class="flex flex-row items-center h-96rpx">
               <image class="w-56 h-56 mr-38rpx" src="/assets/img/base/add.png"></image>
@@ -45,6 +45,24 @@
             </view>
           </view>
         </van-cell>
+        <view wx:else>
+          <view class="flex flex-row items-center bg-hex-fff rounded-32rpx px-40rpx py-32rpx mb-24rpx relative" wx:for="{{sceneDeviceConditionsFlatten}}" bindtap="handleSceneActionEdit" data-index="{{index}}" wx:key="uniId">
+            <view class="w-72 h-72 rounded-full">
+              <image src="{{item.pic}}" class="w-72 h-72" />
+            </view>
+
+            <view class="flex flex-col items-start ml-32rpx">
+              <text class="text-32rpx text-black-2a font-medium leading-none mt-10rpx">{{item.name}}</text>
+              <view class="flex flex-row gap-x-20rpx text-26 text-black-tips mt-22rpx leading-56rpx">
+                <text class="px-24rpx bg-hex-F4F5F8 rounded-32rpx" wx:for="{{item.desc}}" wx:key="index">{{item}}</text>
+              </view>
+            </view>
+
+            <view wx:if="{{!isDefault}}" class="px-20rpx py-16rpx absolute right-0 top-0" catchtap="handleConditionDelete" data-index="{{index}}" data-info="{{item}}">
+              <image src="/assets/img/base/close-gray.png" class="w-40 h-40" />
+            </view>
+          </view>
+        </view>
       </van-cell-group>
       <view class="h-48rpx mt-64rpx mb-36rpx mx-48rpx flex justify-between align-center">
         <text class="text-40rpx font-medium text-hex-1a1a1c leading-48rpx">就执行</text>
@@ -60,7 +78,7 @@
           </view>
         </van-cell>
         <view wx:else>
-          <view class="flex flex-row items-center bg-hex-fff rounded-32rpx px-40rpx py-32rpx mb-24rpx relative" wx:for="{{sceneDeviceActionsFlatten}}" bindtap="handleSceneActionEdit" data-index="{{index}}" wx:key="uniId">
+          <view class="flex flex-row items-center bg-hex-fff rounded-32rpx px-40rpx py-32rpx mb-24rpx relative" wx:for="{{sceneDeviceActionsFlatten}}" bindtap="handleAutoSceneActionEdit" data-index="{{index}}" wx:key="uniId">
             <view class="w-72 h-72 rounded-full">
               <image src="{{item.pic}}" class="w-72 h-72" />
             </view>
@@ -87,11 +105,14 @@
   </view>
 </view>
 
-<edit-effectiveTime-popup show="{{showEffectiveTimePopup}}" bind:close="handleEffectiveTimeClose" bind:confirm="handleEffectiveTimeConfirm" />
+<edit-effectiveTime-popup show="{{showEffectiveTimePopup}}" startTime="{{effectiveTime.startTime}}" endTime="{{effectiveTime.endTime}}" periodType="{{effectiveTime.timeType}}" week="{{effectiveTime.timePeriod}}" bind:close="handleEffectiveTimeClose" bind:confirm="handleEffectiveTimeConfirm" />
 <add-condition-popup show="{{showEditConditionPopup}}" bind:close="handleConditionClose" bind:conditionClicked="onConditionClicked" />
 <add-action-popup show="{{showEditActionPopup}}" bind:close="handleActionClose" bind:actionClicked="onActionClicked" />
 <edit-icon-popup value="{{sceneIcon}}" show="{{showEditIconPopup}}" bind:close="handleEditIconClose" bind:confirm="handleEditIconConfirm" />
-<edit-timeConditions-popup show="{{showPeriodPopup}}" bind:close="handlePeriodClose" bind:confirm="handlePeriodConfirm" />
+<edit-timeConditions-popup show="{{showTimeConditionPopup}}" time="{{timeCondition.time || '10:00'}}" periodType="{{timeCondition.timeType || '1'}}" week="{{timeCondition.timePeriod || '1,2,3,4,5,6,7'}}" bind:close="handleTimeConditionClose" bind:confirm="handleTimeConditionConfirm" />
 <edit-delay-popup show="{{showDelayPopup}}" value="{{delay}}" bind:change="handleDelayChange" bind:close="handleDelayClose" bind:confirm="handleDelayConfirm" bind:cancel="handleDelayReturn" />
 <select-card-popup show="{{showSelectCardPopup}}" title="{{cardType === 'device'? '选择设备':'选择场景'}}" cardType="{{cardType}}" list="{{list}}" selectList="{{linkSelectList}}" bind:select="handleSelectCardSelect" bind:close="handleSelectCardClose" bind:confirm="handleSelectCardConfirm" bind:cancel="handleSelectCardReturn"></select-card-popup>
+<light-control-popup show="{{showEditPopup === '0x13'}}" title="{{sceneEditTitle}}" lightInfo="{{sceneEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleEditPopupClose"></light-control-popup>
+<switch-control-popup show="{{showEditPopup === '0x21'}}" title="{{sceneEditTitle}}" switchInfo="{{sceneEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleEditPopupClose"></switch-control-popup>
+<curtain-control-popup show="{{showEditPopup === '0x14'}}" title="{{sceneEditTitle}}" deviceInfo="{{sceneEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleEditPopupClose"></curtain-control-popup>
 <van-toast id="van-toast" />

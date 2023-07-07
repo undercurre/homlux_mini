@@ -5,10 +5,10 @@
 
     <scroll-view enhanced show-scrollbar="{{true}}" scroll-y="{{true}}" style="height: 990rpx">
       <view class="h-18rpx"></view>
-      <time-picker-view value="{{value}}"></time-picker-view>
+      <time-picker-view value="{{timeValue}}" bind:change="timeChange"></time-picker-view>
       <view class="mt-38rpx w-750rpx px-11rpx box-border py-1rpx">
         <text class="ml-58rpx text-32rpx font-medium text-hex-27282a">重复设置</text>
-        <period-select></period-select>
+        <period-select week="{{week}}" radio="{{periodType}}" bind:periodChange="periodChange" bind:weekChange="weekChange"></period-select>
       </view>
     </scroll-view>
 

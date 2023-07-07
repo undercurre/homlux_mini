@@ -237,7 +237,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .border-blue,
 .border-hex-488FFF{--un-border-opacity:1;border-color:rgba(72,143,255,var(--un-border-opacity));}
 .border-hex-d3d3d3{--un-border-opacity:1;border-color:rgba(211,211,211,var(--un-border-opacity));}
-.border-hex-dadada{--un-border-opacity:1;border-color:rgba(218,218,218,var(--un-border-opacity));}
 .border-hex-ddd{--un-border-opacity:1;border-color:rgba(221,221,221,var(--un-border-opacity));}
 .border-hex-F6F6F8{--un-border-opacity:1;border-color:rgba(246,246,248,var(--un-border-opacity));}
 .border-hex-F6FAFD{--un-border-opacity:1;border-color:rgba(246,250,253,var(--un-border-opacity));}

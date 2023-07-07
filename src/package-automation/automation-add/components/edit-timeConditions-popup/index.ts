@@ -1,4 +1,6 @@
-Component({
+import { ComponentWithComputed } from 'miniprogram-computed'
+
+ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
   },
@@ -9,17 +11,24 @@ Component({
     show: {
       type: Boolean,
       value: false,
+    },
+    time: {
+      type: String,
+      value: '10:00',
+    },
+    periodType: {
+      type: String,
+      value: '1',
       observer(value) {
-        if (value) {
+        if (value === '1' && this.data.week.split(',').length < 7) {
           this.setData({
-            icon: this.data.value,
+            periodType: '4',
           })
         }
       },
     },
-    value: {
-      type: Array,
-      value: [11, 0],
+    week: {
+      type: String,
     },
   },
 
@@ -27,7 +36,12 @@ Component({
    * 组件的初始数据
    */
   data: {},
-
+  computed: {
+    timeValue(data) {
+      const value = data.time.split(':').map((item: string) => Number(item))
+      return value
+    },
+  },
   /**
    * 组件的方法列表
    */
@@ -36,7 +50,27 @@ Component({
       this.triggerEvent('close')
     },
     handleConfirm() {
-      this.triggerEvent('confirm')
+      this.triggerEvent('confirm', { time: this.data.time, periodType: this.data.periodType, week: this.data.week })
     },
+    timeChange(e: { detail: number[] }) {
+      const value = e.detail.map((item) => String(item).padStart(2, '0'))
+      this.setData({
+        time: value.join(':'),
+      })
+
+      this.triggerEvent('change', this.data.time)
+    },
+    /* 周期设置 start */
+    periodChange(e: { detail: string }) {
+      this.setData({
+        periodType: e.detail,
+      })
+    },
+    weekChange(e: { detail: string }) {
+      this.setData({
+        week: e.detail,
+      })
+    },
+    /* 周期设置 end */
   },
 })

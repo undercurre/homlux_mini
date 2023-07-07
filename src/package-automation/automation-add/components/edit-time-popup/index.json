@@ -2,7 +2,6 @@
   "component": true,
   "usingComponents": {
     "time-picker-view": "../../../../components/time-picker-view/index",
-    "period-select": "../../../../components/period-select/index",
-    "edit-time-popup": "../edit-time-popup/index"
+    "period-select": "../../../../components/period-select/index"
   }
 }
