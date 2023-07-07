@@ -93,9 +93,6 @@
   </view>
 </view>
 
-<view wx:if="{{ controlPopup }}" class="h-600rpx"></view>
-<view wx:if="{{ editSelectMode }}" class="h-368rpx"></view>
-
 <!-- 设备控制弹窗 -->
 <device-control-popup controlPopup="{{controlPopup}}" checkedList="{{checkedList}}" lightStatus="{{lightStatus}}" curtainStatus="{{curtainStatus}}" checkedType="{{checkedType}}" bind:popMove="handlePopMove" bind:updateList="updateDeviceList"></device-control-popup>
 
