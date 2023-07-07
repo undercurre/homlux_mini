@@ -11,7 +11,9 @@
         "search-subdevice/index",
         "bind-home/index",
         "change-wifi-success/index",
-        "choose-device/index"
+        "choose-device/index",
+        "choose-sensor/index",
+        "connect-guide/index"
       ]
     },
     {
@@ -32,7 +34,8 @@
         "device-manage/device-detail/index",
         "device-manage/group-detail/index",
         "voice-control/index",
-        "voice-intro/index"
+        "voice-intro/index",
+        "device-category/index"
       ]
     },
     {

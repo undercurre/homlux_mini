@@ -17,24 +17,25 @@ ComponentWithComputed({
   data: {
     deviceList: [
       {
-        icon: '/package-distribution/assets/choose-device/gateway.png',
+        icon: '/package-distribution/assets/guide/gateway.png',
         name: '智能网关',
         path: '/package-distribution/scan/index',
       },
       {
-        icon: '/package-distribution/assets/choose-device/subdevice.png',
+        icon: '/package-distribution/assets/guide/subdevice.png',
         name: '开关/灯具',
         path: '/package-distribution/scan/index',
       },
       {
-        icon: '/package-distribution/assets/choose-device/screen.png',
+        icon: '/package-distribution/assets/guide/screen.png',
         name: '智慧屏',
         path: '/package-distribution/scan/index',
       },
-      // {
-      //   icon: '/package-distribution/assets/choose-device/sensor.png',
-      //   name: '传感器'
-      // }
+      {
+        icon: '/package-distribution/assets/guide/sensor.png',
+        name: '传感器',
+        path: '/package-distribution/choose-sensor/index',
+      },
     ],
   },
 

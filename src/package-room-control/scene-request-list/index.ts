@@ -30,6 +30,15 @@ ComponentWithComputed({
     successNum(data) {
       return data.deviceList.filter((item) => item.status === 'success').length
     },
+    tipsText(data) {
+      let text = '配置完成'
+
+      if (data.finishNum !== data.deviceList.length) {
+        text = `正在将场景配置下发至设备（${data.finishNum}/${data.deviceList.length}）…`
+      }
+
+      return text
+    },
   },
 
   lifetimes: {

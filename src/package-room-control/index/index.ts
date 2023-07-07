@@ -302,6 +302,7 @@ ComponentWithComputed({
             WSEventType.device_online_status,
             WSEventType.device_offline_status,
             WSEventType.group_device_result_status,
+            WSEventType.screen_move_sub_device,
           ].includes(e.result.eventType)
         ) {
           this.updateRoomData(e)
@@ -469,7 +470,11 @@ ComponentWithComputed({
             }
 
             // 如果控制框为显示状态，且是当前更新项，则同步更新
-            if (this.data.checkedList.includes(device!.deviceId) && device!.select) {
+            if (
+              device!.mzgdPropertyDTOList &&
+              this.data.checkedList.includes(originDevice!.deviceId) &&
+              originDevice!.select
+            ) {
               const prop = device!.mzgdPropertyDTOList['1']
               if (originDevice.proType === PRO_TYPE.light) {
                 diffData.lightStatus = {

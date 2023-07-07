@@ -52,6 +52,7 @@ ComponentWithComputed({
           key: 'device',
           icon: 'add',
           url: '/package-distribution/choose-device/index',
+          // url: '/package-distribution/scan/index',
         })
       }
       if (data.isCreator) {

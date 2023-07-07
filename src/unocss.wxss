@@ -46,6 +46,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .py-50rpx{padding-top:50rpx;padding-bottom:50rpx;}
 .py-6rpx{padding-top:6rpx;padding-bottom:6rpx;}
 .py-8rpx{padding-top:8rpx;padding-bottom:8rpx;}
+.py-96rpx{padding-top:96rpx;padding-bottom:96rpx;}
 .pb-100rpx{padding-bottom:100rpx;}
 .pb-140rpx{padding-bottom:140rpx;}
 .pb-16rpx{padding-bottom:16rpx;}
@@ -108,6 +109,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .my-10rpx{margin-top:10rpx;margin-bottom:10rpx;}
 .my-12rpx{margin-top:12rpx;margin-bottom:12rpx;}
 .my-20rpx{margin-top:20rpx;margin-bottom:20rpx;}
+.my-64rpx{margin-top:64rpx;margin-bottom:64rpx;}
 .mb-0_el_{margin-bottom:0rpx !important;}
 .mb-126rpx{margin-bottom:126rpx;}
 .mb-128rpx{margin-bottom:128rpx;}
@@ -124,7 +126,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .mb-52rpx{margin-bottom:52rpx;}
 .mb-64rpx{margin-bottom:64rpx;}
 .mb-70rpx{margin-bottom:70rpx;}
-.mb-80rpx{margin-bottom:80rpx;}
 .mb-86rpx{margin-bottom:86rpx;}
 .mb-8rpx{margin-bottom:8rpx;}
 .mb-96rpx{margin-bottom:96rpx;}
@@ -164,6 +165,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .mt-240rpx{margin-top:240rpx;}
 .mt-24rpx{margin-top:24rpx;}
 .mt-26rpx{margin-top:26rpx;}
+.mt-276rpx{margin-top:276rpx;}
 .mt-28rpx{margin-top:28rpx;}
 .mt-290rpx{margin-top:290rpx;}
 .mt-32rpx{margin-top:32rpx;}
@@ -458,6 +460,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .h-96rpx{height:96rpx;}
 .h-98rpx{height:98rpx;}
 .h-full{height:100%;}
+.max-h-45vh{max-height:45vh;}
 .max-w-110rpx{max-width:110rpx;}
 .max-w-200{max-width:200rpx;}
 .min-h-240rpx{min-height:240rpx;}
@@ -534,6 +537,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .w-full{width:100%;}
 .visible{visibility:visible;}
 .whitespace-nowrap{white-space:nowrap;}
+.overflow-auto{overflow:auto;}
 .overflow-hidden{overflow:hidden;}
 .justify-start{justify-content:flex-start;}
 .justify-end{justify-content:flex-end;}

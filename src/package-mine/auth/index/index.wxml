@@ -11,3 +11,5 @@
     </van-cell>
   </van-cell-group>
 </view>
+
+<van-toast id="van-toast" />

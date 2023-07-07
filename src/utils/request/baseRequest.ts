@@ -1,3 +1,5 @@
+import { showLoading, hideLoading } from '../index'
+
 export type BaseRequestOptions<T extends AnyResType> = WechatMiniprogram.RequestOption<T> & {
   /**
    * 可以传入是否展示loading，自定义成功或者失败回调
@@ -50,11 +52,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
     }
     // 是否显示loading，显示mask用于阻止用户多次点击
     if (requestOption.loading) {
-      wx.showLoading &&
-        wx.showLoading({
-          title: '加载中...',
-          mask: true,
-        })
+      showLoading()
     }
 
     const start = Date.now()
@@ -116,7 +114,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       ...requestOption,
       complete() {
         if (requestOption.loading) {
-          wx.hideLoading && wx.hideLoading()
+          hideLoading()
         }
       },
     })

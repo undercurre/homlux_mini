@@ -51,7 +51,11 @@ ComponentWithComputed({
       value: false,
       observer() {
         if (this.data.roomListComputed.length) {
-          let roomSelect = roomStore.currentRoom?.roomId || this.data.roomListComputed[0].roomId
+          let roomSelect = roomStore.currentRoom?.roomId
+
+          if (this.data.roomListComputed.findIndex((item) => item.roomId === roomSelect) < 0) {
+            roomSelect = this.data.roomListComputed[0].roomId
+          }
 
           if (this.data.selectList.length) {
             const selectItem = this.data.list.find(
