@@ -25,6 +25,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    _errorList: [] as string[],
     _addModeTimeId: 0,
     _deviceMap: {} as {
       [x: string]: {
@@ -172,6 +173,8 @@ ComponentWithComputed({
         // 若全部执行并等待完毕，则关闭监听、网关配网
         if (!hasWaitItem) {
           this.stopGwAddMode()
+
+          Logger.log('失败原因列表', this.data._errorList)
         }
       }
 
@@ -304,7 +307,7 @@ ComponentWithComputed({
           return item
         }
 
-        for await (const value of asyncPool(3, list, iteratorFn)) {
+        for await (const value of asyncPool(2, list, iteratorFn)) {
           const index = tempList.findIndex((item) => item === value.mac)
 
           tempList.splice(index, 1)
@@ -353,11 +356,13 @@ ComponentWithComputed({
           if (bleDevice.status === 'waiting') {
             bleDevice.status = 'fail'
             Logger.error(bleDevice.mac + '绑定监听超时')
+            this.data._errorList.push(`【${bleDevice.mac}】绑定监听超时`)
             this.updateBleDeviceListView()
           }
         }, timeout * 1000)
       } else if (this.data._deviceMap[bleDevice.mac].zigbeeRepeatTimes === 0) {
         Logger.error(`子设备配网失败：${bleDevice.mac}`, res)
+        this.data._errorList.push(`【${bleDevice.mac}】${JSON.stringify(res)}`)
         bleDevice.status = 'fail'
 
         this.updateBleDeviceListView()

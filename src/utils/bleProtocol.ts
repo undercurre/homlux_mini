@@ -79,7 +79,7 @@ export class BleClient {
     const connectRes = await wx
       .createBLEConnection({
         deviceId: this.deviceUuid, // 搜索到设备的 deviceId
-        timeout: 8000,
+        // timeout: 8000,
       })
       .catch((err: WechatMiniprogram.BluetoothError) => err)
 
@@ -99,7 +99,7 @@ export class BleClient {
     // 存在蓝牙信号较差的情况，连接蓝牙设备后会中途断开的情况，需要做对应异常处理，超时处理
     const initRes = await Promise.race([
       this.initBleService(),
-      delay(6000).then(() => ({ success: false, error: '获取蓝牙服务信息超时' })),
+      delay(10000).then(() => ({ success: false, error: '获取蓝牙服务信息超时' })),
     ])
 
     Logger.log(`【${this.mac}】initRes`, initRes)
@@ -227,7 +227,7 @@ export class BleClient {
       let timeId = 0
 
       let listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
-        Logger.log(`listener-res`, res)
+        Logger.log(`listener-res-default`, res)
       }
 
       return new Promise<{ code: string; success: boolean; cmdType?: string; subCmdType?: string; resMsg: string }>(
@@ -453,18 +453,18 @@ export const bleUtil = {
 }
 
 // todo: 测试代码，可删除
-wx.onBLEConnectionStateChange(function (res) {
-  // 该方法回调中可以用于处理连接意外断开等异常情况
-  if (!res.connected) {
-    Logger.log(`device ${res.deviceId} state has changed, connected: ${res.connected}`)
-  }
+// wx.onBLEConnectionStateChange(function (res) {
+//   // 该方法回调中可以用于处理连接意外断开等异常情况
+//   if (!res.connected) {
+//     Logger.log(`device ${res.deviceId} state has changed, connected: ${res.connected}`)
+//   }
 
-  setTimeout(() => {
-    wx.getConnectedBluetoothDevices({
-      services: [],
-      success(res) {
-        Logger.log('getConnectedBluetoothDevices', res)
-      },
-    })
-  }, 500)
-})
+//   setTimeout(() => {
+//     wx.getConnectedBluetoothDevices({
+//       services: [],
+//       success(res) {
+//         Logger.log('getConnectedBluetoothDevices', res)
+//       },
+//     })
+//   }, 500)
+// })
