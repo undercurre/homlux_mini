@@ -285,7 +285,7 @@ export class BleClient {
           return res
         })
         .catch(async (err) => {
-          Logger.error(`【${this.mac}】sendCmd-err`, err)
+          Logger.error(`【${this.mac}】promise-sendCmd-err`, err, `蓝牙连接状态：${bleDeviceMap[this.deviceUuid]}`)
 
           await this.close() // 异常关闭需要主动配合关闭连接closeBLEConnection，否则资源会被占用无法释放，导致无法连接蓝牙设备
 
@@ -302,7 +302,7 @@ export class BleClient {
           clearTimeout(timeId)
         })
     } catch (err) {
-      Logger.error(`【${this.mac}】sendCmd-err`, err)
+      Logger.error(`【${this.mac}】sendCmd-err`, err, `蓝牙连接状态：${bleDeviceMap[this.deviceUuid]}`)
       await this.close() // 异常关闭需要主动配合关闭连接closeBLEConnection，否则资源会被占用无法释放，导致无法连接蓝牙设备
       return {
         code: -1,
@@ -448,19 +448,15 @@ export const bleUtil = {
   },
 }
 
-// todo: 测试代码，可删除
-// wx.onBLEConnectionStateChange(function (res) {
-//   // 该方法回调中可以用于处理连接意外断开等异常情况
-//   if (!res.connected) {
-//     Logger.log(`device ${res.deviceId} state has changed, connected: ${res.connected}`)
-//   }
+export const bleDeviceMap = {} as IAnyObject
 
-//   setTimeout(() => {
-//     wx.getConnectedBluetoothDevices({
-//       services: [],
-//       success(res) {
-//         Logger.log('getConnectedBluetoothDevices', res)
-//       },
-//     })
-//   }, 500)
-// })
+// todo: 测试代码，可删除
+wx.onBLEConnectionStateChange(function (res) {
+  bleDeviceMap[res.deviceId] = res.connected
+
+  if (!res.connected) {
+    const deviceId = res.deviceId
+
+    Logger.log(`【${deviceId}】蓝牙已断开`)
+  }
+})

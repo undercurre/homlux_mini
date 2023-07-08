@@ -14,9 +14,6 @@ export const bleDevicesStore = observable({
 
   bleDeviceList: [] as IBleDevice[],
 
-  // todo: 测试数据
-  // bleDeviceList: JSON.parse('[{"proType":"0x13","deviceUuid":"1C:34:F1:5D:BD:A7","mac":"1C34F15DBDA7","signal":"strong","RSSI":-58,"zigbeeMac":"1C34F1FFFE5DBDA7","isConfig":"00","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/midea.hlight.002.001.png","productId":"midea.hlight.002.001","name":"睿铂灯带","isChecked":false,"client":{"key":"midea@homluxBDA7","isConnected":false,"serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"1C34F15DBDA7","deviceUuid":"1C:34:F1:5D:BD:A7"},"roomId":"dead9933c2c447538ec26f6c55f1cd84","roomName":"主卧","switchList":[],"status":"waiting","requesting":false},{"proType":"0x21","deviceUuid":"04:CD:15:AE:9E:28","mac":"04CD15AE9E28","signal":"normal","RSSI":-74,"zigbeeMac":"04CD15FFFEAE9E28","isConfig":"02","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/1-1.png","productId":"midea.mfswitch.005.003","name":"一路面板","isChecked":false,"client":{"key":"midea@homlux9E28","isConnected":false,"serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"04CD15AE9E28","deviceUuid":"04:CD:15:AE:9E:28"},"roomId":"dead9933c2c447538ec26f6c55f1cd84","roomName":"主卧","switchList":[],"status":"waiting","requesting":false},{"proType":"0x13","deviceUuid":"1C:34:F1:54:02:5D","mac":"1C34F154025D","signal":"weak","RSSI":-81,"zigbeeMac":"1C34F1FFFE54025D","isConfig":"02","icon":"https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/midea.hlight.002.001.png","productId":"midea.hlight.002.001","name":"睿铂灯带2","isChecked":false,"client":{"key":"midea@homlux025D","isConnected":false,"serviceId":"BAE55B96-7D19-458D-970C-50613D801BC9","characteristicId":"","msgId":0,"mac":"1C34F154025D","deviceUuid":"1C:34:F1:54:02:5D"},"roomId":"dead9933c2c447538ec26f6c55f1cd84","roomName":"主卧","switchList":[],"status":"waiting","requesting":false}]') as IBleDevice[],
-
   startBleDiscovery() {
     if (this.discovering) {
       Logger.error('已经正在搜索蓝牙')
@@ -28,7 +25,6 @@ export const bleDevicesStore = observable({
     })
     // 监听扫描到新设备事件, 安卓 6.0 及以上版本，无定位权限或定位开关未打开时，无法进行设备搜索
     wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
-      console.log('onBluetoothDeviceFound', res.devices)
       res.devices = unique(res.devices, 'deviceId') as WechatMiniprogram.BlueToothDevice[] // 去重
 
       const deviceList = res.devices

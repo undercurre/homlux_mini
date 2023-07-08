@@ -5,7 +5,7 @@ import Toast from '@vant/weapp/toast/toast'
 import asyncPool from 'tiny-async-pool'
 import { homeBinding, roomBinding, homeStore } from '../../store/index'
 import { bleDevicesBinding, IBleDevice, bleDevicesStore } from '../store/bleDeviceStore'
-import { getCurrentPageParams, emitter, Logger, throttle } from '../../utils/index'
+import { getCurrentPageParams, emitter, Logger, throttle, bleDeviceMap } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { sendCmdAddSubdevice, bindDevice, batchUpdate } from '../../apis/index'
 import lottie from 'lottie-miniprogram'
@@ -95,7 +95,6 @@ ComponentWithComputed({
       bleDevicesBinding.store.startBleDiscovery()
     },
     detached() {
-      console.log('detached')
       // 退出页面时清除循环执行的代码
 
       // 终止配网指令下发
@@ -302,12 +301,12 @@ ComponentWithComputed({
           return item
         }
 
-        for await (const value of asyncPool(2, list, iteratorFn)) {
+        for await (const value of asyncPool(3, list, iteratorFn)) {
           const index = tempList.findIndex((item) => item === value.mac)
 
           tempList.splice(index, 1)
 
-          Logger.log('蓝牙任务结束：', value.mac, '当前蓝牙指令任务：', JSON.stringify(tempList))
+          Logger.log(`【${value.mac}】蓝牙任务结束，当前蓝牙指令任务：`, tempList)
         }
 
         Logger.log('所有蓝牙指令任务结束')
@@ -357,7 +356,9 @@ ComponentWithComputed({
         }, timeout * 1000)
       } else if (this.data._deviceMap[bleDevice.mac].zigbeeRepeatTimes === 0) {
         Logger.error(`子设备配网失败：${bleDevice.mac}`, res)
-        this.data._errorList.push(`【${bleDevice.mac}】${JSON.stringify(res)}`)
+        this.data._errorList.push(
+          `【${bleDevice.mac}】${JSON.stringify(res)}，蓝牙连接状态：${bleDeviceMap[bleDevice.deviceUuid]}`,
+        )
         bleDevice.status = 'fail'
 
         this.updateBleDeviceListView()
