@@ -376,7 +376,7 @@ ComponentWithComputed({
           const [deviceId, switchId] = this.data.editSelectList[0].split(':')
           const device = deviceStore.allRoomDeviceFlattenMap[this.data.editSelectList[0]]
           const deviceInfoUpdateVoList = [] as Device.DeviceInfoUpdateVo[]
-          let type = '';
+          let type = ''
           if (this.data.editSwitchName !== device.switchInfoDTOList[0].switchName) {
             device.switchInfoDTOList[0].switchName = this.data.editSwitchName // 用于传参，更新视图
             type = '3'

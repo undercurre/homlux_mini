@@ -869,6 +869,7 @@ ComponentWithComputed({
       }
     },
 
+    // 编辑模式下再点选
     handleCardEditSelect(e: { detail: DeviceCard }) {
       const device = e.detail
       const { uniId } = device
@@ -958,21 +959,16 @@ ComponentWithComputed({
       diffData.checkedList = [...this.data.checkedList]
       diffData.controlPopup = toCheck
 
-      // 弹起popup后，选中卡片滚动到视图中央，以免被遮挡
-      const divideRpxByPx = storage.get<number>('divideRpxByPx')
-        ? (storage.get<number>('divideRpxByPx') as number)
-        : 0.5
-      const windowHeight = storage.get<number>('windowHeight') as number
-      const bottom = windowHeight - 716 * divideRpxByPx
-      const top = bottom - 216 * divideRpxByPx
-
-      diffData.scrollTop = this.data.scrollTop + e.detail.clientRect.top - top + 4
-
       // 更新视图
       this.setData(diffData)
 
       // TODO
       this.updateSelectType()
+
+      // 弹起popup后，选中卡片滚动到视图中央，以免被遮挡
+      this.setData({
+        scrollTop: this.data.scrollTop + e.detail.clientRect.top - this.data.scrollViewHeight / 2,
+      })
     },
 
     // 卡片点击时，按品类调用对应方法
@@ -1137,7 +1133,7 @@ ComponentWithComputed({
       })
     },
     // 长按选择，进入编辑状态
-    handleLongpress(e: { detail: DeviceCard }) {
+    handleLongpress(e: { detail: DeviceCard & { clientRect: WechatMiniprogram.ClientRect } }) {
       // 已是编辑状态，不重复操作
       if (this.data.editSelectMode) {
         return
@@ -1163,6 +1159,11 @@ ComponentWithComputed({
       this.setData(diffData)
       device.editSelect = true
       this.updateQueue(device)
+
+      // 弹起popup后，选中卡片滚动到视图中央，以免被遮挡
+      this.setData({
+        scrollTop: this.data.scrollTop + e.detail.clientRect.top - this.data.scrollViewHeight / 2,
+      })
 
       console.log('handleLongpress', e, diffData)
     },
