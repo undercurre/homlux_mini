@@ -415,6 +415,15 @@ ComponentWithComputed({
             this.handleClose()
             await Promise.all([homeStore.updateRoomCardList(), deviceStore.updateSubDeviceList()])
             this.triggerEvent('updateList', device)
+
+            // 如果修改的是面板名称，则需要同时更新面板其余的按键对应的卡片
+            if (this.data.editDeviceName !== device.deviceName) {
+              deviceStore.deviceFlattenList.forEach((_device) => {
+                if (_device.deviceId === deviceId && _device.switchInfoDTOList[0].switchId !== switchId) {
+                  this.triggerEvent('updateList', _device)
+                }
+              })
+            }
           } else {
             Toast({
               message: '修改失败',
