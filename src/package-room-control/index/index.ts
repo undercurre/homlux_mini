@@ -68,6 +68,8 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    _updating: false, // 列表更新中标志
+    _diffWaitlist: [] as (DeviceCard | IAnyObject)[], // 待更新列表
     navigationBarAndStatusBarHeight:
       (storage.get<number>('statusBarHeight') as number) +
       (storage.get<number>('navigationBarHeight') as number) +
@@ -278,10 +280,11 @@ ComponentWithComputed({
           if (Object.prototype.hasOwnProperty.call(e.result.eventData.event, 'power')) {
             device.mzgdPropertyDTOList[e.result.eventData.ep].OnOff = e.result.eventData.event.power === 'on' ? 1 : 0
           }
-          this.updateDeviceList(device)
+          this.updateQueue(device)
           return
         }
-        // 更新在线状态
+        // 更新设备在线状态
+        // FIXME 不是专用事件，需要云端支持，以减少监听的数量
         else if (
           e.result.eventType === WSEventType.screen_online_status_sub_device ||
           e.result.eventType === WSEventType.screen_online_status_wifi_device
@@ -291,7 +294,7 @@ ComponentWithComputed({
           device.deviceId = deviceId
           device.uniId = ep ? `${deviceId}:${ep}` : deviceId
           device.onLineStatus = status
-          this.updateDeviceList(device)
+          this.updateQueue(device)
         }
         // 节流更新本地数据
         else if (
@@ -348,7 +351,7 @@ ComponentWithComputed({
           sceneStore.updateSceneList(),
           sceneStore.updateAllRoomSceneList(),
         ])
-        this.updateDeviceList()
+        this.updateQueue({})
       } finally {
         wx.stopPullDownRefresh()
       }
@@ -411,14 +414,16 @@ ComponentWithComputed({
     },
     /**
      * @description 初始化或更新设备列表
-     * @param e 设备对象，或包裹设备对象的事件
+     * @param e 设备对象属性
      */
-    async updateDeviceList(e?: DeviceCard & { detail?: DeviceCard }) {
-      console.log('[updateDeviceList Begin]', e?.detail ?? e ?? '')
+    async updateDeviceList(e?: DeviceCard | IAnyObject) {
+      if (!e) {
+        return
+      }
 
       // 单项更新
-      if (e?.deviceId || e?.detail?.deviceId) {
-        const device = e?.deviceId ? e : e.detail
+      if (Object.keys(e).length) {
+        const device = e as DeviceCard
         let originDevice: DeviceCard
 
         for (const groupIndex in this.data.devicePageList) {
@@ -546,7 +551,46 @@ ComponentWithComputed({
         this.setData({
           deviceListInited: true,
         })
+
         console.log('[updateDeviceList]列表更新完成', this.data.devicePageList)
+      }
+
+      // 恢复更新标志
+      this.data._updating = false
+
+      // 如果列表队列不为空刚继续执行
+      if (this.data._diffWaitlist.length) {
+        this.updateQueue()
+      }
+    },
+
+    /**
+     * @description 列表更新预处理方法，对更新动作进行节流、队列处理
+     * @param e 设备属性 | 包裹在事件中的设备属性 | 空对象（表示全量更新）| 不传值则执行下一个
+     * TODO 对无效更新进行过滤
+     */
+    async updateQueue(e?: (DeviceCard & { detail?: DeviceCard }) | IAnyObject) {
+      console.log('[updateQueue Begin]')
+
+      // 有更新，先推进队尾
+      if (e) {
+        // 如果是包裹在事件中的设备属性，则简化结构
+        if (Object.prototype.hasOwnProperty.call(e, 'detail')) {
+          const { detail } = e as { detail: DeviceCard }
+          this.data._diffWaitlist.push(detail)
+        }
+        // e：设备属性 | 空对象
+        else {
+          this.data._diffWaitlist.push(e)
+        }
+      }
+      // 未在更新中，从队首取一个执行
+      if (!this.data._updating) {
+        // console.log('[updateQueue shifting] Queue Len:', this.data._diffWaitlist.length)
+        this.data._updating = true
+
+        const diff = this.data._diffWaitlist.shift()
+        this.updateDeviceList(diff)
       }
     },
 
@@ -808,7 +852,7 @@ ComponentWithComputed({
       })
       device.select = false
       device.editSelect = toCheck
-      this.updateDeviceList(device)
+      this.updateQueue(device)
 
       console.log('handleCardEditSelect', list)
     },
@@ -848,7 +892,7 @@ ComponentWithComputed({
         oldDevice.deviceId = oldCheckedId.split(':')[0]
         oldDevice.uniId = oldCheckedId
         oldDevice.select = false
-        this.updateDeviceList(oldDevice)
+        this.updateQueue(oldDevice)
       }
 
       // 选择逻辑
@@ -873,7 +917,7 @@ ComponentWithComputed({
       // 更新选中样式
       const device = e.detail
       device.select = this.data.checkedList.includes(uniId)
-      this.updateDeviceList(device)
+      this.updateQueue(device)
 
       // 合并数据变化
       diffData.checkedList = [...this.data.checkedList]
@@ -932,7 +976,7 @@ ComponentWithComputed({
 
       // 即时改变视图，提升操作手感
       device.mzgdPropertyDTOList[ep].OnOff = newOnOff
-      this.updateDeviceList(device)
+      this.updateQueue(device)
       this.setData({
         'lightStatus.OnOff': newOnOff,
       })
@@ -948,7 +992,7 @@ ComponentWithComputed({
 
       if (!res.success) {
         device.mzgdPropertyDTOList[ep].OnOff = OldOnOff
-        this.updateDeviceList(device)
+        this.updateQueue(device)
         this.setData({
           'lightStatus.OnOff': OldOnOff,
         })
@@ -1049,7 +1093,7 @@ ComponentWithComputed({
       } as DeviceCard
       device.deviceId = this.data.checkedList[0]
       device.uniId = this.data.checkedList[0]
-      this.updateDeviceList(device)
+      this.updateQueue(device)
 
       // 收起弹窗
       this.setData({
@@ -1083,7 +1127,7 @@ ComponentWithComputed({
       }
       this.setData(diffData)
       device.editSelect = true
-      this.updateDeviceList(device)
+      this.updateQueue(device)
 
       console.log('handleLongpress', e, diffData)
     },
@@ -1106,7 +1150,7 @@ ComponentWithComputed({
       })
     },
     handleRoomMoveSuccess() {
-      this.updateDeviceList()
+      this.updateQueue({})
     },
   },
 })
