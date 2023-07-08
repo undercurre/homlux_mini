@@ -35,6 +35,8 @@ type DeviceCard = Device.DeviceItem & {
   select: boolean
   editSelect: boolean
   linkSceneName: string
+  isRefresh: boolean // 是否整个列表刷新
+  timestamp: number // 加入队列时打上的时间戳
 }
 
 /**
@@ -69,7 +71,7 @@ ComponentWithComputed({
    */
   data: {
     _updating: false, // 列表更新中标志
-    _diffWaitlist: [] as (DeviceCard | IAnyObject)[], // 待更新列表
+    _diffWaitlist: [] as DeviceCard[], // 待更新列表
     navigationBarAndStatusBarHeight:
       (storage.get<number>('statusBarHeight') as number) +
       (storage.get<number>('navigationBarHeight') as number) +
@@ -351,7 +353,7 @@ ComponentWithComputed({
           sceneStore.updateSceneList(),
           sceneStore.updateAllRoomSceneList(),
         ])
-        this.updateQueue({})
+        this.updateQueue({ isRefresh: true })
       } finally {
         wx.stopPullDownRefresh()
       }
@@ -416,13 +418,13 @@ ComponentWithComputed({
      * @description 初始化或更新设备列表
      * @param e 设备对象属性
      */
-    async updateDeviceList(e?: DeviceCard | IAnyObject) {
+    async updateDeviceList(e?: DeviceCard) {
       if (!e) {
         return
       }
 
       // 单项更新
-      if (Object.keys(e).length) {
+      if (!e.isRefresh) {
         const device = e as DeviceCard
         let originDevice: DeviceCard
 
@@ -502,7 +504,9 @@ ComponentWithComputed({
             break // 找到就中断
           }
         }
-      } else {
+      }
+      // 整个列表更新
+      else {
         const flattenList = deviceStore.deviceFlattenList
 
         // 如果为空则不初始化
@@ -555,9 +559,12 @@ ComponentWithComputed({
         console.log('[updateDeviceList]列表更新完成', this.data.devicePageList)
       }
 
+      // 模拟堵塞任务执行
+      // await delay(2000)
+      console.log('[updateDeviceList] Ended', this.data._diffWaitlist.length)
+
       // 恢复更新标志
       this.data._updating = false
-
       // 如果列表队列不为空刚继续执行
       if (this.data._diffWaitlist.length) {
         this.updateQueue()
@@ -565,31 +572,59 @@ ComponentWithComputed({
     },
 
     /**
-     * @description 列表更新预处理方法，对更新动作进行节流、队列处理
+     * @description 引入任务队列处理列表更新，对更新动作进行节流、队列处理
      * @param e 设备属性 | 包裹在事件中的设备属性 | 空对象（表示全量更新）| 不传值则执行下一个
-     * TODO 对无效更新进行过滤
      */
-    async updateQueue(e?: (DeviceCard & { detail?: DeviceCard }) | IAnyObject) {
+    async updateQueue(e?: (DeviceCard & { detail?: DeviceCard }) | Optional<DeviceCard>) {
       console.log('[updateQueue Begin]')
 
-      // 有更新，先推进队尾
       if (e) {
+        const timestamp = new Date().getTime()
+        let device: DeviceCard
+
         // 如果是包裹在事件中的设备属性，则简化结构
         if (Object.prototype.hasOwnProperty.call(e, 'detail')) {
           const { detail } = e as { detail: DeviceCard }
-          this.data._diffWaitlist.push(detail)
+          device = detail
         }
         // e：设备属性 | 空对象
         else {
-          this.data._diffWaitlist.push(e)
+          device = e as DeviceCard
+        }
+
+        // 未初始化完毕不接受单独更新，所有初始化完成前的更新将被丢弃
+        if (!this.data.deviceListInited && !device.isRefresh) {
+          console.log('[No deviceListInited, updateQueue Quit]')
+          return
+        }
+
+        // 短时内deviceId重复的更新，进行合并
+        const THRESHOLD_TIME = 2000
+        let replace_flag = false
+        for (const index in this.data._diffWaitlist) {
+          const _device = this.data._diffWaitlist[index]
+          const timediff = timestamp - _device.timestamp
+          if (device.deviceId === _device.deviceId && timediff < THRESHOLD_TIME) {
+            this.data._diffWaitlist[index] = {
+              ..._device,
+              ...device,
+            }
+            replace_flag = true
+            console.log('Similar update found.', device.deviceId, timediff)
+            break
+          }
+        }
+        // 一直未有覆盖操作，直接放到队尾
+        if (!replace_flag) {
+          this.data._diffWaitlist.push({ ...device, timestamp })
         }
       }
+
       // 未在更新中，从队首取一个执行
       if (!this.data._updating) {
-        // console.log('[updateQueue shifting] Queue Len:', this.data._diffWaitlist.length)
-        this.data._updating = true
-
         const diff = this.data._diffWaitlist.shift()
+        console.log('[updateQueue Shifting] Queue Len:', this.data._diffWaitlist.length)
+        this.data._updating = true
         this.updateDeviceList(diff)
       }
     },
@@ -834,6 +869,7 @@ ComponentWithComputed({
       }
     },
 
+    // 编辑模式下再点选
     handleCardEditSelect(e: { detail: DeviceCard }) {
       const device = e.detail
       const { uniId } = device
@@ -923,21 +959,16 @@ ComponentWithComputed({
       diffData.checkedList = [...this.data.checkedList]
       diffData.controlPopup = toCheck
 
-      // 弹起popup后，选中卡片滚动到视图中央，以免被遮挡
-      const divideRpxByPx = storage.get<number>('divideRpxByPx')
-        ? (storage.get<number>('divideRpxByPx') as number)
-        : 0.5
-      const windowHeight = storage.get<number>('windowHeight') as number
-      const bottom = windowHeight - 716 * divideRpxByPx
-      const top = bottom - 216 * divideRpxByPx
-
-      diffData.scrollTop = this.data.scrollTop + e.detail.clientRect.top - top + 4
-
       // 更新视图
       this.setData(diffData)
 
       // TODO
       this.updateSelectType()
+
+      // 弹起popup后，选中卡片滚动到视图中央，以免被遮挡
+      this.setData({
+        scrollTop: this.data.scrollTop + e.detail.clientRect.top - this.data.scrollViewHeight / 2,
+      })
     },
 
     // 卡片点击时，按品类调用对应方法
@@ -1102,7 +1133,7 @@ ComponentWithComputed({
       })
     },
     // 长按选择，进入编辑状态
-    handleLongpress(e: { detail: DeviceCard }) {
+    handleLongpress(e: { detail: DeviceCard & { clientRect: WechatMiniprogram.ClientRect } }) {
       // 已是编辑状态，不重复操作
       if (this.data.editSelectMode) {
         return
@@ -1129,6 +1160,11 @@ ComponentWithComputed({
       device.editSelect = true
       this.updateQueue(device)
 
+      // 弹起popup后，选中卡片滚动到视图中央，以免被遮挡
+      this.setData({
+        scrollTop: this.data.scrollTop + e.detail.clientRect.top - this.data.scrollViewHeight / 2,
+      })
+
       console.log('handleLongpress', e, diffData)
     },
 
@@ -1150,7 +1186,7 @@ ComponentWithComputed({
       })
     },
     handleRoomMoveSuccess() {
-      this.updateQueue({})
+      this.updateQueue({ isRefresh: true })
     },
   },
 })
