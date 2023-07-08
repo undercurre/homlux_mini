@@ -2,7 +2,6 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { runInAction } from 'mobx-miniprogram'
 import Toast from '@vant/weapp/toast/toast'
-import asyncPool from 'tiny-async-pool'
 import { homeBinding, roomBinding, homeStore } from '../../store/index'
 import { bleDevicesBinding, IBleDevice, bleDevicesStore } from '../store/bleDeviceStore'
 import { getCurrentPageParams, emitter, Logger, throttle, bleDeviceMap } from '../../utils/index'
@@ -10,6 +9,7 @@ import pageBehaviors from '../../behaviors/pageBehaviors'
 import { sendCmdAddSubdevice, bindDevice, batchUpdate } from '../../apis/index'
 import lottie from 'lottie-miniprogram'
 import { addDevice } from '../assets/search-subdevice/lottie/index'
+import PromiseQueue from '../../lib/promise-queue'
 
 type StatusName = 'discover' | 'requesting' | 'success' | 'error'
 
@@ -25,6 +25,8 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    _pQueue: new PromiseQueue({ concurrency: 3 }),
+    _id: Math.floor(Math.random() * 100),
     _errorList: [] as string[],
     _addModeTimeId: 0,
     _deviceMap: {} as {
@@ -60,7 +62,7 @@ ComponentWithComputed({
         error: '附近的子设备',
       }
 
-      return titleMap[data.status]
+      return titleMap[data.status] || ''
     },
     selectedList(data) {
       const list = data.bleDeviceList || []
@@ -96,6 +98,7 @@ ComponentWithComputed({
     },
     detached() {
       // 退出页面时清除循环执行的代码
+      this.data._pQueue.clear()
 
       // 终止配网指令下发
       this.stopGwAddMode()
@@ -108,7 +111,13 @@ ComponentWithComputed({
     },
   },
 
+  pageLifetimes: {},
+
   methods: {
+    onUnload: function () {
+      // 页面销毁时执行
+      Logger.log('批量配网页面-onUnload')
+    },
     startAnimation() {
       // 加载动画
       this.createSelectorQuery()
@@ -250,12 +259,36 @@ ComponentWithComputed({
           return
         }
 
+        type PromiseThunk = () => Promise<any>
+        const taskList = [] as PromiseThunk[]
+        const tempList: string[] = []
         list.forEach((item) => {
           this.data._deviceMap[item.mac] = {
             bindTimeoutId: 0,
             requestTimes: 20,
             zigbeeRepeatTimes: 2,
           }
+
+          taskList.push(async () => {
+            tempList.push(item.mac)
+            Logger.log(this.data._id, '开始蓝牙任务：', item.mac, '当前蓝牙指令任务：', tempList)
+
+            wx.reportEvent('add_device', {
+              pro_type: item.proType,
+              model_id: item.productId,
+              add_type: 'discover',
+            })
+
+            await this.startZigbeeNet(item)
+
+            await item.client.close()
+
+            const index = tempList.findIndex((tempItem) => tempItem === item.mac)
+
+            tempList.splice(index, 1)
+
+            Logger.log(`【${item.mac}】蓝牙任务结束，当前蓝牙指令任务：`, tempList)
+          })
         })
 
         // 监听云端推送，判断哪些子设备绑定成功
@@ -282,34 +315,33 @@ ComponentWithComputed({
           this.startAnimation()
         }, 300)
 
-        const tempList: string[] = []
+        this.data._pQueue = new PromiseQueue({ concurrency: 3 })
+        this.data._pQueue.add(taskList)
 
-        const iteratorFn = async (item: IBleDevice) => {
-          tempList.push(item.mac)
-          Logger.log('开始蓝牙任务：', item.mac, '当前蓝牙指令任务：', JSON.stringify(tempList))
+        // const iteratorFn = async (item: IBleDevice) => {
+        //   tempList.push(item.mac)
+        //   Logger.log(this.data._id, '开始蓝牙任务：', item.mac, '当前蓝牙指令任务：', JSON.stringify(tempList))
 
-          wx.reportEvent('add_device', {
-            pro_type: item.proType,
-            model_id: item.productId,
-            add_type: 'discover',
-          })
+        //   wx.reportEvent('add_device', {
+        //     pro_type: item.proType,
+        //     model_id: item.productId,
+        //     add_type: 'discover',
+        //   })
 
-          await this.startZigbeeNet(item)
+        //   await this.startZigbeeNet(item)
 
-          await item.client.close()
+        //   await item.client.close()
 
-          return item
-        }
+        //   return item
+        // }
 
-        for await (const value of asyncPool(3, list, iteratorFn)) {
-          const index = tempList.findIndex((item) => item === value.mac)
+        // for await (const value of asyncPool(3, list, iteratorFn)) {
+        //   const index = tempList.findIndex((item) => item === value.mac)
 
-          tempList.splice(index, 1)
+        //   tempList.splice(index, 1)
 
-          Logger.log(`【${value.mac}】蓝牙任务结束，当前蓝牙指令任务：`, tempList)
-        }
-
-        Logger.log('所有蓝牙指令任务结束')
+        //   Logger.log(`【${value.mac}】蓝牙任务结束，当前蓝牙指令任务：`, tempList)
+        // }
       } catch (err) {
         Logger.log('beginAddDevice-err', err)
       }

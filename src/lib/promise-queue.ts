@@ -1,107 +1,110 @@
 interface IPromiseQueueOpts {
-  concurrency: number;
+  concurrency: number
 }
 
-type PromiseThunk = () => Promise<any>;
+type PromiseThunk = () => Promise<any>
 
 export default class PromiseQueue {
-  private _queue: Array<() => any>;
-  private _pause: boolean;
-  private _ongoingCount: number;
-  private readonly _concurrency: number;
+  private _queue: Array<() => any>
+  private _pause: boolean
+  private _ongoingCount: number
+  private readonly _concurrency: number
 
   constructor(opts: IPromiseQueueOpts) {
-    this._queue = [];
-    this._pause = false;
-    opts = Object.assign({
-      concurrency: 1,
-    }, opts);
+    this._queue = []
+    this._pause = false
+    opts = Object.assign(
+      {
+        concurrency: 1,
+      },
+      opts,
+    )
 
     if (opts.concurrency < 1) {
-      throw new TypeError("Expected `concurrency` to be an integer which is bigger than 0");
+      throw new TypeError('Expected `concurrency` to be an integer which is bigger than 0')
     }
 
-    this._ongoingCount = 0;
-    this._concurrency = opts.concurrency;
+    this._ongoingCount = 0
+    this._concurrency = opts.concurrency
   }
 
   public pause() {
-    this._pause = true;
+    this._pause = true
   }
 
   public resume() {
-    this._pause = false;
-    this._next();
+    this._pause = false
+    this._next()
   }
 
   public clear() {
-    this._queue = [];
+    this._queue = []
   }
 
   public add(fn: PromiseThunk | PromiseThunk[]): PromiseQueue | TypeError {
     if (Array.isArray(fn)) {
       if (fn.length > 1) {
-        const res = this.add(fn.shift()!);
+        const res = this.add(fn.shift()!)
         if (!(res instanceof TypeError)) {
-          return this.add(fn);
+          return this.add(fn)
         }
       }
-      return this.add(fn[0]);
+      return this.add(fn[0])
     } else {
       // tslint:disable-next-line
       new Promise((resolve, reject) => {
         const run = () => {
-          this._ongoingCount++;
-          (fn as () => Promise<any>)().then(
+          this._ongoingCount++
+          ;(fn as () => Promise<any>)().then(
             (val: any) => {
-              resolve(val);
-              this._ongoingCount--;
-              this._next();
+              resolve(val)
+              this._ongoingCount--
+              this._next()
             },
             (err: Error) => {
-              reject(err);
-              this._ongoingCount--;
-              this._next();
+              reject(err)
+              this._ongoingCount--
+              this._next()
             },
-          );
-        };
+          )
+        }
 
         if (this._ongoingCount < this._concurrency && !this._pause) {
-          run();
+          run()
         } else {
-          this._queue.push(run);
+          this._queue.push(run)
         }
-      });
-      return this;
+      })
+      return this
     }
   }
 
   // Promises which are not ready yet to run in the queue.
   get waitingCount() {
-    return this._queue.length;
+    return this._queue.length
   }
 
   // Promises which are running but not done.
   get ongoingCount() {
-    return this._ongoingCount;
+    return this._ongoingCount
   }
 
   private _resolveEmpty: () => void = () => {
     console.log('队列执行完毕')
-  };
+  }
 
   private _next() {
     if (this._ongoingCount >= this._concurrency || this._pause) {
-      return;
+      return
     }
 
     if (this._queue.length > 0) {
-      const firstQueueTask = this._queue.shift();
+      const firstQueueTask = this._queue.shift()
       if (firstQueueTask) {
-        firstQueueTask();
+        firstQueueTask()
       }
     } else {
-      this._resolveEmpty();
+      this._resolveEmpty()
     }
   }
 }
