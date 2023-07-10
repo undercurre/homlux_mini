@@ -300,7 +300,7 @@ ComponentWithComputed({
     async beginAddSensor(list: Device.ISubDevice[]) {
       try {
         // 将整个列表发到云端标记为绑定
-        for (let device of list) {
+        for (const device of list) {
           const res = await bindDevice({
             deviceId: device.deviceId,
             houseId: homeBinding.store.currentHomeId,
