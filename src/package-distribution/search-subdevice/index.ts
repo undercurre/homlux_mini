@@ -146,6 +146,7 @@ ComponentWithComputed({
     toggleDevice(e: WechatMiniprogram.CustomEvent) {
       const index = e.currentTarget.dataset.index as number
       const item = bleDevicesBinding.store.bleDeviceList[index]
+      this.stopFlash()
 
       item.isChecked = !item.isChecked
 
