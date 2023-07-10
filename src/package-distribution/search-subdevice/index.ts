@@ -159,6 +159,7 @@ ComponentWithComputed({
           proType: PRO_TYPE.sensor,
           isChecked: false,
           status: 'waiting' as const,
+          deviceUuid: device.deviceId
         }))
 
       runInAction(() => {
