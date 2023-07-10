@@ -205,7 +205,7 @@ ComponentWithComputed({
               zIndex: 9999,
             })
             await Promise.all([deviceStore.updateSubDeviceList(), homeStore.updateRoomCardList()])
-            this.triggerEvent('updateList')
+            this.triggerEvent('updateList', { isRefresh: true })
             this.handleClose()
           } else {
             Toast({
