@@ -517,7 +517,10 @@ ComponentWithComputed({
         const device = deviceStore.deviceMap[deviceId]
         if (device.deviceType === 2) {
           for (const eq in device.mzgdPropertyDTOList) {
-            this.data.moveWaitlist.push(`${device.deviceId}:${eq}`)
+            const uId = `${device.deviceId}:${eq}`
+            if (!this.data.moveWaitlist.includes(uId)) {
+              this.data.moveWaitlist.push(uId)
+            }
           }
         } else {
           this.data.moveWaitlist.push(`${device.deviceId}:1`)
