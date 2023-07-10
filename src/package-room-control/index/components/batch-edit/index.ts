@@ -376,26 +376,30 @@ ComponentWithComputed({
           const [deviceId, switchId] = this.data.editSelectList[0].split(':')
           const device = deviceStore.allRoomDeviceFlattenMap[this.data.editSelectList[0]]
           const deviceInfoUpdateVoList = [] as Device.DeviceInfoUpdateVo[]
+          let type = ''
           if (this.data.editSwitchName !== device.switchInfoDTOList[0].switchName) {
+            device.switchInfoDTOList[0].switchName = this.data.editSwitchName // 用于传参，更新视图
+            type = '3'
             deviceInfoUpdateVoList.push({
               deviceId,
               switchId,
               houseId: homeStore.currentHomeId,
               switchName: this.data.editSwitchName,
-              type: '3',
+              type,
             })
-            device.switchInfoDTOList[0].switchName = this.data.editSwitchName // 用于传参，更新视图
           }
           if (this.data.editDeviceName !== device.deviceName) {
+            device.deviceName = this.data.editDeviceName // 用于传参，更新视图
+            type = '0'
             deviceInfoUpdateVoList.push({
               deviceId,
               deviceName: this.data.editDeviceName,
               houseId: homeStore.currentHomeId,
-              type: '0',
+              type,
               deviceType: device.deviceType,
             })
-            device.deviceName = this.data.editDeviceName // 用于传参，更新视图
           }
+          // 名称一样未被修改，假提示？
           if (!deviceInfoUpdateVoList.length) {
             Toast({
               message: '修改成功',
@@ -415,6 +419,15 @@ ComponentWithComputed({
             this.handleClose()
             await Promise.all([homeStore.updateRoomCardList(), deviceStore.updateSubDeviceList()])
             this.triggerEvent('updateList', device)
+
+            // 如果修改的是面板名称，则需要同时更新面板其余的按键对应的卡片
+            if (type === '0') {
+              deviceStore.deviceFlattenList.forEach((_device) => {
+                if (_device.deviceId === deviceId && _device.switchInfoDTOList[0].switchId !== switchId) {
+                  this.triggerEvent('updateList', _device)
+                }
+              })
+            }
           } else {
             Toast({
               message: '修改失败',
