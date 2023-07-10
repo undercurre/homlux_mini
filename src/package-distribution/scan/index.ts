@@ -434,13 +434,24 @@ ComponentWithComputed({
 
         showLoading()
         // mode 配网方式 （00代表AP配网，01代表蓝牙配网， 02代表AP+有线）
+        // 带蓝牙子设备
         if (pageParams.mode === '01') {
-          // 子设备
           await this.bindSubDevice(pageParams)
-        } else if (pageParams.mode === '02') {
-          // 网关绑定逻辑
+        }
+        // 网关绑定逻辑
+        else if (pageParams.mode === '02') {
           await this.bindGateway(pageParams)
-        } else if (pageParams.mode === '10') {
+        }
+        // 传感器，需手动进入配网
+        else if (pageParams.mode === '03') {
+          wx.redirectTo({
+            url: strUtil.getUrlWithParams('/package-distribution/connect-guide/index', {
+              sn8: pageParams.sn,
+            }),
+          })
+        }
+        // 智慧屏扫码绑定
+        else if (pageParams.mode === '10') {
           wx.redirectTo({
             url: strUtil.getUrlWithParams('/package-auth/auth-screen/index', {
               code: pageParams.code,
