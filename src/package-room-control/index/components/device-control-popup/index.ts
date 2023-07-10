@@ -212,6 +212,11 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
+    sliderTap() {
+      if (!this.data.lightStatus.OnOff) {
+        Toast('请先开灯')
+      }
+    },
     popupMove() {
       const { checkedList } = this.data
       this.setData({
