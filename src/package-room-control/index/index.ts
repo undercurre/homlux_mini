@@ -541,7 +541,7 @@ ComponentWithComputed({
             devicePageList: [], // 清空
             deviceListInited: false,
           })
-          console.log('[updateDeviceList]列表刷新')
+          console.log('[updateDeviceList]列表重加载')
         }
 
         // 拆分为二维数组，以便分页渲染
@@ -561,7 +561,7 @@ ComponentWithComputed({
 
       // 模拟堵塞任务执行
       // await delay(2000)
-      console.log('[updateDeviceList] Ended', this.data._diffWaitlist.length)
+      // console.log('[updateDeviceList] Ended', this.data._diffWaitlist.length)
 
       // 恢复更新标志
       this.data._updating = false
@@ -576,8 +576,6 @@ ComponentWithComputed({
      * @param e 设备属性 | 包裹在事件中的设备属性 | 空对象（表示全量更新）| 不传值则执行下一个
      */
     async updateQueue(e?: (DeviceCard & { detail?: DeviceCard }) | Optional<DeviceCard>) {
-      console.log('[updateQueue Begin]')
-
       if (e) {
         const timestamp = new Date().getTime()
         let device: DeviceCard
@@ -617,13 +615,14 @@ ComponentWithComputed({
         // 一直未有覆盖操作，直接放到队尾
         if (!replace_flag) {
           this.data._diffWaitlist.push({ ...device, timestamp })
+          console.log('[updateQueue Pushed] Queue Len:', this.data._diffWaitlist.length)
         }
       }
 
       // 未在更新中，从队首取一个执行
       if (!this.data._updating) {
         const diff = this.data._diffWaitlist.shift()
-        console.log('[updateQueue Shifting] Queue Len:', this.data._diffWaitlist.length)
+        console.log('[updateQueue  Shift] Queue Len:', this.data._diffWaitlist.length)
         this.data._updating = true
         this.updateDeviceList(diff)
       }
