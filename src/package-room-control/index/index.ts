@@ -137,7 +137,8 @@ ComponentWithComputed({
           (data.allRoomDeviceList as DeviceCard[]).filter(
             (device) =>
               device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
-              device.proType !== PRO_TYPE.gateway,
+              device.proType !== PRO_TYPE.gateway &&
+              device.proType !== PRO_TYPE.sensor,
           ).length > 0
         )
       }
@@ -1176,7 +1177,7 @@ ComponentWithComputed({
     },
 
     handleAddDevice() {
-      wx.navigateTo({ url: '/package-distribution/scan/index' })
+      wx.navigateTo({ url: '/package-distribution/choose-device/index' })
     },
     handleRebindGateway() {
       const gateway = deviceStore.allRoomDeviceMap[this.data.officeDeviceInfo.gatewayId]

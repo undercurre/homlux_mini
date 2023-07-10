@@ -85,7 +85,7 @@
 
         <!-- 有列表时的添加按钮 -->
         <view class="flex-col-center py-20rpx" wx:if="{{roomHasSubDevice}}">
-          <van-button wx-if="{{canAddDevice}}" type="default" color="rgba(255,255,255,0.60)" size="small" custom-class="round-btn-border" round bind:tap="goTo" data-url="/package-distribution/scan/index">
+          <van-button wx-if="{{canAddDevice}}" type="default" color="rgba(255,255,255,0.60)" size="small" custom-class="round-btn-border" round bind:tap="goTo" data-url="/package-distribution/choose-device/index">
             <text class="text-26rpx text-hex-555659">添加设备</text>
           </van-button>
         </view>
