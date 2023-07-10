@@ -13,7 +13,7 @@ ComponentWithComputed({
     src: {
       dev: 'https://api-prod.smartmidea.net/v2/open/oauth2/authorize?client_id=a1b362741f4a510d44c086b85ab5a872&state=1&response_type=code&redirect_uri=https://test.meizgd.com/meiju/index.html',
       sit: 'https://api-prod.smartmidea.net/v2/open/oauth2/authorize?client_id=12a2a9508d6e642f4f6af330f5c9bbff&state=1&response_type=code&redirect_uri=https://sit.meizgd.com/meiju/index.html',
-      prod: '',
+      prod: 'https://api-prod.smartmidea.net/v2/open/oauth2/authorize?client_id=e7dcf22e23bcc7d574aa7d9b1d45736b&state=1&response_type=code&redirect_uri=https://mzaio.meizgd.com/meiju/index.html',
     },
   },
   computed: {
