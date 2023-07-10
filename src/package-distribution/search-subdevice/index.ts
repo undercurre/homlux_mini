@@ -626,8 +626,8 @@ ComponentWithComputed({
       homeBinding.store.updateCurrentHomeDetail()
       wx.closeBluetoothAdapter()
 
-      wx.navigateBack({
-        delta: 2,
+      wx.switchTab({
+        url: '/pages/index/index',
       })
     },
 
