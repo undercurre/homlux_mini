@@ -92,13 +92,15 @@ ComponentWithComputed({
         item.status = 'waiting'
       })
 
+      this.data._pQueue = new PromiseQueue({ concurrency: 3 })
+
       bleDevicesStore.updateBleDeviceList()
 
       bleDevicesBinding.store.startBleDiscovery()
     },
     detached() {
       // 退出页面时清除循环执行的代码
-      this.data._pQueue.clear()
+      this.data._pQueue?.clear()
 
       // 终止配网指令下发
       this.stopGwAddMode()
@@ -316,7 +318,6 @@ ComponentWithComputed({
           this.startAnimation()
         }, 300)
 
-        this.data._pQueue = new PromiseQueue({ concurrency: 3 })
         this.data._pQueue.add(taskList)
 
         // const iteratorFn = async (item: IBleDevice) => {
