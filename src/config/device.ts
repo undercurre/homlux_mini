@@ -34,3 +34,30 @@ export const SENSOR_TYPE = {
   doorsensor: 'midea.magnet.001.201',
   freepad: 'midea.freepad.001.201',
 } as const
+
+export const sensorList: Record<string, string>[] = [
+  {
+    icon: '/package-distribution/assets/guide/sensor-body.png',
+    img: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/sensor_body.gif',
+    name: '人体传感器',
+    desc: '① 确认传感器电池已安装好\n② 长按球体顶部「配网按键」3秒，至指示灯开始闪烁（1秒/次）',
+    path: 'sensor_door.gif',
+    sn8: '7961012A',
+  },
+  {
+    icon: '/package-distribution/assets/guide/sensor-door.png',
+    img: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/sensor_door.gif',
+    name: '门磁传感器',
+    desc: '① 确认传感器电池已安装好\n② 长按顶部「配网按键」3秒，至指示灯开始闪烁（1秒/次）',
+    path: '',
+    sn8: '79610128',
+  },
+  {
+    icon: '/package-distribution/assets/guide/sensor-switch.png',
+    img: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/sensor_switch.gif',
+    name: '无线开关',
+    desc: '① 确认传感器电池已安装好\n② 长按「开关键」10秒，至指示灯开始闪烁（1秒/次）',
+    path: '',
+    sn8: '7937772A',
+  },
+]

@@ -33,11 +33,7 @@
     </view>
 
     <view class="flex flex-row gap-46rpx pt-30rpx px-32rpx">
-      <van-button class="grow" size="large" bind:click="quitHome" plain wx:if="{{currentHomeDetail.houseUserAuth !== 1}}">退出家庭</van-button>
-
-      <van-button class="grow" size="large" bind:click="toTransferHome" plain wx:if="{{currentHomeDetail.houseUserAuth === 1}}">转让家庭</van-button>
-
-      <van-button class="grow" size="large" type="primary" bind:click="createHome">新建家庭</van-button>
+      <van-button class="w-full" size="large" type="primary" bind:click="createHome">新建家庭</van-button>
     </view>
   </view>
 </view>

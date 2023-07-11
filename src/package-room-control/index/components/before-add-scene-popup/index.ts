@@ -97,8 +97,12 @@ ComponentWithComputed({
       const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
       const device = allRoomDeviceMap[deviceAction.uniId]
 
+      let ep = 1
+      if (device.proType === PRO_TYPE.switch) {
+        ep = Number(device.switchInfoDTOList[0].switchId)
+      }
       // 目前仅子设备单控支持闪烁指令
-      deviceAction.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId })
+      deviceAction.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, ep })
 
       this.setData({
         actionEditTitle: deviceAction.name,

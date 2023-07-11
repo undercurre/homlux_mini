@@ -20,6 +20,7 @@
       "root": "package-mine",
       "pages": [
         "home-manage/index",
+        "home-transfer/index",
         "room-manage/index",
         "room-detail/index",
         "member-manage/index",

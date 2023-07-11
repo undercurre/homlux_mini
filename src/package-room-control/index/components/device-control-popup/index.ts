@@ -212,6 +212,11 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
+    sliderTap() {
+      if (!this.data.lightStatus.OnOff) {
+        Toast('请先开灯')
+      }
+    },
     popupMove() {
       const { checkedList } = this.data
       this.setData({
@@ -777,7 +782,12 @@ ComponentWithComputed({
     }),
 
     findDevice(device: Device.DeviceItem) {
-      findDevice({ gatewayId: device.gatewayId, devId: device.deviceId })
+      let ep = 1
+      if (device.proType === PRO_TYPE.switch) {
+        ep = Number(device.switchInfoDTOList[0].switchId)
+      }
+
+      findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, ep })
     },
     toDetail() {
       const deviceId = this.data.checkedList[0].split(':')[0]

@@ -46,9 +46,19 @@ ComponentWithComputed({
         })
       }
 
+      // 用户家庭权限 1：创建者 2：管理员 3：游客
       if (data.currentHomeDetail?.houseUserAuth === 1) {
+        actions.push(
+          {
+            name: '转让家庭',
+          },
+          {
+            name: '解散家庭',
+          },
+        )
+      } else {
         actions.push({
-          name: '解散家庭',
+          name: '退出家庭',
         })
       }
 
@@ -131,9 +141,24 @@ ComponentWithComputed({
 
       if (name === '重命名') {
         this.editName()
+        return
       }
+
       if (name === '解散家庭') {
         this.delHome()
+        return
+      }
+
+      if (name === '转让家庭') {
+        wx.navigateTo({
+          url: '/package-mine/home-transfer/index',
+        })
+        return
+      }
+
+      if (name === '退出家庭') {
+        this.quitHome()
+        return
       }
     },
 
