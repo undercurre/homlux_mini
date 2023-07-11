@@ -3,7 +3,6 @@
     "van-toast": "@vant/weapp/toast/index",
     "van-dialog": "@vant/weapp/dialog/index",
     "home-select-menu": "../../components/home-select-menu/index",
-    "van-action-sheet": "@vant/weapp/action-sheet/index",
-    "transfer-home-popup": "./components/transfer-home-popup/index"
+    "van-action-sheet": "@vant/weapp/action-sheet/index"
   }
 }
