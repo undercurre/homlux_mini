@@ -22,7 +22,7 @@ export async function querySceneListByHouseId(houseId: string, options?: { loadi
   })
 }
 
-export async function addScene(data: Scene.AddSceneDto, options?: { loading?: boolean }) {
+export async function addScene(data: Scene.AddSceneDto | AutoScene.AddAutoSceneDto, options?: { loading?: boolean }) {
   return await mzaioRequest.post<{ sceneId: string }>({
     log: true,
     loading: options?.loading ?? false,

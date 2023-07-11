@@ -27,3 +27,10 @@ export const proName: Record<string, string> = {
   '0x21': 'switch',
   '0x16': 'gateway',
 } as const
+
+// 传感器类型，通过productId区分
+export const SENSOR_TYPE = {
+  humanSensor: 'midea.ir.201',
+  doorsensor: 'midea.magnet.001.201',
+  freepad: 'midea.freepad.001.201',
+} as const

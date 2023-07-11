@@ -49,6 +49,9 @@ ComponentWithComputed({
     handleClose() {
       this.triggerEvent('close')
     },
+    handleCancel() {
+      this.triggerEvent('cancel')
+    },
     handleConfirm() {
       this.triggerEvent('confirm', { time: this.data.time, periodType: this.data.periodType, week: this.data.week })
     },

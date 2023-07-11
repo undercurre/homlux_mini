@@ -10,6 +10,7 @@
     "edit-effectiveTime-popup": "./components/edit-effectiveTime-popup/index",
     "curtain-control-popup": "/components/curtain-control-popup/index",
     "light-control-popup": "/components/light-control-popup/index",
-    "switch-control-popup": "/components/switch-control-popup/index"
+    "switch-control-popup": "/components/switch-control-popup/index",
+    "edit-sensor-popup": "./components/edit-sensor-popup/index"
   }
 }

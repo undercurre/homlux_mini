@@ -52,7 +52,7 @@
     },
     {
       "root": "package-automation",
-      "pages": ["automation-log/index", "automation-add/index"]
+      "pages": ["automation-log/index", "automation-add/index", "automation-request-list/index"]
     }
   ],
   "preloadRule": {

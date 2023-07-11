@@ -9,17 +9,6 @@ Component({
     show: {
       type: Boolean,
       value: false,
-      observer(value) {
-        if (value) {
-          this.setData({
-            icon: this.data.value,
-          })
-        }
-      },
-    },
-    value: {
-      type: String,
-      value: '',
     },
   },
 
@@ -33,18 +22,21 @@ Component({
         icon: '/assets/img/automation/device.png',
         title: '设备',
         desc: '执行房间内的设备动作',
+        key: 'device',
       },
       {
         id: 1,
         icon: '/assets/img/automation/scene.png',
         title: '场景',
         desc: '执行房间内的场景',
+        key: 'scene',
       },
       {
         id: 3,
         icon: '/assets/img/automation/time.png',
         title: '延时',
         desc: '延迟一段时间',
+        key: 'delay',
       },
     ],
   },
@@ -55,22 +47,11 @@ Component({
   methods: {
     handleClose() {
       this.triggerEvent('close')
-      this.setData({
-        icon: '',
-      })
     },
-    handleSceneIconTap(e: { currentTarget: { dataset: { scene: string } } }) {
-      this.setData({
-        icon: e.currentTarget.dataset.scene,
-      })
-    },
-    // data-scene="{{item[0]}}"
-    onConditionClicked(e: { currentTarget: { dataset: { index: number } } }) {
+
+    onConditionClicked(e: { currentTarget: { dataset: { key: string } } }) {
       console.log('actionClicked', e)
-      this.triggerEvent('actionClicked', e.currentTarget.dataset.index)
-      this.setData({
-        icon: '',
-      })
+      this.triggerEvent('actionClicked', e.currentTarget.dataset.key)
     },
   },
 })

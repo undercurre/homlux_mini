@@ -9,17 +9,6 @@ Component({
     show: {
       type: Boolean,
       value: false,
-      observer(value) {
-        if (value) {
-          this.setData({
-            icon: this.data.value,
-          })
-        }
-      },
-    },
-    value: {
-      type: String,
-      value: '',
     },
   },
 
@@ -33,12 +22,14 @@ Component({
         icon: '/assets/img/automation/time.png',
         title: '到达某个时间时',
         desc: '如“晚上12点时，自动关闭卧室灯光和窗帘”',
+        key: 'time',
       },
       {
         id: 1,
         icon: '/assets/img/automation/sensor.png',
         title: '传感器触发时',
         desc: '如“有人经过时，自动打开过道灯光”',
+        key: 'sensor',
       },
     ],
   },
@@ -49,22 +40,11 @@ Component({
   methods: {
     handleClose() {
       this.triggerEvent('close')
-      this.setData({
-        icon: '',
-      })
     },
-    handleSceneIconTap(e: { currentTarget: { dataset: { scene: string } } }) {
-      this.setData({
-        icon: e.currentTarget.dataset.scene,
-      })
-    },
-    // data-scene="{{item[0]}}"
-    onConditionClicked(e: { currentTarget: { dataset: { index: number } } }) {
+
+    onConditionClicked(e: { currentTarget: { dataset: { key: string } } }) {
       console.log('conditionClicked', e)
-      this.triggerEvent('conditionClicked', e.currentTarget.dataset.index)
-      this.setData({
-        icon: '',
-      })
+      this.triggerEvent('conditionClicked', e.currentTarget.dataset.key)
     },
   },
 })

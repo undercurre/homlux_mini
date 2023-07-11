@@ -7,17 +7,23 @@ enum weekStr {
   Value6 = '6',
   Value7 = '7',
 }
-import { findDevice, sendDevice } from '../../apis/index'
+// import Dialog from '@vant/weapp/dialog/dialog'
+import Toast from '@vant/weapp/toast/toast'
+import {
+  findDevice,
+  //sendDevice
+} from '../../apis/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 // import { homeBinding, homeStore, otaBinding, otaStore } from '../../store/index'
 // import Toast from '@vant/weapp/toast/toast'
 import { ComponentWithComputed } from 'miniprogram-computed'
 // import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 // import { getEnv } from '../../config/index'
-import { deviceStore, sceneStore } from '../../store/index'
+import { deviceStore, sceneStore, homeStore } from '../../store/index'
 import {
   // maxColorTemp, minColorTemp,
   PRO_TYPE,
+  SENSOR_TYPE,
 } from '../../config/index'
 // import Toast from '@vant/weapp/toast/toast'
 import {
@@ -25,9 +31,8 @@ import {
   // getCurrentPageParams,
   // transferDeviceProperty,
   toPropertyDesc,
-  transferDeviceProperty,
   // toWifiProperty,
-  // storage,
+  storage,
   // strUtil,
 } from '../../utils/index'
 
@@ -65,11 +70,13 @@ ComponentWithComputed({
     // list: [] as (Device.DeviceItem | Scene.SceneItem)[],
     //场景列表
     sceneList: [] as Scene.SceneItem[],
-    //设备列表
+    //设备列表 //除网关智慧屏和传感器
     deviceList: [] as Device.DeviceItem[],
+    //传感器列表
+    sensorList: [] as Device.DeviceItem[],
     /** 已选中设备或场景 TODO */
     linkSelectList: [] as string[],
-    cardType: 'device', //设备卡片：'device'  场景卡片： 'scene'
+    selectCardType: 'device', //设备卡片：'device'  场景卡片： 'scene'  传感器卡片：'sensor'
     showSelectCardPopup: false,
     /** 将当前场景里多路的action拍扁 */
     sceneDeviceActionsFlatten: [] as AutoScene.AutoSceneFlattenAction[],
@@ -83,17 +90,28 @@ ComponentWithComputed({
       timePeriod: '',
       timeType: '',
     },
-    deviceConditions: {},
     _cacheDeviceMap: {} as IAnyObject, // 缓存设备设置预览前的设备状态，用于退出时恢复
-    editIndex: 1,
     /** 是否修改过action */
     _isEditAction: false,
+    editingSensorType: 'midea.ir.201',
+    editingSensorAbility: ['有人移动'],
+    editingUniId: '',
   },
 
   computed: {
     list(data) {
-      return data.cardType === 'device' ? data.deviceList : data.sceneList
+      if (data.selectCardType === 'scene') {
+        return data.sceneList
+      } else if (data.selectCardType === 'sensor') {
+        return data.sensorList
+      } else {
+        return data.deviceList
+      }
     },
+    cardType(data) {
+      return data.selectCardType === 'device' || data.selectCardType === 'sensor' ? 'device' : 'scene'
+    },
+
     isAllday(data) {
       const start = data.effectiveTime.startTime.split(':')
       const startMin = Number(start[0]) * 60 + Number(start[1])
@@ -161,12 +179,23 @@ ComponentWithComputed({
         sceneStore.updateAllRoomSceneList(),
         deviceStore.updateSubDeviceList(), // deviceStore.updateAllRoomDeviceList(),
       ])
+      const sensorList = deviceStore.allRoomDeviceFlattenList.filter((item) => item.proType === PRO_TYPE.sensor)
+      sensorList.forEach((item) => {
+        if (item.productId === SENSOR_TYPE.humanSensor) {
+          item.property = { Occupancy: 1 }
+        } else if (item.productId === SENSOR_TYPE.doorsensor) {
+          item.property = { ZoneStatus: 1 }
+        } else {
+          item.property = { OnOff: 1 }
+        }
+      })
       this.setData({
         sceneList: [...sceneStore.allRoomSceneList],
         deviceList: deviceStore.allRoomDeviceFlattenList.filter(
           (item) =>
             item.proType === PRO_TYPE.light || item.proType === PRO_TYPE.switch || item.proType === PRO_TYPE.curtain,
         ),
+        sensorList,
       })
     },
     ready() {},
@@ -189,12 +218,12 @@ ComponentWithComputed({
         })
     },
 
-    changeAutoSceneName(event: WechatMiniprogram.CustomEvent) {
-      console.log('changeAutoSceneName', event)
+    inputAutoSceneName(e: { detail: string }) {
+      console.log('changeAutoSceneName', e)
 
-      // this.setData({
-      //   sceneIcon: event.detail || '',
-      // })
+      this.setData({
+        sceneName: e.detail || '',
+      })
 
       // this.triggerEvent('change', Object.assign({}, this.data.deviceInfo))
     },
@@ -241,7 +270,7 @@ ComponentWithComputed({
       })
     },
     /* 设置场景生效时间段 end */
-
+    /* 设置场景条件弹窗 start */
     handleConditionShow() {
       this.setData({
         showEditConditionPopup: true,
@@ -252,22 +281,40 @@ ComponentWithComputed({
         showEditConditionPopup: false,
       })
     },
-    onConditionClicked(e: { detail: number }) {
+    onConditionClicked(e: { detail: string }) {
       console.log(e.detail)
-      if (!e.detail) {
+      if (e.detail === 'time') {
         this.setData({
           showTimeConditionPopup: true,
         })
+      } else {
+        this.addSensorPopup()
       }
       this.setData({
         showEditConditionPopup: false,
       })
+    },
+    /* 设置场景条件弹窗 end */
+    /**
+     * 增加传感器做场景条件
+     */
+    addSensorPopup() {
+      this.setData({
+        selectCardType: 'sensor',
+      })
+      this.handleSelectCardShow()
     },
     /* 时间条件 start */
     handleTimeConditionClose() {
       this.setData({
         showTimeConditionPopup: false,
       })
+    },
+    handleTimeConditionReturn() {
+      this.setData({
+        showTimeConditionPopup: false,
+      })
+      this.handleConditionShow()
     },
     handleTimeConditionConfirm(e: { detail: { time: string; periodType: string; week: string } }) {
       const { time, periodType, week } = e.detail
@@ -290,20 +337,20 @@ ComponentWithComputed({
         showEditActionPopup: false,
       })
     },
-    onActionClicked(e: { detail: number }) {
+    onActionClicked(e: { detail: string }) {
       console.log(e.detail)
-      if (e.detail === 2) {
+      if (e.detail === 'delay') {
         this.setData({
           showDelayPopup: true,
         })
-      } else if (e.detail === 1) {
+      } else if (e.detail === 'scene') {
         this.setData({
-          cardType: 'scene',
+          selectCardType: 'scene',
         })
         this.handleSelectCardShow()
       } else {
         this.setData({
-          cardType: 'device',
+          selectCardType: 'device',
         })
         this.handleSelectCardShow()
       }
@@ -376,14 +423,22 @@ ComponentWithComputed({
       this.setData({
         showSelectCardPopup: false,
       })
-      this.handleActionShow()
+      if (this.data.selectCardType === 'sensor') {
+        this.handleConditionShow()
+      } else {
+        this.handleActionShow()
+      }
     },
     async handleSelectCardConfirm() {
       // console.log('handleSelectCardConfirm', e)
       this.setData({
         showSelectCardPopup: false,
       })
-      this.updateSceneDeviceActionsFlatten()
+      if (this.data.selectCardType === 'sensor') {
+        this.updateSceneDeviceConditionsFlatten()
+      } else {
+        this.updateSceneDeviceActionsFlatten()
+      }
     },
     handleActionDelete(e: WechatMiniprogram.TouchEvent) {
       console.log('删除', e)
@@ -428,17 +483,18 @@ ComponentWithComputed({
 
       deviceSelected.forEach((item) => {
         if (item.proType === PRO_TYPE.switch) {
+          console.log('查查黑车', item.property, toPropertyDesc(item.proType, item.property!))
+
           const ep = parseInt(item.uniId.split(':')[1])
-          const OnOff = item.mzgdPropertyDTOList[ep].OnOff
-          const desc = toPropertyDesc(item.proType, item.mzgdPropertyDTOList[ep])
+          const OnOff = item.property!.OnOff
+          const desc = toPropertyDesc(item.proType, item.property!)
           //多路开关
           sceneDeviceActionsFlatten.push({
             uniId: item.uniId,
             name: `${item.switchInfoDTOList[0].switchName} | ${item.deviceName}`,
-            type: 2,
+            type: item.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
             desc,
             pic: item.switchInfoDTOList[0].pic,
-            delay: delaySec,
             proType: PRO_TYPE.switch,
             value: {
               ep,
@@ -446,19 +502,17 @@ ComponentWithComputed({
             },
           })
         } else {
-          const properties = transferDeviceProperty(item.proType, item.mzgdPropertyDTOList['1'])
-          const desc = toPropertyDesc(item.proType, properties)
+          const desc = toPropertyDesc(item.proType, item.property!)
           sceneDeviceActionsFlatten.push({
             uniId: item.uniId,
             name: item.deviceName,
-            type: 2,
+            type: item.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
             desc,
             pic: item.pic as string,
-            delay: delaySec,
             proType: item.proType,
             value: {
               ep: 1,
-              ...properties,
+              ...item.property,
             },
           })
         }
@@ -470,7 +524,7 @@ ComponentWithComputed({
           desc: [item.roomName],
           type: 5,
           pic: `../../assets/img/scene/${item.sceneIcon}.png`,
-          delay: delaySec,
+          value: {},
         })
       })
       if (delaySec) {
@@ -478,8 +532,9 @@ ComponentWithComputed({
           uniId: 'delay',
           name: '延时',
           desc: [this.formatTime(delaySec)],
-          type: 5,
+          type: 6,
           pic: '../../assets/img/automation/time.png',
+          value: { delaySec },
         })
       }
       console.log('handleSelectCardConfirm333', this.data.sceneDeviceActionsFlatten)
@@ -497,8 +552,32 @@ ComponentWithComputed({
           name: this.data.timeCondition.time,
           desc: [this.formatPeriodDesc(this.data.timeCondition.timeType, this.data.timeCondition.timePeriod)],
           pic: '../../assets/img/automation/time.png',
+          productId: 'time',
+          property: {},
+          type: 6,
         })
       }
+
+      //已选中的传感器
+      const sensorSelected = this.data.linkSelectList
+        .map((id) => {
+          return this.data.sensorList.find((item) => item.uniId === id)
+        })
+        .filter((item) => item !== undefined) as Device.DeviceItem[]
+
+      sensorSelected.forEach((item) => {
+        sceneDeviceConditionsFlatten.push({
+          uniId: item.uniId,
+          name: item.deviceName,
+          desc: toPropertyDesc(item.proType, item.property!),
+          pic: item.pic,
+          productId: item.productId,
+          property: item.property!,
+          proType: item.proType,
+          type: item.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
+        })
+      })
+
       this.setData({
         sceneDeviceConditionsFlatten,
       })
@@ -558,6 +637,53 @@ ComponentWithComputed({
         return newWeekArr.join('、')
       }
     },
+    /* 传感器条件编辑 start */
+    handleEditSensorClose() {
+      this.setData({
+        showEditSensorPopup: false,
+      })
+    },
+    handleEditSensorConfirm(e: { detail: IAnyObject }) {
+      const listEditIndex = this.data.sensorList.findIndex((item) => item.uniId === this.data.editingUniId)
+      const flattenEditIndex = this.data.sceneDeviceConditionsFlatten.findIndex(
+        (item) => item.uniId === this.data.editingUniId,
+      )
+      const listItem = this.data.sensorList[listEditIndex]
+
+      const conditionItem = this.data.sceneDeviceConditionsFlatten[flattenEditIndex]
+
+      conditionItem.property = {
+        ...e.detail,
+      }
+      conditionItem.desc = toPropertyDesc(conditionItem.proType!, conditionItem.property)
+      listItem.property = {
+        ...e.detail,
+      }
+      this.setData({
+        _isEditAction: true,
+        showEditSensorPopup: false,
+        sceneDeviceConditionsFlatten: [...this.data.sceneDeviceConditionsFlatten],
+        sensorList: [...this.data.sensorList],
+      })
+    },
+    /* 传感器条件编辑 end */
+
+    handleAutoSceneConditionEdit(e: WechatMiniprogram.TouchEvent) {
+      const { index } = e.currentTarget.dataset
+      const action = this.data.sceneDeviceConditionsFlatten[index]
+
+      if (action.productId === 'time') {
+        console.log('11')
+      } else {
+        this.setData({
+          editingSensorType: action.productId,
+          editingSensorAbility: action.desc,
+          editingUniId: action.uniId,
+          showEditSensorPopup: true,
+        })
+      }
+    },
+
     /**
      * 编辑场景延时/设备动作结果
      * @param e
@@ -592,7 +718,7 @@ ComponentWithComputed({
             deviceId: device.deviceId,
           },
           showEditPopup: device.proType,
-          editIndex: index,
+          editingUniId: action.uniId,
         })
       }
     },
@@ -604,7 +730,12 @@ ComponentWithComputed({
     },
     handleSceneEditConfirm(e: { detail: IAnyObject }) {
       const { _cacheDeviceMap } = this.data
-      const actionItem = this.data.sceneDeviceActionsFlatten[this.data.editIndex]
+      const listEditIndex = this.data.deviceList.findIndex((item) => item.uniId === this.data.editingUniId)
+      const flattenEditIndex = this.data.sceneDeviceActionsFlatten.findIndex(
+        (item) => item.uniId === this.data.editingUniId,
+      )
+      const listItem = this.data.deviceList[listEditIndex]
+      const actionItem = this.data.sceneDeviceActionsFlatten[flattenEditIndex]
       const device = deviceStore.allRoomDeviceFlattenMap[actionItem.uniId]
 
       if (!_cacheDeviceMap[actionItem.uniId]) {
@@ -628,6 +759,10 @@ ComponentWithComputed({
           property: oldProperty,
         }
       }
+      listItem.property = {
+        ...listItem.property,
+        ...e.detail,
+      }
 
       actionItem.value = {
         ...actionItem.value,
@@ -639,8 +774,63 @@ ComponentWithComputed({
       this.setData({
         _isEditAction: true,
         sceneDeviceActionsFlatten: [...this.data.sceneDeviceActionsFlatten],
+        deviceList: [...this.data.deviceList],
       })
     },
-    /* 编辑设备动作弹窗 end */
+
+    async handleConfirm() {
+      if (!this.data.sceneName) {
+        Toast({
+          message: '场景名不能为空',
+          zIndex: 99999,
+        })
+        return
+      }
+      if (this.data.sceneName.length > 15) {
+        Toast({
+          message: '场景名称不能超过15个字符',
+          zIndex: 99999,
+        })
+        return
+      }
+
+      this.setData({
+        isAddingScene: true,
+      })
+
+      const newSceneData = {
+        conditionType: '1',
+        deviceActions: [],
+        deviceConditions: [],
+        timeConditions: [this.data.timeCondition],
+        effectiveTime: {
+          startTime: this.data.effectiveTime.startTime + ':00',
+          endTime: this.data.effectiveTime.endTime + ':59',
+          timeType: this.data.effectiveTime.timeType,
+          timePeriod: this.data.effectiveTime.timePeriod,
+        },
+        houseId: homeStore.currentHomeDetail.houseId,
+        sceneIcon: this.data.sceneIcon,
+        sceneName: this.data.sceneName,
+        sceneCategory: '1',
+        sceneType: '1',
+      } as AutoScene.AddAutoSceneDto
+
+      console.log('newSceneData保存', newSceneData)
+      console.log('sceneDeviceActionsFlatten保存', this.data.sceneDeviceActionsFlatten)
+      console.log('sceneDeviceConditionsFlatten保存', this.data.sceneDeviceConditionsFlatten)
+
+      storage.set('autoscene_data', newSceneData)
+      storage.set('autosceneDeviceActionsFlatten', this.data.sceneDeviceActionsFlatten)
+      storage.set('autosceneDeviceConditionsFlatten', this.data.sceneDeviceConditionsFlatten)
+
+      this.setData({
+        isAddingScene: false,
+      })
+
+      wx.navigateTo({
+        url: '/package-automation/automation-request-list/index',
+      })
+    },
   },
 })
