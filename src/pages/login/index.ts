@@ -1,6 +1,5 @@
 import { login } from '../../apis/index'
 import { homeStore, othersStore, userStore } from '../../store/index'
-import { loadUserInfo } from '../../utils/index'
 import { storage } from '../../utils/storage'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehavior from '../../behaviors/pageBehaviors'
@@ -27,14 +26,14 @@ Component({
       })
     },
 
-    onLoginTap() {
+    handleLoginTap() {
       if (!this.data.isAgree) {
         Toast('请同意协议')
         return
       }
     },
 
-    onLoginClick(e: { detail: { code: string } }) {
+    handleLoginClick(e: { detail: { code: string } }) {
       if (!e.detail.code) {
         Toast('取消登录')
         return
@@ -43,9 +42,27 @@ Component({
         success: (res) => {
           console.log('login', res, e)
           if (res.code) {
-            this.handleLogin({
-              jsCode: res.code,
-              code: e.detail.code,
+            wx.getFuzzyLocation({
+              type: 'wgs84',
+              success: (loc) => {
+                console.log('getFuzzyLocation', loc)
+                this.login({
+                  jsCode: res.code,
+                  code: e.detail.code,
+                  latitude: loc.latitude,
+                  longitude: loc.longitude,
+                })
+              },
+              fail: (msg) => {
+                console.log(msg)
+                // if (msg.errMsg.indexOf('deny') !== -1) {
+                //   Toast('地理位置访问失败，请手动设置\n系统访问地理位置的权限')
+                // }
+                this.login({
+                  jsCode: res.code,
+                  code: e.detail.code,
+                })
+              },
             })
           } else {
             Toast('登录失败！')
@@ -55,19 +72,13 @@ Component({
       })
     },
 
-    async handleLogin(data: { jsCode: string; code: string }) {
+    async login(data: { jsCode: string; code: string; latitude?: number; longitude?: number }) {
       const loginRes = await login(data)
       if (loginRes.success && loginRes.result) {
         console.log('loginRes', loginRes)
-        // 批量缓存返回值
-        ;(['token', 'mobilePhone', 'nickName', 'headImageUrl'] as const).forEach((item) => {
-          const value = (loginRes.result as User.UserLoginRes)[item]
-          if (value) {
-            // storage.set(item, 'f9992117fd284789bb96bd20b4782988', null)
-            storage.set(item, value, null)
-          }
-        })
-        loadUserInfo()
+        storage.set('token', loginRes.result.token, null)
+
+        await userStore.updateUserInfo()
         userStore.setIsLogin(true)
         othersStore.setIsInit(false)
         homeStore.homeInit()

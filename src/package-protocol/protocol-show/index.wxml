@@ -7,10 +7,13 @@
 </view>
 
 <!-- 标题 -->
-<nav-bar title="{{title}}" z-index="{{113}}" left-arrow bind:leftTap="goBack"></nav-bar>
-
+<nav-bar title="{{title}}" z-index="{{113}}" left-arrow show-go-home bind:leftTap="goBack"></nav-bar>
+<view class="h-24rpx"> </view>
 <view class="w-750rpx flex-center">
-  <scroll-view scroll-x scroll-y style="width: calc(100vw - 48rpx); height: calc(100vh - navigationBarAndStatusBarHeight)">
-    <rich-text nodes="{{doc}}"></rich-text>
+  <scroll-view scroll-x scroll-y style="width: 100vw; height: calc(100vh - navigationBarAndStatusBarHeight)">
+    <view style="width: calc(100vw - 48rpx); margin-left: 24rpx">
+      <rich-text v-if="{{type === 'doc'}}" nodes="{{doc}}"></rich-text>
+    </view>
+    <image bindtap="handleImgTap" show-menu-by-longpress v-elif="{{type === 'img'}}" src="{{url}}" style="width: {{width}};height: {{height}};" />
   </scroll-view>
 </view>

@@ -1,4 +1,5 @@
-import { mzaioRequest } from '../utils/index'
+import { delay, mzaioRequest, toWifiProperty } from '../utils/index'
+import { PRO_TYPE } from '../config/index'
 
 /**
  * 设备管理-根据家庭id查询全屋的设备
@@ -22,25 +23,13 @@ export async function allDevicePowerControl(data: { houseId: string; onOff: numb
   return await mzaioRequest.post<IAnyObject>({
     log: false,
     loading: options?.loading ?? false,
-    url: '/v1/mzgd/user/deviceAllPowerOnOrOff',
+    url: '/v1/device/deviceControlByHouseId',
     data: data,
   })
 }
 
 /**
- * 设备管理-根据家庭id房间id查询房间所有设备
- */
-export async function queryDeviceList(data: { houseId: string; roomId: string }, options?: { loading?: boolean }) {
-  return await mzaioRequest.post<Device.DeviceItem[]>({
-    log: true,
-    loading: options?.loading ?? false,
-    url: '/v1/device/queryDeviceInfoByRoomId',
-    data,
-  })
-}
-
-/**
- * 设备控制-根据家庭id房间id查询房间除了网关的子设备
+ * 设备控制-根据家庭id房间id查询房间的子设备
  */
 export async function querySubDeviceList(data: { houseId: string; roomId: string }, options?: { loading?: boolean }) {
   return await mzaioRequest.post<Device.DeviceItem[]>({
@@ -85,27 +74,6 @@ export async function queryDeviceOnlineStatus(
 }
 
 /**
- * 根据产品id查产品信息
- */
-export async function queryProtypeInfo(
-  data: { pid?: string; proType?: string; mid?: string },
-  options?: { loading?: boolean },
-) {
-  return await mzaioRequest.post<{
-    icon: string
-    productId: string
-    productName: string
-    proType: string
-    switchNum: number
-  }>({
-    log: true,
-    loading: options?.loading ?? false,
-    url: '/v1/device/queryProtypeInfo',
-    data,
-  })
-}
-
-/**
  * 配网-绑定
  */
 export async function bindDevice(
@@ -118,12 +86,16 @@ export async function bindDevice(
   },
   options?: { loading?: boolean },
 ) {
-  return await mzaioRequest.post<{ deviceId: string; isBind: boolean; msg: string }>({
+  const res = await mzaioRequest.post<{ deviceId: string; isBind: boolean; msg: string }>({
     log: true,
     loading: options?.loading ?? false,
     url: '/v1/device/bindDevice',
     data,
   })
+
+  await delay(1500) // 延迟1.5s，防止绑定后台逻辑还没执行完毕
+
+  return res
 }
 
 /**
@@ -134,7 +106,8 @@ export async function controlDevice(
     customJson?: IAnyObject
     deviceId: string
     method: string
-    topic: string
+    deviceType?: number
+    topic?: string
     inputData: IAnyObject[]
   },
   option?: { loading?: boolean },
@@ -145,6 +118,86 @@ export async function controlDevice(
     url: '/v1/device/down',
     data: data,
   })
+}
+
+/**
+ * 下发控制设备，使用子设备属性作为标准，目前兼容控制子设备、wifi灯
+ * @param data
+ * @param option
+ */
+export async function sendDevice(
+  data: {
+    proType: string
+    deviceType: number
+    deviceId: string
+    gatewayId?: string
+    ep?: number | string
+    property: IAnyObject
+  },
+  option?: { loading?: boolean },
+) {
+  const property = data.property
+  let params
+  let promise
+
+  switch (data.deviceType) {
+    case 2:
+      params = {
+        topic: '/subdevice/control',
+        deviceId: data.gatewayId as string,
+        deviceType: data.deviceType,
+        method: data.proType === PRO_TYPE.light ? 'lightControl' : 'panelSingleControl',
+        inputData: [
+          {
+            devId: data.deviceId,
+            ep: data.ep,
+            ...property,
+          },
+        ],
+      }
+      promise = controlDevice(params, option)
+      break
+
+    case 3:
+      if (data.proType === PRO_TYPE.light) {
+        const downData = toWifiProperty(data.proType, property)
+
+        params = {
+          deviceId: data.deviceId,
+          deviceType: data.deviceType,
+          method: 'wifiLampControl',
+          inputData: [downData],
+        }
+
+        promise = controlDevice(params, option)
+      } else if (data.proType === PRO_TYPE.curtain) {
+        const downData = toWifiProperty(data.proType, property)
+
+        params = {
+          deviceId: data.deviceId,
+          deviceType: data.deviceType,
+          method: 'wifiCurtainControl',
+          inputData: [downData],
+        }
+
+        promise = controlDevice(params, option)
+      }
+
+      break
+
+    case 4:
+      promise = groupControl(
+        {
+          groupId: data.deviceId,
+          controlAction: [data.property],
+        },
+        option,
+      )
+
+      break
+  }
+
+  return promise || { success: false }
 }
 
 /**
@@ -161,8 +214,33 @@ export async function sendCmdAddSubdevice(
       method: 'subdeviceAdd',
       inputData: [
         {
-          expire: 60,
-          buzz: 1,
+          expire: data.expire,
+          buzz: data.buzz,
+        },
+      ],
+    },
+    options,
+  )
+}
+
+/**
+ * 云端找一找接口
+ * Identify 闪多少秒
+ */
+export async function findDevice(
+  { gatewayId, devId, ep = 1, Identify = 3 }: { gatewayId: string; devId: string; ep?: number; Identify?: number },
+  options?: { loading?: boolean },
+) {
+  return await controlDevice(
+    {
+      topic: '/subdevice/control',
+      deviceId: gatewayId,
+      method: 'deviceFind',
+      inputData: [
+        {
+          devId,
+          ep,
+          Identify,
         },
       ],
     },
@@ -200,6 +278,7 @@ export async function editDeviceInfo(
     type?: string
     switchId?: string
     switchName?: string
+    deviceType?: number
   },
   options?: { loading?: boolean },
 ) {
@@ -247,7 +326,7 @@ export async function deleteDevice(
 }
 
 /**
- * 批量编辑设备(开关)
+ * 批量编辑设备（包括灯组）
  * @param data
  * @param options
  */
@@ -279,87 +358,255 @@ export async function saveDeviceOrder(data: Device.OrderSaveData, options?: { lo
 }
 
 /**
- * deviceIds: 关联设备ID:格式 1 按键开关 deviceId-switchId 2 子设备 deviceId
- * relType: 关联类型: 0:关联灯类型 1:关联开关类型
- */
-export async function createAssociated(
-  data: { deviceIds: string[]; relType: '0' | '1' },
-  options?: { loading?: boolean },
-) {
-  return await mzaioRequest.post<IAnyObject>({
-    log: true,
-    loading: options?.loading ?? false,
-    url: '/v1/device/createAssociated',
-    data,
-  })
-}
-
-export async function updateAssociated(
-  data: {
-    relType: '0' | '1'
-    lightRelId?: string
-    switchRelId?: string
-    deviceIds: string[]
-  },
-  options?: { loading?: boolean },
-) {
-  return await mzaioRequest.post<IAnyObject>({
-    log: true,
-    loading: options?.loading ?? false,
-    url: '/v1/device/updateAssociated',
-    data,
-  })
-}
-
-/**
- * 删除整个关联或者部分设备关联
- * 如果传入deviceIds，删除deviceIds中的关联
- * 如果不传deviceIds，删除整个lightRelId或者switchRelId关联
- */
-export async function delAssociated(
-  data: {
-    relType: '0' | '1'
-    lightRelId?: string
-    switchRelId?: string
-    deviceIds?: string[]
-  },
-  options?: { loading?: boolean },
-) {
-  return await mzaioRequest.post<IAnyObject>({
-    log: true,
-    loading: options?.loading ?? false,
-    url: '/v1/device/delAssociated',
-    data,
-  })
-}
-
-/**
  * 设备替换
  * 需要在前端验证设备是否可替换
  */
-// export async function deviceReplace(
-//   data: {
-//     newDevId: string
-//     oldDevId: string
-//   },
-//   options?: { loading?: boolean },
-// ) {
-//   return await mzaioRequest.post<IAnyObject>({
-//     log: true,
-//     loading: options?.loading ?? false,
-//     url: '/v1/device/deviceReplace',
-//     data,
-//   })
-// }
+export async function deviceReplace(
+  data: {
+    newDevId: string
+    oldDevId: string
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<IAnyObject>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/deviceReplace',
+    data,
+  })
+}
 
 /**
  * 根据sn去查设备的mac、图片、品类
  */
-export async function checkDevice(data: { dsn: string }, options?: { loading?: boolean }) {
+export async function checkDevice(
+  data: { dsn?: string; mac?: string; productId?: string },
+  options?: { loading?: boolean },
+) {
   return await mzaioRequest.post<Device.MzgdProTypeDTO>({
-    log: true,
+    log: false,
     loading: options?.loading ?? false,
     url: '/v1/device/checkDevice',
+    data,
+  })
+}
+
+/**
+ * 根据面板ID和面板开关获取关联的灯
+ */
+export async function getRelLampInfo(
+  data: { primaryDeviceId: string; primarySwitchId: string },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<{ lampRelList: Device.IMzgdLampRelGetDTO[] }>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/getRelLampInfo',
+    data,
+  })
+}
+
+/**
+ * 根据面板ID和面板开关获取主动、被动的面板开关
+ */
+export async function getRelDeviceInfo(
+  data: { primaryDeviceId: string; primarySwitchId: string },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<{
+    primaryRelDeviceInfo: Device.IMzgdRelGetDTO[]
+    secondRelDeviceInfo: Device.IMzgdRelGetDTO[]
+  }>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/getRelDeviceInfo',
+    data,
+  })
+}
+
+/**
+ * 编辑面板和灯关联
+ * @param lampDevices 关联设备ID:格式 deviceId, 灯Id,逗号分隔 )
+ * @param primaryDeviceId
+ * @param primarySwitchId
+ */
+export async function editLampAndSwitchAssociated(
+  data: { lampDevices: string; primaryDeviceId: string; primarySwitchId: string },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/editLampAndSwitchAssociated',
+    data,
+  })
+}
+
+/**
+ * 删除面板和灯关联
+ */
+export async function delLampAndSwitchAssociated(
+  data: { deviceId: string; switchId: string; relIds: string },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/delLampAndSwitchAssociated',
+    data,
+  })
+}
+
+/**
+ * 编辑面板和面板关联
+ * @param secondSwitchs 关联设备ID:格式 deviceId-switch, 逗号分隔
+ */
+export async function editSwitchAndSwitchAssociated(
+  data: { primaryDeviceId: string; primarySwitchId: string; secondSwitchs: string },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/editSwitchAndSwitchAssociated',
+    data,
+  })
+}
+
+/**
+ * 删除面板和面板关联
+ * @param relIds 面板关联Id,逗号分隔 )
+ */
+export async function delSwitchAndSwitchAssociated(data: { relIds: string }, options?: { loading?: boolean }) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/delSwitchAndSwitchAssociated',
+    data,
+  })
+}
+
+/**
+ * 根据家庭id获取面板是否已经关联过灯
+ */
+export async function getLampDeviceByHouseId(data: { houseId: string }, options?: { loading?: boolean }) {
+  return await mzaioRequest.post<Array<Device.IMzgdLampDeviceInfoDTO>>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/getLampDeviceByHouseId',
+    data,
+  })
+}
+
+/**
+ * 增加分组
+ */
+export async function addGroup(
+  data: {
+    applianceGroupDtoList: Device.GroupDTO[]
+    groupName: string
+    houseId: string
+    roomId: string
+    userId?: string
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<{ groupId: string }>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/scene/addGroup',
+    data,
+  })
+}
+
+/**
+ * 更新分组
+ */
+export async function updateGroup(
+  data: {
+    applianceGroupDtoList: Device.GroupDTO[]
+    groupId: string
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/scene/uptGroup',
+    data,
+  })
+}
+
+/**
+ * 查询分组详情
+ */
+export async function queryGroup(
+  data: {
+    groupId: string
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<Device.DeviceItem>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/scene/queryGroupByGroupId',
+    data,
+  })
+}
+
+/**
+ * 解散灯组
+ */
+export async function delGroup(
+  data: {
+    groupId: string
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/scene/delGroup',
+    data,
+  })
+}
+
+/**
+ * 分组重命名
+ */
+export async function renameGroup(
+  data: {
+    groupId: string
+    groupName: string
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/scene/groupRename',
+    data,
+  })
+}
+
+/**
+ * 分组重控制
+ */
+export async function groupControl(
+  data: {
+    groupId: string
+    controlAction: {
+      OnOff?: 0 | 1
+      Level?: number
+      ColorTemp?: number
+    }[]
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/scene/groupControl',
     data,
   })
 }

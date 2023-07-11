@@ -10,6 +10,9 @@ Component({
     deviceInfo: {
       type: Object,
     },
+    canEditDevice: {
+      type: Boolean,
+    },
   },
 
   /**
@@ -29,6 +32,7 @@ Component({
    */
   methods: {
     handlePopupShow(e: { currentTarget: { dataset: { title: '渐亮时长' | '渐暗时长' } } }) {
+      if (!this.data.canEditDevice) return
       if (!this.data.deviceInfo.onLineStatus) {
         return
       }

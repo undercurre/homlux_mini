@@ -1,13 +1,12 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
-import { bleUtil, strUtil, BleClient, getCurrentPageParams } from '../../utils/index'
+import { bleUtil, strUtil, BleClient, getCurrentPageParams, emitter, Logger } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { sendCmdAddSubdevice, bindDevice, queryDeviceOnlineStatus } from '../../apis/index'
+import { sendCmdAddSubdevice, bindDevice } from '../../apis/index'
 import { IBleDevice } from './typings'
 
 type StatusName = 'linking' | 'error'
-let deviceNum = 0
 
 ComponentWithComputed({
   options: {
@@ -37,20 +36,42 @@ ComponentWithComputed({
       pageParams.deviceName = pageParams.deviceName || '子设备'
       pageParams.deviceIcon = pageParams.deviceIcon || ''
 
-      deviceNum = deviceBinding.store.allRoomDeviceList.filter((item) => item.proType === pageParams.proType).length // 数量
-
       this.setData({
         pageParams,
       })
       this.initBle()
-    },
-    detached: function () {
-      wx.closeBluetoothAdapter()
-    },
-  },
 
-  pageLifetimes: {
-    hide() {},
+      // 扫码子设备，60s超时处理，无论是否发现目标子设备
+      this.data._timeId = setTimeout(() => {
+        if (!this.data._hasFound) {
+          console.error(`没有发现子设备${this.data.pageParams.mac}`)
+        }
+
+        this.setData({
+          status: 'error',
+        })
+
+        emitter.off('bind_device')
+        console.error(`绑定失败：子设备${this.data.pageParams.mac}，绑定推送监听超时`)
+      }, 60000)
+
+      emitter.on('bind_device', (data) => {
+        console.log('bind_device', data)
+
+        if (data.deviceId === this.data.pageParams.mac) {
+          console.log(`收到绑定推送消息：子设备${this.data.pageParams.mac}`)
+          this.bindBleDeviceToClound()
+          emitter.off('bind_device')
+          clearTimeout(this.data._timeId)
+        }
+      })
+    },
+    detached() {
+      emitter.off('bind_device')
+      clearTimeout(this.data._timeId)
+      wx.stopBluetoothDevicesDiscovery()
+      this.stopGwAddMode()
+    },
   },
 
   methods: {
@@ -75,36 +96,18 @@ ComponentWithComputed({
 
           return flag
         })
-        console.log('扫到新设备', deviceList)
         deviceList.forEach((item) => {
           this.handleBleDeviceInfo(item)
         })
       })
 
-      wx.onBLEConnectionStateChange(function (res) {
-        // 该方法回调中可以用于处理连接意外断开等异常情况
-        console.log(
-          'onBLEConnectionStateChange-add-subdevice',
-          res,
-          `device ${res.deviceId} state has changed, connected: ${res.connected}`,
-        )
-      })
-
       // 开始搜寻附近的蓝牙外围设备
       wx.startBluetoothDevicesDiscovery({
-        // services: ['BAE55B96-7D19-458D-970C-50613D801BC9'],
-        allowDuplicatesKey: false,
+        allowDuplicatesKey: true,
         powerLevel: 'high',
         interval: 3000,
         success: (res) => {
           console.log('startBluetoothDevicesDiscovery', res)
-          this.data._timeId = setTimeout(() => {
-            if (!this.data._hasFound) {
-              this.setData({
-                status: 'error',
-              })
-            }
-          }, 30000)
         },
       })
     },
@@ -113,18 +116,20 @@ ComponentWithComputed({
      * 检查是否目标设备
      */
     async handleBleDeviceInfo(device: WechatMiniprogram.BlueToothDevice) {
-      const dataMsg = strUtil.ab2hex(device.advertisData)
-      const msgObj = bleUtil.transferBroadcastData(dataMsg)
-      const boardMac = this.data.pageParams.mac.slice(0, 6) + this.data.pageParams.mac.slice(10)
+      const msgObj = bleUtil.transferBroadcastData(device.advertisData)
+      const targetMac = this.data.pageParams.mac // 云端的是zigbee模块的mac
 
-      // 广播的mac是6字节位，需要将云端的8位mac截掉中间两字节位
-      if (boardMac !== msgObj.mac) {
+      if (targetMac !== msgObj.zigbeeMac) {
+        return false
+      }
+
+      if (this.data._hasFound) {
+        console.error('重复发现目标蓝牙设备')
         return false
       }
 
       this.data._hasFound = true
-      clearTimeout(this.data._timeId)
-      console.log('Device Found', device, dataMsg, msgObj)
+      console.log('Device Found', device, msgObj)
 
       wx.stopBluetoothDevicesDiscovery()
 
@@ -161,12 +166,34 @@ ComponentWithComputed({
       })
 
       if (!res.success) {
+        Logger.error('网关下发指令失败', res)
         this.setData({
           status: 'error',
         })
 
         return
       }
+    },
+
+    async stopGwAddMode() {
+      if (!this.data._hasFound) {
+        return false
+      }
+
+      const pageParams = getCurrentPageParams()
+
+      const res = await sendCmdAddSubdevice({
+        deviceId: pageParams.gatewayId,
+        expire: 0,
+        buzz: 0,
+      })
+
+      // 子设备配网阶段，保持网关在配网状态
+      if (res.success) {
+        console.log('结束网关配网状态')
+      }
+
+      return res
     },
 
     async startZigbeeNet(bleDevice: IBleDevice) {
@@ -183,58 +210,50 @@ ComponentWithComputed({
       if (res.success) {
         bleDevice.zigbeeMac = res.result.zigbeeMac
 
-        this.queryDeviceOnlineStatus(bleDevice)
+        // this.queryDeviceOnlineStatus(bleDevice)
       } else {
         this.setData({
           status: 'error',
         })
       }
+
+      bleDevice.client.close()
     },
 
-    async queryDeviceOnlineStatus(device: IBleDevice) {
-      const queryRes = await queryDeviceOnlineStatus({
-        deviceId: device.zigbeeMac,
-        deviceType: '2',
-        sn: this.data.pageParams.gatewaySn,
-      })
-
-      console.log('queryDeviceOnlineStatus', queryRes)
-
-      if (queryRes.result.onlineStatus === 0) {
-        // 限制最多查询云端设备在线状态次数：device.requestTimes，超过则置为失败
-        device.requestTimes--
-
-        if (device.requestTimes <= 0) {
-          this.setData({
-            status: 'error',
-          })
-
-          return
-        }
-
-        setTimeout(() => {
-          this.queryDeviceOnlineStatus(device)
-        }, 3000)
-
-        return
-      }
-
+    async bindBleDeviceToClound() {
       this.setData({
         activeIndex: 2,
       })
 
+      const { mac, proType, modelId } = this.data.pageParams
+      let { deviceName } = this.data.pageParams
+
+      const existDevice = deviceBinding.store.allRoomDeviceList.find((item) => item.deviceId === mac)
+
+      // 重新绑定同一家庭情况下，取旧命名
+      if (existDevice) {
+        deviceName = existDevice.deviceName
+      } else {
+        let bindNum = deviceBinding.store.allRoomDeviceList.filter(
+          (item) => item.proType === proType && item.productId === modelId,
+        ).length // 已绑定的相同设备数量
+
+        deviceName = deviceName + (bindNum > 0 ? ++bindNum : '')
+      }
+
       const res = await bindDevice({
-        deviceId: device.zigbeeMac,
+        deviceId: this.data.pageParams.mac,
         houseId: homeBinding.store.currentHomeId,
         roomId: roomBinding.store.currentRoom.roomId,
         sn: '',
-        deviceName: device.name + (deviceNum > 0 ? ++deviceNum : ''),
+        deviceName: deviceName,
       })
 
       if (res.success && res.result.isBind) {
         this.setData({
           activeIndex: 3,
         })
+
         wx.redirectTo({
           url: strUtil.getUrlWithParams('/package-distribution/bind-home/index', {
             deviceId: res.result.deviceId,

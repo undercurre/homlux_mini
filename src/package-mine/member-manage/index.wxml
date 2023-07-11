@@ -1,5 +1,5 @@
 <view class="page-container flex flex-col">
-  <nav-bar background="#eef2f7" leftArrow="{{true}}" bind:leftTap="goBack" title="成员管理"></nav-bar>
+  <nav-bar background="#eef2f7" leftArrow="{{true}}" show-go-home bind:leftTap="goBack" title="成员管理"></nav-bar>
 
   <view class="grow flex flex-col pt-24rpx">
     <scroll-view show-scrollbar="{{false}}">
@@ -21,7 +21,7 @@
     </scroll-view>
   </view>
 
-  <view class="h-184rpx w-full fixed bottom-0 bg-hex-eef2f7">
+  <view class="h-184rpx w-full fixed bottom-0 bg-hex-eef2f7" wx:if="{{!isVisitor}}">
     <view class="w-686rpx mx-32rpx mt-12rpx">
       <van-button size="large" type="primary" bind:click="onInviteMemberClick" open-type="share" wx:if="{{isAdmin}}">邀请成员</van-button>
       <van-button size="large" type="primary" bind:click="onInviteMemberClick" wx:if="{{!isAdmin}}">邀请成员</van-button>
@@ -54,3 +54,5 @@
     </view>
   </view>
 </van-popup>
+
+<van-toast id="van-toast" />

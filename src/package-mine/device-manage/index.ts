@@ -22,31 +22,14 @@ ComponentWithComputed({
   },
 
   computed: {
-    roomSelectMenuList(data) {
-      if (data.roomList) {
-        return [
-          { roomId: '0', roomName: '全屋' },
-          ...(data.roomList as Room.RoomInfo[]).map((room) => ({
-            roomId: room.roomId,
-            roomName: room.roomName,
-          })),
-        ]
-      }
-      return []
-    },
-    currentRoomName(data) {
-      if (data.roomSelectMenuList) {
-        return (data.roomSelectMenuList as { roomId: string; roomName: string }[]).find(
-          (room) => room.roomId === data.roomSelect,
-        )?.roomName
-      }
-      return ''
-    },
     deviceListCompited(data) {
+      const list = data.allRoomDeviceList ? [...data.allRoomDeviceList].sort((a, b) => a.orderNum - b.orderNum) : []
       if (data.roomSelect === '0') {
-        return data.allRoomDeviceList
+        return list
+      } else if (data.roomSelect === '-1') {
+        return list.filter((d: Device.DeviceItem) => !d.onLineStatus)
       } else {
-        return data.deviceList
+        return list.filter((d: Device.DeviceItem) => d.roomId === data.roomSelect)
       }
     },
   },
@@ -88,13 +71,22 @@ ComponentWithComputed({
       }, 500)
       this.loadData()
       // 状态更新推送
-      emitter.on('deviceEdit', () => {
-        if (this.data.roomSelect === '0') {
-          deviceBinding.store.updateAllRoomDeviceList()
-          return
-        } else if (this.data.roomSelect) {
-          deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
-        }
+      emitter.on('deviceEdit', async () => {
+        // if (this.data.roomSelect === '0') {
+        await deviceBinding.store.updateAllRoomDeviceList()
+
+        // 预防修改房间时，造成当前选中房间为空
+        setTimeout(() => {
+          if (!this.data.deviceListCompited.length) {
+            this.setData({
+              roomSelect: roomBinding.store.roomList[0].roomId,
+            })
+          }
+        }, 100)
+        //   return
+        // } else if (this.data.roomSelect) {
+        //   deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
+        // }
       })
       emitter.on('wsReceive', async (e) => {
         // 设备相关的消息推送根据条件判断是否刷新
@@ -119,7 +111,7 @@ ComponentWithComputed({
             }
           } else {
             // 可能是新绑的设备，直接更新房间
-            deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
+            deviceBinding.store.updateSubDeviceList(undefined, this.data.roomSelect)
           }
         } else if (
           typeof e.result.eventData === 'object' &&
@@ -128,31 +120,36 @@ ComponentWithComputed({
           (e.result.eventData.roomId === this.data.roomSelect || this.data.roomSelect === '0')
         ) {
           // 设备被删除，查房间
-          if (this.data.roomSelect === '0') {
-            deviceBinding.store.updateAllRoomDeviceList()
-          } else {
-            deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
-          }
+          // if (this.data.roomSelect === '0') {
+          deviceBinding.store.updateAllRoomDeviceList()
+          // } else {
+          // deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
+          // }
         } else if (typeof e.result.eventData === 'object' && e.result.eventType === WSEventType.room_del) {
-          await roomStore.updateRoomList()
-          if (this.data.roomSelect === '0') {
-            deviceBinding.store.updateAllRoomDeviceList()
-          } else if (e.result.eventData.roomId === this.data.roomSelect) {
-            // 房间被删了，切到其他房间
-            if (roomStore.roomList.length > 0) {
-              this.setData({
-                roomSelect: roomBinding.store.roomList[0].roomId,
-              })
-              deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
-            } else {
-              this.setData({
-                roomSelect: '',
-              })
-              runInAction(() => {
-                deviceStore.deviceList = []
-              })
-            }
+          // await roomStore.updateRoomList()
+          // if (this.data.roomSelect === '0') {
+          deviceBinding.store.updateAllRoomDeviceList()
+          if (roomStore.roomList.length > 0) {
+            this.setData({
+              roomSelect: roomBinding.store.roomList[0].roomId,
+            })
           }
+          // } else if (e.result.eventData.roomId === this.data.roomSelect) {
+          //   // 房间被删了，切到其他房间
+          //   if (roomStore.roomList.length > 0) {
+          //     this.setData({
+          //       roomSelect: roomBinding.store.roomList[0].roomId,
+          //     })
+          //     deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
+          //   } else {
+          //     this.setData({
+          //       roomSelect: '',
+          //     })
+          //     runInAction(() => {
+          //       deviceStore.deviceList = []
+          //     })
+          //   }
+          // }
         }
       })
     },
@@ -164,14 +161,14 @@ ComponentWithComputed({
 
     async onPullDownRefresh() {
       try {
-        await roomStore.updateRoomList()
-        if (this.data.roomSelect === '0') {
-          // 查全屋
-          deviceBinding.store.updateAllRoomDeviceList()
-        } else {
-          // 查房间
-          deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
-        }
+        // await roomStore.updateRoomList()
+        // if (this.data.roomSelect) {
+        //   // 查房间
+        //   deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
+        // } else {
+        // 查全屋
+        deviceBinding.store.updateAllRoomDeviceList()
+        // }
       } finally {
         this.setData({
           isRefresh: false,
@@ -182,13 +179,13 @@ ComponentWithComputed({
     async loadData() {
       // 先加载ota列表信息，用于设备详情页展示
       otaStore.updateList()
-      await roomStore.updateRoomList()
-      if (this.data.roomSelect === '0') {
-        deviceBinding.store.updateAllRoomDeviceList()
-        return
-      } else if (this.data.roomSelect) {
-        deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
-      }
+      // await roomStore.updateRoomList()
+      // if (this.data.roomSelect === '0') {
+      deviceBinding.store.updateAllRoomDeviceList()
+      //   return
+      // } else if (this.data.roomSelect) {
+      //   deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
+      // }
     },
 
     handleFullPageTap(e?: { detail: { x: number; y: number } }) {
@@ -215,20 +212,23 @@ ComponentWithComputed({
       this.setData({
         roomSelect: e.detail,
       })
-      this.hideSelectRoomMenu()
-      if (e.detail === '0') {
-        // 查全屋
-        deviceBinding.store.updateAllRoomDeviceList()
-      } else {
-        // 查房间
-        deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
-      }
+      // this.hideSelectRoomMenu()
+      // if (this.data.roomSelect === '0') {
+      //   // 查房间
+      //   deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
+      // } else {
+      //   // 查全屋
+      //   deviceBinding.store.updateAllRoomDeviceList()
+      // }
     },
 
-    handleCardClick(e: { currentTarget: { dataset: { deviceId: string } } }) {
-      console.log('handleCardClick', e.currentTarget.dataset.deviceId)
+    handleCardClick(e: { currentTarget: { dataset: { deviceId: string; deviceType: number } } }) {
+      const { deviceId, deviceType } = e.currentTarget.dataset
+      console.log('handleCardClick', deviceId, deviceType)
+      const pageName = deviceType === 4 ? 'group-detail' : 'device-detail'
+
       wx.navigateTo({
-        url: `/package-mine/device-manage/device-detail/index?deviceId=${e.currentTarget.dataset.deviceId}`,
+        url: `/package-mine/device-manage/${pageName}/index?deviceId=${deviceId}`,
       })
     },
 

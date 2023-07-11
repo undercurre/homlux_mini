@@ -1,9 +1,10 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { logout, storage } from '../../utils/index'
-import { userBinding, userStore } from '../../store/index'
+import { userBinding, homeBinding, userStore } from '../../store/index'
+import pageBehavior from '../../behaviors/pageBehaviors'
 
 Component({
-  behaviors: [BehaviorWithStore({ storeBindings: [userBinding] })],
+  behaviors: [BehaviorWithStore({ storeBindings: [userBinding, homeBinding] }), pageBehavior],
   /**
    * 页面的初始数据
    */
@@ -73,6 +74,8 @@ Component({
 
       logout()
     },
+
+    /** 如果没登陆，点击头像去登录 */
     handleUserInfoTap() {
       if (!userStore.isLogin) {
         wx.navigateTo({

@@ -6,7 +6,7 @@
   <view class="mt-24rpx w-750rpx flex-1" id="content">
     <scroll-view enhanced show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
       <van-cell-group inset>
-        <van-cell center is-link wx:for="{{switchList}}" wx:key="switchId" bind:click="handleSwitchClick" data-index="{{index}}" title="{{item.switchName}}">
+        <van-cell center is-link="{{canEditDevice}}" wx:for="{{switchList}}" wx:key="switchId" bind:click="handleSwitchClick" data-index="{{index}}" title="{{item.switchName}}">
           <view slot="icon">
             <image class="w-96rpx h-96rpx bg-hex-f6fafd mr-32rpx rounded-999" src="{{item.pic}}" />
           </view>
@@ -17,15 +17,16 @@
   </view>
 </view>
 
-<van-popup show="{{ showPopup }}" round position="bottom" bind:close="handleClose">
+<van-toast id="van-toast" />
+<van-popup show="{{ showPopup }}" round position="bottom" bind:close="handleClose" closeable>
   <view class="w-750rpx flex flex-col items-center">
     <template is="title" data="{{title: '按键设置'}}" />
     <view class="mt-98rpx w-686rpx">
-      <text class="block pl-16rpx pb-32rpx text-28">房间名称</text>
-      <van-field custom-style="padding: 20rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" model:value="{{ switchName }}" placeholder="请输入按键名称" clearable></van-field>
+      <text class="block pl-16rpx pb-32rpx text-28">按键名称</text>
+      <van-field custom-style="padding: 20rpx 32rpx;background-color: #F6FAFD;border-radius: 24rpx;" model:value="{{ switchName }}" placeholder="请输入按键名称" clearable></van-field>
     </view>
     <view class="h-98rpx"></view>
-    <template is="bottom-btn" />
+    <template is="bottom-btn" data="{{disabled:!switchName}}" />
     <view class="h-32rpx"></view>
   </view>
 </van-popup>

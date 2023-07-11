@@ -15,7 +15,8 @@ ComponentWithComputed({
    */
   data: {
     urls: {
-      voiceIntro: '/package-mine/voice-intro/index',
+      duerIntro: '/package-mine/voice-intro/index?type=duer',
+      miIntro: '/package-mine/voice-intro/index?type=mi',
     },
   },
 
@@ -28,11 +29,5 @@ ComponentWithComputed({
     detached: function () {},
   },
 
-  methods: {
-    toPage(e: { currentTarget: { dataset: { url: string } } }) {
-      wx.navigateTo({
-        url: e.currentTarget.dataset.url,
-      })
-    },
-  },
+  methods: {},
 })

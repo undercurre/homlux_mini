@@ -5,13 +5,15 @@
       "root": "package-distribution",
       "pages": [
         "scan/index",
-        "check-gateway/index",
-        "add-gateway/index",
+        "link-gateway/index",
         "wifi-connect/index",
         "add-subdevice/index",
         "search-subdevice/index",
         "bind-home/index",
-        "change-wifi-success/index"
+        "change-wifi-success/index",
+        "choose-device/index",
+        "choose-sensor/index",
+        "connect-guide/index"
       ]
     },
     {
@@ -23,26 +25,35 @@
         "member-manage/index",
         "accept-invitation/index",
         "device-replace/index",
+        "auth/index/index",
+        "auth/meiju/index",
+        "auth/home-list/index",
+        "auth/device-list/index",
         "ota/index",
         "device-manage/index",
         "device-manage/device-detail/index",
+        "device-manage/group-detail/index",
         "voice-control/index",
         "voice-intro/index"
       ]
     },
     {
       "root": "package-room-control",
-      "pages": ["index/index", "scene-edit/index", "scene-list/index"]
+      "pages": ["index/index", "scene-edit/index", "scene-request-list/index", "scene-list/index", "group/index"]
     },
     {
       "root": "package-protocol",
-      "pages": ["protocol-show/index", "protocol-list/index"]
+      "pages": ["protocol-show/index", "protocol-list/index", "add-virtual-device/index"]
+    },
+    {
+      "root": "package-auth",
+      "pages": ["auth-screen/index"]
     }
   ],
   "preloadRule": {
     "pages/index/index": {
       "network": "all",
-      "packages": ["package-distribution"]
+      "packages": ["package-room-control", "package-distribution"]
     }
   },
   "tabBar": {
@@ -58,6 +69,7 @@
       }
     ]
   },
+  "lazyCodeLoading": "requiredComponents",
   "usingComponents": {
     "van-button": "@vant/weapp/button/index",
     "van-overlay": "@vant/weapp/overlay/index",
@@ -66,13 +78,13 @@
     "van-popup": "@vant/weapp/popup/index",
     "van-field": "@vant/weapp/field/index",
     "van-cell-group": "@vant/weapp/cell-group/index",
+    "van-dialog": "@vant/weapp/dialog/index",
+    "van-toast": "@vant/weapp/toast/index",
     "nav-bar": "./components/custom-nav-bar/index",
     "home-select-menu": "./components/home-select-menu/index",
     "add-room": "./components/add-room/index",
     "svg-icon": "./components/svg-icon/index",
-    "device-card": "./components/device-card/index",
-    "van-dialog": "@vant/weapp/dialog/index",
-    "van-toast": "@vant/weapp/toast/index"
+    "device-card": "./components/device-card/index"
   },
   "window": {
     "navigationStyle": "custom",
@@ -91,7 +103,7 @@
       "desc": "本应用访问位置信息，用于发现附近设备及WLAN列表等功能"
     },
     "scope.userFuzzyLocation": {
-      "desc": "你的位置信息将用于家庭位置管理"
+      "desc": "本应用访问位置信息，用于获取天气信息提示等功能"
     }
   },
   "requiredPrivateInfos": ["getFuzzyLocation"]

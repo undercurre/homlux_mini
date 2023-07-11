@@ -1,6 +1,6 @@
 {
   "component": true,
   "usingComponents": {
-    "link-popup": "../../../components/link-popup/index"
+    "select-card-popup": "../../../../components/select-card-popup/index"
   }
 }

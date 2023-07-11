@@ -28,11 +28,17 @@ declare namespace Room {
        */
       roomName: string
 
-      // 下面是小程序端维护的字段
       /**
-       * 子设备数量
+       * 下面是小程序端统计的字段
        */
-      subDeviceNum?: number
+      // 统计多少灯打开（多开开关单独计算）（取代云端deviceLightOnNum）
+      lightOnCount: number
+
+      // 非网关设备数
+      endCount: number
+
+      // 灯与面板总数量
+      lightCount: number
     }
     /**
      * 房间场景列表
@@ -51,6 +57,7 @@ declare namespace Room {
      * 设备数量
      */
     deviceNum?: number
+
     /**
      * 	房间icon
      */
@@ -68,10 +75,24 @@ declare namespace Room {
      */
     sceneList: Scene.SceneItem[]
 
-    // 下面是小程序端维护的字段
     /**
-     * 子设备数量
+     * 下面是小程序端统计的字段
      */
-    subDeviceNum?: number
+    // 统计多少灯打开（多开开关单独计算）（取代云端deviceLightOnNum）
+    lightOnCount: number
+
+    // 非网关设备数
+    endCount: number
+
+    // 灯与面板总数量
+    lightCount: number
+  }
+
+  /**
+   * 房间排序
+   */
+  interface RoomSort {
+    roomId: string
+    sort: number
   }
 }

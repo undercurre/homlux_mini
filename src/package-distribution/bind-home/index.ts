@@ -2,9 +2,10 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { getCurrentPageParams, strUtil } from '../../utils/index'
+import { getCurrentPageParams, checkInputNameIllegal } from '../../utils/index'
 import { queryDeviceInfoByDeviceId, editDeviceInfo, batchUpdate } from '../../apis/index'
 import { homeBinding, homeStore, roomBinding } from '../../store/index'
+import { PRO_TYPE } from '../../config/index'
 
 ComponentWithComputed({
   options: {
@@ -31,8 +32,6 @@ ComponentWithComputed({
 
   lifetimes: {
     ready() {
-      homeBinding.store.updateCurrentHomeDetail()
-
       this.getDeviceInfo()
     },
     detached() {},
@@ -62,28 +61,16 @@ ComponentWithComputed({
             sn: res.result.sn,
             roomId: res.result.roomId,
             proType: res.result.proType,
-            switchList: res.result.switchInfoDTOList
-              ? res.result.switchInfoDTOList.map((item) => ({
-                  switchId: item.switchId,
-                  switchName: item.switchName,
-                }))
-              : [],
+            switchList:
+              res.result.proType === PRO_TYPE.switch && res.result.switchInfoDTOList
+                ? res.result.switchInfoDTOList.map((item) => ({
+                    switchId: item.switchId,
+                    switchName: item.switchName,
+                  }))
+                : [],
           },
         })
       }
-    },
-
-    toScan() {
-      wx.navigateBack()
-    },
-
-    toSearchSubdevice() {
-      wx.navigateTo({
-        url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
-          gatewayId: this.data.deviceInfo.deviceId,
-          gatewaySn: this.data.deviceInfo.sn,
-        }),
-      })
     },
 
     changeDeviceInfo(event: WechatMiniprogram.CustomEvent) {
@@ -98,6 +85,22 @@ ComponentWithComputed({
 
     async finish() {
       const { deviceId, deviceName, roomId } = this.data.deviceInfo
+
+      if (!deviceName) {
+        Toast('设备名称不能为空')
+        return
+      }
+
+      // 校验名字合法性
+      if (checkInputNameIllegal(deviceName)) {
+        Toast('设备名称不能用特殊符号或表情')
+        return
+      }
+
+      if (deviceName.length > 6) {
+        Toast('设备名称不能超过6个字符')
+        return
+      }
 
       const res = await editDeviceInfo({
         deviceId,
@@ -124,7 +127,13 @@ ComponentWithComputed({
       if (res.success) {
         homeBinding.store.updateCurrentHomeDetail()
 
-        wx.switchTab({ url: '/pages/index/index' })
+        // 关闭扫描页面可能开启的蓝牙、wifi资源
+        wx.closeBluetoothAdapter()
+        wx.stopWifi()
+
+        wx.navigateBack({
+          delta: 2,
+        })
       } else {
         Toast('保存失败')
       }

@@ -9,12 +9,16 @@ import {
   saveOrUpdateUserHouseInfo,
   getRoomList,
   updateDefaultHouse,
+  getShareId,
+  queryAllDevice,
 } from '../apis/index'
-import { proType } from '../config/index'
+import { PRO_TYPE } from '../config/index'
+import { asyncStorage, storage, Logger } from '../utils/index'
 import { deviceStore } from './device'
 import { othersStore } from './others'
 import { roomStore } from './room'
-import { sceneStore } from './scene'
+import { userStore } from './user'
+import { deviceCount } from '../utils/index'
 
 export const homeStore = observable({
   homeList: [] as Home.IHomeItem[],
@@ -23,6 +27,8 @@ export const homeStore = observable({
   currentHomeDetail: {} as Home.IHomeDetail,
 
   homeMemberInfo: {} as Home.HomeMemberInfo,
+
+  shareId: '',
 
   get currentHomeId() {
     let houseId = this.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
@@ -44,6 +50,12 @@ export const homeStore = observable({
    * 首页加载逻辑
    */
   async homeInit() {
+    const success = this.loadHomeDataFromStorage()
+    if (success) {
+      runInAction(() => {
+        othersStore.isInit = true
+      })
+    }
     const res = await this.updateHomeList()
     if (res.success) {
       queryUserHouseInfo({ houseId: this.currentHomeId }).then((res) => {
@@ -53,60 +65,9 @@ export const homeStore = observable({
           })
         }
       })
-      // 全屋房间、设备加载完成，开始渲染
-      const res = await Promise.all([getRoomList(homeStore.currentHomeId), deviceStore.updateAllRoomDeviceList()])
-      if (res[0].success) {
-        res[0].result.roomInfoList.forEach((roomInfo) => {
-          const roomDeviceList = roomStore.roomDeviceList[roomInfo.roomInfo.roomId]
-          // 过滤一下默认场景，没灯过滤明亮柔和，没灯没开关全部过滤
-          const hasSwitch = roomDeviceList?.some((device) => device.proType === proType.switch) ?? false
-          const hasLight = roomDeviceList?.some((device) => device.proType === proType.light) ?? false
-          if (!hasSwitch && !hasLight) {
-            // 四个默认场景都去掉
-            roomInfo.roomSceneList = roomInfo.roomSceneList.filter((scene) => scene.isDefault === '0')
-          } else if (hasSwitch && !hasLight) {
-            // 只有开关，去掉默认的明亮、柔和
-            roomInfo.roomSceneList = roomInfo.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
-          }
-          // 统计多少灯打开（开关不关联灯或者关联场景都算进去）
-          let deviceLightOnNum = 0
-          // 统计多少个子设备
-          let subDeviceNum = 0
-          roomDeviceList?.forEach((device) => {
-            if (device.proType !== proType.gateway) {
-              subDeviceNum++
-            }
-            if (!device.onLineStatus) return
-            if (device.proType === proType.light && device.mzgdPropertyDTOList['1'].OnOff) {
-              deviceLightOnNum++
-            } else if (device.proType === proType.switch) {
-              device.switchInfoDTOList.forEach((switchItem) => {
-                if (
-                  !switchItem.lightRelId &&
-                  device.mzgdPropertyDTOList[switchItem.switchId].OnOff &&
-                  !device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode
-                ) {
-                  deviceLightOnNum++
-                }
-              })
-            }
-          })
-          roomInfo.roomInfo.deviceLightOnNum = deviceLightOnNum
-          roomInfo.roomInfo.subDeviceNum = subDeviceNum
-        })
-        runInAction(() => {
-          roomStore.roomList = res[0].result.roomInfoList.map((room) => ({
-            roomId: room.roomInfo.roomId,
-            roomIcon: room.roomInfo.roomIcon || 'drawing-room',
-            roomName: room.roomInfo.roomName,
-            deviceLightOnNum: room.roomInfo.deviceLightOnNum,
-            sceneList: room.roomSceneList,
-            deviceNum: room.roomInfo.deviceNum,
-            subDeviceNum: room.roomInfo.subDeviceNum,
-          }))
-          othersStore.isInit = true
-        })
-      }
+      // 全屋房间、设备加载
+      await this.updateRoomCardList()
+      othersStore.setIsInit(true)
     }
   },
 
@@ -133,10 +94,14 @@ export const homeStore = observable({
     if (res.success) {
       runInAction(() => {
         homeStore.homeList = res.result
+        console.log('updateHomeList store', res.result)
+
         const houseId = homeStore.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
         // 首次进入或删除了默认家庭时，默认选中第0个
         if (!houseId && homeStore.homeList.length) {
+          Logger.error('默认家庭为空，设置默认家庭')
           updateDefaultHouse(homeStore.homeList[0].houseId)
+          homeStore.homeList[0].defaultHouseFlag = true
         }
       })
     }
@@ -160,8 +125,10 @@ export const homeStore = observable({
       })
       await deviceStore.updateAllRoomDeviceList(undefined, options)
       await roomStore.updateRoomList(options)
+      this.homeDataPersistence()
       return
     } else {
+      console.error('获取家庭信息失败', res)
       return Promise.reject('获取家庭信息失败')
     }
   },
@@ -169,10 +136,58 @@ export const homeStore = observable({
   /**
    * 更新当前家庭房间卡片列表
    */
-  async updateRoomCardList() {
-    await deviceStore.updateAllRoomDeviceList()
-    await roomStore.updateRoomList()
-    await sceneStore.updateAllRoomSceneList()
+  async updateRoomCardList(options?: { loading: boolean }) {
+    const homeId = homeStore.currentHomeId
+    const data = await Promise.all([queryAllDevice(homeId, options), getRoomList(homeId, options)])
+    if (data[0].success) {
+      const list = {} as Record<string, Device.DeviceItem[]>
+      data[0].result
+        ?.sort((a, b) => a.deviceId.localeCompare(b.deviceId))
+        .forEach((device) => {
+          if (list[device.roomId]) {
+            list[device.roomId].push(device)
+          } else {
+            list[device.roomId] = [device]
+          }
+        })
+      runInAction(() => {
+        roomStore.roomDeviceList = list
+        deviceStore.allRoomDeviceList = data[0].result
+      })
+    }
+    if (data[1].success) {
+      data[1].result.roomInfoList.forEach((room) => {
+        const roomDeviceList = roomStore.roomDeviceList[room.roomInfo.roomId]
+        // 过滤一下默认场景，没灯过滤明亮柔和，没灯没开关全部过滤
+        const hasSwitch = roomDeviceList?.some((device) => device.proType === PRO_TYPE.switch) ?? false
+        const hasLight = roomDeviceList?.some((device) => device.proType === PRO_TYPE.light) ?? false
+        if (!hasSwitch && !hasLight) {
+          // 四个默认场景都去掉
+          room.roomSceneList = room.roomSceneList.filter((scene) => scene.isDefault === '0')
+        } else if (hasSwitch && !hasLight) {
+          // 只有开关，去掉默认的明亮、柔和
+          room.roomSceneList = room.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
+        }
+
+        const { lightOnCount, endCount, lightCount } = deviceCount(roomDeviceList)
+        room.roomInfo.lightOnCount = lightOnCount
+        room.roomInfo.endCount = endCount
+        room.roomInfo.lightCount = lightCount
+      })
+      runInAction(() => {
+        roomStore.roomList = data[1].result.roomInfoList.map((room) => ({
+          roomId: room.roomInfo.roomId,
+          roomIcon: room.roomInfo.roomIcon || 'drawing-room',
+          roomName: room.roomInfo.roomName,
+          lightOnCount: room.roomInfo.lightOnCount,
+          sceneList: room.roomSceneList,
+          deviceNum: room.roomInfo.deviceNum,
+          endCount: room.roomInfo.endCount,
+          lightCount: room.roomInfo.lightCount,
+        }))
+      })
+    }
+    this.homeDataPersistence()
   },
 
   /**
@@ -253,13 +268,72 @@ export const homeStore = observable({
   /**
    * 邀请家庭成员
    */
-  async inviteMember(houseId: string, auth: number) {
-    const res = await inviteHouseUser({ houseId, auth })
+  async inviteMember(houseId: string, auth: number, shareId: string) {
+    const res = await inviteHouseUser({ houseId, auth, shareId })
     if (res.success) {
       return
     } else {
       return Promise.reject('邀请家庭成员失败')
     }
+  },
+
+  /**
+   * 获取分享连接ID
+   */
+  async getInviteShareId() {
+    const res = await getShareId({ houseId: this.currentHomeId })
+    if (res.success) {
+      runInAction(() => {
+        homeBinding.store.shareId = res.result.shareId
+      })
+      return
+    } else {
+      return Promise.reject('获取分享连接失败')
+    }
+  },
+
+  /**
+   * 缓存主要的初始数据
+   */
+  async homeDataPersistence() {
+    if (!userStore.isLogin) {
+      return
+    }
+    const token = await asyncStorage.get<string>('token')
+    const data = {
+      token,
+      homeData: {
+        homeList: this.homeList,
+        currentHomeDetail: this.currentHomeDetail,
+        roomList: roomStore.roomList,
+        allRoomDeviceList: deviceStore.allRoomDeviceList,
+      },
+    }
+    await asyncStorage.set('homeData', data, 60 * 60 * 24) // 缓存有效期一天
+  },
+
+  /**
+   * 从缓存加载数据，如果成功加载返回true，否则false
+   */
+  loadHomeDataFromStorage() {
+    const token = storage.get<string>('token')
+    if (!token) {
+      return false
+    }
+    const data = storage.get('homeData') as IAnyObject
+    if (!data) {
+      return false
+    } else if (data.token != token) {
+      storage.remove('homeData')
+      return false
+    }
+    runInAction(() => {
+      this.homeList = data.homeData.homeList
+      this.currentHomeDetail = data.homeData.currentHomeDetail
+      roomStore.roomList = data.homeData.roomList
+      deviceStore.allRoomDeviceList = data.homeData.allRoomDeviceList
+    })
+    return true
   },
 })
 

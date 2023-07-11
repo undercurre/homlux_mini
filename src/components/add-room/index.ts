@@ -1,9 +1,15 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import Toast from '@vant/weapp/toast/toast'
 import { saveHouseRoomInfo } from '../../apis/index'
 import { homeBinding, roomBinding } from '../../store/index'
-import Toast from '@vant/weapp/toast/toast'
+import { checkInputNameIllegal, emitter } from '../../utils/index'
 
 Component({
+  options: {
+    styleIsolation: 'apply-shared',
+    pureDataPattern: /^_/,
+  },
+
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] })],
 
   /**
@@ -13,6 +19,10 @@ Component({
     show: {
       type: Boolean,
       value: false,
+    },
+    isSave: {
+      type: Boolean,
+      value: true,
     },
     isEditName: {
       type: Boolean,
@@ -117,14 +127,11 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    handleScroll(_: WechatMiniprogram.CustomEvent) {
-      console.log('handleScroll')
-    },
     changeRoomName(event: WechatMiniprogram.CustomEvent) {
       console.log('changeRoomName', event)
 
       this.setData({
-        'roomInfo.name': event.detail.value,
+        'roomInfo.name': event.detail || '',
       })
     },
 
@@ -133,38 +140,53 @@ Component({
     },
     async handleConfirm() {
       if (!this.data.roomInfo.name) {
-        Toast('房间名称不能为空')
+        Toast('名称不能为空')
         return
       }
 
-      if (this.data.roomInfo.name.length > 6) {
-        Toast('房间名称不能超过6个字符')
+      // 校验名字合法性
+      if (checkInputNameIllegal(this.data.roomInfo.name)) {
+        Toast('名称不能用特殊符号或表情')
         return
       }
 
-      const res = await saveHouseRoomInfo({
-        houseId: homeBinding.store.currentHomeId,
-        roomId: this.data.roomId,
-        roomIcon: this.data.roomInfo.icon,
-        roomName: this.data.roomInfo.name,
-      })
+      if (this.data.roomInfo.name.length > 5) {
+        Toast('名称不能超过5个字符')
+        return
+      }
 
-      if (res.success) {
-        roomBinding.store.updateRoomList()
-
-        this.triggerEvent('confirm', {
+      if (this.data.isSave) {
+        const res = await saveHouseRoomInfo({
+          houseId: homeBinding.store.currentHomeId,
           roomId: this.data.roomId,
           roomIcon: this.data.roomInfo.icon,
           roomName: this.data.roomInfo.name,
         })
 
-        this.triggerEvent('close')
+        if (res.success) {
+          roomBinding.store.updateRoomList()
+          emitter.emit('homeInfoEdit')
+        } else {
+          return
+        }
       }
+
+      this.triggerEvent('confirm', {
+        roomId: this.data.roomId,
+        roomIcon: this.data.roomInfo.icon,
+        roomName: this.data.roomInfo.name,
+      })
+
+      this.triggerEvent('close')
     },
+    /**
+     * @name 图标选中操作
+     */
     selectIcon({ currentTarget }: WechatMiniprogram.BaseEvent) {
       console.log('selectIcon', currentTarget)
+      const { icon } = currentTarget.dataset
       this.setData({
-        'roomInfo.icon': currentTarget.dataset.icon,
+        'roomInfo.icon': icon,
       })
     },
   },

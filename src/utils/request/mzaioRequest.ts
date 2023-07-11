@@ -1,7 +1,7 @@
 import { baseRequest, BaseRequestOptions } from './baseRequest'
 import storage from '../storage'
-import { env, mzaioBaseURL, TOKEN_EXPIRED } from '../../config/index'
-import { userStore } from '../../store/index'
+import { getEnv, mzaioBaseURL, TOKEN_EXPIRED } from '../../config/index'
+import { logout } from '../../utils/index'
 
 // 后端默认返回格式
 type mzaioResponseRowData<T extends AnyResType = AnyResType> = {
@@ -37,7 +37,7 @@ const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: Base
   }
 
   // 拼接上美智云的基础地址
-  options.url = mzaioBaseURL[env] + options.url
+  options.url = mzaioBaseURL[getEnv()] + options.url
 
   // 后续考虑选择用nanoid生成reqId，但是微信小程序不支持浏览器的crypto API，无法使用nanoid和uuid包。
   const reqId = Date.now()
@@ -61,20 +61,21 @@ const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: Base
     generalSuccessHandler: (result) => {
       // token过期，跳转到登录
       if ((result.data as unknown as { code: number }).code === TOKEN_EXPIRED) {
-        userStore.setIsLogin(false)
-        wx.switchTab({
-          url: '/pages/index/index',
-        })
+        logout()
         return result.data
+      } else if (!(result.data as unknown as { success: boolean }).success) {
+        console.error('接口已响应，但返回异常', options, result.data)
       }
       return result.data
     },
-    generalFailHandler: (error) =>
-      ({
+    generalFailHandler: (error) => {
+      console.error('请求失败，原因：', error.errMsg)
+      return {
         code: -1,
         msg: error.errMsg,
         success: false,
-      } as unknown as T),
+      } as unknown as T
+    },
   }) as unknown as Promise<mzaioResponseRowData<T>>
 }
 

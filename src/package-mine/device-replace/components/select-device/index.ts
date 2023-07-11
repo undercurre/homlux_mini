@@ -13,8 +13,12 @@ ComponentWithComputed({
       type: Boolean,
       value: false,
     },
-    filterDevice: {
-      type: Object,
+    choosingNew: {
+      type: Boolean,
+      value: false,
+    },
+    list: {
+      type: Array,
     },
   },
 
@@ -24,22 +28,37 @@ ComponentWithComputed({
   data: {
     allRoomDeviceList: Array<Device.DeviceItem>(),
     checkedDevice: {},
-    roomSelect: '',
+    roomSelect: '0',
   },
 
   computed: {
-    // 过滤网关设备；如传入checkedDevice，则列表只显示相同productId的项，并排除已选择项
-    wifiDeviceList(data) {
-      const { filterDevice } = data
-      const hasOldDevice = filterDevice && filterDevice.productId
-      return data.allRoomDeviceList.filter((item) => {
-        const isSubdevice = item.deviceType === 2
-        const isCurrentRoom = data.roomSelect === '' ? true : item.roomId === data.roomSelect
-        const isFilterDevice = hasOldDevice
-          ? item.productId === filterDevice.productId && item.deviceId !== filterDevice.deviceId
-          : true
+    popupTitle(data) {
+      const { choosingNew } = data
+      return choosingNew ? '选择新设备' : '选择被替换设备'
+    },
 
-        return isSubdevice && isCurrentRoom && isFilterDevice
+    /**
+     * @description 所有待选设备列表
+     * 如正在选择新设备，则传入 deviceList，即使用指定列表；否则显示所有设备
+     * ! 不按房间筛选
+     */
+    allDeviceList(data) {
+      const list = data.choosingNew ? data.list : data.allRoomDeviceList
+      return list.filter((d) => d.deviceType === 2)
+    },
+
+    /**
+     * @description 显示待选设备列表
+     * 如正在选择新设备，则传入 deviceList，即使用指定列表；否则显示所有设备
+     * isCurrentRoom 按房间筛选
+     */
+    showDeviceList(data) {
+      const list = data.choosingNew ? data.list : data.allRoomDeviceList
+
+      return list.filter((d) => {
+        const isSubdevice = d.deviceType === 2
+        const isCurrentRoom = data.roomSelect === '0' ? true : d.roomId === data.roomSelect
+        return isSubdevice && isCurrentRoom
       })
     },
   },

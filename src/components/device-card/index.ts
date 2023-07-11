@@ -1,25 +1,18 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { deviceBinding, deviceStore, sceneBinding, sceneStore } from '../../store/index'
-import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { proName, proType } from '../../config/index'
-let throttleTimer = 0
+import { proName, PRO_TYPE } from '../../config/index'
+
+const CONTROL_INTERVAL = 3000 // 开关操作间隔时间
+
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
   },
-  behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding, sceneBinding] })],
   /**
    * 组件的属性列表
    */
   properties: {
+    // 单选
     select: {
-      type: Boolean,
-      value: false,
-    },
-    deviceInfo: {
-      type: Object,
-    },
-    showControl: {
       type: Boolean,
       value: false,
     },
@@ -27,9 +20,33 @@ ComponentWithComputed({
       type: Boolean,
       value: false,
     },
+    // 编辑模式选择，可多选
     editSelect: {
       type: Boolean,
       value: false,
+    },
+    deviceInfo: {
+      type: Object,
+    },
+    // 是否显示控制图标（如电源开关）
+    showControl: {
+      type: Boolean,
+      value: false,
+    },
+    // 是否带投影
+    showShadow: {
+      type: Boolean,
+      value: false,
+    },
+    // 是否带渐变背景
+    showGradientBg: {
+      type: Boolean,
+      value: false,
+    },
+    // 是否显示开关按键名称及图标
+    showBtnDetail: {
+      type: Boolean,
+      value: true,
     },
   },
 
@@ -40,83 +57,71 @@ ComponentWithComputed({
     ripple: false,
     onOff: false, // true: on false: off
     showDeviceOffline: false,
+    isProcessing: false,
+    _throttleTimer: 0,
   },
 
   computed: {
     picUrl(data) {
-      if (data.deviceInfo.proType === proType.switch) {
+      if (data.deviceInfo.proType === PRO_TYPE.switch && data.showBtnDetail) {
         return data.deviceInfo?.switchInfoDTOList[0]?.pic
       } else if (data.deviceInfo?.pic) {
         return data.deviceInfo.pic
       }
       return ''
     },
-    isLinkScene(data) {
-      if (!data.deviceInfo || !data.deviceInfo.switchInfoDTOList || !data.deviceInfo.switchInfoDTOList[0]) {
-        return false
-      }
-      const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
-      return (
-        data.deviceInfo.proType === proType.switch && data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2
-      )
-    },
     controlBtnPic(data) {
-      if (data.deviceInfo.proType === proType.light) {
+      // 窗帘，位置大于0即为开启
+      if (data.deviceInfo.proType === PRO_TYPE.curtain) {
+        const pos = data.deviceInfo.mzgdPropertyDTOList['1'].curtain_position
+        const isClosed = pos === '0'
+        if (data.isProcessing) {
+          return isClosed ? '/assets/img/base/curtain-opening.png' : '/assets/img/base/curtain-closing.png'
+        }
+        return isClosed ? '/assets/img/base/curtain-open.png' : '/assets/img/base/curtain-close.png'
+      }
+      // 灯及灯组
+      else if (data.deviceInfo.proType === PRO_TYPE.light) {
         return data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
-          ? '/assets/img/device-control/power-on.png'
-          : '/assets/img/device-control/power-off.png'
-      } else if (data.deviceInfo.proType === proType.switch) {
+          ? '/assets/img/base/power-on.png'
+          : '/assets/img/base/power-off.png'
+      }
+      // 面板
+      else if (data.deviceInfo.proType === PRO_TYPE.switch && data.deviceInfo.switchInfoDTOList[0]) {
+        // ! 确保带有switchInfoDTOList
         const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
         if (!data.deviceInfo.mzgdPropertyDTOList[switchId]) {
           // 万一设备没有开关属性，不显示
           return ''
         }
         return data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff
-          ? '/assets/img/device-control/power-on.png'
-          : '/assets/img/device-control/power-off.png'
+          ? '/assets/img/base/power-on.png'
+          : '/assets/img/base/power-off.png'
       }
       return ''
     },
-    linkSceneName(data) {
-      if (!data.deviceInfo || !data.deviceInfo.switchInfoDTOList || !data.deviceInfo.switchInfoDTOList[0]) {
-        return ''
-      }
-      const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
-      const switchSceneMap = deviceStore.switchSceneMap
-      const sceneIdMp = sceneStore.sceneIdMp
-      if (
-        switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`] &&
-        sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]] &&
-        sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]].sceneName
-      ) {
-        const sceneName = sceneIdMp[switchSceneMap[`${data.deviceInfo.deviceId}:${switchId}`]].sceneName
-        if (new RegExp('[\\u4E00-\\u9FFF]+', 'g').test(sceneName)) {
-          // 名字有中文，只能显示三个字符
-          return sceneName.slice(0, 3)
-        } else {
-          // 全英文，显示4个
-          return sceneName.slice(0, 4)
-        }
-      }
-      return ''
-    },
-    deviceName(data) {
-      let name = ''
-      if (data.deviceInfo.proType === proType.switch) {
-        name = data.deviceInfo.switchInfoDTOList[0].switchName
+    topTitle(data) {
+      // 如果是开关，deviceName显示开关名称
+      let name
+      if (data.deviceInfo.proType === PRO_TYPE.switch && data.showBtnDetail) {
+        const switchInfo = data.deviceInfo.switchInfoDTOList[0]
+        name = switchInfo.switchName ?? '按键' + switchInfo.switchId
       } else {
         name = data.deviceInfo.deviceName
       }
-      if (new RegExp('[\\u4E00-\\u9FFF]+', 'g').test(name)) {
-        // 存在中文字符，只能显示5个字符
-        return name.slice(0, 5)
-      } else {
-        // 不存在中文字符，只能显示8个字符
-        return name.slice(0, 8)
-      }
+      return name.length > 5 ? name.slice(0, 5) + '...' : name
+    },
+    bottomDesc(data) {
+      return data.deviceInfo.deviceName.length > 5
+        ? data.deviceInfo.deviceName.slice(0, 5) + '...'
+        : data.deviceInfo.deviceName
     },
     deviceType(data) {
       return proName[data.deviceInfo.proType]
+    },
+    /** 开关面板名称 */
+    switchDeviceName(data) {
+      return data.deviceInfo.deviceName.slice(0, 5)
     },
   },
 
@@ -141,12 +146,30 @@ ComponentWithComputed({
                 clientRect: res[0],
               })
             } else {
-              this.triggerEvent('offlineTap', this.data.deviceInfo)
+              this.triggerEvent('offlineTap', {
+                ...this.data.deviceInfo,
+                clientRect: res[0],
+              })
             }
           }
         })
     },
+    /**
+     * 处理中部位置点击时的事件，优化交互手感
+     */
+    handleMiddleTap() {
+      if (this.data.showControl && this.data.deviceInfo.onLineStatus) {
+        this.handlePowerTap()
+      } else {
+        this.handleCardTap()
+      }
+    },
     handlePowerTap() {
+      // 如果设备离线，刚转为点击卡片
+      if (!this.data.deviceInfo.onLineStatus) {
+        this.handleCardTap()
+        return
+      }
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
       this.createSelectorQuery()
         .select('#card')
@@ -155,21 +178,29 @@ ComponentWithComputed({
           if (this.data.deviceInfo.onLineStatus) {
             this.triggerEvent('controlTap', { ...this.data.deviceInfo, clientRect: res[0] })
             // 执行动画
-            if (throttleTimer) {
+            if (this.data._throttleTimer) {
               return
             }
             let onOff = false
-            if (this.data.deviceInfo.proType === proType.light) {
+            if (this.data.deviceInfo.proType === PRO_TYPE.light) {
               onOff = !this.data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
-            } else if (this.data.deviceInfo.proType === proType.switch) {
+            } else if (this.data.deviceInfo.proType === PRO_TYPE.switch) {
               const switchId = this.data.deviceInfo.switchInfoDTOList[0].switchId
               if (this.data.deviceInfo.mzgdPropertyDTOList[switchId]) {
                 onOff = !this.data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff
               }
               if (this.data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
-                throttleTimer = setTimeout(() => {
-                  throttleTimer = 0
-                }, 550)
+                this.data._throttleTimer = setTimeout(() => {
+                  this.data._throttleTimer = 0
+                  this.setData({
+                    isProcessing: false,
+                  })
+                }, CONTROL_INTERVAL)
+
+                this.setData({
+                  isProcessing: true,
+                })
+
                 return
               }
             }
@@ -177,15 +208,33 @@ ComponentWithComputed({
               ripple: true,
               onOff,
             })
-            throttleTimer = setTimeout(() => {
-              throttleTimer = 0
+            this.data._throttleTimer = setTimeout(() => {
+              this.data._throttleTimer = 0
               this.setData({
                 ripple: false,
+                isProcessing: false,
               })
-            }, 550)
+            }, CONTROL_INTERVAL)
+            this.setData({
+              isProcessing: true,
+            })
           } else {
-            this.triggerEvent('offlineTap', this.data.deviceInfo)
+            this.triggerEvent('offlineTap', {
+              ...this.data.deviceInfo,
+              clientRect: res[0],
+            })
           }
+        })
+    },
+    handleLongPress() {
+      this.createSelectorQuery()
+        .select('#card')
+        .boundingClientRect()
+        .exec((res) => {
+          this.triggerEvent('longPress', {
+            ...this.data.deviceInfo,
+            clientRect: res[0],
+          })
         })
     },
   },

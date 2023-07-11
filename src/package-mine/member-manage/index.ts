@@ -4,6 +4,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { homeBinding, userBinding } from '../../store/index'
 import { storage } from '../../utils/storage'
+import { emitter } from '../../utils/eventBus'
 
 ComponentWithComputed({
   options: {
@@ -54,15 +55,10 @@ ComponentWithComputed({
     ],
     curClickUserItem: null as any,
     curOptionItem: null as any,
-    curUser: { userHouseAuth: 0 } as Home.HouseUserItem,
+    curUser: { userHouseAuth: 3 } as Home.HouseUserItem,
     isNeedShare: false,
     isAdmin: false,
-    headIconList: [
-      '/assets/img/member-manage/head1.png',
-      '/assets/img/member-manage/head2.png',
-      '/assets/img/member-manage/head3.png',
-      '/assets/img/member-manage/head4.png',
-    ],
+    isVisitor: false,
     popupTitle: '权限管理',
   },
 
@@ -72,12 +68,16 @@ ComponentWithComputed({
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
     attached: function () {
       this.updateShareSetting()
-      userBinding.store.updateUserInfo().then(() => {
+      this.initData()
+
+      emitter.on('invite_user_house', () => {
         this.initData()
       })
     },
     moved: function () {},
-    detached: function () {},
+    detached: function () {
+      emitter.off('invite_user_house')
+    },
   },
 
   methods: {
@@ -85,34 +85,46 @@ ComponentWithComputed({
       homeBinding.store.updateHomeMemberList().then(() => {
         this.updateView()
       })
+      homeBinding.store.getInviteShareId()
     },
     updateView() {
+      if (homeBinding.store.homeMemberInfo.houseUserList.length === 0) return
       const curUserId = userBinding.store.userInfo.userId
       const result: object[] = []
-      const list = homeBinding.store.homeMemberInfo.houseUserList
+      const list = homeBinding.store.homeMemberInfo.houseUserList.sort((a, b) => {
+        return a.userHouseAuth - b.userHouseAuth
+      })
       if (list) {
         const curUser = list.find((item: Home.HouseUserItem) => {
           return item.userId === curUserId
         })
         if (curUser) {
+          result.push({
+            icon: curUser.headImageUrl,
+            name: curUser.userName,
+            role: curUser.userHouseAuthName,
+            id: curUser.userId,
+            roleCode: curUser.userHouseAuth,
+            isCanEdit: false,
+          })
           this.setData({
             curUser: curUser,
             isAdmin: curUser.userHouseAuth === 2,
+            isVisitor: curUser.userHouseAuth === 3,
           })
         }
         list.forEach((item: Home.HouseUserItem) => {
-          let isCanEdit = false
-          if (curUser?.userId === item.userId) isCanEdit = false
-          else isCanEdit = this.canIEditOther(curUser?.userHouseAuth, item.userHouseAuth)
-          const headIndex = Math.floor(Math.random() * 4)
-          result.push({
-            icon: this.data.headIconList[headIndex],
-            name: item.userName,
-            role: item.userHouseAuthName,
-            id: item.userId,
-            roleCode: item.userHouseAuth,
-            isCanEdit: isCanEdit,
-          })
+          if (curUser?.userId !== item.userId) {
+            const isCanEdit = this.canIEditOther(curUser?.userHouseAuth, item.userHouseAuth)
+            result.push({
+              icon: item.headImageUrl,
+              name: item.userName,
+              role: item.userHouseAuthName,
+              id: item.userId,
+              roleCode: item.userHouseAuth,
+              isCanEdit: isCanEdit,
+            })
+          }
         })
         this.setData({ memberList: result })
       }
@@ -121,7 +133,6 @@ ComponentWithComputed({
       //创建者：1 管理员：2 游客：3
       if (mySelf === other) return false
       if (mySelf === 1) return true
-      if (mySelf == 2 && other == 3) return true
       return false
     },
     onUserItemClick(data: any) {
@@ -272,16 +283,19 @@ ComponentWithComputed({
       setTimeout(() => {
         this.setData({ isEditRole: false })
         this.clearOptionList()
+        emitter.emit('homeInfoEdit')
       }, 300)
     },
     changeUserRole(userId: string, auth: Home.UserRole) {
       homeBinding.store.updateMemberAuth(userId, auth).then(() => {
         this.updateView()
+        emitter.emit('homeInfoEdit')
       })
     },
     deleteUser(userId: string) {
       homeBinding.store.deleteMember(userId).then(() => {
         this.updateView()
+        emitter.emit('homeInfoEdit')
       })
     },
     updateShareSetting() {
@@ -310,15 +324,17 @@ ComponentWithComputed({
               '&houseId=' +
               homeBinding.store.currentHomeId +
               '&time=' +
-              time.valueOf(),
-            imageUrl: '/assets/img/login/logo.png',
+              time.valueOf() +
+              '&shareId=' +
+              homeBinding.store.shareId,
+            imageUrl: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/welcome.png',
           })
         }, 500)
       })
       return {
         title: '邀请你加入我的家庭',
         path: '/pages/index/index?type=visitor',
-        imageUrl: '/assets/img/login/logo.png',
+        imageUrl: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/welcome.png',
         promise,
       }
     },

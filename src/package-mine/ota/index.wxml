@@ -2,7 +2,7 @@
 <view class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7" style="z-index: -1"></view>
 <view class="h-100vh flex flex-col items-center">
   <!-- 标题 -->
-  <nav-bar title="固件升级" left-arrow bind:leftTap="goBack"></nav-bar>
+  <nav-bar title="固件升级" show-go-home="{{fromDevice}}" left-arrow bind:leftTap="goBack"></nav-bar>
   <van-cell-group inset>
     <van-cell>
       <view class="flex flex-col items-start pr-44rpx">
@@ -10,7 +10,7 @@
         <text class="text-28rpx text-black-tips font-normal text-justify mt-24rpx">每天凌晨1:00期间自动升级所有设备固件。升级完成时，设备将短暂重启</text>
       </view>
       <view slot="right-icon">
-        <van-switch checked="{{autoUpdate}}" loading="{{isLoading}}" bind:change="onChange" />
+        <van-switch checked="{{autoUpdate}}" loading="{{isLoading}}" disabled="{{!canOTA}}" bind:change="onAutoUpdateChange" />
       </view>
     </van-cell>
   </van-cell-group>
@@ -38,7 +38,7 @@
             <view class="w-686rpx h-1rpx bg-hex-eef2f7"></view>
             <view class="flex flex-col w-full">
               <view class="mt-24rpx flex">
-                <text>当前版本：</text>
+                <text>最新版本：</text>
                 <view class="ml-30rpx">
                   <text>{{item.version}}</text>
                 </view>
@@ -53,11 +53,18 @@
           </view>
         </van-cell>
       </van-cell-group>
+      <view wx:if="{{!hasUpdate}}" class="w-750rpx flex-center">
+        <view class="h-284rpx"></view>
+        <text class="text-black-tips text-28rpx">暂无可升级设备</text>
+      </view>
     </scroll-view>
   </view>
-  <view class="mb-96rpx mt-32rpx w-686rpx flex-col-center">
+  <view wx:if="{{canOTA}}" class="mb-96rpx mt-32rpx w-686rpx flex-col-center">
     <text class="text-24rpx text-black-tips mb-24rpx {{isUpdating?'':'opacity-0'}}">升级完成时，设备将短暂重启</text>
-    <van-button class="w-686rpx" type="primary" size="large" disabled="{{isUpdating || !hasUpdate}}" bind:click="handleUpdate">{{isUpdating?'剩余'+remainOtaDevice+'个设备...':'立即升级'}}</van-button>
+
+    <view class="w-full" bind:tap="handleUpdate">
+      <van-button class="w-686rpx" type="primary" size="large" disabled="{{isUpdating || !hasUpdate}}">{{isUpdating?'剩余'+remainOtaDevice+'个设备...':'立即升级'}}</van-button>
+    </view>
   </view>
 </view>
 

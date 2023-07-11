@@ -1,6 +1,8 @@
+import Toast from '@vant/weapp/toast/toast'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { editDeviceInfo } from '../../../../../apis/device'
 import { homeStore } from '../../../../../store/index'
+import { checkInputNameIllegal } from '../../../../../utils/validate'
 
 ComponentWithComputed({
   options: {
@@ -12,6 +14,9 @@ ComponentWithComputed({
   properties: {
     deviceInfo: {
       type: Object,
+    },
+    canEditDevice: {
+      type: Boolean,
     },
   },
 
@@ -54,7 +59,7 @@ ComponentWithComputed({
    */
   methods: {
     handleSwitchClick(e: WechatMiniprogram.TouchEvent) {
-      console.log(e.currentTarget.dataset.index)
+      if (!this.data.canEditDevice) return
       this.setData({
         showPopup: true,
         switchClickIndex: e.currentTarget.dataset.index,
@@ -67,12 +72,22 @@ ComponentWithComputed({
       })
     },
     async handleConfirm() {
+      // 校验名字合法性
+      if (checkInputNameIllegal(this.data.switchName)) {
+        Toast('按键名称不能用特殊符号或表情')
+        return
+      }
       this.setData({
         showPopup: false,
       })
       if (this.data.deviceInfo.switchInfoDTOList[this.data.switchClickIndex].switchName !== this.data.switchName) {
+        if (this.data.switchName.length > 5) {
+          Toast('按键名称不能超过5个字符字')
+          return
+        }
         const res = await editDeviceInfo({
           type: '3',
+          deviceType: this.data.deviceInfo.deviceType,
           deviceId: this.data.deviceInfo.deviceId,
           houseId: homeStore.currentHomeDetail.houseId,
           switchId: this.data.deviceInfo.switchInfoDTOList[this.data.switchClickIndex].switchId,

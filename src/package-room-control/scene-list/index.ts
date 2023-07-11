@@ -1,15 +1,14 @@
 // package-room-control/scene-list/index.ts
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { deviceStore, homeStore, sceneBinding, sceneStore } from '../../store/index'
-import pageBehavior from '../../behaviors/pageBehaviors'
-import { runInAction } from 'mobx-miniprogram'
-import { execScene, updateSceneSort } from '../../apis/scene'
 import Toast from '@vant/weapp/toast/toast'
-import { storage, emitter } from '../../utils/index'
+import { deviceStore, homeBinding, homeStore, sceneBinding, sceneStore } from '../../store/index'
+import pageBehavior from '../../behaviors/pageBehaviors'
+import { execScene, updateSceneSort } from '../../apis/scene'
+import { storage, emitter, strUtil } from '../../utils/index'
 
 ComponentWithComputed({
-  behaviors: [BehaviorWithStore({ storeBindings: [sceneBinding] }), pageBehavior],
+  behaviors: [BehaviorWithStore({ storeBindings: [sceneBinding, homeBinding] }), pageBehavior],
   /**
    * 页面的初始数据
    */
@@ -27,11 +26,8 @@ ComponentWithComputed({
 
   computed: {},
 
-  methods: {
-    /**
-     * 生命周期函数--监听页面加载
-     */
-    onLoad() {
+  lifetimes: {
+    ready() {
       this.updateList()
       sceneStore.updateSceneList().then(() => {
         this.updateList()
@@ -43,7 +39,9 @@ ComponentWithComputed({
         })
       })
     },
+  },
 
+  methods: {
     onUnload() {
       emitter.off('sceneEdit')
     },
@@ -58,30 +56,34 @@ ComponentWithComputed({
     updateList() {
       const listData = [] as IAnyObject[]
       const deviceMap = deviceStore.allRoomDeviceMap
+
       sceneStore.sceneList.forEach((scene: Scene.SceneItem) => {
+        let linkName = ''
         if (scene.deviceConditions?.length > 0) {
           const device = deviceMap[scene.deviceConditions[0].deviceId]
           const switchName = device.switchInfoDTOList.find(
             (switchItem) => switchItem.switchId === scene.deviceConditions[0].controlEvent[0].ep.toString(),
           )?.switchName
-          listData.push({
-            ...scene,
-            dragId: scene.sceneId,
-            linkName: `${device.deviceName?.slice(0, 5)}${switchName?.slice(0, 4)} | ${device.roomName}`,
-          })
-          return
+
+          linkName = `${switchName} | ${device.deviceName}`
         }
+
         listData.push({
           ...scene,
           dragId: scene.sceneId,
-          linkName: '',
+          linkName,
+          sceneIcon: scene.sceneIcon + '-gray',
         })
       })
       this.setData({
         listData,
       })
-      const drag = this.selectComponent('#drag')
-      drag.init()
+
+      // 防止场景为空，drag为null·
+      if (listData.length) {
+        const drag = this.selectComponent('#drag')
+        drag.init()
+      }
     },
 
     async onPullDownRefresh() {
@@ -106,25 +108,14 @@ ComponentWithComputed({
     },
 
     toSetting(e: { detail: Scene.SceneItem }) {
-      console.log('toSetting', e)
-      const index = sceneStore.sceneList.findIndex((scene) => scene.sceneId === e.detail.sceneId)
-      runInAction(() => {
-        sceneStore.selectSceneIndex = index
-      })
-      wx.navigateTo({
-        url: '/package-room-control/scene-edit/index',
-      })
+      if (this.data.isCreator || this.data.isAdmin) {
+        wx.navigateTo({
+          url: strUtil.getUrlWithParams('/package-room-control/scene-edit/index', { sceneId: e.detail.sceneId }),
+        })
+      } else {
+        Toast('您当前身份为访客，无法编辑场景')
+      }
     },
-
-    // handleChange(e) {
-    //   console.log('handleChange', e)
-    // },
-
-    // handleScroll(e: { detail: { scrollTop: number } }) {
-    //   this.setData({
-    //     pageMetaScrollTop: e.detail.scrollTop,
-    //   })
-    // },
 
     async handleSortEnd(e: { detail: { listData: Scene.SceneItem[] } }) {
       console.log('handleSortEnd', e)

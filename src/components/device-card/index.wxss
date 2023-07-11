@@ -1,5 +1,5 @@
 .card-shadow {
-  box-shadow: 0px 4px 32px 0px rgba(97, 109, 136, 0.1);
+  box-shadow: 0px 4px 16px 0px rgba(97, 109, 136, 0.1);
 }
 
 .card-clip {
@@ -40,20 +40,7 @@
     opacity: 0;
   }
 }
-/* @keyframes ripple-off {
-  0% {
-    transform: translateY(-500rpx) translateX(-50%);
-    opacity: 0.8;
-  }
-  80% {
-    transform: translateY(0) translateX(-50%);
-    opacity: 0.3;
-  }
-  100% {
-    transform: translateY(0) translateX(-50%);
-    opacity: 0;
-  }
-} */
+
 @keyframes ripple-off {
   0% {
     transform: translateY(250rpx) translateX(-50%);

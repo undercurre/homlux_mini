@@ -1,11 +1,11 @@
-import { execOtaUpdate } from '../../apis/ota'
+import { execOtaUpdate, setOtaSchedule } from '../../apis/ota'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { otaBinding, otaStore } from '../../store/index'
+import { homeBinding, homeStore, otaBinding, otaStore } from '../../store/index'
 import Toast from '@vant/weapp/toast/toast'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 ComponentWithComputed({
-  behaviors: [BehaviorWithStore({ storeBindings: [otaBinding] }), pageBehavior],
+  behaviors: [BehaviorWithStore({ storeBindings: [otaBinding, homeBinding] }), pageBehavior],
 
   /**
    * 组件的初始数据
@@ -17,6 +17,7 @@ ComponentWithComputed({
     otaData: [{}],
     isUpdating: false,
     hasUpdate: false,
+    fromDevice: false,
     _pollingTimer: 0,
   },
 
@@ -30,13 +31,19 @@ ComponentWithComputed({
       })
       return count
     },
+    canOTA(data) {
+      return data.isCreator || data.isAdmin
+    },
   },
 
   /**
    * 组件的方法列表
    */
   methods: {
-    async onLoad() {
+    async onLoad(params: IAnyObject) {
+      this.setData({
+        fromDevice: !!params.fromDevice,
+      })
       wx.createSelectorQuery()
         .select('#content')
         .boundingClientRect()
@@ -52,6 +59,7 @@ ComponentWithComputed({
         this.setData({
           isUpdating: otaStore.otaProductList.some((product) => product.updateStatus === 1),
           hasUpdate: otaStore.otaProductList.length > 0,
+          autoUpdate: !!otaStore.jobStatus,
         })
         if (this.data.isUpdating) {
           this.startPollingQuery()
@@ -63,28 +71,38 @@ ComponentWithComputed({
     onUnload() {
       this.stopPolling()
     },
-    // todo: 待云端实现
-    onChange(e: { detail: boolean }) {
+    async onAutoUpdateChange() {
       if (this.data.isLoading) {
         return
       }
       this.setData({
         isLoading: true,
-        autoUpdate: e.detail,
       })
-      setTimeout(() => {
+      const res = await setOtaSchedule({ houseId: homeStore.currentHomeId, jobStatus: this.data.autoUpdate ? 0 : 1 })
+      if (res.success) {
         this.setData({
-          isLoading: !this.data.isLoading,
+          autoUpdate: !this.data.autoUpdate,
         })
-      }, 1000)
+      }
+      this.setData({
+        isLoading: !this.data.isLoading,
+      })
     },
     handleUpdate() {
+      if (!this.data.hasUpdate) {
+        return
+      }
+
+      console.log('下发OTA')
       this.setData({
         isUpdating: true,
       })
-      execOtaUpdate({
-        deviceOtaList: otaStore.otaUpdateList,
-      }).then((res) => {
+      execOtaUpdate(
+        {
+          deviceOtaList: otaStore.otaUpdateList,
+        },
+        { loading: !this.data.isUpdating },
+      ).then((res) => {
         if (res.success) {
           // 下发升级指令成功，轮询直到完成更新
           this.startPollingQuery()
@@ -103,7 +121,7 @@ ComponentWithComputed({
         } else {
           Toast('查询OTA信息失败')
         }
-      }, 5000)
+      }, 30000)
     },
     stopPolling() {
       if (this.data._pollingTimer) {

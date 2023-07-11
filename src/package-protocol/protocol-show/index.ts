@@ -1,5 +1,5 @@
 import { storage } from '../../utils/index'
-import { userService, privacyPolicy, userInfoList, authList } from './protocol-doc'
+import { userService, privacyPolicy } from './protocol-doc'
 import pageBehavior from '../../behaviors/pageBehaviors'
 Component({
   behaviors: [pageBehavior],
@@ -16,8 +16,12 @@ Component({
       (storage.get<number>('statusBarHeight') as number) +
       (storage.get<number>('navigationBarHeight') as number) +
       'px',
+    type: '',
     doc: '',
     title: '',
+    url: '',
+    width: '',
+    height: '',
   },
 
   /**
@@ -29,24 +33,43 @@ Component({
       if (e.protocal === 'privacyPolicy') {
         this.setData({
           title: '美的照明隐私协议',
+          type: 'doc',
           doc: privacyPolicy,
         })
       } else if (e.protocal === 'userService') {
         this.setData({
           title: '软件许可及用户服务协议',
+          type: 'doc',
           doc: userService,
         })
       } else if (e.protocal === 'userInfoList') {
         this.setData({
           title: '已收集个人信息清单',
-          doc: userInfoList,
+          type: 'img',
+          url: '/package-protocol/assets/img/userInfoList.png',
+          width: '750rpx',
+          height: '1060rpx',
         })
       } else if (e.protocal === 'authList') {
         this.setData({
           title: '美的照明权限列表',
-          doc: authList,
+          type: 'img',
+          url: '/package-protocol/assets/img/authList.png',
+          width: '141vh',
+          height: '100vh',
         })
       }
+    },
+    handleImgTap() {
+      wx.previewMedia({
+        sources: [
+          {
+            url: this.data.url,
+            type: 'image',
+          },
+        ],
+        showmenu: true,
+      })
     },
   },
 })

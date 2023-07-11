@@ -1,4 +1,6 @@
-// package-room-control/scene-edit/components/edit-name/index.ts
+import Toast from '@vant/weapp/toast/toast'
+import { checkInputNameIllegal } from '../../../../utils/index'
+
 Component({
   options: {
     styleIsolation: 'apply-shared',
@@ -42,6 +44,21 @@ Component({
       })
     },
     handleConfirm() {
+      // 校验名字合法性
+      if (checkInputNameIllegal(this.data.name)) {
+        Toast({
+          message: '场景名称不能用特殊符号或表情',
+          zIndex: 99999,
+        })
+        return
+      }
+      if (this.data.name.length > 15) {
+        Toast({
+          message: '场景名称不能超过15个字符',
+          zIndex: 99999,
+        })
+        return
+      }
       this.triggerEvent('confirm', this.data.name)
       this.setData({
         name: '',

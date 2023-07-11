@@ -1,11 +1,13 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
+import Dialog from '@vant/weapp/dialog/dialog'
 import dayjs from 'dayjs'
 import { deviceBinding, homeBinding } from '../../store/index'
+import { bleDevicesBinding, bleDevicesStore } from '../store/bleDeviceStore'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { strUtil, bleUtil } from '../../utils/index'
-import { checkDevice, queryProtypeInfo, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
+import { checkWifiSwitch, strUtil, showLoading, hideLoading, delay, Logger, isAndroid } from '../../utils/index'
+import { checkDevice, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -13,7 +15,7 @@ ComponentWithComputed({
     pureDataPattern: /^_/,
   },
 
-  behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding] }), pageBehaviors],
+  behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding, bleDevicesBinding] }), pageBehaviors],
   /**
    * 组件的属性列表
    */
@@ -23,17 +25,19 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
+    _listenLocationTimeId: 0, // 监听系统位置信息是否打开的计时器， 0为不存在监听
+    needCheckCamera: true, // 是否需要重新检查摄像头权限
+    isBlePermit: false,
     isShowPage: false,
     isShowGatewayList: false, // 是否展示选择网关列表弹窗
     isShowNoGatewayTips: false, // 是否展示添加网关提示弹窗
     isScan: false, // 是否正在扫码
-    _isDiscovering: false, // 是否正在发现蓝牙
-    bleStatus: '',
     isFlash: false,
     selectGatewayId: '',
     selectGatewaySn: '',
-    subdeviceList: Array<string>(),
-    deviceInfo: {} as IAnyObject,
+    deviceInfo: {
+      icon: '/package-distribution/assets/scan/light.png',
+    } as IAnyObject,
   },
 
   computed: {
@@ -42,21 +46,55 @@ ComponentWithComputed({
 
       return allRoomDeviceList.filter((item) => item.deviceType === 1)
     },
-    tipsText(data) {
-      if (data.bleStatus === 'close') {
+    tipsText(data: IAnyObject) {
+      if (!data.available) {
         return '打开手机蓝牙发现附近子设备'
       }
 
-      return data.subdeviceList.length ? `搜索到${data.subdeviceList.length}个附近的子设备` : '正在搜索附近子设备'
+      return data.bleDeviceList?.length ? `搜索到${data.bleDeviceList.length}个附近的子设备` : '正在搜索附近子设备'
     },
   },
 
   lifetimes: {
     async ready() {
-      await homeBinding.store.updateHomeInfo()
+      bleDevicesBinding.store.reset()
 
+      await homeBinding.store.updateHomeInfo()
+    },
+    detached() {
+      wx.closeBluetoothAdapter()
+      wx.stopWifi()
+      clearInterval(this.data._listenLocationTimeId)
+    },
+  },
+
+  pageLifetimes: {
+    show() {
+      this.setData({
+        isShowPage: true,
+      })
+
+      // 蓝牙权限及开关已开情况下
+      this.data.isBlePermit && bleDevicesStore.available && bleDevicesStore.startBleDiscovery()
+    },
+    hide() {
+      // 由于非授权情况下进入页面，摄像头组件已经渲染，即使重新授权页无法正常使用，需要通过wx：if重新触发渲染组件
+      this.setData({
+        isShowPage: false,
+      })
+
+      bleDevicesStore.discovering && bleDevicesStore.stopBLeDiscovery()
+    },
+  },
+
+  /**
+   * 组件的方法列表
+   */
+  methods: {
+    // 检查是否通过微信扫码直接进入该界面时判断场景值
+    checkWxScanEnter() {
       const params = wx.getLaunchOptionsSync()
-      console.log(
+      Logger.log(
         'scanPage',
         params,
         'wx.getEnterOptionsSync()',
@@ -65,49 +103,16 @@ ComponentWithComputed({
         getCurrentPages(),
       )
 
-      this.initBle()
-
       // 防止重复判断,仅通过微信扫码直接进入该界面时判断场景值
       if (getCurrentPages().length === 1 && params.scene === 1011) {
         const scanUrl = decodeURIComponent(params.query.q)
 
-        console.log('scanUrl', scanUrl)
+        Logger.log('scanUrl', scanUrl)
 
         this.handleScanUrl(scanUrl)
 
         return
       }
-    },
-    detached() {
-      wx.closeBluetoothAdapter()
-    },
-  },
-
-  pageLifetimes: {
-    async show() {
-      this.setData({
-        isShowPage: true,
-      })
-    },
-    hide() {
-      console.log('hide')
-      // 由于非授权情况下进入页面，摄像头组件已经渲染，即使重新授权页无法正常使用，需要通过wx：if重新触发渲染组件
-      this.setData({
-        isShowPage: false,
-      })
-    },
-  },
-
-  /**
-   * 组件的方法列表
-   */
-  methods: {
-    test() {
-      wx.scanCode({
-        success(res) {
-          console.log(res)
-        },
-      })
     },
     showGateListPopup() {
       this.setData({
@@ -116,7 +121,6 @@ ComponentWithComputed({
     },
 
     async selectGateway(event: WechatMiniprogram.CustomEvent) {
-      console.log('selectGateway', event)
       const { index } = event.currentTarget.dataset
 
       const item = this.data.gatewayList[index]
@@ -147,168 +151,87 @@ ComponentWithComputed({
      * 检查系统蓝牙开关
      */
     async checkSystemBleSwitch() {
-      const res = wx.getSystemSetting()
-
-      console.log('getSystemSetting', res)
-
-      this.setData({
-        bleStatus: res.bluetoothEnabled ? 'open' : 'close',
-      })
       // 没有打开系统蓝牙开关异常处理
-      if (!res.bluetoothEnabled) {
-        wx.showModal({
-          title: '请打开手机蓝牙',
-          content: '用于发现附近的子设备',
-          showCancel: false,
-          confirmText: '我知道了',
-          confirmColor: '#27282A',
+      if (!bleDevicesStore.available) {
+        Dialog.alert({
+          message: '请打开手机蓝牙，用于发现附近的子设备',
+          showCancelButton: false,
+          confirmButtonText: '我知道了',
         })
       }
 
-      return res.bluetoothEnabled
+      return bleDevicesStore.available
     },
 
     /**
      * 检查微信蓝牙权限
-     * isDeny: 是否已拒绝授权，
      */
-    async checkBlePermission(isDeny?: boolean) {
-      let settingRes: IAnyObject = {}
-      // 若已知未授权，省略查询权限流程，节省时间
-      if (isDeny !== true) {
-        settingRes = await wx.getSetting()
-      }
+    async checkBlePermission() {
+      showLoading()
+      // 没有打开微信蓝牙授权异常处理
 
-      return new Promise<boolean>((resolve) => {
-        // 没有打开微信蓝牙授权异常处理
-        console.log('getSetting', settingRes)
-
-        if (isDeny || !settingRes.authSetting['scope.bluetooth']) {
-          wx.showModal({
-            content: '请授权使用蓝牙，否则无法正常扫码配网',
-            showCancel: true,
-            cancelText: '返回',
-            cancelColor: '#27282A',
-            confirmText: '去设置',
-            confirmColor: '#27282A',
-            success: (res) => {
-              console.log('showModal', res)
-              if (res.cancel) {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                this.goBack() // 拒绝授权摄像头，则退出当前页面
-                resolve(false)
-
-                return
-              }
-
-              wx.openSetting({
-                success: (settingRes) => {
-                  console.log('openSetting', settingRes)
-                  resolve(this.checkBlePermission())
-                },
-              })
-            },
-          })
-        } else {
-          resolve(true)
-        }
+      this.setData({
+        needCheckCamera: true,
       })
+
+      Dialog.alert({
+        message: '请授权使用蓝牙，否则无法正常扫码配网',
+        showCancelButton: true,
+        cancelButtonText: '返回',
+        confirmButtonText: '去设置',
+        confirmButtonOpenType: 'openSetting',
+      }).catch(() => {
+        // on cancel
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        this.goBack() // 拒绝授权摄像头，则退出当前页面
+      })
+
+      hideLoading()
     },
 
     async initBle() {
+      if (bleDevicesStore.discovering) {
+        return
+      }
+
       // 初始化蓝牙模块
-      const openBleRes = await wx
+      const openBleRes = (await wx
         .openBluetoothAdapter({
           mode: 'central',
         })
-        .catch((err: WechatMiniprogram.BluetoothError) => err)
+        .catch((err: WechatMiniprogram.BluetoothError) => err)) as IAnyObject
 
-      // 判断是否授权蓝牙
-      if (openBleRes.errMsg.includes('auth deny')) {
-        const permission = await this.checkBlePermission(true)
+      Logger.log('scan-openBleRes', openBleRes)
+
+      // 判断是否授权蓝牙 安卓、IOS返回错误格式不一致
+      if (openBleRes.errno === 103 || openBleRes.errMsg.includes('auth deny')) {
+        this.checkBlePermission()
 
         // 优先判断微信授权设置
-        if (!permission) {
-          return
-        }
+        return
       }
 
-      console.log('scan-openBleRes', openBleRes)
-
-      wx.onBluetoothAdapterStateChange((res) => {
-        console.log('onBluetoothAdapterStateChange-scan', res)
-        this.setData({
-          bleStatus: res.available ? 'open' : 'close',
-        })
-        if (res.available) {
-          this.startDiscoverBle()
-        }
+      this.setData({
+        isBlePermit: true,
       })
 
       // 系统是否已打开蓝牙
       const res = await this.checkSystemBleSwitch()
 
       if (!res) {
-        return
+        const listen = (res: WechatMiniprogram.OnBluetoothAdapterStateChangeCallbackResult) => {
+          if (res.available) {
+            bleDevicesStore.startBleDiscovery()
+            this.checkWxScanEnter()
+            wx.offBluetoothAdapterStateChange(listen)
+          }
+        }
+        wx.onBluetoothAdapterStateChange(listen)
       } else {
-        this.startDiscoverBle()
+        bleDevicesStore.startBleDiscovery()
+        this.checkWxScanEnter()
       }
-    },
-
-    async startDiscoverBle() {
-      if (this.data._isDiscovering) {
-        return
-      }
-
-      this.data._isDiscovering = true
-
-      // 监听扫描到新设备事件
-      wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
-        const subdeviceList = res.devices.filter((item) => {
-          let flag = false
-
-          // localName为homlux_ble且没有被发现过的
-          if (
-            item.localName &&
-            item.localName.includes('homlux_ble') &&
-            this.data.subdeviceList.findIndex((listItem) => item.deviceId === listItem) < 0
-          ) {
-            flag = true
-          } else {
-            return false
-          }
-
-          const dataMsg = strUtil.ab2hex(item.advertisData)
-          const msgObj = bleUtil.transferBroadcastData(dataMsg)
-          console.log('BroadcastData', msgObj)
-
-          // 过滤已经配网的设备
-          // 设备网络状态 0x00：未入网   0x01：正在入网   0x02:  已经入网   0x03:  已经连入网，但父节点没有响应
-          if (msgObj.isConfig !== '00') {
-            flag = false
-          }
-
-          return flag
-        })
-
-        if (subdeviceList.length <= 0) return
-
-        this.setData({
-          subdeviceList: this.data.subdeviceList.concat(subdeviceList.map((item) => item.deviceId)),
-        })
-      })
-
-      // 开始搜寻附近的蓝牙外围设备
-      wx.startBluetoothDevicesDiscovery({
-        // services: ['BAE55B96-7D19-458D-970C-50613D801BC9'],
-        allowDuplicatesKey: false,
-        powerLevel: 'high',
-        interval: 3000,
-        success(res) {
-          console.log('startBluetoothDevicesDiscovery', res)
-        },
-      })
     },
 
     onCloseGwList() {
@@ -320,50 +243,47 @@ ComponentWithComputed({
     },
 
     // 检查摄像头权限
-    async checkCamera() {
-      const settingRes = await wx.getSetting()
+    async checkCameraPerssion() {
+      showLoading()
+      const settingRes = await wx.getSetting().catch((err) => err)
 
-      console.log('getSetting', settingRes)
-      // res.authSetting = {
-      //   "scope.userInfo": true,
-      //   "scope.userLocation": true
-      // }
+      Logger.log('检查摄像头权限', settingRes)
 
       if (!settingRes.authSetting['scope.camera']) {
-        wx.showModal({
-          content: '请授权使用摄像头，否则无法正常扫码配网',
-          showCancel: true,
-          cancelText: '返回',
-          cancelColor: '#27282A',
-          confirmText: '去设置',
-          confirmColor: '#27282A',
-          success: (res) => {
-            console.log('showModal', res)
-            if (res.cancel) {
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              this.goBack() // 拒绝授权摄像头，则退出当前页面
-              return
-            }
+        // 跳转过权限设置页均需要重置needCheckCamera状态，回来后需要重新检查摄像头权限
+        this.setData({
+          needCheckCamera: true,
+        })
 
-            wx.openSetting({
-              success: (settingRes) => {
-                console.log('openSetting', settingRes)
-              },
-            })
-          },
+        Dialog.alert({
+          message: '请授权使用摄像头，用于扫码配网',
+          showCancelButton: true,
+          cancelButtonText: '返回',
+          confirmButtonText: '去设置',
+          confirmButtonOpenType: 'openSetting',
+        }).catch(() => {
+          // on cancel
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          this.goBack() // 拒绝授权摄像头，则退出当前页面
+        })
+      } else {
+        this.setData({
+          needCheckCamera: false,
         })
       }
+
+      hideLoading()
+
+      return settingRes.authSetting['scope.camera']
     },
     /**
      * 扫码解析
      */
     async getQrCodeInfo(e: WechatMiniprogram.CustomEvent) {
-      if (this.data.isScan) {
+      if (this.data.isScan || !bleDevicesStore.discovering) {
         return
       }
-
-      console.log('getQrCodeInfo', e, this.data.isScan)
 
       const scanUrl = e.detail.result
 
@@ -371,9 +291,48 @@ ComponentWithComputed({
     },
 
     getCameraError(event: WechatMiniprogram.CustomEvent) {
-      console.log('getCameraError', event)
+      Logger.error('getCameraError', event)
 
-      this.checkCamera()
+      this.checkCameraPerssion()
+    },
+
+    async initCameraDone() {
+      Logger.log('initCameraDone')
+      if (this.data.needCheckCamera) {
+        const flag = await this.checkCameraPerssion()
+
+        if (!flag) {
+          return
+        }
+      }
+
+      // 安卓 6.0 及以上版本，定位开关未打开时，无法进行设备搜索。
+      if (isAndroid() && !this.data._listenLocationTimeId) {
+        const systemSetting = wx.getSystemSetting()
+
+        if (!systemSetting.locationEnabled) {
+          wx.showModal({
+            content: '请打开手机系统的位置信息开关',
+            showCancel: false,
+            confirmText: '我知道了',
+            confirmColor: '#488FFF',
+          })
+
+          this.data._listenLocationTimeId = setInterval(() => {
+            const systemSetting = wx.getSystemSetting()
+
+            if (systemSetting.locationEnabled) {
+              clearInterval(this.data._listenLocationTimeId)
+              this.data._listenLocationTimeId = 0
+              this.initBle()
+            }
+          }, 3000)
+
+          return
+        }
+      }
+
+      this.initBle()
     },
 
     toggleFlash() {
@@ -388,7 +347,10 @@ ComponentWithComputed({
         mediaType: ['image'],
         sourceType: ['album'],
         success: async (res) => {
-          console.log('选择相册：', res)
+          this.setData({
+            isScan: true,
+          })
+          showLoading()
 
           const file = res.tempFiles[0]
 
@@ -398,7 +360,7 @@ ComponentWithComputed({
           if (file.size > 1500 * 1024) {
             const compressRes = await wx.compressImage({
               src: file.tempFilePath,
-              quality: 80,
+              quality: 70,
             })
 
             console.log('compressRes', compressRes)
@@ -439,39 +401,57 @@ ComponentWithComputed({
         },
         success: async (res) => {
           console.log('uploadFile-success', res)
+          await delay(3000) // 由于有可能图片还没上传完毕，需要延迟调用解析图片接口
+
           const query = await queryWxImgQrCode(result.downloadUrl)
 
           if (query.success) {
             this.handleScanUrl(query.result.qrCodeUrl)
+          } else {
+            hideLoading()
+            Toast('无效二维码')
+            this.setData({
+              isScan: false,
+            })
           }
-        },
-        complete(res) {
-          console.log('uploadFile-complete', res)
         },
       })
     },
 
     async handleScanUrl(url: string) {
-      if (!url.includes('meizgd.com/homlux/qrCode.html')) {
-        Toast('非法二维码')
-        return
-      }
+      try {
+        this.setData({
+          isScan: true,
+        })
 
-      this.setData({
-        isScan: true,
-      })
+        if (!url.includes('meizgd.com/homlux/qrCode.html')) {
+          throw '无效二维码'
+        }
 
-      const pageParams = strUtil.getUrlParams(url)
+        const pageParams = strUtil.getUrlParams(url)
 
-      console.log('pageParams', pageParams)
+        Logger.log('scanParams', pageParams)
 
-      // mode 配网方式 （00代表AP配网，01代表蓝牙配网， 02代表AP+有线）
-      if (pageParams.mode === '01') {
-        // 子设备
-        await this.bindSubDevice(pageParams)
-      } else if (pageParams.mode === '02') {
-        // 网关绑定逻辑
-        await this.bindGateway(pageParams)
+        showLoading()
+        // mode 配网方式 （00代表AP配网，01代表蓝牙配网， 02代表AP+有线）
+        if (pageParams.mode === '01') {
+          // 子设备
+          await this.bindSubDevice(pageParams)
+        } else if (pageParams.mode === '02') {
+          // 网关绑定逻辑
+          await this.bindGateway(pageParams)
+        } else if (pageParams.mode === '10') {
+          wx.redirectTo({
+            url: strUtil.getUrlWithParams('/package-auth/auth-screen/index', {
+              code: pageParams.code,
+            }),
+          })
+        } else {
+          throw '无效二维码'
+        }
+        hideLoading()
+      } catch (err) {
+        Toast(err as string)
       }
 
       // 延迟复位扫码状态，防止安卓端短时间重复执行扫码逻辑
@@ -479,19 +459,16 @@ ComponentWithComputed({
         this.setData({
           isScan: false,
         })
-
-        console.log('isScan', this.data.isScan)
       }, 2000)
     },
 
     async bindGateway(params: IAnyObject) {
-      wx.showLoading({
-        title: 'loading',
-      })
-
-      const res = await queryProtypeInfo({
-        pid: params.pid,
-      })
+      const res = await checkDevice(
+        {
+          productId: params.pid,
+        },
+        { loading: false },
+      )
 
       if (!res.success) {
         Toast('验证产品信息失败')
@@ -499,27 +476,31 @@ ComponentWithComputed({
         return
       }
 
-      wx.navigateTo({
-        url: strUtil.getUrlWithParams('/package-distribution/check-gateway/index', {
-          ssid: params.ssid,
-          deviceName: res.result.productName,
-        }),
-      })
-      wx.hideLoading()
-    },
-
-    async bindSubDevice(params: IAnyObject) {
-      wx.showLoading({
-        title: 'loading',
-      })
-
-      if (this.data.bleStatus !== 'open') {
-        this.checkSystemBleSwitch()
+      // 预校验wifi开关是否打开
+      if (!checkWifiSwitch()) {
         return
       }
 
-      const res = await checkDevice({ dsn: params.sn })
+      Logger.log('checkDevice', res)
+      wx.reportEvent('add_device', {
+        pro_type: res.result.proType,
+        model_id: params.pid,
+        add_type: 'qrcode',
+      })
 
+      wx.navigateTo({
+        url: strUtil.getUrlWithParams('/package-distribution/link-gateway/index', {
+          apSSID: params.ssid,
+          deviceName: res.result.productName,
+          type: 'query',
+        }),
+      })
+    },
+
+    async bindSubDevice(params: IAnyObject) {
+      const res = await checkDevice({ dsn: params.sn }, { loading: false })
+
+      Logger.log('checkDevice', res)
       if (!res.success) {
         Toast('验证产品信息失败')
 
@@ -533,7 +514,7 @@ ComponentWithComputed({
           proType: res.result.proType,
           deviceName: res.result.productName,
           icon: res.result.productIcon,
-          mac: res.result.mac,
+          mac: res.result.mac, // zigbee 的mac
         },
       })
 
@@ -542,7 +523,6 @@ ComponentWithComputed({
       if (flag) {
         this.addSingleSubdevice()
       }
-      wx.hideLoading()
     },
 
     /**
@@ -555,10 +535,15 @@ ComponentWithComputed({
         return true
       }
 
-      console.log('this.data.gatewayList', this.data.gatewayList)
       if (this.data.gatewayList.length === 0) {
         this.setData({
           isShowNoGatewayTips: true,
+        })
+
+        Dialog.alert({
+          title: this.data.deviceInfo.deviceName,
+          showCancelButton: false,
+          confirmButtonText: '我知道了',
         })
 
         return false
@@ -582,6 +567,7 @@ ComponentWithComputed({
      */
     addNearSubdevice() {
       this.data.deviceInfo.type = 'near'
+      this.data.deviceInfo.deviceName = '子设备'
 
       if (!this.checkGateWayInfo()) {
         return
@@ -590,7 +576,6 @@ ComponentWithComputed({
       const gatewayId = this.data.selectGatewayId,
         gatewaySn = this.data.selectGatewaySn
 
-      wx.closeBluetoothAdapter()
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
           gatewayId,
@@ -604,7 +589,14 @@ ComponentWithComputed({
       const gatewayId = this.data.selectGatewayId,
         gatewaySn = this.data.selectGatewaySn
 
-      wx.closeBluetoothAdapter()
+      const { proType, modelId } = this.data.deviceInfo
+
+      wx.reportEvent('add_device', {
+        pro_type: proType,
+        model_id: modelId,
+        add_type: 'qrcode',
+      })
+
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/add-subdevice/index', {
           mac: this.data.deviceInfo.mac,
@@ -612,7 +604,8 @@ ComponentWithComputed({
           gatewaySn,
           deviceName: this.data.deviceInfo.deviceName,
           deviceIcon: this.data.deviceInfo.icon,
-          proType: this.data.deviceInfo.proType,
+          proType: proType,
+          modelId,
         }),
       })
     },

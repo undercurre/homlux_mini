@@ -1,25 +1,31 @@
 <view class="page-container flex flex-col">
   <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="添加设备"></nav-bar>
 
-  <view class="grow flex flex-col">
+  <view class="grow flex flex-col pt-100rpx">
     <block wx:if="{{status === 'linking'}}">
-      <tips-box text="请将设备尽量靠近智能网关" icon="{{pageParams.deviceIcon}}" size="160"></tips-box>
+      <tips-box text="请将{{pageParams.deviceName}}尽量靠近智能网关" icon="{{pageParams.deviceIcon}}" size="160"></tips-box>
 
       <mz-progress show-progress="{{true}}" active-index="{{activeIndex}}"></mz-progress>
     </block>
 
     <block wx:if="{{status === 'error'}}">
-      <tips-box text="连接失败！" icon="/assets/img/default-img/error.png"></tips-box>
+      <tips-box text="添加失败！" icon="/assets/img/default-img/no-found.png"></tips-box>
 
-      <view class="grow pl-88rpx pr-50rpx pt-180rpx">
+      <view class="grow px-88rpx pt-180rpx">
         <view class="text-28 text-black-2a">
-          <text>请排查以下原因：</text>
+          <text>请排查以下情况：</text>
         </view>
 
-        <view class="flex flex-col py-24rpx text-26 text-hex-666 leading-46rpx">
-          <text>1、确保路由器网络环境正常</text>
-          <text>2、将网关尽可能靠近路由器</text>
-          <text>3、合理摆放网关的位置，避免部分子设备距离过远</text>
+        <view class="py-30rpx text-26 text-hex-666 leading-46rpx">
+          <view>
+            <text>1、家庭网络是否正常</text>
+          </view>
+          <view>
+            <text>2、网关是否正常供电，且已连接家庭网络</text>
+          </view>
+          <view>
+            <text>3、子设备是否离网关过远，或被障碍物遮挡</text>
+          </view>
         </view>
       </view>
 

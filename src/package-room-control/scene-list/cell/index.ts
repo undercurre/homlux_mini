@@ -1,5 +1,6 @@
-// package-room-control/scene-list/cell/index.ts
-Component({
+import { ComponentWithComputed } from 'miniprogram-computed'
+
+ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
   },
@@ -10,6 +11,22 @@ Component({
     item: {
       type: Object,
       value: {},
+    },
+  },
+
+  computed: {
+    linkDesc(data) {
+      if (data.item?.data?.linkName) {
+        return '已关联：' + data.item.data.linkName
+      }
+      return '暂未关联开关'
+    },
+    sceneName(data) {
+      if (data.item?.data?.sceneName?.length && data.item?.data?.sceneName?.length > 10) {
+        return data.item.data.sceneName.slice(0, 8) + '...'
+      } else {
+        return data.item.data.sceneName
+      }
     },
   },
 

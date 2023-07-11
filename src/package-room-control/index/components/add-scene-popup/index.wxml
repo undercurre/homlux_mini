@@ -1,14 +1,13 @@
 <import src="/commons/templates/popup.wxml" />
-<van-popup show="{{ show }}" z-index="9000" round position="bottom" bind:close="handleClose">
+<van-popup show="{{ show }}" z-index="1000" round position="bottom" bind:close="handleClose" closeable>
   <view class="w-750rpx h-1200rpx relative flex flex-col items-center">
-    <template is="close" />
-    <template is="title" data="{{title: '收藏为新场景'}}" />
+    <template is="title" data="{{title: '创建场景'}}" />
     <text class="h-36rpx text-26rpx text-black-tips mt-22rpx font-normal">保存房间内设备的状态，便于快速执行</text>
     <view class="mt-32rpx w-750rpx">
       <text class="ml-48rpx h-40rpx text-28rpx text-black-2a font-normal">场景名称</text>
     </view>
     <view class="mt-32rpx w-686rpx mx-32rpx">
-      <van-field model:value="{{ sceneName }}" placeholder="自定义场景" custom-style="padding: 28rpx 32rpx;border: 2rpx solid #DDDDDD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
+      <van-field model:value="{{ sceneName }}" placeholder="自定义场景" custom-style="padding: 28rpx 32rpx;background-color: #F6FAFD;border-radius: 24rpx;" clearable="{{true}}" border="{{false}}"> </van-field>
     </view>
     <view class="mt-32rpx w-750rpx">
       <text class="ml-48rpx h-40rpx text-28rpx text-black-2a font-normal">选择场景图标</text>
@@ -20,20 +19,8 @@
       </view>
     </view>
 
-    <!-- <view class="flex-1 w-654rpx" id="content">
-      <scroll-view enhanced scroll-x style="height: {{contentHeight}}px;">
-        <view class="h-32rpx"></view>
-        <view class="flex">
-          <view data-scene="{{item[0]}}" bindtap="handleSceneIconTap" wx:for="{{sceneList}}" wx:key="index" class="rounded-32rpx bg-hex-f6fafd box-border flex-center {{index !== 0 ? 'ml-48rpx' : ''}}" style="border: 4rpx solid {{sceneIcon === item[0]?'#488FFF':'transparent'}};">
-            <image class="w-72rpx h-72rpx m-24rpx" src="/assets/img/scene/{{item[0]}}.png" mode="" />
-          </view>
-        </view>
-        <view class="h-32rpx"></view>
-      </scroll-view>
-    </view> -->
-
     <van-cell-group inset class="w-750rpx mb-32rpx">
-      <van-cell center is-link custom-class="switch-cell" value="{{linkSwitch?'已关联':'未关联'}}" bind:click="handleLinkSwitchPopup" custom-style="border: 2rpx solid #DDDDDD;border-radius: 24px;">
+      <van-cell center is-link custom-class="switch-cell" value="{{linkSwitch?'已关联':'未关联'}}" bind:click="handleLinkSwitchPopup" custom-style="border: 2rpx solid #DDDDDD;border-radius: 24px;" border="{{false}}">
         <view class="flex flex-col items-start" slot="title">
           <text class="text-32rpx text-black-2a font-medium h-44rpx">关联智能开关</text>
           <text class="text-26rpx text-black-tips font-normal leading-none mt-12rpx mb-12rpx">通过开关触发场景</text>
@@ -41,16 +28,17 @@
       </van-cell>
     </van-cell-group>
 
-    <!-- <template is="bottom-btn" data="{{disabled: disabled}}" /> -->
     <view class="flex w-686rpx">
       <van-button class="flex-1" size="large" bind:click="handleReturn">上一步</van-button>
       <view class="w-46rpx"></view>
-      <van-button type="primary" class="flex-1" size="large" bind:click="handleConfirm">确定</van-button>
+      <van-button disabled="{{!sceneName || isAddingScene}}" type="primary" class="flex-1" size="large" bind:click="handleConfirm">确定</van-button>
     </view>
     <view style="height: calc(96rpx - env(safe-area-inset-bottom))"></view>
   </view>
+
+  <select-card-popup show="{{showLinkPopup}}" title="关联智能开关" showCancel="{{false}}" list="{{list}}" selectList="{{linkSelectList}}" bind:select="handleLinkSelect" bind:close="handleLinkPopupClose" bind:confirm="handleLinkPopupConfirm"></select-card-popup>
 </van-popup>
 
-<link-popup show="{{showLinkPopup}}" list="{{list}}" selectList="{{linkSelectList}}" linkType="switch" bind:select="handleLinkSelect" bind:close="handleLinkPopupClose" bind:confirm="handleLinkPopupConfirm"></link-popup>
-
 <van-toast id="van-toast" />
+
+<van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />

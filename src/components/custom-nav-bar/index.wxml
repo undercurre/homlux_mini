@@ -5,8 +5,13 @@
   <!--自定义导航栏-->
   <view class="flex justify-center items-center w-full relative" style="{{'height:' + navigationBarHeight}}">
     <!-- 左侧内容 -->
-    <view wx:if="{{leftArrow}}" bindtap="handleLeftTap" class="absolute left-0 top-0 bottom-0 flex items-center">
-      <image src="{{leftIcon}}" class="w-48rpx h-48rpx mx-32rpx"></image>
+    <view wx:if="{{leftArrow}}" class="absolute left-0 top-0 bottom-0 flex items-center">
+      <view class="flex-center h-full ml-32rpx" bindtap="handleLeftTap">
+        <image src="{{leftIcon}}" class="w-48rpx h-48rpx"></image>
+      </view>
+      <view class="flex-center h-full ml-26rpx" wx:if="{{showGoHome}}" bindtap="handleGoHome">
+        <image src="/assets/img/base/go-home.png" class="w-35rpx h-35rpx"></image>
+      </view>
     </view>
     <slot></slot>
     <!-- 标题 -->

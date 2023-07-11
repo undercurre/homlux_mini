@@ -13,6 +13,21 @@ export const userStore = observable({
   } as User.UserInfo,
   isLogin: false,
 
+  logout() {
+    runInAction(() => {
+      this.userInfo = {
+        userId: '',
+        nickName: '',
+        mobilePhone: '',
+        headImageUrl: '',
+        name: '',
+        wxId: '',
+        sex: 0,
+      }
+      this.isLogin = false
+    })
+  },
+
   setIsLogin(value: boolean) {
     runInAction(() => {
       this.isLogin = value
@@ -23,7 +38,7 @@ export const userStore = observable({
     const res = await queryUserInfo()
     if (res.success) {
       runInAction(() => {
-        res.result.nickName = res.result.nickName ?? res.result.mobilePhone.slice(-4)
+        res.result.nickName = res.result.nickName ?? '用户' + res.result.mobilePhone.slice(-4)
         userStore.userInfo = res.result
       })
       return

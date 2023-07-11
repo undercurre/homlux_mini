@@ -1,0 +1,25 @@
+/* @import '../common/index.wxss'; */
+.mz-slider {
+  height: 80rpx;
+  background-color: #eff0f3;
+  border-radius: 24rpx;
+  overflow: hidden;
+}
+
+.mz-slider-bar {
+  background-color: rgb(80, 127, 255);
+  border-radius: 24rpx;
+  height: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.mz-slider-button {
+  background-color: #fff;
+  border-radius: 8rpx;
+  height: 40rpx;
+  width: 8rpx;
+}
+.mz-slider--disabled {
+  opacity: 0.5;
+}

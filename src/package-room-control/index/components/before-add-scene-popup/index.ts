@@ -1,11 +1,14 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { runInAction } from 'mobx-miniprogram'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { maxColorTempK, minColorTempK, proType } from '../../../../config/index'
-import { roomBinding, sceneBinding, sceneStore } from '../../../../store/index'
+import { findDevice, sendDevice } from '../../../../apis/index'
+import { PRO_TYPE } from '../../../../config/index'
+import { deviceStore, roomBinding, sceneBinding, sceneStore } from '../../../../store/index'
+import { toPropertyDesc } from '../../../../utils/index'
 
 ComponentWithComputed({
   options: {
+    pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
     styleIsolation: 'apply-shared',
   },
   behaviors: [BehaviorWithStore({ storeBindings: [sceneBinding, roomBinding] })],
@@ -31,11 +34,10 @@ ComponentWithComputed({
   data: {
     editIndex: 0,
     contentHeight: 0,
-    sceneEditTitle: '',
-    showSceneEditLightPopup: false,
-    showSceneEditSwitchPopup: false,
-    sceneLightEditInfo: {} as IAnyObject,
-    sceneSwitchEditInfo: {} as IAnyObject,
+    actionEditTitle: '',
+    popupType: '', // 编辑的设备类型
+    sceneEditInfo: {} as IAnyObject,
+    _cacheDeviceMap: {} as IAnyObject, // 缓存设备设置预览前的设备状态，用于退出时恢复
   },
 
   computed: {
@@ -65,6 +67,21 @@ ComponentWithComputed({
     },
     handleClose() {
       this.triggerEvent('close')
+
+      const { _cacheDeviceMap } = this.data
+
+      console.log('handleClose', _cacheDeviceMap)
+
+      for (const cacheDevice of Object.values(_cacheDeviceMap)) {
+        sendDevice({
+          deviceId: cacheDevice.deviceId,
+          gatewayId: cacheDevice.gatewayId,
+          proType: cacheDevice.proType,
+          deviceType: cacheDevice.deviceType,
+          ep: cacheDevice.ep,
+          property: cacheDevice.property,
+        })
+      }
     },
     handleNext() {
       this.triggerEvent('next')
@@ -76,56 +93,77 @@ ComponentWithComputed({
       })
     },
     handleSceneActionEdit(e: WechatMiniprogram.TouchEvent) {
-      if (sceneStore.addSceneActions[e.currentTarget.dataset.index].proType === proType.light) {
-        this.setData({
-          sceneEditTitle: sceneStore.addSceneActions[e.currentTarget.dataset.index].name,
-          sceneLightEditInfo: sceneStore.addSceneActions[e.currentTarget.dataset.index].value,
-          showSceneEditLightPopup: true,
-          editIndex: e.currentTarget.dataset.index,
-        })
-      } else if (sceneStore.addSceneActions[e.currentTarget.dataset.index].proType === proType.switch) {
-        this.setData({
-          sceneEditTitle: sceneStore.addSceneActions[e.currentTarget.dataset.index].name,
-          sceneSwitchEditInfo: sceneStore.addSceneActions[e.currentTarget.dataset.index].value,
-          showSceneEditSwitchPopup: true,
-          editIndex: e.currentTarget.dataset.index,
-        })
+      const deviceAction = sceneStore.addSceneActions[e.currentTarget.dataset.index]
+      const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
+      const device = allRoomDeviceMap[deviceAction.uniId]
+
+      let ep = 1
+      if (device.proType === PRO_TYPE.switch) {
+        ep = Number(device.switchInfoDTOList[0].switchId)
       }
-    },
-    handleSceneLightEditPopupClose() {
+      // 目前仅子设备单控支持闪烁指令
+      deviceAction.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, ep })
+
       this.setData({
-        showSceneEditLightPopup: false,
+        actionEditTitle: deviceAction.name,
+        sceneEditInfo: {
+          ...deviceAction.value,
+          deviceType: deviceAction.deviceType,
+          gatewayId: device.gatewayId,
+          deviceId: device.deviceId,
+        },
+        popupType: deviceAction.proType,
+        editIndex: e.currentTarget.dataset.index,
       })
     },
-    handleSceneSwitchEditPopupClose() {
+    handleEditPopupClose() {
       this.setData({
-        showSceneEditSwitchPopup: false,
+        popupType: '',
       })
     },
+
+    /**
+     * 预览设备状态,需求
+     */
     handleSceneEditConfirm(e: { detail: IAnyObject }) {
-      sceneStore.addSceneActions[this.data.editIndex].value = {
-        ep: sceneStore.addSceneActions[this.data.editIndex].value.ep,
-        ...e.detail,
-      }
-      if (sceneStore.addSceneActions[this.data.editIndex].proType === proType.light) {
-        if (e.detail.OnOff) {
-          const desc = e.detail.OnOff ? ['打开'] : ['关闭']
-          const color = (e.detail.ColorTemp / 100) * (maxColorTempK - minColorTempK) + minColorTempK
-          desc.push(`亮度${e.detail.Level}%`)
-          desc.push(`色温${color}K`)
-          sceneStore.addSceneActions[this.data.editIndex].desc = desc
-        } else {
-          sceneStore.addSceneActions[this.data.editIndex].desc = ['关闭']
+      console.log('previewDeviceStatus', e)
+      const { _cacheDeviceMap } = this.data
+      const deviceAction = sceneStore.addSceneActions[this.data.editIndex]
+      const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
+      const device = allRoomDeviceMap[deviceAction.uniId]
+      const previewData = e.detail
+
+      if (!_cacheDeviceMap[deviceAction.uniId]) {
+        let property = {
+          ...deviceAction.value,
         }
-      } else if (sceneStore.addSceneActions[this.data.editIndex].proType === proType.switch) {
-        sceneStore.addSceneActions[this.data.editIndex].desc = e.detail.OnOff ? ['打开'] : ['关闭']
+
+        delete property.minColorTemp
+        delete property.maxColorTemp
+
+        if (deviceAction.proType === PRO_TYPE.curtain) {
+          property = { curtain_position: deviceAction.value.curtain_position }
+        }
+
+        _cacheDeviceMap[deviceAction.uniId] = {
+          gatewayId: device.gatewayId,
+          deviceId: device.deviceId,
+          proType: device.proType,
+          deviceType: device.deviceType,
+          ep: deviceAction.value.ep,
+          property,
+        }
       }
+
+      deviceAction.value = {
+        ...deviceAction.value,
+        ...previewData,
+      }
+
+      deviceAction.desc = toPropertyDesc(deviceAction.proType, deviceAction.value)
+
       runInAction(() => {
         sceneStore.addSceneActions = [...sceneStore.addSceneActions]
-      })
-      this.setData({
-        showSceneEditLightPopup: false,
-        showSceneEditSwitchPopup: false,
       })
     },
   },

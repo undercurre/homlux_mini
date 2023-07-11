@@ -3,7 +3,8 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { runInAction } from 'mobx-miniprogram'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { execScene } from '../../../../apis/scene'
-import { roomBinding, roomStore } from '../../../../store/index'
+import { PRO_TYPE } from '../../../../config/index'
+import { deviceStore, roomBinding, roomStore } from '../../../../store/index'
 ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
@@ -17,25 +18,21 @@ ComponentWithComputed({
       type: Object,
       observer() {},
     },
+    isMoving: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   computed: {
     showScene(data) {
-      return data.roomInfo.subDeviceNum > 0
+      return !data.isMoving && data.roomInfo.endCount > 0
     },
     sceneList(data) {
       return data.roomInfo.sceneList.map((scene: Scene.SceneBase) => {
-        let sceneName = scene.sceneName
-        if (new RegExp('[\\u4E00-\\u9FFF]+', 'g').test(sceneName)) {
-          // 名字有中文，只能显示四个
-          sceneName = sceneName.slice(0, 4)
-        } else {
-          // 全英文，显示7个
-          sceneName = sceneName.slice(0, 7)
-        }
         return {
           ...scene,
-          sceneName,
+          sceneName: scene.sceneName.slice(0, 4),
         }
       })
     },
@@ -46,13 +43,13 @@ ComponentWithComputed({
       return []
     },
     hasBottomPadding(data) {
-      return data.roomInfo.subDeviceNum > 0 && data.roomInfo.sceneList.length > 0
+      return data.roomInfo.endCount > 0 && data.roomInfo.sceneList.length > 0 && !data.isMoving
     },
     desc(data) {
       if (data.sceneList && data.deviceListComputed) {
-        return data.roomInfo.deviceLightOnNum
-          ? data.roomInfo.deviceLightOnNum + '盏灯亮起'
-          : data.roomInfo.subDeviceNum > 0
+        return data.roomInfo.lightOnCount
+          ? data.roomInfo.lightOnCount + '盏灯亮起'
+          : data.roomInfo.lightCount > 0
           ? '灯全部关闭'
           : ''
       }
@@ -85,55 +82,21 @@ ComponentWithComputed({
         })
       }, 1050)
       execScene(e.currentTarget.dataset.value)
-      // this.execCardBgAnimationStart(e.currentTarget.dataset.value)
     },
     handleCardTap() {
       const index = roomStore.roomList.findIndex((room) => room.roomId === this.data.roomInfo.roomId)
       runInAction(() => {
         roomStore.currentRoomIndex = index
+        deviceStore.deviceList = deviceStore.allRoomDeviceList.filter(
+          (device) =>
+            device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
+            device.proType !== PRO_TYPE.gateway,
+        )
       })
       wx.navigateTo({
         url: '/package-room-control/index/index',
       })
     },
-    execCardBgAnimationStart() {
-      // this.
-      // this.animate(
-      //   `#effect-${value}`,
-      //   [
-      //     {
-      //       opacity: 0,
-      //     },
-      //     {
-      //       opacity: 1,
-      //     },
-      //   ],
-      //   30,
-      //   () => {
-      //     setTimeout(() => {
-      //       this.execCardBgAnimationEnd(value)
-      //     }, 30)
-      //   },
-      // )
-    },
-    execCardBgAnimationEnd(value: string) {
-      this.animate(
-        `#effect-${value}`,
-        [
-          {
-            opacity: 1,
-          },
-          {
-            opacity: 0,
-          },
-        ],
-        60,
-        () => {
-          this.setData({
-            sceneClickId: '',
-          })
-        },
-      )
-    },
+    doNothing() {},
   },
 })

@@ -1,37 +1,66 @@
-import { deviceStore, homeStore, sceneStore } from '../../store/index'
-import pageBehavior from '../../behaviors/pageBehaviors'
-import { maxColorTempK, minColorTempK, proType } from '../../config/index'
-import { deleteScene, updateScene } from '../../apis/index'
-import { ComponentWithComputed } from 'miniprogram-computed'
-import { emitter } from '../../utils/eventBus'
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
-import { removeSwitchRel } from '../utils/index'
+import { ComponentWithComputed } from 'miniprogram-computed'
+import { deviceStore, homeStore, sceneStore } from '../../store/index'
+import pageBehavior from '../../behaviors/pageBehaviors'
+import { PRO_TYPE } from '../../config/index'
+import {
+  deleteScene,
+  findDevice,
+  updateScene,
+  getRelLampInfo,
+  getRelDeviceInfo,
+  sendDevice,
+  delLampAndSwitchAssociated,
+  delSwitchAndSwitchAssociated,
+} from '../../apis/index'
+import {
+  emitter,
+  getCurrentPageParams,
+  transferDeviceProperty,
+  toPropertyDesc,
+  storage,
+  strUtil,
+} from '../../utils/index'
 
 ComponentWithComputed({
   behaviors: [pageBehavior],
+  options: {
+    pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
+  },
   /**
    * 页面的初始数据
    */
   data: {
-    sceneId: '',
+    _sceneInfo: {} as Scene.SceneItem,
+    _cacheDeviceMap: {} as IAnyObject, // 缓存设备设置预览前的设备状态，用于退出时恢复
     sceneName: '',
     sceneIcon: '',
+    /** 过滤出全屋开关，提供关联开关选择 */
     switchList: [] as Device.DeviceItem[],
+    /** 是否默认场景，默认场景不允许改图标 */
     isDefault: false,
+    /** 列表高度 */
     contentHeight: 0,
     showEditNamePopup: false,
     showEditIconPopup: false,
     showLinkPopup: false,
-    sceneDeviceActionsFlatten: [] as Device.ActionItem[], // 将场景里多路的action拍扁
+    /** 将当前场景里多路的action拍扁 */
+    sceneDeviceActionsFlatten: [] as Device.ActionItem[],
+    /** 关联弹窗选中的开关确认后的开关uniId */
     linkSwitch: '',
+    /** 关联选中的开关的已有关联绑定信息 */
+    _linkSwitchRefInfo: {
+      lampRelList: Array<Device.IMzgdLampRelGetDTO>(), // 当前面板的灯关联数据
+      switchRelList: Array<Device.IMzgdRelGetDTO>(), // 当前面板的关联面板数据
+    },
+    /** 关联弹窗展示用的选择列表 */
     linkSwitchSelect: [] as string[],
-    isEditAction: false,
+    /** 是否修改过action */
+    _isEditAction: false,
     sceneEditTitle: '',
-    showSceneEditLightPopup: false,
-    showSceneEditSwitchPopup: false,
-    sceneLightEditInfo: {} as IAnyObject,
-    sceneSwitchEditInfo: {} as IAnyObject,
+    showEditPopup: '', // 要展示的编辑弹窗类型
+    sceneEditInfo: {} as IAnyObject,
   },
 
   computed: {
@@ -44,67 +73,81 @@ ComponentWithComputed({
         )?.switchName
         return device.deviceName.slice(0, 5) + switchName?.slice(0, 4)
       }
-      return ''
+      return ' '
+    },
+    showSceneName(data) {
+      console.log(data.sceneName)
+      if (data.sceneName.length > 12) {
+        return data.sceneName.slice(0, 12) + '...'
+      }
+      return data.sceneName
     },
   },
 
-  methods: {
-    /**
-     * 生命周期函数--监听页面加载
-     */
-    onLoad() {
-      const deviceMap = deviceStore.deviceMap
+  lifetimes: {
+    ready() {
+      const pageParams = getCurrentPageParams()
+
+      const deviceMap = deviceStore.allRoomDeviceMap
       const sceneDeviceActionsFlatten = [] as Device.ActionItem[]
-      sceneStore.sceneList[sceneStore.selectSceneIndex].deviceActions?.forEach((device) => {
-        if (!deviceMap[device.deviceId]) {
-          console.log('不存在的设备', device)
+
+      const sceneInfo = sceneStore.sceneList.find((item) => item.sceneId === pageParams.sceneId) as Scene.SceneItem
+
+      this.data._sceneInfo = sceneInfo
+
+      sceneInfo.deviceActions = sceneInfo.deviceActions || []
+
+      sceneInfo.deviceActions.forEach((actions) => {
+        const device = deviceMap[actions.deviceId]
+
+        if (!device) {
+          console.log('不存在的设备', actions)
           return
         }
-        if (deviceMap[device.deviceId].proType === proType.switch) {
+
+        if (device.proType === PRO_TYPE.switch) {
           // 多路开关
-          device.controlAction.forEach((action) => {
-            const switchItem = deviceMap[device.deviceId].switchInfoDTOList.find(
-              (item) => item.switchId === String(action.ep),
-            )
+          actions.controlAction.forEach((action) => {
+            // 将当前选中编辑的场景，拍扁action加入list
             sceneDeviceActionsFlatten.push({
-              uniId: `${device.deviceId}:${action.ep}`,
-              proType: proType.switch,
-              name: `${switchItem?.switchName ? switchItem?.switchName : switchItem?.switchId + '路开关'} | ${
-                deviceMap[device.deviceId].deviceName
-              }`,
-              desc: action.OnOff ? ['打开'] : ['关闭'],
-              pic:
-                deviceMap[device.deviceId].switchInfoDTOList.find(
-                  (switchInfo) => switchInfo.switchId === action.ep.toString(),
-                )?.pic ?? '',
+              uniId: `${actions.deviceId}:${action.ep}`,
+              proType: PRO_TYPE.switch,
+              name: `${action.deviceName} | ${actions.deviceName}`,
+              desc: toPropertyDesc(actions.proType, action),
+              deviceType: actions.deviceType,
+              pic: action.devicePic as string,
               value: action,
             })
           })
         } else {
+          let property = actions.controlAction[0]
+
+          if (actions.proType === PRO_TYPE.light) {
+            property = {
+              ...device.mzgdPropertyDTOList[1],
+              ...property,
+            }
+          }
+
+          property = transferDeviceProperty(actions.proType, property)
+          // 灯光设备
           const action = {
-            uniId: `${device.deviceId}`,
-            name: `${deviceMap[device.deviceId].deviceName}`,
-            desc: device.controlAction[0].OnOff ? ['打开'] : ['关闭'],
-            pic: '',
-            proType: '',
-            value: device.controlAction[0],
+            uniId: `${actions.deviceId}`,
+            name: `${device.deviceName}`,
+            desc: toPropertyDesc(actions.proType, property),
+            pic: actions.devicePic as string,
+            proType: actions.proType,
+            deviceType: actions.deviceType,
+            value: property,
           }
-          if (deviceMap[device.deviceId].proType === proType.light) {
-            if (typeof device.controlAction[0].Level === 'number') {
-              action.desc.push(`亮度${device.controlAction[0].Level}%`)
-            }
-            if (typeof device.controlAction[0].ColorTemp === 'number') {
-              const color = (device.controlAction[0].ColorTemp / 100) * (maxColorTempK - minColorTempK) + minColorTempK
-              action.desc.push(`色温${color}K`)
-            }
-            action.pic = deviceMap[device.deviceId].pic
-            action.proType = proType.light
-          }
+
           sceneDeviceActionsFlatten.push(action)
         }
       })
-      const sceneId = sceneStore.sceneList[sceneStore.selectSceneIndex].sceneId
-      const linkSwitch = sceneStore.sceneSwitchMap[sceneId] ? sceneStore.sceneSwitchMap[sceneId] : ''
+
+      const linkSwitch = sceneStore.sceneSwitchMap[sceneInfo.sceneId] || ''
+      const switchList = deviceStore.allRoomDeviceFlattenList.filter((device) => device.proType === PRO_TYPE.switch)
+
       wx.createSelectorQuery()
         .select('#content')
         .boundingClientRect()
@@ -112,105 +155,99 @@ ComponentWithComputed({
           if (res[0] && res[0].height) {
             this.setData({
               contentHeight: res[0].height,
-              sceneId,
-              sceneName: sceneStore.sceneList[sceneStore.selectSceneIndex].sceneName,
-              sceneIcon: sceneStore.sceneList[sceneStore.selectSceneIndex].sceneIcon,
-              switchList: deviceStore.allRoomDeviceFlattenList.filter((device) => device.proType === proType.switch),
+              sceneName: sceneInfo.sceneName,
+              sceneIcon: sceneInfo.sceneIcon,
+              switchList,
               sceneDeviceActionsFlatten,
-              isDefault: sceneStore.sceneList[sceneStore.selectSceneIndex].isDefault === '1',
+              isDefault: sceneInfo.isDefault === '1',
               linkSwitch,
               linkSwitchSelect: linkSwitch ? [linkSwitch] : [],
             })
           }
         })
     },
+  },
+
+  methods: {
+    handleExit() {
+      const { _cacheDeviceMap } = this.data
+
+      console.log('handleClose', _cacheDeviceMap)
+
+      for (const cacheDevice of Object.values(_cacheDeviceMap)) {
+        sendDevice({
+          deviceId: cacheDevice.deviceId,
+          gatewayId: cacheDevice.gatewayId,
+          proType: cacheDevice.proType,
+          deviceType: cacheDevice.deviceType,
+          ep: cacheDevice.ep,
+          property: cacheDevice.property,
+        })
+      }
+
+      this.goBack()
+    },
     handleSceneDelete() {
       Dialog.confirm({
         message: '确定删除该场景？',
       }).then(async () => {
-        const res = await deleteScene(this.data.sceneId)
+        const res = await deleteScene(this.data._sceneInfo.sceneId)
         if (res.success) {
           emitter.emit('sceneEdit')
           homeStore.updateRoomCardList()
           wx.navigateBack()
         } else {
-          Toast('删除失败')
+          Toast({ message: '删除失败', zIndex: 9999 })
         }
       })
     },
     handleActionDelete(e: WechatMiniprogram.TouchEvent) {
       this.data.sceneDeviceActionsFlatten.splice(e.currentTarget.dataset.index, 1)
+
       this.setData({
         sceneDeviceActionsFlatten: [...this.data.sceneDeviceActionsFlatten],
-        isEditAction: true,
+        _isEditAction: true,
       })
     },
     async handleSave() {
-      const deviceMap = deviceStore.deviceMap
-      const data = { sceneId: this.data.sceneId, updateType: '0', conditionType: '0' } as Scene.UpdateSceneDto
-      if (this.data.sceneName !== sceneStore.sceneList[sceneStore.selectSceneIndex].sceneName) {
-        data.sceneName = this.data.sceneName
-      }
-      if (this.data.sceneIcon !== sceneStore.sceneList[sceneStore.selectSceneIndex].sceneName) {
-        data.sceneIcon = this.data.sceneIcon
-      }
       if (this.data.sceneDeviceActionsFlatten.length === 0) {
         // 删完actions按照删除场景处理
         Dialog.confirm({
           message: '清空操作将会删除场景，确定删除该场景？',
         }).then(async () => {
-          const res = await deleteScene(this.data.sceneId)
+          const res = await deleteScene(this.data._sceneInfo.sceneId)
           if (res.success) {
             emitter.emit('sceneEdit')
             homeStore.updateRoomCardList()
             wx.navigateBack()
           } else {
-            Toast('删除失败')
+            Toast({ message: '删除失败', zIndex: 9999 })
           }
         })
         return
       }
 
-      if (this.data.isEditAction) {
-        // 将展开的action组合起来
-        const deviceActions = [] as Scene.DeviceAction[]
-        const deviceActionsMap = {} as Record<string, Scene.DeviceAction>
-        this.data.sceneDeviceActionsFlatten.forEach((deviceAction) => {
-          if (deviceAction.uniId.includes(':')) {
-            // 开关，可能有多路
-            const deviceId = deviceAction.uniId.split(':')[0]
-            if (deviceActionsMap[deviceId]) {
-              deviceActionsMap[deviceId].controlAction.push(deviceAction.value)
-            } else {
-              deviceActionsMap[deviceId] = {
-                controlAction: [deviceAction.value],
-                deviceId,
-                deviceType: String(deviceMap[deviceId].deviceType),
-                proType: deviceMap[deviceId].proType,
-              }
-            }
-          } else {
-            deviceActionsMap[deviceAction.uniId] = {
-              controlAction: [deviceAction.value],
-              deviceId: deviceAction.uniId,
-              deviceType: String(deviceMap[deviceAction.uniId].deviceType),
-              proType: deviceMap[deviceAction.uniId].proType,
-            }
-          }
-        })
-        deviceActions.push(...Object.values(deviceActionsMap))
-        data.deviceActions = deviceActions
-        data.updateType = '1'
+      const data = {
+        sceneId: this.data._sceneInfo.sceneId,
+        updateType: '0',
+        conditionType: '0',
+      } as Scene.UpdateSceneDto
+
+      if (this.data.sceneName !== this.data._sceneInfo.sceneName) {
+        data.sceneName = this.data.sceneName
+      }
+      if (this.data.sceneIcon !== this.data._sceneInfo.sceneIcon) {
+        data.sceneIcon = this.data.sceneIcon
       }
 
       if (this.data.linkSwitch) {
         if (
-          deviceStore.switchSceneMap[this.data.linkSwitch] &&
-          deviceStore.switchSceneMap[this.data.linkSwitch] !== this.data.sceneId
+          deviceStore.switchSceneConditionMap[this.data.linkSwitch] &&
+          deviceStore.switchSceneConditionMap[this.data.linkSwitch] !== this.data._sceneInfo.sceneId
         ) {
           // 解绑开关原来的场景
           const res = await updateScene({
-            sceneId: deviceStore.switchSceneMap[this.data.linkSwitch],
+            sceneId: deviceStore.switchSceneConditionMap[this.data.linkSwitch],
             updateType: '2',
           })
           if (!res.success) {
@@ -221,15 +258,38 @@ ComponentWithComputed({
             return
           }
         }
-        // 新的开关如果有关联也需要解开关联
-        const isSuccess = await removeSwitchRel(this.data.linkSwitch.split(':')[0], this.data.linkSwitch.split(':')[1])
-        if (!isSuccess) {
-          Toast({
-            message: '解除绑定失败',
-            zIndex: 99999,
+
+        const { lampRelList, switchRelList } = this.data._linkSwitchRefInfo
+        const [deviceId, switchId] = this.data.linkSwitch.split(':')
+
+        if (lampRelList.length) {
+          // 删除指定面板和灯的关联数据
+
+          const res = await delLampAndSwitchAssociated({
+            deviceId: deviceId,
+            switchId: switchId,
+            relIds: lampRelList.map((item) => item.lampDeviceId).join(','),
           })
-          return
+
+          if (!res.success) {
+            Toast({ message: '删除面板已有的灯关联失败', zIndex: 9999 })
+            return
+          }
         }
+
+        if (switchRelList.length) {
+          // 删除指定面板和灯的关联数据
+
+          const res = await delSwitchAndSwitchAssociated({
+            relIds: switchRelList.map((item) => item.relId).join(','),
+          })
+
+          if (!res.success) {
+            Toast({ message: '删除面板已有的开关关联失败', zIndex: 9999 })
+            return
+          }
+        }
+
         data.deviceConditions = [
           {
             deviceId: this.data.linkSwitch.split(':')[0],
@@ -241,18 +301,35 @@ ComponentWithComputed({
             ],
           },
         ]
-        data.updateType = data.updateType === '0' ? '3' : '5'
-      } else {
+        data.updateType = '3'
+      } else if (!this.data.linkSwitch && this.data._sceneInfo.deviceConditions) {
         // 删除绑定
-        data.updateType = data.updateType === '0' ? '2' : '4'
+        data.updateType = '2'
       }
+
+      if (this.data._isEditAction) {
+        data.deviceActions = []
+        data.updateType = data.updateType === '0' ? '1' : data.updateType === '2' ? '4' : '5'
+
+        // 场景动作数据统一在scene-request-list页面处理
+        storage.set('scene_data', data)
+        storage.set('sceneDeviceActionsFlatten', this.data.sceneDeviceActionsFlatten)
+
+        // 需要更新结果的情况，需要跳转页面等待上报结果
+        wx.redirectTo({
+          url: strUtil.getUrlWithParams('/package-room-control/scene-request-list/index', { sceneId: data.sceneId }),
+        })
+
+        return
+      }
+
       const res = await updateScene(data)
       if (res.success) {
         emitter.emit('sceneEdit')
-        Toast('修改成功')
+        Toast({ message: '修改成功', zIndex: 9999 })
         wx.navigateBack()
       } else {
-        Toast('修改失败')
+        Toast({ message: '修改失败', zIndex: 9999 })
       }
     },
     handleEditNameShow() {
@@ -291,17 +368,75 @@ ComponentWithComputed({
         sceneIcon: e.detail,
       })
     },
-    handleSwitchSelect(e: { detail: string }) {
-      if (this.data.linkSwitchSelect[0] === e.detail) {
+    async handleSwitchSelect(e: { detail: string }) {
+      const switchUnid = e.detail
+      const { sceneDeviceActionsFlatten } = this.data
+
+      if (sceneDeviceActionsFlatten.find((item) => item.uniId === switchUnid)) {
+        Toast({ message: '无法选择，此开关已是当前场景的执行设备', zIndex: 9999 })
+        return
+      }
+
+      if (this.data.linkSwitchSelect[0] === switchUnid) {
         this.setData({
           linkSwitchSelect: [],
         })
         return
       }
+
+      const [deviceId, switchId] = switchUnid.split(':')
+
+      // 查询所选面板与其他开关和灯的关联关系
+      const res = await Promise.all([
+        getRelLampInfo({
+          primaryDeviceId: deviceId,
+          primarySwitchId: switchId,
+        }),
+        getRelDeviceInfo({
+          primaryDeviceId: deviceId,
+          primarySwitchId: switchId,
+        }),
+      ])
+
+      if (!res[0].success || !res[1].success) {
+        Toast({ message: '查询设备信息失败', zIndex: 9999 })
+        return
+      }
+
+      const lampRelList = res[0].result.lampRelList
+      const switchRelList = res[1].result.primaryRelDeviceInfo.concat(res[1].result.secondRelDeviceInfo)
+      const switchSceneConditionMap = deviceStore.switchSceneConditionMap
+      let linkDesc = ''
+
+      if (lampRelList.length) {
+        linkDesc = '灯具'
+      } else if (switchRelList.length) {
+        linkDesc = '开关'
+      } else if (switchSceneConditionMap[switchUnid]) {
+        linkDesc = '其他场景'
+      }
+
+      if (linkDesc) {
+        const dialigRes = await Dialog.confirm({
+          message: `此开关已关联${linkDesc}，确定变更？`,
+          cancelButtonText: '取消',
+          confirmButtonText: '变更',
+          zIndex: 2000,
+        })
+          .then(() => true)
+          .catch(() => false)
+
+        if (!dialigRes) return
+      }
+
+      this.data._linkSwitchRefInfo.lampRelList = lampRelList
+      this.data._linkSwitchRefInfo.switchRelList = switchRelList
+
       this.setData({
-        linkSwitchSelect: [e.detail],
+        linkSwitchSelect: [switchUnid],
       })
     },
+
     handleLinkSwitchPopup() {
       this.setData({
         showLinkPopup: true,
@@ -319,54 +454,77 @@ ComponentWithComputed({
       })
     },
     handleSceneActionEdit(e: WechatMiniprogram.TouchEvent) {
-      if (this.data.sceneDeviceActionsFlatten[e.currentTarget.dataset.index].proType === proType.light) {
-        this.setData({
-          sceneEditTitle: this.data.sceneDeviceActionsFlatten[e.currentTarget.dataset.index].name,
-          sceneLightEditInfo: this.data.sceneDeviceActionsFlatten[e.currentTarget.dataset.index].value,
-          showSceneEditLightPopup: true,
-          editIndex: e.currentTarget.dataset.index,
-        })
-      } else if (this.data.sceneDeviceActionsFlatten[e.currentTarget.dataset.index].proType === proType.switch) {
-        this.setData({
-          sceneEditTitle: this.data.sceneDeviceActionsFlatten[e.currentTarget.dataset.index].name,
-          sceneSwitchEditInfo: this.data.sceneDeviceActionsFlatten[e.currentTarget.dataset.index].value,
-          showSceneEditSwitchPopup: true,
-          editIndex: e.currentTarget.dataset.index,
-        })
+      // 默认场景不可编辑场景设备数据
+      if (this.data.isDefault) {
+        return
       }
-    },
-    handleSceneLightEditPopupClose() {
+
+      const { index } = e.currentTarget.dataset
+
+      const deviceAction = this.data.sceneDeviceActionsFlatten[index]
+      const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
+      const device = allRoomDeviceMap[deviceAction.uniId]
+      let ep = 1
+
+      if (deviceAction.proType === PRO_TYPE.switch) {
+        ep = Number(device.switchInfoDTOList[0].switchId)
+      }
+
+      device.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, ep })
+
       this.setData({
-        showSceneEditLightPopup: false,
+        sceneEditTitle: deviceAction.name,
+        sceneEditInfo: {
+          ...deviceAction.value,
+          deviceType: device.deviceType,
+          gatewayId: device.gatewayId,
+          deviceId: device.deviceId,
+        },
+        showEditPopup: device.proType,
+        editIndex: index,
       })
     },
-    handleSceneSwitchEditPopupClose() {
+    handleEditPopupClose() {
       this.setData({
-        showSceneEditSwitchPopup: false,
+        showEditPopup: '',
       })
     },
     handleSceneEditConfirm(e: { detail: IAnyObject }) {
-      this.data.sceneDeviceActionsFlatten[this.data.editIndex].value = {
-        ep: this.data.sceneDeviceActionsFlatten[this.data.editIndex].value.ep,
+      const { _cacheDeviceMap } = this.data
+      const actionItem = this.data.sceneDeviceActionsFlatten[this.data.editIndex]
+      const device = deviceStore.allRoomDeviceFlattenMap[actionItem.uniId]
+
+      if (!_cacheDeviceMap[actionItem.uniId]) {
+        let oldProperty = {
+          ...device.property,
+        }
+
+        delete oldProperty.minColorTemp
+        delete oldProperty.maxColorTemp
+
+        if (oldProperty.proType === PRO_TYPE.curtain) {
+          oldProperty = { curtain_position: oldProperty.curtain_position }
+        }
+
+        _cacheDeviceMap[actionItem.uniId] = {
+          gatewayId: device.gatewayId,
+          deviceId: device.deviceId,
+          proType: device.proType,
+          deviceType: device.deviceType,
+          ep: actionItem.value.ep,
+          property: oldProperty,
+        }
+      }
+
+      actionItem.value = {
+        ...actionItem.value,
         ...e.detail,
       }
-      if (this.data.sceneDeviceActionsFlatten[this.data.editIndex].proType === proType.light) {
-        if (e.detail.OnOff) {
-          const desc = e.detail.OnOff ? ['打开'] : ['关闭']
-          const color = (e.detail.ColorTemp / 100) * (maxColorTempK - minColorTempK) + minColorTempK
-          desc.push(`亮度${e.detail.Level}%`)
-          desc.push(`色温${color}K`)
-          this.data.sceneDeviceActionsFlatten[this.data.editIndex].desc = desc
-        } else {
-          this.data.sceneDeviceActionsFlatten[this.data.editIndex].desc = ['关闭']
-        }
-      } else if (this.data.sceneDeviceActionsFlatten[this.data.editIndex].proType === proType.switch) {
-        this.data.sceneDeviceActionsFlatten[this.data.editIndex].desc = e.detail.OnOff ? ['打开'] : ['关闭']
-      }
+
+      actionItem.desc = toPropertyDesc(actionItem.proType, actionItem.value)
+
       this.setData({
-        showSceneEditLightPopup: false,
-        showSceneEditSwitchPopup: false,
-        isEditAction: true,
+        _isEditAction: true,
         sceneDeviceActionsFlatten: [...this.data.sceneDeviceActionsFlatten],
       })
     },

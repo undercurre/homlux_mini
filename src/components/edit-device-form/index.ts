@@ -1,6 +1,7 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
-import { homeBinding, roomBinding } from '../../store/index'
+import { homeBinding, roomBinding, roomStore } from '../../store/index'
+import { checkInputNameIllegal } from '../../utils/index'
 
 Component({
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, roomBinding] })],
@@ -12,6 +13,10 @@ Component({
       type: Array,
       value: [],
     },
+    customStyle: {
+      type: String,
+      value: '',
+    },
     deviceName: {
       type: String,
       value: '',
@@ -20,16 +25,22 @@ Component({
       type: String,
       value: '',
     },
+    roomName: {
+      type: String,
+      value: '',
+    },
   },
 
   observers: {
-    'deviceName, roomId, switchList': function (deviceName, roomId, switchList) {
+    'deviceName, roomId, roomName, switchList': function (deviceName, roomId, roomName, switchList) {
       console.log('observers-deviceName', deviceName, roomId, switchList)
 
       this.setData({
+        isAddRoom: false,
+        isShowEditSwitch: false,
         deviceInfo: {
           roomId: roomId,
-          roomName: '',
+          roomName: roomName,
           deviceName: deviceName,
           switchList: switchList,
         },
@@ -47,7 +58,7 @@ Component({
       roomId: '',
       roomName: '',
       deviceName: '',
-      switchList: [],
+      switchList: [] as Device.ISwitch[],
     },
     switchInfo: {
       switchId: '',
@@ -60,17 +71,22 @@ Component({
    */
   methods: {
     selectRoom(event: WechatMiniprogram.CustomEvent) {
-      console.log('selectRoom', event)
+      const roomInfo = roomStore.roomList[event.currentTarget.dataset.index]
 
       this.setData({
-        'deviceInfo.roomId': event.currentTarget.dataset.id,
-        'deviceInfo.roomName': event.currentTarget.dataset.name,
+        'deviceInfo.roomId': roomInfo.roomId,
+        'deviceInfo.roomName': roomInfo.roomName,
       })
 
       this.triggerEvent('change', Object.assign({}, this.data.deviceInfo))
     },
 
     addRoom() {
+      if (roomBinding.store.roomList.length >= 50) {
+        Toast('一个家庭中最多创建50个房间')
+        return
+      }
+
       this.setData({
         isAddRoom: true,
       })
@@ -81,11 +97,9 @@ Component({
 
       const item = this.data.switchList[index]
 
-      console.log(111, index, item)
-
       this.setData({
         isShowEditSwitch: true,
-        switchInfo: item,
+        switchInfo: Object.assign({}, item),
       })
     },
 
@@ -93,7 +107,7 @@ Component({
       console.log('changeSwitchName', event)
 
       this.setData({
-        'switchInfo.switchName': event.detail.value,
+        'switchInfo.switchName': event.detail.value || '',
       })
     },
 
@@ -108,10 +122,22 @@ Component({
         return
       }
 
-      if (this.data.switchInfo.switchName.length > 6) {
-        Toast('按键名称不能超过6个字符')
+      // 校验名字合法性
+      if (checkInputNameIllegal(this.data.switchInfo.switchName)) {
+        Toast('按键名称不能用特殊符号或表情')
         return
       }
+
+      if (this.data.switchInfo.switchName.length > 5) {
+        Toast('按键名称不能超过5个字符')
+        return
+      }
+
+      const switchItem = this.data.deviceInfo.switchList.find(
+        (item) => item.switchId === this.data.switchInfo.switchId,
+      ) as Device.ISwitch
+
+      switchItem.switchName = this.data.switchInfo.switchName
 
       this.setData({
         deviceInfo: this.data.deviceInfo,
@@ -125,7 +151,7 @@ Component({
       console.log('changeDeviceName', event)
 
       this.setData({
-        'deviceInfo.deviceName': event.detail.value,
+        'deviceInfo.deviceName': event.detail.value || '',
       })
 
       this.triggerEvent('change', Object.assign({}, this.data.deviceInfo))

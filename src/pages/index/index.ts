@@ -7,17 +7,40 @@ import {
   deviceBinding,
   homeStore,
   othersStore,
+  roomStore,
+  deviceStore,
 } from '../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { storage } from '../../utils/index'
-import { proType } from '../../config/index'
+import { storage, throttle } from '../../utils/index'
+import { PRO_TYPE, ROOM_CARD_H, ROOM_CARD_M } from '../../config/index'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
-import { allDevicePowerControl } from '../../apis/index'
-import { emitter } from '../../utils/eventBus'
+import { allDevicePowerControl, updateRoomSort } from '../../apis/index'
+import { emitter, WSEventType } from '../../utils/eventBus'
 import { updateDefaultHouse } from '../../apis/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
-let throttleTimer = 0
+import { runInAction } from 'mobx-miniprogram'
+
+type PosType = Record<'index' | 'y', number>
+
+/**
+ * 根据index计算坐标位置
+ * @returns {x, y}
+ */
+function getPos(index: number): number {
+  return index * ROOM_CARD_M
+}
+
+/**
+ * 根据坐标位置计算index
+ * TODO 防止超界
+ * @returns index
+ */
+function getIndex(y: number) {
+  const maxIndex = roomStore.roomList.length - 1 // 防止越界
+  return Math.min(maxIndex, Math.floor((y + ROOM_CARD_M / 2) / ROOM_CARD_M))
+}
+
 ComponentWithComputed({
   behaviors: [
     BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding, homeBinding, deviceBinding] }),
@@ -30,28 +53,45 @@ ComponentWithComputed({
       'px',
     // 状态栏高度
     statusBarHeight: storage.get<number>('statusBarHeight') + 'px',
-    dropdownMenu: {
-      x: '0px',
-      y: '0px',
-      isShow: false,
-    },
+    // 可滚动区域高度
+    scrollViewHeight:
+      (storage.get<number>('windowHeight') as number) -
+      (storage.get<number>('statusBarHeight') as number) -
+      (storage.get<number>('bottomBarHeight') as number) - // IPX
+      90 - // 开关、添加按钮
+      (storage.get<number>('navigationBarHeight') as number),
     selectHomeMenu: {
       x: '0px',
       y: '0px',
       isShow: false,
     },
-    contentHeight: 0,
+    addMenu: {
+      right: '0px',
+      y: '0px',
+      isShow: false,
+    },
     allOnBtnTap: false,
     allOffBtnTap: false,
     showAddNewRoom: false,
     showHomeSelect: false,
-    isRefresh: false,
     loading: true,
+    isTryInvite: false,
+    isMoving: false,
+    hasMoved: false,
+    roomPos: {} as Record<string, PosType>,
+    accumulatedY: 0, // 可移动区域高度
+    placeholder: {
+      y: 0,
+      index: -1,
+    } as PosType,
   },
   computed: {
     currentHomeName(data) {
-      if (data.currentHomeDetail) {
-        return data.currentHomeDetail?.houseName ?? ''
+      if (data.currentHomeDetail && data.currentHomeDetail.houseName) {
+        if (data.currentHomeDetail.houseName.length > 6) {
+          return data.currentHomeDetail.houseName.slice(0, 6) + '...'
+        }
+        return data.currentHomeDetail?.houseName
       }
       return ''
     },
@@ -67,7 +107,7 @@ ComponentWithComputed({
       let hasLightOrSwitch = false
       if (data.allRoomDeviceList) {
         data.allRoomDeviceList.some((device: Device.DeviceItem) => {
-          if (([proType.light, proType.switch] as string[]).includes(device.proType)) {
+          if (([PRO_TYPE.light, PRO_TYPE.switch] as string[]).includes(device.proType)) {
             hasLightOrSwitch = true
             return true
           }
@@ -99,6 +139,9 @@ ComponentWithComputed({
         )
       }
     },
+    roomList() {
+      this.renewRoomPos()
+    },
   },
 
   methods: {
@@ -110,7 +153,6 @@ ComponentWithComputed({
           selected: 0,
         })
       }
-      this.updateContentHeight()
       if (othersStore.isInit) {
         this.setData({
           loading: false,
@@ -122,23 +164,10 @@ ComponentWithComputed({
       this.hideMenu()
       emitter.off('wsReceive')
     },
-    async onPullDownRefresh() {
-      try {
-        await homeStore.updateHomeInfo({ loading: true })
-      } finally {
-        this.setData({
-          isRefresh: false,
-        })
-      }
-    },
-
-    onShow() {
+    async onShow() {
       setTimeout(() => {
         this.inviteMember()
       }, 1000)
-      if (homeStore.currentHomeId) {
-        homeStore.updateRoomCardList()
-      }
       if (!othersStore.isInit) {
         this.setData({
           loading: true,
@@ -146,18 +175,95 @@ ComponentWithComputed({
       }
       emitter.off('wsReceive')
       emitter.on('wsReceive', (res) => {
-        if (!throttleTimer && res.result.eventType !== 'connect_success_status') {
-          throttleTimer = setTimeout(() => {
-            homeStore.updateRoomCardList()
-            throttleTimer = 0
-          }, 500)
+        if (res.result.eventType === 'device_property') {
+          // 如果有传更新的状态数据过来，直接更新store
+          if (res.result.eventData.event && res.result.eventData.deviceId && res.result.eventData.ep) {
+            const device = deviceStore.allRoomDeviceList.find(
+              (device) => device.deviceId === res.result.eventData.deviceId,
+            )
+            if (device) {
+              runInAction(() => {
+                device.mzgdPropertyDTOList[res.result.eventData.ep] = {
+                  ...device.mzgdPropertyDTOList[res.result.eventData.ep],
+                  ...res.result.eventData.event,
+                }
+              })
+
+              // 仅为本地更新，暂时取消节流
+              this.updateRoomCard()
+
+              // 直接更新store里的数据，更新完退出回调函数
+              return
+            }
+          }
         }
+        // Perf: ws消息很多，改用白名单过滤
+        else if (
+          [
+            WSEventType.device_del,
+            WSEventType.device_replace,
+            WSEventType.device_online_status,
+            WSEventType.device_offline_status,
+            WSEventType.bind_device,
+            WSEventType.scene_device_result_status,
+            WSEventType.group_device_result_status,
+            WSEventType.screen_move_sub_device,
+          ].includes(res.result.eventType)
+        ) {
+          this.updateRoomData()
+        }
+      })
+
+      // 房间选择恢复默认
+      if (roomStore.currentRoomIndex) {
+        runInAction(() => {
+          roomStore.currentRoomIndex = 0
+        })
+      }
+    },
+
+    // 节流更新房间卡片信息
+    updateRoomData: throttle(() => {
+      homeStore.updateRoomCardList()
+    }, 3000),
+
+    // 节流更新房间卡片信息
+    updateRoomCard: throttle(() => {
+      roomStore.updateRoomCardLightOnNum()
+    }, 2000),
+
+    /**
+     * @description 生成房间位置
+     * @param isMoving 是否正在拖动
+     */
+    renewRoomPos(isMoving = false) {
+      const currentIndex = this.data.placeholder.index
+      const roomPos = {} as Record<string, PosType>
+      let accumulatedY = 0
+      roomStore.roomList
+        .sort((a, b) => this.data.roomPos[a.roomId]?.index - this.data.roomPos[b.roomId]?.index)
+        .forEach((room, index) => {
+          roomPos[room.roomId] = {
+            index,
+            // 正在拖的卡片，不改变位置
+            y: currentIndex === index ? this.data.roomPos[room.roomId].y : accumulatedY,
+          }
+          // 若场景列表为空，或正在拖动，则使用 ROOM_CARD_M
+          accumulatedY += !room.endCount || !room.sceneList.length || isMoving === true ? ROOM_CARD_M : ROOM_CARD_H
+        })
+
+      this.setData({
+        roomPos,
+        accumulatedY,
       })
     },
 
     inviteMember() {
-      const isTryInvite = storage.get('isTryInvite', 0)
-      if (isTryInvite === 1) {
+      if (wx.getEnterOptionsSync().scene != 1044) {
+        console.log('lmn>>>非卡片进入')
+        return
+      }
+      if (this.data.isTryInvite) {
         console.log('lmn>>>已尝试过邀请')
         return
       }
@@ -166,9 +272,12 @@ ComponentWithComputed({
       const type = enterQuery.type as string
       const houseId = enterQuery.houseId as string
       const time = enterQuery.time as string
+      const shareId = enterQuery.shareId as string
       if (token && type && houseId && time) {
-        storage.set('isTryInvite', 1)
-        console.log(`lmn>>>邀请参数:token=${token}/type=${type}/houseId=${houseId}/time=${time}`)
+        this.setData({
+          isTryInvite: true,
+        })
+        console.log(`lmn>>>邀请参数:token=${token}/type=${type}/houseId=${houseId}/time=${time}/shareId=${shareId}`)
         for (let i = 0; i < homeBinding.store.homeList.length; i++) {
           if (homeBinding.store.homeList[i].houseId == houseId) {
             console.log('lmn>>>已经在该家庭')
@@ -182,10 +291,11 @@ ComponentWithComputed({
             title: '邀请过期',
             message: '该邀请已过期，请联系邀请者重新邀请',
             confirmButtonText: '我知道了',
+            zIndex: 9999,
           })
         } else {
           homeBinding.store
-            .inviteMember(houseId, parseInt(type))
+            .inviteMember(houseId, parseInt(type), shareId)
             .then(() => {
               console.log('lmn>>>邀请成功')
               updateDefaultHouse(houseId).finally(() => {
@@ -211,36 +321,10 @@ ComponentWithComputed({
 
     // 收起所有菜单
     hideMenu() {
-      // this.doHomeSelectArrowAnimation(false, this.data.selectHomeMenu.isShow)
       this.setData({
-        'dropdownMenu.isShow': false,
         'selectHomeMenu.isShow': false,
+        'addMenu.isShow': false,
       })
-      // if (e && e.detail && e.detail.x) {
-      //   wx.createSelectorQuery()
-      //     .select('#addIcon')
-      //     .boundingClientRect()
-      //     .exec((res) => {
-      //       // 点中加按钮以外的地方都要隐藏下拉菜单
-      //       if (
-      //         res[0] &&
-      //         (e.detail.x > res[0].right ||
-      //           e.detail.x < res[0].left ||
-      //           e.detail.y > res[0].bottom ||
-      //           e.detail.y < res[0].top)
-      //       ) {
-      //         this.setData({
-      //           'dropdownMenu.isShow': false,
-      //           'selectHomeMenu.isShow': false,
-      //         })
-      //       }
-      //     })
-      // } else {
-      //   this.setData({
-      //     'dropdownMenu.isShow': false,
-      //     'selectHomeMenu.isShow': false,
-      //   })
-      // }
     },
     /**
      * 跳转到登录页
@@ -254,96 +338,23 @@ ComponentWithComputed({
      * 点击全屋开按钮
      */
     handleAllOn() {
-      this.hideMenu()
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
       allDevicePowerControl({
         houseId: homeStore.currentHomeId,
         onOff: 1,
       })
-      this.animate(
-        `#all-on`,
-        [
-          {
-            opacity: 0,
-          },
-          {
-            opacity: 1,
-          },
-        ],
-        30,
-        () => {
-          this.animate(
-            `#all-on`,
-            [
-              {
-                opacity: 1,
-              },
-              {
-                opacity: 0,
-              },
-            ],
-            60,
-          )
-        },
-      )
     },
     /**
      * 点击全屋关按钮
      */
     handleAllOff() {
-      this.hideMenu()
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
       allDevicePowerControl({ houseId: homeStore.currentHomeId, onOff: 0 })
-      this.animate(
-        `#all-off`,
-        [
-          {
-            opacity: 0,
-          },
-          {
-            opacity: 1,
-          },
-        ],
-        30,
-        () => {
-          this.animate(
-            `#all-off`,
-            [
-              {
-                opacity: 1,
-              },
-              {
-                opacity: 0,
-              },
-            ],
-            60,
-          )
-        },
-      )
-    },
-    /**
-     * 点击加号按钮下拉
-     */
-    handleDropdown() {
-      wx.createSelectorQuery()
-        .select('#addIcon')
-        .boundingClientRect()
-        .exec((res) => {
-          this.setData({
-            dropdownMenu: {
-              x: '20rpx',
-              y: res[0].bottom + 10 + 'px',
-              isShow: !this.data.dropdownMenu.isShow,
-            },
-            'selectHomeMenu.isShow': false,
-          })
-        })
     },
     /**
      * 用户切换家庭
      */
     handleHomeSelect() {
-      // this.doHomeSelectArrowAnimation(false, this.data.selectHomeMenu.isShow)
       this.setData({
         'selectHomeMenu.isShow': false,
       })
@@ -352,7 +363,6 @@ ComponentWithComputed({
      * 用户点击展示/隐藏家庭选择
      */
     handleShowHomeSelectMenu() {
-      // this.doHomeSelectArrowAnimation(!this.data.selectHomeMenu.isShow, this.data.selectHomeMenu.isShow)
       this.setData({
         selectHomeMenu: {
           x: '28rpx',
@@ -363,7 +373,6 @@ ComponentWithComputed({
             'px',
           isShow: !this.data.selectHomeMenu.isShow,
         },
-        'dropdownMenu.isShow': false,
       })
     },
     /**
@@ -374,49 +383,116 @@ ComponentWithComputed({
         showAddNewRoom: false,
       })
     },
-    updateContentHeight() {
-      wx.createSelectorQuery()
-        .select('#content')
-        .boundingClientRect()
-        .exec((res) => {
-          if (res[0] && res[0].height) {
-            this.setData({
-              contentHeight: res[0].height,
-            })
-          }
-        })
+
+    showAddMenu() {
+      this.setData({
+        addMenu: {
+          right: '25rpx',
+          y:
+            (storage.get<number>('statusBarHeight') as number) +
+            (storage.get<number>('navigationBarHeight') as number) +
+            50 +
+            'px',
+          isShow: !this.data.addMenu.isShow,
+        },
+      })
     },
-    doHomeSelectArrowAnimation(newValue: boolean, oldValue: boolean) {
-      if (newValue === oldValue) {
+
+    // 开始拖拽，初始化placeholder
+    movableTouchStart(e: WechatMiniprogram.TouchEvent) {
+      wx.vibrateShort({ type: 'heavy' })
+
+      const rid = e.currentTarget.dataset.rid
+      const index = this.data.roomPos[rid].index
+
+      const diffData = {} as IAnyObject
+      diffData.isMoving = true
+      diffData.placeholder = {
+        index,
+        y: getPos(index),
+      }
+
+      console.log('movableTouchStart:', diffData)
+
+      this.setData(diffData)
+
+      this.renewRoomPos(true)
+    },
+
+    /**
+     * 拖拽时触发的卡片移动效果
+     */
+    movableChange: throttle(function (this: IAnyObject, e: WechatMiniprogram.TouchEvent) {
+      const targetOrder = getIndex(e.detail.y)
+      if (this.data.placeholder.index !== targetOrder && e.detail.source === 'touch') {
+        const oldOrder = this.data.placeholder.index
+        console.log('movableChange: %d-->%d', oldOrder, targetOrder, e)
+
+        // 更新placeholder的位置
+        const isForward = oldOrder < targetOrder
+        const diffData = {} as IAnyObject
+        diffData[`placeholder.index`] = targetOrder
+        diffData[`placeholder.y`] = getPos(targetOrder)
+
+        // 更新联动卡片的位置
+        let moveCount = 0
+        for (const room of roomStore.roomList) {
+          const _orderNum = this.data.roomPos[room.roomId].index
+          if (
+            (isForward && _orderNum > oldOrder && _orderNum <= targetOrder) ||
+            (!isForward && _orderNum >= targetOrder && _orderNum < oldOrder)
+          ) {
+            ++moveCount
+            const dOrderNum = isForward ? _orderNum - 1 : _orderNum + 1
+            diffData[`roomPos.${room.roomId}.y`] = getPos(dOrderNum)
+            diffData[`roomPos.${room.roomId}.index`] = dOrderNum
+
+            // 减少遍历消耗
+            if (moveCount >= Math.abs(targetOrder - oldOrder)) {
+              break
+            }
+          }
+        }
+
+        // 更新被拖拽卡片的排序num
+        diffData[`roomPos.${e.currentTarget.dataset.rid}.index`] = targetOrder
+
+        console.log('movableChange', diffData)
+        this.setData(diffData)
+
+        this.data.hasMoved = true
+      }
+    }, 0),
+
+    movableTouchEnd(e: WechatMiniprogram.TouchEvent) {
+      if (!this.data.isMoving) {
         return
       }
-      if (newValue) {
-        this.animate(
-          '#homeSelectArrow',
-          [
-            {
-              rotateZ: 0,
-            },
-            {
-              rotateZ: 180,
-            },
-          ],
-          200,
-        )
-      } else {
-        this.animate(
-          '#homeSelectArrow',
-          [
-            {
-              rotateZ: 180,
-            },
-            {
-              rotateZ: 0,
-            },
-          ],
-          200,
-        )
-      }
+      const dpos = this.data.placeholder.y
+
+      const diffData = {} as IAnyObject
+      diffData.isMoving = false
+      // 修正卡片位置
+      diffData[`roomPos.${e.currentTarget.dataset.rid}.y`] = dpos
+      diffData[`placeholder.index`] = -1
+      this.setData(diffData)
+      console.log('movableTouchEnd:', diffData)
+
+      this.renewRoomPos()
+
+      this.handleSortSaving()
+    },
+
+    handleSortSaving() {
+      const roomSortList = [] as Room.RoomSort[]
+      Object.keys(this.data.roomPos).forEach((roomId) => {
+        roomSortList.push({
+          roomId,
+          sort: this.data.roomPos[roomId].index + 1,
+        })
+      })
+
+      updateRoomSort(roomSortList)
     },
   },
 })

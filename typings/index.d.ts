@@ -2,6 +2,7 @@ interface IAppOption {
   globalData: {
     userInfo?: WechatMiniprogram.UserInfo
     svgs?: Record<string, string>
+    firstOnShow: boolean
   }
   userInfoReadyCallback?: WechatMiniprogram.GetUserInfoSuccessCallback
 }
@@ -9,6 +10,10 @@ interface IAppOption {
 type IAnyObject = WechatMiniprogram.IAnyObject
 
 type AnyResType = string | IAnyObject | ArrayBuffer
+
+type ENV_TYPE = 'dev' | 'sit' | 'prod'
+
+type ConfigWithEnv<T> = Record<ENV_TYPE, T>
 
 /**
  * 声名 Behaviors 方法类型
@@ -20,3 +25,10 @@ declare namespace WechatMiniprogram.Component {
     goBack(): void
   }
 }
+
+/**
+ * 类似keyof，但是获取value的类型
+ * 用法：interface I {a: 1, b: '2', c: true}            ValueOf<I> => 1 | '2' | true
+ * 又或者const obj = {a: 1, b: '2', c: true} as const   ValueOf<typeof obj> => 1 | '2' | true
+ */
+type ValueOf<T> = T[keyof T]

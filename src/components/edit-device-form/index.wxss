@@ -9,3 +9,7 @@
   color: #27282a;
   line-height: 40rpx;
 }
+
+.form-box::-webkit-scrollbar {
+  display: none; /* Chrome Safari */
+}

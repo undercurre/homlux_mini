@@ -1,6 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
+import Dialog from '@vant/weapp/dialog/dialog'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { strUtil, storage, getCurrentPageParams } from '../../utils/index'
+import { strUtil, storage, getCurrentPageParams, isAndroid, checkWifiSwitch } from '../../utils/index'
 
 ComponentWithComputed({
   options: {
@@ -13,7 +14,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
-    type: '',
+    type: '', // bind: 绑定网关，changeWifi： 更改wifi
     isShowPw: false, // 是否展示密码明文
     isShowWifiTips: false,
     hasShowWifiTips: false,
@@ -27,9 +28,9 @@ ComponentWithComputed({
       SSID: '',
       pw: '',
     },
-    _platform: '',
     cacheWifiList: [] as Array<{ SSID: string; pw: string }>,
     systemWifiList: [] as WechatMiniprogram.WifiInfo[],
+    _wifiSwitchInterId: 0,
   },
 
   computed: {
@@ -45,7 +46,7 @@ ComponentWithComputed({
 
         if (wifiInfo) {
           wifiInfo.frequency = item.frequency
-          wifiInfo.signalStrength = data._platform === 'android' ? item.signalStrength : item.signalStrength * 100
+          wifiInfo.signalStrength = isAndroid() ? item.signalStrength : item.signalStrength * 100
         } else {
           list.push({
             ...item,
@@ -71,34 +72,45 @@ ComponentWithComputed({
 
   lifetimes: {
     ready() {
+      if (checkWifiSwitch()) {
+        this.initWifi()
+      } else {
+        this.data._wifiSwitchInterId = setInterval(() => {
+          const systemSetting = wx.getSystemSetting()
+
+          if (systemSetting.wifiEnabled) {
+            Dialog.close()
+            clearInterval(this.data._wifiSwitchInterId)
+            this.data._wifiSwitchInterId = 0
+            this.initWifi()
+          }
+        }, 1500)
+      }
+
       const pageParams = getCurrentPageParams()
 
-      const deviceInfo = wx.getDeviceInfo()
-
-      console.log('deviceInfo', deviceInfo)
+      console.log('ready', pageParams)
 
       const cacheWifiInfo = storage.get('selected_home_wifi') as { SSID: string; pw: string }
 
       const cacheWifiList = storage.get('cacheWifiList', []) as Array<{ SSID: string; pw: string }>
 
       this.setData({
-        type: pageParams.type || 'select',
+        type: pageParams.type || 'bind',
         wifiInfo: cacheWifiInfo || {
           SSID: '',
           pw: '',
         },
         cacheWifiList: cacheWifiList,
-        _platform: deviceInfo.platform,
       })
-
-      this.initWifi()
     },
-    detached() {},
-  },
+    detached() {
+      if (this.data._wifiSwitchInterId) {
+        clearInterval(this.data._wifiSwitchInterId)
+      }
 
-  pageLifetimes: {
-    show() {},
-    hide() {},
+      wx.offGetWifiList()
+    },
   },
 
   methods: {
@@ -119,19 +131,22 @@ ComponentWithComputed({
     },
 
     async initWifi() {
-      const pageParams = getCurrentPageParams()
-
       const startRes = await wx.startWifi()
 
-      console.log('startRes', startRes, 'pageParams', pageParams)
+      console.log('startRes', startRes)
 
       wx.onGetWifiList((res) => {
         console.log('onGetWifiList-wifi-connect', res)
         const wifiList = res.wifiList.filter((item) => {
-          if (item.frequency) {
-            console.log('frequency', item.SSID, item.frequency)
+          // 过滤5G信号wifi,仅安卓端有效
+          if (item.frequency && item.frequency > 5000) {
+            return false
           }
-          return item.SSID && this.data.systemWifiList.findIndex((foundItem) => item.SSID === foundItem.SSID) < 0 // 过滤空的ssid的wifi
+          return (
+            item.SSID &&
+            !item.SSID.includes('midea_16') &&
+            this.data.systemWifiList.findIndex((foundItem) => item.SSID === foundItem.SSID) < 0
+          ) // 过滤空的ssid的wifi以及网关热点
         })
 
         if (!wifiList.length) {
@@ -142,26 +157,28 @@ ComponentWithComputed({
           isRequestSystemWifiList: false,
           systemWifiList: this.data.systemWifiList.concat(wifiList),
         })
-        console.log('onGetWifiList', wifiList.map((item) => item.SSID).join('；'))
       })
 
-      wx.onWifiConnected(async (res) => {
-        console.log('onWifiConnected-connect-wifi', res, pageParams)
-
-        if (!res.wifi.SSID || res.wifi.SSID === pageParams.apSSID) {
-          return
-        }
-
-        this.setData({
-          wifiInfo: {
-            SSID: res.wifi.SSID,
-            pw: '',
+      // 若当前没有选择wifi，默认回填当前连接的wifi
+      if (!this.data.wifiInfo.SSID) {
+        wx.getConnectedWifi({
+          success: (res) => {
+            // 过滤网关热点
+            if (!res.wifi.SSID?.includes('midea_16')) {
+              this.setData({
+                'wifiInfo.SSID': res.wifi.SSID,
+              })
+            }
           },
         })
-      })
+      }
     },
 
     toggleWifi() {
+      if (!checkWifiSwitch()) {
+        return
+      }
+
       const hasList = this.data.cacheWifiList.length > 0 || this.data.systemWifiList.length > 0
 
       if (hasList) {
@@ -189,6 +206,7 @@ ComponentWithComputed({
           this.setData({
             isRequestSystemWifiList: false,
           })
+
           console.log('getWifiList-catch', err)
         })
 
@@ -271,10 +289,11 @@ ComponentWithComputed({
       }
 
       wx.redirectTo({
-        url: strUtil.getUrlWithParams('/package-distribution/add-gateway/index', {
+        url: strUtil.getUrlWithParams('/package-distribution/link-gateway/index', {
           ...pageParams,
           wifiSSID: SSID,
           wifiPassword: pw,
+          type: this.data.type,
         }),
       })
     },

@@ -7,16 +7,11 @@
   background: rgba(0, 0, 0, 0.06);
 }
 
-.tab-title-check {
+.tab-title {
   color: #27282a;
   font-weight: 600;
-  font-size: 32rpx;
-}
-
-.tab-title-uncheck {
-  color: #555659;
-  font-weight: 400;
-  font-size: 28rpx;
+  font-size: 36rpx;
+  font-weight: bold;
 }
 
 .switch-cell {
@@ -26,51 +21,51 @@
   height: 112rpx;
 }
 
-.btn-press {
-  background-image: linear-gradient(155deg, #468cfb 6%, #6ba3fc 96%);
-  animation: btn-press-ani 0.6s ease forwards;
-}
-
-.slider-brightness-bar {
-  background-image: linear-gradient(270deg, #dbe5ff 0%, #507fff 100%) !important;
+.slider-button {
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 52rpx;
+  border: 3rpx solid #ffffff;
+  background-image: linear-gradient(30deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 60%) !important;
 }
 
 .slider-color-temp-bar {
-  background-image: linear-gradient(270deg, #c7ecff 8%, #fdeeba 75%, #f9dd9f 100%) !important;
+  background-image: linear-gradient(90deg, #ffde78 0%, #fff4d9 35%, #fff7e8 55%, #93affe 100%) !important;
 }
 
-.arrow-up {
-  animation: arrow-up-ani 0.8s ease forwards;
-}
-.arrow-down {
-  animation: arrow-down-ani 0.8s ease forwards;
+.onoff-slider-rail {
+  background: rgba(176, 176, 176, 0.1);
 }
 
-@keyframes arrow-up-ani {
-  0% {
-    transform: rotateX(0deg);
-  }
-  100% {
-    transform: rotateX(180deg);
-  }
+.onoff-slider {
+  background: #ffffff;
+  box-shadow: 0px 2px 12px 0px rgba(97, 109, 136, 0.15);
+  border-radius: 32rpx;
+  width: 334rpx;
+  height: 84rpx;
+  position: absolute;
+  top: 0;
 }
-@keyframes arrow-down-ani {
-  0% {
-    transform: rotateX(180deg);
-  }
-  100% {
-    transform: rotateX(0deg);
-  }
+.slider-button {
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 52rpx;
+  border: 3rpx solid #ffffff;
+  background-image: linear-gradient(30deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 60%) !important;
+}
+
+.btn-effect:active {
+  animation: btn-press-ani 0.4s ease forwards;
 }
 
 @keyframes btn-press-ani {
   0% {
-    opacity: 0;
+    background-color: transparent;
   }
   30% {
-    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.06);
   }
   100% {
-    opacity: 0;
+    background-color: transparent;
   }
 }

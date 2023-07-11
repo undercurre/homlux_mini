@@ -1,9 +1,10 @@
 import { observable, runInAction } from 'mobx-miniprogram'
-import { queryAllDevice, queryDeviceList, querySubDeviceList } from '../apis/device'
-import { proType } from '../config/index'
+import { queryAllDevice, querySubDeviceList } from '../apis/device'
+import { PRO_TYPE } from '../config/index'
 import { homeStore } from './home'
 import { roomStore } from './room'
 import { sceneStore } from './scene'
+import { transferDeviceProperty } from '../utils/index'
 
 export const deviceStore = observable({
   /**
@@ -14,26 +15,6 @@ export const deviceStore = observable({
    * 全屋设备
    */
   allRoomDeviceList: [] as Device.DeviceItem[],
-  /**
-   * 当前选择的灯具的状态
-   */
-  lightInfo: {} as Record<string, number>,
-  /**
-   * 选了了那些设备
-   */
-  selectList: [] as string[],
-  /**
-   * 选择了什么类型
-   */
-  selectType: [] as string[],
-  /**
-   * 是否是长按选中模式
-   */
-  isEditSelectMode: false,
-  /**
-   * 长按选中模式中选择的设备
-   */
-  editSelect: [] as string[],
 
   /**
    * deviceId -> device 映射
@@ -58,12 +39,7 @@ export const deviceStore = observable({
   get deviceFlattenList() {
     const list = [] as Device.DeviceItem[]
     deviceStore.deviceList.forEach((device) => {
-      if (device.proType === proType.light) {
-        list.push({
-          ...device,
-          uniId: device.deviceId,
-        })
-      } else if (device.proType === proType.switch) {
+      if (device.proType === PRO_TYPE.switch) {
         device.switchInfoDTOList?.forEach((switchItem) => {
           list.push({
             ...device,
@@ -72,8 +48,32 @@ export const deviceStore = observable({
             },
             switchInfoDTOList: [switchItem],
             uniId: `${device.deviceId}:${switchItem.switchId}`,
+            orderNum: switchItem.orderNum,
           })
         })
+      }
+      // 包括proType.light在内，所有非网关设备都用这种方案插值
+      else if (device.proType !== PRO_TYPE.gateway) {
+        list.push({
+          ...device,
+          uniId: device.deviceId,
+          mzgdPropertyDTOList: {
+            1: transferDeviceProperty(device.proType, device.mzgdPropertyDTOList[1]),
+          },
+        })
+      }
+    })
+    return list
+  },
+
+  /**
+   * 在灯组中的灯ID
+   */
+  get lightsInGroup() {
+    const list = [] as string[]
+    deviceStore.deviceList.forEach((device) => {
+      if (device.deviceType === 4) {
+        list.push(...device.groupDeviceList!.map((device) => device.deviceId))
       }
     })
     return list
@@ -87,15 +87,11 @@ export const deviceStore = observable({
   get allRoomDeviceFlattenList() {
     const list = [] as Device.DeviceItem[]
     deviceStore.allRoomDeviceList.forEach((device) => {
-      if (device.proType === proType.light) {
-        list.push({
-          ...device,
-          uniId: device.deviceId,
-        })
-      } else if (device.proType === proType.switch) {
+      if (device.proType === PRO_TYPE.switch) {
         device.switchInfoDTOList?.forEach((switchItem) => {
           list.push({
             ...device,
+            property: device.mzgdPropertyDTOList[switchItem.switchId],
             mzgdPropertyDTOList: {
               [switchItem.switchId]: device.mzgdPropertyDTOList[switchItem.switchId],
             },
@@ -104,76 +100,50 @@ export const deviceStore = observable({
           })
         })
       }
+      // 包括proType.light在内，所有非网关设备都用这种方案插值
+      else if (device.proType !== PRO_TYPE.gateway) {
+        list.push({
+          ...device,
+          uniId: device.deviceId,
+          property: transferDeviceProperty(device.proType, device.mzgdPropertyDTOList[1]),
+          mzgdPropertyDTOList: {
+            1: transferDeviceProperty(device.proType, device.mzgdPropertyDTOList[1]),
+          },
+        })
+      }
     })
     return list
   },
 
   /**
-   * 关联设备关系映射
-   * deviceId -> {lightRelId: string}
-   * deviceId:switchId -> {switchRelId?: string;lightRelId?: string}
-   */
-  get deviceRelMap(): Record<string, { switchRelId?: string; lightRelId?: string }> {
-    const map = {} as Record<string, { switchRelId?: string; lightRelId?: string }>
-    deviceStore.allRoomDeviceFlattenList.forEach((device) => {
-      if (device.proType === proType.switch) {
-        const ref = {} as { switchRelId?: string; lightRelId?: string }
-        if (device.switchInfoDTOList[0].switchRelId) {
-          ref.switchRelId = device.switchInfoDTOList[0].switchRelId
-        }
-        if (device.switchInfoDTOList[0].lightRelId) {
-          ref.lightRelId = device.switchInfoDTOList[0].lightRelId
-        }
-        if (Object.keys(ref).length !== 0) {
-          map[device.uniId] = ref
-        }
-      } else {
-        if (device.lightRelId) {
-          map[device.deviceId] = { lightRelId: device.lightRelId }
-        }
-      }
-    })
-    return map
-  },
-
-  /**
-   * relId 和设备关联映射
-   */
-  get relDeviceMap(): Record<string, string[]> {
-    const map = {} as Record<string, string[]>
-    deviceStore.allRoomDeviceFlattenList.forEach((device) => {
-      if (device.lightRelId) {
-        if (map[device.lightRelId]) {
-          map[device.lightRelId].push(device.uniId)
-        } else {
-          map[device.lightRelId] = [device.uniId]
-        }
-      }
-      if (device.uniId.includes(':')) {
-        if (device.switchInfoDTOList[0].lightRelId) {
-          if (map[device.switchInfoDTOList[0].lightRelId]) {
-            map[device.switchInfoDTOList[0].lightRelId].push(device.uniId)
-          } else {
-            map[device.switchInfoDTOList[0].lightRelId] = [device.uniId]
-          }
-        }
-        if (device.switchInfoDTOList[0].switchRelId) {
-          if (map[device.switchInfoDTOList[0].switchRelId]) {
-            map[device.switchInfoDTOList[0].switchRelId].push(device.uniId)
-          } else {
-            map[device.switchInfoDTOList[0].switchRelId] = [device.uniId]
-          }
-        }
-      }
-    })
-    return map
-  },
-
-  /**
-   * 关联场景关系映射
+   * 关联场景关系映射(deviceActions的关联)
    * switchUniId -> sceneId
    */
-  get switchSceneMap(): Record<string, string> {
+  get switchSceneActionMap(): Record<string, string[]> {
+    const map = {} as Record<string, string[]>
+    sceneStore.allRoomSceneList.forEach((scene) => {
+      scene.deviceActions?.forEach((action) => {
+        if (action.proType === PRO_TYPE.switch) {
+          action.controlAction.forEach((controlData) => {
+            if (map[`${action.deviceId}:${controlData.ep}`]) {
+              if (!map[`${action.deviceId}:${controlData.ep}`].includes(scene.sceneId)) {
+                map[`${action.deviceId}:${controlData.ep}`].push(scene.sceneId)
+              }
+            } else {
+              map[`${action.deviceId}:${controlData.ep}`] = [scene.sceneId]
+            }
+          })
+        }
+      })
+    })
+    return map
+  },
+
+  /**
+   * 关联场景关系映射(deviceConditions的关联)
+   * switchUniId -> sceneId
+   */
+  get switchSceneConditionMap(): Record<string, string> {
     const map = {} as Record<string, string>
     sceneStore.allRoomSceneList.forEach((scene) => {
       scene.deviceConditions?.forEach((condition) => {
@@ -185,8 +155,8 @@ export const deviceStore = observable({
 
   async updateAllRoomDeviceList(houseId: string = homeStore.currentHomeId, options?: { loading: boolean }) {
     const res = await queryAllDevice(houseId, options)
-    const list = {} as Record<string, Device.DeviceItem[]>
     if (res.success) {
+      const list = {} as Record<string, Device.DeviceItem[]>
       res.result
         ?.sort((a, b) => a.deviceId.localeCompare(b.deviceId))
         .forEach((device) => {
@@ -200,18 +170,9 @@ export const deviceStore = observable({
         roomStore.roomDeviceList = list
         deviceStore.allRoomDeviceList = res.result
       })
+    } else {
+      console.log('加载全屋设备失败！', res)
     }
-  },
-
-  async updateDeviceList(
-    houseId: string = homeStore.currentHomeId,
-    roomId: string = roomStore.roomList[roomStore.currentRoomIndex].roomId,
-    options?: { loading: boolean },
-  ) {
-    const res = await queryDeviceList({ houseId, roomId }, options)
-    runInAction(() => {
-      deviceStore.deviceList = res.success ? res.result.sort((a, b) => a.deviceId.localeCompare(b.deviceId)) : []
-    })
   },
 
   async updateSubDeviceList(
@@ -228,14 +189,6 @@ export const deviceStore = observable({
 
 export const deviceBinding = {
   store: deviceStore,
-  fields: [
-    'selectList',
-    'selectType',
-    'deviceList',
-    'lightInfo',
-    'allRoomDeviceList',
-    'isEditSelectMode',
-    'editSelect',
-  ],
+  fields: ['deviceList', 'allRoomDeviceList', 'deviceFlattenList'],
   actions: [],
 }

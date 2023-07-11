@@ -33,6 +33,10 @@ Component({
       type: Boolean,
       value: false,
     },
+    showGoHome: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /**
@@ -58,6 +62,13 @@ Component({
   methods: {
     handleLeftTap() {
       this.triggerEvent('leftTap')
+    },
+    /**
+     * 返回小程序首页
+     * FIXME wx.switchTab 在IOS下会出现中间页面；wx.navigateBack因小程序内核问题导致只能后退一级；暂时使用 wx.reLaunch
+     */
+    handleGoHome() {
+      wx.reLaunch({ url: '/pages/index/index' })
     },
   },
 })

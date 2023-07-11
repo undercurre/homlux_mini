@@ -26,15 +26,17 @@ declare namespace Home {
 
   /**
    * 成员角色
-   * Creater 1：创建者
-   * Manager 2：管理员
-   * Guest 3：游客
+   * 1：创建者
+   * 2：管理员
+   * 3：游客
    */
-  export enum UserRole {
-    Creater,
-    Manager,
-    Guest,
+  export interface UserRoleMap {
+    creator: 1
+    admin: 2
+    visitor: 3
   }
+
+  export type UserRole = ValueOf<UserRoleMap>
 
   /**
    * 家庭详细值
@@ -49,7 +51,7 @@ declare namespace Home {
      */
     houseName: string
 
-    // 用户家庭权限 1：创建者 2：管理员 3：游客
+    // 用户家庭权限
     houseUserAuth: UserRole
 
     /**
@@ -71,15 +73,10 @@ declare namespace Home {
      * 房间数量
      */
     roomCount: number
-
-    /**
-     * 房间列表
-     */
-    roomList: IRoomInfo[]
   }
 
   export interface IRoomInfo {
-    deviceLightOnNum: number
+    lightOnCount: number
     roomIcon: string
     roomId: string
     roomName: string
@@ -89,7 +86,7 @@ declare namespace Home {
     /**
      * 成员权限编码
      */
-    userHouseAuth: number
+    userHouseAuth: UserRole
     /**
      * 成员权限名称
      */

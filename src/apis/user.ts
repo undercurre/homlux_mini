@@ -5,7 +5,7 @@ import { mzaioRequest } from '../utils/index'
  */
 export async function queryUserInfo() {
   return await mzaioRequest.post<User.UserInfo>({
-    log: false,
+    log: true,
     loading: false,
     url: '/v1/mzgd/user/queryWxUserInfo',
   })
@@ -31,10 +31,24 @@ export async function queryWxImgQrCode(imgUrl: string) {
 export async function getUploadFileForOssInfo(fileName: string) {
   return await mzaioRequest.post<{ certification: string; downloadUrl: string; uploadUrl: string }>({
     log: false,
-    loading: true,
+    loading: false,
     url: '/v1/mzgd/user/uploadFileForOss',
     data: {
       fileName,
+    },
+  })
+}
+
+/**
+ * 美智用户二维码确认授权接口
+ */
+export async function authQrcode(qrcode: string) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: false,
+    url: '/v1/mzgd/user/mzgdUserQrcodeAuthorize',
+    data: {
+      qrcode,
     },
   })
 }

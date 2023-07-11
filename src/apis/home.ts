@@ -54,6 +54,7 @@ export async function saveOrUpdateUserHouseInfo(
  * 更新默认家庭
  */
 export async function updateDefaultHouse(houseId: string, options?: { loading?: boolean }) {
+  console.debug('切换家庭updateDefaultHouse', houseId)
   return await mzaioRequest.post<Home.IHomeDetail>({
     log: true,
     loading: options?.loading ?? false,
@@ -131,10 +132,7 @@ export async function queryHouseUserList({ houseId = '' }, options?: { loading?:
  * 更新家庭成员权限
  * 家庭成员权限，创建者：1 管理员：2 游客：3
  */
-export async function updateHouseUserAuth(
-  { userId = '', auth = Home.UserRole.Guest, houseId = '' },
-  options?: { loading?: boolean },
-) {
+export async function updateHouseUserAuth({ userId = '', auth = 3, houseId = '' }, options?: { loading?: boolean }) {
   return await mzaioRequest.post({
     log: true,
     loading: options?.loading ?? false,
@@ -165,7 +163,7 @@ export async function deleteHouseUser({ houseId = '', userId = '' }, options?: {
 /**
  * 邀请家庭成员
  */
-export async function inviteHouseUser({ houseId = '', auth = 3 }, options?: { loading?: boolean }) {
+export async function inviteHouseUser({ houseId = '', auth = 3, shareId = '' }, options?: { loading?: boolean }) {
   return await mzaioRequest.post({
     log: true,
     loading: options?.loading ?? false,
@@ -173,6 +171,21 @@ export async function inviteHouseUser({ houseId = '', auth = 3 }, options?: { lo
     data: {
       houseId,
       houseUserAuth: auth,
+      shareId,
+    },
+  })
+}
+
+/**
+ * 获取分享连接ID
+ */
+export async function getShareId({ houseId = '' }, options?: { loading?: boolean }) {
+  return await mzaioRequest.post<{ shareId: string }>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/user/getShareId',
+    data: {
+      houseId,
     },
   })
 }

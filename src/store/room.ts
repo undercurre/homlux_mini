@@ -1,7 +1,9 @@
 import { observable, runInAction } from 'mobx-miniprogram'
 import { getRoomList } from '../apis/index'
-import { proType } from '../config/index'
+import { PRO_TYPE } from '../config/index'
+import { deviceStore } from './device'
 import { homeStore } from './home'
+import { deviceCount } from '../utils/index'
 
 export const roomStore = observable({
   /**
@@ -19,46 +21,57 @@ export const roomStore = observable({
     return this.roomList[this.currentRoomIndex]
   },
 
+  /**
+   * 更新房间开灯数量
+   * ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
+   */
+  updateRoomCardLightOnNum() {
+    const list = {} as Record<string, Device.DeviceItem[]>
+    deviceStore.allRoomDeviceList
+      .sort((a, b) => a.deviceId.localeCompare(b.deviceId))
+      .forEach((device) => {
+        if (list[device.roomId]) {
+          list[device.roomId].push(device)
+        } else {
+          list[device.roomId] = [device]
+        }
+      })
+    roomStore.roomList.forEach((roomInfo) => {
+      const roomDeviceList = list[roomInfo.roomId]
+      const { lightOnCount, endCount, lightCount } = deviceCount(roomDeviceList)
+
+      roomInfo.lightOnCount = lightOnCount
+      roomInfo.endCount = endCount
+      roomInfo.lightCount = lightCount
+    })
+
+    runInAction(() => {
+      roomStore.roomDeviceList = list
+      roomStore.roomList = [...roomStore.roomList]
+    })
+  },
+
   async updateRoomList(options?: { loading: boolean }) {
     const res = await getRoomList(homeStore.currentHomeId, options)
     if (res.success) {
-      res.result.roomInfoList.forEach((roomInfo) => {
-        const roomDeviceList = roomStore.roomDeviceList[roomInfo.roomInfo.roomId]
+      res.result.roomInfoList.forEach((room) => {
+        const roomDeviceList = roomStore.roomDeviceList[room.roomInfo.roomId]
         // 过滤一下默认场景，没灯过滤明亮柔和，没灯没开关全部过滤
-        const hasSwitch = roomDeviceList?.some((device) => device.proType === proType.switch) ?? false
-        const hasLight = roomDeviceList?.some((device) => device.proType === proType.light) ?? false
+        const hasSwitch = roomDeviceList?.some((device) => device.proType === PRO_TYPE.switch) ?? false
+        const hasLight = roomDeviceList?.some((device) => device.proType === PRO_TYPE.light) ?? false
         if (!hasSwitch && !hasLight) {
           // 四个默认场景都去掉
-          roomInfo.roomSceneList = roomInfo.roomSceneList.filter((scene) => scene.isDefault === '0')
+          room.roomSceneList = room.roomSceneList.filter((scene) => scene.isDefault === '0')
         } else if (hasSwitch && !hasLight) {
           // 只有开关，去掉默认的明亮、柔和
-          roomInfo.roomSceneList = roomInfo.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
+          room.roomSceneList = room.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
         }
-        // 统计多少灯打开（开关不关联灯或者关联场景都算进去）
-        let deviceLightOnNum = 0
-        // 统计多少个子设备
-        let subDeviceNum = 0
-        roomDeviceList?.forEach((device) => {
-          if (device.proType !== proType.gateway) {
-            subDeviceNum++
-          }
-          if (!device.onLineStatus) return
-          if (device.proType === proType.light && device.mzgdPropertyDTOList['1'].OnOff) {
-            deviceLightOnNum++
-          } else if (device.proType === proType.switch) {
-            device.switchInfoDTOList.forEach((switchItem) => {
-              if (
-                !switchItem.lightRelId &&
-                device.mzgdPropertyDTOList[switchItem.switchId].OnOff &&
-                !device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode
-              ) {
-                deviceLightOnNum++
-              }
-            })
-          }
-        })
-        roomInfo.roomInfo.deviceLightOnNum = deviceLightOnNum
-        roomInfo.roomInfo.subDeviceNum = subDeviceNum
+
+        const { lightOnCount, endCount, lightCount } = deviceCount(roomDeviceList)
+
+        room.roomInfo.lightOnCount = lightOnCount
+        room.roomInfo.endCount = endCount
+        room.roomInfo.lightCount = lightCount
       })
 
       runInAction(() => {
@@ -66,10 +79,11 @@ export const roomStore = observable({
           roomId: room.roomInfo.roomId,
           roomIcon: room.roomInfo.roomIcon || 'drawing-room',
           roomName: room.roomInfo.roomName,
-          deviceLightOnNum: room.roomInfo.deviceLightOnNum,
           sceneList: room.roomSceneList,
           deviceNum: room.roomInfo.deviceNum,
-          subDeviceNum: room.roomInfo.subDeviceNum,
+          lightOnCount: room.roomInfo.lightOnCount,
+          endCount: room.roomInfo.endCount,
+          lightCount: room.roomInfo.lightCount,
         }))
       })
     }

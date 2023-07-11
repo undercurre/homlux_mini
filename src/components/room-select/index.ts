@@ -75,7 +75,7 @@ ComponentWithComputed({
         deviceBinding.store.updateAllRoomDeviceList()
       } else {
         // 查房间
-        deviceBinding.store.updateDeviceList(undefined, this.data.roomSelect)
+        deviceBinding.store.updateSubDeviceList(undefined, this.data.roomSelect)
       }
     },
 

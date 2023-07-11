@@ -3,15 +3,18 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { roomBinding, homeBinding, userBinding } from '../../store/index'
+import { roomBinding, homeBinding, userBinding, deviceBinding, homeStore } from '../../store/index'
 import { saveOrUpdateUserHouseInfo, delUserHouse, quitUserHouse, updateDefaultHouse } from '../../apis/index'
-import { strUtil } from '../../utils/index'
+import { strUtil, checkInputNameIllegal, emitter } from '../../utils/index'
 
 ComponentWithComputed({
   options: {
     addGlobalClass: true,
   },
-  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, homeBinding, userBinding] }), pageBehaviors],
+  behaviors: [
+    BehaviorWithStore({ storeBindings: [roomBinding, homeBinding, userBinding, deviceBinding] }),
+    pageBehaviors,
+  ],
 
   /**
    * 页面的初始数据
@@ -34,27 +37,57 @@ ComponentWithComputed({
   },
 
   computed: {
-    settingActions() {
-      const actions = [
-        {
+    settingActions(data) {
+      const actions = []
+
+      if (data.isEnabled) {
+        actions.push({
           name: '重命名',
-        },
-        {
+        })
+      }
+
+      if (data.currentHomeDetail?.houseUserAuth === 1) {
+        actions.push({
           name: '解散家庭',
-        },
-      ]
+        })
+      }
 
       return actions
+    },
+    isEnabled(data) {
+      const role = data.currentHomeDetail?.houseUserAuth
+      return role === 1 || role === 2
+    },
+    namingPopupTitle(data) {
+      return data.homeInfoEdited.houseId ? '重命名家庭' : '新建家庭'
+    },
+    houseName(data) {
+      return data.currentHomeDetail?.houseName?.length > 6
+        ? data.currentHomeDetail?.houseName.slice(0, 6) + '...'
+        : data.currentHomeDetail?.houseName
     },
   },
 
   lifetimes: {
     ready: async function () {
+      console.log('home manage ==== ready')
+      homeStore.updateHomeInfo()
       homeBinding.store.updateHomeMemberList()
-      userBinding.store.updateUserInfo()
+
+      emitter.on('homeInfoEdit', () => {
+        homeStore.updateHomeInfo()
+        homeBinding.store.updateHomeMemberList()
+      })
+
+      emitter.on('invite_user_house', () => {
+        homeStore.updateHomeInfo()
+      })
     },
     moved: function () {},
-    detached: function () {},
+    detached: function () {
+      emitter.off('homeInfoEdit')
+      emitter.off('invite_user_house')
+    },
   },
 
   methods: {
@@ -108,6 +141,11 @@ ComponentWithComputed({
      * 创建家庭
      */
     createHome() {
+      // const ownerHomeList = homeStore.homeList.filter((home) => home.houseCreatorFlag)
+      if (homeStore.homeList.length >= 20) {
+        Toast('每个账号最多可以存在20个家庭')
+        return
+      }
       this.setData({
         isEditName: true,
         homeInfoEdited: {
@@ -150,9 +188,8 @@ ComponentWithComputed({
     async confirmHomeInfo() {
       const { houseName } = this.data.homeInfoEdited
 
-      if (!houseName) {
-        Toast('家庭名称不能为空')
-
+      if (checkInputNameIllegal(houseName)) {
+        Toast('家庭名称不能用特殊符号或表情')
         return
       }
 
@@ -188,11 +225,15 @@ ComponentWithComputed({
     },
 
     async delHome() {
-      const list = homeBinding.store.homeList.filter((item) => item.houseCreatorFlag)
+      const allDeviceList = deviceBinding.store.allRoomDeviceList
+      if (allDeviceList && allDeviceList.length > 0) {
+        Toast('家庭存在设备，不允许解散')
+        return
+      }
 
-      if (list.length <= 1) {
+      const homeList = homeBinding.store.homeList.filter((item) => item.houseCreatorFlag)
+      if (homeList.length <= 1) {
         Toast('请至少保留一个创建的家庭')
-
         return
       }
 

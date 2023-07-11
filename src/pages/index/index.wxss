@@ -25,3 +25,24 @@
 .round-btn-border {
   border: 1px solid rgba(162, 162, 162, 0.25) !important;
 }
+
+.button-tap-effect {
+  animation: effect ease-in-out 0.3s 1 forwards;
+}
+
+@keyframes effect {
+  0% {
+    color: #2b4067;
+  }
+  30% {
+    color: #fff;
+    background-color: #468cfb;
+  }
+  40% {
+    color: #fff;
+    background-color: #468cfb;
+  }
+  100% {
+    color: #2b4067;
+  }
+}

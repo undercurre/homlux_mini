@@ -1,5 +1,5 @@
 <view class="page-container flex flex-col pt-40rpx">
-  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="{{roomInfo.roomName}}"></nav-bar>
+  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="{{roomInfo.roomName}}" show-go-home></nav-bar>
 
   <view class="grow">
     <van-cell-group inset>
@@ -13,10 +13,14 @@
     </van-cell-group>
   </view>
 
-  <van-button wx:if="{{isManager}}" class="mx-32rpx" size="large" type="danger" block bind:click="delRoom">删除房间</van-button>
+  <view class="flex px-32rpx gap-x-46rpx" wx:if="{{isManager}}">
+    <van-button class="flex-1" size="large" bind:click="delRoom">删除</van-button>
+
+    <van-button type="primary" class="flex-1" size="large" bind:click="saveRoomInfo">确认</van-button>
+  </view>
 </view>
 
-<add-room show="{{isEdit}}" is-edit-name="{{editType === 'name'}}" is-edit-icon="{{editType === 'icon'}}" room-id="{{roomInfo.roomId}}" room-name="{{roomInfo.roomName}}" room-icon="{{roomInfo.roomIcon}}" bind:confirm="finishAddRoom" bind:close="onClose"></add-room>
+<add-room show="{{isEdit}}" isSave="{{false}}" is-edit-name="{{editType === 'name'}}" is-edit-icon="{{editType === 'icon'}}" room-id="{{roomInfo.roomId}}" room-name="{{roomInfo.roomName}}" room-icon="{{roomInfo.roomIcon}}" bind:confirm="finishAddRoom" bind:close="onClose"></add-room>
 
 <van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />
 
