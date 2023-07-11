@@ -161,7 +161,7 @@ ComponentWithComputed({
           proType: PRO_TYPE.sensor,
           isChecked: false,
           status: 'waiting' as const,
-          deviceUuid: device.deviceId
+          deviceUuid: device.deviceId,
         }))
 
       runInAction(() => {
@@ -405,31 +405,6 @@ ComponentWithComputed({
         }, 300)
 
         this.data._pQueue.add(taskList)
-
-        // const iteratorFn = async (item: IBleDevice) => {
-        //   tempList.push(item.mac)
-        //   Logger.log(this.data._id, '开始蓝牙任务：', item.mac, '当前蓝牙指令任务：', JSON.stringify(tempList))
-
-        //   wx.reportEvent('add_device', {
-        //     pro_type: item.proType,
-        //     model_id: item.productId,
-        //     add_type: 'discover',
-        //   })
-
-        //   await this.startZigbeeNet(item)
-
-        //   await item.client.close()
-
-        //   return item
-        // }
-
-        // for await (const value of asyncPool(3, list, iteratorFn)) {
-        //   const index = tempList.findIndex((item) => item === value.mac)
-
-        //   tempList.splice(index, 1)
-
-        //   Logger.log(`【${value.mac}】蓝牙任务结束，当前蓝牙指令任务：`, tempList)
-        // }
       } catch (err) {
         Logger.log('beginAddDevice-err', err)
       }
@@ -475,7 +450,7 @@ ComponentWithComputed({
           }
         }, timeout * 1000)
       } else if (this.data._deviceMap[bleDevice.mac].zigbeeRepeatTimes === 0) {
-        Logger.error(`子设备配网失败：${bleDevice.mac}`, res)
+        Logger.error(`【${bleDevice.mac}】子设备配网失败`, res)
         this.data._errorList.push(
           `【${bleDevice.mac}】${JSON.stringify(res)}，蓝牙连接状态：${bleDeviceMap[bleDevice.deviceUuid]}`,
         )
@@ -487,7 +462,7 @@ ComponentWithComputed({
         await this.startZigbeeNet(bleDevice)
       }
 
-      Logger.log(bleDevice.mac, 'startZigbeeNet-end')
+      Logger.log(`【${bleDevice.mac}】startZigbeeNet-end`)
     },
 
     async bindBleDeviceToCloud(device: Device.ISubDevice) {
