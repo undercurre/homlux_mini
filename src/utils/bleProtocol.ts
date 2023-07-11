@@ -34,8 +34,6 @@ export class BleClient {
   mac: string
   key = ''
 
-  isConnected = false // 是否正在连接
-
   deviceUuid: string
   serviceId = 'BAE55B96-7D19-458D-970C-50613D801BC9'
   characteristicId = '' // 灯具和面板的uid不一致，同类设备的uid是一样的
@@ -93,8 +91,6 @@ export class BleClient {
         error: connectRes,
       }
     }
-
-    this.isConnected = true
 
     // 存在蓝牙信号较差的情况，连接蓝牙设备后会中途断开的情况，需要做对应异常处理，超时处理
     const initRes = await Promise.race([
@@ -177,11 +173,13 @@ export class BleClient {
   }
 
   async close() {
-    if (!this.isConnected) {
+    const isConnected = bleDeviceMap[this.deviceUuid]
+
+    if (!isConnected) {
+      Logger.log(`【${this.mac}】已关闭蓝牙连接，无需再次关闭`)
       return
     }
     Logger.log(`【${this.mac}】${this.deviceUuid}开始关闭蓝牙连接`)
-    this.isConnected = false
     const res = await wx.closeBLEConnection({ deviceId: this.deviceUuid }).catch((err) => err)
 
     Logger.log(`【${this.mac}】closeBLEConnection`, res)
@@ -189,7 +187,9 @@ export class BleClient {
 
   async sendCmd(params: { cmdType: keyof typeof CmdTypeMap; subType: keyof typeof ControlSubType }) {
     try {
-      if (!this.isConnected) {
+      const isConnected = bleDeviceMap[this.deviceUuid]
+
+      if (!isConnected) {
         const connectRes = await this.connect()
 
         Logger.log(`【${this.mac}】connect`, connectRes)
@@ -285,6 +285,7 @@ export class BleClient {
           return res
         })
         .catch(async (err) => {
+          // todo: 
           Logger.error(`【${this.mac}】promise-sendCmd-err`, err, `蓝牙连接状态：${bleDeviceMap[this.deviceUuid]}`)
 
           await this.close() // 异常关闭需要主动配合关闭连接closeBLEConnection，否则资源会被占用无法释放，导致无法连接蓝牙设备
@@ -337,7 +338,7 @@ export class BleClient {
       },
     }
 
-    Logger.log(`【${this.mac}】startZigbeeNet`, result)
+    Logger.log(`【${this.mac}】startZigbeeNet`, result, `蓝牙连接状态：${bleDeviceMap[this.deviceUuid]}`)
 
     return result
   }
