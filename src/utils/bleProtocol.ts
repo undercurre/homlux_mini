@@ -285,7 +285,7 @@ export class BleClient {
           return res
         })
         .catch(async (err) => {
-          // todo: 
+          // todo:
           Logger.error(`【${this.mac}】promise-sendCmd-err`, err, `蓝牙连接状态：${bleDeviceMap[this.deviceUuid]}`)
 
           await this.close() // 异常关闭需要主动配合关闭连接closeBLEConnection，否则资源会被占用无法释放，导致无法连接蓝牙设备
