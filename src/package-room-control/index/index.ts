@@ -1018,7 +1018,7 @@ ComponentWithComputed({
         deviceId: device.deviceId,
         ep,
         gatewayId: device.gatewayId,
-        property: { OnOff: newOnOff },
+        property: { OnOff: newOnOff, time: 500 },
       })
 
       if (!res.success) {
