@@ -108,9 +108,8 @@ ComponentWithComputed({
           return
         }
 
-        // 有WS时，前端查询绑定信息
-        // TOOD 建立 bind_device 列表，排除可能存在的 设备历史上报缓存
-        // TODO 停止监听的规则与ble配网规则合并
+        // 有WS时，触发前端查询绑定信息
+        // _sensorList 列表，排除可能存在的 设备历史上报缓存
         emitter.on('bind_device', (data) => {
           Logger.log('bind_device', data)
 
@@ -172,8 +171,11 @@ ComponentWithComputed({
       // 加载动画
       this.createSelectorQuery()
         .selectAll('#canvas')
-        .node((res) => {
-          const canvas = (res as IAnyObject)[0].node
+        .node((res: IAnyObject) => {
+          if (!res || !res.length) {
+            return
+          }
+          const canvas = res[0].node
           const context = canvas.getContext('2d')
 
           canvas.width = 400
@@ -312,6 +314,13 @@ ComponentWithComputed({
 
     async beginAddSensor(list: Device.ISubDevice[]) {
       try {
+        this.setData({
+          status: 'requesting',
+        })
+        setTimeout(() => {
+          this.startAnimation()
+        }, 300)
+
         // 将整个列表发到云端标记为绑定
         for (const device of list) {
           const res = await bindDevice({
@@ -325,10 +334,6 @@ ComponentWithComputed({
           device.status = res.success && res.result.isBind ? 'success' : 'fail'
         }
         bleDevicesStore.updateBleDeviceList()
-
-        this.setData({
-          status: 'requesting',
-        })
 
         Logger.log('添加传感器结束')
       } catch (err) {
@@ -648,6 +653,7 @@ ComponentWithComputed({
     finish() {
       homeBinding.store.updateCurrentHomeDetail()
       wx.closeBluetoothAdapter()
+      bleDevicesStore.reset()
 
       wx.switchTab({
         url: '/pages/index/index',
