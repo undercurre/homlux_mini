@@ -298,7 +298,7 @@ ComponentWithComputed({
           // 超时后检查云端上报，是否已成功移动完毕 5~120s
           const TIME_OUT = Math.min(Math.max(5000, this.data.moveWaitlist.length * 1000), 120000)
 
-          showLoading()
+          showLoading('正在移动设备房间，请稍候')
           timeId = setTimeout(async () => {
             hideLoading()
 
