@@ -730,7 +730,7 @@ ComponentWithComputed({
       diffData[`placeholder.orderNum`] = -1
       diffData[`placeholder.index`] = -1
       diffData[`placeholder.groupIndex`] = -1
-      
+
       this.setData(diffData)
       console.log('movableTouchEnd:', diffData)
 
