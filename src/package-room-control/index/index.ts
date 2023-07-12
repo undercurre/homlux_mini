@@ -709,7 +709,7 @@ ComponentWithComputed({
     }, 50),
 
     movableChange(e: WechatMiniprogram.TouchEvent) {
-      if (e.detail.source === 'touch') {
+      if (e.detail.source === 'touch' || e.detail.source === 'friction') {
         this.movableChangeThrottle(e)
       }
     },
@@ -730,6 +730,7 @@ ComponentWithComputed({
       diffData[`placeholder.orderNum`] = -1
       diffData[`placeholder.index`] = -1
       diffData[`placeholder.groupIndex`] = -1
+      
       this.setData(diffData)
       console.log('movableTouchEnd:', diffData)
 

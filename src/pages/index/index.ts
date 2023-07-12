@@ -469,7 +469,7 @@ ComponentWithComputed({
     }, 50),
 
     movableChange(e: WechatMiniprogram.TouchEvent) {
-      if (e.detail.source === 'touch') {
+      if (e.detail.source === 'touch' || e.detail.source === 'friction') {
         this.movableChangeThrottle(e)
       }
     },
