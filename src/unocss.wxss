@@ -287,6 +287,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .decoration-blue{-webkit-text-decoration-color:rgba(72,143,255,var(--un-line-opacity));--un-line-opacity:1;text-decoration-color:rgba(72,143,255,var(--un-line-opacity));}
 .decoration-solid{text-decoration-style:solid;}
 .text-center{text-align:center;}
+.text-left{text-align:left;}
 .text-justify{text-align:justify;}
 .text-black-2a,
 .text-hex-27282A{--un-text-opacity:1;color:rgba(39,40,42,var(--un-text-opacity));}

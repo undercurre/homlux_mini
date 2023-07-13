@@ -1,4 +1,8 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
+import { runInAction } from 'mobx-miniprogram'
+import Toast from '@vant/weapp/toast/toast'
+import Dialog from '@vant/weapp/dialog/dialog'
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import {
   othersBinding,
   roomBinding,
@@ -10,16 +14,10 @@ import {
   roomStore,
   deviceStore,
 } from '../../store/index'
-import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { storage, throttle } from '../../utils/index'
+import { storage, throttle, emitter, WSEventType, showLoading, hideLoading, strUtil } from '../../utils/index'
 import { PRO_TYPE, ROOM_CARD_H, ROOM_CARD_M } from '../../config/index'
-import Toast from '@vant/weapp/toast/toast'
-import Dialog from '@vant/weapp/dialog/dialog'
-import { allDevicePowerControl, updateRoomSort } from '../../apis/index'
-import { emitter, WSEventType } from '../../utils/eventBus'
-import { updateDefaultHouse } from '../../apis/index'
+import { allDevicePowerControl, updateRoomSort, updateDefaultHouse, changeUserHouse } from '../../apis/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { runInAction } from 'mobx-miniprogram'
 
 type PosType = Record<'index' | 'y', number>
 
@@ -147,6 +145,15 @@ ComponentWithComputed({
   methods: {
     // 生命周期或者其他钩子
     onLoad: function () {
+      console.debug('page-index-onLoad')
+
+      const params = wx.getLaunchOptionsSync()
+      console.log(
+        'getLaunchOptionsSync',
+        params,
+        'wx.getEnterOptionsSync()',
+        wx.getEnterOptionsSync(),
+      )
       // 更新tabbar状态
       if (typeof this.getTabBar === 'function' && this.getTabBar()) {
         this.getTabBar().setData({
@@ -158,6 +165,8 @@ ComponentWithComputed({
           loading: false,
         })
       }
+
+      this.accetHomeTransfer()
     },
     onHide() {
       // 隐藏之前展示的下拉菜单
@@ -317,6 +326,86 @@ ComponentWithComputed({
       } else {
         console.log('lmn>>>无效邀请参数')
       }
+    },
+
+    /**
+     * 接受家庭转让逻辑
+     */
+    async accetHomeTransfer() {
+      if (!this.data.isLogin) {
+        console.log('未登录，停止转让逻辑')
+        return
+      }
+
+      const params = wx.getLaunchOptionsSync()
+      console.log(
+        'getLaunchOptionsSync',
+        params,
+        'wx.getEnterOptionsSync()',
+        wx.getEnterOptionsSync(),
+      )
+
+      let enterQuery: IAnyObject
+
+      if (params.scene === 1011) {
+        const scanUrl = decodeURIComponent(params.query.q)
+
+        console.log('scanUrl', scanUrl)
+
+        enterQuery = strUtil.getUrlParams(scanUrl)
+      } else if (params.scene === 1007) {
+        enterQuery = wx.getEnterOptionsSync().query
+      } else {
+        console.log('非家庭转让逻辑')
+        return
+      }
+      
+      const type = enterQuery.type as string
+      const houseId = enterQuery.houseId as string
+      const expireTime = enterQuery.expireTime as string
+      const shareId = enterQuery.shareId as string
+      const oldUserId = enterQuery.userId as string
+      const scene = wx.getEnterOptionsSync().scene
+
+      console.log('enterQuery, scene:', scene, 'type', type)
+      if (type !== 'transferHome') {
+        console.log('非家庭转让逻辑')
+        return
+      }
+
+      const now = new Date().valueOf()
+      // 判断链接是否过期
+      if (now > parseInt(expireTime)) {
+        Dialog.confirm({
+          title: '该消息过期',
+          message: '该消息已过期，请联系邀请者重新邀请',
+          confirmButtonText: '我知道了',
+          zIndex: 9999,
+        })
+
+        return
+      }
+
+      showLoading()
+      const res = await changeUserHouse({ houseId, type: 2, shareId, changeUserId: oldUserId })
+
+      if (res.success) {
+        await updateDefaultHouse(houseId)
+
+        await homeBinding.store.updateHomeInfo()
+
+        Dialog.confirm({
+          title: '你已成为当前家庭的创建者',
+          message: '家庭无线局域网如发生变更，家庭内的所有设备将会离线，可在智慧屏上修改连接的无线局域网。',
+          confirmButtonText: '我知道了',
+          showCancelButton: false,
+          zIndex: 9999,
+        })
+      } else {
+        Toast(res.msg)
+      }
+
+      hideLoading()
     },
 
     // 收起所有菜单

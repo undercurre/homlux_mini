@@ -7,9 +7,9 @@
         <van-cell title="转让给家庭成员" is-link center border="{{false}}" bind:click="toTransferHomeMember" />
       </van-cell-group>
 
-      <van-cell-group inset>
+      <button class="bg-white m-24rpx rounded-32rpx overflow-hidden text-left p-0 border-0" open-type="share">
         <van-cell title="转让给微信好友" is-link center border="{{false}}" bind:click="toTransferByWx" />
-      </van-cell-group>
+      </button>
 
       <view class="bg-white m-24rpx rounded-32rpx overflow-hidden">
         <van-cell title="通过二维码转让" label="微信扫码完成家庭转让" center border="{{false}}" />

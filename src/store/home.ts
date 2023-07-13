@@ -288,7 +288,7 @@ export const homeStore = observable({
       })
       return
     } else {
-      return Promise.reject('获取分享连接失败')
+      return Promise.reject('获取分享链接失败')
     }
   },
 

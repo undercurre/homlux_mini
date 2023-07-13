@@ -150,6 +150,14 @@ ComponentWithComputed({
       }
 
       if (name === '转让家庭') {
+        const list = homeBinding.store.homeList.filter((item) => item.houseCreatorFlag)
+
+        if (list.length <= 1) {
+          Toast('请至少保留一个创建的家庭')
+
+          return
+        }
+
         wx.navigateTo({
           url: '/package-mine/home-transfer/index',
         })

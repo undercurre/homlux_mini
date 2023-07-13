@@ -54,7 +54,6 @@ export async function saveOrUpdateUserHouseInfo(
  * 更新默认家庭
  */
 export async function updateDefaultHouse(houseId: string, options?: { loading?: boolean }) {
-  console.debug('切换家庭updateDefaultHouse', houseId)
   return await mzaioRequest.post<Home.IHomeDetail>({
     log: true,
     loading: options?.loading ?? false,
@@ -97,9 +96,10 @@ export async function quitUserHouse(houseId: string, options?: { loading?: boole
 
 /**
  * 转让家庭
+ * type 家庭变更类型 1：家庭转让 2：工程移交 
  */
 export async function changeUserHouse(
-  params: { houseId: string; changeUserId: string },
+  params: { type: number; houseId: string; changeUserId: string; shareId?: string },
   options?: { loading?: boolean },
 ) {
   return await mzaioRequest.post({
@@ -108,7 +108,6 @@ export async function changeUserHouse(
     url: '/v1/mzgd/user/house/changeUserHouse',
     data: {
       ...params,
-      creatorUserId: userBinding.store.userInfo.userId,
     },
   })
 }
