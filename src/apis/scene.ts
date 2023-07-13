@@ -88,3 +88,38 @@ export async function updateSceneSort(
     data,
   })
 }
+
+export async function queryAutoSceneListByHouseId(houseId: string, options?: { loading?: boolean }) {
+  return await mzaioRequest.post<AutoScene.AutoSceneItem[]>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/scene/queryAutoSceneListByHouseId',
+    data: {
+      houseId,
+    },
+  })
+}
+
+export async function queryAutoSceneLogByHouseId(
+  data: { houseId: string; reportTs?: number },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<AutoScene.AutoSceneLog[]>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/scene/querySceneLog',
+    data,
+  })
+}
+
+export async function setAutoSceneEnabled(
+  data: { sceneId: string; isEnabled: string },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<IAnyObject>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/scene/setSceneEnabled',
+    data,
+  })
+}

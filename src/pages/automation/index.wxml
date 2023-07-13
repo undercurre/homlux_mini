@@ -29,13 +29,13 @@
       <view class="h-96rpx"></view>
       <view class="flex-1">
         <!-- 房间卡片列表 -->
-        <van-cell-group wx:for="{{autoSceneList}}" wx:key="name" inset>
-          <van-cell title="{{item.name}}" data-index="{{index}}" label="{{item.desc}}" center title-style="font-weight: 500;" border="{{false}}">
+        <van-cell-group wx:for="{{allRoomAutoSceneListComputed}}" wx:key="sceneId" inset>
+          <van-cell title="{{item.sceneName}}" label="{{item.desc}}" center title-style="font-weight: 500;" border="{{false}}">
             <view slot="icon" class="rounded-32rpx p-16rpx mr-32rpx">
-              <image class="w-72 h-72" src="/assets/img/auto-scene/{{item.icon}}.png"></image>
+              <image class="w-72 h-72" src="/assets/img/auto-scene/{{item.sceneIcon}}.png"></image>
             </view>
             <view slot="right-icon">
-              <van-switch checked="{{item.onoff}}" bind:change="onAutoUpdateChange" />
+              <van-switch checked="{{item.isEnabled === '1'}}" data-sceneId="{{item.sceneId}}" data-isEnabled="{{item.isEnabled}}" bind:change="changeAutoSceneEnabled" />
             </view>
           </van-cell>
         </van-cell-group>

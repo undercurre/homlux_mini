@@ -2,17 +2,20 @@ declare namespace AutoScene {
   /**
    * 查询房间的场景列表项
    */
-  interface SceneItem extends SceneBase {
+  interface AutoSceneItem extends SceneBase {
     /**
      * 条件类型
      * 0-或，1-与
      */
     conditionType: string
+    // 是否启用
+    isEnabled: '0' | '1'
     deviceActions: DeviceAction[]
     deviceConditions: DeviceCondition[]
+    timeConditions: TimeCondition[]
+    effectiveTime: effectiveTime
     houseId: string
-    orderNum: number
-    roomId: string
+    desc: string
   }
   /**
    * 房间列表里的场景列表项
@@ -137,5 +140,13 @@ declare namespace AutoScene {
      * 0-仅更新名称和icon，1-删除结果 2-取消绑定 3-更新绑定 4-删除结果与取消绑定 5-删除结果与更新绑定
      */
     updateType: '0' | '1' | '2' | '3' | '4' | '5'
+  }
+  interface AutoSceneLog {
+    sceneName: string
+    sceneId: string
+    reportTs: number
+    reportAt: string
+    errorCode: 0 | 1
+    actionTime: string
   }
 }

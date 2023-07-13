@@ -55,4 +55,77 @@ export const strUtil = {
     })
     return hexArr.join('')
   },
+  /**
+   * 周期描述转换
+   * @param timeType
+   * @param timePeriod
+   * @returns
+   */
+  transPeriodDesc(timeType: string, timePeriod: string) {
+    if (timeType === '0') {
+      return '仅一次'
+    } else if (timeType === '2') {
+      return '法定工作日'
+    } else if (timeType === '3') {
+      return '法定节假日'
+    } else {
+      const weekMap: Record<string, string> = {
+        '1': '周日',
+        '2': '周一',
+        '3': '周二',
+        '4': '周三',
+        '5': '周四',
+        '6': '周五',
+        '7': '周六',
+      }
+      const weekArr = timePeriod.split(',')
+      if (weekArr.length === 7) {
+        return '每天'
+      }
+      const newWeekArr: string[] = []
+      weekArr.forEach((item) => {
+        newWeekArr.push(weekMap[item])
+      })
+      return newWeekArr.join('、')
+    }
+  },
+  /**
+   * 传入开始时间和结束时间，解释结束时间是否为次日
+   * @param startTime '12:00'
+   * @param endTime '14:00'
+   * @returns
+   */
+  transEndTimeDesc(startTime: string, endTime: string) {
+    const startTimeHour = parseInt(startTime.substring(0, 2))
+    const endTimeHour = parseInt(endTime.substring(0, 2))
+    const startTimeMin = parseInt(startTime.substring(startTime.indexOf(':') + 1))
+    const endTimeMin = parseInt(endTime.substring(endTime.indexOf(':') + 1))
+
+    if (endTimeHour < startTimeHour) {
+      return `次日${endTime}`
+    } else if (endTimeHour === startTimeHour) {
+      if (endTimeMin <= startTimeMin) {
+        return `次日${endTime}`
+      } else {
+        return endTime
+      }
+    } else {
+      return endTime
+    }
+  },
+  /**
+   * 自动化场景desc转换 区分时间条件和传感器条件
+   * @param effectiveTime
+   * @param timeConditions
+   */
+  transDesc(effectiveTime: AutoScene.effectiveTime, timeConditions: AutoScene.TimeCondition) {
+    if (!timeConditions.time) {
+      return `${effectiveTime.startTime}-${strUtil.transEndTimeDesc(
+        effectiveTime.startTime,
+        effectiveTime.endTime,
+      )} ${strUtil.transPeriodDesc(effectiveTime.timeType, effectiveTime.timePeriod)}`
+    } else {
+      return `${timeConditions.time} ${strUtil.transPeriodDesc(timeConditions.timeType, timeConditions.timePeriod)}`
+    }
+  },
 }

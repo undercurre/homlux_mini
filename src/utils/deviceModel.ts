@@ -115,7 +115,7 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
   if (proType === PRO_TYPE.sensor) {
     !isNullOrUnDef(property.Occupancy) && descList.push(property.Occupancy ? '有人移动' : '超时无人移动')
     !isNullOrUnDef(property.IlluminanceLevelStatus) &&
-      descList.push(property.IlluminanceLevelStatus ? '环境光亮' : '环境光暗')
+      descList.push(property.IlluminanceLevelStatus === '2' ? '环境光亮' : '环境光暗')
     !isNullOrUnDef(property.ZoneStatus) &&
       descList.push(
         property.ZoneStatus ? (!isNullOrUnDef(property.PIRToUnoccupiedDelay) ? '超时未关' : '打开') : '关闭',

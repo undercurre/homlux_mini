@@ -1,50 +1,55 @@
 import pageBehavior from '../../behaviors/pageBehaviors'
-// import { homeBinding, homeStore, otaBinding, otaStore } from '../../store/index'
 // import Toast from '@vant/weapp/toast/toast'
 import { ComponentWithComputed } from 'miniprogram-computed'
-// import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-// import { getEnv } from '../../config/index'
+import { queryAutoSceneLogByHouseId } from '../../apis/scene'
+import { homeStore } from '../../store/home'
+import dayjs from 'dayjs'
+
 ComponentWithComputed({
+  options: {
+    pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
+  },
   behaviors: [pageBehavior],
 
   /**
    * 组件的初始数据
    */
   data: {
-    autoUpdate: false,
-    isLoading: false,
     contentHeight: 0,
-    autoSceneLog: {
-      '6月23日': [
-        { id: 0, name: '早上起床模式', desc: '早上7:00', icon: 'all-on', isSuccess: '已执行' },
-        { id: 1, name: '早上起床模式', desc: '早上7:00', icon: 'all-on', isSuccess: '执行失败' },
-      ],
-      '5月30日': [
-        { id: 0, name: '客厅无人关闭模式客...', desc: '上午12:00', icon: 'mild', isSuccess: '已执行' },
-        { id: 1, name: '客厅无人关闭模式', desc: '上午12:00', icon: 'mild', isSuccess: '执行失败' },
-      ],
-      '4月30日': [
-        { id: 0, name: '客厅无人关闭模式客...', desc: '上午12:00', icon: 'mild', isSuccess: '已执行' },
-        { id: 1, name: '客厅无人关闭模式', desc: '上午12:00', icon: 'mild', isSuccess: '执行失败' },
-      ],
-    },
-    isUpdating: false,
-    hasUpdate: false,
-    fromDevice: false,
-    _pollingTimer: 0,
+    isRefreshing: false,
+    isAllLogs: false,
+    _tempLog: [] as AutoScene.AutoSceneLog[],
   },
 
   computed: {
-    // canOTA(data) {
-    //   return data.isCreator || data.isAdmin
-    // },
+    autoSceneLog(data) {
+      const logsMap = {} as Record<string, AutoScene.AutoSceneLog[]>
+      data._tempLog.forEach((item) => {
+        const date = dayjs(item.reportAt).format('M月D日')
+        if (logsMap[date]) {
+          logsMap[date].push({ ...item, actionTime: dayjs(item.reportAt).format('HH:mm') })
+        } else {
+          logsMap[date] = [{ ...item, actionTime: dayjs(item.reportAt).format('HH:mm') }]
+        }
+      })
+      return logsMap
+    },
   },
 
   /**
    * 组件的方法列表
    */
   methods: {
-    onLoad() {
+    async onLoad() {
+      const logRes = await queryAutoSceneLogByHouseId({ houseId: homeStore.currentHomeId })
+      if (logRes.success) {
+        this.setData({
+          _tempLog: logRes.result,
+          isAllLogs: logRes.result.length < 50,
+        })
+      }
+      console.log('日志', logRes)
+
       wx.createSelectorQuery()
         .select('#content')
         .boundingClientRect()
@@ -55,6 +60,36 @@ ComponentWithComputed({
             })
           }
         })
+    },
+
+    async onRefresh() {
+      this.setData({
+        isRefreshing: true,
+      })
+
+      const logRes = await queryAutoSceneLogByHouseId({ houseId: homeStore.currentHomeId })
+      if (logRes.success) {
+        this.setData({
+          _tempLog: logRes.result,
+          isAllLogs: logRes.result.length < 50,
+        })
+      }
+      this.setData({
+        isRefreshing: false,
+      })
+    },
+
+    async onLoadmore() {
+      const logRes = await queryAutoSceneLogByHouseId({
+        houseId: homeStore.currentHomeId,
+        reportTs: this.data._tempLog[this.data._tempLog.length - 1].reportTs,
+      })
+      if (logRes.success) {
+        this.setData({
+          _tempLog: this.data._tempLog.concat(logRes.result),
+          isAllLogs: logRes.result.length < 50,
+        })
+      }
     },
   },
 })

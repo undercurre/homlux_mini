@@ -6,19 +6,22 @@
   <nav-bar title="日志" left-arrow bind:leftTap="goBack"></nav-bar>
 
   <view class="flex-1 w-750rpx" id="content">
-    <scroll-view scroll-y="{{true}}" style="height: {{contentHeight}}px;">
+    <scroll-view scroll-y="{{true}}" style="height: {{contentHeight}}px;" lower-threshold="{{100}}" bindscrolltolower="onLoadmore" refresher-enabled bindrefresherrefresh="onRefresh" refresher-triggered="{{isRefreshing}}">
       <view class="h-6rpx"></view>
       <view wx:for="{{autoSceneLog}}" wx:for-item="logs" wx:for-index="date" wx:key="date">
         <view class="mb-24rpx mt-42rpx ml-46rpx">
           <text class="text-hex-555659 text-28rpx">{{date}}</text>
         </view>
         <van-cell-group inset border="{{false}}">
-          <van-cell value-class="cell-value" wx:key="id" wx:for="{{logs}}" title="{{item.name}}" label="{{item.desc}}" center title-style="font-weight: 500;flex:2;" border="{{index === logs.length - 1 ? false : true}}" value="{{item.isSuccess}}">
+          <van-cell value-class="cell-value" wx:key="id" wx:for="{{logs}}" title="{{item.sceneName}}" label="{{item.actionTime}}" center title-style="font-weight: 500;flex:2;" border="{{index === logs.length - 1 ? false : true}}" value="{{item.errorCode === 0 ? '已执行' : '执行失败'}}">
             <view slot="icon" class="rounded-32rpx p-16rpx mr-32rpx">
-              <image class="w-72 h-72" src="/assets/img/auto-scene/{{item.icon}}.png"></image>
+              <image class="w-72 h-72" src="/assets/img/auto-scene/{{item.sceneIcon}}.png"></image>
             </view>
           </van-cell>
         </van-cell-group>
+      </view>
+      <view class="w-full flex justify-center" wx:if="{{!isRefreshing &&isAllLogs}}">
+        <text class="text-hex-555659 text-28rpx">已加载全部日志</text>
       </view>
       <view class="h-32rpx"></view>
     </scroll-view>
