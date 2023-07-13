@@ -340,7 +340,7 @@ ComponentWithComputed({
 
       const params = wx.getEnterOptionsSync()
       const scene = params.scene
-      console.log('wx.getEnterOptionsSync()', params)
+      console.log('wx.getEnterOptionsSync()', params, 'wx.getLaunchOptionsSync()', wx.getLaunchOptionsSync())
 
       let enterQuery: IAnyObject
 
@@ -376,6 +376,7 @@ ComponentWithComputed({
           title: '该消息过期',
           message: '该消息已过期，请联系创建者重新发送',
           confirmButtonText: '我知道了',
+          showCancelButton: false,
           zIndex: 9999,
         })
 
