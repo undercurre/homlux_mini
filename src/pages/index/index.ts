@@ -147,8 +147,6 @@ ComponentWithComputed({
     onLoad: function () {
       console.debug('page-index-onLoad')
 
-      const params = wx.getLaunchOptionsSync()
-      console.log('getLaunchOptionsSync', params, 'wx.getEnterOptionsSync()', wx.getEnterOptionsSync())
       // 更新tabbar状态
       if (typeof this.getTabBar === 'function' && this.getTabBar()) {
         this.getTabBar().setData({
@@ -340,19 +338,20 @@ ComponentWithComputed({
         return
       }
 
-      const params = wx.getLaunchOptionsSync()
-      console.log('getLaunchOptionsSync', params, 'wx.getEnterOptionsSync()', wx.getEnterOptionsSync())
+      const params = wx.getEnterOptionsSync()
+      const scene = params.scene
+      console.log('wx.getEnterOptionsSync()', params)
 
       let enterQuery: IAnyObject
 
-      if (params.scene === 1011) {
+      if (scene === 1011) {
         const scanUrl = decodeURIComponent(params.query.q)
 
         console.log('scanUrl', scanUrl)
 
         enterQuery = strUtil.getUrlParams(scanUrl)
-      } else if (params.scene === 1007) {
-        enterQuery = wx.getEnterOptionsSync().query
+      } else if (scene === 1007) {
+        enterQuery = params.query
       } else {
         console.log('非家庭转让逻辑')
         return
@@ -363,9 +362,8 @@ ComponentWithComputed({
       const expireTime = enterQuery.expireTime as string
       const shareId = enterQuery.shareId as string
       const oldUserId = enterQuery.userId as string
-      const scene = wx.getEnterOptionsSync().scene
 
-      console.log('enterQuery, scene:', scene, 'type', type)
+      console.log('enterQuery:', enterQuery)
       if (type !== 'transferHome') {
         console.log('非家庭转让逻辑')
         return
@@ -376,7 +374,7 @@ ComponentWithComputed({
       if (now > parseInt(expireTime)) {
         Dialog.confirm({
           title: '该消息过期',
-          message: '该消息已过期，请联系邀请者重新邀请',
+          message: '该消息已过期，请联系创建者重新发送',
           confirmButtonText: '我知道了',
           zIndex: 9999,
         })
