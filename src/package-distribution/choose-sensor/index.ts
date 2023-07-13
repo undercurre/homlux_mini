@@ -18,7 +18,7 @@ ComponentWithComputed({
   data: {
     deviceList: sensorList.map((sensor) => ({
       ...sensor,
-      path: `/package-distribution/connect-guide/index?sn8=${sensor.sn8}`,
+      path: `/package-distribution/connect-guide/index?modelId=${sensor.productId}`,
     })),
   },
 
