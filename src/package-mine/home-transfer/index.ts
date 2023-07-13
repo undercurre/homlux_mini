@@ -42,12 +42,16 @@ ComponentWithComputed({
   },
 
   methods: {
+    /**
+     * 获取分享链接参数
+     * @param params expire 过期时间(秒)
+     */
     getShareParams(params: { expire: number }) {
-      const expireTime = 1989315941007 || new Date().valueOf() + params.expire // 过期时间
+      const expireTime = new Date().valueOf() + params.expire + 1000 // 过期时间
 
       return `type=transferHome&houseId=${
         homeBinding.store.currentHomeId
-      }&expireTime=${expireTime}&shareId=${11}&userId=${userBinding.store.userInfo.userId}`
+      }&expireTime=${expireTime}&shareId=${this.data._shareId}&userId=${userBinding.store.userInfo.userId}`
     },
     showQrCode() {
       const query = wx.createSelectorQuery()
@@ -103,7 +107,7 @@ ComponentWithComputed({
 
       return {
         title,
-        path: '/pages/index/index?' + this.getShareParams({ expire: 86400000 }),
+        path: '/pages/index/index?' + this.getShareParams({ expire: 86400 }),
         imageUrl: ShareImgUrl,
       }
     },
