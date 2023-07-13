@@ -96,7 +96,7 @@ export async function quitUserHouse(houseId: string, options?: { loading?: boole
 
 /**
  * 转让家庭
- * type 家庭变更类型 1：家庭转让 2：工程移交 
+ * type 家庭变更类型 1：家庭转让 2：工程移交
  */
 export async function changeUserHouse(
   params: { type: number; houseId: string; changeUserId: string; shareId?: string },

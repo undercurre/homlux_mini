@@ -148,12 +148,7 @@ ComponentWithComputed({
       console.debug('page-index-onLoad')
 
       const params = wx.getLaunchOptionsSync()
-      console.log(
-        'getLaunchOptionsSync',
-        params,
-        'wx.getEnterOptionsSync()',
-        wx.getEnterOptionsSync(),
-      )
+      console.log('getLaunchOptionsSync', params, 'wx.getEnterOptionsSync()', wx.getEnterOptionsSync())
       // 更新tabbar状态
       if (typeof this.getTabBar === 'function' && this.getTabBar()) {
         this.getTabBar().setData({
@@ -220,6 +215,14 @@ ComponentWithComputed({
           ].includes(res.result.eventType)
         ) {
           this.updateRoomData()
+        } else if (
+          res.result.eventType === 'project_change_house' &&
+          homeStore.currentHomeDetail?.houseUserAuth === 1
+        ) {
+          // 仅家庭创建者触发监听，监听家庭移交是否成功
+          homeStore.updateHomeInfo()
+
+          Toast('家庭转移成功')
         }
       })
 
@@ -338,12 +341,7 @@ ComponentWithComputed({
       }
 
       const params = wx.getLaunchOptionsSync()
-      console.log(
-        'getLaunchOptionsSync',
-        params,
-        'wx.getEnterOptionsSync()',
-        wx.getEnterOptionsSync(),
-      )
+      console.log('getLaunchOptionsSync', params, 'wx.getEnterOptionsSync()', wx.getEnterOptionsSync())
 
       let enterQuery: IAnyObject
 
@@ -359,7 +357,7 @@ ComponentWithComputed({
         console.log('非家庭转让逻辑')
         return
       }
-      
+
       const type = enterQuery.type as string
       const houseId = enterQuery.houseId as string
       const expireTime = enterQuery.expireTime as string

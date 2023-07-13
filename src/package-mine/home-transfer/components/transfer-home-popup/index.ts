@@ -82,7 +82,11 @@ Component({
 
       const item = this.data.userList[this.data.selectIndex]
 
-      const changeRes = await changeUserHouse({ type: 1, houseId: homeBinding.store.currentHomeId, changeUserId: item.userId })
+      const changeRes = await changeUserHouse({
+        type: 1,
+        houseId: homeBinding.store.currentHomeId,
+        changeUserId: item.userId,
+      })
 
       if (!changeRes.success) {
         Toast('转让失败')
