@@ -5,6 +5,7 @@ import pageBehaviors from '../../behaviors/pageBehaviors'
 import { deviceBinding } from '../../store/index'
 import { getCurrentPageParams } from '../../utils/index'
 import { SCREEN_PID, PRO_TYPE } from '../../config/device'
+import { emitter } from '../../utils/eventBus'
 
 ComponentWithComputed({
   options: {
@@ -20,8 +21,8 @@ ComponentWithComputed({
     pageParam: '',
     defaultImg: {
       gateway: '../../assets/img/default-img/only-gateway.png',
-      sensor: '../../assets/img/default-img/only-gateway.png',
-      screen: '../../assets/img/default-img/only-gateway.png',
+      sensor: '../../assets/img/default-img/sensor.png',
+      screen: '../../assets/img/default-img/smart_screen.png',
     },
   },
 
@@ -72,9 +73,16 @@ ComponentWithComputed({
   },
 
   methods: {
+    onLoad() {
+      emitter.on('deviceEdit', async () => {
+        await deviceBinding.store.updateAllRoomDeviceList()
+      })
+    },
+    onUnload() {
+      emitter.off('deviceEdit')
+    },
     handleCardClick(e: { currentTarget: { dataset: { deviceId: string; deviceType: number } } }) {
       const { deviceId, deviceType } = e.currentTarget.dataset
-      console.log('handleCardClick', deviceId, deviceType)
       const pageName = deviceType === 4 ? 'group-detail' : 'device-detail'
 
       wx.navigateTo({

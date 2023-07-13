@@ -100,7 +100,7 @@ let loadingNum = 0 // 正在等待loading的个数
 /**
  * 显示loading
  */
-export function showLoading() {
+export function showLoading(title = '加载中...') {
   loadingNum++
 
   console.log('showLoading', loadingNum)
@@ -108,7 +108,7 @@ export function showLoading() {
     return
   }
   wx.showLoading({
-    title: '加载中...',
+    title,
     mask: true,
   })
 }

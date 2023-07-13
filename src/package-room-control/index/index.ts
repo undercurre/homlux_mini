@@ -651,10 +651,14 @@ ComponentWithComputed({
     /**
      * 拖拽时触发的卡片移动效果
      */
-    movableChange: throttle(function (this: IAnyObject, e: WechatMiniprogram.TouchEvent) {
+    movableChangeThrottle: throttle(function (this: IAnyObject, e: WechatMiniprogram.TouchEvent) {
       const targetOrder = getIndex(e.detail.x, e.detail.y)
-      if (this.data.placeholder.orderNum !== targetOrder && e.detail.source === 'touch') {
+      if (this.data.placeholder.orderNum !== targetOrder) {
         const oldOrder = this.data.placeholder.orderNum
+        // 节流操作，可能导致movableTouchEnd后仍有movableChange需要执行，丢弃掉
+        if (oldOrder < 0) {
+          return
+        }
         console.log('movableChange: %d-->%d', oldOrder, targetOrder, e)
 
         // 更新placeholder的位置
@@ -702,7 +706,13 @@ ComponentWithComputed({
 
         this.data.hasMoved = true
       }
-    }, 100),
+    }, 50),
+
+    movableChange(e: WechatMiniprogram.TouchEvent) {
+      if (e.detail.source === 'touch' || e.detail.source === 'friction') {
+        this.movableChangeThrottle(e)
+      }
+    },
 
     movableTouchEnd() {
       if (!this.data.isMoving) {
@@ -720,6 +730,7 @@ ComponentWithComputed({
       diffData[`placeholder.orderNum`] = -1
       diffData[`placeholder.index`] = -1
       diffData[`placeholder.groupIndex`] = -1
+
       this.setData(diffData)
       console.log('movableTouchEnd:', diffData)
 
@@ -1018,7 +1029,7 @@ ComponentWithComputed({
         deviceId: device.deviceId,
         ep,
         gatewayId: device.gatewayId,
-        property: { OnOff: newOnOff },
+        property: { OnOff: newOnOff, time: 500 },
       })
 
       if (!res.success) {

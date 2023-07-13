@@ -511,10 +511,14 @@ ComponentWithComputed({
     /**
      * 拖拽时触发的卡片移动效果
      */
-    movableChange: throttle(function (this: IAnyObject, e: WechatMiniprogram.TouchEvent) {
+    movableChangeThrottle: throttle(function (this: IAnyObject, e: WechatMiniprogram.TouchEvent) {
       const targetOrder = getIndex(e.detail.y)
-      if (this.data.placeholder.index !== targetOrder && e.detail.source === 'touch') {
+      if (this.data.placeholder.index !== targetOrder) {
         const oldOrder = this.data.placeholder.index
+        // 节流操作，可能导致movableTouchEnd后仍有movableChange需要执行，丢弃掉
+        if (oldOrder < 0) {
+          return
+        }
         console.log('movableChange: %d-->%d', oldOrder, targetOrder, e)
 
         // 更新placeholder的位置
@@ -551,7 +555,13 @@ ComponentWithComputed({
 
         this.data.hasMoved = true
       }
-    }, 0),
+    }, 50),
+
+    movableChange(e: WechatMiniprogram.TouchEvent) {
+      if (e.detail.source === 'touch' || e.detail.source === 'friction') {
+        this.movableChangeThrottle(e)
+      }
+    },
 
     movableTouchEnd(e: WechatMiniprogram.TouchEvent) {
       if (!this.data.isMoving) {
