@@ -46,11 +46,24 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    async onLoad(query: { sn8: string }) {
+    async onLoad(query: { sn8?: string; q?: string }) {
+      console.log(query)
+
+      let sn8 = ''
+      // 页面跳转
       if (query?.sn8) {
-        console.log(query.sn8)
+        sn8 = query.sn8
+      }
+      // 扫码进入
+      else if (query?.q) {
+        const pageParams = strUtil.getUrlParams(decodeURIComponent(query.q))
+        console.log(pageParams)
+        sn8 = pageParams.sn8
+      }
+
+      if (sn8) {
         this.setData({
-          currentSensor: query.sn8,
+          currentSensor: sn8,
         })
       }
     },

@@ -442,14 +442,6 @@ ComponentWithComputed({
         else if (pageParams.mode === '02') {
           await this.bindGateway(pageParams)
         }
-        // 传感器，需手动进入配网
-        else if (pageParams.mode === '03') {
-          wx.redirectTo({
-            url: strUtil.getUrlWithParams('/package-distribution/connect-guide/index', {
-              sn8: pageParams.sn,
-            }),
-          })
-        }
         // 智慧屏扫码绑定
         else if (pageParams.mode === '10') {
           wx.redirectTo({
