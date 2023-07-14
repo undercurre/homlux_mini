@@ -47,10 +47,7 @@ export async function startWebsocketService() {
           title: res.result.eventData,
           icon: 'none',
         })
-      } else if (
-        res.result.eventType === 'project_change_house' &&
-        homeStore.currentHomeDetail?.houseUserAuth === 1
-      ) {
+      } else if (res.result.eventType === 'project_change_house' && homeStore.currentHomeDetail?.houseUserAuth === 1) {
         // 仅家庭创建者触发监听，监听家庭移交是否成功
         wx.showModal({
           content: '当前家庭已被转移成功',
@@ -59,7 +56,7 @@ export async function startWebsocketService() {
           confirmColor: '#488FFF',
           complete() {
             wx.reLaunch({ url: '/pages/index/index' })
-          }
+          },
         })
       }
     } catch (err) {
