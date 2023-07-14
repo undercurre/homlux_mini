@@ -154,7 +154,9 @@ ComponentWithComputed({
       const res = await getUnbindSensor({ gatewayId })
       const list = res.result
         // 过滤非本次加入的传感器，过滤非指定型号传感器
-        .filter((device) => this.data._sensorList.includes(device.deviceId) && device.productId === this.data._productId)
+        .filter(
+          (device) => this.data._sensorList.includes(device.deviceId) && device.productId === this.data._productId,
+        )
         .map((device) => ({
           ...device,
           name: device.productName,
