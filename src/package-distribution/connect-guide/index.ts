@@ -38,7 +38,7 @@ ComponentWithComputed({
       return allRoomDeviceList.filter((item) => item.deviceType === 1)
     },
     currentGuide(data) {
-      return data.sensorList.find((sensor) => sensor.sn8 === data.currentSensor)
+      return data.sensorList.find((sensor) => sensor.productId === data.currentSensor)
     },
   },
 
@@ -46,24 +46,24 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    async onLoad(query: { sn8?: string; q?: string }) {
+    async onLoad(query: { modelId?: string; q?: string }) {
       console.log(query)
 
-      let sn8 = ''
+      let modelId = ''
       // 页面跳转
-      if (query?.sn8) {
-        sn8 = query.sn8
+      if (query?.modelId) {
+        modelId = query.modelId
       }
       // 扫码进入
       else if (query?.q) {
         const pageParams = strUtil.getUrlParams(decodeURIComponent(query.q))
         console.log(pageParams)
-        sn8 = pageParams.sn8
+        modelId = pageParams.modelId
       }
 
-      if (sn8) {
+      if (modelId) {
         this.setData({
-          currentSensor: sn8,
+          currentSensor: modelId,
         })
       }
     },
@@ -76,13 +76,11 @@ ComponentWithComputed({
     handleNextStep() {
       // 如果存在网关信息，则直接跳转
       if (this.checkGateWayInfo()) {
-        const proType = PRO_TYPE.sensor
-        const gatewayId = this.data.selectGatewayId
-
         wx.navigateTo({
           url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
-            gatewayId,
-            proType,
+            gatewayId: this.data.selectGatewayId,
+            proType: PRO_TYPE.sensor,
+            productId: this.data.currentSensor,
           }),
         })
       }

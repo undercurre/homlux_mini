@@ -53,7 +53,11 @@ export const deviceStore = observable({
         })
       }
       // 包括proType.light在内，所有非网关、可显示的设备都用这种方案插值
-      else if (device.proType !== PRO_TYPE.gateway && device.proType !== PRO_TYPE.sensor) {
+      else if (
+        device.proType !== PRO_TYPE.gateway &&
+        device.proType !== PRO_TYPE.sensor &&
+        device.mzgdPropertyDTOList // 过滤不完整的数据，避免引起整个列表加载出错
+      ) {
         list.push({
           ...device,
           uniId: device.deviceId,
