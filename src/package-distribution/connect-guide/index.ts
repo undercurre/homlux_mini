@@ -74,6 +74,9 @@ ComponentWithComputed({
     },
     // FIXME 判断方法与下一步方法相互耦合
     handleNextStep() {
+      if (!this.data.isReady) {
+        return
+      }
       // 如果存在网关信息，则直接跳转
       if (this.checkGateWayInfo()) {
         wx.navigateTo({
