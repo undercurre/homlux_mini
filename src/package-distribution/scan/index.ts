@@ -32,6 +32,7 @@ ComponentWithComputed({
     isShowGatewayList: false, // 是否展示选择网关列表弹窗
     isShowNoGatewayTips: false, // 是否展示添加网关提示弹窗
     isScan: false, // 是否正在扫码
+    scanType: '', // 扫码页的种类
     isFlash: false,
     selectGatewayId: '',
     selectGatewaySn: '',
@@ -74,8 +75,11 @@ ComponentWithComputed({
         isShowPage: true,
       })
 
-      // 蓝牙权限及开关已开情况下
-      this.data.isBlePermit && bleDevicesStore.available && bleDevicesStore.startBleDiscovery()
+      // 子设备配网页，蓝牙权限及开关已开情况下
+      this.data.scanType === 'subdevice' &&
+        this.data.isBlePermit &&
+        bleDevicesStore.available &&
+        bleDevicesStore.startBleDiscovery()
     },
     hide() {
       // 由于非授权情况下进入页面，摄像头组件已经渲染，即使重新授权页无法正常使用，需要通过wx：if重新触发渲染组件
@@ -91,6 +95,11 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
+    async onLoad(query: { type?: string }) {
+      this.setData({
+        scanType: query.type,
+      })
+    },
     // 检查是否通过微信扫码直接进入该界面时判断场景值
     checkWxScanEnter() {
       const params = wx.getLaunchOptionsSync()

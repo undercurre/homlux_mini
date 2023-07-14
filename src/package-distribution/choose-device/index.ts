@@ -19,17 +19,17 @@ ComponentWithComputed({
       {
         icon: '/package-distribution/assets/guide/gateway.png',
         name: '智能网关',
-        path: '/package-distribution/scan/index',
+        path: '/package-distribution/scan/index?type=gateway',
       },
       {
         icon: '/package-distribution/assets/guide/subdevice.png',
         name: '开关/灯具',
-        path: '/package-distribution/scan/index',
+        path: '/package-distribution/scan/index?type=subdevice',
       },
       {
         icon: '/package-distribution/assets/guide/screen.png',
         name: '智慧屏',
-        path: '/package-distribution/scan/index',
+        path: '/package-distribution/scan/index?type=screen',
       },
       {
         icon: '/package-distribution/assets/guide/sensor.png',
