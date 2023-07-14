@@ -2,7 +2,7 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, homeStore } from '../../../../store/index'
 import { changeUserHouse, queryHouseUserList } from '../../../../apis/index'
-import { emitter, handleGoHome } from '../../../../utils/index'
+import { emitter, goHome } from '../../../../utils/index'
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
 
@@ -93,11 +93,11 @@ Component({
         return
       } else {
         homeStore.updateHomeInfo()
-        
+
         Toast({
           message: '转让成功',
           onClose: () => {
-            handleGoHome()
+            goHome()
           },
         })
       }
