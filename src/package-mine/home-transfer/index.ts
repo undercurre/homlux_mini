@@ -47,9 +47,11 @@ ComponentWithComputed({
      * @param params expire 过期时间(秒)
      */
     getShareParams(params: { expire: number }) {
-      const expireTime = new Date().valueOf() + params.expire + 1000 // 过期时间
+      // const expireTime = new Date().valueOf() + params.expire + 1000 // 过期时间
+      const expireTime = 2689300739974 || params.expire
 
-      return `type=transferHome&houseId=${homeBinding.store.currentHomeId}&expireTime=${expireTime}&shareId=${this.data._shareId}&userId=${userBinding.store.userInfo.userId}`
+      // todo: 暂时去掉&shareId=${this.data._shareId}
+      return `type=transferHome&houseId=${homeBinding.store.currentHomeId}&expireTime=${expireTime}&userId=${userBinding.store.userInfo.userId}`
     },
     showQrCode() {
       const query = wx.createSelectorQuery()

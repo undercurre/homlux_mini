@@ -1,5 +1,5 @@
 <view class="page-container flex flex-col">
-  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="转让家庭"></nav-bar>
+  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="转让家庭" showGoHome></nav-bar>
 
   <view class="grow flex flex-col justify-between">
     <view>

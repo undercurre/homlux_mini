@@ -1,8 +1,8 @@
 // package-mine/home-manage/components/transfer-home/index.ts
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding } from '../../../../store/index'
-import { changeUserHouse, queryHouseUserList, quitUserHouse } from '../../../../apis/index'
-import { emitter } from '../../../../utils/eventBus'
+import { changeUserHouse, queryHouseUserList } from '../../../../apis/index'
+import { emitter, handleGoHome } from '../../../../utils/index'
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
 
@@ -91,13 +91,14 @@ Component({
       if (!changeRes.success) {
         Toast('转让失败')
         return
+      } else {
+        Toast({
+          message: '转让成功',
+          onClose: () => {
+            handleGoHome()
+          },
+        })
       }
-
-      const delRes = await quitUserHouse(homeBinding.store.currentHomeDetail.houseId)
-      Toast(delRes.success ? '转让成功' : '转让失败')
-      homeBinding.store.updateHomeInfo()
-
-      emitter.emit('homeInfoEdit')
     },
   },
 })

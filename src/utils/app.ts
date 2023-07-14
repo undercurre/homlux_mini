@@ -5,7 +5,13 @@ import { storage } from './storage'
 
 const deviceInfo = wx.getDeviceInfo()
 
-console.log('deviceInfo', deviceInfo)
+/**
+ * 返回小程序首页
+ * FIXME wx.switchTab 在IOS下会出现中间页面；wx.navigateBack因小程序内核问题导致只能后退一级；暂时使用 wx.reLaunch
+ */
+export function handleGoHome() {
+  wx.switchTab({ url: '/pages/index/index' })
+}
 
 export function setNavigationBarAndBottomBarHeight() {
   const { statusBarHeight, platform, windowWidth, windowHeight, safeArea, system } = wx.getSystemInfoSync()

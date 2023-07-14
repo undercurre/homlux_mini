@@ -218,9 +218,12 @@ ComponentWithComputed({
           homeStore.currentHomeDetail?.houseUserAuth === 1
         ) {
           // 仅家庭创建者触发监听，监听家庭移交是否成功
-          homeStore.updateHomeInfo()
-
-          Toast('家庭转移成功')
+          Toast({
+            message: '家庭转移成功',
+            onClose: () => {
+              wx.reLaunch({ url: '/pages/index/index' })
+            },
+          })
         }
       })
 
@@ -283,7 +286,7 @@ ComponentWithComputed({
       const houseId = enterQuery.houseId as string
       const time = enterQuery.time as string
       const shareId = enterQuery.shareId as string
-      if (token && type && houseId && time) {
+      if (token && type && type !== 'transferHome' && houseId && time) {
         this.setData({
           isTryInvite: true,
         })
