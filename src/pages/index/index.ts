@@ -145,8 +145,6 @@ ComponentWithComputed({
   methods: {
     // 生命周期或者其他钩子
     onLoad: function () {
-      console.debug('page-index-onLoad')
-
       // 更新tabbar状态
       if (typeof this.getTabBar === 'function' && this.getTabBar()) {
         this.getTabBar().setData({
@@ -293,6 +291,7 @@ ComponentWithComputed({
             title: '邀请过期',
             message: '该邀请已过期，请联系邀请者重新邀请',
             confirmButtonText: '我知道了',
+            showCancelButton: false,
             zIndex: 9999,
           })
         } else {
