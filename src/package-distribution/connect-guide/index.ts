@@ -108,12 +108,11 @@ ComponentWithComputed({
         isShowGatewayList: false,
       })
 
-      const proType = PRO_TYPE.sensor
-
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
           gatewayId: this.data.selectGatewayId,
-          proType,
+          proType: PRO_TYPE.sensor,
+          productId: this.data.currentSensor,
         }),
       })
     },
