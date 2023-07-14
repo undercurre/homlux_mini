@@ -78,16 +78,30 @@ ComponentWithComputed({
       const url = 'https://web.meizgd.com/homlux/qrCode.html?' + this.getShareParams({ expire: 300 })
 
       console.log('generateQrCode', url)
-      // 调用方法drawQrcode生成二维码
-      drawQrcode({
-        canvas: canvas,
-        canvasId: 'myQrcode',
-        width: 520,
-        padding: 40,
-        background: '#ffffff',
-        foreground: '#000000',
-        text: url,
-      })
+      var img = canvas.createImage();
+        img.src = "../../assets/img/login/logo.png"
+
+        // img.onload完成后才能调用 drawQrcode方法
+        img.onload = function () {
+          // 调用方法drawQrcode生成二维码
+          drawQrcode({
+            canvas: canvas,
+            canvasId: 'myQrcode',
+            width: 260,
+            padding: 20,
+            background: '#ffffff',
+            foreground: '#000000',
+            text: url,
+            correctLevel: 1,
+            image: {
+              imageResource: img,
+              width: 56, // 建议不要设置过大，以免影响扫码
+              height: 56, // 建议不要设置过大，以免影响扫码
+              round: false, // Logo图片是否为圆形
+            },
+          })
+        }
+      
     },
     toTransferHomeMember() {
       if (homeBinding.store.currentHomeDetail.userCount <= 1) {

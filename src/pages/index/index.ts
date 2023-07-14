@@ -213,17 +213,6 @@ ComponentWithComputed({
           ].includes(res.result.eventType)
         ) {
           this.updateRoomData()
-        } else if (
-          res.result.eventType === 'project_change_house' &&
-          homeStore.currentHomeDetail?.houseUserAuth === 1
-        ) {
-          // 仅家庭创建者触发监听，监听家庭移交是否成功
-          Toast({
-            message: '家庭转移成功',
-            onClose: () => {
-              wx.reLaunch({ url: '/pages/index/index' })
-            },
-          })
         }
       })
 
