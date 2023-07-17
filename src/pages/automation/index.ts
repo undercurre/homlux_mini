@@ -58,5 +58,7 @@ ComponentWithComputed({
         url: strUtil.getUrlWithParams(this.data.urls.automationAdd, { autosceneid }),
       })
     },
+    //阻止事件冒泡
+    stopPropagation() {},
   },
 })

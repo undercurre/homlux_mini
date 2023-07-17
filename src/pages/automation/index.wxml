@@ -35,7 +35,7 @@
               <image class="w-72 h-72" src="/assets/img/auto-scene/{{item.sceneIcon}}.png"></image>
             </view>
             <view slot="right-icon">
-              <van-switch checked="{{item.isEnabled === '1'}}" data-sceneId="{{item.sceneId}}" data-isEnabled="{{item.isEnabled}}" bind:change="changeAutoSceneEnabled" />
+              <van-switch checked="{{item.isEnabled === '1'}}" data-sceneId="{{item.sceneId}}" data-isEnabled="{{item.isEnabled}}" bind:change="changeAutoSceneEnabled" catchtap="stopPropagation" />
             </view>
           </van-cell>
         </van-cell-group>
@@ -50,7 +50,7 @@
 
       <image src="/assets/img/default-img/link-wifi.png" class="w-300rpx h-300rpx"></image>
       <text class="text-32rpx text-black-59 mt-44rpx mb-32rpx">尚未设置自动化</text>
-      <text class="text-24rpx text-black-59 mb-224rpx opacity-40">通过传感器、时间灯条件自动控制灯光与窗帘</text>
+      <text class="text-24rpx text-black-59 mb-224rpx opacity-40">通过传感器、时间等条件自动控制灯光与窗帘</text>
       <van-button bind:click="goTo" data-url="{{urls.automationAdd}}" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-class="add-immediately-btn" wx:if="{{true}}">
         <text class="text-white text-36rpx font-normal">立即创建</text>
       </van-button>

@@ -33,7 +33,7 @@ Component({
       },
       {
         id: 3,
-        icon: '/assets/img/automation/time.png',
+        icon: '/assets/img/automation/stopwatch.png',
         title: '延时',
         desc: '延迟一段时间',
         key: 'delay',

@@ -13,6 +13,8 @@ import {
   deleteScene,
   findDevice,
   //sendDevice
+  addScene,
+  updateScene,
 } from '../../apis/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 // import { homeBinding, homeStore, otaBinding, otaStore } from '../../store/index'
@@ -32,8 +34,8 @@ import {
   // getCurrentPageParams,
   // transferDeviceProperty,
   toPropertyDesc,
-  // toWifiProperty,
-  storage,
+  toWifiProperty,
+  // storage,
   getCurrentPageParams,
   // strUtil,
 } from '../../utils/index'
@@ -648,7 +650,7 @@ ComponentWithComputed({
           name: item.sceneName,
           desc: [item.roomName],
           type: 5,
-          pic: `../../assets/img/scene/${item.sceneIcon}.png`,
+          pic: `../../assets/img/scene/${item.sceneIcon}-gray.png`,
           value: {},
         })
       })
@@ -658,7 +660,7 @@ ComponentWithComputed({
           name: '延时',
           desc: [this.formatTime(delaySec)],
           type: 6,
-          pic: '../../assets/img/automation/time.png',
+          pic: '../../assets/img/automation/stopwatch-materialized.png',
           value: { delaySec },
         })
       }
@@ -676,7 +678,7 @@ ComponentWithComputed({
           uniId: 'time',
           name: this.data.timeCondition.time,
           desc: [this.formatPeriodDesc(this.data.timeCondition.timeType, this.data.timeCondition.timePeriod)],
-          pic: '../../assets/img/automation/time.png',
+          pic: '../../assets/img/automation/time-materialized.png',
           productId: 'time',
           property: {},
           type: 6,
@@ -1011,17 +1013,124 @@ ComponentWithComputed({
       console.log('sceneDeviceActionsFlatten保存', this.data.sceneDeviceActionsFlatten)
       console.log('sceneDeviceConditionsFlatten保存', this.data.sceneDeviceConditionsFlatten)
 
-      storage.set('autoscene_data', newSceneData)
-      storage.set('autosceneDeviceActionsFlatten', this.data.sceneDeviceActionsFlatten)
-      storage.set('autosceneDeviceConditionsFlatten', this.data.sceneDeviceConditionsFlatten)
+      // storage.set('autoscene_data', newSceneData)
+      // storage.set('autosceneDeviceActionsFlatten', this.data.sceneDeviceActionsFlatten)
+      // storage.set('autosceneDeviceConditionsFlatten', this.data.sceneDeviceConditionsFlatten)
 
       // this.setData({
       //   isAddingScene: false,
       // })
 
-      wx.navigateTo({
-        url: '/package-automation/automation-request-list/index',
+      // wx.navigateTo({
+      //   url: '/package-automation/automation-request-list/index',
+      // })
+
+      // 处理发送请求的deviceActions字段数据
+      const deviceMap = deviceStore.allRoomDeviceMap
+      // switch需要特殊处理
+      const switchDeviceMap = {} as Record<string, IAnyObject[]>
+      let delaySec = 0
+      this.data.sceneDeviceActionsFlatten.forEach((action) => {
+        if (action.uniId === 'delay') {
+          delaySec = action.value.delaySec
+        } else {
+          const device = deviceMap[action.uniId] || deviceMap[action.uniId.split(':')[0]]
+
+          if (device) {
+            if (action.proType === PRO_TYPE.switch) {
+              const deviceId = action.uniId.split(':')[0]
+              if (switchDeviceMap[deviceId]) {
+                switchDeviceMap[deviceId].push(action.value)
+              } else {
+                switchDeviceMap[deviceId] = [action.value]
+              }
+            } else {
+              const property = action.value
+              let ctrlAction = {} as IAnyObject
+
+              if (device.deviceType === 2) {
+                ctrlAction.ep = 1
+              }
+
+              if (device.proType === PRO_TYPE.light) {
+                ctrlAction.OnOff = property.OnOff
+
+                if (property.OnOff === 1) {
+                  ctrlAction.ColorTemp = property.ColorTemp
+                  ctrlAction.Level = property.Level
+                }
+
+                if (device.deviceType === 3) {
+                  ctrlAction = toWifiProperty(device.proType, ctrlAction)
+                }
+              } else if (device.proType === PRO_TYPE.curtain) {
+                ctrlAction.curtain_position = property.curtain_position
+              }
+
+              newSceneData?.deviceActions?.push({
+                controlAction: [ctrlAction],
+                deviceId: action.uniId,
+                deviceType: device.deviceType,
+                proType: device.proType,
+              })
+            }
+          } else {
+            //场景
+            newSceneData?.deviceActions?.push({
+              controlAction: [],
+              deviceId: action.uniId,
+              deviceType: action.type,
+            })
+          }
+        }
       })
+
+      // 再将switch放到要发送的数据里面
+      newSceneData?.deviceActions?.push(
+        ...Object.entries(switchDeviceMap).map(([deviceId, actions]) => ({
+          controlAction: actions,
+          deviceId: deviceId,
+          deviceType: deviceMap[deviceId].deviceType,
+          proType: deviceMap[deviceId].proType,
+        })),
+      )
+      //是否有延时操作
+      if (delaySec !== 0) {
+        newSceneData.deviceActions.forEach((item) => {
+          item.delayTime = delaySec
+        })
+      }
+
+      //处理发送请求的deviceConditions字段数据
+      this.data.sceneDeviceConditionsFlatten.forEach((action) => {
+        const device = deviceMap[action.uniId]
+        if (device) {
+          newSceneData?.deviceConditions?.push({
+            controlEvent: [{ ep: 1, ...action.property }],
+            deviceId: action.uniId,
+          })
+        }
+      })
+
+      console.log('创建更新自动化', newSceneData)
+      const promise = this.data.autoSceneId
+        ? updateScene(newSceneData as AutoScene.AddAutoSceneDto)
+        : addScene(newSceneData as AutoScene.AddAutoSceneDto)
+
+      const res = await promise
+      if (!res.success) {
+        Toast({
+          message: this.data.autoSceneId ? '更新失败' : '创建失败',
+        })
+      } else {
+        autosceneStore.updateAllRoomAutoSceneList()
+        Toast({
+          message: this.data.autoSceneId ? '更新成功' : '创建成功',
+          onClose: () => {
+            wx.navigateBack()
+          },
+        })
+      }
     },
     async handleAutoSceneDelete() {
       const res = await Dialog.confirm({
