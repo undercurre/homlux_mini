@@ -660,7 +660,7 @@ ComponentWithComputed({
           name: '延时',
           desc: [this.formatTime(delaySec)],
           type: 6,
-          pic: '../../assets/img/automation/time.png',
+          pic: '../../assets/img/automation/stopwatch-materialized.png',
           value: { delaySec },
         })
       }
@@ -678,7 +678,7 @@ ComponentWithComputed({
           uniId: 'time',
           name: this.data.timeCondition.time,
           desc: [this.formatPeriodDesc(this.data.timeCondition.timeType, this.data.timeCondition.timePeriod)],
-          pic: '../../assets/img/automation/time.png',
+          pic: '../../assets/img/automation/time-materialized.png',
           productId: 'time',
           property: {},
           type: 6,
