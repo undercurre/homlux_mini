@@ -504,7 +504,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .w-400,
 .w-400rpx{width:400rpx;}
 .w-411{width:411rpx;}
-.w-420rpx{width:420rpx;}
 .w-42rpx{width:42rpx;}
 .w-46,
 .w-46rpx{width:46rpx;}

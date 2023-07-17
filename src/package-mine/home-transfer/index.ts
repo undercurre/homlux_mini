@@ -74,7 +74,9 @@ ComponentWithComputed({
 
     // 生成二维码
     generateQrCode(canvas: IAnyObject) {
-      const url = 'https://web.meizgd.com/homlux/qrCode.html?' + this.getShareParams({ expire: 300 })
+      const params = `type=transferHome&houseId=${homeBinding.store.currentHomeId}&expireTime=2689580361243&userId=${userBinding.store.userInfo.userId}`
+
+      const url = 'https://web.meizgd.com/homlux/qrCode.html?' + (params || this.getShareParams({ expire: 300 }))
 
       console.log('generateQrCode', url)
       const img = canvas.createImage()
@@ -94,8 +96,8 @@ ComponentWithComputed({
           correctLevel: 1,
           image: {
             imageResource: img,
-            width: 56, // 建议不要设置过大，以免影响扫码
-            height: 56, // 建议不要设置过大，以免影响扫码
+            width: 80, // 建议不要设置过大，以免影响扫码
+            height: 80, // 建议不要设置过大，以免影响扫码
             round: false, // Logo图片是否为圆形
           },
         })
