@@ -86,6 +86,8 @@ declare namespace Device {
     groupName?: string
 
     isScreenGateway: boolean // 是否智慧屏
+
+    controlAction: IAnyObject //自动化传感器使用
   }
 
   interface MzgdPropertyDTO {

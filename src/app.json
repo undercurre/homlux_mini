@@ -1,5 +1,5 @@
 {
-  "pages": ["pages/index/index", "pages/login/index", "pages/mine/index"],
+  "pages": ["pages/index/index", "pages/login/index", "pages/mine/index", "pages/automation/index"],
   "subpackages": [
     {
       "root": "package-distribution",
@@ -50,6 +50,10 @@
     {
       "root": "package-auth",
       "pages": ["auth-screen/index"]
+    },
+    {
+      "root": "package-automation",
+      "pages": ["automation-log/index", "automation-add/index", "automation-request-list/index"]
     }
   ],
   "preloadRule": {
@@ -64,6 +68,10 @@
       {
         "pagePath": "pages/index/index",
         "text": "首页"
+      },
+      {
+        "pagePath": "pages/automation/index",
+        "text": "自动化"
       },
       {
         "pagePath": "pages/mine/index",

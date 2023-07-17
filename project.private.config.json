@@ -123,6 +123,13 @@
           "scene": null
         },
         {
+          "name": "自动化",
+          "pathName": "pages/automation/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "转让家庭",
           "pathName": "package-mine/home-transfer/index",
           "query": "",

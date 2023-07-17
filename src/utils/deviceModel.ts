@@ -85,15 +85,21 @@ export function toWifiProperty(proType: string, properties: IAnyObject) {
  */
 export function toPropertyDesc(proType: string, property: IAnyObject) {
   const descList = [] as string[]
-  !isNullOrUnDef(property.OnOff) && descList.push(property.OnOff ? '打开' : '关闭')
+  if (proType === PRO_TYPE.light) {
+    !isNullOrUnDef(property.OnOff) && descList.push(property.OnOff ? '打开' : '关闭')
+    if (property.OnOff === 1) {
+      !isNullOrUnDef(property.Level) && descList.push(`亮度${property.Level}%`)
 
-  if (proType === PRO_TYPE.light && property.OnOff === 1) {
-    !isNullOrUnDef(property.Level) && descList.push(`亮度${property.Level}%`)
-
-    if (!isNullOrUnDef(property.ColorTemp)) {
-      const color = (property.ColorTemp / 100) * (property.maxColorTemp - property.minColorTemp) + property.minColorTemp
-      descList.push(`色温${color}K`)
+      if (!isNullOrUnDef(property.ColorTemp)) {
+        const color =
+          (property.ColorTemp / 100) * (property.maxColorTemp - property.minColorTemp) + property.minColorTemp
+        descList.push(`色温${color}K`)
+      }
     }
+  }
+
+  if (proType === PRO_TYPE.switch) {
+    !isNullOrUnDef(property.OnOff) && descList.push(property.OnOff ? '打开' : '关闭')
   }
 
   if (proType === PRO_TYPE.curtain) {
@@ -104,6 +110,18 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
     } else {
       descList.push(`开启至${property.curtain_position}%`)
     }
+  }
+
+  if (proType === PRO_TYPE.sensor) {
+    !isNullOrUnDef(property.Occupancy) && descList.push(property.Occupancy ? '有人移动' : '超时无人移动')
+    !isNullOrUnDef(property.IlluminanceLevelStatus) &&
+      descList.push(property.IlluminanceLevelStatus === '2' ? '环境光亮' : '环境光暗')
+    !isNullOrUnDef(property.ZoneStatus) &&
+      descList.push(
+        property.ZoneStatus ? (!isNullOrUnDef(property.PIRToUnoccupiedDelay) ? '超时未关' : '打开') : '关闭',
+      )
+    !isNullOrUnDef(property.OnOff) &&
+      descList.push(property.OnOff === 1 ? '单击' : property.OnOff === 2 ? '双击' : '长按')
   }
 
   return descList
