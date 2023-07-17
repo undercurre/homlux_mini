@@ -5,6 +5,8 @@ import { storage } from './storage'
 
 const deviceInfo = wx.getDeviceInfo()
 
+const accountInfo = wx.getAccountInfoSync()
+
 /**
  * 返回小程序首页
  * FIXME wx.switchTab 在IOS下会出现中间页面
@@ -127,6 +129,10 @@ export function hideLoading() {
   setTimeout(() => {
     loadingNum === 0 && wx.hideLoading()
   }, 300)
+}
+
+export function isRelease() {
+  return accountInfo.miniProgram.envVersion === 'release'
 }
 
 /**

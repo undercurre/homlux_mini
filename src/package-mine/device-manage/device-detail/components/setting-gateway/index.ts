@@ -1,5 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { checkWifiSwitch } from '../../../../../utils/index'
+import { checkWifiSwitch, isRelease } from '../../../../../utils/index'
+import { controlDevice } from '../../../../../apis/index'
+import Toast from '@vant/weapp/toast/toast'
 
 ComponentWithComputed({
   options: {
@@ -20,11 +22,15 @@ ComponentWithComputed({
   /**
    * 组件的初始数据
    */
-  data: {},
+  data: {
+    isShowChannelList: false,
+    columns: [...new Array(16)].map((_item, index) => index + 11),
+    isRelease: isRelease(),
+  },
 
   computed: {
     channelText(data) {
-      return `${data.deviceInfo.channel}(${data.deviceInfo.panId})`
+      return data.deviceInfo.channel ? `${data.deviceInfo.channel}(${data.deviceInfo.panId})` : ''
     },
   },
 
@@ -32,6 +38,34 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
+    toggleActionSheet() {
+      if (!this.data.isRelease && this.data.isManager) {
+        this.setData({ isShowChannelList: !this.data.isShowChannelList })
+      }
+    },
+
+    async onSelectChannel(event: WechatMiniprogram.CustomEvent) {
+      console.log(event.detail)
+      const { value } = event.detail
+
+      this.toggleActionSheet()
+
+      const res = await controlDevice({
+        deviceId: this.data.deviceInfo.deviceId,
+        deviceType: 1,
+        method: 'networkAnalysis',
+        topic: '/zigbeeInfo',
+        inputData: [
+          {
+            mode: 'updateChannel',
+            channel: value,
+          },
+        ],
+      })
+
+      Toast(res.success ? '切换成功' : '切换失败')
+    },
+
     toChangeWifi() {
       // 预校验wifi开关是否打开
       if (!checkWifiSwitch()) {

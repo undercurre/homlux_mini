@@ -4,9 +4,15 @@
   </view>
   <view>
     <van-cell-group inset>
-      <van-cell title="信道" bind:click="toChangeChannel" is-link="{{isManager}}" value="{{channelText}}"></van-cell>
+      <van-cell title="信道" bind:click="toggleActionSheet" is-link="{{!isRelease && isManager}}" value="{{channelText}}"></van-cell>
 
       <van-cell v-if="{{isManager}}" title="更改WiFi" bind:click="toChangeWifi" is-link border="{{false}}"></van-cell>
     </van-cell-group>
   </view>
 </view>
+
+<van-popup show="{{ isShowChannelList }}" bind:close="toggleActionSheet" round position="bottom">
+  <van-picker class="mt-40rpx" columns="{{ columns }}" bind:cancel="toggleActionSheet" bind:confirm="onSelectChannel" show-toolbar title="信道选择" />
+</van-popup>
+
+<van-toast id="van-toast" />
