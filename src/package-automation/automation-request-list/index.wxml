@@ -28,7 +28,7 @@
   </scroll-view>
 
   <view class="flex flex-row gap-x-46rpx px-32rpx" wx:if="{{finishNum === waitingList.length}}">
-    <van-button wx:if="{{successNum === waitingList.length}}" class="w-full" type="primary" size="large" bind:click="goBack">完成</van-button>
+    <van-button wx:if="{{successNum === waitingList.length}}" class="w-full" type="primary" size="large" bind:click="handleFinish">完成</van-button>
 
     <block wx:else>
       <van-button class="w-full" size="large" bind:click="goBack">跳过</van-button>

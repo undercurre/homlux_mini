@@ -4,6 +4,7 @@ import pageBehaviors from '../../behaviors/pageBehaviors'
 import { autosceneBinding } from '../../store/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import { strUtil } from '../../utils/strUtil'
 
 // pages/login/index.ts
 ComponentWithComputed({
@@ -49,6 +50,13 @@ ComponentWithComputed({
       const { isenabled, sceneid } = e.currentTarget.dataset
       const isEnabled = isenabled === '0' ? '1' : '0'
       autosceneBinding.store.changeAutoSceneEnabled({ sceneId: sceneid, isEnabled })
+    },
+    toEditAutoScene(e: { currentTarget: { dataset: { autosceneid: string } } }) {
+      const { autosceneid } = e.currentTarget.dataset
+
+      wx.navigateTo({
+        url: strUtil.getUrlWithParams(this.data.urls.automationAdd, { autosceneid }),
+      })
     },
   },
 })

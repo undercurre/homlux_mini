@@ -6,10 +6,10 @@
     </view>
     <picker-view immediate-change indicator-class="picker-selected" indicator-style="height: 50px;" class="w-full h-270rpx" value="{{value}}" bindchange="bindChange">
       <picker-view-column>
-        <view wx:for="{{colFir}}" style="padding-left: 124rpx; line-height: 50px; text-align: center; font-weight: 500; font-size: 40rpx">{{item}}</view>
+        <view wx:for="{{colFir}}" wx:key="colFir" style="padding-left: 124rpx; line-height: 50px; text-align: center; font-weight: 500; font-size: 40rpx">{{item}}</view>
       </picker-view-column>
       <picker-view-column>
-        <view wx:for="{{colSec}}" style="padding-right: 164rpx; line-height: 50px; text-align: center; font-weight: 500; font-size: 38rpx">{{item}}</view>
+        <view wx:for="{{colSec}}" wx:key="colSec" style="padding-right: 164rpx; line-height: 50px; text-align: center; font-weight: 500; font-size: 38rpx">{{item}}</view>
       </picker-view-column>
     </picker-view>
   </view>

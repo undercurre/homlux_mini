@@ -22,16 +22,6 @@ declare namespace AutoScene {
    */
   interface SceneBase {
     /**
-     * 对应的默认场景
-     * 0：全开 1：全关 2：明亮 3：柔和
-     */
-    defaultType: string
-    /**
-     * 是否默认创建的场景
-     * 0：否 1：是
-     */
-    isDefault: string
-    /**
      * 	场景Icon
      */
     sceneIcon: string
@@ -123,24 +113,13 @@ declare namespace AutoScene {
     sceneType: string
     // 场景类别，0-手动场景，1-自动场景
     sceneCategory: '0' | '1'
-  }
-  interface UpdateSceneDto {
-    /**
-     * 条件类型
-     * 0-或，1-与，目前全部传0
-     * updateType=3或者updateType=5时，必传
-     */
-    conditionType?: '0' | '1'
-    deviceActions?: DeviceAction[]
-    deviceConditions?: DeviceCondition[]
-    sceneIcon?: string
-    sceneId?: string
-    sceneName?: string
     /** 更新类型
-     * 0-仅更新名称和icon，1-删除结果 2-取消绑定 3-更新绑定 4-删除结果与取消绑定 5-删除结果与更新绑定
+     *  0-只更新名称，icon 1-更新结果 2-取消绑定 6-更新条件 7-更新条件与更新结果
      */
-    updateType: '0' | '1' | '2' | '3' | '4' | '5'
+    updateType?: '0' | '1' | '6' | '7'
+    sceneId?: string
   }
+
   interface AutoSceneLog {
     sceneName: string
     sceneId: string

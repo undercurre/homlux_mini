@@ -3,7 +3,7 @@
     <view class="onoff-slider bg-white h-full"></view>
   </view>
 
-  <view wx:for="{{list}}" wx:key="{{index}}" bindtap="handleOnOffChange" data-index="{{index}}" data-item="{{item}}" class="w-full h-96rpx z-2 text-center button">
+  <view wx:for="{{list}}" wx:key="index" bindtap="handleOnOffChange" data-index="{{index}}" data-item="{{item}}" class="w-full h-96rpx z-2 text-center button">
     <text class="text-32rpx  leading-96rpx font-medium {{index === checkedIndex?'text-blue':'text-black-2a'}}">{{item.name}}</text>
   </view>
 </view>

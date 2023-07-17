@@ -119,13 +119,13 @@ export const strUtil = {
    * @param timeConditions
    */
   transDesc(effectiveTime: AutoScene.effectiveTime, timeConditions: AutoScene.TimeCondition) {
-    if (!timeConditions.time) {
-      return `${effectiveTime.startTime}-${strUtil.transEndTimeDesc(
-        effectiveTime.startTime,
-        effectiveTime.endTime,
-      )} ${strUtil.transPeriodDesc(effectiveTime.timeType, effectiveTime.timePeriod)}`
-    } else {
+    if (timeConditions && timeConditions.time) {
       return `${timeConditions.time} ${strUtil.transPeriodDesc(timeConditions.timeType, timeConditions.timePeriod)}`
+    } else {
+      return `${effectiveTime.startTime.substring(0, 5)}-${strUtil.transEndTimeDesc(
+        effectiveTime.startTime.substring(0, 5),
+        effectiveTime.endTime.substring(0, 5),
+      )} ${strUtil.transPeriodDesc(effectiveTime.timeType, effectiveTime.timePeriod)}`
     }
   },
 }

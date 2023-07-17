@@ -68,7 +68,10 @@ export async function deleteScene(sceneId: string, options?: { loading?: boolean
   })
 }
 
-export async function updateScene(data: Scene.UpdateSceneDto, options?: { loading?: boolean }) {
+export async function updateScene(
+  data: Scene.UpdateSceneDto | AutoScene.AddAutoSceneDto,
+  options?: { loading?: boolean },
+) {
   return await mzaioRequest.post<IAnyObject>({
     log: true,
     loading: options?.loading ?? false,

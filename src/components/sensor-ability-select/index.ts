@@ -32,14 +32,14 @@ ComponentWithComputed({
       'midea.ir.201': [
         { name: '有人移动', ability: { Occupancy: 1 } },
         { name: '超时无人移动', ability: { Occupancy: 0, PIRToUnoccupiedDelay: 10 } },
-        { name: '环境光亮', ability: { IlluminanceLevelStatus: 2 } },
-        { name: '环境光暗', ability: { IlluminanceLevelStatus: 1 } },
+        // { name: '环境光亮', ability: { IlluminanceLevelStatus: 2 } },
+        // { name: '环境光暗', ability: { IlluminanceLevelStatus: 1 } },
       ],
       'midea.magnet.001.201': [
         { name: '打开', ability: { ZoneStatus: 1 } },
         { name: '关闭', ability: { ZoneStatus: 0 } },
-        { name: '环境光暗', ability: { IlluminanceLevelStatus: 1 } },
-        { name: '环境光亮', ability: { IlluminanceLevelStatus: 2 } },
+        // { name: '环境光暗', ability: { IlluminanceLevelStatus: 1 } },
+        // { name: '环境光亮', ability: { IlluminanceLevelStatus: 2 } },
         { name: '超时未关', ability: { ZoneStatus: 1, PIRToUnoccupiedDelay: 10 } },
       ],
       'midea.freepad.001.201': [

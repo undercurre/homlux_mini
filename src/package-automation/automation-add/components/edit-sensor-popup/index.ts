@@ -43,11 +43,11 @@ ComponentWithComputed({
     },
     popupHeight(data) {
       if (data.productId === SENSOR_TYPE.doorsensor) {
-        return 794
+        return 602
       } else if (data.productId === SENSOR_TYPE.freepad) {
         return 602
       } else {
-        return 698
+        return 506
       }
     },
   },

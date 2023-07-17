@@ -7,9 +7,10 @@ enum weekStr {
   Value6 = '6',
   Value7 = '7',
 }
-// import Dialog from '@vant/weapp/dialog/dialog'
+import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
 import {
+  deleteScene,
   findDevice,
   //sendDevice
 } from '../../apis/index'
@@ -19,7 +20,7 @@ import pageBehavior from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
 // import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 // import { getEnv } from '../../config/index'
-import { deviceStore, sceneStore, homeStore } from '../../store/index'
+import { deviceStore, sceneStore, homeStore, autosceneStore } from '../../store/index'
 import {
   // maxColorTemp, minColorTemp,
   PRO_TYPE,
@@ -33,6 +34,7 @@ import {
   toPropertyDesc,
   // toWifiProperty,
   storage,
+  getCurrentPageParams,
   // strUtil,
 } from '../../utils/index'
 
@@ -46,6 +48,8 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
+    _autosceneInfo: {} as AutoScene.AutoSceneItem, //待编辑的自动化
+    autoSceneId: '',
     sceneIcon: 'general',
     sceneName: '',
     //场景的生效时间段
@@ -93,6 +97,11 @@ ComponentWithComputed({
     _cacheDeviceMap: {} as IAnyObject, // 缓存设备设置预览前的设备状态，用于退出时恢复
     /** 是否修改过action */
     _isEditAction: false,
+    /** 是否修改过Condition */
+    _isEditCondition: false,
+    /** 是否修改过图标或名称 */
+    // _isEditIconOrName: false,
+
     editingSensorType: 'midea.ir.201',
     editingSensorAbility: ['有人移动'],
     editingUniId: '',
@@ -173,9 +182,30 @@ ComponentWithComputed({
     },
   },
   lifetimes: {
-    async attached() {
+    attached() {
+      wx.createSelectorQuery()
+        .select('#content')
+        .boundingClientRect()
+        .exec((res) => {
+          if (res[0] && res[0].height) {
+            this.setData({
+              contentHeight: res[0].height,
+            })
+          }
+        })
+    },
+    ready() {},
+    detached() {},
+  },
+  /**
+   * 组件的方法列表
+   */
+  methods: {
+    async onLoad() {
+      const { autosceneid } = getCurrentPageParams()
+      this.setData({ autoSceneId: autosceneid })
+
       await Promise.all([
-        // sceneStore.updateSceneList(),
         sceneStore.updateAllRoomSceneList(),
         deviceStore.updateSubDeviceList(), // deviceStore.updateAllRoomDeviceList(),
       ])
@@ -197,25 +227,108 @@ ComponentWithComputed({
         ),
         sensorList,
       })
-    },
-    ready() {},
-    detached() {},
-  },
-  /**
-   * 组件的方法列表
-   */
-  methods: {
-    onLoad() {
-      wx.createSelectorQuery()
-        .select('#content')
-        .boundingClientRect()
-        .exec((res) => {
-          if (res[0] && res[0].height) {
-            this.setData({
-              contentHeight: res[0].height,
-            })
+
+      if (autosceneid) {
+        const linkSelectList = [] as string[]
+        const delay = [0, 0] as number[]
+
+        const autoSceneInfo = autosceneStore.allRoomAutoSceneList.find(
+          (item) => item.sceneId === autosceneid,
+        ) as AutoScene.AutoSceneItem
+        console.log('autoSceneInfo', autoSceneInfo)
+        console.log('typeof', typeof autoSceneInfo.deviceConditions, !autoSceneInfo.deviceConditions)
+
+        this.data._autosceneInfo = autoSceneInfo
+        this.setData({
+          sceneIcon: autoSceneInfo.sceneIcon,
+          sceneName: autoSceneInfo.sceneName,
+          'effectiveTime.startTime': autoSceneInfo.effectiveTime.startTime.substring(0, 5),
+          'effectiveTime.endTime': autoSceneInfo.effectiveTime.endTime.substring(0, 5),
+          'effectiveTime.timePeriod': autoSceneInfo.effectiveTime.timePeriod,
+          'effectiveTime.timeType': autoSceneInfo.effectiveTime.timeType,
+        })
+        // autoSceneInfo.deviceConditions = autoSceneInfo.deviceConditions || []
+        // autoSceneInfo.deviceActions = autoSceneInfo.deviceActions || []
+        console.log('看看', autoSceneInfo.deviceConditions, autoSceneInfo.deviceConditions.length)
+        //处理执行条件
+        if (autoSceneInfo.deviceConditions.length) {
+          //传感器条件
+          autoSceneInfo.deviceConditions.forEach((action) => {
+            const index = this.data.sensorList.findIndex((item) => item.uniId === action.deviceId)
+            if (index !== -1) {
+              linkSelectList.push(action.deviceId)
+
+              this.data.sensorList[index].property = {
+                ...action.controlEvent[0],
+              }
+            } else {
+              console.log('设备不存在', action)
+            }
+          })
+        } else {
+          //时间条件
+          const timeConditions = autoSceneInfo.timeConditions[0]
+          this.setData({
+            'timeCondition.time': timeConditions.time,
+            'timeCondition.timePeriod': timeConditions.timePeriod,
+            'timeCondition.timeType': timeConditions.timeType,
+          })
+        }
+        //处理执行结果
+        autoSceneInfo.deviceActions.forEach((action) => {
+          if (action.delayTime) {
+            delay[0] = Math.trunc(action.delayTime / 60)
+            delay[1] = Math.trunc(action.delayTime % 60)
+          }
+          if (action.deviceType === 5) {
+            //场景
+            linkSelectList.push(action.deviceId)
+          } else {
+            //设备
+            if (action.proType === PRO_TYPE.switch) {
+              // 多路开关
+              action.controlAction.forEach((ep: { OnOff: number; ep: number }) => {
+                // 将当前选中编辑的场景，拍扁action加入list
+                const index = this.data.deviceList.findIndex((item) => item.uniId === `${action.deviceId}:${ep.ep}`)
+                if (index !== -1) {
+                  linkSelectList.push(`${action.deviceId}:${ep.ep}`)
+                  this.data.deviceList[index].property = {
+                    ...this.data.deviceList[index].property,
+                    OnOff: ep.OnOff,
+                  }
+                } else {
+                  console.log('设备不存在', action, ep)
+                }
+              })
+            } else {
+              const index = this.data.deviceList.findIndex((item) => item.uniId === action.deviceId)
+              if (index !== -1) {
+                linkSelectList.push(action.deviceId)
+
+                this.data.deviceList[index].property = {
+                  ...this.data.deviceList[index].property,
+                  ...action.controlAction[0],
+                }
+              } else {
+                console.log('设备不存在', action)
+              }
+            }
           }
         })
+
+        this.setData(
+          {
+            linkSelectList,
+            delay,
+            deviceList: [...this.data.deviceList],
+          },
+          () => {
+            this.updateSceneDeviceActionsFlatten()
+            this.updateSceneDeviceConditionsFlatten()
+            console.log('aaa', linkSelectList)
+          },
+        )
+      }
     },
 
     inputAutoSceneName(e: { detail: string }) {
@@ -262,6 +375,7 @@ ComponentWithComputed({
     }) {
       const { startTime, endTime, periodType, week } = e.detail
       this.setData({
+        _isEditCondition: true,
         showEffectiveTimePopup: false,
         'effectiveTime.startTime': startTime,
         'effectiveTime.endTime': endTime,
@@ -320,9 +434,14 @@ ComponentWithComputed({
       const { time, periodType, week } = e.detail
       this.setData({
         showTimeConditionPopup: false,
+        _isEditCondition: true,
         'timeCondition.time': time,
         'timeCondition.timeType': periodType,
         'timeCondition.timePeriod': week,
+        'effectiveTime.startTime': '00:00',
+        'effectiveTime.endTime': '23:59',
+        'effectiveTime.timeType': '1',
+        'effectiveTime.timePeriod': '1,2,3,4,5,6,7',
       })
       this.updateSceneDeviceConditionsFlatten()
     },
@@ -379,6 +498,7 @@ ComponentWithComputed({
     handleDelayConfirm() {
       this.updateSceneDeviceActionsFlatten()
       this.setData({
+        _isEditAction: true,
         showDelayPopup: false,
       })
     },
@@ -436,8 +556,14 @@ ComponentWithComputed({
       })
       if (this.data.selectCardType === 'sensor') {
         this.updateSceneDeviceConditionsFlatten()
+        this.setData({
+          _isEditCondition: true,
+        })
       } else {
         this.updateSceneDeviceActionsFlatten()
+        this.setData({
+          _isEditAction: true,
+        })
       }
     },
     handleActionDelete(e: WechatMiniprogram.TouchEvent) {
@@ -457,6 +583,7 @@ ComponentWithComputed({
       }
       this.data.sceneDeviceActionsFlatten.splice(e.currentTarget.dataset.index, 1)
       this.setData({
+        _isEditAction: true,
         sceneDeviceActionsFlatten: [...this.data.sceneDeviceActionsFlatten],
       })
     },
@@ -483,8 +610,6 @@ ComponentWithComputed({
 
       deviceSelected.forEach((item) => {
         if (item.proType === PRO_TYPE.switch) {
-          console.log('查查黑车', item.property, toPropertyDesc(item.proType, item.property!))
-
           const ep = parseInt(item.uniId.split(':')[1])
           const OnOff = item.property!.OnOff
           const desc = toPropertyDesc(item.proType, item.property!)
@@ -585,7 +710,13 @@ ComponentWithComputed({
     handleConditionDelete(e: WechatMiniprogram.TouchEvent) {
       console.log('删除', e)
       const uniId = e.currentTarget.dataset.info.uniId
-
+      if (this.data.linkSelectList.includes(uniId)) {
+        const index = this.data.linkSelectList.findIndex((id) => id === uniId)
+        this.data.linkSelectList.splice(index, 1)
+        this.setData({
+          linkSelectList: [...this.data.linkSelectList],
+        })
+      }
       if (uniId === 'time') {
         this.setData({
           'timeCondition.time': '',
@@ -595,6 +726,7 @@ ComponentWithComputed({
       }
       this.data.sceneDeviceConditionsFlatten.splice(e.currentTarget.dataset.index, 1)
       this.setData({
+        _isEditCondition: true,
         sceneDeviceConditionsFlatten: [...this.data.sceneDeviceConditionsFlatten],
       })
     },
@@ -660,7 +792,7 @@ ComponentWithComputed({
         ...e.detail,
       }
       this.setData({
-        _isEditAction: true,
+        _isEditCondition: true,
         showEditSensorPopup: false,
         sceneDeviceConditionsFlatten: [...this.data.sceneDeviceConditionsFlatten],
         sensorList: [...this.data.sensorList],
@@ -673,7 +805,9 @@ ComponentWithComputed({
       const action = this.data.sceneDeviceConditionsFlatten[index]
 
       if (action.productId === 'time') {
-        console.log('11')
+        this.setData({
+          showTimeConditionPopup: true,
+        })
       } else {
         this.setData({
           editingSensorType: action.productId,
@@ -778,7 +912,30 @@ ComponentWithComputed({
       })
     },
 
-    async handleConfirm() {
+    async handleSave() {
+      if (
+        this.data.autoSceneId &&
+        (this.data.sceneDeviceActionsFlatten.length === 0 || this.data.sceneDeviceConditionsFlatten.length === 0)
+      ) {
+        // 删完actions或conditions按照删除场景处理
+        const res = await Dialog.confirm({
+          message: '清空条件或操作将会删除场景，确定删除该场景？',
+        }).catch(() => 'cancel')
+
+        console.log('delAutoScene', res)
+
+        if (res === 'cancel') return
+
+        const delRes = await deleteScene(this.data.autoSceneId)
+        if (delRes.success) {
+          await autosceneStore.updateAllRoomAutoSceneList()
+          wx.navigateBack()
+        } else {
+          Toast({ message: '删除失败', zIndex: 9999 })
+        }
+
+        return
+      }
       if (!this.data.sceneName) {
         Toast({
           message: '场景名不能为空',
@@ -794,19 +951,19 @@ ComponentWithComputed({
         return
       }
 
-      this.setData({
-        isAddingScene: true,
-      })
+      // this.setData({
+      //   isAddingScene: true,
+      // })
 
       const newSceneData = {
         conditionType: '1',
         deviceActions: [],
         deviceConditions: [],
-        timeConditions: [this.data.timeCondition],
+        timeConditions: [],
         effectiveTime: {
           startTime: this.data.effectiveTime.startTime + ':00',
           endTime: this.data.effectiveTime.endTime + ':59',
-          timeType: this.data.effectiveTime.timeType,
+          timeType: this.data.effectiveTime.timeType === '4' ? '1' : this.data.effectiveTime.timeType, //前端用4表示自定义 1表示每天，云端全用1
           timePeriod: this.data.effectiveTime.timePeriod,
         },
         houseId: homeStore.currentHomeDetail.houseId,
@@ -815,6 +972,40 @@ ComponentWithComputed({
         sceneCategory: '1',
         sceneType: '1',
       } as AutoScene.AddAutoSceneDto
+      if (this.data.timeCondition.time !== '') {
+        newSceneData.timeConditions.push({
+          time: this.data.timeCondition.time,
+          timeType: this.data.timeCondition.timeType === '4' ? '1' : this.data.timeCondition.timeType,
+          timePeriod: this.data.timeCondition.timePeriod,
+        })
+      }
+
+      if (this.data.autoSceneId) {
+        //是要准备更新场景
+        let _isEditIconOrName = false
+        if (
+          this.data.sceneIcon !== this.data._autosceneInfo.sceneIcon ||
+          this.data.sceneName !== this.data._autosceneInfo.sceneName
+        ) {
+          _isEditIconOrName = true
+        }
+
+        if (!_isEditIconOrName && !this.data._isEditAction && !this.data._isEditCondition) {
+          //全都没更改过则直接返回
+          wx.navigateBack()
+          return
+        }
+        //更新场景
+        newSceneData.updateType = '0' //0-只更新名称，icon 1-更新结果  6-更新条件 7-更新条件与更新结果
+        newSceneData.sceneId = this.data.autoSceneId
+        if (this.data._isEditAction && !this.data._isEditCondition) {
+          newSceneData.updateType = '1'
+        } else if (!this.data._isEditAction && this.data._isEditCondition) {
+          newSceneData.updateType = '6'
+        } else if (this.data._isEditAction && this.data._isEditCondition) {
+          newSceneData.updateType = '7'
+        }
+      }
 
       console.log('newSceneData保存', newSceneData)
       console.log('sceneDeviceActionsFlatten保存', this.data.sceneDeviceActionsFlatten)
@@ -824,13 +1015,30 @@ ComponentWithComputed({
       storage.set('autosceneDeviceActionsFlatten', this.data.sceneDeviceActionsFlatten)
       storage.set('autosceneDeviceConditionsFlatten', this.data.sceneDeviceConditionsFlatten)
 
-      this.setData({
-        isAddingScene: false,
-      })
+      // this.setData({
+      //   isAddingScene: false,
+      // })
 
       wx.navigateTo({
         url: '/package-automation/automation-request-list/index',
       })
+    },
+    async handleAutoSceneDelete() {
+      const res = await Dialog.confirm({
+        message: '确定删除该自动化？',
+      }).catch(() => 'cancel')
+
+      console.log('delAutoScene', res)
+
+      if (res === 'cancel') return
+
+      const delRes = await deleteScene(this.data.autoSceneId)
+      if (delRes.success) {
+        await autosceneStore.updateAllRoomAutoSceneList()
+        wx.navigateBack()
+      } else {
+        Toast({ message: '删除失败', zIndex: 9999 })
+      }
     },
   },
 })

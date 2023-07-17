@@ -100,8 +100,19 @@
   </view>
   <view class="h-160rpx"></view>
 
-  <view class="fixed left-32 bottom-56 justify-center w-686rpx">
+  <!-- <view class="fixed left-32 bottom-56 justify-center w-686rpx">
+    <van-button custom-class="popup-control-btn" custom-style="border: 2rpx solid #A2A2A2;" color="transparent" bind:click="handleSceneDelete">
+        <text class="text-36rpx text-black-tips">删除</text>
+      </van-button>
     <van-button type="primary" class="grow" size="large" disabled="{{disabled}}" bind:click="handleConfirm">{{ confirmText || '确定'}}</van-button>
+  </view> -->
+  <view class="fixed bottom-56 flex justify-around w-750rpx">
+    <van-button wx:if="{{autoSceneId}}" custom-class="double-btn" custom-style="border: 2rpx solid #A2A2A2;" color="transparent" bind:click="handleAutoSceneDelete">
+      <text class="text-36rpx text-black-tips">删除</text>
+    </van-button>
+    <van-button type="primary" custom-class="{{autoSceneId ? 'double-btn' : 'single-btn'}}" bind:click="handleSave">
+      <text class="text-36rpx">确定</text>
+    </van-button>
   </view>
 </view>
 
@@ -117,3 +128,4 @@
 <curtain-control-popup show="{{showEditPopup === '0x14'}}" title="{{sceneEditTitle}}" deviceInfo="{{sceneEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleEditPopupClose"></curtain-control-popup>
 <edit-sensor-popup show="{{showEditSensorPopup}}" productId="{{editingSensorType}}" checkList="{{editingSensorAbility}}" bind:confirm="handleEditSensorConfirm" bind:close="handleEditSensorClose"></edit-sensor-popup>
 <van-toast id="van-toast" />
+<van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />

@@ -11,8 +11,9 @@ export const autosceneStore = observable({
 
   get allRoomAutoSceneListComputed() {
     const list = [...this.allRoomAutoSceneList]
-    list.forEach((item) => {
-      item.desc = strUtil.transDesc(item.effectiveTime, item.timeConditions[0])
+    list.map((item) => {
+      const desc = strUtil.transDesc(item.effectiveTime, item.timeConditions[0])
+      item.desc = desc.length > 18 ? desc.substring(0, 18) + '...' : desc
     })
 
     return list

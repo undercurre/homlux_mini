@@ -1,13 +1,9 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { storage, emitter, getCurrentPageParams, toWifiProperty } from '../../utils/index'
-import {
-  addScene,
-  retryScene,
-  //  updateScene
-} from '../../apis/index'
-import { sceneStore, deviceStore, homeStore } from '../../store/index'
+import { storage, emitter, toWifiProperty } from '../../utils/index'
+import { addScene, retryScene, updateScene } from '../../apis/index'
+import { sceneStore, deviceStore, homeStore, autosceneStore } from '../../store/index'
 import { PRO_TYPE } from '../../config/index'
 
 ComponentWithComputed({
@@ -47,7 +43,6 @@ ComponentWithComputed({
 
   lifetimes: {
     async ready() {
-      const pageParams = getCurrentPageParams()
       const sceneData = storage.get('autoscene_data') as AutoScene.AddAutoSceneDto //| Scene.UpdateSceneDto
       const autosceneDeviceActionsFlatten = storage.get(
         'autosceneDeviceActionsFlatten',
@@ -61,10 +56,10 @@ ComponentWithComputed({
       // console.log('autosceneDeviceConditionsFlatten配置', autosceneDeviceConditionsFlatten)
 
       const actionDevicesIdList = autosceneDeviceActionsFlatten.map((item) => item.uniId)
-      const conditionDevicesIdList = autosceneDeviceConditionsFlatten.map((item) => item.uniId)
-      const selectIdList: string[] = [...actionDevicesIdList, ...conditionDevicesIdList]
+      // const conditionDevicesIdList = autosceneDeviceConditionsFlatten.map((item) => item.uniId)
+      const selectIdList: string[] = [...actionDevicesIdList] //...conditionDevicesIdList
 
-      const deviceList = deviceStore.deviceFlattenList
+      const deviceList = deviceStore.allRoomDeviceFlattenList
         .filter((item) => selectIdList.includes(item.uniId))
         .map((item) => ({
           ...item,
@@ -84,7 +79,7 @@ ComponentWithComputed({
       const waitingList = [...deviceList, ...sceneList]
 
       // 处理发送请求的deviceActions字段数据
-      const deviceMap = deviceStore.deviceMap
+      const deviceMap = deviceStore.allRoomDeviceMap
       // switch需要特殊处理
       const switchDeviceMap = {} as Record<string, IAnyObject[]>
       let delaySec = 0
@@ -190,17 +185,17 @@ ComponentWithComputed({
       })
       console.log('创建自动化', waitingList, sceneData)
 
-      // const promise = pageParams.sceneId
-      //   ? updateScene(sceneData as Scene.UpdateSceneDto)
-      //   : addScene(sceneData as AutoScene.AddAutoSceneDto)
+      const promise = sceneData.sceneId
+        ? updateScene(sceneData as AutoScene.AddAutoSceneDto)
+        : addScene(sceneData as AutoScene.AddAutoSceneDto)
 
-      const promise = addScene(sceneData as AutoScene.AddAutoSceneDto)
+      // const promise = addScene(sceneData as AutoScene.AddAutoSceneDto)
 
       const res = await promise
 
       if (res.success) {
         this.setData({
-          sceneId: pageParams.sceneId || res.result.sceneId,
+          sceneId: sceneData.sceneId || res.result.sceneId,
         })
 
         setTimeout(() => {
@@ -228,6 +223,7 @@ ComponentWithComputed({
       deviceStore.updateSubDeviceList()
       deviceStore.updateAllRoomDeviceList()
       homeStore.updateRoomCardList()
+      autosceneStore.updateAllRoomAutoSceneList()
     },
   },
 
@@ -279,6 +275,12 @@ ComponentWithComputed({
           message: '重试失败',
         })
       }
+    },
+
+    handleFinish() {
+      wx.switchTab({
+        url: '/pages/automation/index',
+      })
     },
   },
 })
