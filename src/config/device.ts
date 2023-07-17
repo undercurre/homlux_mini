@@ -56,7 +56,7 @@ export const sensorList: Record<string, string>[] = [
     icon: '/package-distribution/assets/guide/sensor-switch.png',
     img: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/sensor_switch.gif',
     name: '无线开关',
-    desc: '① 确认传感器电池已安装好\n② 长按「开关键」10秒，至指示灯开始闪烁（1秒/次）',
+    desc: '① 确认传感器电池已安装好\n② 点击「开关键」，随后立刻长按5秒以上，至指示灯开始闪烁（1秒/次）',
     path: '',
     productId: 'midea.freepad.001.201',
   },
