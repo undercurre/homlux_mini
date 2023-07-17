@@ -47,8 +47,7 @@ ComponentWithComputed({
      * @param params expire 过期时间(秒)
      */
     getShareParams(params: { expire: number }) {
-      // const expireTime = new Date().valueOf() + params.expire + 1000 // 过期时间
-      const expireTime = params.expire
+      const expireTime = new Date().valueOf() + params.expire * 1000 // 过期时间
 
       // todo: 暂时去掉&shareId=${this.data._shareId}
       return `type=transferHome&houseId=${homeBinding.store.currentHomeId}&expireTime=${expireTime}&shareId=${this.data._shareId}&userId=${userBinding.store.userInfo.userId}`
