@@ -650,7 +650,7 @@ ComponentWithComputed({
           name: item.sceneName,
           desc: [item.roomName],
           type: 5,
-          pic: `../../assets/img/scene/${item.sceneIcon}.png`,
+          pic: `../../assets/img/scene/${item.sceneIcon}-gray.png`,
           value: {},
         })
       })
