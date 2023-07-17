@@ -1,5 +1,7 @@
-// package-mine/device-manage/device-detail/components/setting-gateway/index.ts
-Component({
+import { ComponentWithComputed } from 'miniprogram-computed'
+import { checkWifiSwitch } from '../../../../../utils/index'
+
+ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
   },
@@ -10,45 +12,35 @@ Component({
     deviceInfo: {
       type: Object,
     },
+    isManager: {
+      type: Boolean,
+    },
   },
 
   /**
    * 组件的初始数据
    */
-  data: {
-    backup: false,
-    resetting: false,
+  data: {},
+
+  computed: {
+    channelText(data) {
+      return `${data.deviceInfo.channel}(${data.deviceInfo.panId})`
+    },
   },
 
   /**
    * 组件的方法列表
    */
   methods: {
-    handleBackup() {
-      if (!this.data.deviceInfo.onLineStatus) {
+    toChangeWifi() {
+      // 预校验wifi开关是否打开
+      if (!checkWifiSwitch()) {
         return
       }
-      this.setData({
-        backup: true,
+
+      wx.navigateTo({
+        url: `/package-distribution/wifi-connect/index?type=changeWifi&sn=${this.data.deviceInfo.sn}`,
       })
-      setTimeout(() => {
-        this.setData({
-          backup: false,
-        })
-      }, 3000)
-    },
-    handleReset() {
-      if (!this.data.deviceInfo.onLineStatus) {
-        return
-      }
-      this.setData({
-        resetting: true,
-      })
-      setTimeout(() => {
-        this.setData({
-          resetting: false,
-        })
-      }, 3000)
     },
   },
 })
