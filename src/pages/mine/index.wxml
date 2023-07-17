@@ -18,11 +18,11 @@
     <van-cell icon="/assets/img/mine/home.png" title="家庭管理" is-link center data-url="{{urls.homeControl}}" border="{{false}}" bind:click="toPage" />
   </van-cell-group>
 
-  <van-cell-group inset>
+  <!-- <van-cell-group inset>
     <van-cell icon="/assets/img/mine/gateway.png" title="智能网关" is-link center data-url="{{urls.deviceCategory}}" data-param="gateway" bind:click="toPage" />
     <van-cell icon="/assets/img/mine/sensor.png" title="传感器" is-link center data-url="{{urls.deviceCategory}}" data-param="sensor" bind:click="toPage" />
     <van-cell icon="/assets/img/mine/screen.png" title="智慧屏" is-link center data-url="{{urls.deviceCategory}}" data-param="screen" bind:click="toPage" />
-  </van-cell-group>
+  </van-cell-group> -->
 
   <van-cell-group inset>
     <van-cell icon="/assets/img/mine/voiceControl.png" title="语音控制" is-link center data-url="{{urls.voiceControl}}" bind:click="toPage" />
