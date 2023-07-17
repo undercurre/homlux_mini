@@ -34,13 +34,13 @@
       </van-cell-group>
       <view class="h-48rpx mt-64rpx mb-36rpx mx-48rpx flex justify-between align-center">
         <text class="text-40rpx font-medium text-hex-1a1a1c leading-48rpx">如果</text>
-        <image wx:if="{{sceneDeviceConditionsFlatten.length && !timeCondition.time}}" class="w-48 h-48" src="/assets/img/base/add.png" bindtap="addSensorPopup"></image>
+        <image wx:if="{{sceneDeviceConditionsFlatten.length && !timeCondition.time}}" class="w-48 h-48" src="/assets/img/automation/add.png" bindtap="addSensorPopup"></image>
       </view>
       <van-cell-group inset>
         <van-cell border="{{false}}" clickable="{{true}}" bind:click="handleConditionShow" wx:if="{{!sceneDeviceConditionsFlatten.length}}">
           <view class="flex items-center justify-center">
             <view class="flex flex-row items-center h-96rpx">
-              <image class="w-56 h-56 mr-38rpx" src="/assets/img/base/add.png"></image>
+              <image class="w-56 h-56 mr-38rpx" src="/assets/img/automation/add.png"></image>
               <text class="text-32rpx text-hex-555659">添加条件</text>
             </view>
           </view>
@@ -66,13 +66,13 @@
       </van-cell-group>
       <view class="h-48rpx mt-64rpx mb-36rpx mx-48rpx flex justify-between align-center">
         <text class="text-40rpx font-medium text-hex-1a1a1c leading-48rpx">就执行</text>
-        <image wx:if="{{sceneDeviceActionsFlatten.length}}" class="w-48 h-48" src="/assets/img/base/add.png" bindtap="handleActionShow"></image>
+        <image wx:if="{{sceneDeviceActionsFlatten.length}}" class="w-48 h-48" src="/assets/img/automation/add.png" bindtap="handleActionShow"></image>
       </view>
       <van-cell-group inset>
         <van-cell border="{{false}}" clickable="{{true}}" bind:click="handleActionShow" wx:if="{{!sceneDeviceActionsFlatten.length}}">
           <view class="flex items-center justify-center">
             <view class="flex flex-row items-center h-96rpx">
-              <image class="w-56 h-56 mr-38rpx" src="/assets/img/base/add.png"></image>
+              <image class="w-56 h-56 mr-38rpx" src="/assets/img/automation/add.png"></image>
               <text class="text-32rpx text-hex-555659">执行动作</text>
             </view>
           </view>
