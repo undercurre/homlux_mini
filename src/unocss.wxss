@@ -372,6 +372,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .h-100vh,
 .h-screen{height:100vh;}
 .h-104rpx{height:104rpx;}
+.h-106rpx{height:106rpx;}
 .h-108{height:108rpx;}
 .h-110rpx{height:110rpx;}
 .h-114rpx{height:114rpx;}
