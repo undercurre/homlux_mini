@@ -49,7 +49,7 @@ ComponentWithComputed({
     },
     nextBtnText(data) {
       const textMap = {
-        introduce: '开始使用',
+        introduce: '我知道了',
         oldDevice: '下一步',
         newDevice: '开始替换',
         processing: '',
