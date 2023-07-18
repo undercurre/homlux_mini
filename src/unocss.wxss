@@ -137,6 +137,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .ml-26rpx{margin-left:26rpx;}
 .ml-30rpx{margin-left:30rpx;}
 .ml-32rpx{margin-left:32rpx;}
+.ml-40rpx{margin-left:40rpx;}
 .ml-46rpx{margin-left:46rpx;}
 .ml-48rpx{margin-left:48rpx;}
 .ml-4rpx{margin-left:4rpx;}
@@ -379,6 +380,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .h-128rpx{height:128rpx;}
 .h-136rpx{height:136rpx;}
 .h-138rpx{height:138rpx;}
+.h-140rpx{height:140rpx;}
 .h-144rpx{height:144rpx;}
 .h-146rpx{height:146rpx;}
 .h-152rpx{height:152rpx;}
@@ -495,7 +497,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .w-300rpx{width:300rpx;}
 .w-32,
 .w-32rpx{width:32rpx;}
-.w-338rpx{width:338rpx;}
+.w-340rpx{width:340rpx;}
 .w-344rpx{width:344rpx;}
 .w-35rpx{width:35rpx;}
 .w-36,
