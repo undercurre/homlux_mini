@@ -5,7 +5,7 @@
     <block wx:if="{{status === 'introduce'}}">
       <tips-box text="当某个设备损坏或需要更换时，您可以使用设备替换功能，用新设备完全替换该设备，新设备将继承以下数据：" icon="/assets/img/default-img/new-device-replace.png"></tips-box>
 
-      <view class="pt-32rpx px-64rpx">
+      <view class="pt-32rpx px-32rpx">
         <view class="text-24 leading-46rpx text-black-tips">
           <text class="block">1.被替换设备的名称与房间</text>
           <text class="block">2.被替换设备的参数设置</text>
@@ -19,27 +19,12 @@
     <block wx:if="{{status === 'oldDevice'}}">
       <steps active="{{0}}"></steps>
       <text class="block text-center pt-60rpx pb-16rpx leading-40rpx text-28 text-black-59">选择被替换设备</text>
-      <text class="block text-center pb-80rpx leading-34rpx text-24 text-hex-a2a2a2">替换完成后，该设备将自动从家庭中解绑。</text>
+      <text class="block text-center pb-80rpx leading-34rpx text-24 text-black-59">替换完成后，该设备将自动从家庭中解绑。</text>
 
-      <van-cell-group inset wx:if="{{ oldDeviceItem && oldDeviceItem.deviceId }}">
-        <van-cell clickable bind:click="addOldDevice">
-          <view class="flex item-center">
-            <view class="w-96rpx h-96rpx bg-hex-F6FAFD rounded-999 flex-center">
-              <image src="{{oldDeviceItem.pic}}" class="w-72rpx h-72rpx" />
-            </view>
-            <view class="h-96rpx flex flex-col justify-center items-start ml-32rpx">
-              <text class="text-black-2a text-32rpx">{{oldDeviceItem.deviceName}}</text>
-              <view>
-                <text class="text-black-tips text-28rpx mt-8rpx">{{oldDeviceItem.roomName}}{{oldDeviceItem.onLineStatus ? '' : ' | '}}</text>
-                <text wx:if="{{!oldDeviceItem.onLineStatus}}" class="text-28rpx text-hex-fbbb32">离线</text>
-              </view>
-            </view>
-          </view>
-        </van-cell>
-      </van-cell-group>
+      <view class="bg-white mx-24rpx p-60rpx rounded-32rpx flex justify-center">
+        <device-card wx:if="{{ oldDeviceItem && oldDeviceItem.deviceId }}" showBtnDetail="{{false}}" device-info="{{oldDeviceItem}}" device-type="light" bind:cardTap="addOldDevice" bind:offlineTap="addOldDevice" />
 
-      <view wx:else class="bg-white mx-24rpx p-60rpx rounded-32rpx flex justify-center">
-        <view class="flex flex-col items-center" bind:tap="addOldDevice">
+        <view wx:else class="flex flex-col items-center" bind:tap="addOldDevice">
           <image class="w-108 h-108" src="/assets/img/device-replace/add.png"></image>
           <text class="pt-48rpx text-28 leading-40rpx text-black-59">选择设备</text>
         </view>
@@ -49,26 +34,12 @@
     <block wx:if="{{status === 'newDevice'}}">
       <steps active="{{1}}"></steps>
       <text class="block text-center pt-60rpx pb-16rpx leading-40rpx text-28 text-black-59">选择新设备</text>
-      <text class="block text-center pb-80rpx leading-34rpx text-24 text-hex-a2a2a2">仅可选择在线，且与旧设备同类别的新设备</text>
+      <text class="block text-center pb-80rpx leading-34rpx text-24 text-black-59">仅可选择在线，且与旧设备同类别的新设备</text>
 
-      <van-cell-group inset wx:if="{{ newDeviceItem && newDeviceItem.deviceId }}">
-        <van-cell clickable bind:click="addNewDevice">
-          <view class="flex item-center">
-            <view class="w-96rpx h-96rpx bg-hex-F6FAFD rounded-999 flex-center">
-              <image src="{{newDeviceItem.pic}}" class="w-72rpx h-72rpx" />
-            </view>
-            <view class="h-96rpx flex flex-col justify-center items-start ml-32rpx">
-              <text class="text-black-2a text-32rpx">{{newDeviceItem.deviceName}}</text>
-              <view>
-                <text class="text-black-tips text-28rpx mt-8rpx">{{newDeviceItem.roomName}}</text>
-              </view>
-            </view>
-          </view>
-        </van-cell>
-      </van-cell-group>
+      <view class="bg-white mx-24rpx p-60rpx rounded-32rpx flex justify-center">
+        <device-card wx:if="{{ newDeviceItem && newDeviceItem.deviceId }}" showBtnDetail="{{false}}" device-info="{{newDeviceItem}}" device-type="light" bind:cardTap="addNewDevice" />
 
-      <view wx:else class="bg-white mx-24rpx p-60rpx rounded-32rpx flex justify-center">
-        <view class="flex flex-col items-center" bind:tap="addNewDevice">
+        <view wx:else class="flex flex-col items-center" bind:tap="addNewDevice">
           <image class="w-108 h-108" src="/assets/img/device-replace/add.png"></image>
           <text class="pt-48rpx text-28 leading-40rpx text-black-59">选择设备</text>
         </view>

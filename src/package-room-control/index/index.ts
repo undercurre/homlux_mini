@@ -144,6 +144,16 @@ ComponentWithComputed({
       }
       return false
     },
+    roomHasDevice(data) {
+      if (data.deviceList) {
+        return (
+          (data.allRoomDeviceList as DeviceCard[]).filter(
+            (device) => device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId,
+          ).length > 0
+        )
+      }
+      return false
+    },
     title(data) {
       if (data.roomList && data.roomList[data.currentRoomIndex]) {
         return data.roomList[data.currentRoomIndex].roomName
