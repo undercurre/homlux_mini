@@ -305,7 +305,7 @@ ComponentWithComputed({
 
       if (linkDesc) {
         const dialigRes = await Dialog.confirm({
-          message: `此开关已关联${linkDesc}，确定变更？`,
+          title: `此开关已关联${linkDesc}，确定变更？`,
           cancelButtonText: '取消',
           confirmButtonText: '变更',
           zIndex: 2000,

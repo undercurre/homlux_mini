@@ -102,7 +102,7 @@ ComponentWithComputed({
       }
 
       const dialogRes = await Dialog.confirm({
-        message: '确定删除该房间？',
+        title: '确定删除该房间？',
       }).catch(() => {
         return 'cancel'
       })

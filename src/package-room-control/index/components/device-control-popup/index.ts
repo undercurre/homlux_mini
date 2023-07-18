@@ -366,7 +366,7 @@ ComponentWithComputed({
 
         if (this.data.selectLinkType === 'switch' && (linkScene || lampRelList.length)) {
           const dialogRes = await Dialog.confirm({
-            message: `此开关已关联${linkScene ? '场景' : '灯具'}，是否取消关联？`,
+            title: `此开关已关联${linkScene ? '场景' : '灯具'}，是否取消关联？`,
             cancelButtonText: '取消',
             confirmButtonText: '确定',
             zIndex: 2000,
@@ -389,7 +389,7 @@ ComponentWithComputed({
 
         if (switchSceneActionMap[switchUniId]?.includes(selectId)) {
           const dialogRes = await Dialog.confirm({
-            message: '此开关已被其他场景使用，是否需要变更？',
+            title: '此开关已被其他场景使用，是否需要变更？',
             cancelButtonText: '取消',
             confirmButtonText: '变更',
             zIndex: 2000,
@@ -673,7 +673,7 @@ ComponentWithComputed({
         // 变更绑定类型的情况下弹框确认
         if (linkType !== selectLinkType) {
           const dialogRes = await Dialog.confirm({
-            message: `此开关已${descMap[linkType]}，是否变更？`,
+            title: `此开关已${descMap[linkType]}，是否变更？`,
             cancelButtonText: '取消',
             confirmButtonText: '确定',
             zIndex: 2000,

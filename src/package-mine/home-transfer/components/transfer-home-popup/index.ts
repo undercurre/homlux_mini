@@ -76,7 +76,7 @@ Component({
       this.triggerEvent('close')
 
       const dialog = await Dialog.confirm({
-        message: '是否转让当前家庭',
+        title: '是否转让当前家庭',
         context: this,
       }).catch(() => 'cancel')
       if (dialog === 'cancel') return
