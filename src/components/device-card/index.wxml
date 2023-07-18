@@ -1,7 +1,7 @@
 <view id="card" class="{{showShadow?'card-shadow':''}} card-clip w-160rpx h-216rpx rounded-32rpx flex-col-center relative overflow-hidden" catchtap="handleCardTap" bind:longpress="handleLongPress">
   <!-- 单选和编辑选择，选中状态均使用描边样式 -->
   <view wx:if="{{select || editSelect}}" class="w-160rpx h-216rpx absolute left-0 top-0 box-border select-border rounded-32rpx bg-hex-fff"></view>
-  <view wx:else class="w-160rpx h-216rpx rounded-32rpx box-border {{showGradientBg?'show-control-bg white-border':'bg-hex-f7f7f7'}}"></view>
+  <view wx:else class="w-160rpx h-216rpx rounded-32rpx box-border {{showGradientBg?'show-control-bg white-border':'bg-hex-f9fbfe'}}"></view>
 
   <!-- 顶部标题 -->
   <view class="absolute left-0 top-16rpx w-160rpx flex-center">
@@ -9,7 +9,7 @@
   </view>
 
   <!-- 设备图标 -->
-  <view class="absolute left-0 pb-24rpx flex-col-center w-full h-full">
+  <view class="absolute left-0 pb-32rpx flex-col-center w-full h-full">
     <image src="{{picUrl}}" class="w-72rpx h-72rpx"></image>
   </view>
 
@@ -33,6 +33,9 @@
   <!-- 离线文字 -->
   <view wx:if="{{!deviceInfo.onLineStatus}}" class="absolute left-0 bottom-24rpx w-160rpx flex flex-col flex-center">
     <text class="text-24rpx text-hex-fbbb32">离线</text>
+  </view>
+  <view wx:elif="{{!showControl && !showBtnDetail && deviceType==='switch' || deviceType!=='switch'}}" class="absolute left-0 bottom-24rpx w-160rpx flex flex-col flex-center">
+    <text class="text-24rpx text-hex-555659">在线</text>
   </view>
 </view>
 
