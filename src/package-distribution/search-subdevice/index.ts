@@ -29,7 +29,7 @@ ComponentWithComputed({
     _gatewayInfo: {
       channel: 0,
     },
-    _proType: '',
+    proType: '',
     _pQueue: new PromiseQueue({ concurrency: 3 }),
     _id: Math.floor(Math.random() * 100),
     _errorList: [] as string[],
@@ -47,7 +47,7 @@ ComponentWithComputed({
       deviceUuid: '',
       deviceId: '',
       deviceName: '',
-      roomId: '',
+      roomId: roomBinding.store.currentRoom.roomId,
       roomName: '',
       switchList: [] as Device.ISwitch[],
     },
@@ -102,7 +102,9 @@ ComponentWithComputed({
       bleDevicesStore.updateBleDeviceList()
 
       const { proType, productId, channel } = getCurrentPageParams()
-      this.data._proType = proType
+      this.setData({
+        proType
+      })
       this.data._productId = productId
       this.data._gatewayInfo.channel = parseInt(channel) || 0
       if (proType === PRO_TYPE.sensor) {
@@ -165,7 +167,7 @@ ComponentWithComputed({
           ...device,
           name: device.productName,
           proType: PRO_TYPE.sensor,
-          isChecked: false,
+          isChecked: true,
           status: 'waiting' as const,
           deviceUuid: device.deviceId,
         }))
@@ -223,7 +225,7 @@ ComponentWithComputed({
       try {
         const selectedList = bleDevicesBinding.store.bleDeviceList.filter((item: Device.ISubDevice) => item.isChecked)
 
-        if (this.data._proType === PRO_TYPE.sensor) {
+        if (this.data.proType === PRO_TYPE.sensor) {
           this.beginAddSensor(selectedList)
         } else {
           bleDevicesBinding.store.stopBLeDiscovery()
