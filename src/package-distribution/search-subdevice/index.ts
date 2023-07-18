@@ -26,6 +26,9 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    _gatewayInfo: {
+      channel: 0,
+    },
     _proType: '',
     _pQueue: new PromiseQueue({ concurrency: 3 }),
     _id: Math.floor(Math.random() * 100),
@@ -98,9 +101,10 @@ ComponentWithComputed({
 
       bleDevicesStore.updateBleDeviceList()
 
-      const { proType, productId } = getCurrentPageParams()
+      const { proType, productId, channel } = getCurrentPageParams()
       this.data._proType = proType
       this.data._productId = productId
+      this.data._gatewayInfo.channel = parseInt(channel) || 0
       if (proType === PRO_TYPE.sensor) {
         const res = await this.startGwAddMode(false)
 
@@ -444,7 +448,7 @@ ComponentWithComputed({
 
       this.data._deviceMap[bleDevice.mac].zigbeeRepeatTimes--
 
-      const res = await bleDevice.client.startZigbeeNet()
+      const res = await bleDevice.client.startZigbeeNet({ channel: this.data._gatewayInfo.channel })
 
       if (res.success) {
         bleDevice.isConfig = '02' // 将设备配网状态置为已配网，否则失败重试由于前面判断状态的逻辑无法重新添加成功

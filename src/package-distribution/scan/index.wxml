@@ -64,7 +64,7 @@
           <text class="block leading-36rpx text-26 text-black-tips pt-8rpx">{{ item.onLineStatus === 1 ? '在线' : '离线' }}</text>
         </view>
 
-        <image class="w-48 h-48" src="{{ item.deviceId === selectGatewayId ? '/assets/img/base/check.png' : '/assets/img/base/uncheck.png' }}" />
+        <image class="w-48 h-48" src="{{ item.deviceId === selectGateway.deviceId ? '/assets/img/base/check.png' : '/assets/img/base/uncheck.png' }}" />
       </view>
     </view>
 
@@ -73,7 +73,7 @@
     <view class="flex flex-row gap-46rpx px-24rpx">
       <van-button class="grow" size="large" bind:click="onCloseGwList">取消</van-button>
 
-      <van-button class="grow" size="large" type="primary" bind:click="confirmGateway" disabled="{{!selectGatewayId}}">确定</van-button>
+      <van-button class="grow" size="large" type="primary" bind:click="confirmGateway" disabled="{{!selectGateway.deviceId}}">确定</van-button>
     </view>
 
     <view class="h-96"></view>

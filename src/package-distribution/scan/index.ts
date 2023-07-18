@@ -34,8 +34,11 @@ ComponentWithComputed({
     isScan: false, // 是否正在扫码
     scanType: '', // 扫码页的种类
     isFlash: false,
-    selectGatewayId: '',
-    selectGatewaySn: '',
+    selectGateway: {
+      deviceId: '',
+      sn: '',
+      channel: 0,
+    },
     deviceInfo: {
       icon: '/package-distribution/assets/scan/light.png',
     } as IAnyObject,
@@ -139,8 +142,11 @@ ComponentWithComputed({
       }
 
       this.setData({
-        selectGatewayId: item.deviceId,
-        selectGatewaySn: item.sn,
+        selectGateway: {
+          deviceId: item.deviceId,
+          sn: item.sn,
+          channel: item.channel,
+        },
       })
     },
 
@@ -246,8 +252,11 @@ ComponentWithComputed({
     onCloseGwList() {
       this.setData({
         isShowGatewayList: false,
-        selectGatewayId: '',
-        selectGatewaySn: '',
+        selectGateway: {
+          deviceId: '',
+          sn: '',
+          channel: 0,
+        },
       })
     },
 
@@ -541,7 +550,7 @@ ComponentWithComputed({
      * 添加子设备时，检测是否已选择网关信息
      */
     checkGateWayInfo() {
-      const gatewayId = this.data.selectGatewayId
+      const gatewayId = this.data.selectGateway.deviceId
 
       if (gatewayId) {
         return true
@@ -562,8 +571,11 @@ ComponentWithComputed({
       }
 
       if (this.data.gatewayList.length === 1 && this.data.gatewayList[0].onLineStatus === 1) {
-        this.data.selectGatewayId = this.data.gatewayList[0].deviceId
-        this.data.selectGatewaySn = this.data.gatewayList[0].sn
+        this.data.selectGateway = {
+          deviceId: this.data.gatewayList[0].deviceId,
+          sn: this.data.gatewayList[0].sn,
+          channel: this.data.gatewayList[0].channel,
+        }
       } else {
         this.setData({
           isShowGatewayList: true,
@@ -585,21 +597,20 @@ ComponentWithComputed({
         return
       }
 
-      const gatewayId = this.data.selectGatewayId,
-        gatewaySn = this.data.selectGatewaySn
+      const { deviceId, sn, channel } = this.data.selectGateway
 
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
-          gatewayId,
-          gatewaySn,
+          gatewayId: deviceId,
+          gatewaySn: sn,
+          channel: channel,
         }),
       })
     },
 
     // 添加单个子设备
     addSingleSubdevice() {
-      const gatewayId = this.data.selectGatewayId,
-        gatewaySn = this.data.selectGatewaySn
+      const { deviceId, sn, channel } = this.data.selectGateway
 
       const { proType, modelId } = this.data.deviceInfo
 
@@ -612,8 +623,9 @@ ComponentWithComputed({
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/add-subdevice/index', {
           mac: this.data.deviceInfo.mac,
-          gatewayId,
-          gatewaySn,
+          gatewayId: deviceId,
+          gatewaySn: sn,
+          channel: channel,
           deviceName: this.data.deviceInfo.deviceName,
           deviceIcon: this.data.deviceInfo.icon,
           proType: proType,

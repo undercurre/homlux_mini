@@ -6,30 +6,6 @@ const CmdTypeMap = {
   DEVICE_INFO_QUREY: 0x01, // 查询
 } as const
 
-// type CmdType = typeof CmdTypeMap
-
-// /**
-//  * 根据值获取对应的控制类型名称
-//  * @param value
-//  */
-// function getCmdTypeName(value: CmdType[keyof CmdType]) {
-//   return Object.entries(CmdTypeMap).find((item) => item[1] === value)![0]
-// }
-
-// 控制类子类型枚举
-// CTL_CONFIG_ZIGBEE_NET				= 0x00,		//开启ZigBee配网模式
-// CTL_DEVICE_ONOFF_ON	 			= 0x01,		//控制设备开关开
-// CTL_DEVICE_ONOFF_OFF	 			= 0x02,		//控制设备开关关
-// CTL_LIGHT_LEVEL	 					= 0x03,		//控制灯光亮度
-// CTL_LIGHT_COLOR	 				= 0x04,		//控制灯光色温
-const ControlSubType = {
-  haveTry: [0x05],
-  CTL_CONFIG_ZIGBEE_NET: [0x00, 0x00, 0x00, 0x00],
-  QUERY_ZIGBEE_STATE: [0x01],
-  QUREY_ONOFF_STATUS: [0x02],
-  QUREY_LIGHT_STATUS: [0x03],
-} as const
-
 export class BleClient {
   mac: string
   key = ''
@@ -185,7 +161,7 @@ export class BleClient {
     Logger.log(`【${this.mac}】closeBLEConnection`, res)
   }
 
-  async sendCmd(params: { cmdType: keyof typeof CmdTypeMap; subType: keyof typeof ControlSubType }) {
+  async sendCmd(params: { cmdType: keyof typeof CmdTypeMap; data: Array<number> }) {
     try {
       const isConnected = bleDeviceMap[this.deviceUuid]
 
@@ -198,16 +174,16 @@ export class BleClient {
         }
       }
 
-      const { cmdType, subType } = params
+      const { cmdType, data } = params
 
-      Logger.log(`【${this.mac}】蓝牙指令发起，cmdType： ${params.cmdType}--${params.subType}`)
+      Logger.log(`【${this.mac}】蓝牙指令发起，cmdType： ${cmdType}--${data}`)
 
       const msgId = ++this.msgId // 等待回复的指令msgId
       // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
       // 1 byte	     1 byte	   1 byte	          N  bytes	    1 byte
       const cmdArr = [CmdTypeMap[cmdType], msgId, 0x00]
 
-      cmdArr.push(...ControlSubType[subType])
+      cmdArr.push(...data)
 
       cmdArr[2] = cmdArr.length
 
@@ -231,7 +207,7 @@ export class BleClient {
         (resolve, reject) => {
           // 超时处理
           timeId = setTimeout(() => {
-            resolve({ code: '-1', success: false, resMsg: '蓝牙指令回复超时', cmdType: cmdType, subCmdType: subType })
+            resolve({ code: '-1', success: false, resMsg: '蓝牙指令回复超时', cmdType: cmdType })
           }, 8000)
 
           listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
@@ -259,7 +235,6 @@ export class BleClient {
               resMsg: resMsg.substr(2),
               success: true,
               cmdType: cmdType,
-              subCmdType: subType,
             })
           }
 
@@ -280,7 +255,7 @@ export class BleClient {
         },
       )
         .then((res) => {
-          Logger.log(`【${this.mac}】 蓝牙指令回复时间： ${Date.now() - begin}ms`, cmdType, subType)
+          Logger.log(`【${this.mac}】 蓝牙指令回复时间： ${Date.now() - begin}ms`, cmdType, data)
 
           return res
         })
@@ -314,8 +289,8 @@ export class BleClient {
     }
   }
 
-  async startZigbeeNet() {
-    const res = await this.sendCmd({ cmdType: 'DEVICE_CONTROL', subType: 'CTL_CONFIG_ZIGBEE_NET' })
+  async startZigbeeNet({ channel = 0x00 }) {
+    const res = await this.sendCmd({ cmdType: 'DEVICE_CONTROL', data: [0x00, channel, 0x00, 0x00] })
 
     let zigbeeMac = ''
 
@@ -347,7 +322,7 @@ export class BleClient {
    * 闪烁指令
    */
   async flash() {
-    const res = await this.sendCmd({ cmdType: 'DEVICE_CONTROL', subType: 'haveTry' })
+    const res = await this.sendCmd({ cmdType: 'DEVICE_CONTROL', data: [0x05] })
 
     Logger.log(`【${this.mac}】flash`, res)
 
@@ -358,7 +333,7 @@ export class BleClient {
    * 查询ZigBee网关连接状态
    */
   async getZigbeeState() {
-    const res = await this.sendCmd({ cmdType: 'DEVICE_INFO_QUREY', subType: 'QUERY_ZIGBEE_STATE' })
+    const res = await this.sendCmd({ cmdType: 'DEVICE_INFO_QUREY', data: [0x01] })
 
     let isConfig = ''
 
@@ -382,7 +357,7 @@ export class BleClient {
    * 查询灯光状态
    */
   async getLightState() {
-    const res = await this.sendCmd({ cmdType: 'DEVICE_INFO_QUREY', subType: 'QUREY_LIGHT_STATUS' })
+    const res = await this.sendCmd({ cmdType: 'DEVICE_INFO_QUREY', data: [0x03] })
 
     Logger.log(`【${this.mac}】getLightState`, res)
 

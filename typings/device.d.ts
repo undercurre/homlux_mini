@@ -24,6 +24,10 @@ declare namespace Device {
     // 接口返回值属性
     deviceId: string
     deviceName: string
+
+    channel: number // zigbee信道
+
+    panId: number
     /**
      * 设备类型
      * 1:网关 2:子设备 3:wifi, 4:灯组
@@ -208,7 +212,7 @@ declare namespace Device {
     icon: string
     productId: string
     switchList: Device.ISwitch[]
-    client: BleClient
+    client: import('../src/utils/index').BleClient
     status: 'waiting' | 'fail' | 'success' // 配网状态
     isChecked: boolean // 是否被选中
     requesting: boolean // 是否正在发送试一试命令
