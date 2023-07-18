@@ -21,6 +21,10 @@ Component({
             this.setData({
               [`weekList[${Number(item.key) - 1}].checked`]: true,
             })
+          } else {
+            this.setData({
+              [`weekList[${Number(item.key) - 1}].checked`]: false,
+            })
           }
         })
       },

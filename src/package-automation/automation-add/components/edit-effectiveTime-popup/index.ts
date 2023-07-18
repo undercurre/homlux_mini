@@ -33,6 +33,13 @@ ComponentWithComputed({
     },
     week: {
       type: String,
+      observer(value) {
+        if (this.data.periodType === '1' && value.split(',').length < 7) {
+          this.setData({
+            periodType: '4',
+          })
+        }
+      },
     },
   },
 
