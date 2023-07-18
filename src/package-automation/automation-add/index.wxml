@@ -1,10 +1,9 @@
 <!-- 背景 -->
 <view class="w-100vw h-100vh fixed left-0 top-0 bg-hex-f4f8ff bg-z-index-1"></view>
 <view class="fixed left-0 top-0 w-100vw h-50vh bg-z-index" style="background: linear-gradient(180deg, rgba(87, 105, 255, 0.1) 0%, rgba(87, 105, 255, 0) 100%)"></view>
-<view class="h-100vh flex flex-col items-center">
+<view class="flex flex-col items-center page-container">
   <!-- 标题 -->
   <nav-bar title="创建自动化" left-arrow bind:leftTap="goBack"></nav-bar>
-
   <view class="flex-1 w-750rpx" id="content">
     <scroll-view scroll-y="{{true}}" class="w-full" style="height: {{contentHeight}}px;">
       <view class="h-32rpx"></view>
@@ -98,15 +97,7 @@
       </van-cell-group>
     </scroll-view>
   </view>
-  <view class="h-160rpx"></view>
-
-  <!-- <view class="fixed left-32 bottom-56 justify-center w-686rpx">
-    <van-button custom-class="popup-control-btn" custom-style="border: 2rpx solid #A2A2A2;" color="transparent" bind:click="handleSceneDelete">
-        <text class="text-36rpx text-black-tips">删除</text>
-      </van-button>
-    <van-button type="primary" class="grow" size="large" disabled="{{disabled}}" bind:click="handleConfirm">{{ confirmText || '确定'}}</van-button>
-  </view> -->
-  <view class="fixed bottom-56 flex justify-around w-750rpx">
+  <view class="flex flex-row gap-46rpx pt-30rpx justify-around w-750rpx">
     <van-button wx:if="{{autoSceneId}}" custom-class="double-btn" custom-style="border: 2rpx solid #A2A2A2;" color="transparent" bind:click="handleAutoSceneDelete">
       <text class="text-36rpx text-black-tips">删除</text>
     </van-button>
