@@ -1,12 +1,3 @@
-enum weekStr {
-  Value1 = '1',
-  Value2 = '2',
-  Value3 = '3',
-  Value4 = '4',
-  Value5 = '5',
-  Value6 = '6',
-  Value7 = '7',
-}
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
 import {
@@ -37,7 +28,7 @@ import {
   toWifiProperty,
   // storage,
   getCurrentPageParams,
-  // strUtil,
+  strUtil,
 } from '../../utils/index'
 
 ComponentWithComputed({
@@ -135,32 +126,7 @@ ComponentWithComputed({
       }
     },
     timePeriodDesc(data) {
-      if (data.effectiveTime.timeType === '0') {
-        return '仅一次'
-      } else if (data.effectiveTime.timeType === '2') {
-        return '法定工作日'
-      } else if (data.effectiveTime.timeType === '3') {
-        return '法定节假日'
-      } else {
-        const weekMap = {
-          '1': '周日',
-          '2': '周一',
-          '3': '周二',
-          '4': '周三',
-          '5': '周四',
-          '6': '周五',
-          '7': '周六',
-        }
-        const weekArr = data.effectiveTime.timePeriod.split(',') as weekStr[]
-        if (weekArr.length === 7) {
-          return '每天'
-        }
-        const newWeekArr: string[] = []
-        weekArr.forEach((item) => {
-          newWeekArr.push(weekMap[item])
-        })
-        return newWeekArr.join('、')
-      }
+      return strUtil.transPeriodDesc(data.effectiveTime.timeType, data.effectiveTime.timePeriod)
     },
     endTimeDesc(data) {
       const startTimeHour = parseInt(data.effectiveTime.startTime.substring(0, 2))
@@ -677,7 +643,7 @@ ComponentWithComputed({
         sceneDeviceConditionsFlatten.push({
           uniId: 'time',
           name: this.data.timeCondition.time,
-          desc: [this.formatPeriodDesc(this.data.timeCondition.timeType, this.data.timeCondition.timePeriod)],
+          desc: [strUtil.transPeriodDesc(this.data.timeCondition.timeType, this.data.timeCondition.timePeriod)],
           pic: '../../assets/img/automation/time-materialized.png',
           productId: 'time',
           property: {},
@@ -742,34 +708,6 @@ ComponentWithComputed({
       return `${Math.trunc(seconds / 3600) > 0 ? Math.trunc(seconds / 3600) + '小时' : ''}${
         Math.trunc((seconds % 3600) / 60) > 0 ? Math.trunc((seconds % 3600) / 60) + '分' : ''
       }${Math.trunc((seconds % 3600) % 60) > 0 ? Math.trunc((seconds % 3600) % 60) + '秒' : ''}`
-    },
-    formatPeriodDesc(timeType: string, timePeriod: string) {
-      if (timeType === '0') {
-        return '仅一次'
-      } else if (timeType === '2') {
-        return '法定工作日'
-      } else if (timeType === '3') {
-        return '法定节假日'
-      } else {
-        const weekMap = {
-          '1': '周日',
-          '2': '周一',
-          '3': '周二',
-          '4': '周三',
-          '5': '周四',
-          '6': '周五',
-          '7': '周六',
-        }
-        const weekArr = timePeriod.split(',') as weekStr[]
-        if (weekArr.length === 7) {
-          return '每天'
-        }
-        const newWeekArr: string[] = []
-        weekArr.forEach((item) => {
-          newWeekArr.push(weekMap[item])
-        })
-        return newWeekArr.join('、')
-      }
     },
     /* 传感器条件编辑 start */
     handleEditSensorClose() {
