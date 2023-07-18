@@ -24,7 +24,7 @@ ComponentWithComputed({
 
   computed: {
     style(data) {
-      return `border: ${data.select ? '3rpx solid #488FFF' : '3rpx solid rgba(0,0,0,0)'};`
+      return `border: 3rpx solid ${data.select ? '#507FFF' : 'rgba(0,0,0,0)'};`
     },
   },
 

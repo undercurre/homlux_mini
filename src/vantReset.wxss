@@ -62,7 +62,8 @@ page {
   /* skeleton end */
 
   /* dialog start */
-  --dialog-width: 654rpx;
+  --dialog-width: 622rpx;
+  --dialog-header-isolated-padding: 48rpx 64rpx;
   /* dialog end */
 
   /* toast start */

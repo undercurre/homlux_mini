@@ -189,7 +189,7 @@ ComponentWithComputed({
     },
     handleSceneDelete() {
       Dialog.confirm({
-        message: '确定删除该场景？',
+        title: '确定删除该场景？',
       }).then(async () => {
         const res = await deleteScene(this.data._sceneInfo.sceneId)
         if (res.success) {
@@ -213,7 +213,7 @@ ComponentWithComputed({
       if (this.data.sceneDeviceActionsFlatten.length === 0) {
         // 删完actions按照删除场景处理
         Dialog.confirm({
-          message: '清空操作将会删除场景，确定删除该场景？',
+          title: '清空操作将会删除场景，确定删除该场景？',
         }).then(async () => {
           const res = await deleteScene(this.data._sceneInfo.sceneId)
           if (res.success) {

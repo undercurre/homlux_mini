@@ -179,7 +179,7 @@ ComponentWithComputed({
       }
       const hasSwitch = this.data.editSelectList.some((uniId: string) => uniId.includes(':'))
       Dialog.confirm({
-        message: hasSwitch ? '该按键所在的面板将被一起删除' : '确定删除该设备',
+        title: hasSwitch ? '该按键所在的面板将被一起删除' : '确定删除该设备',
         confirmButtonText: '是',
         cancelButtonText: '否',
         context: this,
@@ -303,7 +303,7 @@ ComponentWithComputed({
             hideLoading()
 
             Dialog.confirm({
-              message: '部分设备未成功移动，是否重试',
+              title: '部分设备未成功移动，是否重试',
               confirmButtonText: '是',
               cancelButtonText: '否',
               context: this,
@@ -325,7 +325,7 @@ ComponentWithComputed({
       })
       if (hasSwitch && !this.data.moveFailCount) {
         Dialog.confirm({
-          message: '按键所在的面板将被移动至新房间，是否继续？',
+          title: '按键所在的面板将被移动至新房间，是否继续？',
           confirmButtonText: '是',
           cancelButtonText: '否',
           context: this,

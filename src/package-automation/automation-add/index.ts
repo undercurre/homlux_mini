@@ -859,7 +859,7 @@ ComponentWithComputed({
       ) {
         // 删完actions或conditions按照删除场景处理
         const res = await Dialog.confirm({
-          message: '清空条件或操作将会删除场景，确定删除该场景？',
+          title: '清空条件或操作将会删除场景，确定删除该场景？',
         }).catch(() => 'cancel')
 
         console.log('delAutoScene', res)
@@ -1072,7 +1072,7 @@ ComponentWithComputed({
     },
     async handleAutoSceneDelete() {
       const res = await Dialog.confirm({
-        message: '确定删除该自动化？',
+        title: '确定删除该自动化？',
       }).catch(() => 'cancel')
 
       console.log('delAutoScene', res)

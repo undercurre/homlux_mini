@@ -271,7 +271,7 @@ ComponentWithComputed({
       }
 
       const res = await Dialog.confirm({
-        message: '是否解散当前家庭',
+        title: '是否解散当前家庭',
       }).catch(() => 'cancel')
 
       console.log('delHome', res)
@@ -313,7 +313,7 @@ ComponentWithComputed({
 
     async quitHome() {
       const res = await Dialog.confirm({
-        message: '是否退出当前家庭',
+        title: '是否退出当前家庭',
       }).catch(() => 'cancel')
 
       console.log('delHome', res)
