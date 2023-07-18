@@ -31,6 +31,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .px-46rpx{padding-left:46rpx;padding-right:46rpx;}
 .px-48rpx{padding-left:48rpx;padding-right:48rpx;}
 .px-50rpx{padding-left:50rpx;padding-right:50rpx;}
+.px-64rpx{padding-left:64rpx;padding-right:64rpx;}
 .px-88rpx{padding-left:88rpx;padding-right:88rpx;}
 .px-8rpx{padding-left:8rpx;padding-right:8rpx;}
 .py-10rpx{padding-top:10rpx;padding-bottom:10rpx;}
