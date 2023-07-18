@@ -39,7 +39,7 @@
       <view wx:for="{{actionList}}" class="flex flex-row items-center leading-44rpx {{item.isShow && 'border-bottom'}}" wx:key="key" bindtap="onPopupClick" data-item="{{item}}">
         <view class="flex flex-col grow justify-center items-start {{item.isShow ? 'h-128rpx': 'h-0rpx'}}">
           <text wx:if="{{item.isShow}}" class="text-34 leading-48rpx">{{item.text}}</text>
-          <text wx:if="{{item.isShow}}" class="text-28 leading-40rpx text-black-tips">{{item.label}}</text>
+          <text wx:if="{{item.isShow}}" class="text-28 leading-40rpx text-black-tips mt-16rpx">{{item.label}}</text>
         </view>
 
         <image wx:if="{{item.isCheck && item.isShow}}" src="/assets/img/member-manage/tick.png" class="w-48 h-48"></image>
