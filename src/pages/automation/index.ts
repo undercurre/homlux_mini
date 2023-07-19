@@ -44,11 +44,14 @@ ComponentWithComputed({
           autosceneBinding.store.updateAllRoomAutoSceneList()
         },
       )
-      emitter.on('wsReceive', (res) => {
-        const { eventType } = res.result
-        if (eventType === 'scene_add' || eventType === 'scene_del' || eventType === 'scene_upt') {
-          autosceneBinding.store.updateAllRoomAutoSceneList()
-        }
+      emitter.on('scene_add', () => {
+        autosceneBinding.store.updateAllRoomAutoSceneList()
+      })
+      emitter.on('scene_del', () => {
+        autosceneBinding.store.updateAllRoomAutoSceneList()
+      })
+      emitter.on('scene_upt', () => {
+        autosceneBinding.store.updateAllRoomAutoSceneList()
       })
       //加载自动化列表
       if (this.data.isLogin) {
@@ -56,7 +59,9 @@ ComponentWithComputed({
       }
     },
     onUnload() {
-      emitter.off('wsReceive')
+      emitter.off('scene_add')
+      emitter.off('scene_del')
+      emitter.off('scene_upt')
     },
     toPage(e: { currentTarget: { dataset: { url: string } } }) {
       wx.navigateTo({

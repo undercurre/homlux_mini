@@ -28,6 +28,15 @@ type Events = {
     sceneId: string
     errCode: number // 0 成功，1-失败
   }
+  scene_upt: {
+    eventType: keyof typeof WSEventType
+  }
+  scene_add: {
+    eventType: keyof typeof WSEventType
+  }
+  scene_del: {
+    eventType: keyof typeof WSEventType
+  }
 }
 
 export const WSEventType = {
