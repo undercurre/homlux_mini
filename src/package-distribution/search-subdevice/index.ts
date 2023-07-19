@@ -170,7 +170,7 @@ ComponentWithComputed({
           isChecked: true,
           status: 'waiting' as const,
           deviceUuid: device.deviceId,
-          roomId: roomBinding.store.currentRoom.roomId // 默认为当前房间
+          roomId: roomBinding.store.currentRoom.roomId, // 默认为当前房间
         }))
 
       runInAction(() => {

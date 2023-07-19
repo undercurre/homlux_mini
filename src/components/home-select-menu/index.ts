@@ -41,6 +41,7 @@ ComponentWithComputed({
    */
   data: {
     isRender: false,
+    reverseArrow: false
   },
 
   computed: {
@@ -123,6 +124,16 @@ ComponentWithComputed({
         ],
         100,
       )
+    },
+    scrollToLower() {
+      this.setData({
+        reverseArrow: true
+      })
+    },
+    scrollToUpper() {
+      this.setData({
+        reverseArrow: false
+      })
     },
     black() {},
   },
