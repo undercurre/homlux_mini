@@ -20,6 +20,7 @@ export class BleClient {
 
     this.mac = mac
     this.deviceUuid = deviceUuid
+    deviceUuidMap[deviceUuid] = mac
     // 密钥为：midea@homlux0167   (0167为该设备MAC地址后四位
     this.key = `midea@homlux${mac.substr(-4, 4)}`
 
@@ -46,7 +47,7 @@ export class BleClient {
   async connect() {
     const date1 = Date.now()
 
-    Logger.log(`【${this.mac}】开始连接蓝牙`, this.deviceUuid)
+    Logger.log(`【${this.mac}】开始连接蓝牙`)
 
     // 会出现createBLEConnection一直没返回的情况（低概率）
     // 微信bug，安卓端timeout参数无效
@@ -57,7 +58,7 @@ export class BleClient {
       })
       .catch((err: WechatMiniprogram.BluetoothError) => err)
 
-    Logger.log(`【${this.mac}】 connect`, this.deviceUuid, connectRes, `连接蓝牙时间： ${Date.now() - date1}ms`)
+    Logger.log(`【${this.mac}】 connectRes`, connectRes, `连接蓝牙时间： ${Date.now() - date1}ms`)
 
     // 判断是否连接蓝牙，0为连接成功，-1为已经连接
     // 避免-1的情况，因为安卓如果重复调用 wx.createBLEConnection 创建连接，有可能导致系统持有同一设备多个连接的实例，导致调用 closeBLEConnection 的时候并不能真正的断开与设备的连接。占用蓝牙资源
@@ -75,7 +76,6 @@ export class BleClient {
     ])
 
     if (!initRes.success) {
-      await this.close() // 释放已连接的蓝牙资源
       throw {
         ...initRes,
         code: -1,
@@ -207,7 +207,7 @@ export class BleClient {
         (resolve, reject) => {
           // 超时处理
           timeId = setTimeout(() => {
-            resolve({ code: '-1', success: false, resMsg: '蓝牙指令回复超时', cmdType: cmdType })
+            reject({ code: '-1', success: false, resMsg: '蓝牙指令回复超时', cmdType: cmdType })
           }, 8000)
 
           listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
@@ -259,20 +259,8 @@ export class BleClient {
 
           return res
         })
-        .catch(async (err) => {
-          // todo:
-          Logger.error(`【${this.mac}】promise-sendCmd-err`, err, `蓝牙连接状态：${bleDeviceMap[this.deviceUuid]}`)
-
-          await this.close() // 异常关闭需要主动配合关闭连接closeBLEConnection，否则资源会被占用无法释放，导致无法连接蓝牙设备
-
-          return {
-            code: -1,
-            success: false,
-            error: err,
-            resMsg: '',
-          }
-        })
         .finally(() => {
+          console.log(`【${this.mac}】-finally`)
           wx.offBLECharacteristicValueChange(listener)
 
           clearTimeout(timeId)
@@ -426,6 +414,8 @@ export const bleUtil = {
 
 export const bleDeviceMap = {} as IAnyObject
 
+const deviceUuidMap = {} as IAnyObject
+
 // todo: 测试代码，可删除
 wx.onBLEConnectionStateChange(function (res) {
   bleDeviceMap[res.deviceId] = res.connected
@@ -433,6 +423,7 @@ wx.onBLEConnectionStateChange(function (res) {
   if (!res.connected) {
     const deviceId = res.deviceId
 
-    Logger.log(`【${deviceId}】蓝牙已断开`)
+
+    Logger.log(`【${deviceUuidMap[deviceId] || deviceId}】蓝牙已断开`)
   }
 })

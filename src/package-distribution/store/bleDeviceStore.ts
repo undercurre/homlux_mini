@@ -162,7 +162,7 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
   })
 
   if (!infoRes.success) {
-    Logger.error(`设备${baseInfo.mac}云端不存在注册记录`, baseInfo)
+    Logger.error(`设备${baseInfo.zigbeeMac}云端不存在注册记录`, baseInfo)
     return
   }
 
@@ -172,14 +172,14 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
     bleDevicesStore.bleDeviceList.find((foundItem) => foundItem.deviceUuid === baseInfo.deviceUuid) ||
     (infoRes.result.roomId && baseInfo.isConfig === '02')
   ) {
-    Logger.log(`${infoRes.result.productName}：${baseInfo.mac}已绑定`)
+    Logger.log(`${infoRes.result.productName}：${baseInfo.zigbeeMac}已绑定`)
     return
   }
 
   let { productName: deviceName } = infoRes.result
   const { proType, switchNum, modelId, productIcon } = infoRes.result
 
-  Logger.log(`成功发现${deviceName}：${baseInfo.mac}`)
+  Logger.log(`成功发现${deviceName}：${baseInfo.zigbeeMac}`)
 
   const bindNum = deviceBinding.store.allRoomDeviceList.filter(
     (item) => item.proType === proType && item.productId === modelId,

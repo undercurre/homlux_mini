@@ -222,7 +222,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .bg-hex-F6F6F8{--un-bg-opacity:1;background-color:rgba(246,246,248,var(--un-bg-opacity));}
 .bg-hex-f6fafd,
 .bg-hex-F6FAFD{--un-bg-opacity:1;background-color:rgba(246,250,253,var(--un-bg-opacity));}
-.bg-hex-f7f7f7{--un-bg-opacity:1;background-color:rgba(247,247,247,var(--un-bg-opacity));}
 .bg-hex-f9fbfe,
 .bg-hex-F9FBFE{--un-bg-opacity:1;background-color:rgba(249,251,254,var(--un-bg-opacity));}
 .bg-hex-fff,
