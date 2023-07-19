@@ -207,7 +207,7 @@ export class BleClient {
         (resolve, reject) => {
           // 超时处理
           timeId = setTimeout(() => {
-            reject({ code: '-1', success: false, resMsg: '蓝牙指令回复超时', cmdType: cmdType })
+            reject('蓝牙指令回复超时')
           }, 8000)
 
           listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
@@ -260,10 +260,17 @@ export class BleClient {
           return res
         })
         .catch(async (err) => {
-          Logger.error(`【${this.mac}】sendCmd-err`, err, `蓝牙连接状态：${bleDeviceMap[this.deviceUuid]}`)
-          await this.close()
+          // todo:
+          Logger.error(`【${this.mac}】promise-sendCmd-err`, err, `蓝牙连接状态：${bleDeviceMap[this.deviceUuid]}`)
 
-          return err
+          await this.close() // 异常关闭需要主动配合关闭连接closeBLEConnection，否则资源会被占用无法释放，导致无法连接蓝牙设备
+
+          return {
+            code: -1,
+            success: false,
+            error: err,
+            resMsg: '',
+          }
         })
         .finally(() => {
           console.log(`【${this.mac}】-finally`)
