@@ -47,7 +47,7 @@ ComponentWithComputed({
       deviceUuid: '',
       deviceId: '',
       deviceName: '',
-      roomId: roomBinding.store.currentRoom.roomId,
+      roomId: '',
       roomName: '',
       switchList: [] as Device.ISwitch[],
     },
@@ -170,6 +170,7 @@ ComponentWithComputed({
           isChecked: true,
           status: 'waiting' as const,
           deviceUuid: device.deviceId,
+          roomId: roomBinding.store.currentRoom.roomId // 默认为当前房间
         }))
 
       runInAction(() => {
@@ -335,7 +336,7 @@ ComponentWithComputed({
           const res = await bindDevice({
             deviceId: device.deviceId,
             houseId: homeBinding.store.currentHomeId,
-            roomId: roomBinding.store.currentRoom.roomId,
+            roomId: device.roomId,
             sn: '',
             deviceName: device.name,
           })
