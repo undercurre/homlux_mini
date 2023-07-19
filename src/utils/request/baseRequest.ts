@@ -107,7 +107,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
 
     // 请求发起时的提示
     if (requestOption.log) {
-      console.log(`» 发起请求 ${requestOption.url} 参数：\n`, requestOption.data, requestOption.header)
+      console.log(`» 发起请求 ${requestOption.url} ${new Date((requestOption.data as Record<string, any>).timestamp).toLocaleTimeString()}\n`, requestOption.data, requestOption.header)
     }
 
     wx.request({
