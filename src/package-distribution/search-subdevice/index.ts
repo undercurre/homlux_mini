@@ -103,7 +103,7 @@ ComponentWithComputed({
 
       const { proType, productId, channel } = getCurrentPageParams()
       this.setData({
-        proType
+        proType,
       })
       this.data._productId = productId
       this.data._gatewayInfo.channel = parseInt(channel) || 0
