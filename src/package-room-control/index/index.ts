@@ -510,9 +510,9 @@ ComponentWithComputed({
 
             if (Object.keys(diffData).length) {
               this.setData(diffData)
-              console.log('[updateDeviceList, %s, %s]单个卡片更新完成', groupIndex, index, diffData)
+              console.log('▤ [%s, %s] 单个卡片更新完成', groupIndex, index, diffData)
             } else {
-              console.log('[updateDeviceList, %s, %s]diffData为空，不必更新', groupIndex, index)
+              console.log('▤ [%s, %s] diffData为空，不必更新', groupIndex, index)
             }
             break // 找到就中断
           }
@@ -546,7 +546,7 @@ ComponentWithComputed({
           }))
 
         if (!this.data.deviceListInited) {
-          console.log('[updateDeviceList]列表初始化')
+          console.log('▤ [updateDeviceList] 列表初始化')
         }
         // !! 整个列表刷新
         else {
@@ -554,7 +554,7 @@ ComponentWithComputed({
             devicePageList: [], // 清空
             deviceListInited: false,
           })
-          console.log('[updateDeviceList]列表重加载')
+          console.log('▤ [updateDeviceList] 列表重新加载')
         }
 
         // 拆分为二维数组，以便分页渲染
@@ -569,12 +569,12 @@ ComponentWithComputed({
           deviceListInited: true,
         })
 
-        console.log('[updateDeviceList]列表更新完成', this.data.devicePageList)
+        console.log('▤ [updateDeviceList] 列表更新完成', this.data.devicePageList)
       }
 
       // 模拟堵塞任务执行
       // await delay(2000)
-      // console.log('[updateDeviceList] Ended', this.data._diffWaitlist.length)
+      // console.log('▤ [updateDeviceList] Ended', this.data._diffWaitlist.length)
 
       // 恢复更新标志
       this.data._updating = false
@@ -605,7 +605,7 @@ ComponentWithComputed({
 
         // 未初始化完毕不接受单独更新，所有初始化完成前的更新将被丢弃
         if (!this.data.deviceListInited && !device.isRefresh) {
-          console.log('[No deviceListInited, updateQueue Quit]')
+          console.log('▤ [No deviceListInited, updateQueue Quit]')
           return
         }
 
@@ -621,21 +621,22 @@ ComponentWithComputed({
               ...device,
             }
             replace_flag = true
-            console.log('Similar update found.', device.deviceId, timediff)
+            console.log('▤ Similar update found', device.deviceId, timediff)
             break
           }
         }
         // 一直未有覆盖操作，直接放到队尾
         if (!replace_flag) {
           this.data._diffWaitlist.push({ ...device, timestamp })
-          console.log('[updateQueue Pushed] Queue Len:', this.data._diffWaitlist.length)
+          if (this.data._diffWaitlist.length > 1) {
+            console.log('▤ [updateQueue Pushed] Queue Len:', this.data._diffWaitlist.length)
+          }
         }
       }
 
       // 未在更新中，从队首取一个执行
       if (!this.data._updating) {
         const diff = this.data._diffWaitlist.shift()
-        console.log('[updateQueue  Shift] Queue Len:', this.data._diffWaitlist.length)
         this.data._updating = true
         this.updateDeviceList(diff)
       }
@@ -655,7 +656,7 @@ ComponentWithComputed({
         groupIndex,
         index,
       }
-      console.log('movableTouchStart:', diffData)
+      console.log('⇅ [movableTouchStart]', diffData)
 
       this.setData(diffData)
     },
@@ -671,7 +672,7 @@ ComponentWithComputed({
         if (oldOrder < 0) {
           return
         }
-        console.log('movableChange: %d-->%d', oldOrder, targetOrder, e)
+        console.log('⇅ [movableChange] %d-->%d', oldOrder, targetOrder, e)
 
         // 更新placeholder的位置
         const dPos = getPos(targetOrder)
@@ -744,7 +745,7 @@ ComponentWithComputed({
       diffData[`placeholder.groupIndex`] = -1
 
       this.setData(diffData)
-      console.log('movableTouchEnd:', diffData)
+      console.log('⇅ [movableTouchEnd]', diffData)
 
       this.handleSortSaving()
     },
