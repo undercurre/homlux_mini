@@ -5,7 +5,7 @@
     <block wx:if="{{status === 'introduce'}}">
       <tips-box text="当某个设备损坏或需要更换时，您可以使用设备替换功能，用新设备完全替换该设备，新设备将继承以下数据：" icon="/assets/img/default-img/new-device-replace.png"></tips-box>
 
-      <view class="pt-32rpx px-32rpx">
+      <view class="pt-32rpx px-64rpx">
         <view class="text-24 leading-46rpx text-black-tips">
           <text class="block">1.被替换设备的名称与房间</text>
           <text class="block">2.被替换设备的参数设置</text>
