@@ -97,7 +97,7 @@
       </van-cell-group>
     </scroll-view>
   </view>
-  <view class="flex flex-row gap-46rpx pt-30rpx justify-around w-750rpx">
+  <view class="flex flex-row pt-30rpx justify-between w-750rpx px-32rpx box-border">
     <van-button wx:if="{{autoSceneId}}" custom-class="double-btn" custom-style="border: 2rpx solid #A2A2A2;" color="transparent" bind:click="handleAutoSceneDelete">
       <text class="text-36rpx text-black-tips">删除</text>
     </van-button>
