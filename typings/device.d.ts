@@ -122,6 +122,7 @@ declare namespace Device {
       orderNum: string
       roomId: string
       switchId?: string
+      type?: string
     }[]
     /** 类型:0 子设备顺序 1 按键顺序	 */
     type: '1' | '0'

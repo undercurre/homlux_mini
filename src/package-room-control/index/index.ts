@@ -784,6 +784,7 @@ ComponentWithComputed({
               roomId: device.roomId,
               orderNum: String(device.orderNum),
               switchId: device.switchInfoDTOList[0].switchId,
+              type: '1'
             })
           }
         }
