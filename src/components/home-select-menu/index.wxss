@@ -11,3 +11,6 @@
   border-right: 16rpx solid transparent;
   top: -28rpx;
 }
+.rotate-180 {
+  transform: rotate(180deg);
+}

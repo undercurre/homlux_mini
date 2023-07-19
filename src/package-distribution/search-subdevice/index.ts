@@ -105,7 +105,9 @@ ComponentWithComputed({
       bleDevicesStore.updateBleDeviceList()
 
       const { proType, productId, channel } = getCurrentPageParams()
-      this.data._proType = proType
+      this.setData({
+        proType,
+      })
       this.data._productId = productId
       this.data._gatewayInfo.channel = parseInt(channel) || 0 // 获取网关信道
 
@@ -170,9 +172,10 @@ ComponentWithComputed({
           ...device,
           name: device.productName,
           proType: PRO_TYPE.sensor,
-          isChecked: false,
+          isChecked: true,
           status: 'waiting' as const,
           deviceUuid: device.deviceId,
+          roomId: roomBinding.store.currentRoom.roomId, // 默认为当前房间
         }))
 
       runInAction(() => {
@@ -228,7 +231,7 @@ ComponentWithComputed({
       try {
         const selectedList = bleDevicesBinding.store.bleDeviceList.filter((item: Device.ISubDevice) => item.isChecked)
 
-        if (this.data._proType === PRO_TYPE.sensor) {
+        if (this.data.proType === PRO_TYPE.sensor) {
           this.beginAddSensor(selectedList)
         } else {
           bleDevicesBinding.store.stopBLeDiscovery()
@@ -338,7 +341,7 @@ ComponentWithComputed({
           const res = await bindDevice({
             deviceId: device.deviceId,
             houseId: homeBinding.store.currentHomeId,
-            roomId: roomBinding.store.currentRoom.roomId,
+            roomId: device.roomId,
             sn: '',
             deviceName: device.name,
           })

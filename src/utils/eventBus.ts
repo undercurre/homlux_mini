@@ -48,6 +48,9 @@ export const WSEventType = {
   screen_move_sub_device: 'screen_move_sub_device', // 智慧屏设备变更
   project_change_house: 'project_change_house', // 工程移交
   change_house: 'change_house', // 家庭转让
+  scene_add: 'scene_add', // 场景更新
+  scene_upt: 'scene_upt', // 创建场景
+  scene_del: 'scene_del', // 场景删除
 }
 
 export const emitter: Emitter<Events> = mitt<Events>()

@@ -29,18 +29,11 @@
 <view bindtap="handleScreenTap" bindtouchmove="handleScreenTap">
   <!-- 标题 -->
   <nav-bar title="{{title}}" z-index="{{113}}" left-arrow bind:leftTap="goBack" disabled="{{opacity === 0}}"></nav-bar>
-  <!-- 房间无子设备,但是有网关 -->
-  <view wx:if="{{roomHasGateway && !roomHasSubDevice}}" class="w-full flex flex-col items-center">
-    <image src="/assets/img/default-img/only-gateway.png" class="w-300rpx h-300rpx mt-64rpx"></image>
-    <text class="text-black-59 text-28rpx mt-48rpx">智能网关非可控制设备</text>
-    <text data-url="/package-mine/device-manage/index" bindtap="goTo" class="text-black-59 text-28rpx">请在<text class="mx-8rpx text-blue underline decoration-solid decoration-blue">设备管理</text>中查看</text>
-    <van-button wx-if="{{canAddDevice}}" type="primary" class="mt-290rpx w-686rpx" size="large" bind:click="handleAddDevice">添加智能设备</van-button>
-  </view>
-  <!-- 家庭无子设备无网关 -->
-  <view wx:if="{{!roomHasGateway && !roomHasSubDevice}}" class="w-full flex flex-col items-center">
+  <!-- 家庭无设备，或只有网关 -->
+  <view wx:if="{{!roomHasDevice}}" class="w-full flex flex-col items-center">
     <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx mt-64rpx"></image>
-    <text class="text-black-59 text-28rpx mt-48rpx">这个房间空空如也</text>
-    <van-button wx-if="{{canAddDevice}}" type="primary" class="mt-290rpx w-686rpx" size="large" bind:click="handleAddDevice">添加智能设备</van-button>
+    <text class="text-black-59 text-28rpx mt-48rpx text-center leading-48rpx">{{'房间内还未添加可控制的\n灯具、开关、窗帘'}}</text>
+    <van-button wx-if="{{canAddDevice}}" type="primary" class="mt-290rpx w-686rpx" size="large" bind:click="handleAddDevice">立即添加</van-button>
   </view>
 
   <!-- 有设备页面主体 -->
@@ -72,7 +65,7 @@
           </movable-view> -->
 
           <view wx:for="{{devicePageList}}" wx:for-item="group" wx:key="g" wx:for-index="g" class="flex flex-row flex-wrap">
-            <movable-view wx:for="{{group}}" wx:key="uniId" data-index="{{index}}" data-group="{{g}}" data-ordernum="{{item.orderNum}}" x="{{item.x}}" y="{{item.y}}" direction="all" friction="{{999}}" damping="{{100}}" bind:longpress="movableTouchStart" bind:touchend="movableTouchEnd" bind:change="movableChange" class="{{ index === placeholder.index && g === placeholder.groupIndex ? 'z-100' : 'z-1' }}" disabled="{{!isMoving}}">
+            <movable-view wx:for="{{group}}" wx:key="uniId" data-index="{{index}}" data-group="{{g}}" data-ordernum="{{item.orderNum}}" x="{{item.x}}" y="{{item.y}}" direction="all" friction="{{999}}" damping="{{100}}" bind:longpress="movableTouchStart" bind:touchend="movableTouchEnd" catch:change="movableChange" class="{{ index === placeholder.index && g === placeholder.groupIndex ? 'z-100' : 'z-1' }}" disabled="{{!isMoving}}">
               <device-card class="w-180rpx pb-16rpx pt-16rpx flex justify-center {{editSelectMode && (index !== placeholder.index || g !== placeholder.groupIndex) ? 'shake' : ''}}" showControl="{{!editSelectMode}}" showShadow showGradientBg edit-mode="{{editSelectMode}}" edit-select="{{item.editSelect}}" device-info="{{item}}" data-item="{{item}}" select="{{item.select}}" bind:controlTap="handleControlTap" bind:cardTap="handleCardTap" bind:offlineTap="handleShowDeviceOffline" bind:longPress="handleLongpress" />
             </movable-view>
           </view>

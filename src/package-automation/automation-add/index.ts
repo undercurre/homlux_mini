@@ -868,7 +868,7 @@ ComponentWithComputed({
 
         const delRes = await deleteScene(this.data.autoSceneId)
         if (delRes.success) {
-          await autosceneStore.updateAllRoomAutoSceneList()
+          // await autosceneStore.updateAllRoomAutoSceneList()
           wx.navigateBack()
         } else {
           Toast({ message: '删除失败', zIndex: 9999 })
@@ -1061,7 +1061,7 @@ ComponentWithComputed({
           message: this.data.autoSceneId ? '更新失败' : '创建失败',
         })
       } else {
-        autosceneStore.updateAllRoomAutoSceneList()
+        // autosceneStore.updateAllRoomAutoSceneList()
         Toast({
           message: this.data.autoSceneId ? '更新成功' : '创建成功',
           onClose: () => {
@@ -1081,7 +1081,7 @@ ComponentWithComputed({
 
       const delRes = await deleteScene(this.data.autoSceneId)
       if (delRes.success) {
-        await autosceneStore.updateAllRoomAutoSceneList()
+        // await autosceneStore.updateAllRoomAutoSceneList()
         wx.navigateBack()
       } else {
         Toast({ message: '删除失败', zIndex: 9999 })

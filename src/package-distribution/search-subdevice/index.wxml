@@ -2,7 +2,7 @@
 
 <view class="page-container flex flex-col h-screen">
   <!-- 导航栏 -->
-  <nav-bar leftArrow="{{status !== 'requesting'}}" bind:leftTap="goBack" background="transparent" title="{{pageTitle}}"></nav-bar>
+  <nav-bar leftArrow="{{status !== 'requesting'}}" bind:leftTap="goBackHome" background="transparent" title="{{pageTitle}}"></nav-bar>
 
   <view class="grow shrink flex flex-col justify-between box-border pt-40rpx">
     <block wx:if="{{status === 'discover'}}">
@@ -12,7 +12,7 @@
         <view class="flex flex-row items-center justify-between pb-34rpx">
           <text class="text-26 text-black-59">发现{{bleDeviceList.length}}个附近的设备</text>
 
-          <van-button plain round type="info" size="small" bind:click="toggleSelectAll">{{ isAllSelected ? '取消全选' : '全选'}}</van-button>
+          <van-button wx:if="{{proType !== '0xBC'}}" plain round type="info" size="small" bind:click="toggleSelectAll">{{ isAllSelected ? '取消全选' : '全选'}}</van-button>
         </view>
 
         <scroll-view class="grow shrink h-500" scroll-y="{{true}}" enhanced show-scrollbar="{{false}}">
@@ -21,12 +21,12 @@
               <view class="relative ml-10rpx my-20rpx border-4rpx border-solid border-hex-F6F6F8 rounded-full leading-0 p-10rpx">
                 <image src="{{item.icon}}" class="w-72 h-72"></image>
 
-                <view wx:if="{{item.proType !== '0xBC'}}" class="signal-box bottom-0 leading-0 rounded-14rpx {{ item.signal === 'weak' ? 'bg-hex-FFF4F4' : 'bg-hex-F4F8FF'}}">
+                <view wx:if="{{proType !== '0xBC'}}" class="signal-box bottom-0 leading-0 rounded-14rpx {{ item.signal === 'weak' ? 'bg-hex-FFF4F4' : 'bg-hex-F4F8FF'}}">
                   <image src="/package-distribution/assets/search-subdevice/signal-{{ item.signal }}.png" class="w-46 h-28"></image>
                 </view>
               </view>
 
-              <image slot="icon" class="w-48 h-48" src="{{ item.isChecked ? '/assets/img/base/check.png' : '/assets/img/base/uncheck.png' }}" />
+              <image wx:if="{{proType !== '0xBC'}}" slot="icon" class="w-48 h-48" src="{{ item.isChecked ? '/assets/img/base/check.png' : '/assets/img/base/uncheck.png' }}" />
             </van-checkbox>
 
             <view class="grow pl-32rpx" bind:tap="editDevice" data-id="{{item.deviceUuid}}">
@@ -39,13 +39,14 @@
               <text class="text-26 text-black-59 opacity-95">{{ item.roomName }}</text>
             </view>
 
-            <view class="shrink-0" wx:if="{{item.proType !== '0xBC'}}">
+            <view class="shrink-0" wx:if="{{proType !== '0xBC'}}">
               <van-button plain type="primary" size="small" round bind:click="tryControl" data-id="{{item.deviceUuid}}" loading="{{item.requesting}}" custom-style="background: rgba(72,143,255,0.10) !important;border-radius: 12rpx; font-size: 24rpx; width: 120rpx;padding: 0;">{{ item.mac === flashInfo.mac ? '正在闪烁' : '找一找'}}</van-button>
             </view>
           </view>
         </scroll-view>
 
-        <van-button class="mt-24rpx" block type="primary" size="large" bind:click="confirmAdd" disabled="{{selectedList.length===0}}">确认添加（已选{{selectedList.length}}个）</van-button>
+        <van-button wx:if="{{proType !== '0xBC'}}" class="mt-24rpx" block type="primary" size="large" bind:click="confirmAdd" disabled="{{selectedList.length===0}}">确认添加（已选{{selectedList.length}}个）</van-button>
+        <van-button wx:else class="mt-24rpx" block type="primary" size="large" bind:click="confirmAdd" disabled="{{selectedList.length===0}}">确认添加</van-button>
       </view>
     </block>
 
@@ -74,7 +75,7 @@
             <view class="relative my-20rpx border-4rpx border-solid border-hex-F6F6F8 rounded-full leading-0 p-10rpx">
               <image src="{{item.icon}}" class="w-72 h-72"></image>
 
-              <view wx:if="{{item.proType !== '0xBC'}}" class="signal-box bottom-0 leading-0 rounded-14rpx {{ item.signal === 'weak' ? 'bg-hex-FFF4F4' : 'bg-hex-F4F8FF'}}">
+              <view wx:if="{{proType !== '0xBC'}}" class="signal-box bottom-0 leading-0 rounded-14rpx {{ item.signal === 'weak' ? 'bg-hex-FFF4F4' : 'bg-hex-F4F8FF'}}">
                 <image src="/package-distribution/assets/search-subdevice/signal-{{ item.signal }}.png" class="w-46 h-28"></image>
               </view>
             </view>
@@ -89,7 +90,7 @@
               <text class="text-26 text-black-59 opacity-95">{{ item.roomName }}</text>
             </view>
 
-            <view class="shrink-0" wx:if="{{item.proType !== '0xBC'}}">
+            <view class="shrink-0" wx:if="{{proType !== '0xBC'}}">
               <van-button plain type="primary" size="small" round bind:click="tryControl" data-id="{{item.deviceUuid}}" loading="{{item.requesting}}" custom-style="background: rgba(72,143,255,0.10) !important;border-radius: 12rpx; font-size: 24rpx; width: 120rpx;padding: 0;">{{ item.mac === flashInfo.mac ? '正在闪烁' : '找一找'}}</van-button>
             </view>
           </view>
