@@ -1186,9 +1186,9 @@ ComponentWithComputed({
       this.updateQueue(device)
 
       // 弹起popup后，选中卡片滚动到视图中央，以免被遮挡
-      this.setData({
-        scrollTop: this.data.scrollTop + e.detail.clientRect.top - this.data.scrollViewHeight / 2,
-      })
+      // this.setData({
+      //   scrollTop: this.data.scrollTop + e.detail.clientRect.top - this.data.scrollViewHeight / 2,
+      // })
 
       console.log('handleLongpress', e, diffData)
     },
@@ -1213,5 +1213,6 @@ ComponentWithComputed({
     handleRoomMoveSuccess() {
       this.updateQueue({ isRefresh: true })
     },
+    movableTouchMove() {},
   },
 })

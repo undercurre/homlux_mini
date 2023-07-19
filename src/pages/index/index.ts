@@ -581,5 +581,7 @@ ComponentWithComputed({
 
       updateRoomSort(roomSortList)
     },
+
+    movableTouchMove() {},
   },
 })
