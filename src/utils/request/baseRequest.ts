@@ -1,4 +1,5 @@
 import { showLoading, hideLoading } from '../index'
+import { Logger } from '../log'
 
 export type BaseRequestOptions<T extends AnyResType> = WechatMiniprogram.RequestOption<T> & {
   /**
@@ -79,7 +80,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       // 否则就只使用generalSuccessHandler进行通用处理或者generalSuccessHandler不存在则不处理直接返回
       requestOption.success = (result) => {
         if (requestOption.log) {
-          console.log(`✔ ${requestOption.url} 用时 ${Date.now() - start} ms，响应内容：\n`, result.data)
+          Logger.log(`✔ ${requestOption.url} 用时 ${Date.now() - start} ms，响应内容：\n`, result.data)
         }
         const data = requestOption.generalSuccessHandler ? requestOption.generalSuccessHandler(result) : result.data
         resolve(data)
@@ -91,14 +92,14 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       const handler = requestOption.failHandler
       requestOption.fail = (err) => {
         if (requestOption.log) {
-          console.log('✘请求URL:' + requestOption.url + ' 失败，原因：' + err.errMsg, requestOption.data)
+          Logger.error('✘请求URL:' + requestOption.url + ' 失败，原因：' + err.errMsg, requestOption.data)
         }
         resolve(handler(err))
       }
     } else {
       requestOption.fail = (err) => {
         if (requestOption.log) {
-          console.log('✘请求URL:' + requestOption.url + ' 失败，失败原因：' + err.errMsg, requestOption.data)
+          Logger.error('✘请求URL:' + requestOption.url + ' 失败，失败原因：' + err.errMsg, requestOption.data)
         }
         const data = requestOption.generalFailHandler ? requestOption.generalFailHandler(err) : (err as unknown as T)
         resolve(data)
@@ -107,7 +108,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
 
     // 请求发起时的提示
     if (requestOption.log) {
-      console.log(`» 发起请求 ${requestOption.url} ${new Date((requestOption.data as Record<string, any>).timestamp).toLocaleTimeString()}\n`, requestOption.data, requestOption.header)
+      Logger.log(`» 发起请求 ${requestOption.url} 参数：\n`, requestOption.data, requestOption.header)
     }
 
     wx.request({
