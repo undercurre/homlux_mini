@@ -403,7 +403,7 @@ ComponentWithComputed({
 
           zigbeeTaskList.push(async () => {
             zigbeeList.push(item.mac)
-            Logger.debug(`【${item.mac}】开始zigbee配网：`,'zigbeeList', zigbeeList, zigbeeList.length)
+            Logger.debug(`【${item.mac}】开始zigbee配网：`, 'zigbeeList', zigbeeList, zigbeeList.length)
             // 数据埋点：上报尝试配网的子设备
             wx.reportEvent('add_device', {
               pro_type: item.proType,
@@ -424,7 +424,7 @@ ComponentWithComputed({
               Logger.debug(`【${item.mac}】蓝牙任务结束,bleList`, bleList)
             })
 
-            const zigbeeTask = new Promise<{ success: boolean, msg?: string }>((resolve) => {
+            const zigbeeTask = new Promise<{ success: boolean; msg?: string }>((resolve) => {
               this.data._zigbeeTaskCallbackMap[item.mac] = resolve
             })
 
@@ -446,7 +446,7 @@ ComponentWithComputed({
 
             zigbeeList.splice(index, 1)
 
-            Logger.debug(`【${item.mac}】结束zigbee配网：`,'zigbeeList', zigbeeList, zigbeeList.length)
+            Logger.debug(`【${item.mac}】结束zigbee配网：`, 'zigbeeList', zigbeeList, zigbeeList.length)
           })
         })
 
@@ -457,7 +457,11 @@ ComponentWithComputed({
     },
 
     async startZigbeeNet(bleDevice: Device.ISubDevice) {
-      Logger.log(`【${bleDevice.mac}】配网指令，第${3 - this.data._deviceMap[bleDevice.mac].zigbeeRepeatTimes}次, 检测配网状态：${bleDevice.isConfig}`)
+      Logger.log(
+        `【${bleDevice.mac}】配网指令，第${
+          3 - this.data._deviceMap[bleDevice.mac].zigbeeRepeatTimes
+        }次, 检测配网状态：${bleDevice.isConfig}`,
+      )
 
       const timeout = 90 // 等待绑定推送，超时60s
       // 过滤刚出厂设备刚起电时会默认进入配网状态期间，被网关绑定的情况，这种当做成功配网，无需再下发配网指令，否则可能会导致zigbee入网失败
@@ -490,7 +494,10 @@ ComponentWithComputed({
           }
         }, timeout * 1000)
       } else if (this.data._deviceMap[bleDevice.mac].zigbeeRepeatTimes === 0) {
-        this.data._zigbeeTaskCallbackMap[bleDevice.mac]({ success: false, msg: `子设备配网失败-${JSON.stringify(res)}` })
+        this.data._zigbeeTaskCallbackMap[bleDevice.mac]({
+          success: false,
+          msg: `子设备配网失败-${JSON.stringify(res)}`,
+        })
       } else {
         // 配网指令允许重发2次
         await this.startZigbeeNet(bleDevice)

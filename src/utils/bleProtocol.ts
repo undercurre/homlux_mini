@@ -259,6 +259,12 @@ export class BleClient {
 
           return res
         })
+        .catch(async (err) => {
+          Logger.error(`【${this.mac}】sendCmd-err`, err, `蓝牙连接状态：${bleDeviceMap[this.deviceUuid]}`)
+          await this.close()
+
+          return err
+        })
         .finally(() => {
           console.log(`【${this.mac}】-finally`)
           wx.offBLECharacteristicValueChange(listener)
@@ -422,7 +428,6 @@ wx.onBLEConnectionStateChange(function (res) {
 
   if (!res.connected) {
     const deviceId = res.deviceId
-
 
     Logger.log(`【${deviceUuidMap[deviceId] || deviceId}】蓝牙已断开`)
   }
