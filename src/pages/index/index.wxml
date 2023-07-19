@@ -45,7 +45,7 @@
       <view class="h-24rpx"></view>
       <!-- 房间卡片列表 -->
       <movable-area style="height: {{accumulatedY}}px; width: 702rpx;">
-        <movable-view wx:for="{{roomList}}" wx:key="roomId" data-index="{{index}}" data-rid="{{item.roomId}}" class="w-702rpx {{item.sceneList.length && !isMoving ? 'h-336rpx' : 'h-152rpx'}}" y="{{roomPos[item.roomId].y}}" direction="vertical" friction="{{999}}" damping="{{100}}" bind:longpress="movableTouchStart" bind:touchend="movableTouchEnd" catch:change="movableChange" catch:touchmove="movableTouchMove" class="{{ roomPos[item.roomId].index === placeholder.index ? 'z-100' : (isMoving ? 'opacity-50' : 'opacity-100 z-1') }}" disabled="{{!isMoving}}">
+        <movable-view wx:for="{{roomList}}" wx:key="roomId" data-index="{{index}}" data-rid="{{item.roomId}}" class="w-702rpx {{item.sceneList.length && !isMoving ? 'h-336rpx' : 'h-152rpx'}}" y="{{roomPos[item.roomId].y}}" direction="vertical" friction="{{999}}" damping="{{100}}" bind:longpress="movableTouchStart" bind:touchend="movableTouchEnd" catch:change="movableChange" class="{{ roomPos[item.roomId].index === placeholder.index ? 'z-100' : (isMoving ? 'opacity-50' : 'opacity-100 z-1') }}" disabled="{{!isMoving}}">
           <room-card room-info="{{item}}" data-room="{{item.roomId}}" isMoving="{{isMoving}}" bind:sceneSelect="handleSceneSelect"></room-card>
         </movable-view>
       </movable-area>

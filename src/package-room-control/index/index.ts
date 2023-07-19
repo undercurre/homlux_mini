@@ -1213,6 +1213,5 @@ ComponentWithComputed({
     handleRoomMoveSuccess() {
       this.updateQueue({ isRefresh: true })
     },
-    movableTouchMove() {},
   },
 })
