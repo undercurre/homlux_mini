@@ -152,7 +152,7 @@ ComponentWithComputed({
             (device) =>
               device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
               device.proType !== PRO_TYPE.gateway &&
-              device.proType !== PRO_TYPE.sensor
+              device.proType !== PRO_TYPE.sensor,
           ).length > 0
         )
       }
