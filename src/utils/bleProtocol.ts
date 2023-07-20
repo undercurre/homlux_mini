@@ -54,7 +54,7 @@ export class BleClient {
     const connectRes = await wx
       .createBLEConnection({
         deviceId: this.deviceUuid, // 搜索到设备的 deviceId
-        // timeout: 8000,
+        timeout: 10000,
       })
       .catch((err: WechatMiniprogram.BluetoothError) => err)
 

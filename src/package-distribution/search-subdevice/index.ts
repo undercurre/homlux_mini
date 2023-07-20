@@ -370,8 +370,6 @@ ComponentWithComputed({
 
         // 若为其余蓝牙子设备，则监听云端推送，判断哪些子设备绑定成功
         emitter.on('bind_device', (data) => {
-          Logger.log('bind_device', data)
-
           const bleDevice = bleDevicesStore.bleDeviceList.find(
             (item) => item.isChecked && item.zigbeeMac === data.deviceId,
           )
@@ -406,7 +404,7 @@ ComponentWithComputed({
 
           zigbeeTaskList.push(async () => {
             zigbeeList.push(item.mac)
-            Logger.debug(`【${item.mac}】开始zigbee配网：`, 'zigbeeList', zigbeeList, zigbeeList.length)
+            Logger.debug(`【${item.mac}】开始zigbee配网：`, 'zigbeeList', zigbeeList)
             // 数据埋点：上报尝试配网的子设备
             wx.reportEvent('add_device', {
               pro_type: item.proType,
@@ -427,19 +425,20 @@ ComponentWithComputed({
               Logger.debug(`【${item.mac}】蓝牙任务结束,bleList`, bleList)
             })
 
-            const zigbeeTask = new Promise<{ success: boolean; msg?: string }>((resolve) => {
+            // 等待zigbee子设备添加上报promise
+            const waitingZigbeeAdd = new Promise<{ success: boolean; msg?: string }>((resolve) => {
               this.data._zigbeeTaskCallbackMap[item.mac] = resolve
             })
 
-            const taskRes = await zigbeeTask
+            const waitingRes = await waitingZigbeeAdd
 
-            Logger.log(`【${item.mac}】taskRes`, taskRes)
+            Logger.log(`【${item.mac}】waitingRes`, waitingRes)
             delete this.data._zigbeeTaskCallbackMap[item.mac]
 
-            if (!taskRes.success) {
+            if (!waitingRes.success) {
               item.status = 'fail'
-              Logger.error(`【${item.mac}】zigebee配网失败：`, taskRes.msg)
-              this.data._errorList.push(`【${item.mac}】${taskRes.msg}`)
+              Logger.error(`【${item.mac}】zigebee配网失败：`, waitingRes.msg)
+              this.data._errorList.push(`【${item.mac}】${waitingRes.msg}`)
               this.updateBleDeviceListView()
             } else {
               await this.bindBleDeviceToCloud(item)
@@ -455,55 +454,61 @@ ComponentWithComputed({
 
         this.data._zigbeeTaskQueue.add(zigbeeTaskList)
       } catch (err) {
-        Logger.log('beginAddBleDevice-err', err)
+        Logger.error('beginAddBleDevice-err', err)
       }
     },
 
     async startZigbeeNet(bleDevice: Device.ISubDevice) {
-      Logger.log(
-        `【${bleDevice.mac}】配网指令，第${
-          3 - this.data._deviceMap[bleDevice.mac].zigbeeRepeatTimes
-        }次, 检测配网状态：${bleDevice.isConfig}`,
-      )
+      try {
+        Logger.log(
+          `【${bleDevice.mac}】配网指令，第${
+            3 - this.data._deviceMap[bleDevice.mac].zigbeeRepeatTimes
+          }次, 检测配网状态：${bleDevice.isConfig}`,
+        )
 
-      const timeout = 90 // 等待绑定推送，超时60s
-      // 过滤刚出厂设备刚起电时会默认进入配网状态期间，被网关绑定的情况，这种当做成功配网，无需再下发配网指令，否则可能会导致zigbee入网失败
-      if (bleDevice.isConfig !== '02') {
-        const configRes = await bleDevice.client.getZigbeeState()
+        const timeout = 90 // 等待绑定推送，超时60s
+        // 过滤刚出厂设备刚起电时会默认进入配网状态期间，被网关绑定的情况，这种当做成功配网，无需再下发配网指令，否则重复发送配网指令可能会导致zigbee入网失败
+        if (bleDevice.isConfig !== '02') {
+          const configRes = await bleDevice.client.getZigbeeState()
 
-        if (configRes.success && configRes.result.isConfig === '02') {
-          bleDevice.isConfig = configRes.result.isConfig
+          if (configRes.success && configRes.result.isConfig === '02') {
+            bleDevice.isConfig = configRes.result.isConfig
+            // 等待绑定推送，超时处理
+            this.data._deviceMap[bleDevice.mac].bindTimeoutId = setTimeout(() => {
+              if (bleDevice.status === 'waiting') {
+                this.data._zigbeeTaskCallbackMap[bleDevice.mac]({ success: false, msg: '绑定推送监听超时' })
+              }
+            }, timeout * 1000)
+
+            return
+          } else if (!configRes.success) {
+            Logger.error(`【${bleDevice.mac}】getZigbeeState失败：`, configRes)
+          }
+        }
+
+        this.data._deviceMap[bleDevice.mac].zigbeeRepeatTimes--
+
+        const res = await bleDevice.client.startZigbeeNet({ channel: this.data._gatewayInfo.channel })
+
+        if (res.success) {
+          bleDevice.isConfig = '02' // 将设备配网状态置为已配网，否则失败重试由于前面判断状态的逻辑无法重新添加成功
           // 等待绑定推送，超时处理
           this.data._deviceMap[bleDevice.mac].bindTimeoutId = setTimeout(() => {
             if (bleDevice.status === 'waiting') {
-              this.data._zigbeeTaskCallbackMap[bleDevice.mac]({ success: false, msg: '绑定推送监听超时' })
+              this.data._zigbeeTaskCallbackMap[bleDevice.mac]({ success: false, msg: '绑定监听超时' })
             }
           }, timeout * 1000)
-
-          return
+        } else if (this.data._deviceMap[bleDevice.mac].zigbeeRepeatTimes === 0) {
+          this.data._zigbeeTaskCallbackMap[bleDevice.mac]({
+            success: false,
+            msg: `子设备蓝牙配网指令失败-${JSON.stringify(res)}`,
+          })
+        } else {
+          // 配网指令允许重发2次
+          await this.startZigbeeNet(bleDevice)
         }
-      }
-
-      this.data._deviceMap[bleDevice.mac].zigbeeRepeatTimes--
-
-      const res = await bleDevice.client.startZigbeeNet({ channel: this.data._gatewayInfo.channel })
-
-      if (res.success) {
-        bleDevice.isConfig = '02' // 将设备配网状态置为已配网，否则失败重试由于前面判断状态的逻辑无法重新添加成功
-        // 等待绑定推送，超时处理
-        setTimeout(() => {
-          if (bleDevice.status === 'waiting') {
-            this.data._zigbeeTaskCallbackMap[bleDevice.mac]({ success: false, msg: '绑定监听超时' })
-          }
-        }, timeout * 1000)
-      } else if (this.data._deviceMap[bleDevice.mac].zigbeeRepeatTimes === 0) {
-        this.data._zigbeeTaskCallbackMap[bleDevice.mac]({
-          success: false,
-          msg: `子设备配网失败-${JSON.stringify(res)}`,
-        })
-      } else {
-        // 配网指令允许重发2次
-        await this.startZigbeeNet(bleDevice)
+      } catch (err) {
+        Logger.error(`【${bleDevice.mac}】startZigbeeNet-catch`, err)
       }
     },
 

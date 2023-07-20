@@ -162,7 +162,7 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
   })
 
   if (!infoRes.success) {
-    Logger.error(`设备${baseInfo.zigbeeMac}云端不存在注册记录`, baseInfo)
+    Logger.error(`设备${baseInfo.zigbeeMac}云端不存在注册记录`)
     return
   }
 

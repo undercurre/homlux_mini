@@ -66,7 +66,7 @@ App<IAppOption>({
   },
 
   onError(msg: string) {
-    Logger.error(msg)
+    Logger.error('app-onError', msg)
   },
 
   globalData: {
