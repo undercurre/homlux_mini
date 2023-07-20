@@ -11,6 +11,7 @@ import lottie from 'lottie-miniprogram'
 import { addDevice } from '../assets/search-subdevice/lottie/index'
 import PromiseQueue from '../../lib/promise-queue'
 import { PRO_TYPE } from '../../config/index'
+import dayjs from 'dayjs'
 
 type StatusName = 'discover' | 'requesting' | 'success' | 'error'
 
@@ -26,6 +27,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    _startTime: 0,
     _gatewayInfo: {
       channel: 0,
     },
@@ -332,7 +334,7 @@ ComponentWithComputed({
       }
 
       emitter.off('bind_device')
-      Logger.log('关闭子设备绑定监听')
+      Logger.debug('-------本次配网结束-----用时(ms)：', dayjs().valueOf() - this.data._startTime)
 
       return res
     },
@@ -370,7 +372,8 @@ ComponentWithComputed({
       try {
         this.stopFlash()
 
-        Logger.log('-------开始子设备配网------')
+        Logger.debug('-------开始子设备配网------')
+        this.data._startTime = dayjs().valueOf()
         const res = await this.startGwAddMode()
 
         if (!res.success) {

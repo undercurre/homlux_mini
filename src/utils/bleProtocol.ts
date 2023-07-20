@@ -94,15 +94,13 @@ export class BleClient {
       // 连接成功，获取服务,IOS无法跳过该接口，否则后续接口会报100004，找不到服务
 
       if (!isAndroid()) {
-        const bleServiceRes = await wx
+        await wx
           .getBLEDeviceServices({
             deviceId: this.deviceUuid,
           })
           .catch((err) => {
             throw err
           })
-
-        Logger.log(`【${this.mac}】bleServiceRes`, bleServiceRes)
       }
 
       // IOS无法跳过该接口，否则后续接口会报10005	no characteristic	没有找到指定特征
@@ -118,7 +116,6 @@ export class BleClient {
       // 取第一个属性（固定，为可写可读可监听），不同品类的子设备的characteristicId不一样，同类的一样
       const characteristicId = characRes.characteristics[0].uuid
       this.characteristicId = characteristicId
-      Logger.log(`【${this.mac}】characRes`, characRes)
 
       await wx
         .notifyBLECharacteristicValueChange({
@@ -157,6 +154,9 @@ export class BleClient {
     }
     Logger.log(`【${this.mac}】${this.deviceUuid}开始关闭蓝牙连接`)
     const res = await wx.closeBLEConnection({ deviceId: this.deviceUuid }).catch((err) => err)
+
+    // 存在调用关闭蓝牙连接指令和与设备蓝牙连接真正断开有时间差，强制等待1s
+    await delay(1000)
 
     Logger.log(`【${this.mac}】closeBLEConnection`, res)
   }
@@ -203,57 +203,55 @@ export class BleClient {
         Logger.log(`listener-res-default`, res)
       }
 
-      return new Promise<{ code: string; success: boolean; cmdType?: string; subCmdType?: string; resMsg: string }>(
-        (resolve, reject) => {
-          // 超时处理
-          timeId = setTimeout(() => {
-            reject('蓝牙指令回复超时')
-          }, 8000)
+      return new Promise<{ code: string; success: boolean; cmdType?: string; resMsg: string }>((resolve, reject) => {
+        // 超时处理
+        timeId = setTimeout(() => {
+          reject('蓝牙指令回复超时')
+        }, 8000)
 
-          listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
-            if (res.deviceId !== this.deviceUuid) {
-              return
-            }
-
-            const hex = strUtil.ab2hex(res.value)
-            const msg = aesUtil.decrypt(hex, this.key, 'Hex')
-
-            const resMsgId = parseInt(msg.substr(2, 2), 16) // 收到回复的指令msgId
-            const packLen = parseInt(msg.substr(4, 2), 16) // 回复消息的Byte Msg Id到Byte Checksum的总长度，单位byte
-
-            // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
-            // 1 byte	     1 byte	   1 byte	          N  bytes	    1 byte
-            if (resMsgId !== msgId) {
-              return
-            }
-
-            // 仅截取消息参数部分数据，
-            const resMsg = msg.substr(6, (packLen - 3) * 2)
-
-            resolve({
-              code: '0',
-              resMsg: resMsg.substr(2),
-              success: true,
-              cmdType: cmdType,
-            })
+        listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
+          if (res.deviceId !== this.deviceUuid) {
+            return
           }
 
-          wx.onBLECharacteristicValueChange(listener)
+          const hex = strUtil.ab2hex(res.value)
+          const msg = aesUtil.decrypt(hex, this.key, 'Hex')
 
-          wx.writeBLECharacteristicValue({
-            deviceId: this.deviceUuid,
-            serviceId: this.serviceId,
-            characteristicId: this.characteristicId,
-            value: buffer,
+          const resMsgId = parseInt(msg.substr(2, 2), 16) // 收到回复的指令msgId
+          const packLen = parseInt(msg.substr(4, 2), 16) // 回复消息的Byte Msg Id到Byte Checksum的总长度，单位byte
+
+          // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
+          // 1 byte	     1 byte	   1 byte	          N  bytes	    1 byte
+          if (resMsgId !== msgId) {
+            return
+          }
+
+          // 仅截取消息参数部分数据，
+          const resMsg = msg.substr(6, (packLen - 3) * 2)
+
+          resolve({
+            code: '0',
+            resMsg: resMsg.substr(2),
+            success: true,
+            cmdType: cmdType,
           })
-            .then((res) => {
-              Logger.log(`【${this.mac}】writeBLECharacteristicValue`, res)
-            })
-            .catch((err) => {
-              reject(err)
-            })
-        },
-      )
+        }
+
+        wx.onBLECharacteristicValueChange(listener)
+
+        wx.writeBLECharacteristicValue({
+          deviceId: this.deviceUuid,
+          serviceId: this.serviceId,
+          characteristicId: this.characteristicId,
+          value: buffer,
+        })
+          .then((res) => {
+            Logger.log(`【${this.mac}】${cmdType}:writeBLECharacteristicValue`, res)
+          })
+          .catch((err) => {
+            reject(err)
+          })
+      })
         .then((res) => {
           Logger.log(`【${this.mac}】 蓝牙指令回复时间： ${Date.now() - begin}ms`, cmdType, data)
 
