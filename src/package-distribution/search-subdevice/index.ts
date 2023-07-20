@@ -60,6 +60,7 @@ ComponentWithComputed({
       timeId: 0,
       mac: '',
     },
+    confirmLoading: false,
   },
 
   computed: {
@@ -238,22 +239,29 @@ ComponentWithComputed({
       Toast(msg)
     },
 
-    // 确认添加设备
+    // 确认添加子设备
     async confirmAdd() {
       try {
         const selectedList = bleDevicesBinding.store.bleDeviceList.filter((item: Device.ISubDevice) => item.isChecked)
 
-        if (this.data.proType === PRO_TYPE.sensor) {
-          this.beginAddSensor(selectedList)
-        } else {
-          bleDevicesBinding.store.stopBLeDiscovery()
-          this.beginAddBleDevice(selectedList)
-        }
+        bleDevicesBinding.store.stopBLeDiscovery()
+        this.beginAddBleDevice(selectedList)
       } catch (err) {
         Logger.log('confirmAdd-err', err)
       }
     },
 
+    // 确认添加传感器
+    async confirmAddSensor() {
+      this.setData({ confirmLoading: true })
+      try {
+        const selectedList = bleDevicesBinding.store.bleDeviceList.filter((item: Device.ISubDevice) => item.isChecked)
+
+        this.beginAddSensor(selectedList)
+      } catch (err) {
+        Logger.log('confirmAdd-err', err)
+      }
+    },
     /**
      * 更新设备列表数据
      * @param isCheckAddMode 是否需要检查网关配网状态
@@ -341,12 +349,9 @@ ComponentWithComputed({
 
     async beginAddSensor(list: Device.ISubDevice[]) {
       try {
-        this.setData({
-          status: 'requesting',
-        })
-        setTimeout(() => {
-          this.startAnimation()
-        }, 300)
+        // setTimeout(() => {
+        //   this.startAnimation()
+        // }, 300)
 
         // 将整个列表发到云端标记为绑定
         for (const device of list) {
@@ -362,6 +367,10 @@ ComponentWithComputed({
         }
         bleDevicesStore.updateBleDeviceList()
 
+        // HACK 成功页面仍共用请求状态
+        this.setData({
+          status: 'requesting',
+        })
         Logger.log('添加传感器结束')
       } catch (err) {
         Logger.log('beginAddSensor-err', err)
