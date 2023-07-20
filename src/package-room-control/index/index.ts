@@ -747,7 +747,22 @@ ComponentWithComputed({
       this.setData(diffData)
       console.log('⇅ [movableTouchEnd]', diffData)
 
+      setTimeout(() => this.resetPos(), 500)
       this.handleSortSaving()
+    },
+    // 修正可能出现的卡片错位
+    resetPos() {
+      const diffData = {} as IAnyObject
+      for (const groupIndex in this.data.devicePageList) {
+        const group = this.data.devicePageList[groupIndex]
+        for (const index in group) {
+          const { orderNum } = group[index]
+          const dpos = getPos(orderNum)
+          diffData[`devicePageList[${groupIndex}][${index}].x`] = dpos.x
+          diffData[`devicePageList[${groupIndex}][${index}].y`] = dpos.y
+        }
+      }
+      this.setData(diffData)
     },
     async handleSortSaving() {
       if (!this.data.hasMoved) {
