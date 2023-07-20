@@ -367,7 +367,7 @@ ComponentWithComputed({
         return
       }
 
-      const home = homeBinding.store.homeList.find(item => item.houseId === houseId && item.houseCreatorFlag)
+      const home = homeBinding.store.homeList.find((item) => item.houseId === houseId && item.houseCreatorFlag)
 
       if (home) {
         console.log('当前用户已经是对应家庭的创建者')
