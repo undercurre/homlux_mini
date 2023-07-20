@@ -112,6 +112,8 @@ ComponentWithComputed({
       this.data._gatewayInfo.channel = parseInt(channel) || 0 // 获取网关信道
 
       if (proType === PRO_TYPE.sensor) {
+        bleDevicesStore.reset()
+
         const res = await this.startGwAddMode(false)
 
         if (!res.success) {
@@ -168,14 +170,15 @@ ComponentWithComputed({
         .filter(
           (device) => this.data._sensorList.includes(device.deviceId) && device.productId === this.data._productId,
         )
-        .map((device) => ({
+        .map((device, index) => ({
           ...device,
-          name: device.productName,
+          name: `${device.productName}${index > 0 ? index + 1 : ''}`,
           proType: PRO_TYPE.sensor,
           isChecked: true,
           status: 'waiting' as const,
           deviceUuid: device.deviceId,
           roomId: roomBinding.store.currentRoom.roomId, // 默认为当前房间
+          mac: device.deviceId,
         }))
 
       runInAction(() => {
@@ -222,8 +225,15 @@ ComponentWithComputed({
 
     showMac(e: WechatMiniprogram.CustomEvent) {
       const { mac, rssi } = e.currentTarget.dataset
+      let msg = ''
 
-      Toast(`Mac：${mac}  信号：${rssi}`)
+      if (mac) {
+        msg += `Mac：${mac}`
+      }
+      if (rssi) {
+        msg += `  信号：${rssi}`
+      }
+      Toast(msg)
     },
 
     // 确认添加设备
