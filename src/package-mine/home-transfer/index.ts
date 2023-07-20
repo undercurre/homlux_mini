@@ -29,6 +29,10 @@ ComponentWithComputed({
     ready: async function () {
       this.showQrCode()
 
+      wx.updateShareMenu({
+        withShareTicket: true, // 用于禁用分享选择界面的多选操作
+      })
+
       const res = await getShareId({ houseId: homeBinding.store.currentHomeId })
 
       if (res.success) {
@@ -74,11 +78,9 @@ ComponentWithComputed({
 
     // 生成二维码
     generateQrCode(canvas: IAnyObject) {
-      const params = `type=transferHome&houseId=${homeBinding.store.currentHomeId}&expireTime=2689580361243&userId=${userBinding.store.userInfo.userId}`
+      const url = 'https://web.meizgd.com/homlux/qrCode.html?' + this.getShareParams({ expire: 300 })
 
-      const url = 'https://web.meizgd.com/homlux/qrCode.html?' + (params || this.getShareParams({ expire: 300 }))
-
-      console.log('generateQrCode', url)
+      console.debug('二维码链接：', url)
       const img = canvas.createImage()
       img.src = '../../assets/img/login/logo.png'
 

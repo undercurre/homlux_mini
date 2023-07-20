@@ -40,6 +40,10 @@ function getIndex(y: number) {
 }
 
 ComponentWithComputed({
+  options: {
+    addGlobalClass: true,
+    pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
+  },
   behaviors: [
     BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding, homeBinding, deviceBinding] }),
     pageBehavior,
@@ -73,7 +77,7 @@ ComponentWithComputed({
     showAddNewRoom: false,
     showHomeSelect: false,
     loading: true,
-    isTryInvite: false,
+    _isAcceptShare: false, // 是否已经触发过接受分享逻辑
     isMoving: false,
     hasMoved: false,
     roomPos: {} as Record<string, PosType>,
@@ -156,8 +160,6 @@ ComponentWithComputed({
           loading: false,
         })
       }
-
-      this.accetHomeTransfer()
     },
     onHide() {
       // 隐藏之前展示的下拉菜单
@@ -166,7 +168,7 @@ ComponentWithComputed({
     },
     async onShow() {
       setTimeout(() => {
-        this.inviteMember()
+        this.acceptShare()
       }, 1000)
       if (!othersStore.isInit) {
         this.setData({
@@ -258,13 +260,25 @@ ComponentWithComputed({
       })
     },
 
+    acceptShare() {
+      if (!this.data.isLogin) {
+        console.log('未登录，停止分享逻辑')
+        return
+      }
+
+      if (this.data._isAcceptShare) {
+        console.log('已触发过接受分享逻辑')
+        return
+      }
+
+      this.inviteMember()
+
+      this.accetHomeTransfer()
+    },
+
     inviteMember() {
       if (wx.getEnterOptionsSync().scene != 1044) {
         console.log('lmn>>>非卡片进入')
-        return
-      }
-      if (this.data.isTryInvite) {
-        console.log('lmn>>>已尝试过邀请')
         return
       }
       const enterQuery = wx.getEnterOptionsSync().query
@@ -274,9 +288,7 @@ ComponentWithComputed({
       const time = enterQuery.time as string
       const shareId = enterQuery.shareId as string
       if (token && type && type !== 'transferHome' && houseId && time) {
-        this.setData({
-          isTryInvite: true,
-        })
+        this.data._isAcceptShare = true
         console.log(`lmn>>>邀请参数:token=${token}/type=${type}/houseId=${houseId}/time=${time}/shareId=${shareId}`)
         for (let i = 0; i < homeBinding.store.homeList.length; i++) {
           if (homeBinding.store.homeList[i].houseId == houseId) {
@@ -324,14 +336,9 @@ ComponentWithComputed({
      * 接受家庭转让逻辑
      */
     async accetHomeTransfer() {
-      if (!this.data.isLogin) {
-        console.log('未登录，停止转让逻辑')
-        return
-      }
-
       const params = wx.getEnterOptionsSync()
       const scene = params.scene
-      console.log('wx.getEnterOptionsSync()', params, 'wx.getLaunchOptionsSync()', wx.getLaunchOptionsSync())
+      console.log('wx.getEnterOptionsSync()', params)
 
       let enterQuery: IAnyObject
 
@@ -341,7 +348,7 @@ ComponentWithComputed({
         console.log('scanUrl', scanUrl)
 
         enterQuery = strUtil.getUrlParams(scanUrl)
-      } else if (scene === 1007) {
+      } else if (scene === 1007 || scene === 1044) {
         enterQuery = params.query
       } else {
         console.log('非家庭转让逻辑')
@@ -357,6 +364,13 @@ ComponentWithComputed({
       console.log('enterQuery:', enterQuery)
       if (type !== 'transferHome') {
         console.log('非家庭转让逻辑')
+        return
+      }
+
+      const home = homeBinding.store.homeList.find(item => item.houseId === houseId && item.houseCreatorFlag)
+
+      if (home) {
+        console.log('当前用户已经是对应家庭的创建者')
         return
       }
 
@@ -392,6 +406,8 @@ ComponentWithComputed({
       } else {
         Toast(res.msg)
       }
+
+      this.data._isAcceptShare = true
 
       hideLoading()
     },
