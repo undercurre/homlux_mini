@@ -168,9 +168,9 @@ ComponentWithComputed({
         .filter(
           (device) => this.data._sensorList.includes(device.deviceId) && device.productId === this.data._productId,
         )
-        .map((device) => ({
+        .map((device, index) => ({
           ...device,
-          name: device.productName,
+          name: `${device.productName}${index > 0 ? index + 1 : ''}`,
           proType: PRO_TYPE.sensor,
           isChecked: true,
           status: 'waiting' as const,
