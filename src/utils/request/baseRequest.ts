@@ -80,7 +80,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       // 否则就只使用generalSuccessHandler进行通用处理或者generalSuccessHandler不存在则不处理直接返回
       requestOption.success = (result) => {
         if (requestOption.log) {
-          Logger.log(`✔ ${requestOption.url} 用时 ${Date.now() - start} ms，响应内容：\n`, result.data)
+          Logger.log(`✔ ${requestOption.url} 用时 ${Date.now() - start} ms`) // , result.data
         }
         const data = requestOption.generalSuccessHandler ? requestOption.generalSuccessHandler(result) : result.data
         resolve(data)
@@ -108,7 +108,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
 
     // 请求发起时的提示
     if (requestOption.log) {
-      Logger.log(`» 发起请求 ${requestOption.url} 参数：\n`, requestOption.data, requestOption.header)
+      Logger.log(`» 发起请求 ${requestOption.url} 参数：\n`, requestOption.data)
     }
 
     wx.request({
