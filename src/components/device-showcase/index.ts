@@ -17,7 +17,9 @@ ComponentWithComputed({
   /**
    * 组件的初始数据
    */
-  data: {},
+  data: {
+    ripple: false,
+  },
 
   computed: {},
 
@@ -27,6 +29,9 @@ ComponentWithComputed({
   methods: {
     handleCardTap() {
       console.log(this.data.deviceInfo)
+      this.setData({
+        ripple: true,
+      })
       wx.navigateTo({
         url: this.data.deviceInfo.path,
       })

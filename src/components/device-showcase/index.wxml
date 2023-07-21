@@ -1,7 +1,10 @@
-<view id="card" class="w-300rpx h-264rpx rounded-32rpx flex-col-center overflow-hidden bg-hex-fff" catchtap="handleCardTap">
+<view id="card" class="relative w-300rpx h-264rpx rounded-32rpx flex-col-center overflow-hidden bg-hex-fff" catchtap="handleCardTap">
   <!-- 设备图标 -->
   <image src="{{deviceInfo.icon}}" class="w-96rpx h-96rpx"></image>
 
   <!-- 标题 -->
   <text class="text-32rpx text-hex-555659 font-medium mt-32rpx">{{deviceInfo.name}}</text>
+
+  <!-- 点击开关时的动画 -->
+  <view wx:if="{{ripple}}" class="absolute left-140rpx w-400rpx h-400rpx rounded-full {{onOff ? 'ripple-on' : 'ripple-off'}}" style="animation: ripple-{{onOff ? 'on' : 'off'}} 1s ease forwards;"></view>
 </view>
