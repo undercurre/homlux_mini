@@ -1,5 +1,5 @@
 <van-popup show="{{ show }}" position="bottom" round closeable catchtouchmove="true" root-portal="{{true}}" bind:close="handleClose">
-  <view class="popup-shadow w-750rpx h-600rpx rounded-t-64rpx bg-white flex-col flex items-center py-20rpx">
+  <view class="w-750rpx h-480rpx bg-white flex-col flex items-center py-20rpx">
     <!-- tab -->
     <view class="flex justify-evenly w-686rpx mt-10rpx relative">
       <view class="flex-col-center" data-tab="light" wx:if="{{lightTab}}">
@@ -20,11 +20,11 @@
     <view class="flex flex-col items-center flex-1 pt-10rpx">
       <!-- 灯光控制 -->
       <view class="flex flex-col w-750rpx" wx:if="{{tab==='light'}}">
-        <text class="text-32rpx text-black-59 mt-70rpx ml-48rpx">亮度 | {{lightInfoInner.Level}}%</text>
+        <text class="text-32rpx mt-70rpx ml-48rpx {{lightStatus.OnOff ? 'text-black-59' : 'text-hex-a2a2a2'}}">亮度 | {{lightInfoInner.Level}}%</text>
         <view class="px-48rpx pt-28rpx">
           <mz-slider catch:tap="sliderTap" catch:slideEnd="handleLevelChange" catch:slideChange="handleLevelDrag" disabled="{{!lightStatus.OnOff}}" value="{{lightInfoInner.Level}}" min="{{1}}" active-color="linear-gradient(90deg, rgba(80,127,255,0.8) 5%, rgba(116,153,255,0.18) 100%)"> </mz-slider>
         </view>
-        <text class="text-32rpx text-black-59 mt-20rpx ml-48rpx">色温 | {{colorTempK}}K</text>
+        <text class="text-32rpx mt-20rpx ml-48rpx {{lightStatus.OnOff ? 'text-black-59' : 'text-hex-a2a2a2'}}">色温 | {{colorTempK}}K</text>
         <view class="px-48rpx pt-28rpx">
           <mz-slider catch:tap="sliderTap" catch:slideEnd="handleColorTempChange" catch:slideChange="handleColorTempDrag" disabled="{{!lightStatus.OnOff}}" value="{{lightInfoInner.ColorTemp}}" use-button-slot custom-class="slider-color-temp-bar" active-color="rgba(0,0,0,0)">
             <view slot="button" class="slider-button" />
@@ -48,10 +48,11 @@
           <view class="w-2rpx h-40rpx bg-hex-ddd"></view>
           <text catch:tap="closeCurtain" class="text-32 text-hex-1e2c46 px-50rpx h-80rpx leading-80rpx rounded-24rpx btn-effect">全关</text>
         </view>
-        <view class="h-80rpx"></view>
       </view>
     </view>
   </view>
+
+  <view style="height: calc(96rpx - env(safe-area-inset-bottom))"></view>
 </van-popup>
 
 <!-- 关联类型选择弹窗 -->
