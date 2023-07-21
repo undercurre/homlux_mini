@@ -40,8 +40,8 @@ ComponentWithComputed({
     _addModeTimeId: 0,
     _deviceMap: {} as {
       [x: string]: {
-        bindTimeoutId: number
-        requestTimes: number // 查询云端在线次数
+        startTime: number, // 开始配网的时间
+        bindTimeoutId: number, // 绑定推送监听超时计时器
         zigbeeRepeatTimes: number // 配网自动重试次数
       }
     }, // 发现到的子设备配网数据集合（无关UI展示的），key为mac
@@ -154,14 +154,13 @@ ComponentWithComputed({
 
       // 清除闪烁指令
       this.stopFlash()
+
+      // 清除推送监听定时器
+      Object.values(this.data._deviceMap).forEach(item => item.bindTimeoutId && clearTimeout(item.bindTimeoutId))
     },
   },
 
   methods: {
-    onUnload: function () {
-      // 页面销毁时执行
-      Logger.log('批量配网页面-onUnload')
-    },
     /**
      * @description 主动查询已入网设备
      */
@@ -396,11 +395,20 @@ ComponentWithComputed({
             (item) => item.isChecked && item.zigbeeMac === data.deviceId,
           )
 
-          if (bleDevice && this.data._zigbeeTaskCallbackMap[bleDevice.mac]) {
-            Logger.log(`【${bleDevice.mac}】绑定推送成功`)
-            this.data._deviceMap[bleDevice.mac].bindTimeoutId &&
-              clearTimeout(this.data._deviceMap[bleDevice.mac].bindTimeoutId)
-            this.data._zigbeeTaskCallbackMap[bleDevice.mac]({ success: true })
+          if (bleDevice) {
+            const deviceData = this.data._deviceMap[bleDevice.mac]
+
+            Logger.log(`【${bleDevice.mac}】绑定推送成功， 推送等待时长(ms)：`, dayjs().valueOf() - this.data._deviceMap[bleDevice.mac].startTime)
+
+            if (deviceData.bindTimeoutId) {
+              clearTimeout(deviceData.bindTimeoutId)
+
+              deviceData.bindTimeoutId = 0
+            }
+
+            if (this.data._zigbeeTaskCallbackMap[bleDevice.mac]) {
+              this.data._zigbeeTaskCallbackMap[bleDevice.mac]({ success: true })
+            }
           }
         })
 
@@ -419,8 +427,8 @@ ComponentWithComputed({
 
         list.forEach((item) => {
           this.data._deviceMap[item.mac] = {
+            startTime: dayjs().valueOf(),
             bindTimeoutId: 0,
-            requestTimes: 20,
             zigbeeRepeatTimes: 2,
           }
 

@@ -390,6 +390,7 @@ ComponentWithComputed({
 
       showLoading()
       const res = await changeUserHouse({ houseId, type: 2, shareId, changeUserId: oldUserId })
+      hideLoading()
 
       if (res.success) {
         await updateDefaultHouse(houseId)
@@ -403,13 +404,13 @@ ComponentWithComputed({
           showCancelButton: false,
           zIndex: 9999,
         })
+      } else if (res.code === 9870) {
+        Toast('分享链接已失效')
       } else {
         Toast(res.msg)
       }
 
       this.data._isAcceptShare = true
-
-      hideLoading()
     },
 
     // 收起所有菜单

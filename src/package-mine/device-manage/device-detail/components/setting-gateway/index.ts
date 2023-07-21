@@ -30,7 +30,9 @@ ComponentWithComputed({
 
   computed: {
     channelText(data) {
-      return data.deviceInfo.channel ? `${data.deviceInfo.channel}(${data.deviceInfo.panId})` : ''
+      const panId = data.deviceInfo.panId.toString(16).toUpperCase()
+
+      return data.deviceInfo.channel ? `${data.deviceInfo.channel}(0x${panId})` : ''
     },
   },
 
