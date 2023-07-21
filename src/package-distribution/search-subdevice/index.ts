@@ -40,8 +40,8 @@ ComponentWithComputed({
     _addModeTimeId: 0,
     _deviceMap: {} as {
       [x: string]: {
-        startTime: number, // 开始配网的时间
-        bindTimeoutId: number, // 绑定推送监听超时计时器
+        startTime: number // 开始配网的时间
+        bindTimeoutId: number // 绑定推送监听超时计时器
         zigbeeRepeatTimes: number // 配网自动重试次数
       }
     }, // 发现到的子设备配网数据集合（无关UI展示的），key为mac
@@ -156,7 +156,7 @@ ComponentWithComputed({
       this.stopFlash()
 
       // 清除推送监听定时器
-      Object.values(this.data._deviceMap).forEach(item => item.bindTimeoutId && clearTimeout(item.bindTimeoutId))
+      Object.values(this.data._deviceMap).forEach((item) => item.bindTimeoutId && clearTimeout(item.bindTimeoutId))
     },
   },
 
@@ -398,7 +398,10 @@ ComponentWithComputed({
           if (bleDevice) {
             const deviceData = this.data._deviceMap[bleDevice.mac]
 
-            Logger.log(`【${bleDevice.mac}】绑定推送成功， 推送等待时长(ms)：`, dayjs().valueOf() - this.data._deviceMap[bleDevice.mac].startTime)
+            Logger.log(
+              `【${bleDevice.mac}】绑定推送成功， 推送等待时长(ms)：`,
+              dayjs().valueOf() - this.data._deviceMap[bleDevice.mac].startTime,
+            )
 
             if (deviceData.bindTimeoutId) {
               clearTimeout(deviceData.bindTimeoutId)
