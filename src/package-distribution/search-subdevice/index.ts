@@ -521,14 +521,14 @@ ComponentWithComputed({
               this.data._zigbeeTaskCallbackMap[bleDevice.mac]({ success: false, msg: '绑定监听超时' })
             }
           }, timeout * 1000)
-        } else if (this.data._deviceMap[bleDevice.mac].zigbeeRepeatTimes === 0) {
+        } else if (this.data._deviceMap[bleDevice.mac].zigbeeRepeatTimes > 0) {
+          // 配网指令失败重发
+          await this.startZigbeeNet(bleDevice)
+        } else {
           this.data._zigbeeTaskCallbackMap[bleDevice.mac]({
             success: false,
             msg: `子设备蓝牙配网指令失败-${JSON.stringify(res)}`,
           })
-        } else {
-          // 配网指令允许重发2次
-          await this.startZigbeeNet(bleDevice)
         }
       } catch (err) {
         Logger.error(`【${bleDevice.mac}】startZigbeeNet-catch`, err)
