@@ -2,7 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { runInAction } from 'mobx-miniprogram'
 import Toast from '@vant/weapp/toast/toast'
-import { homeBinding, roomBinding, homeStore } from '../../store/index'
+import { homeBinding, roomBinding, homeStore, deviceStore } from '../../store/index'
 import { bleDevicesBinding, bleDevicesStore } from '../store/bleDeviceStore'
 import { getCurrentPageParams, emitter, Logger, throttle } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
@@ -165,6 +165,11 @@ ComponentWithComputed({
      * @description 主动查询已入网设备
      */
     async findSensor() {
+      // 已绑定的相同设备数量
+      const bindNum = deviceStore.allRoomDeviceList.filter(
+        (item) => item.proType === PRO_TYPE.sensor && item.productId === this.data._productId,
+      ).length
+
       const { gatewayId } = getCurrentPageParams()
       const res = await getUnbindSensor({ gatewayId })
       const list = res.result
@@ -172,16 +177,19 @@ ComponentWithComputed({
         .filter(
           (device) => this.data._sensorList.includes(device.deviceId) && device.productId === this.data._productId,
         )
-        .map((device, index) => ({
-          ...device,
-          name: `${device.productName}${index > 0 ? index + 1 : ''}`,
-          proType: PRO_TYPE.sensor,
-          isChecked: true,
-          status: 'waiting' as const,
-          deviceUuid: device.deviceId,
-          roomId: roomBinding.store.currentRoom.roomId, // 默认为当前房间
-          mac: device.deviceId,
-        }))
+        .map((device, index) => {
+          const deviceNum = bindNum + index // 已有相同设备数量
+          return {
+            ...device,
+            name: `${device.productName}${deviceNum > 0 ? deviceNum + 1 : ''}`,
+            proType: PRO_TYPE.sensor,
+            isChecked: true,
+            status: 'waiting' as const,
+            deviceUuid: device.deviceId,
+            roomId: roomBinding.store.currentRoom.roomId, // 默认为当前房间
+            mac: device.deviceId,
+          }
+        })
 
       runInAction(() => {
         bleDevicesBinding.store.bleDeviceList = list
