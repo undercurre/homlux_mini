@@ -32,14 +32,14 @@
         </view>
       </view>
       <!-- 开关控制 -->
-      <!-- <view wx:if="{{tab==='switch'}}" class="flex flex-col w-750rpx">
+      <view wx:if="{{tab==='switch'}}" class="flex flex-col w-750rpx">
         <view class="h-22rpx"></view>
         <van-cell-group inset style="opacity: {{(disabledLinkSetting)?0.5:1}};">
           <van-cell border="{{false}}" is-link="{{!disabledLinkSetting}}" title="模式设置" value="{{linkTypeDesc}}" custom-class="switch-cell" catch:click="handleSelectLinkPopup"></van-cell>
         </van-cell-group>
-      </view> -->
+      </view>
       <!-- 窗帘控制 -->
-      <view wx:if="{{tab==='switch'}}" class="w-full h-full flex-col-center">
+      <view wx:if="{{tab==='curtain'}}" class="w-full h-full flex-col-center">
         <curtain-slider value="{{curtainInfo.position}}" catch:change="changeCurtain" catch:slideEnd="changeCurtain"></curtain-slider>
         <view class="flex flex-row justify-evenly rounded-24rpx bg-hex-eef2f7 w-686rpx h-80rpx items-center mt-28rpx">
           <text catch:tap="openCurtain" class="text-32 text-hex-1e2c46 px-50rpx h-80rpx leading-80rpx rounded-24rpx btn-effect">全开</text>
