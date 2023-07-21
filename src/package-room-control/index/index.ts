@@ -774,11 +774,9 @@ ComponentWithComputed({
 
       const deviceOrderData = {
         deviceInfoByDeviceVoList: [],
-        type: '0',
       } as Device.OrderSaveData
       const switchOrderData = {
         deviceInfoByDeviceVoList: [],
-        type: '1',
       } as Device.OrderSaveData
 
       for (const groupIndex in this.data.devicePageList) {
@@ -791,6 +789,7 @@ ComponentWithComputed({
               houseId: homeStore.currentHomeId,
               roomId: device.roomId,
               orderNum: String(device.orderNum),
+              type: device.deviceType === 4 ? '2' : '0', // 灯组为2，普通设备为0
             })
           }
           // 若开关按键参与排序，需要按 type: '1' 再保存

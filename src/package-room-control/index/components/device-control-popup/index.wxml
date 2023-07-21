@@ -51,7 +51,7 @@
       </view>
     </view>
   </view>
-        
+
   <view style="height: calc(96rpx - env(safe-area-inset-bottom))"></view>
 </van-popup>
 
