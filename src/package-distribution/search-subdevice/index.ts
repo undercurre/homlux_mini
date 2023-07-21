@@ -494,6 +494,7 @@ ComponentWithComputed({
           const configRes = await bleDevice.client.getZigbeeState()
 
           if (configRes.success && configRes.result.isConfig === '02') {
+            Logger.log(`【${bleDevice.mac}】已zigbee配网成功，无需下发配网指令`)
             bleDevice.isConfig = configRes.result.isConfig
             // 等待绑定推送，超时处理
             this.data._deviceMap[bleDevice.mac].bindTimeoutId = setTimeout(() => {
