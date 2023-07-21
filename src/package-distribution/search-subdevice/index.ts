@@ -430,7 +430,7 @@ ComponentWithComputed({
 
         list.forEach((item) => {
           this.data._deviceMap[item.mac] = {
-            startTime: dayjs().valueOf(),
+            startTime: 0,
             bindTimeoutId: 0,
             zigbeeRepeatTimes: 2,
           }
@@ -481,7 +481,7 @@ ComponentWithComputed({
 
             zigbeeList.splice(index, 1)
 
-            Logger.debug(`【${item.mac}】结束zigbee配网：`, 'zigbeeList', zigbeeList, zigbeeList.length)
+            Logger.debug(`【${item.mac}】结束zigbee配网：`, 'zigbeeList', zigbeeList)
           })
         })
 
@@ -508,6 +508,7 @@ ComponentWithComputed({
             Logger.log(`【${bleDevice.mac}】已zigbee配网成功，无需下发配网指令`)
             bleDevice.isConfig = configRes.result.isConfig
             // 等待绑定推送，超时处理
+            this.data._deviceMap[bleDevice.mac].startTime = dayjs().valueOf()
             this.data._deviceMap[bleDevice.mac].bindTimeoutId = setTimeout(() => {
               if (bleDevice.status === 'waiting') {
                 this.data._zigbeeTaskCallbackMap[bleDevice.mac]({ success: false, msg: '绑定推送监听超时' })
@@ -527,6 +528,7 @@ ComponentWithComputed({
         if (res.success) {
           bleDevice.isConfig = '02' // 将设备配网状态置为已配网，否则失败重试由于前面判断状态的逻辑无法重新添加成功
           // 等待绑定推送，超时处理
+          this.data._deviceMap[bleDevice.mac].startTime = dayjs().valueOf()
           this.data._deviceMap[bleDevice.mac].bindTimeoutId = setTimeout(() => {
             if (bleDevice.status === 'waiting') {
               this.data._zigbeeTaskCallbackMap[bleDevice.mac]({ success: false, msg: '绑定监听超时' })
