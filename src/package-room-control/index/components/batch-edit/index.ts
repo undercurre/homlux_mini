@@ -217,7 +217,7 @@ ComponentWithComputed({
         .catch((e) => console.log(e))
     },
     handleEditNamePopup() {
-      if (this.data.editSelectList?.length > 1) {
+      if (!this.data.canEditName) {
         return
       }
       const uniId = this.data.editSelectList[0]
@@ -240,7 +240,7 @@ ComponentWithComputed({
       }
     },
     handleMoveRoomPopup() {
-      if (!this.data.editSelectList.length) {
+      if (!this.data.canMoveRoom) {
         return
       }
       const uniId = this.data.editSelectList[0]
@@ -251,6 +251,9 @@ ComponentWithComputed({
       })
     },
     handleCreateGroup() {
+      if (!this.data.canGroup) {
+        return
+      }
       const lightList = this.data.editSelectList
       wx.navigateTo({
         url: '/package-room-control/group/index',

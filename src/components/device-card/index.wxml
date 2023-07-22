@@ -34,7 +34,7 @@
   <view wx:if="{{!deviceInfo.onLineStatus}}" class="absolute left-0 bottom-24rpx w-160rpx flex flex-col flex-center">
     <text class="text-24rpx text-hex-fbbb32">离线</text>
   </view>
-  <view wx:elif="{{!showControl && (!showBtnDetail && deviceType==='switch' || deviceType!=='switch')}}" class="absolute left-0 bottom-24rpx w-160rpx flex flex-col flex-center">
+  <view wx:elif="{{!showControl}}" class="absolute left-0 bottom-24rpx w-160rpx flex flex-col flex-center">
     <text class="text-24rpx text-hex-555659">在线</text>
   </view>
 </view>

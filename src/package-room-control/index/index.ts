@@ -144,13 +144,15 @@ ComponentWithComputed({
       }
       return false
     },
+    // 房间存在可显示的设备
     roomHasDevice(data) {
       if (data.deviceList) {
         return (
           (data.allRoomDeviceList as DeviceCard[]).filter(
             (device) =>
               device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
-              device.proType !== PRO_TYPE.gateway,
+              device.proType !== PRO_TYPE.gateway &&
+              device.proType !== PRO_TYPE.sensor,
           ).length > 0
         )
       }
@@ -747,7 +749,22 @@ ComponentWithComputed({
       this.setData(diffData)
       console.log('⇅ [movableTouchEnd]', diffData)
 
+      setTimeout(() => this.resetPos(), 500)
       this.handleSortSaving()
+    },
+    // 修正可能出现的卡片错位
+    resetPos() {
+      const diffData = {} as IAnyObject
+      for (const groupIndex in this.data.devicePageList) {
+        const group = this.data.devicePageList[groupIndex]
+        for (const index in group) {
+          const { orderNum } = group[index]
+          const dpos = getPos(orderNum)
+          diffData[`devicePageList[${groupIndex}][${index}].x`] = dpos.x
+          diffData[`devicePageList[${groupIndex}][${index}].y`] = dpos.y
+        }
+      }
+      this.setData(diffData)
     },
     async handleSortSaving() {
       if (!this.data.hasMoved) {
@@ -757,11 +774,9 @@ ComponentWithComputed({
 
       const deviceOrderData = {
         deviceInfoByDeviceVoList: [],
-        type: '0',
       } as Device.OrderSaveData
       const switchOrderData = {
         deviceInfoByDeviceVoList: [],
-        type: '1',
       } as Device.OrderSaveData
 
       for (const groupIndex in this.data.devicePageList) {
@@ -774,6 +789,7 @@ ComponentWithComputed({
               houseId: homeStore.currentHomeId,
               roomId: device.roomId,
               orderNum: String(device.orderNum),
+              type: device.deviceType === 4 ? '2' : '0', // 灯组为2，普通设备为0
             })
           }
           // 若开关按键参与排序，需要按 type: '1' 再保存

@@ -145,7 +145,7 @@ ComponentWithComputed({
         selectGateway: {
           deviceId: item.deviceId,
           sn: item.sn,
-          channel: item.channel,
+          channel: item.channel || 0,
         },
       })
     },
@@ -574,7 +574,7 @@ ComponentWithComputed({
         this.data.selectGateway = {
           deviceId: this.data.gatewayList[0].deviceId,
           sn: this.data.gatewayList[0].sn,
-          channel: this.data.gatewayList[0].channel,
+          channel: this.data.gatewayList[0].channel || 0,
         }
       } else {
         this.setData({

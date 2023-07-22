@@ -46,11 +46,11 @@
         </scroll-view>
 
         <van-button wx:if="{{proType !== '0xBC'}}" class="mt-24rpx" block type="primary" size="large" bind:click="confirmAdd" disabled="{{selectedList.length===0}}">确认添加（已选{{selectedList.length}}个）</van-button>
-        <van-button wx:else class="mt-24rpx" block type="primary" size="large" bind:click="confirmAdd" disabled="{{selectedList.length===0}}">确认添加</van-button>
+        <van-button wx:else class="mt-24rpx" block type="primary" size="large" bind:click="confirmAddSensor" disabled="{{selectedList.length===0}}" loading="{{confirmLoading}}" loading-text="添加中...">确认添加</van-button>
       </view>
     </block>
 
-    <block wx:if="{{status === 'requesting' && (successList.length + failList.length) !== selectedList.length}}">
+    <block wx:if="{{proType !== '0xBC' && status === 'requesting' && (successList.length + failList.length) !== selectedList.length}}">
       <view class="flex flex-col items-center">
         <canvas id="canvas" type="2d" class="w-400rpx h-400rpx inline-block"></canvas>
 

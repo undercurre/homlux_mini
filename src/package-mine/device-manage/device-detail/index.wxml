@@ -1,3 +1,5 @@
+<page-meta page-style="{{ showEditNamePopup || showEditRoomPopup ? 'overflow: hidden;' : '' }}" />
+
 <view class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7" style="z-index: -1"></view>
 
 <view class="h-100vh flex flex-col items-center">
@@ -32,9 +34,7 @@
   <!-- 隔开一点距离 -->
   <view class="h-24rpx"></view>
   <!-- 底部按钮 -->
-  <van-button wx-if="{{canEditDevice}}" type="warning" custom-class="delete-btn" bind:click="handleDeviceDelete">
-    <text>删除设备</text>
-  </van-button>
+  <van-button wx-if="{{canEditDevice}}" size="large" type="warning" custom-class="delete-btn" bind:click="handleDeviceDelete">删除设备</van-button>
   <view wx-if="{{canEditDevice}}" style="height: 96rpx"></view>
 </view>
 
