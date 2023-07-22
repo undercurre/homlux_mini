@@ -274,6 +274,14 @@ Component({
     handleShowDeviceOffline(e: { detail: IAnyObject }) {
       this.triggerEvent('offlineTap', e.detail)
     },
+    /* 自动化使用 start */
+    handleActionEdit(e: { detail: IAnyObject }) {
+      this.triggerEvent('actionEdit', e.detail)
+    },
+    handleActionDelete(e: { detail: IAnyObject }) {
+      this.triggerEvent('actionDelete', e.detail)
+    },
+    /* 自动化使用 end */
   },
   ready() {
     // prof: 感觉没什么用，暂时注释

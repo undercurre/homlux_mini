@@ -52,6 +52,7 @@ declare namespace AutoScene {
   }
   /** 拍扁的结果集合 */
   interface AutoSceneFlattenAction {
+    orderNum: number
     /** 设备或场景id */
     uniId: string
     // 名称

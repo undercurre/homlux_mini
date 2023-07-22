@@ -12,6 +12,8 @@
     "light-control-popup": "/components/light-control-popup/index",
     "switch-control-popup": "/components/switch-control-popup/index",
     "edit-sensor-popup": "./components/edit-sensor-popup/index",
-    "van-dialog": "@vant/weapp/dialog/index"
+    "van-dialog": "@vant/weapp/dialog/index",
+    "cell": "./components/cell/index",
+    "drag": "/components/drag/index"
   }
 }

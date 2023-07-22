@@ -26,7 +26,7 @@ import {
   // transferDeviceProperty,
   toPropertyDesc,
   toWifiProperty,
-  // storage,
+  storage,
   getCurrentPageParams,
   strUtil,
 } from '../../utils/index'
@@ -41,6 +41,10 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
+    navigationBarAndStatusBarHeight:
+      (storage.get<number>('statusBarHeight') as number) +
+      (storage.get<number>('navigationBarHeight') as number) +
+      'px',
     _autosceneInfo: {} as AutoScene.AutoSceneItem, //待编辑的自动化
     autoSceneId: '',
     sceneIcon: 'general',
@@ -52,7 +56,7 @@ ComponentWithComputed({
       startTime: '00:00',
       endTime: '23:59',
     },
-    contentHeight: 0,
+    // contentHeight: 0,
     showEditIconPopup: false, //展示编辑场景图标popup
     showEditConditionPopup: false, //展示添加条件popup
     showEditActionPopup: false, //展示添加执行动作popup
@@ -80,7 +84,7 @@ ComponentWithComputed({
     /** 将当前场景里多路的Condition拍扁 */
     sceneDeviceConditionsFlatten: [] as AutoScene.AutoSceneFlattenCondition[],
     //延时
-    delay: [0, 0],
+    delay: [0],
     //时间条件
     timeCondition: {
       time: '',
@@ -98,6 +102,8 @@ ComponentWithComputed({
     editingSensorType: 'midea.ir.201',
     editingSensorAbility: ['有人移动'],
     editingUniId: '',
+    editingDelayId: '',
+    scrollTop: 0,
   },
 
   computed: {
@@ -151,16 +157,17 @@ ComponentWithComputed({
   },
   lifetimes: {
     attached() {
-      wx.createSelectorQuery()
-        .select('#content')
-        .boundingClientRect()
-        .exec((res) => {
-          if (res[0] && res[0].height) {
-            this.setData({
-              contentHeight: res[0].height,
-            })
-          }
-        })
+      // wx.createSelectorQuery()
+      //   .select('#content')
+      //   .boundingClientRect()
+      //   .exec((res) => {
+      //     console.log('res', res)
+      //     if (res[0] && res[0].height) {
+      //       this.setData({
+      //         contentHeight: res[0].height,
+      //       })
+      //     }
+      //   })
     },
     ready() {},
     detached() {},
@@ -173,6 +180,7 @@ ComponentWithComputed({
       const { autosceneid } = getCurrentPageParams()
       this.setData({ autoSceneId: autosceneid })
 
+      //处理三个传感器、场景和设备列表
       await Promise.all([
         sceneStore.updateAllRoomSceneList(),
         deviceStore.updateSubDeviceList(), // deviceStore.updateAllRoomDeviceList(),
@@ -198,7 +206,6 @@ ComponentWithComputed({
 
       if (autosceneid) {
         const linkSelectList = [] as string[]
-        const delay = [0, 0] as number[]
 
         const autoSceneInfo = autosceneStore.allRoomAutoSceneList.find(
           (item) => item.sceneId === autosceneid,
@@ -217,7 +224,8 @@ ComponentWithComputed({
         })
         // autoSceneInfo.deviceConditions = autoSceneInfo.deviceConditions || []
         // autoSceneInfo.deviceActions = autoSceneInfo.deviceActions || []
-        console.log('看看', autoSceneInfo.deviceConditions, autoSceneInfo.deviceConditions.length)
+        console.log('看看', autoSceneInfo.deviceActions, autoSceneInfo.deviceActions.length)
+        // return
         //处理执行条件
         if (autoSceneInfo.deviceConditions.length) {
           //传感器条件
@@ -243,43 +251,88 @@ ComponentWithComputed({
           })
         }
         //处理执行结果
-        autoSceneInfo.deviceActions.forEach((action) => {
-          if (action.delayTime) {
-            delay[0] = Math.trunc(action.delayTime / 60)
-            delay[1] = Math.trunc(action.delayTime % 60)
-          }
-          if (action.deviceType === 5) {
+        const tempSceneDeviceActionsFlatten = [] as AutoScene.AutoSceneFlattenAction[]
+
+        autoSceneInfo.deviceActions.forEach((action, index) => {
+          if (action.deviceType === 6) {
+            tempSceneDeviceActionsFlatten.push({
+              uniId: action.deviceId,
+              name: '延时',
+              desc: [action.delayTime + '秒'],
+              type: action.deviceType,
+              pic: '/assets/img/automation/stopwatch-materialized.png',
+              value: { delayTime: action.delayTime },
+              orderNum: index,
+            })
+          } else if (action.deviceType === 5) {
             //场景
-            linkSelectList.push(action.deviceId)
-          } else {
-            //设备
-            if (action.proType === PRO_TYPE.switch) {
-              // 多路开关
-              action.controlAction.forEach((ep: { OnOff: number; ep: number }) => {
-                // 将当前选中编辑的场景，拍扁action加入list
-                const index = this.data.deviceList.findIndex((item) => item.uniId === `${action.deviceId}:${ep.ep}`)
-                if (index !== -1) {
-                  linkSelectList.push(`${action.deviceId}:${ep.ep}`)
-                  this.data.deviceList[index].property = {
-                    ...this.data.deviceList[index].property,
-                    OnOff: ep.OnOff,
-                  }
-                } else {
-                  console.log('设备不存在', action, ep)
-                }
+            const scene = this.data.sceneList.find((item) => item.sceneId === action.deviceId)
+            if (scene) {
+              //是场景
+              linkSelectList.push(action.deviceId)
+              tempSceneDeviceActionsFlatten.push({
+                uniId: scene.sceneId,
+                name: scene.sceneName,
+                type: 5,
+                desc: [scene.roomName],
+                pic: `/assets/img/scene/${scene.sceneIcon}-gray.png`,
+                value: {},
+                orderNum: index,
               })
             } else {
-              const index = this.data.deviceList.findIndex((item) => item.uniId === action.deviceId)
-              if (index !== -1) {
-                linkSelectList.push(action.deviceId)
-
-                this.data.deviceList[index].property = {
-                  ...this.data.deviceList[index].property,
-                  ...action.controlAction[0],
-                }
+              console.log('场景不存在', action)
+            }
+          } else {
+            //设备
+            let deviceUniId = action.deviceId
+            if (action.proType === PRO_TYPE.switch) {
+              deviceUniId = `${action.deviceId}:${action.controlAction[0].ep}`
+            }
+            const device = this.data.deviceList.find((item) => item.uniId === deviceUniId)
+            if (device) {
+              //是设备
+              linkSelectList.push(deviceUniId)
+              if (device.proType === PRO_TYPE.switch) {
+                //是开关面板
+                const OnOff = action.controlAction[0].OnOff
+                const desc = toPropertyDesc(device.proType, action.controlAction[0])
+                tempSceneDeviceActionsFlatten.push({
+                  uniId: device.uniId,
+                  name: `${device.switchInfoDTOList[0].switchName} | ${device.deviceName}`,
+                  type: device.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
+                  desc,
+                  pic: device.switchInfoDTOList[0].pic,
+                  proType: PRO_TYPE.switch,
+                  value: {
+                    ep: action.controlAction[0].ep,
+                    OnOff,
+                  },
+                  orderNum: 0,
+                })
               } else {
-                console.log('设备不存在', action)
+                const desc = toPropertyDesc(device.proType, {
+                  ...action.controlAction[0],
+                  minColorTemp: device.property!.minColorTemp,
+                  maxColorTemp: device.property!.maxColorTemp,
+                })
+                tempSceneDeviceActionsFlatten.push({
+                  uniId: device.uniId,
+                  name: device.deviceName,
+                  type: device.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
+                  desc,
+                  pic: device.pic as string,
+                  proType: device.proType,
+                  value: {
+                    ...action.controlAction[0],
+                    minColorTemp: device.property!.minColorTemp,
+                    maxColorTemp: device.property!.maxColorTemp,
+                    ep: 1,
+                  },
+                  orderNum: 0,
+                })
               }
+            } else {
+              console.log('设备不存在', action)
             }
           }
         })
@@ -287,13 +340,11 @@ ComponentWithComputed({
         this.setData(
           {
             linkSelectList,
-            delay,
-            deviceList: [...this.data.deviceList],
+            sceneDeviceActionsFlatten: tempSceneDeviceActionsFlatten,
           },
           () => {
-            this.updateSceneDeviceActionsFlatten()
+            this.updateSceneDeviceActionsFlatten(false)
             this.updateSceneDeviceConditionsFlatten()
-            console.log('aaa', linkSelectList)
           },
         )
       }
@@ -429,6 +480,7 @@ ComponentWithComputed({
       if (e.detail === 'delay') {
         this.setData({
           showDelayPopup: true,
+          delay: [0],
         })
       } else if (e.detail === 'scene') {
         this.setData({
@@ -457,16 +509,37 @@ ComponentWithComputed({
       })
       this.handleActionShow()
     },
-    handleDelayChange(e: { detail: number[] }) {
-      console.log('handleDelayChange', e.detail)
-      this.setData({
-        delay: e.detail,
-      })
-    },
-    handleDelayConfirm() {
+    handleDelayConfirm(e: { detail: number[] }) {
+      console.log(e.detail)
+      if (!e.detail[0]) {
+        if (this.data.editingDelayId) {
+          const index = this.data.sceneDeviceActionsFlatten.findIndex((item) => item.uniId === this.data.editingDelayId)
+          this.data.sceneDeviceActionsFlatten.splice(index, 1)
+        }
+      } else {
+        if (this.data.editingDelayId) {
+          //更新原来的延时Id
+          const index = this.data.sceneDeviceActionsFlatten.findIndex((item) => item.uniId === this.data.editingDelayId)
+          this.setData({
+            [`sceneDeviceActionsFlatten[${index}].desc`]: [e.detail[0] + '秒'],
+            [`sceneDeviceActionsFlatten[${index}].value`]: { delayTime: e.detail[0] },
+          })
+        } else {
+          //新增一个Id并push到列表后
+          this.data.sceneDeviceActionsFlatten.push({
+            uniId: new Date().getTime() + 'DLY',
+            name: '延时',
+            desc: [e.detail[0] + '秒'],
+            type: 6,
+            pic: '/assets/img/automation/stopwatch-materialized.png',
+            value: { delayTime: e.detail[0] },
+            orderNum: 0,
+          })
+        }
+      }
       this.updateSceneDeviceActionsFlatten()
       this.setData({
-        _isEditAction: true,
+        editingDelayId: '',
         showDelayPopup: false,
       })
     },
@@ -478,7 +551,6 @@ ComponentWithComputed({
      */
     handleSelectCardShow() {
       // const switchUniId = this.data.checkedList[0]
-      console.log('111')
       this.setData({
         showSelectCardPopup: true,
       })
@@ -529,14 +601,10 @@ ComponentWithComputed({
         })
       } else {
         this.updateSceneDeviceActionsFlatten()
-        this.setData({
-          _isEditAction: true,
-        })
       }
     },
-    handleActionDelete(e: WechatMiniprogram.TouchEvent) {
-      console.log('删除', e)
-      const uniId = e.currentTarget.dataset.info.uniId
+    handleActionDelete(e: { detail: string }) {
+      const uniId = e.detail
       if (this.data.linkSelectList.includes(uniId)) {
         const index = this.data.linkSelectList.findIndex((id) => id === uniId)
         this.data.linkSelectList.splice(index, 1)
@@ -544,96 +612,97 @@ ComponentWithComputed({
           linkSelectList: [...this.data.linkSelectList],
         })
       }
-      if (uniId === 'delay') {
-        this.setData({
-          delay: [0, 0],
-        })
+      if (uniId.indexOf('DLY') !== -1) {
+        const index = this.data.sceneDeviceActionsFlatten.findIndex((item) => item.uniId === uniId)
+        this.data.sceneDeviceActionsFlatten.splice(index, 1)
       }
-      this.data.sceneDeviceActionsFlatten.splice(e.currentTarget.dataset.index, 1)
-      this.setData({
-        _isEditAction: true,
-        sceneDeviceActionsFlatten: [...this.data.sceneDeviceActionsFlatten],
-      })
+      this.updateSceneDeviceActionsFlatten()
     },
-    updateSceneDeviceActionsFlatten() {
-      console.log('updateSceneDeviceActionsFlatten')
-      const delaySec = this.data.delay[0] * 60 + this.data.delay[1]
-      console.log('delaySec', delaySec)
+    updateSceneDeviceActionsFlatten(isEditAction = true) {
+      let tempSceneDeviceActionsFlatten = this.data.sceneDeviceActionsFlatten as AutoScene.AutoSceneFlattenAction[]
 
-      const sceneDeviceActionsFlatten = [] as AutoScene.AutoSceneFlattenAction[]
+      //删除取消选中的设备和场景
+      tempSceneDeviceActionsFlatten = tempSceneDeviceActionsFlatten.filter((item) => {
+        const index = this.data.linkSelectList.findIndex((id) => id === item.uniId)
+        return index !== -1 || item.type === 6
+      })
 
-      //已选中的设备
-      const deviceSelected = this.data.linkSelectList
-        .map((id) => {
-          return this.data.deviceList.find((item) => item.uniId === id)
-        })
-        .filter((item) => item !== undefined) as Device.DeviceItem[]
-
-      //已选中的场景
-      const sceneSelected = this.data.linkSelectList
-        .map((id) => {
-          return this.data.sceneList.find((item) => item.sceneId === id)
-        })
-        .filter((item) => item !== undefined) as Scene.SceneItem[]
-
-      deviceSelected.forEach((item) => {
-        if (item.proType === PRO_TYPE.switch) {
-          const ep = parseInt(item.uniId.split(':')[1])
-          const OnOff = item.property!.OnOff
-          const desc = toPropertyDesc(item.proType, item.property!)
-          //多路开关
-          sceneDeviceActionsFlatten.push({
-            uniId: item.uniId,
-            name: `${item.switchInfoDTOList[0].switchName} | ${item.deviceName}`,
-            type: item.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
-            desc,
-            pic: item.switchInfoDTOList[0].pic,
-            proType: PRO_TYPE.switch,
-            value: {
-              ep,
-              OnOff,
-            },
-          })
-        } else {
-          const desc = toPropertyDesc(item.proType, item.property!)
-          sceneDeviceActionsFlatten.push({
-            uniId: item.uniId,
-            name: item.deviceName,
-            type: item.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
-            desc,
-            pic: item.pic as string,
-            proType: item.proType,
-            value: {
-              ep: 1,
-              ...item.property,
-            },
-          })
+      //从后面插入已选中的设备和场景
+      this.data.linkSelectList.forEach((id) => {
+        const index = tempSceneDeviceActionsFlatten.findIndex((action) => action.uniId === id)
+        if (index === -1) {
+          //没找到则证明是新入列的，push到最后
+          const device = this.data.deviceList.find((item) => item.uniId === id)
+          if (device) {
+            //是设备
+            console.log('是设备', device)
+            if (device.proType === PRO_TYPE.switch) {
+              //是开关面板
+              const ep = parseInt(device.uniId.split(':')[1])
+              const OnOff = device.property!.OnOff
+              const desc = toPropertyDesc(device.proType, device.property!)
+              tempSceneDeviceActionsFlatten.push({
+                uniId: device.uniId,
+                name: `${device.switchInfoDTOList[0].switchName} | ${device.deviceName}`,
+                type: device.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
+                desc,
+                pic: device.switchInfoDTOList[0].pic,
+                proType: PRO_TYPE.switch,
+                value: {
+                  ep,
+                  OnOff,
+                },
+                orderNum: 0,
+              })
+            } else {
+              const desc = toPropertyDesc(device.proType, device.property!)
+              tempSceneDeviceActionsFlatten.push({
+                uniId: device.uniId,
+                name: device.deviceName,
+                type: device.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
+                desc,
+                pic: device.pic as string,
+                proType: device.proType,
+                value: {
+                  ep: 1,
+                  ...device.property,
+                },
+                orderNum: 0,
+              })
+            }
+          } else {
+            const scene = this.data.sceneList.find((item) => item.sceneId === id)
+            if (scene) {
+              //是场景
+              console.log('是场景', scene)
+              tempSceneDeviceActionsFlatten.push({
+                uniId: scene.sceneId,
+                name: scene.sceneName,
+                type: 5,
+                desc: [scene.roomName],
+                pic: `/assets/img/scene/${scene.sceneIcon}-gray.png`,
+                value: {},
+                orderNum: 0,
+              })
+            }
+          }
         }
       })
-      sceneSelected.forEach((item) => {
-        sceneDeviceActionsFlatten.push({
-          uniId: item.sceneId,
-          name: item.sceneName,
-          desc: [item.roomName],
-          type: 5,
-          pic: `../../assets/img/scene/${item.sceneIcon}-gray.png`,
-          value: {},
-        })
+
+      //增加排序顺序字段
+      const sceneDeviceActionsFlatten = tempSceneDeviceActionsFlatten.map((item, index) => {
+        return { ...item, orderNum: index, dragId: item.uniId }
       })
-      if (delaySec) {
-        sceneDeviceActionsFlatten.unshift({
-          uniId: 'delay',
-          name: '延时',
-          desc: [this.formatTime(delaySec)],
-          type: 6,
-          pic: '../../assets/img/automation/stopwatch-materialized.png',
-          value: { delaySec },
-        })
-      }
-      console.log('handleSelectCardConfirm333', this.data.sceneDeviceActionsFlatten)
       this.setData({
         sceneDeviceActionsFlatten,
+        _isEditAction: isEditAction,
       })
+
+      // 防止场景为空，drag为null·
+      if (sceneDeviceActionsFlatten.length) {
+        const drag = this.selectComponent('#drag')
+        drag.init()
+      }
     },
     /* 条件方法 start */
     updateSceneDeviceConditionsFlatten() {
@@ -700,15 +769,6 @@ ComponentWithComputed({
     },
     /* 条件方法 end */
 
-    /**
-     * 传入秒数，转化为时分秒格式
-     * @param seconds
-     */
-    formatTime(seconds: number) {
-      return `${Math.trunc(seconds / 3600) > 0 ? Math.trunc(seconds / 3600) + '小时' : ''}${
-        Math.trunc((seconds % 3600) / 60) > 0 ? Math.trunc((seconds % 3600) / 60) + '分' : ''
-      }${Math.trunc((seconds % 3600) % 60) > 0 ? Math.trunc((seconds % 3600) % 60) + '秒' : ''}`
-    },
     /* 传感器条件编辑 start */
     handleEditSensorClose() {
       this.setData({
@@ -763,14 +823,18 @@ ComponentWithComputed({
      * @param e
      * @returns
      */
-    handleAutoSceneActionEdit(e: WechatMiniprogram.TouchEvent) {
-      const { index } = e.currentTarget.dataset
+    handleAutoSceneActionEdit(e: { detail: number }) {
+      const index = e.detail
       const action = this.data.sceneDeviceActionsFlatten[index]
       console.log('handleAutoSceneActionEdit', action)
-      if (action.uniId === 'delay') {
+      if (action.type === 6) {
         this.setData({
+          delay: [action.value.delayTime],
+          editingDelayId: action.uniId,
           showDelayPopup: true,
         })
+      } else if (action.type === 5) {
+        return
       } else {
         const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
         const device = allRoomDeviceMap[action.uniId]
@@ -845,11 +909,15 @@ ComponentWithComputed({
 
       actionItem.desc = toPropertyDesc(actionItem.proType as string, actionItem.value)
 
-      this.setData({
-        _isEditAction: true,
-        sceneDeviceActionsFlatten: [...this.data.sceneDeviceActionsFlatten],
-        deviceList: [...this.data.deviceList],
-      })
+      this.setData(
+        {
+          sceneDeviceActionsFlatten: [...this.data.sceneDeviceActionsFlatten],
+          deviceList: [...this.data.deviceList],
+        },
+        () => {
+          this.updateSceneDeviceActionsFlatten()
+        },
+      )
     },
 
     async handleSave() {
@@ -860,6 +928,7 @@ ComponentWithComputed({
         // 删完actions或conditions按照删除场景处理
         const res = await Dialog.confirm({
           title: '清空条件或操作将会删除场景，确定删除该场景？',
+          zIndex: 9999,
         }).catch(() => 'cancel')
 
         console.log('delAutoScene', res)
@@ -890,10 +959,6 @@ ComponentWithComputed({
         })
         return
       }
-
-      // this.setData({
-      //   isAddingScene: true,
-      // })
 
       const newSceneData = {
         conditionType: '1',
@@ -955,33 +1020,35 @@ ComponentWithComputed({
       // storage.set('autosceneDeviceActionsFlatten', this.data.sceneDeviceActionsFlatten)
       // storage.set('autosceneDeviceConditionsFlatten', this.data.sceneDeviceConditionsFlatten)
 
-      // this.setData({
-      //   isAddingScene: false,
-      // })
-
       // wx.navigateTo({
       //   url: '/package-automation/automation-request-list/index',
       // })
 
       // 处理发送请求的deviceActions字段数据
       const deviceMap = deviceStore.allRoomDeviceMap
-      // switch需要特殊处理
-      const switchDeviceMap = {} as Record<string, IAnyObject[]>
-      let delaySec = 0
       this.data.sceneDeviceActionsFlatten.forEach((action) => {
-        if (action.uniId === 'delay') {
-          delaySec = action.value.delaySec
+        if (action.uniId.indexOf('DLY') !== -1) {
+          newSceneData.deviceActions.push({
+            controlAction: [],
+            delayTime: action.value.delayTime,
+            deviceId: action.uniId,
+            deviceType: action.type,
+            orderNum: action.orderNum,
+          })
         } else {
           const device = deviceMap[action.uniId] || deviceMap[action.uniId.split(':')[0]]
-
           if (device) {
+            //是设备
             if (action.proType === PRO_TYPE.switch) {
+              //是开关面板
               const deviceId = action.uniId.split(':')[0]
-              if (switchDeviceMap[deviceId]) {
-                switchDeviceMap[deviceId].push(action.value)
-              } else {
-                switchDeviceMap[deviceId] = [action.value]
-              }
+              newSceneData?.deviceActions?.push({
+                controlAction: [action.value],
+                deviceId,
+                deviceType: action.type,
+                proType: action.proType,
+                orderNum: action.orderNum,
+              })
             } else {
               const property = action.value
               let ctrlAction = {} as IAnyObject
@@ -1005,39 +1072,25 @@ ComponentWithComputed({
                 ctrlAction.curtain_position = property.curtain_position
               }
 
-              newSceneData?.deviceActions?.push({
+              newSceneData.deviceActions.push({
                 controlAction: [ctrlAction],
                 deviceId: action.uniId,
                 deviceType: device.deviceType,
                 proType: device.proType,
+                orderNum: action.orderNum,
               })
             }
           } else {
             //场景
-            newSceneData?.deviceActions?.push({
+            newSceneData.deviceActions.push({
               controlAction: [],
               deviceId: action.uniId,
               deviceType: action.type,
+              orderNum: action.orderNum,
             })
           }
         }
       })
-
-      // 再将switch放到要发送的数据里面
-      newSceneData?.deviceActions?.push(
-        ...Object.entries(switchDeviceMap).map(([deviceId, actions]) => ({
-          controlAction: actions,
-          deviceId: deviceId,
-          deviceType: deviceMap[deviceId].deviceType,
-          proType: deviceMap[deviceId].proType,
-        })),
-      )
-      //是否有延时操作
-      if (delaySec !== 0) {
-        newSceneData.deviceActions.forEach((item) => {
-          item.delayTime = delaySec
-        })
-      }
 
       //处理发送请求的deviceConditions字段数据
       this.data.sceneDeviceConditionsFlatten.forEach((action) => {
@@ -1051,6 +1104,7 @@ ComponentWithComputed({
       })
 
       console.log('创建更新自动化', newSceneData)
+      // return
       const promise = this.data.autoSceneId
         ? updateScene(newSceneData as AutoScene.AddAutoSceneDto)
         : addScene(newSceneData as AutoScene.AddAutoSceneDto)
@@ -1073,6 +1127,7 @@ ComponentWithComputed({
     async handleAutoSceneDelete() {
       const res = await Dialog.confirm({
         title: '确定删除该自动化？',
+        zIndex: 9999,
       }).catch(() => 'cancel')
 
       console.log('delAutoScene', res)
@@ -1087,5 +1142,35 @@ ComponentWithComputed({
         Toast({ message: '删除失败', zIndex: 9999 })
       }
     },
+    /* 执行结果拖拽相关方法 start */
+    // 页面滚动
+    onPageScroll(e: { scrollTop: number }) {
+      this.setData({
+        scrollTop: e.scrollTop,
+      })
+    },
+    // handleScroll(e) {
+    //   wx.pageScrollTo({
+    //     scrollTop: e.detail.scrollTop,
+    //     duration: 300,
+    //   })
+    // },
+    async handleSortEnd(e: { detail: { listData: AutoScene.AutoSceneFlattenAction[] } }) {
+      e.detail.listData.forEach((item, index) => {
+        if (item.orderNum != index) {
+          item.orderNum = index
+        }
+      })
+      this.setData({
+        _isEditAction: true,
+        sceneDeviceActionsFlatten: e.detail.listData,
+      })
+      // 防止场景为空，drag为null·
+      if (e.detail.listData.length) {
+        const drag = this.selectComponent('#drag')
+        drag.init()
+      }
+    },
+    /* 执行结果拖拽相关方法 end */
   },
 })

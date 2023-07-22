@@ -1,5 +1,5 @@
 /* package-automation/automation-add/index.wxss */
-
+/* 页面容器公共样式 */
 .double-btn {
   width: 320rpx !important;
   height: 88rpx !important;
