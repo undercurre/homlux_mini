@@ -45,7 +45,7 @@
     </view>
 
     <!-- 无自动化场景时显示 -->
-    <view wx:else class="w-full mt-56rpx flex flex-col items-center">
+    <view wx:else class="w-full mt-182rpx flex flex-col items-center">
       <image src="/assets/img/default-img/link-wifi.png" class="w-300rpx h-300rpx"></image>
       <text class="text-32rpx text-black-59 mt-44rpx mb-32rpx">尚未设置自动化</text>
       <text class="text-24rpx text-black-59 mb-224rpx opacity-40">通过传感器、时间等条件自动控制灯光与窗帘</text>
