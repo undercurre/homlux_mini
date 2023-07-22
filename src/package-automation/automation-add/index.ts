@@ -421,7 +421,12 @@ ComponentWithComputed({
           showTimeConditionPopup: true,
         })
       } else {
-        this.addSensorPopup()
+        if (this.data.sensorList.length) {
+          this.addSensorPopup()
+        } else {
+          Toast({ message: '尚未添加传感器', zIndex: 9999 })
+          return
+        }
       }
       this.setData({
         showEditConditionPopup: false,
@@ -483,15 +488,25 @@ ComponentWithComputed({
           delay: [0],
         })
       } else if (e.detail === 'scene') {
-        this.setData({
-          selectCardType: 'scene',
-        })
-        this.handleSelectCardShow()
+        if (this.data.sceneList.length) {
+          this.setData({
+            selectCardType: 'scene',
+          })
+          this.handleSelectCardShow()
+        } else {
+          Toast({ message: '暂无可执行场景', zIndex: 9999 })
+          return
+        }
       } else {
-        this.setData({
-          selectCardType: 'device',
-        })
-        this.handleSelectCardShow()
+        if (this.data.deviceList.length) {
+          this.setData({
+            selectCardType: 'device',
+          })
+          this.handleSelectCardShow()
+        } else {
+          Toast({ message: '暂无可执行设备', zIndex: 9999 })
+          return
+        }
       }
       this.setData({
         showEditActionPopup: false,
@@ -927,7 +942,8 @@ ComponentWithComputed({
       ) {
         // 删完actions或conditions按照删除场景处理
         const res = await Dialog.confirm({
-          title: '清空条件或操作将会删除场景，确定删除该场景？',
+          title: '清空条件或动作将会删除场景，是否确定？',
+          confirmButtonText: '确定',
           zIndex: 9999,
         }).catch(() => 'cancel')
 
