@@ -49,7 +49,8 @@ ComponentWithComputed({
     show: {
       type: Boolean,
       value: false,
-      observer() {
+      observer(value) {
+        if (!value) return
         if (this.data.roomListComputed.length) {
           let roomSelect = roomStore.currentRoom?.roomId
 
@@ -58,13 +59,22 @@ ComponentWithComputed({
           }
 
           if (this.data.selectList.length) {
-            const selectItem = this.data.list.find(
-              (item: Device.DeviceItem & Scene.SceneItem) =>
-                item.sceneId === this.data.selectList[0] || item.uniId === this.data.selectList[0],
-            )
+            let selectItem = { roomId: '' }
+            this.data.selectList.forEach((id: string) => {
+              if (selectItem === undefined || !selectItem.roomId) {
+                selectItem = this.data.list.find(
+                  (item: Device.DeviceItem & Scene.SceneItem) => item.sceneId === id || item.uniId === id,
+                )
+              }
+            })
 
-            roomSelect = selectItem.roomId
-          } else if (this.data.defaultRoomId) {
+            if (selectItem && selectItem.roomId) {
+              roomSelect = selectItem.roomId
+            } else {
+              roomSelect = this.data.roomListComputed[0].roomId
+            }
+          }
+          if (this.data.defaultRoomId) {
             roomSelect = this.data.defaultRoomId
           }
           this.setData({
