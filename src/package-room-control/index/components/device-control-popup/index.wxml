@@ -1,4 +1,4 @@
-<van-popup show="{{ show }}" position="bottom" round closeable catchtouchmove="true" root-portal="{{true}}" bind:close="handleClose">
+<van-popup show="{{ show }}" position="bottom" round closeable catchtouchmove="true" bind:close="handleClose">
   <view class="w-750rpx h-480rpx bg-white flex-col flex items-center py-20rpx">
     <!-- tab -->
     <view class="flex justify-evenly w-686rpx mt-10rpx relative">
