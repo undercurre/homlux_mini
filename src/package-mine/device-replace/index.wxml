@@ -38,7 +38,7 @@
         </van-cell>
       </van-cell-group>
 
-      <view wx:else class="bg-white mx-24rpx p-60rpx rounded-32rpx flex justify-center">
+      <view wx:else class="bg-white mx-24rpx py-32rpx rounded-32rpx flex justify-center">
         <view class="flex flex-col items-center" bind:tap="addOldDevice">
           <image class="w-108 h-108" src="/assets/img/device-replace/add.png"></image>
           <text class="pt-48rpx text-28 leading-40rpx text-black-59">选择设备</text>
@@ -97,7 +97,7 @@
   </view>
 
   <view class="flex flex-row">
-    <van-button wx:if="{{status === 'newDevice'}}" class="flex-1 mx-24rpx" size="large" block bind:click="prevBtn">上一步</van-button>
+    <van-button color="transparent" wx:if="{{status === 'newDevice'}}" class="flex-1 mx-24rpx border border-solid border-hex-ddd rounded-16rpx" size="large" block bind:click="prevBtn">上一步</van-button>
     <van-button wx:if="{{status !== 'processing'}}" class="flex-1 mx-24rpx" size="large" type="primary" block bind:click="nextBtn" disabled="{{nextBtnDisabled}}">{{ nextBtnText }}</van-button>
   </view>
 </view>
