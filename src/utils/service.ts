@@ -38,17 +38,18 @@ export async function startWebsocketService() {
   socketTask.onMessage((e) => {
     try {
       const res = JSON.parse(e.data as string)
-      Logger.log('☄ 接收到socket信息：', res.result.eventType, res.result.eventData)
+      const { eventType, eventData } = res.result
+      Logger.log('☄ 接收到socket信息：', eventType, eventData)
       emitter.emit('wsReceive', res)
-      emitter.emit(res.result.eventType, res.result.eventData)
+      emitter.emit(eventType, eventData)
 
       // 全局加上进入家庭的消息提示（暂时方案）
-      if (res.result.eventType === 'invite_user_house' && res.result.eventData) {
+      if (eventType === 'invite_user_house' && eventData) {
         wx.showToast({
-          title: res.result.eventData,
+          title: eventData,
           icon: 'none',
         })
-      } else if (res.result.eventType === 'quit_home' && homeStore.currentHomeDetail?.houseUserAuth === 1) {
+      } else if (eventType === 'del_house_user' && userStore.userInfo.userId === eventData.userId) {
         // 仅家庭创建者触发监听，监听家庭移交是否成功
         wx.showModal({
           content: `你已被退出“${homeStore.currentHomeDetail.houseName}”家庭`,

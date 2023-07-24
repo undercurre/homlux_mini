@@ -11,7 +11,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .p-16rpx{padding:16rpx;}
 .p-24rpx{padding:24rpx;}
 .p-4rpx{padding:4rpx;}
-.p-60rpx{padding:60rpx;}
 .p-8rpx{padding:8rpx;}
 .px,
 .px-32rpx{padding-left:32rpx;padding-right:32rpx;}

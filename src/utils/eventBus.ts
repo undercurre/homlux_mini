@@ -37,6 +37,11 @@ type Events = {
   scene_del: {
     eventType: keyof typeof WSEventType
   }
+
+  // 用户退出
+  del_house_user: {
+    userId: string
+  }
 }
 
 export const WSEventType = {
