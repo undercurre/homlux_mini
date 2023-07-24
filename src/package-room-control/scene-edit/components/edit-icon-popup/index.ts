@@ -16,9 +16,6 @@ Component({
           this.setData({
             icon: this.data.value,
           })
-          setTimeout(() => {
-            this.getHeight()
-          }, 100)
         }
       },
     },
@@ -33,7 +30,6 @@ Component({
    */
   data: {
     icon: '',
-    contentHeight: 0,
     sceneList: sceneList.filter((scene) => !scene[1].isDefault),
   },
 
@@ -41,18 +37,6 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    getHeight() {
-      this.createSelectorQuery()
-        .select('#content')
-        .boundingClientRect()
-        .exec((res) => {
-          if (res[0] && res[0].height) {
-            this.setData({
-              contentHeight: res[0].height,
-            })
-          }
-        })
-    },
     handleClose() {
       this.triggerEvent('close')
       this.setData({
