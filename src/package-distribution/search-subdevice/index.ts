@@ -102,7 +102,7 @@ ComponentWithComputed({
         item.status = 'waiting'
       })
 
-      this.data._bleTaskQueue = new PromiseQueue({ concurrency: 3 })
+      this.data._bleTaskQueue = new PromiseQueue({ concurrency: 2 })
       this.data._zigbeeTaskQueue = new PromiseQueue({ concurrency: 6 })
 
       bleDevicesStore.updateBleDeviceList()
@@ -404,6 +404,7 @@ ComponentWithComputed({
           )
 
           if (bleDevice) {
+            bleDevice.status = 'zigbeeBind' // 标记子设备已入网关的zigbee网络
             const deviceData = this.data._deviceMap[bleDevice.mac]
 
             Logger.log(
@@ -449,7 +450,7 @@ ComponentWithComputed({
 
           zigbeeTaskList.push(async () => {
             zigbeeList.push(item.mac)
-            Logger.debug(`【${item.mac}】开始zigbee配网：`, 'zigbeeList', zigbeeList)
+            Logger.debug(`【${item.mac}】开始zigbee配网`)
             // 数据埋点：上报尝试配网的子设备
             wx.reportEvent('add_device', {
               pro_type: item.proType,
@@ -457,24 +458,23 @@ ComponentWithComputed({
               add_type: 'discover',
             })
 
-            this.data._bleTaskQueue.add(async () => {
-              // 已经手动进入配网状态且已经zigbee配网成功的，无需再次进入配网
-              if (item.status === 'success') {
-                Logger.debug(`【${item.mac}】已手动完成配网`)
-                return
-              }
+            // 已经手动进入配网状态且已经zigbee配网成功的，无需再次进入配网
+            if (item.status !== 'zigbeeBind') {
+              this.data._bleTaskQueue.add(async () => {
+                bleList.push(item.mac)
+                Logger.debug(`【${item.mac}】蓝牙任务开始`)
+                await this.startZigbeeNet(item)
 
-              bleList.push(item.mac)
-              Logger.debug(`【${item.mac}】蓝牙任务开始,bleList`, bleList)
-              await this.startZigbeeNet(item)
+                await item.client.close()
 
-              await item.client.close()
+                const index = bleList.findIndex((mac) => item.mac === mac)
 
-              const index = bleList.findIndex((mac) => item.mac === mac)
-
-              bleList.splice(index, 1)
-              Logger.debug(`【${item.mac}】蓝牙任务结束,bleList`, bleList)
-            })
+                bleList.splice(index, 1)
+                Logger.debug(`【${item.mac}】蓝牙任务结束,bleList`, bleList)
+              })
+            } else {
+              Logger.debug(`【${item.mac}】已手动完成配网`)
+            }
 
             const waitingRes = await waitingZigbeeAdd
 
@@ -483,7 +483,7 @@ ComponentWithComputed({
 
             if (!waitingRes.success) {
               item.status = 'fail'
-              Logger.error(`【${item.mac}】zigebee配网失败：`, waitingRes.msg)
+              Logger.error(`【${item.mac}】配网失败：`, waitingRes.msg)
               this.data._errorList.push(`【${item.mac}】${waitingRes.msg}`)
               this.updateBleDeviceListView()
             } else {
@@ -513,7 +513,7 @@ ComponentWithComputed({
           }次, 检测配网状态：${bleDevice.isConfig}`,
         )
 
-        const timeout = 90 // 等待绑定推送，超时60s
+        const timeout = 60 // 等待绑定推送，超时60s
         // 过滤刚出厂设备刚起电时会默认进入配网状态期间，被网关绑定的情况，这种当做成功配网，无需再下发配网指令，否则重复发送配网指令可能会导致zigbee入网失败
         if (bleDevice.isConfig !== '02') {
           const configRes = await bleDevice.client.getZigbeeState()

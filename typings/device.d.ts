@@ -214,7 +214,7 @@ declare namespace Device {
     productId: string
     switchList: Device.ISwitch[]
     client: import('../src/utils/index').BleClient
-    status: 'waiting' | 'fail' | 'success' // 配网状态
+    status: 'waiting' | 'zigbeeBind' | 'fail' | 'success' // 配网状态  zigbeeBind
     isChecked: boolean // 是否被选中
     requesting: boolean // 是否正在发送试一试命令
 

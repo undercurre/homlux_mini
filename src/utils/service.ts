@@ -39,7 +39,7 @@ export async function startWebsocketService() {
     try {
       const res = JSON.parse(e.data as string)
       const { eventType, eventData } = res.result
-      Logger.log('☄ 接收到socket信息：', eventType, eventData)
+      Logger.console('☄ 接收到socket信息：', eventType, eventData)
       emitter.emit('wsReceive', res)
       emitter.emit(eventType, eventData)
 

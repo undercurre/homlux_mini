@@ -54,7 +54,7 @@ export class BleClient {
     const connectRes = await wx
       .createBLEConnection({
         deviceId: this.deviceUuid, // 搜索到设备的 deviceId
-        timeout: 10000,
+        timeout: 15000,
       })
       .catch((err: WechatMiniprogram.BluetoothError) => err)
 
@@ -146,12 +146,12 @@ export class BleClient {
   }
 
   async close() {
-    const isConnected = bleDeviceMap[this.deviceUuid]
+    // const isConnected = bleDeviceMap[this.deviceUuid]
 
-    if (!isConnected) {
-      Logger.log(`【${this.mac}】已关闭蓝牙连接，无需再次关闭`)
-      return
-    }
+    // if (!isConnected) {
+    //   Logger.log(`【${this.mac}】已关闭蓝牙连接，无需再次关闭`)
+    //   return
+    // }
     Logger.log(`【${this.mac}】${this.deviceUuid}开始关闭蓝牙连接`)
     const res = await wx.closeBLEConnection({ deviceId: this.deviceUuid }).catch((err) => err)
 
@@ -168,7 +168,6 @@ export class BleClient {
       if (!isConnected) {
         const connectRes = await this.connect()
 
-        Logger.log(`【${this.mac}】connect`, connectRes)
         if (connectRes.code === -1) {
           throw connectRes
         }
@@ -271,7 +270,6 @@ export class BleClient {
           }
         })
         .finally(() => {
-          console.log(`【${this.mac}】-finally`)
           wx.offBLECharacteristicValueChange(listener)
 
           clearTimeout(timeId)
@@ -431,9 +429,7 @@ const deviceUuidMap = {} as IAnyObject
 wx.onBLEConnectionStateChange(function (res) {
   bleDeviceMap[res.deviceId] = res.connected
 
-  if (!res.connected) {
-    const deviceId = res.deviceId
+  const deviceId = res.deviceId
 
-    Logger.log(`【${deviceUuidMap[deviceId] || deviceId}】蓝牙已断开`)
-  }
+  Logger.log(`【${deviceUuidMap[deviceId] || deviceId}】蓝牙已${res.connected ? '连接' : '断开'}`)
 })
