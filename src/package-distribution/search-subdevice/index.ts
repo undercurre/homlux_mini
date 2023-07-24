@@ -417,9 +417,7 @@ ComponentWithComputed({
               deviceData.bindTimeoutId = 0
             }
 
-            if (this.data._zigbeeTaskCallbackMap[bleDevice.mac]) {
-              this.data._zigbeeTaskCallbackMap[bleDevice.mac]({ success: true })
-            }
+            this.data._zigbeeTaskCallbackMap[bleDevice.mac]({ success: true })
           }
         })
 
@@ -443,6 +441,12 @@ ComponentWithComputed({
             zigbeeRepeatTimes: 2,
           }
 
+          // 等待zigbee子设备添加上报promise
+          // 存在手动进入配网的情况，还没发送蓝牙配网指令就已经收到zigbee添加上报成功的情况，这种情况也需要当做配网成功且不需要重复发送蓝牙配网指令
+          const waitingZigbeeAdd = new Promise<{ success: boolean; msg?: string }>((resolve) => {
+            this.data._zigbeeTaskCallbackMap[item.mac] = resolve
+          })
+
           zigbeeTaskList.push(async () => {
             zigbeeList.push(item.mac)
             Logger.debug(`【${item.mac}】开始zigbee配网：`, 'zigbeeList', zigbeeList)
@@ -454,6 +458,12 @@ ComponentWithComputed({
             })
 
             this.data._bleTaskQueue.add(async () => {
+              // 已经手动进入配网状态且已经zigbee配网成功的，无需再次进入配网
+              if (item.status === 'success') {
+                Logger.debug(`【${item.mac}】已手动完成配网`)
+                return
+              }
+
               bleList.push(item.mac)
               Logger.debug(`【${item.mac}】蓝牙任务开始,bleList`, bleList)
               await this.startZigbeeNet(item)
@@ -464,11 +474,6 @@ ComponentWithComputed({
 
               bleList.splice(index, 1)
               Logger.debug(`【${item.mac}】蓝牙任务结束,bleList`, bleList)
-            })
-
-            // 等待zigbee子设备添加上报promise
-            const waitingZigbeeAdd = new Promise<{ success: boolean; msg?: string }>((resolve) => {
-              this.data._zigbeeTaskCallbackMap[item.mac] = resolve
             })
 
             const waitingRes = await waitingZigbeeAdd
@@ -482,6 +487,7 @@ ComponentWithComputed({
               this.data._errorList.push(`【${item.mac}】${waitingRes.msg}`)
               this.updateBleDeviceListView()
             } else {
+              item.status = 'success'
               await this.bindBleDeviceToCloud(item)
             }
 
@@ -570,10 +576,8 @@ ComponentWithComputed({
         if (device.switchList.length > 1) {
           await this.editDeviceInfo({ deviceId: res.result.deviceId, switchList: device.switchList })
         }
-
-        device.status = 'success'
       } else {
-        device.status = 'fail'
+        Logger.error(`${device.mac}绑定失败`, res)
       }
 
       this.updateBleDeviceListView()
