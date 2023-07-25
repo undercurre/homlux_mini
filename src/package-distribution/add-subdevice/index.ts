@@ -60,9 +60,9 @@ ComponentWithComputed({
       emitter.on('bind_device', (data) => {
         if (data.deviceId === this.data.pageParams.mac) {
           console.log(`收到绑定推送消息：子设备${this.data.pageParams.mac}`)
-          wx.reportEvent("zigebee_add", {
-            "cost_time": dayjs().valueOf() - this.data._startTime,
-            "model_id": this.data.pageParams.modelId,
+          wx.reportEvent('zigebee_add', {
+            cost_time: dayjs().valueOf() - this.data._startTime,
+            model_id: this.data.pageParams.modelId,
           })
 
           this.bindBleDeviceToClound()
