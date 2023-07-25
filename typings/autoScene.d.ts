@@ -66,6 +66,8 @@ declare namespace AutoScene {
 
     proType?: string
     value: IAnyObject
+    //前端拖拽时用的绝对唯一的Id
+    dragId: string
   }
   interface DeviceCondition {
     /**

@@ -29,7 +29,7 @@ ComponentWithComputed({
       this.triggerEvent('actionEdit', e.currentTarget.dataset.index)
     },
     handleActionDelete(e: WechatMiniprogram.TouchEvent) {
-      this.triggerEvent('actionDelete', e.currentTarget.dataset.uniid)
+      this.triggerEvent('actionDelete', e.currentTarget.dataset.dragid)
     },
   },
 })
