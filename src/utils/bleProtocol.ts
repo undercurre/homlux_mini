@@ -9,39 +9,22 @@ const CmdTypeMap = {
 export class BleClient {
   mac: string
   key = ''
+  modelId = ''
 
   deviceUuid: string
   serviceId = 'BAE55B96-7D19-458D-970C-50613D801BC9'
   characteristicId = '' // 灯具和面板的uid不一致，同类设备的uid是一样的
   msgId = 0
 
-  constructor(params: { mac: string; deviceUuid: string }) {
-    const { mac, deviceUuid } = params
+  constructor(params: { mac: string; deviceUuid: string; modelId: string }) {
+    const { mac, deviceUuid, modelId } = params
 
     this.mac = mac
     this.deviceUuid = deviceUuid
+    this.modelId = modelId
     deviceUuidMap[deviceUuid] = mac
     // 密钥为：midea@homlux0167   (0167为该设备MAC地址后四位
     this.key = `midea@homlux${mac.substr(-4, 4)}`
-
-    const listener = (res: WechatMiniprogram.OnBLECharacteristicValueChangeCallbackResult) => {
-      if (res.deviceId !== this.deviceUuid) {
-        return
-      }
-
-      const hex = strUtil.ab2hex(res.value)
-      let msg = aesUtil.decrypt(hex, this.key, 'Hex')
-
-      // const resMsgId = parseInt(msg.substr(2, 2), 16) // 收到回复的指令msgId
-      const packLen = parseInt(msg.substr(4, 2), 16) // 回复消息的Byte Msg Id到Byte Checksum的总长度，单位byte
-
-      // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
-      // 1 byte	     1 byte	   1 byte	          N  bytes	    1 byte
-      // 仅截取消息参数部分数据，
-      msg = msg.substr(6, (packLen - 3) * 2)
-    }
-
-    wx.onBLECharacteristicValueChange(listener)
   }
 
   async connect() {
@@ -58,7 +41,14 @@ export class BleClient {
       })
       .catch((err: WechatMiniprogram.BluetoothError) => err)
 
-    Logger.log(`【${this.mac}】 connectRes`, connectRes, `连接蓝牙时间： ${Date.now() - date1}ms`)
+    const costTime = Date.now() - date1
+
+    Logger.log(`【${this.mac}】 connectRes`, connectRes, `连接蓝牙时间： ${costTime}ms`)
+
+    wx.reportEvent('connect_ble', {
+      model_id: this.modelId,
+      cost_time: costTime,
+    })
 
     // 判断是否连接蓝牙，0为连接成功，-1为已经连接
     // 避免-1的情况，因为安卓如果重复调用 wx.createBLEConnection 创建连接，有可能导致系统持有同一设备多个连接的实例，导致调用 closeBLEConnection 的时候并不能真正的断开与设备的连接。占用蓝牙资源
