@@ -1,7 +1,7 @@
 <wxs src="/commons/wxs/util.wxs" module="module" />
 
-<van-popup show="{{ show }}" z-index="1002" round position="bottom" bind:close="handleClose" catchtouchmove="blank" closeable>
-  <view class="w-750rpx h-1000rpx relative flex flex-col items-center">
+<van-popup show="{{ show }}" z-index="1002" round position="bottom" bind:close="handleClose" catchtouchmove="blank" closeable safe-area-inset-bottom="{{false}}">
+  <view class="w-750rpx h-90vh relative flex flex-col items-center">
     <view class="flex flex-row">
       <text wx:if="titleLeftBtnText" class="absolute leading-50rpx text-32 text-hex-555659" bind:tap="clickTitleLeftBtn">{{ titleLeftBtnText }}</text>
       <text class="h-50rpx text-36rpx text-black-2a mt-44rpx font-medium">{{title}}</text>
@@ -31,17 +31,16 @@
           <device-card wx:for="{{listComputed}}" wx:key="uniId" bind:cardTap="handleCardTap" device-info="{{item}}" select="{{module.includes(selectList, item.uniId)}}" bind:offlineTap="handleOfflineTap" />
         </view>
       </view>
-      <view class="h-32rpx"></view>
     </scroll-view>
 
-    <view class="h-16rpx"></view>
+    <view class="h-96rpx"></view>
     <view class="flex w-686rpx gap-x-46rpx">
       <van-button wx:if="{{showCancel}}" class="flex-1" size="large" bind:click="handleCancel">{{ cancelText }}</van-button>
 
       <van-button wx:if="{{showConfirm}}" type="primary" class="flex-1" size="large" bind:click="handleConfirm">{{ confirmText }}</van-button>
     </view>
 
-    <view style="height: 28rpx"></view>
+    <view class="h-96rpx"></view>
   </view>
 
   <van-dialog z-index="1003" use-slot title="子设备离线" show="{{ showDeviceOffline }}" confirm-button-color="#488FFF" confirmButtonText="我知道了" bind:close="handleCloseDeviceOffline">

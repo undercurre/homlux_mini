@@ -12,7 +12,7 @@
         </view>
       </view>
     </view>
-    
+
     <template is="bottom-btn" />
   </view>
 </van-popup>

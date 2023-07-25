@@ -125,7 +125,6 @@ ComponentWithComputed({
     /** 已选中设备或场景 TODO */
     linkSelectList: [] as string[],
     showLinkPopup: false,
-    showSelectLinkPopup: false,
     allOnPress: false,
     allOffPress: false,
     _switchRelInfo: {
@@ -408,29 +407,19 @@ ComponentWithComputed({
         })
       }
     },
-    handleSelectLinkPopup() {
+    async handleSelectLinkPopupConfirm(e: WechatMiniprogram.TouchEvent) {
       if (this.data.disabledLinkSetting) {
         const message = '只能创建者及管理员进行关联'
         Toast({ message, zIndex: 9999 })
         return
       }
 
+      const { type } = e.currentTarget.dataset
       this.setData({
-        showSelectLinkPopup: true,
-      })
-    },
-    handleSelectLinkPopupClose() {
-      this.setData({
-        showSelectLinkPopup: false,
-      })
-    },
-    async handleSelectLinkPopupConfirm(e: { detail: 'light' | 'switch' | 'scene' }) {
-      this.setData({
-        showSelectLinkPopup: false,
-        selectLinkType: e.detail,
+        selectLinkType: type,
       })
 
-      if (e.detail === 'switch') {
+      if (type === 'switch') {
         const res = await getLampDeviceByHouseId({ houseId: homeStore.currentHomeId })
 
         if (res.success) {
@@ -450,7 +439,6 @@ ComponentWithComputed({
       this.setData({
         showLinkPopup: false,
       })
-      this.handleSelectLinkPopup()
     },
     /** 关联开关 */
     async updateSwitchAssociate() {

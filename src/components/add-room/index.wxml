@@ -7,7 +7,7 @@
 
     <view class="h-48rpx"></view>
 
-    <scroll-view scroll-y enhanced show-scrollbar="{{false}}" style="max-height: 50vh;">
+    <scroll-view scroll-y enhanced show-scrollbar="{{false}}" style="max-height: 50vh">
       <view wx:if="{{isEditName}}">
         <text class="block pl-16rpx pb-24rpx text-28 text-hex-555659" wx:if="{{isEditIcon}}">房间名称</text>
 
