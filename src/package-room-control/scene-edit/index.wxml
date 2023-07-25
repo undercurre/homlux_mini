@@ -12,7 +12,7 @@
       <van-cell is-link value="{{showSceneName}}" center bind:click="handleEditNameShow">
         <text slot="title" class="text-32rpx w-130rpx">场景名称</text>
       </van-cell>
-      <van-cell title="场景图标" is-link="{{!isDefault}}" center bind:click="handleEditIconShow">
+      <van-cell title="场景图标" is-link="{{!isDefault}}" center bind:click="handleEditIconShow" border="{{false}}">
         <view class="flex justify-end">
           <view class="bg-hex-eff0f3 rounded-999 w-52rpx h-52rpx">
             <svg-icon name="scene:{{sceneIcon}}" width="52rpx" height="52rpx" />
@@ -44,14 +44,16 @@
         </view>
       </scroll-view>
     </view>
-    <view class="mb-86rpx mt-24rpx flex justify-center">
-      <van-button custom-class="popup-control-btn" custom-style="border: 2rpx solid #A2A2A2;" color="transparent" bind:click="handleSceneDelete">
-        <text class="text-36rpx text-black-tips">删除</text>
-      </van-button>
-      <van-button type="primary" custom-class="popup-control-btn" class="ml-46rpx" bind:click="handleSave">
-        <text class="text-36rpx">确定</text>
-      </van-button>
+
+    <view class="h-30rpx"></view>
+
+    <view class="flex px-32rpx gap-x-46rpx">
+      <van-button class="flex-1" size="large" bind:click="handleSceneDelete" custom-style="background-color: transparent;">删除</van-button>
+
+      <van-button type="primary" class="flex-1" size="large" bind:click="handleSave">确定</van-button>
     </view>
+
+    <view class="h-96rpx"></view>
   </view>
 </view>
 
