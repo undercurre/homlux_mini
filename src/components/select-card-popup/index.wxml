@@ -1,7 +1,7 @@
 <wxs src="/commons/wxs/util.wxs" module="module" />
 
 <van-popup show="{{ show }}" z-index="1002" round position="bottom" bind:close="handleClose" catchtouchmove="blank" closeable safe-area-inset-bottom="{{false}}">
-  <view class="w-750rpx h-90vh relative flex flex-col items-center">
+  <view class="w-750rpx h-85vh relative flex flex-col items-center">
     <view class="flex flex-row">
       <text wx:if="titleLeftBtnText" class="absolute leading-50rpx text-32 text-hex-555659" bind:tap="clickTitleLeftBtn">{{ titleLeftBtnText }}</text>
       <text class="h-50rpx text-36rpx text-black-2a mt-44rpx font-medium">{{title}}</text>
