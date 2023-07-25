@@ -1,5 +1,5 @@
 <import src="/commons/templates/popup.wxml" />
-<van-popup show="{{ show }}" z-index="10000" position="bottom" round bind:close="handleClose" closeable>
+<van-popup show="{{ show }}" z-index="10000" position="bottom" round bind:close="handleClose" closeable safe-area-inset-bottom="{{false}}">
   <view class="flex flex-col px-32rpx text-black-2a">
     <view class="flex-center pb-32rpx">
       <template is="title" data="{{ title: popupTitle }}" />
