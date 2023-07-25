@@ -320,7 +320,7 @@ ComponentWithComputed({
         return
       }
 
-      wx.reportEvent('test', {
+      wx.reportEvent('gateway_add', {
         app_device: Date.now() - start,
       })
 
@@ -380,7 +380,7 @@ ComponentWithComputed({
         })
 
         Logger.debug('app到云端，添加网关耗时：', Date.now() - start)
-        wx.reportEvent('test', {
+        wx.reportEvent('gateway_add', {
           app_cloud: Date.now() - start,
         })
 
@@ -440,9 +440,6 @@ ComponentWithComputed({
       }
 
       Logger.debug('网关检查流程耗时：', Date.now() - start)
-      wx.reportEvent('test', {
-        check_device: Date.now() - start,
-      })
       if (gatewayStatus.method === 'wifi') {
         // "method":"wifi" //无线配网："wifi"，有线配网:"eth"
         wx.redirectTo({

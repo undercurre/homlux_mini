@@ -536,6 +536,7 @@ ComponentWithComputed({
           deviceName: res.result.productName,
           icon: res.result.productIcon,
           mac: res.result.mac, // zigbee 的mac
+          modelId: res.result.modelId,
         },
       })
 

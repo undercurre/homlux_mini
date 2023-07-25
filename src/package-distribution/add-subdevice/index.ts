@@ -5,6 +5,7 @@ import { bleUtil, strUtil, BleClient, getCurrentPageParams, emitter, Logger } fr
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { sendCmdAddSubdevice, bindDevice } from '../../apis/index'
 import { IBleDevice } from './typings'
+import dayjs from 'dayjs'
 
 type StatusName = 'linking' | 'error'
 
@@ -25,6 +26,7 @@ ComponentWithComputed({
     activeIndex: 0,
     pageParams: {} as IAnyObject,
     _hasFound: false, // 是否已经找到指定mac设备
+    _startTime: 0, // 发送完蓝牙配网指令的实际
   },
 
   lifetimes: {
@@ -56,10 +58,13 @@ ComponentWithComputed({
       }, 60000)
 
       emitter.on('bind_device', (data) => {
-        console.log('bind_device', data)
-
         if (data.deviceId === this.data.pageParams.mac) {
           console.log(`收到绑定推送消息：子设备${this.data.pageParams.mac}`)
+          wx.reportEvent("zigebee_add", {
+            "cost_time": dayjs().valueOf() - this.data._startTime,
+            "model_id": this.data.pageParams.modelId,
+          })
+
           this.bindBleDeviceToClound()
           emitter.off('bind_device')
           clearTimeout(this.data._timeId)
@@ -139,7 +144,7 @@ ComponentWithComputed({
         zigbeeMac: '',
         icon: this.data.pageParams.deviceIcon,
         name: this.data.pageParams.deviceName,
-        client: new BleClient({ mac: msgObj.mac, deviceUuid: device.deviceId }),
+        client: new BleClient({ mac: msgObj.mac, deviceUuid: device.deviceId, modelId: this.data.pageParams.modelId }),
         roomId: '',
         roomName: '',
         status: 'waiting',
@@ -209,8 +214,7 @@ ComponentWithComputed({
 
       if (res.success) {
         bleDevice.zigbeeMac = res.result.zigbeeMac
-
-        // this.queryDeviceOnlineStatus(bleDevice)
+        this.data._startTime = dayjs().valueOf()
       } else {
         this.setData({
           status: 'error',
