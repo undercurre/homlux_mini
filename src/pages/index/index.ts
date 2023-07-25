@@ -596,7 +596,18 @@ ComponentWithComputed({
         })
       })
 
+      // 更新云端排序
       updateRoomSort(roomSortList)
+
+      // 更新store排序
+      const list = [] as Room.RoomInfo[]
+      roomStore.roomList.forEach((room) => {
+        const { index } = this.data.roomPos[room.roomId]
+        list[index] = room
+      })
+      runInAction(() => {
+        roomStore.roomList = list
+      })
     },
   },
 })
