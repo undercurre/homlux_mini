@@ -13,8 +13,8 @@
       </view>
     </view>
 
-    <view class="px-20rpx py-16rpx absolute right-0 top-0" catchtap="handleActionDelete" data-dragId="{{item.data.dragId}}">
-      <image src="/assets/img/base/close-gray.png" class="w-40 h-40" />
+    <view class="px-24rpx py-16rpx absolute right-0 top-0" catchtap="handleActionDelete" data-dragId="{{item.data.dragId}}">
+      <image src="/assets/img/base/delete.png" class="w-40 h-40" />
     </view>
   </view>
 </van-cell-group>
