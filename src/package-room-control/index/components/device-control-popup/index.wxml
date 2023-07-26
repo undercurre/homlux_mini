@@ -19,12 +19,13 @@
     <!-- tab内容 -->
     <view class="flex flex-col items-center flex-1 pt-10rpx">
       <!-- 灯光控制 -->
-      <view class="flex flex-col w-750rpx" wx:if="{{tab==='light'}}">
+      <view class="flex flex-col w-750rpx mb-22rpx" wx:if="{{tab==='light'}}">
         <text class="text-32rpx mt-70rpx ml-48rpx {{lightStatus.OnOff ? 'text-black-59' : 'text-hex-a2a2a2'}}">亮度 | {{lightInfoInner.Level}}%</text>
         <view class="px-48rpx pt-28rpx">
           <mz-slider catch:tap="sliderTap" catch:slideEnd="handleLevelChange" catch:slideChange="handleLevelDrag" disabled="{{!lightStatus.OnOff}}" value="{{lightInfoInner.Level}}" min="{{1}}" active-color="linear-gradient(90deg, rgba(80,127,255,0.8) 5%, rgba(116,153,255,0.18) 100%)"> </mz-slider>
         </view>
-        <text class="text-32rpx mt-20rpx ml-48rpx {{lightStatus.OnOff ? 'text-black-59' : 'text-hex-a2a2a2'}}">色温 | {{colorTempK}}K</text>
+
+        <text class="text-32rpx mt-66rpx ml-48rpx {{lightStatus.OnOff ? 'text-black-59' : 'text-hex-a2a2a2'}}">色温 | {{colorTempK}}K</text>
         <view class="px-48rpx pt-28rpx">
           <mz-slider catch:tap="sliderTap" catch:slideEnd="handleColorTempChange" catch:slideChange="handleColorTempDrag" disabled="{{!lightStatus.OnOff}}" value="{{lightInfoInner.ColorTemp}}" use-button-slot custom-class="slider-color-temp-bar" active-color="rgba(0,0,0,0)">
             <view slot="button" class="slider-button" />
@@ -75,8 +76,8 @@
       </view>
       <!-- 窗帘控制 -->
       <view wx:if="{{tab==='curtain'}}" class="w-full h-full flex-col-center">
-        <curtain-slider value="{{curtainInfo.position}}" catch:change="changeCurtain" catch:slideEnd="changeCurtain"></curtain-slider>
-        <view class="flex flex-row justify-evenly rounded-24rpx bg-hex-eef2f7 w-686rpx h-80rpx items-center mt-28rpx">
+        <curtain-slider class="mt-56rpx" value="{{curtainInfo.position}}" catch:change="changeCurtain" catch:slideEnd="changeCurtain"></curtain-slider>
+        <view class="flex flex-row justify-evenly rounded-24rpx bg-hex-eef2f7 w-686rpx h-80rpx items-center mt-56rpx">
           <text catch:tap="openCurtain" class="text-32 text-hex-1e2c46 px-50rpx h-80rpx leading-80rpx rounded-24rpx btn-effect">全开</text>
           <view class="w-2rpx h-40rpx bg-hex-ddd"></view>
           <text catch:tap="pauseCurtain" class="text-32 text-hex-1e2c46 px-50rpx h-80rpx leading-80rpx rounded-24rpx btn-effect">暂停</text>
@@ -87,7 +88,7 @@
     </view>
   </view>
 
-  <view class="h-96rpx"></view>
+  <view class="h-64rpx"></view>
 </van-popup>
 
 <!-- 关联列表（场景列表 or 设备列表）弹窗 -->
