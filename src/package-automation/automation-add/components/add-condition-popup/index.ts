@@ -46,5 +46,6 @@ Component({
       console.log('conditionClicked', e)
       this.triggerEvent('conditionClicked', e.currentTarget.dataset.key)
     },
+    blank() {},
   },
 })

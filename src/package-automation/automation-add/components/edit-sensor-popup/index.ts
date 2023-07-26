@@ -66,5 +66,6 @@ ComponentWithComputed({
     handleConfirm() {
       this.triggerEvent('confirm', this.data._controlAction)
     },
+    blank() {},
   },
 })

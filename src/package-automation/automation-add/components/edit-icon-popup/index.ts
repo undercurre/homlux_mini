@@ -70,5 +70,6 @@ Component({
         icon: e.currentTarget.dataset.scene,
       })
     },
+    blank() {},
   },
 })

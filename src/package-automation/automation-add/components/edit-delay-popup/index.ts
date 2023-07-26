@@ -76,5 +76,6 @@ Component({
         value: e.detail,
       })
     },
+    blank() {},
   },
 })
