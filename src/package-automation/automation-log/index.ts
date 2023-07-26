@@ -32,7 +32,12 @@ ComponentWithComputed({
           logsMap[date] = [{ ...item, actionTime: dayjs(item.reportAt).format('HH:mm') }]
         }
       })
+      console.log('logsMap', logsMap)
+
       return logsMap
+    },
+    autoSceneLogLength(data) {
+      return Object.keys(data.autoSceneLog).length
     },
   },
 
