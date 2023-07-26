@@ -343,7 +343,6 @@ ComponentWithComputed({
             WSEventType.device_online_status,
             WSEventType.device_offline_status,
             WSEventType.group_device_result_status,
-            WSEventType.screen_move_sub_device,
           ].includes(e.result.eventType)
         ) {
           this.updateRoomData(e)
@@ -378,7 +377,7 @@ ComponentWithComputed({
     // 节流更新房间各种信息
     updateRoomData: throttle(function (this: IAnyObject) {
       this.reloadData()
-    }, 3000),
+    }, 8000),
 
     // 页面滚动
     onPageScroll(e: { detail: { scrollTop: number } }) {

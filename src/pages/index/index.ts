@@ -209,7 +209,6 @@ ComponentWithComputed({
             WSEventType.bind_device,
             WSEventType.scene_device_result_status,
             WSEventType.group_device_result_status,
-            WSEventType.screen_move_sub_device,
           ].includes(res.result.eventType)
         ) {
           this.updateRoomData()
