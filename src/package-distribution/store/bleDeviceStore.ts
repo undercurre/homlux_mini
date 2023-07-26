@@ -123,7 +123,10 @@ export const bleDevicesStore = observable({
   updateBleDeviceList() {
     runInAction(() => {
       this.bleDeviceList = this.bleDeviceList.concat([])
-      Logger.log('updateBleDeviceList, waiting', this.bleDeviceList.filter(item => item.status === 'waiting' && item.isChecked))
+      Logger.log(
+        'updateBleDeviceList, waiting',
+        this.bleDeviceList.filter((item) => item.status === 'waiting' && item.isChecked),
+      )
     })
   },
 
