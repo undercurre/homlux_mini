@@ -62,8 +62,8 @@
             </view>
           </view>
 
-          <view wx:if="{{!isDefault}}" class="px-20rpx py-16rpx absolute right-0 top-0" catchtap="handleConditionDelete" data-index="{{index}}" data-info="{{item}}">
-            <image src="/assets/img/base/close-gray.png" class="w-40 h-40" />
+          <view class="px-24rpx py-16rpx absolute right-0 top-0" catchtap="handleConditionDelete" data-index="{{index}}" data-info="{{item}}">
+            <image src="/assets/img/base/delete.png" class="w-40 h-40" />
           </view>
         </view>
       </view>
