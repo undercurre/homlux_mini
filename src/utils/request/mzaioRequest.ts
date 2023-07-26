@@ -56,20 +56,43 @@ const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: Base
     options.timeout = 10000
   }
 
+  const start = Date.now()
+
   return baseRequest<T>({
     ...options,
     generalSuccessHandler: (result) => {
       // token过期，跳转到登录
       if ((result.data as unknown as { code: number }).code === TOKEN_EXPIRED) {
         logout()
-        return result.data
       } else if (!(result.data as unknown as { success: boolean }).success) {
         console.error('接口已响应，但返回异常', options, result.data)
       }
+
+      const cost_time = Date.now() - start
+
+      wx.reportEvent('wxdata_perf_monitor', {
+        wxdata_perf_monitor_id: options.url,
+        wxdata_perf_monitor_level: 0,
+        wxdata_perf_error_code: (result.data as IAnyObject).code,
+        wxdata_perf_cost_time: cost_time,
+        wxdata_perf_error_msg: (result.data as IAnyObject).msg,
+      })
+
       return result.data
     },
     generalFailHandler: (error) => {
       console.error('请求失败，原因：', error.errMsg)
+
+      const cost_time = Date.now() - start
+
+      wx.reportEvent('wxdata_perf_monitor', {
+        wxdata_perf_monitor_id: options.url,
+        wxdata_perf_monitor_level: 0,
+        wxdata_perf_error_code: -1,
+        wxdata_perf_cost_time: cost_time,
+        wxdata_perf_error_msg: error.errMsg,
+      })
+
       return {
         code: -1,
         msg: error.errMsg,

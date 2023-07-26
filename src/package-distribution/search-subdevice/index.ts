@@ -396,7 +396,8 @@ ComponentWithComputed({
 
     async beginAddBleDevice(list: Device.ISubDevice[]) {
       try {
-        this.stopFlash()
+        // 先关闭可能正在连接的子设备
+        await this.stopFlash() 
 
         Logger.debug('-------开始子设备配网------')
         this.data._startTime = dayjs().valueOf()
@@ -497,11 +498,18 @@ ComponentWithComputed({
               item.status = 'fail'
               Logger.error(`【${item.mac}】配网失败：`, waitingRes.msg)
               this.data._errorList.push(`【${item.mac}】${waitingRes.msg}`)
-              this.updateBleDeviceListView()
+
+              wx.reportEvent("zigbee_error", {
+                "model_id": item.productId,
+                "pro_type": item.proType,
+                "error_msg": waitingRes.msg,
+              })
             } else {
               item.status = 'success'
               await this.bindBleDeviceToCloud(item)
             }
+
+            this.updateBleDeviceListView()
 
             const index = zigbeeList.findIndex((mac) => item.mac === mac)
 
@@ -715,7 +723,7 @@ ComponentWithComputed({
     /**
      * 停止闪烁
      */
-    stopFlash() {
+    async stopFlash() {
       if (!this.data.flashInfo.mac) {
         return
       }
@@ -728,7 +736,7 @@ ComponentWithComputed({
 
       bleDevicesStore.updateBleDeviceList()
 
-      bleDevice.client.close()
+      await bleDevice.client.close()
 
       this.setData({
         'flashInfo.mac': '',
