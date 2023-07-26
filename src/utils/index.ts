@@ -59,9 +59,10 @@ export function rpx2px(rpx: number) {
  * @param fn 要执行的函数
  * @param wait 延迟的时间
  * @param immediate 第一次是否立即执行
+ * @param end 距离上次执行时间小于wait时，是否延时执行并确保执行最后一次
  * FIXME 实际引用时，this类型无法推导，暂时直接在参数中指定为 any
  */
-export function throttle<T extends (...args: any[]) => unknown>(fn: T, wait = 500, immediate = true) {
+export function throttle<T extends (...args: any[]) => unknown>(fn: T, wait = 500, immediate = true, end = true) {
   let lastInvoke = 0
   let timeId = 0
 
@@ -71,7 +72,7 @@ export function throttle<T extends (...args: any[]) => unknown>(fn: T, wait = 50
     if ((immediate && lastInvoke === 0) || current - lastInvoke > wait) {
       fn.apply(this, args)
       lastInvoke = current
-    } else {
+    } else if (end) {
       clearTimeout(timeId)
       timeId = setTimeout(() => {
         fn.apply(this, args)

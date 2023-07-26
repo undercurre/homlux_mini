@@ -239,6 +239,7 @@ ComponentWithComputed({
   },
 
   watch: {
+    // 设备数变化时，刷新可移动区域高度
     'currentRoom.endCount'(value) {
       this.setData({
         movableAreaHeight: Math.ceil(value / 4) * 236,
