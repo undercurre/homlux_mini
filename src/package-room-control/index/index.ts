@@ -255,6 +255,28 @@ ComponentWithComputed({
       //   console.debug('setUpdatePerformanceListener', res, res.pendingStartTimestamp - res.updateStartTimestamp, res.updateEndTimestamp - res.updateStartTimestamp, dayjs().format('YYYY-MM-DD HH:mm:ss'))
       // })
 
+      // 是否点击过场景使用提示的我知道了，如果没点击过就显示
+      const hasKnownUseAddScene = storage.get<boolean>('hasKnownUseAddScene')
+      if (!hasKnownUseAddScene) {
+        this.createSelectorQuery()
+          .select('#scene-card')
+          .boundingClientRect((res) => {
+            console.log('#scene-card', res)
+            if (res) {
+              this.setData({
+                showAddSceneTips: true,
+                sceneTipsPositionStyle: `left: ${res.left}px;top: ${res.top}px;width: ${res.width}px;height: ${res.height}px;`,
+              })
+            }
+          })
+          .exec()
+      }
+    },
+
+    async onShow() {
+      // 再更新一遍数据
+      await this.reloadData()
+
       // ws消息处理
       emitter.on('wsReceive', async (e) => {
         if (e.result.eventType === WSEventType.device_property) {
@@ -321,7 +343,6 @@ ComponentWithComputed({
             WSEventType.device_online_status,
             WSEventType.device_offline_status,
             WSEventType.group_device_result_status,
-            WSEventType.screen_move_sub_device,
           ].includes(e.result.eventType)
         ) {
           this.updateRoomData(e)
@@ -336,27 +357,6 @@ ComponentWithComputed({
           })
         }
       })
-      // 是否点击过场景使用提示的我知道了，如果没点击过就显示
-      const hasKnownUseAddScene = storage.get<boolean>('hasKnownUseAddScene')
-      if (!hasKnownUseAddScene) {
-        this.createSelectorQuery()
-          .select('#scene-card')
-          .boundingClientRect((res) => {
-            console.log('#scene-card', res)
-            if (res) {
-              this.setData({
-                showAddSceneTips: true,
-                sceneTipsPositionStyle: `left: ${res.left}px;top: ${res.top}px;width: ${res.width}px;height: ${res.height}px;`,
-              })
-            }
-          })
-          .exec()
-      }
-    },
-
-    async onShow() {
-      // 再更新一遍数据
-      await this.reloadData()
     },
 
     async reloadData() {
@@ -377,7 +377,7 @@ ComponentWithComputed({
     // 节流更新房间各种信息
     updateRoomData: throttle(function (this: IAnyObject) {
       this.reloadData()
-    }, 3000),
+    }, 8000),
 
     // 页面滚动
     onPageScroll(e: { detail: { scrollTop: number } }) {
@@ -390,6 +390,11 @@ ComponentWithComputed({
     },
 
     onUnload() {
+      // 解除监听
+      emitter.off('wsReceive')
+    },
+    onHide() {
+      console.log('onHide')
       // 解除监听
       emitter.off('wsReceive')
     },

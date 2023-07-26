@@ -62,8 +62,8 @@
             </view>
           </view>
 
-          <view wx:if="{{!isDefault}}" class="px-20rpx py-16rpx absolute right-0 top-0" catchtap="handleConditionDelete" data-index="{{index}}" data-info="{{item}}">
-            <image src="/assets/img/base/close-gray.png" class="w-40 h-40" />
+          <view class="px-24rpx py-16rpx absolute right-0 top-0" catchtap="handleConditionDelete" data-index="{{index}}" data-info="{{item}}">
+            <image src="/assets/img/base/delete.png" class="w-40 h-40" />
           </view>
         </view>
       </view>
@@ -92,7 +92,7 @@
     <van-button wx:if="{{autoSceneId}}" custom-class="double-btn" custom-style="border: 2rpx solid #A2A2A2;" color="transparent" bind:click="handleAutoSceneDelete">
       <text class="text-36rpx text-black-tips">删除</text>
     </van-button>
-    <van-button type="primary" custom-class="{{autoSceneId ? 'double-btn' : 'single-btn'}}" disabled="{{!autoSceneId &&(sceneDeviceActionsFlatten.length === 0 || sceneDeviceConditionsFlatten.length === 0)}}" bind:click="handleSave">
+    <van-button type="primary" custom-class="{{autoSceneId ? 'double-btn' : 'single-btn'}}" disabled="{{!autoSceneId &&(sceneDeviceActionsLength === 0 || sceneDeviceConditionsFlatten.length === 0)}}" bind:click="handleSave">
       <text class="text-36rpx">确定</text>
     </van-button>
   </view>

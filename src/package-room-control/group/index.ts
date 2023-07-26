@@ -6,6 +6,8 @@ import { emitter } from '../../utils/index'
 import { StatusType } from './typings'
 import { addGroup, renameGroup, delGroup, updateGroup } from '../../apis/device'
 
+let timeoutId: number
+
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, roomBinding] }), pageBehaviors],
   data: {
@@ -14,6 +16,7 @@ ComponentWithComputed({
     groupName: '',
     groupId: '',
     presetNames: ['筒灯', '射灯', '吊灯', '灯组'],
+    showGroupFailTips: false,
   },
   computed: {
     successList(data) {
@@ -30,7 +33,7 @@ ComponentWithComputed({
   methods: {
     onLoad() {
       const eventChannel = this.getOpenerEventChannel()
-      eventChannel.on('createGroup', (data) => {
+      eventChannel.on('createGroup', async (data) => {
         const deviceList = data.lightList.map((deviceId: string) => ({
           ...deviceStore.deviceMap[deviceId],
           status: 'processing',
@@ -45,43 +48,65 @@ ComponentWithComputed({
 
         // 开始创建\更新分组
         if (!this.data.groupId) {
-          this.addGroup()
+          await this.addGroup()
         } else {
-          this.updateGroup()
+          await this.updateGroup()
         }
 
-        // 监听创建结果
-        emitter.on('group_device_result_status', (result) => {
-          const diffData = {} as IAnyObject
-          const index = this.data.deviceList.findIndex((device) => device.deviceId === result.devId)
-          const isSuccess = result.errCode === 0
-
-          console.log('emitter====', result.devId, index)
-
-          diffData[`deviceList[${index}].status`] = isSuccess ? 'success' : 'failed'
-
-          // 若这是最后一个上报，则变更页面状态
-          if (this.data.failedList.length + this.data.successList.length === this.data.deviceList.length - 1) {
-            diffData.status = this.data.failedList.length || !isSuccess ? 'hasFailure' : 'allSuccess'
-
-            if (diffData.status === 'hasFailure') {
-              this.setData({
-                showGroupFailTips: true,
-              })
-            }
-          }
-
-          this.setData(diffData)
-
-          // 如果全部失败，则清空分组
-          if (this.data.failedList.length === this.data.deviceList.length) {
-            delGroup({ groupId: this.data.groupId })
+        // 超时控制
+        const TIME_OUT = Math.min(Math.max(8000, this.data.deviceList.length * 1000), 120000)
+        timeoutId = setTimeout(() => {
+          if (this.data.deviceList.length !== this.data.successList.length) {
             this.setData({
-              groupId: '',
+              showGroupFailTips: true,
+              status: 'hasFailure',
             })
           }
-        })
+        }, TIME_OUT)
       })
+
+      // 监听分组结果
+      emitter.on('group_device_result_status', (result) => {
+        const diffData = {} as IAnyObject
+        const index = this.data.deviceList.findIndex((device) => device.deviceId === result.devId)
+        const isSuccess = result.errCode === 0
+
+        console.log('emitter====', result.devId, index)
+
+        diffData[`deviceList[${index}].status`] = isSuccess ? 'success' : 'failed'
+
+        // 若这是最后一个上报，则变更页面状态
+        if (this.data.failedList.length + this.data.successList.length === this.data.deviceList.length - 1) {
+          diffData.status = this.data.failedList.length || !isSuccess ? 'hasFailure' : 'allSuccess'
+
+          if (diffData.status === 'hasFailure') {
+            this.setData({
+              showGroupFailTips: true,
+            })
+            clearTimeout(timeoutId)
+          } else if (this.data.showGroupFailTips) {
+            this.setData({
+              showGroupFailTips: false,
+            })
+          }
+        }
+
+        this.setData(diffData)
+
+        // 如果全部失败，则清空分组
+        if (this.data.failedList.length === this.data.deviceList.length) {
+          delGroup({ groupId: this.data.groupId })
+          this.setData({
+            groupId: '',
+          })
+          clearTimeout(timeoutId)
+        }
+      })
+    },
+    onUnload() {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
     },
     handleCloseDialog() {
       this.setData({
@@ -104,8 +129,8 @@ ComponentWithComputed({
       }
     },
 
-    updateGroup() {
-      updateGroup({
+    async updateGroup() {
+      await updateGroup({
         applianceGroupDtoList: this.data.deviceList.map((device) => ({
           deviceId: device.deviceId,
           deviceType: device.deviceType,
@@ -123,6 +148,7 @@ ComponentWithComputed({
       }))
       this.setData({
         deviceList,
+        status: 'processing'
       })
 
       if (!this.data.groupId) {

@@ -1,7 +1,9 @@
 import { observable, runInAction } from 'mobx-miniprogram'
 import { queryAutoSceneListByHouseId, setAutoSceneEnabled } from '../apis/scene'
 import { homeStore } from './home'
-import { strUtil } from '../utils/index'
+import { strUtil, transferDeviceProperty } from '../utils/index'
+import { PRO_TYPE } from '../config/index'
+import { deviceStore } from './device'
 
 export const autosceneStore = observable({
   /**
@@ -10,13 +12,29 @@ export const autosceneStore = observable({
   allRoomAutoSceneList: [] as AutoScene.AutoSceneItem[],
 
   get allRoomAutoSceneListComputed() {
-    const list = [...this.allRoomAutoSceneList]
-    list.map((item) => {
+    const templist = [...this.allRoomAutoSceneList]
+    return templist.map((item: AutoScene.AutoSceneItem) => {
       const desc = strUtil.transDesc(item.effectiveTime, item.timeConditions[0])
       item.desc = desc.length > 18 ? desc.substring(0, 18) + '...' : desc
-    })
 
-    return list
+      item.deviceActions.forEach((action) => {
+        if (action.proType === PRO_TYPE.light) {
+          const device = deviceStore.allRoomDeviceFlattenList.find((item) => item.uniId === action.deviceId)
+          if (device) {
+            runInAction(() => {
+              action.controlAction[0] = transferDeviceProperty(device.proType, {
+                ...action.controlAction[0],
+                minColorTemp: device.property!.minColorTemp,
+                maxColorTemp: device.property!.maxColorTemp,
+              })
+            })
+          } else {
+            console.log('allRoomAutoSceneListComputed设备不存在', action)
+          }
+        }
+      })
+      return item
+    })
   },
 
   async changeAutoSceneEnabled(data: { sceneId: string; isEnabled: '1' | '0' }) {

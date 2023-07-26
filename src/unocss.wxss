@@ -294,7 +294,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .leading-none{line-height:1;}
 .tab{-moz-tab-size:4;-o-tab-size:4;tab-size:4;}
 .truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.underline{text-decoration-line:underline;}
 .decoration-blue{-webkit-text-decoration-color:rgba(72,143,255,var(--un-line-opacity));--un-line-opacity:1;text-decoration-color:rgba(72,143,255,var(--un-line-opacity));}
 .decoration-solid{text-decoration-style:solid;}
 .text-center{text-align:center;}
