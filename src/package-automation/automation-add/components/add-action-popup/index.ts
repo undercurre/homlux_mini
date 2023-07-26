@@ -53,5 +53,6 @@ Component({
       console.log('actionClicked', e)
       this.triggerEvent('actionClicked', e.currentTarget.dataset.key)
     },
+    blank() {},
   },
 })

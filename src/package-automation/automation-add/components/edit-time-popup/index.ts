@@ -56,5 +56,6 @@ ComponentWithComputed({
     timeChange(e: { detail: number[] }) {
       this.triggerEvent('change', e.detail)
     },
+    blank() {},
   },
 })

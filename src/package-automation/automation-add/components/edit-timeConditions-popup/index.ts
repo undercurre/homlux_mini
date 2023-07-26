@@ -82,5 +82,6 @@ ComponentWithComputed({
       })
     },
     /* 周期设置 end */
+    blank() {},
   },
 })
