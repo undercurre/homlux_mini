@@ -421,6 +421,7 @@ ComponentWithComputed({
             Logger.log(`【${bleDevice.mac}】绑定推送成功， 推送等待时长(ms)：${costTime}`)
 
             wx.reportEvent('zigebee_add', {
+              pro_type: bleDevice.proType,
               cost_time: costTime > 1690268520264 ? -1 : costTime, // -1代表手动起网配上的子设备
               model_id: bleDevice.productId,
             })

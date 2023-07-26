@@ -9,19 +9,21 @@ const CmdTypeMap = {
 export class BleClient {
   mac: string
   key = ''
-  modelId = ''
+  proType = '' // 品类，用于数据埋点
+  modelId = '' // 型号，用于数据埋点
 
   deviceUuid: string
   serviceId = 'BAE55B96-7D19-458D-970C-50613D801BC9'
   characteristicId = '' // 灯具和面板的uid不一致，同类设备的uid是一样的
   msgId = 0
 
-  constructor(params: { mac: string; deviceUuid: string; modelId: string }) {
-    const { mac, deviceUuid, modelId } = params
+  constructor(params: { mac: string; deviceUuid: string; proType: string; modelId: string }) {
+    const { mac, deviceUuid, modelId, proType } = params
 
     this.mac = mac
     this.deviceUuid = deviceUuid
     this.modelId = modelId
+    this.proType = proType
     deviceUuidMap[deviceUuid] = mac
     // 密钥为：midea@homlux0167   (0167为该设备MAC地址后四位
     this.key = `midea@homlux${mac.substr(-4, 4)}`
@@ -46,6 +48,7 @@ export class BleClient {
     Logger.log(`【${this.mac}】 connectRes`, connectRes, `连接蓝牙时间： ${costTime}ms`)
 
     wx.reportEvent('connect_ble', {
+      pro_type: this.proType,
       model_id: this.modelId,
       cost_time: costTime,
     })

@@ -209,7 +209,7 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
     gatewayId: '',
     productName: '',
     isChecked: false,
-    client: new BleClient({ mac: baseInfo.mac, deviceUuid: baseInfo.deviceUuid, modelId }),
+    client: new BleClient({ mac: baseInfo.mac, deviceUuid: baseInfo.deviceUuid, modelId, proType }),
     roomId: roomBinding.store.currentRoom.roomId,
     roomName: roomBinding.store.currentRoom.roomName,
     switchList: [],

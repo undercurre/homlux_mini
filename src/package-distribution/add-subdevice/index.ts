@@ -61,6 +61,7 @@ ComponentWithComputed({
         if (data.deviceId === this.data.pageParams.mac) {
           console.log(`收到绑定推送消息：子设备${this.data.pageParams.mac}`)
           wx.reportEvent('zigebee_add', {
+            pro_type: this.data.pageParams.proType,
             cost_time: dayjs().valueOf() - this.data._startTime,
             model_id: this.data.pageParams.modelId,
           })
@@ -144,7 +145,12 @@ ComponentWithComputed({
         zigbeeMac: '',
         icon: this.data.pageParams.deviceIcon,
         name: this.data.pageParams.deviceName,
-        client: new BleClient({ mac: msgObj.mac, deviceUuid: device.deviceId, modelId: this.data.pageParams.modelId }),
+        client: new BleClient({
+          mac: msgObj.mac,
+          deviceUuid: device.deviceId,
+          modelId: this.data.pageParams.modelId,
+          proType: this.data.pageParams.proType,
+        }),
         roomId: '',
         roomName: '',
         status: 'waiting',
