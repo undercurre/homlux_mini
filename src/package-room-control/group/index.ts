@@ -148,6 +148,7 @@ ComponentWithComputed({
       }))
       this.setData({
         deviceList,
+        status: 'processing'
       })
 
       if (!this.data.groupId) {
