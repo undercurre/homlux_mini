@@ -397,7 +397,7 @@ ComponentWithComputed({
     async beginAddBleDevice(list: Device.ISubDevice[]) {
       try {
         // 先关闭可能正在连接的子设备
-        await this.stopFlash() 
+        await this.stopFlash()
 
         Logger.debug('-------开始子设备配网------')
         this.data._startTime = dayjs().valueOf()
@@ -499,10 +499,10 @@ ComponentWithComputed({
               Logger.error(`【${item.mac}】配网失败：`, waitingRes.msg)
               this.data._errorList.push(`【${item.mac}】${waitingRes.msg}`)
 
-              wx.reportEvent("zigbee_error", {
-                "model_id": item.productId,
-                "pro_type": item.proType,
-                "error_msg": waitingRes.msg,
+              wx.reportEvent('zigbee_error', {
+                model_id: item.productId,
+                pro_type: item.proType,
+                error_msg: waitingRes.msg,
               })
             } else {
               item.status = 'success'
@@ -599,8 +599,6 @@ ComponentWithComputed({
       } else {
         Logger.error(`${device.mac}绑定失败`, res)
       }
-
-      this.updateBleDeviceListView()
     },
 
     async editDeviceInfo(data: { deviceId: string; switchList: Device.ISwitch[] }) {

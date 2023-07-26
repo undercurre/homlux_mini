@@ -27,8 +27,6 @@ ComponentWithComputed({
 
   lifetimes: {
     ready: async function () {
-      this.showQrCode()
-
       wx.updateShareMenu({
         withShareTicket: true, // 用于禁用分享选择界面的多选操作
       })
@@ -37,6 +35,8 @@ ComponentWithComputed({
 
       if (res.success) {
         this.data._shareId = res.result.shareId
+
+        this.showQrCode()
       }
     },
     moved: function () {},

@@ -64,7 +64,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       requestOption.success = (result) => {
         // 是否打印请求结果
         if (requestOption.log) {
-          console.log(
+          Logger.console(
             '请求URL:' + requestOption.url + ' 成功，参数：',
             requestOption.data,
             '，请求结果：',
@@ -82,7 +82,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
         const cost_time = Date.now() - start
 
         if (requestOption.log) {
-          Logger.log(`✔ ${requestOption.url} 用时 ${cost_time} ms`) // , result.data
+          Logger.console(`✔ ${requestOption.url} 用时 ${cost_time} ms`) // , result.data
         }
 
         const data = requestOption.generalSuccessHandler ? requestOption.generalSuccessHandler(result) : result.data
@@ -111,7 +111,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
 
     // 请求发起时的提示
     if (requestOption.log) {
-      Logger.log(`» 发起请求 ${requestOption.url} 参数：\n`, requestOption.data)
+      Logger.console(`» 发起请求 ${requestOption.url} 参数：\n`, requestOption.data)
     }
 
     wx.request({

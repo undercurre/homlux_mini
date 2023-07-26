@@ -502,7 +502,6 @@ ComponentWithComputed({
         return
       }
 
-      Logger.log('checkDevice', res)
       wx.reportEvent('add_device', {
         pro_type: res.result.proType,
         model_id: params.pid,
@@ -521,7 +520,6 @@ ComponentWithComputed({
     async bindSubDevice(params: IAnyObject) {
       const res = await checkDevice({ dsn: params.sn }, { loading: false })
 
-      Logger.log('checkDevice', res)
       if (!res.success) {
         Toast('验证产品信息失败')
 
