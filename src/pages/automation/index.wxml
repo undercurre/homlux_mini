@@ -30,11 +30,14 @@
       <view class="flex-1">
         <!-- 房间卡片列表 -->
         <van-cell-group wx:for="{{allRoomAutoSceneListComputed}}" wx:key="sceneId" inset>
-          <van-cell title="{{item.sceneName}}" label="{{item.desc}}" label-class="cell-lable" center title-style="font-weight: 500;" border="{{false}}" clickable data-autosceneid="{{item.sceneId}}" bind:click="toEditAutoScene">
-            <view slot="icon" class="rounded-32rpx p-16rpx mr-32rpx">
+          <van-cell label="{{item.desc}}" label-class="cell-lable" center border="{{false}}" clickable data-autosceneid="{{item.sceneId}}" bind:click="toEditAutoScene">
+            <view slot="icon" class="rounded-32rpx p-16rpx mr-16rpx flex">
               <image class="w-72 h-72" src="/assets/img/auto-scene/{{item.sceneIcon}}.png"></image>
             </view>
-            <view slot="right-icon">
+            <view slot="title" class="w-384rpx h-44rpx cell-title">
+              <text>{{item.sceneName}}</text>
+            </view>
+            <view slot="right-icon" class="pt-12rpx">
               <van-switch checked="{{item.isEnabled === '1'}}" data-sceneId="{{item.sceneId}}" data-isEnabled="{{item.isEnabled}}" bind:change="changeAutoSceneEnabled" catchtap="stopPropagation" />
             </view>
           </van-cell>

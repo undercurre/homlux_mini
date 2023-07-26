@@ -77,6 +77,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .pt-100rpx{padding-top:100rpx;}
 .pt-10rpx{padding-top:10rpx;}
 .pt-112rpx{padding-top:112rpx;}
+.pt-12rpx{padding-top:12rpx;}
 .pt-16rpx{padding-top:16rpx;}
 .pt-180rpx{padding-top:180rpx;}
 .pt-20rpx{padding-top:20rpx;}
@@ -496,6 +497,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .w-35rpx{width:35rpx;}
 .w-36,
 .w-36rpx{width:36rpx;}
+.w-384rpx{width:384rpx;}
 .w-40{width:40rpx;}
 .w-400,
 .w-400rpx{width:400rpx;}

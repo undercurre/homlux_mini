@@ -29,6 +29,7 @@ import {
   storage,
   getCurrentPageParams,
   strUtil,
+  checkInputNameIllegal,
 } from '../../utils/index'
 
 ComponentWithComputed({
@@ -969,6 +970,13 @@ ComponentWithComputed({
       if (!this.data.sceneName) {
         Toast({
           message: '场景名不能为空',
+          zIndex: 99999,
+        })
+        return
+      }
+      if (checkInputNameIllegal(this.data.sceneName)) {
+        Toast({
+          message: '场景名称不能用特殊符号或表情',
           zIndex: 99999,
         })
         return

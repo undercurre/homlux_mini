@@ -28,7 +28,7 @@
           <text class="text-32rpx text-hex-27282A text-left">生效时间</text>
           <view class="flex flex-col items-end">
             <text wx:if="{{!isAllday}}" class="text-28rpx text-hex-555659 text-right">{{effectiveTime.startTime+'-'+endTimeDesc}}</text>
-            <text class="{{!isAllday ? 'text-24rpx' : 'text-32rpx'}} text-hex-a2a2a2 text-right">{{timePeriodDesc}}</text>
+            <text class="{{!isAllday || timePeriodDesc.length > 14  ? 'text-24rpx' : 'text-32rpx'}} text-hex-a2a2a2 text-right">{{timePeriodDesc}}</text>
           </view>
         </view>
         <view slot="right-icon" class="flex items-center ml-12rpx">
