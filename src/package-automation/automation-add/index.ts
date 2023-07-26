@@ -1,29 +1,11 @@
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
-import {
-  deleteScene,
-  findDevice,
-  //sendDevice
-  addScene,
-  updateScene,
-} from '../../apis/index'
+import { deleteScene, findDevice, addScene, updateScene } from '../../apis/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
-// import { homeBinding, homeStore, otaBinding, otaStore } from '../../store/index'
-// import Toast from '@vant/weapp/toast/toast'
 import { ComponentWithComputed } from 'miniprogram-computed'
-// import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-// import { getEnv } from '../../config/index'
 import { deviceStore, sceneStore, homeStore, autosceneStore } from '../../store/index'
+import { PRO_TYPE, SENSOR_TYPE } from '../../config/index'
 import {
-  // maxColorTemp, minColorTemp,
-  PRO_TYPE,
-  SENSOR_TYPE,
-} from '../../config/index'
-// import Toast from '@vant/weapp/toast/toast'
-import {
-  // emitter,
-  // getCurrentPageParams,
-  // transferDeviceProperty,
   toPropertyDesc,
   toWifiProperty,
   storage,
@@ -163,6 +145,10 @@ ComponentWithComputed({
       } else {
         return data.sceneDevicelinkSelectList
       }
+    },
+    //只包含场景和设备的动作列表长度
+    sceneDeviceActionsLength(data) {
+      return data.sceneDeviceActionsFlatten.filter((item) => item.uniId.indexOf('DLY') === -1).length
     },
   },
   lifetimes: {
@@ -944,7 +930,7 @@ ComponentWithComputed({
     async handleSave() {
       if (
         this.data.autoSceneId &&
-        (this.data.sceneDeviceActionsFlatten.length === 0 || this.data.sceneDeviceConditionsFlatten.length === 0)
+        (this.data.sceneDeviceActionsLength === 0 || this.data.sceneDeviceConditionsFlatten.length === 0)
       ) {
         // 删完actions或conditions按照删除场景处理
         const res = await Dialog.confirm({
@@ -959,7 +945,7 @@ ComponentWithComputed({
 
         const delRes = await deleteScene(this.data.autoSceneId)
         if (delRes.success) {
-          // await autosceneStore.updateAllRoomAutoSceneList()
+          await autosceneStore.updateAllRoomAutoSceneList()
           wx.navigateBack()
         } else {
           Toast({ message: '删除失败', zIndex: 9999 })
@@ -1144,7 +1130,7 @@ ComponentWithComputed({
           message: this.data.autoSceneId ? '更新失败' : '创建失败',
         })
       } else {
-        // autosceneStore.updateAllRoomAutoSceneList()
+        autosceneStore.updateAllRoomAutoSceneList()
         Toast({
           message: this.data.autoSceneId ? '更新成功' : '创建成功',
           onClose: () => {
@@ -1165,7 +1151,7 @@ ComponentWithComputed({
 
       const delRes = await deleteScene(this.data.autoSceneId)
       if (delRes.success) {
-        // await autosceneStore.updateAllRoomAutoSceneList()
+        await autosceneStore.updateAllRoomAutoSceneList()
         wx.navigateBack()
       } else {
         Toast({ message: '删除失败', zIndex: 9999 })

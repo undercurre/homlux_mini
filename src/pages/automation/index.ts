@@ -53,6 +53,9 @@ ComponentWithComputed({
       emitter.on('scene_upt', () => {
         autosceneBinding.store.updateAllRoomAutoSceneList()
       })
+      emitter.on('scene_enabled', () => {
+        autosceneBinding.store.updateAllRoomAutoSceneList()
+      })
       //加载自动化列表
       if (this.data.isLogin) {
         autosceneBinding.store.updateAllRoomAutoSceneList()
@@ -62,6 +65,7 @@ ComponentWithComputed({
       emitter.off('scene_add')
       emitter.off('scene_del')
       emitter.off('scene_upt')
+      emitter.off('scene_enabled')
     },
     toPage(e: { currentTarget: { dataset: { url: string } } }) {
       wx.navigateTo({

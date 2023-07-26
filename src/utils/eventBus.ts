@@ -37,6 +37,9 @@ type Events = {
   scene_del: {
     eventType: keyof typeof WSEventType
   }
+  scene_enabled: {
+    eventType: keyof typeof WSEventType
+  }
 
   // 用户退出
   del_house_user: {
@@ -65,6 +68,7 @@ export const WSEventType = {
   scene_add: 'scene_add', // 场景更新
   scene_upt: 'scene_upt', // 创建场景
   scene_del: 'scene_del', // 场景删除
+  scene_enabled: 'scene_enabled', //场景使能切换
 }
 
 export const emitter: Emitter<Events> = mitt<Events>()
