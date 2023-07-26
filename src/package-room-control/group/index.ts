@@ -59,6 +59,7 @@ ComponentWithComputed({
           if (this.data.deviceList.length !== this.data.successList.length) {
             this.setData({
               showGroupFailTips: true,
+              status: 'hasFailure',
             })
           }
         }, TIME_OUT)
@@ -83,6 +84,10 @@ ComponentWithComputed({
               showGroupFailTips: true,
             })
             clearTimeout(timeoutId)
+          } else if (this.data.showGroupFailTips) {
+            this.setData({
+              showGroupFailTips: false,
+            })
           }
         }
 
@@ -107,7 +112,6 @@ ComponentWithComputed({
       this.setData({
         showGroupFailTips: false,
       })
-      this.endGroup()
     },
     async addGroup() {
       const res = await addGroup({
