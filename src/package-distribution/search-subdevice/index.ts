@@ -423,12 +423,17 @@ ComponentWithComputed({
           )
 
           if (bleDevice) {
-            bleDevice.status = 'zigbeeBind' // 标记子设备已入网关的zigbee网络
             const deviceData = this.data._deviceMap[bleDevice.mac]
             const costTime = dayjs().valueOf() - deviceData.startTime
 
             Logger.log(`【${bleDevice.mac}】绑定推送成功， 推送等待时长(ms)：${costTime}`)
 
+            if (bleDevice.status === 'success' || bleDevice.status === 'fail') {
+              Logger.debug(`【${bleDevice.mac}】已经是终结状态`)
+              return
+            }
+
+            bleDevice.status = 'zigbeeBind' // 标记子设备已入网关的zigbee网络
             wx.reportEvent('zigebee_add', {
               pro_type: bleDevice.proType,
               cost_time: costTime > 1690268520264 ? -1 : costTime, // -1代表手动起网配上的子设备
@@ -507,7 +512,7 @@ ComponentWithComputed({
 
             Logger.log(`【${item.mac}】waitingRes`, waitingRes)
 
-            if (!waitingRes.success) {
+            if (!waitingRes.success && item.status === 'waiting') {
               item.status = 'fail'
               Logger.error(`【${item.mac}】配网失败：`, waitingRes.msg)
               this.data._errorList.push(`【${item.mac}】${waitingRes.msg}`)
