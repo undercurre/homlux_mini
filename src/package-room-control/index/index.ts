@@ -496,7 +496,7 @@ ComponentWithComputed({
               diffData[`devicePageList[${groupIndex}][${index}].switchInfoDTOList[0]`] = newVal
             }
 
-            // 如果控制框为显示状态，且是当前更新项，则同步更新
+            // 如果控制弹框为显示状态，则同步选中设备的状态
             if (
               device!.mzgdPropertyDTOList &&
               this.data.checkedList.includes(originDevice!.deviceId) &&
@@ -647,6 +647,21 @@ ComponentWithComputed({
         const diff = this.data._diffWaitlist.shift()
         this.data._updating = true
         this.updateDeviceList(diff)
+      }
+    },
+
+    // 更新选中状态并渲染
+    toSelect(uniId: string) {
+      for (const groupIndex in this.data.devicePageList) {
+        const group = this.data.devicePageList[groupIndex]
+        const index = group.findIndex((d) => d.uniId === uniId)
+        if (index !== -1) {
+          const diffData = {} as IAnyObject
+          diffData[`devicePageList[${groupIndex}][${index}].select`] = !group[index].select
+          console.log(diffData)
+          this.setData(diffData)
+          break
+        }
       }
     },
 
@@ -965,23 +980,22 @@ ComponentWithComputed({
       const isChecked = this.data.checkedList.includes(uniId) // 点击卡片前，卡片是否选中
       const toCheck = !isChecked // 本次点击需执行的选中状态
 
-      // 选择时的卡片样式渲染
-      const diffData = {} as IAnyObject
-
-      // 取消选择
+      // 取消旧选择
       if (toCheck && this.data.checkedList.length) {
         const oldCheckedId = this.data.checkedList[0]
-        const oldDevice = {} as DeviceCard
-        oldDevice.deviceId = oldCheckedId.split(':')[0]
-        oldDevice.uniId = oldCheckedId
-        oldDevice.select = false
-        this.updateQueue(oldDevice)
+        this.toSelect(oldCheckedId)
       }
+
+      // 选择渲染
+      this.toSelect(uniId)
+
+      // 选择时的卡片样式渲染
+      const diffData = {} as IAnyObject
 
       // 选择逻辑
       this.data.checkedList = toCheck ? [uniId] : []
 
-      // 选择灯卡片时，面板状态的处理
+      // 选择灯卡片时，同步设备状态到控制弹窗
       if (toCheck) {
         const prop = e.detail.mzgdPropertyDTOList['1']
         if (e.detail.proType === PRO_TYPE.light) {
@@ -997,11 +1011,6 @@ ComponentWithComputed({
         }
       }
 
-      // 更新选中样式
-      const device = e.detail
-      device.select = this.data.checkedList.includes(uniId)
-      this.updateQueue(device)
-
       // 合并数据变化
       diffData.checkedList = [...this.data.checkedList]
       diffData.controlPopup = toCheck
@@ -1009,13 +1018,14 @@ ComponentWithComputed({
       // 更新视图
       this.setData(diffData)
 
-      // TODO
+      // TODO 冗余操作，是否可以取消设值
       this.updateSelectType()
 
       // 弹起popup后，选中卡片滚动到视图中央，以免被遮挡
-      this.setData({
-        scrollTop: this.data.scrollTop + e.detail.clientRect.top - this.data.scrollViewHeight / 2,
-      })
+      // 作用不大，减小渲染压力，暂时注释
+      // this.setData({
+      //   scrollTop: this.data.scrollTop + e.detail.clientRect.top - this.data.scrollViewHeight / 2,
+      // })
     },
 
     // 卡片点击时，按品类调用对应方法
@@ -1116,28 +1126,6 @@ ComponentWithComputed({
       wx.navigateTo({
         url: '/package-room-control/scene-request-list/index',
       })
-
-      // this.updateDeviceList()
-      // setTimeout(() => {
-      //   wx.createSelectorQuery()
-      //     .select('#scene-title')
-      //     .boundingClientRect()
-      //     .exec((res) => {
-      //       if (res.length > 0 && res[0]) {
-      //         this.setData({
-      //           sceneTitlePosition: {
-      //             x: res[0].left,
-      //             y: res[0].top,
-      //           },
-      //         })
-      //         setTimeout(() => {
-      //           this.setData({
-      //             showAddSceneSuccess: false,
-      //           })
-      //         }, 3000)
-      //       }
-      //     })
-      // }, 100)
     },
     updateSelectType() {
       const typeList = new Set()
