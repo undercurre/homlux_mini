@@ -136,7 +136,7 @@ export const bleDevicesStore = observable({
       Logger.log(
         'updateBleDeviceList, success',
         this.bleDeviceList.filter((item) => item.isChecked).length,
-        this.bleDeviceList.filter((item) => (item.status === 'success' || item.status === 'fail')).length,
+        this.bleDeviceList.filter((item) => item.status === 'success' || item.status === 'fail').length,
       )
     })
   },

@@ -557,7 +557,7 @@ ComponentWithComputed({
             // 等待绑定推送，超时处理
             deviceData.startTime = dayjs().valueOf()
             deviceData.bindTimeoutId = setTimeout(() => {
-              if (bleDevice.status === 'waiting') {
+              if (bleDevice.status !== 'success' && bleDevice.status !== 'fail') {
                 deviceData.zigbeeAddCallback({ success: false, msg: '绑定推送监听超时' })
               }
             }, timeout * 1000)
@@ -579,8 +579,8 @@ ComponentWithComputed({
           // 等待绑定推送，超时处理
           deviceData.startTime = dayjs().valueOf()
           deviceData.bindTimeoutId = setTimeout(() => {
-            if (bleDevice.status === 'waiting') {
-              deviceData.zigbeeAddCallback({ success: false, msg: '绑定监听超时' })
+            if (bleDevice.status !== 'success' && bleDevice.status !== 'fail') {
+              deviceData.zigbeeAddCallback({ success: false, msg: '绑定推送监听超时' })
             }
           }, timeout * 1000)
         } else if (deviceData.zigbeeRepeatTimes > 0) {
