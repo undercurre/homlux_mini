@@ -1,11 +1,11 @@
-// const minutes = []
+const minutes = []
 const seconds = []
 
-// for (let i = 0; i <= 30; i++) {
-//   minutes.push(String(i).padStart(2, '0'))
-// }
-
 for (let i = 0; i <= 10; i++) {
+  minutes.push(String(i).padStart(2, '0'))
+}
+
+for (let i = 0; i <= 59; i++) {
   seconds.push(String(i).padStart(2, '0'))
 }
 
@@ -30,7 +30,7 @@ Component({
     },
     value: {
       type: Array,
-      value: [0],
+      value: [0, 0],
     },
     showCancel: {
       type: Boolean,
@@ -54,7 +54,7 @@ Component({
    * 组件的初始数据
    */
   data: {
-    // minutes,
+    minutes,
     seconds,
   },
 

@@ -69,7 +69,7 @@ ComponentWithComputed({
     /** 将当前场景里多路的Condition拍扁 */
     sceneDeviceConditionsFlatten: [] as AutoScene.AutoSceneFlattenCondition[],
     //延时
-    delay: [0],
+    delay: [0, 0],
     //时间条件
     timeCondition: {
       time: '',
@@ -254,7 +254,7 @@ ComponentWithComputed({
             tempSceneDeviceActionsFlatten.push({
               uniId: action.deviceId,
               name: '延时',
-              desc: [action.delayTime + '秒'],
+              desc: [strUtil.formatTime(action.delayTime)],
               type: action.deviceType,
               pic: '/assets/img/automation/stopwatch-materialized.png',
               value: { delayTime: action.delayTime },
@@ -483,7 +483,7 @@ ComponentWithComputed({
       if (e.detail === 'delay') {
         this.setData({
           showDelayPopup: true,
-          delay: [0],
+          delay: [0, 0],
         })
       } else if (e.detail === 'scene') {
         if (this.data.sceneList.length) {
@@ -524,28 +524,30 @@ ComponentWithComputed({
     },
     handleDelayConfirm(e: { detail: number[] }) {
       console.log(e.detail)
-      if (!e.detail[0]) {
+      if (!e.detail[0] && !e.detail[1]) {
         if (this.data.editingDelayId) {
           const index = this.data.sceneDeviceActionsFlatten.findIndex((item) => item.uniId === this.data.editingDelayId)
           this.data.sceneDeviceActionsFlatten.splice(index, 1)
         }
       } else {
+        const delaySec = e.detail[0] * 60 + e.detail[1]
+
         if (this.data.editingDelayId) {
           //更新原来的延时Id
           const index = this.data.sceneDeviceActionsFlatten.findIndex((item) => item.uniId === this.data.editingDelayId)
           this.setData({
-            [`sceneDeviceActionsFlatten[${index}].desc`]: [e.detail[0] + '秒'],
-            [`sceneDeviceActionsFlatten[${index}].value`]: { delayTime: e.detail[0] },
+            [`sceneDeviceActionsFlatten[${index}].desc`]: [strUtil.formatTime(delaySec)],
+            [`sceneDeviceActionsFlatten[${index}].value`]: { delayTime: delaySec },
           })
         } else {
           //新增一个Id并push到列表后
           this.data.sceneDeviceActionsFlatten.push({
             uniId: new Date().getTime() + 'DLY',
             name: '延时',
-            desc: [e.detail[0] + '秒'],
+            desc: [strUtil.formatTime(delaySec)],
             type: 6,
             pic: '/assets/img/automation/stopwatch-materialized.png',
-            value: { delayTime: e.detail[0] },
+            value: { delayTime: delaySec },
             orderNum: 0,
             dragId: new Date().getTime() + 'DLY',
           })
@@ -835,8 +837,11 @@ ComponentWithComputed({
       const action = this.data.sceneDeviceActionsFlatten[index]
       console.log('handleAutoSceneActionEdit', action)
       if (action.type === 6) {
+        const delay = [0, 0] as number[]
+        delay[0] = Math.trunc(action.value.delayTime / 60)
+        delay[1] = Math.trunc(action.value.delayTime % 60)
         this.setData({
-          delay: [action.value.delayTime],
+          delay,
           editingDelayId: action.uniId,
           showDelayPopup: true,
         })
