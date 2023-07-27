@@ -16,7 +16,8 @@ export const autosceneStore = observable({
     return templist.map((item: AutoScene.AutoSceneItem) => {
       const desc = strUtil.transDesc(item.effectiveTime, item.timeConditions[0])
       item.desc = desc.length > 18 ? desc.substring(0, 18) + '...' : desc
-
+      const reg = /^icon-\d+$/ //自动化场景图标统一为该名称格式
+      if (!reg.test(item.sceneIcon)) item.sceneIcon = 'icon-1'
       item.deviceActions.forEach((action) => {
         if (action.proType === PRO_TYPE.light) {
           const device = deviceStore.allRoomDeviceFlattenList.find((item) => item.uniId === action.deviceId)
