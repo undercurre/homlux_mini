@@ -133,7 +133,7 @@ ComponentWithComputed({
 
         wx.switchTab({
           url: '/pages/index/index',
-        })  
+        })
       } else {
         Toast('保存失败')
       }

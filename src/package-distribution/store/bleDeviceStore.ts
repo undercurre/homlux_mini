@@ -127,6 +127,17 @@ export const bleDevicesStore = observable({
         'updateBleDeviceList, waiting',
         this.bleDeviceList.filter((item) => item.status === 'waiting' && item.isChecked),
       )
+
+      Logger.log(
+        'updateBleDeviceList, zigbeeBind',
+        this.bleDeviceList.filter((item) => item.status === 'zigbeeBind' && item.isChecked),
+      )
+
+      Logger.log(
+        'updateBleDeviceList, success',
+        this.bleDeviceList.filter((item) => item.isChecked).length,
+        this.bleDeviceList.filter((item) => (item.status === 'success' || item.status === 'fail')).length,
+      )
     })
   },
 
@@ -183,7 +194,7 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
   let { productName: deviceName } = infoRes.result
   const { proType, switchNum, modelId, productIcon } = infoRes.result
 
-  Logger.log(`成功发现${deviceName}：${baseInfo.zigbeeMac}`, baseInfo)
+  Logger.log(`成功发现${deviceName}：${baseInfo.zigbeeMac}`)
 
   const bindNum = deviceBinding.store.allRoomDeviceList.filter(
     (item) => item.proType === proType && item.productId === modelId,

@@ -190,8 +190,6 @@ export class BleClient {
 
       const buffer = strUtil.hexStringToArrayBuffer(msg)
 
-      Logger.log('msg', msg, 'buffer', buffer)
-
       const begin = Date.now()
 
       let timeId = 0
