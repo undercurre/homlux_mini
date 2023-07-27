@@ -1,8 +1,14 @@
 // custom-tab-bar/index.ts
-Component({
+import { ComponentWithComputed } from 'miniprogram-computed'
+import pageBehavior from '../behaviors/pageBehaviors'
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import { homeBinding, userBinding } from '../store/index'
+
+ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
   },
+  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, userBinding] }), pageBehavior],
 
   /**
    * 组件的属性列表
@@ -36,6 +42,15 @@ Component({
         path: '/pages/mine/index',
       },
     ],
+  },
+  computed: {
+    menuList(data: IAnyObject) {
+      const list = data.list
+      if (!data.isLogin || data.isVisitor) {
+        return list.filter((item: IAnyObject) => item.text !== '自动化')
+      }
+      return list
+    },
   },
 
   /**

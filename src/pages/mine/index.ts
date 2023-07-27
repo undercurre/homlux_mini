@@ -36,18 +36,22 @@ Component({
       deviceCategory: '/package-mine/device-category/index',
     },
   },
-  methods: {
-    /**
-     * 生命周期函数--监听页面加载
-     */
-    onLoad() {
+  pageLifetimes: {
+    show() {
       if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-        this.getTabBar().setData({
-          selected: 2,
-        })
+        if (!this.data.isLogin || this.data.isVisitor) {
+          this.getTabBar().setData({
+            selected: 1,
+          })
+        } else {
+          this.getTabBar().setData({
+            selected: 2,
+          })
+        }
       }
     },
-
+  },
+  methods: {
     toPage(e: { currentTarget: { dataset: { url: string; auth: string; param: string } } }) {
       console.log('e.currentTarget.dataset', e.currentTarget)
       const { url, auth, param } = e.currentTarget.dataset
