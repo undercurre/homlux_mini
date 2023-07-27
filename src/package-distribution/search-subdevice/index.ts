@@ -30,6 +30,8 @@ ComponentWithComputed({
     _startTime: 0,
     _gatewayInfo: {
       channel: 0,
+      extPanId: 0,
+      panId: 0,
     },
     _proType: '',
     _bleTaskQueue: new PromiseQueue({ concurrency: 3 }), // 允许同时进行蓝牙通讯配网的任务队列，暂定3个
@@ -117,12 +119,16 @@ ComponentWithComputed({
 
       bleDevicesStore.updateBleDeviceList()
 
-      const { proType, productId, channel } = getCurrentPageParams()
+      const { proType, productId, channel, extPanId, panId } = getCurrentPageParams()
       this.setData({
         proType,
       })
       this.data._productId = productId
-      this.data._gatewayInfo.channel = parseInt(channel) || 0 // 获取网关信道
+      this.data._gatewayInfo = {
+        channel: parseInt(channel), // 获取网关信道
+        extPanId: parseInt(extPanId),
+        panId: parseInt(panId),
+      }
 
       if (proType === PRO_TYPE.sensor) {
         bleDevicesStore.reset()
@@ -557,7 +563,9 @@ ComponentWithComputed({
 
         deviceData.zigbeeRepeatTimes--
 
-        const res = await bleDevice.client.startZigbeeNet({ channel: this.data._gatewayInfo.channel })
+        const { channel, extPanId, panId } = this.data._gatewayInfo
+
+        const res = await bleDevice.client.startZigbeeNet({ channel, extPanId, panId })
 
         if (res.success) {
           bleDevice.isConfig = '02' // 将设备配网状态置为已配网，否则失败重试由于前面判断状态的逻辑无法重新添加成功

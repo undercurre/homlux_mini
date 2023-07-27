@@ -6,7 +6,7 @@
     "urlCheck": true,
     "bigPackageSizeSupport": true
   },
-  "libVersion": "3.0.0",
+  "libVersion": "2.33.0",
   "condition": {
     "miniprogram": {
       "list": [

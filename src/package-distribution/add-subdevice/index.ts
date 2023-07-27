@@ -209,8 +209,13 @@ ComponentWithComputed({
 
     async startZigbeeNet(bleDevice: IBleDevice) {
       bleDevice.zigbeeRepeatTimes--
+      const { channel, extPanId, panId } = this.data.pageParams
 
-      const res = await bleDevice.client.startZigbeeNet({ channel: parseInt(this.data.pageParams.channel) })
+      const res = await bleDevice.client.startZigbeeNet({
+        channel: parseInt(channel),
+        extPanId: parseInt(extPanId),
+        panId: parseInt(panId),
+      })
 
       // 配网指令允许重发3次
       if (!res.success && bleDevice.zigbeeRepeatTimes > 0) {

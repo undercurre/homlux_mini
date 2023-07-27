@@ -279,8 +279,18 @@ export class BleClient {
     }
   }
 
-  async startZigbeeNet({ channel = 0x00 }) {
-    const res = await this.sendCmd({ cmdType: 'DEVICE_CONTROL', data: [0x00, channel, 0x00, 0x00] })
+  async startZigbeeNet({ channel = 0, panId = 0, extPanId = 0 }) {
+    const panIdHexArr = strUtil.hexStringToArrayUnit8(panId.toString(16).toUpperCase().padStart(4, '0'), 2).reverse()
+    const exPanIdHexArr = strUtil
+      .hexStringToArrayUnit8(extPanId.toString(16).toUpperCase().padStart(16, '0'), 2)
+      .reverse()
+
+    console.debug('panIdHexArr', panIdHexArr, 'exPanIdHexArr', exPanIdHexArr)
+
+    const res = await this.sendCmd({
+      cmdType: 'DEVICE_CONTROL',
+      data: [0x00, channel, ...panIdHexArr, ...exPanIdHexArr],
+    })
 
     let zigbeeMac = ''
 

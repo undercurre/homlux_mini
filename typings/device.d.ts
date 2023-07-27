@@ -28,6 +28,8 @@ declare namespace Device {
     channel: number // zigbee信道
 
     panId: number
+
+    extPanId: number
     /**
      * 设备类型
      * 1:网关 2:子设备 3:wifi, 4:灯组
