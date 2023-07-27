@@ -41,7 +41,7 @@ export const strUtil = {
   hexStringToArrayUnit8(str: string, num: number) {
     const reg = new RegExp(`([0-9a-fA-F]{${num}})`)
     let arr = str.split(reg)
-    
+
     arr = arr.filter((item) => item != '')
 
     return arr.map((item) => parseInt('0x' + item))
