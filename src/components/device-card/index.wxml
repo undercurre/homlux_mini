@@ -9,7 +9,7 @@
   </view>
 
   <!-- 设备图标 -->
-  <view class="absolute left-0 pb-32rpx flex-col-center w-full h-full">
+  <view class="absolute left-0 pb-40rpx flex-col-center w-full h-full">
     <image src="{{picUrl}}" class="w-72rpx h-72rpx"></image>
   </view>
 
@@ -17,12 +17,12 @@
   <view wx:if="{{ripple}}" class="absolute left-80rpx w-250rpx h-250rpx rounded-999 {{onOff ? 'ripple-on' : 'ripple-off'}}" style="animation: ripple-{{onOff ? 'on' : 'off'}} 1s ease forwards;"></view>
 
   <!-- 附加描述，暂时只用于显示面板名称 -->
-  <view catchtap="handleMiddleTap" class="absolute text-center w-full top-100rpx mt-12rpx" wx:if="{{deviceType==='switch' && (showControl || showBtnDetail)}}">
+  <view catch:tap="handleMiddleTap" class="absolute text-center w-full top-90rpx pt-20rpx" wx:if="{{deviceType==='switch' && (showControl || showBtnDetail)}}">
     <text class="text-20rpx text-black-tips">{{bottomDesc}}</text>
   </view>
 
   <!-- 控制按钮、场景关联 -->
-  <view wx:if="{{showControl && deviceInfo.onLineStatus}}" class="absolute left-0 bottom-0 w-160rpx flex-col-center" catchtap="handlePowerTap">
+  <view wx:if="{{showControl && deviceInfo.onLineStatus}}" class="absolute left-0 bottom-0 w-160rpx flex-col-center" catch:tap="handlePowerTap">
     <view wx:if="{{deviceInfo.linkSceneName}}" class="flex-center mb-22rpx">
       <image src="/assets/img/base/scene-switch-btn.png" class="w-22rpx h-22rpx mt-4rpx" />
       <text class="text-blue text-24rpx leading-none ml-4rpx">{{deviceInfo.linkSceneName}}</text>

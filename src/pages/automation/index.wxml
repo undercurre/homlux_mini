@@ -38,7 +38,9 @@
               <text>{{item.sceneName}}</text>
             </view>
             <view slot="right-icon" class="pt-12rpx">
-              <van-switch checked="{{item.isEnabled === '1'}}" data-sceneId="{{item.sceneId}}" data-isEnabled="{{item.isEnabled}}" bind:change="changeAutoSceneEnabled" catchtap="stopPropagation" />
+              <view hover-stop-propagation="true">
+                <van-switch checked="{{item.isEnabled === '1'}}" data-sceneId="{{item.sceneId}}" data-isEnabled="{{item.isEnabled}}" bind:change="changeAutoSceneEnabled" catchtap="stopPropagation" />
+              </view>
             </view>
           </van-cell>
         </van-cell-group>

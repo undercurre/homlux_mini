@@ -145,4 +145,14 @@ export const strUtil = {
       )} ${strUtil.transPeriodDesc(effectiveTime.timeType, effectiveTime.timePeriod)}`
     }
   },
+
+  /**
+   * 传入秒数，转化为时分秒格式
+   * @param seconds
+   */
+  formatTime(seconds: number) {
+    return `${Math.trunc(seconds / 3600) > 0 ? Math.trunc(seconds / 3600) + '小时' : ''}${
+      Math.trunc((seconds % 3600) / 60) > 0 ? Math.trunc((seconds % 3600) / 60) + '分' : ''
+    }${Math.trunc((seconds % 3600) % 60) > 0 ? Math.trunc((seconds % 3600) % 60) + '秒' : ''}`
+  },
 }
