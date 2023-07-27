@@ -30,6 +30,23 @@ export const strUtil = {
     }
     return theRequest
   },
+
+  /**
+   * 分割16进制字符串，转化成字节数组，
+   * 此正则只针对十六进制
+   * 输入多于六个字符，超过的字符如果不属于十六进制会变成NaN
+   * @param str
+   * @param num
+   */
+  hexStringToArrayUnit8(str: string, num: number) {
+    const reg = new RegExp(`([0-9a-fA-F]{${num}})`)
+    let arr = str.split(reg)
+    
+    arr = arr.filter((item) => item != '')
+
+    return arr.map((item) => parseInt('0x' + item))
+  },
+
   /**
    * 16进制字符串转ArrayBuffer
    * @param str

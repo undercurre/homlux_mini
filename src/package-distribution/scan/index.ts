@@ -38,6 +38,8 @@ ComponentWithComputed({
       deviceId: '',
       sn: '',
       channel: 0,
+      extPanId: 0,
+      panId: 0,
     },
     deviceInfo: {
       icon: '/package-distribution/assets/scan/light.png',
@@ -146,6 +148,8 @@ ComponentWithComputed({
           deviceId: item.deviceId,
           sn: item.sn,
           channel: item.channel || 0,
+          panId: item.panId || 0,
+          extPanId: item.extPanId || 0,
         },
       })
     },
@@ -256,6 +260,8 @@ ComponentWithComputed({
           deviceId: '',
           sn: '',
           channel: 0,
+          extPanId: 0,
+          panId: 0,
         },
       })
     },
@@ -570,10 +576,13 @@ ComponentWithComputed({
       }
 
       if (this.data.gatewayList.length === 1 && this.data.gatewayList[0].onLineStatus === 1) {
+        const gateway = this.data.gatewayList[0]
         this.data.selectGateway = {
-          deviceId: this.data.gatewayList[0].deviceId,
-          sn: this.data.gatewayList[0].sn,
-          channel: this.data.gatewayList[0].channel || 0,
+          deviceId: gateway.deviceId,
+          sn: gateway.sn,
+          channel: gateway.channel || 0,
+          panId: gateway.panId || 0,
+          extPanId: gateway.extPanId || 0,
         }
       } else {
         this.setData({
@@ -596,20 +605,22 @@ ComponentWithComputed({
         return
       }
 
-      const { deviceId, sn, channel } = this.data.selectGateway
+      const { deviceId, sn, channel, extPanId, panId } = this.data.selectGateway
 
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
           gatewayId: deviceId,
           gatewaySn: sn,
-          channel: channel,
+          channel,
+          extPanId,
+          panId,
         }),
       })
     },
 
     // 添加单个子设备
     addSingleSubdevice() {
-      const { deviceId, sn, channel } = this.data.selectGateway
+      const { deviceId, sn, channel, extPanId, panId } = this.data.selectGateway
 
       const { proType, modelId } = this.data.deviceInfo
 
@@ -624,7 +635,9 @@ ComponentWithComputed({
           mac: this.data.deviceInfo.mac,
           gatewayId: deviceId,
           gatewaySn: sn,
-          channel: channel,
+          channel,
+          extPanId,
+          panId,
           deviceName: this.data.deviceInfo.deviceName,
           deviceIcon: this.data.deviceInfo.icon,
           proType: proType,
