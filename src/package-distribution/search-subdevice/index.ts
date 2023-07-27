@@ -481,6 +481,11 @@ ComponentWithComputed({
             // 已经手动进入配网状态且已经zigbee配网成功的，无需再次进入配网
             if (item.status !== 'zigbeeBind') {
               this.data._bleTaskQueue.add(async () => {
+                if (item.status === 'success') {
+                  Logger.debug(`${item.mac}已zigbee配网成功，无需再下发蓝牙指令`)
+                  return
+                }
+
                 bleList.push(item.mac)
                 Logger.debug(`【${item.mac}】蓝牙任务开始`)
                 await this.startZigbeeNet(item)

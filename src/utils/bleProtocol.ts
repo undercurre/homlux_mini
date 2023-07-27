@@ -206,11 +206,17 @@ export class BleClient {
             return
           }
 
+          Logger.log('listener', res)
+
           const hex = strUtil.ab2hex(res.value)
           const msg = aesUtil.decrypt(hex, this.key, 'Hex')
 
+          Logger.debug('msg', msg)
+
           const resMsgId = parseInt(msg.substr(2, 2), 16) // 收到回复的指令msgId
           const packLen = parseInt(msg.substr(4, 2), 16) // 回复消息的Byte Msg Id到Byte Checksum的总长度，单位byte
+
+          Logger.log('hex', hex, 'resMsgId', resMsgId, 'msgId', msgId)
 
           // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
           // 1 byte	     1 byte	   1 byte	          N  bytes	    1 byte
