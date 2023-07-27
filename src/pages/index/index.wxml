@@ -39,13 +39,13 @@
 <view class="flex flex-col" bindtap="hideMenu">
   <!-- 主体内容 -->
   <view class="flex flex-1 w-full box-border" id="content">
-    <!-- 有设备时显示 -->
-    <scroll-view scroll-y enhanced show-scrollbar="{{false}}" class="flex flex-col items-between mx-24rpx" wx:if="{{hasDevice}}" style="height: {{scrollViewHeight}}px;">
+    <!-- 有设备时显示 FIXME 拖拽时不能滚动 -->
+    <scroll-view enhanced="{{true}}" scroll-y="{{!isMoving}}" show-scrollbar="{{false}}" class="flex flex-col items-between mx-24rpx" wx:if="{{hasDevice}}" style="height: {{scrollViewHeight}}px;" scroll-top="{{scrollTop}}" scroll-with-animation="{{true}}" bind:scroll="onPageScroll">
       <!-- 顶开上面的内容高度 -->
       <view class="h-24rpx"></view>
       <!-- 房间卡片列表 -->
       <movable-area style="height: {{accumulatedY}}px; width: 702rpx;">
-        <movable-view wx:for="{{roomList}}" wx:key="roomId" data-index="{{index}}" data-rid="{{item.roomId}}" class="w-702rpx {{item.sceneList.length && !isMoving ? 'h-336rpx' : 'h-152rpx'}}" y="{{roomPos[item.roomId].y}}" direction="vertical" friction="{{999}}" damping="{{100}}" bind:longpress="movableTouchStart" bind:touchend="movableTouchEnd" catch:change="movableChange" class="{{ roomPos[item.roomId].index === placeholder.index ? 'z-100' : (isMoving ? 'opacity-50' : 'opacity-100 z-1') }}" disabled="{{!isMoving}}">
+        <movable-view out-of-bounds wx:for="{{roomList}}" wx:key="roomId" data-index="{{index}}" data-rid="{{item.roomId}}" class="w-702rpx {{item.sceneList.length && !isMoving ? 'h-336rpx' : 'h-152rpx'}}" y="{{roomPos[item.roomId].y}}" direction="vertical" friction="{{999}}" damping="{{100}}" bind:longpress="movableLongpress" bind:touchend="movableTouchEnd" bind:touchmove="movableTouchMove" class="{{ roomPos[item.roomId].index === placeholder.index ? 'z-100' : (isMoving ? 'opacity-50' : 'opacity-100 z-1') }}" disabled="{{!isMoving}}">
           <room-card room-info="{{item}}" data-room="{{item.roomId}}" isMoving="{{isMoving}}" bind:sceneSelect="handleSceneSelect"></room-card>
         </movable-view>
       </movable-area>

@@ -131,9 +131,9 @@ ComponentWithComputed({
         wx.closeBluetoothAdapter()
         wx.stopWifi()
 
-        wx.navigateBack({
-          delta: 2,
-        })
+        wx.switchTab({
+          url: '/pages/index/index',
+        })  
       } else {
         Toast('保存失败')
       }

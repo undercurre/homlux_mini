@@ -36,7 +36,7 @@ function getPos(index: number): number {
  */
 function getIndex(y: number) {
   const maxIndex = roomStore.roomList.length - 1 // 防止越界
-  return Math.min(maxIndex, Math.floor((y + ROOM_CARD_M / 2) / ROOM_CARD_M))
+  return Math.max(0, Math.min(maxIndex, Math.floor((y + ROOM_CARD_M / 2) / ROOM_CARD_M)))
 }
 
 ComponentWithComputed({
@@ -62,6 +62,7 @@ ComponentWithComputed({
       (storage.get<number>('bottomBarHeight') as number) - // IPX
       90 - // 开关、添加按钮
       (storage.get<number>('navigationBarHeight') as number),
+    _system: storage.get('system') as string,
     selectHomeMenu: {
       x: '0px',
       y: '0px',
@@ -79,13 +80,15 @@ ComponentWithComputed({
     loading: true,
     _isAcceptShare: false, // 是否已经触发过接受分享逻辑
     isMoving: false,
-    hasMoved: false,
     roomPos: {} as Record<string, PosType>,
     accumulatedY: 0, // 可移动区域高度
     placeholder: {
       y: 0,
       index: -1,
     } as PosType,
+    scrollTop: 0,
+    _scrolledWhenMoving: false, // 拖拽时，被动发生了滚动
+    _lastClientY: 0, // 上次触控采样时 的Y坐标
   },
   computed: {
     currentHomeName(data) {
@@ -253,10 +256,17 @@ ComponentWithComputed({
           accumulatedY += !room.endCount || !room.sceneList.length || isMoving === true ? ROOM_CARD_M : ROOM_CARD_H
         })
 
-      this.setData({
-        roomPos,
-        accumulatedY,
-      })
+      // 拖动模式，不改变高度
+      if (isMoving) {
+        this.setData({
+          roomPos,
+        })
+      } else {
+        this.setData({
+          roomPos,
+          accumulatedY,
+        })
+      }
     },
 
     acceptShare() {
@@ -492,7 +502,7 @@ ComponentWithComputed({
     },
 
     // 开始拖拽，初始化placeholder
-    movableTouchStart(e: WechatMiniprogram.TouchEvent) {
+    movableLongpress(e: WechatMiniprogram.TouchEvent) {
       wx.vibrateShort({ type: 'heavy' })
 
       const rid = e.currentTarget.dataset.rid
@@ -510,61 +520,81 @@ ComponentWithComputed({
       this.setData(diffData)
 
       this.renewRoomPos(true)
+
+      // 执行一次，防止出现空白位置
+      // this.movableChangeThrottle(e)
     },
 
     /**
      * 拖拽时触发的卡片移动效果
      */
     movableChangeThrottle: throttle(function (this: IAnyObject, e: WechatMiniprogram.TouchEvent) {
-      const targetOrder = getIndex(e.detail.y)
-      if (this.data.placeholder.index !== targetOrder) {
-        const oldOrder = this.data.placeholder.index
-        // 节流操作，可能导致movableTouchEnd后仍有movableChange需要执行，丢弃掉
-        if (oldOrder < 0) {
-          return
-        }
-        console.log('movableChange: %d-->%d', oldOrder, targetOrder, e)
+      const TOP_HEIGHT = 170
+      const posY = e.detail.y || e.touches[0]?.clientY - TOP_HEIGHT + this.data.scrollTop
+      const targetOrder = getIndex(posY)
+      if (this.data.placeholder.index === targetOrder) {
+        return
+      }
 
-        // 更新placeholder的位置
-        const isForward = oldOrder < targetOrder
-        const diffData = {} as IAnyObject
-        diffData[`placeholder.index`] = targetOrder
-        diffData[`placeholder.y`] = getPos(targetOrder)
+      const oldOrder = this.data.placeholder.index
+      // 节流操作，可能导致movableTouchEnd后仍有movableChange需要执行，丢弃掉
+      if (oldOrder < 0) {
+        return
+      }
+      console.log('[movableChange] %d --> %d', oldOrder, targetOrder, e)
 
-        // 更新联动卡片的位置
-        let moveCount = 0
-        for (const room of roomStore.roomList) {
-          const _orderNum = this.data.roomPos[room.roomId].index
-          if (
-            (isForward && _orderNum > oldOrder && _orderNum <= targetOrder) ||
-            (!isForward && _orderNum >= targetOrder && _orderNum < oldOrder)
-          ) {
-            ++moveCount
-            const dOrderNum = isForward ? _orderNum - 1 : _orderNum + 1
-            diffData[`roomPos.${room.roomId}.y`] = getPos(dOrderNum)
-            diffData[`roomPos.${room.roomId}.index`] = dOrderNum
+      // 更新placeholder的位置
+      const isForward = oldOrder < targetOrder
+      const diffData = {} as IAnyObject
+      diffData[`placeholder.index`] = targetOrder
+      diffData[`placeholder.y`] = getPos(targetOrder)
 
-            // 减少遍历消耗
-            if (moveCount >= Math.abs(targetOrder - oldOrder)) {
-              break
-            }
+      // 更新联动卡片的位置
+      let moveCount = 0
+      for (const room of roomStore.roomList) {
+        const _orderNum = this.data.roomPos[room.roomId].index
+        if (
+          (isForward && _orderNum > oldOrder && _orderNum <= targetOrder) ||
+          (!isForward && _orderNum >= targetOrder && _orderNum < oldOrder)
+        ) {
+          ++moveCount
+          const dOrderNum = isForward ? _orderNum - 1 : _orderNum + 1
+          diffData[`roomPos.${room.roomId}.y`] = getPos(dOrderNum)
+          diffData[`roomPos.${room.roomId}.index`] = dOrderNum
+
+          // 减少遍历消耗
+          if (moveCount >= Math.abs(targetOrder - oldOrder)) {
+            break
           }
         }
-
-        // 更新被拖拽卡片的排序num
-        diffData[`roomPos.${e.currentTarget.dataset.rid}.index`] = targetOrder
-
-        console.log('movableChange', diffData)
-        this.setData(diffData)
-
-        this.data.hasMoved = true
       }
+
+      // 直接更新被拖拽卡片位置
+      if (this.data._scrolledWhenMoving || this.data._system.indexOf('iOS') > -1) {
+        const rid = e.currentTarget.dataset.rid
+        diffData[`roomPos.${rid}.y`] = getPos(targetOrder)
+      }
+
+      // 更新被拖拽卡片的排序num
+      diffData[`roomPos.${e.currentTarget.dataset.rid}.index`] = targetOrder
+
+      // FIXME 自动滚动
+      // const dir = clientY > this.data._lastClientY ? 'down' : 'up'
+      // let { scrollTop } = this.data
+      // this.data._lastClientY = clientY
+      // if (dir === 'up' && clientY < 200) {
+      //   scrollTop -= 50
+      // } else if (dir === 'down' && clientY > this.data.scrollViewHeight + 50) {
+      //   scrollTop += 50
+      // }
+      // diffData.scrollTop = scrollTop
+
+      console.log('[movableChange] diffData:', diffData)
+      this.setData(diffData)
     }, 50),
 
-    movableChange(e: WechatMiniprogram.TouchEvent) {
-      if (e.detail.source === 'touch' || e.detail.source === 'friction') {
-        this.movableChangeThrottle(e)
-      }
+    movableTouchMove(e: WechatMiniprogram.TouchEvent) {
+      this.movableChangeThrottle(e)
     },
 
     movableTouchEnd(e: WechatMiniprogram.TouchEvent) {
@@ -575,6 +605,7 @@ ComponentWithComputed({
 
       const diffData = {} as IAnyObject
       diffData.isMoving = false
+
       // 修正卡片位置
       diffData[`roomPos.${e.currentTarget.dataset.rid}.y`] = dpos
       diffData[`placeholder.index`] = -1
@@ -582,8 +613,24 @@ ComponentWithComputed({
       console.log('movableTouchEnd:', diffData)
 
       this.renewRoomPos()
+      setTimeout(() => this.renewRoomPos(), 500)
+
+      this.data._scrolledWhenMoving = false
 
       this.handleSortSaving()
+    },
+
+    // 页面滚动
+    onPageScroll(e: { detail: { scrollTop: number } }) {
+      if (this.data.isMoving || !e?.detail) {
+        this.data._scrolledWhenMoving = true
+        console.log('scrolled when moving', e)
+        return
+      }
+
+      const { scrollTop } = e.detail
+      console.log('onPageScroll scrollTop: %s, _lastClientY: %s', scrollTop, this.data._lastClientY)
+      this.data.scrollTop = scrollTop
     },
 
     handleSortSaving() {
