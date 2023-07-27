@@ -206,8 +206,6 @@ export class BleClient {
             return
           }
 
-          Logger.log('listener', res)
-
           const hex = strUtil.ab2hex(res.value)
           const msg = aesUtil.decrypt(hex, this.key, 'Hex')
 
@@ -293,7 +291,7 @@ export class BleClient {
 
     const res = await this.sendCmd({
       cmdType: 'DEVICE_CONTROL',
-      data: [0x00, channel, ...panIdHexArr, ...exPanIdHexArr],
+      data: [0x00, channel],
     })
 
     let zigbeeMac = ''
