@@ -320,7 +320,7 @@ ComponentWithComputed({
       const pageParams = getCurrentPageParams()
       const expireTime = 60
 
-      Logger.log('网关进入配网模式', flag)
+      Logger.log('网关进入配网模式 | 是否蓝牙配网：', flag)
       const res = await sendCmdAddSubdevice({
         deviceId: pageParams.gatewayId,
         expire: expireTime,
