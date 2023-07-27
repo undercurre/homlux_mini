@@ -32,11 +32,11 @@ export const strUtil = {
   },
 
   /**
-   * 分割16进制字符串，转化成字节数组，
+   * 分割16进制字符串，转化成对应num个字节数组，
    * 此正则只针对十六进制
    * 输入多于六个字符，超过的字符如果不属于十六进制会变成NaN
-   * @param str
-   * @param num
+   * @param str 16进制字符串
+   * @param num 要拆分的字节数的个体单位
    */
   hexStringToArrayUnit8(str: string, num: number) {
     const reg = new RegExp(`([0-9a-fA-F]{${num}})`)

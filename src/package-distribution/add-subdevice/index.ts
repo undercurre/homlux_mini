@@ -213,7 +213,7 @@ ComponentWithComputed({
 
       const res = await bleDevice.client.startZigbeeNet({
         channel: parseInt(channel),
-        extPanId: parseInt(extPanId),
+        extPanId: extPanId,
         panId: parseInt(panId),
       })
 

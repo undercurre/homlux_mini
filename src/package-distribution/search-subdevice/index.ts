@@ -30,7 +30,7 @@ ComponentWithComputed({
     _startTime: 0,
     _gatewayInfo: {
       channel: 0,
-      extPanId: 0,
+      extPanId: '',
       panId: 0,
     },
     _proType: '',
@@ -126,7 +126,7 @@ ComponentWithComputed({
       this.data._productId = productId
       this.data._gatewayInfo = {
         channel: parseInt(channel), // 获取网关信道
-        extPanId: parseInt(extPanId),
+        extPanId: extPanId,
         panId: parseInt(panId),
       }
 

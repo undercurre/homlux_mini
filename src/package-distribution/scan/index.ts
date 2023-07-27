@@ -38,7 +38,7 @@ ComponentWithComputed({
       deviceId: '',
       sn: '',
       channel: 0,
-      extPanId: 0,
+      extPanId: '',
       panId: 0,
     },
     deviceInfo: {
@@ -149,7 +149,7 @@ ComponentWithComputed({
           sn: item.sn,
           channel: item.channel || 0,
           panId: item.panId || 0,
-          extPanId: item.extPanId || 0,
+          extPanId: item.extPanId || '',
         },
       })
     },
@@ -260,7 +260,7 @@ ComponentWithComputed({
           deviceId: '',
           sn: '',
           channel: 0,
-          extPanId: 0,
+          extPanId: '',
           panId: 0,
         },
       })
@@ -582,7 +582,7 @@ ComponentWithComputed({
           sn: gateway.sn,
           channel: gateway.channel || 0,
           panId: gateway.panId || 0,
-          extPanId: gateway.extPanId || 0,
+          extPanId: gateway.extPanId || '',
         }
       } else {
         this.setData({
