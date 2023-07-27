@@ -168,8 +168,6 @@ export class BleClient {
 
       const { cmdType, data } = params
 
-      Logger.log(`【${this.mac}】蓝牙指令发起，cmdType： ${cmdType}--${data}`)
-
       const msgId = ++this.msgId // 等待回复的指令msgId
       // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
       // 1 byte	     1 byte	   1 byte	          N  bytes	    1 byte
@@ -182,6 +180,8 @@ export class BleClient {
       cmdArr.push(bleUtil.getCheckNum(cmdArr))
 
       const hexArr = cmdArr.map((item) => item.toString(16).padStart(2, '0').toUpperCase())
+
+      Logger.log(`【${this.mac}】蓝牙指令发起，cmdType： ${cmdType}--${hexArr}`)
 
       const msg = aesUtil.encrypt(hexArr.join(''), this.key, 'Hex')
 
@@ -400,7 +400,7 @@ export const bleUtil = {
       sum += msgArr[i]
     }
 
-    const temp = sum.toString(2).padStart(8, '0')
+    const temp = sum.toString(2).padStart(8, '0').slice(-8) // 校验码仅取后2位16进制数字
 
     sum = parseInt(this.exchange(temp), 2)
     sum += 1
