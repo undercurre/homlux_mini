@@ -11,19 +11,22 @@ export class BleClient {
   key = ''
   proType = '' // 品类，用于数据埋点
   modelId = '' // 型号，用于数据埋点
+  protocolVersion = ''
 
   deviceUuid: string
   serviceId = 'BAE55B96-7D19-458D-970C-50613D801BC9'
   characteristicId = '' // 灯具和面板的uid不一致，同类设备的uid是一样的
   msgId = 0
 
-  constructor(params: { mac: string; deviceUuid: string; proType: string; modelId: string }) {
-    const { mac, deviceUuid, modelId, proType } = params
+  constructor(params: { mac: string; deviceUuid: string; proType: string; modelId: string; protocolVersion: string }) {
+    const { mac, deviceUuid, modelId, proType, protocolVersion } = params
 
     this.mac = mac
     this.deviceUuid = deviceUuid
     this.modelId = modelId
     this.proType = proType
+    this.protocolVersion = protocolVersion
+
     deviceUuidMap[deviceUuid] = mac
     // 密钥为：midea@homlux0167   (0167为该设备MAC地址后四位
     this.key = `midea@homlux${mac.substr(-4, 4)}`
@@ -187,6 +190,8 @@ export class BleClient {
 
       const buffer = strUtil.hexStringToArrayBuffer(msg)
 
+      Logger.log('msg', msg, 'buffer', buffer)
+
       const begin = Date.now()
 
       let timeId = 0
@@ -209,12 +214,10 @@ export class BleClient {
           const hex = strUtil.ab2hex(res.value)
           const msg = aesUtil.decrypt(hex, this.key, 'Hex')
 
-          Logger.debug('msg', msg)
-
           const resMsgId = parseInt(msg.substr(2, 2), 16) // 收到回复的指令msgId
           const packLen = parseInt(msg.substr(4, 2), 16) // 回复消息的Byte Msg Id到Byte Checksum的总长度，单位byte
 
-          Logger.log('hex', hex, 'resMsgId', resMsgId, 'msgId', msgId)
+          Logger.debug('resMsgId', resMsgId)
 
           // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
           // 1 byte	     1 byte	   1 byte	          N  bytes	    1 byte
@@ -241,20 +244,20 @@ export class BleClient {
           characteristicId: this.characteristicId,
           value: buffer,
         })
-          .then((res) => {
-            Logger.log(`【${this.mac}】${cmdType}:writeBLECharacteristicValue`, res)
+          .then(() => {
+            Logger.log(`【${this.mac}】${cmdType}:writeBLECharacteristicValue`)
           })
           .catch((err) => {
             reject(err)
           })
       })
         .then((res) => {
-          Logger.log(`【${this.mac}】 蓝牙指令回复时间： ${Date.now() - begin}ms`, cmdType, data)
+          Logger.log(`【${this.mac}】${cmdType} 蓝牙指令回复时间： ${Date.now() - begin}ms`)
 
           return res
         })
         .catch(async (err) => {
-          // todo:
+          // todo: 暂时找不到方法和下面的catch逻辑合并处理
           Logger.error(`【${this.mac}】promise-sendCmd-err`, err, `蓝牙连接状态：${bleDeviceMap[this.deviceUuid]}`)
 
           await this.close() // 异常关闭需要主动配合关闭连接closeBLEConnection，否则资源会被占用无法释放，导致无法连接蓝牙设备
@@ -288,10 +291,11 @@ export class BleClient {
     const exPanIdHexArr = strUtil.hexStringToArrayUnit8(extPanId || '0000000000000000', 2).reverse()
 
     console.debug('panIdHexArr', panIdHexArr, 'exPanIdHexArr', exPanIdHexArr)
+    const arr = this.protocolVersion === '02' ? [...panIdHexArr, ...exPanIdHexArr] : []
 
     const res = await this.sendCmd({
       cmdType: 'DEVICE_CONTROL',
-      data: [0x00, channel],
+      data: [0x00, channel, ...arr],
     })
 
     let zigbeeMac = ''
@@ -393,7 +397,7 @@ export const bleUtil = {
       deviceCategory: msgStr.substr(18, 2),
       deviceModel: msgStr.substr(20, 2),
       version: msgStr.substr(22, 2),
-      protocolVersion: msgStr.substr(24, 2),
+      protocolVersion: msgStr.slice(-2),
     }
   },
 

@@ -1,5 +1,4 @@
 import CryptoJS from 'crypto-js'
-import { Logger } from './log'
 
 // 2、Crypto加密方法封装
 export const aesUtil = {
@@ -24,7 +23,6 @@ export const aesUtil = {
   },
   // 解密函數
   decrypt: (data: string, keyStr: string, enc: 'Hex' | 'Utf8' = 'Utf8') => {
-    Logger.debug('decrypt', data, keyStr, enc)
     const key = CryptoJS.enc.Utf8.parse(keyStr)
 
     const hexStr = CryptoJS.enc.Hex.parse(data)

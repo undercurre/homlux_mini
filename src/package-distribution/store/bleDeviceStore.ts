@@ -183,7 +183,7 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
   let { productName: deviceName } = infoRes.result
   const { proType, switchNum, modelId, productIcon } = infoRes.result
 
-  Logger.log(`成功发现${deviceName}：${baseInfo.zigbeeMac}`)
+  Logger.log(`成功发现${deviceName}：${baseInfo.zigbeeMac}`, baseInfo)
 
   const bindNum = deviceBinding.store.allRoomDeviceList.filter(
     (item) => item.proType === proType && item.productId === modelId,
@@ -213,7 +213,13 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
     gatewayId: '',
     productName: '',
     isChecked: false,
-    client: new BleClient({ mac: baseInfo.mac, deviceUuid: baseInfo.deviceUuid, modelId, proType }),
+    client: new BleClient({
+      mac: baseInfo.mac,
+      deviceUuid: baseInfo.deviceUuid,
+      modelId,
+      proType,
+      protocolVersion: baseInfo.protocolVersion,
+    }),
     roomId: roomBinding.store.currentRoom.roomId,
     roomName: roomBinding.store.currentRoom.roomName,
     switchList: [],

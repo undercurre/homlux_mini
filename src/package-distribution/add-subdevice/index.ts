@@ -150,6 +150,7 @@ ComponentWithComputed({
           deviceUuid: device.deviceId,
           modelId: this.data.pageParams.modelId,
           proType: this.data.pageParams.proType,
+          protocolVersion: msgObj.protocolVersion,
         }),
         roomId: '',
         roomName: '',
