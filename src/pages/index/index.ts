@@ -617,7 +617,7 @@ ComponentWithComputed({
 
       this.data._scrolledWhenMoving = false
 
-      // this.handleSortSaving()
+      this.handleSortSaving()
     },
 
     // 页面滚动
