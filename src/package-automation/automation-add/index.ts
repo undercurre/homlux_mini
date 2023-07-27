@@ -30,7 +30,7 @@ ComponentWithComputed({
       'px',
     _autosceneInfo: {} as AutoScene.AutoSceneItem, //待编辑的自动化
     autoSceneId: '',
-    sceneIcon: 'general',
+    sceneIcon: 'icon-1',
     sceneName: '',
     //场景的生效时间段
     effectiveTime: {

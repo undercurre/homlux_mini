@@ -1,4 +1,4 @@
-import { sceneList } from '../../../../config/index'
+import { autoSceneIconList } from '../../../../config/index'
 
 Component({
   options: {
@@ -34,7 +34,7 @@ Component({
   data: {
     icon: '',
     contentHeight: 0,
-    sceneList,
+    autoSceneIconList,
   },
 
   /**
