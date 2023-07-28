@@ -1,6 +1,6 @@
 <view id="card" class="{{showShadow?'card-shadow':''}} card-clip w-160rpx h-216rpx rounded-32rpx flex-col-center relative overflow-hidden" catchtap="handleCardTap" bind:longpress="handleLongPress">
   <!-- 单选和编辑选择，选中状态均使用描边样式 -->
-  <view wx:if="{{select || editSelect}}" class="w-160rpx h-216rpx absolute left-0 top-0 box-border select-border rounded-32rpx bg-hex-fff"></view>
+  <view wx:if="{{select}}" class="w-160rpx h-216rpx absolute left-0 top-0 box-border select-border rounded-32rpx bg-hex-fff"></view>
   <view wx:else class="w-160rpx h-216rpx rounded-32rpx box-border {{showGradientBg?'show-control-bg white-border':'bg-hex-f9fbfe'}}"></view>
 
   <!-- 顶部标题 -->
