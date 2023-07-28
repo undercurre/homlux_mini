@@ -423,12 +423,17 @@ ComponentWithComputed({
           )
 
           if (bleDevice) {
-            bleDevice.status = 'zigbeeBind' // 标记子设备已入网关的zigbee网络
             const deviceData = this.data._deviceMap[bleDevice.mac]
             const costTime = dayjs().valueOf() - deviceData.startTime
 
             Logger.log(`【${bleDevice.mac}】绑定推送成功， 推送等待时长(ms)：${costTime}`)
 
+            if (bleDevice.status === 'success' || bleDevice.status === 'fail') {
+              Logger.debug(`【${bleDevice.mac}】已经是终结状态，终止推送后续逻辑`)
+              return
+            }
+
+            bleDevice.status = 'zigbeeBind' // 标记子设备已入网关的zigbee网络
             wx.reportEvent('zigebee_add', {
               pro_type: bleDevice.proType,
               cost_time: costTime > 1690268520264 ? -1 : costTime, // -1代表手动起网配上的子设备
@@ -481,7 +486,7 @@ ComponentWithComputed({
             })
 
             // 已经手动进入配网状态且已经zigbee配网成功的，无需再次进入配网
-            if (item.status !== 'zigbeeBind') {
+            if (item.status === 'waiting') {
               this.data._bleTaskQueue.add(async () => {
                 if (item.status === 'success') {
                   Logger.debug(`${item.mac}已zigbee配网成功，无需再下发蓝牙指令`)
@@ -518,7 +523,6 @@ ComponentWithComputed({
                 error_msg: waitingRes.msg,
               })
             } else {
-              item.status = 'success'
               await this.bindBleDeviceToCloud(item)
             }
 
@@ -570,6 +574,11 @@ ComponentWithComputed({
 
         deviceData.zigbeeRepeatTimes--
 
+        if (bleDevice.status !== 'waiting') {
+          Logger.debug(`【${bleDevice.mac}】子设备处于非等待状态，退出蓝牙配网流程`)
+          return
+        }
+
         const { channel, extPanId, panId } = this.data._gatewayInfo
 
         const res = await bleDevice.client.startZigbeeNet({ channel, extPanId, panId })
@@ -598,6 +607,8 @@ ComponentWithComputed({
     },
 
     async bindBleDeviceToCloud(device: Device.ISubDevice) {
+      device.status = 'success'
+
       const res = await bindDevice({
         deviceId: device.zigbeeMac,
         houseId: homeBinding.store.currentHomeId,
