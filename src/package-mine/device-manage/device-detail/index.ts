@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
-import { deviceStore, homeBinding, homeStore, otaStore, roomBinding } from '../../../store/index'
+import { deviceStore, homeBinding, homeStore, otaStore, roomBinding, roomStore } from '../../../store/index'
 import pageBehavior from '../../../behaviors/pageBehaviors'
 import { deleteDevice, editDeviceInfo, queryDeviceInfoByDeviceId } from '../../../apis/index'
 import { proName, PRO_TYPE } from '../../../config/index'
@@ -156,7 +156,9 @@ ComponentWithComputed({
       })
       if (res.success) {
         this.updateDeviceInfo()
-        homeStore.updateRoomCardList()
+        await homeStore.updateRoomCardList()
+        await roomStore.updateRoomList()
+        roomStore.updateRoomCardLightOnNum()
         emitter.emit('deviceEdit')
       }
     },

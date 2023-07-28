@@ -501,7 +501,7 @@ ComponentWithComputed({
       })
     },
 
-    // 开始拖拽，初始化placeholder
+    // 开始拖拽
     movableLongpress(e: WechatMiniprogram.TouchEvent) {
       wx.vibrateShort({ type: 'heavy' })
 
@@ -515,14 +515,14 @@ ComponentWithComputed({
         y: getPos(index),
       }
 
-      console.log('movableTouchStart:', diffData)
+      console.log('[movableTouchStart] diffData: ', diffData)
 
       this.setData(diffData)
 
       this.renewRoomPos(true)
 
       // 执行一次，防止出现空白位置
-      // this.movableChangeThrottle(e)
+      this.movableChangeThrottle(e)
     },
 
     /**
@@ -530,7 +530,7 @@ ComponentWithComputed({
      */
     movableChangeThrottle: throttle(function (this: IAnyObject, e: WechatMiniprogram.TouchEvent) {
       const TOP_HEIGHT = 170
-      const posY = e.detail.y || e.touches[0]?.clientY - TOP_HEIGHT + this.data.scrollTop
+      const posY = (e.detail.y || e.touches[0]?.clientY) - TOP_HEIGHT + this.data.scrollTop
       const targetOrder = getIndex(posY)
       if (this.data.placeholder.index === targetOrder) {
         return
@@ -541,7 +541,7 @@ ComponentWithComputed({
       if (oldOrder < 0) {
         return
       }
-      console.log('[movableChange] %d --> %d', oldOrder, targetOrder, e)
+      console.log('[movableChange] %d --> %d, posY: %s', oldOrder, targetOrder, posY, e)
 
       // 更新placeholder的位置
       const isForward = oldOrder < targetOrder
