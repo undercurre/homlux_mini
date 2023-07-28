@@ -156,8 +156,8 @@ ComponentWithComputed({
       })
       if (res.success) {
         this.updateDeviceInfo()
-        await deviceStore.updateAllRoomDeviceList()
         await homeStore.updateRoomCardList()
+        await roomStore.updateRoomList()
         roomStore.updateRoomCardLightOnNum()
         emitter.emit('deviceEdit')
       }
