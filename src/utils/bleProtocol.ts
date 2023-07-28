@@ -215,8 +215,7 @@ export class BleClient {
           const resMsgId = parseInt(msg.substr(2, 2), 16) // 收到回复的指令msgId
           const packLen = parseInt(msg.substr(4, 2), 16) // 回复消息的Byte Msg Id到Byte Checksum的总长度，单位byte
 
-          Logger.debug('resMsgId', resMsgId)
-
+          Logger.debug(`【${this.mac}】resMsgId`, resMsgId, 'msgId', msgId)
           // Cmd Type	   Msg Id	   Package Len	   Parameter(s) 	Checksum
           // 1 byte	     1 byte	   1 byte	          N  bytes	    1 byte
           if (resMsgId !== msgId) {
@@ -227,7 +226,7 @@ export class BleClient {
           const resMsg = msg.substr(6, (packLen - 3) * 2)
 
           resolve({
-            code: '0',
+            code: resMsg.substr(0, 2),
             resMsg: resMsg.substr(2),
             success: true,
             cmdType: cmdType,
@@ -261,7 +260,7 @@ export class BleClient {
           await this.close() // 异常关闭需要主动配合关闭连接closeBLEConnection，否则资源会被占用无法释放，导致无法连接蓝牙设备
 
           return {
-            code: -1,
+            code: '-1',
             success: false,
             error: err,
             resMsg: '',
@@ -276,7 +275,7 @@ export class BleClient {
       Logger.error(`【${this.mac}】sendCmd-err`, err, `蓝牙连接状态：${bleDeviceMap[this.deviceUuid]}`)
       await this.close() // 异常关闭需要主动配合关闭连接closeBLEConnection，否则资源会被占用无法释放，导致无法连接蓝牙设备
       return {
-        code: -1,
+        code: '-1',
         success: false,
         error: err,
         resMsg: '',
@@ -288,7 +287,6 @@ export class BleClient {
     const panIdHexArr = strUtil.hexStringToArrayUnit8(panId.toString(16).toUpperCase().padStart(4, '0'), 2).reverse()
     const exPanIdHexArr = strUtil.hexStringToArrayUnit8(extPanId || '0000000000000000', 2).reverse()
 
-    console.debug('panIdHexArr', panIdHexArr, 'exPanIdHexArr', exPanIdHexArr)
     const arr = this.protocolVersion === '02' ? [...panIdHexArr, ...exPanIdHexArr] : []
 
     const res = await this.sendCmd({
@@ -410,6 +408,11 @@ export const bleUtil = {
 
     sum = parseInt(this.exchange(temp), 2)
     sum += 1
+
+    // 防止补码+1后，数据溢出
+    if (sum >= 256) {
+      sum = sum - 256
+    }
 
     return sum
   },

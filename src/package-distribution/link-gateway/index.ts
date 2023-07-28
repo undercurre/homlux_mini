@@ -80,7 +80,6 @@ ComponentWithComputed({
       this.initWifi()
     },
     detached() {
-      Logger.debug('link-gateway:detached')
       this.data._socket?.close()
 
       if (this.data._queryCloudTimeId) {

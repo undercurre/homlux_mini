@@ -61,6 +61,8 @@ export async function startWebsocketService() {
             goHome()
           },
         })
+      } else if (eventType === 'change_house_user_auth' && userStore.userInfo.userId === eventData.userId) {
+        homeStore.updateHomeInfo()
       }
     } catch (err) {
       Logger.error('接收到socket信息：', e.data)

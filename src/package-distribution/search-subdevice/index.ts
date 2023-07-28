@@ -6,7 +6,13 @@ import { homeBinding, roomBinding, homeStore, deviceStore } from '../../store/in
 import { bleDevicesBinding, bleDevicesStore } from '../store/bleDeviceStore'
 import { getCurrentPageParams, emitter, Logger, throttle } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { getUnbindSensor, sendCmdAddSubdevice, bindDevice, batchUpdate } from '../../apis/index'
+import {
+  getUnbindSensor,
+  sendCmdAddSubdevice,
+  bindDevice,
+  batchUpdate,
+  queryDeviceOnlineStatus,
+} from '../../apis/index'
 import lottie from 'lottie-miniprogram'
 import { addDevice } from '../assets/search-subdevice/lottie/index'
 import PromiseQueue from '../../lib/promise-queue'
@@ -591,6 +597,16 @@ ComponentWithComputed({
         const res = await bleDevice.client.startZigbeeNet({ channel, extPanId, panId })
 
         if (res.success) {
+          // 兼容新固件逻辑，子设备重复
+          if (res.code === '02') {
+            const deviceStatusRes = await queryDeviceOnlineStatus({ deviceType: '2', deviceId: bleDevice.zigbeeMac })
+
+            if (deviceStatusRes.success && deviceStatusRes.result.onlineStatus === 1) {
+              Logger.log(`【${bleDevice.mac}】子设备已入网`)
+              deviceData.zigbeeAddCallback({ success: true })
+              return
+            }
+          }
           bleDevice.isConfig = '02' // 将设备配网状态置为已配网，否则失败重试由于前面判断状态的逻辑无法重新添加成功
           // 等待绑定推送，超时处理
           deviceData.startTime = dayjs().valueOf()
