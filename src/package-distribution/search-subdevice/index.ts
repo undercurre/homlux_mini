@@ -641,12 +641,13 @@ ComponentWithComputed({
       })
 
       if (res.success && res.result.isBind) {
+        Logger.log(`${device.mac}绑定家庭成功`)
         // 仅2-4路面板需要更改按键名称
         if (device.switchList.length > 1) {
           await this.editDeviceInfo({ deviceId: res.result.deviceId, switchList: device.switchList })
         }
       } else {
-        Logger.error(`${device.mac}绑定失败`, res)
+        Logger.error(`${device.mac}绑定家庭失败`, res)
       }
     },
 
