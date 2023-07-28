@@ -539,12 +539,13 @@ ComponentWithComputed({
           // 接口返回开关面板数据以设备为一个整体，需要前端拆开后排序
           // 排除灯组
           .filter((device) => !deviceStore.lightsInGroup.includes(device.deviceId))
-          // 先排序再映射字段
-          .sort((a, b) => a.orderNum - b.orderNum && parseInt(a.deviceId) - parseInt(b.deviceId))
+          // 排序，先按排序字段升序，相同则再按设备id升序
+          .sort((a, b) => a.orderNum - b.orderNum || parseInt(a.deviceId) - parseInt(b.deviceId))
+          // 补充字段
           .map((device, index) => ({
             ...device,
             ...getPos(index),
-            // !! 整理orderNum，从0开始
+            // !! 重排orderNum，从0开始
             // TRICK 排序过程orderNum代替index使用，而不必改变数组的真实索引
             orderNum: index,
             type: proName[device.proType],
