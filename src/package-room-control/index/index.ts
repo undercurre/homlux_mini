@@ -33,7 +33,6 @@ type DeviceCard = Device.DeviceItem & {
   orderNum: number
   type: string
   select: boolean
-  editSelect: boolean
   linkSceneName: string
   isRefresh: boolean // 是否整个列表刷新
   timestamp: number // 加入队列时打上的时间戳
@@ -461,7 +460,7 @@ ComponentWithComputed({
             originDevice = this.data.devicePageList[groupIndex][index]
             const diffData = {} as IAnyObject
             // review 细致到字段的diff
-            const renderList = ['deviceName', 'onLineStatus', 'select', 'editSelect'] // 需要刷新界面的字段
+            const renderList = ['deviceName', 'onLineStatus', 'select'] // 需要刷新界面的字段
 
             renderList.forEach((key) => {
               const newVal = _get(device!, key)
@@ -549,8 +548,7 @@ ComponentWithComputed({
             // TRICK 排序过程orderNum代替index使用，而不必改变数组的真实索引
             orderNum: index,
             type: proName[device.proType],
-            select: this.data.checkedList.includes(device.uniId),
-            editSelect: this.data.editSelectList.includes(device.uniId),
+            select: this.data.checkedList.includes(device.uniId) || this.data.editSelectList.includes(device.uniId),
             linkSceneName: this.getLinkSceneName(device),
           }))
 
@@ -651,14 +649,18 @@ ComponentWithComputed({
       }
     },
 
-    // 更新选中状态并渲染
-    toSelect(uniId: string) {
+    /**
+     * @description 更新选中状态并渲染
+     * @param uniId
+     * @param toCheck 可选，若指定则设为指定状态；若不指定则置反
+     */
+    toSelect(uniId: string, toCheck?: boolean) {
       for (const groupIndex in this.data.devicePageList) {
         const group = this.data.devicePageList[groupIndex]
         const index = group.findIndex((d) => d.uniId === uniId)
         if (index !== -1) {
           const diffData = {} as IAnyObject
-          diffData[`devicePageList[${groupIndex}][${index}].select`] = !group[index].select
+          diffData[`devicePageList[${groupIndex}][${index}].select`] = toCheck ?? !group[index].select
           console.log(diffData)
           this.setData(diffData)
           break
@@ -939,19 +941,18 @@ ComponentWithComputed({
       const toCheck = !this.data.editSelectList.includes(uniId)
       const list = [...this.data.editSelectList]
 
+      // 未选中，则追加到已选中列表
       if (toCheck) {
         list.push(uniId)
-      } else {
+      }
+      // 从列表中移除
+      else {
         const index = list.findIndex((id) => uniId === id)
         list.splice(index, 1)
       }
 
-      this.setData({
-        editSelectList: list,
-      })
-      device.select = false
-      device.editSelect = toCheck
-      this.updateQueue(device)
+      // 选择样式渲染
+      this.toSelect(uniId)
 
       console.log('handleCardEditSelect', list)
     },
@@ -967,8 +968,8 @@ ComponentWithComputed({
       for (const groupIndex in this.data.devicePageList) {
         this.data.devicePageList[groupIndex].forEach((device, index) => {
           // 如果状态已是一样，则不放diff，减少数据的变更
-          if (device.editSelect !== toCheckAll) {
-            diffData[`devicePageList[${groupIndex}][${index}].editSelect`] = toCheckAll
+          if (device.select !== toCheckAll) {
+            diffData[`devicePageList[${groupIndex}][${index}].select`] = toCheckAll
           }
         })
       }
@@ -987,7 +988,7 @@ ComponentWithComputed({
         this.toSelect(oldCheckedId)
       }
 
-      // 选择渲染
+      // 选择样式渲染
       this.toSelect(uniId)
 
       // 选择时的卡片样式渲染
@@ -1193,8 +1194,8 @@ ComponentWithComputed({
         this.handleScreenTap()
       }
       this.setData(diffData)
-      device.editSelect = true
-      this.updateQueue(device)
+
+      this.toSelect(device.uniId, true)
 
       // 弹起popup后，选中卡片滚动到视图中央，以免被遮挡
       // this.setData({

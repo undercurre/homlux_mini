@@ -12,17 +12,12 @@ ComponentWithComputed({
    * 组件的属性列表
    */
   properties: {
-    // 单选
+    // 是否显示选中样式，包括单选和多选
     select: {
       type: Boolean,
       value: false,
     },
     editMode: {
-      type: Boolean,
-      value: false,
-    },
-    // 编辑模式选择，可多选
-    editSelect: {
       type: Boolean,
       value: false,
     },
