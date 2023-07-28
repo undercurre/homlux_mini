@@ -597,12 +597,12 @@ ComponentWithComputed({
         const res = await bleDevice.client.startZigbeeNet({ channel, extPanId, panId })
 
         if (res.success) {
-          // 兼容新固件逻辑，子设备重复
+          // 兼容新固件逻辑，子设备重复配网同一个网关，网关不会上报子设备入网，必须app手动查询设备入网状态
           if (res.code === '02') {
             const deviceStatusRes = await queryDeviceOnlineStatus({ deviceType: '2', deviceId: bleDevice.zigbeeMac })
 
             if (deviceStatusRes.success && deviceStatusRes.result.onlineStatus === 1) {
-              Logger.log(`【${bleDevice.mac}】子设备已入网`)
+              Logger.log(`【${bleDevice.mac}】手动查询子设备已入网`)
               deviceData.zigbeeAddCallback({ success: true })
               return
             }

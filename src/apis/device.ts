@@ -59,7 +59,7 @@ export async function queryDeviceInfoByDeviceId(
 /**
  * 查询设备在线离线状态
  * @param data deviceType 设备类型（1:网关 2:子设备 3:wifi
- * @param options 
+ * @param options
  */
 export async function queryDeviceOnlineStatus(
   data: { deviceType: '1' | '2' | '3'; sn?: string; deviceId?: string },
