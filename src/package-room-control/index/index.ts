@@ -381,12 +381,12 @@ ComponentWithComputed({
 
     // 页面滚动
     onPageScroll(e: { detail: { scrollTop: number } }) {
-      this.data.scrollTop = e.detail.scrollTop
-      if (e.detail.scrollTop !== 0) {
+      if (e?.detail?.scrollTop !== 0) {
         this.setData({
           showAddSceneTips: false,
         })
       }
+      this.data.scrollTop = e?.detail?.scrollTop || 0
     },
 
     onUnload() {
