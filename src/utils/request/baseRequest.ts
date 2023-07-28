@@ -82,7 +82,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
         const cost_time = Date.now() - start
 
         if (requestOption.log) {
-          Logger.console(`✔ ${requestOption.url} 用时 ${cost_time} ms`) // , result.data
+          Logger.console(`✔ ${requestOption.url} 用时 ${cost_time} ms\n`, result.data)
         }
 
         const data = requestOption.generalSuccessHandler ? requestOption.generalSuccessHandler(result) : result.data
