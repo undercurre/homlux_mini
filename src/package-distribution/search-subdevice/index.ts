@@ -428,8 +428,16 @@ ComponentWithComputed({
 
             Logger.log(`【${bleDevice.mac}】绑定推送成功， 推送等待时长(ms)：${costTime}`)
 
-            if (bleDevice.status === 'success' || bleDevice.status === 'fail') {
-              Logger.debug(`【${bleDevice.mac}】已经是终结状态，终止推送后续逻辑`)
+            if (bleDevice.status === 'success') {
+              Logger.debug(`【${bleDevice.mac}】已经是成功状态，终止推送后续逻辑`)
+              return
+            }
+
+            if (bleDevice.status === 'fail') {
+              Logger.debug(`【${bleDevice.mac}】已经是失败状态`)
+              this.bindBleDeviceToCloud(bleDevice)
+
+              this.updateBleDeviceListView()
               return
             }
 
@@ -555,15 +563,14 @@ ComponentWithComputed({
         if (bleDevice.isConfig !== '02') {
           const configRes = await bleDevice.client.getZigbeeState()
 
-          if (configRes.success && configRes.result.isConfig === '02') {
+          // 需要排查查询过程中收到绑定推送
+          if (configRes.success && configRes.result.isConfig === '02' && bleDevice.status !== 'success') {
             Logger.log(`【${bleDevice.mac}】已zigbee配网成功，无需下发配网指令`)
             bleDevice.isConfig = configRes.result.isConfig
             // 等待绑定推送，超时处理
             deviceData.startTime = dayjs().valueOf()
             deviceData.bindTimeoutId = setTimeout(() => {
-              if (bleDevice.status !== 'success' && bleDevice.status !== 'fail') {
-                deviceData.zigbeeAddCallback({ success: false, msg: '绑定推送监听超时' })
-              }
+              deviceData.zigbeeAddCallback({ success: false, msg: '绑定推送监听超时' })
             }, timeout * 1000)
 
             return
