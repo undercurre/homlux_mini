@@ -113,6 +113,14 @@ ComponentWithComputed({
     },
   },
 
+  pageLifetimes: {
+    show() {
+      this.setData({
+        isRequestSystemWifiList: false,
+      })
+    },
+  },
+
   methods: {
     toggleWifiTips() {
       this.setData({
@@ -196,9 +204,7 @@ ComponentWithComputed({
     },
 
     async getWifiList() {
-      const deviceInfo = wx.getDeviceInfo()
-
-      if (deviceInfo.system.toLowerCase().includes('android') || this.data.hasShowWifiTips) {
+      if (isAndroid() || this.data.hasShowWifiTips) {
         this.setData({
           isRequestSystemWifiList: true,
         })
@@ -215,7 +221,7 @@ ComponentWithComputed({
         this.setData({
           isShowWifiList: true,
         })
-      } else if (deviceInfo.system.toLowerCase().includes('ios')) {
+      } else {
         this.toggleWifiTips()
       }
     },

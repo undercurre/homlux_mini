@@ -429,7 +429,7 @@ export async function waitingBatchDeleteDevice(
 
   options.loading && showLoading()
 
-  const subDeviceList = data.deviceBaseDeviceVoList.filter(item => item.deviceType === '2') // 删除的子设备列表
+  const subDeviceList = data.deviceBaseDeviceVoList.filter((item) => item.deviceType === '2') // 删除的子设备列表
   let delRes = await batchDeleteDevice(data)
 
   // 仅子设备删除需要判断是否收到设备上报的删除ack判断
@@ -441,7 +441,7 @@ export async function waitingBatchDeleteDevice(
   for (let i = 0, times = Math.ceil(4 + subDeviceList.length / 4); i < times; i++) {
     await delay(1000)
 
-    delRes = await queryDelDevIdIsSuccess({ devIds: subDeviceList.map(item => item.deviceId) })
+    delRes = await queryDelDevIdIsSuccess({ devIds: subDeviceList.map((item) => item.deviceId) })
 
     if (delRes.success && (delRes.result as string[]).length === 0) {
       break

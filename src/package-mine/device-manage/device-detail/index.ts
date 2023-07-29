@@ -3,7 +3,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
 import { deviceStore, homeBinding, homeStore, otaStore, roomBinding, roomStore } from '../../../store/index'
 import pageBehavior from '../../../behaviors/pageBehaviors'
-import { deleteDevice, editDeviceInfo, queryDeviceInfoByDeviceId } from '../../../apis/index'
+import { waitingDeleteDevice, editDeviceInfo, queryDeviceInfoByDeviceId } from '../../../apis/index'
 import { proName, PRO_TYPE } from '../../../config/index'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { emitter } from '../../../utils/index'
@@ -173,7 +173,7 @@ ComponentWithComputed({
       Dialog.confirm({
         title: '确定删除该设备？',
       }).then(async () => {
-        const res = await deleteDevice({
+        const res = await waitingDeleteDevice({
           deviceId: this.data.deviceId,
           deviceType: this.data.deviceInfo.deviceType,
           sn: this.data.deviceInfo.proType === PRO_TYPE.gateway ? this.data.deviceInfo.sn : this.data.deviceId,
