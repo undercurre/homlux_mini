@@ -826,5 +826,12 @@ ComponentWithComputed({
         }))
       })
     },
+
+    goBackPrev() {
+      const pages = getCurrentPages()
+      wx.navigateBack({
+        delta: pages.length - 1
+      })
+    }
   },
 })

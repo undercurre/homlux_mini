@@ -38,8 +38,9 @@ Component({
         Toast({
           message: '授权成功',
           onClose: () => {
-            wx.switchTab({
-              url: '/pages/index/index',
+            const pages = getCurrentPages()
+            wx.navigateBack({
+              delta: pages.length - 1
             })
           },
         })
