@@ -834,9 +834,8 @@ ComponentWithComputed({
     },
 
     goBackPrev() {
-      const pages = getCurrentPages()
       wx.navigateBack({
-        delta: pages.length - 1,
+        delta: this.data.proType === PRO_TYPE.sensor ? 4 : 2,
       })
     },
   },

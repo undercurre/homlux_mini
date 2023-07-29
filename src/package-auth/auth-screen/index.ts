@@ -38,9 +38,8 @@ Component({
         Toast({
           message: '授权成功',
           onClose: () => {
-            const pages = getCurrentPages()
             wx.navigateBack({
-              delta: pages.length - 1,
+              delta: 3,
             })
           },
         })

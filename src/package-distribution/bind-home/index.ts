@@ -131,9 +131,8 @@ ComponentWithComputed({
         wx.closeBluetoothAdapter()
         wx.stopWifi()
 
-        const pages = getCurrentPages()
         wx.navigateBack({
-          delta: pages.length - 1,
+          delta: 3,
         })
       } else {
         Toast('保存失败')
