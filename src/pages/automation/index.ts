@@ -6,7 +6,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { strUtil } from '../../utils/strUtil'
 import { reaction } from 'mobx-miniprogram'
-import { emitter } from '../../utils/index'
+// import { emitter } from '../../utils/index'
 
 // pages/login/index.ts
 ComponentWithComputed({
@@ -44,29 +44,29 @@ ComponentWithComputed({
           autosceneBinding.store.updateAllRoomAutoSceneList()
         },
       )
-      emitter.on('scene_add', () => {
-        autosceneBinding.store.updateAllRoomAutoSceneList()
-      })
-      emitter.on('scene_del', () => {
-        autosceneBinding.store.updateAllRoomAutoSceneList()
-      })
-      emitter.on('scene_upt', () => {
-        autosceneBinding.store.updateAllRoomAutoSceneList()
-      })
-      emitter.on('scene_enabled', () => {
-        autosceneBinding.store.updateAllRoomAutoSceneList()
-      })
+      // emitter.on('scene_add', () => {
+      //   autosceneBinding.store.updateAllRoomAutoSceneList()
+      // })
+      // emitter.on('scene_del', () => {
+      //   autosceneBinding.store.updateAllRoomAutoSceneList()
+      // })
+      // emitter.on('scene_upt', () => {
+      //   autosceneBinding.store.updateAllRoomAutoSceneList()
+      // })
+      // emitter.on('scene_enabled', () => {
+      //   autosceneBinding.store.updateAllRoomAutoSceneList()
+      // })
+    },
+    onShow() {
       //加载自动化列表
-      if (this.data.isLogin) {
-        autosceneBinding.store.updateAllRoomAutoSceneList()
-      }
+      autosceneBinding.store.updateAllRoomAutoSceneList()
     },
-    onUnload() {
-      emitter.off('scene_add')
-      emitter.off('scene_del')
-      emitter.off('scene_upt')
-      emitter.off('scene_enabled')
-    },
+    // onUnload() {
+    //   emitter.off('scene_add')
+    //   emitter.off('scene_del')
+    //   emitter.off('scene_upt')
+    //   emitter.off('scene_enabled')
+    // },
     toPage(e: { currentTarget: { dataset: { url: string } } }) {
       wx.navigateTo({
         url: e.currentTarget.dataset.url,
