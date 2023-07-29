@@ -75,6 +75,17 @@ export async function queryDeviceOnlineStatus(
 }
 
 /**
+ * 查询设备在线离线状态
+ * @param data deviceType 设备类型（1:网关 2:子设备 3:wifi
+ * @param options
+ */
+export async function isDeviceOnline(data: { deviceType: '1' | '2' | '3'; sn?: string; deviceId?: string }) {
+  const deviceStatusRes = await queryDeviceOnlineStatus(data)
+
+  return deviceStatusRes.success && deviceStatusRes.result.onlineStatus === 1
+}
+
+/**
  * 配网-绑定
  */
 export async function bindDevice(
