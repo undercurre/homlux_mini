@@ -6,13 +6,7 @@ import { homeBinding, roomBinding, homeStore, deviceStore } from '../../store/in
 import { bleDevicesBinding, bleDevicesStore } from '../store/bleDeviceStore'
 import { getCurrentPageParams, emitter, Logger, throttle } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import {
-  getUnbindSensor,
-  sendCmdAddSubdevice,
-  bindDevice,
-  batchUpdate,
-  isDeviceOnline,
-} from '../../apis/index'
+import { getUnbindSensor, sendCmdAddSubdevice, bindDevice, batchUpdate, isDeviceOnline } from '../../apis/index'
 import lottie from 'lottie-miniprogram'
 import { addDevice } from '../assets/search-subdevice/lottie/index'
 import PromiseQueue from '../../lib/promise-queue'
@@ -558,7 +552,7 @@ ComponentWithComputed({
 
     /**
      * 监听绑定推送超时处理
-     * @param bleDevice 
+     * @param bleDevice
      */
     async handleZigbeeTimeout(bleDevice: Device.ISubDevice) {
       const deviceData = this.data._deviceMap[bleDevice.mac]
