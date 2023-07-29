@@ -9,14 +9,14 @@ Component({
     checkImg: '/assets/img/base/check.png',
     uncheckImg: '/assets/img/base/uncheck.png',
     defaultPage: '',
-    prevPages: 0
+    prevPages: 0,
   },
 
   methods: {
     onLoad() {
       const pages = getCurrentPages()
       this.setData({
-        prevPages: pages.length
+        prevPages: pages.length,
       })
       // 若已设置过默认页，并且不是从设置页跳转过来，则直接跳转到目标页面
       const { defaultPage } = othersStore
@@ -27,12 +27,12 @@ Component({
       }
 
       this.setData({
-        defaultPage
+        defaultPage,
       })
     },
     onChange(e: WechatMiniprogram.CustomEvent) {
       this.setData({
-        defaultPage: e.target.dataset.page
+        defaultPage: e.target.dataset.page,
       })
     },
     handleDefaultPage() {
@@ -42,6 +42,6 @@ Component({
       wx.switchTab({
         url: `/pages/${defaultPage}/index`,
       })
-    }
+    },
   },
 })

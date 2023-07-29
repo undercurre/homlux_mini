@@ -17,7 +17,6 @@
         <view class="rounded-32rpx shot">遥控器</view>
         <image class="h-32rpx w-32rpx mt-8rpx" slot="icon" src="{{ defaultPage === 'remoter' ? checkImg : uncheckImg }}" />
       </van-checkbox>
-
     </view>
 
     <view class="mt-50rpx">
