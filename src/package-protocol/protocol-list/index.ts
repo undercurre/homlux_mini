@@ -103,6 +103,6 @@ Component({
     },
     wsSend() {
       socketSend(`[${new Date().toLocaleString()}] 小程序端主动发送消息测试`)
-    }
+    },
   },
 })

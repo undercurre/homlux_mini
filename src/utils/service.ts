@@ -92,7 +92,7 @@ export function socketSend(data: string | ArrayBuffer) {
     },
     fail(res) {
       Logger.error(res)
-    }
+    },
   })
 }
 
