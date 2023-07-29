@@ -2,7 +2,7 @@ import { observable, runInAction } from 'mobx-miniprogram'
 
 export const othersStore = observable({
   isInit: false,
-  defaultPage: 'remoter', // 默认首页 'index' || 'remoter' || 'mine'
+  defaultPage: '', // 默认首页 'index' || 'remoter' || 'mine'
 
   setIsInit(value: boolean) {
     runInAction(() => {
@@ -14,7 +14,7 @@ export const othersStore = observable({
     runInAction(() => {
       this.defaultPage = value
     })
-  }
+  },
 })
 
 export const othersBinding = {

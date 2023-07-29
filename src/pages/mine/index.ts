@@ -34,6 +34,7 @@ Component({
       feedback: '/package-mine/feedback/index',
       about: '/package-protocol/protocol-list/index',
       deviceCategory: '/package-mine/device-category/index',
+      defaultPageSetting: '/pages/start/index',
     },
   },
   pageLifetimes: {
@@ -65,6 +66,12 @@ Component({
 
       wx.navigateTo({
         url: strUtil.getUrlWithParams(url, param === undefined ? {} : { param }),
+      })
+    },
+    toPageWithLogin(e: { currentTarget: { dataset: { url: string } } }) {
+      const { url } = e.currentTarget.dataset
+      wx.navigateTo({
+        url,
       })
     },
 

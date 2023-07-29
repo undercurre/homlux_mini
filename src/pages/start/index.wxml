@@ -1,7 +1,31 @@
 <!--pages/login/index.wxml-->
 <view class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7" style="z-index: -1"></view>
-<nav-bar left-arrow bind:leftTap="goBack"></nav-bar>
-<view class="flex-col-center w-750rpx" style="margin-top: {{marginTop}}px;">
-  <image class="w-144rpx h-144rpx" src="/assets/img/login/logo.png"></image>
-  <text class="text-48rpx font-semibold mt-48rpx ml-12rpx" style="letter-spacing: 8.8rpx">美的照明 启动页</text>
+<nav-bar left-arrow="{{prevPages >= 2}}" bind:leftTap="goBack"></nav-bar>
+
+<view class="flex-col-center w-750rpx mt-36rpx">
+  <view class="w-686rpx select-box rounded-55rpx flex-col-center relative" catchtap="handleCardTap" bind:longpress="handleLongPress">
+    <view>
+      <text>选择启动页样式</text>
+    </view>
+
+    <view class="flex flex-row center mt-50rpx">
+      <van-checkbox use-icon-slot bind:change="onChange" label-position="left" data-page="index" custom-class="pic-check">
+        <view class="rounded-32rpx shot">首页</view>
+        <image class="h-32rpx w-32rpx mt-8rpx" slot="icon" src="{{ defaultPage === 'index' ? checkImg : uncheckImg }}" />
+      </van-checkbox>
+      <van-checkbox use-icon-slot bind:change="onChange" label-position="left" data-page="remoter" custom-class="pic-check">
+        <view class="rounded-32rpx shot">遥控器</view>
+        <image class="h-32rpx w-32rpx mt-8rpx" slot="icon" src="{{ defaultPage === 'remoter' ? checkImg : uncheckImg }}" />
+      </van-checkbox>
+
+    </view>
+
+    <view class="mt-50rpx">
+      <text class="text-24rpx text-hex-a2a2a2">您可以……</text>
+    </view>
+  </view>
+
+  <view class="w-686rpx px-32rpx mt-50rpx mb-128rpx">
+    <van-button bindtap="handleDefaultPage" block disabled="{{!defaultPage}}" type="primary" size="large">设置为启动页</van-button>
+  </view>
 </view>

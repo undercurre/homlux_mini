@@ -26,7 +26,7 @@ App<IAppOption>({
 
     // 如果用户是首次进入，则选择默认首页
     const defaultPage = (storage.get<string>('defaultPage') ?? '') as string
-    console.log({defaultPage})
+    console.log({ defaultPage })
     if (defaultPage) {
       othersStore.setDefaultPage(defaultPage)
     }
