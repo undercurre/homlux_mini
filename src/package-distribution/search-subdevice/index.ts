@@ -556,7 +556,9 @@ ComponentWithComputed({
      */
     async handleZigbeeTimeout(bleDevice: Device.ISubDevice) {
       const deviceData = this.data._deviceMap[bleDevice.mac]
-      const isOnline = await isDeviceOnline({ deviceType: '2', deviceId: bleDevice.zigbeeMac })
+      const isOnline = await isDeviceOnline({ devIds: [bleDevice.zigbeeMac] })
+
+      Logger.log(`【${bleDevice.mac}】监听超时查询在线状态：${isOnline}`)
 
       isOnline && Logger.debug(`【${bleDevice.mac}】zigbee入网成功但没有收到推送`)
 
@@ -606,7 +608,7 @@ ComponentWithComputed({
         if (res.success) {
           // 兼容新固件逻辑，子设备重复配网同一个网关，网关不会上报子设备入网，必须app手动查询设备入网状态
           if (res.code === '02') {
-            const isOnline = await isDeviceOnline({ deviceType: '2', deviceId: bleDevice.zigbeeMac })
+            const isOnline = await isDeviceOnline({ devIds: [bleDevice.zigbeeMac] })
 
             if (isOnline) {
               Logger.log(`【${bleDevice.mac}】手动查询子设备已入网`)
