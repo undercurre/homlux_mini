@@ -1,5 +1,5 @@
 {
-  "pages": ["pages/index/index", "pages/login/index", "pages/mine/index", "pages/automation/index"],
+  "pages": ["pages/start/index", "pages/index/index", "pages/login/index", "pages/mine/index", "pages/automation/index", "pages/remoter/index"],
   "subpackages": [
     {
       "root": "package-distribution",
@@ -72,6 +72,10 @@
       {
         "pagePath": "pages/automation/index",
         "text": "自动化"
+      },
+      {
+        "pagePath": "pages/remoter/index",
+        "text": "遥控器"
       },
       {
         "pagePath": "pages/mine/index",

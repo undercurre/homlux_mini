@@ -12,6 +12,7 @@ import { deviceStore, homeStore, othersStore } from './store/index'
 import { isConnect } from './utils/network'
 import { reaction } from 'mobx-miniprogram'
 
+// TODO 统一配置和管理 storage key
 App<IAppOption>({
   async onLaunch() {
     // 加载svg数据
@@ -22,6 +23,13 @@ App<IAppOption>({
 
     // 获取状态栏、顶部栏、底部栏高度
     setNavigationBarAndBottomBarHeight()
+
+    // 如果用户是首次进入，则选择默认首页
+    const defaultPage = (storage.get<string>('defaultPage') ?? '') as string
+    console.log({defaultPage})
+    if (defaultPage) {
+      othersStore.setDefaultPage(defaultPage)
+    }
 
     // 如果用户已经登录，开始请求数据
     if (storage.get<string>('token')) {
