@@ -285,7 +285,7 @@ ComponentWithComputed({
     finish() {
       const pages = getCurrentPages()
       wx.navigateBack({
-        delta: pages.length - 1
+        delta: pages.length - 1,
       })
     },
   },
