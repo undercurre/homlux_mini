@@ -954,6 +954,10 @@ ComponentWithComputed({
       // 选择样式渲染
       this.toSelect(uniId)
 
+      this.setData({
+        editSelectList: list,
+      })
+
       console.log('handleCardEditSelect', list)
     },
 
