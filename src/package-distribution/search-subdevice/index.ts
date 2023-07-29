@@ -819,9 +819,7 @@ ComponentWithComputed({
       wx.closeBluetoothAdapter()
       bleDevicesStore.reset()
 
-      wx.switchTab({
-        url: '/pages/index/index',
-      })
+      this.goBackPrev()
     },
 
     toggleSelectAll() {
