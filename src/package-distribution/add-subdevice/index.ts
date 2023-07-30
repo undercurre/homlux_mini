@@ -3,7 +3,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
 import { bleUtil, strUtil, BleClient, getCurrentPageParams, emitter, Logger } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { sendCmdAddSubdevice, bindDevice } from '../../apis/index'
+import { sendCmdAddSubdevice, bindDevice, isDeviceOnline } from '../../apis/index'
 import { IBleDevice } from './typings'
 import dayjs from 'dayjs'
 
@@ -53,8 +53,9 @@ ComponentWithComputed({
           status: 'error',
         })
 
+        console.error(`【${this.data.pageParams.mac}】绑定推送监听超时`)
         emitter.off('bind_device')
-        console.error(`绑定失败：子设备${this.data.pageParams.mac}，绑定推送监听超时`)
+        this.queryZigbeeBindStatus()
       }, 60000)
 
       emitter.on('bind_device', (data) => {
@@ -142,7 +143,7 @@ ComponentWithComputed({
       const bleDevice: IBleDevice = {
         deviceUuid: device.deviceId,
         mac: msgObj.mac,
-        zigbeeMac: '',
+        zigbeeMac: this.data.pageParams.mac,
         icon: this.data.pageParams.deviceIcon,
         name: this.data.pageParams.deviceName,
         client: new BleClient({
@@ -208,6 +209,21 @@ ComponentWithComputed({
       return res
     },
 
+    /**
+     * 手动查询子设备是否入网
+     * @param bleDevice
+     */
+    async queryZigbeeBindStatus() {
+      const zigbeeMac = this.data.pageParams.mac
+      const isOnline = await isDeviceOnline({ devIds: [zigbeeMac] })
+
+      Logger.log(`【${zigbeeMac}】查询入网状态：${isOnline}`)
+
+      if (isOnline) {
+        this.bindBleDeviceToClound()
+      }
+    },
+
     async startZigbeeNet(bleDevice: IBleDevice) {
       bleDevice.zigbeeRepeatTimes--
       const { channel, extPanId, panId } = this.data.pageParams
@@ -227,6 +243,11 @@ ComponentWithComputed({
       if (res.success) {
         bleDevice.zigbeeMac = res.result.zigbeeMac
         this.data._startTime = dayjs().valueOf()
+
+        // 兼容新固件逻辑，子设备重复配网同一个网关，网关不会上报子设备入网，必须app手动查询设备入网状态
+        if (res.code === '02') {
+          this.queryZigbeeBindStatus()
+        }
       } else {
         this.setData({
           status: 'error',
