@@ -407,7 +407,9 @@ export async function waitingDeleteDevice(
   }
   options.loading && hideLoading()
 
-  return delRes
+  return {
+    success: delRes.success && (delRes.result as string[]).length === 0
+  }
 }
 
 /**
@@ -463,7 +465,9 @@ export async function waitingBatchDeleteDevice(
   }
   options.loading && hideLoading()
 
-  return delRes
+  return {
+    success: delRes.success && (delRes.result as string[]).length === 0
+  }
 }
 
 /**
