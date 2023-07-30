@@ -468,8 +468,6 @@ ComponentWithComputed({
 
         type PromiseThunk = () => Promise<any>
         const zigbeeTaskList = [] as PromiseThunk[]
-        const zigbeeList = [] as string[]
-        const bleList = [] as string[]
 
         list.forEach((item) => {
           // 等待zigbee子设备添加上报promise
@@ -484,8 +482,7 @@ ComponentWithComputed({
           })
 
           zigbeeTaskList.push(async () => {
-            zigbeeList.push(item.mac)
-            Logger.debug(`【${item.mac}】开始zigbee配网`)
+            Logger.debug(`【${item.mac}】开始zigbee配网任务`)
             // 数据埋点：上报尝试配网的子设备
             wx.reportEvent('add_device', {
               pro_type: item.proType,
@@ -501,16 +498,12 @@ ComponentWithComputed({
                   return
                 }
 
-                bleList.push(item.mac)
                 Logger.debug(`【${item.mac}】蓝牙任务开始`)
                 await this.startZigbeeNet(item)
 
                 await item.client.close()
 
-                const index = bleList.findIndex((mac) => item.mac === mac)
-
-                bleList.splice(index, 1)
-                Logger.debug(`【${item.mac}】蓝牙任务结束,bleList`, bleList)
+                Logger.debug(`【${item.mac}】蓝牙任务结束`)
               })
             } else {
               Logger.debug(`【${item.mac}】已手动完成配网`)
@@ -536,11 +529,7 @@ ComponentWithComputed({
 
             this.updateBleDeviceListView()
 
-            const index = zigbeeList.findIndex((mac) => item.mac === mac)
-
-            zigbeeList.splice(index, 1)
-
-            Logger.debug(`【${item.mac}】结束zigbee配网：`, 'zigbeeList', zigbeeList)
+            Logger.debug(`【${item.mac}】结束zigbee配网任务：`)
           })
         })
 

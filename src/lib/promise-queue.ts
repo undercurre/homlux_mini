@@ -89,9 +89,7 @@ export default class PromiseQueue {
     return this._ongoingCount
   }
 
-  private _resolveEmpty: () => void = () => {
-    console.log('队列执行完毕')
-  }
+  private _resolveEmpty: () => void = () => {}
 
   private _next() {
     if (this._ongoingCount >= this._concurrency || this._pause) {
