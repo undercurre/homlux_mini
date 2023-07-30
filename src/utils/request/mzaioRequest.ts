@@ -75,7 +75,7 @@ const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: Base
         wxdata_perf_monitor_level: 0,
         wxdata_perf_error_code: (result.data as IAnyObject).code,
         wxdata_perf_cost_time: cost_time,
-        wxdata_perf_error_msg: (result.data as IAnyObject).msg,
+        wxdata_perf_error_msg: (result.data as IAnyObject).msg || '',
       })
 
       return result.data
@@ -90,7 +90,7 @@ const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: Base
         wxdata_perf_monitor_level: 0,
         wxdata_perf_error_code: -1,
         wxdata_perf_cost_time: cost_time,
-        wxdata_perf_error_msg: error.errMsg,
+        wxdata_perf_error_msg: error.errMsg || '',
       })
 
       return {
