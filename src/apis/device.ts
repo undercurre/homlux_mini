@@ -75,14 +75,28 @@ export async function queryDeviceOnlineStatus(
 }
 
 /**
+ * 查询设备是否绑定网关
+ * @param data devIds 设备
+ * @param options
+ */
+export async function queryBindDevIdIsSuccess(data: { devIds: string[] }, options?: { loading?: boolean }) {
+  return await mzaioRequest.post<string[]>({
+    log: false,
+    loading: options?.loading ?? false,
+    url: '/v1/device/queryBindDevIdIsSuccess',
+    data,
+  })
+}
+
+/**
  * 查询设备在线离线状态
  * @param data deviceType 设备类型（1:网关 2:子设备 3:wifi
  * @param options
  */
-export async function isDeviceOnline(data: { deviceType: '1' | '2' | '3'; sn?: string; deviceId?: string }) {
-  const deviceStatusRes = await queryDeviceOnlineStatus(data)
+export async function isDeviceOnline(data: { devIds: string[] }) {
+  const deviceStatusRes = await queryBindDevIdIsSuccess(data)
 
-  return deviceStatusRes.success && deviceStatusRes.result.onlineStatus === 1
+  return deviceStatusRes.success && deviceStatusRes.result.length === 0
 }
 
 /**
@@ -372,7 +386,7 @@ export async function waitingDeleteDevice(
 ) {
   options = options || { loading: true }
 
-  options.loading && showLoading()
+  options.loading && showLoading('正在删除')
 
   let delRes = await deleteDevice(data)
 
@@ -427,7 +441,7 @@ export async function waitingBatchDeleteDevice(
 ) {
   options = options || { loading: true }
 
-  options.loading && showLoading()
+  options.loading && showLoading('正在删除')
 
   const subDeviceList = data.deviceBaseDeviceVoList.filter((item) => item.deviceType === '2') // 删除的子设备列表
   let delRes = await batchDeleteDevice(data)

@@ -835,7 +835,7 @@ ComponentWithComputed({
 
     goBackPrev() {
       wx.navigateBack({
-        delta: this.data.proType === PRO_TYPE.sensor ? 4 : 2,
+        delta: this.data.proType === PRO_TYPE.sensor ? 4 : 3,
       })
     },
   },
