@@ -59,7 +59,7 @@
       </van-button>
     </view>
 
-    <view wx:if="{{!isLogin}}">
+    <!-- <view wx:if="{{!isLogin}}">
       <image src="/assets/img/home/bg.jpg" class="bg-image fixed z-200 left-0 top-0"></image>
       <view class="fixed z-201 left-0 w-750rpx flex flex-col" style="top: {{statusBarHeight}};">
         <view class="flex items-center flex-col w-750rpx mt-56rpx">
@@ -71,7 +71,7 @@
           </van-button>
         </view>
       </view>
-    </view>
+    </view> -->
   </view>
 </view>
 <view class="tabbar-placeholder"></view>

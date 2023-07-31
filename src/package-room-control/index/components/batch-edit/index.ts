@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { PRO_TYPE } from '../../../../config/index'
-import { batchDeleteDevice, batchUpdate, renameGroup } from '../../../../apis/index'
+import { waitingBatchDeleteDevice, batchUpdate, renameGroup } from '../../../../apis/index'
 import { deviceBinding, deviceStore, homeStore, roomBinding, roomStore } from '../../../../store/index'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
@@ -193,7 +193,7 @@ ComponentWithComputed({
               set.add(uniId)
             }
           })
-          const res = await batchDeleteDevice({
+          const res = await waitingBatchDeleteDevice({
             deviceBaseDeviceVoList: Array.from(set).map((deviceId) => ({
               deviceId,
               deviceType: String(deviceStore.deviceMap[deviceId].deviceType),

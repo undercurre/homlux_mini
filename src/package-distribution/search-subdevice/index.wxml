@@ -2,7 +2,7 @@
 
 <view class="page-container flex flex-col h-screen">
   <!-- 导航栏 -->
-  <nav-bar leftArrow="{{status !== 'requesting'}}" bind:leftTap="goBackHome" background="transparent" title="{{pageTitle}}"></nav-bar>
+  <nav-bar leftArrow="{{status !== 'requesting'}}" bind:leftTap="goBackPrev" background="transparent" title="{{pageTitle}}"></nav-bar>
 
   <view class="grow shrink flex flex-col justify-between box-border pt-40rpx">
     <block wx:if="{{status === 'discover'}}">

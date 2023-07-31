@@ -123,21 +123,6 @@ export const bleDevicesStore = observable({
   updateBleDeviceList() {
     runInAction(() => {
       this.bleDeviceList = this.bleDeviceList.concat([])
-      Logger.log(
-        'updateBleDeviceList, waiting',
-        this.bleDeviceList.filter((item) => item.status === 'waiting' && item.isChecked),
-      )
-
-      Logger.log(
-        'updateBleDeviceList, zigbeeBind',
-        this.bleDeviceList.filter((item) => item.status === 'zigbeeBind' && item.isChecked),
-      )
-
-      Logger.log(
-        'updateBleDeviceList, success',
-        this.bleDeviceList.filter((item) => item.isChecked).length,
-        this.bleDeviceList.filter((item) => item.status === 'success' || item.status === 'fail').length,
-      )
     })
   },
 

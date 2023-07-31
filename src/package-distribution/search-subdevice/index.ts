@@ -6,13 +6,7 @@ import { homeBinding, roomBinding, homeStore, deviceStore } from '../../store/in
 import { bleDevicesBinding, bleDevicesStore } from '../store/bleDeviceStore'
 import { getCurrentPageParams, emitter, Logger, throttle } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import {
-  getUnbindSensor,
-  sendCmdAddSubdevice,
-  bindDevice,
-  batchUpdate,
-  queryDeviceOnlineStatus,
-} from '../../apis/index'
+import { getUnbindSensor, sendCmdAddSubdevice, bindDevice, batchUpdate, isDeviceOnline } from '../../apis/index'
 import lottie from 'lottie-miniprogram'
 import { addDevice } from '../assets/search-subdevice/lottie/index'
 import PromiseQueue from '../../lib/promise-queue'
@@ -474,8 +468,6 @@ ComponentWithComputed({
 
         type PromiseThunk = () => Promise<any>
         const zigbeeTaskList = [] as PromiseThunk[]
-        const zigbeeList = [] as string[]
-        const bleList = [] as string[]
 
         list.forEach((item) => {
           // 等待zigbee子设备添加上报promise
@@ -490,8 +482,7 @@ ComponentWithComputed({
           })
 
           zigbeeTaskList.push(async () => {
-            zigbeeList.push(item.mac)
-            Logger.debug(`【${item.mac}】开始zigbee配网`)
+            Logger.debug(`【${item.mac}】开始zigbee配网任务`)
             // 数据埋点：上报尝试配网的子设备
             wx.reportEvent('add_device', {
               pro_type: item.proType,
@@ -507,16 +498,12 @@ ComponentWithComputed({
                   return
                 }
 
-                bleList.push(item.mac)
                 Logger.debug(`【${item.mac}】蓝牙任务开始`)
                 await this.startZigbeeNet(item)
 
                 await item.client.close()
 
-                const index = bleList.findIndex((mac) => item.mac === mac)
-
-                bleList.splice(index, 1)
-                Logger.debug(`【${item.mac}】蓝牙任务结束,bleList`, bleList)
+                Logger.debug(`【${item.mac}】蓝牙任务结束`)
               })
             } else {
               Logger.debug(`【${item.mac}】已手动完成配网`)
@@ -542,11 +529,7 @@ ComponentWithComputed({
 
             this.updateBleDeviceListView()
 
-            const index = zigbeeList.findIndex((mac) => item.mac === mac)
-
-            zigbeeList.splice(index, 1)
-
-            Logger.debug(`【${item.mac}】结束zigbee配网：`, 'zigbeeList', zigbeeList)
+            Logger.debug(`【${item.mac}】结束zigbee配网任务：`)
           })
         })
 
@@ -554,6 +537,21 @@ ComponentWithComputed({
       } catch (err) {
         Logger.error('beginAddBleDevice-err', err)
       }
+    },
+
+    /**
+     * 监听绑定推送超时处理
+     * @param bleDevice
+     */
+    async handleZigbeeTimeout(bleDevice: Device.ISubDevice) {
+      const deviceData = this.data._deviceMap[bleDevice.mac]
+      const isOnline = await isDeviceOnline({ devIds: [bleDevice.zigbeeMac] })
+
+      Logger.log(`【${bleDevice.mac}】监听超时查询在线状态：${isOnline}`)
+
+      isOnline && Logger.debug(`【${bleDevice.mac}】zigbee入网成功但没有收到推送`)
+
+      deviceData.zigbeeAddCallback({ success: isOnline, msg: '绑定推送监听超时' })
     },
 
     async startZigbeeNet(bleDevice: Device.ISubDevice) {
@@ -569,14 +567,14 @@ ComponentWithComputed({
         if (bleDevice.isConfig !== '02') {
           const configRes = await bleDevice.client.getZigbeeState()
 
-          // 需要排查查询过程中收到绑定推送
+          // 需要排除查询过程中收到绑定推送
           if (configRes.success && configRes.result.isConfig === '02' && bleDevice.status !== 'success') {
             Logger.log(`【${bleDevice.mac}】已zigbee配网成功，无需下发配网指令`)
             bleDevice.isConfig = configRes.result.isConfig
             // 等待绑定推送，超时处理
             deviceData.startTime = dayjs().valueOf()
             deviceData.bindTimeoutId = setTimeout(() => {
-              deviceData.zigbeeAddCallback({ success: false, msg: '绑定推送监听超时' })
+              this.handleZigbeeTimeout(bleDevice)
             }, timeout * 1000)
 
             return
@@ -599,9 +597,9 @@ ComponentWithComputed({
         if (res.success) {
           // 兼容新固件逻辑，子设备重复配网同一个网关，网关不会上报子设备入网，必须app手动查询设备入网状态
           if (res.code === '02') {
-            const deviceStatusRes = await queryDeviceOnlineStatus({ deviceType: '2', deviceId: bleDevice.zigbeeMac })
+            const isOnline = await isDeviceOnline({ devIds: [bleDevice.zigbeeMac] })
 
-            if (deviceStatusRes.success && deviceStatusRes.result.onlineStatus === 1) {
+            if (isOnline) {
               Logger.log(`【${bleDevice.mac}】手动查询子设备已入网`)
               deviceData.zigbeeAddCallback({ success: true })
               return
@@ -610,10 +608,9 @@ ComponentWithComputed({
           bleDevice.isConfig = '02' // 将设备配网状态置为已配网，否则失败重试由于前面判断状态的逻辑无法重新添加成功
           // 等待绑定推送，超时处理
           deviceData.startTime = dayjs().valueOf()
+
           deviceData.bindTimeoutId = setTimeout(() => {
-            if (bleDevice.status !== 'success' && bleDevice.status !== 'fail') {
-              deviceData.zigbeeAddCallback({ success: false, msg: '绑定推送监听超时' })
-            }
+            this.handleZigbeeTimeout(bleDevice)
           }, timeout * 1000)
         } else if (deviceData.zigbeeRepeatTimes > 0) {
           // 配网指令失败重发
@@ -813,9 +810,7 @@ ComponentWithComputed({
       wx.closeBluetoothAdapter()
       bleDevicesStore.reset()
 
-      wx.switchTab({
-        url: '/pages/index/index',
-      })
+      this.goBackPrev()
     },
 
     toggleSelectAll() {
@@ -824,6 +819,12 @@ ComponentWithComputed({
           ...item,
           isChecked: !this.data.isAllSelected,
         }))
+      })
+    },
+
+    goBackPrev() {
+      wx.navigateBack({
+        delta: this.data.proType === PRO_TYPE.sensor ? 4 : 3,
       })
     },
   },
