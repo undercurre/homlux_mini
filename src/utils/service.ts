@@ -80,6 +80,22 @@ export async function startWebsocketService() {
   })
 }
 
+export function socketSend(data: string | ArrayBuffer) {
+  if (!socketTask) {
+    Logger.error('[socketSend] socketTask 未正常连接')
+    return
+  }
+  socketTask.send({
+    data,
+    success(res) {
+      Logger.console('发送成功', res)
+    },
+    fail(res) {
+      Logger.error(res)
+    },
+  })
+}
+
 function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {
   Logger.log('socket关闭连接', e)
   socketIsConnect = false

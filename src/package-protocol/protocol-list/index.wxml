@@ -9,6 +9,7 @@
   <block wx:if="{{envVersion !== 'release'}}">
     <van-cell icon="/assets/img/mine/about.png" title="切换环境【{{curEnv}}】" is-link center bind:click="toggleEnv" />
     <van-cell icon="/assets/img/mine/deviceReplace.png" title="添加虚拟设备" is-link center bind:click="addVirtualDevice" />
+    <van-cell icon="/assets/img/mine/sensor.png" title="socket发送测试" is-link center bind:click="wsSend" />
   </block>
 
   <van-cell wx:if="{{envVersion === 'release' && version}}" title="版本号" value="{{version}}" center />
