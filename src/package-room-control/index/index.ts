@@ -440,6 +440,7 @@ ComponentWithComputed({
      */
     async updateDeviceList(e?: DeviceCard) {
       if (!e) {
+        this.data._updating = false
         return
       }
 
@@ -531,6 +532,7 @@ ComponentWithComputed({
 
         // 如果为空则不初始化
         if (!flattenList.length) {
+          this.data._updating = false
           return
         }
 
