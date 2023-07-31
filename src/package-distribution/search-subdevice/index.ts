@@ -114,7 +114,7 @@ ComponentWithComputed({
         item.status = 'waiting'
       })
 
-      this.data._bleTaskQueue = new PromiseQueue({ concurrency: 3 })
+      this.data._bleTaskQueue = new PromiseQueue({ concurrency: 2 })
       this.data._zigbeeTaskQueue = new PromiseQueue({ concurrency: 6 })
 
       bleDevicesStore.updateBleDeviceList()
