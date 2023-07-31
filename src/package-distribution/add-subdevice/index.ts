@@ -44,19 +44,21 @@ ComponentWithComputed({
       this.initBle()
 
       // 扫码子设备，60s超时处理，无论是否发现目标子设备
-      this.data._timeId = setTimeout(() => {
+      this.data._timeId = setTimeout(async () => {
         if (!this.data._hasFound) {
           console.error(`没有发现子设备${this.data.pageParams.mac}`)
         }
 
-        this.setData({
-          status: 'error',
-        })
-
         console.error(`【${this.data.pageParams.mac}】绑定推送监听超时`)
         emitter.off('bind_device')
-        this.queryZigbeeBindStatus()
-      }, 60000)
+        const isBind = await this.queryZigbeeBindStatus()
+
+        if (!isBind) {
+          this.setData({
+            status: 'error',
+          })
+        }
+      }, 70000)
 
       emitter.on('bind_device', (data) => {
         if (data.deviceId === this.data.pageParams.mac) {
@@ -220,8 +222,11 @@ ComponentWithComputed({
       Logger.log(`【${zigbeeMac}】查询入网状态：${isOnline}`)
 
       if (isOnline) {
+        clearTimeout(this.data._timeId)
         this.bindBleDeviceToClound()
       }
+
+      return isOnline
     },
 
     async startZigbeeNet(bleDevice: IBleDevice) {

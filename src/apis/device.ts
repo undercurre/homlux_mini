@@ -75,7 +75,7 @@ export async function queryDeviceOnlineStatus(
 }
 
 /**
- * 查询设备是否绑定网关
+ * 查询子设备是否已入网
  * @param data devIds 设备
  * @param options
  */
@@ -89,8 +89,8 @@ export async function queryBindDevIdIsSuccess(data: { devIds: string[] }, option
 }
 
 /**
- * 查询设备在线离线状态
- * @param data deviceType 设备类型（1:网关 2:子设备 3:wifi
+ * 查询子设备是否已入网
+ * @param data
  * @param options
  */
 export async function isDeviceOnline(data: { devIds: string[] }) {
