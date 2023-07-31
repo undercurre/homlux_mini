@@ -2,7 +2,7 @@
 <view class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7" style="z-index: -1"></view>
 <nav-bar left-arrow="{{prevPages >= 2}}" bind:leftTap="goBack"></nav-bar>
 
-<view class="flex-col-center w-750rpx mt-36rpx">
+<view wx:if="{{needSettingPage}}" class="flex-col-center w-750rpx mt-36rpx">
   <view class="w-686rpx select-box rounded-55rpx flex-col-center relative" catchtap="handleCardTap" bind:longpress="handleLongPress">
     <view>
       <text>选择启动页样式</text>

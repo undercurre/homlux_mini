@@ -5,3 +5,7 @@
   <image class="w-144rpx h-144rpx" src="/assets/img/login/logo.png"></image>
   <text class="text-48rpx font-semibold mt-48rpx ml-12rpx" style="letter-spacing: 8.8rpx">遥控器首页</text>
 </view>
+
+<van-dialog id="van-dialog" confirm-button-color="#488FFF" cancel-button-color="#27282A">
+  <!-- <text class="font-medium text-32rpx text-hex-555659" slot="title">{{'请打开手机蓝牙开关和\n微信蓝牙权限'}}</text> -->
+</van-dialog>
