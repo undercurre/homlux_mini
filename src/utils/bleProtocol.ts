@@ -226,8 +226,8 @@ export class BleClient {
           const resMsg = msg.substr(6, (packLen - 3) * 2)
 
           resolve({
-            code: resMsg.substr(0, 2),
-            resMsg: resMsg.substr(2),
+            code: resMsg.slice(2, 4),
+            resMsg: resMsg.slice(2),
             success: true,
             cmdType: cmdType,
           })
