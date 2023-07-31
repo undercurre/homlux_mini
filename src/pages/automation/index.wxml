@@ -1,5 +1,5 @@
 <!--pages/automation/index.wxml-->
-<nav-bar background="transparent"></nav-bar>
+<nav-bar z-index="{{113}}" left-arrow bind:leftTap="goBack">自动化</nav-bar>
 <!-- 背景 -->
 <view class="bg-z-index fixed left-0 top-0 w-100vw h-100vh">
   <image src="/assets/img/home/bg.jpg" class="bg-image"></image>

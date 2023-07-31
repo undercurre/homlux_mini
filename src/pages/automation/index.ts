@@ -32,11 +32,11 @@ ComponentWithComputed({
   methods: {
     onLoad() {
       // 更新tabbar状态
-      if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-        this.getTabBar().setData({
-          selected: 1,
-        })
-      }
+      // if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      //   this.getTabBar().setData({
+      //     selected: 1,
+      //   })
+      // }
       // 监听houseId变化，重新请求对应家庭的自动化列表
       reaction(
         () => homeStore.currentHomeDetail.houseId,

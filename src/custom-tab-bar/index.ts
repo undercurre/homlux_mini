@@ -30,10 +30,10 @@ ComponentWithComputed({
         path: '/pages/index/index',
       },
       {
-        text: '自动化',
+        text: '遥控器',
         selectedIcon: '/assets/img/tabbar/automation-selected.png',
         unSelectedIcon: '/assets/img/tabbar/automation-unselected.png',
-        path: '/pages/automation/index',
+        path: '/pages/remoter/index',
       },
       {
         text: '我的',
@@ -44,13 +44,14 @@ ComponentWithComputed({
     ],
   },
   computed: {
-    menuList(data: IAnyObject) {
-      const list = data.list
-      if (!data.isLogin || data.isVisitor) {
-        return list.filter((item: IAnyObject) => item.text !== '自动化')
-      }
-      return list
-    },
+    // 已不需要作权限判断，暂时注释
+    // menuList(data: IAnyObject) {
+    //   const list = data.list
+    //   if (!data.isLogin || data.isVisitor) {
+    //     return list.filter((item: IAnyObject) => item.text !== '自动化')
+    //   }
+    //   return list
+    // },
   },
 
   /**
