@@ -14,7 +14,7 @@
   </view>
 
   <view class="flex px-32rpx gap-x-46rpx" wx:if="{{isManager}}">
-    <van-button class="flex-1" size="large" bind:click="delRoom">删除</van-button>
+    <van-button class="flex-1" size="large" bind:click="delRoom" custom-style="background-color: transparent;">删除</van-button>
 
     <van-button type="primary" class="flex-1" size="large" bind:click="saveRoomInfo">确认</van-button>
   </view>

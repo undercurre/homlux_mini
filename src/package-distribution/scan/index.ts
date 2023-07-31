@@ -32,9 +32,15 @@ ComponentWithComputed({
     isShowGatewayList: false, // 是否展示选择网关列表弹窗
     isShowNoGatewayTips: false, // 是否展示添加网关提示弹窗
     isScan: false, // 是否正在扫码
+    scanType: '', // 扫码页的种类
     isFlash: false,
-    selectGatewayId: '',
-    selectGatewaySn: '',
+    selectGateway: {
+      deviceId: '',
+      sn: '',
+      channel: 0,
+      extPanId: '',
+      panId: 0,
+    },
     deviceInfo: {
       icon: '/package-distribution/assets/scan/light.png',
     } as IAnyObject,
@@ -74,8 +80,11 @@ ComponentWithComputed({
         isShowPage: true,
       })
 
-      // 蓝牙权限及开关已开情况下
-      this.data.isBlePermit && bleDevicesStore.available && bleDevicesStore.startBleDiscovery()
+      // 子设备配网页，蓝牙权限及开关已开情况下
+      this.data.scanType === 'subdevice' &&
+        this.data.isBlePermit &&
+        bleDevicesStore.available &&
+        bleDevicesStore.startBleDiscovery()
     },
     hide() {
       // 由于非授权情况下进入页面，摄像头组件已经渲染，即使重新授权页无法正常使用，需要通过wx：if重新触发渲染组件
@@ -91,6 +100,11 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
+    async onLoad(query: { type?: string }) {
+      this.setData({
+        scanType: query.type,
+      })
+    },
     // 检查是否通过微信扫码直接进入该界面时判断场景值
     checkWxScanEnter() {
       const params = wx.getLaunchOptionsSync()
@@ -130,8 +144,13 @@ ComponentWithComputed({
       }
 
       this.setData({
-        selectGatewayId: item.deviceId,
-        selectGatewaySn: item.sn,
+        selectGateway: {
+          deviceId: item.deviceId,
+          sn: item.sn,
+          channel: item.channel || 0,
+          panId: item.panId || 0,
+          extPanId: item.extPanId || '',
+        },
       })
     },
 
@@ -237,8 +256,13 @@ ComponentWithComputed({
     onCloseGwList() {
       this.setData({
         isShowGatewayList: false,
-        selectGatewayId: '',
-        selectGatewaySn: '',
+        selectGateway: {
+          deviceId: '',
+          sn: '',
+          channel: 0,
+          extPanId: '',
+          panId: 0,
+        },
       })
     },
 
@@ -434,13 +458,16 @@ ComponentWithComputed({
 
         showLoading()
         // mode 配网方式 （00代表AP配网，01代表蓝牙配网， 02代表AP+有线）
+        // 带蓝牙子设备
         if (pageParams.mode === '01') {
-          // 子设备
           await this.bindSubDevice(pageParams)
-        } else if (pageParams.mode === '02') {
-          // 网关绑定逻辑
+        }
+        // 网关绑定逻辑
+        else if (pageParams.mode === '02') {
           await this.bindGateway(pageParams)
-        } else if (pageParams.mode === '10') {
+        }
+        // 智慧屏扫码绑定
+        else if (pageParams.mode === '10') {
           wx.redirectTo({
             url: strUtil.getUrlWithParams('/package-auth/auth-screen/index', {
               code: pageParams.code,
@@ -481,7 +508,6 @@ ComponentWithComputed({
         return
       }
 
-      Logger.log('checkDevice', res)
       wx.reportEvent('add_device', {
         pro_type: res.result.proType,
         model_id: params.pid,
@@ -500,7 +526,6 @@ ComponentWithComputed({
     async bindSubDevice(params: IAnyObject) {
       const res = await checkDevice({ dsn: params.sn }, { loading: false })
 
-      Logger.log('checkDevice', res)
       if (!res.success) {
         Toast('验证产品信息失败')
 
@@ -515,6 +540,7 @@ ComponentWithComputed({
           deviceName: res.result.productName,
           icon: res.result.productIcon,
           mac: res.result.mac, // zigbee 的mac
+          modelId: res.result.modelId,
         },
       })
 
@@ -529,7 +555,7 @@ ComponentWithComputed({
      * 添加子设备时，检测是否已选择网关信息
      */
     checkGateWayInfo() {
-      const gatewayId = this.data.selectGatewayId
+      const gatewayId = this.data.selectGateway.deviceId
 
       if (gatewayId) {
         return true
@@ -550,8 +576,14 @@ ComponentWithComputed({
       }
 
       if (this.data.gatewayList.length === 1 && this.data.gatewayList[0].onLineStatus === 1) {
-        this.data.selectGatewayId = this.data.gatewayList[0].deviceId
-        this.data.selectGatewaySn = this.data.gatewayList[0].sn
+        const gateway = this.data.gatewayList[0]
+        this.data.selectGateway = {
+          deviceId: gateway.deviceId,
+          sn: gateway.sn,
+          channel: gateway.channel || 0,
+          panId: gateway.panId || 0,
+          extPanId: gateway.extPanId || '',
+        }
       } else {
         this.setData({
           isShowGatewayList: true,
@@ -573,21 +605,22 @@ ComponentWithComputed({
         return
       }
 
-      const gatewayId = this.data.selectGatewayId,
-        gatewaySn = this.data.selectGatewaySn
+      const { deviceId, sn, channel, extPanId, panId } = this.data.selectGateway
 
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
-          gatewayId,
-          gatewaySn,
+          gatewayId: deviceId,
+          gatewaySn: sn,
+          channel,
+          extPanId,
+          panId,
         }),
       })
     },
 
     // 添加单个子设备
     addSingleSubdevice() {
-      const gatewayId = this.data.selectGatewayId,
-        gatewaySn = this.data.selectGatewaySn
+      const { deviceId, sn, channel, extPanId, panId } = this.data.selectGateway
 
       const { proType, modelId } = this.data.deviceInfo
 
@@ -600,8 +633,11 @@ ComponentWithComputed({
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/add-subdevice/index', {
           mac: this.data.deviceInfo.mac,
-          gatewayId,
-          gatewaySn,
+          gatewayId: deviceId,
+          gatewaySn: sn,
+          channel,
+          extPanId,
+          panId,
           deviceName: this.data.deviceInfo.deviceName,
           deviceIcon: this.data.deviceInfo.icon,
           proType: proType,

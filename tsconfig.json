@@ -18,7 +18,7 @@
     "strictPropertyInitialization": true,
     "skipLibCheck": true,
     "lib": ["ES2020"],
-    "types": ["miniprogram-api-typings", "crypto-js", "tiny-async-pool"],
+    "types": ["miniprogram-api-typings", "crypto-js"],
     "typeRoots": ["./typings"],
     "paths": {
       "@vant/weapp/*": ["./node_modules/@vant/weapp/dist/*"]

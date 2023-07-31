@@ -125,7 +125,6 @@ ComponentWithComputed({
     /** 已选中设备或场景 TODO */
     linkSelectList: [] as string[],
     showLinkPopup: false,
-    showSelectLinkPopup: false,
     allOnPress: false,
     allOffPress: false,
     _switchRelInfo: {
@@ -366,7 +365,7 @@ ComponentWithComputed({
 
         if (this.data.selectLinkType === 'switch' && (linkScene || lampRelList.length)) {
           const dialogRes = await Dialog.confirm({
-            message: `此开关已关联${linkScene ? '场景' : '灯具'}，是否取消关联？`,
+            title: `此开关已关联${linkScene ? '场景' : '灯具'}，是否取消关联？`,
             cancelButtonText: '取消',
             confirmButtonText: '确定',
             zIndex: 2000,
@@ -389,7 +388,7 @@ ComponentWithComputed({
 
         if (switchSceneActionMap[switchUniId]?.includes(selectId)) {
           const dialogRes = await Dialog.confirm({
-            message: '此开关已被其他场景使用，是否需要变更？',
+            title: '此开关已被其他场景使用，是否需要变更？',
             cancelButtonText: '取消',
             confirmButtonText: '变更',
             zIndex: 2000,
@@ -408,29 +407,19 @@ ComponentWithComputed({
         })
       }
     },
-    handleSelectLinkPopup() {
+    async handleSelectLinkPopupConfirm(e: WechatMiniprogram.TouchEvent) {
       if (this.data.disabledLinkSetting) {
         const message = '只能创建者及管理员进行关联'
         Toast({ message, zIndex: 9999 })
         return
       }
 
+      const { type } = e.currentTarget.dataset
       this.setData({
-        showSelectLinkPopup: true,
-      })
-    },
-    handleSelectLinkPopupClose() {
-      this.setData({
-        showSelectLinkPopup: false,
-      })
-    },
-    async handleSelectLinkPopupConfirm(e: { detail: 'light' | 'switch' | 'scene' }) {
-      this.setData({
-        showSelectLinkPopup: false,
-        selectLinkType: e.detail,
+        selectLinkType: type,
       })
 
-      if (e.detail === 'switch') {
+      if (type === 'switch') {
         const res = await getLampDeviceByHouseId({ houseId: homeStore.currentHomeId })
 
         if (res.success) {
@@ -450,7 +439,6 @@ ComponentWithComputed({
       this.setData({
         showLinkPopup: false,
       })
-      this.handleSelectLinkPopup()
     },
     /** 关联开关 */
     async updateSwitchAssociate() {
@@ -673,7 +661,7 @@ ComponentWithComputed({
         // 变更绑定类型的情况下弹框确认
         if (linkType !== selectLinkType) {
           const dialogRes = await Dialog.confirm({
-            message: `此开关已${descMap[linkType]}，是否变更？`,
+            title: `此开关已${descMap[linkType]}，是否变更？`,
             cancelButtonText: '取消',
             confirmButtonText: '确定',
             zIndex: 2000,

@@ -4,6 +4,7 @@ type Events = {
   // 从websocket接受到信息 start
   bind_device: {
     deviceId: string
+    proType: string
   } // 绑定子设备
   wsReceive: {
     result: {
@@ -27,6 +28,23 @@ type Events = {
     sceneId: string
     errCode: number // 0 成功，1-失败
   }
+  scene_upt: {
+    eventType: keyof typeof WSEventType
+  }
+  scene_add: {
+    eventType: keyof typeof WSEventType
+  }
+  scene_del: {
+    eventType: keyof typeof WSEventType
+  }
+  scene_enabled: {
+    eventType: keyof typeof WSEventType
+  }
+
+  // 用户退出
+  del_house_user: {
+    userId: string
+  }
 }
 
 export const WSEventType = {
@@ -45,6 +63,12 @@ export const WSEventType = {
   screen_online_status_sub_device: 'screen_online_status_sub_device', // 子设备在线状态更新
   screen_online_status_wifi_device: 'screen_online_status_wifi_device', // wifi 设备在线状态更新
   screen_move_sub_device: 'screen_move_sub_device', // 智慧屏设备变更
+  project_change_house: 'project_change_house', // 工程移交
+  change_house: 'change_house', // 家庭转让
+  scene_add: 'scene_add', // 场景更新
+  scene_upt: 'scene_upt', // 创建场景
+  scene_del: 'scene_del', // 场景删除
+  scene_enabled: 'scene_enabled', //场景使能切换
 }
 
 export const emitter: Emitter<Events> = mitt<Events>()

@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "sensor-ability-select": "../../../../components/sensor-ability-select/index"
+  }
+}

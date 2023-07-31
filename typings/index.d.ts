@@ -32,3 +32,5 @@ declare namespace WechatMiniprogram.Component {
  * 又或者const obj = {a: 1, b: '2', c: true} as const   ValueOf<typeof obj> => 1 | '2' | true
  */
 type ValueOf<T> = T[keyof T]
+
+declare module 'weapp-qrcode-canvas-2d'

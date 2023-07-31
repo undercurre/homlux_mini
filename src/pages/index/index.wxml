@@ -39,13 +39,13 @@
 <view class="flex flex-col" bindtap="hideMenu">
   <!-- 主体内容 -->
   <view class="flex flex-1 w-full box-border" id="content">
-    <!-- 有设备时显示 -->
-    <scroll-view scroll-y enhanced show-scrollbar="{{false}}" class="flex flex-col items-between mx-24rpx" wx:if="{{hasDevice}}" style="height: {{scrollViewHeight}}px;">
+    <!-- 有设备时显示 FIXME 拖拽时不能滚动 -->
+    <scroll-view enhanced="{{true}}" scroll-y="{{!isMoving}}" show-scrollbar="{{false}}" class="flex flex-col items-between mx-24rpx" wx:if="{{hasDevice}}" style="height: {{scrollViewHeight}}px;" scroll-top="{{scrollTop}}" scroll-with-animation="{{true}}" bind:scroll="onPageScroll">
       <!-- 顶开上面的内容高度 -->
       <view class="h-24rpx"></view>
       <!-- 房间卡片列表 -->
       <movable-area style="height: {{accumulatedY}}px; width: 702rpx;">
-        <movable-view wx:for="{{roomList}}" wx:key="roomId" data-index="{{index}}" data-rid="{{item.roomId}}" class="w-702rpx {{item.sceneList.length && !isMoving ? 'h-336rpx' : 'h-152rpx'}}" y="{{roomPos[item.roomId].y}}" direction="vertical" bind:longpress="movableTouchStart" bind:touchend="movableTouchEnd" bind:change="movableChange" class="{{ roomPos[item.roomId].index === placeholder.index ? 'z-100' : (isMoving ? 'opacity-50' : 'opacity-100 z-1') }}" disabled="{{!isMoving}}">
+        <movable-view out-of-bounds wx:for="{{roomList}}" wx:key="roomId" data-index="{{index}}" data-rid="{{item.roomId}}" class="w-702rpx {{item.sceneList.length && !isMoving ? 'h-336rpx' : 'h-152rpx'}}" y="{{roomPos[item.roomId].y}}" direction="vertical" friction="{{999}}" damping="{{100}}" bind:longpress="movableLongpress" bind:touchend="movableTouchEnd" bind:touchmove="movableTouchMove" class="{{ roomPos[item.roomId].index === placeholder.index ? 'z-100' : (isMoving ? 'opacity-50' : 'opacity-100 z-1') }}" disabled="{{!isMoving}}">
           <room-card room-info="{{item}}" data-room="{{item.roomId}}" isMoving="{{isMoving}}" bind:sceneSelect="handleSceneSelect"></room-card>
         </movable-view>
       </movable-area>
@@ -62,9 +62,7 @@
       <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx"></image>
       <text class="text-32rpx text-black-59 mt-44rpx mb-32rpx">尚未添加设备</text>
       <text class="text-24rpx text-black-59 mb-224rpx opacity-40">立即添加设备，开启智慧照明</text>
-      <van-button bind:click="goTo" data-url="/package-distribution/scan/index" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-class="add-immediately-btn" wx:if="{{isInit && !hasDevice && (isCreator || isAdmin)}}">
-        <text class="text-white text-36rpx font-normal">添加智能设备</text>
-      </van-button>
+      <van-button bind:click="goTo" data-url="/package-distribution/choose-device/index" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-class="add-immediately-btn" wx:if="{{isInit && !hasDevice && (isCreator || isAdmin)}}"> <text class="text-white text-36rpx font-normal">添加智能设备</text> </van-button>
     </view>
   </view>
 </view>
@@ -102,4 +100,4 @@
 <add-menu right="{{addMenu.right}}" y="{{addMenu.y}}" isShow="{{addMenu.isShow}}"></add-menu>
 <add-room show="{{showAddNewRoom}}" bind:close="handleHideAddNewRoom"></add-room>
 <van-toast id="van-toast" />
-<van-dialog id="van-dialog" />
+<van-dialog id="van-dialog" confirm-button-color="#488FFF" />

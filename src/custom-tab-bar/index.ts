@@ -1,8 +1,14 @@
 // custom-tab-bar/index.ts
-Component({
+import { ComponentWithComputed } from 'miniprogram-computed'
+import pageBehavior from '../behaviors/pageBehaviors'
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import { homeBinding, userBinding } from '../store/index'
+
+ComponentWithComputed({
   options: {
     styleIsolation: 'apply-shared',
   },
+  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, userBinding] }), pageBehavior],
 
   /**
    * 组件的属性列表
@@ -24,12 +30,27 @@ Component({
         path: '/pages/index/index',
       },
       {
+        text: '自动化',
+        selectedIcon: '/assets/img/tabbar/automation-selected.png',
+        unSelectedIcon: '/assets/img/tabbar/automation-unselected.png',
+        path: '/pages/automation/index',
+      },
+      {
         text: '我的',
         selectedIcon: '/assets/img/tabbar/mine-selected.png',
         unSelectedIcon: '/assets/img/tabbar/mine-unselected.png',
         path: '/pages/mine/index',
       },
     ],
+  },
+  computed: {
+    menuList(data: IAnyObject) {
+      const list = data.list
+      if (!data.isLogin || data.isVisitor) {
+        return list.filter((item: IAnyObject) => item.text !== '自动化')
+      }
+      return list
+    },
   },
 
   /**

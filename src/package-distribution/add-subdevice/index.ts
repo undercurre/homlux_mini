@@ -3,8 +3,9 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
 import { bleUtil, strUtil, BleClient, getCurrentPageParams, emitter, Logger } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { sendCmdAddSubdevice, bindDevice } from '../../apis/index'
+import { sendCmdAddSubdevice, bindDevice, isDeviceOnline } from '../../apis/index'
 import { IBleDevice } from './typings'
+import dayjs from 'dayjs'
 
 type StatusName = 'linking' | 'error'
 
@@ -25,6 +26,7 @@ ComponentWithComputed({
     activeIndex: 0,
     pageParams: {} as IAnyObject,
     _hasFound: false, // 是否已经找到指定mac设备
+    _startTime: 0, // 发送完蓝牙配网指令的实际
   },
 
   lifetimes: {
@@ -51,15 +53,20 @@ ComponentWithComputed({
           status: 'error',
         })
 
+        console.error(`【${this.data.pageParams.mac}】绑定推送监听超时`)
         emitter.off('bind_device')
-        console.error(`绑定失败：子设备${this.data.pageParams.mac}，绑定推送监听超时`)
+        this.queryZigbeeBindStatus()
       }, 60000)
 
       emitter.on('bind_device', (data) => {
-        console.log('bind_device', data)
-
         if (data.deviceId === this.data.pageParams.mac) {
           console.log(`收到绑定推送消息：子设备${this.data.pageParams.mac}`)
+          wx.reportEvent('zigebee_add', {
+            pro_type: this.data.pageParams.proType,
+            cost_time: dayjs().valueOf() - this.data._startTime,
+            model_id: this.data.pageParams.modelId,
+          })
+
           this.bindBleDeviceToClound()
           emitter.off('bind_device')
           clearTimeout(this.data._timeId)
@@ -136,10 +143,16 @@ ComponentWithComputed({
       const bleDevice: IBleDevice = {
         deviceUuid: device.deviceId,
         mac: msgObj.mac,
-        zigbeeMac: '',
+        zigbeeMac: this.data.pageParams.mac,
         icon: this.data.pageParams.deviceIcon,
         name: this.data.pageParams.deviceName,
-        client: new BleClient({ mac: msgObj.mac, deviceUuid: device.deviceId }),
+        client: new BleClient({
+          mac: msgObj.mac,
+          deviceUuid: device.deviceId,
+          modelId: this.data.pageParams.modelId,
+          proType: this.data.pageParams.proType,
+          protocolVersion: msgObj.protocolVersion,
+        }),
         roomId: '',
         roomName: '',
         status: 'waiting',
@@ -196,10 +209,30 @@ ComponentWithComputed({
       return res
     },
 
+    /**
+     * 手动查询子设备是否入网
+     * @param bleDevice
+     */
+    async queryZigbeeBindStatus() {
+      const zigbeeMac = this.data.pageParams.mac
+      const isOnline = await isDeviceOnline({ devIds: [zigbeeMac] })
+
+      Logger.log(`【${zigbeeMac}】查询入网状态：${isOnline}`)
+
+      if (isOnline) {
+        this.bindBleDeviceToClound()
+      }
+    },
+
     async startZigbeeNet(bleDevice: IBleDevice) {
       bleDevice.zigbeeRepeatTimes--
+      const { channel, extPanId, panId } = this.data.pageParams
 
-      const res = await bleDevice.client.startZigbeeNet()
+      const res = await bleDevice.client.startZigbeeNet({
+        channel: parseInt(channel),
+        extPanId: extPanId,
+        panId: parseInt(panId),
+      })
 
       // 配网指令允许重发3次
       if (!res.success && bleDevice.zigbeeRepeatTimes > 0) {
@@ -209,8 +242,12 @@ ComponentWithComputed({
 
       if (res.success) {
         bleDevice.zigbeeMac = res.result.zigbeeMac
+        this.data._startTime = dayjs().valueOf()
 
-        // this.queryDeviceOnlineStatus(bleDevice)
+        // 兼容新固件逻辑，子设备重复配网同一个网关，网关不会上报子设备入网，必须app手动查询设备入网状态
+        if (res.code === '02') {
+          this.queryZigbeeBindStatus()
+        }
       } else {
         this.setData({
           status: 'error',
@@ -267,8 +304,8 @@ ComponentWithComputed({
     },
 
     finish() {
-      wx.switchTab({
-        url: '/pages/index/index',
+      wx.navigateBack({
+        delta: 3,
       })
     },
   },

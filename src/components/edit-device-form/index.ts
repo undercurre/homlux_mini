@@ -33,8 +33,6 @@ Component({
 
   observers: {
     'deviceName, roomId, roomName, switchList': function (deviceName, roomId, roomName, switchList) {
-      console.log('observers-deviceName', deviceName, roomId, switchList)
-
       this.setData({
         isAddRoom: false,
         isShowEditSwitch: false,

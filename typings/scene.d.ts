@@ -13,6 +13,7 @@ declare namespace Scene {
     houseId: string
     orderNum: number
     roomId: string
+    roomName: string
   }
   /**
    * 房间列表里的场景列表项

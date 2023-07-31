@@ -1,5 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { proName, PRO_TYPE } from '../../config/index'
+import { throttle } from '../../utils/index'
 
 const CONTROL_INTERVAL = 3000 // 开关操作间隔时间
 
@@ -11,17 +12,12 @@ ComponentWithComputed({
    * 组件的属性列表
    */
   properties: {
-    // 单选
+    // 是否显示选中样式，包括单选和多选
     select: {
       type: Boolean,
       value: false,
     },
     editMode: {
-      type: Boolean,
-      value: false,
-    },
-    // 编辑模式选择，可多选
-    editSelect: {
       type: Boolean,
       value: false,
     },
@@ -58,7 +54,16 @@ ComponentWithComputed({
     onOff: false, // true: on false: off
     showDeviceOffline: false,
     isProcessing: false,
-    _throttleTimer: 0,
+    _clientRect: {} as IAnyObject,
+  },
+  lifetimes: {
+    ready() {
+      this.createSelectorQuery()
+        .select('#card')
+        .boundingClientRect()
+        .exec((res) => (this.data._clientRect = res[0]))
+    },
+    detached() {},
   },
 
   computed: {
@@ -109,11 +114,11 @@ ComponentWithComputed({
       } else {
         name = data.deviceInfo.deviceName
       }
-      return name.length > 5 ? name.slice(0, 5) + '...' : name
+      return name.length > 5 ? name.slice(0, 2) + '...' + name.slice(-2) : name
     },
     bottomDesc(data) {
       return data.deviceInfo.deviceName.length > 5
-        ? data.deviceInfo.deviceName.slice(0, 5) + '...'
+        ? data.deviceInfo.deviceName.slice(0, 2) + '...' + data.deviceInfo.deviceName.slice(-2)
         : data.deviceInfo.deviceName
     },
     deviceType(data) {
@@ -130,29 +135,24 @@ ComponentWithComputed({
    */
   methods: {
     handleCardTap() {
-      this.createSelectorQuery()
-        .select('#card')
-        .boundingClientRect()
-        .exec((res) => {
-          if (this.data.editMode) {
-            this.triggerEvent('cardTap', {
-              ...this.data.deviceInfo,
-              clientRect: res[0],
-            })
-          } else {
-            if (this.data.deviceInfo.onLineStatus) {
-              this.triggerEvent('cardTap', {
-                ...this.data.deviceInfo,
-                clientRect: res[0],
-              })
-            } else {
-              this.triggerEvent('offlineTap', {
-                ...this.data.deviceInfo,
-                clientRect: res[0],
-              })
-            }
-          }
+      if (this.data.editMode) {
+        this.triggerEvent('cardTap', {
+          ...this.data.deviceInfo,
+          clientRect: this.data._clientRect,
         })
+      } else {
+        if (this.data.deviceInfo.onLineStatus) {
+          this.triggerEvent('cardTap', {
+            ...this.data.deviceInfo,
+            clientRect: this.data._clientRect,
+          })
+        } else {
+          this.triggerEvent('offlineTap', {
+            ...this.data.deviceInfo,
+            clientRect: this.data._clientRect,
+          })
+        }
+      }
     },
     /**
      * 处理中部位置点击时的事件，优化交互手感
@@ -164,67 +164,59 @@ ComponentWithComputed({
         this.handleCardTap()
       }
     },
+    // 节流执行
+    controlThrottle: throttle(
+      function (this: IAnyObject) {
+        this.setData({
+          isProcessing: true,
+          ripple: true,
+        })
+
+        // 回滚状态及动画
+        setTimeout(() => {
+          this.setData({
+            isProcessing: false,
+            ripple: false,
+          })
+        }, CONTROL_INTERVAL)
+      },
+      CONTROL_INTERVAL,
+      true,
+      false,
+    ),
     handlePowerTap() {
       // 如果设备离线，刚转为点击卡片
       if (!this.data.deviceInfo.onLineStatus) {
         this.handleCardTap()
         return
       }
-      if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
-      this.createSelectorQuery()
-        .select('#card')
-        .boundingClientRect()
-        .exec((res) => {
-          if (this.data.deviceInfo.onLineStatus) {
-            this.triggerEvent('controlTap', { ...this.data.deviceInfo, clientRect: res[0] })
-            // 执行动画
-            if (this.data._throttleTimer) {
-              return
-            }
-            let onOff = false
-            if (this.data.deviceInfo.proType === PRO_TYPE.light) {
-              onOff = !this.data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
-            } else if (this.data.deviceInfo.proType === PRO_TYPE.switch) {
-              const switchId = this.data.deviceInfo.switchInfoDTOList[0].switchId
-              if (this.data.deviceInfo.mzgdPropertyDTOList[switchId]) {
-                onOff = !this.data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff
-              }
-              if (this.data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
-                this.data._throttleTimer = setTimeout(() => {
-                  this.data._throttleTimer = 0
-                  this.setData({
-                    isProcessing: false,
-                  })
-                }, CONTROL_INTERVAL)
 
-                this.setData({
-                  isProcessing: true,
-                })
+      // 振动反馈
+      if (wx.vibrateShort) wx.vibrateShort({ type: 'light' })
 
-                return
-              }
-            }
-            this.setData({
-              ripple: true,
-              onOff,
-            })
-            this.data._throttleTimer = setTimeout(() => {
-              this.data._throttleTimer = 0
-              this.setData({
-                ripple: false,
-                isProcessing: false,
-              })
-            }, CONTROL_INTERVAL)
-            this.setData({
-              isProcessing: true,
-            })
-          } else {
-            this.triggerEvent('offlineTap', {
-              ...this.data.deviceInfo,
-              clientRect: res[0],
-            })
-          }
-        })
+      // emit 事件，发送指令等
+      this.triggerEvent('controlTap', { ...this.data.deviceInfo, clientRect: this.data._clientRect })
+
+      // 状态反转
+      let onOff = false
+      if (this.data.deviceInfo.proType === PRO_TYPE.light) {
+        onOff = !this.data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
+      } else if (this.data.deviceInfo.proType === PRO_TYPE.switch) {
+        const { switchId } = this.data.deviceInfo.switchInfoDTOList[0]
+        onOff = !this.data.deviceInfo.mzgdPropertyDTOList[switchId]?.OnOff
+
+        // 未确定用途，暂时注释
+        // if (this.data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
+        //   return
+        // }
+      }
+
+      this.setData({
+        onOff,
+      })
+
+      // 节流执行的部分
+      this.controlThrottle()
     },
     handleLongPress() {
       this.createSelectorQuery()

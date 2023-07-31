@@ -132,7 +132,7 @@ ComponentWithComputed({
         wx.stopWifi()
 
         wx.navigateBack({
-          delta: 2,
+          delta: 3,
         })
       } else {
         Toast('保存失败')

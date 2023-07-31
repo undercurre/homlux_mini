@@ -199,7 +199,7 @@ export class WifiSocket {
     return new Promise((resolve) => {
       wx.getLocalIPAddress({
         success: (successRes) => {
-          Logger.debug('getLocalIPAddress-success', successRes, dayjs().format('HH:mm:ss'))
+          Logger.log('getLocalIPAddress-success', successRes)
 
           // IOS偶现返回ip为unknown,安卓可能会获取到0.0.0.0
           if (successRes.localip.includes('.') && successRes.localip !== '0.0.0.0') {
@@ -463,8 +463,6 @@ export class WifiSocket {
       topic: '/gateway/net/status',
       data: {},
     })
-
-    Logger.debug('getGatewayStatus：', dayjs().format('HH:mm:ss'))
 
     if (!res.success) {
       Logger.error('查询网关状态失败')

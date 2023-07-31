@@ -5,6 +5,7 @@ import pageBehaviors from '../../behaviors/pageBehaviors'
 import { homeBinding, userBinding } from '../../store/index'
 import { storage } from '../../utils/storage'
 import { emitter } from '../../utils/eventBus'
+import { ShareImgUrl } from '../../config/index'
 
 ComponentWithComputed({
   options: {
@@ -327,14 +328,14 @@ ComponentWithComputed({
               time.valueOf() +
               '&shareId=' +
               homeBinding.store.shareId,
-            imageUrl: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/welcome.png',
+            imageUrl: ShareImgUrl,
           })
         }, 500)
       })
       return {
         title: '邀请你加入我的家庭',
         path: '/pages/index/index?type=visitor',
-        imageUrl: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/welcome.png',
+        imageUrl: ShareImgUrl,
         promise,
       }
     },

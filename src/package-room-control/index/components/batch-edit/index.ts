@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { PRO_TYPE } from '../../../../config/index'
-import { batchDeleteDevice, batchUpdate, renameGroup } from '../../../../apis/index'
+import { waitingBatchDeleteDevice, batchUpdate, renameGroup } from '../../../../apis/index'
 import { deviceBinding, deviceStore, homeStore, roomBinding, roomStore } from '../../../../store/index'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
@@ -179,7 +179,7 @@ ComponentWithComputed({
       }
       const hasSwitch = this.data.editSelectList.some((uniId: string) => uniId.includes(':'))
       Dialog.confirm({
-        message: hasSwitch ? '该按键所在的面板将被一起删除' : '确定删除该设备',
+        title: hasSwitch ? '该按键所在的面板将被一起删除' : '确定删除该设备',
         confirmButtonText: '是',
         cancelButtonText: '否',
         context: this,
@@ -193,7 +193,7 @@ ComponentWithComputed({
               set.add(uniId)
             }
           })
-          const res = await batchDeleteDevice({
+          const res = await waitingBatchDeleteDevice({
             deviceBaseDeviceVoList: Array.from(set).map((deviceId) => ({
               deviceId,
               deviceType: String(deviceStore.deviceMap[deviceId].deviceType),
@@ -217,7 +217,7 @@ ComponentWithComputed({
         .catch((e) => console.log(e))
     },
     handleEditNamePopup() {
-      if (this.data.editSelectList?.length > 1) {
+      if (!this.data.canEditName) {
         return
       }
       const uniId = this.data.editSelectList[0]
@@ -240,7 +240,7 @@ ComponentWithComputed({
       }
     },
     handleMoveRoomPopup() {
-      if (!this.data.editSelectList.length) {
+      if (!this.data.canMoveRoom) {
         return
       }
       const uniId = this.data.editSelectList[0]
@@ -251,6 +251,9 @@ ComponentWithComputed({
       })
     },
     handleCreateGroup() {
+      if (!this.data.canGroup) {
+        return
+      }
       const lightList = this.data.editSelectList
       wx.navigateTo({
         url: '/package-room-control/group/index',
@@ -298,12 +301,12 @@ ComponentWithComputed({
           // 超时后检查云端上报，是否已成功移动完毕 5~120s
           const TIME_OUT = Math.min(Math.max(5000, this.data.moveWaitlist.length * 1000), 120000)
 
-          showLoading()
+          showLoading('正在移动设备房间，请稍候')
           timeId = setTimeout(async () => {
             hideLoading()
 
             Dialog.confirm({
-              message: '部分设备未成功移动，是否重试',
+              title: '部分设备未成功移动，是否重试',
               confirmButtonText: '是',
               cancelButtonText: '否',
               context: this,
@@ -325,7 +328,7 @@ ComponentWithComputed({
       })
       if (hasSwitch && !this.data.moveFailCount) {
         Dialog.confirm({
-          message: '按键所在的面板将被移动至新房间，是否继续？',
+          title: '按键所在的面板将被移动至新房间，是否继续？',
           confirmButtonText: '是',
           cancelButtonText: '否',
           context: this,

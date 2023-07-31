@@ -51,8 +51,8 @@ ComponentWithComputed({
           title: '添加设备',
           key: 'device',
           icon: 'add',
-          // url: '/package-distribution/choose-device/index',
-          url: '/package-distribution/scan/index',
+          url: '/package-distribution/choose-device/index',
+          // url: '/package-distribution/scan/index',
         })
       }
       if (data.isCreator) {

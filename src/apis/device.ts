@@ -1,4 +1,4 @@
-import { delay, mzaioRequest, toWifiProperty } from '../utils/index'
+import { delay, mzaioRequest, toWifiProperty, showLoading, hideLoading } from '../utils/index'
 import { PRO_TYPE } from '../config/index'
 
 /**
@@ -58,7 +58,8 @@ export async function queryDeviceInfoByDeviceId(
 
 /**
  * 查询设备在线离线状态
- * 设备类型（1:网关 2:子设备 3:wifi
+ * @param data deviceType 设备类型（1:网关 2:子设备 3:wifi
+ * @param options
  */
 export async function queryDeviceOnlineStatus(
   data: { deviceType: '1' | '2' | '3'; sn?: string; deviceId?: string },
@@ -71,6 +72,31 @@ export async function queryDeviceOnlineStatus(
     url: '/v1/device/queryDeviceOnlineStatus',
     data,
   })
+}
+
+/**
+ * 查询设备是否绑定网关
+ * @param data devIds 设备
+ * @param options
+ */
+export async function queryBindDevIdIsSuccess(data: { devIds: string[] }, options?: { loading?: boolean }) {
+  return await mzaioRequest.post<string[]>({
+    log: false,
+    loading: options?.loading ?? false,
+    url: '/v1/device/queryBindDevIdIsSuccess',
+    data,
+  })
+}
+
+/**
+ * 查询设备在线离线状态
+ * @param data deviceType 设备类型（1:网关 2:子设备 3:wifi
+ * @param options
+ */
+export async function isDeviceOnline(data: { devIds: string[] }) {
+  const deviceStatusRes = await queryBindDevIdIsSuccess(data)
+
+  return deviceStatusRes.success && deviceStatusRes.result.length === 0
 }
 
 /**
@@ -249,6 +275,19 @@ export async function findDevice(
 }
 
 /**
+ * 云端获取网关下的传感器列表（未绑定到家庭的）
+ * @param gatewayId
+ */
+export async function getUnbindSensor(data: { gatewayId: string }, option?: { loading?: boolean }) {
+  return await mzaioRequest.post<Device.ISubDevice[]>({
+    log: true,
+    loading: option?.loading || false,
+    url: '/v1/device/getUnbindSensor',
+    data,
+  })
+}
+
+/**
  * 检查ota版本
  */
 export async function checkOtaVersion(deviceId: string, options?: { loading?: boolean }) {
@@ -310,7 +349,7 @@ export async function batchUpdate(
 }
 
 /**
- * 设备管理-删除设备
+ * 设备管理-删除单个设备
  * 网关需要传sn，子设备传子设备的deviceId代替sn
  */
 export async function deleteDevice(
@@ -326,6 +365,54 @@ export async function deleteDevice(
 }
 
 /**
+ * 批量查询设备是否已删除
+ */
+export async function queryDelDevIdIsSuccess(data: { devIds: string[] }, options?: { loading?: boolean }) {
+  return await mzaioRequest.post<string[]>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/queryDelDevIdIsSuccess',
+    data,
+  })
+}
+
+/**
+ * 等待删除单个设备结果
+ * 仅子设备：增加删除接口调用后，轮询网关上报的删除ack结果来判断删除最终结果
+ */
+export async function waitingDeleteDevice(
+  data: { deviceId: string; deviceType: number; sn: string },
+  options?: { loading?: boolean },
+) {
+  options = options || { loading: true }
+
+  options.loading && showLoading('正在删除')
+
+  let delRes = await deleteDevice(data)
+
+  // 仅子设备删除需要判断是否收到设备上报的删除ack判断
+  if (data.deviceType !== 2 || !delRes.success) {
+    options.loading && hideLoading()
+    return delRes
+  }
+
+  for (let i = 0, times = 4; i < times; i++) {
+    await delay(1000)
+
+    delRes = await queryDelDevIdIsSuccess({ devIds: [data.deviceId] })
+
+    if (delRes.success && delRes.result.length === 0) {
+      break
+    }
+  }
+  options.loading && hideLoading()
+
+  return {
+    success: delRes.success && (delRes.result as string[]).length === 0,
+  }
+}
+
+/**
  * 批量编辑设备（包括灯组）
  * @param data
  * @param options
@@ -336,12 +423,51 @@ export async function batchDeleteDevice(
   },
   options?: { loading?: boolean },
 ) {
-  return await mzaioRequest.post<{ isSuccess: boolean }>({
+  return await mzaioRequest.post({
     log: true,
     loading: options?.loading ?? false,
     url: '/v1/device/batchDelDevice',
     data,
   })
+}
+
+/**
+ * 等待批量删除设备结果
+ * 仅子设备：增加删除接口调用后，轮询网关上报的删除ack结果来判断删除最终结果
+ */
+export async function waitingBatchDeleteDevice(
+  data: {
+    deviceBaseDeviceVoList: Device.DeviceBaseDeviceVo[]
+  },
+  options?: { loading?: boolean },
+) {
+  options = options || { loading: true }
+
+  options.loading && showLoading('正在删除')
+
+  const subDeviceList = data.deviceBaseDeviceVoList.filter((item) => item.deviceType === '2') // 删除的子设备列表
+  let delRes = await batchDeleteDevice(data)
+
+  // 仅子设备删除需要判断是否收到设备上报的删除ack判断
+  if (subDeviceList.length === 0 || !delRes.success) {
+    options.loading && hideLoading()
+    return delRes
+  }
+
+  for (let i = 0, times = Math.ceil(4 + subDeviceList.length / 4); i < times; i++) {
+    await delay(1000)
+
+    delRes = await queryDelDevIdIsSuccess({ devIds: subDeviceList.map((item) => item.deviceId) })
+
+    if (delRes.success && (delRes.result as string[]).length === 0) {
+      break
+    }
+  }
+  options.loading && hideLoading()
+
+  return {
+    success: delRes.success && (delRes.result as string[]).length === 0,
+  }
 }
 
 /**

@@ -1,4 +1,4 @@
-import { storage } from '../../utils/index'
+import { storage, goHome } from '../../utils/index'
 
 // components/custom-nav-bar/index.ts
 Component({
@@ -68,7 +68,7 @@ Component({
      * FIXME wx.switchTab 在IOS下会出现中间页面；wx.navigateBack因小程序内核问题导致只能后退一级；暂时使用 wx.reLaunch
      */
     handleGoHome() {
-      wx.reLaunch({ url: '/pages/index/index' })
+      goHome()
     },
   },
 })

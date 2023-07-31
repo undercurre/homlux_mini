@@ -189,17 +189,20 @@ ComponentWithComputed({
     },
     handleSceneDelete() {
       Dialog.confirm({
-        message: '确定删除该场景？',
-      }).then(async () => {
-        const res = await deleteScene(this.data._sceneInfo.sceneId)
-        if (res.success) {
-          emitter.emit('sceneEdit')
-          homeStore.updateRoomCardList()
-          wx.navigateBack()
-        } else {
-          Toast({ message: '删除失败', zIndex: 9999 })
-        }
+        title: '确定删除该场景？',
+        context: this,
       })
+        .then(async () => {
+          const res = await deleteScene(this.data._sceneInfo.sceneId)
+          if (res.success) {
+            emitter.emit('sceneEdit')
+            homeStore.updateRoomCardList()
+            wx.navigateBack()
+          } else {
+            Toast({ message: '删除失败', zIndex: 9999, context: this })
+          }
+        })
+        .catch((err) => err)
     },
     handleActionDelete(e: WechatMiniprogram.TouchEvent) {
       this.data.sceneDeviceActionsFlatten.splice(e.currentTarget.dataset.index, 1)
@@ -213,7 +216,7 @@ ComponentWithComputed({
       if (this.data.sceneDeviceActionsFlatten.length === 0) {
         // 删完actions按照删除场景处理
         Dialog.confirm({
-          message: '清空操作将会删除场景，确定删除该场景？',
+          title: '清空操作将会删除场景，确定删除该场景？',
         }).then(async () => {
           const res = await deleteScene(this.data._sceneInfo.sceneId)
           if (res.success) {

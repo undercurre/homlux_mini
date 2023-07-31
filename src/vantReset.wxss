@@ -42,7 +42,7 @@ page {
   /* cell end */
 
   /* toast start */
-  --toast-background-color: rgba(0, 0, 0, 0.72);
+  --toast-background-color: rgba(0, 0, 0, 0.8);
   --toast-border-radius: 46rpx;
   --toast-font-size: 32rpx;
   --toast-line-height: 44rpx;
@@ -62,7 +62,8 @@ page {
   /* skeleton end */
 
   /* dialog start */
-  --dialog-width: 654rpx;
+  --dialog-width: 622rpx;
+  --dialog-header-isolated-padding: 48rpx 64rpx;
   /* dialog end */
 
   /* toast start */
@@ -125,17 +126,17 @@ page {
 /* 弹窗 start */
 .van-dialog__header {
   font-size: 36rpx;
+  color: #27282a;
 }
 
 .van-dialog__message {
-  padding: 80rpx 80rpx 90rpx !important;
+  padding: 32rpx 64rpx 48rpx !important;
 }
 
 .van-dialog__message-text {
-  font-size: 36rpx;
-  color: #27282a;
-  font-weight: 500;
-  line-height: 50rpx;
+  font-size: 28rpx;
+  color: #666;
+  line-height: 48rpx;
 }
 
 .van-dialog__cancel,

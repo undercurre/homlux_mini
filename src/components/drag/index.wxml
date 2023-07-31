@@ -6,7 +6,7 @@
       <slot name="{{item.slot}}"></slot>
     </block>
     <block wx:else>
-      <item data-index="{{index}}" columns="{{columns}}" item="{{item}}" bind:toSetting="handleToSetting" bind:exec="handleExec" bind:controlTap="handleControlTap" bind:cardTap="handleCardTap" bind:offlineTap="handleShowDeviceOffline" />
+      <item data-index="{{index}}" columns="{{columns}}" item="{{item}}" bind:toSetting="handleToSetting" bind:exec="handleExec" bind:controlTap="handleControlTap" bind:cardTap="handleCardTap" bind:offlineTap="handleShowDeviceOffline" bind:actionEdit="handleActionEdit" bind:actionDelete="handleActionDelete" />
     </block>
   </view>
 </view>

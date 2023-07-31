@@ -24,6 +24,12 @@ declare namespace Device {
     // 接口返回值属性
     deviceId: string
     deviceName: string
+
+    channel: number // zigbee信道
+
+    panId: number
+
+    extPanId: string
     /**
      * 设备类型
      * 1:网关 2:子设备 3:wifi, 4:灯组
@@ -86,6 +92,8 @@ declare namespace Device {
     groupName?: string
 
     isScreenGateway: boolean // 是否智慧屏
+
+    controlAction: IAnyObject //自动化传感器使用
   }
 
   interface MzgdPropertyDTO {
@@ -116,9 +124,10 @@ declare namespace Device {
       orderNum: string
       roomId: string
       switchId?: string
+      type?: string
     }[]
     /** 类型:0 子设备顺序 1 按键顺序	 */
-    type: '1' | '0'
+    // type: '1' | '0'
   }
 
   interface MzgdProTypeDTO {
@@ -191,4 +200,29 @@ declare namespace Device {
   }
 
   type GroupDTO = Pick<DeviceItem, 'deviceId' | 'deviceType' | 'proType'>
+
+  type ISubDevice = {
+    proType: string // 品类码
+    deviceUuid: string
+    mac: string
+    signal: string
+    RSSI: number
+    zigbeeMac: string
+    isConfig: string
+    name: string
+    roomId: string
+    roomName: string
+    icon: string
+    productId: string
+    switchList: Device.ISwitch[]
+    client: import('../src/utils/index').BleClient
+    status: 'waiting' | 'zigbeeBind' | 'fail' | 'success' // 配网状态  zigbeeBind
+    isChecked: boolean // 是否被选中
+    requesting: boolean // 是否正在发送试一试命令
+
+    deviceId: string
+    deviceName: string
+    gatewayId: string
+    productName: string
+  }
 }

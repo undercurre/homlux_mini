@@ -1,4 +1,0 @@
-/* package-room-control/index/components/scene-card/index.wxss */
-.card-shadow {
-  box-shadow: 0px 4px 24px 0px rgba(97, 109, 136, 0.15);
-}

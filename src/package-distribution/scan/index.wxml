@@ -6,7 +6,7 @@
 
   <view class="fixed left-0 right-0 top-0 bottom-0 flex flex-col">
     <view class="grow shrink h-200 camera-mask flex flex-col justify-end items-center">
-      <text class="leading-44rpx text-32 text-hex-F4F8FF pb-20rpx">扫描机身或说明书上的二维码</text>
+      <text class="leading-44rpx text-32 text-hex-F4F8FF pb-20rpx">扫描{{scanType === 'screen' ? '智慧屏' : '机身或说明书'}}上的二维码</text>
     </view>
 
     <view class="grow-0 flex flex-row items-stretch leading-0">
@@ -19,7 +19,7 @@
     </view>
 
     <view class="pt-80rpx h-300 grow shrink camera-mask flex flex-col items-center justify-between">
-      <view wx:if="{{isBlePermit}}" class="inline-block flex flex-row items-center bg-hex-5A5A5A rounded-32rpx leading-74rpx px-28rpx w-min-380">
+      <view wx:if="{{scanType === 'subdevice' && isBlePermit}}" class="inline-block flex flex-row items-center bg-hex-5A5A5A rounded-32rpx leading-74rpx px-28rpx w-min-380">
         <image wx:if="{{discovering}}" class="w-28 h-28 rotate" src="/package-distribution/assets/scan/scaning.png"></image>
 
         <text class="grow text-hex-F4F8FF px-16rpx" bind:tap="checkSystemBleSwitch">{{tipsText}}</text>
@@ -64,7 +64,7 @@
           <text class="block leading-36rpx text-26 text-black-tips pt-8rpx">{{ item.onLineStatus === 1 ? '在线' : '离线' }}</text>
         </view>
 
-        <image class="w-48 h-48" src="{{ item.deviceId === selectGatewayId ? '/assets/img/base/check.png' : '/assets/img/base/uncheck.png' }}" />
+        <image class="w-48 h-48" src="{{ item.deviceId === selectGateway.deviceId ? '/assets/img/base/check.png' : '/assets/img/base/uncheck.png' }}" />
       </view>
     </view>
 
@@ -73,7 +73,7 @@
     <view class="flex flex-row gap-46rpx px-24rpx">
       <van-button class="grow" size="large" bind:click="onCloseGwList">取消</van-button>
 
-      <van-button class="grow" size="large" type="primary" bind:click="confirmGateway" disabled="{{!selectGatewayId}}">确定</van-button>
+      <van-button class="grow" size="large" type="primary" bind:click="confirmGateway" disabled="{{!selectGateway.deviceId}}">确定</van-button>
     </view>
 
     <view class="h-96"></view>

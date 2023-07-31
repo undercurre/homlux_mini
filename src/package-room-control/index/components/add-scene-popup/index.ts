@@ -10,7 +10,7 @@ import {
 } from '../../../../apis/index'
 import { sceneList } from '../../../../config/index'
 import { deviceStore, homeStore, roomStore, sceneStore } from '../../../../store/index'
-import { storage } from '../../../../utils/index'
+import { storage, checkInputNameIllegal } from '../../../../utils/index'
 
 ComponentWithComputed({
   options: {
@@ -98,6 +98,15 @@ ComponentWithComputed({
         })
         return
       }
+
+      if (checkInputNameIllegal(this.data.sceneName)) {
+        Toast({
+          message: '场景名称不能用特殊符号或表情',
+          zIndex: 99999,
+        })
+        return
+      }
+
       if (this.data.sceneName.length > 15) {
         Toast({
           message: '场景名称不能超过15个字符',
@@ -305,7 +314,7 @@ ComponentWithComputed({
 
       if (linkDesc) {
         const dialigRes = await Dialog.confirm({
-          message: `此开关已关联${linkDesc}，确定变更？`,
+          title: `此开关已关联${linkDesc}，确定变更？`,
           cancelButtonText: '取消',
           confirmButtonText: '变更',
           zIndex: 2000,

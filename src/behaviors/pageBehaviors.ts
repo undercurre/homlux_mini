@@ -40,12 +40,12 @@ export default BehaviorWithComputed({
         imageUrl: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/welcome.png',
       }
     },
-    onShareTimeline() {
-      return {
-        title: '欢迎使用美的照明Homlux',
-        path: '/pages/index/index',
-      }
-    },
+    // onShareTimeline() {
+    //   return {
+    //     title: '欢迎使用美的照明Homlux',
+    //     path: '/pages/index/index',
+    //   }
+    // },
   },
   computed: {
     isCreator(data) {

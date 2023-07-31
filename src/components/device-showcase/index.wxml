@@ -1,4 +1,4 @@
-<view id="card" class="w-300rpx h-264rpx rounded-32rpx flex-col-center overflow-hidden bg-hex-fff" catchtap="handleCardTap">
+<view id="card" class="relative w-300rpx h-264rpx rounded-32rpx flex-col-center overflow-hidden bg-hex-fff card" catchtap="handleCardTap">
   <!-- 设备图标 -->
   <image src="{{deviceInfo.icon}}" class="w-96rpx h-96rpx"></image>
 

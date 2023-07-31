@@ -1,7 +1,7 @@
 <wxs src="/commons/wxs/util.wxs" module="module" />
 
-<van-popup show="{{ show }}" z-index="1002" round position="bottom" bind:close="handleClose" catchtouchmove="blank" closeable>
-  <view class="w-750rpx h-1000rpx relative flex flex-col items-center">
+<van-popup show="{{ show }}" z-index="1002" round position="bottom" bind:close="handleClose" catchtouchmove="blank" closeable safe-area-inset-bottom="{{false}}">
+  <view class="w-750rpx h-85vh relative flex flex-col items-center">
     <view class="flex flex-row">
       <text wx:if="titleLeftBtnText" class="absolute leading-50rpx text-32 text-hex-555659" bind:tap="clickTitleLeftBtn">{{ titleLeftBtnText }}</text>
       <text class="h-50rpx text-36rpx text-black-2a mt-44rpx font-medium">{{title}}</text>
@@ -10,7 +10,7 @@
     <scroll-view enhanced show-scrollbar="{{false}}" scroll-x class="mt-48rpx h-60rpx w-750rpx flex" enable-flex>
       <view class="flex">
         <view class="w-50rpx"></view>
-        <view class="flex min-w-650rpx justify-center">
+        <view class="flex min-w-650rpx justify-start">
           <view wx:for="{{roomListComputed}}" wx:key="roomId" class="flex-col-center {{index!==0?'ml-90rpx': ''}}" data-item="{{item}}" bindtap="handleRoomSelect">
             <text class="{{roomSelect === item.roomId ? 'text-32rpx text-black-2a' : 'text-28rpx text-hex-555659'}} whitespace-nowrap">{{item.roomName}}</text>
             <view class="w-42rpx h-8rpx mt-8rpx bg-hex-488fff rounded-999 {{roomSelect === item.roomId ? 'opacity-100' : 'opacity-0'}}"></view>
@@ -31,28 +31,28 @@
           <device-card wx:for="{{listComputed}}" wx:key="uniId" bind:cardTap="handleCardTap" device-info="{{item}}" select="{{module.includes(selectList, item.uniId)}}" bind:offlineTap="handleOfflineTap" />
         </view>
       </view>
-      <view class="h-32rpx"></view>
     </scroll-view>
 
-    <view class="h-16rpx"></view>
+    <view class="h-96rpx"></view>
     <view class="flex w-686rpx gap-x-46rpx">
       <van-button wx:if="{{showCancel}}" class="flex-1" size="large" bind:click="handleCancel">{{ cancelText }}</van-button>
 
       <van-button wx:if="{{showConfirm}}" type="primary" class="flex-1" size="large" bind:click="handleConfirm">{{ confirmText }}</van-button>
     </view>
 
-    <view style="height: 28rpx"></view>
+    <view class="h-96rpx"></view>
   </view>
 
-  <van-dialog z-index="1003" use-slot title="子设备离线" show="{{ showDeviceOffline }}" confirm-button-color="#488FFF" confirmButtonText="我知道了" bind:close="handleCloseDeviceOffline">
+  <van-dialog use-slot title="{{officeDeviceInfo.deviceName}}离线" show="{{ showDeviceOffline }}" confirm-button-color="#488FFF" confirmButtonText="我知道了" bind:close="handleCloseDeviceOffline">
     <view class="flex-col-center w-full">
       <image src="{{officeDeviceInfo.pic}}" class="w-160rpx h-160rpx mt-70rpx" />
       <view class="flex flex-col mt-88rpx">
-        <text class="text-hex-666666 text-28rpx">可能的原因：</text>
-        <text class="text-hex-555659 text-24rpx mt-16rpx">1.路由器密码被修改，建议将智能网关<text class="text-blue underline decoration-solid decoration-blue" bindtap="handleRebindGateway">重新联网</text></text>
-        <text class="text-hex-555659 text-24rpx mt-8rpx">2.设备与网关未通电</text>
-        <text class="text-hex-555659 text-24rpx mt-8rpx">3.设备与网关距离过远，或有其他遮挡物</text>
-        <text class="text-hex-555659 text-24rpx mt-8rpx">4.路由器未通电或网络异常</text>
+        <text class="text-hex-555659 text-32rpx">可能的原因：</text>
+        <text class="text-hex-A2A2A2 text-28rpx mt-20rpx">1、路由器密码被修改，建议将智能网关 </text>
+        <text class="text-28rpx text-blue decoration-solid decoration-blue ml-46rpx mt-8rpx" bindtap="handleRebindGateway">重新联网</text>
+        <text class="text-hex-A2A2A2 text-28rpx mt-20rpx">2、设备与网关未通电</text>
+        <text class="text-hex-A2A2A2 text-28rpx mt-20rpx">3、设备与网关距离过远，或有其他遮挡物</text>
+        <text class="text-hex-A2A2A2 text-28rpx mt-20rpx">4、路由器未通电或网络异常</text>
       </view>
       <view class="h-80rpx"></view>
     </view>

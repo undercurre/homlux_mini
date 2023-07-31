@@ -5,7 +5,15 @@ import { storage } from './storage'
 
 const deviceInfo = wx.getDeviceInfo()
 
-console.log('deviceInfo', deviceInfo)
+const accountInfo = wx.getAccountInfoSync()
+
+/**
+ * 返回小程序首页
+ * FIXME wx.switchTab 在IOS下会出现中间页面
+ */
+export function goHome() {
+  wx.switchTab({ url: '/pages/index/index' })
+}
 
 export function setNavigationBarAndBottomBarHeight() {
   const { statusBarHeight, platform, windowWidth, windowHeight, safeArea, system } = wx.getSystemInfoSync()
@@ -100,15 +108,14 @@ let loadingNum = 0 // 正在等待loading的个数
 /**
  * 显示loading
  */
-export function showLoading() {
+export function showLoading(title = '加载中...') {
   loadingNum++
 
-  console.log('showLoading', loadingNum)
   if (loadingNum > 1) {
     return
   }
   wx.showLoading({
-    title: '加载中...',
+    title,
     mask: true,
   })
 }
@@ -120,9 +127,12 @@ export function hideLoading() {
   loadingNum > 0 && loadingNum-- // 防止胡乱调用loadingNum，导致loadingNum为负数
 
   setTimeout(() => {
-    console.log('hideLoading', loadingNum)
     loadingNum === 0 && wx.hideLoading()
   }, 300)
+}
+
+export function isRelease() {
+  return accountInfo.miniProgram.envVersion === 'release'
 }
 
 /**

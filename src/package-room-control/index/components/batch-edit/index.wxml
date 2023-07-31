@@ -42,7 +42,7 @@
     </view>
   </view>
 
-  <van-popup show="{{ showEditName }}" z-index="2000" round position="bottom" bind:close="handleClose" closeable>
+  <van-popup show="{{ showEditName }}" z-index="2000" round position="bottom" bind:close="handleClose" closeable safe-area-inset-bottom="{{false}}">
     <view class="w-750rpx relative flex flex-col items-center">
       <template is="title" data="{{title: '修改名称'}}" />
       <block wx:if="{{isEditSwitchName}}">
@@ -59,11 +59,12 @@
       <view class="flex-1 mt-32rpx w-686rpx mb-126rpx">
         <van-field model:value="{{ editDeviceName }}" maxlength="{{6}}" placeholder="请输入{{editDeviceNameTitle}}" custom-style="padding: 28rpx 32rpx;background-color: #F6FAFD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
       </view>
+
       <template is="bottom-btn" data="{{disabled: editNameDisable}}" />
     </view>
   </van-popup>
 
-  <van-popup show="{{ showEditRoom }}" round position="bottom" bind:close="handleClose" closeable>
+  <van-popup show="{{ showEditRoom }}" round position="bottom" bind:close="handleClose" closeable safe-area-inset-bottom="{{false}}">
     <view class="w-750rpx flex flex-col items-center">
       <template is="title" data="{{title: '选择房间'}}" />
       <view class="w-686rpx min-h-240rpx mt-16rpx">
@@ -73,9 +74,8 @@
           </view>
         </view>
       </view>
-      <view class="h-32rpx"></view>
+
       <template is="bottom-btn" data="{{disabled: editRoomDisable}}" />
-      <view class="h-32rpx"></view>
     </view>
   </van-popup>
 

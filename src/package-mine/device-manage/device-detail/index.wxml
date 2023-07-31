@@ -1,3 +1,5 @@
+<page-meta page-style="{{ showEditNamePopup || showEditRoomPopup ? 'overflow: hidden;' : '' }}" />
+
 <view class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7" style="z-index: -1"></view>
 
 <view class="h-100vh flex flex-col items-center">
@@ -18,8 +20,8 @@
           </view>
         </view>
       </van-cell>
-      <van-cell wx:if="{{isGateway && !isVisitor}}" title="更改WiFi" is-link="{{canEditDevice}}" bind:click="toChangeWifi"></van-cell>
-      <van-cell wx:if="{{isSubDeviceOrGateway}}" title="Mac 地址" value="{{mac}}" bind:click="clickMac"></van-cell>
+
+      <van-cell wx:if="{{isSubDeviceOrGateway}}" title="Mac 地址" value="{{mac}}" border="{{false}}" bind:click="clickMac"></van-cell>
     </van-cell-group>
   </view>
 
@@ -27,15 +29,13 @@
   <view class="flex flex-1">
     <setting-light can-edit-device="{{canEditDevice}}" device-info="{{deviceInfo}}" wx:if="{{prodType === 'light'}}" bind:update="updateDeviceInfo" />
     <setting-switch can-edit-device="{{canEditDevice}}" device-info="{{deviceInfo}}" wx:if="{{prodType === 'switch'}}" bind:update="updateDeviceInfo" />
-    <setting-gateway can-edit-device="{{canEditDevice}}" device-info="{{deviceInfo}}" wx:if="{{prodType === 'gateway'}}" bind:update="updateDeviceInfo" />
+    <setting-gateway isManager="{{canEditDevice}}" device-info="{{deviceInfo}}" wx:if="{{prodType === 'gateway'}}" bind:update="updateDeviceInfo" />
   </view>
   <!-- 隔开一点距离 -->
   <view class="h-24rpx"></view>
   <!-- 底部按钮 -->
-  <van-button wx-if="{{canEditDevice}}" type="warning" custom-class="delete-btn" bind:click="handleDeviceDelete">
-    <text>删除设备</text>
-  </van-button>
-  <view wx-if="{{canEditDevice}}" style="height: 86rpx"></view>
+  <van-button wx-if="{{canEditDevice}}" size="large" type="warning" custom-class="delete-btn" bind:click="handleDeviceDelete">删除设备</van-button>
+  <view wx-if="{{canEditDevice}}" class="h-96rpx"></view>
 </view>
 
 <van-toast id="van-toast" />

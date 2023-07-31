@@ -1,5 +1,6 @@
 <!--pages/mine/index.wxml-->
 <nav-bar background="transparent"></nav-bar>
+
 <view style="z-index: -1" class="fixed left-0 top-0 w-100vw h-100vh">
   <image src="/assets/img/home/bg.jpg" style="width: 100vw; height: 100vh"></image>
 </view>
@@ -12,31 +13,39 @@
   </view>
 </view>
 
-<van-cell-group inset>
-  <van-cell icon="/assets/img/mine/home.png" title="家庭管理" is-link center data-url="{{urls.homeControl}}" border="{{false}}" bind:click="toPage" />
-</van-cell-group>
+<view class="pb-140rpx">
+  <van-cell-group inset>
+    <van-cell icon="/assets/img/mine/home.png" title="家庭管理" is-link center data-url="{{urls.homeControl}}" border="{{false}}" bind:click="toPage" />
+  </van-cell-group>
 
-<van-cell-group inset>
-  <van-cell icon="/assets/img/mine/voiceControl.png" title="语音控制" is-link center data-url="{{urls.voiceControl}}" bind:click="toPage" />
-  <van-cell wx:if="{{!isVisitor}}" icon="/assets/img/mine/upgrade.png" title="固件升级" is-link center data-url="{{urls.ota}}" bind:click="toPage" />
-  <van-cell wx:if="{{!isVisitor}}" icon="/assets/img/mine/deviceReplace.png" title="设备替换" is-link center data-url="{{urls.deviceReplace}}" bind:click="toPage" />
-</van-cell-group>
+  <!-- <van-cell-group inset>
+    <van-cell icon="/assets/img/mine/gateway.png" title="智能网关" is-link center data-url="{{urls.deviceCategory}}" data-param="gateway" bind:click="toPage" />
+    <van-cell icon="/assets/img/mine/sensor.png" title="传感器" is-link center data-url="{{urls.deviceCategory}}" data-param="sensor" bind:click="toPage" />
+    <van-cell icon="/assets/img/mine/screen.png" title="智慧屏" is-link center data-url="{{urls.deviceCategory}}" data-param="screen" bind:click="toPage" />
+  </van-cell-group> -->
 
-<van-cell-group inset>
-  <van-cell is-link>
-    <button icon="/assets/img/mine/advise.png" open-type="feedback" class="bg-transparent rounded-none p-0 menu-item-button">
-      <view class="flex flex-row items-center justify-between">
-        <view class="flex flex-row items-center">
-          <image class="w-48 h-48 mr-26rpx" src="/assets/img/mine/advise.png"></image>
-          <text class="text-32 text-black leading-none">建议反馈</text>
+  <van-cell-group inset>
+    <van-cell icon="/assets/img/mine/voiceControl.png" title="语音控制" is-link center data-url="{{urls.voiceControl}}" bind:click="toPage" />
+    <van-cell wx:if="{{!isVisitor}}" icon="/assets/img/mine/upgrade.png" title="固件升级" is-link center data-url="{{urls.ota}}" bind:click="toPage" />
+    <van-cell wx:if="{{!isVisitor}}" icon="/assets/img/mine/deviceReplace.png" title="设备替换" is-link center data-url="{{urls.deviceReplace}}" bind:click="toPage" />
+  </van-cell-group>
+
+  <van-cell-group inset>
+    <van-cell is-link>
+      <button icon="/assets/img/mine/advise.png" open-type="feedback" class="bg-transparent rounded-none p-0 menu-item-button">
+        <view class="flex flex-row items-center justify-between">
+          <view class="flex flex-row items-center">
+            <image class="w-48 h-48 mr-26rpx" src="/assets/img/mine/advise.png"></image>
+            <text class="text-32 text-black leading-none">建议反馈</text>
+          </view>
         </view>
-      </view>
-    </button>
-  </van-cell>
+      </button>
+    </van-cell>
 
-  <van-cell icon="/assets/img/mine/about.png" title="关于" is-link center data-url="{{urls.about}}" data-auth="no" bind:click="toPage" border="{{false}}" />
-</van-cell-group>
+    <van-cell icon="/assets/img/mine/about.png" title="关于" is-link center data-url="{{urls.about}}" data-auth="no" bind:click="toPage" border="{{false}}" />
+  </van-cell-group>
 
-<view class="px-24rpx pb-140rpx mt-24rpx" wx:if="{{isLogin}}">
-  <van-button block type="danger" plain size="large" bind:click="loginOut">退出登录</van-button>
+  <view class="px-24rpx mt-24rpx" wx:if="{{isLogin}}">
+    <van-button block type="danger" plain size="large" bind:click="loginOut">退出登录</van-button>
+  </view>
 </view>

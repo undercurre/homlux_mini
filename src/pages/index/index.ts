@@ -1,4 +1,8 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
+import { runInAction } from 'mobx-miniprogram'
+import Toast from '@vant/weapp/toast/toast'
+import Dialog from '@vant/weapp/dialog/dialog'
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import {
   othersBinding,
   roomBinding,
@@ -10,16 +14,10 @@ import {
   roomStore,
   deviceStore,
 } from '../../store/index'
-import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { storage, throttle } from '../../utils/index'
+import { storage, throttle, emitter, WSEventType, showLoading, hideLoading, strUtil } from '../../utils/index'
 import { PRO_TYPE, ROOM_CARD_H, ROOM_CARD_M } from '../../config/index'
-import Toast from '@vant/weapp/toast/toast'
-import Dialog from '@vant/weapp/dialog/dialog'
-import { allDevicePowerControl, updateRoomSort } from '../../apis/index'
-import { emitter, WSEventType } from '../../utils/eventBus'
-import { updateDefaultHouse } from '../../apis/index'
+import { allDevicePowerControl, updateRoomSort, updateDefaultHouse, changeUserHouse } from '../../apis/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { runInAction } from 'mobx-miniprogram'
 
 type PosType = Record<'index' | 'y', number>
 
@@ -38,10 +36,14 @@ function getPos(index: number): number {
  */
 function getIndex(y: number) {
   const maxIndex = roomStore.roomList.length - 1 // 防止越界
-  return Math.min(maxIndex, Math.floor((y + ROOM_CARD_M / 2) / ROOM_CARD_M))
+  return Math.max(0, Math.min(maxIndex, Math.floor((y + ROOM_CARD_M / 2) / ROOM_CARD_M)))
 }
 
 ComponentWithComputed({
+  options: {
+    addGlobalClass: true,
+    pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
+  },
   behaviors: [
     BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding, homeBinding, deviceBinding] }),
     pageBehavior,
@@ -60,6 +62,7 @@ ComponentWithComputed({
       (storage.get<number>('bottomBarHeight') as number) - // IPX
       90 - // 开关、添加按钮
       (storage.get<number>('navigationBarHeight') as number),
+    _system: storage.get('system') as string,
     selectHomeMenu: {
       x: '0px',
       y: '0px',
@@ -75,15 +78,17 @@ ComponentWithComputed({
     showAddNewRoom: false,
     showHomeSelect: false,
     loading: true,
-    isTryInvite: false,
+    _isAcceptShare: false, // 是否已经触发过接受分享逻辑
     isMoving: false,
-    hasMoved: false,
     roomPos: {} as Record<string, PosType>,
     accumulatedY: 0, // 可移动区域高度
     placeholder: {
       y: 0,
       index: -1,
     } as PosType,
+    scrollTop: 0,
+    _scrolledWhenMoving: false, // 拖拽时，被动发生了滚动
+    _lastClientY: 0, // 上次触控采样时 的Y坐标
   },
   computed: {
     currentHomeName(data) {
@@ -166,7 +171,7 @@ ComponentWithComputed({
     },
     async onShow() {
       setTimeout(() => {
-        this.inviteMember()
+        this.acceptShare()
       }, 1000)
       if (!othersStore.isInit) {
         this.setData({
@@ -207,7 +212,6 @@ ComponentWithComputed({
             WSEventType.bind_device,
             WSEventType.scene_device_result_status,
             WSEventType.group_device_result_status,
-            WSEventType.screen_move_sub_device,
           ].includes(res.result.eventType)
         ) {
           this.updateRoomData()
@@ -252,19 +256,38 @@ ComponentWithComputed({
           accumulatedY += !room.endCount || !room.sceneList.length || isMoving === true ? ROOM_CARD_M : ROOM_CARD_H
         })
 
-      this.setData({
-        roomPos,
-        accumulatedY,
-      })
+      // 拖动模式，不改变高度
+      if (isMoving) {
+        this.setData({
+          roomPos,
+        })
+      } else {
+        this.setData({
+          roomPos,
+          accumulatedY,
+        })
+      }
+    },
+
+    acceptShare() {
+      if (!this.data.isLogin) {
+        console.log('未登录，停止分享逻辑')
+        return
+      }
+
+      if (this.data._isAcceptShare) {
+        console.log('已触发过接受分享逻辑')
+        return
+      }
+
+      this.inviteMember()
+
+      this.accetHomeTransfer()
     },
 
     inviteMember() {
       if (wx.getEnterOptionsSync().scene != 1044) {
         console.log('lmn>>>非卡片进入')
-        return
-      }
-      if (this.data.isTryInvite) {
-        console.log('lmn>>>已尝试过邀请')
         return
       }
       const enterQuery = wx.getEnterOptionsSync().query
@@ -273,10 +296,8 @@ ComponentWithComputed({
       const houseId = enterQuery.houseId as string
       const time = enterQuery.time as string
       const shareId = enterQuery.shareId as string
-      if (token && type && houseId && time) {
-        this.setData({
-          isTryInvite: true,
-        })
+      if (token && type && type !== 'transferHome' && houseId && time) {
+        this.data._isAcceptShare = true
         console.log(`lmn>>>邀请参数:token=${token}/type=${type}/houseId=${houseId}/time=${time}/shareId=${shareId}`)
         for (let i = 0; i < homeBinding.store.homeList.length; i++) {
           if (homeBinding.store.homeList[i].houseId == houseId) {
@@ -291,6 +312,7 @@ ComponentWithComputed({
             title: '邀请过期',
             message: '该邀请已过期，请联系邀请者重新邀请',
             confirmButtonText: '我知道了',
+            showCancelButton: false,
             zIndex: 9999,
           })
         } else {
@@ -317,6 +339,87 @@ ComponentWithComputed({
       } else {
         console.log('lmn>>>无效邀请参数')
       }
+    },
+
+    /**
+     * 接受家庭转让逻辑
+     */
+    async accetHomeTransfer() {
+      const params = wx.getEnterOptionsSync()
+      const scene = params.scene
+      console.log('wx.getEnterOptionsSync()', params)
+
+      let enterQuery: IAnyObject
+
+      if (scene === 1011) {
+        const scanUrl = decodeURIComponent(params.query.q)
+
+        console.log('scanUrl', scanUrl)
+
+        enterQuery = strUtil.getUrlParams(scanUrl)
+      } else if (scene === 1007 || scene === 1044) {
+        enterQuery = params.query
+      } else {
+        console.log('非家庭转让逻辑')
+        return
+      }
+
+      const type = enterQuery.type as string
+      const houseId = enterQuery.houseId as string
+      const expireTime = enterQuery.expireTime as string
+      const shareId = enterQuery.shareId as string
+      const oldUserId = enterQuery.userId as string
+
+      console.log('enterQuery:', enterQuery)
+      if (type !== 'transferHome') {
+        console.log('非家庭转让逻辑')
+        return
+      }
+
+      const home = homeBinding.store.homeList.find((item) => item.houseId === houseId && item.houseCreatorFlag)
+
+      if (home) {
+        console.log('当前用户已经是对应家庭的创建者')
+        return
+      }
+
+      const now = new Date().valueOf()
+      // 判断链接是否过期
+      if (now > parseInt(expireTime)) {
+        Dialog.confirm({
+          title: '该消息过期',
+          message: '该消息已过期，请联系创建者重新发送',
+          confirmButtonText: '我知道了',
+          showCancelButton: false,
+          zIndex: 9999,
+        })
+
+        return
+      }
+
+      showLoading()
+      const res = await changeUserHouse({ houseId, type: 2, shareId, changeUserId: oldUserId })
+      hideLoading()
+
+      if (res.success) {
+        await updateDefaultHouse(houseId)
+
+        await homeBinding.store.updateHomeInfo()
+
+        Dialog.confirm({
+          title: '你已成为当前家庭的创建者',
+          message: '家庭无线局域网如发生变更，家庭内的所有设备将会离线，可在智慧屏上修改连接的无线局域网。',
+          confirmButtonText: '我知道了',
+          showCancelButton: false,
+          zIndex: 9999,
+        })
+      } else if (res.code === 9870) {
+        Toast('分享链接已失效')
+      } else {
+        Toast(res.msg)
+      }
+
+      this.data._isAcceptShare = true
     },
 
     // 收起所有菜单
@@ -398,8 +501,8 @@ ComponentWithComputed({
       })
     },
 
-    // 开始拖拽，初始化placeholder
-    movableTouchStart(e: WechatMiniprogram.TouchEvent) {
+    // 开始拖拽
+    movableLongpress(e: WechatMiniprogram.TouchEvent) {
       wx.vibrateShort({ type: 'heavy' })
 
       const rid = e.currentTarget.dataset.rid
@@ -412,57 +515,87 @@ ComponentWithComputed({
         y: getPos(index),
       }
 
-      console.log('movableTouchStart:', diffData)
+      console.log('[movableTouchStart] diffData: ', diffData)
 
       this.setData(diffData)
 
       this.renewRoomPos(true)
+
+      // 执行一次，防止出现空白位置
+      this.movableChangeThrottle(e)
     },
 
     /**
      * 拖拽时触发的卡片移动效果
      */
-    movableChange: throttle(function (this: IAnyObject, e: WechatMiniprogram.TouchEvent) {
-      const targetOrder = getIndex(e.detail.y)
-      if (this.data.placeholder.index !== targetOrder && e.detail.source === 'touch') {
-        const oldOrder = this.data.placeholder.index
-        console.log('movableChange: %d-->%d', oldOrder, targetOrder, e)
+    movableChangeThrottle: throttle(function (this: IAnyObject, e: WechatMiniprogram.TouchEvent) {
+      const TOP_HEIGHT = 170
+      const posY = (e.detail.y || e.touches[0]?.clientY) - TOP_HEIGHT + this.data.scrollTop
+      const targetOrder = getIndex(posY)
+      if (this.data.placeholder.index === targetOrder) {
+        return
+      }
 
-        // 更新placeholder的位置
-        const isForward = oldOrder < targetOrder
-        const diffData = {} as IAnyObject
-        diffData[`placeholder.index`] = targetOrder
-        diffData[`placeholder.y`] = getPos(targetOrder)
+      const oldOrder = this.data.placeholder.index
+      // 节流操作，可能导致movableTouchEnd后仍有movableChange需要执行，丢弃掉
+      if (oldOrder < 0) {
+        return
+      }
+      console.log('[movableChange] %d --> %d, posY: %s', oldOrder, targetOrder, posY, e)
 
-        // 更新联动卡片的位置
-        let moveCount = 0
-        for (const room of roomStore.roomList) {
-          const _orderNum = this.data.roomPos[room.roomId].index
-          if (
-            (isForward && _orderNum > oldOrder && _orderNum <= targetOrder) ||
-            (!isForward && _orderNum >= targetOrder && _orderNum < oldOrder)
-          ) {
-            ++moveCount
-            const dOrderNum = isForward ? _orderNum - 1 : _orderNum + 1
-            diffData[`roomPos.${room.roomId}.y`] = getPos(dOrderNum)
-            diffData[`roomPos.${room.roomId}.index`] = dOrderNum
+      // 更新placeholder的位置
+      const isForward = oldOrder < targetOrder
+      const diffData = {} as IAnyObject
+      diffData[`placeholder.index`] = targetOrder
+      diffData[`placeholder.y`] = getPos(targetOrder)
 
-            // 减少遍历消耗
-            if (moveCount >= Math.abs(targetOrder - oldOrder)) {
-              break
-            }
+      // 更新联动卡片的位置
+      let moveCount = 0
+      for (const room of roomStore.roomList) {
+        const _orderNum = this.data.roomPos[room.roomId].index
+        if (
+          (isForward && _orderNum > oldOrder && _orderNum <= targetOrder) ||
+          (!isForward && _orderNum >= targetOrder && _orderNum < oldOrder)
+        ) {
+          ++moveCount
+          const dOrderNum = isForward ? _orderNum - 1 : _orderNum + 1
+          diffData[`roomPos.${room.roomId}.y`] = getPos(dOrderNum)
+          diffData[`roomPos.${room.roomId}.index`] = dOrderNum
+
+          // 减少遍历消耗
+          if (moveCount >= Math.abs(targetOrder - oldOrder)) {
+            break
           }
         }
-
-        // 更新被拖拽卡片的排序num
-        diffData[`roomPos.${e.currentTarget.dataset.rid}.index`] = targetOrder
-
-        console.log('movableChange', diffData)
-        this.setData(diffData)
-
-        this.data.hasMoved = true
       }
-    }, 0),
+
+      // 直接更新被拖拽卡片位置
+      if (this.data._scrolledWhenMoving || this.data._system.indexOf('iOS') > -1) {
+        const rid = e.currentTarget.dataset.rid
+        diffData[`roomPos.${rid}.y`] = getPos(targetOrder)
+      }
+
+      // 更新被拖拽卡片的排序num
+      diffData[`roomPos.${e.currentTarget.dataset.rid}.index`] = targetOrder
+
+      // FIXME 自动滚动
+      // const dir = clientY > this.data._lastClientY ? 'down' : 'up'
+      // let { scrollTop } = this.data
+      // this.data._lastClientY = clientY
+      // if (dir === 'up' && clientY < 200) {
+      //   scrollTop -= 50
+      // } else if (dir === 'down' && clientY > this.data.scrollViewHeight + 50) {
+      //   scrollTop += 50
+      // }
+      // diffData.scrollTop = scrollTop
+
+      console.log('[movableChange] diffData:', diffData)
+      this.setData(diffData)
+    }, 50),
+
+    movableTouchMove(e: WechatMiniprogram.TouchEvent) {
+      this.movableChangeThrottle(e)
+    },
 
     movableTouchEnd(e: WechatMiniprogram.TouchEvent) {
       if (!this.data.isMoving) {
@@ -472,6 +605,7 @@ ComponentWithComputed({
 
       const diffData = {} as IAnyObject
       diffData.isMoving = false
+
       // 修正卡片位置
       diffData[`roomPos.${e.currentTarget.dataset.rid}.y`] = dpos
       diffData[`placeholder.index`] = -1
@@ -479,8 +613,24 @@ ComponentWithComputed({
       console.log('movableTouchEnd:', diffData)
 
       this.renewRoomPos()
+      setTimeout(() => this.renewRoomPos(), 500)
+
+      this.data._scrolledWhenMoving = false
 
       this.handleSortSaving()
+    },
+
+    // 页面滚动
+    onPageScroll(e: { detail: { scrollTop: number } }) {
+      if (this.data.isMoving || !e?.detail) {
+        this.data._scrolledWhenMoving = true
+        console.log('scrolled when moving', e)
+        return
+      }
+
+      const { scrollTop } = e.detail
+      console.log('onPageScroll scrollTop: %s, _lastClientY: %s', scrollTop, this.data._lastClientY)
+      this.data.scrollTop = scrollTop
     },
 
     handleSortSaving() {
@@ -492,7 +642,18 @@ ComponentWithComputed({
         })
       })
 
+      // 更新云端排序
       updateRoomSort(roomSortList)
+
+      // 更新store排序
+      const list = [] as Room.RoomInfo[]
+      roomStore.roomList.forEach((room) => {
+        const { index } = this.data.roomPos[room.roomId]
+        list[index] = room
+      })
+      runInAction(() => {
+        roomStore.roomList = list
+      })
     },
   },
 })

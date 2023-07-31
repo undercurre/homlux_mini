@@ -46,12 +46,12 @@ App<IAppOption>({
   },
 
   onShow() {
-    console.log('app-onShow', this.globalData)
     if (this.globalData.firstOnShow) {
       this.globalData.firstOnShow = false
       return
     }
     // 用户热启动app，建立ws连接，并且再更新一次数据
+    Logger.log('app-onShow, isConnect:', isConnect(), homeStore.currentHomeId)
     if (homeStore.currentHomeId && storage.get<string>('token') && isConnect()) {
       deviceStore.updateSubDeviceList()
       homeStore.updateHomeInfo()
@@ -60,13 +60,13 @@ App<IAppOption>({
   },
 
   onHide() {
-    console.log('app-onHide')
+    Logger.log('app-onHide')
     // 用户最小化app，断开ws连接
     closeWebSocket()
   },
 
   onError(msg: string) {
-    Logger.error(msg)
+    Logger.error('app-onError', msg)
   },
 
   globalData: {

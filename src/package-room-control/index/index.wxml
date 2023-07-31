@@ -29,18 +29,11 @@
 <view bindtap="handleScreenTap" bindtouchmove="handleScreenTap">
   <!-- 标题 -->
   <nav-bar title="{{title}}" z-index="{{113}}" left-arrow bind:leftTap="goBack" disabled="{{opacity === 0}}"></nav-bar>
-  <!-- 房间无子设备,但是有网关 -->
-  <view wx:if="{{roomHasGateway && !roomHasSubDevice}}" class="w-full flex flex-col items-center">
-    <image src="/assets/img/default-img/only-gateway.png" class="w-300rpx h-300rpx mt-64rpx"></image>
-    <text class="text-black-59 text-28rpx mt-48rpx">智能网关非可控制设备</text>
-    <text data-url="/package-mine/device-manage/index" bindtap="goTo" class="text-black-59 text-28rpx">请在<text class="mx-8rpx text-blue underline decoration-solid decoration-blue">设备管理</text>中查看</text>
-    <van-button wx-if="{{canAddDevice}}" type="primary" class="mt-290rpx w-686rpx" size="large" bind:click="handleAddDevice">添加智能设备</van-button>
-  </view>
-  <!-- 家庭无子设备无网关 -->
-  <view wx:if="{{!roomHasGateway && !roomHasSubDevice}}" class="w-full flex flex-col items-center">
+  <!-- 家庭无设备，或只有网关 -->
+  <view wx:if="{{!roomHasDevice}}" class="w-full flex flex-col items-center">
     <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx mt-64rpx"></image>
-    <text class="text-black-59 text-28rpx mt-48rpx">这个房间空空如也</text>
-    <van-button wx-if="{{canAddDevice}}" type="primary" class="mt-290rpx w-686rpx" size="large" bind:click="handleAddDevice">添加智能设备</van-button>
+    <text class="text-black-59 text-28rpx mt-48rpx text-center leading-48rpx">{{'房间内还未添加可控制的\n灯具、开关、窗帘'}}</text>
+    <van-button wx-if="{{canAddDevice}}" type="primary" class="mt-290rpx w-686rpx" size="large" bind:click="handleAddDevice">立即添加</van-button>
   </view>
 
   <!-- 有设备页面主体 -->
@@ -65,15 +58,15 @@
           </view>
         </view>
 
-        <movable-area style="height: {{movableAreaHeight}}rpx; width: 600rpx;">
+        <movable-area wx:if="{{devicePageList.length}}" style="height: {{movableAreaHeight}}rpx; width: 600rpx;">
           <!-- 拖动占位符 -->
           <!-- <movable-view wx:if="{{isMoving}}" x="{{placeholder.x}}" y="{{placeholder.y}}" direction="all" class="z-1">
             <view class="w-160rpx h-216rpx rounded-32rpx ml-10rpx mt-16rpx border border-solid border-blue opacity-25"></view>
           </movable-view> -->
 
           <view wx:for="{{devicePageList}}" wx:for-item="group" wx:key="g" wx:for-index="g" class="flex flex-row flex-wrap">
-            <movable-view wx:for="{{group}}" wx:key="uniId" data-index="{{index}}" data-group="{{g}}" data-ordernum="{{item.orderNum}}" x="{{item.x}}" y="{{item.y}}" direction="all" bind:longpress="movableTouchStart" bind:touchend="movableTouchEnd" bind:change="movableChange" class="{{ index === placeholder.index && g === placeholder.groupIndex ? 'z-100' : 'z-1' }}" disabled="{{!isMoving}}">
-              <device-card class="w-180rpx pb-16rpx pt-16rpx flex justify-center {{editSelectMode && (index !== placeholder.index || g !== placeholder.groupIndex) ? 'shake' : ''}}" showControl="{{!editSelectMode}}" showShadow showGradientBg edit-mode="{{editSelectMode}}" edit-select="{{item.editSelect}}" device-info="{{item}}" data-item="{{item}}" select="{{item.select}}" bind:controlTap="handleControlTap" bind:cardTap="handleCardTap" bind:offlineTap="handleShowDeviceOffline" bind:longPress="handleLongpress" />
+            <movable-view wx:for="{{group}}" wx:key="uniId" data-index="{{index}}" data-group="{{g}}" data-ordernum="{{item.orderNum}}" x="{{item.x}}" y="{{item.y}}" direction="all" friction="{{999}}" damping="{{100}}" bind:longpress="movableTouchStart" bind:touchend="movableTouchEnd" catch:change="movableChange" class="{{ index === placeholder.index && g === placeholder.groupIndex ? 'z-100' : 'z-1' }}" disabled="{{!isMoving}}">
+              <device-card class="w-180rpx pb-16rpx pt-16rpx flex justify-center {{editSelectMode && (index !== placeholder.index || g !== placeholder.groupIndex) ? 'shake' : ''}}" showControl="{{!editSelectMode}}" showShadow showGradientBg edit-mode="{{editSelectMode}}" device-info="{{item}}" data-item="{{item}}" select="{{item.select}}" bind:controlTap="handleControlTap" bind:cardTap="handleCardTap" bind:offlineTap="handleShowDeviceOffline" bind:longPress="handleLongpress" />
             </movable-view>
           </view>
         </movable-area>
@@ -85,7 +78,7 @@
 
         <!-- 有列表时的添加按钮 -->
         <view class="flex-col-center py-20rpx" wx:if="{{roomHasSubDevice}}">
-          <van-button wx-if="{{canAddDevice}}" type="default" color="rgba(255,255,255,0.60)" size="small" custom-class="round-btn-border" round bind:tap="goTo" data-url="/package-distribution/scan/index">
+          <van-button wx-if="{{canAddDevice}}" type="default" color="rgba(255,255,255,0.60)" size="small" custom-class="round-btn-border" round bind:tap="goTo" data-url="/package-distribution/choose-device/index">
             <text class="text-26rpx text-hex-555659">添加设备</text>
           </van-button>
         </view>
@@ -109,11 +102,12 @@
   <view class="flex-col-center w-full">
     <image src="{{officeDeviceInfo.pic}}" class="w-160rpx h-160rpx mt-70rpx" />
     <view class="flex flex-col mt-88rpx">
-      <text class="text-hex-666666 text-28rpx">可能的原因：</text>
-      <text class="text-hex-555659 text-24rpx mt-16rpx">1.路由器密码被修改，建议将智能网关<text class="text-blue underline decoration-solid decoration-blue" bindtap="handleRebindGateway">重新联网</text></text>
-      <text class="text-hex-555659 text-24rpx mt-8rpx">2.设备与网关未通电</text>
-      <text class="text-hex-555659 text-24rpx mt-8rpx">3.设备与网关距离过远，或有其他遮挡物</text>
-      <text class="text-hex-555659 text-24rpx mt-8rpx">4.路由器未通电或网络异常</text>
+      <text class="text-hex-555659 text-32rpx">可能的原因：</text>
+      <text class="text-hex-A2A2A2 text-28rpx mt-20rpx">1、路由器密码被修改，建议将智能网关 </text>
+      <text class="text-28rpx text-blue decoration-solid decoration-blue ml-46rpx mt-8rpx" bindtap="handleRebindGateway">重新联网</text>
+      <text class="text-hex-A2A2A2 text-28rpx mt-20rpx">2、设备与网关未通电</text>
+      <text class="text-hex-A2A2A2 text-28rpx mt-20rpx">3、设备与网关距离过远，或有其他遮挡物</text>
+      <text class="text-hex-A2A2A2 text-28rpx mt-20rpx">4、路由器未通电或网络异常</text>
     </view>
     <view class="h-80rpx"></view>
   </view>

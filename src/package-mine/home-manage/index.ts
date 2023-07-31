@@ -46,9 +46,19 @@ ComponentWithComputed({
         })
       }
 
+      // 用户家庭权限 1：创建者 2：管理员 3：游客
       if (data.currentHomeDetail?.houseUserAuth === 1) {
+        actions.push(
+          {
+            name: '转让家庭',
+          },
+          {
+            name: '解散家庭',
+          },
+        )
+      } else {
         actions.push({
-          name: '解散家庭',
+          name: '退出家庭',
         })
       }
 
@@ -131,9 +141,32 @@ ComponentWithComputed({
 
       if (name === '重命名') {
         this.editName()
+        return
       }
+
       if (name === '解散家庭') {
         this.delHome()
+        return
+      }
+
+      if (name === '转让家庭') {
+        const list = homeBinding.store.homeList.filter((item) => item.houseCreatorFlag)
+
+        if (list.length <= 1) {
+          Toast('请至少保留一个创建的家庭')
+
+          return
+        }
+
+        wx.navigateTo({
+          url: '/package-mine/home-transfer/index',
+        })
+        return
+      }
+
+      if (name === '退出家庭') {
+        this.quitHome()
+        return
       }
     },
 
@@ -238,7 +271,7 @@ ComponentWithComputed({
       }
 
       const res = await Dialog.confirm({
-        message: '是否解散当前家庭',
+        title: '是否解散当前家庭',
       }).catch(() => 'cancel')
 
       console.log('delHome', res)
@@ -280,7 +313,7 @@ ComponentWithComputed({
 
     async quitHome() {
       const res = await Dialog.confirm({
-        message: '是否退出当前家庭',
+        title: '是否退出当前家庭',
       }).catch(() => 'cancel')
 
       console.log('delHome', res)

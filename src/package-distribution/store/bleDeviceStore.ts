@@ -12,7 +12,7 @@ export const bleDevicesStore = observable({
 
   isStart: false, // 业务字段，标志是否开始了发现蓝牙设备流程，用于蓝牙开关被中途关掉（会终止蓝牙搜索）又打开的情况，恢复蓝牙搜索状态
 
-  bleDeviceList: [] as IBleDevice[],
+  bleDeviceList: [] as Device.ISubDevice[],
 
   startBleDiscovery() {
     if (this.discovering) {
@@ -162,7 +162,7 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
   })
 
   if (!infoRes.success) {
-    Logger.error(`设备${baseInfo.mac}云端不存在注册记录`, baseInfo)
+    Logger.error(`设备${baseInfo.zigbeeMac}云端不存在注册记录`)
     return
   }
 
@@ -172,14 +172,14 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
     bleDevicesStore.bleDeviceList.find((foundItem) => foundItem.deviceUuid === baseInfo.deviceUuid) ||
     (infoRes.result.roomId && baseInfo.isConfig === '02')
   ) {
-    Logger.log(`${infoRes.result.productName}：${baseInfo.mac}已绑定`)
+    Logger.log(`${infoRes.result.productName}：${baseInfo.zigbeeMac}已绑定`)
     return
   }
 
   let { productName: deviceName } = infoRes.result
   const { proType, switchNum, modelId, productIcon } = infoRes.result
 
-  Logger.log(`成功发现${deviceName}：${baseInfo.mac}`)
+  Logger.log(`成功发现${deviceName}：${baseInfo.zigbeeMac}`)
 
   const bindNum = deviceBinding.store.allRoomDeviceList.filter(
     (item) => item.proType === proType && item.productId === modelId,
@@ -193,7 +193,7 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
 
   deviceName += deviceNum > 0 ? deviceNum + 1 : ''
 
-  const bleDevice: IBleDevice = {
+  const bleDevice: Device.ISubDevice = {
     proType: proType,
     deviceUuid: baseInfo.deviceUuid,
     mac: baseInfo.mac,
@@ -204,8 +204,18 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
     icon: productIcon,
     productId: modelId,
     name: deviceName,
+    deviceName,
+    deviceId: '',
+    gatewayId: '',
+    productName: '',
     isChecked: false,
-    client: new BleClient({ mac: baseInfo.mac, deviceUuid: baseInfo.deviceUuid }),
+    client: new BleClient({
+      mac: baseInfo.mac,
+      deviceUuid: baseInfo.deviceUuid,
+      modelId,
+      proType,
+      protocolVersion: baseInfo.protocolVersion,
+    }),
     roomId: roomBinding.store.currentRoom.roomId,
     roomName: roomBinding.store.currentRoom.roomName,
     switchList: [],
@@ -229,26 +239,6 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
   runInAction(() => {
     bleDevicesStore.bleDeviceList = bleDevicesStore.bleDeviceList.concat([])
   })
-}
-
-export interface IBleDevice {
-  proType: string // 品类码
-  deviceUuid: string
-  mac: string
-  signal: string
-  RSSI: number
-  zigbeeMac: string
-  isConfig: string
-  name: string
-  roomId: string
-  roomName: string
-  icon: string
-  productId: string
-  switchList: Device.ISwitch[]
-  client: BleClient
-  status: 'waiting' | 'fail' | 'success' // 配网状态
-  isChecked: boolean // 是否被选中
-  requesting: boolean // 是否正在发送试一试命令
 }
 
 export interface IBleBaseInfo {

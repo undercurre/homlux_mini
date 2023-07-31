@@ -8,7 +8,6 @@
 | select      | boolean | false | false  | 是否控制选中       |
 | showControl | boolean | false | false  | 是否有控制功能      |
 | editMode | boolean | false | false  | 是否处于长按选中模式   |
-| editSelect | boolean | false | false  | 处于选中模式中的选中状态 |
 
 ## 事件
 

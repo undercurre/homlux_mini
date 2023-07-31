@@ -21,9 +21,9 @@
   </view>
 
   <view class="text-center py-32rpx" bindtap="debindMeiju">
-    <text class="text-36rpx text-hex-555659">解除绑定</text>
+    <text class="text-32rpx text-hex-555659">解除绑定</text>
   </view>
-  <van-button class="flex-1 mx-24rpx" size="large" type="primary" block bind:click="goBackHome">返回首页</van-button>
+  <van-button class="mx-24rpx" size="large" type="primary" block bind:click="goBackHome">返回首页</van-button>
 
   <view class="list-bottom-placeholder"> </view>
 </view>

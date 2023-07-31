@@ -62,3 +62,5 @@ export const sceneMap = {
 }
 
 export const sceneList = Object.entries(sceneMap)
+
+export const autoSceneIconList = Array.from({ length: 8 }, (_, i) => `icon-${i + 1}`)
