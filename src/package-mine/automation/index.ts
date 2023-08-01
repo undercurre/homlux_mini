@@ -1,11 +1,11 @@
 import { storage } from '../../utils/storage'
 // import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { autosceneBinding, homeStore, userBinding } from '../../store/index'
+import { autosceneBinding, userBinding } from '../../store/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { strUtil } from '../../utils/strUtil'
-import { reaction } from 'mobx-miniprogram'
+// import { reaction } from 'mobx-miniprogram'
 // import { emitter } from '../../utils/index'
 
 // pages/login/index.ts
@@ -38,12 +38,12 @@ ComponentWithComputed({
       //   })
       // }
       // 监听houseId变化，重新请求对应家庭的自动化列表
-      reaction(
-        () => homeStore.currentHomeDetail.houseId,
-        () => {
-          autosceneBinding.store.updateAllRoomAutoSceneList()
-        },
-      )
+      // reaction(
+      //   () => homeStore.currentHomeDetail.houseId,
+      //   () => {
+      //     autosceneBinding.store.updateAllRoomAutoSceneList()
+      //   },
+      // )
       // emitter.on('scene_add', () => {
       //   autosceneBinding.store.updateAllRoomAutoSceneList()
       // })
@@ -56,11 +56,12 @@ ComponentWithComputed({
       // emitter.on('scene_enabled', () => {
       //   autosceneBinding.store.updateAllRoomAutoSceneList()
       // })
-    },
-    onShow() {
       //加载自动化列表
       autosceneBinding.store.updateAllRoomAutoSceneList()
     },
+    // onShow() {
+
+    // },
     // onUnload() {
     //   emitter.off('scene_add')
     //   emitter.off('scene_del')
