@@ -48,25 +48,44 @@
     },
     {
       "root": "package-room-control",
-      "pages": ["index/index", "scene-edit/index", "scene-request-list/index", "scene-list/index", "group/index"]
+      "pages": [
+        "index/index",
+        "scene-edit/index",
+        "scene-request-list/index",
+        "scene-list/index",
+        "group/index"
+      ]
     },
     {
       "root": "package-protocol",
-      "pages": ["protocol-show/index", "protocol-list/index", "add-virtual-device/index"]
+      "pages": [
+        "protocol-show/index",
+        "protocol-list/index",
+        "add-virtual-device/index"
+      ]
     },
     {
       "root": "package-auth",
-      "pages": ["auth-screen/index"]
+      "pages": [
+        "auth-screen/index"
+      ]
     },
     {
       "root": "package-automation",
-      "pages": ["automation-log/index", "automation-add/index", "automation-request-list/index"]
+      "pages": [
+        "automation-log/index",
+        "automation-add/index",
+        "automation-request-list/index"
+      ]
     }
   ],
   "preloadRule": {
     "pages/index/index": {
       "network": "all",
-      "packages": ["package-room-control", "package-distribution"]
+      "packages": [
+        "package-room-control",
+        "package-distribution"
+      ]
     }
   },
   "tabBar": {
@@ -121,10 +140,9 @@
     },
     "scope.userFuzzyLocation": {
       "desc": "本应用访问位置信息，用于获取天气信息提示等功能"
-    },
-    "scope.bluetooth": {
-      "desc": "本应用使用蓝牙功能，用于搜索与连接蓝牙设备"
     }
   },
-  "requiredPrivateInfos": ["getFuzzyLocation"]
+  "requiredPrivateInfos": [
+    "getFuzzyLocation"
+  ]
 }

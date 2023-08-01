@@ -1,6 +1,6 @@
 import pageBehavior from '../../behaviors/pageBehaviors'
 import Dialog from '@vant/weapp/dialog/dialog'
-import { isAndroid, Logger, checkWxBlePermission } from '../../utils/index'
+import { isAndroid, Logger, checkWxBlePermission, storage } from '../../utils/index'
 
 Component({
   behaviors: [pageBehavior],
@@ -11,6 +11,11 @@ Component({
     isWxBlePermit: false, // 微信蓝牙权限是否开启
     isSystemBlePermit: false, // 系统蓝牙权限是否开启
     _listenLocationTimeId: 0, // 监听系统位置信息是否打开的计时器， 0为不存在监听
+    scrollViewHeight:
+      (storage.get<number>('windowHeight') as number) -
+      (storage.get<number>('statusBarHeight') as number) -
+      (storage.get<number>('bottomBarHeight') as number) - // IPX
+      (storage.get<number>('navigationBarHeight') as number)
   },
 
   lifetimes: {

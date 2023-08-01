@@ -1,11 +1,79 @@
 <!--pages/login/index.wxml-->
 <view class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7" style="z-index: -1"></view>
-<nav-bar>遥控器</nav-bar>
-<view class="flex-col-center w-750rpx" style="margin-top: {{marginTop}}px;">
-  <image class="w-144rpx h-144rpx" src="/assets/img/login/logo.png"></image>
-  <text class="text-48rpx font-semibold mt-48rpx ml-12rpx" style="letter-spacing: 8.8rpx">遥控器首页</text>
+<nav-bar>
+  <view class="flex-1">
+    <text class="ml-24rpx text-40rpx font-semibold">遥控器</text>
+  </view>
+</nav-bar>
+
+<view style="z-index: -1" class="fixed left-0 top-0 w-100vw h-100vh">
+  <image src="/assets/img/home/bg.jpg" style="width: 100vw; height: 100vh"></image>
 </view>
 
-<van-dialog id="van-dialog" confirm-button-color="#488FFF" cancel-button-color="#27282A">
-  <!-- <text class="font-medium text-32rpx text-hex-555659" slot="title">{{'请打开手机蓝牙开关和\n微信蓝牙权限'}}</text> -->
-</van-dialog>
+<scroll-view enhanced scroll-y show-scrollbar="{{false}}" style="height: {{scrollViewHeight}}px;">
+  <view class="pt-16rpx">
+    <text class="ml-24rpx text-hex-6e6f74 text-28">发现设备</text>
+  </view>
+
+  <van-cell-group inset>
+    <van-cell clickable bind:click="handleCardClick">
+      <view class="flex item-center">
+        <view class="w-96rpx h-96rpx bg-hex-F6FAFD rounded-999 flex-center">
+          <image src="{{item.pic}}" class="w-72rpx h-72rpx" />
+        </view>
+        <view class="h-96rpx flex flex-col justify-center items-start ml-32rpx">
+          <view class="flex flex-row flex-center">
+            <text class="text-black-2a text-32rpx">吸顶灯</text>
+            <image src="/assets/img/base/scene-switch-btn.png" class="w-32rpx h-32rpx ml-16rpx" />
+          </view>
+          <view>
+            <text class="text-black-tips text-28rpx mt-8rpx">未连接</text>
+          </view>
+        </view>
+      </view>
+      <view slot="right-icon" class="flex-col-center">
+        <view class="h-72rpx flex-center bg-hex-ddd rounded-40rpx px-32rpx">
+          <image src="/assets/img/base/power-off.png" class="w-72rpx h-72rpx" />
+          <text class="w-100rpx text-28rpx">小夜灯</text>
+        </view>
+      </view>
+    </van-cell>
+  </van-cell-group>
+
+  <view class="pt-16rpx">
+    <text class="ml-24rpx text-hex-6e6f74 text-28">我的设备</text>
+  </view>
+
+  <van-cell-group inset wx:for="{{[0, 1, 2, 3, 4, 5, 6, 7]}}" wx:key="index">
+    <van-cell clickable bind:click="handleCardClick">
+      <view class="flex item-center">
+        <view class="w-96rpx h-96rpx bg-hex-F6FAFD rounded-999 flex-center">
+          <image src="{{item.pic}}" class="w-72rpx h-72rpx" />
+        </view>
+        <view class="h-96rpx flex flex-col justify-center items-start ml-32rpx">
+          <view class="flex flex-row flex-center">
+            <text class="text-black-2a text-32rpx">风扇灯</text>
+            <image src="/assets/img/base/scene-switch-btn.png" class="w-32rpx h-32rpx ml-16rpx" />
+          </view>
+          <view>
+            <text class="text-black-tips text-28rpx mt-8rpx">照明开启</text>
+          </view>
+        </view>
+      </view>
+      <view slot="right-icon" class="flex-col-center">
+        <view class="h-72rpx flex-center bg-hex-ddd rounded-40rpx px-32rpx">
+          <image src="/assets/img/base/power-off.png" class="w-72rpx h-72rpx" />
+          <text class="w-100rpx text-28rpx">照明</text>
+        </view>
+      </view>
+    </van-cell>
+  </van-cell-group>
+
+  <view class="w-full flex-center pb-40rpx">
+    <van-button type="default" color="rgba(255,255,255,0.60)" size="small" custom-class="round-btn-border" round loading block loading-text="搜索设备" />
+  </view>
+
+  <view class="list-bottom-placeholder"> </view>
+</scroll-view>
+
+<van-dialog id="van-dialog" confirm-button-color="#488FFF" cancel-button-color="#27282A" />

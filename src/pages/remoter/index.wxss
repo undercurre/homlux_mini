@@ -2,3 +2,11 @@
 page {
   height: 100%;
 }
+
+.list-bottom-placeholder {
+  height: calc(env(safe-area-inset-bottom) + 32rpx);
+}
+
+.van-button__loading-text {
+  color: #666;
+}
