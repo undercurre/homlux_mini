@@ -1,12 +1,5 @@
 {
-  "pages": [
-    "pages/start/index",
-    "pages/index/index",
-    "pages/login/index",
-    "pages/mine/index",
-    "pages/automation/index",
-    "pages/remoter/index"
-  ],
+  "pages": ["pages/start/index", "pages/index/index", "pages/login/index", "pages/mine/index", "pages/remoter/index"],
   "subpackages": [
     {
       "root": "package-distribution",
@@ -43,7 +36,8 @@
         "device-manage/group-detail/index",
         "voice-control/index",
         "guideline/index",
-        "device-category/index"
+        "device-category/index",
+        "automation/index"
       ]
     },
     {
