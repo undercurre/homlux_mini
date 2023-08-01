@@ -13,8 +13,10 @@ ComponentWithComputed({
    */
   data: {
     url: {
-      duer: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/intro.png',
-      mi: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/aIntro.png',
+      duerVoice: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/intro.png',
+      miVoice: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/aIntro.png',
+      // TODO
+      bleEnable: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/aIntro.png',
     },
     showImg: '',
   },
@@ -22,7 +24,7 @@ ComponentWithComputed({
   computed: {},
 
   methods: {
-    async onLoad(query: { type: 'duer' | 'mi' }) {
+    async onLoad(query: { type: 'duerVoice' | 'miVoice' | 'bleEnable' }) {
       this.setData({
         showImg: this.data.url[query.type],
       })
