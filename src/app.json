@@ -1,5 +1,10 @@
 {
-  "pages": ["pages/index/index", "pages/login/index", "pages/mine/index", "pages/automation/index"],
+  "pages": [
+    "pages/index/index",
+    "pages/login/index",
+    "pages/mine/index",
+    "pages/automation/index"
+  ],
   "subpackages": [
     {
       "root": "package-distribution",
@@ -24,7 +29,6 @@
         "room-manage/index",
         "room-detail/index",
         "member-manage/index",
-        "accept-invitation/index",
         "device-replace/index",
         "auth/index/index",
         "auth/meiju/index",
@@ -41,25 +45,44 @@
     },
     {
       "root": "package-room-control",
-      "pages": ["index/index", "scene-edit/index", "scene-request-list/index", "scene-list/index", "group/index"]
+      "pages": [
+        "index/index",
+        "scene-edit/index",
+        "scene-request-list/index",
+        "scene-list/index",
+        "group/index"
+      ]
     },
     {
       "root": "package-protocol",
-      "pages": ["protocol-show/index", "protocol-list/index", "add-virtual-device/index"]
+      "pages": [
+        "protocol-show/index",
+        "protocol-list/index",
+        "add-virtual-device/index"
+      ]
     },
     {
       "root": "package-auth",
-      "pages": ["auth-screen/index"]
+      "pages": [
+        "auth-screen/index"
+      ]
     },
     {
       "root": "package-automation",
-      "pages": ["automation-log/index", "automation-add/index", "automation-request-list/index"]
+      "pages": [
+        "automation-log/index",
+        "automation-add/index",
+        "automation-request-list/index"
+      ]
     }
   ],
   "preloadRule": {
     "pages/index/index": {
       "network": "all",
-      "packages": ["package-room-control", "package-distribution"]
+      "packages": [
+        "package-room-control",
+        "package-distribution"
+      ]
     }
   },
   "tabBar": {
@@ -86,7 +109,6 @@
     "van-cell": "@vant/weapp/cell/index",
     "van-slider": "@vant/weapp/slider/index",
     "van-popup": "@vant/weapp/popup/index",
-    "van-field": "@vant/weapp/field/index",
     "van-cell-group": "@vant/weapp/cell-group/index",
     "van-dialog": "@vant/weapp/dialog/index",
     "van-toast": "@vant/weapp/toast/index",
@@ -94,6 +116,7 @@
     "home-select-menu": "./components/home-select-menu/index",
     "add-room": "./components/add-room/index",
     "svg-icon": "./components/svg-icon/index",
+    "van-field": "@vant/weapp/field/index",
     "device-card": "./components/device-card/index"
   },
   "window": {
@@ -116,5 +139,12 @@
       "desc": "本应用访问位置信息，用于获取天气信息提示等功能"
     }
   },
-  "requiredPrivateInfos": ["getFuzzyLocation"]
+  "requiredPrivateInfos": [
+    "getFuzzyLocation"
+  ],
+  "rendererOptions": {
+    "skyline": {
+      "defaultDisplayBlock": true
+    }
+  }
 }

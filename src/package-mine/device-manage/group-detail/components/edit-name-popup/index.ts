@@ -2,9 +2,7 @@ import Toast from '@vant/weapp/toast/toast'
 import { checkInputNameIllegal } from '../../../../../utils/index'
 
 Component({
-  options: {
-    styleIsolation: 'apply-shared',
-  },
+  options: {},
   /**
    * 组件的属性列表
    */

@@ -10,9 +10,7 @@ import { storage, checkInputNameIllegal, emitter, showLoading, hideLoading } fro
 let timeId: number
 
 ComponentWithComputed({
-  options: {
-    styleIsolation: 'apply-shared',
-  },
+  options: {},
 
   behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding, roomBinding] })],
 

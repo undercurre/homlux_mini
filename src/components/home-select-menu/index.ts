@@ -4,9 +4,7 @@ import { homeBinding, homeStore } from '../../store/index'
 import { updateDefaultHouse } from '../../apis/index'
 
 ComponentWithComputed({
-  options: {
-    styleIsolation: 'apply-shared',
-  },
+  options: {},
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] })],
   /**
    * 组件的属性列表

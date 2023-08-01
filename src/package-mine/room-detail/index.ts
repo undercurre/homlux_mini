@@ -8,10 +8,7 @@ import { emitter, getCurrentPageParams } from '../../utils/index'
 import { delHouseRoom, saveHouseRoomInfo } from '../../apis/index'
 
 ComponentWithComputed({
-  options: {
-    styleIsolation: 'shared',
-    addGlobalClass: true,
-  },
+  options: {},
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, roomBinding] }), pageBehaviors],
 
   /**

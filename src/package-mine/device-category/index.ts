@@ -1,4 +1,3 @@
-// package-mine/hoom-manage/index.ts
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
@@ -8,9 +7,7 @@ import { SCREEN_PID, PRO_TYPE } from '../../config/device'
 import { emitter } from '../../utils/eventBus'
 
 ComponentWithComputed({
-  options: {
-    addGlobalClass: true,
-  },
+  options: {},
 
   behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding] }), pageBehaviors],
 

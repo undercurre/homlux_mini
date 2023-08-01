@@ -8,9 +8,7 @@ import { saveOrUpdateUserHouseInfo, delUserHouse, quitUserHouse, updateDefaultHo
 import { strUtil, checkInputNameIllegal, emitter } from '../../utils/index'
 
 ComponentWithComputed({
-  options: {
-    addGlobalClass: true,
-  },
+  options: {},
   behaviors: [
     BehaviorWithStore({ storeBindings: [roomBinding, homeBinding, userBinding, deviceBinding] }),
     pageBehaviors,

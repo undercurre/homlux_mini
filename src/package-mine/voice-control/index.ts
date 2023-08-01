@@ -5,9 +5,7 @@ import pageBehaviors from '../../behaviors/pageBehaviors'
 import { homeBinding, userBinding } from '../../store/index'
 
 ComponentWithComputed({
-  options: {
-    addGlobalClass: true,
-  },
+  options: {},
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, userBinding] }), pageBehaviors],
 
   /**

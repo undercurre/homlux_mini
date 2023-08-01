@@ -5,9 +5,7 @@ import { homeStore } from '../../../../../store/index'
 import { checkInputNameIllegal } from '../../../../../utils/validate'
 
 ComponentWithComputed({
-  options: {
-    styleIsolation: 'apply-shared',
-  },
+  options: {},
   /**
    * 组件的属性列表
    */

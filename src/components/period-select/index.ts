@@ -1,9 +1,5 @@
-// import Toast from '@vant/weapp/toast/toast'
-
 Component({
-  options: {
-    styleIsolation: 'apply-shared',
-  },
+  options: {},
 
   /**
    * 组件的属性列表

@@ -17,7 +17,7 @@
   min-height: 100vh;
   background-color: #eef2f7;
   box-sizing: border-box;
-  padding-bottom: calc(28rpx + env(safe-area-inset-bottom));
+  padding-bottom: 96rpx;
 }
 
 .bg-z-index {

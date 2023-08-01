@@ -7,9 +7,7 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
 
 Component({
-  options: {
-    addGlobalClass: true,
-  },
+  options: {},
 
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] })],
   /**

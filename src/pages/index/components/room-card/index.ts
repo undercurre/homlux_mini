@@ -1,4 +1,3 @@
-// pages/index/components/room-card/index.ts
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { runInAction } from 'mobx-miniprogram'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
@@ -6,9 +5,7 @@ import { execScene } from '../../../../apis/scene'
 import { PRO_TYPE } from '../../../../config/index'
 import { deviceStore, roomBinding, roomStore } from '../../../../store/index'
 ComponentWithComputed({
-  options: {
-    styleIsolation: 'apply-shared',
-  },
+  options: {},
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding] })],
   /**
    * 组件的属性列表

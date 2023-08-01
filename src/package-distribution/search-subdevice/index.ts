@@ -17,7 +17,6 @@ type StatusName = 'discover' | 'requesting' | 'success' | 'error'
 
 ComponentWithComputed({
   options: {
-    addGlobalClass: true,
     pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
   },
 

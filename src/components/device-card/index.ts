@@ -5,9 +5,7 @@ import { throttle } from '../../utils/index'
 const CONTROL_INTERVAL = 3000 // 开关操作间隔时间
 
 ComponentWithComputed({
-  options: {
-    styleIsolation: 'apply-shared',
-  },
+  options: {},
   /**
    * 组件的属性列表
    */

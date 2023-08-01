@@ -3,9 +3,7 @@ import { deviceStore, roomStore } from '../../store/index'
 import { checkWifiSwitch } from '../../utils/index'
 
 ComponentWithComputed({
-  options: {
-    styleIsolation: 'apply-shared',
-  },
+  options: {},
   /**
    * 组件的属性列表
    */

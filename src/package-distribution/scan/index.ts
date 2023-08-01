@@ -11,7 +11,6 @@ import { checkDevice, getUploadFileForOssInfo, queryWxImgQrCode } from '../../ap
 
 ComponentWithComputed({
   options: {
-    styleIsolation: 'apply-shared',
     pureDataPattern: /^_/,
   },
 

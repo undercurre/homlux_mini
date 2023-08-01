@@ -2,9 +2,7 @@ import { homeBinding, roomBinding } from '../../../../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 
 Component({
-  options: {
-    styleIsolation: 'apply-shared',
-  },
+  options: {},
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, roomBinding] })],
   /**
    * 组件的属性列表
