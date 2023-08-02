@@ -1,0 +1,37 @@
+function touchStart(event, ownerInstance) {
+  var img = ownerInstance.selectComponent('.img')
+  var imgActive = ownerInstance.selectComponent('.imgActive')
+  if (!imgActive) {
+    return
+  }
+
+  img.setStyle({
+    opacity: 0,
+    transition: 'opacity 0.3s',
+  })
+  imgActive.setStyle({
+    opacity: 1,
+    transition: 'opacity 0.3s',
+  })
+}
+
+function touchEnd(event, ownerInstance) {
+  var img = ownerInstance.selectComponent('.img')
+  var imgActive = ownerInstance.selectComponent('.imgActive')
+  if (!imgActive) {
+    return
+  }
+
+  img.setStyle({
+    opacity: 1,
+    transition: 'opacity 0.3s',
+  })
+  imgActive.setStyle({
+    opacity: 0,
+    transition: 'opacity 0.3s',
+  })
+}
+module.exports = {
+  touchStart: touchStart,
+  touchEnd: touchEnd,
+}

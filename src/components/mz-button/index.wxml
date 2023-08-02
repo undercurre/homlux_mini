@@ -1,0 +1,14 @@
+<wxs module="handler" src="./index.wxs"></wxs>
+
+<view class="mz-button relative flex-col-center" x="{{100}}" style="{{computedStyle}}" bind:touchstart="{{handler.touchStart}}" bind:touchend="{{handler.touchEnd}}">
+  <view wx:if="{{type === 'round'}}" class="round"></view>
+  <view wx:elif="{{type === 'square'}}" class="square"></view>
+  <block wx:else>
+    <image class="img" src="{{img}}"></image>
+    <image wx:if="{{imgActive}}" class="imgActive" src="{{imgActive}}" style="opacity: 0;"></image>
+  </block>
+
+  <view class="z-1">
+    <slot></slot>
+  </view>
+</view>
