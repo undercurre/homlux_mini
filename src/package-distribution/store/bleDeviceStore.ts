@@ -45,23 +45,23 @@ export const bleDevicesStore = observable({
           return item.localName && item.localName.includes('homlux_ble') && !foundItem && item.RSSI > -80
         })
         .map((item) => getBleDeviceBaseInfo(item))
+        .filter((item) => {
+          // 设备配网状态没变化的同一设备不再查询，防止重复查询同一设备的云端信息接口
+          return !_foundList.find(
+            (foundItem) => foundItem.deviceUuid === item.deviceUuid && foundItem.isConfig === item.isConfig,
+          )
+        })
       // 过滤已经配网的设备
       // 设备网络状态 0x00：未入网   0x01：正在入网   0x02:  已经入网
       // 但由于丢包情况，设备本地状态不可靠，需要查询云端是否存在该设备的绑定状态（是否存在家庭绑定关系）结合判断是否真正配网
 
-      deviceList.forEach(async (item) => {
-        // 设备配网状态没变化的同一设备不再查询，防止重复查询同一设备的云端信息接口
-        if (
-          _foundList.find(
-            (foundItem) => foundItem.deviceUuid === item.deviceUuid && foundItem.isConfig === item.isConfig,
-          )
-        ) {
-          return
-        }
+      if (deviceList.length <= 0) {
+        return
+      }
+      // 记录已经查询过的设备
+      _foundList = _foundList.concat(deviceList)
 
-        _foundList.push(item)
-        handleBleDeviceInfo(item)
-      })
+      checkBleDeviceList(deviceList)
     })
 
     // 开始搜寻附近的蓝牙外围设备
@@ -105,18 +105,15 @@ export const bleDevicesStore = observable({
       runInAction(() => {
         bleDevicesStore.discovering = res.discovering
         bleDevicesStore.available = res.available
-
-        if (this.isStart && !res.discovering) {
-          wx.startBluetoothDevicesDiscovery({
-            allowDuplicatesKey: true,
-            powerLevel: 'high',
-            interval: 3000,
-            success() {
-              Logger.log('restartBluetoothDevicesDiscovery')
-            },
-          })
-        }
       })
+
+      if (this.isStart && !res.discovering) {
+        wx.startBluetoothDevicesDiscovery({
+          allowDuplicatesKey: true,
+          powerLevel: 'high',
+          interval: 3000,
+        })
+      }
     })
   },
 
@@ -141,6 +138,8 @@ export const bleDevicesBinding = {
 function getBleDeviceBaseInfo(bleDevice: WechatMiniprogram.BlueToothDevice): IBleBaseInfo {
   const msgObj = bleUtil.transferBroadcastData(bleDevice.advertisData)
 
+  Logger.debug('getBleDeviceBaseInfo', msgObj)
+
   const { RSSI } = bleDevice
   const signal = getSignalFlag(RSSI)
 
@@ -156,30 +155,58 @@ function getSignalFlag(RSSI: number) {
   return RSSI > -80 ? (RSSI > -70 ? 'strong' : 'normal') : 'weak'
 }
 
-async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
+async function checkBleDeviceList(list: IBleBaseInfo[]) {
   const infoRes = await checkDevice({
-    mac: baseInfo.zigbeeMac,
+    mzgdBluetoothVoList: list.map((item) => ({
+      mac: item.zigbeeMac,
+      proType: item.proType,
+      bluetoothPid: item.bluetoothPid,
+    })),
   })
 
   if (!infoRes.success) {
-    Logger.error(`设备${baseInfo.zigbeeMac}云端不存在注册记录`)
+    Logger.error(`设备${list.map((item) => item.zigbeeMac)}云端不存在注册记录`)
     return
   }
 
+  list.forEach((item) => {
+    handleBleDeviceInfo({
+      ...item,
+      productName: '',
+      roomId: '',
+      switchNum: 0,
+      modelId: '',
+      productIcon: '',
+    })
+  })
+
+  runInAction(() => {
+    bleDevicesStore.bleDeviceList = bleDevicesStore.bleDeviceList.concat([])
+  })
+}
+
+function handleBleDeviceInfo(
+  deviceInfo: IBleBaseInfo & {
+    productName: string
+    roomId: string
+    switchNum: number
+    modelId: string
+    productIcon: string
+  },
+) {
+  let { productName: deviceName } = deviceInfo
+  const { deviceUuid, mac, roomId, isConfig, zigbeeMac, proType, switchNum, modelId, productIcon } = deviceInfo
   // 1、存在接口查询过程，过滤期间重复添加的设备
   // 2、过滤云端存在房间绑定关系且设备本地状态为02(已绑定状态)的设备
   if (
-    bleDevicesStore.bleDeviceList.find((foundItem) => foundItem.deviceUuid === baseInfo.deviceUuid) ||
-    (infoRes.result.roomId && baseInfo.isConfig === '02')
+    bleDevicesStore.bleDeviceList.find((foundItem) => foundItem.deviceUuid === deviceUuid) ||
+    (roomId && isConfig === '02')
   ) {
-    Logger.log(`${infoRes.result.productName}：${baseInfo.zigbeeMac}已绑定`)
+    Logger.log(`${deviceName}：${zigbeeMac}已绑定`)
     return
   }
 
-  let { productName: deviceName } = infoRes.result
-  const { proType, switchNum, modelId, productIcon } = infoRes.result
-
-  Logger.log(`成功发现${deviceName}：${baseInfo.zigbeeMac}`)
+  Logger.log(`成功发现${deviceName}：${zigbeeMac}`)
 
   const bindNum = deviceBinding.store.allRoomDeviceList.filter(
     (item) => item.proType === proType && item.productId === modelId,
@@ -194,13 +221,13 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
   deviceName += deviceNum > 0 ? deviceNum + 1 : ''
 
   const bleDevice: Device.ISubDevice = {
-    proType: proType,
-    deviceUuid: baseInfo.deviceUuid,
-    mac: baseInfo.mac,
-    signal: baseInfo.signal,
-    RSSI: baseInfo.RSSI,
-    zigbeeMac: baseInfo.zigbeeMac,
-    isConfig: baseInfo.isConfig,
+    proType,
+    deviceUuid,
+    mac,
+    signal: deviceInfo.signal,
+    RSSI: deviceInfo.RSSI,
+    zigbeeMac,
+    isConfig,
     icon: productIcon,
     productId: modelId,
     name: deviceName,
@@ -210,11 +237,11 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
     productName: '',
     isChecked: false,
     client: new BleClient({
-      mac: baseInfo.mac,
-      deviceUuid: baseInfo.deviceUuid,
+      mac,
+      deviceUuid,
       modelId,
       proType,
-      protocolVersion: baseInfo.protocolVersion,
+      protocolVersion: deviceInfo.protocolVersion,
     }),
     roomId: roomBinding.store.currentRoom.roomId,
     roomName: roomBinding.store.currentRoom.roomName,
@@ -235,10 +262,6 @@ async function handleBleDeviceInfo(baseInfo: IBleBaseInfo) {
   }
 
   bleDevicesStore.bleDeviceList.push(bleDevice)
-
-  runInAction(() => {
-    bleDevicesStore.bleDeviceList = bleDevicesStore.bleDeviceList.concat([])
-  })
 }
 
 export interface IBleBaseInfo {
@@ -249,8 +272,8 @@ export interface IBleBaseInfo {
   isConfig: string
   mac: string
   zigbeeMac: string
-  deviceCategory: string
-  deviceModel: string
+  proType: string
+  bluetoothPid: string
   version: string
   protocolVersion: string
 }

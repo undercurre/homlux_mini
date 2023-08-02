@@ -375,6 +375,8 @@ export const bleUtil = {
     const msgStr = strUtil.ab2hex(advertisData)
     const macStr = msgStr.substr(6, 16)
 
+    Logger.debug('transferBroadcastData', msgStr)
+
     let arr = []
 
     for (let i = 0; i < macStr.length; i = i + 2) {
@@ -390,9 +392,9 @@ export const bleUtil = {
       isConfig: msgStr.substr(4, 2),
       mac: zigbeeMac.substr(0, 6) + zigbeeMac.substr(-6, 6),
       zigbeeMac,
-      deviceCategory: msgStr.substr(18, 2),
-      deviceModel: msgStr.substr(20, 2),
-      version: msgStr.substr(22, 2),
+      proType: `0x${msgStr.slice(22, 24)}`,
+      bluetoothPid: `0x${msgStr.slice(24, 26)}`,
+      version: msgStr.slice(26, 28),
       protocolVersion: msgStr.slice(-2),
     }
   },

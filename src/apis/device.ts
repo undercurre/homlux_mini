@@ -506,11 +506,16 @@ export async function deviceReplace(
  * 根据sn去查设备的mac、图片、品类
  */
 export async function checkDevice(
-  data: { dsn?: string; mac?: string; productId?: string },
+  data: {
+    dsn?: string
+    mac?: string
+    productId?: string
+    mzgdBluetoothVoList?: { proType: string; bluetoothPid: string; mac: string }[]
+  },
   options?: { loading?: boolean },
 ) {
   return await mzaioRequest.post<Device.MzgdProTypeDTO>({
-    log: false,
+    log: true,
     loading: options?.loading ?? false,
     url: '/v1/device/checkDevice',
     data,
