@@ -1,0 +1,19 @@
+<view class="page-container flex flex-col">
+  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="吸顶灯"></nav-bar>
+
+  <view class="flex-col-center">
+    <view class="relative control-pannel">
+      <mz-button class="absolute down" img="/package-remoter/assets/down.png" imgActive="/package-remoter/assets/downActive.png" imgWidth="304rpx" imgHeight="142rpx"></mz-button>
+      <mz-button class="absolute up" img="/package-remoter/assets/up.png" imgActive="/package-remoter/assets/upActive.png" imgWidth="304rpx" imgHeight="142rpx"></mz-button>
+      <mz-button class="absolute left" img="/package-remoter/assets/left.png" imgActive="/package-remoter/assets/leftActive.png" imgWidth="142rpx" imgHeight="304rpx"></mz-button>
+      <mz-button class="absolute right" img="/package-remoter/assets/right.png" imgActive="/package-remoter/assets/rightActive.png" imgWidth="142rpx" imgHeight="304rpx"></mz-button>
+
+      <mz-button class="absolute middle" type="round" imgWidth="154rpx" imgHeight="154rpx"></mz-button>
+    </view>
+
+    <view class="flex flex-row justify-evenly mt-36rpx w-full">
+      <mz-button class="mt-64rpx" type="square"></mz-button>
+      <mz-button class="mt-64rpx" type="square"></mz-button>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,24 @@
+.control-pannel {
+  width: 480rpx;
+  height: 480rpx;
+}
+.up {
+  top: 0;
+  left: 88rpx;
+}
+.left {
+  left: 0;
+  top: 88rpx;
+}
+.down {
+  bottom: 0;
+  left: 88rpx;
+}
+.right {
+  right: 0;
+  top: 88rpx;
+}
+.middle {
+  left: 162rpx;
+  top: 162rpx;
+}

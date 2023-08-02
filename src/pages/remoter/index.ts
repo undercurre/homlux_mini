@@ -15,7 +15,7 @@ Component({
       (storage.get<number>('windowHeight') as number) -
       (storage.get<number>('statusBarHeight') as number) -
       (storage.get<number>('bottomBarHeight') as number) - // IPX
-      (storage.get<number>('navigationBarHeight') as number)
+      (storage.get<number>('navigationBarHeight') as number),
   },
 
   lifetimes: {
@@ -148,6 +148,12 @@ Component({
           }
         }, 3000)
       }
+    },
+
+    handleCardClick() {
+      wx.navigateTo({
+        url: '/package-remoter/pannel/index',
+      })
     },
   },
 })

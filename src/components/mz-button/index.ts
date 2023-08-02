@@ -24,15 +24,13 @@ ComponentWithComputed({
     type: {
       type: String,
       value: 'custom',
-    }
+    },
   },
 
   /**
    * 组件的初始数据
    */
-  data: {
-
-  },
+  data: {},
 
   computed: {
     computedStyle(data) {
@@ -40,7 +38,7 @@ ComponentWithComputed({
         width: ${data.imgWidth};
         height: ${data.imgHeight};
       `
-    }
+    },
   },
 
   methods: {
@@ -52,6 +50,6 @@ ComponentWithComputed({
     },
     handleTouchEnd(e: WechatMiniprogram.TouchEvent) {
       this.triggerEvent('touchend', e.detail)
-    }
+    },
   },
 })

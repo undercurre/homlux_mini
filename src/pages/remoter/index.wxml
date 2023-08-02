@@ -24,7 +24,7 @@
         <view class="h-96rpx flex flex-col justify-center items-start ml-32rpx">
           <view class="flex flex-row flex-center">
             <text class="text-black-2a text-32rpx">吸顶灯</text>
-            <image src="/assets/img/base/scene-switch-btn.png" class="w-32rpx h-32rpx ml-16rpx" />
+            <image src="/assets/img/base/bleOn.png" class="w-30 h-40 ml-16rpx" />
           </view>
           <view>
             <text class="text-black-tips text-28rpx mt-8rpx">未连接</text>
@@ -32,9 +32,9 @@
         </view>
       </view>
       <view slot="right-icon" class="flex-col-center">
-        <view class="h-72rpx flex-center bg-hex-ddd rounded-40rpx px-32rpx">
-          <image src="/assets/img/base/power-off.png" class="w-72rpx h-72rpx" />
-          <text class="w-100rpx text-28rpx">小夜灯</text>
+        <view class="h-80rpx flex-center bg-hex-eff0f3 rounded-40rpx px-20rpx">
+          <image src="/assets/img/base/power-stroke.png" class="w-48rpx h-48rpx" />
+          <text class="w-80rpx text-24rpx ml-16rpx">小夜灯</text>
         </view>
       </view>
     </van-cell>
@@ -53,7 +53,7 @@
         <view class="h-96rpx flex flex-col justify-center items-start ml-32rpx">
           <view class="flex flex-row flex-center">
             <text class="text-black-2a text-32rpx">风扇灯</text>
-            <image src="/assets/img/base/scene-switch-btn.png" class="w-32rpx h-32rpx ml-16rpx" />
+            <image src="/assets/img/base/bleOn.png" class="w-30 h-40 ml-16rpx" />
           </view>
           <view>
             <text class="text-black-tips text-28rpx mt-8rpx">照明开启</text>
@@ -61,9 +61,9 @@
         </view>
       </view>
       <view slot="right-icon" class="flex-col-center">
-        <view class="h-72rpx flex-center bg-hex-ddd rounded-40rpx px-32rpx">
-          <image src="/assets/img/base/power-off.png" class="w-72rpx h-72rpx" />
-          <text class="w-100rpx text-28rpx">照明</text>
+        <view class="h-80rpx flex-center bg-hex-eff0f3 rounded-40rpx px-20rpx">
+          <image src="/assets/img/base/power-stroke.png" class="w-48rpx h-48rpx" />
+          <text class="w-80rpx text-24rpx ml-16rpx">照明</text>
         </view>
       </view>
     </van-cell>
