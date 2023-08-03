@@ -1,36 +1,76 @@
+var _TRANSITION = 'opacity 0.3s'
+
 function touchStart(event, ownerInstance) {
-  var img = ownerInstance.selectComponent('.img')
-  var imgActive = ownerInstance.selectComponent('.imgActive')
-  if (!imgActive) {
+  var instant = ownerInstance.selectComponent('.preset') || ownerInstance.selectComponent('.img')
+  var instantActive = ownerInstance.selectComponent('.presetActive') || ownerInstance.selectComponent('.imgActive')
+  var iIcon = ownerInstance.selectComponent('.icon')
+  var iIconActive = ownerInstance.selectComponent('.iconActive')
+  var iText = ownerInstance.selectComponent('.text')
+
+  ownerInstance.callMethod('handleTouchStart', event)
+
+  // 如果未设置激活样式，则为静态按钮
+  if (!instantActive) {
     return
   }
 
-  img.setStyle({
+  instant.setStyle({
     opacity: 0,
-    transition: 'opacity 0.3s',
+    transition: _TRANSITION,
   })
-  imgActive.setStyle({
+  instantActive.setStyle({
     opacity: 1,
-    transition: 'opacity 0.3s',
+    transition: _TRANSITION,
+  })
+  iText.addClass('textActive')
+
+  if (!iIconActive) {
+    return
+  }
+  iIcon.setStyle({
+    opacity: 0,
+    transition: _TRANSITION,
+  })
+  iIconActive.setStyle({
+    opacity: 1,
+    transition: _TRANSITION,
   })
 }
 
 function touchEnd(event, ownerInstance) {
-  var img = ownerInstance.selectComponent('.img')
-  var imgActive = ownerInstance.selectComponent('.imgActive')
-  if (!imgActive) {
+  var instant = ownerInstance.selectComponent('.preset') || ownerInstance.selectComponent('.img')
+  var instantActive = ownerInstance.selectComponent('.presetActive') || ownerInstance.selectComponent('.imgActive')
+  var iIcon = ownerInstance.selectComponent('.icon')
+  var iIconActive = ownerInstance.selectComponent('.iconActive')
+  var iText = ownerInstance.selectComponent('.text')
+
+  if (!instantActive) {
     return
   }
 
-  img.setStyle({
+  instant.setStyle({
     opacity: 1,
-    transition: 'opacity 0.3s',
+    transition: _TRANSITION,
   })
-  imgActive.setStyle({
+  instantActive.setStyle({
     opacity: 0,
-    transition: 'opacity 0.3s',
+    transition: _TRANSITION,
+  })
+  iText.removeClass('textActive')
+
+  if (!iIconActive) {
+    return
+  }
+  iIcon.setStyle({
+    opacity: 1,
+    transition: _TRANSITION,
+  })
+  iIconActive.setStyle({
+    opacity: 0,
+    transition: _TRANSITION,
   })
 }
+
 module.exports = {
   touchStart: touchStart,
   touchEnd: touchEnd,

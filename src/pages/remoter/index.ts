@@ -150,7 +150,7 @@ Component({
       }
     },
 
-    handleCardClick() {
+    handleCardTap() {
       wx.navigateTo({
         url: '/package-remoter/pannel/index',
       })

@@ -13,6 +13,14 @@ ComponentWithComputed({
       type: String,
       value: '',
     },
+    icon: {
+      type: String,
+      value: '',
+    },
+    iconActive: {
+      type: String,
+      value: '',
+    },
     imgWidth: {
       type: String,
       value: '304rpx',
@@ -25,6 +33,39 @@ ComponentWithComputed({
       type: String,
       value: 'custom',
     },
+    hasFeedback: {
+      type: Boolean,
+      value: true,
+    },
+    text: {
+      type: String,
+      value: '',
+    },
+    /**
+     * 文字宽度
+     * 仅当横向排版时生效
+     */
+    textWidth: {
+      type: String,
+      value: '96rpx',
+    },
+    textColor: {
+      type: String,
+      value: '#555659',
+    },
+    textSize: {
+      type: String,
+      value: '32rpx',
+    },
+    /**
+     * 文字及图标排版方向
+     * row: 横向
+     * col: 竖向
+     */
+    dir: {
+      type: String,
+      value: 'row',
+    },
   },
 
   /**
@@ -33,10 +74,17 @@ ComponentWithComputed({
   data: {},
 
   computed: {
-    computedStyle(data) {
+    btnStyle(data) {
       return `
         width: ${data.imgWidth};
         height: ${data.imgHeight};
+      `
+    },
+    textStyle(data) {
+      const widthStyle = data.dir === 'row' ? `width: ${data.textWidth}; margin-left: 32rpx;` : ''
+      return `${widthStyle}
+        color: ${data.textColor};
+        font-size: ${data.textSize};
       `
     },
   },
@@ -44,6 +92,20 @@ ComponentWithComputed({
   methods: {
     handleTouchStart(e: WechatMiniprogram.TouchEvent) {
       this.triggerEvent('touchstart', e)
+      if (wx.vibrateShort) wx.vibrateShort({ type: 'light' })
+
+      // 预留逻辑，暂时未被调用
+      // const innerAudioContext = wx.createInnerAudioContext()
+      // innerAudioContext.autoplay = true
+      // innerAudioContext.src =
+      //   '/package-remoter/assets/tick.wav'
+      // innerAudioContext.onPlay(() => {
+      //   console.log('开始播放')
+      // })
+      // innerAudioContext.onError((res) => {
+      //   console.log(res.errMsg)
+      //   console.log(res.errCode)
+      // })
     },
     handleLongPress(e: WechatMiniprogram.TouchEvent) {
       this.triggerEvent('longpress', e.detail)

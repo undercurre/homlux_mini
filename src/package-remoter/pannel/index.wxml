@@ -1,19 +1,30 @@
 <view class="page-container flex flex-col">
   <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="吸顶灯"></nav-bar>
 
+  <view class="text-right py-32rpx pr-44rpx">
+    <image class="w-48 h-48" src="/assets/img/home-manage/setting.png" bind:tap="toSetting"></image>
+  </view>
+
   <view class="flex-col-center">
     <view class="relative control-pannel">
       <mz-button class="absolute down" img="/package-remoter/assets/down.png" imgActive="/package-remoter/assets/downActive.png" imgWidth="304rpx" imgHeight="142rpx"></mz-button>
       <mz-button class="absolute up" img="/package-remoter/assets/up.png" imgActive="/package-remoter/assets/upActive.png" imgWidth="304rpx" imgHeight="142rpx"></mz-button>
-      <mz-button class="absolute left" img="/package-remoter/assets/left.png" imgActive="/package-remoter/assets/leftActive.png" imgWidth="142rpx" imgHeight="304rpx"></mz-button>
+      <mz-button class="absolute left" img="/package-remoter/assets/left.png" imgActive="/package-remoter/assets/leftActive.png" imgWidth="142rpx" imgHeight="304rpx" icon="/package-remoter/assets/light01.png" iconActive="/package-remoter/assets/light00.png"></mz-button>
       <mz-button class="absolute right" img="/package-remoter/assets/right.png" imgActive="/package-remoter/assets/rightActive.png" imgWidth="142rpx" imgHeight="304rpx"></mz-button>
 
-      <mz-button class="absolute middle" type="round" imgWidth="154rpx" imgHeight="154rpx"></mz-button>
+      <mz-button class="absolute middle" type="round" imgWidth="154rpx" imgHeight="154rpx" hasFeedback="{{false}}"></mz-button>
     </view>
 
-    <view class="flex flex-row justify-evenly mt-36rpx w-full">
-      <mz-button class="mt-64rpx" type="square"></mz-button>
-      <mz-button class="mt-64rpx" type="square"></mz-button>
+    <view class="flex flex-row justify-evenly flex-wrap mt-36rpx w-full">
+      <mz-button icon="/package-remoter/assets/scene01.png" iconActive="/package-remoter/assets/scene00.png" class="mt-64rpx" type="square" text="日常"></mz-button>
+      <mz-button icon="/package-remoter/assets/scene11.png" iconActive="/package-remoter/assets/scene10.png" class="mt-64rpx" type="square" text="休闲"></mz-button>
+
+      <mz-button icon="/package-remoter/assets/scene21.png" iconActive="/package-remoter/assets/scene20.png" class="mt-64rpx" type="square" text="延时关"></mz-button>
+      <mz-button icon="/package-remoter/assets/scene31.png" iconActive="/package-remoter/assets/scene30.png" class="mt-64rpx" type="square" text="助眠"></mz-button>
     </view>
+  </view>
+
+  <view>
+    <mz-button2 icon="/package-remoter/assets/power1.png" iconActive="/package-remoter/assets/power0.png" text="照明"></mz-button2>
   </view>
 </view>
