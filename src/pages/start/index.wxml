@@ -5,26 +5,25 @@
 <view wx:if="{{needSettingPage}}" class="flex-col-center w-750rpx mt-36rpx">
   <view class="w-686rpx select-box rounded-55rpx flex-col-center relative" catchtap="handleCardTap" bind:longpress="handleLongPress">
     <view>
-      <text>选择启动页样式</text>
+      <text class="text-40rpx font-semibold">选择默认主页</text>
+    </view>
+    
+    <view class="mt-50rpx text-center">
+      <text class="text-24rpx text-hex-a2a2a2">{{'该选择不影响您后续的操作，您可以\n在“默认主页”中更改主页的设定'}}</text>
     </view>
 
     <view class="flex flex-row center mt-50rpx">
       <van-checkbox use-icon-slot bind:change="onChange" label-position="left" data-page="index" custom-class="pic-check">
         <view class="rounded-32rpx shot">首页</view>
-        <image class="h-32rpx w-32rpx mt-8rpx" slot="icon" src="{{ defaultPage === 'index' ? checkImg : uncheckImg }}" />
+        <image class="h-32rpx w-32rpx mt-48rpx" slot="icon" src="{{ defaultPage === 'index' ? checkImg : uncheckImg }}" />
       </van-checkbox>
       <van-checkbox use-icon-slot bind:change="onChange" label-position="left" data-page="remoter" custom-class="pic-check">
         <view class="rounded-32rpx shot">遥控器</view>
-        <image class="h-32rpx w-32rpx mt-8rpx" slot="icon" src="{{ defaultPage === 'remoter' ? checkImg : uncheckImg }}" />
+        <image class="h-32rpx w-32rpx mt-48rpx" slot="icon" src="{{ defaultPage === 'remoter' ? checkImg : uncheckImg }}" />
       </van-checkbox>
     </view>
-
-    <view class="mt-50rpx">
-      <text class="text-24rpx text-hex-a2a2a2">您可以……</text>
-    </view>
   </view>
-
-  <view class="w-686rpx px-32rpx mt-50rpx mb-128rpx">
-    <van-button bindtap="handleDefaultPage" block disabled="{{!defaultPage}}" type="primary" size="large">设置为启动页</van-button>
+  <view class="fixed bottom-0 flex flex-row pt-30rpx w-full px-32rpx box-border" style="height: calc(146rpx + env(safe-area-inset-bottom))">
+    <van-button class="w-full" bindtap="handleDefaultPage" block disabled="{{!defaultPage}}" type="primary" size="large">设置为默认主页</van-button>
   </view>
 </view>

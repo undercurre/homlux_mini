@@ -156,7 +156,7 @@ Component({
         return
       }
       wx.navigateTo({
-        url: `/package-remoter/pannel/index?sn8=${sn8}`
+        url: `/package-remoter/pannel/index?sn8=${sn8}`,
       })
     },
   },
