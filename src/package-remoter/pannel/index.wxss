@@ -1,4 +1,5 @@
-.control-pannel {
+.joystick {
+  position: relative;
   width: 480rpx;
   height: 480rpx;
 }
@@ -21,4 +22,18 @@
 .middle {
   left: 162rpx;
   top: 162rpx;
+}
+
+.main-control {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  border-radius: 64rpx 64rpx 0 0;
+  padding-top: 16rpx;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 16rpx);
 }

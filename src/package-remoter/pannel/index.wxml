@@ -1,30 +1,29 @@
 <view class="page-container flex flex-col">
-  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="吸顶灯"></nav-bar>
+  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="{{device.deviceName}}"></nav-bar>
 
   <view class="text-right py-32rpx pr-44rpx">
     <image class="w-48 h-48" src="/assets/img/home-manage/setting.png" bind:tap="toSetting"></image>
   </view>
 
   <view class="flex-col-center">
-    <view class="relative control-pannel">
-      <mz-button class="absolute down" img="/package-remoter/assets/down.png" imgActive="/package-remoter/assets/downActive.png" imgWidth="304rpx" imgHeight="142rpx"></mz-button>
-      <mz-button class="absolute up" img="/package-remoter/assets/up.png" imgActive="/package-remoter/assets/upActive.png" imgWidth="304rpx" imgHeight="142rpx"></mz-button>
-      <mz-button class="absolute left" img="/package-remoter/assets/left.png" imgActive="/package-remoter/assets/leftActive.png" imgWidth="142rpx" imgHeight="304rpx" icon="/package-remoter/assets/light01.png" iconActive="/package-remoter/assets/light00.png"></mz-button>
-      <mz-button class="absolute right" img="/package-remoter/assets/right.png" imgActive="/package-remoter/assets/rightActive.png" imgWidth="142rpx" imgHeight="304rpx"></mz-button>
+    <view class="joystick">
+      <mz-button class="absolute up" img="/package-remoter/assets/up.png" imgActive="/package-remoter/assets/upActive.png" imgWidth="304rpx" imgHeight="142rpx" icon="{{device.joystick.up.icon}}" iconActive="{{device.joystick.up.iconActive}}" bind:tap="upTap" data-key="{{device.joystick.up.key}}"></mz-button>
+
+      <mz-button class="absolute right" img="/package-remoter/assets/right.png" imgActive="/package-remoter/assets/rightActive.png" imgWidth="142rpx" imgHeight="304rpx" icon="{{device.joystick.right.icon}}" iconActive="{{device.joystick.right.iconActive}}"></mz-button>
+
+      <mz-button class="absolute down" img="/package-remoter/assets/down.png" imgActive="/package-remoter/assets/downActive.png" imgWidth="304rpx" imgHeight="142rpx" icon="{{device.joystick.down.icon}}" iconActive="{{device.joystick.down.iconActive}}"></mz-button>
+
+      <mz-button class="absolute left" img="/package-remoter/assets/left.png" imgActive="/package-remoter/assets/leftActive.png" imgWidth="142rpx" imgHeight="304rpx" icon="{{device.joystick.left.icon}}" iconActive="{{device.joystick.left.iconActive}}"></mz-button>
 
       <mz-button class="absolute middle" type="round" imgWidth="154rpx" imgHeight="154rpx" hasFeedback="{{false}}"></mz-button>
     </view>
 
     <view class="flex flex-row justify-evenly flex-wrap mt-36rpx w-full">
-      <mz-button icon="/package-remoter/assets/scene01.png" iconActive="/package-remoter/assets/scene00.png" class="mt-64rpx" type="square" text="日常"></mz-button>
-      <mz-button icon="/package-remoter/assets/scene11.png" iconActive="/package-remoter/assets/scene10.png" class="mt-64rpx" type="square" text="休闲"></mz-button>
-
-      <mz-button icon="/package-remoter/assets/scene21.png" iconActive="/package-remoter/assets/scene20.png" class="mt-64rpx" type="square" text="延时关"></mz-button>
-      <mz-button icon="/package-remoter/assets/scene31.png" iconActive="/package-remoter/assets/scene30.png" class="mt-64rpx" type="square" text="助眠"></mz-button>
+      <mz-button wx:for="{{device.mList}}" wx:key="index" icon="{{item.icon}}" iconActive="{{item.iconActive}}" class="mt-64rpx" type="square" text="{{item.name}}"></mz-button>
     </view>
   </view>
 
-  <view>
-    <mz-button2 icon="/package-remoter/assets/power1.png" iconActive="/package-remoter/assets/power0.png" text="照明"></mz-button2>
+  <view class="main-control">
+    <mz-button2 wx:for="{{device.bList}}" wx:key="index" icon="{{item.icon}}" iconActive="{{item.iconActive}}" text="{{item.name}}"></mz-button2>
   </view>
 </view>

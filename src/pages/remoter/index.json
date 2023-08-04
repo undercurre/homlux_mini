@@ -1,7 +1,8 @@
 {
   "component": true,
   "usingComponents": {
-    "van-dialog": "@vant/weapp/dialog/index"
+    "van-dialog": "@vant/weapp/dialog/index",
+    "mz-button": "/components/mz-button3/index"
   },
   "navigationStyle": "custom"
 }

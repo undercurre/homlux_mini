@@ -90,8 +90,7 @@ ComponentWithComputed({
   },
 
   methods: {
-    handleTouchStart(e: WechatMiniprogram.TouchEvent) {
-      this.triggerEvent('touchstart', e)
+    handleTouchStart() {
       if (wx.vibrateShort) wx.vibrateShort({ type: 'light' })
 
       // 预留逻辑，暂时未被调用

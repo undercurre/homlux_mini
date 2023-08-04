@@ -1,24 +1,18 @@
-// package-mine/hoom-manage/index.ts
-import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { homeBinding, userBinding } from '../../store/index'
+import { fanLight } from '../devices'
 
 ComponentWithComputed({
   options: {
     addGlobalClass: true,
   },
-  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, userBinding] }), pageBehaviors],
+  behaviors: [pageBehaviors],
 
   /**
    * 页面的初始数据
    */
   data: {
-    urls: {
-      duerIntro: '/package-mine/guideline/index?type=duerVoice',
-      miIntro: '/package-mine/guideline/index?type=miVoice',
-    },
-    btnImage: '/assets/img/automation/stopwatch.png',
+    device: { ...fanLight },
   },
 
   computed: {},
@@ -30,5 +24,9 @@ ComponentWithComputed({
     detached: function () {},
   },
 
-  methods: {},
+  methods: {
+    upTap(e: WechatMiniprogram.TouchEvent) {
+      console.log('upTap', e.target.dataset.key)
+    },
+  },
 })

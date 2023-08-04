@@ -32,10 +32,7 @@
         </view>
       </view>
       <view slot="right-icon" class="flex-col-center">
-        <view class="h-80rpx flex-center bg-hex-eff0f3 rounded-40rpx px-20rpx">
-          <image src="/assets/img/base/power-stroke.png" class="w-48rpx h-48rpx" />
-          <text class="w-80rpx text-24rpx ml-16rpx">小夜灯</text>
-        </view>
+        <mz-button icon="/assets/img/base/power-stroke.png" iconActive="/assets/img/base/power-stroke2.png" text="小夜灯"></mz-button>
       </view>
     </van-cell>
   </van-cell-group>
@@ -61,10 +58,7 @@
         </view>
       </view>
       <view slot="right-icon" class="flex-col-center">
-        <view class="h-80rpx flex-center bg-hex-eff0f3 rounded-40rpx px-20rpx">
-          <image src="/assets/img/base/power-stroke.png" class="w-48rpx h-48rpx" />
-          <text class="w-80rpx text-24rpx ml-16rpx">照明</text>
-        </view>
+        <mz-button icon="/assets/img/base/power-stroke.png" iconActive="/assets/img/base/power-stroke2.png" text="照明"></mz-button>
       </view>
     </van-cell>
   </van-cell-group>

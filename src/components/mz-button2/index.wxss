@@ -1,6 +1,6 @@
 .icon-wrapper {
   position: relative;
-  width:  96rpx;
+  width: 96rpx;
   height: 96rpx;
   border-radius: 48rpx;
   background-color: #f1f5fa;
