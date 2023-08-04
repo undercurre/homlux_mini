@@ -70,10 +70,7 @@ export const bleDevicesStore = observable({
     wx.startBluetoothDevicesDiscovery({
       allowDuplicatesKey: true,
       powerLevel: 'high',
-      interval: 3000,
-      success(res) {
-        Logger.log('startBluetoothDevicesDiscovery', res)
-      },
+      interval: 5000,
     })
   },
 
@@ -113,7 +110,7 @@ export const bleDevicesStore = observable({
         wx.startBluetoothDevicesDiscovery({
           allowDuplicatesKey: true,
           powerLevel: 'high',
-          interval: 3000,
+          interval: 5000,
         })
       }
     })
@@ -129,7 +126,6 @@ export const bleDevicesStore = observable({
    * 节流更新蓝牙设备列表，根据实际业务场景使用
    */
   updateBleDeviceListThrottle: throttle(() => {
-    Logger.debug('updateBleDeviceListThrottle')
     bleDevicesStore.updateBleDeviceList()
   }, 5000),
 

@@ -107,9 +107,6 @@ ComponentWithComputed({
   lifetimes: {
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
     async ready() {
-      this.setUpdatePerformanceListener({ withDataPaths: true }, (res) => {
-        Logger.debug('setUpdatePerformanceListener', res)
-      })
       // 开始配子设备后，侧滑离开当前页面时，重置发现的蓝牙设备列表的状态，以免返回扫码页重进当前页面时状态不对
       bleDevicesStore.bleDeviceList.forEach((item) => {
         item.isChecked = false
