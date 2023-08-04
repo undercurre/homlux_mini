@@ -16,7 +16,7 @@
   </view>
 
   <van-cell-group inset>
-    <van-cell clickable bind:tap="handleCardTap">
+    <van-cell clickable bind:tap="handleCardTap" data-sn8="7909AC81">
       <view class="flex item-center">
         <view class="w-96rpx h-96rpx bg-hex-F6FAFD rounded-999 flex-center">
           <image src="{{item.pic}}" class="w-72rpx h-72rpx" />
@@ -42,7 +42,7 @@
   </view>
 
   <van-cell-group inset wx:for="{{[0, 1, 2, 3, 4, 5, 6, 7]}}" wx:key="index">
-    <van-cell clickable bind:tap="handleCardTap">
+    <van-cell clickable bind:tap="handleCardTap" data-sn8="7909AC82">
       <view class="flex item-center">
         <view class="w-96rpx h-96rpx bg-hex-F6FAFD rounded-999 flex-center">
           <image src="{{item.pic}}" class="w-72rpx h-72rpx" />

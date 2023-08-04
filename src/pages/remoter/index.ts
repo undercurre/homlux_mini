@@ -150,9 +150,13 @@ Component({
       }
     },
 
-    handleCardTap() {
+    handleCardTap(e: WechatMiniprogram.TouchEvent) {
+      const { sn8 } = e.currentTarget.dataset
+      if (!sn8) {
+        return
+      }
       wx.navigateTo({
-        url: '/package-remoter/pannel/index',
+        url: `/package-remoter/pannel/index?sn8=${sn8}`
       })
     },
   },

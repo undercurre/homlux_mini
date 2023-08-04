@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { fanLight } from '../devices'
+import { deviceConfig, sn8ToType } from '../devices'
 
 ComponentWithComputed({
   options: {
@@ -12,7 +12,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
-    device: { ...fanLight },
+    device: {} as IAnyObject,
   },
 
   computed: {},
@@ -25,6 +25,14 @@ ComponentWithComputed({
   },
 
   methods: {
+    async onLoad(query: { sn8: string }) {
+      const { sn8 } = query
+      const deviceType = sn8ToType[sn8]
+      this.setData({
+        device: { ...deviceConfig[deviceType] },
+      })
+    },
+
     upTap(e: WechatMiniprogram.TouchEvent) {
       console.log('upTap', e.target.dataset.key)
     },
