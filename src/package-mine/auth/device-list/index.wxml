@@ -20,12 +20,14 @@
     </scroll-view>
   </view>
 
-  <view class="text-center py-32rpx" bindtap="debindMeiju">
+  <view class="list-bottom-placeholder"> </view>
+</view>
+
+<view class="fixed bottom-0 flex flex-col pt-30rpx w-750rpx px-32rpx box-border z-400" style="height: calc(212rpx + env(safe-area-inset-bottom))">
+  <view class="text-center pb-32rpx" bindtap="debindMeiju">
     <text class="text-32rpx text-hex-555659">解除绑定</text>
   </view>
-  <van-button class="mx-24rpx" size="large" type="primary" block bind:click="goBackHome">返回首页</van-button>
-
-  <view class="list-bottom-placeholder"> </view>
+  <van-button class="w-full" size="large" type="primary" block bind:click="goBackHome">返回首页</van-button>
 </view>
 
 <van-toast id="van-toast" />
