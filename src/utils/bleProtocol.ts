@@ -375,8 +375,6 @@ export const bleUtil = {
     const msgStr = strUtil.ab2hex(advertisData)
     const macStr = msgStr.substr(6, 16)
 
-    Logger.debug('transferBroadcastData', msgStr)
-
     let arr = []
 
     for (let i = 0; i < macStr.length; i = i + 2) {

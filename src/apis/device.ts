@@ -510,7 +510,6 @@ export async function checkDevice(
     dsn?: string
     mac?: string
     productId?: string
-    mzgdBluetoothVoList?: { proType: string; bluetoothPid: string; mac: string }[]
   },
   options?: { loading?: boolean },
 ) {
@@ -518,6 +517,49 @@ export async function checkDevice(
     log: true,
     loading: options?.loading ?? false,
     url: '/v1/device/checkDevice',
+    data,
+  })
+}
+
+/**
+ * 批量校验设备的mac
+ */
+export async function batchCheckDevice(
+  data: {
+    deviceCheckSubDeviceVoList: { mac: string }[]
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<Device.MzgdProTypeDTO[]>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/batchCheckDevice',
+    data,
+  })
+}
+
+/**
+ * 批量设备的基本产品信息
+ */
+export async function batchGetProductInfoByBPid(
+  data: {
+    mzgdBluetoothVoList: { proType: string; bluetoothPid: string }[]
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<
+    {
+      proType: string
+      bluetoothPid: string
+      productIcon: string
+      productName: string
+      modelId: string
+      switchNum: number
+    }[]
+  >({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/batchGetProductInfoByBPid',
     data,
   })
 }

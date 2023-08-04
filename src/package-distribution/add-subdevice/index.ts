@@ -3,7 +3,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
 import { bleUtil, strUtil, BleClient, getCurrentPageParams, emitter, Logger } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { sendCmdAddSubdevice, bindDevice, isDeviceOnline } from '../../apis/index'
+import { sendCmdAddSubdevice, bindDevice, isDeviceOnline, batchGetProductInfoByBPid } from '../../apis/index'
 import { IBleDevice } from './typings'
 import dayjs from 'dayjs'
 
@@ -30,12 +30,9 @@ ComponentWithComputed({
 
   lifetimes: {
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
-    ready: function () {
+    ready: async function () {
       const pageParams = getCurrentPageParams()
       console.log('pageParams', pageParams)
-
-      pageParams.deviceName = pageParams.deviceName || '子设备'
-      pageParams.deviceIcon = pageParams.deviceIcon || ''
 
       this.setData({
         pageParams,
@@ -140,6 +137,32 @@ ComponentWithComputed({
       console.log('Device Found', device, msgObj)
 
       wx.stopBluetoothDevicesDiscovery()
+
+      const productInfoRes = await batchGetProductInfoByBPid({
+        mzgdBluetoothVoList: [{ proType: msgObj.proType, bluetoothPid: msgObj.bluetoothPid }],
+      })
+
+      if (!productInfoRes.success && productInfoRes.result.length) {
+        this.setData({
+          status: 'error',
+        })
+        return
+      }
+
+      const { proType, modelId, productName, productIcon } = productInfoRes.result[0]
+
+      wx.reportEvent('add_device', {
+        pro_type: proType,
+        model_id: modelId,
+        add_type: 'qrcode',
+      })
+
+      this.setData({
+        'pageParams.deviceName': productName,
+        'pageParams.deviceIcon': productIcon,
+        'pageParams.modelId': modelId,
+        'pageParams.proType': proType,
+      })
 
       const bleDevice: IBleDevice = {
         deviceUuid: device.deviceId,

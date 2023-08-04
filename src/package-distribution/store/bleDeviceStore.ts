@@ -1,9 +1,19 @@
 import { observable, runInAction } from 'mobx-miniprogram'
-import { BleClient, unique, bleUtil, Logger } from '../../utils/index'
+import { BleClient, bleUtil, Logger, throttle } from '../../utils/index'
 import { roomBinding, deviceBinding } from '../../store/index'
-import { checkDevice } from '../../apis/index'
+import { batchCheckDevice, batchGetProductInfoByBPid } from '../../apis/index'
 
 let _foundList = [] as IBleBaseInfo[]
+
+// 缓存的产品信息
+const productInfoMap: {
+  [x: string]: {
+    productIcon: string
+    productName: string
+    modelId: string
+    switchNum: number
+  }
+} = {}
 
 export const bleDevicesStore = observable({
   available: false, // 是否打开蓝牙开关
@@ -25,8 +35,6 @@ export const bleDevicesStore = observable({
     })
     // 监听扫描到新设备事件, 安卓 6.0 及以上版本，无定位权限或定位开关未打开时，无法进行设备搜索
     wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
-      res.devices = unique(res.devices, 'deviceId') as WechatMiniprogram.BlueToothDevice[] // 去重
-
       const deviceList = res.devices
         .filter((item) => {
           const foundItem = bleDevicesStore.bleDeviceList.find((foundItem) => foundItem.deviceUuid === item.deviceId)
@@ -36,10 +44,6 @@ export const bleDevicesStore = observable({
             foundItem.RSSI = baseInfo.RSSI
             foundItem.signal = baseInfo.signal
             foundItem.isConfig = baseInfo.isConfig
-
-            runInAction(() => {
-              bleDevicesStore.bleDeviceList = bleDevicesStore.bleDeviceList.concat([])
-            })
           }
           // localName为homlux_ble且过滤【已经显示在列表的】、【蓝牙信号值低于-80】的设备
           return item.localName && item.localName.includes('homlux_ble') && !foundItem && item.RSSI > -80
@@ -51,10 +55,8 @@ export const bleDevicesStore = observable({
             (foundItem) => foundItem.deviceUuid === item.deviceUuid && foundItem.isConfig === item.isConfig,
           )
         })
-      // 过滤已经配网的设备
-      // 设备网络状态 0x00：未入网   0x01：正在入网   0x02:  已经入网
-      // 但由于丢包情况，设备本地状态不可靠，需要查询云端是否存在该设备的绑定状态（是否存在家庭绑定关系）结合判断是否真正配网
 
+      this.updateBleDeviceListThrottle()
       if (deviceList.length <= 0) {
         return
       }
@@ -70,7 +72,7 @@ export const bleDevicesStore = observable({
       powerLevel: 'high',
       interval: 3000,
       success(res) {
-        Logger.log('startBluetoothDevicesDiscovery, allowDuplicatesKey: true', res)
+        Logger.log('startBluetoothDevicesDiscovery', res)
       },
     })
   },
@@ -123,6 +125,14 @@ export const bleDevicesStore = observable({
     })
   },
 
+  /**
+   * 节流更新蓝牙设备列表，根据实际业务场景使用
+   */
+  updateBleDeviceListThrottle: throttle(() => {
+    Logger.debug('updateBleDeviceListThrottle')
+    bleDevicesStore.updateBleDeviceList()
+  }, 5000),
+
   // 清除缓存信息
   clearCache() {
     _foundList = []
@@ -137,8 +147,6 @@ export const bleDevicesBinding = {
 
 function getBleDeviceBaseInfo(bleDevice: WechatMiniprogram.BlueToothDevice): IBleBaseInfo {
   const msgObj = bleUtil.transferBroadcastData(bleDevice.advertisData)
-
-  Logger.debug('getBleDeviceBaseInfo', msgObj)
 
   const { RSSI } = bleDevice
   const signal = getSignalFlag(RSSI)
@@ -156,27 +164,77 @@ function getSignalFlag(RSSI: number) {
 }
 
 async function checkBleDeviceList(list: IBleBaseInfo[]) {
-  const infoRes = await checkDevice({
-    mzgdBluetoothVoList: list.map((item) => ({
+  const checkRes = await batchCheckDevice({
+    deviceCheckSubDeviceVoList: list.map((item) => ({
       mac: item.zigbeeMac,
-      proType: item.proType,
-      bluetoothPid: item.bluetoothPid,
     })),
   })
 
-  if (!infoRes.success) {
-    Logger.error(`设备${list.map((item) => item.zigbeeMac)}云端不存在注册记录`)
+  if (!checkRes.success) {
     return
   }
 
-  list.forEach((item) => {
+  const inValidList = checkRes.result.filter((item) => !item.isValid).map((item) => item.mac)
+
+  inValidList.length && Logger.debug('设备云端不存在注册记录：', inValidList)
+
+  // 合法设备列表
+  const validDeviceList = list.filter((item) => {
+    const isValid = checkRes.result.findIndex((checkItem) => item.zigbeeMac === checkItem.mac && checkItem.isValid) >= 0
+
+    return isValid
+  })
+
+  // 判断是否存在合法的设备
+  if (validDeviceList.length === 0) {
+    return
+  }
+
+  // 待查询的产品信息 id列表
+  const needQueryList: { proType: string; bluetoothPid: string }[] = []
+
+  validDeviceList.forEach((item) => {
+    const isInNeedList =
+      needQueryList.findIndex(
+        (needItem) => item.proType === needItem.proType && item.bluetoothPid === needItem.bluetoothPid,
+      ) >= 0
+
+    // 剔除已存在缓存的产品id和已经存在待查询列表的数据
+    if (!productInfoMap[`${item.proType}${item.bluetoothPid}`] && !isInNeedList) {
+      needQueryList.push({ proType: item.proType, bluetoothPid: item.bluetoothPid })
+    }
+  })
+
+  if (needQueryList.length) {
+    const queryListRes = await batchGetProductInfoByBPid({
+      mzgdBluetoothVoList: needQueryList,
+    })
+
+    if (!queryListRes.success) {
+      return
+    }
+
+    // 缓存查询回来的产品信息数据，重复使用
+    queryListRes.result.forEach((item) => {
+      productInfoMap[`${item.proType}${item.bluetoothPid}`] = {
+        productIcon: item.productIcon,
+        productName: item.productName,
+        switchNum: item.switchNum,
+        modelId: item.modelId,
+      }
+    })
+  }
+
+  validDeviceList.forEach((item) => {
+    const productInfo = productInfoMap[`${item.proType}${item.bluetoothPid}`]
+
     handleBleDeviceInfo({
       ...item,
-      productName: '',
+      productName: productInfo.productName,
       roomId: '',
-      switchNum: 0,
-      modelId: '',
-      productIcon: '',
+      switchNum: productInfo.switchNum,
+      modelId: productInfo.modelId,
+      productIcon: productInfo.productIcon,
     })
   })
 
@@ -196,6 +254,10 @@ function handleBleDeviceInfo(
 ) {
   let { productName: deviceName } = deviceInfo
   const { deviceUuid, mac, roomId, isConfig, zigbeeMac, proType, switchNum, modelId, productIcon } = deviceInfo
+
+  // 过滤已经配网的设备
+  // 设备网络状态 0x00：未入网   0x01：正在入网   0x02:  已经入网
+  // 但由于丢包情况，设备本地状态不可靠，需要查询云端是否存在该设备的绑定状态（是否存在家庭绑定关系）结合判断是否真正配网
   // 1、存在接口查询过程，过滤期间重复添加的设备
   // 2、过滤云端存在房间绑定关系且设备本地状态为02(已绑定状态)的设备
   if (

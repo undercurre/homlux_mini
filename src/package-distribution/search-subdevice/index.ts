@@ -4,7 +4,7 @@ import { runInAction } from 'mobx-miniprogram'
 import Toast from '@vant/weapp/toast/toast'
 import { homeBinding, roomBinding, homeStore, deviceStore } from '../../store/index'
 import { bleDevicesBinding, bleDevicesStore } from '../store/bleDeviceStore'
-import { getCurrentPageParams, emitter, Logger, throttle } from '../../utils/index'
+import { getCurrentPageParams, emitter, Logger } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { getUnbindSensor, sendCmdAddSubdevice, bindDevice, batchUpdate, isDeviceOnline } from '../../apis/index'
 import lottie from 'lottie-miniprogram'
@@ -107,13 +107,16 @@ ComponentWithComputed({
   lifetimes: {
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
     async ready() {
+      this.setUpdatePerformanceListener({ withDataPaths: true }, (res) => {
+        Logger.debug('setUpdatePerformanceListener', res)
+      })
       // 开始配子设备后，侧滑离开当前页面时，重置发现的蓝牙设备列表的状态，以免返回扫码页重进当前页面时状态不对
       bleDevicesStore.bleDeviceList.forEach((item) => {
         item.isChecked = false
         item.status = 'waiting'
       })
 
-      this.data._bleTaskQueue = new PromiseQueue({ concurrency: 2 })
+      this.data._bleTaskQueue = new PromiseQueue({ concurrency: 3 })
       this.data._zigbeeTaskQueue = new PromiseQueue({ concurrency: 6 })
 
       bleDevicesStore.updateBleDeviceList()
@@ -302,15 +305,8 @@ ComponentWithComputed({
         }
       }
 
-      this.updateBleDeviceListThrottle()
+      bleDevicesStore.updateBleDeviceListThrottle()
     },
-
-    /**
-     * 节流更新蓝牙设备列表，根据实际业务场景使用
-     */
-    updateBleDeviceListThrottle: throttle(() => {
-      bleDevicesStore.updateBleDeviceList()
-    }, 3000),
 
     /**
      * @description 网关进入配网模式

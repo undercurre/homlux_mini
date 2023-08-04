@@ -10,7 +10,7 @@ export * from './auth'
 export async function login(data: object) {
   return await mzaioRequest.post<User.UserLoginRes>({
     log: true,
-    loading: true,
+    loading: false,
     url: '/v1/mzgdApi/auth/mzgd/login',
     data,
   })
