@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "edit-name-popup": "./components/edit-name-popup/index"
+  }
+}

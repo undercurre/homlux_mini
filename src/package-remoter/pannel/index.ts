@@ -36,5 +36,11 @@ ComponentWithComputed({
     upTap(e: WechatMiniprogram.TouchEvent) {
       console.log('upTap', e.target.dataset.key)
     },
+
+    toSetting() {
+      wx.navigateTo({
+        url: '/package-remoter/setting/index'
+      })
+    }
   },
 })

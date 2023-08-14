@@ -58,7 +58,7 @@
     },
     {
       "root": "package-remoter",
-      "pages": ["pannel/index"]
+      "pages": ["pannel/index", "setting/index"]
     }
   ],
   "preloadRule": {
