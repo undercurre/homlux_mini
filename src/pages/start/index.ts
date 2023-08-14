@@ -9,6 +9,10 @@ ComponentWithComputed({
   data: {
     checkImg: '/assets/img/base/check.png',
     uncheckImg: '/assets/img/base/uncheck.png',
+    shots: {
+      img0: '/assets/img/remoter/shot0.png',
+      img1: '/assets/img/remoter/shot1.png'
+    },
     defaultPage: '',
     prevPages: 0,
   },

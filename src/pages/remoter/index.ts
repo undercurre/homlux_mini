@@ -16,6 +16,8 @@ Component({
       (storage.get<number>('statusBarHeight') as number) -
       (storage.get<number>('bottomBarHeight') as number) - // IPX
       (storage.get<number>('navigationBarHeight') as number),
+    showTips: false, // 首次进入显示操作提示
+    tipsStep: 0,
   },
 
   lifetimes: {
@@ -37,6 +39,16 @@ Component({
   },
 
   methods: {
+    onLoad() {
+      // 是否点击过场景使用提示的我知道了，如果没点击过就显示
+      const hasConfirmRemoterTips = storage.get<boolean>('hasConfirmRemoterTips')
+      console.log({ hasConfirmRemoterTips })
+      if (!hasConfirmRemoterTips) {
+        this.setData({
+          showTips: true,
+        })
+      }
+    },
     /**
      * @description 初始化蓝牙模块
      * TODO 目前只检查权限，未实质打开服务
@@ -157,6 +169,20 @@ Component({
       }
       wx.navigateTo({
         url: `/package-remoter/pannel/index?sn8=${sn8}`,
+      })
+    },
+    cancelTips() {
+      this.setData({
+        showTips: false,
+      })
+      storage.set('hasConfirmRemoterTips', true)
+    },
+    nextTips() {
+      if (this.data.tipsStep === 1) {
+        this.cancelTips()
+      }
+      this.setData({
+        tipsStep: this.data.tipsStep + 1,
       })
     },
   },

@@ -3,7 +3,7 @@
 <nav-bar left-arrow="{{prevPages >= 2}}" bind:leftTap="goBack"></nav-bar>
 
 <view wx:if="{{needSettingPage}}" class="flex-col-center w-750rpx mt-36rpx">
-  <view class="w-686rpx select-box rounded-55rpx flex-col-center relative" catchtap="handleCardTap" bind:longpress="handleLongPress">
+  <view class="w-686rpx select-box rounded-55rpx flex-col-center relative">
     <view>
       <text class="text-40rpx font-semibold">选择默认主页</text>
     </view>
@@ -14,11 +14,11 @@
 
     <view class="flex flex-row center mt-50rpx">
       <van-checkbox use-icon-slot bind:change="onChange" label-position="left" data-page="index" custom-class="pic-check">
-        <view class="rounded-32rpx shot">首页</view>
+        <image class="rounded-32rpx shot" src="{{ shots.img0 }}" />
         <image class="h-32rpx w-32rpx mt-48rpx" slot="icon" src="{{ defaultPage === 'index' ? checkImg : uncheckImg }}" />
       </van-checkbox>
       <van-checkbox use-icon-slot bind:change="onChange" label-position="left" data-page="remoter" custom-class="pic-check">
-        <view class="rounded-32rpx shot">遥控器</view>
+        <image class="rounded-32rpx shot" src="{{ shots.img1 }}" />
         <image class="h-32rpx w-32rpx mt-48rpx" slot="icon" src="{{ defaultPage === 'remoter' ? checkImg : uncheckImg }}" />
       </van-checkbox>
     </view>
