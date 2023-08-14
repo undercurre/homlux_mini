@@ -6,7 +6,6 @@
 }
 
 .shot {
-  border: 4rpx solid #ddd;
   overflow: hidden;
   width: 264rpx;
   height: 570rpx;

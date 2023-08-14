@@ -1,4 +1,4 @@
 .image-intro {
   width: 702rpx;
-  height: 1824rpx;
+  height: auto;
 }

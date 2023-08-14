@@ -70,12 +70,12 @@
   <view class="list-bottom-placeholder"> </view>
 </scroll-view>
 
-<!-- 场景卡片使用提示 -->
+<!-- 新手使用提示 -->
 <view wx:if="{{showTips && tipsStep === 1}}" class="tips-step-popup">
   <image src="/assets/img/remoter/step-popup.png" class="w-full h-full"></image>
 </view>
-<view wx:if="{{showTips}}" class="tips-bg pt-100rpx">
-  <view class="tips-btn ml-24rpx flex-col-center" bind:tap="cancelTips">
+<view wx:if="{{showTips}}" class="tips-bg">
+  <view class="tips-btn ml-24rpx flex-col-center" style="margin-top: {{statusBarHeight}}px;" bind:tap="cancelTips">
     <text class="text-26rpx text-white">退出引导</text>
   </view>
   <block wx:if="{{tipsStep === 0}}">

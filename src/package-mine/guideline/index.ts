@@ -1,6 +1,9 @@
-// package-mine/hoom-manage/index.ts
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
+import { storage } from '../../utils/index'
+
+// 设备类型
+const system = (storage.get<string>('system') as string).toLocaleLowerCase().indexOf('ios') > -1 ? 'ios' : 'android'
 
 ComponentWithComputed({
   options: {
@@ -15,8 +18,7 @@ ComponentWithComputed({
     url: {
       duerVoice: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/intro.png',
       miVoice: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/aIntro.png',
-      // TODO
-      bleEnable: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/aIntro.png',
+      bleEnable: `https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/ble-${system}.png`,
     },
     showImg: '',
   },

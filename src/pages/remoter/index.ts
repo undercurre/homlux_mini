@@ -11,6 +11,7 @@ Component({
     isWxBlePermit: false, // 微信蓝牙权限是否开启
     isSystemBlePermit: false, // 系统蓝牙权限是否开启
     _listenLocationTimeId: 0, // 监听系统位置信息是否打开的计时器， 0为不存在监听
+    statusBarHeight: storage.get<number>('statusBarHeight') as number,
     scrollViewHeight:
       (storage.get<number>('windowHeight') as number) -
       (storage.get<number>('statusBarHeight') as number) -
