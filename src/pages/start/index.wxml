@@ -7,7 +7,7 @@
     <view>
       <text class="text-40rpx font-semibold">选择默认主页</text>
     </view>
-    
+
     <view class="mt-50rpx text-center">
       <text class="text-24rpx text-hex-a2a2a2">{{'该选择不影响您后续的操作，您可以\n在“默认主页”中更改主页的设定'}}</text>
     </view>
