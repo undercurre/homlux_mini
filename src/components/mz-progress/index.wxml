@@ -5,7 +5,7 @@
     <view wx:for="{{stepList}}" wx:key="text" class="flex flex-row items-center justify-between text-28 text-black-tips leading-40rpx pb-40rpx relative">
       <text class="{{ index <= activeIndex && 'text-black-59'}}">{{item.text}}</text>
 
-      <image class="absolute -right-180rpx w-32 h-32 {{index > activeIndex && 'opacity-0' }}" src="/assets/img/base/{{ index === activeIndex ? 'loading' : 'check'}}.png"></image>
+      <image class="absolute -right-64rpx w-32 h-32 {{index > activeIndex && 'opacity-0' }}" src="/assets/img/base/{{ index === activeIndex ? 'loading' : 'check'}}.png"></image>
     </view>
   </view>
 </view>
