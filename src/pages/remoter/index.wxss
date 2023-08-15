@@ -17,10 +17,6 @@ page {
   height: calc(env(safe-area-inset-bottom) + 32rpx);
 }
 
-.van-button__loading-text {
-  color: #666;
-}
-
 .tips-btn {
   border-radius: 32rpx;
   width: 160rpx;
@@ -71,4 +67,23 @@ page {
   margin-left: auto;
   margin-right: auto;
   line-height: 1.5;
+}
+
+.large-btn {
+  color: #fff !important;
+  border-radius: 20rpx !important;
+  width: 686rpx;
+  height: 88rpx !important;
+  border: 0;
+  font-size: 36rpx !important;
+  font-weight: 400 !important;
+}
+.large-btn .van-button__loading-text {
+  color: #fff;
+}
+.small-btn {
+  color: #666 !important;
+}
+.small-btn .van-button__loading-text {
+  color: #666;
 }

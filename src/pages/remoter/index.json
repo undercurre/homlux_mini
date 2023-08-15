@@ -1,6 +1,7 @@
 {
   "component": true,
   "usingComponents": {
+    "tips-box": "/components/tips-box/index",
     "van-dialog": "@vant/weapp/dialog/index",
     "mz-button": "/components/mz-button3/index"
   },

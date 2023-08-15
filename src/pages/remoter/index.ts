@@ -19,6 +19,8 @@ Component({
       (storage.get<number>('navigationBarHeight') as number),
     showTips: false, // 首次进入显示操作提示
     tipsStep: 0,
+    isSeeking: false, // 正在搜索设备
+    isNotFound: false, // 已搜索过至少一次但未找到
   },
 
   lifetimes: {
@@ -185,6 +187,18 @@ Component({
       this.setData({
         tipsStep: this.data.tipsStep + 1,
       })
+    },
+    toSeek() {
+      this.setData({
+        isSeeking: true,
+      })
+
+      setTimeout(() => {
+        this.setData({
+          isSeeking: false,
+          isNotFound: !this.data.isNotFound,
+        })
+      }, 3000)
     },
   },
 })

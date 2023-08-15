@@ -39,8 +39,8 @@ ComponentWithComputed({
 
     toSetting() {
       wx.navigateTo({
-        url: '/package-remoter/setting/index'
+        url: '/package-remoter/setting/index',
       })
-    }
+    },
   },
 })
