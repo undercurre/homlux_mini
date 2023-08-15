@@ -571,7 +571,6 @@ ComponentWithComputed({
         })
 
         Dialog.alert({
-          title: this.data.deviceInfo.deviceName,
           showCancelButton: false,
           confirmButtonText: '我知道了',
         })

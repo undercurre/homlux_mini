@@ -550,6 +550,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .items-end{align-items:flex-end;}
 .items-center{align-items:center;}
 .items-stretch{align-items:stretch;}
+.-right-180rpx{right:-180rpx;}
 .bottom-0{bottom:0rpx;}
 .bottom-24rpx{bottom:24rpx;}
 .left-0{left:0rpx;}
