@@ -37,7 +37,9 @@
         "voice-control/index",
         "guideline/index",
         "device-category/index",
-        "automation/index"
+        "automation/index",
+        "help/list/index",
+        "help/show/index"
       ]
     },
     {

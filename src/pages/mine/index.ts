@@ -33,6 +33,7 @@ Component({
       ota: '/package-mine/ota/index',
       deviceReplace: '/package-mine/device-replace/index',
       feedback: '/package-mine/feedback/index',
+      help: '/package-mine/help/list/index',
       about: '/package-protocol/protocol-list/index',
       deviceCategory: '/package-mine/device-category/index',
       defaultPageSetting: '/pages/start/index',
@@ -61,12 +62,6 @@ Component({
 
       wx.navigateTo({
         url: strUtil.getUrlWithParams(url, param === undefined ? {} : { param }),
-      })
-    },
-    toPageWithLogin(e: { currentTarget: { dataset: { url: string } } }) {
-      const { url } = e.currentTarget.dataset
-      wx.navigateTo({
-        url,
       })
     },
 

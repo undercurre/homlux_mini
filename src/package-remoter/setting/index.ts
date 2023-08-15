@@ -77,8 +77,8 @@ ComponentWithComputed({
         title: '确定删除该设备？',
       }).then(async () => {
         // if (true) {
-          Toast('删除成功')
-          wx.navigateBack()
+        Toast('删除成功')
+        wx.navigateBack()
         // } else {
         //   Toast('删除失败')
         // }
@@ -89,8 +89,8 @@ ComponentWithComputed({
         title: '确认解除实体遥控器与当前设备的配对关系？',
       }).then(async () => {
         // if (true) {
-          Toast('解绑成功')
-          wx.navigateBack()
+        Toast('解绑成功')
+        wx.navigateBack()
         // } else {
         //   Toast('解绑失败')
         // }
