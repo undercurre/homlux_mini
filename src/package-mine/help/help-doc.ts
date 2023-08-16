@@ -9,7 +9,6 @@ export const helpList = [
   },
 ]
 
-
 export const remoterHelp = `
 <p style="font-size:16px;font-weight: 600; line-height: 2;">
 1、 设备是否需要联网？

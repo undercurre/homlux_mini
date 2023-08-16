@@ -1,6 +1,7 @@
 import pageBehavior from '../../behaviors/pageBehaviors'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { isAndroid, Logger, checkWxBlePermission, storage } from '../../utils/index'
+// import { deviceConfig, sn8ToType } from '../../config/remoter'
 
 Component({
   behaviors: [pageBehavior],
@@ -21,6 +22,66 @@ Component({
     tipsStep: 0,
     isSeeking: false, // 正在搜索设备
     isNotFound: false, // 已搜索过至少一次但未找到
+    foundList: [
+      {
+        devicePic: '/assets/img/remoter/ceilLight.png',
+        deviceName: '吸顶灯',
+        sn8: '7909AC81',
+        switchStatus: 'off',
+        switchType: '小夜灯',
+      },
+    ], // 搜索到的设备
+    deviceList: [
+      {
+        devicePic: '/assets/img/remoter/fanLight.png',
+        deviceName: '风扇灯',
+        sn8: '7909AC82',
+        switchStatus: 'on',
+        switchType: '照明',
+      },
+      {
+        devicePic: '/assets/img/remoter/bathHeater.png',
+        deviceName: '浴霸',
+        sn8: '7909AC83',
+        switchStatus: 'on',
+        switchType: '小夜灯',
+      },
+      {
+        devicePic: '/assets/img/remoter/fanLight.png',
+        deviceName: '风扇灯',
+        sn8: '7909AC82',
+        switchStatus: 'on',
+        switchType: '照明',
+      },
+      {
+        devicePic: '/assets/img/remoter/fanLight.png',
+        deviceName: '风扇灯',
+        sn8: '7909AC82',
+        switchStatus: 'on',
+        switchType: '照明',
+      },
+      {
+        devicePic: '/assets/img/remoter/fanLight.png',
+        deviceName: '风扇灯',
+        sn8: '7909AC82',
+        switchStatus: 'on',
+        switchType: '照明',
+      },
+      {
+        devicePic: '/assets/img/remoter/fanLight.png',
+        deviceName: '风扇灯',
+        sn8: '7909AC82',
+        switchStatus: 'on',
+        switchType: '照明',
+      },
+      {
+        devicePic: '/assets/img/remoter/fanLight.png',
+        deviceName: '风扇灯',
+        sn8: '7909AC82',
+        switchStatus: 'on',
+        switchType: '照明',
+      },
+    ], // 我的设备
   },
 
   lifetimes: {

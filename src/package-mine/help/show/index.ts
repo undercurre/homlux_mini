@@ -26,8 +26,8 @@ ComponentWithComputed({
     homLuxHelp: {
       dev: 'https://test.meizgd.com/homlux',
       sit: 'https://test.meizgd.com/homlux',
-      prod: 'https://mzaio.meizgd.com/homlux'
-    }
+      prod: 'https://mzaio.meizgd.com/homlux',
+    },
   },
   computed: {
     webviewSrc(data) {
@@ -42,7 +42,7 @@ ComponentWithComputed({
     onLoad(e: { page: string }) {
       console.log(e)
       this.setData({
-        helpType: e.page
+        helpType: e.page,
       })
       const help = helpList.find((h) => h.value === e.page)
       if (help) {

@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { deviceConfig, sn8ToType } from '../devices'
+import { deviceConfig, sn8ToType } from '../../config/remoter'
 
 ComponentWithComputed({
   options: {

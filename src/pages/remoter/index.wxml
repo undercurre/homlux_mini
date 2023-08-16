@@ -48,14 +48,14 @@
   </view>
 
   <van-cell-group inset>
-    <van-cell clickable bind:tap="handleCardTap" data-sn8="7909AC81">
+    <van-cell wx:for="{{foundList}}" wx:key="index" clickable bind:tap="handleCardTap" data-sn8="{{item.sn8}}">
       <view class="flex item-center">
         <view class="w-96rpx h-96rpx bg-hex-F6FAFD rounded-999 flex-center">
-          <image src="{{item.pic}}" class="w-72rpx h-72rpx" />
+          <image src="{{item.devicePic}}" class="w-72rpx h-72rpx" />
         </view>
         <view class="h-96rpx flex flex-col justify-center items-start ml-32rpx">
           <view class="flex flex-row flex-center">
-            <text class="text-black-2a text-32rpx">吸顶灯</text>
+            <text class="text-black-2a text-32rpx">{{item.deviceName}}</text>
             <image src="/assets/img/base/bleOn.png" class="w-30 h-40 ml-16rpx" />
           </view>
           <view>
@@ -64,7 +64,7 @@
         </view>
       </view>
       <view slot="right-icon" class="flex-col-center">
-        <mz-button icon="/assets/img/base/power-stroke.png" iconActive="/assets/img/base/power-stroke2.png" text="小夜灯"></mz-button>
+        <mz-button icon="/assets/img/base/power-stroke.png" iconActive="/assets/img/base/power-stroke2.png" text="{{item.switchType}}"></mz-button>
       </view>
     </van-cell>
   </van-cell-group>
@@ -73,24 +73,24 @@
     <text class="ml-24rpx text-hex-6e6f74 text-28">我的设备</text>
   </view>
 
-  <van-cell-group inset wx:for="{{[0, 1, 2, 3, 4, 5, 6, 7]}}" wx:key="index">
-    <van-cell clickable bind:tap="handleCardTap" data-sn8="7909AC82">
+  <van-cell-group inset wx:for="{{deviceList}}" wx:key="index">
+    <van-cell clickable bind:tap="handleCardTap" data-sn8="{{item.sn8}}">
       <view class="flex item-center">
         <view class="w-96rpx h-96rpx bg-hex-F6FAFD rounded-999 flex-center">
-          <image src="{{item.pic}}" class="w-72rpx h-72rpx" />
+          <image src="{{item.devicePic}}" class="w-72rpx h-72rpx" />
         </view>
         <view class="h-96rpx flex flex-col justify-center items-start ml-32rpx">
           <view class="flex flex-row flex-center">
-            <text class="text-black-2a text-32rpx">风扇灯</text>
+            <text class="text-black-2a text-32rpx">{{item.deviceName}}</text>
             <image src="/assets/img/base/bleOn.png" class="w-30 h-40 ml-16rpx" />
           </view>
           <view>
-            <text class="text-black-tips text-28rpx mt-8rpx">照明开启</text>
+            <text class="text-black-tips text-28rpx mt-8rpx">{{item.switchType}}{{item.switchStatus === 'on' ? '开启' : '关闭' }}</text>
           </view>
         </view>
       </view>
       <view slot="right-icon" class="flex-col-center">
-        <mz-button icon="/assets/img/base/power-stroke.png" iconActive="/assets/img/base/power-stroke2.png" text="照明"></mz-button>
+        <mz-button icon="/assets/img/base/power-stroke.png" iconActive="/assets/img/base/power-stroke2.png" text="{{item.switchType}}"></mz-button>
       </view>
     </van-cell>
   </van-cell-group>
