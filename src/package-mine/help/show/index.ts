@@ -1,7 +1,10 @@
 import { storage } from '../../../utils/index'
-import { helpList, homLuxHelp, remoterHelp } from '../help-doc'
+import { helpList, remoterHelp } from '../help-doc'
 import pageBehavior from '../../../behaviors/pageBehaviors'
-Component({
+import { ComponentWithComputed } from 'miniprogram-computed'
+import { getEnv } from '../../../config/index'
+
+ComponentWithComputed({
   behaviors: [pageBehavior],
 
   /**
@@ -18,8 +21,18 @@ Component({
     url: '',
     width: '',
     height: '',
-    homLuxHelp,
-    remoterHelp
+    remoterHelp,
+    helpType: '',
+    homLuxHelp: {
+      dev: 'https://test.meizgd.com/homlux',
+      sit: 'https://test.meizgd.com/homlux',
+      prod: 'https://mzaio.meizgd.com/homlux'
+    }
+  },
+  computed: {
+    webviewSrc(data) {
+      return data.homLuxHelp[getEnv()]
+    },
   },
 
   /**
@@ -28,12 +41,15 @@ Component({
   methods: {
     onLoad(e: { page: string }) {
       console.log(e)
+      this.setData({
+        helpType: e.page
+      })
       const help = helpList.find((h) => h.value === e.page)
       if (help) {
         this.setData({
           title: help.title,
           doc: this.data[help.value],
-          type: 'doc'
+          type: 'doc',
         })
       }
     },

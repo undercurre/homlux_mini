@@ -18,9 +18,10 @@ Component({
    */
   methods: {
     handleTap(e: WechatMiniprogram.TouchEvent) {
+      const helpType = e.currentTarget.dataset.value
       const helpPage = '/package-mine/help/show/index'
       wx.navigateTo({
-        url: `${helpPage}?page=${e.currentTarget.dataset.value}`,
+        url: `${helpPage}?page=${helpType}`,
       })
     },
   },
