@@ -227,7 +227,7 @@ Component({
     },
 
     handleCardTap(e: WechatMiniprogram.TouchEvent) {
-      const { sn8 } = e.currentTarget.dataset
+      const sn8 = e.detail
       if (!sn8) {
         return
       }

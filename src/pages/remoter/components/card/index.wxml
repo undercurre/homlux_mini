@@ -1,0 +1,21 @@
+<van-cell-group inset>
+  <van-cell clickable bind:tap="handleCardTap">
+    <view class="flex item-center">
+      <view class="w-96rpx h-96rpx bg-hex-F6FAFD rounded-999 flex-center">
+        <image src="{{item.devicePic}}" class="w-72rpx h-72rpx" />
+      </view>
+      <view class="h-96rpx flex flex-col justify-center items-start ml-32rpx">
+        <view class="flex flex-row flex-center">
+          <text class="text-black-2a text-32rpx">{{item.deviceName}}</text>
+          <image src="/assets/img/base/bleOn.png" class="w-30 h-40 ml-16rpx" />
+        </view>
+        <view>
+          <text class="text-black-tips text-28rpx mt-8rpx">未连接</text>
+        </view>
+      </view>
+    </view>
+    <view slot="right-icon" class="flex-col-center">
+      <mz-button icon="/assets/img/base/power-stroke.png" iconActive="/assets/img/base/power-stroke2.png" text="{{item.switchType}}"></mz-button>
+    </view>
+  </van-cell>
+</van-cell-group>
