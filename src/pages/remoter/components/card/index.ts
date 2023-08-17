@@ -34,8 +34,7 @@ ComponentWithComputed({
    */
   methods: {
     handleCardTap() {
-      console.log(this.data.item)
-      this.triggerEvent('tap', this.data.item.data?.sn8)
+      this.triggerEvent('cardTap', this.data.device?.sn8)
     },
   },
 })

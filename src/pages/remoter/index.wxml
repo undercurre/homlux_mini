@@ -37,7 +37,7 @@
     <text class="ml-40rpx text-hex-6e6f74 text-28">发现设备</text>
   </view>
 
-  <card wx:for="{{foundList}}" item="{{item}}" wx:key="index" bind:tap="handleCardTap"></card>
+  <card wx:for="{{foundList}}" item="{{item}}" wx:key="index" bind:cardTap="handleCardTap"></card>
 
   <view class="pt-48rpx">
     <text class="ml-40rpx text-hex-6e6f74 text-28">我的设备</text>
