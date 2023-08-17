@@ -86,7 +86,6 @@ Component({
         userStore.setIsLogin(true)
         othersStore.setIsInit(false)
         homeStore.homeInit()
-        autosceneStore.updateAllRoomAutoSceneList()
         wx.switchTab({
           url: '/pages/index/index',
         })

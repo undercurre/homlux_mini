@@ -12,7 +12,8 @@ const accountInfo = wx.getAccountInfoSync()
  * FIXME wx.switchTab 在IOS下会出现中间页面
  */
 export function goHome() {
-  wx.switchTab({ url: '/pages/index/index' })
+  const defaultPage = (storage.get<string>('defaultPage') ?? '') as string
+  wx.switchTab({ url: `/pages/${defaultPage}/index` })
 }
 
 export function setNavigationBarAndBottomBarHeight() {

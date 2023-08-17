@@ -1,5 +1,5 @@
 {
-  "pages": ["pages/index/index", "pages/login/index", "pages/mine/index", "pages/automation/index"],
+  "pages": ["pages/start/index", "pages/index/index", "pages/login/index", "pages/mine/index", "pages/remoter/index"],
   "subpackages": [
     {
       "root": "package-distribution",
@@ -34,8 +34,11 @@
         "device-manage/device-detail/index",
         "device-manage/group-detail/index",
         "voice-control/index",
-        "voice-intro/index",
-        "device-category/index"
+        "guideline/index",
+        "device-category/index",
+        "automation/index",
+        "help/list/index",
+        "help/show/index"
       ]
     },
     {
@@ -53,6 +56,10 @@
     {
       "root": "package-automation",
       "pages": ["automation-log/index", "automation-add/index", "automation-request-list/index"]
+    },
+    {
+      "root": "package-remoter",
+      "pages": ["pannel/index", "setting/index"]
     }
   ],
   "preloadRule": {
@@ -69,8 +76,8 @@
         "text": "首页"
       },
       {
-        "pagePath": "pages/automation/index",
-        "text": "自动化"
+        "pagePath": "pages/remoter/index",
+        "text": "遥控器"
       },
       {
         "pagePath": "pages/mine/index",

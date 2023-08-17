@@ -1,5 +1,7 @@
 import { BehaviorWithComputed } from 'miniprogram-computed'
 import { userRole } from '../config/home'
+import { othersStore } from '../store/index'
+
 export default BehaviorWithComputed({
   methods: {
     /**
@@ -20,8 +22,9 @@ export default BehaviorWithComputed({
      * 返回首页
      */
     goBackHome: function () {
+      const { defaultPage } = othersStore
       wx.switchTab({
-        url: '/pages/index/index',
+        url: `/pages/${defaultPage}/index`,
       })
     },
     /**
