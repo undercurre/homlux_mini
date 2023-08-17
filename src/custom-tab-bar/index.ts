@@ -5,9 +5,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, userBinding } from '../store/index'
 
 ComponentWithComputed({
-  options: {
-    styleIsolation: 'apply-shared',
-  },
+  options: {},
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, userBinding] }), pageBehavior],
 
   /**

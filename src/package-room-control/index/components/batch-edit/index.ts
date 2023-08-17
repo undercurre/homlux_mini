@@ -10,9 +10,7 @@ import { storage, checkInputNameIllegal, emitter, showLoading, hideLoading } fro
 let timeId: number
 
 ComponentWithComputed({
-  options: {
-    styleIsolation: 'apply-shared',
-  },
+  options: {},
 
   behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding, roomBinding] })],
 
@@ -204,7 +202,6 @@ ComponentWithComputed({
               message: '删除成功',
               zIndex: 9999,
             })
-            await Promise.all([deviceStore.updateSubDeviceList(), homeStore.updateRoomCardList()])
             this.triggerEvent('updateList', { isRefresh: true })
             this.handleClose()
           } else {
@@ -347,7 +344,6 @@ ComponentWithComputed({
       if (timeId) {
         clearTimeout(timeId)
       }
-      await Promise.all([deviceStore.updateSubDeviceList(), homeStore.updateRoomCardList()])
       this.triggerEvent('roomMove')
       Toast({
         message: '移动成功',

@@ -3,7 +3,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
 import { bleUtil, strUtil, BleClient, getCurrentPageParams, emitter, Logger } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { sendCmdAddSubdevice, bindDevice, isDeviceOnline } from '../../apis/index'
+import { sendCmdAddSubdevice, bindDevice, isDeviceOnline, batchGetProductInfoByBPid } from '../../apis/index'
 import { IBleDevice } from './typings'
 import dayjs from 'dayjs'
 
@@ -11,7 +11,6 @@ type StatusName = 'linking' | 'error'
 
 ComponentWithComputed({
   options: {
-    addGlobalClass: true,
     pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
   },
 
@@ -31,12 +30,9 @@ ComponentWithComputed({
 
   lifetimes: {
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
-    ready: function () {
+    ready: async function () {
       const pageParams = getCurrentPageParams()
       console.log('pageParams', pageParams)
-
-      pageParams.deviceName = pageParams.deviceName || '子设备'
-      pageParams.deviceIcon = pageParams.deviceIcon || ''
 
       this.setData({
         pageParams,
@@ -44,19 +40,21 @@ ComponentWithComputed({
       this.initBle()
 
       // 扫码子设备，60s超时处理，无论是否发现目标子设备
-      this.data._timeId = setTimeout(() => {
+      this.data._timeId = setTimeout(async () => {
         if (!this.data._hasFound) {
           console.error(`没有发现子设备${this.data.pageParams.mac}`)
         }
 
-        this.setData({
-          status: 'error',
-        })
-
         console.error(`【${this.data.pageParams.mac}】绑定推送监听超时`)
         emitter.off('bind_device')
-        this.queryZigbeeBindStatus()
-      }, 60000)
+        const isBind = await this.queryZigbeeBindStatus()
+
+        if (!isBind) {
+          this.setData({
+            status: 'error',
+          })
+        }
+      }, 70000)
 
       emitter.on('bind_device', (data) => {
         if (data.deviceId === this.data.pageParams.mac) {
@@ -140,6 +138,32 @@ ComponentWithComputed({
 
       wx.stopBluetoothDevicesDiscovery()
 
+      const productInfoRes = await batchGetProductInfoByBPid({
+        mzgdBluetoothVoList: [{ proType: msgObj.proType, bluetoothPid: msgObj.bluetoothPid }],
+      })
+
+      if (!productInfoRes.success && productInfoRes.result.length) {
+        this.setData({
+          status: 'error',
+        })
+        return
+      }
+
+      const { proType, modelId, productName, productIcon } = productInfoRes.result[0]
+
+      wx.reportEvent('add_device', {
+        pro_type: proType,
+        model_id: modelId,
+        add_type: 'qrcode',
+      })
+
+      this.setData({
+        'pageParams.deviceName': productName,
+        'pageParams.deviceIcon': productIcon,
+        'pageParams.modelId': modelId,
+        'pageParams.proType': proType,
+      })
+
       const bleDevice: IBleDevice = {
         deviceUuid: device.deviceId,
         mac: msgObj.mac,
@@ -220,8 +244,11 @@ ComponentWithComputed({
       Logger.log(`【${zigbeeMac}】查询入网状态：${isOnline}`)
 
       if (isOnline) {
+        clearTimeout(this.data._timeId)
         this.bindBleDeviceToClound()
       }
+
+      return isOnline
     },
 
     async startZigbeeNet(bleDevice: IBleDevice) {

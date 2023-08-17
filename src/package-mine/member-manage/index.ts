@@ -8,9 +8,7 @@ import { emitter } from '../../utils/eventBus'
 import { ShareImgUrl } from '../../config/index'
 
 ComponentWithComputed({
-  options: {
-    addGlobalClass: true,
-  },
+  options: {},
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, userBinding] }), pageBehaviors],
 
   /**

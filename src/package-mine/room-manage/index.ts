@@ -6,9 +6,7 @@ import { homeBinding, roomBinding } from '../../store/index'
 import { strUtil } from '../../utils/index'
 
 ComponentWithComputed({
-  options: {
-    addGlobalClass: true,
-  },
+  options: {},
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, roomBinding] }), pageBehaviors],
 
   /**

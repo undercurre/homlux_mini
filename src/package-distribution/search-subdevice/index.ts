@@ -4,7 +4,7 @@ import { runInAction } from 'mobx-miniprogram'
 import Toast from '@vant/weapp/toast/toast'
 import { homeBinding, roomBinding, homeStore, deviceStore } from '../../store/index'
 import { bleDevicesBinding, bleDevicesStore } from '../store/bleDeviceStore'
-import { getCurrentPageParams, emitter, Logger, throttle } from '../../utils/index'
+import { getCurrentPageParams, emitter, Logger } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { getUnbindSensor, sendCmdAddSubdevice, bindDevice, batchUpdate, isDeviceOnline } from '../../apis/index'
 import lottie from 'lottie-miniprogram'
@@ -17,7 +17,6 @@ type StatusName = 'discover' | 'requesting' | 'success' | 'error'
 
 ComponentWithComputed({
   options: {
-    addGlobalClass: true,
     pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
   },
 
@@ -303,15 +302,8 @@ ComponentWithComputed({
         }
       }
 
-      this.updateBleDeviceListThrottle()
+      bleDevicesStore.updateBleDeviceListThrottle()
     },
-
-    /**
-     * 节流更新蓝牙设备列表，根据实际业务场景使用
-     */
-    updateBleDeviceListThrottle: throttle(() => {
-      bleDevicesStore.updateBleDeviceList()
-    }, 3000),
 
     /**
      * @description 网关进入配网模式
@@ -442,11 +434,6 @@ ComponentWithComputed({
             }
 
             bleDevice.status = 'zigbeeBind' // 标记子设备已入网关的zigbee网络
-            wx.reportEvent('zigebee_add', {
-              pro_type: bleDevice.proType,
-              cost_time: costTime > 1690268520264 ? -1 : costTime, // -1代表手动起网配上的子设备
-              model_id: bleDevice.productId,
-            })
 
             if (deviceData.bindTimeoutId) {
               clearTimeout(deviceData.bindTimeoutId)
@@ -547,7 +534,7 @@ ComponentWithComputed({
       const deviceData = this.data._deviceMap[bleDevice.mac]
       const isOnline = await isDeviceOnline({ devIds: [bleDevice.zigbeeMac] })
 
-      Logger.log(`【${bleDevice.mac}】监听超时查询在线状态：${isOnline}`)
+      Logger.log(`【${bleDevice.mac}】监听超时，查询云端入网状态：${isOnline}`)
 
       isOnline && Logger.debug(`【${bleDevice.mac}】zigbee入网成功但没有收到推送`)
 
@@ -627,8 +614,6 @@ ComponentWithComputed({
     },
 
     async bindBleDeviceToCloud(device: Device.ISubDevice) {
-      device.status = 'success'
-
       const res = await bindDevice({
         deviceId: device.zigbeeMac,
         houseId: homeBinding.store.currentHomeId,
@@ -638,12 +623,23 @@ ComponentWithComputed({
       })
 
       if (res.success && res.result.isBind) {
+        device.status = 'success'
         Logger.log(`${device.mac}绑定家庭成功`)
         // 仅2-4路面板需要更改按键名称
         if (device.switchList.length > 1) {
           await this.editDeviceInfo({ deviceId: res.result.deviceId, switchList: device.switchList })
         }
+
+        const deviceData = this.data._deviceMap[device.mac]
+        const costTime = dayjs().valueOf() - deviceData.startTime
+
+        wx.reportEvent('zigebee_add', {
+          pro_type: device.proType,
+          cost_time: deviceData.startTime === 0 ? -1 : costTime, // -1代表手动起网配上的子设备
+          model_id: device.productId,
+        })
       } else {
+        device.status = 'fail'
         Logger.error(`${device.mac}绑定家庭失败`, res)
       }
     },

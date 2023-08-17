@@ -31,7 +31,6 @@ const descMap = {
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] }), pageBehavior],
   options: {
-    styleIsolation: 'apply-shared',
     pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
   },
 

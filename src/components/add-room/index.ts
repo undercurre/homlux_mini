@@ -6,7 +6,6 @@ import { checkInputNameIllegal, emitter } from '../../utils/index'
 
 Component({
   options: {
-    styleIsolation: 'apply-shared',
     pureDataPattern: /^_/,
   },
 

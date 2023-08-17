@@ -6,9 +6,7 @@ import { storage } from '../../utils/index'
 const system = (storage.get<string>('system') as string).toLocaleLowerCase().indexOf('ios') > -1 ? 'ios' : 'android'
 
 ComponentWithComputed({
-  options: {
-    addGlobalClass: true,
-  },
+  options: {},
   behaviors: [pageBehaviors],
 
   /**

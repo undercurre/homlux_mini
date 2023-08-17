@@ -11,7 +11,6 @@ import { checkDevice, getUploadFileForOssInfo, queryWxImgQrCode } from '../../ap
 
 ComponentWithComputed({
   options: {
-    styleIsolation: 'apply-shared',
     pureDataPattern: /^_/,
   },
 
@@ -524,7 +523,16 @@ ComponentWithComputed({
     },
 
     async bindSubDevice(params: IAnyObject) {
-      const res = await checkDevice({ dsn: params.sn }, { loading: false })
+      const checkData = {} as IAnyObject
+      const { sn, mac } = params
+
+      if (sn) {
+        checkData.dsn = sn
+      } else if (mac) {
+        checkData.mac = mac
+      }
+
+      const res = await checkDevice(checkData, { loading: false })
 
       if (!res.success) {
         Toast('验证产品信息失败')
@@ -536,11 +544,7 @@ ComponentWithComputed({
       this.setData({
         deviceInfo: {
           type: 'single',
-          proType: res.result.proType,
-          deviceName: res.result.productName,
-          icon: res.result.productIcon,
           mac: res.result.mac, // zigbee 的mac
-          modelId: res.result.modelId,
         },
       })
 
@@ -567,7 +571,6 @@ ComponentWithComputed({
         })
 
         Dialog.alert({
-          title: this.data.deviceInfo.deviceName,
           showCancelButton: false,
           confirmButtonText: '我知道了',
         })
@@ -622,14 +625,6 @@ ComponentWithComputed({
     addSingleSubdevice() {
       const { deviceId, sn, channel, extPanId, panId } = this.data.selectGateway
 
-      const { proType, modelId } = this.data.deviceInfo
-
-      wx.reportEvent('add_device', {
-        pro_type: proType,
-        model_id: modelId,
-        add_type: 'qrcode',
-      })
-
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/add-subdevice/index', {
           mac: this.data.deviceInfo.mac,
@@ -638,10 +633,6 @@ ComponentWithComputed({
           channel,
           extPanId,
           panId,
-          deviceName: this.data.deviceInfo.deviceName,
-          deviceIcon: this.data.deviceInfo.icon,
-          proType: proType,
-          modelId,
         }),
       })
     },

@@ -2,9 +2,7 @@ import { storage, goHome } from '../../utils/index'
 
 // components/custom-nav-bar/index.ts
 Component({
-  options: {
-    styleIsolation: 'apply-shared',
-  },
+  options: {},
   /**
    * 组件的属性列表
    */

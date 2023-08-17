@@ -7,9 +7,7 @@ import { strUtil } from '../../utils/index'
 import Dialog from '@vant/weapp/dialog/dialog'
 
 ComponentWithComputed({
-  options: {
-    styleIsolation: 'apply-shared',
-  },
+  options: {},
   behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding] }), pageBehaviors],
   /**
    * 组件的属性列表

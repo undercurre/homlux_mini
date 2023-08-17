@@ -1,9 +1,7 @@
 import { sceneList } from '../../../../config/index'
 
 Component({
-  options: {
-    styleIsolation: 'apply-shared',
-  },
+  options: {},
   /**
    * 组件的属性列表
    */
