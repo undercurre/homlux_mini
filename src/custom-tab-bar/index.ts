@@ -31,8 +31,8 @@ ComponentWithComputed({
       },
       {
         text: '遥控器',
-        selectedIcon: '/assets/img/tabbar/automation-selected.png',
-        unSelectedIcon: '/assets/img/tabbar/automation-unselected.png',
+        selectedIcon: '/assets/img/tabbar/remoter-selected.png',
+        unSelectedIcon: '/assets/img/tabbar/remoter-unselected.png',
         path: '/pages/remoter/index',
       },
       {

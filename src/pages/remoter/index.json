@@ -3,7 +3,8 @@
   "usingComponents": {
     "tips-box": "/components/tips-box/index",
     "van-dialog": "@vant/weapp/dialog/index",
-    "card": "./components/card/index"
+    "card": "./components/card/index",
+    "drag": "/components/drag/index"
   },
   "navigationStyle": "custom"
 }

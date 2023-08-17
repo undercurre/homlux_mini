@@ -14,7 +14,15 @@ ComponentWithComputed({
     },
   },
 
-  computed: {},
+  computed: {
+    // 设备数据，兼容独立使用和在drag组件中引用
+    device(data) {
+      if (data.item?.data) {
+        return data.item.data
+      }
+      return data.item
+    }
+  },
 
   /**
    * 组件的初始数据
@@ -26,7 +34,8 @@ ComponentWithComputed({
    */
   methods: {
     handleCardTap() {
-      this.triggerEvent('tap', this.data.item?.sn8)
+      console.log(this.data.item)
+      this.triggerEvent('tap', this.data.item.data?.sn8)
     },
   },
 })

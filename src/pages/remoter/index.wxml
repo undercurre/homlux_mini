@@ -32,20 +32,20 @@
   </block>
 </view>
 
-<scroll-view wx:else enhanced scroll-y show-scrollbar="{{false}}" style="height: {{scrollViewHeight}}px;">
+<scroll-view wx:else enhanced scroll-y show-scrollbar="{{false}}" style="height: {{scrollViewHeight}}px;" bind:scroll="onPageScroll">
   <view class="pt-16rpx">
-    <text class="ml-24rpx text-hex-6e6f74 text-28">发现设备</text>
+    <text class="ml-40rpx text-hex-6e6f74 text-28">发现设备</text>
   </view>
 
   <card wx:for="{{foundList}}" item="{{item}}" wx:key="index" bind:tap="handleCardTap"></card>
 
-  <view class="pt-16rpx">
-    <text class="ml-24rpx text-hex-6e6f74 text-28">我的设备</text>
+  <view class="pt-48rpx">
+    <text class="ml-40rpx text-hex-6e6f74 text-28">我的设备</text>
   </view>
 
-  <card wx:for="{{deviceList}}" item="{{item}}" wx:key="index" bind:tap="handleCardTap"></card>
+  <drag wx:if="{{deviceList.length > 0}}" id="drag" list-data="{{deviceList}}" item-height="{{184}}" scroll-top="{{scrollTop}}" generic:item="card" bind:cardTap="handleCardTap"  bind:sortend="handleSortEnd"></drag>
 
-  <view class="w-full flex-center pb-40rpx">
+  <view class="w-full flex-center pb-40rpx mt-20rpx">
     <template is="btn" data="{{ isSeeking: isSeeking }}"></template>
   </view>
   <view class="list-bottom-placeholder"> </view>
