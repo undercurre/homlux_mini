@@ -14,7 +14,7 @@
     </van-checkbox>
   </view>
   <view class="px-32rpx mt-50rpx mb-128rpx">
-    <van-button open-type="getPhoneNumber" bindtap="handleLoginTap" bindgetphonenumber="handleLoginClick" block disabled="{{!isAgree}}" type="primary" size="large">快速登录</van-button>
+    <van-button open-type="getPhoneNumber|agreePrivacyAuthorization" bindtap="handleLoginTap" bindgetphonenumber="handleLoginClick" block disabled="{{!isAgree}}" type="primary" size="large">快速登录</van-button>
   </view>
 </view>
 
