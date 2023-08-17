@@ -25,11 +25,11 @@
   </van-cell-group> -->
 
   <van-cell-group inset>
-    <van-cell wx:if="{{!isVisitor}}" icon="/assets/img/tabbar/automation-unselected.png" title="自动化场景" is-link center data-url="{{urls.automation}}" bind:click="toPage" />
+    <van-cell wx:if="{{!isVisitor}}" icon="/assets/img/mine/automation.png" title="自动化场景" is-link center data-url="{{urls.automation}}" bind:click="toPage" />
     <van-cell icon="/assets/img/mine/voiceControl.png" title="语音控制" is-link center data-url="{{urls.voiceControl}}" bind:click="toPage" />
     <van-cell wx:if="{{!isVisitor}}" icon="/assets/img/mine/upgrade.png" title="固件升级" is-link center data-url="{{urls.ota}}" bind:click="toPage" />
     <van-cell wx:if="{{!isVisitor}}" icon="/assets/img/mine/deviceReplace.png" title="设备替换" is-link center data-url="{{urls.deviceReplace}}" bind:click="toPage" />
-    <van-cell icon="/assets/img/mine/deviceReplace.png" title="启动页设置" is-link center data-url="{{urls.defaultPageSetting}}" data-auth="no" bind:click="toPage" />
+    <van-cell icon="/assets/img/mine/homepage.png" title="默认主页" is-link center data-url="{{urls.defaultPageSetting}}" data-auth="no" bind:click="toPage" />
   </van-cell-group>
 
   <van-cell-group inset>

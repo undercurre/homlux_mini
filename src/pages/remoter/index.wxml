@@ -43,7 +43,7 @@
     <text class="ml-40rpx text-hex-6e6f74 text-28">我的设备</text>
   </view>
 
-  <drag wx:if="{{deviceList.length > 0}}" id="drag" list-data="{{deviceList}}" item-height="{{184}}" scroll-top="{{scrollTop}}" generic:item="card" bind:cardTap="handleCardTap"  bind:sortend="handleSortEnd"></drag>
+  <drag wx:if="{{deviceList.length > 0}}" id="drag" list-data="{{deviceList}}" item-height="{{184}}" scroll-top="{{scrollTop}}" generic:item="card" bind:cardTap="handleCardTap" bind:sortend="handleSortEnd"></drag>
 
   <view class="w-full flex-center pb-40rpx mt-20rpx">
     <template is="btn" data="{{ isSeeking: isSeeking }}"></template>

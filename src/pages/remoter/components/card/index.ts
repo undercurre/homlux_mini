@@ -21,7 +21,7 @@ ComponentWithComputed({
         return data.item.data
       }
       return data.item
-    }
+    },
   },
 
   /**
