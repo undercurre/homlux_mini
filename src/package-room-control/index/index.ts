@@ -15,16 +15,7 @@ import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { sendDevice, execScene, saveDeviceOrder } from '../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
-import {
-  storage,
-  emitter,
-  WSEventType,
-  rpx2px,
-  _get,
-  throttle,
-  toPropertyDesc,
-  transferDeviceProperty,
-} from '../../utils/index'
+import { storage, emitter, WSEventType, rpx2px, _get, throttle, toPropertyDesc } from '../../utils/index'
 import { proName, PRO_TYPE, LIST_PAGE, CARD_W, CARD_H } from '../../config/index'
 
 type DeviceCard = Device.DeviceItem & {
@@ -286,8 +277,8 @@ ComponentWithComputed({
           )
           if (deviceInHouse) {
             runInAction(() => {
-              deviceInHouse.mzgdPropertyDTOList[e.result.eventData.ep] = {
-                ...deviceInHouse.mzgdPropertyDTOList[e.result.eventData.ep],
+              deviceInHouse.mzgdPropertyDTOList[e.result.eventData.modelName] = {
+                ...deviceInHouse.mzgdPropertyDTOList[e.result.eventData.modelName],
                 ...e.result.eventData.event,
               }
             })
@@ -300,8 +291,8 @@ ComponentWithComputed({
           ) as DeviceCard
           if (deviceInRoom) {
             runInAction(() => {
-              deviceInRoom.mzgdPropertyDTOList[e.result.eventData.ep] = {
-                ...deviceInRoom.mzgdPropertyDTOList[e.result.eventData.ep],
+              deviceInRoom.mzgdPropertyDTOList[e.result.eventData.modelName] = {
+                ...deviceInRoom.mzgdPropertyDTOList[e.result.eventData.modelName],
                 ...e.result.eventData.event,
               }
             })
@@ -310,15 +301,15 @@ ComponentWithComputed({
           // 组装要更新的设备数据，更新的为flatten列表，结构稍不同
           const device = {} as DeviceCard
           device.deviceId = e.result.eventData.deviceId
-          device.uniId = `${e.result.eventData.deviceId}:${e.result.eventData.ep}`
+          device.uniId = `${e.result.eventData.deviceId}:${e.result.eventData.modelName}`
           device.mzgdPropertyDTOList = {}
-          device.mzgdPropertyDTOList[e.result.eventData.ep] = {
+          device.mzgdPropertyDTOList[e.result.eventData.modelName] = {
             ...e.result.eventData.event,
           }
-          // WIFI灯状态更新
-          if (Object.prototype.hasOwnProperty.call(e.result.eventData.event, 'power')) {
-            device.mzgdPropertyDTOList[e.result.eventData.ep].OnOff = e.result.eventData.event.power === 'on' ? 1 : 0
-          }
+          // 按物模型属性，WIFI灯状态更新与zigbee灯统一，此处冗余逻辑已不需要
+          // if (Object.prototype.hasOwnProperty.call(e.result.eventData.event, 'power')) {
+          //   device.mzgdPropertyDTOList[e.result.eventData.modelName].power = e.result.eventData.event.power === 'on' ? 1 : 0
+          // }
           this.updateQueue(device)
           return
         }
@@ -328,10 +319,10 @@ ComponentWithComputed({
           e.result.eventType === WSEventType.screen_online_status_sub_device ||
           e.result.eventType === WSEventType.screen_online_status_wifi_device
         ) {
-          const { deviceId, ep, status } = e.result.eventData
+          const { deviceId, modelName, status } = e.result.eventData
           const device = {} as DeviceCard
           device.deviceId = deviceId
-          device.uniId = ep ? `${deviceId}:${ep}` : deviceId
+          device.uniId = modelName ? `${deviceId}:${modelName}` : deviceId
           device.onLineStatus = status
           this.updateQueue(device)
         }
@@ -474,13 +465,13 @@ ComponentWithComputed({
 
             // 如果mzgdPropertyDTOList、switchInfoDTOList字段存在，则覆盖更新
             if (device!.mzgdPropertyDTOList) {
-              const eq = originDevice.proType === PRO_TYPE.switch ? originDevice.uniId.split(':')[1] : 1
+              const modelName = originDevice.proType === PRO_TYPE.switch ? originDevice.uniId.split(':')[1] : 'light'
               const newVal = {
-                ...originDevice.mzgdPropertyDTOList[eq],
-                ...device?.mzgdPropertyDTOList[eq],
+                ...originDevice.mzgdPropertyDTOList[modelName],
+                ...device?.mzgdPropertyDTOList[modelName],
               }
 
-              diffData[`devicePageList[${groupIndex}][${index}].mzgdPropertyDTOList[${eq}]`] = newVal
+              diffData[`devicePageList[${groupIndex}][${index}].mzgdPropertyDTOList[${modelName}]`] = newVal
 
               // 更新场景关联信息
               diffData[`devicePageList[${groupIndex}][${index}].linkSceneName`] = this.getLinkSceneName({
@@ -502,12 +493,12 @@ ComponentWithComputed({
               this.data.checkedList.includes(originDevice!.deviceId) &&
               originDevice!.select
             ) {
-              const prop = transferDeviceProperty(originDevice.proType, device!.mzgdPropertyDTOList['1'])
+              const prop = device!.mzgdPropertyDTOList['1']
               if (originDevice.proType === PRO_TYPE.light) {
                 diffData.lightStatus = {
-                  Level: prop.Level,
-                  ColorTemp: prop.ColorTemp,
-                  OnOff: prop.OnOff,
+                  brightness: prop.brightness,
+                  colorTemperature: prop.colorTemperature,
+                  power: prop.power,
                 }
               } else if (originDevice.proType === PRO_TYPE.curtain) {
                 diffData.curtainStatus = {
@@ -878,9 +869,9 @@ ComponentWithComputed({
       selectList.forEach((device) => {
         if (device.proType === PRO_TYPE.switch) {
           // 开关
-          const ep = parseInt(device.uniId.split(':')[1])
-          const OnOff = device.mzgdPropertyDTOList[ep].OnOff
-          const desc = toPropertyDesc(device.proType, device.mzgdPropertyDTOList[ep])
+          const modelName = device.uniId.split(':')[1]
+          const power = device.mzgdPropertyDTOList[modelName].power
+          const desc = toPropertyDesc(device.proType, device.mzgdPropertyDTOList[modelName])
 
           addSceneActions.push({
             uniId: device.uniId,
@@ -890,12 +881,12 @@ ComponentWithComputed({
             proType: device.proType,
             deviceType: device.deviceType,
             value: {
-              ep,
-              OnOff,
+              modelName,
+              power,
             },
           })
         } else {
-          const properties = transferDeviceProperty(device.proType, device.mzgdPropertyDTOList['1'])
+          const properties = device.mzgdPropertyDTOList['1']
           const desc = toPropertyDesc(device.proType, properties)
 
           const action = {
@@ -906,7 +897,7 @@ ComponentWithComputed({
             proType: device.proType,
             deviceType: device.deviceType,
             value: {
-              ep: 1,
+              modelName: device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1',
               ...properties,
             } as IAnyObject,
           }
@@ -1008,9 +999,9 @@ ComponentWithComputed({
         const prop = e.detail.mzgdPropertyDTOList['1']
         if (e.detail.proType === PRO_TYPE.light) {
           diffData.lightStatus = {
-            Level: prop.Level,
-            ColorTemp: prop.ColorTemp,
-            OnOff: prop.OnOff,
+            brightness: prop.brightness,
+            colorTemperature: prop.colorTemperature,
+            power: prop.power,
           }
         } else if (e.detail.proType === PRO_TYPE.curtain) {
           diffData.curtainStatus = {
@@ -1039,10 +1030,14 @@ ComponentWithComputed({
     // 卡片点击时，按品类调用对应方法
     async handleControlTap(e: { detail: DeviceCard }) {
       const device = { ...e.detail }
-      const ep = device.switchInfoDTOList ? device.switchInfoDTOList[0].switchId : 1
+      const modelName = device.switchInfoDTOList
+        ? device.switchInfoDTOList[0].switchId
+        : device.proType === PRO_TYPE.light
+        ? 'light'
+        : 'wallSwitch1'
 
       // 若面板关联场景
-      if (device.proType === PRO_TYPE.switch && device.mzgdPropertyDTOList[ep].ButtonMode === 2) {
+      if (device.proType === PRO_TYPE.switch && device.mzgdPropertyDTOList[modelName].ButtonMode === 2) {
         const sceneId = deviceStore.switchSceneConditionMap[device.uniId]
         if (sceneId) {
           execScene(sceneId)
@@ -1067,30 +1062,30 @@ ComponentWithComputed({
       }
 
       // 灯和面板
-      const OldOnOff = device.mzgdPropertyDTOList[ep].OnOff
+      const OldOnOff = device.mzgdPropertyDTOList[modelName].power
       const newOnOff = OldOnOff ? 0 : 1
 
       // 即时改变视图，提升操作手感
-      device.mzgdPropertyDTOList[ep].OnOff = newOnOff
+      device.mzgdPropertyDTOList[modelName].power = newOnOff
       this.updateQueue(device)
       this.setData({
-        'lightStatus.OnOff': newOnOff,
+        'lightStatus.power': newOnOff,
       })
 
       const res = await sendDevice({
         proType: device.proType,
         deviceType: device.deviceType,
         deviceId: device.deviceId,
-        ep,
+        modelName,
         gatewayId: device.gatewayId,
-        property: { OnOff: newOnOff, time: 500 },
+        property: { power: newOnOff, time: 500 },
       })
 
       if (!res.success) {
-        device.mzgdPropertyDTOList[ep].OnOff = OldOnOff
+        device.mzgdPropertyDTOList[modelName].power = OldOnOff
         this.updateQueue(device)
         this.setData({
-          'lightStatus.OnOff': OldOnOff,
+          'lightStatus.power': OldOnOff,
         })
         Toast('控制失败')
       }

@@ -490,7 +490,7 @@ ComponentWithComputed({
           if (result.errCode !== 0) {
             this.data.moveFailCount++
           }
-          const uniId = `${result.devId}:${result.ep}`
+          const uniId = `${result.devId}:${result.modelName}`
           const finishedIndex = this.data.moveWaitlist.findIndex((item) => item === uniId)
           this.data.moveWaitlist.splice(finishedIndex, 1)
 
@@ -515,8 +515,8 @@ ComponentWithComputed({
         const deviceId = uId.split(':')[0]
         const device = deviceStore.deviceMap[deviceId]
         if (device.deviceType === 2) {
-          for (const eq in device.mzgdPropertyDTOList) {
-            const uId = `${device.deviceId}:${eq}`
+          for (const modelName in device.mzgdPropertyDTOList) {
+            const uId = `${device.deviceId}:${modelName}`
             if (!this.data.moveWaitlist.includes(uId)) {
               this.data.moveWaitlist.push(uId)
             }

@@ -137,7 +137,7 @@ ComponentWithComputed({
             deviceId: this.data.linkSwitch.split(':')[0],
             controlEvent: [
               {
-                ep: Number(this.data.linkSwitch.split(':')[1]),
+                modelName: this.data.linkSwitch.split(':')[1],
                 ButtonScene: 1,
               },
             ],

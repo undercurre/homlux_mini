@@ -49,7 +49,7 @@ ComponentWithComputed({
    */
   data: {
     ripple: false,
-    onOff: false, // true: on false: off
+    power: false, // true: on false: off
     showDeviceOffline: false,
     isProcessing: false,
     _clientRect: {} as IAnyObject,
@@ -85,7 +85,7 @@ ComponentWithComputed({
       }
       // 灯及灯组
       else if (data.deviceInfo.proType === PRO_TYPE.light) {
-        return data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
+        return data.deviceInfo.mzgdPropertyDTOList['1'].power
           ? '/assets/img/base/power-on.png'
           : '/assets/img/base/power-off.png'
       }
@@ -97,7 +97,7 @@ ComponentWithComputed({
           // 万一设备没有开关属性，不显示
           return ''
         }
-        return data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff
+        return data.deviceInfo.mzgdPropertyDTOList[switchId].power
           ? '/assets/img/base/power-on.png'
           : '/assets/img/base/power-off.png'
       }
@@ -196,12 +196,12 @@ ComponentWithComputed({
       this.triggerEvent('controlTap', { ...this.data.deviceInfo, clientRect: this.data._clientRect })
 
       // 状态反转
-      let onOff = false
+      let power = false
       if (this.data.deviceInfo.proType === PRO_TYPE.light) {
-        onOff = !this.data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
+        power = !this.data.deviceInfo.mzgdPropertyDTOList['1'].power
       } else if (this.data.deviceInfo.proType === PRO_TYPE.switch) {
         const { switchId } = this.data.deviceInfo.switchInfoDTOList[0]
-        onOff = !this.data.deviceInfo.mzgdPropertyDTOList[switchId]?.OnOff
+        power = !this.data.deviceInfo.mzgdPropertyDTOList[switchId]?.power
 
         // 未确定用途，暂时注释
         // if (this.data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
@@ -210,7 +210,7 @@ ComponentWithComputed({
       }
 
       this.setData({
-        onOff,
+        power,
       })
 
       // 节流执行的部分

@@ -5,7 +5,7 @@
     </view>
 
     <view class="mt-64rpx px-32rpx">
-      <handle-onoff vertical="{{true}}" OnOff="{{OnOff === 1}}" bind:change="handleOnOffChange"></handle-onoff>
+      <handle-onoff vertical="{{true}}" power="{{power === 1}}" bind:change="handleOnOffChange"></handle-onoff>
     </view>
 
     <view class="h-96rpx"></view>

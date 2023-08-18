@@ -75,8 +75,8 @@ ComponentWithComputed({
       value: {} as Record<string, number>,
       observer(value) {
         this.setData({
-          'lightInfoInner.Level': value.Level ?? 0,
-          'lightInfoInner.ColorTemp': value.ColorTemp ?? 0,
+          'lightInfoInner.brightness': value.brightness ?? 0,
+          'lightInfoInner.colorTemperature': value.colorTemperature ?? 0,
         })
       },
     },
@@ -107,8 +107,8 @@ ComponentWithComputed({
     show: false,
     tab: '' as '' | 'light' | 'switch' | 'curtain',
     lightInfoInner: {
-      Level: 10,
-      ColorTemp: 20,
+      brightness: 10,
+      colorTemperature: 20,
     },
     maxColorTemp,
     minColorTemp,
@@ -136,7 +136,7 @@ ComponentWithComputed({
 
   computed: {
     colorTempK(data) {
-      return (data.lightInfoInner.ColorTemp / 100) * (data.maxColorTemp - data.minColorTemp) + data.minColorTemp
+      return (data.lightInfoInner.colorTemperature / 100) * (data.maxColorTemp - data.minColorTemp) + data.minColorTemp
     },
     lightTab(data) {
       if (data.checkedType) {
@@ -211,7 +211,7 @@ ComponentWithComputed({
    */
   methods: {
     sliderTap() {
-      if (!this.data.lightStatus.OnOff) {
+      if (!this.data.lightStatus.power) {
         Toast('请先开灯')
       }
     },
@@ -538,7 +538,7 @@ ComponentWithComputed({
           deviceId,
           controlEvent: [
             {
-              ep: Number(switchId),
+              modelName: switchId,
               ButtonScene: 1,
             },
           ],
@@ -707,7 +707,7 @@ ComponentWithComputed({
         tab: e.currentTarget.dataset.tab,
       })
     },
-    async lightSendDeviceControl(type: 'ColorTemp' | 'Level') {
+    async lightSendDeviceControl(type: 'colorTemperature' | 'brightness') {
       const deviceId = this.data.checkedList[0]
       const device = deviceStore.deviceMap[deviceId]
       if (deviceId.indexOf(':') !== -1 || device.proType !== PRO_TYPE.light) {
@@ -727,7 +727,7 @@ ComponentWithComputed({
         deviceType: device.deviceType,
         gatewayId: device.gatewayId,
         deviceId,
-        ep: 1,
+        modelName: device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1',
         property: {
           [type]: this.data.lightInfoInner[type],
         },
@@ -741,40 +741,40 @@ ComponentWithComputed({
     },
     handleLevelDrag: throttle(function (this: IAnyObject, e: { detail: number }) {
       this.setData({
-        'lightInfoInner.Level': e.detail,
+        'lightInfoInner.brightness': e.detail,
       })
     }),
     handleLevelChange(e: { detail: number }) {
       this.setData({
-        'lightInfoInner.Level': e.detail,
+        'lightInfoInner.brightness': e.detail,
       })
-      this.lightSendDeviceControl('Level')
+      this.lightSendDeviceControl('brightness')
     },
     handleLevelDragEnd() {
-      this.lightSendDeviceControl('Level')
+      this.lightSendDeviceControl('brightness')
     },
     handleColorTempDragEnd() {
-      this.lightSendDeviceControl('ColorTemp')
+      this.lightSendDeviceControl('colorTemperature')
     },
     handleColorTempChange(e: { detail: number }) {
       this.setData({
-        'lightInfoInner.ColorTemp': e.detail,
+        'lightInfoInner.colorTemperature': e.detail,
       })
-      this.lightSendDeviceControl('ColorTemp')
+      this.lightSendDeviceControl('colorTemperature')
     },
     handleColorTempDrag: throttle(function (this: IAnyObject, e: { detail: number }) {
       this.setData({
-        'lightInfoInner.ColorTemp': e.detail,
+        'lightInfoInner.colorTemperature': e.detail,
       })
     }),
 
     findDevice(device: Device.DeviceItem) {
-      let ep = 1
+      let modelName = 'light'
       if (device.proType === PRO_TYPE.switch) {
-        ep = Number(device.switchInfoDTOList[0].switchId)
+        modelName = device.switchInfoDTOList[0].switchId
       }
 
-      findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, ep })
+      findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, modelName })
     },
     toDetail() {
       const deviceId = this.data.checkedList[0].split(':')[0]

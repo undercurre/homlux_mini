@@ -5,18 +5,18 @@
     </view>
 
     <view class="mt-64rpx px-32rpx">
-      <handle-onoff OnOff="{{OnOff === 1}}" bind:change="handleOnOffChange"></handle-onoff>
+      <handle-onoff power="{{power === 1}}" bind:change="handleOnOffChange"></handle-onoff>
     </view>
 
     <view class="w-full box-border mt-64rpx px-48rpx">
       <text class="text-32rpx text-black-59">亮度 | {{levelShow}}%</text>
       <view class="pt-28rpx">
-        <mz-slider bind:slideEnd="handleLevelChange" bind:slideChange="handleLevelDrag" disabled="{{!OnOff}}" value="{{Level}}" min="{{1}}" active-color="linear-gradient(90deg, rgba(80,127,255,0.8) 5%, rgba(116,153,255,0.18) 100%)"> </mz-slider>
+        <mz-slider bind:slideEnd="handleLevelChange" bind:slideChange="handleLevelDrag" disabled="{{!power}}" value="{{brightness}}" min="{{1}}" active-color="linear-gradient(90deg, rgba(80,127,255,0.8) 5%, rgba(116,153,255,0.18) 100%)"> </mz-slider>
       </view>
 
       <text class="block text-32rpx text-black-59 pt-48rpx">色温 | {{colorTempShow}}K</text>
       <view class="pt-28rpx">
-        <mz-slider bind:slideEnd="handleColorTempChange" bind:slideChange="handleColorTempDrag" disabled="{{!OnOff}}" value="{{ColorTemp}}" use-button-slot custom-class="slider-color-temp-bar" active-color="rgba(0,0,0,0)">
+        <mz-slider bind:slideEnd="handleColorTempChange" bind:slideChange="handleColorTempDrag" disabled="{{!power}}" value="{{colorTemperature}}" use-button-slot custom-class="slider-color-temp-bar" active-color="rgba(0,0,0,0)">
           <view slot="button" class="slider-button" />
         </mz-slider>
       </view>

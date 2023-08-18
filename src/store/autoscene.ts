@@ -1,7 +1,7 @@
 import { observable, runInAction } from 'mobx-miniprogram'
 import { queryAutoSceneListByHouseId, setAutoSceneEnabled } from '../apis/scene'
 import { homeStore } from './home'
-import { strUtil, transferDeviceProperty } from '../utils/index'
+import { strUtil } from '../utils/index'
 import { PRO_TYPE } from '../config/index'
 import { deviceStore } from './device'
 
@@ -23,11 +23,11 @@ export const autosceneStore = observable({
           const device = deviceStore.allRoomDeviceFlattenList.find((item) => item.uniId === action.deviceId)
           if (device) {
             runInAction(() => {
-              action.controlAction[0] = transferDeviceProperty(device.proType, {
+              action.controlAction[0] = {
                 ...action.controlAction[0],
                 minColorTemp: device.property!.minColorTemp,
                 maxColorTemp: device.property!.maxColorTemp,
-              })
+              }
             })
           } else {
             console.log('allRoomAutoSceneListComputed设备不存在', action)

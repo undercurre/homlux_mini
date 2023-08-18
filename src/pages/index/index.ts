@@ -181,14 +181,14 @@ ComponentWithComputed({
       emitter.on('wsReceive', (res) => {
         if (res.result.eventType === 'device_property') {
           // 如果有传更新的状态数据过来，直接更新store
-          if (res.result.eventData.event && res.result.eventData.deviceId && res.result.eventData.ep) {
+          if (res.result.eventData.event && res.result.eventData.deviceId && res.result.eventData.modelName) {
             const device = deviceStore.allRoomDeviceList.find(
               (device) => device.deviceId === res.result.eventData.deviceId,
             )
             if (device) {
               runInAction(() => {
-                device.mzgdPropertyDTOList[res.result.eventData.ep] = {
-                  ...device.mzgdPropertyDTOList[res.result.eventData.ep],
+                device.mzgdPropertyDTOList[res.result.eventData.modelName] = {
+                  ...device.mzgdPropertyDTOList[res.result.eventData.modelName],
                   ...res.result.eventData.event,
                 }
               })

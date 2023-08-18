@@ -4,7 +4,6 @@ import { PRO_TYPE } from '../config/index'
 import { homeStore } from './home'
 import { roomStore } from './room'
 import { sceneStore } from './scene'
-import { transferDeviceProperty } from '../utils/index'
 
 export const deviceStore = observable({
   /**
@@ -62,7 +61,7 @@ export const deviceStore = observable({
           ...device,
           uniId: device.deviceId,
           mzgdPropertyDTOList: {
-            1: transferDeviceProperty(device.proType, device.mzgdPropertyDTOList[1]),
+            1: device.mzgdPropertyDTOList[1],
           },
         })
       }
@@ -109,9 +108,9 @@ export const deviceStore = observable({
         list.push({
           ...device,
           uniId: device.deviceId,
-          property: transferDeviceProperty(device.proType, device.mzgdPropertyDTOList[1]),
+          property: device.mzgdPropertyDTOList[1],
           mzgdPropertyDTOList: {
-            1: transferDeviceProperty(device.proType, device.mzgdPropertyDTOList[1]),
+            1: device.mzgdPropertyDTOList[1],
           },
         })
       }
@@ -129,12 +128,12 @@ export const deviceStore = observable({
       scene.deviceActions?.forEach((action) => {
         if (action.proType === PRO_TYPE.switch) {
           action.controlAction.forEach((controlData) => {
-            if (map[`${action.deviceId}:${controlData.ep}`]) {
-              if (!map[`${action.deviceId}:${controlData.ep}`].includes(scene.sceneId)) {
-                map[`${action.deviceId}:${controlData.ep}`].push(scene.sceneId)
+            if (map[`${action.deviceId}:${controlData.modelName}`]) {
+              if (!map[`${action.deviceId}:${controlData.modelName}`].includes(scene.sceneId)) {
+                map[`${action.deviceId}:${controlData.modelName}`].push(scene.sceneId)
               }
             } else {
-              map[`${action.deviceId}:${controlData.ep}`] = [scene.sceneId]
+              map[`${action.deviceId}:${controlData.modelName}`] = [scene.sceneId]
             }
           })
         }
@@ -151,7 +150,7 @@ export const deviceStore = observable({
     const map = {} as Record<string, string>
     sceneStore.allRoomSceneList.forEach((scene) => {
       scene.deviceConditions?.forEach((condition) => {
-        map[`${condition.deviceId}:${condition.controlEvent[0].ep}`] = scene.sceneId
+        map[`${condition.deviceId}:${condition.controlEvent[0].modelName}`] = scene.sceneId
       })
     })
     return map

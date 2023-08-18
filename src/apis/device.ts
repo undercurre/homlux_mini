@@ -1,4 +1,4 @@
-import { delay, mzaioRequest, toWifiProperty, showLoading, hideLoading } from '../utils/index'
+import { delay, mzaioRequest, showLoading, hideLoading } from '../utils/index'
 import { PRO_TYPE } from '../config/index'
 
 /**
@@ -157,7 +157,7 @@ export async function sendDevice(
     deviceType: number
     deviceId: string
     gatewayId?: string
-    ep?: number | string
+    modelName?: string
     property: IAnyObject
   },
   option?: { loading?: boolean },
@@ -176,7 +176,7 @@ export async function sendDevice(
         inputData: [
           {
             devId: data.deviceId,
-            ep: data.ep,
+            modelName: data.modelName,
             ...property,
           },
         ],
@@ -186,7 +186,7 @@ export async function sendDevice(
 
     case 3:
       if (data.proType === PRO_TYPE.light) {
-        const downData = toWifiProperty(data.proType, property)
+        const downData = property
 
         params = {
           deviceId: data.deviceId,
@@ -197,7 +197,7 @@ export async function sendDevice(
 
         promise = controlDevice(params, option)
       } else if (data.proType === PRO_TYPE.curtain) {
-        const downData = toWifiProperty(data.proType, property)
+        const downData = property
 
         params = {
           deviceId: data.deviceId,
@@ -254,7 +254,7 @@ export async function sendCmdAddSubdevice(
  * Identify 闪多少秒
  */
 export async function findDevice(
-  { gatewayId, devId, ep = 1, Identify = 3 }: { gatewayId: string; devId: string; ep?: number; Identify?: number },
+  { gatewayId, devId, modelName = 'wallSwitch1', Identify = 3 }: { gatewayId: string; devId: string; modelName?: string; Identify?: number },
   options?: { loading?: boolean },
 ) {
   return await controlDevice(
@@ -265,7 +265,7 @@ export async function findDevice(
       inputData: [
         {
           devId,
-          ep,
+          modelName,
           Identify,
         },
       ],
@@ -769,9 +769,9 @@ export async function groupControl(
   data: {
     groupId: string
     controlAction: {
-      OnOff?: 0 | 1
-      Level?: number
-      ColorTemp?: number
+      power?: 0 | 1
+      brightness?: number
+      colorTemperature?: number
     }[]
   },
   options?: { loading?: boolean },

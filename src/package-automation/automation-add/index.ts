@@ -7,7 +7,6 @@ import { deviceStore, sceneStore, homeStore, autosceneStore } from '../../store/
 import { PRO_TYPE, SENSOR_TYPE } from '../../config/index'
 import {
   toPropertyDesc,
-  toWifiProperty,
   storage,
   getCurrentPageParams,
   strUtil,
@@ -188,7 +187,7 @@ ComponentWithComputed({
         } else if (item.productId === SENSOR_TYPE.doorsensor) {
           item.property = { ZoneStatus: 1 }
         } else {
-          item.property = { OnOff: 1 }
+          item.property = { power: 1 }
         }
       })
       this.setData({
@@ -283,14 +282,14 @@ ComponentWithComputed({
             //设备
             let deviceUniId = action.deviceId
             if (action.proType === PRO_TYPE.switch) {
-              deviceUniId = `${action.deviceId}:${action.controlAction[0].ep}`
+              deviceUniId = `${action.deviceId}:${action.controlAction[0].modelName}`
             }
             const device = this.data.deviceList.find((item) => item.uniId === deviceUniId)
             if (device) {
               //是设备
               if (device.proType === PRO_TYPE.switch) {
                 //是开关面板
-                const OnOff = action.controlAction[0].OnOff
+                const power = action.controlAction[0].power
                 const desc = toPropertyDesc(device.proType, action.controlAction[0])
                 tempSceneDeviceActionsFlatten.push({
                   uniId: device.uniId,
@@ -300,8 +299,8 @@ ComponentWithComputed({
                   pic: device.switchInfoDTOList[0].pic,
                   proType: PRO_TYPE.switch,
                   value: {
-                    ep: action.controlAction[0].ep,
-                    OnOff,
+                    modelName: action.controlAction[0].modelName,
+                    power,
                   },
                   orderNum: 0,
                   dragId: device.uniId + Math.floor(Math.random() * 1001),
@@ -323,7 +322,7 @@ ComponentWithComputed({
                     ...action.controlAction[0],
                     minColorTemp: device.property!.minColorTemp,
                     maxColorTemp: device.property!.maxColorTemp,
-                    ep: 1,
+                    modelName: device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1',
                   },
                   orderNum: 0,
                   dragId: device.uniId + Math.floor(Math.random() * 1001),
@@ -644,8 +643,8 @@ ComponentWithComputed({
           console.log('是设备', device)
           if (device.proType === PRO_TYPE.switch) {
             //是开关面板
-            const ep = parseInt(device.uniId.split(':')[1])
-            const OnOff = device.property!.OnOff
+            const modelName = device.uniId.split(':')[1]
+            const power = device.property!.power
             const desc = toPropertyDesc(device.proType, device.property!)
             tempSceneDeviceActionsFlatten.push({
               uniId: device.uniId,
@@ -655,8 +654,8 @@ ComponentWithComputed({
               pic: device.switchInfoDTOList[0].pic,
               proType: PRO_TYPE.switch,
               value: {
-                ep,
-                OnOff,
+                modelName,
+                power,
               },
               orderNum: 0,
               dragId: device.uniId + Math.floor(Math.random() * 1001),
@@ -671,7 +670,7 @@ ComponentWithComputed({
               pic: device.pic as string,
               proType: device.proType,
               value: {
-                ep: 1,
+                modelName: 'light',
                 ...device.property,
               },
               orderNum: 0,
@@ -851,13 +850,13 @@ ComponentWithComputed({
         const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
         const device = allRoomDeviceMap[action.uniId]
         console.log('device', device)
-        let ep = 1
+        let modelName = 'light'
 
         if (action.proType === PRO_TYPE.switch) {
-          ep = Number(device.switchInfoDTOList[0].switchId)
+          modelName = String(device.switchInfoDTOList[0].switchId)
         }
 
-        device.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, ep })
+        device.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, modelName })
 
         this.setData({
           sceneEditTitle: action.name,
@@ -905,7 +904,7 @@ ComponentWithComputed({
           deviceId: device.deviceId,
           proType: device.proType,
           deviceType: device.deviceType,
-          ep: actionItem.value?.ep,
+          modelName: actionItem.value?.modelName,
           property: oldProperty,
         }
       }
@@ -1074,20 +1073,20 @@ ComponentWithComputed({
               let ctrlAction = {} as IAnyObject
 
               if (device.deviceType === 2) {
-                ctrlAction.ep = 1
+                ctrlAction.modelName = device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1'
               }
 
               if (device.proType === PRO_TYPE.light) {
-                ctrlAction.OnOff = property.OnOff
+                ctrlAction.power = property.power
 
-                if (property.OnOff === 1) {
-                  ctrlAction.ColorTemp = property.ColorTemp
-                  ctrlAction.Level = property.Level
+                if (property.power === 1) {
+                  ctrlAction.colorTemperature = property.colorTemperature
+                  ctrlAction.brightness = property.brightness
                 }
 
-                if (device.deviceType === 3) {
-                  ctrlAction = toWifiProperty(device.proType, ctrlAction)
-                }
+                // if (device.deviceType === 3) {
+                //   ctrlAction = toWifiProperty(device.proType, ctrlAction)
+                // }
               } else if (device.proType === PRO_TYPE.curtain) {
                 ctrlAction.curtain_position = property.curtain_position
               }
@@ -1117,7 +1116,7 @@ ComponentWithComputed({
         const device = deviceMap[action.uniId]
         if (device) {
           newSceneData?.deviceConditions?.push({
-            controlEvent: [{ ep: 1, ...action.property }],
+            controlEvent: [{ modelName: device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1', ...action.property }],
             deviceId: action.uniId,
           })
         }

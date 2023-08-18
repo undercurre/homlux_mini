@@ -14,7 +14,7 @@ type Events = {
   }
   group_device_result_status: {
     devId: string
-    ep: number
+    modelName: string
     errCode: number
   }
   // 从websocket接受到信息 end
@@ -24,7 +24,7 @@ type Events = {
   invite_user_house: void
   scene_device_result_status: {
     devId: string
-    ep: number
+    modelName: string
     sceneId: string
     errCode: number // 0 成功，1-失败
   }

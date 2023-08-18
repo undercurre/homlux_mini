@@ -43,9 +43,9 @@ ComponentWithComputed({
         { name: '超时未关', ability: { ZoneStatus: 1, PIRToUnoccupiedDelay: 10 } },
       ],
       'midea.freepad.001.201': [
-        { name: '单击', ability: { OnOff: 1 } },
-        { name: '双击', ability: { OnOff: 2 } },
-        { name: '长按', ability: { OnOff: 3 } },
+        { name: '单击', ability: { power: 1 } },
+        { name: '双击', ability: { power: 2 } },
+        { name: '长按', ability: { power: 3 } },
       ],
     },
   },

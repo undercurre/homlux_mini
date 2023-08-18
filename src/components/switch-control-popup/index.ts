@@ -24,7 +24,7 @@ ComponentWithComputed({
       observer(value) {
         if (value) {
           this.setData({
-            OnOff: this.data.switchInfo.OnOff,
+            power: this.data.switchInfo.power,
           })
         }
       },
@@ -34,8 +34,8 @@ ComponentWithComputed({
      * {
     deviceId: string
     gatewayId: string
-    ep: number
-    OnOff: number
+    modelName: string
+    power: number
   }
      */
     switchInfo: {
@@ -47,7 +47,7 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    OnOff: 0,
+    power: 0,
   },
 
   /**
@@ -56,12 +56,12 @@ ComponentWithComputed({
   methods: {
     async controlSubDevice() {
       const switchInfo = this.data.switchInfo
-      const property = { OnOff: this.data.OnOff }
+      const property = { power: this.data.power }
 
       const res = await sendDevice({
         deviceId: switchInfo.deviceId,
         deviceType: 2,
-        ep: switchInfo.ep,
+        modelName: switchInfo.modelName,
         gatewayId: switchInfo.gatewayId,
         proType: PRO_TYPE.switch,
         property,
@@ -81,13 +81,13 @@ ComponentWithComputed({
         this.controlSubDevice()
       }
 
-      this.triggerEvent('confirm', { OnOff: this.data.OnOff })
+      this.triggerEvent('confirm', { power: this.data.power })
     },
     handleOnOffChange(e: WechatMiniprogram.CustomEvent) {
-      const OnOff = e.detail ? 1 : 0
+      const power = e.detail ? 1 : 0
 
       this.setData({
-        OnOff,
+        power,
       })
 
       this.handleConfirm()

@@ -62,7 +62,7 @@ ComponentWithComputed({
         if (scene.deviceConditions?.length > 0) {
           const device = deviceMap[scene.deviceConditions[0].deviceId]
           const switchName = device.switchInfoDTOList.find(
-            (switchItem) => switchItem.switchId === scene.deviceConditions[0].controlEvent[0].ep.toString(),
+            (switchItem) => switchItem.switchId === scene.deviceConditions[0].controlEvent[0].modelName.toString(),
           )?.switchName
 
           linkName = `${switchName} | ${device.deviceName}`
