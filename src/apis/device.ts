@@ -254,7 +254,12 @@ export async function sendCmdAddSubdevice(
  * Identify 闪多少秒
  */
 export async function findDevice(
-  { gatewayId, devId, modelName = 'wallSwitch1', Identify = 3 }: { gatewayId: string; devId: string; modelName?: string; Identify?: number },
+  {
+    gatewayId,
+    devId,
+    modelName = 'wallSwitch1',
+    Identify = 3,
+  }: { gatewayId: string; devId: string; modelName?: string; Identify?: number },
   options?: { loading?: boolean },
 ) {
   return await controlDevice(

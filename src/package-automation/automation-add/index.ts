@@ -5,13 +5,7 @@ import pageBehavior from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { deviceStore, sceneStore, homeStore, autosceneStore } from '../../store/index'
 import { PRO_TYPE, SENSOR_TYPE } from '../../config/index'
-import {
-  toPropertyDesc,
-  storage,
-  getCurrentPageParams,
-  strUtil,
-  checkInputNameIllegal,
-} from '../../utils/index'
+import { toPropertyDesc, storage, getCurrentPageParams, strUtil, checkInputNameIllegal } from '../../utils/index'
 
 ComponentWithComputed({
   options: {
@@ -1070,7 +1064,7 @@ ComponentWithComputed({
               })
             } else {
               const property = action.value
-              let ctrlAction = {} as IAnyObject
+              const ctrlAction = {} as IAnyObject
 
               if (device.deviceType === 2) {
                 ctrlAction.modelName = device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1'
@@ -1116,7 +1110,9 @@ ComponentWithComputed({
         const device = deviceMap[action.uniId]
         if (device) {
           newSceneData?.deviceConditions?.push({
-            controlEvent: [{ modelName: device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1', ...action.property }],
+            controlEvent: [
+              { modelName: device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1', ...action.property },
+            ],
             deviceId: action.uniId,
           })
         }

@@ -14,13 +14,7 @@ import {
   delLampAndSwitchAssociated,
   delSwitchAndSwitchAssociated,
 } from '../../apis/index'
-import {
-  emitter,
-  getCurrentPageParams,
-  toPropertyDesc,
-  storage,
-  strUtil,
-} from '../../utils/index'
+import { emitter, getCurrentPageParams, toPropertyDesc, storage, strUtil } from '../../utils/index'
 
 ComponentWithComputed({
   behaviors: [pageBehavior],

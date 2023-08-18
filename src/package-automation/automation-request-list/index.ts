@@ -98,7 +98,7 @@ ComponentWithComputed({
               }
             } else {
               const property = action.value
-              let ctrlAction = {} as IAnyObject
+              const ctrlAction = {} as IAnyObject
 
               if (device.deviceType === 2) {
                 ctrlAction.modelName = device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1'
@@ -158,7 +158,9 @@ ComponentWithComputed({
         const device = deviceMap[action.uniId]
         if (device) {
           sceneData?.deviceConditions?.push({
-            controlEvent: [{ modelName: device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1', ...action.property }],
+            controlEvent: [
+              { modelName: device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1', ...action.property },
+            ],
             deviceId: action.uniId,
           })
         }
