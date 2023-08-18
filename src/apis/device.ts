@@ -783,3 +783,39 @@ export async function groupControl(
     data,
   })
 }
+
+/**
+ * 获取网关网络信息
+ */
+export async function getGwNetworkInfo(
+  data: {
+    deviceId: string
+  },
+  options?: { loading?: boolean },
+) {
+  options?.loading && showLoading()
+
+  const downRes = await controlDevice({
+    deviceId: data.deviceId,
+    deviceType: 1,
+    method: 'networkAnalysis',
+    topic: '/zigbeeInfo',
+    inputData: [
+      {
+        mode: 'updateChannel',
+      },
+    ],
+  })
+
+  if (!downRes.success) {
+    return downRes
+  }
+
+  await delay(1000)
+
+  const deviceInfoRes = await queryDeviceInfoByDeviceId({ deviceId: data.deviceId })
+
+  options?.loading && hideLoading()
+
+  return deviceInfoRes
+}

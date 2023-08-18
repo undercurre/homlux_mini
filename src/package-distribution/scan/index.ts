@@ -7,7 +7,7 @@ import { deviceBinding, homeBinding } from '../../store/index'
 import { bleDevicesBinding, bleDevicesStore } from '../store/bleDeviceStore'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { checkWifiSwitch, strUtil, showLoading, hideLoading, delay, Logger, isAndroid } from '../../utils/index'
-import { checkDevice, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
+import { getGwNetworkInfo, checkDevice, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -142,13 +142,29 @@ ComponentWithComputed({
         return
       }
 
+      const queryInfo = await getGwNetworkInfo({deviceId: item.deviceId})
+
+        let networkInfo = {
+          channel: 0,
+          panId: 0,
+          extPanId: '',
+        }
+
+        if (queryInfo.success) {
+          networkInfo = {
+            channel: queryInfo.result.channel,
+            panId: queryInfo.result.panId,
+            extPanId: queryInfo.result.extPanId,
+          }
+        }
+
       this.setData({
         selectGateway: {
           deviceId: item.deviceId,
           sn: item.sn,
-          channel: item.channel || 0,
-          panId: item.panId || 0,
-          extPanId: item.extPanId || '',
+          channel: networkInfo.channel || 0,
+          panId: networkInfo.panId || 0,
+          extPanId: networkInfo.extPanId || '',
         },
       })
     },
@@ -548,7 +564,7 @@ ComponentWithComputed({
         },
       })
 
-      const flag = this.checkGateWayInfo()
+      const flag = await this.checkGateWayInfo()
 
       if (flag) {
         this.addSingleSubdevice()
@@ -558,7 +574,7 @@ ComponentWithComputed({
     /**
      * 添加子设备时，检测是否已选择网关信息
      */
-    checkGateWayInfo() {
+    async checkGateWayInfo() {
       const gatewayId = this.data.selectGateway.deviceId
 
       if (gatewayId) {
@@ -580,12 +596,29 @@ ComponentWithComputed({
 
       if (this.data.gatewayList.length === 1 && this.data.gatewayList[0].onLineStatus === 1) {
         const gateway = this.data.gatewayList[0]
+
+        const queryInfo = await getGwNetworkInfo({deviceId: gateway.deviceId})
+
+        let networkInfo = {
+          channel: 0,
+          panId: 0,
+          extPanId: '',
+        }
+
+        if (queryInfo.success) {
+          networkInfo = {
+            channel: queryInfo.result.channel,
+            panId: queryInfo.result.panId,
+            extPanId: queryInfo.result.extPanId,
+          }
+        }
+
         this.data.selectGateway = {
           deviceId: gateway.deviceId,
           sn: gateway.sn,
-          channel: gateway.channel || 0,
-          panId: gateway.panId || 0,
-          extPanId: gateway.extPanId || '',
+          channel: networkInfo.channel || 0,
+          panId: networkInfo.panId || 0,
+          extPanId: networkInfo.extPanId || '',
         }
       } else {
         this.setData({
@@ -600,11 +633,13 @@ ComponentWithComputed({
     /**
      * 添加附近搜索的子设备
      */
-    addNearSubdevice() {
+    async addNearSubdevice() {
       this.data.deviceInfo.type = 'near'
       this.data.deviceInfo.deviceName = '子设备'
 
-      if (!this.checkGateWayInfo()) {
+      const isValid = await this.checkGateWayInfo()
+
+      if (!isValid) {
         return
       }
 
