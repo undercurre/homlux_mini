@@ -599,9 +599,9 @@ ComponentWithComputed({
         return
       }
 
-      const { deviceId, sn, } = this.data.selectGateway
+      const { deviceId, sn } = this.data.selectGateway
 
-      const queryInfo = await getGwNetworkInfo({ deviceId })
+      const queryInfo = await getGwNetworkInfo({ deviceId }, { loading: true })
 
       let networkInfo = {
         channel: 0,
@@ -632,7 +632,7 @@ ComponentWithComputed({
     async addSingleSubdevice() {
       const { deviceId, sn } = this.data.selectGateway
 
-      const queryInfo = await getGwNetworkInfo({ deviceId })
+      const queryInfo = await getGwNetworkInfo({ deviceId }, { loading: true })
 
       let networkInfo = {
         channel: 0,
