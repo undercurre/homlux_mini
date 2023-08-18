@@ -802,7 +802,7 @@ export async function getGwNetworkInfo(
     topic: '/zigbeeInfo',
     inputData: [
       {
-        mode: 'updateChannel',
+        mode: 'getNetworkInfo',
       },
     ],
   })

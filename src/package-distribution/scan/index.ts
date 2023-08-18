@@ -142,21 +142,21 @@ ComponentWithComputed({
         return
       }
 
-      const queryInfo = await getGwNetworkInfo({deviceId: item.deviceId})
+      const queryInfo = await getGwNetworkInfo({ deviceId: item.deviceId })
 
-        let networkInfo = {
-          channel: 0,
-          panId: 0,
-          extPanId: '',
-        }
+      let networkInfo = {
+        channel: 0,
+        panId: 0,
+        extPanId: '',
+      }
 
-        if (queryInfo.success) {
-          networkInfo = {
-            channel: queryInfo.result.channel,
-            panId: queryInfo.result.panId,
-            extPanId: queryInfo.result.extPanId,
-          }
+      if (queryInfo.success) {
+        networkInfo = {
+          channel: queryInfo.result.channel,
+          panId: queryInfo.result.panId,
+          extPanId: queryInfo.result.extPanId,
         }
+      }
 
       this.setData({
         selectGateway: {
@@ -597,7 +597,7 @@ ComponentWithComputed({
       if (this.data.gatewayList.length === 1 && this.data.gatewayList[0].onLineStatus === 1) {
         const gateway = this.data.gatewayList[0]
 
-        const queryInfo = await getGwNetworkInfo({deviceId: gateway.deviceId})
+        const queryInfo = await getGwNetworkInfo({ deviceId: gateway.deviceId })
 
         let networkInfo = {
           channel: 0,
