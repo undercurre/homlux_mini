@@ -36,9 +36,6 @@ ComponentWithComputed({
     selectGateway: {
       deviceId: '',
       sn: '',
-      channel: 0,
-      extPanId: '',
-      panId: 0,
     },
     deviceInfo: {
       icon: '/package-distribution/assets/scan/light.png',
@@ -142,29 +139,10 @@ ComponentWithComputed({
         return
       }
 
-      const queryInfo = await getGwNetworkInfo({ deviceId: item.deviceId })
-
-      let networkInfo = {
-        channel: 0,
-        panId: 0,
-        extPanId: '',
-      }
-
-      if (queryInfo.success) {
-        networkInfo = {
-          channel: queryInfo.result.channel,
-          panId: queryInfo.result.panId,
-          extPanId: queryInfo.result.extPanId,
-        }
-      }
-
       this.setData({
         selectGateway: {
           deviceId: item.deviceId,
           sn: item.sn,
-          channel: networkInfo.channel || 0,
-          panId: networkInfo.panId || 0,
-          extPanId: networkInfo.extPanId || '',
         },
       })
     },
@@ -274,9 +252,6 @@ ComponentWithComputed({
         selectGateway: {
           deviceId: '',
           sn: '',
-          channel: 0,
-          extPanId: '',
-          panId: 0,
         },
       })
     },
@@ -597,28 +572,9 @@ ComponentWithComputed({
       if (this.data.gatewayList.length === 1 && this.data.gatewayList[0].onLineStatus === 1) {
         const gateway = this.data.gatewayList[0]
 
-        const queryInfo = await getGwNetworkInfo({ deviceId: gateway.deviceId })
-
-        let networkInfo = {
-          channel: 0,
-          panId: 0,
-          extPanId: '',
-        }
-
-        if (queryInfo.success) {
-          networkInfo = {
-            channel: queryInfo.result.channel,
-            panId: queryInfo.result.panId,
-            extPanId: queryInfo.result.extPanId,
-          }
-        }
-
         this.data.selectGateway = {
           deviceId: gateway.deviceId,
           sn: gateway.sn,
-          channel: networkInfo.channel || 0,
-          panId: networkInfo.panId || 0,
-          extPanId: networkInfo.extPanId || '',
         }
       } else {
         this.setData({
@@ -643,31 +599,63 @@ ComponentWithComputed({
         return
       }
 
-      const { deviceId, sn, channel, extPanId, panId } = this.data.selectGateway
+      const { deviceId, sn, } = this.data.selectGateway
+
+      const queryInfo = await getGwNetworkInfo({ deviceId })
+
+      let networkInfo = {
+        channel: 0,
+        panId: 0,
+        extPanId: '',
+      }
+
+      if (queryInfo.success) {
+        networkInfo = {
+          channel: queryInfo.result.channel,
+          panId: queryInfo.result.panId,
+          extPanId: queryInfo.result.extPanId,
+        }
+      }
 
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
           gatewayId: deviceId,
           gatewaySn: sn,
-          channel,
-          extPanId,
-          panId,
+          channel: networkInfo.channel || 0,
+          panId: networkInfo.panId || 0,
+          extPanId: networkInfo.extPanId || '',
         }),
       })
     },
 
     // 添加单个子设备
-    addSingleSubdevice() {
-      const { deviceId, sn, channel, extPanId, panId } = this.data.selectGateway
+    async addSingleSubdevice() {
+      const { deviceId, sn } = this.data.selectGateway
+
+      const queryInfo = await getGwNetworkInfo({ deviceId })
+
+      let networkInfo = {
+        channel: 0,
+        panId: 0,
+        extPanId: '',
+      }
+
+      if (queryInfo.success) {
+        networkInfo = {
+          channel: queryInfo.result.channel,
+          panId: queryInfo.result.panId,
+          extPanId: queryInfo.result.extPanId,
+        }
+      }
 
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/add-subdevice/index', {
           mac: this.data.deviceInfo.mac,
           gatewayId: deviceId,
           gatewaySn: sn,
-          channel,
-          extPanId,
-          panId,
+          channel: networkInfo.channel || 0,
+          panId: networkInfo.panId || 0,
+          extPanId: networkInfo.extPanId || '',
         }),
       })
     },
