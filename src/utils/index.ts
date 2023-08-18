@@ -124,7 +124,7 @@ export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
         endCount++
         lightCount++
         if (!device.onLineStatus) break
-        if (device.mzgdPropertyDTOList['1'].power) {
+        if (device.mzgdPropertyDTOList['light'].power) {
           lightOnCount++
         }
         break

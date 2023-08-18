@@ -117,7 +117,7 @@ ComponentWithComputed({
 
           if (actions.proType === PRO_TYPE.light) {
             property = {
-              ...device.mzgdPropertyDTOList[1],
+              ...device.mzgdPropertyDTOList['light'],
               ...property,
             }
           }

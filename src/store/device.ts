@@ -61,7 +61,7 @@ export const deviceStore = observable({
           ...device,
           uniId: device.deviceId,
           mzgdPropertyDTOList: {
-            1: device.mzgdPropertyDTOList[1],
+            light: device.mzgdPropertyDTOList['light'],
           },
         })
       }
@@ -105,12 +105,13 @@ export const deviceStore = observable({
       }
       // 包括proType.light在内，所有非网关设备都用这种方案插值
       else if (device.proType !== PRO_TYPE.gateway) {
+        const modelName = device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1'
         list.push({
           ...device,
           uniId: device.deviceId,
-          property: device.mzgdPropertyDTOList[1],
+          property: device.mzgdPropertyDTOList[modelName],
           mzgdPropertyDTOList: {
-            1: device.mzgdPropertyDTOList[1],
+            [modelName]: device.mzgdPropertyDTOList[modelName],
           },
         })
       }

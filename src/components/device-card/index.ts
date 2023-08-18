@@ -85,7 +85,7 @@ ComponentWithComputed({
       }
       // 灯及灯组
       else if (data.deviceInfo.proType === PRO_TYPE.light) {
-        return data.deviceInfo.mzgdPropertyDTOList['1'].power
+        return data.deviceInfo.mzgdPropertyDTOList['light'].power
           ? '/assets/img/base/power-on.png'
           : '/assets/img/base/power-off.png'
       }
@@ -198,7 +198,8 @@ ComponentWithComputed({
       // 状态反转
       let power = false
       if (this.data.deviceInfo.proType === PRO_TYPE.light) {
-        power = !this.data.deviceInfo.mzgdPropertyDTOList['1'].power
+        const modelName = this.data.deviceInfo.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1'
+        power = !this.data.deviceInfo.mzgdPropertyDTOList[modelName].power
       } else if (this.data.deviceInfo.proType === PRO_TYPE.switch) {
         const { switchId } = this.data.deviceInfo.switchInfoDTOList[0]
         power = !this.data.deviceInfo.mzgdPropertyDTOList[switchId]?.power

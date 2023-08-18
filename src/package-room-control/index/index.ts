@@ -493,7 +493,8 @@ ComponentWithComputed({
               this.data.checkedList.includes(originDevice!.deviceId) &&
               originDevice!.select
             ) {
-              const prop = device!.mzgdPropertyDTOList['1']
+              const modelName = device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1'
+              const prop = device!.mzgdPropertyDTOList[modelName]
               if (originDevice.proType === PRO_TYPE.light) {
                 diffData.lightStatus = {
                   brightness: prop.brightness,
@@ -886,7 +887,7 @@ ComponentWithComputed({
             },
           })
         } else {
-          const properties = device.mzgdPropertyDTOList['1']
+          const properties = device.mzgdPropertyDTOList['light']
           const desc = toPropertyDesc(device.proType, properties)
 
           const action = {
@@ -996,7 +997,8 @@ ComponentWithComputed({
 
       // 选择灯卡片时，同步设备状态到控制弹窗
       if (toCheck) {
-        const prop = e.detail.mzgdPropertyDTOList['1']
+        const modelName = e.detail.proType === PRO_TYPE.light ? 'light' : '1'
+        const prop = e.detail.mzgdPropertyDTOList[modelName]
         if (e.detail.proType === PRO_TYPE.light) {
           diffData.lightStatus = {
             brightness: prop.brightness,

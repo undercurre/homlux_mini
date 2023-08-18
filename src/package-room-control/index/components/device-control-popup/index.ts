@@ -62,7 +62,7 @@ ComponentWithComputed({
           if (!device || device.proType !== PRO_TYPE.light) {
             return
           }
-          const { minColorTemp, maxColorTemp } = device.mzgdPropertyDTOList[1].colorTempRange!
+          const { minColorTemp, maxColorTemp } = device.mzgdPropertyDTOList['light'].colorTempRange!
           this.setData({
             minColorTemp,
             maxColorTemp,
@@ -714,11 +714,11 @@ ComponentWithComputed({
         return
       }
 
-      const oldValue = device.mzgdPropertyDTOList[1][type]
+      const oldValue = device.mzgdPropertyDTOList['light'][type]
 
       // 即时改变devicePageList，以便场景引用
       runInAction(() => {
-        device.mzgdPropertyDTOList[1][type] = this.data.lightInfoInner[type]
+        device.mzgdPropertyDTOList['light'][type] = this.data.lightInfoInner[type]
       })
       this.triggerEvent('updateList', device)
 
@@ -734,7 +734,7 @@ ComponentWithComputed({
       })
 
       if (!res.success) {
-        device.mzgdPropertyDTOList[1][type] = oldValue
+        device.mzgdPropertyDTOList['light'][type] = oldValue
         this.triggerEvent('updateList', device)
         Toast('控制失败')
       }
