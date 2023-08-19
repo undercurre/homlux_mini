@@ -38,7 +38,7 @@ page {
 }
 .tips-step-arrow2 {
   position: absolute;
-  bottom: calc(env(safe-area-inset-bottom) + 500rpx);
+  bottom: 470rpx;
   right: 228rpx;
   width: 238rpx;
   height: 300rpx;
@@ -46,7 +46,7 @@ page {
 .tips-step3-txt {
   position: absolute;
   width: 100%;
-  bottom: calc(env(safe-area-inset-bottom) + 660rpx);
+  bottom: 600rpx;
 }
 .tips-step-next {
   position: absolute;

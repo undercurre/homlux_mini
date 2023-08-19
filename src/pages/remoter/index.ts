@@ -118,6 +118,7 @@ Component({
   },
   pageLifetimes: {
     show() {
+      // TabBar选中项处理
       if (typeof this.getTabBar === 'function' && this.getTabBar()) {
         this.getTabBar().setData({
           selected: 1,
@@ -138,11 +139,10 @@ Component({
         })
       }
 
+      // 我的设备排序
       this.data.deviceList.forEach((d) => {
         d.orderNum = this.data._orderMap[d.dragId] ?? d.orderNum
       })
-
-      // 我的设备排序
       this.setData({
         deviceList: this.data.deviceList.sort((a, b) => a.orderNum - b.orderNum),
       })
@@ -172,6 +172,7 @@ Component({
         return
       }
 
+      // 安卓需要同时打开位置开关及权限
       if (isAndroid()) {
         this.consultSystemLocation()
       }
@@ -194,7 +195,7 @@ Component({
         cancelButtonText: '知道了',
         confirmButtonText: '去设置',
         confirmButtonOpenType: 'openSetting', // 确认按钮的微信开放能力
-      }).catch(() => Logger.error('Refused WxBlePermission'))
+      }).catch(() => Logger.error('WxBlePermission Refused'))
 
       return false
     },
