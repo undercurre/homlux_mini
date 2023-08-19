@@ -471,7 +471,7 @@ ComponentWithComputed({
                 ...device?.mzgdPropertyDTOList[modelName],
               }
 
-              diffData[`devicePageList[${groupIndex}][${index}].mzgdPropertyDTOList[${modelName}]`] = newVal
+              diffData[`devicePageList[${groupIndex}][${index}].mzgdPropertyDTOList.${modelName}`] = newVal
 
               // 更新场景关联信息
               diffData[`devicePageList[${groupIndex}][${index}].linkSceneName`] = this.getLinkSceneName({
@@ -857,7 +857,7 @@ ComponentWithComputed({
       const selectList = deviceList.filter((device) => {
         let [, switchId] = device.uniId.split(':')
 
-        switchId = switchId ?? 1
+        switchId = switchId ?? 'light'
 
         return device.mzgdPropertyDTOList[switchId].ButtonMode !== 2 && device.onLineStatus
       })
