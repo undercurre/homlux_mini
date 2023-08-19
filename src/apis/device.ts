@@ -172,7 +172,7 @@ export async function sendDevice(
         topic: '/subdevice/control',
         deviceId: data.gatewayId as string,
         deviceType: data.deviceType,
-        method: data.proType === PRO_TYPE.light ? 'lightControl' : 'panelSingleControl',
+        method: data.proType === PRO_TYPE.light ? 'lightControlNew' : 'panelSingleControlNew',
         inputData: [
           {
             devId: data.deviceId,
@@ -266,7 +266,7 @@ export async function findDevice(
     {
       topic: '/subdevice/control',
       deviceId: gatewayId,
-      method: 'deviceFind',
+      method: 'deviceFindNew',
       inputData: [
         {
           devId,
