@@ -1,5 +1,5 @@
 import { observable, runInAction } from 'mobx-miniprogram'
-import { BleClient, bleUtil, Logger, throttle } from '../../utils/index'
+import { BleClient, bleUtil, Logger, throttle, unique } from '../../utils/index'
 import { roomBinding, deviceBinding } from '../../store/index'
 import { batchCheckDevice, batchGetProductInfoByBPid } from '../../apis/index'
 
@@ -35,6 +35,8 @@ export const bleDevicesStore = observable({
     })
     // 监听扫描到新设备事件, 安卓 6.0 及以上版本，无定位权限或定位开关未打开时，无法进行设备搜索
     wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
+      res.devices = unique(res.devices, 'deviceId') as WechatMiniprogram.BlueToothDevice[] // 去重
+
       const deviceList = res.devices
         .filter((item) => {
           const foundItem = bleDevicesStore.bleDeviceList.find((foundItem) => foundItem.deviceUuid === item.deviceId)
