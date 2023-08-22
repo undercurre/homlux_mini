@@ -53,14 +53,12 @@ export class WifiSocket {
 
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     _instance = this
-
-    Logger.log('constructor', dayjs().format('HH:mm:ss'))
   }
 
   async isConnectDeviceWifi() {
     const connectedRes = await wx.getConnectedWifi().catch((err) => err)
 
-    Logger.log('获取当前wifi信息：', connectedRes, dayjs().format('HH:mm:ss'))
+    Logger.log('获取当前wifi信息：', connectedRes)
 
     if (connectedRes && (connectedRes as IAnyObject).wifi?.SSID === this.SSID) {
       Logger.log(`检测目标wifi：${this.SSID}已连接`)
@@ -172,7 +170,6 @@ export class WifiSocket {
   }
 
   bindUdp = () => {
-    Logger.log('bindUdp', this, dayjs().format('HH:mm:ss'))
     const port = udpClient?.bind(6366)
 
     Logger.log('port', port)
@@ -188,7 +185,6 @@ export class WifiSocket {
   }
 
   closeUdp = () => {
-    Logger.log('closeUdp', dayjs().format('HH:mm:ss'))
     udpClient?.close()
   }
 
@@ -211,7 +207,7 @@ export class WifiSocket {
           }
         },
         fail: (failRes) => {
-          Logger.error('getLocalIPAddress-fail', failRes, dayjs().format('HH:mm:ss'))
+          Logger.error('getLocalIPAddress-fail', failRes)
           resolve(false)
         },
       })
@@ -259,21 +255,6 @@ export class WifiSocket {
     // 网关固定IP，优先11.1，ip,冲突才会选择33.1
     // const ipList = ['192.168.11.1', '192.168.33.1']
 
-    // for (const ip of ipList) {
-    //   Logger.log('ip:', ip)
-    //   const connectTcpRes = await this.connectTcp(ip).catch((err) => ({ success: false, msg: err }))
-
-    //   Logger.log('connectTcpRes', connectTcpRes)
-
-    //   Logger.info(`尝试连接${ip}：${connectTcpRes.success}`, dayjs().format('HH:mm:ss'))
-    //   if (connectTcpRes.success) {
-    //     this.deviceInfo.ip = ip
-
-    //     tcpClient.close()
-    //     return { success: true, msg: '固定IP连接成功' }
-    //   }
-    // }
-
     // 获取IP失败时，强制默认192.168.11.1
     if (!this.deviceInfo.ip) {
       Logger.error('采用默认Ip：', '192.168.11.1')
@@ -295,7 +276,7 @@ export class WifiSocket {
 
       const listen = (res: WechatMiniprogram.GeneralCallbackResult) => {
         Logger.log(IP, 'tcpClient.onConnect port：', res)
-        Logger.debug('TCP连接时间：', Date.now() - start)
+        Logger.log('TCP连接时间：', Date.now() - start)
 
         clearTimeout(timeId)
         tcpClient?.offConnect()
@@ -335,8 +316,6 @@ export class WifiSocket {
       Logger.log('tcpClient.onClose', res)
       this.deviceInfo.isConnectTcp = false
     })
-
-    Logger.log('initTcpSocket', dayjs().format('HH:mm:ss'))
   }
 
   closeTcp() {
@@ -359,13 +338,6 @@ export class WifiSocket {
     udpClient.onClose((res) => {
       Logger.log('udpClient.onClose', res)
     })
-
-    // 防止在配网页面直接关闭小程序，导致udp端口没有被占用释放，下次打开时会无法创建同样端口的udp实例，需要在合适时机销毁没用的udp实例
-    // wx.onAppHide(this.closeUdp)
-
-    // wx.onAppShow(this.bindUdp)
-
-    Logger.log('initUdpSocket', dayjs().format('HH:mm:ss'))
 
     return port
   }
@@ -416,7 +388,7 @@ export class WifiSocket {
           data: params.data,
         }
 
-        Logger.log(`${params.method}-send: ${params.topic}`, msgData, dayjs().format('HH:mm:ss'))
+        Logger.log(`${params.method}-send: ${params.topic}`, msgData)
 
         const message = aesUtil.encrypt(JSON.stringify(msgData), this.key)
         const sendMsg = strUtil.hexStringToArrayBuffer(message)

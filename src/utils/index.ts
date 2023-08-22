@@ -12,7 +12,7 @@ export * from './app'
 export * from './log'
 export * from './deviceModel'
 
-import { PRO_TYPE } from '../config/index'
+import {PRO_TYPE} from '../config/index'
 
 export function delay(ms: number) {
   return new Promise<void>((resolve) => {

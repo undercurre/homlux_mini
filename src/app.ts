@@ -11,7 +11,7 @@ import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore } from './store/index'
 import { isConnect } from './utils/network'
 import { reaction } from 'mobx-miniprogram'
-// import homOs from 'homlux-sdk'
+import homOs from 'homlux-sdk'
 
 App<IAppOption>({
   async onLaunch() {
@@ -30,21 +30,25 @@ App<IAppOption>({
     // 获取状态栏、顶部栏、底部栏高度
     setNavigationBarAndBottomBarHeight()
 
-    // 如果用户已经登录，开始请求数据
-    if (storage.get<string>('token')) {
-      appOnLaunchService()
-    } else {
-      othersStore.setIsInit(false)
-    }
-
     // 监听houseId变化，切换websocket连接,切换成对应家庭的sock连接
     reaction(
       () => homeStore.currentHomeDetail.houseId,
       () => {
         closeWebSocket()
         startWebsocketService()
+
+        let key = '21c53171bd6b4fbda4fce28438690814'
+
+        homOs.config({ key: key.slice(0, 16), homeId: homeStore.currentHomeDetail.houseId })
       },
     )
+
+    // 如果用户已经登录，开始请求数据
+    if (storage.get<string>('token')) {
+      appOnLaunchService()
+    } else {
+      othersStore.setIsInit(false)
+    }
 
     // 监听内存不足告警事件
     wx.onMemoryWarning(function () {

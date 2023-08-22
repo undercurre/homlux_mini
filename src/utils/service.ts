@@ -127,7 +127,6 @@ export async function appOnLaunchService() {
     console.log('开始时间', start / 1000)
     await Promise.all([userStore.updateUserInfo(), homeStore.homeInit()])
     console.log('加载完成时间', Date.now() / 1000, '用时', (Date.now() - start) / 1000 + 's')
-    startWebsocketService()
   } catch (e) {
     Logger.error('appOnLaunchService-err:', e)
   }
