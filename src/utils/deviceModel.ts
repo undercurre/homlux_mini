@@ -97,8 +97,8 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
       !isNullOrUnDef(property.brightness) && descList.push(`亮度${property.brightness}%`)
 
       if (!isNullOrUnDef(property.colorTemperature)) {
-        const color =
-          (property.colorTemperature / 100) * (property.maxColorTemp - property.minColorTemp) + property.minColorTemp
+        const { maxColorTemp, minColorTemp } = property.colorTempRange || property
+        const color = (property.colorTemperature / 100) * (maxColorTemp - minColorTemp) + minColorTemp
         descList.push(`色温${color}K`)
       }
     }

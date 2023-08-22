@@ -302,8 +302,8 @@ ComponentWithComputed({
               } else {
                 const desc = toPropertyDesc(device.proType, {
                   ...action.controlAction[0],
-                  minColorTemp: device.property!.minColorTemp,
-                  maxColorTemp: device.property!.maxColorTemp,
+                  minColorTemp: device.property!.colorTempRange.minColorTemp,
+                  maxColorTemp: device.property!.colorTempRange.maxColorTemp,
                 })
                 tempSceneDeviceActionsFlatten.push({
                   uniId: device.uniId,
@@ -314,8 +314,8 @@ ComponentWithComputed({
                   proType: device.proType,
                   value: {
                     ...action.controlAction[0],
-                    minColorTemp: device.property!.minColorTemp,
-                    maxColorTemp: device.property!.maxColorTemp,
+                    minColorTemp: device.property!.colorTempRange.minColorTemp,
+                    maxColorTemp: device.property!.colorTempRange.maxColorTemp,
                     modelName: device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1',
                   },
                   orderNum: 0,
