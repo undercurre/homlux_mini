@@ -4,6 +4,7 @@ import { roomBinding, deviceBinding } from '../../store/index'
 import { batchCheckDevice, batchGetProductInfoByBPid } from '../../apis/index'
 
 let _foundList = [] as IBleBaseInfo[]
+let _bleStateChangeListen: WechatMiniprogram.OnBluetoothAdapterStateChangeCallback | null
 
 // 缓存的产品信息
 const productInfoMap: {
@@ -14,6 +15,28 @@ const productInfoMap: {
     switchNum: number
   }
 } = {}
+
+wx.onBluetoothAdapterStateChange((res) => {
+  Logger.log('onBluetoothAdapterStateChange-store', res)
+
+  runInAction(() => {
+    bleDevicesStore.discovering = res.discovering
+    bleDevicesStore.available = res.available
+  })
+
+  // 用于蓝牙开关被中途关掉（会终止蓝牙搜索）又打开的情况，恢复蓝牙搜索状态
+  if (bleDevicesStore.isStart && res.available && !res.discovering) {
+    wx.startBluetoothDevicesDiscovery({
+      allowDuplicatesKey: true,
+      powerLevel: 'high',
+      interval: 5000,
+    })
+  }
+
+  if (_bleStateChangeListen) {
+    _bleStateChangeListen(res)
+  }
+})
 
 export const bleDevicesStore = observable({
   available: false, // 是否打开蓝牙开关
@@ -30,9 +53,7 @@ export const bleDevicesStore = observable({
       return
     }
 
-    runInAction(() => {
-      this.isStart = true
-    })
+    this.isStart = true
     // 监听扫描到新设备事件, 安卓 6.0 及以上版本，无定位权限或定位开关未打开时，无法进行设备搜索
     wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
       res.devices = unique(res.devices, 'deviceId') as WechatMiniprogram.BlueToothDevice[] // 去重
@@ -80,9 +101,7 @@ export const bleDevicesStore = observable({
     Logger.log('终止蓝牙发现')
     wx.stopBluetoothDevicesDiscovery()
     wx.offBluetoothDeviceFound()
-    runInAction(() => {
-      this.isStart = false
-    })
+    this.isStart = false
   },
 
   reset() {
@@ -97,25 +116,6 @@ export const bleDevicesStore = observable({
     })
 
     _foundList = []
-
-    wx.offBluetoothAdapterStateChange()
-
-    wx.onBluetoothAdapterStateChange((res) => {
-      Logger.log('onBluetoothAdapterStateChange-store', res)
-
-      runInAction(() => {
-        bleDevicesStore.discovering = res.discovering
-        bleDevicesStore.available = res.available
-      })
-
-      if (this.isStart && !res.discovering) {
-        wx.startBluetoothDevicesDiscovery({
-          allowDuplicatesKey: true,
-          powerLevel: 'high',
-          interval: 5000,
-        })
-      }
-    })
   },
 
   updateBleDeviceList() {
@@ -134,6 +134,14 @@ export const bleDevicesStore = observable({
   // 清除缓存信息
   clearCache() {
     _foundList = []
+  },
+
+  onBluetoothAdapterStateChange(listener: WechatMiniprogram.OnBluetoothAdapterStateChangeCallback) {
+    _bleStateChangeListen = listener
+  },
+
+  offBluetoothAdapterStateChange() {
+    _bleStateChangeListen = null
   },
 })
 

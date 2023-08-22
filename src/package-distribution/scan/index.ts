@@ -64,6 +64,8 @@ ComponentWithComputed({
       await homeBinding.store.updateHomeInfo()
     },
     detached() {
+      Logger.debug('scan-detach')
+      bleDevicesStore.stopBLeDiscovery()
       wx.closeBluetoothAdapter()
       wx.stopWifi()
       clearInterval(this.data._listenLocationTimeId)
@@ -75,6 +77,8 @@ ComponentWithComputed({
       this.setData({
         isShowPage: true,
       })
+
+      console.debug('pageLifetimes', this.data.scanType === 'subdevice', this.data.isBlePermit, bleDevicesStore.available)
 
       // 子设备配网页，蓝牙权限及开关已开情况下
       this.data.scanType === 'subdevice' &&
@@ -203,6 +207,7 @@ ComponentWithComputed({
     },
 
     async initBle() {
+      Logger.debug('initBle', bleDevicesStore.discovering)
       if (bleDevicesStore.discovering) {
         return
       }
@@ -231,15 +236,18 @@ ComponentWithComputed({
       // 系统是否已打开蓝牙
       const res = await this.checkSystemBleSwitch()
 
+      Logger.debug('checkSystemBleSwitch', res)
+
       if (!res) {
         const listen = (res: WechatMiniprogram.OnBluetoothAdapterStateChangeCallbackResult) => {
           if (res.available) {
             bleDevicesStore.startBleDiscovery()
             this.checkWxScanEnter()
-            wx.offBluetoothAdapterStateChange(listen)
+
+            bleDevicesStore.offBluetoothAdapterStateChange()
           }
         }
-        wx.onBluetoothAdapterStateChange(listen)
+        bleDevicesStore.onBluetoothAdapterStateChange(listen)
       } else {
         bleDevicesStore.startBleDiscovery()
         this.checkWxScanEnter()
