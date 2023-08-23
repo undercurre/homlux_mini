@@ -14,7 +14,7 @@ page {
 }
 
 .list-bottom-placeholder {
-  height: calc(env(safe-area-inset-bottom) + 32rpx);
+  height: calc(env(safe-area-inset-bottom) + 64rpx);
 }
 
 .tips-btn {

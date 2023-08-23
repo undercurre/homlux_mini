@@ -45,8 +45,14 @@
 
   <drag wx:if="{{deviceList.length > 0}}" id="drag" list-data="{{deviceList}}" item-height="{{184}}" scroll-top="{{scrollTop}}" generic:item="card" bind:cardTap="handleCardTap" bind:sortend="handleSortEnd"></drag>
 
+  <view>
+    <text class="text-20rpx">{{debug}}</text>
+  </view>
+
   <view class="w-full flex-center pb-40rpx mt-20rpx">
     <template is="btn" data="{{ isSeeking: isSeeking }}"></template>
+
+    <van-button custom-class="small-btn" color="rgba(255,255,255,0.60)" size="small" round bind:click="startAdvertising">发送广播</van-button>
   </view>
   <view class="list-bottom-placeholder"> </view>
 </scroll-view>

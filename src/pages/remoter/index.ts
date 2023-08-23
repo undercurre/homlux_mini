@@ -1,6 +1,8 @@
 import pageBehavior from '../../behaviors/pageBehaviors'
 import Dialog from '@vant/weapp/dialog/dialog'
-import { isAndroid, Logger, checkWxBlePermission, storage } from '../../utils/index'
+import { isAndroid, Logger, checkWxBlePermission, storage, unique } from '../../utils/index'
+import remoterProtocol from '../../utils/remoterProtocol'
+import { createBleServer, bleAdvertising } from '../../utils/remoterUtils'
 // import { deviceConfig, sn8ToType } from '../../config/remoter'
 
 type RmDeviceItem = {
@@ -80,44 +82,34 @@ Component({
         switchStatus: 'on',
         switchType: '照明',
       },
-      {
-        dragId: 4,
-        orderNum: 4,
-        devicePic: '/assets/img/remoter/fanLight.png',
-        deviceName: '风扇灯4',
-        sn8: '7909AC82',
-        switchStatus: 'on',
-        switchType: '照明',
-      },
-      {
-        dragId: 5,
-        orderNum: 5,
-        devicePic: '/assets/img/remoter/fanLight.png',
-        deviceName: '风扇灯5',
-        sn8: '7909AC82',
-        switchStatus: 'on',
-        switchType: '照明',
-      },
-      {
-        dragId: 6,
-        orderNum: 6,
-        devicePic: '/assets/img/remoter/fanLight.png',
-        deviceName: '风扇灯6',
-        sn8: '7909AC82',
-        switchStatus: 'on',
-        switchType: '照明',
-      },
     ], // 我的设备
+    _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
+    debug: '',
   },
 
   lifetimes: {
     detached() {
-      clearInterval(this.data._listenLocationTimeId)
-      wx.offBluetoothAdapterStateChange()
+      wx.offBluetoothAdapterStateChange() // 移除蓝牙适配器状态变化事件的全部监听函数
+      wx.offBluetoothDeviceFound() // 移除搜索到新设备的事件的全部监听函数
+
+      // 关闭外围设备服务端
+      if (this.data._bleServer) {
+        this.data._bleServer.close()
+      }
+      // 移除系统位置信息开关状态的监听
+      if (this.data._listenLocationTimeId) {
+        clearInterval(this.data._listenLocationTimeId)
+      }
     },
   },
   pageLifetimes: {
     show() {
+      this.initCapacity()
+    },
+  },
+
+  methods: {
+    async onLoad() {
       // TabBar选中项处理
       if (typeof this.getTabBar === 'function' && this.getTabBar()) {
         this.getTabBar().setData({
@@ -125,12 +117,6 @@ Component({
         })
       }
 
-      this.initCapacity()
-    },
-  },
-
-  methods: {
-    onLoad() {
       // 是否点击过场景使用提示的我知道了，如果没点击过就显示
       const hasConfirmRemoterTips = storage.get<boolean>('hasConfirmRemoterTips')
       if (!hasConfirmRemoterTips) {
@@ -148,6 +134,9 @@ Component({
       })
 
       this.initDrag()
+
+      // 建立BLE外围设备服务端
+      this.data._bleServer = await createBleServer()
     },
     // 拖拽列表初始化
     initDrag() {
@@ -158,8 +147,7 @@ Component({
       drag.init()
     },
     /**
-     * @description 初始化蓝牙模块
-     * TODO 目前只检查权限，未实质打开服务
+     * @description 初始化蓝牙模块，只检查权限，未实质打开服务
      */
     async initCapacity() {
       await this.consultWxBlePermission()
@@ -280,31 +268,59 @@ Component({
         url: `/package-remoter/pannel/index?sn8=${sn8}`,
       })
     },
-    cancelTips() {
-      this.setData({
-        showTips: false,
-      })
-      storage.set('hasConfirmRemoterTips', true)
-    },
-    nextTips() {
-      if (this.data.tipsStep === 1) {
-        this.cancelTips()
-      }
-      this.setData({
-        tipsStep: this.data.tipsStep + 1,
-      })
-    },
+    // 搜索设备
     toSeek() {
       this.setData({
         isSeeking: true,
       })
 
-      setTimeout(() => {
-        this.setData({
-          isSeeking: false,
-          isNotFound: !this.data.isNotFound,
-        })
-      }, 3000)
+      // 监听扫描到新设备事件
+      wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
+        const rList = unique(res.devices, 'deviceId') // 过滤重复设备信息
+          .map((item) => remoterProtocol.searchDeviceCallBack(item))
+          .filter((item) => !!item)
+
+        console.log('搜寻蓝牙外围设备：', rList[0])
+
+        if (rList.length) {
+          this.endSeek()
+          // TODO 目前只有单一设备
+          this.setData({
+            debug: rList[0]?.payload.toLocaleUpperCase(),
+          })
+        }
+      })
+
+      // 开始搜寻附近的蓝牙外围设备
+      const SEEK_TIMEOUT = 3000
+      wx.startBluetoothDevicesDiscovery({
+        allowDuplicatesKey: true,
+        powerLevel: 'high',
+        interval: SEEK_TIMEOUT,
+      })
+
+      // 如果一直找不到，也自动停止搜索
+      // !! 停止时间要稍长于 SEEK_TIMEOUT，否则会导致监听方法不执行
+      setTimeout(() => this.endSeek(), SEEK_TIMEOUT + 1000)
+    },
+    // 停止搜索设备
+    endSeek() {
+      wx.stopBluetoothDevicesDiscovery({
+        success: () => console.log('停止搜寻蓝牙外围设备'),
+      })
+      this.setData({
+        isSeeking: false,
+        isNotFound: !this.data.isNotFound,
+      })
+    },
+    startAdvertising() {
+      if (!this.data._bleServer) {
+        return
+      }
+      bleAdvertising(this.data._bleServer, {
+        addr: 'AA9078563412',
+        payload: '0001B80B4416F6670001000000000000',
+      })
     },
     onPageScroll(e: { detail: { scrollTop: number } }) {
       this.setData({
@@ -330,6 +346,21 @@ Component({
         this.data._orderMap[d.dragId] = d.orderNum
       })
       storage.set('orderMap', this.data._orderMap)
+    },
+    // 取消新手提示
+    cancelTips() {
+      this.setData({
+        showTips: false,
+      })
+      storage.set('hasConfirmRemoterTips', true)
+    },
+    nextTips() {
+      if (this.data.tipsStep === 1) {
+        this.cancelTips()
+      }
+      this.setData({
+        tipsStep: this.data.tipsStep + 1,
+      })
     },
   },
 })

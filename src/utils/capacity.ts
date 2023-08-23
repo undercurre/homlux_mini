@@ -8,7 +8,8 @@ import { Logger } from './index'
  */
 export const checkWxBlePermission = async () => {
   // 初始化蓝牙模块
-  const mode = 'central' // 主机模式
+  const mode = 'peripheral' // 从机模式
+  // const mode = 'central' // 主机模式
   const openBleRes = (await wx
     .openBluetoothAdapter({ mode })
     .catch((err: WechatMiniprogram.BluetoothError) => err)) as WechatMiniprogram.BluetoothError & { errno?: number }
