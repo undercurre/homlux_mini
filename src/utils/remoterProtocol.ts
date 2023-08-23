@@ -1,18 +1,23 @@
 import cryptoUtils from './remoterCrypto'
+import { mfIdToType } from '../config/remoter'
+
+// 遥控器支持设备列表
+const SUPPORT_LIST = Object.keys(mfIdToType)
 
 /**
  * @description 小程序扫描蓝牙回调处理函数
- * @param comId 企业ID，TODO 默认暂为CA0A，需要与设备电控同步改为4D11
+ * @param manufacturerId 设备ID，
  */
-const _searchDeviceCallBack = (device: WechatMiniprogram.BlueToothDevice, comId = 'CA0A') => {
+const _searchDeviceCallBack = (device: WechatMiniprogram.BlueToothDevice) => {
   if (!device.advertisData) return
   const advertisData = cryptoUtils.ab2hex(device.advertisData)
-  const compid = advertisData.slice(0, 4)
+  const manufacturerId = advertisData.slice(0, 4)
   //	筛选指定设备
-  if (!compid.toLocaleUpperCase().includes(comId)) return
+  if (!SUPPORT_LIST.includes(manufacturerId.toLocaleUpperCase())) return
   const advData = _parseAdvertisData(advertisData.slice(4))
   return {
     advertisDataStr: advertisData.slice(0),
+    manufacturerId,
     ...device,
     ...advData,
   }

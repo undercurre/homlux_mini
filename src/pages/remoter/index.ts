@@ -3,16 +3,17 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import { isAndroid, Logger, checkWxBlePermission, storage, unique } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import { createBleServer, bleAdvertising } from '../../utils/remoterUtils'
-// import { deviceConfig, sn8ToType } from '../../config/remoter'
+// import { deviceConfig, mfIdToType } from '../../config/remoter'
 
 type RmDeviceItem = {
   dragId: number
   orderNum: number
   devicePic: string
   deviceName: string
-  sn8: string
+  mfId: string
   switchStatus: string
   switchType: string
+  saved: boolean // 是否已保存在本地（我的设备）
 }
 
 Component({
@@ -40,9 +41,10 @@ Component({
       {
         devicePic: '/assets/img/remoter/ceilLight.png',
         deviceName: '吸顶灯',
-        sn8: '7909AC81',
+        mfId: '4D11',
         switchStatus: 'off',
         switchType: '小夜灯',
+        saved: false,
       },
     ], // 搜索到的设备
     deviceList: [
@@ -51,36 +53,40 @@ Component({
         orderNum: 1,
         devicePic: '/assets/img/remoter/fanLight.png',
         deviceName: '风扇灯',
-        sn8: '7909AC82',
+        mfId: '4D12',
         switchStatus: 'on',
         switchType: '照明',
+        saved: true,
       },
       {
         dragId: 1,
         orderNum: 0,
         devicePic: '/assets/img/remoter/bathHeater.png',
         deviceName: '浴霸',
-        sn8: '7909AC83',
+        mfId: '4D26',
         switchStatus: 'on',
         switchType: '小夜灯',
+        saved: true,
       },
       {
         dragId: 2,
         orderNum: 2,
         devicePic: '/assets/img/remoter/fanLight.png',
-        deviceName: '风扇灯2',
-        sn8: '7909AC82',
+        deviceName: '吸顶灯2',
+        mfId: '4D11',
         switchStatus: 'on',
         switchType: '照明',
+        saved: true,
       },
       {
         dragId: 3,
         orderNum: 3,
         devicePic: '/assets/img/remoter/fanLight.png',
-        deviceName: '风扇灯3',
-        sn8: '7909AC82',
+        deviceName: '吸顶灯3',
+        mfId: '4D11',
         switchStatus: 'on',
         switchType: '照明',
+        saved: true,
       },
     ], // 我的设备
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
@@ -260,12 +266,12 @@ Component({
     },
 
     handleCardTap(e: WechatMiniprogram.TouchEvent) {
-      const sn8 = e.detail
-      if (!sn8) {
+      const mfId = e.detail
+      if (!mfId) {
         return
       }
       wx.navigateTo({
-        url: `/package-remoter/pannel/index?sn8=${sn8}`,
+        url: `/package-remoter/pannel/index?mfId=${mfId}`,
       })
     },
     // 搜索设备

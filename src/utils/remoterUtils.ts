@@ -20,6 +20,7 @@ export function createBleServer() {
 }
 
 /**
+ * TODO 区分安卓与IOS
  * @description 开始发送广播
  * @param server
  * @param params.addr 蓝牙地址

@@ -11,7 +11,7 @@
             <image src="/assets/img/base/bleOn.png" class="w-30 h-40 ml-16rpx" />
           </view>
           <view>
-            <text class="text-black-tips text-28rpx mt-8rpx">未连接</text>
+            <text class="text-black-tips text-28rpx mt-8rpx">{{desc}}</text>
           </view>
         </view>
       </view>

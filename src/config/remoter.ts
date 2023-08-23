@@ -119,7 +119,9 @@ export const deviceConfig: IAnyObject = {
 /**
  * 设备SN8->类型映射
  */
-export const sn8ToType: Record<string, string> = {
-  '7909AC81': 'ceilLight',
-  '7909AC82': 'fanLight',
+export const mfIdToType: Record<string, string> = {
+  CA0A: 'ceilLight', // TODO 删除
+  '4D11': 'ceilLight', // 吸顶灯
+  '4D12': 'fanLight', // 风扇灯，TODO 预留
+  '4D26': 'fanLight', // 浴霸，TODO 预留
 }

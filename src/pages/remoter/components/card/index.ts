@@ -17,10 +17,15 @@ ComponentWithComputed({
   computed: {
     // 设备数据，兼容独立使用和在drag组件中引用
     device(data) {
-      if (data.item?.data) {
-        return data.item.data
+      return data.item?.data ?? data.item
+    },
+    desc(data) {
+      const device = data.item?.data ?? data.item
+      if (device?.saved === true) {
+        const statusText = device.switchStatus === 'on' ? '开启' : '关闭'
+        return `${device.switchType}${statusText}`
       }
-      return data.item
+      return '未连接'
     },
   },
 
@@ -34,7 +39,7 @@ ComponentWithComputed({
    */
   methods: {
     handleCardTap() {
-      this.triggerEvent('cardTap', this.data.device?.sn8)
+      this.triggerEvent('cardTap', this.data.device?.mfId)
     },
   },
 })
