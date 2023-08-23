@@ -184,9 +184,23 @@ async function checkBleDeviceList(list: IBleBaseInfo[]) {
 
   inValidList.length && Logger.debug('设备云端不存在注册记录：', inValidList)
 
-  // 合法设备列表
+  // 合法注册且没有配网设备列表
   const validDeviceList = list.filter((item) => {
-    const isValid = checkRes.result.findIndex((checkItem) => item.zigbeeMac === checkItem.mac && checkItem.isValid) >= 0
+    const { zigbeeMac, isConfig } = item
+
+    const isValid = checkRes.result.findIndex((checkItem) => {
+      // 过滤已经配网的设备
+      // 设备网络状态 0x00：未入网   0x01：正在入网   0x02:  已经入网
+      // 但由于丢包情况，设备本地状态不可靠，需要查询云端是否存在该设备的绑定状态（是否存在家庭绑定关系）结合判断是否真正配网
+      // 2、过滤云端存在房间绑定关系且设备本地状态为02(已绑定状态)的设备
+      const isBind = checkItem.roomId && isConfig === '02'
+
+      if (isBind) {
+        Logger.log(`【${zigbeeMac}】已绑定`)
+      }
+
+      return zigbeeMac === checkItem.mac && checkItem.isValid && !isBind
+    }) >= 0
 
     return isValid
   })
@@ -237,7 +251,6 @@ async function checkBleDeviceList(list: IBleBaseInfo[]) {
     handleBleDeviceInfo({
       ...item,
       productName: productInfo.productName,
-      roomId: '',
       switchNum: productInfo.switchNum,
       modelId: productInfo.modelId,
       productIcon: productInfo.productIcon,
@@ -252,25 +265,18 @@ async function checkBleDeviceList(list: IBleBaseInfo[]) {
 function handleBleDeviceInfo(
   deviceInfo: IBleBaseInfo & {
     productName: string
-    roomId: string
     switchNum: number
     modelId: string
     productIcon: string
   },
 ) {
   let { productName: deviceName } = deviceInfo
-  const { deviceUuid, mac, roomId, isConfig, zigbeeMac, proType, switchNum, modelId, productIcon } = deviceInfo
+  const { deviceUuid, mac, isConfig, zigbeeMac, proType, switchNum, modelId, productIcon } = deviceInfo
 
-  // 过滤已经配网的设备
-  // 设备网络状态 0x00：未入网   0x01：正在入网   0x02:  已经入网
-  // 但由于丢包情况，设备本地状态不可靠，需要查询云端是否存在该设备的绑定状态（是否存在家庭绑定关系）结合判断是否真正配网
-  // 1、存在接口查询过程，过滤期间重复添加的设备
-  // 2、过滤云端存在房间绑定关系且设备本地状态为02(已绑定状态)的设备
+  // 过滤已经在列表的的设备  存在接口查询过程，过滤期间重复上报的设备
   if (
-    bleDevicesStore.bleDeviceList.find((foundItem) => foundItem.deviceUuid === deviceUuid) ||
-    (roomId && isConfig === '02')
+    bleDevicesStore.bleDeviceList.find((foundItem) => foundItem.deviceUuid === deviceUuid)
   ) {
-    Logger.log(`${deviceName}：${zigbeeMac}已绑定`)
     return
   }
 
