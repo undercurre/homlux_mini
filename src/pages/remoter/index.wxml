@@ -4,6 +4,7 @@
 <nav-bar>
   <view class="flex-1">
     <text class="ml-24rpx text-40rpx font-semibold">遥控器</text>
+    <text class="ml-4rpx px-8rpx text-18rpx bg-hex-debug text-white">{{debugStr}}</text>
   </view>
 </nav-bar>
 
@@ -33,7 +34,7 @@
 </view>
 
 <scroll-view wx:else enhanced scroll-y show-scrollbar="{{false}}" style="height: {{scrollViewHeight}}px;" bind:scroll="onPageScroll">
-  <view class="pt-16rpx">
+  <view class="pt-16rpx" wx:if="{{foundList.length}}">
     <text class="ml-40rpx text-hex-6e6f74 text-28">发现设备</text>
   </view>
 
@@ -44,10 +45,6 @@
   </view>
 
   <drag wx:if="{{deviceList.length > 0}}" id="drag" list-data="{{deviceList}}" item-height="{{184}}" scroll-top="{{scrollTop}}" generic:item="card" bind:cardTap="handleCardTap" bind:sortend="handleSortEnd"></drag>
-
-  <view>
-    <text class="text-20rpx">{{debug}}</text>
-  </view>
 
   <view class="w-full flex-center pb-40rpx mt-20rpx">
     <template is="btn" data="{{ isSeeking: isSeeking }}"></template>

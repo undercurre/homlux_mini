@@ -227,6 +227,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .bg-white{--un-bg-opacity:1;background-color:rgba(255,255,255,var(--un-bg-opacity));}
 .bg-hex-FFF4F4{--un-bg-opacity:1;background-color:rgba(255,244,244,var(--un-bg-opacity));}
 .bg-hex-ffffff_42{background-color:rgba(255,255,255,0.42);}
+.bg-hex-debug{background-color:rgba(0,0,0,0.42);}
 .bg-red{--un-bg-opacity:1;background-color:rgba(255,56,73,var(--un-bg-opacity));}
 .bg-transparent{background-color:transparent;}
 .border{border-width:1px;}

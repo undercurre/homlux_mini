@@ -39,7 +39,7 @@ ComponentWithComputed({
    */
   methods: {
     handleCardTap() {
-      this.triggerEvent('cardTap', this.data.device?.mfId)
+      this.triggerEvent('cardTap', this.data.device)
     },
   },
 })

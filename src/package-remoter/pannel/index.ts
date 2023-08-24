@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { deviceConfig, mfIdToType } from '../../config/remoter'
+import { deviceConfig } from '../../config/remoter'
 
 ComponentWithComputed({
   options: {
@@ -25,12 +25,11 @@ ComponentWithComputed({
   },
 
   methods: {
-    async onLoad(query: { mfId: string }) {
-      const { mfId } = query
-      console.log({ mfId })
-      const deviceType = mfIdToType[mfId]
+    async onLoad(query: { deviceType: string, deviceModel: string }) {
+      const { deviceType, deviceModel } = query
+      console.log({ deviceType, deviceModel })
       this.setData({
-        device: { ...deviceConfig[deviceType] },
+        device: { ...deviceConfig[deviceType][deviceModel] },
       })
     },
 

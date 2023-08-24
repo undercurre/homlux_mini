@@ -1,16 +1,19 @@
 import pageBehavior from '../../behaviors/pageBehaviors'
 import Dialog from '@vant/weapp/dialog/dialog'
-import { isAndroid, Logger, checkWxBlePermission, storage, unique } from '../../utils/index'
+import { isAndroid, Logger, checkWxBlePermission, storage, unique, isNullOrUnDef } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import { createBleServer, bleAdvertising } from '../../utils/remoterUtils'
-// import { deviceConfig, mfIdToType } from '../../config/remoter'
+import { deviceConfig, MIN_RSSI } from '../../config/remoter'
+// import { deviceConfig } from '../../config/remoter'
 
 type RmDeviceItem = {
   dragId: number
+  deviceId: string
   orderNum: number
   devicePic: string
   deviceName: string
-  mfId: string
+  deviceType: string
+  deviceModel: string
   switchStatus: string
   switchType: string
   saved: boolean // 是否已保存在本地（我的设备）
@@ -37,60 +40,47 @@ Component({
     tipsStep: 0,
     isSeeking: false, // 正在搜索设备
     isNotFound: false, // 已搜索过至少一次但未找到
-    foundList: [
-      {
-        devicePic: '/assets/img/remoter/ceilLight.png',
-        deviceName: '吸顶灯',
-        mfId: '4D11',
-        switchStatus: 'off',
-        switchType: '小夜灯',
-        saved: false,
-      },
-    ], // 搜索到的设备
+    foundList: [] as RmDeviceItem[], // 搜索到的设备
     deviceList: [
       {
         dragId: 0,
+        deviceId: '',
         orderNum: 1,
         devicePic: '/assets/img/remoter/fanLight.png',
-        deviceName: '风扇灯',
-        mfId: '4D12',
+        deviceName: '风扇灯Mock',
+        deviceType: '13',
+        deviceModel: '02',
         switchStatus: 'on',
         switchType: '照明',
         saved: true,
       },
       {
         dragId: 1,
+        deviceId: '',
         orderNum: 0,
         devicePic: '/assets/img/remoter/bathHeater.png',
-        deviceName: '浴霸',
-        mfId: '4D26',
+        deviceName: '浴霸Mock',
+        deviceType: '26',
+        deviceModel: '01',
         switchStatus: 'on',
         switchType: '小夜灯',
         saved: true,
       },
       {
         dragId: 2,
+        deviceId: '',
         orderNum: 2,
         devicePic: '/assets/img/remoter/fanLight.png',
-        deviceName: '吸顶灯2',
-        mfId: '4D11',
-        switchStatus: 'on',
-        switchType: '照明',
-        saved: true,
-      },
-      {
-        dragId: 3,
-        orderNum: 3,
-        devicePic: '/assets/img/remoter/fanLight.png',
-        deviceName: '吸顶灯3',
-        mfId: '4D11',
+        deviceName: '吸顶灯Mock',
+        deviceType: '13',
+        deviceModel: '01',
         switchStatus: 'on',
         switchType: '照明',
         saved: true,
       },
     ], // 我的设备
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
-    debug: '',
+    debugStr: '0000',
   },
 
   lifetimes: {
@@ -266,12 +256,16 @@ Component({
     },
 
     handleCardTap(e: WechatMiniprogram.TouchEvent) {
-      const mfId = e.detail
-      if (!mfId) {
+      const { deviceType, deviceModel, saved } = e.detail
+      if (isNullOrUnDef(deviceType) || isNullOrUnDef(deviceModel)) {
+        return
+      }
+      // TODO 添加到我的设备
+      if (!saved) {
         return
       }
       wx.navigateTo({
-        url: `/package-remoter/pannel/index?mfId=${mfId}`,
+        url: `/package-remoter/pannel/index?deviceType=${deviceType}&deviceModel=${deviceModel}`,
       })
     },
     // 搜索设备
@@ -289,10 +283,35 @@ Component({
         console.log('搜寻蓝牙外围设备：', rList[0])
 
         if (rList.length) {
+          // 终止搜寻
           this.endSeek()
-          // TODO 目前只有单一设备
+
+          // 刷新发现设备列表
+          // TODO 排除已在我的设备列表的设备
+          const foundList = rList
+            .filter((item) => item!.RSSI >= MIN_RSSI) // 过滤弱信号设备
+            .map((_d) => {
+              const deviceType = _d!.deviceType
+              const deviceModel = _d!.deviceModel
+              const detail = deviceConfig[deviceType][deviceModel] // deviceModel
+              return {
+                devicePic: detail.devicePic,
+                deviceName: detail.deviceName,
+                deviceId: detail.deviceId,
+                deviceType,
+                deviceModel,
+                switchStatus: 'off',
+                switchType: '小夜灯',
+                saved: false,
+              }
+            }) as RmDeviceItem[]
+
+          // TODO 目前只显示单一设备调试信息
+          const debugStr = `[recv]${rList[0]?.payload.toLocaleUpperCase()},${rList[0]?.RSSI}dBm`
+
           this.setData({
-            debug: rList[0]?.payload.toLocaleUpperCase(),
+            foundList,
+            debugStr,
           })
         }
       })
@@ -319,6 +338,7 @@ Component({
         isNotFound: !this.data.isNotFound,
       })
     },
+    // 广播控制指令
     startAdvertising() {
       if (!this.data._bleServer) {
         return

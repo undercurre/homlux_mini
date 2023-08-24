@@ -1,8 +1,8 @@
 import cryptoUtils from './remoterCrypto'
-import { mfIdToType } from '../config/remoter'
+import { deviceConfig } from '../config/remoter'
 
 // 遥控器支持设备列表
-const SUPPORT_LIST = Object.keys(mfIdToType)
+const SUPPORT_LIST = Object.keys(deviceConfig)
 
 /**
  * @description 小程序扫描蓝牙回调处理函数
@@ -12,12 +12,14 @@ const _searchDeviceCallBack = (device: WechatMiniprogram.BlueToothDevice) => {
   if (!device.advertisData) return
   const advertisData = cryptoUtils.ab2hex(device.advertisData)
   const manufacturerId = advertisData.slice(0, 4)
+  const deviceType = manufacturerId.slice(2)
   //	筛选指定设备
-  if (!SUPPORT_LIST.includes(manufacturerId.toLocaleUpperCase())) return
+  if (!SUPPORT_LIST.includes(deviceType.toLocaleUpperCase())) return
   const advData = _parseAdvertisData(advertisData.slice(4))
   return {
-    advertisDataStr: advertisData.slice(0),
+    fullAdvertistData: advertisData.slice(0),
     manufacturerId,
+    deviceType,
     ...device,
     ...advData,
   }
@@ -25,35 +27,30 @@ const _searchDeviceCallBack = (device: WechatMiniprogram.BlueToothDevice) => {
 //	解析 advertisData
 const _parseAdvertisData = (advertisDataStr: string) => {
   const VBCV = advertisDataStr.slice(0, 2)
-  const { version, fromDevice, BTP, connect, visibility } = _parseVBCV(VBCV)
   const encryptFlag = advertisDataStr.slice(2, 4)
-  const { encryptType, encryptIndex } = _parseEncryptFlag(encryptFlag)
   const addr = advertisDataStr.slice(4, 16)
   const payload = advertisDataStr.slice(16)
+  const deviceModel = advertisDataStr.slice(16, 18)
   return {
-    version,
-    fromDevice,
-    BTP,
-    connect,
-    visibility,
-    encryptType,
-    encryptIndex,
+    ..._parseVBCV(VBCV),
+    ..._parseEncryptFlag(encryptFlag),
+    deviceModel,
     addr,
     payload,
   }
 }
-//	解析 version,btp.src,connect,visibility
+//	解析 version,btp,src,connect,visibility
 const _parseVBCV = (vbcvHexStr: string) => {
   //	16进制字符串转为2进制,补全8位
   const vbcvBinary = parseInt(vbcvHexStr, 16).toString(2).padStart(8, '0')
   const version = parseInt(vbcvBinary.slice(0, 4), 2)
-  const fromDevice = !!+vbcvBinary[4]
-  const BTP = !+vbcvBinary[5]
-  const connect = !+vbcvBinary[6]
-  const visibility = !+vbcvBinary[7]
+  const src = +vbcvBinary[4]
+  const BTP = !!+vbcvBinary[5]
+  const connect = !!+vbcvBinary[6]
+  const visibility = !!+vbcvBinary[7]
   return {
     version,
-    fromDevice,
+    src,
     BTP,
     connect,
     visibility,
