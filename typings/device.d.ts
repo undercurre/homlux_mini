@@ -14,7 +14,7 @@ declare namespace Device {
       minColorTemp: number
     }
     ButtonMode?: number
-    ButtonScene?: number
+    buttonScene?: number
     curtain_position?: string
     curtain_status?: string
     curtain_direction?: 'positive' | 'reverse' // 窗帘开合方向

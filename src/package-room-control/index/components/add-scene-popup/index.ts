@@ -138,7 +138,7 @@ ComponentWithComputed({
             controlEvent: [
               {
                 modelName: this.data.linkSwitch.split(':')[1],
-                ButtonScene: 1,
+                buttonScene: 1,
               },
             ],
           },

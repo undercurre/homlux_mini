@@ -539,7 +539,7 @@ ComponentWithComputed({
           controlEvent: [
             {
               modelName: switchId,
-              ButtonScene: 1,
+              buttonScene: 1,
             },
           ],
         },

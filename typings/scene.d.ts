@@ -64,10 +64,10 @@ declare namespace Scene {
   interface DeviceCondition {
     /**
      * 绑定控制集合，
-     * 例如："controlEvent":[{"modelName":'wallSwitch1',"ButtonScene":1}]
-     * ButtonScene 电控所需参数，目前固定为1
+     * 例如："controlEvent":[{"modelName":'wallSwitch1',"buttonScene":1}]
+     * buttonScene 电控所需参数，目前固定为1
      */
-    controlEvent: { modelName: string; ButtonScene: number }[]
+    controlEvent: { modelName: string; buttonScene: number }[]
     /** 设备id */
     deviceId: string
   }
