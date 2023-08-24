@@ -177,11 +177,11 @@ ComponentWithComputed({
       const sensorList = deviceStore.allRoomDeviceFlattenList.filter((item) => item.proType === PRO_TYPE.sensor)
       sensorList.forEach((item) => {
         if (item.productId === SENSOR_TYPE.humanSensor) {
-          item.property = { Occupancy: 1 }
+          item.property = { Occupancy: 1, modelName: 'irDetector' }
         } else if (item.productId === SENSOR_TYPE.doorsensor) {
-          item.property = { ZoneStatus: 1 }
+          item.property = { doorStatus: 1, modelName: 'magnet' }
         } else {
-          item.property = { power: 1 }
+          item.property = { buttonClicked: 1, modelName: 'freepad' }
         }
       })
       this.setData({
@@ -1110,9 +1110,7 @@ ComponentWithComputed({
         const device = deviceMap[action.uniId]
         if (device) {
           newSceneData?.deviceConditions?.push({
-            controlEvent: [
-              { modelName: device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1', ...action.property },
-            ],
+            controlEvent: [{ ...(action.property as { modelName: string }) }],
             deviceId: action.uniId,
           })
         }

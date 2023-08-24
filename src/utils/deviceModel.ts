@@ -122,12 +122,12 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
     !isNullOrUnDef(property.Occupancy) && descList.push(property.Occupancy ? '有人移动' : '超时无人移动')
     !isNullOrUnDef(property.IlluminanceLevelStatus) &&
       descList.push(property.IlluminanceLevelStatus === '2' ? '环境光亮' : '环境光暗')
-    !isNullOrUnDef(property.ZoneStatus) &&
+    !isNullOrUnDef(property.doorStatus) &&
       descList.push(
-        property.ZoneStatus ? (!isNullOrUnDef(property.PIRToUnoccupiedDelay) ? '超时未关' : '打开') : '关闭',
+        property.doorStatus ? (!isNullOrUnDef(property.PIRToUnoccupiedDelay) ? '超时未关' : '打开') : '关闭',
       )
-    !isNullOrUnDef(property.power) &&
-      descList.push(property.power === 1 ? '单击' : property.power === 2 ? '双击' : '长按')
+    !isNullOrUnDef(property.buttonClicked) &&
+      descList.push(property.buttonClicked === 1 ? '单击' : property.buttonClicked === 2 ? '双击' : '长按')
   }
 
   return descList
