@@ -7,7 +7,7 @@
   <!-- 上半部分 -->
   <view class="mt-24rpx w-750rpx">
     <van-cell-group inset>
-      <van-cell is-link bind:click="handleDeviceNameEditPopup" title="设备名称" value="{{deviceName}}"></van-cell>
+      <van-cell is-link bind:click="handleDeviceNameEditPopup" title="设备名称" value="{{device.deviceName}}"></van-cell>
 
       <van-cell is-link title="首页开关" value="{{fastSwitchName}}" border="{{false}}" bind:click="toSetting"></van-cell>
     </van-cell-group>

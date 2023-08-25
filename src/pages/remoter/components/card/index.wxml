@@ -8,7 +8,7 @@
         <view class="h-96rpx flex flex-col justify-center items-start ml-32rpx">
           <view class="flex flex-row flex-center">
             <text class="text-black-2a text-32rpx">{{device.deviceName}}</text>
-            <image src="/assets/img/base/bleOn.png" class="w-30 h-40 ml-16rpx" />
+            <image src="{{bleIcon}}" class="w-30 h-40 ml-16rpx" />
           </view>
           <view>
             <text class="text-black-tips text-28rpx mt-8rpx">{{desc}}</text>
@@ -16,7 +16,7 @@
         </view>
       </view>
       <view slot="right-icon" class="flex-col-center">
-        <mz-button icon="/assets/img/base/power-stroke.png" iconActive="/assets/img/base/power-stroke2.png" text="{{device.switchType}}"></mz-button>
+        <mz-button icon="/assets/img/base/power-stroke.png" iconActive="/assets/img/base/power-stroke2.png" text="{{device.switchType || ''}}"></mz-button>
       </view>
     </van-cell>
   </van-cell-group>

@@ -1,11 +1,14 @@
 // 搜寻蓝牙设备时的信号强度阈值(最小值)
 export const MIN_RSSI = -75
 
+// 搜寻超时时间
+export const SEEK_TIMEOUT = 3000
+
 /**
  * @description 设备交互数据配置，按设备类型区分
  * { deviceType: { deviceModel: { configDetail }}}
  */
-export const deviceConfig: IAnyObject = {
+export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = {
   '13': {
     '01': {
       deviceName: '吸顶灯',
@@ -66,6 +69,7 @@ export const deviceConfig: IAnyObject = {
     },
     '02': {
       deviceName: '风扇灯',
+      devicePic: '',
       joystick: {
         up: {
           key: 'brightIncrease',
@@ -124,6 +128,7 @@ export const deviceConfig: IAnyObject = {
   '26': {
     '01': {
       deviceName: '浴霸',
+      devicePic: '',
       joystick: {
         up: {
           key: 'brightIncrease',

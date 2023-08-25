@@ -45,6 +45,8 @@ type Events = {
   del_house_user: {
     userId: string
   }
+  // 删除遥控器
+  remoterDeleted: void
 }
 
 export const WSEventType = {

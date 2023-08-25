@@ -2,6 +2,8 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
+import { deviceConfig } from '../../config/remoter'
+import { storage, emitter } from '../../utils/index'
 
 ComponentWithComputed({
   behaviors: [pageBehavior],
@@ -9,10 +11,11 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
-    deviceName: '吸顶灯',
     showEditNamePopup: false,
     isShowSetting: false,
     fastSwitchName: '照明开关',
+    _localList: (storage.get<Remoter.LocalList>('_localList') ?? {}) as Remoter.LocalList,
+    device: {} as IAnyObject,
   },
 
   computed: {
@@ -31,12 +34,12 @@ ComponentWithComputed({
   },
 
   methods: {
-    /**
-     * 生命周期函数--监听页面加载
-     */
-    onLoad() {},
-
-    onShow() {},
+    async onLoad(query: { deviceType: string; deviceModel: string; deviceId: string }) {
+      const { deviceType, deviceModel, deviceId } = query
+      this.setData({
+        device: { ...deviceConfig[deviceType][deviceModel], deviceId },
+      })
+    },
 
     handleDeviceNameEditPopup() {
       this.setData({
@@ -75,26 +78,27 @@ ComponentWithComputed({
     handleDeviceDelete() {
       Dialog.confirm({
         title: '确定删除该设备？',
-      }).then(async () => {
-        // if (true) {
-        Toast('删除成功')
-        wx.navigateBack()
-        // } else {
-        //   Toast('删除失败')
-        // }
       })
+        .then(async () => {
+          Toast('删除成功')
+          delete this.data._localList[this.data.device.deviceId]
+          storage.set('_localList', this.data._localList)
+          emitter.emit('remoterDeleted')
+
+          wx.navigateBack({
+            delta: 2,
+          })
+        })
+        .catch(() => {})
     },
     handleDeviceUnbind() {
       Dialog.confirm({
         title: '确认解除实体遥控器与当前设备的配对关系？',
-      }).then(async () => {
-        // if (true) {
-        Toast('解绑成功')
-        wx.navigateBack()
-        // } else {
-        //   Toast('解绑失败')
-        // }
       })
+        .then(async () => {
+          Toast('解绑成功')
+        })
+        .catch(() => {})
     },
   },
 })

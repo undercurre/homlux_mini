@@ -17,19 +17,11 @@ ComponentWithComputed({
 
   computed: {},
 
-  lifetimes: {
-    // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
-    attached: function () {},
-    moved: function () {},
-    detached: function () {},
-  },
-
   methods: {
-    async onLoad(query: { deviceType: string, deviceModel: string }) {
-      const { deviceType, deviceModel } = query
-      console.log({ deviceType, deviceModel })
+    async onLoad(query: { deviceType: string; deviceModel: string; deviceId: string }) {
+      const { deviceType, deviceModel, deviceId } = query
       this.setData({
-        device: { ...deviceConfig[deviceType][deviceModel] },
+        device: { ...deviceConfig[deviceType][deviceModel], deviceType, deviceModel, deviceId },
       })
     },
 
@@ -38,8 +30,9 @@ ComponentWithComputed({
     },
 
     toSetting() {
+      const { deviceType, deviceModel, deviceId } = this.data.device
       wx.navigateTo({
-        url: '/package-remoter/setting/index',
+        url: `/package-remoter/setting/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceId=${deviceId}`,
       })
     },
   },

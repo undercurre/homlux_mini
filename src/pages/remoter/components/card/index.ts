@@ -1,9 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 
 ComponentWithComputed({
-  options: {
-    styleIsolation: 'apply-shared',
-  },
   /**
    * 组件的属性列表
    */
@@ -26,6 +23,11 @@ ComponentWithComputed({
         return `${device.switchType}${statusText}`
       }
       return '未连接'
+    },
+    bleIcon(data) {
+      const device = data.item?.data ?? data.item
+      const iconName = device.discovered === false ? 'bleOff' : 'bleOn'
+      return `/assets/img/base/${iconName}.png`
     },
   },
 

@@ -1,25 +1,54 @@
 import pageBehavior from '../../behaviors/pageBehaviors'
+import { ComponentWithComputed } from 'miniprogram-computed'
 import Dialog from '@vant/weapp/dialog/dialog'
-import { isAndroid, Logger, checkWxBlePermission, storage, unique, isNullOrUnDef } from '../../utils/index'
+import { isAndroid, Logger, checkWxBlePermission, storage, unique, isNullOrUnDef, emitter } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import { createBleServer, bleAdvertising } from '../../utils/remoterUtils'
-import { deviceConfig, MIN_RSSI } from '../../config/remoter'
-// import { deviceConfig } from '../../config/remoter'
+import { deviceConfig, MIN_RSSI, SEEK_TIMEOUT } from '../../config/remoter'
 
-type RmDeviceItem = {
-  dragId: number
-  deviceId: string
-  orderNum: number
-  devicePic: string
-  deviceName: string
-  deviceType: string
-  deviceModel: string
-  switchStatus: string
-  switchType: string
-  saved: boolean // 是否已保存在本地（我的设备）
-}
+const MOCK_DEVICES = [
+  {
+    dragId: '0',
+    deviceId: '',
+    orderNum: 1,
+    devicePic: '/assets/img/remoter/fanLight.png',
+    deviceName: '风扇灯Mock',
+    deviceType: '13',
+    deviceModel: '02',
+    switchStatus: 'on',
+    switchType: '照明',
+    saved: true,
+    discovered: false,
+  },
+  {
+    dragId: '1',
+    deviceId: '',
+    orderNum: 0,
+    devicePic: '/assets/img/remoter/bathHeater.png',
+    deviceName: '浴霸Mock',
+    deviceType: '26',
+    deviceModel: '01',
+    switchStatus: 'on',
+    switchType: '小夜灯',
+    saved: true,
+    discovered: false,
+  },
+  {
+    dragId: '2',
+    deviceId: '',
+    orderNum: 2,
+    devicePic: '/assets/img/remoter/fanLight.png',
+    deviceName: '吸顶灯Mock',
+    deviceType: '13',
+    deviceModel: '01',
+    switchStatus: 'on',
+    switchType: '照明',
+    saved: true,
+    discovered: false,
+  },
+] as Remoter.DeviceItem[]
 
-Component({
+ComponentWithComputed({
   behaviors: [pageBehavior],
   /**
    * 页面的初始数据
@@ -29,7 +58,7 @@ Component({
     isSystemBlePermit: false, // 系统蓝牙权限是否开启
     _listenLocationTimeId: 0, // 监听系统位置信息是否打开的计时器， 0为不存在监听
     statusBarHeight: storage.get<number>('statusBarHeight') as number,
-    _orderMap: (storage.get<Record<number, number>>('orderMap') ?? {}) as Record<number, number>,
+    _localList: (storage.get<Remoter.LocalList>('_localList') ?? {}) as Remoter.LocalList,
     scrollTop: 0,
     scrollViewHeight:
       (storage.get<number>('windowHeight') as number) -
@@ -40,47 +69,16 @@ Component({
     tipsStep: 0,
     isSeeking: false, // 正在搜索设备
     isNotFound: false, // 已搜索过至少一次但未找到
-    foundList: [] as RmDeviceItem[], // 搜索到的设备
-    deviceList: [
-      {
-        dragId: 0,
-        deviceId: '',
-        orderNum: 1,
-        devicePic: '/assets/img/remoter/fanLight.png',
-        deviceName: '风扇灯Mock',
-        deviceType: '13',
-        deviceModel: '02',
-        switchStatus: 'on',
-        switchType: '照明',
-        saved: true,
-      },
-      {
-        dragId: 1,
-        deviceId: '',
-        orderNum: 0,
-        devicePic: '/assets/img/remoter/bathHeater.png',
-        deviceName: '浴霸Mock',
-        deviceType: '26',
-        deviceModel: '01',
-        switchStatus: 'on',
-        switchType: '小夜灯',
-        saved: true,
-      },
-      {
-        dragId: 2,
-        deviceId: '',
-        orderNum: 2,
-        devicePic: '/assets/img/remoter/fanLight.png',
-        deviceName: '吸顶灯Mock',
-        deviceType: '13',
-        deviceModel: '01',
-        switchStatus: 'on',
-        switchType: '照明',
-        saved: true,
-      },
-    ], // 我的设备
+    foundList: [] as Remoter.DeviceItem[], // 搜索到的设备
+    deviceList: [] as Remoter.DeviceItem[], // 我的设备
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
     debugStr: '0000',
+  },
+
+  computed: {
+    deviceIds(data) {
+      return data.deviceList.map((device) => device.deviceId)
+    },
   },
 
   lifetimes: {
@@ -96,11 +94,16 @@ Component({
       if (this.data._listenLocationTimeId) {
         clearInterval(this.data._listenLocationTimeId)
       }
+
+      emitter.off('remoterDeleted')
     },
   },
   pageLifetimes: {
-    show() {
-      this.initCapacity()
+    async show() {
+      await this.initCapacity()
+
+      // 搜索一轮设备
+      this.toSeek()
     },
   },
 
@@ -121,18 +124,77 @@ Component({
         })
       }
 
-      // 我的设备排序
-      this.data.deviceList.forEach((d) => {
-        d.orderNum = this.data._orderMap[d.dragId] ?? d.orderNum
-      })
-      this.setData({
-        deviceList: this.data.deviceList.sort((a, b) => a.orderNum - b.orderNum),
+      // 初始化我的设备
+      this.initDeviceList()
+
+      // 监听扫描到新设备事件
+      wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
+        const rList = unique(res.devices, 'deviceId') // 过滤重复设备信息
+          .map((item) => remoterProtocol.searchDeviceCallBack(item))
+          .filter((item) => !!item)
+
+        console.log('搜寻蓝牙外围设备：', rList[0])
+
+        if (rList.length) {
+          // 终止搜寻
+          this.endSeek()
+
+          const diffData = {} as IAnyObject
+
+          const foundList = [] as Remoter.DeviceItem[]
+          rList.forEach((item) => {
+            const isSavedDevice = this.data.deviceIds.includes(item!.deviceId)
+            // 刷新发现设备列表
+            if (
+              item!.RSSI >= MIN_RSSI && // 过滤弱信号设备
+              !isSavedDevice // 排除已在我的设备列表的设备
+            ) {
+              const deviceType = item!.deviceType
+              const deviceModel = item!.deviceModel
+              const detail = deviceConfig[deviceType][deviceModel]
+
+              foundList.push({
+                deviceId: item!.deviceId,
+                devicePic: detail.devicePic,
+                deviceName: detail.deviceName,
+                deviceType,
+                deviceModel,
+                switchStatus: 'off',
+                switchType: '小夜灯',
+                saved: false,
+              })
+            }
+            // 刷新我的设备列表
+            else if (isSavedDevice) {
+              const index = this.data.deviceList.findIndex((d) => d.deviceId === item?.deviceId)
+              diffData[`deviceList[${index}].discovered`] = true
+            }
+          })
+
+          // TODO 目前只显示单一设备调试信息
+          const debugStr = `[recv]${rList[0]?.payload.toLocaleUpperCase()},${rList[0]?.RSSI}dBm`
+
+          diffData.foundList = foundList
+          diffData.debugStr = debugStr
+          console.log('diffData', diffData)
+
+          this.setData(diffData)
+
+          this.initDrag()
+        }
       })
 
       this.initDrag()
 
       // 建立BLE外围设备服务端
       this.data._bleServer = await createBleServer()
+
+      // 根据通知,更新设备列表
+      emitter.on('remoterDeleted', () => {
+        this.data._localList = (storage.get<Remoter.LocalList>('_localList') ?? {}) as Remoter.LocalList
+
+        this.initDeviceList()
+      })
     },
     // 拖拽列表初始化
     initDrag() {
@@ -142,6 +204,36 @@ Component({
       const drag = this.selectComponent('#drag')
       drag.init()
     },
+
+    // 从storage初始化我的设备列表
+    // TODO 删除MOCK列表
+    initDeviceList() {
+      const deviceList = [...MOCK_DEVICES] as Remoter.DeviceItem[]
+      for (const deviceId in this.data._localList) {
+        const { deviceModel, deviceType, orderNum } = this.data._localList[deviceId]
+        if (!deviceModel || !deviceType) return
+
+        const detail = deviceConfig[deviceType][deviceModel]
+        deviceList.push({
+          dragId: deviceId,
+          deviceId,
+          orderNum: orderNum ?? 0,
+          devicePic: detail.devicePic,
+          deviceName: detail.deviceName,
+          deviceType,
+          deviceModel,
+          switchStatus: 'off',
+          switchType: '小夜灯',
+          saved: true,
+          discovered: false,
+        })
+      }
+
+      this.setData({
+        deviceList: deviceList.sort((a, b) => a.orderNum! - b.orderNum!),
+      })
+    },
+
     /**
      * @description 初始化蓝牙模块，只检查权限，未实质打开服务
      */
@@ -255,17 +347,48 @@ Component({
       }
     },
 
+    // 点击设备卡片
     handleCardTap(e: WechatMiniprogram.TouchEvent) {
-      const { deviceType, deviceModel, saved } = e.detail
+      const { deviceType, deviceModel, saved, deviceId } = e.detail
       if (isNullOrUnDef(deviceType) || isNullOrUnDef(deviceModel)) {
         return
       }
-      // TODO 添加到我的设备
+
+      // 新发现设备, 点击添加到我的设备
       if (!saved) {
+        const index = this.data.foundList.findIndex((device) => device.deviceId === deviceId)
+        const newDevice = this.data.foundList.splice(index, 1)[0]
+        const orderNum = this.data.deviceList.length
+        this.data.deviceList.push({
+          ...newDevice,
+          dragId: deviceId,
+          orderNum,
+          saved: true,
+          discovered: true,
+        })
+        console.log('this.data.deviceList', this.data.deviceList)
+
+        this.setData({
+          foundList: this.data.foundList,
+          deviceList: this.data.deviceList,
+        })
+
+        this.initDrag()
+
+        // 保存到前端缓存
+        this.data._localList[deviceId] = {
+          orderNum,
+          deviceType,
+          deviceModel,
+        }
+        storage.set('_localList', this.data._localList)
+
         return
       }
+
+      // 跳转到控制页
       wx.navigateTo({
-        url: `/package-remoter/pannel/index?deviceType=${deviceType}&deviceModel=${deviceModel}`,
+        url: `/package-remoter/pannel/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceModel=${deviceModel}&deviceId=${deviceId}`,
       })
     },
     // 搜索设备
@@ -274,59 +397,16 @@ Component({
         isSeeking: true,
       })
 
-      // 监听扫描到新设备事件
-      wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
-        const rList = unique(res.devices, 'deviceId') // 过滤重复设备信息
-          .map((item) => remoterProtocol.searchDeviceCallBack(item))
-          .filter((item) => !!item)
-
-        console.log('搜寻蓝牙外围设备：', rList[0])
-
-        if (rList.length) {
-          // 终止搜寻
-          this.endSeek()
-
-          // 刷新发现设备列表
-          // TODO 排除已在我的设备列表的设备
-          const foundList = rList
-            .filter((item) => item!.RSSI >= MIN_RSSI) // 过滤弱信号设备
-            .map((_d) => {
-              const deviceType = _d!.deviceType
-              const deviceModel = _d!.deviceModel
-              const detail = deviceConfig[deviceType][deviceModel] // deviceModel
-              return {
-                devicePic: detail.devicePic,
-                deviceName: detail.deviceName,
-                deviceId: detail.deviceId,
-                deviceType,
-                deviceModel,
-                switchStatus: 'off',
-                switchType: '小夜灯',
-                saved: false,
-              }
-            }) as RmDeviceItem[]
-
-          // TODO 目前只显示单一设备调试信息
-          const debugStr = `[recv]${rList[0]?.payload.toLocaleUpperCase()},${rList[0]?.RSSI}dBm`
-
-          this.setData({
-            foundList,
-            debugStr,
-          })
-        }
-      })
-
       // 开始搜寻附近的蓝牙外围设备
-      const SEEK_TIMEOUT = 3000
       wx.startBluetoothDevicesDiscovery({
         allowDuplicatesKey: true,
         powerLevel: 'high',
-        interval: SEEK_TIMEOUT,
+        interval: SEEK_TIMEOUT - 500,
       })
 
       // 如果一直找不到，也自动停止搜索
       // !! 停止时间要稍长于 SEEK_TIMEOUT，否则会导致监听方法不执行
-      setTimeout(() => this.endSeek(), SEEK_TIMEOUT + 1000)
+      setTimeout(() => this.endSeek(), SEEK_TIMEOUT)
     },
     // 停止搜索设备
     endSeek() {
@@ -358,7 +438,7 @@ Component({
      * 拖拽结束相关
      * @param e
      */
-    async handleSortEnd(e: { detail: { listData: RmDeviceItem[] } }) {
+    async handleSortEnd(e: { detail: { listData: Remoter.DeviceItem[] } }) {
       // 更新列表数据
       this.setData({
         deviceList: e.detail.listData.map((item, index) => ({
@@ -369,9 +449,9 @@ Component({
 
       // 排序缓存在前端
       this.data.deviceList.forEach((d) => {
-        this.data._orderMap[d.dragId] = d.orderNum
+        this.data._localList[d.deviceId].orderNum = d.orderNum
       })
-      storage.set('orderMap', this.data._orderMap)
+      storage.set('_localList', this.data._localList)
     },
     // 取消新手提示
     cancelTips() {
