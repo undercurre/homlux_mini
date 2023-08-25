@@ -69,12 +69,20 @@ App<IAppOption>({
       homeStore.updateHomeInfo()
       startWebsocketService()
     }
+
+    if (homeStore.currentHomeId) {
+      let key = '21c53171bd6b4fbda4fce28438690814'
+
+      homOs.config({ key: key.slice(0, 16), homeId: homeStore.currentHomeDetail.houseId })
+    }
   },
 
   onHide() {
     Logger.log('app-onHide')
     // 用户最小化app，断开ws连接
     closeWebSocket()
+
+    homOs.destory()
   },
 
   onError(msg: string) {
