@@ -79,6 +79,7 @@ ComponentWithComputed({
 
     editingSensorType: 'midea.ir.201',
     editingSensorAbility: ['有人移动'],
+    editingSensorProperty: { Occupancy: 1, modelName: 'irDetector' } as IAnyObject,
     editingUniId: '',
     editingDelayId: '',
     scrollTop: 0,
@@ -814,6 +815,7 @@ ComponentWithComputed({
         this.setData({
           editingSensorType: action.productId,
           editingSensorAbility: action.desc,
+          editingSensorProperty: action.property,
           editingUniId: action.uniId,
           showEditSensorPopup: true,
         })
