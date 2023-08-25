@@ -37,7 +37,7 @@ App<IAppOption>({
         closeWebSocket()
         startWebsocketService()
 
-        let key = '21c53171bd6b4fbda4fce28438690814'
+        const key = '21c53171bd6b4fbda4fce28438690814'
 
         homOs.config({ key: key.slice(0, 16), homeId: homeStore.currentHomeDetail.houseId })
       },
@@ -71,7 +71,7 @@ App<IAppOption>({
     }
 
     if (homeStore.currentHomeId) {
-      let key = '21c53171bd6b4fbda4fce28438690814'
+      const key = '21c53171bd6b4fbda4fce28438690814'
 
       homOs.config({ key: key.slice(0, 16), homeId: homeStore.currentHomeDetail.houseId })
     }
@@ -82,7 +82,7 @@ App<IAppOption>({
     // 用户最小化app，断开ws连接
     closeWebSocket()
 
-    homOs.destory()
+    homOs.close()
   },
 
   onError(msg: string) {
