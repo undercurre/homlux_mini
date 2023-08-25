@@ -11,7 +11,6 @@ import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore } from './store/index'
 import { isConnect } from './utils/network'
 import { reaction } from 'mobx-miniprogram'
-// import homOs from 'homlux-sdk'
 
 App<IAppOption>({
   async onLaunch() {
