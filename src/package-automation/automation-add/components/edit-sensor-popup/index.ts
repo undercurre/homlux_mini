@@ -22,6 +22,14 @@ ComponentWithComputed({
       type: String,
       value: '',
     },
+    controlAction: {
+      type: Object,
+      observer(value) {
+        this.setData({
+          _controlAction: value,
+        })
+      },
+    },
   },
 
   /**
