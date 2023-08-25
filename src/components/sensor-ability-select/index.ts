@@ -30,22 +30,22 @@ ComponentWithComputed({
   data: {
     abilityList: {
       'midea.ir.201': [
-        { name: '有人移动', ability: { Occupancy: 1 } },
-        { name: '超时无人移动', ability: { Occupancy: 0, PIRToUnoccupiedDelay: 10 } },
+        { name: '有人移动', ability: { Occupancy: 1, modelName: 'irDetector' } },
+        { name: '超时无人移动', ability: { Occupancy: 0, PIRToUnoccupiedDelay: 10, modelName: 'irDetector' } },
         // { name: '环境光亮', ability: { IlluminanceLevelStatus: 2 } },
         // { name: '环境光暗', ability: { IlluminanceLevelStatus: 1 } },
       ],
       'midea.magnet.001.201': [
-        { name: '打开', ability: { ZoneStatus: 1 } },
-        { name: '关闭', ability: { ZoneStatus: 0 } },
+        { name: '打开', ability: { doorStatus: 1, modelName: 'magnet' } },
+        { name: '关闭', ability: { doorStatus: 0, modelName: 'magnet' } },
         // { name: '环境光暗', ability: { IlluminanceLevelStatus: 1 } },
         // { name: '环境光亮', ability: { IlluminanceLevelStatus: 2 } },
-        { name: '超时未关', ability: { ZoneStatus: 1, PIRToUnoccupiedDelay: 10 } },
+        { name: '超时未关', ability: { doorStatus: 1, PIRToUnoccupiedDelay: 10, modelName: 'magnet' } },
       ],
       'midea.freepad.001.201': [
-        { name: '单击', ability: { power: 1 } },
-        { name: '双击', ability: { power: 2 } },
-        { name: '长按', ability: { power: 3 } },
+        { name: '单击', ability: { buttonClicked: 1, modelName: 'freepad' } },
+        { name: '双击', ability: { buttonClicked: 2, modelName: 'freepad' } },
+        { name: '长按', ability: { buttonClicked: 3, modelName: 'freepad' } },
       ],
     },
   },
