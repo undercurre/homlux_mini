@@ -26,6 +26,7 @@ wx.onBluetoothAdapterStateChange((res) => {
 
   // 用于蓝牙开关被中途关掉（会终止蓝牙搜索）又打开的情况，恢复蓝牙搜索状态
   if (bleDevicesStore.isStart && res.available && !res.discovering) {
+    Logger.log('恢复蓝牙搜索状态')
     wx.startBluetoothDevicesDiscovery({
       allowDuplicatesKey: true,
       powerLevel: 'high',
