@@ -82,7 +82,7 @@ App<IAppOption>({
     // 用户最小化app，断开ws连接
     closeWebSocket()
 
-    homOs.close()
+    homOs.destory()
   },
 
   onError(msg: string) {
