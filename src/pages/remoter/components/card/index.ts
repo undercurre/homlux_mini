@@ -43,5 +43,8 @@ ComponentWithComputed({
     handleCardTap() {
       this.triggerEvent('cardTap', this.data.device)
     },
+    handleControlTap() {
+      this.triggerEvent('controlTap', this.data.device)
+    }
   },
 })

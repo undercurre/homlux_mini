@@ -16,7 +16,7 @@
         </view>
       </view>
       <view slot="right-icon" class="flex-col-center">
-        <mz-button icon="/assets/img/base/power-stroke.png" iconActive="/assets/img/base/power-stroke2.png" text="{{device.switchType || ''}}"></mz-button>
+        <mz-button icon="/assets/img/base/power-stroke.png" iconActive="/assets/img/base/power-stroke2.png" text="{{device.switchType || ''}}" bind:touchstart="handleControlTap"></mz-button>
       </view>
     </van-cell>
   </van-cell-group>

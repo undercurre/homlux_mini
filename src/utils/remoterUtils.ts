@@ -1,5 +1,6 @@
 import cryptoUtils from './remoterCrypto'
 import remoterProtocol from './remoterProtocol'
+import { isAndroid } from './app'
 
 /**
  * @description 建立本地作为蓝牙[低功耗外围设备]的服务端
@@ -27,24 +28,35 @@ export function createBleServer() {
  * @param params.payload 发送数据
  */
 export function bleAdvertising(
-  server: WechatMiniprogram.BLEPeripheralServer,
+  server: WechatMiniprogram.BLEPeripheralServer | null,
   params: { addr: string; payload: string; comId?: string },
 ) {
   const { addr, payload, comId = '0x4D11' } = params
   return new Promise((resolve, reject) => {
-    const sequence = 1 //new Date().getTime()
-    const manufacturerSpecificData = remoterProtocol.createAndroidBleRequest(`${addr}${payload}`, sequence)
-    console.log('开始广播：', comId, cryptoUtils.ab2hex(manufacturerSpecificData).slice(0))
+    if (!server) {
+      reject('server is Not existed')
+      return
+    }
+    const manufacturerSpecificData = remoterProtocol.createAndroidBleRequest({ payload, addr })
+    const serviceUuids = remoterProtocol.createIOSBleRequest({ payload, addr, comId })
+    console.log('Android广播：', comId, cryptoUtils.ab2hex(manufacturerSpecificData).slice(0))
+    console.log('IOS广播：', serviceUuids)
+
+    const advertiseRequest = {} as IAnyObject
+
+    if (isAndroid()) {
+      advertiseRequest.manufacturerData = [
+        {
+          manufacturerId: comId,
+          manufacturerSpecificData,
+        },
+      ]
+    } else {
+      advertiseRequest.serviceUuids = serviceUuids
+    }
 
     server.startAdvertising({
-      advertiseRequest: {
-        manufacturerData: [
-          {
-            manufacturerId: remoterProtocol.getManufacturerId(true, comId!),
-            manufacturerSpecificData,
-          },
-        ],
-      },
+      advertiseRequest,
       success(res) {
         console.log('广播结束', res)
         server.stopAdvertising()

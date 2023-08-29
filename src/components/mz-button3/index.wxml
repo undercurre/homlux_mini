@@ -1,6 +1,6 @@
 <wxs module="handler" src="./index.wxs"></wxs>
 
-<view class="mz-button" catch:touchstart="{{handler.touchStart}}" catch:touchend="{{handler.touchEnd}}">
+<view class="mz-button" catch:touchstart="{{handler.touchStart}}" catch:touchend="{{handler.touchEnd}}" catch:tap="handleTap">
   <view class="icon-wrapper">
     <image class="icon" src="{{icon}}"></image>
     <image wx:if="{{iconActive}}" class="iconActive" src="{{iconActive}}" style="opacity: 0"></image>

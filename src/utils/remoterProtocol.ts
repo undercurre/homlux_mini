@@ -91,39 +91,48 @@ const _createBluetoothProtocol = (params: { sequence: number; addr: string; data
   return buffer
 }
 
-//	创建轻智能发送协议
-const createBleProtocol = (params: { data: string; addr: string; sequence: number }) => {
-  const { data, addr, sequence = 0 } = params
-  //	1. set version, src, placeholder
-  const version = parseInt('0001' + '1000', 2)
-  //	2. set sequence
-  const header = [version, parseInt('0001' + sequence.toString(2).padStart(4, '0'), 2)]
-  //	3. set addr
+//	创建广播发送协议
+const createBleProtocol = (params: { payload: string; addr: string; }) => {
+  const { payload, addr } = params
+  // 第一个字节
+  const version = '0001'
+  const src = 1 // 手机发出
+  const BTP = 0 // 不分包
+  const connected = 0
+  const visibility = 0
+  const VBCV = parseInt(`${version}${src}${BTP}${connected}${visibility}`, 2)
+
+  // 第二个字节
+  const encryptType = '0001' // 加密
+  const encryptIndex = Math.round(Math.random() * 15)
+  const encryptIndexBin = encryptIndex.toString(2).padStart(4, '0')
+  const advData = [VBCV, parseInt(`${encryptType}${encryptIndexBin}`, 2)]
+
+  // addr
   for (let i = 0; i < addr.length; i += 2) {
-    header.push(parseInt(addr.slice(i, i + 2), 16))
+    advData.push(parseInt(addr.slice(i, i + 2), 16))
   }
-  //	4. encode payload
-  const encrytpedData = cryptoUtils.enCodeData(data, addr, sequence)
+  
+  // encode payload
+  const channel = parseInt(payload.slice(0, 4))
+  const encrytpedData = cryptoUtils.enCodeData(payload.slice(4), addr, encryptIndex)
   console.log('加密后的数据', encrytpedData)
 
-  header.push(...encrytpedData)
-  return header
+  advData.push(channel, ...encrytpedData)
+  return advData
 }
 
 /**
- * 创建 安卓 轻智能广播数据
+ * 创建安卓广播数据
  * 拼接在 advertiseRequest.manufacturerData [{
  *  	manufacturerId: getManufacturerId(true, '0xxxxx'),
  * 		manufacturerSpecificData: _createAndroidBleRequest()
  * }]
  * @returns
  */
-const _createAndroidBleRequest = (data: string, sequence: number): Uint8Array => {
-  //	1. get addr
-  const addr = data.slice(0, 12)
-  //	2. get payload
-  const payload = data.slice(12)
-  const manufacturerData = createBleProtocol({ data: payload, addr, sequence })
+const _createAndroidBleRequest = (params: { payload: string; addr: string; }): Uint8Array => {
+  const { payload, addr } = params
+  const manufacturerData = createBleProtocol({ payload, addr })
   // console.log('manufacturerData', manufacturerData)
   const commandData = new Uint8Array(manufacturerData.length)
   commandData.set(manufacturerData)
@@ -131,20 +140,17 @@ const _createAndroidBleRequest = (data: string, sequence: number): Uint8Array =>
 }
 
 /**
- * 创建 ios 轻智能广播数据
+ * 创建 ios 广播数据
  * 拼接在 advertiseRequest.serviceUuids
  * @param data string[]
- * @param compid string
+ * @param comId string
  * @returns string[]
  */
-const _createIOSBleRequest = (data: string, sequence: number, compid: string): string[] => {
-  //	1. get addr
-  const addr = data.slice(0, 12)
-  //	2. get payload
-  const payload = data.slice(12)
-  //	3. concat data
-  const manufacturerId = _getManufacturerId(false, compid)
-  const manufacturerData = createBleProtocol({ data: payload, addr, sequence })
+const _createIOSBleRequest = (params: { payload: string; addr: string; comId: string }): string[] => {
+  const { payload, addr, comId } = params
+
+  const manufacturerId = comId.slice(2)
+  const manufacturerData = createBleProtocol({ payload, addr })
   const arrayData: string[] = []
   arrayData.push(manufacturerId)
   for (let i = 0; i < manufacturerData.length; i += 2) {
@@ -152,10 +158,10 @@ const _createIOSBleRequest = (data: string, sequence: number, compid: string): s
     const hex2 = (manufacturerData[i + 1] ?? '00').toString(16).padStart(2, '0')
     arrayData.push(hex2.concat(hex1))
   }
-  if (arrayData.length < 13) {
-    const testData = ['1bee', '78c8', '4af6', '1344', '9744', '1b61', '7c72', '4746', '23c2', '795b', '85c2', '7a36']
-    arrayData.push(...testData.slice(0, 13 - arrayData.length))
-  }
+  // if (arrayData.length < 13) {
+  //   const testData = ['1bee', '78c8', '4af6', '1344', '9744', '1b61', '7c72', '4746', '23c2', '795b', '85c2', '7a36']
+  //   arrayData.push(...testData.slice(0, 13 - arrayData.length))
+  // }
   return arrayData
 }
 

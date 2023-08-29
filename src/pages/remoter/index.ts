@@ -83,6 +83,7 @@ ComponentWithComputed({
 
   lifetimes: {
     detached() {
+      this.endSeek()
       wx.offBluetoothAdapterStateChange() // 移除蓝牙适配器状态变化事件的全部监听函数
       wx.offBluetoothDeviceFound() // 移除搜索到新设备的事件的全部监听函数
 
@@ -124,11 +125,12 @@ ComponentWithComputed({
         })
       }
 
-      // 初始化我的设备
+      // 初始化[我的设备]列表
       this.initDeviceList()
 
       // 监听扫描到新设备事件
       wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
+        console.log('onBluetoothDeviceFound', res)
         const rList = unique(res.devices, 'deviceId') // 过滤重复设备信息
           .map((item) => remoterProtocol.searchDeviceCallBack(item))
           .filter((item) => !!item)
@@ -187,7 +189,7 @@ ComponentWithComputed({
       this.initDrag()
 
       // 建立BLE外围设备服务端
-      this.data._bleServer = await createBleServer()
+      // this.data._bleServer = await createBleServer()
 
       // 根据通知,更新设备列表
       emitter.on('remoterDeleted', () => {
@@ -281,6 +283,7 @@ ComponentWithComputed({
      */
     consultSystemBlePermission() {
       const systemSetting = wx.getSystemSetting()
+      console.log('[getSystemSetting]', systemSetting)
       this.setData({
         isSystemBlePermit: systemSetting.bluetoothEnabled,
       })
@@ -391,6 +394,20 @@ ComponentWithComputed({
         url: `/package-remoter/pannel/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceModel=${deviceModel}&deviceId=${deviceId}`,
       })
     },
+    // 点击设备按钮
+    async handleControlTap(e: WechatMiniprogram.TouchEvent) {
+      console.log(e)
+      // 建立BLE外围设备服务端
+      if (!this.data._bleServer) {
+        this.data._bleServer = await createBleServer()
+      }
+
+      // 广播控制指令
+      bleAdvertising(this.data._bleServer, {
+        addr: 'AA9078563412',
+        payload: '0001B80B4416F6670001000000000000',
+      })
+    },
     // 搜索设备
     toSeek() {
       this.setData({
@@ -402,6 +419,9 @@ ComponentWithComputed({
         allowDuplicatesKey: true,
         powerLevel: 'high',
         interval: SEEK_TIMEOUT - 500,
+        fail(err) {
+          console.log('startBluetoothDevicesDiscoveryErr', err)
+        },
       })
 
       // 如果一直找不到，也自动停止搜索
@@ -418,16 +438,7 @@ ComponentWithComputed({
         isNotFound: !this.data.isNotFound,
       })
     },
-    // 广播控制指令
-    startAdvertising() {
-      if (!this.data._bleServer) {
-        return
-      }
-      bleAdvertising(this.data._bleServer, {
-        addr: 'AA9078563412',
-        payload: '0001B80B4416F6670001000000000000',
-      })
-    },
+
     onPageScroll(e: { detail: { scrollTop: number } }) {
       this.setData({
         scrollTop: e.detail.scrollTop,
