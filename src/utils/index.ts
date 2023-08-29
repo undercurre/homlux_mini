@@ -11,6 +11,7 @@ export * from './validate'
 export * from './app'
 export * from './log'
 export * from './deviceModel'
+export * from './network'
 
 import {PRO_TYPE} from '../config/index'
 

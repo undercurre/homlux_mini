@@ -6,12 +6,13 @@ import {
   closeWebSocket,
   setCurrentEnv,
   Logger,
+  isConnect,
 } from './utils/index'
 import svgs from './assets/svg/index'
-import { deviceStore, homeStore, othersStore } from './store/index'
-import { isConnect } from './utils/network'
-import { reaction } from 'mobx-miniprogram'
-import homOs from 'homlux-sdk'
+import {deviceStore, homeStore, othersStore} from './store/index'
+import {reaction} from 'mobx-miniprogram'
+import homOs, { getDeviceList } from 'homlux-sdk'
+import { getEnv } from './config/index'
 
 App<IAppOption>({
   async onLaunch() {
@@ -37,9 +38,7 @@ App<IAppOption>({
         closeWebSocket()
         startWebsocketService()
 
-        const key = '21c53171bd6b4fbda4fce28438690814'
-
-        homOs.config({ key: key.slice(0, 16), homeId: homeStore.currentHomeDetail.houseId })
+        this.initHomeOs()
       },
     )
 
@@ -70,11 +69,7 @@ App<IAppOption>({
       startWebsocketService()
     }
 
-    if (homeStore.currentHomeId) {
-      const key = '21c53171bd6b4fbda4fce28438690814'
-
-      homOs.config({ key: key.slice(0, 16), homeId: homeStore.currentHomeDetail.houseId })
-    }
+    this.initHomeOs()
   },
 
   onHide() {
@@ -87,6 +82,18 @@ App<IAppOption>({
 
   onError(msg: string) {
     Logger.error('app-onError', msg)
+  },
+
+  async initHomeOs() {
+    if (!homeStore.currentHomeId) {
+      return
+    }
+
+    const token = storage.get('token', '') as string
+    
+    homOs.init({token, homeId: homeStore.currentHomeDetail.houseId, env: getEnv()})
+
+    getDeviceList()
   },
 
   globalData: {
