@@ -286,7 +286,7 @@ ComponentWithComputed({
 
     inviteMember() {
       const enterOption = wx.getEnterOptionsSync()
-      
+
       if (enterOption.scene != 1007 && enterOption.scene != 1044) {
         console.log('lmn>>>非聊天卡片进入')
         return
