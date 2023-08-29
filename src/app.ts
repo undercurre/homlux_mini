@@ -9,8 +9,8 @@ import {
   isConnect,
 } from './utils/index'
 import svgs from './assets/svg/index'
-import {deviceStore, homeStore, othersStore} from './store/index'
-import {reaction} from 'mobx-miniprogram'
+import { deviceStore, homeStore, othersStore } from './store/index'
+import { reaction } from 'mobx-miniprogram'
 import homOs, { getDeviceList } from 'homlux-sdk'
 import { getEnv } from './config/index'
 
@@ -90,8 +90,8 @@ App<IAppOption>({
     }
 
     const token = storage.get('token', '') as string
-    
-    homOs.init({token, homeId: homeStore.currentHomeDetail.houseId, env: getEnv()})
+
+    homOs.init({ token, homeId: homeStore.currentHomeDetail.houseId, env: getEnv() })
 
     getDeviceList()
   },
