@@ -45,6 +45,6 @@ ComponentWithComputed({
     },
     handleControlTap() {
       this.triggerEvent('controlTap', this.data.device)
-    }
+    },
   },
 })

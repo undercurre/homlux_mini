@@ -12,10 +12,10 @@ export const checkWxBlePermission = async () => {
   const openBleRes = (await wx
     .openBluetoothAdapter({ mode: 'peripheral' })
     .catch((err: WechatMiniprogram.BluetoothError) => err)) as WechatMiniprogram.BluetoothError & { errno?: number }
-    // IOS
-    const openCenterBleRes = (await wx
-      .openBluetoothAdapter({ mode: 'central' })
-      .catch((err: WechatMiniprogram.BluetoothError) => err)) as WechatMiniprogram.BluetoothError & { errno?: number }
+  // IOS
+  const openCenterBleRes = (await wx
+    .openBluetoothAdapter({ mode: 'central' })
+    .catch((err: WechatMiniprogram.BluetoothError) => err)) as WechatMiniprogram.BluetoothError & { errno?: number }
 
   Logger.console('[openBluetoothAdapter]', openBleRes)
   Logger.console('[openBluetoothAdapter]', openCenterBleRes)

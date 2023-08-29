@@ -92,7 +92,7 @@ const _createBluetoothProtocol = (params: { sequence: number; addr: string; data
 }
 
 //	创建广播发送协议
-const createBleProtocol = (params: { payload: string; addr: string; }) => {
+const createBleProtocol = (params: { payload: string; addr: string }) => {
   const { payload, addr } = params
   // 第一个字节
   const version = '0001'
@@ -112,7 +112,7 @@ const createBleProtocol = (params: { payload: string; addr: string; }) => {
   for (let i = 0; i < addr.length; i += 2) {
     advData.push(parseInt(addr.slice(i, i + 2), 16))
   }
-  
+
   // encode payload
   const channel = parseInt(payload.slice(0, 4))
   const encrytpedData = cryptoUtils.enCodeData(payload.slice(4), addr, encryptIndex)
@@ -130,7 +130,7 @@ const createBleProtocol = (params: { payload: string; addr: string; }) => {
  * }]
  * @returns
  */
-const _createAndroidBleRequest = (params: { payload: string; addr: string; }): Uint8Array => {
+const _createAndroidBleRequest = (params: { payload: string; addr: string }): Uint8Array => {
   const { payload, addr } = params
   const manufacturerData = createBleProtocol({ payload, addr })
   // console.log('manufacturerData', manufacturerData)
