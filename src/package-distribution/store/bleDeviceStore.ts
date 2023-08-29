@@ -189,20 +189,19 @@ async function checkBleDeviceList(list: IBleBaseInfo[]) {
   const validDeviceList = list.filter((item) => {
     const { zigbeeMac, isConfig } = item
 
-    const isValid =
-      checkRes.result.findIndex((checkItem) => {
-        // 过滤已经配网的设备
-        // 设备网络状态 0x00：未入网   0x01：正在入网   0x02:  已经入网
-        // 但由于丢包情况，设备本地状态不可靠，需要查询云端是否存在该设备的绑定状态（是否存在家庭绑定关系）结合判断是否真正配网
-        // 2、过滤云端存在房间绑定关系且设备本地状态为02(已绑定状态)的设备
-        const isBind = checkItem.roomId && isConfig === '02'
+    const cloudDeviceInfo = checkRes.result.find((checkItem) => zigbeeMac === checkItem.mac) as Device.MzgdProTypeDTO
 
-        if (isBind) {
-          Logger.log(`【${zigbeeMac}】已绑定`)
-        }
+    // 过滤已经配网的设备
+    // 设备网络状态 0x00：未入网   0x01：正在入网   0x02:  已经入网
+    // 但由于丢包情况，设备本地状态不可靠，需要查询云端是否存在该设备的绑定状态（是否存在家庭绑定关系）结合判断是否真正配网
+    // 2、过滤云端存在房间绑定关系且设备本地状态为02(已绑定状态)的设备
+    const isBind = cloudDeviceInfo.roomId && isConfig === '02'
 
-        return zigbeeMac === checkItem.mac && checkItem.isValid && !isBind
-      }) >= 0
+    if (isBind) {
+      Logger.log(`【${zigbeeMac}】已绑定`)
+    }
+
+    const isValid = cloudDeviceInfo.isValid && !isBind
 
     return isValid
   })

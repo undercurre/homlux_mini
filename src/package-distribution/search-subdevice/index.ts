@@ -453,7 +453,7 @@ ComponentWithComputed({
           this.startAnimation()
         }, 300)
 
-        await delay(1500)
+        await delay(1500) // 强行延时，等待上面的动画渲染完毕，以免和蓝牙逻辑同事发生导致动画卡顿
 
         type PromiseThunk = () => Promise<any>
         const zigbeeTaskList = [] as PromiseThunk[]
