@@ -142,14 +142,12 @@ export class BleClient {
   }
 
   async close() {
-    // const isConnected = bleDeviceMap[this.deviceUuid]
-
-    // if (!isConnected) {
-    //   Logger.log(`【${this.mac}】已关闭蓝牙连接，无需再次关闭`)
-    //   return
-    // }
     Logger.log(`【${this.mac}】${this.deviceUuid}开始关闭蓝牙连接`)
-    const res = await wx.closeBLEConnection({ deviceId: this.deviceUuid }).catch((err) => err)
+    // 偶现调用closeBLEConnection后没有任何返回，需要手动增加超时处理
+    const res = await Promise.race([
+      wx.closeBLEConnection({ deviceId: this.deviceUuid }).catch((err) => err),
+      delay(5000).then(() => 'closeBLEConnection超时'),
+    ])
 
     // 存在调用关闭蓝牙连接指令和与设备蓝牙连接真正断开有时间差，强制等待1s
     await delay(1000)

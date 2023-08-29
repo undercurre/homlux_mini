@@ -112,7 +112,7 @@ ComponentWithComputed({
         powerLevel: 'high',
         interval: 3000,
         success: (res) => {
-          console.log('startBluetoothDevicesDiscovery', res)
+          console.log('startBluetoothDevicesDiscovery-添加单个子设备', res)
         },
       })
     },

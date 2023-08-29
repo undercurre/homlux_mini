@@ -285,11 +285,13 @@ ComponentWithComputed({
     },
 
     inviteMember() {
-      if (wx.getEnterOptionsSync().scene != 1044) {
-        console.log('lmn>>>非卡片进入')
+      const enterOption = wx.getEnterOptionsSync()
+
+      if (enterOption.scene != 1007 && enterOption.scene != 1044) {
+        console.log('lmn>>>非聊天卡片进入')
         return
       }
-      const enterQuery = wx.getEnterOptionsSync().query
+      const enterQuery = enterOption.query
       const token = storage.get('token', '')
       const type = enterQuery.type as string
       const houseId = enterQuery.houseId as string
