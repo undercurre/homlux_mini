@@ -458,7 +458,8 @@ ComponentWithComputed({
         type PromiseThunk = () => Promise<any>
         const zigbeeTaskList = [] as PromiseThunk[]
 
-        list.forEach((item) => {
+        // 配网前对设备列表进行排序，优先配网信号强的设备
+        list.sort((prev, after) => after.RSSI - prev.RSSI).forEach((item) => {
           // 等待zigbee子设备添加上报promise
           // 存在手动进入配网的情况，还没发送蓝牙配网指令就已经收到zigbee添加上报成功的情况，这种情况也需要当做配网成功且不需要重复发送蓝牙配网指令
           const waitingZigbeeAdd = new Promise<{ success: boolean; msg?: string }>((resolve) => {
@@ -521,6 +522,8 @@ ComponentWithComputed({
             Logger.debug(`【${item.mac}】结束zigbee配网任务：`)
           })
         })
+
+        Logger.log('配网设备list', list)
 
         this.data._zigbeeTaskQueue.add(zigbeeTaskList)
       } catch (err) {
