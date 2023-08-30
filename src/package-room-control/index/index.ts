@@ -345,6 +345,7 @@ ComponentWithComputed({
             WSEventType.group_upt,
             WSEventType.group_device_result_status,
             WSEventType.device_del,
+            WSEventType.bind_device,
           ].includes(e.result.eventType)
         ) {
           this.updateRoomData(e)
@@ -372,6 +373,7 @@ ComponentWithComputed({
     async reloadData() {
       try {
         await Promise.all([
+          homeStore.updateRoomCardList(),
           deviceStore.updateAllRoomDeviceList(),
           homeStore.updateRoomCardList(),
           sceneStore.updateSceneList(),
