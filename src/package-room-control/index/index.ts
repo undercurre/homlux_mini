@@ -132,7 +132,7 @@ ComponentWithComputed({
       return false
     },
     roomHasSubDevice(data) {
-      if (data.deviceList) {
+      if (data.deviceList?.length) {
         return (
           (data.allRoomDeviceList as DeviceCard[]).filter(
             (device) =>
@@ -146,7 +146,7 @@ ComponentWithComputed({
     },
     // 房间存在可显示的设备
     roomHasDevice(data) {
-      if (data.deviceList) {
+      if (data.deviceList?.length) {
         return (
           (data.allRoomDeviceList as DeviceCard[]).filter(
             (device) =>
@@ -171,7 +171,7 @@ ComponentWithComputed({
       return []
     },
     deviceIdTypeMap(data): Record<string, string> {
-      if (data.deviceList) {
+      if (data.deviceList?.length) {
         return Object.fromEntries(
           data.deviceList.map((device: DeviceCard) => [device.deviceId, proName[device.proType]]),
         )
@@ -389,7 +389,7 @@ ComponentWithComputed({
     }, 4000),
 
     // 直接更新store数据, 移除列表中的设备
-    removeDevice(deviceId: String) {
+    removeDevice(deviceId: string) {
       console.log('remove', deviceId)
       const newDeviceList = [] as Device.DeviceItem[]
       deviceStore.deviceList.forEach((device) => {
@@ -557,10 +557,10 @@ ComponentWithComputed({
         const flattenList = deviceStore.deviceFlattenList
 
         // 如果为空则不初始化
-        if (!flattenList.length) {
-          this.data._updating = false
-          return
-        }
+        // if (!flattenList.length) {
+        //   this.data._updating = false
+        //   return
+        // }
 
         const _list = flattenList
           // 接口返回开关面板数据以设备为一个整体，需要前端拆开后排序
