@@ -202,7 +202,7 @@ ComponentWithComputed({
               message: '删除成功',
               zIndex: 9999,
             })
-            this.triggerEvent('updateList', { isRefresh: true })
+            this.triggerEvent('updateListOnCloud')
             this.handleClose()
           } else {
             Toast({
@@ -344,7 +344,7 @@ ComponentWithComputed({
       if (timeId) {
         clearTimeout(timeId)
       }
-      this.triggerEvent('roomMove')
+      this.triggerEvent('updateListOnCloud')
       Toast({
         message: '移动成功',
         zIndex: 9999,

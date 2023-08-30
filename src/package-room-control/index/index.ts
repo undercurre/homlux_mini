@@ -336,14 +336,6 @@ ComponentWithComputed({
           device.onLineStatus = status
           this.updateQueue(device)
         }
-        // 移动
-        else if (e.result.eventType === WSEventType.group_device_result_status) {
-          this.removeDevice(e.result.eventData.devId)
-        }
-        // 删除
-        else if (e.result.eventType === WSEventType.device_del) {
-          this.removeDevice(e.result.eventData.deviceId)
-        }
         // 节流更新本地数据
         else if (
           [
@@ -351,6 +343,8 @@ ComponentWithComputed({
             WSEventType.device_online_status,
             WSEventType.device_offline_status,
             WSEventType.group_upt,
+            WSEventType.group_device_result_status,
+            WSEventType.device_del,
           ].includes(e.result.eventType)
         ) {
           this.updateRoomData(e)
@@ -364,6 +358,14 @@ ComponentWithComputed({
             url: '/pages/index/index',
           })
         }
+
+        // 独立执行 移动\删除 的刷新
+        if (
+          e.result.eventType === WSEventType.group_device_result_status ||
+          e.result.eventType === WSEventType.device_del
+        ) {
+          this.removeDevice(e.result.eventData.devId ?? e.result.eventData.deviceId)
+        }
       })
     },
 
@@ -371,7 +373,6 @@ ComponentWithComputed({
       try {
         await Promise.all([
           deviceStore.updateAllRoomDeviceList(),
-          deviceStore.updateSubDeviceList(),
           homeStore.updateRoomCardList(),
           sceneStore.updateSceneList(),
           sceneStore.updateAllRoomSceneList(),
@@ -382,25 +383,25 @@ ComponentWithComputed({
       }
     },
 
-    // 节流更新房间各种信息
+    // 节流更新房间各种关联信息
     updateRoomData: throttle(function (this: IAnyObject) {
       this.reloadData()
-    }, 8000),
+    }, 4000),
 
-    // 移除列表中的设备
+    // 直接更新store数据, 移除列表中的设备
     removeDevice(deviceId: String) {
       console.log('remove', deviceId)
       const newDeviceList = [] as Device.DeviceItem[]
       deviceStore.deviceList.forEach((device) => {
         if (deviceId !== device.deviceId) {
-          newDeviceList.push(device)
+          newDeviceList.push({ ...device })
         }
       })
       runInAction(() => {
         deviceStore.deviceList = newDeviceList
       })
 
-      this.updateWholeList()
+      this.updateQueue({ isRefresh: true })
     },
 
     // 页面滚动
@@ -521,24 +522,25 @@ ComponentWithComputed({
             }
 
             // 如果控制弹框为显示状态，则同步选中设备的状态
-            if (
-              device!.mzgdPropertyDTOList &&
-              this.data.checkedList.includes(originDevice!.deviceId) &&
-              originDevice!.select
-            ) {
-              const prop = transferDeviceProperty(originDevice.proType, device!.mzgdPropertyDTOList['1'])
-              if (originDevice.proType === PRO_TYPE.light) {
-                diffData.lightStatus = {
-                  Level: prop.Level,
-                  ColorTemp: prop.ColorTemp,
-                  OnOff: prop.OnOff,
-                }
-              } else if (originDevice.proType === PRO_TYPE.curtain) {
-                diffData.curtainStatus = {
-                  position: prop.curtain_position,
-                }
-              }
-            }
+            // 因为异常推送较多，暂时不对弹框中的设备状态进行更新
+            // if (
+            //   device!.mzgdPropertyDTOList &&
+            //   this.data.checkedList.includes(originDevice!.deviceId) &&
+            //   originDevice!.select
+            // ) {
+            //   const prop = transferDeviceProperty(originDevice.proType, device!.mzgdPropertyDTOList['1'])
+            //   if (originDevice.proType === PRO_TYPE.light) {
+            //     diffData.lightStatus = {
+            //       Level: prop.Level,
+            //       ColorTemp: prop.ColorTemp,
+            //       OnOff: prop.OnOff,
+            //     }
+            //   } else if (originDevice.proType === PRO_TYPE.curtain) {
+            //     diffData.curtainStatus = {
+            //       position: prop.curtain_position,
+            //     }
+            //   }
+            // }
 
             if (Object.keys(diffData).length) {
               this.setData(diffData)
@@ -675,9 +677,19 @@ ComponentWithComputed({
       }
     },
 
-    updateWholeList: throttle(function (this: IAnyObject) {
-      this.updateQueue({ isRefresh: true }, 5000)
-    }),
+    // 基于云端更新数据
+    async updateRoomListOnCloud() {
+      await deviceStore.updateSubDeviceList()
+      this.updateQueue({ isRefresh: true })
+    },
+    // updateRoomListOnCloud: throttle(
+    //   async function (this: IAnyObject) {
+    //     await deviceStore.updateSubDeviceList()
+    //     this.updateQueue({ isRefresh: true })
+    //   },
+    //   4000,
+    //   false,
+    // ),
 
     /**
      * @description 更新选中状态并渲染
