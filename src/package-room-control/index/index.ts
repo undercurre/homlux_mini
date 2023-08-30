@@ -24,6 +24,7 @@ import {
   throttle,
   toPropertyDesc,
   transferDeviceProperty,
+  isNullOrUnDef,
 } from '../../utils/index'
 import { proName, PRO_TYPE, LIST_PAGE, CARD_W, CARD_H } from '../../config/index'
 
@@ -335,14 +336,21 @@ ComponentWithComputed({
           device.onLineStatus = status
           this.updateQueue(device)
         }
+        // 移动
+        else if (e.result.eventType === WSEventType.group_device_result_status) {
+          this.removeDevice(e.result.eventData.devId)
+        }
+        // 删除
+        else if (e.result.eventType === WSEventType.device_del) {
+          this.removeDevice(e.result.eventData.deviceId)
+        }
         // 节流更新本地数据
         else if (
           [
-            WSEventType.device_del,
             WSEventType.device_replace,
             WSEventType.device_online_status,
             WSEventType.device_offline_status,
-            WSEventType.group_device_result_status,
+            WSEventType.group_upt,
           ].includes(e.result.eventType)
         ) {
           this.updateRoomData(e)
@@ -378,6 +386,22 @@ ComponentWithComputed({
     updateRoomData: throttle(function (this: IAnyObject) {
       this.reloadData()
     }, 8000),
+
+    // 移除列表中的设备
+    removeDevice(deviceId: String) {
+      console.log('remove', deviceId)
+      const newDeviceList = [] as Device.DeviceItem[]
+      deviceStore.deviceList.forEach((device) => {
+        if (deviceId !== device.deviceId) {
+          newDeviceList.push(device)
+        }
+      })
+      runInAction(() => {
+        deviceStore.deviceList = newDeviceList
+      })
+
+      this.updateWholeList()
+    },
 
     // 页面滚动
     onPageScroll(e: { detail: { scrollTop: number } }) {
@@ -650,6 +674,10 @@ ComponentWithComputed({
         this.updateDeviceList(diff)
       }
     },
+
+    updateWholeList: throttle(function (this: IAnyObject) {
+      this.updateQueue({ isRefresh: true }, 5000)
+    }),
 
     /**
      * @description 更新选中状态并渲染
@@ -1007,11 +1035,9 @@ ComponentWithComputed({
       if (toCheck) {
         const prop = e.detail.mzgdPropertyDTOList['1']
         if (e.detail.proType === PRO_TYPE.light) {
-          diffData.lightStatus = {
-            Level: prop.Level,
-            ColorTemp: prop.ColorTemp,
-            OnOff: prop.OnOff,
-          }
+          if (!isNullOrUnDef(prop.Level)) diffData['lightStatus.Level'] = prop.Level
+          if (!isNullOrUnDef(prop.ColorTemp)) diffData['lightStatus.ColorTemp'] = prop.ColorTemp
+          if (!isNullOrUnDef(prop.OnOff)) diffData['lightStatus.OnOff'] = prop.OnOff
         } else if (e.detail.proType === PRO_TYPE.curtain) {
           diffData.curtainStatus = {
             position: prop.curtain_position,
@@ -1227,9 +1253,6 @@ ComponentWithComputed({
       wx.navigateTo({
         url: `/package-distribution/wifi-connect/index?type=changeWifi&sn=${gateway.sn}`,
       })
-    },
-    handleRoomMoveSuccess() {
-      this.updateQueue({ isRefresh: true })
     },
   },
 })
