@@ -459,69 +459,71 @@ ComponentWithComputed({
         const zigbeeTaskList = [] as PromiseThunk[]
 
         // 配网前对设备列表进行排序，优先配网信号强的设备
-        list.sort((prev, after) => after.RSSI - prev.RSSI).forEach((item) => {
-          // 等待zigbee子设备添加上报promise
-          // 存在手动进入配网的情况，还没发送蓝牙配网指令就已经收到zigbee添加上报成功的情况，这种情况也需要当做配网成功且不需要重复发送蓝牙配网指令
-          const waitingZigbeeAdd = new Promise<{ success: boolean; msg?: string }>((resolve) => {
-            this.data._deviceMap[item.mac] = {
-              startTime: 0,
-              bindTimeoutId: 0,
-              zigbeeRepeatTimes: 2,
-              zigbeeAddCallback: resolve,
-            }
-          })
-
-          zigbeeTaskList.push(async () => {
-            Logger.debug(`【${item.mac}】开始zigbee配网任务`)
-            // 数据埋点：上报尝试配网的子设备
-            wx.reportEvent('add_device', {
-              pro_type: item.proType,
-              model_id: item.productId,
-              add_type: 'discover',
+        list
+          .sort((prev, after) => after.RSSI - prev.RSSI)
+          .forEach((item) => {
+            // 等待zigbee子设备添加上报promise
+            // 存在手动进入配网的情况，还没发送蓝牙配网指令就已经收到zigbee添加上报成功的情况，这种情况也需要当做配网成功且不需要重复发送蓝牙配网指令
+            const waitingZigbeeAdd = new Promise<{ success: boolean; msg?: string }>((resolve) => {
+              this.data._deviceMap[item.mac] = {
+                startTime: 0,
+                bindTimeoutId: 0,
+                zigbeeRepeatTimes: 2,
+                zigbeeAddCallback: resolve,
+              }
             })
 
-            // 已经手动进入配网状态且已经zigbee配网成功的，无需再次进入配网
-            if (item.status === 'waiting') {
-              this.data._bleTaskQueue.add(async () => {
-                if (item.status === 'success') {
-                  Logger.debug(`${item.mac}已zigbee配网成功，无需再下发蓝牙指令`)
-                  return
-                }
-
-                Logger.debug(`【${item.mac}】蓝牙任务开始`)
-                await this.startZigbeeNet(item)
-
-                await item.client.close()
-
-                Logger.debug(`【${item.mac}】蓝牙任务结束`)
-              })
-            } else {
-              Logger.debug(`【${item.mac}】已手动完成配网`)
-            }
-
-            const waitingRes = await waitingZigbeeAdd
-
-            Logger.log(`【${item.mac}】waitingRes`, waitingRes)
-
-            if (!waitingRes.success) {
-              item.status = 'fail'
-              Logger.error(`【${item.mac}】配网失败：`, waitingRes.msg)
-              this.data._errorList.push(`【${item.mac}】${waitingRes.msg}`)
-
-              wx.reportEvent('zigbee_error', {
-                model_id: item.productId,
+            zigbeeTaskList.push(async () => {
+              Logger.debug(`【${item.mac}】开始zigbee配网任务`)
+              // 数据埋点：上报尝试配网的子设备
+              wx.reportEvent('add_device', {
                 pro_type: item.proType,
-                error_msg: waitingRes.msg,
+                model_id: item.productId,
+                add_type: 'discover',
               })
-            } else {
-              await this.bindBleDeviceToCloud(item)
-            }
 
-            this.updateBleDeviceListView()
+              // 已经手动进入配网状态且已经zigbee配网成功的，无需再次进入配网
+              if (item.status === 'waiting') {
+                this.data._bleTaskQueue.add(async () => {
+                  if (item.status === 'success') {
+                    Logger.debug(`${item.mac}已zigbee配网成功，无需再下发蓝牙指令`)
+                    return
+                  }
 
-            Logger.debug(`【${item.mac}】结束zigbee配网任务：`)
+                  Logger.debug(`【${item.mac}】蓝牙任务开始`)
+                  await this.startZigbeeNet(item)
+
+                  await item.client.close()
+
+                  Logger.debug(`【${item.mac}】蓝牙任务结束`)
+                })
+              } else {
+                Logger.debug(`【${item.mac}】已手动完成配网`)
+              }
+
+              const waitingRes = await waitingZigbeeAdd
+
+              Logger.log(`【${item.mac}】waitingRes`, waitingRes)
+
+              if (!waitingRes.success) {
+                item.status = 'fail'
+                Logger.error(`【${item.mac}】配网失败：`, waitingRes.msg)
+                this.data._errorList.push(`【${item.mac}】${waitingRes.msg}`)
+
+                wx.reportEvent('zigbee_error', {
+                  model_id: item.productId,
+                  pro_type: item.proType,
+                  error_msg: waitingRes.msg,
+                })
+              } else {
+                await this.bindBleDeviceToCloud(item)
+              }
+
+              this.updateBleDeviceListView()
+
+              Logger.debug(`【${item.mac}】结束zigbee配网任务：`)
+            })
           })
-        })
 
         Logger.log('配网设备list', list)
 
