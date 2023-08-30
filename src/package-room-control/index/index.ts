@@ -343,8 +343,8 @@ ComponentWithComputed({
             WSEventType.device_online_status,
             WSEventType.device_offline_status,
             WSEventType.group_upt,
-            WSEventType.group_device_result_status,
-            WSEventType.device_del,
+            // WSEventType.group_device_result_status,
+            // WSEventType.device_del,
             WSEventType.bind_device,
           ].includes(e.result.eventType)
         ) {
@@ -361,12 +361,12 @@ ComponentWithComputed({
         }
 
         // 独立执行 移动\删除 的刷新
-        if (
-          e.result.eventType === WSEventType.group_device_result_status ||
-          e.result.eventType === WSEventType.device_del
-        ) {
-          this.removeDevice(e.result.eventData.devId ?? e.result.eventData.deviceId)
-        }
+        // if (
+        //   e.result.eventType === WSEventType.group_device_result_status ||
+        //   e.result.eventType === WSEventType.device_del
+        // ) {
+        //   this.removeDevice(e.result.eventData.devId ?? e.result.eventData.deviceId)
+        // }
       })
     },
 
