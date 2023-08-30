@@ -321,6 +321,8 @@ ComponentWithComputed({
         buzz: this.data._addModeTimeId ? 0 : 1,
       })
 
+      Logger.log('startGwAddMode', res)
+
       // 子设备配网阶段，保持网关在配网状态
       if (res.success) {
         this.data._addModeTimeId = setTimeout(() => {
@@ -458,6 +460,7 @@ ComponentWithComputed({
         type PromiseThunk = () => Promise<any>
         const zigbeeTaskList = [] as PromiseThunk[]
 
+        Logger.log('初始化zigbee任务队列:start')
         list.forEach((item) => {
           // 等待zigbee子设备添加上报promise
           // 存在手动进入配网的情况，还没发送蓝牙配网指令就已经收到zigbee添加上报成功的情况，这种情况也需要当做配网成功且不需要重复发送蓝牙配网指令
@@ -523,6 +526,8 @@ ComponentWithComputed({
         })
 
         this.data._zigbeeTaskQueue.add(zigbeeTaskList)
+
+        Logger.log('初始化zigbee任务队列:end')
       } catch (err) {
         Logger.error('beginAddBleDevice-err', err)
       }
