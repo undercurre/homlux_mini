@@ -373,7 +373,7 @@ ComponentWithComputed({
     async reloadData() {
       try {
         await Promise.all([
-          homeStore.updateRoomCardList(),
+          deviceStore.updateSubDeviceList(),
           deviceStore.updateAllRoomDeviceList(),
           homeStore.updateRoomCardList(),
           sceneStore.updateSceneList(),
