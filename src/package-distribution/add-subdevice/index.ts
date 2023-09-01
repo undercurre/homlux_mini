@@ -59,13 +59,7 @@ ComponentWithComputed({
       emitter.on('bind_device', (data) => {
         if (data.deviceId === this.data.pageParams.mac) {
           console.log(`收到绑定推送消息：子设备${this.data.pageParams.mac}`)
-          wx.reportEvent('zigebee_add', {
-            pro_type: this.data.pageParams.proType,
-            cost_time: dayjs().valueOf() - this.data._startTime,
-            model_id: this.data.pageParams.modelId,
-          })
-
-          this.bindBleDeviceToClound()
+          this.bindBleDeviceToCloud()
           emitter.off('bind_device')
           clearTimeout(this.data._timeId)
         }
@@ -245,7 +239,7 @@ ComponentWithComputed({
 
       if (isOnline) {
         clearTimeout(this.data._timeId)
-        this.bindBleDeviceToClound()
+        this.bindBleDeviceToCloud()
       }
 
       return isOnline
@@ -284,7 +278,7 @@ ComponentWithComputed({
       bleDevice.client.close()
     },
 
-    async bindBleDeviceToClound() {
+    async bindBleDeviceToCloud() {
       this.setData({
         activeIndex: 2,
       })
@@ -322,6 +316,12 @@ ComponentWithComputed({
           url: strUtil.getUrlWithParams('/package-distribution/bind-home/index', {
             deviceId: res.result.deviceId,
           }),
+        })
+
+        wx.reportEvent('zigebee_add', {
+          pro_type: this.data.pageParams.proType,
+          cost_time: dayjs().valueOf() - this.data._startTime,
+          model_id: this.data.pageParams.modelId,
         })
       } else {
         this.setData({

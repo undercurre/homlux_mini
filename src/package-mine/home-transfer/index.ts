@@ -57,7 +57,7 @@ ComponentWithComputed({
     },
     showQrCode() {
       const query = wx.createSelectorQuery()
-      
+
       query
         .select('#myQrcode')
         .fields({

@@ -202,13 +202,14 @@ ComponentWithComputed({
               message: '删除成功',
               zIndex: 9999,
             })
-            this.triggerEvent('updateList', { isRefresh: true })
+            this.triggerEvent('updateListOnCloud')
             this.handleClose()
           } else {
             Toast({
               message: '删除失败',
               zIndex: 9999,
             })
+            this.triggerEvent('updateListOnCloud')
           }
         })
         .catch((e) => console.log(e))
@@ -312,6 +313,8 @@ ComponentWithComputed({
               .catch((e) => console.log(e))
           }, TIME_OUT)
         } else {
+          this.triggerEvent('updateListOnCloud')
+
           Toast({
             message: '移动失败',
             zIndex: 9999,
@@ -344,7 +347,7 @@ ComponentWithComputed({
       if (timeId) {
         clearTimeout(timeId)
       }
-      this.triggerEvent('roomMove')
+      this.triggerEvent('updateListOnCloud')
       Toast({
         message: '移动成功',
         zIndex: 9999,

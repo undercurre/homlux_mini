@@ -321,6 +321,8 @@ ComponentWithComputed({
         buzz: this.data._addModeTimeId ? 0 : 1,
       })
 
+      Logger.log('startGwAddMode', res)
+
       // 子设备配网阶段，保持网关在配网状态
       if (res.success) {
         this.data._addModeTimeId = setTimeout(() => {
@@ -458,6 +460,7 @@ ComponentWithComputed({
         type PromiseThunk = () => Promise<any>
         const zigbeeTaskList = [] as PromiseThunk[]
 
+        Logger.log('初始化zigbee任务队列:start')
         // 配网前对设备列表进行排序，优先配网信号强的设备
         list
           .sort((prev, after) => after.RSSI - prev.RSSI)
@@ -528,6 +531,8 @@ ComponentWithComputed({
         Logger.log('配网设备list', list)
 
         this.data._zigbeeTaskQueue.add(zigbeeTaskList)
+
+        Logger.log('初始化zigbee任务队列:end')
       } catch (err) {
         Logger.error('beginAddBleDevice-err', err)
       }

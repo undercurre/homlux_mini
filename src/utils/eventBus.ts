@@ -59,7 +59,8 @@ export const WSEventType = {
   invite_user_house: 'invite_user_house', // 用户加入家庭
   control_fail: 'control_fail', // 控制失败 TODO 未发现使用逻辑，预留？
   scene_device_result_status: 'scene_device_result_status ', // 创建、编辑场景结果
-  group_device_result_status: 'group_device_result_status', // 移动房间、创建分组结果
+  group_device_result_status: 'group_device_result_status', // 移动房间结果
+  group_upt: 'group_upt', // 分组变更
   screen_online_status_sub_device: 'screen_online_status_sub_device', // 子设备在线状态更新
   screen_online_status_wifi_device: 'screen_online_status_wifi_device', // wifi 设备在线状态更新
   screen_move_sub_device: 'screen_move_sub_device', // 智慧屏设备变更
