@@ -15,16 +15,7 @@ import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { sendDevice, execScene, saveDeviceOrder } from '../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
-import {
-  storage,
-  emitter,
-  WSEventType,
-  rpx2px,
-  _get,
-  throttle,
-  toPropertyDesc,
-  isNullOrUnDef,
-} from '../../utils/index'
+import { storage, emitter, WSEventType, rpx2px, _get, throttle, toPropertyDesc, isNullOrUnDef } from '../../utils/index'
 import { proName, PRO_TYPE, LIST_PAGE, CARD_W, CARD_H } from '../../config/index'
 
 type DeviceCard = Device.DeviceItem & {
