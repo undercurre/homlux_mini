@@ -4,7 +4,7 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import { isAndroid, Logger, checkWxBlePermission, storage, unique, isNullOrUnDef, emitter } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import { createBleServer, bleAdvertising } from '../../utils/remoterUtils'
-import { deviceConfig, MIN_RSSI, SEEK_TIMEOUT } from '../../config/remoter'
+import { deviceConfig, MIN_RSSI, SEEK_TIMEOUT, CMD } from '../../config/remoter'
 
 const MOCK_DEVICES = [
   {
@@ -78,6 +78,9 @@ ComponentWithComputed({
   computed: {
     deviceIds(data) {
       return data.deviceList.map((device) => device.deviceId)
+    },
+    deviceNames(data) {
+      return data.deviceList.map((device) => device.deviceName)
     },
   },
 
@@ -154,11 +157,18 @@ ComponentWithComputed({
               const deviceType = item!.deviceType
               const deviceModel = item!.deviceModel
               const detail = deviceConfig[deviceType][deviceModel]
+              const deviceCount = this.data.deviceList.filter(
+                (device) => device.deviceType === deviceType && device.deviceModel === deviceModel,
+              ).length
+              const deviceName = this.data.deviceNames.includes(detail.deviceName)
+                ? detail.deviceName + (deviceCount + 1)
+                : detail.deviceName
 
               foundList.push({
                 deviceId: item!.deviceId,
+                addr: item!.addr,
                 devicePic: detail.devicePic,
-                deviceName: detail.deviceName,
+                deviceName,
                 deviceType,
                 deviceModel,
                 switchStatus: 'off',
@@ -212,16 +222,17 @@ ComponentWithComputed({
     initDeviceList() {
       const deviceList = [...MOCK_DEVICES] as Remoter.DeviceItem[]
       for (const deviceId in this.data._localList) {
-        const { deviceModel, deviceType, orderNum } = this.data._localList[deviceId]
+        const { deviceModel, deviceType, orderNum, deviceName } = this.data._localList[deviceId]
         if (!deviceModel || !deviceType) return
 
         const detail = deviceConfig[deviceType][deviceModel]
         deviceList.push({
           dragId: deviceId,
           deviceId,
+          addr: deviceId.split(':').reverse().join(''),
           orderNum: orderNum ?? 0,
           devicePic: detail.devicePic,
-          deviceName: detail.deviceName,
+          deviceName: deviceName ?? detail.deviceName,
           deviceType,
           deviceModel,
           switchStatus: 'off',
@@ -352,7 +363,7 @@ ComponentWithComputed({
 
     // 点击设备卡片
     handleCardTap(e: WechatMiniprogram.TouchEvent) {
-      const { deviceType, deviceModel, saved, deviceId } = e.detail
+      const { deviceType, deviceModel, deviceName, saved, deviceId } = e.detail
       if (isNullOrUnDef(deviceType) || isNullOrUnDef(deviceModel)) {
         return
       }
@@ -383,6 +394,7 @@ ComponentWithComputed({
           orderNum,
           deviceType,
           deviceModel,
+          deviceName,
         }
         storage.set('_localList', this.data._localList)
 
@@ -403,10 +415,17 @@ ComponentWithComputed({
       }
 
       // 广播控制指令
+      const { addr } = e.detail
+      // const addr = '18392c0c5566' // 模拟遥控器mac
+      const payload = remoterProtocol.generalCmdString(CMD.NIGHT_LAMP)
       bleAdvertising(this.data._bleServer, {
-        addr: 'AA9078563412',
-        payload: '0001B80B4416F6670001000000000000',
+        addr,
+        payload,
       })
+
+      if (!e.detail.saved) {
+        this.handleCardTap(e)
+      }
     },
     // 搜索设备
     toSeek() {

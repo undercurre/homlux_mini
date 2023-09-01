@@ -12,15 +12,15 @@
       <text class="text-24rpx text-hex-a2a2a2">{{'该选择不影响您后续的操作，您可以\n在“默认主页”中更改主页的设定'}}</text>
     </view>
 
-    <view class="flex flex-row center mt-50rpx">
-      <van-checkbox use-icon-slot bind:change="onChange" label-position="left" data-page="index" custom-class="pic-check">
+    <view class="flex flex-row justify-evenly center mt-50rpx w-750rpx">
+      <view bind:tap="handlePageTap" data-page="index" class="pic-check">
         <image class="rounded-32rpx shot" src="{{ shots.img0 }}" />
         <image class="h-32rpx w-32rpx mt-48rpx" slot="icon" src="{{ defaultPage === 'index' ? checkImg : uncheckImg }}" />
-      </van-checkbox>
-      <van-checkbox use-icon-slot bind:change="onChange" label-position="left" data-page="remoter" custom-class="pic-check">
+      </view>
+      <view bind:tap="handlePageTap" data-page="remoter" class="pic-check">
         <image class="rounded-32rpx shot" src="{{ shots.img1 }}" />
         <image class="h-32rpx w-32rpx mt-48rpx" slot="icon" src="{{ defaultPage === 'remoter' ? checkImg : uncheckImg }}" />
-      </van-checkbox>
+      </view>
     </view>
   </view>
   <view class="fixed bottom-0 flex flex-row pt-30rpx w-full px-32rpx box-border" style="height: calc(146rpx + env(safe-area-inset-bottom))">

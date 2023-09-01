@@ -39,24 +39,24 @@ function _createRandomEncodeFlag(): number {
  * @param data 用户透传payload
  * @param addr 设备addr
  * @param flag 本次通信的加密序列起始索引
- * @param isble 是否为 ble广播加密
  * @returns number[]
  */
-function _enCodeData(data: string, addr: string, flag: number, isble = true) {
+function _enCodeData(data: string, addr: string, flag: number) {
   const encryptResult: number[] = []
   const encodeTable = createEncodeTable(addr)
-  console.log('本次通信的 循环加密表', encodeTable, 'flag', flag)
+  console.log(
+    '本次通信的 循环加密表',
+    encodeTable.map((b) => b.toString(16)),
+    'flag',
+    flag,
+  )
   const source: number[] = []
   let encodeIndex = flag & 0x0f
   for (let i = 0; i < data.length; i += 2) {
     source.push(parseInt(data.slice(i, i + 2), 16))
   }
-  console.log('本次需要加密的数据', source)
+  console.log('本次需要加密的数据', data)
   for (let i = 0; i < source.length; i++) {
-    if (i === 0 && isble) {
-      encryptResult[i] = source[i]
-      continue
-    }
     encryptResult[i] = source[i] ^ encodeTable[encodeIndex % encodeTable.length]
     encodeIndex++
   }

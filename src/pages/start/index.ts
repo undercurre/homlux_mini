@@ -42,9 +42,9 @@ ComponentWithComputed({
         })
       }
     },
-    onChange(e: WechatMiniprogram.CustomEvent) {
+    handlePageTap(e: WechatMiniprogram.CustomEvent) {
       this.setData({
-        defaultPage: e.target.dataset.page,
+        defaultPage: e.currentTarget.dataset.page,
       })
     },
     handleDefaultPage() {

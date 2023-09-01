@@ -76,7 +76,7 @@ const _createBluetoothProtocol = (params: { sequence: number; addr: string; data
   const sequenceOpcode = parseInt(sequence.toString(2) + opcode.toString(2), 2)
   commandData.push(sequenceOpcode)
   //	3. encrypt data
-  const encrytpedData = cryptoUtils.enCodeData(data, addr, sequence, false)
+  const encrytpedData = cryptoUtils.enCodeData(data, addr, sequence)
   console.log('蓝牙协议 加密后的数据:', encrytpedData)
   commandData.push(...encrytpedData)
   //	4. set length =>  payload length
@@ -91,20 +91,23 @@ const _createBluetoothProtocol = (params: { sequence: number; addr: string; data
   return buffer
 }
 
-//	创建广播发送协议
-const createBleProtocol = (params: { payload: string; addr: string }) => {
-  const { payload, addr } = params
+/**
+ * @description 按播发送协议拼接数据
+ * @param params.isEncrypt 是否加密
+ */
+const createBleProtocol = (params: { payload: string; addr: string; isEncrypt?: boolean }) => {
+  const { payload, addr, isEncrypt = true } = params
   // 第一个字节
   const version = '0001'
   const src = 1 // 手机发出
   const BTP = 0 // 不分包
   const connected = 0
-  const visibility = 0
+  const visibility = 1 // 设备可见
   const VBCV = parseInt(`${version}${src}${BTP}${connected}${visibility}`, 2)
 
   // 第二个字节
-  const encryptType = '0001' // 加密
-  const encryptIndex = Math.round(Math.random() * 15)
+  const encryptType = isEncrypt ? '0001' : '0000'
+  const encryptIndex = 0 // Math.round(Math.random() * 15)
   const encryptIndexBin = encryptIndex.toString(2).padStart(4, '0')
   const advData = [VBCV, parseInt(`${encryptType}${encryptIndexBin}`, 2)]
 
@@ -113,10 +116,21 @@ const createBleProtocol = (params: { payload: string; addr: string }) => {
     advData.push(parseInt(addr.slice(i, i + 2), 16))
   }
 
+  // 不加密则直接返回
+  if (!isEncrypt) {
+    for (let i = 0; i < payload.length; i += 2) {
+      advData.push(parseInt(payload.slice(i, i + 2), 16))
+    }
+    return advData
+  }
+
   // encode payload
-  const channel = parseInt(payload.slice(0, 4))
-  const encrytpedData = cryptoUtils.enCodeData(payload.slice(4), addr, encryptIndex)
-  console.log('加密后的数据', encrytpedData)
+  const channel = parseInt(payload.slice(0, 2))
+  const encrytpedData = cryptoUtils.enCodeData(payload.slice(2), addr, encryptIndex)
+  console.log(
+    '加密后的数据',
+    encrytpedData.map((b) => b.toString(16)),
+  )
 
   advData.push(channel, ...encrytpedData)
   return advData
@@ -185,7 +199,7 @@ const _handleBluetoothResponse = (response: string, addr: string) => {
   const opCode = parseInt(seqOpcode.slice(4), 2)
   const payload = response.slice(4, len * 2 + 2)
   const decryptData = cryptoUtils
-    .enCodeData(payload, addr, sequence, false)
+    .enCodeData(payload, addr, sequence)
     .map((item) => item.toString(16).padStart(2, '0'))
     .join('')
   return {
@@ -209,6 +223,23 @@ const _handleBleResponse = (response: string) => {
   }
 }
 
+/**
+ * 根据电控协议生成设备指令数据
+ */
+const _generalCmdString = (key: number) => {
+  const channel = 0x01
+  const version = 0x01
+  const sequence = 0x00
+  const sum = (channel + version + sequence + key) % 256
+  const data = [channel, version, sequence, key]
+  // Byte4...Byte14 预留，默认0x00
+  for (let i = 4; i <= 14; ++i) {
+    data[i] = 0x00
+  }
+  data.push(sum)
+  return data.map((byte) => byte.toString(16).padStart(2, '0')).join('')
+}
+
 export default {
   searchDeviceCallBack: _searchDeviceCallBack,
   createAndroidBleRequest: _createAndroidBleRequest,
@@ -217,4 +248,5 @@ export default {
   createBluetoothProtocol: _createBluetoothProtocol,
   handleBluetoothResponse: _handleBluetoothResponse,
   handleBleResponse: _handleBleResponse,
+  generalCmdString: _generalCmdString,
 }

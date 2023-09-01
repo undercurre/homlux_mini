@@ -7,23 +7,23 @@
 
   <view class="flex-col-center">
     <view class="joystick">
-      <mz-button class="absolute up" img="/package-remoter/assets/up.png" imgActive="/package-remoter/assets/upActive.png" imgWidth="304rpx" imgHeight="142rpx" icon="{{device.joystick.up.icon}}" iconActive="{{device.joystick.up.iconActive}}" bind:tap="upTap" data-key="{{device.joystick.up.key}}"></mz-button>
+      <mz-button class="absolute up" img="/package-remoter/assets/up.png" imgActive="/package-remoter/assets/upActive.png" imgWidth="304rpx" imgHeight="142rpx" icon="{{device.joystick.up.icon}}" iconActive="{{device.joystick.up.iconActive}}" bind:tap="btnTap" data-key="{{device.joystick.up.key}}" bind:longpress="handleLongPress"></mz-button>
 
-      <mz-button class="absolute right" img="/package-remoter/assets/right.png" imgActive="/package-remoter/assets/rightActive.png" imgWidth="142rpx" imgHeight="304rpx" icon="{{device.joystick.right.icon}}" iconActive="{{device.joystick.right.iconActive}}"></mz-button>
+      <mz-button class="absolute right" img="/package-remoter/assets/right.png" imgActive="/package-remoter/assets/rightActive.png" imgWidth="142rpx" imgHeight="304rpx" icon="{{device.joystick.right.icon}}" iconActive="{{device.joystick.right.iconActive}}" bind:tap="btnTap" data-key="{{device.joystick.right.key}}"></mz-button>
 
-      <mz-button class="absolute down" img="/package-remoter/assets/down.png" imgActive="/package-remoter/assets/downActive.png" imgWidth="304rpx" imgHeight="142rpx" icon="{{device.joystick.down.icon}}" iconActive="{{device.joystick.down.iconActive}}"></mz-button>
+      <mz-button class="absolute down" img="/package-remoter/assets/down.png" imgActive="/package-remoter/assets/downActive.png" imgWidth="304rpx" imgHeight="142rpx" icon="{{device.joystick.down.icon}}" iconActive="{{device.joystick.down.iconActive}}" bind:tap="btnTap" data-key="{{device.joystick.down.key}}"></mz-button>
 
-      <mz-button class="absolute left" img="/package-remoter/assets/left.png" imgActive="/package-remoter/assets/leftActive.png" imgWidth="142rpx" imgHeight="304rpx" icon="{{device.joystick.left.icon}}" iconActive="{{device.joystick.left.iconActive}}"></mz-button>
+      <mz-button class="absolute left" img="/package-remoter/assets/left.png" imgActive="/package-remoter/assets/leftActive.png" imgWidth="142rpx" imgHeight="304rpx" icon="{{device.joystick.left.icon}}" iconActive="{{device.joystick.left.iconActive}}" bind:tap="btnTap" data-key="{{device.joystick.left.key}}"></mz-button>
 
       <mz-button class="absolute middle" type="round" imgWidth="154rpx" imgHeight="154rpx" hasFeedback="{{false}}"></mz-button>
     </view>
 
     <view class="flex flex-row justify-evenly flex-wrap mt-36rpx w-full">
-      <mz-button wx:for="{{device.mList}}" wx:key="index" icon="{{item.icon}}" iconActive="{{item.iconActive}}" class="mt-64rpx" type="square" text="{{item.name}}"></mz-button>
+      <mz-button wx:for="{{device.mList}}" wx:key="index" icon="{{item.icon}}" iconActive="{{item.iconActive}}" bind:tap="btnTap" class="mt-64rpx" type="square" text="{{item.name}}" data-key="{{item.key}}"></mz-button>
     </view>
   </view>
 
   <view class="main-control">
-    <mz-button2 wx:for="{{device.bList}}" wx:key="index" icon="{{item.icon}}" iconActive="{{item.iconActive}}" text="{{item.name}}"></mz-button2>
+    <mz-button2 wx:for="{{device.bList}}" wx:key="index" icon="{{item.icon}}" iconActive="{{item.iconActive}}" bind:tap="btnTap" text="{{item.name}}" data-key="{{item.key}}"></mz-button2>
   </view>
 </view>
