@@ -585,10 +585,16 @@ ComponentWithComputed({
         })
         return
       }
-
-      this.setData({
-        [`${listType}`]: [...this.data[listType], selectId],
-      })
+      if (this.data.selectCardType === 'sensor') {
+        //传感器只单选
+        this.setData({
+          sensorlinkSelectList: [selectId],
+        })
+      } else {
+        this.setData({
+          sceneDevicelinkSelectList: [...this.data['sceneDevicelinkSelectList'], selectId],
+        })
+      }
     },
     handleSelectCardClose() {
       this.setData({

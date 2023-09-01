@@ -1,8 +1,6 @@
 // package-mine/device-replace/components/steps/index.ts
 Component({
-  options: {
-    addGlobalClass: true,
-  },
+  options: {},
   /**
    * 组件的属性列表
    */

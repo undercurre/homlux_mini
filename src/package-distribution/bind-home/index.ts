@@ -8,9 +8,7 @@ import { homeBinding, homeStore, roomBinding } from '../../store/index'
 import { PRO_TYPE } from '../../config/index'
 
 ComponentWithComputed({
-  options: {
-    styleIsolation: 'apply-shared',
-  },
+  options: {},
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, roomBinding] }), pageBehaviors],
   /**
    * 组件的属性列表

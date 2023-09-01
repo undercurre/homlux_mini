@@ -8,9 +8,7 @@ import { saveOrUpdateUserHouseInfo, delUserHouse, quitUserHouse, updateDefaultHo
 import { strUtil, checkInputNameIllegal, emitter } from '../../utils/index'
 
 ComponentWithComputed({
-  options: {
-    addGlobalClass: true,
-  },
+  options: {},
   behaviors: [
     BehaviorWithStore({ storeBindings: [roomBinding, homeBinding, userBinding, deviceBinding] }),
     pageBehaviors,
@@ -40,7 +38,7 @@ ComponentWithComputed({
     settingActions(data) {
       const actions = []
 
-      if (data.isEnabled) {
+      if (data.currentHomeDetail?.houseUserAuth === 1 || data.currentHomeDetail?.houseUserAuth === 2) {
         actions.push({
           name: '重命名',
         })
@@ -63,10 +61,6 @@ ComponentWithComputed({
       }
 
       return actions
-    },
-    isEnabled(data) {
-      const role = data.currentHomeDetail?.houseUserAuth
-      return role === 1 || role === 2
     },
     namingPopupTitle(data) {
       return data.homeInfoEdited.houseId ? '重命名家庭' : '新建家庭'

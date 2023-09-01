@@ -15,7 +15,6 @@ let reportInfo: IAnyObject = {}
 
 ComponentWithComputed({
   options: {
-    styleIsolation: 'apply-shared',
     pureDataPattern: /^_/,
   },
   behaviors: [pageBehaviors],

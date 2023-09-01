@@ -33,7 +33,7 @@
   <view wx:if="{{!roomHasDevice}}" class="w-full flex flex-col items-center">
     <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx mt-64rpx"></image>
     <text class="text-black-59 text-28rpx mt-48rpx text-center leading-48rpx">{{'房间内还未添加可控制的\n灯具、开关、窗帘'}}</text>
-    <van-button wx-if="{{canAddDevice}}" type="primary" class="mt-290rpx w-686rpx" size="large" bind:click="handleAddDevice">立即添加</van-button>
+    <van-button wx:if="{{canAddDevice}}" type="primary" class="mt-290rpx w-686rpx" size="large" bind:click="handleAddDevice">立即添加</van-button>
   </view>
 
   <!-- 有设备页面主体 -->
@@ -78,7 +78,7 @@
 
         <!-- 有列表时的添加按钮 -->
         <view class="flex-col-center py-20rpx" wx:if="{{roomHasSubDevice}}">
-          <van-button wx-if="{{canAddDevice}}" type="default" color="rgba(255,255,255,0.60)" size="small" custom-class="round-btn-border" round bind:tap="goTo" data-url="/package-distribution/choose-device/index">
+          <van-button wx:if="{{canAddDevice}}" type="default" color="rgba(255,255,255,0.60)" size="small" custom-class="round-btn-border" round bind:tap="goTo" data-url="/package-distribution/choose-device/index">
             <text class="text-26rpx text-hex-555659">添加设备</text>
           </van-button>
         </view>
@@ -94,7 +94,7 @@
 
 <add-scene-popup actions="{{addSceneActions}}" show="{{showAddScenePopup}}" bind:close="handleAddScenePopupClose" bind:confirm="handleShowAddSceneSuccess" bind:return="handleAddScenePopupReturn" />
 
-<batch-edit bind:updateList="updateQueue" bind:roomMove="handleRoomMoveSuccess" bind:close="exitEditMode" bind:selectAll="editSelectAll" editSelectMode="{{editSelectMode}}" editSelectList="{{editSelectList}}"></batch-edit>
+<batch-edit bind:updateList="updateQueue" bind:updateListOnCloud="updateRoomData" bind:close="exitEditMode" bind:selectAll="editSelectAll" editSelectMode="{{editSelectMode}}" editSelectList="{{editSelectList}}"></batch-edit>
 
 <van-toast id="van-toast" />
 

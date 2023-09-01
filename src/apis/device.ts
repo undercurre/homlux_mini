@@ -75,7 +75,7 @@ export async function queryDeviceOnlineStatus(
 }
 
 /**
- * 查询设备是否绑定网关
+ * 查询子设备是否已入网
  * @param data devIds 设备
  * @param options
  */
@@ -89,8 +89,8 @@ export async function queryBindDevIdIsSuccess(data: { devIds: string[] }, option
 }
 
 /**
- * 查询设备在线离线状态
- * @param data deviceType 设备类型（1:网关 2:子设备 3:wifi
+ * 查询子设备是否已入网
+ * @param data
  * @param options
  */
 export async function isDeviceOnline(data: { devIds: string[] }) {
@@ -506,13 +506,60 @@ export async function deviceReplace(
  * 根据sn去查设备的mac、图片、品类
  */
 export async function checkDevice(
-  data: { dsn?: string; mac?: string; productId?: string },
+  data: {
+    dsn?: string
+    mac?: string
+    productId?: string
+  },
   options?: { loading?: boolean },
 ) {
   return await mzaioRequest.post<Device.MzgdProTypeDTO>({
-    log: false,
+    log: true,
     loading: options?.loading ?? false,
     url: '/v1/device/checkDevice',
+    data,
+  })
+}
+
+/**
+ * 批量校验设备的mac
+ */
+export async function batchCheckDevice(
+  data: {
+    deviceCheckSubDeviceVoList: { mac: string }[]
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<Device.MzgdProTypeDTO[]>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/batchCheckDevice',
+    data,
+  })
+}
+
+/**
+ * 批量设备的基本产品信息
+ */
+export async function batchGetProductInfoByBPid(
+  data: {
+    mzgdBluetoothVoList: { proType: string; bluetoothPid: string }[]
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<
+    {
+      proType: string
+      bluetoothPid: string
+      productIcon: string
+      productName: string
+      modelId: string
+      switchNum: number
+    }[]
+  >({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/batchGetProductInfoByBPid',
     data,
   })
 }
@@ -735,4 +782,40 @@ export async function groupControl(
     url: '/v1/mzgd/scene/groupControl',
     data,
   })
+}
+
+/**
+ * 获取网关网络信息
+ */
+export async function getGwNetworkInfo(
+  data: {
+    deviceId: string
+  },
+  options?: { loading?: boolean },
+) {
+  options?.loading && showLoading()
+
+  const downRes = await controlDevice({
+    deviceId: data.deviceId,
+    deviceType: 1,
+    method: 'networkAnalysis',
+    topic: '/zigbeeInfo',
+    inputData: [
+      {
+        mode: 'getNetworkInfo',
+      },
+    ],
+  })
+
+  if (!downRes.success) {
+    return downRes
+  }
+
+  await delay(1000)
+
+  const deviceInfoRes = await queryDeviceInfoByDeviceId({ deviceId: data.deviceId })
+
+  options?.loading && hideLoading()
+
+  return deviceInfoRes
 }

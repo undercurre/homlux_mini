@@ -24,6 +24,7 @@ import {
   throttle,
   toPropertyDesc,
   transferDeviceProperty,
+  isNullOrUnDef,
 } from '../../utils/index'
 import { proName, PRO_TYPE, LIST_PAGE, CARD_W, CARD_H } from '../../config/index'
 
@@ -131,7 +132,7 @@ ComponentWithComputed({
       return false
     },
     roomHasSubDevice(data) {
-      if (data.deviceList) {
+      if (data.deviceList?.length) {
         return (
           (data.allRoomDeviceList as DeviceCard[]).filter(
             (device) =>
@@ -145,7 +146,7 @@ ComponentWithComputed({
     },
     // 房间存在可显示的设备
     roomHasDevice(data) {
-      if (data.deviceList) {
+      if (data.deviceList?.length) {
         return (
           (data.allRoomDeviceList as DeviceCard[]).filter(
             (device) =>
@@ -170,7 +171,7 @@ ComponentWithComputed({
       return []
     },
     deviceIdTypeMap(data): Record<string, string> {
-      if (data.deviceList) {
+      if (data.deviceList?.length) {
         return Object.fromEntries(
           data.deviceList.map((device: DeviceCard) => [device.deviceId, proName[device.proType]]),
         )
@@ -338,11 +339,13 @@ ComponentWithComputed({
         // 节流更新本地数据
         else if (
           [
-            WSEventType.device_del,
             WSEventType.device_replace,
             WSEventType.device_online_status,
             WSEventType.device_offline_status,
-            WSEventType.group_device_result_status,
+            WSEventType.group_upt,
+            // WSEventType.group_device_result_status,
+            // WSEventType.device_del,
+            WSEventType.bind_device,
           ].includes(e.result.eventType)
         ) {
           this.updateRoomData(e)
@@ -356,14 +359,22 @@ ComponentWithComputed({
             url: '/pages/index/index',
           })
         }
+
+        // 独立执行 移动\删除 的刷新
+        // if (
+        //   e.result.eventType === WSEventType.group_device_result_status ||
+        //   e.result.eventType === WSEventType.device_del
+        // ) {
+        //   this.removeDevice(e.result.eventData.devId ?? e.result.eventData.deviceId)
+        // }
       })
     },
 
     async reloadData() {
       try {
         await Promise.all([
-          deviceStore.updateAllRoomDeviceList(),
           deviceStore.updateSubDeviceList(),
+          deviceStore.updateAllRoomDeviceList(),
           homeStore.updateRoomCardList(),
           sceneStore.updateSceneList(),
           sceneStore.updateAllRoomSceneList(),
@@ -374,10 +385,26 @@ ComponentWithComputed({
       }
     },
 
-    // 节流更新房间各种信息
+    // 节流更新房间各种关联信息
     updateRoomData: throttle(function (this: IAnyObject) {
       this.reloadData()
-    }, 8000),
+    }, 4000),
+
+    // 直接更新store数据, 移除列表中的设备
+    removeDevice(deviceId: string) {
+      console.log('remove', deviceId)
+      const newDeviceList = [] as Device.DeviceItem[]
+      deviceStore.deviceList.forEach((device) => {
+        if (deviceId !== device.deviceId) {
+          newDeviceList.push({ ...device })
+        }
+      })
+      runInAction(() => {
+        deviceStore.deviceList = newDeviceList
+      })
+
+      this.updateQueue({ isRefresh: true })
+    },
 
     // 页面滚动
     onPageScroll(e: { detail: { scrollTop: number } }) {
@@ -497,24 +524,25 @@ ComponentWithComputed({
             }
 
             // 如果控制弹框为显示状态，则同步选中设备的状态
-            if (
-              device!.mzgdPropertyDTOList &&
-              this.data.checkedList.includes(originDevice!.deviceId) &&
-              originDevice!.select
-            ) {
-              const prop = transferDeviceProperty(originDevice.proType, device!.mzgdPropertyDTOList['1'])
-              if (originDevice.proType === PRO_TYPE.light) {
-                diffData.lightStatus = {
-                  Level: prop.Level,
-                  ColorTemp: prop.ColorTemp,
-                  OnOff: prop.OnOff,
-                }
-              } else if (originDevice.proType === PRO_TYPE.curtain) {
-                diffData.curtainStatus = {
-                  position: prop.curtain_position,
-                }
-              }
-            }
+            // 因为异常推送较多，暂时不对弹框中的设备状态进行更新
+            // if (
+            //   device!.mzgdPropertyDTOList &&
+            //   this.data.checkedList.includes(originDevice!.deviceId) &&
+            //   originDevice!.select
+            // ) {
+            //   const prop = transferDeviceProperty(originDevice.proType, device!.mzgdPropertyDTOList['1'])
+            //   if (originDevice.proType === PRO_TYPE.light) {
+            //     diffData.lightStatus = {
+            //       Level: prop.Level,
+            //       ColorTemp: prop.ColorTemp,
+            //       OnOff: prop.OnOff,
+            //     }
+            //   } else if (originDevice.proType === PRO_TYPE.curtain) {
+            //     diffData.curtainStatus = {
+            //       position: prop.curtain_position,
+            //     }
+            //   }
+            // }
 
             if (Object.keys(diffData).length) {
               this.setData(diffData)
@@ -531,10 +559,10 @@ ComponentWithComputed({
         const flattenList = deviceStore.deviceFlattenList
 
         // 如果为空则不初始化
-        if (!flattenList.length) {
-          this.data._updating = false
-          return
-        }
+        // if (!flattenList.length) {
+        //   this.data._updating = false
+        //   return
+        // }
 
         const _list = flattenList
           // 接口返回开关面板数据以设备为一个整体，需要前端拆开后排序
@@ -650,6 +678,20 @@ ComponentWithComputed({
         this.updateDeviceList(diff)
       }
     },
+
+    // 基于云端更新数据
+    async updateRoomListOnCloud() {
+      await deviceStore.updateSubDeviceList()
+      this.updateQueue({ isRefresh: true })
+    },
+    // updateRoomListOnCloud: throttle(
+    //   async function (this: IAnyObject) {
+    //     await deviceStore.updateSubDeviceList()
+    //     this.updateQueue({ isRefresh: true })
+    //   },
+    //   4000,
+    //   false,
+    // ),
 
     /**
      * @description 更新选中状态并渲染
@@ -1007,11 +1049,9 @@ ComponentWithComputed({
       if (toCheck) {
         const prop = e.detail.mzgdPropertyDTOList['1']
         if (e.detail.proType === PRO_TYPE.light) {
-          diffData.lightStatus = {
-            Level: prop.Level,
-            ColorTemp: prop.ColorTemp,
-            OnOff: prop.OnOff,
-          }
+          if (!isNullOrUnDef(prop.Level)) diffData['lightStatus.Level'] = prop.Level
+          if (!isNullOrUnDef(prop.ColorTemp)) diffData['lightStatus.ColorTemp'] = prop.ColorTemp
+          if (!isNullOrUnDef(prop.OnOff)) diffData['lightStatus.OnOff'] = prop.OnOff
         } else if (e.detail.proType === PRO_TYPE.curtain) {
           diffData.curtainStatus = {
             position: prop.curtain_position,
@@ -1227,9 +1267,6 @@ ComponentWithComputed({
       wx.navigateTo({
         url: `/package-distribution/wifi-connect/index?type=changeWifi&sn=${gateway.sn}`,
       })
-    },
-    handleRoomMoveSuccess() {
-      this.updateQueue({ isRefresh: true })
     },
   },
 })

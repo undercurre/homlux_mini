@@ -34,8 +34,8 @@
   <!-- 隔开一点距离 -->
   <view class="h-24rpx"></view>
   <!-- 底部按钮 -->
-  <van-button wx-if="{{canEditDevice}}" size="large" type="warning" custom-class="delete-btn" bind:click="handleDeviceDelete">删除设备</van-button>
-  <view wx-if="{{canEditDevice}}" class="h-96rpx"></view>
+  <van-button wx:if="{{canEditDevice}}" size="large" type="warning" custom-class="delete-btn" bind:click="handleDeviceDelete">删除设备</van-button>
+  <view wx:if="{{canEditDevice}}" class="h-96rpx"></view>
 </view>
 
 <van-toast id="van-toast" />

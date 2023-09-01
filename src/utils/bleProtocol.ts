@@ -142,14 +142,12 @@ export class BleClient {
   }
 
   async close() {
-    // const isConnected = bleDeviceMap[this.deviceUuid]
-
-    // if (!isConnected) {
-    //   Logger.log(`【${this.mac}】已关闭蓝牙连接，无需再次关闭`)
-    //   return
-    // }
     Logger.log(`【${this.mac}】${this.deviceUuid}开始关闭蓝牙连接`)
-    const res = await wx.closeBLEConnection({ deviceId: this.deviceUuid }).catch((err) => err)
+    // 偶现调用closeBLEConnection后没有任何返回，需要手动增加超时处理
+    const res = await Promise.race([
+      wx.closeBLEConnection({ deviceId: this.deviceUuid }).catch((err) => err),
+      delay(5000).then(() => 'closeBLEConnection超时'),
+    ])
 
     // 存在调用关闭蓝牙连接指令和与设备蓝牙连接真正断开有时间差，强制等待1s
     await delay(1000)
@@ -226,8 +224,8 @@ export class BleClient {
           const resMsg = msg.substr(6, (packLen - 3) * 2)
 
           resolve({
-            code: resMsg.substr(0, 2),
-            resMsg: resMsg.substr(2),
+            code: resMsg.slice(2, 4),
+            resMsg: resMsg.slice(2),
             success: true,
             cmdType: cmdType,
           })
@@ -390,9 +388,9 @@ export const bleUtil = {
       isConfig: msgStr.substr(4, 2),
       mac: zigbeeMac.substr(0, 6) + zigbeeMac.substr(-6, 6),
       zigbeeMac,
-      deviceCategory: msgStr.substr(18, 2),
-      deviceModel: msgStr.substr(20, 2),
-      version: msgStr.substr(22, 2),
+      proType: `0x${msgStr.slice(22, 24)}`,
+      bluetoothPid: `0x${msgStr.slice(24, 26)}`,
+      version: msgStr.slice(26, 28),
       protocolVersion: msgStr.slice(-2),
     }
   },

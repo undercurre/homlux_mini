@@ -9,9 +9,7 @@ import QQMapWX from '../../lib/qqmap-wx-jssdk'
 import { storage } from '../../utils/storage'
 
 ComponentWithComputed({
-  options: {
-    addGlobalClass: true,
-  },
+  options: {},
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] }), pageBehaviors],
 
   /**

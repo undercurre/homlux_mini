@@ -1,4 +1,3 @@
-// package-mine/device-replace/index.ts
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
@@ -10,9 +9,7 @@ import { deviceReplace } from '../../apis/index'
 import { emitter } from '../../utils/eventBus'
 
 ComponentWithComputed({
-  options: {
-    addGlobalClass: true,
-  },
+  options: {},
   behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding] }), pageBehaviors],
 
   /**

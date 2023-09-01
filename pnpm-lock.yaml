@@ -19,7 +19,7 @@ specifiers:
   fast-deep-equal: ^2.0.1
   husky: ^8.0.3
   lottie-miniprogram: ^1.0.12
-  miniprogram-api-typings: ^3.9.1
+  miniprogram-api-typings: ^3.11.0
   miniprogram-computed: ^4.4.0
   miniprogram-recycle-view: ^0.1.5
   mitt: ^3.0.0
@@ -60,7 +60,7 @@ devDependencies:
   eslint-plugin-wxml: 0.7.5_eslint@8.40.0
   esno: 0.16.3
   husky: 8.0.3
-  miniprogram-api-typings: 3.9.1
+  miniprogram-api-typings: 3.11.0
   prettier: 2.8.8
   typescript: 4.9.5
   unocss: 0.48.5
@@ -2209,8 +2209,8 @@ packages:
     resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
     dev: true
 
-  /miniprogram-api-typings/3.9.1:
-    resolution: {integrity: sha512-oyratzOWyuFhBzONp06l0FBPu03ltCd1sRWoy2v38SnAKxtpZ8ySLTSEw//hIsBdocMda7fFZEjOG57L57mcUw==}
+  /miniprogram-api-typings/3.11.0:
+    resolution: {integrity: sha512-jMYeqEOGZc1dq7MR8Zu1tj1zmzlvATlvsUb7eFaTYk8LoBVrbgdGUWwVjAmFFNjNdiUaokceGeJaByAa5QYpKw==}
     dev: true
 
   /miniprogram-computed/4.4.0:

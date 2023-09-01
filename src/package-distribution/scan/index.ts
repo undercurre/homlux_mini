@@ -7,11 +7,10 @@ import { deviceBinding, homeBinding } from '../../store/index'
 import { bleDevicesBinding, bleDevicesStore } from '../store/bleDeviceStore'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { checkWifiSwitch, strUtil, showLoading, hideLoading, delay, Logger, isAndroid } from '../../utils/index'
-import { checkDevice, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
+import { getGwNetworkInfo, checkDevice, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
 
 ComponentWithComputed({
   options: {
-    styleIsolation: 'apply-shared',
     pureDataPattern: /^_/,
   },
 
@@ -37,9 +36,6 @@ ComponentWithComputed({
     selectGateway: {
       deviceId: '',
       sn: '',
-      channel: 0,
-      extPanId: '',
-      panId: 0,
     },
     deviceInfo: {
       icon: '/package-distribution/assets/scan/light.png',
@@ -68,6 +64,7 @@ ComponentWithComputed({
       await homeBinding.store.updateHomeInfo()
     },
     detached() {
+      bleDevicesStore.stopBLeDiscovery()
       wx.closeBluetoothAdapter()
       wx.stopWifi()
       clearInterval(this.data._listenLocationTimeId)
@@ -147,9 +144,6 @@ ComponentWithComputed({
         selectGateway: {
           deviceId: item.deviceId,
           sn: item.sn,
-          channel: item.channel || 0,
-          panId: item.panId || 0,
-          extPanId: item.extPanId || '',
         },
       })
     },
@@ -243,10 +237,11 @@ ComponentWithComputed({
           if (res.available) {
             bleDevicesStore.startBleDiscovery()
             this.checkWxScanEnter()
-            wx.offBluetoothAdapterStateChange(listen)
+
+            bleDevicesStore.offBluetoothAdapterStateChange()
           }
         }
-        wx.onBluetoothAdapterStateChange(listen)
+        bleDevicesStore.onBluetoothAdapterStateChange(listen)
       } else {
         bleDevicesStore.startBleDiscovery()
         this.checkWxScanEnter()
@@ -259,9 +254,6 @@ ComponentWithComputed({
         selectGateway: {
           deviceId: '',
           sn: '',
-          channel: 0,
-          extPanId: '',
-          panId: 0,
         },
       })
     },
@@ -524,7 +516,16 @@ ComponentWithComputed({
     },
 
     async bindSubDevice(params: IAnyObject) {
-      const res = await checkDevice({ dsn: params.sn }, { loading: false })
+      const checkData = {} as IAnyObject
+      const { sn, mac } = params
+
+      if (sn) {
+        checkData.dsn = sn
+      } else if (mac) {
+        checkData.mac = mac
+      }
+
+      const res = await checkDevice(checkData, { loading: false })
 
       if (!res.success) {
         Toast('验证产品信息失败')
@@ -536,15 +537,11 @@ ComponentWithComputed({
       this.setData({
         deviceInfo: {
           type: 'single',
-          proType: res.result.proType,
-          deviceName: res.result.productName,
-          icon: res.result.productIcon,
           mac: res.result.mac, // zigbee 的mac
-          modelId: res.result.modelId,
         },
       })
 
-      const flag = this.checkGateWayInfo()
+      const flag = await this.checkGateWayInfo()
 
       if (flag) {
         this.addSingleSubdevice()
@@ -554,7 +551,7 @@ ComponentWithComputed({
     /**
      * 添加子设备时，检测是否已选择网关信息
      */
-    checkGateWayInfo() {
+    async checkGateWayInfo() {
       const gatewayId = this.data.selectGateway.deviceId
 
       if (gatewayId) {
@@ -567,7 +564,6 @@ ComponentWithComputed({
         })
 
         Dialog.alert({
-          title: this.data.deviceInfo.deviceName,
           showCancelButton: false,
           confirmButtonText: '我知道了',
         })
@@ -577,12 +573,10 @@ ComponentWithComputed({
 
       if (this.data.gatewayList.length === 1 && this.data.gatewayList[0].onLineStatus === 1) {
         const gateway = this.data.gatewayList[0]
+
         this.data.selectGateway = {
           deviceId: gateway.deviceId,
           sn: gateway.sn,
-          channel: gateway.channel || 0,
-          panId: gateway.panId || 0,
-          extPanId: gateway.extPanId || '',
         }
       } else {
         this.setData({
@@ -597,51 +591,73 @@ ComponentWithComputed({
     /**
      * 添加附近搜索的子设备
      */
-    addNearSubdevice() {
+    async addNearSubdevice() {
       this.data.deviceInfo.type = 'near'
       this.data.deviceInfo.deviceName = '子设备'
 
-      if (!this.checkGateWayInfo()) {
+      const isValid = await this.checkGateWayInfo()
+
+      if (!isValid) {
         return
       }
 
-      const { deviceId, sn, channel, extPanId, panId } = this.data.selectGateway
+      const { deviceId, sn } = this.data.selectGateway
+
+      const queryInfo = await getGwNetworkInfo({ deviceId }, { loading: true })
+
+      let networkInfo = {
+        channel: 0,
+        panId: 0,
+        extPanId: '',
+      }
+
+      if (queryInfo.success) {
+        networkInfo = {
+          channel: queryInfo.result.channel,
+          panId: queryInfo.result.panId,
+          extPanId: queryInfo.result.extPanId,
+        }
+      }
 
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
           gatewayId: deviceId,
           gatewaySn: sn,
-          channel,
-          extPanId,
-          panId,
+          channel: networkInfo.channel || 0,
+          panId: networkInfo.panId || 0,
+          extPanId: networkInfo.extPanId || '',
         }),
       })
     },
 
     // 添加单个子设备
-    addSingleSubdevice() {
-      const { deviceId, sn, channel, extPanId, panId } = this.data.selectGateway
+    async addSingleSubdevice() {
+      const { deviceId, sn } = this.data.selectGateway
 
-      const { proType, modelId } = this.data.deviceInfo
+      const queryInfo = await getGwNetworkInfo({ deviceId }, { loading: true })
 
-      wx.reportEvent('add_device', {
-        pro_type: proType,
-        model_id: modelId,
-        add_type: 'qrcode',
-      })
+      let networkInfo = {
+        channel: 0,
+        panId: 0,
+        extPanId: '',
+      }
+
+      if (queryInfo.success) {
+        networkInfo = {
+          channel: queryInfo.result.channel,
+          panId: queryInfo.result.panId,
+          extPanId: queryInfo.result.extPanId,
+        }
+      }
 
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/add-subdevice/index', {
           mac: this.data.deviceInfo.mac,
           gatewayId: deviceId,
           gatewaySn: sn,
-          channel,
-          extPanId,
-          panId,
-          deviceName: this.data.deviceInfo.deviceName,
-          deviceIcon: this.data.deviceInfo.icon,
-          proType: proType,
-          modelId,
+          channel: networkInfo.channel || 0,
+          panId: networkInfo.panId || 0,
+          extPanId: networkInfo.extPanId || '',
         }),
       })
     },

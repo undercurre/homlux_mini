@@ -72,6 +72,7 @@ export function throttle<T extends (...args: any[]) => unknown>(fn: T, wait = 50
     if ((immediate && lastInvoke === 0) || current - lastInvoke > wait) {
       fn.apply(this, args)
       lastInvoke = current
+      clearTimeout(timeId) // 清除历史的定时器
     } else if (end) {
       clearTimeout(timeId)
       timeId = setTimeout(() => {

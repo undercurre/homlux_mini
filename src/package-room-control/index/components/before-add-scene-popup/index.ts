@@ -9,7 +9,6 @@ import { toPropertyDesc } from '../../../../utils/index'
 ComponentWithComputed({
   options: {
     pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
-    styleIsolation: 'apply-shared',
   },
   behaviors: [BehaviorWithStore({ storeBindings: [sceneBinding, roomBinding] })],
   /**

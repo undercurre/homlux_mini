@@ -1,8 +1,5 @@
-// package-mine/device-manage/device-detail/components/setting-light/index.ts
 Component({
-  options: {
-    styleIsolation: 'apply-shared',
-  },
+  options: {},
   /**
    * 组件的属性列表
    */

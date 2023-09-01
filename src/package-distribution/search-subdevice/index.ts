@@ -4,7 +4,7 @@ import { runInAction } from 'mobx-miniprogram'
 import Toast from '@vant/weapp/toast/toast'
 import { homeBinding, roomBinding, homeStore, deviceStore } from '../../store/index'
 import { bleDevicesBinding, bleDevicesStore } from '../store/bleDeviceStore'
-import { getCurrentPageParams, emitter, Logger, throttle } from '../../utils/index'
+import { getCurrentPageParams, emitter, Logger, delay } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { getUnbindSensor, sendCmdAddSubdevice, bindDevice, batchUpdate, isDeviceOnline } from '../../apis/index'
 import lottie from 'lottie-miniprogram'
@@ -17,7 +17,6 @@ type StatusName = 'discover' | 'requesting' | 'success' | 'error'
 
 ComponentWithComputed({
   options: {
-    addGlobalClass: true,
     pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
   },
 
@@ -303,15 +302,8 @@ ComponentWithComputed({
         }
       }
 
-      this.updateBleDeviceListThrottle()
+      bleDevicesStore.updateBleDeviceListThrottle()
     },
-
-    /**
-     * 节流更新蓝牙设备列表，根据实际业务场景使用
-     */
-    updateBleDeviceListThrottle: throttle(() => {
-      bleDevicesStore.updateBleDeviceList()
-    }, 3000),
 
     /**
      * @description 网关进入配网模式
@@ -328,6 +320,8 @@ ComponentWithComputed({
         expire: expireTime,
         buzz: this.data._addModeTimeId ? 0 : 1,
       })
+
+      Logger.log('startGwAddMode', res)
 
       // 子设备配网阶段，保持网关在配网状态
       if (res.success) {
@@ -442,11 +436,6 @@ ComponentWithComputed({
             }
 
             bleDevice.status = 'zigbeeBind' // 标记子设备已入网关的zigbee网络
-            wx.reportEvent('zigebee_add', {
-              pro_type: bleDevice.proType,
-              cost_time: costTime > 1690268520264 ? -1 : costTime, // -1代表手动起网配上的子设备
-              model_id: bleDevice.productId,
-            })
 
             if (deviceData.bindTimeoutId) {
               clearTimeout(deviceData.bindTimeoutId)
@@ -466,9 +455,12 @@ ComponentWithComputed({
           this.startAnimation()
         }, 300)
 
+        await delay(1500) // 强行延时，等待上面的动画渲染完毕，以免和蓝牙逻辑同事发生导致动画卡顿
+
         type PromiseThunk = () => Promise<any>
         const zigbeeTaskList = [] as PromiseThunk[]
 
+        Logger.log('初始化zigbee任务队列:start')
         list.forEach((item) => {
           // 等待zigbee子设备添加上报promise
           // 存在手动进入配网的情况，还没发送蓝牙配网指令就已经收到zigbee添加上报成功的情况，这种情况也需要当做配网成功且不需要重复发送蓝牙配网指令
@@ -534,6 +526,8 @@ ComponentWithComputed({
         })
 
         this.data._zigbeeTaskQueue.add(zigbeeTaskList)
+
+        Logger.log('初始化zigbee任务队列:end')
       } catch (err) {
         Logger.error('beginAddBleDevice-err', err)
       }
@@ -547,7 +541,7 @@ ComponentWithComputed({
       const deviceData = this.data._deviceMap[bleDevice.mac]
       const isOnline = await isDeviceOnline({ devIds: [bleDevice.zigbeeMac] })
 
-      Logger.log(`【${bleDevice.mac}】监听超时查询在线状态：${isOnline}`)
+      Logger.log(`【${bleDevice.mac}】监听超时，查询云端入网状态：${isOnline}`)
 
       isOnline && Logger.debug(`【${bleDevice.mac}】zigbee入网成功但没有收到推送`)
 
@@ -627,8 +621,6 @@ ComponentWithComputed({
     },
 
     async bindBleDeviceToCloud(device: Device.ISubDevice) {
-      device.status = 'success'
-
       const res = await bindDevice({
         deviceId: device.zigbeeMac,
         houseId: homeBinding.store.currentHomeId,
@@ -638,12 +630,23 @@ ComponentWithComputed({
       })
 
       if (res.success && res.result.isBind) {
+        device.status = 'success'
         Logger.log(`${device.mac}绑定家庭成功`)
         // 仅2-4路面板需要更改按键名称
         if (device.switchList.length > 1) {
           await this.editDeviceInfo({ deviceId: res.result.deviceId, switchList: device.switchList })
         }
+
+        const deviceData = this.data._deviceMap[device.mac]
+        const costTime = dayjs().valueOf() - deviceData.startTime
+
+        wx.reportEvent('zigebee_add', {
+          pro_type: device.proType,
+          cost_time: deviceData.startTime === 0 ? -1 : costTime, // -1代表手动起网配上的子设备
+          model_id: device.productId,
+        })
       } else {
+        device.status = 'fail'
         Logger.error(`${device.mac}绑定家庭失败`, res)
       }
     },

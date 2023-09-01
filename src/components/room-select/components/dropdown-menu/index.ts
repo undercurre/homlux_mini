@@ -1,8 +1,5 @@
-// pages/index/components/dropdown-menu/index.ts
 Component({
-  options: {
-    styleIsolation: 'apply-shared',
-  },
+  options: {},
   /**
    * 组件的属性列表
    */

@@ -17,6 +17,12 @@ App<IAppOption>({
     // 加载svg数据
     this.globalData.svgs = svgs
 
+    wx.onNeedPrivacyAuthorization(() => {
+      console.debug('onNeedPrivacyAuthorization')
+      // 需要用户同意隐私授权时
+      // 弹出开发者自定义的隐私授权弹窗
+    })
+
     // 设备运行环境
     setCurrentEnv()
 
@@ -50,6 +56,7 @@ App<IAppOption>({
       this.globalData.firstOnShow = false
       return
     }
+
     // 用户热启动app，建立ws连接，并且再更新一次数据
     Logger.log('app-onShow, isConnect:', isConnect(), homeStore.currentHomeId)
     if (homeStore.currentHomeId && storage.get<string>('token') && isConnect()) {

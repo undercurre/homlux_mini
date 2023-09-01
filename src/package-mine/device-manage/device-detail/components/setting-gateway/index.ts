@@ -4,9 +4,7 @@ import { controlDevice } from '../../../../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
 
 ComponentWithComputed({
-  options: {
-    styleIsolation: 'apply-shared',
-  },
+  options: {},
   /**
    * 组件的属性列表
    */

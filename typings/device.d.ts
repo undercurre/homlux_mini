@@ -132,7 +132,7 @@ declare namespace Device {
 
   interface MzgdProTypeDTO {
     deviceIcon: string
-    isValid: boolean
+    isValid: boolean // 设备mac是否合法
     mac: string
     modelId: string
     proType: string

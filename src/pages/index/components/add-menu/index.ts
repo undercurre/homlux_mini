@@ -5,9 +5,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] }), pageBehavior],
-  options: {
-    styleIsolation: 'apply-shared',
-  },
+  options: {},
   /**
    * 组件的属性列表
    */

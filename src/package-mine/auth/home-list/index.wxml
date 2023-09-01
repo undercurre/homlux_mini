@@ -15,9 +15,11 @@
     </scroll-view>
   </view>
 
-  <van-button class="mx-24rpx" size="large" type="primary" block bind:click="toDevicePage" disabled="{{!homeList.length}}">确定</van-button>
-
   <view class="list-bottom-placeholder"> </view>
+</view>
+
+<view class="fixed bottom-0 flex flex-row pt-30rpx w-750rpx px-32rpx box-border z-400" style="height: calc(146rpx + env(safe-area-inset-bottom))">
+  <van-button class="mx-24rpx w-full" size="large" type="primary" block bind:click="toDevicePage" disabled="{{!homeList.length}}">确定</van-button>
 </view>
 
 <van-toast id="van-toast" />

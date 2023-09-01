@@ -3,9 +3,7 @@ import pageBehaviors from '../../behaviors/pageBehaviors'
 import { sensorList } from '../../config/index'
 
 ComponentWithComputed({
-  options: {
-    styleIsolation: 'apply-shared',
-  },
+  options: {},
   behaviors: [pageBehaviors],
   /**
    * 组件的属性列表
