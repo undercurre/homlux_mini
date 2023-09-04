@@ -46,7 +46,7 @@ type Events = {
     userId: string
   }
   // 删除遥控器
-  remoterDeleted: void
+  remoterChanged: void
 }
 
 export const WSEventType = {

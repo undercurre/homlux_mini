@@ -16,6 +16,7 @@ Component({
       type: Boolean,
       observer(value) {
         if (value) {
+          console.log('show popup, value:', this.data.value)
           this.setData({
             deviceName: this.data.value,
           })

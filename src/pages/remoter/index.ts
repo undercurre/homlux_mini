@@ -10,6 +10,7 @@ const MOCK_DEVICES = [
   {
     dragId: '0',
     deviceId: '',
+    addr: '',
     orderNum: 1,
     devicePic: '/assets/img/remoter/fanLight.png',
     deviceName: '风扇灯Mock',
@@ -23,6 +24,7 @@ const MOCK_DEVICES = [
   {
     dragId: '1',
     deviceId: '',
+    addr: '',
     orderNum: 0,
     devicePic: '/assets/img/remoter/bathHeater.png',
     deviceName: '浴霸Mock',
@@ -36,6 +38,7 @@ const MOCK_DEVICES = [
   {
     dragId: '2',
     deviceId: '',
+    addr: '',
     orderNum: 2,
     devicePic: '/assets/img/remoter/fanLight.png',
     deviceName: '吸顶灯Mock',
@@ -99,7 +102,7 @@ ComponentWithComputed({
         clearInterval(this.data._listenLocationTimeId)
       }
 
-      emitter.off('remoterDeleted')
+      emitter.off('remoterChanged')
     },
   },
   pageLifetimes: {
@@ -107,7 +110,7 @@ ComponentWithComputed({
       await this.initCapacity()
 
       // 搜索一轮设备
-      this.toSeek()
+      // this.toSeek()
     },
   },
 
@@ -138,7 +141,7 @@ ComponentWithComputed({
           .map((item) => remoterProtocol.searchDeviceCallBack(item))
           .filter((item) => !!item)
 
-        console.log('搜寻蓝牙外围设备：', rList[0])
+        console.log('搜寻蓝牙外围设备：', rList)
 
         if (rList.length) {
           // 终止搜寻
@@ -148,8 +151,10 @@ ComponentWithComputed({
 
           const foundList = [] as Remoter.DeviceItem[]
           rList.forEach((item) => {
-            const isSavedDevice = this.data.deviceIds.includes(item!.deviceId)
+            const deviceId = isAndroid() ? item!.deviceId : item!.addr
+            const isSavedDevice = this.data.deviceIds.includes(deviceId)
             // 刷新发现设备列表
+            // FIXME IOS的RSSI范围似乎不太一样
             if (
               item!.RSSI >= MIN_RSSI && // 过滤弱信号设备
               !isSavedDevice // 排除已在我的设备列表的设备
@@ -157,15 +162,19 @@ ComponentWithComputed({
               const deviceType = item!.deviceType
               const deviceModel = item!.deviceModel
               const detail = deviceConfig[deviceType][deviceModel]
+              // 同品类同型号设备的数量
               const deviceCount = this.data.deviceList.filter(
                 (device) => device.deviceType === deviceType && device.deviceModel === deviceModel,
               ).length
+              // 加上编号后缀，以避免同名混淆
               const deviceName = this.data.deviceNames.includes(detail.deviceName)
                 ? detail.deviceName + (deviceCount + 1)
                 : detail.deviceName
+              // 安卓设备id为mac；iOS与安卓统一使用mac地址作为id，但不带:分隔
+              const deviceId = isAndroid() ? item!.deviceId : item!.addr
 
               foundList.push({
-                deviceId: item!.deviceId,
+                deviceId,
                 addr: item!.addr,
                 devicePic: detail.devicePic,
                 deviceName,
@@ -178,7 +187,7 @@ ComponentWithComputed({
             }
             // 刷新我的设备列表
             else if (isSavedDevice) {
-              const index = this.data.deviceList.findIndex((d) => d.deviceId === item?.deviceId)
+              const index = this.data.deviceList.findIndex((d) => d.deviceId === deviceId)
               diffData[`deviceList[${index}].discovered`] = true
             }
           })
@@ -198,16 +207,17 @@ ComponentWithComputed({
 
       this.initDrag()
 
-      // 建立BLE外围设备服务端
-      // this.data._bleServer = await createBleServer()
+      // 搜索一轮设备
+      this.toSeek()
 
       // 根据通知,更新设备列表
-      emitter.on('remoterDeleted', () => {
+      emitter.on('remoterChanged', () => {
         this.data._localList = (storage.get<Remoter.LocalList>('_localList') ?? {}) as Remoter.LocalList
 
         this.initDeviceList()
       })
     },
+
     // 拖拽列表初始化
     initDrag() {
       if (!this.data.deviceList.length) {
@@ -220,6 +230,7 @@ ComponentWithComputed({
     // 从storage初始化我的设备列表
     // TODO 删除MOCK列表
     initDeviceList() {
+      console.log('[initDeviceList]_localList', this.data._localList)
       const deviceList = [...MOCK_DEVICES] as Remoter.DeviceItem[]
       for (const deviceId in this.data._localList) {
         const { deviceModel, deviceType, orderNum, deviceName } = this.data._localList[deviceId]
@@ -229,7 +240,7 @@ ComponentWithComputed({
         deviceList.push({
           dragId: deviceId,
           deviceId,
-          addr: deviceId.split(':').reverse().join(''),
+          addr: isAndroid() ? deviceId.split(':').reverse().join('') : deviceId,
           orderNum: orderNum ?? 0,
           devicePic: detail.devicePic,
           deviceName: deviceName ?? detail.deviceName,

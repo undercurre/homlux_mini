@@ -212,4 +212,5 @@ export const CMD: Record<string, number> = {
   SCENE_DELAY_OFF: 0x1b, // |延时关
   SCENE_SLEEP: 0x1d, // |助眠
   NIGHT_LAMP: 0x1c, // |小夜灯
+  END: 0x00, // |指令终止（松手时发送）
 }

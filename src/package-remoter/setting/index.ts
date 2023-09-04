@@ -36,8 +36,9 @@ ComponentWithComputed({
   methods: {
     async onLoad(query: { deviceType: string; deviceModel: string; deviceId: string }) {
       const { deviceType, deviceModel, deviceId } = query
+      const deviceName = this.data._localList[deviceId].deviceName ?? deviceConfig[deviceType][deviceModel]
       this.setData({
-        device: { ...deviceConfig[deviceType][deviceModel], deviceId },
+        device: { ...deviceConfig[deviceType][deviceModel], deviceName, deviceId },
       })
     },
 
@@ -52,9 +53,17 @@ ComponentWithComputed({
       })
     },
     handleDeviceNameEditConfirm(e: { detail: string }) {
+      const deviceName = e.detail
+      this.data._localList[this.data.device.deviceId].deviceName = deviceName
+      storage.set('_localList', this.data._localList)
+      emitter.emit('remoterChanged')
+
       this.setData({
         showEditNamePopup: false,
-        deviceName: e.detail,
+        device: {
+          ...this.data.device,
+          deviceName,
+        },
       })
     },
     toSetting() {
@@ -83,7 +92,7 @@ ComponentWithComputed({
           Toast('删除成功')
           delete this.data._localList[this.data.device.deviceId]
           storage.set('_localList', this.data._localList)
-          emitter.emit('remoterDeleted')
+          emitter.emit('remoterChanged')
 
           wx.navigateBack({
             delta: 2,
