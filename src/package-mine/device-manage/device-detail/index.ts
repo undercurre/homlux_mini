@@ -7,6 +7,7 @@ import { waitingDeleteDevice, editDeviceInfo, queryDeviceInfoByDeviceId } from '
 import { proName, PRO_TYPE } from '../../../config/index'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { emitter } from '../../../utils/index'
+
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, homeBinding] }), pageBehavior],
   /**
@@ -83,9 +84,6 @@ ComponentWithComputed({
         roomId,
       })
       this.updateDeviceInfo()
-      // checkOtaVersion(deviceId).then((res) => {
-      //   console.log('ota', res)
-      // })
     },
 
     onShow() {

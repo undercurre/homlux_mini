@@ -28,9 +28,13 @@ ComponentWithComputed({
 
   computed: {
     channelText(data) {
-      const panId = data.deviceInfo.panId.toString(16).toUpperCase()
+      if (!data.deviceInfo.channel) {
+        return ''
+      }
 
-      return data.deviceInfo.channel ? `${data.deviceInfo.channel}(0x${panId})` : ''
+      const panId = data.deviceInfo.panId?.toString(16).toUpperCase()
+
+      return `${data.deviceInfo.channel}(0x${panId})`
     },
   },
 
