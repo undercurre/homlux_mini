@@ -43,7 +43,7 @@
             <text class="text-hex-373cdf text-22rpx opacity-80 mt-12rpx">实现双控或多控功能</text>
           </view>
           <view class="mr-42rpx flex-center">
-            <text class="text-black-tips text-28rpx leading-none">{{linkType==='switch' ? '已关联' : ''}}</text>
+            <text class="text-black-tips text-28rpx leading-none">{{isLinkSwitch ? '已关联' : ''}}</text>
             <image src="/assets/img/base/arrow-right.png" class="w-32rpx h-32rpx" />
           </view>
         </view>
@@ -56,7 +56,7 @@
             <text class="text-hex-de7e28 text-22rpx opacity-80 mt-12rpx">实现单灯或灯组的开关功能</text>
           </view>
           <view class="mr-42rpx flex-center">
-            <text class="text-black-tips text-28rpx leading-none">{{linkType==='light' ? '已关联' : ''}}</text>
+            <text class="text-black-tips text-28rpx leading-none">{{isLinkLight ? '已关联' : ''}}</text>
             <image src="/assets/img/base/arrow-right.png" class="w-32rpx h-32rpx" />
           </view>
         </view>
@@ -69,7 +69,7 @@
             <text class="text-hex-1454ae text-22rpx opacity-80 mt-12rpx">实现智能场景的控制功能</text>
           </view>
           <view class="mr-42rpx flex-center">
-            <text class="text-black-tips text-28rpx leading-none">{{linkType==='scene' ? '已关联' : ''}}</text>
+            <text class="text-black-tips text-28rpx leading-none">{{isLinkScene ? '已关联' : ''}}</text>
             <image src="/assets/img/base/arrow-right.png" class="w-32rpx h-32rpx" />
           </view>
         </view>

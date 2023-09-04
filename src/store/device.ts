@@ -121,7 +121,7 @@ export const deviceStore = observable({
 
   /**
    * 关联场景关系映射(deviceActions的关联)
-   * switchUniId -> sceneId
+   * switchUniId -> sceneId  开关  -》 所属的场景列表
    */
   get switchSceneActionMap(): Record<string, string[]> {
     const map = {} as Record<string, string[]>
@@ -144,8 +144,8 @@ export const deviceStore = observable({
   },
 
   /**
-   * 关联场景关系映射(deviceConditions的关联)
-   * switchUniId -> sceneId
+   * 关联场景关系映射(deviceConditions的关联)，
+   * switchUniId -> sceneId  开关 -》 关联的场景
    */
   get switchSceneConditionMap(): Record<string, string> {
     const map = {} as Record<string, string>
