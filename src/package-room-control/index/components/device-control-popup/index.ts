@@ -2,7 +2,7 @@ import { Logger, isArrEqual, throttle, showLoading, hideLoading } from '../../..
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, deviceStore, sceneStore, homeStore } from '../../../../store/index'
-import { maxColorTemp, minColorTemp, PRO_TYPE } from '../../../../config/index'
+import { maxColorTemp, minColorTemp, PRO_TYPE, SCREEN_PID } from '../../../../config/index'
 import {
   sendDevice,
   findDevice,
@@ -47,20 +47,29 @@ ComponentWithComputed({
       value: [] as string[],
       observer(value) {
         this.updateLinkInfo()
-        // 色温范围计算
         if (value.length) {
-          const deviceId = this.data.checkedList[0]
+          const deviceId = this.data.checkedList[0]?.split(':')[0]
           const { deviceMap } = deviceStore
           const device = deviceMap[deviceId]
 
-          if (!device || device.proType !== PRO_TYPE.light) {
+          if (!device) {
             return
           }
-          const { minColorTemp, maxColorTemp } = device.mzgdPropertyDTOList['light'].colorTempRange!
-          this.setData({
-            minColorTemp,
-            maxColorTemp,
-          })
+          // 色温范围计算
+          if (device.proType === PRO_TYPE.light) {
+            const { minColorTemp, maxColorTemp } = device.mzgdPropertyDTOList['light'].colorTempRange!
+            this.setData({
+              minColorTemp,
+              maxColorTemp,
+            })
+          }
+          // 是否智慧屏判断
+          else if (device.proType === PRO_TYPE.switch) {
+            const isScreen = SCREEN_PID.includes(device.productId)
+            this.setData({
+              isScreen
+            })
+          }
         }
       },
     },
@@ -126,6 +135,7 @@ ComponentWithComputed({
       switchRelList: Array<Device.IMzgdRelGetDTO>(), // 当前面板的关联面板数据
     },
     _allSwitchLampRelList: Array<Device.IMzgdLampDeviceInfoDTO>(), // 家庭所有面板的灯关联关系数据
+    isScreen: false // 当前选中项是否智慧屏
   },
 
   computed: {

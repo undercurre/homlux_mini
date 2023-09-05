@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { PRO_TYPE } from '../../../../config/index'
+import { PRO_TYPE, SCREEN_PID } from '../../../../config/index'
 import { waitingBatchDeleteDevice, batchUpdate, renameGroup } from '../../../../apis/index'
 import { deviceBinding, deviceStore, homeStore, roomBinding, roomStore } from '../../../../store/index'
 import Toast from '@vant/weapp/toast/toast'
@@ -116,6 +116,20 @@ ComponentWithComputed({
         })
       )
     },
+    /**
+     * @description 可被删除
+     * 设备数量大于1
+     * 非智慧屏开关
+     */
+    canDelete(data) {
+      const noScreen = data.editSelectList.every((uId: string) => {
+        const deviceId = uId.split(':')[0]
+        const device = deviceStore.deviceMap[deviceId]
+        return !SCREEN_PID.includes(device.productId)
+      })
+
+      return noScreen && data.editSelectList?.length
+    },
     editDeviceNameTitle(data) {
       return data.editProType === PRO_TYPE.switch ? '面板名称' : '设备名称'
     },
@@ -172,7 +186,7 @@ ComponentWithComputed({
     },
     // TODO 处理分组解散的交互提示
     handleDeleteDialog() {
-      if (!this.data.editSelectList.length) {
+      if (!this.data.canDelete) {
         return
       }
       const hasSwitch = this.data.editSelectList.some((uniId: string) => uniId.includes(':'))
