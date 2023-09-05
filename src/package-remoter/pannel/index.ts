@@ -3,7 +3,7 @@ import pageBehaviors from '../../behaviors/pageBehaviors'
 import { CMD, deviceConfig } from '../../config/remoter'
 import { emitter, storage, isAndroid } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
-import { createBleServer, bleAdvertising } from '../../utils/remoterUtils'
+import { createBleServer, bleAdvertising, bleAdvertisingEnd, stopAdvertising } from '../../utils/remoterUtils'
 
 ComponentWithComputed({
   options: {
@@ -18,18 +18,17 @@ ComponentWithComputed({
     device: {} as IAnyObject,
     _localList: (storage.get<Remoter.LocalList>('_localList') ?? {}) as Remoter.LocalList,
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
+    _lastPowerKey: '', // 记录上一次点击‘照明’时的指令键，用于反转处理
   },
 
   computed: {},
 
-  lifetimes: {
-    detached() {
-      emitter.off('remoterChanged')
-    },
-  },
-
   methods: {
     async onLoad(query: { deviceType: string; deviceModel: string; deviceId: string }) {
+      // HACK 从设置页后退时被跳过，再次进入时可能不会重新初始化
+      this.data._localList = (storage.get<Remoter.LocalList>('_localList') ?? {}) as Remoter.LocalList
+
+      console.log('pannel', this.data._localList)
       const { deviceType, deviceModel, deviceId } = query
       const addr = isAndroid() ? deviceId.split(':').reverse().join('') : deviceId
       const deviceName = this.data._localList[deviceId].deviceName ?? deviceConfig[deviceType][deviceModel]
@@ -42,8 +41,13 @@ ComponentWithComputed({
 
       // 根据通知,更新设备列表
       emitter.on('remoterChanged', () => {
+        console.log('remoterChanged on Pannel')
+
         this.reloadDeviceData()
       })
+    },
+    onUnload() {
+      emitter.off('remoterChanged')
     },
 
     reloadDeviceData() {
@@ -61,18 +65,51 @@ ComponentWithComputed({
       if (!this.data._bleServer) {
         this.data._bleServer = await createBleServer()
       }
+
+      let { key } = e.target.dataset
+      // HACK 特殊的POWER按钮反转处理
+      if (key === 'POWER') {
+        key = this.data._lastPowerKey === 'POWER_OFF' ? 'POWER_ON' : 'POWER_OFF'
+        this.data._lastPowerKey = key
+      }
+
       // 广播控制指令
       const { addr } = this.data.device
-      const payload = remoterProtocol.generalCmdString(CMD[e.target.dataset.key])
+      const payload = remoterProtocol.generalCmdString(CMD[key])
       bleAdvertising(this.data._bleServer, {
         addr,
         payload,
       })
 
-      console.log('btnTap', e.target.dataset.key, payload, addr)
+      console.log('btnTap', key, payload, addr)
     },
-    handleLongPress(e: WechatMiniprogram.TouchEvent) {
-      console.log('handleLongPress', e)
+    async handleLongPress(e: WechatMiniprogram.TouchEvent) {
+      if (!this.data._bleServer) {
+        this.data._bleServer = await createBleServer()
+      }
+
+      const key = `${e.target.dataset.key}_ACC` // 加上长按指令后缀
+
+      // 广播控制指令
+      const { addr } = this.data.device
+      const payload = remoterProtocol.generalCmdString(CMD[key])
+      bleAdvertising(this.data._bleServer, {
+        addr,
+        payload,
+        autoEnd: false, // 松手才发终止指令
+      })
+
+      console.log('handleLongPress', key, payload)
+    },
+    async handleTouchEnd() {
+      if (!this.data._bleServer) {
+        this.data._bleServer = await createBleServer()
+      }
+      await stopAdvertising(this.data._bleServer)
+
+      const { addr } = this.data.device
+      bleAdvertisingEnd(this.data._bleServer, { addr })
+      console.log('handleTouchEnd')
     },
 
     toSetting() {

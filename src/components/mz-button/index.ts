@@ -106,11 +106,5 @@ ComponentWithComputed({
       //   console.log(res.errCode)
       // })
     },
-    handleLongPress(e: WechatMiniprogram.TouchEvent) {
-      this.triggerEvent('longpress', e.detail)
-    },
-    handleTouchEnd(e: WechatMiniprogram.TouchEvent) {
-      this.triggerEvent('touchend', e.detail)
-    },
   },
 })

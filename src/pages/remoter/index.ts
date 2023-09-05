@@ -9,7 +9,7 @@ import { deviceConfig, MIN_RSSI, SEEK_TIMEOUT, CMD } from '../../config/remoter'
 const MOCK_DEVICES = [
   {
     dragId: '0',
-    deviceId: '',
+    deviceId: '0',
     addr: '',
     orderNum: 1,
     devicePic: '/assets/img/remoter/fanLight.png',
@@ -23,7 +23,7 @@ const MOCK_DEVICES = [
   },
   {
     dragId: '1',
-    deviceId: '',
+    deviceId: '1',
     addr: '',
     orderNum: 0,
     devicePic: '/assets/img/remoter/bathHeater.png',
@@ -37,7 +37,7 @@ const MOCK_DEVICES = [
   },
   {
     dragId: '2',
-    deviceId: '',
+    deviceId: '2',
     addr: '',
     orderNum: 2,
     devicePic: '/assets/img/remoter/fanLight.png',
@@ -84,33 +84,6 @@ ComponentWithComputed({
     },
     deviceNames(data) {
       return data.deviceList.map((device) => device.deviceName)
-    },
-  },
-
-  lifetimes: {
-    detached() {
-      this.endSeek()
-      wx.offBluetoothAdapterStateChange() // 移除蓝牙适配器状态变化事件的全部监听函数
-      wx.offBluetoothDeviceFound() // 移除搜索到新设备的事件的全部监听函数
-
-      // 关闭外围设备服务端
-      if (this.data._bleServer) {
-        this.data._bleServer.close()
-      }
-      // 移除系统位置信息开关状态的监听
-      if (this.data._listenLocationTimeId) {
-        clearInterval(this.data._listenLocationTimeId)
-      }
-
-      emitter.off('remoterChanged')
-    },
-  },
-  pageLifetimes: {
-    async show() {
-      await this.initCapacity()
-
-      // 搜索一轮设备
-      // this.toSeek()
     },
   },
 
@@ -205,17 +178,42 @@ ComponentWithComputed({
         }
       })
 
-      this.initDrag()
-
       // 搜索一轮设备
       this.toSeek()
 
       // 根据通知,更新设备列表
       emitter.on('remoterChanged', () => {
+        console.log('remoterChanged on IndexList')
         this.data._localList = (storage.get<Remoter.LocalList>('_localList') ?? {}) as Remoter.LocalList
 
         this.initDeviceList()
       })
+    },
+
+    async onShow() {
+      await this.initCapacity()
+
+      // 搜索一轮设备
+      // this.toSeek()
+    },
+
+    onUnload() {
+      console.log('detached on Index')
+
+      this.endSeek()
+      wx.offBluetoothAdapterStateChange() // 移除蓝牙适配器状态变化事件的全部监听函数
+      wx.offBluetoothDeviceFound() // 移除搜索到新设备的事件的全部监听函数
+
+      // 关闭外围设备服务端
+      if (this.data._bleServer) {
+        this.data._bleServer.close()
+      }
+      // 移除系统位置信息开关状态的监听
+      if (this.data._listenLocationTimeId) {
+        clearInterval(this.data._listenLocationTimeId)
+      }
+
+      emitter.off('remoterChanged')
     },
 
     // 拖拽列表初始化
@@ -230,7 +228,6 @@ ComponentWithComputed({
     // 从storage初始化我的设备列表
     // TODO 删除MOCK列表
     initDeviceList() {
-      console.log('[initDeviceList]_localList', this.data._localList)
       const deviceList = [...MOCK_DEVICES] as Remoter.DeviceItem[]
       for (const deviceId in this.data._localList) {
         const { deviceModel, deviceType, orderNum, deviceName } = this.data._localList[deviceId]
@@ -256,6 +253,8 @@ ComponentWithComputed({
       this.setData({
         deviceList: deviceList.sort((a, b) => a.orderNum! - b.orderNum!),
       })
+
+      this.initDrag()
     },
 
     /**

@@ -23,33 +23,28 @@ export function createBleServer() {
 }
 
 /**
- * TODO 区分安卓与IOS
  * @description 开始发送广播
  * @param server
  * @param params.addr 蓝牙地址
  * @param params.payload 发送数据
+ * @param params.autoEnd 自动发送结束指令
  * @param params.INTERVAL 广播时长
  */
 export async function bleAdvertising(
   server: WechatMiniprogram.BLEPeripheralServer | null,
-  params: { addr: string; payload: string; comId?: string; INTERVAL?: number },
+  params: { addr: string; payload: string; comId?: string; autoEnd?: boolean; INTERVAL?: number },
 ) {
-  const { addr, payload, comId = '0x4D11', INTERVAL = 800 } = params
+  const { addr, payload, comId = '0x4D11', INTERVAL = 800, autoEnd = true } = params
   if (!server) {
     console.log('server is Not existed')
     return
   }
-  const payloadEnd = remoterProtocol.generalCmdString(CMD.END)
   const manufacturerSpecificData = remoterProtocol.createAndroidBleRequest({ payload, addr })
   const serviceUuids = remoterProtocol.createIOSBleRequest({ payload, addr, comId })
   console.log('Android广播：', comId, cryptoUtils.ab2hex(manufacturerSpecificData).slice(0))
   console.log('IOS广播：', serviceUuids)
 
-  const manufacturerSpecificDataEnd = remoterProtocol.createAndroidBleRequest({ payload: payloadEnd, addr })
-  const serviceUuidsEnd = remoterProtocol.createIOSBleRequest({ payload: payloadEnd, addr, comId })
-
   const advertiseRequest = {} as WechatMiniprogram.AdvertiseReqObj
-  const advertiseRequestEnd = {} as WechatMiniprogram.AdvertiseReqObj
 
   if (isAndroid()) {
     advertiseRequest.manufacturerData = [
@@ -58,24 +53,51 @@ export async function bleAdvertising(
         manufacturerSpecificData,
       },
     ]
-    advertiseRequestEnd.manufacturerData = [
-      {
-        manufacturerId: comId,
-        manufacturerSpecificData: manufacturerSpecificDataEnd,
-      },
-    ]
   } else {
     advertiseRequest.serviceUuids = serviceUuids
-    advertiseRequestEnd.serviceUuids = serviceUuidsEnd
   }
 
   // 需要连发多次指令以防丢包
   await startAdvertising(server, advertiseRequest)
   await delay(INTERVAL)
-  await stopAdvertising(server)
 
-  // 指令结束要发终止指令
-  await startAdvertising(server, advertiseRequestEnd)
+  // 主动终止控制指令广播，并发终止指令广播
+  if (autoEnd) {
+    await stopAdvertising(server)
+    await bleAdvertisingEnd(server, { addr })
+  }
+}
+
+/**
+ * @description 发送终止指令的广播
+ * @param server
+ * @param params.addr 蓝牙地址
+ * @param params.INTERVAL 广播时长，终止指令多发一点
+ */
+export async function bleAdvertisingEnd(
+  server: WechatMiniprogram.BLEPeripheralServer,
+  params: { addr: string; comId?: string; INTERVAL?: number },
+) {
+  const { addr, comId = '0x4D11', INTERVAL = 1000 } = params
+  const payload = remoterProtocol.generalCmdString(CMD.END) // 固定发这个指令
+  const manufacturerSpecificData = remoterProtocol.createAndroidBleRequest({ payload, addr })
+  const serviceUuids = remoterProtocol.createIOSBleRequest({ payload, addr, comId })
+
+  const advertiseRequest = {} as WechatMiniprogram.AdvertiseReqObj
+
+  if (isAndroid()) {
+    advertiseRequest.manufacturerData = [
+      {
+        manufacturerId: comId,
+        manufacturerSpecificData,
+      },
+    ]
+  } else {
+    advertiseRequest.serviceUuids = serviceUuids
+  }
+
+  // 需要连发多次指令以防丢包
+  await startAdvertising(server, advertiseRequest)
   await delay(INTERVAL)
   await stopAdvertising(server)
 }

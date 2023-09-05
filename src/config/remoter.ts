@@ -63,7 +63,7 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
       ],
       bList: [
         {
-          key: 'POWER_ON',
+          key: 'POWER',
           icon: '/package-remoter/assets/power1.png',
           iconActive: '/package-remoter/assets/power0.png',
           name: '照明',
@@ -209,8 +209,8 @@ export const CMD: Record<string, number> = {
   COLOR_TEMP_MINUS: 0x21, // |色温- 短按
   SCENE_DAILY: 0x19, // |日常
   SCENE_RELAX: 0x1a, // |休闲
-  SCENE_DELAY_OFF: 0x1b, // |延时关
-  SCENE_SLEEP: 0x1d, // |助眠
+  SCENE_DELAY_OFF: 0x1d, // |延时关
+  SCENE_SLEEP: 0x1b, // |助眠
   NIGHT_LAMP: 0x1c, // |小夜灯
   END: 0x00, // |指令终止（松手时发送）
 }
