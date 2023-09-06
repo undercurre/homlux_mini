@@ -4,7 +4,7 @@ import Toast from '@vant/weapp/toast/toast'
 import { deviceStore, homeBinding, homeStore, otaStore, roomBinding, roomStore } from '../../../store/index'
 import pageBehavior from '../../../behaviors/pageBehaviors'
 import { waitingDeleteDevice, editDeviceInfo, queryDeviceInfoByDeviceId } from '../../../apis/index'
-import { proName, PRO_TYPE } from '../../../config/index'
+import { proName, PRO_TYPE, SCREEN_PID } from '../../../config/index'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { emitter } from '../../../utils/index'
 
@@ -72,6 +72,13 @@ ComponentWithComputed({
     canEditDevice(data) {
       return data.isCreator || data.isAdmin
     },
+    /**
+     * @description 是否显示按键设置
+     * 包括面板，智慧屏
+     */
+    hasSwitchSetting(data) {
+      return data.deviceInfo.proType === PRO_TYPE.switch || SCREEN_PID.includes(data.deviceInfo.productId)
+    }
   },
 
   methods: {

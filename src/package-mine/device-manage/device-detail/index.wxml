@@ -26,9 +26,9 @@
   </view>
 
   <!-- 下半部分 -->
-  <view class="flex flex-1">
+  <view class="flex flex-1 flex-col">
     <setting-light can-edit-device="{{canEditDevice}}" device-info="{{deviceInfo}}" wx:if="{{prodType === 'light'}}" bind:update="updateDeviceInfo" />
-    <setting-switch can-edit-device="{{canEditDevice}}" device-info="{{deviceInfo}}" wx:if="{{prodType === 'switch'}}" bind:update="updateDeviceInfo" />
+    <setting-switch can-edit-device="{{canEditDevice}}" device-info="{{deviceInfo}}" wx:if="{{hasSwitchSetting}}" bind:update="updateDeviceInfo" />
     <setting-gateway isManager="{{canEditDevice}}" device-info="{{deviceInfo}}" wx:if="{{prodType === 'gateway'}}" bind:update="updateDeviceInfo" />
   </view>
   <!-- 隔开一点距离 -->
