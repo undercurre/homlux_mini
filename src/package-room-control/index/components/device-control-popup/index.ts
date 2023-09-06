@@ -67,7 +67,7 @@ ComponentWithComputed({
           else if (device.proType === PRO_TYPE.switch) {
             const isScreen = SCREEN_PID.includes(device.productId)
             this.setData({
-              isScreen
+              isScreen,
             })
           }
         }
@@ -135,7 +135,7 @@ ComponentWithComputed({
       switchRelList: Array<Device.IMzgdRelGetDTO>(), // 当前面板的关联面板数据
     },
     _allSwitchLampRelList: Array<Device.IMzgdLampDeviceInfoDTO>(), // 家庭所有面板的灯关联关系数据
-    isScreen: false // 当前选中项是否智慧屏
+    isScreen: false, // 当前选中项是否智慧屏
   },
 
   computed: {

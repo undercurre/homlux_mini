@@ -233,19 +233,19 @@ ComponentWithComputed({
         return
       }
       const uniId = this.data.editSelectList[0]
-      const device = deviceStore.allRoomDeviceFlattenMap[uniId]
+      const device = deviceStore.deviceFlattenMap[uniId]
       if (uniId.includes(':')) {
         this.setData({
           showEditName: true,
-          editDeviceName: deviceStore.allRoomDeviceFlattenMap[uniId].deviceName,
-          editSwitchName: deviceStore.allRoomDeviceFlattenMap[uniId].switchInfoDTOList[0].switchName,
+          editDeviceName: deviceStore.deviceFlattenMap[uniId].deviceName,
+          editSwitchName: deviceStore.deviceFlattenMap[uniId].switchInfoDTOList[0].switchName,
           isEditSwitchName: true,
           editProType: device.proType,
         })
       } else {
         this.setData({
           showEditName: true,
-          editDeviceName: deviceStore.allRoomDeviceFlattenMap[uniId].deviceName,
+          editDeviceName: deviceStore.deviceFlattenMap[uniId].deviceName,
           isEditSwitchName: false,
           editProType: device.proType,
         })
@@ -256,7 +256,7 @@ ComponentWithComputed({
         return
       }
       const uniId = this.data.editSelectList[0]
-      const device = deviceStore.allRoomDeviceFlattenMap[uniId]
+      const device = deviceStore.deviceFlattenMap[uniId]
       this.setData({
         showEditRoom: true,
         roomId: device.roomId,
@@ -390,7 +390,7 @@ ComponentWithComputed({
             return
           }
           const [deviceId, switchId] = this.data.editSelectList[0].split(':')
-          const device = deviceStore.allRoomDeviceFlattenMap[this.data.editSelectList[0]]
+          const device = deviceStore.deviceFlattenMap[this.data.editSelectList[0]]
           const deviceInfoUpdateVoList = [] as Device.DeviceInfoUpdateVo[]
           let type = ''
           if (this.data.editSwitchName !== device.switchInfoDTOList[0].switchName) {
@@ -453,7 +453,7 @@ ComponentWithComputed({
         }
         // 修改灯属性
         else {
-          const device = deviceStore.allRoomDeviceFlattenMap[this.data.editSelectList[0]]
+          const device = deviceStore.deviceFlattenMap[this.data.editSelectList[0]]
 
           if (checkInputNameIllegal(this.data.editDeviceName)) {
             Toast('设备名称不能用特殊符号或表情')
