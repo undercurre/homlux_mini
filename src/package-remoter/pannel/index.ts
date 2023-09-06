@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { CMD, deviceConfig } from '../../config/remoter'
-import { emitter, storage, isAndroid } from '../../utils/index'
+import { emitter, storage } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import { createBleServer, bleAdvertising, bleAdvertisingEnd, stopAdvertising } from '../../utils/remoterUtils'
 
@@ -24,16 +24,15 @@ ComponentWithComputed({
   computed: {},
 
   methods: {
-    async onLoad(query: { deviceType: string; deviceModel: string; deviceId: string }) {
+    async onLoad(query: { deviceType: string; deviceModel: string; addr: string }) {
       // HACK 从设置页后退时被跳过，再次进入时可能不会重新初始化
       this.data._localList = (storage.get<Remoter.LocalList>('_localList') ?? {}) as Remoter.LocalList
 
       console.log('pannel', this.data._localList)
-      const { deviceType, deviceModel, deviceId } = query
-      const addr = isAndroid() ? deviceId.split(':').reverse().join('') : deviceId
-      const deviceName = this.data._localList[deviceId].deviceName ?? deviceConfig[deviceType][deviceModel]
+      const { deviceType, deviceModel, addr } = query
+      const deviceName = this.data._localList[addr].deviceName ?? deviceConfig[deviceType][deviceModel]
       this.setData({
-        device: { ...deviceConfig[deviceType][deviceModel], deviceType, deviceModel, deviceId, deviceName, addr },
+        device: { ...deviceConfig[deviceType][deviceModel], deviceType, deviceModel, deviceName, addr },
       })
 
       // 建立BLE外围设备服务端
@@ -52,7 +51,7 @@ ComponentWithComputed({
 
     reloadDeviceData() {
       this.data._localList = (storage.get<Remoter.LocalList>('_localList') ?? {}) as Remoter.LocalList
-      const deviceName = this.data._localList[this.data.device.deviceId].deviceName
+      const deviceName = this.data._localList[this.data.device.addr].deviceName
       this.setData({
         device: {
           ...this.data.device,
@@ -113,9 +112,9 @@ ComponentWithComputed({
     },
 
     toSetting() {
-      const { deviceType, deviceModel, deviceId } = this.data.device
+      const { deviceType, deviceModel, addr } = this.data.device
       wx.navigateTo({
-        url: `/package-remoter/setting/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceId=${deviceId}`,
+        url: `/package-remoter/setting/index?deviceType=${deviceType}&deviceModel=${deviceModel}&addr=${addr}`,
       })
     },
   },

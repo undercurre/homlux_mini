@@ -11,8 +11,8 @@
   position: absolute;
   width: 64rpx;
   height: 64rpx;
-  left: 16rpx;
-  top: 16rpx;
+  left: 17rpx;
+  top: 17rpx;
 }
 
 .text {

@@ -6,7 +6,7 @@ declare namespace Remoter {
     dragId?: string // 用于拖拽功能, 直接使用 deviceId
     orderNum?: number // 用于拖拽功能, 排序索引
     addr: string // 传输用的mac地址，逆序，不带:
-    deviceId: string // Mac地址,带:
+    deviceId: string // 安卓，Mac地址,带:  IOS，deviceUuid
     devicePic: string
     deviceName: string
     deviceType: string // 设备品类
@@ -32,5 +32,5 @@ declare namespace Remoter {
     bList: ButtonRes[]
   }
 
-  type LocalList = Record<string, Pick<DeviceItem, 'deviceModel' | 'deviceType' | 'orderNum' | 'deviceName'>>
+  type LocalList = Record<string, Pick<DeviceItem, 'deviceModel' | 'deviceType' | 'orderNum' | 'deviceName' | 'deviceId'>>
 }

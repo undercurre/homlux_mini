@@ -34,11 +34,11 @@ ComponentWithComputed({
   },
 
   methods: {
-    async onLoad(query: { deviceType: string; deviceModel: string; deviceId: string }) {
-      const { deviceType, deviceModel, deviceId } = query
-      const deviceName = this.data._localList[deviceId].deviceName ?? deviceConfig[deviceType][deviceModel]
+    async onLoad(query: { deviceType: string; deviceModel: string; addr: string }) {
+      const { deviceType, deviceModel, addr } = query
+      const deviceName = this.data._localList[addr].deviceName ?? deviceConfig[deviceType][deviceModel]
       this.setData({
-        device: { ...deviceConfig[deviceType][deviceModel], deviceName, deviceId },
+        device: { ...deviceConfig[deviceType][deviceModel], deviceName, addr },
       })
     },
 
@@ -54,7 +54,7 @@ ComponentWithComputed({
     },
     handleDeviceNameEditConfirm(e: { detail: string }) {
       const deviceName = e.detail
-      this.data._localList[this.data.device.deviceId].deviceName = deviceName
+      this.data._localList[this.data.device.addr].deviceName = deviceName
       storage.set('_localList', this.data._localList)
       emitter.emit('remoterChanged')
 
@@ -90,7 +90,7 @@ ComponentWithComputed({
       })
         .then(async () => {
           Toast('删除成功')
-          delete this.data._localList[this.data.device.deviceId]
+          delete this.data._localList[this.data.device.addr]
           storage.set('_localList', this.data._localList)
           emitter.emit('remoterChanged')
 

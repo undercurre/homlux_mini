@@ -6,51 +6,6 @@ import remoterProtocol from '../../utils/remoterProtocol'
 import { createBleServer, bleAdvertising } from '../../utils/remoterUtils'
 import { deviceConfig, MIN_RSSI, SEEK_TIMEOUT, CMD } from '../../config/remoter'
 
-const MOCK_DEVICES = [
-  {
-    dragId: '0',
-    deviceId: '0',
-    addr: '',
-    orderNum: 1,
-    devicePic: '/assets/img/remoter/fanLight.png',
-    deviceName: '风扇灯Mock',
-    deviceType: '13',
-    deviceModel: '02',
-    switchStatus: 'on',
-    switchType: '照明',
-    saved: true,
-    discovered: false,
-  },
-  {
-    dragId: '1',
-    deviceId: '1',
-    addr: '',
-    orderNum: 0,
-    devicePic: '/assets/img/remoter/bathHeater.png',
-    deviceName: '浴霸Mock',
-    deviceType: '26',
-    deviceModel: '01',
-    switchStatus: 'on',
-    switchType: '小夜灯',
-    saved: true,
-    discovered: false,
-  },
-  {
-    dragId: '2',
-    deviceId: '2',
-    addr: '',
-    orderNum: 2,
-    devicePic: '/assets/img/remoter/fanLight.png',
-    deviceName: '吸顶灯Mock',
-    deviceType: '13',
-    deviceModel: '01',
-    switchStatus: 'on',
-    switchType: '照明',
-    saved: true,
-    discovered: false,
-  },
-] as Remoter.DeviceItem[]
-
 ComponentWithComputed({
   behaviors: [pageBehavior],
   /**
@@ -81,6 +36,9 @@ ComponentWithComputed({
   computed: {
     deviceIds(data) {
       return data.deviceList.map((device) => device.deviceId)
+    },
+    deviceAddrs(data) {
+      return data.deviceList.map((device) => device.addr)
     },
     deviceNames(data) {
       return data.deviceList.map((device) => device.deviceName)
@@ -124,8 +82,7 @@ ComponentWithComputed({
 
           const foundList = [] as Remoter.DeviceItem[]
           rList.forEach((item) => {
-            const deviceId = isAndroid() ? item!.deviceId : item!.addr
-            const isSavedDevice = this.data.deviceIds.includes(deviceId)
+            const isSavedDevice = this.data.deviceAddrs.includes(item!.addr)
             // 刷新发现设备列表
             // FIXME IOS的RSSI范围似乎不太一样
             if (
@@ -143,11 +100,9 @@ ComponentWithComputed({
               const deviceName = this.data.deviceNames.includes(detail.deviceName)
                 ? detail.deviceName + (deviceCount + 1)
                 : detail.deviceName
-              // 安卓设备id为mac；iOS与安卓统一使用mac地址作为id，但不带:分隔
-              const deviceId = isAndroid() ? item!.deviceId : item!.addr
 
               foundList.push({
-                deviceId,
+                deviceId: item!.deviceId,
                 addr: item!.addr,
                 devicePic: detail.devicePic,
                 deviceName,
@@ -160,7 +115,7 @@ ComponentWithComputed({
             }
             // 刷新我的设备列表
             else if (isSavedDevice) {
-              const index = this.data.deviceList.findIndex((d) => d.deviceId === deviceId)
+              const index = this.data.deviceList.findIndex((d) => d.addr === item!.addr)
               diffData[`deviceList[${index}].discovered`] = true
             }
           })
@@ -179,7 +134,7 @@ ComponentWithComputed({
       })
 
       // 搜索一轮设备
-      this.toSeek()
+      // this.toSeek()
 
       // 根据通知,更新设备列表
       emitter.on('remoterChanged', () => {
@@ -194,7 +149,7 @@ ComponentWithComputed({
       await this.initCapacity()
 
       // 搜索一轮设备
-      // this.toSeek()
+      this.toSeek()
     },
 
     onUnload() {
@@ -226,18 +181,17 @@ ComponentWithComputed({
     },
 
     // 从storage初始化我的设备列表
-    // TODO 删除MOCK列表
     initDeviceList() {
-      const deviceList = [...MOCK_DEVICES] as Remoter.DeviceItem[]
-      for (const deviceId in this.data._localList) {
-        const { deviceModel, deviceType, orderNum, deviceName } = this.data._localList[deviceId]
+      const deviceList = [] as Remoter.DeviceItem[]
+      for (const addr in this.data._localList) {
+        const { deviceModel, deviceType, orderNum, deviceName, deviceId } = this.data._localList[addr]
         if (!deviceModel || !deviceType) return
 
         const detail = deviceConfig[deviceType][deviceModel]
         deviceList.push({
-          dragId: deviceId,
+          dragId: addr,
           deviceId,
-          addr: isAndroid() ? deviceId.split(':').reverse().join('') : deviceId,
+          addr,
           orderNum: orderNum ?? 0,
           devicePic: detail.devicePic,
           deviceName: deviceName ?? detail.deviceName,
@@ -373,19 +327,19 @@ ComponentWithComputed({
 
     // 点击设备卡片
     handleCardTap(e: WechatMiniprogram.TouchEvent) {
-      const { deviceType, deviceModel, deviceName, saved, deviceId } = e.detail
+      const { deviceType, deviceModel, deviceName, saved, deviceId, addr } = e.detail
       if (isNullOrUnDef(deviceType) || isNullOrUnDef(deviceModel)) {
         return
       }
 
       // 新发现设备, 点击添加到我的设备
       if (!saved) {
-        const index = this.data.foundList.findIndex((device) => device.deviceId === deviceId)
+        const index = this.data.foundList.findIndex((device) => device.addr === addr)
         const newDevice = this.data.foundList.splice(index, 1)[0]
         const orderNum = this.data.deviceList.length
         this.data.deviceList.push({
           ...newDevice,
-          dragId: deviceId,
+          dragId: addr,
           orderNum,
           saved: true,
           discovered: true,
@@ -400,7 +354,8 @@ ComponentWithComputed({
         this.initDrag()
 
         // 保存到前端缓存
-        this.data._localList[deviceId] = {
+        this.data._localList[addr] = {
+          deviceId,
           orderNum,
           deviceType,
           deviceModel,
@@ -413,7 +368,7 @@ ComponentWithComputed({
 
       // 跳转到控制页
       wx.navigateTo({
-        url: `/package-remoter/pannel/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceModel=${deviceModel}&deviceId=${deviceId}`,
+        url: `/package-remoter/pannel/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceModel=${deviceModel}&addr=${addr}`,
       })
     },
     // 点击设备按钮
@@ -489,7 +444,7 @@ ComponentWithComputed({
 
       // 排序缓存在前端
       this.data.deviceList.forEach((d) => {
-        this.data._localList[d.deviceId].orderNum = d.orderNum
+        this.data._localList[d.addr].orderNum = d.orderNum
       })
       storage.set('_localList', this.data._localList)
     },
