@@ -23,32 +23,13 @@ ComponentWithComputed({
    */
   data: {
     switchClickIndex: 0,
-    contentHeight: 0,
     switchName: '',
     showPopup: false,
   },
 
   computed: {
     switchList(data) {
-      if (data.deviceInfo.switchInfoDTOList) {
-        return data.deviceInfo.switchInfoDTOList
-      }
-      return []
-    },
-  },
-
-  lifetimes: {
-    ready() {
-      this.createSelectorQuery()
-        .select('#content')
-        .boundingClientRect()
-        .exec((res) => {
-          if (res[0] && res[0].height) {
-            this.setData({
-              contentHeight: res[0].height,
-            })
-          }
-        })
+      return data.deviceInfo?.switchInfoDTOList ?? []
     },
   },
 

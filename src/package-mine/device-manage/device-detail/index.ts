@@ -91,6 +91,18 @@ ComponentWithComputed({
         roomId,
       })
       this.updateDeviceInfo()
+
+      this.createSelectorQuery()
+        .select('#content')
+        .boundingClientRect()
+        .exec((res) => {
+          console.log(res)
+          if (res[0]?.height) {
+            this.setData({
+              contentHeight: res[0].height,
+            })
+          }
+        })
     },
 
     onShow() {

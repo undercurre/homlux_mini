@@ -1,10 +1,9 @@
 <import src="/commons/templates/popup.wxml" />
-<view class="h-full flex flex-col">
+<view class="flex flex-col">
   <view class="w-750rpx flex mt-16rpx">
     <text class="ml-48rpx text-black-59 font-normal text-28rpx">按键设置</text>
   </view>
-  <view class="mt-24rpx w-750rpx flex-1" id="content">
-    <scroll-view enhanced show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: {{contentHeight}}px;">
+  <view class="w-750rpx">
       <van-cell-group inset>
         <van-cell center is-link="{{canEditDevice}}" wx:for="{{switchList}}" wx:key="switchId" bind:click="handleSwitchClick" data-index="{{index}}" title="{{item.switchName}}">
           <view slot="icon">
@@ -13,7 +12,6 @@
         </van-cell>
       </van-cell-group>
       <view class="h-8rpx"></view>
-    </scroll-view>
   </view>
 </view>
 
