@@ -78,7 +78,7 @@ ComponentWithComputed({
      */
     hasSwitchSetting(data) {
       return data.deviceInfo.proType === PRO_TYPE.switch || SCREEN_PID.includes(data.deviceInfo.productId)
-    }
+    },
   },
 
   methods: {

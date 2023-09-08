@@ -532,7 +532,8 @@ ComponentWithComputed({
         const deviceId = uId.split(':')[0]
         const device = deviceStore.deviceMap[deviceId]
         if (device.deviceType === 2) {
-          for (const modelName in device.mzgdPropertyDTOList) {
+          for (const panel of device.switchInfoDTOList) {
+            const modelName = panel.switchId
             const uId = `${device.deviceId}:${modelName}`
             if (!this.data.moveWaitlist.includes(uId)) {
               this.data.moveWaitlist.push(uId)

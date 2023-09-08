@@ -4,14 +4,14 @@
     <text class="ml-48rpx text-black-59 font-normal text-28rpx">按键设置</text>
   </view>
   <view class="w-750rpx">
-      <van-cell-group inset>
-        <van-cell center is-link="{{canEditDevice}}" wx:for="{{switchList}}" wx:key="switchId" bind:click="handleSwitchClick" data-index="{{index}}" title="{{item.switchName}}">
-          <view slot="icon">
-            <image class="w-96rpx h-96rpx bg-hex-f6fafd mr-32rpx rounded-999" src="{{item.pic}}" />
-          </view>
-        </van-cell>
-      </van-cell-group>
-      <view class="h-8rpx"></view>
+    <van-cell-group inset>
+      <van-cell center is-link="{{canEditDevice}}" wx:for="{{switchList}}" wx:key="switchId" bind:click="handleSwitchClick" data-index="{{index}}" title="{{item.switchName}}">
+        <view slot="icon">
+          <image class="w-96rpx h-96rpx bg-hex-f6fafd mr-32rpx rounded-999" src="{{item.pic}}" />
+        </view>
+      </van-cell>
+    </van-cell-group>
+    <view class="h-8rpx"></view>
   </view>
 </view>
 
