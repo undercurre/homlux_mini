@@ -11,8 +11,8 @@ import {
 import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore } from './store/index'
 import { reaction } from 'mobx-miniprogram'
-import homOs, { getDeviceList } from 'homlux-sdk'
-import { getEnv } from './config/index'
+import homOs from 'homlux-sdk'
+import mqtt from "./lib/mqtt.min.js";
 
 App<IAppOption>({
   async onLaunch() {
@@ -30,6 +30,8 @@ App<IAppOption>({
 
     // 获取状态栏、顶部栏、底部栏高度
     setNavigationBarAndBottomBarHeight()
+
+    homOs.init({ mqttLib: mqtt })
 
     // 监听houseId变化，切换websocket连接,切换成对应家庭的sock连接
     reaction(
@@ -67,9 +69,9 @@ App<IAppOption>({
       deviceStore.updateSubDeviceList()
       homeStore.updateHomeInfo()
       startWebsocketService()
-    }
 
-    this.initHomeOs()
+      this.initHomeOs()
+    }
   },
 
   onHide() {
@@ -77,7 +79,7 @@ App<IAppOption>({
     // 用户最小化app，断开ws连接
     closeWebSocket()
 
-    homOs.destory()
+    homOs.logout()
   },
 
   onError(msg: string) {
@@ -85,15 +87,12 @@ App<IAppOption>({
   },
 
   async initHomeOs() {
-    if (!homeStore.currentHomeId) {
-      return
-    }
+    await homeStore.updateLocalKey()
 
-    const token = storage.get('token', '') as string
-
-    homOs.init({ token, homeId: homeStore.currentHomeDetail.houseId, env: getEnv() })
-
-    getDeviceList()
+    // 调试阶段可写死传递host参数，PC模拟调试
+    // host {"level": 200, "ip": "192.168.1.121", "devId": "1689839011110674"}
+    // host {"level": 200, "ip": "192.168.1.123", "devId": "1693906973627831"}
+    homOs.login(homeStore.currentHomeDetail.houseId, homeStore.key, { ip: '192.168.1.123', devId: '1693906973627831'})
   },
 
   globalData: {
