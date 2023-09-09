@@ -20,7 +20,8 @@ ComponentWithComputed({
       const device = data.item?.data ?? data.item
       if (device?.saved === true) {
         const statusText = device.switchStatus === 'on' ? '开启' : '关闭'
-        return `${device.switchType}${statusText}`
+        const connectText = device.connected ? '|已连接' : ''
+        return `${device.switchType}${statusText}${connectText}`
       }
       return '未连接'
     },
@@ -46,5 +47,8 @@ ComponentWithComputed({
     handleControlTap() {
       this.triggerEvent('controlTap', this.data.device)
     },
+    handlePicTap() {
+      this.triggerEvent('exec', this.data.device)
+    }
   },
 })

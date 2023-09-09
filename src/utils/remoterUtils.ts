@@ -3,6 +3,7 @@ import remoterProtocol from './remoterProtocol'
 import { isAndroid } from './app'
 import { delay } from '../utils/index'
 import { CMD } from '../config/remoter'
+import storage from './storage'
 
 /**
  * @description 建立本地作为蓝牙[低功耗外围设备]的服务端
@@ -145,4 +146,139 @@ export function stopAdvertising(server: WechatMiniprogram.BLEPeripheralServer) {
       },
     })
   })
+}
+
+/**
+ * 基于连接的低功耗蓝牙设备服务
+ */
+export class BleService {
+  addr: string
+  deviceId: string // 搜索到设备的 deviceId
+  serviceId = ''
+  characteristics = [] as WechatMiniprogram.BLECharacteristic[]
+  isConnected = false
+
+  constructor(device: { addr: string; deviceId: string }) {
+    const { addr, deviceId } = device
+
+    this.addr = addr
+    this.deviceId = deviceId
+  }
+
+  // 建立连接
+  async connect() {
+    const startTime = Date.now()
+
+    console.log(`${this.addr} 开始连接蓝牙`)
+
+    // 会出现createBLEConnection一直没返回的情况（低概率）
+    // 微信bug，安卓端timeout参数无效
+    const connectRes = await wx
+      .createBLEConnection({
+        deviceId: this.deviceId,
+        timeout: 15000,
+      })
+      .catch((err: WechatMiniprogram.BluetoothError) => err)
+
+    const costTime = Date.now() - startTime
+    console.log(`${this.addr} connectRes `, connectRes, `连接蓝牙时间： ${costTime}ms`)
+
+    // 判断是否连接蓝牙，0为连接成功，-1为已经连接
+    // 避免-1的情况，因为安卓如果重复调用 wx.createBLEConnection 创建连接，有可能导致系统持有同一设备多个连接的实例，导致调用 closeBLEConnection 的时候并不能真正的断开与设备的连接。占用蓝牙资源
+    if (connectRes.errCode !== 0 && connectRes.errCode !== -1) {
+      throw {
+        code: -1,
+        error: connectRes,
+      }
+    }
+
+    // 新连接，未记录过服务ID
+    const res = await wx
+      .getBLEDeviceServices({
+        deviceId: this.deviceId,
+      })
+      .catch((err) => {
+        throw err
+      })
+    console.log('getBLEDeviceServices', res)
+
+    this.serviceId = res.services[0].uuid
+
+    // 更新持久化记录
+    const _localList = (storage.get('_localList') ?? {}) as Remoter.LocalList
+    _localList[this.addr].serviceId = res.services[0].uuid
+    storage.set('_localList', _localList)
+
+    return {
+      code: 0,
+      error: connectRes,
+    }
+  }
+
+  // 初始化蓝牙特征值
+  async init() {
+    // 未经连接步骤的初始化，从缓存中获取 serviceId
+    if (!this.serviceId) {
+      const _localList = (storage.get('_localList') ?? {}) as Remoter.LocalList
+      this.serviceId = _localList[this.addr].serviceId as string
+    }
+    // IOS无法跳过该接口，否则后续接口会报10005	no characteristic	没有找到指定特征
+    const characRes = await wx
+      .getBLEDeviceCharacteristics({
+        deviceId: this.deviceId,
+        serviceId: this.serviceId,
+      })
+      .catch((err) => {
+        throw err
+      })
+
+    console.log('getBLEDeviceCharacteristics', characRes)
+
+    // 取第一个属性（固定，为可写可读可监听），不同品类的子设备的characteristicId不一样，同类的一样
+    this.characteristics = characRes.characteristics
+  }
+
+  async sendCmd(payload: string) {
+    const characteristic = this.characteristics.find((c) => c.properties.write)
+    if (!characteristic) {
+      return
+    }
+    await wx
+      .writeBLECharacteristicValue({
+        deviceId: this.deviceId,
+        serviceId: this.serviceId,
+        characteristicId: characteristic.uuid,
+        value: remoterProtocol.createBluetoothProtocol({
+          addr: this.addr,
+          data: payload,
+        }),
+      })
+      .catch((err) => {
+        throw err
+      })
+
+    // 收到延迟，安卓平台上，在调用 wx.notifyBLECharacteristicValueChange 成功后立即调用本接口，在部分机型上会发生 10008 系统错误
+    if (isAndroid()) {
+      await delay(500)
+    }
+  }
+
+  async readState() {
+    const characteristic = this.characteristics.find((c) => c.properties.read)
+    if (!characteristic) {
+      return
+    }
+
+    const res = await wx
+    .readBLECharacteristicValue({
+      deviceId: this.deviceId,
+      serviceId: this.serviceId,
+      characteristicId: characteristic.uuid,
+    })
+    .catch((err) => {
+      throw err
+    })
+
+    console.log('readBLECharacteristicValue', res)
+  }
 }

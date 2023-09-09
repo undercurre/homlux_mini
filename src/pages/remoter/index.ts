@@ -3,8 +3,9 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { isAndroid, Logger, checkWxBlePermission, storage, unique, isNullOrUnDef, emitter } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
-import { createBleServer, bleAdvertising } from '../../utils/remoterUtils'
+import { createBleServer, bleAdvertising, BleService } from '../../utils/remoterUtils'
 import { deviceConfig, MIN_RSSI, SEEK_TIMEOUT, CMD } from '../../config/remoter'
+import remoterCrypto from '../../utils/remoterCrypto'
 
 ComponentWithComputed({
   behaviors: [pageBehavior],
@@ -16,7 +17,7 @@ ComponentWithComputed({
     isSystemBlePermit: false, // 系统蓝牙权限是否开启
     _listenLocationTimeId: 0, // 监听系统位置信息是否打开的计时器， 0为不存在监听
     statusBarHeight: storage.get<number>('statusBarHeight') as number,
-    _localList: (storage.get<Remoter.LocalList>('_localList') ?? {}) as Remoter.LocalList,
+    _localList: (storage.get('_localList') ?? {}) as Remoter.LocalList,
     scrollTop: 0,
     scrollViewHeight:
       (storage.get<number>('windowHeight') as number) -
@@ -31,6 +32,7 @@ ComponentWithComputed({
     deviceList: [] as Remoter.DeviceItem[], // 我的设备
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
     debugStr: '0000',
+    _serviceList: {} as Record<string, BleService>,
   },
 
   computed: {
@@ -133,6 +135,12 @@ ComponentWithComputed({
         }
       })
 
+      // 监听蓝牙连接值变化
+      wx.onBLECharacteristicValueChange(function (res) {
+        console.log('onBLECharacteristicValueChange', res.value)
+        console.log('onBLECharacteristicValueChange', remoterCrypto.ab2hex(res.value))
+      })
+
       // 搜索一轮设备
       // this.toSeek()
 
@@ -150,6 +158,9 @@ ComponentWithComputed({
 
       // 搜索一轮设备
       this.toSeek()
+
+      // 获取已连接的设备
+      this.getConnectedDevices()
     },
 
     onUnload() {
@@ -158,6 +169,7 @@ ComponentWithComputed({
       this.endSeek()
       wx.offBluetoothAdapterStateChange() // 移除蓝牙适配器状态变化事件的全部监听函数
       wx.offBluetoothDeviceFound() // 移除搜索到新设备的事件的全部监听函数
+      wx.offBLECharacteristicValueChange() // 移除蓝牙低功耗设备的特征值变化事件的全部监听函数
 
       // 关闭外围设备服务端
       if (this.data._bleServer) {
@@ -201,6 +213,7 @@ ComponentWithComputed({
           switchType: '小夜灯',
           saved: true,
           discovered: false,
+          connected: false,
         })
       }
 
@@ -326,7 +339,7 @@ ComponentWithComputed({
     },
 
     // 点击设备卡片
-    handleCardTap(e: WechatMiniprogram.TouchEvent) {
+    async handleCardTap(e: WechatMiniprogram.TouchEvent) {
       const { deviceType, deviceModel, deviceName, saved, deviceId, addr } = e.detail
       if (isNullOrUnDef(deviceType) || isNullOrUnDef(deviceModel)) {
         return
@@ -374,15 +387,25 @@ ComponentWithComputed({
     // 点击设备按钮
     async handleControlTap(e: WechatMiniprogram.TouchEvent) {
       console.log(e)
+      const { addr, connected } = e.detail
+      // const addr = '18392c0c5566' // 模拟遥控器mac
+
+      const payload = remoterProtocol.generalCmdString(CMD.NIGHT_LAMP)
+
+      // 如果已建立连接则基于连接发送
+      if (connected) {
+        const bs = this.data._serviceList[addr]
+        // await bs.sendCmd(payload)
+        await bs.readState()
+        return
+      }
+
       // 建立BLE外围设备服务端
       if (!this.data._bleServer) {
         this.data._bleServer = await createBleServer()
       }
 
       // 广播控制指令
-      const { addr } = e.detail
-      // const addr = '18392c0c5566' // 模拟遥控器mac
-      const payload = remoterProtocol.generalCmdString(CMD.NIGHT_LAMP)
       bleAdvertising(this.data._bleServer, {
         addr,
         payload,
@@ -391,6 +414,25 @@ ComponentWithComputed({
       if (!e.detail.saved) {
         this.handleCardTap(e)
       }
+    },
+    // 点击设备图片
+    async handleCardExec(e: WechatMiniprogram.TouchEvent) {
+      console.log('handleCardExec', e)
+
+      const { deviceId, addr, connected } = e.detail
+
+      const bs = new BleService({ addr, deviceId })
+      this.data._serviceList[addr] = bs
+
+      if (!connected) {
+        await bs.connect()
+        const diffData = {} as IAnyObject
+        const index = this.data.deviceList.findIndex((d) => d.addr === addr)
+        diffData[`deviceList[${index}].connected`] = true
+        this.setData(diffData)
+      }
+      await bs.init()
+      this.initDrag()
     },
     // 搜索设备
     toSeek() {
@@ -421,6 +463,32 @@ ComponentWithComputed({
         isSeeking: false,
         isNotFound: !this.data.isNotFound,
       })
+    },
+
+    // 获取已连接的设备
+    async getConnectedDevices() {
+      const services = Object.keys(this.data._localList)
+        .map((addr) => this.data._localList[addr].serviceId)
+        .filter((service) => !!service) as string[]
+
+      const res = await wx.getConnectedBluetoothDevices({
+        services,
+      })
+      console.log('getConnectedBluetoothDevices', res)
+
+      // 更新已连接状态
+      if (res.devices?.length) {
+        const servicesList = res.devices.map((item) => item.deviceId)
+
+        const diffData = {} as IAnyObject
+        this.data.deviceList.forEach((device, index) => {
+          if (servicesList.includes(device.deviceId)) {
+            diffData[`deviceList[${index}].connected`] = true
+          }
+        })
+        this.setData(diffData)
+        this.initDrag()
+      }
     },
 
     onPageScroll(e: { detail: { scrollTop: number } }) {

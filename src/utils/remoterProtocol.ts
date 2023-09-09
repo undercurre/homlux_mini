@@ -68,21 +68,26 @@ const _parseEncryptFlag = (encryptFlag: string) => {
 }
 
 //	创建蓝牙发送协议
-const _createBluetoothProtocol = (params: { sequence: number; addr: string; data: string; opcode?: number }) => {
-  const { sequence, addr, opcode = 0x0b, data } = params
+const _createBluetoothProtocol = (params: { addr: string; data: string; opcode?: number }) => {
+  const { addr, opcode = 0x0b, data } = params
   //	1. len
   const commandData = [0x00]
+
   //	2. sequence,opcode
-  const sequenceOpcode = parseInt(sequence.toString(2) + opcode.toString(2), 2)
+  const encryptIndex = Math.round(Math.random() * 15)
+  const sequenceOpcode = parseInt(encryptIndex.toString(2) + opcode.toString(2), 2)
   commandData.push(sequenceOpcode)
+
   //	3. encrypt data
-  const encrytpedData = cryptoUtils.enCodeData(data, addr, sequence)
+  const encrytpedData = cryptoUtils.enCodeData(data, addr, encryptIndex)
   console.log('蓝牙协议 加密后的数据:', encrytpedData)
   commandData.push(...encrytpedData)
+
   //	4. set length =>  payload length
   commandData[0] = commandData.length - 2
+  console.log('commandData', commandData, commandData.length)
+
   //	5. create buffer
-  console.log('commandData length', commandData.length)
   const buffer = new ArrayBuffer(commandData.length)
   const dataView = new DataView(buffer)
   for (let i = 0; i < commandData.length; i++) {
@@ -92,10 +97,10 @@ const _createBluetoothProtocol = (params: { sequence: number; addr: string; data
 }
 
 /**
- * @description 按播发送协议拼接数据
+ * @description 按发送协议拼接数据
  * @param params.isEncrypt 是否加密
  */
-const createBleProtocol = (params: { payload: string; addr: string; isEncrypt?: boolean }) => {
+const createBleProtocol = (params: { payload: string; addr: string; isEncrypt?: boolean; }) => {
   const { payload, addr, isEncrypt = true } = params
   // 第一个字节
   const version = '0001'
@@ -107,41 +112,43 @@ const createBleProtocol = (params: { payload: string; addr: string; isEncrypt?: 
 
   // 第二个字节
   const encryptType = isEncrypt ? '0001' : '0000'
-  const encryptIndex = 0 // Math.round(Math.random() * 15)
+  const encryptIndex = Math.round(Math.random() * 15)
   const encryptIndexBin = encryptIndex.toString(2).padStart(4, '0')
-  const advData = [VBCV, parseInt(`${encryptType}${encryptIndexBin}`, 2)]
+  const dataArr = [VBCV, parseInt(`${encryptType}${encryptIndexBin}`, 2)]
 
   // addr
   for (let i = 0; i < addr.length; i += 2) {
-    advData.push(parseInt(addr.slice(i, i + 2), 16))
+    dataArr.push(parseInt(addr.slice(i, i + 2), 16))
   }
 
   // 不加密则直接返回
   if (!isEncrypt) {
     for (let i = 0; i < payload.length; i += 2) {
-      advData.push(parseInt(payload.slice(i, i + 2), 16))
+      dataArr.push(parseInt(payload.slice(i, i + 2), 16))
     }
-    return advData
   }
-
   // encode payload
-  const channel = parseInt(payload.slice(0, 2))
-  const encrytpedData = cryptoUtils.enCodeData(payload.slice(2), addr, encryptIndex)
-  console.log(
-    '加密后的数据',
-    encrytpedData.map((b) => b.toString(16)),
-  )
+  else {
+    const channel = parseInt(payload.slice(0, 2))
+    const encrytpedData = cryptoUtils.enCodeData(payload.slice(2), addr, encryptIndex)
+    console.log(
+      '加密后的数据',
+      encrytpedData.map((b) => b.toString(16)),
+    )
+    dataArr.push(channel, ...encrytpedData)
+  }
+  // console.log('dataArr', dataArr)
 
-  advData.push(channel, ...encrytpedData)
-  return advData
+  // const buffer = new ArrayBuffer(dataArr.length)
+  // const dataView = new DataView(buffer)
+  // for (let i = 0; i < dataArr.length; i++) {
+  //   dataView.setInt8(i, dataArr[i])
+  // }
+  return dataArr
 }
 
 /**
  * 创建安卓广播数据
- * 拼接在 advertiseRequest.manufacturerData [{
- *  	manufacturerId: getManufacturerId(true, '0xxxxx'),
- * 		manufacturerSpecificData: _createAndroidBleRequest()
- * }]
  * @returns
  */
 const _createAndroidBleRequest = (params: { payload: string; addr: string }): Uint8Array => {
@@ -172,21 +179,7 @@ const _createIOSBleRequest = (params: { payload: string; addr: string; comId: st
     const hex2 = (manufacturerData[i + 1] ?? '00').toString(16).padStart(2, '0')
     arrayData.push(hex2.concat(hex1))
   }
-  // if (arrayData.length < 13) {
-  //   const testData = ['1bee', '78c8', '4af6', '1344', '9744', '1b61', '7c72', '4746', '23c2', '795b', '85c2', '7a36']
-  //   arrayData.push(...testData.slice(0, 13 - arrayData.length))
-  // }
   return arrayData
-}
-
-/**
- * 根据手机系统获取 compid
- * @param isAndroid
- * @param compid
- * @returns
- */
-const _getManufacturerId = (isAndroid: boolean, compid: string) => {
-  return isAndroid ? compid : compid.slice(2)
 }
 
 /**
@@ -244,7 +237,6 @@ export default {
   searchDeviceCallBack: _searchDeviceCallBack,
   createAndroidBleRequest: _createAndroidBleRequest,
   createIOSBleRequest: _createIOSBleRequest,
-  getManufacturerId: _getManufacturerId,
   createBluetoothProtocol: _createBluetoothProtocol,
   handleBluetoothResponse: _handleBluetoothResponse,
   handleBleResponse: _handleBleResponse,

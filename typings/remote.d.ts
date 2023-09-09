@@ -15,6 +15,7 @@ declare namespace Remoter {
     switchType: string // 快捷开关类型 TODO 改为按命令索引
     saved: boolean // 是否已保存在本地（我的设备）
     discovered?: boolean // 是否被搜索到, 用于我的设备列表
+    connected?: boolean // 是否与设备建立连接
   }
 
   interface ButtonRes {
@@ -32,5 +33,8 @@ declare namespace Remoter {
     bList: ButtonRes[]
   }
 
-  type LocalList = Record<string, Pick<DeviceItem, 'deviceModel' | 'deviceType' | 'orderNum' | 'deviceName' | 'deviceId'>>
+  type LocalList = Record<
+    string,
+    Pick<DeviceItem, 'deviceModel' | 'deviceType' | 'orderNum' | 'deviceName' | 'deviceId'> & { serviceId?: string }
+  >
 }
