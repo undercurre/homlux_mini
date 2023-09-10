@@ -1,5 +1,5 @@
 import { Logger, mzaioRequest } from '../utils/index'
-import homOs from 'homlux-sdk'
+import homOs from 'js-homos'
 
 export async function querySceneList(roomId: string, options?: { loading?: boolean }) {
   return await mzaioRequest.post<Scene.SceneItem[]>({

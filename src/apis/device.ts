@@ -1,6 +1,6 @@
 import { delay, mzaioRequest, showLoading, hideLoading, Logger } from '../utils/index'
 import { PRO_TYPE } from '../config/index'
-import homOs from 'homlux-sdk'
+import homOs from 'js-homos'
 
 /**
  * 设备管理-根据家庭id查询全屋的设备
