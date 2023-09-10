@@ -11,6 +11,7 @@ import {
   updateDefaultHouse,
   getShareId,
   queryAllDevice,
+  queryLocalKey,
 } from '../apis/index'
 import { PRO_TYPE } from '../config/index'
 import { asyncStorage, storage, Logger } from '../utils/index'
@@ -21,6 +22,8 @@ import { userStore } from './user'
 import { deviceCount } from '../utils/index'
 
 export const homeStore = observable({
+  key: '', // 局域网本地场景key
+
   homeList: [] as Home.IHomeItem[],
 
   /** 当前家庭详细信息 */
@@ -310,6 +313,14 @@ export const homeStore = observable({
       },
     }
     await asyncStorage.set('homeData', data, 60 * 60 * 24) // 缓存有效期一天
+  },
+
+  async updateLocalKey() {
+    const res = await queryLocalKey({ houseId: this.currentHomeId })
+
+    if (res.success) {
+      this.key = res.result
+    }
   },
 
   /**

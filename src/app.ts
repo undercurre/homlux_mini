@@ -6,11 +6,13 @@ import {
   closeWebSocket,
   setCurrentEnv,
   Logger,
+  isConnect,
 } from './utils/index'
 import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore } from './store/index'
-import { isConnect } from './utils/network'
 import { reaction } from 'mobx-miniprogram'
+import homOs from 'homlux-sdk'
+import mqtt from './lib/mqtt.min.js'
 
 App<IAppOption>({
   async onLaunch() {
@@ -29,12 +31,7 @@ App<IAppOption>({
     // 获取状态栏、顶部栏、底部栏高度
     setNavigationBarAndBottomBarHeight()
 
-    // 如果用户已经登录，开始请求数据
-    if (storage.get<string>('token')) {
-      appOnLaunchService()
-    } else {
-      othersStore.setIsInit(false)
-    }
+    homOs.init({ mqttLib: mqtt })
 
     // 监听houseId变化，切换websocket连接,切换成对应家庭的sock连接
     reaction(
@@ -42,8 +39,17 @@ App<IAppOption>({
       () => {
         closeWebSocket()
         startWebsocketService()
+
+        this.initHomeOs()
       },
     )
+
+    // 如果用户已经登录，开始请求数据
+    if (storage.get<string>('token')) {
+      appOnLaunchService()
+    } else {
+      othersStore.setIsInit(false)
+    }
 
     // 监听内存不足告警事件
     wx.onMemoryWarning(function () {
@@ -63,6 +69,8 @@ App<IAppOption>({
       deviceStore.updateSubDeviceList()
       homeStore.updateHomeInfo()
       startWebsocketService()
+
+      this.initHomeOs()
     }
   },
 
@@ -70,10 +78,21 @@ App<IAppOption>({
     Logger.log('app-onHide')
     // 用户最小化app，断开ws连接
     closeWebSocket()
+
+    homOs.logout()
   },
 
   onError(msg: string) {
     Logger.error('app-onError', msg)
+  },
+
+  async initHomeOs() {
+    await homeStore.updateLocalKey()
+
+    // 调试阶段可写死传递host参数，PC模拟调试
+    // host {"level": 200, "ip": "192.168.1.121", "devId": "1689839011110674"}
+    // host {"level": 200, "ip": "192.168.1.123", "devId": "1693906973627831"}
+    homOs.login(homeStore.currentHomeDetail.houseId, homeStore.key, { ip: '192.168.1.123', devId: '1693906973627831' })
   },
 
   globalData: {

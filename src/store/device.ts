@@ -14,7 +14,6 @@ export const deviceStore = observable({
    * 全屋设备
    */
   allRoomDeviceList: [] as Device.DeviceItem[],
-
   /**
    * deviceId -> device 映射
    */

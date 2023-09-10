@@ -1,5 +1,6 @@
-import { delay, mzaioRequest, showLoading, hideLoading } from '../utils/index'
+import { delay, mzaioRequest, showLoading, hideLoading, Logger } from '../utils/index'
 import { PRO_TYPE } from '../config/index'
+import homOs from 'homlux-sdk'
 
 /**
  * 设备管理-根据家庭id查询全屋的设备
@@ -132,12 +133,35 @@ export async function controlDevice(
     customJson?: IAnyObject
     deviceId: string
     method: string
-    deviceType?: number
+    deviceType?: number // 设备类型（1:网关 2:子设备 3:wifi
     topic?: string
     inputData: IAnyObject[]
   },
   option?: { loading?: boolean },
 ) {
+  const { deviceId, deviceType, inputData } = data
+
+  // 仅子设备需要判断是否局域网控制
+  if (deviceType === 2 && homOs.isSupportLan({ deviceId })) {
+    const localRes = await homOs.deviceControl({
+      deviceId,
+      actions: inputData.map((item) => ({
+        modelName: item.modelName,
+        deviceProperty: {
+          ...item,
+        },
+      })),
+    })
+
+    Logger.log('localRes', localRes)
+
+    if (localRes.success) {
+      return localRes
+    } else {
+      Logger.error('局域网调用失败，改走云端链路')
+    }
+  }
+
   return await mzaioRequest.post<IAnyObject>({
     log: true,
     loading: option?.loading || false,
@@ -781,6 +805,24 @@ export async function groupControl(
   },
   options?: { loading?: boolean },
 ) {
+  const { groupId, controlAction } = data
+
+  // 仅子设备需要判断是否局域网控制
+  if (homOs.isSupportLan({ groupId })) {
+    const localRes = await homOs.groupControl({
+      webGroupId: groupId,
+      actions: controlAction,
+    })
+
+    Logger.log('localRes', localRes)
+
+    if (localRes.success) {
+      return localRes
+    } else {
+      Logger.error('局域网调用失败，改走云端链路')
+    }
+  }
+
   return await mzaioRequest.post({
     log: true,
     loading: options?.loading ?? false,
@@ -823,4 +865,21 @@ export async function getGwNetworkInfo(
   options?.loading && hideLoading()
 
   return deviceInfoRes
+}
+
+/**
+ * 获取本地场景密钥key接口
+ */
+export async function queryLocalKey(
+  data: {
+    houseId: string
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<string>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/queryLocalKey',
+    data,
+  })
 }
