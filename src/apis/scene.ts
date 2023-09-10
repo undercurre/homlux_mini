@@ -48,14 +48,14 @@ export async function retryScene(
 }
 
 export async function execScene(sceneId: string, options?: { loading?: boolean }) {
-  if (homOs.isSupportLan({ sceneId })){
+  if (homOs.isSupportLan({ sceneId })) {
     const localRes = await homOs.sceneExecute(sceneId)
 
     Logger.log('localRes', localRes)
 
     if (localRes.success) {
       return localRes
-    } else{
+    } else {
       Logger.error('局域网调用失败，改走云端链路')
     }
   }

@@ -142,14 +142,14 @@ export async function controlDevice(
   const { deviceId, deviceType, inputData } = data
 
   // 仅子设备需要判断是否局域网控制
-  if (deviceType === 2 && homOs.isSupportLan({ deviceId })){
+  if (deviceType === 2 && homOs.isSupportLan({ deviceId })) {
     const localRes = await homOs.deviceControl({
       deviceId,
-      actions: inputData.map(item => ({
+      actions: inputData.map((item) => ({
         modelName: item.modelName,
         deviceProperty: {
           ...item,
-        }
+        },
       })),
     })
 
@@ -157,7 +157,7 @@ export async function controlDevice(
 
     if (localRes.success) {
       return localRes
-    } else{
+    } else {
       Logger.error('局域网调用失败，改走云端链路')
     }
   }
@@ -808,7 +808,7 @@ export async function groupControl(
   const { groupId, controlAction } = data
 
   // 仅子设备需要判断是否局域网控制
-  if (homOs.isSupportLan({ groupId })){
+  if (homOs.isSupportLan({ groupId })) {
     const localRes = await homOs.groupControl({
       webGroupId: groupId,
       actions: controlAction,
@@ -818,7 +818,7 @@ export async function groupControl(
 
     if (localRes.success) {
       return localRes
-    } else{
+    } else {
       Logger.error('局域网调用失败，改走云端链路')
     }
   }
