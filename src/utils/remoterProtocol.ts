@@ -67,7 +67,7 @@ const _parseEncryptFlag = (encryptFlag: string) => {
   }
 }
 
-//	创建蓝牙发送协议
+//	创建蓝牙连接发送协议
 const _createBluetoothProtocol = (params: { addr: string; data: string; opcode?: number }) => {
   const { addr, opcode = 0x0b, data } = params
   //	1. len
@@ -100,7 +100,7 @@ const _createBluetoothProtocol = (params: { addr: string; data: string; opcode?:
  * @description 按发送协议拼接数据
  * @param params.isEncrypt 是否加密
  */
-const createBleProtocol = (params: { payload: string; addr: string; isEncrypt?: boolean; }) => {
+const createBleProtocol = (params: { payload: string; addr: string; isEncrypt?: boolean }) => {
   const { payload, addr, isEncrypt = true } = params
   // 第一个字节
   const version = '0001'

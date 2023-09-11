@@ -49,6 +49,6 @@ ComponentWithComputed({
     },
     handlePicTap() {
       this.triggerEvent('exec', this.data.device)
-    }
+    },
   },
 })

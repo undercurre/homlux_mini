@@ -45,7 +45,7 @@
       <text class="ml-40rpx text-hex-6e6f74 text-28">我的设备</text>
     </view>
 
-    <drag id="drag" list-data="{{deviceList}}" item-height="{{184}}" scroll-top="{{scrollTop}}" generic:item="card" bind:cardTap="handleCardTap" bind:controlTap="handleControlTap" bind:sortend="handleSortEnd" bind:exec="handleCardExec"></drag>
+    <drag id="drag" list-data="{{deviceList}}" item-height="{{184}}" scroll-top="{{scrollTop}}" generic:item="card" bind:cardTap="handleCardTap" bind:controlTap="handleControlTap" bind:sortend="handleSortEnd" bind:exec="handleCardTap"></drag>
   </block>
 
   <view class="w-full flex-center pb-40rpx mt-20rpx">

@@ -2,6 +2,7 @@
   <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="{{device.deviceName}}"></nav-bar>
 
   <view class="text-right py-32rpx pr-44rpx">
+    <image class="w-48 h-48 mr-48rpx" src="{{connectIcon}}" bind:tap="connectToggle" wx:if="{{envVersion === 'develop'}}"></image>
     <image class="w-48 h-48" src="/assets/img/home-manage/setting.png" bind:tap="toSetting"></image>
   </view>
 

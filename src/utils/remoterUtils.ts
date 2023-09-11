@@ -1,7 +1,7 @@
 import cryptoUtils from './remoterCrypto'
 import remoterProtocol from './remoterProtocol'
-import { isAndroid } from './app'
-import { delay } from '../utils/index'
+import { hideLoading, isAndroid, showLoading } from './app'
+import { delay, Logger } from '../utils/index'
 import { CMD } from '../config/remoter'
 import storage from './storage'
 
@@ -12,11 +12,11 @@ export function createBleServer() {
   return new Promise<WechatMiniprogram.BLEPeripheralServer>((resolve, reject) => {
     wx.createBLEPeripheralServer({
       success(res) {
-        console.log('BLE外围设备服务端创建成功', res)
+        Logger.log('BLE外围设备服务端创建成功', res)
         resolve(res.server)
       },
       fail(err) {
-        console.error(err)
+        Logger.error(err)
         reject(err)
       },
     })
@@ -37,13 +37,13 @@ export async function bleAdvertising(
 ) {
   const { addr, payload, comId = '0x4D11', INTERVAL = 800, autoEnd = true } = params
   if (!server) {
-    console.log('server is Not existed')
+    Logger.log('server is Not existed')
     return
   }
   const manufacturerSpecificData = remoterProtocol.createAndroidBleRequest({ payload, addr })
   const serviceUuids = remoterProtocol.createIOSBleRequest({ payload, addr, comId })
-  console.log('Android广播：', comId, cryptoUtils.ab2hex(manufacturerSpecificData).slice(0))
-  console.log('IOS广播：', serviceUuids)
+  Logger.log('Android广播：', comId, cryptoUtils.ab2hex(manufacturerSpecificData).slice(0))
+  Logger.log('IOS广播：', serviceUuids)
 
   const advertiseRequest = {} as WechatMiniprogram.AdvertiseReqObj
 
@@ -117,11 +117,11 @@ export function startAdvertising(
       powerLevel: 'high',
       advertiseRequest,
       success(res) {
-        console.log('广播成功', res)
+        Logger.log('广播成功', res)
         resolve(res)
       },
       fail(err) {
-        console.error(err)
+        Logger.error(err)
         reject(err)
       },
     })
@@ -137,11 +137,11 @@ export function stopAdvertising(server: WechatMiniprogram.BLEPeripheralServer) {
   return new Promise((resolve, reject) => {
     server.stopAdvertising({
       success(res) {
-        console.log('广播停止成功', res)
+        Logger.log('广播停止成功', res)
         resolve(res)
       },
       fail(err) {
-        console.error(err)
+        Logger.error(err)
         reject(err)
       },
     })
@@ -167,9 +167,10 @@ export class BleService {
 
   // 建立连接
   async connect() {
+    showLoading('正在建立蓝牙连接')
     const startTime = Date.now()
 
-    console.log(`${this.addr} 开始连接蓝牙`)
+    Logger.log(`${this.addr} 开始连接蓝牙`)
 
     // 会出现createBLEConnection一直没返回的情况（低概率）
     // 微信bug，安卓端timeout参数无效
@@ -181,7 +182,9 @@ export class BleService {
       .catch((err: WechatMiniprogram.BluetoothError) => err)
 
     const costTime = Date.now() - startTime
-    console.log(`${this.addr} connectRes `, connectRes, `连接蓝牙时间： ${costTime}ms`)
+    Logger.log(`${this.addr} connectRes `, connectRes, `连接蓝牙时间： ${costTime}ms`)
+
+    hideLoading()
 
     // 判断是否连接蓝牙，0为连接成功，-1为已经连接
     // 避免-1的情况，因为安卓如果重复调用 wx.createBLEConnection 创建连接，有可能导致系统持有同一设备多个连接的实例，导致调用 closeBLEConnection 的时候并不能真正的断开与设备的连接。占用蓝牙资源
@@ -200,7 +203,7 @@ export class BleService {
       .catch((err) => {
         throw err
       })
-    console.log('getBLEDeviceServices', res)
+    Logger.log('getBLEDeviceServices', res)
 
     this.serviceId = res.services[0].uuid
 
@@ -213,6 +216,19 @@ export class BleService {
       code: 0,
       error: connectRes,
     }
+  }
+
+  async close() {
+    showLoading('正在断开蓝牙连接')
+
+    Logger.log(`${this.addr} ${this.deviceId} 开始关闭蓝牙连接`)
+    const res = await wx.closeBLEConnection({ deviceId: this.deviceId }).catch((err) => err)
+
+    // 存在调用关闭蓝牙连接指令和与设备蓝牙连接真正断开有时间差，强制等待1s
+    await delay(1000)
+
+    Logger.log(`${this.addr} closeBLEConnection`, res)
+    hideLoading()
   }
 
   // 初始化蓝牙特征值
@@ -232,7 +248,7 @@ export class BleService {
         throw err
       })
 
-    console.log('getBLEDeviceCharacteristics', characRes)
+    Logger.log('getBLEDeviceCharacteristics', characRes)
 
     // 取第一个属性（固定，为可写可读可监听），不同品类的子设备的characteristicId不一样，同类的一样
     this.characteristics = characRes.characteristics
@@ -270,15 +286,15 @@ export class BleService {
     }
 
     const res = await wx
-    .readBLECharacteristicValue({
-      deviceId: this.deviceId,
-      serviceId: this.serviceId,
-      characteristicId: characteristic.uuid,
-    })
-    .catch((err) => {
-      throw err
-    })
+      .readBLECharacteristicValue({
+        deviceId: this.deviceId,
+        serviceId: this.serviceId,
+        characteristicId: characteristic.uuid,
+      })
+      .catch((err) => {
+        throw err
+      })
 
-    console.log('readBLECharacteristicValue', res)
+    Logger.log('readBLECharacteristicValue', res)
   }
 }

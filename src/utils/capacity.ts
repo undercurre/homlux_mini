@@ -18,7 +18,7 @@ export const checkWxBlePermission = async () => {
     .catch((err: WechatMiniprogram.BluetoothError) => err)) as WechatMiniprogram.BluetoothError & { errno?: number }
 
   Logger.console('[openBluetoothAdapter]', openBleRes)
-  Logger.console('[openBluetoothAdapter]', openCenterBleRes)
+  Logger.console('[openCenterBleAdapterForIOS]', openCenterBleRes)
 
   // 判断是否授权蓝牙 安卓、iOS返回错误格式不一致
   if (openBleRes.errno === 103 || openBleRes.errMsg.includes('auth deny')) {
