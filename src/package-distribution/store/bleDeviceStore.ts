@@ -100,9 +100,9 @@ export const bleDevicesStore = observable({
 
   stopBLeDiscovery() {
     Logger.log('终止蓝牙发现')
+    this.isStart = false
     wx.stopBluetoothDevicesDiscovery()
     wx.offBluetoothDeviceFound()
-    this.isStart = false
   },
 
   reset() {
