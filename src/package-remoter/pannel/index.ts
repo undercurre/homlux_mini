@@ -92,9 +92,9 @@ ComponentWithComputed({
       }
 
       let { key } = e.target.dataset
-      // HACK 特殊的POWER按钮反转处理
-      if (key === 'POWER') {
-        key = this.data._lastPowerKey === 'POWER_OFF' ? 'POWER_ON' : 'POWER_OFF'
+      // HACK 特殊的照明按钮反转处理
+      if (key === 'LIGHT_LAMP') {
+        key = this.data._lastPowerKey === `${key}_OFF` ? `${key}_ON` : `${key}_OFF`
         this.data._lastPowerKey = key
       }
 

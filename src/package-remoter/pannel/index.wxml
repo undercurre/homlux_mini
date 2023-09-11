@@ -10,11 +10,11 @@
     <view class="joystick">
       <mz-button class="absolute up" img="/package-remoter/assets/up.png" imgActive="/package-remoter/assets/upActive.png" imgWidth="304rpx" imgHeight="142rpx" icon="{{device.joystick.up.icon}}" iconActive="{{device.joystick.up.iconActive}}" bind:tap="btnTap" data-key="{{device.joystick.up.key}}" data-lp-key="{{device.joystick.up.key}}" bind:longpress="handleLongPress" bind:touchend="handleTouchEnd"></mz-button>
 
-      <mz-button class="absolute right" img="/package-remoter/assets/right.png" imgActive="/package-remoter/assets/rightActive.png" imgWidth="142rpx" imgHeight="304rpx" icon="{{device.joystick.right.icon}}" iconActive="{{device.joystick.right.iconActive}}" bind:tap="btnTap" data-key="{{device.joystick.right.key}}" bind:longpress="handleLongPress" bind:touchend="handleTouchEnd"></mz-button>
+      <mz-button class="absolute right" img="/package-remoter/assets/right.png" imgActive="/package-remoter/assets/rightActive.png" imgWidth="142rpx" imgHeight="304rpx" icon="{{device.joystick.right.icon}}" iconActive="{{device.joystick.right.iconActive}}" text="{{device.joystick.right.name}}" dir="col" bind:tap="btnTap" data-key="{{device.joystick.right.key}}" bind:longpress="handleLongPress" bind:touchend="handleTouchEnd"></mz-button>
 
       <mz-button class="absolute down" img="/package-remoter/assets/down.png" imgActive="/package-remoter/assets/downActive.png" imgWidth="304rpx" imgHeight="142rpx" icon="{{device.joystick.down.icon}}" iconActive="{{device.joystick.down.iconActive}}" bind:tap="btnTap" data-key="{{device.joystick.down.key}}" bind:longpress="handleLongPress" bind:touchend="handleTouchEnd"></mz-button>
 
-      <mz-button class="absolute left" img="/package-remoter/assets/left.png" imgActive="/package-remoter/assets/leftActive.png" imgWidth="142rpx" imgHeight="304rpx" icon="{{device.joystick.left.icon}}" iconActive="{{device.joystick.left.iconActive}}" bind:tap="btnTap" data-key="{{device.joystick.left.key}}" bind:longpress="handleLongPress" bind:touchend="handleTouchEnd"></mz-button>
+      <mz-button class="absolute left" img="/package-remoter/assets/left.png" imgActive="/package-remoter/assets/leftActive.png" imgWidth="142rpx" imgHeight="304rpx" icon="{{device.joystick.left.icon}}" iconActive="{{device.joystick.left.iconActive}}" text="{{device.joystick.left.name}}" dir="col" bind:tap="btnTap" data-key="{{device.joystick.left.key}}" bind:longpress="handleLongPress" bind:touchend="handleTouchEnd"></mz-button>
 
       <mz-button class="absolute middle" type="round" imgWidth="154rpx" imgHeight="154rpx" hasFeedback="{{false}}"></mz-button>
     </view>

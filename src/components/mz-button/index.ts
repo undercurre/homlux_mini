@@ -47,7 +47,7 @@ ComponentWithComputed({
      */
     textWidth: {
       type: String,
-      value: '96rpx',
+      value: '128rpx',
     },
     textColor: {
       type: String,
