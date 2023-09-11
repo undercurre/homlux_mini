@@ -30,7 +30,7 @@ ComponentWithComputed({
     foundList: [] as Remoter.DeviceItem[], // 搜索到的设备
     deviceList: [] as Remoter.DeviceItem[], // 我的设备
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
-    // _serviceList: {} as Record<string, BleService>,
+    _timeId: -1,
     debugStr: '0000',
   },
 
@@ -68,12 +68,12 @@ ComponentWithComputed({
 
       // 监听扫描到新设备事件
       wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
-        console.log('onBluetoothDeviceFound', res)
+        // console.log('onBluetoothDeviceFound', res)
         const rList = unique(res.devices, 'deviceId') // 过滤重复设备信息
           .map((item) => remoterProtocol.searchDeviceCallBack(item))
           .filter((item) => !!item)
 
-        console.log('搜寻蓝牙外围设备：', rList)
+        console.log('搜寻到的设备列表：', rList)
 
         if (rList.length) {
           // 终止搜寻
@@ -85,7 +85,6 @@ ComponentWithComputed({
           rList.forEach((item) => {
             const isSavedDevice = this.data.deviceAddrs.includes(item!.addr)
             // 刷新发现设备列表
-            // FIXME IOS的RSSI范围似乎不太一样
             if (
               item!.RSSI >= MIN_RSSI && // 过滤弱信号设备
               !isSavedDevice // 排除已在我的设备列表的设备
@@ -114,11 +113,12 @@ ComponentWithComputed({
                 saved: false,
               })
             }
-            // 刷新我的设备列表
-            else if (isSavedDevice) {
-              const index = this.data.deviceList.findIndex((d) => d.addr === item!.addr)
-              diffData[`deviceList[${index}].discovered`] = true
-            }
+          })
+
+          // 刷新我的设备列表
+          const rListIds = rList.map((r) => r?.addr)
+          this.data.deviceList.forEach((device, index) => {
+            diffData[`deviceList[${index}].discovered`] = rListIds.includes(device.addr)
           })
 
           // TODO 目前只显示单一设备调试信息
@@ -177,6 +177,11 @@ ComponentWithComputed({
       // 移除系统位置信息开关状态的监听
       if (this.data._listenLocationTimeId) {
         clearInterval(this.data._listenLocationTimeId)
+      }
+
+      // 取消计时器
+      if (this.data._timeId) {
+        clearTimeout(this.data._timeId)
       }
 
       emitter.off('remoterChanged')
@@ -391,13 +396,6 @@ ComponentWithComputed({
 
       const payload = remoterProtocol.generalCmdString(CMD.NIGHT_LAMP)
 
-      // 如果已建立连接则基于连接发送
-      // if (connected) {
-      //   const bs = this.data._serviceList[addr]
-      //   await bs.sendCmd(payload)
-      //   return
-      // }
-
       // 建立BLE外围设备服务端
       if (!this.data._bleServer) {
         this.data._bleServer = await createBleServer()
@@ -413,25 +411,6 @@ ComponentWithComputed({
         this.handleCardTap(e)
       }
     },
-    // 点击设备图片
-    // async handleCardExec(e: WechatMiniprogram.TouchEvent) {
-    //   console.log('handleCardExec', e)
-
-    //   const { deviceId, addr, connected } = e.detail
-
-    //   const bs = new BleService({ addr, deviceId })
-    //   this.data._serviceList[addr] = bs
-
-    //   if (!connected) {
-    //     await bs.connect()
-    //     const diffData = {} as IAnyObject
-    //     const index = this.data.deviceList.findIndex((d) => d.addr === addr)
-    //     diffData[`deviceList[${index}].connected`] = true
-    //     this.setData(diffData)
-    //   }
-    //   await bs.init()
-    //   this.initDrag()
-    // },
     // 搜索设备
     toSeek() {
       this.setData({
@@ -450,10 +429,13 @@ ComponentWithComputed({
 
       // 如果一直找不到，也自动停止搜索
       // !! 停止时间要稍长于 SEEK_TIMEOUT，否则会导致监听方法不执行
-      setTimeout(() => this.endSeek(), SEEK_TIMEOUT)
+      this.data._timeId = setTimeout(() => this.endSeek(), SEEK_TIMEOUT)
     },
     // 停止搜索设备
     endSeek() {
+      if (this.data._timeId) {
+        clearTimeout(this.data._timeId)
+      }
       wx.stopBluetoothDevicesDiscovery({
         success: () => console.log('停止搜寻蓝牙外围设备'),
       })
@@ -463,7 +445,7 @@ ComponentWithComputed({
       })
     },
 
-    // 获取已连接的设备
+    // 获取已连接的设备 暂时用不着
     async getConnectedDevices() {
       const services = Object.keys(this.data._localList)
         .map((addr) => this.data._localList[addr].serviceId)

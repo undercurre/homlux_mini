@@ -78,7 +78,7 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
     },
     '02': {
       deviceName: '风扇灯',
-      devicePic: '',
+      devicePic: '/assets/img/remoter/fanLight.png',
       joystick: {
         up: {
           key: 'brightIncrease',
@@ -137,7 +137,7 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
   '26': {
     '01': {
       deviceName: '浴霸',
-      devicePic: '',
+      devicePic: '/assets/img/remoter/bathHeater.png',
       joystick: {
         up: {
           key: 'brightIncrease',
