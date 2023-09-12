@@ -19,12 +19,6 @@ App<IAppOption>({
     // 加载svg数据
     this.globalData.svgs = svgs
 
-    wx.onNeedPrivacyAuthorization(() => {
-      console.debug('onNeedPrivacyAuthorization')
-      // 需要用户同意隐私授权时
-      // 弹出开发者自定义的隐私授权弹窗
-    })
-
     // 设备运行环境
     setCurrentEnv()
 
@@ -79,6 +73,7 @@ App<IAppOption>({
     // 用户最小化app，断开ws连接
     closeWebSocket()
 
+    // 退出HomOS sdk登录态，断开局域网连接
     homOs.logout()
   },
 
@@ -92,7 +87,7 @@ App<IAppOption>({
     // 调试阶段可写死传递host参数，PC模拟调试
     // host {"level": 200, "ip": "192.168.1.121", "devId": "1689839011110674"}
     // host {"level": 200, "ip": "192.168.1.123", "devId": "1693906973627831"}
-    homOs.login(homeStore.currentHomeDetail.houseId, homeStore.key)
+    homOs.login(homeStore.currentHomeDetail.houseId, homeStore.key, { ip: '192.168.1.123', devId: '1693906973627831' })
   },
 
   globalData: {
