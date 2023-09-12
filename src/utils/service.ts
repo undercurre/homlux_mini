@@ -21,7 +21,7 @@ let socketIsConnect = false // socket是否处于连接状态
 let connectTimeId = 0 // 连接socket的延时器
 
 // socket心跳缓存数据
-let heartbeatInfo = {
+const heartbeatInfo = {
   timeId: 0, // 计时器
   lastMsgId: 0, // 上一次的心跳包消息Id
 }
@@ -46,9 +46,12 @@ export async function startWebsocketService() {
       const msgId = Date.now().valueOf()
 
       socketTask?.send({
-        data: JSON.stringify({ topic:"heartbeatTopic", message: {
-          msgId,
-        }}),
+        data: JSON.stringify({
+          topic: 'heartbeatTopic',
+          message: {
+            msgId,
+          },
+        }),
         success(res) {
           Logger.log('socket心跳包-success', res)
           setTimeout(() => {
@@ -62,7 +65,7 @@ export async function startWebsocketService() {
         },
         fail(res) {
           Logger.log('socket心跳包-fail', res)
-        }
+        },
       })
     }, 30000)
   })
