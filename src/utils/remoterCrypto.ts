@@ -44,18 +44,18 @@ function _createRandomEncodeFlag(): number {
 function _enCodeData(data: string, addr: string, flag: number) {
   const encryptResult: number[] = []
   const encodeTable = createEncodeTable(addr)
-  console.log(
-    '本次通信的 循环加密表',
-    encodeTable.map((b) => b.toString(16)),
-    'flag',
-    flag,
-  )
+  // console.log(
+  //   '本次通信的 循环加密表',
+  //   encodeTable.map((b) => b.toString(16)),
+  //   'flag',
+  //   flag,
+  // )
   const source: number[] = []
   let encodeIndex = flag & 0x0f
   for (let i = 0; i < data.length; i += 2) {
     source.push(parseInt(data.slice(i, i + 2), 16))
   }
-  console.log('本次需要加密的数据', data)
+  // console.log('本次需要加密的数据', data)
   for (let i = 0; i < source.length; i++) {
     encryptResult[i] = source[i] ^ encodeTable[encodeIndex % encodeTable.length]
     encodeIndex++

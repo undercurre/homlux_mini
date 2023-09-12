@@ -19,7 +19,7 @@
   <block wx:if="{{isNotFound}}">
     <template is="notFoundMsg"></template>
 
-    <view class="w-full flex-center mt-130rpx">
+    <view class="bottom-btn">
       <template is="btn" data="{{ isSeeking: isSeeking }}"></template>
     </view>
   </block>

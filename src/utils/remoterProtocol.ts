@@ -131,10 +131,10 @@ const createBleProtocol = (params: { payload: string; addr: string; isEncrypt?: 
   else {
     const channel = parseInt(payload.slice(0, 2))
     const encrytpedData = cryptoUtils.enCodeData(payload.slice(2), addr, encryptIndex)
-    console.log(
-      '加密后的数据',
-      encrytpedData.map((b) => b.toString(16)),
-    )
+    // console.log(
+    //   '加密后的数据',
+    //   encrytpedData.map((b) => b.toString(16)),
+    // )
     dataArr.push(channel, ...encrytpedData)
   }
   // console.log('dataArr', dataArr)

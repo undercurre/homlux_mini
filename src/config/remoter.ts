@@ -37,6 +37,9 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
           icon: '/package-remoter/assets/light1.png',
           iconActive: '/package-remoter/assets/light0.png',
         },
+        middle: {
+          key: 'FACTORY',
+        },
       },
       mList: [
         {
@@ -168,6 +171,9 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
           iconActive: '/package-remoter/assets/warm0.png',
           name: '弱暖',
         },
+        middle: {
+          key: 'FACTORY',
+        },
       },
       mList: [
         {
@@ -245,6 +251,9 @@ export const CMD: Record<string, number> = {
   BATH_SWING: 0x18, // 摆风
   BATH_BRIGHT_PLUS: 0x0c, // 亮度+，数字遥控独有
   BATH_BRIGHT_MINUS: 0x0a, // 亮度- 短按
+
+  // 厂测指令（调试用）
+  FACTORY: 0x13,
 
   // 指令终止（松手时发送）
   END: 0x00,

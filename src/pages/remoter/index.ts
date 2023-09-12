@@ -194,7 +194,7 @@ ComponentWithComputed({
     },
 
     toggleDebug() {
-      if (this.data._envVersion === 'release') {
+      if (this.data._envVersion !== 'develop') {
         return
       }
 

@@ -87,3 +87,10 @@ page {
 .small-btn .van-button__loading-text {
   color: #666;
 }
+
+.bottom-btn {
+  position: absolute;
+  bottom: calc(env(safe-area-inset-bottom) + 150rpx);
+  left: 50%;
+  transform: translateX(-50%);
+}

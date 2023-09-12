@@ -91,7 +91,7 @@ ComponentWithComputed({
 
   methods: {
     handleTouchStart() {
-      if (wx.vibrateShort) wx.vibrateShort({ type: 'light' })
+      if (wx.vibrateShort && this.data.hasFeedback) wx.vibrateShort({ type: 'light' })
 
       // 预留逻辑，暂时未被调用
       // const innerAudioContext = wx.createInnerAudioContext()
