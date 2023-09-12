@@ -173,7 +173,7 @@ Component({
      *  初始化函数
      *  {listData, topSize, bottomSize, itemHeight} 参数改变需要手动调用初始化方法
      */
-    init(device?: Device.DeviceItem) {
+    init() {
       const delItem = (item: IAnyObject, extraNode: boolean) => ({
         id: item.dragId,
         extraNode: extraNode,
@@ -225,34 +225,12 @@ Component({
       this.data.rows = Math.ceil(list.length / columns)
       listWxs = list
 
-      console.log('drag.init() setData', list)
-
-      if (device) {
-        const item = list.find((l) => l.id === device.deviceId)
-        const index = list.findIndex((l) => l.id === device.deviceId)
-        if (index !== -1) {
-          const diffData = {} as IAnyObject
-          diffData[`list[${index}].data.onLineStatus`] = item?.data.onLineStatus
-          diffData[`list[${index}].data.select`] = item?.data.select
-          diffData[`list[${index}].data.mzgdPropertyDTOList[1].OnOff`] = item?.data.mzgdPropertyDTOList[1].OnOff
-          console.log('drag init setData diffList', diffData)
-          this.setData(diffData)
-        }
-
-        this.setData({
-          // list,
-          wrapStyle: `height: ${this.data.rows * this.data.itemHeight}rpx`,
-          dragging: true,
-          updating: true,
-        })
-      } else {
-        this.setData({
-          list,
-          wrapStyle: `height: ${this.data.rows * this.data.itemHeight}rpx`,
-          dragging: true,
-          updating: true,
-        })
-      }
+      this.setData({
+        list,
+        wrapStyle: `height: ${this.data.rows * this.data.itemHeight}rpx`,
+        dragging: true,
+        updating: true,
+      })
 
       if (list.length === 0) return
 

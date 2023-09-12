@@ -280,7 +280,7 @@ ComponentWithComputed({
 
     handleFinish() {
       wx.switchTab({
-        url: '/pages/automation/index',
+        url: '/package-mine/automation/index',
       })
     },
   },

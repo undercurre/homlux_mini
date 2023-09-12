@@ -13,8 +13,8 @@ ComponentWithComputed({
    */
   data: {
     urls: {
-      duerIntro: '/package-mine/voice-intro/index?type=duer',
-      miIntro: '/package-mine/voice-intro/index?type=mi',
+      duerIntro: '/package-mine/guideline/index?type=duerVoice',
+      miIntro: '/package-mine/guideline/index?type=miVoice',
     },
   },
 

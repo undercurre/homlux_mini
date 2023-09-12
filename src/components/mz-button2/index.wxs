@@ -1,0 +1,54 @@
+var _TRANSITION = 'all 0.3s'
+
+function touchStart(event, ownerInstance) {
+  var iWrapper = ownerInstance.selectComponent('.icon-wrapper')
+  var iIcon = ownerInstance.selectComponent('.icon')
+  var iIconActive = ownerInstance.selectComponent('.iconActive')
+
+  ownerInstance.callMethod('handleTouchStart', event)
+
+  if (!iIconActive) {
+    return
+  }
+  iWrapper.setStyle({
+    'background-color': '#488fff',
+    'background-image': 'linear-gradient(155deg, #468CFB 6%, #6BA3FC 96%)',
+    transition: _TRANSITION,
+  })
+  iIcon.setStyle({
+    opacity: 0,
+    transition: _TRANSITION,
+  })
+  iIconActive.setStyle({
+    opacity: 1,
+    transition: _TRANSITION,
+  })
+}
+
+function touchEnd(event, ownerInstance) {
+  var iWrapper = ownerInstance.selectComponent('.icon-wrapper')
+  var iIcon = ownerInstance.selectComponent('.icon')
+  var iIconActive = ownerInstance.selectComponent('.iconActive')
+
+  if (!iIconActive) {
+    return
+  }
+  iWrapper.setStyle({
+    'background-color': '#f1f5fa',
+    'background-image': 'none',
+    transition: _TRANSITION,
+  })
+  iIcon.setStyle({
+    opacity: 1,
+    transition: _TRANSITION,
+  })
+  iIconActive.setStyle({
+    opacity: 0,
+    transition: _TRANSITION,
+  })
+}
+
+module.exports = {
+  touchStart: touchStart,
+  touchEnd: touchEnd,
+}
