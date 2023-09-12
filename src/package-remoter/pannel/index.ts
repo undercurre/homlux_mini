@@ -11,8 +11,6 @@ import {
   BleService,
 } from '../../utils/remoterUtils'
 
-
-
 ComponentWithComputed({
   options: {
     addGlobalClass: true,
