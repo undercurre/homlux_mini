@@ -12,6 +12,7 @@ export * from './app'
 export * from './log'
 export * from './deviceModel'
 export * from './network'
+export * from './capacity'
 
 import { PRO_TYPE } from '../config/index'
 
@@ -28,7 +29,7 @@ export function delay(ms: number) {
  * @param arr
  * @param key 唯一key
  */
-export function unique(arr: Array<IAnyObject>, key: string) {
+export function unique<T = IAnyObject>(arr: Array<T>, key: keyof T) {
   const res = new Map()
 
   return arr.filter((item) => !res.has(item[key]) && res.set(item[key], 1))

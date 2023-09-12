@@ -14,6 +14,7 @@ import { reaction } from 'mobx-miniprogram'
 import homOs from 'js-homos'
 import mqtt from './lib/mqtt.min.js'
 
+// TODO 统一配置和管理 storage key
 App<IAppOption>({
   async onLaunch() {
     // 加载svg数据
@@ -32,6 +33,20 @@ App<IAppOption>({
     setNavigationBarAndBottomBarHeight()
 
     homOs.init({ mqttLib: mqtt })
+
+    // 如果用户是首次进入，则选择默认首页
+    const defaultPage = (storage.get<string>('defaultPage') ?? '') as string
+    console.log({ defaultPage })
+    if (defaultPage) {
+      othersStore.setDefaultPage(defaultPage)
+    }
+
+    // 如果用户已经登录，开始请求数据
+    if (storage.get<string>('token')) {
+      appOnLaunchService()
+    } else {
+      othersStore.setIsInit(false)
+    }
 
     // 监听houseId变化，切换websocket连接,切换成对应家庭的sock连接
     reaction(
