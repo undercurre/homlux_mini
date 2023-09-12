@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { CMD, deviceConfig, FACTORY_ADDR } from '../../config/remoter'
-import { emitter, storage } from '../../utils/index'
+import { emitter, Logger, storage } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import {
   createBleServer,
@@ -29,6 +29,7 @@ ComponentWithComputed({
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
     _bleService: null as BleService | null,
     _lastPowerKey: '', // 记录上一次点击‘照明’时的指令键，用于反转处理
+    _keyQueue: ['', '', '', '', '', '', '', ''], // 记录按键序列
   },
 
   computed: {
@@ -94,6 +95,10 @@ ComponentWithComputed({
       }
 
       let { key } = e.target.dataset
+      // DEBUG 产测指令，仅调试模式可用
+      if (key === 'FACTORY' && !this.data.isFactoryMode) {
+        return
+      }
       // HACK 特殊的照明按钮反转处理
       if (key === 'LIGHT_LAMP') {
         key = this.data._lastPowerKey === `${key}_OFF` ? `${key}_ON` : `${key}_OFF`
@@ -102,6 +107,9 @@ ComponentWithComputed({
 
       const addr = this.data.isFactoryMode ? FACTORY_ADDR : this.data.device.addr
       const payload = remoterProtocol.generalCmdString(CMD[key])
+
+      const { dir } = e.target.dataset
+      Logger.log('btnTap', key, dir, { payload, addr })
 
       // DEBUG 蓝牙连接模式
       if (this.data.device.connected) {
@@ -115,7 +123,9 @@ ComponentWithComputed({
         })
       }
 
-      console.log('btnTap', { key, payload, addr })
+      // 记录点击按键序列，作为进入调试模式的前置操作
+      this.data._keyQueue.shift()
+      this.data._keyQueue.push(dir)
     },
     async handleLongPress(e: WechatMiniprogram.TouchEvent) {
       if (!this.data._bleServer) {
@@ -123,7 +133,7 @@ ComponentWithComputed({
       }
 
       const key = `${e.target.dataset.key}_ACC` // 加上长按指令后缀
-      const addr = this.data.isFactoryMode ? '112233445566' : this.data.device.addr
+      const addr = this.data.isFactoryMode ? FACTORY_ADDR : this.data.device.addr
       const payload = remoterProtocol.generalCmdString(CMD[key])
 
       // DEBUG 蓝牙连接模式 TODO 定时连续发指令
@@ -155,7 +165,7 @@ ComponentWithComputed({
       }
       await stopAdvertising(this.data._bleServer)
 
-      const { addr } = this.data.device
+      const addr = this.data.isFactoryMode ? FACTORY_ADDR : this.data.device.addr
       bleAdvertisingEnd(this.data._bleServer, { addr })
       console.log('handleTouchEnd')
     },
@@ -190,8 +200,16 @@ ComponentWithComputed({
     },
 
     toggleDebug() {
-      // 只用于开发环境
+      // 只用于开发环境、体验环境
       if (this.data._envVersion === 'release') {
+        return
+      }
+
+      // 进入调试模式，按键序列满足上上下下左左右右
+      const q = this.data._keyQueue.join('')
+      this.data._keyQueue = ['', '', '', '', '', '', '', ''] // 清空
+      console.log('toggleDebug', q)
+      if (!this.data.isDebugMode && q !== 'UUDDLLRR') {
         return
       }
 

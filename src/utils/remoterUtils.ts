@@ -1,4 +1,4 @@
-import cryptoUtils from './remoterCrypto'
+// import cryptoUtils from './remoterCrypto'
 import remoterProtocol from './remoterProtocol'
 import { hideLoading, isAndroid, showLoading } from './app'
 import { delay, Logger } from '../utils/index'
@@ -35,19 +35,17 @@ export async function bleAdvertising(
   server: WechatMiniprogram.BLEPeripheralServer | null,
   params: { addr: string; payload: string; comId?: string; autoEnd?: boolean; INTERVAL?: number },
 ) {
-  const { addr, payload, comId = '0x4D11', INTERVAL = 800, autoEnd = true } = params
+  const { addr, payload, comId = '0x4D11', INTERVAL = 500, autoEnd = true } = params
   if (!server) {
     Logger.log('server is Not existed')
     return
   }
-  const manufacturerSpecificData = remoterProtocol.createAndroidBleRequest({ payload, addr })
-  const serviceUuids = remoterProtocol.createIOSBleRequest({ payload, addr, comId })
-  Logger.log('Android广播：', comId, cryptoUtils.ab2hex(manufacturerSpecificData).slice(0))
-  Logger.log('IOS广播：', serviceUuids)
-
   const advertiseRequest = {} as WechatMiniprogram.AdvertiseReqObj
 
   if (isAndroid()) {
+    const manufacturerSpecificData = remoterProtocol.createAndroidBleRequest({ payload, addr })
+    Logger.log('开始发送广播', comId) // , cryptoUtils.ab2hex(manufacturerSpecificData).slice(0)
+
     advertiseRequest.manufacturerData = [
       {
         manufacturerId: comId,
@@ -55,6 +53,9 @@ export async function bleAdvertising(
       },
     ]
   } else {
+    const serviceUuids = remoterProtocol.createIOSBleRequest({ payload, addr, comId })
+    Logger.log('开始发送广播')
+
     advertiseRequest.serviceUuids = serviceUuids
   }
 
@@ -79,14 +80,15 @@ export async function bleAdvertisingEnd(
   server: WechatMiniprogram.BLEPeripheralServer,
   params: { addr: string; comId?: string; INTERVAL?: number },
 ) {
-  const { addr, comId = '0x4D11', INTERVAL = 1000 } = params
+  const { addr, comId = '0x4D11', INTERVAL = 500 } = params
   const payload = remoterProtocol.generalCmdString(CMD.END) // 固定发这个指令
-  const manufacturerSpecificData = remoterProtocol.createAndroidBleRequest({ payload, addr })
-  const serviceUuids = remoterProtocol.createIOSBleRequest({ payload, addr, comId })
-
   const advertiseRequest = {} as WechatMiniprogram.AdvertiseReqObj
 
+  Logger.log('开始发送0x00广播')
+
   if (isAndroid()) {
+    const manufacturerSpecificData = remoterProtocol.createAndroidBleRequest({ payload, addr })
+
     advertiseRequest.manufacturerData = [
       {
         manufacturerId: comId,
@@ -94,6 +96,8 @@ export async function bleAdvertisingEnd(
       },
     ]
   } else {
+    const serviceUuids = remoterProtocol.createIOSBleRequest({ payload, addr, comId })
+
     advertiseRequest.serviceUuids = serviceUuids
   }
 
@@ -117,7 +121,7 @@ export function startAdvertising(
       powerLevel: 'high',
       advertiseRequest,
       success(res) {
-        Logger.log('广播成功', res)
+        Logger.log('广播发送成功')
         resolve(res)
       },
       fail(err) {
@@ -137,7 +141,7 @@ export function stopAdvertising(server: WechatMiniprogram.BLEPeripheralServer) {
   return new Promise((resolve, reject) => {
     server.stopAdvertising({
       success(res) {
-        Logger.log('广播停止成功', res)
+        Logger.log('停止广播成功')
         resolve(res)
       },
       fail(err) {
