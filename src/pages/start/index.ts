@@ -10,8 +10,8 @@ ComponentWithComputed({
     checkImg: '/assets/img/base/check.png',
     uncheckImg: '/assets/img/base/uncheck.png',
     shots: {
-      img0: '/assets/img/remoter/shot0.png',
-      img1: '/assets/img/remoter/shot1.png',
+      img0: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/shot0.png',
+      img1: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/shot1.png',
     },
     defaultPage: '',
     prevPages: 0,
