@@ -4,6 +4,9 @@ export const MIN_RSSI = -75
 // 搜寻超时时间
 export const SEEK_TIMEOUT = 3000
 
+// 工厂调试用Mac地址
+export const FACTORY_ADDR = '112233445566'
+
 /**
  * @description 设备交互数据配置，按设备类型区分
  * { deviceType: { deviceModel: { configDetail }}}

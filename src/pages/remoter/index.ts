@@ -14,6 +14,7 @@ ComponentWithComputed({
   data: {
     isWxBlePermit: false, // 微信蓝牙权限是否开启
     isSystemBlePermit: false, // 系统蓝牙权限是否开启
+    _envVersion: 'release', // 当前小程序环境，默认为发布版，用于屏蔽部分实验功能
     _listenLocationTimeId: 0, // 监听系统位置信息是否打开的计时器， 0为不存在监听
     statusBarHeight: storage.get<number>('statusBarHeight') as number,
     _localList: (storage.get('_localList') ?? {}) as Remoter.LocalList,
@@ -32,6 +33,7 @@ ComponentWithComputed({
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
     _timeId: -1,
     debugStr: '0000',
+    isDebugMode: false,
   },
 
   computed: {
@@ -143,6 +145,10 @@ ComponentWithComputed({
       // 搜索一轮设备
       // this.toSeek()
 
+      // 版本获取
+      const info = wx.getAccountInfoSync()
+      this.data._envVersion = info.miniProgram.envVersion
+
       // 根据通知,更新设备列表
       emitter.on('remoterChanged', () => {
         console.log('remoterChanged on IndexList')
@@ -185,6 +191,14 @@ ComponentWithComputed({
       }
 
       emitter.off('remoterChanged')
+    },
+
+    toggleDebug() {
+      if (this.data._envVersion === 'release') {
+        return
+      }
+
+      this.setData({ isDebugMode: !this.data.isDebugMode })
     },
 
     // 拖拽列表初始化

@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { CMD, deviceConfig } from '../../config/remoter'
+import { CMD, deviceConfig, FACTORY_ADDR } from '../../config/remoter'
 import { emitter, storage } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import {
@@ -10,6 +10,8 @@ import {
   stopAdvertising,
   BleService,
 } from '../../utils/remoterUtils'
+
+
 
 ComponentWithComputed({
   options: {
@@ -22,7 +24,9 @@ ComponentWithComputed({
    */
   data: {
     device: {} as IAnyObject,
-    envVersion: 'release', // 当前小程序环境，默认为发布版，用于屏蔽部分实验功能
+    isDebugMode: false,
+    isFactoryMode: false, // 工厂调试模式，按特定的地址发送指令
+    _envVersion: 'release', // 当前小程序环境，默认为发布版，用于屏蔽部分实验功能
     _localList: (storage.get<Remoter.LocalList>('_localList') ?? {}) as Remoter.LocalList,
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
     _bleService: null as BleService | null,
@@ -30,6 +34,9 @@ ComponentWithComputed({
   },
 
   computed: {
+    pageTitle(data) {
+      return data.isFactoryMode ? `${data.device.deviceName}|${FACTORY_ADDR}` : data.device.deviceName
+    },
     connectIcon(data) {
       return data.device.connected ? '/assets/img/base/scene-switch-btn.png' : '/assets/img/base/offline.png'
     },
@@ -61,10 +68,7 @@ ComponentWithComputed({
 
       // 版本获取
       const info = wx.getAccountInfoSync()
-
-      this.setData({
-        envVersion: info.miniProgram.envVersion,
-      })
+      this.data._envVersion = info.miniProgram.envVersion
     },
     onUnload() {
       emitter.off('remoterChanged')
@@ -98,9 +102,11 @@ ComponentWithComputed({
         this.data._lastPowerKey = key
       }
 
-      const { addr, connected } = this.data.device
+      const addr = this.data.isFactoryMode ? FACTORY_ADDR : this.data.device.addr
       const payload = remoterProtocol.generalCmdString(CMD[key])
-      if (connected) {
+
+      // DEBUG 蓝牙连接模式
+      if (this.data.device.connected) {
         await this.data._bleService?.sendCmd(payload)
       }
       // 广播控制指令
@@ -111,7 +117,7 @@ ComponentWithComputed({
         })
       }
 
-      console.log('btnTap', { key, payload, addr, connected })
+      console.log('btnTap', { key, payload, addr })
     },
     async handleLongPress(e: WechatMiniprogram.TouchEvent) {
       if (!this.data._bleServer) {
@@ -119,11 +125,11 @@ ComponentWithComputed({
       }
 
       const key = `${e.target.dataset.key}_ACC` // 加上长按指令后缀
-
-      const { addr, connected } = this.data.device
+      const addr = this.data.isFactoryMode ? '112233445566' : this.data.device.addr
       const payload = remoterProtocol.generalCmdString(CMD[key])
-      if (connected) {
-        // TODO 定时连续发指令
+
+      // DEBUG 蓝牙连接模式 TODO 定时连续发指令
+      if (this.data.device.connected) {
         await this.data._bleService?.sendCmd(payload)
         await this.data._bleService?.sendCmd(payload)
         await this.data._bleService?.sendCmd(payload)
@@ -164,7 +170,7 @@ ComponentWithComputed({
     },
 
     // 建立蓝牙连接（调试用）
-    async connectToggle() {
+    async toggleBleMode() {
       if (wx.vibrateShort) wx.vibrateShort({ type: 'light' })
 
       const { addr, connected } = this.data.device
@@ -183,6 +189,22 @@ ComponentWithComputed({
       const diffData = {} as IAnyObject
       diffData['device.connected'] = !connected
       this.setData(diffData)
+    },
+
+    toggleDebug() {
+      // 只用于开发环境
+      if (this.data._envVersion === 'release') {
+        return
+      }
+
+      // 切换调试模式，同时默认禁用工厂模式
+      this.setData({ isDebugMode: !this.data.isDebugMode, isFactoryMode: false })
+    },
+
+    toggleAddr() {
+      if (wx.vibrateShort) wx.vibrateShort({ type: 'light' })
+
+      this.setData({ isFactoryMode: !this.data.isFactoryMode })
     },
   },
 })
