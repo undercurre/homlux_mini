@@ -444,6 +444,8 @@ ComponentWithComputed({
             }
 
             deviceData.zigbeeAddCallback({ success: true })
+          } else {
+            Logger.debug(`【${data.deviceId}】非指定绑定设备推送成功`)
           }
         })
 
