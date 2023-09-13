@@ -30,8 +30,8 @@ ComponentWithComputed({
   data: {
     abilityList: {
       'midea.ir.201': [
-        { name: '有人移动', ability: { Occupancy: 1, modelName: 'irDetector' } },
-        { name: '超时无人移动', ability: { Occupancy: 0, PIRToUnoccupiedDelay: 10, modelName: 'irDetector' } },
+        { name: '有人移动', ability: { occupancy: 1, modelName: 'irDetector' } },
+        { name: '超时无人移动', ability: { occupancy: 0, PIRToUnoccupiedDelay: 10, modelName: 'irDetector' } },
         // { name: '环境光亮', ability: { IlluminanceLevelStatus: 2 } },
         // { name: '环境光暗', ability: { IlluminanceLevelStatus: 1 } },
       ],

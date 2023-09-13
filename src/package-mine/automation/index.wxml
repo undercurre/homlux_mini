@@ -11,7 +11,7 @@
     <view class="flex-1 flex flex-col items-between" wx:if="{{allRoomAutoSceneListComputed.length}}">
       <!-- catchtap="handleShowHomeSelectMenu" -->
       <view style="height: calc(96rpx + {{navigationBarAndStatusBarHeight}});" class="w-full fixed left-0 top-0 z-110 overflow-hidden">
-        <image src="/assets/img/home/bg.jpg" class="bg-image absolute z-111"></image>
+        <!-- <image src="/assets/img/home/bg.jpg" class="bg-image absolute z-111"></image> -->
         <view class="absolute left-0 w-638rpx h-96rpx flex justify-between items-center mx-56rpx z-112" style="top:{{navigationBarAndStatusBarHeight}}">
           <view class="flex flex-row justify-center items-center z-112">
             <!-- <text class="text-hex-1e2c46 text-48rpx font-semibold">{{'全部'}}</text> -->
