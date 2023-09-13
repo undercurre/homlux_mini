@@ -32,6 +32,7 @@ ComponentWithComputed({
     deviceList: [] as Remoter.DeviceItem[], // 我的设备
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
     _timeId: -1,
+    _lastPowerKey: '', // 记录上一次点击‘照明’时的指令键，用于反转处理
     debugStr: '0000',
     isDebugMode: false,
   },
@@ -111,7 +112,8 @@ ComponentWithComputed({
                 deviceType,
                 deviceModel,
                 switchStatus: 'off',
-                switchType: '小夜灯',
+                switchType: detail.quickControl.name!,
+                switchKey: detail.quickControl.key!,
                 saved: false,
               })
             }
@@ -123,8 +125,9 @@ ComponentWithComputed({
             diffData[`deviceList[${index}].discovered`] = rListIds.includes(device.addr)
           })
 
-          // TODO 目前只显示单一设备调试信息
-          const debugStr = `[recv]${rList[0]?.payload.toLocaleUpperCase()},${rList[0]?.RSSI}dBm`
+          // 显示设备调试信息
+          const rListRSSI = rList.map((r) => `${r?.manufacturerId}:${r?.RSSI}dBm`)
+          const debugStr = `[recv]${rListRSSI.join('|')}`
 
           diffData.foundList = foundList
           diffData.debugStr = debugStr
@@ -194,7 +197,7 @@ ComponentWithComputed({
     },
 
     toggleDebug() {
-      if (this.data._envVersion !== 'develop') {
+      if (this.data._envVersion === 'release') {
         return
       }
 
@@ -228,7 +231,8 @@ ComponentWithComputed({
           deviceType,
           deviceModel,
           switchStatus: 'off',
-          switchType: '小夜灯',
+          switchType: detail.quickControl.name!,
+          switchKey: detail.quickControl.key!,
           saved: true,
           discovered: false,
           connected: false,
@@ -356,59 +360,74 @@ ComponentWithComputed({
       }
     },
 
+    // 将新发现设备, 点击添加到我的设备
+    saveDevice(device: Remoter.DeviceItem) {
+      const { deviceType, deviceModel, deviceName, deviceId, addr } = device
+      const index = this.data.foundList.findIndex((device) => device.addr === addr)
+      const newDevice = this.data.foundList.splice(index, 1)[0]
+      const orderNum = this.data.deviceList.length
+      this.data.deviceList.push({
+        ...newDevice,
+        dragId: addr,
+        orderNum,
+        saved: true,
+        discovered: true,
+      })
+      console.log('saved deviceList', this.data.deviceList)
+
+      this.setData({
+        foundList: this.data.foundList,
+        deviceList: this.data.deviceList,
+      })
+
+      this.initDrag()
+
+      // 保存到前端缓存
+      this.data._localList[addr] = {
+        deviceId,
+        orderNum,
+        deviceType,
+        deviceModel,
+        deviceName,
+      }
+      storage.set('_localList', this.data._localList)
+    },
+
     // 点击设备卡片
     async handleCardTap(e: WechatMiniprogram.TouchEvent) {
-      const { deviceType, deviceModel, deviceName, saved, deviceId, addr } = e.detail
+      const { deviceType, deviceModel, saved, addr } = e.detail
       if (isNullOrUnDef(deviceType) || isNullOrUnDef(deviceModel)) {
         return
       }
 
-      // 新发现设备, 点击添加到我的设备
       if (!saved) {
-        const index = this.data.foundList.findIndex((device) => device.addr === addr)
-        const newDevice = this.data.foundList.splice(index, 1)[0]
-        const orderNum = this.data.deviceList.length
-        this.data.deviceList.push({
-          ...newDevice,
-          dragId: addr,
-          orderNum,
-          saved: true,
-          discovered: true,
-        })
-        console.log('this.data.deviceList', this.data.deviceList)
-
-        this.setData({
-          foundList: this.data.foundList,
-          deviceList: this.data.deviceList,
-        })
-
-        this.initDrag()
-
-        // 保存到前端缓存
-        this.data._localList[addr] = {
-          deviceId,
-          orderNum,
-          deviceType,
-          deviceModel,
-          deviceName,
-        }
-        storage.set('_localList', this.data._localList)
-
-        return
+        this.saveDevice(e.detail as Remoter.DeviceItem)
       }
-
       // 跳转到控制页
-      wx.navigateTo({
-        url: `/package-remoter/pannel/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceModel=${deviceModel}&addr=${addr}`,
-      })
+      else {
+        wx.navigateTo({
+          url: `/package-remoter/pannel/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceModel=${deviceModel}&addr=${addr}`,
+        })
+      }
     },
     // 点击设备按钮
     async handleControlTap(e: WechatMiniprogram.TouchEvent) {
-      console.log(e)
-      const { addr } = e.detail
+      console.log('handleControlTap', e.detail)
+
+      // 先触发本地保存，提高响应体验
+      if (!e.detail.saved) {
+        this.saveDevice(e.detail as Remoter.DeviceItem)
+      }
+
+      const { addr, switchKey } = e.detail
       // const addr = '18392c0c5566' // 模拟遥控器mac
 
-      const payload = remoterProtocol.generalCmdString(CMD.NIGHT_LAMP)
+      // HACK 特殊的照明按钮反转处理
+      let key = switchKey
+      if (key === 'LIGHT_LAMP') {
+        key = this.data._lastPowerKey === `${key}_OFF` ? `${key}_ON` : `${key}_OFF`
+      }
+      const payload = remoterProtocol.generalCmdString(CMD[key])
 
       // 建立BLE外围设备服务端
       if (!this.data._bleServer) {
@@ -420,10 +439,6 @@ ComponentWithComputed({
         addr,
         payload,
       })
-
-      if (!e.detail.saved) {
-        this.handleCardTap(e)
-      }
     },
     // 搜索设备
     toSeek() {
@@ -455,7 +470,7 @@ ComponentWithComputed({
       })
       this.setData({
         isSeeking: false,
-        isNotFound: !this.data.isNotFound,
+        isNotFound: true,
       })
     },
 

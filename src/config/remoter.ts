@@ -1,5 +1,5 @@
 // 搜寻蓝牙设备时的信号强度阈值(最小值)
-export const MIN_RSSI = -75
+export const MIN_RSSI = -55
 
 // 搜寻超时时间
 export const SEEK_TIMEOUT = 3000
@@ -81,6 +81,10 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
           name: '小夜灯',
         },
       ],
+      quickControl: {
+        key: 'LIGHT_LAMP',
+        name: '照明'
+      }
     },
     '02': {
       deviceName: '风扇灯',
@@ -141,6 +145,10 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
           name: '风扇',
         },
       ],
+      quickControl: {
+        key: 'LIGHT_NIGHT_LAMP',
+        name: '小夜灯'
+      }
     },
   },
   '26': {
@@ -215,6 +223,10 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
           name: '待机',
         },
       ],
+      quickControl: {
+        key: 'BATH_NIGHT_LAMP',
+        name: '小夜灯'
+      }
     },
   },
 }
@@ -224,10 +236,10 @@ export const CMD: Record<string, number> = {
   // 吸顶灯
   LIGHT_LAMP_ON: 0x06, // 开灯
   LIGHT_LAMP_OFF: 0x07, // 关灯
-  LIGHT_BRIGHT_PLUS_ACC: 0x0c, // 亮度+ 长按
-  LIGHT_BRIGHT_MINUS_ACC: 0x0a, // 亮度- 长按
-  LIGHT_COLOR_TEMP_PLUS_ACC: 0x05, // 色温+ 长按
-  LIGHT_COLOR_TEMP_MINUS_ACC: 0x01, // 色温- 长按
+  LIGHT_BRIGHT_PLUS_ACC: 0x3c, // 亮度+ 长按
+  LIGHT_BRIGHT_MINUS_ACC: 0x3a, // 亮度- 长按
+  LIGHT_COLOR_TEMP_PLUS_ACC: 0x35, // 色温+ 长按
+  LIGHT_COLOR_TEMP_MINUS_ACC: 0x31, // 色温- 长按
   LIGHT_BRIGHT_PLUS: 0x2c, // 亮度+ 短按
   LIGHT_BRIGHT_MINUS: 0x2a, // 亮度- 短按
   LIGHT_COLOR_TEMP_PLUS: 0x25, // 色温+ 短按
