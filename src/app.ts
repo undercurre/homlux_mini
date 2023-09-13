@@ -74,11 +74,6 @@ App<IAppOption>({
   },
 
   onShow() {
-    if (this.globalData.firstOnShow) {
-      this.globalData.firstOnShow = false
-      return
-    }
-
     // 用户热启动app，建立ws连接，并且再更新一次数据
     Logger.log('app-onShow, isConnect:', isConnect(), homeStore.currentHomeId)
     if (homeStore.currentHomeId && storage.get<string>('token') && isConnect()) {

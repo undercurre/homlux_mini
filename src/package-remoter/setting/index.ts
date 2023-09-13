@@ -104,7 +104,7 @@ ComponentWithComputed({
             delta: 2,
             complete() {
               emitter.emit('remoterChanged')
-            }
+            },
           })
         })
         .catch(() => {})

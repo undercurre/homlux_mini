@@ -83,8 +83,8 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
       ],
       quickControl: {
         key: 'LIGHT_LAMP',
-        name: '照明'
-      }
+        name: '照明',
+      },
     },
     '02': {
       deviceName: '风扇灯',
@@ -147,8 +147,8 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
       ],
       quickControl: {
         key: 'LIGHT_NIGHT_LAMP',
-        name: '小夜灯'
-      }
+        name: '小夜灯',
+      },
     },
   },
   '26': {
@@ -225,8 +225,8 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
       ],
       quickControl: {
         key: 'BATH_NIGHT_LAMP',
-        name: '小夜灯'
-      }
+        name: '小夜灯',
+      },
     },
   },
 }
