@@ -32,6 +32,7 @@ ComponentWithComputed({
     deviceList: [] as Remoter.DeviceItem[], // 我的设备
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
     _timeId: -1,
+    _lastPowerKey: '', // 记录上一次点击‘照明’时的指令键，用于反转处理
     debugStr: '0000',
     isDebugMode: false,
   },
@@ -111,7 +112,8 @@ ComponentWithComputed({
                 deviceType,
                 deviceModel,
                 switchStatus: 'off',
-                switchType: '小夜灯',
+                switchType: detail.quickControl.name!,
+                switchKey: detail.quickControl.key!,
                 saved: false,
               })
             }
@@ -229,7 +231,8 @@ ComponentWithComputed({
           deviceType,
           deviceModel,
           switchStatus: 'off',
-          switchType: '小夜灯',
+          switchType: detail.quickControl.name!,
+          switchKey: detail.quickControl.key!,
           saved: true,
           discovered: false,
           connected: false,
@@ -416,10 +419,15 @@ ComponentWithComputed({
         this.saveDevice(e.detail as Remoter.DeviceItem)
       }
 
-      const { addr } = e.detail
+      const { addr, switchKey } = e.detail
       // const addr = '18392c0c5566' // 模拟遥控器mac
 
-      const payload = remoterProtocol.generalCmdString(CMD.LIGHT_NIGHT_LAMP)
+      // HACK 特殊的照明按钮反转处理
+      let key = switchKey
+      if (key === 'LIGHT_LAMP') {
+        key = this.data._lastPowerKey === `${key}_OFF` ? `${key}_ON` : `${key}_OFF`
+      }
+      const payload = remoterProtocol.generalCmdString(CMD[key])
 
       // 建立BLE外围设备服务端
       if (!this.data._bleServer) {
@@ -462,7 +470,7 @@ ComponentWithComputed({
       })
       this.setData({
         isSeeking: false,
-        isNotFound: !this.data.isNotFound,
+        isNotFound: true,
       })
     },
 

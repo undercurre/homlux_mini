@@ -88,14 +88,23 @@ ComponentWithComputed({
       Dialog.confirm({
         title: '确定删除该设备？',
       })
-        .then(async () => {
+        .then(() => {
           Toast('删除成功')
-          delete this.data._localList[this.data.device.addr]
-          storage.set('_localList', this.data._localList)
-          emitter.emit('remoterChanged')
+          const newList = {} as Remoter.LocalList
+          Object.keys(this.data._localList).forEach((addr) => {
+            if (addr === this.data.device.addr) {
+              return
+            }
+            newList[addr] = this.data._localList[addr]
+          })
+          this.data._localList = newList
+          storage.set('_localList', newList)
 
           wx.navigateBack({
             delta: 2,
+            complete() {
+              emitter.emit('remoterChanged')
+            }
           })
         })
         .catch(() => {})

@@ -173,7 +173,7 @@ ComponentWithComputed({
       //处理三个传感器、场景和设备列表
       await Promise.all([
         sceneStore.updateAllRoomSceneList(),
-        deviceStore.updateAllRoomDeviceList(), //deviceStore.updateSubDeviceList(), // 
+        deviceStore.updateAllRoomDeviceList(), //deviceStore.updateSubDeviceList(), //
       ])
       const sensorList = deviceStore.allRoomDeviceFlattenList.filter((item) => item.proType === PRO_TYPE.sensor)
       sensorList.forEach((item) => {
