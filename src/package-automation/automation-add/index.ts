@@ -79,7 +79,7 @@ ComponentWithComputed({
 
     editingSensorType: 'midea.ir.201',
     editingSensorAbility: ['有人移动'],
-    editingSensorProperty: { Occupancy: 1, modelName: 'irDetector' } as IAnyObject,
+    editingSensorProperty: { occupancy: 1, modelName: 'irDetector' } as IAnyObject,
     editingUniId: '',
     editingDelayId: '',
     scrollTop: 0,
@@ -173,12 +173,12 @@ ComponentWithComputed({
       //处理三个传感器、场景和设备列表
       await Promise.all([
         sceneStore.updateAllRoomSceneList(),
-        deviceStore.updateAllRoomDeviceList(), //deviceStore.updateSubDeviceList(), // 
+        deviceStore.updateAllRoomDeviceList(), //deviceStore.updateSubDeviceList(), //
       ])
       const sensorList = deviceStore.allRoomDeviceFlattenList.filter((item) => item.proType === PRO_TYPE.sensor)
       sensorList.forEach((item) => {
         if (item.productId === SENSOR_TYPE.humanSensor) {
-          item.property = { Occupancy: 1, modelName: 'irDetector' }
+          item.property = { occupancy: 1, modelName: 'irDetector' }
         } else if (item.productId === SENSOR_TYPE.doorsensor) {
           item.property = { doorStatus: 1, modelName: 'magnet' }
         } else {
