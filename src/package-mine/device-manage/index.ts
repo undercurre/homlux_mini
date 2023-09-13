@@ -5,6 +5,7 @@ import pageBehavior from '../../behaviors/pageBehaviors'
 import { emitter, WSEventType } from '../../utils/eventBus'
 import { queryDeviceInfoByDeviceId } from '../../apis/index'
 import { runInAction } from 'mobx-miniprogram'
+import { PRO_TYPE, SCREEN_PID } from '../../config/index'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, deviceBinding] }), pageBehavior],
@@ -23,13 +24,19 @@ ComponentWithComputed({
 
   computed: {
     deviceListCompited(data) {
-      const list = data.allRoomDeviceList ? [...data.allRoomDeviceList].sort((a, b) => a.orderNum - b.orderNum) : []
+      const list = data.allRoomDeviceList?.length ? [...data.allRoomDeviceList] : []
+      const rst = list
+        .sort((a, b) => a.orderNum - b.orderNum)
+        // 过滤智慧屏按键
+        .filter(
+          (d) => (d.proType === PRO_TYPE.switch && !SCREEN_PID.includes(d.productId)) || d.proType !== PRO_TYPE.switch,
+        )
       if (data.roomSelect === '0') {
-        return list
+        return rst
       } else if (data.roomSelect === '-1') {
-        return list.filter((d: Device.DeviceItem) => !d.onLineStatus)
+        return rst.filter((d) => !d.onLineStatus)
       } else {
-        return list.filter((d: Device.DeviceItem) => d.roomId === data.roomSelect)
+        return rst.filter((d: Device.DeviceItem) => d.roomId === data.roomSelect)
       }
     },
   },
