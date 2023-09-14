@@ -81,10 +81,16 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
           name: '小夜灯',
         },
       ],
-      quickControl: {
-        key: 'LIGHT_LAMP',
-        name: '照明',
-      },
+      actions: [
+        {
+          key: 'LIGHT_NIGHT_LAMP',
+          name: '小夜灯',
+        },
+        {
+          key: 'LIGHT_LAMP',
+          name: '照明',
+        },
+      ],
     },
     '02': {
       deviceName: '风扇灯',
@@ -145,10 +151,12 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
           name: '风扇',
         },
       ],
-      quickControl: {
-        key: 'LIGHT_NIGHT_LAMP',
-        name: '小夜灯',
-      },
+      actions: [
+        {
+          key: 'LIGHT_NIGHT_LAMP',
+          name: '小夜灯',
+        },
+      ],
     },
   },
   '26': {
@@ -223,10 +231,28 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
           name: '待机',
         },
       ],
-      quickControl: {
-        key: 'BATH_NIGHT_LAMP',
-        name: '小夜灯',
-      },
+      actions: [
+        {
+          key: 'BATH_WARM_SOFT',
+          name: '取暖',
+        },
+        {
+          key: 'BATH_WIND',
+          name: '吹风',
+        },
+        {
+          key: 'BATH_VENTILATE',
+          name: '换气',
+        },
+        {
+          key: 'BATH_DRY',
+          name: '干燥',
+        },
+        {
+          key: 'BATH_LAMP',
+          name: '照明',
+        },
+      ],
     },
   },
 }

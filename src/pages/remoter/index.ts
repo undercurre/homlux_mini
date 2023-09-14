@@ -1,13 +1,24 @@
-import pageBehavior from '../../behaviors/pageBehaviors'
+import pageBehaviors from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Dialog from '@vant/weapp/dialog/dialog'
-import { isAndroid, Logger, checkWxBlePermission, storage, unique, isNullOrUnDef, emitter } from '../../utils/index'
+import {
+  isAndroid,
+  Logger,
+  checkWxBlePermission,
+  storage,
+  unique,
+  isNullOrUnDef,
+  emitter,
+  delay,
+} from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import { createBleServer, bleAdvertising } from '../../utils/remoterUtils'
 import { deviceConfig, MIN_RSSI, SEEK_TIMEOUT, CMD } from '../../config/remoter'
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import { remoterStore, remoterBinding } from '../../store/index'
 
 ComponentWithComputed({
-  behaviors: [pageBehavior],
+  behaviors: [BehaviorWithStore({ storeBindings: [remoterBinding] }), pageBehaviors],
   /**
    * 页面的初始数据
    */
@@ -29,25 +40,15 @@ ComponentWithComputed({
     isSeeking: false, // 正在搜索设备
     isNotFound: false, // 已搜索过至少一次但未找到
     foundList: [] as Remoter.DeviceItem[], // 搜索到的设备
-    deviceList: [] as Remoter.DeviceItem[], // 我的设备
+    listState: {} as Record<string, boolean>, // 设备状态映射
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
     _timeId: -1,
     _lastPowerKey: '', // 记录上一次点击‘照明’时的指令键，用于反转处理
-    debugStr: '0000',
+    debugStr: '[recv]',
     isDebugMode: false,
   },
 
-  computed: {
-    deviceIds(data) {
-      return data.deviceList.map((device) => device.deviceId)
-    },
-    deviceAddrs(data) {
-      return data.deviceList.map((device) => device.addr)
-    },
-    deviceNames(data) {
-      return data.deviceList.map((device) => device.deviceName)
-    },
-  },
+  computed: {},
 
   methods: {
     async onLoad() {
@@ -72,71 +73,64 @@ ComponentWithComputed({
       // 监听扫描到新设备事件
       wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
         // console.log('onBluetoothDeviceFound', res)
-        const rList = unique(res.devices, 'deviceId') // 过滤重复设备信息
-          .map((item) => remoterProtocol.searchDeviceCallBack(item))
-          .filter((item) => !!item)
+        const recoveredList =
+          unique(res.devices, 'deviceId') // 过滤重复设备
+            .map((item) => remoterProtocol.searchDeviceCallBack(item)) // 过滤不支持的设备
+            .filter((item) => !!item) || []
 
-        console.log('搜寻到的设备列表：', rList)
+        console.log('搜寻到的设备列表：', recoveredList)
 
-        if (rList.length) {
-          // 终止搜寻
-          this.endSeek()
+        // 找到设备，即终止搜寻
+        this.endSeek()
 
-          const diffData = {} as IAnyObject
+        const foundList = [] as Remoter.DeviceItem[]
+        recoveredList.forEach((item) => {
+          const isSavedDevice = remoterStore.deviceAddrs.includes(item!.addr)
+          // 刷新发现设备列表
+          if (
+            item!.RSSI >= MIN_RSSI && // 过滤弱信号设备
+            !isSavedDevice // 排除已在我的设备列表的设备
+          ) {
+            const deviceType = item!.deviceType
+            const deviceModel = item!.deviceModel
+            const detail = deviceConfig[deviceType][deviceModel]
+            // 同品类同型号设备的数量
+            const deviceCount = remoterStore.remoterList.filter(
+              (device) => device.deviceType === deviceType && device.deviceModel === deviceModel,
+            ).length
+            // 加上编号后缀，以避免同名混淆
+            const deviceName = remoterStore.deviceNames.includes(detail.deviceName)
+              ? detail.deviceName + (deviceCount + 1)
+              : detail.deviceName
 
-          const foundList = [] as Remoter.DeviceItem[]
-          rList.forEach((item) => {
-            const isSavedDevice = this.data.deviceAddrs.includes(item!.addr)
-            // 刷新发现设备列表
-            if (
-              item!.RSSI >= MIN_RSSI && // 过滤弱信号设备
-              !isSavedDevice // 排除已在我的设备列表的设备
-            ) {
-              const deviceType = item!.deviceType
-              const deviceModel = item!.deviceModel
-              const detail = deviceConfig[deviceType][deviceModel]
-              // 同品类同型号设备的数量
-              const deviceCount = this.data.deviceList.filter(
-                (device) => device.deviceType === deviceType && device.deviceModel === deviceModel,
-              ).length
-              // 加上编号后缀，以避免同名混淆
-              const deviceName = this.data.deviceNames.includes(detail.deviceName)
-                ? detail.deviceName + (deviceCount + 1)
-                : detail.deviceName
+            foundList.push({
+              deviceId: item!.deviceId,
+              addr: item!.addr,
+              devicePic: detail.devicePic,
+              deviceName,
+              deviceType,
+              deviceModel,
+              switchStatus: 'off',
+              saved: false,
+              defaultAction: 0,
+            })
+          }
+        })
 
-              foundList.push({
-                deviceId: item!.deviceId,
-                addr: item!.addr,
-                devicePic: detail.devicePic,
-                deviceName,
-                deviceType,
-                deviceModel,
-                switchStatus: 'off',
-                switchType: detail.quickControl.name!,
-                switchKey: detail.quickControl.key!,
-                saved: false,
-              })
-            }
-          })
+        // 刷新我的设备列表
+        const rListIds = recoveredList.map((r) => r!.addr)
+        remoterStore.renewRmState(rListIds)
 
-          // 刷新我的设备列表
-          const rListIds = rList.map((r) => r?.addr)
-          this.data.deviceList.forEach((device, index) => {
-            diffData[`deviceList[${index}].discovered`] = rListIds.includes(device.addr)
-          })
+        // 显示设备调试信息
+        const rListRSSI = recoveredList.map((r) => `${r?.manufacturerId}:${r?.RSSI}dBm`)
+        const debugStr = `[recv]${rListRSSI.join('|')}`
 
-          // 显示设备调试信息
-          const rListRSSI = rList.map((r) => `${r?.manufacturerId}:${r?.RSSI}dBm`)
-          const debugStr = `[recv]${rListRSSI.join('|')}`
+        this.setData({
+          foundList,
+          debugStr,
+        })
 
-          diffData.foundList = foundList
-          diffData.debugStr = debugStr
-          console.log('diffData', diffData)
-
-          this.setData(diffData)
-
-          this.initDrag()
-        }
+        this.initDrag()
       })
 
       // 监听蓝牙连接值变化
@@ -205,44 +199,21 @@ ComponentWithComputed({
     },
 
     // 拖拽列表初始化
-    initDrag() {
-      if (!this.data.deviceList.length) {
+    async initDrag() {
+      if (!remoterStore.hasRemoter) {
         return
       }
+
+      // 有可能视图未更新，需要先等待nextTick
+      await delay(0)
+
       const drag = this.selectComponent('#drag')
       drag.init()
     },
 
     // 从storage初始化我的设备列表
     initDeviceList() {
-      const deviceList = [] as Remoter.DeviceItem[]
-      for (const addr in this.data._localList) {
-        const { deviceModel, deviceType, orderNum, deviceName, deviceId } = this.data._localList[addr]
-        if (!deviceModel || !deviceType) return
-
-        const detail = deviceConfig[deviceType][deviceModel]
-        deviceList.push({
-          dragId: addr,
-          deviceId,
-          addr,
-          orderNum: orderNum ?? 0,
-          devicePic: detail.devicePic,
-          deviceName: deviceName ?? detail.deviceName,
-          deviceType,
-          deviceModel,
-          switchStatus: 'off',
-          switchType: detail.quickControl.name!,
-          switchKey: detail.quickControl.key!,
-          saved: true,
-          discovered: false,
-          connected: false,
-        })
-      }
-
-      this.setData({
-        deviceList: deviceList.sort((a, b) => a.orderNum! - b.orderNum!),
-      })
-
+      remoterStore.retrieveRmStore()
       this.initDrag()
     },
 
@@ -362,35 +333,22 @@ ComponentWithComputed({
 
     // 将新发现设备, 点击添加到我的设备
     saveDevice(device: Remoter.DeviceItem) {
-      const { deviceType, deviceModel, deviceName, deviceId, addr } = device
+      const { addr } = device
       const index = this.data.foundList.findIndex((device) => device.addr === addr)
       const newDevice = this.data.foundList.splice(index, 1)[0]
-      const orderNum = this.data.deviceList.length
-      this.data.deviceList.push({
-        ...newDevice,
-        dragId: addr,
-        orderNum,
-        saved: true,
-        discovered: true,
-      })
-      console.log('saved deviceList', this.data.deviceList)
+      const orderNum = remoterStore.remoterList.length
 
-      this.setData({
-        foundList: this.data.foundList,
-        deviceList: this.data.deviceList,
+      remoterStore.addRemoter({
+        ...newDevice,
+        orderNum,
+        defaultAction: 0,
       })
 
       this.initDrag()
 
-      // 保存到前端缓存
-      this.data._localList[addr] = {
-        deviceId,
-        orderNum,
-        deviceType,
-        deviceModel,
-        deviceName,
-      }
-      storage.set('_localList', this.data._localList)
+      this.setData({
+        foundList: this.data.foundList,
+      })
     },
 
     // 点击设备卡片
@@ -419,11 +377,11 @@ ComponentWithComputed({
         this.saveDevice(e.detail as Remoter.DeviceItem)
       }
 
-      const { addr, switchKey } = e.detail
+      const { addr, actions, defaultAction } = e.detail
       // const addr = '18392c0c5566' // 模拟遥控器mac
 
       // HACK 特殊的照明按钮反转处理
-      let key = switchKey
+      let { key } = actions[defaultAction]
       if (key === 'LIGHT_LAMP') {
         key = this.data._lastPowerKey === `${key}_OFF` ? `${key}_ON` : `${key}_OFF`
       }
@@ -474,31 +432,31 @@ ComponentWithComputed({
       })
     },
 
-    // 获取已连接的设备 暂时用不着
-    async getConnectedDevices() {
-      const services = Object.keys(this.data._localList)
-        .map((addr) => this.data._localList[addr].serviceId)
-        .filter((service) => !!service) as string[]
+    // 获取已建立连接的设备 暂时用不着
+    // async getConnectedDevices() {
+    //   const services = Object.keys(this.data._localList)
+    //     .map((addr) => this.data._localList[addr].serviceId)
+    //     .filter((service) => !!service) as string[]
 
-      const res = await wx.getConnectedBluetoothDevices({
-        services,
-      })
-      console.log('getConnectedBluetoothDevices', res)
+    //   const res = await wx.getConnectedBluetoothDevices({
+    //     services,
+    //   })
+    //   console.log('getConnectedBluetoothDevices', res)
 
-      // 更新已连接状态
-      if (res.devices?.length) {
-        const servicesList = res.devices.map((item) => item.deviceId)
+    //   // 更新已连接状态
+    //   if (res.devices?.length) {
+    //     const servicesList = res.devices.map((item) => item.deviceId)
 
-        const diffData = {} as IAnyObject
-        this.data.deviceList.forEach((device, index) => {
-          if (servicesList.includes(device.deviceId)) {
-            diffData[`deviceList[${index}].connected`] = true
-          }
-        })
-        this.setData(diffData)
-        this.initDrag()
-      }
-    },
+    //     const diffData = {} as IAnyObject
+    //     this.data.deviceList.forEach((device, index) => {
+    //       if (servicesList.includes(device.deviceId)) {
+    //         diffData[`deviceList[${index}].connected`] = true
+    //       }
+    //     })
+    //     this.setData(diffData)
+    //     this.initDrag()
+    //   }
+    // },
 
     onPageScroll(e: { detail: { scrollTop: number } }) {
       this.setData({
@@ -512,18 +470,12 @@ ComponentWithComputed({
      */
     async handleSortEnd(e: { detail: { listData: Remoter.DeviceItem[] } }) {
       // 更新列表数据
-      this.setData({
-        deviceList: e.detail.listData.map((item, index) => ({
+      remoterStore.saveRmStore(
+        e.detail.listData.map((item, index) => ({
           ...item,
           orderNum: index,
         })),
-      })
-
-      // 排序缓存在前端
-      this.data.deviceList.forEach((d) => {
-        this.data._localList[d.addr].orderNum = d.orderNum
-      })
-      storage.set('_localList', this.data._localList)
+      )
     },
     // 取消新手提示
     cancelTips() {

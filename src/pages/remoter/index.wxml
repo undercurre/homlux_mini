@@ -13,7 +13,7 @@
   <image src="/assets/img/home/bg.jpg" style="width: 100vw; height: 100vh"></image>
 </view>
 
-<view wx:if="{{foundList.length === 0 && deviceList.length === 0}}" class="mt-80rpx flex flex-col items-center">
+<view wx:if="{{foundList.length === 0 && !hasRemoter}}" class="mt-80rpx flex flex-col items-center">
   <tips-box text="没有发现新设备～" icon="/assets/img/default-img/no-found.png"></tips-box>
 
   <block wx:if="{{isNotFound}}">
@@ -40,13 +40,11 @@
 
   <card wx:for="{{foundList}}" item="{{item}}" wx:key="index" bind:cardTap="handleCardTap" bind:controlTap="handleControlTap"></card>
 
-  <block wx:if="{{deviceList.length > 0}}">
-    <view class="pt-48rpx">
-      <text class="ml-40rpx text-hex-6e6f74 text-28">我的设备</text>
-    </view>
+  <view class="pt-48rpx">
+    <text class="ml-40rpx text-hex-6e6f74 text-28">我的设备</text>
+  </view>
 
-    <drag id="drag" list-data="{{deviceList}}" item-height="{{184}}" scroll-top="{{scrollTop}}" generic:item="card" bind:cardTap="handleCardTap" bind:controlTap="handleControlTap" bind:sortend="handleSortEnd" bind:exec="handleCardTap"></drag>
-  </block>
+  <drag id="drag" list-data="{{remoterViewList}}" item-height="{{184}}" scroll-top="{{scrollTop}}" generic:item="card" bind:cardTap="handleCardTap" bind:controlTap="handleControlTap" bind:sortend="handleSortEnd" bind:exec="handleCardTap"></drag>
 
   <view class="w-full flex-center pb-40rpx mt-20rpx">
     <template is="btn" data="{{ isSeeking: isSeeking }}"></template>

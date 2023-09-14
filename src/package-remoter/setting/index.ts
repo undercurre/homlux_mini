@@ -1,12 +1,13 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import pageBehavior from '../../behaviors/pageBehaviors'
+import pageBehaviors from '../../behaviors/pageBehaviors'
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
-import { deviceConfig } from '../../config/remoter'
 import { storage, emitter } from '../../utils/index'
+import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import { remoterStore, remoterBinding } from '../../store/index'
 
 ComponentWithComputed({
-  behaviors: [pageBehavior],
+  behaviors: [BehaviorWithStore({ storeBindings: [remoterBinding] }), pageBehaviors],
   /**
    * 页面的初始数据
    */
@@ -15,31 +16,14 @@ ComponentWithComputed({
     isShowSetting: false,
     fastSwitchName: '照明开关',
     _localList: (storage.get<Remoter.LocalList>('_localList') ?? {}) as Remoter.LocalList,
-    device: {} as IAnyObject,
   },
 
-  computed: {
-    settingActions() {
-      const actions = [
-        {
-          name: '小夜灯',
-        },
-        {
-          name: '照明',
-        },
-      ]
-
-      return actions
-    },
-  },
+  computed: {},
 
   methods: {
     async onLoad(query: { deviceType: string; deviceModel: string; addr: string }) {
       const { deviceType, deviceModel, addr } = query
-      const deviceName = this.data._localList[addr].deviceName ?? deviceConfig[deviceType][deviceModel]
-      this.setData({
-        device: { ...deviceConfig[deviceType][deviceModel], deviceName, addr },
-      })
+      this.setData({ deviceType, deviceModel, addr })
     },
 
     handleDeviceNameEditPopup() {
@@ -54,17 +38,14 @@ ComponentWithComputed({
     },
     handleDeviceNameEditConfirm(e: { detail: string }) {
       const deviceName = e.detail
-      this.data._localList[this.data.device.addr].deviceName = deviceName
-      storage.set('_localList', this.data._localList)
-      emitter.emit('remoterChanged')
+
+      remoterStore.renameCurRemoter(deviceName)
 
       this.setData({
         showEditNamePopup: false,
-        device: {
-          ...this.data.device,
-          deviceName,
-        },
       })
+
+      emitter.emit('remoterChanged')
     },
     toSetting() {
       this.setData({
@@ -77,12 +58,11 @@ ComponentWithComputed({
       })
     },
     onSelectSetting(e: WechatMiniprogram.CustomEvent) {
-      const name = e.detail.name
+      const actions = remoterStore.curRemoter.actions
+      const index = actions.findIndex((action) => action.name === e.detail.name)
+      console.log('onSelectSetting', e.detail.name, index)
 
-      this.setData({
-        isShowSetting: false,
-        fastSwitchName: name,
-      })
+      remoterStore.changeAction(index)
     },
     handleDeviceDelete() {
       Dialog.confirm({
@@ -90,15 +70,7 @@ ComponentWithComputed({
       })
         .then(() => {
           Toast('删除成功')
-          const newList = {} as Remoter.LocalList
-          Object.keys(this.data._localList).forEach((addr) => {
-            if (addr === this.data.device.addr) {
-              return
-            }
-            newList[addr] = this.data._localList[addr]
-          })
-          this.data._localList = newList
-          storage.set('_localList', newList)
+          remoterStore.removeCurRemoter()
 
           wx.navigateBack({
             delta: 2,

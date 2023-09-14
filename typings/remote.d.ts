@@ -12,11 +12,10 @@ declare namespace Remoter {
     deviceType: string // 设备品类
     deviceModel: string // 设备型号
     switchStatus: string // 快捷开关状态
-    switchType: string // 快捷开关类型 TODO 改为按命令索引
-    switchKey: string // 快捷开关key
     saved: boolean // 是否已保存在本地（我的设备）
     discovered?: boolean // 是否被搜索到, 用于我的设备列表
     connected?: boolean // 是否与设备建立连接
+    defaultAction: number // 默认首页开关索引
   }
 
   interface ButtonRes {
@@ -32,11 +31,13 @@ declare namespace Remoter {
     joystick: Record<string, ButtonRes>
     mList: ButtonRes[]
     bList: ButtonRes[]
-    quickControl: ButtonRes
+    actions: ButtonRes[]
   }
 
   type LocalList = Record<
     string,
     Pick<DeviceItem, 'deviceModel' | 'deviceType' | 'orderNum' | 'deviceName' | 'deviceId'> & { serviceId?: string }
   >
+
+  type DeviceDetail = DeviceItem & ConfigItem
 }

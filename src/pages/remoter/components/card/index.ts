@@ -18,10 +18,11 @@ ComponentWithComputed({
     },
     desc(data) {
       const device = data.item?.data ?? data.item
+      const action = device.actions[device.defaultAction]
       if (device?.saved === true) {
         const statusText = device.switchStatus === 'on' ? '开启' : '关闭'
         const connectText = device.connected ? '|已连接' : ''
-        return `${device.switchType}${statusText}${connectText}`
+        return `${action.name}${statusText}${connectText}`
       }
       return '未连接'
     },
@@ -29,6 +30,10 @@ ComponentWithComputed({
       const device = data.item?.data ?? data.item
       const iconName = device.discovered === false ? 'bleOff' : 'bleOn'
       return `/assets/img/base/${iconName}.png`
+    },
+    action(data) {
+      const device = data.item?.data ?? data.item
+      return device.actions[device.defaultAction]
     },
   },
 
