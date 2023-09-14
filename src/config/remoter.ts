@@ -191,7 +191,7 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
           name: '安心沐浴',
         },
         {
-          key: 'BATH_AUTO',
+          key: 'BATH_WIND',
           icon: '/package-remoter/assets/scene91.png',
           iconActive: '/package-remoter/assets/scene90.png',
           name: '吹风',

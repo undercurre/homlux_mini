@@ -108,7 +108,7 @@ export async function bleAdvertisingEnd(
 }
 
 /**
- * @description 将server.startAdvertising封装为Promise
+ * @description 将 server.startAdvertising 封装为Promise
  * @param server
  * @param advertiseRequest
  */

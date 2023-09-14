@@ -57,6 +57,7 @@ ComponentWithComputed({
       this.data._bleServer = await createBleServer()
 
       // 根据通知,更新设备列表
+      // FIXME 删除设备时，IOS下仍会触发本更新，导致报错
       emitter.on('remoterChanged', () => {
         console.log('remoterChanged on Pannel')
 
