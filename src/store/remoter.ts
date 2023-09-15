@@ -6,9 +6,6 @@ export const remoterStore = observable({
   // 我的设备列表，只需要保存部分属性
   remoterList: [] as Remoter.DeviceItem[],
 
-  // 遥控器状态映射（目前仅包括发现状态）
-  listState: {} as Record<string, boolean>,
-
   // 当前详情页 addr
   curAddr: '',
 
@@ -45,14 +42,9 @@ export const remoterStore = observable({
           ...device,
           dragId: addr,
           devicePic,
-          switchStatus: 'off', // TODO
           actions,
-          // switchType: actions[0].name!,
-          // switchKey: actions[0].key!,
-
           saved: true,
           connected: false,
-          discovered: this.listState[addr],
         }
       })
       .sort((a, b) => a.orderNum! - b.orderNum!)
@@ -85,13 +77,32 @@ export const remoterStore = observable({
   },
 
   // 更新遥控器状态
-  renewRmState(discoveredList: string[]) {
-    const state = {} as Record<string, boolean>
-    this.remoterList.forEach(({ addr }) => {
-      state[addr] = discoveredList.includes(addr)
+  renewRmState(recoveredList: Remoter.DeviceRx[]) {
+    const rListIds = recoveredList.map((r) => r!.addr)
+
+    const list = this.remoterList.map((device) => {
+      const { deviceModel, deviceType, addr, defaultAction } = device
+      const { actions } = deviceConfig[deviceType][deviceModel]
+      const isDiscovered = rListIds.includes(addr)
+      const actionKey = actions[defaultAction].key ?? ''
+
+      let actionStatus = false
+      if (isDiscovered) {
+        const rd = recoveredList.find((d) => d.addr === addr)
+        const { deviceAttr } = rd!
+        actionStatus = deviceAttr[actionKey] ?? false
+      }
+
+      return {
+        ...device,
+        actionStatus,
+        DISCOVERED: isDiscovered ? 1 : 0,
+      }
     })
+
+    console.log('renewRmState', list)
     runInAction(() => {
-      this.listState = state
+      this.remoterList = list
     })
   },
 

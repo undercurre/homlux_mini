@@ -40,7 +40,6 @@ ComponentWithComputed({
     isSeeking: false, // 正在搜索设备
     isNotFound: false, // 已搜索过至少一次但未找到
     foundList: [] as Remoter.DeviceItem[], // 搜索到的设备
-    listState: {} as Record<string, boolean>, // 设备状态映射
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
     _timeId: -1,
     _lastPowerKey: '', // 记录上一次点击‘照明’时的指令键，用于反转处理
@@ -83,7 +82,7 @@ ComponentWithComputed({
         // 找到设备，即终止搜寻
         this.endSeek()
 
-        const foundList = [] as Remoter.DeviceItem[]
+        const foundList = [] as Remoter.DeviceDetail[]
         recoveredList.forEach((item) => {
           const isSavedDevice = remoterStore.deviceAddrs.includes(item!.addr)
           // 刷新发现设备列表
@@ -93,33 +92,34 @@ ComponentWithComputed({
           ) {
             const deviceType = item!.deviceType
             const deviceModel = item!.deviceModel
-            const detail = deviceConfig[deviceType][deviceModel]
+            const config = deviceConfig[deviceType][deviceModel]
             // 同品类同型号设备的数量
             const deviceCount = remoterStore.remoterList.filter(
               (device) => device.deviceType === deviceType && device.deviceModel === deviceModel,
             ).length
             // 加上编号后缀，以避免同名混淆
-            const deviceName = remoterStore.deviceNames.includes(detail.deviceName)
-              ? detail.deviceName + (deviceCount + 1)
-              : detail.deviceName
+            const deviceName = remoterStore.deviceNames.includes(config.deviceName)
+              ? config.deviceName + (deviceCount + 1)
+              : config.deviceName
 
+            // 更新发现设备列表
             foundList.push({
               deviceId: item!.deviceId,
               addr: item!.addr,
-              devicePic: detail.devicePic,
+              devicePic: config.devicePic,
+              actions: config.actions,
               deviceName,
               deviceType,
               deviceModel,
-              switchStatus: 'off',
+              actionStatus: false,
               saved: false,
               defaultAction: 0,
             })
           }
         })
 
-        // 刷新我的设备列表
-        const rListIds = recoveredList.map((r) => r!.addr)
-        remoterStore.renewRmState(rListIds)
+        // 更新我的设备列表
+        remoterStore.renewRmState(recoveredList as Remoter.DeviceRx[])
 
         // 显示设备调试信息
         const rListRSSI = recoveredList.map((r) => `${r?.manufacturerId}:${r?.RSSI}dBm`)
