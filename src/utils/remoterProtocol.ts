@@ -2,14 +2,14 @@ import cryptoUtils from './remoterCrypto'
 import { deviceConfig } from '../config/remoter'
 
 // bit位定义
-export const BIT_0 = 0x01 << 0; //1     0x01
-export const BIT_1 = 0x01 << 1; //2     0x02
-export const BIT_2 = 0x01 << 2; //4     0x04
-export const BIT_3 = 0x01 << 3; //8     0x08
-export const BIT_4 = 0x01 << 4; //16    0x10
-export const BIT_5 = 0x01 << 5; //32    0x20
-export const BIT_6 = 0x01 << 6; //64    0x40
-export const BIT_7 = 0x01 << 7; //128    0x80
+export const BIT_0 = 0x01 << 0 //1     0x01
+export const BIT_1 = 0x01 << 1 //2     0x02
+export const BIT_2 = 0x01 << 2 //4     0x04
+export const BIT_3 = 0x01 << 3 //8     0x08
+export const BIT_4 = 0x01 << 4 //16    0x10
+export const BIT_5 = 0x01 << 5 //32    0x20
+export const BIT_6 = 0x01 << 6 //64    0x40
+export const BIT_7 = 0x01 << 7 //128    0x80
 
 // 遥控器支持设备列表
 const SUPPORT_LIST = Object.keys(deviceConfig)
@@ -41,7 +41,7 @@ const _searchDeviceCallBack = (device: WechatMiniprogram.BlueToothDevice) => {
     addr,
     deviceModel,
     payload,
-    deviceAttr: _parsePayload(payload, deviceType)
+    deviceAttr: _parsePayload(payload, deviceType),
   }
 }
 
@@ -78,16 +78,16 @@ const _parsePayload = (payload: string, deviceType: string) => {
   const rxBuf = new ArrayBuffer(payload.length) // 申请内存
   const rxU16 = new Uint16Array(rxBuf)
   for (let i = 0; i < payload.length / 2; ++i) {
-    rxU16[i] = parseInt(payload.slice(i*2, i*2 + 2), 16)
+    rxU16[i] = parseInt(payload.slice(i * 2, i * 2 + 2), 16)
   }
 
   if (deviceType === '26') {
     return {
-      BATH_WARM: !! (rxU16[4] & BIT_5),
-      BATH_WIND: !! (rxU16[4] & BIT_2),
-      BATH_VENTILATE: !! (rxU16[4] & BIT_1),
-      BATH_DRY: !! (rxU16[4] & BIT_0),
-      BATH_LAMP: !! (rxU16[1] & BIT_0)
+      BATH_WARM: !!(rxU16[4] & BIT_5),
+      BATH_WIND: !!(rxU16[4] & BIT_2),
+      BATH_VENTILATE: !!(rxU16[4] & BIT_1),
+      BATH_DRY: !!(rxU16[4] & BIT_0),
+      BATH_LAMP: !!(rxU16[1] & BIT_0),
     }
   }
   return {}

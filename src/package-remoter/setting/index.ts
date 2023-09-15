@@ -15,7 +15,6 @@ ComponentWithComputed({
     showEditNamePopup: false,
     isShowSetting: false,
     fastSwitchName: '照明开关',
-    _localList: (storage.get<Remoter.LocalList>('_localList') ?? {}) as Remoter.LocalList,
   },
 
   computed: {},
@@ -63,6 +62,7 @@ ComponentWithComputed({
       console.log('onSelectSetting', e.detail.name, index)
 
       remoterStore.changeAction(index)
+      emitter.emit('remoterChanged')
     },
     handleDeviceDelete() {
       Dialog.confirm({

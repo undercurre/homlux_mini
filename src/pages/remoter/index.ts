@@ -28,7 +28,6 @@ ComponentWithComputed({
     _envVersion: 'release', // 当前小程序环境，默认为发布版，用于屏蔽部分实验功能
     _listenLocationTimeId: 0, // 监听系统位置信息是否打开的计时器， 0为不存在监听
     statusBarHeight: storage.get<number>('statusBarHeight') as number,
-    _localList: (storage.get('_localList') ?? {}) as Remoter.LocalList,
     scrollTop: 0,
     scrollViewHeight:
       (storage.get<number>('windowHeight') as number) -
@@ -140,7 +139,7 @@ ComponentWithComputed({
       // })
 
       // 搜索一轮设备
-      // this.toSeek()
+      this.toSeek()
 
       // 版本获取
       const info = wx.getAccountInfoSync()
@@ -149,18 +148,14 @@ ComponentWithComputed({
       // 根据通知,更新设备列表
       emitter.on('remoterChanged', () => {
         console.log('remoterChanged on IndexList')
-        this.data._localList = (storage.get<Remoter.LocalList>('_localList') ?? {}) as Remoter.LocalList
 
-        this.initDeviceList()
+        this.initDrag()
       })
     },
 
     async onShow() {
-      await this.initCapacity()
-
       // 搜索一轮设备
-      this.toSeek()
-
+      // this.toSeek()
       // 获取已连接的设备
       // this.getConnectedDevices()
     },
@@ -399,7 +394,9 @@ ComponentWithComputed({
       })
     },
     // 搜索设备
-    toSeek() {
+    async toSeek() {
+      await this.initCapacity()
+
       this.setData({
         isSeeking: true,
       })
