@@ -9,7 +9,7 @@ import {
   isConnect,
 } from './utils/index'
 import svgs from './assets/svg/index'
-import { deviceStore, homeStore, othersStore } from './store/index'
+import { deviceStore, homeStore, othersStore, sceneStore } from './store/index'
 import { reaction } from 'mobx-miniprogram'
 import homOs from 'js-homos'
 import mqtt from './lib/mqtt.min.js'
@@ -99,7 +99,7 @@ App<IAppOption>({
   },
 
   async initHomeOs() {
-    await homeStore.updateLocalKey()
+    await Promise.all([homeStore.updateLocalKey(), sceneStore.updateAllRoomSceneList()])
 
     // 调试阶段可写死传递host参数，PC模拟调试
     // host {"level": 200, "ip": "192.168.1.121", "devId": "1689839011110674"}

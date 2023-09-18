@@ -41,6 +41,10 @@ declare namespace Scene {
      * 场景名称
      */
     sceneName: string
+    /**
+     * 场景更新时间
+     */
+    updateStamp: number
   }
   /** 结果集合 */
   interface DeviceAction {

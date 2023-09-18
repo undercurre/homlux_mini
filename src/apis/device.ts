@@ -1,6 +1,7 @@
 import { delay, mzaioRequest, showLoading, hideLoading, Logger } from '../utils/index'
 import { PRO_TYPE } from '../config/index'
 import homOs from 'js-homos'
+import { deviceStore } from '../store'
 
 /**
  * 设备管理-根据家庭id查询全屋的设备
@@ -807,8 +808,10 @@ export async function groupControl(
 ) {
   const { groupId, controlAction } = data
 
+  const groupInfo = deviceStore.allRoomDeviceList.find((item) => item.deviceId === groupId)
+
   // 仅子设备需要判断是否局域网控制
-  if (homOs.isSupportLan({ groupId })) {
+  if (homOs.isSupportLan({ groupId, updateStamp: groupInfo?.updateStamp })) {
     const localRes = await homOs.groupControl({
       webGroupId: groupId,
       actions: controlAction,

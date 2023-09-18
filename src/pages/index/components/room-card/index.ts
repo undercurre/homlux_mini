@@ -73,6 +73,7 @@ ComponentWithComputed({
       this.setData({
         sceneClickId: e.currentTarget.dataset.value,
       })
+
       setTimeout(() => {
         this.setData({
           sceneClickId: '',

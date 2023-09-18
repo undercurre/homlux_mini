@@ -98,7 +98,6 @@ ComponentWithComputed({
     },
 
     async handleExecScene(e: { detail: Scene.SceneItem }) {
-      // console.log('handleExecScene', e)
       const res = await execScene(e.detail.sceneId)
       if (res.success) {
         Toast('执行成功')

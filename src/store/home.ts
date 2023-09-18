@@ -320,6 +320,8 @@ export const homeStore = observable({
 
     if (res.success) {
       this.key = res.result
+      // key的有效期是30天，设置缓存过期时间25天
+      storage.set('loaclKey', this.key, Date.now() + 1000 * 60 * 60 * 24 * 25)
     }
   },
 

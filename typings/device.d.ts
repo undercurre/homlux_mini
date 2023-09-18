@@ -94,6 +94,8 @@ declare namespace Device {
     isScreenGateway: boolean // 是否智慧屏
 
     controlAction: IAnyObject //自动化传感器使用
+
+    updateStamp: number
   }
 
   interface MzgdPropertyDTO {

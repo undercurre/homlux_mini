@@ -1,5 +1,6 @@
 import { Logger, mzaioRequest } from '../utils/index'
 import homOs from 'js-homos'
+import { sceneStore } from '../store/index'
 
 export async function querySceneList(roomId: string, options?: { loading?: boolean }) {
   return await mzaioRequest.post<Scene.SceneItem[]>({
@@ -48,7 +49,11 @@ export async function retryScene(
 }
 
 export async function execScene(sceneId: string, options?: { loading?: boolean }) {
-  if (homOs.isSupportLan({ sceneId })) {
+  const sceneItem = sceneStore.allRoomSceneList.find((item) => item.sceneId === sceneId)
+
+  Logger.debug('execScene', sceneStore.allRoomSceneList, sceneItem)
+
+  if (homOs.isSupportLan({ sceneId, updateStamp: sceneItem?.updateStamp })) {
     const localRes = await homOs.sceneExecute(sceneId)
 
     Logger.log('localRes', localRes)
