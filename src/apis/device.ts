@@ -1,7 +1,7 @@
 import { delay, mzaioRequest, showLoading, hideLoading, Logger } from '../utils/index'
 import { PRO_TYPE } from '../config/index'
 import homOs from 'js-homos'
-import { deviceStore } from '../store'
+import { deviceStore } from '../store/index'
 
 /**
  * 设备管理-根据家庭id查询全屋的设备
