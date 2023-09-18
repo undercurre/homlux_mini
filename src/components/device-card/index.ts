@@ -76,7 +76,7 @@ ComponentWithComputed({
     controlBtnPic(data) {
       // 窗帘，位置大于0即为开启
       if (data.deviceInfo.proType === PRO_TYPE.curtain) {
-        const pos = data.deviceInfo.mzgdPropertyDTOList['1'].curtain_position
+        const pos = data.deviceInfo.mzgdPropertyDTOList['curtain'].curtain_position
         const isClosed = pos === '0'
         if (data.isProcessing) {
           return isClosed ? '/assets/img/base/curtain-opening.png' : '/assets/img/base/curtain-closing.png'
