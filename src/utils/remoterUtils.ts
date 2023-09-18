@@ -3,7 +3,6 @@ import remoterProtocol from './remoterProtocol'
 import { hideLoading, isAndroid, showLoading } from './app'
 import { delay, Logger } from '../utils/index'
 import { CMD } from '../config/remoter'
-import storage from './storage'
 
 /**
  * @description 建立本地作为蓝牙[低功耗外围设备]的服务端

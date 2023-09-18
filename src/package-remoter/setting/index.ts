@@ -2,7 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
-import { storage, emitter } from '../../utils/index'
+import { emitter } from '../../utils/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
 

@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { CMD, FACTORY_ADDR } from '../../config/remoter'
-import { emitter, Logger, storage } from '../../utils/index'
+import { emitter, Logger } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import {
   createBleServer,
