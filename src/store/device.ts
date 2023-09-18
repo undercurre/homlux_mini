@@ -1,6 +1,6 @@
 import { observable, runInAction } from 'mobx-miniprogram'
 import { queryAllDevice, querySubDeviceList } from '../apis/device'
-import { PRO_TYPE } from '../config/index'
+import { MODEL_NAME, PRO_TYPE } from '../config/index'
 import { homeStore } from './home'
 import { roomStore } from './room'
 import { sceneStore } from './scene'
@@ -56,12 +56,12 @@ export const deviceStore = observable({
         device.proType !== PRO_TYPE.sensor &&
         device.mzgdPropertyDTOList // 过滤不完整的数据，避免引起整个列表加载出错
       ) {
+        const modelName = MODEL_NAME[device.proType]
         list.push({
           ...device,
           uniId: device.deviceId,
           mzgdPropertyDTOList: {
-            light: device.mzgdPropertyDTOList['light'],
-            curtain: device.mzgdPropertyDTOList['curtain'],
+            [modelName]: device.mzgdPropertyDTOList[modelName],
           },
         })
       }

@@ -16,7 +16,7 @@ import pageBehavior from '../../behaviors/pageBehaviors'
 import { sendDevice, execScene, saveDeviceOrder } from '../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
 import { storage, emitter, WSEventType, rpx2px, _get, throttle, toPropertyDesc, isNullOrUnDef } from '../../utils/index'
-import { proName, PRO_TYPE, LIST_PAGE, CARD_W, CARD_H } from '../../config/index'
+import { proName, PRO_TYPE, LIST_PAGE, CARD_W, CARD_H, MODEL_NAME } from '../../config/index'
 
 type DeviceCard = Device.DeviceItem & {
   x: string
@@ -897,7 +897,7 @@ ComponentWithComputed({
       const selectList = deviceList.filter((device) => {
         let [, switchId] = device.uniId.split(':')
 
-        switchId = switchId ?? device.proType === PRO_TYPE.light ? 'light' : 'curtain'
+        switchId = switchId ?? MODEL_NAME[device.proType]
 
         return device.mzgdPropertyDTOList[switchId]?.ButtonMode !== 2 && device.onLineStatus
       })
@@ -926,8 +926,9 @@ ComponentWithComputed({
               power,
             },
           })
-        } else if (device.proType === PRO_TYPE.light) {
-          const properties = device.mzgdPropertyDTOList['light']
+        } else {
+          const modelName = MODEL_NAME[device.proType]
+          const properties = device.mzgdPropertyDTOList[modelName]
           const desc = toPropertyDesc(device.proType, properties)
 
           const action = {
@@ -938,7 +939,7 @@ ComponentWithComputed({
             proType: device.proType,
             deviceType: device.deviceType,
             value: {
-              modelName: device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1',
+              modelName,
               ...properties,
             } as IAnyObject,
           }
@@ -1037,7 +1038,7 @@ ComponentWithComputed({
 
       // 选择灯卡片时，同步设备状态到控制弹窗
       if (toCheck) {
-        const modelName = e.detail.proType === PRO_TYPE.light ? 'light' : 'curtain'
+        const modelName = MODEL_NAME[e.detail.proType]
         const prop = e.detail.mzgdPropertyDTOList[modelName]
         if (e.detail.proType === PRO_TYPE.light) {
           if (!isNullOrUnDef(prop.brightness)) diffData['lightStatus.brightness'] = prop.brightness
@@ -1070,11 +1071,7 @@ ComponentWithComputed({
     // 卡片点击时，按品类调用对应方法
     async handleControlTap(e: { detail: DeviceCard }) {
       const device = { ...e.detail }
-      const modelName = device.switchInfoDTOList
-        ? device.switchInfoDTOList[0].switchId
-        : device.proType === PRO_TYPE.light
-        ? 'light'
-        : 'wallSwitch1'
+      const modelName = device.switchInfoDTOList ? device.switchInfoDTOList[0].switchId : MODEL_NAME[e.detail.proType]
 
       // 若面板关联场景
       if (device.proType === PRO_TYPE.switch && device.mzgdPropertyDTOList[modelName].ButtonMode === 2) {
@@ -1086,7 +1083,7 @@ ComponentWithComputed({
       }
 
       if (device.proType === PRO_TYPE.curtain) {
-        const OldPosition = device.mzgdPropertyDTOList['curtain'].curtain_position
+        const OldPosition = device.mzgdPropertyDTOList[modelName].curtain_position
         const NewPosition = Number(OldPosition) > 0 ? '0' : '100'
         const res = await sendDevice({
           proType: device.proType,
