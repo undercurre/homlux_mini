@@ -211,7 +211,7 @@ ComponentWithComputed({
     },
 
     toggleAddr() {
-      if (wx.vibrateShort) wx.vibrateShort({ type: 'light' })
+      if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
 
       this.setData({ isFactoryMode: !this.data.isFactoryMode })
     },

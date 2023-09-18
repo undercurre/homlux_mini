@@ -23,6 +23,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    MIN_RSSI,
     isWxBlePermit: false, // 微信蓝牙权限是否开启
     isSystemBlePermit: false, // 系统蓝牙权限是否开启
     _envVersion: 'release', // 当前小程序环境，默认为发布版，用于屏蔽部分实验功能
@@ -86,7 +87,7 @@ ComponentWithComputed({
           const isSavedDevice = remoterStore.deviceAddrs.includes(item!.addr)
           // 刷新发现设备列表
           if (
-            item!.RSSI >= MIN_RSSI && // 过滤弱信号设备
+            item!.RSSI >= this.data.MIN_RSSI && // 过滤弱信号设备
             !isSavedDevice // 排除已在我的设备列表的设备
           ) {
             const deviceType = item!.deviceType
@@ -489,5 +490,12 @@ ComponentWithComputed({
         tipsStep: this.data.tipsStep + 1,
       })
     },
+    rssiToggle() {
+      let rssi = this.data.MIN_RSSI - 5
+      if (rssi < -80) {
+        rssi = -50
+      }
+      this.setData({ MIN_RSSI: rssi })
+    }
   },
 })

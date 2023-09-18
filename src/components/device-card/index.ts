@@ -190,7 +190,7 @@ ComponentWithComputed({
       }
 
       // 振动反馈
-      if (wx.vibrateShort) wx.vibrateShort({ type: 'light' })
+      if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
 
       // emit 事件，发送指令等
       this.triggerEvent('controlTap', { ...this.data.deviceInfo, clientRect: this.data._clientRect })

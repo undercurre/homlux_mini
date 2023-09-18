@@ -52,6 +52,10 @@
   <view class="list-bottom-placeholder"> </view>
 </scroll-view>
 
+<view wx:if="{{isDebugMode}}" class="rssiToggle bg-hex-debug" catch:tap="rssiToggle">
+  <text class="text-18rpx text-white">{{'搜索设备\n RSSI阈值\n' + MIN_RSSI}}dBm</text>
+</view>
+
 <!-- 新手使用提示 -->
 <template wx:if="{{showTips}}" is="tips" data="{{ tipsStep: tipsStep, statusBarHeight: statusBarHeight }}"></template>
 
