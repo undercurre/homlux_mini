@@ -17,21 +17,21 @@ Component({
     actionList: [
       {
         id: 0,
-        icon: '/assets/img/automation/device.png',
+        icon: '/package-automation/assets/imgs/automation/device.png',
         title: '设备',
         desc: '执行房间内的设备动作',
         key: 'device',
       },
       {
         id: 1,
-        icon: '/assets/img/automation/scene.png',
+        icon: '/package-automation/assets/imgs/automation/scene.png',
         title: '场景',
         desc: '执行房间内的场景',
         key: 'scene',
       },
       {
         id: 3,
-        icon: '/assets/img/automation/stopwatch.png',
+        icon: '/package-automation/assets/imgs/automation/stopwatch.png',
         title: '延时',
         desc: '延迟一段时间',
         key: 'delay',

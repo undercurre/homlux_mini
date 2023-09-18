@@ -18,8 +18,8 @@
             <!-- <svg-icon id="homeSelectArrow" class="home-select-arrow" color="#1E2C46" name="material-symbols:arrow-drop-down-rounded" width="48rpx" height="48rpx" /> -->
           </view>
           <view class="flex flex-row justify-center items-center z-112">
-            <image bind:tap="toPage" data-url="{{urls.automationLog}}" src="/assets/img/automation/auto-scene-log.png" class="w-64rpx h-64rpx mr-32rpx"></image>
-            <image bind:tap="toPage" data-url="{{urls.automationAdd}}" src="/assets/img/automation/auto-scene-add.png" class="w-64rpx h-64rpx"></image>
+            <image bind:tap="toPage" data-url="{{urls.automationLog}}" src="/package-mine/assets/imgs/auto-scene/auto-scene-log.png" class="w-64rpx h-64rpx mr-32rpx"></image>
+            <image bind:tap="toPage" data-url="{{urls.automationAdd}}" src="/package-mine/assets/imgs/auto-scene/auto-scene-add.png" class="w-64rpx h-64rpx"></image>
           </view>
         </view>
       </view>
@@ -30,7 +30,7 @@
         <van-cell-group wx:for="{{allRoomAutoSceneListComputed}}" wx:key="sceneId" inset>
           <van-cell label="{{item.desc}}" label-class="cell-lable" center border="{{false}}" clickable data-autosceneid="{{item.sceneId}}" bind:click="toEditAutoScene">
             <view slot="icon" class="rounded-32rpx p-16rpx mr-16rpx flex">
-              <image class="w-72 h-72" src="/assets/img/auto-scene/{{item.sceneIcon}}.png"></image>
+              <image class="w-72 h-72" src="/package-mine/assets/imgs/auto-scene/{{item.sceneIcon}}.png"></image>
             </view>
             <view slot="title" class="w-384rpx h-44rpx cell-title">
               <text>{{item.sceneName}}</text>
