@@ -897,9 +897,9 @@ ComponentWithComputed({
       const selectList = deviceList.filter((device) => {
         let [, switchId] = device.uniId.split(':')
 
-        switchId = switchId ?? 'light'
+        switchId = switchId ?? device.proType === PRO_TYPE.light ? 'light' : 'curtain'
 
-        return device.mzgdPropertyDTOList[switchId].ButtonMode !== 2 && device.onLineStatus
+        return device.mzgdPropertyDTOList[switchId]?.ButtonMode !== 2 && device.onLineStatus
       })
 
       if (!selectList.length) {
@@ -926,7 +926,7 @@ ComponentWithComputed({
               power,
             },
           })
-        } else {
+        } else if (device.proType === PRO_TYPE.light) {
           const properties = device.mzgdPropertyDTOList['light']
           const desc = toPropertyDesc(device.proType, properties)
 
@@ -1037,7 +1037,7 @@ ComponentWithComputed({
 
       // 选择灯卡片时，同步设备状态到控制弹窗
       if (toCheck) {
-        const modelName = e.detail.proType === PRO_TYPE.light ? 'light' : '1'
+        const modelName = e.detail.proType === PRO_TYPE.light ? 'light' : 'curtain'
         const prop = e.detail.mzgdPropertyDTOList[modelName]
         if (e.detail.proType === PRO_TYPE.light) {
           if (!isNullOrUnDef(prop.brightness)) diffData['lightStatus.brightness'] = prop.brightness
@@ -1086,7 +1086,7 @@ ComponentWithComputed({
       }
 
       if (device.proType === PRO_TYPE.curtain) {
-        const OldPosition = device.mzgdPropertyDTOList[1].curtain_position
+        const OldPosition = device.mzgdPropertyDTOList['curtain'].curtain_position
         const NewPosition = Number(OldPosition) > 0 ? '0' : '100'
         const res = await sendDevice({
           proType: device.proType,

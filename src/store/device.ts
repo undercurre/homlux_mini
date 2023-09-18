@@ -61,6 +61,7 @@ export const deviceStore = observable({
           uniId: device.deviceId,
           mzgdPropertyDTOList: {
             light: device.mzgdPropertyDTOList['light'],
+            curtain: device.mzgdPropertyDTOList['curtain'],
           },
         })
       }
