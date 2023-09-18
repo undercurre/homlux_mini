@@ -27,7 +27,7 @@ ComponentWithComputed({
     _bleService: null as BleService | null,
     _lastPowerKey: '', // 记录上一次点击‘照明’时的指令键，用于反转处理
     _keyQueue: ['', '', '', '', '', '', '', ''], // 记录按键序列
-    _longpress_key: ''
+    _longpress_key: '',
   },
 
   computed: {

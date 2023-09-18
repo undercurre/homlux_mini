@@ -105,7 +105,7 @@ export const deviceStore = observable({
       }
       // 包括proType.light在内，所有非网关设备都用这种方案插值
       else if (device.proType !== PRO_TYPE.gateway) {
-        const modelName = device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1'
+        const modelName = MODEL_NAME[device.proType]
         list.push({
           ...device,
           uniId: device.deviceId,
