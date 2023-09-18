@@ -141,8 +141,9 @@ export const remoterStore = observable({
 
   // 删除当前遥控器
   removeCurRemoter() {
-    const index = this.remoterList.findIndex((device) => device.addr === this.curAddr)
-    const list = this.remoterList.splice(index, 1)
+    const list = [...this.remoterList]
+    const index = list.findIndex((device) => device.addr === this.curAddr)
+    list.splice(index, 1)
     runInAction(() => {
       this.remoterList = list
     })

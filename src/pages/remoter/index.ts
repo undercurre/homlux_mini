@@ -496,6 +496,6 @@ ComponentWithComputed({
         rssi = -50
       }
       this.setData({ MIN_RSSI: rssi })
-    }
+    },
   },
 })
