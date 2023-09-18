@@ -322,8 +322,9 @@ ComponentWithComputed({
         }
       }
 
-      // 安卓 6.0 及以上版本，定位开关未打开时，无法进行设备搜索。
-      if (isAndroid() && !this.data._listenLocationTimeId) {
+      // 网关配网以及蓝牙子设备配网需要用到位置权限功能
+      // 安卓 6.0 及以上版本，在没有打开定位开关的时候会，导致设备不能正常获取周边的 Wi-Fi 信息。无法进行蓝牙设备搜索
+      if ((this.data.scanType === 'gateway' || this.data.scanType === 'subdevice') && isAndroid() && !this.data._listenLocationTimeId) {
         const systemSetting = wx.getSystemSetting()
 
         if (!systemSetting.locationEnabled) {
@@ -348,7 +349,8 @@ ComponentWithComputed({
         }
       }
 
-      this.initBle()
+      // 蓝牙子设备配网需要用到蓝牙功能
+      this.data.scanType === 'subdevice' && this.initBle()
     },
 
     toggleFlash() {

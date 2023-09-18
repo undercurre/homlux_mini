@@ -52,19 +52,18 @@ export async function startWebsocketService() {
             msgId,
           },
         }),
-        success(res) {
-          Logger.log('socket心跳包-success', res)
+        success() {
           setTimeout(() => {
             // 根据onMessage监听topic === 'heartbeatTopic'消息，判断是否收到心跳回复，3s超时
             if (msgId !== heartbeatInfo.lastMsgId) {
               // 3s内没有收到发出的心跳回复，认为socket断开需要重连
-              Logger.debug('socket心跳回复超时，重连')
+              Logger.error('socket心跳回复超时，重连')
               startWebsocketService()
             }
           }, 3000)
         },
         fail(res) {
-          Logger.log('socket心跳包-fail', res)
+          Logger.error('socket心跳包-fail', res)
         },
       })
     }, 30000)
