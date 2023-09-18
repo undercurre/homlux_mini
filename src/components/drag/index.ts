@@ -88,7 +88,7 @@ Component({
   },
   methods: {
     vibrate() {
-      if (this.data.platform !== 'devtools') wx.vibrateShort({ type: 'light' })
+      if (this.data.platform !== 'devtools') wx.vibrateShort({ type: 'heavy' })
     },
     pageScroll(e: { scrollTop: number }) {
       if (this.data.pageMetaSupport) {

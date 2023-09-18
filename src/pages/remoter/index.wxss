@@ -98,3 +98,15 @@ page {
 .bg-hex-debug {
   background-color: rgba(0, 0, 0, 0.42);
 }
+.rssiToggle {
+  position: absolute;
+  top: 100rpx;
+  right: 180rpx;
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  text-align: center;
+  line-height: 24rpx;
+  padding-top: 16rpx;
+  box-sizing: border-box;
+}

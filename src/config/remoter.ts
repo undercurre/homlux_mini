@@ -1,5 +1,5 @@
 // 搜寻蓝牙设备时的信号强度阈值(最小值)
-export const MIN_RSSI = -55
+export const MIN_RSSI = -60
 
 // 搜寻超时时间
 export const SEEK_TIMEOUT = 3000

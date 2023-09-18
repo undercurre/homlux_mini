@@ -27,6 +27,7 @@ ComponentWithComputed({
     _bleService: null as BleService | null,
     _lastPowerKey: '', // 记录上一次点击‘照明’时的指令键，用于反转处理
     _keyQueue: ['', '', '', '', '', '', '', ''], // 记录按键序列
+    _longpress_key: '',
   },
 
   computed: {
@@ -148,13 +149,22 @@ ComponentWithComputed({
         })
       }
 
+      this.data._longpress_key = e.target.dataset.dir
+
       console.log('handleLongPress', key, payload)
     },
-    async handleTouchEnd() {
+    async handleTouchEnd(e: WechatMiniprogram.TouchEvent) {
       // 若已建立连接，则不再广播结束指令
       if (remoterStore.curRemoter.connected) {
         return
       }
+
+      // 如果上个动作不是执行长按，不需要主动广播结束指令
+      const { dir } = e.target.dataset
+      if (!dir || dir !== this.data._longpress_key) {
+        return
+      }
+      this.data._longpress_key = ''
 
       if (!this.data._bleServer) {
         this.data._bleServer = await createBleServer()
@@ -211,7 +221,7 @@ ComponentWithComputed({
     },
 
     toggleAddr() {
-      if (wx.vibrateShort) wx.vibrateShort({ type: 'light' })
+      if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
 
       this.setData({ isFactoryMode: !this.data.isFactoryMode })
     },
