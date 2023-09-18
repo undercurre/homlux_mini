@@ -1,6 +1,6 @@
 <wxs module="handler" src="./index.wxs"></wxs>
 
-<view class="mz-button relative flex-col-center" style="{{btnStyle}}" bind:touchstart="{{handler.touchStart}}" bind:touchend="{{handler.touchEnd}}" bind:longpress="handleLongPress">
+<view class="mz-button relative flex-col-center" style="{{btnStyle}}" bind:touchstart="{{handler.touchStart}}" bind:touchend="{{handler.touchEnd}}">
   <block wx:if="{{type === 'round'}}">
     <view class="preset round"></view>
     <view wx:if="{{hasFeedback}}" class="presetActive round" style="opacity: 0"></view>

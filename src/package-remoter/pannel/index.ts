@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { CMD, FACTORY_ADDR } from '../../config/remoter'
-import { emitter, Logger, storage } from '../../utils/index'
+import { emitter, Logger } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import {
   createBleServer,
@@ -23,7 +23,6 @@ ComponentWithComputed({
     isDebugMode: false,
     isFactoryMode: false, // 工厂调试模式，按特定的地址发送指令
     _envVersion: 'release', // 当前小程序环境，默认为发布版，用于屏蔽部分实验功能
-    _localList: (storage.get<Remoter.LocalList>('_localList') ?? {}) as Remoter.LocalList,
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
     _bleService: null as BleService | null,
     _lastPowerKey: '', // 记录上一次点击‘照明’时的指令键，用于反转处理
@@ -175,21 +174,18 @@ ComponentWithComputed({
 
     // 建立蓝牙连接（调试用）
     async toggleBleMode() {
-      if (wx.vibrateShort) wx.vibrateShort({ type: 'light' })
-
-      const { addr, connected } = remoterStore.curRemoter
-      const { deviceId } = this.data._localList[addr]
-      if (!this.data._bleService) {
-        this.data._bleService = new BleService({ addr, deviceId })
-      }
-
-      if (!connected) {
-        await this.data._bleService.connect()
-        await this.data._bleService.init()
-      } else {
-        await this.data._bleService.close()
-      }
-
+      // if (wx.vibrateShort) wx.vibrateShort({ type: 'light' })
+      // const { addr, connected } = remoterStore.curRemoter
+      // const { deviceId } = this.data._localList[addr]
+      // if (!this.data._bleService) {
+      //   this.data._bleService = new BleService({ addr, deviceId })
+      // }
+      // if (!connected) {
+      //   await this.data._bleService.connect()
+      //   await this.data._bleService.init()
+      // } else {
+      //   await this.data._bleService.close()
+      // }
       // TODO 更新连接状态
       // const diffData = {} as IAnyObject
       // diffData['device.connected'] = !connected

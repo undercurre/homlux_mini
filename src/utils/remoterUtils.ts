@@ -3,7 +3,6 @@ import remoterProtocol from './remoterProtocol'
 import { hideLoading, isAndroid, showLoading } from './app'
 import { delay, Logger } from '../utils/index'
 import { CMD } from '../config/remoter'
-import storage from './storage'
 
 /**
  * @description 建立本地作为蓝牙[低功耗外围设备]的服务端
@@ -212,9 +211,9 @@ export class BleService {
     this.serviceId = res.services[0].uuid
 
     // 更新持久化记录
-    const _localList = (storage.get('_localList') ?? {}) as Remoter.LocalList
-    _localList[this.addr].serviceId = res.services[0].uuid
-    storage.set('_localList', _localList)
+    // const _localList = (storage.get('_localList') ?? {}) as Remoter.LocalList
+    // _localList[this.addr].serviceId = res.services[0].uuid
+    // storage.set('_localList', _localList)
 
     return {
       code: 0,
@@ -238,10 +237,10 @@ export class BleService {
   // 初始化蓝牙特征值
   async init() {
     // 未经连接步骤的初始化，从缓存中获取 serviceId
-    if (!this.serviceId) {
-      const _localList = (storage.get('_localList') ?? {}) as Remoter.LocalList
-      this.serviceId = _localList[this.addr].serviceId as string
-    }
+    // if (!this.serviceId) {
+    //   const _localList = (storage.get('_localList') ?? {}) as Remoter.LocalList
+    //   this.serviceId = _localList[this.addr].serviceId as string
+    // }
     // IOS无法跳过该接口，否则后续接口会报10005	no characteristic	没有找到指定特征
     const characRes = await wx
       .getBLEDeviceCharacteristics({

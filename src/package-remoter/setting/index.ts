@@ -2,7 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
-import { storage, emitter } from '../../utils/index'
+import { emitter } from '../../utils/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
 
@@ -15,7 +15,6 @@ ComponentWithComputed({
     showEditNamePopup: false,
     isShowSetting: false,
     fastSwitchName: '照明开关',
-    _localList: (storage.get<Remoter.LocalList>('_localList') ?? {}) as Remoter.LocalList,
   },
 
   computed: {},
@@ -63,6 +62,7 @@ ComponentWithComputed({
       console.log('onSelectSetting', e.detail.name, index)
 
       remoterStore.changeAction(index)
+      emitter.emit('remoterChanged')
     },
     handleDeviceDelete() {
       Dialog.confirm({

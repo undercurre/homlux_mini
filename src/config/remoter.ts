@@ -233,8 +233,8 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
       ],
       actions: [
         {
-          key: 'BATH_WARM_SOFT',
-          name: '取暖',
+          key: 'BATH_ALL_OFF',
+          name: '待机',
         },
         {
           key: 'BATH_WIND',
@@ -287,8 +287,10 @@ export const CMD: Record<string, number> = {
   BATH_WARM_SOFT: 0x05, // 弱暖
   BATH_WARM_STRONG: 0x01, // 强暖
   BATH_SWING: 0x18, // 摆风
-  BATH_BRIGHT_PLUS: 0x0c, // 亮度+，数字遥控独有
+  BATH_BRIGHT_PLUS: 0x0c, // 亮度+
+  BATH_BRIGHT_PLUS_ACC: 0x0c, // 亮度+，长按与短按指令暂用一个
   BATH_BRIGHT_MINUS: 0x0a, // 亮度- 短按
+  BATH_BRIGHT_MINUS_ACC: 0x0a, // 亮度- 长按
 
   // 厂测指令（调试用）
   FACTORY: 0x13,
