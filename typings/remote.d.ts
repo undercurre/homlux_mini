@@ -11,12 +11,11 @@ declare namespace Remoter {
     deviceName: string
     deviceType: string // 设备品类
     deviceModel: string // 设备型号
-    switchStatus: string // 快捷开关状态
-    switchType: string // 快捷开关类型 TODO 改为按命令索引
-    switchKey: string // 快捷开关key
+    actionStatus: boolean // 快捷开关状态, 0:关  1:开
     saved: boolean // 是否已保存在本地（我的设备）
-    discovered?: boolean // 是否被搜索到, 用于我的设备列表
+    DISCOVERED?: number // 是否被搜索到, 用于我的设备列表
     connected?: boolean // 是否与设备建立连接
+    defaultAction: number // 默认首页开关索引
   }
 
   interface ButtonRes {
@@ -29,14 +28,32 @@ declare namespace Remoter {
   interface ConfigItem {
     deviceName: string
     devicePic: string
-    joystick: Record<string, ButtonRes>
-    mList: ButtonRes[]
-    bList: ButtonRes[]
-    quickControl: ButtonRes
+    joystick?: Record<string, ButtonRes>
+    mList?: ButtonRes[]
+    bList?: ButtonRes[]
+    actions: ButtonRes[]
   }
 
   type LocalList = Record<
     string,
     Pick<DeviceItem, 'deviceModel' | 'deviceType' | 'orderNum' | 'deviceName' | 'deviceId'> & { serviceId?: string }
   >
+
+  type DeviceDetail = DeviceItem & ConfigItem
+
+  type DeviceRx = DeviceItem &
+    WechatMiniprogram.BlueToothDevice & {
+      fullAdvertistData: string
+      manufacturerId: string
+      deviceType: string
+      deviceAttr: Record<string, boolean>
+      payload: string
+      version: number
+      src: number
+      BTP: boolean
+      connect: boolean
+      visibility: boolean
+      encryptType: number
+      encryptIndex: number
+    }
 }

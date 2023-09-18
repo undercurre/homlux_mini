@@ -17,14 +17,14 @@ Component({
     conditionList: [
       {
         id: 0,
-        icon: '/assets/img/automation/time.png',
+        icon: '/package-automation/assets/imgs/automation/time.png',
         title: '到达某个时间时',
         desc: '如“晚上12点时，自动关闭卧室灯光和窗帘”',
         key: 'time',
       },
       {
         id: 1,
-        icon: '/assets/img/automation/sensor.png',
+        icon: '/package-automation/assets/imgs/automation/sensor.png',
         title: '传感器触发时',
         desc: '如“有人经过时，自动打开过道灯光”',
         key: 'sensor',

@@ -18,17 +18,23 @@ ComponentWithComputed({
     },
     desc(data) {
       const device = data.item?.data ?? data.item
+      const { actionStatus, connected } = device
+      const action = device.actions[device.defaultAction]
       if (device?.saved === true) {
-        const statusText = device.switchStatus === 'on' ? '开启' : '关闭'
-        const connectText = device.connected ? '|已连接' : ''
-        return `${device.switchType}${statusText}${connectText}`
+        const statusText = actionStatus ? '开启' : '关闭' // TODO 不存在的状态
+        const connectText = connected ? '|已连接' : ''
+        return `${action.name}${statusText}${connectText}`
       }
       return '未连接'
     },
     bleIcon(data) {
       const device = data.item?.data ?? data.item
-      const iconName = device.discovered === false ? 'bleOff' : 'bleOn'
+      const iconName = device.DISCOVERED === 0 ? 'bleOff' : 'bleOn'
       return `/assets/img/base/${iconName}.png`
+    },
+    action(data) {
+      const device = data.item?.data ?? data.item
+      return device.actions[device.defaultAction]
     },
   },
 

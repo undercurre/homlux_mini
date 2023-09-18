@@ -16,7 +16,7 @@
           <van-cell-group inset border="{{false}}">
             <van-cell value-class="cell-value" wx:key="id" wx:for="{{logs}}" title="{{item.sceneName}}" label="{{item.actionTime}}" center title-style="font-weight: 500;flex:2;" border="{{index === logs.length - 1 ? false : true}}" value="{{item.errorCode === 0 ? '已执行' : '执行失败'}}">
               <view slot="icon" class="rounded-32rpx p-16rpx mr-32rpx">
-                <image class="w-72 h-72" src="/assets/img/auto-scene/{{item.sceneIcon}}.png"></image>
+                <image class="w-72 h-72" src="/package-mine/assets/imgs/auto-scene/{{item.sceneIcon}}.png"></image>
               </view>
             </van-cell>
           </van-cell-group>

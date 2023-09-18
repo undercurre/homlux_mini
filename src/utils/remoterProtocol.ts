@@ -1,6 +1,16 @@
 import cryptoUtils from './remoterCrypto'
 import { deviceConfig } from '../config/remoter'
 
+// bit位定义
+export const BIT_0 = 0x01 << 0 //1     0x01
+export const BIT_1 = 0x01 << 1 //2     0x02
+export const BIT_2 = 0x01 << 2 //4     0x04
+export const BIT_3 = 0x01 << 3 //8     0x08
+export const BIT_4 = 0x01 << 4 //16    0x10
+export const BIT_5 = 0x01 << 5 //32    0x20
+export const BIT_6 = 0x01 << 6 //64    0x40
+export const BIT_7 = 0x01 << 7 //128    0x80
+
 // 遥控器支持设备列表
 const SUPPORT_LIST = Object.keys(deviceConfig)
 
@@ -15,30 +25,26 @@ const _searchDeviceCallBack = (device: WechatMiniprogram.BlueToothDevice) => {
   const deviceType = manufacturerId.slice(2)
   //	筛选指定设备
   if (!SUPPORT_LIST.includes(deviceType.toLocaleUpperCase())) return
-  const advData = _parseAdvertisData(advertisData.slice(4))
+  const VBCV = advertisData.slice(4, 6)
+  const encryptFlag = advertisData.slice(6, 8)
+  const addr = advertisData.slice(8, 20)
+  const deviceModel = advertisData.slice(20, 22)
+  const payload = advertisData.slice(22) // 按调整后的协议，从第11字节开始
+
   return {
     fullAdvertistData: advertisData.slice(0),
+    ...device,
     manufacturerId,
     deviceType,
-    ...device,
-    ...advData,
-  }
-}
-//	解析 advertisData
-const _parseAdvertisData = (advertisDataStr: string) => {
-  const VBCV = advertisDataStr.slice(0, 2)
-  const encryptFlag = advertisDataStr.slice(2, 4)
-  const addr = advertisDataStr.slice(4, 16)
-  const payload = advertisDataStr.slice(16)
-  const deviceModel = advertisDataStr.slice(16, 18)
-  return {
     ..._parseVBCV(VBCV),
     ..._parseEncryptFlag(encryptFlag),
-    deviceModel,
     addr,
+    deviceModel,
     payload,
+    deviceAttr: _parsePayload(payload, deviceType),
   }
 }
+
 //	解析 version,btp,src,connect,visibility
 const _parseVBCV = (vbcvHexStr: string) => {
   //	16进制字符串转为2进制,补全8位
@@ -65,6 +71,26 @@ const _parseEncryptFlag = (encryptFlag: string) => {
     encryptType,
     encryptIndex,
   }
+}
+
+// 转换设备状态
+const _parsePayload = (payload: string, deviceType: string) => {
+  const rxBuf = new ArrayBuffer(payload.length) // 申请内存
+  const rxU16 = new Uint16Array(rxBuf)
+  for (let i = 0; i < payload.length / 2; ++i) {
+    rxU16[i] = parseInt(payload.slice(i * 2, i * 2 + 2), 16)
+  }
+
+  if (deviceType === '26') {
+    return {
+      BATH_WARM: !!(rxU16[4] & BIT_5),
+      BATH_WIND: !!(rxU16[4] & BIT_2),
+      BATH_VENTILATE: !!(rxU16[4] & BIT_1),
+      BATH_DRY: !!(rxU16[4] & BIT_0),
+      BATH_LAMP: !!(rxU16[1] & BIT_0),
+    }
+  }
+  return {}
 }
 
 //	创建蓝牙连接发送协议
