@@ -897,9 +897,9 @@ ComponentWithComputed({
       const selectList = deviceList.filter((device) => {
         let [, switchId] = device.uniId.split(':')
 
-        switchId = switchId ?? 'light'
+        switchId = switchId ?? device.proType === PRO_TYPE.light ? 'light' : 'curtain'
 
-        return device.mzgdPropertyDTOList[switchId].ButtonMode !== 2 && device.onLineStatus
+        return device.mzgdPropertyDTOList[switchId]?.ButtonMode !== 2 && device.onLineStatus
       })
 
       if (!selectList.length) {
@@ -926,7 +926,7 @@ ComponentWithComputed({
               power,
             },
           })
-        } else {
+        } else if (device.proType === PRO_TYPE.light) {
           const properties = device.mzgdPropertyDTOList['light']
           const desc = toPropertyDesc(device.proType, properties)
 
