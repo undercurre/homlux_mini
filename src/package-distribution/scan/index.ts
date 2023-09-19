@@ -300,9 +300,7 @@ ComponentWithComputed({
     async getQrCodeInfo(e: WechatMiniprogram.CustomEvent) {
       let isReady = true // 标志扫码环境条件是否准备好
 
-      if (
-        (this.data.scanType === 'gateway' || this.data.scanType === 'subdevice') &&
-        isAndroid()) {
+      if ((this.data.scanType === 'gateway' || this.data.scanType === 'subdevice') && isAndroid()) {
         const systemSetting = wx.getSystemSetting()
 
         isReady = systemSetting.locationEnabled
@@ -312,7 +310,6 @@ ComponentWithComputed({
         isReady = isReady && bleDevicesStore.discovering
       }
 
-      
       // 必须等待初始化好或者非处于扫码状态后才能扫码
       if (!isReady || this.data.isScan) {
         return

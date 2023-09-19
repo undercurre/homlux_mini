@@ -334,7 +334,7 @@ ComponentWithComputed({
               })
             })
             .catch((error) => {
-              console.error('inviteMember', error);
+              console.error('inviteMember', error)
               if (error.code === 9870) {
                 Toast('分享链接已失效')
               } else {
