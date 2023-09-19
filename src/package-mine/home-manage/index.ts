@@ -147,7 +147,7 @@ ComponentWithComputed({
         const list = homeBinding.store.homeList.filter((item) => item.houseCreatorFlag)
 
         if (list.length <= 1) {
-          Toast({ 
+          Toast({
             message: '请至少保留一个创建的家庭',
           })
 

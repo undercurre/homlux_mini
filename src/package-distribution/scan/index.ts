@@ -204,7 +204,8 @@ ComponentWithComputed({
     },
 
     async initBle() {
-      if (bleDevicesStore.discovering) {
+      // 蓝牙子设备配网需要用到蓝牙功能
+      if (this.data.scanType !== 'subdevice' || bleDevicesStore.discovering) {
         return
       }
 
@@ -297,7 +298,23 @@ ComponentWithComputed({
      * 扫码解析
      */
     async getQrCodeInfo(e: WechatMiniprogram.CustomEvent) {
-      if (this.data.isScan || !bleDevicesStore.discovering) {
+      let isReady = true // 标志扫码环境条件是否准备好
+
+      if (
+        (this.data.scanType === 'gateway' || this.data.scanType === 'subdevice') &&
+        isAndroid()) {
+        const systemSetting = wx.getSystemSetting()
+
+        isReady = systemSetting.locationEnabled
+      }
+
+      if (this.data.scanType === 'subdevice') {
+        isReady = isReady && bleDevicesStore.discovering
+      }
+
+      
+      // 必须等待初始化好或者非处于扫码状态后才能扫码
+      if (!isReady || this.data.isScan) {
         return
       }
 
@@ -324,7 +341,11 @@ ComponentWithComputed({
 
       // 网关配网以及蓝牙子设备配网需要用到位置权限功能
       // 安卓 6.0 及以上版本，在没有打开定位开关的时候会，导致设备不能正常获取周边的 Wi-Fi 信息。无法进行蓝牙设备搜索
-      if ((this.data.scanType === 'gateway' || this.data.scanType === 'subdevice') && isAndroid() && !this.data._listenLocationTimeId) {
+      if (
+        (this.data.scanType === 'gateway' || this.data.scanType === 'subdevice') &&
+        isAndroid() &&
+        !this.data._listenLocationTimeId
+      ) {
         const systemSetting = wx.getSystemSetting()
 
         if (!systemSetting.locationEnabled) {
@@ -349,8 +370,7 @@ ComponentWithComputed({
         }
       }
 
-      // 蓝牙子设备配网需要用到蓝牙功能
-      this.data.scanType === 'subdevice' && this.initBle()
+      this.initBle()
     },
 
     toggleFlash() {
