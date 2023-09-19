@@ -54,7 +54,7 @@
     },
     {
       "root": "package-automation",
-      "pages": ["automation/index", "automation-log/index", "automation-add/index", "automation-request-list/index"]
+      "pages": ["automation/index", "automation-log/index", "automation-add/index"]
     },
     {
       "root": "package-remoter",
