@@ -55,11 +55,12 @@ ComponentWithComputed({
       }
       if (data.isCreator) {
         list.push(
-          // {
-          //   title: '添加自动化',
-          //   key: 'auto',
-          //   icon: 'auto',
-          // },
+          {
+            title: '添加自动化',
+            key: 'auto',
+            icon: 'auto',
+            url: '/package-automation/automation/index',
+          },
           {
             title: '连接其它平台',
             key: 'platform',
