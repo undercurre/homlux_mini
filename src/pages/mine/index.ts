@@ -28,7 +28,7 @@ Component({
     ],
     urls: {
       homeControl: '/package-mine/home-manage/index',
-      automation: '/package-mine/automation/index',
+      automation: '/package-automation/automation/index',
       voiceControl: '/package-mine/voice-control/index',
       ota: '/package-mine/ota/index',
       deviceReplace: '/package-mine/device-replace/index',
