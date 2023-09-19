@@ -4,7 +4,7 @@ import { deleteScene, findDevice, addScene, updateScene } from '../../apis/index
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { deviceStore, sceneStore, homeStore, autosceneStore } from '../../store/index'
-import { PRO_TYPE, SENSOR_TYPE } from '../../config/index'
+import { PRO_TYPE, SENSOR_TYPE, MODEL_NAME } from '../../config/index'
 import { toPropertyDesc, storage, getCurrentPageParams, strUtil, checkInputNameIllegal } from '../../utils/index'
 
 ComponentWithComputed({
@@ -280,6 +280,7 @@ ComponentWithComputed({
               deviceUniId = `${action.deviceId}:${action.controlAction[0].modelName}`
             }
             const device = this.data.deviceList.find((item) => item.uniId === deviceUniId)
+
             if (device) {
               //是设备
               if (device.proType === PRO_TYPE.switch) {
@@ -301,11 +302,15 @@ ComponentWithComputed({
                   dragId: device.uniId + Math.floor(Math.random() * 1001),
                 })
               } else {
-                const desc = toPropertyDesc(device.proType, {
-                  ...action.controlAction[0],
-                  minColorTemp: device.property!.colorTempRange.minColorTemp,
-                  maxColorTemp: device.property!.colorTempRange.maxColorTemp,
-                })
+                let property = action.controlAction[0]
+
+                if (action.proType === PRO_TYPE.light) {
+                  property = {
+                    ...device.mzgdPropertyDTOList['light'],
+                    ...property,
+                  }
+                }
+                const desc = toPropertyDesc(device.proType, property)
                 tempSceneDeviceActionsFlatten.push({
                   uniId: device.uniId,
                   name: device.deviceName,
@@ -314,10 +319,8 @@ ComponentWithComputed({
                   pic: device.pic as string,
                   proType: device.proType,
                   value: {
-                    ...action.controlAction[0],
-                    minColorTemp: device.property!.colorTempRange.minColorTemp,
-                    maxColorTemp: device.property!.colorTempRange.maxColorTemp,
-                    modelName: device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1',
+                    ...property,
+                    modelName: MODEL_NAME[device.proType],
                   },
                   orderNum: 0,
                   dragId: device.uniId + Math.floor(Math.random() * 1001),

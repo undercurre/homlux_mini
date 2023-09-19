@@ -78,7 +78,7 @@ ComponentWithComputed({
       return data.brightness
     },
     colorTempShow(data) {
-      const { maxColorTemp, minColorTemp } = data.lightInfo
+      const { maxColorTemp, minColorTemp } = data.lightInfo.colorTempRange || data.lightInfo
 
       return (data.colorTemperature / 100) * (maxColorTemp - minColorTemp) + minColorTemp
     },
