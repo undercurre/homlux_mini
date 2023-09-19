@@ -90,6 +90,10 @@ export const deviceStore = observable({
   get allRoomDeviceFlattenList() {
     const list = [] as Device.DeviceItem[]
     deviceStore.allRoomDeviceList.forEach((device) => {
+      // 过滤属性数据不完整的数据
+      if (!device.mzgdPropertyDTOList) {
+        return
+      }
       if (device.proType === PRO_TYPE.switch) {
         device.switchInfoDTOList?.forEach((switchItem) => {
           list.push({
