@@ -315,6 +315,18 @@ export const homeStore = observable({
     await asyncStorage.set('homeData', data, 60 * 60 * 24) // 缓存有效期一天
   },
 
+  async initLocalKey() {
+    const key = storage.get('loaclKey') as string
+
+    console.debug('key', key)
+
+    if (key) {
+      this.key = key
+    } else {
+      await this.updateLocalKey()
+    }
+  },
+
   async updateLocalKey() {
     const res = await queryLocalKey({ houseId: this.currentHomeId })
 

@@ -121,22 +121,9 @@ ComponentWithComputed({
       }
       return false
     },
-    roomHasSubDevice(data) {
-      if (data.deviceList?.length) {
-        return (
-          (data.allRoomDeviceList as DeviceCard[]).filter(
-            (device) =>
-              device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
-              device.proType !== PRO_TYPE.gateway &&
-              device.proType !== PRO_TYPE.sensor,
-          ).length > 0
-        )
-      }
-      return false
-    },
     // 房间存在可显示的设备
     roomHasDevice(data) {
-      if (data.deviceList?.length) {
+      if (data.allRoomDeviceList?.length) {
         return (
           (data.allRoomDeviceList as DeviceCard[]).filter(
             (device) =>

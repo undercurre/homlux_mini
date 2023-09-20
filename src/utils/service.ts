@@ -5,11 +5,15 @@ import { homeStore, userStore } from '../store/index'
 import { emitter } from './eventBus'
 import { Logger } from './log'
 import { goHome } from './app'
+import homos from 'js-homos'
 
 export function logout() {
   storage.remove('mobilePhone')
   storage.remove('token')
   userStore.logout()
+  homos.logout()
+  closeWebSocket()
+
   wx.switchTab({
     url: '/pages/index/index',
   })

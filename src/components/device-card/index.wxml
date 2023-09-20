@@ -10,7 +10,7 @@
 
   <!-- 设备图标 -->
   <view class="absolute left-0 pb-40rpx flex-col-center w-full h-full">
-    <image src="{{picUrl}}" class="w-72rpx h-72rpx"></image>
+    <image src="{{picUrl}}" class="w-72rpx h-72rpx" binderror="loadImgError"></image>
   </view>
 
   <!-- 点击开关时的动画 -->

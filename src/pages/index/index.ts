@@ -270,7 +270,6 @@ ComponentWithComputed({
 
     acceptShare() {
       if (!this.data.isLogin) {
-        console.log('未登录，停止分享逻辑')
         return
       }
 
@@ -288,7 +287,6 @@ ComponentWithComputed({
       const enterOption = wx.getEnterOptionsSync()
 
       if (enterOption.scene != 1007 && enterOption.scene != 1044) {
-        console.log('lmn>>>非聊天卡片进入')
         return
       }
       const enterQuery = enterOption.query
@@ -366,7 +364,6 @@ ComponentWithComputed({
       } else if (scene === 1007 || scene === 1044) {
         enterQuery = params.query
       } else {
-        console.log('非家庭转让逻辑')
         return
       }
 

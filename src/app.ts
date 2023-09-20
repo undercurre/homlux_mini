@@ -52,10 +52,12 @@ App<IAppOption>({
     // 监听houseId变化，切换websocket连接,切换成对应家庭的sock连接
     reaction(
       () => homeStore.currentHomeDetail.houseId,
-      () => {
+      async () => {
+        console.debug('监听houseId变化', homeStore.currentHomeDetail.houseId)
         closeWebSocket()
         startWebsocketService()
 
+        await homeStore.updateLocalKey()
         this.initHomeOs()
       },
     )
@@ -99,12 +101,20 @@ App<IAppOption>({
   },
 
   async initHomeOs() {
-    await Promise.all([homeStore.updateLocalKey(), sceneStore.updateAllRoomSceneList()])
+    await Promise.all([homeStore.initLocalKey(), sceneStore.updateAllRoomSceneList()])
 
     // 调试阶段可写死传递host参数，PC模拟调试
-    // host {"level": 200, "ip": "192.168.1.121", "devId": "1689839011110674"}
-    // host {"level": 200, "ip": "192.168.1.123", "devId": "1693906973627831"}
-    homOs.login(homeStore.currentHomeDetail.houseId, homeStore.key)
+    // host {"ip": "192.168.1.121", "devId": "1689839011110674", SSID: 'test'}
+    // host {"ip": "192.168.1.123", "devId": "1693906973627831", SSID: 'test'}
+    homOs.login({
+      homeId: homeStore.currentHomeDetail.houseId,
+      key: homeStore.key,
+      host: { ip: '192.168.1.129', devId: '1694499802565103', SSID: 'test' },
+    })
+
+    homOs.onMessage((res: IAnyObject) => {
+      Logger.log('homOs.onMessage', res)
+    })
   },
 
   globalData: {

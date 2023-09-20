@@ -18,7 +18,9 @@ export const deviceStore = observable({
    * deviceId -> device 映射
    */
   get deviceMap(): Record<string, Device.DeviceItem> {
-    return Object.fromEntries(deviceStore.deviceList.map((device: Device.DeviceItem) => [device.deviceId, device]))
+    return Object.fromEntries(
+      deviceStore.deviceListByRoomId.map((device: Device.DeviceItem) => [device.deviceId, device]),
+    )
   },
 
   get allRoomDeviceMap(): Record<string, Device.DeviceItem> {
@@ -31,12 +33,18 @@ export const deviceStore = observable({
     return Object.fromEntries(deviceStore.deviceFlattenList.map((device: Device.DeviceItem) => [device.uniId, device]))
   },
 
+  get deviceListByRoomId(): Device.DeviceItem[] {
+    return this.allRoomDeviceList.filter((item) => {
+      return item.roomId === roomStore.currentRoom.roomId
+    })
+  },
+
   /**
    * 将有多个按键的开关拍扁，保证每个设备和每个按键都是独立一个item，并且uniId唯一
    */
   get deviceFlattenList() {
     const list = [] as Device.DeviceItem[]
-    deviceStore.deviceList.forEach((device) => {
+    this.deviceListByRoomId.forEach((device) => {
       if (device.proType === PRO_TYPE.switch) {
         device.switchInfoDTOList?.forEach((switchItem) => {
           list.push({

@@ -37,12 +37,12 @@
   </view>
 
   <!-- 有设备页面主体 -->
-  <view wx:if="{{roomHasSubDevice}}" class="w-750rpx flex flex-col items-center">
+  <view wx:if="{{roomHasDevice}}" class="w-750rpx flex flex-col items-center">
     <view class="w-720rpx">
       <!-- 设备卡片列表 -->
       <scroll-view scroll-y enhanced show-scrollbar="{{false}}" style="height: {{ scrollViewHeight }}px;" bindscroll="onPageScroll" scroll-top="{{scrollTop}}" scroll-with-animation="{{true}}">
         <!-- 场景 -->
-        <view id="scene-card" wx:if="{{roomHasSubDevice}}" class="scene-card w-686rpx h-96rpx flex items-center rounded-24rpx mt-20rpx ml-16rpx mb-12rpx relative" bindtap="handleSceneTap">
+        <view id="scene-card" class="scene-card w-686rpx h-96rpx flex items-center rounded-24rpx mt-20rpx ml-16rpx mb-12rpx relative" bindtap="handleSceneTap">
           <image src="/package-room-control/assets/img/scene.png" class="absolute left-0 top-0 w-686rpx h-96rpx scene-card-bg" />
           <image src="/assets/img/base/scene.png" class="w-64rpx h-64rpx ml-24rpx"></image>
           <text id="scene-title" class="text-32rpx text-hex-333333 font-medium ml-16rpx">场景</text>
@@ -77,7 +77,7 @@
         <van-skeleton wx:if="{{!deviceListInited}}" row="1" row-width="700rpx" row-class="mt-32rpx rounded-32rpx skeleton_fix" />
 
         <!-- 有列表时的添加按钮 -->
-        <view class="flex-col-center py-20rpx" wx:if="{{roomHasSubDevice}}">
+        <view class="flex-col-center py-20rpx" wx:if="{{roomHasDevice}}">
           <van-button wx:if="{{canAddDevice}}" type="default" color="rgba(255,255,255,0.60)" size="small" custom-class="round-btn-border" round bind:tap="goTo" data-url="/package-distribution/choose-device/index">
             <text class="text-26rpx text-hex-555659">添加设备</text>
           </van-button>

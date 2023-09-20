@@ -6,6 +6,8 @@ interface IAppOption {
   }
   userInfoReadyCallback?: WechatMiniprogram.GetUserInfoSuccessCallback
 
+  initHomeOs: () => void
+
   [x: string]: any
 }
 

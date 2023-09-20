@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { proName, PRO_TYPE } from '../../config/index'
-import { throttle } from '../../utils/index'
+import { Logger, throttle } from '../../utils/index'
 
 const CONTROL_INTERVAL = 3000 // 开关操作间隔时间
 
@@ -53,6 +53,7 @@ ComponentWithComputed({
     showDeviceOffline: false,
     isProcessing: false,
     _clientRect: {} as IAnyObject,
+    isLoadImgError: false,
   },
   lifetimes: {
     ready() {
@@ -66,6 +67,9 @@ ComponentWithComputed({
 
   computed: {
     picUrl(data) {
+      if (data.isLoadImgError) {
+        return '/assets/img/default-img/default-device.png'
+      }
       if (data.deviceInfo.proType === PRO_TYPE.switch && data.showBtnDetail) {
         return data.deviceInfo?.switchInfoDTOList[0]?.pic
       } else if (data.deviceInfo?.pic) {
@@ -227,6 +231,13 @@ ComponentWithComputed({
             clientRect: res[0],
           })
         })
+    },
+
+    loadImgError(e: WechatMiniprogram.BaseEvent) {
+      Logger.error('loadImgError', e)
+      this.setData({
+        isLoadImgError: true,
+      })
     },
   },
 })

@@ -18,8 +18,8 @@ dependencies:
     specifier: ^2.0.1
     version: 2.0.1
   js-homos:
-    specifier: ^0.0.7
-    version: 0.0.7
+    specifier: ^0.0.9
+    version: 0.0.9
   lottie-miniprogram:
     specifier: ^1.0.12
     version: 1.0.12
@@ -2303,11 +2303,12 @@ packages:
     hasBin: true
     dev: true
 
-  /js-homos@0.0.7:
-    resolution: {integrity: sha512-zz5kwRE7LEZ5t9FMsOCRo5j9K9BimnwUvmDf4on75SRxmezsuJB7AJD2EGhxvPCtCqS4MZeVt5jfY4+rchN2jQ==}
+  /js-homos@0.0.9:
+    resolution: {integrity: sha512-t7ibQI0BkZUXjdC2XBRdkIU2JMt3Bj7L1crp6Ps6ZYa6rtCKC/cCPtUE+0NrLXt7t7SY/tfrOFR0r5HUryHbCw==}
     dependencies:
       crypto-js: 4.1.1
       dayjs: 1.11.9
+      mitt: 3.0.1
       mqtt: 4.3.7
     transitivePeerDependencies:
       - bufferutil
@@ -2565,6 +2566,10 @@ packages:
 
   /mitt@3.0.0:
     resolution: {integrity: sha512-7dX2/10ITVyqh4aOSVI9gdape+t9l2/8QxHrFmUXu4EEUpdlxl6RudZUPZoc+zuY2hk1j7XxVroIVIan/pD/SQ==}
+    dev: false
+
+  /mitt@3.0.1:
+    resolution: {integrity: sha512-vKivATfr97l2/QBCYAkXYDbrIWPM2IIKEl7YPhjCvKlG3kE2gm+uBo6nEXK3M5/Ffh/FLpKExzOQ3JJoJGFKBw==}
     dev: false
 
   /mobx-miniprogram-bindings@2.1.5(mobx-miniprogram@4.13.2):
