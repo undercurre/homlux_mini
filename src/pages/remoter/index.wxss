@@ -83,6 +83,7 @@ page {
 }
 .small-btn {
   color: #666 !important;
+  width: 168rpx;
 }
 .small-btn .van-button__loading-text {
   color: #666;

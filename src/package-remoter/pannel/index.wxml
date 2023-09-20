@@ -11,23 +11,25 @@
 
   <view class="flex-col-center">
     <view class="joystick" wx:if="{{curRemoter.joystick}}">
-      <mz-button class="absolute up" img="/package-remoter/assets/up.png" imgActive="/package-remoter/assets/upActive.png" imgWidth="304rpx" imgHeight="142rpx" icon="{{curRemoter.joystick.up.icon}}" iconActive="{{curRemoter.joystick.up.iconActive}}" bind:tap="btnTap" data-key="{{curRemoter.joystick.up.key}}" data-lp-key="{{curRemoter.joystick.up.key}}" data-dir="U" bind:longpress="handleLongPress" bind:touchend="handleTouchEnd"></mz-button>
+      <mz-button class="absolute up" img="/package-remoter/assets/up.png" imgActive="/package-remoter/assets/upActive.png" imgWidth="304rpx" imgHeight="142rpx" icon="{{curRemoter.joystick.up.icon}}" iconActive="{{curRemoter.joystick.up.iconActive}}" bind:touchstart="btnTap" data-key="{{curRemoter.joystick.up.key}}" data-lp-key="{{curRemoter.joystick.up.key}}" data-dir="U" bind:longpress="handleLongPress" bind:touchend="handleTouchEnd"></mz-button>
 
-      <mz-button class="absolute right" img="/package-remoter/assets/right.png" imgActive="/package-remoter/assets/rightActive.png" imgWidth="142rpx" imgHeight="304rpx" icon="{{curRemoter.joystick.right.icon}}" iconActive="{{curRemoter.joystick.right.iconActive}}" text="{{curRemoter.joystick.right.name}}" dir="col" bind:tap="btnTap" data-key="{{curRemoter.joystick.right.key}}" data-dir="R" bind:longpress="handleLongPress" bind:touchend="handleTouchEnd"></mz-button>
+      <mz-button class="absolute right" img="/package-remoter/assets/right.png" imgActive="/package-remoter/assets/rightActive.png" imgWidth="142rpx" imgHeight="304rpx" icon="{{curRemoter.joystick.right.icon}}" iconActive="{{curRemoter.joystick.right.iconActive}}" text="{{curRemoter.joystick.right.name}}" dir="col" bind:touchstart="btnTap" data-key="{{curRemoter.joystick.right.key}}" data-dir="R" bind:longpress="handleLongPress" bind:touchend="handleTouchEnd"></mz-button>
 
-      <mz-button class="absolute down" img="/package-remoter/assets/down.png" imgActive="/package-remoter/assets/downActive.png" imgWidth="304rpx" imgHeight="142rpx" icon="{{curRemoter.joystick.down.icon}}" iconActive="{{curRemoter.joystick.down.iconActive}}" bind:tap="btnTap" data-key="{{curRemoter.joystick.down.key}}" bind:longpress="handleLongPress" data-dir="D" bind:touchend="handleTouchEnd"></mz-button>
+      <mz-button class="absolute down" img="/package-remoter/assets/down.png" imgActive="/package-remoter/assets/downActive.png" imgWidth="304rpx" imgHeight="142rpx" icon="{{curRemoter.joystick.down.icon}}" iconActive="{{curRemoter.joystick.down.iconActive}}" bind:touchstart="btnTap" data-key="{{curRemoter.joystick.down.key}}" bind:longpress="handleLongPress" data-dir="D" bind:touchend="handleTouchEnd"></mz-button>
 
-      <mz-button class="absolute left" img="/package-remoter/assets/left.png" imgActive="/package-remoter/assets/leftActive.png" imgWidth="142rpx" imgHeight="304rpx" icon="{{curRemoter.joystick.left.icon}}" iconActive="{{curRemoter.joystick.left.iconActive}}" text="{{curRemoter.joystick.left.name}}" dir="col" bind:tap="btnTap" data-key="{{curRemoter.joystick.left.key}}" bind:longpress="handleLongPress" data-dir="L" bind:touchend="handleTouchEnd"></mz-button>
+      <mz-button class="absolute left" img="/package-remoter/assets/left.png" imgActive="/package-remoter/assets/leftActive.png" imgWidth="142rpx" imgHeight="304rpx" icon="{{curRemoter.joystick.left.icon}}" iconActive="{{curRemoter.joystick.left.iconActive}}" text="{{curRemoter.joystick.left.name}}" dir="col" bind:touchstart="btnTap" data-key="{{curRemoter.joystick.left.key}}" bind:longpress="handleLongPress" data-dir="L" bind:touchend="handleTouchEnd"></mz-button>
 
-      <mz-button class="absolute middle" type="round" imgWidth="154rpx" imgHeight="154rpx" hasFeedback="{{isFactoryMode}}" bind:tap="btnTap" data-key="{{curRemoter.joystick.middle.key}}"></mz-button>
+      <mz-button class="absolute middle" type="round" imgWidth="154rpx" imgHeight="154rpx" hasFeedback="{{isFactoryMode}}" bind:touchstart="btnTap" data-key="{{curRemoter.joystick.middle.key}}"></mz-button>
     </view>
 
     <view class="flex flex-row justify-evenly flex-wrap mt-36rpx w-full" wx:if="{{curRemoter.mList}}">
-      <mz-button wx:for="{{curRemoter.mList}}" wx:key="index" icon="{{item.icon}}" iconActive="{{item.iconActive}}" bind:tap="btnTap" class="mt-64rpx" type="square" text="{{item.name}}" data-key="{{item.key}}"></mz-button>
+      <mz-button wx:for="{{curRemoter.mList}}" wx:key="index" icon="{{item.icon}}" iconActive="{{item.iconActive}}" bind:touchstart="btnTap" class="mt-64rpx" type="square" text="{{item.name}}" data-key="{{item.key}}"></mz-button>
     </view>
   </view>
 
   <view class="main-control" wx:if="{{curRemoter.bList}}">
-    <mz-button2 wx:for="{{curRemoter.bList}}" wx:key="index" icon="{{item.icon}}" iconActive="{{item.iconActive}}" bind:tap="btnTap" text="{{item.name}}" data-key="{{item.key}}"></mz-button2>
+    <mz-button2 wx:for="{{curRemoter.bList}}" wx:key="index" icon="{{item.icon}}" iconActive="{{item.iconActive}}" bind:touchstart="btnTap" text="{{item.name}}" data-key="{{item.key}}"></mz-button2>
   </view>
 </view>
+
+<van-dialog id="van-dialog" confirm-button-color="#488FFF" cancel-button-color="#27282A" />

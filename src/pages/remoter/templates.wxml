@@ -1,5 +1,5 @@
 <template name="btn">
-  <van-button custom-class="small-btn" color="rgba(255,255,255,0.60)" size="small" round loading="{{isSeeking}}" loading-text="搜索设备" loading-type="spinner" bind:click="toSeek">搜索设备</van-button>
+  <van-button custom-class="small-btn" color="rgba(255,255,255,0.60)" size="small" round loading="{{isSeeking}}" loading-type="spinner" bind:click="toSeek">搜索设备</van-button>
 </template>
 
 <template name="tips">

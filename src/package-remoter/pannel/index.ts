@@ -1,7 +1,7 @@
-import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
+import { ComponentWithComputed } from 'miniprogram-computed'
 import { CMD, FACTORY_ADDR } from '../../config/remoter'
-import { emitter, Logger } from '../../utils/index'
+import { emitter, Logger, initBleCapacity } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import {
   createBleServer,
@@ -47,6 +47,12 @@ ComponentWithComputed({
       const { addr } = query
       // this.setData({ deviceType, deviceModel, addr })
       remoterStore.setAddr(addr)
+
+      const bleInited = await initBleCapacity()
+
+      if (!bleInited) {
+        return
+      }
 
       // 建立BLE外围设备服务端
       this.data._bleServer = await createBleServer()
