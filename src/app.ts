@@ -109,7 +109,7 @@ App<IAppOption>({
     homOs.login({
       homeId: homeStore.currentHomeDetail.houseId,
       key: homeStore.key,
-      host: { ip: '192.168.1.129', devId: '1694499802565103', SSID: 'test' },
+      // host: { ip: '192.168.1.129', devId: '1694499802565103', SSID: 'test' },
     })
 
     homOs.onMessage((res: IAnyObject) => {
