@@ -124,6 +124,9 @@ page {
 /* 遮罩 end */
 
 /* 弹窗 start */
+.van-toast--text {
+  text-align: justify;
+}
 .van-dialog__header {
   font-size: 36rpx;
   color: #27282a;
