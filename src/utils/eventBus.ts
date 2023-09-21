@@ -1,4 +1,7 @@
 import mitt, { Emitter } from 'mitt'
+import { Logger } from './log'
+import { goHome } from './app'
+import { homeStore, userStore } from '../store/index'
 
 type Events = {
   // 从websocket接受到信息 start
@@ -12,6 +15,18 @@ type Events = {
       eventType: keyof typeof WSEventType
     }
   }
+  // 消息推送集合，接收包含云端的ws推送和mqtt的推送消息
+  msgPush: {
+    source: 'ws' | 'mqtt'
+    reqId: string
+    result: {
+      topic?: string
+      message?: string
+      eventData: IAnyObject
+      eventType: keyof typeof WSEventType
+    }
+  }
+
   group_device_result_status: {
     devId: string
     modelName: string
@@ -72,6 +87,56 @@ export const WSEventType = {
   scene_upt: 'scene_upt', // 创建场景
   scene_del: 'scene_del', // 场景删除
   scene_enabled: 'scene_enabled', //场景使能切换
+  del_house_user: 'del_house_user', // 家庭用户被删除
+  change_house_user_auth: 'change_house_user_auth' // 用户角色变更
 }
 
 export const emitter: Emitter<Events> = mitt<Events>()
+
+const receiveMsgIdMap = {} as { [x: string]: boolean }
+
+emitter.on('msgPush', (res) => {
+  const { reqId, result } = res
+  const { eventType, eventData } = result
+
+  // 目前云端ws仅部分消息类型增加了reqId字段，明确哪个类型的消息需要的云端才会增加
+  if (reqId) {
+    // 根据reqId判断ws和mqtt推送的消息是否重复，是则不重复处理，忽略该消息
+    if (receiveMsgIdMap[reqId]) {
+      Logger.console('✘ 重复push信息：', res)
+
+      delete receiveMsgIdMap[reqId]
+  
+      return
+    }
+
+    receiveMsgIdMap[reqId] = true
+  }
+
+  Logger.console('☄ 推送信息：', res, eventType)
+
+  emitter.emit(eventType as any, eventData)
+  emitter.emit('wsReceive', res)
+
+  // 全局加上进入家庭的消息提示（暂时方案）
+  if (eventType === 'invite_user_house' && eventData) {
+    wx.showToast({
+      title: eventData as unknown as string, // 强制ts类型转换
+      icon: 'none',
+    })
+  } else if (eventType === 'del_house_user' && userStore.userInfo.userId === eventData.userId) {
+    // 仅家庭创建者触发监听，监听家庭移交是否成功
+    wx.showModal({
+      content: `你已被退出“${homeStore.currentHomeDetail.houseName}”家庭`,
+      showCancel: false,
+      confirmText: '我知道了',
+      confirmColor: '#488FFF',
+      complete() {
+        homeStore.updateHomeInfo()
+        goHome()
+      },
+    })
+  } else if (eventType === 'change_house_user_auth' && userStore.userInfo.userId === eventData.userId) {
+    homeStore.updateHomeInfo()
+  }
+})

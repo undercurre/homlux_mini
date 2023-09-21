@@ -7,6 +7,7 @@ import {
   setCurrentEnv,
   Logger,
   isConnect,
+  emitter,
 } from './utils/index'
 import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore, sceneStore } from './store/index'
@@ -109,11 +110,32 @@ App<IAppOption>({
     homOs.login({
       homeId: homeStore.currentHomeDetail.houseId,
       key: homeStore.key,
+      // host: { level: 200, ip: '192.168.3.96', devId: '1694499802565103', SSID: 'test' },
       // host: { ip: '192.168.1.129', devId: '1694499802565103', SSID: 'test' },
     })
 
-    homOs.onMessage((res: IAnyObject) => {
-      Logger.log('homOs.onMessage', res)
+    homOs.onMessage((res: { topic: string; reqId: string; data: IAnyObject }) => {
+      Logger.console('Ⓜ 推送mqtt信息：', res)
+
+      const { topic, reqId, data } = res
+
+      // 子设备状态变更
+      if (topic === '/local/subDeviceStatus') {
+        const deviceInfo = data.deviceStatusInfoList[0]
+
+        emitter.emit('msgPush', {
+          source: 'mqtt',
+          reqId: reqId,
+          result: {
+            eventType: 'device_property',
+            eventData: {
+              deviceId: deviceInfo.devId,
+              event: deviceInfo.deviceProperty,
+              modelName: deviceInfo.modelName,
+            },
+          },
+        })
+      }
     })
   },
 

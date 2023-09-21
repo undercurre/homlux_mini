@@ -4,7 +4,6 @@ import { connectHouseSocket } from '../apis/websocket'
 import { homeStore, userStore } from '../store/index'
 import { emitter } from './eventBus'
 import { Logger } from './log'
-import { goHome } from './app'
 import homos from 'js-homos'
 
 export function logout() {
@@ -75,34 +74,20 @@ export async function startWebsocketService() {
   socketTask.onMessage((e) => {
     try {
       const res = JSON.parse(e.data as string)
-      const { eventType, eventData, topic, message } = res.result
-      Logger.console('☄ 接收到socket信息：', res, eventType, eventData)
-      emitter.emit('wsReceive', res)
-      emitter.emit(eventType, eventData)
 
-      // 全局加上进入家庭的消息提示（暂时方案）
-      if (eventType === 'invite_user_house' && eventData) {
-        wx.showToast({
-          title: eventData,
-          icon: 'none',
-        })
-      } else if (eventType === 'del_house_user' && userStore.userInfo.userId === eventData.userId) {
-        // 仅家庭创建者触发监听，监听家庭移交是否成功
-        wx.showModal({
-          content: `你已被退出“${homeStore.currentHomeDetail.houseName}”家庭`,
-          showCancel: false,
-          confirmText: '我知道了',
-          confirmColor: '#488FFF',
-          complete() {
-            homeStore.updateHomeInfo()
-            goHome()
-          },
-        })
-      } else if (eventType === 'change_house_user_auth' && userStore.userInfo.userId === eventData.userId) {
-        homeStore.updateHomeInfo()
-      } else if (topic === 'heartbeatTopic') {
+      Logger.console('Ⓦ 推送ws信息：', res)
+
+      const { topic, message, eventData } = res.result
+
+      if (topic === 'heartbeatTopic') {
         // 缓存上一次收到的心跳包id
         heartbeatInfo.lastMsgId = message.msgId
+      } else {
+        emitter.emit('msgPush', {
+          source: 'ws',
+          reqId: eventData.reqId,
+          result: res.result,
+        })
       }
     } catch (err) {
       Logger.error('接收到socket信息：', e.data)
@@ -111,12 +96,6 @@ export async function startWebsocketService() {
   })
   socketTask.onError((err) => {
     Logger.error('socket错误onError：', err)
-    // 防止重复收到error事件，重复触发重连
-    connectTimeId = setTimeout(() => {
-      clearTimeout(connectTimeId)
-      Logger.log('socket重连')
-      startWebsocketService()
-    }, 10000)
   })
 }
 
@@ -143,8 +122,8 @@ function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {
   // 4001: token校验不通过
   if (e.code !== 1000 && e.code !== 4001) {
     Logger.error('socket异常关闭连接', e)
+    clearTimeout(connectTimeId)
     connectTimeId = setTimeout(() => {
-      clearTimeout(connectTimeId)
       Logger.log('socket重连')
       startWebsocketService()
     }, 5000)
