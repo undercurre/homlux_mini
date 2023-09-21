@@ -11,7 +11,7 @@ declare namespace Remoter {
     deviceName: string
     deviceType: string // 设备品类
     deviceModel: string // 设备型号
-    actionStatus: boolean // 快捷开关状态
+    actionStatus: boolean | undefined // 快捷开关状态
     saved: boolean // 是否已保存在本地（我的设备）
     DISCOVERED?: number // 是否被搜索到, 用于我的设备列表
     connected?: boolean // 是否与设备建立连接
