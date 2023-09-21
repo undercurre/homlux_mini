@@ -22,6 +22,8 @@ export function setNavigationBarAndBottomBarHeight() {
 
   // 手机系统
   storage.set('system', system, null)
+  // 手机平台
+  storage.set('platform', platform, null)
   // 屏幕高度
   storage.set('windowHeight', windowHeight, null)
   // 状态栏高度

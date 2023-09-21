@@ -32,7 +32,7 @@ ComponentWithComputed({
 
       this.setData({
         prevPages: pages.length,
-        defaultPage,
+        defaultPage: defaultPage || 'index', // 如果用户是首次进入，则选择默认首页
       })
 
       // 若已设置过默认页，并且不是从设置页跳转过来，则直接跳转到目标页面
