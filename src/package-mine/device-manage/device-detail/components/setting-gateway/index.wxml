@@ -6,7 +6,7 @@
     <van-cell-group inset>
       <van-cell title="信道" bind:click="toggleActionSheet" is-link="{{!isRelease && isManager}}" value="{{channelText}}"></van-cell>
 
-      <van-cell v-if="{{isManager}}" title="更改WiFi" bind:click="toChangeWifi" is-link border="{{false}}"></van-cell>
+      <van-cell v-if="{{!deviceInfo.isScreenGateway && isManager}}" title="更改WiFi" bind:click="toChangeWifi" is-link border="{{false}}"></van-cell>
     </van-cell-group>
   </view>
 </view>

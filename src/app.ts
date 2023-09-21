@@ -110,12 +110,12 @@ App<IAppOption>({
     homOs.login({
       homeId: homeStore.currentHomeDetail.houseId,
       key: homeStore.key,
-      // host: { level: 200, ip: '192.168.3.96', devId: '1694499802565103', SSID: 'test' },
+      host: { level: 200, ip: '192.168.3.96', devId: '1694499802565103', SSID: 'test' },
       // host: { ip: '192.168.1.129', devId: '1694499802565103', SSID: 'test' },
     })
 
     homOs.onMessage((res: { topic: string; reqId: string; data: IAnyObject }) => {
-      Logger.console('Ⓜ 推送mqtt信息：', res)
+      Logger.console('Ⓜ 收到mqtt推送：', res)
 
       const { topic, reqId, data } = res
 
@@ -135,6 +135,8 @@ App<IAppOption>({
             },
           },
         })
+      } else {
+        Logger.console('➤ 未处理的mqtt推送：', res)
       }
     })
   },

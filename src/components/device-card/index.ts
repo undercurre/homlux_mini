@@ -130,6 +130,11 @@ ComponentWithComputed({
     switchDeviceName(data) {
       return data.deviceInfo.deviceName.slice(0, 5)
     },
+
+    // 设备是否可控
+    canCtrl(data) {
+      return data.deviceInfo.onLineStatus || data.deviceInfo.canLanCtrl
+    }
   },
 
   /**
@@ -143,7 +148,7 @@ ComponentWithComputed({
           clientRect: this.data._clientRect,
         })
       } else {
-        if (this.data.deviceInfo.onLineStatus) {
+        if (this.data.canCtrl) {
           this.triggerEvent('cardTap', {
             ...this.data.deviceInfo,
             clientRect: this.data._clientRect,
@@ -160,7 +165,7 @@ ComponentWithComputed({
      * 处理中部位置点击时的事件，优化交互手感
      */
     handleMiddleTap() {
-      if (this.data.showControl && this.data.deviceInfo.onLineStatus) {
+      if (this.data.showControl && this.data.canCtrl) {
         this.handlePowerTap()
       } else {
         this.handleCardTap()
@@ -188,7 +193,7 @@ ComponentWithComputed({
     ),
     handlePowerTap() {
       // 如果设备离线，刚转为点击卡片
-      if (!this.data.deviceInfo.onLineStatus) {
+      if (!this.data.canCtrl) {
         this.handleCardTap()
         return
       }

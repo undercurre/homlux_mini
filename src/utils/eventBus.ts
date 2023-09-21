@@ -88,7 +88,7 @@ export const WSEventType = {
   scene_del: 'scene_del', // 场景删除
   scene_enabled: 'scene_enabled', //场景使能切换
   del_house_user: 'del_house_user', // 家庭用户被删除
-  change_house_user_auth: 'change_house_user_auth' // 用户角色变更
+  change_house_user_auth: 'change_house_user_auth', // 用户角色变更
 }
 
 export const emitter: Emitter<Events> = mitt<Events>()
@@ -103,17 +103,17 @@ emitter.on('msgPush', (res) => {
   if (reqId) {
     // 根据reqId判断ws和mqtt推送的消息是否重复，是则不重复处理，忽略该消息
     if (receiveMsgIdMap[reqId]) {
-      Logger.console('✘ 重复push信息：', res)
+      Logger.console('✘ 重复push消息：', res)
 
       delete receiveMsgIdMap[reqId]
-  
+
       return
     }
 
     receiveMsgIdMap[reqId] = true
   }
 
-  Logger.console('☄ 推送信息：', res, eventType)
+  Logger.console('☄ 推送消息：', res, eventType)
 
   emitter.emit(eventType as any, eventData)
   emitter.emit('wsReceive', res)
