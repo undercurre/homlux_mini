@@ -6,7 +6,7 @@
 .tool-bar {
   position: absolute;
   top: 60rpx;
-  right: 8rpx;
+  right: 20rpx;
 }
 .img-wrapper {
   padding: 20rpx;

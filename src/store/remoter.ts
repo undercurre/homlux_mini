@@ -2,7 +2,7 @@ import { observable, runInAction } from 'mobx-miniprogram'
 import { storage } from '../utils/index'
 import { deviceConfig } from '../config/remoter'
 
-// 是否开启模拟数据，用于模型器样式调整(经缓存记录，故第二次打开才显示模拟数据)
+// 是否开启模拟数据，用于模型器样式调整
 const { platform } = wx.getSystemInfoSync()
 const IS_MOCK = platform === 'devtools'
 
@@ -108,7 +108,8 @@ export const remoterStore = observable({
 
   // 从本地缓存初始化/重置【我的设备】列表
   retrieveRmStore() {
-    const list = (storage.get(RM_KEY) ?? IS_MOCK ? MOCK_DEVICES : []) as Remoter.DeviceItem[]
+    const defaultList = IS_MOCK ? MOCK_DEVICES : []
+    const list = (storage.get(RM_KEY) ?? defaultList) as Remoter.DeviceItem[]
 
     runInAction(() => {
       this.remoterList = list
@@ -125,11 +126,11 @@ export const remoterStore = observable({
       const isDiscovered = rListIds.includes(addr)
       const actionKey = actions[defaultAction].key ?? ''
 
-      let actionStatus = false
+      let actionStatus
       if (isDiscovered) {
         const rd = recoveredList.find((d) => d.addr === addr)
         const { deviceAttr } = rd!
-        actionStatus = deviceAttr[actionKey] ?? false
+        actionStatus = deviceAttr[actionKey]
       }
 
       return {
