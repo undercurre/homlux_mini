@@ -81,14 +81,22 @@ ComponentWithComputed({
             const deviceType = item!.deviceType
             const deviceModel = item!.deviceModel
             const config = deviceConfig[deviceType][deviceModel]
-            // 同品类同型号设备的数量
-            const deviceCount = remoterStore.remoterList.filter(
+
+            // 同品类同型号设备的数量，包括已保存、新发现
+            const savedDeviceCount = remoterStore.remoterList.filter(
               (device) => device.deviceType === deviceType && device.deviceModel === deviceModel,
             ).length
-            // 加上编号后缀，以避免同名混淆
-            const deviceName = remoterStore.deviceNames.includes(config.deviceName)
-              ? config.deviceName + (deviceCount + 1)
-              : config.deviceName
+            const newDeviceCount = foundList.filter(
+              (device) => device.deviceType === deviceType && device.deviceModel === deviceModel,
+            ).length
+            const deviceNameSuffix = savedDeviceCount + newDeviceCount + 1
+
+            // 如果设备名已存在，则加上编号后缀，以避免同名混淆
+            const hasSavedName = remoterStore.deviceNames.includes(config.deviceName)
+            const hasFoundName = foundList.findIndex((d) => d.deviceName === config.deviceName) > -1
+            const deviceName = hasSavedName || hasFoundName ? config.deviceName + deviceNameSuffix : config.deviceName
+
+            console.log({ savedDeviceCount, newDeviceCount, hasSavedName, hasFoundName })
 
             // 更新发现设备列表
             foundList.push({

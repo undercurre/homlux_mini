@@ -3,7 +3,8 @@ import { storage } from '../utils/index'
 import { deviceConfig } from '../config/remoter'
 
 // 是否开启模拟数据，用于模型器样式调整(经缓存记录，故第二次打开才显示模拟数据)
-const IS_MOCK = storage.get('platform') === 'devtools'
+const { platform } = wx.getSystemInfoSync()
+const IS_MOCK = platform === 'devtools'
 
 const MOCK_DEVICES = [
   {
