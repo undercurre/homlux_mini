@@ -185,10 +185,13 @@ export const deviceStore = observable({
         })
       runInAction(() => {
         roomStore.roomDeviceList = list
-        deviceStore.allRoomDeviceList = res.result.map(item => {
+        deviceStore.allRoomDeviceList = res.result.map((item) => {
           const { deviceId, updateStamp } = item
 
-          const canLanCtrl = item.deviceType === 4 ? homOs.isSupportLan({ groupId: deviceId, updateStamp, }) : homOs.isSupportLan({ deviceId, })
+          const canLanCtrl =
+            item.deviceType === 4
+              ? homOs.isSupportLan({ groupId: deviceId, updateStamp })
+              : homOs.isSupportLan({ deviceId })
 
           return {
             ...item,

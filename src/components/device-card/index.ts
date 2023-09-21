@@ -134,7 +134,7 @@ ComponentWithComputed({
     // 设备是否可控
     canCtrl(data) {
       return data.deviceInfo.onLineStatus || data.deviceInfo.canLanCtrl
-    }
+    },
   },
 
   /**

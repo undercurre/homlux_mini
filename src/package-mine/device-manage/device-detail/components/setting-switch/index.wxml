@@ -5,7 +5,7 @@
   </view>
   <view class="w-750rpx">
     <van-cell-group inset>
-      <van-cell center is-link="{{canEditDevice}}" wx:for="{{switchList}}" wx:key="switchId" bind:click="handleSwitchClick" data-index="{{index}}" title="{{item.switchName}}" border="{{switchList.lenght - 1 > index}}">
+      <van-cell center is-link="{{canEditDevice}}" wx:for="{{switchList}}" wx:key="switchId" bind:click="handleSwitchClick" data-index="{{index}}" title="{{item.switchName}}" border="{{switchList.length - 1 > index}}">
         <view slot="icon">
           <image class="w-96rpx h-96rpx bg-hex-f6fafd mr-32rpx rounded-999" src="{{item.pic}}" />
         </view>
