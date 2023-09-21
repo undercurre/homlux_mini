@@ -16,13 +16,13 @@ ComponentWithComputed({
     MIN_RSSI,
     _envVersion: 'release', // 当前小程序环境，默认为发布版，用于屏蔽部分实验功能
     _listenLocationTimeId: 0, // 监听系统位置信息是否打开的计时器， 0为不存在监听
-    statusBarHeight: storage.get<number>('statusBarHeight') as number,
+    statusBarHeight: storage.get('statusBarHeight') as number,
     scrollTop: 0,
     scrollViewHeight:
-      (storage.get<number>('windowHeight') as number) -
-      (storage.get<number>('statusBarHeight') as number) -
-      (storage.get<number>('bottomBarHeight') as number) - // IPX
-      (storage.get<number>('navigationBarHeight') as number),
+      (storage.get('windowHeight') as number) -
+      (storage.get('statusBarHeight') as number) -
+      (storage.get('bottomBarHeight') as number) - // IPX
+      (storage.get('navigationBarHeight') as number),
     showTips: false, // 首次进入显示操作提示
     tipsStep: 0,
     isSeeking: false, // 正在搜索设备
@@ -143,6 +143,8 @@ ComponentWithComputed({
     },
 
     async onShow() {
+      await delay(0)
+
       // 搜索一轮设备
       this.toSeek()
       // 获取已连接的设备
@@ -201,7 +203,7 @@ ComponentWithComputed({
       this.initDrag()
     },
 
-    // 将新发现设备, 点击添加到我的设备
+    // 将新发现设备, 添加到[我的设备]
     saveDevice(device: Remoter.DeviceItem) {
       const { addr } = device
       const index = this.data.foundList.findIndex((device) => device.addr === addr)
@@ -263,10 +265,12 @@ ComponentWithComputed({
       }
 
       // 广播控制指令
-      bleAdvertising(this.data._bleServer, {
+      await bleAdvertising(this.data._bleServer, {
         addr,
         payload,
       })
+
+      await this.toSeek()
     },
     // 搜索设备
     async toSeek() {

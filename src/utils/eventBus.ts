@@ -88,7 +88,7 @@ export const WSEventType = {
   scene_del: 'scene_del', // 场景删除
   scene_enabled: 'scene_enabled', //场景使能切换
   del_house_user: 'del_house_user', // 家庭用户被删除
-  change_house_user_auth: 'change_house_user_auth' // 用户角色变更
+  change_house_user_auth: 'change_house_user_auth', // 用户角色变更
 }
 
 export const emitter: Emitter<Events> = mitt<Events>()
@@ -106,7 +106,7 @@ emitter.on('msgPush', (res) => {
       Logger.console('✘ 重复push信息：', res)
 
       delete receiveMsgIdMap[reqId]
-  
+
       return
     }
 
