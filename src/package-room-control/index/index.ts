@@ -15,7 +15,17 @@ import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { sendDevice, execScene, saveDeviceOrder } from '../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
-import { storage, emitter, WSEventType, rpx2px, _get, throttle, toPropertyDesc, isNullOrUnDef } from '../../utils/index'
+import {
+  storage,
+  emitter,
+  WSEventType,
+  rpx2px,
+  _get,
+  throttle,
+  toPropertyDesc,
+  isNullOrUnDef,
+  transferDeviceProperty,
+} from '../../utils/index'
 import { proName, PRO_TYPE, LIST_PAGE, CARD_W, CARD_H, MODEL_NAME } from '../../config/index'
 
 type DeviceCard = Device.DeviceItem & {
@@ -476,9 +486,13 @@ ComponentWithComputed({
               }
             })
 
+            const modelName =
+              originDevice.proType === PRO_TYPE.switch
+                ? originDevice.uniId.split(':')[1]
+                : MODEL_NAME[originDevice.proType]
+
             // 如果mzgdPropertyDTOList、switchInfoDTOList字段存在，则覆盖更新
             if (device!.mzgdPropertyDTOList) {
-              const modelName = originDevice.proType === PRO_TYPE.switch ? originDevice.uniId.split(':')[1] : 'light'
               const newVal = {
                 ...originDevice.mzgdPropertyDTOList[modelName],
                 ...device?.mzgdPropertyDTOList[modelName],
@@ -501,25 +515,26 @@ ComponentWithComputed({
             }
 
             // 如果控制弹框为显示状态，则同步选中设备的状态
-            // 因为异常推送较多，暂时不对弹框中的设备状态进行更新
-            // if (
-            //   device!.mzgdPropertyDTOList &&
-            //   this.data.checkedList.includes(originDevice!.deviceId) &&
-            //   originDevice!.select
-            // ) {
-            //   const prop = transferDeviceProperty(originDevice.proType, device!.mzgdPropertyDTOList['1'])
-            //   if (originDevice.proType === PRO_TYPE.light) {
-            //     diffData.lightStatus = {
-            //       Level: prop.Level,
-            //       ColorTemp: prop.ColorTemp,
-            //       OnOff: prop.OnOff,
-            //     }
-            //   } else if (originDevice.proType === PRO_TYPE.curtain) {
-            //     diffData.curtainStatus = {
-            //       position: prop.curtain_position,
-            //     }
-            //   }
-            // }
+            if (
+              device!.mzgdPropertyDTOList &&
+              this.data.checkedList.includes(originDevice!.deviceId) &&
+              originDevice!.select
+            ) {
+              const prop = transferDeviceProperty(originDevice.proType, device!.mzgdPropertyDTOList[modelName])
+              // 因为【灯】异常推送较多，暂时不对弹框中的设备状态进行更新
+              //   if (originDevice.proType === PRO_TYPE.light) {
+              //     diffData.lightStatus = {
+              //       Level: prop.Level,
+              //       ColorTemp: prop.ColorTemp,
+              //       OnOff: prop.OnOff,
+              //     }
+              //   } else
+              if (originDevice.proType === PRO_TYPE.curtain) {
+                diffData.curtainStatus = {
+                  position: prop.curtain_position,
+                }
+              }
+            }
 
             if (Object.keys(diffData).length) {
               this.setData(diffData)

@@ -1,16 +1,6 @@
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
-import Dialog from '@vant/weapp/dialog/dialog'
-import {
-  isAndroid,
-  Logger,
-  checkWxBlePermission,
-  storage,
-  unique,
-  isNullOrUnDef,
-  emitter,
-  delay,
-} from '../../utils/index'
+import { initBleCapacity, storage, unique, isNullOrUnDef, emitter, delay } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import { createBleServer, bleAdvertising } from '../../utils/remoterUtils'
 import { deviceConfig, MIN_RSSI, SEEK_TIMEOUT, CMD } from '../../config/remoter'
@@ -24,8 +14,6 @@ ComponentWithComputed({
    */
   data: {
     MIN_RSSI,
-    isWxBlePermit: false, // 微信蓝牙权限是否开启
-    isSystemBlePermit: false, // 系统蓝牙权限是否开启
     _envVersion: 'release', // 当前小程序环境，默认为发布版，用于屏蔽部分实验功能
     _listenLocationTimeId: 0, // 监听系统位置信息是否打开的计时器， 0为不存在监听
     statusBarHeight: storage.get<number>('statusBarHeight') as number,
@@ -140,7 +128,7 @@ ComponentWithComputed({
       // })
 
       // 搜索一轮设备
-      this.toSeek()
+      // this.toSeek()
 
       // 版本获取
       const info = wx.getAccountInfoSync()
@@ -156,7 +144,7 @@ ComponentWithComputed({
 
     async onShow() {
       // 搜索一轮设备
-      // this.toSeek()
+      this.toSeek()
       // 获取已连接的设备
       // this.getConnectedDevices()
     },
@@ -211,120 +199,6 @@ ComponentWithComputed({
     initDeviceList() {
       remoterStore.retrieveRmStore()
       this.initDrag()
-    },
-
-    /**
-     * @description 初始化蓝牙模块，只检查权限，未实质打开服务
-     */
-    async initCapacity() {
-      await this.consultWxBlePermission()
-      if (!this.data.isWxBlePermit) {
-        return
-      }
-
-      this.consultSystemBlePermission()
-      if (!this.data.isSystemBlePermit) {
-        return
-      }
-
-      // 安卓需要同时打开位置开关及权限
-      if (isAndroid()) {
-        this.consultSystemLocation()
-      }
-    },
-
-    /**
-     * 检查小程序蓝牙权限
-     */
-    async consultWxBlePermission() {
-      const isWxBlePermit = await checkWxBlePermission()
-      if (isWxBlePermit) {
-        this.setData({
-          isWxBlePermit,
-        })
-        return true
-      }
-
-      Dialog.confirm({
-        title: '请授权小程序使用蓝牙',
-        cancelButtonText: '知道了',
-        confirmButtonText: '去设置',
-        confirmButtonOpenType: 'openSetting', // 确认按钮的微信开放能力
-      }).catch(() => Logger.error('WxBlePermission Refused'))
-
-      return false
-    },
-
-    /**
-     * 检查系统蓝牙开关、对微信的授权
-     */
-    consultSystemBlePermission() {
-      const systemSetting = wx.getSystemSetting()
-      console.log('[getSystemSetting]', systemSetting)
-      this.setData({
-        isSystemBlePermit: systemSetting.bluetoothEnabled,
-      })
-
-      if (!this.data.isSystemBlePermit) {
-        Dialog.confirm({
-          title: '请打开手机蓝牙开关并授权微信使用',
-          cancelButtonText: '知道了',
-          confirmButtonText: '查看指引',
-        })
-          .then(() => {
-            wx.navigateTo({
-              url: '/package-mine/guideline/index?type=bleEnable',
-            })
-          })
-          .catch(() => Logger.error('未查看指引'))
-
-        // 监听蓝牙状态的变化
-        const listen = (res: WechatMiniprogram.OnBluetoothAdapterStateChangeCallbackResult) => {
-          this.setData({
-            isSystemBlePermit: res.available,
-          })
-          if (res.available) {
-            Logger.log('System Ble Adapter Ready')
-            wx.offBluetoothAdapterStateChange(listen)
-          }
-        }
-        wx.onBluetoothAdapterStateChange(listen)
-      }
-    },
-    /**
-     * 检查系统位置信息开关、对微信的授权
-     */
-    consultSystemLocation() {
-      if (this.data._listenLocationTimeId) {
-        return
-      }
-
-      const systemSetting = wx.getSystemSetting()
-
-      if (!systemSetting.locationEnabled) {
-        Dialog.confirm({
-          title: '请打开手机系统的位置信息开关',
-          cancelButtonText: '知道了',
-          confirmButtonText: '查看指引',
-        })
-          .then(() => {
-            wx.navigateTo({
-              url: '/package-mine/guideline/index?type=bleEnable',
-            })
-          })
-          .catch(() => Logger.error('未查看指引'))
-
-        // 轮询设备
-        this.data._listenLocationTimeId = setInterval(() => {
-          const systemSetting = wx.getSystemSetting()
-
-          if (systemSetting.locationEnabled) {
-            clearInterval(this.data._listenLocationTimeId)
-            this.data._listenLocationTimeId = 0
-            this.initCapacity()
-          }
-        }, 3000)
-      }
     },
 
     // 将新发现设备, 点击添加到我的设备
@@ -396,7 +270,7 @@ ComponentWithComputed({
     },
     // 搜索设备
     async toSeek() {
-      await this.initCapacity()
+      await initBleCapacity()
 
       this.setData({
         isSeeking: true,
