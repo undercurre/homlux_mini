@@ -2,6 +2,45 @@ import { observable, runInAction } from 'mobx-miniprogram'
 import { storage } from '../utils/index'
 import { deviceConfig } from '../config/remoter'
 
+// 是否开启模拟数据，用于模型器样式调整
+const { platform } = wx.getSystemInfoSync()
+const IS_MOCK = platform === 'devtools'
+
+const MOCK_DEVICES = [
+  {
+    dragId: '112233445566',
+    orderNum: 1,
+    deviceId: '0',
+    addr: '112233445566',
+    devicePic: '/assets/img/remoter/fanLight.png',
+    deviceName: '风扇灯Mock',
+    deviceType: '13',
+    deviceModel: '02',
+    saved: true,
+    actionStatus: true,
+    defaultAction: 0,
+    DISCOVERED: 0,
+  },
+] as Remoter.DeviceItem[]
+
+// 设备列表缓存键名
+const RM_KEY = 'remoterListLS'
+
+// 保存数据到缓存，只保存指定的键
+export const saveRmList = (list: Remoter.DeviceItem[], key = RM_KEY) => {
+  const filterList = list.map((r) => ({
+    orderNum: r.orderNum,
+    addr: r.addr,
+    deviceId: r.deviceId,
+    deviceName: r.deviceName,
+    deviceType: r.deviceType,
+    deviceModel: r.deviceModel,
+    actionStatus: r.actionStatus,
+    defaultAction: r.defaultAction,
+  }))
+  storage.set(key, filterList)
+}
+
 export const remoterStore = observable({
   // 我的设备列表，只需要保存部分属性
   remoterList: [] as Remoter.DeviceItem[],
@@ -69,7 +108,8 @@ export const remoterStore = observable({
 
   // 从本地缓存初始化/重置【我的设备】列表
   retrieveRmStore() {
-    const list = (storage.get('remoterListLS') ?? []) as Remoter.DeviceItem[]
+    const defaultList = IS_MOCK ? MOCK_DEVICES : []
+    const list = (storage.get(RM_KEY) ?? defaultList) as Remoter.DeviceItem[]
 
     runInAction(() => {
       this.remoterList = list
@@ -86,11 +126,11 @@ export const remoterStore = observable({
       const isDiscovered = rListIds.includes(addr)
       const actionKey = actions[defaultAction].key ?? ''
 
-      let actionStatus = false
+      let actionStatus
       if (isDiscovered) {
         const rd = recoveredList.find((d) => d.addr === addr)
         const { deviceAttr } = rd!
-        actionStatus = deviceAttr[actionKey] ?? false
+        actionStatus = deviceAttr[actionKey]
       }
 
       return {
@@ -123,7 +163,7 @@ export const remoterStore = observable({
     runInAction(() => {
       this.remoterList[index].deviceName = deviceName
     })
-    storage.set('remoterListLS', this.remoterList)
+    saveRmList(this.remoterList)
   },
 
   // 修改当前遥控器默认首页开关
@@ -136,7 +176,7 @@ export const remoterStore = observable({
     runInAction(() => {
       this.remoterList[index].defaultAction = key
     })
-    storage.set('remoterListLS', this.remoterList)
+    saveRmList(this.remoterList)
   },
 
   // 删除当前遥控器
@@ -147,7 +187,7 @@ export const remoterStore = observable({
     runInAction(() => {
       this.remoterList = list
     })
-    storage.set('remoterListLS', list)
+    saveRmList(list)
   },
 
   // 整体更新【我的设备】列表，并保存到本地缓存 // TODO 过滤元素，优化类型定义
@@ -155,13 +195,13 @@ export const remoterStore = observable({
     runInAction(() => {
       this.remoterList = list
     })
-    storage.set('remoterListLS', list)
+    saveRmList(list)
   },
 
   // 添加新的设备 // TODO 过滤元素，优化类型定义
   addRemoter(device: Remoter.DeviceItem) {
     const list = [...this.remoterList, device]
-    storage.set('remoterListLS', list)
+    saveRmList(list)
     runInAction(() => {
       this.remoterList.push(device)
     })

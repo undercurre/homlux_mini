@@ -233,6 +233,10 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
       ],
       actions: [
         {
+          key: 'BATH_LAMP',
+          name: '照明',
+        },
+        {
           key: 'BATH_ALL_OFF',
           name: '待机',
         },
@@ -247,10 +251,6 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
         {
           key: 'BATH_DRY',
           name: '干燥',
-        },
-        {
-          key: 'BATH_LAMP',
-          name: '照明',
         },
       ],
     },

@@ -18,12 +18,12 @@ ComponentWithComputed({
     },
     desc(data) {
       const device = data.item?.data ?? data.item
-      const { actionStatus, connected } = device
+      const { actionStatus, DISCOVERED } = device
       const action = device.actions[device.defaultAction]
       if (device?.saved === true) {
-        const statusText = actionStatus ? '开启' : '关闭' // TODO 不存在的状态
-        const connectText = connected ? '|已连接' : ''
-        return `${action.name}${statusText}${connectText}`
+        const connectText = DISCOVERED === 1 ? '已连接' : '未连接'
+        const statusText = actionStatus ? '开启' : '关闭'
+        return typeof actionStatus === 'boolean' ? `${action.name}${statusText}` : connectText
       }
       return '未连接'
     },

@@ -1,7 +1,7 @@
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { CMD, FACTORY_ADDR } from '../../config/remoter'
-import { emitter, Logger, initBleCapacity } from '../../utils/index'
+import { emitter, Logger, initBleCapacity, storage } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import {
   createBleServer,
@@ -22,6 +22,8 @@ ComponentWithComputed({
   data: {
     isDebugMode: false,
     isFactoryMode: false, // 工厂调试模式，按特定的地址发送指令
+    toolbarMarginTop:
+      (storage.get('statusBarHeight') as number) + (storage.get('navigationBarHeight') as number) + 'px',
     _envVersion: 'release', // 当前小程序环境，默认为发布版，用于屏蔽部分实验功能
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
     _bleService: null as BleService | null,

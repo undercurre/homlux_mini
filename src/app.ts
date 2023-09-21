@@ -36,7 +36,7 @@ App<IAppOption>({
 
     homOs.init({ mqttLib: mqtt })
 
-    // 如果用户是首次进入，则选择默认首页
+    // 从缓存中读取默认首页
     const defaultPage = (storage.get<string>('defaultPage') ?? '') as string
     console.log({ defaultPage })
     if (defaultPage) {

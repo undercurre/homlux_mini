@@ -1,15 +1,21 @@
 <view class="page-container flex flex-col">
   <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" bind:longpress="toggleDebug" title="{{curRemoter.deviceName}}"></nav-bar>
 
-  <view class="text-right py-32rpx pr-44rpx">
+  <view class="tool-bar" style="top: {{toolbarMarginTop}}">
     <!-- 工厂产测模式 -->
-    <image class="w-48 h-48 mr-48rpx" src="/assets/img/mine/gateway.png" bind:tap="toggleAddr" wx:if="{{isDebugMode}}"></image>
+    <div class="img-wrapper" bind:tap="toggleAddr" wx:if="{{isDebugMode}}">
+      <image class="w-48 h-48 mr-48rpx" src="/assets/img/mine/gateway.png"></image>
+    </div>
     <!-- 基于连接的指令调试 -->
-    <!-- <image class="w-48 h-48 mr-48rpx" src="{{connectIcon}}" bind:tap="toggleBleMode" wx:if="{{isDebugMode}}"></image> -->
-    <image class="w-48 h-48" src="/assets/img/home-manage/setting.png" bind:tap="toSetting"></image>
+    <!-- <div class="img-wrapper" bind:tap="toggleBleMode" wx:if="{{isDebugMode}}">
+      <image class="w-48 h-48 mr-48rpx" src="{{connectIcon}}"></image>
+    </div> -->
+    <div class="img-wrapper" bind:tap="toSetting">
+      <image class="w-48 h-48" src="/assets/img/home-manage/setting.png"></image>
+    </div>
   </view>
 
-  <view class="flex-col-center">
+  <view class="flex-col-center flex-1">
     <view class="joystick" wx:if="{{curRemoter.joystick}}">
       <mz-button class="absolute up" img="/package-remoter/assets/up.png" imgActive="/package-remoter/assets/upActive.png" imgWidth="304rpx" imgHeight="142rpx" icon="{{curRemoter.joystick.up.icon}}" iconActive="{{curRemoter.joystick.up.iconActive}}" bind:touchstart="btnTap" data-key="{{curRemoter.joystick.up.key}}" data-lp-key="{{curRemoter.joystick.up.key}}" data-dir="U" bind:longpress="handleLongPress" bind:touchend="handleTouchEnd"></mz-button>
 
