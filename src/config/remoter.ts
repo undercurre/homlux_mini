@@ -160,8 +160,102 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
     },
   },
   '26': {
-    // MY-S5X28-Y5W，MY-S5X28-Y6W
-    '01': {
+    // MY-S5X28-Y5W
+    '02': { // 0010 无人感
+      deviceName: '浴霸',
+      devicePic: '/assets/img/remoter/bathHeater.png',
+      joystick: {
+        up: {
+          key: 'BATH_BRIGHT_PLUS',
+          icon: '/package-remoter/assets/bright1.png',
+          iconActive: '/package-remoter/assets/bright0.png',
+        },
+        right: {
+          key: 'BATH_WARM_STRONG',
+          icon: '/package-remoter/assets/warm3.png',
+          iconActive: '/package-remoter/assets/warm2.png',
+          name: '强暖',
+        },
+        down: {
+          key: 'BATH_BRIGHT_MINUS',
+          icon: '/package-remoter/assets/bright3.png',
+          iconActive: '/package-remoter/assets/bright2.png',
+        },
+        left: {
+          key: 'BATH_WARM_SOFT',
+          icon: '/package-remoter/assets/warm1.png',
+          iconActive: '/package-remoter/assets/warm0.png',
+          name: '弱暖',
+        },
+        middle: {
+          key: 'FACTORY',
+        },
+      },
+      mList: [
+        {
+          key: 'BATH_AUTO',
+          icon: '/package-remoter/assets/scene81.png',
+          iconActive: '/package-remoter/assets/scene80.png',
+          name: '安心沐浴',
+        },
+        {
+          key: 'BATH_WIND',
+          icon: '/package-remoter/assets/scene91.png',
+          iconActive: '/package-remoter/assets/scene90.png',
+          name: '吹风',
+        },
+        {
+          key: 'BATH_VENTILATE',
+          icon: '/package-remoter/assets/sceneA1.png',
+          iconActive: '/package-remoter/assets/sceneA0.png',
+          name: '换气',
+        },
+        {
+          key: 'BATH_DRY',
+          icon: '/package-remoter/assets/sceneB1.png',
+          iconActive: '/package-remoter/assets/sceneB0.png',
+          name: '干燥',
+        },
+      ],
+      bList: [
+        {
+          key: 'BATH_LAMP',
+          icon: '/package-remoter/assets/power1.png',
+          iconActive: '/package-remoter/assets/power0.png',
+          name: '照明',
+        },
+        {
+          key: 'BATH_ALL_OFF',
+          icon: '/package-remoter/assets/power1.png',
+          iconActive: '/package-remoter/assets/power0.png',
+          name: '待机',
+        },
+      ],
+      actions: [
+        {
+          key: 'BATH_LAMP',
+          name: '照明',
+        },
+        {
+          key: 'BATH_ALL_OFF',
+          name: '待机',
+        },
+        {
+          key: 'BATH_WIND',
+          name: '吹风',
+        },
+        {
+          key: 'BATH_VENTILATE',
+          name: '换气',
+        },
+        {
+          key: 'BATH_DRY',
+          name: '干燥',
+        },
+      ],
+    },
+    // MY-S5X28-Y6W
+    '06': { // 0110
       deviceName: '浴霸',
       devicePic: '/assets/img/remoter/bathHeater.png',
       joystick: {
