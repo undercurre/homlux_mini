@@ -35,8 +35,10 @@ export const deviceStore = observable({
   },
 
   get deviceListByRoomId(): Device.DeviceItem[] {
+    const currentRoomId = roomStore.currentRoom?.roomId || 0
+
     return this.allRoomDeviceList.filter((item) => {
-      return item.roomId === roomStore.currentRoom.roomId
+      return item.roomId === currentRoomId
     })
   },
 
