@@ -83,7 +83,7 @@ ComponentWithComputed({
             const config = deviceConfig[deviceType][deviceModel]
 
             if (!config) {
-              console.log('device config NOT EXISTED')
+              console.log('config NOT EXISTED in onBluetoothDeviceFound')
               return
             }
 

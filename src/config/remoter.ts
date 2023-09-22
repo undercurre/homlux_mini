@@ -161,7 +161,8 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
   },
   '26': {
     // MY-S5X28-Y5W
-    '02': { // 0010 无人感
+    '02': {
+      // 0010 无人感
       deviceName: '浴霸',
       devicePic: '/assets/img/remoter/bathHeater.png',
       joystick: {
@@ -255,7 +256,8 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
       ],
     },
     // MY-S5X28-Y6W
-    '06': { // 0110
+    '06': {
+      // 0110
       deviceName: '浴霸',
       devicePic: '/assets/img/remoter/bathHeater.png',
       joystick: {
