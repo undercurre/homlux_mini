@@ -1,4 +1,7 @@
-var _TRANSITION = 'opacity 0.3s'
+var btn = require('../../commons/wxs/btn.wxs')
+
+var isPressed = false // 当前是否点击状态
+var timerId // 计时器
 
 function touchStart(event, ownerInstance) {
   var instant = ownerInstance.selectComponent('.preset') || ownerInstance.selectComponent('.img')
@@ -6,37 +9,36 @@ function touchStart(event, ownerInstance) {
   var iIcon = ownerInstance.selectComponent('.icon')
   var iIconActive = ownerInstance.selectComponent('.iconActive')
   var iText = ownerInstance.selectComponent('.text')
+  var iTextActive = ownerInstance.selectComponent('.textActive')
 
-  ownerInstance.callMethod('handleTouchStart', event)
+  isPressed = true
 
-  // 如果未设置激活样式，则为静态按钮
-  if (!instantActive) {
-    return
-  }
-
-  instant.setStyle({
-    opacity: 0,
-    transition: _TRANSITION,
-  })
-  instantActive.setStyle({
-    opacity: 1,
-    transition: _TRANSITION,
-  })
+  btn.opacityTransition(instant, instantActive)
   if (iText) {
-    iText.addClass('textActive')
+    btn.opacityTransition(iText, iTextActive)
+  }
+  if (iIconActive) {
+    btn.opacityTransition(iIcon, iIconActive)
   }
 
-  if (!iIconActive) {
-    return
-  }
-  iIcon.setStyle({
-    opacity: 0,
-    transition: _TRANSITION,
-  })
-  iIconActive.setStyle({
-    opacity: 1,
-    transition: _TRANSITION,
-  })
+  timerId = ownerInstance.setTimeout(function () {
+    ownerInstance.clearTimeout(timerId)
+    timerId = null
+
+    // 如果超时仍未松手
+    if (isPressed) {
+      return
+    }
+
+    // 如果未被点击，则反转状态
+    btn.opacityTransition(instant, instantActive, false)
+    if (iText) {
+      btn.opacityTransition(iText, iTextActive, false)
+    }
+    if (iIconActive) {
+      btn.opacityTransition(iIcon, iIconActive, false)
+    }
+  }, btn._INTERVAL)
 }
 
 function touchEnd(event, ownerInstance) {
@@ -45,34 +47,23 @@ function touchEnd(event, ownerInstance) {
   var iIcon = ownerInstance.selectComponent('.icon')
   var iIconActive = ownerInstance.selectComponent('.iconActive')
   var iText = ownerInstance.selectComponent('.text')
+  var iTextActive = ownerInstance.selectComponent('.textActive')
 
-  if (!instantActive) {
+  isPressed = false
+
+  if (timerId) {
     return
   }
 
-  instant.setStyle({
-    opacity: 1,
-    transition: _TRANSITION,
-  })
-  instantActive.setStyle({
-    opacity: 0,
-    transition: _TRANSITION,
-  })
+  btn.opacityTransition(instant, instantActive, false)
+
   if (iText) {
-    iText.removeClass('textActive')
+    btn.opacityTransition(iText, iTextActive, false)
   }
 
-  if (!iIconActive) {
-    return
+  if (iIconActive) {
+    btn.opacityTransition(iIcon, iIconActive, false)
   }
-  iIcon.setStyle({
-    opacity: 1,
-    transition: _TRANSITION,
-  })
-  iIconActive.setStyle({
-    opacity: 0,
-    transition: _TRANSITION,
-  })
 }
 
 module.exports = {
