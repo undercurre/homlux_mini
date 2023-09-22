@@ -34,7 +34,7 @@
   </view>
 
   <view class="main-control" wx:if="{{curRemoter.bList}}">
-    <mz-button2 wx:for="{{curRemoter.bList}}" wx:key="index" icon="{{item.icon}}" iconActive="{{item.iconActive}}" bind:touchstart="btnTap" text="{{item.name}}" data-key="{{item.key}}"></mz-button2>
+    <mz-button-bottom wx:for="{{curRemoter.bList}}" wx:key="index" icon="{{item.icon}}" iconActive="{{item.iconActive}}" bind:touchstart="btnTap" text="{{item.name}}" data-key="{{item.key}}"></mz-button-bottom>
   </view>
 </view>
 
