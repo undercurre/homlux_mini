@@ -1,32 +1,45 @@
-var _TRANSITION = 'all 0.3s'
+var btn = require('../../commons/wxs/btn.wxs')
+
+var isPressed = false // 当前是否点击状态
+var timerId // 计时器
 
 function touchStart(event, ownerInstance) {
   var iWrapper = ownerInstance.selectComponent('.mz-button')
   var iIcon = ownerInstance.selectComponent('.icon')
   var iIconActive = ownerInstance.selectComponent('.iconActive')
   var iText = ownerInstance.selectComponent('.text')
+  var iTextActive = ownerInstance.selectComponent('.textActive')
 
-  ownerInstance.callMethod('handleTouchStart', event)
+  isPressed = true
 
-  if (!iIconActive) {
-    return
+  btn.bgTransition(iWrapper)
+
+  if (iIconActive) {
+    btn.opacityTransition(iIcon, iIconActive)
   }
   if (iText) {
-    iText.addClass('textActive')
+    btn.opacityTransition(iText, iTextActive)
   }
-  iWrapper.setStyle({
-    'background-color': '#488fff',
-    'background-image': 'linear-gradient(155deg, #468CFB 6%, #6BA3FC 96%)',
-    transition: _TRANSITION,
-  })
-  iIcon.setStyle({
-    opacity: 0,
-    transition: _TRANSITION,
-  })
-  iIconActive.setStyle({
-    opacity: 1,
-    transition: _TRANSITION,
-  })
+
+  timerId = ownerInstance.setTimeout(function () {
+    ownerInstance.clearTimeout(timerId)
+    timerId = null
+
+    // 如果超时仍未松手
+    if (isPressed) {
+      return
+    }
+
+    // 如果未被点击，则反转状态
+    btn.bgTransition(iWrapper, false)
+
+    if (iIconActive) {
+      btn.opacityTransition(iIcon, iIconActive, false)
+    }
+    if (iText) {
+      btn.opacityTransition(iText, iTextActive, false)
+    }
+  }, btn._INTERVAL)
 }
 
 function touchEnd(event, ownerInstance) {
@@ -34,26 +47,21 @@ function touchEnd(event, ownerInstance) {
   var iIcon = ownerInstance.selectComponent('.icon')
   var iIconActive = ownerInstance.selectComponent('.iconActive')
   var iText = ownerInstance.selectComponent('.text')
+  var iTextActive = ownerInstance.selectComponent('.textActive')
 
-  if (!iIconActive) {
+  isPressed = false
+
+  if (timerId) {
     return
   }
-  if (iText) {
-    iText.removeClass('textActive')
+  btn.bgTransition(iWrapper, false)
+
+  if (iIconActive) {
+    btn.opacityTransition(iIcon, iIconActive, false)
   }
-  iWrapper.setStyle({
-    'background-color': '#f1f5fa',
-    'background-image': 'none',
-    transition: _TRANSITION,
-  })
-  iIcon.setStyle({
-    opacity: 1,
-    transition: _TRANSITION,
-  })
-  iIconActive.setStyle({
-    opacity: 0,
-    transition: _TRANSITION,
-  })
+  if (iText) {
+    btn.opacityTransition(iText, iTextActive, false)
+  }
 }
 
 module.exports = {

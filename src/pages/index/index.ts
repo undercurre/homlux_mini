@@ -469,6 +469,7 @@ ComponentWithComputed({
     handleHomeSelect() {
       this.setData({
         'selectHomeMenu.isShow': false,
+        'addMenu.isShow': false,
       })
     },
     /**

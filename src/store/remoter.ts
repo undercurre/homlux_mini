@@ -12,9 +12,9 @@ const MOCK_DEVICES = [
     orderNum: 1,
     deviceId: '0',
     addr: '112233445566',
-    devicePic: '/assets/img/remoter/fanLight.png',
-    deviceName: '风扇灯Mock',
-    deviceType: '13',
+    devicePic: '/assets/img/remoter/bathHeater.png',
+    deviceName: '浴霸Mock',
+    deviceType: '26',
     deviceModel: '02',
     saved: true,
     actionStatus: true,
@@ -75,8 +75,12 @@ export const remoterStore = observable({
     return list
       .map((device) => {
         const { deviceModel, deviceType, addr } = device
-        const { devicePic, actions } = deviceConfig[deviceType][deviceModel]
-
+        const config = deviceConfig[deviceType][deviceModel]
+        if (!config) {
+          console.log('device config NOT EXISTED IN remoterViewList')
+          return {} as Remoter.DeviceItem
+        }
+        const { devicePic, actions } = config
         return {
           ...device,
           dragId: addr,
@@ -99,7 +103,8 @@ export const remoterStore = observable({
     if (!deviceModel || !deviceType) {
       return {} as Remoter.DeviceDetail
     }
-    const config = deviceConfig[deviceType][deviceModel]
+    const config = deviceConfig[deviceType][deviceModel] || {}
+
     return {
       ...config,
       ...device,
@@ -122,7 +127,12 @@ export const remoterStore = observable({
 
     const list = this.remoterList.map((device) => {
       const { deviceModel, deviceType, addr, defaultAction } = device
-      const { actions } = deviceConfig[deviceType][deviceModel]
+      const config = deviceConfig[deviceType][deviceModel]
+      if (!config) {
+        console.log('config NOT EXISTED in renewRmState')
+        return device
+      }
+      const { actions } = config
       const isDiscovered = rListIds.includes(addr)
       const actionKey = actions[defaultAction].key ?? ''
 

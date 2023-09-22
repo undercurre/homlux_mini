@@ -31,7 +31,7 @@ ComponentWithComputed({
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
     _timeId: -1,
     _lastPowerKey: '', // 记录上一次点击‘照明’时的指令键，用于反转处理
-    debugStr: '[recv]',
+    debugStr: '[rx]',
     isDebugMode: false,
   },
 
@@ -82,6 +82,11 @@ ComponentWithComputed({
             const deviceModel = item!.deviceModel
             const config = deviceConfig[deviceType][deviceModel]
 
+            if (!config) {
+              console.log('config NOT EXISTED in onBluetoothDeviceFound')
+              return
+            }
+
             // 同品类同型号设备的数量，包括已保存、新发现
             const savedDeviceCount = remoterStore.remoterList.filter(
               (device) => device.deviceType === deviceType && device.deviceModel === deviceModel,
@@ -118,8 +123,8 @@ ComponentWithComputed({
         remoterStore.renewRmState(recoveredList as Remoter.DeviceRx[])
 
         // 显示设备调试信息
-        const rListRSSI = recoveredList.map((r) => `${r?.manufacturerId}:${r?.RSSI}dBm`)
-        const debugStr = `[recv]${rListRSSI.join('|')}`
+        const rListRSSI = recoveredList.map((r) => `${r?.deviceType},${r?.deviceModel}:${r?.RSSI}`)
+        const debugStr = `[rx]${rListRSSI.join('|')}`
 
         this.setData({
           foundList,
@@ -141,16 +146,16 @@ ComponentWithComputed({
       // 版本获取
       const info = wx.getAccountInfoSync()
       this.data._envVersion = info.miniProgram.envVersion
+    },
 
+    async onShow() {
       // 根据通知,更新设备列表
       emitter.on('remoterChanged', () => {
         console.log('remoterChanged on IndexList')
 
         this.initDrag()
       })
-    },
 
-    async onShow() {
       await delay(0)
 
       // 搜索一轮设备

@@ -19,7 +19,10 @@
       <image class="icon" src="{{icon}}"></image>
       <image wx:if="{{hasFeedback && iconActive}}" class="iconActive" src="{{iconActive}}" style="opacity: 0"></image>
     </view>
-    <view class="text" wx:if="{{text}}" style="{{textStyle}}">{{text}}</view>
+    <view class="text-wrapper" wx:if="{{text}}" style="{{textStyle}}">
+      <text class="text">{{text}}</text>
+      <text class="textActive" style="opacity: 0">{{text}}</text>
+    </view>
     <slot></slot>
   </view>
 </view>
