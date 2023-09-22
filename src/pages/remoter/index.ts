@@ -146,16 +146,16 @@ ComponentWithComputed({
       // 版本获取
       const info = wx.getAccountInfoSync()
       this.data._envVersion = info.miniProgram.envVersion
+    },
 
+    async onShow() {
       // 根据通知,更新设备列表
       emitter.on('remoterChanged', () => {
         console.log('remoterChanged on IndexList')
 
         this.initDrag()
       })
-    },
 
-    async onShow() {
       await delay(0)
 
       // 搜索一轮设备

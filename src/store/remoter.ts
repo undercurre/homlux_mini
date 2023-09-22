@@ -104,7 +104,7 @@ export const remoterStore = observable({
       return {} as Remoter.DeviceDetail
     }
     const config = deviceConfig[deviceType][deviceModel] || {}
-    
+
     return {
       ...config,
       ...device,
