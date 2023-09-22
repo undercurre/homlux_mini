@@ -17,6 +17,20 @@ page {
   height: calc(env(safe-area-inset-bottom) + 64rpx);
 }
 
+.placeholder {
+  height: 176rpx;
+  width: 700rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  border-radius: 32rpx;
+  margin-top: 40rpx;
+  margin-left: 25rpx;
+  border: 3rpx solid #fff;
+  box-sizing: border-box;
+}
+
 .tips-btn {
   border-radius: 32rpx;
   width: 160rpx;
@@ -83,7 +97,10 @@ page {
 }
 .small-btn {
   color: #666 !important;
-  width: 168rpx;
+  width: 184rpx;
+  height: 76rpx !important;
+  border-radius: 38rpx !important;
+  margin-top: 40rpx;
 }
 .small-btn .van-button__loading-text {
   color: #666;
