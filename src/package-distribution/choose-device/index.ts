@@ -34,6 +34,11 @@ ComponentWithComputed({
         name: '传感器',
         path: '/package-distribution/choose-sensor/index',
       },
+      {
+        icon: '/package-distribution/assets/guide/curtain.png',
+        name: '窗帘',
+        path: '/package-distribution/choose-sensor/index',
+      },
     ],
   },
 
