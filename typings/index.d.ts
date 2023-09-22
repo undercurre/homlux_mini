@@ -38,5 +38,3 @@ declare namespace WechatMiniprogram.Component {
 type ValueOf<T> = T[keyof T]
 
 declare module 'weapp-qrcode-canvas-2d'
-
-declare module 'js-homos'

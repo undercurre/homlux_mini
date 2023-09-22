@@ -14,8 +14,8 @@ dependencies:
     specifier: ^2.0.1
     version: 2.0.1
   js-homos:
-    specifier: ^0.0.10
-    version: 0.0.10
+    specifier: ^0.0.12
+    version: 0.0.12
   lottie-miniprogram:
     specifier: ^1.0.12
     version: 1.0.12
@@ -2157,8 +2157,8 @@ packages:
     hasBin: true
     dev: true
 
-  /js-homos@0.0.10:
-    resolution: {integrity: sha512-wxKLDWKIqCuUgpmM41lIhl18LPiFkaeRGyOmBEBs3dTd4jS//J+uJ9yE7SnZUzA1J+lYyyrKosLNQqbFmEq5Og==}
+  /js-homos@0.0.12:
+    resolution: {integrity: sha512-Pj7TJwMkF3SyUSlLcAmVs5hv3/HGDLi330XwDTgzajEEl8FrHnQqpCCh6kzOE2+1PgAjBoAYfT2+mj+TLpbzgg==}
     dependencies:
       crypto-js: 4.1.1
       dayjs: 1.11.9
