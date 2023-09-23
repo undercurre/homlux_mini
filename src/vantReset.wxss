@@ -76,6 +76,11 @@ page {
   height: var(--button-normal-height) !important;
 }
 
+.van-button--block {
+  padding-left: 30rpx;
+  padding-right: 30rpx;
+}
+
 .van-button--danger,
 .van-button--primary {
   border: 0 !important;

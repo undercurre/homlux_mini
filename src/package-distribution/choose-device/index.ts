@@ -37,7 +37,7 @@ ComponentWithComputed({
       {
         icon: '/package-distribution/assets/guide/curtain.png',
         name: '窗帘',
-        path: '/package-distribution/choose-sensor/index',
+        path: '/package-distribution-meiju/check-auth/index?sn8=79700Z76',
       },
     ],
   },
