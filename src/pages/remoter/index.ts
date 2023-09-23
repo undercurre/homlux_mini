@@ -229,11 +229,11 @@ ComponentWithComputed({
         defaultAction: 0,
       })
 
-      this.initDrag()
-
       this.setData({
         foundList: this.data.foundList,
       })
+
+      this.initDrag()
     },
 
     // 点击设备卡片

@@ -1,9 +1,11 @@
-var btn = require('../../commons/wxs/btn.wxs')
+var btn = require('../../../../commons/wxs/btn.wxs')
 
 var isPressed = false // 当前是否点击状态
 var timerId // 计时器
 
 function touchStart(event, ownerInstance) {
+  ownerInstance.callMethod('handleTouchStart', event)
+
   var instant = ownerInstance.selectComponent('.preset') || ownerInstance.selectComponent('.img')
   var instantActive = ownerInstance.selectComponent('.presetActive') || ownerInstance.selectComponent('.imgActive')
   var iIcon = ownerInstance.selectComponent('.icon')
