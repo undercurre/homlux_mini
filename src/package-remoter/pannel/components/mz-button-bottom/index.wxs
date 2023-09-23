@@ -9,7 +9,7 @@ function touchStart(event, ownerInstance) {
   var iWrapper = ownerInstance.selectComponent('.icon-wrapper')
   var iIcon = ownerInstance.selectComponent('.icon')
   var iIconActive = ownerInstance.selectComponent('.iconActive')
-  
+
   isPressed = true
 
   btn.bgTransition(iWrapper)

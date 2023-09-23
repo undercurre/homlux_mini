@@ -8,6 +8,20 @@ const IS_MOCK = platform === 'devtools'
 
 const MOCK_DEVICES = [
   {
+    dragId: '112233445567',
+    orderNum: 1,
+    deviceId: '0',
+    addr: '112233445567',
+    devicePic: '/assets/img/remoter/bathHeater.png',
+    deviceName: '吸顶灯Mock',
+    deviceType: '13',
+    deviceModel: '01',
+    saved: true,
+    actionStatus: true,
+    defaultAction: 0,
+    DISCOVERED: 0,
+  },
+  {
     dragId: '112233445566',
     orderNum: 1,
     deviceId: '0',
@@ -98,7 +112,7 @@ export const remoterStore = observable({
     if (!this.curAddr) {
       return {} as Remoter.DeviceDetail
     }
-    const device = this.remoterMap[this.curAddr]
+    const device = this.remoterMap[this.curAddr] || {}
     const { deviceModel, deviceType } = device
     if (!deviceModel || !deviceType) {
       return {} as Remoter.DeviceDetail

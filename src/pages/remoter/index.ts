@@ -26,6 +26,7 @@ ComponentWithComputed({
     showTips: false, // 首次进入显示操作提示
     tipsStep: 0,
     isSeeking: false, // 正在搜索设备
+    foundListHolder: false, // 临时显示发现列表的点位符
     isNotFound: false, // 已搜索过至少一次但未找到
     foundList: [] as Remoter.DeviceItem[], // 搜索到的设备
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
@@ -199,15 +200,11 @@ ComponentWithComputed({
 
     // 拖拽列表初始化
     async initDrag() {
-      if (!remoterStore.hasRemoter) {
-        return
-      }
-
       // 有可能视图未更新，需要先等待nextTick
       await delay(0)
 
       const drag = this.selectComponent('#drag')
-      drag.init()
+      drag?.init()
     },
 
     // 从storage初始化我的设备列表
@@ -217,7 +214,7 @@ ComponentWithComputed({
     },
 
     // 将新发现设备, 添加到[我的设备]
-    saveDevice(device: Remoter.DeviceItem) {
+    async saveDevice(device: Remoter.DeviceItem) {
       const { addr } = device
       const index = this.data.foundList.findIndex((device) => device.addr === addr)
       const newDevice = this.data.foundList.splice(index, 1)[0]
@@ -229,11 +226,19 @@ ComponentWithComputed({
         defaultAction: 0,
       })
 
+      await this.initDrag()
+
       this.setData({
+        foundListHolder: !this.data.foundList.length,
         foundList: this.data.foundList,
       })
-
-      this.initDrag()
+      if (!this.data.foundList.length) {
+        setTimeout(() => {
+          this.setData({
+            foundListHolder: false,
+          })
+        }, 2000)
+      }
     },
 
     // 点击设备卡片
