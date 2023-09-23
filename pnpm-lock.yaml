@@ -23,6 +23,9 @@ dependencies:
   lottie-miniprogram:
     specifier: ^1.0.12
     version: 1.0.12
+  m-utilsdk:
+    specifier: ^1.0.8
+    version: 1.0.8
   miniprogram-computed:
     specifier: ^4.4.0
     version: 4.4.0
@@ -2602,6 +2605,10 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       yallist: 4.0.0
+
+  /m-utilsdk@1.0.8:
+    resolution: {integrity: sha512-ygXiGbEWkXsyanSwQSIR3RolPFcvkP0Ni7EpAgiv300nT31a94TrdaMfq4HuegB5yPAk5hmqKnArRkptWACTmA==}
+    dev: false
 
   /magic-string@0.27.0:
     resolution: {integrity: sha512-8UnnX2PeRAPZuN12svgR9j7M1uWMovg/CEnIwIG0LFkXSJJe4PdfUGiTGl8V9bsBHFUtfVINcSyYxd7q+kx9fA==}

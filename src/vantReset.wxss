@@ -191,3 +191,9 @@ page {
 }
 
 /* switch end */
+
+/* checkbox end */
+.van-checkbox__icon-wrap {
+  display: inline-flex;
+}
+/* checkbox end */

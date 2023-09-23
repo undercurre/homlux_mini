@@ -1,7 +1,9 @@
 <view class="flex flex-row items-center">
-  <van-checkbox use-icon-slot value="{{ checked }}" disabled="{{disabled}}" bind:change="onChange">
+  <van-checkbox use-icon-slot value="{{ checked }}" disabled="{{disabled}}" icon-size="{{iconSize}}" bind:change="onChange">
     <image slot="icon" class="w-32 h-32" src="{{ checked ? '/assets/img/base/check.png' : '/assets/img/base/uncheck.png' }}" />
-  </van-checkbox>
 
-  <slot></slot>
+    <text class="pl-12rpx">
+      <slot></slot>
+      </text>
+  </van-checkbox>
 </view>

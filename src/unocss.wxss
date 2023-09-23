@@ -68,6 +68,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .pb-8rpx{padding-bottom:8rpx;}
 .pb-96rpx{padding-bottom:96rpx;}
 .pl-10rpx{padding-left:10rpx;}
+.pl-12rpx{padding-left:12rpx;}
 .pl-16rpx{padding-left:16rpx;}
 .pl-32rpx{padding-left:32rpx;}
 .pl-40rpx{padding-left:40rpx;}

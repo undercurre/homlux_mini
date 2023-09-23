@@ -14,7 +14,7 @@ Component({
     },
     iconSize: {
       type: String,
-      value: '20px',
+      value: '16px',
     },
   },
 

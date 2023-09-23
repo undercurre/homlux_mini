@@ -19,5 +19,11 @@ Component({
     },
     detached() {},
   },
-  methods: {},
+  methods: {
+    handleConfirm() {
+      wx.navigateTo({
+        url: 'package-distribution-meiju/pages/inputWifiInfo/inputWifiInfo',
+      })
+    }
+  },
 })
