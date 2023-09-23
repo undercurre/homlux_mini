@@ -3,7 +3,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { initBleCapacity, storage, unique, isNullOrUnDef, emitter, delay } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import { createBleServer, bleAdvertising } from '../../utils/remoterUtils'
-import { deviceConfig, MIN_RSSI, SEEK_TIMEOUT, CMD, FREQUENCY_TIME } from '../../config/remoter'
+import { deviceConfig, MIN_RSSI, SEEK_TIMEOUT, SEEK_TIMEOUT_CONTROLED, CMD, FREQUENCY_TIME } from '../../config/remoter'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
 import Toast from '@vant/weapp/toast/toast'
@@ -302,16 +302,20 @@ ComponentWithComputed({
         payload,
       })
 
-      await this.toSeek(1000)
+      await this.toSeek(true)
     },
     // 搜索设备
-    async toSeek(seekTimout?: number) {
-      const interval = typeof seekTimout === 'number' ? seekTimout : SEEK_TIMEOUT // 在template中调用时，会误传入非number参数
+    async toSeek(isControlled = false) {
+      const _isControlled = typeof isControlled === 'boolean' && isControlled
+      const interval = _isControlled ? SEEK_TIMEOUT_CONTROLED : SEEK_TIMEOUT // 在template中调用时，会误传入非number参数
       await initBleCapacity()
 
-      this.setData({
-        isSeeking: true,
-      })
+      // 如果是受控后搜索，不显示搜索中状态
+      if (!_isControlled) {
+        this.setData({
+          isSeeking: true,
+        })
+      }
 
       // 开始搜寻附近的蓝牙外围设备
       wx.startBluetoothDevicesDiscovery({

@@ -1,8 +1,11 @@
 // 搜寻蓝牙设备时的信号强度阈值(最小值)
 export const MIN_RSSI = -65
 
-// 自动搜寻超时时间
+// 搜寻超时时间
 export const SEEK_TIMEOUT = 2500
+
+// 控制后搜寻超时时间
+export const SEEK_TIMEOUT_CONTROLED = 1000
 
 // 操作频繁提示的间隔时间
 export const FREQUENCY_TIME = 1000
