@@ -5,10 +5,6 @@ interface IAppOption {
     firstOnShow: boolean
   }
   userInfoReadyCallback?: WechatMiniprogram.GetUserInfoSuccessCallback
-
-  initHomeOs: () => void
-
-  [x: string]: any
 }
 
 type IAnyObject = WechatMiniprogram.IAnyObject

@@ -267,6 +267,13 @@ ComponentWithComputed({
 
       // ws消息处理
       emitter.on('wsReceive', async (e) => {
+        const { eventType } = e.result
+
+        if(eventType === WSEventType.updateHomeDataLanInfo) {
+          this.updateQueue({ isRefresh: true })
+          return
+        }
+
         if (e.result.eventType === WSEventType.device_property) {
           // 如果有传更新的状态数据过来，直接更新store
           const deviceInHouse = deviceStore.allRoomDeviceList.find(
@@ -366,6 +373,7 @@ ComponentWithComputed({
           sceneStore.updateSceneList(),
           sceneStore.updateAllRoomSceneList(),
         ])
+
         this.updateQueue({ isRefresh: true })
       } finally {
         wx.stopPullDownRefresh()

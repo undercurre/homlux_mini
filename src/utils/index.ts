@@ -7,6 +7,7 @@ export * from './strUtil'
 export * from './wifiProtocol'
 export * from './bleProtocol'
 export * from './eventBus'
+export * from './host'
 export * from './validate'
 export * from './app'
 export * from './log'
@@ -82,6 +83,22 @@ export function throttle<T extends (...args: any[]) => unknown>(fn: T, wait = 50
       }, wait)
     }
   }
+}
+
+/**
+ * 防抖函数
+ * @param fn
+ * @param delay
+ */
+export function debounce<T extends (...args: any[]) => unknown>(fn: T, delay = 500) {
+  let timer = 0;
+
+  return function(...args: unknown[]) {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      fn(args);
+    }, delay);
+  };
 }
 
 /**

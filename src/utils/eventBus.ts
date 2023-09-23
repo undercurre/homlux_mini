@@ -18,7 +18,7 @@ type Events = {
   // 消息推送集合，接收包含云端的ws推送和mqtt的推送消息
   msgPush: {
     source: 'ws' | 'mqtt'
-    reqId: string
+    reqId?: string
     result: {
       topic?: string
       message?: string
@@ -89,6 +89,7 @@ export const WSEventType = {
   scene_enabled: 'scene_enabled', //场景使能切换
   del_house_user: 'del_house_user', // 家庭用户被删除
   change_house_user_auth: 'change_house_user_auth', // 用户角色变更
+  updateHomeDataLanInfo: 'updateHomeDataLanInfo', // mqtt通知，局域网的设备、灯组列表数据更新
 }
 
 export const emitter: Emitter<Events> = mitt<Events>()
