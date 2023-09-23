@@ -3,9 +3,10 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { initBleCapacity, storage, unique, isNullOrUnDef, emitter, delay } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import { createBleServer, bleAdvertising } from '../../utils/remoterUtils'
-import { deviceConfig, MIN_RSSI, SEEK_TIMEOUT, CMD } from '../../config/remoter'
+import { deviceConfig, MIN_RSSI, SEEK_TIMEOUT, CMD, FREQUENCY_TIME } from '../../config/remoter'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
+import Toast from '@vant/weapp/toast/toast'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [remoterBinding] }), pageBehaviors],
@@ -33,6 +34,7 @@ ComponentWithComputed({
     _timeId: -1,
     _lastPowerKey: '', // 记录上一次点击‘照明’时的指令键，用于反转处理
     _firstLoad: true, // 页面首次打开
+    _timer: 0, // 记录上次指令时间
     debugStr: '[rx]',
     isDebugMode: false,
   },
@@ -272,6 +274,13 @@ ComponentWithComputed({
         this.saveDevice(e.detail as Remoter.DeviceItem)
       }
 
+      const now = new Date().getTime()
+      console.log('now - this.data._timer', now - this.data._timer)
+      if (now - this.data._timer < FREQUENCY_TIME) {
+        Toast('操作太快啦~')
+      }
+      this.data._timer = now
+
       const { addr, actions, defaultAction } = e.detail
       // const addr = '18392c0c5566' // 模拟遥控器mac
 
@@ -297,7 +306,7 @@ ComponentWithComputed({
     },
     // 搜索设备
     async toSeek(seekTimout?: number) {
-      const interval = typeof seekTimout === 'number' ? seekTimout : SEEK_TIMEOUT
+      const interval = typeof seekTimout === 'number' ? seekTimout : SEEK_TIMEOUT // 在template中调用时，会误传入非number参数
       await initBleCapacity()
 
       this.setData({
@@ -316,7 +325,7 @@ ComponentWithComputed({
 
       // 如果一直找不到，也自动停止搜索
       // !! 停止时间要稍长于 SEEK_TIMEOUT，否则会导致监听方法不执行
-      this.data._timeId = setTimeout(() => this.endSeek(), interval + 3000)
+      this.data._timeId = setTimeout(() => this.endSeek(), interval + 500)
     },
     // 停止搜索设备
     endSeek() {

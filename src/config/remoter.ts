@@ -4,6 +4,9 @@ export const MIN_RSSI = -65
 // 自动搜寻超时时间
 export const SEEK_TIMEOUT = 2500
 
+// 操作频繁提示的间隔时间
+export const FREQUENCY_TIME = 1000
+
 // 工厂调试用Mac地址
 export const FACTORY_ADDR = '112233445566'
 

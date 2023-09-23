@@ -39,3 +39,5 @@
 </view>
 
 <van-dialog id="van-dialog" confirm-button-color="#488FFF" cancel-button-color="#27282A" />
+
+<van-toast id="van-toast" />
