@@ -15,15 +15,13 @@ Component({
     iconSize: {
       type: String,
       value: '20px',
-    }
+    },
   },
 
   /**
    * 组件的初始数据
    */
-  data: {
-
-  },
+  data: {},
 
   /**
    * 组件的方法列表
@@ -31,6 +29,6 @@ Component({
   methods: {
     onChange(event: WechatMiniprogram.CustomEvent) {
       this.triggerEvent('change', event.detail)
-    }
-  }
+    },
+  },
 })

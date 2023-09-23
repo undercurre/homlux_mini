@@ -19,7 +19,5 @@ Component({
     },
     detached() {},
   },
-  methods: {
-
-  }
-});
+  methods: {},
+})
