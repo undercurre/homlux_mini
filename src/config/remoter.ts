@@ -1,8 +1,8 @@
 // 搜寻蓝牙设备时的信号强度阈值(最小值)
 export const MIN_RSSI = -65
 
-// 搜寻超时时间
-export const SEEK_TIMEOUT = 3000
+// 自动搜寻超时时间
+export const SEEK_TIMEOUT = 2500
 
 // 工厂调试用Mac地址
 export const FACTORY_ADDR = '112233445566'

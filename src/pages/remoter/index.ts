@@ -293,10 +293,11 @@ ComponentWithComputed({
         payload,
       })
 
-      await this.toSeek()
+      await this.toSeek(1000)
     },
     // 搜索设备
-    async toSeek() {
+    async toSeek(seekTimout?: number) {
+      const interval = typeof seekTimout === 'number' ? seekTimout : SEEK_TIMEOUT
       await initBleCapacity()
 
       this.setData({
@@ -307,7 +308,7 @@ ComponentWithComputed({
       wx.startBluetoothDevicesDiscovery({
         allowDuplicatesKey: true,
         powerLevel: 'high',
-        interval: SEEK_TIMEOUT - 500,
+        interval,
         fail(err) {
           console.log('startBluetoothDevicesDiscoveryErr', err)
         },
@@ -315,7 +316,7 @@ ComponentWithComputed({
 
       // 如果一直找不到，也自动停止搜索
       // !! 停止时间要稍长于 SEEK_TIMEOUT，否则会导致监听方法不执行
-      this.data._timeId = setTimeout(() => this.endSeek(), SEEK_TIMEOUT)
+      this.data._timeId = setTimeout(() => this.endSeek(), interval + 3000)
     },
     // 停止搜索设备
     endSeek() {
