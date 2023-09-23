@@ -7,7 +7,7 @@ import {
   setCurrentEnv,
   Logger,
   isConnect,
-  initHomeOs
+  initHomeOs,
 } from './utils/index'
 import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore } from './store/index'

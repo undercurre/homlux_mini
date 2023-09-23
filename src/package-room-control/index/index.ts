@@ -269,7 +269,7 @@ ComponentWithComputed({
       emitter.on('wsReceive', async (e) => {
         const { eventType } = e.result
 
-        if(eventType === WSEventType.updateHomeDataLanInfo) {
+        if (eventType === WSEventType.updateHomeDataLanInfo) {
           this.updateQueue({ isRefresh: true })
           return
         }

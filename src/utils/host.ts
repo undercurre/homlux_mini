@@ -1,5 +1,5 @@
-import {deviceStore, homeStore, sceneStore} from "../store/index";
-import homOs from "js-homos";
+import { deviceStore, homeStore, sceneStore } from '../store/index'
+import homOs from 'js-homos'
 import { Logger, emitter, debounce } from './index'
 
 export async function initHomeOs() {
@@ -15,7 +15,7 @@ export async function initHomeOs() {
     // host: { ip: '192.168.1.129', devId: '1694499802565103', SSID: 'test' },
   })
 
-  homOs.onMessage((res: { topic: string; reqId?: string; data: IAnyObject, ts: string }) => {
+  homOs.onMessage((res: { topic: string; reqId?: string; data: IAnyObject; ts: string }) => {
     Logger.console('Ⓜ 收到mqtt推送：', res)
 
     const { topic, reqId, data } = res

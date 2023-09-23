@@ -1,9 +1,9 @@
-import {observable, runInAction} from 'mobx-miniprogram'
-import {queryAllDevice, querySubDeviceList} from '../apis/device'
-import {MODEL_NAME, PRO_TYPE} from '../config/index'
-import {homeStore} from './home'
-import {roomStore} from './room'
-import {sceneStore} from './scene'
+import { observable, runInAction } from 'mobx-miniprogram'
+import { queryAllDevice, querySubDeviceList } from '../apis/device'
+import { MODEL_NAME, PRO_TYPE } from '../config/index'
+import { homeStore } from './home'
+import { roomStore } from './room'
+import { sceneStore } from './scene'
 import homOs from 'js-homos'
 
 export const deviceStore = observable({
@@ -200,12 +200,12 @@ export const deviceStore = observable({
   updateAllRoomDeviceListLanStatus() {
     runInAction(() => {
       deviceStore.allRoomDeviceList = deviceStore.allRoomDeviceList.map((item) => {
-        const {deviceId, updateStamp} = item
+        const { deviceId, updateStamp } = item
 
         const canLanCtrl =
           item.deviceType === 4
-            ? homOs.isSupportLan({groupId: deviceId, updateStamp})
-            : homOs.isSupportLan({deviceId})
+            ? homOs.isSupportLan({ groupId: deviceId, updateStamp })
+            : homOs.isSupportLan({ deviceId })
 
         return {
           ...item,
@@ -216,20 +216,15 @@ export const deviceStore = observable({
   },
 
   async updateSubDeviceList(
-    houseId
-      :
-      string = homeStore.currentHomeId,
-    roomId
-      :
-      string = roomStore.roomList[roomStore.currentRoomIndex].roomId,
-    options ?: { loading: boolean },
+    houseId: string = homeStore.currentHomeId,
+    roomId: string = roomStore.roomList[roomStore.currentRoomIndex].roomId,
+    options?: { loading: boolean },
   ) {
-    const res = await querySubDeviceList({houseId, roomId}, options)
+    const res = await querySubDeviceList({ houseId, roomId }, options)
     runInAction(() => {
       deviceStore.deviceList = res.success ? res.result : []
     })
-  }
-  ,
+  },
 })
 
 export const deviceBinding = {

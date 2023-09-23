@@ -91,14 +91,14 @@ export function throttle<T extends (...args: any[]) => unknown>(fn: T, wait = 50
  * @param delay
  */
 export function debounce<T extends (...args: any[]) => unknown>(fn: T, delay = 500) {
-  let timer = 0;
+  let timer = 0
 
-  return function(...args: unknown[]) {
-    clearTimeout(timer);
+  return function (...args: unknown[]) {
+    clearTimeout(timer)
     timer = setTimeout(() => {
-      fn(args);
-    }, delay);
-  };
+      fn(args)
+    }, delay)
+  }
 }
 
 /**
