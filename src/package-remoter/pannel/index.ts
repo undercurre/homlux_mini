@@ -1,6 +1,6 @@
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { CMD, FACTORY_ADDR } from '../../config/remoter'
+import { CMD, FACTORY_ADDR, FREQUENCY_TIME } from '../../config/remoter'
 import { emitter, Logger, initBleCapacity, storage } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import {
@@ -12,6 +12,7 @@ import {
 } from '../../utils/remoterUtils'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
+import Toast from '@vant/weapp/toast/toast'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [remoterBinding] }), pageBehaviors],
@@ -30,6 +31,7 @@ ComponentWithComputed({
     _lastPowerKey: '', // 记录上一次点击‘照明’时的指令键，用于反转处理
     _keyQueue: ['', '', '', '', '', '', '', ''], // 记录按键序列
     _longpress_key: '',
+    _timer: 0, // 记录上次指令时间
   },
 
   computed: {
@@ -115,6 +117,12 @@ ComponentWithComputed({
 
       const { dir } = e.target.dataset
       Logger.log('btnTap', key, dir, { payload, addr })
+
+      const now = new Date().getTime()
+      if (now - this.data._timer < FREQUENCY_TIME) {
+        Toast('操作太快啦~')
+      }
+      this.data._timer = now
 
       // DEBUG 蓝牙连接模式
       if (remoterStore.curRemoter.connected) {
