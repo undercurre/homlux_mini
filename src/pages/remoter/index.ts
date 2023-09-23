@@ -32,6 +32,7 @@ ComponentWithComputed({
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
     _timeId: -1,
     _lastPowerKey: '', // 记录上一次点击‘照明’时的指令键，用于反转处理
+    _firstLoad: true, // 页面首次打开
     debugStr: '[rx]',
     isDebugMode: false,
   },
@@ -159,8 +160,12 @@ ComponentWithComputed({
 
       await delay(0)
 
-      // 搜索一轮设备
-      this.toSeek()
+      // 首次进入，由用户手动操作；非首次进入（返回），自动搜索一轮设备
+      if (this.data._firstLoad) {
+        this.data._firstLoad = false
+      } else {
+        this.toSeek()
+      }
       // 获取已连接的设备
       // this.getConnectedDevices()
     },
