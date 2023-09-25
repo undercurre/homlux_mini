@@ -46,8 +46,6 @@ ComponentWithComputed({
       const sceneData = storage.get('scene_data') as Scene.AddSceneDto | Scene.UpdateSceneDto
       const sceneDeviceActionsFlatten = storage.get('sceneDeviceActionsFlatten') as Device.ActionItem[]
 
-      console.log('sceneData', sceneData, 'sceneDeviceActionsFlatten', sceneDeviceActionsFlatten)
-
       const selectIdList = sceneDeviceActionsFlatten.map((item) => item.uniId)
 
       const deviceList = deviceStore.deviceFlattenList

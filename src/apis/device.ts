@@ -146,15 +146,19 @@ export async function controlDevice(
   if (deviceType === 2 && homOs.isSupportLan({ deviceId: inputData[0].devId })) {
     const localRes = await homOs.deviceControl({
       deviceId: inputData[0].devId,
-      actions: inputData.map((item) => ({
-        modelName: item.modelName,
-        deviceProperty: {
-          ...item,
-        },
-      })),
-    })
+      actions: inputData.map((item) => {
+        // 由于传多余的属性，网关端会报错，需要去除多余的属性
+        const deviceProperty = Object.assign({}, item)
 
-    Logger.log('localRes', localRes)
+        delete deviceProperty.modelName
+        delete deviceProperty.devId
+
+        return {
+          modelName: item.modelName,
+          deviceProperty,
+        }
+      }),
+    })
 
     if (localRes.success) {
       return localRes
