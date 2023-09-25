@@ -89,7 +89,13 @@ ComponentWithComputed({
      * 设备均在线
      */
     canMoveRoom(data) {
+      const noScreen = data.editSelectList.every((uId: string) => {
+        const deviceId = uId.split(':')[0]
+        const device = deviceStore.deviceMap[deviceId]
+        return !SCREEN_PID.includes(device.productId)
+      })
       return (
+        noScreen &&
         data.editSelectList?.length &&
         data.editSelectList.every((uId: string) => {
           const deviceId = uId.split(':')[0] // 不管有没有:
