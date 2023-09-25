@@ -299,7 +299,6 @@ export class WifiSocket {
     tcpClient = wx.createTCPSocket()
 
     tcpClient?.onMessage((res) => {
-      Logger.log('tcpClient?.onMessage', res)
       this.handleReply(res.message)
     })
 
@@ -329,7 +328,6 @@ export class WifiSocket {
     const port = this.bindUdp()
 
     udpClient.onMessage((res) => {
-      Logger.log('udpClient?.onMessage', res)
       this.handleReply(res.message)
     })
 
