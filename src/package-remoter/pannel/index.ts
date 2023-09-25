@@ -41,7 +41,8 @@ ComponentWithComputed({
         : '/assets/img/base/offline.png'
     },
     curAddrText(data) {
-      if (!data.isDebugMode) { // 没什么意义，但触发主动刷新
+      if (!data.isDebugMode) {
+        // 没什么意义，但触发主动刷新
         return ''
       }
       const addr = (data.isFactoryMode ? FACTORY_ADDR : remoterStore.curRemoter.addr) ?? ''
