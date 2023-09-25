@@ -35,14 +35,17 @@ ComponentWithComputed({
   },
 
   computed: {
-    pageTitle(data) {
-      const deviceName = remoterStore.curRemoter.deviceName ?? ''
-      return data.isFactoryMode ? `${deviceName}|${FACTORY_ADDR}` : deviceName
-    },
     connectIcon() {
       return remoterStore.curRemoter?.connected
         ? '/assets/img/base/scene-switch-btn.png'
         : '/assets/img/base/offline.png'
+    },
+    curAddrText(data) {
+      if (!data.isDebugMode) { // 没什么意义，但触发主动刷新
+        return ''
+      }
+      const addr = (data.isFactoryMode ? FACTORY_ADDR : remoterStore.curRemoter.addr) ?? ''
+      return String.prototype.match.call(addr, /.{1,2}/g)?.join(':')
     },
   },
 
