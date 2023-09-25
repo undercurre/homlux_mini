@@ -1,0 +1,4 @@
+<view class="bottom-button2">
+  <view wx:if="{{buttomButonData.cancelText}}" class="cancel" style="margin-right: {{buttomButonData.comfirmText?'30rpx':'0'}};" bindtap="clickCancel">{{buttomButonData.cancelText}}</view>
+  <view wx:if="{{buttomButonData.comfirmText}}" class="confirm" bindtap="clickConfirm">{{buttomButonData.comfirmText}}</view>
+</view>

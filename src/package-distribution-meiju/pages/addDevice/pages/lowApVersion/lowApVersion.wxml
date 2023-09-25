@@ -1,0 +1,6 @@
+<!--distribution-network/addDevice//pages/lowApVersion/lowApVersion.wxml-->
+<view class="page flex-c" style="margin-top:{{statusBarHeight+40}}px">
+  <image class="on-found" src="{{imgBaseUrl+imges.noLocation}}"></image>
+  <view class="desc">小程序无法为此设备配网，请使用美的美居App为设备完成配网</view>
+  <view class="back-index" bindtap="backToIndex">返回首页</view>
+</view>

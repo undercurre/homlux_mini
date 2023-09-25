@@ -24,6 +24,6 @@ Component({
       wx.navigateTo({
         url: 'package-distribution-meiju/pages/inputWifiInfo/inputWifiInfo',
       })
-    }
+    },
   },
 })

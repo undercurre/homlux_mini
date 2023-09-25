@@ -1,0 +1,110 @@
+/* addDevice//pages/linkDevice/linkDevice.wxss */
+.notice-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.block {
+  display: block;
+  text-align: center;
+}
+
+.tip-box {
+  display: flex;
+  align-items: center;
+  margin-right: 8rpx;
+}
+.tip-icon {
+  width: 32rpx;
+  height: 32rpx;
+}
+
+/* .thick {
+  font-weight: 600;
+} */
+
+.blue {
+  color: rgb(52, 106, 224);
+}
+
+.title {
+  text-align: center;
+  font-family: PingFangSC-Medium;
+  font-size: 48rpx;
+  color: #000000;
+  letter-spacing: 0;
+  margin-top: 30rpx;
+  line-height: 48rpx;
+  font-weight: 500;
+}
+
+.scan-desc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.link-flow {
+  width: 100%;
+  margin: 112rpx auto 48rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+/* .phone-img {
+  width: 196rpx;
+  height: 196rpx;
+} */
+
+/* .blue-tooth-img {
+  width: 80rpx;
+  height: 16rpx;
+  margin: 0rpx 5rpx;
+} */
+
+.device-img {
+  display: inline-block;
+  max-width: 196rpx;
+  max-height: 196rpx;
+  z-index: 100;
+}
+
+.progressBar {
+  margin: 68rpx auto 40rpx;
+  width: 284rpx;
+  height: 8rpx;
+  background: #e5e5e8;
+  border-radius: 26px;
+}
+
+.finish {
+  width: 10%;
+  height: 8rpx;
+  background: #267aff;
+  border-radius: 36px 0 0 36px;
+}
+
+.progress-list {
+  height: 150rpx;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* .step-img {
+  display: inline-block;
+  width: 32rpx;
+  height: 32rpx;
+  margin-left: 12rpx;
+} */
+
+/* .timing-desc {
+  margin-top: 144rpx;
+  text-align: center;
+} */

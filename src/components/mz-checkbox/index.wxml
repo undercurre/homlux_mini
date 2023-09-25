@@ -4,6 +4,6 @@
 
     <text class="pl-12rpx">
       <slot></slot>
-      </text>
+    </text>
   </van-checkbox>
 </view>

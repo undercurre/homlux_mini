@@ -1,0 +1,34 @@
+<!--addDevice//pages/linkCombinedFail/linkCombinedFail.wxml-->
+<view id="{{brand}}">
+  <view class="page container">
+    <view class="combined-top">
+      <image class="combined-fail-icon" src="{{failIcon}}" />
+      <text class="combined-status">设备组合失败</text>
+    </view>
+
+    <view class="combined-progress combined-result" wx:for="{{deviceList}}" wx:key="index">
+      <image class="combined-result-device" src="{{item.deviceImg}}" />
+      <view class="flex-c">
+        <view class="flex-r">
+          <text class="combined-result-name overflow-ellipsis">{{item.deviceName}}</text>
+          <text wx:if="{{item.roomName}}" class="combined-result-room">{{item.roomName}}</text>
+        </view>
+        <view class="flex-r align-c">
+          <mx-icon class="combined-icon" name="{{item.ui_icon}}" color="{{item.ui_fontColor}}" size="14" />
+          <text class="combined-result-success">{{item.ui_linkText}}</text>
+        </view>
+      </view>
+      <view class="flex-r align-c right-btn" bindtap="rightClick" data-info="{{item}}">
+        <text>{{item.ui_btnText}}</text>
+        <mx-icon wx:if="{{item.ui_btnText}}" class="combined-result-icon" name="arrow" color="#999999" size="12" />
+      </view>
+    </view>
+    <view class="bottom-btn" bindtap="toHome">
+      <text>完成</text>
+    </view>
+    <!-- 放弃添加弹窗 -->
+    <mx-dialog id="mx-cancleLink" show="{{ishowDialog}}" showCancelButton="true" cancelButtonColor="{{dialogStyle.cancelButtonColor}}" confirmButtonColor="{{dialogStyle.confirmButtonColor}}" title="{{titleContent}}" message="{{messageContent}}" cancel-button-text="放弃添加" confirm-button-text="再等等" bind:confirm="clickWaitAminute" bind:cancel="discardAdd"> </mx-dialog>
+    <mx-dialog id="mx-dialog"> </mx-dialog>
+  </view>
+  <mx-dialog id="mx-dialog" />
+</view>

@@ -1,0 +1,107 @@
+.notice {
+  margin-top: 40rpx;
+  margin-left: 32rpx;
+  font-size: 24rpx;
+  color: #8a8a8f;
+}
+
+.device-name {
+  margin-left: 32rpx;
+  margin-right: 32rpx;
+}
+
+.marginBottom {
+  margin-bottom: 48rpx;
+}
+
+.inputNotice {
+  margin-top: 16rpx;
+  margin-left: 64rpx;
+  margin-bottom: 48rpx;
+  font-size: 24rpx;
+  color: #ff8225;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.inputNoticeImg {
+  width: 24rpx;
+  height: 24rpx;
+  margin-right: 8rpx;
+}
+
+.input {
+  height: 92rpx;
+  position: relative;
+  padding: 0rpx 40rpx;
+  margin-top: 16rpx;
+  border: 1rpx solid #c7c7cc;
+  border-radius: 24px;
+  font-family: PingFangSC-Regular;
+  font-size: 32rpx;
+  color: #000000;
+  letter-spacing: 0;
+  line-height: 92rpx;
+}
+
+.placeholder {
+  font-size: 28rpx;
+  color: #c7c7cc;
+}
+
+.room {
+  font-size: 24rpx;
+  color: #8a8a8f;
+  margin-left: 32rpx;
+  margin-bottom: 20rpx;
+}
+
+.title {
+  width: 100%;
+  margin-bottom: 16rpx;
+}
+
+.room-name {
+  display: inline-block;
+  height: 72rpx;
+  padding: 0rpx 32rpx;
+  box-sizing: border-box;
+  line-height: 72rpx;
+  margin-right: 16rpx;
+  margin-bottom: 10rpx;
+  border-radius: 36rpx;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.room-name:last-child {
+  margin-right: none;
+}
+
+.active {
+  background: #e9f1ff;
+  color: #5192fa;
+}
+
+.default {
+  background: #f6f6f6;
+  color: #666666;
+}
+
+.save {
+  height: 92rpx;
+  margin-top: 110rpx;
+  line-height: 92rpx;
+  text-align: center;
+  border-radius: 48rpx;
+  background: #267aff;
+  color: #fff;
+  width: 686rpx;
+  margin-left: 32rpx;
+  margin-right: 32rpx;
+  position: absolute;
+  bottom: 48rpx;
+}

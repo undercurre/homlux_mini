@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "",
+  "usingComponents": {
+    "local-toast": "../../components/localToast/localToast",
+    "sure-center-dialog": "../../../../pages/component/sure-center-dialog/sure-center-dialog",
+    "mx-dialog": "/miniprogram_npm/m-ui/mx-dialog/index"
+  },
+  "enablePullDownRefresh": true
+}

@@ -1,0 +1,16 @@
+<view>
+  <view class="img">
+    <image class="phone" src="{{imgBaseUrl}}/addDeviceAboutImg/ic_meiphone@1x.png"></image>
+    <image class="warn" src="{{baseImgUrl}}/scan-device/findFriend/link_ic_warming_s@2x.png"></image>
+    <image class="deviceImg" src="{{device.deviceImg}}"></image>
+  </view>
+  <view class="notice">{{device.deviceName}}联网失败</view>
+  <view class="code">{{device.nextTitle}}({{device.result}})</view>
+  <view class="reason">
+    <view wx:for="{{device.reason}}" wx:key="index" wx:for-index="index" wx:for-item="item">{{index+1}}、{{item}}</view>
+  </view>
+  <view class="btn">
+    <view class="back" bindtap="backToIndex">返回首页</view>
+    <view class="retry" bindtap="retry">重试</view>
+  </view>
+</view>

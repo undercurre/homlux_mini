@@ -1,0 +1,8 @@
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "搜索",
+  "usingComponents": {
+    "search-navbar": "../../components/search-navbar/search-navbar",
+    "mx-dialog": "/miniprogram_npm/m-ui/mx-dialog/index"
+  }
+}

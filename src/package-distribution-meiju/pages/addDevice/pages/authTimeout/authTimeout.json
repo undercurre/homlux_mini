@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "plugin-navbar": "/pages/component/plugin-navbar/plugin-navbar"
+  }
+}

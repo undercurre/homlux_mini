@@ -1,0 +1,12 @@
+{
+  "navigationBarBackgroundColor": "#FFF",
+  "navigationStyle": "custom",
+  "navigationBarTextStyle": "black",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "link-device-header": "/distribution-network/addDevice/pages/component/input-wifi-header/input-wifi-header",
+    "mp-actionSheet": "../component/actionsheet/actionsheet",
+    "mp-dialog": "../component/dialog/dialog",
+    "mx-dialog": "/miniprogram_npm/m-ui/mx-dialog/index"
+  }
+}

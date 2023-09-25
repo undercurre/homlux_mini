@@ -1,0 +1,263 @@
+/* addDevice//pages/addGuide/addGuide.wxss */
+
+.block {
+  display: block;
+  text-align: center;
+}
+
+.thick {
+  font-weight: 600;
+}
+
+.blue {
+  font-family: PingFangSC-Medium;
+  color: #267aff;
+  font-weight: 600;
+}
+
+.orange-display-txt {
+  color: #ff8225;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.digitalFont {
+  font-family: 'QuartzBolD';
+}
+
+.flex-r {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: center;
+}
+
+/* .title {
+  text-align: center;
+  font-family: PingFangSC-Medium;
+  font-size: 48rpx;
+  color: #000000;
+  letter-spacing: 0;
+  text-align: center;
+  line-height: 48rpx;
+  font-weight: 500;
+} */
+
+/* .guide-img-box {
+  position: relative;
+  width: 686rpx;
+  height: 384rpx;
+  margin: 40rpx auto;
+  background-color: #e5e5e8;
+  border-radius: 32rpx;
+} */
+
+.device-img {
+  width: 196rpx;
+  height: 196rpx;
+  position: absolute;
+  top: 50%;
+  right: 100rpx;
+  transform: translateY(-50%);
+}
+
+.guide-img {
+  width: 686rpx;
+  height: 384rpx;
+  display: block;
+}
+
+.mode5-img {
+  width: 686rpx;
+  height: 384rpx;
+  display: block;
+  border-radius: 32rpx;
+  margin: 40rpx auto;
+}
+
+.addGuide-dialog-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40rpx;
+}
+
+.check-addGuide-title {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.check-addGuide-content {
+  margin-top: 40rpx;
+  margin-bottom: 18rpx;
+}
+
+/* .check-addGuide{
+  width:100%;
+} */
+
+/* .check-addGuide::after {
+  content: '';
+  display: inline-block;
+  width: 10rpx;
+  height: 10rpx;
+  margin-left: 8rpx;
+  border-top: solid 3rpx #267AFF;
+  border-right: solid 3rpx #267AFF;
+  transform: rotate(45deg);
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-top-color: rgb(38, 122, 255);
+  border-right-width: 1px;
+  border-right-style: solid;
+  border-right-color: rgb(38, 122, 255);
+} */
+
+/* .guide-desc {
+  margin: auto;
+  width: 91.5%;
+  font-size: 32rpx;
+} */
+
+/* .skip {
+  margin-top: 70%;
+  text-align: center;
+} */
+
+/* onfound */
+/* .no-device {
+  display: block;
+  margin: 93rpx auto 32rpx;
+  width: 372rpx;
+  height: 372rpx;
+} */
+
+.check-guide {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100vh;
+}
+
+.desc-list {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 30rpx;
+  margin-top: 20rpx;
+  padding: 0 4%;
+  align-items: center;
+}
+
+.r {
+  display: flex;
+  margin-bottom: 42rpx;
+  align-items: top;
+}
+
+/* .num {
+  width: 36rpx;
+  height: 36rpx;
+  line-height: 36rpx;
+  text-align: center;
+  margin-right: 16rpx;
+  margin-top: 10rpx;
+  border-radius: 50%;
+  color: #458bff;
+  background: #e9f1ff;
+  font-size: 24rpx;
+  flex-shrink: 0;
+} */
+
+.text {
+  font-size: 32rpx;
+}
+
+/* .open-plugin,
+.link-btn{
+  width: 91.5%;
+  height: 92rpx;
+  margin: auto;
+  line-height: 92rpx;
+  text-align: center;
+  border-radius: 48rpx;
+  background: #267aff;
+  color: #fff;
+} */
+
+/* .retry {
+  width: 91.5%;
+  height: 92rpx;
+  margin: auto;
+  line-height: 92rpx;
+  text-align: center;
+  border-radius: 48rpx;
+  background: #267aff;
+  color: #fff;
+  position: absolute;
+  bottom: 48rpx;
+} */
+
+/* .check-finish {
+  margin-bottom: 40rpx;
+} */
+
+.finish-sel {
+  color: #666666;
+  margin-bottom: 40rpx;
+}
+
+/* .sel {
+  width: 36rpx;
+  height: 36rpx;
+  margin-right: 16rpx;
+} */
+
+/* .sel-text {
+  height: 36rpx;
+  line-height: 36rpx;
+  font-size: 28rpx;
+} */
+/* .switch-set {
+  text-align: center;
+  padding-bottom: 40rpx;
+  font-size: 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} */
+.switch-set .blue-text {
+  color: #267aff;
+}
+.switch-set image {
+  display: block;
+  width: 12rpx;
+  height: 20rpx;
+  margin-left: 12rpx;
+}
+.switch-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bluetoothOpenNotice {
+  padding: 0rpx 40rpx;
+  margin-bottom: 40rpx;
+}
+.btn {
+  color: #267aff;
+}
+/* 
+.descList{
+  margin-top: 86rpx;
+  margin-left: 52rpx;
+  margin-right: 52rpx;
+} */
+
+.btnView {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

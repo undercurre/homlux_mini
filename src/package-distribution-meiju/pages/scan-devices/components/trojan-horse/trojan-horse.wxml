@@ -1,0 +1,9 @@
+<view class="containers0" wx:if="{{isShowHorse}}">
+  <view class="two-box">
+    <image class="swing" src="/assets/img/loading.png"></image>
+    <view class="content">
+      <text>加载中...</text>
+      <!-- <text class="dots"></text> -->
+    </view>
+  </view>
+</view>

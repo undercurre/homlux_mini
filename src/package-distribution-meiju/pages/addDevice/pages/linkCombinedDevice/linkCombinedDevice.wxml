@@ -1,0 +1,31 @@
+<!--addDevice//pages/linkCombinedDevice/linkCombinedDevice.wxml-->
+<view id="{{brand}}">
+  <view class="page container">
+    <link-device-header bind:clickCancel="clickCancel" app-name="app-name" buttonColor="{{brandConfig.backButtonColor}}"></link-device-header>
+    <!-- wx:if="{{brand !== 'colmo'}}" -->
+    <view class="combined-top">
+      <image class="combined-device-img" src="{{deviceImg}}" mode="aspectFit" />
+      <view>
+        <mx-icon class="combined-icon" name="{{iconStyle.combinedSuccessName}}" color="#25CF42" size="24" />
+        <text class="combined-status">{{deviceName}}已联网成功</text>
+      </view>
+    </view>
+
+    <text class="combined-top-tip">搜索到套装其他产品，正在自动为其联网…</text>
+
+    <text class="combined-bottom-tip" style="bottom:{{isIpx?'128rpx':'94rpx'}};">联网期间，请勿操作设备</text>
+    <view class="combined-progress">
+      <image class="combined-progress-device" src="{{slaveImg}}" mode="" />
+      <text class="combined-progress-name overflow-ellipsis">{{slaveName}}</text>
+      <text class="combined-progress-step">{{progressList[curStep].name}}</text>
+      <image class="combined-progress-icon" src="{{combinedLoading}}" mode="" />
+    </view>
+    <!-- <view>
+      <text class="special-font-color">测试倒计时：{{time}}s</text>
+    </view> -->
+    <!-- 放弃添加弹窗 -->
+    <mx-dialog id="mx-cancleLink" show="{{ishowCancleDialog}}" showCancelButton="true" cancelButtonColor="{{dialogStyle.cancelButtonColor}}" confirmButtonColor="{{dialogStyle.confirmButtonColor}}" title="{{titleContent}}" cancel-button-text="放弃添加" confirm-button-text="再等等" bind:confirm="clickWaitAminute" bind:cancel="discardAdd"> </mx-dialog>
+    <!-- 失败重试弹窗 -->
+    <mx-dialog id="mx-reCombine" show="{{ishowReDialog}}" showCancelButton="true" cancelButtonColor="{{dialogStyle.cancelButtonColor}}" confirmButtonColor="{{dialogStyle.confirmButtonColor}}" title="{{titleContent}}" cancel-button-text="取消" confirm-button-text="重试" bind:confirm="reCombine" bind:cancel="cancelCombined"> </mx-dialog>
+  </view>
+</view>

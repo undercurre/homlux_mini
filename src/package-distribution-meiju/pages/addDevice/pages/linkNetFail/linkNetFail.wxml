@@ -1,0 +1,96 @@
+<!--addDevice//pages/linkNetFail/linkNetFail.wxml-->
+<wxs src="assets/js/subutil.wxs" module="tools" />
+<view id="{{brand}}">
+  <view class="page link-fail-container" style="padding-top:{{statusBarHeight+40}}px">
+    <link-device-header isNavCancel="{{combinedStatus == -1}}" bind:clickCancel="clickBack" buttonColor="{{brandConfig.backButtonColor}}"></link-device-header>
+    <!-- <link-fail-header backText="{{('取消')}}" bind:clickBack="clickBack" back="back" header="link-fail-heade" buttonColor="{{brandConfig.backButtonColor}}"> </link-fail-header> -->
+    <view class="fail-link-flow">
+      <!-- <image src="./assets/img/ic_meiphone@1x.png" class="phone-img"></image> -->
+      <image src="{{meiPhone}}" class="fail-phone-img"></image>
+      <!-- <image src="./assets/img/link_ic_zhuyi.png" class="blue-tooth-img"></image> -->
+      <image src="{{zhuyi}}" class="fail-blue-tooth-img"></image>
+      <!-- <image src="{{deviceImg||'../assets/img/dms_img_lack@3x.png'}}" class="device-img"></image> -->
+      <!-- <image src="{{deviceImg||dms_img_lack}}" class="fail-device-img"></image> -->
+      <image wx:if="{{!deviceImgLoaded}}" class="fail-device-img" src="{{dms_img_lack}}"></image>
+      <image
+          hidden="{{!deviceImgLoaded}}"
+          src="{{deviceImg}}"
+          class="fail-device-img"
+          bindload="devivceImgSuccess"
+          binderror="deviceImgError"
+        ></image>
+    </view>
+    <view class="header flex-c">
+      <!-- <image class="fail-image" src="{{imgBaseUrl+imges.fail}}"></image> -->
+      <view class="fail-title theme-font-color">{{tools.formatFailTitle(failUiData.mainTitle,deviceName)}}</view>
+      <view class="fail-code">
+        <text>{{tools.formatFailTitle(failUiData.nextTitle,deviceName)}}</text>
+        <text wx:if="{{failUiData.mainTitle}}">({{failUiData.errorCode||901001}})</text>
+      </view>
+    </view>
+    <view class="desc-list-fail">
+      <view
+        class="item"
+        wx:for="{{ failUiData.guideDesc }}"
+        wx:key="*this"
+        wx:for-item="failUiDataItem"
+        wx:for-index="failUiDataindex"
+      >
+        <view class="{{failUiData.guideDesc.length>1?'link-fail-r':'link-fail-c'}}">
+          <view wx:if="{{failUiData.guideDesc.length>1}}" class="num-fail">{{failUiDataindex+1}}</view>
+          <view class="text theme-font-color">
+            {{tools.formatGuideDesc(failUiDataItem,deviceName)}}
+            <!-- <text wx:if="{{tools.isTest(failUiDataItem)}}" class="ping-net" bindtap="clickTestNet">测试一下</text> -->
+            <text
+              wx:if="{{tools.isGuide(failUiDataItem)}}"
+              data-text="{{failUiDataItem}}"
+              class="ping-net"
+              bindtap="clickJumpH5"
+              >查看教程</text
+            >
+          </view>
+        </view>
+        <view wx:if="{{tools.isNeedWifiConfirmInput(failUiDataItem)}}" class="pws-confirm">
+          <input class="c4-2" wx:if="{{!continueConnectWifi}}" value="{{bindWifiInfo.SSIDContent}}" placeholder="{{wifiInputPlaceholder}}" disabled="true">
+            <text class="switch-wifi special-font-color" catchtap="clickSwitchWifi">切换WiFi</text>
+          </input>
+          <input class="c4-2" wx:if="{{continueConnectWifi}}" value="{{bindWifiInfo.SSIDContent}}" placeholder="{{wifiInputPlaceholder}}" bindinput="inputSSIDContent" maxlength='40'>
+          </input>
+          <view wx:if="{{tipText}}" class="tips">
+            <!-- <image class="warn" src="{{imgBaseUrl+imges.zhuyi}}"></image> -->
+            <view class="tip-text">{{tipText}}</view>
+          </view>
+          <view class="c6-2">
+            <input wx:if="{{!isCanSeePsw}}" class="psw-input" value="{{bindWifiInfo.PswContent}}" bindinput="getPsw" bindfocus="pswFocus" bindblur="pswBlur" type="text" password="{{pswInputType}}" placeholder="输入 WiFi 密码">
+              <image class="show-psw" src="{{isCanSeePsw?wifiShow:wifiHide}}" catchtap="switchPswShow"></image>
+            </input>
+
+            <input wx:if="{{isCanSeePsw}}" class="psw-input" value="{{bindWifiInfo.PswContent}}" bindinput="getPsw" bindfocus="pswFocus" bindblur="pswBlur" type="text" password="{{pswInputType}}" placeholder="输入 WiFi 密码">
+              <image class="show-psw" src="{{isCanSeePsw?wifiShow:wifiHide}}" catchtap="switchPswShow"></image>
+            </input>
+          </view>
+          <view wx:if="{{spaceTip}}" class="spaceTips">
+            <view class="tip-text">{{spaceTip}}</view>
+          </view>
+          <view class="tip-list-fail">
+            <view class="tip-fail"> <text class="circle"></text> <text>仅支持 2.4GHz WiFi</text> </view>
+            <view class="tip-fail tip2">
+              <text class="circle"></text> <text>不支持需要二次验证的网络</text>
+              <text data-text="qmark" bindtap="clickJumpH5" class="q-mark">?</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部按钮 -->
+    <bottom-button bind:clickCancel="" buttomButonData="{{buttomButonData}}" brand="{{brand}}" confirm="confirm" bottom-button2="bottom-button2" cancle="cancle"></bottom-button>
+
+    <!-- 测试弹窗 -->
+    <img-dialog customDialog="{{testNetDialog}}"></img-dialog>
+
+    <!-- 自定弹窗 -->
+    <custom-dialog bind:clickCancel="clickCancel" customDialog="{{customDialog}}"></custom-dialog>
+  </view>
+  <mx-dialog id="mx-dialog" />
+</view>

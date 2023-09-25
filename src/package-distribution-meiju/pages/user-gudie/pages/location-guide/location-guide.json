@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "操作指引",
+  "usingComponents": {
+    "mx-button": "/miniprogram_npm/m-ui/mx-button/index"
+  }
+}

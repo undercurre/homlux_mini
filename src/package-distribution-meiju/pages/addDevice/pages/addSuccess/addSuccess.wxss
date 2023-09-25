@@ -1,0 +1,170 @@
+/* addDevice//pages/addSuccess/addSuccess.wxss */
+.block {
+  display: block;
+  text-align: center;
+}
+
+/* .page {
+  width: 91.5%;
+  height: 100%;
+  overflow: scroll;
+  margin: auto;
+} */
+
+.header {
+  margin-bottom: 72rpx;
+  font-size: 24rpx;
+  color: #8a8a8f;
+}
+
+.success-text {
+  font-family: PingFangSC-Medium;
+  font-size: 48rpx;
+  color: #000000;
+  letter-spacing: 0;
+  text-align: center;
+  line-height: 48rpx;
+  font-weight: 500;
+}
+
+.placeholder {
+  font-size: 28rpx;
+  color: #c7c7cc;
+}
+
+.more {
+  position: absolute;
+  width: 48rpx;
+  height: 48rpx;
+  top: 25%;
+  right: 0rpx;
+  transform: translateX(-50%);
+}
+
+.phcolor {
+  color: #000000;
+}
+.room {
+  padding-bottom: 200rpx;
+}
+/* .room-list {
+} */
+
+/* .room-name {
+  display: inline-block;
+  height: 72rpx;
+  padding: 0rpx 32rpx;
+  box-sizing: border-box;
+  line-height: 72rpx;
+  margin-right: 16rpx;
+  margin-bottom: 10rpx;
+  border-radius: 36rpx;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+} */
+
+.room-name:last-child {
+  margin-right: none;
+}
+
+/* .default {
+  background: #f6f6f6;
+  color: #666666;
+}
+
+.active {
+  background: #e9f1ff;
+  color: #5192fa;
+} */
+
+.add-room {
+  background: #f6f6f6;
+  position: relative;
+}
+
+.add-img {
+  width: 28rpx;
+  height: 28rpx;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.bottom-button {
+  padding: 30rpx 0rpx;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* .save {
+  width: 92.5%;
+  height: 92rpx;
+  margin: auto;
+  line-height: 92rpx;
+  text-align: center;
+  border-radius: 48rpx;
+  background: #267aff;
+  color: #fff;
+} */
+
+/* 修改组件默认样式 */
+.weui-actionsheet__cell_warn {
+  color: #267aff;
+}
+
+.dialog-input {
+  width: 476rpx;
+  height: 48rpx;
+  color: #000000;
+  margin: auto;
+  line-height: 48rox;
+  background: #fff;
+  border: 1rpx solid #9f9f9f;
+}
+
+.inputNotice {
+  margin-left: 30rpx;
+  margin-bottom: 48rpx;
+  font-size: 24rpx;
+  color: #ff8225;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.inputNoticeImg {
+  width: 24rpx;
+  height: 24rpx;
+  margin-right: 8rpx;
+}
+
+.loading-room {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+.loading {
+  display: inline-block;
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 15rpx;
+}
+
+/* .get-room-fail {
+  text-align: center;
+}
+
+.try-get-room {
+  color: #267aff;
+} */

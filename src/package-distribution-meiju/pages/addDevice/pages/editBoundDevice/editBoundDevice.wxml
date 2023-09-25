@@ -1,0 +1,18 @@
+<wxs src="../utils/filter.wxs" module="tools" />
+<view class="notice">设置个性化名称，建议使用中文</view>
+<view class="device-name">
+  <input class="{{inputNotice==''?'device-name-input input marginBottom':'device-name-input input'}}" bindinput="antiNameClicked" bindblur="changeDeviceName" placeholder="请输入设备名称" placeholder-class="placeholder" value="{{device.deviceName}}" maxlength="15"></input>
+</view>
+<view wx:if="{{inputNotice!=''}}" class="inputNotice">
+  <image class="inputNoticeImg" src="{{baseImgUrl}}/scan-device/findFriend/link_ic_warming_s@2x.png"></image>
+  <view>{{inputNotice}}</view>
+</view>
+<view class="room">
+  <view class="title">所属房间</view>
+  <view class="room-list">
+    <view class="room-name {{item.roomId==device.roomId?'active':'default'}}" wx:for="{{familyInfo.roomList}}" wx:key="index" data-id="{{item.roomId}}" data-room-name="{{item.name}}" bindtap="switchRoom">
+      {{tools.formatRoomName(item.name,4)}}
+    </view>
+  </view>
+</view>
+<view class="save" bindtap="changeBindDviceInfo">完成</view>
