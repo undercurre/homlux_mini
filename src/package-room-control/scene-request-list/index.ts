@@ -52,10 +52,16 @@ ComponentWithComputed({
 
       const deviceList = deviceStore.deviceFlattenList
         .filter((item) => selectIdList.includes(item.uniId))
-        .map((item) => ({
-          ...item,
-          status: 'waiting',
-        }))
+        .map((item) => {
+          if (item.proType === PRO_TYPE.switch) {
+            item.pic = item.switchInfoDTOList[0]?.pic
+          }
+
+          return {
+            ...item,
+            status: 'waiting',
+          }
+        })
 
       // 处理发送请求的deviceActions字段数据
       const deviceMap = deviceStore.deviceMap
