@@ -121,7 +121,7 @@ ComponentWithComputed({
       const now = new Date().getTime()
       console.log('now - this.data._timer', now - this.data._timer)
       if (now - this.data._timer < FREQUENCY_TIME) {
-        Toast('操作太快啦~')
+        Toast('操作太频繁啦~')
       }
       this.data._timer = now
 
