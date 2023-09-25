@@ -11,7 +11,7 @@ export async function initHomeOs() {
   homOs.login({
     homeId: homeStore.currentHomeDetail.houseId,
     key: homeStore.key,
-    // host: { ip: '192.168.3.103', devId: '1694507652870764', SSID: 'test' },
+    // host: { "ip": "192.168.1.13", "devId": "1694507652870764", SSID: 'test' },
     // host: { ip: '192.168.1.129', devId: '1694499802565103', SSID: 'test' },
   })
 
