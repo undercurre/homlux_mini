@@ -72,6 +72,19 @@ export const strUtil = {
     })
     return hexArr.join('')
   },
+
+  /**
+   * ArrayBuffer转为字符串，参数为ArrayBuffer对象
+   * @param buf ArrayBuffer
+   */
+  ab2str(buf: ArrayBuffer) {
+    const bytes = new Uint8Array(buf)
+    let text = ''
+    for (let i = 0; i < bytes.length; i++) {
+      text += '%' + bytes[i].toString(16)
+    }
+    return decodeURIComponent(text)
+  },
   /**
    * 周期描述转换
    * @param timeType
