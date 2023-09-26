@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 // addDevice/pages/inputWifiInfo/inputWifiInfo.js
 const app = getApp()
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
@@ -13,16 +13,18 @@ import { showToast, getFullPageUrl } from '../../../../utils/util'
 import { string2Uint8Array } from 'm-utilsdk/index'
 import { getScanRespPackInfo } from '../../../../utils/blueAdDataParse'
 import { burialPoint } from './assets/js/burialPoint'
-import { encyptWifi, decodeWifi } from '../../../assets/js/utils'
+import { decodeWifi } from '../../../assets/js/utils'
 import { deviceImgMap } from '../../../../utils/deviceImgMap'
 import WifiMgr from '../assets/js/wifiMgr'
 import { addDeviceSDK } from '../../../../utils/addDeviceSDK.js'
 import { checkPermission } from '../../../../common/checkPermissionTip'
 import { setWifiStorage } from '../../utils/wifiStorage'
+import { environment, imgBaseUrl } from '../../../../common/api'
 
 const brandStyle = require('../../../assets/js/brand.js')
 import { imgesList } from '../../../assets/js/shareImg.js'
 import { commonDialog } from '../../../assets/js/commonDialog'
+const imgUrl = imgBaseUrl.url + '/shareImg/' + app.globalData.brand
 let wifiMgr = new WifiMgr()
 let interval = null
 let showImgTime = null
@@ -342,12 +344,9 @@ Page({
         res: res,
       },
     })
-    log.info('获取当前连接wifi信息', res)
-    log.info('storageWifiListV1======', wx.getStorageSync('storageWifiListV1'))
     let storageWifiListV1 = wx.getStorageSync('storageWifiListV1')
     if (storageWifiListV1 && storageWifiListV1[environment].length && decodeWifi(storageWifiListV1[environment])) {
       console.log('有对应环境的缓存wifi信息')
-      log.info('有对应环境的wifi缓存')
       let storageWifiList = decodeWifi(wx.getStorageSync('storageWifiListV1')[environment])
       console.log('uuuuuuuuuuuuuuu', storageWifiList, res.BSSID)
       getApp().setMethodCheckingLog('有对应环境的缓存wifi信息')
@@ -366,7 +365,6 @@ Page({
         // if (item.BSSID == res.BSSID) {
         if (item.SSIDContent == res.SSID) {
           console.log('有这个wifi的storage')
-          log.info('有当前连接wifi的缓存')
           getApp().setMethodCheckingLog('有当前连接wifi的缓存')
           burialPoint.apLocalLog({
             log: {
@@ -392,7 +390,6 @@ Page({
     } else {
       //没有wifi storage 直接取当前连接的wifi
       console.log('没有对应环境的缓存wifi信息')
-      log.info('没有对应环境的缓存wifi信息')
       getApp().setMethodCheckingLog('没有对应环境的缓存wifi信息')
       that.initBindWifiTest(res.BSSID, res.SSID, res.SSID.length, '01', '12', res.signalStrength, res.frequency)
     }
@@ -428,34 +425,22 @@ Page({
     burialPoint.clickconnectedWifi({
       deviceSessionId: app.globalData.deviceSessionId,
     })
-    Dialog.confirm({
-      title: '若您已确定手机连上了家庭WiFi,请确保您当前的微信版本为8.0.17及以上版本',
-      confirmButtonText: '我知道了',
-      confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
-      showCancelButton: false,
-    }).then((res) => {
-      if (res.action == 'confirm') {
+    wx.showModal({
+      title: '提示',
+      content: '若您已确定手机连上了家庭WiFi,请确保您当前的微信版本为8.0.17及以上版本',
+      showCancel: false,
+      confirmText: '我知道了',
+      success: function (res) {
+        if (res.confirm) {
+          console.log('click confirm')
+        }
+      },
+      complete() {
         burialPoint.viewTipUpVersion({
           deviceSessionId: app.globalData.deviceSessionId,
         })
-      }
+      },
     })
-    // wx.showModal({
-    //   title: '提示',
-    //   content: '若您已确定手机连上了家庭WiFi,请确保您当前的微信版本为8.0.17及以上版本',
-    //   showCancel: false,
-    //   confirmText: '我知道了',
-    //   success: function (res) {
-    //     if (res.confirm) {
-    //       console.log('click confirm')
-    //     }
-    //   },
-    //   complete() {
-    //     burialPoint.viewTipUpVersion({
-    //       deviceSessionId: app.globalData.deviceSessionId,
-    //     })
-    //   },
-    // })
   },
 
   //切换wifi
@@ -639,8 +624,6 @@ Page({
       .then((res) => {
         console.log('获取当前连接wifi信息', res)
         console.log('storageWifiListV1======', wx.getStorageSync('storageWifiListV1'))
-        log.info('获取当前连接wifi信息', res)
-        log.info('storageWifiListV1======', wx.getStorageSync('storageWifiListV1'))
         burialPoint.apLocalLog({
           log: {
             msg: '调用微信接口wx.getConnectedWifi 成功',
@@ -650,7 +633,6 @@ Page({
         let storageWifiListV1 = wx.getStorageSync('storageWifiListV1')
         if (storageWifiListV1 && storageWifiListV1[environment].length && decodeWifi(storageWifiListV1[environment])) {
           console.log('有对应环境的缓存wifi信息')
-          log.info('有对应环境的wifi缓存')
           burialPoint.apLocalLog({
             log: {
               msg: '有对应环境的wifi缓存',
@@ -671,12 +653,6 @@ Page({
               if (item.SSIDContent == res.SSID) {
                 //调整为用wifi名作为标示
                 console.log('有这个wifi的storage')
-                log.info('有当前连接wifi的缓存')
-                burialPoint.apLocalLog({
-                  log: {
-                    msg: '有当前连接wifi的缓存',
-                  },
-                })
                 isHasPsw = true
                 wifiNum = index
               }
@@ -710,7 +686,6 @@ Page({
         } else {
           //没有wifi storage 直接取当前连接的wifi
           console.log('没有对应环境的缓存wifi信息')
-          log.info('没有对应环境的缓存wifi信息')
           that.initBindWifiTest(res.BSSID, res.SSID, res.SSID.length, '01', '12', res.signalStrength, res.frequency)
         }
         that.data.isGetCurLinkWifiInfo = true
@@ -732,7 +707,6 @@ Page({
       })
       .catch((err) => {
         console.log('getConnectedWifi', err)
-        log.info('获取当前连接wifi错误', err)
 
         burialPoint.apLocalLog({
           log: {
@@ -756,7 +730,6 @@ Page({
           })
         }
         console.log('getConnectedWifi', err)
-        log.info('获取当前连接wifi错误', err)
       })
   },
 
@@ -951,51 +924,28 @@ Page({
                           'wx.authorize()',
                           `授权定位异常。error=${JSON.stringify(error)}`,
                         )
-                        Dialog.confirm({
-                          title: '定位失败，您未开启定位权限，点击开启定位权限',
-                          confirmButtonText: '我知道了',
-                          confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
-                          showCancelButton: false,
-                        }).then((res) => {
-                          if (res.action == 'confirm') {
-                            wx.openSetting({
-                              success: function (res) {
-                                if (res.authSetting['scope.userLocation']) {
-                                  console.log('获取当前连接wifi信息')
-                                  that.getCurLinkWifiInfo()
-                                } else {
-                                  wx.showToast({
-                                    title: '用户未开启地理位置权限',
-                                    icon: 'none',
-                                    duration: 3000,
-                                  })
-                                }
-                              },
-                            })
-                          }
+                        wx.showModal({
+                          title: '提示',
+                          content: '定位失败，您未开启定位权限，点击开启定位权限',
+                          success: function (res) {
+                            if (res.confirm) {
+                              wx.openSetting({
+                                success: function (res) {
+                                  if (res.authSetting['scope.userLocation']) {
+                                    console.log('获取当前连接wifi信息')
+                                    that.getCurLinkWifiInfo()
+                                  } else {
+                                    wx.showToast({
+                                      title: '用户未开启地理位置权限',
+                                      icon: 'none',
+                                      duration: 3000,
+                                    })
+                                  }
+                                },
+                              })
+                            }
+                          },
                         })
-                        // wx.showModal({
-                        //   title: '提示',
-                        //   content: '定位失败，您未开启定位权限，点击开启定位权限',
-                        //   success: function (res) {
-                        //     if (res.confirm) {
-                        //       wx.openSetting({
-                        //         success: function (res) {
-                        //           if (res.authSetting['scope.userLocation']) {
-                        //             console.log('获取当前连接wifi信息')
-                        //             that.getCurLinkWifiInfo()
-                        //           } else {
-                        //             wx.showToast({
-                        //               title: '用户未开启地理位置权限',
-                        //               icon: 'none',
-                        //               duration: 3000,
-                        //             })
-                        //           }
-                        //         },
-                        //       })
-                        //     }
-                        //   },
-                        // })
                       },
                     })
                   } else {
@@ -1098,10 +1048,11 @@ Page({
       })
     }
     //中文,中文符号,表情校验
-    let reg = /^[0-9a-zA-Z{}#%*+=_|~<>€£¥·•.,?!'-/\:;()$&@"^\\[\]]+$/
+    let reg = /^[0-9a-zA-Z{}#%*+=_|~<>€£¥·•.,?!'-/:;()$&@"^\\[\]]+$/
     let deal = psw.replace(/\s/g, '').replaceAll('…', '...') //ios手机 连续输入三个...会转为…符号，将…装为...
     if (deal != '' && !reg.test(deal)) {
       let checkRes =
+        // eslint-disable-next-line no-misleading-character-class
         /[\uD83C|\uD83D|\uD83E][\uDC00-\uDFFF][\u200D|\uFE0F]|[\uD83C|\uD83D|\uD83E][\uDC00-\uDFFF]|[0-9|*|#]\uFE0F\u20E3|[0-9|#]\u20E3|[\u203C-\u3299]\uFE0F\u200D|[\u203C-\u3299]\uFE0F|[\u2122-\u2B55]|\u303D|[A9|AE]\u3030|\uA9|\uAE|\u3030/gi.test(
           psw,
         )
@@ -1296,6 +1247,7 @@ Page({
     let _this = this
     if (mode == 0 && this.data.platform == 'android' && fm != 'scanCode') {
       //如果是Android客户端，ap配网，设备已发出WiFi信号则跳过配网指引页
+      // eslint-disable-next-line no-inner-declarations
       async function passFunc() {
         let brandName = _this.getBrandBname(enterprise)
         console.log('跳过配网指引', `${brandName}_${type.toLocaleLowerCase()}`)
@@ -1469,39 +1421,20 @@ Page({
   //确认输入wifi密码弹窗
   checkInputPsw() {
     return new Promise((resolve, reject) => {
-      Dialog.confirm({
+      wx.showModal({
         title: '家庭WiFi密码为空',
-        message: '请确认当前家庭WiFi为无密码WiFi，密码错误会造成配网失败噢',
-        confirmButtonText: '继续',
-        cancelButtonText: '输入密码',
-        // confirmButtonColor:'#0078FF',
-        cancelButtonColor: this.data.dialogStyle.cancelButtonColor4,
-        confirmButtonColor: this.data.dialogStyle.confirmButtonColor3,
+        content: '请确认当前家庭WiFi为无密码WiFi，密码错误会造成配网失败噢',
+        cancelText: '输入密码',
+        confirmText: '继续',
+        cancelColor: '#458BFF',
+        confirmColor: '#458BFF',
+        success(res) {
+          resolve(res)
+        },
+        fail(error) {
+          reject(error)
+        },
       })
-        .then((res) => {
-          if (res.action == 'confirm') {
-            resolve(res)
-          }
-        })
-        .catch((error) => {
-          console.log('hahahahhaha:', error)
-          resolve(error)
-        })
-
-      // wx.showModal({
-      //   title: '家庭WiFi密码为空',
-      //   content: '请确认当前家庭WiFi为无密码WiFi，密码错误会造成配网失败噢',
-      //   cancelText: '输入密码',
-      //   confirmText: '继续',
-      //   cancelColor: '#458BFF',
-      //   confirmColor: '#458BFF',
-      //   success(res) {
-      //     resolve(res)
-      //   },
-      //   fail(error) {
-      //     reject(error)
-      //   },
-      // })
     })
   },
   hideWifiList() {
@@ -1604,17 +1537,6 @@ Page({
         return
       }
       console.log('非wifi状态', error)
-      log.info('当前手机非wifi状态')
-      burialPoint.apLocalLog({
-        log: {
-          msg: '调用微信接口wx.getConnectedWifi 失败',
-          error: error,
-        },
-      })
-      getApp().setMethodFailedCheckingLog(
-        'wx.getConnectedWifi()',
-        `调用微信接口wx.getConnectedWifi()异常。error=${JSON.stringify(error)}`,
-      )
       this.setData({
         netType: 0, //非wifi
       })
@@ -1643,7 +1565,6 @@ Page({
       wx.getNetworkType({
         success(res) {
           console.log('当前网络状况', res)
-          log.info('当前网络状况', res)
           resolve(res.networkType)
         },
         fail(error) {
@@ -2077,7 +1998,7 @@ Page({
   },
 
   toNum(num) {
-    var num = num.toString()
+    num = num.toString()
     var version = num.split('.')
     var num_place = ['', '0', '00', '000', '0000'],
       r = num_place.reverse()
@@ -2194,7 +2115,6 @@ Page({
     console.log('storageWifiListV1:', storageWifiListV1)
     if (storageWifiListV1 && storageWifiListV1[environment].length && decodeWifi(storageWifiListV1[environment])) {
       console.log('有对应环境的缓存wifi信息')
-      log.info('有对应环境的wifi缓存')
       let storageWifiList = decodeWifi(wx.getStorageSync('storageWifiListV1')[environment])
 
       let isHasPsw = false
