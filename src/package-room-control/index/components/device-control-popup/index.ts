@@ -864,11 +864,13 @@ ComponentWithComputed({
     openCurtain() {
       this.curtainControl({
         curtain_position: '100',
+        curtain_status: 'open',
       })
     },
     closeCurtain() {
       this.curtainControl({
         curtain_position: '0',
+        curtain_status: 'close',
       })
     },
     pauseCurtain() {
