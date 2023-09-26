@@ -141,6 +141,10 @@ export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
         break
       case PRO_TYPE.light:
         endCount++
+        if (device.deviceType === 4) {
+          // 灯数及亮灯数不计算灯组
+          return
+        }
         lightCount++
         if (!device.onLineStatus) break
         if (device.mzgdPropertyDTOList['light'].power) {

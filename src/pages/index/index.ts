@@ -199,7 +199,6 @@ ComponentWithComputed({
                 }
               })
 
-              // 仅为本地更新，暂时取消节流
               this.updateRoomCard()
 
               // 直接更新store里的数据，更新完退出回调函数
