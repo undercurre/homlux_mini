@@ -6,7 +6,7 @@
 <nav-bar bind:longpress="toggleDebug">
   <view class="flex-1">
     <text class="ml-24rpx text-40rpx font-semibold">遥控器</text>
-    <text wx:if="{{isDebugMode}}" class="ml-4rpx px-8rpx text-18rpx bg-hex-debug text-white">{{debugStr}}</text>
+    <text wx:if="{{isDebugMode}}" class="ml-4rpx px-8rpx text-18rpx text-debug text-white">{{debugStr}}</text>
   </view>
 </nav-bar>
 
@@ -64,7 +64,7 @@
   <view class="list-bottom-placeholder"> </view>
 </scroll-view>
 
-<view wx:if="{{isDebugMode}}" class="rssiToggle bg-hex-debug" catch:tap="rssiToggle">
+<view wx:if="{{isDebugMode}}" class="rssiToggle text-debug" catch:tap="rssiToggle">
   <text class="text-18rpx text-white">{{'搜索阈值\n >' + MIN_RSSI}}dBm</text>
 </view>
 
