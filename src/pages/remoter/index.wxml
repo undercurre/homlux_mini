@@ -1,5 +1,7 @@
 <import src="./templates.wxml" />
 
+<wxs module="handler" src="./index.wxs"></wxs>
+
 <view class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7" style="z-index: -1"></view>
 <nav-bar bind:longpress="toggleDebug">
   <view class="flex-1">
@@ -34,17 +36,27 @@
 </view>
 
 <scroll-view wx:else enhanced scroll-y show-scrollbar="{{false}}" style="height: {{scrollViewHeight}}px;" bind:scroll="onPageScroll">
-  <view class="pt-16rpx" wx:if="{{foundList.length}}">
+  <view class="pt-16rpx foundTitle" wx:if="{{foundList.length || foundListHolder}}">
     <text class="ml-40rpx text-hex-6e6f74 text-28">发现设备</text>
   </view>
 
-  <card wx:for="{{foundList}}" item="{{item}}" wx:key="index" bind:cardTap="handleCardTap" bind:controlTap="handleControlTap"></card>
+  <view class="placeholder foundListHolder" wx:if="{{!foundList.length && foundListHolder}}">
+    <image src="../../assets/img/remoter/no-device.png" class="w-80rpx h-80rpx mr-26rpx" />
+    <text class="text-hex-b6b7bb text-28rpx">暂无设备</text>
+  </view>
+
+  <card wx:for="{{foundList}}" item="{{item}}" wx:key="index" bind:touchstart="{{handler.touchstart}}" bind:cardTap="handleCardTap" bind:controlTap="handleControlTap" data-count="{{foundList.length}}"></card>
 
   <view class="pt-48rpx">
     <text class="ml-40rpx text-hex-6e6f74 text-28">我的设备</text>
   </view>
 
-  <drag id="drag" list-data="{{remoterViewList}}" item-height="{{184}}" scroll-top="{{scrollTop}}" generic:item="card" bind:cardTap="handleCardTap" bind:controlTap="handleControlTap" bind:sortend="handleSortEnd" bind:exec="handleCardTap"></drag>
+  <view class="placeholder" wx:if="{{!remoterViewList.length}}">
+    <image src="../../assets/img/remoter/no-device.png" class="w-80rpx h-80rpx mr-26rpx" />
+    <text class="text-hex-b6b7bb text-28rpx">暂无设备</text>
+  </view>
+
+  <drag id="drag" list-data="{{remoterViewList}}" item-height="{{216}}" scroll-top="{{scrollTop}}" generic:item="card" bind:cardTap="handleCardTap" bind:controlTap="handleControlTap" bind:sortend="handleSortEnd"></drag>
 
   <view class="w-full flex-center pb-40rpx mt-20rpx">
     <template is="btn" data="{{ isSeeking: isSeeking }}"></template>
@@ -60,3 +72,5 @@
 <template wx:if="{{showTips}}" is="tips" data="{{ tipsStep: tipsStep, statusBarHeight: statusBarHeight }}"></template>
 
 <van-dialog id="van-dialog" confirm-button-color="#488FFF" cancel-button-color="#27282A" />
+
+<van-toast id="van-toast" />

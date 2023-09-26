@@ -46,16 +46,20 @@ ComponentWithComputed({
       const sceneData = storage.get('scene_data') as Scene.AddSceneDto | Scene.UpdateSceneDto
       const sceneDeviceActionsFlatten = storage.get('sceneDeviceActionsFlatten') as Device.ActionItem[]
 
-      console.log('sceneData', sceneData, 'sceneDeviceActionsFlatten', sceneDeviceActionsFlatten)
-
       const selectIdList = sceneDeviceActionsFlatten.map((item) => item.uniId)
 
       const deviceList = deviceStore.deviceFlattenList
         .filter((item) => selectIdList.includes(item.uniId))
-        .map((item) => ({
-          ...item,
-          status: 'waiting',
-        }))
+        .map((item) => {
+          if (item.proType === PRO_TYPE.switch) {
+            item.pic = item.switchInfoDTOList[0]?.pic
+          }
+
+          return {
+            ...item,
+            status: 'waiting',
+          }
+        })
 
       // 处理发送请求的deviceActions字段数据
       const deviceMap = deviceStore.deviceMap

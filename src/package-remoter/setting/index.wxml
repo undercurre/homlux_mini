@@ -5,7 +5,7 @@
   <nav-bar title="设置设备" left-arrow bind:leftTap="goBack"></nav-bar>
 
   <!-- 上半部分 -->
-  <view class="mt-24rpx w-750rpx">
+  <view class="mt-24rpx w-750rpx flex-1">
     <van-cell-group inset>
       <van-cell is-link bind:click="handleDeviceNameEditPopup" title="设备名称" value="{{curRemoter.deviceName}}"></van-cell>
 

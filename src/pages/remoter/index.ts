@@ -3,9 +3,10 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { initBleCapacity, storage, unique, isNullOrUnDef, emitter, delay } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import { createBleServer, bleAdvertising } from '../../utils/remoterUtils'
-import { deviceConfig, MIN_RSSI, SEEK_TIMEOUT, CMD } from '../../config/remoter'
+import { deviceConfig, MIN_RSSI, SEEK_TIMEOUT, SEEK_TIMEOUT_CONTROLED, CMD, FREQUENCY_TIME } from '../../config/remoter'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
+import Toast from '@vant/weapp/toast/toast'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [remoterBinding] }), pageBehaviors],
@@ -26,11 +27,14 @@ ComponentWithComputed({
     showTips: false, // 首次进入显示操作提示
     tipsStep: 0,
     isSeeking: false, // 正在搜索设备
+    foundListHolder: false, // 临时显示发现列表的点位符
     isNotFound: false, // 已搜索过至少一次但未找到
     foundList: [] as Remoter.DeviceItem[], // 搜索到的设备
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
     _timeId: -1,
     _lastPowerKey: '', // 记录上一次点击‘照明’时的指令键，用于反转处理
+    _firstLoad: true, // 页面首次打开
+    _timer: 0, // 记录上次指令时间
     debugStr: '[rx]',
     isDebugMode: false,
   },
@@ -158,8 +162,12 @@ ComponentWithComputed({
 
       await delay(0)
 
-      // 搜索一轮设备
-      this.toSeek()
+      // 首次进入，由用户手动操作；非首次进入（返回），自动搜索一轮设备
+      if (this.data._firstLoad) {
+        this.data._firstLoad = false
+      } else {
+        this.toSeek(true)
+      }
       // 获取已连接的设备
       // this.getConnectedDevices()
     },
@@ -199,15 +207,11 @@ ComponentWithComputed({
 
     // 拖拽列表初始化
     async initDrag() {
-      if (!remoterStore.hasRemoter) {
-        return
-      }
-
       // 有可能视图未更新，需要先等待nextTick
       await delay(0)
 
       const drag = this.selectComponent('#drag')
-      drag.init()
+      drag?.init()
     },
 
     // 从storage初始化我的设备列表
@@ -217,7 +221,7 @@ ComponentWithComputed({
     },
 
     // 将新发现设备, 添加到[我的设备]
-    saveDevice(device: Remoter.DeviceItem) {
+    async saveDevice(device: Remoter.DeviceItem) {
       const { addr } = device
       const index = this.data.foundList.findIndex((device) => device.addr === addr)
       const newDevice = this.data.foundList.splice(index, 1)[0]
@@ -229,11 +233,19 @@ ComponentWithComputed({
         defaultAction: 0,
       })
 
-      this.initDrag()
+      await this.initDrag()
 
       this.setData({
+        foundListHolder: !this.data.foundList.length,
         foundList: this.data.foundList,
       })
+      if (!this.data.foundList.length) {
+        setTimeout(() => {
+          this.setData({
+            foundListHolder: false,
+          })
+        }, 2000)
+      }
     },
 
     // 点击设备卡片
@@ -262,6 +274,13 @@ ComponentWithComputed({
         this.saveDevice(e.detail as Remoter.DeviceItem)
       }
 
+      const now = new Date().getTime()
+      console.log('now - this.data._timer', now - this.data._timer)
+      if (now - this.data._timer < FREQUENCY_TIME) {
+        Toast('操作太频繁啦~')
+      }
+      this.data._timer = now
+
       const { addr, actions, defaultAction } = e.detail
       // const addr = '18392c0c5566' // 模拟遥控器mac
 
@@ -283,21 +302,26 @@ ComponentWithComputed({
         payload,
       })
 
-      await this.toSeek()
+      await this.toSeek(true)
     },
     // 搜索设备
-    async toSeek() {
+    async toSeek(isControlled = false) {
+      const _isControlled = typeof isControlled === 'boolean' && isControlled
+      const interval = _isControlled ? SEEK_TIMEOUT_CONTROLED : SEEK_TIMEOUT // 在template中调用时，会误传入非number参数
       await initBleCapacity()
 
-      this.setData({
-        isSeeking: true,
-      })
+      // 如果是受控后搜索，不显示搜索中状态
+      if (!_isControlled) {
+        this.setData({
+          isSeeking: true,
+        })
+      }
 
       // 开始搜寻附近的蓝牙外围设备
       wx.startBluetoothDevicesDiscovery({
         allowDuplicatesKey: true,
         powerLevel: 'high',
-        interval: SEEK_TIMEOUT - 500,
+        interval,
         fail(err) {
           console.log('startBluetoothDevicesDiscoveryErr', err)
         },
@@ -305,7 +329,7 @@ ComponentWithComputed({
 
       // 如果一直找不到，也自动停止搜索
       // !! 停止时间要稍长于 SEEK_TIMEOUT，否则会导致监听方法不执行
-      this.data._timeId = setTimeout(() => this.endSeek(), SEEK_TIMEOUT)
+      this.data._timeId = setTimeout(() => this.endSeek(), interval + 500)
     },
     // 停止搜索设备
     endSeek() {

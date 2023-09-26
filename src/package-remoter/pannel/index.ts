@@ -1,6 +1,6 @@
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { CMD, FACTORY_ADDR } from '../../config/remoter'
+import { CMD, FACTORY_ADDR, FREQUENCY_TIME } from '../../config/remoter'
 import { emitter, Logger, initBleCapacity, storage } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import {
@@ -12,6 +12,7 @@ import {
 } from '../../utils/remoterUtils'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
+import Toast from '@vant/weapp/toast/toast'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [remoterBinding] }), pageBehaviors],
@@ -30,17 +31,22 @@ ComponentWithComputed({
     _lastPowerKey: '', // 记录上一次点击‘照明’时的指令键，用于反转处理
     _keyQueue: ['', '', '', '', '', '', '', ''], // 记录按键序列
     _longpress_key: '',
+    _timer: 0, // 记录上次指令时间
   },
 
   computed: {
-    pageTitle(data) {
-      const deviceName = remoterStore.curRemoter.deviceName ?? ''
-      return data.isFactoryMode ? `${deviceName}|${FACTORY_ADDR}` : deviceName
-    },
     connectIcon() {
       return remoterStore.curRemoter?.connected
         ? '/assets/img/base/scene-switch-btn.png'
         : '/assets/img/base/offline.png'
+    },
+    curAddrText(data) {
+      if (!data.isDebugMode) {
+        // 没什么意义，但触发主动刷新
+        return ''
+      }
+      const addr = (data.isFactoryMode ? FACTORY_ADDR : remoterStore.curRemoter.addr) ?? ''
+      return String.prototype.match.call(addr, /.{1,2}/g)?.join(':')
     },
   },
 
@@ -115,6 +121,13 @@ ComponentWithComputed({
 
       const { dir } = e.target.dataset
       Logger.log('btnTap', key, dir, { payload, addr })
+
+      const now = new Date().getTime()
+      console.log('now - this.data._timer', now - this.data._timer)
+      if (now - this.data._timer < FREQUENCY_TIME) {
+        Toast('操作太频繁啦~')
+      }
+      this.data._timer = now
 
       // DEBUG 蓝牙连接模式
       if (remoterStore.curRemoter.connected) {

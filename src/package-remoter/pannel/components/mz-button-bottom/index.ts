@@ -27,8 +27,7 @@ ComponentWithComputed({
   computed: {},
 
   methods: {
-    handleTouchStart(e: WechatMiniprogram.TouchEvent) {
-      this.triggerEvent('touchstart', e)
+    handleTouchStart() {
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
     },
     handleLongPress(e: WechatMiniprogram.TouchEvent) {

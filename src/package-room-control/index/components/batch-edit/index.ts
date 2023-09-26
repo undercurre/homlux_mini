@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { PRO_TYPE, SCREEN_PID } from '../../../../config/index'
+import { MODEL_NAME, PRO_TYPE, SCREEN_PID } from '../../../../config/index'
 import { waitingBatchDeleteDevice, batchUpdate, renameGroup } from '../../../../apis/index'
 import { deviceBinding, deviceStore, homeStore, roomBinding, roomStore } from '../../../../store/index'
 import Toast from '@vant/weapp/toast/toast'
@@ -89,7 +89,13 @@ ComponentWithComputed({
      * 设备均在线
      */
     canMoveRoom(data) {
+      const noScreen = data.editSelectList.every((uId: string) => {
+        const deviceId = uId.split(':')[0]
+        const device = deviceStore.deviceMap[deviceId]
+        return !SCREEN_PID.includes(device.productId)
+      })
       return (
+        noScreen &&
         data.editSelectList?.length &&
         data.editSelectList.every((uId: string) => {
           const deviceId = uId.split(':')[0] // 不管有没有:
@@ -531,7 +537,7 @@ ComponentWithComputed({
       this.data.editSelectList.forEach((uId: string) => {
         const deviceId = uId.split(':')[0]
         const device = deviceStore.deviceMap[deviceId]
-        if (device.deviceType === 2) {
+        if (device.proType === PRO_TYPE.switch) {
           for (const panel of device.switchInfoDTOList) {
             const modelName = panel.switchId
             const uId = `${device.deviceId}:${modelName}`
@@ -540,7 +546,8 @@ ComponentWithComputed({
             }
           }
         } else {
-          this.data.moveWaitlist.push(`${device.deviceId}:1`)
+          const modelName = MODEL_NAME[device.proType]
+          this.data.moveWaitlist.push(`${device.deviceId}:${modelName}`)
         }
       })
     },

@@ -4,13 +4,17 @@
 }
 
 .tool-bar {
+  display: flex;
   position: absolute;
+  flex-direction: row;
   top: 60rpx;
   right: 20rpx;
 }
 .img-wrapper {
   padding: 20rpx;
   display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .joystick {

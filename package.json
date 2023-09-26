@@ -20,7 +20,7 @@
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.7",
     "fast-deep-equal": "^2.0.1",
-    "js-homos": "^0.0.12",
+    "js-homos": "^0.0.14",
     "lottie-miniprogram": "^1.0.12",
     "m-utilsdk": "^1.0.8",
     "miniprogram-computed": "^4.4.0",

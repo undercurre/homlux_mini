@@ -1,10 +1,13 @@
-var btn = require('../../commons/wxs/btn.wxs')
+var btn = require('../../../../commons/wxs/btn.wxs')
 
 var isPressed = false // 当前是否点击状态
 var timerId // 计时器
 
 function touchStart(event, ownerInstance) {
-  var iWrapper = ownerInstance.selectComponent('.mz-button')
+  ownerInstance.callMethod('handleTouchStart', event)
+
+  var instant = ownerInstance.selectComponent('.preset') || ownerInstance.selectComponent('.img')
+  var instantActive = ownerInstance.selectComponent('.presetActive') || ownerInstance.selectComponent('.imgActive')
   var iIcon = ownerInstance.selectComponent('.icon')
   var iIconActive = ownerInstance.selectComponent('.iconActive')
   var iText = ownerInstance.selectComponent('.text')
@@ -12,13 +15,12 @@ function touchStart(event, ownerInstance) {
 
   isPressed = true
 
-  btn.bgTransition(iWrapper)
-
-  if (iIconActive) {
-    btn.opacityTransition(iIcon, iIconActive)
-  }
+  btn.opacityTransition(instant, instantActive)
   if (iText) {
     btn.opacityTransition(iText, iTextActive)
+  }
+  if (iIconActive) {
+    btn.opacityTransition(iIcon, iIconActive)
   }
 
   timerId = ownerInstance.setTimeout(function () {
@@ -31,19 +33,19 @@ function touchStart(event, ownerInstance) {
     }
 
     // 如果未被点击，则反转状态
-    btn.bgTransition(iWrapper, false)
-
-    if (iIconActive) {
-      btn.opacityTransition(iIcon, iIconActive, false)
-    }
+    btn.opacityTransition(instant, instantActive, false)
     if (iText) {
       btn.opacityTransition(iText, iTextActive, false)
+    }
+    if (iIconActive) {
+      btn.opacityTransition(iIcon, iIconActive, false)
     }
   }, btn._INTERVAL)
 }
 
 function touchEnd(event, ownerInstance) {
-  var iWrapper = ownerInstance.selectComponent('.mz-button')
+  var instant = ownerInstance.selectComponent('.preset') || ownerInstance.selectComponent('.img')
+  var instantActive = ownerInstance.selectComponent('.presetActive') || ownerInstance.selectComponent('.imgActive')
   var iIcon = ownerInstance.selectComponent('.icon')
   var iIconActive = ownerInstance.selectComponent('.iconActive')
   var iText = ownerInstance.selectComponent('.text')
@@ -54,13 +56,15 @@ function touchEnd(event, ownerInstance) {
   if (timerId) {
     return
   }
-  btn.bgTransition(iWrapper, false)
+
+  btn.opacityTransition(instant, instantActive, false)
+
+  if (iText) {
+    btn.opacityTransition(iText, iTextActive, false)
+  }
 
   if (iIconActive) {
     btn.opacityTransition(iIcon, iIconActive, false)
-  }
-  if (iText) {
-    btn.opacityTransition(iText, iTextActive, false)
   }
 }
 

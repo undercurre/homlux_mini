@@ -4,11 +4,12 @@
   <view class="tool-bar" style="top: {{toolbarMarginTop}}">
     <!-- 工厂产测模式 -->
     <div class="img-wrapper" bind:tap="toggleAddr" wx:if="{{isDebugMode}}">
-      <image class="w-48 h-48 mr-48rpx" src="/assets/img/mine/gateway.png"></image>
+      <text class="text-18rpx mr-10rpx">{{curAddrText}}</text>
+      <image class="w-48 h-48" src="/assets/img/mine/sensor.png"></image>
     </div>
     <!-- 基于连接的指令调试 -->
     <!-- <div class="img-wrapper" bind:tap="toggleBleMode" wx:if="{{isDebugMode}}">
-      <image class="w-48 h-48 mr-48rpx" src="{{connectIcon}}"></image>
+      <image class="w-48 h-48" src="{{connectIcon}}"></image>
     </div> -->
     <div class="img-wrapper" bind:tap="toSetting">
       <image class="w-48 h-48" src="/assets/img/home-manage/setting.png"></image>
@@ -34,8 +35,10 @@
   </view>
 
   <view class="main-control" wx:if="{{curRemoter.bList}}">
-    <mz-button2 wx:for="{{curRemoter.bList}}" wx:key="index" icon="{{item.icon}}" iconActive="{{item.iconActive}}" bind:touchstart="btnTap" text="{{item.name}}" data-key="{{item.key}}"></mz-button2>
+    <mz-button-bottom wx:for="{{curRemoter.bList}}" wx:key="index" icon="{{item.icon}}" iconActive="{{item.iconActive}}" bind:touchstart="btnTap" text="{{item.name}}" data-key="{{item.key}}"></mz-button-bottom>
   </view>
 </view>
 
 <van-dialog id="van-dialog" confirm-button-color="#488FFF" cancel-button-color="#27282A" />
+
+<van-toast id="van-toast" />

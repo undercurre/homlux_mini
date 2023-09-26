@@ -833,11 +833,12 @@ ComponentWithComputed({
     toDetail() {
       const deviceId = this.data.checkedList[0].split(':')[0]
       const deviceMap = deviceStore.deviceMap
-      const { deviceType } = deviceMap[deviceId]
+      const { deviceType, productId, gatewayId } = deviceMap[deviceId]
       const pageName = deviceType === 4 ? 'group-detail' : 'device-detail'
+      const _deviceId = SCREEN_PID.includes(productId) ? gatewayId : deviceId
 
       wx.navigateTo({
-        url: `/package-mine/device-manage/${pageName}/index?deviceId=${deviceId}`,
+        url: `/package-mine/device-manage/${pageName}/index?deviceId=${_deviceId}`,
       })
 
       this.triggerEvent('popMove', 'down')
