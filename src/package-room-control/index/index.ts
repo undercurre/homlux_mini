@@ -1261,7 +1261,12 @@ ComponentWithComputed({
       this.editSelectAll({ detail: false })
     },
 
-    handleAddDevice() {
+    async handleAddDevice() {
+      const res = await wx.getNetworkType()
+      if (res.networkType === 'none') {
+        Toast('当前无法连接网络\n请检查网络设置')
+        return
+      }
       wx.navigateTo({ url: '/package-distribution/choose-device/index' })
     },
     handleRebindGateway() {

@@ -9,3 +9,5 @@
 
   <view class="arrow absolute right-32rpx top-0 w-0 h-0"></view>
 </view>
+
+<van-toast id="van-toast" />
