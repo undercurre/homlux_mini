@@ -300,7 +300,7 @@ ComponentWithComputed({
       }
 
       const res = await bindDevice({
-        deviceId: this.data.pageParams.mac,
+        deviceId: mac,
         houseId: homeBinding.store.currentHomeId,
         roomId: roomBinding.store.currentRoom.roomId,
         sn: '',
