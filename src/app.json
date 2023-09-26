@@ -62,7 +62,7 @@
     },
     {
       "root": "package-distribution-meiju",
-      "pages": ["pages/check-auth/index", "pages/inputWifiInfo/inputWifiInfo"]
+      "pages": ["pages/check-auth/index", "pages/addDevice/pages/inputWifiInfo/inputWifiInfo"]
     }
   ],
   "preloadRule": {

@@ -737,7 +737,7 @@ Page({
                 let { status } = respData.data.data
                 if (status == '1' || status == '2') {
                   wx.reLaunch({
-                    url: '/distribution-network/addDevice/pages/afterCheck/afterCheck?backTo=/pages/index/index',
+                    url: '/package-distribution-meiju/pages/addDevice/pages/afterCheck/afterCheck?backTo=/pages/index/index',
                   })
                 } else {
                   goToInvitePage(homeName, app.addDeviceInfo.cloudBackDeviceInfo, '/pages/index/index', true, status)
@@ -780,7 +780,7 @@ Page({
                 let { status } = respData.data.data
                 if (status == '1' || status == '2') {
                   wx.reLaunch({
-                    url: '/distribution-network/addDevice/pages/afterCheck/afterCheck?backTo=/pages/index/index',
+                    url: '/package-distribution-meiju/pages/addDevice/pages/afterCheck/afterCheck?backTo=/pages/index/index',
                   })
                 } else {
                   goToInvitePage(homeName, app.addDeviceInfo.cloudBackDeviceInfo, '/pages/index/index', true, status)

@@ -1775,7 +1775,7 @@ const config = {
         supSN8: ['70000656', '70000696'],
       },
     },
-    QRcodeGuideUrl: '/distribution-network/scan-devices/pages/qrcode-guide/qrcode-guide',
+    QRcodeGuideUrl: '/package-distribution-meiju/pages/scan-devices/pages/qrcode-guide/qrcode-guide',
     /**
      * 扫码域名配置
      */

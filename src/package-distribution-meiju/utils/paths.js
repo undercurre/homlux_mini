@@ -14,35 +14,35 @@ module.exports = {
   commonSubPage: '/activities/activitiesTemp/pages/commonSubPage/commonSubPage',
   //---运营活动模板页面end---
   download: '/pages/download/download',
-  scanDevice: '/distribution-network/scan-devices/pages/scan-device/scan-device',
-  scanHelp: '/distribution-network/scan-devices/pages/scan-help/scan-help',
-  wetChatMiddlePage: '/distribution-network/scan-devices/pages/wetChat-middlePage/wetChat-middlePage',
+  scanDevice: '/package-distribution-meiju/pages/scan-devices/pages/scan-device/scan-device',
+  scanHelp: '/package-distribution-meiju/pages/scan-devices/pages/scan-help/scan-help',
+  wetChatMiddlePage: '/package-distribution-meiju/pages/scan-devices/pages/wetChat-middlePage/wetChat-middlePage',
   //配网页面
-  inputWifiInfo: '/distribution-network/addDevice/pages/inputWifiInfo/inputWifiInfo',
-  addGuide: '/distribution-network/addDevice/pages/addGuide/addGuide',
-  addFail: '/distribution-network/addDevice/pages/addFail/addFail',
-  addSuccess: '/distribution-network/addDevice/pages/addSuccess/addSuccess',
-  linkDevice: '/distribution-network/addDevice/pages/linkDevice/linkDevice',
-  linkNetFail: '/distribution-network/addDevice/pages/linkNetFail/linkNetFail',
-  wifiSuccessSimple: '/distribution-network/addDevice/pages/wifiSuccessSimple/wifiSuccessSimple',
+  inputWifiInfo: '/package-distribution-meiju/pages/addDevice/pages/inputWifiInfo/inputWifiInfo',
+  addGuide: '/package-distribution-meiju/pages/addDevice/pages/addGuide/addGuide',
+  addFail: '/package-distribution-meiju/pages/addDevice/pages/addFail/addFail',
+  addSuccess: '/package-distribution-meiju/pages/addDevice/pages/addSuccess/addSuccess',
+  linkDevice: '/package-distribution-meiju/pages/addDevice/pages/linkDevice/linkDevice',
+  linkNetFail: '/package-distribution-meiju/pages/addDevice/pages/linkNetFail/linkNetFail',
+  wifiSuccessSimple: '/package-distribution-meiju/pages/addDevice/pages/wifiSuccessSimple/wifiSuccessSimple',
   unSupportDevice: '/pages/unSupportDevice/unSupportDevice',
-  linkAp: '/distribution-network/addDevice/pages/linkAp/linkAp',
-  lowApVersion: '/distribution-network/addDevice/pages/lowApVersion/lowApVersion',
-  selectDevice: '/distribution-network/select-devices/pages/select-device/select-device',
-  selectModel: '/distribution-network/select-devices/pages/select-model/select-model',
-  searchDevice: '/distribution-network/select-devices/pages/search-device/search-device',
-  batchNetwork: '/distribution-network/addDevice/pages/batchNetwork/batchNetwork', //找朋友批量配网页面
-  friendDeviceNetWork: '/distribution-network/addDevice/pages/friendDeviceNetWork/friendDeviceNetWork', //找朋友单个朋友设备配网页面
-  friendDeviceNetWorkFail: '/distribution-network/addDevice/pages/friendDeviceNetworkFail/friendDeviceNetworkFail', //找朋友单个朋友设备配网失败页
-  editBoundDevice: '/distribution-network/addDevice/pages/editBoundDevice/editBoundDevice', //找朋友编辑朋友设备绑定信息页面
-  feedback: '/distribution-network/addDevice/pages/feedback/feedback', //问题反馈
-  frequencyGuide: '/distribution-network/user-gudie/pages/frequency-guide/frequency-guide', //wifi频率指引
-  locationGuide: '/distribution-network/user-gudie/pages/location-guide/location-guide', //开启定位指引
-  blueGuide: '/distribution-network/user-gudie/pages/blue-guide/blue-guide', //开启蓝牙指引
-  localNetGuide: '/distribution-network/addDevice/pages/localNetGuide/localNetGuide', //开启本地网络指引
-  inviteFamily: '/distribution-network/addDevice/pages/inviteFamily/inviteFamily', //配网完成支持邀请成员页面
-  linkCombinedDevice: '/distribution-network/addDevice/pages/linkCombinedDevice/linkCombinedDevice', // 组合设备进度页面
-  linkCombinedFail: '/distribution-network/addDevice/pages/linkCombinedFail/linkCombinedFail', // 组合设备失败页面
+  linkAp: '/package-distribution-meiju/pages/addDevice/pages/linkAp/linkAp',
+  lowApVersion: '/package-distribution-meiju/pages/addDevice/pages/lowApVersion/lowApVersion',
+  selectDevice: '/package-distribution-meiju/pages/select-devices/pages/select-device/select-device',
+  selectModel: '/package-distribution-meiju/pages/select-devices/pages/select-model/select-model',
+  searchDevice: '/package-distribution-meiju/pages/select-devices/pages/search-device/search-device',
+  batchNetwork: '/package-distribution-meiju/pages/addDevice/pages/batchNetwork/batchNetwork', //找朋友批量配网页面
+  friendDeviceNetWork: '/package-distribution-meiju/pages/addDevice/pages/friendDeviceNetWork/friendDeviceNetWork', //找朋友单个朋友设备配网页面
+  friendDeviceNetWorkFail: '/package-distribution-meiju/pages/addDevice/pages/friendDeviceNetworkFail/friendDeviceNetworkFail', //找朋友单个朋友设备配网失败页
+  editBoundDevice: '/package-distribution-meiju/pages/addDevice/pages/editBoundDevice/editBoundDevice', //找朋友编辑朋友设备绑定信息页面
+  feedback: '/package-distribution-meiju/pages/addDevice/pages/feedback/feedback', //问题反馈
+  frequencyGuide: '/package-distribution-meiju/pages/user-gudie/pages/frequency-guide/frequency-guide', //wifi频率指引
+  locationGuide: '/package-distribution-meiju/pages/user-gudie/pages/location-guide/location-guide', //开启定位指引
+  blueGuide: '/package-distribution-meiju/pages/user-gudie/pages/blue-guide/blue-guide', //开启蓝牙指引
+  localNetGuide: '/package-distribution-meiju/pages/addDevice/pages/localNetGuide/localNetGuide', //开启本地网络指引
+  inviteFamily: '/package-distribution-meiju/pages/addDevice/pages/inviteFamily/inviteFamily', //配网完成支持邀请成员页面
+  linkCombinedDevice: '/package-distribution-meiju/pages/addDevice/pages/linkCombinedDevice/linkCombinedDevice', // 组合设备进度页面
+  linkCombinedFail: '/package-distribution-meiju/pages/addDevice/pages/linkCombinedFail/linkCombinedFail', // 组合设备失败页面
   //登录页面
   login: '/pages/login/login',
   //地图组件

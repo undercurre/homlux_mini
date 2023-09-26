@@ -456,7 +456,7 @@ Page({
           // clearInterval(timer)
           // app.addDeviceInfo.sn = this.data.sn
           // wx.navigateTo({
-          //     url: `/distribution-network/addDevice/pages/addSuccess/addSuccess`
+          //     url: `/package-distribution-meiju/pages/addDevice/pages/addSuccess/addSuccess`
           // })
         })
         burialPoint.linkDeviceView({
@@ -2927,7 +2927,7 @@ Page({
             app.addDeviceInfo.randomCode = self.data.blueRandomCode || self.data.randomCode
             if (data.data.status == '1' || data.data.status == '2') {
               wx.reLaunch({
-                url: `/distribution-network/addDevice/pages/afterCheck/afterCheck?backTo=/pages/index/index&randomCode=${
+                url: `/package-distribution-meiju/pages/addDevice/pages/afterCheck/afterCheck?backTo=/pages/index/index&randomCode=${
                   self.data.blueRandomCode || self.data.randomCode
                 }`,
               })
@@ -3721,7 +3721,7 @@ Page({
         app.addDeviceInfo.randomCode = self.data.blueRandomCode
         if (data.data.status == '1' || data.data.status == '2') {
           wx.reLaunch({
-            url: `/distribution-network/addDevice/pages/afterCheck/afterCheck?backTo=/pages/index/index&randomCode=${
+            url: `/package-distribution-meiju/pages/addDevice/pages/afterCheck/afterCheck?backTo=/pages/index/index&randomCode=${
               self.data.blueRandomCode || self.data.randomCode
             }`,
           })

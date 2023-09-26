@@ -122,7 +122,7 @@ Page({
       return
     }
     wx.navigateTo({
-      url: '/distribution-network/addDevice/pages/linkDevice/linkDevice',
+      url: '/package-distribution-meiju/pages/addDevice/pages/linkDevice/linkDevice',
     })
   },
   backToIndex() {

@@ -205,7 +205,7 @@ Page({
       if (this.data.time == 0) {
         clearInterval(timer)
         wx.redirectTo({
-          url: '/distribution-network/addDevice/pages/authTimeout/authTimeout',
+          url: '/package-distribution-meiju/pages/addDevice/pages/authTimeout/authTimeout',
         })
       }
     }, 1000)

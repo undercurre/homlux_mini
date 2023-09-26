@@ -75,7 +75,7 @@ Page({
       moduleVison: app.globalData.blueVersion,
     })
     wx.navigateTo({
-      url: '/distribution-network/addDevice/pages/addGuide/addGuide',
+      url: '/package-distribution-meiju/pages/addDevice/pages/addGuide/addGuide',
     })
   },
 

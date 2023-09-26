@@ -113,7 +113,7 @@ Page({
     //0 已确权 1 待确权 2 未确权 3 不支持确权
     if (status == 1 || status == 2) {
       wx.reLaunch({
-        url: '/distribution-network/addDevice/pages/afterCheck/afterCheck?backTo=/pages/index/index',
+        url: '/package-distribution-meiju/pages/addDevice/pages/afterCheck/afterCheck?backTo=/pages/index/index',
       })
     } else {
       // 组合配网新增逻辑

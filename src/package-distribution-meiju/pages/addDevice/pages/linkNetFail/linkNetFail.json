@@ -2,10 +2,10 @@
   "navigationBarTitleText": "",
   "navigationStyle": "custom",
   "usingComponents": {
-    "link-device-header": "/distribution-network/addDevice/pages/component/input-wifi-header/input-wifi-header",
-    "bottom-button": "/distribution-network/addDevice/pages/component/bottom-button/bottom-button",
-    "custom-dialog": "/distribution-network/addDevice/pages/component/custom-dialog/custom-dialog",
-    "img-dialog": "/distribution-network/addDevice/pages/component/img-dialog/img-dialog",
+    "link-device-header": "/package-distribution-meiju/pages/addDevice/pages/component/input-wifi-header/input-wifi-header",
+    "bottom-button": "/package-distribution-meiju/pages/addDevice/pages/component/bottom-button/bottom-button",
+    "custom-dialog": "/package-distribution-meiju/pages/addDevice/pages/component/custom-dialog/custom-dialog",
+    "img-dialog": "/package-distribution-meiju/pages/addDevice/pages/component/img-dialog/img-dialog",
     "mx-dialog": "/miniprogram_npm/m-ui/mx-dialog/index"
   }
 }

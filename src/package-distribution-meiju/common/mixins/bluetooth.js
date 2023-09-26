@@ -18,7 +18,7 @@ import { addDeviceSDK } from '../../../utils/addDeviceSDK.js'
 import { getPrivateKeys } from '../../../utils/getPrivateKeys'
 import Dialog from '../../../miniprogram_npm/m-ui/mx-dialog/dialog'
 // const brandStyle = require('../../../assets/js/brand.js')
-const brandStyle = require('../../../distribution-network/assets/js/brand')
+const brandStyle = require('../../../package-distribution-meiju/pages/assets/js/brand')
 const log = require('../../../utils/log')
 const searchTime = 30000
 const blueWifi = 'wifiAndBle'

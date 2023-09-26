@@ -56,7 +56,7 @@ Page({
   },
   retry() {
     wx.redirectTo({
-      url: '/distribution-network/addDevice/pages/afterCheck/afterCheck?backTo=/pages/index/index',
+      url: '/package-distribution-meiju/pages/addDevice/pages/afterCheck/afterCheck?backTo=/pages/index/index',
     })
   },
 

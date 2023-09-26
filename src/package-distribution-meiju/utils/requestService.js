@@ -470,7 +470,7 @@ function deviceCardToPlugin(applianceCode) {
   if (currentPage.route.includes('afterCheck')) return //进入插件页lua/get接口会重复请求，避免多次进入后确权页
   if (getApp().globalData.noAuthApplianceCodeList.includes(applianceCode)) {
     wx.reLaunch({
-      url: '/distribution-network/addDevice/pages/afterCheck/afterCheck?backTo=/pages/index/index',
+      url: '/package-distribution-meiju/pages/addDevice/pages/afterCheck/afterCheck?backTo=/pages/index/index',
     })
   }
 }

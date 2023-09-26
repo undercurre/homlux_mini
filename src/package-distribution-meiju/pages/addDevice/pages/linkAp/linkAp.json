@@ -3,6 +3,6 @@
   "navigationStyle": "default",
   "usingComponents": {
     "no-found-ap": "../component/no-found-ap/no-found-ap",
-    "wifi-list-sheet": "/distribution-network/addDevice/pages/component/wifi-list-sheet/wifi-list-sheet"
+    "wifi-list-sheet": "/package-distribution-meiju/pages/addDevice/pages/component/wifi-list-sheet/wifi-list-sheet"
   }
 }
