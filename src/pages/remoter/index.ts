@@ -26,7 +26,7 @@ ComponentWithComputed({
       (storage.get('navigationBarHeight') as number),
     showTips: false, // 首次进入显示操作提示
     tipsStep: 0,
-    isSeeking: false, // 正在搜索设备
+    isSeeking: false, // 正在主动搜索设备（不标记静默搜索的情况）
     foundListHolder: false, // 临时显示发现列表的点位符
     isNotFound: false, // 已搜索过至少一次但未找到
     foundList: [] as Remoter.DeviceItem[], // 搜索到的设备
@@ -71,13 +71,30 @@ ComponentWithComputed({
 
         console.log('搜寻到的设备列表：', recoveredList)
 
+        // 在终止搜寻前先记录本次搜索的操作方式
+        const isUserSeeking = this.data.isSeeking
+
         // 找到设备，即终止搜寻
         this.endSeek()
 
+        // 更新我的设备列表
+        remoterStore.renewRmState(recoveredList as Remoter.DeviceRx[])
+        this.initDrag()
+
+        // 显示设备调试信息
+        const rListRSSI = recoveredList.map((r) => `${r?.deviceType},${r?.deviceModel}:${r?.RSSI}`)
+        const debugStr = `[rx]${rListRSSI.join('|')}`
+        this.setData({ debugStr })
+
+        // 静默搜索，只处理已保存列表的设备
+        if (!isUserSeeking) {
+          return
+        }
+
+        // 用户主动搜索，刷新发现列表
         const foundList = [] as Remoter.DeviceDetail[]
         recoveredList.forEach((item) => {
           const isSavedDevice = remoterStore.deviceAddrs.includes(item!.addr)
-          // 刷新发现设备列表
           if (
             item!.RSSI >= this.data.MIN_RSSI && // 过滤弱信号设备
             !isSavedDevice // 排除已在我的设备列表的设备
@@ -123,19 +140,7 @@ ComponentWithComputed({
           }
         })
 
-        // 更新我的设备列表
-        remoterStore.renewRmState(recoveredList as Remoter.DeviceRx[])
-
-        // 显示设备调试信息
-        const rListRSSI = recoveredList.map((r) => `${r?.deviceType},${r?.deviceModel}:${r?.RSSI}`)
-        const debugStr = `[rx]${rListRSSI.join('|')}`
-
-        this.setData({
-          foundList,
-          debugStr,
-        })
-
-        this.initDrag()
+        this.setData({ foundList })
       })
 
       // 监听蓝牙连接值变化
@@ -288,6 +293,7 @@ ComponentWithComputed({
       let { key } = actions[defaultAction]
       if (key === 'LIGHT_LAMP') {
         key = this.data._lastPowerKey === `${key}_OFF` ? `${key}_ON` : `${key}_OFF`
+        this.data._lastPowerKey = key
       }
       const payload = remoterProtocol.generalCmdString(CMD[key])
 
