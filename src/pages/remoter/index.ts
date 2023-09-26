@@ -3,7 +3,15 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { initBleCapacity, storage, unique, isNullOrUnDef, emitter, delay } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import { createBleServer, bleAdvertising } from '../../utils/remoterUtils'
-import { deviceConfig, MIN_RSSI, SEEK_TIMEOUT, SEEK_TIMEOUT_CONTROLED, CMD, FREQUENCY_TIME } from '../../config/remoter'
+import {
+  deviceConfig,
+  MIN_RSSI,
+  SEEK_TIMEOUT,
+  SEEK_TIMEOUT_CONTROLED,
+  CMD,
+  FREQUENCY_TIME,
+  SEEK_INTERVAL,
+} from '../../config/remoter'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
 import Toast from '@vant/weapp/toast/toast'
@@ -31,7 +39,8 @@ ComponentWithComputed({
     isNotFound: false, // 已搜索过至少一次但未找到
     foundList: [] as Remoter.DeviceItem[], // 搜索到的设备
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
-    _timeId: -1,
+    _time_id_end: null as number | null, // 定时终止搜索设备
+    _time_id_poll: null as number | null, // 定时轮询设备状态
     _lastPowerKey: '', // 记录上一次点击‘照明’时的指令键，用于反转处理
     _firstLoad: true, // 页面首次打开
     _timer: 0, // 记录上次指令时间
@@ -72,7 +81,7 @@ ComponentWithComputed({
         console.log('搜寻到的设备列表：', recoveredList)
 
         // 在终止搜寻前先记录本次搜索的操作方式
-        const isUserSeeking = this.data.isSeeking
+        const isUserControlled = this.data.isSeeking
 
         // 找到设备，即终止搜寻
         this.endSeek()
@@ -87,7 +96,7 @@ ComponentWithComputed({
         this.setData({ debugStr })
 
         // 静默搜索，只处理已保存列表的设备
-        if (!isUserSeeking) {
+        if (!isUserControlled) {
           return
         }
 
@@ -171,13 +180,13 @@ ComponentWithComputed({
       if (this.data._firstLoad) {
         this.data._firstLoad = false
       } else {
-        this.toSeek(true)
+        this.toSeek()
       }
       // 获取已连接的设备
       // this.getConnectedDevices()
     },
 
-    onUnload() {
+    onHide() {
       console.log('detached on Index')
 
       this.endSeek()
@@ -195,8 +204,13 @@ ComponentWithComputed({
       }
 
       // 取消计时器
-      if (this.data._timeId) {
-        clearTimeout(this.data._timeId)
+      if (this.data._time_id_end) {
+        clearTimeout(this.data._time_id_end)
+        this.data._time_id_end = null
+      }
+      if (this.data._time_id_poll) {
+        clearTimeout(this.data._time_id_poll)
+        this.data._time_id_poll = null
       }
 
       emitter.off('remoterChanged')
@@ -210,10 +224,27 @@ ComponentWithComputed({
       this.setData({ isDebugMode: !this.data.isDebugMode })
     },
 
+    // 轮询设备列表
+    toPoll() {
+      // 如果已有定时，先清除，以便再次开始轮询
+      if (this.data._time_id_poll) {
+        clearTimeout(this.data._time_id_poll)
+        this.data._time_id_poll = null
+      }
+
+      // 如果未有定时，并且存在列表，则开始轮询
+      if (!this.data._time_id_poll && remoterStore.hasRemoter) {
+        this.data._time_id_poll = setTimeout(() => this.toSeek(), SEEK_INTERVAL)
+      }
+    },
+
     // 拖拽列表初始化
     async initDrag() {
       // 有可能视图未更新，需要先等待nextTick
       await delay(0)
+
+      // 设备列表变更，同时更新轮询设置
+      this.toPoll()
 
       const drag = this.selectComponent('#drag')
       drag?.init()
@@ -308,16 +339,19 @@ ComponentWithComputed({
         payload,
       })
 
-      await this.toSeek(true)
+      await this.toSeek()
     },
-    // 搜索设备
-    async toSeek(isControlled = false) {
-      const _isControlled = typeof isControlled === 'boolean' && isControlled
-      const interval = _isControlled ? SEEK_TIMEOUT_CONTROLED : SEEK_TIMEOUT // 在template中调用时，会误传入非number参数
+    /**
+     * @description 搜索设备
+     * @param isUserControlled 是否用户主动操作
+     */
+    async toSeek(e?: WechatMiniprogram.TouchEvent) {
+      const isUserControlled = !!e // 若从wxml调用，即为用户主动操作
+      const interval = isUserControlled ? SEEK_TIMEOUT_CONTROLED : SEEK_TIMEOUT // 在template中调用时，会误传入非number参数
       await initBleCapacity()
 
       // 如果是受控后搜索，不显示搜索中状态
-      if (!_isControlled) {
+      if (isUserControlled) {
         this.setData({
           isSeeking: true,
         })
@@ -335,12 +369,16 @@ ComponentWithComputed({
 
       // 如果一直找不到，也自动停止搜索
       // !! 停止时间要稍长于 SEEK_TIMEOUT，否则会导致监听方法不执行
-      this.data._timeId = setTimeout(() => this.endSeek(), interval + 500)
+      this.data._time_id_end = setTimeout(() => this.endSeek(), interval + 500)
+
+      // 递归调用轮询方法
+      this.toPoll()
     },
     // 停止搜索设备
     endSeek() {
-      if (this.data._timeId) {
-        clearTimeout(this.data._timeId)
+      if (this.data._time_id_end) {
+        clearTimeout(this.data._time_id_end)
+        this.data._time_id_end = null
       }
       wx.stopBluetoothDevicesDiscovery({
         success: () => console.log('停止搜寻蓝牙外围设备'),
