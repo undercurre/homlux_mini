@@ -66,7 +66,6 @@ ComponentWithComputed({
     detached() {
       bleDevicesStore.stopBLeDiscovery()
       wx.closeBluetoothAdapter()
-      wx.stopWifi()
       clearInterval(this.data._listenLocationTimeId)
     },
   },

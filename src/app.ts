@@ -27,13 +27,6 @@ App<IAppOption>({
     // 获取状态栏、顶部栏、底部栏高度
     setNavigationBarAndBottomBarHeight()
 
-    // 监控是否存在onNeedPrivacyAuthorization，暂时没有业务需求，后期可删除
-    if (wx.canIUse('onNeedPrivacyAuthorization')) {
-      wx.onNeedPrivacyAuthorization(() => {
-        console.error('onNeedPrivacyAuthorization')
-      })
-    }
-
     homOs.init({ mqttLib: mqtt })
 
     // 从缓存中读取默认首页

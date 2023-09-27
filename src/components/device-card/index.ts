@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { proName, PRO_TYPE } from '../../config/index'
-import { Logger, throttle } from '../../utils/index'
+import { throttle } from '../../utils/index'
 
 const CONTROL_INTERVAL = 3000 // 开关操作间隔时间
 
@@ -238,8 +238,7 @@ ComponentWithComputed({
         })
     },
 
-    loadImgError(e: WechatMiniprogram.BaseEvent) {
-      Logger.error('loadImgError', e)
+    loadImgError() {
       this.setData({
         isLoadImgError: true,
       })

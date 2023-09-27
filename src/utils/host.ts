@@ -6,13 +6,10 @@ export async function initHomeOs() {
   await Promise.all([homeStore.initLocalKey(), sceneStore.updateAllRoomSceneList()])
 
   // 调试阶段可写死传递host参数，PC模拟调试
-  // host {"ip": "192.168.1.121", "devId": "1689839011110674", SSID: 'test'}
-  // host {"ip": "192.168.1.123", "devId": "1693906973627831", SSID: 'test'}
   homOs.login({
     homeId: homeStore.currentHomeDetail.houseId,
     key: homeStore.key,
-    // host: { ip: '192.168.1.13', devId: '1694507652870764', SSID: 'test' },
-    // host: { ip: '192.168.1.129', devId: '1694499802565103', SSID: 'test' },
+    // host: { ip: '192.168.3.50', devId: '1695801976080149', SSID: 'test' },
   })
 
   homOs.onMessage((res: { topic: string; reqId?: string; data: IAnyObject; ts: string }) => {
