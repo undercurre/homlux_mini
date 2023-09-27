@@ -167,6 +167,8 @@ ComponentWithComputed({
     },
 
     async onShow() {
+      await initBleCapacity()
+
       // 根据通知,更新设备列表
       emitter.on('remoterChanged', () => {
         console.log('remoterChanged on IndexList')
@@ -348,7 +350,6 @@ ComponentWithComputed({
     async toSeek(e?: WechatMiniprogram.TouchEvent) {
       const isUserControlled = !!e // 若从wxml调用，即为用户主动操作
       const interval = isUserControlled ? SEEK_TIMEOUT_CONTROLED : SEEK_TIMEOUT // 在template中调用时，会误传入非number参数
-      await initBleCapacity()
 
       // 如果是受控后搜索，不显示搜索中状态
       if (isUserControlled) {
