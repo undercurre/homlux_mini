@@ -147,9 +147,9 @@ ComponentWithComputed({
           if (res.success) {
             Toast('删除成功')
             homeStore.updateRoomCardList()
+            this.queryGroupInfo()
             emitter.emit('deviceEdit')
             emitter.emit('homeInfoEdit')
-            wx.navigateBack()
           } else {
             Toast('删除失败')
           }
