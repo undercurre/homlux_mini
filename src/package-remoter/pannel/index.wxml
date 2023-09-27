@@ -30,7 +30,7 @@
     </view>
 
     <view class="flex flex-row justify-evenly flex-wrap mt-36rpx w-full" wx:if="{{curRemoter.mList}}">
-      <mz-button wx:for="{{curRemoter.mList}}" wx:key="index" icon="{{item.icon}}" iconActive="{{item.iconActive}}" bind:touchstart="btnTap" class="mt-64rpx" type="square" text="{{item.name}}" data-key="{{item.key}}"></mz-button>
+      <mz-button wx:for="{{curRemoter.mList}}" wx:key="index" icon="{{item.icon}}" iconActive="{{item.iconActive}}" bind:touchstart="btnTap" class="mt-64rpx" textWidth="128rpx" type="square" text="{{item.name}}" data-key="{{item.key}}"></mz-button>
     </view>
   </view>
 
