@@ -351,8 +351,10 @@ ComponentWithComputed({
       const isUserControlled = !!e // 若从wxml调用，即为用户主动操作
       const interval = isUserControlled ? SEEK_TIMEOUT_CONTROLED : SEEK_TIMEOUT // 在template中调用时，会误传入非number参数
 
-      // 如果是受控后搜索，不显示搜索中状态
+      // 若用户主动搜索，检查权限，并显示搜索中状态
       if (isUserControlled) {
+        await initBleCapacity()
+
         this.setData({
           isSeeking: true,
         })

@@ -130,6 +130,7 @@ export const consultSystemLocation = async () => {
  * @description 初始化蓝牙模块，只检查权限，未实质打开服务
  */
 export const initBleCapacity = async () => {
+  Logger.log('initBleCapacity triggered')
   // 微信蓝牙权限是否开启
   const isWxBlePermit = await consultWxBlePermission()
   if (!isWxBlePermit) {
