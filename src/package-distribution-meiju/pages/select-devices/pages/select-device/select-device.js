@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { requestService, rangersBurialPoint } from '../../../../utils/requestService'
-import { imgBaseUrl } from '../../../../api'
+import { imgBaseUrl } from '../../../../common/api'
 import computedBehavior from '../../../../utils/miniprogram-computed.js'
 import { getStamp, getReqId } from 'm-utilsdk/index'
 import { getFullPageUrl, showToast } from '../../../../utils/util.js'

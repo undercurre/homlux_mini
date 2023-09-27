@@ -1,5 +1,3 @@
-import { rangersBurialPoint } from '../../../utils/requestService'
-import { getFullPageUrl } from '../../../utils/util'
 Component({
   properties: {
     title: {
@@ -79,20 +77,6 @@ Component({
           object_name.push('允许小程序使用位置权限')
         }
         object_name = object_name.join('/')
-        rangersBurialPoint('user_behavior_event', {
-          page_id: 'popus_open_locate_new',
-          page_name: '提示需开启位置权限弹窗',
-          page_path: getFullPageUrl(),
-          module: 'appliance',
-          widget_id: 'click_check_guide',
-          widget_name: '查看指引',
-          object_type: '弹窗类型',
-          object_id: '',
-          object_name: object_name || '',
-          device_info: {
-            device_session_id: getApp().globalData.deviceSessionId || '',
-          },
-        })
       }
       if (title == '请开启蓝牙权限') {
         let object_name = []
@@ -106,20 +90,6 @@ Component({
           object_name.push('允许小程序使用蓝牙权限')
         }
         object_name = object_name.join('/')
-        rangersBurialPoint('user_behavior_event', {
-          page_id: 'popus_open_bluetooth_new',
-          page_name: '提示需开启蓝牙权限弹窗',
-          page_path: getFullPageUrl(),
-          module: 'appliance',
-          widget_id: 'click_check_guide',
-          widget_name: '查看指引',
-          object_type: '弹窗类型',
-          object_id: '',
-          object_name: object_name || '',
-          device_info: {
-            device_session_id: getApp().globalData.deviceSessionId || '',
-          },
-        })
       }
     },
     clickLink(e) {
@@ -147,18 +117,6 @@ Component({
             object_name.push('允许小程序使用位置权限')
           }
           object_name = object_name.join('/')
-          rangersBurialPoint('user_page_view', {
-            page_id: 'popus_open_locate_new',
-            page_name: '提示需开启位置权限弹窗',
-            page_path: getFullPageUrl(),
-            module: 'appliance',
-            object_type: '弹窗类型',
-            object_id: '',
-            object_name: object_name || '',
-            device_info: {
-              device_session_id: getApp().globalData.deviceSessionId || '',
-            },
-          })
         }
         if (title == '请开启蓝牙权限') {
           let object_name = []
@@ -172,18 +130,6 @@ Component({
             object_name.push('允许小程序使用蓝牙权限')
           }
           object_name = object_name.join('/')
-          rangersBurialPoint('user_page_view', {
-            page_id: 'popus_open_bluetooth_new',
-            page_name: '提示需开启蓝牙权限弹窗',
-            page_path: getFullPageUrl(),
-            module: 'appliance',
-            object_type: '弹窗类型',
-            object_id: '',
-            object_name: object_name || '',
-            device_info: {
-              device_session_id: getApp().globalData.deviceSessionId || '',
-            },
-          })
         }
       }
     },

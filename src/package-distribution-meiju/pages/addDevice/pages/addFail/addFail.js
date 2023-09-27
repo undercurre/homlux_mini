@@ -4,9 +4,7 @@ const netWordMixin = require('../../../assets/js/netWordMixin')
 const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 const app = getApp()
 import { burialPoint } from './assets/js/burialPoint'
-import { creatDeviceSessionId } from '../../../../utils/util'
 import paths from '../../../../utils/paths'
-var log = require('../../../../utils/log')
 Page({
   behaviors: [addDeviceMixin, netWordMixin, getFamilyPermissionMixin],
   /**

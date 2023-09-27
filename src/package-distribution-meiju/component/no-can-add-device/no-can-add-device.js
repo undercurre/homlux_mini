@@ -1,10 +1,8 @@
-// pages/component/no-device/no-device.js
-import { baseImgApi } from '../../../api'
-import paths from '../../../utils/paths'
+import paths from '../../utils/paths'
 
-import { imgBaseUrl } from '../../../api'
-import { rangersBurialPoint } from '../../../utils/requestService'
-import { getFullPageUrl } from '../../../utils/util'
+import { imgBaseUrl } from '../../common/api'
+import { rangersBurialPoint } from '../../utils/requestService'
+import { getFullPageUrl } from '../../utils/util'
 Component({
   /**
    * 组件的属性列表

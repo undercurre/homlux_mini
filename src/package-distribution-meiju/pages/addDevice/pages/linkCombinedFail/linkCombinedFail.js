@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 // addDevice/pages/linkCombinedDevice/linkCombinedDevice.js
 const app = getApp()
 const bleNeg = require('../../../../utils/ble/ble-negotiation')
@@ -10,8 +11,6 @@ import { requestService } from '../../../../utils/requestService'
 import { getReqId, getStamp } from 'm-utilsdk/index'
 import { burialPoint } from './assets/js/burialPoint'
 import { api, imgBaseUrl } from '../../../../api'
-import { creatErrorCode } from '../assets/js/errorCode' // 有使用，勿删
-import WifiMgr from '../assets/js/wifiMgr'
 import computedBehavior, { includes } from '../../../../utils/miniprogram-computed.js'
 import { imgesList } from '../../../assets/js/shareImg.js'
 const imgUrl = imgBaseUrl.url + '/shareImg/' + app.globalData.brand

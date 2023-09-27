@@ -138,8 +138,8 @@
         },
         {
           "name": "美居授权确认页面",
-          "pathName": "package-distribution-meiju/check-auth/index",
-          "query": "sn8=79700Z76",
+          "pathName": "package-distribution-meiju/pages/check-auth/index",
+          "query": "",
           "launchMode": "default",
           "scene": null
         }

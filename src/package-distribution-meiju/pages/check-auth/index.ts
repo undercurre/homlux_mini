@@ -21,8 +21,9 @@ Component({
   },
   methods: {
     handleConfirm() {
+      console.log('222222')
       wx.navigateTo({
-        url: 'package-distribution-meiju/pages/inputWifiInfo/inputWifiInfo',
+        url: 'package-distribution-meiju/pages/addDevice/pages/inputWifiInfo/inputWifiInfo',
       })
     },
   },

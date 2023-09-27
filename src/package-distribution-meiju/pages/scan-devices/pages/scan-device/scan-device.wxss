@@ -1,5 +1,5 @@
 /* distribution-network/scan-devices/pages/scan-device/scan-device.wxss */
-@import '../../../../pages/common/css/common.wxss';
+@import '../../../../common/css/common.wxss';
 
 /* page {
   background: #1A1A1F;

@@ -34,12 +34,12 @@ import {
   hexCharCodeToStr,
   hex2bin,
 } from 'm-utilsdk/index'
-import { showToast, checkFamilyPermission } from '../../../../utils/util'
+import { checkFamilyPermission } from '../../../../utils/util'
 import { getScanRespPackInfo, getSn8 } from '../../../../utils/blueAdDataParse'
 import { isSupportPlugin } from '../../../../utils/pluginFilter'
 import { constructionBleOrder, paesrBleResponData } from '../../../../utils/ble/ble-order'
 import { burialPoint } from './assets/js/burialPoint'
-import { api, imgBaseUrl } from '../../../../api'
+import { api, imgBaseUrl } from '../../../../common/api'
 let appKey = api.appKey
 
 import { apParamsSet } from '../assets/js/apParamsSet'
