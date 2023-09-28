@@ -13,7 +13,7 @@ import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore } from './store/index'
 import { reaction } from 'mobx-miniprogram'
 import homOs from 'js-homos'
-import mqtt from './lib/mqtt.min.js'
+import mqtt from './lib/mqtt.min.js' // 暂时只能使用4.2.1版本，高版本有bug，判断错运行环境
 
 // TODO 统一配置和管理 storage key
 App<IAppOption>({
