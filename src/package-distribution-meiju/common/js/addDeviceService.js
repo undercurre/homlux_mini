@@ -1,16 +1,13 @@
 /**
- * author : lisin
- * desc   : 添加设备相关通用方法
- * date   : 2021/11/24 15:00pm
+ * 配网公共类
  */
 
-const app = getApp() //获取应用实例
-import config from '../common/js/config.js'
-import paths from './paths'
-import { getReqId, getStamp, cloudDecrypt, hexCharCodeToStr, CryptoJS } from 'm-utilsdk/index'
-import { isSupportPlugin } from './pluginFilter.js'
-import { requestService } from './requestService'
-import { brandConfig } from '../pages/assets/js/brand'
+import { api } from '../../common/js/api'
+import paths from '../../utils/paths'
+import { getStamp, getReqId, hexCharCodeToStr, cloudDecrypt, CryptoJS } from 'm-utilsdk/index'
+import { isSupportPlugin } from '../../utils/pluginFilter.js'
+import { requestService } from '../../utils/requestService'
+import app from '../app'
 
 //配网方式list
 const modeList = {
@@ -24,7 +21,6 @@ const modeList = {
   7: '网线',
   8: 'NB - IOT',
   9: 'Msmart - lite协议',
-  17: '数字遥控器配网',
   10: '本地蓝牙直连',
   20: '家用协议直连',
   21: '家用协议配网',
@@ -40,38 +36,13 @@ const modeList = {
 }
 
 //目前小程序支持的配网模式
-let supportAddDeviceMode = []
-brandConfig.ap && supportAddDeviceMode.push(0)
-brandConfig.bluetooth && supportAddDeviceMode.push(3)
-brandConfig.singleBlue && supportAddDeviceMode.push(5)
-brandConfig['NB-IOT'] && supportAddDeviceMode.push(8)
-brandConfig.localBlue && supportAddDeviceMode.push(9, 10)
-brandConfig.matchNetAfterDirectConn_AC && supportAddDeviceMode.push(20, 21)
-brandConfig.matchNetAfterDirectConn_WB01 && supportAddDeviceMode.push(30, 31)
-brandConfig.dynamicQRcode && supportAddDeviceMode.push(100)
-brandConfig.bigScreenBind && supportAddDeviceMode.push(103)
+const supportAddDeviceMode = [0, 3, 5, 9, 10, 20, 21, 30, 31, 100]
 
 //需要小程序授权使用蓝牙的配网模式
 const bluetoothAuthModes = [3, 5, 20, 21, 30, 31] //蓝牙配网涉及的mode
 
-//已知的小程序配网入口
-const addDeviceFm = {
-  autoFound: '自发现',
-  selectType: '选型',
-  scanCode: '扫码',
-  ncf: 'nfc',
-  noActive: '已购未绑定',
-  bluePugin: '直连插件跳配网',
-}
-
 //支持wb01直连后配网的白名单
 const wb01BindBLeAfterWifi = {
-  // 'CA': {
-  //     'SN8': ['001A0481','00100R23']
-  // },
-  // 'DA': {
-  //     'SN8': ['66778899']
-  // },
   13: {
     SN8: ['79009833'],
   },
@@ -113,119 +84,14 @@ const addDeviceACList = {
     '22012887',
     '22012889',
     '22012899',
-    '220Z2338',
-    '220Z1552',
-    '220F1079',
-    '220F1077',
-    '22012897',
-    '220Z1554',
-    '22251507',
-    '22251505',
-    '222Z1560',
-    '22012879',
-    '22012883',
-    '220Z1529',
-    '22012875',
-    '22012873',
-    '220Z1526',
-    '222Z1566', // QJ200_51_72_BLE
-    '22251511', // QJ200_51_72_BLE
-    '22251509', // QJ200_51_72_BLE
-    '22251517', // YB233_D5_BLE
-    '22251513', // YB233_D5_BLE
-    '222Z1567', // YB233_D5_BLE
-    '22251515', // TP200_D5_BLE
-    '22251519', // TP200_D5_BLE
-    '222Z1571', // TP200_D5_BLE
-    '220Z1565',
-    '22012925',
-    '22012929', // QJ200_26_35_BLE
-    '22012927',
-    '220Z1564', // MCA1_BLE,
-    '22012933',
-    '220Z1570',
-    '22012931', // F1_1_26_35_BLE
-    '22251523',
-    '22251521', // MZB_风尊,
-    '22396413',
-    '22396415',
-    '22396421',
-    '22396411',
-    '22396419',
-    '22396417',
-    '22396569',
-    '22396561',
-    '22396565',
-    '22396567',
-    '22396559',
-    '22396563', // 酷风 96413/96415/96421/96411/96419/96417/96569/96561/96565/96567/96559/96563
-    '22020087',
-    '22020085',
-    '220Z1926',
-    '220F9025', // W11 20085/Z1926/F9025
-    '222Z1576',
-    '22251529',
-    '22251531', // VC201 Z1576/51529/51531
-    '22012959',
-    '22012957',
-    '22013001',
-    '220Z1591', // D1-1  12959/12957
-    '22251537',
-    '22251535', // KS1-1 51537/51535
-    '22251533',
-    '22251557', // HY1-1 22251533\22251557
-    '22251559',
-    '222Z1581',
-    '22251545', // 22251559/222Z1581/22251545 F1-1柜
-    '22012983',
-    '22012985', // 22012983、22012985 QD201
-    '22012971',
-    '22012973', // 22012971、22012973 PH201,
-    '22251569',
-    '22251565',
-    '22251563',
-    '22251567', // 22251569 22251565 22251563 22251567  N8MJD1 N8ZHD1
-    '22251539',
-    '22251541', // 22051539 22051541 KS1_3_BLE
-    '22012999',
-    '22012997', // 22012999 22012997 N8KS1-1
-    '22013031',
-    '22013029',
-    '220F1101', // 22013031 22013029 N8KS1-3
-    '22013049', // 22013049 KFR-46GW/KS1-1
-    '22013003',
-    '22013005',
-    '220F1071',
-    '220F1073', // 22013003 22013005 220F1071 220F1073 N8XF1-1
-    '22013025',
-    '22013027',
-    '220Z1590', // K2-1
-    '22251573',
-    '22251571', // MJ101(1),
-    '222Z1592',
-    '22251575', // M2-1,
-    '22013045',
-    '22013043',
-    '220Z1593',
-    '22013041', // JH1-1
-    '22012951',
-    '220Z1580', // KFR-35G/T5[Y] KFR-35G/T5
-    '22013019',
-    '220Z1587', // KFR-35G/T3 KFR-35G/T3[Y]
-    '22251525',
-    '222Z1568', // KFR-72L/T5 KFR-72L/T5[Y]
-    '22260049',
-    '22260047', //  KFR-72/W11
-    '24012965', // 厨房空调 24012965 240Z1595 24013047 240Z1597 129Z2363
-    '240Z1595',
-    '24013047',
-    '240Z1597',
-    '129Z2363',
-    '240F1093',
-    '240F1107',
-    '220F1173',
-    '220F1171', // N8KQ1-D1
-  ], // MXC MZB K1-1 MKA YA103 x1-1 vc200 KW200A_26_35_BLE N8MKA1A_26_35_BLE KS1-1 HY1-1
+    "220Z2338",
+    "220Z1552",
+    "22012897",
+    "220Z1554",
+    "22251507",
+    "22251505",
+    "222Z1560"
+  ], // MXC MZB K1-1 MKA YA103 x1-1 vc200
   black: [
     '22040013',
     '22040017',
@@ -272,22 +138,6 @@ const addDeviceACList = {
     '22040045',
     '22040051',
     '22040043',
-    '220F4015',
-    '220F4013',
-    '220F4011',
-    '22270047',
-    '220F4005',
-    '22040053',
-    '22040057',
-    '22040055',
-    '220F4017',
-    '22270055',
-    '22270053',
-    '22270051',
-    '22270049',
-    '22040063',
-    '22040061',
-    '22040059',
   ],
 }
 
@@ -311,7 +161,7 @@ const supportAutoFoundACModel = [
   'KFR-26G/BDN8Y-YA103(1)A',
 ]
 
-const addDeviceSDK = {
+const addDeviceService = {
   modeList: modeList,
   supportAddDeviceMode: supportAddDeviceMode,
   isCanWb01BindBLeAfterWifi: isCanWb01BindBLeAfterWifi,
@@ -335,11 +185,6 @@ const addDeviceSDK = {
   goToAddDevice({ type, sn8, A0, mode, guideInfo, isCheckHasPlugin = true }) {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
-      // if (!paramas.type || !paramas.sn8) { //无完整设备信息直接跳转添加设备页
-      //     wx.navigateTo({
-      //         url: paths.scanDevice,
-      //     })
-      // }
       if (isCheckHasPlugin) {
         //配网模块产品逻辑 需校验是否有对应插件控制
         let type0x = type.includes('0x') ? type : '0x' + type
@@ -353,12 +198,6 @@ const addDeviceSDK = {
       }
       if (!mode || !guideInfo) {
         //无配网方式 或 指引
-        if (!app.globalData.isLogon) {
-          reject({
-            code: 1002,
-            msg: '未登录',
-          })
-        }
         try {
           let guideRes = await this.getAddDeviceModeAndGuide({
             type,
@@ -495,6 +334,28 @@ const addDeviceSDK = {
     })
   },
 
+  //msmartlite插件直连插件 跳转配网
+  msmartLiteBlueAfterLinkNet({
+    type,
+    sn8,
+    deviceId, //蓝牙id
+    deviceName, //设备名字
+    deviceImg, //设备图片
+  }) {
+    app.addDeviceInfo.type = type
+    app.addDeviceInfo.sn8 = sn8
+    app.addDeviceInfo.deviceId = deviceId
+    app.addDeviceInfo.deviceName = deviceName
+    app.addDeviceInfo.deviceImg = deviceImg
+    app.addDeviceInfo.mode = 3
+    app.addDeviceInfo.fm = 'bluePugin'
+    app.addDeviceInfo.blueVersion = 2
+    app.addDeviceInfo.isCheck = true
+    wx.navigateTo({
+      url: paths.inputWifiInfo,
+    })
+  },
+
   /**
    * desc: 知道设备的品类、sn8 获取设备的配网方式  注：调接口需登录
    * @params {type,sn8}
@@ -603,7 +464,7 @@ const addDeviceSDK = {
   //获取明文sn
   getDeviceSn(sn) {
     const cipText = sn || ''
-    const appKey = config.appKey[config.environment]
+    const appKey = api.appKey
     const key = app.globalData.isLogon ? app.globalData.userData.key : ''
     console.log('sn解密前', cipText, key, appKey)
     const plainTextSn = cloudDecrypt(cipText, key, appKey)
@@ -622,45 +483,15 @@ const addDeviceSDK = {
    * @param {*} ssid wifi ssid
    */
   checkIsAddedApDevice(ssid) {
-    const list = app.globalData.curAddedApDeviceList || []
-    if (list.length === 0) return false
-    return list.some((item) => {
-      return item.ssid === ssid
-    })
-  },
-
-  //msmartlite插件直连插件 跳转配网
-  msmartLiteBlueAfterLinkNet({
-    type,
-    sn8,
-    deviceId, //蓝牙id
-    deviceName, //设备名字
-    deviceImg, //设备图片
-  }) {
-    app.addDeviceInfo.type = type
-    app.addDeviceInfo.sn8 = sn8
-    app.addDeviceInfo.deviceId = deviceId
-    app.addDeviceInfo.deviceName = deviceName
-    app.addDeviceInfo.deviceImg = deviceImg
-    app.addDeviceInfo.mode = 3
-    app.addDeviceInfo.fm = 'bluePugin'
-    app.addDeviceInfo.blueVersion = 2
-    app.addDeviceInfo.isCheck = true
-    wx.navigateTo({
-      url: paths.inputWifiInfo,
-    })
+    return app.globalData.curAddedApDeviceList.includes(ssid)
   },
 
   /**
-   *
+   * 获取设备确权情况
    * @param {*} applanceCode 设备code
    */
   checkDeviceAuth(applianceCode) {
     return new Promise((resolve, reject) => {
-      if (app.globalData.noAuthApplianceCodeList.includes(applianceCode)) {
-        resolve(false)
-        return
-      }
       let reqData = {
         applianceCode: applianceCode,
         reqId: getReqId(),
@@ -669,15 +500,11 @@ const addDeviceSDK = {
       requestService
         .request('getApplianceAuthType', reqData)
         .then((resp) => {
-          console.log('首页卡片进插件页调用66666-查询确权状态', resp)
+          console.log('查询确权状态', resp)
           if (resp.data.data.status == 1 || resp.data.data.status == 2) {
             //0 已确权 1 待确权 2 未确权 3 不支持确权
             resolve(true)
           } else {
-            //不需要确权的
-            if (!app.globalData.noAuthApplianceCodeList.includes(applianceCode)) {
-              app.globalData.noAuthApplianceCodeList.push(applianceCode)
-            }
             resolve(false)
           }
         })
@@ -764,7 +591,7 @@ const addDeviceSDK = {
     } else if (mode == '000' || mode == '001' || mode == '1') {
       //001 1 的mode临时转为ap配网
       return 0
-    } else if (mode == '' || !Object.keys(modeList).includes(mode.toString())) {
+    } else if (mode == '' || !Object.keys(modeList).includes(mode)) {
       //mode为空 或者不规则都转为ap配网
       return 0
     }
@@ -772,4 +599,4 @@ const addDeviceSDK = {
   },
 }
 
-export { addDeviceSDK }
+export { addDeviceService }

@@ -1,5 +1,5 @@
-const app = getApp()
-const brandConfig = app.globalData.brandConfig[app.globalData.brand]
+import { brandConfig } from '../pages/assets/js/brand'
+
 const addDevices = brandConfig.matchNetFilter
 
 // eslint-disable-next-line no-unused-vars

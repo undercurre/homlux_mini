@@ -1,45 +1,11 @@
-/* eslint-disable prettier/prettier */
 /*
  * @desc: 多云协议
  * @author: zhucc22
  * @Date: 2023-04-03 13:56:53
  */
-const app = getApp() //获取应用实例
 import { requestService } from '../../utils/requestService'
-import config from '../../config.js' //环境及域名基地址配置
 import { md5 } from 'm-utilsdk/index'
-import prodCloudConfig from '../assets/cloudConfig/cloudConfig-prod'
-import testCloudConfig from '../assets/cloudConfig/clouldConfig-sit'
-const environment = config.environment
 const cloudMethods = {
-  //获取本地的模块映射表
-  getLocalModule() {
-    switch (environment) {
-      case 'prod': // 生产
-        this.globalData.cloudGlobalModule = JSON.stringify(prodCloudConfig)
-        wx.setStorageSync('cloudGlobalModule', JSON.stringify(prodCloudConfig)) //存储
-        break
-      case 'sit': // 测试
-        this.globalData.cloudGlobalModule = JSON.stringify(testCloudConfig)
-        wx.setStorageSync('cloudGlobalModule', JSON.stringify(testCloudConfig)) //存储
-        break
-      default:
-        this.globalData.cloudGlobalModule = JSON.stringify(prodCloudConfig)
-        wx.setStorageSync('cloudGlobalModule', JSON.stringify(prodCloudConfig)) //存储
-        break
-    }
-  },
-  //区域与token校验的签名
-  getGlobalSigh() {
-    if (app && app.globalData && app.globalData.userData) {
-      let accessToken = app.globalData.userData.mdata.accessToken
-      let region = app?.globalData?.region
-      let paramStr = accessToken + region
-      return md5(paramStr)
-    } else {
-      return ''
-    }
-  },
   // 就近接入区域代码获取
   getGlobalRegion() {
     return new Promise((resolve, reject) => {

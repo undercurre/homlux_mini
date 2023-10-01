@@ -1,20 +1,20 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 //扫设备二维码 一维码 能效二维码 触屏动态二维码 非智设备码 进入配网
 
 const app = getApp() //获取应用实例
 
-import { clickEventTracking } from '../track/track.js'
 import { hasKey, getStamp, getReqId } from 'm-utilsdk/index'
 import { getFullPageUrl, showToast } from './util.js'
 import { addDeviceSDK } from './addDeviceSDK'
 import { requestService } from './requestService'
 import { isSupportPlugin } from './pluginFilter'
 import { isAddDevice } from './temporaryNoSupDevices'
-import { linkDevice, virtualPlugin, newPlugin, webView } from './paths'
+import { linkDevice, virtualPlugin, newPlugin } from './paths'
 import { rangersBurialPoint } from './requestService'
-import { commonH5Api } from '../api'
-import Dialog from '../miniprogram_npm/m-ui/mx-dialog/dialog'
+import { commonH5Api } from '../common/js/api'
+import Dialog from '../../miniprogram_npm/m-ui/mx-dialog/dialog'
+import { brandConfig } from '../pages/assets/js/brand'
 const paths = require('./paths')
-const brandConfig = app.globalData.brandConfig[app.globalData.brand]
 
 //触屏配网相关埋点
 const burialPoint = {
@@ -168,17 +168,11 @@ export async function actionScanResult(
   homegroupId,
   homeName,
 ) {
-  trackClickScan()
-
   let scanRes = ''
   try {
     scanRes = await scanCode()
   } catch (error) {
     console.log('微信扫码失败=========', error)
-    scanFailTracking({
-      fialReason: '微信扫码接口调用异常',
-      errorCode: error,
-    })
   }
 
   if (!scanRes.result) {
@@ -262,17 +256,6 @@ export async function actionScanResult(
           }
           // on confirm
         })
-        .catch(() => {
-          if (error.action == 'cancel') {
-          }
-          // on cancel
-        })
-      return
-      wx.hideLoading()
-      wx.redirectTo({
-        url: `${virtualPlugin}?q=${encodeURIComponent(result)}&id=${homegroupId}&homeName=${homeName}&orgFrom=2`,
-      })
-      getApp().setMethodFailedCheckingLog('isIntelligentDevice', '跳转非智插件页')
       return
     }
 
@@ -293,17 +276,6 @@ export async function actionScanResult(
           }
           // on confirm
         })
-        .catch(() => {
-          if (error.action == 'cancel') {
-          }
-          // on cancel
-        })
-      return
-      wx.hideLoading()
-      wx.redirectTo({
-        url: `${newPlugin}?q=${encodeURIComponent(result)}&id=${homegroupId}&homeName=${homeName}&orgFrom=2`,
-      })
-      getApp().setMethodFailedCheckingLog('isIntelligentDevices', '跳转新的非智插件页')
       return
     }
 
@@ -311,16 +283,12 @@ export async function actionScanResult(
       wx.hideLoading()
       console.log('非midead 不支持')
       showNotSupport()
-      scanCodeNotSupportTracking({}, '此二维码不适用于添加设备', scanCodeRes)
-      getApp().setMethodFailedCheckingLog('actionScan', '此二维码不适用于添加设备')
       return
     }
 
     if (ifMideaQrcode && !urlType) {
       wx.hideLoading()
       justAppSupport()
-      scanCodeNotSupportTracking({}, '非美的合规的二维码', scanCodeRes)
-      getApp().setMethodFailedCheckingLog('actionScan', '非美的合规的二维码')
       return
     }
 
@@ -345,10 +313,6 @@ export async function actionScanResult(
           showToast('当前网络信号不佳，请检查网络设置', 'none', 3000)
         }
         console.log('解密接口调用失败=========', error)
-        scanFailTracking({
-          fialReason: '解密接口调用失败',
-          errorCode: error,
-        })
       }
     } else {
       data = getUrlParamy(result)
@@ -359,30 +323,12 @@ export async function actionScanResult(
       wx.hideLoading()
       console.log('扫码 不支持 非智能设备')
       showNotSupport()
-      scanCodeNotSupportTracking(
-        {
-          type: data.category,
-          sn8: data.sn8,
-        },
-        '非智能设备不支持小程序配网',
-        scanCodeRes,
-      )
-      getApp().setMethodFailedCheckingLog('actionScan', '非智能设备不支持小程序配网')
       return
     }
     if (!map.includes((data.mode + '').toString())) {
       wx.hideLoading()
       console.log('扫码 不支持 的配网方式')
       justAppSupport()
-      scanCodeNotSupportTracking(
-        {
-          type: data.category,
-          sn8: data.sn8,
-        },
-        '小程序暂时不支持的配网方式',
-        scanCodeRes,
-      )
-      getApp().setMethodFailedCheckingLog('actionScan', '小程序暂时不支持的配网方式')
       return
     }
     let formatType = '0x' + data.category.toLocaleUpperCase()
@@ -390,49 +336,21 @@ export async function actionScanResult(
       wx.hideLoading()
       console.log('扫码 不支持 无对应插件')
       justAppSupport()
-      scanCodeNotSupportTracking(
-        {
-          type: data.category,
-          sn8: data.sn8,
-        },
-        '该品类无对应插件不支持小程序配网',
-        scanCodeRes,
-      )
-      getApp().setMethodFailedCheckingLog('actionScan', '该品类无对应插件不支持小程序配网')
       return
     }
     const addDeviceInfo = getAddDeviceInfo(data)
     if (addDeviceInfo.moduleType == 0 && addDeviceInfo.category != 'C0') {
       console.log('扫码 不支持 特殊品类不支持')
       justAppSupport()
-      scanCodeNotSupportTracking(
-        {
-          type: data.category,
-          sn8: data.sn8,
-        },
-        '该特殊品类不支持小程序配网',
-        scanCodeRes,
-      )
-      getApp().setMethodFailedCheckingLog('actionScan', "该特殊品类不支持小程序配网'")
       return
     }
     if (!isAddDevice(data.category.toLocaleUpperCase(), data.sn8)) {
       wx.hideLoading()
       console.log('扫码 不支持 未测试')
       justAppSupport()
-      scanCodeNotSupportTracking(
-        {
-          type: data.category,
-          sn8: data.sn8,
-        },
-        '未测试品类不支持小程序配网',
-        scanCodeRes,
-      )
-      getApp().setMethodFailedCheckingLog('actionScan', "未测试品类不支持小程序配网'")
       return
     }
     wx.hideLoading()
-    trackScanResult(result, addDeviceSDK.getLinkType(data.mode))
     // 扫码成功时不执行自发现，防止扫码跳转后异常执行自发现
     app.globalData.ifBackFromScan = true
 
@@ -452,9 +370,7 @@ function scanCode() {
         console.log('扫码失败返回', error)
         reject(error)
       },
-      complete() {
-        trackViewScan()
-      },
+      complete() {},
     })
   })
 }
@@ -468,15 +384,7 @@ async function actionOneOrEnergyCode(scanRes, codeType, showNotSupport, justAppS
     wx.hideLoading()
   } catch (error) {
     wx.hideLoading()
-    scanFailTracking({
-      fialReason: '能效码、一维码查询调用失败',
-      errorCode: error,
-    })
     showNotSupport()
-    getApp().setMethodFailedCheckingLog(
-      'actionOneOrEnergyCode',
-      `${JSON.stringify(codeType)}解析失败,error=${JSON.stringify(error)}`,
-    )
     return
   }
 
@@ -526,24 +434,6 @@ async function actionOneOrEnergyCode(scanRes, codeType, showNotSupport, justAppS
     justAppSupport()
     return
   }
-
-  const result = scanRes.result.replace(/\s*/g, '') //移除空格
-  clickEventTracking('user_behavior_event', 'trackScanResult', {
-    object_id: result.replace(/\u0026/g, '&'),
-    device_info: {
-      device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-      sn: '', //sn码
-      sn8: '', //sn8码
-      a0: '', //a0码
-      widget_cate: '', //设备品类
-      wifi_model_version: '', //模组wifi版本
-      link_type: addDeviceSDK.getLinkType(data.mode), //连接方式 bluetooth/ap/...
-      iot_device_id: '', //设备id
-    },
-    ext_info: {
-      qrcode_type: codeType, //码类型（一维码/能效二维码）
-    },
-  })
 
   // 扫码成功时不执行自发现，防止扫码跳转后异常执行自发现
   app.globalData.ifBackFromScan = true
@@ -635,11 +525,6 @@ function dynamicCodeAdd(scanCodeRes, getDeviceApImgAndName, showNotSupport, just
         }
       },
     })
-    scanFailTracking({
-      fialReason: '大屏扫码解析失败',
-      errorCode: -1,
-    })
-    getApp().setMethodFailedCheckingLog('dynamicCodeAdd', '触屏配网生成二维码，无法识别')
   }
 }
 
@@ -673,13 +558,13 @@ function getUrlParamy(result) {
     result.includes('dsn')
   ) {
     const res = result.split('?')[1]
-    let list = new Array()
-    let paramy = new Array()
+    let list = []
+    let paramy = []
     if (res.includes(';')) {
       list = res.split(';')
       console.log('paramy11111111', list)
       list.forEach((item) => {
-        let itemList = new Array()
+        let itemList = []
 
         itemList = item.split('&')
         console.log('paramy2222', itemList)
@@ -843,98 +728,12 @@ function scanCodeDecode(qrCode, timeout = 3000) {
   })
 }
 
-//扫描结果埋点
-function trackScanResult(result, linkType) {
-  clickEventTracking('user_behavior_event', 'trackScanResult', {
-    object_id: result.replace(/\u0026/g, '&'),
-    device_info: {
-      device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-      sn: '', //sn码
-      sn8: '', //sn8码
-      a0: '', //a0码
-      widget_cate: '', //设备品类
-      wifi_model_version: '', //模组wifi版本
-      link_type: linkType, //连接方式 bluetooth/ap/...
-      iot_device_id: '', //设备id
-    },
-  })
-}
-
-//扫码不支持埋点
-function scanCodeNotSupportTracking(deviceInfo, errorMsg, scanCodeRes) {
-  clickEventTracking('user_page_view', 'scanCodeNotSuppotr', {
-    device_info: {
-      device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-      sn: '', //sn码
-      sn8: deviceInfo.sn8 || '', //sn8码
-      a0: '', //a0码
-      widget_cate: deviceInfo.type || '', //设备品类
-      wifi_model_version: '', //模组wifi版本
-      link_type: '', //连接方式 bluetooth/ap/...
-      iot_device_id: '', //设备id
-    },
-    ext_info: {
-      error_msg: errorMsg || '',
-      url: scanCodeRes,
-    },
-  })
-}
-
-//扫一扫调出弹出埋点
-function trackClickScan() {
-  clickEventTracking('user_behavior_event', 'trackClickScan', {
-    device_info: {
-      device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-      sn: '', //sn码
-      sn8: '', //sn8码
-      a0: '', //a0码
-      widget_cate: '', //设备品类
-      wifi_model_version: '', //模组wifi版本
-      link_type: '', //连接方式 bluetooth/ap/...
-      iot_device_id: '', //设备id
-    },
-  })
-}
-
-//扫描调出预览埋点
-function trackViewScan() {
-  clickEventTracking('user_page_view', 'trackViewScan', {
-    device_info: {
-      device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-      sn: '', //sn码
-      sn8: '', //sn8码
-      a0: '', //a0码
-      widget_cate: '', //设备品类
-      wifi_model_version: '', //模组wifi版本
-      link_type: '', //连接方式 bluetooth/ap/...
-      iot_device_id: '', //设备id
-    },
-  })
-}
-
-// 扫码失败埋点
-function scanFailTracking(params) {
-  clickEventTracking('user_behavior_event', '', {
-    page_path: getFullPageUrl(),
-    module: 'appliance',
-    page_id: 'page_scan_add_appliance',
-    page_name: '扫码添加设备页',
-    object_type: '',
-    widget_id: 'popups_scan_qrcode_fail',
-    widget_name: '扫码失败',
-    ext_info: {
-      fail_reason: params.fialReason,
-      error_code: params.errorCode,
-    },
-  })
-}
 // 点击跳转机身二维码指引
 function clickQRcodeGuide() {
   burialPoint.clickScanHint()
   jumpQRcodeGuide()
 }
 function jumpQRcodeGuide() {
-  const brandConfig = app.globalData.brandConfig[app.globalData.brand]
   const guideUrl =
     brandConfig.QRcodeGuideUrl ||
     `${paths.webView}?webViewUrl=${encodeURIComponent(

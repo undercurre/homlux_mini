@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 const app = getApp()
-const paths = require('../../../../../utils/paths')
 const log = require('../../../../../utils/log')
 import { getReqId, getStamp } from 'm-utilsdk'
 import { requestService } from '../../../../../utils/requestService'
-import { api, imgBaseUrl } from '../../../../../api'
+// eslint-disable-next-line no-undef
 module.exports = Behavior({
   data: {
     isStopGetExists: false, //是否停止查询设备已连上云

@@ -24,7 +24,7 @@ Page({
     noteMaxLen: 1000,
     phone: '',
     content: '',
-    dialogStyle: brandStyle.config[app.globalData.brand].dialogStyle, //弹窗样式
+    dialogStyle: brandStyle.brandConfig.dialogStyle, //弹窗样式
   },
 
   /**

@@ -2,17 +2,15 @@
 
 const app = getApp() //获取应用实例
 
-import { requestService, rangersBurialPoint } from '../../utils/requestService'
+import { requestService } from '../../utils/requestService'
 
 import { getStamp, getReqId, wxCardAesEncrypt } from 'm-utilsdk/index'
 
 import { getFullPageUrl } from '../../utils/util'
 
-import { clickEventTracking } from '../../track/track.js'
-
 import { templateIds } from './templateIds'
 
-import { getDeviceSn } from '../../pages/common/js/device.js'
+import { getDeviceSn } from '../../common/js/device.js'
 
 //根据长期模板id获取长期模板名字
 function getTemplateName(templateId) {
@@ -110,7 +108,6 @@ function openModal(sn, snTicket, template_ids, sn8, pluginType, modelId, applian
       return prev
     }, [])
     //曝光埋点
-    openSubscribeModalTrack(sn8, pluginType, msg_list)
   }
   //打开订阅授权弹窗
   wx.requestSubscribeDeviceMessage({
@@ -134,7 +131,6 @@ function openModal(sn, snTicket, template_ids, sn8, pluginType, modelId, applian
         unSubscribeTemplateId.forEach((item) => {
           msg_list.push({ msg_type: getTemplateName(item), status: 0 })
         })
-        clickConfirmTrack(sn8, pluginType, msg_list)
       }
       console.log('允许订阅的模板id', subscribeTemplateId)
       saveSubscribeSetting(subscribeTemplateId)
@@ -149,88 +145,13 @@ function openModal(sn, snTicket, template_ids, sn8, pluginType, modelId, applian
         prev.push(getTemplateName(currentValue))
         return prev
       }, [])
-      if (res.errMsg.includes('cancel operation')) {
-        clickCancelTrack(sn8, pluginType, msg_list)
-      } else if (res.errMsg.includes('reject operation')) {
+      if (res.errMsg.includes('reject operation')) {
         saveSubscribeSetting(template_ids)
         let msgList = msg_list.reduce((prev, currentValue) => {
           prev.push({ msg_type: currentValue, status: 0 })
           return prev
         }, [])
-        clickRejectTrack(sn8, pluginType, msgList)
       }
-    },
-  })
-}
-
-//设备订阅允许点击埋点
-function clickConfirmTrack(sn8, pluginType, msg_list) {
-  clickEventTracking('user_behavior_event', 'clickConfirmTrack', {
-    page_id: 'popups_subscribe_plugin',
-    page_name: '插件页订阅消息弹窗',
-    module: '插件',
-    widget_id: 'click_confirm',
-    widget_name: '允许',
-    device_info: {
-      sn8: sn8, //sn8码
-      pluginType: pluginType, //设备品类
-    },
-    ext_info: {
-      msg_list: msg_list,
-    },
-  })
-}
-
-//设备订阅授权弹窗埋点
-function openSubscribeModalTrack(sn8, pluginType, msg_list) {
-  //曝光埋点
-  rangersBurialPoint('user_page_view', {
-    page_path: getFullPageUrl(),
-    module: '插件',
-    page_id: 'popups_subscribe_plugin',
-    page_name: '插件页订阅消息弹窗',
-    device_info: {
-      sn8: sn8, //sn8码
-      pluginType: pluginType, //设备品类
-    },
-    ext_info: {
-      msg_list: msg_list,
-    },
-  })
-}
-
-//设备订阅取消点击埋点
-function clickCancelTrack(sn8, pluginType, msg_list) {
-  clickEventTracking('user_behavior_event', 'clickCancelTrack', {
-    page_id: 'popups_subscribe_plugin',
-    page_name: '插件页订阅消息弹窗',
-    module: '插件',
-    widget_id: 'click_cancel',
-    widget_name: '取消',
-    device_info: {
-      sn8: sn8, //sn8码
-      pluginType: pluginType, //设备品类
-    },
-    ext_info: {
-      msg_list: msg_list,
-    },
-  })
-}
-
-//设备订阅拒绝不在询问点击埋点
-function clickRejectTrack(sn8, pluginType, msg_list) {
-  clickEventTracking('user_behavior_event', 'clickRejectTrack', {
-    page_id: 'popups_subscribe_plugin',
-    page_name: '插件页订阅消息弹窗',
-    module: '插件',
-    widget_id: 'click_reject',
-    widget_name: '拒绝',
-    device_info: {
-      sn8: sn8, //sn8码
-      pluginType: pluginType, //设备品类
-    },
-    ext_info: {
-      msg_list: msg_list,
     },
   })
 }

@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 import { requestService, rangersBurialPoint } from '../../../../utils/requestService'
-import { mideaServiceImgApi, imgBaseUrl } from '../../../../api'
+import { mideaServiceImgApi, imgBaseUrl } from '../../../../common/js/api'
 import computedBehavior from '../../../../utils/miniprogram-computed.js'
 import { getStamp, getReqId } from 'm-utilsdk/index'
 import { checkWxVersion_807, getFullPageUrl, showToast } from '../../../../utils/util.js'
@@ -10,11 +11,11 @@ import { getLinkType } from '../../../assets/js/utils'
 import { addDeviceSDK } from '../../../../utils/addDeviceSDK'
 import { getPrivateKeys } from '../../../../utils/getPrivateKeys'
 const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
-import Dialog from '../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
+import Dialog from '../../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
 const brandStyle = require('../../../assets/js/brand.js')
 import { imgesList } from '../../../assets/js/shareImg.js'
-const app = getApp()
-const imgUrl = imgBaseUrl.url + '/shareImg/' + app.globalData.brand
+import app from '../../../../common/app'
+const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
 
 Page({
   behaviors: [computedBehavior, getFamilyPermissionMixin],
@@ -37,7 +38,7 @@ Page({
     clickFLag: false, //防重复点击
     subCode: '', //产品型号
     placeholder: '请输入设备型号或系列', //占位文字
-    dialogStyle: brandStyle.config[app.globalData.brand].dialogStyle, //弹窗样式
+    dialogStyle: brandStyle.brandConfig.dialogStyle, //弹窗样式
   },
   computed: {
     convertedProductList() {
@@ -73,8 +74,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    getApp().onLoadCheckingLog()
-    this.data.brand = app.globalData.brand
+    this.data.brand = brandStyle.brand
     if (this.data.brand == 'colmo') {
       wx.setNavigationBarColor({
         backgroundColor: '#202026',
@@ -267,7 +267,6 @@ Page({
       hasNext: false,
       loadFlag: false,
     })
-    getApp().setActionCheckingLog('getSearchData', '搜索设备事件')
     this.getQueryIotProductV2()
   },
   getQueryIotProductV2(str) {
@@ -277,7 +276,7 @@ Page({
       code: searchKeyWord,
       pageSize: '20',
       page: pageNum,
-      brand: app.globalData.brand == 'meiju' ? '' : app.globalData.brand,
+      brand: brandStyle.brand == 'meiju' ? '' : brandStyle.brand,
       stamp: getStamp(),
       reqId: getReqId(),
     }
@@ -331,16 +330,13 @@ Page({
   },
   actionGoBack() {
     wx.navigateBack({})
-    getApp().setActionCheckingLog('actionGoBack', '点击搜索页返回事件')
   },
   delKeyWord() {
     this.setData({
       searchKeyWord: '',
     })
-    getApp().setActionCheckingLog('delKeyWord', '点击清除搜索输入内容事件')
   },
   loadMoreData() {
-    getApp().setActionCheckingLog('loadMoreData', '触发上拉加载更多事件')
     console.log('next======')
     let { pageNum, hasNext } = this.data
     if (!hasNext) {
@@ -442,7 +438,6 @@ Page({
   },
   //产品点击
   async prodClicked(e) {
-    getApp().setActionCheckingLog('prodClicked', '选择型号页点击了对应产品')
     let self = this
     let { clickFLag } = this.data
     let code = e.currentTarget.dataset.code
@@ -471,21 +466,12 @@ Page({
     self.clickApplianceViewTrack(index, category)
     //先判断是否isSupportPlugin
     if (!isSupportPlugin(`0x${category}`, code, code, '0')) {
-      Dialog.confirm({
-        title: '该设备暂不支持小程序配网，我们会尽快开放，敬请期待',
-        confirmButtonText: '我知道了',
-        confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
-        showCancelButton: false,
-      }).then((res) => {
-        if (res.action == 'confirm') {
-        }
+      wx.showModal({
+        content: '该设备仅支持在美的美居App添加',
+        confirmText: '我知道了',
+        confirmColor: '#267aff',
+        showCancel: false,
       })
-      // wx.showModal({
-      //   content: '该设备仅支持在美的美居App添加',
-      //   confirmText: '我知道了',
-      //   confirmColor: '#267aff',
-      //   showCancel: false,
-      // })
       this.selectTypeNotSoupportTracking(
         {
           deviceSessionId: app.globalData.deviceSessionId,
@@ -504,21 +490,12 @@ Page({
     }
     if (!isAddDevice(category.toLocaleUpperCase(), code)) {
       console.log('选型 不支持 未测试')
-      Dialog.confirm({
-        title: '该设备暂不支持小程序配网，我们会尽快开放，敬请期待',
-        confirmButtonText: '我知道了',
-        confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
-        showCancelButton: false,
-      }).then((res) => {
-        if (res.action == 'confirm') {
-        }
+      wx.showModal({
+        content: '该设备仅支持在美的美居App添加',
+        confirmText: '我知道了',
+        confirmColor: '#267aff',
+        showCancel: false,
       })
-      // wx.showModal({
-      //   content: '该设备仅支持在美的美居App添加',
-      //   confirmText: '我知道了',
-      //   confirmColor: '#267aff',
-      //   showCancel: false,
-      // })
       setTimeout(() => {
         self.setData({
           clickFLag: false,
@@ -556,22 +533,6 @@ Page({
         app.addDeviceInfo = addDeviceInfo
         let modeArr = addDeviceSDK.supportAddDeviceMode
         if (modeArr.indexOf(mode) >= 0) {
-          //判断微信版本
-          // if (!checkWxVersion_807()) {
-          //   wx.showModal({
-          //     content: '你的微信版本过低，请升级至最新版本后再试',
-          //     confirmText: '我知道了',
-          //     confirmColor: '#267aff',
-          //     showCancel: false,
-          //   })
-          //   setTimeout(() => {
-          //     self.setData({
-          //       clickFLag: false,
-          //     })
-          //   }, 1000)
-          //   getApp().setMethodFailedCheckingLog('prodClicked', '微信版本过低')
-          //   return
-          // }
           // 判断全局的密钥有没有，有就跳过，没有就重新拉取
           if (!app.globalData.privateKey && mode != '103' && mode != '100') {
             self.data.clickFLag = false
@@ -619,21 +580,12 @@ Page({
             })
           }
         } else {
-          Dialog.confirm({
-            title: '该设备暂不支持小程序配网，我们会尽快开放，敬请期待',
-            confirmButtonText: '我知道了',
-            confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
-            showCancelButton: false,
-          }).then((res) => {
-            if (res.action == 'confirm') {
-            }
+          wx.showModal({
+            content: '该设备仅支持在美的美居App添加',
+            confirmText: '我知道了',
+            confirmColor: '#267aff',
+            showCancel: false,
           })
-          // wx.showModal({
-          //   content: '该设备仅支持在美的美居App添加',
-          //   confirmText: '我知道了',
-          //   confirmColor: '#267aff',
-          //   showCancel: false,
-          // })
           this.selectTypeNotSoupportTracking(
             {
               deviceSessionId: app.globalData.deviceSessionId,

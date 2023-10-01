@@ -1,19 +1,18 @@
+/* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 const app = getApp()
 import { index, webView, download } from '../../../../utils/paths'
 import { hasKey, getStamp, getReqId } from 'm-utilsdk/index'
 import { checkFamilyPermission, getFullPageUrl } from '../../../../utils/util.js'
-import { clickEventTracking } from '../../../../track/track.js'
 import { requestService, rangersBurialPoint } from '../../../../utils/requestService'
 import { isSupportPlugin } from '../../../../utils/pluginFilter'
-const bluetooth = require('../../../../pages/common/mixins/bluetooth.js')
-const dialogCommonData = require('../../../../pages/common/mixins/dialog-common-data.js')
+const bluetooth = require('../../../../common/mixins/bluetooth.js')
+const dialogCommonData = require('../../../../common/mixins/dialog-common-data.js')
 import { isAddDevice } from '../../../../utils/temporaryNoSupDevices'
 import { addDeviceSDK } from '../../../../utils/addDeviceSDK'
-import { checkPermission } from '../../../../pages/common/js/permissionAbout/checkPermissionTip'
-import { baseImgApi } from '../../../../api'
+import { checkPermission } from '../../../../common/js/checkPermissionTip'
+import { baseImgApi } from '../../../../common/js/api'
 import paths from '../../../../utils/paths.js'
-import { familyPermissionText } from '../../../../globalCommon/js/commonText.js'
-// import { service } from '../../../../pages/index/assets/js/service'
+import { familyPermissionText } from '../../../../common/js/commonText.js'
 import { service } from '../../../assets/js/service.js'
 
 Page({
@@ -39,7 +38,6 @@ Page({
 
   onLoad: function (options) {
     console.log('中间页参数', options)
-    getApp().onLoadCheckingLog()
     let defineOptions = ''
     let wetChatvirtualPlugin = wx.getStorageSync('wetChatvirtualPlugin')
     let wechatMiddleOptions = wx.getStorageSync('wechatMiddleOptions')
@@ -73,25 +71,6 @@ Page({
     this.setData({
       options: params,
       from: from,
-    })
-  },
-  // H5下载落地页进入小程序配网浏览埋点
-  viewReports() {
-    clickEventTracking('user_page_view', 'onView', {
-      ext_info: {
-        source: 'wechat_scan',
-      },
-    })
-  },
-  // 微信扫一扫进入小程序配网浏览埋点
-  wechatViewTrack() {
-    app.globalData.fromWechatScan = 'wechat_scan'
-    clickEventTracking('user_page_view', 'onView', {
-      page_id: 'page_middle',
-      page_name: '配网跳转中间页',
-      ext_info: {
-        source: 'wechat_scan',
-      },
     })
   },
   // 处理逻辑
@@ -256,13 +235,13 @@ Page({
       (result.includes('tsn') || result.includes('dsn') || result.includes('type'))
     ) {
       const res = result.split('?')[1]
-      let list = new Array()
-      let paramy = new Array()
+      let list = []
+      let paramy = []
       if (res.includes(';')) {
         list = res.split(';')
         console.log('paramy11111111', list)
         list.forEach((item) => {
-          let itemList = new Array()
+          let itemList = []
 
           itemList = item.split('&')
           console.log('paramy2222', itemList)
@@ -387,44 +366,6 @@ Page({
       })
     }
     await this.gotoNetwork(e)
-    if (e) {
-      let { sn8, category } = this.data.device
-      let { type } = e.currentTarget.dataset
-      if (type == 'location') {
-        clickEventTracking('user_behavior_event', 'lookLocationGuide', {
-          page_id: 'scan_code_locat_permiss',
-          page_name: '扫码中间页-位置权限开启提示',
-          module: 'appliance',
-          widget_id: 'finish_operate',
-          widget_name: '已开启按钮',
-          page_path: getFullPageUrl(),
-          device_info: {
-            sn8: sn8, //sn8码
-            widget_cate: category, //设备品类
-          },
-          ext_info: {
-            notice: this.data.locationNotice.join('/'),
-          },
-        })
-      }
-      if (type == 'bluetooth') {
-        clickEventTracking('user_behavior_event', 'lookLocationGuide', {
-          page_id: 'scan_code_bluetooth_permiss',
-          page_name: '扫码中间页-蓝牙权限开启提示',
-          module: 'appliance',
-          widget_id: 'finish_operate',
-          widget_name: '已开启按钮',
-          page_path: getFullPageUrl(),
-          device_info: {
-            sn8: sn8, //sn8码
-            widget_cate: category, //设备品类
-          },
-          ext_info: {
-            notice: this.data.bluetoothNotice.join('/'),
-          },
-        })
-      }
-    }
   },
 
   //获取位置授权情况
@@ -537,22 +478,6 @@ Page({
 
   //查看位置权限以及是否打开指引
   lookLocationGuide() {
-    let { sn8, category } = this.data.device
-    clickEventTracking('user_behavior_event', 'lookLocationGuide', {
-      page_id: 'scan_code_locat_permiss',
-      page_name: '扫码中间页-位置权限开启提示',
-      module: 'appliance',
-      widget_id: 'view_guidelines_locat',
-      widget_name: '查看指引按钮',
-      page_path: getFullPageUrl(),
-      device_info: {
-        sn8: sn8, //sn8码
-        widget_cate: category, //设备品类
-      },
-      ext_info: {
-        notice: this.data.locationNotice.join('/'),
-      },
-    })
     wx.navigateTo({
       url: paths.locationGuide + `?permissionTypeList=${JSON.stringify(this.data.location.permissionTypeList)}`,
     })
@@ -560,22 +485,6 @@ Page({
 
   //查看蓝牙权限以及是否打开指引
   lookBluetoothGuide() {
-    let { sn8, category } = this.data.device
-    clickEventTracking('user_behavior_event', 'lookBluetoothGuide', {
-      page_id: 'scan_code_bluetooth_permiss',
-      page_name: '扫码中间页-蓝牙权限开启提示',
-      module: 'appliance',
-      widget_id: 'view_guidelines_bluetooth',
-      widget_name: '查看指引按钮',
-      page_path: getFullPageUrl(),
-      device_info: {
-        sn8: sn8, //sn8码
-        widget_cate: category, //设备品类
-      },
-      ext_info: {
-        notice: this.data.bluetoothNotice.join('/'),
-      },
-    })
     wx.navigateTo({
       url: paths.blueGuide + `?permissionTypeList=${JSON.stringify(this.data.bluetooth.permissionTypeList)}`,
     })

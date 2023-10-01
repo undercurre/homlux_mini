@@ -1,4 +1,4 @@
-import { imgBaseUrl, baseImgApi } from '../../../../api'
+import { imgBaseUrl, baseImgApi } from '../../../../common/js/api'
 import paths from '../../../../utils/paths'
 
 Page({
@@ -15,8 +15,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    getApp().onLoadCheckingLog()
-
     console.log('配网失败设备信息', JSON.parse(options.device))
     this.setData({
       device: JSON.parse(options.device),

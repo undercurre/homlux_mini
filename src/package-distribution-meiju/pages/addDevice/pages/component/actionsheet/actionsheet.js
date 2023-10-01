@@ -1,5 +1,5 @@
 import { imgesList } from '../../../../assets/js/shareImg.js'
-import { imgBaseUrl } from '../../../../../api'
+import { imgBaseUrl } from '../../../../../common/js/api'
 const imgUrl = imgBaseUrl.url + '/shareImg/' + getApp().globalData.brand
 module.exports = /******/ (function (modules) {
   // webpackBootstrap

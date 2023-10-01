@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
-// addDevice//pages/linkNetFail/linkNetFail.js
 const app = getApp()
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const netWordMixin = require('../../../assets/js/netWordMixin')
@@ -9,7 +8,7 @@ import { burialPoint } from './assets/js/burialPoint'
 import { string2Uint8Array, isEmptyObject } from 'm-utilsdk/index'
 import { showToast } from '../../../../utils/util'
 import paths from '../../../../utils/paths'
-import { environment, commonH5Api, imgBaseUrl } from '../../../../common/js/api'
+import { environment, commonH5Api } from '../../../../common/js/api'
 import { decodeWifi } from '../../../assets/js/utils'
 import computedBehavior from '../../../../utils/miniprogram-computed.js'
 import { addDeviceSDK } from '../../../../utils/addDeviceSDK.js'
@@ -18,8 +17,6 @@ import { setWifiStorage } from '../../utils/wifiStorage'
 import WifiMgr from '../assets/js/wifiMgr'
 
 const brandStyle = require('../../../assets/js/brand.js')
-import { imgesList } from '../../../assets/js/shareImg.js'
-const imgUrl = imgBaseUrl.url + '/shareImg/' + app.globalData.brand
 let wifiMgr = new WifiMgr()
 Page({
   behaviors: [addDeviceMixin, netWordMixin, getFamilyPermissionMixin, computedBehavior],
@@ -61,8 +58,8 @@ Page({
     tempPsw: '', //暂存密码用于密码限制输入判断
     continueConnectWifi: false, //是否手动输入连wifi  false:不是手动输入，true是手动输入
     brand: '',
-    dialogStyle: brandStyle.config[app.globalData.brand].dialogStyle, //弹窗样式
-    brandConfig: app.globalData.brandConfig[app.globalData.brand],
+    dialogStyle: brandStyle.brandConfig.dialogStyle, //弹窗样式
+    brandConfig: brandStyle.brandConfig,
     isClickConfirm: false, //弹窗防重
     deviceImgLoaded: false,
     combinedStatus: -1, // 组合设备的组合状态
@@ -96,8 +93,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   async onLoad() {
-    getApp().onLoadCheckingLog()
-    this.data.brand = app.globalData.brand
+    this.data.brand = brandStyle.brand
     this.data.combinedStatus = app.combinedDeviceInfo ? app.combinedDeviceInfo[0].combinedStatus : ''
     this.setData({
       brand: this.data.brand,
@@ -407,7 +403,6 @@ Page({
     let { SSIDContent } = this.data.bindWifiInfo
     try {
       let wifiInfo = await wifiMgr.getConnectedWifi()
-      getApp().setMethodCheckingLog('wx.getConnectedWifi()')
       if (wifiInfo.SSID == SSIDContent) {
         //还是之前连接的wifi
         console.log('[还是同一个wifi]')
@@ -421,10 +416,6 @@ Page({
       this.getCurLinkWifiInfo(wifiInfo)
     } catch (error) {
       console.log('[get connected wifi fail]', error)
-      getApp().setMethodFailedCheckingLog(
-        'wx.getConnectedWifi()',
-        `调用微信接口wx.getConnectedWifi()异常。error=${JSON.stringify(error)}`,
-      )
       if (this.data.pageStatus == 'show') {
         this.delay(1500).then(() => {
           this.getSwitchWifiInfo()
@@ -931,6 +922,7 @@ Page({
     let deal = psw.replace(/\s/g, '').replaceAll('…', '...') //ios手机 连续输入三个...会转为…符号，将…装为...
     if (deal != '' && !reg.test(deal)) {
       let checkRes =
+        // eslint-disable-next-line no-misleading-character-class
         /[\uD83C|\uD83D|\uD83E][\uDC00-\uDFFF][\u200D|\uFE0F]|[\uD83C|\uD83D|\uD83E][\uDC00-\uDFFF]|[0-9|*|#]\uFE0F\u20E3|[0-9|#]\u20E3|[\u203C-\u3299]\uFE0F\u200D|[\u203C-\u3299]\uFE0F|[\u2122-\u2B55]|\u303D|[A9|AE]\u3030|\uA9|\uAE|\u3030/gi.test(
           psw,
         )

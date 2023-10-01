@@ -1,8 +1,7 @@
-import { getStamp, hasKey, CryptoJS, md5 } from 'm-utilsdk/index'
-import { getNewSign } from './util'
+import { getStamp, hasKey } from 'm-utilsdk/index'
 import { api } from '../common/js/api'
 
-import qs from './qs'
+import qs from './qs/index'
 
 var requestService = {
   request: (apiName, params, method, headerObj, timeout) => {},

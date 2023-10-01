@@ -1,7 +1,7 @@
-const app = getApp() //获取应用实例
-import { deviceImgMap } from '../../../utils/deviceImgMap'
-import { deviceImgApi } from '../../../api'
-import config from '../../../config.js'
+import { deviceImgMap } from '../../utils/deviceImgMap'
+import app from '../app'
+import { deviceImgApi } from './api'
+import config from './config.js'
 import { cloudDecrypt } from 'm-utilsdk/index'
 const getDeviceImgAndName = (dcpDeviceImgList, category, sn8) => {
   let item = new Object()

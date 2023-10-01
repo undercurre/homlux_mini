@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const app = getApp()
-import { imgBaseUrl, baseImgApi } from '../../../../api'
+import { imgBaseUrl, baseImgApi } from '../../../../common/js/api'
 import paths from '../../../../utils/paths'
 import { requestService, rangersBurialPoint } from '../../../../utils/requestService'
 import { getStamp, getReqId } from 'm-utilsdk/index'
@@ -30,7 +30,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function () {
-    getApp().onLoadCheckingLog()
     this.getLoginStatus().then(() => {
       if (app.globalData.isLogon) {
         this.checkFamilyPermission()

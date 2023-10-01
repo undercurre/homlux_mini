@@ -1,12 +1,11 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 /**
  * 从云端获取协商密钥，用于加解密蓝牙，ap等信息
  */
 import { requestService, rangersBurialPoint } from './requestService'
 import { getReqId, getStamp, cloudDecrypt } from 'm-utilsdk/index'
 import { getFullPageUrl } from './util'
-import { api } from '../api'
-const WX_LOG = require('./log')
-const app = getApp()
+import { api } from '../common/js/api'
 const getPrivateKeys = {
   getPrivateKey() {
     return new Promise((resolve, reject) => {
@@ -18,7 +17,6 @@ const getPrivateKeys = {
       requestService
         .request('privateKey', reqData)
         .then((resp) => {
-          WX_LOG.info('获取协商密钥正常', 'getPrivateKey')
           console.log('获取密钥成功')
           const key = getApp().globalData.isLogon ? getApp().globalData.userData.key : ''
           var privateKeyValue = resp.data.data.msmart.filter(function (item) {
@@ -30,7 +28,6 @@ const getPrivateKeys = {
           resolve(resp)
         })
         .catch((error) => {
-          WX_LOG.error('获取协商密钥异常', 'getPrivateKey', error)
           reject(error)
         })
     })
@@ -46,12 +43,9 @@ const getPrivateKeys = {
       requestService
         .request('privateKey', reqData)
         .then((resp) => {
-          WX_LOG.info('获取协商密钥正常', 'getPrivateKey')
-          // reject(resp)
           resolve(resp)
         })
         .catch((error) => {
-          WX_LOG.error('获取协商密钥异常', 'getPrivateKey', error)
           reject(error)
         })
     })

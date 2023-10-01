@@ -3,7 +3,7 @@
  * @author: zhucc22
  * @Date: 2023-04-26 09:37:08
  */
-import { environment } from '../api'
+import { environment } from '../common/js/api'
 
 import $$Rangers from '@datarangers/sdk-mp'
 const rangersInit = () => {

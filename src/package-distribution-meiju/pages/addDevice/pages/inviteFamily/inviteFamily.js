@@ -1,14 +1,12 @@
 // pages/discover/discover.js
 var app = getApp()
-import { imgBaseUrl } from '../../../../api'
+import { imgBaseUrl } from '../../../../common/js/api'
 import { getReqId, getStamp, hasKey } from 'm-utilsdk/index'
 import { requestService } from '../../../../utils/requestService'
 import { goTopluginPage } from '../../../../utils/pluginFilter'
 import { ApBurialPoint } from '../assets/js/burialPoint'
-import { setPluginDeviceInfo } from '../../../../track/pluginTrack.js'
-const brandStyle = require('../../../assets/js/brand.js')
 import { imgesList } from '../../../assets/js/shareImg.js'
-const imgUrl = imgBaseUrl.url + '/shareImg/' + app.globalData.brand
+const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
 Page({
   behaviors: [],
   /**
@@ -25,7 +23,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    this.data.brand = app.globalData.brand
+    this.data.brand = brandStyle.brand
     this.setData({
       brand: this.data.brand,
     })
@@ -122,9 +120,6 @@ Page({
         let deviceList = []
         deviceInfo.composeApplianceList = app.composeApplianceList
         console.log('---inviteFamily deviceInfo---', deviceInfo)
-        setPluginDeviceInfo(deviceInfo)
-      } else {
-        setPluginDeviceInfo(app.addDeviceInfo) //进入插件页前，设置设备信息到app.globalData.currDeviceInfo
       }
       goTopluginPage(deviceInfo, backTo, isRomoveRoute)
     }

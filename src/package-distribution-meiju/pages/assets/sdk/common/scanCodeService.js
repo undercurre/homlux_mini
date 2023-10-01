@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /**
  * 扫码服务接口
  */
@@ -5,14 +6,13 @@ const app = getApp()
 import { requestService } from '../../../../utils/requestService'
 import { hasKey, getStamp, getReqId } from 'm-utilsdk/index'
 import { getFullPageUrl, showToast } from '../../../../utils/util.js'
-import { clickEventTracking } from '../../../../track/track.js'
 import { scanCode } from '../core/scanCode.js'
-import { addDeviceService } from '../../../../pages/common/sdk/common/addDeviceService'
+import { addDeviceService } from '../../../../common/js/addDeviceService'
 import { deviceImgMap } from '../../../../utils/deviceImgMap'
-import { deviceImgApi } from '../../../../api'
+import { deviceImgApi } from '../../../../common/js/api'
 import { rangersBurialPoint } from '../../../../utils/requestService'
 const WX_LOG = require('../../../../utils/log')
-import { config } from '../../../../pages/common/sdk/config'
+import { config } from '../../../../common/sdk/config'
 var scanCodeService = {
   /**
    * 扫码接口
@@ -25,7 +25,6 @@ var scanCodeService = {
     }
    */
   async actionScanResult() {
-    trackClickScan()
     let scanRes = ''
     try {
       scanRes = await scanCode.scanCode()
@@ -163,22 +162,6 @@ var scanCodeService = {
     deviceInfo.guideInfo = scanCodeGuide
 
     const result = scanRes.result.replace(/\s*/g, '') //移除空格
-    clickEventTracking('user_behavior_event', 'trackScanResult', {
-      object_id: result.replace(/\u0026/g, '&'),
-      device_info: {
-        device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-        sn: '', //sn码
-        sn8: '', //sn8码
-        a0: '', //a0码
-        widget_cate: '', //设备品类
-        wifi_model_version: '', //模组wifi版本
-        link_type: addDeviceService.getLinkType(data.mode), //连接方式 bluetooth/ap/...
-        iot_device_id: '', //设备id
-      },
-      ext_info: {
-        qrcode_type: codeType, //码类型（一维码/能效二维码）
-      },
-    })
     return deviceInfo
   },
   //触屏动态二维码逻辑
@@ -287,37 +270,6 @@ var scanCodeService = {
         })
     })
   },
-  //扫一扫调出弹出埋点
-  trackClickScan() {
-    clickEventTracking('user_behavior_event', 'trackClickScan', {
-      device_info: {
-        device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-        sn: '', //sn码
-        sn8: '', //sn8码
-        a0: '', //a0码
-        widget_cate: '', //设备品类
-        wifi_model_version: '', //模组wifi版本
-        link_type: '', //连接方式 bluetooth/ap/...
-        iot_device_id: '', //设备id
-      },
-    })
-  },
-  // 扫码失败埋点
-  scanFailTracking(params) {
-    clickEventTracking('user_behavior_event', '', {
-      page_path: getFullPageUrl(),
-      module: 'appliance',
-      page_id: 'page_scan_add_appliance',
-      page_name: '扫码添加设备页',
-      object_type: '',
-      widget_id: 'popups_scan_qrcode_fail',
-      widget_name: '扫码失败',
-      ext_info: {
-        fail_reason: params.fialReason,
-        error_code: params.errorCode,
-      },
-    })
-  },
   //处理设备信息
   getAddDeviceInfo(data) {
     const moduleType = this.getModuleType(data)
@@ -367,22 +319,6 @@ var scanCodeService = {
     }
     return tag
   },
-  // 扫码失败埋点
-  scanFailTracking(params) {
-    clickEventTracking('user_behavior_event', '', {
-      page_path: getFullPageUrl(),
-      module: 'appliance',
-      page_id: 'page_scan_add_appliance',
-      page_name: '扫码添加设备页',
-      object_type: '',
-      widget_id: 'popups_scan_qrcode_fail',
-      widget_name: '扫码失败',
-      ext_info: {
-        fail_reason: params.fialReason,
-        error_code: params.errorCode,
-      },
-    })
-  },
   //获取扫描的二维码链接参数
   getUrlParamy(result) {
     const map = ['mode', 'type', 'tsn', 'type', 'v', 'SSID', 'dsn']
@@ -392,13 +328,13 @@ var scanCodeService = {
       (result.includes('dsn') || result.includes('type'))
     ) {
       const res = result.split('?')[1]
-      let list = new Array()
-      let paramy = new Array()
+      let list = []
+      let paramy = []
       if (res.includes(';')) {
         list = res.split(';')
         console.log('paramy11111111', list)
         list.forEach((item) => {
-          let itemList = new Array()
+          let itemList = []
 
           itemList = item.split('&')
           console.log('paramy2222', itemList)
@@ -428,22 +364,6 @@ var scanCodeService = {
       })
       return obj
     }
-  },
-  //扫描结果埋点
-  trackScanResult(result, linkType) {
-    clickEventTracking('user_behavior_event', 'trackScanResult', {
-      object_id: result.replace(/\u0026/g, '&'),
-      device_info: {
-        device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-        sn: '', //sn码
-        sn8: '', //sn8码
-        a0: '', //a0码
-        widget_cate: '', //设备品类
-        wifi_model_version: '', //模组wifi版本
-        link_type: linkType, //连接方式 bluetooth/ap/...
-        iot_device_id: '', //设备id
-      },
-    })
   },
   getDeviceApImgAndName(dcpDeviceImgList, category) {
     let item = new Object()
@@ -611,21 +531,6 @@ const burialPoint = {
       },
     })
   },
-}
-//扫一扫调出弹出埋点
-function trackClickScan() {
-  clickEventTracking('user_behavior_event', 'trackClickScan', {
-    device_info: {
-      device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-      sn: '', //sn码
-      sn8: '', //sn8码
-      a0: '', //a0码
-      widget_cate: '', //设备品类
-      wifi_model_version: '', //模组wifi版本
-      link_type: '', //连接方式 bluetooth/ap/...
-      iot_device_id: '', //设备id
-    },
-  })
 }
 
 module.exports = {

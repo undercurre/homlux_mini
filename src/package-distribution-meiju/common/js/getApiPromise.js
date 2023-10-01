@@ -1,4 +1,4 @@
-import { requestService } from '../../../utils/requestService'
+import { requestService } from '../../utils/requestService'
 
 //模拟数据
 const service = {

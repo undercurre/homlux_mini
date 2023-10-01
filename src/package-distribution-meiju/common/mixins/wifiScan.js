@@ -1,6 +1,6 @@
-// const app = getApp()
 import { service } from '../js/getApiPromise.js'
 const brand = 'midea'
+// eslint-disable-next-line no-undef
 module.exports = Behavior({
   behaviors: [],
   properties: {},
@@ -20,9 +20,6 @@ module.exports = Behavior({
               if (!this.filterMideaAP(device.SSID)) return
               const deviceData = this.getDeviceData(device)
               this.deviceApList.unshift(deviceData)
-              // const idx = inArray(foundDevices, 'deviceId', device.deviceId)
-              // const idx2 = inArray(noSupportDevices, 'deviceId', device.deviceId)
-              // const idx = inArray(foundDevices, 'deviceId', device.deviceId)
             })
           })
         })

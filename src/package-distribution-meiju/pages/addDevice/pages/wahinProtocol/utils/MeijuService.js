@@ -2,8 +2,8 @@ import { formatTime, getTimeStamp, getReqId, getUID, getStamp, RndNum, getSign, 
 
 import { requestService } from '../../../../../utils/requestService'
 
-import { CryptoJS, md5 } from '../../../../../miniprogram_npm/m-utilsdk/index'
-import { api } from '../../../../../api'
+import { CryptoJS, md5 } from '../../../../../../miniprogram_npm/m-utilsdk/index'
+import { api } from '../../../../../common/js/api'
 
 const app = getApp()
 
@@ -111,7 +111,6 @@ export default class MeijuService {
    * 其他小程序带登录态跳转
    */
   fromMiniProgramLogin() {
-    let self = this
     let ramdom = getStamp()
     return new Promise((resolve, reject) => {
       wx.login({

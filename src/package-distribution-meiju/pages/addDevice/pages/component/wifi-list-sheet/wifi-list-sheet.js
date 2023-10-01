@@ -1,11 +1,9 @@
+/* eslint-disable @typescript-eslint/no-this-alias,@typescript-eslint/no-var-requires */
 const addDeviceMixin = require('../../assets/js/addDeviceMixin')
 import computedBehavior from '../../../../../utils/miniprogram-computed'
-import WifiMgr from '../../assets/js/wifiMgr'
-let wifiMgr = new WifiMgr()
 import { addDeviceSDK } from '../../../../../utils/addDeviceSDK.js'
-const brandStyle = require('../../../../assets/js/brand.js')
 import { imgesList } from '../../../../assets/js/shareImg.js'
-import { imgBaseUrl } from '../../../../../api'
+import { imgBaseUrl } from '../../../../../common/js/api'
 const imgUrl = imgBaseUrl.url + '/shareImg/' + getApp().globalData.brand
 Component({
   externalClasses: ['frame', 'wifi-list-title', 'blue', 'wifi-item', 'left'],

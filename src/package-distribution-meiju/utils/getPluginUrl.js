@@ -4,12 +4,11 @@
  * @Date: 2023-08-01 10:34:47
  */
 import { newPluginUrl, PluginUrl } from './paths'
-import { debug } from '../plugindevelop'
 import { newPluginConfig } from './newPluginConfig' //测试数据
 
 function getPluginUrl(type, deviceInfo) {
   type = type.includes('0x') ? type : `0x${type}`
-  let url = debug ? PluginUrl : newPluginConfig.includes(type) ? newPluginUrl : PluginUrl
+  let url = newPluginConfig.includes(type) ? newPluginUrl : PluginUrl
   if (deviceInfo) {
     return url + `/T${type}/index/index?deviceInfo=` + encodeURIComponent(deviceInfo)
   } else {

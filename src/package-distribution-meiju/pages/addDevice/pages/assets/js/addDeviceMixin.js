@@ -4,6 +4,7 @@ import { showToast, getFullPageUrl } from '../../../../../utils/util'
 import { creatErrorCode, failTextData } from './errorCode'
 import { ApBurialPoint } from './burialPoint'
 import paths from '../../../../../utils/paths'
+import { brandConfig } from '../../../../assets/js/brand'
 const app = getApp() //获取应用实例
 
 const supportedApplianceTypes = [
@@ -178,7 +179,6 @@ const filterList = {
     SN8: ['665000VR'],
   },
 }
-const brandConfig = app.globalData.brandConfig[app.globalData.brand]
 // eslint-disable-next-line no-undef
 module.exports = Behavior({
   behaviors: [],
@@ -722,54 +722,23 @@ module.exports = Behavior({
       wx.startWifi({
         success(res) {
           console.log('调用微信接口wx.startWifi成功', res)
-          ApBurialPoint.apLocalLog({
-            log: {
-              msg: '调用微信接口wx.startWifi成功',
-              res: res,
-            },
-          })
-          getApp().setMethodCheckingLog('调用微信接口wx.startWifi成功')
           wx.connectWifi({
             SSID: '',
             password: '',
             maunal: true, // 是否去设置页连接
             success(res) {
               console.log('调用微信接口wx.connectWifi跳转设置页成功', res)
-              ApBurialPoint.apLocalLog({
-                log: {
-                  msg: '调用微信接口wx.connectWifi跳转设置页成功',
-                  res: res,
-                },
-              })
-              getApp().setMethodCheckingLog('调用微信接口wx.connectWifi跳转设置页成功')
             },
             fail(error) {
               if (error.errCode == 12005) {
                 showToast('请先打开手机WiFi')
               }
               console.log('调用微信接口wx.connectWifi跳转设置页失败', error)
-              ApBurialPoint.apLocalLog({
-                log: {
-                  msg: '调用微信接口wx.connectWifi跳转设置页失败',
-                  error: error,
-                },
-              })
-              getApp().setMethodFailedCheckingLog(
-                '调用微信接口wx.connectWifi跳转设置页失败',
-                `error=${JSON.stringify(error)}`,
-              )
             },
           })
         },
         fail(error) {
           console.log('调用微信接口wx.startWifi失败', error)
-          ApBurialPoint.apLocalLog({
-            log: {
-              msg: '调用微信接口wx.startWifi失败',
-              error: error,
-            },
-          })
-          getApp().setMethodFailedCheckingLog('调用微信接口wx.startWifi失败', `error=${JSON.stringify(error)}`)
         },
       })
     },
@@ -866,14 +835,9 @@ module.exports = Behavior({
         // requestService
         //   .request('getApplianceAuthType', reqData)
         //   .then((resp) => {
-        //     getApp().setMethodCheckingLog('getApplianceAuthType')
         //     resolve(resp)
         //   })
         //   .catch((error) => {
-        //     getApp().setMethodFailedCheckingLog(
-        //       'getApplianceAuthType',
-        //       `获取设备确权状态异常。error=${JSON.stringify(error)}`
-        //     )
         //     reject(error)
         //   })
       })

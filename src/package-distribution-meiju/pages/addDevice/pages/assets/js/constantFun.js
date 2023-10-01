@@ -1,5 +1,5 @@
 import { toHexString, string2Uint8Array, dec2hex } from 'm-utilsdk/index'
-import { api, environment } from '../../../../../api'
+import { api, environment } from '../../../../../common/js/api'
 
 let signStr = 'xhdiwjnchekd4d512chdjx5d8e4c394D2D7S'
 let signHex = '78686469776a6e6368656b6434643531326368646a783564386534633339344432443753'

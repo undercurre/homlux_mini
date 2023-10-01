@@ -1,5 +1,5 @@
 // distribution-network/addDevice/pages/frequencyGuide/frequencyGuide.js
-import { imgBaseUrl } from '../../../../api.js'
+import { imgBaseUrl } from '../../../../common/js/api.js'
 Page({
   /**
    * 页面的初始数据

@@ -18,8 +18,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    getApp().onLoadCheckingLog()
-
     let { sn, type, sn8, moduleVersion } = app.addDeviceInfo
     burialPoint.lowApVersionView({
       deviceSessionId: app.globalData.deviceSessionId,

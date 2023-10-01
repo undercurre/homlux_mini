@@ -2,7 +2,7 @@ const app = getApp() //获取应用实例
 import paths from '../../../../utils/paths'
 import { requestService } from '../../../../utils/requestService'
 import { getStamp, getReqId } from 'm-utilsdk/index'
-import { baseImgApi } from '../../../../api.js'
+import { baseImgApi } from '../../../../common/js/api.js'
 const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 Page({
   behaviors: [getFamilyPermissionMixin],
@@ -20,8 +20,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    getApp().onLoadCheckingLog()
-
     this.getLoginStatus().then(() => {
       if (app.globalData.isLogon) {
         this.checkFamilyPermission()

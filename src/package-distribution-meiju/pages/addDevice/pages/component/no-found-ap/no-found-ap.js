@@ -1,5 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const addDeviceMixin = require('../../assets/js/addDeviceMixin')
-import { baseImgApi, imgBaseUrl } from '../../../../../api'
+import { baseImgApi, imgBaseUrl } from '../../../../../common/js/api'
 import { burialPoint } from './assets/js/burialPoint'
 import { imgesList } from '../../../../assets/js/shareImg.js'
 const imgUrl = imgBaseUrl.url + '/shareImg/' + getApp().globalData.brand

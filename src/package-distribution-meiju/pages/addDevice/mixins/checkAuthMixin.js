@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 const app = getApp()
 const bluetooth = require('../../../common/mixins/bluetooth.js')
 
@@ -7,6 +7,7 @@ import { getScanRespPackInfo, getDeviceCategoryAndSn8 } from '../../../utils/blu
 import { requestService } from '../../../utils/requestService'
 import { openAdapter } from '../pages/utils/blueApi'
 import { bleRssiValue } from '../pages/utils/BleRssiValue'
+import { brandConfig } from '../../assets/js/brand'
 
 // eslint-disable-next-line no-undef
 module.exports = Behavior({
@@ -66,14 +67,9 @@ module.exports = Behavior({
               powerLevel: 'high',
               success: (res) => {
                 console.log('@module checkAuthMixin.js\n@method searchBlueByType\n@desc 开始搜寻蓝牙成功\n', res)
-                getApp().setMethodCheckingLog('wx.startBluetoothDevicesDiscovery()')
               },
               fail(error) {
                 console.error('@module checkAuthMixin.js\n@method searchBlueByType\n@desc 开始搜寻蓝牙失败\n', error)
-                getApp().setMethodFailedCheckingLog(
-                  'wx.startBluetoothDevicesDiscovery()',
-                  `开始发现蓝牙设备失败。error=${JSON.stringify(error)}`,
-                )
               },
             })
             let typeMatchList = [] // 搜索到品类匹配的设备列表
@@ -83,10 +79,6 @@ module.exports = Behavior({
               wx.stopBluetoothDevicesDiscovery({
                 fail(error) {
                   console.error('@module checkAuthMixin.js\n@method searchBlueByType\n@desc 停止蓝牙搜索失败\n', error)
-                  getApp().setMethodFailedCheckingLog(
-                    'wx.stopBluetoothDevicesDiscovery()',
-                    `停止蓝牙搜索失败。error=${JSON.stringify(error)}`,
-                  )
                 },
               })
               console.log('@module checkAuthMixin.js\n@method searchBlueByType\n@desc 最终合并结果\n', typeMatchList)
@@ -120,7 +112,6 @@ module.exports = Behavior({
               let typeMatchListTemp = []
               res.devices.forEach((device) => {
                 // 品牌名校验
-                const brandConfig = app.globalData.brandConfig[app.globalData.brand]
                 const localName = device.localName || device.name || ''
                 if (!brandConfig.apNameHeader.some((value) => localName.includes(value))) {
                   return
@@ -150,7 +141,6 @@ module.exports = Behavior({
                 if (app.addDeviceInfo.deviceId === device.deviceId && !app.addDeviceInfo.adData) {
                   app.addDeviceInfo.adData = device.adData
                 }
-                getApp().setMethodCheckingLog('蓝牙信息', `device=${JSON.stringify(device)}`)
                 // 校验二代蓝牙广播包长度对不对
                 if (!this.checkAdsData(device)) {
                   console.log('二代蓝牙广播包长度异常', adData)
@@ -262,14 +252,9 @@ module.exports = Behavior({
               powerLevel: 'high',
               success: (res) => {
                 console.log('@module checkAuthMixin.js\n@method checkNearby\n@desc 开始搜寻蓝牙成功\n', res)
-                getApp().setMethodCheckingLog('wx.startBluetoothDevicesDiscovery()')
               },
               fail(err) {
                 console.error('@module checkAuthMixin.js\n@method checkNearby\n@desc 开始搜寻蓝牙失败\n', err)
-                getApp().setMethodFailedCheckingLog(
-                  'wx.startBluetoothDevicesDiscovery()',
-                  `开始发现蓝牙设备失败。error=${JSON.stringify(err)}`,
-                )
               },
             })
             wx.onBluetoothDeviceFound((res) => {

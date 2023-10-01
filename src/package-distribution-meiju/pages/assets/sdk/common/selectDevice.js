@@ -48,7 +48,7 @@ var selectDevice = {
         subCode,
         pageSize: '20',
         page: pageNum,
-        brand: app.globalData.brand == 'meiju' ? '' : app.globalData.brand,
+        brand: brandStyle.brand == 'meiju' ? '' : brandStyle.brand,
         stamp: getStamp(),
         reqId: getReqId(),
       }

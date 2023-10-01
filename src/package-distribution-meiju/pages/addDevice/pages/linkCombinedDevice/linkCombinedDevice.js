@@ -1,16 +1,13 @@
-// addDevice/pages/linkCombinedDevice/linkCombinedDevice.js
+/* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 const app = getApp()
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const combineDeviceMixin = require('../assets/js/combineDeviceMixin')
 const paths = require('../../../../utils/paths')
-const log = require('../../../../utils/log')
 let timer
-import { burialPoint } from './assets/js/burialPoint'
-import Dialog from '../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
-import { api, imgBaseUrl } from '../../../../api'
+import { imgBaseUrl } from '../../../../common/js/api'
 import { imgesList } from '../../../assets/js/shareImg.js'
-const imgUrl = imgBaseUrl.url + '/shareImg/' + app.globalData.brand
-const bluetooth = require('../../../../pages/common/mixins/bluetooth')
+const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
+const bluetooth = require('../../../../common/mixins/bluetooth')
 const brandStyle = require('../../../assets/js/brand.js')
 Page({
   behaviors: [addDeviceMixin, combineDeviceMixin, bluetooth],
@@ -26,9 +23,9 @@ Page({
     addDeviceInfo: {},
     time: 80, // todo update 80
     brand: '',
-    brandConfig: app.globalData.brandConfig[app.globalData.brand],
-    dialogStyle: brandStyle.config[app.globalData.brand].dialogStyle, //弹窗样式
-    iconStyle: brandStyle.config[app.globalData.brand].iconStyle, //图标样式
+    brandConfig: brandStyle.brandConfig,
+    dialogStyle: brandStyle.brandConfig.dialogStyle, //弹窗样式
+    iconStyle: brandStyle.brandConfig.iconStyle, //图标样式
     ishowDialog: false, //是否显示组件库弹窗
     titleContent: '',
     messageContent: '',
@@ -163,7 +160,6 @@ Page({
                   titleContent: '创建组合设备失败，请重试',
                   messageContent: '',
                 })
-                burialPoint.combinedFailDialogView({})
               })
           })
           .catch((err) => {
@@ -208,7 +204,6 @@ Page({
       titleContent: `${deviceName}正在努力联网了，确定要放弃么？`,
       messageContent: '',
     })
-    burialPoint.abandonAddDialogView({})
   },
   /**
    * 弹窗按钮-再等等
@@ -217,7 +212,6 @@ Page({
     this.setData({
       ishowCancleDialog: false,
     })
-    burialPoint.clickWaitAminuteDialog({})
   },
   /**
    * 弹窗按钮-放弃添加
@@ -232,7 +226,6 @@ Page({
     })
     if (app.combinedDeviceInfo[0].combinedStatus == 1) return
     app.combinedDeviceInfo[0].combinedStatus = 2
-    burialPoint.clickCancelAbandonDialog({})
     wx.reLaunch({
       url: paths.linkCombinedFail,
     })
@@ -241,14 +234,12 @@ Page({
    * 弹窗按钮-重试
    */
   reCombine() {
-    burialPoint.clickRetryFailDialog()
     this.init()
   },
   /**
    * 弹窗按钮-取消重试
    */
   cancelCombined() {
-    burialPoint.clickCancelFailDialog({})
     wx.reLaunch({
       url: paths.linkCombinedFail,
     })
@@ -281,7 +272,6 @@ Page({
    */
   async onLoad(option) {
     console.info('-------组合进度页 onLoad-------', option)
-    getApp().onLoadCheckingLog()
     if (option.randomCode) {
       app.addDeviceInfo.randomCode = option.randomCode
     }
@@ -289,7 +279,7 @@ Page({
     if (option.offlineReLink) {
       this.offlineReLink = option.offlineReLink
     }
-    this.data.brand = app.globalData.brand
+    this.data.brand = brandStyle.brand
     let { type, sn8 } = app.combinedDeviceInfo[0] // todo upadta
     // 获取辅设备名称和图片
     let typeAndName = this.getDeviceImgAndName(type, sn8)
@@ -303,8 +293,6 @@ Page({
       deviceName: app.addDeviceInfo.deviceName,
       deviceImg: app.addDeviceInfo.deviceImg,
     })
-    // 页面曝光埋点
-    burialPoint.combinedDeviceView({})
     // 初始化
     this.init()
   },

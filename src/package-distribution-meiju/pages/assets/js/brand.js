@@ -1803,7 +1803,11 @@ const config = {
     backButtonColor: 'white',
   },
 }
+const brand = 'meiju'
+const brandConfig = config[brand]
 
 module.exports = {
   config,
+  brandConfig,
+  brand,
 }

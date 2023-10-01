@@ -16,8 +16,9 @@ import { api } from '../../../../common/js/api'
 import { baseImgApi, imgBaseUrl } from '../../../../common/js/api.js'
 import { imgesList } from '../../../assets/js/shareImg.js'
 import Dialog from '../../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
+import { brandConfig } from '../../../assets/js/brand'
 
-const imgUrl = imgBaseUrl.url + '/shareImg/' + app.globalData.brand
+const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
 Page({
   behaviors: [addDeviceMixin, netWordMixin, getFamilyPermissionMixin],
   /**
@@ -65,10 +66,10 @@ Page({
     combinedStatus: -1, // 0-失败，1-成功，2-取消
     masterName: '', //主设备名
     slaveName: '', // 辅设备名
-    brandConfig: app.globalData.brandConfig[app.globalData.brand],
+    brandConfig,
     ishowAddroom: false, //是否显示添加房间弹窗
     newRoomName: '', //房间弹窗-房间名称
-    dialogStyle: app.globalData.brandConfig[app.globalData.brand].dialogStyle, //弹窗样式
+    dialogStyle: brandConfig.dialogStyle, //弹窗样式
     isFailStr: false, //输入房间名称是非法字符
     ishowFocus: false, //打开新建房间后，自动聚焦
     roomFlag: false, // 全空格标识符
@@ -132,8 +133,7 @@ Page({
    */
   onLoad: function (options) {
     app.globalData.ifBackFromSuccess = false
-    getApp().onLoadCheckingLog()
-    this.data.brand = app.globalData.brand
+    this.data.brand = brandStyle.brand
     this.setData({
       brand: this.data.brand,
     })
@@ -346,7 +346,6 @@ Page({
             currentRoomName: resp.data.data.homeList[0].roomList[0].name,
           })
         }
-        getApp().setMethodCheckingLog('getFamilyInfo')
       })
       .catch((error) => {
         this.setData({
@@ -354,7 +353,6 @@ Page({
           currentRoomId: null,
         })
         console.log('[获取家庭信息异常]', error)
-        getApp().setMethodFailedCheckingLog('getFamilyInfo', `获取家庭信息异常。error=${JSON.stringify(error)}`)
       })
   },
   getHomeList() {
@@ -500,17 +498,8 @@ Page({
       this.setData({
         inputNotice: '设备名称不能为空',
       })
-      getApp().setMethodFailedCheckingLog('deviceNameCheck', '设备名称不能为空')
       return false
     }
-    // let reg = /^(\p{Unified_Ideograph}|[a-zA-Z\d ])*$/u
-    // if (!reg.test(value)) {
-    //   this.setData({
-    //     inputNotice: '设备名称不支持标点符号及表情',
-    //   })
-    //   getApp().setMethodFailedCheckingLog('deviceNameCheck', '设备名称不支持标点符号及表情')
-    //   return false
-    // }
     this.setData({
       inputNotice: '',
     })
@@ -547,7 +536,6 @@ Page({
       return
     }
     let homeName = this.data.familyInfo.name
-    getApp().setMethodCheckingLog('changeBindDviceInfo')
     let { mode, type, sn, sn8, mac, applianceCode, deviceImg } = app.addDeviceInfo
     let btMac = mac ? mac.replace(/:/g, '').toLocaleUpperCase() : ''
     let applianceType = type.includes('0x') ? type : '0x' + type
@@ -586,11 +574,9 @@ Page({
         //url传参改为全局变量传参
         app.addDeviceInfo.cloudBackDeviceInfo = bindRemoteDeviceResp
         goToInvitePage(homeName, bindRemoteDeviceResp, '/pages/index/index', true, () => {})
-        getApp().setMethodCheckingLog('changeBindDviceInfo')
       } catch (error) {
         showToast('网络不佳，请检查网络')
         console.log('遥控设备绑定失败', error)
-        getApp().setMethodFailedCheckingLog('changeBindDviceInfo', `遥控设备绑定失败。error=${JSON.stringify(error)}`)
       }
       return
     }
@@ -785,7 +771,6 @@ Page({
           }
           if (app.addDeviceInfo.mode == 5) {
             goToInvitePage(homeName, app.addDeviceInfo.cloudBackDeviceInfo, '/pages/index/index', true)
-            getApp().setMethodCheckingLog('changeBindDviceInfo')
           }
           if (mode == 20) {
             app.addDeviceInfo.deviceName = this.data.deviceName
@@ -796,7 +781,6 @@ Page({
                 this_.data.changeClickFlagNew = false
               },
             })
-            getApp().setMethodCheckingLog('changeBindDviceInfo')
           }
           if (mode == 30) {
             // app.addDeviceInfo={
@@ -820,32 +804,18 @@ Page({
                 this_.data.changeClickFlagNew = false
               },
             })
-            getApp().setMethodCheckingLog('changeBindDviceInfo')
           }
           if (mode == 100) {
             //触屏配网
             goToInvitePage(homeName, app.addDeviceInfo.cloudBackDeviceInfo, '/pages/index/index', true)
-            getApp().setMethodCheckingLog('changeBindDviceInfo')
           }
           if (mode == 8) {
             //NB-Iot配网
             goToInvitePage(homeName, app.addDeviceInfo.cloudBackDeviceInfo, '/pages/index/index', true)
-            getApp().setMethodCheckingLog('changeBindDviceInfo')
           }
           //网关网线配网
           if (mode == 7) {
-            // if (!isSupportPlugin(type, sn8, A0, '0')) {
-            //   //不支持
-            //   getApp().setMethodCheckingLog('changeBindDviceInfo')
-            //   wx.reLaunch({
-            //     url:
-            //       '/pages/unSupportDevice/unSupportDevice?backTo=/pages/index/index&deviceInfo=' +
-            //       encodeURIComponent(deviceInfo),
-            //   })
-            //   return
-            // }
             goToInvitePage(homeName, app.addDeviceInfo.cloudBackDeviceInfo, '/pages/index/index', true)
-            getApp().setMethodCheckingLog('changeBindDviceInfo')
           }
         }
         // this_.data.changeClickFlagNew = false
@@ -856,10 +826,6 @@ Page({
         this_.data.changeClickFlagNew = false
         console.log('changeClickFLag:', this_.data.changeClickFlagNew)
         console.error('修改设备绑定信息失败', error)
-        getApp().setMethodFailedCheckingLog(
-          'changeBindDviceInfo',
-          `修改设备绑定信息失败。error=${JSON.stringify(error)}`,
-        )
         if (error.errno == '5') {
           clickFlag = !clickFlag
           showToast('网络不佳，请检查网络')
@@ -876,30 +842,6 @@ Page({
     return checkRes
   },
 
-  // getApplianceAuthType(applianceCode) {
-  //   let reqData = {
-  //     applianceCode: applianceCode,
-  //     reqId: getReqId(),
-  //     stamp: getStamp(),
-  //   }
-  //   log.info('查询设备确权情况入参', reqData)
-  //   console.log('查询设备确权情况入参', reqData)
-  //   return new Promise((resolve, reject) => {
-  //     requestService
-  //       .request('getApplianceAuthType', reqData)
-  //       .then((resp) => {
-  //         getApp().setMethodCheckingLog('getApplianceAuthType')
-  //         resolve(resp)
-  //       })
-  //       .catch((error) => {
-  //         getApp().setMethodFailedCheckingLog(
-  //           'getApplianceAuthType',
-  //           `获取设备确权状态异常。error=${JSON.stringify(error)}`
-  //         )
-  //         reject(error)
-  //       })
-  //   })
-  // },
   getCurDeviceStr(item) {
     let { ssid } = app.addDeviceInfo
     const applianceCode = item.applianceCode

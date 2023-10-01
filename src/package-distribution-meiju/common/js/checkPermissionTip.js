@@ -12,12 +12,6 @@ const checkPermission = {
     let res = await Promise.all([
       checkAndGetWxSystemInfo({
         forceUpdate,
-        success: () => {
-          getApp().setMethodCheckingLog('wx.getSystemInfo()')
-        },
-        fail: (error) => {
-          getApp().setMethodFailedCheckingLog('wx.getSystemInfo()', `获取系统信息异常${JSON.stringify(error)}`)
-        },
       }),
       checkAndGetWxGetSetting({
         forceUpdate,
@@ -99,12 +93,6 @@ const checkPermission = {
     let res = await Promise.all([
       checkAndGetWxSystemInfo({
         forceUpdate,
-        success: () => {
-          getApp().setMethodCheckingLog('wx.getSystemInfo()')
-        },
-        fail: (error) => {
-          getApp().setMethodFailedCheckingLog('wx.getSystemInfo()', `获取系统信息异常${JSON.stringify(error)}`)
-        },
       }),
       checkAndGetWxGetSetting({
         forceUpdate,

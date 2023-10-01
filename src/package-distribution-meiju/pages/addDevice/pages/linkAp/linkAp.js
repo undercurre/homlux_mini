@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 const app = getApp()
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const paths = require('../../../../utils/paths')
@@ -5,15 +6,13 @@ const netWordMixin = require('../../../assets/js/netWordMixin')
 const log = require('../../../../utils/log')
 const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 import { showToast, getFullPageUrl } from '../../../../utils/util'
-
-import { burialPoint } from './assets/js/burialPoint'
-
+import { brand } from '../../../assets/js/brand'
 import { login } from '../../../../utils/paths'
 import { addDeviceSDK } from '../../../../utils/addDeviceSDK'
 import WifiMgr from '../assets/js/wifiMgr'
 import { imgesList } from '../../../assets/js/shareImg.js'
-import { imgBaseUrl } from '../../../../api'
-const imgUrl = imgBaseUrl.url + '/shareImg/' + app.globalData.brand
+import { imgBaseUrl } from '../../../../common/js/api'
+const imgUrl = imgBaseUrl.url + '/shareImg/' + brand
 let wifiMgr = new WifiMgr()
 Page({
   behaviors: [addDeviceMixin, netWordMixin, getFamilyPermissionMixin],
@@ -51,8 +50,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
-    getApp().onLoadCheckingLog()
-    this.data.brand = app.globalData.brand
+    this.data.brand = brand
     this.setData({
       brand: this.data.brand,
       android_ApName: imgUrl + imgesList['android_ApName'],
@@ -95,12 +93,6 @@ Page({
         // this.onLinkDeviceWifi(this.data.brandName, this.data.type)
         this.readingGuideTiming() //阅读计时
         // this.onNetType()
-        burialPoint.linkApView({
-          deviceSessionId: app.globalData.deviceSessionId,
-          type,
-          sn8,
-          linkType: app.addDeviceInfo.linkType,
-        })
         this.saveDeviceImg(deviceImg)
       } else {
         this.navToLogin()
@@ -110,7 +102,6 @@ Page({
     //     this.getWifiList() //提前获取下wifi列表
     // }
     this.wifiListSheet = this.selectComponent('#wifi-list-sheet') //组件的id
-    getApp().setMethodCheckingLog('linkApPageInit')
   },
   getLoginStatus() {
     return app
@@ -138,26 +129,12 @@ Page({
   },
   //点击反馈
   feedback() {
-    let { type, sn8, linkType } = app.addDeviceInfo
-    burialPoint.clickfeedback({
-      deviceSessionId: app.globalData.deviceSessionId,
-      type,
-      sn8,
-      linkType: linkType,
-    })
     wx.navigateTo({
       url: paths.feedback,
     })
   },
   //关闭帮助弹窗
   closeHelpDialog() {
-    let { type, sn8, linkType } = app.addDeviceInfo
-    burialPoint.clickCloseHelpDialog({
-      deviceSessionId: app.globalData.deviceSessionId,
-      type,
-      sn8,
-      linkType: linkType,
-    })
   },
   //判断系统展示UI
   checkSystm() {
@@ -186,16 +163,8 @@ Page({
   },
   //切换步骤详情展示
   switchShowDetail() {
-    getApp().setActionCheckingLog('switchShowDetail', '切换步骤详情展示隐藏')
-    let { type, sn8, linkType } = app.addDeviceInfo
     this.setData({
       isShowStepDetail: !this.data.isShowStepDetail,
-    })
-    burialPoint.clickLookLinkStep({
-      deviceSessionId: app.globalData.deviceSessionId,
-      type,
-      sn8,
-      linkType,
     })
     wx.pageScrollTo({
       selector: '.detail-title',
@@ -231,7 +200,6 @@ Page({
     let deviceWifiSSID = ''
     wifiMgr.getWifiList(
       (wifiList) => {
-        getApp().setMethodCheckingLog('连接设备页获取wifi列表成功')
         wifiList.forEach((item, index) => {
           let deviceSSID = item.SSID.toLocaleLowerCase()
           if (deviceSSID.includes(`${brandName}_${type}`)) {
@@ -241,15 +209,12 @@ Page({
         })
         if (isOpenDeviceWifi) {
           console.log('找到设备ap===============', deviceWifiSSID)
-          getApp().setMethodCheckingLog(`用户已起设备wifi，设备wifi名为${deviceWifiSSID}`)
         } else {
           console.log('没找到设备ap===============')
-          getApp().setMethodFailedCheckingLog('wifi列表内未找到设备wifi', '')
         }
       },
       (error) => {
         console.log('获取wifi列表失败', error)
-        getApp().setMethodFailedCheckingLog('连接设备页获取wifi列表失败', `error=${JSON.stringify(error)}`)
       },
     )
   },
@@ -279,43 +244,18 @@ Page({
   hideWifiListSheet() {
     console.log('hideWifiListSheet=============')
     this.data.isGetWifiList = false
-    let { type, sn8, linkType } = app.addDeviceInfo
-    burialPoint.closeDeviceWifiListSheet({
-      deviceSessionId: app.globalData.deviceSessionId,
-      type,
-      sn8,
-      linkType,
-      wifiList: this.data.wifiList,
-    })
   },
 
   //wifi列表点击去设置页
   clickNoFoundFamilyWifi() {
     this.switchWifi()
-    let { type, sn8, linkType } = app.addDeviceInfo
-    burialPoint.clickNoFoundDeviceWifi({
-      deviceSessionId: app.globalData.deviceSessionId,
-      type,
-      sn8,
-      linkType,
-      wifiList: this.data.wifiList,
-    })
   },
   goLinkDeviceWifi() {
-    getApp().setActionCheckingLog('goLinkDeviceWifi', '点击去连接设备wifi按钮')
     if (this.data.readingTimer > 0) {
       //未阅读完毕
       getApp().setMethodFailedCheckingLog('goLinkDeviceWifi', '未阅读完毕')
       return
     }
-    let { type, sn8, sn, linkType, brandName } = app.addDeviceInfo
-    burialPoint.goToLinkDeviceWifi({
-      deviceSessionId: app.globalData.deviceSessionId,
-      type,
-      sn8,
-      sn,
-      linkType,
-    })
     this.switchWifi(false)
   },
   goToSetPage() {
@@ -349,7 +289,6 @@ Page({
     let self = this
     type = type.toLocaleLowerCase()
     if (this.data.isLinkDeviceWifi) {
-      getApp().setMethodCheckingLog('checkLinkWifi 已连上设备wifi')
       return //已连上设备wifi
     }
     console.log('checkLinkWifi===========', self.data.isLinkDeviceWifi)
@@ -358,26 +297,11 @@ Page({
       .then((res) => {
         console.log('wifi info', res, res.SSID.includes(`${brandName}_${type}`), !self.data.isLinkDeviceWifi)
         log.info('当前wifi info', res)
-        burialPoint.apLocalLog({
-          log: {
-            msg: '调用微信接口wx.getConnectedWifi 成功',
-            wifiInfo: res,
-          },
-        })
-        this.apLogReportEven({
-          msg: '调用微信接口wx.getConnectedWifi 成功',
-          res: res,
-        })
-        getApp().setMethodCheckingLog(`wx.getConnectedWifi()成功。wifiInfo=${JSON.stringify(res)}`)
         if (res.SSID.toLocaleLowerCase().includes(`${brandName}_${type}`) && !self.data.isLinkDeviceWifi) {
           // showToast('连上了设备wifi')
           self.data.isLinkDeviceWifi = true
           log.info('调用getConnectedWifi判断 连上了设备ap')
           console.log('连上了设备ap 111')
-          getApp().setMethodCheckingLog('wx.getConnectedWifi()已连上设备wifi')
-          this.apLogReportEven({
-            msg: 'wx.getConnectedWifi()已连上设备wifi',
-          })
           let connectWifiDeviceHotspot = {
             deviceSessionId: app.globalData.deviceSessionId,
             type: app.addDeviceInfo.type,
@@ -387,7 +311,6 @@ Page({
             ssid: res.SSID,
             rssi: res.signalStrength,
           }
-          burialPoint.connectWifiDeviceHotspot(connectWifiDeviceHotspot)
           app.apNoNetBurialPoint.connectWifiDeviceHotspot = connectWifiDeviceHotspot //暂存
           //重置当前连接热点信息
           app.addDeviceInfo.BSSID = res.BSSID
@@ -414,16 +337,6 @@ Page({
       })
       .catch((error) => {
         console.log('获取当前连接wifi失败', error)
-        burialPoint.apLocalLog({
-          log: {
-            msg: '调用微信接口wx.getConnectedWifi 失败',
-            error: error,
-          },
-        })
-        getApp().setMethodFailedCheckingLog(
-          'wx.getConnectedWifi()',
-          `调用微信接口wx.getConnectedWifi。error=${JSON.stringify(error)}`,
-        )
         this.apLogReportEven({
           msg: '调用微信接口wx.getConnectedWifi 失败',
           error: error,
@@ -443,36 +356,11 @@ Page({
     wx.onWifiConnected((res) => {
       console.log('监听连接上wifi后响应', res, brandName, type, self.data.isLinkDeviceWifi)
       log.info('非wifi 连上wifi后 wifi info', res)
-      burialPoint.apLocalLog({
-        log: {
-          msg: '调用微信接口wx.onWifiConnected 响应',
-          res: res,
-        },
-      })
-      this.apLogReportEven({
-        msg: '调用微信接口wx.onWifiConnected 响应',
-        res: res,
-      })
       if (res.wifi.SSID.toLocaleLowerCase().includes(`${brandName}_${type}`) && !self.data.isLinkDeviceWifi) {
         // showToast('连上了设备wifi')
         self.data.isLinkDeviceWifi = true
         console.log('连上了设备ap')
         log.info('连上了设备ap')
-        getApp().setMethodCheckingLog('wx.onWifiConnected()已连上设备wifi')
-        this.apLogReportEven({
-          msg: '根据wx.onWifiConnected()结果判定已连上设备wifi',
-        })
-        let burialInfo = {
-          deviceSessionId: app.globalData.deviceSessionId,
-          type: app.addDeviceInfo.type,
-          sn8: app.addDeviceInfo.sn8,
-          moduleVersion: app.addDeviceInfo.blueVersion,
-          linkType: app.addDeviceInfo.linkType,
-          ssid: res.wifi.SSID,
-          rssi: res.wifi.signalStrength,
-        }
-        burialPoint.connectWifiDeviceHotspot(burialInfo)
-        app.apNoNetBurialPoint.connectWifiDeviceHotspot = burialInfo //暂存
         //重置当前连接热点信息
         app.addDeviceInfo.ssid = res.wifi.SSID
         app.addDeviceInfo.rssi = res.wifi.signalStrength
@@ -497,7 +385,6 @@ Page({
   },
   copy() {
     const _this = this
-    getApp().setActionCheckingLog('copy', '点击复制密码')
     if (this.data.flag) return
     this.data.flag = true
     wx.setClipboardData({
@@ -505,63 +392,21 @@ Page({
       success(res) {
         showToast('复制成功')
         _this.data.flag = false
-        getApp().setMethodCheckingLog('wx.setClipboardData()')
-        // wx.hideLoading()
-        // wx.getClipboardData({
-        //   success(res) {
-        //     showToast('复制成功')
-        //     console.log(res.data) // data
-        //     log.info('复制内容成功', res.data)
-        //     getApp().setMethodCheckingLog('wx.getClipboardData()')
-        //   },
-        //   fail(error) {
-        //     log.info('复制内容error', error)
-        //     getApp().setMethodFailedCheckingLog('wx.getClipboardData()', `复制密码异常。error=${JSON.stringify(error)}`)
-        //   },
-        // })
       },
       fail(error) {
         _this.data.flag = false
-        getApp().setMethodFailedCheckingLog('wx.setClipboardData()', `复制密码异常。error=${JSON.stringify(error)}`)
       },
     })
   },
   //找不到ap
   clickNoFoundWifi() {
-    getApp().setActionCheckingLog('clickNoFoundWifi', '点击找不到设备wifi')
     this.selectComponent('#bottomFrame').showFrame()
-    let { moduleType, deviceName, type, sn8, deviceId, blueVersion, mode } = app.addDeviceInfo
-    burialPoint.notFoundDeviceWifiPopupView({
-      deviceSessionId: app.globalData.deviceSessionId,
-      type,
-      sn8,
-      linkType: app.addDeviceInfo.linkType,
-    })
   },
   //帮助弹窗 重新设置
   retrySetDevice() {
-    getApp().setActionCheckingLog('retrySetDevice', '点击重新起设备热点')
-    // const eventChannel = this.getOpenerEventChannel();
-    let { fm, type, sn8, linkType } = app.addDeviceInfo
-    burialPoint.clickreytyDevice({
-      deviceSessionId: app.globalData.deviceSessionId,
-      type,
-      sn8,
-      linkType: linkType,
-    })
     wx.reLaunch({
       url: paths.addGuide,
     })
-    // if (fm != 'autoFound') {
-    //   //选型 扫码 回到指引页
-    //   wx.reLaunch({
-    //     url: paths.addGuide,
-    //   })
-    //   return
-    // }
-    // wx.reLaunch({
-    //   url: paths.scanDevice,
-    // })
   },
   //当前手机网络状态
   nowNetType() {
@@ -592,14 +437,6 @@ Page({
     this.data.pageStatus = 'show'
     this.checkDeviceWifiOpen(this.data.brandName, app.addDeviceInfo.type) //判断是否起设备ap
     this.checkLinkWifi(this.data.brandName, app.addDeviceInfo.type)
-    let { type, sn8, sn, linkType } = app.addDeviceInfo
-    burialPoint.linkApPageShow({
-      deviceSessionId: app.globalData.deviceSessionId,
-      type,
-      sn8,
-      sn,
-      linkType,
-    })
   },
 
   /**
@@ -607,14 +444,6 @@ Page({
    */
   onHide: function () {
     this.data.pageStatus = 'hide'
-    let { type, sn8, sn, linkType } = app.addDeviceInfo
-    burialPoint.linkApPageHide({
-      deviceSessionId: app.globalData.deviceSessionId,
-      type,
-      sn8,
-      sn,
-      linkType,
-    })
   },
 
   /**

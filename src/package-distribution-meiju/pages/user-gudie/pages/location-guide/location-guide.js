@@ -1,7 +1,5 @@
-// distribution-network/user-gudie/pages/loaction-guide/loaction-guide.js
-
 import { rangersBurialPoint } from '../../../../utils/requestService'
-import { baseImgApi } from '../../../../api'
+import { baseImgApi } from '../../../../common/js/api'
 import { getFullPageUrl } from '../../../../utils/util'
 
 const app = getApp()

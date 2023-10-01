@@ -1,30 +1,29 @@
-// distribution-network/scan-devices/pages/scan-device/scan-device.js
-import { baseImgApi, deviceImgApi, imgBaseUrl, commonH5Api, publicImg } from '../../../../api.js'
+/* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
+import { baseImgApi, deviceImgApi, imgBaseUrl, commonH5Api, publicImg } from '../../../../common/js/api.js'
 import { hasKey, getStamp, getReqId, isEmptyObject } from 'm-utilsdk/index'
-import { clickEventTracking } from '../../../../track/track.js'
 import { scanHelp, selectDevice } from '../../../../utils/paths.js'
 import { requestService, rangersBurialPoint } from '../../../../utils/requestService'
 import { isSupportPlugin } from '../../../../utils/pluginFilter'
 import { login } from '../../../../utils/paths'
 import { burialPoint } from './assest/js/burialPoint'
-const bluetooth = require('../../../../pages/common/mixins/bluetooth.js')
+const bluetooth = require('../../../../common/mixins/bluetooth.js')
 const paths = require('../../../../utils/paths')
-const dialogCommonData = require('../../../../pages/common/mixins/dialog-common-data.js')
+const dialogCommonData = require('../../../../common/mixins/dialog-common-data.js')
 const app = getApp()
 import { actionScanResult } from '../../../../utils/scanCodeApi'
 import { checkFamilyPermission, creatDeviceSessionId, getFullPageUrl } from '../../../../utils/util.js'
-import { familyPermissionText } from '../../../../globalCommon/js/commonText.js'
+import { familyPermissionText } from '../../../../common/js/commonText.js'
 import { addDeviceSDK } from '../../../../utils/addDeviceSDK'
-import { checkPermission } from '../../../../pages/common/js/permissionAbout/checkPermissionTip'
+import { checkPermission } from '../../../../common/js/checkPermissionTip'
 import { getPrivateKeys } from '../../../../utils/getPrivateKeys'
 const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
-import Dialog from '../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
+import Dialog from '../../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
 const brandStyle = require('../../../assets/js/brand.js')
 import { imgesList } from '../../../assets/js/shareImg.js'
 import { commonDialog } from '../../../assets/js/commonDialog'
 let findFriendTimer, findFriendTimer2 //主设备找朋友定时查询
 let scanHintTimer
-const imgUrl = imgBaseUrl.url + '/shareImg/' + app.globalData.brand
+const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
 Page({
   behaviors: [bluetooth, dialogCommonData, getFamilyPermissionMixin],
   /**
@@ -64,8 +63,8 @@ Page({
     scanImg: '', //扫描动图
     permissionImg: '', //权限图片
     reSearchIcon: '', //重新搜索图标
-    dialogStyle: brandStyle.config[app.globalData.brand].dialogStyle, //弹窗样式
-    brandConfig: app.globalData.brandConfig[app.globalData.brand],
+    dialogStyle: brandStyle.brandConfig.dialogStyle, //弹窗样式
+    brandConfig: brandStyle.brandConfig,
     guideFalg: false,
     retryFlag: false,
   },
@@ -75,9 +74,8 @@ Page({
    * 生命周期函数--监听页面加载
    */
   async onLoad(options) {
-    getApp().onLoadCheckingLog()
-    console.log('品牌:', app.globalData.brand)
-    this.data.brand = app.globalData.brand
+    console.log('品牌:', brandStyle.brand)
+    this.data.brand = brandStyle.brand
     this.setData({
       brand: this.data.brand,
       reSearchIcon: imgUrl + imgesList['reSearchIcon'],
@@ -186,18 +184,6 @@ Page({
     app.globalData.deviceSessionId = app.globalData.deviceSessionId
       ? app.globalData.deviceSessionId
       : creatDeviceSessionId(app.globalData.userData.uid)
-    clickEventTracking('user_page_view', 'onShow', {
-      device_info: {
-        device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-        sn: '', //sn码
-        sn8: '', //sn8码
-        a0: '', //a0码
-        widget_cate: '', //设备品类
-        wifi_model_version: '', //模组wifi版本
-        link_type: '', //连接方式 bluetooth/ap/...
-        iot_device_id: '', //设备id
-      },
-    })
     if (app.globalData.ifBackFromScan) {
       // 扫码成功时不执行自发现，防止扫码跳转后异常执行自发现
       console.log('@module scan-device.js\n@method onShow\n@desc 扫码成功时不执行自发现')
@@ -333,8 +319,6 @@ Page({
         // on confirm
       })
       .catch((error) => {
-        if (error.action == 'cancel') {
-        }
         // on cancel
       })
   },
@@ -355,7 +339,6 @@ Page({
   },
 
   async actionScan() {
-    getApp().setActionCheckingLog('actionScan', '添加设备页，点击扫码按钮')
     if (this.data.actionScanClickFlag) {
       console.log('[防重阻止]')
       return
@@ -377,8 +360,6 @@ Page({
         confirmButtonText: '好的',
         confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
       }).then((res) => {
-        if (res.action == 'confirm') {
-        }
       })
       // wx.showModal({
       //   showCancel: false,
@@ -579,7 +560,6 @@ Page({
     //   }
     //   return
     // }
-    getApp().setActionCheckingLog('goNetwork', '小程序添加设备页点击自发现设备事件')
     const item = e.currentTarget.dataset.item
     console.log('跳转前数据', e, item)
     // app.globalData.deviceSessionId = app.globalData.deviceSessionId ? app.globalData.deviceSessionId : creatDeviceSessionId(app.globalData.userData.uid)
@@ -589,21 +569,6 @@ Page({
     } else if (item.mode == 3 || item.mode == 5) {
       linkType = 'bluetooth'
     }
-    clickEventTracking('user_behavior_event', 'goNetwork', {
-      device_info: {
-        device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-        sn: '', //sn码
-        sn8: item.sn8, //sn8码
-        a0: '', //a0码
-        widget_cate: item.type, //设备品类
-        wifi_model_version: item.moduleVersion, //模组wifi版本
-        link_type: linkType, //连接方式 bluetooth/ap/...
-        iot_device_id: '', //设备id
-      },
-      ext_info: {
-        is_near: item.isSameSn8Nearest ? 1 : 0,
-      },
-    })
     if (!this.checkWxVersion()) {
       Dialog.alert({
         message: '你的微信版本过低，请升级至最新版本后再试',
@@ -684,55 +649,11 @@ Page({
     this.data.guideFalg = true
     let { type, permissionTypeList } = this.data.checkPermissionRes
     if (type == 'location') {
-      clickEventTracking('user_behavior_event', 'LookLocationGuide', {
-        page_path: getFullPageUrl(),
-        module: 'appliance',
-        page_id: 'page_open_locate_new',
-        page_name: '提示需开启位置权限页面',
-        page_module: '',
-        widget_name: '查看指引',
-        widget_id: 'click_check_guide',
-        rank: '',
-        object_type: '弹窗类型',
-        object_id: '',
-        object_name: (await this.getpermissionTextAll('location')) || '',
-        device_info: {
-          device_session_id: app.globalData.deviceSessionId || '', //一次配网事件标识
-          sn8: '', //sn8码
-          a0: '', //a0码
-          widget_cate: '', //设备品类"
-          iot_device_id: '', //设备id
-          wifi_model_version: '', //模组wifi版本
-          link_type: '', //新增配网方式
-        },
-      })
       wx.navigateTo({
         url: paths.locationGuide + `?permissionTypeList=${JSON.stringify(permissionTypeList)}`,
       })
     }
     if (type == 'blue') {
-      clickEventTracking('user_behavior_event', 'LookLocationGuide', {
-        page_path: getFullPageUrl(),
-        module: 'appliance',
-        page_id: 'page_open_bluetooth_new',
-        page_name: '提示需开启蓝牙权限页面',
-        page_module: '',
-        widget_name: '查看指引',
-        widget_id: 'click_check_guide',
-        rank: '',
-        object_type: '弹窗类型',
-        object_id: '',
-        object_name: (await this.getpermissionTextAll('blue')) || '',
-        device_info: {
-          device_session_id: app.globalData.deviceSessionId || '', //一次配网事件标识
-          sn8: '', //sn8码
-          a0: '', //a0码
-          widget_cate: '', //设备品类"
-          iot_device_id: '', //设备id
-          wifi_model_version: '', //模组wifi版本
-          link_type: '', //新增配网方式
-        },
-      })
       wx.navigateTo({
         url: paths.blueGuide + `?permissionTypeList=${JSON.stringify(permissionTypeList)}`,
       })
@@ -746,39 +667,6 @@ Page({
       return
     }
     this.data.retryFlag = true
-    let { type } = this.data.checkPermissionRes
-    if (type == 'location') {
-      clickEventTracking('user_behavior_event', 'researchDevice', {
-        page_id: 'page_open_locate_new',
-        page_name: '提示需开启位置权限页面',
-        page_path: getFullPageUrl(),
-        module: 'appliance',
-        widget_id: 'click_research device',
-        widget_name: '重新搜索设备',
-        object_type: '弹窗类型',
-        object_id: '',
-        object_name: (await this.getpermissionTextAll('location')) || '',
-        device_info: {
-          device_session_id: getApp().globalData.deviceSessionId || '',
-        },
-      })
-    }
-    if (type == 'blue') {
-      clickEventTracking('user_behavior_event', 'researchDevice', {
-        page_id: 'page_page_open_bluetooth_new',
-        page_name: '提示需开启蓝牙权限页面',
-        page_path: getFullPageUrl(),
-        module: 'appliance',
-        widget_id: 'click_research device',
-        widget_name: '重新搜索设备',
-        object_type: '弹窗类型',
-        object_id: '',
-        object_name: (await this.getpermissionTextAll('blue')) || '',
-        device_info: {
-          device_session_id: getApp().globalData.deviceSessionId || '',
-        },
-      })
-    }
     let permission = await this.permissionCheckTip()
     console.log('[retry permission]', permission)
     if (permission) {
@@ -796,18 +684,6 @@ Page({
   },
 
   goScanHelp() {
-    clickEventTracking('user_behavior_event', 'goScanHelp', {
-      device_info: {
-        device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-        sn: '', //sn码
-        sn8: '', //sn8码
-        a0: '', //a0码
-        widget_cate: '', //设备品类
-        wifi_model_version: '', //模组wifi版本
-        link_type: '', //连接方式 bluetooth/ap/...
-        iot_device_id: '', //设备id
-      },
-    })
     wx.navigateTo({
       url: scanHelp,
     })
@@ -829,18 +705,10 @@ Page({
       blueRes = await checkPermission.blue(false)
     } catch (error) {
       this.data.selectModelClickFlag = false
-      Dialog.confirm({
-        title: '微信系统出错，请尝试点击右上角“...” - “重新进入小程序”',
-        confirmButtonText: '好的',
-        confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
-      }).then((res) => {
-        if (res.action == 'confirm') {
-        }
+      wx.showModal({
+        showCancel: false,
+        content: '微信系统出错，请尝试点击右上角“...” - “重新进入小程序”',
       })
-      // wx.showModal({
-      //   showCancel: false,
-      //   content: '微信系统出错，请尝试点击右上角“...” - “重新进入小程序”',
-      // })
       console.log(error, '[loactionRes blueRes]err checkPermission')
     }
     console.log('[loactionRes] checkPermission', locationRes)
@@ -908,7 +776,7 @@ Page({
     this.jumpQRcodeGuide()
   },
   jumpQRcodeGuide() {
-    const brandConfig = app.globalData.brandConfig[app.globalData.brand]
+    const brandConfig = brandStyle.brandConfig
     const guideUrl =
       brandConfig.QRcodeGuideUrl ||
       `${paths.webView}?webViewUrl=${encodeURIComponent(
@@ -1199,30 +1067,6 @@ Page({
       this.clearTimer()
       this.friendDeviceNetwork(target)
     }
-  },
-
-  //朋友设备配网点击埋点
-  friendDevicesNetworkClickTrack(category) {
-    clickEventTracking('user_behavior_event', 'friendDevicesNetworkClickTrack', {
-      page_path: getFullPageUrl(),
-      module: 'appliance',
-      page_id: 'page_add_appliance',
-      page_name: '添加设备页',
-      page_module: '',
-      widget_name: '附近设备icon',
-      widget_id: 'click_found_appliance',
-      rank: '',
-      object_type: '',
-      object_id: '',
-      object_name: '',
-      device_info: {
-        device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-        sn8: '', //sn8码
-        widget_cate: category, //设备品类
-        wifi_model_version: '', //模组wifi版本
-        link_type: '家电找朋友', //新增配网方式
-      },
-    })
   },
 
   //发送给设备配网指令

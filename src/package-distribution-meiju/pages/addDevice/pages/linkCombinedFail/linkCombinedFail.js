@@ -7,15 +7,14 @@ const netWordMixin = require('../../../assets/js/netWordMixin')
 const paths = require('../../../../utils/paths')
 import { requestService } from '../../../../utils/requestService'
 import { getReqId, getStamp } from 'm-utilsdk/index'
-import { burialPoint } from './assets/js/burialPoint'
 import { imgBaseUrl } from '../../../../common/js/api'
 import computedBehavior from '../../../../utils/miniprogram-computed.js'
 import { imgesList } from '../../../assets/js/shareImg.js'
-const imgUrl = imgBaseUrl.url + '/shareImg/' + app.globalData.brand
+const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
 const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 const brandStyle = require('../../../assets/js/brand.js')
 console.log('brandStyle:', brandStyle)
-const iconStyle = brandStyle.config[app.globalData.brand].iconStyle //图标样式
+const iconStyle = brandStyle.brandConfig.iconStyle //图标样式
 Page({
   behaviors: [bleNeg, addDeviceMixin, wahinMixin, netWordMixin, computedBehavior, getFamilyPermissionMixin],
   /**
@@ -54,7 +53,6 @@ Page({
    * @param {*} e
    */
   rightClick: function (e) {
-    burialPoint.clickViewReason()
     // 传递的参数
     const info = e.currentTarget.dataset['info']
     if (info.ui_btnText.includes('设置')) {
@@ -73,7 +71,6 @@ Page({
    * 点击完成
    */
   toHome() {
-    burialPoint.clickFinish()
     wx.reLaunch({
       url: '/pages/index/index',
     })
@@ -129,34 +126,6 @@ Page({
     app.addDeviceInfo.ui_btnText = this.data.statusArr[1].btnText
     app.addDeviceInfo.ui_icon = this.data.statusArr[1].icon
     // 辅设备需处理绑定和组合2种状态: 0-失败，1-成功，2-取消
-    // 页面曝光埋点-取消
-    if (combinedStatus == 2) {
-      burialPoint.combinedFailView({
-        pageName: '组合设备失败页-辅设备取消联网',
-        extInfo: 'reason_combined_device_cancel_failed',
-      })
-    } else {
-      // 页面曝光埋点-3种失败
-      if (this_.data.errorCode == 3001) {
-        burialPoint.combinedFailView({
-          pageName: '组合设备失败页-联网失败',
-          deviceSessionId: app.globalData.deviceSessionId,
-          extInfo: 'reason_networking_failed',
-        })
-      } else if (this_.data.errorCode == 3002) {
-        burialPoint.combinedFailView({
-          pageName: '组合设备失败页-绑定失败',
-          deviceSessionId: app.globalData.deviceSessionId,
-          extInfo: 'reason_binding_failed',
-        })
-      } else {
-        burialPoint.combinedFailView({
-          pageName: '组合设备失败页-组合失败',
-          deviceSessionId: app.globalData.deviceSessionId,
-          extInfo: 'reason_combined_failed',
-        })
-      }
-    }
     let status
     if (bindStatus == 1) {
       // 绑定成功-->"联网成功"or""取消"
@@ -187,8 +156,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad(option) {
-    getApp().onLoadCheckingLog()
-    this.data.brand = app.globalData.brand
+    this.data.brand = brandStyle.brand
     this.setData({
       brand: this.data.brand,
     })

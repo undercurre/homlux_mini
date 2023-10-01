@@ -31,7 +31,6 @@ function setWifiStorage(wifiInfo) {
           storageWifiList[environment] = encyptWifi(storageWifiList[environment].slice(-3)) // 只保存三个
           wx.setStorageSync('storageWifiListV1', storageWifiList)
           console.log('@module wifiStorage.js\n@method setWifiStorage\n@desc 更新WiFi缓存\n', storageWifiList)
-          log.info('更新WiFi缓存', storageWifiList)
         }
       }
     })
@@ -41,12 +40,9 @@ function setWifiStorage(wifiInfo) {
       storageWifiList[environment] = encyptWifi(storageWifiList[environment].slice(-3)) // 只保存三个
       wx.setStorageSync('storageWifiListV1', storageWifiList)
       console.log('@module wifiStorage.js\n@method setWifiStorage\n@desc 新增WiFi缓存\n', storageWifiList)
-      log.info('新增WiFi缓存', storageWifiList)
     }
-    getApp().setMethodCheckingLog('setWifiStorage')
   } catch (error) {
     console.error('@module wifiStorage.js\n@method setWifiStorage\n@desc 异常报错\n', error)
-    getApp().setMethodFailedCheckingLog('setWifiStorage', `error=${JSON.stringify(error)}`)
   }
 }
 

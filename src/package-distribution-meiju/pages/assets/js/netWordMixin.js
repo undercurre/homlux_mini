@@ -95,12 +95,7 @@ module.exports = Behavior({
         })
       }
     },
-    logAddDivceInfo(logKey, addDviceInfo) {
-      let addDviceInfoTemp = JSON.parse(JSON.stringify(addDviceInfo))
-      if (addDviceInfoTemp.againCheckList) addDviceInfoTemp.againCheckList = ''
-      if (addDviceInfoTemp.apUtils) addDviceInfoTemp.apUtils = ''
-      if (addDviceInfoTemp.deviceImgPath) addDviceInfoTemp.deviceImgPath = ''
-      if (addDviceInfoTemp.guideInfo) addDviceInfoTemp.guideInfo = ''
+    logAddDivceInfo() {
     },
     //当前手机网络状态
     nowNetType() {

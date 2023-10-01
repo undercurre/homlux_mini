@@ -2,11 +2,9 @@ export const wxGetSystemInfo = () => {
   return new Promise((resolve) => {
     wx.getSystemInfo({
       success(res) {
-        getApp().setMethodCheckingLog('wx.getSystemInfo()')
         resolve(res)
       },
       fail(error) {
-        getApp().setMethodFailedCheckingLog('wx.getSystemInfo()', `获取系统信息异常${JSON.stringify(error)}`)
       },
     })
   })

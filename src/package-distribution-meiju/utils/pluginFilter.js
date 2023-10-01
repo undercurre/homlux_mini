@@ -1,150 +1,17 @@
 import paths from './paths'
-import { showToast } from './util'
 import { getPluginUrl } from './getPluginUrl'
 const app = getApp()
-const brandConfig = app.globalData.brandConfig[app.globalData.brand]
-const supportedApplianceTypes = brandConfig.pluginFilter_type
-const filterList = brandConfig.pluginFilter_SN8
 const filterBothCodeType = ['0xFA'] //需要同时校验A0和sn8的品类
-const allSN8List = brandConfig.allSN8List
-import Dialog from '../miniprogram_npm/m-ui/mx-dialog/dialog'
+import Dialog from '../../miniprogram_npm/m-ui/mx-dialog/dialog'
 import { rangersBurialPoint } from './requestService'
 import { getFullPageUrl } from './util'
 const isSupportPlugin = (type, sn8, A0 = '', isOtherEquipment = '0', cardType) => {
-  let isSupport = false
-  if (supportedApplianceTypes.indexOf(type) > -1 && isOtherEquipment == '0') {
-    //filter third party equipment
-    // if (type == '0x4E') {
-    //   isSupport = true
-    // }
-    if (filterList[type]) {
-      if (sn8) {
-        if (filterList[type]['SN8']) {
-          if (filterList[type]['SN8_blacklist']) {
-            if (filterList[type]['SN8'].indexOf(sn8) > -1 && filterList[type]['SN8_blacklist'].indexOf(sn8) < 0) {
-              isSupport = true
-            }
-          } else {
-            if (filterList[type]['SN8'].indexOf(sn8) > -1) {
-              isSupport = true
-            }
-          }
-        } else {
-          if (filterList[type]['SN8_blacklist']) {
-            if (filterList[type]['SN8_blacklist'].indexOf(sn8) < 0) {
-              isSupport = true
-            }
-          } else {
-            isSupport = true
-          }
-        }
-      } else if (A0) {
-        if (filterList[type]['A0']) {
-          if (filterList[type]['A0_blacklist']) {
-            if (filterList[type]['A0'].indexOf(A0) > -1 && filterList[type]['A0_blacklist'].indexOf(A0) < 0) {
-              isSupport = true
-            }
-          } else {
-            if (filterList[type]['A0'].indexOf(A0) > -1) {
-              isSupport = true
-            }
-          }
-        } else {
-          if (filterList[type]['A0_blacklist']) {
-            if (filterList[type]['A0_blacklist'].indexOf(A0) < 0) {
-              isSupport = true
-            }
-          } else {
-            isSupport = true
-          }
-        }
-      }
-    } else {
-      isSupport = true
-    }
-  } else {
-    if (cardType == 'bluetooth') {
-      //遥控器绑定卡片
-      isSupport = true
-    }
-  }
-  return isSupport
+  return true
 }
 
 //过滤小程序支持的设备（因为涉及到回归验证的问题，暂时不合并其他业务的过滤逻辑）
 function filterSupportedPlugin(type, sn8, A0, isOtherEquipment, cardType) {
-  let isSupport = false,
-    sn8Suporrt = false,
-    A0Suporrt = false
-  // console.log('过滤优化1==》', type, sn8, A0, isOtherEquipment, cardType)
-  if (filterBothCodeType.indexOf(type) > -1) {
-    if (supportedApplianceTypes.indexOf(type) > -1 && isOtherEquipment == '0') {
-      //filter third party equipment
-      if (filterList[type]) {
-        if (
-          filterList[type]['SN8'] ||
-          filterList[type]['SN8_blacklist'] ||
-          filterList[type]['A0'] ||
-          filterList[type]['A0_blacklist']
-        ) {
-          if (sn8) {
-            if (filterList[type]['SN8']) {
-              if (filterList[type]['SN8_blacklist']) {
-                if (filterList[type]['SN8'].indexOf(sn8) > -1 && filterList[type]['SN8_blacklist'].indexOf(sn8) < 0) {
-                  sn8Suporrt = true
-                }
-              } else {
-                if (filterList[type]['SN8'].indexOf(sn8) > -1) {
-                  sn8Suporrt = true
-                }
-              }
-            } else {
-              if (filterList[type]['SN8_blacklist']) {
-                if (filterList[type]['SN8_blacklist'].indexOf(sn8) < 0) {
-                  sn8Suporrt = true
-                }
-              }
-            }
-          }
-
-          if (A0) {
-            if (filterList[type]['A0']) {
-              if (filterList[type]['A0_blacklist']) {
-                if (filterList[type]['A0'].indexOf(A0) > -1 && filterList[type]['A0_blacklist'].indexOf(A0) < 0) {
-                  A0Suporrt = true
-                }
-              } else {
-                if (filterList[type]['A0'].indexOf(A0) > -1) {
-                  A0Suporrt = true
-                }
-              }
-            } else {
-              if (filterList[type]['A0_blacklist']) {
-                if (filterList[type]['A0_blacklist'].indexOf(A0) < 0) {
-                  A0Suporrt = true
-                }
-              }
-            }
-          }
-          //或运算取最终值
-          isSupport = A0Suporrt || sn8Suporrt
-        } else {
-          isSupport = true
-        }
-      } else {
-        isSupport = true
-      }
-    } else {
-      if (cardType == 'bluetooth') {
-        //遥控器绑定卡片
-        isSupport = true
-      }
-    }
-  } else {
-    // console.log('过滤优化2==》', type, sn8, A0, isOtherEquipment, cardType)
-    isSupport = isSupportPlugin(type, sn8, A0, isOtherEquipment, cardType)
-  }
-  return isSupport
+  return true
 }
 //微清相关插件合包
 const msoType = ['B0', 'B1', 'B2', 'B4', '9B', 'BF']
@@ -159,34 +26,12 @@ const getCommonType = (type) => {
 function showDialog(deviceInfo, hasPageName) {
   deviceInfo = JSON.parse(deviceInfo)
   let A0 = app.addDeviceInfo.cloudBackDeviceInfo.modelNumber
-  rangersBurialPoint('user_page_view', {
-    page_path: getFullPageUrl(),
-    module: 'appliance',
-    page_id: 'no_plugin_package_obtained',
-    page_name: '无法跳转插件页弹窗',
-    widget_id: '',
-    widget_name: '',
-    object_type: '',
-    object_id: '',
-    object_name: '',
-    ext_info: {},
-    device_info: {
-      device_session_id: app.globalData.deviceSessionId || '', //一次配网事件标识
-      sn: deviceInfo.sn || '', //sn码
-      sn8: deviceInfo.sn8, //sn8码
-      a0: A0 || '', //a0码
-      widget_cate: deviceInfo.type, //设备品类
-      wifi_model_version: app.addDeviceInfo.blueVersion || '', //模组wifi版本
-      link_type: app.addDeviceInfo.linkType || 'bluetooth', //连接方式 bluetooth/ap/...
-      iot_device_id: deviceInfo.applianceCode || '', //设备id
-    },
-  })
   Dialog.confirm({
     title: '无法跳转设备控制页面',
     message: '未获取到控制页面，请检查网络后重试，若仍无法获取，请联系客服',
     confirmButtonText: hasPageName ? '我知道了' : '返回首页',
-    confirmButtonColor: brandConfig.dialogStyle.confirmButtonColor,
-    cancelButtonColor: brandConfig.dialogStyle.cancelButtonColor3,
+    // confirmButtonColor: brandConfig.dialogStyle.confirmButtonColor,
+    // cancelButtonColor: brandConfig.dialogStyle.cancelButtonColor3,
     cancelButtonText: '返回首页',
     showCancelButton: hasPageName,
   })
@@ -373,8 +218,6 @@ const isColmoDeviceByDecodeSn = (decodedSn = '') => {
 }
 
 module.exports = {
-  supportedApplianceTypes,
-  filterList,
   isSupportPlugin,
   getCommonType,
   goTopluginPage,

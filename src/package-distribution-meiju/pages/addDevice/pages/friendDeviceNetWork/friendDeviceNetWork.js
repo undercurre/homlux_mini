@@ -1,15 +1,16 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const app = getApp() //获取应用实例
 let timer, timer2 //定时查询
 import paths from '../../../../utils/paths'
-import { getDeviceSn, getDeviceSn8 } from '../../../../pages/common/js/device'
+import { getDeviceSn, getDeviceSn8 } from '../../../../common/js/device'
 import { requestService } from '../../../../utils/requestService'
 import { getReqId, getStamp } from 'm-utilsdk/index'
 import { isSupportPlugin } from '../../../../utils/pluginFilter'
-import { baseImgApi } from '../../../../api.js'
+import { baseImgApi } from '../../../../common/js/api.js'
 import { failTextData, friendDeviceFailTextData } from '../../../addDevice/pages/assets/js/errorCode'
-const dialogCommonData = require('../../../../pages/common/mixins/dialog-common-data.js')
+const dialogCommonData = require('../../../../common/mixins/dialog-common-data.js')
 const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
-import Dialog from '../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
+import Dialog from '../../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
 const brandStyle = require('../../../assets/js/brand.js')
 Page({
   behaviors: [dialogCommonData, getFamilyPermissionMixin],
@@ -22,14 +23,13 @@ Page({
     statusBarHeight: wx.getSystemInfoSync()['statusBarHeight'], //顶部状态栏的高度
     time: 70, //轮询时间
     masterDevices: [], //当前家庭主设备信息
-    dialogStyle: brandStyle.config[app.globalData.brand].dialogStyle, //弹窗样式
+    dialogStyle: brandStyle.brandConfig.dialogStyle, //弹窗样式
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    getApp().onLoadCheckingLog()
     this.getLoginStatus().then(() => {
       if (app.globalData.isLogon) {
         this.checkFamilyPermission()

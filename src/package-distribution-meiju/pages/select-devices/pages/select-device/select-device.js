@@ -16,7 +16,7 @@ import Dialog from '../../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
 const brandStyle = require('../../../assets/js/brand.js')
 import { imgesList } from '../../../assets/js/shareImg.js'
 const app = getApp()
-const imgUrl = imgBaseUrl.url + '/shareImg/' + app.globalData.brand
+const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
 const imgCdnUrl = {
   url: 'https://pic.mdcdn.cn/h5/img/colmomini',
 }
@@ -212,7 +212,7 @@ Page({
     heightArr: [],
     lastActive: 0,
     endIndexFlag: false, //判断左边是否选中了最后一个
-    dialogStyle: brandStyle.config[app.globalData.brand].dialogStyle, //弹窗样式
+    dialogStyle: brandStyle.brandConfig.dialogStyle, //弹窗样式
   },
   computed: {
     //距离底部多远
@@ -225,9 +225,8 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad() {
-    getApp().onLoadCheckingLog()
     console.log('isAddDevice====', isAddDevice('BF', '70000696'))
-    this.data.brand = app.globalData.brand
+    this.data.brand = brandStyle.brand
     this.setData({
       brand: this.data.brand,
       searchIcon: imgUrl + imgesList['searchIcon'],
@@ -271,7 +270,6 @@ Page({
   onShow: function () {},
 
   itemClicked(e) {
-    getApp().setActionCheckingLog('itemClicked', '选择设备页点击对应设备事件')
     let { productList } = this.data
     let index = e.currentTarget.dataset.index
     let category = e.currentTarget.dataset.category
@@ -393,7 +391,7 @@ Page({
     const param = {
       stamp: getStamp(),
       reqId: getReqId(),
-      brand: app.globalData.brand == 'meiju' ? '' : app.globalData.brand,
+      brand: brandStyle.brand == 'meiju' ? '' : brandStyle.brand,
     }
     try {
       const interfaceRes = await requestService.request('getQueryBrandCategory', param)
@@ -401,7 +399,7 @@ Page({
         return arr.list0.length
       })
       console.log('@module select-device.js\n@method getQueryBrandCategory\n@desc 获取大小类成功\n', productList)
-      if (app.globalData.brand == 'colmo') {
+      if (brandStyle.brand == 'colmo') {
         // colmo品牌需要更换本地图片
         let colmoImgMap = []
         Object.values(categoryMap).forEach((element) => {
@@ -558,7 +556,6 @@ Page({
   },
   //产品点击
   async prodClicked(e) {
-    getApp().setActionCheckingLog('prodClicked', '选择设备页点击对应设备事件')
     let category = e.currentTarget.dataset.category
     let name = e.currentTarget.dataset.name
     let isProduct = e.currentTarget.dataset.product
@@ -736,7 +733,6 @@ Page({
       })
   },
   goSearch() {
-    getApp().setActionCheckingLog('goSearch', '跳转搜索设备页事件')
     wx.navigateTo({
       url: `${searchDevice}`,
     })

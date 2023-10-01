@@ -228,7 +228,7 @@ const loginMethods = {
           mobile: getApp().globalData.phoneNumber,
           // "mobile": 15000000067,
           // "randomCode": this.data.randomCode,
-          invitationCode: '', //getApp().globalData.invitationCode || "",
+          invitationCode: '',
           // "prebind": this.data.bypassSms ? true : false || false, //bypassSms验证码
           prebind: true,
           reqId: getReqId(),
@@ -272,7 +272,7 @@ const loginMethods = {
         let reqData = {
           appKey: '46579c15',
           appVersion: '1.0.0',
-          deviceId: ramdom, //getApp().globalData.fromMiniProgramData.jp_rand,
+          deviceId: ramdom,
           osVersion: '',
           platform: 110,
         }
@@ -544,7 +544,6 @@ const loginMethods = {
       reqId: getReqId(),
       stamp: getStamp(),
     }
-    let that = this
     return new Promise((resolve, reject) => {
       requestService
         .request('getIotDeviceV3', reqData)
@@ -570,7 +569,6 @@ const loginMethods = {
       clientType: 5,
       version: version,
     }
-    let that = this
     return new Promise((resolve, reject) => {
       requestService
         .request('checkIsUpdate', reqData)

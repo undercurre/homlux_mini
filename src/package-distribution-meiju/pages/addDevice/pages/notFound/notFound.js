@@ -19,8 +19,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    getApp().onLoadCheckingLog()
-
     let { type, sn8, blueVersion, moduleType, deviceName } = app.addDeviceInfo
     this.setData({
       deviceName: deviceName,

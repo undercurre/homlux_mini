@@ -18,8 +18,9 @@ import { getWxSystemInfo, getWxGetSetting } from '../../utils/wx/index.js'
 import { addDeviceSDK } from '../../utils/addDeviceSDK.js'
 import { getPrivateKeys } from '../../utils/getPrivateKeys'
 import Dialog from '../../../miniprogram_npm/m-ui/mx-dialog/dialog'
-const brandStyle = require('../../../package-distribution-meiju/pages/assets/js/brand')
+const brandStyle = require('../../pages/assets/js/brand')
 const log = require('../../../utils/log')
+
 const searchTime = 30000
 const blueWifi = 'wifiAndBle'
 let enterTime = 0
@@ -46,7 +47,7 @@ module.exports = Behavior({
     distance: '',
     showOpenLocation: false, //是否显示打开位置信息提示
     showOpenBluetooth: false, //是否显示打开蓝牙提示
-    dialogStyle: brandStyle.config[app.globalData.brand].dialogStyle,
+    dialogStyle: brandStyle.brandConfig.dialogStyle,
   },
   methods: {
     //根据广播包 获取设备品类和sn8
@@ -176,8 +177,7 @@ module.exports = Behavior({
      * @param {Number} isIndex 是否首页
      */
     openBluetoothAdapter(isIndex = 1) {
-      const brandConfig = app.globalData.brandConfig[app.globalData.brand]
-      if (!brandConfig.bluetooth) return
+      if (!brandStyle.brandConfig.bluetooth) return
       app.globalData.bluetoothUnSupport = []
       this.closeBluetoothAdapter()
       // this.clearDevices()
@@ -353,9 +353,8 @@ module.exports = Behavior({
       wx.onBluetoothDeviceFound((res) => {
         res.devices.forEach((device) => {
           // 品牌名校验
-          const brandConfig = app.globalData.brandConfig[app.globalData.brand]
           const localName = device.localName || device.name || ''
-          if (!brandConfig.apNameHeader.some((value) => localName.includes(value))) {
+          if (!brandStyle.brandConfig.apNameHeader.some((value) => localName.includes(value))) {
             return
           }
 
@@ -372,7 +371,6 @@ module.exports = Behavior({
 
             const adData = ab2hex(device.advertisData) // ArrayBuffer转16进度字符串
             device.adData = adData
-            getApp().setMethodCheckingLog('蓝牙信息', `device=${JSON.stringify(device)}`)
             // 校验二代蓝牙广播包长度对不对
             if (!this.checkAdsData(device)) {
               console.log('二代蓝牙广播包长度异常', adData)
@@ -410,7 +408,7 @@ module.exports = Behavior({
               }
             }
             // 校验SN8
-            let ifSN8Matching = this.checkSN8(brandConfig, deviceParam)
+            let ifSN8Matching = this.checkSN8(brandStyle.brandConfig, deviceParam)
             if (!ifSN8Matching) {
               return
             }
@@ -566,15 +564,11 @@ module.exports = Behavior({
      * @param {string} sn8 sn8
      */
     getDeviceImgAndName(category, sn8) {
-      const dcpDeviceImgList = isEmptyObject(app.globalData.dcpDeviceImgList)
-        ? wx.getStorageSync('dcpDeviceImgList')
-        : app.globalData.dcpDeviceImgList
-      const list = dcpDeviceImgList[category] || ''
+      const list = ''
       let item = {
         deviceImg: '',
         deviceName: '',
       }
-      // console.log('@module bluetooth.js\n@method getDeviceImgAndName\n@desc 获取设备图片和名称\n', list, category, sn8)
       // 获取设备图片
       if (!list) {
         item.deviceImg = baseImgApi.url + 'scene/sence_img_lack.png'
@@ -606,7 +600,6 @@ module.exports = Behavior({
           item.deviceName = deviceImgMap['DEFAULT_ICON']['title']
         }
       }
-      // console.log('@module bluetooth.js\n@method getDeviceImgAndName\n@desc 获取设备图片和名称结果\n', item)
       return item
     },
     //图片接口和自发现同时进行，有些自发现设备信息已发现显示，图片接口还没执行完，这个时候需要更新自发现设备图片为空的图片和名字
@@ -856,12 +849,6 @@ module.exports = Behavior({
           getWxSystemInfo({ forceUpdate }),
           getWxGetSetting({
             forceUpdate,
-            success() {
-              getApp().setMethodCheckingLog('wx.getSetting()')
-            },
-            fail(error) {
-              getApp().setMethodFailedCheckingLog('wx.getSetting()', `获取授权信息异常${JSON.stringify(error)}`)
-            },
           }),
         ]).then((res) => {
           if (!res[0].locationEnabled || !res[0].locationAuthorized || !res[1]['authSetting']['scope.userLocation']) {
@@ -909,11 +896,7 @@ module.exports = Behavior({
         getWxGetSetting({
           forceUpdate,
           success(res) {
-            getApp().setMethodCheckingLog('wx.getSetting()')
             resolve(res.authSetting)
-          },
-          fail(error) {
-            getApp().setMethodFailedCheckingLog('wx.getSetting()', `获取授权信息异常${JSON.stringify(error)}`)
           },
         })
       })
@@ -1372,8 +1355,7 @@ module.exports = Behavior({
      * @param {Number} isIndex 是否首页
      */
     async getWifiList(isIndex = 1) {
-      const brandConfig = app.globalData.brandConfig[app.globalData.brand]
-      if (!brandConfig.ap) return
+      if (!brandStyle.brandConfig.ap) return
       const res = await this.checkSystem()
       if (res) return
       service.getWxApiPromise(wx.startWifi).then((res1) => {
@@ -1388,7 +1370,7 @@ module.exports = Behavior({
           console.log('@module bluetooth.js\n@method getWifiList\n@desc 获取到WiFi列表\n', res3)
           res3.wifiList.forEach((device) => {
             // 校验设备热点名称
-            if (!this.filterAPName(brandConfig.apNameHeader, device.SSID)) return
+            if (!this.filterAPName(brandStyle.brandConfig.apNameHeader, device.SSID)) return
             console.log('@module bluetooth.js\n@method getWifiList\n@desc 通过名称校验\n', device)
             // WiFi强度校验
             if (device.signalStrength < 99) return

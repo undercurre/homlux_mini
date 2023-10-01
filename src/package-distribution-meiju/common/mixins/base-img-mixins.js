@@ -1,4 +1,5 @@
-import { imgBaseUrl, baseImgApi } from '../../../api'
+import { imgBaseUrl, baseImgApi } from '../../common/js/api'
+// eslint-disable-next-line no-undef
 module.exports = Behavior({
   behaviors: [],
   data: {

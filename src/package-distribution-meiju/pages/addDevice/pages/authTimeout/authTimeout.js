@@ -1,5 +1,7 @@
 // addDevice//pages/authTimeout/authTimeout.js
 const app = getApp()
+import { brand } from '../../../assets/js/brand'
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 Page({
   behaviors: [getFamilyPermissionMixin],
@@ -15,8 +17,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    getApp().onLoadCheckingLog()
-    this.data.brand = app.globalData.brand
+    this.data.brand = brand
     this.setData({
       brand: this.data.brand,
     })

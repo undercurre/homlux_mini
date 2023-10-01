@@ -104,7 +104,7 @@ const imgesList = {
 //             console.log('aaaaaaaaaaaaaaaaaaaaaaa')
 //             console.log(app.globalData)
 //             console.log('777777777777777777777777777777777777')
-//             // url = imgBaseUrl.url+'/shareImg/'+'/'+ app.globalData.brand + imgesList[name]
+//             // url = imgBaseUrl.url+'/shareImg/'+'/'+ brandStyle.brand + imgesList[name]
 //         }
 //         return url
 //     }

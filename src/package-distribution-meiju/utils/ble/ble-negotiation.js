@@ -89,8 +89,6 @@ module.exports = Behavior({
             connected: true,
           })
           this.data.linkBleSuccess(res)
-          getApp().setMethodCheckingLog('wx.createBLEConnection 成功', `倒计时剩余${this.data.time}s`)
-          // log.info('wx.createBLEConnection 成功')
 
           console.log('蓝牙连接成功', res)
           wx.getSystemInfo({

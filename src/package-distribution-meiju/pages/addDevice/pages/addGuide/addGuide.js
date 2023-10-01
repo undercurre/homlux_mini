@@ -13,7 +13,6 @@ import { addDeviceTime } from '../../../assets/js/utils'
 import { deviceImgMap } from '../../../../utils/deviceImgMap'
 import computedBehavior from '../../../../utils/miniprogram-computed.js'
 import { deviceImgApi, imgBaseUrl } from '../../../../common/js/api'
-import { burialPoint } from './assets/js/burialPoint'
 import { openAdapter } from '../utils/blueApi'
 import { getStamp, getReqId, ab2hex } from 'm-utilsdk/index'
 import { creatDeviceSessionId, showToast, getFullPageUrl } from '../../../../utils/util'
@@ -26,7 +25,7 @@ import { typesPreserveAfterCheckGuideByA0 } from '../../config/index'
 import Dialog from '../../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
 const brandStyle = require('../../../assets/js/brand.js')
 import { imgesList } from '../../../assets/js/shareImg.js'
-const imgUrl = imgBaseUrl.url + '/shareImg/' + app.globalData.brand
+const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
 let timer
 
 Page({
@@ -66,7 +65,7 @@ Page({
     guideInfo: [], //配网指引数组
     ifAllowSkipNear: false, // 是否允许跳过靠近确权
     brand: '',
-    dialogStyle: brandStyle.config[app.globalData.brand].dialogStyle, //弹窗样式
+    dialogStyle: brandStyle.brandConfig.dialogStyle, //弹窗样式
     ishowBlueRes: false, //蓝牙权限弹窗
     bluePermissionTextAll: '', //蓝牙权限弹窗-内容
     sel: imgUrl + imgesList['sel'],
@@ -74,22 +73,20 @@ Page({
     noFoundImg: imgUrl + imgesList['noFound'],
     guideFlag: false,
     guideBlueRes: '',
-    bigScreenBind: brandStyle.config[app.globalData.brand].bigScreenBind,
+    bigScreenBind: brandStyle.brandConfig.bigScreenBind,
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad() {
-    getApp().onLoadCheckingLog()
-    this.data.brand = app.globalData.brand
+    this.data.brand = brandStyle.brand
     this.setData({
       brand: this.data.brand,
     })
     this.localToast = this.selectComponent('#localToast')
     // this.getAddDeviceInfo()
     console.log('adddeviceinfo===', app.addDeviceInfo)
-    this.logAddDivceInfo('添加设备参数', app.addDeviceInfo)
     this.getLoginStatus().then(() => {
       console.log('getLoginStatus===', app.globalData.isLogon)
       this.checkFamilyPermission()
@@ -127,7 +124,6 @@ Page({
     },
   },
   switchSet() {
-    getApp().setActionCheckingLog('switchSet', '点击切换配网指引')
     const { guideIndex, guideInfo } = this.data
     const nextIndex = guideIndex < guideInfo.length - 1 ? guideIndex + 1 : 0
     this.setData({
@@ -247,14 +243,6 @@ Page({
       this.setData({
         guideType: 'set',
       })
-      burialPoint.addGuideView({
-        deviceSessionId: app.globalData.deviceSessionId,
-        sn8: sn8,
-        type: type,
-        moduleVersion: blueVersion || '',
-        linkType: app.addDeviceInfo.linkType,
-        fm: fm,
-      })
       console.log('上报了配网指引页埋点')
       console.log('fm=====', fm)
       this.getGuideFormat(guideInfo, fm) //获取指引格式化显示
@@ -284,26 +272,15 @@ Page({
         // AP配网非自发现入口，扫描蓝牙信号
         this.searchBlueByType(type, sn8, ssid).then((device) => {
           console.log('@module addGuide.js\n@method initAddGuide\n@desc 匹配到设备信息\n', device)
-          // if(!getFullPageUrl().includes('addDevice/pages/addGuide/addGuide')) return //只在本页面弹框
-          Dialog.confirm({
-            title: '搜索到设备蓝牙信号，可为您自动完成连接',
-            confirmButtonText: '自动连接',
-            cancelButtonText: '取消',
-            confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
-            cancelButtonColor: this.data.dialogStyle.cancelButtonColor3,
-          })
-            .then((res) => {
-              if (res.action == 'confirm') {
-                // 埋点
-                burialPoint.changeBlueDialog({
-                  deviceSessionId: app.globalData.deviceSessionId,
-                  blueVersion: app.addDeviceInfo.blueVersion,
-                  deviceId: app.addDeviceInfo.deviceId,
-                  linkType: app.addDeviceInfo.linkType,
-                  sn: app.addDeviceInfo.sn,
-                  sn8: app.addDeviceInfo.sn8,
-                  type: app.addDeviceInfo.type,
-                })
+          wx.showModal({
+            title: '',
+            content: '搜索到设备蓝牙信号，可为您自动完成连接',
+            cancelText: '取消',
+            cancelColor: '#267AFF',
+            confirmText: '自动连接',
+            confirmColor: '#267AFF',
+            success(res) {
+              if (res.confirm) {
                 // 转换为蓝牙配网
                 app.addDeviceInfo.adData = device.adData
                 app.addDeviceInfo.blueVersion = self.getBluetoothType(device.adData)
@@ -317,22 +294,12 @@ Page({
                   device.adData,
                   app.addDeviceInfo.blueVersion,
                   device.type,
-                  device.localName,
+                  device.localName
                 )
                 app.addDeviceInfo.mode = 3
                 app.addDeviceInfo.linkType = addDeviceSDK.getLinkType(3)
                 app.addDeviceInfo.hadChangeBlue = true
                 console.log('@module addGuide.js\n@method initAddGuide\n@desc 更新设备信息\n', app.addDeviceInfo)
-                // 埋点
-                burialPoint.confirmChangeBlueDialog({
-                  deviceSessionId: app.globalData.deviceSessionId,
-                  blueVersion: app.addDeviceInfo.blueVersion,
-                  deviceId: app.addDeviceInfo.deviceId,
-                  linkType: app.addDeviceInfo.linkType,
-                  sn: app.addDeviceInfo.sn,
-                  sn8: app.addDeviceInfo.sn8,
-                  type: app.addDeviceInfo.type,
-                })
                 // 解析蓝牙功能状态
                 const packInfo = getScanRespPackInfo(device.adData)
                 console.log('@module addGuide.js\n@method initAddGuide\n@desc 蓝牙功能状态\n', packInfo)
@@ -355,122 +322,12 @@ Page({
                   })
                 }
               }
-            })
-            .catch((error) => {
-              // 埋点
-              burialPoint.changeBlueDialog({
-                deviceSessionId: app.globalData.deviceSessionId,
-                blueVersion: app.addDeviceInfo.blueVersion,
-                deviceId: app.addDeviceInfo.deviceId,
-                linkType: app.addDeviceInfo.linkType,
-                sn: app.addDeviceInfo.sn,
-                sn8: app.addDeviceInfo.sn8,
-                type: app.addDeviceInfo.type,
-              })
-              // 埋点
-              burialPoint.cancelChangeBlueDialog({
-                deviceSessionId: app.globalData.deviceSessionId,
-                blueVersion: app.addDeviceInfo.blueVersion,
-                deviceId: app.addDeviceInfo.deviceId,
-                linkType: app.addDeviceInfo.linkType,
-                sn: app.addDeviceInfo.sn,
-                sn8: app.addDeviceInfo.sn8,
-                type: app.addDeviceInfo.type,
-              })
-            })
-          // wx.showModal({
-          //   title: '',
-          //   content: '搜索到设备蓝牙信号，可为您自动完成连接',
-          //   cancelText: '取消',
-          //   cancelColor: '#267AFF',
-          //   confirmText: '自动连接',
-          //   confirmColor: '#267AFF',
-          //   success(res) {
-          //     // 埋点
-          //     burialPoint.changeBlueDialog({
-          //       deviceSessionId: app.globalData.deviceSessionId,
-          //       blueVersion: app.addDeviceInfo.blueVersion,
-          //       deviceId: app.addDeviceInfo.deviceId,
-          //       linkType: app.addDeviceInfo.linkType,
-          //       sn: app.addDeviceInfo.sn,
-          //       sn8: app.addDeviceInfo.sn8,
-          //       type: app.addDeviceInfo.type,
-          //     })
-          //     if (res.confirm) {
-          //       // 转换为蓝牙配网
-          //       app.addDeviceInfo.adData = device.adData
-          //       app.addDeviceInfo.blueVersion = self.getBluetoothType(device.adData)
-          //       app.addDeviceInfo.deviceId = device.deviceId
-          //       app.addDeviceInfo.mac = self.getIosMac(device.advertisData)
-          //       if (!app.addDeviceInfo.referenceRSSI) {
-          //         app.addDeviceInfo.referenceRSSI = self.getReferenceRSSI(device.adData)
-          //       }
-          //       app.addDeviceInfo.sn8 = self.getBlueSn8(device.adData)
-          //       app.addDeviceInfo.ssid = self.getBluetoothSSID(
-          //         device.adData,
-          //         app.addDeviceInfo.blueVersion,
-          //         device.type,
-          //         device.localName
-          //       )
-          //       app.addDeviceInfo.mode = 3
-          //       app.addDeviceInfo.linkType = addDeviceSDK.getLinkType(3)
-          //       app.addDeviceInfo.hadChangeBlue = true
-          //       console.log('@module addGuide.js\n@method initAddGuide\n@desc 更新设备信息\n', app.addDeviceInfo)
-          //       // 埋点
-          //       burialPoint.confirmChangeBlueDialog({
-          //         deviceSessionId: app.globalData.deviceSessionId,
-          //         blueVersion: app.addDeviceInfo.blueVersion,
-          //         deviceId: app.addDeviceInfo.deviceId,
-          //         linkType: app.addDeviceInfo.linkType,
-          //         sn: app.addDeviceInfo.sn,
-          //         sn8: app.addDeviceInfo.sn8,
-          //         type: app.addDeviceInfo.type,
-          //       })
-          //       // 解析蓝牙功能状态
-          //       const packInfo = getScanRespPackInfo(device.adData)
-          //       console.log('@module addGuide.js\n@method initAddGuide\n@desc 蓝牙功能状态\n', packInfo)
-          //       if (packInfo.isWifiCheck || packInfo.isBleCheck || packInfo.isCanSet) {
-          //         // 设备已确权
-          //         app.addDeviceInfo.isCheck = true
-          //         wx.navigateTo({
-          //           url: paths.linkDevice,
-          //         })
-          //       } else if (app.addDeviceInfo.blueVersion == 1) {
-          //         // 一代蓝牙
-          //         wx.navigateTo({
-          //           url: paths.linkDevice,
-          //         })
-          //       } else {
-          //         // 二代蓝牙
-          //         app.addDeviceInfo.ifNearby = true
-          //         wx.redirectTo({
-          //           url: paths.addGuide,
-          //         })
-          //       }
-          //     } else if (res.cancel) {
-          //       // 埋点
-          //       burialPoint.cancelChangeBlueDialog({
-          //         deviceSessionId: app.globalData.deviceSessionId,
-          //         blueVersion: app.addDeviceInfo.blueVersion,
-          //         deviceId: app.addDeviceInfo.deviceId,
-          //         linkType: app.addDeviceInfo.linkType,
-          //         sn: app.addDeviceInfo.sn,
-          //         sn8: app.addDeviceInfo.sn8,
-          //         type: app.addDeviceInfo.type,
-          //       })
-          //     }
-          //   },
-          // })
+            },
+          })
         })
       }
     }
     if ((mode == 3 && ifNearby) || mode == 20 || (mode == 30 && fm == 'autoFound')) {
-      burialPoint.nearDecieView({
-        deviceSessionId: app.globalData.deviceSessionId,
-        sn8: sn8,
-        type: type,
-        moduleVison: blueVersion,
-      })
       if (mode == 3) app.addDeviceInfo.ifNearby = false
       this.setData({
         guideType: 'near',
@@ -619,12 +476,6 @@ Page({
   },
   //跳转反馈
   feedback() {
-    burialPoint.clickFeedback({
-      deviceSessionId: app.globalData.deviceSessionId,
-      moduleType: app.addDeviceInfo.moduleType,
-      type: app.addDeviceInfo.type,
-      sn8: app.addDeviceInfo.sn8,
-    })
     wx.navigateTo({
       url: paths.feedback,
     })
@@ -701,193 +552,48 @@ Page({
           console.log('靠近确权============getFullPageUrl', page)
           if (page.includes('addDevice/pages/addGuide/addGuide')) {
             if (!this.data.ifAllowSkipNear) {
-              Dialog.confirm({
+              // 不允许跳过
+              wx.showModal({
                 title: '未靠近设备',
-                message: '请尝试重新靠近',
-                confirmButtonText: '重试',
-                cancelButtonText: '退出',
-                confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
-                cancelButtonColor: this.data.dialogStyle.cancelButtonColor3,
-              })
-                .then((res) => {
-                  if (res.action == 'confirm') {
-                    burialPoint.nearTimeoutDialogView({
-                      deviceSessionId: app.globalData.deviceSessionId,
-                      blueVersion: app.addDeviceInfo.blueVersion,
-                      deviceId: app.addDeviceInfo.deviceId,
-                      linkType: app.addDeviceInfo.linkType,
-                      sn: app.addDeviceInfo.sn,
-                      sn8: app.addDeviceInfo.sn8,
-                      type: app.addDeviceInfo.type,
-                    })
-
+                content: '请尝试重新靠近',
+                cancelText: '退出',
+                cancelColor: '#267AFF',
+                confirmText: '重试',
+                confirmColor: '#267AFF',
+                success(res) {
+                  if (res.confirm) {
                     // 重试
-                    this.retryClickFlag = false
                     self.retryCheckNearby()
-                    burialPoint.confirmNearTimeoutDialog({
-                      deviceSessionId: app.globalData.deviceSessionId,
-                      blueVersion: app.addDeviceInfo.blueVersion,
-                      deviceId: app.addDeviceInfo.deviceId,
-                      linkType: app.addDeviceInfo.linkType,
-                      sn: app.addDeviceInfo.sn,
-                      sn8: app.addDeviceInfo.sn8,
-                      type: app.addDeviceInfo.type,
-                    })
-                  }
-                })
-                .catch((error) => {
-                  if (error.action == 'cancel') {
+                  } else if (res.cancel) {
                     // 退出
                     wx.reLaunch({
                       url: paths.index,
                     })
-                    burialPoint.cancelNearTimeoutDialog({
-                      deviceSessionId: app.globalData.deviceSessionId,
-                      blueVersion: app.addDeviceInfo.blueVersion,
-                      deviceId: app.addDeviceInfo.deviceId,
-                      linkType: app.addDeviceInfo.linkType,
-                      sn: app.addDeviceInfo.sn,
-                      sn8: app.addDeviceInfo.sn8,
-                      type: app.addDeviceInfo.type,
-                    })
                   }
-                })
-
-              // 不允许跳过
-              // wx.showModal({
-              //   title: '未靠近设备',
-              //   content: '请尝试重新靠近',
-              //   cancelText: '退出',
-              //   cancelColor: '#267AFF',
-              //   confirmText: '重试',
-              //   confirmColor: '#267AFF',
-              //   success(res) {
-              //     burialPoint.nearTimeoutDialogView({
-              //       deviceSessionId: app.globalData.deviceSessionId,
-              //       blueVersion: app.addDeviceInfo.blueVersion,
-              //       deviceId: app.addDeviceInfo.deviceId,
-              //       linkType: app.addDeviceInfo.linkType,
-              //       sn: app.addDeviceInfo.sn,
-              //       sn8: app.addDeviceInfo.sn8,
-              //       type: app.addDeviceInfo.type,
-              //     })
-              //     if (res.confirm) {
-              //       // 重试
-              //       self.retryCheckNearby()
-              //       burialPoint.confirmNearTimeoutDialog({
-              //         deviceSessionId: app.globalData.deviceSessionId,
-              //         blueVersion: app.addDeviceInfo.blueVersion,
-              //         deviceId: app.addDeviceInfo.deviceId,
-              //         linkType: app.addDeviceInfo.linkType,
-              //         sn: app.addDeviceInfo.sn,
-              //         sn8: app.addDeviceInfo.sn8,
-              //         type: app.addDeviceInfo.type,
-              //       })
-              //     } else if (res.cancel) {
-              //       // 退出
-              //       wx.reLaunch({
-              //         url: paths.index,
-              //       })
-              //       burialPoint.cancelNearTimeoutDialog({
-              //         deviceSessionId: app.globalData.deviceSessionId,
-              //         blueVersion: app.addDeviceInfo.blueVersion,
-              //         deviceId: app.addDeviceInfo.deviceId,
-              //         linkType: app.addDeviceInfo.linkType,
-              //         sn: app.addDeviceInfo.sn,
-              //         sn8: app.addDeviceInfo.sn8,
-              //         type: app.addDeviceInfo.type,
-              //       })
-              //     }
-              //   },
-              // })
-            } else {
-              Dialog.confirm({
-                title: '未靠近设备',
-                message: '你可以跳过该步骤，后续再通过操作设备进行验证',
-                confirmButtonText: '跳过',
-                cancelButtonText: '重试',
-                confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
-                cancelButtonColor: this.data.dialogStyle.cancelButtonColor3,
+                },
               })
-                .then((res) => {
-                  if (res.action == 'confirm') {
-                    burialPoint.skipDialogView({
-                      deviceSessionId: app.globalData.deviceSessionId,
-                      sn8: app.addDeviceInfo.sn8,
-                      type: app.addDeviceInfo.type,
-                      moduleVersion: app.addDeviceInfo.blueVersion,
-                    })
+            } else {
+              // 允许跳过
+              wx.showModal({
+                title: '未靠近设备',
+                content: '你可以跳过该步骤，后续再通过操作设备进行验证',
+                cancelText: '重试',
+                cancelColor: '#267AFF',
+                confirmText: '跳过',
+                confirmColor: '#267AFF',
+                success(res) {
+                  if (res.confirm) {
                     //跳过
                     app.addDeviceInfo.isCheck = false
                     wx.navigateTo({
                       url: paths.linkDevice,
                     })
-                    burialPoint.clickAbandonNearSkip({
-                      deviceSessionId: app.globalData.deviceSessionId,
-                      sn8: app.addDeviceInfo.sn8,
-                      type: app.addDeviceInfo.type,
-                      moduleVersion: app.addDeviceInfo.blueVersion,
-                    })
-                  }
-                })
-                .catch((error) => {
-                  if (error.action == 'cancel') {
-                    burialPoint.skipDialogView({
-                      deviceSessionId: app.globalData.deviceSessionId,
-                      sn8: app.addDeviceInfo.sn8,
-                      type: app.addDeviceInfo.type,
-                      moduleVersion: app.addDeviceInfo.blueVersion,
-                    })
+                  } else if (res.cancel) {
                     //重试
-                    this.retryClickFlag = false
                     self.retryCheckNearby()
-                    burialPoint.clickAbandonNearRetry({
-                      deviceSessionId: app.globalData.deviceSessionId,
-                      sn8: app.addDeviceInfo.sn8,
-                      type: app.addDeviceInfo.type,
-                      moduleVersion: app.addDeviceInfo.blueVersion,
-                    })
                   }
-                })
-              // 允许跳过
-              // wx.showModal({
-              //   title: '未靠近设备',
-              //   content: '你可以跳过该步骤，后续再通过操作设备进行验证',
-              //   cancelText: '重试',
-              //   cancelColor: '#267AFF',
-              //   confirmText: '跳过',
-              //   confirmColor: '#267AFF',
-              //   success(res) {
-              //     burialPoint.skipDialogView({
-              //       deviceSessionId: app.globalData.deviceSessionId,
-              //       sn8: app.addDeviceInfo.sn8,
-              //       type: app.addDeviceInfo.type,
-              //       moduleVersion: app.addDeviceInfo.blueVersion,
-              //     })
-              //     if (res.confirm) {
-              //       //跳过
-              //       app.addDeviceInfo.isCheck = false
-              //       wx.navigateTo({
-              //         url: paths.linkDevice,
-              //       })
-              //       burialPoint.clickAbandonNearSkip({
-              //         deviceSessionId: app.globalData.deviceSessionId,
-              //         sn8: app.addDeviceInfo.sn8,
-              //         type: app.addDeviceInfo.type,
-              //         moduleVersion: app.addDeviceInfo.blueVersion,
-              //       })
-              //     } else if (res.cancel) {
-              //       //重试
-              //       self.retryCheckNearby()
-              //       burialPoint.clickAbandonNearRetry({
-              //         deviceSessionId: app.globalData.deviceSessionId,
-              //         sn8: app.addDeviceInfo.sn8,
-              //         type: app.addDeviceInfo.type,
-              //         moduleVersion: app.addDeviceInfo.blueVersion,
-              //       })
-              //     }
-              //   },
-              // })
+                },
+              })
             }
           }
         }
@@ -899,12 +605,6 @@ Page({
             wx.offBluetoothDeviceFound()
             wx.stopBluetoothDevicesDiscovery()
           }
-          burialPoint.notFoundDeviceWifiPopupView({
-            deviceSessionId: app.globalData.deviceSessionId,
-            sn8: app.addDeviceInfo.sn8,
-            type: app.addDeviceInfo.type,
-            moduleType: app.addDeviceInfo.moduleType,
-          })
         }
       }
     }, 1000)
@@ -915,7 +615,6 @@ Page({
       //未阅读完毕
       return
     }
-    getApp().setActionCheckingLog('finish', '点击勾选完成事件')
     this.setData({
       isFinishUpAp: !this.data.isFinishUpAp,
     })
@@ -933,14 +632,6 @@ Page({
       mode = 0
       app.addDeviceInfo.linkType = addDeviceSDK.getLinkType(0)
     }
-    getApp().setActionCheckingLog('next', '点击下一步按钮事件')
-    burialPoint.clickGuideNext({
-      deviceSessionId: app.globalData.deviceSessionId,
-      sn8: app.addDeviceInfo.sn8,
-      type: app.addDeviceInfo.type,
-      moduleVersion: app.addDeviceInfo.blueVersion,
-      linkType: app.addDeviceInfo.linkType,
-    })
     wx.offBluetoothDeviceFound()
     wx.stopBluetoothDevicesDiscovery()
     if (mode == 0) {
@@ -973,7 +664,6 @@ Page({
     this.setData({
       noFound: false,
     })
-    getApp().setActionCheckingLog('retry', '点击重试按钮')
     this.timing()
     app.globalData.bluetoothFail = !(await this.checkBluetoothAuth()) //蓝牙配网检查蓝牙是否开启以及是否蓝牙授权
     const { type, sn8, fm } = app.addDeviceInfo
@@ -993,23 +683,10 @@ Page({
     } else {
       this.checkSetConfig(type, sn8, fm)
     }
-    burialPoint.clickretrySetDevice({
-      deviceSessionId: app.globalData.deviceSessionId,
-      moduleType: app.addDeviceInfo.moduleType,
-      type: app.addDeviceInfo.type,
-      sn8: app.addDeviceInfo.sn8,
-    })
   },
   //本地蓝牙跳转  储存
   async openPlugin() {
-    getApp().setActionCheckingLog('openPlugin', '本地蓝牙点击跳转插件')
     let { type, A0, sn8, deviceName, deviceImg, linkType } = app.addDeviceInfo
-    burialPoint.clickDownLoadOpenPlugin({
-      deviceSessionId: app.globalData.deviceSessionId,
-      type,
-      sn8,
-      linkType,
-    })
     let currentHomeGroupId = app.globalData.currentHomeGroupId
     let typeFomat = type.includes('0x') ? type.toLocaleUpperCase() : '0x' + type.toLocaleUpperCase()
     console.log('is has plugin', isSupportPlugin(typeFomat, sn8), currentHomeGroupId)
@@ -1062,7 +739,6 @@ Page({
     if (!this.data.isFinishUpAp) {
       return
     }
-    getApp().setActionCheckingLog('touchScanCode', '点击大屏扫码按钮事件')
     //大屏这里是扫码按钮
     let { deviceName, type, sn } = app.addDeviceInfo
     let scanResult = {}
@@ -1072,24 +748,16 @@ Page({
     } catch (error) {
       console.log('扫码失败====', error)
       if (!error.errMsg.includes('fail cancel')) {
-        Dialog.confirm({
-          title: '该二维码无法识别，请扫描设备屏幕二维码',
-          confirmButtonText: '我知道了',
-          confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
-          cancelButtonColor: this.data.dialogStyle.cancelButtonColor3,
-          showCancelButton: false,
-        })
         //非主动取消扫码
-        // wx.showModal({
-        //   title: '',
-        //   content: '该二维码无法识别，请扫描设备屏幕二维码',
-        //   confirmText: '我知道了',
-        //   confirmColor: '#267AFF',
-        //   showCancel: false,
-        //   success() {},
-        // })
+        wx.showModal({
+          title: '',
+          content: '该二维码无法识别，请扫描设备屏幕二维码',
+          confirmText: '我知道了',
+          confirmColor: '#267AFF',
+          showCancel: false,
+          success() {},
+        })
       }
-      getApp().setMethodFailedCheckingLog('wx.scanCode()', `微信扫码接口返回异常，error=${JSON.stringify(error)}`)
       return
     }
     let scanCdoeResObj = addDeviceSDK.dynamicCodeAdd.getTouchScreenScanCodeInfo(scanResult.result)
@@ -1099,105 +767,31 @@ Page({
       app.addDeviceInfo.type = scanCdoeResObj.type.toUpperCase()
       app.addDeviceInfo.sn = scanCdoeResObj.sn
       app.addDeviceInfo.bigScreenScanCodeInfo = scanCdoeResObj
-      burialPoint.touchScreenDiolog({
-        deviceSessionId: app.globalData.deviceSessionId,
-        type: type,
-        sn: app.addDeviceInfo.sn,
-        msg: '触屏配网扫码成功',
-      })
 
-      Dialog.confirm({
-        title: `你正在添加${deviceName},确定要继续吗？`,
-        confirmButtonText: '确定',
-        cancleButtonText: '取消',
-        confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
-        cancelButtonColor: this.data.dialogStyle.cancelButtonColor3,
-      }).then((res) => {
-        if (res.action == 'confirm') {
-          //确定
-          wx.navigateTo({
-            url: paths.linkDevice,
-          })
-          burialPoint.touchScreenDiologConfirm({
-            deviceSessionId: app.globalData.deviceSessionId,
-            type: type,
-            sn: app.addDeviceInfo.sn,
-          })
-        }
+      wx.showModal({
+        title: '',
+        content: `你正在添加${deviceName},确定要继续吗？`,
+        cancelText: '取消',
+        cancelColor: '#267AFF',
+        confirmText: '确定',
+        confirmColor: '#267AFF',
+        success(res) {
+          if (res.confirm) {
+            //确定
+            wx.navigateTo({
+              url: paths.linkDevice,
+            })
+          }
+        },
       })
-      // wx.showModal({
-      //   title: '',
-      //   content: `你正在添加${deviceName},确定要继续吗？`,
-      //   cancelText: '取消',
-      //   cancelColor: '#267AFF',
-      //   confirmText: '确定',
-      //   confirmColor: '#267AFF',
-      //   success(res) {
-      //     if (res.confirm) {
-      //       //确定
-      //       wx.navigateTo({
-      //         url: paths.linkDevice,
-      //       })
-      //       burialPoint.touchScreenDiologConfirm({
-      //         deviceSessionId: app.globalData.deviceSessionId,
-      //         type: type,
-      //         sn: app.addDeviceInfo.sn,
-      //       })
-      //     } else if (res.cancel) {
-      //       //取消
-      //       burialPoint.touchScreenDiologCancel({
-      //         deviceSessionId: app.globalData.deviceSessionId,
-      //         type: type,
-      //         sn: app.addDeviceInfo.sn,
-      //       })
-      //     }
-      //   },
-      // })
     } else {
-      Dialog.confirm({
-        title: '该二维码无法识别，请扫描设备屏幕二维码',
-        confirmButtonText: '我知道了',
-        confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
-        cancelButtonColor: this.data.dialogStyle.cancelButtonColor3,
-        showCancelButton: false,
-      }).then((res) => {
-        if (res.action == 'confirm') {
-          //知道了
-          burialPoint.touchScreenDiologClickKnow({
-            deviceSessionId: app.globalData.deviceSessionId,
-            type: type,
-            sn: sn,
-          })
-        }
+      wx.showModal({
+        title: '',
+        content: '该二维码无法识别，请扫描设备屏幕二维码',
+        confirmText: '我知道了',
+        confirmColor: '#267AFF',
+        showCancel: false,
       })
-
-      // wx.showModal({
-      //   title: '',
-      //   content: '该二维码无法识别，请扫描设备屏幕二维码',
-      //   confirmText: '我知道了',
-      //   confirmColor: '#267AFF',
-      //   showCancel: false,
-      //   success(res) {
-      //     if (res.confirm) {
-      //       //知道了
-      //       burialPoint.touchScreenDiologClickKnow({
-      //         deviceSessionId: app.globalData.deviceSessionId,
-      //         type: type,
-      //         sn: sn,
-      //       })
-      //     }
-      //   },
-      // })
-      burialPoint.touchScreenErrorDiolog({
-        deviceSessionId: app.globalData.deviceSessionId,
-        type: type,
-        sn: sn,
-        msg: '触屏配网生成二维码，无法识别',
-      })
-      getApp().setMethodFailedCheckingLog(
-        'touchScanCode',
-        `触屏配网生成二维码，无法识别。code=${JSON.stringify(scanCdoeResObj)}`,
-      )
     }
   },
   //校验是否手动确权
@@ -1212,22 +806,14 @@ Page({
           interval: 500,
           success: (res) => {
             console.log('startBluetoothDevicesDiscovery success', res)
-            getApp().setMethodCheckingLog('wx.startBluetoothDevicesDiscovery()')
-          },
-          fail(error) {
-            getApp().setMethodFailedCheckingLog(
-              'wx.startBluetoothDevicesDiscovery()',
-              `开始发现蓝牙设备失败。error=${JSON.stringify(error)}`,
-            )
           },
         })
         //监听发现设备
         wx.onBluetoothDeviceFound((res) => {
           res.devices.forEach((device) => {
             // 品牌名校验
-            const brandConfig = app.globalData.brandConfig[app.globalData.brand]
             const localName = device.localName || device.name || ''
-            if (!brandConfig.apNameHeader.some((value) => localName.includes(value))) {
+            if (!brandStyle.brandConfig.apNameHeader.some((value) => localName.includes(value))) {
               return
             }
             // RSSI为正值的异常情况均舍弃
@@ -1249,7 +835,7 @@ Page({
               return
             }
             const deviceParam = this.getDeviceParam(device)
-            let ifSN8Matching = this.checkSN8(brandConfig, deviceParam)
+            let ifSN8Matching = this.checkSN8(brandStyle.brandConfig, deviceParam)
             if (!ifSN8Matching) {
               console.log('addDeviceInfo', app.addDeviceInfo)
               if (fm == 'scanCode' && isColmoDeviceByDecodeSn(app.addDeviceInfo.tsn || app.addDeviceInfo.sn)) {
@@ -1303,43 +889,13 @@ Page({
               wx.navigateTo({
                 url: paths.linkDevice,
               })
-            } else {
-              getApp().setMethodCheckingLog('收到广播包未确权成功', `${deviceAds}`)
             }
           })
         })
       })
       .catch((error) => {
         console.log('打开蓝牙适配器失败', error)
-        getApp().setMethodFailedCheckingLog('wx.openAdapter()', `打开蓝牙适配器失败。error=${JSON.stringify(error)}`)
       })
-  },
-  //请求指引结果埋点
-  serverGuideResultBurialPoint(resp) {
-    if (resp.data.code == 0) {
-      //正常有指引返回
-      burialPoint.serverGuideResult({
-        deviceSessionId: app.globalData.deviceSessionId,
-        moduleType: app.addDeviceInfo.moduleType,
-        type: app.addDeviceInfo.type,
-        sn8: app.addDeviceInfo.sn8,
-        moduleVison: app.addDeviceInfo.blueVersion,
-        linkType: app.addDeviceInfo.linkType,
-        serverCode: resp.data.code + '',
-        serverType: resp.data.data.category,
-        serverSn8: resp.data.data.code,
-      })
-    } else {
-      burialPoint.serverGuideResult({
-        deviceSessionId: app.globalData.deviceSessionId,
-        moduleType: app.addDeviceInfo.moduleType,
-        type: app.addDeviceInfo.type,
-        sn8: app.addDeviceInfo.sn8,
-        moduleVison: app.addDeviceInfo.blueVersion,
-        linkType: app.addDeviceInfo.linkType,
-        serverCode: resp.data.code + '',
-      })
-    }
   },
   //自发现来的指引
   getAutoFoundGuide(mode, type, sn8, enterprise = '0000', productId = '', ssid) {
@@ -1480,15 +1036,6 @@ Page({
     const this_ = this
     if (this.clickFlag) return
     this.clickFlag = true
-    burialPoint.clickSkipNear({
-      deviceSessionId: app.globalData.deviceSessionId,
-      blueVersion: app.addDeviceInfo.blueVersion,
-      deviceId: app.addDeviceInfo.deviceId,
-      linkType: app.addDeviceInfo.linkType,
-      sn: app.addDeviceInfo.sn,
-      sn8: app.addDeviceInfo.sn8,
-      type: app.addDeviceInfo.type,
-    })
     wx.offBluetoothDeviceFound()
     wx.stopBluetoothDevicesDiscovery()
     app.addDeviceInfo.isCheck = false
@@ -1526,28 +1073,6 @@ Page({
     b = arr.reverse().join(':')
     return b
   },
-  //多配网指引-浏览埋点
-  getNewDeviceGuideInfoViewTrack(guideInfo) {
-    if (!guideInfo.connectDescNew || !guideInfo.mainConnectTypeDesc) return
-    burialPoint.getNewDeviceGuideInfoViewTrack({
-      deviceSessionId: app.globalData.deviceSessionId,
-      sn8: app.addDeviceInfo.sn8,
-      type: app.addDeviceInfo.type,
-      moduleVersion: app.addDeviceInfo.blueVersion,
-      linkType: app.addDeviceInfo.linkType,
-    })
-  },
-  //多配网指引-点击埋点
-  clickNewDeviceGuideInfoViewTrack() {
-    burialPoint.clickNewDeviceGuideInfoViewTrack({
-      deviceSessionId: app.globalData.deviceSessionId,
-      sn8: app.addDeviceInfo.sn8,
-      type: app.addDeviceInfo.type,
-      moduleVersion: app.addDeviceInfo.blueVersion,
-      linkType: app.addDeviceInfo.linkType,
-    })
-  },
-
   //蓝牙配网检查蓝牙是否授权以及是否打开蓝牙
   async checkBluetoothAuth() {
     // let result = true
@@ -1564,45 +1089,10 @@ Page({
     if (!blueRes.isCanBlue) {
       // 记录当前埋点
       this.objectName = this.setBurialObjectNameValue(blueRes.permissionTypeList)
-      burialPoint.bluetoothGuideView({
-        name: this.objectName,
-        deviceSessionId: app.globalData.deviceSessionId,
-        sn8: app.addDeviceInfo.sn8,
-        type: app.addDeviceInfo.type,
-        moduleVersion: app.addDeviceInfo.blueVersion,
-        linkType: app.addDeviceInfo.linkType,
-      })
       this.setData({
         ishowBlueRes: true,
         bluePermissionTextAll: blueRes.permissionTextAll,
       })
-      // this.setDialogMixinsData(
-      //   true,
-      //   '请开启蓝牙权限',
-      //   blueRes.permissionTextAll,
-      //   false,
-      //   [
-      //     {
-      //       btnText: '放弃',
-      //       flag: 'bottomBtn',
-      //       type: 'cancel',
-      //     },
-      //     {
-      //       btnText: '已完成操作',
-      //       flag: 'bottomBtn',
-      //       type: 'confirm',
-      //       permissionTypeList: blueRes.permissionTypeList,
-      //     },
-      //   ],
-      //   [
-      //     {
-      //       btnText: '查看详细指引',
-      //       flag: 'lookGuide',
-      //       type: 'blue',
-      //       permissionTypeList: blueRes.permissionTypeList,
-      //     },
-      //   ]
-      // )
       return false
     }
     return true
@@ -1619,25 +1109,9 @@ Page({
     console.log('kkkkkkkkk', e)
     if (e.flag == 'bottomBtn') {
       if (e.type == 'confirm') {
-        burialPoint.clickBluetoothFinish({
-          name: this.objectName,
-          deviceSessionId: app.globalData.deviceSessionId,
-          sn8: app.addDeviceInfo.sn8,
-          type: app.addDeviceInfo.type,
-          moduleVersion: app.addDeviceInfo.blueVersion,
-          linkType: app.addDeviceInfo.linkType,
-        })
         this.initAddGuide()
       }
       if (e.type == 'cancel') {
-        burialPoint.clickBluetoothQuit({
-          name: this.objectName,
-          deviceSessionId: app.globalData.deviceSessionId,
-          sn8: app.addDeviceInfo.sn8,
-          type: app.addDeviceInfo.type,
-          moduleVersion: app.addDeviceInfo.blueVersion,
-          linkType: app.addDeviceInfo.linkType,
-        })
         wx.switchTab({
           url: paths.index,
         })
@@ -1650,14 +1124,6 @@ Page({
     e = e.detail
     if (e.flag == 'lookGuide') {
       if (e.type == 'blue') {
-        burialPoint.clickBluetoothGuide({
-          name: this.objectName,
-          deviceSessionId: app.globalData.deviceSessionId,
-          sn8: app.addDeviceInfo.sn8,
-          type: app.addDeviceInfo.type,
-          moduleVersion: app.addDeviceInfo.blueVersion,
-          linkType: app.addDeviceInfo.linkType,
-        })
         wx.navigateTo({
           url: paths.blueGuide + `?permissionTypeList=${JSON.stringify(e.permissionTypeList)}`,
         })
@@ -1744,14 +1210,6 @@ Page({
   },
 
   hasFinish() {
-    burialPoint.clickBluetoothFinish({
-      name: this.objectName,
-      deviceSessionId: app.globalData.deviceSessionId,
-      sn8: app.addDeviceInfo.sn8,
-      type: app.addDeviceInfo.type,
-      moduleVersion: app.addDeviceInfo.blueVersion,
-      linkType: app.addDeviceInfo.linkType,
-    })
     this.initAddGuide()
   },
 
@@ -1779,15 +1237,6 @@ Page({
     }
     wx.reLaunch({
       url: paths.index,
-    })
-    burialPoint.addGuideGoToHome({
-      deviceSessionId: app.globalData.deviceSessionId,
-      blueVersion: app.addDeviceInfo.blueVersion,
-      deviceId: app.addDeviceInfo.deviceId,
-      linkType: app.addDeviceInfo.linkType,
-      sn: app.addDeviceInfo.sn,
-      sn8: app.addDeviceInfo.sn8,
-      type: app.addDeviceInfo.type,
     })
   },
 

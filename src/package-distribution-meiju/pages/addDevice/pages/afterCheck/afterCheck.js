@@ -11,10 +11,10 @@ import { getPluginUrl } from '../../../../utils/getPluginUrl'
 import { getReqId, getStamp } from 'm-utilsdk/index'
 import { getFullPageUrl } from '../../../../utils/util'
 import { isSupportPlugin, goTopluginPage } from '../../../../utils/pluginFilter'
-import { burialPoint } from './assets/js/burialPoint'
 import paths from '../../../../utils/paths'
 import { typesPreserveAfterCheckGuideByA0 } from '../../config/index'
 import Dialog from '../../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
+import { brand } from '../../../assets/js/brand'
 let timer
 
 Page({
@@ -40,12 +40,10 @@ Page({
    * 生命周期函数--监听页面加载
    */
   async onLoad(options) {
-    getApp().onLoadCheckingLog()
-    this.data.brand = app.globalData.brand
+    this.data.brand = brand
     this.setData({
       brand: this.data.brand,
     })
-    burialPoint.afterCheckoutView()
     if (options.backTo) {
       this.setData({
         backTo: options.backTo,
@@ -114,8 +112,6 @@ Page({
           wx.navigateTo({
             url: getPluginUrl(type) + '?backTo=/pages/index/index&deviceInfo=' + deviceInfo,
             fail(error) {
-              burialPoint.afterCheckJumpFail(app.addDeviceInfo)
-              getApp().setMethodFailedCheckingLog('wx.navigateTo()', `跳转插件页异常。error=${JSON.stringify(error)}`)
               let page = getFullPageUrl()
               if (!page.includes('addDevice/pages/afterCheck/afterCheck')) {
                 return
@@ -127,7 +123,6 @@ Page({
                 showCancelButton: false,
               }).then((res) => {
                 if (res.action == 'confirm') {
-                  burialPoint.afterCheckCancel(app.addDeviceInfo)
                   wx.reLaunch({
                     url: paths.index,
                   })
@@ -208,31 +203,6 @@ Page({
     }, 1000)
   },
 
-  // getApplianceAuthType(applianceCode) {
-  //   let reqData = {
-  //     applianceCode: applianceCode,
-  //     reqId: getReqId(),
-  //     stamp: getStamp(),
-  //   }
-  //   return new Promise((resolve, reject) => {
-  //     requestService
-  //       .request('getApplianceAuthType', reqData)
-  //       .then((resp) => {
-  //         console.log('查询确权状态')
-  //         getApp().setMethodCheckingLog('getApplianceAuthType')
-  //         resolve(resp)
-  //       })
-  //       .catch((error) => {
-  //         log.info('查询确权状态error', error)
-  //         getApp().setMethodFailedCheckingLog(
-  //           'getApplianceAuthType',
-  //           `查询设备确权状态异常。error=${JSON.stringify(error)}`
-  //         )
-  //         reject(error)
-  //       })
-  //   })
-  // },
-
   //进入待确权
   applianceAuthConfirm(applianceCode) {
     let reqData = {
@@ -245,16 +215,9 @@ Page({
         .request('applianceAuthConfirm', reqData)
         .then((resp) => {
           console.log('进入待确权')
-          log.info('成功进入待确权')
-          getApp().setMethodCheckingLog('applianceAuthConfirm')
           resolve(resp)
         })
         .catch((error) => {
-          log.info('成功进入待确权error', error)
-          getApp().setMethodFailedCheckingLog(
-            'applianceAuthConfirm',
-            `进入确权状态异常异常。error=${JSON.stringify(error)}`,
-          )
           reject(error)
         })
     })
@@ -283,11 +246,9 @@ Page({
               wx.reLaunch({
                 url: '/pages/unSupportDevice/unSupportDevice?deviceInfo=' + encodeURIComponent(deviceInfo),
               })
-              getApp().setMethodCheckingLog('checkApplianceAuth')
               return
             }
             goTopluginPage(app.addDeviceInfo.cloudBackDeviceInfo, '/pages/index/index', true, 'afterCheck')
-            getApp().setMethodCheckingLog('checkApplianceAuth')
           }
         } else {
           if (this.data.time != 0 && !this.data.isStopCheck) {
@@ -296,12 +257,6 @@ Page({
             })
           }
         }
-      })
-      .catch((error) => {
-        getApp().setMethodFailedCheckingLog(
-          'checkApplianceAuth',
-          `校验是否完成后确权异常。error=${JSON.stringify(error)}`,
-        )
       })
   },
   sleep(milSec) {

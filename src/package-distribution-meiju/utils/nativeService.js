@@ -1,7 +1,7 @@
 import { getMarketSign } from './util'
 import { getTimeStamp } from 'm-utilsdk/index'
 import { requestService } from './requestService'
-import { api } from '../api'
+import { api } from '../common/js/api'
 
 var nativeService = {
   /**

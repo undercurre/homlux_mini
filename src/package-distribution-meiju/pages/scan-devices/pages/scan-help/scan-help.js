@@ -1,10 +1,10 @@
 // distribution-network/scan-devices/pages/scan-help/scan-help.js
-import { imgBaseUrl } from '../../../../api.js'
-import { clickEventTracking } from '../../../../track/track.js'
+import { imgBaseUrl } from '../../../../common/js/api.js'
 const app = getApp()
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 import { imgesList } from '../../../assets/js/shareImg.js'
-const imgUrl = imgBaseUrl.url + '/shareImg/' + app.globalData.brand
+const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
 Page({
   behaviors: [getFamilyPermissionMixin],
   /**
@@ -12,7 +12,7 @@ Page({
    */
   data: {
     baseImgUrl: imgBaseUrl.url,
-    brand: app.globalData.brand,
+    brand: brandStyle.brand,
     noResultImg: imgUrl + imgesList['noResult'],
   },
   getLoginStatus() {
@@ -35,7 +35,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function () {
-    getApp().onLoadCheckingLog()
     this.getLoginStatus().then(() => {
       if (app.globalData.isLogon) {
         this.checkFamilyPermission()
@@ -53,20 +52,7 @@ Page({
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function () {
-    clickEventTracking('user_page_view', 'onShow', {
-      device_info: {
-        device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-        sn: '', //sn码
-        sn8: '', //sn8码
-        a0: '', //a0码
-        widget_cate: '', //设备品类
-        wifi_model_version: '', //模组wifi版本
-        link_type: '', //连接方式 bluetooth/ap/...
-        iot_device_id: '', //设备id
-      },
-    })
-  },
+  onShow: function () {},
 
   /**
    * 生命周期函数--监听页面隐藏

@@ -1,11 +1,10 @@
-import { api } from '../../../api'
+import { api } from '../../../common/js/api'
 import { hexCharCodeToStr, CryptoJS } from 'm-utilsdk/index'
 let MAS_KEY = {
   dev: '143320d6c73144d083baf9f5b1a7acc9',
   sit: '143320d6c73144d083baf9f5b1a7acc9',
   prod: 'ad0ee21d48a64bf49f4fb583ab76e799',
 }
-const iv = 'abcdef0123456789'
 //获得连接方式
 function getLinkType(mode) {
   let linkType = ''

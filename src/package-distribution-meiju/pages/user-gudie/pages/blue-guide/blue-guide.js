@@ -1,5 +1,5 @@
 import { rangersBurialPoint } from '../../../../utils/requestService'
-import { baseImgApi } from '../../../../api'
+import { baseImgApi } from '../../../../common/js/api'
 import { getFullPageUrl } from '../../../../utils/util'
 
 const app = getApp()

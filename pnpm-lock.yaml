@@ -23,6 +23,15 @@ dependencies:
   lottie-miniprogram:
     specifier: ^1.0.12
     version: 1.0.12
+  m-miniBaseSDK:
+    specifier: ^1.0.5
+    version: 1.0.5
+  m-miniCommonSDK:
+    specifier: ^1.0.8
+    version: 1.0.8
+  m-services:
+    specifier: ^1.0.13
+    version: 1.0.13
   m-ui:
     specifier: ^2.0.12
     version: 2.0.12
@@ -2608,6 +2617,23 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       yallist: 4.0.0
+
+  /m-miniBaseSDK@1.0.5:
+    resolution: {integrity: sha512-tzYYO/StmqIs9kxVNCU+qJuZtkJeMWlbesVwTaN8l5Gn8zHj1tHfyHBTp2kEttJZCn75IIOXUKwyZLYe39BSQA==}
+    dependencies:
+      m-miniCommonSDK: 1.0.8
+      m-utilsdk: 1.0.8
+    dev: false
+
+  /m-miniCommonSDK@1.0.8:
+    resolution: {integrity: sha512-wQPx1ZoCKy8uvQgybMptQhtCCHt/EYQFAOZ5LbygSbTDpBh0RAzpBXluAZg1USu+1W3OIAJuyifTB0uLpS34qw==}
+    dev: false
+
+  /m-services@1.0.13:
+    resolution: {integrity: sha512-2U+UsFv4o0PbEsl5kcGVui+vw00JM20xA1vDnMvhv2XyVybC02vUQWBaz7E9A95qlHuuJx65dz5t4Iw3QcEqzw==}
+    dependencies:
+      m-utilsdk: 1.0.8
+    dev: false
 
   /m-ui@2.0.12:
     resolution: {integrity: sha512-dsCF4FKdF9hA3UuqF/JFpFYxBHd3olixabSilNeWGS0MamhjZ2ebb9ISMhnEbtI6/5l0Vdy/IS5c3U3qVmXkTw==}
