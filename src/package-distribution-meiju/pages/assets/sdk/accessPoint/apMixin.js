@@ -5,6 +5,7 @@
 const app = getApp()
 import { hexStringToArrayBuffer } from 'm-utilsdk/index'
 import { apService } from './apService'
+// eslint-disable-next-line no-undef
 module.exports = Behavior({
   data: {
     isLinkTcpSuccess: false, //tcp连接是否成功

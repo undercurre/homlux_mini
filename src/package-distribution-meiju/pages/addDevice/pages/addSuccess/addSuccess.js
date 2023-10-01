@@ -1,4 +1,4 @@
-// addDevice//pages/addSuccess/addSuccess.js
+/* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 const app = getApp() //获取应用实例
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const netWordMixin = require('../../../assets/js/netWordMixin')
@@ -7,20 +7,16 @@ const log = require('../../../../utils/log')
 import { requestService } from '../../../../utils/requestService'
 import { getReqId, getStamp, cloudEncrypt, validateFun } from 'm-utilsdk/index'
 import { showToast, getFullPageUrl } from '../../../../utils/util'
-// import { service } from '../../../../pages/index/assets/js/service.js'
 import { service } from '../../../assets/js/service.js'
 import { burialPoint } from './assets/js/burialPoint'
-import { isSupportPlugin, goToInvitePage } from '../../../../utils/pluginFilter'
+import { goToInvitePage } from '../../../../utils/pluginFilter'
 import paths from '../../../../utils/paths'
 import { service as services } from '../assets/js/service'
-import { api } from '../../../../api'
-import { setPluginDeviceInfo } from '../../../../track/pluginTrack.js'
-import { baseImgApi, imgBaseUrl } from '../../../../api.js'
+import { api } from '../../../../common/js/api'
+import { baseImgApi, imgBaseUrl } from '../../../../common/js/api.js'
 import { imgesList } from '../../../assets/js/shareImg.js'
-import { info } from '../../../../utils/log'
-import Dialog from '../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
+import Dialog from '../../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
 
-const brandStyle = require('../../../assets/js/brand.js')
 const imgUrl = imgBaseUrl.url + '/shareImg/' + app.globalData.brand
 Page({
   behaviors: [addDeviceMixin, netWordMixin, getFamilyPermissionMixin],
@@ -587,7 +583,6 @@ Page({
           //断开连接
           deviceId: app.addDeviceInfo.deviceId,
         })
-        setPluginDeviceInfo(bindRemoteDeviceResp)
         //url传参改为全局变量传参
         app.addDeviceInfo.cloudBackDeviceInfo = bindRemoteDeviceResp
         goToInvitePage(homeName, bindRemoteDeviceResp, '/pages/index/index', true, () => {})
@@ -867,7 +862,6 @@ Page({
         )
         if (error.errno == '5') {
           clickFlag = !clickFlag
-          //errno = 5 接口超时
           showToast('网络不佳，请检查网络')
         }
       })
@@ -875,6 +869,7 @@ Page({
 
   checkDeviceName(str) {
     let checkRes =
+      // eslint-disable-next-line no-misleading-character-class
       /[\uD83C|\uD83D|\uD83E][\uDC00-\uDFFF][\u200D|\uFE0F]|[\uD83C|\uD83D|\uD83E][\uDC00-\uDFFF]|[0-9|*|#]\uFE0F\u20E3|[0-9|#]\u20E3|[\u203C-\u3299]\uFE0F\u200D|[\u203C-\u3299]\uFE0F|[\u2122-\u2B55]|\u303D|[A9|AE]\u3030|\uA9|\uAE|\u3030/gi.test(
         str,
       )
@@ -1147,9 +1142,6 @@ Page({
           confirmButtonText: '我知道了',
           showCancelButton: false,
           confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
-        }).then((res) => {
-          if (res.action == 'confirm') {
-          }
         })
       })
   },

@@ -1,15 +1,14 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const app = getApp()
 import { imgBaseUrl, baseImgApi } from '../../../../api'
 import paths from '../../../../utils/paths'
 import { requestService, rangersBurialPoint } from '../../../../utils/requestService'
 import { getStamp, getReqId } from 'm-utilsdk/index'
-import { getDeviceSn, getDeviceSn8 } from '../../../../pages/common/js/device'
+import { getDeviceSn, getDeviceSn8 } from '../../../../common/js/device'
 import { isSupportPlugin } from '../../../../utils/pluginFilter'
 import { getFullPageUrl } from '../../../../utils/util.js'
-import { clickEventTracking } from '../../../../track/track.js'
-const dialogCommonData = require('../../../../pages/common/mixins/dialog-common-data.js')
+const dialogCommonData = require('../../../../common/mixins/dialog-common-data.js')
 const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
-import { commonDialog } from '../../../assets/js/commonDialog'
 let timer, timer2 //定时查询
 Page({
   behaviors: [dialogCommonData, getFamilyPermissionMixin],
@@ -347,35 +346,6 @@ Page({
     })
   },
 
-  //批量朋友设备配网设置点击埋点
-  batchNetworkSettingClickTrack(device) {
-    clickEventTracking('user_behavior_event', 'batchNetworkSettingClickTrack', {
-      page_path: getFullPageUrl(),
-      module: 'appliance',
-      page_id: 'page_batch_connet',
-      page_name: '批量联网进度页',
-      page_module: '',
-      widget_name: '设置',
-      widget_id: '',
-      rank: '',
-      object_type: '',
-      object_id: '',
-      object_name: '',
-      device_info: {
-        device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-        sn8: device.sn8, //sn8码
-        widget_cate: device.category, //设备品类
-        wifi_model_version: '', //模组wifi版本
-        link_type: '家电找朋友', //新增配网方式 :家电找朋友
-        iot_device_id: device.applianceCode, //设备id
-      },
-      ext_info: {
-        apptype: [device.category], //设备品类
-        sn8: [device.sn8], //sn8码
-      },
-    })
-  },
-
   backToIndex() {
     wx.reLaunch({
       url: paths.index,
@@ -417,32 +387,6 @@ Page({
     }
   },
 
-  //批量朋友设备配网取消点击埋点
-  batchNetworkCancelClickTrack(category, sn8) {
-    clickEventTracking('user_behavior_event', 'batchNetworkCancelClickTrack', {
-      page_path: getFullPageUrl(),
-      module: 'appliance',
-      page_id: 'page_batch_connet',
-      page_name: '批量联网进度页',
-      page_module: '',
-      widget_name: '取消',
-      widget_id: '',
-      rank: '',
-      object_type: '',
-      object_id: '',
-      object_name: '',
-      device_info: {
-        device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-        wifi_model_version: '', //模组wifi版本
-        link_type: '家电找朋友', //新增配网方式 :家电找朋友
-      },
-      ext_info: {
-        apptype: [...category], //设备品类
-        sn8: [...sn8], //sn8码
-      },
-    })
-  },
-
   goBackIndex() {
     if (!this.data.showFinishBtn) {
       return
@@ -481,38 +425,6 @@ Page({
     )
     wx.reLaunch({
       url: paths.index,
-    })
-  },
-
-  //批量朋友设备配网完成点击埋点
-  batchNetworkFinishClickTrack(category, sn8, sn, applianceCode, failCategory, failSn8, failSn, failApplianceCode) {
-    clickEventTracking('user_behavior_event', 'batchNetworkFinishClickTrack', {
-      page_path: getFullPageUrl(),
-      module: 'appliance',
-      page_id: 'page_batch_connet',
-      page_name: '批量联网进度页',
-      page_module: '',
-      widget_name: '完成',
-      widget_id: '',
-      rank: '',
-      object_type: '',
-      object_id: '',
-      object_name: '',
-      device_info: {
-        device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-        wifi_model_version: '', //模组wifi版本
-        link_type: '家电找朋友', //新增配网方式 :家电找朋友
-      },
-      ext_info: {
-        success_apptype: [...category], //联网成功设备品类
-        success_sn8: [...sn8], //联网成功sn8码
-        success_sn: [...sn], //联网成功sn码
-        success_iot_device_id: [...applianceCode], //联网成功设备ID
-        fail_apptype: [...failCategory], //联网失败设备品类
-        fail_success_sn8: [...failSn8], //联网失败sn8码
-        fail_sn: [...failSn], //联网失败sn8码
-        fail_iot_device_id: [...failApplianceCode], //联网失败设备ID
-      },
     })
   },
 

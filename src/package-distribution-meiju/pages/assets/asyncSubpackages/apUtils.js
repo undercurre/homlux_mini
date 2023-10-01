@@ -1,3 +1,4 @@
+/* eslint-disable no-redeclare */
 const app = getApp()
 import {
   CryptoJS,
@@ -10,8 +11,7 @@ import {
   hexCharCodeToStr,
   stringToHex,
 } from 'm-utilsdk/index'
-import { wifiStr } from '../../../utils/util'
-import { api } from '../../../api'
+import { api } from '../../../common/js/api'
 
 let signStr = app.globalData.privateKey //ap
 let signHex = stringToHex(signStr) //ap->hex
@@ -128,7 +128,7 @@ function encode(order, key, orderType, keyType) {
     var wordArray = CryptoJS.enc.Utf8.parse(hexString)
     // var wordArray = CryptoJS.enc.Hex.parse(hexString)
   } else {
-    var wordArray = CryptoJS.enc.Hex.parse(hexString)
+    wordArray = CryptoJS.enc.Hex.parse(hexString)
   }
   if (keyType == 'utf8') {
     var key = CryptoJS.enc.Utf8.parse(key)
@@ -357,7 +357,6 @@ module.exports = {
   padByte,
   parseIp,
   parsePort,
-  checkApSign,
   dec2hex,
   creatSign,
   checkApSign,

@@ -437,7 +437,6 @@ Page({
   },
 
   async makeSure(e) {
-    this.locationAndBluetoothClickTrack(e.detail.flag) //位置和蓝牙弹窗提示点击埋点
     e = e.detail
     console.log('kkkkkkkkk', e)
     if (e.flag == 'lookGuide') {

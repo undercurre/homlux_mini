@@ -1,194 +1,11 @@
 import { getStamp, hasKey, CryptoJS, md5 } from 'm-utilsdk/index'
 import { getNewSign } from './util'
-import { api } from '../api'
-import trackApiList from '../track/oneKeyTrack/config/trackApiList.js'
-import { authorizedCommonTrack, trackLoaded } from '../track/track.js'
-import { pluginRequestTrack } from '../track/pluginTrack.js'
-import cloudMethods from '../globalCommon/js/cloud.js'
+import { api } from '../common/js/api'
 
 import qs from './qs'
 
 var requestService = {
-  request: (apiName, params, method, headerObj, timeout) => {
-    return new Promise((resolve, reject) => {
-      let timestamp = getStamp()
-      let apiObj = api[apiName]
-      let url
-      if (apiObj) {
-        //已有接口配置
-        // url = api.isMasEnv ? api[apiName].masUrl : api[apiName].url
-        url = api.isMasEnv ? cloudMethods.cloudRule(api[apiName].masUrl) : api[apiName].url //20230605屏蔽多云的需求，20230612开放多云入口
-      } else {
-        if (apiName.indexOf('http') > -1) {
-          //不是现有接口直接传完整地址
-          url = apiName
-        } else {
-          //不是现有接口，复用环境域名，只传uri(MAS Key)
-          url = api.urlPrefix + apiName
-        }
-      }
-
-      let MzTdecode_seed = ''
-      //品类服透传接口，加密data
-      if (apiName == 'MzTransmit') {
-        // 准备解密种子
-        let accessToken = getApp().globalData.userData.key //用户的key
-        accessToken = CryptoJS.enc.Hex.parse(accessToken)
-        accessToken = CryptoJS.enc.Base64.stringify(accessToken)
-        let appKey = api.appKey //云端分配给App的key
-        let md5_key = md5(appKey).substring(0, 16)
-        md5_key = CryptoJS.enc.Utf8.parse(md5_key)
-        MzTdecode_seed = CryptoJS.AES.decrypt(accessToken, md5_key, {
-          mode: CryptoJS.mode.ECB,
-          padding: CryptoJS.pad.Pkcs7,
-        }).toString(CryptoJS.enc.Utf8)
-        //准备对data进行加密
-        if (params.data) {
-          let tempData = ''
-          let content = JSON.stringify(params.data)
-          MzTdecode_seed = CryptoJS.enc.Utf8.parse(MzTdecode_seed)
-          //加密data,加密种子是前面解密的key
-          tempData = CryptoJS.AES.encrypt(content, MzTdecode_seed, {
-            mode: CryptoJS.mode.ECB,
-            padding: CryptoJS.pad.Pkcs7,
-          })
-          tempData = tempData.ciphertext.toString()
-          params['data'] = tempData
-        }
-      }
-      //网关透传接口，加密order
-      let decode_seed = ''
-      if (apiName == 'gatewayTransport') {
-        //准备解密的种子，解密key,seed是appid
-        let content = getApp().globalData.userData.key
-        content = CryptoJS.enc.Hex.parse(content)
-        content = CryptoJS.enc.Base64.stringify(content)
-        let md5_key = md5(api.appKey).substring(0, 16)
-        md5_key = CryptoJS.enc.Utf8.parse(md5_key)
-        //解密key,得到加密种子，用来加密order
-        decode_seed = CryptoJS.AES.decrypt(content, md5_key, {
-          mode: CryptoJS.mode.ECB,
-          padding: CryptoJS.pad.Pkcs7,
-        }).toString(CryptoJS.enc.Utf8)
-
-        //准备对order进行加密
-        if (params.order) {
-          let tempOrder = ''
-          let content = JSON.stringify(params.order)
-          decode_seed = CryptoJS.enc.Utf8.parse(decode_seed)
-          //加密order,加密种子是前面解密的key
-          tempOrder = CryptoJS.AES.encrypt(content, decode_seed, {
-            mode: CryptoJS.mode.ECB,
-            padding: CryptoJS.pad.Pkcs7,
-          })
-          tempOrder = tempOrder.ciphertext.toString()
-          params['order'] = tempOrder
-        }
-      }
-
-      let header = {
-        'content-type': getHeaderContentType(headerObj), // 默认值
-        random: timestamp,
-        secretVersion: '1.0',
-        sign: getNewSign(params, api.apiKey, timestamp, method), //new
-        version: '8.5',
-        iotAppId: '901',
-        ...headerObj,
-        // 'iot-gray-identification': "beta", //临时添加alpha泳道
-      }
-      if (getApp() && getApp().globalData && getApp().globalData.userData) {
-        let accessToken = getApp().globalData.userData.mdata.accessToken
-        let region = wx.getStorageSync('userRegion')
-        header['accessToken'] = accessToken
-        if (region) {
-          header['regionSign'] = md5(accessToken + region)
-        }
-      }
-      if (apiName == 'multiNetworkGuide') {
-        //选型获取指引 要求app版大于7.8才支持蓝牙配网
-        // header['version'] = '8.0.0'
-        header['version'] = ''
-      }
-      // --- 设置快开中转消息头 --- 2021.08.19 Ao(敖广骏)
-      if (getApp() && getApp().globalData && getApp().globalData.pluginHeaders) {
-        let pluginHeaders = getApp().globalData.pluginHeaders
-        for (let key in pluginHeaders) {
-          header[key] = pluginHeaders[key]
-        }
-      }
-      // --- 设置快开中转消息头 end ---
-      //---调用接口的埋点 start  2021-05-06--
-      const selectApi = trackApiList.filter((item) => {
-        return item[apiName] == apiName
-      })
-      trackLoaded('page_loaded_event', apiName, {}, 1, 'start')
-      //---调用接口的埋点 end --
-      wx.request({
-        url: url,
-        data: params,
-        header: header,
-        method: method || 'POST',
-        timeout: timeout || 15000, //lisin 新增接口超时时间传参
-        success(resData) {
-          ApiTrack(apiName, selectApi, resData, 'success', params)
-          trackLoaded('page_loaded_event', apiName, resData, 1, 'end')
-          if (apiName === 'luaControl') {
-            pluginApiTrack('success', params, resData)
-          }
-          wx.hideNavigationBarLoading()
-          console.log('返回数据', resData)
-          if (
-            resData.data.errorCode == 0 ||
-            resData.code == 0 ||
-            resData.data.code == 0 ||
-            resData.data.errCode == 0 ||
-            (resData.data.resultcode == 0 && resData.data.returncode == 0) ||
-            resData.data.status == true ||
-            resData.data.returnStatus == true ||
-            resData.data.status == false ||
-            resData.data.returnStatus == false ||
-            resData.data.code == 200 ||
-            resData.data.retCode == '0' ||
-            resData.retcode == 'SUCC' ||
-            resData.data.retcode == 'SUCC'
-          ) {
-            //支持电商接口
-            //网关透传接口,解密返回的响应
-            if (apiName == 'gatewayTransport') {
-              let content = resData.data.data.reply
-              content = CryptoJS.enc.Hex.parse(content)
-              content = CryptoJS.enc.Base64.stringify(content)
-              //解密返回的响应，解密种子跟前面用来加密的种子是同一个
-              let subResponse = CryptoJS.AES.decrypt(content, decode_seed, {
-                mode: CryptoJS.mode.ECB,
-                padding: CryptoJS.pad.Pkcs7,
-              })
-              resData.data.data.data = JSON.parse(subResponse.toString(CryptoJS.enc.Utf8))
-            }
-            resolve(resData)
-          } else {
-            //登录态过期返回40002
-            if (resData.data.errorCode == 40002 || resData.code == 40002 || resData.data.code == 40002) {
-              getApp().globalData.isLogon = false
-            }
-            ///mjl/v1/device/status/lua/get接口报1321错误码，进入后确权页面
-            if (apiName == 'luaGet' && resData.data.code == '1321') {
-              deviceCardToPlugin(params.applianceCode)
-            }
-            reject(resData)
-          }
-        },
-        fail(error) {
-          ApiTrack(apiName, selectApi, error, 'fail', params)
-          if (apiName === 'luaControl') {
-            pluginApiTrack('fail', params, error)
-          }
-          trackLoaded('page_loaded_event', apiName, error, 1, 'end')
-          reject(error)
-        },
-      })
-    })
-  },
+  request: (apiName, params, method, headerObj, timeout) => {},
   getErrorMessage: (code) => {
     return errorList[code] || '未知系统错误'
   },
@@ -335,62 +152,7 @@ var requestBurialPoint = function (
 }
 
 //字节埋点
-var rangersBurialPoint = function (apiName, param) {
-  const app = getApp()
-  const launchOptions = wx.getLaunchOptionsSync()
-  if (app) {
-    let gdt_vid = launchOptions.query.gdt_vid ? launchOptions.query.gdt_vid : ''
-    let qz_gdt = launchOptions.query.qz_gdt ? launchOptions.query.qz_gdt : ''
-    app.$$Rangers.config({
-      evtParams: {
-        click_id: gdt_vid + qz_gdt,
-        scene: launchOptions.scene,
-      },
-    })
-  }
-  if (app && app.globalData.userData) {
-    app.$$Rangers.config({
-      user_id: app.globalData.userData.uid || '',
-      user_unique_id: app.globalData.userData.uid || '',
-      user_type: app.globalData.userData.grade || '',
-    })
-  }
-  if (app && app.globalData.userData && app.globalData.userData.userInfo) {
-    app.$$Rangers.config({
-      nick_name: app.globalData.userData.userInfo.nickName || '',
-      gender: app.globalData.userData.userInfo.sex === 'F' ? '女' : '男' || '',
-      avatar_url: app.globalData.userData.userInfo.headImgUrl || '',
-    })
-  }
-  if (app) {
-    app.$$Rangers.send() // 设置完毕，可以发送事件了
-  }
-
-  // app.$$Rangers = $$Rangers //挂载到全局实例
-  if (apiName && param) {
-    //设置启动小程序来源埋点
-    param.launch_source = app.globalData.launch_source
-    //设置启动小程序投放渠道cid参数
-    param.cid = app.globalData.cid
-    //如果是微信扫一扫设备二维码进入小程序配网的，ext_info需要携带source wechat_scan属性方便跟踪分析
-    if (app.globalData.fromWechatScan) {
-      if (param.ext_info) {
-        if (typeof param.ext_info == 'object') {
-          param.ext_info.source = app.globalData.fromWechatScan
-        } else {
-          param.ext_info = {
-            ext_info: param.ext_info,
-            source: app.globalData.fromWechatScan,
-          }
-        }
-      } else {
-        param.ext_info = {}
-        param.ext_info.source = app.globalData.fromWechatScan
-      }
-    }
-    app.$$Rangers.event(apiName, param)
-  }
-}
+var rangersBurialPoint = function (apiName, param) {}
 var errorList = {
   1000: '未知系统错误',
   1002: '参数为空',
@@ -417,7 +179,6 @@ const ApiTrack = (apiName, list, resData, flag, reqData) => {
       resData: resData.data,
       reqData,
     }
-    authorizedCommonTrack('user_behavior_event', select['widget_id'], params)
   } else if (flag == 'fail') {
     console.log('接口失败', resData)
     const params = {
@@ -427,7 +188,6 @@ const ApiTrack = (apiName, list, resData, flag, reqData) => {
       reqData,
     }
     console.log('接口埋点fail:apiName', apiName, resData)
-    authorizedCommonTrack('user_behavior_event', select['widget_id'], params)
   }
 }
 const pluginApiTrack = (reqStatus, reqData, resData) => {
@@ -446,7 +206,6 @@ const pluginApiTrack = (reqStatus, reqData, resData) => {
       msg: hasKey(resData.data, 'msg') ? resData.data.msg : '',
     }
   }
-  pluginRequestTrack(data)
 }
 
 const getHeaderContentType = (header) => {

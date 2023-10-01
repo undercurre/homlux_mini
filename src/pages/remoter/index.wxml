@@ -6,7 +6,7 @@
 <nav-bar bind:longpress="toggleDebug">
   <view class="flex-1">
     <text class="ml-24rpx text-40rpx font-semibold">遥控器</text>
-    <text wx:if="{{isDebugMode}}" class="ml-4rpx px-8rpx text-18rpx  text-white">{{debugStr}}</text>
+    <text wx:if="{{isDebugMode}}" class="ml-4rpx px-8rpx text-18rpx text-white">{{debugStr}}</text>
   </view>
 </nav-bar>
 

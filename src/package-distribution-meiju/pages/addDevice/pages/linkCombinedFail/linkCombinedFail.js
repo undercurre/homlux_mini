@@ -1,17 +1,15 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-// addDevice/pages/linkCombinedDevice/linkCombinedDevice.js
+/* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 const app = getApp()
 const bleNeg = require('../../../../utils/ble/ble-negotiation')
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const wahinMixin = require('../wahinProtocol/mixin/wahinMixin')
 const netWordMixin = require('../../../assets/js/netWordMixin')
 const paths = require('../../../../utils/paths')
-const log = require('../../../../utils/log')
 import { requestService } from '../../../../utils/requestService'
 import { getReqId, getStamp } from 'm-utilsdk/index'
 import { burialPoint } from './assets/js/burialPoint'
-import { api, imgBaseUrl } from '../../../../api'
-import computedBehavior, { includes } from '../../../../utils/miniprogram-computed.js'
+import { imgBaseUrl } from '../../../../common/js/api'
+import computedBehavior from '../../../../utils/miniprogram-computed.js'
 import { imgesList } from '../../../assets/js/shareImg.js'
 const imgUrl = imgBaseUrl.url + '/shareImg/' + app.globalData.brand
 const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')

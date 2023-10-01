@@ -1,4 +1,4 @@
-import { checkAndGetWxSystemInfo, checkAndGetWxGetSetting } from '../utils/wx/utils'
+import { checkAndGetWxSystemInfo, checkAndGetWxGetSetting } from '../../utils/wx/utils'
 import { hasKey } from 'm-utilsdk/index'
 
 const checkPermission = {

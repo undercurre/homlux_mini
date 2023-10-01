@@ -53,13 +53,13 @@
   /* margin-top:27rpx; */
 }
 
-.content-link{
+.content-link {
   display: flex;
   align-items: center;
   font-family: PingFangSC-Regular;
   font-size: 26rpx;
   color: #267aff;
-  letter-spacing:  -0.58rpx;
+  letter-spacing: -0.58rpx;
   text-align: left;
   font-weight: bold;
   line-height: 36rpx;
@@ -72,8 +72,8 @@
   width: 10rpx;
   height: 10rpx;
   margin-left: 8rpx;
-  border-top: solid 3rpx #267AFF;
-  border-right: solid 3rpx #267AFF;
+  border-top: solid 3rpx #267aff;
+  border-right: solid 3rpx #267aff;
   transform: rotate(45deg);
 }
 

@@ -5,10 +5,9 @@
  */
 
 const app = getApp() //获取应用实例
-import config from '../common/config.js'
+import config from '../common/js/config.js'
 import paths from './paths'
 import { getReqId, getStamp, cloudDecrypt, hexCharCodeToStr, CryptoJS } from 'm-utilsdk/index'
-import { showToast } from './util'
 import { isSupportPlugin } from './pluginFilter.js'
 import { requestService } from './requestService'
 
@@ -334,6 +333,7 @@ const addDeviceSDK = {
    *
    */
   goToAddDevice({ type, sn8, A0, mode, guideInfo, isCheckHasPlugin = true }) {
+    // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       // if (!paramas.type || !paramas.sn8) { //无完整设备信息直接跳转添加设备页
       //     wx.navigateTo({
@@ -492,66 +492,6 @@ const addDeviceSDK = {
           console.log('调添加设备灰度权限接口', error)
           reject(error)
         })
-    })
-  },
-
-  //是否是添加设备灰度用户
-  /**
-   *
-   * @param {*} isCheckGray 是否校验灰度 一些特殊入口可以选择不校验
-   */
-  isGrayUser(isCheckGray = true) {
-    return new Promise(async (resolve, reject) => {
-      // 29版本用户灰度下线，不需要校验用户是否灰度，直接return
-      console.log('[跳过灰度校验]')
-      resolve(true)
-      return
-      if (!isCheckGray) {
-        console.log('[跳过灰度校验]')
-        resolve(true)
-        return
-      }
-      if (app.globalData.isGetGrayList) {
-        //已获取过权限
-        resolve(app.globalData.isCanAddDevice)
-      } else {
-        if (app.globalData.isLogon) {
-          try {
-            let data = await this.getCheckUserCanAddDevice()
-            app.globalData.isCanAddDevice = data.gray
-            wx.setStorageSync('IS_CAN_ADD_DEVICE', app.globalData.isCanAddDevice)
-            app.globalData.isGetGrayList = true
-          } catch (error) {
-            app.globalData.isCanAddDevice = wx.getStorageSync('IS_CAN_ADD_DEVICE') //接口失败取缓存
-            app.globalData.isGetGrayList = false
-          }
-          resolve(app.globalData.isCanAddDevice)
-        } else {
-          reject()
-        }
-      }
-    })
-  },
-
-  //msmartlite插件直连插件 跳转配网
-  msmartLiteBlueAfterLinkNet({
-    type,
-    sn8,
-    deviceId, //蓝牙id
-    deviceName, //设备名字
-    deviceImg, //设备图片
-  }) {
-    app.addDeviceInfo.type = type
-    app.addDeviceInfo.sn8 = sn8
-    app.addDeviceInfo.deviceId = deviceId
-    app.addDeviceInfo.deviceName = deviceName
-    app.addDeviceInfo.deviceImg = deviceImg
-    app.addDeviceInfo.mode = 3
-    app.addDeviceInfo.fm = 'bluePugin'
-    app.addDeviceInfo.blueVersion = 2
-    app.addDeviceInfo.isCheck = true
-    wx.navigateTo({
-      url: paths.inputWifiInfo,
     })
   },
 

@@ -1,5 +1,4 @@
-import { toHexString, string2Uint8Array, dec2hex } from 'm-utilsdk/index'
-import { api, environment } from '../../../../../api'
+import { dec2hex } from 'm-utilsdk/index'
 import { constantFun } from './constantFun'
 const app = getApp()
 

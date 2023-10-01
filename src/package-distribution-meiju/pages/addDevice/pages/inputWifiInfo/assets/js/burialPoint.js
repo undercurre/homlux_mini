@@ -1,17 +1,9 @@
 import { rangersBurialPoint } from '../../../../../../utils/requestService'
 import { getFullPageUrl } from '../../../../../../utils/util'
 
-import { ApBurialPoint } from '../../../assets/js/burialPoint'
-
 export const burialPoint = {
   //本地日志上报
-  apLocalLog: (params) => {
-    ApBurialPoint.apLocalLog({
-      pageId: 'page_WiFi_edit',
-      pageName: '输入家庭WiFi密码页',
-      log: params.log,
-    })
-  },
+  apLocalLog: (params) => {},
   /**
    * 页面浏览埋点 输入家庭WiFi密码页
    */

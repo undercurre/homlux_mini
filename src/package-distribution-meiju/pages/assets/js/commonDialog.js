@@ -1,4 +1,5 @@
-import Dialog from '../../../miniprogram_npm/m-ui/mx-dialog/dialog'
+import Dialog from '../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const paths = require('../../../utils/paths')
 const commonDialog = {
   /**

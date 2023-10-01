@@ -33,7 +33,8 @@ module.exports = {
   searchDevice: '/package-distribution-meiju/pages/select-devices/pages/search-device/search-device',
   batchNetwork: '/package-distribution-meiju/pages/addDevice/pages/batchNetwork/batchNetwork', //找朋友批量配网页面
   friendDeviceNetWork: '/package-distribution-meiju/pages/addDevice/pages/friendDeviceNetWork/friendDeviceNetWork', //找朋友单个朋友设备配网页面
-  friendDeviceNetWorkFail: '/package-distribution-meiju/pages/addDevice/pages/friendDeviceNetworkFail/friendDeviceNetworkFail', //找朋友单个朋友设备配网失败页
+  friendDeviceNetWorkFail:
+    '/package-distribution-meiju/pages/addDevice/pages/friendDeviceNetworkFail/friendDeviceNetworkFail', //找朋友单个朋友设备配网失败页
   editBoundDevice: '/package-distribution-meiju/pages/addDevice/pages/editBoundDevice/editBoundDevice', //找朋友编辑朋友设备绑定信息页面
   feedback: '/package-distribution-meiju/pages/addDevice/pages/feedback/feedback', //问题反馈
   frequencyGuide: '/package-distribution-meiju/pages/user-gudie/pages/frequency-guide/frequency-guide', //wifi频率指引

@@ -18,8 +18,8 @@ dependencies:
     specifier: ^2.0.1
     version: 2.0.1
   js-homos:
-    specifier: ^0.0.14
-    version: 0.0.14
+    specifier: ^0.0.17
+    version: 0.0.17
   lottie-miniprogram:
     specifier: ^1.0.12
     version: 1.0.12
@@ -2396,8 +2396,8 @@ packages:
     hasBin: true
     dev: true
 
-  /js-homos@0.0.14:
-    resolution: {integrity: sha512-0J4u9tHXLqXbuToXGRAd2LQ5NL9VtNoxuyYyj4Z/Xx+YrvEa5WraHgOkI1L3DEuCC7T4LTZ+CbEwzNv7l1iWgw==}
+  /js-homos@0.0.17:
+    resolution: {integrity: sha512-Vr8vTXko7FGhDswG5sqn2AvtYQbH3B6HD1PEobBlm9UmlPLRPzMzXsMgIVVCoA+RxJghNU6sM9uJo1Z6QGWEcQ==}
     dependencies:
       crypto-js: 4.1.1
       dayjs: 1.11.9
@@ -2467,7 +2467,7 @@ packages:
     dev: true
 
   /leven@2.1.0:
-    resolution: {integrity: sha512-nvVPLpIHUxCUoRLrFqTgSxXJ614d8AgQoWl7zPe/2VadE8+1dpU3LBhowRuBAcuwruWtOdD8oYC9jDNJjXDPyA==}
+    resolution: {integrity: sha1-wuep93IJTe6dNCAq6KzORoeHVYA=}
     engines: {node: '>=0.10.0'}
     dev: false
 
@@ -3096,7 +3096,7 @@ packages:
     dev: true
 
   /reinterval@1.1.0:
-    resolution: {integrity: sha512-QIRet3SYrGp0HUHO88jVskiG6seqUGC5iAG7AwI/BV4ypGcuqk9Du6YQBUOUqm9c8pw1eyLoIaONifRua1lsEQ==}
+    resolution: {integrity: sha1-M2Hs+jymwYKDOA3Qu5VG85D17Oc=}
     dev: false
 
   /require-directory@2.1.1:
@@ -3487,7 +3487,7 @@ packages:
     dev: true
 
   /typedarray@0.0.6:
-    resolution: {integrity: sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==}
+    resolution: {integrity: sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=}
     dev: false
 
   /typescript@4.9.5:
@@ -3618,7 +3618,7 @@ packages:
     dev: true
 
   /util-deprecate@1.0.2:
-    resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
+    resolution: {integrity: sha1-RQ1Nyfpw3nMnYvvS1KKJgUGaDM8=}
 
   /v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}

@@ -1,18 +1,18 @@
-// addDevice/pages/addGuide/addGuide.js
+/* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 const app = getApp()
 const log = require('../../../../utils/log')
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const checkAuthMixin = require('../../mixins/checkAuthMixin')
 const netWordMixin = require('../../../assets/js/netWordMixin')
-const bluetooth = require('../../../../pages/common/mixins/bluetooth')
-const dialogCommonData = require('../../../../pages/common/mixins/dialog-common-data.js')
+const bluetooth = require('../../../../common/mixins/bluetooth')
+const dialogCommonData = require('../../../../common/mixins/dialog-common-data.js')
 const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 
 import { isSupportPlugin, isColmoDeviceByDecodeSn } from '../../../../utils/pluginFilter'
 import { addDeviceTime } from '../../../assets/js/utils'
 import { deviceImgMap } from '../../../../utils/deviceImgMap'
 import computedBehavior from '../../../../utils/miniprogram-computed.js'
-import { deviceImgApi, baseImgApi, imgBaseUrl } from '../../../../api'
+import { deviceImgApi, imgBaseUrl } from '../../../../common/js/api'
 import { burialPoint } from './assets/js/burialPoint'
 import { openAdapter } from '../utils/blueApi'
 import { getStamp, getReqId, ab2hex } from 'm-utilsdk/index'
@@ -21,9 +21,9 @@ import { getScanRespPackInfo, getDeviceCategoryAndSn8 } from '../../../../utils/
 import { requestService } from '../../../../utils/requestService'
 import paths from '../../../../utils/paths'
 import { addDeviceSDK } from '../../../../utils/addDeviceSDK'
-import { checkPermission } from '../../../../pages/common/js/permissionAbout/checkPermissionTip'
+import { checkPermission } from '../../../../common/js/checkPermissionTip'
 import { typesPreserveAfterCheckGuideByA0 } from '../../config/index'
-import Dialog from '../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
+import Dialog from '../../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
 const brandStyle = require('../../../assets/js/brand.js')
 import { imgesList } from '../../../assets/js/shareImg.js'
 const imgUrl = imgBaseUrl.url + '/shareImg/' + app.globalData.brand
@@ -1041,7 +1041,7 @@ Page({
     if (currentHomeGroupId && localBlueDevices[currentHomeGroupId]) {
       localBlueDevices[currentHomeGroupId].push(deviceInfo)
     } else {
-      localBlueDevices[currentHomeGroupId] = new Array()
+      localBlueDevices[currentHomeGroupId] = []
       localBlueDevices[currentHomeGroupId].push(deviceInfo)
     }
     console.log('local blue devices =====', localBlueDevices)
@@ -1078,9 +1078,6 @@ Page({
           confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
           cancelButtonColor: this.data.dialogStyle.cancelButtonColor3,
           showCancelButton: false,
-        }).then((res) => {
-          if (res.action == 'confirm') {
-          }
         })
         //非主动取消扫码
         // wx.showModal({
@@ -1115,31 +1112,19 @@ Page({
         cancleButtonText: '取消',
         confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
         cancelButtonColor: this.data.dialogStyle.cancelButtonColor3,
+      }).then((res) => {
+        if (res.action == 'confirm') {
+          //确定
+          wx.navigateTo({
+            url: paths.linkDevice,
+          })
+          burialPoint.touchScreenDiologConfirm({
+            deviceSessionId: app.globalData.deviceSessionId,
+            type: type,
+            sn: app.addDeviceInfo.sn,
+          })
+        }
       })
-        .then((res) => {
-          if (res.action == 'confirm') {
-            //确定
-            wx.navigateTo({
-              url: paths.linkDevice,
-            })
-            burialPoint.touchScreenDiologConfirm({
-              deviceSessionId: app.globalData.deviceSessionId,
-              type: type,
-              sn: app.addDeviceInfo.sn,
-            })
-          }
-        })
-        .catch((error) => {
-          if (res.action == 'cancle') {
-            //取消
-            burialPoint.touchScreenDiologCancel({
-              deviceSessionId: app.globalData.deviceSessionId,
-              type: type,
-              sn: app.addDeviceInfo.sn,
-            })
-          }
-        })
-
       // wx.showModal({
       //   title: '',
       //   content: `你正在添加${deviceName},确定要继续吗？`,
@@ -1630,7 +1615,6 @@ Page({
   },
 
   async makeSure(e) {
-    this.locationAndBluetoothClickTrack(e.detail.flag) //位置和蓝牙弹窗提示点击埋点
     e = e.detail
     console.log('kkkkkkkkk', e)
     if (e.flag == 'bottomBtn') {

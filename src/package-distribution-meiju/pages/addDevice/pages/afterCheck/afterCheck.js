@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 // addDevice/pages/afterCheck/afterCheck.js
 const app = getApp()
 const log = require('../../../../utils/log')
@@ -12,9 +13,8 @@ import { getFullPageUrl } from '../../../../utils/util'
 import { isSupportPlugin, goTopluginPage } from '../../../../utils/pluginFilter'
 import { burialPoint } from './assets/js/burialPoint'
 import paths from '../../../../utils/paths'
-import { setPluginDeviceInfo } from '../../../../track/pluginTrack.js'
 import { typesPreserveAfterCheckGuideByA0 } from '../../config/index'
-import Dialog from '../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
+import Dialog from '../../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
 let timer
 
 Page({
@@ -60,7 +60,7 @@ Page({
     console.warn('afterCheck randomCode---', this.data.randomCode)
     // 组合配网新增逻辑
     let applianceCode, deviceInfo, type, deviceName, A0
-    if (!!app.addDeviceInfo.cloudBackDeviceInfo) {
+    if (app.addDeviceInfo.cloudBackDeviceInfo) {
       deviceInfo = app && app.addDeviceInfo.cloudBackDeviceInfo
       applianceCode = app.addDeviceInfo.cloudBackDeviceInfo.applianceCode
       deviceName = app.addDeviceInfo.cloudBackDeviceInfo.deviceName
@@ -111,7 +111,6 @@ Page({
             url: `${paths.linkCombinedDevice}?randomCode=${this.data.randomCode}`,
           })
         } else {
-          setPluginDeviceInfo(deviceInfo)
           wx.navigateTo({
             url: getPluginUrl(type) + '?backTo=/pages/index/index&deviceInfo=' + deviceInfo,
             fail(error) {
@@ -125,8 +124,6 @@ Page({
                 title: '无法跳转设备控制页面',
                 message: '未获取到控制页面，请检查网络后重试，若仍无法获取，请联系客服',
                 confirmButtonText: '返回首页',
-                confirmButtonColor: brandConfig.dialogStyle.confirmButtonColor,
-                cancelButtonColor: brandConfig.dialogStyle.cancelButtonColor3,
                 showCancelButton: false,
               }).then((res) => {
                 if (res.action == 'confirm') {

@@ -1,6 +1,6 @@
 import paths from '../../utils/paths'
 
-import { imgBaseUrl } from '../../common/api'
+import { imgBaseUrl } from '../../common/js/api'
 import { rangersBurialPoint } from '../../utils/requestService'
 import { getFullPageUrl } from '../../utils/util'
 Component({

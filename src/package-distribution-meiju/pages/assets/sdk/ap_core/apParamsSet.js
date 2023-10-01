@@ -1,5 +1,5 @@
-import { toHexString, string2Uint8Array, dec2hex } from 'm-utilsdk/index'
-import { api, environment } from '../../../../api'
+import { dec2hex } from 'm-utilsdk/index'
+import { environment } from '../../../../common/js/api'
 
 import { constantFun } from './constantFun'
 

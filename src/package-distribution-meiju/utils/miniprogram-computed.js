@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-undef
 module.exports = Behavior({
   lifetimes: {
     created() {
@@ -84,7 +85,6 @@ module.exports = Behavior({
 
             if (this._doingSetData) {
               // eslint-disable-next-line no-console
-              // eslint-disable-next-line prettier/prettier
               console.warn("can't call setData in computed getter function!")
               return
             }
@@ -115,8 +115,6 @@ module.exports = Behavior({
       const originalSetData = this._originalSetData
 
       if (this._doingSetData) {
-        // eslint-disable-next-line no-console
-        // eslint-disable-next-line prettier/prettier
         console.warn("can't call setData in computed getter function!")
         return
       }

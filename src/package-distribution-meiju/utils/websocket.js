@@ -1,6 +1,6 @@
 import { urlParamsJoin, getSSESign } from './util.js'
 import { getReqId } from 'm-utilsdk/index'
-import { api } from '../api'
+import { api } from '../common/js/api'
 export default class websocket {
   constructor({ heartCheck, isReconnection, initWebSocketObj }) {
     // 是否连接

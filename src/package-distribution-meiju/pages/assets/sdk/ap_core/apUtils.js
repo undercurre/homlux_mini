@@ -1,3 +1,4 @@
+/* eslint-disable no-redeclare */
 import {
   CryptoJS,
   md5,
@@ -8,8 +9,7 @@ import {
   cloudEncrypt,
   hexCharCodeToStr,
 } from 'm-utilsdk/index'
-import { wifiStr } from '../../../../utils/util'
-import { api } from '../../../../api'
+import { api } from '../../../../common/js/api'
 
 let signStr = 'xhdiwjnchekd4d512chdjx5d8e4c394D2D7S'
 let signHex = '78686469776a6e6368656b6434643531326368646a783564386534633339344432443753'
@@ -358,7 +358,6 @@ const apUtils = {
   checkApSign,
   dec2hex,
   creatSign,
-  checkApSign,
   decode2body,
   parseUdpBody,
   construOrder,
@@ -377,7 +376,6 @@ module.exports = {
   checkApSign,
   dec2hex,
   creatSign,
-  checkApSign,
   decode2body,
   parseUdpBody,
   construOrder,

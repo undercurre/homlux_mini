@@ -1,134 +1,35 @@
+/* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
+import { service } from '../js/getApiPromise'
+
 const app = getApp()
 let timer = ''
 let timer1 = ''
 
-import { baseImgApi, deviceImgApi } from '../../../api'
-import { service } from '../js/getApiPromise.js'
+import { baseImgApi, deviceImgApi } from '../js/api'
 import { getStamp, getReqId, isEmptyObject, hasKey } from 'm-utilsdk/index'
-import { creatDeviceSessionId, getFullPageUrl, showToast } from '../../../utils/util.js'
-import { requestService, rangersBurialPoint } from '../../../utils/requestService'
+import { creatDeviceSessionId, getFullPageUrl } from '../../utils/util.js'
+import { requestService, rangersBurialPoint } from '../../utils/requestService'
 import { locationdevice, ab2hex, hex2bin, inArray, hexCharCodeToStr } from '../js/bluetoothUtils.js'
-import { deviceImgMap } from '../../../utils/deviceImgMap'
-import { supportedApplianceTypes, isSupportPlugin } from '../../../utils/pluginFilter'
-import { inputWifiInfo, addGuide, linkDevice, index as homePage } from '../../../utils/paths.js'
-import { isAddDevice } from '../../../utils/temporaryNoSupDevices'
-import { clickEventTracking } from '../../../track/track.js'
-import { getWxSystemInfo, getWxGetSetting } from '../../../utils/wx/index.js'
-import { addDeviceSDK } from '../../../utils/addDeviceSDK.js'
-import { getPrivateKeys } from '../../../utils/getPrivateKeys'
+import { deviceImgMap } from '../../utils/deviceImgMap'
+import { supportedApplianceTypes, isSupportPlugin } from '../../utils/pluginFilter'
+import { inputWifiInfo, addGuide, linkDevice, index as homePage } from '../../utils/paths.js'
+import { isAddDevice } from '../../utils/temporaryNoSupDevices'
+import { getWxSystemInfo, getWxGetSetting } from '../../utils/wx/index.js'
+import { addDeviceSDK } from '../../utils/addDeviceSDK.js'
+import { getPrivateKeys } from '../../utils/getPrivateKeys'
 import Dialog from '../../../miniprogram_npm/m-ui/mx-dialog/dialog'
-// const brandStyle = require('../../../assets/js/brand.js')
 const brandStyle = require('../../../package-distribution-meiju/pages/assets/js/brand')
 const log = require('../../../utils/log')
 const searchTime = 30000
 const blueWifi = 'wifiAndBle'
-// const ble = 'ble'
 let enterTime = 0
-// ArrayBuffer转16进度字符串示例
-// function ab2hex(buffer) {
-//   var hexArr = Array.prototype.map.call(
-//     new Uint8Array(buffer),
-//     function (bit) {
-//       return ('00' + bit.toString(16)).slice(-2)
-//     }
-//   )
-//   return hexArr.join('');
-// }
+// eslint-disable-next-line no-undef
 module.exports = Behavior({
   behaviors: [],
   properties: {},
   data: {
     dcpDeviceImgList: [],
-    devices: [
-      // {
-      //   deviceImg: 'https://midea-file.oss-cn-hangzhou.aliyuncs.com/2021/12/10/14/RJQswpfADACBYOAKLcUQ.png',
-      //   deviceName: '多开门冰箱',
-      //   isSupport: true,
-      //   category: 'CA',
-      //   RSSI: -50,
-      //   deviceId: "30:B2:37:91:7A:00",
-      //   isSameSn8Nearest: false,
-      // },
-      // {
-      //   deviceImg: 'https://midea-file.oss-cn-hangzhou.aliyuncs.com/2021/12/10/14/RJQswpfADACBYOAKLcUQ.png',
-      //   deviceName: '多开门冰箱',
-      //   category: 'CA',
-      //   RSSI: -60,
-      //   isSameSn8Nearest: false,
-      // },
-      // {
-      //   deviceImg: 'https://www.smartmidea.net/projects/sit/meiju-lite-assets/mainContent/images/img_wushebei.png',
-      //   deviceName: '测试3'
-      // },
-      // {
-      //   deviceImg: 'https://www.smartmidea.net/projects/sit/meiju-lite-assets/mainContent/images/img_wushebei.png',
-      //   deviceName: '测试3'
-      // },
-      // {
-      //   deviceImg: 'https://www.smartmidea.net/projects/sit/meiju-lite-assets/mainContent/images/img_wushebei.png',
-      //   deviceName: '测试1测试1测试1测试1测试1测试1'
-      // },
-      // {
-      //   deviceImg: 'https://www.smartmidea.net/projects/sit/meiju-lite-assets/mainContent/images/img_wushebei.png',
-      //   deviceName: '测试2'
-      // },
-      // {
-      //   deviceImg: 'https://www.smartmidea.net/projects/sit/meiju-lite-assets/mainContent/images/img_wushebei.png',
-      //   deviceName: '测试3'
-      // },
-      // {
-      //   deviceImg: 'https://www.smartmidea.net/projects/sit/meiju-lite-assets/mainContent/images/img_wushebei.png',
-      //   deviceName: '测试3'
-      // },
-      // {
-      //   deviceImg: 'https://www.smartmidea.net/projects/sit/meiju-lite-assets/mainContent/images/img_wushebei.png',
-      //   deviceName: '测试1测试1测试1测试1测试1测试1'
-      // },
-      // {
-      //   deviceImg: 'https://www.smartmidea.net/projects/sit/meiju-lite-assets/mainContent/images/img_wushebei.png',
-      //   deviceName: '测试2'
-      // },
-      // {
-      //   deviceImg: 'https://www.smartmidea.net/projects/sit/meiju-lite-assets/mainContent/images/img_wushebei.png',
-      //   deviceName: '测试3'
-      // },
-      // {
-      //   deviceImg: 'https://www.smartmidea.net/projects/sit/meiju-lite-assets/mainContent/images/img_wushebei.png',
-      //   deviceName: '测试3'
-      // },
-      // {
-      //   deviceImg: 'https://www.smartmidea.net/projects/sit/meiju-lite-assets/mainContent/images/img_wushebei.png',
-      //   deviceName: '测试1测试1测试1测试1测试1测试1'
-      // },
-      // {
-      //   deviceImg: 'https://www.smartmidea.net/projects/sit/meiju-lite-assets/mainContent/images/img_wushebei.png',
-      //   deviceName: '测试2'
-      // },
-      // {
-      //   deviceImg: 'https://www.smartmidea.net/projects/sit/meiju-lite-assets/mainContent/images/img_wushebei.png',
-      //   deviceName: '测试3'
-      // },
-      // {
-      //   deviceImg: 'https://www.smartmidea.net/projects/sit/meiju-lite-assets/mainContent/images/img_wushebei.png',
-      //   deviceName: '测试3'
-      // },
-      // {
-      //   deviceImg: 'https://www.smartmidea.net/projects/sit/meiju-lite-assets/mainContent/images/img_wushebei.png',
-      //   deviceName: '测试1测试1测试1测试1测试1测试1'
-      // },
-      // {
-      //   deviceImg: 'https://www.smartmidea.net/projects/sit/meiju-lite-assets/mainContent/images/img_wushebei.png',
-      //   deviceName: '测试2'
-      // },
-      // {
-      //   deviceImg: 'https://www.smartmidea.net/projects/sit/meiju-lite-assets/mainContent/images/img_wushebei.png',
-      //   deviceName: '测试3'
-      // },
-      // {
-      //   deviceImg: 'https://www.smartmidea.net/projects/sit/meiju-lite-assets/mainContent/images/img_wushebei.png',
-      //   deviceName: '测试3'
-      // }
-    ],
+    devices: [],
     isDeviceLength: false,
     isBluetoothMixinNotOpenWxLocation: false,
     isBluetoothMixinGoSetting: false,
@@ -1351,23 +1252,6 @@ module.exports = Behavior({
             cateExtInfo = data?.category ? data.category : ''
             sn8ExtInfo = data?.mainConnectinfoList?.length ? data.mainConnectinfoList[0].code : ''
           }
-          clickEventTracking('user_behavior_event', 'serverGuideResult', {
-            device_info: {
-              device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-              sn: '', //sn码
-              sn8: item.sn8, //sn8码
-              a0: '', //a0码
-              widget_cate: item.category, //设备品类
-              wifi_model_version: '', //模组wifi版本
-              link_type: app.addDeviceInfo.linkType, //连接方式 bluetooth/ap/...
-              iot_device_id: '', //设备id
-            },
-            ext_info: {
-              code: codeExtInfo,
-              cate: cateExtInfo,
-              sn8: sn8ExtInfo,
-            },
-          })
         } catch (error) {
           getApp().setMethodFailedCheckingLog('actionGoNetwork', `获取配网指引失败:${JSON.stringify(error)}`)
           console.log('[get add device guide error]', error)
@@ -1435,9 +1319,6 @@ module.exports = Behavior({
             confirmButtonText: '我知道了',
             confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
             showCancelButton: false,
-          }).then((res) => {
-            if (res.action == 'confirm') {
-            }
           })
         }
       }
@@ -1474,17 +1355,6 @@ module.exports = Behavior({
       } else if (mode == 8) {
         app.addDeviceInfo.linkType = 'NB-IOT'
         app.globalData.deviceSessionId = creatDeviceSessionId(app.globalData.userData.uid) //创建一次配网标识
-        clickEventTracking('user_behavior_event', 'nfc_NB', {
-          device_info: {
-            device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-            sn: item.plainSn || '', //sn码
-            sn8: item.sn8 || '', //sn8码
-            a0: '', //a0码
-            widget_cate: item.type, //设备品类
-            wifi_model_version: '', //模组wifi版本
-            link_type: 'NB-IOT', //连接方式 bluetooth/ap/
-          },
-        })
         wx.navigateTo({
           url: linkDevice,
         })
@@ -1762,26 +1632,6 @@ module.exports = Behavior({
         wx.authorize({
           scope: 'scope.bluetooth',
           async success() {
-            //用户授权小程序使用蓝牙权限允许点击埋点
-            clickEventTracking('user_behavior_event', 'bluetoothAuthorize', {
-              page_path: getFullPageUrl(),
-              module: '公共',
-              page_id: 'popus_page_bluetooth_auth',
-              page_name: '蓝牙授权弹窗',
-              page_module: '',
-              widget_name: '允许',
-              widget_id: 'click_allow',
-              rank: '',
-              object_type: '',
-              object_id: '',
-              object_name: '',
-              device_info: {},
-              ext_info: {},
-              sn: '',
-              tsn: '',
-              dsn: '',
-              type: '',
-            })
             if (!app.globalData.isBluetoothMixinHasAuthBluetooth) {
               await _this.checkSystemInfo()
             }
@@ -1790,26 +1640,6 @@ module.exports = Behavior({
           fail(err) {
             if (err.errMsg.includes('deny')) {
               app.globalData.hasAuthBluetooth = true
-              //用户授权小程序使用蓝牙权限拒绝点击埋点
-              clickEventTracking('user_behavior_event', 'bluetoothAuthorize', {
-                page_path: getFullPageUrl(),
-                module: '公共',
-                page_id: 'popus_page_bluetooth_auth',
-                page_name: '蓝牙授权弹窗',
-                page_module: '',
-                widget_name: '拒绝',
-                widget_id: 'click_cancel',
-                rank: '',
-                object_type: '',
-                object_id: '',
-                object_name: '',
-                device_info: {},
-                ext_info: {},
-                sn: '',
-                tsn: '',
-                dsn: '',
-                type: '',
-              })
             }
           },
           complete() {
@@ -1819,164 +1649,6 @@ module.exports = Behavior({
             } catch (error) {
               console.log('不执行timing')
             }
-          },
-        })
-      }
-    },
-
-    //位置和蓝牙弹窗提示点击埋点
-    locationAndBluetoothClickTrack(flag, deviceInfo) {
-      let sn8 = deviceInfo && deviceInfo.sn8 ? deviceInfo.sn8 : ''
-      let type = deviceInfo && deviceInfo.type ? deviceInfo.type : ''
-      this.setData({
-        isSureDialog: false,
-        showOpenBluetooth: false,
-        showOpenLocation: false,
-      })
-      if (flag == 'bluetoothAuth') {
-        let params = {
-          page_path: getFullPageUrl(),
-          module: 'appliance',
-          page_id: 'popus_page_auth_msg',
-          page_name: '提示授权允许信息弹窗',
-          page_module: '',
-          widget_name: '我知道了',
-          widget_id: 'click_knew',
-          rank: '',
-          object_type: '',
-          object_id: '',
-          object_name: '',
-          device_info: {
-            device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-            sn: '', //sn码
-            sn8: sn8, //sn8码
-            a0: '', //a0码
-            widget_cate: type, //设备品类
-            wifi_model_version: '', //模组wifi版本
-            link_type: 'bluetooth', //连接方式 bluetooth/WiFi..
-            iot_device_id: '', //设备id
-          },
-          ext_info: {
-            refer_page_name: getFullPageUrl(),
-          },
-          sn: '',
-          tsn: '',
-          dsn: '',
-          type: '',
-        }
-        //用户未授权小程序使用蓝牙权限弹窗"我知道了"点击埋点
-        clickEventTracking('user_behavior_event', 'bluetoothAuthorize', params)
-      } else if (flag == 'openBluetooth') {
-        let params = {
-          page_path: getFullPageUrl(),
-          module: 'appliance',
-          page_id: 'popus_page_open_bluetooth',
-          page_name: '提示开启蓝牙弹窗',
-          page_module: '',
-          widget_name: '我知道了',
-          widget_id: 'click_knew',
-          rank: '',
-          object_type: '',
-          object_id: '',
-          object_name: '',
-          device_info: {
-            device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-            sn: '', //sn码
-            sn8: sn8, //sn8码
-            a0: '', //a0码
-            widget_cate: type, //设备品类
-            wifi_model_version: '', //模组wifi版本
-            link_type: 'bluetooth', //连接方式 bluetooth/WiFi..
-            iot_device_id: '', //设备id
-          },
-          ext_info: {
-            refer_page_name: getFullPageUrl(),
-          },
-          sn: '',
-          tsn: '',
-          dsn: '',
-          type: '',
-        }
-        //用户未开启蓝牙弹窗"我知道了"点击埋点
-        clickEventTracking('user_behavior_event', 'bluetoothAuthorize', params)
-      } else if (flag == 'openLocation') {
-        //用户未开启位置信息弹窗"我知道了"点击埋点
-        clickEventTracking('user_behavior_event', 'bluetoothAuthorize', {
-          page_path: getFullPageUrl(),
-          module: 'appliance',
-          page_id: 'popus_page_locate_service',
-          page_name: '提示开启定位服务弹窗',
-          page_module: '',
-          widget_name: '我知道了',
-          widget_id: 'click_knew',
-          rank: '',
-          object_type: '',
-          object_id: '',
-          object_name: '',
-          device_info: {},
-          ext_info: {
-            refer_page_name: getFullPageUrl(),
-          },
-          sn: '',
-          tsn: '',
-          dsn: '',
-          type: '',
-        })
-      }
-    },
-    // 蓝牙和位置权限校验埋点
-    checkLocationAndBluetoothBurialPoint(title, content) {
-      if (title == '请开启位置权限') {
-        let object_name = []
-        if (content.includes('开启手机定位')) {
-          object_name.push('开启定位服务')
-        }
-        if (content.includes('授予微信使用定位的权限')) {
-          object_name.push('允许微信获取位置权限')
-        }
-        if (content.includes('允许本程序使用位置信息')) {
-          object_name.push('允许小程序使用位置权限')
-        }
-        object_name = object_name.join('/')
-        rangersBurialPoint('user_behavior_event', {
-          page_id: 'popus_open_locate_new',
-          page_name: '提示需开启位置权限弹窗',
-          page_path: getFullPageUrl(),
-          module: 'appliance',
-          widget_id: 'click_check_guide',
-          widget_name: '查看指引',
-          object_type: '弹窗类型',
-          object_id: '',
-          object_name: object_name || '',
-          device_info: {
-            device_session_id: getApp().globalData.deviceSessionId || '',
-          },
-        })
-      }
-      if (title == '请开启蓝牙权限') {
-        let object_name = []
-        if (content.includes('开启手机蓝牙')) {
-          object_name.push('开启蓝牙服务')
-        }
-        if (content.includes('授予微信使用蓝牙的权限')) {
-          object_name.push('允许微信获取蓝牙权限')
-        }
-        if (content.includes('允许本程序使用蓝牙')) {
-          object_name.push('允许小程序使用蓝牙权限')
-        }
-        object_name = object_name.join('/')
-        rangersBurialPoint('user_behavior_event', {
-          page_id: 'popus_open_bluetooth_new',
-          page_name: '提示需开启蓝牙权限弹窗',
-          page_path: getFullPageUrl(),
-          module: 'appliance',
-          widget_id: 'click_check_guide',
-          widget_name: '查看指引',
-          object_type: '弹窗类型',
-          object_id: '',
-          object_name: object_name || '',
-          device_info: {
-            device_session_id: getApp().globalData.deviceSessionId || '',
           },
         })
       }

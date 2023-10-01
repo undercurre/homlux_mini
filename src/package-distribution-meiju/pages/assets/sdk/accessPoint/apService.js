@@ -1,10 +1,9 @@
 /**
  * tcp相关服务接口
  */
-const app = getApp()
 import { apUtils } from '../ap_core/apUtils'
 import { apParamsSet } from '../ap_core/apParamsSet'
-import { getRandomString, string2Uint8Array, toHexString } from 'm-utilsdk/index'
+import { string2Uint8Array, toHexString } from 'm-utilsdk/index'
 
 const apService = {
   /**

@@ -39,7 +39,7 @@ import { getScanRespPackInfo, getSn8 } from '../../../../utils/blueAdDataParse'
 import { isSupportPlugin } from '../../../../utils/pluginFilter'
 import { constructionBleOrder, paesrBleResponData } from '../../../../utils/ble/ble-order'
 import { burialPoint } from './assets/js/burialPoint'
-import { api, imgBaseUrl } from '../../../../common/api'
+import { api, imgBaseUrl } from '../../../../common/js/api'
 let appKey = api.appKey
 
 import { apParamsSet } from '../assets/js/apParamsSet'

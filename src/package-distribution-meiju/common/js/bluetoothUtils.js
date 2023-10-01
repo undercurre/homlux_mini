@@ -1,16 +1,133 @@
+const hexToBinArray = (str) => {
+  var dec = parseInt(str, 16),
+    bin = dec.toString(2),
+    len = bin.length
+  if (len < 8) {
+    var diff = 8 - len,
+      zeros = ''
+    for (var i = 0; i < diff; i++) {
+      zeros += '0'
+    }
+    bin = zeros + bin
+  }
+  return bin.split('')
+}
+
+const inArray = (arr, key, val) => {
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i][key] === val) {
+      return i
+    }
+  }
+  return -1
+}
+
+// ArrayBuffer转16进度字符串示例
+const ab2hex = (buffer) => {
+  var hexArr = Array.prototype.map.call(new Uint8Array(buffer), function (bit) {
+    return ('00' + bit.toString(16)).slice(-2)
+  })
+  return hexArr.join('')
+}
+
+//十六进制转ASCII码
+const hexCharCodeToStr = (hexCharCodeStr) => {
+  var trimedStr = hexCharCodeStr.trim()
+  var rawStr = trimedStr.substr(0, 2).toLowerCase() === '0x' ? trimedStr.substr(2) : trimedStr
+  var len = rawStr.length
+  if (len % 2 !== 0) {
+    alert('存在非法字符!')
+    return ''
+  }
+  var curCharCode
+  var resultStr = []
+  for (var i = 0; i < len; i = i + 2) {
+    curCharCode = parseInt(rawStr.substr(i, 2), 16)
+    resultStr.push(String.fromCharCode(curCharCode))
+  }
+  return resultStr.join('')
+}
+//十六进制转二进制 59 => [1, 0, 0, 1, 1, 0, 1, 0]
+const hex2bin = (str) => {
+  if (!str) {
+    return []
+  }
+  str = parseInt(str, 16).toString(2)
+  var i = str.length
+  if (i >= 8) {
+    //截取右8位，不足的位数前面补0
+    str = str.substring(i - 8, i)
+  } else {
+    var str0 = '00000000'
+    str = str0.substring(0, str0.length - i) + str
+  }
+  //切割反转 方便读取位数据
+  str = str.split('').map((i) => {
+    return parseInt(i)
+  })
+  return str.reverse()
+}
+
+/*
+ *判断消息标识和消息类型是否相同
+ *reqOrder respOrder
+ *type 消息类型
+ */
+const checkLogoAndType = (reqOrder, respOrder) => {
+  if (!reqOrder && !respOrder) {
+    return
+  }
+  if (!reqOrder.includes('aa55') || !respOrder.includes('aa55')) {
+    console.log('校验传入指令格式不正确')
+    return
+  }
+  let isSameLogo = reqOrder.substr(6, 2) == respOrder.substr(6, 2)
+  if (isSameLogo) {
+    return true
+  } else {
+    return false
+  }
+}
+
+const delay = (ms, res) => {
+  return new Promise(function (resolve) {
+    setTimeout(function () {
+      resolve(res)
+    }, ms)
+  })
+}
+
+const hexStringToArrayBuffer = (str) => {
+  if (!str) {
+    return new ArrayBuffer(0)
+  }
+  var buffer = new ArrayBuffer(str.length / 2)
+  let dataView = new DataView(buffer)
+  let ind = 0
+  for (var i = 0, len = str.length; i < len; i += 2) {
+    let code = parseInt(str.substr(i, 2), 16)
+    dataView.setUint8(ind, code)
+    ind++
+  }
+  return buffer
+}
+//aa55 => aa,55
+const formatStr = (str) => {
+  let arr = []
+  for (var i = 0, len = str.length; i < len; i += 2) {
+    arr.push(str.substr(i, 2))
+  }
+  let string = arr.join(',')
+  return string
+}
+
 //设备信息表
-export const deviceImgMap = {
+const locationdevice = {
   DEFAULT_ICON: {
-    title: '设备',
+    title: '默认图标',
     deviceType: 'DEFAULT_ICON',
     onlineIcon: 'blue_default_type',
     offlineIcon: 'gray_default_type',
-  },
-  BC: {
-    title: '温度探针',
-    deviceType: 'BC',
-    onlineIcon: 'blue_bc',
-    offlineIcon: 'blue_bc',
   },
   '0F': {
     title: '体脂秤',
@@ -24,13 +141,13 @@ export const deviceImgMap = {
     onlineIcon: 'blue_10',
     offlineIcon: 'gray_10',
   },
-  CE: {
+  ce: {
     title: '新风机',
     deviceType: 'ce',
     onlineIcon: 'smart_ce',
     offlineIcon: 'smart_ce',
   },
-  CF: {
+  cf: {
     title: '地暖',
     deviceType: 'cf',
     onlineIcon: 'smart_cf',
@@ -162,6 +279,12 @@ export const deviceImgMap = {
     onlineIcon: 'blue_b8',
     offlineIcon: 'blue_b8',
   },
+  B9: {
+    title: '多头炉',
+    deviceType: 'B9',
+    onlineIcon: 'gray_b9',
+    offlineIcon: 'gray_b9',
+  },
   BF: {
     title: '微波蒸汽烤箱',
     deviceType: 'BF',
@@ -227,6 +350,12 @@ export const deviceImgMap = {
     deviceType: 'E7',
     onlineIcon: 'blue_e7',
     offlineIcon: 'blue_e7',
+  },
+  E8: {
+    title: '电炖锅',
+    deviceType: 'E8',
+    onlineIcon: 'blue_e8',
+    offlineIcon: 'blue_e8',
   },
   E9: {
     title: '面包机',
@@ -388,82 +517,24 @@ export const deviceImgMap = {
     onlineIcon: 'blue_26',
     offlineIcon: 'blue_26',
   },
+
   '9C': {
     title: '集成灶',
     deviceType: '9C',
     onlineIcon: 'blue_9c',
     offlineIcon: 'blue_9c',
   },
-  E6: {
-    title: '壁挂炉',
-    deviceType: 'E6',
-    onlineIcon: 'blue_e6',
-    offlineIcon: 'blue_e6',
-  },
-  '08': {
-    title: '语音贴',
-    deviceType: '08',
-    onlineIcon: 'blue_08',
-    offlineIcon: 'blue_08',
-  },
-  '06': {
-    title: '食材清洗机',
-    deviceType: '06',
-    onlineIcon: 'blue_06',
-    offlineIcon: 'blue_06',
-  },
-  '2D': {
-    title: '可视化黑头仪',
-    deviceType: '2D',
-    onlineIcon: 'blue_2d',
-    offlineIcon: 'blue_2d',
-  },
-  '2F': {
-    title: '智能跳绳',
-    deviceType: '2F',
-    onlineIcon: 'blue_2f',
-    offlineIcon: 'blue_2f',
-  },
-  31: {
-    title: '智能SPA冲牙器',
-    deviceType: '31',
-    onlineIcon: 'blue_31',
-    offlineIcon: 'blue_31',
-  },
-  36: {
-    title: '智能驱蚊器',
-    deviceType: '36',
-    onlineIcon: 'blue_36',
-    offlineIcon: 'blue_36',
-  },
-  '3D': {
-    title: '电热水瓶',
-    deviceType: '3D',
-    onlineIcon: 'blue_3D',
-    offlineIcon: 'blue_3D',
-  },
-  B9: {
-    title: '多头炉',
-    deviceType: 'B9',
-    onlineIcon: 'gray_b9',
-    offlineIcon: 'gray_b9',
-  },
-  33: {
-    title: '空气炸锅',
-    deviceType: '33',
-  },
-  40: {
-    title: '智能凉霸',
-    deviceType: '40',
-    onlineIcon: 'gray_40',
-    offlineIcon: 'gray_40',
-  },
-  32: {
-    title: '电蒸锅',
-    deviceType: '32',
-  },
-  E8: {
-    title: '电炖锅',
-    deviceType: 'E8',
-  },
+}
+
+module.exports = {
+  locationdevice: locationdevice,
+  hexToBinArray: hexToBinArray,
+  inArray: inArray,
+  ab2hex: ab2hex,
+  hex2bin: hex2bin,
+  hexCharCodeToStr: hexCharCodeToStr,
+  hexStringToArrayBuffer: hexStringToArrayBuffer,
+  delay: delay,
+  checkLogoAndType: checkLogoAndType,
+  formatStr: formatStr,
 }

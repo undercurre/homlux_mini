@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 import { requestService, rangersBurialPoint } from '../../../../utils/requestService'
-import { imgBaseUrl } from '../../../../common/api'
+import { imgBaseUrl } from '../../../../common/js/api'
 import computedBehavior from '../../../../utils/miniprogram-computed.js'
 import { getStamp, getReqId } from 'm-utilsdk/index'
 import { getFullPageUrl, showToast } from '../../../../utils/util.js'
@@ -12,7 +12,7 @@ import { isAddDevice } from '../../../../utils/temporaryNoSupDevices'
 import { addDeviceSDK } from '../../../../utils/addDeviceSDK'
 import { getPrivateKeys } from '../../../../utils/getPrivateKeys'
 const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
-import Dialog from '../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
+import Dialog from '../../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
 const brandStyle = require('../../../assets/js/brand.js')
 import { imgesList } from '../../../assets/js/shareImg.js'
 const app = getApp()
@@ -617,8 +617,6 @@ Page({
         showCancelButton: false,
       }).then((res) => {
         this.prodClickFlag = false
-        if (res.action == 'confirm') {
-        }
       })
       // wx.showModal({
       //   content: '该设备暂不支持小程序配网，我们会尽快开放，敬请期待',
@@ -686,8 +684,6 @@ Page({
             showCancelButton: false,
           }).then((res) => {
             this.prodClickFlag = false
-            if (res.action == 'confirm') {
-            }
           })
           // wx.showModal({
           //   content: '该设备暂不支持小程序配网，我们会尽快开放，敬请期待',

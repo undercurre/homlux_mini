@@ -5,7 +5,6 @@ const app = getApp()
 import { requestService } from '../../../../utils/requestService'
 import { getStamp, getReqId } from 'm-utilsdk/index'
 import { creatErrorCode } from './errorCode'
-const WX_LOG = require('../../../../utils/log')
 const linkDeviceService = {
   /**
    * 获取家庭信息
@@ -25,7 +24,6 @@ const linkDeviceService = {
         .then((resp) => {
           app.globalData.isCreateFamily =
             resp.data.data.homeList[0].roleId == '1001' || resp.data.data.homeList[0].roleId == '1002' //是否是当前家庭的创建者
-          WX_LOG.info('获取家庭信息成功', 'applianceList')
           resolve(resp)
         })
         .catch((error) => {
@@ -36,7 +34,6 @@ const linkDeviceService = {
               this.getFamilyInfo(groupId, retryNum, timeout)
             }, 2000)
           } else {
-            WX_LOG.error('获取家庭信息失败', 'applianceList', error)
             reject(error)
           }
         })
@@ -62,7 +59,6 @@ const linkDeviceService = {
       requestService
         .request('checkApExists', reqData, 'POST', '', timeout)
         .then((resp) => {
-          WX_LOG.info('查询设备是否连上云成功', 'checkApExists')
           resolve(resp)
         })
         .catch((error) => {
@@ -83,7 +79,6 @@ const linkDeviceService = {
               })
             }
           }
-          WX_LOG.error('查询设备是否连上云失败', 'checkApExists', error)
           reject(error)
         })
     })
@@ -114,12 +109,10 @@ const linkDeviceService = {
         .request('bindDeviceToHome', reqData, 'POST', '', 3000)
         .then((resp) => {
           if (resp.data.code == 0) {
-            WX_LOG.info('帐号绑定到家庭成功', 'bindDeviceToHome')
             reslove(resp)
           }
         })
         .catch((error) => {
-          WX_LOG.error('帐号绑定到家庭失败', 'bindDeviceToHome', error)
           reject(error)
         })
     })

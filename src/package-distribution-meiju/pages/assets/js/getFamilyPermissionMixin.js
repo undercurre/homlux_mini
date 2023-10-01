@@ -1,9 +1,10 @@
 import { requestService, rangersBurialPoint } from '../../../utils/requestService'
 import { getStamp, getReqId, isEmptyObject } from 'm-utilsdk/index'
 import { checkFamilyPermission, getFullPageUrl } from '../../../utils/util.js'
-import { familyPermissionText } from '../../../globalCommon/js/commonText.js'
+import { familyPermissionText } from '../../../common/js/commonText.js'
 const app = getApp()
 
+// eslint-disable-next-line no-undef
 module.exports = Behavior({
   behaviors: [],
   properties: {},

@@ -1,5 +1,4 @@
 //多套小程序共用一套配网-图片
-import { imgBaseUrl } from '../../../api'
 const imgesList = {
   meiPhone: '/addDeviceAboutImg/ic_meiphone@1x.png',
   zhuyi: '/addDeviceAboutImg/link_ic_zhuyi.png',

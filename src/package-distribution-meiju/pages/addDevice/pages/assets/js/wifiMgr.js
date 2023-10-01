@@ -1,4 +1,3 @@
-const app = getApp()
 var platform
 var wifiList = []
 var callBackFunc
@@ -70,6 +69,7 @@ export default class WifiMgr {
 
   // 初始化 WiFi 模块
   startWifi() {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     let that = this
     wx.startWifi({
       success(res) {
@@ -87,6 +87,7 @@ export default class WifiMgr {
 
   // 请求获取 WiFi 列表
   getWifiListFunc() {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     let that = this
     if (platform == 'ios') {
       that.getWifiList()

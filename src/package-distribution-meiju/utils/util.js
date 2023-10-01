@@ -1,3 +1,4 @@
+/* eslint-disable no-redeclare */
 import {
   CryptoJS,
   md5,
@@ -11,8 +12,8 @@ import {
 } from 'm-utilsdk/index'
 import { login } from './paths.js'
 import { canIUseOpenEmbeddedMiniProgram } from './version'
-import config from '../common/config'
-import { baseImgApi, deviceImgApi } from '../api.js'
+import config from '../common/js/config'
+import { baseImgApi, deviceImgApi } from '../common/js/api.js'
 import { deviceImgMap } from './deviceImgMap'
 
 function getNewSign(obj, apiKey, random, method = 'POST') {
