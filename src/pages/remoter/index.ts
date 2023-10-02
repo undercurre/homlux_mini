@@ -70,6 +70,32 @@ ComponentWithComputed({
       // 初始化[我的设备]列表
       this.initDeviceList()
 
+      // 根据通知,更新设备列表
+      emitter.on('remoterChanged', async () => {
+        await delay(0)
+        console.log('remoterChanged on IndexList')
+
+        const drag = this.selectComponent('#drag')
+        drag?.init()
+      })
+
+      // 监听蓝牙连接值变化
+      // wx.onBLECharacteristicValueChange(function (res) {
+      //   console.log('onBLECharacteristicValueChange', res.value)
+      //   console.log('onBLECharacteristicValueChange', remoterCrypto.ab2hex(res.value))
+      // })
+
+      // 搜索一轮设备
+      // this.toSeek()
+
+      // 版本获取
+      const info = wx.getAccountInfoSync()
+      this.data._envVersion = info.miniProgram.envVersion
+    },
+
+    async onShow() {
+      await initBleCapacity()
+
       // 监听扫描到新设备事件
       wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
         // console.log('onBluetoothDeviceFound', res)
@@ -151,32 +177,6 @@ ComponentWithComputed({
 
         this.setData({ foundList })
       })
-
-      // 根据通知,更新设备列表
-      emitter.on('remoterChanged', async () => {
-        await delay(0)
-        console.log('remoterChanged on IndexList')
-
-        const drag = this.selectComponent('#drag')
-        drag?.init()
-      })
-
-      // 监听蓝牙连接值变化
-      // wx.onBLECharacteristicValueChange(function (res) {
-      //   console.log('onBLECharacteristicValueChange', res.value)
-      //   console.log('onBLECharacteristicValueChange', remoterCrypto.ab2hex(res.value))
-      // })
-
-      // 搜索一轮设备
-      // this.toSeek()
-
-      // 版本获取
-      const info = wx.getAccountInfoSync()
-      this.data._envVersion = info.miniProgram.envVersion
-    },
-
-    async onShow() {
-      await initBleCapacity()
 
       await delay(0)
 
