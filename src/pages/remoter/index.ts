@@ -36,7 +36,7 @@ ComponentWithComputed({
     tipsStep: 0,
     isSeeking: false, // 正在主动搜索设备（不标记静默搜索的情况）
     foundListHolder: false, // 临时显示发现列表的点位符
-    isNotFound: false, // 已搜索过至少一次但未找到
+    canShowNotFound: false, // 已搜索过至少一次但未找到
     foundList: [] as Remoter.DeviceItem[], // 搜索到的设备
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
     _time_id_end: null as number | null, // 定时终止搜索设备
@@ -152,6 +152,15 @@ ComponentWithComputed({
         this.setData({ foundList })
       })
 
+      // 根据通知,更新设备列表
+      emitter.on('remoterChanged', async () => {
+        await delay(0)
+        console.log('remoterChanged on IndexList')
+
+        const drag = this.selectComponent('#drag')
+        drag?.init()
+      })
+
       // 监听蓝牙连接值变化
       // wx.onBLECharacteristicValueChange(function (res) {
       //   console.log('onBLECharacteristicValueChange', res.value)
@@ -168,13 +177,6 @@ ComponentWithComputed({
 
     async onShow() {
       await initBleCapacity()
-
-      // 根据通知,更新设备列表
-      emitter.on('remoterChanged', () => {
-        console.log('remoterChanged on IndexList')
-
-        this.initDrag()
-      })
 
       await delay(0)
 
@@ -214,7 +216,9 @@ ComponentWithComputed({
         clearTimeout(this.data._time_id_poll)
         this.data._time_id_poll = null
       }
+    },
 
+    onUnload() {
       emitter.off('remoterChanged')
     },
 
@@ -228,13 +232,13 @@ ComponentWithComputed({
 
     // 轮询设备列表
     toPoll() {
-      // 如果已有定时，先清除，以便再次开始轮询
+      // 如果已有定时，先清除，以便重复触发轮询
       if (this.data._time_id_poll) {
         clearTimeout(this.data._time_id_poll)
         this.data._time_id_poll = null
       }
 
-      // 如果未有定时，并且存在列表，则开始轮询
+      // 如果未有定时，并且存在列表，则开始静默轮询
       if (!this.data._time_id_poll && remoterStore.hasRemoter) {
         this.data._time_id_poll = setTimeout(() => this.toSeek(), SEEK_INTERVAL)
       }
@@ -388,7 +392,7 @@ ComponentWithComputed({
       })
       this.setData({
         isSeeking: false,
-        isNotFound: true,
+        canShowNotFound: true,
       })
     },
 

@@ -1,7 +1,7 @@
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { CMD, FACTORY_ADDR, FREQUENCY_TIME } from '../../config/remoter'
-import { emitter, Logger, initBleCapacity, storage } from '../../utils/index'
+import { Logger, initBleCapacity, storage } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import {
   createBleServer,
@@ -65,13 +65,12 @@ ComponentWithComputed({
       // 建立BLE外围设备服务端
       this.data._bleServer = await createBleServer()
 
-      // 根据通知,更新设备列表
-      // FIXME 删除设备时，IOS下仍会触发本更新，导致报错
-      emitter.on('remoterChanged', () => {
-        console.log('remoterChanged on Pannel')
+      // 根据通知,更新设备列表，设备控制页暂时不需要本通知
+      // emitter.on('remoterChanged', () => {
+      // console.log('remoterChanged on Pannel')
 
-        // this.reloadDeviceData()
-      })
+      // this.reloadDeviceData()
+      // })
 
       // TODO 监听蓝牙连接状态变化
 
@@ -80,7 +79,7 @@ ComponentWithComputed({
       this.data._envVersion = info.miniProgram.envVersion
     },
     onUnload() {
-      emitter.off('remoterChanged')
+      // emitter.off('remoterChanged')
 
       // 关闭蓝牙连接
       if (remoterStore.curRemoter.connected) {
