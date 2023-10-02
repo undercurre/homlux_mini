@@ -368,7 +368,7 @@ ComponentWithComputed({
       try {
         await Promise.all([
           deviceStore.updateSubDeviceList(),
-          deviceStore.updateAllRoomDeviceList(),
+          // deviceStore.updateAllRoomDeviceList(), // 重复查询
           homeStore.updateRoomCardList(),
           sceneStore.updateSceneList(),
           sceneStore.updateAllRoomSceneList(),
