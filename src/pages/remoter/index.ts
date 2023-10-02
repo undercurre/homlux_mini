@@ -249,9 +249,6 @@ ComponentWithComputed({
       // 有可能视图未更新，需要先等待nextTick
       await delay(0)
 
-      // 设备列表变更，同时更新轮询设置
-      this.toPoll()
-
       const drag = this.selectComponent('#drag')
       drag?.init()
     },
@@ -259,7 +256,11 @@ ComponentWithComputed({
     // 从storage初始化我的设备列表
     initDeviceList() {
       remoterStore.retrieveRmStore()
+
       this.initDrag()
+
+      // 设备列表变更，同时更新轮询设置
+      this.toPoll()
     },
 
     // 将新发现设备, 添加到[我的设备]
@@ -275,17 +276,19 @@ ComponentWithComputed({
         defaultAction: 0,
       })
 
-      await this.initDrag()
-
       this.setData({
         foundListHolder: !this.data.foundList.length,
         foundList: this.data.foundList,
       })
+      await this.initDrag() // 设备列表增加了要刷新
+
+      // 发现列表已空，占位符显示2秒
       if (!this.data.foundList.length) {
         setTimeout(() => {
           this.setData({
             foundListHolder: false,
           })
+          this.initDrag() // 动画结束了位置变化过又要刷新
         }, 2000)
       }
     },
