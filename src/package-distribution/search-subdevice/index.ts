@@ -531,7 +531,10 @@ ComponentWithComputed({
             })
           })
 
-        Logger.log('配网设备list', list.map(item => item.zigbeeMac))
+        Logger.log(
+          '配网设备list',
+          list.map((item) => item.zigbeeMac),
+        )
 
         this.data._zigbeeTaskQueue.add(zigbeeTaskList)
 

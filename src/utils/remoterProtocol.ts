@@ -194,7 +194,12 @@ const _createAndroidBleRequest = (params: { payload: string; addr: string; isFac
  * @param comId string
  * @returns string[]
  */
-const _createIOSBleRequest = (params: { payload: string; addr: string; comId: string; isFactory?: boolean }): string[] => {
+const _createIOSBleRequest = (params: {
+  payload: string
+  addr: string
+  comId: string
+  isFactory?: boolean
+}): string[] => {
   const { payload, addr, comId, isFactory } = params
 
   const manufacturerId = comId.slice(2)
