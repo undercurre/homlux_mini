@@ -172,7 +172,7 @@ export const homeStore = observable({
           room.roomSceneList = room.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
         }
 
-        const { lightOnCount, endCount, lightCount } = deviceCount(roomDeviceList)
+        const { lightOnCount, endCount, lightCount } = deviceCount(roomDeviceList, deviceStore.lightsInGroup)
         room.roomInfo.lightOnCount = lightOnCount
         room.roomInfo.endCount = endCount
         room.roomInfo.lightCount = lightCount

@@ -129,7 +129,7 @@ export function _get(obj: object, path: string, defaultVal = undefined) {
  *  lightCount: 灯与面板总数量（不排除关联，面板按拆分设备计数）
  * }
  */
-export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
+export function deviceCount(list: Device.DeviceItem[], lightsInGroup: string[]): Record<string, number> {
   let lightOnCount = 0
   let endCount = 0
   let lightCount = 0
@@ -140,9 +140,14 @@ export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
         endCount++
         break
       case PRO_TYPE.light:
-        endCount++
+        // 终端卡片数，不计算已在灯组中的单灯
+        // TODO release-1030 将改为全部显示
+        if (!lightsInGroup.includes(device.deviceId)) {
+          endCount++
+        }
+
+        // 灯数及亮灯数不计算灯组
         if (device.deviceType === 4) {
-          // 灯数及亮灯数不计算灯组
           return
         }
         lightCount++
