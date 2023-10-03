@@ -119,7 +119,7 @@ ComponentWithComputed({
       const payload = remoterProtocol.generalCmdString(CMD[key])
 
       const { dir } = e.target.dataset
-      Logger.log('btnTap', key, dir, { payload, addr })
+      Logger.log('btnTap', key, dir, { payload, addr, isFactory: this.data.isFactoryMode })
 
       const now = new Date().getTime()
       console.log('now - this.data._timer', now - this.data._timer)
@@ -137,6 +137,7 @@ ComponentWithComputed({
         bleAdvertising(this.data._bleServer, {
           addr,
           payload,
+          isFactory: this.data.isFactoryMode,
         })
       }
 
@@ -166,6 +167,7 @@ ComponentWithComputed({
           addr,
           payload,
           autoEnd: false, // 松手才发终止指令
+          isFactory: this.data.isFactoryMode,
         })
       }
 
@@ -192,7 +194,7 @@ ComponentWithComputed({
       await stopAdvertising(this.data._bleServer)
 
       const addr = this.data.isFactoryMode ? FACTORY_ADDR : remoterStore.curAddr
-      bleAdvertisingEnd(this.data._bleServer, { addr })
+      bleAdvertisingEnd(this.data._bleServer, { addr, isFactory: this.data.isFactoryMode })
       console.log('handleTouchEnd')
     },
 
