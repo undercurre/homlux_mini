@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 // addDevice//pages/notFound/notFound.js
 const app = getApp()
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
-import { burialPoint } from './assets/js/burialPoint'
 import { creatDeviceSessionId } from '../../../../utils/util'
 import paths from '../../../../utils/paths'
 Page({
@@ -18,40 +18,11 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
-    let { type, sn8, blueVersion, moduleType, deviceName } = app.addDeviceInfo
+  onLoad: function () {
+    let { deviceName } = app.addDeviceInfo
     this.setData({
       deviceName: deviceName,
     })
-    this.getLoginStatus().then(() => {
-      if (app.globalData.isLogon) {
-        this.checkFamilyPermission()
-      } else {
-        this.navToLogin()
-      }
-    })
-    burialPoint.noFoundView({
-      deviceSessionId: app.globalData.deviceSessionId,
-      moduleType: moduleType,
-      type: type,
-      sn8: sn8,
-      moduleVison: blueVersion,
-    })
-  },
-  getLoginStatus() {
-    return app
-      .checkGlobalExpiration()
-      .then(() => {
-        this.setData({
-          isLogon: app.globalData.isLogon,
-        })
-      })
-      .catch(() => {
-        app.globalData.isLogon = false
-        this.setData({
-          isLogin: app.globalData.isLogon,
-        })
-      })
   },
   //跳转反馈
   feedback() {
@@ -65,13 +36,6 @@ Page({
   },
   retry() {
     app.globalData.deviceSessionId = creatDeviceSessionId(app.globalData.userData.uid)
-    burialPoint.clickRetry({
-      deviceSessionId: app.globalData.deviceSessionId,
-      moduleType: app.globalData.moduleType,
-      type: app.globalData.type,
-      sn8: app.globalData.sn8,
-      moduleVison: app.globalData.blueVersion,
-    })
     wx.navigateTo({
       url: '/package-distribution-meiju/pages/addDevice/pages/addGuide/addGuide',
     })
@@ -96,7 +60,6 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
-    getApp().onUnloadCheckingLog()
   },
 
   /**

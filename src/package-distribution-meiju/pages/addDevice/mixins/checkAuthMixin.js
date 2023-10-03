@@ -41,10 +41,6 @@ module.exports = Behavior({
           })
           .catch((err) => {
             console.error('@module checkAuthMixin.js\n@method getNetworkThreshold\n@desc 获取确权距离阈值失败\n', err)
-            getApp().setMethodFailedCheckingLog(
-              'getNetworkThreshold',
-              `获取蓝牙阈值列表异常。error=${JSON.stringify(err)}`,
-            )
             reject(err)
           })
       })
@@ -184,14 +180,9 @@ module.exports = Behavior({
                         '@module checkAuthMixin.js\n@method searchBlueByType\n@desc 停止蓝牙搜索失败\n',
                         error,
                       )
-                      getApp().setMethodFailedCheckingLog(
-                        'wx.stopBluetoothDevicesDiscovery()',
-                        `停止蓝牙搜索失败。error=${JSON.stringify(error)}`,
-                      )
                     },
                   })
                   resolve(ssidMatch)
-                  return
                 } else {
                   console.log('@module checkAuthMixin.js\n@method searchBlueByType\n@desc ssid匹配失败')
                 }
@@ -200,10 +191,6 @@ module.exports = Behavior({
           })
           .catch((error) => {
             console.error('@module checkAuthMixin.js\n@method searchBlueByType\n@desc 打开蓝牙适配器失败\n', error)
-            getApp().setMethodFailedCheckingLog(
-              'wx.openAdapter()',
-              `打开蓝牙适配器失败。error=${JSON.stringify(error)}`,
-            )
           })
       })
     },
@@ -278,10 +265,6 @@ module.exports = Behavior({
                       wx.stopBluetoothDevicesDiscovery({
                         fail(err) {
                           console.error('@module checkAuthMixin.js\n@method checkNearby\n@desc 停止蓝牙搜索失败\n', err)
-                          getApp().setMethodFailedCheckingLog(
-                            'wx.stopBluetoothDevicesDiscovery()',
-                            `停止蓝牙搜索失败。error=${JSON.stringify(err)}`,
-                          )
                         },
                       })
                       app.addDeviceInfo.isCheck = true
@@ -302,7 +285,6 @@ module.exports = Behavior({
           })
           .catch((err) => {
             console.error('@module checkAuthMixin.js\n@method searchBlueByType\n@desc 打开蓝牙适配器失败\n', err)
-            getApp().setMethodFailedCheckingLog('wx.openAdapter()', `打开蓝牙适配器失败。err=${JSON.stringify(err)}`)
           })
       })
     },

@@ -139,7 +139,7 @@
         {
           "name": "美居授权确认页面",
           "pathName": "package-distribution-meiju/pages/check-auth/index",
-          "query": "",
+          "query": "proType=14&sn8=79700Z76",
           "launchMode": "default",
           "scene": null
         }

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
-import { requestService, rangersBurialPoint } from '../../../../utils/requestService'
+import { requestService } from '../../../../utils/requestService'
 import { imgBaseUrl } from '../../../../common/js/api'
 import computedBehavior from '../../../../utils/miniprogram-computed.js'
 import { getStamp, getReqId } from 'm-utilsdk/index'
-import { checkWxVersion_807, getFullPageUrl, showToast } from '../../../../utils/util.js'
+import { getFullPageUrl, showToast } from '../../../../utils/util.js'
 import { addGuide, inputWifiInfo, searchDevice } from '../../../../utils/paths.js'
 import { isSupportPlugin } from '../../../../utils/pluginFilter'
 import { isAddDevice } from '../../../../utils/temporaryNoSupDevices'
@@ -13,7 +13,7 @@ import Dialog from '../../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
 const brandStyle = require('../../../assets/js/brand.js')
 import { imgesList } from '../../../assets/js/shareImg.js'
 import { getPrivateKeys } from '../../../../utils/getPrivateKeys'
-const app = getApp()
+import app from '../../../../common/app'
 const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
 const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 Page({
@@ -59,33 +59,11 @@ Page({
         frontColor: '#ffffff',
       })
     }
-    this.getLoginStatus().then(() => {
-      if (app.globalData.isLogon) {
-        this.checkFamilyPermission()
-      } else {
-        this.navToLogin()
-      }
-    })
     this.setData({
       subCode: options.category || '',
       prodName: options.name || '',
     })
     this.initData()
-  },
-  getLoginStatus() {
-    return app
-      .checkGlobalExpiration()
-      .then(() => {
-        this.setData({
-          isLogon: app.globalData.isLogon,
-        })
-      })
-      .catch(() => {
-        app.globalData.isLogon = false
-        this.setData({
-          isLogin: app.globalData.isLogon,
-        })
-      })
   },
 
   /**
@@ -107,7 +85,6 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
-    getApp().onUnloadCheckingLog()
   },
 
   /**
@@ -295,7 +272,6 @@ Page({
     let productId = e.currentTarget.dataset.id
     let deviceImg = e.currentTarget.dataset.img
     if (clickFLag) {
-      getApp().setMethodFailedCheckingLog('prodClicked', '点击防重处理不触发')
       console.log('prodClicked点击防重处理不触发')
       return
     }
@@ -324,15 +300,6 @@ Page({
           clickFLag: false,
         })
       }, 1000)
-      this.selectTypeNotSoupportTracking(
-        {
-          deviceSessionId: app.globalData.deviceSessionId,
-          type: category,
-          sn8: code,
-        },
-        '该品类无对应插件不支持小程序配网',
-      )
-      getApp().setMethodFailedCheckingLog('prodClicked', '该品类无对应插件不支持小程序配网')
       return
     }
     if (!isAddDevice(category.toLocaleUpperCase(), code)) {
@@ -349,15 +316,6 @@ Page({
           clickFLag: false,
         })
       }, 1000)
-      this.selectTypeNotSoupportTracking(
-        {
-          deviceSessionId: app.globalData.deviceSessionId,
-          type: category,
-          sn8: code,
-        },
-        '未测试品类不支持小程序配网',
-      )
-      getApp().setMethodFailedCheckingLog('prodClicked', '未测试品类不支持小程序配网')
       return
     }
     requestService
@@ -382,22 +340,6 @@ Page({
         app.addDeviceInfo = addDeviceInfo
         let modeArr = addDeviceSDK.supportAddDeviceMode
         if (modeArr.indexOf(mode) >= 0) {
-          //判断微信版本
-          if (checkWxVersion_807()) {
-            wx.showModal({
-              content: '你的微信版本过低，请升级至最新版本后再试',
-              confirmText: '我知道了',
-              confirmColor: '#267aff',
-              showCancel: false,
-            })
-            setTimeout(() => {
-              self.setData({
-                clickFLag: false,
-              })
-            }, 1000)
-            getApp().setMethodFailedCheckingLog('prodClicked', '微信版本过低')
-            return
-          }
           // 判断全局的密钥有没有，有就跳过，没有就重新拉取
           if (!app.globalData.privateKey && mode != '103' && mode != '100') {
             if (app.globalData.privateKeyIntervalNum) {
@@ -448,36 +390,12 @@ Page({
               self.data.clickFLag = false
             }
           })
-          // wx.showModal({
-          //   content: '该设备仅支持在美的美居App添加',
-          //   confirmText: '我知道了',
-          //   confirmColor: '#267aff',
-          //   showCancel: false,
-          // })
-          this.selectTypeNotSoupportTracking(
-            {
-              deviceSessionId: app.globalData.deviceSessionId,
-              type: category,
-              sn8: code,
-            },
-            '小程序暂时不支持的配网方式',
-          )
-          getApp().setMethodFailedCheckingLog('prodClicked', '小程序暂时不支持的配网方式')
         }
         setTimeout(() => {
           self.setData({
             clickFLag: false,
           })
         }, 1000)
-        this.getGuideTrack({
-          deviceSessionId: app.globalData.deviceSessionId,
-          type: category,
-          sn8: code,
-          linkType: addDeviceInfo.linkType,
-          serverCode: res.data.code + '',
-          serverType: res.data.data.category,
-          serverSn8: res.data.data.mainConnectinfoList[0].code,
-        })
         console.log('select model==============')
       })
       .catch((err) => {
@@ -487,88 +405,16 @@ Page({
           clickFLag: false,
         })
         if (err?.data?.code && err.data.code == 1) {
-          // wx.showToast({
-          //   title: err.data.msg,
-          //   icon: 'none',
-          // })
           Dialog.confirm({
             title: '未获取到该产品的操作指引，请检查网络后重试，若仍失败，请联系售后处理',
             confirmButtonText: '好的',
             confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
             showCancelButton: false,
-            success(res) {},
           })
         } else {
           showToast('当前网络信号不佳，请检查网络设置', 'none', 3000)
         }
-        this.getGuideTrack({
-          deviceSessionId: app.globalData.deviceSessionId,
-          type: category,
-          sn8: code,
-          linkType: '', //getLinkType(mode),
-          serverCode: err?.data?.code + '' || err,
-        })
-        getApp().setMethodFailedCheckingLog('prodClicked', `选型后获取设备指引异常。error=${JSON.stringify(err)}`)
-        // if (err.errMsg) {
-        //   showToast('网络不佳，请检查网络')
-        //   return
-        // }
       })
-  },
-  //获取指引埋点
-  getGuideTrack(params) {
-    rangersBurialPoint('user_behavior_event', {
-      module: 'appliance', //写死 “活动”
-      page_id: 'device_guidebook_page', //参考接口请求参数“pageId”
-      page_name: '配网指引返回结果', //当前页面的标题，顶部的title
-      page_path: getFullPageUrl(), //当前页面的URL
-      widget_id: 'server_return',
-      widget_name: '服务器返回',
-      object_type: '',
-      object_id: '',
-      object_name: '',
-      ext_info: {
-        code: params.serverCode || '',
-        cate: params.serverType || '',
-        sn8: params.serverSn8 || '',
-      },
-      device_info: {
-        device_session_id: params.deviceSessionId, //一次配网事件标识
-        sn: '', //sn码
-        sn8: params.sn8, //sn8码
-        a0: '', //a0码
-        widget_cate: params.type, //设备品类
-        wifi_model_version: params.moduleVison || '', //模组wifi版本
-        link_type: params.linkType, //连接方式 bluetooth/ap/...
-        iot_device_id: params.applianceCode || '', //设备id
-      },
-    })
-  },
-  //选型不支持埋点
-  selectTypeNotSoupportTracking(deviceInfo, errorMsg) {
-    rangersBurialPoint('user_page_view', {
-      module: 'appliance',
-      page_id: 'popups_select_not_support', //参考接口请求参数“pageId”
-      page_name: '选择设备不支持配网弹窗', //当前页面的标题，顶部的title
-      page_path: getFullPageUrl(), //当前页面的URL
-      object_type: '',
-      object_id: '',
-      object_name: '',
-      ext_info: {
-        error_msg: errorMsg || '',
-      },
-      device_info: {
-        device_session_id: deviceInfo.deviceSessionId, //一次配网事件标识
-        sn: '', //sn码
-        sn8: deviceInfo.sn8, //sn8码
-        widget_cate: deviceInfo.type, //设备品类
-      },
-    })
-  },
-  goLogin() {
-    wx.navigateTo({
-      url: '../../../../pages/login/login',
-    })
   },
   loadMoreData() {
     console.log('next======')

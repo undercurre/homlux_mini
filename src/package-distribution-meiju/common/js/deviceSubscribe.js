@@ -6,8 +6,6 @@ import { requestService } from '../../utils/requestService'
 
 import { getStamp, getReqId, wxCardAesEncrypt } from 'm-utilsdk/index'
 
-import { getFullPageUrl } from '../../utils/util'
-
 import { templateIds } from './templateIds'
 
 import { getDeviceSn } from '../../common/js/device.js'

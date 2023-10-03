@@ -1,10 +1,10 @@
-// distribution-network/scan-devices/pages/scan-help/scan-help.js
 import { imgBaseUrl } from '../../../../common/js/api.js'
 const app = getApp()
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 import { imgesList } from '../../../assets/js/shareImg.js'
-const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
+import { brand } from '../../../assets/js/brand'
+const imgUrl = imgBaseUrl.url + '/shareImg/' + brand
 Page({
   behaviors: [getFamilyPermissionMixin],
   /**
@@ -12,36 +12,14 @@ Page({
    */
   data: {
     baseImgUrl: imgBaseUrl.url,
-    brand: brandStyle.brand,
+    brand: brand,
     noResultImg: imgUrl + imgesList['noResult'],
-  },
-  getLoginStatus() {
-    return app
-      .checkGlobalExpiration()
-      .then(() => {
-        this.setData({
-          isLogon: app.globalData.isLogon,
-        })
-      })
-      .catch(() => {
-        app.globalData.isLogon = false
-        this.setData({
-          isLogin: app.globalData.isLogon,
-        })
-      })
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function () {
-    this.getLoginStatus().then(() => {
-      if (app.globalData.isLogon) {
-        this.checkFamilyPermission()
-      } else {
-        this.navToLogin()
-      }
-    })
   },
 
   /**
@@ -63,7 +41,6 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
-    getApp().onUnloadCheckingLog()
   },
 
   /**

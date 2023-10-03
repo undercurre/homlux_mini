@@ -2,7 +2,6 @@
 import { getReqId, getStamp } from 'm-utilsdk/index'
 import { showToast, getFullPageUrl } from '../../../../../utils/util'
 import { creatErrorCode, failTextData } from './errorCode'
-import { ApBurialPoint } from './burialPoint'
 import paths from '../../../../../utils/paths'
 import { brandConfig } from '../../../../assets/js/brand'
 const app = getApp() //获取应用实例
@@ -277,15 +276,9 @@ module.exports = Behavior({
         return true
       }
 
-      if (
-        Number(paramsVersionArr[0]) == Number(phoneSystemVersionArr[0]) &&
+      return Number(paramsVersionArr[0]) == Number(phoneSystemVersionArr[0]) &&
         Number(paramsVersionArr[1]) == Number(phoneSystemVersionArr[1]) &&
-        Number(paramsVersionArr[2]) < Number(phoneSystemVersionArr[2])
-      ) {
-        return true
-      }
-
-      return false
+        Number(paramsVersionArr[2]) < Number(phoneSystemVersionArr[2]);
     },
     //延迟函数
     delay(milSec) {
@@ -393,12 +386,7 @@ module.exports = Behavior({
     //是否可以主动连接设备ap
     isCanDrivingLinkDeviceAp(ssid) {
       let res = wx.getSystemInfoSync()
-      if (res.system.includes('Android') || ssid) {
-        //安卓 或者 有ssid
-        return true
-      } else {
-        return false
-      }
+      return res.system.includes('Android') || ssid;
     },
     //获取当前家庭默认id
     getCurrentHomeGroupId() {
@@ -428,23 +416,6 @@ module.exports = Behavior({
         //     reject(error)
         //   }
         // )
-      })
-    },
-    //上报ap 无网期间触发相关埋点
-    sendApNoNetBurialpoint(Burialpointes) {
-      console.log('批量上报ap 无网触发埋点', Burialpointes)
-      Object.keys(Burialpointes).forEach((item, index) => {
-        console.log('无网触发埋点====', item, ApBurialPoint[item])
-        if (typeof Burialpointes[item] == 'object') {
-          console.log('批量上报ap===========111', Burialpointes[item])
-          ApBurialPoint[item](Burialpointes[item])
-        }
-        if (Array.isArray(Burialpointes[item])) {
-          Burialpointes[item].forEach((item2) => {
-            console.log('批量上报ap===========', item2)
-            ApBurialPoint[item](item2)
-          })
-        }
       })
     },
     //获取自启热点 无后确权固件名单
@@ -504,10 +475,6 @@ module.exports = Behavior({
           stamp: getStamp(),
         }
         console.log('checkApExists reqData:', reqData)
-        getApp().setMethodFailedCheckingLog(
-          '查询设备是否连上云参数',
-          `reqData=${JSON.stringify(reqData)},plainSn=${app.addDeviceInfo.plainSn}`,
-        )
         console.log(`查询设备是否连上云参数 reqData=${JSON.stringify(reqData)},plainSn=${app.addDeviceInfo.plainSn}`)
         // requestService
         //   .request('checkApExists', reqData, 'POST', '', timeout)
@@ -560,11 +527,6 @@ module.exports = Behavior({
         })
         .catch((error) => {
           console.log('查询设备是否连上云接口失败2', error)
-          getApp().setMethodFailedCheckingLog('查询设备连云结果异常', `error=${JSON.stringify(error)}`)
-          this.apLogReportEven({
-            msg: '查询设备是否连上云接口结果异常',
-            error: error,
-          })
           if (this.data.isStopGetExists) return
           if (error.data && error.data.code) {
             console.log('设备未连上云', error)

@@ -5,13 +5,11 @@
 const app = getApp()
 import { requestService } from '../../../../utils/requestService'
 import { hasKey, getStamp, getReqId } from 'm-utilsdk/index'
-import { getFullPageUrl, showToast } from '../../../../utils/util.js'
+import { showToast } from '../../../../utils/util.js'
 import { scanCode } from '../core/scanCode.js'
 import { addDeviceService } from '../../../../common/js/addDeviceService'
 import { deviceImgMap } from '../../../../utils/deviceImgMap'
 import { deviceImgApi } from '../../../../common/js/api'
-import { rangersBurialPoint } from '../../../../utils/requestService'
-const WX_LOG = require('../../../../utils/log')
 import { config } from '../../../../common/sdk/config'
 var scanCodeService = {
   /**
@@ -28,13 +26,11 @@ var scanCodeService = {
     let scanRes = ''
     try {
       scanRes = await scanCode.scanCode()
-      WX_LOG.info('微信扫码成功', 'scanCode.scanCode', scanRes)
     } catch (error) {
-      WX_LOG.error('微信扫码失败', 'scanCode.scanCode', error)
+      console.error('微信扫码失败', 'scanCode.scanCode', error)
     }
 
     if (!scanRes.result) {
-      WX_LOG.error('该二维码无法识别', 'scanCode.scanCode', scanRes)
       return
     }
 
@@ -111,10 +107,6 @@ var scanCodeService = {
             showToast('当前网络信号不佳，请检查网络设置', 'none', 3000)
           }
           console.log('解密接口调用失败=========', error)
-          this.scanFailTracking({
-            fialReason: '解密接口调用失败',
-            errorCode: error,
-          })
         }
       } else {
         data = this.getUrlParamy(result)
@@ -124,7 +116,6 @@ var scanCodeService = {
       const addDeviceInfo = this.getAddDeviceInfo(data)
 
       wx.hideLoading()
-      this.trackScanResult(result, addDeviceService.getLinkType(data.mode))
 
       return addDeviceInfo
     }
@@ -135,15 +126,9 @@ var scanCodeService = {
     let scanCodeGuide = null
     try {
       scanCodeGuide = await this.isScanCodeGuide(scanRes.result)
-      WX_LOG.info('能效码、一维码查询成功', scanCodeGuide)
       wx.hideLoading()
     } catch (error) {
       wx.hideLoading()
-      this.scanFailTracking({
-        fialReason: '能效码、一维码查询调用失败',
-        errorCode: error,
-      })
-      WX_LOG.error('能效码、一维码查询失败', error)
       return
     }
 
@@ -183,13 +168,6 @@ var scanCodeService = {
         deviceImg: deviceNameAndImg.deviceImg,
       }
       app.addDeviceInfo = addDeviceInfo
-      let { type, sn } = app.addDeviceInfo
-      burialPoint.touchScreenDiolog({
-        deviceSessionId: app.globalData.deviceSessionId,
-        type: type,
-        sn: sn,
-        msg: '触屏配网扫码成功',
-      })
 
       return addDeviceInfo
       //业务逻辑
@@ -240,12 +218,6 @@ var scanCodeService = {
       //     }
       //   },
       // })
-      this.scanFailTracking({
-        fialReason: '大屏扫码解析失败',
-        errorCode: -1,
-      })
-      getApp().setMethodFailedCheckingLog('dynamicCodeAdd', '触屏配网生成二维码，无法识别')
-      WX_LOG.error('触屏配网生成二维码，无法识', 'dynamicCodeAdd')
       return scanCdoeResObj
     }
   },
@@ -261,11 +233,9 @@ var scanCodeService = {
       requestService
         .request('multiNetworkGuide', resq)
         .then((resp) => {
-          WX_LOG.info('扫码请求配网指引成功', 'multiNetworkGuide')
           resolve(resp)
         })
         .catch((error) => {
-          WX_LOG.error('扫码请求配网指引失败', 'multiNetworkGuide', error)
           reject(error)
         })
     })
@@ -413,123 +383,6 @@ var scanCodeService = {
     }
     wx.hideLoading()
     return returnObj
-  },
-}
-//触屏配网相关埋点
-const burialPoint = {
-  /**
-   * 触屏配网提示绑定弹窗
-   */
-  touchScreenDiolog: (params) => {
-    rangersBurialPoint('user_page_view', {
-      page_path: getFullPageUrl(),
-      module: 'appliance',
-      page_id: 'popups_add_appliance_notice',
-      page_name: '设备添加提示弹窗',
-      widget_id: '',
-      widget_name: '',
-      object_type: '',
-      object_id: '',
-      object_name: '',
-      ext_info: {
-        code: params.code || '',
-        msg: params.msg || '',
-      },
-      device_info: {
-        device_session_id: params.deviceSessionId, //一次配网事件标识
-        sn: params.sn || '', //sn码
-        sn8: params.sn8, //sn8码
-        a0: '', //a0码
-        widget_cate: params.type, //设备品类
-        wifi_model_version: params.moduleVison || '', //模组wifi版本
-        link_type: 'screen_touch', //连接方式 bluetooth/ap/...
-        iot_device_id: params.applianceCode || '', //设备id
-      },
-    })
-  },
-
-  /**
-   * 点击触屏配网弹窗 是
-   */
-  touchScreenDiologConfirm: (params) => {
-    rangersBurialPoint('user_behavior_event', {
-      page_path: getFullPageUrl(),
-      module: 'appliance',
-      page_id: 'popups_add_appliance_notice',
-      page_name: '设备添加提示弹窗',
-      widget_id: 'click_confirm',
-      widget_name: '是',
-      object_type: '',
-      object_id: '',
-      object_name: '',
-      ext_info: {},
-      device_info: {
-        device_session_id: params.deviceSessionId, //一次配网事件标识
-        sn: params.sn || '', //sn码
-        sn8: params.sn8, //sn8码
-        a0: '', //a0码
-        widget_cate: params.type, //设备品类
-        wifi_model_version: params.moduleVison || '', //模组wifi版本
-        link_type: 'screen_touch', //连接方式 bluetooth/ap/...
-        iot_device_id: params.applianceCode || '', //设备id
-      },
-    })
-  },
-
-  /**
-   * 点击触屏配网弹窗 否
-   */
-  touchScreenDiologCancel: (params) => {
-    rangersBurialPoint('user_behavior_event', {
-      page_path: getFullPageUrl(),
-      module: 'appliance',
-      page_id: 'popups_add_appliance_notice',
-      page_name: '设备添加提示弹窗',
-      widget_id: 'click_cancel',
-      widget_name: '否',
-      object_type: '',
-      object_id: '',
-      object_name: '',
-      ext_info: {},
-      device_info: {
-        device_session_id: params.deviceSessionId, //一次配网事件标识
-        sn: params.sn || '', //sn码
-        sn8: params.sn8, //sn8码
-        a0: '', //a0码
-        widget_cate: params.type, //设备品类
-        wifi_model_version: params.moduleVison || '', //模组wifi版本
-        link_type: 'screen_touch', //连接方式 bluetooth/ap/...
-        iot_device_id: params.applianceCode || '', //设备id
-      },
-    })
-  },
-
-  /**
-   * 触屏配网扫码失败 点击知道了
-   */
-  touchScreenDiologClickKnow: (params) => {
-    rangersBurialPoint('user_behavior_event', {
-      page_path: getFullPageUrl(),
-      module: 'appliance',
-      page_id: 'popups_scan_qrcode_fail',
-      page_name: '扫码失败弹窗',
-      widget_id: 'click_confirm',
-      widget_name: '好的',
-      object_type: '',
-      object_id: '',
-      object_name: '',
-      ext_info: {},
-      device_info: {
-        device_session_id: params.deviceSessionId, //一次配网事件标识
-        sn: params.sn || '', //sn码
-        sn8: params.sn8, //sn8码
-        a0: '', //a0码
-        widget_cate: params.type, //设备品类
-        wifi_model_version: params.moduleVison || '', //模组wifi版本
-        link_type: 'screen_touch', //连接方式 bluetooth/ap/...
-        iot_device_id: params.applianceCode || '', //设备id
-      },
-    })
   },
 }
 

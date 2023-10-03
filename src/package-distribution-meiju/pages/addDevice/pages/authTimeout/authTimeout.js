@@ -21,39 +21,6 @@ Page({
     this.setData({
       brand: this.data.brand,
     })
-    // if (this.data.brand == 'meiju') {
-    //   wx.setNavigationBarColor({
-    //     frontColor: '#000000',
-    //     backgroundColor: '#ffffff',
-    //   })
-    // } else if (this.data.brand == 'colmo') {
-    //   wx.setNavigationBarColor({
-    //     frontColor: '#ffffff',
-    //     backgroundColor: '#1A1A1F',
-    //   })
-    // }
-    this.getLoginStatus().then(() => {
-      if (app.globalData.isLogon) {
-        this.checkFamilyPermission()
-      } else {
-        this.navToLogin()
-      }
-    })
-  },
-  getLoginStatus() {
-    return app
-      .checkGlobalExpiration()
-      .then(() => {
-        this.setData({
-          isLogon: app.globalData.isLogon,
-        })
-      })
-      .catch(() => {
-        app.globalData.isLogon = false
-        this.setData({
-          isLogin: app.globalData.isLogon,
-        })
-      })
   },
   retry() {
     wx.redirectTo({
@@ -80,7 +47,6 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
-    getApp().onUnloadCheckingLog()
   },
 
   /**

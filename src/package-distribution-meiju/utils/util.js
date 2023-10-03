@@ -8,7 +8,6 @@ import {
   getTimeStamp,
   aesEncrypt,
   getStamp,
-  isEmptyObject,
 } from 'm-utilsdk/index'
 import { login } from './paths.js'
 import { canIUseOpenEmbeddedMiniProgram } from './version'
@@ -282,32 +281,6 @@ function navigateToMiniProgram(appId, path, extra, envVersion) {
     success(res) {},
   })
 }
-/**
- * @description 校验用户权限
- * @param {Object} params currentHomeInfo-当前家庭信息 permissionText-权限提示弹窗文案 callback-点击确定回调
- *
- */
-const checkFamilyPermission = (params = {}) => {
-  const { currentHomeInfo, permissionText, callback } = params
-  if (currentHomeInfo.roleId === '1003') {
-    if (permissionText && !isEmptyObject(permissionText)) {
-      wx.showModal({
-        title: permissionText.title,
-        content: permissionText.content,
-        confirmText: permissionText.confirmText,
-        showCancel: false,
-        success(res) {
-          if (res.confirm) {
-            console.log('用户点击确定')
-            callback && callback()
-          }
-        },
-      })
-    }
-    return false
-  }
-  return true
-}
 
 // v1版本获取icon
 function getIcon(device, iconArr, currApplianceList) {
@@ -387,7 +360,6 @@ module.exports = {
   aesEncryptUrl,
   judgeWayToMiniProgram,
   navigateToMiniProgram,
-  checkFamilyPermission,
   getIcon,
   checkNetwork,
 }

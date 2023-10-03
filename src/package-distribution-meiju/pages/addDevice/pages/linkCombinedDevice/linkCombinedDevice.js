@@ -321,10 +321,7 @@ Page({
     this.data.pageStatus = 'unload'
     this.data.isStopGetExists = true // 停止轮询查询设备联网
     if (timer) clearInterval(timer)
-    app.onUnloadCheckingLog()
     clearInterval(timer)
-
-    app.onUnloadCheckingLog()
   },
 
   /**

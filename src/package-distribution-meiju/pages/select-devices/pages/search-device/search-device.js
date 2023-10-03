@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
-import { requestService, rangersBurialPoint } from '../../../../utils/requestService'
+import { requestService } from '../../../../utils/requestService'
 import { mideaServiceImgApi, imgBaseUrl } from '../../../../common/js/api'
 import computedBehavior from '../../../../utils/miniprogram-computed.js'
 import { getStamp, getReqId } from 'm-utilsdk/index'
-import { checkWxVersion_807, getFullPageUrl, showToast } from '../../../../utils/util.js'
+import { showToast } from '../../../../utils/util.js'
 import { addGuide, inputWifiInfo } from '../../../../utils/paths.js'
 import { isSupportPlugin } from '../../../../utils/pluginFilter'
 import { isAddDevice } from '../../../../utils/temporaryNoSupDevices'
@@ -87,33 +87,10 @@ Page({
       delIcon: imgUrl + imgesList['delIcon'],
       right_arrow: imgUrl + imgesList['right_arrow'],
     })
-    this.getLoginStatus().then(() => {
-      if (app.globalData.isLogon) {
-        this.checkFamilyPermission()
-      } else {
-        this.navToLogin()
-      }
-    })
     this.setData({
       subCode: options.subCode || '',
     })
     this.initData()
-    this.makePageViewTrack()
-  },
-  getLoginStatus() {
-    return app
-      .checkGlobalExpiration()
-      .then(() => {
-        this.setData({
-          isLogon: app.globalData.isLogon,
-        })
-      })
-      .catch(() => {
-        app.globalData.isLogon = false
-        this.setData({
-          isLogin: app.globalData.isLogon,
-        })
-      })
   },
 
   /**
@@ -134,7 +111,6 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
-    getApp().onUnloadCheckingLog()
   },
 
   /**
@@ -283,7 +259,6 @@ Page({
     if (subCode) {
       param['subCode'] = subCode
     }
-    self.clickSearcBtnViewTrack(searchKeyWord)
     requestService
       .request('getQueryIotProductV2', param)
       .then((res) => {
@@ -316,16 +291,11 @@ Page({
           self.setData({
             productList: [],
           })
-          self.applianceUnfoundViewTrack(searchKeyWord)
         }
         self.setData({
           loadFlag: true,
           hasNext: false,
         })
-        getApp().setMethodFailedCheckingLog(
-          'getQueryIotProductV2',
-          `获取搜索设备结果异常。error=${JSON.stringify(err)}`,
-        )
       })
   },
   actionGoBack() {
@@ -445,11 +415,9 @@ Page({
     let enterprise = e.currentTarget.dataset.enterprise
     let productId = e.currentTarget.dataset.id
     let deviceImg = e.currentTarget.dataset.img
-    let index = e.currentTarget.dataset.index
     console.log('e.mode:', e)
     if (clickFLag) {
       console.log('点击防重处理不触发')
-      getApp().setMethodFailedCheckingLog('prodClicked', '点击防重处理不触发')
       return
     }
     this.data.clickFLag = true
@@ -463,7 +431,6 @@ Page({
       queryType: 1,
     }
     console.log('param===', param)
-    self.clickApplianceViewTrack(index, category)
     //先判断是否isSupportPlugin
     if (!isSupportPlugin(`0x${category}`, code, code, '0')) {
       wx.showModal({
@@ -472,20 +439,11 @@ Page({
         confirmColor: '#267aff',
         showCancel: false,
       })
-      this.selectTypeNotSoupportTracking(
-        {
-          deviceSessionId: app.globalData.deviceSessionId,
-          type: category,
-          sn8: code,
-        },
-        '该品类无对应插件不支持小程序配网',
-      )
       setTimeout(() => {
         self.setData({
           clickFLag: false,
         })
       }, 1000)
-      getApp().setMethodFailedCheckingLog('prodClicked', '该品类无对应插件不支持小程序配网')
       return
     }
     if (!isAddDevice(category.toLocaleUpperCase(), code)) {
@@ -501,15 +459,6 @@ Page({
           clickFLag: false,
         })
       }, 1000)
-      this.selectTypeNotSoupportTracking(
-        {
-          deviceSessionId: app.globalData.deviceSessionId,
-          type: category,
-          sn8: code,
-        },
-        '未测试品类不支持小程序配网',
-      )
-      getApp().setMethodFailedCheckingLog('prodClicked', '未测试品类不支持小程序配网')
       return
     }
     requestService
@@ -586,30 +535,12 @@ Page({
             confirmColor: '#267aff',
             showCancel: false,
           })
-          this.selectTypeNotSoupportTracking(
-            {
-              deviceSessionId: app.globalData.deviceSessionId,
-              type: category,
-              sn8: code,
-            },
-            '小程序暂时不支持的配网方式',
-          )
-          getApp().setMethodFailedCheckingLog('prodClicked', '小程序暂时不支持的配网方式')
         }
         setTimeout(() => {
           self.setData({
             clickFLag: false,
           })
         }, 1000)
-        this.getGuideTrack({
-          deviceSessionId: app.globalData.deviceSessionId,
-          type: category,
-          sn8: code,
-          linkType: addDeviceInfo.linkType,
-          serverCode: res.data.code + '',
-          serverType: res.data.data.category,
-          serverSn8: res.data.data.mainConnectinfoList[0].code,
-        })
         console.log('search device==============')
       })
       .catch((err) => {
@@ -622,23 +553,10 @@ Page({
             confirmButtonText: '好的',
             confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
             showCancelButton: false,
-            success(res) {},
           })
         } else {
           showToast('当前网络信号不佳，请检查网络设置', 'none', 3000)
         }
-        this.getGuideTrack({
-          deviceSessionId: app.globalData.deviceSessionId,
-          type: category,
-          sn8: code,
-          linkType: '', //getLinkType(mode),
-          serverCode: err?.data?.code + '' || err,
-        })
-        getApp().setMethodFailedCheckingLog('prodClicked', `选型后获取设备指引失败。error=${JSON.stringify(err)}`)
-        // if (err.errMsg) {
-        //   showToast('网络不佳，请检查网络')
-        //   return
-        // }
       })
   },
   bindImgError(e) {
@@ -648,112 +566,5 @@ Page({
       [imgFailFlag]: true,
     })
     console.log('bindImgError======', e)
-  },
-  makePageViewTrack() {
-    rangersBurialPoint('user_page_view', {
-      module: 'appliance', //写死 “活动”
-      page_id: 'page_search_appliance', //参考接口请求参数“pageId”
-      page_name: '搜索设备页', //当前页面的标题，顶部的title
-      page_path: getFullPageUrl(), //当前页面的URL
-      page_module: 'appliance',
-      device_info: {
-        device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-      },
-    })
-  },
-  applianceUnfoundViewTrack(object_name) {
-    rangersBurialPoint('user_page_view', {
-      module: 'appliance', //写死 “活动”
-      page_id: 'page_search_appliance_unfound', //参考接口请求参数“pageId”
-      page_name: '搜索设备页-未搜索到结果', //当前页面的标题，顶部的title
-      page_path: getFullPageUrl(), //当前页面的URL
-      page_module: 'appliance',
-      object_type: '关键词',
-      object_name,
-      device_info: {
-        device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-      },
-    })
-  },
-  clickSearcBtnViewTrack(object_name) {
-    rangersBurialPoint('user_behavior_event', {
-      module: 'appliance', //写死 “活动”
-      page_id: 'page_search_appliance', //参考接口请求参数“pageId”
-      page_name: '搜索设备页', //当前页面的标题，顶部的title
-      page_path: getFullPageUrl(), //当前页面的URL
-      widget_id: 'click_search',
-      widget_name: '搜索',
-      page_module: 'appliance',
-      object_type: '关键词',
-      object_name,
-      device_info: {
-        device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-      },
-    })
-  },
-  clickApplianceViewTrack(rank, object_name) {
-    rangersBurialPoint('user_behavior_event', {
-      module: 'appliance', //写死 “活动”
-      page_id: 'page_search_appliance', //参考接口请求参数“pageId”
-      page_name: '搜索设备页', //当前页面的标题，顶部的title
-      page_path: getFullPageUrl(), //当前页面的URL
-      widget_id: 'click_appliance',
-      widget_name: '设备',
-      page_module: 'appliance',
-      object_type: '设备',
-      rank: rank + 1,
-      object_name,
-      device_info: {},
-    })
-  },
-  //获取指引埋点
-  getGuideTrack(params) {
-    rangersBurialPoint('user_behavior_event', {
-      module: 'appliance', //写死 “活动”
-      page_id: 'device_guidebook_page', //参考接口请求参数“pageId”
-      page_name: '配网指引返回结果', //当前页面的标题，顶部的title
-      page_path: getFullPageUrl(), //当前页面的URL
-      widget_id: 'server_return',
-      widget_name: '服务器返回',
-      object_type: '',
-      object_id: '',
-      object_name: '',
-      ext_info: {
-        code: params.serverCode || '',
-        cate: params.serverType || '',
-        sn8: params.serverSn8 || '',
-      },
-      device_info: {
-        device_session_id: params.deviceSessionId, //一次配网事件标识
-        sn: '', //sn码
-        sn8: params.sn8, //sn8码
-        a0: '', //a0码
-        widget_cate: params.type, //设备品类
-        wifi_model_version: params.moduleVison || '', //模组wifi版本
-        link_type: params.linkType, //连接方式 bluetooth/ap/...
-        iot_device_id: params.applianceCode || '', //设备id
-      },
-    })
-  },
-  //选型不支持埋点
-  selectTypeNotSoupportTracking(deviceInfo, errorMsg) {
-    rangersBurialPoint('user_page_view', {
-      module: 'appliance',
-      page_id: 'popups_select_not_support', //参考接口请求参数“pageId”
-      page_name: '选择设备不支持配网弹窗', //当前页面的标题，顶部的title
-      page_path: getFullPageUrl(), //当前页面的URL
-      object_type: '',
-      object_id: '',
-      object_name: '',
-      ext_info: {
-        error_msg: errorMsg || '',
-      },
-      device_info: {
-        device_session_id: deviceInfo.deviceSessionId, //一次配网事件标识
-        sn: '', //sn码
-        sn8: deviceInfo.sn8, //sn8码
-        widget_cate: deviceInfo.type, //设备品类-
-      },
-    })
   },
 })

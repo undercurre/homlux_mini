@@ -62,12 +62,6 @@ Component({
   computed: {
     fomatWifiList() {
       let { wifiList, isGetDeviceWifi, isSupport5G, brandName, type } = this.properties
-
-      let {
-        // wifiList,
-        imgBaseUrl,
-        imges,
-      } = this.data
       console.log('wifi列表 this.properties', this.properties)
       let wifiName
       let signalStrength

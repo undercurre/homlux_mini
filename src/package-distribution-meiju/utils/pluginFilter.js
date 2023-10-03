@@ -1,9 +1,7 @@
 import paths from './paths'
 import { getPluginUrl } from './getPluginUrl'
 const app = getApp()
-const filterBothCodeType = ['0xFA'] //需要同时校验A0和sn8的品类
 import Dialog from '../../miniprogram_npm/m-ui/mx-dialog/dialog'
-import { rangersBurialPoint } from './requestService'
 import { getFullPageUrl } from './util'
 const isSupportPlugin = (type, sn8, A0 = '', isOtherEquipment = '0', cardType) => {
   return true
@@ -24,8 +22,6 @@ const getCommonType = (type) => {
  * hasPageName 是否是后确权页面过来
  */
 function showDialog(deviceInfo, hasPageName) {
-  deviceInfo = JSON.parse(deviceInfo)
-  let A0 = app.addDeviceInfo.cloudBackDeviceInfo.modelNumber
   Dialog.confirm({
     title: '无法跳转设备控制页面',
     message: '未获取到控制页面，请检查网络后重试，若仍无法获取，请联系客服',
@@ -35,89 +31,6 @@ function showDialog(deviceInfo, hasPageName) {
     cancelButtonText: '返回首页',
     showCancelButton: hasPageName,
   })
-    .then((res) => {
-      if (res.action == 'confirm') {
-        if (hasPageName) {
-          rangersBurialPoint('user_behavior_event', {
-            page_path: getFullPageUrl(),
-            module: 'appliance',
-            page_id: 'no_plugin_package_obtained',
-            page_name: '无法跳转插件页弹窗',
-            widget_id: 'got_it_button',
-            widget_name: '我知道了按钮',
-            object_type: '',
-            object_id: '',
-            object_name: '',
-            ext_info: {},
-            device_info: {
-              device_session_id: app.globalData.deviceSessionId || '', //一次配网事件标识
-              sn: deviceInfo.sn || '', //sn码
-              sn8: deviceInfo.sn8, //sn8码
-              a0: A0 || '', //a0码
-              widget_cate: deviceInfo.type, //设备品类
-              wifi_model_version: app.addDeviceInfo.blueVersion || '', //模组wifi版本
-              link_type: app.addDeviceInfo.linkType || 'bluetooth', //连接方式 bluetooth/ap/...
-              iot_device_id: deviceInfo.applianceCode || '', //设备id
-            },
-          })
-        } else {
-          rangersBurialPoint('user_behavior_event', {
-            page_path: getFullPageUrl(),
-            module: 'appliance',
-            page_id: 'no_plugin_package_obtained',
-            page_name: '无法跳转插件页弹窗',
-            widget_id: 'homepage_button',
-            widget_name: '返回首页按钮',
-            object_type: '',
-            object_id: '',
-            object_name: '',
-            ext_info: {},
-            device_info: {
-              device_session_id: app.globalData.deviceSessionId || '', //一次配网事件标识
-              sn: deviceInfo.sn || '', //sn码
-              sn8: deviceInfo.sn8, //sn8码
-              a0: A0 || '', //a0码
-              widget_cate: deviceInfo.type, //设备品类
-              wifi_model_version: app.addDeviceInfo.blueVersion || '', //模组wifi版本
-              link_type: app.addDeviceInfo.linkType || 'bluetooth', //连接方式 bluetooth/ap/...
-              iot_device_id: deviceInfo.applianceCode || '', //设备id
-            },
-          })
-          wx.reLaunch({
-            url: paths.index,
-          })
-        }
-      }
-    })
-    .catch((error) => {
-      if (error.action == 'cancel') {
-        rangersBurialPoint('user_behavior_event', {
-          page_path: getFullPageUrl(),
-          module: 'appliance',
-          page_id: 'no_plugin_package_obtained',
-          page_name: '无法跳转插件页弹窗',
-          widget_id: 'homepage_button',
-          widget_name: '返回首页按钮',
-          object_type: '',
-          object_id: '',
-          object_name: '',
-          ext_info: {},
-          device_info: {
-            device_session_id: app.globalData.deviceSessionId || '', //一次配网事件标识
-            sn: deviceInfo.sn || '', //sn码
-            sn8: deviceInfo.sn8, //sn8码
-            a0: A0 || '', //a0码
-            widget_cate: deviceInfo.type, //设备品类
-            wifi_model_version: app.addDeviceInfo.blueVersion || '', //模组wifi版本
-            link_type: app.addDeviceInfo.linkType || 'bluetooth', //连接方式 bluetooth/ap/...
-            iot_device_id: deviceInfo.applianceCode || '', //设备id
-          },
-        })
-        wx.reLaunch({
-          url: paths.index,
-        })
-      }
-    })
 }
 
 /**
@@ -136,7 +49,7 @@ function goTopluginPage(deviceInfo, backPage = '', isRomoveRoute = false, fromPa
   console.log('deviceInfo====', typeof deviceInfo)
   console.log('deviceInfo==type==', deviceInfo.type)
   console.log('deviceInfo=====', deviceInfo)
-  let type = deviceInfo.type.includes('0x') ? deviceInfo.type : '0x' + type
+  let type = deviceInfo.type.includes('0x') ? deviceInfo.type : '0x' + deviceInfo.type
   let category = type
   let sn8 = deviceInfo.sn8
   type = getCommonType(type)

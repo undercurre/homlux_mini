@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 const app = getApp()
-import { index, webView, download } from '../../../../utils/paths'
+import { index, } from '../../../../utils/paths'
 import { hasKey, getStamp, getReqId } from 'm-utilsdk/index'
-import { checkFamilyPermission, getFullPageUrl } from '../../../../utils/util.js'
-import { requestService, rangersBurialPoint } from '../../../../utils/requestService'
+import { requestService } from '../../../../utils/requestService'
 import { isSupportPlugin } from '../../../../utils/pluginFilter'
 const bluetooth = require('../../../../common/mixins/bluetooth.js')
 const dialogCommonData = require('../../../../common/mixins/dialog-common-data.js')
@@ -12,7 +11,6 @@ import { addDeviceSDK } from '../../../../utils/addDeviceSDK'
 import { checkPermission } from '../../../../common/js/checkPermissionTip'
 import { baseImgApi } from '../../../../common/js/api'
 import paths from '../../../../utils/paths.js'
-import { familyPermissionText } from '../../../../common/js/commonText.js'
 import { service } from '../../../assets/js/service.js'
 
 Page({
@@ -102,26 +100,6 @@ Page({
         }
       },
     })
-  },
-  navToLogin() {
-    app.globalData.isLogon = false
-    let from = true
-    wx.setStorageSync('fromWetChat', from)
-    wx.switchTab({
-      url: index,
-    })
-  },
-  // 校验是否登录
-  getLoginStatus() {
-    return app
-      .checkGlobalExpiration()
-      .then((res) => {
-        console.log(res)
-      })
-      .catch((err) => {
-        console.log(err)
-        app.globalData.isLogon = false
-      })
   },
   //解析链接参数
   parseUrl(url) {
@@ -324,17 +302,6 @@ Page({
     return type.toLocaleUpperCase()
   },
 
-  //检查登录状态
-  checkLogin() {
-    this.getLoginStatus().then(() => {
-      if (app.globalData.isLogon) {
-        this.auth()
-      } else {
-        this.navToLogin()
-      }
-    })
-  },
-
   //判断位置和蓝牙授权情况
   async auth(e) {
     let _this = this
@@ -375,23 +342,6 @@ Page({
       location: location,
       locationNotice: location?.permissionTextList ? location.permissionTextList : [],
     })
-    if (this.data.locationNotice.length != 0) {
-      let { sn8, category } = this.data.device
-      //曝光埋点
-      rangersBurialPoint('user_page_view', {
-        page_id: 'scan_code_locat_permiss',
-        page_name: '扫码中间页-位置权限开启提示',
-        module: 'appliance',
-        page_path: getFullPageUrl(),
-        device_info: {
-          sn8: sn8, //sn8码
-          widget_cate: category, //设备品类
-        },
-        ext_info: {
-          notice: this.data.locationNotice.join('/'),
-        },
-      })
-    }
   },
 
   //获取蓝牙授权情况
@@ -401,23 +351,6 @@ Page({
       bluetooth: bluetooth,
       bluetoothNotice: bluetooth?.permissionTextList ? bluetooth.permissionTextList : [],
     })
-    if (this.data.bluetoothNotice.length != 0) {
-      let { sn8, category } = this.data.device
-      //曝光埋点
-      rangersBurialPoint('user_page_view', {
-        page_id: 'scan_code_bluetooth_permiss',
-        page_name: '扫码中间页-蓝牙权限开启提示',
-        module: 'appliance',
-        page_path: getFullPageUrl(),
-        device_info: {
-          sn8: sn8, //sn8码
-          widget_cate: category, //设备品类
-        },
-        ext_info: {
-          notice: this.data.bluetoothNotice.join('/'),
-        },
-      })
-    }
   },
 
   //位置蓝牙授权通过后进入配网流程
@@ -435,22 +368,7 @@ Page({
       let homeList = await this.getHomeGrouplistService()
       // app.globalData.currentHomeGroupId = homeList[0].homegroupId
       console.log('当前用户家庭列表', homeList)
-      if (homeList.length != 0) {
-        //检查是否是当前家庭的创建者或管理员，只有创建者或管理员才可以添加设备
-        let hasFamilyPermission = checkFamilyPermission({
-          currentHomeInfo: homeList[0],
-          permissionText: familyPermissionText.addDevice,
-          callback: () => {
-            wx.reLaunch({
-              url: index,
-            })
-          },
-        })
-        console.log('hasFamilyPermission', hasFamilyPermission)
-        if (hasFamilyPermission) {
-          go()
-        }
-      } else {
+      if (homeList.length === 0) {
         go()
       }
     } else if (e) {
@@ -592,19 +510,11 @@ Page({
   onReady: function () {},
 
   onShow: function () {
-    //判断是否是从其他页面返回到中间页，如果是则跳首页
-    if (app.globalData.isFromOtherPage) {
-      app.globalData.isFromOtherPage = false //跳转完重置状态
-      wx.switchTab({
-        url: paths.index,
-      })
-    }
   },
 
   onHide: function () {},
 
   onUnload: function () {
-    getApp().onUnloadCheckingLog()
   },
 
   onPullDownRefresh: function () {},

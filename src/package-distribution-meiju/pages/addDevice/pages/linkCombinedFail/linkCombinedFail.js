@@ -211,7 +211,6 @@ Page({
    */
   onUnload: function () {
     this.data.pageStatus = 'unload'
-    app.onUnloadCheckingLog()
   },
 
   /**

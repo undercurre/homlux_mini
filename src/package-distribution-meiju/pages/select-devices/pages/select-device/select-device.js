@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
-import { requestService, rangersBurialPoint } from '../../../../utils/requestService'
+import { requestService } from '../../../../utils/requestService'
 import { imgBaseUrl } from '../../../../common/js/api'
 import computedBehavior from '../../../../utils/miniprogram-computed.js'
 import { getStamp, getReqId } from 'm-utilsdk/index'
-import { getFullPageUrl, showToast } from '../../../../utils/util.js'
+import { showToast } from '../../../../utils/util.js'
 import { selectModel, searchDevice, addGuide, inputWifiInfo } from '../../../../utils/paths.js'
 import { isSupportPlugin } from '../../../../utils/pluginFilter'
-import { login } from '../../../../utils/paths'
 import { getLinkType } from '../../../assets/js/utils'
 import { isAddDevice } from '../../../../utils/temporaryNoSupDevices'
 import { addDeviceSDK } from '../../../../utils/addDeviceSDK'
@@ -231,32 +230,14 @@ Page({
       brand: this.data.brand,
       searchIcon: imgUrl + imgesList['searchIcon'],
     })
-    // if (this.data.brand == 'meiju') {
-    //   wx.setNavigationBarColor({
-    //     frontColor: '#000000',
-    //     backgroundColor: '#ffffff',
-    //   })
-    // } else if (this.data.brand == 'colmo') {
-    //   wx.setNavigationBarColor({
-    //     frontColor: '#ffffff',
-    //     backgroundColor: '#1A1A1F',
-    //   })
-    // }
     if (this.data.brand == 'colmo') {
       wx.setNavigationBarColor({
         backgroundColor: '#202026',
         frontColor: '#ffffff',
       })
     }
-    this.getLoginStatus().then(() => {
-      if (app.globalData.isLogon) {
-        this.checkFamilyPermission()
-        this.initData()
-        this.makePageViewTrack()
-      } else {
-        this.navToLogin()
-      }
-    })
+
+    this.initData()
   },
 
   /**
@@ -272,8 +253,6 @@ Page({
   itemClicked(e) {
     let { productList } = this.data
     let index = e.currentTarget.dataset.index
-    let category = e.currentTarget.dataset.category
-    this.clickCategoryViewTrack(category)
     this.setData({
       currentIndex: index,
       endIndexFlag: index == productList.length - 1 ? true : false,
@@ -290,7 +269,6 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
-    getApp().onUnloadCheckingLog()
   },
 
   /**
@@ -563,7 +541,6 @@ Page({
     const this_ = this
     if (this.prodClickFlag) return
     this.prodClickFlag = true
-    this.clickApplianceViewTrack(iCategoryName, name)
     //isProduct为true直接跳配网
     if (isProduct) {
       let code = e.currentTarget.dataset.code
@@ -571,19 +548,6 @@ Page({
       let enterprise = e.currentTarget.dataset.enterprise
       let productId = e.currentTarget.dataset.id
       let deviceImg = e.currentTarget.dataset.img
-      // 判断全局的密钥有没有，有就跳过，没有就重新拉取
-      // if(!app.globalData.privateKey) {
-      //   if(app.globalData.privateKeyIntervalNum) {
-      //     clearInterval(app.globalData.privateKeyIntervalNum)
-      //   }
-      //   try {
-      //       await getPrivateKeys.getPrivateKey()
-      //       this.prodClicked(e)
-      //   } catch(err) {
-      //     this.privateKeyErrorHand(e)
-      //   }
-      //   return
-      // }
       this.makeProductCheck(code, pCategory, enterprise, productId, deviceImg)
     } else {
       wx.navigateTo({
@@ -607,29 +571,12 @@ Page({
     console.log('param===', param)
     //先判断是否isSupportPlugin
     if (!isSupportPlugin(`0x${category}`, code, code, '0')) {
-      Dialog.confirm({
-        title: '该设备暂不支持小程序配网，我们会尽快开放，敬请期待',
-        confirmButtonText: '我知道了',
-        confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
-        showCancelButton: false,
-      }).then((res) => {
-        this.prodClickFlag = false
+      wx.showModal({
+        content: '该设备暂不支持小程序配网，我们会尽快开放，敬请期待',
+        confirmText: '我知道了',
+        confirmColor: '#267aff',
+        showCancel: false,
       })
-      // wx.showModal({
-      //   content: '该设备暂不支持小程序配网，我们会尽快开放，敬请期待',
-      //   confirmText: '我知道了',
-      //   confirmColor: '#267aff',
-      //   showCancel: false,
-      // })
-      this.selectTypeNotSoupportTracking(
-        {
-          deviceSessionId: app.globalData.deviceSessionId,
-          type: category,
-          sn8: code,
-        },
-        '该品类无对应插件不支持小程序配网',
-      )
-      getApp().setMethodFailedCheckingLog('prodClicked', '该品类无对应插件不支持小程序配网')
       return
     }
     requestService
@@ -679,35 +626,11 @@ Page({
             confirmButtonText: '我知道了',
             confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
             showCancelButton: false,
-          }).then((res) => {
+          }).then(() => {
             this.prodClickFlag = false
           })
-          // wx.showModal({
-          //   content: '该设备暂不支持小程序配网，我们会尽快开放，敬请期待',
-          //   confirmText: '我知道了',
-          //   confirmColor: '#267aff',
-          //   showCancel: false,
-          // })
-          this.selectTypeNotSoupportTracking(
-            {
-              deviceSessionId: app.globalData.deviceSessionId,
-              type: category,
-              sn8: code,
-            },
-            '小程序暂时不支持的配网方式',
-          )
-          getApp().setMethodFailedCheckingLog('prodClicked', '小程序暂时不支持的配网方式')
           console.log('小程序暂时不支持的配网方式====')
         }
-        this.getGuideTrack({
-          deviceSessionId: app.globalData.deviceSessionId,
-          type: category,
-          sn8: code,
-          linkType: addDeviceInfo.linkType,
-          serverCode: addDeviceInfo.serverCode + '',
-          serverType: addDeviceInfo.serverType,
-          serverSn8: addDeviceInfo.guideInfo[0].code,
-        })
         console.log('select model==============')
       })
       .catch((err) => {
@@ -718,18 +641,6 @@ Page({
             icon: 'none',
           })
         }
-        this.getGuideTrack({
-          deviceSessionId: app.globalData.deviceSessionId,
-          type: category,
-          sn8: code,
-          linkType: '', //getLinkType(mode),
-          serverCode: err?.data?.code + '' || err,
-        })
-        getApp().setMethodFailedCheckingLog('prodClicked', `选择设备后获取指引失败。error=${JSON.stringify(err)}`)
-        // if (err.errMsg) {
-        //   showToast('网络不佳，请检查网络')
-        //   return
-        // }
       })
   },
   goSearch() {
@@ -747,7 +658,6 @@ Page({
       for (let i = 0; i < heightArr.length; i++) {
         if (scrollTop >= 0 && scrollTop < heightArr[0]) {
           if (lastActive != 0) {
-            this.clickCategoryViewTrack(productList[0]['categoryName'])
             this.setData({
               currentIndex: 0,
               lastActive: 0,
@@ -761,7 +671,6 @@ Page({
             })
           } else {
             if (lastActive != i) {
-              this.clickCategoryViewTrack(productList[i]['categoryName'])
               this.setData({
                 currentIndex: i,
                 lastActive: i,
@@ -771,122 +680,5 @@ Page({
         }
       }
     }
-  },
-  makePageViewTrack() {
-    rangersBurialPoint('user_page_view', {
-      module: 'appliance', //写死 “活动”
-      page_id: 'page_choose_appliance_type', //参考接口请求参数“pageId”
-      page_name: '选择设备类型页', //当前页面的标题，顶部的title
-      page_path: getFullPageUrl(), //当前页面的URL
-      page_module: 'appliance',
-      device_info: {
-        device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-      },
-    })
-  },
-  clickCategoryViewTrack(object_name) {
-    rangersBurialPoint('user_behavior_event', {
-      module: 'appliance', //写死 “活动”
-      page_id: 'page_choose_appliance_type', //参考接口请求参数“pageId”
-      page_name: '选择设备类型页', //当前页面的标题，顶部的title
-      page_path: getFullPageUrl(), //当前页面的URL
-      widget_id: 'click_category',
-      widget_name: '分类',
-      page_module: 'appliance',
-      object_type: '分类',
-      object_name,
-      device_info: {
-        device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-      },
-    })
-  },
-  clickApplianceViewTrack(page_module, object_name) {
-    rangersBurialPoint('user_behavior_event', {
-      module: 'appliance', //写死 “活动”
-      page_id: 'page_choose_appliance_type', //参考接口请求参数“pageId”
-      page_name: '选择设备类型页', //当前页面的标题，顶部的title
-      page_path: getFullPageUrl(), //当前页面的URL
-      widget_id: 'click_appliance',
-      widget_name: '分类',
-      page_module,
-      object_type: '设备品类',
-      object_name,
-      device_info: {
-        device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-      },
-    })
-  },
-  //获取指引埋点
-  getGuideTrack(params) {
-    rangersBurialPoint('user_behavior_event', {
-      module: 'appliance', //写死 “活动”
-      page_id: 'device_guidebook_page', //参考接口请求参数“pageId”
-      page_name: '配网指引返回结果', //当前页面的标题，顶部的title
-      page_path: getFullPageUrl(), //当前页面的URL
-      widget_id: 'server_return',
-      widget_name: '服务器返回',
-      object_type: '',
-      object_id: '',
-      object_name: '',
-      ext_info: {
-        code: params.serverCode || '',
-        cate: params.serverType || '',
-        sn8: params.serverSn8 || '',
-      },
-      device_info: {
-        device_session_id: params.deviceSessionId, //一次配网事件标识
-        sn: '', //sn码
-        sn8: params.sn8, //sn8码
-        a0: '', //a0码
-        widget_cate: params.type, //设备品类
-        wifi_model_version: params.moduleVison || '', //模组wifi版本
-        link_type: params.linkType, //连接方式 bluetooth/ap/...
-        iot_device_id: params.applianceCode || '', //设备id
-      },
-    })
-  },
-  //选型不支持埋点
-  selectTypeNotSoupportTracking(deviceInfo, errorMsg) {
-    rangersBurialPoint('user_page_view', {
-      module: 'appliance',
-      page_id: 'popups_select_not_support', //参考接口请求参数“pageId”
-      page_name: '选择设备不支持配网弹窗', //当前页面的标题，顶部的title
-      page_path: getFullPageUrl(), //当前页面的URL
-      object_type: '',
-      object_id: '',
-      object_name: '',
-      ext_info: {
-        error_msg: errorMsg || '',
-      },
-      device_info: {
-        device_session_id: deviceInfo.deviceSessionId, //一次配网事件标识
-        sn: '', //sn码
-        sn8: deviceInfo.sn8, //sn8码
-        widget_cate: deviceInfo.type, //设备品类
-      },
-    })
-  },
-  // 获取登录状态 最新登录流程
-  getLoginStatus() {
-    return app
-      .checkGlobalExpiration()
-      .then(() => {
-        this.setData({
-          isLogon: app.globalData.isLogon,
-        })
-      })
-      .catch(() => {
-        app.globalData.isLogon = false
-        this.setData({
-          isLogin: app.globalData.isLogon,
-        })
-      })
-  },
-  navToLogin() {
-    app.globalData.isLogon = false
-    this.setData({
-      isLogin: app.globalData.isLogon,
-    })
-    wx.navigateTo({ url: login })
   },
 })

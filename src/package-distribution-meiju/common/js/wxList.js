@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 import { requestService } from '../../utils/requestService'
 import { getSnTicket } from './deviceSubscribe.js'
 import {

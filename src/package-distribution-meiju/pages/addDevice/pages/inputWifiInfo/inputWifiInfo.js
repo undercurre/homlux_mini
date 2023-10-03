@@ -16,19 +16,16 @@ import WifiMgr from '../assets/js/wifiMgr'
 import { addDeviceSDK } from '../../../../utils/addDeviceSDK.js'
 import { checkPermission } from '../../../../common/js/checkPermissionTip'
 import { setWifiStorage } from '../../utils/wifiStorage'
-import { environment, imgBaseUrl } from '../../../../common/js/api'
+import { environment } from '../../../../common/js/api'
 const brandStyle = require('../../../assets/js/brand.js')
 import { brandConfig } from '../../../assets/js/brand'
-import { imgesList } from '../../../assets/js/shareImg.js'
 import { commonDialog } from '../../../assets/js/commonDialog'
 import app from '../../../../common/app'
-const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
 let wifiMgr = new WifiMgr()
+import { imgList } from '../../../../common/js/img'
 let interval = null
 let showImgTime = null
 const systemInfo = wx.getSystemInfoSync()
-
-console.log('----test---------')
 
 Page({
   behaviors: [addDeviceMixin, netWordMixin, computedBehavior, bluetooth, getFamilyPermissionMixin, checkAuthMixin],
@@ -72,17 +69,9 @@ Page({
     applianceCode: '',
     ctrlType: '',
     guideStep: [
-      // {
-      //   type: 'location',
-      //   title: '允许程序使用位置信息',
-      //   desc: []
-      // },
       {
         title: '请前往手机系统设置页，将手机连接上家庭WiFi，再返回本页面',
       },
-      // {
-      //   title: '将手机连接上WiFi（设备将通过此WiFi连接网络）',
-      // },
     ],
     mode: null,
     isIpx: app.globalData.isPx,
@@ -154,13 +143,13 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  async onLoad(options) {
+  async onLoad() {
     this.data.brand = brandStyle.brand
     this.setData({
       brand: this.data.brand,
-      guideImg: imgUrl + imgesList['linkGuide'],
-      wifiConnect: imgUrl + imgesList['wifiConnect'],
-      questinoImg: imgUrl + imgesList['questino'],
+      guideImg: imgList['linkGuide'],
+      wifiConnect: imgList['wifiConnect'],
+      questinoImg: imgList['questino'],
     })
     console.log(this.data.brand)
 
@@ -178,11 +167,10 @@ Page({
       fm,
     } = app.addDeviceInfo
 
-    this.checkFamilyPermission()
     if (!deviceImg || !deviceName) {
       // 设备图片或名称缺失则补全
       let typeAndName
-      if (fm == 'selectType') {
+      if (fm === 'selectType') {
         typeAndName = this.getDeviceImgAndName(type)
       } else {
         typeAndName = this.getDeviceImgAndName(type, sn8)
@@ -193,7 +181,7 @@ Page({
     this.setData({
       deviceName: deviceName || app.addDeviceInfo.deviceName,
       mode: mode || 0, //默认ap
-      isSupport5G: (guideInfo && guideInfo[0].wifiFrequencyBand) == 2 ? true : false,
+      isSupport5G: (guideInfo && guideInfo[0].wifiFrequencyBand) == 2,
     })
     if (!brandName) {
       app.addDeviceInfo.brandName = this.getBrandBname(enterprise)
@@ -201,7 +189,7 @@ Page({
     //设置连接方式
     app.addDeviceInfo.linkType = this.getLinkType(mode)
     this.checkSystm()
-    if (this.data.system == 'iOS') {
+    if (this.data.system === 'iOS') {
       this.locationAuthorize() //判断用户是否授权小程序使用位置权限
     }
     // app.globalData.deviceSessionId = creatDeviceSessionId(app.globalData.userData.uid)
@@ -242,31 +230,6 @@ Page({
       }
     }
   },
-  getLoginStatus() {
-    return app
-      .checkGlobalExpiration()
-      .then((res) => {
-        this.setData({
-          isLogon: app.globalData.isLogon,
-        })
-      })
-      .catch((err) => {
-        app.globalData.isLogon = false
-        this.setData({
-          isLogin: app.globalData.isLogon,
-        })
-      })
-  },
-  navToLogin() {
-    app.globalData.isLogon = false
-    this.setData({
-      isLogin: app.globalData.isLogon,
-    })
-    wx.navigateTo({
-      url: paths.login,
-    })
-  },
-
   //点击跳转wifi频率指引页
   goTofrequencyGuide() {
     wx.navigateTo({
@@ -318,7 +281,6 @@ Page({
     console.log('res.system==========', res.system)
     if (res.system.includes('iOS')) {
       this.setData({
-        // isTipIosUpVersion: true,
         system: 'iOS',
       })
     }
@@ -344,17 +306,9 @@ Page({
     let that = this
     if (this.data.clickFLag) {
       console.log('进入防重逻辑')
-      // if(!this.data.locationResFlag) {
-      //   wx.showToast({
-      //     title: '网络不佳，请检查网络后重试',
-      //     icon: 'none',
-      //     duration: 2000,
-      //   })
-      // }
       return
     }
     this.data.clickFLag = true
-    let { type, sn8, linkType } = app.addDeviceInfo
     const res = wx.getSystemInfoSync()
     console.log(res.system)
     if (res.system.includes('Android')) {
@@ -591,7 +545,7 @@ Page({
         //还是之前连接的wifi
         console.log('还是同一个wifi')
         if (this.data.pageStatus == 'show') {
-          this.delay(1500).then((end) => {
+          this.delay(1500).then(() => {
             this.loopGetWifiInfo()
           })
         }
@@ -600,10 +554,6 @@ Page({
       this.getCurLinkWifiInfo()
     } catch (error) {
       console.log('[get connected wifi fail]', error)
-      getApp().setMethodFailedCheckingLog(
-        'wx.getConnectedWifi()',
-        `调用微信接口wx.getConnectedWifi()异常。error=${JSON.stringify(error)}`,
-      )
       if (this.data.pageStatus == 'show') {
         this.delay(1500).then((end) => {
           this.loopGetWifiInfo()
@@ -656,19 +606,9 @@ Page({
       success: (res) => {
         let platform = res.res
         wx.startWifi({
-          success(res) {
+          success() {
             console.log('初始化wifi成功')
             that.data.isInitWifiSuccess = true
-            // that.nowNetType().then(networkType => {
-            //     if (networkType != 'wifi') {
-            //         this.setData({
-            //             netType: 0
-            //         })
-            //         return
-            //     } else {
-            //         that.getCurLinkWifiInfo()
-            //     }
-            // })
             if (platform == 'ios') {
               //获取当前连接wifi信息 弹出确认窗口
               that.getCurLinkWifiInfo()
@@ -680,12 +620,12 @@ Page({
                   if (!res.authSetting['scope.userLocation']) {
                     wx.authorize({
                       scope: 'scope.userLocation',
-                      success(res) {
+                      success() {
                         //获取当前连接wifi信息
                         console.log('授权定位成功')
                         that.getCurLinkWifiInfo()
                       },
-                      fail(error) {
+                      fail() {
                         wx.showModal({
                           title: '提示',
                           content: '定位失败，您未开启定位权限，点击开启定位权限',
@@ -715,16 +655,10 @@ Page({
                     that.getCurLinkWifiInfo()
                   }
                 },
-                fail(error) {
-                  getApp().setMethodFailedCheckingLog(
-                    'wx.getSetting()',
-                    `获取定位权限异常。error=${JSON.stringify(error)}`,
-                  )
-                },
               })
             }
           },
-          fail(res) {
+          fail() {
             wx.showToast({
               title: '初始化WiFi失败',
               icon: 'none',
@@ -736,18 +670,6 @@ Page({
       },
     })
   },
-  // //展示wifi列表
-  // showWifiList() {
-  //     wifiMgr.checkPlatform().then(platform => {
-  //         if (platform == 'ios') {
-  //             this.setData({
-  //                 wifiDialogShow: true
-  //             })
-  //         } else {
-  //             this.getWifiList()
-  //         }
-  //     })
-  // },
   switchPswShow() {
     let { isCanSeePsw, pswInputType } = this.data
     this.setData({
@@ -871,7 +793,6 @@ Page({
     }
     if (PswContent && PswContent.length < 8) {
       showToast('密码长度不足8位')
-      getApp().setMethodFailedCheckingLog('check psw length', '密码长度不足8位')
       self.data.clickNetFLag = false
       return
     }
@@ -907,19 +828,13 @@ Page({
     app.addDeviceInfo.continueConnectWifi = this.data.continueConnectWifi // 保存是否手动输入的状态->失败页linkNetFail需要用到
     console.log('addDeviceInfo====', app.addDeviceInfo)
     const {
-      adData,
-      moduleType,
       deviceName,
       type,
-      sn8,
-      deviceId,
       blueVersion,
       mode,
       fm,
       enterprise,
       ssid,
-      sn,
-      referenceRSSI,
       isCheck,
     } = app.addDeviceInfo
     this.searchBlueStopTimeout && clearTimeout(this.searchBlueStopTimeout)
@@ -927,7 +842,7 @@ Page({
     wx.stopBluetoothDevicesDiscovery()
 
     this.data.fm = fm || 'autoFound'
-    if (mode == 0 && fm == 'autoFound') {
+    if (mode == 0 && fm === 'autoFound') {
       //自发现ap
       if (this.isCanDrivingLinkDeviceAp(ssid)) {
         wx.navigateTo({
@@ -988,7 +903,6 @@ Page({
           (error) => {
             console.log('获取wifi列表失败', error)
             self.data.clickNetFLag = false
-            getApp().setMethodFailedCheckingLog('wx.getWifiList()', `获取wifi列表异常。error=${JSON.stringify(error)}`)
           },
         )
       }
@@ -1013,21 +927,15 @@ Page({
       //masmart做了直连 去配网
       wx.navigateTo({
         url: paths.linkDevice,
-        fail(error) {
-          getApp().setMethodFailedCheckingLog('wx.navigateTo()', `下一步跳转异常。error=${JSON.stringify(error)}`)
-        },
         complete() {
           self.data.clickNetFLag = false
         },
       })
       return
     }
-    if ((mode == 5 && fm == 'autoFound' && blueVersion != 1) || (mode == 3 && fm == 'bluePugin')) {
+    if ((mode == 5 && fm === 'autoFound' && blueVersion != 1) || (mode == 3 && fm === 'bluePugin')) {
       wx.navigateTo({
         url: paths.linkDevice,
-        fail(error) {
-          getApp().setMethodFailedCheckingLog('wx.navigateTo()', `下一步跳转异常。error=${JSON.stringify(error)}`)
-        },
         complete() {
           self.data.clickNetFLag = false
         },
@@ -1039,9 +947,6 @@ Page({
         // 非自发现未匹配到设备蓝牙，跳转配网指引页
         wx.navigateTo({
           url: paths.addGuide,
-          fail(error) {
-            getApp().setMethodFailedCheckingLog('wx.navigateTo()', `下一步跳转异常。error=${JSON.stringify(error)}`)
-          },
           complete() {
             self.data.clickNetFLag = false
           },
@@ -1052,9 +957,6 @@ Page({
         // 设备已确权，跳转联网进度页
         wx.navigateTo({
           url: paths.linkDevice,
-          fail(error) {
-            getApp().setMethodFailedCheckingLog('wx.navigateTo()', `下一步跳转异常。error=${JSON.stringify(error)}`)
-          },
           complete() {
             self.data.clickNetFLag = false
           },
@@ -1065,9 +967,6 @@ Page({
         // 一代蓝牙，跳转配网指引页
         wx.navigateTo({
           url: paths.addGuide,
-          fail(error) {
-            getApp().setMethodFailedCheckingLog('wx.navigateTo()', `下一步跳转异常。error=${JSON.stringify(error)}`)
-          },
           complete() {
             self.data.clickNetFLag = false
           },
@@ -1078,9 +977,6 @@ Page({
         // 靠近确权成功，跳转联网进度页
         wx.navigateTo({
           url: paths.linkDevice,
-          fail(error) {
-            getApp().setMethodFailedCheckingLog('wx.navigateTo()', `下一步跳转异常。error=${JSON.stringify(error)}`)
-          },
           complete() {
             self.data.clickNetFLag = false
           },
@@ -1091,9 +987,6 @@ Page({
         app.addDeviceInfo.ifNearby = true
         wx.navigateTo({
           url: paths.addGuide,
-          fail(error) {
-            getApp().setMethodFailedCheckingLog('wx.navigateTo()', `下一步跳转异常。error=${JSON.stringify(error)}`)
-          },
           complete() {
             self.data.clickNetFLag = false
           },
@@ -1104,9 +997,6 @@ Page({
 
     wx.navigateTo({
       url: paths.addGuide,
-      fail(error) {
-        getApp().setMethodFailedCheckingLog('wx.navigateTo()', `下一步跳转异常。error=${JSON.stringify(error)}`)
-      },
       complete() {
         self.data.clickNetFLag = false
       },
@@ -1163,17 +1053,6 @@ Page({
       'bindWifiTest.signalStrength': signalStrength, //Wi-Fi 信号强度, 安卓取值 0 ～ 100 ，iOS 取值 0 ～ 1 ，值越大强度越大
       'bindWifiTest.frequency': frequency, //Wi-Fi 频段单位 MHz
     })
-    let { moduleType, deviceName, type, sn8, deviceId, blueVersion } = app.addDeviceInfo
-    // burialPoint.wifiInfo({
-    //     ssid: BSSID,
-    //     chain: chain,
-    //     deviceSessionId: app.globalData.deviceSessionId,
-    //     moduleType,
-    //     type,
-    //     sn8,
-    //     moduleVison: blueVersion,
-    //     linkType: app.addDeviceInfo.linkType
-    // })
     console.log('上报了wifi ssid and chain', BSSID, chain)
   },
   showToast(text) {
@@ -1199,12 +1078,9 @@ Page({
   },
 
   async checkNet() {
-    // this.setData({
-    //   netType: 1, //wifi
-    // })
-    // return
     try {
-      let wifiInfo = await wifiMgr.getConnectedWifi()
+      await wifiMgr.getConnectedWifi()
+
       if (this.data.continueConnectWifi) {
         this.setData({
           continueConnectWifi: false,
@@ -1228,15 +1104,16 @@ Page({
       this.setData({
         netType: 0, //非wifi
       })
-      if (this.data.netType == 0 && this.data.isLoad) {
+      if (this.data.netType === 0 && this.data.isLoad) {
         //只触发一次
         this.data.isLoad = false
       }
-      if (this.data.pageStatus == 'show') {
-        this.delay(1500).then((end) => {
-          this.checkNet()
-        })
-      }
+      // todo: 暂时注释，没必要不停轮询wifi状态
+      // if (this.data.pageStatus === 'show') {
+      //   this.delay(1500).then((end) => {
+      //     this.checkNet()
+      //   })
+      // }
     }
   },
   //当前手机网络状态
@@ -1260,7 +1137,7 @@ Page({
     })
   },
   skip() {
-    let { mode, moduleType, type, sn8, blueVersion, sn, cloudBackDeviceInfo, linkType } = app.addDeviceInfo
+    let { type, cloudBackDeviceInfo } = app.addDeviceInfo
     wx.closeBLEConnection({
       deviceId: app.addDeviceInfo.deviceId,
     })
@@ -1273,36 +1150,15 @@ Page({
 
   //msmart 直连取消后配网
   blueCancelLinkWifi() {
-    let { type, deviceName, cloudBackDeviceInfo } = app.addDeviceInfo
+    let { deviceName } = app.addDeviceInfo
     this.setData({
       titleContent: `要放弃为${deviceName}配网吗`,
       messageContent: `请在等一等，${deviceName}正在努力连接中`,
       blueCancelLinkModal: true,
     })
-    // wx.showModal({
-    //   title: `要放弃为${deviceName}配网吗`,
-    //   content: `请在等一等，${deviceName}正在努力连接中`,
-    //   cancelText: '放弃',
-    //   confirmText: '再等等',
-    //   cancelColor: '#458BFF',
-    //   confirmColor: '#458BFF',
-    //   success(res) {
-    //     if (res.cancel) {
-    //       //放弃
-    //       wx.closeBLEConnection({
-    //         deviceId: app.addDeviceInfo.deviceId,
-    //       })
-    //       let type0x = type.includes('0x') ? type : '0x' + type
-    //       let deviceInfo = encodeURIComponent(JSON.stringify(cloudBackDeviceInfo))
-    //       wx.reLaunch({
-    //         url: `/plugin/T${type0x}/index/index?backTo=/pages/index/index&deviceInfo=${deviceInfo}`,
-    //       })
-    //     }
-    //   },
-    // })
   },
   giveUpBlueCancelLink() {
-    let { type, deviceName, cloudBackDeviceInfo } = app.addDeviceInfo
+    let { type, cloudBackDeviceInfo } = app.addDeviceInfo
     wx.closeBLEConnection({
       deviceId: app.addDeviceInfo.deviceId,
     })
@@ -1457,34 +1313,7 @@ Page({
    */
   async onShow() {
     console.log('onshow==========')
-    let { mode, isCheckGray } = app.addDeviceInfo
     this.data.clickNetFLag = false //解决防重标志位没有被清除的问题
-    console.log('isCheckGray:' + isCheckGray)
-    //如果是从落地页面过来的，则不需要检查灰度
-    console.log('============Yoram test==========')
-    console.log(
-      'from_download_page:' + app.globalData.from_download_page + ' isCanAddDevice:' + this.data.isCanAddDevice,
-    )
-    let from_download_page = false
-    //获取添加设备灰度名单判断是否是灰度用户
-    try {
-      let isCan = await addDeviceSDK.isGrayUser(isCheckGray)
-      //如果是从落地页面过来的，则不需要检查灰度
-      from_download_page = app.globalData.from_download_page
-      if (from_download_page) {
-        this.setData({
-          isCanAddDevice: true,
-        })
-      } else if (!isCan && Number(mode) != 21) {
-        console.log('屏蔽了配网入口')
-        this.setData({
-          isCanAddDevice: isCan,
-        })
-        return
-      }
-    } catch (error) {
-      console.log('[isGrayUser error]', error)
-    }
     this.checkNet()
     this.data.pageStatus = 'show'
     //如果是蓝牙配网则判断蓝牙是否授权
@@ -1507,10 +1336,8 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
-    getApp().onUnloadCheckingLog()
     this.data.pageStatus = 'unload'
     //重全局变量
-    app.globalData.from_download_page = false
     clearInterval(interval)
     wx.offBluetoothDeviceFound()
     wx.stopBluetoothDevicesDiscovery()
@@ -1534,7 +1361,6 @@ Page({
 
   //去连接wifi 提示弹窗
   connectWifi() {
-    let self = this
     // 判断是否有精准定位，安卓 系统》=12
     console.log('系统start========================')
     console.log(systemInfo.brand)
@@ -1543,7 +1369,7 @@ Page({
     let systemType = system.split(' ')[0]
     let systemGrade = this.systemGrade()
     // 如果是IOS  或者  微信系统>= 8.2.0  或者  安卓系统没有精准定位功能
-    if (systemType == 'IOS' || this.toNum(version) >= this.toNum('8.2.0') || !systemGrade) {
+    if (systemType === 'IOS' || this.toNum(version) >= this.toNum('8.2.0') || !systemGrade) {
       this.setData({
         ishowManualInputWiFi: true,
         messageContent: '无法获取所连接的WiFi，可手动输入家庭WiFi名称与密码',
@@ -1551,14 +1377,14 @@ Page({
     } else {
       // 安卓系统有精准定位
       brand = brand.toLowerCase()
-      if (brand == 'xiaomi' || brand == 'redmi') {
+      if (brand === 'xiaomi' || brand === 'redmi') {
         //是否符合品牌
         this.setData({
           ishowDialog: true,
           modalText: '请关闭手机系统中微信的"模糊定位"开关',
           otherAndroidSystem: false, //是小米系的安卓系统
         })
-      } else if (brand == 'vivo' || brand == 'huawei' || brand == 'honor' || brand == 'oppo' || brand == 'motorola') {
+      } else if (brand === 'vivo' || brand === 'huawei' || brand === 'honor' || brand === 'oppo' || brand === 'motorola') {
         this.setData({
           ishowDialog: true,
           modalText: '请开启手机系统中微信的"精确位置"开关',
@@ -1596,7 +1422,7 @@ Page({
     let systemNum = system.split(' ')[1]
     let phoneSystem = system.split(' ')[0]
     // console.log(this.toNum('10.0.1'))
-    if (phoneSystem == 'iOS') {
+    if (phoneSystem === 'iOS') {
       result = false
     } else {
       if (this.toNum(systemNum) >= this.toNum('12')) {
@@ -1607,7 +1433,7 @@ Page({
   },
 
   //跳转系统微信设置页
-  clickSetting(e) {
+  clickSetting() {
     wx.openAppAuthorizeSetting({
       //ios和安卓都是打开系统微信设置页，效果一样
       success(res) {

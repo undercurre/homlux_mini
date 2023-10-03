@@ -7,19 +7,18 @@ let timer1 = ''
 
 import { baseImgApi, deviceImgApi } from '../js/api'
 import { getStamp, getReqId, isEmptyObject, hasKey } from 'm-utilsdk/index'
-import { creatDeviceSessionId, getFullPageUrl } from '../../utils/util.js'
-import { requestService, rangersBurialPoint } from '../../utils/requestService'
+import { creatDeviceSessionId } from '../../utils/util.js'
+import { requestService } from '../../utils/requestService'
 import { locationdevice, ab2hex, hex2bin, inArray, hexCharCodeToStr } from '../js/bluetoothUtils.js'
 import { deviceImgMap } from '../../utils/deviceImgMap'
-import { supportedApplianceTypes, isSupportPlugin } from '../../utils/pluginFilter'
-import { inputWifiInfo, addGuide, linkDevice, index as homePage } from '../../utils/paths.js'
+import { isSupportPlugin } from '../../utils/pluginFilter'
+import { inputWifiInfo, addGuide, linkDevice } from '../../utils/paths.js'
 import { isAddDevice } from '../../utils/temporaryNoSupDevices'
 import { getWxSystemInfo, getWxGetSetting } from '../../utils/wx/index.js'
 import { addDeviceSDK } from '../../utils/addDeviceSDK.js'
 import { getPrivateKeys } from '../../utils/getPrivateKeys'
 import Dialog from '../../../miniprogram_npm/m-ui/mx-dialog/dialog'
 const brandStyle = require('../../pages/assets/js/brand')
-const log = require('../../../utils/log')
 
 const searchTime = 30000
 const blueWifi = 'wifiAndBle'
@@ -66,7 +65,6 @@ module.exports = Behavior({
       const name = device.localName ? device.localName : device.name
       if (!device.localName) {
         console.log('device:', device)
-        log.info('问题设备', device)
       }
       const blueVersion = this.getBluetoothType(advertisData)
       // console.log("blueVersion222------------", blueVersion, advertisData)
@@ -149,9 +147,9 @@ module.exports = Behavior({
 
       return {
         moduleType: binArray[0] ? 'wifiAndBle' : 'ble',
-        isLinkWifi: binArray[1] ? true : false,
-        isBindble: binArray[2] ? true : false,
-        isBleCheck: binArray[3] ? true : false,
+        isLinkWifi: !!binArray[1],
+        isBindble: !!binArray[2],
+        isBleCheck: !!binArray[3],
         // "isWifiCheck": binArray[4] ? true : false,
         // "isBleCanBind": binArray[5] ? true : false,
         // "isSupportBle": binArray[6] ? true : false,
@@ -193,14 +191,6 @@ module.exports = Behavior({
         fail: (res) => {
           if (res.errCode === 10001) {
             console.log('6666wx.openBluetoothAdapter失败', res)
-            rangersBurialPoint('user_page_view', {
-              page_path: getFullPageUrl(),
-              page_id: 'wx.openBluetoothAdapter-fail',
-              page_name: '蓝牙自发现wx.openBluetoothAdapter初始化蓝牙模块失败',
-              ext_info: {
-                error: JSON.stringify(res),
-              },
-            })
             wx.onBluetoothAdapterStateChange((res) => {
               console.log('onBluetoothAdapterStateChange', res)
               if (res.available) {
@@ -505,7 +495,7 @@ module.exports = Behavior({
       const isSupport = this.checkIfSupport(mode, moduleType, category, sn8)
       const typeAndName = this.getDeviceImgAndName(category, sn8)
       const referenceRSSI = this.getReferenceRSSI(advertisData)
-      const obj = new Object()
+      const obj = {}
       obj.sn8 = sn8
       obj.category = category
       obj.mac = mac
@@ -1020,23 +1010,14 @@ module.exports = Behavior({
       let self = this
       let cancelText = '此二维码获取配网指引失败，请使用选择型号添加'
       if (fm !== 'scanCode') {
-        // showToast('配网指引获取失败')
-        Dialog.confirm({
-          title: '未获取到该产品的操作指引，请检查网络后重试，若仍失败，请联系售后处理',
-          confirmButtonText: '好的',
-          confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
-          showCancelButton: false,
-          zIndex: 99999,
-        }).then((res) => {})
-        // wx.showModal({
-        //   content: '未获取到该产品的操作指引，请检查网络后重试，若仍失败，请联系售后处理',
-        //   confirmText: '好的',
-        //   confirmColor: '#458BFF',
-        //   showCancel: false,
-        //   success(res) {},
-        // })
+        wx.showModal({
+          content: '未获取到该产品的操作指引，请检查网络后重试，若仍失败，请联系售后处理',
+          confirmText: '好的',
+          confirmColor: '#458BFF',
+          showCancel: false,
+          success(res) {},
+        })
       } else {
-        // let cancelText = fm == 'scanCode' ? '此二维码获取配网指引失败，请使用选择型号添加' : '配网指引获取失败'
         wx.showModal({
           content: cancelText,
           cancelText: '重新扫码',
@@ -1236,38 +1217,14 @@ module.exports = Behavior({
             sn8ExtInfo = data?.mainConnectinfoList?.length ? data.mainConnectinfoList[0].code : ''
           }
         } catch (error) {
-          getApp().setMethodFailedCheckingLog('actionGoNetwork', `获取配网指引失败:${JSON.stringify(error)}`)
           console.log('[get add device guide error]', error)
-          // if (error.errMsg) {
-          //   showToast('网络不佳，请检查网络')
-          //   return
-          // }
           //微信扫一扫二维码进入配网，没获取到配网指引跳转到下载app页面
           if (app.globalData.fromWechatScan) {
-            // wx.showModal({
-            //   title: '',
-            //   content: '该设备暂不支持小程序配网，我们会尽快开放，敬请期待',
-            //   showCancel: false,
-            //   confirmText: '我知道了',
-            //   success(res) {
-            //     if (res.confirm) {
-            //       wx.switchTab({
-            //         url: homePage,
-            //       })
-            //     }
-            //   },
-            // })
-            Dialog.confirm({
-              title: '该设备暂不支持小程序配网，我们会尽快开放，敬请期待',
-              confirmButtonText: '我知道了',
-              confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
-              showCancelButton: false,
-            }).then((res) => {
-              if (res.action == 'confirm') {
-                wx.switchTab({
-                  url: homePage,
-                })
-              }
+            wx.showModal({
+              title: '',
+              content: '该设备暂不支持小程序配网，我们会尽快开放，敬请期待',
+              showCancel: false,
+              confirmText: '我知道了',
             })
             return
           }
@@ -1481,11 +1438,10 @@ module.exports = Behavior({
     //构造数据
     getDeviceData(deviceData) {
       console.log('deviceData=========', deviceData)
-      const result = new Object()
+      const result = {}
       const category = this.getApCategory(deviceData.SSID).toUpperCase()
       const typeAndName = this.getDeviceImgAndName(category)
-      let formatType = '0x' + category.toLocaleUpperCase()
-      const isSupport = supportedApplianceTypes.includes(formatType) //ap 自发现是否有插件只校验品类
+      const isSupport = true //ap 自发现是否有插件只校验品类
       const enterprise = this.getEnterPrise(deviceData.SSID)
       result.category = category
       result.signalStrength = deviceData.signalStrength
@@ -1506,7 +1462,7 @@ module.exports = Behavior({
     },
 
     getDeviceApImgAndName(dcpDeviceImgList, category) {
-      let item = new Object()
+      let item = {}
       console.log('获取图标命名称1', dcpDeviceImgList, category)
       if (dcpDeviceImgList[category]) {
         item.deviceImg = dcpDeviceImgList[category].common
@@ -1532,15 +1488,15 @@ module.exports = Behavior({
       const arr = version.split('.')
       console.log('version11', parseInt(arr[0]) < 8)
       if (parseInt(arr[0]) < 8) return false
-      if (parseInt(arr[0]) >= 8 && parseInt(arr[1]) === 0 && parseInt(arr[2]) < 7) return false
-      return true
+      return !(parseInt(arr[0]) >= 8 && parseInt(arr[1]) === 0 && parseInt(arr[2]) < 7);
+
     },
     checkSystem() {
       // eslint-disable-next-line no-async-promise-executor
       return new Promise(async (resolve) => {
         const systemInfo = await getWxSystemInfo()
         const platform = systemInfo && systemInfo.platform
-        const result = platform.indexOf('ios') > -1 ? true : false
+        const result = platform.indexOf('ios') > -1
         resolve(result)
       })
     },
@@ -1596,21 +1552,6 @@ module.exports = Behavior({
       if (!app.globalData.hasAuthBluetooth && !app.globalData.showBluetoothAuthCount) {
         app.globalData.showBluetoothAuthCount = 1
         //用户授权小程序使用蓝牙权限预览埋点
-        rangersBurialPoint('user_page_view', {
-          page_path: getFullPageUrl(),
-          module: '公共',
-          page_id: 'popus_page_bluetooth_auth',
-          page_name: '蓝牙授权弹窗',
-          object_type: '',
-          object_id: '',
-          object_name: '',
-          device_info: {},
-          ext_info: {},
-          sn: '',
-          tsn: '',
-          dsn: '',
-          type: '',
-        })
         wx.authorize({
           scope: 'scope.bluetooth',
           async success() {

@@ -762,105 +762,10 @@ var api = {
   },
 }
 
-let uploadApi = {
-  environment: environment,
-  // 上传凭证 新api 10.15上线
-  uploadPic: {
-    url: `${imgUploadDomain[`${environment}`]}/api/mcsp_uc/mcsp-uc-member/member/uploadPic.do_lite`,
-    api: '/api/mcsp_uc/mcsp-uc-member/member/uploadPic.do_lite',
-  },
-  // upload: {
-  //   url: `${imgUploadDomain[`${environment}`]}/ccrm2-core/uploadApi/upload`,
-  //   api: '/ccrm2-core/uploadApi/upload',
-  // },
-  // 已替换接口，但未联调
-  upload: {
-    url: `${imgUploadDomain[`${environment}`]}/member/uploadPic.do`,
-    api: '/member/uploadPic.do',
-  },
-}
-
-let fridgeApi = {
-  environment: environment,
-  getInfo: {
-    url: `${fridgeDomain[`${environment}`]}/fridgesn/v2/getInfo.do`,
-  },
-}
-
-let logonStatusApi = {
-  environment: environment,
-  mucuserlogin: {
-    url: `${logonStatusDomain[`${environment}`]}/next/userinfo/mucuserlogin`,
-  },
-}
-
-let mvipApi = {
-  environment: environment,
-  getRegisterStatus: {
-    url: `${mvipDomain[`${environment}`]}/next/user_register/checkisresetquery?registeractid=1001`,
-  },
-  createDailyScore: {
-    url: `${mvipDomain[`${environment}`]}/next/user_register/createdailyscore`,
-  },
-  updateRegisterStatus: {
-    url: `${mvipDomain[`${environment}`]}/next/user_register/modifyuserregisterquery?registeractid=1001`,
-  },
-}
-
 let imageApi = {
   environment: environment,
   getImagePath: {
     url: `${imageDomain[`${environment}`]}`,
-  },
-}
-//c4a隐私协议
-let privacyApi = {
-  environment: environment,
-  url: `${privacyDomain[`${environment}`]}`,
-}
-//用户协议
-let serviceAgreementApi = {
-  environment: environment,
-  url:
-    environment == 'sit' || environment == 'dev'
-      ? `${agreementDomain[`${environment}`]}/projects/sit/meiju-lite-policy/userAgreement.html`
-      : `${agreementDomain[`${environment}`]}/projects/meiju-lite-policy/userAgreement.html`,
-}
-
-//隐私协议
-let privacyPolicyApi = {
-  environment: environment,
-  url:
-    environment == 'sit' || environment == 'dev'
-      ? `${agreementDomain[`${environment}`]}/projects/sit/meiju-lite-policy/lawPolicy.html`
-      : `${agreementDomain[`${environment}`]}/projects/meiju-lite-policy/lawPolicy.html`,
-}
-
-//邀请加入家庭领红包活动
-let inviteReciveMoneyApi = {
-  environment: environment,
-  url:
-    environment == 'sit' || environment == 'dev'
-      ? `${agreementDomain[`${environment}`]}/activity/sit/202012/smartLink-v3/index.html`
-      : `${agreementDomain[`${environment}`]}/activity/202012/smartLink-v3/index.html`,
-}
-
-//活动模板配置（图片存放）
-let actTemplateImgApi = {
-  environment: environment,
-  url:
-    environment == 'sit' || environment == 'dev'
-      ? `${agreementDomain[`${environment}`]}/projects/sit/meiju-lite-assets/actTemp/images/`
-      : `${agreementDomain[`${environment}`]}/projects/meiju-lite-assets/actTemp/images/`,
-}
-// 活动模板app活动主页地址
-let actTemplateH5Addr = {
-  environment: environment,
-  actHome: {
-    url:
-      environment == 'sit' || environment == 'dev'
-        ? 'https://activity.msmartlife.cn/activity/sit/ot/index.html'
-        : 'https://activity.msmartlife.cn/activity/ot/index.html',
   },
 }
 
@@ -921,26 +826,13 @@ let publicImg = {
   },
 }
 
-// 运营活动静态资源path
-let activitiesAssets = `${config.activitiesDomain}/projects${environment == 'sit' ? '/sit' : ''}/meiju-lite-assets`
 export {
   environment,
   api,
-  fridgeApi,
-  uploadApi,
-  logonStatusApi,
-  mvipApi,
   imageApi,
-  serviceAgreementApi,
-  privacyPolicyApi,
-  inviteReciveMoneyApi,
-  actTemplateImgApi,
-  actTemplateH5Addr,
   imgBaseUrl,
   baseImgApi,
   deviceImgApi,
-  privacyApi,
   mideaServiceImgApi,
-  activitiesAssets,
   commonH5Api,
 }

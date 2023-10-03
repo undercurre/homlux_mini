@@ -54,24 +54,8 @@ brandConfig.bigScreenBind && supportAddDeviceMode.push(103)
 //需要小程序授权使用蓝牙的配网模式
 const bluetoothAuthModes = [3, 5, 20, 21, 30, 31] //蓝牙配网涉及的mode
 
-//已知的小程序配网入口
-const addDeviceFm = {
-  autoFound: '自发现',
-  selectType: '选型',
-  scanCode: '扫码',
-  ncf: 'nfc',
-  noActive: '已购未绑定',
-  bluePugin: '直连插件跳配网',
-}
-
 //支持wb01直连后配网的白名单
 const wb01BindBLeAfterWifi = {
-  // 'CA': {
-  //     'SN8': ['001A0481','00100R23']
-  // },
-  // 'DA': {
-  //     'SN8': ['66778899']
-  // },
   13: {
     SN8: ['79009833'],
   },
@@ -81,7 +65,7 @@ const wb01BindBLeAfterWifi = {
 }
 
 //是否走wb01直连后配网
-const isCanWb01BindBLeAfterWifi = (type, sn8, A0 = '') => {
+const isCanWb01BindBLeAfterWifi = (type, sn8) => {
   let tag = false
 
   if (Object.keys(wb01BindBLeAfterWifi).includes(type)) {
@@ -314,7 +298,7 @@ const supportAutoFoundACModel = [
 const addDeviceSDK = {
   modeList: modeList,
   supportAddDeviceMode: supportAddDeviceMode,
-  isCanWb01BindBLeAfterWifi: isCanWb01BindBLeAfterWifi,
+  isCanWb01BindBLeAfterWifi,
   deviceApPassword: deviceApPassword,
   addDeviceACList: addDeviceACList,
   bluetoothAuthModes: bluetoothAuthModes,
@@ -421,7 +405,7 @@ const addDeviceSDK = {
   isSupportAddDeviceMode(mode) {
     mode = mode * 1
     mode = this.modeTransition(mode)
-    return this.supportAddDeviceMode.includes(mode) ? true : false
+    return this.supportAddDeviceMode.includes(mode)
   },
 
   //计算udp广播地址
@@ -433,17 +417,17 @@ const addDeviceSDK = {
 
   //把地址转换成二进制格式
   ip2bin(ip) {
-    var ip_str = '',
+    let ip_str = '',
       ip_arr = ip.split('.'),
       curr_num,
       number_bin,
-      count
-    for (var i = 0; i < 4; i++) {
+      count;
+    for (let i = 0; i < 4; i++) {
       curr_num = ip_arr[i]
       number_bin = parseInt(curr_num)
       number_bin = number_bin.toString(2)
       count = 8 - number_bin.length
-      for (var j = 0; j < count; j++) {
+      for (let j = 0; j < count; j++) {
         number_bin = '0' + number_bin
       }
       ip_str += number_bin + (i == 3 ? '' : '.')
@@ -469,30 +453,10 @@ const addDeviceSDK = {
   andBin(ip, mask) {
     let ipArr = ip.split('.')
     let broadcast = []
-    for (var i = 0; i < 4; i++) {
+    for (let i = 0; i < 4; i++) {
       broadcast.push(ipArr[i] | mask[i])
     }
     return broadcast.join('.')
-  },
-
-  //调添加设备灰度权限接口
-  getCheckUserCanAddDevice() {
-    let reqData = {
-      reqId: getReqId(),
-      stamp: getStamp(),
-    }
-    return new Promise((resolve, reject) => {
-      requestService
-        .request('addDeviceGray', reqData)
-        .then((resp) => {
-          console.log('调接口判断用户是否可以进行添加设备', resp.data.data)
-          resolve(resp.data.data)
-        })
-        .catch((error) => {
-          console.log('调添加设备灰度权限接口', error)
-          reject(error)
-        })
-    })
   },
 
   /**
@@ -558,12 +522,12 @@ const addDeviceSDK = {
 
   //是否是需要屏蔽的空调蓝牙信号
   isShiledAcAdata(type, sn8) {
-    return type == 'AC' && this.addDeviceACList.black.includes(sn8) ? true : false
+    return type === 'AC' && this.addDeviceACList.black.includes(sn8)
   },
 
   //是否是走直连后配网的空调sn8
   isBlueAfterLinlNetAc(type, sn8) {
-    return type.toLocaleUpperCase().includes('AC') && this.addDeviceACList.white.includes(sn8) ? true : false
+    return type.toLocaleUpperCase().includes('AC') && this.addDeviceACList.white.includes(sn8)
   },
 
   //获得连接方式
@@ -583,7 +547,7 @@ const addDeviceSDK = {
 
   //判断是否是设备ap
   isDeviceAp(ssid) {
-    let reg = /(midea|bugu|toshiba)_[a-z0-9]{2}_.{4}/
+    let reg = /(midea|bugu|toshiba)_[a-z\d]{2}_.{4}/
     let re = new RegExp(reg)
     return re.test(ssid.toLocaleLowerCase())
   },
@@ -692,10 +656,8 @@ const addDeviceSDK = {
    * @param {*} ssid
    */
   bySSIDCheckIs5g(ssid) {
-    if (ssid.includes('5g') || ssid.includes('5G')) {
-      return true
-    }
-    return false
+    return !!(ssid.includes('5g') || ssid.includes('5G'));
+
   },
 
   //触屏动态二维码配网相关
@@ -705,7 +667,7 @@ const addDeviceSDK = {
       if (!scanCodeRes) return false
       let isDeCodeDynamicCode = true
       let keys = ['appliance=', 'ck=', 'cd=']
-      for (var i = 0; i < keys.length; i++) {
+      for (let i = 0; i < keys.length; i++) {
         if (!scanCodeRes.includes(keys[i])) {
           isDeCodeDynamicCode = false
           return isDeCodeDynamicCode
@@ -738,7 +700,7 @@ const addDeviceSDK = {
         }
       let keyVulueArr = scanCodeRes.split('?')[1].split('&')
       let resObject = {}
-      keyVulueArr.forEach((item, index) => {
+      keyVulueArr.forEach((item) => {
         resObject[item.split('=')[0]] = item.split('=')[1]
       })
       console.log('keyVulueArr===', resObject)

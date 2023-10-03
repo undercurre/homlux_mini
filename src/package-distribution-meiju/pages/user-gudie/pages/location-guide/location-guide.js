@@ -1,9 +1,6 @@
-import { rangersBurialPoint } from '../../../../utils/requestService'
-import { baseImgApi } from '../../../../common/js/api'
-import { getFullPageUrl } from '../../../../utils/util'
-
+import { imgBaseUrl } from '../../../../common/js/img'
 const app = getApp()
-const loactionImgUrl = baseImgApi.url
+const loactionImgUrl = imgBaseUrl
 Page({
   /**
    * 页面的初始数据
@@ -21,19 +18,19 @@ Page({
           title: '打开手机定位服务',
           stepes: [
             {
-              img: loactionImgUrl + '/permission/iOS/loaction/iOS_dingwei_01_1.png',
+              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudieiOS_dingwei_01_1.png',
               text: '1.点击手机【设置】',
             },
             {
-              img: loactionImgUrl + '/permission/iOS/loaction/ios_dingwei_01_2.png',
+              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudieios_dingwei_01_2.png',
               text: '2.找到并点选【隐私】',
             },
             {
-              img: loactionImgUrl + '/permission/iOS/loaction/ios_dingwei_01_3.png',
+              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudieios_dingwei_01_3.png',
               text: '3.点击【定位服务】',
             },
             {
-              img: loactionImgUrl + '/permission/iOS/loaction/ios_dingwei_01_4.png',
+              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudieios_dingwei_01_4.png',
               text: '4.打开【定位服务】',
             },
           ],
@@ -42,19 +39,19 @@ Page({
           title: '允许微信使用定位',
           stepes: [
             {
-              img: loactionImgUrl + '/permission/iOS/loaction/ios_dingwei_02_1.png',
+              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudieios_dingwei_02_1.png',
               text: '1.点击手机【设置】',
             },
             {
-              img: loactionImgUrl + '/permission/iOS/loaction/ios_dingwei_02_2.png',
+              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudieios_dingwei_02_2.png',
               text: '2.找到并点选【微信】',
             },
             {
-              img: loactionImgUrl + '/permission/iOS/loaction/ios_dingwei_02_3.png',
+              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudieios_dingwei_02_3.png',
               text: '3.点选【位置】',
             },
             {
-              img: loactionImgUrl + '/permission/iOS/loaction/ios_dingwei_02_4.png',
+              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudieios_dingwei_02_4.png',
               text: '4.选择【使用App期间】',
             },
           ],
@@ -63,23 +60,23 @@ Page({
           title: '允许微信使用定位',
           stepes: [
             {
-              img: loactionImgUrl + '/permission/iOS/loaction/ios_dingwei_02_1.png',
+              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudieios_dingwei_02_1.png',
               text: '1.点击手机【设置】',
             },
             {
-              img: loactionImgUrl + '/permission/iOS/loaction/ios_dingwei_02_2.png',
+              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudieios_dingwei_02_2.png',
               text: '2.找到并点选【微信】',
             },
             {
-              img: loactionImgUrl + '/permission/iOS/loaction/ios_dingwei_02_3.png',
+              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudieios_dingwei_02_3.png',
               text: '3.点选【位置】',
             },
             {
-              img: loactionImgUrl + '/permission/iOS/loaction/ios_dingwei_02_4.png',
+              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudieios_dingwei_02_4.png',
               text: '4.选择【使用App期间】',
             },
             {
-              img: loactionImgUrl + '/permission/iOS/loaction/ios_jingqueweizhi_02_5.png',
+              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudieios_jingqueweizhi_02_5.png',
               text: '5.打开【精确位置】开关',
             },
           ],
@@ -88,19 +85,19 @@ Page({
           title: '允许小程序使用位置信息',
           stepes: [
             {
-              img: loactionImgUrl + '/permission/iOS/loaction/ios_dingwei_03_1.png',
+              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudieios_dingwei_03_1.png',
               text: '1.点击右上角【…】',
             },
             {
-              img: loactionImgUrl + '/permission/iOS/loaction/ios_dingwei_03_2.png',
+              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudieios_dingwei_03_2.png',
               text: '2.点击【设置】',
             },
             {
-              img: loactionImgUrl + '/permission/iOS/loaction/ios_dingwei_03_3.png',
+              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudieios_dingwei_03_3.png',
               text: '3.点击【位置信息】',
             },
             {
-              img: loactionImgUrl + '/permission/iOS/loaction/ios_dingwei_03_4.png',
+              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudieios_dingwei_03_4.png',
               text: '4.设为【仅在使用小程序期间】',
             },
           ],
@@ -109,15 +106,15 @@ Page({
           title: '打开本地网络',
           stepes: [
             {
-              img: loactionImgUrl + '/permission/iOS/loaction/ios_dingwei_02_1.png',
+              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudieios_dingwei_02_1.png',
               text: '1.点击手机【设置】',
             },
             {
-              img: loactionImgUrl + '/permission/iOS/loaction/ios_dingwei_02_2.png',
+              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudieios_dingwei_02_2.png',
               text: '2.找到并点选【微信】',
             },
             {
-              img: loactionImgUrl + '/permission/iOS/loaction/ios_bendiwangluo_3.png',
+              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudieios_bendiwangluo_3.png',
               text: '3.打开【本地网络】开关',
             },
           ],
@@ -266,7 +263,7 @@ Page({
       console.log('[permision Type List]', permissionTypeList)
       this.viewBurialPoint(permissionTypeList)
       let { system, tipTextList } = this.data
-      if (system == 'iOS') {
+      if (system === 'iOS') {
         if (!permissionTypeList.locationEnabled) {
           //未开定位开关
           loactionTextList.push(tipTextList.iOS.locationEnabled)
@@ -290,7 +287,7 @@ Page({
           loactionTextList.push(tipTextList.iOS.scopeUserLocation)
         }
       }
-      if (system == 'Android') {
+      if (system === 'Android') {
         if (!permissionTypeList.locationEnabled) {
           //未开定位开关
           loactionTextList.push(tipTextList.Android.locationEnabled)
@@ -311,7 +308,7 @@ Page({
     })
 
     //精准/模糊定位操作指引
-    if (options.route && options.route == 'operatingInstructions') {
+    if (options.route && options.route === 'operatingInstructions') {
       let { locationTipTextList } = this.data
       let loactioSystemList = []
       // let otherAndroidSystem = Boolean(options.otherAndroidSystem)
@@ -323,7 +320,7 @@ Page({
       }
       this.setData({
         originRoute: 'operatingInstructions',
-        otherAndroidSystem: options.otherAndroidSystem == 'true' ? true : false,
+        otherAndroidSystem: options.otherAndroidSystem === 'true',
         loactioSystemList: loactioSystemList,
       })
     }
@@ -342,18 +339,6 @@ Page({
       object_name.push('允许小程序使用位置权限')
     }
     object_name = object_name.join('/')
-    rangersBurialPoint('user_page_view', {
-      page_id: 'page_open_locate_new',
-      page_name: '提示需开启位置权限页面',
-      page_path: getFullPageUrl(),
-      module: 'appliance',
-      object_type: '弹窗类型',
-      object_id: '',
-      object_name: object_name || '',
-      device_info: {
-        device_session_id: getApp().globalData.deviceSessionId || '',
-      },
-    })
     console.log('提示需开启位置权限页面 浏览埋点', object_name)
   },
 

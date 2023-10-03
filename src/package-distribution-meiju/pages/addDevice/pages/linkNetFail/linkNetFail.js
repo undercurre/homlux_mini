@@ -3,8 +3,6 @@ const app = getApp()
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const netWordMixin = require('../../../assets/js/netWordMixin')
 const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
-const log = require('../../../../utils/log')
-import { burialPoint } from './assets/js/burialPoint'
 import { string2Uint8Array, isEmptyObject } from 'm-utilsdk/index'
 import { showToast } from '../../../../utils/util'
 import paths from '../../../../utils/paths'
@@ -70,7 +68,7 @@ Page({
     //当前连接wifi提示
     tipText() {
       // return `这个可能是一个5GHz WiFi，可能无法连接，请切换至2.4GHz WiFi`
-      let { bindWifiInfo, deviceName, isSupport5G } = this.data
+      let { bindWifiInfo, isSupport5G } = this.data
       if (bindWifiInfo && bindWifiInfo.frequency && bindWifiInfo.frequency > 5000) {
         return '该WiFi可能为5GHz WiFi，设备无法连接，请切换其他WiFi'
       }
@@ -104,24 +102,6 @@ Page({
       zhuyi: `../assets/img/link_ic_zhuyi_${this.data.brand}.png`,
       wifiShow: '../assets/img/WiFi_ic_kejian.png',
       wifiHide: '../assets/img/wifi_ic_bukejian.png',
-    })
-    // if (this.data.brand == 'meiju') {
-    //   wx.setNavigationBarColor({
-    //     frontColor: '#000000',
-    //     backgroundColor: '#ffffff',
-    //   })
-    // } else if (this.data.brand == 'colmo') {
-    //   wx.setNavigationBarColor({
-    //     frontColor: '#ffffff',
-    //     backgroundColor: '#1A1A1F',
-    //   })
-    // }
-    this.getLoginStatus().then(() => {
-      if (app.globalData.isLogon) {
-        this.checkFamilyPermission()
-      } else {
-        this.navToLogin()
-      }
     })
     let {
       deviceName,
@@ -175,53 +155,16 @@ Page({
     } else {
       this.apUtils = apUtils
     }
-    burialPoint.linkNetFailView({
-      pageId: mode == 0 || mode == 3 || mode == 21 ? 'page_WiFi_connect_fail' : 'page_connect_fail',
-      pageName: mode == 0 || mode == 3 || mode == 21 ? 'WiFi联网失败页' : '连接失败页',
-      deviceSessionId: app.globalData.deviceSessionId,
-      type,
-      sn8,
-      linkType: linkType,
-      moduleVison: moduleVersion || blueVersion,
-      errorCode: errorCode,
-      sn: this.data.plainSn,
-    })
     this.setData({
       mode: mode,
     })
     //统一读取wifi缓存信息
     if (curWifiInfo) {
-      // this.data.bindWifiInfo = this.apUtils.decodeWifi(wx.getStorageSync('bindWifiInfo'))
       console.log('读取缓存：', curWifiInfo)
       this.setData({
         bindWifiInfo: curWifiInfo,
       })
     }
-    // this.onSwitchWifi()
-    this.sendApNoNetBurialpoint(app.apNoNetBurialPoint) //批量上报ap 无网触发埋点
-    // if (mode == 21) { //遥控配网 返回输入wifi页
-    //     this.setData({
-    //         backTo: paths.inputWifiInfo
-    //     })
-    // }
-    // if (this.data.failUiData.isTest) {
-    //     this.autoPingCurWifi()
-    // }
-  },
-  getLoginStatus() {
-    return app
-      .checkGlobalExpiration()
-      .then(() => {
-        this.setData({
-          isLogon: app.globalData.isLogon,
-        })
-      })
-      .catch(() => {
-        app.globalData.isLogon = false
-        this.setData({
-          isLogin: app.globalData.isLogon,
-        })
-      })
   },
   //展示对应错误文案
   getErrorGuideDesc(errorCode) {
@@ -272,8 +215,6 @@ Page({
     if (this.data.combinedStatus > -1) {
       cancelText = ''
       comfirmText = errorCode == 3001 ? '重新联网' : '重新绑定'
-      if (errorCode == 3001) burialPoint.reLinkView(burialPointParams)
-      if (errorCode == 3002) burialPoint.reBindView(burialPointParams)
     }
     this.setData({
       //底部按钮
@@ -311,8 +252,6 @@ Page({
                   console.log('代码走到了校验当前网络是否畅通------' + errorCode)
                   if (errorCode == 3001 || errorCode == 3002) {
                     //组合配网重试
-                    if (errorCode == 3001) burialPoint.clickReLink(burialPointParams)
-                    if (errorCode == 3002) burialPoint.clickReBind(burialPointParams)
                     app.addDeviceInfo.errorCode = '' //重置
                     wx.reLaunch({
                       url: paths.linkCombinedDevice,
@@ -493,15 +432,6 @@ Page({
   async clickTestNet() {
     let self = this
     let { moduleType, type, sn8, sn, linkType, moduleVersion } = app.addDeviceInfo
-    burialPoint.clickPingNetTest({
-      deviceSessionId: app.globalData.deviceSessionId,
-      moduleType: moduleType,
-      type: type,
-      sn8: sn8,
-      sn: sn,
-      linkType: linkType,
-      moduleVersion: moduleVersion,
-    })
     this.data.isClickTestNet = true
     this.data.isStopTestWifiNet = false //重置
     try {
@@ -525,25 +455,6 @@ Page({
               if (res.comfirm) {
                 console.log('page dialog res2222', res)
                 self.switchWifi()
-                burialPoint.clickRequestWifiDialogSetting({
-                  deviceSessionId: app.globalData.deviceSessionId,
-                  moduleType: moduleType,
-                  type: type,
-                  sn8: sn8,
-                  sn: sn,
-                  linkType: linkType,
-                  moduleVersion: moduleVersion,
-                })
-              } else if (res.cancel) {
-                burialPoint.clickRequestWifiDialogCancel({
-                  deviceSessionId: app.globalData.deviceSessionId,
-                  moduleType: moduleType,
-                  type: type,
-                  sn8: sn8,
-                  sn: sn,
-                  linkType: linkType,
-                  moduleVersion: moduleVersion,
-                })
               }
             },
           },
@@ -567,25 +478,6 @@ Page({
               if (res.comfirm) {
                 console.log('page dialog res2222', res)
                 self.switchWifi()
-                burialPoint.clickRequestWifiDialogSetting({
-                  deviceSessionId: app.globalData.deviceSessionId,
-                  moduleType: moduleType,
-                  type: type,
-                  sn8: sn8,
-                  sn: sn,
-                  linkType: linkType,
-                  moduleVersion: moduleVersion,
-                })
-              } else if (res.cancel) {
-                burialPoint.clickRequestWifiDialogCancel({
-                  deviceSessionId: app.globalData.deviceSessionId,
-                  moduleType: moduleType,
-                  type: type,
-                  sn8: sn8,
-                  sn: sn,
-                  linkType: linkType,
-                  moduleVersion: moduleVersion,
-                })
               }
             },
           },
@@ -606,136 +498,12 @@ Page({
               console.log('page dialog res', res)
               if (res.comfirm) {
                 self.switchWifi()
-                burialPoint.clickOpenWifiDialogSetting({
-                  deviceSessionId: app.globalData.deviceSessionId,
-                  moduleType: moduleType,
-                  type: type,
-                  sn8: sn8,
-                  sn: sn,
-                  linkType: linkType,
-                  moduleVersion: moduleVersion,
-                })
-              } else if (res.cancel) {
-                burialPoint.clickOpenWifiDialogCancel({
-                  deviceSessionId: app.globalData.deviceSessionId,
-                  moduleType: moduleType,
-                  type: type,
-                  sn8: sn8,
-                  sn: sn,
-                  linkType: linkType,
-                  moduleVersion: moduleVersion,
-                })
               }
             },
           },
         })
       }
-
-      // if (error.errCode == 12005) {
-      //     console.log('未打开wifi开关')
-      //     burialPoint.openWifiDialogShow({
-      //         deviceSessionId: app.globalData.deviceSessionId,
-      //         moduleType: moduleType,
-      //         type: type,
-      //         sn8: sn8,
-      //         sn: sn,
-      //         linkType: linkType,
-      //         moduleVersion: moduleVersion
-      //     })
-      //     this.setData({ //请打开wifi
-      //         customDialog: {
-      //             show: true,
-      //             title: '',
-      //             content: `请开启WLAN，并连接到“${this.data.bindWifiInfo.SSIDContent}”`,
-      //             cancelText: '取消',
-      //             cancelColor: '#267AFF',
-      //             confirmText: '去设置',
-      //             confirmColor: '#267AFF',
-      //             success(res) {
-      //                 console.log('page dialog res', res)
-      //                 if (res.comfirm) {
-      //                     self.switchWifi()
-      //                     burialPoint.clickOpenWifiDialogSetting({
-      //                         deviceSessionId: app.globalData.deviceSessionId,
-      //                         moduleType: moduleType,
-      //                         type: type,
-      //                         sn8: sn8,
-      //                         sn: sn,
-      //                         linkType: linkType,
-      //                         moduleVersion: moduleVersion
-      //                     })
-      //                 } else if (res.cancel) {
-      //                     burialPoint.clickOpenWifiDialogCancel({
-      //                         deviceSessionId: app.globalData.deviceSessionId,
-      //                         moduleType: moduleType,
-      //                         type: type,
-      //                         sn8: sn8,
-      //                         sn: sn,
-      //                         linkType: linkType,
-      //                         moduleVersion: moduleVersion
-      //                     })
-      //                 }
-      //             }
-      //         }
-      //     })
-      // } else { //未连接到对应wifi
-      //     burialPoint.linkTargetWifiDialogShow({
-      //         deviceSessionId: app.globalData.deviceSessionId,
-      //         moduleType: moduleType,
-      //         type: type,
-      //         sn8: sn8,
-      //         sn: sn,
-      //         linkType: linkType,
-      //         moduleVersion: moduleVersion
-      //     })
-      //     this.setData({ //请连接对应wifi弹窗
-      //         customDialog: {
-      //             show: true,
-      //             title: ``,
-      //             content: `请连接到“${this.data.bindWifiInfo.SSIDContent}”，再进行测试`,
-      //             cancelText: '取消',
-      //             cancelColor: '#267AFF',
-      //             confirmText: '去设置',
-      //             confirmColor: '#267AFF',
-      //             success(res) {
-      //                 console.log('page dialog res', res)
-      //                 if (res.comfirm) {
-      //                     console.log('page dialog res2222', res)
-      //                     self.switchWifi()
-      //                     burialPoint.clickRequestWifiDialogSetting({
-      //                         deviceSessionId: app.globalData.deviceSessionId,
-      //                         moduleType: moduleType,
-      //                         type: type,
-      //                         sn8: sn8,
-      //                         sn: sn,
-      //                         linkType: linkType,
-      //                         moduleVersion: moduleVersion
-      //                     })
-      //                 } else if (res.cancel) {
-      //                     burialPoint.clickRequestWifiDialogCancel({
-      //                         deviceSessionId: app.globalData.deviceSessionId,
-      //                         moduleType: moduleType,
-      //                         type: type,
-      //                         sn8: sn8,
-      //                         sn: sn,
-      //                         linkType: linkType,
-      //                         moduleVersion: moduleVersion
-      //                     })
-      //                 }
-      //             }
-      //         }
-      //     })
-      // }
     }
-    // wx.onWifiConnected(res => { //监听连上对应wifi
-    //     console.log('连上wifi了：', res, self.data.bindWifiInfo.BSSID)
-    //     this.getCurLinkWifiInfo()
-    //     let wifiInfo = res.wifi
-    //     if (wifiInfo.BSSID == self.data.bindWifiInfo.BSSID) {
-    //         self.pingMideaNet()
-    //         wx.offWifiConnected()
-    //     }
-    // })
   },
 
   //ping 相关网络
@@ -967,14 +735,6 @@ Page({
   retry() {
     let { moduleType, type, sn8, blueVersion, moduleVersion, mode, fm, linkType, guideInfo, hadChangeBlue } =
       app.addDeviceInfo
-    burialPoint.clickRetry({
-      deviceSessionId: app.globalData.deviceSessionId,
-      moduleType: moduleType,
-      type: type,
-      sn8: sn8,
-      linkType: linkType,
-      moduleVersion: blueVersion || '',
-    })
     setWifiStorage(this.data.bindWifiInfo)
     app.addDeviceInfo.curWifiInfo = this.data.bindWifiInfo //共享选取的wifi
     console.log('---------------retry--------------------')
@@ -1091,10 +851,7 @@ Page({
     //获取当前连接wifi信息
     console.log('获取当前连接wifi信息', res)
     console.log('storageWifiListV1======', wx.getStorageSync('storageWifiListV1'))
-    log.info('now connect wifi info:', res)
-    log.info('storageWifiListV1', wx.getStorageSync('storageWifiListV1'))
     if (wx.getStorageSync('storageWifiListV1') && decodeWifi(wx.getStorageSync('storageWifiListV1')[environment])) {
-      log.info('has match wifi storage')
       wx.getStorageSync('storageWifiListV1')
       let storageWifiList = decodeWifi(wx.getStorageSync('storageWifiListV1')[environment])
       console.log('uuuuuuuuuuuuuuu', storageWifiList, res.SSID)
@@ -1104,7 +861,6 @@ Page({
         storageWifiList.forEach((item, index) => {
           if (item.SSIDContent == res.SSID) {
             console.log('有这个wifi的storage')
-            log.info('has now wifi storage')
             isHasPsw = true
             wifiNum = index
           }
@@ -1178,23 +934,6 @@ Page({
     app.addDeviceInfo.curWifiInfo = this.data.bindWifiInfo
   },
 
-  //backToIndex
-  backToIndex() {
-    let { moduleType, type, sn8, sn, linkType, moduleVersion, plainSn } = app.addDeviceInfo
-    burialPoint.clickBackToHome({
-      deviceSessionId: app.globalData.deviceSessionId,
-      moduleType: moduleType,
-      type: type,
-      sn8: sn8,
-      sn: plainSn,
-      linkType: linkType,
-      moduleVersion: moduleVersion,
-    })
-    wx.reLaunch({
-      url: paths.index,
-    })
-  },
-
   //msmart 去直连插件
   goToBlueConctrol() {
     let { type, deviceId, cloudBackDeviceInfo } = app.addDeviceInfo
@@ -1227,22 +966,18 @@ Page({
       wx.navigateTo({
         url: paths.localNetGuide + `?permissionTypeList=${JSON.stringify(permissionTypeList)}`,
       })
-      burialPoint.clickLocalNetGuide(params)
       return
     } else if (text.indexOf('Mac地址') != -1) {
       url = `${commonH5Api.url}macGuide.html`
       // title = '操作指引'
       title = ''
-      burialPoint.clickWhitelistGuide(params)
     } else if (text.indexOf('DHCP') != -1) {
       url = `${commonH5Api.url}dhcpGuide.html`
       // title = '操作指引'
       title = ''
-      burialPoint.clickDHCPGuide(params)
     } else if (text.indexOf('qmark') != -1) {
       url = `${commonH5Api.url}problem.html`
       title = '常见问题'
-      burialPoint.clickSecondNetGuide(params)
     }
     console.log('url:', url)
     console.log('title:', title)
@@ -1269,7 +1004,6 @@ Page({
     console.log('storageWifiListV1:', storageWifiListV1)
     if (storageWifiListV1 && storageWifiListV1[environment].length && decodeWifi(storageWifiListV1[environment])) {
       console.log('有对应环境的缓存wifi信息')
-      log.info('有对应环境的wifi缓存')
       let storageWifiList = decodeWifi(wx.getStorageSync('storageWifiListV1')[environment])
 
       let isHasPsw = false
@@ -1316,7 +1050,6 @@ Page({
    */
   deviceImgError(e) {
     console.error('@module linkNetFail.js\n@method deviceImgError\n@desc  联网失败页设备图片加载失败\n', e)
-    log.error('@module linkNetFail.js\n@method deviceImgError\n@desc  联网失败页设备图片加载失败\n', e)
   },
 
   /**
@@ -1347,7 +1080,6 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
-    getApp().onUnloadCheckingLog()
     this.data.pageStatus = 'unload'
     wx.offWifiConnected()
   },

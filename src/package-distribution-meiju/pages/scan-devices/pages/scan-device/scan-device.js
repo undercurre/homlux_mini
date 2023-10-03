@@ -1,18 +1,15 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
-import { baseImgApi, deviceImgApi, imgBaseUrl, commonH5Api, publicImg } from '../../../../common/js/api.js'
-import { hasKey, getStamp, getReqId, isEmptyObject } from 'm-utilsdk/index'
+import { baseImgApi, deviceImgApi, imgBaseUrl, commonH5Api } from '../../../../common/js/api.js'
+import { getStamp, getReqId, isEmptyObject } from 'm-utilsdk/index'
 import { scanHelp, selectDevice } from '../../../../utils/paths.js'
-import { requestService, rangersBurialPoint } from '../../../../utils/requestService'
+import { requestService } from '../../../../utils/requestService'
 import { isSupportPlugin } from '../../../../utils/pluginFilter'
-import { login } from '../../../../utils/paths'
-import { burialPoint } from './assest/js/burialPoint'
 const bluetooth = require('../../../../common/mixins/bluetooth.js')
 const paths = require('../../../../utils/paths')
 const dialogCommonData = require('../../../../common/mixins/dialog-common-data.js')
 const app = getApp()
 import { actionScanResult } from '../../../../utils/scanCodeApi'
-import { checkFamilyPermission, creatDeviceSessionId, getFullPageUrl } from '../../../../utils/util.js'
-import { familyPermissionText } from '../../../../common/js/commonText.js'
+import {creatDeviceSessionId } from '../../../../utils/util.js'
 import { addDeviceSDK } from '../../../../utils/addDeviceSDK'
 import { checkPermission } from '../../../../common/js/checkPermissionTip'
 import { getPrivateKeys } from '../../../../utils/getPrivateKeys'
@@ -90,36 +87,29 @@ Page({
         homeName: options.homeName,
       })
     }
-    this.getLoginStatus().then(async () => {
-      if (app.globalData.isLogon) {
-        let { isCheckGray } = app.addDeviceInfo
-        //获取添加设备灰度名单判断是否是灰度用户
-        try {
-          let isCan = await addDeviceSDK.isGrayUser(isCheckGray)
-          this.setData({
-            isCanAddDevice: isCan,
-          })
-          if (!this.data.isCanAddDevice) {
-            console.log('屏蔽了配网入口')
-            burialPoint.viewNoSupportPage({
-              deviceSessionId: app.globalData.deviceSessionId,
-            })
-            return
-          }
-        } catch (error) {
-          console.log('[isGrayUser error]', error)
-        }
-        this.checkCurrentFamilyPermission()
-        this.locationAuthorize() //判断用户是否授权小程序使用位置权限
-        this.bluetoothAuthorize() //判断用户是否授权小程序使用蓝牙权限
-        if (options.openScan) {
-          //是否启动扫码
-          this.actionScan()
-        }
-      } else {
-        this.navToLogin()
+
+    let { isCheckGray } = app.addDeviceInfo
+    //获取添加设备灰度名单判断是否是灰度用户
+    try {
+      let isCan = await addDeviceSDK.isGrayUser(isCheckGray)
+      this.setData({
+        isCanAddDevice: isCan,
+      })
+      if (!this.data.isCanAddDevice) {
+        console.log('屏蔽了配网入口')
+        return
       }
-    })
+    } catch (error) {
+      console.log('[isGrayUser error]', error)
+    }
+    this.checkCurrentFamilyPermission()
+    this.locationAuthorize() //判断用户是否授权小程序使用位置权限
+    this.bluetoothAuthorize() //判断用户是否授权小程序使用蓝牙权限
+    if (options.openScan) {
+      //是否启动扫码
+      this.actionScan()
+    }
+
     this.setTimer()
   },
 
@@ -228,7 +218,6 @@ Page({
    */
   onUnload: function () {
     console.log('onUnload111')
-    getApp().onUnloadCheckingLog()
 
     this.stopBluetoothDevicesDiscovery()
     // this.closeWifiScan()
@@ -236,14 +225,8 @@ Page({
     //关闭自动搜索
     wx.offBluetoothDeviceFound()
     wx.offGetWifiList()
-    // this.stopBluetoothDevicesDiscovery()
     this.clearTimer()
     this._clearTimeout()
-
-    // wx.offBluetoothDeviceFound()
-    // wx.offGetWifiList()
-    // this.clearTimer()
-    // this._clearTimeout()
   },
 
   clearTimer() {
@@ -261,7 +244,6 @@ Page({
         this.setData({
           isScanHint: true,
         })
-        burialPoint.viewScanHint()
       }
     }, 5000)
   },
@@ -281,30 +263,6 @@ Page({
    */
   onReachBottom: function () {},
 
-  getLoginStatus() {
-    return app
-      .checkGlobalExpiration()
-      .then(() => {
-        this.setData({
-          isLogon: app.globalData.isLogon,
-        })
-      })
-      .catch(() => {
-        app.globalData.isLogon = false
-        this.setData({
-          isLogin: app.globalData.isLogon,
-        })
-      })
-  },
-  navToLogin() {
-    app.globalData.isLogon = false
-    this.setData({
-      isLogin: app.globalData.isLogon,
-    })
-    wx.navigateTo({
-      url: login,
-    })
-  },
   showNotSupport() {
     Dialog.confirm({
       title: '该二维码无法识别，请扫描机身上携带“智能产品”标识的二维码',
@@ -434,7 +392,6 @@ Page({
     }
     if (e.flag == 'bottomBtn') {
       if (e.type == 'guide') {
-        burialPoint.toClickToGuide()
         this.jumpQRcodeGuide()
       }
     }
@@ -576,7 +533,6 @@ Page({
       }).then(() => {
         // on close
       })
-      getApp().setMethodFailedCheckingLog('goNetwork', '微信版本校验不通过')
       setTimeout(() => {
         this.data.autoFoundCardClickFlag = false
       }, 1500)
@@ -584,7 +540,6 @@ Page({
     }
 
     if (!item.isSupport) {
-      getApp().setMethodFailedCheckingLog('goNetwork', `暂不支持的设备。deviceINifo=${JSON.stringify(item)}`)
       setTimeout(() => {
         this.data.autoFoundCardClickFlag = false
       }, 1500)
@@ -618,20 +573,6 @@ Page({
       this.setData({
         checkPermissionRes: bluePermission,
         permissionImg: imgUrl + imgesList['img_dakailanya'],
-      })
-      rangersBurialPoint('user_page_view', {
-        page_id: 'page_open_bluetooth_new',
-        page_name: '提示需开启蓝牙权限页面',
-        page_path: getCurrentPages()[0].route,
-        module: 'appliance',
-        widget_id: '',
-        widget_name: '查看指引',
-        object_type: '弹窗类型',
-        object_id: '',
-        object_name: (await this.getpermissionTextAll('blue')) || '',
-        device_info: {
-          device_session_id: getApp().globalData.deviceSessionId || '',
-        },
       })
       return false
     }
@@ -756,23 +697,8 @@ Page({
       url: selectDevice,
     })
   },
-  clickAddByTypeViewTrack() {
-    rangersBurialPoint('user_behavior_event', {
-      module: 'appliance', //写死 “活动”
-      page_id: 'page_add_appliance', //参考接口请求参数“pageId”
-      page_name: '添加设备页', //当前页面的标题，顶部的title
-      page_path: getFullPageUrl(), //当前页面的URL
-      widget_id: 'click_add_by_type',
-      widget_name: '按机型添加',
-      page_module: 'appliance',
-      device_info: {
-        device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-      },
-    })
-  },
   // 点击跳转机身二维码指引
   clickQRcodeGuide() {
-    burialPoint.clickScanHint()
     this.jumpQRcodeGuide()
   },
   jumpQRcodeGuide() {
@@ -880,26 +806,6 @@ Page({
             reject(error)
           },
         )
-      }
-    })
-  },
-  // 校验家庭权限
-  checkCurrentFamilyPermission() {
-    this.getHomeGroup().then((res) => {
-      const homeList = res
-      const homeGroupId = this.data.id
-      const currentHomeInfo = homeList.find((item) => item.homegroupId === homeGroupId) || homeList[0]
-      const hasFamilyPermission = checkFamilyPermission({
-        currentHomeInfo,
-        permissionText: familyPermissionText.distributionNetwork,
-        callback: () => {
-          wx.switchTab({
-            url: '/pages/index/index',
-          })
-        },
-      })
-      if (!hasFamilyPermission) {
-        this.checkFamilyPermissionBurialPoint()
       }
     })
   },
@@ -1026,25 +932,6 @@ Page({
           console.log(error)
         })
     }
-  },
-
-  //朋友设备批量配网弹窗预览埋点
-  batchNetworkViewTrack() {
-    rangersBurialPoint('user_page_view', {
-      page_path: getFullPageUrl(),
-      module: 'appliance',
-      page_id: 'popups_batch_add_device',
-      page_name: '批量添加弹窗',
-      object_type: '',
-      object_id: '',
-      object_name: '',
-      device_info: {
-        device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-        wifi_model_version: '', //模组wifi版本
-        link_type: '家电找朋友', //新增配网方式 :家电找朋友
-      },
-      ext_info: {},
-    })
   },
 
   //朋友设备配网

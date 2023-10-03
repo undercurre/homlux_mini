@@ -30,6 +30,7 @@ const heartbeatInfo = {
 }
 
 export async function startWebsocketService() {
+  return
   if (!storage.get<string>('token')) {
     return
   }

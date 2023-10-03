@@ -49,7 +49,7 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad(options) {
+  onLoad() {
     this.data.brand = brand
     this.setData({
       brand: this.data.brand,
@@ -63,69 +63,21 @@ Page({
       detailExpand: imgUrl + imgesList['detailExpand'],
     })
     console.log('this.data.brand------:', this.data.brand)
-    // if (this.data.brand == 'meiju') {
-    //   wx.setNavigationBarColor({
-    //     frontColor: '#000000',
-    //     backgroundColor: '#ffffff',
-    //   })
-    // } else if (this.data.brand == 'colmo') {
-    //   wx.setNavigationBarColor({
-    //     frontColor: '#ffffff',
-    //     backgroundColor: '#1A1A1F',
-    //   })
-    //   // wx.setBackgroundColor({
-    //   //   backgroundColor: '#1A1A1F',
-    //   // })
-    // }
     this.checkSystm()
-    this.getLoginStatus().then(() => {
-      if (app.globalData.isLogon) {
-        this.checkFamilyPermission()
-        let { moduleType, deviceName, type, sn8, deviceId, blueVersion, mode, enterprise, deviceImg } =
-          app.addDeviceInfo
-        this.setData({
-          deviceImg: deviceImg,
-          deviceName: deviceName,
-          linkDeviceWifi: '去连接',
-          type: type,
-          brandName: this.getBrandBname(enterprise),
-        })
-        // this.onLinkDeviceWifi(this.data.brandName, this.data.type)
-        this.readingGuideTiming() //阅读计时
-        // this.onNetType()
-        this.saveDeviceImg(deviceImg)
-      } else {
-        this.navToLogin()
-      }
-    })
-    // if (app.globalData.systemInfo.platform == 'android') {
-    //     this.getWifiList() //提前获取下wifi列表
-    // }
-    this.wifiListSheet = this.selectComponent('#wifi-list-sheet') //组件的id
-  },
-  getLoginStatus() {
-    return app
-      .checkGlobalExpiration()
-      .then((res) => {
-        this.setData({
-          isLogon: app.globalData.isLogon,
-        })
-      })
-      .catch((err) => {
-        app.globalData.isLogon = false
-        this.setData({
-          isLogin: app.globalData.isLogon,
-        })
-      })
-  },
-  navToLogin() {
-    app.globalData.isLogon = false
+    let { moduleType, deviceName, type, sn8, deviceId, blueVersion, mode, enterprise, deviceImg } =
+      app.addDeviceInfo
     this.setData({
-      isLogin: app.globalData.isLogon,
+      deviceImg: deviceImg,
+      deviceName: deviceName,
+      linkDeviceWifi: '去连接',
+      type: type,
+      brandName: this.getBrandBname(enterprise),
     })
-    wx.navigateTo({
-      url: login,
-    })
+    // this.onLinkDeviceWifi(this.data.brandName, this.data.type)
+    this.readingGuideTiming() //阅读计时
+    // this.onNetType()
+    this.saveDeviceImg(deviceImg)
+    this.wifiListSheet = this.selectComponent('#wifi-list-sheet') //组件的id
   },
   //点击反馈
   feedback() {
@@ -253,7 +205,6 @@ Page({
   goLinkDeviceWifi() {
     if (this.data.readingTimer > 0) {
       //未阅读完毕
-      getApp().setMethodFailedCheckingLog('goLinkDeviceWifi', '未阅读完毕')
       return
     }
     this.switchWifi(false)
@@ -452,7 +403,6 @@ Page({
   onUnload: function () {
     this.data.pageStatus = 'unload'
     wx.offWifiConnected()
-    getApp().onUnloadCheckingLog()
   },
 
   /**

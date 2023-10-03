@@ -1,20 +1,19 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-// addDevice/pages/afterCheck/afterCheck.js
 const app = getApp()
-const log = require('../../../../utils/log')
 const netWordMixin = require('../../../assets/js/netWordMixin')
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 
-import { requestService } from '../../../../utils/requestService'
-import { getPluginUrl } from '../../../../utils/getPluginUrl'
-import { getReqId, getStamp } from 'm-utilsdk/index'
-import { getFullPageUrl } from '../../../../utils/util'
-import { isSupportPlugin, goTopluginPage } from '../../../../utils/pluginFilter'
+import {requestService} from '../../../../utils/requestService'
+import {getPluginUrl} from '../../../../utils/getPluginUrl'
+import {getReqId, getStamp} from 'm-utilsdk/index'
+import {getFullPageUrl} from '../../../../utils/util'
+import {goTopluginPage, isSupportPlugin} from '../../../../utils/pluginFilter'
 import paths from '../../../../utils/paths'
-import { typesPreserveAfterCheckGuideByA0 } from '../../config/index'
+import {typesPreserveAfterCheckGuideByA0} from '../../config/index'
 import Dialog from '../../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
-import { brand } from '../../../assets/js/brand'
+import {brand} from '../../../assets/js/brand'
+
 let timer
 
 Page({
@@ -77,17 +76,8 @@ Page({
 
     console.log('options---', options)
     console.log('后确权addDeviceinfo====', deviceInfo)
-    this.logAddDivceInfo('添加设备参数', deviceInfo)
-
-    this.getLoginStatus().then(() => {
-      if (app.globalData.isLogon) {
-        this.checkFamilyPermission()
-        this.timing()
-        this.getGuideInfo(type, sn8, A0)
-      } else {
-        this.navToLogin()
-      }
-    })
+    this.timing()
+    this.getGuideInfo(type, sn8, A0)
     this.setData({
       deviceName: deviceName,
     })
@@ -95,15 +85,13 @@ Page({
     if (applianceCode) {
       let ApplianceAuthTypeResp = await this.getApplianceAuthType(applianceCode)
       console.log('ApplianceAuthTypeResp', ApplianceAuthTypeResp)
-      log.info('查询设备确权情况', ApplianceAuthTypeResp)
       const status = ApplianceAuthTypeResp.data.data.status
       if (status == 0) {
         console.log('后确权成功')
-        log.info('后确权成功')
         clearInterval(timer)
         // 组合配网新增跳转
         app.addDeviceInfo.status = status // 组合设备更新确权状态
-        let { combinedDeviceFlag } = app.addDeviceInfo // combinedDeviceFlag在首页会置为false
+        let {combinedDeviceFlag} = app.addDeviceInfo // combinedDeviceFlag在首页会置为false
         if (combinedDeviceFlag) {
           wx.reLaunch({
             url: `${paths.linkCombinedDevice}?randomCode=${this.data.randomCode}`,
@@ -136,7 +124,6 @@ Page({
         // 兼容status=1,2,3的情况，等于3当做未确权处理(组合配网新增)
         //未确权
         console.log(`${status == 3 ? '不支持确权' : '未确权'}`)
-        log.info(`${status == 3 ? '不支持确权' : '未确权'}`)
         await this.applianceAuthConfirm(applianceCode) //进入待确权
         this.sleep(10000).then((end) => {
           //新增10秒后在开始查询
@@ -149,10 +136,10 @@ Page({
   getGuideInfo(type, sn8, A0, enterprise = '0000') {
     type = type.includes('0x') ? type.substr(2, 2) : type
     let code = sn8
-    console.log('@module afterCheck.js\n@method getGuideInfo\n@desc 设备品类信息\n', { type, sn8, A0 })
+    console.log('@module afterCheck.js\n@method getGuideInfo\n@desc 设备品类信息\n', {type, sn8, A0})
     // 部分品类使用A0获取后确权指引
     if (typesPreserveAfterCheckGuideByA0.includes(type) && A0) {
-      console.log('@module afterCheck.js\n@method getGuideInfo\n@desc 使用A0获取后确权指引\n', { type, A0 })
+      console.log('@module afterCheck.js\n@method getGuideInfo\n@desc 使用A0获取后确权指引\n', {type, A0})
       code = A0
     }
     let reqData = {
@@ -161,12 +148,10 @@ Page({
       enterprise: enterprise,
     }
     console.log('reqDasta====', reqData)
-    log.info('请求后确权指引参数', reqData)
     requestService
       .request('getIotConfirmInfoV2', reqData)
       .then((resp) => {
         console.log('确权指引信息', resp.data.data)
-        log.info('后确权指引信息', reqData)
         if (!resp.data.data.confirmDesc && !resp.data.data.confirmImgUrl) {
           //未配置确权指引
           this.noGuide()
@@ -179,7 +164,6 @@ Page({
       })
       .catch((error) => {
         console.log(error)
-        log.info('请求后确权指引信息错误', error)
         if (error.data.code == 1) {
           this.noGuide()
         }
@@ -231,7 +215,7 @@ Page({
           clearInterval(timer)
           // 组合配网新增跳转
           app.addDeviceInfo.status = resp2.data.data.status // 组合设备更新确权状态
-          let { combinedDeviceFlag } = app.addDeviceInfo // combinedDeviceFlag在首页会置为false
+          let {combinedDeviceFlag} = app.addDeviceInfo // combinedDeviceFlag在首页会置为false
           if (combinedDeviceFlag) {
             wx.reLaunch({
               url: `${paths.linkCombinedDevice}?randomCode=${this.data.randomCode}`,
@@ -265,53 +249,28 @@ Page({
     })
   },
 
-  getLoginStatus() {
-    console.log(app.globalData.isLogon, 'afterCheck getLoginStatus')
-    return app
-      .checkGlobalExpiration()
-      .then((res) => {
-        this.setData({
-          isLogon: app.globalData.isLogon,
-        })
-      })
-      .catch((err) => {
-        app.globalData.isLogon = false
-        this.setData({
-          isLogin: app.globalData.isLogon,
-        })
-      })
-  },
-  navToLogin() {
-    app.globalData.isLogon = false
-    this.setData({
-      isLogin: app.globalData.isLogon,
-    })
-    wx.navigateTo({
-      url: paths.login,
-    })
-  },
-
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
-  onReady: function () {},
+  onReady: function () {
+  },
 
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function () {},
+  onShow: function () {
+  },
 
   /**
    * 生命周期函数--监听页面隐藏
    */
-  onHide: function () {},
+  onHide: function () {
+  },
 
   /**
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
-    getApp().onUnloadCheckingLog()
-
     clearInterval(timer)
     this.data.isStopCheck = true
   },
@@ -319,10 +278,12 @@ Page({
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
-  onPullDownRefresh: function () {},
+  onPullDownRefresh: function () {
+  },
 
   /**
    * 页面上拉触底事件的处理函数
    */
-  onReachBottom: function () {},
+  onReachBottom: function () {
+  },
 })

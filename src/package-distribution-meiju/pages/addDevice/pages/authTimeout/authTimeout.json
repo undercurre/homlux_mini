@@ -2,6 +2,6 @@
   "navigationBarTitleText": "",
   "navigationStyle": "custom",
   "usingComponents": {
-    "plugin-navbar": "/pages/component/plugin-navbar/plugin-navbar"
+    "plugin-navbar": "/package-distribution-meiju/component/plugin-navbar/plugin-navbar"
   }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef,@typescript-eslint/no-this-alias */
 // ble-negotiation-behaviors.js
 import {
   getReqId,
@@ -9,7 +10,6 @@ import {
   requestWithTry,
 } from 'm-utilsdk/index'
 import { requestService } from '../requestService'
-// const log = require('../utils/log')
 
 const app = getApp() //获取应用实例
 
@@ -17,9 +17,6 @@ let packageSize = 200
 module.exports = Behavior({
   behaviors: [],
   properties: {
-    // myBehaviorProperty: {
-    //   type: String
-    // }
   },
   data: {
     deviceId: '',
@@ -122,7 +119,6 @@ module.exports = Behavior({
         },
         fail: (error) => {
           console.error('链接失败', JSON.stringify(error))
-          getApp().setMethodFailedCheckingLog('wx.createBLEConnection失败', `error=${JSON.stringify(error)}`)
           // log.info('wx.wx.createBLEConnection失败',`error=${JSON.stringify(error)}`)
 
           if (!this.data.connected && this.data.time > 20) {

@@ -1,5 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
+import {strUtil} from "../../utils";
 
 ComponentWithComputed({
   options: {},
@@ -37,7 +38,11 @@ ComponentWithComputed({
       {
         icon: '/package-distribution/assets/guide/curtain.png',
         name: '窗帘',
-        path: '/package-distribution-meiju/check-auth/index?sn8=79700Z76',
+        path: strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
+          proType: '14',
+          sn8: '79700Z76',
+          deviceImg: '/package-distribution/assets/guide/curtain.png',
+        }),
       },
     ],
   },

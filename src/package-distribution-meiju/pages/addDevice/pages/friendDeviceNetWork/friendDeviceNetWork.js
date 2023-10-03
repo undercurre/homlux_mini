@@ -30,14 +30,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    this.getLoginStatus().then(() => {
-      if (app.globalData.isLogon) {
-        this.checkFamilyPermission()
-      } else {
-        this.navToLogin()
-      }
-    })
-
     console.log('待配网设备信息', JSON.parse(options.device))
     this.setData({
       device: JSON.parse(options.device),
@@ -54,21 +46,6 @@ Page({
    */
   onShow: function () {
     this.goNetwork()
-  },
-  getLoginStatus() {
-    return app
-      .checkGlobalExpiration()
-      .then(() => {
-        this.setData({
-          isLogon: app.globalData.isLogon,
-        })
-      })
-      .catch(() => {
-        app.globalData.isLogon = false
-        this.setData({
-          isLogin: app.globalData.isLogon,
-        })
-      })
   },
   clearTime() {
     clearInterval(timer)
@@ -366,8 +343,6 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
-    getApp().onUnloadCheckingLog()
-
     this.clearTime()
   },
 

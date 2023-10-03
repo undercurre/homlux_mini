@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 const app = getApp()
-const log = require('../../../../utils/log')
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const checkAuthMixin = require('../../mixins/checkAuthMixin')
 const netWordMixin = require('../../../assets/js/netWordMixin')
@@ -22,7 +21,6 @@ import paths from '../../../../utils/paths'
 import { addDeviceSDK } from '../../../../utils/addDeviceSDK'
 import { checkPermission } from '../../../../common/js/checkPermissionTip'
 import { typesPreserveAfterCheckGuideByA0 } from '../../config/index'
-import Dialog from '../../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
 const brandStyle = require('../../../assets/js/brand.js')
 import { imgesList } from '../../../assets/js/shareImg.js'
 const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
@@ -87,15 +85,7 @@ Page({
     this.localToast = this.selectComponent('#localToast')
     // this.getAddDeviceInfo()
     console.log('adddeviceinfo===', app.addDeviceInfo)
-    this.getLoginStatus().then(() => {
-      console.log('getLoginStatus===', app.globalData.isLogon)
-      this.checkFamilyPermission()
-      if (app.globalData.isLogon) {
-        this.initAddGuide()
-      } else {
-        this.navToLogin()
-      }
-    })
+    this.initAddGuide()
   },
   computed: {
     currGuideInfo() {
@@ -133,7 +123,6 @@ Page({
       ['checkGuideInfo.connectUrlA']: guideInfo[nextIndex].connectUrlA,
     })
     this.localToast.showToast(`已切换至第${nextIndex + 1}种方式`)
-    this.clickNewDeviceGuideInfoViewTrack()
   },
   async initAddGuide() {
     const self = this
@@ -430,50 +419,7 @@ Page({
         this_.retryClickFlag = false
       })
   },
-  getLoginStatus() {
-    return app
-      .checkGlobalExpiration()
-      .then(() => {
-        this.setData({
-          isLogon: app.globalData.isLogon,
-        })
-      })
-      .catch(() => {
-        app.globalData.isLogon = false
-        this.setData({
-          isLogin: app.globalData.isLogon,
-        })
-      })
-  },
-  navToLogin() {
-    app.globalData.isLogon = false
-    this.setData({
-      isLogin: app.globalData.isLogon,
-    })
-    wx.navigateTo({
-      url: paths.login,
-    })
-  },
-
-  getAddDeviceInfo() {
-    let addDeviceInfo = {
-      deviceName: '滚筒洗衣机',
-      deviceId: '', //设备蓝牙id
-      mac: 'A0:68:1C:BC:38:27', //设备mac combo:'A0:68:1C:74:CC:4A'  一代：'84:7C:9B:77:2D:47' 华凌：'A0:68:1C:BC:38:27'
-      type: 'DB', //设备品类 AC
-      sn8: '14392',
-      deviceImg: 'https://www.smartmidea.net/projects/sit/meiju-lite-assets/mainContent/images/img_wushebei.png', //设备图片
-      moduleType: 1, //模组类型 0：ble 1:ble+weifi
-      blueVersion: null, //蓝牙版本 1:1代  2：2代
-      mode: 0,
-      adData: 'a806013232303430303235414339333831011100322738bc1c68a0',
-      fm: 'autoFound',
-      productId: '',
-      enterprise: '0000',
-      isFromScanCode: false,
-    }
-    app.addDeviceInfo = addDeviceInfo
-  },
+  getAddDeviceInfo() {},
   //跳转反馈
   feedback() {
     wx.navigateTo({
@@ -499,7 +445,6 @@ Page({
         ['checkGuideInfo.connectDesc']: this.guideDescFomat(guideInfo[0].connectDesc),
         ['checkGuideInfo.connectUrlA']: guideInfo[0].connectUrlA,
       })
-      this.getNewDeviceGuideInfoViewTrack(guideInfo)
     } else {
       switch (
         fm //根据入口不同获取不同的指引
@@ -564,11 +509,6 @@ Page({
                   if (res.confirm) {
                     // 重试
                     self.retryCheckNearby()
-                  } else if (res.cancel) {
-                    // 退出
-                    wx.reLaunch({
-                      url: paths.index,
-                    })
                   }
                 },
               })
@@ -621,7 +561,7 @@ Page({
   },
   //ap完成手动确权
   async next() {
-    let { mode, ssid, sn8, fm, hadChangeBlue } = app.addDeviceInfo
+    let { mode, ssid, hadChangeBlue } = app.addDeviceInfo
     if (!this.data.isFinishUpAp) {
       showToast('请先勾选')
       return
@@ -638,7 +578,6 @@ Page({
       this.searchBlueStopTimeout && clearTimeout(this.searchBlueStopTimeout)
       //ap
       if (this.isCanDrivingLinkDeviceAp(ssid)) {
-        // app.addDeviceInfo.isCanDrivingLinkDeviceAp = true
         wx.navigateTo({
           url: paths.linkAp,
         })
@@ -860,17 +799,9 @@ Page({
                 deviceAds,
                 packInfo,
               )
-              log.info('手动确权成功', device, deviceAds, packInfo)
               self.data.curDeviceISCheck = true
               wx.offBluetoothDeviceFound()
-              wx.stopBluetoothDevicesDiscovery({
-                fail(error) {
-                  getApp().setMethodFailedCheckingLog(
-                    'wx.stopBluetoothDevicesDiscovery()',
-                    `停止蓝牙发现失败。error=${JSON.stringify(error)}`,
-                  )
-                },
-              })
+              wx.stopBluetoothDevicesDiscovery()
               app.addDeviceInfo.isFeature = packInfo.isFeature
               app.addDeviceInfo.adData = deviceAds
               app.addDeviceInfo.blueVersion = self.getBleVersion(device.advertisData)
@@ -920,18 +851,14 @@ Page({
             ['checkGuideInfo.connectDesc']: this.guideDescFomat(resp.data.data.mainConnectinfoList[0].connectDesc),
             ['checkGuideInfo.connectUrlA']: resp.data.data.mainConnectinfoList[0].connectUrlA,
           })
-          this.getNewDeviceGuideInfoViewTrack(resp.data.data.mainConnectinfoList)
           console.log('配网指引信息', resp.data.data.mainConnectinfoList[0].connectDesc)
         }
-        this.serverGuideResultBurialPoint(resp)
       })
       .catch((error) => {
         console.log(error)
         if (error.data.code == 1) {
           this.noGuide()
         }
-        this.serverGuideResultBurialPoint(error)
-        getApp().setMethodFailedCheckingLog('getAutoFoundGuide', `自发现获取指引异常。error=${JSON.stringify(error)}`)
       })
   },
   //扫码获取指引
@@ -949,7 +876,6 @@ Page({
       queryType: 2,
     }
     console.log('扫码请求确权指引', reqData)
-    log.info('扫码请求确权指引', reqData)
     requestService
       .request('multiNetworkGuide', reqData)
       .then((resp) => {
@@ -958,19 +884,14 @@ Page({
             ['checkGuideInfo.connectDesc']: this.guideDescFomat(resp.data.data.mainConnectinfoList[0].connectDesc),
             ['checkGuideInfo.connectUrlA']: resp.data.data.mainConnectinfoList[0].connectUrlA,
           })
-          this.getNewDeviceGuideInfoViewTrack(resp.data.data.mainConnectinfoList)
           console.log('配网指引信息 扫码', resp.data.data.mainConnectinfoList[0].connectDesc)
         }
-        this.serverGuideResultBurialPoint(resp)
       })
       .catch((error) => {
         console.log(error)
-        log.info('扫码获取指引错误', error)
         if (error.data.code == 1) {
           this.noGuide()
         }
-        this.serverGuideResultBurialPoint(error)
-        getApp().setMethodFailedCheckingLog('getAutoFoundGuide', `自发现获取指引异常。error=${JSON.stringify(error)}`)
       })
   },
 
@@ -986,7 +907,6 @@ Page({
       queryType: 1,
     }
     console.log('请求确权指引', reqData)
-    log.info('选型请求确权指引', reqData)
     requestService
       .request('multiNetworkGuide', reqData)
       .then((resp) => {
@@ -995,19 +915,14 @@ Page({
             ['checkGuideInfo.connectDesc']: this.guideDescFomat(resp.data.data.mainConnectinfoList[0].connectDesc),
             ['checkGuideInfo.connectUrlA']: resp.data.data.mainConnectinfoList[0].connectUrlA,
           })
-          this.getNewDeviceGuideInfoViewTrack(resp.data.data.mainConnectinfoList)
           console.log('配网指引信息 选型', resp.data.data.mainConnectinfoList[0].connectDesc)
         }
-        this.serverGuideResultBurialPoint(resp)
       })
       .catch((error) => {
         console.log(error)
-        log.info('选型获取指引错误', error)
         if (error.data.code == 1) {
           this.noGuide()
         }
-        this.serverGuideResultBurialPoint(error)
-        getApp().setMethodFailedCheckingLog('getAutoFoundGuide', `自发现获取指引异常。error=${JSON.stringify(error)}`)
       })
   },
 
@@ -1087,8 +1002,6 @@ Page({
     this.data.guideBlueRes = blueRes
     console.log('[blueRes]', blueRes)
     if (!blueRes.isCanBlue) {
-      // 记录当前埋点
-      this.objectName = this.setBurialObjectNameValue(blueRes.permissionTypeList)
       this.setData({
         ishowBlueRes: true,
         bluePermissionTextAll: blueRes.permissionTextAll,
@@ -1168,8 +1081,6 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
-    getApp().onUnloadCheckingLog()
-
     console.log('页面返回清除了定时器')
     this.searchBlueStopTimeout && clearTimeout(this.searchBlueStopTimeout)
     wx.offBluetoothDeviceFound()
@@ -1216,18 +1127,13 @@ Page({
   async checkGuide() {
     if (this.data.guideFlag) return
     this.data.guideFlag = true
-    // let blueRes = await checkPermission.blue()
     let blueRes = this.data.guideBlueRes
-    log.info('蓝牙权限弹窗', blueRes)
     wx.navigateTo({
       url: paths.blueGuide + `?permissionTypeList=${JSON.stringify(blueRes.permissionTypeList)}`,
     })
     setTimeout(() => {
       this.data.guideFlag = false
     }, 1000)
-    // this.setData({
-    //   ishowBlueRes:false
-    // })
   },
 
   iseeBtn() {

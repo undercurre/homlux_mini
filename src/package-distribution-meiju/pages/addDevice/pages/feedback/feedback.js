@@ -1,18 +1,10 @@
-// distribution-network/addDevice/pages/feedback/feedback.js
+/* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 const app = getApp()
-const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const paths = require('../../../../utils/paths')
-const netWordMixin = require('../../../assets/js/netWordMixin')
-const log = require('../../../../utils/log')
 const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 
 import { showToast } from '../../../../utils/util'
-import { burialPoint } from './assets/js/burialPoint'
 
-import { login } from '../../../../utils/paths'
-import { addDeviceSDK } from '../../../../utils/addDeviceSDK'
-
-import Dialog from '../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
 const brandStyle = require('../../../assets/js/brand.js')
 Page({
   behaviors: [getFamilyPermissionMixin],
@@ -30,36 +22,7 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
-    let { type, sn8, linkType } = app.addDeviceInfo
-    this.getLoginStatus().then(() => {
-      if (app.globalData.isLogon) {
-        this.checkFamilyPermission()
-      } else {
-        this.navToLogin()
-      }
-    })
-    burialPoint.feedbackView({
-      deviceSessionId: app.globalData.deviceSessionId,
-      type,
-      sn8,
-      linkType: linkType,
-    })
-  },
-  getLoginStatus() {
-    return app
-      .checkGlobalExpiration()
-      .then(() => {
-        this.setData({
-          isLogon: app.globalData.isLogon,
-        })
-      })
-      .catch(() => {
-        app.globalData.isLogon = false
-        this.setData({
-          isLogin: app.globalData.isLogon,
-        })
-      })
+  onLoad: function () {
   },
   bindTextAreaChange: function (e) {
     var that = this
@@ -80,16 +43,7 @@ Page({
   },
 
   async submit() {
-    let { type, sn8, linkType } = app.addDeviceInfo
     let { content, phone } = this.data
-    burialPoint.clickFeedbackSubmit({
-      deviceSessionId: app.globalData.deviceSessionId,
-      type,
-      sn8,
-      linkType: linkType,
-      question: content,
-      phone: phone,
-    })
     console.log('===========', content, phone)
     if (!content) {
       showToast('请输入问题')
@@ -101,45 +55,18 @@ Page({
     }
     try {
       await app.checkNet(2000)
-      burialPoint.apLocalLog({
-        log: {
-          msg: '用户反馈',
-          question: content,
-          contactInfo: phone,
-        },
-      })
       showToast('提交成功')
-      burialPoint.feedbackSuccessDialogView({
-        deviceSessionId: app.globalData.deviceSessionId,
-        type,
-        sn8,
-        linkType: linkType,
-      })
       setTimeout(() => {
         wx.switchTab({
           url: paths.index,
         })
       }, 2000)
     } catch (error) {
-      // wx.showModal({
-      //   title: '提交失败',
-      //   content: '请检查网络设置后重新提交',
-      //   showCancel: false,
-      //   confirmText: '我知道了',
-      //   success: function (res) {
-      //     if (res.confirm) {
-      //     }
-      //   },
-      // })
-      Dialog.confirm({
+      wx.showModal({
         title: '提交失败',
-        message: '请检查网络设置后重新提交',
-        confirmButtonText: '我知道了',
-        confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
-        showCancelButton: false,
-      }).then((res) => {
-        if (res.action == 'confirm') {
-        }
+        content: '请检查网络设置后重新提交',
+        showCancel: false,
+        confirmText: '我知道了',
       })
     }
   },

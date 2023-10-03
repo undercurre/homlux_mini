@@ -4,152 +4,16 @@
 const app = getApp() //获取应用实例
 
 import { hasKey, getStamp, getReqId } from 'm-utilsdk/index'
-import { getFullPageUrl, showToast } from './util.js'
+import { showToast } from './util.js'
 import { addDeviceSDK } from './addDeviceSDK'
 import { requestService } from './requestService'
 import { isSupportPlugin } from './pluginFilter'
 import { isAddDevice } from './temporaryNoSupDevices'
-import { linkDevice, virtualPlugin, newPlugin } from './paths'
-import { rangersBurialPoint } from './requestService'
+import { linkDevice } from './paths'
 import { commonH5Api } from '../common/js/api'
 import Dialog from '../../miniprogram_npm/m-ui/mx-dialog/dialog'
 import { brandConfig } from '../pages/assets/js/brand'
 const paths = require('./paths')
-
-//触屏配网相关埋点
-const burialPoint = {
-  /**
-   * 触屏配网提示绑定弹窗
-   */
-  touchScreenDiolog: (params) => {
-    rangersBurialPoint('user_page_view', {
-      page_path: getFullPageUrl(),
-      module: 'appliance',
-      page_id: 'popups_add_appliance_notice',
-      page_name: '设备添加提示弹窗',
-      widget_id: '',
-      widget_name: '',
-      object_type: '',
-      object_id: '',
-      object_name: '',
-      ext_info: {
-        code: params.code || '',
-        msg: params.msg || '',
-      },
-      device_info: {
-        device_session_id: params.deviceSessionId, //一次配网事件标识
-        sn: params.sn || '', //sn码
-        sn8: params.sn8, //sn8码
-        a0: '', //a0码
-        widget_cate: params.type, //设备品类
-        wifi_model_version: params.moduleVison || '', //模组wifi版本
-        link_type: 'screen_touch', //连接方式 bluetooth/ap/...
-        iot_device_id: params.applianceCode || '', //设备id
-      },
-    })
-  },
-
-  /**
-   * 点击触屏配网弹窗 是
-   */
-  touchScreenDiologConfirm: (params) => {
-    rangersBurialPoint('user_behavior_event', {
-      page_path: getFullPageUrl(),
-      module: 'appliance',
-      page_id: 'popups_add_appliance_notice',
-      page_name: '设备添加提示弹窗',
-      widget_id: 'click_confirm',
-      widget_name: '是',
-      object_type: '',
-      object_id: '',
-      object_name: '',
-      ext_info: {},
-      device_info: {
-        device_session_id: params.deviceSessionId, //一次配网事件标识
-        sn: params.sn || '', //sn码
-        sn8: params.sn8, //sn8码
-        a0: '', //a0码
-        widget_cate: params.type, //设备品类
-        wifi_model_version: params.moduleVison || '', //模组wifi版本
-        link_type: 'screen_touch', //连接方式 bluetooth/ap/...
-        iot_device_id: params.applianceCode || '', //设备id
-      },
-    })
-  },
-
-  /**
-   * 点击触屏配网弹窗 否
-   */
-  touchScreenDiologCancel: (params) => {
-    rangersBurialPoint('user_behavior_event', {
-      page_path: getFullPageUrl(),
-      module: 'appliance',
-      page_id: 'popups_add_appliance_notice',
-      page_name: '设备添加提示弹窗',
-      widget_id: 'click_cancel',
-      widget_name: '否',
-      object_type: '',
-      object_id: '',
-      object_name: '',
-      ext_info: {},
-      device_info: {
-        device_session_id: params.deviceSessionId, //一次配网事件标识
-        sn: params.sn || '', //sn码
-        sn8: params.sn8, //sn8码
-        a0: '', //a0码
-        widget_cate: params.type, //设备品类
-        wifi_model_version: params.moduleVison || '', //模组wifi版本
-        link_type: 'screen_touch', //连接方式 bluetooth/ap/...
-        iot_device_id: params.applianceCode || '', //设备id
-      },
-    })
-  },
-
-  /**
-   * 触屏配网扫码失败 点击知道了
-   */
-  touchScreenDiologClickKnow: (params) => {
-    rangersBurialPoint('user_behavior_event', {
-      page_path: getFullPageUrl(),
-      module: 'appliance',
-      page_id: 'popups_scan_qrcode_fail',
-      page_name: '扫码失败弹窗',
-      widget_id: 'click_confirm',
-      widget_name: '好的',
-      object_type: '',
-      object_id: '',
-      object_name: '',
-      ext_info: {},
-      device_info: {
-        device_session_id: params.deviceSessionId, //一次配网事件标识
-        sn: params.sn || '', //sn码
-        sn8: params.sn8, //sn8码
-        a0: '', //a0码
-        widget_cate: params.type, //设备品类
-        wifi_model_version: params.moduleVison || '', //模组wifi版本
-        link_type: 'screen_touch', //连接方式 bluetooth/ap/...
-        iot_device_id: params.applianceCode || '', //设备id
-      },
-    })
-  },
-  /**
-   * 5s搜不到设备点击二维码 跳转指引
-   */
-  clickScanHint: () => {
-    rangersBurialPoint('user_behavior_event', {
-      page_path: getFullPageUrl(),
-      module: 'appliance',
-      page_id: 'page_add_device',
-      page_name: '添加设备页',
-      widget_id: 'click_word_try_scanning',
-      widget_name: '搜索不到设备尝试扫码提示',
-      object_type: '',
-      object_id: '',
-      object_name: '',
-      ext_info: {},
-    })
-  },
-}
 
 /**
  * @param {*} showNotSupport  扫描的二维码不适于添加设备弹窗方法
@@ -176,7 +40,6 @@ export async function actionScanResult(
   }
 
   if (!scanRes.result) {
-    getApp().setMethodFailedCheckingLog('wx.scanCode()', `该二维码无法识别。scanRes=${JSON.stringify(scanRes)}`)
     return
   }
 
@@ -457,13 +320,6 @@ function dynamicCodeAdd(scanCodeRes, getDeviceApImgAndName, showNotSupport, just
       deviceImg: deviceNameAndImg.deviceImg,
     }
     app.addDeviceInfo = addDeviceInfo
-    let { type, sn } = app.addDeviceInfo
-    burialPoint.touchScreenDiolog({
-      deviceSessionId: app.globalData.deviceSessionId,
-      type: type,
-      sn: sn,
-      msg: '触屏配网扫码成功',
-    })
     // 动态扫码绑定添加白名单过滤逻辑
     let formatType = '0x' + addDeviceInfo.type.toLocaleUpperCase()
     let sn8 = addDeviceInfo.sn && addDeviceInfo.sn.substring(9, 17)
@@ -492,18 +348,6 @@ function dynamicCodeAdd(scanCodeRes, getDeviceApImgAndName, showNotSupport, just
           wx.navigateTo({
             url: linkDevice,
           })
-          burialPoint.touchScreenDiologConfirm({
-            deviceSessionId: app.globalData.deviceSessionId,
-            type: type,
-            sn: sn,
-          })
-        } else if (res.cancel) {
-          //取消
-          burialPoint.touchScreenDiologCancel({
-            deviceSessionId: app.globalData.deviceSessionId,
-            type: type,
-            sn: sn,
-          })
         }
       },
     })
@@ -514,16 +358,6 @@ function dynamicCodeAdd(scanCodeRes, getDeviceApImgAndName, showNotSupport, just
       confirmText: '我知道了',
       confirmColor: '#267AFF',
       showCancel: false,
-      success(res) {
-        if (res.confirm) {
-          //知道了
-          burialPoint.touchScreenDiologCancel({
-            deviceSessionId: app.globalData.deviceSessionId,
-            type: app.addDeviceInfo.type,
-            sn: app.addDeviceInfo.sn,
-          })
-        }
-      },
     })
   }
 }
@@ -574,7 +408,7 @@ function getUrlParamy(result) {
       paramy = res ? res.split('&') : []
     }
     console.log('paramy---------', paramy)
-    let obj = new Object()
+    let obj = {}
     paramy.forEach((item) => {
       let key = item.split('=')[0]
       let value = item.split('=')[1]
@@ -730,7 +564,6 @@ function scanCodeDecode(qrCode, timeout = 3000) {
 
 // 点击跳转机身二维码指引
 function clickQRcodeGuide() {
-  burialPoint.clickScanHint()
   jumpQRcodeGuide()
 }
 function jumpQRcodeGuide() {

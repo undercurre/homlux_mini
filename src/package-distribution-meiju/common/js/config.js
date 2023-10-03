@@ -1,5 +1,5 @@
 const config = {
-  environment: 'prod',
+  environment: 'dev',
   isMasEnv: true, //是否通过
   masPrefix: '/mas/v5/app/proxy?alias=',
   //域名

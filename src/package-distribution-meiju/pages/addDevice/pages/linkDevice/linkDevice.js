@@ -5,7 +5,6 @@ const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const wahinMixin = require('../wahinProtocol/mixin/wahinMixin')
 const netWordMixin = require('../../../assets/js/netWordMixin')
 const paths = require('../../../../utils/paths')
-const log = require('../../../../utils/log')
 let checkLinkFamilyWifTimer
 let timer
 let udpCycTimer
@@ -32,7 +31,6 @@ import {
   toHexString,
   uintArray2String,
 } from 'm-utilsdk/index'
-import {checkFamilyPermission} from '../../../../utils/util'
 import {getScanRespPackInfo, getSn8} from '../../../../utils/blueAdDataParse'
 import {isSupportPlugin} from '../../../../utils/pluginFilter'
 import {constructionBleOrder, paesrBleResponData} from '../../../../utils/ble/ble-order'
@@ -45,7 +43,6 @@ import {service} from '../assets/js/service'
 import WifiMgr from '../assets/js/wifiMgr'
 import {addDeviceSDK} from '../../../../utils/addDeviceSDK'
 import computedBehavior from '../../../../utils/miniprogram-computed.js'
-import {familyPermissionText} from '../../../../common/js/commonText.js'
 import {bytesToHexString, IntToBytes, stringToHashCode} from '../../utils/util'
 import {setWifiStorage} from '../../utils/wifiStorage'
 
@@ -166,19 +163,15 @@ Page({
       deviceName,
       mac,
       type,
-      sn8,
       moduleType,
       blueVersion,
       mode,
       deviceImg,
       adData, //广播
       fm,
-      rssi,
-      enterprise,
       curWifiInfo,
       apUtils,
       bigScreenScanCodeInfo, //触碰配网扫码info
-      isCanDrivingLinkDeviceAp, //是否需要主动连接设备ap
       sn,
       msmartBleWrite,
     } = app.addDeviceInfo
@@ -211,7 +204,6 @@ Page({
     }
     if (mode != 0) {
       console.log('进度页其他配网家庭id', app.globalData.currentHomeGroupId)
-      log.info('进度页其他配网家庭id', app.globalData.currentHomeGroupId)
 
       try {
         if (!app.globalData.currentHomeGroupId) {
@@ -269,6 +261,9 @@ Page({
       // this.data.bindWifiInfo = this.apUtils.decodeWifi(wx.getStorageSync('bindWifiInfo'))
       this.data.bindWifiInfo = curWifiInfo
     }
+    let isShowUnSupportDialog = false // 不支持插件弹窗显示标识
+    let isShowColmoUnSupportDialog = false // colmo旧设备弹窗显示标识
+
     switch (Number(mode)) {
       case 0: //ap link
         this.data.udpAdData = await this.getUdpInfo()
@@ -281,8 +276,6 @@ Page({
         }
         udpCycTimer && clearInterval(udpCycTimer)
         this.getApLinkData() // 解析udp数据存入addDeviceInfo
-        let isShowUnSupportDialog = false // 不支持插件弹窗显示标识
-        let isShowColmoUnSupportDialog = false // colmo旧设备弹窗显示标识
         console.log('当前品牌：' + brandStyle.brand)
         if (this.data.brandConfig.supportPluginFlag) {
           if (brandStyle.brand == 'colmo') {
@@ -370,11 +363,6 @@ Page({
             deviceId: app.addDeviceInfo.deviceId,
           })
           this.linkSuccess()
-          // clearInterval(timer)
-          // app.addDeviceInfo.sn = this.data.sn
-          // wx.navigateTo({
-          //     url: `/package-distribution-meiju/pages/addDevice/pages/addSuccess/addSuccess`
-          // })
         })
         break
       case 3:
@@ -401,7 +389,6 @@ Page({
             })
             //校验绑定码成功
             console.log('on neg success----------------', res)
-            log.info('msmart bluetooht neg success')
             this.sendWifiInfo(this.data.bindWifiInfo, blueVersion)
             this.againGetAPExists(this.data.sn, this.data.blueRandomCode, async (resp) => {
               console.log('设备成功连上云', resp)
@@ -411,7 +398,6 @@ Page({
                 'progressList[1].isFinish': true,
               })
               // 'progressList[2].isFinish': true,
-              log.info('device success link cloud')
               wx.closeBLEConnection({
                 deviceId: app.addDeviceInfo.deviceId,
               })
@@ -464,7 +450,6 @@ Page({
           a0 = a0.join('')
           a0 = parseInt(a0, 16)
           app.addDeviceInfo.a0 = a0 // 截取主设备a0
-          log.info('msmart bluetooht neg success')
           this.resisterBleDataChanged(this.handleBLEDataChanged) // 注册蓝牙信息改变监听
           // 组合设备新增指令
           console.info('是否查询0x63-03？' + app.addDeviceInfo.isFeature)
@@ -491,7 +476,6 @@ Page({
               curStep: 2,
               'progressList[1].isFinish': true,
             })
-            log.info('device success link cloud')
             this.data.autoCloseBleConnection = true
             wx.closeBLEConnection({
               deviceId: app.addDeviceInfo.deviceId,
@@ -557,7 +541,6 @@ Page({
         app.addDeviceInfo.plainSn = plainTextSn
         console.log('sn解密后', plainTextSn)
         console.log('msmart mode 31 sn--------', this.data.sn)
-        log.info('msmart bluetooht neg success')
         wifiInfoOrder = this.sendWifiInfo(this.data.bindWifiInfo, blueVersion, false)
         if (msmartBleWrite) {
           console.log('msmartBleWrite--------', msmartBleWrite)
@@ -577,7 +560,6 @@ Page({
               'progressList[1].isFinish': true,
             })
             // progressList[2].isFinish': true
-            log.info('device success link cloud')
             let bindRes = await this.bindDeviceToHome()
             console.log('绑定设备至默认家庭房间', resp)
             let plainSn = addDeviceSDK.getDeviceSn(bindRes.data.data.sn)
@@ -585,11 +567,6 @@ Page({
             app.addDeviceInfo.cloudBackDeviceInfo.roomName = this.data.currentRoomName
             app.addDeviceInfo.cloudBackDeviceInfo.sn8 = addDeviceSDK.getDeviceSn8(plainSn)
             app.addDeviceInfo.cloudBackDeviceInfo.bindType = 2
-            // let type0x = app.addDeviceInfo.cloudBackDeviceInfo.type
-            // let deviceInfo = encodeURIComponent(JSON.stringify(app.addDeviceInfo.cloudBackDeviceInfo))
-            // wx.closeBLEConnection({ //断开连接
-            //     deviceId: app.addDeviceInfo.deviceId
-            // })
             wx.reLaunch({
               url: paths.wifiSuccessSimple,
             })
@@ -617,12 +594,6 @@ Page({
             app.addDeviceInfo.moduleVersion = this.data.wifi_version
             console.log('sn解密后', plainTextSn)
             console.log('on neg success----------------', res)
-            log.info('msmart bluetooht neg success')
-            // 组合设备新增指令
-            // console.info('是否查询0x63-03？'+app.addDeviceInfo.isFeature)
-            // if(this.data.brandConfig.combinedDevice && app.addDeviceInfo.isFeature){
-            //   this.getCombinedFlag()
-            // }
             this.sendWifiInfo(this.data.bindWifiInfo, blueVersion)
             this.data.msmartBlueLinkNetYetWifiInfo = true //发送了wifi信息
             this.setData({
@@ -637,7 +608,6 @@ Page({
                 'progressList[1].isFinish': true,
               })
               // progressList[2].isFinish': true
-              log.info('device success link cloud')
               wx.closeBLEConnection({
                 deviceId: app.addDeviceInfo.deviceId,
               })
@@ -729,7 +699,6 @@ Page({
    */
   deviceImgError(e) {
     console.error('@module linkDevice.js\n@method deviceImgError\n@desc 设备图片加载失败\n', e)
-    log.error('@module linkDevice.js\n@method deviceImgError\n@desc 设备图片加载失败\n', e)
   },
 
   //监听wifi切换
@@ -757,10 +726,6 @@ Page({
       }
     } catch (error) {
       console.log('[get connected wifi fail]', error)
-      getApp().setMethodFailedCheckingLog(
-        'wx.getConnectedWifi()',
-        `调用微信接口wx.getConnectedWifi()异常。error=${JSON.stringify(error)}`,
-      )
       if (this.data.pageStatus == 'show') {
         this.delay(1500).then((end) => {
           this.onWifiSwitch()
@@ -863,7 +828,6 @@ Page({
     let key = app.globalData.userData.key
     this.data.sn = this.apUtils.enCodeSn(this.data.udpAdData.sn, key, appKey)
     console.log('udpAdData=========', this.data.udpAdData, this.data.sn)
-    log.info('@method getApLinkData @desc 收到udp响应设备信息包\n', this.data.udpAdData, this.data.sn)
     if (this.data.udpAdData.sn) {
       this.data.plainSn = asiiCode2Str(hexString2Uint8Array(this.data.udpAdData.sn))
       app.addDeviceInfo.plainSn = this.data.plainSn
@@ -877,20 +841,6 @@ Page({
       this.data.combinedDeviceFlag = hex2bin(add2)[4] == 1 // 标识位于附加信息的bit4: 1代表是，0代表否
       app.addDeviceInfo.combinedDeviceFlag = this.data.combinedDeviceFlag
       console.info('存在组合设备标识[AP通道]----------' + app.addDeviceInfo.combinedDeviceFlag)
-    }
-    let burialInfo = {
-      //成功建立udp埋点
-      deviceSessionId: app.globalData.deviceSessionId,
-      type: this.data.addDeviceInfo.type,
-      sn8: this.data.addDeviceInfo.sn8,
-      sn: this.data.plainSn,
-      moduleVersion: '', //ap配网没有像蓝牙的协议版本
-      linkType: app.addDeviceInfo.linkType,
-      ssid: app.addDeviceInfo.ssid,
-      rssi: app.addDeviceInfo.rssi,
-      curIp: this.data.curIp,
-      udpBroadcastAddress: this.data.udpBroadcastAddress, //目前是固定地址
-      wifi_version: moduleVersion, //模组版本埋点上报
     }
     if (this.data.udpAdData.udpVersion.slice(0, 2) < 2) {
       console.log('@module linkDevice.js\n@method apLinkAbout\n@desc 检测到UDP<2\n', this.data.udpAdData)
@@ -1576,24 +1526,14 @@ Page({
       this.udp = wx.createUDPSocket()
       if (this.udp === null) {
         console.log('暂不支持udp')
-        log.info('now phone on support udp')
-        getApp().setMethodFailedCheckingLog('wx.createUDPSocket()', '不支持udp')
-        this.apLogReportEven({
-          msg: '本机不支持udp',
-        })
         return
       }
       this.udp.bind()
       this.udp.onListening(function (res) {
         console.log('监听中...')
-        log.info('onMessage udp...')
       })
       this.udp.onMessage((res) => {
         console.log(res)
-        this.apLogReportEven({
-          msg: 'udp单波响应信息',
-          res: res,
-        })
         if (res) {
           //udp广播信息
           let hexMsg = ab2hex(res.message).toLocaleLowerCase()
@@ -1642,41 +1582,23 @@ Page({
             })
           }
           console.log('再次发送udp======')
-          getApp().setMethodFailedCheckingLog('再次发送udp请求消息')
-          this.apLogReportEven({
-            msg: '再次发送udp单波消息给设备',
-          })
         }
       }, 2000)
       console.log('发送成功')
-      log.info('send udp broadcast success')
     })
   },
   //监听设备自启广播
   onDeviceAutoUdp() {
-    let {type} = app.addDeviceInfo
     return new Promise((resolve, reject) => {
       this.udp2 = wx.createUDPSocket() //新建udp2实例
       if (this.udp2 === null) {
         console.log('暂不支持')
-        log.info('now phone on support udp')
-        getApp().setMethodFailedCheckingLog('wx.createUDPSocket()', '不支持udp')
-        this.apLogReportEven({
-          msg: '本机不支持udp',
-        })
-        this.apLogReportEven({
-          error: '当前手机无法使用udp',
-        })
         return
       } else {
         console.log('this.udp2===', this.udp2)
         this.udp2.bind(15000)
         this.udp2.onListening(function (res) {
           console.log('监听中...')
-          log.info('onMessage udp...')
-          this.apLogReportEven({
-            success: '成功监听udp广播',
-          })
           console.log(res)
         })
         this.udp2.onMessage((res) => {
@@ -1894,20 +1816,10 @@ Page({
     this.tcp.onError(async (error) => {
       //监听tcp错误
       console.log('link tcp error', error)
-      getApp().setMethodFailedCheckingLog('tcp.onError', `tcp响应错误，error=${JSON.stringify(error)}`)
       app.addDeviceInfo.errorCode = this.creatErrorCode({
         errorCode: 4038,
         isCustom: true,
       })
-      log.info('link tcp error', error)
-      app.apNoNetBurialPoint.apLocalLog.push(
-        this.createAplogData({
-          log: {
-            msg: 'tcp错误',
-            error: error,
-          },
-        }),
-      )
       /**
        * 3 - 绑定 wifi 网络失败，BSSID 不合法
        * 4 - 绑定 wifi 网络失败，系统错误
@@ -2146,9 +2058,6 @@ Page({
     if (bindWifiInfo.BSSID) {
       order.bssidLen = toHexString([bindWifiInfo.BSSID.split(':').join('').length / 2])
       order.bssid = bindWifiInfo.BSSID.split(':').join('')
-    } else {
-      log.error('bindWifiInfo.BSSID为空', bindWifiInfo)
-      getApp().setMethodFailedCheckingLog('bindWifiInfo.BSSID为空', `bindWifiInfo=${JSON.stringify(bindWifiInfo)}`)
     }
     order.gbkssidLen = toHexString([bindWifiInfo.SSIDLength]) //backUp ssid
     order.gbkssid = toHexString(string2Uint8Array(bindWifiInfo.SSIDContent))
@@ -2206,7 +2115,6 @@ Page({
       this.data.isBackLinkRoute = true //成功回连路由
       let wifiInfo = res.wifi
       console.log('连上了wifi', res)
-      log.info('connect wifi success')
       wx.offWifiConnected()
     })
     let searchDevieLinkCloud = {
@@ -2220,7 +2128,6 @@ Page({
       wifi_version: app.addDeviceInfo.moduleVersion, //模组版本埋点上报
     }
     app.apNoNetBurialPoint.searchDevieLinkCloud = searchDevieLinkCloud //暂存
-    log.info('开始查询设备是否连接云端')
     let timeout = 5000
     this.newAgainGetAPExists(
       this.data.sn,
@@ -2237,12 +2144,10 @@ Page({
           errorCode: 4013,
           isCustom: true,
         })
-        log.info('设备成功连上云', resp)
-        let {type, againCheckList, moduleVersion, sn8, linkType, apNoNetBurialPoint} = app.addDeviceInfo
+        let {type, againCheckList, moduleVersion} = app.addDeviceInfo
         console.log('app.apNoNetBurialPoint=========', app.apNoNetBurialPoint)
         if (!isEmptyObject(app.apNoNetBurialPoint)) {
           this.sendApNoNetBurialpoint(app.apNoNetBurialPoint) //批量上报ap 无网触发埋点
-          app.apNoNetBurialPoint = {apLocalLog: []}
         }
         //sta阶段
         if (this.isAgainCheck(againCheckList, type, moduleVersion)) {
@@ -2569,7 +2474,6 @@ Page({
         })
       }
       if (this.data.time == 0) {
-        getApp().setMethodFailedCheckingLog('连接设备进度页超时，跳转失败页')
         const {mode} = app.addDeviceInfo
         let errorCode
         if (mode == 30) {
@@ -2965,18 +2869,6 @@ Page({
     } else {
       currentHomeInfo = homeInfo
     }
-    const hasFamilyPermission = checkFamilyPermission({
-      currentHomeInfo,
-      permissionText: familyPermissionText.distributionNetwork,
-      callback: () => {
-        wx.switchTab({
-          url: '/pages/index/index',
-        })
-      },
-    })
-    if (!hasFamilyPermission) {
-      this.checkFamilyPermissionBurialPoint()
-    }
   },
   getFamilyInfo(groupId, currentRoomId, retryNum = 3, timeout = 2000) {
     let reqData = {
@@ -3317,7 +3209,6 @@ Page({
    */
   onUnload: function () {
     this.data.pageStatus = 'unload'
-    app.onUnloadCheckingLog()
     app.globalData.scanObj = {} //配网成功了后，需要清除数据，不然下次自发现会用到旧的数据状态
     console.log('页面返回清除了定时器')
     clearInterval(timer)

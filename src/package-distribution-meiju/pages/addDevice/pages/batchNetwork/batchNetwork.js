@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const app = getApp()
-import { imgBaseUrl, baseImgApi } from '../../../../common/js/api'
+import {baseImgApi, imgBaseUrl} from '../../../../common/js/api'
 import paths from '../../../../utils/paths'
-import { requestService, rangersBurialPoint } from '../../../../utils/requestService'
-import { getStamp, getReqId } from 'm-utilsdk/index'
-import { getDeviceSn, getDeviceSn8 } from '../../../../common/js/device'
-import { isSupportPlugin } from '../../../../utils/pluginFilter'
-import { getFullPageUrl } from '../../../../utils/util.js'
+import {requestService} from '../../../../utils/requestService'
+import {getReqId, getStamp} from 'm-utilsdk/index'
+import {getDeviceSn, getDeviceSn8} from '../../../../common/js/device'
+import {isSupportPlugin} from '../../../../utils/pluginFilter'
+
 const dialogCommonData = require('../../../../common/mixins/dialog-common-data.js')
 const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 let timer, timer2 //定时查询
@@ -30,62 +30,19 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function () {
-    this.getLoginStatus().then(() => {
-      if (app.globalData.isLogon) {
-        this.checkFamilyPermission()
-      } else {
-        this.navToLogin()
-      }
-    })
   },
 
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
-  onReady: function () {},
+  onReady: function () {
+  },
 
   /**
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
     this.getBatchNetworkDevices()
-  },
-  getLoginStatus() {
-    return app
-      .checkGlobalExpiration()
-      .then(() => {
-        this.setData({
-          isLogon: app.globalData.isLogon,
-        })
-      })
-      .catch(() => {
-        app.globalData.isLogon = false
-        this.setData({
-          isLogin: app.globalData.isLogon,
-        })
-      })
-  },
-  //朋友设备批量配网进度页预览埋点
-  batchNetworkViewTrack(category) {
-    rangersBurialPoint('user_page_view', {
-      page_path: getFullPageUrl(),
-      module: 'appliance',
-      page_id: 'page_batch_connet',
-      page_name: '批量联网进度页',
-      object_type: '',
-      object_id: '',
-      object_name: '',
-      device_info: {
-        device_session_id: app.globalData.deviceSessionId, //一次配网事件标识
-        wifi_model_version: '', //模组wifi版本
-        link_type: '家电找朋友', //新增配网方式 :家电找朋友
-      },
-      ext_info: {
-        apptype: [...category], //设备品类
-        sn8: [], //sn8码
-        sn: [], //sn码
-      },
-    })
   },
 
   getBatchNetworkDevices() {
@@ -181,7 +138,7 @@ Page({
             return item.mac == this.data.devices[z].mac
           })
           if (!had && resp[i]['friends'][j]['mac'] == this.data.devices[z].mac) {
-            let { mac, modelNumber, sn, result, randomCode, useRandom } = resp[i]['friends'][j]
+            let {mac, modelNumber, sn, result, randomCode, useRandom} = resp[i]['friends'][j]
             let device = {
               ssid: this.data.devices[z].ssid,
               signal: this.data.devices[z].signal,
@@ -217,14 +174,14 @@ Page({
                 console.log('获取设备配网指引结果', modeResult)
                 let bindType = ''
                 if (modeResult.data.code == 0 && modeResult.data.data.mainConnectinfoList.length != 0) {
-                  let { mode } = modeResult.data.data.mainConnectinfoList[0].mode
+                  let {mode} = modeResult.data.data.mainConnectinfoList[0].mode
                   let moduleType = this.getModuleType(mode)
                   bindType = this.mode2bindType(mode, moduleType)
                 }
                 let bindResult = await this.bindDeviceToHome(device, bindType)
                 console.log('绑定设备结果', bindResult)
                 if (bindResult.data.code == 0) {
-                  let { roomId, applianceCode, homegroupId } = bindResult.data.data
+                  let {roomId, applianceCode, homegroupId} = bindResult.data.data
                   device.network = 'success'
                   let bindRoom = app.globalData.applianceHomeData.roomList.find((item) => {
                     return item.roomId == roomId
@@ -443,8 +400,6 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
-    getApp().onUnloadCheckingLog()
-
     this.clearTime()
   },
 
@@ -459,10 +414,12 @@ Page({
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
-  onPullDownRefresh: function () {},
+  onPullDownRefresh: function () {
+  },
 
   /**
    * 页面上拉触底事件的处理函数
    */
-  onReachBottom: function () {},
+  onReachBottom: function () {
+  },
 })
