@@ -91,7 +91,7 @@
             </view>
 
             <view class="shrink-0" wx:if="{{proType !== '0xBC'}}">
-              <van-button plain type="primary" size="small" round bind:click="tryControl" data-id="{{item.deviceUuid}}" loading="{{item.requesting}}" custom-style="background: rgba(72,143,255,0.10) !important;border-radius: 12rpx; font-size: 24rpx; width: 120rpx;padding: 0;">{{ item.mac === flashInfo.mac ? '正在闪烁' : '找一找'}}</van-button>
+              <van-button plain type="primary" size="small" round bind:click="tryControl" data-id="{{item.deviceUuid}}" loading="{{flashInfo.isConnecting}}" custom-style="background: rgba(72,143,255,0.10) !important;border-radius: 12rpx; font-size: 24rpx; width: 120rpx;padding: 0;">{{ item.mac === flashInfo.mac ? '正在闪烁' : '找一找'}}</van-button>
             </view>
           </view>
         </scroll-view>

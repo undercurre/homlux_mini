@@ -70,6 +70,7 @@ ComponentWithComputed({
     flashInfo: {
       timeId: 0,
       mac: '',
+      isConnecting: false, // 是否正在连接
     },
     confirmLoading: false,
   },
@@ -530,7 +531,7 @@ ComponentWithComputed({
             })
           })
 
-        Logger.log('配网设备list', list)
+        Logger.log('配网设备list', list.map(item => item.zigbeeMac))
 
         this.data._zigbeeTaskQueue.add(zigbeeTaskList)
 
@@ -726,23 +727,21 @@ ComponentWithComputed({
      * 试一试
      */
     async tryControl(event: WechatMiniprogram.CustomEvent) {
+      const { mac: oldMac } = this.data.flashInfo
+      await this.stopFlash()
       const { id } = event.currentTarget.dataset
 
       const bleDeviceItem = bleDevicesBinding.store.bleDeviceList.find(
         (item) => item.deviceUuid === id,
       ) as Device.ISubDevice
 
-      bleDeviceItem.requesting = true
-
-      bleDevicesStore.updateBleDeviceList()
-
-      // 停止之前正在闪烁的设备
-      if (this.data.flashInfo.mac === bleDeviceItem.mac) {
-        this.stopFlash()
+      // 点击正在闪烁的设备时，直接停止闪烁逻辑即可终止逻辑
+      if (oldMac === bleDeviceItem.mac) {
         return
       }
 
       this.setData({
+        'flashInfo.isConnecting': true,
         'flashInfo.mac': bleDeviceItem.mac,
       })
       this.keepFlash(bleDeviceItem)
@@ -750,19 +749,11 @@ ComponentWithComputed({
 
     // 循环下发闪烁
     async keepFlash(bleDevice: Device.ISubDevice) {
-      if (bleDevice.mac !== this.data.flashInfo.mac) {
-        bleDevice.requesting = false
-
-        bleDevicesStore.updateBleDeviceList()
-        bleDevice.client.close()
-        return
-      }
-
       const res = await bleDevice.client.flash()
 
-      bleDevice.requesting = false
-
-      bleDevicesStore.updateBleDeviceList()
+      this.setData({
+        'flashInfo.isConnecting': false,
+      })
 
       console.log('flash', res, this.data.flashInfo.mac)
       if (!res.success) {
@@ -783,21 +774,18 @@ ComponentWithComputed({
         return
       }
 
+      clearTimeout(this.data.flashInfo.timeId)
+
       const bleDevice = bleDevicesBinding.store.bleDeviceList.find(
         (item) => item.mac === this.data.flashInfo.mac,
       ) as Device.ISubDevice
 
-      bleDevice.requesting = false
-
-      bleDevicesStore.updateBleDeviceList()
-
-      await bleDevice.client.close()
-
       this.setData({
+        'flashInfo.isConnecting': false,
         'flashInfo.mac': '',
       })
 
-      clearTimeout(this.data.flashInfo.timeId)
+      await bleDevice.client.close()
     },
 
     // 重新添加

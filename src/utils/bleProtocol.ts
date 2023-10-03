@@ -278,7 +278,7 @@ export class BleClient {
           clearTimeout(timeId)
         })
     } catch (err) {
-      Logger.error(`【${this.mac}】sendCmd-err`, err, `蓝牙连接状态：${bleDeviceMap[this.deviceUuid]}`)
+      Logger.error(`【${this.mac}】${params.cmdType}sendCmd-err`, err, `蓝牙连接状态：${bleDeviceMap[this.deviceUuid]}`)
       await this.close() // 异常关闭需要主动配合关闭连接closeBLEConnection，否则资源会被占用无法释放，导致无法连接蓝牙设备
       return {
         code: '-1',
@@ -327,17 +327,6 @@ export class BleClient {
   }
 
   /**
-   * 闪烁指令
-   */
-  async flash() {
-    const res = await this.sendCmd({ cmdType: 'DEVICE_CONTROL', data: [0x05] })
-
-    Logger.log(`【${this.mac}】flash`, res)
-
-    return res
-  }
-
-  /**
    * 查询ZigBee网关连接状态
    */
   async getZigbeeState() {
@@ -373,6 +362,17 @@ export class BleClient {
       ...res,
       result: {},
     }
+  }
+
+  /**
+   * 闪烁指令
+   */
+  async flash() {
+    const res = await this.sendCmd({ cmdType: 'DEVICE_CONTROL', data: [0x05] })
+
+    Logger.log(`【${this.mac}】flash`, res)
+
+    return res
   }
 }
 
