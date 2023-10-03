@@ -201,6 +201,7 @@ ComponentWithComputed({
       // 关闭外围设备服务端
       if (this.data._bleServer) {
         this.data._bleServer.close()
+        this.data._bleServer = null
       }
       // 移除系统位置信息开关状态的监听
       if (this.data._listenLocationTimeId) {
