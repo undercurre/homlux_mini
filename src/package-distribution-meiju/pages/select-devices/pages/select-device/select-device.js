@@ -459,7 +459,6 @@ Page({
       widget_id: 'key_server_failed',
       widget_name: '密钥获取失败弹窗',
     }
-    getPrivateKeys.privateBurialPoint(obj)
 
     Dialog.confirm({
       title: '服务器连接失败',
@@ -476,7 +475,6 @@ Page({
           })
           obj.widget_id = 'click_retry'
           obj.widget_name = '密钥获取失败弹窗重试按钮'
-          getPrivateKeys.privateBurialPoint(obj)
           try {
             await getPrivateKeys.getPrivateKey()
             this.prodClicked(e)
@@ -494,7 +492,6 @@ Page({
           })
           obj.widget_id = 'click_cancel'
           obj.widget_name = '密钥获取失败弹窗取消按钮'
-          getPrivateKeys.privateBurialPoint(obj)
         }
       })
     wx.showModal({
@@ -509,7 +506,6 @@ Page({
           })
           obj.widget_id = 'click_cancel'
           obj.widget_name = '密钥获取失败弹窗取消按钮'
-          getPrivateKeys.privateBurialPoint(obj)
         }
 
         if (res.confirm) {
@@ -519,7 +515,6 @@ Page({
           })
           obj.widget_id = 'click_retry'
           obj.widget_name = '密钥获取失败弹窗重试按钮'
-          getPrivateKeys.privateBurialPoint(obj)
           try {
             await getPrivateKeys.getPrivateKey()
             this.prodClicked(e)

@@ -191,18 +191,8 @@ Page({
     let cancelText = '返回首页'
     if (this.drawBtnClickFlag) return
     this.drawBtnClickFlag = true
-    const { type, sn, sn8 } = this.data.deviceInfo
     let a0 = ''
     if (this.data.deviceInfo.a0) a0 = this.data.deviceInfo.a0
-    const burialPointParams = {
-      deviceSessionId: app.globalData.deviceSessionId || '',
-      type: type,
-      sn8: sn8,
-      sn: sn,
-      a0: a0,
-      moduleVersion: app.addDeviceInfo.moduleVersion || '',
-      linkType: app.addDeviceInfo.linkType || 'bluetooth',
-    }
     if (errorCode == 1501) {
       comfirmText = ''
     }

@@ -211,12 +211,6 @@ var api = {
     masUrl: `${domain[`${environment}`] + masPrefix}/v1/gateway/device/getInfo`,
     api: '/v1/gateway/device/getInfo',
   },
-  // 数据埋点
-  burialPoint: {
-    url: 'https://iot-dev.smartmidea.net:443/mop/v5/app/actions/sendmsgCustom',
-    masUrl: `${domain[`${environment}`]}/mop/v5/app/actions/sendmsgCustom`,
-    api: '/mop/v5/app/actions/sendmsgCustom',
-  },
   //查询活动邀请记录
   inviteRecord: {
     url: 'http://activity-sit.smartmidea.net/v1/activity/redpack/invite/record',

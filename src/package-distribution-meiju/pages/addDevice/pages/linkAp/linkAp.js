@@ -251,7 +251,6 @@ Page({
             ssid: res.SSID,
             rssi: res.signalStrength,
           }
-          app.apNoNetBurialPoint.connectWifiDeviceHotspot = connectWifiDeviceHotspot //暂存
           //重置当前连接热点信息
           app.addDeviceInfo.BSSID = res.BSSID
           app.addDeviceInfo.ssid = res.SSID

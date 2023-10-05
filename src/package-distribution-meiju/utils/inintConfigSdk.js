@@ -18,14 +18,11 @@ const requestServiceInit = new requestService({
 //初始化消息推送sdk
 const deviceSubscribeInit = new deviceSubscribe({
   requestService: requestServiceInit.requestService,
-  rangersBurialPoint: requestServiceInit.rangersBurialPoint,
 })
 
 const globalCommonConfig = {
   requestService: requestServiceInit.requestService,
   uploadFileTask: requestServiceInit.uploadFileTask,
-  requestBurialPoint: requestServiceInit.requestBurialPoint,
-  rangersBurialPoint: requestServiceInit.rangersBurialPoint,
   pluginApiTrack: requestServiceInit.pluginApiTrack,
   getTemplateId: deviceSubscribeInit.getTemplateId,
   getSnTicket: deviceSubscribeInit.getSnTicket,

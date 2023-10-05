@@ -2,9 +2,8 @@
 /**
  * 从云端获取协商密钥，用于加解密蓝牙，ap等信息
  */
-import { requestService, rangersBurialPoint } from './requestService'
+import { requestService } from './requestService'
 import { getReqId, getStamp, cloudDecrypt } from 'm-utilsdk/index'
-import { getFullPageUrl } from './util'
 import { api } from '../common/js/api'
 const getPrivateKeys = {
   getPrivateKey() {
@@ -142,23 +141,6 @@ const getPrivateKeys = {
           }
           this.recursion(promise, resolve, reject, count + 1, totalCount)
         })
-    })
-  },
-  privateBurialPoint(obj) {
-    rangersBurialPoint('user_behavior_event', {
-      module: 'appliance', //写死
-      page_id: '', //参考接口请求参数“pageId”
-      page_name: obj.page_name || '', //当前页面的标题，顶部的title
-      page_path: getFullPageUrl(), //当前页面的URL
-      widget_id: obj.widget_id,
-      widget_name: obj.widget_name,
-      page_module: '',
-      object_type: '',
-      widget_cate: obj.widget_cate || '',
-      sn8: obj.sn8 || '',
-      device_info: {
-        device_session_id: getApp().globalData.deviceSessionId, //一次配网事件标识
-      },
     })
   },
 }

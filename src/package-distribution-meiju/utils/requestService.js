@@ -73,85 +73,6 @@ var uploadFileTask = function (params) {
   })
 }
 
-// 数据埋点接口
-var requestBurialPoint = function (
-  apiName,
-  param = { action_type: '', sub_action: '', action_result: '', page_name: '', widget_name: '' },
-) {
-  var defaultParam = {
-    opt_system_type: '', //操作系统类型 *
-    network_type: '', // *
-    device_type: '', //手机型号 *
-    opt_system_version: '', //操作系统版本 *
-    network_operator: '', //网络运营商名 x
-    device_resolution: '', // 分辨率 *
-    device_brand: '', //手机品牌 *
-    install_way: '', //安装渠道 //x
-    device_imei: '', // 手机唯一标识 x
-    //app_version: '1.0.0',  // *
-    ip: getApp().globalData.ip || '', //x
-    location_gps_lat: '', //x
-    app_name: '微信小程序-MeijuLite',
-    page_name: param.page_name, //*
-    //app_key: '1ym983d5', //*
-    user_account: '', // *手机号码
-    uid: '', //*
-    action_type: param.action_type, // *
-    action_create_time: getStamp(), //*
-    action_result: param.action_result,
-    sub_action: param.sub_action, //*
-    widget_name: param.widget_name || 'WeChat',
-  }
-  wx.getSystemInfo({
-    success(res) {
-      let OSversion = res.system.split(' ')[1] || res.system
-
-      defaultParam.opt_system_version = OSversion
-      defaultParam.opt_system_type = res.platform
-      defaultParam.device_type = res.model
-      defaultParam.device_brand = res.brand
-      defaultParam.uid = (getApp().globalData.userData && getApp().globalData.userData.uid) || ''
-      defaultParam.user_account =
-        (getApp().globalData.userData &&
-          getApp().globalData.userData.userInfo &&
-          getApp().globalData.userData.userInfo.mobile) ||
-        getApp().globalData.phoneNumber
-      defaultParam.device_resolution = `${res.screenHeight}*${res.windowWidth}`
-    },
-  })
-
-  wx.getNetworkType({
-    success(res) {
-      let networkType = res.networkType.toUpperCase()
-      networkType = networkType == 'UNKNOWN' ? '未知' : networkType
-
-      defaultParam.network_type = networkType
-
-      // 数序列化,埋点
-      let burialData = {
-        topic: 'plugin_action',
-        msgJson: JSON.stringify(defaultParam),
-      }
-      let ret = ''
-      for (let it in burialData) {
-        ret += '&' + encodeURIComponent(it) + '=' + encodeURIComponent(burialData[it])
-      }
-      ret = ret.substr(1)
-
-      wx.request({
-        url: api[apiName].masUrl + '?' + ret,
-        method: 'POST',
-        data: {},
-        success(res) {
-          console.log('埋点成功', res)
-        },
-      })
-    },
-  })
-}
-
-//字节埋点
-var rangersBurialPoint = function (apiName, param) {}
 var errorList = {
   1000: '未知系统错误',
   1002: '参数为空',
@@ -166,47 +87,6 @@ var errorList = {
   1219: '该邀请已被其他用户使用，请联系邀请者重新邀请',
   1220: '该邀请已过期，请联系邀请者重新邀请',
 }
-const ApiTrack = (apiName, list, resData, flag, reqData) => {
-  if (list.length == 0) return
-  const select = list[0]
-
-  if (flag == 'success') {
-    console.log('接口埋点success:apiName', apiName, resData)
-    const params = {
-      code: resData.data.code,
-      msg: resData.data.msg,
-      resData: resData.data,
-      reqData,
-    }
-  } else if (flag == 'fail') {
-    console.log('接口失败', resData)
-    const params = {
-      code: '',
-      msg: resData.errMsg,
-      resData: resData,
-      reqData,
-    }
-    console.log('接口埋点fail:apiName', apiName, resData)
-  }
-}
-const pluginApiTrack = (reqStatus, reqData, resData) => {
-  // luaControl
-  let data = {}
-  if (reqStatus === 'success') {
-    data = {
-      req_params: reqData,
-      code: hasKey(resData.data, 'code') ? resData.data.code : '-1',
-      msg: resData.data.msg,
-    }
-  } else {
-    data = {
-      req_params: reqData,
-      code: hasKey(resData.data, 'code') ? resData.data.code : '-2',
-      msg: hasKey(resData.data, 'msg') ? resData.data.msg : '',
-    }
-  }
-}
-
 const getHeaderContentType = (header) => {
   if (!header) return 'application/json'
   if (hasKey(header, 'content-type')) {
@@ -233,4 +113,4 @@ function deviceCardToPlugin(applianceCode) {
   }
 }
 
-export { requestService, uploadFileTask, requestBurialPoint, rangersBurialPoint }
+export { requestService, uploadFileTask }

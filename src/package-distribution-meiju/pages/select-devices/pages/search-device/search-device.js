@@ -334,7 +334,6 @@ Page({
       sn8: app.addDeviceInfo.sn8 || '',
       widget_cate: app.addDeviceInfo.type || '',
     }
-    getPrivateKeys.privateBurialPoint(obj)
     Dialog.confirm({
       title: '服务器连接失败',
       message: '请检查网络或稍后再试',
@@ -350,7 +349,6 @@ Page({
           })
           obj.widget_id = 'click_retry'
           obj.widget_name = '密钥获取失败弹窗重试按钮'
-          getPrivateKeys.privateBurialPoint(obj)
           try {
             await getPrivateKeys.getPrivateKey()
             self.prodClicked(e)
@@ -368,42 +366,8 @@ Page({
           })
           obj.widget_id = 'click_cancel'
           obj.widget_name = '密钥获取失败弹窗取消按钮'
-          getPrivateKeys.privateBurialPoint(obj)
         }
       })
-    // wx.showModal({
-    //   title: '服务器连接失败',
-    //   content: '请检查网络或稍后再试',
-    //   confirmText: '重试',
-    //   complete: async (res) => {
-    //     if (res.cancel) {
-    //       wx.hideLoading()
-    //       self.setData({
-    //         clickFLag: false,
-    //       })
-    //       obj.widget_id = 'click_cancel'
-    //       obj.widget_name = '密钥获取失败弹窗取消按钮'
-    //       getPrivateKeys.privateBurialPoint(obj)
-    //     }
-
-    //     if (res.confirm) {
-    //       wx.hideLoading()
-    //       self.setData({
-    //         clickFLag: false,
-    //       })
-    //       obj.widget_id = 'click_retry'
-    //       obj.widget_name = '密钥获取失败弹窗重试按钮'
-    //       getPrivateKeys.privateBurialPoint(obj)
-    //       try {
-    //           await getPrivateKeys.getPrivateKey()
-    //           this.prodClicked(e)
-    //       } catch(err) {
-    //           console.log('Yoram err is ->', err)
-    //           this.privateKeyErrorHand(e, addDeviceInfo)
-    //       }
-    //     }
-    //   }
-    // })
   },
   //产品点击
   async prodClicked(e) {

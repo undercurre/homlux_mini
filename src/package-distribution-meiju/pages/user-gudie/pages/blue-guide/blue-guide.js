@@ -141,7 +141,6 @@ Page({
         bluetoothAuthorized: false,
         scopeBluetooth: false,
       }
-      this.viewBurialPoint(permissionTypeList)
       let { system, tipTextList } = this.data
       if (system == 'iOS') {
         if (!permissionTypeList.bluetoothEnabled) {
@@ -177,21 +176,6 @@ Page({
       loactionTextList: loactionTextList,
     })
     console.log('[loactionTextList]', loactionTextList)
-  },
-  viewBurialPoint(permissionTypeList) {
-    let { bluetoothEnabled, bluetoothAuthorized, scopeBluetooth } = permissionTypeList
-    let object_name = []
-    if (!bluetoothEnabled) {
-      object_name.push('开启蓝牙服务')
-    }
-    if (!bluetoothAuthorized) {
-      object_name.push('允许微信获取蓝牙权限')
-    }
-    if (!scopeBluetooth) {
-      object_name.push('允许小程序使用蓝牙权限')
-    }
-    object_name = object_name.join('/')
-    console.log('提示需开启蓝牙权限页面 浏览埋点', object_name)
   },
 
   /**

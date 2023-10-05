@@ -170,54 +170,7 @@ var scanCodeService = {
       app.addDeviceInfo = addDeviceInfo
 
       return addDeviceInfo
-      //业务逻辑
-      // wx.showModal({
-      //   title: '',
-      //   content: `你正在添加${app.addDeviceInfo.deviceName},确定要继续吗？`,
-      //   cancelText: '取消',
-      //   cancelColor: '#267AFF',
-      //   confirmText: '确定',
-      //   confirmColor: '#267AFF',
-      //   success(res) {
-      //     if (res.confirm) {
-      //       //确定
-      //       wx.navigateTo({
-      //         url: linkDevice,
-      //       })
-      //       burialPoint.touchScreenDiologConfirm({
-      //         deviceSessionId: app.globalData.deviceSessionId,
-      //         type: type,
-      //         sn: sn,
-      //       })
-      //     } else if (res.cancel) {
-      //       //取消
-      //       burialPoint.touchScreenDiologCancel({
-      //         deviceSessionId: app.globalData.deviceSessionId,
-      //         type: type,
-      //         sn: sn,
-      //       })
-      //     }
-      //   },
-      // })
     } else {
-      //业务逻辑
-      // wx.showModal({
-      //   title: '',
-      //   content: '该二维码无法识别，请扫描设备屏幕二维码',
-      //   confirmText: '我知道了',
-      //   confirmColor: '#267AFF',
-      //   showCancel: false,
-      //   success(res) {
-      //     if (res.confirm) {
-      //       //知道了
-      //       burialPoint.touchScreenDiologCancel({
-      //         deviceSessionId: app.globalData.deviceSessionId,
-      //         type: app.addDeviceInfo.type,
-      //         sn: app.addDeviceInfo.sn,
-      //       })
-      //     }
-      //   },
-      // })
       return scanCdoeResObj
     }
   },

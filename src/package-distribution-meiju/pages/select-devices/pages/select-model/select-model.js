@@ -184,7 +184,6 @@ Page({
       sn8: app.addDeviceInfo.sn8 || '',
       widget_cate: app.addDeviceInfo.type || '',
     }
-    getPrivateKeys.privateBurialPoint(obj)
     wx.hideLoading()
     // 解决低配置机子跳到其他页面时还会弹框的问题
     if (getFullPageUrl().indexOf('select-model/select-model') == -1) return
@@ -201,7 +200,6 @@ Page({
           wx.hideLoading()
           obj.widget_id = 'click_retry'
           obj.widget_name = '密钥获取失败弹窗重试按钮'
-          getPrivateKeys.privateBurialPoint(obj)
           try {
             wx.showLoading()
             await getPrivateKeys.getPrivateKey()
@@ -223,43 +221,8 @@ Page({
           })
           obj.widget_id = 'click_cancel'
           obj.widget_name = '密钥获取失败弹窗取消按钮'
-          getPrivateKeys.privateBurialPoint(obj)
         }
       })
-    // wx.showModal({
-    //   title: '服务器连接失败',
-    //   content: '请检查网络或稍后再试',
-    //   confirmText: '重试',
-    //   complete: async (res) => {
-    //     if (res.cancel) {
-    //       wx.hideLoading()
-    //       self.setData({
-    //         clickFLag: false,
-    //       })
-    //       obj.widget_id = 'click_cancel'
-    //       obj.widget_name = '密钥获取失败弹窗取消按钮'
-    //       getPrivateKeys.privateBurialPoint(obj)
-    //     }
-
-    //     if (res.confirm) {
-    //       wx.hideLoading()
-    //       obj.widget_id = 'click_retry'
-    //       obj.widget_name = '密钥获取失败弹窗重试按钮'
-    //       getPrivateKeys.privateBurialPoint(obj)
-    //       try {
-    //         wx.showLoading()
-    //         await getPrivateKeys.getPrivateKey()
-    //         self.data.clickFLag = false
-    //         wx.hideLoading()
-    //         this.prodClicked(e)
-    //       } catch (err) {
-    //         console.log('Yoram err is ->', err)
-    //         wx.hideLoading()
-    //         this.privateKeyErrorHand(e, addDeviceInfo)
-    //       }
-    //     }
-    //   },
-    // })
   },
   //产品点击
   async prodClicked(e) {

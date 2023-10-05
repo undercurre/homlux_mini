@@ -493,17 +493,6 @@ Page({
         isDirectCon = true
         negType = 2
         this.bleNegotiation(deviceId, isDirectCon, moduleType, negType)
-        // this.resisterOnLinkBleSuccess(res => { //蓝牙连接成功
-        //     burialPoint.connectWifiDeviceHotspot({ //成功建立蓝牙协商埋点
-        //         deviceSessionId: app.globalData.deviceSessionId,
-        //         type: app.addDeviceInfo.type,
-        //         sn8: app.addDeviceInfo.sn8,
-        //         moduleVersion: app.addDeviceInfo.blueVersion,
-        //         linkType: app.addDeviceInfo.linkType,
-        //         ssid: app.addDeviceInfo.ssid,
-        //         rssi: app.addDeviceInfo.rssi
-        //     })
-        // })
         this.resisterOnBlebindSuccess((res) => {
           if (this.data.isSuccessDirectConnect) return
           this.data.isSuccessDirectConnect = true
@@ -1262,50 +1251,6 @@ Page({
           self.goLinkDeviceFailPage(4200) // 4200：自启热点无后确权
         }
       })
-
-    // wx.showModal({
-    //   title: conctent,
-    //   cancelText: '取消',
-    //   cancelColor: '#000000',
-    //   confirmText: confirmText,
-    //   confirmColor: '#267AFF',
-    //   async success(res) {
-    //     if (res.confirm) {
-    //       //设置
-    //       clearInterval(timer)
-    //       burialPoint.clickSettingSecurityDialog({
-    //         deviceSessionId: app.globalData.deviceSessionId,
-    //         type: type,
-    //         sn8: sn8,
-    //         sn: self.data.sn,
-    //         linkType: linkType,
-    //         moduleVison: moduleVersion,
-    //       })
-    //       //非洗衣机重新获取配网指引
-    //       if (!app.addDeviceInfo.isWashingMachine) {
-    //         let guide = await self.getNetworkGuide()
-    //         if (guide) {
-    //           app.addDeviceInfo.guideInfo = guide
-    //         }
-    //       }
-    //       wx.reLaunch({
-    //         //洗衣机去扫码页
-    //         url: app.addDeviceInfo.isWashingMachine ? paths.scanDevice + '?openScan=true' : paths.addGuide,
-    //       })
-    //     } else if (res.cancel) {
-    //       //取消
-    //       burialPoint.clickCancelSecurityDialog({
-    //         deviceSessionId: app.globalData.deviceSessionId,
-    //         type: type,
-    //         sn8: sn8,
-    //         sn: self.data.sn,
-    //         linkType: linkType,
-    //         moduleVison: moduleVersion,
-    //       })
-    //       self.goLinkDeviceFailPage(4200) // 4200：自启热点无后确权
-    //     }
-    //   },
-    // })
   },
   guideDialogFail() {
     let self = this
@@ -1651,15 +1596,6 @@ Page({
               wx.navigateTo({
                 url: paths.localNetGuide + `?permissionTypeList=${JSON.stringify(permissionTypeList)}`,
               })
-              let localNetDialogClickLookGuide = {
-                deviceSessionId: app.globalData.deviceSessionId,
-                type: app.addDeviceInfo.type,
-                sn8: app.addDeviceInfo.sn8,
-                sn: self.data.plainSn,
-                moduleVersion: app.addDeviceInfo.moduleVersion,
-                linkType: app.addDeviceInfo.linkType,
-              }
-              app.apNoNetBurialPoint.localNetDialogClickLookGuide = localNetDialogClickLookGuide //暂存
             }
           })
           .catch((error) => {
@@ -1671,68 +1607,8 @@ Page({
               wx.reLaunch({
                 url: paths.index,
               })
-              let localNetDialogClickConfirm = {
-                deviceSessionId: app.globalData.deviceSessionId,
-                type: app.addDeviceInfo.type,
-                sn8: app.addDeviceInfo.sn8,
-                sn: self.data.plainSn,
-                moduleVersion: app.addDeviceInfo.moduleVersion,
-                linkType: app.addDeviceInfo.linkType,
-              }
-              app.apNoNetBurialPoint.localNetDialogClickConfirm = localNetDialogClickConfirm
             }
           })
-        // this.setData({
-        //   //取消弹窗
-        //   customDialog: {
-        //     show: true,
-        //     content: '手机与设备通信中断，请确认手机设置已授权微信获取“本地网络权限”',
-        //     cancelText: '放弃',
-        //     cancelColor: '#0078FF',
-        //     confirmText: '查看指引',
-        //     confirmColor: '#0078FF',
-        //     success(res) {
-        //       console.log('page dialog res', res)
-        //       if (res.confirm) {
-        //         self.closeUdp()
-        //         clearInterval(timer) //停止计时
-        //         clearInterval(udpCycTimer) //停止udp重试
-        //         let permissionTypeList = { localNet: false } //本地网络未开
-        //         wx.navigateTo({
-        //           url: paths.localNetGuide + `?permissionTypeList=${JSON.stringify(permissionTypeList)}`,
-        //         })
-        //         let localNetDialogClickLookGuide = {
-        //           deviceSessionId: app.globalData.deviceSessionId,
-        //           type: app.addDeviceInfo.type,
-        //           sn8: app.addDeviceInfo.sn8,
-        //           sn: self.data.plainSn,
-        //           moduleVersion: app.addDeviceInfo.moduleVersion,
-        //           linkType: app.addDeviceInfo.linkType,
-        //         }
-        //         burialPoint.localNetDialogClickLookGuide(localNetDialogClickLookGuide)
-        //         app.apNoNetBurialPoint.localNetDialogClickLookGuide = localNetDialogClickLookGuide //暂存
-        //       } else if (res.cancel) {
-        //         clearInterval(udpCycTimer) //停止udp重试
-        //         clearInterval(timer) //停止计时
-        //         self.closeUdp()
-        //         //回到首页
-        //         wx.reLaunch({
-        //           url: paths.index,
-        //         })
-        //         let localNetDialogClickConfirm = {
-        //           deviceSessionId: app.globalData.deviceSessionId,
-        //           type: app.addDeviceInfo.type,
-        //           sn8: app.addDeviceInfo.sn8,
-        //           sn: self.data.plainSn,
-        //           moduleVersion: app.addDeviceInfo.moduleVersion,
-        //           linkType: app.addDeviceInfo.linkType,
-        //         }
-        //         burialPoint.localNetDialogClickConfirm(localNetDialogClickConfirm)
-        //         app.apNoNetBurialPoint.localNetDialogClickConfirm = localNetDialogClickConfirm
-        //       }
-        //     },
-        //   },
-        // })
         this.data.isShowOpenlocaltNetTip = true
       }
     }
@@ -2096,21 +1972,9 @@ Page({
     wx.onWifiConnected((res) => {
       //自动回连成功wifi
       this.data.isBackLinkRoute = true //成功回连路由
-      let wifiInfo = res.wifi
       console.log('连上了wifi', res)
       wx.offWifiConnected()
     })
-    let searchDevieLinkCloud = {
-      //开始查询云
-      deviceSessionId: app.globalData.deviceSessionId,
-      type: this.data.addDeviceInfo.type,
-      sn8: this.data.addDeviceInfo.sn8,
-      sn: this.data.plainSn,
-      moduleVersion: '', //ap配网没有像蓝牙的协议版本
-      linkType: app.addDeviceInfo.linkType,
-      wifi_version: app.addDeviceInfo.moduleVersion, //模组版本埋点上报
-    }
-    app.apNoNetBurialPoint.searchDevieLinkCloud = searchDevieLinkCloud //暂存
     let timeout = 5000
     this.newAgainGetAPExists(
       this.data.sn,
@@ -2128,10 +1992,6 @@ Page({
           isCustom: true,
         })
         let {type, againCheckList, moduleVersion} = app.addDeviceInfo
-        console.log('app.apNoNetBurialPoint=========', app.apNoNetBurialPoint)
-        if (!isEmptyObject(app.apNoNetBurialPoint)) {
-          this.sendApNoNetBurialpoint(app.apNoNetBurialPoint) //批量上报ap 无网触发埋点
-        }
         //sta阶段
         if (this.isAgainCheck(againCheckList, type, moduleVersion)) {
           //是 自启热点无后确权设备 CA '031844031844'
@@ -2613,76 +2473,8 @@ Page({
       messageContent: `请再等一等，${this.data.deviceName}正在努力连接中`,
       titleContent: `要放弃添加${this.data.deviceName}${linkNet}吗？`,
     })
-    // this.setData({
-    //   //取消弹窗
-    //   customDialog: {
-    //     show: true,
-    //     title: `要放弃添加${this.data.deviceName}${linkNet}吗？`,
-    //     content: `请再等一等，${this.data.deviceName}正在努力连接中`,
-    //     cancelText: '放弃添加',
-    //     cancelColor: '#267AFF',
-    //     confirmText: '再等等',
-    //     confirmColor: '#267AFF',
-    //     success(res) {
-    //       console.log('page dialog res', res)
-    //       if (res.confirm) {
-    //         burialPoint.clickWait({
-    //           deviceSessionId: app.globalData.deviceSessionId,
-    //           type: type,
-    //           sn8: sn8,
-    //           moduleVersion: blueVersion || '',
-    //           sn: sn || '',
-    //           linkType: app.addDeviceInfo.linkType,
-    //         })
-    //       } else if (res.cancel) {
-    //   burialPoint.clickAbandon({
-    //     deviceSessionId: app.globalData.deviceSessionId,
-    //     type: type,
-    //     sn8: sn8,
-    //     moduleVersion: blueVersion || '',
-    //     sn: sn || '',
-    //     linkType: app.addDeviceInfo.linkType,
-    //   })
-    //   // 关闭相关进程和连接
-    //   clearInterval(timer)
-    //   if (mode == 0) {
-    //     // AP
-    //     self.data.isStopGetExists = true // 停止查询设备是否联网
-    //     udpCycTimer && clearInterval(udpCycTimer)
-    //     self.tcp && self.finishTcp()
-    //   }
-    //   const needCloseBLEConnection = [3, 5, 20, 21, 31]
-    //   if (needCloseBLEConnection.includes(mode)) {
-    //     self.data.isOnbleResp = false
-    //     self.data.autoCloseBleConnection = true
-    //     wx.closeBLEConnection({
-    //       deviceId: app.addDeviceInfo.deviceId,
-    //     })
-    //   }
-    //   if (mode == 20) {
-    //     self.data.isCancelHuaLinOn = true
-    //   }
-    //   if (mode == 21) {
-    //     app.addDeviceInfo.mode = '' //置空模式
-    //   }
-    //   if (mode == 31) {
-    //     const type0x = type.includes('0x') ? type : '0x' + type
-    //     const deviceInfo = encodeURIComponent(JSON.stringify(cloudBackDeviceInfo))
-    //     wx.reLaunch({
-    //       url: `/plugin/T${type0x}/index/index?backTo=/pages/index/index&deviceInfo=${deviceInfo}`,
-    //     })
-    //     return
-    //   }
-    //   wx.reLaunch({
-    //     url: paths.index,
-    //   })
-    // }
-    //     },
-    //   },
-    // })
   },
   clickWaitAminute() {
-    let {type, sn8, sn, blueVersion} = app.addDeviceInfo
     this.setData({
       ishowDialog: false,
     })
@@ -3149,23 +2941,6 @@ Page({
   onHide: function () {
     this.data.pageStatus = 'hide'
     clearInterval(checkLinkFamilyWifTimer)
-    //先注释掉-yzh
-    // let page = getCurrentPages()
-    // if (!page[page.length - 1].route.includes(paths.linkDevice) && this.data.customDialog.show) {
-    //   //跳转关闭 取消弹窗
-    //   this.setData({
-    //     ['customDialog.show']: false,
-    //   })
-    // }
-    // if (!page[page.length - 1].route.includes(paths.locationGuide) && this.data.customDialog.show) {
-    //   //跳转关闭 取消弹窗
-    //   this.setData({
-    //     ['customDialog.show']: false,
-    //   })
-    // }
-    if (!isEmptyObject(app.apNoNetBurialPoint)) {
-      this.sendApNoNetBurialpoint(app.apNoNetBurialPoint) //批量上报ap 无网触发埋点
-    }
   },
 
   /**

@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const addDeviceMixin = require('../../assets/js/addDeviceMixin')
 import { baseImgApi, imgBaseUrl } from '../../../../../common/js/api'
-import { burialPoint } from './assets/js/burialPoint'
 import { imgesList } from '../../../../assets/js/shareImg.js'
 const imgUrl = imgBaseUrl.url + '/shareImg/' + getApp().globalData.brand
 
@@ -111,8 +111,6 @@ Component({
      */
     searchWiFi() {
       const self = this
-      // 埋点
-      burialPoint.isSearchingView()
       // 重置页面数据
       this.setData({
         isSearching: true,
@@ -149,8 +147,6 @@ Component({
                 }
               })
             ) {
-              // 埋点
-              burialPoint.foundWiFiView()
               self.setData({
                 ifFoundWiFi: true,
               })
@@ -185,8 +181,6 @@ Component({
      * 已找到设备WiFi-点击去连接
      */
     onConfirmFoundWiFi() {
-      // 埋点
-      burialPoint.confirmFoundWiFi()
       this.goLinkDeviceWifi()
     },
   },
