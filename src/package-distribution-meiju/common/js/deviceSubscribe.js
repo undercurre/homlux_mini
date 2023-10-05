@@ -1,6 +1,6 @@
 //设备订阅公共方法
 
-const app = getApp() //获取应用实例
+import app from '../app'
 
 import { requestService } from '../../utils/requestService'
 

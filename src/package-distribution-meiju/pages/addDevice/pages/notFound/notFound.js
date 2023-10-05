@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-// addDevice//pages/notFound/notFound.js
-const app = getApp()
+import app from '../../../../common/app'
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
-const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 import { creatDeviceSessionId } from '../../../../utils/util'
 import paths from '../../../../utils/paths'
 Page({
-  behaviors: [addDeviceMixin, getFamilyPermissionMixin],
+  behaviors: [addDeviceMixin],
   /**
    * 页面的初始数据
    */

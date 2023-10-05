@@ -12,13 +12,10 @@ import {
   cloneDeep,
 } from 'm-utilsdk/index'
 import { showToast } from '../../utils/util'
-// import { getDeviceSn } from '../../pages/common/js/device.js'
-// componentCommonTrack
-import { clickEventTracking } from '../../track/track.js'
 import { checkCanIUserWxApi } from '../../utils/wx/utils.js'
-import config from '../../config.js'
+import config from '../js/config.js'
 
-const app = getApp()
+import app from '../app'
 const wxList = {
   config: {
     launch_source: 'click_wechat_device_card',
@@ -136,7 +133,6 @@ const wxList = {
             resolve(false)
             return
           }
-          const app = getApp()
           const canIUseBatchAddDevicePanel = checkCanIUserWxApi('batchAddDevicePanel', false)
           const canIUseDevicePanel = app.globalData.canIUseDevicePanel
           const canIUseDevicePanelHasSaved = canIUseDevicePanel !== null && canIUseDevicePanel !== undefined
@@ -184,7 +180,6 @@ const wxList = {
    */
   checkIsDeviceDisabled() {
     return new Promise((resolve) => {
-      const app = getApp()
       const options = this.getCurrentPageOptions()
       const applianceCode = options?.applianceCode
       const isFromWxDeviceCard = this.checkIsFromWxDeviceCard()
@@ -294,7 +289,6 @@ const wxList = {
    * 获取解密applianceCode
    */
   getPlainApplianceCode(encodeApplianceCode) {
-    const app = getApp()
     const decodeApplianceCode = aesDecrypt(encodeApplianceCode, app.globalData.aesKey, app.globalData.aesIv)
     return decodeApplianceCode
   },
@@ -625,18 +619,6 @@ const wxList = {
                   app_type: reportDevice?._appType,
                 })
               }
-              clickEventTracking('user_behavior_event', null, {
-                page_id: 'page_home',
-                page_name: '首页',
-                module: '首页',
-                page_module: '设备卡片',
-                widget_id: 'lick_btn_add_wechat_lnk',
-                widget_name: '成功添加微信快捷',
-                object_type: 'appliance',
-                object_id: '设备ID',
-                object_name: object_name.join(','),
-                ext_info: JSON.stringify(ext_info),
-              })
             }
           },
           fail(res) {
@@ -655,18 +637,6 @@ const wxList = {
             app_type: sourceDevice?._appType,
           })
         }
-        clickEventTracking('user_behavior_event', null, {
-          page_id: 'page_home',
-          page_name: '首页',
-          module: '首页',
-          page_module: '设备卡片',
-          widget_id: 'lick_btn_add_wechat_lnk',
-          widget_name: '发起添加微信快捷',
-          object_type: 'appliance',
-          object_id: '设备ID',
-          object_name: object_name.join(','),
-          ext_info: JSON.stringify(ext_info),
-        })
       }
     })
   },
@@ -674,7 +644,6 @@ const wxList = {
   actionAddCardBatch(uploadList) {
     return new Promise((resolve, reject) => {
       const applianceCodeList = []
-      const app = getApp()
       for (let i = 0, len = uploadList.length; i < len; i++) {
         applianceCodeList.push({
           applianceCode: this.getEncryptApplianceCode(uploadList[i]?.applianceCode),

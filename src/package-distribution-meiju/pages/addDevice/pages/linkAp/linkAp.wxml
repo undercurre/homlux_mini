@@ -2,6 +2,8 @@
 <wxs src="../utils/filter.wxs" module="tools" />
 <view id="{{brand}}">
   <view class="page2 theme-bg-color">
+    <nav-bar leftArrow bind:leftTap="goBack"></nav-bar>
+
     <view class="andriod" wx:if="{{system=='Android'}}">
       <view class="title-box">
         <view class="ap-title">用手机连上{{deviceName}}无线网络</view>

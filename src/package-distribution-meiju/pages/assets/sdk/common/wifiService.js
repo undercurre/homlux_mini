@@ -1,7 +1,6 @@
 /**
  * wifi相关的服务
  */
-const app = getApp()
 var platform
 var wifiList = []
 

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const app = getApp() //获取应用实例
+import app from '../../../../common/app'
 let timer, timer2 //定时查询
 import paths from '../../../../utils/paths'
 import { getDeviceSn, getDeviceSn8 } from '../../../../common/js/device'
@@ -9,11 +9,10 @@ import { isSupportPlugin } from '../../../../utils/pluginFilter'
 import { baseImgApi } from '../../../../common/js/api.js'
 import { failTextData, friendDeviceFailTextData } from '../../../addDevice/pages/assets/js/errorCode'
 const dialogCommonData = require('../../../../common/mixins/dialog-common-data.js')
-const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 import Dialog from '../../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
 const brandStyle = require('../../../assets/js/brand.js')
 Page({
-  behaviors: [dialogCommonData, getFamilyPermissionMixin],
+  behaviors: [dialogCommonData],
   /**
    * 页面的初始数据
    */

@@ -1,6 +1,9 @@
 {
   "navigationBarTitleText": "操作指引",
-  "usingComponents": {
-    "mx-button": "/miniprogram_npm/m-ui/mx-button/index"
-  }
+  "navigationStyle": "default",
+  "backgroundTextStyle": "dark",
+  "navigationBarBackgroundColor": "#fff",
+  "navigationBarTextStyle": "black",
+  "backgroundColor":"#fff",
+  "usingComponents": {}
 }

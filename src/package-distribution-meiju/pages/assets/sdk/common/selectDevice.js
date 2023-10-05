@@ -1,10 +1,9 @@
 /**
  * 设备选型相关接口
  */
-const app = getApp() //获取应用实例
 import { requestService } from '../../../../utils/requestService'
 import { getStamp, getReqId } from 'm-utilsdk/index'
-const WX_LOG = require('../../../../utils/log')
+import brandStyle from "../../js/brand";
 var selectDevice = {
   /**
    * 返回查询设备列表，大类，点击选型后显示的数据
@@ -21,11 +20,9 @@ var selectDevice = {
           let productList = res.data.data.list.filter((arr) => {
             return arr.list0.length
           })
-          WX_LOG.info('查询设备列表，大类成功', 'getQueryBrandCategory')
           resolve(productList)
         })
         .catch((error) => {
-          WX_LOG.error('查询设备列表，大类失败', 'getQueryBrandCategory', error)
           reject(error)
         })
     })
@@ -48,7 +45,7 @@ var selectDevice = {
         subCode,
         pageSize: '20',
         page: pageNum,
-        brand: brandStyle.brand == 'meiju' ? '' : brandStyle.brand,
+        brand: brandStyle.brand === 'meiju' ? '' : brandStyle.brand,
         stamp: getStamp(),
         reqId: getReqId(),
       }
@@ -58,11 +55,9 @@ var selectDevice = {
           let currList = res.data.data.list || []
           let hasNextPage = res.data.data.hasNextPage
           if (!currList.length) {
-            WX_LOG.warn('设备型号列表二级目录失败', 'getQueryIotProductV2', res)
             reject()
           }
           let currProduct = str != 'next' ? currList : [...productList, ...currList]
-          WX_LOG.info('设备型号列表二级目录成功', 'getQueryIotProductV2')
           resolve({
             productList: currProduct,
             loadFlag: true,
@@ -74,7 +69,6 @@ var selectDevice = {
             hasNext: false,
             loadFlag: true,
           })
-          WX_LOG.error('设备型号列表二级目录失败', 'getQueryIotProductV2', error)
         })
     })
   },

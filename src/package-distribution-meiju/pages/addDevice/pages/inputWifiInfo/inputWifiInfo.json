@@ -4,6 +4,7 @@
     "link-device-header": "/package-distribution-meiju/pages/addDevice/pages/component/input-wifi-header/input-wifi-header",
     "wifi-list-sheet": "/package-distribution-meiju/pages/addDevice/pages/component/wifi-list-sheet/wifi-list-sheet",
     "sure-center-dialog": "/package-distribution-meiju/component/sure-center-dialog/sure-center-dialog",
-    "no-can-add-device": "/package-distribution-meiju/component/no-can-add-device/no-can-add-device"
+    "no-can-add-device": "/package-distribution-meiju/component/no-can-add-device/no-can-add-device",
+    "mx-dialog": "/miniprogram_npm/m-ui/mx-dialog/index"
   }
 }

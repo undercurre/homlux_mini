@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
-const app = getApp()
-const log = require('../../../../../utils/log')
+import app from '../../../../../common/app'
 import { getReqId, getStamp } from 'm-utilsdk'
 import { requestService } from '../../../../../utils/requestService'
 // eslint-disable-next-line no-undef
@@ -123,7 +122,6 @@ module.exports = Behavior({
           .request('batchBindDeviceToHome', reqData, 'POST', '', 3000)
           .then((resp) => {
             console.log('@module combineDeviceMixin.js\n@method batchBindDeviceToHome\n@desc 批量绑定设备结果\n', resp)
-            log.info('batch bind device result', resp)
             const data_ = resp.data.data
             if (resp.data.code == 0) {
               if (data_.failList.length == 0) {
@@ -158,7 +156,6 @@ module.exports = Behavior({
         homegroupId: app.globalData.currentHomeGroupId,
       }
       console.log('generateCombinedDevice reqData===', reqData)
-      log.info('generateCombinedDevice reqData', reqData)
       return new Promise((reslove, reject) => {
         requestService
           .request('generateCombinedDevice', reqData, 'POST', '', 3000)
@@ -167,7 +164,6 @@ module.exports = Behavior({
               '@module combineDeviceMixin.js\n@method generateCombinedDevice\n@desc 组合设备结果\n',
               resp.data,
             )
-            log.info('generate combined device result', resp.data)
             if (resp.data.code == 0) {
               reslove(resp.data)
             }

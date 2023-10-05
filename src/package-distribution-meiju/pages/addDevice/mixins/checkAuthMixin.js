@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
-const app = getApp()
+import app from '../../../common/app'
 const bluetooth = require('../../../common/mixins/bluetooth.js')
 
 import { ab2hex } from 'm-utilsdk/index'

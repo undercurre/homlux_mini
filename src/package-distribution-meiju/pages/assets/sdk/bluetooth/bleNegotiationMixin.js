@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 // ble-negotiation-behaviors.js
 import { ab2hex, hexStringToArrayBuffer, formatStr, hexString2Uint8Array, requestWithTry } from 'm-utilsdk/index'
 import { bleNegotiationService } from './bleNegotiationService'
-const app = getApp() //获取应用实例
+import app from '../../../../common/app'
 
 let packageSize = 200
+// eslint-disable-next-line no-undef
 module.exports = Behavior({
   behaviors: [],
   properties: {

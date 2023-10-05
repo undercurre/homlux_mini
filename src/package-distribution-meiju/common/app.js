@@ -7,6 +7,7 @@ const app = {
     sn8: '', // sn8
     linkType: '',
     mode: 0,
+    isFromScanCode: false,
   },
   globalData: {
     isLogon: true,
@@ -14,8 +15,19 @@ const app = {
       key: '',
     },
     isCanClearFound: true,
+    systemInfo: {},
   }
 }
+
+wx.getSystemInfo({
+  success: (res) => {
+    app.globalData.systemInfo = res
+    console.log('getWxSystemInfo, success, forceUpdate', res)
+  },
+  fail: (e) => {
+    console.log('getWxSystemInfo, fail', e)
+  },
+})
 
 export function getApp() {
   return app

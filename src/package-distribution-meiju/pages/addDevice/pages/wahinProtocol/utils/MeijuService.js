@@ -1,11 +1,11 @@
-import { formatTime, getTimeStamp, getReqId, getUID, getStamp, RndNum, getSign, cheakVersion } from 'm-utilsdk/index'
+import { getTimeStamp, getReqId, getStamp, } from 'm-utilsdk/index'
 
 import { requestService } from '../../../../../utils/requestService'
 
 import { CryptoJS, md5 } from '../../../../../../miniprogram_npm/m-utilsdk/index'
 import { api } from '../../../../../common/js/api'
 
-const app = getApp()
+import app from '../../../../../common/app'
 
 export default class MeijuService {
   constructor() {}

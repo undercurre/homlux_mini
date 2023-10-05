@@ -1,5 +1,5 @@
 /* eslint-disable no-redeclare */
-const app = getApp()
+import app from '../../../../common/app'
 import {
   CryptoJS,
   md5,

@@ -1,16 +1,17 @@
 module.exports = {
-  scanDevice: '/distribution-network/scan-devices/pages/scan-device/scan-device',
-  scanHelp: '/distribution-network/scan-devices/pages/scan-help/scan-help',
-  //配网页面
+  //已知在使用的配网页面
   inputWifiInfo: '/package-distribution-meiju/pages/addDevice/pages/inputWifiInfo/inputWifiInfo',
   addGuide: '/package-distribution-meiju/pages/addDevice/pages/addGuide/addGuide',
+  linkAp: '/package-distribution-meiju/pages/addDevice/pages/linkAp/linkAp',
+
+  scanDevice: '/package-distribution-meiju/pages/scan-devices/pages/scan-device/scan-device',
+  scanHelp: '/package-distribution-meiju/pages/scan-devices/pages/scan-help/scan-help',
   addFail: '/package-distribution-meiju/pages/addDevice/pages/addFail/addFail',
   addSuccess: '/package-distribution-meiju/pages/addDevice/pages/addSuccess/addSuccess',
   linkDevice: '/package-distribution-meiju/pages/addDevice/pages/linkDevice/linkDevice',
   linkNetFail: '/package-distribution-meiju/pages/addDevice/pages/linkNetFail/linkNetFail',
   wifiSuccessSimple: '/package-distribution-meiju/pages/addDevice/pages/wifiSuccessSimple/wifiSuccessSimple',
   unSupportDevice: '/pages/unSupportDevice/unSupportDevice',
-  linkAp: '/package-distribution-meiju/pages/addDevice/pages/linkAp/linkAp',
   lowApVersion: '/package-distribution-meiju/pages/addDevice/pages/lowApVersion/lowApVersion',
   selectDevice: '/package-distribution-meiju/pages/select-devices/pages/select-device/select-device',
   selectModel: '/package-distribution-meiju/pages/select-devices/pages/select-model/select-model',
@@ -20,7 +21,6 @@ module.exports = {
   friendDeviceNetWorkFail:
     '/package-distribution-meiju/pages/addDevice/pages/friendDeviceNetworkFail/friendDeviceNetworkFail', //找朋友单个朋友设备配网失败页
   editBoundDevice: '/package-distribution-meiju/pages/addDevice/pages/editBoundDevice/editBoundDevice', //找朋友编辑朋友设备绑定信息页面
-  feedback: '/package-distribution-meiju/pages/addDevice/pages/feedback/feedback', //问题反馈
   frequencyGuide: '/package-distribution-meiju/pages/user-gudie/pages/frequency-guide/frequency-guide', //wifi频率指引
   locationGuide: '/package-distribution-meiju/pages/user-gudie/pages/location-guide/location-guide', //开启定位指引
   blueGuide: '/package-distribution-meiju/pages/user-gudie/pages/blue-guide/blue-guide', //开启蓝牙指引
@@ -38,6 +38,4 @@ module.exports = {
   newPlugin: '/midea-virtual-plugin/pages/new-plugin/new-plugin',
   //同步设备到微信设置的设备列表页
   deviceToWxSetting: '/sub-package/wx-bind-device/pages/device-list/device-list',
-  //插件前缀，新架构
-  newPluginUrl: '/src/modules/module_plugin/miniprogram_npm',
 }

@@ -1,6 +1,6 @@
 import paths from './paths'
 import { getPluginUrl } from './getPluginUrl'
-const app = getApp()
+import app from '../common/app'
 import Dialog from '../../miniprogram_npm/m-ui/mx-dialog/dialog'
 import { getFullPageUrl } from './util'
 const isSupportPlugin = (type, sn8, A0 = '', isOtherEquipment = '0', cardType) => {

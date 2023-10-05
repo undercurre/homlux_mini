@@ -142,6 +142,13 @@
           "query": "proType=14&sn8=79700Z76",
           "launchMode": "default",
           "scene": null
+        },
+        {
+          "name": "配网指引页面",
+          "pathName": "package-distribution-meiju/pages/addDevice/pages/addGuide/addGuide",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
         }
       ]
     }

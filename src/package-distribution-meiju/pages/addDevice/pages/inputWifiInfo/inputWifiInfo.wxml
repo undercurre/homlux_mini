@@ -1,4 +1,6 @@
 <view class="page" id="{{brand}}">
+  <nav-bar leftArrow bind:leftTap="goBack"></nav-bar>
+
   <link-device-header isNavCancel="{{mode==31}}" bind:clickCancel="blueCancelLinkWifi" buttonColor="{{brandConfig.backButtonColor}}"></link-device-header>
   <block wx:if="{{isCanAddDevice}}">
     <view class="wifi-container theme-font-color" style="padding-top:{{80}}px">
@@ -98,7 +100,7 @@
   <block wx:else class="no-can-add-device">
     <no-can-add-device></no-can-add-device>
   </block>
-  <mx-dialog id="mx-operate" show="{{ishowDialog}}" useSlot="{{ishowDialog}}" showCancelButton="{{ishowDialog}}" cancelButtonColor="#000" bind:confirm="clickSetting" confirmButtonText="去操作"
+  <mx-dialog id="mx-operate" show="{{ishowDialog}}" useSlot="{{ishowDialog}}" showCancelButton="{{ishowDialog}}" bind:confirm="clickSetting" confirmButtonText="去操作"
   cancelButtonColor="{{dialogStyle.cancelButtonColor}}"  confirmButtonColor="{{dialogStyle.confirmButtonColor2}}" custom-style="padding-top:40rpx;padding-left:40rpx;padding-right:40rpx;" onClickOverlay="onClickOverlay" message-align="left" messageSize='16'>
     <useSlot>
       <view class="dialog-content">

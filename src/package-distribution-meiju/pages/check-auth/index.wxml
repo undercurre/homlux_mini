@@ -1,5 +1,5 @@
 <view class="page-container flex flex-col justify-between">
-  <nav-bar leftArrow bind:leftTap="goBack" background="transparent"></nav-bar>
+  <nav-bar leftArrow bind:leftTap="goBack"></nav-bar>
 
   <view>
     <view class="px-64rpx pt-30rpx">

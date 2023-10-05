@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
-const app = getApp() //获取应用实例
+import app from '../../../../common/app'
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const netWordMixin = require('../../../assets/js/netWordMixin')
-const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 import { requestService } from '../../../../utils/requestService'
 import { getReqId, getStamp, cloudEncrypt, validateFun } from 'm-utilsdk/index'
 import { showToast, getFullPageUrl } from '../../../../utils/util'
@@ -18,7 +17,7 @@ import { brandConfig, brand } from '../../../assets/js/brand'
 
 const imgUrl = imgBaseUrl.url + '/shareImg/' + brand
 Page({
-  behaviors: [addDeviceMixin, netWordMixin, getFamilyPermissionMixin],
+  behaviors: [addDeviceMixin, netWordMixin],
   /**
    * 页面的初始数据
    */

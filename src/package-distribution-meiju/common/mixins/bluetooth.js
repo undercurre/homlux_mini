@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 import { service } from '../js/getApiPromise'
-
-const app = getApp()
+import app from '../app'
 let timer = ''
 let timer1 = ''
 

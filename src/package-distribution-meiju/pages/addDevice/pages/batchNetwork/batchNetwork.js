@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const app = getApp()
+import app from '../../../../common/app'
 import {baseImgApi, imgBaseUrl} from '../../../../common/js/api'
 import paths from '../../../../utils/paths'
 import {requestService} from '../../../../utils/requestService'
@@ -8,10 +8,9 @@ import {getDeviceSn, getDeviceSn8} from '../../../../common/js/device'
 import {isSupportPlugin} from '../../../../utils/pluginFilter'
 
 const dialogCommonData = require('../../../../common/mixins/dialog-common-data.js')
-const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 let timer, timer2 //定时查询
 Page({
-  behaviors: [dialogCommonData, getFamilyPermissionMixin],
+  behaviors: [dialogCommonData],
   /**
    * 页面的初始数据
    */

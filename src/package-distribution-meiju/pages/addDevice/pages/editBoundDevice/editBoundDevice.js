@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const app = getApp() //获取应用实例
+import app from '../../../../common/app'
 import paths from '../../../../utils/paths'
 import {requestService} from '../../../../utils/requestService'
 import {getReqId, getStamp} from 'm-utilsdk/index'
 import {baseImgApi} from '../../../../common/js/api.js'
 
-const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 Page({
-  behaviors: [getFamilyPermissionMixin],
+  behaviors: [],
   /**
    * 页面的初始数据
    */
@@ -86,23 +85,19 @@ Page({
       .request('homeModify', params)
       .then((resp) => {
         console.log('修改已绑定设备信息成功', resp.data.data)
-        try {
-          var value = wx.getStorageSync('batchNetwork')
-          if (value) {
-            value.forEach((item) => {
-              if (item.applianceCode == this.data.device.applianceCode) {
-                item.deviceName = this.data.device.deviceName
-                item.roomId = this.data.device.roomId
-                item.room = this.data.device.room
-              }
-            })
-            wx.setStorageSync('batchNetwork', value)
-            wx.navigateTo({
-              url: paths.batchNetwork,
-            })
-          }
-        } catch (e) {
-          throw e
+        var value = wx.getStorageSync('batchNetwork')
+        if (value) {
+          value.forEach((item) => {
+            if (item.applianceCode == this.data.device.applianceCode) {
+              item.deviceName = this.data.device.deviceName
+              item.roomId = this.data.device.roomId
+              item.room = this.data.device.room
+            }
+          })
+          wx.setStorageSync('batchNetwork', value)
+          wx.navigateTo({
+            url: paths.batchNetwork,
+          })
         }
       })
       .catch((error) => {

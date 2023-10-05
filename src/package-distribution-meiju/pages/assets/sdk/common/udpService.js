@@ -2,13 +2,12 @@
  * UDP相关的服务
  * 设备的udp有两种情况，一种是设备自启udp广播，可以直接监听广播消息，另外一种是通过发送udp信息到设备(指定端口），设备会有回播
  */
-const app = getApp()
+import app from '../../../../common/app'
 import { hexStringToArrayBuffer, ab2hex, isEmptyObject, hexCharCodeToStr } from 'm-utilsdk/index'
 import { commonIndex } from './commonIndex'
-import { addDeviceService } from '../../../../pages/common/sdk/common/addDeviceService'
+import { addDeviceService } from '../../../../common/js/addDeviceService'
 import { apUtils } from '../ap_core/apUtils'
 let udpCycTimer
-const WX_LOG = require('../../../../utils/log')
 const udpService = {
   /**
    * 获取udp广播包消息
@@ -26,10 +25,8 @@ const udpService = {
         //有ip和子网掩码 则根据两者计算广播地址
         udpBroadcastAddress = addDeviceService.getBroadcastAddress(res.localip, res.netmask)
       }
-      WX_LOG.info('获取当前ip成功', 'getLocalIPAddress', res)
     } catch (error) {
       console.log('获取当前ip失败error', error)
-      WX_LOG.error('获取当前ip失败', 'getLocalIPAddress', error)
     }
     return new Promise((resolve, reject) => {
       let parmas = {
@@ -44,7 +41,7 @@ const udpService = {
         return
       }
       udp.bind()
-      udp.onListening(function (res) {
+      udp.onListening(function () {
         console.log('监听中...')
       })
       udp.onMessage((res) => {
@@ -53,14 +50,13 @@ const udpService = {
           //udp广播信息
           let hexMsg = ab2hex(res.message).toLocaleLowerCase()
           console.log('udp message', hexMsg)
-          if (apUtils.decode2body(hexMsg).type == '807a') {
+          if (apUtils.decode2body(hexMsg).type === '807a') {
             let udpMsgBody = apUtils.decode2body(hexMsg).body //解密模组消息
             let adData = apUtils.parseUdpBody(udpMsgBody) //解析UDP消息体
             console.log('获取udp返回', adData)
             if (hexCharCodeToStr(adData.ssid).toLocaleLowerCase() == app.addDeviceInfo.ssid.toLocaleLowerCase()) {
               //校验响应包
               udpAdData = adData
-              WX_LOG.info('获取udp返回信息', 'udp.onMessage', adData)
               resolve(adData)
             }
           }
@@ -68,7 +64,6 @@ const udpService = {
       })
       udp.onError((res) => {
         console.log('udp error', res)
-        WX_LOG.error('获取udp错误', res)
         reject(res)
       })
       console.log('发送udp时的地址====', udpBroadcastAddress)
@@ -126,7 +121,6 @@ const udpService = {
               let adData = apUtils.parseUdpBody(udpMsgBody)
               if (hexCharCodeToStr(adData.ssid).toLocaleLowerCase() == app.addDeviceInfo.ssid.toLocaleLowerCase()) {
                 //过滤偶现没有版本信息的包
-                WX_LOG.info('设备自启udp成功', 'udp.onMessage')
                 resolve(adData)
               }
             }
@@ -134,7 +128,6 @@ const udpService = {
         })
         udp.onError((res) => {
           console.log('udp2 error', res)
-          WX_LOG.error('设备自启udp错误', 'udp.onMessage', res)
           reject(res)
         })
       }

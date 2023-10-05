@@ -1,10 +1,5 @@
-// addDevice//pages/authTimeout/authTimeout.js
-const app = getApp()
 import { brand } from '../../../assets/js/brand'
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 Page({
-  behaviors: [getFamilyPermissionMixin],
   /**
    * 页面的初始数据
    */

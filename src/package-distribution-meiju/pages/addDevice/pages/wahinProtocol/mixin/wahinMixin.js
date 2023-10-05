@@ -1,15 +1,5 @@
-// import {
-//     getTimeStamp,
-//     getReqId,
-//     getUID,
-//     getStamp,
-//     RndNum,
-//     getSign
-// } from 'm-utilsdk/index'
-import { requestService } from '../../../../../utils/requestService'
-import BluetoothConn from '../bluetooth/bluetooth-conn.js'
-import DeviceComDecorator from '../utils/ac-service/DeviceComDecorator'
-const app = getApp() //获取应用实例
+import app from '../../../../../common/app'
+// eslint-disable-next-line no-undef
 module.exports = Behavior({
   behaviors: [],
   properties: {

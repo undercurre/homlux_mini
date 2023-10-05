@@ -7,13 +7,12 @@ import { isSupportPlugin } from '../../../../utils/pluginFilter'
 const bluetooth = require('../../../../common/mixins/bluetooth.js')
 const paths = require('../../../../utils/paths')
 const dialogCommonData = require('../../../../common/mixins/dialog-common-data.js')
-const app = getApp()
+import app from '../../../../common/app'
 import { actionScanResult } from '../../../../utils/scanCodeApi'
 import {creatDeviceSessionId } from '../../../../utils/util.js'
 import { addDeviceSDK } from '../../../../utils/addDeviceSDK'
 import { checkPermission } from '../../../../common/js/checkPermissionTip'
 import { getPrivateKeys } from '../../../../utils/getPrivateKeys'
-const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 import Dialog from '../../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
 const brandStyle = require('../../../assets/js/brand.js')
 import { imgesList } from '../../../assets/js/shareImg.js'
@@ -22,7 +21,7 @@ let findFriendTimer, findFriendTimer2 //主设备找朋友定时查询
 let scanHintTimer
 const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
 Page({
-  behaviors: [bluetooth, dialogCommonData, getFamilyPermissionMixin],
+  behaviors: [bluetooth, dialogCommonData],
   /**
    * 页面的初始数据
    */

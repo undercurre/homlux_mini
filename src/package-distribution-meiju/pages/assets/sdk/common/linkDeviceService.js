@@ -1,7 +1,7 @@
 /**
  * 设备连接页面通用方法
  */
-const app = getApp()
+import app from '../../../../common/app'
 import { requestService } from '../../../../utils/requestService'
 import { getStamp, getReqId } from 'm-utilsdk/index'
 import { creatErrorCode } from './errorCode'

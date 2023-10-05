@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
+import pageBehaviors from '../../../../../behaviors/pageBehaviors'
+
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const checkAuthMixin = require('../../mixins/checkAuthMixin')
 const netWordMixin = require('../../../assets/js/netWordMixin')
 const paths = require('../../../../utils/paths')
 const bluetooth = require('../../../../common/mixins/bluetooth.js')
-const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
-
 import computedBehavior from '../../../../utils/miniprogram-computed.js'
 import { showToast, getFullPageUrl } from '../../../../utils/util'
 import { string2Uint8Array } from 'm-utilsdk/index'
@@ -28,7 +28,7 @@ let showImgTime = null
 const systemInfo = wx.getSystemInfoSync()
 
 Page({
-  behaviors: [addDeviceMixin, netWordMixin, computedBehavior, bluetooth, getFamilyPermissionMixin, checkAuthMixin],
+  behaviors: [addDeviceMixin, netWordMixin, computedBehavior, bluetooth, checkAuthMixin, pageBehaviors],
   /**
    * 页面的初始数据
    */
@@ -192,7 +192,6 @@ Page({
     if (this.data.system === 'iOS') {
       this.locationAuthorize() //判断用户是否授权小程序使用位置权限
     }
-    // app.globalData.deviceSessionId = creatDeviceSessionId(app.globalData.userData.uid)
     if (mode == 0) {
       this.getWifisList()
     }

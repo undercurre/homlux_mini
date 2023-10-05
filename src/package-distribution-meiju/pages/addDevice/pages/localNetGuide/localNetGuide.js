@@ -1,7 +1,7 @@
 // distribution-network/addDevice/pages/localNetGuide/localNetGuide.js
 import { baseImgApi } from '../../../../common/js/api'
 
-const app = getApp()
+import app from '../../../../common/app'
 const loactionImgUrl = baseImgApi.url
 Page({
   /**

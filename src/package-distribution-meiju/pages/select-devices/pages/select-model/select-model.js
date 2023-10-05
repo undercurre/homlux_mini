@@ -15,9 +15,8 @@ import { imgesList } from '../../../assets/js/shareImg.js'
 import { getPrivateKeys } from '../../../../utils/getPrivateKeys'
 import app from '../../../../common/app'
 const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
-const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 Page({
-  behaviors: [computedBehavior, getFamilyPermissionMixin],
+  behaviors: [computedBehavior],
   /**
    * 页面的初始数据
    */

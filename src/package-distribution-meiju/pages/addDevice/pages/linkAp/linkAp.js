@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
-const app = getApp()
+import pageBehaviors from '../../../../../behaviors/pageBehaviors'
+import app from '../../../../common/app'
+
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const paths = require('../../../../utils/paths')
 const netWordMixin = require('../../../assets/js/netWordMixin')
-const log = require('../../../../utils/log')
-const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 import { showToast, getFullPageUrl } from '../../../../utils/util'
 import { brand } from '../../../assets/js/brand'
-import { login } from '../../../../utils/paths'
 import { addDeviceSDK } from '../../../../utils/addDeviceSDK'
 import WifiMgr from '../assets/js/wifiMgr'
 import { imgesList } from '../../../assets/js/shareImg.js'
@@ -15,7 +14,7 @@ import { imgBaseUrl } from '../../../../common/js/api'
 const imgUrl = imgBaseUrl.url + '/shareImg/' + brand
 let wifiMgr = new WifiMgr()
 Page({
-  behaviors: [addDeviceMixin, netWordMixin, getFamilyPermissionMixin],
+  behaviors: [addDeviceMixin, netWordMixin, pageBehaviors],
   /**
    * 页面的初始数据
    */
@@ -64,7 +63,7 @@ Page({
     })
     console.log('this.data.brand------:', this.data.brand)
     this.checkSystm()
-    let { moduleType, deviceName, type, sn8, deviceId, blueVersion, mode, enterprise, deviceImg } =
+    let { deviceName, type, enterprise, deviceImg } =
       app.addDeviceInfo
     this.setData({
       deviceImg: deviceImg,
@@ -73,17 +72,9 @@ Page({
       type: type,
       brandName: this.getBrandBname(enterprise),
     })
-    // this.onLinkDeviceWifi(this.data.brandName, this.data.type)
     this.readingGuideTiming() //阅读计时
-    // this.onNetType()
     this.saveDeviceImg(deviceImg)
     this.wifiListSheet = this.selectComponent('#wifi-list-sheet') //组件的id
-  },
-  //点击反馈
-  feedback() {
-    wx.navigateTo({
-      url: paths.feedback,
-    })
   },
   //关闭帮助弹窗
   closeHelpDialog() {
@@ -146,13 +137,13 @@ Page({
   },
   //判断设备是否启了设备热点
   checkDeviceWifiOpen(brandName, type) {
-    if (this.data.system == 'iOS') return //ios不做此判断
+    if (this.data.system === 'iOS') return //ios不做此判断
     type = type.toLocaleLowerCase()
     let isOpenDeviceWifi = false //根据wifi列表返回判断是否起了设备ap
     let deviceWifiSSID = ''
     wifiMgr.getWifiList(
       (wifiList) => {
-        wifiList.forEach((item, index) => {
+        wifiList.forEach((item) => {
           let deviceSSID = item.SSID.toLocaleLowerCase()
           if (deviceSSID.includes(`${brandName}_${type}`)) {
             isOpenDeviceWifi = true
@@ -236,7 +227,7 @@ Page({
   },
 
   //校验是否连上设备ap
-  async checkLinkWifi(brandName, type) {
+  checkLinkWifi: async function (brandName, type) {
     let self = this
     type = type.toLocaleLowerCase()
     if (this.data.isLinkDeviceWifi) {
@@ -247,11 +238,9 @@ Page({
       .getConnectedWifi()
       .then((res) => {
         console.log('wifi info', res, res.SSID.includes(`${brandName}_${type}`), !self.data.isLinkDeviceWifi)
-        log.info('当前wifi info', res)
         if (res.SSID.toLocaleLowerCase().includes(`${brandName}_${type}`) && !self.data.isLinkDeviceWifi) {
           // showToast('连上了设备wifi')
           self.data.isLinkDeviceWifi = true
-          log.info('调用getConnectedWifi判断 连上了设备ap')
           console.log('连上了设备ap 111')
           let connectWifiDeviceHotspot = {
             deviceSessionId: app.globalData.deviceSessionId,
@@ -277,7 +266,7 @@ Page({
             })
           }
         } else {
-          if (this.data.pageStatus == 'show') {
+          if (this.data.pageStatus === 'show') {
             //连上的不是设备ap 则继续获取判断
             setTimeout(() => {
               console.log('连上的不是设备ap=====')
@@ -288,14 +277,11 @@ Page({
       })
       .catch((error) => {
         console.log('获取当前连接wifi失败', error)
-        this.apLogReportEven({
-          msg: '调用微信接口wx.getConnectedWifi 失败',
-          error: error,
-        })
-        if (this.data.pageStatus == 'show') {
-          setInterval(() => {
-            this.checkLinkWifi(brandName, type)
-          }, 1500)
+        if (this.data.pageStatus === 'show') {
+          // todo: 暂时注释轮询逻辑
+          // setInterval(() => {
+          //   this.checkLinkWifi(brandName, type)
+          // }, 1500)
         }
       })
   },
@@ -306,12 +292,10 @@ Page({
     type = type.toLocaleLowerCase()
     wx.onWifiConnected((res) => {
       console.log('监听连接上wifi后响应', res, brandName, type, self.data.isLinkDeviceWifi)
-      log.info('非wifi 连上wifi后 wifi info', res)
       if (res.wifi.SSID.toLocaleLowerCase().includes(`${brandName}_${type}`) && !self.data.isLinkDeviceWifi) {
         // showToast('连上了设备wifi')
         self.data.isLinkDeviceWifi = true
         console.log('连上了设备ap')
-        log.info('连上了设备ap')
         //重置当前连接热点信息
         app.addDeviceInfo.ssid = res.wifi.SSID
         app.addDeviceInfo.rssi = res.wifi.signalStrength
@@ -340,11 +324,11 @@ Page({
     this.data.flag = true
     wx.setClipboardData({
       data: this.data.psw,
-      success(res) {
+      success() {
         showToast('复制成功')
         _this.data.flag = false
       },
-      fail(error) {
+      fail() {
         _this.data.flag = false
       },
     })

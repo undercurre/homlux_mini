@@ -1,12 +1,9 @@
 import { imgBaseUrl } from '../../../../common/js/api.js'
-const app = getApp()
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 import { imgesList } from '../../../assets/js/shareImg.js'
 import { brand } from '../../../assets/js/brand'
 const imgUrl = imgBaseUrl.url + '/shareImg/' + brand
 Page({
-  behaviors: [getFamilyPermissionMixin],
+  behaviors: [],
   /**
    * 页面的初始数据
    */

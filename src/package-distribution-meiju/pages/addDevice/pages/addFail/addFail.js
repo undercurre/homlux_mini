@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-this-alias,@typescript-eslint/no-var-requires */
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const netWordMixin = require('../../../assets/js/netWordMixin')
-const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
-const app = getApp()
+import app from '../../../../common/app'
 import paths from '../../../../utils/paths'
 
 Page({
-  behaviors: [addDeviceMixin, netWordMixin, getFamilyPermissionMixin],
+  behaviors: [addDeviceMixin, netWordMixin],
   /**
    * 页面的初始数据
    */

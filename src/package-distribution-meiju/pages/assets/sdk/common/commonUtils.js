@@ -1,5 +1,3 @@
-import { getFullPageUrl } from '../../../../utils/util'
-
 const commonUtils = {
   /**
    * 获取当前ip地址
@@ -23,23 +21,6 @@ const commonUtils = {
       })
     })
   },
-  /**
-   * reportEven 数据上报
-   * @param {*} params
-   */
-  apLogReportEven(params) {
-    let data = {
-      ...params,
-    }
-    wx.reportEvent('ap_local_log', {
-      data: JSON.stringify(data),
-      page_path: getFullPageUrl(),
-      device_session_id: app.globalData.deviceSessionId || '',
-      uid: (getApp().globalData.userData && getApp().globalData.userData.uid) || '',
-      time: new Date().getTime(),
-    })
-  },
-
   /**
    * 随机数生成接口,配网生成的随机数是32位
    * @param {*} length

@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import {strUtil} from "../../utils";
+import {strUtil} from "../../utils/index";
 
 ComponentWithComputed({
   options: {},

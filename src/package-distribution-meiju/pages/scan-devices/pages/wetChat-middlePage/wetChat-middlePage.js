@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
-const app = getApp()
+import app from '../../../../common/app'
 import { index, } from '../../../../utils/paths'
 import { hasKey, getStamp, getReqId } from 'm-utilsdk/index'
 import { requestService } from '../../../../utils/requestService'

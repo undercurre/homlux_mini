@@ -10,11 +10,10 @@ import { getLinkType } from '../../../assets/js/utils'
 import { isAddDevice } from '../../../../utils/temporaryNoSupDevices'
 import { addDeviceSDK } from '../../../../utils/addDeviceSDK'
 import { getPrivateKeys } from '../../../../utils/getPrivateKeys'
-const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 import Dialog from '../../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
 const brandStyle = require('../../../assets/js/brand.js')
 import { imgesList } from '../../../assets/js/shareImg.js'
-const app = getApp()
+import app from '../../../../common/app'
 const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
 const imgCdnUrl = {
   url: 'https://pic.mdcdn.cn/h5/img/colmomini',
@@ -197,7 +196,7 @@ const categoryMap = {
   // ],
 }
 Page({
-  behaviors: [computedBehavior, getFamilyPermissionMixin],
+  behaviors: [computedBehavior],
   /**
    * 页面的初始数据
    */

@@ -9,11 +9,11 @@ import {
   aesEncrypt,
   getStamp,
 } from 'm-utilsdk/index'
-import { login } from './paths.js'
 import { canIUseOpenEmbeddedMiniProgram } from './version'
 import config from '../common/js/config'
 import { baseImgApi, deviceImgApi } from '../common/js/api.js'
 import { deviceImgMap } from './deviceImgMap'
+import app from '../common/app'
 
 function getNewSign(obj, apiKey, random, method = 'POST') {
   var paramStr = ''
@@ -196,7 +196,6 @@ function checkWxVersion_807() {
 }
 //给url加上at(加密token)参数
 function urlAddAt(url) {
-  const app = getApp()
   let token = app.globalData.userData.mdata.accessToken //asscess-token
   let aesKey = app.globalData.aesKey //AES key
   let aesIv = app.globalData.aesIv
@@ -206,7 +205,6 @@ function urlAddAt(url) {
 }
 //判断url拼接加密参数前是否需要进行登录操作 token不存在需要 存在则不需要
 function aesEncryptUrl(loginFlag, url) {
-  const app = getApp()
   return new Promise((resolve, reject) => {
     if (loginFlag) {
       app
@@ -216,17 +214,11 @@ function aesEncryptUrl(loginFlag, url) {
             resolve(urlAddAt(url))
           } else {
             app.globalData.isLogon = false
-            wx.navigateTo({
-              url: login,
-            })
             reject()
           }
         })
         .catch(() => {
           app.globalData.isLogon = false
-          wx.navigateTo({
-            url: login,
-          })
           reject()
         })
     } else {

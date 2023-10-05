@@ -1,5 +1,4 @@
 /* eslint-disable no-undef,@typescript-eslint/no-this-alias */
-// ble-negotiation-behaviors.js
 import {
   getReqId,
   getStamp,
@@ -11,7 +10,7 @@ import {
 } from 'm-utilsdk/index'
 import { requestService } from '../requestService'
 
-const app = getApp() //获取应用实例
+import app from '../../common/app'
 
 let packageSize = 200
 module.exports = Behavior({

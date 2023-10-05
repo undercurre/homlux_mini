@@ -4,7 +4,7 @@
  * date   : 2021/11/24 15:00pm
  */
 
-const app = getApp() //获取应用实例
+import app from '../common/app'
 import config from '../common/js/config.js'
 import paths from './paths'
 import { getReqId, getStamp, cloudDecrypt, hexCharCodeToStr, CryptoJS } from 'm-utilsdk/index'
@@ -297,7 +297,7 @@ const supportAutoFoundACModel = [
 
 const addDeviceSDK = {
   modeList: modeList,
-  supportAddDeviceMode: supportAddDeviceMode,
+  supportAddDeviceMode,
   isCanWb01BindBLeAfterWifi,
   deviceApPassword: deviceApPassword,
   addDeviceACList: addDeviceACList,

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 //扫设备二维码 一维码 能效二维码 触屏动态二维码 非智设备码 进入配网
-
-const app = getApp() //获取应用实例
+import app from '../common/app'
 
 import { hasKey, getStamp, getReqId } from 'm-utilsdk/index'
 import { showToast } from './util.js'

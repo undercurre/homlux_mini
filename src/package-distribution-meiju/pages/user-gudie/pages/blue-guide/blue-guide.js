@@ -1,8 +1,6 @@
-import { rangersBurialPoint } from '../../../../utils/requestService'
 import { baseImgApi } from '../../../../common/js/api'
-import { getFullPageUrl } from '../../../../utils/util'
 
-const app = getApp()
+import app from '../../../../common/app'
 const loactionImgUrl = baseImgApi.url
 Page({
   /**
@@ -193,18 +191,6 @@ Page({
       object_name.push('允许小程序使用蓝牙权限')
     }
     object_name = object_name.join('/')
-    rangersBurialPoint('user_page_view', {
-      page_id: 'page_open_bluetooth_new',
-      page_name: '提示需开启蓝牙权限页面',
-      page_path: getFullPageUrl(),
-      module: 'appliance',
-      object_type: '弹窗类型',
-      object_id: '',
-      object_name: object_name || '',
-      device_info: {
-        device_session_id: getApp().globalData.deviceSessionId || '',
-      },
-    })
     console.log('提示需开启蓝牙权限页面 浏览埋点', object_name)
   },
 

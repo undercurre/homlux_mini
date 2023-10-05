@@ -1,6 +1,6 @@
 import { dec2hex } from 'm-utilsdk/index'
 import { constantFun } from './constantFun'
-const app = getApp()
+import app from '../../../../../common/app'
 
 /**
  * author : lisin

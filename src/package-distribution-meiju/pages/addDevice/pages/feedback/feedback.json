@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "问题反馈",
-  "backgroundColor": "#757580",
-  "usingComponents": {
-    "mx-dialog": "/miniprogram_npm/m-ui/mx-dialog/index"
-  }
-}

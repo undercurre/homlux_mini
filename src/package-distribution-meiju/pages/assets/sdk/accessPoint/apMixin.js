@@ -2,7 +2,7 @@
  * AP配网，tcp相关的服务接口,发送路由信息到设备等逻辑
  */
 
-const app = getApp()
+import app from '../../../../common/app'
 import { hexStringToArrayBuffer } from 'm-utilsdk/index'
 import { apService } from './apService'
 // eslint-disable-next-line no-undef

@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
-const app = getApp()
+import app from '../../../../common/app'
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const combineDeviceMixin = require('../assets/js/combineDeviceMixin')
 const paths = require('../../../../utils/paths')
 let timer
 import { imgBaseUrl } from '../../../../common/js/api'
 import { imgesList } from '../../../assets/js/shareImg.js'
-const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
 const bluetooth = require('../../../../common/mixins/bluetooth')
 const brandStyle = require('../../../assets/js/brand.js')
+const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
 Page({
   behaviors: [addDeviceMixin, combineDeviceMixin, bluetooth],
   /**

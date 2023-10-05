@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
-const app = getApp()
+import app from '../../../../common/app'
+
 const bleNeg = require('../../../../utils/ble/ble-negotiation')
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const wahinMixin = require('../wahinProtocol/mixin/wahinMixin')
@@ -10,13 +11,12 @@ import { getReqId, getStamp } from 'm-utilsdk/index'
 import { imgBaseUrl } from '../../../../common/js/api'
 import computedBehavior from '../../../../utils/miniprogram-computed.js'
 import { imgesList } from '../../../assets/js/shareImg.js'
-const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
-const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 const brandStyle = require('../../../assets/js/brand.js')
+const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
 console.log('brandStyle:', brandStyle)
 const iconStyle = brandStyle.brandConfig.iconStyle //图标样式
 Page({
-  behaviors: [bleNeg, addDeviceMixin, wahinMixin, netWordMixin, computedBehavior, getFamilyPermissionMixin],
+  behaviors: [bleNeg, addDeviceMixin, wahinMixin, netWordMixin, computedBehavior],
   /**
    * 页面的初始数据
    */

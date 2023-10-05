@@ -2,7 +2,7 @@
 /**
  * 扫码服务接口
  */
-const app = getApp()
+import app from '../../../../common/app'
 import { requestService } from '../../../../utils/requestService'
 import { hasKey, getStamp, getReqId } from 'm-utilsdk/index'
 import { showToast } from '../../../../utils/util.js'

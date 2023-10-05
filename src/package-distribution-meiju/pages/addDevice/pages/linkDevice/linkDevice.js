@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
-const app = getApp()
+import app from '../../../../common/app'
+
 const bleNeg = require('../../../../utils/ble/ble-negotiation')
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const wahinMixin = require('../wahinProtocol/mixin/wahinMixin')
@@ -51,13 +52,12 @@ import {imgesList} from '../../../assets/js/shareImg.js'
 
 let appKey = api.appKey
 
-const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 const brandStyle = require('../../../assets/js/brand.js')
 const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
 let wifiMgr = new WifiMgr()
 
 Page({
-  behaviors: [bleNeg, addDeviceMixin, wahinMixin, netWordMixin, computedBehavior, getFamilyPermissionMixin],
+  behaviors: [bleNeg, addDeviceMixin, wahinMixin, netWordMixin, computedBehavior],
   /**
    * 页面的初始数据
    */
@@ -187,10 +187,6 @@ Page({
     this.apUtils = apUtils //分包异步加载
     console.log('app.addDeviceInfo =====', app.addDeviceInfo)
     this.logAddDivceInfo('添加设备参数', app.addDeviceInfo)
-    this.apLogReportEven({
-      msg: '添加设备参数',
-      res: app.addDeviceInfo,
-    })
     let needTimingMode = [0, 3, 5, 20, 21, 30, 31]
     if (needTimingMode.includes(mode)) {
       //蓝牙、ap相关才有倒计时
@@ -219,7 +215,6 @@ Page({
             currentRoomId: currentRoomId,
             currentRoomName: currentRoomName,
           })
-          this.checkCurrentFamilyPermission(currentHomeGroupId, app.globalData.homeGrounpList)
         } else {
           let familyInfo = await this.getFamilyInfo(app.globalData.currentHomeGroupId)
         }
@@ -230,11 +225,8 @@ Page({
     console.log('addDeviceInfo====', app.addDeviceInfo)
     let negType = 2
     let isDirectCon
-    let orderType
     let systemInfo //系统信息
     let bindType = addDeviceSDK.mode2bindType(mode, moduleType)
-    let ip = ''
-    let model = app.globalData.systemInfo.brand
     let wifiInfoOrder
     let key
     let plainTextSn
@@ -271,14 +263,14 @@ Page({
           curStep: 1,
           'progressList[0].isFinish': true,
         })
-        if (this.data.udpAdData.tcpIp == '0.0.0.0') {
+        if (this.data.udpAdData.tcpIp === '0.0.0.0') {
           this.data.udpAdData.tcpIp = '192.168.1.1'
         }
         udpCycTimer && clearInterval(udpCycTimer)
         this.getApLinkData() // 解析udp数据存入addDeviceInfo
         console.log('当前品牌：' + brandStyle.brand)
         if (this.data.brandConfig.supportPluginFlag) {
-          if (brandStyle.brand == 'colmo') {
+          if (brandStyle.brand === 'colmo') {
             if (!this.isColmoDeviceByDecodeSn(this.data.plainSn) && !this.isColmoDeviceBySn8(this.data.udpAdData.sn8)) {
               isShowColmoUnSupportDialog = true
               isShowUnSupportDialog = true
@@ -352,12 +344,9 @@ Page({
         }
         isDirectCon = true
         this.bleNegotiation(deviceId, isDirectCon, moduleType, negType)
-        this.resisterOnLinkBleSuccess((res) => {
-          //蓝牙连接成功
-        })
+        this.resisterOnLinkBleSuccess()
         this.resisterOnBlebindSuccess((res) => {
           console.log('on bind success----------------', res)
-          log.info('AC direct connect success')
           app.addDeviceInfo.moduleVersion = this.data.wifi_version
           wx.closeBLEConnection({
             deviceId: app.addDeviceInfo.deviceId,
@@ -433,8 +422,7 @@ Page({
           }
         })
         //蓝牙连接成功
-        this.resisterOnLinkBleSuccess((res) => {
-        })
+        this.resisterOnLinkBleSuccess()
         //密钥协商
         this.resisterOnBleNegSuccess(async (res) => {
           console.log('on neg success----------------', res)
@@ -835,7 +823,7 @@ Page({
   },
   //ap 配网流程合
   async apLinkAbout() {
-    const {tcpIp, tcpPort, moduleVersion, sn, type, sn8, udpVersion, mac, add2} = this.data.udpAdData
+    const {tcpIp, tcpPort, add2} = this.data.udpAdData
     // 获取组合配网标识
     if (this.data.brandConfig.combinedDevice && add2) {
       this.data.combinedDeviceFlag = hex2bin(add2)[4] == 1 // 标识位于附加信息的bit4: 1代表是，0代表否
@@ -1230,11 +1218,11 @@ Page({
   //自启热点无后确权 交互处理
   noCheckDo() {
     let self = this
-    let {type, sn8, linkType, moduleVersion} = app.addDeviceInfo
+    let {type} = app.addDeviceInfo
     type = type.includes('0x') ? type.substr(2, 2).toLocaleUpperCase() : type.toLocaleUpperCase()
     let conctent = '为保证连接的安全性，请重新连接设备，以完成安全性验证'
     let confirmText = (confirmText = '重新连接')
-    if (type == 'DA' || type == 'DB') {
+    if (type === 'DA' || type === 'DB') {
       //洗衣需要去扫码
       app.addDeviceInfo.isWashingMachine = true
       conctent = '为保证连接的安全性，请扫描机身的二维码重新连接设备，以完成安全性验证'
@@ -1404,7 +1392,6 @@ Page({
       stamp: getStamp(),
     }
     console.log('添加记录', linkNetRecord)
-    log.info('add once connect net record', linkNetRecord)
     wx.setStorageSync('linkNetRecord', linkNetRecord)
   },
   //判断是家庭wifi
@@ -1603,10 +1590,6 @@ Page({
         })
         this.udp2.onMessage((res) => {
           console.log(res)
-          this.apLogReportEven({
-            msg: 'udp广播响应信息',
-            res: res,
-          })
           if (res) {
             //udp2广播信息
             let hexMsg = ab2hex(res.message).toLocaleLowerCase()
@@ -2706,16 +2689,8 @@ Page({
   },
   discardAdd() {
     let {
-      deviceId,
-      deviceName,
-      mac,
       type,
-      sn8,
-      sn,
-      moduleType,
-      blueVersion,
       mode,
-      moduleVersion,
       cloudBackDeviceInfo,
     } = app.addDeviceInfo
     const self = this
@@ -2790,7 +2765,6 @@ Page({
       }
     }
     console.log('bind reqData===', reqData)
-    log.info('bind device reqData', reqData)
     //设置默认家庭
     // service.homegroupDefaultSetService(this.data.currentHomeGroupId)
     return new Promise((reslove, reject) => {
@@ -2798,7 +2772,6 @@ Page({
         .request('bindDeviceToHome', reqData, 'POST', '', 3000)
         .then((resp) => {
           console.log('@module linkDevice.js\n@method bindDeviceToHome\n@desc 绑定设备结果\n', resp.data)
-          log.info('bind device result', resp.data)
           if (resp.data.code == 0) {
             app.addDeviceInfo.applianceCode = resp.data.data.applianceCode
             app.addDeviceInfo.lastBindName = resp.data.data.name
@@ -2859,15 +2832,6 @@ Page({
       }
     } catch (error) {
       console.log('[bind device to home fail]', error)
-    }
-  },
-  // 校验家庭权限
-  checkCurrentFamilyPermission(homeGroupId, homeInfo) {
-    let currentHomeInfo = []
-    if (homeGroupId) {
-      currentHomeInfo = homeInfo.find((item) => item.homegroupId === homeGroupId)
-    } else {
-      currentHomeInfo = homeInfo
     }
   },
   getFamilyInfo(groupId, currentRoomId, retryNum = 3, timeout = 2000) {

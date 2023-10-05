@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
-const app = getApp()
+import app from '../../../../common/app'
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const netWordMixin = require('../../../assets/js/netWordMixin')
-const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 import { string2Uint8Array, isEmptyObject } from 'm-utilsdk/index'
 import { showToast } from '../../../../utils/util'
 import paths from '../../../../utils/paths'
@@ -17,7 +16,7 @@ import WifiMgr from '../assets/js/wifiMgr'
 const brandStyle = require('../../../assets/js/brand.js')
 let wifiMgr = new WifiMgr()
 Page({
-  behaviors: [addDeviceMixin, netWordMixin, getFamilyPermissionMixin, computedBehavior],
+  behaviors: [addDeviceMixin, netWordMixin, computedBehavior],
   /**
    * 页面的初始数据
    */

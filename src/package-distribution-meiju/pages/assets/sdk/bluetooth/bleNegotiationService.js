@@ -4,14 +4,8 @@
 import {
   getReqId,
   getStamp,
-  ab2hex,
-  hexStringToArrayBuffer,
-  formatStr,
-  hexString2Uint8Array,
-  requestWithTry,
 } from 'm-utilsdk/index'
 import { requestService } from '../../../../utils/requestService'
-const app = getApp() //获取应用实例
 const bleNegotiationService = {
   /**
    * 开启蓝牙适配器

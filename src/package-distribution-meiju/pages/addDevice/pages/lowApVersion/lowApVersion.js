@@ -1,10 +1,5 @@
-// distribution-network/addDevice//pages/lowApVersion/lowApVersion.js
-const app = getApp()
+/* eslint-disable @typescript-eslint/no-var-requires */
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
-const paths = require('../../../../utils/paths')
-const netWordMixin = require('../../../assets/js/netWordMixin')
-const log = require('../../../../utils/log')
-import { burialPoint } from './assets/js/burialPoint'
 Page({
   behaviors: [addDeviceMixin],
   /**
@@ -17,17 +12,7 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
-    let { sn, type, sn8, moduleVersion } = app.addDeviceInfo
-    burialPoint.lowApVersionView({
-      deviceSessionId: app.globalData.deviceSessionId,
-      sn8: sn8,
-      type: type,
-      sn: sn,
-      moduleVersion: moduleVersion,
-      linkType: app.addDeviceInfo.linkType,
-    })
-    log.info('low ap version')
+  onLoad: function () {
   },
   backToIndex() {
     wx.switchTab({

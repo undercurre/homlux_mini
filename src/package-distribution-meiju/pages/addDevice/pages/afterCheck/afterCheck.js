@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const app = getApp()
+import app from '../../../../common/app'
 const netWordMixin = require('../../../assets/js/netWordMixin')
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
-const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 
 import {requestService} from '../../../../utils/requestService'
 import {getPluginUrl} from '../../../../utils/getPluginUrl'
@@ -17,7 +16,7 @@ import {brand} from '../../../assets/js/brand'
 let timer
 
 Page({
-  behaviors: [addDeviceMixin, netWordMixin, getFamilyPermissionMixin],
+  behaviors: [addDeviceMixin, netWordMixin],
   /**
    * 页面的初始数据
    */

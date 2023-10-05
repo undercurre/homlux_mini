@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 import Common from './common.js'
 import ProtocolConn from './protocol-conn.js'
 import ProtocolSecurity from './protocol-security.js'
 import ProtocolBiz from './protocol-biz.js'
 import MsgGroup from './msg-group.js'
 import Event from './event.js'
+import app from '../../../../../common/app'
 
-const app = getApp()
 let bluetoothCrypto = '../../../../assets/asyncSubpackages/crypto/bluetooth-crypto.js'
 
 const Commands = Object.freeze({
@@ -16,7 +17,6 @@ const Commands = Object.freeze({
 })
 
 const ProtocolType = Object.freeze({
-  t1: 0x00,
   t1: 0x01,
   t2: 0x02,
   t3: 0x03,
@@ -113,6 +113,7 @@ export default class BluetoothConn {
         }, 20 * 1000) //20秒未协商好主动断开连接
 
         if (app.platform == 'ios') {
+          // eslint-disable-next-line no-irregular-whitespace
           //errMsg: "setBLEMTU:fail can only be invoked on android"
           //获取蓝牙所有服务
           //iOS平台上后续对特征值的read、write、notify，由于系统需要获取特征值实例，传入的 serviceId 与 characteristicId 必须由 getBLEDeviceServices 与 getBLEDeviceCharacteristics 中获取到后才能使用。
@@ -200,6 +201,7 @@ export default class BluetoothConn {
       },
     })
   }
+
   getBLEDeviceCharacteristics(serviceId) {
     let that = this
     startTime = new Date().getTime()
@@ -249,6 +251,7 @@ export default class BluetoothConn {
       },
     })
   }
+
   /**
    * 开始协商密钥
    */
@@ -260,6 +263,7 @@ export default class BluetoothConn {
     //this.getVersion(); //本版本可以不执行，目前不用判断版本
     this.step1()
   }
+
   closeBLEConnection() {
     console.log('小程序主动断开连接 222')
     this.connSuccess = false
@@ -288,7 +292,8 @@ export default class BluetoothConn {
         console.log('notifyBLECharacteristicValueChange成功', res)
         endTime = new Date().getTime()
         console.log('notifyBLECharacteristicValueChange成功耗时：' + (endTime - startTime) + 'ms')
-        if (app.platform == 'ios') {
+        if (app.platform === 'ios') {
+          // eslint-disable-next-line no-irregular-whitespace
           //errMsg: "setBLEMTU:fail can only be invoked on android"
           //获取蓝牙所有服务
           //iOS平台上后续对特征值的read、write、notify，由于系统需要获取特征值实例，传入的 serviceId 与 characteristicId 必须由 getBLEDeviceServices 与 getBLEDeviceCharacteristics 中获取到后才能使用。

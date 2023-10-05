@@ -1,6 +1,6 @@
 import { dec2hex } from 'm-utilsdk/index'
 import { constantFun } from '../core/constantFun'
-const app = getApp()
+import app from '../../../../common/app'
 
 /**
  * 设置blue配网指令相关参数

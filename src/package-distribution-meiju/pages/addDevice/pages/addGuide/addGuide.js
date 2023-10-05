@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
-const app = getApp()
+import pageBehaviors from '../../../../../behaviors/pageBehaviors'
+import {Logger} from "../../../../../utils/index";
+
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const checkAuthMixin = require('../../mixins/checkAuthMixin')
 const netWordMixin = require('../../../assets/js/netWordMixin')
 const bluetooth = require('../../../../common/mixins/bluetooth')
 const dialogCommonData = require('../../../../common/mixins/dialog-common-data.js')
-const getFamilyPermissionMixin = require('../../../assets/js/getFamilyPermissionMixin.js')
 
 import { isSupportPlugin, isColmoDeviceByDecodeSn } from '../../../../utils/pluginFilter'
 import { addDeviceTime } from '../../../assets/js/utils'
@@ -23,17 +24,20 @@ import { checkPermission } from '../../../../common/js/checkPermissionTip'
 import { typesPreserveAfterCheckGuideByA0 } from '../../config/index'
 const brandStyle = require('../../../assets/js/brand.js')
 import { imgesList } from '../../../assets/js/shareImg.js'
+import { queryGuideInfo } from '../../../../../apis/index'
+
+import app from '../../../../common/app'
 const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
 let timer
 
 Page({
   behaviors: [
+    pageBehaviors,
     addDeviceMixin,
     netWordMixin,
     computedBehavior,
     bluetooth,
     dialogCommonData,
-    getFamilyPermissionMixin,
     checkAuthMixin,
   ],
   /**
@@ -232,7 +236,6 @@ Page({
       this.setData({
         guideType: 'set',
       })
-      console.log('上报了配网指引页埋点')
       console.log('fm=====', fm)
       this.getGuideFormat(guideInfo, fm) //获取指引格式化显示
       // if (mode == 0) {
@@ -896,34 +899,58 @@ Page({
   },
 
   //选型得到的指引
-  getSelectTypeGuide(type, sn8, enterprise = '0000', productId) {
-    let reqData = {
-      code: sn8,
-      reqId: getReqId(),
-      stamp: getStamp(),
-      enterpriseCode: enterprise,
-      category: type.includes('0x') ? type.substr(2, 2) : type,
-      productId: productId,
-      queryType: 1,
+  async getSelectTypeGuide(type, sn8, enterprise = '0000', productId) {
+    // const res = await queryGuideInfo({sn8: this.data.sn8, type: this.data.proType, mode: '0' })
+
+    const res = {
+      "code": 0,
+      "data": {
+        "auxiConnectinfoList": [],
+        "auxiMode": -1,
+        "brand": "midea",
+        "category": "14",
+        "dataSource": 1,
+        "enterpriseCode": "0000",
+        "mainConnectinfoList": [{
+          "bluetoothName": null,
+          "code": "79700Z76",
+          "connectDesc": "① 将智能窗帘插上电源\n② 快速点按「SET-2」键4次，再长按「SET-2」键1次，直至指示灯闪烁",
+          "connectUrlA": "http://midea-file.oss-cn-hangzhou.aliyuncs.com/2021/7/7/15/NZxmnjoefmcMealUPBmt.gif",
+          "connectUrlB": "",
+          "connectUrlC": "",
+          "controlVersion": null,
+          "customerModel": "SC-1/M2-Z",
+          "isAutoConnect": 0,
+          "isBluetoothControl": 0,
+          "leadingWords": "已完成上述操作",
+          "marketModel": "SC-1/M2-Z",
+          "mode": 0,
+          "note": null,
+          "productCode": "21079710000001",
+          "productId": "SC-1/M2-Z",
+          "productImg": "http://midea-file.oss-cn-hangzhou.aliyuncs.com/2021/6/21/13/pJeBIFcVqOdjdODAiSRK.png",
+          "productName": "智能电动窗帘",
+          "wifiFrequencyBand": 1,
+          "wifiName": null
+        }],
+        "mode": 0,
+        "needTransfer2FailStatus": null,
+        "proInfrared": null
+      },
+      "msg": "操作成功"
     }
-    console.log('请求确权指引', reqData)
-    requestService
-      .request('multiNetworkGuide', reqData)
-      .then((resp) => {
-        if (resp.data.data.mainConnectinfoList.length != 0) {
-          this.setData({
-            ['checkGuideInfo.connectDesc']: this.guideDescFomat(resp.data.data.mainConnectinfoList[0].connectDesc),
-            ['checkGuideInfo.connectUrlA']: resp.data.data.mainConnectinfoList[0].connectUrlA,
-          })
-          console.log('配网指引信息 选型', resp.data.data.mainConnectinfoList[0].connectDesc)
-        }
+
+    Logger.console('queryGuideInfo', res)
+
+    if (res.data.mainConnectinfoList.length !== 0) {
+      this.setData({
+        ['checkGuideInfo.connectDesc']: this.guideDescFomat(res.data.mainConnectinfoList[0].connectDesc),
+        ['checkGuideInfo.connectUrlA']: res.data.mainConnectinfoList[0].connectUrlA,
       })
-      .catch((error) => {
-        console.log(error)
-        if (error.data.code == 1) {
-          this.noGuide()
-        }
-      })
+      console.log('配网指引信息 选型', res.data.mainConnectinfoList[0].connectDesc)
+    } else if (res.data.code === 1) {
+      this.noGuide()
+    }
   },
 
   //获取设备图片

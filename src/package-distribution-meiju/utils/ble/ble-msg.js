@@ -1,4 +1,4 @@
-const app = getApp()
+import app from '../../common/app'
 const Commands = Object.freeze({
   c1: 0x01, //协商
   c2: 0x02, //数传

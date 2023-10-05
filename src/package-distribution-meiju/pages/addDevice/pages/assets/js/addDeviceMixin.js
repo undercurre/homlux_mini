@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
-import { getReqId, getStamp } from 'm-utilsdk/index'
-import { showToast, getFullPageUrl } from '../../../../../utils/util'
-import { creatErrorCode, failTextData } from './errorCode'
+import {getReqId, getStamp} from 'm-utilsdk/index'
+import {showToast} from '../../../../../utils/util'
+import {creatErrorCode, failTextData} from './errorCode'
 import paths from '../../../../../utils/paths'
-import { brandConfig } from '../../../../assets/js/brand'
-const app = getApp() //获取应用实例
+import {brandConfig} from '../../../../assets/js/brand'
+import app from '../../../../../common/app'
+import { imgBaseUrl } from '../../../../../common/js/api'
 
 const supportedApplianceTypes = [
   '0xAC',
@@ -259,6 +260,21 @@ module.exports = Behavior({
     isStopLinkWifi: false,
   },
   methods: {
+    //数码管字体替换图片
+    replaceInco(guideDesc){
+      let list = ['#AP#','#00#','#0A#','#0L#','#01#','#02#']
+      let imgList = ['code_ap@3x.png','code_00@3x.png','code_0a@3x.png','code_0l@3x.png','code_01@3x.png','code_02@3x.png']
+      for(let i = 0 ;i<=list.length-1;i++){
+        if(guideDesc.includes(list[i])){
+          let imgUrl = imgBaseUrl.url+'/shareImg/'+ app.globalData.brand+'/'+ imgList[i]
+          let content = ' <img class="nixie-tube" src='+imgUrl+'></img> '
+          guideDesc = guideDesc.replaceAll(list[i],content)
+
+        }
+      }
+      return guideDesc
+
+    },
     //校验手机系统版本
     checkPhoneSystemVerion(version = '14.0.0') {
       let phoneSystemVersion = app.globalData.systemInfo.system.split(' ')[1]
@@ -270,14 +286,14 @@ module.exports = Behavior({
       }
 
       if (
-        Number(paramsVersionArr[0]) == Number(phoneSystemVersionArr[0]) &&
+        Number(paramsVersionArr[0]) === Number(phoneSystemVersionArr[0]) &&
         Number(paramsVersionArr[1]) < Number(phoneSystemVersionArr[1])
       ) {
         return true
       }
 
-      return Number(paramsVersionArr[0]) == Number(phoneSystemVersionArr[0]) &&
-        Number(paramsVersionArr[1]) == Number(phoneSystemVersionArr[1]) &&
+      return Number(paramsVersionArr[0]) === Number(phoneSystemVersionArr[0]) &&
+        Number(paramsVersionArr[1]) === Number(phoneSystemVersionArr[1]) &&
         Number(paramsVersionArr[2]) < Number(phoneSystemVersionArr[2]);
     },
     //延迟函数
@@ -289,19 +305,6 @@ module.exports = Behavior({
     //异步延迟函数
     async delayAwait(milSec) {
       await new Promise((resolve) => setTimeout(resolve, milSec))
-    },
-    //reportEven 数据上报
-    apLogReportEven(params) {
-      let data = {
-        ...params,
-      }
-      wx.reportEvent('ap_local_log', {
-        data: JSON.stringify(data),
-        page_path: getFullPageUrl(),
-        device_session_id: app.globalData.deviceSessionId || '',
-        uid: (getApp().globalData.userData && getApp().globalData.userData.uid) || '',
-        time: new Date().getTime(),
-      })
     },
     //获取当前ip地址
     getLocalIPAddress() {
@@ -338,7 +341,7 @@ module.exports = Behavior({
      * @param {*} callBack      失败
      */
     async tryConectWifi(wifiInfo, frequency = 2, callBack, callFail) {
-      let { ssid, password, isGoSet } = wifiInfo
+      let {ssid, password, isGoSet} = wifiInfo
       if (!this.data.isSuccessLinkDeviceAp && !this.data.isStopLinkWifi) {
         try {
           await this.connectWifi(ssid, password, isGoSet)
@@ -391,32 +394,7 @@ module.exports = Behavior({
     //获取当前家庭默认id
     getCurrentHomeGroupId() {
       //获取家庭列表
-      return new Promise((resolve, reject) => {
-        let reqData = {
-          reqId: getReqId(),
-          stamp: getStamp(),
-        }
-        // requestService.request('applianceList', reqData).then(
-        //   (resp) => {
-        //     if (resp.data.code == 0) {
-        //       let homeList = resp.data.data.homeList || {}
-        //       console.log('homeList====', homeList)
-        //       let homegroupId = ''
-        //       homeList.forEach((item, index) => {
-        //         if (item.isDefault == '1') {
-        //           homegroupId = item.homegroupId
-        //         }
-        //       })
-        //       resolve(homegroupId)
-        //     } else {
-        //       reject(resp)
-        //     }
-        //   },
-        //   (error) => {
-        //     reject(error)
-        //   }
-        // )
-      })
+      return '1111'
     },
     //获取自启热点 无后确权固件名单
     getTwoLinkNetList() {
@@ -554,7 +532,7 @@ module.exports = Behavior({
     //轮询查询设备是否连上云
     againGetAPExists(sn, randomCode = '', callBack, callFail) {
       console.log('this.data.isStopGetExists===', this.data.isStopGetExists)
-      this.checkApExists(sn, randomCode ? true : false, randomCode)
+      this.checkApExists(sn, !!randomCode, randomCode)
         .then((resp) => {
           console.log('查询设备是否连上云', resp.data.code)
           if (resp.data.code == 0) {
@@ -568,7 +546,7 @@ module.exports = Behavior({
             }
           }
         })
-        .catch((error) => {
+        .catch(() => {
           if (!this.data.isStopGetExists) {
             setTimeout(() => {
               this.againGetAPExists(sn, randomCode, callBack, callFail)
@@ -594,13 +572,13 @@ module.exports = Behavior({
     //根据企业码返回企业热点名
     getBrandBname(enterprise) {
       let brandName = 'midea'
-      if (enterprise == '0010') {
+      if (enterprise === '0010') {
         brandName = 'bugu'
       }
       return brandName
     },
     //生成错误码
-    creatErrorCode({ platform, module, errorCode, isCustom }) {
+    creatErrorCode({platform, module, errorCode, isCustom}) {
       return creatErrorCode({
         platform,
         module,
@@ -631,11 +609,11 @@ module.exports = Behavior({
           resolve()
         } else {
           wx.startWifi({
-            success: (res) => {
+            success: () => {
               self.data.isStartwifi = true
               resolve()
             },
-            fail(error) {
+            fail() {
               reject()
             },
           })
@@ -729,7 +707,8 @@ module.exports = Behavior({
             console.log('扫码失败返回', error)
             reject(error)
           },
-          complete() {},
+          complete() {
+          },
         })
       })
     },
@@ -740,10 +719,10 @@ module.exports = Behavior({
      * return hex 01
      */
     padLen(str, len) {
-      var temp = str
-      var strLen = (str + '').length
+      let temp = str;
+      let strLen = (str + '').length;
       if (strLen < len) {
-        for (var i = 0; i < len - strLen; i++) {
+        for (let i = 0; i < len - strLen; i++) {
           temp = '0' + temp
         }
       }
@@ -814,7 +793,7 @@ module.exports = Behavior({
      */
     isSupportPlugin_backup(type, sn8, A0 = '', isOtherEquipment = '0') {
       let isSupport = false
-      if (supportedApplianceTypes.indexOf(type) > -1 && isOtherEquipment == '0') {
+      if (supportedApplianceTypes.indexOf(type) > -1 && isOtherEquipment === '0') {
         //filter third party equipment
         if (filterList[type]) {
           if (sn8) {

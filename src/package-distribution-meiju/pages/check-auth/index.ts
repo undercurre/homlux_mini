@@ -1,3 +1,5 @@
+import pageBehaviors from '../../../behaviors/pageBehaviors'
+
 import app from '../../common/app'
 // import {queryGuideInfo} from '../../../apis/index'
 import {Logger} from "../../../utils/index";
@@ -7,6 +9,7 @@ import {addGuide, inputWifiInfo} from '../../utils/paths.js'
 const {getLinkType} = require("../assets/js/utils.js")
 
 Component({
+  behaviors: [pageBehaviors],
   properties: {
     proType: String,
     sn8: String,
@@ -118,7 +121,7 @@ Component({
         } else if (mode == 0 || mode == 3) {
           console.log('跳inputWifiInfo')
           wx.navigateTo({
-            url: inputWifiInfo,
+            url: addGuide,
           })
         }
       } else {

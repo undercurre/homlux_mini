@@ -1,7 +1,7 @@
 /**
  * 蓝牙相关服务接口
  */
-const app = getApp()
+import app from '../../../../common/app'
 const bluetoothService = {
   openAdapter() {
     if (app.globalData.bluetoothFail) {

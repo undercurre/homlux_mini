@@ -1,10 +1,11 @@
 <!--addDevice//pages/addGuide/addGuide.wxml-->
 <view class="page" id="{{brand}}">
   <view class="container">
+    <nav-bar leftArrow bind:leftTap="goBack"></nav-bar>
     <!-- ble guide -->
     <!--  -->
-    <view wx:if="{{guideType=='set'&&!noFound}}" class="check-guide">
-      <view class="{{brand == 'colmo'?'':'addGuide-title'}} addGuide-thick">
+    <view wx:if="{{guideType==='set'&&!noFound}}" class="check-guide">
+      <view class="{{brand === 'colmo'?'':'addGuide-title'}} addGuide-thick">
         <block>
           <text class="addGuide-title theme-font-color" wx:if="{{mode==9||mode==10}}">{{deviceName}}</text>
           <text class="addGuide-title theme-font-color" wx:else>设置{{deviceName}}</text>
@@ -13,8 +14,6 @@
       <image class="addGuide-mode5-img" src="{{checkGuideInfo.connectUrlA}}"></image>
       <view wx:if="{{mode==0 || mode==9 || mode==10 || mode==100 || mode==103}}" class="add-guide-desc theme-font-color">请按步骤完成以下操作</view>
       <view wx:else class="add-guide-desc theme-font-color">请在<text class="blue2">{{time}}</text>秒内完成以下操作</view>
-      <!-- <view class="guide-desc">{{checkGuideInfo.connectDesc}}<text class="blue">{{time}}秒</text> -->
-      <!-- </view> -->
       <view class="desc-list-guide">
         <rich-text class="add-guide-desc-content" nodes="{{currGuideInfo.currConnectDesc}}"></rich-text>
       </view>
