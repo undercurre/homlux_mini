@@ -526,9 +526,6 @@ Page({
             curStep: 1,
             'progressList[0].isFinish': true,
           })
-          // const key = app.globalData.isLogon ? app.globalData.userData.key : ''
-          // const plainTextSn = cloudDecrypt(this.data.sn, key, api.appKey)
-          // console.log("sn解密后", plainTextSn)
           this.againGetAPExists(this.data.sn, this.data.blueRandomCode, async (resp) => {
             console.log('设备成功连上云', resp)
             this.setData({

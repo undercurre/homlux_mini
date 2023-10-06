@@ -93,7 +93,7 @@
       <view class="guide-gif">
         <!-- 需要包装一层盒子，不然ios上会有颜色重影 -->
         <view>
-          <image wx:if="{{brandName=='bugu'}}" class="ap-img" src="{{linkDeviceWifiBugu}}"></image>
+          <image wx:if="{{brandName==='bugu'}}" class="ap-img" src="{{linkDeviceWifiBugu}}"></image>
           <image wx:else class="ap-img" src="{{linkDeviceWifiMidea}}"></image>
         </view>
       </view>

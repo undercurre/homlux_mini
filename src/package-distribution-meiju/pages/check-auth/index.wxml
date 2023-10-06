@@ -1,4 +1,4 @@
-<view class="page-container flex flex-col justify-between">
+<view class="page-container flex flex-col justify-between" wx:if="{{!isAuth}}">
   <nav-bar leftArrow bind:leftTap="goBack"></nav-bar>
 
   <view>
@@ -22,10 +22,9 @@
   </view>
 
   <view class="flex flex-col items-center px-32rpx">
-    <mz-checkbox class="pb-32rpx" checked="{{isAgree}}">
-      <text class="text-26 text-hex-555659">我知道了（2s）</text>
-    </mz-checkbox>
-
-    <van-button class="w-full" type="primary" block size="large" bind:click="handleConfirm">确定</van-button>
+    <mz-checkbox class="pb-32rpx" checked="{{isAgree}}" disabled="{{seconds > 0}}" bind:change="toAgree" label="{{tipsText}}"></mz-checkbox>
+    <van-button class="w-full" type="primary" block size="large" bind:click="toBindMeijuHome" disabled="{{!isAgree}}">确定</van-button>
   </view>
 </view>
+
+<van-toast id="van-toast" />

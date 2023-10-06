@@ -16,6 +16,10 @@ Component({
       type: String,
       value: '16px',
     },
+    label: {
+      type: String,
+      value: '',
+    },
   },
 
   /**

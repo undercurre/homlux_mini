@@ -5,9 +5,6 @@ const isMasEnv = config.isMasEnv
 const masPrefix = config.masPrefix
 const domain = config.domain
 const cloudDomain = config.cloudDomain
-const fridgeDomain = config.fridgeDomain
-const logonStatusDomain = config.logonStatusDomain
-const mvipDomain = config.mvipDomain
 const imageDomain = config.imageDomain
 const agreementDomain = config.agreementDomain
 const apiKey = config.apiKey
@@ -15,9 +12,6 @@ const appKey = config.appKey
 const iotAppId = config.iotAppId
 const marketAppId = config.marketAppId
 const marketKey = config.marketKey
-const privacyDomain = config.privacyDomain
-const imgUploadDomain = config.imgUploadDomain
-const vaasVideoKey = config.vaasVideoKey
 const websocketDomain = config.websocketDomain
 const myxAppkey = config.myxAppkey
 const myxSecret = config.myxSecret
@@ -32,30 +26,16 @@ var api = {
   appKey: `${appKey[`${environment}`]}`,
   marketAppId: `${marketAppId['prod']}`,
   marketKey: `${marketKey['prod']}`,
-  // marketAppId: `${marketAppId[`${environment}`]}`,
-  // marketKey: `${marketKey[`${environment}`]}`,
-  vaasVideoKey: `${vaasVideoKey[`${environment}`]}`,
   websocketDomain: `${websocketDomain[environment]}`,
   myxAppkey: `${myxAppkey[environment]}`,
   myxSecret: `${myxSecret[environment]}`,
   myqwid: `${qwid[environment]}`,
   serviceAppid: `${serviceAppid[environment]}`,
 
-  //登录地址
-  login: {
-    url: `${domain[`${environment}`]}/muc/v5/app/mj/user/wx/login`,
-    masUrl: `${domain[`${environment}`] + masPrefix}/mjl/mj/user/wx/login`,
-    api: '/muc/v5/app/mj/user/wx/login',
-  },
   bind: {
     url: `${domain[`${environment}`]}/muc/v5/app/mj/user/wx/mobile/bind`,
     masUrl: `${domain[`${environment}`] + masPrefix}/mjl/mj/user/wx/mobile/bind`,
     api: '/muc/v5/app/mj/user/wx/mobile/bind',
-  },
-  rigister: {
-    url: `${domain[`${environment}`]}/muc/v5/app/mj/user/wx/mobile/register/bind`,
-    masUrl: `${domain[`${environment}`] + masPrefix}/mjl/mj/user/wx/mobile/register/bind`,
-    api: '/muc/v5/app/mj/user/wx/mobile/register/bind',
   },
   //其他小程序带登录态跳转
   bing: {
@@ -767,7 +747,7 @@ let imageApi = {
 let imgBaseUrl = {
   environment: environment,
   url:
-    environment == 'sit' || environment == 'dev'
+    environment === 'sit' || environment === 'dev'
       ? `${agreementDomain[`${environment}`]}/projects/sit/meiju-lite-assets`
       : `${agreementDomain[`${environment}`]}/projects/meiju-lite-assets`,
 }
@@ -775,7 +755,7 @@ let imgBaseUrl = {
 let baseImgApi = {
   environment: environment,
   url:
-    environment == 'sit' || environment == 'dev'
+    environment === 'sit' || environment === 'dev'
       ? `${agreementDomain[`${environment}`]}/projects/sit/meiju-lite-assets/mainContent/images/`
       : `${agreementDomain[`${environment}`]}/projects/meiju-lite-assets/mainContent/images/`,
 }

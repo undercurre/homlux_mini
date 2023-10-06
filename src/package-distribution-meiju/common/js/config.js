@@ -1,5 +1,5 @@
 const config = {
-  environment: 'dev',
+  environment: 'prod',
   isMasEnv: true, //是否通过
   masPrefix: '/mas/v5/app/proxy?alias=',
   //域名
@@ -13,32 +13,6 @@ const config = {
     dev: 'https://mp-g-dev.smartmidea.net', //测试
     sit: 'https://mp-g-sit.smartmidea.net', //测试
     prod: 'https://mp-g.smartmidea.net', //生产
-  },
-  //运营活动域名
-  activitiesDomain: 'https://activity.msmartlife.cn',
-  //冰箱接口相关
-  fridgeDomain: {
-    dev: 'https://i.mideav.com', //冰箱测试环境
-    sit: 'https://i.mideav.com', //冰箱测试环境
-    prod: 'https://f.mideav.com', //冰箱正式环境
-  },
-  //微清扫地机活动相关
-  robotActivityDomain: {
-    dev: 'https://sit.ioter.cc', //扫地机活动测试环境
-    sit: 'https://sit.ioter.cc', //扫地机活动测试环境
-    prod: 'https://mx-cnca.midea.com', //扫地机活动正式环境
-  },
-  //登录态接口
-  logonStatusDomain: {
-    dev: 'https://sitm.midea.cn', //测试环境
-    sit: 'https://sitm.midea.cn', //测试环境
-    prod: 'https://mvip.midea.cn', //正式环境
-  },
-  //电商接口
-  mvipDomain: {
-    dev: 'https://sitmvip.midea.cn', //测试环境
-    sit: 'https://sitmvip.midea.cn', //测试环境
-    prod: 'https://mvip.midea.cn', //正式环境
   },
   //图片接口
   imageDomain: {
@@ -90,44 +64,6 @@ const config = {
     prod: 'https://sec.midea.com', //正式环境
   },
 
-  //以换代修 凭证上传接口新api
-  imgUploadDomain: {
-    dev: 'https://mcsp-sit.midea.com', //测试环境
-    sit: 'https://mcsp-sit.midea.com', //测试环境
-    prod: 'https://mcsp.midea.com', //正式环境
-  },
-
-  //虚拟插件页webview pageurl
-  virtualPluginPageUrl: {
-    dev: 'https://www.smartmidea.net/projects/sit/mini-qrcode/index.html', //开发环境
-    sit: 'https://www.smartmidea.net/projects/sit/mini-qrcode/index.html', //测试环境
-    prod: 'https://www.smartmidea.net/projects/mini-qrcode/index.html', //正式环境
-  },
-  //虚拟插件页webview pageurl
-  // virtualPluginPageUrl: {
-  //     "dev": "https://www.smartmidea.net/projects/sit/mini-qrcode/index.html", //开发环境
-  //     "sit": "https://www.smartmidea.net/projects/sit/mini-qrcode/index.html", //测试环境
-  //     "prod": "https://www.smartmidea.net/projects/mini-qrcode/index.html" //正式环境
-  // },
-
-  sdaHome: {
-    dev: 'https://www.smartmidea.net/projects/sit/mini-qrcode/index.html#/SDAHome', //开发环境
-    sit: 'https://www.smartmidea.net/projects/sit/mini-qrcode/index.html#/SDAHome', //测试环境
-    prod: 'https://www.smartmidea.net/projects/mini-qrcode/index.html#/SDAHome', //正式环境
-  },
-
-  // 空调相关接口
-  acDomain: {
-    dev: 'https://airtest.midea.com', //冰箱测试环境
-    sit: 'https://airtest.midea.com', //冰箱测试环境
-    prod: 'https://smartrac.midea.com', //冰箱正式环境
-  },
-  //极光视频
-  vaasVideoKey: {
-    dev: 'yloxpcb08ak7', //测试环境
-    sit: 'yloxpcb08ak7', //测试环境
-    prod: 'yloxpcb08ak7', //正式环境
-  },
   imgPrefix: {
     dev: 'https://www.smartmidea.net/projects/sit/meiju-lite-assets',
     sit: 'https://www.smartmidea.net/projects/sit/meiju-lite-assets/',

@@ -1155,6 +1155,8 @@ Page({
       messageContent: `请在等一等，${deviceName}正在努力连接中`,
       blueCancelLinkModal: true,
     })
+
+    this.goBack()
   },
   giveUpBlueCancelLink() {
     let { type, cloudBackDeviceInfo } = app.addDeviceInfo

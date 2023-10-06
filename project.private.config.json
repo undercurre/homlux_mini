@@ -149,6 +149,13 @@
           "query": "",
           "launchMode": "default",
           "scene": null
+        },
+        {
+          "name": "选择设备界面",
+          "pathName": "package-distribution/choose-device/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
         }
       ]
     }

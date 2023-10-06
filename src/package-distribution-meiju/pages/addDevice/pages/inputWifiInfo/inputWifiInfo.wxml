@@ -1,7 +1,6 @@
 <view class="page" id="{{brand}}">
   <nav-bar leftArrow bind:leftTap="goBack"></nav-bar>
 
-  <link-device-header isNavCancel="{{mode==31}}" bind:clickCancel="blueCancelLinkWifi" buttonColor="{{brandConfig.backButtonColor}}"></link-device-header>
   <block wx:if="{{isCanAddDevice}}">
     <view class="wifi-container theme-font-color" style="padding-top:{{80}}px">
       <view class="input-wifi" wx:if="{{netType==1}}">

@@ -1,5 +1,4 @@
 {
-  "navigationStyle": "custom",
   "usingComponents": {
     "link-device-header": "/package-distribution-meiju/pages/addDevice/pages/component/input-wifi-header/input-wifi-header",
     "wifi-list-sheet": "/package-distribution-meiju/pages/addDevice/pages/component/wifi-list-sheet/wifi-list-sheet",

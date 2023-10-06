@@ -7,6 +7,8 @@ const app = {
     sn8: '', // sn8
     linkType: '',
     mode: 0,
+    productId: '',
+    deviceImg: '', // 设备图片
     isFromScanCode: false,
   },
   globalData: {

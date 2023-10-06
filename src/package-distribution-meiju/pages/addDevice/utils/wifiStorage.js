@@ -1,6 +1,5 @@
 import { environment } from '../../../common/js/api'
 import { encyptWifi, decodeWifi } from '../../assets/js/utils'
-var log = require('../../../utils/log')
 
 /**
  * 设置wifiStorage

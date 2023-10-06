@@ -158,66 +158,6 @@ const service = {
         })
     })
   },
-  getOnlineAdvertisement(isLogon) {
-    return new Promise((resolve, reject) => {
-      if (isMock) {
-        let resp = {
-          data: mockData.homegroupDefaultSet,
-        }
-        if (resp.data.code == 0) {
-          resolve()
-        } else {
-          reject(resp)
-        }
-        return
-      }
-
-      let reqData = {
-        appVersion: '',
-        sourceSystem: 'mjapp',
-        adPosCode: 'LITEFC',
-        moblieSys: 'android',
-      }
-      const adver = isLogon ? 'getOnlineAdvertisement_token' : 'getOnlineAdvertisement'
-      requestService.request(adver, reqData).then(
-        (resp) => {
-          if (resp.data.code == 0) {
-            resolve(resp)
-          } else {
-            reject(resp)
-          }
-        },
-        (error) => {
-          reject(error)
-        },
-      )
-    })
-  },
-
-  // 首页空态广告位 美云销内容  新api
-  getAdvertise(params) {
-    let { isLogon } = params
-    delete params['isLogon']
-    return new Promise((resolve, reject) => {
-      let reqData = {
-        ...params,
-      }
-      const advertimeTemp = isLogon ? 'getAdvertisement_Token' : 'getAdvertisement'
-      requestService.request(advertimeTemp, reqData).then(
-        (resp) => {
-          if (resp.data.code == 0) {
-            resolve(resp)
-          } else {
-            reject(resp)
-          }
-        },
-        (error) => {
-          reject(error)
-        },
-      )
-    })
-  },
-
   //设备确权状态
   getApplianceAuthType(applianceCode) {
     let reqData = {

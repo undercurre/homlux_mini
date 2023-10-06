@@ -5,7 +5,7 @@ import {mzaioRequest} from '../utils/index'
  * @param code，美居登录后返回的授权码，正常授权流程必传，因为暂没有二次获取家庭列表的路径
  */
 export async function getMeijuHomeList(code?: string) {
-  return await mzaioRequest.post<{ mideaHouseList: Auth.MeijuHome[] }>({
+  return await mzaioRequest.post<{ mideaHouseList: Meiju.MeijuHome[] }>({
     log: true,
     loading: false,
     url: '/v1/mzgd/user/queryMideaUserHouseInfo',
@@ -21,7 +21,7 @@ export async function getMeijuHomeList(code?: string) {
  * @param houseId Homlux 家庭id
  */
 export async function bindMeiju({houseId, mideaHouseId}: { houseId: string; mideaHouseId: string }) {
-  return await mzaioRequest.post<Auth.MeijuDevice[]>({
+  return await mzaioRequest.post<Meiju.MeijuDevice[]>({
     log: true,
     loading: false,
     url: '/v1/thirdparty/midea/device/bindHouseRoom',
@@ -33,7 +33,7 @@ export async function bindMeiju({houseId, mideaHouseId}: { houseId: string; mide
  * 获取美居设备列表（已授权）
  */
 export async function getMeijuDeviceList() {
-  return await mzaioRequest.post<Auth.MeijuDevice[]>({
+  return await mzaioRequest.post<Meiju.MeijuDevice[]>({
     log: true,
     loading: false,
     url: '/v1/thirdparty/midea/device/list',
@@ -46,7 +46,7 @@ export async function getMeijuDeviceList() {
  * @param houseId Homlux 家庭id
  */
 export async function syncMeijuDeviceList(houseId: string) {
-  return await mzaioRequest.post<Auth.MeijuDevice[]>({
+  return await mzaioRequest.post<Meiju.MeijuDevice[]>({
     log: true,
     loading: true,
     url: '/v1/thirdparty/midea/device/syncMideaDevice',
@@ -58,10 +58,10 @@ export async function syncMeijuDeviceList(houseId: string) {
  * 查询第三方授权
  * @param houseId Homlux 家庭id
  */
-export async function queryUserThirdPartyInfo(houseId: string) {
-  return await mzaioRequest.post<Auth.AuthItem[]>({
+export async function queryUserThirdPartyInfo(houseId: string, options?: { loading?: boolean }) {
+  return await mzaioRequest.post<Meiju.AuthItem[]>({
     log: true,
-    loading: false,
+    loading: options?.loading ?? false,
     url: '/v1/thirdparty/midea/device/queryUserThirdPartyInfo',
     data: {houseId},
   })
@@ -88,7 +88,14 @@ export async function delDeviceSubscribe(houseId: string) {
  * @param params.type 设备品类(格式如AC)
  */
 export async function queryGuideInfo(params: { mode: string, modelNumber?: string, sn8?: string, type: string }) {
-  return await mzaioRequest.post({
+  return await mzaioRequest.post<{
+    isAutoConnect: string // 上电默认连接模式(0 不启动，1 AP，2 WIFI零配)
+    mainConnectTypeDesc: string // 配网介绍
+    mainConnectTypeUrlList: string[] // 主配网图列表 ["http://midea-file.oss-cn-hangzhou.aliyuncs.com/2023/7/21/9/ChjOZnQUgWmtBEMMYQjf.gif"]
+    modelCode: string // 设备型号（SN8）或特殊设备型号（A0）的值
+    modelType: string // modelCode类型 0:A0设备型号（SN8）,1:特殊设备型号（A0）的值
+    wifiFrequencyBand: string // WIFI频段：1:2.4G，2:2.4G/5G
+  }>({
     log: true,
     loading: false,
     url: '/v1/thirdparty/midea/device/queryGuideInfo',

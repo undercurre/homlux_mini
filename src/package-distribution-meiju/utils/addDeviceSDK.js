@@ -336,13 +336,6 @@ const addDeviceSDK = {
         }
       }
       if (!mode || !guideInfo) {
-        //无配网方式 或 指引
-        if (!app.globalData.isLogon) {
-          reject({
-            code: 1002,
-            msg: '未登录',
-          })
-        }
         try {
           let guideRes = await this.getAddDeviceModeAndGuide({
             type,

@@ -43,7 +43,7 @@ const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: Base
   const reqId = Date.now()
   options.data = Object.assign(
     {
-      reqId,
+      reqId: reqId.toString(),
       frontendType: 'WeApp',
       systemSource: storage.get<string>('system'),
       timestamp: reqId,
