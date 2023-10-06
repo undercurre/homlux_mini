@@ -16,7 +16,6 @@ const productInfoMap: {
   }
 } = {}
 
-
 export const bleDevicesStore = observable({
   available: false, // 是否打开蓝牙开关
 
