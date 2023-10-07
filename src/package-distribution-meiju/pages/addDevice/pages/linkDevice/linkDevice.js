@@ -208,7 +208,7 @@ Page({
           app.globalData.currentHomeGroupId = await this.getCurrentHomeGroupId()
           console.log('进度页其他配网家庭id 获取到', app.globalData.currentHomeGroupId)
         }
-        let {currentRoomId, currentRoomName, currentHomeGroupId} = app.globalData
+        let {currentRoomId, currentRoomName} = app.globalData
         if (currentRoomId && currentRoomName) {
           console.log('已有家庭信息================')
           this.setData({
@@ -216,7 +216,7 @@ Page({
             currentRoomName: currentRoomName,
           })
         } else {
-          let familyInfo = await this.getFamilyInfo(app.globalData.currentHomeGroupId)
+          await this.getFamilyInfo(app.globalData.currentHomeGroupId)
         }
       } catch (err) {
         console.error(err)
@@ -295,7 +295,7 @@ Page({
               confirmButtonColor: this_.data.dialogStyle.confirmButtonColor2,
               cancelButtonColor: this_.data.dialogStyle.cancelButtonColor2,
             }).then((res) => {
-              if (res.action == 'confirm') {
+              if (res.action === 'confirm') {
                 wx.reLaunch({
                   url: paths.index,
                 })
@@ -308,13 +308,13 @@ Page({
               ...this_.data.unSupportDialogData,
             })
               .then((res) => {
-                if (res.action == 'confirm') {
+                if (res.action === 'confirm') {
                   // 点击埋点
                   this_.apLinkAbout()
                 }
               })
               .catch((res) => {
-                if (res.action == 'cancel') {
+                if (res.action === 'cancel') {
                   // 关闭相关进程和连接
                   clearInterval(timer)
                   if (mode == 0) {
@@ -363,7 +363,7 @@ Page({
         }
         //蓝牙协商
         isDirectCon = false
-        if (fm == 'bluePugin') {
+        if (fm === 'bluePugin') {
           this.bleNegotiation(deviceId, true, moduleType, 3)
           this.resisterOnBlebindSuccess((res) => {
             key = app.globalData.isLogon ? app.globalData.userData.key : ''
@@ -682,7 +682,7 @@ Page({
       let wifiInfo = await wifiMgr.getConnectedWifi()
       this.data.curLinkWifiInfo = wifiInfo
       console.log('[on wifi switch]', wifiInfo)
-      if (wifiInfo.SSID != app.addDeviceInfo.ssid) {
+      if (wifiInfo.SSID !== app.addDeviceInfo.ssid) {
         //连接的不是设备wifi
         this.deviceWifiYetSwitchTip() //设备wifi被切提示重连
       } else {
@@ -693,15 +693,15 @@ Page({
           this.createTCP(tcpIp, tcpPort)
         }
       }
-      if (this.data.pageStatus == 'show') {
-        this.delay(1500).then((end) => {
+      if (this.data.pageStatus === 'show') {
+        this.delay(1500).then(() => {
           this.onWifiSwitch()
         })
       }
     } catch (error) {
       console.log('[get connected wifi fail]', error)
-      if (this.data.pageStatus == 'show') {
-        this.delay(1500).then((end) => {
+      if (this.data.pageStatus === 'show') {
+        this.delay(1500).then(() => {
           this.onWifiSwitch()
         })
       }
@@ -718,7 +718,7 @@ Page({
         title: 'WiFi密码错误',
         desc: '请确认并重新输入密码',
         wifiInfo: self.data.bindWifiInfo,
-        confirmText: this.data.brand == 'colmo' ? '确定' : '重试',
+        confirmText: this.data.brand === 'colmo' ? '确定' : '重试',
         confirmColor: '#267AFF',
         success(res) {
           console.log(res)
@@ -752,8 +752,8 @@ Page({
         title: '请确认WiFi密码',
         wifiInfo: self.data.bindWifiInfo,
         confirmColor: '#267AFF',
-        desc: this.data.brand == 'colmo' ? '请确认并重新输入密码' : '',
-        confirmText: this.data.brand == 'colmo' ? '确定' : '确认',
+        desc: this.data.brand === 'colmo' ? '请确认并重新输入密码' : '',
+        confirmText: this.data.brand === 'colmo' ? '确定' : '确认',
         success(res) {
           console.log(res)
           if (res.confirm) {
@@ -835,7 +835,7 @@ Page({
     } catch (error) {
       console.log('tcp时获取当前连接wifi异常', `error=${JSON.stringify(error)}`)
     }
-    if (this.data.curLinkWifiInfo.SSID != app.addDeviceInfo.ssid) {
+    if (this.data.curLinkWifiInfo.SSID !== app.addDeviceInfo.ssid) {
       console.log('[tcp前设备wifi被切走]')
       return
     }
@@ -848,7 +848,7 @@ Page({
     const decodeMsg = this.apUtils.decode2body(ab2hex(res.message))
     console.log('@module linkDevice.js\n@method tcpOnMessage\n@desc tcp消息响应\n', decodeMsg)
     // 组合设备（0074指令）模组回报
-    if (decodeMsg.type == '8074') {
+    if (decodeMsg.type === '8074') {
       this.isTcpRespond0074 = true
       // 解析设备信息 TLV格式
       this.parseTLVfor74(decodeMsg.body)
@@ -861,23 +861,23 @@ Page({
         this.sendApWifiAfter()
       }
     }
-    if (decodeMsg.type == '8043') {
+    if (decodeMsg.type === '8043') {
       // 写入临时ID（0043指令）模组回报
       this.ifLowUDPRespond0043 = true
       app.addDeviceInfo.temporaryID = decodeMsg.body
       console.log('@module linkDevice.js\n@method tcpOnMessage\n@desc 设备临时ID\n', decodeMsg.body)
       this.getDeviceSubType()
     }
-    if (decodeMsg.type == '8020') {
+    if (decodeMsg.type === '8020') {
       // 获取子类型（0020指令）模组回报
       this.ifLowUDPRespond0020 = true
       const subType = decodeMsg.body.substring(24, 28)
       console.log('@module linkDevice.js\n@method tcpOnMessage\n@desc 设备子类型\n', subType)
       this.configWiFiParams()
     }
-    if (decodeMsg.type == '8068') {
+    if (decodeMsg.type === '8068') {
       // WiFi连接参数配置（0068指令）模组回报
-      if (decodeMsg.body == '0000') {
+      if (decodeMsg.body === '0000') {
         this.ifLowUDPRespond0068 = true
         this.switchWiFiMode()
       } else {
@@ -890,21 +890,21 @@ Page({
         this.configWiFiParams(error0068)
       }
     }
-    if (decodeMsg.type == '8081') {
+    if (decodeMsg.type === '8081') {
       // WiFi工作模式切换STA（0081指令）模组回报
       this.ifLowUDPRespond0081 = true
     }
-    if (decodeMsg.type == '8071') {
+    if (decodeMsg.type === '8071') {
       //上次错误响应
       let lastErrorCode = decodeMsg.body.substr(4, 2) //截取错误code
       console.log('8071 error code  tcp onmessage:', lastErrorCode, decodeMsg.body)
-      if (lastErrorCode != '00') {
+      if (lastErrorCode !== '00') {
         //00是正确
         app.addDeviceInfo.errorCode = '18' + this.padLen(lastErrorCode, 4)
         console.log('71 指令响应错误码:', app.addDeviceInfo.errorCode)
       }
     }
-    if (decodeMsg.type == '8070') {
+    if (decodeMsg.type === '8070') {
       //配网指令上行
       let code = parseInt(decodeMsg.body, 16)
       if (code == 0) {
@@ -932,7 +932,7 @@ Page({
         // tag a9：设备 SN，tag aa：A0
         for (let i = 0; i < tlvNumBit; i++) {
           tlvSnTag = msg.substr(readCursor, 2)
-          if (tlvSnTag == 'a9') {
+          if (tlvSnTag === 'a9') {
             snLen = msg.substr(readCursor + tlvSnTag.length, 2) // 0x20
             readCursor = readCursor + tlvSnTag.length + snLen.length // 14
             snLenBit = parseInt(snLen, 16) * 2
@@ -948,7 +948,7 @@ Page({
           }
           readCursor += snLenBit
           tlvA0Tag = msg.substr(readCursor, 2)
-          if (tlvA0Tag == 'aa') {
+          if (tlvA0Tag === 'aa') {
             readCursor += tlvA0Tag.length
             a0Len = msg.substr(readCursor, 2) // 02
             a0LenBit = parseInt(a0Len, 16) * 2 // 4
@@ -989,7 +989,7 @@ Page({
         // tlv 2,1,32 tag0006：设备 SN，tag0007：A0
         for (let i = 0; i < tlvNumBit; i++) {
           tlvSnTag = this.apUtils.reverse(msg.substr(readCursor + tlvNum.length, 4))
-          if (tlvSnTag[1] == '06') {
+          if (tlvSnTag[1] === '06') {
             readCursor += 6 // 16
             snLen = msg.substr(readCursor, 2) // 20
             snLenBit = parseInt(snLen, 16) * 2
@@ -1006,7 +1006,7 @@ Page({
           }
           readCursor += snLenBit
           tlvA0Tag = msg.substr(readCursor, 2) // 取高位
-          if (tlvA0Tag == '07') {
+          if (tlvA0Tag === '07') {
             readCursor += 4 // 舍弃tag低位+4
             a0Len = msg.substr(readCursor, 2) // 02
             a0LenBit = parseInt(a0Len, 16) * 2
@@ -1048,7 +1048,7 @@ Page({
     if (parseInt(tlvNum, 16) > 0) {
       // tlv格式解析
       let tlvTag = this.apUtils.reverse(msg.substr(readCursor + 2, 4))
-      if (tlvTag[1] == '02') {
+      if (tlvTag[1] === '02') {
         combinedNum = msg.substr(readCursor + 8, 2)
       }
       // 判断组合设备数量
@@ -1194,7 +1194,7 @@ Page({
       //名单不存在就不去二次确权
       return false
     }
-    let obj = firmwareList.find((item, index) => {
+    let obj = firmwareList.find((item) => {
       return item.applianceType == formatType && item.wifiVersion == softwareVersion
     })
     console.log('obj====', obj)
@@ -1222,7 +1222,7 @@ Page({
       confirmButtonColor: this.data.dialogStyle.confirmButtonColor,
     })
       .then(async (res) => {
-        if (res.action == 'confirm') {
+        if (res.action === 'confirm') {
           //设置
           clearInterval(timer)
           //非洗衣机重新获取配网指引
@@ -1243,7 +1243,7 @@ Page({
         }
       })
       .catch((error) => {
-        if (error.action == 'cancel') {
+        if (error.action === 'cancel') {
           //取消
           self.goLinkDeviceFailPage(4200) // 4200：自启热点无后确权
         }
@@ -1260,7 +1260,7 @@ Page({
       confirmButtonColor: this.data.dialogStyle.confirmButtonColor,
     })
       .then(async (res) => {
-        if (res.action == 'confirm') {
+        if (res.action === 'confirm') {
           try {
             //非洗衣机重新获取配网指引
             if (!app.addDeviceInfo.isWashingMachine) {
@@ -1279,7 +1279,7 @@ Page({
         }
       })
       .catch((error) => {
-        if (error.action == 'cancel') {
+        if (error.action === 'cancel') {
           wx.reLaunch({
             url: paths.index,
           })
@@ -1289,7 +1289,6 @@ Page({
 
   //获取配网指引
   getNetworkGuide() {
-    let self = this
     return new Promise((resolve, reject) => {
       let {type, sn8, mode, ssid, enterprise} = app.addDeviceInfo
       let reqData = {
@@ -1344,7 +1343,7 @@ Page({
     let netType = await this.nowNetType()
     await this.startWifi() //初始化wifi
     checkLinkFamilyWifTimer = setInterval(() => {
-      if (netType == 'wifi') {
+      if (netType === 'wifi') {
         wx.getConnectedWifi({
           success(res) {
             console.log('family wifi info', res)
@@ -1373,7 +1372,7 @@ Page({
       confirmButtonColor: this.data.dialogStyle.confirmButtonColor,
       showCancelButton: false,
     }).then((res) => {
-      if (res.action == 'confirm') {
+      if (res.action === 'confirm') {
         setTimeout(() => {
           // colmo 点击我知道了按钮，效果不明显，美居没问题，加个定时器影响不大
           self.init()
@@ -1431,13 +1430,12 @@ Page({
   //获取udp广播包消息
   async openbroadcast() {
     // var msg = '5A5A01114800920000000000992C3B130806151400000000000000000000000000000000000000007F75BD6B3E4F8B762E849C6E578D6590AB77CD526E688D5C3DBD16E5AA3495B6'
-    let {type} = app.addDeviceInfo
     this.data.udpBroadcastAddress = '255.255.255.255' //默认
     try {
       let res = await this.getLocalIPAddress()
       console.log('udp时本机当前ip====', res)
       this.data.curIp = res.localip
-      if (res.localip && res.localip != 'unknown' && res.netmask) {
+      if (res.localip && res.localip !== 'unknown' && res.netmask) {
         //有ip和子网掩码 则根据两者计算广播地址
         this.data.udpBroadcastAddress = addDeviceSDK.getBroadcastAddress(res.localip, res.netmask)
       }
@@ -1458,7 +1456,7 @@ Page({
         return
       }
       this.udp.bind()
-      this.udp.onListening(function (res) {
+      this.udp.onListening(function () {
         console.log('监听中...')
       })
       this.udp.onMessage((res) => {
@@ -1467,12 +1465,12 @@ Page({
           //udp广播信息
           let hexMsg = ab2hex(res.message).toLocaleLowerCase()
           console.log('udp message', hexMsg)
-          if (this.apUtils.decode2body(hexMsg).type == '807a') {
+          if (this.apUtils.decode2body(hexMsg).type === '807a') {
             this.data.udpMsgBody = this.apUtils.decode2body(hexMsg).body
             let adData = this.apUtils.parseUdpBody(this.data.udpMsgBody)
             console.log('获取udp返回', adData)
             this.setIfSupportAds(adData)
-            if (hexCharCodeToStr(adData.ssid).toLocaleLowerCase() == app.addDeviceInfo.ssid.toLocaleLowerCase()) {
+            if (hexCharCodeToStr(adData.ssid).toLocaleLowerCase() === app.addDeviceInfo.ssid.toLocaleLowerCase()) {
               //校验响应包
               resolve(adData)
             }
@@ -1536,11 +1534,11 @@ Page({
             //udp2广播信息
             let hexMsg = ab2hex(res.message).toLocaleLowerCase()
             console.log('udp2 message', hexMsg)
-            if (this.apUtils.decode2body(hexMsg).type == '007a') {
+            if (this.apUtils.decode2body(hexMsg).type === '007a') {
               this.data.udpMsgBody = this.apUtils.decode2body(hexMsg).body
               let adData = this.apUtils.parseUdpBody(this.data.udpMsgBody)
               this.setIfSupportAds(adData)
-              if (hexCharCodeToStr(adData.ssid).toLocaleLowerCase() == app.addDeviceInfo.ssid.toLocaleLowerCase()) {
+              if (hexCharCodeToStr(adData.ssid).toLocaleLowerCase() === app.addDeviceInfo.ssid.toLocaleLowerCase()) {
                 //过滤偶现没有版本信息的包
                 resolve(adData)
               }
@@ -1585,7 +1583,7 @@ Page({
           confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
         })
           .then((res) => {
-            if (res.action == 'confirm') {
+            if (res.action === 'confirm') {
               self.closeUdp()
               clearInterval(timer) //停止计时
               clearInterval(udpCycTimer) //停止udp重试
@@ -1596,7 +1594,7 @@ Page({
             }
           })
           .catch((error) => {
-            if (error.action == 'cancel') {
+            if (error.action === 'cancel') {
               clearInterval(udpCycTimer) //停止udp重试
               clearInterval(timer) //停止计时
               self.closeUdp()
@@ -1722,7 +1720,7 @@ Page({
       wx.getNetworkType({
         success(res) {
           const networkType = res.networkType
-          if (networkType == 'wifi') {
+          if (networkType === 'wifi') {
             //如果当前已经连接wifi,则直接连接
             self.tcp.connect({
               address: address,
@@ -1733,7 +1731,7 @@ Page({
             //如果当前还没有连接wifi，通过监听wifi状态变化，转为wifi后再连接
             wx.onNetworkStatusChange(function connectTCPOnWiFi(res) {
               console.log('@module linkDevice.js\n@method apSendWifiInfo\n@desc 网络状态变化回调\n', res)
-              if (res.isConnected && res.networkType == 'wifi') {
+              if (res.isConnected && res.networkType === 'wifi') {
                 if (self.tcp) {
                   self.tcp.connect({
                     address: address,
@@ -1829,9 +1827,9 @@ Page({
    */
   configWiFiParams(error) {
     this.data.randomCode = getRandomString(32).toLocaleLowerCase() // 生成随机数，但是不需要发送给模组
-    let info = new Object()
+    let info = {}
     info.encryMode = this.data.bindWifiInfo.PswContent ? '02' : '00' // WiFi加密方式：有密码的传2，无密码的传0
-    if (error?.code == '04' && info.encryMode == '02') {
+    if (error?.code === '04' && info.encryMode === '02') {
       info.encryMode = '01'
     }
     info.ssidLen = toHexString([this.data.bindWifiInfo.SSIDLength])
@@ -2055,7 +2053,7 @@ Page({
             console.warn('---有组合设备，查询主设备确权中---', data)
             app.addDeviceInfo.status = data.data.status
             app.addDeviceInfo.randomCode = self.data.blueRandomCode || self.data.randomCode
-            if (data.data.status == '1' || data.data.status == '2') {
+            if (data.data.status === '1' || data.data.status === '2') {
               wx.reLaunch({
                 url: `/package-distribution-meiju/pages/addDevice/pages/afterCheck/afterCheck?backTo=/pages/index/index&randomCode=${
                   self.data.blueRandomCode || self.data.randomCode
@@ -2077,7 +2075,7 @@ Page({
           this.goLinkDeviceFailPage()
         }
       },
-      async (error) => {
+      async () => {
         this.data.timeoutNum = this.data.timeoutNum + 1
         console.log('接口超时错误=========', this.data.timeoutNum)
         if (this.data.timeoutNum == 4) {
@@ -2094,13 +2092,13 @@ Page({
             confirmButtonColor: this.data.dialogStyle.confirmButtonColor,
           })
             .then((res) => {
-              if (res.action == 'confirm') {
+              if (res.action === 'confirm') {
                 self.data.isMamualLinkFamilyWifi = true
                 self.switchWifi(false)
               }
             })
             .catch((error) => {
-              if (error.action == 'cancel') {
+              if (error.action === 'cancel') {
                 self.timing()
               }
             })
@@ -2142,7 +2140,7 @@ Page({
       deviceId: deviceId,
       sessionKey: '',
       advertisData: device.advertisData,
-      success: (res) => {
+      success: () => {
         console.log('blue success=============')
         let bindType = 1
         app.globalData.DeviceComDecorator = new DeviceComDecorator(app.bluetoothConn, deviceId, bindType)
@@ -2216,7 +2214,7 @@ Page({
           if (mode != 20) return
           if (this.data.isCancelHuaLinOn) return
           console.log('receiveMessage eeeeeeeeee', data)
-          if (ab2hex(data).slice(0, 12) == '303030303030') {
+          if (ab2hex(data).slice(0, 12) === '303030303030') {
             let snAsiiArr = hexString2Uint8Array(ab2hex(data))
             let sn = asiiCode2Str(snAsiiArr)
             this.data.plainSn = sn
@@ -2448,17 +2446,7 @@ Page({
   },
   clickCancel() {
     let {
-      deviceId,
-      deviceName,
-      mac,
-      type,
-      sn8,
-      sn,
-      moduleType,
-      blueVersion,
       mode,
-      moduleVersion,
-      cloudBackDeviceInfo,
     } = app.addDeviceInfo
     let linkNet = ''
     if (mode === 3 || mode === 21) {
@@ -2634,7 +2622,6 @@ Page({
         .request('applianceList', reqData, 'POST', '', timeout)
         .then((resp) => {
           console.log('默认家庭信息', resp.data.data.homeList[0])
-          this.checkCurrentFamilyPermission(null, resp.data.data.homeList[0])
           this.setData({
             familyInfo: resp.data.data.homeList[0],
           })
@@ -2895,12 +2882,12 @@ Page({
     this.setData({
       brand: this.data.brand,
       dms_img_lack:
-        this.data.brand != 'colmo' ? './assets/img/dms_img_lack@3x.png' : './assets/img/dms_img_lack_colmo@3x.png',
+        this.data.brand !== 'colmo' ? './assets/img/dms_img_lack@3x.png' : './assets/img/dms_img_lack_colmo@3x.png',
       // meiPhone:imgUrl+ imgesList['meiPhone'],
       meiPhone:
         this.data.brand !== 'colmo' ? './assets/img/ic_meiphone@1x.png' : './assets/img/ic_meiphone_colmo@1x.png',
       // loadingImg:imgUrl+ imgesList['loading'],
-      loadingImg: this.data.brand != 'colmo' ? './assets/img/loading_spot.png' : './assets/img/loading_spot_colmo.png',
+      loadingImg: this.data.brand !== 'colmo' ? './assets/img/loading_spot.png' : './assets/img/loading_spot_colmo.png',
       closeImg: imgUrl + imgesList['closeImg'],
     })
     // 清空组合设备数据

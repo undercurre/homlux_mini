@@ -190,6 +190,7 @@ module.exports = Behavior({
   data: {
     // deviceInfo: '',
     isIpx: app.globalData.isPx,
+    imgBaseUrl: imgBaseUrl.url,
     imges: {
       meiPhone: '/addDeviceAboutImg/ic_meiphone@1x.png',
       zhuyi: '/addDeviceAboutImg/link_ic_zhuyi.png',

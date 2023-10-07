@@ -16,6 +16,7 @@ const app = {
     userData: {
       key: '',
     },
+    isPx: false,
     isCanClearFound: true,
     systemInfo: {},
   }

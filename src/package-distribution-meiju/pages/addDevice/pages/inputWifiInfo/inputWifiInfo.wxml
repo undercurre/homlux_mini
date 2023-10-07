@@ -2,7 +2,7 @@
   <nav-bar leftArrow bind:leftTap="goBack"></nav-bar>
 
   <block wx:if="{{isCanAddDevice}}">
-    <view class="wifi-container theme-font-color" style="padding-top:{{80}}px">
+    <view class="wifi-container theme-font-color">
       <view class="input-wifi" wx:if="{{netType==1}}">
         <view wx:if="{{mode==31}}" class="blue-after-wifi">
           <!-- <text>输入WiFi信息让设备联网\n远程控制更方便\n</text> -->

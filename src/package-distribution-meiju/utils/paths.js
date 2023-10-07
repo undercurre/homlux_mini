@@ -1,5 +1,6 @@
 module.exports = {
   //已知在使用的配网页面
+  index: '/pages/index/index',
   inputWifiInfo: '/package-distribution-meiju/pages/addDevice/pages/inputWifiInfo/inputWifiInfo',
   addGuide: '/package-distribution-meiju/pages/addDevice/pages/addGuide/addGuide',
   linkAp: '/package-distribution-meiju/pages/addDevice/pages/linkAp/linkAp',

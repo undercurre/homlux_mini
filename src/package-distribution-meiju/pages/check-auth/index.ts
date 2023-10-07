@@ -6,7 +6,7 @@ import {queryGuideInfo, queryUserThirdPartyInfo} from '../../../apis/index'
 import {Logger, storage} from "../../../utils/index";
 import {addDeviceSDK} from '../../utils/addDeviceSDK'
 import {addGuide, inputWifiInfo} from '../../utils/paths.js'
-import Toast from "@vant/weapp/lib/toast/toast";
+import Toast from '@vant/weapp/toast/toast'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const {getLinkType} = require("../assets/js/utils.js")
 
@@ -151,7 +151,13 @@ ComponentWithComputed({
         enterprise: '0000',
         fm: 'selectType',
         linkType: getLinkType(mode),
-        guideInfo: [guideInfo],
+        guideInfo: [{
+          connectDesc: guideInfo.mainConnectTypeDesc,
+          connectUrlA: guideInfo.mainConnectTypeUrlList[0],
+          isAutoConnect: guideInfo.isAutoConnect,
+          code: guideInfo.modelCode,
+          wifiFrequencyBand: guideInfo.wifiFrequencyBand,
+        }],
       }
       const modeArr = addDeviceSDK.supportAddDeviceMode
 

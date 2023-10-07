@@ -102,7 +102,7 @@ Page({
       }
     },
     showSwitchFlag() {
-      return this.data.guideInfo.length > 1 ? true : false
+      return this.data.guideInfo.length > 1
     },
     isShowBleWifiguide() {
       let { blueVersion, mode, guideType, noFound } = this.data
@@ -156,7 +156,7 @@ Page({
     if (!deviceImg || !deviceName) {
       // 设备图片或名称缺失则补全
       let typeAndName
-      if (fm == 'selectType') {
+      if (fm === 'selectType') {
         typeAndName = this.getDeviceImgAndName(type)
       } else {
         typeAndName = this.getDeviceImgAndName(type, sn8)
@@ -191,8 +191,8 @@ Page({
         clearInterval(timer)
         // 修改没有开蓝牙时，靠近确权页会跑到配网指引页的问题
         if (
-          fm == 'noActive' ||
-          fm == 'nfc' ||
+          fm === 'noActive' ||
+          fm === 'nfc' ||
           isFromScanCode ||
           blueVersion == 1 ||
           mode == 0 ||
@@ -208,7 +208,7 @@ Page({
             guideType: 'set',
           })
         }
-        if ((mode == 3 && ifNearby) || mode == 20 || (mode == 30 && fm == 'autoFound')) {
+        if ((mode == 3 && ifNearby) || mode == 20 || (mode == 30 && fm === 'autoFound')) {
           this.setData({
             guideType: 'near',
           })
@@ -220,12 +220,12 @@ Page({
     }
 
     if (
-      fm == 'noActive' ||
-      fm == 'nfc' ||
+      fm === 'noActive' ||
+      fm === 'nfc' ||
       isFromScanCode ||
       blueVersion == 1 ||
       mode == 0 ||
-      (mode == 30 && fm != 'autoFound') ||
+      (mode == 30 && fm !== 'autoFound') ||
       mode == 5 ||
       mode == 9 ||
       mode == 10 ||
@@ -256,11 +256,9 @@ Page({
         }
         app.globalData.scanObj = scanObj
         console.log(app.globalData.scanObj)
-        // if(fm == 'autoFound' || fm == 'selectType' || fm == 'scanCode' ) {
         this.checkSetConfig(type, sn8, fm)
-        // }
       }
-      if (mode == 0 && fm != 'autoFound' && !hadChangeBlue) {
+      if (mode == 0 && fm !== 'autoFound' && !hadChangeBlue) {
         // AP配网非自发现入口，扫描蓝牙信号
         this.searchBlueByType(type, sn8, ssid).then((device) => {
           console.log('@module addGuide.js\n@method initAddGuide\n@desc 匹配到设备信息\n', device)
@@ -319,7 +317,7 @@ Page({
         })
       }
     }
-    if ((mode == 3 && ifNearby) || mode == 20 || (mode == 30 && fm == 'autoFound')) {
+    if ((mode == 3 && ifNearby) || mode == 20 || (mode == 30 && fm === 'autoFound')) {
       if (mode == 3) app.addDeviceInfo.ifNearby = false
       this.setData({
         guideType: 'near',
@@ -423,12 +421,6 @@ Page({
       })
   },
   getAddDeviceInfo() {},
-  //跳转反馈
-  feedback() {
-    wx.navigateTo({
-      url: paths.feedback,
-    })
-  },
   //获取指引格式化显示
   getGuideFormat(guideInfo, fm) {
     let {
@@ -442,7 +434,7 @@ Page({
       sn,
     } = app.addDeviceInfo
     //guideInfo 有可能为null, 逻辑都进不去，没有请求到配网指引，故添加 guideInfo是否存在的判断
-    if (guideInfo && guideInfo.length != 0) {
+    if (guideInfo && guideInfo.length !== 0) {
       //有提前获取的配网指引
       this.setData({
         ['checkGuideInfo.connectDesc']: this.guideDescFomat(guideInfo[0].connectDesc),
@@ -628,7 +620,7 @@ Page({
   },
   //本地蓝牙跳转  储存
   async openPlugin() {
-    let { type, A0, sn8, deviceName, deviceImg, linkType } = app.addDeviceInfo
+    let { type, A0, sn8, deviceName, deviceImg } = app.addDeviceInfo
     let currentHomeGroupId = app.globalData.currentHomeGroupId
     let typeFomat = type.includes('0x') ? type.toLocaleUpperCase() : '0x' + type.toLocaleUpperCase()
     console.log('is has plugin', isSupportPlugin(typeFomat, sn8), currentHomeGroupId)
@@ -1047,11 +1039,11 @@ Page({
   async makeSure(e) {
     e = e.detail
     console.log('kkkkkkkkk', e)
-    if (e.flag == 'bottomBtn') {
-      if (e.type == 'confirm') {
+    if (e.flag === 'bottomBtn') {
+      if (e.type === 'confirm') {
         this.initAddGuide()
       }
-      if (e.type == 'cancel') {
+      if (e.type === 'cancel') {
         wx.switchTab({
           url: paths.index,
         })
@@ -1062,8 +1054,8 @@ Page({
   clickLink(e) {
     console.log('[clich Link]', e)
     e = e.detail
-    if (e.flag == 'lookGuide') {
-      if (e.type == 'blue') {
+    if (e.flag === 'lookGuide') {
+      if (e.type === 'blue') {
         wx.navigateTo({
           url: paths.blueGuide + `?permissionTypeList=${JSON.stringify(e.permissionTypeList)}`,
         })
