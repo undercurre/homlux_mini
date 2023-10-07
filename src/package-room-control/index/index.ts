@@ -386,20 +386,20 @@ ComponentWithComputed({
     }, 4000),
 
     // 直接更新store数据, 移除列表中的设备
-    removeDevice(deviceId: string) {
-      console.log('remove', deviceId)
-      const newDeviceList = [] as Device.DeviceItem[]
-      deviceStore.deviceList.forEach((device) => {
-        if (deviceId !== device.deviceId) {
-          newDeviceList.push({ ...device })
-        }
-      })
-      runInAction(() => {
-        deviceStore.deviceList = newDeviceList
-      })
+    // removeDevice(deviceId: string) {
+    //   console.log('remove', deviceId)
+    //   const newDeviceList = [] as Device.DeviceItem[]
+    //   deviceStore.deviceList.forEach((device) => {
+    //     if (deviceId !== device.deviceId) {
+    //       newDeviceList.push({ ...device })
+    //     }
+    //   })
+    //   runInAction(() => {
+    //     deviceStore.deviceList = newDeviceList
+    //   })
 
-      this.updateQueue({ isRefresh: true })
-    },
+    //   this.updateQueue({ isRefresh: true })
+    // },
 
     // 页面滚动
     onPageScroll(e: { detail: { scrollTop: number } }) {
@@ -483,7 +483,7 @@ ComponentWithComputed({
             originDevice = this.data.devicePageList[groupIndex][index]
             const diffData = {} as IAnyObject
             // review 细致到字段的diff
-            const renderList = ['deviceName', 'onLineStatus', 'select'] // 需要刷新界面的字段
+            const renderList = ['deviceName', 'onLineStatus'] // 需要刷新界面的字段
 
             renderList.forEach((key) => {
               const newVal = _get(device!, key)
@@ -1112,7 +1112,7 @@ ComponentWithComputed({
       const OldOnOff = device.mzgdPropertyDTOList[modelName].power
       const newOnOff = OldOnOff ? 0 : 1
 
-      // 即时改变视图，提升操作手感
+      // 不等待云端，即时改变视图，提升操作手感 // TODO 不插入队列
       device.mzgdPropertyDTOList[modelName].power = newOnOff
       this.updateQueue(device)
       this.setData({
@@ -1200,16 +1200,9 @@ ComponentWithComputed({
         return
       }
 
-      // 更新选中状态样式
+      // 更新选中状态样式  // TODO 不加入队列
       const deviceId = this.data.checkedList[0]
-      const device = {
-        deviceId,
-        uniId: deviceId,
-        select: false,
-      } as DeviceCard
-      device.deviceId = this.data.checkedList[0]
-      device.uniId = this.data.checkedList[0]
-      this.updateQueue(device)
+      this.toSelect(deviceId, false)
 
       // 收起弹窗
       this.setData({
