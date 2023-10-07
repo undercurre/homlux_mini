@@ -222,14 +222,14 @@ ComponentWithComputed({
               message: '删除成功',
               zIndex: 9999,
             })
-            this.triggerEvent('updateListOnCloud')
+            this.triggerEvent('updateList')
             this.handleClose()
           } else {
             Toast({
               message: '删除失败',
               zIndex: 9999,
             })
-            this.triggerEvent('updateListOnCloud')
+            this.triggerEvent('updateList')
           }
         })
         .catch((e) => console.log(e))
@@ -333,7 +333,7 @@ ComponentWithComputed({
               .catch((e) => console.log(e))
           }, TIME_OUT)
         } else {
-          this.triggerEvent('updateListOnCloud')
+          this.triggerEvent('updateList')
 
           Toast({
             message: '移动失败',
@@ -367,7 +367,7 @@ ComponentWithComputed({
       if (timeId) {
         clearTimeout(timeId)
       }
-      this.triggerEvent('updateListOnCloud')
+      this.triggerEvent('updateList')
       Toast({
         message: '移动成功',
         zIndex: 9999,
@@ -440,13 +440,13 @@ ComponentWithComputed({
             })
             this.handleClose()
             await Promise.all([homeStore.updateRoomCardList(), deviceStore.updateSubDeviceList()])
-            this.triggerEvent('updateList', device)
+            this.triggerEvent('updateDevice', device)
 
             // 如果修改的是面板名称，则需要同时更新面板其余的按键对应的卡片
             if (type === '0') {
               deviceStore.deviceFlattenList.forEach((_device) => {
                 if (_device.deviceId === deviceId && _device.switchInfoDTOList[0].switchId !== switchId) {
-                  this.triggerEvent('updateList', _device)
+                  this.triggerEvent('updateDevice', _device)
                 }
               })
             }
@@ -496,7 +496,7 @@ ComponentWithComputed({
             this.handleClose()
             await Promise.all([homeStore.updateRoomCardList(), deviceStore.updateSubDeviceList()])
             device.deviceName = this.data.editDeviceName // 用于传参，更新视图
-            this.triggerEvent('updateList', device)
+            this.triggerEvent('updateDevice', device)
           } else {
             Toast({
               message: '修改失败',

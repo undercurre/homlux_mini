@@ -88,13 +88,13 @@
 </view>
 
 <!-- 设备控制弹窗 -->
-<device-control-popup controlPopup="{{controlPopup}}" checkedList="{{checkedList}}" lightStatus="{{lightStatus}}" curtainStatus="{{curtainStatus}}" checkedType="{{checkedType}}" bind:popMove="handlePopMove" bind:updateList="updateQueue"></device-control-popup>
+<device-control-popup controlPopup="{{controlPopup}}" checkedList="{{checkedList}}" lightStatus="{{lightStatus}}" curtainStatus="{{curtainStatus}}" checkedType="{{checkedType}}" bind:popMove="handlePopMove" bind:updateDevice="updateQueue"></device-control-popup>
 
 <before-add-scene-popup show="{{showBeforeAddScenePopup}}" bind:close="handleBeforeAddScenePopupClose" bind:next="handleBeforeAddScenePopupNext" bind:delete="handleBeforeAddScenePopupDelete" />
 
 <add-scene-popup actions="{{addSceneActions}}" show="{{showAddScenePopup}}" bind:close="handleAddScenePopupClose" bind:confirm="handleShowAddSceneSuccess" bind:return="handleAddScenePopupReturn" />
 
-<batch-edit bind:updateList="updateQueue" bind:updateListOnCloud="reloadDataThrottle" bind:close="exitEditMode" bind:selectAll="editSelectAll" editSelectMode="{{editSelectMode}}" editSelectList="{{editSelectList}}"></batch-edit>
+<batch-edit bind:updateDevice="updateQueue" bind:updateList="reloadDataThrottle" bind:close="exitEditMode" bind:selectAll="editSelectAll" editSelectMode="{{editSelectMode}}" editSelectList="{{editSelectList}}"></batch-edit>
 
 <van-toast id="van-toast" />
 
