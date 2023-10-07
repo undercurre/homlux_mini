@@ -169,7 +169,7 @@ ComponentWithComputed({
       bleDevicesBinding.store.stopBLeDiscovery()
 
       // 清除闪烁指令
-      this.stopFlash()
+      this.stopFlash(this.data.flashInfo.mac)
 
       // 清除推送监听定时器
       Object.values(this.data._deviceMap).forEach((item) => item.bindTimeoutId && clearTimeout(item.bindTimeoutId))
@@ -242,7 +242,7 @@ ComponentWithComputed({
     toggleDevice(e: WechatMiniprogram.CustomEvent) {
       const index = e.currentTarget.dataset.index as number
       const item = bleDevicesBinding.store.bleDeviceList[index]
-      this.stopFlash()
+      this.stopFlash(this.data.flashInfo.mac)
 
       item.isChecked = !item.isChecked
 
@@ -400,7 +400,7 @@ ComponentWithComputed({
     async beginAddBleDevice(list: Device.ISubDevice[]) {
       try {
         // 先关闭可能正在连接的子设备
-        await this.stopFlash()
+        await this.stopFlash(this.data.flashInfo.mac)
 
         Logger.debug('-------开始子设备配网------')
         this.data._startTime = dayjs().valueOf()
@@ -683,7 +683,7 @@ ComponentWithComputed({
      * @param event
      */
     editDevice(event: WechatMiniprogram.BaseEvent) {
-      this.stopFlash()
+      this.stopFlash(this.data.flashInfo.mac)
       const { id } = event.currentTarget.dataset
 
       const item = bleDevicesBinding.store.bleDeviceList.find((item) => item.deviceUuid === id) as Device.ISubDevice
@@ -731,22 +731,27 @@ ComponentWithComputed({
      */
     async tryControl(event: WechatMiniprogram.CustomEvent) {
       const { mac: oldMac } = this.data.flashInfo
-      await this.stopFlash()
       const { id } = event.currentTarget.dataset
 
       const bleDeviceItem = bleDevicesBinding.store.bleDeviceList.find(
         (item) => item.deviceUuid === id,
       ) as Device.ISubDevice
 
-      // 点击正在闪烁的设备时，直接停止闪烁逻辑即可终止逻辑
+      // 切换正在闪烁的设备时
+      if (oldMac !== bleDeviceItem.mac) {
+        this.setData({
+          'flashInfo.isConnecting': true,
+          'flashInfo.mac': bleDeviceItem.mac,
+        })
+      }
+
+      await this.stopFlash(oldMac)
+
+      // q取消正在闪烁的设备时，直接停止闪烁逻辑即可
       if (oldMac === bleDeviceItem.mac) {
         return
       }
 
-      this.setData({
-        'flashInfo.isConnecting': true,
-        'flashInfo.mac': bleDeviceItem.mac,
-      })
       this.keepFlash(bleDeviceItem)
     },
 
@@ -754,13 +759,17 @@ ComponentWithComputed({
     async keepFlash(bleDevice: Device.ISubDevice) {
       const res = await bleDevice.client.flash()
 
-      this.setData({
-        'flashInfo.isConnecting': false,
-      })
+      // 结束找一找按钮的loading状态
+      if (this.data.flashInfo.isConnecting) {
+        this.setData({
+          'flashInfo.isConnecting': false,
+        })
+      }
 
       console.log('flash', res, this.data.flashInfo.mac)
+      // 下发失败后马上重试下发
       if (!res.success) {
-        this.stopFlash()
+        this.keepFlash(bleDevice)
         return
       }
 
@@ -772,21 +781,21 @@ ComponentWithComputed({
     /**
      * 停止闪烁
      */
-    async stopFlash() {
-      if (!this.data.flashInfo.mac) {
+    async stopFlash(mac: string) {
+      if (!mac) {
         return
       }
-
       clearTimeout(this.data.flashInfo.timeId)
 
-      const bleDevice = bleDevicesBinding.store.bleDeviceList.find(
-        (item) => item.mac === this.data.flashInfo.mac,
-      ) as Device.ISubDevice
+      const bleDevice = bleDevicesBinding.store.bleDeviceList.find((item) => item.mac === mac) as Device.ISubDevice
 
-      this.setData({
-        'flashInfo.isConnecting': false,
-        'flashInfo.mac': '',
-      })
+      // 如果取消当前选择的蓝牙设备，则终止loading和闪烁状态
+      if (mac === this.data.flashInfo.mac) {
+        this.setData({
+          'flashInfo.isConnecting': false,
+          'flashInfo.mac': '',
+        })
+      }
 
       await bleDevice.client.close()
     },
