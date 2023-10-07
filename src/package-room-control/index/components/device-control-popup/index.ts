@@ -751,8 +751,6 @@ ComponentWithComputed({
 
       this.data._switchRelInfo.switchUniId = '' // 置空标志位，否则不会更新数据
       this.updateLinkInfo()
-      // 有ws上报，暂时取消整个列表的刷新
-      // this.triggerEvent('updateList')
 
       hideLoading()
     },
@@ -774,7 +772,7 @@ ComponentWithComputed({
       runInAction(() => {
         device.mzgdPropertyDTOList['light'][type] = this.data.lightInfoInner[type]
       })
-      this.triggerEvent('updateList', device)
+      this.triggerEvent('updateDevice', device)
 
       const res = await sendDevice({
         proType: device.proType,
@@ -789,7 +787,7 @@ ComponentWithComputed({
 
       if (!res.success) {
         device.mzgdPropertyDTOList['light'][type] = oldValue
-        this.triggerEvent('updateList', device)
+        this.triggerEvent('updateDevice', device)
         Toast('控制失败')
       }
     },
