@@ -747,7 +747,7 @@ ComponentWithComputed({
 
       await this.stopFlash(oldMac)
 
-      // q取消正在闪烁的设备时，直接停止闪烁逻辑即可
+      // 取消正在闪烁的设备时，直接停止闪烁逻辑即可
       if (oldMac === bleDeviceItem.mac) {
         return
       }
@@ -766,10 +766,17 @@ ComponentWithComputed({
         })
       }
 
-      console.log('flash', res, this.data.flashInfo.mac)
-      // 下发失败后马上重试下发
+      console.log(`【${bleDevice.mac}】flash`, res, this.data.flashInfo.mac)
+
+      if (this.data.flashInfo.mac !== bleDevice.mac) {
+        await bleDevice.client.close()
+        return
+      }
+      // 下发失败且失败的设备与当前选择的闪烁的设备一致后停止闪烁状态
       if (!res.success) {
-        this.keepFlash(bleDevice)
+        this.setData({
+          'flashInfo.mac': '',
+        })
         return
       }
 
