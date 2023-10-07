@@ -759,6 +759,14 @@ ComponentWithComputed({
     async keepFlash(bleDevice: Device.ISubDevice) {
       const res = await bleDevice.client.flash()
 
+      // 判断当前执行闪烁命令的设备是否和选中的设备一致，否则终止逻辑
+      if (this.data.flashInfo.mac !== bleDevice.mac) {
+        if (res.success) {
+          await bleDevice.client.close()
+        }
+        return
+      }
+
       // 结束找一找按钮的loading状态
       if (this.data.flashInfo.isConnecting) {
         this.setData({
@@ -768,10 +776,6 @@ ComponentWithComputed({
 
       console.log(`【${bleDevice.mac}】flash`, res, this.data.flashInfo.mac)
 
-      if (this.data.flashInfo.mac !== bleDevice.mac) {
-        await bleDevice.client.close()
-        return
-      }
       // 下发失败且失败的设备与当前选择的闪烁的设备一致后停止闪烁状态
       if (!res.success) {
         this.setData({
