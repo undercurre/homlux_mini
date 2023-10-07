@@ -787,9 +787,7 @@ ComponentWithComputed({
       }
       clearTimeout(this.data.flashInfo.timeId)
 
-      const bleDevice = bleDevicesBinding.store.bleDeviceList.find(
-        (item) => item.mac === mac,
-      ) as Device.ISubDevice
+      const bleDevice = bleDevicesBinding.store.bleDeviceList.find((item) => item.mac === mac) as Device.ISubDevice
 
       // 如果取消当前选择的蓝牙设备，则终止loading和闪烁状态
       if (mac === this.data.flashInfo.mac) {
