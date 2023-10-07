@@ -4,28 +4,18 @@
   <view class="page2 theme-bg-color">
     <nav-bar leftArrow bind:leftTap="goBack"></nav-bar>
 
-    <view class="andriod" wx:if="{{system=='Android'}}">
+    <view class="andriod" wx:if="{{system==='Android'}}">
       <view class="title-box">
         <view class="ap-title">用手机连上{{deviceName}}无线网络</view>
       </view>
-      <!-- <view
-        class="andriod-guide"
-        style="background:url('{{imgBaseUrl+imges.apName}}') no-repeat; background-size: 686rpx 384rpx;"
-      >
-        <view class="ap-name">{{brandName}}_{{tools.toLocaleLowerCase(type)}}_xxxx</view>
-      </view> -->
       <view class="andriod-guide" style="background-size: 686rpx 384rpx">
-        <image wx:if="{{brandName=='bugu'}}" class="ap-img" src="{{android_linkDeviceWifiBugu}}"></image>
+        <image wx:if="{{brandName==='bugu'}}" class="ap-img" src="{{android_linkDeviceWifiBugu}}"></image>
 
         <image wx:else class="gif-size" src="{{android_ApName}}"></image>
       </view>
-      <!-- <image src="{{imgBaseUrl+imges.apName}}" alt="" class="ap-img"></image> -->
-      <!-- 提前加载图片 -->
-      <image style="display: none" src="{{deviceImg}}" class="device-img"></image>
       <view class="content">
         <view class="one">
           <view class="desc r">
-            <!-- <view class="num">1</view> -->
             <view class="text theme-font-color">请到手机系统设置页连上如下无线网络，连接后返回本页面</view>
           </view>
           <view class="info">
@@ -41,12 +31,6 @@
             </view>
           </view>
         </view>
-        <!-- <view class="two">
-          <view class="desc r">
-            <view class="num">2</view>
-            <view class="text">连上{{deviceName}}WiFi后返回此页面</view>
-          </view>
-        </view> -->
         <view class="detail-title special-font-color" bindtap="switchShowDetail">
           <text class="detail-title-text">查看详细连接步骤</text>
           <image class="expand" src="{{isShowStepDetail?detailExpand:detailPackUp}}"></image>
@@ -80,16 +64,9 @@
           </view>
         </view>
       </view>
-      <!-- <button class="switch-wifi-btn" bindtap="goToSetPage">{{linkDeviceWifi}}</button> -->
     </view>
     <view class="ios" wx:else>
       <view class="title-box"> <view class="ap-title">用手机连上{{deviceName}}无线网络</view></view>
-      <!-- <view
-        class="ap-img"
-        style="background:url('{{imgBaseUrl+imges.apName}}') no-repeat; background-size: 686rpx 384rpx;"
-      >
-        <view class="ap-name">{{brandName}}_{{tools.toLocaleLowerCase(type)}}_xxxx</view>
-      </view> -->
       <view class="guide-gif">
         <!-- 需要包装一层盒子，不然ios上会有颜色重影 -->
         <view>
@@ -119,8 +96,8 @@
       <view class="linkAp-step">
         <view class="detail-stepes" wx:if="{{isShowStepDetail}}">
           <view class="detail-content">
-            <view class="detail-one detail-step" style="height:{{brand=='colmo'?'124rpx':'128rpx'}} ">
-              <text class="detail-text" style="width:{{brand=='colmo'?'90%':'100%'}} "> <text class="step-num">1</text> 点击下方“去连接”进入系统设置页</text>
+            <view class="detail-one detail-step" style="height:{{brand==='colmo'?'124rpx':'128rpx'}} ">
+              <text class="detail-text" style="width:{{brand==='colmo'?'90%':'100%'}} "> <text class="step-num">1</text> 点击下方“去连接”进入系统设置页</text>
             </view>
             <view class="line"></view>
             <view class="detail-two detail-step">
@@ -172,11 +149,7 @@
 
     <view class="bottom-button" style="padding-bottom: {{isIpx?'78rpx':'48rpx'}}; ">
       <view class="no-found-wifi special-font-color" bindtap="clickNoFoundWifi">找不到{{deviceName}}无线网络?</view>
-      <!-- <button class="switch-wifi-btn" bindtap="goLinkDeviceWifi" style="opacity:{{readingTimer?0.2:1}}">
-        {{linkDeviceWifi}}
-        <text wx:if="{{readingTimer}}" class="readingTimer">({{readingTimer}}s)</text>
-      </button> -->
-      <view class="switch-wifi-btn2 {{ brand=='colmo'&& readingTimer?'colmo-stop-go-link':'' }}" bindtap="goLinkDeviceWifi" style="opacity:{{brand!=='colmo'&&readingTimer?0.2:1}}">
+      <view class="switch-wifi-btn2 {{ brand==='colmo'&& readingTimer?'colmo-stop-go-link':'' }}" bindtap="goLinkDeviceWifi" style="opacity:{{brand!=='colmo'&&readingTimer?0.2:1}}">
         {{linkDeviceWifi}}
         <text wx:if="{{readingTimer}}" class="readingTimer">({{readingTimer}}s)</text>
       </view>

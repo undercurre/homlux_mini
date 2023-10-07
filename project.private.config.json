@@ -156,6 +156,13 @@
           "query": "",
           "launchMode": "default",
           "scene": null
+        },
+        {
+          "name": "连接热点linkAP",
+          "pathName": "package-distribution-meiju/pages/addDevice/pages/linkAp/linkAp",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
         }
       ]
     }

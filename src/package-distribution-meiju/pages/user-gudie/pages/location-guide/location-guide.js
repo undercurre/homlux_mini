@@ -1,6 +1,6 @@
-import { imgBaseUrl } from '../../../../common/js/img'
+import { meijuImgDir } from '../../../../../config/img'
 import app from '../../../../common/app'
-const loactionImgUrl = imgBaseUrl
+const loactionImgUrl = meijuImgDir
 Page({
   /**
    * 页面的初始数据
@@ -18,19 +18,19 @@ Page({
           title: '打开手机定位服务',
           stepes: [
             {
-              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudie/iOS_dingwei_01_1.png',
+              img: loactionImgUrl + '/user-gudie/iOS_dingwei_01_1.png',
               text: '1.点击手机【设置】',
             },
             {
-              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudie/ios_dingwei_01_2.png',
+              img: loactionImgUrl + '/user-gudie/ios_dingwei_01_2.png',
               text: '2.找到并点选【隐私】',
             },
             {
-              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudie/ios_dingwei_01_3.png',
+              img: loactionImgUrl + '/user-gudie/ios_dingwei_01_3.png',
               text: '3.点击【定位服务】',
             },
             {
-              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudie/ios_dingwei_01_4.png',
+              img: loactionImgUrl + '/user-gudie/ios_dingwei_01_4.png',
               text: '4.打开【定位服务】',
             },
           ],
@@ -39,19 +39,19 @@ Page({
           title: '允许微信使用定位',
           stepes: [
             {
-              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudie/ios_dingwei_02_1.png',
+              img: loactionImgUrl + '/user-gudie/ios_dingwei_02_1.png',
               text: '1.点击手机【设置】',
             },
             {
-              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudie/ios_dingwei_02_2.png',
+              img: loactionImgUrl + '/user-gudie/ios_dingwei_02_2.png',
               text: '2.找到并点选【微信】',
             },
             {
-              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudie/ios_dingwei_02_3.png',
+              img: loactionImgUrl + '/user-gudie/ios_dingwei_02_3.png',
               text: '3.点选【位置】',
             },
             {
-              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudie/ios_dingwei_02_4.png',
+              img: loactionImgUrl + '/user-gudie/ios_dingwei_02_4.png',
               text: '4.选择【使用App期间】',
             },
           ],
@@ -60,23 +60,23 @@ Page({
           title: '允许微信使用定位',
           stepes: [
             {
-              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudie/ios_dingwei_02_1.png',
+              img: loactionImgUrl + '/user-gudie/ios_dingwei_02_1.png',
               text: '1.点击手机【设置】',
             },
             {
-              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudie/ios_dingwei_02_2.png',
+              img: loactionImgUrl + '/user-gudie/ios_dingwei_02_2.png',
               text: '2.找到并点选【微信】',
             },
             {
-              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudie/ios_dingwei_02_3.png',
+              img: loactionImgUrl + '/user-gudie/ios_dingwei_02_3.png',
               text: '3.点选【位置】',
             },
             {
-              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudie/ios_dingwei_02_4.png',
+              img: loactionImgUrl + '/user-gudie/ios_dingwei_02_4.png',
               text: '4.选择【使用App期间】',
             },
             {
-              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudie/ios_jingqueweizhi_02_5.png',
+              img: loactionImgUrl + '/user-gudie/ios_jingqueweizhi_02_5.png',
               text: '5.打开【精确位置】开关',
             },
           ],
@@ -85,19 +85,19 @@ Page({
           title: '允许小程序使用位置信息',
           stepes: [
             {
-              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudie/ios_dingwei_03_1.png',
+              img: loactionImgUrl + '/user-gudie/ios_dingwei_03_1.png',
               text: '1.点击右上角【…】',
             },
             {
-              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudie/ios_dingwei_03_2.png',
+              img: loactionImgUrl + '/user-gudie/ios_dingwei_03_2.png',
               text: '2.点击【设置】',
             },
             {
-              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudie/ios_dingwei_03_3.png',
+              img: loactionImgUrl + '/user-gudie/ios_dingwei_03_3.png',
               text: '3.点击【位置信息】',
             },
             {
-              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudie/ios_dingwei_03_4.png',
+              img: loactionImgUrl + '/user-gudie/ios_dingwei_03_4.png',
               text: '4.设为【仅在使用小程序期间】',
             },
           ],
@@ -106,15 +106,15 @@ Page({
           title: '打开本地网络',
           stepes: [
             {
-              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudie/ios_dingwei_02_1.png',
+              img: loactionImgUrl + '/user-gudie/ios_dingwei_02_1.png',
               text: '1.点击手机【设置】',
             },
             {
-              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudie/ios_dingwei_02_2.png',
+              img: loactionImgUrl + '/user-gudie/ios_dingwei_02_2.png',
               text: '2.找到并点选【微信】',
             },
             {
-              img: loactionImgUrl + '/package-distribution-meiju/assets/user-gudie/ios_bendiwangluo_3.png',
+              img: loactionImgUrl + '/user-gudie/ios_bendiwangluo_3.png',
               text: '3.打开【本地网络】开关',
             },
           ],
@@ -125,19 +125,19 @@ Page({
           title: '打开手机定位服务',
           stepes: [
             {
-              img: loactionImgUrl + '/permission/Android/loaction/Android_dingwei_01_1.png',
+              img: loactionImgUrl + '/user-gudie/Android_dingwei_01_1.png',
               text: '1.点击手机【设置】',
             },
             {
-              img: loactionImgUrl + '/permission/Android/loaction/Android_dingwei_01_2.png',
+              img: loactionImgUrl + '/user-gudie/Android_dingwei_01_2.png',
               text: '2.找到并点选【隐私】',
             },
             {
-              img: loactionImgUrl + '/permission/Android/loaction/Android_dingwei_01_3.png',
+              img: loactionImgUrl + '/user-gudie/Android_dingwei_01_3.png',
               text: '3.点击【定位服务】',
             },
             {
-              img: loactionImgUrl + '/permission/Android/loaction/Android_dingwei_01_4.png',
+              img: loactionImgUrl + '/user-gudie/Android_dingwei_01_4.png',
               text: '4.打开【定位服务】',
             },
           ],
@@ -146,27 +146,27 @@ Page({
           title: '允许微信使用定位',
           stepes: [
             {
-              img: loactionImgUrl + '/permission/Android/loaction/Android_dingwei_02_1.png',
+              img: loactionImgUrl + '/user-gudie/Android_dingwei_02_1.png',
               text: '1.点击手机【设置】',
             },
             {
-              img: loactionImgUrl + '/permission/Android/loaction/Android_dingwei_02_2.png',
+              img: loactionImgUrl + '/user-gudie/Android_dingwei_02_2.png',
               text: '2.找到并点选【隐私】',
             },
             {
-              img: loactionImgUrl + '/permission/Android/loaction/Android_dingwei_02_3.png',
+              img: loactionImgUrl + '/user-gudie/Android_dingwei_02_3.png',
               text: '3.点击【权限管理】',
             },
             {
-              img: loactionImgUrl + '/permission/Android/loaction/Android_dingwei_02_4.png',
+              img: loactionImgUrl + '/user-gudie/Android_dingwei_02_4.png',
               text: '4.点击【位置信息】',
             },
             {
-              img: loactionImgUrl + '/permission/Android/loaction/Android_dingwei_02_5.png',
+              img: loactionImgUrl + '/user-gudie/Android_dingwei_02_5.png',
               text: '5.找到并点选【微信】',
             },
             {
-              img: loactionImgUrl + '/permission/Android/loaction/Android_dingwei_02_6.png',
+              img: loactionImgUrl + '/user-gudie/Android_dingwei_02_6.png',
               text: '6.选中【仅使用期间允许】',
             },
           ],
@@ -175,19 +175,19 @@ Page({
           title: '允许小程序使用位置信息',
           stepes: [
             {
-              img: loactionImgUrl + '/permission/Android/loaction/Android_dingwei_03_1.png',
+              img: loactionImgUrl + '/user-gudie/Android_dingwei_03_1.png',
               text: '1.点击右上角【…】',
             },
             {
-              img: loactionImgUrl + '/permission/Android/loaction/Android_dingwei_03_2.png',
+              img: loactionImgUrl + '/user-gudie/Android_dingwei_03_2.png',
               text: '2.点击【设置】',
             },
             {
-              img: loactionImgUrl + '/permission/Android/loaction/Android_dingwei_03_3.png',
+              img: loactionImgUrl + '/user-gudie/Android_dingwei_03_3.png',
               text: '3.点击【位置信息】',
             },
             {
-              img: loactionImgUrl + '/permission/Android/loaction/Android_dingwei_03_4.png',
+              img: loactionImgUrl + '/user-gudie/Android_dingwei_03_4.png',
               text: '4.设为【仅在使用小程序期间】',
             },
           ],
@@ -199,19 +199,19 @@ Page({
         locationEnabled: {
           stepes: [
             {
-              img: loactionImgUrl + '/permission/location/huawei-01.png',
+              img: loactionImgUrl + '/user-gudie/huawei-01.png',
               text: '1.点击下方【去设置】按钮',
             },
             {
-              img: loactionImgUrl + '/permission/location/huawei-02.png',
+              img: loactionImgUrl + '/user-gudie/huawei-02.png',
               text: '2.选择权限/权限管理',
             },
             {
-              img: loactionImgUrl + '/permission/location/huawei-03.png',
+              img: loactionImgUrl + '/user-gudie/huawei-03.png',
               text: '3.找到位置信息/定位',
             },
             {
-              img: loactionImgUrl + '/permission/location/huawei-04.png',
+              img: loactionImgUrl + '/user-gudie/huawei-04.png',
               text: '4.开启精确位置/精准定位',
             },
           ],
@@ -221,19 +221,19 @@ Page({
         locationEnabled: {
           stepes: [
             {
-              img: loactionImgUrl + '/permission/location/xiaomi-01.png',
+              img: loactionImgUrl + '/user-gudie/xiaomi-01.png',
               text: '1.点击下方【去设置】按钮',
             },
             {
-              img: loactionImgUrl + '/permission/location/xiaomi-02.png',
+              img: loactionImgUrl + '/user-gudie/xiaomi-02.png',
               text: '2.选择权限管理/权限',
             },
             {
-              img: loactionImgUrl + '/permission/location/xiaomi-03.png',
+              img: loactionImgUrl + '/user-gudie/xiaomi-03.png',
               text: '3.找到定位/位置权限',
             },
             {
-              img: loactionImgUrl + '/permission/location/xiaomi-04.png',
+              img: loactionImgUrl + '/user-gudie/xiaomi-04.png',
               text: '4.关闭模糊定位',
             },
           ],

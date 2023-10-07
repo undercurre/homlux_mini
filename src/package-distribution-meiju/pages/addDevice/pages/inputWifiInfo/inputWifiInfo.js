@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 import pageBehaviors from '../../../../../behaviors/pageBehaviors'
+import { imgList } from '../../../../../config/img'
 
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const checkAuthMixin = require('../../mixins/checkAuthMixin')
@@ -22,7 +23,7 @@ import { brandConfig } from '../../../assets/js/brand'
 import { commonDialog } from '../../../assets/js/commonDialog'
 import app from '../../../../common/app'
 let wifiMgr = new WifiMgr()
-import { imgList } from '../../../../common/js/img'
+
 let interval = null
 let showImgTime = null
 const systemInfo = wx.getSystemInfoSync()

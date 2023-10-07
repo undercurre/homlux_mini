@@ -61,7 +61,6 @@ Page({
       detailPackUp: imgUrl + imgesList['detailPackUp'],
       detailExpand: imgUrl + imgesList['detailExpand'],
     })
-    console.log('this.data.brand------:', this.data.brand)
     this.checkSystm()
     let { deviceName, type, enterprise, deviceImg } =
       app.addDeviceInfo
@@ -73,7 +72,6 @@ Page({
       brandName: this.getBrandBname(enterprise),
     })
     this.readingGuideTiming() //阅读计时
-    this.saveDeviceImg(deviceImg)
     this.wifiListSheet = this.selectComponent('#wifi-list-sheet') //组件的id
   },
   //关闭帮助弹窗
@@ -113,27 +111,6 @@ Page({
       selector: '.detail-title',
       duration: 500,
     })
-  },
-  //预加载设备图片
-  saveDeviceImg(deviceImgUrl) {
-    if (wx.preloadAssets) {
-      wx.preloadAssets({
-        data: [
-          {
-            type: 'image',
-            src: deviceImgUrl,
-          },
-        ],
-        success(resp) {
-          console.log('@module linkAp.js\n@method saveDeviceImg\n@desc 预加载设备图片成功\n', resp)
-        },
-        fail(err) {
-          console.error('@module linkAp.js\n@method saveDeviceImg\n@desc 预加载设备图片失败\n', err)
-        },
-      })
-    } else {
-      console.error('@module linkAp.js\n@method saveDeviceImg\n@desc 预加载设备图片失败，基础库版本不支持')
-    }
   },
   //判断设备是否启了设备热点
   checkDeviceWifiOpen(brandName, type) {
@@ -233,31 +210,19 @@ Page({
     if (this.data.isLinkDeviceWifi) {
       return //已连上设备wifi
     }
-    console.log('checkLinkWifi===========', self.data.isLinkDeviceWifi)
     wifiMgr
       .getConnectedWifi()
       .then((res) => {
         console.log('wifi info', res, res.SSID.includes(`${brandName}_${type}`), !self.data.isLinkDeviceWifi)
         if (res.SSID.toLocaleLowerCase().includes(`${brandName}_${type}`) && !self.data.isLinkDeviceWifi) {
-          // showToast('连上了设备wifi')
           self.data.isLinkDeviceWifi = true
           console.log('连上了设备ap 111')
-          let connectWifiDeviceHotspot = {
-            deviceSessionId: app.globalData.deviceSessionId,
-            type: app.addDeviceInfo.type,
-            sn8: app.addDeviceInfo.sn8,
-            moduleVersion: app.addDeviceInfo.blueVersion,
-            linkType: app.addDeviceInfo.linkType,
-            ssid: res.SSID,
-            rssi: res.signalStrength,
-          }
           //重置当前连接热点信息
           app.addDeviceInfo.BSSID = res.BSSID
           app.addDeviceInfo.ssid = res.SSID
           app.addDeviceInfo.rssi = res.signalStrength
           app.addDeviceInfo.frequency = res.frequency
           wx.stopWifi()
-          console.log('开始跳转')
           if (getFullPageUrl().includes('linkAp')) {
             console.log('是配网页进行连接')
             wx.navigateTo({
@@ -268,7 +233,6 @@ Page({
           if (this.data.pageStatus === 'show') {
             //连上的不是设备ap 则继续获取判断
             setTimeout(() => {
-              console.log('连上的不是设备ap=====')
               this.checkLinkWifi(brandName, type)
             }, 1500)
           }

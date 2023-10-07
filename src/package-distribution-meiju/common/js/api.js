@@ -746,10 +746,7 @@ let imageApi = {
 //小程序（图片存放）
 let imgBaseUrl = {
   environment: environment,
-  url:
-    environment === 'sit' || environment === 'dev'
-      ? `${agreementDomain[`${environment}`]}/projects/sit/meiju-lite-assets`
-      : `${agreementDomain[`${environment}`]}/projects/meiju-lite-assets`,
+  url: `${agreementDomain[`${environment}`]}/projects/meiju-lite-assets`,
 }
 //小程序基础图片存放
 let baseImgApi = {
