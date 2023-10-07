@@ -342,7 +342,7 @@ ComponentWithComputed({
             WSEventType.bind_device,
           ].includes(e.result.eventType)
         ) {
-          this.updateRoomData(e)
+          this.reloadDataThrottle(e)
         } else if (
           e.result.eventType === WSEventType.room_del &&
           e.result.eventData.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId
@@ -381,7 +381,7 @@ ComponentWithComputed({
     },
 
     // 节流更新房间各种关联信息
-    updateRoomData: throttle(function (this: IAnyObject) {
+    reloadDataThrottle: throttle(function (this: IAnyObject) {
       this.reloadData()
     }, 4000),
 

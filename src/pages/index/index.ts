@@ -218,7 +218,7 @@ ComponentWithComputed({
             WSEventType.group_device_result_status,
           ].includes(res.result.eventType)
         ) {
-          this.updateRoomData()
+          this.updateRoomDataThrottle()
         }
       })
 
@@ -231,7 +231,7 @@ ComponentWithComputed({
     },
 
     // 节流更新房间卡片信息
-    updateRoomData: throttle(() => {
+    updateRoomDataThrottle: throttle(() => {
       homeStore.updateRoomCardList()
     }, 3000),
 
