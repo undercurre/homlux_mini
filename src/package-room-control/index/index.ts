@@ -72,7 +72,12 @@ ComponentWithComputed({
   data: {
     _updating: false, // 列表更新中标志
     _diffWaitlist: [] as DeviceCard[], // 待更新列表
-    _diffData: {} as IAnyObject, // 待更新数据（updateDeviceList专用）
+    // 待更新到视图的数据（updateDeviceList专用）
+    _diffCards: {
+      data: {} as IAnyObject,
+      created: 0, // 创建时间
+    },
+    _wait_timeout: null as null | number, // 卡片等待更新时间
     navigationBarAndStatusBarHeight:
       (storage.get<number>('statusBarHeight') as number) +
       (storage.get<number>('navigationBarHeight') as number) +
@@ -354,14 +359,6 @@ ComponentWithComputed({
             url: '/pages/index/index',
           })
         }
-
-        // 独立执行 移动\删除 的刷新
-        // if (
-        //   e.result.eventType === WSEventType.group_device_result_status ||
-        //   e.result.eventType === WSEventType.device_del
-        // ) {
-        //   this.removeDevice(e.result.eventData.devId ?? e.result.eventData.deviceId)
-        // }
       })
     },
 
@@ -386,22 +383,6 @@ ComponentWithComputed({
       this.reloadData()
     }, 4000),
 
-    // 直接更新store数据, 移除列表中的设备
-    // removeDevice(deviceId: string) {
-    //   console.log('remove', deviceId)
-    //   const newDeviceList = [] as Device.DeviceItem[]
-    //   deviceStore.deviceList.forEach((device) => {
-    //     if (deviceId !== device.deviceId) {
-    //       newDeviceList.push({ ...device })
-    //     }
-    //   })
-    //   runInAction(() => {
-    //     deviceStore.deviceList = newDeviceList
-    //   })
-
-    //   this.updateQueue({ isRefresh: true })
-    // },
-
     // 页面滚动
     onPageScroll(e: { detail: { scrollTop: number } }) {
       if (e?.detail?.scrollTop !== 0) {
@@ -412,14 +393,16 @@ ComponentWithComputed({
       this.data.scrollTop = e?.detail?.scrollTop || 0
     },
 
-    onUnload() {
-      // 解除监听
-      emitter.off('wsReceive')
-    },
+    // onUnload() {},
     onHide() {
       console.log('onHide')
       // 解除监听
       emitter.off('wsReceive')
+
+      if (this.data._wait_timeout) {
+        clearTimeout(this.data._wait_timeout)
+        this.data._wait_timeout = null
+      }
     },
     handleKnownAddSceneTap() {
       storage.set('hasKnownUseAddScene', true, null)
@@ -491,7 +474,7 @@ ComponentWithComputed({
               const originVal = _get(originDevice, key)
               // 进一步检查，过滤确实有更新的字段
               if (newVal !== undefined && newVal !== originVal) {
-                this.data._diffData[`devicePageList[${groupIndex}][${index}].${key}`] = newVal
+                this.data._diffCards.data[`devicePageList[${groupIndex}][${index}].${key}`] = newVal
               }
             })
 
@@ -507,20 +490,22 @@ ComponentWithComputed({
                 ...device?.mzgdPropertyDTOList[modelName],
               }
 
-              this.data._diffData[`devicePageList[${groupIndex}][${index}].mzgdPropertyDTOList.${modelName}`] = newVal
+              this.data._diffCards.data[`devicePageList[${groupIndex}][${index}].mzgdPropertyDTOList.${modelName}`] =
+                newVal
 
               // 更新场景关联信息
-              this.data._diffData[`devicePageList[${groupIndex}][${index}].linkSceneName`] = this.getLinkSceneName({
-                ...device!,
-                proType: originDevice.proType, // 补充关键字段
-              })
+              this.data._diffCards.data[`devicePageList[${groupIndex}][${index}].linkSceneName`] =
+                this.getLinkSceneName({
+                  ...device!,
+                  proType: originDevice.proType, // 补充关键字段
+                })
             }
             if (device!.switchInfoDTOList) {
               const newVal = {
                 ...originDevice.switchInfoDTOList[0],
                 ...device?.switchInfoDTOList[0],
               }
-              this.data._diffData[`devicePageList[${groupIndex}][${index}].switchInfoDTOList[0]`] = newVal
+              this.data._diffCards.data[`devicePageList[${groupIndex}][${index}].switchInfoDTOList[0]`] = newVal
             }
 
             // 如果控制弹框为显示状态，则同步选中设备的状态
@@ -539,19 +524,31 @@ ComponentWithComputed({
               //     }
               //   } else
               if (originDevice.proType === PRO_TYPE.curtain) {
-                this.data._diffData.curtainStatus = {
+                this.data._diffCards.data.curtainStatus = {
                   position: prop.curtain_position,
                 }
               }
             }
 
-            if (Object.keys(this.data._diffData).length) {
+            // 处理更新逻辑
+            if (Object.keys(this.data._diffCards.data).length) {
               const now = new Date().getTime()
-              const wait = now - device.timestamp
+              if (!this.data._diffCards.created) {
+                this.data._diffCards.created = now
+              }
+              const wait = now - this.data._diffCards.created
               if (wait >= CARD_REFRESH_TIME && device.timestamp) {
-                this.setData(this.data._diffData)
-                this.data._diffData = {}
-                console.log('▤ [%s, %s] 卡片更新完成', groupIndex, index, this.data._diffData, wait)
+                // 先清空已有的更新等待
+                if (this.data._wait_timeout) {
+                  clearTimeout(this.data._wait_timeout)
+                  this.data._wait_timeout = null
+                }
+                this.setData(this.data._diffCards.data)
+                this.data._diffCards = {
+                  data: {},
+                  created: 0,
+                }
+                console.log('▤ [%s, %s] 卡片更新完成', groupIndex, index, this.data._diffCards.data, wait)
               } else {
                 console.log('▤ [%s, %s] 卡片更新推迟', groupIndex, index, wait)
               }
@@ -623,13 +620,24 @@ ComponentWithComputed({
 
       // 恢复更新标志
       this.data._updating = false
-      // 如果列表队列不为空刚继续执行
+      // 如果等待列表不为空，则递归执行
       if (this.data._diffWaitlist.length) {
         this.updateQueue()
-      } else if (Object.keys(this.data._diffData).length) {
-        this.setData(this.data._diffData)
-        this.data._diffData = {}
-        console.log('▤ [%s, %s] 卡片更新完成，请空更新队列', this.data._diffData)
+      }
+      // 如果等待列表已空，则节流执行视图更新
+      else if (Object.keys(this.data._diffCards.data).length) {
+        if (this.data._wait_timeout) {
+          clearTimeout(this.data._wait_timeout)
+          this.data._wait_timeout = null
+        }
+        this.data._wait_timeout = setTimeout(() => {
+          this.setData(this.data._diffCards.data)
+          console.log('▤ 清空更新队列', this.data._diffCards.data)
+          this.data._diffCards = {
+            data: {},
+            created: 0,
+          }
+        }, CARD_REFRESH_TIME)
       }
     },
 
