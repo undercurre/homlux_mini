@@ -104,7 +104,9 @@ ComponentWithComputed({
           (e.result.eventData.roomId === this.data.roomSelect || this.data.roomSelect === '0')
         ) {
           // 如果是当前房间的设备状态发生变化，更新设备状态
-          const index = deviceStore.deviceList.findIndex((device) => device.deviceId === e.result.eventData.deviceId)
+          const index = deviceStore.allRoomDeviceList.findIndex(
+            (device) => device.deviceId === e.result.eventData.deviceId,
+          )
           if (index !== -1) {
             const res = await queryDeviceInfoByDeviceId({
               deviceId: deviceStore.deviceList[index].deviceId,
@@ -112,13 +114,13 @@ ComponentWithComputed({
             })
             if (res.success) {
               runInAction(() => {
-                deviceStore.deviceList[index] = res.result
-                deviceStore.deviceList = [...deviceStore.deviceList]
+                deviceStore.allRoomDeviceList[index] = res.result
+                deviceStore.allRoomDeviceList = [...deviceStore.allRoomDeviceList]
               })
             }
           } else {
             // 可能是新绑的设备，直接更新房间
-            deviceBinding.store.updateSubDeviceList(undefined, this.data.roomSelect)
+            deviceBinding.store.updateAllRoomDeviceList()
           }
         } else if (
           typeof e.result.eventData === 'object' &&

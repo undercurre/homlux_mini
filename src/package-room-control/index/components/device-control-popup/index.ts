@@ -745,8 +745,8 @@ ComponentWithComputed({
       await Promise.all([
         // sceneStore.updateSceneList(),
         sceneStore.updateAllRoomSceneList(),
-        deviceStore.updateSubDeviceList(),
-        // deviceStore.updateAllRoomDeviceList(),
+        // deviceStore.updateSubDeviceList(),
+        deviceStore.updateAllRoomDeviceList(),
       ])
 
       this.data._switchRelInfo.switchUniId = '' // 置空标志位，否则不会更新数据
