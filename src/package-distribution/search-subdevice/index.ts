@@ -608,6 +608,8 @@ ComponentWithComputed({
               Logger.log(`【${bleDevice.mac}】手动查询子设备已入网`)
               deviceData.zigbeeAddCallback({ success: true })
               return
+            } else {
+              Logger.error(`【${bleDevice.mac}】手动查询子设备未入网状态`)
             }
           }
           bleDevice.isConfig = '02' // 将设备配网状态置为已配网，否则失败重试由于前面判断状态的逻辑无法重新添加成功
@@ -757,9 +759,14 @@ ComponentWithComputed({
 
     // 循环下发闪烁
     async keepFlash(bleDevice: Device.ISubDevice) {
+      // 异步执行，判断当前执行闪烁命令的设备是否和选中的设备一致，否则终止逻辑
+      if (this.data.flashInfo.mac !== bleDevice.mac) {
+        return
+      }
+
       const res = await bleDevice.client.flash()
 
-      // 判断当前执行闪烁命令的设备是否和选中的设备一致，否则终止逻辑
+      // 判断当前执行闪烁命令的设备是否和选中的设备一致，否则终止逻辑,断开连接
       if (this.data.flashInfo.mac !== bleDevice.mac) {
         if (res.success) {
           await bleDevice.client.close()
