@@ -407,7 +407,7 @@ ComponentWithComputed({
         const res = await this.startGwAddMode()
 
         if (!res.success) {
-          Toast(res.msg)
+          Toast(res.code === 9882 ? '当前网关已离线，请重新选择' : res.msg)
           return
         }
 
