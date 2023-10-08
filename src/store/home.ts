@@ -315,7 +315,7 @@ export const homeStore = observable({
   },
 
   async initLocalKey() {
-    const key = storage.get('loaclKey') as string
+    const key = storage.get('localKey') as string
 
     console.debug('key', key)
 
@@ -332,7 +332,7 @@ export const homeStore = observable({
     if (res.success) {
       this.key = res.result
       // key的有效期是30天，设置缓存过期时间25天
-      storage.set('loaclKey', this.key, Date.now() + 1000 * 60 * 60 * 24 * 25)
+      storage.set('localKey', this.key, Date.now() + 1000 * 60 * 60 * 24 * 25)
     }
   },
 
