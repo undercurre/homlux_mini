@@ -1,5 +1,5 @@
 import { observable, runInAction } from 'mobx-miniprogram'
-import { queryAllDevice, querySubDeviceList } from '../apis/device'
+import { queryAllDevice } from '../apis/device'
 import { MODEL_NAME, PRO_TYPE } from '../config/index'
 import { homeStore } from './home'
 import { roomStore } from './room'
@@ -8,20 +8,19 @@ import homOs from 'js-homos'
 
 export const deviceStore = observable({
   /**
-   * 当前房间
-   */
-  deviceList: [] as Device.DeviceItem[],
-  /**
    * 全屋设备
    */
   allRoomDeviceList: [] as Device.DeviceItem[],
+
+  get deviceList(): Device.DeviceItem[] {
+    const { roomId = 0 } = roomStore.currentRoom ?? {}
+    return this.allRoomDeviceList.filter((device) => device.roomId === roomId)
+  },
   /**
    * deviceId -> device 映射
    */
   get deviceMap(): Record<string, Device.DeviceItem> {
-    return Object.fromEntries(
-      deviceStore.deviceListByRoomId.map((device: Device.DeviceItem) => [device.deviceId, device]),
-    )
+    return Object.fromEntries(deviceStore.deviceList.map((device: Device.DeviceItem) => [device.deviceId, device]))
   },
 
   get allRoomDeviceMap(): Record<string, Device.DeviceItem> {
@@ -34,20 +33,12 @@ export const deviceStore = observable({
     return Object.fromEntries(deviceStore.deviceFlattenList.map((device: Device.DeviceItem) => [device.uniId, device]))
   },
 
-  get deviceListByRoomId(): Device.DeviceItem[] {
-    const currentRoomId = roomStore.currentRoom?.roomId || 0
-
-    return this.allRoomDeviceList.filter((item) => {
-      return item.roomId === currentRoomId
-    })
-  },
-
   /**
    * 将有多个按键的开关拍扁，保证每个设备和每个按键都是独立一个item，并且uniId唯一
    */
   get deviceFlattenList() {
     const list = [] as Device.DeviceItem[]
-    this.deviceListByRoomId.forEach((device) => {
+    this.deviceList.forEach((device) => {
       if (device.proType === PRO_TYPE.switch) {
         device.switchInfoDTOList?.forEach((switchItem) => {
           list.push({
@@ -212,17 +203,6 @@ export const deviceStore = observable({
           canLanCtrl,
         }
       })
-    })
-  },
-
-  async updateSubDeviceList(
-    houseId: string = homeStore.currentHomeId,
-    roomId: string = roomStore.roomList[roomStore.currentRoomIndex].roomId,
-    options?: { loading: boolean },
-  ) {
-    const res = await querySubDeviceList({ houseId, roomId }, options)
-    runInAction(() => {
-      deviceStore.deviceList = res.success ? res.result : []
     })
   },
 })

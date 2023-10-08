@@ -2,8 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { runInAction } from 'mobx-miniprogram'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { execScene } from '../../../../apis/scene'
-import { PRO_TYPE } from '../../../../config/index'
-import { deviceStore, roomBinding, roomStore } from '../../../../store/index'
+import { roomBinding, roomStore } from '../../../../store/index'
 ComponentWithComputed({
   options: {},
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding] })],
@@ -85,11 +84,6 @@ ComponentWithComputed({
       const index = roomStore.roomList.findIndex((room) => room.roomId === this.data.roomInfo.roomId)
       runInAction(() => {
         roomStore.currentRoomIndex = index
-        deviceStore.deviceList = deviceStore.allRoomDeviceList.filter(
-          (device) =>
-            device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
-            device.proType !== PRO_TYPE.gateway,
-        )
       })
       wx.navigateTo({
         url: '/package-room-control/index/index',

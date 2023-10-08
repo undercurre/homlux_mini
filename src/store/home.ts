@@ -97,7 +97,6 @@ export const homeStore = observable({
     if (res.success) {
       runInAction(() => {
         homeStore.homeList = res.result
-        console.log('updateHomeList store', res.result)
 
         const houseId = homeStore.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
         // 首次进入或删除了默认家庭时，默认选中第0个
@@ -126,7 +125,7 @@ export const homeStore = observable({
       runInAction(() => {
         homeStore.currentHomeDetail = Object.assign({ houseId: this.currentHomeId }, res.result)
       })
-      await deviceStore.updateAllRoomDeviceList(undefined, options)
+      // await deviceStore.updateAllRoomDeviceList(undefined, options) // 重复加载
       await roomStore.updateRoomList(options)
       this.homeDataPersistence()
       return

@@ -365,7 +365,7 @@ ComponentWithComputed({
     async reloadData() {
       try {
         await Promise.all([
-          deviceStore.updateSubDeviceList(),
+          // deviceStore.updateSubDeviceList(),
           // deviceStore.updateAllRoomDeviceList(), // 重复查询
           homeStore.updateRoomCardList(),
           sceneStore.updateSceneList(),
@@ -548,9 +548,9 @@ ComponentWithComputed({
                   data: {},
                   created: 0,
                 }
-                console.log('▤ [%s, %s] 卡片更新完成', groupIndex, index, this.data._diffCards.data, wait)
+                console.log('▤ [%s, %s] 更新完成，已等待 %sms', groupIndex, index, this.data._diffCards.data, wait)
               } else {
-                console.log('▤ [%s, %s] 卡片更新推迟', groupIndex, index, wait)
+                console.log('▤ [%s, %s] 更新推迟，已等待 %sms', groupIndex, index, wait)
               }
             } else {
               console.log('▤ [%s, %s] diffData为空，不必更新', groupIndex, index)
@@ -682,7 +682,7 @@ ComponentWithComputed({
 
     // 基于云端更新数据
     async updateRoomListOnCloud() {
-      await deviceStore.updateSubDeviceList()
+      await deviceStore.updateAllRoomDeviceList()
       this.updateQueue({ isRefresh: true })
     },
     // updateRoomListOnCloud: throttle(

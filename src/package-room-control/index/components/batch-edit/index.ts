@@ -439,7 +439,7 @@ ComponentWithComputed({
               zIndex: 9999,
             })
             this.handleClose()
-            await Promise.all([homeStore.updateRoomCardList(), deviceStore.updateSubDeviceList()])
+            await homeStore.updateRoomCardList()
             this.triggerEvent('updateDevice', device)
 
             // 如果修改的是面板名称，则需要同时更新面板其余的按键对应的卡片
@@ -494,7 +494,7 @@ ComponentWithComputed({
               zIndex: 9999,
             })
             this.handleClose()
-            await Promise.all([homeStore.updateRoomCardList(), deviceStore.updateSubDeviceList()])
+            await homeStore.updateRoomCardList()
             device.deviceName = this.data.editDeviceName // 用于传参，更新视图
             this.triggerEvent('updateDevice', device)
           } else {
