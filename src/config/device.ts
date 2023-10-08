@@ -3,6 +3,12 @@ import { rpx2px } from '../utils/index'
 // 设备列表，每次加载的条数 应该为4的倍数
 export const LIST_PAGE = 20
 
+/**
+ * @name 设备卡片更新时间阈值
+ * @description 等待时间小于这个值的，均不即时更新，与后面的更新合并，或到到队列清空时一起更新
+ */
+export const CARD_REFRESH_TIME = 1000
+
 // 卡片尺寸
 export const CARD_W = rpx2px(180)
 export const CARD_H = rpx2px(236)

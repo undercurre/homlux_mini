@@ -26,7 +26,7 @@ import {
   isNullOrUnDef,
   transferDeviceProperty,
 } from '../../utils/index'
-import { proName, PRO_TYPE, LIST_PAGE, CARD_W, CARD_H, MODEL_NAME } from '../../config/index'
+import { proName, PRO_TYPE, LIST_PAGE, CARD_W, CARD_H, MODEL_NAME, CARD_REFRESH_TIME } from '../../config/index'
 
 type DeviceCard = Device.DeviceItem & {
   x: string
@@ -72,6 +72,7 @@ ComponentWithComputed({
   data: {
     _updating: false, // 列表更新中标志
     _diffWaitlist: [] as DeviceCard[], // 待更新列表
+    _diffData: {} as IAnyObject, // 待更新数据（updateDeviceList专用）
     navigationBarAndStatusBarHeight:
       (storage.get<number>('statusBarHeight') as number) +
       (storage.get<number>('navigationBarHeight') as number) +
@@ -481,7 +482,7 @@ ComponentWithComputed({
           })
           if (index !== -1) {
             originDevice = this.data.devicePageList[groupIndex][index]
-            const diffData = {} as IAnyObject
+            // const diffData = {} as IAnyObject
             // review 细致到字段的diff
             const renderList = ['deviceName', 'onLineStatus'] // 需要刷新界面的字段
 
@@ -490,7 +491,7 @@ ComponentWithComputed({
               const originVal = _get(originDevice, key)
               // 进一步检查，过滤确实有更新的字段
               if (newVal !== undefined && newVal !== originVal) {
-                diffData[`devicePageList[${groupIndex}][${index}].${key}`] = newVal
+                this.data._diffData[`devicePageList[${groupIndex}][${index}].${key}`] = newVal
               }
             })
 
@@ -506,10 +507,10 @@ ComponentWithComputed({
                 ...device?.mzgdPropertyDTOList[modelName],
               }
 
-              diffData[`devicePageList[${groupIndex}][${index}].mzgdPropertyDTOList.${modelName}`] = newVal
+              this.data._diffData[`devicePageList[${groupIndex}][${index}].mzgdPropertyDTOList.${modelName}`] = newVal
 
               // 更新场景关联信息
-              diffData[`devicePageList[${groupIndex}][${index}].linkSceneName`] = this.getLinkSceneName({
+              this.data._diffData[`devicePageList[${groupIndex}][${index}].linkSceneName`] = this.getLinkSceneName({
                 ...device!,
                 proType: originDevice.proType, // 补充关键字段
               })
@@ -519,7 +520,7 @@ ComponentWithComputed({
                 ...originDevice.switchInfoDTOList[0],
                 ...device?.switchInfoDTOList[0],
               }
-              diffData[`devicePageList[${groupIndex}][${index}].switchInfoDTOList[0]`] = newVal
+              this.data._diffData[`devicePageList[${groupIndex}][${index}].switchInfoDTOList[0]`] = newVal
             }
 
             // 如果控制弹框为显示状态，则同步选中设备的状态
@@ -538,15 +539,22 @@ ComponentWithComputed({
               //     }
               //   } else
               if (originDevice.proType === PRO_TYPE.curtain) {
-                diffData.curtainStatus = {
+                this.data._diffData.curtainStatus = {
                   position: prop.curtain_position,
                 }
               }
             }
 
-            if (Object.keys(diffData).length) {
-              this.setData(diffData)
-              console.log('▤ [%s, %s] 单个卡片更新完成', groupIndex, index, diffData)
+            if (Object.keys(this.data._diffData).length) {
+              const now = new Date().getTime()
+              const wait = now - device.timestamp
+              if (wait >= CARD_REFRESH_TIME && device.timestamp) {
+                this.setData(this.data._diffData)
+                this.data._diffData = {}
+                console.log('▤ [%s, %s] 卡片更新完成', groupIndex, index, this.data._diffData, wait)
+              } else {
+                console.log('▤ [%s, %s] 卡片更新推迟', groupIndex, index, wait)
+              }
             } else {
               console.log('▤ [%s, %s] diffData为空，不必更新', groupIndex, index)
             }
@@ -610,7 +618,7 @@ ComponentWithComputed({
       }
 
       // 模拟堵塞任务执行
-      // await delay(2000)
+      // await delay(100)
       // console.log('▤ [updateDeviceList] Ended', this.data._diffWaitlist.length)
 
       // 恢复更新标志
@@ -618,6 +626,10 @@ ComponentWithComputed({
       // 如果列表队列不为空刚继续执行
       if (this.data._diffWaitlist.length) {
         this.updateQueue()
+      } else if (Object.keys(this.data._diffData).length) {
+        this.setData(this.data._diffData)
+        this.data._diffData = {}
+        console.log('▤ [%s, %s] 卡片更新完成，请空更新队列', this.data._diffData)
       }
     },
 
@@ -627,7 +639,6 @@ ComponentWithComputed({
      */
     async updateQueue(e?: (DeviceCard & { detail?: DeviceCard }) | Optional<DeviceCard>) {
       if (e) {
-        const timestamp = new Date().getTime()
         let device: DeviceCard
 
         // 如果是包裹在事件中的设备属性，则简化结构
@@ -635,7 +646,7 @@ ComponentWithComputed({
           const { detail } = e as { detail: DeviceCard }
           device = detail
         }
-        // e：设备属性 | 空对象
+        // e：设备属性 |
         else {
           device = e as DeviceCard
         }
@@ -646,28 +657,10 @@ ComponentWithComputed({
           return
         }
 
-        // 短时内deviceId重复的更新，进行合并
-        const THRESHOLD_TIME = 2000
-        let replace_flag = false
-        for (const index in this.data._diffWaitlist) {
-          const _device = this.data._diffWaitlist[index]
-          const timediff = timestamp - _device.timestamp
-          if (device.deviceId === _device.deviceId && timediff < THRESHOLD_TIME) {
-            this.data._diffWaitlist[index] = {
-              ..._device,
-              ...device,
-            }
-            replace_flag = true
-            console.log('▤ Similar update found', device.deviceId, timediff)
-            break
-          }
-        }
-        // 一直未有覆盖操作，直接放到队尾
-        if (!replace_flag) {
-          this.data._diffWaitlist.push({ ...device, timestamp })
-          if (this.data._diffWaitlist.length > 1) {
-            console.log('▤ [updateQueue Pushed] Queue Len:', this.data._diffWaitlist.length)
-          }
+        const timestamp = new Date().getTime()
+        this.data._diffWaitlist.push({ ...device, timestamp })
+        if (this.data._diffWaitlist.length > 1) {
+          console.log('▤ [updateQueue Pushed] Queue Len:', this.data._diffWaitlist.length)
         }
       }
 
@@ -1200,7 +1193,7 @@ ComponentWithComputed({
         return
       }
 
-      // 更新选中状态样式  // TODO 不加入队列
+      // 更新选中状态样式
       const deviceId = this.data.checkedList[0]
       this.toSelect(deviceId, false)
 
