@@ -264,7 +264,7 @@ ComponentWithComputed({
       const settingRes = await wx.getSetting().catch((err) => {
         return {
           isFail: true,
-          ...err
+          ...err,
         }
       })
 
