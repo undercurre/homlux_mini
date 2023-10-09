@@ -3,7 +3,7 @@
 
   <view class="flex flex-col">
     <view class="px-24rpx py-30rpx">
-      <van-field value="{{ searchText }}" placeholder="搜索城市" left-icon="/assets/img/home-location/search.png" custom-style="padding: 20rpx 32rpx;border-radius: 24rpx;" placeholder-style="font-size: 28rpx;color: #A2A2A2;" bind:confirm="onInputConfirm" />
+      <van-field value="{{ searchText }}" placeholder="搜索城市" left-icon="/assets/img/home-location/search.png" custom-style="padding: 20rpx 32rpx;border-radius: 24rpx;" placeholder-style="font-size: 28rpx;color: #A2A2A2;" bind:confirm="onInputConfirm" border="{{false}}" />
     </view>
 
     <view class="flex-row flex h-40rpx mx-32rpx mb-48rpx mt-32rpx">
