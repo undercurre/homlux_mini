@@ -212,8 +212,9 @@ ComponentWithComputed({
       let baseHeight =
         (storage.get('windowHeight') as number) -
         (storage.get('statusBarHeight') as number) -
-        (storage.get('navigationBarHeight') as number)
-        - data.toolboxContentHeight - 10 // 场景
+        (storage.get('navigationBarHeight') as number) -
+        data.toolboxContentHeight -
+        10 // 场景
       if (data.controlPopup) {
         baseHeight -= rpx2px(600)
       } else if (data.editSelectMode) {
