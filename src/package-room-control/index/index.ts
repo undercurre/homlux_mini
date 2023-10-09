@@ -83,6 +83,8 @@ ComponentWithComputed({
       (storage.get<number>('navigationBarHeight') as number) +
       'px',
     movableAreaHeight: 236, // 可移动区域高度
+    toolboxContentHeight: 150, // 工具栏内容区域高度
+    toolboxTop: (storage.get('statusBarHeight') as number) + (storage.get('navigationBarHeight') as number), // 工具栏上边补白
     /** 展示点中离线设备弹窗 */
     showDeviceOffline: false,
     /** 点击的离线设备的信息 */
@@ -94,17 +96,6 @@ ComponentWithComputed({
     devicePageList: [] as DeviceCard[][],
     /** 待创建面板的设备选择弹出框 */
     showBeforeAddScenePopup: false,
-    /** 添加场景成功提示 */
-    showAddSceneSuccess: false,
-    /** 添加场景成功提示位置 */
-    sceneTitlePosition: {
-      x: 0,
-      y: 0,
-    },
-    /** 是否提示用户如何创建场景 */
-    showAddSceneTips: false,
-    /** 场景提示部分位置 */
-    sceneTipsPositionStyle: '',
     scrollTop: 0,
     checkedList: [] as string[], // 已选择设备的id列表
     editSelectList: [] as string[], // 编辑状态下，已勾选的设备id列表
@@ -219,15 +210,16 @@ ComponentWithComputed({
     // 可滚动区域高度
     scrollViewHeight(data) {
       let baseHeight =
-        (storage.get<number>('windowHeight') as number) -
-        (storage.get<number>('statusBarHeight') as number) -
-        (storage.get<number>('navigationBarHeight') as number)
+        (storage.get('windowHeight') as number) -
+        (storage.get('statusBarHeight') as number) -
+        (storage.get('navigationBarHeight') as number)
+        - data.toolboxContentHeight - 10 // 场景
       if (data.controlPopup) {
         baseHeight -= rpx2px(600)
       } else if (data.editSelectMode) {
         baseHeight -= rpx2px(368)
       }
-      return baseHeight
+      return baseHeight + 'px'
     },
   },
 
@@ -248,23 +240,6 @@ ComponentWithComputed({
       // this.setUpdatePerformanceListener({withDataPaths: true}, (res) => {
       //   console.debug('setUpdatePerformanceListener', res, res.pendingStartTimestamp - res.updateStartTimestamp, res.updateEndTimestamp - res.updateStartTimestamp, dayjs().format('YYYY-MM-DD HH:mm:ss'))
       // })
-
-      // 是否点击过场景使用提示的我知道了，如果没点击过就显示
-      const hasKnownUseAddScene = storage.get<boolean>('hasKnownUseAddScene')
-      if (!hasKnownUseAddScene) {
-        this.createSelectorQuery()
-          .select('#scene-card')
-          .boundingClientRect((res) => {
-            console.log('#scene-card', res)
-            if (res) {
-              this.setData({
-                showAddSceneTips: true,
-                sceneTipsPositionStyle: `left: ${res.left}px;top: ${res.top}px;width: ${res.width}px;height: ${res.height}px;`,
-              })
-            }
-          })
-          .exec()
-      }
     },
 
     async onShow() {
@@ -385,11 +360,6 @@ ComponentWithComputed({
 
     // 页面滚动
     onPageScroll(e: { detail: { scrollTop: number } }) {
-      if (e?.detail?.scrollTop !== 0) {
-        this.setData({
-          showAddSceneTips: false,
-        })
-      }
       this.data.scrollTop = e?.detail?.scrollTop || 0
     },
 
@@ -403,12 +373,6 @@ ComponentWithComputed({
         clearTimeout(this.data._wait_timeout)
         this.data._wait_timeout = null
       }
-    },
-    handleKnownAddSceneTap() {
-      storage.set('hasKnownUseAddScene', true, null)
-      this.setData({
-        showAddSceneTips: false,
-      })
     },
     handleShowDeviceOffline(e: { detail: DeviceCard }) {
       this.setData({
@@ -1170,10 +1134,6 @@ ComponentWithComputed({
       })
     },
     handleShowAddSceneSuccess() {
-      this.setData({
-        showAddSceneSuccess: false,
-      })
-
       wx.navigateTo({
         url: '/package-room-control/scene-request-list/index',
       })
