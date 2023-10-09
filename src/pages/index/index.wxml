@@ -10,13 +10,9 @@
   <view class="w-750rpx flex justify-between pt-28rpx left-0 absolute z-112" style="top: {{navigationBarAndStatusBarHeight}};">
     <!-- 全屋开关 -->
     <view class="ml-24rpx">
-      <view class="bg-hex-ffffff_42 w-244rpx h-80rpx rounded-40rpx flex items-center" wx:if="{{isShowHomeControl}}">
+      <view class="bg-hex-ffffff_42 w-180rpx h-80rpx rounded-40rpx flex items-center" wx:if="{{isShowHomeControl}}">
         <view class="flex-1 flex justify-center items-center text-28rpx">
-          <text bindtap="{{handler.handleAllOn}}" id="all-on" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999">全开</text>
-        </view>
-        <view class="w-2rpx h-24rpx bg-hex-75829b"></view>
-        <view class="flex-1 flex justify-center items-center text-28rpx">
-          <text bindtap="{{handler.handleAllOff}}" id="all-off" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999">全关</text>
+          <text bindtap="{{handler.handleAllOff}}" id="all-off" class="text-hex-2b4067 px-24rpx py-12rpx rounded-999">一键关灯</text>
         </view>
       </view>
     </view>
