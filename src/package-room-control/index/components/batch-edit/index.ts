@@ -323,6 +323,9 @@ ComponentWithComputed({
           timeId = setTimeout(async () => {
             hideLoading()
 
+            // 部分未成功也要通知刷新页面
+            this.triggerEvent('updateList')
+
             Dialog.confirm({
               title: '部分设备未成功移动，是否重试',
               confirmButtonText: '是',
