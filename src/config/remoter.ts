@@ -28,21 +28,25 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
       joystick: {
         up: {
           key: 'LIGHT_BRIGHT_PLUS',
+          longpress: 'LIGHT_BRIGHT_PLUS_ACC',
           icon: '/package-remoter/assets/bright1.png',
           iconActive: '/package-remoter/assets/bright0.png',
         },
         right: {
           key: 'LIGHT_COLOR_TEMP_PLUS',
+          longpress: 'LIGHT_COLOR_TEMP_PLUS_ACC',
           icon: '/package-remoter/assets/light2.png',
           iconActive: '/package-remoter/assets/light0.png',
         },
         down: {
           key: 'LIGHT_BRIGHT_MINUS',
+          longpress: 'LIGHT_BRIGHT_MINUS_ACC',
           icon: '/package-remoter/assets/bright3.png',
           iconActive: '/package-remoter/assets/bright2.png',
         },
         left: {
           key: 'LIGHT_COLOR_TEMP_MINUS',
+          longpress: 'LIGHT_COLOR_TEMP_MINUS_ACC',
           icon: '/package-remoter/assets/light1.png',
           iconActive: '/package-remoter/assets/light0.png',
         },

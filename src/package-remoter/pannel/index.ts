@@ -99,9 +99,28 @@ ComponentWithComputed({
       // })
     },
 
+    /**
+     * @description 触摸开始时触发；应用可能有长按操作的按钮，如果实际上不存在长按指令，直接执行tap
+     */
+    handleTouchStart(e: WechatMiniprogram.TouchEvent) {
+      const { longpress } = e.target.dataset
+      if (!longpress) {
+        this.btnTap(e)
+      }
+    },
+
+    /**
+     * @description 触摸结束时触发；不可能有长按操作的按钮，直接由bind:touchstart触发
+     */
     async btnTap(e: WechatMiniprogram.TouchEvent) {
+      console.log('btnTap', e)
       if (!this.data._bleServer) {
         this.data._bleServer = await createBleServer()
+      }
+      const { longpress } = e.target.dataset
+      // 如果存在长按指令，且已执行了长按操作
+      if (longpress && this.data._longpress_key) {
+        return
       }
 
       let { key } = e.target.dataset
@@ -150,9 +169,14 @@ ComponentWithComputed({
         this.data._bleServer = await createBleServer()
       }
 
-      const key = `${e.target.dataset.key}_ACC` // 加上长按指令后缀
+      const { longpress } = e.target.dataset
+
+      if (!longpress) {
+        return
+      }
       const addr = this.data.isFactoryMode ? FACTORY_ADDR : remoterStore.curAddr
-      const payload = remoterProtocol.generalCmdString(CMD[key])
+      const payload = remoterProtocol.generalCmdString(CMD[longpress])
+      console.log('handleLongPress', longpress, payload)
 
       // DEBUG 蓝牙连接模式 TODO 定时连续发指令
       if (remoterStore.curRemoter.connected) {
@@ -172,8 +196,6 @@ ComponentWithComputed({
       }
 
       this.data._longpress_key = e.target.dataset.dir
-
-      console.log('handleLongPress', key, payload)
     },
     async handleTouchEnd(e: WechatMiniprogram.TouchEvent) {
       // 若已建立连接，则不再广播结束指令
@@ -195,7 +217,6 @@ ComponentWithComputed({
 
       const addr = this.data.isFactoryMode ? FACTORY_ADDR : remoterStore.curAddr
       bleAdvertisingEnd(this.data._bleServer, { addr, isFactory: this.data.isFactoryMode })
-      console.log('handleTouchEnd')
     },
 
     toSetting() {
