@@ -20,6 +20,7 @@ declare namespace Remoter {
 
   interface ButtonRes {
     key?: string
+    longpress?: string
     icon?: string
     iconActive?: string
     name?: string
