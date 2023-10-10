@@ -63,7 +63,7 @@ export const consultSystemBlePermission = async () => {
     title: '请打开手机蓝牙开关并授权微信使用',
     cancelButtonText: '知道了',
     confirmButtonText: '查看指引',
-    zIndex: 999999
+    zIndex: 999999,
   })
     .then(() => {
       wx.navigateTo({
