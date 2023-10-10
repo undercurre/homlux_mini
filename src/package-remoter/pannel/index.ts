@@ -28,7 +28,8 @@ ComponentWithComputed({
     _envVersion: 'release', // 当前小程序环境，默认为发布版，用于屏蔽部分实验功能
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
     _bleService: null as BleService | null,
-    _lastPowerKey: '', // 记录上一次点击‘照明’时的指令键，用于反转处理
+    // 记录上一次点击‘照明’时的指令键，用于反转处理；默认为关，即首次会广播开的指令
+    _lastPowerKey: 'LIGHT_LAMP_OFF',
     _keyQueue: ['', '', '', '', '', '', '', ''], // 记录按键序列
     _longpress_key: '',
     _timer: 0, // 记录上次指令时间
@@ -113,7 +114,7 @@ ComponentWithComputed({
      * @description 触摸结束时触发；不可能有长按操作的按钮，直接由bind:touchstart触发
      */
     async btnTap(e: WechatMiniprogram.TouchEvent) {
-      console.log('btnTap', e)
+      console.log('btnTap', e, { _lastPowerKey: this.data._lastPowerKey })
       if (!this.data._bleServer) {
         this.data._bleServer = await createBleServer()
       }
@@ -130,9 +131,17 @@ ComponentWithComputed({
       }
       // HACK 特殊的照明按钮反转处理
       if (key === 'LIGHT_LAMP') {
-        key = this.data._lastPowerKey === `${key}_OFF` ? `${key}_ON` : `${key}_OFF`
-        this.data._lastPowerKey = key
+        // 可以开灯的指令，若上次为为这些指令，则关灯
+        const ON_KEYS = [
+          'LIGHT_LAMP_ON',
+          'LIGHT_NIGHT_LAMP',
+          'LIGHT_SCENE_DAILY',
+          'LIGHT_SCENE_RELAX',
+          'LIGHT_SCENE_SLEEP',
+        ]
+        key = ON_KEYS.includes(this.data._lastPowerKey) ? `LIGHT_LAMP_OFF` : `LIGHT_LAMP_ON`
       }
+      this.data._lastPowerKey = key
 
       const addr = this.data.isFactoryMode ? FACTORY_ADDR : remoterStore.curAddr
       const payload = remoterProtocol.generalCmdString(CMD[key])

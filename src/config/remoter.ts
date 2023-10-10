@@ -82,7 +82,7 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
       ],
       bList: [
         {
-          key: 'LIGHT_LAMP',
+          key: 'LIGHT_LAMP', // 模糊匹配指令，需要有特殊的反转逻辑转换为真实指令
           icon: '/package-remoter/assets/power1.png',
           iconActive: '/package-remoter/assets/power0.png',
           name: '照明',
