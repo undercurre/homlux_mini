@@ -9,6 +9,7 @@ import {
   initHomeOs,
   networkStatusListen,
   removeNetworkStatusListen,
+  verifyNetwork,
 } from './utils/index'
 import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore, userStore } from './store/index'
@@ -71,24 +72,36 @@ App<IAppOption>({
     })
   },
 
-  onShow() {
+  async onShow() {
     // 监听网络状态
     networkStatusListen()
+    await verifyNetwork() // 可能网络状态会不变更，先主动查一次
+
+    const { firstOnShow } = this.globalData
+    this.globalData.firstOnShow = false
 
     // 用户热启动app，建立ws连接，并且再更新一次数据
     Logger.log('app-onShow, isConnect:', isConnect(), homeStore.currentHomeId)
-    if (homeStore.currentHomeId && storage.get('token') && isConnect()) {
-      // 首次进入有onLaunch不必加载
-      if (!this.globalData.firstOnShow) {
-        deviceStore.updateAllRoomDeviceList()
-        homeStore.updateHomeInfo()
-      }
-      startWebsocketService()
 
-      initHomeOs()
+    if (!homeStore.currentHomeId || !storage.get('token')) {
+      return
     }
 
-    this.globalData.firstOnShow = false
+    // 以下逻辑需要在已登录状态
+    initHomeOs()
+
+    if (!isConnect()) {
+      return
+    }
+
+    // 以下逻辑需要网络连接
+    startWebsocketService()
+
+    // 首次进入有onLaunch不必加载
+    if (!firstOnShow) {
+      deviceStore.updateAllRoomDeviceList()
+      homeStore.updateHomeInfo()
+    }
   },
 
   onHide() {

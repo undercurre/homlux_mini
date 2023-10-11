@@ -27,7 +27,6 @@ import {
   transferDeviceProperty,
   isConnect,
   getNetworkType,
-  verifyNetwork,
 } from '../../utils/index'
 import { proName, PRO_TYPE, LIST_PAGE, CARD_W, CARD_H, MODEL_NAME, CARD_REFRESH_TIME } from '../../config/index'
 
@@ -273,10 +272,6 @@ ComponentWithComputed({
     async onShow() {
       const networkType = getNetworkType()
       console.log('room-onshow，isConnect', isConnect(), networkType)
-
-      if (networkType === 'wifi' || networkType === 'unknown') {
-        await verifyNetwork()
-      }
 
       if (isConnect()) {
         // 再更新一遍数据
