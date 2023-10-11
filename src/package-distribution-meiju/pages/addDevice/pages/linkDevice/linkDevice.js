@@ -155,7 +155,6 @@ Page({
     setTimeout(() => {
       this.setData({
         curStep: 1,
-        // 'progressList[1].isFinish':true
       })
     }, 2000)
     let {
@@ -175,7 +174,6 @@ Page({
       sn,
       msmartBleWrite,
     } = app.addDeviceInfo
-    console.log('连接设备图片:', deviceImg)
     this.setData({
       addDeviceInfo: app.addDeviceInfo,
       combinedDeviceInfo: app.combinedDeviceInfo,
@@ -185,41 +183,15 @@ Page({
       mode: mode,
     })
     this.apUtils = apUtils //分包异步加载
-    console.log('app.addDeviceInfo =====', app.addDeviceInfo)
-    this.logAddDivceInfo('添加设备参数', app.addDeviceInfo)
     let needTimingMode = [0, 3, 5, 20, 21, 30, 31]
     if (needTimingMode.includes(mode)) {
       //蓝牙、ap相关才有倒计时
       this.timing(mode)
     }
-    if (Number(mode) == 0) {
+    if (Number(mode) === 0) {
       if (!apUtils) {
         app.addDeviceInfo.apUtils = await require.async('../../../assets/asyncSubpackages/apUtils.js')
         this.apUtils = app.addDeviceInfo.apUtils
-      }
-    }
-    if (mode != 0) {
-      console.log('进度页其他配网家庭id', app.globalData.currentHomeGroupId)
-
-      try {
-        if (!app.globalData.currentHomeGroupId) {
-          //无加载到默认家庭
-          console.log('获取当前家庭id')
-          app.globalData.currentHomeGroupId = await this.getCurrentHomeGroupId()
-          console.log('进度页其他配网家庭id 获取到', app.globalData.currentHomeGroupId)
-        }
-        let {currentRoomId, currentRoomName} = app.globalData
-        if (currentRoomId && currentRoomName) {
-          console.log('已有家庭信息================')
-          this.setData({
-            currentRoomId: currentRoomId,
-            currentRoomName: currentRoomName,
-          })
-        } else {
-          await this.getFamilyInfo(app.globalData.currentHomeGroupId)
-        }
-      } catch (err) {
-        console.error(err)
       }
     }
     console.log('addDeviceInfo====', app.addDeviceInfo)
@@ -246,11 +218,9 @@ Page({
       bindType: bindType,
       btMac: mac,
       mode: mode,
-      currentHomeGroupId: app.globalData.currentHomeGroupId,
     })
     //统一读取wifi缓存信息
     if (curWifiInfo) {
-      // this.data.bindWifiInfo = this.apUtils.decodeWifi(wx.getStorageSync('bindWifiInfo'))
       this.data.bindWifiInfo = curWifiInfo
     }
     let isShowUnSupportDialog = false // 不支持插件弹窗显示标识
@@ -268,7 +238,6 @@ Page({
         }
         udpCycTimer && clearInterval(udpCycTimer)
         this.getApLinkData() // 解析udp数据存入addDeviceInfo
-        console.log('当前品牌：' + brandStyle.brand)
         if (this.data.brandConfig.supportPluginFlag) {
           if (brandStyle.brand === 'colmo') {
             if (!this.isColmoDeviceByDecodeSn(this.data.plainSn) && !this.isColmoDeviceBySn8(this.data.udpAdData.sn8)) {
@@ -681,7 +650,7 @@ Page({
     try {
       let wifiInfo = await wifiMgr.getConnectedWifi()
       this.data.curLinkWifiInfo = wifiInfo
-      console.log('[on wifi switch]', wifiInfo)
+      console.log('[on wifi switch]', wifiInfo, app.addDeviceInfo)
       if (wifiInfo.SSID !== app.addDeviceInfo.ssid) {
         //连接的不是设备wifi
         this.deviceWifiYetSwitchTip() //设备wifi被切提示重连
@@ -1077,104 +1046,6 @@ Page({
       log: params.log,
     }
   },
-
-  // //主动连接设备ap
-  // async drivingDeviceAp() {
-  //   let self = this
-  //   let { ssid, type, enterprise } = app.addDeviceInfo
-  //   let brandName = this.getBrandBname(enterprise)
-  //   let res = wx.getSystemInfoSync()
-  //   if (res.system.includes('Android')) {
-  //     //安卓 或者 有ssid
-  //     wx.startWifi({
-  //       success: (res) => {
-  //         wifiMgr.getWifiList(
-  //           async (wifiList) => {
-  //             console.log('获取到wifi list', wifiList)
-  //             let deviceApSsid = wifiList.find((item) => {
-  //               if (item.SSID == ssid || item.SSID.includes(`${brandName}_${type.toLocaleLowerCase()}`)) {
-  //                 return item.SSID
-  //               }
-  //             })
-  //             if (deviceApSsid) {
-  //               console.log('找到对应设备wifi开始连接', deviceApSsid.SSID)
-  //               self.tryConectWifi(
-  //                 {
-  //                   ssid: deviceApSsid.SSID, //deviceApSsid.SSID
-  //                   password: addDeviceSDK.deviceApPassword,
-  //                 },
-  //                 2,
-  //                 (success) => {
-  //                   self.data.isSuccessLinkDeviceAp = true
-  //                   self.apLinkAbout()
-  //                 }
-  //               )
-  //             } else {
-  //               wx.getWifiList({
-  //                 fail: (res) => {},
-  //               })
-  //             }
-  //           },
-  //           (error) => {
-  //             console.log('获取wifi列表失败', error)
-  //           }
-  //         )
-  //       },
-  //     })
-  //     setTimeout(() => {
-  //       self.data.isStopLinkWifi = true //停止
-  //       if (!self.data.isSuccessLinkDeviceAp) {
-  //         app.addDeviceInfo.isCanDrivingLinkDeviceAp = false //手动连接设备ap
-  //         wx.reLaunch({
-  //           url: paths.linkAp,
-  //         })
-  //       }
-  //     }, linkDeviceApTimeOut * 1000)
-  //   } else if (ssid) {
-  //     self.tryConectWifi(
-  //       {
-  //         ssid: ssid,
-  //         password: addDeviceSDK.deviceApPassword,
-  //       },
-  //       2,
-  //       (success) => {
-  //         console.log('连接设备ap成功')
-  //         self.data.isSuccessLinkDeviceAp = true
-  //         self.apLinkAbout()
-  //       }
-  //     )
-  //     setTimeout(() => {
-  //       self.data.isStopLinkWifi = true //停止
-  //       if (!self.data.isSuccessLinkDeviceAp) {
-  //         app.addDeviceInfo.isCanDrivingLinkDeviceAp = false //手动连接设备ap
-  //         wx.reLaunch({
-  //           url: paths.linkAp,
-  //         })
-  //       }
-  //     }, linkDeviceApTimeOut * 1000)
-  //   }
-  // },
-  // //ap配网40s未成功重新连接配网
-  // apAddDeiveTimeOutRetry() {
-  //   let { apDeviceWifiInfo } = app.addDeviceInfo
-  //   let { isLinkcloud, startGetDeviceLinkCloud } = this.data
-  //   let timeTemp = 0
-  //   let timeOutLen = 45
-  //   apRetryTime = setInterval(async () => {
-  //     timeTemp = timeTemp + 1
-  //     console.log('apAddDeiveTimeOutRetry====', timeTemp, isLinkcloud, apDeviceWifiInfo)
-  //     if (timeTemp > timeOutLen && !isLinkcloud && apDeviceWifiInfo) {
-  //       //40s 内未连上云
-  //       clearInterval(apRetryTime)
-  //       await this.connectWifi(apDeviceWifiInfo.SSID, apDeviceWifiInfo.password)
-  //       this.apLinkAbout()
-  //       if (startGetDeviceLinkCloud) {
-  //         console.log('停止轮循查询')
-  //         this.data.isStopGetExists = true //停止轮循查询
-  //       }
-  //     }
-  //   }, 1000)
-  // },
 
   //获取上次配网错误指令
   getLastErrorCode() {
@@ -1642,7 +1513,6 @@ Page({
         if (!this.data.aplinkOrder) {
           this.data.aplinkOrder = this.constrLinknetorder()
         }
-        // this.tcp.write(hexStringToArrayBuffer(this.getLastErrorCode()))
         if (this.tcp) {
           // 发送0074指令查组合设备
           if (app.addDeviceInfo.combinedDeviceFlag) {
@@ -2514,7 +2384,7 @@ Page({
     })
   },
   bindDeviceToHome(bindInfo) {
-    console.log('开始绑定设备')
+    console.log('bindDeviceToHome开始绑定设备')
     let type = app.addDeviceInfo.type.includes('0x') ? app.addDeviceInfo.type : '0x' + app.addDeviceInfo.type
     let reqData = null
     if (bindInfo && bindInfo.mode == 100) {
@@ -2610,48 +2480,6 @@ Page({
     } catch (error) {
       console.log('[bind device to home fail]', error)
     }
-  },
-  getFamilyInfo(groupId, currentRoomId, retryNum = 3, timeout = 2000) {
-    let reqData = {
-      homegroupId: groupId,
-      reqId: getReqId(),
-      stamp: getStamp(),
-    }
-    return new Promise((resolve, reject) => {
-      requestService
-        .request('applianceList', reqData, 'POST', '', timeout)
-        .then((resp) => {
-          console.log('默认家庭信息', resp.data.data.homeList[0])
-          this.setData({
-            familyInfo: resp.data.data.homeList[0],
-          })
-          app.globalData.isCreateFamily =
-            resp.data.data.homeList[0].roleId == '1001' || resp.data.data.homeList[0].roleId == '1002' //是否是当前家庭的创建者
-          if (currentRoomId) {
-            this.setData({
-              currentRoomId: currentRoomId,
-            })
-          } else {
-            this.setData({
-              currentRoomId: resp.data.data.homeList[0].roomList[0].roomId,
-              currentRoomName: resp.data.data.homeList[0].roomList[0].name,
-            })
-          }
-          resolve(resp)
-        })
-        .catch((error) => {
-          console.log('获取家庭信息失败', error)
-          if (retryNum > 0) {
-            retryNum--
-            setTimeout(() => {
-              //继续重试
-              this.getFamilyInfo(groupId, currentRoomId, retryNum, timeout)
-            }, 2000)
-          } else {
-            reject(error)
-          }
-        })
-    })
   },
   /**
    * 处理蓝牙信息改变
@@ -2881,23 +2709,13 @@ Page({
     this.data.brand = brandStyle.brand
     this.setData({
       brand: this.data.brand,
-      dms_img_lack:
-        this.data.brand !== 'colmo' ? './assets/img/dms_img_lack@3x.png' : './assets/img/dms_img_lack_colmo@3x.png',
-      // meiPhone:imgUrl+ imgesList['meiPhone'],
-      meiPhone:
-        this.data.brand !== 'colmo' ? './assets/img/ic_meiphone@1x.png' : './assets/img/ic_meiphone_colmo@1x.png',
-      // loadingImg:imgUrl+ imgesList['loading'],
-      loadingImg: this.data.brand !== 'colmo' ? './assets/img/loading_spot.png' : './assets/img/loading_spot_colmo.png',
+      dms_img_lack: './assets/img/dms_img_lack@3x.png',
+      meiPhone: './assets/img/ic_meiphone@1x.png',
+      loadingImg: './assets/img/loading_spot.png',
       closeImg: imgUrl + imgesList['closeImg'],
     })
     // 清空组合设备数据
     ;(app.combinedDeviceInfo = [{sn: '', a0: ''}]), this.init()
-  },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {
   },
 
   /**
@@ -2910,7 +2728,7 @@ Page({
     if (mode == 0) {
       this.onWifiSwitch()
     }
-    if (this.data.isMamualLinkFamilyWifi || this.data.customDialog.confirmText == '去连接') {
+    if (this.data.isMamualLinkFamilyWifi || this.data.customDialog.confirmText === '去连接') {
       //手动连接家庭wifi后继续倒计时
       this.timing()
     }

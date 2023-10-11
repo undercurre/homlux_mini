@@ -6,6 +6,7 @@ import paths from '../../../../../utils/paths'
 import {brandConfig} from '../../../../assets/js/brand'
 import app from '../../../../../common/app'
 import { imgBaseUrl } from '../../../../../common/js/api'
+import {Logger} from "../../../../../../utils";
 
 const supportedApplianceTypes = [
   '0xAC',
@@ -327,13 +328,6 @@ module.exports = Behavior({
         })
       })
     },
-    logAddDivceInfo(logKey, addDviceInfo) {
-      let addDviceInfoTemp = JSON.parse(JSON.stringify(addDviceInfo))
-      if (addDviceInfoTemp.againCheckList) addDviceInfoTemp.againCheckList = ''
-      if (addDviceInfoTemp.apUtils) addDviceInfoTemp.apUtils = ''
-      if (addDviceInfoTemp.deviceImgPath) addDviceInfoTemp.deviceImgPath = ''
-      if (addDviceInfoTemp.guideInfo) addDviceInfoTemp.guideInfo = ''
-    },
     /**
      * 尝试连接wifi
      * @param {*} wifiInfo      wifi信息
@@ -484,6 +478,7 @@ module.exports = Behavior({
     },
     //新 轮询查询设备是否连上云
     newAgainGetAPExists(sn, forceValidRandomCode, randomCode = '', timeout, callBack, callFail) {
+      Logger.console('newAgainGetAPExists')
       let timeoutID
       const timeoutPromise = new Promise((resolve, reject) => {
         timeoutID = setTimeout(reject, 5000, 'WEB TIMEOUT')

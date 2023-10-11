@@ -15,11 +15,8 @@
       <view wx:if="{{mode == 21}}" class="link-device-title thick">{{deviceName}}联网中</view>
       <view wx:else class="link-device-title thick">连接{{deviceName}}</view>
       <view class="link-device-flow">
-        <!-- <image src="./assets/img/ic_meiphone@1x.png" class="phone-img" bindtap="paskIp"></image> -->
         <image src="{{meiPhone}}" class="phone-img" bindtap="paskIp"></image>
-        <!-- <image src="./assets/img/loading_spot.png" class="blue-tooth-img"></image> -->
         <image src="{{loadingImg}}" class="blue-tooth-img"></image>
-        <!-- <image hidden="{{deviceImgLoaded}}" src="../assets/img/dms_img_lack@3x.png" class="device-img"></image> -->
         <image wx:if="{{!deviceImgLoaded}}" src="{{dms_img_lack}}" class="link-device-img"></image>
         <image hidden="{{!deviceImgLoaded}}" src="{{deviceImg}}" class="device-img" bindload="devivceImgSuccess" binderror="deviceImgError"></image>
       </view>
@@ -47,7 +44,6 @@
     <view wx:if="{{time<=60 && mode != 8}}" class="timing-desc">最多还需要<text class="blue">{{time}}</text>秒，请耐心等待</view>
 
     <!-- 放弃添加弹窗 -->
-    <!-- <custom-dialog bind:clickCancel="clickCancel" customDialog="{{customDialog}}"></custom-dialog> -->
     <mx-dialog id="mx-cancleLink" show="{{ishowDialog}}" showCancelButton="true" cancelButtonColor="{{dialogStyle.cancelButtonColor}}" confirmButtonColor="{{dialogStyle.confirmButtonColor}}" title="{{titleContent}}" message="{{messageContent}}" cancel-button-text="放弃添加" confirm-button-text="再等等" bind:confirm="clickWaitAminute" bind:cancel="discardAdd"> </mx-dialog>
     <mx-dialog id="mx-dialog"> </mx-dialog>
     <!-- 密码错误弹窗 -->

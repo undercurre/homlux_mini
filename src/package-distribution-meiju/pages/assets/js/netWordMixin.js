@@ -95,8 +95,6 @@ module.exports = Behavior({
         })
       }
     },
-    logAddDivceInfo() {
-    },
     //当前手机网络状态
     nowNetType() {
       return new Promise((resolve, reject) => {
