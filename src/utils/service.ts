@@ -34,9 +34,7 @@ export async function startWebsocketService() {
     return
   }
   if (socketIsConnect) {
-    const closeRes = await socketTask?.close({ code: 1000 })
-
-    Logger.log('closeRes', closeRes)
+    await socketTask?.close({ code: 1000 })
   }
   socketTask = connectHouseSocket(homeStore.currentHomeDetail.houseId)
   socketTask.onClose(onSocketClose)
@@ -61,7 +59,7 @@ export async function startWebsocketService() {
             if (msgId !== heartbeatInfo.lastMsgId) {
               // 3s内没有收到发出的心跳回复，认为socket断开需要重连
               Logger.error('socket心跳回复超时，重连')
-              startWebsocketService()
+              socketTask?.close({ code: -1 })
             } else {
               Logger.log('socket心跳回复')
             }
@@ -98,7 +96,21 @@ export async function startWebsocketService() {
   })
   socketTask.onError((err) => {
     Logger.error('socket错误onError：', err)
+
+    if (socketIsConnect) {
+      socketTask?.close({ code: -1 })
+    } else {
+      delayConnectWS()
+    }
   })
+}
+
+function delayConnectWS() {
+  clearTimeout(connectTimeId)
+  connectTimeId = setTimeout(() => {
+    Logger.log('socket开始重连')
+    startWebsocketService()
+  }, 5000)
 }
 
 export function socketSend(data: string | ArrayBuffer) {
@@ -124,11 +136,7 @@ function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {
   // 4001: token校验不通过
   if (e.code !== 1000 && e.code !== 4001) {
     Logger.error('socket异常关闭连接', e)
-    clearTimeout(connectTimeId)
-    connectTimeId = setTimeout(() => {
-      Logger.log('socket重连')
-      startWebsocketService()
-    }, 5000)
+    delayConnectWS()
   }
 }
 

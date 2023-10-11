@@ -1,7 +1,7 @@
 import { baseRequest, BaseRequestOptions } from './baseRequest'
 import storage from '../storage'
 import { getEnv, mzaioBaseURL, TOKEN_EXPIRED } from '../../config/index'
-import {Logger, logout} from '../../utils/index'
+import { Logger, logout } from '../../utils/index'
 
 // 后端默认返回格式
 type mzaioResponseRowData<T extends AnyResType = AnyResType> = {
