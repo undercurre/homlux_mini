@@ -1,9 +1,7 @@
 // service模块存放项目的相关业务代码
-import { storage } from './storage'
 import { connectHouseSocket } from '../apis/websocket'
 import { homeStore, userStore } from '../store/index'
-import { emitter } from './eventBus'
-import { Logger } from './log'
+import { emitter, Logger, storage } from './index'
 import homos from 'js-homos'
 
 export function logout() {
@@ -22,6 +20,7 @@ export function logout() {
 let socketTask: WechatMiniprogram.SocketTask | null = null
 let socketIsConnect = false // socket是否处于连接状态
 let connectTimeId = 0 // 连接socket的延时器
+let isConnecting = false // 是否正在连接ws
 
 // socket心跳缓存数据
 const heartbeatInfo = {
@@ -30,15 +29,21 @@ const heartbeatInfo = {
 }
 
 export async function startWebsocketService() {
-  if (!storage.get<string>('token')) {
+  // 检测未登录或者是否已经正在连接，以免重复连接
+  if (!storage.get<string>('token') || isConnecting) {
+    Logger.log('不进行ws连接,isConnecting:', isConnecting)
     return
   }
+
+  isConnecting = true
   if (socketIsConnect) {
+    Logger.log('已存在ws连接，正在关闭已有连接')
     await socketTask?.close({ code: 1000 })
   }
   socketTask = connectHouseSocket(homeStore.currentHomeDetail.houseId)
   socketTask.onClose(onSocketClose)
   socketTask.onOpen((res) => {
+    isConnecting = false
     socketIsConnect = true
     Logger.log('socket连接成功', res)
 
@@ -96,22 +101,27 @@ export async function startWebsocketService() {
     }
   })
   socketTask.onError((err) => {
-    Logger.error('socket错误onError：', err)
+    // 可能短时间内连续触发多次onError
+    Logger.error('socket错误onError：', err, 'socketIsConnect', socketIsConnect)
 
     if (socketIsConnect) {
-      socketTask?.close({ code: -1 })
+      socketTask?.close({ code: -1 }) // code=-1代码ws报错重连
     } else {
-      delayConnectWS()
+      delayConnectWS(15000)
     }
   })
 }
 
-function delayConnectWS() {
+/**
+ * 延迟连接ws
+ * @param delay 延迟时间
+ */
+function delayConnectWS(delay = 5000) {
   clearTimeout(connectTimeId)
   connectTimeId = setTimeout(() => {
     Logger.log('socket开始重连')
     startWebsocketService()
-  }, 5000)
+  }, delay)
 }
 
 export function socketSend(data: string | ArrayBuffer) {
@@ -130,14 +140,21 @@ export function socketSend(data: string | ArrayBuffer) {
   })
 }
 
+/**
+ *
+ * @param e.code  -1:ws报错重连  1000: 正常主动关闭ws  4001: token校验不通过
+ */
 function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {
-  Logger.log('socket关闭连接', e)
+  Logger.log('socket已关闭连接', e)
   socketIsConnect = false
   clearInterval(heartbeatInfo.timeId)
-  // 4001: token校验不通过
-  if (e.code !== 1000 && e.code !== 4001) {
-    Logger.error('socket异常关闭连接', e)
-    delayConnectWS()
+  const { code } = e
+
+  if (code !== 1000 && code !== 4001) {
+    const delay = code === -1 ? 15000 : 5000 // ws报错重连一般是因为wifi无法访问外网，降低重连频率
+
+    Logger.error('socket异常关闭连接')
+    delayConnectWS(delay)
   }
 }
 
