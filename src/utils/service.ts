@@ -60,6 +60,7 @@ export async function startWebsocketService() {
               // 3s内没有收到发出的心跳回复，认为socket断开需要重连
               Logger.error('socket心跳回复超时，重连')
               socketTask?.close({ code: -1 })
+              clearInterval(heartbeatInfo.timeId)
             } else {
               Logger.log('socket心跳回复')
             }
