@@ -162,7 +162,6 @@ Page({
 
   //关闭wifi列表弹窗 hideWifiListSheet
   hideWifiListSheet() {
-    console.log('hideWifiListSheet=============')
     this.data.isGetWifiList = false
   },
 

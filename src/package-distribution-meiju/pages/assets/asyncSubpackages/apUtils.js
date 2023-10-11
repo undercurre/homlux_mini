@@ -1,5 +1,5 @@
 /* eslint-disable no-redeclare */
-import app from '../../../../common/app'
+import app from '../../../common/app'
 import {
   CryptoJS,
   md5,
@@ -25,7 +25,8 @@ let MAS_KEY = {
 function reverse(hex) {
   // hex = '2c190000'
   let arr = []
-  for (var i = 0, len = hex.length; i < len; i += 2) {
+  let i = 0, len = hex.length;
+  for (; i < len; i += 2) {
     // if(hex.substr(i, 2)!='00'){
 
     // }
@@ -43,7 +44,7 @@ function reverse(hex) {
  * return hex 0100
  */
 function padByte(hex, len) {
-  var padHex = hex
+  let padHex = hex;
   if (hex.length / 2 < len) {
     for (let i = 0; i < len - hex.length / 2; i++) {
       padHex = padHex + '00'
@@ -54,7 +55,7 @@ function padByte(hex, len) {
 
 //解析ip  hex:01 01 a8 c0
 function parseIp(hex) {
-  if (hex.length != 8) {
+  if (hex.length !== 8) {
     console.log('ip参数有误')
   }
   let hexArr = reverse(hex)
@@ -63,7 +64,7 @@ function parseIp(hex) {
 
 //解析port  hex:2c190000
 function parsePort(hex) {
-  if (hex.length != 8) {
+  if (hex.length !== 8) {
     console.log('port参数有误')
   }
   let hexArr = reverse(hex)
@@ -124,16 +125,16 @@ function encode(order, key, orderType, keyType) {
   console.time('encrypto spend time')
   // var hexString = 'aa24ac0000000000000240434e147f7fff3000000000000000000000008000000000e9cce7'
   var hexString = order
-  if (orderType == 'utf8') {
+  if (orderType === 'utf8') {
     var wordArray = CryptoJS.enc.Utf8.parse(hexString)
     // var wordArray = CryptoJS.enc.Hex.parse(hexString)
   } else {
     wordArray = CryptoJS.enc.Hex.parse(hexString)
   }
-  if (keyType == 'utf8') {
-    var key = CryptoJS.enc.Utf8.parse(key)
+  if (keyType === 'utf8') {
+    key = CryptoJS.enc.Utf8.parse(key)
   } else {
-    var key = CryptoJS.enc.Hex.parse(key)
+    key = CryptoJS.enc.Hex.parse(key)
   }
   var encryptedData = CryptoJS.AES.encrypt(wordArray, key, {
     mode: CryptoJS.mode.ECB,
@@ -149,17 +150,13 @@ function decode(order, key, orderType, keyType) {
   console.log('key=====', key)
   console.time('decrypto spend time')
   var hexString = order
-  if (orderType == 'utf8') {
-    var cipherTextHexStr = CryptoJS.enc.Utf8.parse(hexString)
-  } else {
-    var cipherTextHexStr = CryptoJS.enc.Hex.parse(hexString)
-  }
-  var cipherTextHexStr = CryptoJS.enc.Hex.parse(hexString)
+  let cipherTextHexStr
+  cipherTextHexStr = CryptoJS.enc.Hex.parse(hexString)
   var baseData = CryptoJS.enc.Base64.stringify(cipherTextHexStr)
-  if (keyType == 'utf8') {
-    var key = CryptoJS.enc.Utf8.parse(key)
+  if (keyType === 'utf8') {
+    key = CryptoJS.enc.Utf8.parse(key)
   } else {
-    var key = CryptoJS.enc.Hex.parse(key)
+    key = CryptoJS.enc.Hex.parse(key)
   }
   var decodeData = CryptoJS.AES.decrypt(baseData, key, {
     mode: CryptoJS.mode.ECB,
@@ -199,7 +196,6 @@ function decode2body(msg) {
 }
 //解析udp消息体
 function parseUdpBody(deBody) {
-  ;``
   console.log('deBody======', deBody)
   let adData = {}
   adData.tcpIp = parseIp(deBody.slice(0, 8))

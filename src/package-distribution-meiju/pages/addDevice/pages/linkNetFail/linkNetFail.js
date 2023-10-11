@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
+import { queryUserInfo } from '../../../../../apis/index'
+
 import app from '../../../../common/app'
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const netWordMixin = require('../../../assets/js/netWordMixin')
@@ -223,8 +225,7 @@ Page({
             }
             self.data.isClickConfirm = true
             console.log('this.data.isClickConfirm:', self.data.isClickConfirm)
-            app
-              .checkNet()
+            queryUserInfo()
               .then(() => {
                 //如果是ap自发现配网失败点击重试跳设备发现页
                 let { fmType, combinedDeviceFlag } = app.addDeviceInfo
@@ -285,8 +286,7 @@ Page({
                 })
               })
           } else if (res.cancel) {
-            app
-              .checkNet()
+            queryUserInfo()
               .then(() => {
                 self.drawBtnClickFlag = false
                 //校验当前网络是否畅通
@@ -804,7 +804,7 @@ Page({
           },
         })
       } else {
-        await app.checkNet() //校验当前网络是否畅通
+        await queryUserInfo() //校验当前网络是否畅通
         wx.reLaunch({
           url: paths.index,
           complete() {

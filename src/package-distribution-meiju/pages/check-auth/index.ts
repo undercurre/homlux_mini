@@ -1,6 +1,6 @@
-import { ComponentWithComputed } from 'miniprogram-computed'
+import {ComponentWithComputed} from 'miniprogram-computed'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
-import { homeStore } from '../../../store/index'
+import {homeStore} from '../../../store/index'
 import app from '../../common/app'
 import {queryGuideInfo, queryUserThirdPartyInfo} from '../../../apis/index'
 import {Logger, storage} from "../../../utils/index";
@@ -28,13 +28,13 @@ ComponentWithComputed({
 
   computed: {
     tipsText(data) {
-      const { seconds } = data
+      const {seconds} = data
       return '我知道了' + (seconds ? `（${seconds}s）` : '')
     },
   },
   lifetimes: {
     async ready() {
-      const { proType, sn8, deviceImg, productId, mode } = this.data
+      const {proType, sn8, deviceImg, productId, mode} = this.data
       console.log('check-auth', proType, sn8)
 
       if (sn8) {
@@ -45,7 +45,7 @@ ComponentWithComputed({
         app.addDeviceInfo.productId = productId
       }
 
-      const res = await queryUserThirdPartyInfo(homeStore.currentHomeId, { loading: true })
+      const res = await queryUserThirdPartyInfo(homeStore.currentHomeId, {loading: true})
 
       if (res.success) {
         this.setData({
@@ -70,10 +70,11 @@ ComponentWithComputed({
         }, 1000)
       }
     },
-    detached() {},
+    detached() {
+    },
   },
   methods: {
-    toAgree(e: { detail: boolean}) {
+    toAgree(e: { detail: boolean }) {
       console.log('toAgree', e)
 
       if (this.data.seconds > 0) {
@@ -98,45 +99,19 @@ ComponentWithComputed({
      * 前往配网流程页面
      */
     async toBindDevice() {
-      const { sn8, type, mode } = app.addDeviceInfo
+      const {sn8, type, mode} = app.addDeviceInfo
       const res = await queryGuideInfo({sn8, type, mode: mode.toString()})
 
       // const res = {
-      //   "code": 0,
-      //   "data": {
-      //     "auxiConnectinfoList": [],
-      //     "auxiMode": -1,
-      //     "brand": "midea",
-      //     "category": "14",
-      //     "dataSource": 1,
-      //     "enterpriseCode": "0000",
-      //     "mainConnectinfoList": [{
-      //       "bluetoothName": null,
-      //       "code": "79700Z76",
-      //       "connectDesc": "① 将智能窗帘插上电源\n② 快速点按「SET-2」键4次，再长按「SET-2」键1次，直至指示灯闪烁",
-      //       "connectUrlA": "http://midea-file.oss-cn-hangzhou.aliyuncs.com/2021/7/7/15/NZxmnjoefmcMealUPBmt.gif",
-      //       "connectUrlB": "",
-      //       "connectUrlC": "",
-      //       "controlVersion": null,
-      //       "customerModel": "SC-1/M2-Z",
-      //       "isAutoConnect": 0,
-      //       "isBluetoothControl": 0,
-      //       "leadingWords": "已完成上述操作",
-      //       "marketModel": "SC-1/M2-Z",
-      //       "mode": 0,
-      //       "note": null,
-      //       "productCode": "21079710000001",
-      //       "productId": "SC-1/M2-Z",
-      //       "productImg": "http://midea-file.oss-cn-hangzhou.aliyuncs.com/2021/6/21/13/pJeBIFcVqOdjdODAiSRK.png",
-      //       "productName": "智能电动窗帘",
-      //       "wifiFrequencyBand": 1,
-      //       "wifiName": null
-      //     }],
-      //     "mode": 0,
-      //     "needTransfer2FailStatus": null,
-      //     "proInfrared": null
-      //   },
-      //   "msg": "操作成功"
+      //   "result": {
+      //     "modelCode": "7909AC81",
+      //     "modelType": "0",
+      //     "wifiFrequencyBand": "1",
+      //     "isAutoConnect": "0",
+      //     "mainConnectTypeUrlList": ["http://midea-file.oss-cn-hangzhou.aliyuncs.com/2023/7/21/9/ChjOZnQUgWmtBEMMYQjf.gif"],
+      //     "mainConnectTypeDesc": "方式一：长条形遥控器\n①使用遥控器开关灯具，确认遥控器正常\n②开灯，并长按遥控器【配网】键3秒，直至灯具黄/白光交替变化\n方式二：正方形遥控器\n①使用遥控器开关灯具，确认遥控器正常\n②开灯，并长按遥控器【亮度-】与【暖光】键3秒，直至灯具黄/白光交替变化",
+      //     "type": "13"
+      //   }, "code": 0, "msg": "成功!", "success": true, "timestamp": 1696988826782
       // }
       Logger.console('queryGuideInfo', res)
 
