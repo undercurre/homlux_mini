@@ -7,6 +7,8 @@ import {
   Logger,
   isConnect,
   initHomeOs,
+  networkStatusListen,
+  removeNetworkStatusListen,
 } from './utils/index'
 import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore, userStore } from './store/index'
@@ -70,6 +72,9 @@ App<IAppOption>({
   },
 
   onShow() {
+    // 监听网络状态
+    networkStatusListen()
+
     // 用户热启动app，建立ws连接，并且再更新一次数据
     Logger.log('app-onShow, isConnect:', isConnect(), homeStore.currentHomeId)
     if (homeStore.currentHomeId && storage.get('token') && isConnect()) {
@@ -93,6 +98,9 @@ App<IAppOption>({
 
     // 退出HomOS sdk登录态，断开局域网连接
     homOs.logout()
+
+    // 取消监听网络状态
+    removeNetworkStatusListen()
   },
 
   onError(msg: string) {

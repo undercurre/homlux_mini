@@ -25,6 +25,9 @@ import {
   toPropertyDesc,
   isNullOrUnDef,
   transferDeviceProperty,
+  isConnect,
+  getNetworkType,
+  verifyNetwork,
 } from '../../utils/index'
 import { proName, PRO_TYPE, LIST_PAGE, CARD_W, CARD_H, MODEL_NAME, CARD_REFRESH_TIME } from '../../config/index'
 
@@ -268,8 +271,21 @@ ComponentWithComputed({
     },
 
     async onShow() {
-      // 再更新一遍数据
-      await this.reloadData()
+      const networkType = getNetworkType()
+      console.log('room-onshow，isConnect', isConnect(), networkType)
+
+      if (networkType === 'wifi' || networkType === 'unknown') {
+        await verifyNetwork()
+      }
+
+      if (isConnect()) {
+        // 再更新一遍数据
+        await this.reloadData()
+      }
+      // 未连接网络，所有设备直接设置为离线
+      else {
+        this.updateQueue({ isRefresh: true, onLineStatus: 0 })
+      }
 
       // ws消息处理
       emitter.on('wsReceive', async (e) => {
@@ -466,7 +482,7 @@ ComponentWithComputed({
           if (index !== -1) {
             originDevice = this.data.devicePageList[groupIndex][index]
             // const diffData = {} as IAnyObject
-            // review 细致到字段的diff
+            // Review 细致到字段的diff
             const renderList = ['deviceName', 'onLineStatus'] // 需要刷新界面的字段
 
             renderList.forEach((key) => {
@@ -492,20 +508,22 @@ ComponentWithComputed({
 
               this.data._diffCards.data[`devicePageList[${groupIndex}][${index}].mzgdPropertyDTOList.${modelName}`] =
                 newVal
-
-              // 更新场景关联信息
-              this.data._diffCards.data[`devicePageList[${groupIndex}][${index}].linkSceneName`] =
-                this.getLinkSceneName({
-                  ...device!,
-                  proType: originDevice.proType, // 补充关键字段
-                })
             }
+            // 更新面板、按键信息
             if (device!.switchInfoDTOList) {
               const newVal = {
                 ...originDevice.switchInfoDTOList[0],
                 ...device?.switchInfoDTOList[0],
               }
               this.data._diffCards.data[`devicePageList[${groupIndex}][${index}].switchInfoDTOList[0]`] = newVal
+            }
+            // 更新场景关联信息
+            const linkSceneName = this.getLinkSceneName({
+              ...device!,
+              proType: originDevice.proType, // 补充关键字段
+            })
+            if (linkSceneName !== originDevice.linkSceneName) {
+              this.data._diffCards.data[`devicePageList[${groupIndex}][${index}].linkSceneName`] = linkSceneName
             }
 
             // 如果控制弹框为显示状态，则同步选中设备的状态
@@ -585,6 +603,7 @@ ComponentWithComputed({
             type: proName[device.proType],
             select: this.data.checkedList.includes(device.uniId) || this.data.editSelectList.includes(device.uniId),
             linkSceneName: this.getLinkSceneName(device),
+            onLineStatus: e.onLineStatus ?? device.onLineStatus, // 传参数直接设置指定的在线离线状态
           }))
 
         if (!this.data.deviceListInited) {
