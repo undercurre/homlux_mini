@@ -1,9 +1,9 @@
-import { observable, runInAction } from 'mobx-miniprogram'
-import { queryAllDevice } from '../apis/device'
-import { MODEL_NAME, PRO_TYPE } from '../config/index'
-import { homeStore } from './home'
-import { roomStore } from './room'
-import { sceneStore } from './scene'
+import {observable, runInAction} from 'mobx-miniprogram'
+import {queryAllDevice} from '../apis/device'
+import {MODEL_NAME, PRO_TYPE} from '../config/index'
+import {homeStore} from './home'
+import {roomStore} from './room'
+import {sceneStore} from './scene'
 import homOs from 'js-homos'
 
 export const deviceStore = observable({
@@ -13,7 +13,7 @@ export const deviceStore = observable({
   allRoomDeviceList: [] as Device.DeviceItem[],
 
   get deviceList(): Device.DeviceItem[] {
-    const { roomId = 0 } = roomStore.currentRoom ?? {}
+    const {roomId = 0} = roomStore.currentRoom ?? {}
     return this.allRoomDeviceList.filter((device) => device.roomId === roomId)
   },
   /**
@@ -179,6 +179,8 @@ export const deviceStore = observable({
       runInAction(() => {
         roomStore.roomDeviceList = list
         deviceStore.allRoomDeviceList = res.result
+
+        this.updateAllRoomDeviceListLanStatus(false)
       })
     } else {
       console.log('加载全屋设备失败！', res)
@@ -188,21 +190,27 @@ export const deviceStore = observable({
   /**
    * 更新全屋设备列表的局域网状态
    */
-  updateAllRoomDeviceListLanStatus() {
+  updateAllRoomDeviceListLanStatus(isUpdate = true) {
+    const allRoomDeviceList = deviceStore.allRoomDeviceList.map((item) => {
+      const {deviceId, updateStamp} = item
+
+      const canLanCtrl =
+        item.deviceType === 4
+          ? homOs.isSupportLan({groupId: deviceId, updateStamp})
+          : homOs.isSupportLan({deviceId})
+
+      return {
+        ...item,
+        canLanCtrl,
+      }
+    })
+
+    if (!isUpdate) {
+      return
+    }
+
     runInAction(() => {
-      deviceStore.allRoomDeviceList = deviceStore.allRoomDeviceList.map((item) => {
-        const { deviceId, updateStamp } = item
-
-        const canLanCtrl =
-          item.deviceType === 4
-            ? homOs.isSupportLan({ groupId: deviceId, updateStamp })
-            : homOs.isSupportLan({ deviceId })
-
-        return {
-          ...item,
-          canLanCtrl,
-        }
-      })
+      deviceStore.allRoomDeviceList = allRoomDeviceList
     })
   },
 })
