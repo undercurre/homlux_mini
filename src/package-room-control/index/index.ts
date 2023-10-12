@@ -26,6 +26,7 @@ import {
   isNullOrUnDef,
   transferDeviceProperty,
   isConnect,
+  verifyNetwork,
 } from '../../utils/index'
 import { proName, PRO_TYPE, LIST_PAGE, CARD_W, CARD_H, MODEL_NAME, CARD_REFRESH_TIME } from '../../config/index'
 
@@ -267,6 +268,7 @@ ComponentWithComputed({
           .exec()
       }
 
+      await verifyNetwork()
       // 加载数据
       this.reloadDataThrottle()
     },
@@ -1070,6 +1072,8 @@ ComponentWithComputed({
           if (!isNullOrUnDef(prop.brightness)) diffData['lightStatus.brightness'] = prop.brightness
           if (!isNullOrUnDef(prop.colorTemperature)) diffData['lightStatus.colorTemperature'] = prop.colorTemperature
           if (!isNullOrUnDef(prop.power)) diffData['lightStatus.power'] = prop.power
+          if (!isNullOrUnDef(e.detail.canLanCtrl)) diffData['lightStatus.canLanCtrl'] = e.detail.canLanCtrl
+          if (!isNullOrUnDef(e.detail.onLineStatus)) diffData['lightStatus.onLineStatus'] = e.detail.onLineStatus
         } else if (e.detail.proType === PRO_TYPE.curtain) {
           diffData.curtainStatus = {
             position: prop.curtain_position,
