@@ -78,7 +78,7 @@ ComponentWithComputed({
       value: {} as Record<string, number>,
       observer(value) {
         this.setData({
-          'isLanCtl': value.canLanCtrl && !value.onLineStatus,
+          isLanCtl: value.canLanCtrl && !value.onLineStatus,
           'lightInfoInner.brightness': value.brightness ?? 0,
           'lightInfoInner.colorTemperature': value.colorTemperature ?? 0,
         })
