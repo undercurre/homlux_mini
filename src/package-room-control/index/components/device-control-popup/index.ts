@@ -78,6 +78,7 @@ ComponentWithComputed({
       value: {} as Record<string, number>,
       observer(value) {
         this.setData({
+          'isLanCtl': value.canLanCtrl && !value.onLineStatus,
           'lightInfoInner.brightness': value.brightness ?? 0,
           'lightInfoInner.colorTemperature': value.colorTemperature ?? 0,
         })
@@ -107,6 +108,7 @@ ComponentWithComputed({
       componentHeight: 0,
       divideRpxByPx: 0,
     },
+    isLanCtl: false, // 是否局域网控制状态
     show: false,
     tab: '' as '' | 'light' | 'switch' | 'curtain',
     lightInfoInner: {

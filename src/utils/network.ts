@@ -13,7 +13,9 @@ export async function verifyNetwork() {
   const res = await peekNetwork()
   Logger.debug('连网状态验证:', res)
 
-  const newStatus = res.msg.indexOf('time out') === -1 && res.msg.indexOf('UNREACHABLE') === -1
+  // HACK 安卓和IOS返回不一致
+  const newStatus =
+    res.msg.indexOf('timeout') === -1 && res.msg.indexOf('time out') === -1 && res.msg.indexOf('UNREACHABLE') === -1
 
   if (newStatus !== isConnectStatus) {
     isConnectStatus = newStatus
