@@ -153,9 +153,9 @@ export const homeStore = observable({
           }
         })
       runInAction(() => {
-        Logger.debug('updateRoomCardList更新allRoomDeviceList')
         roomStore.roomDeviceList = list
         deviceStore.allRoomDeviceList = data[0].result
+        deviceStore.updateAllRoomDeviceListLanStatus(false)
       })
     }
     if (data[1].success) {
@@ -357,8 +357,6 @@ export const homeStore = observable({
       this.currentHomeDetail = data.homeData.currentHomeDetail
       roomStore.roomList = data.homeData.roomList
       deviceStore.allRoomDeviceList = data.homeData.allRoomDeviceList
-
-      Logger.debug('loadHomeDataFromStorage更新allRoomDeviceList')
     })
     return true
   },
