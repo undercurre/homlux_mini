@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
+import {checkApExists} from '../../../../../../apis/index'
+
 import {getReqId, getStamp} from 'm-utilsdk/index'
 import {showToast} from '../../../../../utils/util'
 import {creatErrorCode, failTextData} from './errorCode'
 import paths from '../../../../../utils/paths'
 import {brandConfig} from '../../../../assets/js/brand'
 import app from '../../../../../common/app'
-import { imgBaseUrl } from '../../../../../common/js/api'
+import {imgBaseUrl} from '../../../../../common/js/api'
 import {Logger} from "../../../../../../utils";
 
 const supportedApplianceTypes = [
@@ -263,14 +265,14 @@ module.exports = Behavior({
   },
   methods: {
     //数码管字体替换图片
-    replaceInco(guideDesc){
-      let list = ['#AP#','#00#','#0A#','#0L#','#01#','#02#']
-      let imgList = ['code_ap@3x.png','code_00@3x.png','code_0a@3x.png','code_0l@3x.png','code_01@3x.png','code_02@3x.png']
-      for(let i = 0 ;i<=list.length-1;i++){
-        if(guideDesc.includes(list[i])){
-          let imgUrl = imgBaseUrl.url+'/shareImg/'+ app.globalData.brand+'/'+ imgList[i]
-          let content = ' <img class="nixie-tube" src='+imgUrl+'></img> '
-          guideDesc = guideDesc.replaceAll(list[i],content)
+    replaceInco(guideDesc) {
+      let list = ['#AP#', '#00#', '#0A#', '#0L#', '#01#', '#02#']
+      let imgList = ['code_ap@3x.png', 'code_00@3x.png', 'code_0a@3x.png', 'code_0l@3x.png', 'code_01@3x.png', 'code_02@3x.png']
+      for (let i = 0; i <= list.length - 1; i++) {
+        if (guideDesc.includes(list[i])) {
+          let imgUrl = imgBaseUrl.url + '/shareImg/' + app.globalData.brand + '/' + imgList[i]
+          let content = ' <img class="nixie-tube" src=' + imgUrl + '></img> '
+          guideDesc = guideDesc.replaceAll(list[i], content)
 
         }
       }
@@ -438,43 +440,70 @@ module.exports = Behavior({
       return linkType
     },
     //查询设备是否连上云
-    checkApExists(sn, forceValidRandomCode, randomCode = '', timeout) {
-      return new Promise((resolve, reject) => {
-        let reqData = {
-          sn: sn,
-          forceValidRandomCode: forceValidRandomCode,
-          randomCode: randomCode,
-          reqId: getReqId(),
-          stamp: getStamp(),
+    async checkApExists(sn, forceValidRandomCode, randomCode = '', timeout) {
+      const res = await checkApExists({
+        sn,
+        randomCode,
+        forceValidRandomCode
+      }).catch((error) => {
+        console.log('查询设备是否连上云 error', error)
+        if (error.data) {
+          app.addDeviceInfo.errorCode = this.creatErrorCode({
+            errorCode: error.data.code,
+            isCustom: true,
+          })
         }
-        console.log('checkApExists reqData:', reqData)
-        console.log(`查询设备是否连上云参数 reqData=${JSON.stringify(reqData)},plainSn=${app.addDeviceInfo.plainSn}`)
-        // requestService
-        //   .request('checkApExists', reqData, 'POST', '', timeout)
-        //   .then((resp) => {
-        //     resolve(resp)
-        //   })
-        //   .catch((error) => {
-        //     console.log('查询设备是否连上云 error', error)
-        //     if (error.data) {
-        //       app.addDeviceInfo.errorCode = this.creatErrorCode({
-        //         errorCode: error.data.code,
-        //         isCustom: true,
-        //       })
-        //     }
-        //     if (app.addDeviceInfo && app.addDeviceInfo.mode == 0) {
-        //       //
-        //       if (error.data && error.data.code == 1384) {
-        //         //随机数校验不一致
-        //         app.addDeviceInfo.errorCode = this.creatErrorCode({
-        //           errorCode: 4169,
-        //           isCustom: true,
-        //         })
-        //       }
-        //     }
-        //     reject(error)
-        //   })
+        if (app.addDeviceInfo && app.addDeviceInfo.mode == 0) {
+          //
+          if (error.data && error.data.code == 1384) {
+            //随机数校验不一致
+            app.addDeviceInfo.errorCode = this.creatErrorCode({
+              errorCode: 4169,
+              isCustom: true,
+            })
+          }
+        }
       })
+
+      console.log(`查询设备是否连上云参数`, sn, randomCode, forceValidRandomCode, 'res', res)
+
+      return res
+      // return new Promise((resolve, reject) => {
+      //   let reqData = {
+      //     sn: sn,
+      //     forceValidRandomCode: forceValidRandomCode,
+      //     randomCode: randomCode,
+      //     reqId: getReqId(),
+      //     stamp: getStamp(),
+      //   }
+      //   console.log('checkApExists reqData:', reqData)
+      //   console.log(`查询设备是否连上云参数 reqData=${JSON.stringify(reqData)},plainSn=${app.addDeviceInfo.plainSn}`)
+      //   requestService
+      //     .request('checkApExists', reqData, 'POST', '', timeout)
+      //     .then((resp) => {
+      //       resolve(resp)
+      //     })
+      //     .catch((error) => {
+      //       console.log('查询设备是否连上云 error', error)
+      //       if (error.data) {
+      //         app.addDeviceInfo.errorCode = this.creatErrorCode({
+      //           errorCode: error.data.code,
+      //           isCustom: true,
+      //         })
+      //       }
+      //       if (app.addDeviceInfo && app.addDeviceInfo.mode == 0) {
+      //         //
+      //         if (error.data && error.data.code == 1384) {
+      //           //随机数校验不一致
+      //           app.addDeviceInfo.errorCode = this.creatErrorCode({
+      //             errorCode: 4169,
+      //             isCustom: true,
+      //           })
+      //         }
+      //       }
+      //       reject(error)
+      //     })
+      // })
     },
     //新 轮询查询设备是否连上云
     newAgainGetAPExists(sn, forceValidRandomCode, randomCode = '', timeout, callBack, callFail) {
@@ -489,14 +518,6 @@ module.exports = Behavior({
           if (resp.data.code == 0) {
             console.log('resolve------------')
             callBack && callBack(resp.data.data)
-          } else {
-            // console.log('查询设备是否连上云接口失败1', resp)
-            // if (!this.data.isStopGetExists) {
-            //   setTimeout(() => {
-            //     this.newAgainGetAPExists(sn, forceValidRandomCode, randomCode, timeout, callBack, callFail)
-            //   }, 2000)
-            // }
-            // callFail && callFail(resp)
           }
         })
         .catch((error) => {

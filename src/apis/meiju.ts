@@ -87,7 +87,12 @@ export async function delDeviceSubscribe(houseId: string) {
  * @param params.modelNumber 特殊设备型号（A0），如果存在则必传
  * @param params.type 设备品类(格式如AC)
  */
-export async function queryGuideInfo(params: { mode: string, modelNumber?: string, sn8?: string, type: string }) {
+export async function queryGuideInfo(params: {
+  mode: string,
+  modelNumber?: string,
+  sn8?: string,
+  type: string
+}) {
   return await mzaioRequest.post<{
     isAutoConnect: string // 上电默认连接模式(0 不启动，1 AP，2 WIFI零配)
     mainConnectTypeDesc: string // 配网介绍
@@ -102,3 +107,98 @@ export async function queryGuideInfo(params: { mode: string, modelNumber?: strin
     data: params,
   })
 }
+
+/**
+ * 查询设备是否已入网
+ * @param params.sn  加密后的sn； 约定采用(AES/CBC/PKCS5Padding),加密方法：AES.encrypt(sn, key,IV),并对加密结果转成16进制字符串表示； 注：加密Key由美的云为三方云分配的clientSecret做SHA256后取字节数组前16字节,其中IV通过伪随机数生成器生成，并且转成十六进制字符串后拼接在加密后的字符串前面，其中加密字符串也采用十六进制，解密的时候云端会把拼接在前面的iv变量截取下来再做解密，具体对称加密实现示例参考附录
+ * @param params.randomCode  配网随机数
+ * @param params.forceValidRandomCode  默认false，传true则强制校验随机数，直到匹配成功或者轮训超时,注：udpversion=2这个值才传true，其他情况都默认false
+ */
+export async function checkApExists(params: {
+  sn: string,
+  randomCode: string,
+  forceValidRandomCode: string
+}) {
+  return await mzaioRequest.post<{
+    reqId: string, // 请求ID
+    available: boolean, // true时为已发现设备
+    applianceList: string[], // 发现的设备列表
+    verificationCode: string, // 随机数验证码，用于绑定校验
+    applianceCode: string // 设备虚拟ID，用于设备相关操作
+  }>({
+    log: true,
+    loading: false,
+    url: '/v1/thirdparty/midea/device/apExists',
+    data: params,
+  })
+}
+
+/**
+ * 绑定美的设备
+ */
+export async function bindMideaDevice(params: {
+  deviceId: string, // 美居设备id
+  houseId: string,
+  applianceType?: string, // 【品类码】 对应Android/iOS AP配网返回的参数deviceTpye【设备品类】
+  bindType?: string, // 绑定类型，默认AP配网可不传，例如大屏扫码的类型为qrcode
+  procotolVersion: string, // 【固件版本号】 对应 Android/iOS AP配网返回的参数【设备协议版本号】
+  verificationCode?: string, // 验证码，bindType不传或者为ap时必传
+}) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: false,
+    url: '/v1/thirdparty/midea/device/mideaDeviceBind',
+    data: params,
+  })
+}
+
+/**
+ * 查询确权状态
+ */
+export async function queryAuthGetStatus(params: {
+  deviceId: string, // 美居设备id
+}) {
+  return await mzaioRequest.post<{
+    status: number // 确权状态：0 已确权\n1 待确权\n2 未确权\n3 不支持确权
+  }>({
+    log: true,
+    loading: false,
+    url: '/v1/thirdparty/midea/device/queryAuthGetStatus',
+    data: params,
+  })
+}
+
+/**
+ * 设备确权
+ */
+export async function confirmDeviceAuth(params: {
+  deviceId: string, // 美居设备id
+}) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: false,
+    url: '/v1/thirdparty/midea/device/deviceAuthConfirm',
+    data: params,
+  })
+}
+
+/**
+ * 查询设备确权信息
+ */
+export async function queryDeviceSpecifiedInfo(params: {
+  deviceId: string, // 美居设备id
+}) {
+  return await mzaioRequest.post<{
+    confirmDesc: string // 确权指引描述
+    confirmImgUrl: string // 确权指引图片url
+    modelCode: string //
+    modelType: string
+    type: string // 设备品类
+  }>({
+    log: true,
+    loading: false,
+    url: '/v1/thirdparty/midea/device/queryDeviceSpecifiedInfo',
+    data: params,
+  })
+}
+
