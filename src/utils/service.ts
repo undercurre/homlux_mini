@@ -1,7 +1,8 @@
 // service模块存放项目的相关业务代码
 import { connectHouseSocket } from '../apis/websocket'
 import { homeStore, userStore } from '../store/index'
-import { emitter, isLogon, Logger, storage } from './index'
+import { isLogon, Logger, storage } from './index'
+import { emitter } from './eventBus'
 import homos from 'js-homos'
 
 export function logout() {
