@@ -10,6 +10,7 @@ import {
   networkStatusListen,
   removeNetworkStatusListen,
   verifyNetwork,
+  isLogon,
 } from './utils/index'
 import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore, userStore } from './store/index'
@@ -39,7 +40,7 @@ App<IAppOption>({
     }
 
     // 如果用户已经登录，开始请求数据
-    if (storage.get<string>('token')) {
+    if (isLogon()) {
       try {
         userStore.setIsLogin(true)
         const start = Date.now()
@@ -83,7 +84,7 @@ App<IAppOption>({
     // 用户热启动app，建立ws连接，并且再更新一次数据
     Logger.log('app-onShow, isConnect:', isConnect(), homeStore.currentHomeId)
 
-    if (!homeStore.currentHomeId || !storage.get('token')) {
+    if (!homeStore.currentHomeId || !isLogon()) {
       return
     }
 

@@ -1,7 +1,7 @@
 // service模块存放项目的相关业务代码
 import { connectHouseSocket } from '../apis/websocket'
 import { homeStore, userStore } from '../store/index'
-import { emitter, Logger, storage } from './index'
+import {emitter, isLogon, Logger, storage} from './index'
 import homos from 'js-homos'
 
 export function logout() {
@@ -103,7 +103,7 @@ export async function startWebsocketService() {
   socketTask.onError((err) => {
     // 可能短时间内连续触发多次onError
     Logger.error('socket错误onError：', err, 'socketIsConnect', socketIsConnect)
-
+    isConnecting = false
     if (socketIsConnect) {
       socketTask?.close({ code: -1 }) // code=-1代码ws报错重连
     } else {
@@ -164,3 +164,10 @@ export function closeWebSocket() {
     socketIsConnect = false
   }
 }
+
+emitter.on('networkStatusChange', (res) => {
+  // 已登录状态下，可以访问外网且当前没有ws连接的情况，发起ws连接
+  if (res.isConnectStatus && isLogon() && !socketIsConnect) {
+    startWebsocketService()
+  }
+})

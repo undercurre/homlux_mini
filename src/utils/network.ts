@@ -1,4 +1,4 @@
-import { Logger } from './log'
+import { Logger, emitter } from './index'
 import { peekNetwork } from '../apis/index'
 
 let isConnectStatus = true
@@ -14,6 +14,11 @@ export async function verifyNetwork() {
   Logger.debug('连网状态验证:', res)
 
   isConnectStatus = res.msg.indexOf('time out') === -1 && res.msg.indexOf('UNREACHABLE') === -1
+
+  emitter.emit('networkStatusChange', {
+    networkType,
+    isConnectStatus,
+  })
 }
 
 export function isConnect() {
@@ -36,6 +41,10 @@ const networkListener = (res: WechatMiniprogram.OnNetworkStatusChangeListenerRes
   // WIFI 状态下不变更连接状态，需要手动调用 verifyNetwork()
   if (networkType !== 'wifi' && networkType !== 'unknown') {
     isConnectStatus = res.isConnected
+    emitter.emit('networkStatusChange', {
+      networkType,
+      isConnectStatus,
+    })
   } else {
     verifyNetwork()
   }

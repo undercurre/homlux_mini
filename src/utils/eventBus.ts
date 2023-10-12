@@ -4,6 +4,11 @@ import { goHome } from './app'
 import { homeStore, userStore } from '../store/index'
 
 type Events = {
+  // 网络状态变更通知
+  networkStatusChange: {
+    networkType: string, // 网络类型
+    isConnectStatus: boolean, // 是否可连接外网
+  },
   // 从websocket接受到信息 start
   bind_device: {
     deviceId: string
