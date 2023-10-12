@@ -51,12 +51,14 @@ import { setWifiStorage } from '../../utils/wifiStorage'
 
 import Dialog from '../../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
 import { imgesList } from '../../../assets/js/shareImg.js'
+import {Logger} from "../../../../../utils";
 
 let appKey = api.appKey
 
 const brandStyle = require('../../../assets/js/brand.js')
 const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
 let wifiMgr = new WifiMgr()
+const queryWifiDelay = 15000
 
 Page({
   behaviors: [bleNeg, addDeviceMixin, wahinMixin, netWordMixin, computedBehavior],
@@ -228,8 +230,10 @@ Page({
     let isShowUnSupportDialog = false // 不支持插件弹窗显示标识
     let isShowColmoUnSupportDialog = false // colmo旧设备弹窗显示标识
 
+    Logger.console('init-switch', mode)
     switch (Number(mode)) {
       case 0: //ap link
+        Logger.console('ap link')
         this.data.udpAdData = await this.getUdpInfo()
         this.setData({
           curStep: 1,
@@ -240,6 +244,8 @@ Page({
         }
         udpCycTimer && clearInterval(udpCycTimer)
         this.getApLinkData() // 解析udp数据存入addDeviceInfo
+
+        Logger.console('brandConfig.supportPluginFlag', this.data.brandConfig.supportPluginFlag)
         if (this.data.brandConfig.supportPluginFlag) {
           if (brandStyle.brand === 'colmo') {
             if (!this.isColmoDeviceByDecodeSn(this.data.plainSn) && !this.isColmoDeviceBySn8(this.data.udpAdData.sn8)) {
@@ -648,15 +654,17 @@ Page({
 
   //监听wifi切换
   async onWifiSwitch() {
+    Logger.console('onWifiSwitch', this.data.apIsSendWifiInfo)
     if (this.data.apIsSendWifiInfo) return //已发送wifi信息
     try {
       let wifiInfo = await wifiMgr.getConnectedWifi()
       this.data.curLinkWifiInfo = wifiInfo
-      console.log('[on wifi switch]', wifiInfo, app.addDeviceInfo)
+      Logger.console('[on wifi switch]', wifiInfo, app.addDeviceInfo)
       if (wifiInfo.SSID !== app.addDeviceInfo.ssid) {
         //连接的不是设备wifi
         this.deviceWifiYetSwitchTip() //设备wifi被切提示重连
       } else {
+        Logger.console('isPopupDeviceWifiYetSwitch', this.data.isPopupDeviceWifiYetSwitch, this.data.udpAdData)
         if (this.data.isPopupDeviceWifiYetSwitch && this.data.udpAdData) {
           //重新发wifi信息
           console.log('[重新发wifi信息]')
@@ -665,14 +673,14 @@ Page({
         }
       }
       if (this.data.pageStatus === 'show') {
-        this.delay(1500).then(() => {
+        this.delay(queryWifiDelay).then(() => {
           this.onWifiSwitch()
         })
       }
     } catch (error) {
       console.log('[get connected wifi fail]', error)
       if (this.data.pageStatus === 'show') {
-        this.delay(1500).then(() => {
+        this.delay(queryWifiDelay).then(() => {
           this.onWifiSwitch()
         })
       }

@@ -1,10 +1,11 @@
 <!--addDevice//pages/addGuide/addGuide.wxml-->
 <view class="page" id="{{brand}}">
   <view class="container">
-    <nav-bar leftArrow bind:leftTap="goBack"></nav-bar>
     <!-- ble guide -->
     <!--  -->
     <view wx:if="{{guideType==='set'&&!noFound}}" class="check-guide">
+      <nav-bar leftArrow bind:leftTap="goBack"></nav-bar>
+
       <view class="{{brand === 'colmo'?'':'addGuide-title'}} addGuide-thick">
         <block>
           <text class="addGuide-title theme-font-color" wx:if="{{mode==9||mode==10}}">{{deviceName}}</text>
