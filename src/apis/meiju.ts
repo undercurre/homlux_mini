@@ -135,13 +135,14 @@ export async function checkApExists(params: {
 
 /**
  * 绑定美的设备
+ * @param params.applianceType 【品类码】 对应Android/iOS AP配网返回的参数deviceTpye【设备品类】
  */
 export async function bindMideaDevice(params: {
-  deviceId: string, // 美居设备id
-  houseId: string,
   applianceType?: string, // 【品类码】 对应Android/iOS AP配网返回的参数deviceTpye【设备品类】
   bindType?: string, // 绑定类型，默认AP配网可不传，例如大屏扫码的类型为qrcode
-  procotolVersion: string, // 【固件版本号】 对应 Android/iOS AP配网返回的参数【设备协议版本号】
+  deviceId: string, // 美居设备id
+  houseId: string, // homLux家庭id
+  roomId: string, // homLux房间id
   verificationCode?: string, // 验证码，bindType不传或者为ap时必传
 }) {
   return await mzaioRequest.post({

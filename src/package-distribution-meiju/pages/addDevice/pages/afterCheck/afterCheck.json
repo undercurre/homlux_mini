@@ -4,7 +4,6 @@
   "navigationBarTitleText": "",
   "navigationBarTextStyle": "black",
   "usingComponents": {
-    "plugin-navbar": "/package-distribution-meiju/component/plugin-navbar/plugin-navbar",
     "mx-dialog": "/miniprogram_npm/m-ui/mx-dialog/index"
   }
 }

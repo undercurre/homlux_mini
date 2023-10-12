@@ -1,5 +1,6 @@
 const app = {
   addDeviceInfo: {
+    roomId: '',
     plainSn: '', //设备原始sn
     msmartBleWrite: null, //蓝牙写入
     combinedDeviceFlag: false, // 存在辅设备标识

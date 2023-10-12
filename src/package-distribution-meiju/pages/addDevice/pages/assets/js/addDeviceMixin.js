@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import {checkApExists} from '../../../../../../apis/index'
+import {Logger} from "../../../../../../utils/index";
 
 import {getReqId, getStamp} from 'm-utilsdk/index'
 import {showToast} from '../../../../../utils/util'
@@ -8,7 +9,6 @@ import paths from '../../../../../utils/paths'
 import {brandConfig} from '../../../../assets/js/brand'
 import app from '../../../../../common/app'
 import {imgBaseUrl} from '../../../../../common/js/api'
-import {Logger} from "../../../../../../utils";
 
 const supportedApplianceTypes = [
   '0xAC',
@@ -514,7 +514,7 @@ module.exports = Behavior({
       })
       Promise.race([timeoutPromise, this.checkApExists(sn, forceValidRandomCode, randomCode, timeout)])
         .then((resp) => {
-          console.log('查询设备是否连上云', resp.data.code)
+          console.log('查询设备是否连上云', resp)
           if (resp.data.code == 0) {
             console.log('resolve------------')
             callBack && callBack(resp.data.data)

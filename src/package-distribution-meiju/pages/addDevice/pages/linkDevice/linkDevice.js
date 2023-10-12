@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
+import { bindMideaDevice } from '../../../../../apis/index'
+import {homeStore, roomStore} from '../../../../../store/index'
 import app from '../../../../common/app'
 
 const bleNeg = require('../../../../utils/ble/ble-negotiation')
@@ -1873,27 +1875,6 @@ Page({
             app.addDeviceInfo.isTwice = true //是第二次配网
           }
         }
-        console.log('进度页AP配网家庭id', app.globalData.currentHomeGroupId)
-        if (!app.globalData.currentHomeGroupId) {
-          app.globalData.currentHomeGroupId = await this.getCurrentHomeGroupId()
-          console.log('进度页AP配网家庭id 从云端获取', app.globalData.currentHomeGroupId)
-
-          this.data.currentHomeGroupId = app.globalData.currentHomeGroupId
-        }
-        let {currentRoomId, currentRoomName} = app.globalData
-        if (currentRoomId && currentRoomName) {
-          console.log('已有家庭信息================')
-          this.setData({
-            currentRoomId: currentRoomId,
-            currentRoomName: currentRoomName,
-          })
-        } else {
-          try {
-            await this.getFamilyInfo(app.globalData.currentHomeGroupId)
-          } catch (error) {
-            console.error(error)
-          }
-        }
         let bindRes = null
         try {
           bindRes = await requestWithTry(this.bindDeviceToHome, 3) //防止超时提前绑定
@@ -2383,8 +2364,17 @@ Page({
       url: paths.index,
     })
   },
-  bindDeviceToHome(bindInfo) {
+  async bindDeviceToHome(bindInfo) {
     console.log('bindDeviceToHome开始绑定设备')
+
+    const res = await bindMideaDevice({
+      deviceId: this.data.deviceId,
+      houseId: homeStore.currentHomeId,
+      roomId: roomStore.currentRoom.roomId,
+      verificationCode: bindInfo.verificationCod,
+    })
+
+    console.log('bindMideaDevice' ,res)
     let type = app.addDeviceInfo.type.includes('0x') ? app.addDeviceInfo.type : '0x' + app.addDeviceInfo.type
     let reqData = null
     if (bindInfo && bindInfo.mode == 100) {
@@ -2412,8 +2402,6 @@ Page({
       }
     }
     console.log('bind reqData===', reqData)
-    //设置默认家庭
-    // service.homegroupDefaultSetService(this.data.currentHomeGroupId)
     return new Promise((reslove, reject) => {
       requestService
         .request('bindDeviceToHome', reqData, 'POST', '', 3000)
