@@ -111,13 +111,12 @@ export async function actionScanResult(
         confirmButtonColor: brandConfig.dialogStyle.confirmButtonColor,
         cancelButtonColor: brandConfig.dialogStyle.cancelButtonColor3,
         cancelButtonText: '取消',
+      }).then((res) => {
+        if (res.action == 'confirm') {
+          clickQRcodeGuide()
+        }
+        // on confirm
       })
-        .then((res) => {
-          if (res.action == 'confirm') {
-            clickQRcodeGuide()
-          }
-          // on confirm
-        })
       return
     }
 
@@ -131,13 +130,12 @@ export async function actionScanResult(
         confirmButtonColor: brandConfig.dialogStyle.confirmButtonColor,
         cancelButtonColor: brandConfig.dialogStyle.cancelButtonColor3,
         cancelButtonText: '取消',
+      }).then((res) => {
+        if (res.action == 'confirm') {
+          clickQRcodeGuide()
+        }
+        // on confirm
       })
-        .then((res) => {
-          if (res.action == 'confirm') {
-            clickQRcodeGuide()
-          }
-          // on confirm
-        })
       return
     }
 

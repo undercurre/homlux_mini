@@ -97,7 +97,6 @@ export const homeStore = observable({
     if (res.success) {
       runInAction(() => {
         homeStore.homeList = res.result
-        console.log('updateHomeList store', res.result)
 
         const houseId = homeStore.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
         // 首次进入或删除了默认家庭时，默认选中第0个
@@ -126,7 +125,7 @@ export const homeStore = observable({
       runInAction(() => {
         homeStore.currentHomeDetail = Object.assign({ houseId: this.currentHomeId }, res.result)
       })
-      await deviceStore.updateAllRoomDeviceList(undefined, options)
+      // await deviceStore.updateAllRoomDeviceList(undefined, options) // 重复加载
       await roomStore.updateRoomList(options)
       this.homeDataPersistence()
       return
@@ -172,7 +171,7 @@ export const homeStore = observable({
           room.roomSceneList = room.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
         }
 
-        const { lightOnCount, endCount, lightCount } = deviceCount(roomDeviceList)
+        const { lightOnCount, endCount, lightCount } = deviceCount(roomDeviceList, deviceStore.lightsInGroup)
         room.roomInfo.lightOnCount = lightOnCount
         room.roomInfo.endCount = endCount
         room.roomInfo.lightCount = lightCount
@@ -316,7 +315,7 @@ export const homeStore = observable({
   },
 
   async initLocalKey() {
-    const key = storage.get('loaclKey') as string
+    const key = storage.get('localKey') as string
 
     console.debug('key', key)
 
@@ -333,7 +332,7 @@ export const homeStore = observable({
     if (res.success) {
       this.key = res.result
       // key的有效期是30天，设置缓存过期时间25天
-      storage.set('loaclKey', this.key, Date.now() + 1000 * 60 * 60 * 24 * 25)
+      storage.set('localKey', this.key, Date.now() + 1000 * 60 * 60 * 24 * 25)
     }
   },
 

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import app from '../../../../common/app'
 import paths from '../../../../utils/paths'
-import {requestService} from '../../../../utils/requestService'
-import {getReqId, getStamp} from 'm-utilsdk/index'
-import {baseImgApi} from '../../../../common/js/api.js'
+import { requestService } from '../../../../utils/requestService'
+import { getReqId, getStamp } from 'm-utilsdk/index'
+import { baseImgApi } from '../../../../common/js/api.js'
 
 Page({
   behaviors: [],
@@ -29,14 +29,12 @@ Page({
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
-  onReady: function () {
-  },
+  onReady: function () {},
 
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function () {
-  },
+  onShow: function () {},
 
   antiNameClicked(e) {
     this.nameCheck(e.detail.value)
@@ -106,7 +104,7 @@ Page({
   },
 
   switchRoom(e) {
-    let {id, roomName} = e.currentTarget.dataset
+    let { id, roomName } = e.currentTarget.dataset
     this.setData({
       ['device.roomId']: id,
       ['device.room']: roomName,
@@ -116,30 +114,25 @@ Page({
   /**
    * 生命周期函数--监听页面隐藏
    */
-  onHide: function () {
-  },
+  onHide: function () {},
 
   /**
    * 生命周期函数--监听页面卸载
    */
-  onUnload: function () {
-  },
+  onUnload: function () {},
 
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
-  onPullDownRefresh: function () {
-  },
+  onPullDownRefresh: function () {},
 
   /**
    * 页面上拉触底事件的处理函数
    */
-  onReachBottom: function () {
-  },
+  onReachBottom: function () {},
 
   /**
    * 用户点击右上角分享
    */
-  onShareAppMessage: function () {
-  },
+  onShareAppMessage: function () {},
 })

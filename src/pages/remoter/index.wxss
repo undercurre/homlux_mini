@@ -114,7 +114,7 @@ page {
   transform: translateX(-50%);
 }
 
-.bg-hex-debug {
+.text-debug {
   background-color: rgba(0, 0, 0, 0.42);
 }
 .rssiToggle {

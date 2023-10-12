@@ -1,4 +1,4 @@
-import {mzaioRequest} from '../utils/index'
+import { mzaioRequest } from '../utils/index'
 
 /**
  * 查询美居家庭列表
@@ -20,12 +20,12 @@ export async function getMeijuHomeList(code?: string) {
  * @param mideaHouseId 美居家庭id
  * @param houseId Homlux 家庭id
  */
-export async function bindMeiju({houseId, mideaHouseId}: { houseId: string; mideaHouseId: string }) {
+export async function bindMeiju({ houseId, mideaHouseId }: { houseId: string; mideaHouseId: string }) {
   return await mzaioRequest.post<Meiju.MeijuDevice[]>({
     log: true,
     loading: false,
     url: '/v1/thirdparty/midea/device/bindHouseRoom',
-    data: {houseId, mideaHouseId},
+    data: { houseId, mideaHouseId },
   })
 }
 
@@ -50,7 +50,7 @@ export async function syncMeijuDeviceList(houseId: string) {
     log: true,
     loading: true,
     url: '/v1/thirdparty/midea/device/syncMideaDevice',
-    data: {houseId},
+    data: { houseId },
   })
 }
 
@@ -63,7 +63,7 @@ export async function queryUserThirdPartyInfo(houseId: string, options?: { loadi
     log: true,
     loading: options?.loading ?? false,
     url: '/v1/thirdparty/midea/device/queryUserThirdPartyInfo',
-    data: {houseId},
+    data: { houseId },
   })
 }
 
@@ -76,7 +76,7 @@ export async function delDeviceSubscribe(houseId: string) {
     log: true,
     loading: false,
     url: '/v1/thirdparty/midea/device/delDeviceSubscribe',
-    data: {houseId},
+    data: { houseId },
   })
 }
 
@@ -87,12 +87,7 @@ export async function delDeviceSubscribe(houseId: string) {
  * @param params.modelNumber 特殊设备型号（A0），如果存在则必传
  * @param params.type 设备品类(格式如AC)
  */
-export async function queryGuideInfo(params: {
-  mode: string,
-  modelNumber?: string,
-  sn8?: string,
-  type: string
-}) {
+export async function queryGuideInfo(params: { mode: string; modelNumber?: string; sn8?: string; type: string }) {
   return await mzaioRequest.post<{
     isAutoConnect: string // 上电默认连接模式(0 不启动，1 AP，2 WIFI零配)
     mainConnectTypeDesc: string // 配网介绍
@@ -114,16 +109,12 @@ export async function queryGuideInfo(params: {
  * @param params.randomCode  配网随机数
  * @param params.forceValidRandomCode  默认false，传true则强制校验随机数，直到匹配成功或者轮训超时,注：udpversion=2这个值才传true，其他情况都默认false
  */
-export async function checkApExists(params: {
-  sn: string,
-  randomCode: string,
-  forceValidRandomCode: string
-}) {
+export async function checkApExists(params: { sn: string; randomCode: string; forceValidRandomCode: string }) {
   return await mzaioRequest.post<{
-    reqId: string, // 请求ID
-    available: boolean, // true时为已发现设备
-    applianceList: string[], // 发现的设备列表
-    verificationCode: string, // 随机数验证码，用于绑定校验
+    reqId: string // 请求ID
+    available: boolean // true时为已发现设备
+    applianceList: string[] // 发现的设备列表
+    verificationCode: string // 随机数验证码，用于绑定校验
     applianceCode: string // 设备虚拟ID，用于设备相关操作
   }>({
     log: true,
@@ -138,12 +129,12 @@ export async function checkApExists(params: {
  * @param params.applianceType 【品类码】 对应Android/iOS AP配网返回的参数deviceTpye【设备品类】
  */
 export async function bindMideaDevice(params: {
-  applianceType?: string, // 【品类码】 对应Android/iOS AP配网返回的参数deviceTpye【设备品类】
-  bindType?: string, // 绑定类型，默认AP配网可不传，例如大屏扫码的类型为qrcode
-  deviceId: string, // 美居设备id
-  houseId: string, // homLux家庭id
-  roomId: string, // homLux房间id
-  verificationCode?: string, // 验证码，bindType不传或者为ap时必传
+  applianceType?: string // 【品类码】 对应Android/iOS AP配网返回的参数deviceTpye【设备品类】
+  bindType?: string // 绑定类型，默认AP配网可不传，例如大屏扫码的类型为qrcode
+  deviceId: string // 美居设备id
+  houseId: string // homLux家庭id
+  roomId: string // homLux房间id
+  verificationCode?: string // 验证码，bindType不传或者为ap时必传
 }) {
   return await mzaioRequest.post({
     log: true,
@@ -157,7 +148,7 @@ export async function bindMideaDevice(params: {
  * 查询确权状态
  */
 export async function queryAuthGetStatus(params: {
-  deviceId: string, // 美居设备id
+  deviceId: string // 美居设备id
 }) {
   return await mzaioRequest.post<{
     status: number // 确权状态：0 已确权\n1 待确权\n2 未确权\n3 不支持确权
@@ -173,7 +164,7 @@ export async function queryAuthGetStatus(params: {
  * 设备确权
  */
 export async function confirmDeviceAuth(params: {
-  deviceId: string, // 美居设备id
+  deviceId: string // 美居设备id
 }) {
   return await mzaioRequest.post({
     log: true,
@@ -187,7 +178,7 @@ export async function confirmDeviceAuth(params: {
  * 查询设备确权信息
  */
 export async function queryDeviceSpecifiedInfo(params: {
-  deviceId: string, // 美居设备id
+  deviceId: string // 美居设备id
 }) {
   return await mzaioRequest.post<{
     confirmDesc: string // 确权指引描述
@@ -202,4 +193,3 @@ export async function queryDeviceSpecifiedInfo(params: {
     data: params,
   })
 }
-

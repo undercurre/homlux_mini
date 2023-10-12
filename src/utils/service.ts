@@ -1,9 +1,8 @@
 // service模块存放项目的相关业务代码
-import { storage } from './storage'
 import { connectHouseSocket } from '../apis/websocket'
 import { homeStore, userStore } from '../store/index'
+import { isLogon, Logger, storage, isConnect } from './index'
 import { emitter } from './eventBus'
-import { Logger } from './log'
 import homos from 'js-homos'
 
 export function logout() {
@@ -22,6 +21,7 @@ export function logout() {
 let socketTask: WechatMiniprogram.SocketTask | null = null
 let socketIsConnect = false // socket是否处于连接状态
 let connectTimeId = 0 // 连接socket的延时器
+let isConnecting = false // 是否正在连接ws
 
 // socket心跳缓存数据
 const heartbeatInfo = {
@@ -30,18 +30,21 @@ const heartbeatInfo = {
 }
 
 export async function startWebsocketService() {
-  return
-  if (!storage.get<string>('token')) {
+  // 检测未登录或者是否已经正在连接，以免重复连接
+  if (!storage.get<string>('token') || isConnecting || !isConnect()) {
+    Logger.log('不进行ws连接,isConnecting:', isConnecting, 'isConnect()', isConnect())
     return
   }
-  if (socketIsConnect) {
-    const closeRes = await socketTask?.close({ code: 1000 })
 
-    Logger.log('closeRes', closeRes)
+  isConnecting = true
+  if (socketIsConnect) {
+    Logger.log('已存在ws连接，正在关闭已有连接')
+    await socketTask?.close({ code: 1000 })
   }
   socketTask = connectHouseSocket(homeStore.currentHomeDetail.houseId)
   socketTask.onClose(onSocketClose)
   socketTask.onOpen((res) => {
+    isConnecting = false
     socketIsConnect = true
     Logger.log('socket连接成功', res)
 
@@ -62,7 +65,10 @@ export async function startWebsocketService() {
             if (msgId !== heartbeatInfo.lastMsgId) {
               // 3s内没有收到发出的心跳回复，认为socket断开需要重连
               Logger.error('socket心跳回复超时，重连')
-              startWebsocketService()
+              socketTask?.close({ code: -1 })
+              clearInterval(heartbeatInfo.timeId)
+            } else {
+              Logger.log('socket心跳回复')
             }
           }, 3000)
         },
@@ -96,8 +102,27 @@ export async function startWebsocketService() {
     }
   })
   socketTask.onError((err) => {
-    Logger.error('socket错误onError：', err)
+    // 可能短时间内连续触发多次onError
+    Logger.error('socket错误onError：', err, 'socketIsConnect', socketIsConnect)
+    isConnecting = false
+    if (socketIsConnect) {
+      socketTask?.close({ code: -1 }) // code=-1代码ws报错重连
+    } else {
+      delayConnectWS(15000)
+    }
   })
+}
+
+/**
+ * 延迟连接ws
+ * @param delay 延迟时间
+ */
+function delayConnectWS(delay = 5000) {
+  clearTimeout(connectTimeId)
+  connectTimeId = setTimeout(() => {
+    Logger.log('socket开始重连')
+    startWebsocketService()
+  }, delay)
 }
 
 export function socketSend(data: string | ArrayBuffer) {
@@ -116,18 +141,21 @@ export function socketSend(data: string | ArrayBuffer) {
   })
 }
 
+/**
+ *
+ * @param e.code  -1:ws报错重连  1000: 正常主动关闭ws  4001: token校验不通过
+ */
 function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {
-  Logger.log('socket关闭连接', e)
+  Logger.log('socket已关闭连接', e)
   socketIsConnect = false
   clearInterval(heartbeatInfo.timeId)
-  // 4001: token校验不通过
-  if (e.code !== 1000 && e.code !== 4001) {
-    Logger.error('socket异常关闭连接', e)
-    clearTimeout(connectTimeId)
-    connectTimeId = setTimeout(() => {
-      Logger.log('socket重连')
-      startWebsocketService()
-    }, 5000)
+  const { code } = e
+
+  if (code !== 1000 && code !== 4001) {
+    const delay = code === -1 ? 15000 : 5000 // ws报错重连一般是因为wifi无法访问外网，降低重连频率
+
+    Logger.error('socket异常关闭连接')
+    delayConnectWS(delay)
   }
 }
 
@@ -138,17 +166,9 @@ export function closeWebSocket() {
   }
 }
 
-/**
- * 进入小程序时的业务逻辑
- */
-export async function appOnLaunchService() {
-  try {
-    userStore.setIsLogin(true)
-    const start = Date.now()
-    console.log('开始时间', start / 1000)
-    await Promise.all([userStore.updateUserInfo(), homeStore.homeInit()])
-    console.log('加载完成时间', Date.now() / 1000, '用时', (Date.now() - start) / 1000 + 's')
-  } catch (e) {
-    Logger.error('appOnLaunchService-err:', e)
+emitter.on('networkStatusChange', (res) => {
+  // 已登录状态下，可以访问外网且当前没有ws连接的情况，发起ws连接
+  if (res.isConnectStatus && isLogon() && !socketIsConnect) {
+    startWebsocketService()
   }
-}
+})

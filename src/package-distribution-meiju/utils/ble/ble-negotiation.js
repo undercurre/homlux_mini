@@ -15,8 +15,7 @@ import app from '../../common/app'
 let packageSize = 200
 module.exports = Behavior({
   behaviors: [],
-  properties: {
-  },
+  properties: {},
   data: {
     deviceId: '',
     moduleType: '', //模组类型 1代表ble, 2代表 bleWifi

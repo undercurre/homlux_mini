@@ -1,10 +1,7 @@
 /**
  * 蓝牙相关服务接口
  */
-import {
-  getReqId,
-  getStamp,
-} from 'm-utilsdk/index'
+import { getReqId, getStamp } from 'm-utilsdk/index'
 import { requestService } from '../../../../utils/requestService'
 const bleNegotiationService = {
   /**

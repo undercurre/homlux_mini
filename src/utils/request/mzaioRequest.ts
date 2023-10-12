@@ -1,7 +1,7 @@
 import { baseRequest, BaseRequestOptions } from './baseRequest'
 import storage from '../storage'
 import { getEnv, mzaioBaseURL, TOKEN_EXPIRED } from '../../config/index'
-import { logout } from '../../utils/index'
+import { Logger, logout } from '../../utils/index'
 
 // 后端默认返回格式
 type mzaioResponseRowData<T extends AnyResType = AnyResType> = {
@@ -65,7 +65,7 @@ const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: Base
       if ((result.data as unknown as { code: number }).code === TOKEN_EXPIRED) {
         logout()
       } else if (!(result.data as unknown as { success: boolean }).success) {
-        console.error('接口已响应，但返回异常', options, result.data)
+        Logger.error('接口已响应，但返回异常', options, result.data)
       }
 
       const cost_time = Date.now() - start
@@ -81,7 +81,7 @@ const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: Base
       return result.data
     },
     generalFailHandler: (error) => {
-      console.error('请求失败，原因：', error.errMsg)
+      Logger.error('请求失败，原因：', options, error.errMsg)
 
       const cost_time = Date.now() - start
 

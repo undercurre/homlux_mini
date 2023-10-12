@@ -25,7 +25,8 @@ let MAS_KEY = {
 function reverse(hex) {
   // hex = '2c190000'
   let arr = []
-  let i = 0, len = hex.length;
+  let i = 0,
+    len = hex.length
   for (; i < len; i += 2) {
     // if(hex.substr(i, 2)!='00'){
 
@@ -44,7 +45,7 @@ function reverse(hex) {
  * return hex 0100
  */
 function padByte(hex, len) {
-  let padHex = hex;
+  let padHex = hex
   if (hex.length / 2 < len) {
     for (let i = 0; i < len - hex.length / 2; i++) {
       padHex = padHex + '00'

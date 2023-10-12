@@ -9,7 +9,7 @@ const paths = require('../../../../utils/paths')
 const dialogCommonData = require('../../../../common/mixins/dialog-common-data.js')
 import app from '../../../../common/app'
 import { actionScanResult } from '../../../../utils/scanCodeApi'
-import {creatDeviceSessionId } from '../../../../utils/util.js'
+import { creatDeviceSessionId } from '../../../../utils/util.js'
 import { addDeviceSDK } from '../../../../utils/addDeviceSDK'
 import { checkPermission } from '../../../../common/js/checkPermissionTip'
 import { getPrivateKeys } from '../../../../utils/getPrivateKeys'
@@ -316,8 +316,7 @@ Page({
         title: '微信系统出错，请尝试点击右上角“...” - “重新进入小程序”',
         confirmButtonText: '好的',
         confirmButtonColor: this.data.dialogStyle.confirmButtonColor2,
-      }).then((res) => {
-      })
+      }).then((res) => {})
       // wx.showModal({
       //   showCancel: false,
       //   content: '微信系统出错，请尝试点击右上角“...” - “重新进入小程序”',

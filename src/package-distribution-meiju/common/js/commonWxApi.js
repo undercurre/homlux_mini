@@ -4,8 +4,7 @@ export const wxGetSystemInfo = () => {
       success(res) {
         resolve(res)
       },
-      fail(error) {
-      },
+      fail(error) {},
     })
   })
 }

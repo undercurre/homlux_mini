@@ -125,12 +125,13 @@ const _createBluetoothProtocol = (params: { addr: string; data: string; opcode?:
 /**
  * @description 按发送协议拼接数据
  * @param params.isEncrypt 是否加密
+ * @param params.isFactory 是否工厂产测模式，模拟实体遥控器
  */
-const createBleProtocol = (params: { payload: string; addr: string; isEncrypt?: boolean }) => {
-  const { payload, addr, isEncrypt = true } = params
+const createBleProtocol = (params: { payload: string; addr: string; isEncrypt?: boolean; isFactory?: boolean }) => {
+  const { payload, addr, isEncrypt = true, isFactory = false } = params
   // 第一个字节
   const version = '0001'
-  const src = 1 // 手机发出
+  const src = isFactory ? 0 : 1 // 0:设备发出  1:手机发出
   const BTP = 0 // 不分包
   const connected = 0
   const visibility = 1 // 设备可见
@@ -163,7 +164,7 @@ const createBleProtocol = (params: { payload: string; addr: string; isEncrypt?: 
     // )
     dataArr.push(channel, ...encrytpedData)
   }
-  // console.log('dataArr', dataArr)
+  console.log('dataArr', dataArr)
 
   // const buffer = new ArrayBuffer(dataArr.length)
   // const dataView = new DataView(buffer)
@@ -177,9 +178,9 @@ const createBleProtocol = (params: { payload: string; addr: string; isEncrypt?: 
  * 创建安卓广播数据
  * @returns
  */
-const _createAndroidBleRequest = (params: { payload: string; addr: string }): Uint8Array => {
-  const { payload, addr } = params
-  const manufacturerData = createBleProtocol({ payload, addr })
+const _createAndroidBleRequest = (params: { payload: string; addr: string; isFactory?: boolean }): Uint8Array => {
+  const { payload, addr, isFactory } = params
+  const manufacturerData = createBleProtocol({ payload, addr, isFactory })
   // console.log('manufacturerData', manufacturerData)
   const commandData = new Uint8Array(manufacturerData.length)
   commandData.set(manufacturerData)
@@ -193,11 +194,16 @@ const _createAndroidBleRequest = (params: { payload: string; addr: string }): Ui
  * @param comId string
  * @returns string[]
  */
-const _createIOSBleRequest = (params: { payload: string; addr: string; comId: string }): string[] => {
-  const { payload, addr, comId } = params
+const _createIOSBleRequest = (params: {
+  payload: string
+  addr: string
+  comId: string
+  isFactory?: boolean
+}): string[] => {
+  const { payload, addr, comId, isFactory } = params
 
   const manufacturerId = comId.slice(2)
-  const manufacturerData = createBleProtocol({ payload, addr })
+  const manufacturerData = createBleProtocol({ payload, addr, isFactory })
   const arrayData: string[] = []
   arrayData.push(manufacturerId)
   for (let i = 0; i < manufacturerData.length; i += 2) {

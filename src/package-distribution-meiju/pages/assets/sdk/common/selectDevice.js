@@ -3,7 +3,7 @@
  */
 import { requestService } from '../../../../utils/requestService'
 import { getStamp, getReqId } from 'm-utilsdk/index'
-import brandStyle from "../../js/brand";
+import brandStyle from '../../js/brand'
 var selectDevice = {
   /**
    * 返回查询设备列表，大类，点击选型后显示的数据

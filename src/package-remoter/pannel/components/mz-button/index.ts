@@ -47,7 +47,7 @@ ComponentWithComputed({
      */
     textWidth: {
       type: String,
-      value: '128rpx',
+      value: '',
     },
     textColor: {
       type: String,
@@ -81,8 +81,11 @@ ComponentWithComputed({
       `
     },
     textStyle(data) {
-      const widthStyle = data.dir === 'row' ? `width: ${data.textWidth}; margin-left: 32rpx;` : ''
+      const _match = String.prototype.match.call(data.textSize, /^\d+/)
+      const _textWidth = data.textWidth || (_match ? Number(_match![0]) * data.text.length + 'rpx' : '32rpx')
+      const widthStyle = data.dir === 'row' ? 'margin-left: 32rpx;' : ''
       return `${widthStyle}
+        width: ${_textWidth};
         color: ${data.textColor};
         font-size: ${data.textSize};
       `

@@ -1,14 +1,5 @@
 /* eslint-disable no-redeclare */
-import {
-  CryptoJS,
-  md5,
-  hasKey,
-  hmacEncode,
-  formatTime,
-  getTimeStamp,
-  aesEncrypt,
-  getStamp,
-} from 'm-utilsdk/index'
+import { CryptoJS, md5, hasKey, hmacEncode, formatTime, getTimeStamp, aesEncrypt, getStamp } from 'm-utilsdk/index'
 import { canIUseOpenEmbeddedMiniProgram } from './version'
 import config from '../common/js/config'
 import { baseImgApi, deviceImgApi } from '../common/js/api.js'

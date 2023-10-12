@@ -155,18 +155,7 @@ Page({
     console.log(this.data.brand)
 
     console.log('addDeviceInfo====', app.addDeviceInfo)
-    const {
-      deviceImg,
-      deviceName,
-      type,
-      sn8,
-      ssid,
-      mode,
-      guideInfo,
-      enterprise,
-      brandName,
-      fm,
-    } = app.addDeviceInfo
+    const { deviceImg, deviceName, type, sn8, ssid, mode, guideInfo, enterprise, brandName, fm } = app.addDeviceInfo
 
     if (!deviceImg || !deviceName) {
       // 设备图片或名称缺失则补全
@@ -827,16 +816,7 @@ Page({
     app.addDeviceInfo.curWifiInfo = this.data.bindWifiTest //共享选取的wifi
     app.addDeviceInfo.continueConnectWifi = this.data.continueConnectWifi // 保存是否手动输入的状态->失败页linkNetFail需要用到
     console.log('addDeviceInfo====', app.addDeviceInfo)
-    const {
-      deviceName,
-      type,
-      blueVersion,
-      mode,
-      fm,
-      enterprise,
-      ssid,
-      isCheck,
-    } = app.addDeviceInfo
+    const { deviceName, type, blueVersion, mode, fm, enterprise, ssid, isCheck } = app.addDeviceInfo
     this.searchBlueStopTimeout && clearTimeout(this.searchBlueStopTimeout)
     wx.offBluetoothDeviceFound()
     wx.stopBluetoothDevicesDiscovery()
@@ -1386,7 +1366,13 @@ Page({
           modalText: '请关闭手机系统中微信的"模糊定位"开关',
           otherAndroidSystem: false, //是小米系的安卓系统
         })
-      } else if (brand === 'vivo' || brand === 'huawei' || brand === 'honor' || brand === 'oppo' || brand === 'motorola') {
+      } else if (
+        brand === 'vivo' ||
+        brand === 'huawei' ||
+        brand === 'honor' ||
+        brand === 'oppo' ||
+        brand === 'motorola'
+      ) {
         this.setData({
           ishowDialog: true,
           modalText: '请开启手机系统中微信的"精确位置"开关',

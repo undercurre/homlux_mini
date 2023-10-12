@@ -41,7 +41,7 @@ const MOCK_DEVICES = [
 const RM_KEY = 'remoterListLS'
 
 // 保存数据到缓存，只保存指定的键
-export const saveRmList = (list: Remoter.DeviceItem[], key = RM_KEY) => {
+export const storeRmList = (list: Remoter.DeviceItem[], key = RM_KEY) => {
   const filterList = list.map((r) => ({
     orderNum: r.orderNum,
     addr: r.addr,
@@ -125,6 +125,12 @@ export const remoterStore = observable({
     }
   },
 
+  // 当前遥控器索引
+  get curRemoterIndex(): number {
+    const { remoterList, curAddr } = this
+    return remoterList.findIndex((d) => d.addr === curAddr)
+  },
+
   // 从本地缓存初始化/重置【我的设备】列表
   retrieveRmStore() {
     const defaultList = IS_MOCK ? MOCK_DEVICES : []
@@ -179,39 +185,37 @@ export const remoterStore = observable({
 
   // 修改当前遥控器名称
   renameCurRemoter(deviceName: string) {
-    const index = this.remoterList.findIndex((d) => d.addr === this.curAddr)
-    if (index === -1) {
+    if (this.curRemoterIndex === -1) {
       return
     }
 
     runInAction(() => {
-      this.remoterList[index].deviceName = deviceName
+      this.remoterList[this.curRemoterIndex].deviceName = deviceName
     })
-    saveRmList(this.remoterList)
+    storeRmList(this.remoterList)
   },
 
   // 修改当前遥控器默认首页开关
   changeAction(key: number) {
-    const index = this.remoterList.findIndex((d) => d.addr === this.curAddr)
-    if (index === -1) {
+    if (this.curRemoterIndex === -1) {
       return
     }
 
     runInAction(() => {
-      this.remoterList[index].defaultAction = key
+      console.log('changeAction runInAction', key)
+      this.remoterList[this.curRemoterIndex].defaultAction = key
     })
-    saveRmList(this.remoterList)
+    storeRmList(this.remoterList)
   },
 
   // 删除当前遥控器
   removeCurRemoter() {
     const list = [...this.remoterList]
-    const index = list.findIndex((device) => device.addr === this.curAddr)
-    list.splice(index, 1)
+    list.splice(this.curRemoterIndex, 1)
     runInAction(() => {
       this.remoterList = list
     })
-    saveRmList(list)
+    storeRmList(list)
   },
 
   // 整体更新【我的设备】列表，并保存到本地缓存 // TODO 过滤元素，优化类型定义
@@ -219,13 +223,13 @@ export const remoterStore = observable({
     runInAction(() => {
       this.remoterList = list
     })
-    saveRmList(list)
+    storeRmList(list)
   },
 
   // 添加新的设备 // TODO 过滤元素，优化类型定义
   addRemoter(device: Remoter.DeviceItem) {
     const list = [...this.remoterList, device]
-    saveRmList(list)
+    storeRmList(list)
     runInAction(() => {
       this.remoterList.push(device)
     })

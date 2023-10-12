@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
-import {checkApExists} from '../../../../../../apis/index'
-import {Logger} from "../../../../../../utils/index";
+import { checkApExists } from '../../../../../../apis/index'
+import { Logger } from '../../../../../../utils/index'
 
-import {getReqId, getStamp} from 'm-utilsdk/index'
-import {showToast} from '../../../../../utils/util'
-import {creatErrorCode, failTextData} from './errorCode'
+import { getReqId, getStamp } from 'm-utilsdk/index'
+import { showToast } from '../../../../../utils/util'
+import { creatErrorCode, failTextData } from './errorCode'
 import paths from '../../../../../utils/paths'
-import {brandConfig} from '../../../../assets/js/brand'
+import { brandConfig } from '../../../../assets/js/brand'
 import app from '../../../../../common/app'
-import {imgBaseUrl} from '../../../../../common/js/api'
+import { imgBaseUrl } from '../../../../../common/js/api'
 
 const supportedApplianceTypes = [
   '0xAC',
@@ -267,17 +267,22 @@ module.exports = Behavior({
     //数码管字体替换图片
     replaceInco(guideDesc) {
       let list = ['#AP#', '#00#', '#0A#', '#0L#', '#01#', '#02#']
-      let imgList = ['code_ap@3x.png', 'code_00@3x.png', 'code_0a@3x.png', 'code_0l@3x.png', 'code_01@3x.png', 'code_02@3x.png']
+      let imgList = [
+        'code_ap@3x.png',
+        'code_00@3x.png',
+        'code_0a@3x.png',
+        'code_0l@3x.png',
+        'code_01@3x.png',
+        'code_02@3x.png',
+      ]
       for (let i = 0; i <= list.length - 1; i++) {
         if (guideDesc.includes(list[i])) {
           let imgUrl = imgBaseUrl.url + '/shareImg/' + app.globalData.brand + '/' + imgList[i]
           let content = ' <img class="nixie-tube" src=' + imgUrl + '></img> '
           guideDesc = guideDesc.replaceAll(list[i], content)
-
         }
       }
       return guideDesc
-
     },
     //校验手机系统版本
     checkPhoneSystemVerion(version = '14.0.0') {
@@ -296,9 +301,11 @@ module.exports = Behavior({
         return true
       }
 
-      return Number(paramsVersionArr[0]) === Number(phoneSystemVersionArr[0]) &&
+      return (
+        Number(paramsVersionArr[0]) === Number(phoneSystemVersionArr[0]) &&
         Number(paramsVersionArr[1]) === Number(phoneSystemVersionArr[1]) &&
-        Number(paramsVersionArr[2]) < Number(phoneSystemVersionArr[2]);
+        Number(paramsVersionArr[2]) < Number(phoneSystemVersionArr[2])
+      )
     },
     //延迟函数
     delay(milSec) {
@@ -338,7 +345,7 @@ module.exports = Behavior({
      * @param {*} callBack      失败
      */
     async tryConectWifi(wifiInfo, frequency = 2, callBack, callFail) {
-      let {ssid, password, isGoSet} = wifiInfo
+      let { ssid, password, isGoSet } = wifiInfo
       if (!this.data.isSuccessLinkDeviceAp && !this.data.isStopLinkWifi) {
         try {
           await this.connectWifi(ssid, password, isGoSet)
@@ -386,7 +393,7 @@ module.exports = Behavior({
     //是否可以主动连接设备ap
     isCanDrivingLinkDeviceAp(ssid) {
       let res = wx.getSystemInfoSync()
-      return res.system.includes('Android') || ssid;
+      return res.system.includes('Android') || ssid
     },
     //获取当前家庭默认id
     getCurrentHomeGroupId() {
@@ -444,7 +451,7 @@ module.exports = Behavior({
       const res = await checkApExists({
         sn,
         randomCode,
-        forceValidRandomCode
+        forceValidRandomCode,
       }).catch((error) => {
         console.log('查询设备是否连上云 error', error)
         if (error.data) {
@@ -595,7 +602,7 @@ module.exports = Behavior({
       return brandName
     },
     //生成错误码
-    creatErrorCode({platform, module, errorCode, isCustom}) {
+    creatErrorCode({ platform, module, errorCode, isCustom }) {
       return creatErrorCode({
         platform,
         module,
@@ -724,8 +731,7 @@ module.exports = Behavior({
             console.log('扫码失败返回', error)
             reject(error)
           },
-          complete() {
-          },
+          complete() {},
         })
       })
     },
@@ -736,8 +742,8 @@ module.exports = Behavior({
      * return hex 01
      */
     padLen(str, len) {
-      let temp = str;
-      let strLen = (str + '').length;
+      let temp = str
+      let strLen = (str + '').length
       if (strLen < len) {
         for (let i = 0; i < len - strLen; i++) {
           temp = '0' + temp

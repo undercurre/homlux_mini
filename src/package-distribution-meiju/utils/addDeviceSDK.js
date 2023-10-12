@@ -414,7 +414,7 @@ const addDeviceSDK = {
       ip_arr = ip.split('.'),
       curr_num,
       number_bin,
-      count;
+      count
     for (let i = 0; i < 4; i++) {
       curr_num = ip_arr[i]
       number_bin = parseInt(curr_num)
@@ -649,8 +649,7 @@ const addDeviceSDK = {
    * @param {*} ssid
    */
   bySSIDCheckIs5g(ssid) {
-    return !!(ssid.includes('5g') || ssid.includes('5G'));
-
+    return !!(ssid.includes('5g') || ssid.includes('5G'))
   },
 
   //触屏动态二维码配网相关

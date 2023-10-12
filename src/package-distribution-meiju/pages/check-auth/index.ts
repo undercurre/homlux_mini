@@ -1,14 +1,14 @@
-import {ComponentWithComputed} from 'miniprogram-computed'
+import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
-import {homeStore} from '../../../store/index'
+import { homeStore } from '../../../store/index'
 import app from '../../common/app'
-import {queryGuideInfo, queryUserThirdPartyInfo} from '../../../apis/index'
-import {Logger, storage} from "../../../utils/index";
-import {addDeviceSDK} from '../../utils/addDeviceSDK'
-import {addGuide, inputWifiInfo} from '../../utils/paths.js'
+import { queryGuideInfo, queryUserThirdPartyInfo } from '../../../apis/index'
+import { Logger, storage } from '../../../utils/index'
+import { addDeviceSDK } from '../../utils/addDeviceSDK'
+import { addGuide, inputWifiInfo } from '../../utils/paths.js'
 import Toast from '@vant/weapp/toast/toast'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const {getLinkType} = require("../assets/js/utils.js")
+const { getLinkType } = require('../assets/js/utils.js')
 
 ComponentWithComputed({
   behaviors: [pageBehaviors],
@@ -28,13 +28,13 @@ ComponentWithComputed({
 
   computed: {
     tipsText(data) {
-      const {seconds} = data
+      const { seconds } = data
       return '我知道了' + (seconds ? `（${seconds}s）` : '')
     },
   },
   lifetimes: {
     async ready() {
-      const {proType, sn8, deviceImg, productId, mode} = this.data
+      const { proType, sn8, deviceImg, productId, mode } = this.data
       console.log('check-auth', proType, sn8)
 
       if (sn8) {
@@ -45,7 +45,7 @@ ComponentWithComputed({
         app.addDeviceInfo.productId = productId
       }
 
-      const res = await queryUserThirdPartyInfo(homeStore.currentHomeId, {loading: true})
+      const res = await queryUserThirdPartyInfo(homeStore.currentHomeId, { loading: true })
 
       if (res.success) {
         this.setData({
@@ -70,8 +70,7 @@ ComponentWithComputed({
         }, 1000)
       }
     },
-    detached() {
-    },
+    detached() {},
   },
   methods: {
     toAgree(e: { detail: boolean }) {
@@ -99,8 +98,8 @@ ComponentWithComputed({
      * 前往配网流程页面
      */
     async toBindDevice() {
-      const {sn8, type, mode} = app.addDeviceInfo
-      const res = await queryGuideInfo({sn8, type, mode: mode.toString()})
+      const { sn8, type, mode } = app.addDeviceInfo
+      const res = await queryGuideInfo({ sn8, type, mode: mode.toString() })
 
       // const res = {
       //   "result": {
@@ -126,13 +125,15 @@ ComponentWithComputed({
         enterprise: '0000',
         fm: 'selectType',
         linkType: getLinkType(mode),
-        guideInfo: [{
-          connectDesc: guideInfo.mainConnectTypeDesc,
-          connectUrlA: guideInfo.mainConnectTypeUrlList[0],
-          isAutoConnect: guideInfo.isAutoConnect,
-          code: guideInfo.modelCode,
-          wifiFrequencyBand: guideInfo.wifiFrequencyBand,
-        }],
+        guideInfo: [
+          {
+            connectDesc: guideInfo.mainConnectTypeDesc,
+            connectUrlA: guideInfo.mainConnectTypeUrlList[0],
+            isAutoConnect: guideInfo.isAutoConnect,
+            code: guideInfo.modelCode,
+            wifiFrequencyBand: guideInfo.wifiFrequencyBand,
+          },
+        ],
       }
       const modeArr = addDeviceSDK.supportAddDeviceMode
 

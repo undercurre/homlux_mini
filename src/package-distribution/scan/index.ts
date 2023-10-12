@@ -66,7 +66,6 @@ ComponentWithComputed({
     detached() {
       bleDevicesStore.stopBLeDiscovery()
       wx.closeBluetoothAdapter()
-      wx.stopWifi()
       clearInterval(this.data._listenLocationTimeId)
     },
   },
@@ -262,9 +261,25 @@ ComponentWithComputed({
     // 检查摄像头权限
     async checkCameraPerssion() {
       showLoading()
-      const settingRes = await wx.getSetting().catch((err) => err)
+      const settingRes = await wx.getSetting().catch((err) => {
+        return {
+          isFail: true,
+          ...err,
+        }
+      })
 
       Logger.log('检查摄像头权限', settingRes)
+
+      if (settingRes.isFail) {
+        hideLoading()
+
+        Dialog.alert({
+          message: '请检查网络是否正常',
+          showCancelButton: false,
+          confirmButtonText: '确定',
+        })
+        return false
+      }
 
       if (!settingRes.authSetting['scope.camera']) {
         // 跳转过权限设置页均需要重置needCheckCamera状态，回来后需要重新检查摄像头权限

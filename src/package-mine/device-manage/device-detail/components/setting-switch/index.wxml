@@ -16,12 +16,12 @@
 </view>
 
 <van-toast id="van-toast" />
-<van-popup show="{{ showPopup }}" round position="bottom" bind:close="handleClose" closeable safe-area-inset-bottom="{{false}}">
+<van-popup show="{{ showPopup }}" round position="bottom" bind:close="handleClose" closeable safe-area-inset-bottom="{{true}}" root-portal="true">
   <view class="w-750rpx flex flex-col items-center">
     <template is="title" data="{{title: '按键设置'}}" />
     <view class="mt-98rpx w-686rpx">
       <text class="block pl-16rpx pb-32rpx text-28">按键名称</text>
-      <van-field custom-style="padding: 20rpx 32rpx;background-color: #F6FAFD;border-radius: 24rpx;" model:value="{{ switchName }}" placeholder="请输入按键名称" clearable></van-field>
+      <van-field custom-style="padding: 20rpx 32rpx;background-color: #F6FAFD;border-radius: 24rpx;" model:value="{{ switchName }}" border="{{ false }}" placeholder="请输入按键名称" clearable></van-field>
     </view>
 
     <template is="bottom-btn" data="{{disabled:!switchName}}" />

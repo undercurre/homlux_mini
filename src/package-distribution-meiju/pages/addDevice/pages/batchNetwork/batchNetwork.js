@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import app from '../../../../common/app'
-import {baseImgApi, imgBaseUrl} from '../../../../common/js/api'
+import { baseImgApi, imgBaseUrl } from '../../../../common/js/api'
 import paths from '../../../../utils/paths'
-import {requestService} from '../../../../utils/requestService'
-import {getReqId, getStamp} from 'm-utilsdk/index'
-import {getDeviceSn, getDeviceSn8} from '../../../../common/js/device'
-import {isSupportPlugin} from '../../../../utils/pluginFilter'
+import { requestService } from '../../../../utils/requestService'
+import { getReqId, getStamp } from 'm-utilsdk/index'
+import { getDeviceSn, getDeviceSn8 } from '../../../../common/js/device'
+import { isSupportPlugin } from '../../../../utils/pluginFilter'
 
 const dialogCommonData = require('../../../../common/mixins/dialog-common-data.js')
 let timer, timer2 //定时查询
@@ -28,14 +28,12 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function () {
-  },
+  onLoad: function () {},
 
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
-  onReady: function () {
-  },
+  onReady: function () {},
 
   /**
    * 生命周期函数--监听页面显示
@@ -137,7 +135,7 @@ Page({
             return item.mac == this.data.devices[z].mac
           })
           if (!had && resp[i]['friends'][j]['mac'] == this.data.devices[z].mac) {
-            let {mac, modelNumber, sn, result, randomCode, useRandom} = resp[i]['friends'][j]
+            let { mac, modelNumber, sn, result, randomCode, useRandom } = resp[i]['friends'][j]
             let device = {
               ssid: this.data.devices[z].ssid,
               signal: this.data.devices[z].signal,
@@ -173,14 +171,14 @@ Page({
                 console.log('获取设备配网指引结果', modeResult)
                 let bindType = ''
                 if (modeResult.data.code == 0 && modeResult.data.data.mainConnectinfoList.length != 0) {
-                  let {mode} = modeResult.data.data.mainConnectinfoList[0].mode
+                  let { mode } = modeResult.data.data.mainConnectinfoList[0].mode
                   let moduleType = this.getModuleType(mode)
                   bindType = this.mode2bindType(mode, moduleType)
                 }
                 let bindResult = await this.bindDeviceToHome(device, bindType)
                 console.log('绑定设备结果', bindResult)
                 if (bindResult.data.code == 0) {
-                  let {roomId, applianceCode, homegroupId} = bindResult.data.data
+                  let { roomId, applianceCode, homegroupId } = bindResult.data.data
                   device.network = 'success'
                   let bindRoom = app.globalData.applianceHomeData.roomList.find((item) => {
                     return item.roomId == roomId
@@ -413,12 +411,10 @@ Page({
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
-  onPullDownRefresh: function () {
-  },
+  onPullDownRefresh: function () {},
 
   /**
    * 页面上拉触底事件的处理函数
    */
-  onReachBottom: function () {
-  },
+  onReachBottom: function () {},
 })

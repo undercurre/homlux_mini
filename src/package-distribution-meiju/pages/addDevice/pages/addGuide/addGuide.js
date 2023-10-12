@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 import pageBehaviors from '../../../../../behaviors/pageBehaviors'
-import {Logger} from "../../../../../utils/index";
+import { Logger } from '../../../../../utils/index'
 
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const checkAuthMixin = require('../../mixins/checkAuthMixin')
@@ -284,7 +284,7 @@ Page({
                   device.adData,
                   app.addDeviceInfo.blueVersion,
                   device.type,
-                  device.localName
+                  device.localName,
                 )
                 app.addDeviceInfo.mode = 3
                 app.addDeviceInfo.linkType = addDeviceSDK.getLinkType(3)
@@ -895,41 +895,43 @@ Page({
     // const res = await queryGuideInfo({sn8: this.data.sn8, type: this.data.proType, mode: '0' })
 
     const res = {
-      "code": 0,
-      "data": {
-        "auxiConnectinfoList": [],
-        "auxiMode": -1,
-        "brand": "midea",
-        "category": "14",
-        "dataSource": 1,
-        "enterpriseCode": "0000",
-        "mainConnectinfoList": [{
-          "bluetoothName": null,
-          "code": "79700Z76",
-          "connectDesc": "① 将智能窗帘插上电源\n② 快速点按「SET-2」键4次，再长按「SET-2」键1次，直至指示灯闪烁",
-          "connectUrlA": "http://midea-file.oss-cn-hangzhou.aliyuncs.com/2021/7/7/15/NZxmnjoefmcMealUPBmt.gif",
-          "connectUrlB": "",
-          "connectUrlC": "",
-          "controlVersion": null,
-          "customerModel": "SC-1/M2-Z",
-          "isAutoConnect": 0,
-          "isBluetoothControl": 0,
-          "leadingWords": "已完成上述操作",
-          "marketModel": "SC-1/M2-Z",
-          "mode": 0,
-          "note": null,
-          "productCode": "21079710000001",
-          "productId": "SC-1/M2-Z",
-          "productImg": "http://midea-file.oss-cn-hangzhou.aliyuncs.com/2021/6/21/13/pJeBIFcVqOdjdODAiSRK.png",
-          "productName": "智能电动窗帘",
-          "wifiFrequencyBand": 1,
-          "wifiName": null
-        }],
-        "mode": 0,
-        "needTransfer2FailStatus": null,
-        "proInfrared": null
+      code: 0,
+      data: {
+        auxiConnectinfoList: [],
+        auxiMode: -1,
+        brand: 'midea',
+        category: '14',
+        dataSource: 1,
+        enterpriseCode: '0000',
+        mainConnectinfoList: [
+          {
+            bluetoothName: null,
+            code: '79700Z76',
+            connectDesc: '① 将智能窗帘插上电源\n② 快速点按「SET-2」键4次，再长按「SET-2」键1次，直至指示灯闪烁',
+            connectUrlA: 'http://midea-file.oss-cn-hangzhou.aliyuncs.com/2021/7/7/15/NZxmnjoefmcMealUPBmt.gif',
+            connectUrlB: '',
+            connectUrlC: '',
+            controlVersion: null,
+            customerModel: 'SC-1/M2-Z',
+            isAutoConnect: 0,
+            isBluetoothControl: 0,
+            leadingWords: '已完成上述操作',
+            marketModel: 'SC-1/M2-Z',
+            mode: 0,
+            note: null,
+            productCode: '21079710000001',
+            productId: 'SC-1/M2-Z',
+            productImg: 'http://midea-file.oss-cn-hangzhou.aliyuncs.com/2021/6/21/13/pJeBIFcVqOdjdODAiSRK.png',
+            productName: '智能电动窗帘',
+            wifiFrequencyBand: 1,
+            wifiName: null,
+          },
+        ],
+        mode: 0,
+        needTransfer2FailStatus: null,
+        proInfrared: null,
       },
-      "msg": "操作成功"
+      msg: '操作成功',
     }
 
     Logger.console('queryGuideInfo', res)

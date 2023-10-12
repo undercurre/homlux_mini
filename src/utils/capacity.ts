@@ -63,6 +63,7 @@ export const consultSystemBlePermission = async () => {
     title: '请打开手机蓝牙开关并授权微信使用',
     cancelButtonText: '知道了',
     confirmButtonText: '查看指引',
+    zIndex: 999999,
   })
     .then(() => {
       wx.navigateTo({
@@ -130,6 +131,7 @@ export const consultSystemLocation = async () => {
  * @description 初始化蓝牙模块，只检查权限，未实质打开服务
  */
 export const initBleCapacity = async () => {
+  Logger.log('initBleCapacity triggered')
   // 微信蓝牙权限是否开启
   const isWxBlePermit = await consultWxBlePermission()
   if (!isWxBlePermit) {

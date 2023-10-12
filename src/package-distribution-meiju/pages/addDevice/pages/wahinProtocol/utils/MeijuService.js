@@ -1,4 +1,4 @@
-import { getTimeStamp, getReqId, getStamp, } from 'm-utilsdk/index'
+import { getTimeStamp, getReqId, getStamp } from 'm-utilsdk/index'
 
 import { requestService } from '../../../../../utils/requestService'
 

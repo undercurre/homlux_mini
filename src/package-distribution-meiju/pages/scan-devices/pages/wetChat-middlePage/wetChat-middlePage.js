@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 import app from '../../../../common/app'
-import { index, } from '../../../../utils/paths'
+import { index } from '../../../../utils/paths'
 import { hasKey, getStamp, getReqId } from 'm-utilsdk/index'
 import { requestService } from '../../../../utils/requestService'
 import { isSupportPlugin } from '../../../../utils/pluginFilter'
@@ -509,13 +509,11 @@ Page({
 
   onReady: function () {},
 
-  onShow: function () {
-  },
+  onShow: function () {},
 
   onHide: function () {},
 
-  onUnload: function () {
-  },
+  onUnload: function () {},
 
   onPullDownRefresh: function () {},
 

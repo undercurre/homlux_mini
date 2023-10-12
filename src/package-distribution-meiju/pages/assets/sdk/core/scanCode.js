@@ -17,8 +17,7 @@ const scanCode = {
           console.log('扫码失败返回', error)
           reject(error)
         },
-        complete() {
-        },
+        complete() {},
       })
     })
   },
@@ -44,7 +43,7 @@ const scanCode = {
         })
     })
   },
-};
+}
 
 module.exports = {
   scanCode,

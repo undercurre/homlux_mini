@@ -8,8 +8,8 @@ const enterpriseName = 'toshiba' //企业码名称
 const config = {
   qrcode,
   mideaUrl,
-  enterpriseName
+  enterpriseName,
 }
 module.exports = {
-  config
+  config,
 }

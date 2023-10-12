@@ -797,13 +797,4 @@ let publicImg = {
   },
 }
 
-export {
-  environment,
-  api,
-  imageApi,
-  imgBaseUrl,
-  baseImgApi,
-  deviceImgApi,
-  mideaServiceImgApi,
-  commonH5Api,
-}
+export { environment, api, imageApi, imgBaseUrl, baseImgApi, deviceImgApi, mideaServiceImgApi, commonH5Api }

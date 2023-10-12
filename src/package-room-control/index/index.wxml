@@ -78,7 +78,7 @@
 
         <!-- 有列表时的添加按钮 -->
         <view class="flex-col-center py-20rpx" wx:if="{{roomHasDevice}}">
-          <van-button wx:if="{{canAddDevice}}" type="default" color="rgba(255,255,255,0.60)" size="small" custom-class="round-btn-border" round bind:tap="goTo" data-url="/package-distribution/choose-device/index">
+          <van-button wx:if="{{canAddDevice}}" type="default" color="rgba(255,255,255,0.60)" size="small" custom-class="round-btn-border" round bind:tap="goToWhenConnected" data-url="/package-distribution/choose-device/index">
             <text class="text-26rpx text-hex-555659">添加设备</text>
           </van-button>
         </view>
@@ -88,13 +88,13 @@
 </view>
 
 <!-- 设备控制弹窗 -->
-<device-control-popup controlPopup="{{controlPopup}}" checkedList="{{checkedList}}" lightStatus="{{lightStatus}}" curtainStatus="{{curtainStatus}}" checkedType="{{checkedType}}" bind:popMove="handlePopMove" bind:updateList="updateQueue"></device-control-popup>
+<device-control-popup controlPopup="{{controlPopup}}" checkedList="{{checkedList}}" lightStatus="{{lightStatus}}" curtainStatus="{{curtainStatus}}" checkedType="{{checkedType}}" bind:popMove="handlePopMove" bind:updateDevice="updateQueue"></device-control-popup>
 
 <before-add-scene-popup show="{{showBeforeAddScenePopup}}" bind:close="handleBeforeAddScenePopupClose" bind:next="handleBeforeAddScenePopupNext" bind:delete="handleBeforeAddScenePopupDelete" />
 
 <add-scene-popup actions="{{addSceneActions}}" show="{{showAddScenePopup}}" bind:close="handleAddScenePopupClose" bind:confirm="handleShowAddSceneSuccess" bind:return="handleAddScenePopupReturn" />
 
-<batch-edit bind:updateList="updateQueue" bind:updateListOnCloud="updateRoomData" bind:close="exitEditMode" bind:selectAll="editSelectAll" editSelectMode="{{editSelectMode}}" editSelectList="{{editSelectList}}"></batch-edit>
+<batch-edit bind:updateDevice="updateQueue" bind:updateList="reloadDataThrottle" bind:close="exitEditMode" bind:selectAll="editSelectAll" editSelectMode="{{editSelectMode}}" editSelectList="{{editSelectList}}"></batch-edit>
 
 <van-toast id="van-toast" />
 

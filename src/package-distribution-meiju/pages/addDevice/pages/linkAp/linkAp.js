@@ -62,8 +62,7 @@ Page({
       detailExpand: imgUrl + imgesList['detailExpand'],
     })
     this.checkSystm()
-    let { deviceName, type, enterprise, deviceImg } =
-      app.addDeviceInfo
+    let { deviceName, type, enterprise, deviceImg } = app.addDeviceInfo
     this.setData({
       deviceImg: deviceImg,
       deviceName: deviceName,
@@ -75,8 +74,7 @@ Page({
     this.wifiListSheet = this.selectComponent('#wifi-list-sheet') //组件的id
   },
   //关闭帮助弹窗
-  closeHelpDialog() {
-  },
+  closeHelpDialog() {},
   //判断系统展示UI
   checkSystm() {
     if (app.globalData.systemInfo.system.includes('Android')) {

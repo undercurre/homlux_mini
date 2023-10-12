@@ -3,15 +3,15 @@ import app from '../../../../common/app'
 const netWordMixin = require('../../../assets/js/netWordMixin')
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 
-import {requestService} from '../../../../utils/requestService'
-import {getPluginUrl} from '../../../../utils/getPluginUrl'
-import {getReqId, getStamp} from 'm-utilsdk/index'
-import {getFullPageUrl} from '../../../../utils/util'
-import {goTopluginPage, isSupportPlugin} from '../../../../utils/pluginFilter'
+import { requestService } from '../../../../utils/requestService'
+import { getPluginUrl } from '../../../../utils/getPluginUrl'
+import { getReqId, getStamp } from 'm-utilsdk/index'
+import { getFullPageUrl } from '../../../../utils/util'
+import { goTopluginPage, isSupportPlugin } from '../../../../utils/pluginFilter'
 import paths from '../../../../utils/paths'
-import {typesPreserveAfterCheckGuideByA0} from '../../config/index'
+import { typesPreserveAfterCheckGuideByA0 } from '../../config/index'
 import Dialog from '../../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
-import {brand} from '../../../assets/js/brand'
+import { brand } from '../../../assets/js/brand'
 
 let timer
 
@@ -90,7 +90,7 @@ Page({
         clearInterval(timer)
         // 组合配网新增跳转
         app.addDeviceInfo.status = status // 组合设备更新确权状态
-        let {combinedDeviceFlag} = app.addDeviceInfo // combinedDeviceFlag在首页会置为false
+        let { combinedDeviceFlag } = app.addDeviceInfo // combinedDeviceFlag在首页会置为false
         if (combinedDeviceFlag) {
           wx.reLaunch({
             url: `${paths.linkCombinedDevice}?randomCode=${this.data.randomCode}`,
@@ -135,10 +135,10 @@ Page({
   getGuideInfo(type, sn8, A0, enterprise = '0000') {
     type = type.includes('0x') ? type.substr(2, 2) : type
     let code = sn8
-    console.log('@module afterCheck.js\n@method getGuideInfo\n@desc 设备品类信息\n', {type, sn8, A0})
+    console.log('@module afterCheck.js\n@method getGuideInfo\n@desc 设备品类信息\n', { type, sn8, A0 })
     // 部分品类使用A0获取后确权指引
     if (typesPreserveAfterCheckGuideByA0.includes(type) && A0) {
-      console.log('@module afterCheck.js\n@method getGuideInfo\n@desc 使用A0获取后确权指引\n', {type, A0})
+      console.log('@module afterCheck.js\n@method getGuideInfo\n@desc 使用A0获取后确权指引\n', { type, A0 })
       code = A0
     }
     let reqData = {
@@ -207,40 +207,39 @@ Page({
   },
   //校验是否完成后确权
   checkApplianceAuth(applianceCode, type, sn8, deviceInfo) {
-    this.getApplianceAuthType(applianceCode)
-      .then((resp2) => {
-        if (resp2.data.data.status == 0) {
-          console.log('后确权成功：', resp2)
-          clearInterval(timer)
-          // 组合配网新增跳转
-          app.addDeviceInfo.status = resp2.data.data.status // 组合设备更新确权状态
-          let {combinedDeviceFlag} = app.addDeviceInfo // combinedDeviceFlag在首页会置为false
-          if (combinedDeviceFlag) {
-            wx.reLaunch({
-              url: `${paths.linkCombinedDevice}?randomCode=${this.data.randomCode}`,
-            })
-          } else {
-            let type = app.addDeviceInfo.cloudBackDeviceInfo.type
-            let A0 = app.addDeviceInfo.cloudBackDeviceInfo.modelNumber
-              ? app.addDeviceInfo.cloudBackDeviceInfo.modelNumber
-              : ''
-            if (!isSupportPlugin(type, sn8, A0)) {
-              //不支持
-              wx.reLaunch({
-                url: '/pages/unSupportDevice/unSupportDevice?deviceInfo=' + encodeURIComponent(deviceInfo),
-              })
-              return
-            }
-            goTopluginPage(app.addDeviceInfo.cloudBackDeviceInfo, '/pages/index/index', true, 'afterCheck')
-          }
+    this.getApplianceAuthType(applianceCode).then((resp2) => {
+      if (resp2.data.data.status == 0) {
+        console.log('后确权成功：', resp2)
+        clearInterval(timer)
+        // 组合配网新增跳转
+        app.addDeviceInfo.status = resp2.data.data.status // 组合设备更新确权状态
+        let { combinedDeviceFlag } = app.addDeviceInfo // combinedDeviceFlag在首页会置为false
+        if (combinedDeviceFlag) {
+          wx.reLaunch({
+            url: `${paths.linkCombinedDevice}?randomCode=${this.data.randomCode}`,
+          })
         } else {
-          if (this.data.time != 0 && !this.data.isStopCheck) {
-            this.sleep(5000).then((end) => {
-              this.checkApplianceAuth(applianceCode, type, sn8, deviceInfo)
+          let type = app.addDeviceInfo.cloudBackDeviceInfo.type
+          let A0 = app.addDeviceInfo.cloudBackDeviceInfo.modelNumber
+            ? app.addDeviceInfo.cloudBackDeviceInfo.modelNumber
+            : ''
+          if (!isSupportPlugin(type, sn8, A0)) {
+            //不支持
+            wx.reLaunch({
+              url: '/pages/unSupportDevice/unSupportDevice?deviceInfo=' + encodeURIComponent(deviceInfo),
             })
+            return
           }
+          goTopluginPage(app.addDeviceInfo.cloudBackDeviceInfo, '/pages/index/index', true, 'afterCheck')
         }
-      })
+      } else {
+        if (this.data.time != 0 && !this.data.isStopCheck) {
+          this.sleep(5000).then((end) => {
+            this.checkApplianceAuth(applianceCode, type, sn8, deviceInfo)
+          })
+        }
+      }
+    })
   },
   sleep(milSec) {
     return new Promise((resolve) => {
@@ -251,20 +250,17 @@ Page({
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
-  onReady: function () {
-  },
+  onReady: function () {},
 
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function () {
-  },
+  onShow: function () {},
 
   /**
    * 生命周期函数--监听页面隐藏
    */
-  onHide: function () {
-  },
+  onHide: function () {},
 
   /**
    * 生命周期函数--监听页面卸载
@@ -277,12 +273,10 @@ Page({
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
-  onPullDownRefresh: function () {
-  },
+  onPullDownRefresh: function () {},
 
   /**
    * 页面上拉触底事件的处理函数
    */
-  onReachBottom: function () {
-  },
+  onReachBottom: function () {},
 })

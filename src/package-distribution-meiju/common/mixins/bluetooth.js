@@ -1387,8 +1387,7 @@ module.exports = Behavior({
       const arr = version.split('.')
       console.log('version11', parseInt(arr[0]) < 8)
       if (parseInt(arr[0]) < 8) return false
-      return !(parseInt(arr[0]) >= 8 && parseInt(arr[1]) === 0 && parseInt(arr[2]) < 7);
-
+      return !(parseInt(arr[0]) >= 8 && parseInt(arr[1]) === 0 && parseInt(arr[2]) < 7)
     },
     checkSystem() {
       // eslint-disable-next-line no-async-promise-executor

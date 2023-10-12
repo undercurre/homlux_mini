@@ -199,7 +199,6 @@ ComponentWithComputed({
                 }
               })
 
-              // 仅为本地更新，暂时取消节流
               this.updateRoomCard()
 
               // 直接更新store里的数据，更新完退出回调函数
@@ -219,7 +218,7 @@ ComponentWithComputed({
             WSEventType.group_device_result_status,
           ].includes(res.result.eventType)
         ) {
-          this.updateRoomData()
+          this.updateRoomDataThrottle()
         }
       })
 
@@ -232,7 +231,7 @@ ComponentWithComputed({
     },
 
     // 节流更新房间卡片信息
-    updateRoomData: throttle(() => {
+    updateRoomDataThrottle: throttle(() => {
       homeStore.updateRoomCardList()
     }, 3000),
 
@@ -326,14 +325,17 @@ ComponentWithComputed({
             .then(() => {
               console.log('lmn>>>邀请成功')
               updateDefaultHouse(houseId).finally(() => {
-                homeBinding.store.updateHomeInfo().then(() => {
-                  homeBinding.store.homeList.forEach((item) => {
+                homeStore.updateHomeInfo().then(() => {
+                  homeStore.homeList.forEach((item) => {
                     if (item.houseId == houseId) {
                       Toast(`您已加入${item.houseName}的家`)
                       return
                     }
                   })
                   Toast('您已加入家庭')
+
+                  // 刷新房间和设备列表
+                  homeStore.updateRoomCardList()
                 })
               })
             })

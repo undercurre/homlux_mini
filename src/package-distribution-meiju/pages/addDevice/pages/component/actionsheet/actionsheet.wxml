@@ -1,15 +1,6 @@
-<wxs module="utils">
-  var join = function (a, b) {
-    return a + b
-  };
-  var isNotSlot = function (v) {
-    return typeof v !== 'string'
-  }
-  module.exports = {join: join, isNotSlot: isNotSlot}
-</wxs>
+<wxs module="utils"> var join = function (a, b) { return a + b }; var isNotSlot = function (v) { return typeof v !== 'string' } module.exports = {join: join, isNotSlot: isNotSlot} </wxs>
 
-<view wx:if="{{mask}}" class="weui-mask {{show ? '' : 'weui-mask_hidden'}} {{maskClass}}"
-      bindtap="closeActionSheet"></view>
+<view wx:if="{{mask}}" class="weui-mask {{show ? '' : 'weui-mask_hidden'}} {{maskClass}}" bindtap="closeActionSheet"></view>
 <view class="weui-actionsheet {{show ? 'weui-actionsheet_toggle' : ''}} {{extClass}}">
   <!-- <scroll-view scroll-y class="scrollBox"> -->
   <!-- 标题 -->
@@ -21,12 +12,9 @@
   </block>
   <slot name="title" wx:else></slot>
   <scroll-view scroll-y class="scrollBox">
-    <view class="{{ !showCancel && index === actions.length-1 ? 'weui-actionsheet__action' : 'weui-actionsheet__menu' }}"
-          wx:key="index" wx:for-item="actionItem" wx:for-index="index" wx:for="{{actions}}">
+    <view class="{{ !showCancel && index === actions.length-1 ? 'weui-actionsheet__action' : 'weui-actionsheet__menu' }}" wx:key="index" wx:for-item="actionItem" wx:for-index="index" wx:for="{{actions}}">
       <block wx:if="{{utils.isNotSlot(actionItem)}}">
-        <view class="weui-actionsheet__cell2 {{item.type === 'warn' ? 'weui-actionsheet__cell_warn' : '' }}"
-              hover-class="weui-active" wx:key="actionIndex" wx:for="{{actionItem}}" wx:for-index="actionIndex"
-              data-groupindex="{{index}}" data-index="{{actionIndex}}" data-value="{{item.value}}" bindtap="buttonTap">
+        <view class="weui-actionsheet__cell2 {{item.type === 'warn' ? 'weui-actionsheet__cell_warn' : '' }}" hover-class="weui-active" wx:key="actionIndex" wx:for="{{actionItem}}" wx:for-index="actionIndex" data-groupindex="{{index}}" data-index="{{actionIndex}}" data-value="{{item.value}}" bindtap="buttonTap">
           <text class="{{item.type === 'seleted' ? 'selectedItem' : ''}}">{{item.text}}</text>
           <image wx:if="{{item.type==='seleted'}}" class="before-one-room" src="{{beforeOneRoomImg}}"></image>
         </view>
