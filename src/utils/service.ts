@@ -1,7 +1,7 @@
 // service模块存放项目的相关业务代码
 import { connectHouseSocket } from '../apis/websocket'
 import { homeStore, userStore } from '../store/index'
-import { isLogon, Logger, storage } from './index'
+import { isLogon, Logger, storage, isConnect } from './index'
 import { emitter } from './eventBus'
 import homos from 'js-homos'
 
@@ -31,8 +31,8 @@ const heartbeatInfo = {
 
 export async function startWebsocketService() {
   // 检测未登录或者是否已经正在连接，以免重复连接
-  if (!storage.get<string>('token') || isConnecting) {
-    Logger.log('不进行ws连接,isConnecting:', isConnecting)
+  if (!storage.get<string>('token') || isConnecting || !isConnect()) {
+    Logger.log('不进行ws连接,isConnecting:', isConnecting, 'isConnect()', isConnect())
     return
   }
 
