@@ -6,19 +6,23 @@ let networkType = 'unknown'
 let weakNet = false
 
 /**
- * @description 访问云端服务根地址，以判断网络是否畅通
- * !! 非WIFI状态，直接根据监听结果判断即可
+ * @description 访问云端服务根地址，以快速判断网络是否畅通
+ * !! 如果处于非WIFI状态，直接根据监听结果判断即可，不必使用此方法
  */
 export async function verifyNetwork() {
   const res = await peekNetwork()
   Logger.debug('连网状态验证:', res)
 
-  isConnectStatus = res.msg.indexOf('time out') === -1 && res.msg.indexOf('UNREACHABLE') === -1
+  const newStatus = res.msg.indexOf('time out') === -1 && res.msg.indexOf('UNREACHABLE') === -1
 
-  emitter.emit('networkStatusChange', {
-    networkType,
-    isConnectStatus,
-  })
+  if (newStatus !== isConnectStatus) {
+    isConnectStatus = newStatus
+    emitter.emit('networkStatusChange', {
+      networkType,
+      isConnectStatus,
+    })
+    emitter.emit('deviceListRetrieve')
+  }
 }
 
 export function isConnect() {
@@ -38,15 +42,19 @@ const networkListener = (res: WechatMiniprogram.OnNetworkStatusChangeListenerRes
 
   networkType = res.networkType
 
-  // WIFI 状态下不变更连接状态，需要手动调用 verifyNetwork()
-  if (networkType !== 'wifi' && networkType !== 'unknown') {
-    isConnectStatus = res.isConnected
-    emitter.emit('networkStatusChange', {
-      networkType,
-      isConnectStatus,
-    })
-  } else {
+  // WIFI 状态下 networkStatusListen 监听不到连接状态，需要手动调用 verifyNetwork()
+  if (networkType === 'wifi' || networkType === 'unknown') {
     verifyNetwork()
+  } else {
+    const newStatus = res.isConnected
+    if (newStatus !== isConnectStatus) {
+      isConnectStatus = newStatus
+      emitter.emit('networkStatusChange', {
+        networkType,
+        isConnectStatus,
+      })
+      emitter.emit('deviceListRetrieve')
+    }
   }
 }
 

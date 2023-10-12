@@ -26,7 +26,6 @@ import {
   isNullOrUnDef,
   transferDeviceProperty,
   isConnect,
-  getNetworkType,
 } from '../../utils/index'
 import { proName, PRO_TYPE, LIST_PAGE, CARD_W, CARD_H, MODEL_NAME, CARD_REFRESH_TIME } from '../../config/index'
 
@@ -267,20 +266,16 @@ ComponentWithComputed({
           })
           .exec()
       }
+
+      // 加载数据
+      this.reloadDataThrottle()
     },
 
     async onShow() {
-      const networkType = getNetworkType()
-      console.log('room-onshow，isConnect', isConnect(), networkType)
-
-      if (isConnect()) {
-        // 再更新一遍数据
-        await this.reloadData()
-      }
-      // 未连接网络，所有设备直接设置为离线
-      else {
-        this.updateQueue({ isRefresh: true, onLineStatus: 0 })
-      }
+      emitter.on('deviceListRetrieve', () => {
+        console.log('deviceListRetrieve，isConnect', isConnect())
+        this.reloadDataThrottle()
+      })
 
       // ws消息处理
       emitter.on('wsReceive', async (e) => {
@@ -374,10 +369,14 @@ ComponentWithComputed({
     },
 
     async reloadData() {
+      // 未连接网络，所有设备直接设置为离线
+      if (!isConnect()) {
+        this.updateQueue({ isRefresh: true, onLineStatus: 0 })
+        return
+      }
+
       try {
         await Promise.all([
-          // deviceStore.updateSubDeviceList(),
-          // deviceStore.updateAllRoomDeviceList(), // 重复查询
           homeStore.updateRoomCardList(),
           sceneStore.updateSceneList(),
           sceneStore.updateAllRoomSceneList(),
@@ -407,8 +406,10 @@ ComponentWithComputed({
     // onUnload() {},
     onHide() {
       console.log('onHide')
+
       // 解除监听
       emitter.off('wsReceive')
+      emitter.off('deviceListRetrieve')
 
       if (this.data._wait_timeout) {
         clearTimeout(this.data._wait_timeout)
