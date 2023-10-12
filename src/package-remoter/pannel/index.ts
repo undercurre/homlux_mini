@@ -126,7 +126,7 @@ ComponentWithComputed({
       }
       // HACK 根据模糊指令匹配为照明按钮，将上次指令作反转处理，转为真实的指令
       if (key === 'LIGHT_LAMP') {
-        key = this.data._lastPowerKey ? `LIGHT_LAMP_OFF` : `LIGHT_LAMP_ON`
+        key = ON_KEYS.includes(this.data._lastPowerKey) ? `LIGHT_LAMP_OFF` : `LIGHT_LAMP_ON`
       }
       // 如果是照明操作相关的按钮，则记录之
       if ([...ON_KEYS, 'LIGHT_LAMP_OFF', 'LIGHT_LAMP_ON'].includes(key)) {
