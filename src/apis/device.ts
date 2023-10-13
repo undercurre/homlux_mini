@@ -818,7 +818,7 @@ export async function groupControl(
   if (homOs.isSupportLan({ groupId, updateStamp: groupInfo?.updateStamp })) {
     const localRes = await homOs.groupControl({
       webGroupId: groupId,
-      actions: controlAction,
+      actions: controlAction[0],
     })
 
     Logger.log('localRes', localRes)
