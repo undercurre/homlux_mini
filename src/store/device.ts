@@ -190,7 +190,7 @@ export const deviceStore = observable({
   /**
    * 更新全屋设备列表的局域网状态
    */
-  updateAllRoomDeviceListLanStatus(isUpdate = true) {
+  updateAllRoomDeviceListLanStatus(isUpdateUI = true) {
     const allRoomDeviceList = deviceStore.allRoomDeviceList.map((item) => {
       const { deviceId, updateStamp } = item
 
@@ -205,7 +205,8 @@ export const deviceStore = observable({
       }
     })
 
-    if (!isUpdate) {
+    if (!isUpdateUI) {
+      deviceStore.allRoomDeviceList = allRoomDeviceList
       return
     }
 
