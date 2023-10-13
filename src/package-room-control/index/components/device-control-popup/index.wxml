@@ -16,6 +16,11 @@
         <image class="w-48 h-48" src="/assets/img/home-manage/setting.png"></image>
       </view>
     </view>
+
+    <view class="offline-tips" wx:if="{{isLanCtl}}">
+      <image class="w-36 h-36 ml-48rpx" src="/package-room-control/assets/img/info.png"></image>
+      <text class="text-hex-555659 text-24 ml-32rpx">当前设备仅支持局域网控制，请检查您的网络！</text>
+    </view>
     <!-- tab内容 -->
     <view class="flex flex-col items-center flex-1 pt-10rpx">
       <!-- 灯光控制 -->

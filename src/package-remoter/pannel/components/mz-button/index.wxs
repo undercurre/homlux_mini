@@ -1,9 +1,11 @@
 var btn = require('../../../../commons/wxs/btn.wxs')
 
-var isPressed = false // 当前是否点击状态
-var timerId // 计时器
+var isPressed = {} // 当前是否点击状态
+var timerId = {} // 计时器
 
 function touchStart(event, ownerInstance) {
+  var key = ownerInstance.getDataset().key
+  console.log(key)
   ownerInstance.callMethod('handleTouchStart', event)
 
   var instant = ownerInstance.selectComponent('.preset') || ownerInstance.selectComponent('.img')
@@ -13,7 +15,7 @@ function touchStart(event, ownerInstance) {
   var iText = ownerInstance.selectComponent('.text')
   var iTextActive = ownerInstance.selectComponent('.textActive')
 
-  isPressed = true
+  isPressed[key] = true
 
   btn.opacityTransition(instant, instantActive)
   if (iText) {
@@ -23,12 +25,12 @@ function touchStart(event, ownerInstance) {
     btn.opacityTransition(iIcon, iIconActive)
   }
 
-  timerId = ownerInstance.setTimeout(function () {
-    ownerInstance.clearTimeout(timerId)
-    timerId = null
+  timerId[key] = ownerInstance.setTimeout(function () {
+    ownerInstance.clearTimeout(timerId[key])
+    timerId[key] = null
 
     // 如果超时仍未松手
-    if (isPressed) {
+    if (isPressed[key]) {
       return
     }
 
@@ -44,6 +46,7 @@ function touchStart(event, ownerInstance) {
 }
 
 function touchEnd(event, ownerInstance) {
+  var key = ownerInstance.getDataset().key
   var instant = ownerInstance.selectComponent('.preset') || ownerInstance.selectComponent('.img')
   var instantActive = ownerInstance.selectComponent('.presetActive') || ownerInstance.selectComponent('.imgActive')
   var iIcon = ownerInstance.selectComponent('.icon')
@@ -53,7 +56,7 @@ function touchEnd(event, ownerInstance) {
 
   isPressed = false
 
-  if (timerId) {
+  if (timerId[key]) {
     return
   }
 

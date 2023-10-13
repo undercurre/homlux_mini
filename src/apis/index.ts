@@ -15,3 +15,13 @@ export async function login(data: object) {
     data,
   })
 }
+
+// 测试网络连接状态用
+export async function peekNetwork() {
+  return await mzaioRequest.post({
+    log: true,
+    loading: false,
+    url: '/',
+    timeout: 300,
+  })
+}

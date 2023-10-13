@@ -51,8 +51,6 @@ export async function retryScene(
 export async function execScene(sceneId: string, options?: { loading?: boolean }) {
   const sceneItem = sceneStore.allRoomSceneList.find((item) => item.sceneId === sceneId)
 
-  Logger.debug('execScene', sceneStore.allRoomSceneList, sceneItem)
-
   if (homOs.isSupportLan({ sceneId, updateStamp: sceneItem?.updateStamp })) {
     const localRes = await homOs.sceneExecute(sceneId)
 

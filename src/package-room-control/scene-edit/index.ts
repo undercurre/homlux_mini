@@ -3,7 +3,7 @@ import Toast from '@vant/weapp/toast/toast'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { deviceStore, homeStore, sceneStore } from '../../store/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { PRO_TYPE } from '../../config/index'
+import { PRO_TYPE, SCREEN_PID } from '../../config/index'
 import {
   deleteScene,
   findDevice,
@@ -139,7 +139,9 @@ ComponentWithComputed({
       })
 
       const linkSwitch = sceneStore.sceneSwitchMap[sceneInfo.sceneId] || ''
-      const switchList = deviceStore.allRoomDeviceFlattenList.filter((device) => device.proType === PRO_TYPE.switch)
+      const switchList = deviceStore.allRoomDeviceFlattenList.filter(
+        (device) => device.proType === PRO_TYPE.switch && !SCREEN_PID.includes(device.productId),
+      )
 
       wx.createSelectorQuery()
         .select('#content')

@@ -186,3 +186,7 @@ export function checkWifiSwitch() {
 
   return true
 }
+
+export function isLogon() {
+  return Boolean(storage.get<string>('token'))
+}

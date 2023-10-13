@@ -7,6 +7,10 @@ import {
   Logger,
   isConnect,
   initHomeOs,
+  networkStatusListen,
+  removeNetworkStatusListen,
+  verifyNetwork,
+  isLogon,
 } from './utils/index'
 import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore, userStore } from './store/index'
@@ -36,7 +40,7 @@ App<IAppOption>({
     }
 
     // 如果用户已经登录，开始请求数据
-    if (storage.get<string>('token')) {
+    if (isLogon()) {
       try {
         userStore.setIsLogin(true)
         const start = Date.now()
@@ -69,21 +73,36 @@ App<IAppOption>({
     })
   },
 
-  onShow() {
+  async onShow() {
+    // 监听网络状态
+    networkStatusListen()
+    await verifyNetwork() // 可能网络状态会不变更，先主动查一次
+
+    const { firstOnShow } = this.globalData
+    this.globalData.firstOnShow = false
+
     // 用户热启动app，建立ws连接，并且再更新一次数据
     Logger.log('app-onShow, isConnect:', isConnect(), homeStore.currentHomeId)
-    if (homeStore.currentHomeId && storage.get('token') && isConnect()) {
-      // 首次进入有onLaunch不必加载
-      if (!this.globalData.firstOnShow) {
-        deviceStore.updateAllRoomDeviceList()
-        homeStore.updateHomeInfo()
-      }
-      startWebsocketService()
 
-      initHomeOs()
+    if (!homeStore.currentHomeId || !isLogon()) {
+      return
     }
 
-    this.globalData.firstOnShow = false
+    // 以下逻辑需要在已登录状态
+    initHomeOs()
+
+    if (!isConnect()) {
+      return
+    }
+
+    // 以下逻辑需要网络连接
+    startWebsocketService()
+
+    // 首次进入有onLaunch不必加载
+    if (!firstOnShow) {
+      deviceStore.updateAllRoomDeviceList()
+      homeStore.updateHomeInfo()
+    }
   },
 
   onHide() {
@@ -93,6 +112,9 @@ App<IAppOption>({
 
     // 退出HomOS sdk登录态，断开局域网连接
     homOs.logout()
+
+    // 取消监听网络状态
+    removeNetworkStatusListen()
   },
 
   onError(msg: string) {

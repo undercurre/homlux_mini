@@ -25,6 +25,9 @@ import {
   toPropertyDesc,
   isNullOrUnDef,
   transferDeviceProperty,
+  isConnect,
+  verifyNetwork,
+  Logger,
 } from '../../utils/index'
 import { proName, PRO_TYPE, LIST_PAGE, CARD_W, CARD_H, MODEL_NAME, CARD_REFRESH_TIME } from '../../config/index'
 
@@ -238,14 +241,22 @@ ComponentWithComputed({
      * 生命周期函数--监听页面加载
      */
     async onLoad() {
+      Logger.log('room-onLoad')
       // this.setUpdatePerformanceListener({withDataPaths: true}, (res) => {
       //   console.debug('setUpdatePerformanceListener', res, res.pendingStartTimestamp - res.updateStartTimestamp, res.updateEndTimestamp - res.updateStartTimestamp, dayjs().format('YYYY-MM-DD HH:mm:ss'))
       // })
     },
 
     async onShow() {
-      // 再更新一遍数据
-      await this.reloadData()
+      await verifyNetwork()
+      // 加载数据
+      this.reloadData()
+
+      Logger.log('room-onShow')
+      emitter.on('deviceListRetrieve', () => {
+        console.log('deviceListRetrieve，isConnect', isConnect())
+        this.reloadDataThrottle()
+      })
 
       // ws消息处理
       emitter.on('wsReceive', async (e) => {
@@ -339,10 +350,15 @@ ComponentWithComputed({
     },
 
     async reloadData() {
+      Logger.log('reloadData', isConnect())
+      // 未连接网络，所有设备直接设置为离线
+      if (!isConnect()) {
+        this.updateQueue({ isRefresh: true, onLineStatus: 0 })
+        return
+      }
+
       try {
         await Promise.all([
-          // deviceStore.updateSubDeviceList(),
-          // deviceStore.updateAllRoomDeviceList(), // 重复查询
           homeStore.updateRoomCardList(),
           sceneStore.updateSceneList(),
           sceneStore.updateAllRoomSceneList(),
@@ -367,8 +383,10 @@ ComponentWithComputed({
     // onUnload() {},
     onHide() {
       console.log('onHide')
+
       // 解除监听
       emitter.off('wsReceive')
+      emitter.off('deviceListRetrieve')
 
       if (this.data._wait_timeout) {
         clearTimeout(this.data._wait_timeout)
@@ -431,7 +449,7 @@ ComponentWithComputed({
           if (index !== -1) {
             originDevice = this.data.devicePageList[groupIndex][index]
             // const diffData = {} as IAnyObject
-            // review 细致到字段的diff
+            // Review 细致到字段的diff
             const renderList = ['deviceName', 'onLineStatus'] // 需要刷新界面的字段
 
             renderList.forEach((key) => {
@@ -457,20 +475,22 @@ ComponentWithComputed({
 
               this.data._diffCards.data[`devicePageList[${groupIndex}][${index}].mzgdPropertyDTOList.${modelName}`] =
                 newVal
-
-              // 更新场景关联信息
-              this.data._diffCards.data[`devicePageList[${groupIndex}][${index}].linkSceneName`] =
-                this.getLinkSceneName({
-                  ...device!,
-                  proType: originDevice.proType, // 补充关键字段
-                })
             }
+            // 更新面板、按键信息
             if (device!.switchInfoDTOList) {
               const newVal = {
                 ...originDevice.switchInfoDTOList[0],
                 ...device?.switchInfoDTOList[0],
               }
               this.data._diffCards.data[`devicePageList[${groupIndex}][${index}].switchInfoDTOList[0]`] = newVal
+            }
+            // 更新场景关联信息
+            const linkSceneName = this.getLinkSceneName({
+              ...device!,
+              proType: originDevice.proType, // 补充关键字段
+            })
+            if (linkSceneName !== originDevice.linkSceneName) {
+              this.data._diffCards.data[`devicePageList[${groupIndex}][${index}].linkSceneName`] = linkSceneName
             }
 
             // 如果控制弹框为显示状态，则同步选中设备的状态
@@ -550,10 +570,11 @@ ComponentWithComputed({
             type: proName[device.proType],
             select: this.data.checkedList.includes(device.uniId) || this.data.editSelectList.includes(device.uniId),
             linkSceneName: this.getLinkSceneName(device),
+            onLineStatus: e.onLineStatus ?? device.onLineStatus, // 传参数直接设置指定的在线离线状态
           }))
 
         if (!this.data.deviceListInited) {
-          console.log('▤ [updateDeviceList] 列表初始化')
+          Logger.log('▤ [updateDeviceList] 列表初始化')
         }
         // !! 整个列表刷新
         else {
@@ -576,7 +597,7 @@ ComponentWithComputed({
           deviceListInited: true,
         })
 
-        console.log('▤ [updateDeviceList] 列表更新完成', this.data.devicePageList)
+        Logger.log('▤ [updateDeviceList] 列表更新完成', this.data.devicePageList)
       }
 
       // 模拟堵塞任务执行
@@ -1020,6 +1041,8 @@ ComponentWithComputed({
           if (!isNullOrUnDef(prop.brightness)) diffData['lightStatus.brightness'] = prop.brightness
           if (!isNullOrUnDef(prop.colorTemperature)) diffData['lightStatus.colorTemperature'] = prop.colorTemperature
           if (!isNullOrUnDef(prop.power)) diffData['lightStatus.power'] = prop.power
+          if (!isNullOrUnDef(e.detail.canLanCtrl)) diffData['lightStatus.canLanCtrl'] = e.detail.canLanCtrl
+          if (!isNullOrUnDef(e.detail.onLineStatus)) diffData['lightStatus.onLineStatus'] = e.detail.onLineStatus
         } else if (e.detail.proType === PRO_TYPE.curtain) {
           diffData.curtainStatus = {
             position: prop.curtain_position,

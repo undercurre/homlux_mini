@@ -6,7 +6,7 @@ import { emitter } from '../../utils/index'
 import { StatusType } from './typings'
 import { addGroup, renameGroup, delGroup, updateGroup } from '../../apis/device'
 
-let timeoutId: number
+let timeoutId: number | null
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, roomBinding] }), pageBehaviors],
@@ -56,10 +56,18 @@ ComponentWithComputed({
         // 超时控制
         const TIME_OUT = Math.min(Math.max(8000, this.data.deviceList.length * 1000), 120000)
         timeoutId = setTimeout(() => {
+          timeoutId = null
           if (this.data.deviceList.length !== this.data.successList.length) {
             this.setData({
               showGroupFailTips: true,
               status: 'hasFailure',
+            })
+          }
+          // 如果全部失败，则清空分组
+          else if (this.data.failedList.length === this.data.deviceList.length) {
+            delGroup({ groupId: this.data.groupId })
+            this.setData({
+              groupId: '',
             })
           }
         }, TIME_OUT)
@@ -83,7 +91,9 @@ ComponentWithComputed({
             this.setData({
               showGroupFailTips: true,
             })
-            clearTimeout(timeoutId)
+            if (timeoutId) {
+              clearTimeout(timeoutId)
+            }
           } else if (this.data.showGroupFailTips) {
             this.setData({
               showGroupFailTips: false,
@@ -99,7 +109,9 @@ ComponentWithComputed({
           this.setData({
             groupId: '',
           })
-          clearTimeout(timeoutId)
+          if (timeoutId) {
+            clearTimeout(timeoutId)
+          }
         }
       })
     },

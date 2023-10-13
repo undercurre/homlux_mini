@@ -155,6 +155,7 @@ export const homeStore = observable({
       runInAction(() => {
         roomStore.roomDeviceList = list
         deviceStore.allRoomDeviceList = data[0].result
+        deviceStore.updateAllRoomDeviceListLanStatus(false)
       })
     }
     if (data[1].success) {

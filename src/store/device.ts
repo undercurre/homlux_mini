@@ -179,6 +179,8 @@ export const deviceStore = observable({
       runInAction(() => {
         roomStore.roomDeviceList = list
         deviceStore.allRoomDeviceList = res.result
+
+        this.updateAllRoomDeviceListLanStatus(false)
       })
     } else {
       console.log('加载全屋设备失败！', res)
@@ -188,21 +190,28 @@ export const deviceStore = observable({
   /**
    * 更新全屋设备列表的局域网状态
    */
-  updateAllRoomDeviceListLanStatus() {
+  updateAllRoomDeviceListLanStatus(isUpdateUI = true) {
+    const allRoomDeviceList = deviceStore.allRoomDeviceList.map((item) => {
+      const { deviceId, updateStamp } = item
+
+      const canLanCtrl =
+        item.deviceType === 4
+          ? homOs.isSupportLan({ groupId: deviceId, updateStamp })
+          : homOs.isSupportLan({ deviceId })
+
+      return {
+        ...item,
+        canLanCtrl,
+      }
+    })
+
+    if (!isUpdateUI) {
+      deviceStore.allRoomDeviceList = allRoomDeviceList
+      return
+    }
+
     runInAction(() => {
-      deviceStore.allRoomDeviceList = deviceStore.allRoomDeviceList.map((item) => {
-        const { deviceId, updateStamp } = item
-
-        const canLanCtrl =
-          item.deviceType === 4
-            ? homOs.isSupportLan({ groupId: deviceId, updateStamp })
-            : homOs.isSupportLan({ deviceId })
-
-        return {
-          ...item,
-          canLanCtrl,
-        }
-      })
+      deviceStore.allRoomDeviceList = allRoomDeviceList
     })
   },
 })

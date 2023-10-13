@@ -14,6 +14,9 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
 import Toast from '@vant/weapp/toast/toast'
 
+// 可以开灯的指令，若上次为为这些指令，则关灯
+const ON_KEYS = ['LIGHT_LAMP_ON', 'LIGHT_NIGHT_LAMP', 'LIGHT_SCENE_DAILY', 'LIGHT_SCENE_RELAX', 'LIGHT_SCENE_SLEEP']
+
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [remoterBinding] }), pageBehaviors],
 
@@ -28,9 +31,11 @@ ComponentWithComputed({
     _envVersion: 'release', // 当前小程序环境，默认为发布版，用于屏蔽部分实验功能
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
     _bleService: null as BleService | null,
-    _lastPowerKey: '', // 记录上一次点击‘照明’时的指令键，用于反转处理
-    _keyQueue: ['', '', '', '', '', '', '', ''], // 记录按键序列
-    _longpress_key: '',
+    // 记录上一次点击‘照明’时的指令键，用于反转处理；默认为关，即首次会广播开的指令
+    _lastPowerKey: 'LIGHT_LAMP_OFF',
+    _keyQueue: ['', '', '', '', '', '', '', ''], // 记录圆盘按键序列
+    _send_key: '', // 本次广播的非长按指令，松手时清除
+    _longpress_key: '', // 正在广播的长按指令，松手时清除
     _timer: 0, // 记录上次指令时间
   },
 
@@ -69,7 +74,6 @@ ComponentWithComputed({
       // emitter.on('remoterChanged', () => {
       // console.log('remoterChanged on Pannel')
 
-      // this.reloadDeviceData()
       // })
 
       // TODO 监听蓝牙连接状态变化
@@ -87,39 +91,61 @@ ComponentWithComputed({
       }
     },
 
-    // TODO 产测模式需要自定义标题
-    reloadDeviceData() {
-      // this.data._localList = (storage.get<Remoter.LocalList>('_localList') ?? {}) as Remoter.LocalList
-      // const deviceName = this.data._localList[this.data.device.addr].deviceName
-      // this.setData({
-      //   device: {
-      //     ...this.data.device,
-      //     deviceName,
-      //   },
-      // })
+    /**
+     * @description 触摸开始时触发的操作，如果实际上不存在长按指令，直接执行 toSendCmd
+     */
+    handleTouchStart(e: WechatMiniprogram.TouchEvent) {
+      const { longpress } = e.target.dataset
+      if (!longpress) {
+        this.toSendCmd(e)
+      }
     },
 
-    async btnTap(e: WechatMiniprogram.TouchEvent) {
+    /**
+     * @name 广播控制指令
+     * @description 若有长按操作，则触摸结束时触发；不可能有长按操作的按钮，直接由bind:touchstart触发
+     */
+    async toSendCmd(e: WechatMiniprogram.TouchEvent) {
+      console.log('toSendCmd triggered', e, {
+        _lastPowerKey: this.data._lastPowerKey,
+        _longpress_key: this.data._longpress_key,
+        _send_key: this.data._send_key,
+      })
+      // 如果已执行了长按操作，则不广播短按指令
+      if (this.data._longpress_key) {
+        return
+      }
+
       if (!this.data._bleServer) {
         this.data._bleServer = await createBleServer()
       }
-
       let { key } = e.target.dataset
       // DEBUG 产测指令，仅调试模式可用
       if (key === 'FACTORY' && !this.data.isFactoryMode) {
         return
       }
-      // HACK 特殊的照明按钮反转处理
+      // HACK 根据模糊指令匹配为照明按钮，将上次指令作反转处理，转为真实的指令
       if (key === 'LIGHT_LAMP') {
-        key = this.data._lastPowerKey === `${key}_OFF` ? `${key}_ON` : `${key}_OFF`
+        key = ON_KEYS.includes(this.data._lastPowerKey) ? `LIGHT_LAMP_OFF` : `LIGHT_LAMP_ON`
+      }
+      // 如果是照明操作相关的按钮，则记录之
+      if ([...ON_KEYS, 'LIGHT_LAMP_OFF', 'LIGHT_LAMP_ON'].includes(key)) {
         this.data._lastPowerKey = key
       }
-
+      // 如果当前是被 tap 触发，但同时已被 touchStart 触发，则不再执行，并清空触发记录
+      if (e.type === 'tap' && this.data._send_key) {
+        this.data._send_key = ''
+        return
+      }
+      // 如果当前是被 touchStart 触发，可直接执行广播，同时记录下指令
+      else if (e.type === 'touchstart') {
+        this.data._send_key = key
+      }
       const addr = this.data.isFactoryMode ? FACTORY_ADDR : remoterStore.curAddr
       const payload = remoterProtocol.generalCmdString(CMD[key])
 
       const { dir } = e.target.dataset
-      Logger.log('btnTap', key, dir, { payload, addr, isFactory: this.data.isFactoryMode })
+      Logger.log('toSendCmd', key, dir, { payload, addr, isFactory: this.data.isFactoryMode })
 
       const now = new Date().getTime()
       console.log('now - this.data._timer', now - this.data._timer)
@@ -146,13 +172,18 @@ ComponentWithComputed({
       this.data._keyQueue.push(dir)
     },
     async handleLongPress(e: WechatMiniprogram.TouchEvent) {
+      const { longpress } = e.target.dataset
+      if (!longpress) {
+        return
+      }
+
       if (!this.data._bleServer) {
         this.data._bleServer = await createBleServer()
       }
 
-      const key = `${e.target.dataset.key}_ACC` // 加上长按指令后缀
       const addr = this.data.isFactoryMode ? FACTORY_ADDR : remoterStore.curAddr
-      const payload = remoterProtocol.generalCmdString(CMD[key])
+      const payload = remoterProtocol.generalCmdString(CMD[longpress])
+      console.log('handleLongPress', longpress, payload)
 
       // DEBUG 蓝牙连接模式 TODO 定时连续发指令
       if (remoterStore.curRemoter.connected) {
@@ -172,22 +203,22 @@ ComponentWithComputed({
       }
 
       this.data._longpress_key = e.target.dataset.dir
-
-      console.log('handleLongPress', key, payload)
     },
+    // !! 和长按操作必须同时出现
     async handleTouchEnd(e: WechatMiniprogram.TouchEvent) {
       // 若已建立连接，则不再广播结束指令
       if (remoterStore.curRemoter.connected) {
         return
       }
 
-      // 如果上个动作不是执行长按，不需要主动广播结束指令
+      // 如果当前不是执行长按操作，不需要主动广播结束指令
       const { dir } = e.target.dataset
       if (!dir || dir !== this.data._longpress_key) {
         return
       }
       this.data._longpress_key = ''
 
+      // 主动广播结束指令
       if (!this.data._bleServer) {
         this.data._bleServer = await createBleServer()
       }
@@ -195,7 +226,6 @@ ComponentWithComputed({
 
       const addr = this.data.isFactoryMode ? FACTORY_ADDR : remoterStore.curAddr
       bleAdvertisingEnd(this.data._bleServer, { addr, isFactory: this.data.isFactoryMode })
-      console.log('handleTouchEnd')
     },
 
     toSetting() {
