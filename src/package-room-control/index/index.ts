@@ -269,13 +269,13 @@ ComponentWithComputed({
           })
           .exec()
       }
-
-      await verifyNetwork()
-      // 加载数据
-      this.reloadData()
     },
 
     async onShow() {
+      await verifyNetwork()
+      // 加载数据
+      this.reloadData()
+
       Logger.log('room-onShow')
       emitter.on('deviceListRetrieve', () => {
         console.log('deviceListRetrieve，isConnect', isConnect())
