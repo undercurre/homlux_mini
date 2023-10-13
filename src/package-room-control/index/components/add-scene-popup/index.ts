@@ -8,7 +8,7 @@ import {
   delLampAndSwitchAssociated,
   delSwitchAndSwitchAssociated,
 } from '../../../../apis/index'
-import {sceneList, SCREEN_PID} from '../../../../config/index'
+import { sceneList, SCREEN_PID } from '../../../../config/index'
 import { deviceStore, homeStore, roomStore, sceneStore } from '../../../../store/index'
 import { storage, checkInputNameIllegal } from '../../../../utils/index'
 
