@@ -27,6 +27,7 @@ import {
   transferDeviceProperty,
   isConnect,
   verifyNetwork,
+  Logger,
 } from '../../utils/index'
 import { proName, PRO_TYPE, LIST_PAGE, CARD_W, CARD_H, MODEL_NAME, CARD_REFRESH_TIME } from '../../config/index'
 
@@ -247,6 +248,7 @@ ComponentWithComputed({
      * 生命周期函数--监听页面加载
      */
     async onLoad() {
+      Logger.log('room-onLoad')
       // this.setUpdatePerformanceListener({withDataPaths: true}, (res) => {
       //   console.debug('setUpdatePerformanceListener', res, res.pendingStartTimestamp - res.updateStartTimestamp, res.updateEndTimestamp - res.updateStartTimestamp, dayjs().format('YYYY-MM-DD HH:mm:ss'))
       // })
@@ -270,10 +272,11 @@ ComponentWithComputed({
 
       await verifyNetwork()
       // 加载数据
-      this.reloadDataThrottle()
+      this.reloadData()
     },
 
     async onShow() {
+      Logger.log('room-onShow')
       emitter.on('deviceListRetrieve', () => {
         console.log('deviceListRetrieve，isConnect', isConnect())
         this.reloadDataThrottle()
@@ -371,6 +374,7 @@ ComponentWithComputed({
     },
 
     async reloadData() {
+      Logger.log('reloadData', isConnect())
       // 未连接网络，所有设备直接设置为离线
       if (!isConnect()) {
         this.updateQueue({ isRefresh: true, onLineStatus: 0 })
@@ -605,7 +609,7 @@ ComponentWithComputed({
           }))
 
         if (!this.data.deviceListInited) {
-          console.log('▤ [updateDeviceList] 列表初始化')
+          Logger.log('▤ [updateDeviceList] 列表初始化')
         }
         // !! 整个列表刷新
         else {
@@ -628,7 +632,7 @@ ComponentWithComputed({
           deviceListInited: true,
         })
 
-        console.log('▤ [updateDeviceList] 列表更新完成', this.data.devicePageList)
+        Logger.log('▤ [updateDeviceList] 列表更新完成', this.data.devicePageList)
       }
 
       // 模拟堵塞任务执行
