@@ -51,7 +51,7 @@ import { setWifiStorage } from '../../utils/wifiStorage'
 
 import Dialog from '../../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
 import { imgesList } from '../../../assets/js/shareImg.js'
-import {Logger} from "../../../../../utils";
+import {Logger} from "../../../../../utils/index";
 
 let appKey = api.appKey
 
@@ -155,6 +155,7 @@ Page({
   isBleRespond40: false, // 蓝牙是否响应0x40指令
   computed: {},
   async init() {
+    Logger.log('init')
     const this_ = this
     setTimeout(() => {
       this.setData({

@@ -271,7 +271,6 @@ export default class WifiMgr {
                     return element
                   }) // 每段的长度小于2则在前面补'0'
                   .join(':') // 处理完成后连接成字符串
-                console.log('@module wifiMgr.js\n@method getConnectedWifi\n@desc BSSID每段补0后结果\n', res)
               }
               if (res.wifi && res.wifi.SSID.includes('unknown ssid')) {
                 //ssid返回异常

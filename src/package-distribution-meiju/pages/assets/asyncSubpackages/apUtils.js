@@ -14,7 +14,10 @@ import {
 import { api } from '../../../common/js/api'
 
 let signStr = app.globalData.privateKey //ap
-let signHex = stringToHex(signStr) //ap->hex
+
+console.debug('stringToHex(signStr)', signStr, stringToHex(signStr))
+// let signHex = stringToHex(signStr) //ap->hex
+let signHex = '78686469776a6e6368656b6434643531326368646a783564386534633339344432443753'
 let MAS_KEY = {
   dev: '143320d6c73144d083baf9f5b1a7acc9',
   sit: '143320d6c73144d083baf9f5b1a7acc9',

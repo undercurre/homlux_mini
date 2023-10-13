@@ -39,6 +39,7 @@ const app = {
     ],
   },
   globalData: {
+    privateKey: 'xhdiwjnchekd4d512chdjx5d8e4c394D2D7S',
     isLogon: true,
     userData: {
       key: '',
