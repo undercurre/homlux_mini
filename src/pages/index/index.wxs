@@ -1,14 +1,4 @@
 var timer = 0
-// var handleAllOn = function (event, ownerInstance) {
-//   if (!timer) {
-//     event.instance.addClass('button-tap-effect')
-//     ownerInstance.callMethod('handleAllOn')
-//     timer = ownerInstance.setTimeout(function () {
-//       event.instance.removeClass('button-tap-effect')
-//       timer = 0
-//     }, 1000)
-//   }
-// }
 
 var handleAllOff = function (event, ownerInstance) {
   if (!timer) {
@@ -22,6 +12,5 @@ var handleAllOff = function (event, ownerInstance) {
 }
 
 module.exports = {
-  // handleAllOn: handleAllOn,
   handleAllOff: handleAllOff,
 }

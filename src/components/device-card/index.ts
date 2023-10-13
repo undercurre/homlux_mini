@@ -135,6 +135,11 @@ ComponentWithComputed({
     canCtrl(data) {
       return data.deviceInfo.onLineStatus || data.deviceInfo.canLanCtrl
     },
+
+    // 设备是灯组
+    isGroup(data) {
+      return data.deviceInfo.deviceType === 4
+    }
   },
 
   /**
