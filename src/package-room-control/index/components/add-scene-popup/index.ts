@@ -8,7 +8,7 @@ import {
   delLampAndSwitchAssociated,
   delSwitchAndSwitchAssociated,
 } from '../../../../apis/index'
-import { sceneList } from '../../../../config/index'
+import {sceneList, SCREEN_PID} from '../../../../config/index'
 import { deviceStore, homeStore, roomStore, sceneStore } from '../../../../store/index'
 import { storage, checkInputNameIllegal } from '../../../../utils/index'
 
@@ -234,7 +234,7 @@ ComponentWithComputed({
     },
     handleLinkSwitchPopup() {
       const list = deviceStore.allRoomDeviceFlattenList.filter((item) => {
-        if (!item.uniId.includes(':')) {
+        if (!item.uniId.includes(':') || SCREEN_PID.includes(item.productId)) {
           return false
         }
         // 排除掉已在待创建场景执行动作中的开关
