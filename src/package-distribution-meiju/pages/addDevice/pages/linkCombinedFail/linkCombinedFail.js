@@ -13,7 +13,6 @@ import computedBehavior from '../../../../utils/miniprogram-computed.js'
 import { imgesList } from '../../../assets/js/shareImg.js'
 const brandStyle = require('../../../assets/js/brand.js')
 const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
-console.log('brandStyle:', brandStyle)
 const iconStyle = brandStyle.brandConfig.iconStyle //图标样式
 Page({
   behaviors: [bleNeg, addDeviceMixin, wahinMixin, netWordMixin, computedBehavior],

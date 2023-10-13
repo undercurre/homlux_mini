@@ -839,11 +839,9 @@ Page({
     let res = wifiInfo
     //获取当前连接wifi信息
     console.log('获取当前连接wifi信息', res)
-    console.log('storageWifiListV1======', wx.getStorageSync('storageWifiListV1'))
     if (wx.getStorageSync('storageWifiListV1') && decodeWifi(wx.getStorageSync('storageWifiListV1')[environment])) {
       wx.getStorageSync('storageWifiListV1')
       let storageWifiList = decodeWifi(wx.getStorageSync('storageWifiListV1')[environment])
-      console.log('uuuuuuuuuuuuuuu', storageWifiList, res.SSID)
       if (Array.isArray(storageWifiList)) {
         let isHasPsw = false
         let wifiNum = null
@@ -990,9 +988,7 @@ Page({
     let BSSID = '00:00:00:00:00:00'
     let that = this
     let storageWifiListV1 = wx.getStorageSync('storageWifiListV1')
-    console.log('storageWifiListV1:', storageWifiListV1)
     if (storageWifiListV1 && storageWifiListV1[environment].length && decodeWifi(storageWifiListV1[environment])) {
-      console.log('有对应环境的缓存wifi信息')
       let storageWifiList = decodeWifi(wx.getStorageSync('storageWifiListV1')[environment])
 
       let isHasPsw = false

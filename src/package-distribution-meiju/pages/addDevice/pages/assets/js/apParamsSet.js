@@ -77,15 +77,16 @@ const apParamsSet = {
    * @return {string} '0703'+平台+集群+环境
    */
   setAdsId() {
-    let clusterId = app.globalData.userData?.clusterId // 登录接口返回的clusterid（十进制）
-    if (!clusterId) return ''
+    // let clusterId = app.globalData.userData?.clusterId // 登录接口返回的clusterid（十进制）
+    // if (!clusterId) return ''
     let tag = 7 // 07
     let len = 3 // 03
-    clusterId = dec2hex(clusterId, 6) // 十进制转换为十六进制
-    let platformId = clusterId.substring(0, 2) // 平台，01：国内美居，02：国际美居，03：国际东芝
-    let id = clusterId.substring(2, 4) // 集群，由各平台约定，默认(至少一个)：01（阿里云）04:（华为云）
-    let env = clusterId.substring(4, 6) // 环境，01：生产，02：sit，03：uat，04：dev
-    let content = platformId + id + env
+    // clusterId = dec2hex(clusterId, 6) // 十进制转换为十六进制
+    // let platformId = clusterId.substring(0, 2) // 平台，01：国内美居，02：国际美居，03：国际东芝
+    // let id = clusterId.substring(2, 4) // 集群，由各平台约定，默认(至少一个)：01（阿里云）04:（华为云）
+    // let env = clusterId.substring(4, 6) // 环境，01：生产，02：sit，03：uat，04：dev
+    // let content = platformId + id + env
+    let content = '010101'
     return this.setParamsFormat(tag, len, content)
   },
 }

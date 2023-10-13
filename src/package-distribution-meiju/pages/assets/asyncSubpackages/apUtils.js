@@ -15,7 +15,7 @@ import { api } from '../../../common/js/api'
 
 let signStr = app.globalData.privateKey //ap
 
-console.debug('stringToHex(signStr)', signStr, stringToHex(signStr))
+console.debug('[asyncSubpackages]stringToHex(signStr)', signStr, stringToHex(signStr))
 // let signHex = stringToHex(signStr) //ap->hex
 let signHex = '78686469776a6e6368656b6434643531326368646a783564386534633339344432443753'
 let MAS_KEY = {
@@ -126,7 +126,6 @@ function decodeWifi(wifiInfo) {
 }
 //AES加密
 function encode(order, key, orderType, keyType) {
-  console.time('encrypto spend time')
   // var hexString = 'aa24ac0000000000000240434e147f7fff3000000000000000000000008000000000e9cce7'
   var hexString = order
   if (orderType === 'utf8') {
@@ -145,14 +144,12 @@ function encode(order, key, orderType, keyType) {
     padding: CryptoJS.pad.Pkcs7,
   })
   encryptedData = encryptedData.ciphertext.toString()
-  console.timeEnd('encrypto spend time')
   return encryptedData
 }
 
 function decode(order, key, orderType, keyType) {
   console.log('decode========order', order)
   console.log('key=====', key)
-  console.time('decrypto spend time')
   var hexString = order
   let cipherTextHexStr
   cipherTextHexStr = CryptoJS.enc.Hex.parse(hexString)
@@ -167,7 +164,6 @@ function decode(order, key, orderType, keyType) {
     padding: CryptoJS.pad.Pkcs7,
   })
   // console.log("decodeData===", decodeData.toString(), decodeData.toString().length)
-  console.timeEnd('decrypto spend time')
   return decodeData.toString()
 }
 
@@ -245,10 +241,8 @@ function parseUdpBody(deBody) {
 */
 function construOrder(params) {
   //5A5A01117800 7000 02000000AF1D0214080615140000000000000000000000000000000000000000
-  console.log('params==', params)
   let proHead = '5a5a'
   let proVersion = '01'
-  // let enCodeTag = '11'
   let encryptTag = Number(params.isEncode || true)
   let signTag = Number(params.isSign || true)
   let len = calcMsgLen(params.body) //120
@@ -276,16 +270,12 @@ function construOrder(params) {
     msgType +
     deviceInfo +
     keep
-  console.log('header===', header)
   header = header.toLocaleLowerCase()
   let EncKey = md5(signStr)
   let enCodeBody = encode(params.body, EncKey, 'hex', 'hex')
-  console.log('encode body===', enCodeBody.length)
   //签名
   let signAll = header + enCodeBody + signHex
   let sign = md5(hexStringToArrayBuffer(signAll))
-  console.log('sign====', sign)
-  console.log('construOrder all order====', header + enCodeBody + sign)
   return header + enCodeBody + sign
 }
 //16進制時間戳

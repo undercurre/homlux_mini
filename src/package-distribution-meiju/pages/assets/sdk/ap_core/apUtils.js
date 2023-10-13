@@ -11,6 +11,7 @@ import {
 } from 'm-utilsdk/index'
 import { api } from '../../../../common/js/api'
 
+console.debug('[ap_core]signHex')
 let signStr = 'xhdiwjnchekd4d512chdjx5d8e4c394D2D7S'
 let signHex = '78686469776a6e6368656b6434643531326368646a783564386534633339344432443753'
 let MAS_KEY = {
@@ -197,7 +198,6 @@ function decode2body(msg) {
 }
 //解析udp消息体
 function parseUdpBody(deBody) {
-  console.log('deBody======', deBody)
   let adData = {}
   adData.tcpIp = parseIp(deBody.slice(0, 8))
   adData.tcpPort = parsePort(deBody.slice(8, 16))
@@ -242,7 +242,6 @@ function parseUdpBody(deBody) {
 */
 function construOrder(params) {
   //5A5A01117800 7000 02000000AF1D0214080615140000000000000000000000000000000000000000
-  console.log('params==', params)
   let proHead = '5a5a'
   let proVersion = '01'
   // let enCodeTag = '11'
@@ -273,16 +272,12 @@ function construOrder(params) {
     msgType +
     deviceInfo +
     keep
-  console.log('header===', header)
   header = header.toLocaleLowerCase()
   let EncKey = md5(signStr)
   let enCodeBody = encode(params.body, EncKey, 'hex', 'hex')
-  console.log('encode body===', enCodeBody.length)
   //签名
   let signAll = header + enCodeBody + signHex
   let sign = md5(hexStringToArrayBuffer(signAll))
-  console.log('sign====', sign)
-  console.log('construOrder all order====', header + enCodeBody + sign)
   return header + enCodeBody + sign
 }
 //16進制時間戳

@@ -58,7 +58,6 @@ function decodeWifi(wifiInfo) {
     mode: CryptoJS.mode.CBC,
     padding: CryptoJS.pad.Pkcs7,
   })
-  console.log('jjjjj', decrypted.toString(CryptoJS.enc.Utf8))
   return JSON.parse(decrypted.toString(CryptoJS.enc.Utf8))
 }
 
