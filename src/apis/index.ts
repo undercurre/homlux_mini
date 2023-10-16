@@ -22,6 +22,6 @@ export async function peekNetwork() {
     log: true,
     loading: false,
     url: '/',
-    timeout: 300,
+    timeout: 2000,
   })
 }

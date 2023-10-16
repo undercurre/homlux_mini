@@ -276,7 +276,7 @@ export const homeStore = observable({
     if (res.success) {
       return
     } else {
-      return Promise.reject('邀请家庭成员失败')
+      return Promise.reject(res)
     }
   },
 
