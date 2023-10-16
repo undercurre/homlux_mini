@@ -72,10 +72,10 @@ declare namespace AutoScene {
   interface DeviceCondition {
     /**
      * 绑定控制集合，
-     * 例如："controlEvent":[{"ep":2,"ButtonScene":1}]
-     * ButtonScene 电控所需参数，目前固定为1
+     * 例如："controlEvent":[{"modelName":'wallSwitch2,"buttonScene":1}]
+     * buttonScene 电控所需参数，目前固定为1
      */
-    controlEvent: { ep: number }[]
+    controlEvent: { modelName: string }[]
     /** 设备id */
     deviceId: string
   }

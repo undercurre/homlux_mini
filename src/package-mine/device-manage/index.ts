@@ -5,6 +5,7 @@ import pageBehavior from '../../behaviors/pageBehaviors'
 import { emitter, WSEventType } from '../../utils/eventBus'
 import { queryDeviceInfoByDeviceId } from '../../apis/index'
 import { runInAction } from 'mobx-miniprogram'
+import { PRO_TYPE, SCREEN_PID } from '../../config/index'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, deviceBinding] }), pageBehavior],
@@ -23,13 +24,19 @@ ComponentWithComputed({
 
   computed: {
     deviceListCompited(data) {
-      const list = data.allRoomDeviceList ? [...data.allRoomDeviceList].sort((a, b) => a.orderNum - b.orderNum) : []
+      const list = data.allRoomDeviceList?.length ? [...data.allRoomDeviceList] : []
+      const rst = list
+        .sort((a, b) => a.orderNum - b.orderNum)
+        // 过滤智慧屏按键
+        .filter(
+          (d) => (d.proType === PRO_TYPE.switch && !SCREEN_PID.includes(d.productId)) || d.proType !== PRO_TYPE.switch,
+        )
       if (data.roomSelect === '0') {
-        return list
+        return rst
       } else if (data.roomSelect === '-1') {
-        return list.filter((d: Device.DeviceItem) => !d.onLineStatus)
+        return rst.filter((d) => !d.onLineStatus)
       } else {
-        return list.filter((d: Device.DeviceItem) => d.roomId === data.roomSelect)
+        return rst.filter((d: Device.DeviceItem) => d.roomId === data.roomSelect)
       }
     },
   },
@@ -97,7 +104,9 @@ ComponentWithComputed({
           (e.result.eventData.roomId === this.data.roomSelect || this.data.roomSelect === '0')
         ) {
           // 如果是当前房间的设备状态发生变化，更新设备状态
-          const index = deviceStore.deviceList.findIndex((device) => device.deviceId === e.result.eventData.deviceId)
+          const index = deviceStore.allRoomDeviceList.findIndex(
+            (device) => device.deviceId === e.result.eventData.deviceId,
+          )
           if (index !== -1) {
             const res = await queryDeviceInfoByDeviceId({
               deviceId: deviceStore.deviceList[index].deviceId,
@@ -105,13 +114,13 @@ ComponentWithComputed({
             })
             if (res.success) {
               runInAction(() => {
-                deviceStore.deviceList[index] = res.result
-                deviceStore.deviceList = [...deviceStore.deviceList]
+                deviceStore.allRoomDeviceList[index] = res.result
+                deviceStore.allRoomDeviceList = [...deviceStore.allRoomDeviceList]
               })
             }
           } else {
             // 可能是新绑的设备，直接更新房间
-            deviceBinding.store.updateSubDeviceList(undefined, this.data.roomSelect)
+            deviceBinding.store.updateAllRoomDeviceList()
           }
         } else if (
           typeof e.result.eventData === 'object' &&

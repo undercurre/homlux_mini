@@ -23,10 +23,10 @@ export const mzaioWSURL: ConfigWithEnv<string> = {
   prod: 'wss://mzaio.meizgd.com/mzaio/v1/wss/',
 }
 
-export const QQMapConfig = {
-  key: 'L7HBZ-UZ6EU-7J5VU-BR54O-3ZDG5-6CFIC',
-  sig: 'W9RrPrVIxGPyuKEzzS76ktDxvN3zxxyJ',
-}
+// export const QQMapConfig = {
+//   key: 'L7HBZ-UZ6EU-7J5VU-BR54O-3ZDG5-6CFIC',
+//   sig: 'W9RrPrVIxGPyuKEzzS76ktDxvN3zxxyJ',
+// }
 
 export function getEnv() {
   return env

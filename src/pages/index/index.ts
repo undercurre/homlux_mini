@@ -150,7 +150,13 @@ ComponentWithComputed({
 
   methods: {
     // 生命周期或者其他钩子
-    onLoad: function () {
+    onLoad() {
+      // 若未设置过默认页，则跳转到start页选择首页
+      if (!othersStore.defaultPage) {
+        wx.reLaunch({
+          url: `/pages/start/index`,
+        })
+      }
       // 更新tabbar状态
       if (typeof this.getTabBar === 'function' && this.getTabBar()) {
         this.getTabBar().setData({
@@ -181,19 +187,18 @@ ComponentWithComputed({
       emitter.on('wsReceive', (res) => {
         if (res.result.eventType === 'device_property') {
           // 如果有传更新的状态数据过来，直接更新store
-          if (res.result.eventData.event && res.result.eventData.deviceId && res.result.eventData.ep) {
+          if (res.result.eventData.event && res.result.eventData.deviceId && res.result.eventData.modelName) {
             const device = deviceStore.allRoomDeviceList.find(
               (device) => device.deviceId === res.result.eventData.deviceId,
             )
             if (device) {
               runInAction(() => {
-                device.mzgdPropertyDTOList[res.result.eventData.ep] = {
-                  ...device.mzgdPropertyDTOList[res.result.eventData.ep],
+                device.mzgdPropertyDTOList[res.result.eventData.modelName] = {
+                  ...device.mzgdPropertyDTOList[res.result.eventData.modelName],
                   ...res.result.eventData.event,
                 }
               })
 
-              // 仅为本地更新，暂时取消节流
               this.updateRoomCard()
 
               // 直接更新store里的数据，更新完退出回调函数
@@ -213,7 +218,7 @@ ComponentWithComputed({
             WSEventType.group_device_result_status,
           ].includes(res.result.eventType)
         ) {
-          this.updateRoomData()
+          this.updateRoomDataThrottle()
         }
       })
 
@@ -226,7 +231,7 @@ ComponentWithComputed({
     },
 
     // 节流更新房间卡片信息
-    updateRoomData: throttle(() => {
+    updateRoomDataThrottle: throttle(() => {
       homeStore.updateRoomCardList()
     }, 3000),
 
@@ -270,7 +275,6 @@ ComponentWithComputed({
 
     acceptShare() {
       if (!this.data.isLogin) {
-        console.log('未登录，停止分享逻辑')
         return
       }
 
@@ -288,7 +292,6 @@ ComponentWithComputed({
       const enterOption = wx.getEnterOptionsSync()
 
       if (enterOption.scene != 1007 && enterOption.scene != 1044) {
-        console.log('lmn>>>非聊天卡片进入')
         return
       }
       const enterQuery = enterOption.query
@@ -322,19 +325,27 @@ ComponentWithComputed({
             .then(() => {
               console.log('lmn>>>邀请成功')
               updateDefaultHouse(houseId).finally(() => {
-                homeBinding.store.updateHomeInfo().then(() => {
-                  homeBinding.store.homeList.forEach((item) => {
+                homeStore.updateHomeInfo().then(() => {
+                  homeStore.homeList.forEach((item) => {
                     if (item.houseId == houseId) {
                       Toast(`您已加入${item.houseName}的家`)
                       return
                     }
                   })
                   Toast('您已加入家庭')
+
+                  // 刷新房间和设备列表
+                  homeStore.updateRoomCardList()
                 })
               })
             })
-            .catch(() => {
-              Toast('加入家庭失败')
+            .catch((error) => {
+              console.error('inviteMember', error)
+              if (error.code === 9870) {
+                Toast('分享链接已失效')
+              } else {
+                Toast(error.msg)
+              }
             })
         }
       } else {
@@ -361,7 +372,6 @@ ComponentWithComputed({
       } else if (scene === 1007 || scene === 1044) {
         enterQuery = params.query
       } else {
-        console.log('非家庭转让逻辑')
         return
       }
 
@@ -461,6 +471,7 @@ ComponentWithComputed({
     handleHomeSelect() {
       this.setData({
         'selectHomeMenu.isShow': false,
+        'addMenu.isShow': false,
       })
     },
     /**

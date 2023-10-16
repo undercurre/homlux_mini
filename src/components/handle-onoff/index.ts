@@ -7,7 +7,7 @@ Component({
    */
   properties: {
     // disabled: Boolean,
-    OnOff: {
+    power: {
       type: Boolean,
       value: false,
     },
@@ -33,7 +33,7 @@ Component({
    */
   methods: {
     async handleOnOffChange(e: WechatMiniprogram.TouchEvent) {
-      if (e.currentTarget.dataset.value === this.data.OnOff) {
+      if (e.currentTarget.dataset.value === this.data.power) {
         return
       }
       const { width } = await getRect(this, '#slider')
@@ -53,9 +53,9 @@ Component({
           () => {
             //先设置原style，再清除动画样式避免样式造成闪烁问题
             this.setData({
-              OnOff: e.currentTarget.dataset.value,
+              power: e.currentTarget.dataset.value,
             })
-            this.triggerEvent('change', this.data.OnOff)
+            this.triggerEvent('change', this.data.power)
             this.clearAnimation('#slider', () => {})
           },
         )
@@ -73,9 +73,9 @@ Component({
           100,
           () => {
             this.setData({
-              OnOff: e.currentTarget.dataset.value,
+              power: e.currentTarget.dataset.value,
             })
-            this.triggerEvent('change', this.data.OnOff)
+            this.triggerEvent('change', this.data.power)
             this.clearAnimation('#slider', () => {})
           },
         )

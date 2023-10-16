@@ -1,5 +1,7 @@
-import { delay, mzaioRequest, toWifiProperty, showLoading, hideLoading } from '../utils/index'
+import { delay, mzaioRequest, showLoading, hideLoading, Logger } from '../utils/index'
 import { PRO_TYPE } from '../config/index'
+import homOs from 'js-homos'
+import { deviceStore } from '../store/index'
 
 /**
  * 设备管理-根据家庭id查询全屋的设备
@@ -132,12 +134,39 @@ export async function controlDevice(
     customJson?: IAnyObject
     deviceId: string
     method: string
-    deviceType?: number
+    deviceType?: number // 设备类型（1:网关 2:子设备 3:wifi
     topic?: string
     inputData: IAnyObject[]
   },
   option?: { loading?: boolean },
 ) {
+  const { deviceType, inputData } = data
+
+  // 仅子设备需要判断是否局域网控制
+  if (deviceType === 2 && homOs.isSupportLan({ deviceId: inputData[0].devId })) {
+    const localRes = await homOs.deviceControl({
+      deviceId: inputData[0].devId,
+      actions: inputData.map((item) => {
+        // 由于传多余的属性，网关端会报错，需要去除多余的属性
+        const deviceProperty = Object.assign({}, item)
+
+        delete deviceProperty.modelName
+        delete deviceProperty.devId
+
+        return {
+          modelName: item.modelName,
+          deviceProperty,
+        }
+      }),
+    })
+
+    if (localRes.success) {
+      return localRes
+    } else {
+      Logger.error('局域网调用失败，改走云端链路')
+    }
+  }
+
   return await mzaioRequest.post<IAnyObject>({
     log: true,
     loading: option?.loading || false,
@@ -157,7 +186,7 @@ export async function sendDevice(
     deviceType: number
     deviceId: string
     gatewayId?: string
-    ep?: number | string
+    modelName?: string
     property: IAnyObject
   },
   option?: { loading?: boolean },
@@ -172,11 +201,11 @@ export async function sendDevice(
         topic: '/subdevice/control',
         deviceId: data.gatewayId as string,
         deviceType: data.deviceType,
-        method: data.proType === PRO_TYPE.light ? 'lightControl' : 'panelSingleControl',
+        method: data.proType === PRO_TYPE.light ? 'lightControlNew' : 'panelSingleControlNew',
         inputData: [
           {
             devId: data.deviceId,
-            ep: data.ep,
+            modelName: data.modelName,
             ...property,
           },
         ],
@@ -186,7 +215,7 @@ export async function sendDevice(
 
     case 3:
       if (data.proType === PRO_TYPE.light) {
-        const downData = toWifiProperty(data.proType, property)
+        const downData = property
 
         params = {
           deviceId: data.deviceId,
@@ -197,7 +226,7 @@ export async function sendDevice(
 
         promise = controlDevice(params, option)
       } else if (data.proType === PRO_TYPE.curtain) {
-        const downData = toWifiProperty(data.proType, property)
+        const downData = property
 
         params = {
           deviceId: data.deviceId,
@@ -254,18 +283,23 @@ export async function sendCmdAddSubdevice(
  * Identify 闪多少秒
  */
 export async function findDevice(
-  { gatewayId, devId, ep = 1, Identify = 3 }: { gatewayId: string; devId: string; ep?: number; Identify?: number },
+  {
+    gatewayId,
+    devId,
+    modelName = 'wallSwitch1',
+    Identify = 3,
+  }: { gatewayId: string; devId: string; modelName?: string; Identify?: number },
   options?: { loading?: boolean },
 ) {
   return await controlDevice(
     {
       topic: '/subdevice/control',
       deviceId: gatewayId,
-      method: 'deviceFind',
+      method: 'deviceFindNew',
       inputData: [
         {
           devId,
-          ep,
+          modelName,
           Identify,
         },
       ],
@@ -769,13 +803,33 @@ export async function groupControl(
   data: {
     groupId: string
     controlAction: {
-      OnOff?: 0 | 1
-      Level?: number
-      ColorTemp?: number
+      power?: 0 | 1
+      brightness?: number
+      colorTemperature?: number
     }[]
   },
   options?: { loading?: boolean },
 ) {
+  const { groupId, controlAction } = data
+
+  const groupInfo = deviceStore.allRoomDeviceList.find((item) => item.deviceId === groupId)
+
+  // 仅子设备需要判断是否局域网控制
+  if (homOs.isSupportLan({ groupId, updateStamp: groupInfo?.updateStamp })) {
+    const localRes = await homOs.groupControl({
+      webGroupId: groupId,
+      actions: controlAction[0],
+    })
+
+    Logger.log('localRes', localRes)
+
+    if (localRes.success) {
+      return localRes
+    } else {
+      Logger.error('局域网调用失败，改走云端链路')
+    }
+  }
+
   return await mzaioRequest.post({
     log: true,
     loading: options?.loading ?? false,
@@ -818,4 +872,21 @@ export async function getGwNetworkInfo(
   options?.loading && hideLoading()
 
   return deviceInfoRes
+}
+
+/**
+ * 获取本地场景密钥key接口
+ */
+export async function queryLocalKey(
+  data: {
+    houseId: string
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<string>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/queryLocalKey',
+    data,
+  })
 }

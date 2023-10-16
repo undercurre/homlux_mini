@@ -153,6 +153,12 @@ export class BleClient {
     await delay(1000)
 
     Logger.log(`【${this.mac}】closeBLEConnection`, res)
+
+    // 偶现IOS端onBLEConnectionStateChange监听某个设备的蓝牙连接状态变化丢了，导致bleDeviceMap存储的状态不准确，
+    // 手动维护状态
+    if (res.errCode === 0) {
+      bleDeviceMap[this.deviceUuid] = false
+    }
   }
 
   async sendCmd(params: { cmdType: keyof typeof CmdTypeMap; data: Array<number> }) {
@@ -165,6 +171,8 @@ export class BleClient {
         if (connectRes.code === -1) {
           throw connectRes
         }
+      } else {
+        Logger.log(`【${this.mac}】蓝牙已连接`)
       }
 
       const { cmdType, data } = params
@@ -270,7 +278,7 @@ export class BleClient {
           clearTimeout(timeId)
         })
     } catch (err) {
-      Logger.error(`【${this.mac}】sendCmd-err`, err, `蓝牙连接状态：${bleDeviceMap[this.deviceUuid]}`)
+      Logger.error(`【${this.mac}】${params.cmdType}sendCmd-err`, err, `蓝牙连接状态：${bleDeviceMap[this.deviceUuid]}`)
       await this.close() // 异常关闭需要主动配合关闭连接closeBLEConnection，否则资源会被占用无法释放，导致无法连接蓝牙设备
       return {
         code: '-1',
@@ -319,17 +327,6 @@ export class BleClient {
   }
 
   /**
-   * 闪烁指令
-   */
-  async flash() {
-    const res = await this.sendCmd({ cmdType: 'DEVICE_CONTROL', data: [0x05] })
-
-    Logger.log(`【${this.mac}】flash`, res)
-
-    return res
-  }
-
-  /**
    * 查询ZigBee网关连接状态
    */
   async getZigbeeState() {
@@ -365,6 +362,17 @@ export class BleClient {
       ...res,
       result: {},
     }
+  }
+
+  /**
+   * 闪烁指令
+   */
+  async flash() {
+    const res = await this.sendCmd({ cmdType: 'DEVICE_CONTROL', data: [0x05] })
+
+    Logger.log(`【${this.mac}】flash`, res)
+
+    return res
   }
 }
 
@@ -433,7 +441,6 @@ export const bleDeviceMap = {} as IAnyObject
 
 const deviceUuidMap = {} as IAnyObject
 
-// todo: 测试代码，可删除
 wx.onBLEConnectionStateChange(function (res) {
   bleDeviceMap[res.deviceId] = res.connected
 

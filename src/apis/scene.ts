@@ -1,4 +1,6 @@
-import { mzaioRequest } from '../utils/index'
+import { Logger, mzaioRequest } from '../utils/index'
+import homOs from 'js-homos'
+import { sceneStore } from '../store/index'
 
 export async function querySceneList(roomId: string, options?: { loading?: boolean }) {
   return await mzaioRequest.post<Scene.SceneItem[]>({
@@ -47,6 +49,20 @@ export async function retryScene(
 }
 
 export async function execScene(sceneId: string, options?: { loading?: boolean }) {
+  const sceneItem = sceneStore.allRoomSceneList.find((item) => item.sceneId === sceneId)
+
+  if (homOs.isSupportLan({ sceneId, updateStamp: sceneItem?.updateStamp })) {
+    const localRes = await homOs.sceneExecute(sceneId)
+
+    Logger.log('localRes', localRes)
+
+    if (localRes.success) {
+      return localRes
+    } else {
+      Logger.error('局域网调用失败，改走云端链路')
+    }
+  }
+
   return await mzaioRequest.post<IAnyObject>({
     log: true,
     loading: options?.loading ?? false,

@@ -5,7 +5,7 @@ import pageBehaviors from '../../behaviors/pageBehaviors'
 import { deviceBinding, deviceStore } from '../../store/index'
 import { StatusType } from './typings'
 import { deviceReplace } from '../../apis/index'
-// import { deviceReplace } from 'homlux-sdk'
+// import { deviceReplace } from 'js-homos'
 import { emitter } from '../../utils/eventBus'
 
 ComponentWithComputed({

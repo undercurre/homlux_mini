@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { PRO_TYPE } from '../../../../config/index'
+import { MODEL_NAME, PRO_TYPE, SCREEN_PID } from '../../../../config/index'
 import { waitingBatchDeleteDevice, batchUpdate, renameGroup } from '../../../../apis/index'
 import { deviceBinding, deviceStore, homeStore, roomBinding, roomStore } from '../../../../store/index'
 import Toast from '@vant/weapp/toast/toast'
@@ -89,7 +89,13 @@ ComponentWithComputed({
      * 设备均在线
      */
     canMoveRoom(data) {
+      const noScreen = data.editSelectList.every((uId: string) => {
+        const deviceId = uId.split(':')[0]
+        const device = deviceStore.deviceMap[deviceId]
+        return !SCREEN_PID.includes(device.productId)
+      })
       return (
+        noScreen &&
         data.editSelectList?.length &&
         data.editSelectList.every((uId: string) => {
           const deviceId = uId.split(':')[0] // 不管有没有:
@@ -115,6 +121,20 @@ ComponentWithComputed({
           return device.proType === PRO_TYPE.light && [2, 3].includes(device.deviceType) && device.onLineStatus === 1
         })
       )
+    },
+    /**
+     * @description 可被删除
+     * 设备数量大于1
+     * 非智慧屏开关
+     */
+    canDelete(data) {
+      const noScreen = data.editSelectList.every((uId: string) => {
+        const deviceId = uId.split(':')[0]
+        const device = deviceStore.deviceMap[deviceId]
+        return !SCREEN_PID.includes(device.productId)
+      })
+
+      return noScreen && data.editSelectList?.length
     },
     editDeviceNameTitle(data) {
       return data.editProType === PRO_TYPE.switch ? '面板名称' : '设备名称'
@@ -172,7 +192,7 @@ ComponentWithComputed({
     },
     // TODO 处理分组解散的交互提示
     handleDeleteDialog() {
-      if (!this.data.editSelectList.length) {
+      if (!this.data.canDelete) {
         return
       }
       const hasSwitch = this.data.editSelectList.some((uniId: string) => uniId.includes(':'))
@@ -202,14 +222,14 @@ ComponentWithComputed({
               message: '删除成功',
               zIndex: 9999,
             })
-            this.triggerEvent('updateListOnCloud')
+            this.triggerEvent('updateList')
             this.handleClose()
           } else {
             Toast({
               message: '删除失败',
               zIndex: 9999,
             })
-            this.triggerEvent('updateListOnCloud')
+            this.triggerEvent('updateList')
           }
         })
         .catch((e) => console.log(e))
@@ -219,19 +239,19 @@ ComponentWithComputed({
         return
       }
       const uniId = this.data.editSelectList[0]
-      const device = deviceStore.allRoomDeviceFlattenMap[uniId]
+      const device = deviceStore.deviceFlattenMap[uniId]
       if (uniId.includes(':')) {
         this.setData({
           showEditName: true,
-          editDeviceName: deviceStore.allRoomDeviceFlattenMap[uniId].deviceName,
-          editSwitchName: deviceStore.allRoomDeviceFlattenMap[uniId].switchInfoDTOList[0].switchName,
+          editDeviceName: deviceStore.deviceFlattenMap[uniId].deviceName,
+          editSwitchName: deviceStore.deviceFlattenMap[uniId].switchInfoDTOList[0].switchName,
           isEditSwitchName: true,
           editProType: device.proType,
         })
       } else {
         this.setData({
           showEditName: true,
-          editDeviceName: deviceStore.allRoomDeviceFlattenMap[uniId].deviceName,
+          editDeviceName: deviceStore.deviceFlattenMap[uniId].deviceName,
           isEditSwitchName: false,
           editProType: device.proType,
         })
@@ -242,7 +262,7 @@ ComponentWithComputed({
         return
       }
       const uniId = this.data.editSelectList[0]
-      const device = deviceStore.allRoomDeviceFlattenMap[uniId]
+      const device = deviceStore.deviceFlattenMap[uniId]
       this.setData({
         showEditRoom: true,
         roomId: device.roomId,
@@ -303,6 +323,9 @@ ComponentWithComputed({
           timeId = setTimeout(async () => {
             hideLoading()
 
+            // 部分未成功也要通知刷新页面
+            this.triggerEvent('updateList')
+
             Dialog.confirm({
               title: '部分设备未成功移动，是否重试',
               confirmButtonText: '是',
@@ -313,7 +336,7 @@ ComponentWithComputed({
               .catch((e) => console.log(e))
           }, TIME_OUT)
         } else {
-          this.triggerEvent('updateListOnCloud')
+          this.triggerEvent('updateList')
 
           Toast({
             message: '移动失败',
@@ -347,7 +370,7 @@ ComponentWithComputed({
       if (timeId) {
         clearTimeout(timeId)
       }
-      this.triggerEvent('updateListOnCloud')
+      this.triggerEvent('updateList')
       Toast({
         message: '移动成功',
         zIndex: 9999,
@@ -376,7 +399,7 @@ ComponentWithComputed({
             return
           }
           const [deviceId, switchId] = this.data.editSelectList[0].split(':')
-          const device = deviceStore.allRoomDeviceFlattenMap[this.data.editSelectList[0]]
+          const device = deviceStore.deviceFlattenMap[this.data.editSelectList[0]]
           const deviceInfoUpdateVoList = [] as Device.DeviceInfoUpdateVo[]
           let type = ''
           if (this.data.editSwitchName !== device.switchInfoDTOList[0].switchName) {
@@ -419,14 +442,14 @@ ComponentWithComputed({
               zIndex: 9999,
             })
             this.handleClose()
-            await Promise.all([homeStore.updateRoomCardList(), deviceStore.updateSubDeviceList()])
-            this.triggerEvent('updateList', device)
+            await homeStore.updateRoomCardList()
+            this.triggerEvent('updateDevice', device)
 
             // 如果修改的是面板名称，则需要同时更新面板其余的按键对应的卡片
             if (type === '0') {
               deviceStore.deviceFlattenList.forEach((_device) => {
                 if (_device.deviceId === deviceId && _device.switchInfoDTOList[0].switchId !== switchId) {
-                  this.triggerEvent('updateList', _device)
+                  this.triggerEvent('updateDevice', _device)
                 }
               })
             }
@@ -439,7 +462,7 @@ ComponentWithComputed({
         }
         // 修改灯属性
         else {
-          const device = deviceStore.allRoomDeviceFlattenMap[this.data.editSelectList[0]]
+          const device = deviceStore.deviceFlattenMap[this.data.editSelectList[0]]
 
           if (checkInputNameIllegal(this.data.editDeviceName)) {
             Toast('设备名称不能用特殊符号或表情')
@@ -474,9 +497,9 @@ ComponentWithComputed({
               zIndex: 9999,
             })
             this.handleClose()
-            await Promise.all([homeStore.updateRoomCardList(), deviceStore.updateSubDeviceList()])
+            await homeStore.updateRoomCardList()
             device.deviceName = this.data.editDeviceName // 用于传参，更新视图
-            this.triggerEvent('updateList', device)
+            this.triggerEvent('updateDevice', device)
           } else {
             Toast({
               message: '修改失败',
@@ -493,7 +516,7 @@ ComponentWithComputed({
           if (result.errCode !== 0) {
             this.data.moveFailCount++
           }
-          const uniId = `${result.devId}:${result.ep}`
+          const uniId = `${result.devId}:${result.modelName}`
           const finishedIndex = this.data.moveWaitlist.findIndex((item) => item === uniId)
           this.data.moveWaitlist.splice(finishedIndex, 1)
 
@@ -517,15 +540,17 @@ ComponentWithComputed({
       this.data.editSelectList.forEach((uId: string) => {
         const deviceId = uId.split(':')[0]
         const device = deviceStore.deviceMap[deviceId]
-        if (device.deviceType === 2) {
-          for (const eq in device.mzgdPropertyDTOList) {
-            const uId = `${device.deviceId}:${eq}`
+        if (device.proType === PRO_TYPE.switch) {
+          for (const panel of device.switchInfoDTOList) {
+            const modelName = panel.switchId
+            const uId = `${device.deviceId}:${modelName}`
             if (!this.data.moveWaitlist.includes(uId)) {
               this.data.moveWaitlist.push(uId)
             }
           }
         } else {
-          this.data.moveWaitlist.push(`${device.deviceId}:1`)
+          const modelName = MODEL_NAME[device.proType]
+          this.data.moveWaitlist.push(`${device.deviceId}:${modelName}`)
         }
       })
     },

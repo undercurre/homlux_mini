@@ -11,6 +11,7 @@ import {
   updateDefaultHouse,
   getShareId,
   queryAllDevice,
+  queryLocalKey,
 } from '../apis/index'
 import { PRO_TYPE } from '../config/index'
 import { asyncStorage, storage, Logger } from '../utils/index'
@@ -21,6 +22,8 @@ import { userStore } from './user'
 import { deviceCount } from '../utils/index'
 
 export const homeStore = observable({
+  key: '', // 局域网本地场景key
+
   homeList: [] as Home.IHomeItem[],
 
   /** 当前家庭详细信息 */
@@ -94,7 +97,6 @@ export const homeStore = observable({
     if (res.success) {
       runInAction(() => {
         homeStore.homeList = res.result
-        console.log('updateHomeList store', res.result)
 
         const houseId = homeStore.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
         // 首次进入或删除了默认家庭时，默认选中第0个
@@ -123,7 +125,7 @@ export const homeStore = observable({
       runInAction(() => {
         homeStore.currentHomeDetail = Object.assign({ houseId: this.currentHomeId }, res.result)
       })
-      await deviceStore.updateAllRoomDeviceList(undefined, options)
+      // await deviceStore.updateAllRoomDeviceList(undefined, options) // 重复加载
       await roomStore.updateRoomList(options)
       this.homeDataPersistence()
       return
@@ -153,6 +155,7 @@ export const homeStore = observable({
       runInAction(() => {
         roomStore.roomDeviceList = list
         deviceStore.allRoomDeviceList = data[0].result
+        deviceStore.updateAllRoomDeviceListLanStatus(false)
       })
     }
     if (data[1].success) {
@@ -169,7 +172,7 @@ export const homeStore = observable({
           room.roomSceneList = room.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
         }
 
-        const { lightOnCount, endCount, lightCount } = deviceCount(roomDeviceList)
+        const { lightOnCount, endCount, lightCount } = deviceCount(roomDeviceList, deviceStore.lightsInGroup)
         room.roomInfo.lightOnCount = lightOnCount
         room.roomInfo.endCount = endCount
         room.roomInfo.lightCount = lightCount
@@ -273,7 +276,7 @@ export const homeStore = observable({
     if (res.success) {
       return
     } else {
-      return Promise.reject('邀请家庭成员失败')
+      return Promise.reject(res)
     }
   },
 
@@ -310,6 +313,28 @@ export const homeStore = observable({
       },
     }
     await asyncStorage.set('homeData', data, 60 * 60 * 24) // 缓存有效期一天
+  },
+
+  async initLocalKey() {
+    const key = storage.get('localKey') as string
+
+    console.debug('key', key)
+
+    if (key) {
+      this.key = key
+    } else {
+      await this.updateLocalKey()
+    }
+  },
+
+  async updateLocalKey() {
+    const res = await queryLocalKey({ houseId: this.currentHomeId })
+
+    if (res.success) {
+      this.key = res.result
+      // key的有效期是30天，设置缓存过期时间25天
+      storage.set('localKey', this.key, Date.now() + 1000 * 60 * 60 * 24 * 25)
+    }
   },
 
   /**

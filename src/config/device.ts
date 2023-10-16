@@ -3,6 +3,12 @@ import { rpx2px } from '../utils/index'
 // 设备列表，每次加载的条数 应该为4的倍数
 export const LIST_PAGE = 20
 
+/**
+ * @name 设备卡片更新时间阈值
+ * @description 等待时间小于这个值的，均不即时更新，与后面的更新合并，或到到队列清空时一起更新
+ */
+export const CARD_REFRESH_TIME = 1000
+
 // 卡片尺寸
 export const CARD_W = rpx2px(180)
 export const CARD_H = rpx2px(236)
@@ -18,8 +24,14 @@ export const PRO_TYPE = {
   sensor: '0xBC',
 } as const
 
+// proType -> 设备modelName，// !! 多路面板modelName为wallSwitch\d，直接从switchInfoDTOList获取
+export const MODEL_NAME = {
+  '0x13': 'light',
+  '0x14': 'curtain',
+} as Record<string, string>
+
 // 智慧屏pid:  四寸屏：pkey:t1ae5ff32ae84b60b159676556aafbf7 psecret: e953d99rb7ef4b55  pid : zk527b6c944a454e9fb15d3cc1f4d55b 十寸屏  pkey:j1ae3ez32ae84b60b159676556aafbf7 psecret: m95fd9grb7ef4b55  pid:ok523b6c941a454e9fb15d3cc1f4d55b
-export const SCREEN_PID = ['zk527b6c944a454e9fb15d3cc1f4d55b', 'ok523b6c941a454e9fb15d3cc1f4d55b'] as const
+export const SCREEN_PID: readonly string[] = ['zk527b6c944a454e9fb15d3cc1f4d55b', 'ok523b6c941a454e9fb15d3cc1f4d55b']
 
 export const proName: Record<string, string> = {
   '0x13': 'light',

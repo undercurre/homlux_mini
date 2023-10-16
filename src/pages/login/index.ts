@@ -1,6 +1,6 @@
 import Toast from '@vant/weapp/toast/toast'
 import { login } from '../../apis/index'
-import { autosceneStore, homeStore, othersStore, userStore } from '../../store/index'
+import { homeStore, othersStore, userStore } from '../../store/index'
 import { storage, showLoading, hideLoading, Logger } from '../../utils/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 
@@ -86,7 +86,6 @@ Component({
         userStore.setIsLogin(true)
         othersStore.setIsInit(false)
         homeStore.homeInit()
-        autosceneStore.updateAllRoomAutoSceneList()
         wx.switchTab({
           url: '/pages/index/index',
         })

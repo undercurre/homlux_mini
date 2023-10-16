@@ -41,12 +41,16 @@ declare namespace Scene {
      * 场景名称
      */
     sceneName: string
+    /**
+     * 场景更新时间
+     */
+    updateStamp: number
   }
   /** 结果集合 */
   interface DeviceAction {
     /**
      * 动作控制集合
-     * 例如："controlAction":[{"ep":1,"OnOff":0},{"ep":2,"OnOff":1}]
+     * 例如："controlAction":[{"modelName":'wallSwitch1,"power":0},{"modelName":'wallSwitch2',"power":1}]
      */
     controlAction: IAnyObject[]
     /** 设备id */
@@ -64,10 +68,10 @@ declare namespace Scene {
   interface DeviceCondition {
     /**
      * 绑定控制集合，
-     * 例如："controlEvent":[{"ep":2,"ButtonScene":1}]
-     * ButtonScene 电控所需参数，目前固定为1
+     * 例如："controlEvent":[{"modelName":'wallSwitch1',"buttonScene":1}]
+     * buttonScene 电控所需参数，目前固定为1
      */
-    controlEvent: { ep: number; ButtonScene: number }[]
+    controlEvent: { modelName: string; buttonScene: number }[]
     /** 设备id */
     deviceId: string
   }

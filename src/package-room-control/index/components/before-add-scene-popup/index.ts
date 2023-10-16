@@ -77,7 +77,7 @@ ComponentWithComputed({
           gatewayId: cacheDevice.gatewayId,
           proType: cacheDevice.proType,
           deviceType: cacheDevice.deviceType,
-          ep: cacheDevice.ep,
+          modelName: cacheDevice.modelName,
           property: cacheDevice.property,
         })
       }
@@ -96,12 +96,12 @@ ComponentWithComputed({
       const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
       const device = allRoomDeviceMap[deviceAction.uniId]
 
-      let ep = 1
+      let modelName = 'light'
       if (device.proType === PRO_TYPE.switch) {
-        ep = Number(device.switchInfoDTOList[0].switchId)
+        modelName = device.switchInfoDTOList[0].switchId
       }
       // 目前仅子设备单控支持闪烁指令
-      deviceAction.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, ep })
+      deviceAction.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, modelName })
 
       this.setData({
         actionEditTitle: deviceAction.name,
@@ -149,7 +149,7 @@ ComponentWithComputed({
           deviceId: device.deviceId,
           proType: device.proType,
           deviceType: device.deviceType,
-          ep: deviceAction.value.ep,
+          modelName: deviceAction.value.modelName,
           property,
         }
       }

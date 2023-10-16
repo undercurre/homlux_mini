@@ -28,26 +28,23 @@ Component({
     ],
     urls: {
       homeControl: '/package-mine/home-manage/index',
+      automation: '/package-automation/automation/index',
       voiceControl: '/package-mine/voice-control/index',
       ota: '/package-mine/ota/index',
       deviceReplace: '/package-mine/device-replace/index',
       feedback: '/package-mine/feedback/index',
+      help: '/package-mine/help/list/index',
       about: '/package-protocol/protocol-list/index',
       deviceCategory: '/package-mine/device-category/index',
+      defaultPageSetting: '/pages/start/index',
     },
   },
   pageLifetimes: {
     show() {
       if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-        if (!this.data.isLogin || this.data.isVisitor) {
-          this.getTabBar().setData({
-            selected: 1,
-          })
-        } else {
-          this.getTabBar().setData({
-            selected: 2,
-          })
-        }
+        this.getTabBar().setData({
+          selected: 2,
+        })
       }
     },
   },

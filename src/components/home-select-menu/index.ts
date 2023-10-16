@@ -70,7 +70,7 @@ ComponentWithComputed({
       const res = await updateDefaultHouse(houseId)
 
       if (res.success) {
-        await homeStore.updateHomeInfo()
+        await homeStore.homeInit()
       }
       this.triggerEvent('afterSelected', { houseId })
     },

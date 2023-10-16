@@ -7,10 +7,13 @@ export * from './strUtil'
 export * from './wifiProtocol'
 export * from './bleProtocol'
 export * from './eventBus'
+export * from './host'
 export * from './validate'
 export * from './app'
 export * from './log'
 export * from './deviceModel'
+export * from './network'
+export * from './capacity'
 
 import { PRO_TYPE } from '../config/index'
 
@@ -27,7 +30,7 @@ export function delay(ms: number) {
  * @param arr
  * @param key 唯一key
  */
-export function unique(arr: Array<IAnyObject>, key: string) {
+export function unique<T = IAnyObject>(arr: Array<T>, key: keyof T) {
   const res = new Map()
 
   return arr.filter((item) => !res.has(item[key]) && res.set(item[key], 1))
@@ -83,6 +86,22 @@ export function throttle<T extends (...args: any[]) => unknown>(fn: T, wait = 50
 }
 
 /**
+ * 防抖函数
+ * @param fn
+ * @param delay
+ */
+export function debounce<T extends (...args: any[]) => unknown>(fn: T, delay = 500) {
+  let timer = 0
+
+  return function (...args: unknown[]) {
+    clearTimeout(timer)
+    timer = setTimeout(() => {
+      fn(args)
+    }, delay)
+  }
+}
+
+/**
  * @description 类似 lodash.get()
  * @param obj 引用对象
  * @param path 路径，可使用[]或.
@@ -110,7 +129,7 @@ export function _get(obj: object, path: string, defaultVal = undefined) {
  *  lightCount: 灯与面板总数量（不排除关联，面板按拆分设备计数）
  * }
  */
-export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
+export function deviceCount(list: Device.DeviceItem[], lightsInGroup: string[]): Record<string, number> {
   let lightOnCount = 0
   let endCount = 0
   let lightCount = 0
@@ -121,13 +140,19 @@ export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
         endCount++
         break
       case PRO_TYPE.light:
-        endCount++
+        // 终端卡片数，不计算已在灯组中的单灯
+        // TODO release-1030 将改为全部显示
+        if (!lightsInGroup.includes(device.deviceId)) {
+          endCount++
+        }
+
+        // 灯数及亮灯数不计算灯组
+        if (device.deviceType === 4) {
+          return
+        }
         lightCount++
         if (!device.onLineStatus) break
-        if (
-          (device.deviceType === 2 && device.mzgdPropertyDTOList['1'].OnOff) ||
-          (device.deviceType === 3 && device.mzgdPropertyDTOList['1'].power === 'on')
-        ) {
+        if (device.mzgdPropertyDTOList['light'].power) {
           lightOnCount++
         }
         break
@@ -138,7 +163,7 @@ export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
           if (
             device.onLineStatus &&
             device.mzgdPropertyDTOList && // 避免个别设备未上报数据导致的整个页面异常
-            device.mzgdPropertyDTOList[switchItem.switchId]?.OnOff &&
+            device.mzgdPropertyDTOList[switchItem.switchId]?.power &&
             !device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode
           ) {
             lightOnCount++

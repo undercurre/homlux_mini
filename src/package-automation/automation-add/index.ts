@@ -4,15 +4,8 @@ import { deleteScene, findDevice, addScene, updateScene } from '../../apis/index
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { deviceStore, sceneStore, homeStore, autosceneStore } from '../../store/index'
-import { PRO_TYPE, SENSOR_TYPE } from '../../config/index'
-import {
-  toPropertyDesc,
-  toWifiProperty,
-  storage,
-  getCurrentPageParams,
-  strUtil,
-  checkInputNameIllegal,
-} from '../../utils/index'
+import { PRO_TYPE, SENSOR_TYPE, MODEL_NAME } from '../../config/index'
+import { toPropertyDesc, storage, getCurrentPageParams, strUtil, checkInputNameIllegal } from '../../utils/index'
 
 ComponentWithComputed({
   options: {
@@ -86,6 +79,7 @@ ComponentWithComputed({
 
     editingSensorType: 'midea.ir.201',
     editingSensorAbility: ['有人移动'],
+    editingSensorProperty: { occupancy: 1, modelName: 'irDetector' } as IAnyObject,
     editingUniId: '',
     editingDelayId: '',
     scrollTop: 0,
@@ -179,16 +173,16 @@ ComponentWithComputed({
       //处理三个传感器、场景和设备列表
       await Promise.all([
         sceneStore.updateAllRoomSceneList(),
-        deviceStore.updateSubDeviceList(), // deviceStore.updateAllRoomDeviceList(),
+        deviceStore.updateAllRoomDeviceList(), //deviceStore.updateSubDeviceList(), //
       ])
       const sensorList = deviceStore.allRoomDeviceFlattenList.filter((item) => item.proType === PRO_TYPE.sensor)
       sensorList.forEach((item) => {
         if (item.productId === SENSOR_TYPE.humanSensor) {
-          item.property = { Occupancy: 1 }
+          item.property = { occupancy: 1, modelName: 'irDetector' }
         } else if (item.productId === SENSOR_TYPE.doorsensor) {
-          item.property = { ZoneStatus: 1 }
+          item.property = { doorStatus: 1, modelName: 'magnet' }
         } else {
-          item.property = { OnOff: 1 }
+          item.property = { buttonClicked: 1, modelName: 'freepad' }
         }
       })
       this.setData({
@@ -256,7 +250,7 @@ ComponentWithComputed({
               name: '延时',
               desc: [strUtil.formatTime(action.delayTime)],
               type: action.deviceType,
-              pic: '/assets/img/automation/stopwatch-materialized.png',
+              pic: '/package-automation/assets/imgs/automation/stopwatch-materialized.png',
               value: { delayTime: action.delayTime },
               orderNum: index,
               dragId: action.deviceId,
@@ -283,14 +277,15 @@ ComponentWithComputed({
             //设备
             let deviceUniId = action.deviceId
             if (action.proType === PRO_TYPE.switch) {
-              deviceUniId = `${action.deviceId}:${action.controlAction[0].ep}`
+              deviceUniId = `${action.deviceId}:${action.controlAction[0].modelName}`
             }
             const device = this.data.deviceList.find((item) => item.uniId === deviceUniId)
+
             if (device) {
               //是设备
               if (device.proType === PRO_TYPE.switch) {
                 //是开关面板
-                const OnOff = action.controlAction[0].OnOff
+                const power = action.controlAction[0].power
                 const desc = toPropertyDesc(device.proType, action.controlAction[0])
                 tempSceneDeviceActionsFlatten.push({
                   uniId: device.uniId,
@@ -300,18 +295,22 @@ ComponentWithComputed({
                   pic: device.switchInfoDTOList[0].pic,
                   proType: PRO_TYPE.switch,
                   value: {
-                    ep: action.controlAction[0].ep,
-                    OnOff,
+                    modelName: action.controlAction[0].modelName,
+                    power,
                   },
                   orderNum: 0,
                   dragId: device.uniId + Math.floor(Math.random() * 1001),
                 })
               } else {
-                const desc = toPropertyDesc(device.proType, {
-                  ...action.controlAction[0],
-                  minColorTemp: device.property!.minColorTemp,
-                  maxColorTemp: device.property!.maxColorTemp,
-                })
+                let property = action.controlAction[0]
+
+                if (action.proType === PRO_TYPE.light) {
+                  property = {
+                    ...device.mzgdPropertyDTOList['light'],
+                    ...property,
+                  }
+                }
+                const desc = toPropertyDesc(device.proType, property)
                 tempSceneDeviceActionsFlatten.push({
                   uniId: device.uniId,
                   name: device.deviceName,
@@ -320,10 +319,8 @@ ComponentWithComputed({
                   pic: device.pic as string,
                   proType: device.proType,
                   value: {
-                    ...action.controlAction[0],
-                    minColorTemp: device.property!.minColorTemp,
-                    maxColorTemp: device.property!.maxColorTemp,
-                    ep: 1,
+                    ...property,
+                    modelName: MODEL_NAME[device.proType],
                   },
                   orderNum: 0,
                   dragId: device.uniId + Math.floor(Math.random() * 1001),
@@ -546,7 +543,7 @@ ComponentWithComputed({
             name: '延时',
             desc: [strUtil.formatTime(delaySec)],
             type: 6,
-            pic: '/assets/img/automation/stopwatch-materialized.png',
+            pic: '/package-automation/assets/imgs/automation/stopwatch-materialized.png',
             value: { delayTime: delaySec },
             orderNum: 0,
             dragId: new Date().getTime() + 'DLY',
@@ -650,8 +647,8 @@ ComponentWithComputed({
           console.log('是设备', device)
           if (device.proType === PRO_TYPE.switch) {
             //是开关面板
-            const ep = parseInt(device.uniId.split(':')[1])
-            const OnOff = device.property!.OnOff
+            const modelName = device.uniId.split(':')[1]
+            const power = device.property!.power
             const desc = toPropertyDesc(device.proType, device.property!)
             tempSceneDeviceActionsFlatten.push({
               uniId: device.uniId,
@@ -661,8 +658,8 @@ ComponentWithComputed({
               pic: device.switchInfoDTOList[0].pic,
               proType: PRO_TYPE.switch,
               value: {
-                ep,
-                OnOff,
+                modelName,
+                power,
               },
               orderNum: 0,
               dragId: device.uniId + Math.floor(Math.random() * 1001),
@@ -677,7 +674,7 @@ ComponentWithComputed({
               pic: device.pic as string,
               proType: device.proType,
               value: {
-                ep: 1,
+                modelName: 'light',
                 ...device.property,
               },
               orderNum: 0,
@@ -728,7 +725,7 @@ ComponentWithComputed({
           uniId: 'time',
           name: this.data.timeCondition.time,
           desc: [strUtil.transPeriodDesc(this.data.timeCondition.timeType, this.data.timeCondition.timePeriod)],
-          pic: '../../assets/img/automation/time-materialized.png',
+          pic: '/package-automation/assets/imgs/automation/time-materialized.png',
           productId: 'time',
           property: {},
           type: 6,
@@ -827,6 +824,7 @@ ComponentWithComputed({
         this.setData({
           editingSensorType: action.productId,
           editingSensorAbility: action.desc,
+          editingSensorProperty: action.property,
           editingUniId: action.uniId,
           showEditSensorPopup: true,
         })
@@ -857,13 +855,13 @@ ComponentWithComputed({
         const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
         const device = allRoomDeviceMap[action.uniId]
         console.log('device', device)
-        let ep = 1
+        let modelName = 'light'
 
         if (action.proType === PRO_TYPE.switch) {
-          ep = Number(device.switchInfoDTOList[0].switchId)
+          modelName = String(device.switchInfoDTOList[0].switchId)
         }
 
-        device.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, ep })
+        device.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, modelName })
 
         this.setData({
           sceneEditTitle: action.name,
@@ -911,7 +909,7 @@ ComponentWithComputed({
           deviceId: device.deviceId,
           proType: device.proType,
           deviceType: device.deviceType,
-          ep: actionItem.value?.ep,
+          modelName: actionItem.value?.modelName,
           property: oldProperty,
         }
       }
@@ -1077,23 +1075,23 @@ ComponentWithComputed({
               })
             } else {
               const property = action.value
-              let ctrlAction = {} as IAnyObject
+              const ctrlAction = {} as IAnyObject
 
               if (device.deviceType === 2) {
-                ctrlAction.ep = 1
+                ctrlAction.modelName = device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1'
               }
 
               if (device.proType === PRO_TYPE.light) {
-                ctrlAction.OnOff = property.OnOff
+                ctrlAction.power = property.power
 
-                if (property.OnOff === 1) {
-                  ctrlAction.ColorTemp = property.ColorTemp
-                  ctrlAction.Level = property.Level
+                if (property.power === 1) {
+                  ctrlAction.colorTemperature = property.colorTemperature
+                  ctrlAction.brightness = property.brightness
                 }
 
-                if (device.deviceType === 3) {
-                  ctrlAction = toWifiProperty(device.proType, ctrlAction)
-                }
+                // if (device.deviceType === 3) {
+                //   ctrlAction = toWifiProperty(device.proType, ctrlAction)
+                // }
               } else if (device.proType === PRO_TYPE.curtain) {
                 ctrlAction.curtain_position = property.curtain_position
               }
@@ -1123,7 +1121,7 @@ ComponentWithComputed({
         const device = deviceMap[action.uniId]
         if (device) {
           newSceneData?.deviceConditions?.push({
-            controlEvent: [{ ep: 1, ...action.property }],
+            controlEvent: [{ ...(action.property as { modelName: string }) }],
             deviceId: action.uniId,
           })
         }

@@ -4,9 +4,10 @@ import Toast from '@vant/weapp/toast/toast'
 import { deviceStore, homeBinding, homeStore, otaStore, roomBinding, roomStore } from '../../../store/index'
 import pageBehavior from '../../../behaviors/pageBehaviors'
 import { waitingDeleteDevice, editDeviceInfo, queryDeviceInfoByDeviceId } from '../../../apis/index'
-import { proName, PRO_TYPE } from '../../../config/index'
+import { proName, PRO_TYPE, SCREEN_PID } from '../../../config/index'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { emitter } from '../../../utils/index'
+
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, homeBinding] }), pageBehavior],
   /**
@@ -30,6 +31,7 @@ ComponentWithComputed({
       return ''
     },
     mac(data) {
+      // 网关规则
       if (data.deviceInfo.deviceType === 1) {
         return data.deviceInfo.sn.substring(8, 9) + data.deviceInfo.sn.substring(17, 28)
       } else {
@@ -71,6 +73,13 @@ ComponentWithComputed({
     canEditDevice(data) {
       return data.isCreator || data.isAdmin
     },
+    /**
+     * @description 是否显示按键设置
+     * 包括面板，智慧屏
+     */
+    hasSwitchSetting(data) {
+      return data.deviceInfo.proType === PRO_TYPE.switch || SCREEN_PID.includes(data.deviceInfo.productId)
+    },
   },
 
   methods: {
@@ -83,9 +92,18 @@ ComponentWithComputed({
         roomId,
       })
       this.updateDeviceInfo()
-      // checkOtaVersion(deviceId).then((res) => {
-      //   console.log('ota', res)
-      // })
+
+      this.createSelectorQuery()
+        .select('#content')
+        .boundingClientRect()
+        .exec((res) => {
+          console.log(res)
+          if (res[0]?.height) {
+            this.setData({
+              contentHeight: res[0].height,
+            })
+          }
+        })
     },
 
     onShow() {

@@ -14,7 +14,7 @@
     <view class="h-32rpx"></view>
     <view class="flex flex-row items-center justify-between mx-32rpx">
       <view class="h-110rpx w-110rpx relative bg-hex-fff rounded-55rpx" bindtap="handleEditIconShow">
-        <image class="absolute top-15 left-16 h-80rpx w-80rpx" src="/assets/img/auto-scene/{{sceneIcon}}.png" />
+        <image class="absolute top-15 left-16 h-80rpx w-80rpx" src="/package-automation/assets/imgs/auto-scene/{{sceneIcon}}.png" />
         <view class="absolute bottom-0 left-15 h-32rpx w-80rpx border-1rpx border-solid border-hex-488FFF bg-white leading-28rpx text-center rounded-18rpx">
           <text class="text-22rpx text-hex-488FFF">编辑</text>
         </view>
@@ -38,13 +38,13 @@
     </van-cell-group>
     <view class="h-48rpx mt-64rpx mb-36rpx mx-48rpx flex justify-between align-center">
       <text class="text-40rpx font-medium text-hex-1a1a1c leading-48rpx">如果</text>
-      <image wx:if="{{sceneDeviceConditionsFlatten.length && !timeCondition.time}}" class="w-48 h-48" src="/assets/img/automation/add.png" bindtap="addSensorPopup"></image>
+      <image wx:if="{{sceneDeviceConditionsFlatten.length && !timeCondition.time}}" class="w-48 h-48" src="/package-automation/assets/imgs/automation/add.png" bindtap="addSensorPopup"></image>
     </view>
     <van-cell-group inset>
       <van-cell border="{{false}}" clickable="{{true}}" bind:click="handleConditionShow" wx:if="{{!sceneDeviceConditionsFlatten.length}}">
         <view class="flex items-center justify-center">
           <view class="flex flex-row items-center h-96rpx">
-            <image class="w-56 h-56 mr-38rpx" src="/assets/img/automation/add.png"></image>
+            <image class="w-56 h-56 mr-38rpx" src="/package-automation/assets/imgs/automation/add.png"></image>
             <text class="text-32rpx text-hex-555659">添加条件</text>
           </view>
         </view>
@@ -70,13 +70,13 @@
     </van-cell-group>
     <view class="h-48rpx mt-64rpx mb-36rpx mx-48rpx flex justify-between align-center">
       <text class="text-40rpx font-medium text-hex-1a1a1c leading-48rpx">就执行</text>
-      <image wx:if="{{sceneDeviceActionsFlatten.length}}" class="w-48 h-48" src="/assets/img/automation/add.png" bindtap="handleActionShow"></image>
+      <image wx:if="{{sceneDeviceActionsFlatten.length}}" class="w-48 h-48" src="/package-automation/assets/imgs/automation/add.png" bindtap="handleActionShow"></image>
     </view>
     <van-cell-group inset wx:if="{{!sceneDeviceActionsFlatten.length}}">
       <van-cell border="{{false}}" clickable="{{true}}" bind:click="handleActionShow">
         <view class="flex items-center justify-center">
           <view class="flex flex-row items-center h-96rpx">
-            <image class="w-56 h-56 mr-38rpx" src="/assets/img/automation/add.png"></image>
+            <image class="w-56 h-56 mr-38rpx" src="/package-automation/assets/imgs/automation/add.png"></image>
             <text class="text-32rpx text-hex-555659">执行动作</text>
           </view>
         </view>
@@ -108,6 +108,6 @@
 <light-control-popup show="{{showEditPopup === '0x13'}}" title="{{sceneEditTitle}}" lightInfo="{{sceneEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleEditPopupClose"></light-control-popup>
 <switch-control-popup show="{{showEditPopup === '0x21'}}" title="{{sceneEditTitle}}" switchInfo="{{sceneEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleEditPopupClose"></switch-control-popup>
 <curtain-control-popup show="{{showEditPopup === '0x14'}}" title="{{sceneEditTitle}}" deviceInfo="{{sceneEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleEditPopupClose"></curtain-control-popup>
-<edit-sensor-popup show="{{showEditSensorPopup}}" productId="{{editingSensorType}}" checkList="{{editingSensorAbility}}" bind:confirm="handleEditSensorConfirm" bind:close="handleEditSensorClose"></edit-sensor-popup>
+<edit-sensor-popup show="{{showEditSensorPopup}}" productId="{{editingSensorType}}" checkList="{{editingSensorAbility}}" controlAction="{{editingSensorProperty}}" bind:confirm="handleEditSensorConfirm" bind:close="handleEditSensorClose"></edit-sensor-popup>
 <van-toast id="van-toast" />
 <van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />

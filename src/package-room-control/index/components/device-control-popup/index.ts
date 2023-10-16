@@ -2,7 +2,7 @@ import { Logger, isArrEqual, throttle, showLoading, hideLoading } from '../../..
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, deviceStore, sceneStore, homeStore } from '../../../../store/index'
-import { maxColorTemp, minColorTemp, PRO_TYPE } from '../../../../config/index'
+import { maxColorTemp, minColorTemp, PRO_TYPE, SCREEN_PID } from '../../../../config/index'
 import {
   sendDevice,
   findDevice,
@@ -20,13 +20,7 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import pageBehavior from '../../../../behaviors/pageBehaviors'
 import { runInAction } from 'mobx-miniprogram'
 
-// 关联类型文描映射
-const descMap = {
-  light: '关联灯具',
-  switch: '关联开关',
-  scene: '关联场景',
-  none: '未关联',
-}
+type ILinkType = 'light' | 'switch' | 'scene'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] }), pageBehavior],
@@ -53,20 +47,29 @@ ComponentWithComputed({
       value: [] as string[],
       observer(value) {
         this.updateLinkInfo()
-        // 色温范围计算
         if (value.length) {
-          const deviceId = this.data.checkedList[0]
+          const deviceId = this.data.checkedList[0]?.split(':')[0]
           const { deviceMap } = deviceStore
           const device = deviceMap[deviceId]
 
-          if (!device || device.proType !== PRO_TYPE.light) {
+          if (!device) {
             return
           }
-          const { minColorTemp, maxColorTemp } = device.mzgdPropertyDTOList[1].colorTempRange!
-          this.setData({
-            minColorTemp,
-            maxColorTemp,
-          })
+          // 色温范围计算
+          if (device.proType === PRO_TYPE.light) {
+            const { minColorTemp, maxColorTemp } = device.mzgdPropertyDTOList['light'].colorTempRange!
+            this.setData({
+              minColorTemp,
+              maxColorTemp,
+            })
+          }
+          // 是否智慧屏判断
+          else if (device.proType === PRO_TYPE.switch) {
+            const isScreen = SCREEN_PID.includes(device.productId)
+            this.setData({
+              isScreen,
+            })
+          }
         }
       },
     },
@@ -75,8 +78,9 @@ ComponentWithComputed({
       value: {} as Record<string, number>,
       observer(value) {
         this.setData({
-          'lightInfoInner.Level': value.Level ?? 0,
-          'lightInfoInner.ColorTemp': value.ColorTemp ?? 0,
+          isLanCtl: value.canLanCtrl && !value.onLineStatus,
+          'lightInfoInner.brightness': value.brightness ?? 0,
+          'lightInfoInner.colorTemperature': value.colorTemperature ?? 0,
         })
       },
     },
@@ -104,11 +108,12 @@ ComponentWithComputed({
       componentHeight: 0,
       divideRpxByPx: 0,
     },
+    isLanCtl: false, // 是否局域网控制状态
     show: false,
     tab: '' as '' | 'light' | 'switch' | 'curtain',
     lightInfoInner: {
-      Level: 10,
-      ColorTemp: 20,
+      brightness: 10,
+      colorTemperature: 20,
     },
     maxColorTemp,
     minColorTemp,
@@ -117,10 +122,10 @@ ComponentWithComputed({
     },
     /** 提供给关联选择的列表 */
     list: [] as (Device.DeviceItem | Scene.SceneItem)[],
-    /** 当前选中的开关，处于是什么关联模式 */
-    linkType: 'none' as 'none' | 'light' | 'switch' | 'scene',
+    /** 当前选中的开关，处于是什么关联模式, 可多选 */
+    linkType: [] as ILinkType[],
     /** 关联弹出框，需要开关去关联什么模式 */
-    selectLinkType: 'none' as 'none' | 'light' | 'switch' | 'scene',
+    selectLinkType: '' as ILinkType,
     /** 已选中设备或场景 TODO */
     linkSelectList: [] as string[],
     showLinkPopup: false,
@@ -132,11 +137,12 @@ ComponentWithComputed({
       switchRelList: Array<Device.IMzgdRelGetDTO>(), // 当前面板的关联面板数据
     },
     _allSwitchLampRelList: Array<Device.IMzgdLampDeviceInfoDTO>(), // 家庭所有面板的灯关联关系数据
+    isScreen: false, // 当前选中项是否智慧屏
   },
 
   computed: {
     colorTempK(data) {
-      return (data.lightInfoInner.ColorTemp / 100) * (data.maxColorTemp - data.minColorTemp) + data.minColorTemp
+      return (data.lightInfoInner.colorTemperature / 100) * (data.maxColorTemp - data.minColorTemp) + data.minColorTemp
     },
     lightTab(data) {
       if (data.checkedType) {
@@ -156,12 +162,24 @@ ComponentWithComputed({
       }
       return false
     },
-    disabledLinkSetting(data) {
-      return data.isVisitor
+
+    // 是否关联智能开关，模板语法不支持Array.includes,改为通过计算属性控制
+    isLinkSwitch(data) {
+      return data.linkType.includes('switch')
     },
 
-    linkTypeDesc(data) {
-      return descMap[data.linkType]
+    // 是否关联智能灯
+    isLinkLight(data) {
+      return data.linkType.includes('light')
+    },
+
+    // 是否关联场景
+    isLinkScene(data) {
+      return data.linkType.includes('scene')
+    },
+
+    disabledLinkSetting(data) {
+      return data.isVisitor
     },
 
     selectCardPopupTitle(data) {
@@ -211,7 +229,7 @@ ComponentWithComputed({
    */
   methods: {
     sliderTap() {
-      if (!this.data.lightStatus.OnOff) {
+      if (!this.data.lightStatus.power) {
         Toast('请先开灯')
       }
     },
@@ -269,18 +287,20 @@ ComponentWithComputed({
       Logger.log('updateLinkInfo')
       const [deviceId, switchId] = switchUniId.split(':')
 
-      let linkType = 'none' as 'none' | 'light' | 'switch' | 'scene'
+      let linkType = [] as ILinkType[]
 
       // 优先判断场景关联信息（已有数据）
       if (deviceStore.switchSceneConditionMap[switchUniId]) {
-        linkType = 'scene'
+        linkType = ['scene']
       } else {
         await Promise.all([this.updateLamoRelInfo(deviceId, switchId), this.getRelSwitchInfo(deviceId, switchId)])
 
         if (switchRelInfo && switchRelInfo.lampRelList.length) {
-          linkType = 'light'
-        } else if (switchRelInfo && switchRelInfo.switchRelList.length) {
-          linkType = 'switch'
+          linkType.push('light')
+        }
+
+        if (switchRelInfo && switchRelInfo.switchRelList.length) {
+          linkType.push('switch')
         }
       }
 
@@ -353,18 +373,17 @@ ComponentWithComputed({
 
       const switchSceneConditionMap = deviceStore.switchSceneConditionMap
 
+      // 关联开关和灯时，选择设备的预校验
       if (['light', 'switch'].includes(this.data.selectLinkType)) {
         const device = deviceMap[selectId]
         device.deviceType === 2 && this.findDevice(device)
 
         const linkScene = switchSceneConditionMap[selectId]
-        const lampRelList = this.data._allSwitchLampRelList.filter(
-          (item) => `${item.panelId}:${item.switchId}` === selectId,
-        ) // 指定面板的灯关联关系列表
 
-        if (this.data.selectLinkType === 'switch' && (linkScene || lampRelList.length)) {
+        // 关联开关时，针对选择的开关做校验，是否已关联场景
+        if (this.data.selectLinkType === 'switch' && linkScene) {
           const dialogRes = await Dialog.confirm({
-            title: `此开关已关联${linkScene ? '场景' : '灯具'}，是否取消关联？`,
+            title: '此开关已关联场景，是否取消关联？',
             cancelButtonText: '取消',
             confirmButtonText: '确定',
             zIndex: 2000,
@@ -385,9 +404,10 @@ ComponentWithComputed({
       } else if (this.data.selectLinkType === 'scene') {
         const switchSceneActionMap = deviceStore.switchSceneActionMap
 
+        // todo: 是否需要该提示
         if (switchSceneActionMap[switchUniId]?.includes(selectId)) {
           const dialogRes = await Dialog.confirm({
-            title: '此开关已被其他场景使用，是否需要变更？',
+            title: '此开关已被当前场景使用，是否需要变更？',
             cancelButtonText: '取消',
             confirmButtonText: '变更',
             zIndex: 2000,
@@ -500,21 +520,10 @@ ComponentWithComputed({
       const switchSceneConditionMap = deviceStore.switchSceneConditionMap
       const switchUniId = this.data.checkedList[0]
       const [deviceId, switchId] = switchUniId.split(':')
-
-      if (this.data.linkSelectList[0] === switchSceneConditionMap[switchUniId]) {
-        // 选择没变化，不执行操作
-        return
-      }
-
-      const newSceneId = this.data.linkSelectList[0]
-      const updateSceneDto = {
-        conditionType: '0',
-        sceneId: newSceneId,
-      } as Scene.UpdateSceneDto
-
       const oldSceneId = switchSceneConditionMap[switchUniId]
+      const newSceneId = this.data.linkSelectList[0]
 
-      if (oldSceneId && this.data.linkSelectList[0] !== oldSceneId) {
+      if (oldSceneId) {
         // 更新场景关联，先取消关联当前场景，再关联其他场景
         const res = await updateScene({
           conditionType: '0',
@@ -533,18 +542,22 @@ ComponentWithComputed({
       }
 
       // 关联新的场景
-      updateSceneDto.deviceConditions = [
-        {
-          deviceId,
-          controlEvent: [
-            {
-              ep: Number(switchId),
-              ButtonScene: 1,
-            },
-          ],
-        },
-      ]
-      updateSceneDto.updateType = '3'
+      const updateSceneDto = {
+        conditionType: '0',
+        sceneId: newSceneId,
+        updateType: '3',
+        deviceConditions: [
+          {
+            deviceId,
+            controlEvent: [
+              {
+                modelName: switchId,
+                buttonScene: 1,
+              },
+            ],
+          },
+        ],
+      } as Scene.UpdateSceneDto
 
       const res = await updateScene(updateSceneDto)
       sceneStore.addCondition(updateSceneDto)
@@ -554,47 +567,80 @@ ComponentWithComputed({
 
     /**
      * 删除面板的关联关系
+     * @param delTypeList 要删除的关联数据类型List
      */
-    async deleteAssocite() {
-      showLoading()
+    async deleteAssocite(delTypeList: ILinkType[]) {
       const switchUniId = this.data.checkedList[0]
       const [deviceId, switchId] = switchUniId.split(':')
       let res
 
-      if (this.data.linkType === 'light') {
+      if (delTypeList.includes('light')) {
         // 删除面板和灯的关联数据
-        res = await delLampAndSwitchAssociated({
-          deviceId,
-          switchId,
-          relIds: this.data._switchRelInfo.lampRelList.map((item) => item.relId).join(','),
-        })
-      } else if (this.data.linkType === 'switch') {
+        res = await delLampAndSwitchAssociated(
+          {
+            deviceId,
+            switchId,
+            relIds: this.data._switchRelInfo.lampRelList.map((item) => item.relId).join(','),
+          },
+          { loading: true },
+        )
+
+        if (!res?.success) {
+          Toast({
+            message: '解除原关联失败',
+            zIndex: 99999,
+          })
+
+          return res
+        }
+      }
+
+      if (delTypeList.includes('switch')) {
         // 删除面板和面板的关联数据
-        res = await delSwitchAndSwitchAssociated({
-          relIds: this.data._switchRelInfo.switchRelList.map((item) => item.relId).join(','),
-        })
-      } else if (this.data.linkType === 'scene') {
+        res = await delSwitchAndSwitchAssociated(
+          {
+            relIds: this.data._switchRelInfo.switchRelList.map((item) => item.relId).join(','),
+          },
+          { loading: true },
+        )
+
+        if (!res?.success) {
+          Toast({
+            message: '解除原关联失败',
+            zIndex: 99999,
+          })
+
+          return res
+        }
+      }
+
+      if (delTypeList.includes('scene')) {
         // 删除场景关联
         const oldSceneId = deviceStore.switchSceneConditionMap[switchUniId]
+
         if (oldSceneId) {
-          res = await updateScene({
-            sceneId: oldSceneId,
-            updateType: '2',
-          })
+          res = await updateScene(
+            {
+              sceneId: oldSceneId,
+              updateType: '2',
+            },
+            { loading: true },
+          )
+
+          if (!res?.success) {
+            Toast({
+              message: '解除原关联失败',
+              zIndex: 99999,
+            })
+
+            return res
+          }
         }
 
         sceneStore.removeCondition(oldSceneId)
       }
 
-      if (!res?.success) {
-        Toast({
-          message: '解除原绑定关系失败',
-          zIndex: 99999,
-        })
-      }
-
-      hideLoading()
-      return res
+      return { success: true }
     },
 
     async editAssocite() {
@@ -629,6 +675,9 @@ ComponentWithComputed({
       return res
     },
 
+    /**
+     * 关联逻辑，开关关联和灯关联可以共存，场景关联和其他不能共存
+     */
     async handleLinkPopupConfirm() {
       this.setData({
         showLinkPopup: false,
@@ -641,26 +690,32 @@ ComponentWithComputed({
       const switchRelList = this.data._switchRelInfo.switchRelList.map((item) => `${item.deviceId}:${item.switchId}`) // 指定面板的灯关联关系列表
       const { linkType, selectLinkType, linkSelectList } = this.data
 
-      // 选择没变化，不执行操作
+      // 关联操作，选择前后的数据没变化，不执行操作，如
+      // 1、关联类型且选择前后的数据一致
       if (
-        (linkType === 'none' && linkSelectList.length === 0) ||
-        (linkType === 'scene' && linkSelectList[0] === switchSceneConditionMap[switchUniId]) ||
-        (linkType === 'light' && isArrEqual(linkSelectList, lampRelList)) ||
-        (linkType === 'switch' && isArrEqual(linkSelectList, switchRelList))
+        (!linkType.includes(selectLinkType) && linkSelectList.length === 0) ||
+        (linkType.includes(selectLinkType) &&
+          ((linkType.includes('scene') && linkSelectList[0] === switchSceneConditionMap[switchUniId]) ||
+            (linkType.includes('light') && isArrEqual(linkSelectList, lampRelList)) ||
+            (linkType.includes('switch') && isArrEqual(linkSelectList, switchRelList))))
       ) {
         Logger.log('关联关系没发生变化，不执行操作')
         return
       }
 
-      // 若面板已存在关联的情况下
-      // 1、若面板已存在关联且与新关联数据的类型不一致
-      // 2、已选择的列表为空时即清空原有绑定关系
+      // 若面板已存在关联的情况下， 开关关联和灯关联可以共存，场景关联和其他不能共存
+      // 1、若面板已存在关联且与新关联数据的类型不能共存
+      // 2、已选择的列表为空时即清空指定关联类型的原有绑定关系
       // 执行删除已有关联操作
-      if (linkType !== 'none' && (linkType !== selectLinkType || linkSelectList.length === 0)) {
-        // 变更绑定类型的情况下弹框确认
-        if (linkType !== selectLinkType) {
+      if (
+        linkType.length &&
+        ((!linkType.includes(selectLinkType) && [...linkType, selectLinkType].includes('scene')) ||
+          linkSelectList.length === 0)
+      ) {
+        // 场景关联和设备关联，这两种不能共存，变更绑定类型的情况下弹框确认
+        if (!linkType.includes(selectLinkType) && [...linkType, selectLinkType].includes('scene')) {
           const dialogRes = await Dialog.confirm({
-            title: `此开关已${descMap[linkType]}，是否变更？`,
+            title: '设备关联和场景关联不能同时存在，是否变更？',
             cancelButtonText: '取消',
             confirmButtonText: '确定',
             zIndex: 2000,
@@ -674,7 +729,8 @@ ComponentWithComputed({
           }
         }
 
-        const delRes = await this.deleteAssocite()
+        // 当linkSelectList为空时，代表清空当前指定类型的关联数据，不应全部清除
+        const delRes = await this.deleteAssocite(linkSelectList.length === 0 ? [selectLinkType] : linkType)
 
         if (!delRes?.success) {
           return
@@ -691,14 +747,12 @@ ComponentWithComputed({
       await Promise.all([
         // sceneStore.updateSceneList(),
         sceneStore.updateAllRoomSceneList(),
-        deviceStore.updateSubDeviceList(),
-        // deviceStore.updateAllRoomDeviceList(),
+        // deviceStore.updateSubDeviceList(),
+        deviceStore.updateAllRoomDeviceList(),
       ])
 
       this.data._switchRelInfo.switchUniId = '' // 置空标志位，否则不会更新数据
       this.updateLinkInfo()
-      // 有ws上报，暂时取消整个列表的刷新
-      // this.triggerEvent('updateList')
 
       hideLoading()
     },
@@ -707,83 +761,84 @@ ComponentWithComputed({
         tab: e.currentTarget.dataset.tab,
       })
     },
-    async lightSendDeviceControl(type: 'ColorTemp' | 'Level') {
+    async lightSendDeviceControl(type: 'colorTemperature' | 'brightness') {
       const deviceId = this.data.checkedList[0]
       const device = deviceStore.deviceMap[deviceId]
       if (deviceId.indexOf(':') !== -1 || device.proType !== PRO_TYPE.light) {
         return
       }
 
-      const oldValue = device.mzgdPropertyDTOList[1][type]
+      const oldValue = device.mzgdPropertyDTOList['light'][type]
 
       // 即时改变devicePageList，以便场景引用
       runInAction(() => {
-        device.mzgdPropertyDTOList[1][type] = this.data.lightInfoInner[type]
+        device.mzgdPropertyDTOList['light'][type] = this.data.lightInfoInner[type]
       })
-      this.triggerEvent('updateList', device)
+      this.triggerEvent('updateDevice', device)
 
       const res = await sendDevice({
         proType: device.proType,
         deviceType: device.deviceType,
         gatewayId: device.gatewayId,
         deviceId,
-        ep: 1,
+        modelName: device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1',
         property: {
           [type]: this.data.lightInfoInner[type],
         },
       })
 
       if (!res.success) {
-        device.mzgdPropertyDTOList[1][type] = oldValue
-        this.triggerEvent('updateList', device)
+        device.mzgdPropertyDTOList['light'][type] = oldValue
+        this.triggerEvent('updateDevice', device)
         Toast('控制失败')
       }
     },
     handleLevelDrag: throttle(function (this: IAnyObject, e: { detail: number }) {
       this.setData({
-        'lightInfoInner.Level': e.detail,
+        'lightInfoInner.brightness': e.detail,
       })
     }),
     handleLevelChange(e: { detail: number }) {
       this.setData({
-        'lightInfoInner.Level': e.detail,
+        'lightInfoInner.brightness': e.detail,
       })
-      this.lightSendDeviceControl('Level')
+      this.lightSendDeviceControl('brightness')
     },
     handleLevelDragEnd() {
-      this.lightSendDeviceControl('Level')
+      this.lightSendDeviceControl('brightness')
     },
     handleColorTempDragEnd() {
-      this.lightSendDeviceControl('ColorTemp')
+      this.lightSendDeviceControl('colorTemperature')
     },
     handleColorTempChange(e: { detail: number }) {
       this.setData({
-        'lightInfoInner.ColorTemp': e.detail,
+        'lightInfoInner.colorTemperature': e.detail,
       })
-      this.lightSendDeviceControl('ColorTemp')
+      this.lightSendDeviceControl('colorTemperature')
     },
     handleColorTempDrag: throttle(function (this: IAnyObject, e: { detail: number }) {
       this.setData({
-        'lightInfoInner.ColorTemp': e.detail,
+        'lightInfoInner.colorTemperature': e.detail,
       })
     }),
 
     findDevice(device: Device.DeviceItem) {
-      let ep = 1
+      let modelName = 'light'
       if (device.proType === PRO_TYPE.switch) {
-        ep = Number(device.switchInfoDTOList[0].switchId)
+        modelName = device.switchInfoDTOList[0].switchId
       }
 
-      findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, ep })
+      findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, modelName })
     },
     toDetail() {
       const deviceId = this.data.checkedList[0].split(':')[0]
       const deviceMap = deviceStore.deviceMap
-      const { deviceType } = deviceMap[deviceId]
+      const { deviceType, productId, gatewayId } = deviceMap[deviceId]
       const pageName = deviceType === 4 ? 'group-detail' : 'device-detail'
+      const _deviceId = SCREEN_PID.includes(productId) ? gatewayId : deviceId
 
       wx.navigateTo({
-        url: `/package-mine/device-manage/${pageName}/index?deviceId=${deviceId}`,
+        url: `/package-mine/device-manage/${pageName}/index?deviceId=${_deviceId}`,
       })
 
       this.triggerEvent('popMove', 'down')
@@ -809,11 +864,13 @@ ComponentWithComputed({
     openCurtain() {
       this.curtainControl({
         curtain_position: '100',
+        curtain_status: 'open',
       })
     },
     closeCurtain() {
       this.curtainControl({
         curtain_position: '0',
+        curtain_status: 'close',
       })
     },
     pauseCurtain() {

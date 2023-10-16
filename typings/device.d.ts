@@ -4,17 +4,17 @@ declare namespace Device {
    * @param ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
    */
   interface mzgdPropertyDTO {
-    ColorTemp?: number // 色温
-    Level?: number // 亮度
-    OnOff?: number // 关 0 | 开 1
-    power?: string // on | off
+    colorTemperature?: number // 色温
+    brightness?: number // 亮度
+    // OnOff?: number // 关 0 | 开 1
+    power?: number // 关 0 | 开 1
     colorTempRange?: {
       // 色温值范围
       maxColorTemp: number
       minColorTemp: number
     }
     ButtonMode?: number
-    ButtonScene?: number
+    buttonScene?: number
     curtain_position?: string
     curtain_status?: string
     curtain_direction?: 'positive' | 'reverse' // 窗帘开合方向
@@ -45,7 +45,7 @@ declare namespace Device {
     /**
      * 设备属性
      * { 每个endpoint: {属性值} }
-     * 单路设备只有一个endpoint：1，比如{ 1: {OnOff: 1} }
+     * 单路设备只有一个endpoint：1，比如{ 1: {power: 1} }
      */
     mzgdPropertyDTOList: Record<string, mzgdPropertyDTO>
 
@@ -79,8 +79,8 @@ declare namespace Device {
     isChecked: boolean
     /**
      * 如果需要将开关拆分，需要这个id
-     * 格式： deviceId:ep
-     * 如: xxxxx:1 xxxxx:2
+     * 格式： deviceId:modelName
+     * 如: xxxxx:wallSwitch1 xxxxx:wallSwitch2
      */
     uniId: string
 
@@ -94,6 +94,10 @@ declare namespace Device {
     isScreenGateway: boolean // 是否智慧屏
 
     controlAction: IAnyObject //自动化传感器使用
+
+    updateStamp: number
+
+    canLanCtrl?: boolean // 是否可以局域网控制,前端自定义属性
   }
 
   interface MzgdPropertyDTO {

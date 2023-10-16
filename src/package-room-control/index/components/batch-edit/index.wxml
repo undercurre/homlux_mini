@@ -29,7 +29,7 @@
         </view>
         <text class="text-black-tips text-24rpx mt-26rpx">创建分组</text>
       </view>
-      <view class="flex-col-center flex-1 {{!editSelectList.length ?'opacity-25':''}}" bindtap="handleDeleteDialog">
+      <view class="flex-col-center flex-1 {{!canDelete ?'opacity-25':''}}" bindtap="handleDeleteDialog">
         <view class="flex-center w-100rpx h-100rpx bg-hex-f6fafd rounded-999">
           <image src="/package-room-control/assets/img/del.png" class="w-48rpx h-48rpx" />
         </view>
@@ -50,14 +50,14 @@
           <text class="text-28rpx text-black-2a ml-48rpx mt-68rpx">按键名称</text>
         </view>
         <view class="flex-1 mt-32rpx w-686rpx">
-          <van-field model:value="{{ editSwitchName }}" maxlength="{{5}}" placeholder="请输入按键名称" custom-style="padding: 28rpx 32rpx;background-color: #F6FAFD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
+          <van-field model:value="{{ editSwitchName }}" maxlength="{{5}}" placeholder="请输入按键名称" custom-style="padding: 28rpx 32rpx;background-color: #F6FAFD;border-radius: 24rpx;" clearable="{{true}}" border="{{false}}"> </van-field>
         </view>
       </block>
       <view class="flex w-750rpx mt-56rpx">
         <text class="text-28rpx text-black-2a ml-48rpx">{{editDeviceNameTitle}}</text>
       </view>
       <view class="flex-1 mt-32rpx w-686rpx mb-126rpx">
-        <van-field model:value="{{ editDeviceName }}" maxlength="{{6}}" placeholder="请输入{{editDeviceNameTitle}}" custom-style="padding: 28rpx 32rpx;background-color: #F6FAFD;border-radius: 24rpx;" clearable="{{true}}"> </van-field>
+        <van-field model:value="{{ editDeviceName }}" maxlength="{{6}}" placeholder="请输入{{editDeviceNameTitle}}" custom-style="padding: 28rpx 32rpx;background-color: #F6FAFD;border-radius: 24rpx;" clearable="{{true}}" border="{{false}}"> </van-field>
       </view>
 
       <template is="bottom-btn" data="{{disabled: editNameDisable}}" />

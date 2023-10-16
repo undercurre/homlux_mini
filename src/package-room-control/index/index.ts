@@ -23,10 +23,13 @@ import {
   _get,
   throttle,
   toPropertyDesc,
-  transferDeviceProperty,
   isNullOrUnDef,
+  transferDeviceProperty,
+  isConnect,
+  verifyNetwork,
+  Logger,
 } from '../../utils/index'
-import { proName, PRO_TYPE, LIST_PAGE, CARD_W, CARD_H } from '../../config/index'
+import { proName, PRO_TYPE, LIST_PAGE, CARD_W, CARD_H, MODEL_NAME, CARD_REFRESH_TIME } from '../../config/index'
 
 type DeviceCard = Device.DeviceItem & {
   x: string
@@ -72,6 +75,12 @@ ComponentWithComputed({
   data: {
     _updating: false, // 列表更新中标志
     _diffWaitlist: [] as DeviceCard[], // 待更新列表
+    // 待更新到视图的数据（updateDeviceList专用）
+    _diffCards: {
+      data: {} as IAnyObject,
+      created: 0, // 创建时间
+    },
+    _wait_timeout: null as null | number, // 卡片等待更新时间
     navigationBarAndStatusBarHeight:
       (storage.get<number>('statusBarHeight') as number) +
       (storage.get<number>('navigationBarHeight') as number) +
@@ -131,22 +140,9 @@ ComponentWithComputed({
       }
       return false
     },
-    roomHasSubDevice(data) {
-      if (data.deviceList?.length) {
-        return (
-          (data.allRoomDeviceList as DeviceCard[]).filter(
-            (device) =>
-              device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
-              device.proType !== PRO_TYPE.gateway &&
-              device.proType !== PRO_TYPE.sensor,
-          ).length > 0
-        )
-      }
-      return false
-    },
     // 房间存在可显示的设备
     roomHasDevice(data) {
-      if (data.deviceList?.length) {
+      if (data.allRoomDeviceList?.length) {
         return (
           (data.allRoomDeviceList as DeviceCard[]).filter(
             (device) =>
@@ -252,6 +248,7 @@ ComponentWithComputed({
      * 生命周期函数--监听页面加载
      */
     async onLoad() {
+      Logger.log('room-onLoad')
       // this.setUpdatePerformanceListener({withDataPaths: true}, (res) => {
       //   console.debug('setUpdatePerformanceListener', res, res.pendingStartTimestamp - res.updateStartTimestamp, res.updateEndTimestamp - res.updateStartTimestamp, dayjs().format('YYYY-MM-DD HH:mm:ss'))
       // })
@@ -275,11 +272,25 @@ ComponentWithComputed({
     },
 
     async onShow() {
-      // 再更新一遍数据
-      await this.reloadData()
+      await verifyNetwork()
+      // 加载数据
+      this.reloadData()
+
+      Logger.log('room-onShow')
+      emitter.on('deviceListRetrieve', () => {
+        console.log('deviceListRetrieve，isConnect', isConnect())
+        this.reloadDataThrottle()
+      })
 
       // ws消息处理
       emitter.on('wsReceive', async (e) => {
+        const { eventType } = e.result
+
+        if (eventType === WSEventType.updateHomeDataLanInfo) {
+          this.updateQueue({ isRefresh: true })
+          return
+        }
+
         if (e.result.eventType === WSEventType.device_property) {
           // 如果有传更新的状态数据过来，直接更新store
           const deviceInHouse = deviceStore.allRoomDeviceList.find(
@@ -287,8 +298,8 @@ ComponentWithComputed({
           )
           if (deviceInHouse) {
             runInAction(() => {
-              deviceInHouse.mzgdPropertyDTOList[e.result.eventData.ep] = {
-                ...deviceInHouse.mzgdPropertyDTOList[e.result.eventData.ep],
+              deviceInHouse.mzgdPropertyDTOList[e.result.eventData.modelName] = {
+                ...deviceInHouse.mzgdPropertyDTOList[e.result.eventData.modelName],
                 ...e.result.eventData.event,
               }
             })
@@ -301,8 +312,8 @@ ComponentWithComputed({
           ) as DeviceCard
           if (deviceInRoom) {
             runInAction(() => {
-              deviceInRoom.mzgdPropertyDTOList[e.result.eventData.ep] = {
-                ...deviceInRoom.mzgdPropertyDTOList[e.result.eventData.ep],
+              deviceInRoom.mzgdPropertyDTOList[e.result.eventData.modelName] = {
+                ...deviceInRoom.mzgdPropertyDTOList[e.result.eventData.modelName],
                 ...e.result.eventData.event,
               }
             })
@@ -311,15 +322,15 @@ ComponentWithComputed({
           // 组装要更新的设备数据，更新的为flatten列表，结构稍不同
           const device = {} as DeviceCard
           device.deviceId = e.result.eventData.deviceId
-          device.uniId = `${e.result.eventData.deviceId}:${e.result.eventData.ep}`
+          device.uniId = `${e.result.eventData.deviceId}:${e.result.eventData.modelName}`
           device.mzgdPropertyDTOList = {}
-          device.mzgdPropertyDTOList[e.result.eventData.ep] = {
+          device.mzgdPropertyDTOList[e.result.eventData.modelName] = {
             ...e.result.eventData.event,
           }
-          // WIFI灯状态更新
-          if (Object.prototype.hasOwnProperty.call(e.result.eventData.event, 'power')) {
-            device.mzgdPropertyDTOList[e.result.eventData.ep].OnOff = e.result.eventData.event.power === 'on' ? 1 : 0
-          }
+          // 按物模型属性，WIFI灯状态更新与zigbee灯统一，此处冗余逻辑已不需要
+          // if (Object.prototype.hasOwnProperty.call(e.result.eventData.event, 'power')) {
+          //   device.mzgdPropertyDTOList[e.result.eventData.modelName].power = e.result.eventData.event.power === 'on' ? 1 : 0
+          // }
           this.updateQueue(device)
           return
         }
@@ -329,10 +340,10 @@ ComponentWithComputed({
           e.result.eventType === WSEventType.screen_online_status_sub_device ||
           e.result.eventType === WSEventType.screen_online_status_wifi_device
         ) {
-          const { deviceId, ep, status } = e.result.eventData
+          const { deviceId, modelName, status } = e.result.eventData
           const device = {} as DeviceCard
           device.deviceId = deviceId
-          device.uniId = ep ? `${deviceId}:${ep}` : deviceId
+          device.uniId = modelName ? `${deviceId}:${modelName}` : deviceId
           device.onLineStatus = status
           this.updateQueue(device)
         }
@@ -348,7 +359,7 @@ ComponentWithComputed({
             WSEventType.bind_device,
           ].includes(e.result.eventType)
         ) {
-          this.updateRoomData(e)
+          this.reloadDataThrottle(e)
         } else if (
           e.result.eventType === WSEventType.room_del &&
           e.result.eventData.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId
@@ -359,26 +370,24 @@ ComponentWithComputed({
             url: '/pages/index/index',
           })
         }
-
-        // 独立执行 移动\删除 的刷新
-        // if (
-        //   e.result.eventType === WSEventType.group_device_result_status ||
-        //   e.result.eventType === WSEventType.device_del
-        // ) {
-        //   this.removeDevice(e.result.eventData.devId ?? e.result.eventData.deviceId)
-        // }
       })
     },
 
     async reloadData() {
+      Logger.log('reloadData', isConnect())
+      // 未连接网络，所有设备直接设置为离线
+      if (!isConnect()) {
+        this.updateQueue({ isRefresh: true, onLineStatus: 0 })
+        return
+      }
+
       try {
         await Promise.all([
-          deviceStore.updateSubDeviceList(),
-          deviceStore.updateAllRoomDeviceList(),
           homeStore.updateRoomCardList(),
           sceneStore.updateSceneList(),
           sceneStore.updateAllRoomSceneList(),
         ])
+
         this.updateQueue({ isRefresh: true })
       } finally {
         wx.stopPullDownRefresh()
@@ -386,25 +395,9 @@ ComponentWithComputed({
     },
 
     // 节流更新房间各种关联信息
-    updateRoomData: throttle(function (this: IAnyObject) {
+    reloadDataThrottle: throttle(function (this: IAnyObject) {
       this.reloadData()
     }, 4000),
-
-    // 直接更新store数据, 移除列表中的设备
-    removeDevice(deviceId: string) {
-      console.log('remove', deviceId)
-      const newDeviceList = [] as Device.DeviceItem[]
-      deviceStore.deviceList.forEach((device) => {
-        if (deviceId !== device.deviceId) {
-          newDeviceList.push({ ...device })
-        }
-      })
-      runInAction(() => {
-        deviceStore.deviceList = newDeviceList
-      })
-
-      this.updateQueue({ isRefresh: true })
-    },
 
     // 页面滚动
     onPageScroll(e: { detail: { scrollTop: number } }) {
@@ -416,14 +409,18 @@ ComponentWithComputed({
       this.data.scrollTop = e?.detail?.scrollTop || 0
     },
 
-    onUnload() {
-      // 解除监听
-      emitter.off('wsReceive')
-    },
+    // onUnload() {},
     onHide() {
       console.log('onHide')
+
       // 解除监听
       emitter.off('wsReceive')
+      emitter.off('deviceListRetrieve')
+
+      if (this.data._wait_timeout) {
+        clearTimeout(this.data._wait_timeout)
+        this.data._wait_timeout = null
+      }
     },
     handleKnownAddSceneTap() {
       storage.set('hasKnownUseAddScene', true, null)
@@ -486,67 +483,95 @@ ComponentWithComputed({
           })
           if (index !== -1) {
             originDevice = this.data.devicePageList[groupIndex][index]
-            const diffData = {} as IAnyObject
-            // review 细致到字段的diff
-            const renderList = ['deviceName', 'onLineStatus', 'select'] // 需要刷新界面的字段
+            // const diffData = {} as IAnyObject
+            // Review 细致到字段的diff
+            const renderList = ['deviceName', 'onLineStatus'] // 需要刷新界面的字段
 
             renderList.forEach((key) => {
               const newVal = _get(device!, key)
               const originVal = _get(originDevice, key)
               // 进一步检查，过滤确实有更新的字段
               if (newVal !== undefined && newVal !== originVal) {
-                diffData[`devicePageList[${groupIndex}][${index}].${key}`] = newVal
+                this.data._diffCards.data[`devicePageList[${groupIndex}][${index}].${key}`] = newVal
               }
             })
 
+            const modelName =
+              originDevice.proType === PRO_TYPE.switch
+                ? originDevice.uniId.split(':')[1]
+                : MODEL_NAME[originDevice.proType]
+
             // 如果mzgdPropertyDTOList、switchInfoDTOList字段存在，则覆盖更新
             if (device!.mzgdPropertyDTOList) {
-              const eq = originDevice.proType === PRO_TYPE.switch ? originDevice.uniId.split(':')[1] : 1
               const newVal = {
-                ...originDevice.mzgdPropertyDTOList[eq],
-                ...device?.mzgdPropertyDTOList[eq],
+                ...originDevice.mzgdPropertyDTOList[modelName],
+                ...device?.mzgdPropertyDTOList[modelName],
               }
 
-              diffData[`devicePageList[${groupIndex}][${index}].mzgdPropertyDTOList[${eq}]`] = newVal
-
-              // 更新场景关联信息
-              diffData[`devicePageList[${groupIndex}][${index}].linkSceneName`] = this.getLinkSceneName({
-                ...device!,
-                proType: originDevice.proType, // 补充关键字段
-              })
+              this.data._diffCards.data[`devicePageList[${groupIndex}][${index}].mzgdPropertyDTOList.${modelName}`] =
+                newVal
             }
+            // 更新面板、按键信息
             if (device!.switchInfoDTOList) {
               const newVal = {
                 ...originDevice.switchInfoDTOList[0],
                 ...device?.switchInfoDTOList[0],
               }
-              diffData[`devicePageList[${groupIndex}][${index}].switchInfoDTOList[0]`] = newVal
+              this.data._diffCards.data[`devicePageList[${groupIndex}][${index}].switchInfoDTOList[0]`] = newVal
+            }
+            // 更新场景关联信息
+            const linkSceneName = this.getLinkSceneName({
+              ...device!,
+              proType: originDevice.proType, // 补充关键字段
+            })
+            if (linkSceneName !== originDevice.linkSceneName) {
+              this.data._diffCards.data[`devicePageList[${groupIndex}][${index}].linkSceneName`] = linkSceneName
             }
 
             // 如果控制弹框为显示状态，则同步选中设备的状态
-            // 因为异常推送较多，暂时不对弹框中的设备状态进行更新
-            // if (
-            //   device!.mzgdPropertyDTOList &&
-            //   this.data.checkedList.includes(originDevice!.deviceId) &&
-            //   originDevice!.select
-            // ) {
-            //   const prop = transferDeviceProperty(originDevice.proType, device!.mzgdPropertyDTOList['1'])
-            //   if (originDevice.proType === PRO_TYPE.light) {
-            //     diffData.lightStatus = {
-            //       Level: prop.Level,
-            //       ColorTemp: prop.ColorTemp,
-            //       OnOff: prop.OnOff,
-            //     }
-            //   } else if (originDevice.proType === PRO_TYPE.curtain) {
-            //     diffData.curtainStatus = {
-            //       position: prop.curtain_position,
-            //     }
-            //   }
-            // }
+            if (
+              device!.mzgdPropertyDTOList &&
+              this.data.checkedList.includes(originDevice!.deviceId) &&
+              originDevice!.select
+            ) {
+              const prop = transferDeviceProperty(originDevice.proType, device!.mzgdPropertyDTOList[modelName])
+              // 因为【灯】异常推送较多，暂时不对弹框中的设备状态进行更新
+              //   if (originDevice.proType === PRO_TYPE.light) {
+              //     diffData.lightStatus = {
+              //       Level: prop.Level,
+              //       ColorTemp: prop.ColorTemp,
+              //       OnOff: prop.OnOff,
+              //     }
+              //   } else
+              if (originDevice.proType === PRO_TYPE.curtain) {
+                this.data._diffCards.data.curtainStatus = {
+                  position: prop.curtain_position,
+                }
+              }
+            }
 
-            if (Object.keys(diffData).length) {
-              this.setData(diffData)
-              console.log('▤ [%s, %s] 单个卡片更新完成', groupIndex, index, diffData)
+            // 处理更新逻辑
+            if (Object.keys(this.data._diffCards.data).length) {
+              const now = new Date().getTime()
+              if (!this.data._diffCards.created) {
+                this.data._diffCards.created = now
+              }
+              const wait = now - this.data._diffCards.created
+              if (wait >= CARD_REFRESH_TIME && device.timestamp) {
+                // 先清空已有的更新等待
+                if (this.data._wait_timeout) {
+                  clearTimeout(this.data._wait_timeout)
+                  this.data._wait_timeout = null
+                }
+                this.setData(this.data._diffCards.data)
+                this.data._diffCards = {
+                  data: {},
+                  created: 0,
+                }
+                console.log('▤ [%s, %s] 更新完成，已等待 %sms', groupIndex, index, this.data._diffCards.data, wait)
+              } else {
+                console.log('▤ [%s, %s] 更新推迟，已等待 %sms', groupIndex, index, wait)
+              }
             } else {
               console.log('▤ [%s, %s] diffData为空，不必更新', groupIndex, index)
             }
@@ -580,10 +605,11 @@ ComponentWithComputed({
             type: proName[device.proType],
             select: this.data.checkedList.includes(device.uniId) || this.data.editSelectList.includes(device.uniId),
             linkSceneName: this.getLinkSceneName(device),
+            onLineStatus: e.onLineStatus ?? device.onLineStatus, // 传参数直接设置指定的在线离线状态
           }))
 
         if (!this.data.deviceListInited) {
-          console.log('▤ [updateDeviceList] 列表初始化')
+          Logger.log('▤ [updateDeviceList] 列表初始化')
         }
         // !! 整个列表刷新
         else {
@@ -606,18 +632,33 @@ ComponentWithComputed({
           deviceListInited: true,
         })
 
-        console.log('▤ [updateDeviceList] 列表更新完成', this.data.devicePageList)
+        Logger.log('▤ [updateDeviceList] 列表更新完成', this.data.devicePageList)
       }
 
       // 模拟堵塞任务执行
-      // await delay(2000)
+      // await delay(100)
       // console.log('▤ [updateDeviceList] Ended', this.data._diffWaitlist.length)
 
       // 恢复更新标志
       this.data._updating = false
-      // 如果列表队列不为空刚继续执行
+      // 如果等待列表不为空，则递归执行
       if (this.data._diffWaitlist.length) {
         this.updateQueue()
+      }
+      // 如果等待列表已空，则节流执行视图更新
+      else if (Object.keys(this.data._diffCards.data).length) {
+        if (this.data._wait_timeout) {
+          clearTimeout(this.data._wait_timeout)
+          this.data._wait_timeout = null
+        }
+        this.data._wait_timeout = setTimeout(() => {
+          this.setData(this.data._diffCards.data)
+          console.log('▤ 清空更新队列', this.data._diffCards.data)
+          this.data._diffCards = {
+            data: {},
+            created: 0,
+          }
+        }, CARD_REFRESH_TIME)
       }
     },
 
@@ -627,7 +668,6 @@ ComponentWithComputed({
      */
     async updateQueue(e?: (DeviceCard & { detail?: DeviceCard }) | Optional<DeviceCard>) {
       if (e) {
-        const timestamp = new Date().getTime()
         let device: DeviceCard
 
         // 如果是包裹在事件中的设备属性，则简化结构
@@ -635,7 +675,7 @@ ComponentWithComputed({
           const { detail } = e as { detail: DeviceCard }
           device = detail
         }
-        // e：设备属性 | 空对象
+        // e：设备属性 |
         else {
           device = e as DeviceCard
         }
@@ -646,28 +686,10 @@ ComponentWithComputed({
           return
         }
 
-        // 短时内deviceId重复的更新，进行合并
-        const THRESHOLD_TIME = 2000
-        let replace_flag = false
-        for (const index in this.data._diffWaitlist) {
-          const _device = this.data._diffWaitlist[index]
-          const timediff = timestamp - _device.timestamp
-          if (device.deviceId === _device.deviceId && timediff < THRESHOLD_TIME) {
-            this.data._diffWaitlist[index] = {
-              ..._device,
-              ...device,
-            }
-            replace_flag = true
-            console.log('▤ Similar update found', device.deviceId, timediff)
-            break
-          }
-        }
-        // 一直未有覆盖操作，直接放到队尾
-        if (!replace_flag) {
-          this.data._diffWaitlist.push({ ...device, timestamp })
-          if (this.data._diffWaitlist.length > 1) {
-            console.log('▤ [updateQueue Pushed] Queue Len:', this.data._diffWaitlist.length)
-          }
+        const timestamp = new Date().getTime()
+        this.data._diffWaitlist.push({ ...device, timestamp })
+        if (this.data._diffWaitlist.length > 1) {
+          console.log('▤ [updateQueue Pushed] Queue Len:', this.data._diffWaitlist.length)
         }
       }
 
@@ -681,7 +703,7 @@ ComponentWithComputed({
 
     // 基于云端更新数据
     async updateRoomListOnCloud() {
-      await deviceStore.updateSubDeviceList()
+      await deviceStore.updateAllRoomDeviceList()
       this.updateQueue({ isRefresh: true })
     },
     // updateRoomListOnCloud: throttle(
@@ -907,9 +929,9 @@ ComponentWithComputed({
       const selectList = deviceList.filter((device) => {
         let [, switchId] = device.uniId.split(':')
 
-        switchId = switchId ?? 1
+        switchId = switchId ?? MODEL_NAME[device.proType]
 
-        return device.mzgdPropertyDTOList[switchId].ButtonMode !== 2 && device.onLineStatus
+        return device.mzgdPropertyDTOList[switchId]?.ButtonMode !== 2 && device.onLineStatus
       })
 
       if (!selectList.length) {
@@ -920,9 +942,9 @@ ComponentWithComputed({
       selectList.forEach((device) => {
         if (device.proType === PRO_TYPE.switch) {
           // 开关
-          const ep = parseInt(device.uniId.split(':')[1])
-          const OnOff = device.mzgdPropertyDTOList[ep].OnOff
-          const desc = toPropertyDesc(device.proType, device.mzgdPropertyDTOList[ep])
+          const modelName = device.uniId.split(':')[1]
+          const power = device.mzgdPropertyDTOList[modelName].power
+          const desc = toPropertyDesc(device.proType, device.mzgdPropertyDTOList[modelName])
 
           addSceneActions.push({
             uniId: device.uniId,
@@ -932,12 +954,13 @@ ComponentWithComputed({
             proType: device.proType,
             deviceType: device.deviceType,
             value: {
-              ep,
-              OnOff,
+              modelName,
+              power,
             },
           })
         } else {
-          const properties = transferDeviceProperty(device.proType, device.mzgdPropertyDTOList['1'])
+          const modelName = MODEL_NAME[device.proType]
+          const properties = device.mzgdPropertyDTOList[modelName]
           const desc = toPropertyDesc(device.proType, properties)
 
           const action = {
@@ -948,7 +971,7 @@ ComponentWithComputed({
             proType: device.proType,
             deviceType: device.deviceType,
             value: {
-              ep: 1,
+              modelName,
               ...properties,
             } as IAnyObject,
           }
@@ -1047,11 +1070,14 @@ ComponentWithComputed({
 
       // 选择灯卡片时，同步设备状态到控制弹窗
       if (toCheck) {
-        const prop = e.detail.mzgdPropertyDTOList['1']
+        const modelName = MODEL_NAME[e.detail.proType]
+        const prop = e.detail.mzgdPropertyDTOList[modelName]
         if (e.detail.proType === PRO_TYPE.light) {
-          if (!isNullOrUnDef(prop.Level)) diffData['lightStatus.Level'] = prop.Level
-          if (!isNullOrUnDef(prop.ColorTemp)) diffData['lightStatus.ColorTemp'] = prop.ColorTemp
-          if (!isNullOrUnDef(prop.OnOff)) diffData['lightStatus.OnOff'] = prop.OnOff
+          if (!isNullOrUnDef(prop.brightness)) diffData['lightStatus.brightness'] = prop.brightness
+          if (!isNullOrUnDef(prop.colorTemperature)) diffData['lightStatus.colorTemperature'] = prop.colorTemperature
+          if (!isNullOrUnDef(prop.power)) diffData['lightStatus.power'] = prop.power
+          if (!isNullOrUnDef(e.detail.canLanCtrl)) diffData['lightStatus.canLanCtrl'] = e.detail.canLanCtrl
+          if (!isNullOrUnDef(e.detail.onLineStatus)) diffData['lightStatus.onLineStatus'] = e.detail.onLineStatus
         } else if (e.detail.proType === PRO_TYPE.curtain) {
           diffData.curtainStatus = {
             position: prop.curtain_position,
@@ -1079,10 +1105,10 @@ ComponentWithComputed({
     // 卡片点击时，按品类调用对应方法
     async handleControlTap(e: { detail: DeviceCard }) {
       const device = { ...e.detail }
-      const ep = device.switchInfoDTOList ? device.switchInfoDTOList[0].switchId : 1
+      const modelName = device.switchInfoDTOList ? device.switchInfoDTOList[0].switchId : MODEL_NAME[e.detail.proType]
 
       // 若面板关联场景
-      if (device.proType === PRO_TYPE.switch && device.mzgdPropertyDTOList[ep].ButtonMode === 2) {
+      if (device.proType === PRO_TYPE.switch && device.mzgdPropertyDTOList[modelName].ButtonMode === 2) {
         const sceneId = deviceStore.switchSceneConditionMap[device.uniId]
         if (sceneId) {
           execScene(sceneId)
@@ -1091,7 +1117,7 @@ ComponentWithComputed({
       }
 
       if (device.proType === PRO_TYPE.curtain) {
-        const OldPosition = device.mzgdPropertyDTOList[1].curtain_position
+        const OldPosition = device.mzgdPropertyDTOList[modelName].curtain_position
         const NewPosition = Number(OldPosition) > 0 ? '0' : '100'
         const res = await sendDevice({
           proType: device.proType,
@@ -1107,30 +1133,30 @@ ComponentWithComputed({
       }
 
       // 灯和面板
-      const OldOnOff = device.mzgdPropertyDTOList[ep].OnOff
+      const OldOnOff = device.mzgdPropertyDTOList[modelName].power
       const newOnOff = OldOnOff ? 0 : 1
 
-      // 即时改变视图，提升操作手感
-      device.mzgdPropertyDTOList[ep].OnOff = newOnOff
+      // 不等待云端，即时改变视图，提升操作手感 // TODO 不插入队列
+      device.mzgdPropertyDTOList[modelName].power = newOnOff
       this.updateQueue(device)
       this.setData({
-        'lightStatus.OnOff': newOnOff,
+        'lightStatus.power': newOnOff,
       })
 
       const res = await sendDevice({
         proType: device.proType,
         deviceType: device.deviceType,
         deviceId: device.deviceId,
-        ep,
+        modelName,
         gatewayId: device.gatewayId,
-        property: { OnOff: newOnOff, time: 500 },
+        property: { power: newOnOff, time: 500 },
       })
 
       if (!res.success) {
-        device.mzgdPropertyDTOList[ep].OnOff = OldOnOff
+        device.mzgdPropertyDTOList[modelName].power = OldOnOff
         this.updateQueue(device)
         this.setData({
-          'lightStatus.OnOff': OldOnOff,
+          'lightStatus.power': OldOnOff,
         })
         Toast('控制失败')
       }
@@ -1200,14 +1226,7 @@ ComponentWithComputed({
 
       // 更新选中状态样式
       const deviceId = this.data.checkedList[0]
-      const device = {
-        deviceId,
-        uniId: deviceId,
-        select: false,
-      } as DeviceCard
-      device.deviceId = this.data.checkedList[0]
-      device.uniId = this.data.checkedList[0]
-      this.updateQueue(device)
+      this.toSelect(deviceId, false)
 
       // 收起弹窗
       this.setData({
@@ -1259,7 +1278,12 @@ ComponentWithComputed({
       this.editSelectAll({ detail: false })
     },
 
-    handleAddDevice() {
+    async handleAddDevice() {
+      const res = await wx.getNetworkType()
+      if (res.networkType === 'none') {
+        Toast('当前无法连接网络\n请检查网络设置')
+        return
+      }
       wx.navigateTo({ url: '/package-distribution/choose-device/index' })
     },
     handleRebindGateway() {

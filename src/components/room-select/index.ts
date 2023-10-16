@@ -70,13 +70,7 @@ ComponentWithComputed({
         roomSelect: e.detail,
       })
       this.hideSelectRoomMenu()
-      if (e.detail === '0') {
-        // 查全屋
-        deviceBinding.store.updateAllRoomDeviceList()
-      } else {
-        // 查房间
-        deviceBinding.store.updateSubDeviceList(undefined, this.data.roomSelect)
-      }
+      deviceBinding.store.updateAllRoomDeviceList()
     },
 
     showSelectRoomMenu() {

@@ -24,6 +24,6 @@
       "@vant/weapp/*": ["./node_modules/@vant/weapp/dist/*"]
     }
   },
-  "include": ["./**/*.ts", "./src/miniprogram_npm/@vant/**/*.d.ts"],
-  "exclude": ["node_modules", "miniprogram_npm", "unocss.config.ts"]
+  "include": ["./**/*.ts"],
+  "exclude": ["node_modules", "miniprogram_npm", "unocss.config.ts", "./src/lib/*.js"]
 }

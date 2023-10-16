@@ -66,7 +66,6 @@ ComponentWithComputed({
     detached() {
       bleDevicesStore.stopBLeDiscovery()
       wx.closeBluetoothAdapter()
-      wx.stopWifi()
       clearInterval(this.data._listenLocationTimeId)
     },
   },
@@ -204,7 +203,8 @@ ComponentWithComputed({
     },
 
     async initBle() {
-      if (bleDevicesStore.discovering) {
+      // 蓝牙子设备配网需要用到蓝牙功能
+      if (this.data.scanType !== 'subdevice' || bleDevicesStore.discovering) {
         return
       }
 
@@ -261,9 +261,25 @@ ComponentWithComputed({
     // 检查摄像头权限
     async checkCameraPerssion() {
       showLoading()
-      const settingRes = await wx.getSetting().catch((err) => err)
+      const settingRes = await wx.getSetting().catch((err) => {
+        return {
+          isFail: true,
+          ...err,
+        }
+      })
 
       Logger.log('检查摄像头权限', settingRes)
+
+      if (settingRes.isFail) {
+        hideLoading()
+
+        Dialog.alert({
+          message: '请检查网络是否正常',
+          showCancelButton: false,
+          confirmButtonText: '确定',
+        })
+        return false
+      }
 
       if (!settingRes.authSetting['scope.camera']) {
         // 跳转过权限设置页均需要重置needCheckCamera状态，回来后需要重新检查摄像头权限
@@ -297,7 +313,20 @@ ComponentWithComputed({
      * 扫码解析
      */
     async getQrCodeInfo(e: WechatMiniprogram.CustomEvent) {
-      if (this.data.isScan || !bleDevicesStore.discovering) {
+      let isReady = true // 标志扫码环境条件是否准备好
+
+      if ((this.data.scanType === 'gateway' || this.data.scanType === 'subdevice') && isAndroid()) {
+        const systemSetting = wx.getSystemSetting()
+
+        isReady = systemSetting.locationEnabled
+      }
+
+      if (this.data.scanType === 'subdevice') {
+        isReady = isReady && bleDevicesStore.discovering
+      }
+
+      // 必须等待初始化好或者非处于扫码状态后才能扫码
+      if (!isReady || this.data.isScan) {
         return
       }
 
@@ -322,8 +351,13 @@ ComponentWithComputed({
         }
       }
 
-      // 安卓 6.0 及以上版本，定位开关未打开时，无法进行设备搜索。
-      if (isAndroid() && !this.data._listenLocationTimeId) {
+      // 网关配网以及蓝牙子设备配网需要用到位置权限功能
+      // 安卓 6.0 及以上版本，在没有打开定位开关的时候会，导致设备不能正常获取周边的 Wi-Fi 信息。无法进行蓝牙设备搜索
+      if (
+        (this.data.scanType === 'gateway' || this.data.scanType === 'subdevice') &&
+        isAndroid() &&
+        !this.data._listenLocationTimeId
+      ) {
         const systemSetting = wx.getSystemSetting()
 
         if (!systemSetting.locationEnabled) {

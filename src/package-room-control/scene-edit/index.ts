@@ -3,7 +3,7 @@ import Toast from '@vant/weapp/toast/toast'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { deviceStore, homeStore, sceneStore } from '../../store/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { PRO_TYPE } from '../../config/index'
+import { PRO_TYPE, SCREEN_PID } from '../../config/index'
 import {
   deleteScene,
   findDevice,
@@ -14,14 +14,7 @@ import {
   delLampAndSwitchAssociated,
   delSwitchAndSwitchAssociated,
 } from '../../apis/index'
-import {
-  emitter,
-  getCurrentPageParams,
-  transferDeviceProperty,
-  toPropertyDesc,
-  storage,
-  strUtil,
-} from '../../utils/index'
+import { emitter, getCurrentPageParams, toPropertyDesc, storage, strUtil } from '../../utils/index'
 
 ComponentWithComputed({
   behaviors: [pageBehavior],
@@ -110,7 +103,7 @@ ComponentWithComputed({
           actions.controlAction.forEach((action) => {
             // 将当前选中编辑的场景，拍扁action加入list
             sceneDeviceActionsFlatten.push({
-              uniId: `${actions.deviceId}:${action.ep}`,
+              uniId: `${actions.deviceId}:${action.modelName}`,
               proType: PRO_TYPE.switch,
               name: `${action.deviceName} | ${actions.deviceName}`,
               desc: toPropertyDesc(actions.proType, action),
@@ -124,12 +117,12 @@ ComponentWithComputed({
 
           if (actions.proType === PRO_TYPE.light) {
             property = {
-              ...device.mzgdPropertyDTOList[1],
+              ...device.mzgdPropertyDTOList['light'],
               ...property,
             }
           }
 
-          property = transferDeviceProperty(actions.proType, property)
+          // property = transferDeviceProperty(actions.proType, property)
           // 灯光设备
           const action = {
             uniId: `${actions.deviceId}`,
@@ -146,7 +139,9 @@ ComponentWithComputed({
       })
 
       const linkSwitch = sceneStore.sceneSwitchMap[sceneInfo.sceneId] || ''
-      const switchList = deviceStore.allRoomDeviceFlattenList.filter((device) => device.proType === PRO_TYPE.switch)
+      const switchList = deviceStore.allRoomDeviceFlattenList.filter(
+        (device) => device.proType === PRO_TYPE.switch && !SCREEN_PID.includes(device.productId),
+      )
 
       wx.createSelectorQuery()
         .select('#content')
@@ -180,7 +175,7 @@ ComponentWithComputed({
           gatewayId: cacheDevice.gatewayId,
           proType: cacheDevice.proType,
           deviceType: cacheDevice.deviceType,
-          ep: cacheDevice.ep,
+          modelName: cacheDevice.modelName,
           property: cacheDevice.property,
         })
       }
@@ -298,8 +293,8 @@ ComponentWithComputed({
             deviceId: this.data.linkSwitch.split(':')[0],
             controlEvent: [
               {
-                ep: Number(this.data.linkSwitch.split(':')[1]),
-                ButtonScene: 1,
+                modelName: this.data.linkSwitch.split(':')[1],
+                buttonScene: 1,
               },
             ],
           },
@@ -467,13 +462,13 @@ ComponentWithComputed({
       const deviceAction = this.data.sceneDeviceActionsFlatten[index]
       const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
       const device = allRoomDeviceMap[deviceAction.uniId]
-      let ep = 1
+      let modelName = 'light'
 
       if (deviceAction.proType === PRO_TYPE.switch) {
-        ep = Number(device.switchInfoDTOList[0].switchId)
+        modelName = device.switchInfoDTOList[0].switchId
       }
 
-      device.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, ep })
+      device.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, modelName })
 
       this.setData({
         sceneEditTitle: deviceAction.name,
@@ -514,7 +509,7 @@ ComponentWithComputed({
           deviceId: device.deviceId,
           proType: device.proType,
           deviceType: device.deviceType,
-          ep: actionItem.value.ep,
+          modelName: actionItem.value.modelName,
           property: oldProperty,
         }
       }

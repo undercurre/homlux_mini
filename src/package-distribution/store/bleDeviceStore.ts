@@ -16,35 +16,12 @@ const productInfoMap: {
   }
 } = {}
 
-wx.onBluetoothAdapterStateChange((res) => {
-  Logger.log('onBluetoothAdapterStateChange-store', res)
-
-  runInAction(() => {
-    bleDevicesStore.discovering = res.discovering
-    bleDevicesStore.available = res.available
-  })
-
-  // 用于蓝牙开关被中途关掉（会终止蓝牙搜索）又打开的情况，恢复蓝牙搜索状态
-  if (bleDevicesStore.isStart && res.available && !res.discovering) {
-    Logger.log('恢复蓝牙搜索状态')
-    wx.startBluetoothDevicesDiscovery({
-      allowDuplicatesKey: true,
-      powerLevel: 'high',
-      interval: 5000,
-    })
-  }
-
-  if (_bleStateChangeListen) {
-    _bleStateChangeListen(res)
-  }
-})
-
 export const bleDevicesStore = observable({
   available: false, // 是否打开蓝牙开关
 
   discovering: false, // 是否正在搜索蓝牙
 
-  isStart: false, // 业务字段，标志是否开始了发现蓝牙设备流程，用于蓝牙开关被中途关掉（会终止蓝牙搜索）又打开的情况，恢复蓝牙搜索状态
+  isStart: false, // 业务字段，标志是否开始了发现蓝牙设备流程，用于蓝牙开关会被……中途终止蓝牙搜索）又打开的情况，恢复蓝牙搜索状态
 
   bleDeviceList: [] as Device.ISubDevice[],
 
@@ -100,13 +77,38 @@ export const bleDevicesStore = observable({
 
   stopBLeDiscovery() {
     Logger.log('终止蓝牙发现')
+    this.isStart = false
     wx.stopBluetoothDevicesDiscovery()
     wx.offBluetoothDeviceFound()
-    this.isStart = false
   },
 
   reset() {
     Logger.log('重置蓝牙store')
+    wx.offBluetoothAdapterStateChange()
+
+    wx.onBluetoothAdapterStateChange((res) => {
+      Logger.log('onBluetoothAdapterStateChange-store', res)
+
+      runInAction(() => {
+        bleDevicesStore.discovering = res.discovering
+        bleDevicesStore.available = res.available
+      })
+
+      // 用于蓝牙开关会被……中途终止蓝牙搜索）又打开的情况，恢复蓝牙搜索状态
+      if (bleDevicesStore.isStart && res.available && !res.discovering) {
+        Logger.log('恢复蓝牙搜索状态')
+        wx.startBluetoothDevicesDiscovery({
+          allowDuplicatesKey: true,
+          powerLevel: 'high',
+          interval: 5000,
+        })
+      }
+
+      if (_bleStateChangeListen) {
+        _bleStateChangeListen(res)
+      }
+    })
+
     const systemSetting = wx.getSystemSetting()
 
     runInAction(() => {
@@ -131,11 +133,6 @@ export const bleDevicesStore = observable({
   updateBleDeviceListThrottle: throttle(() => {
     bleDevicesStore.updateBleDeviceList()
   }, 5000),
-
-  // 清除缓存信息
-  clearCache() {
-    _foundList = []
-  },
 
   onBluetoothAdapterStateChange(listener: WechatMiniprogram.OnBluetoothAdapterStateChangeCallback) {
     _bleStateChangeListen = listener
@@ -201,9 +198,7 @@ async function checkBleDeviceList(list: IBleBaseInfo[]) {
       Logger.log(`【${zigbeeMac}】已绑定`)
     }
 
-    const isValid = cloudDeviceInfo.isValid && !isBind
-
-    return isValid
+    return cloudDeviceInfo.isValid && !isBind
   })
 
   // 判断是否存在合法的设备

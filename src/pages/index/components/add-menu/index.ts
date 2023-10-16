@@ -2,6 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { homeBinding } from '../../../../store/index'
 import pageBehavior from '../../../../behaviors/pageBehaviors'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import Toast from '@vant/weapp/toast/toast'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] }), pageBehavior],
@@ -45,28 +46,29 @@ ComponentWithComputed({
     menuList(data) {
       const list = []
       if (data.isCreator || data.isAdmin) {
-        list.push({
-          title: '添加设备',
-          key: 'device',
-          icon: 'add',
-          url: '/package-distribution/choose-device/index',
-          // url: '/package-distribution/scan/index',
-        })
-      }
-      if (data.isCreator) {
         list.push(
-          // {
-          //   title: '添加自动化',
-          //   key: 'auto',
-          //   icon: 'auto',
-          // },
           {
-            title: '连接其它平台',
-            key: 'platform',
-            icon: 'auth',
-            url: '/package-mine/auth/index/index',
+            title: '添加设备',
+            key: 'device',
+            icon: 'add',
+            url: '/package-distribution/choose-device/index',
+            // url: '/package-distribution/scan/index',
+          },
+          {
+            title: '创建自动化',
+            key: 'auto',
+            icon: 'auto',
+            url: '/package-automation/automation-add/index',
           },
         )
+      }
+      if (data.isCreator) {
+        list.push({
+          title: '连接其它平台',
+          key: 'platform',
+          icon: 'auth',
+          url: '/package-mine/auth/index/index',
+        })
       }
 
       return list
@@ -78,6 +80,11 @@ ComponentWithComputed({
    */
   methods: {
     async addMenuTap(e: { currentTarget: { dataset: { url: string } } }) {
+      const res = await wx.getNetworkType()
+      if (res.networkType === 'none') {
+        Toast('当前无法连接网络\n请检查网络设置')
+        return
+      }
       const url = e.currentTarget.dataset.url
       this.hideAnimate(() => wx.navigateTo({ url }))
     },

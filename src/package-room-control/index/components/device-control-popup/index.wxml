@@ -16,18 +16,23 @@
         <image class="w-48 h-48" src="/assets/img/home-manage/setting.png"></image>
       </view>
     </view>
+
+    <view class="offline-tips" wx:if="{{isLanCtl}}">
+      <image class="w-36 h-36 ml-48rpx" src="/package-room-control/assets/img/info.png"></image>
+      <text class="text-hex-555659 text-24 ml-32rpx">当前设备仅支持局域网控制，请检查您的网络！</text>
+    </view>
     <!-- tab内容 -->
     <view class="flex flex-col items-center flex-1 pt-10rpx">
       <!-- 灯光控制 -->
       <view class="flex flex-col w-750rpx mb-22rpx" wx:if="{{tab==='light'}}">
-        <text class="text-32rpx mt-70rpx ml-48rpx {{lightStatus.OnOff ? 'text-black-59' : 'text-hex-a2a2a2'}}">亮度 | {{lightInfoInner.Level}}%</text>
+        <text class="text-32rpx mt-70rpx ml-48rpx {{lightStatus.power ? 'text-black-59' : 'text-hex-a2a2a2'}}">亮度 | {{lightInfoInner.brightness}}%</text>
         <view class="px-48rpx pt-28rpx">
-          <mz-slider catch:tap="sliderTap" catch:slideEnd="handleLevelChange" catch:slideChange="handleLevelDrag" disabled="{{!lightStatus.OnOff}}" value="{{lightInfoInner.Level}}" min="{{1}}" active-color="linear-gradient(90deg, rgba(80,127,255,0.8) 5%, rgba(116,153,255,0.18) 100%)"> </mz-slider>
+          <mz-slider catch:tap="sliderTap" catch:slideEnd="handleLevelChange" catch:slideChange="handleLevelDrag" disabled="{{!lightStatus.power}}" value="{{lightInfoInner.brightness}}" min="{{1}}" active-color="linear-gradient(90deg, rgba(80,127,255,0.8) 5%, rgba(116,153,255,0.18) 100%)"> </mz-slider>
         </view>
 
-        <text class="text-32rpx mt-66rpx ml-48rpx {{lightStatus.OnOff ? 'text-black-59' : 'text-hex-a2a2a2'}}">色温 | {{colorTempK}}K</text>
+        <text class="text-32rpx mt-66rpx ml-48rpx {{lightStatus.power ? 'text-black-59' : 'text-hex-a2a2a2'}}">色温 | {{colorTempK}}K</text>
         <view class="px-48rpx pt-28rpx">
-          <mz-slider catch:tap="sliderTap" catch:slideEnd="handleColorTempChange" catch:slideChange="handleColorTempDrag" disabled="{{!lightStatus.OnOff}}" value="{{lightInfoInner.ColorTemp}}" use-button-slot custom-class="slider-color-temp-bar" active-color="rgba(0,0,0,0)">
+          <mz-slider catch:tap="sliderTap" catch:slideEnd="handleColorTempChange" catch:slideChange="handleColorTempDrag" disabled="{{!lightStatus.power}}" value="{{lightInfoInner.colorTemperature}}" use-button-slot custom-class="slider-color-temp-bar" active-color="rgba(0,0,0,0)">
             <view slot="button" class="slider-button" />
           </mz-slider>
         </view>
@@ -43,7 +48,7 @@
             <text class="text-hex-373cdf text-22rpx opacity-80 mt-12rpx">实现双控或多控功能</text>
           </view>
           <view class="mr-42rpx flex-center">
-            <text class="text-black-tips text-28rpx leading-none">{{linkType==='switch' ? '已关联' : ''}}</text>
+            <text class="text-black-tips text-28rpx leading-none">{{isLinkSwitch ? '已关联' : ''}}</text>
             <image src="/assets/img/base/arrow-right.png" class="w-32rpx h-32rpx" />
           </view>
         </view>
@@ -56,11 +61,11 @@
             <text class="text-hex-de7e28 text-22rpx opacity-80 mt-12rpx">实现单灯或灯组的开关功能</text>
           </view>
           <view class="mr-42rpx flex-center">
-            <text class="text-black-tips text-28rpx leading-none">{{linkType==='light' ? '已关联' : ''}}</text>
+            <text class="text-black-tips text-28rpx leading-none">{{isLinkLight ? '已关联' : ''}}</text>
             <image src="/assets/img/base/arrow-right.png" class="w-32rpx h-32rpx" />
           </view>
         </view>
-        <view class="link-scene h-146rpx w-686rpx flex-center mt-24rpx" data-type="scene" bindtap="handleSelectLinkPopupConfirm">
+        <view wx:if="{{!isScreen}}" class="link-scene h-146rpx w-686rpx flex-center mt-24rpx" data-type="scene" bindtap="handleSelectLinkPopupConfirm">
           <view class="w-160rpx flex-center">
             <image src="/package-room-control/assets/img/link-scene.png" class="w-146rpx h-146rpx" />
           </view>
@@ -69,7 +74,7 @@
             <text class="text-hex-1454ae text-22rpx opacity-80 mt-12rpx">实现智能场景的控制功能</text>
           </view>
           <view class="mr-42rpx flex-center">
-            <text class="text-black-tips text-28rpx leading-none">{{linkType==='scene' ? '已关联' : ''}}</text>
+            <text class="text-black-tips text-28rpx leading-none">{{isLinkScene ? '已关联' : ''}}</text>
             <image src="/assets/img/base/arrow-right.png" class="w-32rpx h-32rpx" />
           </view>
         </view>

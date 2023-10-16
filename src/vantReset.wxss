@@ -89,6 +89,11 @@ page {
   background-color: #fff !important;
   color: #ff3849 !important;
 }
+.switch-index--btn-class-fix {
+  background-color: #488fff !important;
+  border-radius: 32rpx !important;
+  height: 88rpx;
+}
 
 /* button end */
 
@@ -124,6 +129,9 @@ page {
 /* 遮罩 end */
 
 /* 弹窗 start */
+.van-toast--text {
+  text-align: justify;
+}
 .van-dialog__header {
   font-size: 36rpx;
   color: #27282a;

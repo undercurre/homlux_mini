@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { storage, emitter, getCurrentPageParams, toWifiProperty } from '../../utils/index'
+import { storage, emitter, getCurrentPageParams } from '../../utils/index'
 import { addScene, retryScene, updateScene } from '../../apis/index'
 import { sceneStore, deviceStore, homeStore } from '../../store/index'
 import { PRO_TYPE } from '../../config/index'
@@ -46,16 +46,20 @@ ComponentWithComputed({
       const sceneData = storage.get('scene_data') as Scene.AddSceneDto | Scene.UpdateSceneDto
       const sceneDeviceActionsFlatten = storage.get('sceneDeviceActionsFlatten') as Device.ActionItem[]
 
-      console.log('sceneData', sceneData, 'sceneDeviceActionsFlatten', sceneDeviceActionsFlatten)
-
       const selectIdList = sceneDeviceActionsFlatten.map((item) => item.uniId)
 
       const deviceList = deviceStore.deviceFlattenList
         .filter((item) => selectIdList.includes(item.uniId))
-        .map((item) => ({
-          ...item,
-          status: 'waiting',
-        }))
+        .map((item) => {
+          if (item.proType === PRO_TYPE.switch) {
+            item.pic = item.switchInfoDTOList[0]?.pic
+          }
+
+          return {
+            ...item,
+            status: 'waiting',
+          }
+        })
 
       // 处理发送请求的deviceActions字段数据
       const deviceMap = deviceStore.deviceMap
@@ -74,23 +78,23 @@ ComponentWithComputed({
           }
         } else {
           const property = action.value
-          let ctrlAction = {} as IAnyObject
+          const ctrlAction = {} as IAnyObject
 
           if (device.deviceType === 2) {
-            ctrlAction.ep = 1
+            ctrlAction.modelName = device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1'
           }
 
           if (device.proType === PRO_TYPE.light) {
-            ctrlAction.OnOff = property.OnOff
+            ctrlAction.power = property.power
 
-            if (property.OnOff === 1) {
-              ctrlAction.ColorTemp = property.ColorTemp
-              ctrlAction.Level = property.Level
+            if (property.power === 1) {
+              ctrlAction.colorTemperature = property.colorTemperature
+              ctrlAction.brightness = property.brightness
             }
 
-            if (device.deviceType === 3) {
-              ctrlAction = toWifiProperty(device.proType, ctrlAction)
-            }
+            // if (device.deviceType === 3) {
+            //   ctrlAction = toWifiProperty(device.proType, ctrlAction)
+            // }
           } else if (device.proType === PRO_TYPE.curtain) {
             ctrlAction.curtain_position = property.curtain_position
           }
@@ -122,7 +126,7 @@ ComponentWithComputed({
       emitter.on('scene_device_result_status', (data) => {
         console.log('scene_device_result_status', data)
         const device = this.data.deviceList.find(
-          (item) => item.uniId === data.devId || item.uniId === `${data.devId}:${data.ep}`,
+          (item) => item.uniId === data.devId || item.uniId === `${data.devId}:${data.modelName}`,
         )
 
         if (device) {
@@ -166,7 +170,7 @@ ComponentWithComputed({
       emitter.off('scene_device_result_status')
       sceneStore.updateAllRoomSceneList()
       sceneStore.updateSceneList()
-      deviceStore.updateSubDeviceList()
+      // deviceStore.updateSubDeviceList()
       deviceStore.updateAllRoomDeviceList()
       homeStore.updateRoomCardList()
     },

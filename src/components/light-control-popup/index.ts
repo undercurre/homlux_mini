@@ -24,17 +24,17 @@ ComponentWithComputed({
       type: Boolean,
       observer(value) {
         if (value) {
-          if (this.data.lightInfo.OnOff) {
+          if (this.data.lightInfo.power) {
             this.setData({
-              OnOff: this.data.lightInfo.OnOff,
-              Level: this.data.lightInfo.Level ?? 1,
-              ColorTemp: this.data.lightInfo.ColorTemp ?? 0,
+              power: this.data.lightInfo.power,
+              brightness: this.data.lightInfo.brightness ?? 1,
+              colorTemperature: this.data.lightInfo.colorTemperature ?? 0,
             })
           } else {
             this.setData({
-              OnOff: this.data.lightInfo.OnOff,
-              Level: this.data.lightInfo.Level ?? 1,
-              ColorTemp: this.data.lightInfo.ColorTemp ?? 0,
+              power: this.data.lightInfo.power,
+              brightness: this.data.lightInfo.brightness ?? 1,
+              colorTemperature: this.data.lightInfo.colorTemperature ?? 0,
             })
           }
         }
@@ -46,18 +46,18 @@ ComponentWithComputed({
     deviceType: number
     deviceId: string
     gatewayId?: string
-    ep?: number
+    modelName?: string
     property: IAnyObject
   }
      */
     lightInfo: {
       type: Object,
       value: {
-        ep: 1,
+        modelName: 'light',
         deviceType: 0,
-        OnOff: 0,
-        Level: 1,
-        ColorTemp: 0,
+        power: 0,
+        brightness: 1,
+        colorTemperature: 0,
         maxColorTemp: 6500,
         minColorTemp: 2700,
       },
@@ -68,19 +68,19 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    OnOff: 0,
-    Level: 1,
-    ColorTemp: 0,
+    power: 0,
+    brightness: 1,
+    colorTemperature: 0,
   },
 
   computed: {
     levelShow(data) {
-      return data.Level
+      return data.brightness
     },
     colorTempShow(data) {
-      const { maxColorTemp, minColorTemp } = data.lightInfo
+      const { maxColorTemp, minColorTemp } = data.lightInfo.colorTempRange || data.lightInfo
 
-      return (data.ColorTemp / 100) * (maxColorTemp - minColorTemp) + minColorTemp
+      return (data.colorTemperature / 100) * (maxColorTemp - minColorTemp) + minColorTemp
     },
   },
 
@@ -96,7 +96,7 @@ ComponentWithComputed({
         gatewayId: lightInfo.gatewayId,
         deviceType: lightInfo.deviceType,
         proType: PRO_TYPE.light,
-        ep: 1,
+        modelName: 'light',
         property,
       })
 
@@ -112,14 +112,14 @@ ComponentWithComputed({
     handleConfirm() {
       this.triggerEvent(
         'confirm',
-        this.data.OnOff
+        this.data.power
           ? {
-              OnOff: this.data.OnOff,
-              Level: this.data.Level,
-              ColorTemp: this.data.ColorTemp,
+              power: this.data.power,
+              brightness: this.data.brightness,
+              colorTemperature: this.data.colorTemperature,
             }
           : {
-              OnOff: this.data.OnOff,
+              power: this.data.power,
             },
       )
     },
@@ -127,69 +127,69 @@ ComponentWithComputed({
     handleChange() {
       this.triggerEvent(
         'change',
-        this.data.OnOff
+        this.data.power
           ? {
-              OnOff: this.data.OnOff,
-              Level: this.data.Level,
-              ColorTemp: this.data.ColorTemp,
+              power: this.data.power,
+              brightness: this.data.brightness,
+              colorTemperature: this.data.colorTemperature,
             }
           : {
-              OnOff: this.data.OnOff,
+              power: this.data.power,
             },
       )
     },
     handleOnOffChange(e: WechatMiniprogram.CustomEvent) {
-      const OnOff = e.detail ? 1 : 0
+      const power = e.detail ? 1 : 0
 
       this.setData({
-        OnOff: OnOff,
+        power: power,
       })
 
       if (this.data.isControl) {
-        this.controlSubDevice({ OnOff: this.data.OnOff })
+        this.controlSubDevice({ power: this.data.power })
       }
 
       this.handleConfirm()
     },
     handleLevelDrag(e: { detail: number }) {
       this.setData({
-        Level: e.detail,
+        brightness: e.detail,
       })
 
       if (this.data.isControl) {
-        this.controlSubDevice({ Level: this.data.Level })
+        this.controlSubDevice({ brightness: this.data.brightness })
       }
 
       this.handleChange()
     },
     handleLevelChange(e: { detail: number }) {
       this.setData({
-        Level: e.detail,
+        brightness: e.detail,
       })
 
       if (this.data.isControl) {
-        this.controlSubDevice({ Level: this.data.Level })
+        this.controlSubDevice({ brightness: this.data.brightness })
       }
 
       this.handleConfirm()
     },
     handleColorTempChange(e: { detail: number }) {
       this.setData({
-        ColorTemp: e.detail,
+        colorTemperature: e.detail,
       })
 
       if (this.data.isControl) {
-        this.controlSubDevice({ ColorTemp: this.data.ColorTemp })
+        this.controlSubDevice({ colorTemperature: this.data.colorTemperature })
       }
 
       this.handleConfirm()
     },
     handleColorTempDrag(e: { detail: number }) {
       this.setData({
-        ColorTemp: e.detail,
+        colorTemperature: e.detail,
       })
 
-      this.controlSubDevice({ ColorTemp: this.data.ColorTemp })
+      this.controlSubDevice({ colorTemperature: this.data.colorTemperature })
       this.handleChange()
     },
   },

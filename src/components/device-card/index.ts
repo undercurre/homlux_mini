@@ -49,10 +49,11 @@ ComponentWithComputed({
    */
   data: {
     ripple: false,
-    onOff: false, // true: on false: off
+    power: false, // true: on false: off
     showDeviceOffline: false,
     isProcessing: false,
     _clientRect: {} as IAnyObject,
+    isLoadImgError: false,
   },
   lifetimes: {
     ready() {
@@ -66,6 +67,9 @@ ComponentWithComputed({
 
   computed: {
     picUrl(data) {
+      if (data.isLoadImgError) {
+        return '/assets/img/default-img/default-device.png'
+      }
       if (data.deviceInfo.proType === PRO_TYPE.switch && data.showBtnDetail) {
         return data.deviceInfo?.switchInfoDTOList[0]?.pic
       } else if (data.deviceInfo?.pic) {
@@ -76,7 +80,7 @@ ComponentWithComputed({
     controlBtnPic(data) {
       // 窗帘，位置大于0即为开启
       if (data.deviceInfo.proType === PRO_TYPE.curtain) {
-        const pos = data.deviceInfo.mzgdPropertyDTOList['1'].curtain_position
+        const pos = data.deviceInfo.mzgdPropertyDTOList['curtain'].curtain_position
         const isClosed = pos === '0'
         if (data.isProcessing) {
           return isClosed ? '/assets/img/base/curtain-opening.png' : '/assets/img/base/curtain-closing.png'
@@ -85,7 +89,7 @@ ComponentWithComputed({
       }
       // 灯及灯组
       else if (data.deviceInfo.proType === PRO_TYPE.light) {
-        return data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
+        return data.deviceInfo.mzgdPropertyDTOList['light'].power
           ? '/assets/img/base/power-on.png'
           : '/assets/img/base/power-off.png'
       }
@@ -97,7 +101,7 @@ ComponentWithComputed({
           // 万一设备没有开关属性，不显示
           return ''
         }
-        return data.deviceInfo.mzgdPropertyDTOList[switchId].OnOff
+        return data.deviceInfo.mzgdPropertyDTOList[switchId].power
           ? '/assets/img/base/power-on.png'
           : '/assets/img/base/power-off.png'
       }
@@ -126,6 +130,11 @@ ComponentWithComputed({
     switchDeviceName(data) {
       return data.deviceInfo.deviceName.slice(0, 5)
     },
+
+    // 设备是否可控
+    canCtrl(data) {
+      return data.deviceInfo.onLineStatus || data.deviceInfo.canLanCtrl
+    },
   },
 
   /**
@@ -139,7 +148,7 @@ ComponentWithComputed({
           clientRect: this.data._clientRect,
         })
       } else {
-        if (this.data.deviceInfo.onLineStatus) {
+        if (this.data.canCtrl) {
           this.triggerEvent('cardTap', {
             ...this.data.deviceInfo,
             clientRect: this.data._clientRect,
@@ -156,7 +165,7 @@ ComponentWithComputed({
      * 处理中部位置点击时的事件，优化交互手感
      */
     handleMiddleTap() {
-      if (this.data.showControl && this.data.deviceInfo.onLineStatus) {
+      if (this.data.showControl && this.data.canCtrl) {
         this.handlePowerTap()
       } else {
         this.handleCardTap()
@@ -184,24 +193,25 @@ ComponentWithComputed({
     ),
     handlePowerTap() {
       // 如果设备离线，刚转为点击卡片
-      if (!this.data.deviceInfo.onLineStatus) {
+      if (!this.data.canCtrl) {
         this.handleCardTap()
         return
       }
 
       // 振动反馈
-      if (wx.vibrateShort) wx.vibrateShort({ type: 'light' })
+      if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
 
       // emit 事件，发送指令等
       this.triggerEvent('controlTap', { ...this.data.deviceInfo, clientRect: this.data._clientRect })
 
       // 状态反转
-      let onOff = false
+      let power = false
       if (this.data.deviceInfo.proType === PRO_TYPE.light) {
-        onOff = !this.data.deviceInfo.mzgdPropertyDTOList['1'].OnOff
+        const modelName = this.data.deviceInfo.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1'
+        power = !this.data.deviceInfo.mzgdPropertyDTOList[modelName].power
       } else if (this.data.deviceInfo.proType === PRO_TYPE.switch) {
         const { switchId } = this.data.deviceInfo.switchInfoDTOList[0]
-        onOff = !this.data.deviceInfo.mzgdPropertyDTOList[switchId]?.OnOff
+        power = !this.data.deviceInfo.mzgdPropertyDTOList[switchId]?.power
 
         // 未确定用途，暂时注释
         // if (this.data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
@@ -210,7 +220,7 @@ ComponentWithComputed({
       }
 
       this.setData({
-        onOff,
+        power,
       })
 
       // 节流执行的部分
@@ -226,6 +236,12 @@ ComponentWithComputed({
             clientRect: res[0],
           })
         })
+    },
+
+    loadImgError() {
+      this.setData({
+        isLoadImgError: true,
+      })
     },
   },
 })
