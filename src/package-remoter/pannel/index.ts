@@ -1,7 +1,7 @@
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { CMD, FACTORY_ADDR, FREQUENCY_TIME } from '../../config/remoter'
-import { Logger, initBleCapacity, storage } from '../../utils/index'
+import { CMD, FACTORY_ADDR, FREQUENCY_TIME, MAX_TEMPERATURE, MIN_TEMPERATURE } from '../../config/remoter'
+import { Logger, initBleCapacity, storage, isDevMode } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import {
   createBleServer,
@@ -28,6 +28,7 @@ ComponentWithComputed({
     isFactoryMode: false, // 工厂调试模式，按特定的地址发送指令
     toolbarMarginTop:
       (storage.get('statusBarHeight') as number) + (storage.get('navigationBarHeight') as number) + 'px',
+    setTemperture: 30,
     _envVersion: 'release', // 当前小程序环境，默认为发布版，用于屏蔽部分实验功能
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
     _bleService: null as BleService | null,
@@ -116,7 +117,7 @@ ComponentWithComputed({
         return
       }
 
-      if (!this.data._bleServer) {
+      if (!this.data._bleServer && !isDevMode) {
         this.data._bleServer = await createBleServer()
       }
       let { key } = e.target.dataset
@@ -128,7 +129,7 @@ ComponentWithComputed({
       if (key === 'LIGHT_LAMP') {
         key = ON_KEYS.includes(this.data._lastPowerKey) ? `LIGHT_LAMP_OFF` : `LIGHT_LAMP_ON`
       }
-      // 如果是照明操作相关的按钮，则记录之
+      // 如果是照明操作相关的按钮，则记录到本页变量中（离开页面不保存）
       if ([...ON_KEYS, 'LIGHT_LAMP_OFF', 'LIGHT_LAMP_ON'].includes(key)) {
         this.data._lastPowerKey = key
       }
@@ -142,7 +143,15 @@ ComponentWithComputed({
         this.data._send_key = key
       }
       const addr = this.data.isFactoryMode ? FACTORY_ADDR : remoterStore.curAddr
-      const payload = remoterProtocol.generalCmdString(CMD[key])
+
+      // 温度特别设值 TODO 重构为更通用方法
+      const isTempSetting = ['TEMPERATURE_ADD', 'TEMPERATURE_SUB'].includes(key)
+      if (isTempSetting) {
+        let setTemperture = key === 'TEMPERATURE_ADD' ? this.data.setTemperture + 1 : this.data.setTemperture - 1
+        setTemperture = Math.min(Math.max(setTemperture, MIN_TEMPERATURE), MAX_TEMPERATURE)
+        this.setData({ setTemperture })
+      }
+      const payload = isTempSetting ? remoterProtocol.generalSettingString([0xff, 0xff, this.data.setTemperture]) : remoterProtocol.generalCmdString(CMD[key])
 
       const { dir } = e.target.dataset
       Logger.log('toSendCmd', key, dir, { payload, addr, isFactory: this.data.isFactoryMode })

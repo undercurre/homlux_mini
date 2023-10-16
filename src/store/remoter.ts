@@ -1,10 +1,6 @@
 import { observable, runInAction } from 'mobx-miniprogram'
-import { storage } from '../utils/index'
+import { storage, isDevMode } from '../utils/index'
 import { deviceConfig } from '../config/remoter'
-
-// 是否开启模拟数据，用于模型器样式调整
-const { platform } = wx.getSystemInfoSync()
-const IS_MOCK = platform === 'devtools'
 
 const MOCK_DEVICES = [
   {
@@ -30,6 +26,20 @@ const MOCK_DEVICES = [
     deviceName: '浴霸Mock',
     deviceType: '26',
     deviceModel: '02',
+    saved: true,
+    actionStatus: true,
+    defaultAction: 0,
+    DISCOVERED: 0,
+  },
+  {
+    dragId: '112233445565',
+    orderNum: 1,
+    deviceId: '0',
+    addr: '112233445565',
+    devicePic: '/assets/img/remoter/bathHeater.png',
+    deviceName: '浴霸A70 Mock',
+    deviceType: '26',
+    deviceModel: '07',
     saved: true,
     actionStatus: true,
     defaultAction: 0,
@@ -133,7 +143,7 @@ export const remoterStore = observable({
 
   // 从本地缓存初始化/重置【我的设备】列表
   retrieveRmStore() {
-    const defaultList = IS_MOCK ? MOCK_DEVICES : []
+    const defaultList = isDevMode() ? MOCK_DEVICES : [] // 是否开启模拟数据，用于模型器样式调整
     const list = (storage.get(RM_KEY) ?? defaultList) as Remoter.DeviceItem[]
 
     runInAction(() => {

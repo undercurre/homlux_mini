@@ -249,19 +249,39 @@ const _handleBleResponse = (response: string) => {
 }
 
 /**
- * 根据电控协议生成设备指令数据
+ * 根据电控协议生成设备指令
  */
 const _generalCmdString = (key: number) => {
-  const channel = 0x01
-  const version = 0x01
-  const sequence = 0x00
-  const sum = (channel + version + sequence + key) % 256
-  const data = [channel, version, sequence, key]
-  // Byte4...Byte14 预留，默认0x00
+  const channel = 0x01 // 通道，固定值
+  const version = 0x01 // 协议版本
+  const cmdType = 0x00 // 命令号
+  const sum = (channel + version + cmdType + key) % 256
+  const data = [channel, version, cmdType, key]
+  // 其余字节预留，默认0x00
   for (let i = 4; i <= 14; ++i) {
     data[i] = 0x00
   }
   data.push(sum)
+  return data.map((byte) => byte.toString(16).padStart(2, '0')).join('')
+}
+
+/**
+ * 根据电控协议生成设备设值指令
+ */
+const _generalSettingString = (values: number[]) => {
+  const channel = 0x01 // 通道，固定值
+  const version = 0x01 // 协议版本
+  const cmdType = 0x01 // 命令号
+  let sum = channel + version + cmdType
+  const data = [channel, version, cmdType, ...values]
+  for (let v of values) {
+    sum += v
+  }
+  // 其余字节预留，默认0x00
+  for (let i = 3 + values.length; i <= 14; ++i) {
+    data[i] = 0x00
+  }
+  data.push(sum % 256)
   return data.map((byte) => byte.toString(16).padStart(2, '0')).join('')
 }
 
@@ -273,4 +293,5 @@ export default {
   handleBluetoothResponse: _handleBluetoothResponse,
   handleBleResponse: _handleBleResponse,
   generalCmdString: _generalCmdString,
+  generalSettingString: _generalSettingString,
 }

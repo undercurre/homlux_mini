@@ -30,6 +30,7 @@ declare namespace Remoter {
     deviceName: string
     devicePic: string
     joystick?: Record<string, ButtonRes>
+    showTemperature?: boolean
     mList?: ButtonRes[]
     bList?: ButtonRes[]
     actions: ButtonRes[]

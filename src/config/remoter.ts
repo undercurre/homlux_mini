@@ -16,6 +16,10 @@ export const SEEK_INTERVAL = 8000
 // 工厂调试用Mac地址
 export const FACTORY_ADDR = '112233445566'
 
+// 浴霸温度最大最小值
+export const MAX_TEMPERATURE = 40
+export const MIN_TEMPERATURE = 20
+
 /**
  * @description 设备交互数据配置，按设备类型区分
  * { deviceType: { deviceModel: { configDetail }}}
@@ -301,6 +305,83 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
         },
       },
       mList: [
+        {
+          key: 'BATH_AUTO',
+          icon: '/package-remoter/assets/scene81.png',
+          iconActive: '/package-remoter/assets/scene80.png',
+          name: '安心沐浴',
+        },
+        {
+          key: 'BATH_WIND',
+          icon: '/package-remoter/assets/scene91.png',
+          iconActive: '/package-remoter/assets/scene90.png',
+          name: '吹风',
+        },
+        {
+          key: 'BATH_VENTILATE',
+          icon: '/package-remoter/assets/sceneA1.png',
+          iconActive: '/package-remoter/assets/sceneA0.png',
+          name: '换气',
+        },
+        {
+          key: 'BATH_DRY',
+          icon: '/package-remoter/assets/sceneB1.png',
+          iconActive: '/package-remoter/assets/sceneB0.png',
+          name: '干燥',
+        },
+      ],
+      bList: [
+        {
+          key: 'BATH_LAMP',
+          icon: '/package-remoter/assets/power1.png',
+          iconActive: '/package-remoter/assets/power0.png',
+          name: '照明',
+        },
+        {
+          key: 'BATH_ALL_OFF',
+          icon: '/package-remoter/assets/power1.png',
+          iconActive: '/package-remoter/assets/power0.png',
+          name: '待机',
+        },
+      ],
+      actions: [
+        {
+          key: 'BATH_LAMP',
+          name: '照明',
+        },
+        {
+          key: 'BATH_ALL_OFF',
+          name: '待机',
+        },
+        {
+          key: 'BATH_WIND',
+          name: '吹风',
+        },
+        {
+          key: 'BATH_VENTILATE',
+          name: '换气',
+        },
+        {
+          key: 'BATH_DRY',
+          name: '干燥',
+        },
+      ],
+    },
+    // MY-S5X30-A70
+    '07': {
+      // 0111
+      deviceName: '浴霸',
+      devicePic: '/assets/img/remoter/bathHeater.png',
+      showTemperature: true,
+      mList: [
+        {
+          key: 'TEMPERATURE_ADD',
+          name: '温度+',
+        },
+        {
+          key: 'TEMPERATURE_SUB',
+          name: '温度-',
+        },
         {
           key: 'BATH_AUTO',
           icon: '/package-remoter/assets/scene81.png',

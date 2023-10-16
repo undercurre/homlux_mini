@@ -17,6 +17,9 @@
   </view>
 
   <view class="flex-col-center flex-1">
+    <view wx:if="{{curRemoter.showTemperature}}">
+      <text class="text-temp">{{setTemperture}}</text>
+    </view>
     <view class="joystick" wx:if="{{curRemoter.joystick}}">
       <mz-button class="absolute up" img="/package-remoter/assets/up.png" imgActive="/package-remoter/assets/upActive.png" imgWidth="304rpx" imgHeight="142rpx" icon="{{curRemoter.joystick.up.icon}}" iconActive="{{curRemoter.joystick.up.iconActive}}" bind:tap="toSendCmd" bind:touchstart="handleTouchStart" data-key="{{curRemoter.joystick.up.key}}" data-longpress="{{curRemoter.joystick.up.longpress}}" data-dir="U" bind:longpress="handleLongPress" bind:touchend="handleTouchEnd"></mz-button>
 

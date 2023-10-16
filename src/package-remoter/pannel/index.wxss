@@ -56,3 +56,8 @@
   padding-top: 16rpx;
   padding-bottom: calc(env(safe-area-inset-bottom) + 16rpx);
 }
+
+.text-temp {
+  font-size: 220rpx;
+  color: #495264;
+}
