@@ -64,7 +64,7 @@ const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: Base
       // token过期，跳转到登录
       if ((result.data as unknown as { code: number }).code === TOKEN_EXPIRED) {
         logout()
-      } else if (!(result.data as unknown as { success: boolean }).success) {
+      } else if (!(result.data as unknown as { success: boolean }).success && options.log) {
         Logger.error('接口已响应，但返回异常', options, result.data)
       }
 

@@ -113,7 +113,6 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
     if (requestOption.log) {
       Logger.console(`» 发起请求 ${requestOption.url} 参数：\n`, requestOption.data)
     }
-
     wx.request({
       ...requestOption,
       complete() {
