@@ -151,7 +151,9 @@ ComponentWithComputed({
         setTemperture = Math.min(Math.max(setTemperture, MIN_TEMPERATURE), MAX_TEMPERATURE)
         this.setData({ setTemperture })
       }
-      const payload = isTempSetting ? remoterProtocol.generalSettingString([0xff, 0xff, this.data.setTemperture]) : remoterProtocol.generalCmdString(CMD[key])
+      const payload = isTempSetting
+        ? remoterProtocol.generalSettingString([0xff, 0xff, this.data.setTemperture])
+        : remoterProtocol.generalCmdString(CMD[key])
 
       const { dir } = e.target.dataset
       Logger.log('toSendCmd', key, dir, { payload, addr, isFactory: this.data.isFactoryMode })
