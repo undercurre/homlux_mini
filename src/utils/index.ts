@@ -170,6 +170,10 @@ export function deviceCount(list: Device.DeviceItem[], lightsInGroup: string[]):
           }
         })
         break
+      // 传感器统计控制卡片数
+      case PRO_TYPE.sensor:
+        endCount++
+        break
       // 网关及其他类型，不作统计
       case PRO_TYPE.gateway:
       default:

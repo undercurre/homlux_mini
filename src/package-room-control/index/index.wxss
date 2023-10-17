@@ -2,16 +2,28 @@
   top: 0;
   left: 0;
   width: 750rpx;
-  padding: 0 40rpx;
+  padding: 0 32rpx;
   border: 2rpx solid #fff;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
   border-radius: 0 0 32rpx 32rpx;
   background-image: linear-gradient(180deg, #f2f5fc 10%, #ffffff 74%);
   box-shadow: 0px 4px 16px 0px rgba(97, 109, 136, 0.1);
+}
+.scene-box {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1rpx solid rgba(238, 238, 238, 1);
+  padding: 24rpx 0;
+  margin-bottom: 18rpx;
+}
+.slider-box {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12rpx 6rpx 12rpx 0;
 }
 
 .cancel-select-btn {
@@ -21,8 +33,19 @@
   margin-right: -14rpx;
 }
 
+.slider-brightness-bar {
+  background-image: linear-gradient(270deg, #dbe5ff 0%, #507fff 100%) !important;
+  box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.16);
+  width: 580rpx;
+}
+
+.slider-color-temp-bar {
+  background-image: linear-gradient(270deg, #c7ecff 8%, #fdeeba 75%, #f9dd9f 100%) !important;
+  box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.16);
+  width: 580rpx;
+}
+
 .fav-btn {
-  margin-right: 24rpx;
   padding: 0 !important;
   color: #fff !important;
   background-image: linear-gradient(155deg, #468cfb 6%, #6ba3fc 96%) !important;

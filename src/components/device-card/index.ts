@@ -140,6 +140,16 @@ ComponentWithComputed({
     isGroup(data) {
       return data.deviceInfo.deviceType === 4
     },
+    lowBattery(data) {
+      if (data.deviceInfo.proType === PRO_TYPE.sensor) {
+        return !!data.deviceInfo.mzgdPropertyDTOList?.wallSwitch1.batteryAlarmState
+      }
+      return false
+    },
+    // 在卡片上有控制按钮的
+    hasControl(data) {
+      return data.deviceInfo.proType !== PRO_TYPE.sensor
+    },
   },
 
   /**

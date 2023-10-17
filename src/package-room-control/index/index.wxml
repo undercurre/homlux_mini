@@ -18,17 +18,33 @@
   <view wx:if="{{roomHasDevice}}" class="w-750rpx flex flex-col items-center">
     <!-- 场景 -->
     <view class="tool-box fixed" style="padding-top: {{toolboxTop}}px; height: {{toolboxTop + toolboxContentHeight}}px;">
-      <image src="/assets/img/base/scene.png" class="w-64rpx h-64rpx ml-24rpx"></image>
-      <text id="scene-title" class="text-32rpx text-hex-333333 font-medium ml-16rpx">场景</text>
-      <view class="flex flex-1 justify-end items-center" bind:tap="handleSceneTap">
-        <view class="mr-38rpx flex">
-          <view class="scene-icon p-4rpx bg-hex-fff rounded-999" wx:for="{{sceneListInBar}}" wx:key="sceneId">
-            <view class="bg-hex-eff0f3 rounded-999">
-              <svg-icon name="scene:{{item.sceneIcon}}" width="52rpx" height="52rpx" />
+      <view class="scene-box">
+        <image src="/assets/img/base/scene.png" class="w-64rpx h-64rpx"></image>
+        <text id="scene-title" class="text-32rpx text-hex-333333 font-medium ml-16rpx">场景</text>
+        <view class="flex flex-1 justify-end items-center" bind:tap="handleSceneTap">
+          <view class="mr-38rpx flex">
+            <view class="scene-icon p-4rpx bg-hex-fff rounded-999" wx:for="{{sceneListInBar}}" wx:key="sceneId">
+              <view class="bg-hex-eff0f3 rounded-999">
+                <svg-icon name="scene:{{item.sceneIcon}}" width="52rpx" height="52rpx" />
+              </view>
             </view>
           </view>
+          <van-button catchtap="handleCollect" custom-class="fav-btn" type="primary">创建场景</van-button>
         </view>
-        <van-button catchtap="handleCollect" custom-class="fav-btn" type="primary">创建场景</van-button>
+      </view>
+
+      <view class="slider-box">
+        <image src="/package-room-control/assets/img/bright.png" class="w-48rpx h-48rpx" />
+        <van-slider data-type="level" bind:change="handleLevelChange" bind:drag="handleLevelDrag" bind:drag-end="handleLevelDragEnd" value="{{lightInfoInner.Level}}" min="{{1}}" use-button-slot custom-class="slider-brightness-bar" active-color="rgba(0,0,0,0)" bar-height="16rpx">
+          <image slot="button" src="/package-room-control/assets/img/btn.png" class="w-72rpx h-72rpx mt-6rpx" />
+        </van-slider>
+      </view>
+
+      <view class="slider-box">
+        <image src="/package-room-control/assets/img/colorTemp.png" class="w-48rpx h-48rpx" />
+        <van-slider data-type="colorTemp" bind:change="handleColorTempChange" bind:drag="handleColorTempDrag" bind:drag-end="handleColorTempDragEnd" value="{{lightInfoInner.ColorTemp}}" use-button-slot custom-class="slider-color-temp-bar" active-color="rgba(0,0,0,0)" bar-height="16rpx">
+          <image slot="button" src="/package-room-control/assets/img/btn.png" class="w-72rpx h-72rpx mt-6rpx" />
+        </van-slider>
       </view>
     </view>
 
