@@ -159,7 +159,7 @@ export const remoterStore = observable({
       const { deviceModel, deviceType, addr, defaultAction } = device
       const config = deviceConfig[deviceType][deviceModel]
       if (!config) {
-        console.log('config NOT EXISTED in renewRmState')
+        console.log(`renewRmState 保存的设备[${deviceType}][${deviceModel}]不存在`)
         return device
       }
       const { actions } = config

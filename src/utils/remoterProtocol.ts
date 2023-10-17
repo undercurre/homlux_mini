@@ -73,14 +73,23 @@ const _parseEncryptFlag = (encryptFlag: string) => {
   }
 }
 
-// 转换设备状态
+/**
+ * @name 转换设备状态
+ * @description
+ * @returns key 命名须与 src\config\remoter.ts 中的 actions.key 保持一致
+ */
 const _parsePayload = (payload: string, deviceType: string) => {
   const rxBuf = new ArrayBuffer(payload.length) // 申请内存
   const rxU16 = new Uint16Array(rxBuf)
   for (let i = 0; i < payload.length / 2; ++i) {
     rxU16[i] = parseInt(payload.slice(i * 2, i * 2 + 2), 16)
   }
-
+  if (deviceType === '13') {
+    return {
+      LIGHT_LAMP: !!(rxU16[0] & BIT_0),
+      LIGHT_NIGHT_LAMP: rxU16[8] === 0x06,
+    }
+  }
   if (deviceType === '26') {
     return {
       BATH_WARM: !!(rxU16[4] & BIT_5),
