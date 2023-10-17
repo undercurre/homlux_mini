@@ -23,7 +23,7 @@ ComponentWithComputed({
       {
         icon: '/package-distribution/assets/guide/subdevice.png',
         name: '开关/灯具',
-        path: '/package-distribution/scan/index?type=subdevice',
+        path: '/package-distribution/choose-light/index',
       },
       {
         icon: '/package-distribution/assets/guide/screen.png',
@@ -43,17 +43,6 @@ ComponentWithComputed({
           sn8: '79700Z76',
           productId: 'SC-1/M2-Z',
           deviceImg: '/package-distribution/assets/guide/curtain.png',
-          mode: 0,
-        } as Meiju.IProductItem),
-      },
-      {
-        icon: '/package-distribution/assets/guide/light-wifi.png',
-        name: '吸顶灯',
-        path: strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
-          proType: '13',
-          sn8: '7909AC81',
-          productId: '美的智能吸顶灯',
-          deviceImg: '/package-distribution/assets/guide/light-wifi.png',
           mode: 0,
         } as Meiju.IProductItem),
       },

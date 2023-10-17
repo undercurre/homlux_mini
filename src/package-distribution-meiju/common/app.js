@@ -53,6 +53,7 @@ const app = {
 wx.getSystemInfo({
   success: (res) => {
     app.globalData.systemInfo = res
+    app.globalData.isPx = res && res.safeArea.top > 20
     console.log('getWxSystemInfo, success, forceUpdate', res)
   },
   fail: (e) => {

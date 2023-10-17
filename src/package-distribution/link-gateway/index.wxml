@@ -1,5 +1,5 @@
 <view class="page-container flex flex-col">
-  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="{{pageTitle}}"></nav-bar>
+  <nav-bar leftArrow="{{true}}" bind:leftTap="goBack" title="{{pageTitle}}"></nav-bar>
 
   <view wx:if="{{!isConnectDevice && isAndroid10Plus}}" class="grow px-32rpx flex flex-col justify-between">
     <view>

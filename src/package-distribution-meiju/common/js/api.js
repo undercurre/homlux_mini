@@ -387,13 +387,6 @@ var api = {
     api: '/v1/appliance/bluetooth/decrypt/order_lite',
   },
 
-  //获取设备确权状态
-  getApplianceAuthType: {
-    url: 'https://iot-appliance-sit.smartmidea.net/v1/appliance/auth/get',
-    masUrl: `${domain[`${environment}`] + masPrefix}/v1/appliance/auth/get`,
-    api: '/v1/appliance/auth/get',
-  },
-
   //使用这个接口让设备进入待确权状态
   applianceAuthConfirm: {
     url: 'https://iot-appliance-sit.smartmidea.net/v1/appliance/auth/confirm',

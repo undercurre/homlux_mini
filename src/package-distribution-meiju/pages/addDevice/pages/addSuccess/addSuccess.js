@@ -6,7 +6,6 @@ import { requestService } from '../../../../utils/requestService'
 import { getReqId, getStamp, cloudEncrypt, validateFun } from 'm-utilsdk/index'
 import { showToast, getFullPageUrl } from '../../../../utils/util'
 import { service } from '../../../assets/js/service.js'
-import { goToInvitePage } from '../../../../utils/pluginFilter'
 import paths from '../../../../utils/paths'
 import { service as services } from '../assets/js/service'
 import { api } from '../../../../common/js/api'
@@ -172,28 +171,14 @@ Page({
         blueVersion: 2,
         sn: sn,
         plainSn: plainSn,
-        isCreateFamily: app.globalData.isCreateFamily,
       })
     } else {
       // 单品配网原逻辑
       this.data.deviceInfo = app.addDeviceInfo
       console.log('---添加设备参数---', this.data.deviceInfo)
       if (app.addDeviceInfo) {
-        const {
-          deviceName,
-          mac,
-          type,
-          sn8,
-          blueVersion,
-          mode,
-          sn,
-          bindType,
-          moduleVersion,
-          isTwice,
-          plainSn,
-          lastBindName,
-          applianceCode,
-        } = app.addDeviceInfo
+        const { deviceName, mac, type, sn8, blueVersion, mode, sn, bindType, plainSn, lastBindName, applianceCode } =
+          app.addDeviceInfo
         this.setData({
           combinedStatus: -1,
           titleDeviceName: deviceName,
@@ -206,212 +191,16 @@ Page({
           sn: sn,
           bindType: bindType,
           mode: mode,
-          isCreateFamily: app.globalData.isCreateFamily,
           plainSn: plainSn,
           applianceCode: applianceCode,
         })
       }
     }
-    this.currentHomeGroupId = app.globalData.currentHomeGroupId || ''
-    // 兼容大屏设备扫码
-    if (this.data.deviceInfo.cloudBackDeviceInfo && this.data.deviceInfo.cloudBackDeviceInfo.homegroupId) {
-      this.currentHomeGroupId = this.data.deviceInfo.cloudBackDeviceInfo.homegroupId || ''
-    }
-    console.log('当前家庭id===', this.currentHomeGroupId)
-    if (app.addDeviceInfo.combinedDeviceFlag && app.combinedDeviceInfo[0].combinedStatus > -1) {
-      // 组合成功的新设备取主设备的房间ID
-      const roomId =
-        app.combinedDeviceInfo[0].combinedStatus == 1
-          ? app.globalData.currentRoomId
-          : this.data.deviceInfo.cloudBackDeviceInfo.roomId || app.globalData.currentRoomId
-      console.log('当前房间id---', roomId)
-      this.getFamilyInfo(this.currentHomeGroupId, roomId)
-    } else {
-      console.log('当前房间id===', app.globalData.currentRoomId)
-      this.getFamilyInfo(this.currentHomeGroupId)
-    }
-    this.getHomeList()
-  },
-  //点击重新获取房间信息
-  retryGetFamilyInfo() {
-    this.getFamilyInfo(this.currentHomeGroupId)
-  },
-  getFamilyInfo(groupId, curRoomId) {
-    let reqData = {
-      homegroupId: groupId || '',
-      reqId: getReqId(),
-      stamp: getStamp(),
-    }
-    this.setData({
-      isgetFamilyInfoFail: false,
-    })
-    let { currentHomeGroupId, curFamilyInfo, currentRoomId, currentRoomName } = app.globalData
-    if (groupId == currentHomeGroupId && groupId == curFamilyInfo.homegroupId) {
-      // 8.24 update 解决第1次保存时groupId更新了curFamilyInfo没更新导致家庭显示错误的问题
-      console.log('返回默认家庭家庭信息================', curFamilyInfo)
-      this.currentHomeGroupId = groupId
-      this.data.homeList.forEach((item) => {
-        //重置选中标志
-        item.type = item.value == groupId ? 'seleted' : 'normal'
-      })
-      this.setData({
-        homeList: this.data.homeList,
-        familyInfo: curFamilyInfo,
-        currentRoomId: currentRoomId,
-        currentRoomName: currentRoomName,
-      })
-      return
-    }
-    requestService
-      .request('applianceList', reqData)
-      .then((resp) => {
-        wx.hideLoading()
-        console.log('默认家庭信息', resp.data.data.homeList[0])
-        this.currentHomeGroupId = groupId
-        this.data.homeList.forEach((item) => {
-          //重置选中标志
-          item.type = item.value == groupId ? 'seleted' : 'normal'
-        })
-        this.setData({
-          homeList: this.data.homeList,
-          familyInfo: resp.data.data.homeList[0],
-        })
-        if (curRoomId) {
-          this.setData({
-            currentRoomId: curRoomId,
-          })
-        } else {
-          this.setData({
-            currentRoomId: resp.data.data.homeList[0].roomList[0].roomId,
-            currentRoomName: resp.data.data.homeList[0].roomList[0].name,
-          })
-        }
-      })
-      .catch((error) => {
-        this.setData({
-          isgetFamilyInfoFail: true,
-          currentRoomId: null,
-        })
-        console.log('[获取家庭信息异常]', error)
-      })
-  },
-  getHomeList() {
-    let { homeGrounpList } = app.globalData
-    if (homeGrounpList.length) {
-      let homeList = []
-      homeGrounpList.forEach((item) => {
-        if (item.roleId == '1001' || item.roleId == '1002') {
-          //过滤 留下自己创建的家庭
-          homeList.push({
-            text: item.name,
-            value: item.homegroupId,
-            type: item.homegroupId == this.currentHomeGroupId ? 'seleted' : 'normal',
-          })
-        }
-      })
-      this.setData({
-        homeList: homeList,
-      })
-      console.info('获取当前家庭列表===', this.data.homeList)
-    } else {
-      let reqData = {
-        reqId: getReqId(),
-        stamp: getStamp(),
-      }
-      requestService.request('homeList', reqData).then((resp) => {
-        // console.log('家庭列表0', resp.data.data.homeList)
-        let homeList = []
-        resp.data.data.homeList.forEach((item) => {
-          if (item.roleId == '1001' || item.roleId == '1002') {
-            //过滤 留下自己创建的家庭
-            homeList.push({
-              text: item.name,
-              value: item.homegroupId,
-              type: item.homegroupId == this.currentHomeGroupId ? 'seleted' : 'normal',
-            })
-          }
-        })
-        // homeList.push({
-        //   text: '新增家庭',
-        //   type: 'warn',
-        //   value: 0
-        // })
-        // console.log('家庭列表0++++++++', homeList, this.data.isCreateFamily)
-        this.setData({
-          homeList: homeList,
-        })
-        console.info('查询当前家庭列表===', this.data.homeList)
-      })
-    }
-  },
-  //切换所属家庭
-  switchFamily() {
-    if (!app.globalData.isCreateFamily) {
-      //绑定的不是自己创建的家庭 没权限切换家庭
-      console.warn('绑定的不是自己创建的家庭 没权限切换家庭')
-      return
-    }
-    if (this.data.homeList.length <= 1) {
-      //家庭数小于1
-      console.warn('家庭数小于1')
-      return
-    }
-    this.setData({
-      showActionsheet: true,
-    })
   },
   opendDialogInput() {
     this.setData({
       ['dialog.title']: '请输入房间名称',
       ['dialog.dialogShow']: true,
-    })
-  },
-  //点击新增家庭
-  clickAddHomegroup() {
-    this.setData({
-      ['dialog.dialogShow']: true,
-      ['dialog.title']: '请输入家庭名称',
-    })
-  },
-  addHomegroup(homeName) {
-    let resq = {
-      name: homeName,
-      reqId: getReqId(),
-      stamp: getStamp(),
-    }
-    wx.showLoading({
-      icon: 'none',
-    })
-    requestService.request('addHomegroup', resq).then((resp) => {
-      console.log('创建家庭成功 +++', resp.data.data.homegroupId)
-      app.globalData.currentHomeGroupId = resp.data.data.homegroupId
-      this.currentHomeGroupId = resp.data.data.homegroupId
-      this.getFamilyInfo(this.currentHomeGroupId)
-    })
-  },
-  addRoom(roomName) {
-    let resq = {
-      homegroupId: this.currentHomeGroupId,
-      name: roomName,
-      reqId: getReqId(),
-      stamp: getStamp(),
-    }
-    wx.showLoading({
-      icon: 'none',
-    })
-    requestService.request('addRoom', resq).then((resp) => {
-      console.log('创建房间成功', resp.data.data)
-      this.getFamilyInfo(this.currentHomeGroupId, resp.data.data.id)
-    })
-  },
-  switchRoom(e) {
-    let ds = e.currentTarget.dataset
-    let roomId = ds.id
-    let roomName = ds.roomName
-    console.log('switch room room name', roomName)
-    this.setData({
-      currentRoomId: roomId,
-      currentRoomName: roomName,
     })
   },
   setDeviceName() {
@@ -475,61 +264,16 @@ Page({
       showToast('请选择所在房间后再试')
       return
     }
-    let homeName = this.data.familyInfo.name
-    let { mode, type, sn, sn8, mac, applianceCode, deviceImg } = app.addDeviceInfo
-    let btMac = mac ? mac.replace(/:/g, '').toLocaleUpperCase() : ''
-    let applianceType = type.includes('0x') ? type : '0x' + type
-    if (mode == 20) {
-      //遙控設備 修改綁定信息
-      let reqData = {
-        applianceName: this.data.deviceName,
-        homegroupId: this.currentHomeGroupId,
-        roomId: this.data.currentRoomId,
-        sn: sn,
-        applianceType: applianceType,
-        btMac: btMac,
-        modelNumber: '',
-      }
-      let bindRemoteDeviceResp = null
-      try {
-        bindRemoteDeviceResp = await services.bindRemoteDevice(reqData)
-        Object.assign(bindRemoteDeviceResp, {
-          btMac: mac.replace(/:/g, '').toLocaleUpperCase(),
-          sn8: sn8,
-          sn: sn,
-          name: this.data.deviceName,
-          deviceImg: deviceImg,
-        })
-        console.log('遥控设备绑定结果', bindRemoteDeviceResp)
-        let remoteDeviceList = wx.getStorageSync('remoteDeviceList') ? wx.getStorageSync('remoteDeviceList') : []
-        remoteDeviceList.push(bindRemoteDeviceResp)
-        wx.setStorageSync('remoteDeviceList', remoteDeviceList)
-        service.homegroupDefaultSetService(this.currentHomeGroupId) // 设置默认家庭
-        app.globalData.currentHomeGroupId = this.currentHomeGroupId
-        app.globalData.currentRoomId = this.data.currentRoomId
-        wx.closeBLEConnection({
-          //断开连接
-          deviceId: app.addDeviceInfo.deviceId,
-        })
-        //url传参改为全局变量传参
-        app.addDeviceInfo.cloudBackDeviceInfo = bindRemoteDeviceResp
-        goToInvitePage(homeName, bindRemoteDeviceResp, '/pages/index/index', true, () => {})
-      } catch (error) {
-        showToast('网络不佳，请检查网络')
-        console.log('遥控设备绑定失败', error)
-      }
-      return
-    }
     let nowNetStuts = false
     await this.nowNetType()
       .then((networkType) => {
-        if (networkType == 'none') {
+        if (networkType === 'none') {
           this_.data.changeClickFlagNew = false
           nowNetStuts = true
           showToast('网络不佳，请检查网络后重试')
         }
       })
-      .catch((err) => {
+      .catch(() => {
         this_.data.changeClickFlagNew = false
         showToast('网络不佳，请检查网络后重试')
       })
@@ -546,9 +290,9 @@ Page({
       applianceName: this.data.deviceName,
     }
     console.log('homeModify reqData===', params)
-    app.showLoading('加载中')
+    wx.showLoading('加载中')
     setTimeout(() => {
-      app.closeLoading()
+      wx.hideLoading()
       if (clickFlag && getFullPageUrl().includes('addDevice/pages/addSuccess/addSuccess')) {
         showToast('网络不佳，请检查网络后重试')
       }
@@ -576,13 +320,8 @@ Page({
             resp.data.data.sn = encodeSn
             console.log('前端 加密后的sn===', resp.data.data.sn)
           }
-          let deviceInfo = JSON.stringify(resp.data.data)
-          let type = resp.data.data.type || this.data.deviceInfo.type || app.addDeviceInfo.type
           // type做兼容，以便查询isSupportPlugin
-          type = type.includes('0x') ? type : '0x' + type
-          let sn8 = app.addDeviceInfo.sn8
           let mode = app.addDeviceInfo.mode
-          let A0 = resp.data.data.modelNumber ? resp.data.data.modelNumber : ''
           console.log('homeModify---绑定设备结果', resp.data.data)
           if (this.data.combinedStatus > -1 && app.combinedDeviceInfo[0].sn) {
             if (app.combinedDeviceInfo[0].sn == resp.data.data.sn) {
@@ -616,16 +355,7 @@ Page({
               // 组合配网新增跳转
               console.log('----mode 0 combinedStatus = ' + this.data.combinedStatus)
               if (this.data.combinedStatus > -1) {
-                if (this.data.combinedStatus == 1) {
-                  // 组合成功跳转插件页
-                  goToInvitePage(
-                    homeName,
-                    app.addDeviceInfo.cloudBackDeviceInfo,
-                    '/pages/index/index',
-                    true,
-                    app.addDeviceInfo.status,
-                  )
-                } else {
+                if (this.data.combinedStatus != 1) {
                   // 组合失败返回上一页
                   app.globalData.ifBackFromSuccess = true
                   wx.navigateBack({
@@ -641,15 +371,12 @@ Page({
                   wx.reLaunch({
                     url: '/package-distribution-meiju/pages/addDevice/pages/afterCheck/afterCheck?backTo=/pages/index/index',
                   })
-                } else {
-                  goToInvitePage(homeName, app.addDeviceInfo.cloudBackDeviceInfo, '/pages/index/index', true, status)
                 }
               }
             })
           }
           if (app.addDeviceInfo.mode == 3) {
             try {
-              let { ssid } = app.addDeviceInfo
               app.globalData.curAddedApDeviceList.push(curDeviceItem)
             } catch (error) {
               console.log(error)
@@ -659,16 +386,7 @@ Page({
             this.getApplianceAuthType(resp.data.data.applianceCode).then((respData) => {
               // 组合配网新增跳转
               if (this.data.combinedStatus > -1) {
-                if (this.data.combinedStatus == 1) {
-                  // 组合成功跳转插件页
-                  goToInvitePage(
-                    homeName,
-                    app.addDeviceInfo.cloudBackDeviceInfo,
-                    '/pages/index/index',
-                    true,
-                    app.addDeviceInfo.status,
-                  )
-                } else {
+                if (this.data.combinedStatus != 1) {
                   // 组合失败返回上一页
                   app.globalData.ifBackFromSuccess = true
                   wx.navigateBack({
@@ -683,14 +401,9 @@ Page({
                   wx.reLaunch({
                     url: '/package-distribution-meiju/pages/addDevice/pages/afterCheck/afterCheck?backTo=/pages/index/index',
                   })
-                } else {
-                  goToInvitePage(homeName, app.addDeviceInfo.cloudBackDeviceInfo, '/pages/index/index', true, status)
                 }
               }
             })
-          }
-          if (app.addDeviceInfo.mode == 5) {
-            goToInvitePage(homeName, app.addDeviceInfo.cloudBackDeviceInfo, '/pages/index/index', true)
           }
           if (mode == 20) {
             app.addDeviceInfo.deviceName = this.data.deviceName
@@ -703,15 +416,6 @@ Page({
             })
           }
           if (mode == 30) {
-            // app.addDeviceInfo={
-            //   type:'CA',
-            //   sn8:'001A0481',
-            //   mode:3
-            // }
-            // addDeviceSDK.goToAddDevice({
-            //   type:'CA',
-            //   sn8:'001A0481'
-            // })
             app.globalData.currentRoomId = this.data.currentRoomId
             app.addDeviceInfo.mode = 31 //masmart 直连后去配网
             app.addDeviceInfo.linkType = this.getLinkType(app.addDeviceInfo.mode)
@@ -725,20 +429,7 @@ Page({
               },
             })
           }
-          if (mode == 100) {
-            //触屏配网
-            goToInvitePage(homeName, app.addDeviceInfo.cloudBackDeviceInfo, '/pages/index/index', true)
-          }
-          if (mode == 8) {
-            //NB-Iot配网
-            goToInvitePage(homeName, app.addDeviceInfo.cloudBackDeviceInfo, '/pages/index/index', true)
-          }
-          //网关网线配网
-          if (mode == 7) {
-            goToInvitePage(homeName, app.addDeviceInfo.cloudBackDeviceInfo, '/pages/index/index', true)
-          }
         }
-        // this_.data.changeClickFlagNew = false
         console.log(' ----- save clicked ----- ')
       })
       .catch((error) => {

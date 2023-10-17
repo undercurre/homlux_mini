@@ -101,17 +101,6 @@ ComponentWithComputed({
       const { sn8, type, mode } = app.addDeviceInfo
       const res = await queryGuideInfo({ sn8, type, mode: mode.toString() })
 
-      // const res = {
-      //   "result": {
-      //     "modelCode": "7909AC81",
-      //     "modelType": "0",
-      //     "wifiFrequencyBand": "1",
-      //     "isAutoConnect": "0",
-      //     "mainConnectTypeUrlList": ["http://midea-file.oss-cn-hangzhou.aliyuncs.com/2023/7/21/9/ChjOZnQUgWmtBEMMYQjf.gif"],
-      //     "mainConnectTypeDesc": "方式一：长条形遥控器\n①使用遥控器开关灯具，确认遥控器正常\n②开灯，并长按遥控器【配网】键3秒，直至灯具黄/白光交替变化\n方式二：正方形遥控器\n①使用遥控器开关灯具，确认遥控器正常\n②开灯，并长按遥控器【亮度-】与【暖光】键3秒，直至灯具黄/白光交替变化",
-      //     "type": "13"
-      //   }, "code": 0, "msg": "成功!", "success": true, "timestamp": 1696988826782
-      // }
       Logger.console('queryGuideInfo', res)
 
       if (!res.success) {

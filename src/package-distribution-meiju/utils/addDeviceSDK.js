@@ -614,10 +614,6 @@ const addDeviceSDK = {
    */
   checkDeviceAuth(applianceCode) {
     return new Promise((resolve, reject) => {
-      if (app.globalData.noAuthApplianceCodeList.includes(applianceCode)) {
-        resolve(false)
-        return
-      }
       let reqData = {
         applianceCode: applianceCode,
         reqId: getReqId(),

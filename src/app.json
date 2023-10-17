@@ -13,6 +13,7 @@
         "change-wifi-success/index",
         "choose-device/index",
         "choose-sensor/index",
+        "choose-light/index",
         "connect-guide/index"
       ]
     },

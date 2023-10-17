@@ -1,195 +1,18 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
-import { checkApExists } from '../../../../../../apis/index'
+import { checkApExists, queryAuthGetStatus } from '../../../../../../apis/index'
 import { Logger } from '../../../../../../utils/index'
 
 import { getReqId, getStamp } from 'm-utilsdk/index'
 import { showToast } from '../../../../../utils/util'
 import { creatErrorCode, failTextData } from './errorCode'
 import paths from '../../../../../utils/paths'
-import { brandConfig } from '../../../../assets/js/brand'
 import app from '../../../../../common/app'
 import { imgBaseUrl } from '../../../../../common/js/api'
 
-const supportedApplianceTypes = [
-  '0xAC',
-  '0xA1',
-  '0xE3',
-  '0xE2',
-  '0xED',
-  '0xE1',
-  '0xE6',
-  '0xB6',
-  '0xB7',
-  '0xCA',
-  '0xD9',
-  '0xDA',
-  '0xDB',
-  '0xDC',
-  '0x46',
-  '0xB1',
-  '0xB2',
-  '0xB9',
-] //colmo支持的品类-一期
-const filterList = {
-  '0xAC': {
-    // colmo上线机型列表
-    SN8: [
-      // 挂机
-      '22019035',
-      '22012211',
-      '22019025',
-      '220Z1530',
-      '220Z1336',
-      '220Z1406',
-      '220Z1527',
-      '220Z1453',
-      '22019033',
-      '22019027',
-      '220L9900',
-      '220Z1540',
-      '220Z1464',
-      '22019037',
-      '22019029',
-      '22019043',
-      '22019041',
-      '220Z1549',
-      '220Z1550',
-      '220Z1339',
-      '220Z1352',
-      '22019021',
-      '22019001',
-      '220Z1467',
-      '22019031',
-      '22019039',
-      '22019023',
-      '22019003',
-      '22019045',
-      '220Z1553',
-      // 柜机 4-2
-      '22259029',
-      '222Z1468',
-      '222Z1543',
-      '22259015',
-      '22259031',
-      '222Z1544',
-      '22259017',
-      '222Z1465',
-      '222Z1450',
-      '22259013',
-      '22259027',
-      '222Z1547',
-      '22259023',
-      '22259033',
-      '222Z1546',
-      '222Z1486',
-      '22259001',
-      '222Z1353',
-      '222Z1430',
-      '22259007',
-      '222Z1340',
-      '222Z1329',
-      '222Z1545',
-      '222Z1485',
-      '222Z1429',
-      '222Z1354',
-      '22259009',
-      '22251025',
-      '22259025',
-      '22259021',
-      '222L9996',
-      '222Z1548',
-      '222Z1466',
-      '22259037',
-      '22259035',
-      '22259019',
-      '22259039',
-      '222Z1555',
-      // 小多联三管制
-      '22396927',
-      '22396929',
-      '22396925',
-      '230Z1484',
-      '22396923',
-      '22396919',
-      '22396921',
-      '22396915',
-      '22396917',
-      // 小多联两管制
-      '22396933',
-      '22396939',
-      '22396935',
-      '22396945',
-      '22396943',
-      '22396937',
-      '22396941',
-      // 新风机
-      '26096911',
-      '26096913',
-    ],
-  },
-  '0xED': {
-    SN8: [
-      '63100001',
-      '63200848',
-      '63200849',
-      '63200851',
-      '63200B16',
-      '63200A75',
-      '63200B14',
-      '632A0A63',
-      '63200A63',
-      '63200A95',
-      '63200A05',
-      '63200A61',
-      '63200A97',
-      '63200A06',
-      '6320B139',
-      '6320B105',
-      '6320084F',
-      '6320084M',
-      '6320084N',
-      '6320084L',
-      '6320084P',
-      '6320084W',
-      '6310LA16',
-      '6300RA08',
-      '6300DA01',
-      '6320084C',
-      '6320084G',
-      '6320084B',
-      '6320084K',
-      '6320084Q',
-      '6320084A',
-      '6320084E',
-    ],
-  },
-  '0xA1': {
-    // colmo上线机型列表
-    SN8: [
-      // 除湿机
-      '20104019',
-      '20104018',
-    ],
-  },
-  '0xB1': {
-    SN8: ['71100001'],
-  },
-  '0xB2': {
-    SN8: ['000CSK50', '70100001'],
-  },
-  '0xB9': {
-    // colmo上线机型列表
-    SN8: ['665000VR'],
-  },
-}
 // eslint-disable-next-line no-undef
 module.exports = Behavior({
   behaviors: [],
-  properties: {
-    // deviceInfo: {
-    //     type: Object
-    // }
-  },
+  properties: {},
   data: {
     // deviceInfo: '',
     isIpx: app.globalData.isPx,
@@ -447,7 +270,7 @@ module.exports = Behavior({
       return linkType
     },
     //查询设备是否连上云
-    async checkApExists(sn, forceValidRandomCode, randomCode = '', timeout) {
+    async checkApExists(sn, forceValidRandomCode, randomCode = '') {
       const res = await checkApExists({
         sn,
         randomCode,
@@ -460,9 +283,9 @@ module.exports = Behavior({
             isCustom: true,
           })
         }
-        if (app.addDeviceInfo && app.addDeviceInfo.mode == 0) {
+        if (app.addDeviceInfo && app.addDeviceInfo.mode === 0) {
           //
-          if (error.data && error.data.code == 1384) {
+          if (error.data && error.data.code === 1384) {
             //随机数校验不一致
             app.addDeviceInfo.errorCode = this.creatErrorCode({
               errorCode: 4169,
@@ -475,42 +298,6 @@ module.exports = Behavior({
       console.log(`查询设备是否连上云参数`, sn, randomCode, forceValidRandomCode, 'res', res)
 
       return res
-      // return new Promise((resolve, reject) => {
-      //   let reqData = {
-      //     sn: sn,
-      //     forceValidRandomCode: forceValidRandomCode,
-      //     randomCode: randomCode,
-      //     reqId: getReqId(),
-      //     stamp: getStamp(),
-      //   }
-      //   console.log('checkApExists reqData:', reqData)
-      //   console.log(`查询设备是否连上云参数 reqData=${JSON.stringify(reqData)},plainSn=${app.addDeviceInfo.plainSn}`)
-      //   requestService
-      //     .request('checkApExists', reqData, 'POST', '', timeout)
-      //     .then((resp) => {
-      //       resolve(resp)
-      //     })
-      //     .catch((error) => {
-      //       console.log('查询设备是否连上云 error', error)
-      //       if (error.data) {
-      //         app.addDeviceInfo.errorCode = this.creatErrorCode({
-      //           errorCode: error.data.code,
-      //           isCustom: true,
-      //         })
-      //       }
-      //       if (app.addDeviceInfo && app.addDeviceInfo.mode == 0) {
-      //         //
-      //         if (error.data && error.data.code == 1384) {
-      //           //随机数校验不一致
-      //           app.addDeviceInfo.errorCode = this.creatErrorCode({
-      //             errorCode: 4169,
-      //             isCustom: true,
-      //           })
-      //         }
-      //       }
-      //       reject(error)
-      //     })
-      // })
     },
     //新 轮询查询设备是否连上云
     newAgainGetAPExists(sn, forceValidRandomCode, randomCode = '', timeout, callBack, callFail) {
@@ -522,15 +309,19 @@ module.exports = Behavior({
       Promise.race([timeoutPromise, this.checkApExists(sn, forceValidRandomCode, randomCode, timeout)])
         .then((resp) => {
           console.log('查询设备是否连上云', resp)
-          if (resp.data.code == 0) {
+          if (resp.success && resp.result.available) {
             console.log('resolve------------')
-            callBack && callBack(resp.data.data)
+            callBack && callBack(resp.result)
+          } else {
+            setTimeout(() => {
+              this.newAgainGetAPExists(sn, forceValidRandomCode, randomCode, timeout, callBack, callFail)
+            }, 5000)
           }
         })
         .catch((error) => {
           console.log('查询设备是否连上云接口失败2', error)
           if (this.data.isStopGetExists) return
-          if (error.data && error.data.code) {
+          if (error.success) {
             console.log('设备未连上云', error)
             setTimeout(() => {
               this.newAgainGetAPExists(sn, forceValidRandomCode, randomCode, timeout, callBack, callFail)
@@ -751,120 +542,17 @@ module.exports = Behavior({
       }
       return temp
     },
-    /**
-     * 判断colmo设备SN是否colmo设备
-     * @param {*} decodedSn
-     * @returns
-     */
-    isColmoDeviceByDecodeSn(decodedSn = '') {
-      return decodedSn[8] === '8'
-    },
-
-    /**
-     * 查询是否为旧colmo设备
-     * @param sn8 型号
-     */
-    isColmoDeviceBySn8(sn8) {
-      let isColmo = false
-      Object.values(brandConfig.allSN8List).some((item) => {
-        if (item['sn8'] && item['sn8'].includes(sn8)) {
-          isColmo = true
-          return true
-        }
-        return false
-      })
-      Object.values(filterList).some((item) => {
-        if (item['SN8'] && item['SN8'].includes(sn8)) {
-          isColmo = true
-          return true
-        }
-        return false
-      })
-      return isColmo
-    },
 
     /**
      * 查询确权
      * @param {*} applianceCode
      * @returns
      */
-    getApplianceAuthType(applianceCode) {
-      let reqData = {
-        applianceCode: applianceCode,
-        reqId: getReqId(),
-        stamp: getStamp(),
-      }
-      console.log('查询设备确权情况入参', reqData)
-      return new Promise((resolve, reject) => {
-        // requestService
-        //   .request('getApplianceAuthType', reqData)
-        //   .then((resp) => {
-        //     resolve(resp)
-        //   })
-        //   .catch((error) => {
-        //     reject(error)
-        //   })
-      })
-    },
+    async getApplianceAuthType(applianceCode) {
+      Logger.console('addDeviceMixin.js,  getApplianceAuthType')
+      const res = await queryAuthGetStatus({ deviceId: applianceCode })
 
-    /**
-     * 该方法已经废弃，统一使用pluginFilter.js的方法，修改方法名
-     * @param {*} type
-     * @param {*} sn8
-     * @param {*} A0
-     * @param {*} isOtherEquipment
-     */
-    isSupportPlugin_backup(type, sn8, A0 = '', isOtherEquipment = '0') {
-      let isSupport = false
-      if (supportedApplianceTypes.indexOf(type) > -1 && isOtherEquipment === '0') {
-        //filter third party equipment
-        if (filterList[type]) {
-          if (sn8) {
-            if (filterList[type]['SN8']) {
-              if (filterList[type]['SN8_blacklist']) {
-                if (filterList[type]['SN8'].indexOf(sn8) > -1 && filterList[type]['SN8_blacklist'].indexOf(sn8) < 0) {
-                  isSupport = true
-                }
-              } else {
-                if (filterList[type]['SN8'].indexOf(sn8) > -1) {
-                  isSupport = true
-                }
-              }
-            } else {
-              if (filterList[type]['SN8_blacklist']) {
-                if (filterList[type]['SN8_blacklist'].indexOf(sn8) < 0) {
-                  isSupport = true
-                }
-              } else {
-                isSupport = true
-              }
-            }
-          } else if (A0) {
-            if (filterList[type]['A0']) {
-              if (filterList[type]['A0_blacklist']) {
-                if (filterList[type]['A0'].indexOf(A0) > -1 && filterList[type]['A0_blacklist'].indexOf(A0) < 0) {
-                  isSupport = true
-                }
-              } else {
-                if (filterList[type]['A0'].indexOf(A0) > -1) {
-                  isSupport = true
-                }
-              }
-            } else {
-              if (filterList[type]['A0_blacklist']) {
-                if (filterList[type]['A0_blacklist'].indexOf(A0) < 0) {
-                  isSupport = true
-                }
-              } else {
-                isSupport = true
-              }
-            }
-          }
-        } else {
-          isSupport = true
-        }
-      }
-      return isSupport
+      return res
     },
   },
 })

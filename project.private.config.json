@@ -163,6 +163,13 @@
           "query": "",
           "launchMode": "default",
           "scene": null
+        },
+        {
+          "name": "美居配网-连接家庭inputWifiInfo",
+          "pathName": "package-distribution-meiju/pages/addDevice/pages/inputWifiInfo/inputWifiInfo",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
         }
       ]
     }

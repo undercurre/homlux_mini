@@ -30,13 +30,9 @@
       </view>
       <view class="room">
         <view class="addSuccess-title">所在房间</view>
-        <!-- <text class="title"></text> -->
         <view class="room-list" wx:if="{{!isgetFamilyInfoFail&&familyInfo.roomList}}">
           <view class="room-name {{item.roomId==currentRoomId?'active':'default'}}" wx:for="{{familyInfo.roomList}}" wx:key="index" data-id="{{item.roomId}}" data-room-name="{{item.name}}" bindtap="switchRoom"> {{tools.formatRoomName(item.name,4,'addSuccess')}} </view>
           <view class="add-room-btn" bindtap="increaseRoom"> + </view>
-          <!-- <view class="add-room room-name" bindtap="opendDialogInput">
-          <image class="add-img block" src="../assets/img/home_ic_addroom.png"></image>
-        </view> -->
         </view>
       </view>
       <view wx:if="{{!isgetFamilyInfoFail&&!familyInfo.roomList}}" class="loading-room">

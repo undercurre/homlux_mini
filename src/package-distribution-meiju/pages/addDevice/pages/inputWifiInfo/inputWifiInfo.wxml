@@ -1,4 +1,4 @@
-<view class="page" id="{{brand}}">
+<view class="page page-container" id="{{brand}}">
   <nav-bar leftArrow bind:leftTap="goBack"></nav-bar>
 
   <block wx:if="{{isCanAddDevice}}">
@@ -16,34 +16,42 @@
         <image wx:if="{{isShowRouttingImg}}" class="routing" src="{{wifiConnect}}">\n</image>
 
         <view class="input-area">
-          <input class="c4-wifi" wx:if="{{!continueConnectWifi}}" value="{{bindWifiTest.SSIDContent}}" placeholder="{{wifiInputPlaceholder}}" disabled="true">
-          <text class="switch-wifi special-font-color" catchtap="inputPageSwitchWifi">切换WiFi</text>
+          <input class="c4-wifi" wx:if="{{!continueConnectWifi}}" value="{{bindWifiTest.SSIDContent}}"
+                 placeholder="{{wifiInputPlaceholder}}" disabled="true">
+            <text class="switch-wifi special-font-color" catchtap="inputPageSwitchWifi">切换WiFi</text>
           </input>
-          <input class="c4-wifi" value="{{bindWifiTest.SSIDContent}}" placeholder="输入 WiFi 名称" bindfocus="SSIDFocus" bindblur="SSIDBlur" bindinput="inputSSIDContent" maxlength='40' wx:if="{{continueConnectWifi}}">
+          <input class="c4-wifi" value="{{bindWifiTest.SSIDContent}}" placeholder="输入 WiFi 名称" bindfocus="SSIDFocus"
+                 bindblur="SSIDBlur" bindinput="inputSSIDContent" maxlength='40' wx:if="{{continueConnectWifi}}">
           </input>
           <view wx:if="{{wifiListShow}}" class="wifi-list animation-slide-top">
-            <view wx:if="{{item.SSID!=''}}" class="wifi-list-cell" wx:for="{{wifiList}}" wx:key="index" catchtap="chooseWifi" data-item="{{item}}">{{item.SSID}}</view>
+            <view wx:if="{{item.SSID!=''}}" class="wifi-list-cell" wx:for="{{wifiList}}" wx:key="index"
+                  catchtap="chooseWifi" data-item="{{item}}">{{item.SSID}}
+            </view>
           </view>
           <view wx:if="{{tipText}}" class="tips">
-            <!-- <image class="warn" src="{{imgBaseUrl+imges.zhuyi}}"></image> -->
             <view class="tip-text">{{tipText}}</view>
           </view>
           <view class="c6-wifi">
-            <input wx:if="{{!isCanSeePsw}}" class="psw-input" adjust-position="{{false}}" value="{{bindWifiTest.PswContent}}" bindinput="getPsw" bindfocus="pswFocus" bindblur="pswBlur" type="text" password="true" placeholder="输入 WiFi 密码">
-            <image class="show-psw" src="{{isCanSeePsw?imgBaseUrl+imges.wifiShow:imgBaseUrl+imges.wifiHide}}" catchtap="switchPswShow"></image>
+            <input wx:if="{{!isCanSeePsw}}" class="psw-input" adjust-position="{{false}}"
+                   value="{{bindWifiTest.PswContent}}" bindinput="getPsw" bindfocus="pswFocus" bindblur="pswBlur"
+                   type="text" password="true" placeholder="输入 WiFi 密码">
+              <image class="show-psw" src="{{isCanSeePsw?imgBaseUrl+imges.wifiShow:imgBaseUrl+imges.wifiHide}}"
+                     catchtap="switchPswShow"></image>
             </input>
-            <input wx:if="{{isCanSeePsw}}" class="psw-input" adjust-position="{{false}}" value="{{bindWifiTest.PswContent}}" bindinput="getPsw" bindfocus="pswFocus" bindblur="pswBlur" type="text" placeholder="输入 WiFi 密码">
-            <image class="show-psw" src="{{isCanSeePsw?imgBaseUrl+imges.wifiShow:imgBaseUrl+imges.wifiHide}}" catchtap="switchPswShow"></image>
+            <input wx:if="{{isCanSeePsw}}" class="psw-input" adjust-position="{{false}}"
+                   value="{{bindWifiTest.PswContent}}" bindinput="getPsw" bindfocus="pswFocus" bindblur="pswBlur"
+                   type="text" placeholder="输入 WiFi 密码">
+              <image class="show-psw" src="{{isCanSeePsw?imgBaseUrl+imges.wifiShow:imgBaseUrl+imges.wifiHide}}"
+                     catchtap="switchPswShow"></image>
             </input>
           </view>
           <view class="spaceTips">
             <view class="tip-text">{{spaceTip}}</view>
           </view>
         </view>
-        <view class="{{isShowRouttingImg?'bottom-button-wifi-showPic':'bottom-button-wifi'}} theme-bg-color" style="padding-bottom: {{brand !== 'colmo'?(isIpx?'78rpx':'48rpx'):'100rpx'}}">
-          <!-- <view class="link-wifi" catchtap="configNetWork">{{showNextText}}</view> -->
+        <view class="{{isShowRouttingImg?'bottom-button-wifi-showPic':'bottom-button-wifi'}} theme-bg-color"
+              style="padding-bottom: {{brand !== 'colmo'?(isIpx?'78rpx':'48rpx'):'100rpx'}}">
           <button class="link-wifi-next" bindtap="configNetWork">{{showNextText}}</button>
-          <!-- <button class="link-btn" style="margin-top: 20px;" bindtap="removeLinkNetRecordStorage">移除本地配网记录</button> -->
           <view class="msmart-skip" wx:if="{{mode==31}}" bindtap="skip">跳过</view>
         </view>
       </view>
@@ -56,10 +64,12 @@
         <view class="desc-list">
           <view class="r" wx:for="{{guideStep}}" wx:key="index" wx-index="index">
             <view class="guide-title" wx:if="{{guideStep.length > 1}}">
-              <view class="wifi-num">{{index+1}}</view>
+              <view class="wifi-num">{{index + 1}}</view>
               <view class="text">
                 {{item.title}}
-                <view wx:if="{{item.type==='location'&&item.desc.length}}" class="look-guide" bindtap="lookGuide">查看操作指引</view>
+                <view wx:if="{{item.type==='location'&&item.desc.length}}" class="look-guide" bindtap="lookGuide">
+                  查看操作指引
+                </view>
               </view>
             </view>
             <view class="guide-title" wx:else>
@@ -75,17 +85,23 @@
             </view>
           </view>
         </view>
-        <view class="go-link-wifi theme-bg-color" style="padding-bottom: {{brand !== 'colmo'?(isIpx?'116rpx':'48rpx'):'100rpx'}}">
-          <!-- <view class="ios-up-version" wx:if="{{isTipIosUpVersion}}" bindtap="linktedWifi">已连接WiFi?</view> -->
-          <view class="ios-up-version special-font-color" bindtap="connectWifi">已连接WiFi?</view>
-          <view class="link-wifi" catchtap="linkWifi">去连接WiFi</view>
+        <view class="go-link-wifi px-32rpx box-border">
+          <van-button class="w-full" type="info" custom-style="background-color: transparent;border: 0" plain block size="large" bind:click="connectWifi">已连接WiFi?</van-button>
+
+          <van-button class="w-full mt-30rpx" block type="primary" size="large" bind:click="linkWifi">去连接WiFi</van-button>
+
           <view class="msmart-skip" wx:if="{{mode==31}}" bindtap="skip">跳过</view>
         </view>
       </view>
     </view>
-<!--    <wifi-dialog id='wifiDialog' dialogShow='{{wifiDialogShow}}' bind:confirm="getWifiList"></wifi-dialog>-->
-    <wifi-list-sheet id="wifi-list-sheet" wifiList="{{wifiList}}" title="{{wifiListTitle}}" isSupport5G="{{isSupport5G}}" type="{{type}}" brandName="{{brandName}}" brand="{{brand}}" bind:selectWifi="selectWifi" bind:goToSetPage="clickNoFoundFamilyWifi" bind:hideWifiListSheet="hideWifiListSheet" bind:refreshWifiList="refreshWifiList" frame='frame' wifi-list-title='wifi-list-title' blue='blue'  wifi-item='wifi-item' left='left'></wifi-list-sheet>
-    <sure-center-dialog isShowSureDialog="{{ isSureDialog }}" bind:makeSure="makeSure" title="{{ dialogMixinsTitle }}" content="{{ dialogMixinsContent }}" dialogMixinsBtns="{{ dialogMixinsBtns }}">
+
+    <wifi-list-sheet id="wifi-list-sheet" wifiList="{{wifiList}}" title="{{wifiListTitle}}"
+                     isSupport5G="{{isSupport5G}}" type="{{type}}" brandName="{{brandName}}" brand="{{brand}}"
+                     bind:selectWifi="selectWifi" bind:goToSetPage="clickNoFoundFamilyWifi"
+                     bind:hideWifiListSheet="hideWifiListSheet" bind:refreshWifiList="refreshWifiList" frame='frame'
+                     wifi-list-title='wifi-list-title' blue='blue' wifi-item='wifi-item' left='left'></wifi-list-sheet>
+    <sure-center-dialog isShowSureDialog="{{ isSureDialog }}" bind:makeSure="makeSure" title="{{ dialogMixinsTitle }}"
+                        content="{{ dialogMixinsContent }}" dialogMixinsBtns="{{ dialogMixinsBtns }}">
       <view wx:if="{{isBluetoothMixinNotOpenWxLocation && showOpenLocation}}">
         <view class="locationOpenNotice">1.请在手机设置中开启定位服务，并允许微信获取你的位置信息</view>
         <view class="locationOpenNotice">2.请点击右上角“...”-“设置”-“位置信息”，选择“仅在使用小程序期间”允许访问</view>
@@ -99,22 +115,36 @@
   <block wx:else class="no-can-add-device">
     <no-can-add-device></no-can-add-device>
   </block>
-  <mx-dialog id="mx-operate" show="{{ishowDialog}}" useSlot="{{ishowDialog}}" showCancelButton="{{ishowDialog}}" bind:confirm="clickSetting" confirmButtonText="去操作"
-  cancelButtonColor="{{dialogStyle.cancelButtonColor}}"  confirmButtonColor="{{dialogStyle.confirmButtonColor2}}" custom-style="padding-top:40rpx;padding-left:40rpx;padding-right:40rpx;" onClickOverlay="onClickOverlay" message-align="left" messageSize='16'>
+  <mx-dialog id="mx-operate" show="{{ishowDialog}}" useSlot="{{ishowDialog}}" showCancelButton="{{ishowDialog}}"
+             bind:confirm="clickSetting" confirmButtonText="去操作"
+             cancelButtonColor="{{dialogStyle.cancelButtonColor}}"
+             confirmButtonColor="{{dialogStyle.confirmButtonColor2}}"
+             custom-style="padding-top:40rpx;padding-left:40rpx;padding-right:40rpx;" onClickOverlay="onClickOverlay"
+             message-align="left" messageSize='16'>
     <useSlot>
       <view class="dialog-content">
-        {{modalText}}，以便获取所连接的WiFi <text bindtap="toOperate" class="checkOp">查看操作指引</text>
+        {{modalText}}，以便获取所连接的WiFi
+        <text bindtap="toOperate" class="checkOp">查看操作指引</text>
       </view>
     </useSlot>
   </mx-dialog>
-  <!-- 弹窗内容间距要保持一致，不用插槽改变不了间距，所以统一用插槽 -->
-  <mx-dialog id="mx-ManualInputWiFi" show="{{ishowManualInputWiFi}}" useSlot="{{ishowManualInputWiFi}}" showCancelButton="true" cancelButtonColor="{{dialogStyle.cancelButtonColor}}"  confirmButtonColor="{{dialogStyle.confirmButtonColor2}}" bind:confirm="clickManualInputWiFiBtn" confirmButtonText="手动输入" onClickOverlay="closeManualInputWiFiDialog" custom-style="padding-top:40rpx;padding-left:40rpx;padding-right:40rpx;" message-align="left" messageSize='16'>
-    <useSlot>
-      <view class="dialog-content">
-        {{messageContent}}
-      </view>
-    </useSlot>
-  </mx-dialog>
-  <mx-dialog id="mx-psw" show="{{blueCancelLinkModal}}" showCancelButton="true" cancelButtonColor="{{dialogStyle.cancelButtonColor4}}" confirmButtonColor="{{dialogStyle.confirmButtonColor3}}" title="{{titleContent}}" message="{{messageContent}}" cancel-button-text="放弃" confirm-button-text="再等等" bind:cancel="giveUpBlueCancelLink"></mx-dialog>
+  <mx-dialog id="mx-psw" show="{{blueCancelLinkModal}}" showCancelButton="true"
+             cancelButtonColor="{{dialogStyle.cancelButtonColor4}}"
+             confirmButtonColor="{{dialogStyle.confirmButtonColor3}}" title="{{titleContent}}"
+             message="{{messageContent}}" cancel-button-text="放弃" confirm-button-text="再等等"
+             bind:cancel="giveUpBlueCancelLink"></mx-dialog>
   <mx-dialog id="mx-dialog"></mx-dialog>
 </view>
+
+<van-dialog id="van-dialog" />
+
+<van-toast id="van-toast" />
+
+<!--<van-dialog use-slot title="{{officeDeviceInfo.deviceName}}离线" show="{{ showDeviceOffline }}" confirm-button-color="#488FFF" confirmButtonText="我知道了" bind:close="handleCloseDeviceOffline">-->
+<!--  <view class="flex-col-center w-full">-->
+<!--    <view class="dialog-content">-->
+<!--      {{modalText}}，以便获取所连接的WiFi-->
+<!--      <text bindtap="toOperate" class="checkOp">查看操作指引</text>-->
+<!--    </view>-->
+<!--  </view>-->
+<!--</van-dialog>-->

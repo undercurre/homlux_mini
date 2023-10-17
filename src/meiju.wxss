@@ -532,17 +532,14 @@
 }
 
 #meiju .go-link-wifi {
-  padding: 20rpx 0rpx;
   width: 100%;
   position: fixed;
-  bottom: 0;
+  bottom: 96rpx;
   left: 0;
-  background-color: #ffffff;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding-bottom: env(safe-area-inset-bottom);
 }
 
 #meiju .bottom-button-wifi,

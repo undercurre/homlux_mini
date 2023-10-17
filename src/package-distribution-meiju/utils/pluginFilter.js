@@ -107,22 +107,6 @@ function goTopluginPage(deviceInfo, backPage = '', isRomoveRoute = false, fromPa
 }
 
 /**
- * 配网成功统一跳转邀请页
- * deviceInfo {Object} 必
- *
- * isRomoveRoute {boolear} 是否清除路由栈 默认 false
- */
-
-function goToInvitePage(homeName, deviceInfo, backPage = '', isRomoveRoute = false, status = 0) {
-  wx.navigateTo({
-    url: `${
-      paths.inviteFamily
-    }?homeName=${homeName}&isRomoveRoute=${isRomoveRoute}&backTo=${backPage}&status=${status}&deviceInfo=${JSON.stringify(
-      deviceInfo,
-    )}`,
-  })
-}
-/**
  * 根据sn位数判断是否colmo设备
  * @param {*} decodedSn
  */
@@ -134,7 +118,5 @@ module.exports = {
   isSupportPlugin,
   getCommonType,
   goTopluginPage,
-  goToInvitePage,
-  filterSupportedPlugin,
   isColmoDeviceByDecodeSn,
 }

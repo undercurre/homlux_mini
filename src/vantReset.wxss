@@ -63,6 +63,7 @@ page {
 
   /* dialog start */
   --dialog-width: 622rpx;
+  --dialog-header-font-weight: 600;
   --dialog-header-isolated-padding: 48rpx 64rpx;
   /* dialog end */
 
