@@ -1,5 +1,7 @@
+import { getEnv } from '../../../config/index'
+
 const config = {
-  environment: 'prod',
+  environment: getEnv() === 'prod' ? 'prod' : 'sit',
   isMasEnv: true, //是否通过
   masPrefix: '/mas/v5/app/proxy?alias=',
   //域名

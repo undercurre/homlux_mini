@@ -1,4 +1,4 @@
-import Dialog from '../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
+import Dialog from '@vant/weapp/dialog/dialog'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const paths = require('../../../utils/paths')
 const commonDialog = {
@@ -18,27 +18,23 @@ const commonDialog = {
       message: obj.message,
       confirmButtonText: obj.confirmButtonText,
       confirmButtonColor: obj.confirmButtonColor,
-      cancelButtonColor: obj.cancelButtonColor,
+      showCancelButton: true,
+      // cancelButtonColor: obj.cancelButtonColor,
       messageAlign: 'left',
     })
-      .then((res) => {
-        if (res.action == 'confirm') {
-          if (obj.type == 'location') {
-            wx.navigateTo({
-              url: paths.locationGuide + `?permissionTypeList=${JSON.stringify(obj.permissionTypeList)}`,
-            })
-          }
-          if (obj.type == 'blue') {
-            wx.navigateTo({
-              url: paths.blueGuide + `?permissionTypeList=${JSON.stringify(obj.permissionTypeList)}`,
-            })
-          }
+      .then(() => {
+        if (obj.type === 'location') {
+          wx.navigateTo({
+            url: paths.locationGuide + `?permissionTypeList=${JSON.stringify(obj.permissionTypeList)}`,
+          })
         }
-        // on confirm
+        if (obj.type === 'blue') {
+          wx.navigateTo({
+            url: paths.blueGuide + `?permissionTypeList=${JSON.stringify(obj.permissionTypeList)}`,
+          })
+        }
       })
-      .catch(() => {
-        // on cancel
-      })
+      .catch(() => {})
   },
 }
 

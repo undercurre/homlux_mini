@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 import { bindMideaDevice, queryGuideInfo } from '../../../../../apis/index'
 import { homeStore, roomStore } from '../../../../../store/index'
-import { Logger } from '../../../../../utils/index'
+import {Logger, strUtil} from '../../../../../utils/index'
 import app from '../../../../common/app'
 
 import DeviceComDecorator from '../wahinProtocol/utils/ac-service/DeviceComDecorator'
@@ -29,8 +29,6 @@ import { getScanRespPackInfo, getSn8 } from '../../../../utils/blueAdDataParse'
 import { constructionBleOrder, paesrBleResponData } from '../../../../utils/ble/ble-order'
 import { api, imgBaseUrl } from '../../../../common/js/api'
 import { apParamsSet } from '../assets/js/apParamsSet'
-
-import { blueParamsSet } from '../assets/js/blueParamsSet'
 
 import { service } from '../assets/js/service'
 import WifiMgr from '../assets/js/wifiMgr'
@@ -164,7 +162,6 @@ Page({
       deviceId,
       deviceName,
       mac,
-      type,
       moduleType,
       blueVersion,
       mode,
@@ -758,7 +755,7 @@ Page({
       this.parseTLVfor74(decodeMsg.body)
       // todo delete
       this.tcp.write(hexStringToArrayBuffer(this.data.aplinkOrder))
-      console.log('AP配网发配网指令', this.data.aplinkOrder)
+      console.log('AP配网发配网指令', this.data.aplinkOrder, 'this.data.checkExists', this.data.checkExists)
       this.data.apIsSendWifiInfo = true
       if (!this.data.checkExists) {
         this.data.checkExists = true
@@ -1266,7 +1263,6 @@ Page({
             this.data.udpMsgBody = this.apUtils.decode2body(hexMsg).body
             let adData = this.apUtils.parseUdpBody(this.data.udpMsgBody)
             console.log('获取udp返回', adData)
-            this.setIfSupportAds(adData)
             if (hexCharCodeToStr(adData.ssid).toLocaleLowerCase() === app.addDeviceInfo.ssid.toLocaleLowerCase()) {
               //校验响应包
               resolve(adData)
@@ -1336,7 +1332,6 @@ Page({
               this.data.udpMsgBody = udpMsgBody.body
               let adData = this.apUtils.parseUdpBody(this.data.udpMsgBody)
               console.log('adData', adData)
-              this.setIfSupportAds(adData)
               if (hexCharCodeToStr(adData.ssid).toLocaleLowerCase() === app.addDeviceInfo.ssid.toLocaleLowerCase()) {
                 //过滤偶现没有版本信息的包
                 resolve(adData)
@@ -1702,6 +1697,8 @@ Page({
     Logger.debug('constrLinknetorder', 'app.addDeviceInfo', app.addDeviceInfo)
     if (!this.data.bindWifiInfo) return
     let bindWifiInfo = this.data.bindWifiInfo
+
+    Logger.debug('constrLinknetorder', 'bindWifiInfo', bindWifiInfo)
     let order = {}
     order.randomCode = getRandomString(32).toLocaleLowerCase() //'241205fca8bb549178cd1e5b7c4f8893'
     this.data.randomCode = order.randomCode
@@ -1722,15 +1719,6 @@ Page({
     order.setModuleServerDomain = apParamsSet.setModuleServerDomain()
     order.setModuleServerPort = apParamsSet.setModuleServerPort()
     order.setfeature = apParamsSet.setfeature()
-    // if (app.addDeviceInfo.ifSupportAds) {
-    //   // 支持ADS集群ID
-    //   const setAdsId = apParamsSet.setAdsId()
-    //   if (!setAdsId) {
-    //     this.goLinkDeviceFailPage(4160)
-    //     return
-    //   }
-    //   order.setAdsId = setAdsId
-    // }
     console.log('@module linkDevice.js\n@method constrLinknetorder\n@desc 配网指令对象\n', order)
     order.total = Object.values(order).join('')
     console.log('@module linkDevice.js\n@method constrLinknetorder\n@desc 配网指令对象值连接结果\n', order.total)
@@ -1756,6 +1744,7 @@ Page({
    * @param {Boolean} forceValidRandomCode 是否强制校验随机数
    */
   async sendApWifiAfter(forceValidRandomCode = true) {
+    Logger.console('sendApWifiAfter')
     let self = this
     let randomCode = this.data.randomCode
     let wifiInfo = this.data.bindWifiInfo
@@ -1773,11 +1762,13 @@ Page({
       timeout,
       async (resp) => {
         Logger.debug('sendApWifiAfter-newAgainGetAPExists-success-cb', resp, 'this.data.time', this.data.time)
+        this.data.deviceId = resp.applianceCode
+        app.addDeviceInfo.deviceId = resp.applianceCode
+        app.addDeviceInfo.verificationCode = resp.verificationCode
         if (this.data.time === 0) {
           return
         } //页面计时已结束
         this.data.isLinkcloud = true
-        console.log('设备成功连2上云', resp)
         app.addDeviceInfo.errorCode = this.creatErrorCode({
           errorCode: 4013,
           isCustom: true,
@@ -1805,6 +1796,8 @@ Page({
         } catch (error) {
           console.error(error)
         }
+
+        Logger.console('绑定成功')
         this.setData({
           curStep: 2,
         })
@@ -1817,11 +1810,11 @@ Page({
             this.finishTcp()
           }
           app.addDeviceInfo.sn = this.data.sn
-          app.addDeviceInfo.cloudBackDeviceInfo = bindRes.data.data
-          app.addDeviceInfo.cloudBackDeviceInfo.roomName = this.data.currentRoomName
+          app.addDeviceInfo.cloudBackDeviceInfo = bindRes
           app.composeApplianceList = []
           // 组合配网新增跳转
           let { applianceCode, combinedDeviceFlag } = app.addDeviceInfo
+          Logger.console('---combinedDeviceFlag---', app.addDeviceInfo, 'combinedDeviceFlag', combinedDeviceFlag)
           if (combinedDeviceFlag) {
             app.composeApplianceList.push(app.addDeviceInfo.cloudBackDeviceInfo)
             const { data } = await this.getApplianceAuthType(applianceCode)
@@ -1841,8 +1834,10 @@ Page({
               })
             }
           } else {
-            wx.reLaunch({
-              url: paths.addSuccess,
+            wx.redirectTo({
+              url: strUtil.getUrlWithParams('/package-distribution/bind-home/index', {
+                deviceId: this.data.deviceId,
+              }),
             })
           }
         } else {
@@ -1964,23 +1959,6 @@ Page({
             }
           })
 
-          // this.againGetAPExists(this.data.sn, this.data.blueRandomCode, async (respon) => {
-          //   console.log('设备成功连上云', respon)
-          //   console.log('开始绑定设备')
-          //   let resp = await this.bindDeviceToHome()
-          //   console.log('绑定设备至默认家庭房间', resp)
-          //   app.addDeviceInfo.cloudBackDeviceInfo = resp.data.data
-          //   app.addDeviceInfo.cloudBackDeviceInfo.roomName = this.data.currentRoomName
-          //   clearInterval(timer)
-          //   wx.reLaunch({
-          //     url: paths.wifiSuccessSimple,
-          //   })
-          //   let btMac = this.data.btMac ? this.data.btMac.toLocaleUpperCase() : ''
-          //   let remoteDeviceList = wx.getStorageSync('remoteDeviceList') ? wx.getStorageSync('remoteDeviceList') : []
-          //   remoteDeviceList = remoteDeviceList.filter((item) => item.btMac != btMac)
-          //   wx.setStorageSync('remoteDeviceList', remoteDeviceList)
-          //   app.addDeviceInfo.mode = '' //置空模式
-          // })
           return
         }
         app.globalData.DeviceComDecorator.querySN()
@@ -2004,7 +1982,6 @@ Page({
             app.addDeviceInfo.sn = this.data.sn
             console.log('sn--------------', this.data.sn)
             clearInterval(timer)
-            // await this.bindDeviceToHome() //防止超时提前绑定
             let reqData = {
               applianceName: this.data.deviceName,
               homegroupId: this.data.currentHomeGroupId,
@@ -2032,18 +2009,6 @@ Page({
             this.setData({
               curStep: 2,
             })
-            // app.addDeviceInfo.mode = 21
-            // wx.navigateTo({
-            //     url: paths.inputWifiInfo,
-            // })
-            // let type0x = bindRemoteDeviceResp.type
-            // let deviceInfo = encodeURIComponent(JSON.stringify(bindRemoteDeviceResp))
-            // wx.closeBLEConnection({ //断开连接
-            //     deviceId: app.addDeviceInfo.deviceId
-            // })
-            // wx.redirectTo({
-            //     url: `/plugin/T${type0x}/index/index?backTo=/pages/index/index&deviceInfo=${deviceInfo}`
-            // })
             wx.navigateTo({
               url: paths.addSuccess,
             })
@@ -2246,13 +2211,23 @@ Page({
     })
   },
   async bindDeviceToHome(bindInfo) {
-    console.log('bindDeviceToHome开始绑定设备', this.data.deviceId, 'bindInfo', bindInfo)
+    console.log('bindDeviceToHome开始绑定设备', this.data.deviceId, 'bindInfo', bindInfo, 'app.addDeviceInfo', app.addDeviceInfo)
+
+    if (bindInfo && bindInfo.mode == 100) {
+      let reqData = {
+        homegroupId: homeStore.currentHomeId,
+        sn: this.data.sn,
+        applianceType: app.addDeviceInfo.type,
+        verificationCodeKey: bindInfo.verificationCodeKey,
+        verificationCode: bindInfo.verificationCode,
+      }
+    }
 
     const res = await bindMideaDevice({
       deviceId: this.data.deviceId,
       houseId: homeStore.currentHomeId,
       roomId: roomStore.currentRoom.roomId,
-      verificationCode: bindInfo.verificationCode,
+      verificationCode: app.addDeviceInfo.verificationCode,
     })
 
     console.log('bindMideaDevice', res)
@@ -2266,52 +2241,7 @@ Page({
       })
     }
 
-    // let type = app.addDeviceInfo.type.includes('0x') ? app.addDeviceInfo.type : '0x' + app.addDeviceInfo.type
-    // let reqData = null
-    // if (bindInfo && bindInfo.mode == 100) {
-    //   reqData = {
-    //     homegroupId: this.data.currentHomeGroupId,
-    //     sn: this.data.sn,
-    //     applianceType: type,
-    //     verificationCodeKey: bindInfo.verificationCodeKey,
-    //     verificationCode: bindInfo.verificationCode,
-    //     reqId: getReqId(),
-    //     stamp: getStamp(),
-    //   }
-    // } else {
-    //   reqData = {
-    //     applianceName: app.addDeviceInfo.mode == 21 ? this.data.deviceName : '',
-    //     homegroupId: this.data.currentHomeGroupId,
-    //     // roomId: this.data.currentRoomId,
-    //     sn: this.data.sn,
-    //     applianceType: type,
-    //     btMac: this.data.btMac ? this.data.btMac.replace(/:/g, '') : '',
-    //     reqId: getReqId(),
-    //     stamp: getStamp(),
-    //     bindType: this.data.bindType, //绑定方式，0是AP配网，1是单蓝牙模组的蓝牙绑定, 2是combo的蓝牙配网,3是combo模组的蓝牙绑定, 不传默认都是AP配网
-    //   }
-    // }
-    // console.log('bind reqData===', reqData)
-    // return new Promise((reslove, reject) => {
-    //   requestService
-    //     .request('bindDeviceToHome', reqData, 'POST', '', 3000)
-    //     .then((resp) => {
-    //       console.log('@module linkDevice.js\n@method bindDeviceToHome\n@desc 绑定设备结果\n', resp.data)
-    //       if (resp.data.code == 0) {
-    //         app.addDeviceInfo.applianceCode = resp.data.data.applianceCode
-    //         app.addDeviceInfo.lastBindName = resp.data.data.name
-    //         reslove(resp)
-    //       }
-    //     })
-    //     .catch((error) => {
-    //       console.error('@module linkDevice.js\n@method bindDeviceToHome\n@desc 绑定设备错误\n', error)
-    //       app.addDeviceInfo.errorCode = this.creatErrorCode({
-    //         errorCode: error?.data?.code,
-    //         isCustom: true,
-    //       })
-    //       reject(error)
-    //     })
-    // })
+    return res
   },
   async linkSuccess() {
     let self = this
@@ -2554,31 +2484,6 @@ Page({
         url: paths.linkNetFail,
       })
     }
-  },
-  /**
-   * 判断是否支持集群功能
-   * @param {object|string} adData 广播包信息
-   */
-  setIfSupportAds(adData) {
-    const { mode } = app.addDeviceInfo
-    let binArrayADS
-    if (mode == 0) {
-      // AP
-      binArrayADS = hex2bin(adData.add2)
-      Logger.console('ifSupportAds', binArrayADS[0])
-      app.addDeviceInfo.ifSupportAds = binArrayADS[0] ? true : false
-    } else {
-      // 二代蓝牙
-      const hex = adData.substr(38, 2)
-      binArrayADS = hex2bin(hex)
-      app.addDeviceInfo.ifSupportAds = binArrayADS[2] && binArrayADS[3] ? true : false
-    }
-    console.log('@module linkDevice.js\n@method setIfSupportAds\n@desc 判断是否支持集群功能\n', {
-      adData,
-      mode,
-      binArrayADS,
-      ifSupportAds: app.addDeviceInfo.ifSupportAds,
-    })
   },
   /**
    * 生命周期函数--监听页面加载

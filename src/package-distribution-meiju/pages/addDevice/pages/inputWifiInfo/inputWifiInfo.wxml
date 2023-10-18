@@ -1,6 +1,37 @@
 <view class="page page-container" id="{{brand}}">
   <nav-bar leftArrow bind:leftTap="goBack"></nav-bar>
 
+<!--  <view class="grow flex flex-col justify-between">-->
+<!--    <tips-box icon="/assets/img/default-img/link-wifi.png" text="请连接家庭Wi-Fi以便设备联网"></tips-box>-->
+
+<!--    <view class="grow px-48rpx pt-112rpx">-->
+<!--      <text class="text-black-59 text-26 leading-36rpx">智能设备仅支持2.4GHZ的Wi-Fi</text>-->
+
+<!--      <van-field value="{{ wifiInfo.SSID }}" placeholder="请选择Wi-Fi"-->
+<!--                 custom-style="margin-bottom: 32rpx;margin-top: 40rpx;padding: 16rpx 32rpx;border-radius: 24rpx;"-->
+<!--                 clearable="{{true}}" bind:blur="changeWifiName" border="{{false}}">-->
+<!--        <van-button slot="button" type="primary" plain bind:click="toggleWifi" loading="{{isRequestSystemWifiList}}"-->
+<!--                    disabled="{{isRequestSystemWifiList}}">切换Wi-Fi-->
+<!--        </van-button>-->
+<!--      </van-field>-->
+
+<!--      <van-field value="{{ wifiInfo.pw }}" placeholder="请输入Wi-Fi密码" password="{{!isShowPw}}"-->
+<!--                 custom-style="padding: 16rpx 32rpx;border-radius: 24rpx;" bind:blur="changePw" use-button-slot-->
+<!--                 border="{{false}}">-->
+<!--        <van-button slot="button" bind:click="togglePw" type="default" plain custom-style="border: 0;">-->
+<!--          <svg-icon name="icon-park-outline:preview-{{!isShowPw ? 'close-one' : 'open'}}" color="#555659"-->
+<!--                    height="56rpx"></svg-icon>-->
+<!--        </van-button>-->
+<!--      </van-field>-->
+<!--    </view>-->
+
+<!--    <view class="flex flex-col">-->
+<!--      <van-button class="mx-32rpx" block type="primary" size="large" bind:click="next"-->
+<!--                  disabled="{{!wifiInfo.SSID || !wifiInfo.pw}}">下一步-->
+<!--      </van-button>-->
+<!--    </view>-->
+<!--  </view>-->
+
   <block wx:if="{{isCanAddDevice}}">
     <view class="wifi-container theme-font-color">
       <view class="input-wifi" wx:if="{{netType==1}}">
@@ -49,10 +80,14 @@
             <view class="tip-text">{{spaceTip}}</view>
           </view>
         </view>
-        <view class="{{isShowRouttingImg?'bottom-button-wifi-showPic':'bottom-button-wifi'}} theme-bg-color"
-              style="padding-bottom: {{brand !== 'colmo'?(isIpx?'78rpx':'48rpx'):'100rpx'}}">
-          <button class="link-wifi-next" bindtap="configNetWork">{{showNextText}}</button>
-          <view class="msmart-skip" wx:if="{{mode==31}}" bindtap="skip">跳过</view>
+        <view class="{{isShowRouttingImg?'bottom-button-wifi-showPic':'bottom-button-wifi'}}"
+              style="padding-bottom: 96rpx">
+          <van-button class="w-full" block type="primary" size="large" bind:click="configNetWork">{{showNextText}}
+          </van-button>
+
+          <van-button class="w-full mt-20rpx" wx:if="{{mode==31}}" block type="primary" size="large" bind:click="skip">
+            跳过
+          </van-button>
         </view>
       </view>
       <view class="check-guide" wx:if="{{netType==0}}">
@@ -86,11 +121,16 @@
           </view>
         </view>
         <view class="go-link-wifi px-32rpx box-border">
-          <van-button class="w-full" type="info" custom-style="background-color: transparent;border: 0" plain block size="large" bind:click="connectWifi">已连接WiFi?</van-button>
+          <van-button class="w-full" type="info" custom-style="background-color: transparent;border: 0" plain block
+                      size="large" bind:click="connectWifi">已连接WiFi?
+          </van-button>
 
-          <van-button class="w-full mt-30rpx" block type="primary" size="large" bind:click="linkWifi">去连接WiFi</van-button>
+          <van-button class="w-full mt-20rpx" block type="primary" size="large" bind:click="linkWifi">去连接WiFi
+          </van-button>
 
-          <view class="msmart-skip" wx:if="{{mode==31}}" bindtap="skip">跳过</view>
+          <van-button class="w-full mt-20rpx" wx:if="{{mode==31}}" block type="primary" size="large" bind:click="skip">
+            跳过
+          </van-button>
         </view>
       </view>
     </view>
@@ -115,36 +155,15 @@
   <block wx:else class="no-can-add-device">
     <no-can-add-device></no-can-add-device>
   </block>
-  <mx-dialog id="mx-operate" show="{{ishowDialog}}" useSlot="{{ishowDialog}}" showCancelButton="{{ishowDialog}}"
-             bind:confirm="clickSetting" confirmButtonText="去操作"
-             cancelButtonColor="{{dialogStyle.cancelButtonColor}}"
-             confirmButtonColor="{{dialogStyle.confirmButtonColor2}}"
-             custom-style="padding-top:40rpx;padding-left:40rpx;padding-right:40rpx;" onClickOverlay="onClickOverlay"
-             message-align="left" messageSize='16'>
-    <useSlot>
-      <view class="dialog-content">
-        {{modalText}}，以便获取所连接的WiFi
-        <text bindtap="toOperate" class="checkOp">查看操作指引</text>
-      </view>
-    </useSlot>
-  </mx-dialog>
-  <mx-dialog id="mx-psw" show="{{blueCancelLinkModal}}" showCancelButton="true"
-             cancelButtonColor="{{dialogStyle.cancelButtonColor4}}"
-             confirmButtonColor="{{dialogStyle.confirmButtonColor3}}" title="{{titleContent}}"
-             message="{{messageContent}}" cancel-button-text="放弃" confirm-button-text="再等等"
-             bind:cancel="giveUpBlueCancelLink"></mx-dialog>
-  <mx-dialog id="mx-dialog"></mx-dialog>
 </view>
 
-<van-dialog id="van-dialog" />
+<van-dialog id="van-dialog"/>
 
-<van-toast id="van-toast" />
+<van-toast id="van-toast"/>
 
-<!--<van-dialog use-slot title="{{officeDeviceInfo.deviceName}}离线" show="{{ showDeviceOffline }}" confirm-button-color="#488FFF" confirmButtonText="我知道了" bind:close="handleCloseDeviceOffline">-->
-<!--  <view class="flex-col-center w-full">-->
-<!--    <view class="dialog-content">-->
-<!--      {{modalText}}，以便获取所连接的WiFi-->
-<!--      <text bindtap="toOperate" class="checkOp">查看操作指引</text>-->
-<!--    </view>-->
-<!--  </view>-->
-<!--</van-dialog>-->
+<van-dialog use-title-slot show="{{ ishowDialog }}" confirm-button-color="#488FFF" confirmButtonText="去操作"
+            show-cancel-button="{{true}}" bind:close="onClickOverlay" bind:confirm="clickSetting">
+  <view class="flex-col-center w-full" slot="title">
+    <text>{{modalText}}，以便获取所连接的WiFi<text bindtap="toOperate" style="color: #488FFF;">查看操作指引</text></text>
+  </view>
+</van-dialog>

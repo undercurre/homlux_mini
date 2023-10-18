@@ -57,10 +57,10 @@ const constantFun = {
   },
 
   getDefaultDomain() {
-    if (environment == 'sit') {
+    if (environment === 'sit') {
       return toHexString(string2Uint8Array('iotlab.midea.com.cn'))
     }
-    if (environment == 'sandbox' || environment == 'uat') {
+    if (environment === 'sandbox' || environment === 'uat') {
       //小程序无
       return toHexString(string2Uint8Array('iot-module-uat.smartmidea.net'))
     } else {

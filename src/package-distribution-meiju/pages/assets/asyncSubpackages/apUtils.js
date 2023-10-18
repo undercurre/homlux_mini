@@ -12,10 +12,10 @@ import {
   stringToHex,
 } from 'm-utilsdk/index'
 import { api } from '../../../common/js/api'
+import {Logger} from "../../../../utils/index";
 
 let signStr = app.globalData.privateKey //ap
 
-console.debug('[asyncSubpackages]stringToHex(signStr)', signStr, stringToHex(signStr))
 // let signHex = stringToHex(signStr) //ap->hex
 let signHex = '78686469776a6e6368656b6434643531326368646a783564386534633339344432443753'
 let MAS_KEY = {
@@ -169,6 +169,7 @@ function decode(order, key, orderType, keyType) {
 
 //解密模组ap消息
 function decode2body(msg) {
+  Logger.console('asyncSubpackages----decode2body')
   let type = msg.slice(12, 16)
   type = reverse(type).join('') //转节序
   let tag = msg.slice(16, 18)

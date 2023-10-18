@@ -52,6 +52,7 @@ module.exports = Behavior({
      *negType    确权类型  1:确权后绑定  2：强制下发绑定码 3：校验绑定码
      * */
     async bleNegotiation(deviceId, isDirectCon, moduleType, negType) {
+      console.debug('----bleNegotiation-----')
       let initOrder = await requestWithTry(this.acquirePublicKey, 4)
       this.data.currentOrder = initOrder
       this.data.isDirectCon = isDirectCon
@@ -496,6 +497,7 @@ module.exports = Behavior({
     },
     //获取0101指令
     acquirePublicKey() {
+      console.debug('----ble-negotiation.js   acquirePublicKey-----')
       return new Promise((r, j) => {
         let reqData = {
           reqId: getReqId(),

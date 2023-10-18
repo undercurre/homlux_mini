@@ -1,4 +1,4 @@
-import { mzaioRequest } from '../utils/index'
+import {mzaioRequest} from '../utils/index'
 
 /**
  * 查询美居家庭列表
@@ -20,12 +20,12 @@ export async function getMeijuHomeList(code?: string) {
  * @param mideaHouseId 美居家庭id
  * @param houseId Homlux 家庭id
  */
-export async function bindMeiju({ houseId, mideaHouseId }: { houseId: string; mideaHouseId: string }) {
+export async function bindMeiju({houseId, mideaHouseId}: { houseId: string; mideaHouseId: string }) {
   return await mzaioRequest.post<Meiju.MeijuDevice[]>({
     log: true,
     loading: false,
     url: '/v1/thirdparty/midea/device/bindHouseRoom',
-    data: { houseId, mideaHouseId },
+    data: {houseId, mideaHouseId},
   })
 }
 
@@ -50,7 +50,7 @@ export async function syncMeijuDeviceList(houseId: string) {
     log: true,
     loading: true,
     url: '/v1/thirdparty/midea/device/syncMideaDevice',
-    data: { houseId },
+    data: {houseId},
   })
 }
 
@@ -63,7 +63,7 @@ export async function queryUserThirdPartyInfo(houseId: string, options?: { loadi
     log: true,
     loading: options?.loading ?? false,
     url: '/v1/thirdparty/midea/device/queryUserThirdPartyInfo',
-    data: { houseId },
+    data: {houseId},
   })
 }
 
@@ -76,7 +76,7 @@ export async function delDeviceSubscribe(houseId: string) {
     log: true,
     loading: false,
     url: '/v1/thirdparty/midea/device/delDeviceSubscribe',
-    data: { houseId },
+    data: {houseId},
   })
 }
 
@@ -113,9 +113,10 @@ export async function checkApExists(params: { sn: string; randomCode: string; fo
   return await mzaioRequest.post<{
     reqId: string // 请求ID
     available: boolean // true时为已发现设备
-    applianceList: string[] // 发现的设备列表
-    verificationCode: string // 随机数验证码，用于绑定校验
-    applianceCode: string // 设备虚拟ID，用于设备相关操作
+    applianceList: {
+      verificationCode: string // 随机数验证码，用于绑定校验
+      applianceCode: string // 设备虚拟ID，用于设备相关操作
+    }[] // 发现的设备列表
   }>({
     log: true,
     loading: false,

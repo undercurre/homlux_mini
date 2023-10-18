@@ -48,6 +48,7 @@ module.exports = Behavior({
      *negType    确权类型  1:确权后绑定  2：强制下发绑定码 3：校验绑定码
      * */
     async bleNegotiation(deviceId, isDirectCon, moduleType, negType) {
+      console.log('bleNegotiationMixin.js：bleNegotiation')
       let initOrder = await requestWithTry(bleNegotiationService.acquirePublicKey, 4)
       this.data.currentOrder = initOrder
       this.data.isDirectCon = isDirectCon

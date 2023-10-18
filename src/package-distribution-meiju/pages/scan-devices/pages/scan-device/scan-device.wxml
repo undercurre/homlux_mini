@@ -123,5 +123,6 @@
   <view wx:else class="no-can-add-device">
     <no-can-add-device></no-can-add-device>
   </view>
-  <mx-dialog id="mx-dialog" />
 </view>
+
+<van-dialog id="van-dialog"/>

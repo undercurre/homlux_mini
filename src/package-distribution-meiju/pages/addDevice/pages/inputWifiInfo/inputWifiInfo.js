@@ -3,6 +3,7 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../../../../behaviors/pageBehaviors'
 import {imgList} from '../../../../../config/img'
+
 import computedBehavior from '../../../../utils/miniprogram-computed.js'
 import {getFullPageUrl} from '../../../../utils/util'
 import {string2Uint8Array} from 'm-utilsdk/index'
@@ -97,13 +98,10 @@ Page({
     otherAndroidSystem: true, //是否非小米系的其他系统 true:是(非小米)  false:否(是小米或红米)
     continueConnectWifi: false, //是否继续连wifi (手动输入) false:不是手动输入，true是手动输入
     ishowDialog: false, //是否显示操作指引弹窗
-    messageContent: '', //手动弹窗内容
     focusWifiName: false, //是否聚焦wifi名输入框
     focusWifiPwd: false, //是否聚焦wifi密码输入框
     brand: '',
     dialogStyle: brandStyle.brandConfig.dialogStyle, //弹窗样式
-    blueCancelLinkModal: false,
-    titleContent: '',
     brandConfig,
     locationResFlag: '',
   },
@@ -312,6 +310,16 @@ Page({
         that.data.clickFLag = false
       }
       if (!locationRes.isCanLocation) {
+        // Dialog.confirm({
+        //   title: '请开启位置权限',
+        //   message: locationRes.permissionTextAll,
+        //   showCancelButton: true,
+        //   cancelButtonText: '放弃',
+        //   confirmButtonText: '查看指引',
+        //   confirmButtonColor: '#488FFF',
+        // }).then(() => {}).catch(err => {
+        //   console.log('cancel', err)
+        // })
         const obj = {
           title: '请开启位置权限',
           message: locationRes.permissionTextAll,
@@ -1118,10 +1126,17 @@ Page({
   //msmart 直连取消后配网
   blueCancelLinkWifi() {
     let {deviceName} = app.addDeviceInfo
-    this.setData({
-      titleContent: `要放弃为${deviceName}配网吗`,
-      messageContent: `请在等一等，${deviceName}正在努力连接中`,
-      blueCancelLinkModal: true,
+
+    Dialog.confirm({
+      title: `要放弃为${deviceName}配网吗`,
+      message: `请在等一等，${deviceName}正在努力连接中`,
+      showCancelButton: true,
+      cancelButtonText: '放弃',
+      confirmButtonText: '再等等',
+      confirmButtonColor: '#488FFF',
+    }).then(() => {}).catch(err => {
+      console.log('cancel', err)
+      this.giveUpBlueCancelLink()
     })
 
     this.goBack()
@@ -1332,29 +1347,28 @@ Page({
   //去连接wifi 提示弹窗
   async connectWifi() {
     // 判断是否有精准定位，安卓 系统》=12
-    let {system, version, brand} = systemInfo
+    let {system, brand} = systemInfo
     let systemType = system.split(' ')[0]
     let systemGrade = this.systemGrade()
     // 如果是IOS  或者  微信系统>= 8.2.0  或者  安卓系统没有精准定位功能
-    if (systemType === 'IOS' || this.toNum(version) >= this.toNum('8.2.0') || !systemGrade) {
-    //   Dialog.confirm({
-    //     title: '无法获取所连接的WiFi，可手动输入家庭WiFi名称与密码',
-    //     showCancelButton: true,
-    //     confirmButtonText: '手动输入',
-    //     confirmButtonColor: '#488FFF',
-    //   }).then(text => {
-    //     // 切换wifi登记页
-    //     this.setData({
-    //       netType: 1, //非wifi
-    //     })
-    //   }).catch(err => {
-    //     console.log('cancel', err)
-    //   })
-    // } else {
+    if (systemType === 'IOS' || !systemGrade) {
+      Dialog.confirm({
+        title: '无法获取所连接的WiFi，可手动输入家庭WiFi名称与密码',
+        showCancelButton: true,
+        confirmButtonText: '手动输入',
+        confirmButtonColor: '#488FFF',
+      }).then(text => {
+        // 切换wifi登记页
+        this.setData({
+          netType: 1, //非wifi
+        })
+      }).catch(err => {
+        console.log('cancel', err)
+      })
+    } else {
       // 安卓系统有精准定位
       brand = brand.toLowerCase()
 
-      brand = 'xiaomi'
       if (brand === 'xiaomi' || brand === 'redmi') {
         //是否符合品牌
         this.setData({
@@ -1376,10 +1390,18 @@ Page({
         })
       } else {
         // 除去小米，红米，vivo,华为，荣耀，oppo,摩托罗拉的其他品牌
-        this.setData({
-          ishowManualInputWiFi: true,
-          messageContent:
-            '请检查手机系统中对于微信的位置授权，是否具备”精准位置/确切位置“项，若具备，请开启该权限后重试；若不具备，请尝试手动输入WiFi名称与密码',
+        Dialog.confirm({
+          title: '请检查手机系统中对于微信的位置授权，是否具备”精准位置/确切位置“项，若具备，请开启该权限后重试；若不具备，请尝试手动输入WiFi名称与密码',
+          showCancelButton: true,
+          confirmButtonText: '手动输入',
+          confirmButtonColor: '#488FFF',
+        }).then(text => {
+          // 切换wifi登记页
+          this.setData({
+            netType: 1, //非wifi
+          })
+        }).catch(err => {
+          console.log('cancel', err)
         })
       }
     }

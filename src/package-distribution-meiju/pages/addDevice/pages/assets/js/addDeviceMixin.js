@@ -303,56 +303,48 @@ module.exports = Behavior({
     newAgainGetAPExists(sn, forceValidRandomCode, randomCode = '', timeout, callBack, callFail) {
       Logger.console('newAgainGetAPExists')
       let timeoutID
-      const timeoutPromise = new Promise((resolve, reject) => {
-        timeoutID = setTimeout(reject, 5000, 'WEB TIMEOUT')
+      const timeoutPromise = new Promise((resolve) => {
+        timeoutID = setTimeout(resolve, 5000, { success: false, msg: 'WEB TIMEOUT'} )
       })
       Promise.race([timeoutPromise, this.checkApExists(sn, forceValidRandomCode, randomCode, timeout)])
         .then((resp) => {
-          console.log('查询设备是否连上云', resp)
-          if (resp.success && resp.result.available) {
-            console.log('resolve------------')
-            callBack && callBack(resp.result)
+          Logger.console('查询设备是否连上云', resp)
+          if (resp.success && resp.result.applianceList?.length) {
+            callBack && callBack(resp.result.applianceList[0])
           } else {
-            setTimeout(() => {
-              this.newAgainGetAPExists(sn, forceValidRandomCode, randomCode, timeout, callBack, callFail)
-            }, 5000)
-          }
-        })
-        .catch((error) => {
-          console.log('查询设备是否连上云接口失败2', error)
-          if (this.data.isStopGetExists) return
-          if (error.success) {
-            console.log('设备未连上云', error)
-            setTimeout(() => {
-              this.newAgainGetAPExists(sn, forceValidRandomCode, randomCode, timeout, callBack, callFail)
-            }, 2000)
-          } else {
-            console.log('请求超时', error)
-            let time = 2000
-            if (
-              (error.errMsg && error.errMsg.includes('ERR_NAME_NOT_RESOLVED')) ||
-              (error.errMsg && error.errMsg.includes('ERR_CONNECTION_ABORTED'))
-            ) {
-              console.log('ERR_NAME_NOT_RESOLVED', error)
-              time = 7000
+            console.log('设备未连上云', 'this.data.isStopGetExists', this.data.isStopGetExists)
+            if (this.data.isStopGetExists) return
+            if (resp.success) {
+              setTimeout(() => {
+                this.newAgainGetAPExists(sn, forceValidRandomCode, randomCode, timeout, callBack, callFail)
+              }, 3000)
+            } else {
+              Logger.console('请求超时', resp)
+              let time = 5000
+              if (
+                (resp.errMsg && resp.errMsg.includes('ERR_NAME_NOT_RESOLVED')) ||
+                (resp.errMsg && resp.errMsg.includes('ERR_CONNECTION_ABORTED'))
+              ) {
+                Logger.console('ERR_NAME_NOT_RESOLVED', resp)
+                time = 7000
+              }
+              setTimeout(() => {
+                this.newAgainGetAPExists(sn, forceValidRandomCode, randomCode, timeout, callBack, callFail)
+              }, time)
+              callFail && callFail(resp)
             }
-            setTimeout(() => {
-              this.newAgainGetAPExists(sn, forceValidRandomCode, randomCode, timeout, callBack, callFail)
-            }, time)
-            callFail && callFail(error)
           }
-        })
-        .finally(() => clearTimeout(timeoutID))
+        }).finally(() => clearTimeout(timeoutID))
     },
     //轮询查询设备是否连上云
     againGetAPExists(sn, randomCode = '', callBack, callFail) {
       console.log('this.data.isStopGetExists===', this.data.isStopGetExists)
       this.checkApExists(sn, !!randomCode, randomCode)
         .then((resp) => {
-          console.log('查询设备是否连上云', resp.data.code)
-          if (resp.data.code == 0) {
+          console.log('查询设备是否连上云', resp)
+          if (resp.success && resp.result.available) {
             console.log('resolve------------')
-            callBack && callBack(resp.data.data)
+            callBack && callBack(resp.result)
           } else {
             if (!this.data.isStopGetExists) {
               setTimeout(() => {
@@ -385,11 +377,8 @@ module.exports = Behavior({
       })
     },
     //根据企业码返回企业热点名
-    getBrandBname(enterprise) {
+    getBrandBname() {
       let brandName = 'midea'
-      if (enterprise === '0010') {
-        brandName = 'bugu'
-      }
       return brandName
     },
     //生成错误码

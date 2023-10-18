@@ -47,7 +47,7 @@ ComponentWithComputed({
 
       const res = await queryUserThirdPartyInfo(homeStore.currentHomeId, { loading: true })
 
-      if (res.success) {
+      if (res.success && res.result && res.result[0]) {
         this.setData({
           isAuth: res.result[0].authStatus === 1,
         })

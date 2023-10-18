@@ -10,6 +10,7 @@ import {
   hexCharCodeToStr,
 } from 'm-utilsdk/index'
 import { api } from '../../../../common/js/api'
+import {Logger} from "../../../../../utils/index";
 
 console.debug('[ap_core]signHex')
 let signStr = 'xhdiwjnchekd4d512chdjx5d8e4c394D2D7S'
@@ -171,6 +172,7 @@ function decode(order, key, orderType, keyType) {
 
 //解密模组ap消息
 function decode2body(msg) {
+  Logger.console('ap_core----decode2body')
   let type = msg.slice(12, 16)
   type = reverse(type).join('') //转节序
   let tag = msg.slice(16, 18)

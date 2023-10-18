@@ -4,7 +4,7 @@ import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { getCurrentPageParams, checkInputNameIllegal } from '../../utils/index'
 import { queryDeviceInfoByDeviceId, editDeviceInfo, batchUpdate } from '../../apis/index'
-import { homeBinding, homeStore, roomBinding } from '../../store/index'
+import { homeBinding, homeStore, roomBinding, deviceStore } from '../../store/index'
 import { PRO_TYPE } from '../../config/index'
 
 ComponentWithComputed({
@@ -124,6 +124,8 @@ ComponentWithComputed({
 
       if (res.success) {
         homeBinding.store.updateCurrentHomeDetail()
+
+        deviceStore.updateAllRoomDeviceList() // 重复加载
 
         // 关闭扫描页面可能开启的蓝牙、wifi资源
         wx.closeBluetoothAdapter()

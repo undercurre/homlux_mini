@@ -1,5 +1,5 @@
 <view class="page-container flex flex-col">
-  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="{{pageTitle}}"></nav-bar>
+  <nav-bar leftArrow="{{true}}" bind:leftTap="goBack" title="{{pageTitle}}"></nav-bar>
 
   <view class="grow flex flex-col justify-between">
     <tips-box icon="/package-distribution/assets/wifi-connect/connect-wifi.png" text="请连接家庭Wi-Fi以便设备联网"></tips-box>

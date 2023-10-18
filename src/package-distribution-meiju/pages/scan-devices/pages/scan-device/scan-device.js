@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
+import Dialog from '@vant/weapp/dialog/dialog'
+
 import { baseImgApi, deviceImgApi, imgBaseUrl, commonH5Api } from '../../../../common/js/api.js'
 import { getStamp, getReqId, isEmptyObject } from 'm-utilsdk/index'
 import { scanHelp, selectDevice } from '../../../../utils/paths.js'
@@ -13,7 +15,6 @@ import { creatDeviceSessionId } from '../../../../utils/util.js'
 import { addDeviceSDK } from '../../../../utils/addDeviceSDK'
 import { checkPermission } from '../../../../common/js/checkPermissionTip'
 import { getPrivateKeys } from '../../../../utils/getPrivateKeys'
-import Dialog from '../../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
 const brandStyle = require('../../../assets/js/brand.js')
 import { imgesList } from '../../../assets/js/shareImg.js'
 import { commonDialog } from '../../../assets/js/commonDialog'
