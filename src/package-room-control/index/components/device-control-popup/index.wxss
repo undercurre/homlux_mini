@@ -53,6 +53,36 @@
   border: 3rpx solid #ffffff;
   background-image: linear-gradient(30deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 60%) !important;
 }
+.log-step {
+  position: absolute;
+  left: 50rpx;
+  height: 600rpx;
+  width: 2rpx;
+  background-color: rgba(181,194,210,1);;
+}
+.log-item {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 18rpx 64rpx;
+  width:  564rpx;
+  height: 112rpx;
+  border-radius: 24rpx;
+  background-color: #f6fafd;
+  margin-top: 32rpx;
+  margin-left: 100rpx;
+}
+.circle {
+  position: absolute;
+  left: -60rpx;
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: 24rpx;
+  border: 6rpx solid #b5c2d2;
+  box-sizing: border-box;
+}
 
 .btn-effect:active {
   animation: btn-press-ani 0.4s ease forwards;

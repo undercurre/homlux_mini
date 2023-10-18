@@ -23,8 +23,6 @@ import {
   _get,
   throttle,
   toPropertyDesc,
-  isNullOrUnDef,
-  transferDeviceProperty,
   isConnect,
   verifyNetwork,
   Logger,
@@ -103,9 +101,7 @@ ComponentWithComputed({
     checkedList: [] as string[], // 已选择设备的id列表
     editSelectList: [] as string[], // 编辑状态下，已勾选的设备id列表
     editSelectMode: false, // 是否编辑状态
-    lightStatus: {} as Record<string, number>, // 当前选择的灯具的状态
-    curtainStatus: {} as Record<string, string>, // 当前选择的窗帘的状态
-    checkedType: [] as string[], // 已选择设备的类型
+    checkedDeviceInfo: {} as DeviceCard, // 选中设备的数据
     deviceListInited: false, // 设备列表是否初始化完毕
     isMoving: false, // 是否正在拖拽中
     hasMoved: false, // 排序变更过
@@ -164,18 +160,6 @@ ComponentWithComputed({
         )
       }
       return {}
-    },
-    hasSelectLight(data) {
-      if (data.checkedType) {
-        return data.checkedType.includes('light')
-      }
-      return false
-    },
-    hasSelectSwitch(data) {
-      if (data.checkedType) {
-        return data.checkedType.includes('switch')
-      }
-      return false
     },
     // 设备批量选择按钮文字
     allSelectBtnText(data) {
@@ -497,9 +481,12 @@ ComponentWithComputed({
             if (
               device!.mzgdPropertyDTOList &&
               this.data.checkedList.includes(originDevice!.deviceId) &&
-              originDevice!.select
+              originDevice!.select && 
+              originDevice.proType === PRO_TYPE.curtain // 因为【灯】异常推送较多，暂时不对弹框中的设备状态进行更新
             ) {
-              const prop = transferDeviceProperty(originDevice.proType, device!.mzgdPropertyDTOList[modelName])
+              
+              this.data._diffCards.data.checkedDeviceInfo = device
+              // const prop = transferDeviceProperty(originDevice.proType, device!.mzgdPropertyDTOList[modelName])
               // 因为【灯】异常推送较多，暂时不对弹框中的设备状态进行更新
               //   if (originDevice.proType === PRO_TYPE.light) {
               //     diffData.lightStatus = {
@@ -508,11 +495,11 @@ ComponentWithComputed({
               //       OnOff: prop.OnOff,
               //     }
               //   } else
-              if (originDevice.proType === PRO_TYPE.curtain) {
-                this.data._diffCards.data.curtainStatus = {
-                  position: prop.curtain_position,
-                }
-              }
+              // if (originDevice.proType === PRO_TYPE.curtain) {
+              //   this.data._diffCards.data.curtainStatus = {
+              //     position: prop.curtain_position,
+              //   }
+              // }
             }
 
             // 处理更新逻辑
@@ -1035,19 +1022,20 @@ ComponentWithComputed({
 
       // 选择灯卡片时，同步设备状态到控制弹窗
       if (toCheck) {
-        const modelName = MODEL_NAME[e.detail.proType]
-        const prop = e.detail.mzgdPropertyDTOList[modelName]
-        if (e.detail.proType === PRO_TYPE.light) {
-          if (!isNullOrUnDef(prop.brightness)) diffData['lightStatus.brightness'] = prop.brightness
-          if (!isNullOrUnDef(prop.colorTemperature)) diffData['lightStatus.colorTemperature'] = prop.colorTemperature
-          if (!isNullOrUnDef(prop.power)) diffData['lightStatus.power'] = prop.power
-          if (!isNullOrUnDef(e.detail.canLanCtrl)) diffData['lightStatus.canLanCtrl'] = e.detail.canLanCtrl
-          if (!isNullOrUnDef(e.detail.onLineStatus)) diffData['lightStatus.onLineStatus'] = e.detail.onLineStatus
-        } else if (e.detail.proType === PRO_TYPE.curtain) {
-          diffData.curtainStatus = {
-            position: prop.curtain_position,
-          }
-        }
+        diffData.checkedDeviceInfo = e.detail
+        // const modelName = MODEL_NAME[e.detail.proType]
+        // const prop = e.detail.mzgdPropertyDTOList[modelName]
+        // if (e.detail.proType === PRO_TYPE.light) {
+        //   if (!isNullOrUnDef(prop.brightness)) diffData['lightStatus.brightness'] = prop.brightness
+        //   if (!isNullOrUnDef(prop.colorTemperature)) diffData['lightStatus.colorTemperature'] = prop.colorTemperature
+        //   if (!isNullOrUnDef(prop.power)) diffData['lightStatus.power'] = prop.power
+        //   if (!isNullOrUnDef(e.detail.canLanCtrl)) diffData['lightStatus.canLanCtrl'] = e.detail.canLanCtrl
+        //   if (!isNullOrUnDef(e.detail.onLineStatus)) diffData['lightStatus.onLineStatus'] = e.detail.onLineStatus
+        // } else if (e.detail.proType === PRO_TYPE.curtain) {
+        //   diffData.curtainStatus = {
+        //     position: prop.curtain_position,
+        //   }
+        // }
       }
 
       // 合并数据变化
@@ -1056,9 +1044,6 @@ ComponentWithComputed({
 
       // 更新视图
       this.setData(diffData)
-
-      // TODO 冗余操作，是否可以取消设值
-      this.updateSelectType()
 
       // 弹起popup后，选中卡片滚动到视图中央，以免被遮挡
       // 作用不大，减小渲染压力，暂时注释
@@ -1104,9 +1089,9 @@ ComponentWithComputed({
       // 不等待云端，即时改变视图，提升操作手感 // TODO 不插入队列
       device.mzgdPropertyDTOList[modelName].power = newOnOff
       this.updateQueue(device)
-      this.setData({
-        'lightStatus.power': newOnOff,
-      })
+      // this.setData({
+      //   'lightStatus.power': newOnOff,
+      // })
 
       const res = await sendDevice({
         proType: device.proType,
@@ -1120,9 +1105,9 @@ ComponentWithComputed({
       if (!res.success) {
         device.mzgdPropertyDTOList[modelName].power = OldOnOff
         this.updateQueue(device)
-        this.setData({
-          'lightStatus.power': OldOnOff,
-        })
+        // this.setData({
+        //   'lightStatus.power': OldOnOff,
+        // })
         Toast('控制失败')
       }
 
@@ -1160,19 +1145,6 @@ ComponentWithComputed({
     handleShowAddSceneSuccess() {
       wx.navigateTo({
         url: '/package-room-control/scene-request-list/index',
-      })
-    },
-    updateSelectType() {
-      const typeList = new Set()
-      this.data.checkedList.forEach((deviceId: string) => {
-        if (deviceId.includes(':')) {
-          typeList.add('switch')
-          return
-        }
-        typeList.add(this.data.deviceIdTypeMap[deviceId])
-      })
-      this.setData({
-        checkedType: Array.from(typeList) as string[],
       })
     },
     /** 点击空位的操作 */
