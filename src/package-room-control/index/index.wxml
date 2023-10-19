@@ -33,16 +33,18 @@
         </view>
       </view>
 
+      <!-- 全房间亮度控制 -->
       <view class="slider-box">
         <image src="/package-room-control/assets/img/bright.png" class="w-48rpx h-48rpx" />
-        <van-slider data-type="level" bind:change="handleLevelChange" bind:drag="handleLevelDrag" bind:drag-end="handleLevelDragEnd" value="{{lightInfoInner.Level}}" min="{{1}}" use-button-slot custom-class="slider-brightness-bar" active-color="rgba(0,0,0,0)" bar-height="16rpx">
+        <van-slider bind:change="handleLevelChange" catch:drag="handleLevelDrag" disabled="{{!roomLight.power}}" value="{{roomLight.brightness}}" min="{{1}}" use-button-slot custom-class="slider-brightness-bar" active-color="rgba(0,0,0,0)" bar-height="16rpx">
           <image slot="button" src="/package-room-control/assets/img/btn.png" class="w-72rpx h-72rpx mt-6rpx" />
         </van-slider>
       </view>
 
+      <!-- 全房间色温控制 -->
       <view class="slider-box">
         <image src="/package-room-control/assets/img/colorTemp.png" class="w-48rpx h-48rpx" />
-        <van-slider data-type="colorTemp" bind:change="handleColorTempChange" bind:drag="handleColorTempDrag" bind:drag-end="handleColorTempDragEnd" value="{{lightInfoInner.ColorTemp}}" use-button-slot custom-class="slider-color-temp-bar" active-color="rgba(0,0,0,0)" bar-height="16rpx">
+        <van-slider bind:change="handleColorTempChange" catch:drag="handleColorTempDrag" disabled="{{!roomLight.power}}" value="{{roomLight.colorTemperature}}" use-button-slot custom-class="slider-color-temp-bar" active-color="rgba(0,0,0,0)" bar-height="16rpx">
           <image slot="button" src="/package-room-control/assets/img/btn.png" class="w-72rpx h-72rpx mt-6rpx" />
         </van-slider>
       </view>

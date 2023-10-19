@@ -13,7 +13,7 @@ import {
 } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { sendDevice, execScene, saveDeviceOrder } from '../../apis/index'
+import { sendDevice, execScene, saveDeviceOrder, queryGroup } from '../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
 import {
   storage,
@@ -111,6 +111,11 @@ ComponentWithComputed({
       groupIndex: -1,
       x: '',
       y: '',
+    },
+    roomLight: {
+      brightness: 0,
+      colorTemperature: 0,
+      power: 0,
     },
   },
 
@@ -252,6 +257,17 @@ ComponentWithComputed({
         }
 
         if (e.result.eventType === WSEventType.device_property) {
+          // 房间状态上报
+          if (e.result.eventData.deviceId === roomStore.currentRoom.groupId) {
+            const { event } = e.result.eventData
+            this.setData({
+              roomLight: {
+                brightness: event.brightness,
+                colorTemperature: event.colorTemperature,
+                power: event.power,
+              },
+            })
+          }
           // 如果有传更新的状态数据过来，直接更新store
           const deviceInHouse = deviceStore.allRoomDeviceList.find(
             (device) => device.deviceId === e.result.eventData.deviceId,
@@ -333,6 +349,21 @@ ComponentWithComputed({
       })
     },
 
+    // 查询房间分组详情
+    async queryGroupInfo() {
+      const res = await queryGroup({ groupId: roomStore.currentRoom.groupId })
+      if (res.success) {
+        const roomStatus = res.result.controlAction[0]
+        this.setData({
+          roomLight: {
+            brightness: roomStatus.brightness,
+            colorTemperature: roomStatus.colorTemperature,
+            power: roomStatus.power,
+          },
+        })
+      }
+    },
+
     async reloadData() {
       Logger.log('reloadData', isConnect())
       // 未连接网络，所有设备直接设置为离线
@@ -346,6 +377,7 @@ ComponentWithComputed({
           homeStore.updateRoomCardList(),
           sceneStore.updateSceneList(),
           sceneStore.updateAllRoomSceneList(),
+          this.queryGroupInfo(),
         ])
 
         this.updateQueue({ isRefresh: true })
@@ -481,10 +513,9 @@ ComponentWithComputed({
             if (
               device!.mzgdPropertyDTOList &&
               this.data.checkedList.includes(originDevice!.deviceId) &&
-              originDevice!.select && 
+              originDevice!.select &&
               originDevice.proType === PRO_TYPE.curtain // 因为【灯】异常推送较多，暂时不对弹框中的设备状态进行更新
             ) {
-              
               this.data._diffCards.data.checkedDeviceInfo = device
               // const prop = transferDeviceProperty(originDevice.proType, device!.mzgdPropertyDTOList[modelName])
               // 因为【灯】异常推送较多，暂时不对弹框中的设备状态进行更新
@@ -1224,6 +1255,47 @@ ComponentWithComputed({
       wx.navigateTo({
         url: `/package-distribution/wifi-connect/index?type=changeWifi&sn=${gateway.sn}`,
       })
+    },
+
+    // handleLevelDrag() {
+    //   console.log('handleLevelDrag')
+    // },
+
+    handleLevelChange(e: { detail: number }) {
+      this.setData({
+        'roomLight.brightness': e.detail,
+      })
+      wx.showToast({
+        icon: 'none',
+        title: `${e.detail}%`,
+      })
+      this.lightSendDeviceControl('brightness')
+    },
+    handleColorTempChange(e: { detail: number }) {
+      this.setData({
+        'roomLight.colorTemperature': e.detail,
+      })
+      wx.showToast({
+        icon: 'none',
+        title: `${e.detail}%`,
+      })
+      this.lightSendDeviceControl('colorTemperature')
+    },
+    async lightSendDeviceControl(type: 'colorTemperature' | 'brightness') {
+      const deviceId = roomStore.currentRoom.groupId
+
+      const res = await sendDevice({
+        proType: PRO_TYPE.light,
+        deviceType: 4,
+        deviceId,
+        property: {
+          [type]: this.data.roomLight[type],
+        },
+      })
+
+      if (!res.success) {
+        Toast('控制失败')
+      }
     },
   },
 })

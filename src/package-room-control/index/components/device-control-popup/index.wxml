@@ -90,7 +90,7 @@
           <text class="text-26 text-hex-666666">设备日志</text>
         </view>
         <view class="log-step"></view>
-        <scroll-view scroll-y enhanced show-scrollbar="{{false}}" style="height: 600rpx">
+        <scroll-view scroll-y enhanced show-scrollbar="{{false}}" style="height: 500rpx">
           <view class="log-item" wx:for="{{logListView}}" wx:key="index">
             <view class="flex flex-col">
               <text class="text-32 text-hex-666666">{{item.time}}</text>
