@@ -555,6 +555,23 @@ export async function getSensorLogs(
 }
 
 /**
+ * 上传设备（网关）日志
+ */
+export async function uploadDeviceLog(
+  data: {
+    deviceId: string
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<Device.Log[]>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/uploadDeviceLog',
+    data,
+  })
+}
+
+/**
  * 根据sn去查设备的mac、图片、品类
  */
 export async function checkDevice(
