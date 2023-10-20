@@ -6,6 +6,8 @@
     "change-psw-dialog": "/package-distribution-meiju/pages/addDevice/pages/component/change-psw-dialog/change-psw-dialog",
     "mx-noticebar": "/package-distribution-meiju/component/mx-noticebar/mx-noticebar",
     "mx-notice-bar": "/miniprogram_npm/m-ui/mx-notice-bar/index",
-    "mx-dialog": "/miniprogram_npm/m-ui/mx-dialog/index"
+    "mx-dialog": "/miniprogram_npm/m-ui/mx-dialog/index",
+    "mz-loading": "/components/mz-loading/index",
+    "mz-progress": "/components/mz-progress/index"
   }
 }

@@ -177,6 +177,13 @@
           "query": "",
           "launchMode": "default",
           "scene": null
+        },
+        {
+          "name": "联网失败页面",
+          "pathName": "package-distribution-meiju/pages/addDevice/pages/linkNetFail/linkNetFail",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
         }
       ]
     }

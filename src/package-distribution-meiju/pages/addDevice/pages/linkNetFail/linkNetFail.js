@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 import { queryUserInfo } from '../../../../../apis/index'
+import { isConnect, goHome } from '../../../../../utils/index'
 
 import app from '../../../../common/app'
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
@@ -43,13 +44,11 @@ Page({
     backTo: '',
     isSwitchWifi: false, //是否切换wifi
     buttomButonData: {},
-    testNetDialog: {}, //测试网络弹窗内容
     isDeviceLinkCloud: false, //设备是否连上云
     failUiData: {}, //对应错误页面显示文案数据
     customDialog: {},
     canPingWifiNum: 3, //有结果三次
     isStopTestWifiNet: false, //是否停止测试当前wifi
-    isClickTestNet: false,
     plainSn: '', //原始sn
     pageStatus: 'show', //页面状态
     isSupport5G: false, //是否支持5gwifi
@@ -98,8 +97,6 @@ Page({
       brand: this.data.brand,
       combinedStatus: this.data.combinedStatus,
       dms_img_lack: `../assets/img/dms_img_lack_${this.data.brand}@3x.png`,
-      meiPhone: `../assets/img/ic_meiphone_${this.data.brand}@1x.png`,
-      // meiPhone:imgUrl+ imgesList['meiPhone'],
       zhuyi: `../assets/img/link_ic_zhuyi_${this.data.brand}.png`,
       wifiShow: '../assets/img/WiFi_ic_kejian.png',
       wifiHide: '../assets/img/wifi_ic_bukejian.png',
@@ -111,12 +108,7 @@ Page({
       errorCode,
       apUtils,
       plainSn,
-      type,
-      sn8,
-      blueVersion,
       mode,
-      moduleVersion,
-      linkType,
       curWifiInfo,
       guideInfo,
       continueConnectWifi,
@@ -224,95 +216,92 @@ Page({
               return
             }
             self.data.isClickConfirm = true
-            console.log('this.data.isClickConfirm:', self.data.isClickConfirm)
-            queryUserInfo()
-              .then(() => {
-                //如果是ap自发现配网失败点击重试跳设备发现页
-                let { fmType, combinedDeviceFlag } = app.addDeviceInfo
-                if (fmType && fmType == 'ap' && !combinedDeviceFlag) {
-                  //组合设备不走该路径
-                  setWifiStorage(self.data.bindWifiInfo) //保存本次失败页的wifi账号密码到wifi缓存里，到wifi登记页再取出显示
+            console.log('this.data.isClickConfirm:', self.data.isClickConfirm, isConnect())
+
+            if (isConnect()) {
+              //如果是ap自发现配网失败点击重试跳设备发现页
+              let { fmType, combinedDeviceFlag } = app.addDeviceInfo
+              if (fmType && fmType === 'ap' && !combinedDeviceFlag) {
+                //组合设备不走该路径
+                setWifiStorage(self.data.bindWifiInfo) //保存本次失败页的wifi账号密码到wifi缓存里，到wifi登记页再取出显示
+                wx.reLaunch({
+                  url: paths.scanDevice,
+                  complete() {
+                    self.drawBtnClickFlag = false
+                  },
+                })
+              } else {
+                console.log('代码走到了校验当前网络是否畅通------' + errorCode)
+                if (errorCode == 3001 || errorCode == 3002) {
+                  //组合配网重试
+                  app.addDeviceInfo.errorCode = '' //重置
                   wx.reLaunch({
-                    url: paths.scanDevice,
+                    url: paths.linkCombinedDevice,
+                    complete() {
+                      self.drawBtnClickFlag = false
+                    },
+                  })
+                } else if (errorCode == 4200) {
+                  //二次配网重试
+                  app.addDeviceInfo.errorCode = '' //重置
+                  wx.reLaunch({
+                    url: paths.addGuide,
                     complete() {
                       self.drawBtnClickFlag = false
                     },
                   })
                 } else {
-                  console.log('代码走到了校验当前网络是否畅通------' + errorCode)
-                  if (errorCode == 3001 || errorCode == 3002) {
-                    //组合配网重试
-                    app.addDeviceInfo.errorCode = '' //重置
-                    wx.reLaunch({
-                      url: paths.linkCombinedDevice,
-                      complete() {
-                        self.drawBtnClickFlag = false
-                      },
-                    })
-                  } else if (errorCode == 4200) {
-                    //二次配网重试
-                    app.addDeviceInfo.errorCode = '' //重置
-                    wx.reLaunch({
-                      url: paths.addGuide,
-                      complete() {
-                        self.drawBtnClickFlag = false
-                      },
-                    })
-                  } else {
-                    self.drawBtnClickFlag = false
-                    self.retry()
+                  self.drawBtnClickFlag = false
+                  self.retry()
+                }
+              }
+            } else {
+              self.data.isClickConfirm = false
+              wx.showModal({
+                content: '当前手机无网络，请将手机连至家庭wifi，或切换至4G',
+                showCancel: false,
+                confirmText: '好的',
+                success: function (res) {
+                  if (res.confirm) {
+                    if (errorCode == 4200) {
+                      //二次配网重试
+                      app.addDeviceInfo.errorCode = '' //重置
+                      wx.reLaunch({
+                        url: paths.addGuide,
+                      })
+                    } else {
+                      self.retry()
+                    }
                   }
-                }
+                },
               })
-              .catch(() => {
-                self.data.isClickConfirm = false
-                wx.showModal({
-                  content: '当前手机无网络，请将手机连至家庭wifi，或切换至4G',
-                  showCancel: false,
-                  confirmText: '好的',
-                  success: function (res) {
-                    if (res.confirm) {
-                      if (errorCode == 4200) {
-                        //二次配网重试
-                        app.addDeviceInfo.errorCode = '' //重置
-                        wx.reLaunch({
-                          url: paths.addGuide,
-                        })
-                      } else {
-                        self.retry()
-                      }
-                    }
-                  },
-                })
-              })
+            }
           } else if (res.cancel) {
-            queryUserInfo()
-              .then(() => {
-                self.drawBtnClickFlag = false
-                //校验当前网络是否畅通
-                if (mode == 31) {
-                  self.goToBlueConctrol()
-                } else {
-                  self.backToIndex()
-                }
-              })
-              .catch(() => {
-                self.data.isClickConfirm = false
-                wx.showModal({
-                  content: '当前手机无网络，请将手机连至家庭wifi，或切换至4G',
-                  showCancel: false,
-                  confirmText: '好的',
-                  success: function (res) {
-                    if (res.confirm) {
-                      if (mode == 31) {
-                        self.goToBlueConctrol()
-                      } else {
-                        self.backToIndex()
-                      }
+            if (isConnect()) {
+              self.drawBtnClickFlag = false
+              //校验当前网络是否畅通
+              if (mode == 31) {
+                self.goToBlueConctrol()
+              } else {
+                goHome()
+              }
+            } else {
+              self.data.isClickConfirm = false
+              wx.showModal({
+                content: '当前手机无网络，请将手机连至家庭wifi，或切换至4G',
+                showCancel: false,
+                confirmText: '好的',
+                success: function (res) {
+                  if (res.confirm) {
+                    if (mode == 31) {
+                      self.goToBlueConctrol()
+                    } else {
+                      goHome()
                     }
-                  },
-                })
+                  }
+                },
               })
+            }
           }
         },
       },
@@ -334,7 +323,7 @@ Page({
       if (wifiInfo.SSID == SSIDContent) {
         //还是之前连接的wifi
         console.log('[还是同一个wifi]')
-        if (this.data.pageStatus == 'show') {
+        if (this.data.pageStatus === 'show') {
           setTimeout(() => {
             this.getSwitchWifiInfo()
           }, 1500)
@@ -344,7 +333,7 @@ Page({
       this.getCurLinkWifiInfo(wifiInfo)
     } catch (error) {
       console.log('[get connected wifi fail]', error)
-      if (this.data.pageStatus == 'show') {
+      if (this.data.pageStatus === 'show') {
         this.delay(1500).then(() => {
           this.getSwitchWifiInfo()
         })
@@ -364,17 +353,6 @@ Page({
           if (self.data.isSwitchWifi && res.wifi && res.wifi.SSID && !res.wifi.SSID.includes('unknown ssid')) {
             console.log('更新切换的wifi')
             self.getCurLinkWifiInfo(res.wifi)
-          }
-
-          let wifiInfo = res.wifi
-          if (
-            this.data.isClickTestNet &&
-            !self.data.isStopTestWifiNet &&
-            wifiInfo.BSSID == self.data.bindWifiInfo.BSSID
-          ) {
-            //未停止测试当前网络
-            console.log('自动测试当前网络')
-            self.pingMideaNet()
           }
         })
       },
@@ -415,245 +393,6 @@ Page({
     if (wifiInfo.SSID == this.data.bindWifiInfo.SSIDContent) {
       self.pingMideaNet()
     }
-  },
-
-  //点击测试一下
-  async clickTestNet() {
-    let self = this
-    let { moduleType, type, sn8, sn, linkType, moduleVersion } = app.addDeviceInfo
-    this.data.isClickTestNet = true
-    this.data.isStopTestWifiNet = false //重置
-    try {
-      let wifiInfo = await wifiMgr.getConnectedWifi()
-      console.log('是wifi状态', wifiInfo, this.data.bindWifiInfo.SSID)
-      if (wifiInfo.SSID == this.data.bindWifiInfo.SSIDContent) {
-        self.pingMideaNet()
-      } else {
-        this.setData({
-          //请连接对应wifi弹窗
-          customDialog: {
-            show: true,
-            title: '',
-            content: `请连接到“${this.data.bindWifiInfo.SSIDContent}”，再进行测试`,
-            cancelText: '取消',
-            cancelColor: '#267AFF',
-            confirmText: '去设置',
-            confirmColor: '#267AFF',
-            success(res) {
-              console.log('page dialog res', res)
-              if (res.comfirm) {
-                console.log('page dialog res2222', res)
-                self.switchWifi()
-              }
-            },
-          },
-        })
-      }
-    } catch (error) {
-      let networkType = await this.nowNetType()
-      if (networkType == 'wifi') {
-        this.setData({
-          //请连接对应wifi弹窗
-          customDialog: {
-            show: true,
-            title: '',
-            content: `请连接到“${this.data.bindWifiInfo.SSIDContent}”，再进行测试`,
-            cancelText: '取消',
-            cancelColor: '#267AFF',
-            confirmText: '去设置',
-            confirmColor: '#267AFF',
-            success(res) {
-              console.log('page dialog res', res)
-              if (res.comfirm) {
-                console.log('page dialog res2222', res)
-                self.switchWifi()
-              }
-            },
-          },
-        })
-      } else {
-        console.log('未打开wifi开关')
-        this.setData({
-          //请打开wifi
-          customDialog: {
-            show: true,
-            title: '',
-            content: `请开启WLAN，并连接到“${this.data.bindWifiInfo.SSIDContent}”`,
-            cancelText: '取消',
-            cancelColor: '#267AFF',
-            confirmText: '去设置',
-            confirmColor: '#267AFF',
-            success(res) {
-              console.log('page dialog res', res)
-              if (res.comfirm) {
-                self.switchWifi()
-              }
-            },
-          },
-        })
-      }
-    }
-  },
-
-  //ping 相关网络
-  async pingMideaNet() {
-    let self = this
-    let { moduleType, type, sn8, sn, linkType, moduleVersion } = app.addDeviceInfo
-    this.setData({
-      //测试网络弹窗
-      testNetDialog: {
-        show: true,
-        title: '',
-        content: '测试中',
-        showCancel: true,
-        contentImg: './assets/img/loaidng_gray.gif',
-        cancelText: '取消',
-        cancelColor: '#267AFF',
-        success(res) {
-          console.log('click drawTestNetDialog res', res)
-          if (res.cancel) {
-            self.data.isStopTestWifiNet = true
-          }
-        },
-      },
-    })
-
-    //调整用接口来测试网络情况
-    try {
-      console.log('开始测试网络')
-    } catch (error) {
-      console.log('测试 wifi 网络结果', error)
-      if (this.data.isStopTestWifiNet) return
-      if (error.data && error.data.code) {
-        //有响应 网络正常
-        this.setData({
-          //测试网络弹窗
-          testNetDialog: {
-            show: true,
-            title: '',
-            content: '网络通畅',
-            showCancel: false,
-            contentImg: './assets/img/test_img_success@2x.png',
-            confirmText: '我知道了',
-            confirmColor: '#267AFF',
-            success(res) {
-              console.log('click drawTestNetDialog res', res)
-              if (res.comfirm) {
-                self.data.isStopTestWifiNet = true
-              }
-            },
-          },
-        })
-      }
-      if (error.errMsg && error.errMsg.includes('request:fail')) {
-        //请求超时 网络异常
-        this.setData({
-          //测试网络弹窗
-          testNetDialog: {
-            show: true,
-            title: '',
-            content: '网络连接异常\n请更换WiFi后再试',
-            showCancel: false,
-            contentImg: './assets/img/test_img_fail@2x.png',
-            confirmText: '我知道了',
-            confirmColor: '#267AFF',
-            success(res) {
-              console.log('click drawTestNetDialog res', res)
-              if (res.comfirm) {
-                self.data.isStopTestWifiNet = true
-              }
-            },
-          },
-        })
-      }
-    }
-    // let wifiPingTaskIot1 = this.wifiPingtask({
-    //     domain: "iot1.midea.com.cn",
-    //     port: 28870,
-    //     timeOut: 4,
-    // })
-    // let wifiPingTaskIot2 = this.wifiPingtask({
-    //     domain: "iot1.midea.com.cn",
-    //     port: 28443,
-    //     timeOut: 4,
-    // })
-
-    // let wifiPingTaskIot3 = this.wifiPingtask({
-    //     domain: masDomain[environment],
-    //     port: 80,
-    //     timeOut: 4,
-    // })
-    // Promise.all([wifiPingTaskIot1, wifiPingTaskIot2, wifiPingTaskIot3]).then(res => {
-    //     console.log('midea net normal', res)
-    //     this.data.canPingWifiNum = this.data.canPingWifiNum - 1
-    //     this.setData({ //测试网络弹窗
-    //         testNetDialog: {
-    //             show: true,
-    //             title: '',
-    //             content: '网络通畅',
-    //             showCancel: false,
-    //             contentImg: './assets/img/test_img_success@2x.png',
-    //             confirmText: '我知道了',
-    //             confirmColor: '#267AFF',
-    //             success(res) {
-    //                 console.log('click drawTestNetDialog res', res)
-    //                 if (res.confirm) {}
-    //             }
-    //         }
-    //     })
-    // }).catch(error => {
-    //     console.log('midea net error', error)
-    //     this.data.canPingWifiNum = this.data.canPingWifiNum - 1
-    //     this.setData({ //测试网络弹窗
-    //         testNetDialog: {
-    //             show: true,
-    //             title: '',
-    //             content: '网络连接异常,请更换WiFi后再试',
-    //             showCancel: false,
-    //             contentImg: './assets/img/test_img_fail@2x.png',
-    //             confirmText: '我知道了',
-    //             confirmColor: '#267AFF',
-    //             success(res) {
-    //                 console.log('click drawTestNetDialog res', res)
-    //                 if (res.confirm) {}
-    //             }
-    //         }
-    //     })
-    // })
-  },
-
-  /**
-   * ping 域名
-   * @param {
-   *  domain 域名，
-   *  port   端口，
-   *  timeOut 超时时长 单位：秒
-   * }
-   *
-   *@return {result}
-   */
-  wifiPingtask({ domain, port, timeOut }) {
-    return new Promise((reslove, reject) => {
-      let tcp = wx.createTCPSocket()
-      tcp.connect({
-        address: domain,
-        port: port,
-      })
-      tcp.onConnect((succ) => {
-        console.log(`ping ${domain}${port} success`, succ)
-        reslove({
-          isSuccess: true,
-        })
-      })
-      tcp.onError((error) => {
-        //监听tcp错误
-        console.log(`ping ${domain}${port} error`, error)
-        reject(error)
-      })
-      setTimeout(() => {
-        tcp.close()
-      }, timeOut * 1000)
-    })
   },
 
   switchPswShow() {
@@ -722,7 +461,7 @@ Page({
     }
   },
   retry() {
-    let { moduleType, type, sn8, blueVersion, moduleVersion, mode, fm, linkType, guideInfo, hadChangeBlue } =
+    let { mode, fm, guideInfo, hadChangeBlue } =
       app.addDeviceInfo
     setWifiStorage(this.data.bindWifiInfo)
     app.addDeviceInfo.curWifiInfo = this.data.bindWifiInfo //共享选取的wifi
@@ -737,8 +476,7 @@ Page({
       app.addDeviceInfo.linkType = addDeviceSDK.getLinkType(0)
     }
     if (mode == 0) {
-      // const eventChannel = this.getOpenerEventChannel();
-      if (fm == 'autoFound') {
+      if (fm === 'autoFound') {
         wx.reLaunch({
           url: paths.scanDevice,
         })
@@ -753,7 +491,7 @@ Page({
       return
     }
     if (mode == 3) {
-      if (fm == 'bluePugin') {
+      if (fm === 'bluePugin') {
         wx.navigateTo({
           url: paths.linkDevice,
         })
@@ -887,24 +625,6 @@ Page({
     that.setData({
       netType: 1, //连接了wifi
     })
-    // wifiMgr.getConnectedWifi().then((res) => {
-
-    // }).catch((err) => {
-    //     showToast('请连接wifi')
-    //     if (err.errCode == "12005" || err.errCode == '12010') {
-    //         that.setData({
-    //             wifiInputPlaceholder: '未获取到家庭WiFi',
-    //             wifiInputRightText: '重新获取'
-    //         })
-    //     } else if (err.errCode == "12006") {
-    //         wx.showToast({
-    //             title: '您未打开位置定位开关',
-    //             icon: 'none'
-    //         })
-    //     }
-    //     console.log("getConnectedWifi", err)
-    //     log.info('getConnectedWifi error', error)
-    // })
   },
 
   initBindWifiTest(BSSID, SSIDContent, SSIDLength, EncryptType, chain, signalStrength, frequency) {
@@ -935,16 +655,6 @@ Page({
   },
 
   clickJumpH5(e) {
-    let { moduleType, type, sn8, sn, linkType, moduleVersion } = app.addDeviceInfo
-    let params = {
-      deviceSessionId: app.globalData.deviceSessionId,
-      moduleType: moduleType,
-      type: type,
-      sn8: sn8,
-      sn: sn,
-      linkType: linkType,
-      moduleVersion: moduleVersion,
-    }
     const text = e.target.dataset.text
     let url
     let title
@@ -980,8 +690,7 @@ Page({
   },
 
   inputSSIDContent(e) {
-    // console.log(e)
-    let SSIDContent = e.detail.value
+    let SSIDContent = e.detail
     this.setData({
       'bindWifiTest.SSIDContent': SSIDContent,
     })

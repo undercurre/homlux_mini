@@ -1,8 +1,0 @@
-{
-  "navigationStyle": "custom",
-  "usingComponents": {
-    "link-device-header": "/package-distribution-meiju/pages/addDevice/pages/component/link-device-header/link-device-header",
-    "mx-dialog": "/miniprogram_npm/m-ui/mx-dialog/index",
-    "mx-icon": "/miniprogram_npm/m-ui/mx-icon/index"
-  }
-}

@@ -10,6 +10,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .p-12rpx{padding:12rpx;}
 .p-16rpx{padding:16rpx;}
 .p-24rpx{padding:24rpx;}
+.p-32rpx{padding:32rpx;}
 .p-4rpx{padding:4rpx;}
 .p-8rpx{padding:8rpx;}
 .px,
@@ -65,6 +66,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .pb-4rpx{padding-bottom:4rpx;}
 .pb-60rpx{padding-bottom:60rpx;}
 .pb-64rpx{padding-bottom:64rpx;}
+.pb-72rpx{padding-bottom:72rpx;}
 .pb-80rpx{padding-bottom:80rpx;}
 .pb-8rpx{padding-bottom:8rpx;}
 .pb-96rpx{padding-bottom:96rpx;}
@@ -99,6 +101,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .pt-70rpx{padding-top:70rpx;}
 .pt-80rpx{padding-top:80rpx;}
 .pt-86rpx{padding-top:86rpx;}
+.pt-88rpx{padding-top:88rpx;}
 .pt-8rpx{padding-top:8rpx;}
 .pt-90rpx{padding-top:90rpx;}
 .m-24rpx{margin:24rpx;}
@@ -297,6 +300,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .leading-46rpx{line-height:46rpx;}
 .leading-48rpx{line-height:48rpx;}
 .leading-50rpx{line-height:50rpx;}
+.leading-52rpx{line-height:52rpx;}
 .leading-56rpx{line-height:56rpx;}
 .leading-72rpx{line-height:72rpx;}
 .leading-74rpx{line-height:74rpx;}
