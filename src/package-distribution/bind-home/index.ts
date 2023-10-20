@@ -2,10 +2,11 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { getCurrentPageParams, checkInputNameIllegal } from '../../utils/index'
+import {getCurrentPageParams, checkInputNameIllegal, Logger} from '../../utils/index'
 import { queryDeviceInfoByDeviceId, editDeviceInfo, batchUpdate } from '../../apis/index'
 import { homeBinding, homeStore, roomBinding, deviceStore } from '../../store/index'
 import { PRO_TYPE } from '../../config/index'
+import cacheData from "../common/cacheData";
 
 ComponentWithComputed({
   options: {},
@@ -125,14 +126,21 @@ ComponentWithComputed({
       if (res.success) {
         homeBinding.store.updateCurrentHomeDetail()
 
-        deviceStore.updateAllRoomDeviceList() // 重复加载
+        await deviceStore.updateAllRoomDeviceList()
 
         // 关闭扫描页面可能开启的蓝牙、wifi资源
         wx.closeBluetoothAdapter()
 
-        wx.navigateBack({
-          delta: 3,
-        })
+        Logger.console('cacheData', cacheData)
+        if (cacheData.pageEntry) {
+          wx.reLaunch({
+            url: cacheData.pageEntry,
+          })
+        } else {
+          wx.navigateBack({
+            delta: 3,
+          })
+        }
       } else {
         Toast('保存失败')
       }

@@ -1,6 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { strUtil } from '../../utils/index'
+import cacheData from "../common/cacheData";
 
 ComponentWithComputed({
   options: {},
@@ -50,7 +51,12 @@ ComponentWithComputed({
   },
 
   lifetimes: {
-    ready() {},
+    ready() {
+      const routes = getCurrentPages()
+
+      // 保存进入配网流程的页面入口
+      cacheData.pageEntry = '/' + (routes.length > 2 ? routes[routes.length - 2].route : 'pages/index/index')
+    },
     detached() {},
   },
 

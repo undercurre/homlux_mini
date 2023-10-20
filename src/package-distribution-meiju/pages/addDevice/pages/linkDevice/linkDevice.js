@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
-import { bindMideaDevice, queryGuideInfo } from '../../../../../apis/index'
+import {bindMideaDevice, queryAuthGetStatus, queryDeviceSpecifiedInfo, queryGuideInfo} from '../../../../../apis/index'
 import { homeStore, roomStore } from '../../../../../store/index'
 import {Logger, strUtil} from '../../../../../utils/index'
 import app from '../../../../common/app'
@@ -2231,6 +2231,8 @@ Page({
     })
 
     console.log('bindMideaDevice', res)
+
+    await Promise.all([queryAuthGetStatus({ deviceId: this.data.deviceId }), queryDeviceSpecifiedInfo({ deviceId: this.data.deviceId })])
 
     if (res.success) {
       app.addDeviceInfo.applianceCode = this.data.deviceId

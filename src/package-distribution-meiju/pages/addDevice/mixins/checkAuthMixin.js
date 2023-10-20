@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 import app from '../../../common/app'
-const bluetooth = require('../../../common/mixins/bluetooth.js')
+import {ab2hex} from 'm-utilsdk/index'
+import {getDeviceCategoryAndSn8, getScanRespPackInfo} from '../../../utils/blueAdDataParse'
+import {openAdapter} from '../pages/utils/blueApi'
+import {brandConfig} from '../../assets/js/brand'
 
-import { ab2hex } from 'm-utilsdk/index'
-import { getScanRespPackInfo, getDeviceCategoryAndSn8 } from '../../../utils/blueAdDataParse'
-import { requestService } from '../../../utils/requestService'
-import { openAdapter } from '../pages/utils/blueApi'
-import { bleRssiValue } from '../pages/utils/BleRssiValue'
-import { brandConfig } from '../../assets/js/brand'
+const bluetooth = require('../../../common/mixins/bluetooth.js')
 
 // eslint-disable-next-line no-undef
 module.exports = Behavior({
@@ -18,32 +16,12 @@ module.exports = Behavior({
      * @param {String} type 设备品类
      * @param {String} sn8 设备sn8
      */
-    getNetworkThreshold(type, sn8) {
-      return new Promise((resolve, reject) => {
-        const reqData = {
-          category: type,
-          code: sn8,
-        }
-        requestService
-          .request('getNetworkThreshold', reqData)
-          .then((res) => {
-            console.log(
-              '@module checkAuthMixin.js\n@method getNetworkThreshold\n@desc 获取确权距离阈值成功\n',
-              res.data.data,
-            )
-            if (res.data.data.downlinkThreshold) {
-              res.data.data.downlinkThreshold = 0 - bleRssiValue[res.data.data.downlinkThreshold]
-            }
-            if (res.data.data.signalReference) {
-              res.data.data.signalReference = bleRssiValue[res.data.data.signalReference]
-            }
-            resolve(res.data.data)
-          })
-          .catch((err) => {
-            console.error('@module checkAuthMixin.js\n@method getNetworkThreshold\n@desc 获取确权距离阈值失败\n', err)
-            reject(err)
-          })
-      })
+    getNetworkThreshold() {
+      return {
+        distanceThreshold: '1.2',
+        downlinkThreshold: -60,
+        signalReference: ''
+      }
     },
     /**
      * 搜索蓝牙信号匹配设备
@@ -79,15 +57,15 @@ module.exports = Behavior({
               })
               console.log('@module checkAuthMixin.js\n@method searchBlueByType\n@desc 最终合并结果\n', typeMatchList)
               // 过滤蓝牙强度
-              typeMatchList = typeMatchList.filter((el) => el.RSSI >= -70)
+              typeMatchList = typeMatchList.filter((el) => el.RSSI >= -80)
               console.log('@module checkAuthMixin.js\n@method searchBlueByType\n@desc 蓝牙强度过滤\n', typeMatchList)
-              if (typeMatchList.length == 0) {
+              if (typeMatchList.length === 0) {
                 console.log('@module checkAuthMixin.js\n@method searchBlueByType\n@desc 匹配失败')
                 return
               }
               if (sn8) {
                 console.log('@module checkAuthMixin.js\n@method searchBlueByType\n@desc 开始匹配sn8\n', sn8)
-                const sn8MatchList = typeMatchList.filter((el) => el.sn8 == sn8)
+                const sn8MatchList = typeMatchList.filter((el) => el.sn8 === sn8)
                 if (sn8MatchList.length > 0) {
                   // 信号强度由强至弱排序
                   sn8MatchList.sort((a, b) => b.RSSI - a.RSSI)
@@ -123,13 +101,7 @@ module.exports = Behavior({
                 }
                 // 校验设备品类
                 const typeAndSn8 = getDeviceCategoryAndSn8(device)
-                if (typeAndSn8?.type != type) {
-                  return
-                }
-                // 校验SN8
-                const deviceParam = this.getDeviceParam(device)
-                let ifSN8Matching = this.checkSN8(brandConfig, deviceParam)
-                if (!ifSN8Matching) {
+                if (typeAndSn8?.type !== type) {
                   return
                 }
                 const adData = ab2hex(device.advertisData) // ArrayBuffer转16进度字符串
@@ -247,24 +219,26 @@ module.exports = Behavior({
             wx.onBluetoothDeviceFound((res) => {
               res.devices.forEach((device) => {
                 // 校验设备ID
-                if (device.deviceId != deviceId) return
+                if (device.deviceId !== deviceId) return
                 const average = this.getAverageRSSI(device.RSSI, 5, RSSIList, downlinkThreshold)
-                console.log('@module checkAuthMixin.js\n@method checkNearby\n@desc 本次扫描值\n', device.RSSI, RSSIList)
+                console.log('本次扫描值', device.RSSI, RSSIList, 'average', average)
                 if (average) {
                   this.computedDistance = Math.pow(10, (Math.abs(average) - referenceRSSI) / (10 * 2))
                   console.log(
                     '@module checkAuthMixin.js\n@method checkNearby\n@desc 距离计算\n',
-                    `平均值${average}, 标准值${referenceRSSI}，计算结果${this.computedDistance}`,
+                    `平均值${average}, 标准值【${referenceRSSI}】，计算结果${this.computedDistance}`,
                   )
                 }
+
+                console.log('computedDistance', this.computedDistance, 'checkDistance', checkDistance)
                 if (this.computedDistance) {
                   if (this.computedDistance <= checkDistance) {
                     if (ifResolveOnCheck) {
-                      console.log('@module checkAuthMixin.js\n@method checkNearby\n@desc 靠近确权成功')
+                      console.log('@module checkAuthMixin.js 靠近确权成功')
                       wx.offBluetoothDeviceFound()
                       wx.stopBluetoothDevicesDiscovery({
                         fail(err) {
-                          console.error('@module checkAuthMixin.js\n@method checkNearby\n@desc 停止蓝牙搜索失败\n', err)
+                          console.error('@module checkAuthMixin.js 停止蓝牙搜索失败\n', err)
                         },
                       })
                       app.addDeviceInfo.isCheck = true
@@ -299,22 +273,16 @@ module.exports = Behavior({
     getAverageRSSI(RSSI, n, RSSIList, downlinkThreshold) {
       if (RSSI >= downlinkThreshold && RSSI <= -10) {
         RSSIList.push(RSSI)
-        // if (this.samplingTimer) clearTimeout(this.samplingTimer)
-        // this.samplingTimer = setTimeout(() => {
-        //   console.warn('@module checkAuthMixin.js\n@method getAverageRSSI\n@desc 采样超时，清空采样数组')
-        //   RSSIList.length = 0 // 清空采样数组
-        // }, 1000)
       }
       if (RSSIList.length > n) {
         RSSIList.sort((a, b) => a - b)
         RSSIList.shift()
       }
-      if (RSSIList.length == n) {
+      if (RSSIList.length === n) {
         // 抛出均值
         let total = RSSIList.reduce((preValue, curValue) => preValue + curValue)
         return total / n
       }
-      return
     },
   },
 })

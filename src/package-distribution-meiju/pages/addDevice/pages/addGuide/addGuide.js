@@ -1,6 +1,24 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 import pageBehaviors from '../../../../../behaviors/pageBehaviors'
-import { Logger } from '../../../../../utils/index'
+import {Logger} from '../../../../../utils/index'
+import {queryGuideInfo} from '../../../../../apis/index'
+
+import {isColmoDeviceByDecodeSn, isSupportPlugin} from '../../../../utils/pluginFilter'
+import {addDeviceTime} from '../../../assets/js/utils'
+import {deviceImgMap} from '../../../../utils/deviceImgMap'
+import computedBehavior from '../../../../utils/miniprogram-computed.js'
+import {deviceImgApi, imgBaseUrl} from '../../../../common/js/api'
+import {openAdapter} from '../utils/blueApi'
+import {ab2hex} from 'm-utilsdk/index'
+import {getFullPageUrl, showToast} from '../../../../utils/util'
+import {getDeviceCategoryAndSn8, getScanRespPackInfo} from '../../../../utils/blueAdDataParse'
+import paths from '../../../../utils/paths'
+import {addDeviceSDK} from '../../../../utils/addDeviceSDK'
+import {checkPermission} from '../../../../common/js/checkPermissionTip'
+import {typesPreserveAfterCheckGuideByA0} from '../../config/index'
+import {imgesList} from '../../../assets/js/shareImg.js'
+
+import app from '../../../../common/app'
 
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const checkAuthMixin = require('../../mixins/checkAuthMixin')
@@ -8,25 +26,7 @@ const netWordMixin = require('../../../assets/js/netWordMixin')
 const bluetooth = require('../../../../common/mixins/bluetooth')
 const dialogCommonData = require('../../../../common/mixins/dialog-common-data.js')
 
-import { isSupportPlugin, isColmoDeviceByDecodeSn } from '../../../../utils/pluginFilter'
-import { addDeviceTime } from '../../../assets/js/utils'
-import { deviceImgMap } from '../../../../utils/deviceImgMap'
-import computedBehavior from '../../../../utils/miniprogram-computed.js'
-import { deviceImgApi, imgBaseUrl } from '../../../../common/js/api'
-import { openAdapter } from '../utils/blueApi'
-import { getStamp, getReqId, ab2hex } from 'm-utilsdk/index'
-import { creatDeviceSessionId, showToast, getFullPageUrl } from '../../../../utils/util'
-import { getScanRespPackInfo, getDeviceCategoryAndSn8 } from '../../../../utils/blueAdDataParse'
-import { requestService } from '../../../../utils/requestService'
-import paths from '../../../../utils/paths'
-import { addDeviceSDK } from '../../../../utils/addDeviceSDK'
-import { checkPermission } from '../../../../common/js/checkPermissionTip'
-import { typesPreserveAfterCheckGuideByA0 } from '../../config/index'
 const brandStyle = require('../../../assets/js/brand.js')
-import { imgesList } from '../../../assets/js/shareImg.js'
-import { queryGuideInfo } from '../../../../../apis/index'
-
-import app from '../../../../common/app'
 const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
 let timer
 
@@ -78,22 +78,9 @@ Page({
     bigScreenBind: brandStyle.brandConfig.bigScreenBind,
   },
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad() {
-    this.data.brand = brandStyle.brand
-    this.setData({
-      brand: this.data.brand,
-    })
-    this.localToast = this.selectComponent('#localToast')
-    // this.getAddDeviceInfo()
-    console.log('adddeviceinfo===', app.addDeviceInfo)
-    this.initAddGuide()
-  },
   computed: {
     currGuideInfo() {
-      let { connectDesc, connectUrlA } = this.data.checkGuideInfo
+      let {connectDesc, connectUrlA} = this.data.checkGuideInfo
       let currConnectDesc = connectDesc
       let currConnectUrl = connectUrlA
       return {
@@ -105,7 +92,7 @@ Page({
       return this.data.guideInfo.length > 1
     },
     isShowBleWifiguide() {
-      let { blueVersion, mode, guideType, noFound } = this.data
+      let {blueVersion, mode, guideType, noFound} = this.data
       let res1 = false
       let res2 = false
       if (blueVersion != 1 && mode != 0 && mode != 5 && guideType == 'near' && !noFound) {
@@ -118,7 +105,7 @@ Page({
     },
   },
   switchSet() {
-    const { guideIndex, guideInfo } = this.data
+    const {guideIndex, guideInfo} = this.data
     const nextIndex = guideIndex < guideInfo.length - 1 ? guideIndex + 1 : 0
     this.setData({
       time: 60,
@@ -167,7 +154,6 @@ Page({
     console.log('mode===', mode)
     //设置连接方式
     app.addDeviceInfo.linkType = this.getLinkType(mode)
-    console.log('进入倒计时')
     this.readingGuideTiming() //开始阅读计时
     this.setData({
       deviceName: app.addDeviceInfo.deviceName,
@@ -179,9 +165,6 @@ Page({
       blueVersion: blueVersion,
       guideInfo: guideInfo || [],
     })
-    app.globalData.deviceSessionId = app.globalData.deviceSessionId
-      ? app.globalData.deviceSessionId
-      : creatDeviceSessionId(app.globalData.userData.uid)
     // app.globalData.bluetoothFail = !(await this.checkBluetoothAuth()) //蓝牙配网检查蓝牙是否开启以及是否蓝牙授权
     if (addDeviceSDK.bluetoothAuthModes.includes(mode)) {
       console.log('[需要校验蓝牙权限]')
@@ -238,13 +221,6 @@ Page({
       })
       console.log('fm=====', fm)
       this.getGuideFormat(guideInfo, fm) //获取指引格式化显示
-      // if (mode == 0) {
-      //   this.setData({
-      //     selTypeImg: imgBaseUrl + noSel,
-      //   })
-      // }
-      console.log('---------------Yoram---------------')
-      console.log(type + ' ' + mode + ' ' + sn8 + ' ' + fm)
       if (mode == 3 || mode == 5 || mode == 30) {
         //单蓝牙
         let scanObj = {
@@ -258,64 +234,65 @@ Page({
         console.log(app.globalData.scanObj)
         this.checkSetConfig(type, sn8, fm)
       }
-      if (mode == 0 && fm !== 'autoFound' && !hadChangeBlue) {
-        // AP配网非自发现入口，扫描蓝牙信号
-        this.searchBlueByType(type, sn8, ssid).then((device) => {
-          console.log('@module addGuide.js\n@method initAddGuide\n@desc 匹配到设备信息\n', device)
-          wx.showModal({
-            title: '',
-            content: '搜索到设备蓝牙信号，可为您自动完成连接',
-            cancelText: '取消',
-            cancelColor: '#267AFF',
-            confirmText: '自动连接',
-            confirmColor: '#267AFF',
-            success(res) {
-              if (res.confirm) {
-                // 转换为蓝牙配网
-                app.addDeviceInfo.adData = device.adData
-                app.addDeviceInfo.blueVersion = self.getBluetoothType(device.adData)
-                app.addDeviceInfo.deviceId = device.deviceId
-                app.addDeviceInfo.mac = self.getIosMac(device.advertisData)
-                if (!app.addDeviceInfo.referenceRSSI) {
-                  app.addDeviceInfo.referenceRSSI = self.getReferenceRSSI(device.adData)
-                }
-                app.addDeviceInfo.sn8 = self.getBlueSn8(device.adData)
-                app.addDeviceInfo.ssid = self.getBluetoothSSID(
-                  device.adData,
-                  app.addDeviceInfo.blueVersion,
-                  device.type,
-                  device.localName,
-                )
-                app.addDeviceInfo.mode = 3
-                app.addDeviceInfo.linkType = addDeviceSDK.getLinkType(3)
-                app.addDeviceInfo.hadChangeBlue = true
-                console.log('@module addGuide.js\n@method initAddGuide\n@desc 更新设备信息\n', app.addDeviceInfo)
-                // 解析蓝牙功能状态
-                const packInfo = getScanRespPackInfo(device.adData)
-                console.log('@module addGuide.js\n@method initAddGuide\n@desc 蓝牙功能状态\n', packInfo)
-                if (packInfo.isWifiCheck || packInfo.isBleCheck || packInfo.isCanSet) {
-                  // 设备已确权
-                  app.addDeviceInfo.isCheck = true
-                  wx.navigateTo({
-                    url: paths.linkDevice,
-                  })
-                } else if (app.addDeviceInfo.blueVersion == 1) {
-                  // 一代蓝牙
-                  wx.navigateTo({
-                    url: paths.linkDevice,
-                  })
-                } else {
-                  // 二代蓝牙
-                  app.addDeviceInfo.ifNearby = true
-                  wx.redirectTo({
-                    url: paths.addGuide,
-                  })
-                }
-              }
-            },
-          })
-        })
-      }
+      // todo: 暂时屏蔽蓝牙配网逻辑，接口不全
+      // if (mode === 0 && fm !== 'autoFound' && !hadChangeBlue) {
+      //   // AP配网非自发现入口，扫描蓝牙信号
+      //   this.searchBlueByType(type, sn8, ssid).then((device) => {
+      //     console.log('@module addGuide.js\n@method initAddGuide\n@desc 匹配到设备信息\n', device)
+      //     wx.showModal({
+      //       title: '',
+      //       content: '搜索到设备蓝牙信号，可为您自动完成连接',
+      //       cancelText: '取消',
+      //       cancelColor: '#267AFF',
+      //       confirmText: '自动连接',
+      //       confirmColor: '#267AFF',
+      //       success(res) {
+      //         if (res.confirm) {
+      //           // 转换为蓝牙配网
+      //           app.addDeviceInfo.adData = device.adData
+      //           app.addDeviceInfo.blueVersion = self.getBluetoothType(device.adData)
+      //           app.addDeviceInfo.deviceId = device.deviceId
+      //           app.addDeviceInfo.mac = self.getIosMac(device.advertisData)
+      //           if (!app.addDeviceInfo.referenceRSSI) {
+      //             app.addDeviceInfo.referenceRSSI = self.getReferenceRSSI(device.adData)
+      //           }
+      //           app.addDeviceInfo.sn8 = self.getBlueSn8(device.adData)
+      //           app.addDeviceInfo.ssid = self.getBluetoothSSID(
+      //             device.adData,
+      //             app.addDeviceInfo.blueVersion,
+      //             device.type,
+      //             device.localName,
+      //           )
+      //           app.addDeviceInfo.mode = 3
+      //           app.addDeviceInfo.linkType = addDeviceSDK.getLinkType(3)
+      //           app.addDeviceInfo.hadChangeBlue = true
+      //           console.log('@module addGuide.js\n@method initAddGuide\n@desc 更新设备信息\n', app.addDeviceInfo)
+      //           // 解析蓝牙功能状态
+      //           const packInfo = getScanRespPackInfo(device.adData)
+      //           console.log('@module addGuide.js\n@method initAddGuide\n@desc 蓝牙功能状态\n', packInfo)
+      //           if (packInfo.isWifiCheck || packInfo.isBleCheck || packInfo.isCanSet) {
+      //             // 设备已确权
+      //             app.addDeviceInfo.isCheck = true
+      //             wx.navigateTo({
+      //               url: paths.linkDevice,
+      //             })
+      //           } else if (app.addDeviceInfo.blueVersion == 1) {
+      //             // 一代蓝牙
+      //             wx.navigateTo({
+      //               url: paths.linkDevice,
+      //             })
+      //           } else {
+      //             // 二代蓝牙
+      //             app.addDeviceInfo.ifNearby = true
+      //             wx.redirectTo({
+      //               url: paths.addGuide,
+      //             })
+      //           }
+      //         }
+      //       },
+      //     })
+      //   })
+      // }
     }
     if ((mode == 3 && ifNearby) || mode == 20 || (mode == 30 && fm === 'autoFound')) {
       if (mode == 3) app.addDeviceInfo.ifNearby = false
@@ -341,25 +318,12 @@ Page({
    * 获取靠近确权相关参数
    */
   async getNearbyParams() {
-    const { mode, sn8, type } = app.addDeviceInfo
-    try {
-      // 获取确权距离阈值
-      const threshold = await this.getNetworkThreshold(type, sn8)
-      console.log('@module addGuide.js\n@method initAddGuide\n@desc 确权距离阈值接口返回\n', threshold)
-      this.setData({
-        distance: threshold.distanceThreshold || '1.2',
-      })
-      app.addDeviceInfo.downlinkThreshold = threshold.downlinkThreshold || -60
-      if (threshold.signalReference) {
-        app.addDeviceInfo.referenceRSSI = threshold.signalReference
-      }
-    } catch (err) {
-      console.error(err)
-      this.setData({
-        distance: '1.2',
-      })
-      app.addDeviceInfo.downlinkThreshold = -60
-    }
+    Logger.console('getNearbyParams', app.addDeviceInfo)
+    const {mode, type} = app.addDeviceInfo
+    this.setData({
+      distance: '1.2',
+    })
+    app.addDeviceInfo.downlinkThreshold = -60
     if (mode == 3) {
       // 部分品类使用A0获取后确权指引，此时没有A0需展示跳过按钮
       if (typesPreserveAfterCheckGuideByA0.includes(type)) {
@@ -367,28 +331,7 @@ Page({
         this.setData({
           ifAllowSkipNear: true,
         })
-        return
       }
-      // 获取后确权指引
-      const afterCheckReq = {
-        category: type,
-        code: sn8,
-        enterprise: '0000',
-      }
-      console.log('@module addGuide.js\n@method initAddGuide\n@desc 后确权指引请求参数\n', afterCheckReq)
-      requestService
-        .request('getIotConfirmInfoV2', afterCheckReq, 'POST', '', 10000)
-        .then((resp) => {
-          console.log('@module addGuide.js\n@method initAddGuide\n@desc 后确权指引请求结果\n', resp.data.data)
-          if (resp.data.data.confirmDesc || resp.data.data.confirmImgUrl) {
-            this.setData({
-              ifAllowSkipNear: true,
-            })
-          }
-        })
-        .catch((error) => {
-          console.error('@module addGuide.js\n@method initAddGuide\n@desc 后确权指引请求失败\n', error)
-        })
     }
   },
   /**
@@ -420,18 +363,14 @@ Page({
         this_.retryClickFlag = false
       })
   },
-  getAddDeviceInfo() {},
+  getAddDeviceInfo() {
+  },
   //获取指引格式化显示
-  getGuideFormat(guideInfo, fm) {
+  getGuideFormat(guideInfo) {
     let {
       type,
       sn8,
       mode,
-      enterprise, //企业码
-      productId,
-      tsn, //扫码解析出
-      ssid,
-      sn,
     } = app.addDeviceInfo
     //guideInfo 有可能为null, 逻辑都进不去，没有请求到配网指引，故添加 guideInfo是否存在的判断
     if (guideInfo && guideInfo.length !== 0) {
@@ -441,26 +380,12 @@ Page({
         ['checkGuideInfo.connectUrlA']: guideInfo[0].connectUrlA,
       })
     } else {
-      switch (
-        fm //根据入口不同获取不同的指引
-      ) {
-        case 'autoFound':
-          this.getAutoFoundGuide(mode, type, sn8, enterprise, productId, ssid)
-          break
-        case 'selectType':
-          this.getSelectTypeGuide(type, sn8, enterprise, productId)
-          break
-        case 'scanCode':
-          this.getScanCodeGuide(mode, type, sn8, (enterprise = '0000'), tsn, ssid, (sn = ''))
-          break
-        default:
-          this.getSelectTypeGuide(type, sn8, enterprise, productId)
-      }
+      this.queryGuideInfo(mode, type, sn8)
     }
   },
   //阅读指引计时
   readingGuideTiming() {
-    let { readingTimer } = this.data
+    let {readingTimer} = this.data
     const timer = setInterval(() => {
       if (readingTimer >= 0) {
         console.log('倒计时')
@@ -485,7 +410,7 @@ Page({
       }
       if (this.data.time == 0) {
         clearInterval(timer)
-        if (this.data.guideType == 'near') {
+        if (this.data.guideType === 'near') {
           wx.offBluetoothDeviceFound()
           wx.stopBluetoothDevicesDiscovery()
           let page = getFullPageUrl()
@@ -532,7 +457,7 @@ Page({
             }
           }
         }
-        if (this.data.guideType == 'set') {
+        if (this.data.guideType === 'set') {
           this.setData({
             noFound: true,
           })
@@ -556,7 +481,7 @@ Page({
   },
   //ap完成手动确权
   async next() {
-    let { mode, ssid, hadChangeBlue } = app.addDeviceInfo
+    let {mode, ssid, hadChangeBlue} = app.addDeviceInfo
     if (!this.data.isFinishUpAp) {
       showToast('请先勾选')
       return
@@ -582,7 +507,7 @@ Page({
           events: {
             backFn: (backParams) => {
               console.log(backParams)
-              if (backParams.backPath == 'linkAp' || backParams.backPath == 'linkNetFail') {
+              if (backParams.backPath === 'linkAp' || backParams.backPath === 'linkNetFail') {
                 //页面返回
                 this.setData({
                   isFinishUpAp: false,
@@ -600,8 +525,8 @@ Page({
     })
     this.timing()
     app.globalData.bluetoothFail = !(await this.checkBluetoothAuth()) //蓝牙配网检查蓝牙是否开启以及是否蓝牙授权
-    const { type, sn8, fm } = app.addDeviceInfo
-    if (this.data.guideType == 'near') {
+    const {type, sn8, fm} = app.addDeviceInfo
+    if (this.data.guideType === 'near') {
       this.checkNearby(
         app.addDeviceInfo.deviceId,
         app.addDeviceInfo.referenceRSSI,
@@ -620,7 +545,7 @@ Page({
   },
   //本地蓝牙跳转  储存
   async openPlugin() {
-    let { type, A0, sn8, deviceName, deviceImg } = app.addDeviceInfo
+    let {type, A0, sn8, deviceName, deviceImg} = app.addDeviceInfo
     let currentHomeGroupId = app.globalData.currentHomeGroupId
     let typeFomat = type.includes('0x') ? type.toLocaleUpperCase() : '0x' + type.toLocaleUpperCase()
     console.log('is has plugin', isSupportPlugin(typeFomat, sn8), currentHomeGroupId)
@@ -674,7 +599,7 @@ Page({
       return
     }
     //大屏这里是扫码按钮
-    let { deviceName, type, sn } = app.addDeviceInfo
+    let {deviceName} = app.addDeviceInfo
     let scanResult = {}
     try {
       scanResult = await this.scanCode()
@@ -689,7 +614,8 @@ Page({
           confirmText: '我知道了',
           confirmColor: '#267AFF',
           showCancel: false,
-          success() {},
+          success() {
+          },
         })
       }
       return
@@ -765,20 +691,8 @@ Page({
             }
             // 校验设备品类
             const typeAndSn8 = getDeviceCategoryAndSn8(device)
-            if (typeAndSn8?.type != type) {
+            if (typeAndSn8?.type !== type) {
               return
-            }
-            const deviceParam = this.getDeviceParam(device)
-            let ifSN8Matching = this.checkSN8(brandStyle.brandConfig, deviceParam)
-            if (!ifSN8Matching) {
-              console.log('addDeviceInfo', app.addDeviceInfo)
-              if (fm == 'scanCode' && isColmoDeviceByDecodeSn(app.addDeviceInfo.tsn || app.addDeviceInfo.sn)) {
-                //不在白名单中，但是从带过来的扫码sn中判断，是colmo的设备
-                console.log('从扫码带过来的sn判断是colmo设备')
-                console.log('addDeviceInfo', app.addDeviceInfo)
-              } else {
-                return
-              }
             }
             const deviceAds = ab2hex(device.advertisData) // ArrayBuffer转16进度字符串
             // 解析蓝牙功能状态
@@ -823,127 +737,23 @@ Page({
         console.log('打开蓝牙适配器失败', error)
       })
   },
-  //自发现来的指引
-  getAutoFoundGuide(mode, type, sn8, enterprise = '0000', productId = '', ssid) {
-    console.log('productId', productId)
-    let reqData = {
-      mode: mode + '',
-      category: type.includes('0x') ? type.substr(2, 2) : type,
-      code: sn8,
-      enterpriseCode: enterprise,
-      ssid: ssid,
-      queryType: 2,
-      reqId: getReqId(),
-      stamp: getStamp(),
-    }
-    console.log('自发现请求确权指引', reqData)
-    requestService
-      .request('multiNetworkGuide', reqData)
-      .then((resp) => {
-        console.log('自发现获得确权指引', resp)
-        if (resp.data.data.mainConnectinfoList.length != 0) {
-          this.setData({
-            ['checkGuideInfo.connectDesc']: this.guideDescFomat(resp.data.data.mainConnectinfoList[0].connectDesc),
-            ['checkGuideInfo.connectUrlA']: resp.data.data.mainConnectinfoList[0].connectUrlA,
-          })
-          console.log('配网指引信息', resp.data.data.mainConnectinfoList[0].connectDesc)
-        }
-      })
-      .catch((error) => {
-        console.log(error)
-        if (error.data.code == 1) {
-          this.noGuide()
-        }
-      })
-  },
-  //扫码获取指引
-  getScanCodeGuide(mode, type, sn8, enterprise = '0000', tsn = '', ssid = '', sn = '') {
-    let reqData = {
-      sn: sn,
-      reqId: getReqId(),
-      stamp: getStamp(),
-      ssid: ssid,
-      enterpriseCode: enterprise,
-      category: type.includes('0x') ? type.substr(2, 2) : type,
-      code: sn8,
-      mode: mode + '',
-      tsn: tsn,
-      queryType: 2,
-    }
-    console.log('扫码请求确权指引', reqData)
-    requestService
-      .request('multiNetworkGuide', reqData)
-      .then((resp) => {
-        if (resp.data.data.mainConnectinfoList.length != 0) {
-          this.setData({
-            ['checkGuideInfo.connectDesc']: this.guideDescFomat(resp.data.data.mainConnectinfoList[0].connectDesc),
-            ['checkGuideInfo.connectUrlA']: resp.data.data.mainConnectinfoList[0].connectUrlA,
-          })
-          console.log('配网指引信息 扫码', resp.data.data.mainConnectinfoList[0].connectDesc)
-        }
-      })
-      .catch((error) => {
-        console.log(error)
-        if (error.data.code == 1) {
-          this.noGuide()
-        }
-      })
-  },
-
-  //选型得到的指引
-  async getSelectTypeGuide(type, sn8, enterprise = '0000', productId) {
-    // const res = await queryGuideInfo({sn8: this.data.sn8, type: this.data.proType, mode: '0' })
-
-    const res = {
-      code: 0,
-      data: {
-        auxiConnectinfoList: [],
-        auxiMode: -1,
-        brand: 'midea',
-        category: '14',
-        dataSource: 1,
-        enterpriseCode: '0000',
-        mainConnectinfoList: [
-          {
-            bluetoothName: null,
-            code: '79700Z76',
-            connectDesc: '① 将智能窗帘插上电源\n② 快速点按「SET-2」键4次，再长按「SET-2」键1次，直至指示灯闪烁',
-            connectUrlA: 'http://midea-file.oss-cn-hangzhou.aliyuncs.com/2021/7/7/15/NZxmnjoefmcMealUPBmt.gif',
-            connectUrlB: '',
-            connectUrlC: '',
-            controlVersion: null,
-            customerModel: 'SC-1/M2-Z',
-            isAutoConnect: 0,
-            isBluetoothControl: 0,
-            leadingWords: '已完成上述操作',
-            marketModel: 'SC-1/M2-Z',
-            mode: 0,
-            note: null,
-            productCode: '21079710000001',
-            productId: 'SC-1/M2-Z',
-            productImg: 'http://midea-file.oss-cn-hangzhou.aliyuncs.com/2021/6/21/13/pJeBIFcVqOdjdODAiSRK.png',
-            productName: '智能电动窗帘',
-            wifiFrequencyBand: 1,
-            wifiName: null,
-          },
-        ],
-        mode: 0,
-        needTransfer2FailStatus: null,
-        proInfrared: null,
-      },
-      msg: '操作成功',
-    }
+  async queryGuideInfo(mode, type, sn8) {
+    const res = await queryGuideInfo({sn8, type, mode: mode.toString()})
 
     Logger.console('queryGuideInfo', res)
 
-    if (res.data.mainConnectinfoList.length !== 0) {
-      this.setData({
-        ['checkGuideInfo.connectDesc']: this.guideDescFomat(res.data.mainConnectinfoList[0].connectDesc),
-        ['checkGuideInfo.connectUrlA']: res.data.mainConnectinfoList[0].connectUrlA,
-      })
-      console.log('配网指引信息 选型', res.data.mainConnectinfoList[0].connectDesc)
-    } else if (res.data.code === 1) {
+    if (!res.success) {
       this.noGuide()
+      return
+    }
+
+    const guideInfo = res.result
+
+    if (guideInfo) {
+      this.setData({
+        ['checkGuideInfo.connectDesc']: this.guideDescFomat(guideInfo.mainConnectTypeDesc),
+        ['checkGuideInfo.connectUrlA']: guideInfo.mainConnectTypeUrlList[0],
+      })
     }
   },
 
@@ -993,7 +803,7 @@ Page({
 
   getBleVersion(advertisData) {
     let str = ab2hex(advertisData).substr(4, 2)
-    return str == '00' ? 1 : 2
+    return str === '00' ? 1 : 2
   },
 
   //根据广播包获取mac
@@ -1011,14 +821,6 @@ Page({
   },
   //蓝牙配网检查蓝牙是否授权以及是否打开蓝牙
   async checkBluetoothAuth() {
-    // let result = true
-    // if (addDeviceSDK.bluetoothAuthModes.includes(app.addDeviceInfo.mode)) {
-    //   result = await this.checkLocationAndBluetooth(true, false, false, true, app.addDeviceInfo)
-    //   if (!result) {
-    //     clearInterval(timer)
-    //   }
-    // }
-    // return result
     let blueRes = await checkPermission.blue()
     this.data.guideBlueRes = blueRes
     console.log('[blueRes]', blueRes)
@@ -1066,37 +868,34 @@ Page({
   },
 
   /**
-   * 设置蓝牙权限弹窗埋点 object_name 字段
-   * @param obj 蓝牙权限校验返回结果对象
+   * 生命周期函数--监听页面加载
    */
-  setBurialObjectNameValue(obj) {
-    let value = ''
-    if (!obj.bluetoothEnabled) {
-      value = '开启手机蓝牙'
-    }
-    if (!obj.bluetoothAuthorized) {
-      value = `${value}${value ? '/' : ''}允许微信获取蓝牙权限`
-    }
-    if (!obj.scopeBluetooth) {
-      value = `${value}${value ? '/' : ''}允许小程序使用蓝牙权限`
-    }
-    return value
+  onLoad() {
+    this.data.brand = brandStyle.brand
+    this.setData({
+      brand: this.data.brand,
+    })
+    this.localToast = this.selectComponent('#localToast')
+    console.log('adddeviceinfo===', app.addDeviceInfo)
+    this.initAddGuide()
   },
-
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
-  onReady: function () {},
+  onReady: function () {
+  },
 
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function () {},
+  onShow: function () {
+  },
 
   /**
    * 生命周期函数--监听页面隐藏
    */
-  onHide: function () {},
+  onHide: function () {
+  },
 
   /**
    * 生命周期函数--监听页面卸载
@@ -1114,7 +913,7 @@ Page({
    */
   onPullDownRefresh: function () {
     console.log('下拉刷新======')
-    let { mode, guideInfo, fm } = app.addDeviceInfo
+    let {mode, guideInfo, fm} = app.addDeviceInfo
     let needRefreshMode = [0, 9, 10, 100]
     if (needRefreshMode.includes(Number(mode))) {
       this.setData({
@@ -1130,15 +929,9 @@ Page({
   },
 
   goHome() {
-    if (this.data.brand != 'colmo') {
-      wx.switchTab({
-        url: paths.index,
-      })
-    } else {
-      wx.navigateTo({
-        url: paths.index,
-      })
-    }
+    wx.switchTab({
+      url: paths.index,
+    })
   },
 
   hasFinish() {
@@ -1170,5 +963,6 @@ Page({
   /**
    * 页面上拉触底事件的处理函数
    */
-  onReachBottom: function () {},
+  onReachBottom: function () {
+  },
 })

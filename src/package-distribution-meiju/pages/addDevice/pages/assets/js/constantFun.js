@@ -57,6 +57,7 @@ const constantFun = {
   },
 
   getDefaultDomain() {
+    console.debug('getDefaultDomain', environment)
     if (environment === 'sit') {
       return toHexString(string2Uint8Array('iotlab.midea.com.cn'))
     }

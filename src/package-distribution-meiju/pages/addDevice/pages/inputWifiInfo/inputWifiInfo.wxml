@@ -1,137 +1,80 @@
-<view class="page page-container" id="{{brand}}">
+<view class="page page-container flex flex-col" id="{{brand}}">
   <nav-bar leftArrow bind:leftTap="goBack"></nav-bar>
 
-<!--  <view class="grow flex flex-col justify-between">-->
-<!--    <tips-box icon="/assets/img/default-img/link-wifi.png" text="请连接家庭Wi-Fi以便设备联网"></tips-box>-->
-
-<!--    <view class="grow px-48rpx pt-112rpx">-->
-<!--      <text class="text-black-59 text-26 leading-36rpx">智能设备仅支持2.4GHZ的Wi-Fi</text>-->
-
-<!--      <van-field value="{{ wifiInfo.SSID }}" placeholder="请选择Wi-Fi"-->
-<!--                 custom-style="margin-bottom: 32rpx;margin-top: 40rpx;padding: 16rpx 32rpx;border-radius: 24rpx;"-->
-<!--                 clearable="{{true}}" bind:blur="changeWifiName" border="{{false}}">-->
-<!--        <van-button slot="button" type="primary" plain bind:click="toggleWifi" loading="{{isRequestSystemWifiList}}"-->
-<!--                    disabled="{{isRequestSystemWifiList}}">切换Wi-Fi-->
-<!--        </van-button>-->
-<!--      </van-field>-->
-
-<!--      <van-field value="{{ wifiInfo.pw }}" placeholder="请输入Wi-Fi密码" password="{{!isShowPw}}"-->
-<!--                 custom-style="padding: 16rpx 32rpx;border-radius: 24rpx;" bind:blur="changePw" use-button-slot-->
-<!--                 border="{{false}}">-->
-<!--        <van-button slot="button" bind:click="togglePw" type="default" plain custom-style="border: 0;">-->
-<!--          <svg-icon name="icon-park-outline:preview-{{!isShowPw ? 'close-one' : 'open'}}" color="#555659"-->
-<!--                    height="56rpx"></svg-icon>-->
-<!--        </van-button>-->
-<!--      </van-field>-->
-<!--    </view>-->
-
-<!--    <view class="flex flex-col">-->
-<!--      <van-button class="mx-32rpx" block type="primary" size="large" bind:click="next"-->
-<!--                  disabled="{{!wifiInfo.SSID || !wifiInfo.pw}}">下一步-->
-<!--      </van-button>-->
-<!--    </view>-->
-<!--  </view>-->
-
   <block wx:if="{{isCanAddDevice}}">
-    <view class="wifi-container theme-font-color">
-      <view class="input-wifi" wx:if="{{netType==1}}">
-        <view wx:if="{{mode==31}}" class="blue-after-wifi">
-          <!-- <text>输入WiFi信息让设备联网\n远程控制更方便\n</text> -->
-          <text>输入家庭 WiFi 密码</text>
-        </view>
-        <view wx:else class="c1">输入家庭 WiFi 密码\n</view>
-        <view class="wifi-tip" wx:if="{{!isSupport5G}}">
-          <text class="c2" bindtap="goTofrequencyGuide">仅支持 2.4GHz WiFi</text>
-          <image class="why" src="{{questinoImg}}" bindtap="goTofrequencyGuide"></image>
-        </view>
-        <image wx:if="{{isShowRouttingImg}}" class="routing" src="{{wifiConnect}}">\n</image>
+    <view class="grow flex flex-col justify-between" wx:if="{{netType==1}}">
+      <tips-box icon="/assets/img/default-img/link-wifi.png" text="仅支持2.4GHZ的WIFI"></tips-box>
 
-        <view class="input-area">
-          <input class="c4-wifi" wx:if="{{!continueConnectWifi}}" value="{{bindWifiTest.SSIDContent}}"
-                 placeholder="{{wifiInputPlaceholder}}" disabled="true">
-            <text class="switch-wifi special-font-color" catchtap="inputPageSwitchWifi">切换WiFi</text>
-          </input>
-          <input class="c4-wifi" value="{{bindWifiTest.SSIDContent}}" placeholder="输入 WiFi 名称" bindfocus="SSIDFocus"
-                 bindblur="SSIDBlur" bindinput="inputSSIDContent" maxlength='40' wx:if="{{continueConnectWifi}}">
-          </input>
-          <view wx:if="{{wifiListShow}}" class="wifi-list animation-slide-top">
-            <view wx:if="{{item.SSID!=''}}" class="wifi-list-cell" wx:for="{{wifiList}}" wx:key="index"
-                  catchtap="chooseWifi" data-item="{{item}}">{{item.SSID}}
+      <view class="grow px-48rpx pt-100rpx">
+        <van-field value="{{ bindWifiTest.SSIDContent }}" placeholder="{{!continueConnectWifi ? '未获取到家庭WiFi' : '输入 WiFi 名称'}}"
+                   custom-style="margin-bottom: 32rpx;margin-top: 40rpx;padding: 16rpx 32rpx;border-radius: 24rpx;"
+                   clearable="{{true}}" bind:input="inputSSIDContent" border="{{false}}">
+          <van-button slot="button" type="primary" plain bind:click="inputPageSwitchWifi">切换Wi-Fi
+          </van-button>
+        </van-field>
+
+        <van-field value="{{ bindWifiTest.PswContent }}" placeholder="请输入Wi-Fi密码" password="{{!isCanSeePsw}}"
+                   custom-style="padding: 16rpx 32rpx;border-radius: 24rpx;" bind:input="getPsw" use-button-slot
+                   border="{{false}}" extra-event-params="{{true}}">
+          <van-button slot="button" bind:click="switchPswShow" type="default" plain custom-style="border: 0;">
+            <svg-icon name="icon-park-outline:preview-{{!isShowPw ? 'close-one' : 'open'}}" color="#555659"
+                      height="56rpx"></svg-icon>
+          </van-button>
+        </van-field>
+      </view>
+
+      <view class="flex flex-col">
+        <van-button class="mx-32rpx" block type="primary" size="large" bind:click="configNetWork"
+                    disabled="{{!bindWifiTest.SSIDContent || !bindWifiTest.PswContent}}">下一步
+        </van-button>
+
+        <van-button class="w-full mt-20rpx" wx:if="{{mode==31}}" block type="primary" size="large" bind:click="skip">
+          跳过
+        </van-button>
+      </view>
+    </view>
+
+    <view class="check-guide" wx:if="{{netType==0}}">
+      <view class="wifi-title thick">
+        请将手机连接上家庭WiFi
+      </view>
+      <image class="wifi-guide-img" src="{{guideImg}}">
+      </image>
+      <view class="desc-list">
+        <view class="r" wx:for="{{guideStep}}" wx:key="index" wx-index="index">
+          <view class="guide-title" wx:if="{{guideStep.length > 1}}">
+            <view class="wifi-num">{{index + 1}}</view>
+            <view class="text">
+              {{item.title}}
+              <view wx:if="{{item.type==='location'&&item.desc.length}}" class="look-guide" bindtap="lookGuide">
+                查看操作指引
+              </view>
             </view>
           </view>
-          <view wx:if="{{tipText}}" class="tips">
-            <view class="tip-text">{{tipText}}</view>
+          <view class="guide-title" wx:else>
+            <view class="text-nolcation">
+              {{item.title}}
+            </view>
           </view>
-          <view class="c6-wifi">
-            <input wx:if="{{!isCanSeePsw}}" class="psw-input" adjust-position="{{false}}"
-                   value="{{bindWifiTest.PswContent}}" bindinput="getPsw" bindfocus="pswFocus" bindblur="pswBlur"
-                   type="text" password="true" placeholder="输入 WiFi 密码">
-              <image class="show-psw" src="{{isCanSeePsw?imgBaseUrl+imges.wifiShow:imgBaseUrl+imges.wifiHide}}"
-                     catchtap="switchPswShow"></image>
-            </input>
-            <input wx:if="{{isCanSeePsw}}" class="psw-input" adjust-position="{{false}}"
-                   value="{{bindWifiTest.PswContent}}" bindinput="getPsw" bindfocus="pswFocus" bindblur="pswBlur"
-                   type="text" placeholder="输入 WiFi 密码">
-              <image class="show-psw" src="{{isCanSeePsw?imgBaseUrl+imges.wifiShow:imgBaseUrl+imges.wifiHide}}"
-                     catchtap="switchPswShow"></image>
-            </input>
+          <view class="desc" wx:for="{{item.desc}}" wx:key="index2" wx:for-index="index2" wx:for-item="item2">
+            <view class="desc-item">
+              <text class="porint"></text>
+              <text class="desc-item-text">{{item2}}</text>
+            </view>
           </view>
-          <view class="spaceTips">
-            <view class="tip-text">{{spaceTip}}</view>
-          </view>
-        </view>
-        <view class="{{isShowRouttingImg?'bottom-button-wifi-showPic':'bottom-button-wifi'}}"
-              style="padding-bottom: 96rpx">
-          <van-button class="w-full" block type="primary" size="large" bind:click="configNetWork">{{showNextText}}
-          </van-button>
-
-          <van-button class="w-full mt-20rpx" wx:if="{{mode==31}}" block type="primary" size="large" bind:click="skip">
-            跳过
-          </van-button>
         </view>
       </view>
-      <view class="check-guide" wx:if="{{netType==0}}">
-        <view class="wifi-title thick">
-          请将手机连接上家庭WiFi
-        </view>
-        <image class="wifi-guide-img" src="{{guideImg}}">
-        </image>
-        <view class="desc-list">
-          <view class="r" wx:for="{{guideStep}}" wx:key="index" wx-index="index">
-            <view class="guide-title" wx:if="{{guideStep.length > 1}}">
-              <view class="wifi-num">{{index + 1}}</view>
-              <view class="text">
-                {{item.title}}
-                <view wx:if="{{item.type==='location'&&item.desc.length}}" class="look-guide" bindtap="lookGuide">
-                  查看操作指引
-                </view>
-              </view>
-            </view>
-            <view class="guide-title" wx:else>
-              <view class="text-nolcation">
-                {{item.title}}
-              </view>
-            </view>
-            <view class="desc" wx:for="{{item.desc}}" wx:key="index2" wx:for-index="index2" wx:for-item="item2">
-              <view class="desc-item">
-                <text class="porint"></text>
-                <text class="desc-item-text">{{item2}}</text>
-              </view>
-            </view>
-          </view>
-        </view>
-        <view class="go-link-wifi px-32rpx box-border">
-          <van-button class="w-full" type="info" custom-style="background-color: transparent;border: 0" plain block
-                      size="large" bind:click="connectWifi">已连接WiFi?
-          </van-button>
+      <view class="go-link-wifi px-32rpx box-border">
+        <van-button class="w-full" type="info" custom-style="background-color: transparent;border: 0" plain block
+                    size="large" bind:click="connectWifi">已连接WiFi?
+        </van-button>
 
-          <van-button class="w-full mt-20rpx" block type="primary" size="large" bind:click="linkWifi">去连接WiFi
-          </van-button>
+        <van-button class="w-full mt-20rpx" block type="primary" size="large" bind:click="linkWifi">去连接WiFi
+        </van-button>
 
-          <van-button class="w-full mt-20rpx" wx:if="{{mode==31}}" block type="primary" size="large" bind:click="skip">
-            跳过
-          </van-button>
-        </view>
+        <van-button class="w-full mt-20rpx" wx:if="{{mode==31}}" block type="primary" size="large" bind:click="skip">
+          跳过
+        </van-button>
       </view>
     </view>
 

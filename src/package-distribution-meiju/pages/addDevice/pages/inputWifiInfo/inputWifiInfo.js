@@ -28,7 +28,6 @@ const brandStyle = require('../../../assets/js/brand.js')
 let wifiMgr = new WifiMgr()
 
 let interval = null
-let showImgTime = null
 const systemInfo = wx.getSystemInfoSync()
 
 Page({
@@ -151,7 +150,6 @@ Page({
       wifiConnect: imgList['wifiConnect'],
       questinoImg: imgList['questino'],
     })
-    console.log(this.data.brand)
 
     console.log('addDeviceInfo====', app.addDeviceInfo)
     const {deviceImg, deviceName, type, sn8, ssid, mode, guideInfo, enterprise, brandName, fm} = app.addDeviceInfo
@@ -172,9 +170,6 @@ Page({
       mode: mode || 0, //默认ap
       isSupport5G: (guideInfo && guideInfo[0].wifiFrequencyBand) == 2,
     })
-    if (!brandName) {
-      app.addDeviceInfo.brandName = this.getBrandBname(enterprise)
-    }
     //设置连接方式
     app.addDeviceInfo.linkType = this.getLinkType(mode)
     this.checkSystm()
@@ -195,28 +190,24 @@ Page({
     } catch (error) {
       console.log('------------mode-------------')
     }
-    // if (app.globalData.system.systemInfo == 'android') {
-    //     this.getWifiList() //提前获取下wifi列表
-    // }
-    console.log('加载apUtils结果', app.addDeviceInfo)
     console.log('------------mode-------------')
     console.log('mode:', mode)
     console.log('fm:', fm)
-    console.log('------------modeend-------------')
-    if (mode == 0 || mode == 3) {
-      if (fm == 'autoFound') {
-        // 自发现入口
-        this.handleCheckFlow()
-      } else {
-        // 非自发现入口，开启蓝牙扫描，按品类匹配
-        this.searchBlueByType(type, sn8, ssid).then((device) => {
-          console.log('---------开启蓝牙扫描--------')
-          console.log('@module inputWifiInfo.js\n@method onLoad\n@desc 匹配到设备信息\n', device)
-          this.ifFindMatchedBlueDevice = true
-          this.getBlueGuide(device)
-        })
-      }
-    }
+    // todo: 暂时屏蔽蓝牙扫描功能，接口开发不完整
+    // if (mode == 0 || mode == 3) {
+    //   if (fm === 'autoFound') {
+    //     // 自发现入口
+    //     this.handleCheckFlow()
+    //   } else {
+    //     // 非自发现入口，开启蓝牙扫描，按品类匹配
+    //     this.searchBlueByType(type, sn8, ssid).then((device) => {
+    //       console.log('---------开启蓝牙扫描--------')
+    //       console.log('@module inputWifiInfo.js\n@method onLoad\n@desc 匹配到设备信息\n', device)
+    //       this.ifFindMatchedBlueDevice = true
+    //       this.getBlueGuide(device)
+    //     })
+    //   }
+    // }
   },
   //点击跳转wifi频率指引页
   goTofrequencyGuide() {
@@ -677,38 +668,21 @@ Page({
   // wifi输入框聚焦
   SSIDFocus() {
     this.data.focusWifiName = true
-    this.showRouttingImg(false)
   },
   // wifi输入框失焦
   SSIDBlur() {
     this.data.focusWifiName = true
-    this.showRouttingImg(true)
   },
   //密码输入框聚焦
   pswFocus() {
     this.data.focusWifiPwd = true
-    this.showRouttingImg(false)
   },
 
   pswBlur() {
     this.data.focusWifiPwd = false
-    this.showRouttingImg(true)
-  },
-  showRouttingImg(bool) {
-    console.log('ddddddd')
-    // 点击输入wifi名称和密码输入框，图片都要隐藏，如果是连着点击input框，就不显示图片，点击input框外的才显示图片。看了下，切换输入框的时候，1的失焦和2的聚焦中间时间为400+毫秒~500+毫秒，机型、缓存不一样，时间上也可能不一样，先设600毫秒
-    showImgTime && clearTimeout(showImgTime)
-    showImgTime = setTimeout(
-      () => {
-        this.setData({
-          isShowRouttingImg: bool,
-        })
-      },
-      bool ? 600 : 0,
-    )
-    console.log('isShowRouttingImg:', this.data.isShowRouttingImg)
   },
   getPsw(e) {
+    console.log('getPsw', e)
     let psw = e.detail.value
     //判断输入的wifi密码是否包含空格，并显示对应的提示
     if (/\s+/g.test(psw)) {
@@ -754,7 +728,7 @@ Page({
       })
     }
     console.log('输入的WiFi密码', this.data.bindWifiTest)
-    if (e.detail.value.length != this.data.bindWifiTest.PswContent.length) {
+    if (e.detail.value.length !== this.data.bindWifiTest.PswContent.length) {
       return {
         value: this.data.bindWifiTest.PswContent,
         cursor: e.detail.cursor - (e.detail.value.length - this.data.bindWifiTest.PswContent.length),
@@ -1466,8 +1440,8 @@ Page({
 
   //手动输入wifi名
   inputSSIDContent(e) {
-    // console.log(e)
-    let SSIDContent = e.detail.value
+    console.log('inputSSIDContent', e)
+    let SSIDContent = e.detail
     this.setData({
       'bindWifiTest.SSIDContent': SSIDContent,
     })

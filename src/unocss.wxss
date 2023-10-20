@@ -79,7 +79,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .pr-44rpx{padding-right:44rpx;}
 .pt-100rpx{padding-top:100rpx;}
 .pt-10rpx{padding-top:10rpx;}
-.pt-112rpx{padding-top:112rpx;}
 .pt-12rpx{padding-top:12rpx;}
 .pt-16rpx{padding-top:16rpx;}
 .pt-180rpx{padding-top:180rpx;}

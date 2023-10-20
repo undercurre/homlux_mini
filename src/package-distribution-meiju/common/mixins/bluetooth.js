@@ -311,31 +311,6 @@ module.exports = Behavior({
       })
     },
 
-    //校验SN8
-    checkSN8(brandConfig, deviceParam) {
-      let ifSN8Matching = false
-      if (brandConfig.blueSN8Verify) {
-        if (brandConfig.allSN8List && Object.keys(brandConfig.allSN8List).length > 0) {
-          // 存在全量设备SN8名单配置
-          if (Object.values(brandConfig.allSN8List).some((item) => item['sn8']?.includes(deviceParam.sn8))) {
-            ifSN8Matching = true
-          }
-        }
-        if (brandConfig.pluginFilter_SN8 && Object.keys(brandConfig.pluginFilter_SN8).length > 0) {
-          // 存在插件SN8黑白名单，插件支持的SN8默认为该品牌设备（兼容新增机型）
-          if (Object.values(brandConfig.pluginFilter_SN8).some((item) => item['SN8']?.includes(deviceParam.sn8))) {
-            ifSN8Matching = true
-          }
-        }
-        if (!ifSN8Matching) {
-          console.log('@module bluetooth.js\n@method onBluetoothDeviceFound\n@desc 设备SN8校验失败\n', deviceParam)
-          ifSN8Matching = false
-        }
-      } else {
-        ifSN8Matching = true
-      }
-      return ifSN8Matching
-    },
     onBluetoothDeviceFound(isIndex) {
       const self = this
       const rssiThreshold = isIndex == 0 ? -70 : -58 // 设备发现页信号强度过滤阈值为-70 首页或其他页面为-58
@@ -396,35 +371,6 @@ module.exports = Behavior({
                 return
               }
             }
-            // 校验SN8
-            let ifSN8Matching = this.checkSN8(brandStyle.brandConfig, deviceParam)
-            if (!ifSN8Matching) {
-              return
-            }
-            // if (brandConfig.blueSN8Verify) {
-            //   let ifSN8Matching = false
-            //   if (brandConfig.allSN8List && Object.keys(brandConfig.allSN8List).length > 0) {
-            //     // 存在全量设备SN8名单配置
-            //     if (Object.values(brandConfig.allSN8List).some((item) => item['sn8']?.includes(deviceParam.sn8))) {
-            //       ifSN8Matching = true
-            //     }
-            //   }
-            //   if (brandConfig.pluginFilter_SN8 && Object.keys(brandConfig.pluginFilter_SN8).length > 0) {
-            //     // 存在插件SN8黑白名单，插件支持的SN8默认为该品牌设备（兼容新增机型）
-            //     if (
-            //       Object.values(brandConfig.pluginFilter_SN8).some((item) => item['SN8']?.includes(deviceParam.sn8))
-            //     ) {
-            //       ifSN8Matching = true
-            //     }
-            //   }
-            //   if (!ifSN8Matching) {
-            //     console.log(
-            //       '@module bluetooth.js\n@method onBluetoothDeviceFound\n@desc 设备SN8校验失败\n',
-            //       deviceParam
-            //     )
-            //     return
-            //   }
-            // }
             let nearestRes = this.setBLueSameSn8DeviceTag(deviceParam)
             console.log('=========nearestRes=====', nearestRes)
             if (nearestRes.isHasSameTypeDevice) {
@@ -699,7 +645,7 @@ module.exports = Behavior({
       if (obj.advertisData != null) {
         const hexStr = ab2hex(obj.advertisData)
         const brand = hexStr.slice(0, 4)
-        return brand == 'a806' ? true : false
+        return brand === 'a806'
       }
     },
 
