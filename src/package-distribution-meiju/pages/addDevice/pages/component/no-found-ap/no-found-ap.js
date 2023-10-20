@@ -3,7 +3,9 @@
 const addDeviceMixin = require('../../assets/js/addDeviceMixin')
 import { baseImgApi, imgBaseUrl } from '../../../../../common/js/api'
 import { imgesList } from '../../../../assets/js/shareImg.js'
-const imgUrl = imgBaseUrl.url + '/shareImg/' + getApp().globalData.brand
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const brandStyle = require('../../../../assets/js/brand')
+const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
 
 Component({
   externalClasses: [

@@ -3,7 +3,6 @@ import pageBehaviors from '../../../../../behaviors/pageBehaviors'
 import {Logger} from '../../../../../utils/index'
 import {queryGuideInfo} from '../../../../../apis/index'
 
-import {isColmoDeviceByDecodeSn, isSupportPlugin} from '../../../../utils/pluginFilter'
 import {addDeviceTime} from '../../../assets/js/utils'
 import {deviceImgMap} from '../../../../utils/deviceImgMap'
 import computedBehavior from '../../../../utils/miniprogram-computed.js'
@@ -546,52 +545,20 @@ Page({
   //本地蓝牙跳转  储存
   async openPlugin() {
     let {type, A0, sn8, deviceName, deviceImg} = app.addDeviceInfo
-    let currentHomeGroupId = app.globalData.currentHomeGroupId
     let typeFomat = type.includes('0x') ? type.toLocaleUpperCase() : '0x' + type.toLocaleUpperCase()
-    console.log('is has plugin', isSupportPlugin(typeFomat, sn8), currentHomeGroupId)
-    if (!currentHomeGroupId) {
-      //无加载到默认家庭
-      console.log('获取当前家庭id')
-      app.globalData.currentHomeGroupId = await this.getCurrentHomeGroupId()
-      currentHomeGroupId = app.globalData.currentHomeGroupId
-      console.log('当前家庭id===', app.globalData.currentHomeGroupId)
-    }
-    let homeList = await this.getFamilyInfo(currentHomeGroupId)
-    let roomName = homeList[0].roomList[0].name
-    let roomId = homeList[0].roomList[0].roomId
     let deviceInfo = {
       modelNumber: A0,
       name: deviceName,
       sn8,
       type: typeFomat,
       deviceImg,
-      roomId,
-      roomName,
       activeTime: addDeviceTime(new Date()),
       cardType: 'localBlue', //本地蓝牙
     }
     console.log('deviceInfo', deviceInfo)
 
     let localBlueDevices = wx.getStorageSync('localBlueDevices') || {}
-    console.log('当前家庭id', currentHomeGroupId, localBlueDevices)
-    if (currentHomeGroupId && localBlueDevices[currentHomeGroupId]) {
-      localBlueDevices[currentHomeGroupId].push(deviceInfo)
-    } else {
-      localBlueDevices[currentHomeGroupId] = []
-      localBlueDevices[currentHomeGroupId].push(deviceInfo)
-    }
-    console.log('local blue devices =====', localBlueDevices)
     wx.setStorageSync('localBlueDevices', localBlueDevices)
-    if (isSupportPlugin(typeFomat, sn8)) {
-      // goTopluginPage(deviceInfo, paths.index, true)
-      wx.reLaunch({
-        url: paths.unSupportDevice,
-      })
-    } else {
-      wx.reLaunch({
-        url: paths.unSupportDevice,
-      })
-    }
   },
 
   async touchScanCode() {

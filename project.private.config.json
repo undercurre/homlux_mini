@@ -170,6 +170,13 @@
           "query": "",
           "launchMode": "default",
           "scene": null
+        },
+        {
+          "name": "连接设备页面",
+          "pathName": "package-distribution-meiju/pages/addDevice/pages/linkDevice/linkDevice",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
         }
       ]
     }

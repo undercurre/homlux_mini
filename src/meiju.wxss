@@ -85,7 +85,6 @@
   background: #267aff;
   border-radius: 20px;
   text-align: center;
-  font-family: PingFangSC-Medium;
   font-size: 14px;
   color: #ffffff;
   letter-spacing: 0;
@@ -93,7 +92,6 @@
 }
 
 #meiju .retry-btn {
-  font-family: PingFangSC-Medium;
   font-size: 14px;
   color: #267aff;
   letter-spacing: 0;
@@ -123,7 +121,6 @@
 }
 
 #meiju .searchIng-text {
-  font-family: PingFangSC-Medium;
   font-size: 28rpx;
   color: #000;
   width: 384rpx;
@@ -135,7 +132,6 @@
 }
 
 #meiju .search-help {
-  font-family: PingFangSC-Medium;
   font-size: 24rpx;
   color: #267aff;
   text-align: center;
@@ -153,7 +149,6 @@
   justify-content: center;
   align-items: center;
   margin-top: 40rpx;
-  /* padding-bottom: 64rpx; */
 }
 
 #meiju .header-item {
@@ -174,7 +169,6 @@
   height: 64rpx;
   background: #f2f2f2;
   border-radius: 24px;
-  font-family: PingFangSC-Regular;
   font-size: 12px;
   color: #666666;
   letter-spacing: 0;
@@ -274,7 +268,6 @@
   background: #e9f1ff;
   margin-top: 12rpx;
   border-radius: 25rpx;
-  font-family: PingFangSC-Regular;
   font-size: 22rpx;
   color: #267aff;
   text-align: center;
@@ -399,7 +392,6 @@
 
 #meiju .wifi-container {
   padding-top: 80rpx;
-  font-family: PingFangSC-Medium;
 }
 
 #meiju .c4-wifi,
@@ -407,12 +399,11 @@
   width: 91.5%;
   height: 46px;
   box-sizing: border-box;
-  margin: auto;
   text-align: left;
   border: 1rpx solid #c7c7cc;
   border-radius: 23px;
   padding-left: 20px;
-  margin-bottom: 8px;
+  margin: auto auto 8px;
   position: relative;
   text-overflow: -o-ellipsis-lastline;
   overflow: hidden;
@@ -436,7 +427,6 @@
   display: block;
   width: 686rpx;
   height: 384rpx;
-  margin: 63rpx auto;
   margin-top: 40rpx;
 }
 
@@ -446,10 +436,8 @@
 }
 
 #meiju .wifi-title {
-  font-family: PingFangSC-Medium;
   font-size: 48rpx;
   letter-spacing: 0;
-  text-align: center;
   text-align: center;
   line-height: 48rpx;
   font-weight: 500;
@@ -489,8 +477,7 @@
   width: 324rpx;
   height: 324rpx;
   display: block;
-  margin: auto;
-  margin-top: 4.2vh;
+  margin: 4.2vh auto auto;
 }
 
 #meiju .input-area {
@@ -506,29 +493,6 @@
 #meiju .bluetoothOpenNotice {
   padding: 0rpx 40rpx;
   margin-bottom: 40rpx;
-}
-
-#meiju .look-guide {
-  display: inline-block;
-  font-family: PingFangSC-Medium;
-  font-size: 16px;
-  color: #267aff;
-  letter-spacing: 0;
-  line-height: 22px;
-  font-weight: 500;
-}
-
-#meiju .wifi-num {
-  width: 36rpx;
-  height: 36rpx;
-  line-height: 36rpx;
-  text-align: center;
-  margin-top: 12rpx;
-  margin-right: 16rpx;
-  border-radius: 50%;
-  color: #458bff;
-  background: #e9f1ff;
-  font-size: 24rpx;
 }
 
 #meiju .go-link-wifi {
@@ -606,26 +570,15 @@
 }
 
 #meiju .title {
-  font-family: PingFangSC-Medium;
   font-size: 48rpx;
   letter-spacing: 0;
-  text-align: center;
   text-align: center;
   line-height: 48rpx;
   font-weight: 500;
 }
 
-#meiju .guide-img {
-  display: block;
-  width: 686rpx;
-  height: 384rpx;
-  margin: 63rpx auto;
-  margin-top: 40rpx;
-}
 
 #meiju .desc-list {
-  margin-top: 44rpx;
-  padding-left: 4%;
   align-items: center;
 }
 
@@ -660,7 +613,6 @@
 }
 
 #meiju .switch-wifi-btn2 {
-  margin-top: 30rpx;
   width: 91.5%;
   height: 42px;
   margin: auto;
@@ -687,7 +639,6 @@
 
 #meiju .c1 {
   font-size: 46rpx;
-  font-family: PingFangSC-Semibold, PingFang SC;
   font-weight: 600;
   color: #262628;
   line-height: 64rpx;
@@ -695,7 +646,6 @@
 }
 
 #meiju .c2 {
-  font-family: PingFangSC-Medium;
   font-size: 18px;
   color: #ff8225;
   font-weight: 400;
@@ -713,12 +663,11 @@
   width: 91.5%;
   height: 46px;
   box-sizing: border-box;
-  margin: auto;
   text-align: left;
   border: 1rpx solid #c7c7cc;
   border-radius: 23px;
   padding-left: 20px;
-  margin-bottom: 8px;
+  margin: auto auto 8px;
   position: relative;
   text-overflow: -o-ellipsis-lastline;
   overflow: hidden;
@@ -780,7 +729,6 @@
 /* 配网指引页 */
 #meiju .addGuide-title {
   text-align: center;
-  font-family: PingFangSC-Medium;
   font-size: 48rpx;
   color: #000000;
   letter-spacing: 0;
@@ -810,10 +758,8 @@
   height: 15rpx;
   margin-left: 8rpx;
   border-top: solid 3rpx #267aff;
-  border-right: solid 3rpx #267aff;
   transform: rotate(45deg);
   border-top-width: 1px;
-  border-top-style: solid;
   border-top-color: rgb(38, 122, 255);
   border-right-width: 1px;
   border-right-style: solid;
@@ -1017,7 +963,6 @@
   margin: 30rpx 0 40rpx 0;
   color: #000000;
   letter-spacing: 0;
-  text-align: center;
   font-size: 48rpx;
   font-weight: 500;
   width: 90%;
@@ -1025,7 +970,6 @@
 
 #meiju .guide-gif {
   width: 684rpx;
-  margin: auto;
   background-color: #c9dfff;
   border-radius: 32rpx;
 }
@@ -1034,17 +978,14 @@
   display: block;
   width: 480rpx;
   height: 384rpx;
-  margin: auto;
-  margin-bottom: 48rpx;
+  margin: auto auto 48rpx;
   position: relative;
 }
 
 #meiju .andriod-guide {
-  display: block;
   width: 684rpx;
   height: 384rpx;
-  margin: auto;
-  margin-bottom: 48rpx;
+  margin: auto auto 48rpx;
   position: relative;
   background-color: rgba(38, 122, 255, 0.1);
   border-radius: 32rpx;
@@ -1054,12 +995,6 @@
 }
 
 #meiju .gif-size {
-  /* display: block;
-  width: 654rpx;
-  height: 384rpx;
-  margin-bottom: 48rpx;
-  position: relative;
-  margin-left:48rpx; */
   width: 480rpx;
   height: 384rpx;
 }
@@ -1082,7 +1017,6 @@
   justify-content: center;
   align-items: center;
   margin-top: 20rpx;
-  font-family: PingFangSC-Medium;
   font-size: 28rpx;
   color: #267aff;
   letter-spacing: 0;
@@ -1102,10 +1036,6 @@
   font-weight: 500;
 }
 
-#meiju .page2 {
-  font-family: PingFangSC-Medium;
-}
-
 #meiju .pad {
   font-size: 30rpx;
   letter-spacing: 0;
@@ -1114,31 +1044,11 @@
 }
 
 #meiju .bottom-button {
-  padding: 20rpx 0rpx;
   width: 100%;
   position: fixed;
-  bottom: 0;
+  bottom: 96rpx;
   left: 0;
-  background-color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
 }
-
-/* #meiju .wifi-img {
-    margin-top: 5rpx;
-    margin-right: 5rpx;
-}
-
-#meiju .wifi-name, .psw-name {
-    font-size: 48rpx;
-    color: #FE1E10;
-    letter-spacing: 0;
-    text-align: center;
-    line-height: 52rpx;
-    font-weight: 600;
-} */
 
 #meiju .wifi-img,
 #meiju .psw-img {
@@ -1154,7 +1064,6 @@
 
 #meiju .searching-text-no-found {
   margin-top: 32rpx;
-  font-family: PingFangSC-Medium;
   font-size: 28rpx;
   color: #333333;
   letter-spacing: 0;
@@ -1209,7 +1118,6 @@
 #meiju .detail-text {
   display: block;
   width: 380rpx;
-  font-family: PingFangSC-Semibold;
   font-size: 28rpx;
   color: #666666;
   letter-spacing: 0;
@@ -1219,7 +1127,6 @@
 #meiju .detail-text2 {
   display: block;
   width: 380rpx;
-  font-family: PingFangSC-Semibold;
   font-size: 28rpx;
   color: #666666;
   letter-spacing: 0;
@@ -1339,7 +1246,6 @@
 
 #meiju .link-device-title {
   text-align: center;
-  font-family: PingFangSC-Medium;
   font-size: 48rpx;
   color: #000000;
   letter-spacing: 0;
@@ -1379,7 +1285,6 @@
 }
 
 #meiju .app-name {
-  font-family: PingFangSC-Medium;
   font-size: 36rpx;
   color: #000;
   letter-spacing: 0;
@@ -1391,7 +1296,6 @@
   display: flex;
   justify-content: center;
   margin-top: 30px;
-  font-family: PingFangSC-Regular;
   font-size: 14px;
   color: #8a8a8f;
   letter-spacing: 0;
@@ -1427,7 +1331,6 @@
 }
 
 #meiju .dialog-main-title {
-  font-family: PingFangSC-Medium;
   font-size: 32rpx;
   color: #000000;
   text-align: center;
@@ -1436,7 +1339,6 @@
 }
 
 #meiju .dialog-main-desc {
-  font-family: PingFangSC-Medium;
   font-size: 28rpx;
   line-height: 40rpx;
   text-align: center;
@@ -1451,7 +1353,6 @@
   height: 84rpx;
   border: 1px solid #c7c7cc;
   border-radius: 48rpx;
-  font-family: PingFangSC-Regular;
   font-size: 30rpx;
   color: #c7c7cc;
   letter-spacing: 0;
@@ -1469,7 +1370,6 @@
   height: 84rpx;
   background: #267aff;
   border-radius: 46rpx;
-  font-family: PingFangSC-Medium;
   font-size: 32rpx;
   color: #ffffff;
   letter-spacing: 0;
@@ -1483,7 +1383,6 @@
 #meiju .addSuccess-title {
   width: 100%;
   margin-bottom: 16rpx;
-  font-family: PingFangSC-Regular;
   font-size: 24rpx;
   color: #8a8a8f;
   letter-spacing: 0;
@@ -1511,7 +1410,6 @@
   height: 72rpx;
   padding: 0rpx 32rpx;
   box-sizing: border-box;
-  /* line-height: 72rpx; */
   margin-right: 16rpx;
   margin-bottom: 10rpx;
   border-radius: 36rpx;
@@ -1583,23 +1481,18 @@
   margin-bottom: 16rpx;
 }
 
-#meiju .weui-actionsheet__menu {
-  /* max-height: 100% !important; */
-}
-
 #meiju .weui-actionsheet__cell2 {
   background: #f9f9f9;
   color: #000;
   border-radius: 12px;
   width: 85%;
-  margin: 0 auto;
   font-size: 32rpx;
   justify-content: start;
   position: relative;
   font-weight: 400;
   height: 104rpx;
   padding: 0 32rpx;
-  margin-bottom: 16rpx;
+  margin: 0 auto 16rpx;
   display: flex;
   align-items: center;
 }
@@ -1613,7 +1506,6 @@
 }
 
 #meiju .weui-actionsheet__title-text {
-  font-family: PingFangSC-Medium;
   font-size: 16px;
   color: #000000;
   letter-spacing: -0.44px;
@@ -1660,7 +1552,6 @@
   margin-bottom: 48rpx;
   border: 1rpx solid #c7c7cc;
   border-radius: 24px;
-  font-family: PingFangSC-Regular;
   font-size: 32rpx;
   color: #000000;
   letter-spacing: 0;
@@ -1671,8 +1562,7 @@
 #meiju .retry2 {
   width: 91.5%;
   height: 92rpx;
-  margin: auto;
-  margin-top: 40vh;
+  margin: 40vh auto auto;
   line-height: 92rpx;
   text-align: center;
   border-radius: 48rpx;
@@ -1849,8 +1739,7 @@
 }
 
 #meiju .desc-list-fail {
-  margin: auto;
-  margin-top: 4vh;
+  margin: 4vh auto auto;
   width: 91.5%;
   align-items: center;
 }
@@ -1891,12 +1780,6 @@
 }
 
 #meiju .tip-fail {
-  /* display:block;
-  width: 100%;
-  margin: auto;
-  text-align: center;
-  overflow: hidden;
-  box-sizing: border-box; */
   display: flex;
   align-items: center;
 }
@@ -1944,12 +1827,11 @@
 #meiju .fail-blue-tooth-img {
   width: 30rpx;
   height: 30rpx;
-  margin: 0px 30rpx;
+  margin: 0 30rpx;
 }
 
 #meiju .switch-wifi {
   z-index: 100;
-  font-family: PingFangSC-Medium;
   font-size: 14px;
   color: #267aff;
   line-height: 24px;
@@ -1969,12 +1851,11 @@
   width: 91.5%;
   height: 46px;
   box-sizing: border-box;
-  margin: auto;
   text-align: left;
   border: 1rpx solid #c7c7cc;
   border-radius: 23px;
   padding-left: 20px;
-  margin-bottom: 8px;
+  margin: auto auto 8px;
   position: relative;
   text-overflow: -o-ellipsis-lastline;
   overflow: hidden;
@@ -2019,7 +1900,6 @@
 #meiju .help-text {
   width: 622rpx;
   margin: 60rpx auto;
-  font-family: PingFangSC-Regular;
   font-size: 28rpx;
   color: #333333;
   letter-spacing: -0.78px;
@@ -2049,8 +1929,7 @@
 
 /* 后确权页面 afterCheck*/
 #meiju .after-guide-desc {
-  margin: auto;
-  margin-top: 25rpx;
+  margin: 25rpx auto auto;
   width: 91.5%;
   font-size: 32rpx;
 }
@@ -2087,8 +1966,6 @@
   font-weight: 500;
   text-align: center;
   margin-top: 32rpx;
-  font-size: 36rpx;
-  font-weight: 500;
 }
 
 #meiju .authTimeout-desc {

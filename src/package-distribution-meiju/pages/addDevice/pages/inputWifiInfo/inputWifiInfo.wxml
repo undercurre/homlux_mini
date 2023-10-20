@@ -6,7 +6,8 @@
       <tips-box icon="/assets/img/default-img/link-wifi.png" text="仅支持2.4GHZ的WIFI"></tips-box>
 
       <view class="grow px-48rpx pt-100rpx">
-        <van-field value="{{ bindWifiTest.SSIDContent }}" placeholder="{{!continueConnectWifi ? '未获取到家庭WiFi' : '输入 WiFi 名称'}}"
+        <van-field value="{{ bindWifiTest.SSIDContent }}"
+                   placeholder="{{!continueConnectWifi ? '未获取到家庭WiFi' : '输入 WiFi 名称'}}"
                    custom-style="margin-bottom: 32rpx;margin-top: 40rpx;padding: 16rpx 32rpx;border-radius: 24rpx;"
                    clearable="{{true}}" bind:input="inputSSIDContent" border="{{false}}">
           <van-button slot="button" type="primary" plain bind:click="inputPageSwitchWifi">切换Wi-Fi
@@ -35,35 +36,27 @@
     </view>
 
     <view class="check-guide" wx:if="{{netType==0}}">
-      <view class="wifi-title thick">
-        请将手机连接上家庭WiFi
-      </view>
-      <image class="wifi-guide-img" src="{{guideImg}}">
-      </image>
-      <view class="desc-list">
-        <view class="r" wx:for="{{guideStep}}" wx:key="index" wx-index="index">
-          <view class="guide-title" wx:if="{{guideStep.length > 1}}">
-            <view class="wifi-num">{{index + 1}}</view>
-            <view class="text">
-              {{item.title}}
-              <view wx:if="{{item.type==='location'&&item.desc.length}}" class="look-guide" bindtap="lookGuide">
-                查看操作指引
+      <view class="px-54rpx">
+        <view class="py-50rpx leading-56rpx text-40 text-hex-27282A font-bold">请将手机连接上家庭WiFi</view>
+        <image class="w-642 h-360 mb-50rpx" src="{{guideImg}}"></image>
+        <view class="desc-list">
+          <view wx:for="{{guideStep}}" wx:key="index">
+            <view class="leading-40rpx text-28 text-hex-555659 text-justify">
+              <text wx:if="{{guideStep.length=== 1}}">{{index + 1}}、</text>
+              <text>{{item.title}}</text>
+              <text wx:if="{{1 || item.type==='location'&&item.desc.length}}" class="px-10rpx text-hex-488fff"
+                    bindtap="lookGuide">查看操作指引</text>
+            </view>
+            <view class="desc" wx:for="{{item.desc}}" wx:key="index2" wx:for-index="index2" wx:for-item="item2">
+              <view class="desc-item">
+                <text class="porint"></text>
+                <text class="desc-item-text">{{item2}}</text>
               </view>
-            </view>
-          </view>
-          <view class="guide-title" wx:else>
-            <view class="text-nolcation">
-              {{item.title}}
-            </view>
-          </view>
-          <view class="desc" wx:for="{{item.desc}}" wx:key="index2" wx:for-index="index2" wx:for-item="item2">
-            <view class="desc-item">
-              <text class="porint"></text>
-              <text class="desc-item-text">{{item2}}</text>
             </view>
           </view>
         </view>
       </view>
+
       <view class="go-link-wifi px-32rpx box-border">
         <van-button class="w-full" type="info" custom-style="background-color: transparent;border: 0" plain block
                     size="large" bind:click="connectWifi">已连接WiFi?

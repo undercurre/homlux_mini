@@ -1,36 +1,80 @@
 <!--distribution-network/addDevice/pages/linkAp/linkAp.wxml-->
-<wxs src="../utils/filter.wxs" module="tools" />
+<wxs src="../utils/filter.wxs" module="tools"/>
 <view id="{{brand}}">
   <view class="page2 theme-bg-color">
     <nav-bar leftArrow bind:leftTap="goBack"></nav-bar>
 
-    <view class="andriod" wx:if="{{system==='Android'}}">
-      <view class="title-box">
-        <view class="ap-title">用手机连上{{deviceName}}无线网络</view>
-      </view>
-      <view class="andriod-guide" style="background-size: 686rpx 384rpx">
-        <image wx:if="{{brandName==='bugu'}}" class="ap-img" src="{{android_linkDeviceWifiBugu}}"></image>
+    <view class="px-40rpx">
+      <view class="leading-56rpx py-50rpx text-40 text-hex-27282A font-medium">请用手机连上{{deviceName}}无线网络</view>
 
-        <image wx:else class="gif-size" src="{{android_ApName}}"></image>
+      <view class="guide-gif">
+        <!-- 需要包装一层盒子，不然ios上会有颜色重影 -->
+        <view>
+          <image class="ap-img" src="{{system==='Android' ? android_ApName : linkDeviceWifiMidea}}"></image>
+        </view>
       </view>
-      <view class="content">
-        <view class="one">
-          <view class="desc r">
-            <view class="text theme-font-color">请到手机系统设置页连上如下无线网络，连接后返回本页面</view>
+
+      <view class="leading-40rpx text-28 text-hex-555659">1、请在手机系统设置页连接此热点</view>
+
+      <view class="flex flex-row items-center pt-50rpx">
+        <image class="w-48 h-48" src="/assets/img/distribution/icon-wifi.png"></image>
+
+        <text class="px-40rpx leading-44rpx text-32 text-hex-27282A">{{brandName}}_{{tools.toLocaleLowerCase(type)}}_XXXX</text>
+      </view>
+
+      <view class="flex flex-row items-center pt-40rpx">
+        <image class="w-48 h-48" src="/assets/img/distribution/icon-pw.png"></image>
+
+        <text class="px-40rpx leading-44rpx text-32 text-hex-27282A">12345678</text>
+
+        <van-button plain block type="primary" size="small" custom-style="height: 52rpx;background: rgba(72,143,255,0.10);font-size: 24rpx;" bind:click="copy">复制</van-button>
+      </view>
+
+      <view class="pt-68rpx leading-40rpx text-28 text-hex-555659">2、连接上热点后返回此页面</view>
+
+      <view class="andriod" wx:if="{{system==='Android'}}">
+        <view class="content">
+          <view class="detail-title special-font-color" bindtap="switchShowDetail">
+            <text class="detail-title-text">查看详细连接步骤</text>
+            <image class="expand" src="{{isShowStepDetail?detailExpand:detailPackUp}}"></image>
           </view>
-          <view class="info">
-            <view class="rc" style="margin-bottom: 36rpx">
-              <image class="wifi-img" src="{{wifi}}"></image>
-              <text class="wifi-name">{{brandName}}_{{tools.toLocaleLowerCase(type)}}_</text><text class="sn4">xxxx</text>
-              <text class="pad">(4位数字和字母)</text>
-            </view>
-            <view class="rc">
-              <image class="psw-img" src="{{pswImg}}"></image>
-              <text class="psw-name">{{psw}}</text>
-              <text class="copy" bindtap="copy">复制</text>
+          <view class="linkAp-step">
+            <view class="detail-stepes" wx:if="{{isShowStepDetail}}">
+              <view class="detail-content">
+                <view class="detail-one detail-step" style="height:128rpx">
+                  <text class="detail-text" style="width:100%">
+                    <text class="step-num">1</text> 点击下方“去连接”进入系统设置页
+                  </text>
+                </view>
+                <view class="andriod-line"></view>
+                <view class="detail-two detail-step">
+                  <text class="detail-text">
+                    <text class="step-num">2</text> 选择格式为“{{brandName}}_{{tools.toLocaleLowerCase(type)}}_xxxx”的无线网络进行连接
+                  </text>
+                  <view class="step-four">
+                    <image class="detail-img detail-step" src="{{imgBaseUrl+imges.android_step1}}"></image>
+                    <text class="step-andriod-text">{{brandName}}_{{tools.toLocaleLowerCase(type)}}_xxxx</text>
+                  </view>
+                </view>
+                <view class="detail-four detail-step">
+                  <text class="detail-text">温馨提示：若没有发现类似无线网络，可关闭WLAN开关再打开，刷新列表</text>
+                  <view class="step-four">
+                    <image class="detail-img detail-step" src="{{imgBaseUrl+imges.android_step2}}"></image>
+                  </view>
+                </view>
+                <view class="andriod-line"></view>
+                <view class="detail-thr detail-step">
+                  <text class="detail-text">
+                    <text class="step-num">3</text> 返回小程序
+                  </text>
+                  <image class="detail-img" mode="widthFix" src="{{imgBaseUrl+imges.android_step3}}"></image>
+                </view>
+              </view>
             </view>
           </view>
         </view>
+      </view>
+      <view class="ios" wx:else>
         <view class="detail-title special-font-color" bindtap="switchShowDetail">
           <text class="detail-title-text">查看详细连接步骤</text>
           <image class="expand" src="{{isShowStepDetail?detailExpand:detailPackUp}}"></image>
@@ -38,108 +82,52 @@
         <view class="linkAp-step">
           <view class="detail-stepes" wx:if="{{isShowStepDetail}}">
             <view class="detail-content">
-              <view class="detail-one detail-step" style="height:{{brand=='colmo'?'124rpx':'128rpx'}} ">
-                <text class="detail-text" style="width:{{brand=='colmo'?'90%':'100%'}} "> <text class="step-num">1</text> 点击下方“去连接”进入系统设置页 </text>
+              <view class="detail-one detail-step" style="height:{{brand==='colmo'?'124rpx':'128rpx'}} ">
+                <text class="detail-text" style="width:{{brand==='colmo'?'90%':'100%'}} ">
+                  <text class="step-num">1</text> 点击下方“去连接”进入系统设置页</text>
               </view>
-              <view class="andriod-line"></view>
+              <view class="line"></view>
               <view class="detail-two detail-step">
-                <text class="detail-text"> <text class="step-num">2</text> 选择格式为“{{brandName}}_{{tools.toLocaleLowerCase(type)}}_xxxx”的无线网络进行连接 </text>
+                <text class="detail-text">
+                  <text class="step-num">2</text>
+                  <text>点击左上角“设置”</text>
+                </text>
+                <image class="detail-img" src="{{imgBaseUrl+imges.detailStep2}}"></image>
+              </view>
+              <view class="line"></view>
+              <view class="detail-thr detail-step">
+                <text class="detail-text">
+                  <text class="step-num">3</text>
+                  <text>选择无线局域网</text>
+                </text>
+                <image class="detail-img" src="{{imgBaseUrl+imges.detailStep3}}"></image>
+              </view>
+              <view class="line"></view>
+              <view class="detail-four detail-step">
+                <text class="detail-text2">
+                  <text class="step-num">4</text>
+                  <text>选择格式为“{{brandName}}_{{tools.toLocaleLowerCase(type)}}_xxxx”的无线网络进行连接</text>
+                </text>
                 <view class="step-four">
-                  <image class="detail-img detail-step" src="{{imgBaseUrl+imges.android_step1}}"></image>
-                  <text class="step-andriod-text">{{brandName}}_{{tools.toLocaleLowerCase(type)}}_xxxx</text>
+                  <image class="detail-img detail-step" src="{{imgBaseUrl+imges.detailStep4}}"></image>
+                  <text class="step-four-text">{{brandName}}_{{tools.toLocaleLowerCase(type)}}_xxxx</text>
                 </view>
               </view>
               <view class="detail-four detail-step">
-                <text class="detail-text">温馨提示：若没有发现类似无线网络，可关闭WLAN开关再打开，刷新列表</text>
+                <text class="detail-text"> 温馨提示：若没有发现类似无线网络，可关闭无线局域网开关再打开，刷新列表 </text>
                 <view class="step-four">
-                  <image class="detail-img detail-step" src="{{imgBaseUrl+imges.android_step2}}"></image>
+                  <image class="detail-img detail-step" src="{{imgBaseUrl+imges.detailStep4_1}}"></image>
                 </view>
               </view>
-              <view class="andriod-line"></view>
-              <view class="detail-thr detail-step">
-                <text class="detail-text"> <text class="step-num">3</text> 返回小程序 </text>
-                <image class="detail-img" mode="widthFix" src="{{imgBaseUrl+imges.android_step3}}"></image>
-              </view>
-            </view>
-          </view>
-        </view>
-      </view>
-    </view>
-    <view class="ios" wx:else>
-      <view class="title-box"> <view class="ap-title">用手机连上{{deviceName}}无线网络</view></view>
-      <view class="guide-gif">
-        <!-- 需要包装一层盒子，不然ios上会有颜色重影 -->
-        <view>
-          <image wx:if="{{brandName==='bugu'}}" class="ap-img" src="{{linkDeviceWifiBugu}}"></image>
-          <image wx:else class="ap-img" src="{{linkDeviceWifiMidea}}"></image>
-        </view>
-      </view>
-      <view class="ios-desc theme-font-color">
-        <view>请到手机系统设置页连上如下无线网络，连接后返回本页面</view>
-      </view>
-      <view class="info">
-        <view class="rc" style="margin-bottom: 36rpx">
-          <image class="wifi-img" src="{{wifi}}"></image>
-          <text class="wifi-name">{{brandName}}_{{tools.toLocaleLowerCase(type)}}_</text><text class="sn4">xxxx</text>
-          <text class="pad">(4位数字和字母)</text>
-        </view>
-        <view class="rc">
-          <image class="psw-img" src="{{pswImg}}"></image>
-          <text class="psw-name">{{psw}}</text>
-          <text class="copy" bindtap="copy">复制</text>
-        </view>
-      </view>
-      <view class="detail-title special-font-color" bindtap="switchShowDetail">
-        <text class="detail-title-text">查看详细连接步骤</text>
-        <image class="expand" src="{{isShowStepDetail?detailExpand:detailPackUp}}"></image>
-      </view>
-      <view class="linkAp-step">
-        <view class="detail-stepes" wx:if="{{isShowStepDetail}}">
-          <view class="detail-content">
-            <view class="detail-one detail-step" style="height:{{brand==='colmo'?'124rpx':'128rpx'}} ">
-              <text class="detail-text" style="width:{{brand==='colmo'?'90%':'100%'}} "> <text class="step-num">1</text> 点击下方“去连接”进入系统设置页</text>
-            </view>
-            <view class="line"></view>
-            <view class="detail-two detail-step">
-              <text class="detail-text">
-                <text class="step-num">2</text>
-                <text>点击左上角“设置”</text>
-              </text>
-              <image class="detail-img" src="{{imgBaseUrl+imges.detailStep2}}"></image>
-            </view>
-            <view class="line"></view>
-            <view class="detail-thr detail-step">
-              <text class="detail-text">
-                <text class="step-num">3</text>
-                <text>选择无线局域网</text>
-              </text>
-              <image class="detail-img" src="{{imgBaseUrl+imges.detailStep3}}"></image>
-            </view>
-            <view class="line"></view>
-            <view class="detail-four detail-step">
-              <text class="detail-text2">
-                <text class="step-num">4</text>
-                <text>选择格式为“{{brandName}}_{{tools.toLocaleLowerCase(type)}}_xxxx”的无线网络进行连接</text>
-              </text>
-              <view class="step-four">
-                <image class="detail-img detail-step" src="{{imgBaseUrl+imges.detailStep4}}"></image>
-                <text class="step-four-text">{{brandName}}_{{tools.toLocaleLowerCase(type)}}_xxxx</text>
-              </view>
-            </view>
-            <view class="detail-four detail-step">
-              <text class="detail-text"> 温馨提示：若没有发现类似无线网络，可关闭无线局域网开关再打开，刷新列表 </text>
-              <view class="step-four">
-                <image class="detail-img detail-step" src="{{imgBaseUrl+imges.detailStep4_1}}"></image>
-              </view>
-            </view>
-            <view class="line"></view>
-            <view class="detail-four detail-step">
-              <text class="detail-text">
-                <text class="step-num">5</text>
-                <text>返回小程序</text>
-              </text>
-              <view class="step-four">
-                <image class="detail-img detail-step" src="{{imgBaseUrl+imges.detailStep5}}"></image>
+              <view class="line"></view>
+              <view class="detail-four detail-step">
+                <text class="detail-text">
+                  <text class="step-num">5</text>
+                  <text>返回小程序</text>
+                </text>
+                <view class="step-four">
+                  <image class="detail-img detail-step" src="{{imgBaseUrl+imges.detailStep5}}"></image>
+                </view>
               </view>
             </view>
           </view>
@@ -147,16 +135,28 @@
       </view>
     </view>
 
-    <view class="bottom-button" style="padding-bottom: {{isIpx?'78rpx':'48rpx'}}; ">
-      <view class="no-found-wifi special-font-color" bindtap="clickNoFoundWifi">找不到{{deviceName}}无线网络?</view>
-      <view class="switch-wifi-btn2 {{ brand==='colmo'&& readingTimer?'colmo-stop-go-link':'' }}" bindtap="goLinkDeviceWifi" style="opacity:{{brand!=='colmo'&&readingTimer?0.2:1}}">
+    <view class="bottom-button px-32rpx box-border">
+      <van-button class="w-full" type="info" custom-style="background-color: transparent;border: 0" plain block
+                  size="large" bind:click="clickNoFoundWifi">找不到{{deviceName}}无线网络?
+      </van-button>
+
+      <van-button class="w-full mt-20rpx" block type="primary" size="large" bind:click="goLinkDeviceWifi">
         {{linkDeviceWifi}}
         <text wx:if="{{readingTimer}}" class="readingTimer">({{readingTimer}}s)</text>
-      </view>
+      </van-button>
     </view>
     <!-- 没发现wifi对应弹出层 -->
-    <no-found-ap id="bottomFrame" deviceName="{{deviceName}}" wifi="{{brandName+'_'+tools.toLocaleLowerCase(type)}}" system="{{system}}" closeImg="{{imgBaseUrl+imges.closeImg}}" bind:feedback="feedback" bind:confirm="retrySetDevice" bind:close="closeHelpDialog" no-found-frame="no-found-frame" no-found-step="no-found-step" wifiView="wifiView" no-found-btn="no-found-btn" no-found-title-text="no-found-title-text" wifiImg="wifiImg" searching-text-no-found="searching-text-no-found" searching-img="searching-img" step-text="step-text" foundAp-btn2="foundAp-btn2"> </no-found-ap>
+    <no-found-ap id="bottomFrame" deviceName="{{deviceName}}" wifi="{{brandName+'_'+tools.toLocaleLowerCase(type)}}"
+                 system="{{system}}" closeImg="{{imgBaseUrl+imges.closeImg}}" bind:feedback="feedback"
+                 bind:confirm="retrySetDevice" bind:close="closeHelpDialog" no-found-frame="no-found-frame"
+                 no-found-step="no-found-step" wifiView="wifiView" no-found-btn="no-found-btn"
+                 no-found-title-text="no-found-title-text" wifiImg="wifiImg"
+                 searching-text-no-found="searching-text-no-found" searching-img="searching-img" step-text="step-text"
+                 foundAp-btn2="foundAp-btn2"></no-found-ap>
     <!-- wifi 列表弹窗 -->
-    <wifi-list-sheet id="wifi-list-sheet" wifiList="{{wifiList}}" title="{{wifiListTitle}}" isGetDeviceWifi="{{isGetDeviceWifi}}" type="{{type}}" brandName="{{brandName}}" bind:selectWifi="selectWifi" bind:goToSetPage="clickNoFoundFamilyWifi" bind:hideWifiListSheet="hideWifiListSheet" bind:refreshWifi="getWifiList"></wifi-list-sheet>
+    <wifi-list-sheet id="wifi-list-sheet" wifiList="{{wifiList}}" title="{{wifiListTitle}}"
+                     isGetDeviceWifi="{{isGetDeviceWifi}}" type="{{type}}" brandName="{{brandName}}"
+                     bind:selectWifi="selectWifi" bind:goToSetPage="clickNoFoundFamilyWifi"
+                     bind:hideWifiListSheet="hideWifiListSheet" bind:refreshWifi="getWifiList"></wifi-list-sheet>
   </view>
 </view>

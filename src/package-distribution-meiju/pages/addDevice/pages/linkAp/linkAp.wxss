@@ -1,8 +1,3 @@
-/* distribution-network/addDevice//pages/linkAp/linkAp.wxss */
-.page {
-  font-family: PingFangSC-Medium;
-}
-
 .r {
   display: flex;
   flex-direction: row;
@@ -14,38 +9,6 @@
   display: flex;
   justify-content: center;
 }
-
-/* .title {
-  text-align: center;
-  margin: 30rpx 0 40rpx 0;
-  color: #000000;
-  letter-spacing: 0;
-  text-align: center;
-  font-size: 48rpx;
-  font-weight: 500;
-  width:90%;
-} */
-
-/* .guide-gif {
-  width: 684rpx;
-  margin: auto;
-  background-color: #C9DFFF;
-  border-radius: 32rpx;
-} */
-
-/* .andriod-guide{
-  display: block;
-  width: 684rpx;
-  height: 384rpx;
-  margin: auto;
-  margin-bottom: 48rpx;
-  position: relative;
-  background-color: rgba(38,122,255,0.10);
-  border-radius: 32rpx;
-  display:flex;
-  justify-content: center;
-  align-items: center;
-} */
 
 .ap-name {
   position: absolute;
