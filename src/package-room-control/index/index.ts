@@ -261,6 +261,7 @@ ComponentWithComputed({
           if (e.result.eventData.deviceId === roomStore.currentRoom.groupId) {
             const { event } = e.result.eventData
             this.setData({
+              // 'roomLight.power': event.power,
               roomLight: {
                 brightness: event.brightness,
                 colorTemperature: event.colorTemperature,

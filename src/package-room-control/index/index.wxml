@@ -36,17 +36,17 @@
       <!-- 全房间亮度控制 -->
       <view class="slider-box">
         <image src="/package-room-control/assets/img/bright.png" class="w-48rpx h-48rpx" />
-        <van-slider bind:change="handleLevelChange" catch:drag="handleLevelDrag" disabled="{{!roomLight.power}}" value="{{roomLight.brightness}}" min="{{1}}" use-button-slot custom-class="slider-brightness-bar" active-color="rgba(0,0,0,0)" bar-height="16rpx">
-          <image slot="button" src="/package-room-control/assets/img/btn.png" class="w-72rpx h-72rpx mt-6rpx" />
-        </van-slider>
+        <mz-slider disabled="{{!roomLight.power}}" catch:slideChange="handleLevelChange" catch:slideEnd="handleLevelChange" value="{{roomLight.brightness}}"custom-class="slider-brightness-bar" active-color="rgba(0,0,0,0)" bar-height="{{16}}" use-button-slot data-min="{{1}}" data-is-btn-inset="{{false}}" data-key="roomBrightness">
+          <image slot="button" src="/package-room-control/assets/img/btn.png" class="w-72rpx h-72rpx" />
+        </mz-slider>
       </view>
 
       <!-- 全房间色温控制 -->
       <view class="slider-box">
         <image src="/package-room-control/assets/img/colorTemp.png" class="w-48rpx h-48rpx" />
-        <van-slider bind:change="handleColorTempChange" catch:drag="handleColorTempDrag" disabled="{{!roomLight.power}}" value="{{roomLight.colorTemperature}}" use-button-slot custom-class="slider-color-temp-bar" active-color="rgba(0,0,0,0)" bar-height="16rpx">
-          <image slot="button" src="/package-room-control/assets/img/btn.png" class="w-72rpx h-72rpx mt-6rpx" />
-        </van-slider>
+        <mz-slider disabled="{{!roomLight.power}}" catch:slideChange="handleColorTempChange" catch:slideEnd="handleColorTempChange" value="{{roomLight.colorTemperature}}" custom-class="slider-color-temp-bar" active-color="rgba(0,0,0,0)" bar-height="{{16}}" use-button-slot data-is-btn-inset="{{false}}" data-key="roomColorTemp">
+          <image slot="button" src="/package-room-control/assets/img/btn.png" class="w-72rpx h-72rpx" />
+        </mz-slider>
       </view>
     </view>
 
