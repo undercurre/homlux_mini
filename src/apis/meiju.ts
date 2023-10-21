@@ -147,6 +147,7 @@ export async function bindMideaDevice(params: {
 
 /**
  * 查询确权状态
+ * 设备确权状态值  0 已确权 1 待确权  2 未确权  3 不支持确权
  */
 export async function queryAuthGetStatus(params: {
   deviceId: string // 美居设备id
@@ -176,7 +177,7 @@ export async function confirmDeviceAuth(params: {
 }
 
 /**
- * 查询设备确权信息
+ * 查询设备确权指引信息
  */
 export async function queryDeviceSpecifiedInfo(params: {
   deviceId: string // 美居设备id
