@@ -30,7 +30,7 @@ const heartbeatInfo = {
 }
 
 export async function startWebsocketService() {
-  // 检测未登录或者是否已经正在连接，以免重复连接
+  // 检测未登录或者是否已经正在连接，以免重复连接 todo: 调试，暂时屏蔽ws连接
   if (!storage.get<string>('token') || isConnecting || !isConnect()) {
     Logger.log('不进行ws连接,isConnecting:', isConnecting, 'isConnect()', isConnect())
     return

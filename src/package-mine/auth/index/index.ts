@@ -16,7 +16,7 @@ ComponentWithComputed({
       meiju: '/package-mine/auth/meiju/index',
       deviceList: '/package-mine/auth/device-list/index',
     },
-    authList: [] as Auth.AuthItem[],
+    authList: [] as Meiju.AuthItem[],
   },
 
   computed: {

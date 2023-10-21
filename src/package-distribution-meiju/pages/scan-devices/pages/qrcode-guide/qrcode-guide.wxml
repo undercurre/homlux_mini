@@ -1,0 +1,7 @@
+<view class="container">
+  <scroll-view class="guideBox" scroll-y>
+    <view class="guidePicBox" wx:for="{{guidePicList}}" wx:key="index">
+      <image mode="widthFix" class="guidePic" src="{{item}}"></image>
+    </view>
+  </scroll-view>
+</view>

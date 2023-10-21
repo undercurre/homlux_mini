@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "美的美居lite",
+  "usingComponents": {
+    "trojan-horse": "../../components/trojan-horse/trojan-horse",
+    "sure-center-dialog": "/package-distribution-meiju/component/sure-center-dialog/sure-center-dialog"
+  }
+}

@@ -1,12 +1,10 @@
 <view class="page-container flex flex-col">
-  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="{{pageTitle}}"></nav-bar>
+  <nav-bar leftArrow="{{true}}" bind:leftTap="goBack" title="{{pageTitle}}"></nav-bar>
 
   <view class="grow flex flex-col justify-between">
-    <tips-box icon="/package-distribution/assets/wifi-connect/connect-wifi.png" text="请连接家庭Wi-Fi以便设备联网"></tips-box>
+    <tips-box icon="/package-distribution/assets/wifi-connect/connect-wifi.png" text="仅支持2.4GHZ的WIFI"></tips-box>
 
-    <view class="grow px-48rpx pt-112rpx">
-      <text class="text-black-59 text-26 leading-36rpx">智能设备仅支持2.4GHZ的Wi-Fi</text>
-
+    <view class="grow px-48rpx pt-100rpx">
       <van-field value="{{ wifiInfo.SSID }}" placeholder="请选择Wi-Fi" custom-style="margin-bottom: 32rpx;margin-top: 40rpx;padding: 16rpx 32rpx;border-radius: 24rpx;" clearable="{{true}}" bind:blur="changeWifiName" border="{{false}}">
         <van-button slot="button" type="primary" plain bind:click="toggleWifi" loading="{{isRequestSystemWifiList}}" disabled="{{isRequestSystemWifiList}}"> 切换Wi-Fi </van-button>
       </van-field>

@@ -18,11 +18,26 @@ dependencies:
     specifier: ^2.0.1
     version: 2.0.1
   js-homos:
-    specifier: ^0.0.23
-    version: 0.0.23
+    specifier: ^0.0.17
+    version: 0.0.17
   lottie-miniprogram:
     specifier: ^1.0.12
     version: 1.0.12
+  m-miniBaseSDK:
+    specifier: ^1.0.5
+    version: 1.0.5
+  m-miniCommonSDK:
+    specifier: ^1.0.8
+    version: 1.0.8
+  m-services:
+    specifier: ^1.0.13
+    version: 1.0.13
+  m-ui:
+    specifier: ^2.0.12
+    version: 2.0.12
+  m-utilsdk:
+    specifier: ^1.0.8
+    version: 1.0.8
   miniprogram-computed:
     specifier: ^4.4.0
     version: 4.4.0
@@ -89,8 +104,8 @@ devDependencies:
     specifier: ^14.0.1
     version: 14.0.1
   miniprogram-api-typings:
-    specifier: ^3.11.0
-    version: 3.11.0
+    specifier: ^3.12.0
+    version: 3.12.0
   prettier:
     specifier: ^2.8.8
     version: 2.8.8
@@ -2104,7 +2119,7 @@ packages:
     dev: true
 
   /fs.realpath@1.0.0:
-    resolution: {integrity: sha1-FQStJSMVjKpA20onh8sBQRmU6k8=}
+    resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
 
   /fsevents@2.3.2:
     resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
@@ -2293,7 +2308,7 @@ packages:
     dev: true
 
   /inflight@1.0.6:
-    resolution: {integrity: sha1-Sb1jMdfQLQwJvJEKEHW6gWW1bfk=}
+    resolution: {integrity: sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==}
     dependencies:
       once: 1.4.0
       wrappy: 1.0.2
@@ -2390,8 +2405,8 @@ packages:
     hasBin: true
     dev: true
 
-  /js-homos@0.0.23:
-    resolution: {integrity: sha512-Q+QinLjlU3EJYTWWmJio1GGlLSbGUvAghGxhPkZMj6wiwzYskdReRypQZGAWyYXO9jkEwubz9Sebgz5DsMpX+A==}
+  /js-homos@0.0.17:
+    resolution: {integrity: sha512-Vr8vTXko7FGhDswG5sqn2AvtYQbH3B6HD1PEobBlm9UmlPLRPzMzXsMgIVVCoA+RxJghNU6sM9uJo1Z6QGWEcQ==}
     dependencies:
       crypto-js: 4.1.1
       dayjs: 1.11.9
@@ -2603,6 +2618,31 @@ packages:
     dependencies:
       yallist: 4.0.0
 
+  /m-miniBaseSDK@1.0.5:
+    resolution: {integrity: sha512-tzYYO/StmqIs9kxVNCU+qJuZtkJeMWlbesVwTaN8l5Gn8zHj1tHfyHBTp2kEttJZCn75IIOXUKwyZLYe39BSQA==}
+    dependencies:
+      m-miniCommonSDK: 1.0.8
+      m-utilsdk: 1.0.8
+    dev: false
+
+  /m-miniCommonSDK@1.0.8:
+    resolution: {integrity: sha512-wQPx1ZoCKy8uvQgybMptQhtCCHt/EYQFAOZ5LbygSbTDpBh0RAzpBXluAZg1USu+1W3OIAJuyifTB0uLpS34qw==}
+    dev: false
+
+  /m-services@1.0.13:
+    resolution: {integrity: sha512-2U+UsFv4o0PbEsl5kcGVui+vw00JM20xA1vDnMvhv2XyVybC02vUQWBaz7E9A95qlHuuJx65dz5t4Iw3QcEqzw==}
+    dependencies:
+      m-utilsdk: 1.0.8
+    dev: false
+
+  /m-ui@2.0.12:
+    resolution: {integrity: sha512-dsCF4FKdF9hA3UuqF/JFpFYxBHd3olixabSilNeWGS0MamhjZ2ebb9ISMhnEbtI6/5l0Vdy/IS5c3U3qVmXkTw==}
+    dev: false
+
+  /m-utilsdk@1.0.8:
+    resolution: {integrity: sha512-ygXiGbEWkXsyanSwQSIR3RolPFcvkP0Ni7EpAgiv300nT31a94TrdaMfq4HuegB5yPAk5hmqKnArRkptWACTmA==}
+    dev: false
+
   /magic-string@0.27.0:
     resolution: {integrity: sha512-8UnnX2PeRAPZuN12svgR9j7M1uWMovg/CEnIwIG0LFkXSJJe4PdfUGiTGl8V9bsBHFUtfVINcSyYxd7q+kx9fA==}
     engines: {node: '>=12'}
@@ -2694,8 +2734,8 @@ packages:
   /minimist@1.2.8:
     resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
 
-  /miniprogram-api-typings@3.11.0:
-    resolution: {integrity: sha512-jMYeqEOGZc1dq7MR8Zu1tj1zmzlvATlvsUb7eFaTYk8LoBVrbgdGUWwVjAmFFNjNdiUaokceGeJaByAa5QYpKw==}
+  /miniprogram-api-typings@3.12.0:
+    resolution: {integrity: sha512-tE0zjq+3bFEgUROzCjXTdtLY+FmqiTX4kZWXc8bCC7M9wSHCriBz+ga1E2i1PcI+DQJoz2cyK8Cv2exJv6XEzA==}
     dev: true
 
   /miniprogram-computed@4.4.0:
@@ -2851,7 +2891,7 @@ packages:
     dev: true
 
   /once@1.4.0:
-    resolution: {integrity: sha1-WDsap3WWHUsROsF9nFC6753Xa9E=}
+    resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
     dependencies:
       wrappy: 1.0.2
 
@@ -2937,7 +2977,7 @@ packages:
     dev: true
 
   /path-is-absolute@1.0.1:
-    resolution: {integrity: sha1-F0uSaHNVNP+8es5r9TpanhtcX18=}
+    resolution: {integrity: sha512-AVbw3UJ2e9bq64vSaS9Am0fje1Pa8pbGqTTsmXfaIiMpnr5DlDhfJOuLj9Sf95ZPVDAUerDfEk88MPmPe7UCQg==}
     engines: {node: '>=0.10.0'}
 
   /path-key@3.1.1:
@@ -3702,7 +3742,7 @@ packages:
     dev: true
 
   /wrappy@1.0.2:
-    resolution: {integrity: sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=}
+    resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
   /ws@7.5.9:
     resolution: {integrity: sha512-F+P9Jil7UiSKSkppIiD94dN07AwvFixvLIj1Og1Rl9GGMuNipJnV9JzjD6XuqmAeiswGvUmNLjr5cFuXwNS77Q==}

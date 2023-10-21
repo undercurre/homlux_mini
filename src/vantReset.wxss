@@ -63,6 +63,7 @@ page {
 
   /* dialog start */
   --dialog-width: 622rpx;
+  --dialog-header-font-weight: 600;
   --dialog-header-isolated-padding: 48rpx 64rpx;
   /* dialog end */
 
@@ -74,6 +75,11 @@ page {
 /* button start */
 .van-button--normal {
   height: var(--button-normal-height) !important;
+}
+
+.van-button--block {
+  padding-left: 30rpx;
+  padding-right: 30rpx;
 }
 
 .van-button--danger,
@@ -191,3 +197,9 @@ page {
 }
 
 /* switch end */
+
+/* checkbox end */
+.van-checkbox__icon-wrap {
+  display: inline-flex;
+}
+/* checkbox end */

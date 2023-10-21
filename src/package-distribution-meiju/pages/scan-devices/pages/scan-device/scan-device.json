@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "sure-center-dialog": "/package-distribution-meiju/component/sure-center-dialog/sure-center-dialog",
+    "van-image": "../../../../pages/component/vant/image/index",
+    "devices-action-sheet": "../../../../pages/component/devices-action-sheet/devices-action-sheet",
+    "no-can-add-device": "/package-distribution-meiju/component/no-can-add-device/no-can-add-device"
+  },
+  "navigationStyle": "custom"
+}

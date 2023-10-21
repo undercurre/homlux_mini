@@ -1,0 +1,15 @@
+<!--distribution-network/scan-devices/pages/scan-help/scan-help.wxml-->
+<view id="{{brand}}">
+  <view class="container">
+    <view class="head-img">
+      <image src="{{ noResultImg }}" mode="widthFix"></image>
+    </view>
+    <view class="help-text">
+      <view> 1、请确保设备接通电源并处于工作状态； </view>
+      <view>2、开启手机蓝牙功能；</view>
+      <view>3、开启手机定位服务，并授权微信获取位置信息；</view>
+      <view>4、点击右上角“…”进入小程序设置，为美的美居Lite小程序开启位置权限；</view>
+      <view>5、若仍无法发现设备，可能设备已退出可被扫描的状态，请通过扫码的方式进行添加。</view>
+    </view>
+  </view>
+</view>

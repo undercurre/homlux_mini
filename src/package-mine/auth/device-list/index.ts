@@ -13,7 +13,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
-    deviceList: [] as Auth.MeijuDevice[],
+    deviceList: [] as Meiju.MeijuDevice[],
     listHeight: 0,
   },
 

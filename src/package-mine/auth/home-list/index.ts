@@ -1,10 +1,11 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
-import { getMeijuHomeList } from '../../../apis/index'
-import { delay } from '../../../utils/index'
+import { bindMeiju, getMeijuHomeList } from '../../../apis/index'
+import { delay, storage } from '../../../utils/index'
 import Toast from '@vant/weapp/toast/toast'
+import { homeStore } from '../../../store/index'
 
-type HomeCard = { checked: boolean; index: number } & Auth.MeijuHome
+type HomeCard = { checked: boolean; index: number } & Meiju.MeijuHome
 
 // package-mine/auth/index.ts
 ComponentWithComputed({
@@ -63,9 +64,32 @@ ComponentWithComputed({
       this.setData(diffData)
     },
 
-    toDevicePage() {
-      const url = `/package-mine/auth/device-list/index?homeId=${this.data.currentHome?.mideaHouseId}`
-      wx.navigateTo({ url })
+    toConfirm() {
+      const entry = storage.get('meiju_auth_entry')
+
+      if (entry === 'distribution-meiju') {
+        this.bindMeijuHome()
+      } else {
+        const url = `/package-mine/auth/device-list/index?homeId=${this.data.currentHome?.mideaHouseId}`
+        wx.navigateTo({ url })
+      }
+    },
+
+    async bindMeijuHome() {
+      const res = await bindMeiju({
+        mideaHouseId: this.data.currentHome?.mideaHouseId,
+        houseId: homeStore.currentHomeId,
+      })
+
+      if (res.success) {
+        storage.remove('meiju_auth_entry') // 清除缓存标志，以免影响其他逻辑
+
+        wx.redirectTo({
+          url: '/package-distribution-meiju/pages/check-auth/index',
+        })
+      } else {
+        Toast(res.msg)
+      }
     },
   },
 })

@@ -112,3 +112,5 @@
     <view class="h-80rpx"></view>
   </view>
 </van-dialog>
+
+<device-auth-dialog device-id="178120883719670" is-show="{{false}}"></device-auth-dialog>

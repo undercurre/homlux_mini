@@ -117,7 +117,7 @@ Component({
     toMeiju() {
       wx.openEmbeddedMiniProgram({
         appId: 'wxb12ff482a3185e46',
-        path: 'distribution-network/scan-devices/pages/scan-device/scan-device',
+        path: '/package-distribution-meiju/pages//scan-devices/pages/scan-device/scan-device',
         // envVersion: 'trial',
         complete(res) {
           Logger.log('openEmbeddedMiniProgram', res)
