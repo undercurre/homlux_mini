@@ -1,65 +1,130 @@
-var value = 0
-var step = 1
-var timer = null
+// 值变化节流时间
+var THROTTLE_TIME = 150
 
-var sliderInfo
-var sliderBar
-var buttonInfo
+/**
+ * !! ES5 全局变量会跨组件作用域，以下可能存在混用的属性，须以 data-key 作区分
+ */
+var key = 'common' // 组件实例需要通过data-key唯一标识，作变量隔离
+var setValue = {} // 设置值
+var timer = null
+var sliderBar = {}
+var sliderBtn = {}
+var sliderInfo = {}
+var buttonInfo = {}
+
+/**
+ * 滑条的最小值最大值，默认 0~100
+ * 按钮默认内嵌在滑条容器内
+ */
+var min = 0
+var max = 100
+var isBtnInset = {}
+
+// 处理属性初始化，以及变更
+function propObserver(newValue, oldValue, ownerInstance) {
+  if (newValue === oldValue) {
+    return
+  }
+  ownerInstance.setTimeout(function () {
+    // 获取组件设置
+    var dataset = ownerInstance.getDataset()
+    if (dataset.key !== undefined) key = dataset.key
+
+    // 未初始化
+    if (!isBtnInset[key]) {
+      if (dataset.min !== undefined) min = dataset.min
+      if (dataset.max !== undefined) max = dataset.max
+      if (dataset.isBtnInset !== undefined) {
+        isBtnInset[key] = dataset.isBtnInset
+      } else {
+        isBtnInset[key] = true
+      }
+
+      sliderBar[key] = ownerInstance.selectComponent('.mz-slider-bar')
+      sliderBtn[key] = ownerInstance.selectComponent('.button')
+      sliderInfo[key] = ownerInstance.selectComponent('.mz-slider').getBoundingClientRect()
+      buttonInfo[key] = sliderBtn[key].getBoundingClientRect()
+      // console.log('propObserver', newValue, oldValue, key, JSON.stringify(sliderInfo))
+    }
+  }, 100)
+
+  if (!sliderInfo[key]) {
+    return
+  }
+  var width = ((newValue - min) / (max - min)) * sliderInfo[key].width
+  changeBarStyle(width)
+}
 
 function onTouchstart(event, ownerInstance) {
+  var dataset = ownerInstance.getDataset()
+  if (dataset.key !== undefined) key = dataset.key
   var touch = event.touches[0] || event.changedTouches[0]
-  sliderInfo = ownerInstance.selectComponent('.mz-slider').getBoundingClientRect()
-  buttonInfo = ownerInstance.selectComponent('.button').getBoundingClientRect()
-  sliderBar = ownerInstance.selectComponent('.mz-slider-bar')
-  changeBarStyle(touch.clientX - sliderInfo.left)
-  ownerInstance.callMethod('touchstart', { value })
+  var barWidth = touch.clientX - sliderInfo[key].left
+  changeBarStyle(barWidth)
+  updateValue(barWidth)
+  ownerInstance.callMethod('touchstart', { value: setValue[key] })
 }
 function onTouchmove(event, ownerInstance) {
-  var touch = event.touches[0] || event.changedTouches[0]
-  changeBarStyle(touch.clientX - sliderInfo.left)
-  // ownerInstance.callMethod('valueChange', { value })
+  var dataset = ownerInstance.getDataset()
+  if (dataset.key !== undefined) key = dataset.key
 
+  var touch = event.touches[0] || event.changedTouches[0]
+
+  var barWidth = touch.clientX - sliderInfo[key].left
+  changeBarStyle(barWidth)
+  updateValue(barWidth)
+
+  // 节流触发【值变化】事件
   if (timer) return
   timer = ownerInstance.setTimeout(function () {
-    ownerInstance.callMethod('valueChange', { value })
+    ownerInstance.callMethod('valueChange', { value: setValue[key] })
     timer = null
-  }, 150)
+  }, THROTTLE_TIME)
 }
 
 function onTouchend(event, ownerInstance) {
+  var dataset = ownerInstance.getDataset()
+  if (dataset.key !== undefined) key = dataset.key
+
   if (timer) {
     ownerInstance.clearTimeout(timer)
     timer = null
   }
-  ownerInstance.callMethod('handleEnd', { value })
+  ownerInstance.callMethod('handleEnd', { value: setValue[key] })
 }
 
-function changeBarStyle(clientX) {
-  //脚本设置style优先级比ts里普通style高
-  sliderBar.setStyle({
-    width: calcDragDis(clientX) + 'px',
+function changeBarStyle(_width) {
+  // console.log('changeBarStyle', _width, isBtnInset[key], key)
+  var widthInRange = calcDragDis(_width, isBtnInset[key] ? buttonInfo[key].width : 0)
+  // 已激活的滑条宽度处理
+  sliderBar[key].setStyle({
+    width: widthInRange + 'px',
   })
-  value = Math.round(
-    (calcDragDis(clientX - buttonInfo.width, 0, sliderInfo.width - buttonInfo.width) /
-      (sliderInfo.width - buttonInfo.width)) *
-      100,
+  // 滑动按钮位置处理
+  if (!isBtnInset[key]) {
+    var btnX = widthInRange - buttonInfo[key].width / 2
+    sliderBtn[key].setStyle({
+      transform: 'translateX(' + btnX + 'px)',
+    })
+  }
+}
+
+// 宽度转为设置值
+// ! 在此处处理 min~max 值的传化，组件中的事件处理则不必再逐一处理
+function updateValue(_width) {
+  setValue[key] = Math.round(
+    (calcDragDis(_width, 0, sliderInfo[key].width) / sliderInfo[key].width) * (max - min) + min,
   )
 }
 
-function calcDragDis(value, min = buttonInfo.width, max = sliderInfo.width) {
-  if (value >= min) {
-    if (value < max) {
-      return value
-    } else {
-      return max
-    }
-  } else {
-    return min
-  }
+// 计算范围约束值
+function calcDragDis(_val, min = buttonInfo[key].width, max = sliderInfo[key].width) {
+  return Math.min(Math.max(_val, min), max)
 }
 
 module.exports = {
   onTouchstart: onTouchstart,
   onTouchmove: onTouchmove,
   onTouchend: onTouchend,
+  propObserver: propObserver,
 }

@@ -39,6 +39,7 @@ export const deviceStore = observable({
   get deviceFlattenList() {
     const list = [] as Device.DeviceItem[]
     this.deviceList.forEach((device) => {
+      // 开关面板需要前端拆分处理
       if (device.proType === PRO_TYPE.switch) {
         device.switchInfoDTOList?.forEach((switchItem) => {
           list.push({
@@ -52,10 +53,9 @@ export const deviceStore = observable({
           })
         })
       }
-      // 包括proType.light在内，所有非网关、可显示的设备都用这种方案插值
+      // 包括 PRO_TYPE.light PRO_TYPE.sensor在内，所有非网关、可显示的设备都用这种方案插值
       else if (
         device.proType !== PRO_TYPE.gateway &&
-        device.proType !== PRO_TYPE.sensor &&
         device.mzgdPropertyDTOList // 过滤不完整的数据，避免引起整个列表加载出错
       ) {
         const modelName = MODEL_NAME[device.proType]

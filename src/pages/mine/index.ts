@@ -38,6 +38,12 @@ Component({
       deviceCategory: '/package-mine/device-category/index',
       defaultPageSetting: '/pages/start/index',
     },
+    scrollViewHeight:
+      (storage.get('windowHeight') as number) -
+      (storage.get('statusBarHeight') as number) -
+      (storage.get('navigationBarHeight') as number) -
+      (storage.get('bottomBarHeight') as number) +
+      'px',
   },
   pageLifetimes: {
     show() {
