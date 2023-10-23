@@ -32,8 +32,8 @@ ComponentWithComputed({
     },
     formatter: {
       type: null,
-      value: () => {}
-    }
+      value: () => {},
+    },
   },
 
   /**
@@ -47,7 +47,7 @@ ComponentWithComputed({
   computed: {
     formattedValue(data) {
       return data.formatter(data.value)
-    }
+    },
   },
 
   lifetimes: {
