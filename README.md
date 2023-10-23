@@ -19,6 +19,7 @@ HomLux小程序
 ├── .husky // git hooks
 ├── build // 一些自动化脚本
 ├── docs // 项目文档
+├── ossFile // OSS静态资源文件备份目录
 ├── src // 小程序源码
     ├── apis // 后端接口封装
     ├── assets // 资源目录
