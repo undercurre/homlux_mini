@@ -1,18 +1,14 @@
-// import { storage } from '../../../utils/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { getEnv } from '../../../config/index'
 
-// const MEIJU_DOMAIN = 'https://api-prod.smartmidea.net'
-
-// package-mine/auth/index.ts
 ComponentWithComputed({
   /**
    * 页面的初始数据
    */
   data: {
     src: {
-      sit: 'https://api-sit.smartmidea.net/v2/open/oauth2/authorize?client_id=5324570e51b5048bf74a27b97f0178e2&state=1&response_type=code&redirect_uri=https://sit.meizgd.com/meiju/index.html',
       dev: 'https://api-sit.smartmidea.net/v2/open/oauth2/authorize?client_id=5324570e51b5048bf74a27b97f0178e2&state=1&response_type=code&redirect_uri=https://test.meizgd.com/meiju/index.html',
+      sit: 'https://api-sit.smartmidea.net/v2/open/oauth2/authorize?client_id=6f54fcabcf63943cd8793d193bb3b139&state=1&response_type=code&redirect_uri=https://sit.meizgd.com/meiju/index.html',
       prod: 'https://api-prod.smartmidea.net/v2/open/oauth2/authorize?client_id=e7dcf22e23bcc7d574aa7d9b1d45736b&state=1&response_type=code&redirect_uri=https://mzaio.meizgd.com/meiju/index.html',
     },
   },
