@@ -97,19 +97,6 @@ const imgesList = {
   combinedLoading: '/addDeviceAboutImg/combine_ic_loading.png',
 }
 
-//   const shareImg = {
-//     montage(name){
-//         let url = ''
-//         if(name){
-//             console.log('aaaaaaaaaaaaaaaaaaaaaaa')
-//             console.log(app.globalData)
-//             console.log('777777777777777777777777777777777777')
-//             // url = imgBaseUrl.url+'/shareImg/'+'/'+ brandStyle.brand + imgesList[name]
-//         }
-//         return url
-//     }
-//   }
-
 module.exports = {
   imgesList,
 }

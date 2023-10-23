@@ -1,6 +1,6 @@
 import { imgesList } from '../../../../assets/js/shareImg.js'
 import { imgBaseUrl } from '../../../../../common/js/api'
-const imgUrl = imgBaseUrl.url + '/shareImg/' + getApp().globalData.brand
+const imgUrl = imgBaseUrl.url + '/shareImg/' + 'meiju'
 module.exports = /******/ (function (modules) {
   // webpackBootstrap
   /******/ // The module cache
