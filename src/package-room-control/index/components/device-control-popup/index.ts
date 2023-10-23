@@ -37,6 +37,7 @@ ComponentWithComputed({
       type: Object,
       value: {} as Device.DeviceItem,
       observer(device) {
+        console.log('deviceInfo', device)
         if (!Object.keys(device).length) {
           return
         }
@@ -100,13 +101,13 @@ ComponentWithComputed({
       brightness: 10,
       colorTemperature: 20,
     },
-    deviceProp: {} as Device.mzgdPropertyDTO,
-    logList: [] as Device.Log[],
-    maxColorTemp,
-    minColorTemp,
     curtainInfo: {
       position: 0,
     },
+    deviceProp: {} as Device.mzgdPropertyDTO,
+    logList: [] as Device.Log[], // 设备（传感器）日志列表
+    maxColorTemp,
+    minColorTemp,
     /** 提供给关联选择的列表 */
     list: [] as (Device.DeviceItem | Scene.SceneItem)[],
     /** 当前选中的开关，处于是什么关联模式, 可多选 */
@@ -128,10 +129,10 @@ ComponentWithComputed({
 
   computed: {
     colorTempK(data) {
-      if (!data.deviceProp?.colorTemperature) {
+      if (!data.lightInfoInner?.colorTemperature) {
         return
       }
-      return (data.deviceProp.colorTemperature / 100) * (data.maxColorTemp - data.minColorTemp) + data.minColorTemp
+      return (data.lightInfoInner.colorTemperature / 100) * (data.maxColorTemp - data.minColorTemp) + data.minColorTemp
     },
 
     // 是否关联智能开关，模板语法不支持Array.includes,改为通过计算属性控制
@@ -769,12 +770,6 @@ ComponentWithComputed({
         'lightInfoInner.brightness': e.detail,
       })
       this.lightSendDeviceControl('brightness')
-    },
-    handleLevelDragEnd() {
-      this.lightSendDeviceControl('brightness')
-    },
-    handleColorTempDragEnd() {
-      this.lightSendDeviceControl('colorTemperature')
     },
     handleColorTempChange(e: { detail: number }) {
       this.setData({

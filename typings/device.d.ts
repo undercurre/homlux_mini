@@ -98,6 +98,10 @@ declare namespace Device {
     updateStamp: number
 
     canLanCtrl?: boolean // 是否可以局域网控制,前端自定义属性
+    colorTempRangeMap: {
+      maxColorTemp: number
+      minColorTemp: number
+    }
   }
 
   interface MzgdPropertyDTO {

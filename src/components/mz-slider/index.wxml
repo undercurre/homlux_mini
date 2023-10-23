@@ -12,4 +12,6 @@
     <slot wx:if="{{ useButtonSlot }}" name="button"></slot>
     <view wx:else class="mz-slider-button"></view>
   </view>
+
+  <view wx:if="{{showToast}}" id="slider-toast" class="slider-toast" style="opacity: 0">{{ formattedValue }}</view>
 </view>

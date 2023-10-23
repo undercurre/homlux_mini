@@ -27,7 +27,17 @@ import {
   verifyNetwork,
   Logger,
 } from '../../utils/index'
-import { proName, PRO_TYPE, LIST_PAGE, CARD_W, CARD_H, MODEL_NAME, CARD_REFRESH_TIME } from '../../config/index'
+import {
+  maxColorTemp,
+  minColorTemp,
+  proName,
+  PRO_TYPE,
+  LIST_PAGE,
+  CARD_W,
+  CARD_H,
+  MODEL_NAME,
+  CARD_REFRESH_TIME,
+} from '../../config/index'
 
 type DeviceCard = Device.DeviceItem & {
   x: string
@@ -114,11 +124,24 @@ ComponentWithComputed({
     roomLight: {
       brightness: 0,
       colorTemperature: 0,
+      maxColorTemp,
+      minColorTemp,
       power: 0,
+    },
+    // 房间亮度toast格式化
+    brightnessFormatter(value: number) {
+      return `${value}%`
     },
   },
 
   computed: {
+    // 房间亮度toast格式化
+    colorTempFormatter(data) {
+      const { maxColorTemp, minColorTemp } = data.roomLight
+      return (value: number) => {
+        return `${(value / 100) * (maxColorTemp - minColorTemp) + minColorTemp}K`
+      }
+    },
     // 房间存在可显示的开关或灯具
     roomHasLight(data) {
       if (data.allRoomDeviceList) {
@@ -175,7 +198,9 @@ ComponentWithComputed({
         return false
       }
       const { deviceMap } = deviceStore
-      return data.checkedList.some((uniId) => uniId.indexOf(':') === -1 && deviceMap[uniId].proType === PRO_TYPE.light)
+      return data.checkedList.some(
+        (uniId: string) => uniId.indexOf(':') === -1 && deviceMap[uniId].proType === PRO_TYPE.light,
+      )
     },
     /** 是否只控制选中一个开关 */
     // TODO 代码可删除
@@ -358,10 +383,13 @@ ComponentWithComputed({
       const res = await queryGroup({ groupId: roomStore.currentRoom.groupId })
       if (res.success) {
         const roomStatus = res.result.controlAction[0]
+        const { colorTempRangeMap } = res.result
         this.setData({
           roomLight: {
             brightness: roomStatus.brightness,
             colorTemperature: roomStatus.colorTemperature,
+            maxColorTemp: colorTempRangeMap.maxColorTemp,
+            minColorTemp: colorTempRangeMap.minColorTemp,
             power: roomStatus.power,
           },
         })
@@ -1260,28 +1288,15 @@ ComponentWithComputed({
         url: `/package-distribution/wifi-connect/index?type=changeWifi&sn=${gateway.sn}`,
       })
     },
-
-    // handleLevelDrag() {
-    //   console.log('handleLevelDrag')
-    // },
-
     handleLevelChange(e: { detail: number }) {
       this.setData({
         'roomLight.brightness': e.detail,
-      })
-      wx.showToast({
-        icon: 'none',
-        title: `${e.detail}%`,
       })
       this.lightSendDeviceControl('brightness')
     },
     handleColorTempChange(e: { detail: number }) {
       this.setData({
         'roomLight.colorTemperature': e.detail,
-      })
-      wx.showToast({
-        icon: 'none',
-        title: `${e.detail}%`,
       })
       this.lightSendDeviceControl('colorTemperature')
     },

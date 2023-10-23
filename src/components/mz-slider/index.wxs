@@ -1,16 +1,25 @@
 // 值变化节流时间
-var THROTTLE_TIME = 150
+var THROTTLE_TIME = 400
+
+// Toast 淡入淡出过渡动画
+var FADE_TRANSITION = 'opacity 0.3s'
+
+// Toast 停留时间
+var TOAST_DELAY = 500
 
 /**
  * !! ES5 全局变量会跨组件作用域，以下可能存在混用的属性，须以 data-key 作区分
  */
 var key = 'common' // 组件实例需要通过data-key唯一标识，作变量隔离
 var setValue = {} // 设置值
-var timer = null
+var throttle_timer = null // 【值变化】事件的节流计时
+var toast_timer = {} // toast淡入淡出计时
 var sliderBar = {}
 var sliderBtn = {}
 var sliderInfo = {}
 var buttonInfo = {}
+var sliderToast = {}
+var toastActived = {}
 
 /**
  * 滑条的最小值最大值，默认 0~100
@@ -31,28 +40,33 @@ function propObserver(newValue, oldValue, ownerInstance) {
     if (dataset.key !== undefined) key = dataset.key
 
     // 未初始化
-    if (!isBtnInset[key]) {
-      if (dataset.min !== undefined) min = dataset.min
-      if (dataset.max !== undefined) max = dataset.max
-      if (dataset.isBtnInset !== undefined) {
-        isBtnInset[key] = dataset.isBtnInset
-      } else {
-        isBtnInset[key] = true
-      }
-
-      sliderBar[key] = ownerInstance.selectComponent('.mz-slider-bar')
-      sliderBtn[key] = ownerInstance.selectComponent('.button')
-      sliderInfo[key] = ownerInstance.selectComponent('.mz-slider').getBoundingClientRect()
-      buttonInfo[key] = sliderBtn[key].getBoundingClientRect()
-      // console.log('propObserver', newValue, oldValue, key, JSON.stringify(sliderInfo))
+    // if (!isBtnInset[key]) {
+    if (dataset.min !== undefined) min = dataset.min
+    if (dataset.max !== undefined) max = dataset.max
+    if (dataset.isBtnInset !== undefined) {
+      isBtnInset[key] = dataset.isBtnInset
+    } else {
+      isBtnInset[key] = true
     }
-  }, 100)
 
-  if (!sliderInfo[key]) {
-    return
-  }
-  var width = ((newValue - min) / (max - min)) * sliderInfo[key].width
-  changeBarStyle(width)
+    sliderBar[key] = ownerInstance.selectComponent('.mz-slider-bar')
+    sliderBtn[key] = ownerInstance.selectComponent('.button')
+    sliderInfo[key] = ownerInstance.selectComponent('.mz-slider').getBoundingClientRect()
+    buttonInfo[key] = sliderBtn[key].getBoundingClientRect()
+
+    if (dataset.showToast) {
+      sliderToast[key] = ownerInstance.selectComponent('.slider-toast')
+    }
+    console.log('propObserver', newValue, oldValue, key)
+
+    if (!sliderInfo[key]) {
+      return
+    }
+    var width = ((newValue - min) / (max - min)) * sliderInfo[key].width
+    changeBarStyle(width)
+
+    // }
+  }, 100)
 }
 
 function onTouchstart(event, ownerInstance) {
@@ -64,21 +78,29 @@ function onTouchstart(event, ownerInstance) {
   updateValue(barWidth)
   ownerInstance.callMethod('touchstart', { value: setValue[key] })
 }
+
 function onTouchmove(event, ownerInstance) {
   var dataset = ownerInstance.getDataset()
   if (dataset.key !== undefined) key = dataset.key
 
   var touch = event.touches[0] || event.changedTouches[0]
-
   var barWidth = touch.clientX - sliderInfo[key].left
-  changeBarStyle(barWidth)
+
   updateValue(barWidth)
 
+  changeBarStyle(barWidth)
+
+  // 气泡提示
+  if (dataset.showToast) {
+    changeToastStyle(barWidth)
+    toastActived[key] = true
+  }
+
   // 节流触发【值变化】事件
-  if (timer) return
-  timer = ownerInstance.setTimeout(function () {
+  if (throttle_timer) return
+  throttle_timer = ownerInstance.setTimeout(function () {
     ownerInstance.callMethod('valueChange', { value: setValue[key] })
-    timer = null
+    throttle_timer = null
   }, THROTTLE_TIME)
 }
 
@@ -86,15 +108,42 @@ function onTouchend(event, ownerInstance) {
   var dataset = ownerInstance.getDataset()
   if (dataset.key !== undefined) key = dataset.key
 
-  if (timer) {
-    ownerInstance.clearTimeout(timer)
-    timer = null
+  // 气泡提示
+  if (dataset.showToast) {
+    var touch = event.touches[0] || event.changedTouches[0]
+    var barWidth = touch.clientX - sliderInfo[key].left
+
+    if (toastActived[key] && !toast_timer[key]) {
+      changeToastStyle(barWidth, false)
+      toastActived[key] = false
+    }
+    // 如果原本未显示toast，或者原本toast未完成淡出动画，则先淡入再淡出
+    else {
+      changeToastStyle(barWidth)
+      toastActived[key] = true
+
+      if (toast_timer[key]) {
+        ownerInstance.clearTimeout(toast_timer[key])
+        toast_timer[key] = null
+      }
+
+      toast_timer[key] = ownerInstance.setTimeout(function () {
+        changeToastStyle(barWidth, false)
+        toastActived[key] = false
+        toast_timer[key] = null
+      }, TOAST_DELAY)
+    }
+  }
+
+  if (throttle_timer) {
+    ownerInstance.clearTimeout(throttle_timer)
+    throttle_timer = null
   }
   ownerInstance.callMethod('handleEnd', { value: setValue[key] })
 }
 
+// 滑条样式处理
 function changeBarStyle(_width) {
-  // console.log('changeBarStyle', _width, isBtnInset[key], key)
   var widthInRange = calcDragDis(_width, isBtnInset[key] ? buttonInfo[key].width : 0)
   // 已激活的滑条宽度处理
   sliderBar[key].setStyle({
@@ -107,6 +156,22 @@ function changeBarStyle(_width) {
       transform: 'translateX(' + btnX + 'px)',
     })
   }
+}
+
+/**
+ * Toast样式处理
+ * @param _width 滑动条激活部分宽度
+ * @param _active 是否激活（淡入）
+ */
+function changeToastStyle(_width, _active = true) {
+  var widthInRange = calcDragDis(_width, isBtnInset[key] ? buttonInfo[key].width : 0)
+  var toastInfo = sliderToast[key].getBoundingClientRect()
+  var toastLeft = widthInRange - toastInfo.width / 2
+  sliderToast[key].setStyle({
+    opacity: _active || !toastActived[key] ? 1 : 0,
+    transition: FADE_TRANSITION,
+    transform: 'translateX(' + toastLeft + 'px)',
+  })
 }
 
 // 宽度转为设置值
