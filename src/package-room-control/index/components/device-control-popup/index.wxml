@@ -21,12 +21,12 @@
       <view wx:if="{{deviceInfo.proType==='0x13'}}" class="flex flex-col w-750rpx mb-22rpx">
         <text class="text-32rpx mt-70rpx ml-48rpx {{deviceProp.power ? 'text-black-59' : 'text-hex-a2a2a2'}}">亮度 | {{lightInfoInner.brightness}}%</text>
         <view class="px-48rpx pt-28rpx">
-          <mz-slider catch:tap="sliderTap" catch:slideEnd="handleLevelChange" catch:slideChange="handleLevelDrag" disabled="{{!deviceProp.power}}" value="{{lightInfoInner.brightness}}" min="{{1}}" active-color="linear-gradient(90deg, rgba(80,127,255,0.8) 5%, rgba(116,153,255,0.18) 100%)"> </mz-slider>
+          <mz-slider catch:tap="sliderTap" catch:slideEnd="handleLevelChange" catch:slideChange="handleLevelDrag" disabled="{{!deviceProp.power}}" value="{{lightInfoInner.brightness}}" min="{{1}}" active-color="linear-gradient(90deg, rgba(80,127,255,0.8) 5%, rgba(116,153,255,0.18) 100%)" data-key="brightness"> </mz-slider>
         </view>
 
         <text class="text-32rpx mt-66rpx ml-48rpx {{deviceProp.power ? 'text-black-59' : 'text-hex-a2a2a2'}}">色温 | {{colorTempK}}K</text>
         <view class="px-48rpx pt-28rpx">
-          <mz-slider catch:tap="sliderTap" catch:slideEnd="handleColorTempChange" catch:slideChange="handleColorTempDrag" disabled="{{!deviceProp.power}}" value="{{lightInfoInner.colorTemperature}}" use-button-slot custom-class="slider-color-temp-bar" active-color="rgba(0,0,0,0)">
+          <mz-slider catch:tap="sliderTap" catch:slideEnd="handleColorTempChange" catch:slideChange="handleColorTempDrag" disabled="{{!deviceProp.power}}" value="{{lightInfoInner.colorTemperature}}" use-button-slot custom-class="slider-color-temp-bar" active-color="rgba(0,0,0,0)" data-key="colorTemp">
             <view slot="button" class="slider-button" />
           </mz-slider>
         </view>

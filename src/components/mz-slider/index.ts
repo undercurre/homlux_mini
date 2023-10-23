@@ -43,7 +43,7 @@ ComponentWithComputed({
       // 将 dataset 数据传到组件变量中
       this.setData({
         isBtnInset: this.dataset.isBtnInset as unknown as boolean,
-        btnTop: this.data.barHeight / 2 - this.data.btnHeight / 2 + 'rpx'
+        btnTop: this.data.barHeight / 2 - this.data.btnHeight / 2 + 'rpx',
       })
     },
   },
