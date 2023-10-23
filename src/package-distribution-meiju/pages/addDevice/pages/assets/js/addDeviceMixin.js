@@ -304,7 +304,7 @@ module.exports = Behavior({
       Logger.console('newAgainGetAPExists')
       let timeoutID
       const timeoutPromise = new Promise((resolve) => {
-        timeoutID = setTimeout(resolve, 5000, { success: false, msg: 'WEB TIMEOUT'} )
+        timeoutID = setTimeout(resolve, 5000, { success: false, msg: 'WEB TIMEOUT' })
       })
       Promise.race([timeoutPromise, this.checkApExists(sn, forceValidRandomCode, randomCode, timeout)])
         .then((resp) => {
@@ -334,7 +334,8 @@ module.exports = Behavior({
               callFail && callFail(resp)
             }
           }
-        }).finally(() => clearTimeout(timeoutID))
+        })
+        .finally(() => clearTimeout(timeoutID))
     },
     //轮询查询设备是否连上云
     againGetAPExists(sn, randomCode = '', callBack, callFail) {

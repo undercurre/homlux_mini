@@ -12,7 +12,7 @@ import {
   stringToHex,
 } from 'm-utilsdk/index'
 import { api } from '../../../common/js/api'
-import {Logger} from "../../../../utils/index";
+import { Logger } from '../../../../utils/index'
 
 let signStr = app.globalData.privateKey //ap
 

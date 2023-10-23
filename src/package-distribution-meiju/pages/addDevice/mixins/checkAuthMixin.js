@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 import app from '../../../common/app'
-import {ab2hex} from 'm-utilsdk/index'
-import {getDeviceCategoryAndSn8, getScanRespPackInfo} from '../../../utils/blueAdDataParse'
-import {openAdapter} from '../pages/utils/blueApi'
-import {brandConfig} from '../../assets/js/brand'
+import { ab2hex } from 'm-utilsdk/index'
+import { getDeviceCategoryAndSn8, getScanRespPackInfo } from '../../../utils/blueAdDataParse'
+import { openAdapter } from '../pages/utils/blueApi'
+import { brandConfig } from '../../assets/js/brand'
 
 const bluetooth = require('../../../common/mixins/bluetooth.js')
 
@@ -20,7 +20,7 @@ module.exports = Behavior({
       return {
         distanceThreshold: '1.2',
         downlinkThreshold: -60,
-        signalReference: ''
+        signalReference: '',
       }
     },
     /**

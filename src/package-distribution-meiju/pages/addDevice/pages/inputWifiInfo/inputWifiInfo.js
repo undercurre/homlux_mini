@@ -2,21 +2,21 @@
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../../../../behaviors/pageBehaviors'
-import {imgList} from '../../../../../config/img'
+import { imgList } from '../../../../../config/img'
 
 import computedBehavior from '../../../../utils/miniprogram-computed.js'
-import {getFullPageUrl} from '../../../../utils/util'
-import {string2Uint8Array} from 'm-utilsdk/index'
-import {getScanRespPackInfo} from '../../../../utils/blueAdDataParse'
-import {decodeWifi} from '../../../assets/js/utils'
-import {deviceImgMap} from '../../../../utils/deviceImgMap'
+import { getFullPageUrl } from '../../../../utils/util'
+import { string2Uint8Array } from 'm-utilsdk/index'
+import { getScanRespPackInfo } from '../../../../utils/blueAdDataParse'
+import { decodeWifi } from '../../../assets/js/utils'
+import { deviceImgMap } from '../../../../utils/deviceImgMap'
 import WifiMgr from '../assets/js/wifiMgr'
-import {addDeviceSDK} from '../../../../utils/addDeviceSDK.js'
-import {checkPermission} from '../../../../common/js/checkPermissionTip'
-import {setWifiStorage} from '../../utils/wifiStorage'
-import {environment} from '../../../../common/js/api'
-import {brandConfig} from '../../../assets/js/brand'
-import {commonDialog} from '../../../assets/js/commonDialog'
+import { addDeviceSDK } from '../../../../utils/addDeviceSDK.js'
+import { checkPermission } from '../../../../common/js/checkPermissionTip'
+import { setWifiStorage } from '../../utils/wifiStorage'
+import { environment } from '../../../../common/js/api'
+import { brandConfig } from '../../../assets/js/brand'
+import { commonDialog } from '../../../assets/js/commonDialog'
 import app from '../../../../common/app'
 
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
@@ -114,7 +114,7 @@ Page({
     //当前连接wifi提示
     tipText() {
       // return `这个可能是一个5GHz WiFi，可能无法连接，请切换至2.4GHz WiFi`
-      let {bindWifiTest, isSupport5G, wifiList} = this.data
+      let { bindWifiTest, isSupport5G, wifiList } = this.data
       let target = wifiList.filter((item) => {
         return item.SSID == bindWifiTest.SSIDContent && item.frequency != bindWifiTest.frequency
       })
@@ -152,7 +152,7 @@ Page({
     })
 
     console.log('addDeviceInfo====', app.addDeviceInfo)
-    const {deviceImg, deviceName, type, sn8, ssid, mode, guideInfo, enterprise, brandName, fm} = app.addDeviceInfo
+    const { deviceImg, deviceName, type, sn8, ssid, mode, guideInfo, enterprise, brandName, fm } = app.addDeviceInfo
 
     if (!deviceImg || !deviceName) {
       // 设备图片或名称缺失则补全
@@ -525,7 +525,7 @@ Page({
   },
 
   async loopGetWifiInfo() {
-    let {SSIDContent} = this.data.bindWifiTest
+    let { SSIDContent } = this.data.bindWifiTest
     try {
       let wifiInfo = await wifiMgr.getConnectedWifi()
       console.log('[wifi列表点击去设置页 wifiInfo]', wifiInfo, SSIDContent)
@@ -659,7 +659,7 @@ Page({
     })
   },
   switchPswShow() {
-    let {isCanSeePsw, pswInputType} = this.data
+    let { isCanSeePsw, pswInputType } = this.data
     this.setData({
       isCanSeePsw: !isCanSeePsw,
       pswInputType: !pswInputType,
@@ -748,7 +748,7 @@ Page({
     }
     this.data.clickNetFLag = true
     console.log('bindWifiTest:', this.data.bindWifiTest)
-    let {PswContent, SSIDContent} = this.data.bindWifiTest
+    let { PswContent, SSIDContent } = this.data.bindWifiTest
     if (!SSIDContent) {
       Toast('请输入WiFi名称')
       self.data.clickNetFLag = false
@@ -793,7 +793,7 @@ Page({
     app.addDeviceInfo.curWifiInfo = this.data.bindWifiTest //共享选取的wifi
     app.addDeviceInfo.continueConnectWifi = this.data.continueConnectWifi // 保存是否手动输入的状态->失败页linkNetFail需要用到
     console.log('addDeviceInfo====', app.addDeviceInfo)
-    const {deviceName, type, blueVersion, mode, fm, enterprise, ssid, isCheck} = app.addDeviceInfo
+    const { deviceName, type, blueVersion, mode, fm, enterprise, ssid, isCheck } = app.addDeviceInfo
     this.searchBlueStopTimeout && clearTimeout(this.searchBlueStopTimeout)
     wx.offBluetoothDeviceFound()
     wx.stopBluetoothDevicesDiscovery()
@@ -1086,7 +1086,7 @@ Page({
     })
   },
   skip() {
-    let {type, cloudBackDeviceInfo} = app.addDeviceInfo
+    let { type, cloudBackDeviceInfo } = app.addDeviceInfo
     wx.closeBLEConnection({
       deviceId: app.addDeviceInfo.deviceId,
     })
@@ -1099,7 +1099,7 @@ Page({
 
   //msmart 直连取消后配网
   blueCancelLinkWifi() {
-    let {deviceName} = app.addDeviceInfo
+    let { deviceName } = app.addDeviceInfo
 
     Dialog.confirm({
       title: `要放弃为${deviceName}配网吗`,
@@ -1108,15 +1108,17 @@ Page({
       cancelButtonText: '放弃',
       confirmButtonText: '再等等',
       confirmButtonColor: '#488FFF',
-    }).then(() => {}).catch(err => {
-      console.log('cancel', err)
-      this.giveUpBlueCancelLink()
     })
+      .then(() => {})
+      .catch((err) => {
+        console.log('cancel', err)
+        this.giveUpBlueCancelLink()
+      })
 
     this.goBack()
   },
   giveUpBlueCancelLink() {
-    let {type, cloudBackDeviceInfo} = app.addDeviceInfo
+    let { type, cloudBackDeviceInfo } = app.addDeviceInfo
     wx.closeBLEConnection({
       deviceId: app.addDeviceInfo.deviceId,
     })
@@ -1196,7 +1198,7 @@ Page({
    * 获取蓝牙配网指引
    */
   async getBlueGuide(device) {
-    const {fm, hadChangeBlue, mode} = app.addDeviceInfo
+    const { fm, hadChangeBlue, mode } = app.addDeviceInfo
     if (mode == 0 && fm !== 'autoFound' && !hadChangeBlue) {
       // AP配网非自发现入口
       // 不判断蓝牙配网指引，均转换为蓝牙配网
@@ -1248,7 +1250,7 @@ Page({
    * 处理确权流程
    */
   async handleCheckFlow() {
-    const {adData, mode} = app.addDeviceInfo
+    const { adData, mode } = app.addDeviceInfo
     if (mode != 3) return
     const packInfo = getScanRespPackInfo(adData)
     console.log('@module inputWifiInfo.js\n@method handleCheckFlow\n@desc 蓝牙功能状态\n', packInfo)
@@ -1263,8 +1265,7 @@ Page({
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
-  onReady: function () {
-  },
+  onReady: function () {},
 
   /**
    * 生命周期函数--监听页面显示
@@ -1304,14 +1305,12 @@ Page({
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
-  onPullDownRefresh: function () {
-  },
+  onPullDownRefresh: function () {},
 
   /**
    * 页面上拉触底事件的处理函数
    */
-  onReachBottom: function () {
-  },
+  onReachBottom: function () {},
 
   /**
    * 用户点击右上角分享
@@ -1321,7 +1320,7 @@ Page({
   //去连接wifi 提示弹窗
   async connectWifi() {
     // 判断是否有精准定位，安卓 系统》=12
-    let {system, brand} = systemInfo
+    let { system, brand } = systemInfo
     let systemType = system.split(' ')[0]
     let systemGrade = this.systemGrade()
     // 如果是IOS  或者  微信系统>= 8.2.0  或者  安卓系统没有精准定位功能
@@ -1331,14 +1330,16 @@ Page({
         showCancelButton: true,
         confirmButtonText: '手动输入',
         confirmButtonColor: '#488FFF',
-      }).then(text => {
-        // 切换wifi登记页
-        this.setData({
-          netType: 1, //非wifi
-        })
-      }).catch(err => {
-        console.log('cancel', err)
       })
+        .then((text) => {
+          // 切换wifi登记页
+          this.setData({
+            netType: 1, //非wifi
+          })
+        })
+        .catch((err) => {
+          console.log('cancel', err)
+        })
     } else {
       // 安卓系统有精准定位
       brand = brand.toLowerCase()
@@ -1365,18 +1366,21 @@ Page({
       } else {
         // 除去小米，红米，vivo,华为，荣耀，oppo,摩托罗拉的其他品牌
         Dialog.confirm({
-          title: '请检查手机系统中对于微信的位置授权，是否具备”精准位置/确切位置“项，若具备，请开启该权限后重试；若不具备，请尝试手动输入WiFi名称与密码',
+          title:
+            '请检查手机系统中对于微信的位置授权，是否具备”精准位置/确切位置“项，若具备，请开启该权限后重试；若不具备，请尝试手动输入WiFi名称与密码',
           showCancelButton: true,
           confirmButtonText: '手动输入',
           confirmButtonColor: '#488FFF',
-        }).then(text => {
-          // 切换wifi登记页
-          this.setData({
-            netType: 1, //非wifi
-          })
-        }).catch(err => {
-          console.log('cancel', err)
         })
+          .then((text) => {
+            // 切换wifi登记页
+            this.setData({
+              netType: 1, //非wifi
+            })
+          })
+          .catch((err) => {
+            console.log('cancel', err)
+          })
       }
     }
   },
@@ -1397,7 +1401,7 @@ Page({
   //判断是否有精准定位，安卓 系统》=12
   systemGrade() {
     let result = false //true 有精准定位
-    let {system, brand} = systemInfo
+    let { system, brand } = systemInfo
     brand = brand.toLowerCase()
     let systemNum = system.split(' ')[1]
     let phoneSystem = system.split(' ')[0]

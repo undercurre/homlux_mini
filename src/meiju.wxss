@@ -576,7 +576,6 @@
   font-weight: 500;
 }
 
-
 #meiju .desc-list {
   align-items: center;
 }
@@ -717,7 +716,7 @@
 }
 
 #meiju .blue {
-  color: #488FFF;
+  color: #488fff;
   font-size: 28rpx;
 }
 

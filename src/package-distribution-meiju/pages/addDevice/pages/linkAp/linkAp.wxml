@@ -1,5 +1,5 @@
 <!--distribution-network/addDevice/pages/linkAp/linkAp.wxml-->
-<wxs src="../utils/filter.wxs" module="tools"/>
+<wxs src="../utils/filter.wxs" module="tools" />
 <view id="{{brand}}">
   <view class="page2 theme-bg-color">
     <nav-bar leftArrow bind:leftTap="goBack"></nav-bar>
@@ -41,16 +41,12 @@
           <view class="linkAp-step">
             <view class="detail-stepes" wx:if="{{isShowStepDetail}}">
               <view class="detail-content">
-                <view class="detail-one detail-step" style="height:128rpx">
-                  <text class="detail-text" style="width:100%">
-                    <text class="step-num">1</text> 点击下方“去连接”进入系统设置页
-                  </text>
+                <view class="detail-one detail-step" style="height: 128rpx">
+                  <text class="detail-text" style="width: 100%"> <text class="step-num">1</text> 点击下方“去连接”进入系统设置页 </text>
                 </view>
                 <view class="andriod-line"></view>
                 <view class="detail-two detail-step">
-                  <text class="detail-text">
-                    <text class="step-num">2</text> 选择格式为“{{brandName}}_{{tools.toLocaleLowerCase(type)}}_xxxx”的无线网络进行连接
-                  </text>
+                  <text class="detail-text"> <text class="step-num">2</text> 选择格式为“{{brandName}}_{{tools.toLocaleLowerCase(type)}}_xxxx”的无线网络进行连接 </text>
                   <view class="step-four">
                     <image class="detail-img detail-step" src="{{imgBaseUrl+imges.android_step1}}"></image>
                     <text class="step-andriod-text">{{brandName}}_{{tools.toLocaleLowerCase(type)}}_xxxx</text>
@@ -64,9 +60,7 @@
                 </view>
                 <view class="andriod-line"></view>
                 <view class="detail-thr detail-step">
-                  <text class="detail-text">
-                    <text class="step-num">3</text> 返回小程序
-                  </text>
+                  <text class="detail-text"> <text class="step-num">3</text> 返回小程序 </text>
                   <image class="detail-img" mode="widthFix" src="{{imgBaseUrl+imges.android_step3}}"></image>
                 </view>
               </view>
@@ -83,8 +77,7 @@
           <view class="detail-stepes" wx:if="{{isShowStepDetail}}">
             <view class="detail-content">
               <view class="detail-one detail-step" style="height:{{brand==='colmo'?'124rpx':'128rpx'}} ">
-                <text class="detail-text" style="width:{{brand==='colmo'?'90%':'100%'}} ">
-                  <text class="step-num">1</text> 点击下方“去连接”进入系统设置页</text>
+                <text class="detail-text" style="width:{{brand==='colmo'?'90%':'100%'}} "> <text class="step-num">1</text> 点击下方“去连接”进入系统设置页</text>
               </view>
               <view class="line"></view>
               <view class="detail-two detail-step">
@@ -136,9 +129,7 @@
     </view>
 
     <view class="bottom-button px-32rpx box-border">
-      <van-button class="w-full" type="info" custom-style="background-color: transparent;border: 0" plain block
-                  size="large" bind:click="clickNoFoundWifi">找不到{{deviceName}}无线网络?
-      </van-button>
+      <van-button class="w-full" type="info" custom-style="background-color: transparent;border: 0" plain block size="large" bind:click="clickNoFoundWifi">找不到{{deviceName}}无线网络? </van-button>
 
       <van-button class="w-full mt-20rpx" block type="primary" size="large" bind:click="goLinkDeviceWifi">
         {{linkDeviceWifi}}
@@ -146,17 +137,8 @@
       </van-button>
     </view>
     <!-- 没发现wifi对应弹出层 -->
-    <no-found-ap id="bottomFrame" deviceName="{{deviceName}}" wifi="{{brandName+'_'+tools.toLocaleLowerCase(type)}}"
-                 system="{{system}}" closeImg="{{imgBaseUrl+imges.closeImg}}" bind:feedback="feedback"
-                 bind:confirm="retrySetDevice" bind:close="closeHelpDialog" no-found-frame="no-found-frame"
-                 no-found-step="no-found-step" wifiView="wifiView" no-found-btn="no-found-btn"
-                 no-found-title-text="no-found-title-text" wifiImg="wifiImg"
-                 searching-text-no-found="searching-text-no-found" searching-img="searching-img" step-text="step-text"
-                 foundAp-btn2="foundAp-btn2"></no-found-ap>
+    <no-found-ap id="bottomFrame" deviceName="{{deviceName}}" wifi="{{brandName+'_'+tools.toLocaleLowerCase(type)}}" system="{{system}}" closeImg="{{imgBaseUrl+imges.closeImg}}" bind:feedback="feedback" bind:confirm="retrySetDevice" bind:close="closeHelpDialog" no-found-frame="no-found-frame" no-found-step="no-found-step" wifiView="wifiView" no-found-btn="no-found-btn" no-found-title-text="no-found-title-text" wifiImg="wifiImg" searching-text-no-found="searching-text-no-found" searching-img="searching-img" step-text="step-text" foundAp-btn2="foundAp-btn2"></no-found-ap>
     <!-- wifi 列表弹窗 -->
-    <wifi-list-sheet id="wifi-list-sheet" wifiList="{{wifiList}}" title="{{wifiListTitle}}"
-                     isGetDeviceWifi="{{isGetDeviceWifi}}" type="{{type}}" brandName="{{brandName}}"
-                     bind:selectWifi="selectWifi" bind:goToSetPage="clickNoFoundFamilyWifi"
-                     bind:hideWifiListSheet="hideWifiListSheet" bind:refreshWifi="getWifiList"></wifi-list-sheet>
+    <wifi-list-sheet id="wifi-list-sheet" wifiList="{{wifiList}}" title="{{wifiListTitle}}" isGetDeviceWifi="{{isGetDeviceWifi}}" type="{{type}}" brandName="{{brandName}}" bind:selectWifi="selectWifi" bind:goToSetPage="clickNoFoundFamilyWifi" bind:hideWifiListSheet="hideWifiListSheet" bind:refreshWifi="getWifiList"></wifi-list-sheet>
   </view>
 </view>

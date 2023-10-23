@@ -6,32 +6,21 @@
       <tips-box icon="/assets/img/default-img/link-wifi.png" text="仅支持2.4GHZ的WIFI"></tips-box>
 
       <view class="grow px-48rpx pt-100rpx">
-        <van-field value="{{ bindWifiTest.SSIDContent }}"
-                   placeholder="{{!continueConnectWifi ? '未获取到家庭WiFi' : '输入 WiFi 名称'}}"
-                   custom-style="margin-bottom: 32rpx;margin-top: 40rpx;padding: 16rpx 32rpx;border-radius: 24rpx;"
-                   clearable="{{true}}" bind:input="inputSSIDContent" border="{{false}}">
-          <van-button slot="button" type="primary" plain bind:click="inputPageSwitchWifi">切换Wi-Fi
-          </van-button>
+        <van-field value="{{ bindWifiTest.SSIDContent }}" placeholder="{{!continueConnectWifi ? '未获取到家庭WiFi' : '输入 WiFi 名称'}}" custom-style="margin-bottom: 32rpx;margin-top: 40rpx;padding: 16rpx 32rpx;border-radius: 24rpx;" clearable="{{true}}" bind:input="inputSSIDContent" border="{{false}}">
+          <van-button slot="button" type="primary" plain bind:click="inputPageSwitchWifi">切换Wi-Fi </van-button>
         </van-field>
 
-        <van-field value="{{ bindWifiTest.PswContent }}" placeholder="请输入Wi-Fi密码" password="{{!isCanSeePsw}}"
-                   custom-style="padding: 16rpx 32rpx;border-radius: 24rpx;" bind:input="getPsw" use-button-slot
-                   border="{{false}}" extra-event-params="{{true}}">
+        <van-field value="{{ bindWifiTest.PswContent }}" placeholder="请输入Wi-Fi密码" password="{{!isCanSeePsw}}" custom-style="padding: 16rpx 32rpx;border-radius: 24rpx;" bind:input="getPsw" use-button-slot border="{{false}}" extra-event-params="{{true}}">
           <van-button slot="button" bind:click="switchPswShow" type="default" plain custom-style="border: 0;">
-            <svg-icon name="icon-park-outline:preview-{{!isShowPw ? 'close-one' : 'open'}}" color="#555659"
-                      height="56rpx"></svg-icon>
+            <svg-icon name="icon-park-outline:preview-{{!isShowPw ? 'close-one' : 'open'}}" color="#555659" height="56rpx"></svg-icon>
           </van-button>
         </van-field>
       </view>
 
       <view class="flex flex-col">
-        <van-button class="mx-32rpx" block type="primary" size="large" bind:click="configNetWork"
-                    disabled="{{!bindWifiTest.SSIDContent || !bindWifiTest.PswContent}}">下一步
-        </van-button>
+        <van-button class="mx-32rpx" block type="primary" size="large" bind:click="configNetWork" disabled="{{!bindWifiTest.SSIDContent || !bindWifiTest.PswContent}}">下一步 </van-button>
 
-        <van-button class="w-full mt-20rpx" wx:if="{{mode==31}}" block type="primary" size="large" bind:click="skip">
-          跳过
-        </van-button>
+        <van-button class="w-full mt-20rpx" wx:if="{{mode==31}}" block type="primary" size="large" bind:click="skip"> 跳过 </van-button>
       </view>
     </view>
 
@@ -44,8 +33,7 @@
             <view class="leading-40rpx text-28 text-hex-555659 text-justify">
               <text wx:if="{{guideStep.length=== 1}}">{{index + 1}}、</text>
               <text>{{item.title}}</text>
-              <text wx:if="{{1 || item.type==='location'&&item.desc.length}}" class="px-10rpx text-hex-488fff"
-                    bindtap="lookGuide">查看操作指引</text>
+              <text wx:if="{{1 || item.type==='location'&&item.desc.length}}" class="px-10rpx text-hex-488fff" bindtap="lookGuide">查看操作指引</text>
             </view>
             <view class="desc" wx:for="{{item.desc}}" wx:key="index2" wx:for-index="index2" wx:for-item="item2">
               <view class="desc-item">
@@ -58,26 +46,16 @@
       </view>
 
       <view class="go-link-wifi px-32rpx box-border">
-        <van-button class="w-full" type="info" custom-style="background-color: transparent;border: 0" plain block
-                    size="large" bind:click="connectWifi">已连接WiFi?
-        </van-button>
+        <van-button class="w-full" type="info" custom-style="background-color: transparent;border: 0" plain block size="large" bind:click="connectWifi">已连接WiFi? </van-button>
 
-        <van-button class="w-full mt-20rpx" block type="primary" size="large" bind:click="linkWifi">去连接WiFi
-        </van-button>
+        <van-button class="w-full mt-20rpx" block type="primary" size="large" bind:click="linkWifi">去连接WiFi </van-button>
 
-        <van-button class="w-full mt-20rpx" wx:if="{{mode==31}}" block type="primary" size="large" bind:click="skip">
-          跳过
-        </van-button>
+        <van-button class="w-full mt-20rpx" wx:if="{{mode==31}}" block type="primary" size="large" bind:click="skip"> 跳过 </van-button>
       </view>
     </view>
 
-    <wifi-list-sheet id="wifi-list-sheet" wifiList="{{wifiList}}" title="{{wifiListTitle}}"
-                     isSupport5G="{{isSupport5G}}" type="{{type}}" brandName="{{brandName}}" brand="{{brand}}"
-                     bind:selectWifi="selectWifi" bind:goToSetPage="clickNoFoundFamilyWifi"
-                     bind:hideWifiListSheet="hideWifiListSheet" bind:refreshWifiList="refreshWifiList" frame='frame'
-                     wifi-list-title='wifi-list-title' blue='blue' wifi-item='wifi-item' left='left'></wifi-list-sheet>
-    <sure-center-dialog isShowSureDialog="{{ isSureDialog }}" bind:makeSure="makeSure" title="{{ dialogMixinsTitle }}"
-                        content="{{ dialogMixinsContent }}" dialogMixinsBtns="{{ dialogMixinsBtns }}">
+    <wifi-list-sheet id="wifi-list-sheet" wifiList="{{wifiList}}" title="{{wifiListTitle}}" isSupport5G="{{isSupport5G}}" type="{{type}}" brandName="{{brandName}}" brand="{{brand}}" bind:selectWifi="selectWifi" bind:goToSetPage="clickNoFoundFamilyWifi" bind:hideWifiListSheet="hideWifiListSheet" bind:refreshWifiList="refreshWifiList" frame="frame" wifi-list-title="wifi-list-title" blue="blue" wifi-item="wifi-item" left="left"></wifi-list-sheet>
+    <sure-center-dialog isShowSureDialog="{{ isSureDialog }}" bind:makeSure="makeSure" title="{{ dialogMixinsTitle }}" content="{{ dialogMixinsContent }}" dialogMixinsBtns="{{ dialogMixinsBtns }}">
       <view wx:if="{{isBluetoothMixinNotOpenWxLocation && showOpenLocation}}">
         <view class="locationOpenNotice">1.请在手机设置中开启定位服务，并允许微信获取你的位置信息</view>
         <view class="locationOpenNotice">2.请点击右上角“...”-“设置”-“位置信息”，选择“仅在使用小程序期间”允许访问</view>
@@ -93,13 +71,12 @@
   </block>
 </view>
 
-<van-dialog id="van-dialog"/>
+<van-dialog id="van-dialog" />
 
-<van-toast id="van-toast"/>
+<van-toast id="van-toast" />
 
-<van-dialog use-title-slot show="{{ ishowDialog }}" confirm-button-color="#488FFF" confirmButtonText="去操作"
-            show-cancel-button="{{true}}" bind:close="onClickOverlay" bind:confirm="clickSetting">
+<van-dialog use-title-slot show="{{ ishowDialog }}" confirm-button-color="#488FFF" confirmButtonText="去操作" show-cancel-button="{{true}}" bind:close="onClickOverlay" bind:confirm="clickSetting">
   <view class="flex-col-center w-full" slot="title">
-    <text>{{modalText}}，以便获取所连接的WiFi<text bindtap="toOperate" style="color: #488FFF;">查看操作指引</text></text>
+    <text>{{modalText}}，以便获取所连接的WiFi<text bindtap="toOperate" style="color: #488fff">查看操作指引</text></text>
   </view>
 </van-dialog>

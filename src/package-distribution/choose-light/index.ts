@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import {strUtil} from "../../utils/index";
+import { strUtil } from '../../utils/index'
 
 ComponentWithComputed({
   options: {},
@@ -51,7 +51,7 @@ ComponentWithComputed({
         tag: 'zigbee',
         path: '/package-distribution/scan/index?type=subdevice',
       },
-    ]
+    ],
   },
 
   lifetimes: {

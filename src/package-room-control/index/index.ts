@@ -139,7 +139,7 @@ ComponentWithComputed({
           (data.allRoomDeviceList as DeviceCard[]).filter(
             (device) =>
               device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
-              device.proType !== PRO_TYPE.gateway
+              device.proType !== PRO_TYPE.gateway,
           ).length > 0
         )
       }
@@ -216,7 +216,7 @@ ComponentWithComputed({
     // 工具栏内容区域高度
     toolboxContentHeight(data) {
       return data.roomHasLight ? 150 : 60
-    }, 
+    },
   },
 
   watch: {

@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { strUtil } from '../../utils/index'
-import cacheData from "../common/cacheData";
+import cacheData from '../common/cacheData'
 
 ComponentWithComputed({
   options: {},

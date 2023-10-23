@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
-import {bindMideaDevice, queryAuthGetStatus, queryDeviceSpecifiedInfo, queryGuideInfo} from '../../../../../apis/index'
-import {homeStore, roomStore} from '../../../../../store/index'
-import {Logger, strUtil} from '../../../../../utils/index'
+import {
+  bindMideaDevice,
+  queryAuthGetStatus,
+  queryDeviceSpecifiedInfo,
+  queryGuideInfo,
+} from '../../../../../apis/index'
+import { homeStore, roomStore } from '../../../../../store/index'
+import { Logger, strUtil } from '../../../../../utils/index'
 import app from '../../../../common/app'
 
 import DeviceComDecorator from '../wahinProtocol/utils/ac-service/DeviceComDecorator'
@@ -25,20 +30,20 @@ import {
   toHexString,
   uintArray2String,
 } from 'm-utilsdk/index'
-import {getScanRespPackInfo, getSn8} from '../../../../utils/blueAdDataParse'
-import {constructionBleOrder, paesrBleResponData} from '../../../../utils/ble/ble-order'
-import {api, imgBaseUrl} from '../../../../common/js/api'
-import {apParamsSet} from '../assets/js/apParamsSet'
+import { getScanRespPackInfo, getSn8 } from '../../../../utils/blueAdDataParse'
+import { constructionBleOrder, paesrBleResponData } from '../../../../utils/ble/ble-order'
+import { api, imgBaseUrl } from '../../../../common/js/api'
+import { apParamsSet } from '../assets/js/apParamsSet'
 
-import {service} from '../assets/js/service'
+import { service } from '../assets/js/service'
 import WifiMgr from '../assets/js/wifiMgr'
-import {addDeviceSDK} from '../../../../utils/addDeviceSDK'
+import { addDeviceSDK } from '../../../../utils/addDeviceSDK'
 import computedBehavior from '../../../../utils/miniprogram-computed.js'
-import {bytesToHexString, IntToBytes, stringToHashCode} from '../../utils/util'
-import {setWifiStorage} from '../../utils/wifiStorage'
+import { bytesToHexString, IntToBytes, stringToHashCode } from '../../utils/util'
+import { setWifiStorage } from '../../utils/wifiStorage'
 
 import Dialog from '../../../../../miniprogram_npm/m-ui/mx-dialog/dialog'
-import {imgesList} from '../../../assets/js/shareImg.js'
+import { imgesList } from '../../../assets/js/shareImg.js'
 
 const bleNeg = require('../../../../utils/ble/ble-negotiation')
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
@@ -79,7 +84,7 @@ Page({
     negType: 2,
     moduleType: '',
     addDeviceInfo: {},
-    combinedDeviceInfo: [{sn: '', a0: ''}],
+    combinedDeviceInfo: [{ sn: '', a0: '' }],
     time: 3,
     curStep: 0,
     currentRoomId: 0,
@@ -600,7 +605,7 @@ Page({
         if (this.data.isPopupDeviceWifiYetSwitch && this.data.udpAdData) {
           //重新发wifi信息
           console.log('[重新发wifi信息]')
-          let {tcpIp, tcpPort} = this.data.udpAdData
+          let { tcpIp, tcpPort } = this.data.udpAdData
           this.createTCP(tcpIp, tcpPort)
         }
       }
@@ -651,7 +656,7 @@ Page({
   bluePswFailDialog() {
     Logger.debug('bluePswFailDialog')
     const self = this
-    const {blueVersion, mode, msmartBleWrite} = app.addDeviceInfo
+    const { blueVersion, mode, msmartBleWrite } = app.addDeviceInfo
     clearInterval(timer) // 暂停页面计时
     this.bluePswFailDialogShowNum++ // 增加已展示次数
     console.log(
@@ -702,7 +707,7 @@ Page({
   },
   // ap配网udp数据解析
   getApLinkData() {
-    const {moduleVersion, sn8, mac, sonTypeH, sonTypeL} = this.data.udpAdData
+    const { moduleVersion, sn8, mac, sonTypeH, sonTypeL } = this.data.udpAdData
     let a0 = sonTypeH + '' + sonTypeL
     a0 = parseInt(a0, 16)
     app.addDeviceInfo.a0 = a0 // 截取主设备a0
@@ -721,7 +726,7 @@ Page({
   },
   //ap 配网流程合
   async apLinkAbout() {
-    const {tcpIp, tcpPort, add2} = this.data.udpAdData
+    const { tcpIp, tcpPort, add2 } = this.data.udpAdData
     // 获取组合配网标识
     if (this.data.brandConfig.combinedDevice && add2) {
       this.data.combinedDeviceFlag = hex2bin(add2)[4] == 1 // 标识位于附加信息的bit4: 1代表是，0代表否
@@ -1081,9 +1086,9 @@ Page({
 
   //获取配网指引
   async getNetworkGuide() {
-    let {type, sn8, mode} = app.addDeviceInfo
+    let { type, sn8, mode } = app.addDeviceInfo
 
-    const res = await queryGuideInfo({sn8, type, mode: mode.toString()})
+    const res = await queryGuideInfo({ sn8, type, mode: mode.toString() })
 
     Logger.console('二次验证-重新连接-配网指引信息', res)
 
@@ -1103,7 +1108,7 @@ Page({
   },
   //添加配网一次性记录
   addLinkNetRecord(udpDeviceInfo) {
-    let {type, sn, moduleVersion} = udpDeviceInfo
+    let { type, sn, moduleVersion } = udpDeviceInfo
     let linkNetRecord = {}
     if (wx.getStorageSync('linkNetRecord')) {
       linkNetRecord = wx.getStorageSync('linkNetRecord')
@@ -1163,7 +1168,7 @@ Page({
   //设备wifi被切换提示
   deviceWifiYetSwitchTip() {
     let self = this
-    let {mode} = app.addDeviceInfo
+    let { mode } = app.addDeviceInfo
     if (this.data.isPopupDeviceWifiYetSwitch) return //只弹一次
     this.data.isPopupDeviceWifiYetSwitch = true
     console.log('[连接中断弹窗弹出]', formatTime(new Date()))
@@ -1353,7 +1358,7 @@ Page({
               self.closeUdp()
               clearInterval(timer) //停止计时
               clearInterval(udpCycTimer) //停止udp重试
-              let permissionTypeList = {localNet: false} //本地网络未开
+              let permissionTypeList = { localNet: false } //本地网络未开
               wx.navigateTo({
                 url: paths.localNetGuide + `?permissionTypeList=${JSON.stringify(permissionTypeList)}`,
               })
@@ -1416,7 +1421,13 @@ Page({
             this.data.apIsSendCombinedInfo = true
           } else {
             this.tcp.write(hexStringToArrayBuffer(this.data.aplinkOrder))
-            Logger.debug('AP配网发配网指令', 'this.data.aplinkOrder:', this.data.aplinkOrder, 'this.data.checkExists:', this.data.checkExists)
+            Logger.debug(
+              'AP配网发配网指令',
+              'this.data.aplinkOrder:',
+              this.data.aplinkOrder,
+              'this.data.checkExists:',
+              this.data.checkExists,
+            )
             this.data.apIsSendWifiInfo = true
             //发送完wifi信息就开始查询云
             if (!this.data.checkExists) {
@@ -1547,7 +1558,7 @@ Page({
       }, this.orderTimeout)
     } else {
       console.error('@module linkDevice.js\n@method writeTemporaryID\n@desc 不存在TCP实例')
-      const {tcpIp, tcpPort} = this.data.udpAdData
+      const { tcpIp, tcpPort } = this.data.udpAdData
       this.createTCP(tcpIp, tcpPort)
     }
   },
@@ -1582,7 +1593,7 @@ Page({
       }, this.orderTimeout)
     } else {
       console.error('@module linkDevice.js\n@method getDeviceSubType\n@desc 不存在TCP实例')
-      const {tcpIp, tcpPort} = this.data.udpAdData
+      const { tcpIp, tcpPort } = this.data.udpAdData
       this.createTCP(tcpIp, tcpPort)
     }
   },
@@ -1619,7 +1630,7 @@ Page({
       }, this.orderTimeout)
     } else {
       console.error('@module linkDevice.js\n@method configWiFiParams\n@desc 不存在TCP实例')
-      const {tcpIp, tcpPort} = this.data.udpAdData
+      const { tcpIp, tcpPort } = this.data.udpAdData
       this.createTCP(tcpIp, tcpPort)
     }
   },
@@ -1646,7 +1657,7 @@ Page({
       }
     } else {
       console.error('@module linkDevice.js\n@method switchWiFiMode\n@desc 不存在TCP实例')
-      const {tcpIp, tcpPort} = this.data.udpAdData
+      const { tcpIp, tcpPort } = this.data.udpAdData
       this.createTCP(tcpIp, tcpPort)
     }
   },
@@ -1745,7 +1756,7 @@ Page({
           errorCode: 4013,
           isCustom: true,
         })
-        let {type, againCheckList, moduleVersion} = app.addDeviceInfo
+        let { type, againCheckList, moduleVersion } = app.addDeviceInfo
         //sta阶段
         if (this.isAgainCheck(againCheckList, type, moduleVersion)) {
           //是 自启热点无后确权设备 CA '031844031844'
@@ -1785,11 +1796,11 @@ Page({
           app.addDeviceInfo.cloudBackDeviceInfo = bindRes
           app.composeApplianceList = []
           // 组合配网新增跳转
-          let {applianceCode, combinedDeviceFlag} = app.addDeviceInfo
+          let { applianceCode, combinedDeviceFlag } = app.addDeviceInfo
           Logger.console('---combinedDeviceFlag---', app.addDeviceInfo, 'combinedDeviceFlag', combinedDeviceFlag)
           if (combinedDeviceFlag) {
             app.composeApplianceList.push(app.addDeviceInfo.cloudBackDeviceInfo)
-            const {data} = await this.getApplianceAuthType(applianceCode)
+            const { data } = await this.getApplianceAuthType(applianceCode)
             console.warn('---有组合设备，查询主设备确权中---', data)
             app.addDeviceInfo.status = data.data.status
             app.addDeviceInfo.randomCode = self.data.blueRandomCode || self.data.randomCode
@@ -2017,7 +2028,7 @@ Page({
         })
       }
       if (this.data.time === 0) {
-        const {mode} = app.addDeviceInfo
+        const { mode } = app.addDeviceInfo
         let errorCode
         if (mode == 30) {
           errorCode = 901006
@@ -2120,7 +2131,7 @@ Page({
     app.globalData.DeviceComDecorator.bindDeviceTest(final)
   },
   clickCancel() {
-    let {mode} = app.addDeviceInfo
+    let { mode } = app.addDeviceInfo
     let linkNet = ''
     if (mode === 3 || mode === 21) {
       //配网
@@ -2138,7 +2149,7 @@ Page({
     })
   },
   discardAdd() {
-    let {type, mode, cloudBackDeviceInfo} = app.addDeviceInfo
+    let { type, mode, cloudBackDeviceInfo } = app.addDeviceInfo
     const self = this
     // 关闭相关进程和连接
     clearInterval(timer)
@@ -2178,7 +2189,14 @@ Page({
     })
   },
   async bindDeviceToHome(bindInfo) {
-    console.log('bindDeviceToHome开始绑定设备', this.data.deviceId, 'bindInfo', bindInfo, 'app.addDeviceInfo', app.addDeviceInfo)
+    console.log(
+      'bindDeviceToHome开始绑定设备',
+      this.data.deviceId,
+      'bindInfo',
+      bindInfo,
+      'app.addDeviceInfo',
+      app.addDeviceInfo,
+    )
 
     // if (bindInfo && bindInfo.mode == 100) {
     //   let reqData = {
@@ -2199,7 +2217,10 @@ Page({
 
     console.log('bindMideaDevice', res)
 
-    await Promise.all([queryAuthGetStatus({deviceId: this.data.deviceId}), queryDeviceSpecifiedInfo({deviceId: this.data.deviceId})])
+    await Promise.all([
+      queryAuthGetStatus({ deviceId: this.data.deviceId }),
+      queryDeviceSpecifiedInfo({ deviceId: this.data.deviceId }),
+    ])
 
     if (res.success) {
       app.addDeviceInfo.applianceCode = this.data.deviceId
@@ -2228,10 +2249,10 @@ Page({
       app.addDeviceInfo.cloudBackDeviceInfo = bindRes.result
       app.composeApplianceList = []
       // 组合配网新增跳转
-      let {applianceCode, combinedDeviceFlag} = app.addDeviceInfo
+      let { applianceCode, combinedDeviceFlag } = app.addDeviceInfo
       if (combinedDeviceFlag) {
         app.composeApplianceList.push(app.addDeviceInfo.cloudBackDeviceInfo)
-        const {data} = await this.getApplianceAuthType(applianceCode)
+        const { data } = await this.getApplianceAuthType(applianceCode)
         console.warn('---有组合设备，查询主设备确权中---', data)
         app.addDeviceInfo.status = data.data.status
         app.addDeviceInfo.randomCode = self.data.blueRandomCode
@@ -2262,7 +2283,7 @@ Page({
    * @param {object} characteristic 原始设备消息
    */
   handleBLEDataChanged(respHexData, characteristic) {
-    const {blueVersion, mode} = app.addDeviceInfo
+    const { blueVersion, mode } = app.addDeviceInfo
     if (mode != 31) {
       this.setData({
         curStep: 1,
@@ -2419,7 +2440,7 @@ Page({
       })
     }
 
-    const {mode} = app.addDeviceInfo
+    const { mode } = app.addDeviceInfo
 
     // step2: 关闭相关进程和连接
     clearInterval(timer) // 清除定时器
@@ -2467,16 +2488,16 @@ Page({
       closeImg: imgUrl + imgesList['closeImg'],
     })
     // 清空组合设备数据
-    ;(app.combinedDeviceInfo = [{sn: '', a0: ''}]), this.init()
+    ;(app.combinedDeviceInfo = [{ sn: '', a0: '' }]), this.init()
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    let {isShowOpenlocaltNetTip} = this.data
+    let { isShowOpenlocaltNetTip } = this.data
     this.data.pageStatus = 'show'
-    let {mode} = app.addDeviceInfo
+    let { mode } = app.addDeviceInfo
     if (mode == 0) {
       this.onWifiSwitch()
     }
@@ -2515,12 +2536,10 @@ Page({
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
-  onPullDownRefresh: function () {
-  },
+  onPullDownRefresh: function () {},
 
   /**
    * 页面上拉触底事件的处理函数
    */
-  onReachBottom: function () {
-  },
+  onReachBottom: function () {},
 })

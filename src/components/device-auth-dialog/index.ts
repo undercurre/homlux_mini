@@ -1,7 +1,7 @@
 import Toast from '@vant/weapp/toast/toast'
-import Dialog from '@vant/weapp/dialog/dialog';
-import {ComponentWithComputed} from 'miniprogram-computed'
-import {confirmDeviceAuth, queryAuthGetStatus, queryDeviceSpecifiedInfo} from '../../apis/index'
+import Dialog from '@vant/weapp/dialog/dialog'
+import { ComponentWithComputed } from 'miniprogram-computed'
+import { confirmDeviceAuth, queryAuthGetStatus, queryDeviceSpecifiedInfo } from '../../apis/index'
 
 let secondTimeId = 0 // 倒计时器
 const second = 10 // 倒计时时长
@@ -48,18 +48,18 @@ ComponentWithComputed({
       if (isShow) {
         Dialog.confirm({
           context: this,
-          cancelButtonText: "暂不设置",
-          confirmButtonText: "重试",
+          cancelButtonText: '暂不设置',
+          confirmButtonText: '重试',
           beforeClose(action: string) {
             console.log('beforeClose', action)
             return new Promise((resolve) => {
               if (action === 'confirm') {
-                resolve(false);
+                resolve(false)
               } else {
                 // 拦截取消操作
-                resolve(false);
+                resolve(false)
               }
-            });
+            })
           },
         })
       } else {
@@ -71,14 +71,14 @@ ComponentWithComputed({
       } else {
         clearInterval(secondTimeId)
       }
-    }
+    },
   },
 
   lifetimes: {
     detached() {
       console.log('device-auth-dialog   detached')
       clearInterval(secondTimeId)
-    }
+    },
   },
 
   /**
@@ -86,23 +86,23 @@ ComponentWithComputed({
    */
   methods: {
     async init() {
-      const guideInfoRes = await queryDeviceSpecifiedInfo({deviceId: this.data.deviceId})
+      const guideInfoRes = await queryDeviceSpecifiedInfo({ deviceId: this.data.deviceId })
 
       if (!guideInfoRes.success) {
-        Toast({message: '查询确权指引失败', zIndex: 9999})
+        Toast({ message: '查询确权指引失败', zIndex: 9999 })
         return
       }
 
       this.setData({
         confirmImgUrl: guideInfoRes.result.confirmImgUrl,
-        confirmDesc: this.guideDescFomat(guideInfoRes.result.confirmDesc)
+        confirmDesc: this.guideDescFomat(guideInfoRes.result.confirmDesc),
       })
 
       this.startAuth()
     },
 
     async queryAuthGetStatus() {
-      const res = await queryAuthGetStatus({deviceId: this.data.deviceId})
+      const res = await queryAuthGetStatus({ deviceId: this.data.deviceId })
 
       // 弹框取消后或者倒计时结束，取消轮询确权状态
       if (!res.success || this.data.time <= 0 || !this.data.isShow) {
@@ -110,7 +110,7 @@ ComponentWithComputed({
       }
 
       if (res.result.status === 0) {
-        Toast({message: '确权成功', zIndex: 9999})
+        Toast({ message: '确权成功', zIndex: 9999 })
         this.triggerEvent('success')
         clearInterval(secondTimeId)
         return
@@ -142,10 +142,10 @@ ComponentWithComputed({
         isShowRetryButton: false,
       })
 
-      const confirmRes = await confirmDeviceAuth({deviceId: this.data.deviceId})
+      const confirmRes = await confirmDeviceAuth({ deviceId: this.data.deviceId })
 
       if (!confirmRes.success) {
-        Toast({message: '下发进入确权指令失败', zIndex: 9999})
+        Toast({ message: '下发进入确权指令失败', zIndex: 9999 })
         return
       }
 
@@ -159,7 +159,7 @@ ComponentWithComputed({
         if (this.data.time <= 0) {
           clearInterval(secondTimeId)
           this.setData({
-            isShowRetryButton: true
+            isShowRetryButton: true,
           })
         }
       }, 1000)

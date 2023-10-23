@@ -68,7 +68,6 @@
   margin-bottom: 18rpx;
 }
 
-
 .check-guide {
   display: flex;
   flex-direction: column;
@@ -90,7 +89,6 @@
   margin-bottom: 42rpx;
   align-items: top;
 }
-
 
 .text {
   font-size: 32rpx;

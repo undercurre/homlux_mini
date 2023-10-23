@@ -1,21 +1,21 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 import pageBehaviors from '../../../../../behaviors/pageBehaviors'
-import {Logger} from '../../../../../utils/index'
-import {queryGuideInfo} from '../../../../../apis/index'
+import { Logger } from '../../../../../utils/index'
+import { queryGuideInfo } from '../../../../../apis/index'
 
-import {addDeviceTime} from '../../../assets/js/utils'
-import {deviceImgMap} from '../../../../utils/deviceImgMap'
+import { addDeviceTime } from '../../../assets/js/utils'
+import { deviceImgMap } from '../../../../utils/deviceImgMap'
 import computedBehavior from '../../../../utils/miniprogram-computed.js'
-import {deviceImgApi, imgBaseUrl} from '../../../../common/js/api'
-import {openAdapter} from '../utils/blueApi'
-import {ab2hex} from 'm-utilsdk/index'
-import {getFullPageUrl, showToast} from '../../../../utils/util'
-import {getDeviceCategoryAndSn8, getScanRespPackInfo} from '../../../../utils/blueAdDataParse'
+import { deviceImgApi, imgBaseUrl } from '../../../../common/js/api'
+import { openAdapter } from '../utils/blueApi'
+import { ab2hex } from 'm-utilsdk/index'
+import { getFullPageUrl, showToast } from '../../../../utils/util'
+import { getDeviceCategoryAndSn8, getScanRespPackInfo } from '../../../../utils/blueAdDataParse'
 import paths from '../../../../utils/paths'
-import {addDeviceSDK} from '../../../../utils/addDeviceSDK'
-import {checkPermission} from '../../../../common/js/checkPermissionTip'
-import {typesPreserveAfterCheckGuideByA0} from '../../config/index'
-import {imgesList} from '../../../assets/js/shareImg.js'
+import { addDeviceSDK } from '../../../../utils/addDeviceSDK'
+import { checkPermission } from '../../../../common/js/checkPermissionTip'
+import { typesPreserveAfterCheckGuideByA0 } from '../../config/index'
+import { imgesList } from '../../../assets/js/shareImg.js'
 
 import app from '../../../../common/app'
 
@@ -79,7 +79,7 @@ Page({
 
   computed: {
     currGuideInfo() {
-      let {connectDesc, connectUrlA} = this.data.checkGuideInfo
+      let { connectDesc, connectUrlA } = this.data.checkGuideInfo
       let currConnectDesc = connectDesc
       let currConnectUrl = connectUrlA
       return {
@@ -91,7 +91,7 @@ Page({
       return this.data.guideInfo.length > 1
     },
     isShowBleWifiguide() {
-      let {blueVersion, mode, guideType, noFound} = this.data
+      let { blueVersion, mode, guideType, noFound } = this.data
       let res1 = false
       let res2 = false
       if (blueVersion != 1 && mode != 0 && mode != 5 && guideType == 'near' && !noFound) {
@@ -104,7 +104,7 @@ Page({
     },
   },
   switchSet() {
-    const {guideIndex, guideInfo} = this.data
+    const { guideIndex, guideInfo } = this.data
     const nextIndex = guideIndex < guideInfo.length - 1 ? guideIndex + 1 : 0
     this.setData({
       time: 60,
@@ -318,7 +318,7 @@ Page({
    */
   async getNearbyParams() {
     Logger.console('getNearbyParams', app.addDeviceInfo)
-    const {mode, type} = app.addDeviceInfo
+    const { mode, type } = app.addDeviceInfo
     this.setData({
       distance: '1.2',
     })
@@ -362,15 +362,10 @@ Page({
         this_.retryClickFlag = false
       })
   },
-  getAddDeviceInfo() {
-  },
+  getAddDeviceInfo() {},
   //获取指引格式化显示
   getGuideFormat(guideInfo) {
-    let {
-      type,
-      sn8,
-      mode,
-    } = app.addDeviceInfo
+    let { type, sn8, mode } = app.addDeviceInfo
     //guideInfo 有可能为null, 逻辑都进不去，没有请求到配网指引，故添加 guideInfo是否存在的判断
     if (guideInfo && guideInfo.length !== 0) {
       //有提前获取的配网指引
@@ -384,7 +379,7 @@ Page({
   },
   //阅读指引计时
   readingGuideTiming() {
-    let {readingTimer} = this.data
+    let { readingTimer } = this.data
     const timer = setInterval(() => {
       if (readingTimer >= 0) {
         console.log('倒计时')
@@ -480,7 +475,7 @@ Page({
   },
   //ap完成手动确权
   async next() {
-    let {mode, ssid, hadChangeBlue} = app.addDeviceInfo
+    let { mode, ssid, hadChangeBlue } = app.addDeviceInfo
     if (!this.data.isFinishUpAp) {
       showToast('请先勾选')
       return
@@ -524,7 +519,7 @@ Page({
     })
     this.timing()
     app.globalData.bluetoothFail = !(await this.checkBluetoothAuth()) //蓝牙配网检查蓝牙是否开启以及是否蓝牙授权
-    const {type, sn8, fm} = app.addDeviceInfo
+    const { type, sn8, fm } = app.addDeviceInfo
     if (this.data.guideType === 'near') {
       this.checkNearby(
         app.addDeviceInfo.deviceId,
@@ -544,7 +539,7 @@ Page({
   },
   //本地蓝牙跳转  储存
   async openPlugin() {
-    let {type, A0, sn8, deviceName, deviceImg} = app.addDeviceInfo
+    let { type, A0, sn8, deviceName, deviceImg } = app.addDeviceInfo
     let typeFomat = type.includes('0x') ? type.toLocaleUpperCase() : '0x' + type.toLocaleUpperCase()
     let deviceInfo = {
       modelNumber: A0,
@@ -566,7 +561,7 @@ Page({
       return
     }
     //大屏这里是扫码按钮
-    let {deviceName} = app.addDeviceInfo
+    let { deviceName } = app.addDeviceInfo
     let scanResult = {}
     try {
       scanResult = await this.scanCode()
@@ -581,8 +576,7 @@ Page({
           confirmText: '我知道了',
           confirmColor: '#267AFF',
           showCancel: false,
-          success() {
-          },
+          success() {},
         })
       }
       return
@@ -705,7 +699,7 @@ Page({
       })
   },
   async queryGuideInfo(mode, type, sn8) {
-    const res = await queryGuideInfo({sn8, type, mode: mode.toString()})
+    const res = await queryGuideInfo({ sn8, type, mode: mode.toString() })
 
     Logger.console('queryGuideInfo', res)
 
@@ -849,20 +843,17 @@ Page({
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
-  onReady: function () {
-  },
+  onReady: function () {},
 
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function () {
-  },
+  onShow: function () {},
 
   /**
    * 生命周期函数--监听页面隐藏
    */
-  onHide: function () {
-  },
+  onHide: function () {},
 
   /**
    * 生命周期函数--监听页面卸载
@@ -880,7 +871,7 @@ Page({
    */
   onPullDownRefresh: function () {
     console.log('下拉刷新======')
-    let {mode, guideInfo, fm} = app.addDeviceInfo
+    let { mode, guideInfo, fm } = app.addDeviceInfo
     let needRefreshMode = [0, 9, 10, 100]
     if (needRefreshMode.includes(Number(mode))) {
       this.setData({
@@ -930,6 +921,5 @@ Page({
   /**
    * 页面上拉触底事件的处理函数
    */
-  onReachBottom: function () {
-  },
+  onReachBottom: function () {},
 })

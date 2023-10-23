@@ -461,8 +461,7 @@ Page({
     }
   },
   retry() {
-    let { mode, fm, guideInfo, hadChangeBlue } =
-      app.addDeviceInfo
+    let { mode, fm, guideInfo, hadChangeBlue } = app.addDeviceInfo
     setWifiStorage(this.data.bindWifiInfo)
     app.addDeviceInfo.curWifiInfo = this.data.bindWifiInfo //共享选取的wifi
     console.log('---------------retry--------------------')
