@@ -131,7 +131,7 @@
     <view class="bottom-button px-32rpx box-border">
       <van-button class="w-full" type="info" custom-style="background-color: transparent;border: 0" plain block size="large" bind:click="clickNoFoundWifi">找不到{{deviceName}}无线网络? </van-button>
 
-      <van-button class="w-full mt-20rpx" block type="primary" size="large" bind:click="goLinkDeviceWifi">
+      <van-button class="w-full mt-20rpx" block type="primary" size="large" bind:click="goLinkDeviceWifi" disabled="{{readingTimer > 0}}">
         {{linkDeviceWifi}}
         <text wx:if="{{readingTimer}}" class="readingTimer">({{readingTimer}}s)</text>
       </van-button>
