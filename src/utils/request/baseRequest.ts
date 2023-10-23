@@ -1,5 +1,5 @@
-import { showLoading, hideLoading } from '../index'
-import { Logger } from '../log'
+import {hideLoading, showLoading} from '../index'
+import {Logger} from '../log'
 
 export type BaseRequestOptions<T extends AnyResType> = WechatMiniprogram.RequestOption<T> & {
   /**
@@ -91,22 +91,19 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
     }
 
     // 请求失败回调处理
-    if (requestOption.failHandler) {
-      const handler = requestOption.failHandler
-      requestOption.fail = (err) => {
-        if (requestOption.log) {
-          Logger.error('✘请求URL:' + requestOption.url + ' 失败，原因：' + err.errMsg, requestOption.data)
-        }
-        resolve(handler(err))
+    const handler = requestOption.failHandler || requestOption.generalFailHandler
+    requestOption.fail = (err) => {
+      if (requestOption.log) {
+        Logger.error('✘请求URL:' + requestOption.url + ' 失败，原因：' + err.errMsg, requestOption.data)
       }
-    } else {
-      requestOption.fail = (err) => {
-        if (requestOption.log) {
-          Logger.error('✘请求URL:' + requestOption.url + ' 失败，失败原因：' + err.errMsg, requestOption.data)
-        }
-        const data = requestOption.generalFailHandler ? requestOption.generalFailHandler(err) : (err as unknown as T)
-        resolve(data)
-      }
+
+      wx.showToast({
+        title: '当前无法连接网络\n请检查网络设置',
+        icon: 'none',
+        duration: 2000
+      })
+      const data = handler ? handler(err) : (err as unknown as T)
+      resolve(data)
     }
 
     // 请求发起时的提示
@@ -136,4 +133,4 @@ const baseRequestWithMethod = baseRequest as BaseRequestWithMethod
   }
 })
 
-export { baseRequestWithMethod as baseRequest }
+export {baseRequestWithMethod as baseRequest}

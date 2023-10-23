@@ -81,8 +81,6 @@ const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: Base
       return result.data
     },
     generalFailHandler: (error) => {
-      Logger.error('请求失败，原因：', options, error.errMsg)
-
       const cost_time = Date.now() - start
 
       wx.reportEvent('wxdata_perf_monitor', {
