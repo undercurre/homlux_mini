@@ -85,7 +85,7 @@ Page({
     moduleType: '',
     addDeviceInfo: {},
     combinedDeviceInfo: [{ sn: '', a0: '' }],
-    time: 3,
+    time: 80,
     curStep: 0,
     currentRoomId: 0,
     progressList: [
@@ -1727,7 +1727,6 @@ Page({
    * @param {Boolean} forceValidRandomCode 是否强制校验随机数
    */
   async sendApWifiAfter(forceValidRandomCode = true) {
-    Logger.console('sendApWifiAfter')
     let self = this
     let randomCode = this.data.randomCode
     let wifiInfo = this.data.bindWifiInfo
