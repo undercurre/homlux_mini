@@ -261,12 +261,12 @@ ComponentWithComputed({
           if (e.result.eventData.deviceId === roomStore.currentRoom.groupId) {
             const { event } = e.result.eventData
             this.setData({
-              // 'roomLight.power': event.power,
-              roomLight: {
-                brightness: event.brightness,
-                colorTemperature: event.colorTemperature,
-                power: event.power,
-              },
+              'roomLight.power': event.power,
+              // roomLight: {
+              //   brightness: event.brightness,
+              //   colorTemperature: event.colorTemperature,
+              //   power: event.power,
+              // },
             })
           }
           // 如果有传更新的状态数据过来，直接更新store
