@@ -4,7 +4,7 @@ import computedBehavior from '../../../../../utils/miniprogram-computed'
 import { addDeviceSDK } from '../../../../../utils/addDeviceSDK.js'
 import { imgesList } from '../../../../assets/js/shareImg.js'
 import { imgBaseUrl } from '../../../../../common/js/api'
-const imgUrl = imgBaseUrl.url + '/shareImg/' + getApp().globalData.brand
+const imgUrl = imgBaseUrl.url + '/shareImg/meiju'
 Component({
   externalClasses: ['frame', 'wifi-list-title', 'blue', 'wifi-item', 'left'],
   behaviors: [addDeviceMixin, computedBehavior],
@@ -83,24 +83,17 @@ Component({
           item.isCan = 1
           //wiif 强度分级
           if (signalStrength >= 99) {
-            // item.class = imgBaseUrl + imges.wifiSignalStrength4
             item.class = imgUrl + imgesList['wifiSignalStrength4']
           } else if (99 > signalStrength && signalStrength >= 74) {
             //强度3
-            // item.class = imgBaseUrl + imges.wifiSignalStrength3
             item.class = imgUrl + imgesList['wifiSignalStrength3']
           } else if (74 >= signalStrength && signalStrength > 50) {
-            //???
-            // item.class = imgBaseUrl + imges.wifiSignalStrength3
             item.class = imgUrl + imgesList['wifiSignalStrength3']
           } else if (50 >= signalStrength && signalStrength > 26) {
-            // item.class = imgBaseUrl + imges.wifiSignalStrength2
             item.class = imgUrl + imgesList['wifiSignalStrength2']
           } else if (26 >= signalStrength && signalStrength > 0) {
-            // item.class = imgBaseUrl + imges.wifiSignalStrength1
             item.class = imgUrl + imgesList['wifiSignalStrength1']
           } else if (0 >= signalStrength) {
-            // item.class = imgBaseUrl + imges.wifiSignalStrength1
             item.class = imgUrl + imgesList['wifiSignalStrength1']
           }
         })
@@ -140,24 +133,17 @@ Component({
         }
         //wiif 强度分级
         if (signalStrength >= 99) {
-          // item.class = imgBaseUrl + imges.wifiSignalStrength4
           item.class = imgUrl + imgesList['wifiSignalStrength4']
         } else if (99 > signalStrength && signalStrength >= 74) {
           //强度3
-          // item.class = imgBaseUrl + imges.wifiSignalStrength3
           item.class = imgUrl + imgesList['wifiSignalStrength3']
         } else if (74 >= signalStrength && signalStrength > 50) {
-          //???
-          // item.class = imgBaseUrl + imges.wifiSignalStrength3
           item.class = imgUrl + imgesList['wifiSignalStrength3']
         } else if (50 >= signalStrength && signalStrength > 26) {
-          // item.class = imgBaseUrl + imges.wifiSignalStrength2
           item.class = imgUrl + imgesList['wifiSignalStrength2']
         } else if (26 >= signalStrength && signalStrength > 0) {
-          // item.class = imgBaseUrl + imges.wifiSignalStrength1
           item.class = imgUrl + imgesList['wifiSignalStrength1']
         } else if (0 >= signalStrength) {
-          // item.class = imgBaseUrl + imges.wifiSignalStrength1
           item.class = imgUrl + imgesList['wifiSignalStrength1']
         }
       })
