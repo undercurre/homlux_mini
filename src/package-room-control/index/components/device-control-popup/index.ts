@@ -2,7 +2,7 @@ import { Logger, isArrEqual, throttle, showLoading, hideLoading, isNullOrUnDef }
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, deviceStore, sceneStore, homeStore } from '../../../../store/index'
-import { maxColorTemp, minColorTemp, MODEL_NAME, PRO_TYPE, SCREEN_PID } from '../../../../config/index'
+import { maxColorTemp, minColorTemp, MODEL_NAME, PRO_TYPE, SCREEN_PID, KNOB_PID } from '../../../../config/index'
 import {
   sendDevice,
   findDevice,
@@ -65,8 +65,8 @@ ComponentWithComputed({
         }
         // 是否智慧屏判断
         else if (device.proType === PRO_TYPE.switch) {
-          const isScreen = SCREEN_PID.includes(device.productId)
-          diffData.isScreen = isScreen
+          diffData.isScreen = SCREEN_PID.includes(device.productId)
+          diffData.isKnob = KNOB_PID.includes(device.productId)
         }
         this.setData(diffData)
       },
@@ -123,6 +123,7 @@ ComponentWithComputed({
     },
     _allSwitchLampRelList: Array<Device.IMzgdLampDeviceInfoDTO>(), // 家庭所有面板的灯关联关系数据
     isScreen: false, // 当前选中项是否智慧屏
+    isKnob: false, // 当前选中项是否旋钮开关
   },
 
   computed: {

@@ -59,7 +59,7 @@
             <image src="/assets/img/base/arrow-right.png" class="w-32rpx h-32rpx" />
           </view>
         </view>
-        <view wx:if="{{!isScreen}}" class="link-scene h-146rpx w-686rpx flex-center mt-24rpx" data-type="scene" bindtap="handleSelectLinkPopupConfirm">
+        <view wx:if="{{!isScreen && !isKnob}}" class="link-scene h-146rpx w-686rpx flex-center mt-24rpx" data-type="scene" bindtap="handleSelectLinkPopupConfirm">
           <view class="w-160rpx flex-center">
             <image src="/package-room-control/assets/img/link-scene.png" class="w-146rpx h-146rpx" />
           </view>
