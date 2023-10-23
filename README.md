@@ -27,7 +27,7 @@ HomLux小程序
           ├── img // 存放图片文件
           └── lottie // 存放动画资源
     ├── components // 公用组件
-    ├── behaviors // 共享代码
+    ├── behaviors // behaviors共享代码
           ├── pageBehaviors // 页面层级公共代码
           └──  // 
     ├── config // 一些全局公用的配置、数据
@@ -36,12 +36,17 @@ HomLux小程序
     ├── commons // 公共代码
           ├── templates // 公共wxml模板
           └── wxs // 公共wxs module
+    ├── lib // 第三库源码文件
     ├── custom-tab-bar // 自定义tabbar（必须在这个目录，不能放别的目录）
     ├── store // 全局状态
     ├── package-distribution // 配网相关页面分包（添加设备、附近设备、连接wifi等）
     ├── package-mine // 我的相关页面分包（家庭管理、房间管理、设备管理、OTA、语音控制、设备替换）
     ├── package-room-protocol // 用户协议列表和协议展示分包
     ├── package-room-control // 房间相关页面分包（房间页面控制设备、场景列表、场景管理）
+    ├── package-distribution-meiju // 美居配网相关页面分包
+    ├── package-auth // 第三方授权相关页面分包
+    ├── package-automation // 场景模块相关页面分包
+    ├── package-remoter // 蓝牙遥控器模块相关页面分包
     ├── pages // 主包的页面（小程序主页、登录）
     └── utils // 公用方法
 └── typings // 类型声明文件
