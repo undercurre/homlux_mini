@@ -2216,10 +2216,7 @@ Page({
 
     console.log('bindMideaDevice', res)
 
-    await Promise.all([
-      queryAuthGetStatus({ deviceId: this.data.deviceId }),
-      queryDeviceSpecifiedInfo({ deviceId: this.data.deviceId }),
-    ])
+    await queryAuthGetStatus({ deviceId: this.data.deviceId })
 
     if (res.success) {
       app.addDeviceInfo.applianceCode = this.data.deviceId
