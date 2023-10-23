@@ -19,7 +19,7 @@ export async function login(data: object) {
 // 测试网络连接状态用
 export async function peekNetwork() {
   return await mzaioRequest.post({
-    log: true,
+    log: false,
     loading: false,
     url: '/',
     timeout: 2000,

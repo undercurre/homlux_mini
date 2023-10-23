@@ -3,28 +3,6 @@
 <view class="w-100vw h-100vh fixed left-0 top-0 bg-hex-f4f8ff bg-z-index-1"></view>
 <view class="fixed left-0 top-0 w-100vw h-50vh bg-z-index" style="background: linear-gradient(180deg, rgba(87, 105, 255, 0.1) 0%, rgba(87, 105, 255, 0) 100%)"></view>
 
-<!-- 场景卡片使用提示 -->
-<view wx:if="{{showAddSceneTips}}" class="fixed rounded-24rpx tips-shadow z-115" style="{{sceneTipsPositionStyle}}">
-  <view class="w-344rpx h-138rpx rounded-26rpx tips-dialog absolute right-0 z-116">
-    <view class="wh-full flex-col-center">
-      <text class="text-24rpx text-white">点击此处可创建一个新场景</text>
-      <view class="w-full flex justify-end">
-        <view class="bg-hex-7bb1ff rounded-32rpx mt-26rpx mr-22rpx flex" bindtap="handleKnownAddSceneTap">
-          <text class="text-20rpx text-white leading-none mx-16rpx my-12rpx">我知道了</text>
-        </view>
-      </view>
-    </view>
-    <view class="tips-dialog-arrow"></view>
-  </view>
-</view>
-<!-- 收藏场景提示 -->
-<view wx:if="{{showAddSceneSuccess}}" class="flex-center rounded-16rpx px-22rpx py-8rpx fixed bg-hex-000 opacity-73 z-115" style="left: {{sceneTitlePosition.x}}px; top: calc({{sceneTitlePosition.y}}px - 60rpx);">
-  <view class="relative">
-    <view class="arrow absolute w-0 h-0"></view>
-  </view>
-  <text class="text-white text-26rpx">您创建了一个新的场景</text>
-</view>
-
 <!-- 页面主体，全屏幕点击捕获 -->
 <view bindtap="handleScreenTap" bindtouchmove="handleScreenTap">
   <!-- 标题 -->
@@ -32,32 +10,51 @@
   <!-- 家庭无设备，或只有网关 -->
   <view wx:if="{{!roomHasDevice}}" class="w-full flex flex-col items-center">
     <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx mt-64rpx"></image>
-    <text class="text-black-59 text-28rpx mt-48rpx text-center leading-48rpx">{{'房间内还未添加可控制的\n灯具、开关、窗帘'}}</text>
+    <text class="text-black-59 text-28rpx mt-48rpx text-center leading-48rpx">{{'房间内还未添加\n可控制的设备'}}</text>
     <van-button wx:if="{{canAddDevice}}" type="primary" class="mt-290rpx w-686rpx" size="large" bind:click="handleAddDevice">立即添加</van-button>
   </view>
 
   <!-- 有设备页面主体 -->
   <view wx:if="{{roomHasDevice}}" class="w-750rpx flex flex-col items-center">
-    <view class="w-720rpx">
-      <!-- 设备卡片列表 -->
-      <scroll-view scroll-y enhanced show-scrollbar="{{false}}" style="height: {{ scrollViewHeight }}px;" bindscroll="onPageScroll" scroll-top="{{scrollTop}}" scroll-with-animation="{{true}}">
-        <!-- 场景 -->
-        <view id="scene-card" class="scene-card w-686rpx h-96rpx flex items-center rounded-24rpx mt-20rpx ml-16rpx mb-12rpx relative" bindtap="handleSceneTap">
-          <image src="/package-room-control/assets/img/scene.png" class="absolute left-0 top-0 w-686rpx h-96rpx scene-card-bg" />
-          <image src="/assets/img/base/scene.png" class="w-64rpx h-64rpx ml-24rpx"></image>
-          <text id="scene-title" class="text-32rpx text-hex-333333 font-medium ml-16rpx">场景</text>
-          <view class="flex flex-1 justify-end items-center">
-            <view class="mr-38rpx flex">
-              <view class="scene-icon p-4rpx bg-hex-fff rounded-999" wx:for="{{sceneListInBar}}" wx:key="sceneId">
-                <view class="bg-hex-eff0f3 rounded-999">
-                  <svg-icon name="scene:{{item.sceneIcon}}" width="52rpx" height="52rpx" />
-                </view>
+    <!-- 场景 -->
+    <view class="tool-box fixed" style="padding-top: {{toolboxTop}}px; height: {{toolboxTop + toolboxContentHeight}}px;">
+      <view class="scene-box {{roomHasLight ? 'scene-border-bottom' : ''}}">
+        <image src="/assets/img/base/scene.png" class="w-64rpx h-64rpx"></image>
+        <text id="scene-title" class="text-32rpx text-hex-333333 font-medium ml-16rpx">场景</text>
+        <view class="flex flex-1 justify-end items-center" bind:tap="handleSceneTap">
+          <view class="mr-38rpx flex">
+            <view class="scene-icon p-4rpx bg-hex-fff rounded-999" wx:for="{{sceneListInBar}}" wx:key="sceneId">
+              <view class="bg-hex-eff0f3 rounded-999">
+                <svg-icon name="scene:{{item.sceneIcon}}" width="52rpx" height="52rpx" />
               </view>
             </view>
-            <van-button catchtap="handleCollect" custom-class="fav-btn" type="primary">创建</van-button>
           </view>
+          <van-button catchtap="handleCollect" custom-class="fav-btn" type="primary">创建场景</van-button>
+        </view>
+      </view>
+
+      <block wx:if="{{roomHasLight}}">
+        <!-- 全房间亮度控制 -->
+        <view class="slider-box">
+          <image src="/package-room-control/assets/img/bright.png" class="w-48rpx h-48rpx" />
+          <mz-slider disabled="{{!roomLight.power}}" catch:slideChange="handleLevelChange" catch:slideEnd="handleLevelChange" value="{{roomLight.brightness}}" custom-class="slider-brightness-bar" active-color="rgba(0,0,0,0)" bar-height="{{16}}" use-button-slot data-min="{{1}}" data-is-btn-inset="{{false}}" data-key="roomBrightness">
+            <image slot="button" src="/package-room-control/assets/img/btn.png" class="w-72rpx h-72rpx" />
+          </mz-slider>
         </view>
 
+        <!-- 全房间色温控制 -->
+        <view class="slider-box">
+          <image src="/package-room-control/assets/img/colorTemp.png" class="w-48rpx h-48rpx" />
+          <mz-slider disabled="{{!roomLight.power}}" catch:slideChange="handleColorTempChange" catch:slideEnd="handleColorTempChange" value="{{roomLight.colorTemperature}}" custom-class="slider-color-temp-bar" active-color="rgba(0,0,0,0)" bar-height="{{16}}" use-button-slot data-is-btn-inset="{{false}}" data-key="roomColorTemp">
+            <image slot="button" src="/package-room-control/assets/img/btn.png" class="w-72rpx h-72rpx" />
+          </mz-slider>
+        </view>
+      </block>
+    </view>
+
+    <view class="w-720rpx">
+      <!-- 设备卡片列表 -->
+      <scroll-view scroll-y enhanced show-scrollbar="{{false}}" style="height: {{ scrollViewHeight }}; margin-top: {{toolboxContentHeight + 10}}px" bindscroll="onPageScroll" scroll-top="{{scrollTop}}" scroll-with-animation="{{true}}">
         <movable-area wx:if="{{devicePageList.length}}" style="height: {{movableAreaHeight}}rpx; width: 600rpx;">
           <!-- 拖动占位符 -->
           <!-- <movable-view wx:if="{{isMoving}}" x="{{placeholder.x}}" y="{{placeholder.y}}" direction="all" class="z-1">
@@ -88,7 +85,7 @@
 </view>
 
 <!-- 设备控制弹窗 -->
-<device-control-popup controlPopup="{{controlPopup}}" checkedList="{{checkedList}}" lightStatus="{{lightStatus}}" curtainStatus="{{curtainStatus}}" checkedType="{{checkedType}}" bind:popMove="handlePopMove" bind:updateDevice="updateQueue"></device-control-popup>
+<device-control-popup controlPopup="{{controlPopup}}" deviceInfo="{{checkedDeviceInfo}}" checkedList="{{checkedList}}" bind:popMove="handlePopMove" bind:updateDevice="updateQueue"></device-control-popup>
 
 <before-add-scene-popup show="{{showBeforeAddScenePopup}}" bind:close="handleBeforeAddScenePopupClose" bind:next="handleBeforeAddScenePopupNext" bind:delete="handleBeforeAddScenePopupDelete" />
 

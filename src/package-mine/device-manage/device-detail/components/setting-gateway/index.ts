@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { checkWifiSwitch, isRelease } from '../../../../../utils/index'
-import { controlDevice } from '../../../../../apis/index'
+import { controlDevice, uploadDeviceLog } from '../../../../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
 
 ComponentWithComputed({
@@ -79,6 +79,13 @@ ComponentWithComputed({
       wx.navigateTo({
         url: `/package-distribution/wifi-connect/index?type=changeWifi&sn=${this.data.deviceInfo.sn}`,
       })
+    },
+
+    async uploadDeviceLog() {
+      const res = await uploadDeviceLog({
+        deviceId: this.data.deviceInfo.deviceId,
+      })
+      Toast(res.success ? '上传成功' : '上传失败')
     },
   },
 })

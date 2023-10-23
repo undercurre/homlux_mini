@@ -229,4 +229,9 @@ declare namespace Device {
     gatewayId: string
     productName: string
   }
+
+  type Log = {
+    content: string
+    reportAt: string
+  }
 }
