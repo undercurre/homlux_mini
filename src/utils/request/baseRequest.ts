@@ -1,5 +1,5 @@
-import {hideLoading, showLoading} from '../index'
-import {Logger} from '../log'
+import { hideLoading, showLoading } from '../index'
+import { Logger } from '../log'
 
 export type BaseRequestOptions<T extends AnyResType> = WechatMiniprogram.RequestOption<T> & {
   /**
@@ -100,7 +100,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       wx.showToast({
         title: '当前无法连接网络\n请检查网络设置',
         icon: 'none',
-        duration: 2000
+        duration: 2000,
       })
       const data = handler ? handler(err) : (err as unknown as T)
       resolve(data)
@@ -133,4 +133,4 @@ const baseRequestWithMethod = baseRequest as BaseRequestWithMethod
   }
 })
 
-export {baseRequestWithMethod as baseRequest}
+export { baseRequestWithMethod as baseRequest }
