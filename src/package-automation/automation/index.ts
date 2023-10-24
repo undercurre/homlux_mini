@@ -35,7 +35,9 @@ ComponentWithComputed({
       'px',
     tabClientTop:
       (storage.get<number>('statusBarHeight') as number) +
-      (storage.get<number>('navigationBarHeight') as number) + 31 + 32 +
+      (storage.get<number>('navigationBarHeight') as number) +
+      31 +
+      32 +
       'px',
     // 当前为一键场景/自动场景
     isYijian: true,
@@ -45,15 +47,17 @@ ComponentWithComputed({
   },
   computed: {
     allRoomYijianSceneListComputed() {
-      return sceneStore.allRoomSceneList.filter(item => item !== null).map(item => {
-        return {
-          desc: '描述',
-          sceneIcon: 'icon-1',
-          sceneId: item.sceneId,
-          sceneName: item.sceneName,
-          isEnabled: true,
-        }
-      })
+      return sceneStore.allRoomSceneList
+        .filter((item) => item !== null)
+        .map((item) => {
+          return {
+            desc: '描述',
+            sceneIcon: 'icon-1',
+            sceneId: item.sceneId,
+            sceneName: item.sceneName,
+            isEnabled: true,
+          }
+        })
     },
     roomYijianSceneListComputed(data) {
       const listData = [] as IAnyObject[]
@@ -94,11 +98,11 @@ ComponentWithComputed({
       }
 
       if (data.editBack) {
-        data.editBack = false;
+        data.editBack = false
       }
 
       if (data.selectedRoomId === 'all') {
-        return listData.map(item => {
+        return listData.map((item) => {
           return {
             ...item,
             desc: getDesc(item),
@@ -106,14 +110,15 @@ ComponentWithComputed({
           }
         })
       }
-      return listData.filter(item => item.roomId === data.selectedRoomId).map(item => {
-        return {
-          ...item,
-          desc: getDesc(item),
-          sceneName: getSceneName(item),
-        }
-      })
-
+      return listData
+        .filter((item) => item.roomId === data.selectedRoomId)
+        .map((item) => {
+          return {
+            ...item,
+            desc: getDesc(item),
+            sceneName: getSceneName(item),
+          }
+        })
     },
     roomTab() {
       let tempRoomList = roomStore.roomList.map((item) => {
@@ -124,10 +129,10 @@ ComponentWithComputed({
       })
       tempRoomList.unshift({
         roomId: 'all',
-        roomName: '全屋'
+        roomName: '全屋',
       })
-      return tempRoomList;
-    }
+      return tempRoomList
+    },
   },
   methods: {
     onPageScroll(e: { scrollTop: number }) {
@@ -137,7 +142,7 @@ ComponentWithComputed({
     },
     onYijianRoomChange(event: { detail: { name: string } }) {
       this.setData({
-        selectedRoomId: event.detail.name
+        selectedRoomId: event.detail.name,
       })
     },
     onLoad() {
@@ -215,7 +220,7 @@ ComponentWithComputed({
       })
     },
     //阻止事件冒泡
-    stopPropagation() { },
+    stopPropagation() {},
 
     // 场景类型变更
     handleSceneType() {
@@ -223,9 +228,13 @@ ComponentWithComputed({
         // 修改switch标记
         isYijian: !this.data.isYijian,
         // 修改按钮的地址
-        automationLog: !this.data.isYijian ? '/package-automation/automation-log/index' : '/package-automation/automation-log/index',
-        automationAdd: !this.data.isYijian ? '/package-automation/automation-add-yijian/index' : '/package-automation/automation-add/index',
-      });
+        automationLog: !this.data.isYijian
+          ? '/package-automation/automation-log/index'
+          : '/package-automation/automation-log/index',
+        automationAdd: !this.data.isYijian
+          ? '/package-automation/automation-add-yijian/index'
+          : '/package-automation/automation-add/index',
+      })
     },
     onUnload() {
       emitter.off('sceneEdit')
@@ -235,7 +244,7 @@ ComponentWithComputed({
     ready() {
       emitter.off('sceneEdit')
       emitter.on('sceneEdit', () => {
-        sceneBinding.store.updateAllRoomSceneList().then(() => this.data.editBack = true)
+        sceneBinding.store.updateAllRoomSceneList().then(() => (this.data.editBack = true))
       })
     },
   },

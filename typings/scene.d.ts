@@ -44,7 +44,7 @@ declare namespace Scene {
     /**
      * 场景更新时间
      */
-    updateStamp: number,
+    updateStamp: number
   }
   /** 结果集合 */
   interface DeviceAction {

@@ -5,7 +5,14 @@ import pageBehavior from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { deviceStore, sceneStore, homeStore, autosceneStore, roomStore } from '../../store/index'
 import { PRO_TYPE, SENSOR_TYPE, MODEL_NAME } from '../../config/index'
-import { toPropertyDesc, storage, getCurrentPageParams, strUtil, checkInputNameIllegal, emitter } from '../../utils/index'
+import {
+  toPropertyDesc,
+  storage,
+  getCurrentPageParams,
+  strUtil,
+  checkInputNameIllegal,
+  emitter,
+} from '../../utils/index'
 import { adviceSceneNameList } from '../../config/scene'
 import { roomBinding } from '../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
@@ -166,7 +173,7 @@ ComponentWithComputed({
       //   })
     },
     ready() {},
-    detached() { },
+    detached() {},
   },
   /**
    * 组件的方法列表
@@ -217,7 +224,7 @@ ComponentWithComputed({
         this.setData({
           sceneIcon: sceneInfo.sceneIcon,
           sceneName: sceneInfo.sceneName,
-          roomId: sceneInfo.roomId
+          roomId: sceneInfo.roomId,
         })
 
         this.updateSceneDeviceConditionsFlatten()
@@ -226,7 +233,6 @@ ComponentWithComputed({
         const tempSceneDeviceActionsFlatten = [] as AutoScene.AutoSceneFlattenAction[]
 
         sceneInfo.deviceActions.forEach((action, index) => {
-
           //设备
           let deviceUniId = action.deviceId
           if (action.proType === PRO_TYPE.switch) {
@@ -282,7 +288,6 @@ ComponentWithComputed({
           } else {
             console.log('设备不存在', action)
           }
-
         })
 
         this.setData(
@@ -370,7 +375,7 @@ ComponentWithComputed({
         })
       } else if (e.detail === 'touch') {
         this.setData({
-          showEditRoomPopup: true
+          showEditRoomPopup: true,
         })
       } else {
         if (this.data.sensorList.length) {
@@ -664,7 +669,10 @@ ComponentWithComputed({
         sceneDeviceConditionsFlatten.push({
           uniId: 'room',
           name: '手动点击场景',
-          desc: [roomStore.roomList.find(item => item.roomId === this.data.roomId)?.roomName ?? roomStore.roomList[0].roomName],
+          desc: [
+            roomStore.roomList.find((item) => item.roomId === this.data.roomId)?.roomName ??
+              roomStore.roomList[0].roomName,
+          ],
           pic: '/package-automation/assets/imgs/automation/touch-materialized.png',
           productId: 'touch',
           property: {},
@@ -769,7 +777,7 @@ ComponentWithComputed({
       // const action = this.data.sceneDeviceConditionsFlatten[index]
 
       this.setData({
-        showEditRoomPopup: true
+        showEditRoomPopup: true,
       })
 
       // if (action.productId === 'time') {
@@ -976,7 +984,7 @@ ComponentWithComputed({
       if (this.data.sceneIcon !== this.data._sceneInfo.sceneIcon) {
         data.sceneIcon = this.data.sceneIcon
       }
-      
+
       if (this.data._isEditAction) {
         data.deviceActions = []
         data.updateType = data.updateType === '0' ? '1' : data.updateType === '2' ? '4' : '5'
@@ -987,7 +995,9 @@ ComponentWithComputed({
 
         // 需要更新结果的情况，需要跳转页面等待上报结果
         wx.redirectTo({
-          url: strUtil.getUrlWithParams('/package-automation/scene-request-list-yijian/index', { sceneId: data.sceneId }),
+          url: strUtil.getUrlWithParams('/package-automation/scene-request-list-yijian/index', {
+            sceneId: data.sceneId,
+          }),
         })
 
         return
@@ -1054,7 +1064,7 @@ ComponentWithComputed({
     selectAdviceName(e: { currentTarget: { dataset: { text: string } } }) {
       const name = e.currentTarget.dataset.text
       this.setData({
-        sceneName: name
+        sceneName: name,
       })
     },
     handleSceneRoomEditCancel() {
@@ -1066,7 +1076,7 @@ ComponentWithComputed({
       this.setData({
         roomId: e.detail,
         showEditRoomPopup: false,
-        _isEditCondition: true
+        _isEditCondition: true,
       })
       this.updateSceneDeviceConditionsFlatten()
     },

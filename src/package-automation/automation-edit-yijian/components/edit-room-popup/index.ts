@@ -15,7 +15,10 @@ Component({
       type: Boolean,
       observer(value) {
         if (value) {
-          console.log('显示选择房间', roomStore.roomList.find(item => item.roomId === this.data.value))
+          console.log(
+            '显示选择房间',
+            roomStore.roomList.find((item) => item.roomId === this.data.value),
+          )
           this.setData({
             roomSelect: this.data.value,
           })
