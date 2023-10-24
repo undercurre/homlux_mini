@@ -40,7 +40,7 @@ ComponentWithComputed({
         { name: '关闭', ability: { doorStatus: 0, modelName: 'magnet' } },
         // { name: '环境光暗', ability: { IlluminanceLevelStatus: 1 } },
         // { name: '环境光亮', ability: { IlluminanceLevelStatus: 2 } },
-        { name: '超时未关', ability: { doorStatus: 1, PIRToUnoccupiedDelay: 10, modelName: 'magnet' } },
+        { name: '超时未关闭', ability: { doorStatus: 1, PIRToUnoccupiedDelay: 10, modelName: 'magnet' } },
       ],
       'midea.freepad.001.201': [
         { name: '单击', ability: { buttonClicked: 1, modelName: 'freepad' } },

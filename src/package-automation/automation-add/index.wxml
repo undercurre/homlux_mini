@@ -30,7 +30,7 @@
         </view>
       </view>
     </scroll-view>
-    <van-cell-group inset wx:if="{{operationType === 'auto' &&sceneDeviceConditionsFlatten.length && !timeCondition.time}}">
+    <van-cell-group inset wx:if="{{opearationType === 'auto' && sceneDeviceConditionsFlatten.length && !timeCondition.time}}">
       <van-cell border="{{false}}" clickable="{{true}}" bind:click="handleEffectiveTimeShow">
         <view class="flex items-center justify-between">
           <text class="text-32rpx text-hex-27282A text-left">生效时间</text>

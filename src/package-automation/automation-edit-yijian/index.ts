@@ -1,9 +1,9 @@
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
-import { deleteScene, findDevice, addScene, updateScene } from '../../apis/index'
+import { deleteScene, findDevice, updateScene } from '../../apis/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { deviceStore, sceneStore, homeStore, autosceneStore, roomStore } from '../../store/index'
+import { deviceStore, sceneStore, homeStore, roomStore } from '../../store/index'
 import { PRO_TYPE, SENSOR_TYPE, MODEL_NAME } from '../../config/index'
 import { toPropertyDesc, storage, getCurrentPageParams, strUtil, checkInputNameIllegal, emitter } from '../../utils/index'
 import { adviceSceneNameList } from '../../config/scene'
@@ -225,7 +225,7 @@ ComponentWithComputed({
         //处理执行结果
         const tempSceneDeviceActionsFlatten = [] as AutoScene.AutoSceneFlattenAction[]
 
-        sceneInfo.deviceActions.forEach((action, index) => {
+        sceneInfo.deviceActions.forEach((action) => {
 
           //设备
           let deviceUniId = action.deviceId
@@ -764,7 +764,7 @@ ComponentWithComputed({
     },
     /* 传感器条件编辑 end */
 
-    handleAutoSceneConditionEdit(e: WechatMiniprogram.TouchEvent) {
+    handleAutoSceneConditionEdit() {
       // const { index } = e.currentTarget.dataset
       // const action = this.data.sceneDeviceConditionsFlatten[index]
 

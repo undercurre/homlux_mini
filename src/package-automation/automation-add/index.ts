@@ -439,10 +439,10 @@ ComponentWithComputed({
           showEditRoomPopup: true
         })
       } else {
+        this.setData({
+          opearationType: 'auto',
+        })
         if (this.data.sensorList.length) {
-          this.setData({
-            opearationType: 'auto',
-          })
           this.addSensorPopup()
         } else {
           Toast({ message: '尚未添加传感器', zIndex: 9999 })

@@ -1,6 +1,7 @@
 // pages/protocalList/index.ts
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { storage, setCurrentEnv, logout, socketSend } from '../../utils/index'
+// @ts-ignore
 import meta from '../../meta'
 
 Component({
