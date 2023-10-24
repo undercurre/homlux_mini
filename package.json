@@ -10,7 +10,7 @@
     "prepare": "husky install",
     "unocss": "unocss ./**/*.wxml -c unocss.config.js --watch -o src/unocss.wxss",
     "unocss:build": "unocss ./**/*.wxml -c unocss.config.js -o src/unocss.wxss",
-    "lint": "lint-staged -c ./.husky/lintstagedrc.js",
+    "lint": "lint-staged -c lintstagedrc.js",
     "typecheck": "tsc --noEmit --skipLibCheck",
     "format": "prettier --write ./**/*.{js,ts,wxs,wxml,wxss,json}",
     "getIconify": "esno build/getIconify json=../iconify.json path=./src/assets/svg/iconify.ts"

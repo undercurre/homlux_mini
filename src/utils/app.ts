@@ -12,7 +12,7 @@ const accountInfo = wx.getAccountInfoSync()
  * FIXME wx.switchTab 在IOS下会出现中间页面
  */
 export function goHome() {
-  const defaultPage = (storage.get<string>('defaultPage') ?? '') as string
+  const defaultPage = storage.get<string>('defaultPage') ?? ''
   wx.switchTab({ url: `/pages/${defaultPage}/index` })
 }
 
@@ -145,7 +145,7 @@ export function setCurrentEnv(env?: ENV_TYPE) {
   const info = wx.getAccountInfoSync()
   const { envVersion } = info.miniProgram
   const storageKey = `${envVersion}_env`
-  let envStr = env ?? (storage.get(storageKey) as ENV_TYPE)
+  let envStr = env ?? storage.get(storageKey)
 
   if (!envStr) {
     envStr = envMap[envVersion]

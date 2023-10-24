@@ -1,5 +1,4 @@
-import { hideLoading, showLoading } from '../index'
-import { Logger } from '../log'
+import { hideLoading, showLoading, Logger } from '../index'
 
 export type BaseRequestOptions<T extends AnyResType> = WechatMiniprogram.RequestOption<T> & {
   /**
