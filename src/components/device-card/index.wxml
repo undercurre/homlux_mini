@@ -34,7 +34,7 @@
   <!-- 在线、离线、低电量文字 -->
   <view class="absolute left-0 bottom-24rpx w-160rpx flex flex-col flex-center">
     <text wx:if="{{!canCtrl}}" class="text-24rpx text-hex-fbbb32">离线</text>
-    <text wx:elif="{{lowBattery}}" class="text-24rpx text-hex-555659">低电量</text>
+    <text wx:elif="{{lowBattery}}" class="text-24rpx text-hex-ff3849">低电量</text>
     <text wx:elif="{{!showControl || !hasControl}}" class="text-24rpx text-hex-555659">在线</text>
   </view>
 </view>

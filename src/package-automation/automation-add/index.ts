@@ -273,7 +273,7 @@ ComponentWithComputed({
                 name: scene.sceneName,
                 type: 5,
                 desc: [scene.roomName],
-                pic: `/assets/img/scene/${scene.sceneIcon}-gray.png`,
+                pic: `/assets/img/scene/${scene.sceneIcon}.png`,
                 value: {},
                 orderNum: index,
                 dragId: scene.sceneId + Math.floor(Math.random() * 1001),
@@ -439,10 +439,10 @@ ComponentWithComputed({
           showEditRoomPopup: true,
         })
       } else {
+        this.setData({
+          opearationType: 'auto',
+        })
         if (this.data.sensorList.length) {
-          this.setData({
-            opearationType: 'auto',
-          })
           this.addSensorPopup()
         } else {
           Toast({ message: '尚未添加传感器', zIndex: 9999 })
@@ -742,7 +742,7 @@ ComponentWithComputed({
               name: scene.sceneName,
               type: 5,
               desc: [scene.roomName],
-              pic: `/assets/img/scene/${scene.sceneIcon}-gray.png`,
+              pic: `/assets/img/scene/${scene.sceneIcon}.png`,
               value: {},
               orderNum: 0,
               dragId: scene.sceneId + Math.floor(Math.random() * 1001),
