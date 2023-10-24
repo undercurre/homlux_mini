@@ -78,7 +78,7 @@ ComponentWithComputed({
           ...scene,
           dragId: scene.sceneId,
           linkName,
-          sceneIcon: scene.sceneIcon + '-gray',
+          sceneIcon: scene.sceneIcon,
         })
       })
 
