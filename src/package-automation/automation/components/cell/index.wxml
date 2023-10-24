@@ -1,0 +1,7 @@
+
+      <view slot="right-icon" class="btn-raw w-110rpx h-64rpx relative rounded-24rpx flex-center" data-item="{{item}}" catchtap="handleExecScene">
+        <text class="text-blue text-28rpx">执行</text>
+        <view class="absolute left-0 top-0 opacity-0 w-full h-full flex-center rounded-24rpx {{tapAnimate?'btn-tap':''}}">
+          <text class="text-hex-fff text-28rpx">执行</text>
+        </view>
+      </view>

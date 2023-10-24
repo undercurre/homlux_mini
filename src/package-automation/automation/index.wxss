@@ -26,11 +26,27 @@
   font-size: 28rpx !important;
   margin-top: 8rpx !important;
 }
+
 .cell-title {
-  overflow: hidden; /* 超出一行文字自动隐藏 */
-  text-overflow: ellipsis; /*文字隐藏后添加省略号*/
-  white-space: nowrap; /*强制不换行*/
+  overflow: hidden;
+  /* 超出一行文字自动隐藏 */
+  text-overflow: ellipsis;
+  /*文字隐藏后添加省略号*/
+  white-space: nowrap;
+  /*强制不换行*/
   /* color: red; 省略号颜色 */
   font-weight: 500;
   font-size: 32rpx;
+}
+
+.tab-common .van-ellipsis {
+  font-size: 28rpx;
+  color: #555659;
+  font-weight: 400;
+}
+
+.tab-active .van-ellipsis {
+  font-size: 32rpx;
+  color: #27282A;
+  font-weight: 500;
 }

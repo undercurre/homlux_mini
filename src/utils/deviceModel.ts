@@ -105,7 +105,7 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
   }
 
   if (proType === PRO_TYPE.switch) {
-    !isNullOrUnDef(property.power) && descList.push(property.power ? '打开' : '关闭')
+    !isNullOrUnDef(property) && !isNullOrUnDef(property.power) && descList.push(property.power ? '打开' : '关闭')
   }
 
   if (proType === PRO_TYPE.curtain) {

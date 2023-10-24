@@ -63,4 +63,6 @@ export const sceneMap = {
 
 export const sceneList = Object.entries(sceneMap)
 
-export const autoSceneIconList = Array.from({ length: 8 }, (_, i) => `icon-${i + 1}`)
+export const autoSceneIconList = Array.from({ length: 16 }, (_, i) => `icon-${i + 1}`)
+
+export const adviceSceneNameList = ["回家", "离家", "就餐", "会客", "睡眠", "晨起", "阅读", "观影"]

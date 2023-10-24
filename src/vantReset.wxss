@@ -41,6 +41,10 @@ page {
   --cell-icon-size: 48rpx;
   /* cell end */
 
+  /* tab start */
+  --tabs-nav-background-color: transparent;
+  /* tab end */
+
   /* toast start */
   --toast-background-color: rgba(0, 0, 0, 0.8);
   --toast-border-radius: 46rpx;

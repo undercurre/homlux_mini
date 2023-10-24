@@ -958,7 +958,14 @@ ComponentWithComputed({
         if (device.proType === PRO_TYPE.switch) {
           // 开关
           const modelName = device.uniId.split(':')[1]
-          const power = device.mzgdPropertyDTOList[modelName].power
+          console.log(Boolean(device.mzgdPropertyDTOList[modelName]))
+          console.log(modelName)
+          let power
+          if (device.mzgdPropertyDTOList[modelName]) {
+            power = device.mzgdPropertyDTOList[modelName].power
+          } else {
+            power = false
+          }
           const desc = toPropertyDesc(device.proType, device.mzgdPropertyDTOList[modelName])
 
           addSceneActions.push({
@@ -1002,6 +1009,10 @@ ComponentWithComputed({
         editSelectList: [],
         showBeforeAddScenePopup: true,
       })
+
+      // wx.navigateTo({
+      //   url: '/package-automation/automation/index'
+      // })
     },
 
     /**

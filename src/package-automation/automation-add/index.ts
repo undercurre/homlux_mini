@@ -3,9 +3,10 @@ import Toast from '@vant/weapp/toast/toast'
 import { deleteScene, findDevice, addScene, updateScene } from '../../apis/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { deviceStore, sceneStore, homeStore, autosceneStore } from '../../store/index'
+import { deviceStore, sceneStore, homeStore, autosceneStore, roomStore } from '../../store/index'
 import { PRO_TYPE, SENSOR_TYPE, MODEL_NAME } from '../../config/index'
 import { toPropertyDesc, storage, getCurrentPageParams, strUtil, checkInputNameIllegal } from '../../utils/index'
+import { adviceSceneNameList } from '../../config/scene'
 
 ComponentWithComputed({
   options: {
@@ -17,6 +18,10 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
+    opearationType: 'yijian', // yijian是一键场景，auto是自动化场景
+    roomId: '',
+    showEditRoomPopup: false,
+    adviceSceneNameList: adviceSceneNameList,
     navigationBarAndStatusBarHeight:
       (storage.get<number>('statusBarHeight') as number) +
       (storage.get<number>('navigationBarHeight') as number) +
@@ -144,6 +149,9 @@ ComponentWithComputed({
     sceneDeviceActionsLength(data) {
       return data.sceneDeviceActionsFlatten.filter((item) => item.uniId.indexOf('DLY') === -1).length
     },
+    okBtnText(data) {
+      return data.autoSceneId ? '确定' : '设置好了'
+    }
   },
   lifetimes: {
     attached() {
@@ -159,8 +167,8 @@ ComponentWithComputed({
       //     }
       //   })
     },
-    ready() {},
-    detached() {},
+    ready() { },
+    detached() { }, 
   },
   /**
    * 组件的方法列表
@@ -168,7 +176,7 @@ ComponentWithComputed({
   methods: {
     async onLoad() {
       const { autosceneid } = getCurrentPageParams()
-      this.setData({ autoSceneId: autosceneid })
+      this.setData({ autoSceneId: autosceneid, opearationType: 'auto' })
 
       //处理三个传感器、场景和设备列表
       await Promise.all([
@@ -360,6 +368,14 @@ ComponentWithComputed({
         showEditIconPopup: true,
       })
     },
+    /* 选择建议的房间名称 start */
+    selectAdviceName(e: { currentTarget: { dataset: { text: string } } }) {
+      const name = e.currentTarget.dataset.text
+      this.setData({
+        sceneName: name
+      })
+    },
+
     handleEditIconClose() {
       this.setData({
         showEditIconPopup: false,
@@ -409,14 +425,24 @@ ComponentWithComputed({
         showEditConditionPopup: false,
       })
     },
+    /* 条件弹窗点击回调 */
     onConditionClicked(e: { detail: string }) {
       console.log(e.detail)
       if (e.detail === 'time') {
         this.setData({
+          opearationType: 'auto',
           showTimeConditionPopup: true,
+        })
+      } else if (e.detail === 'touch') {
+        this.setData({
+          opearationType: 'yijian',
+          showEditRoomPopup: true
         })
       } else {
         if (this.data.sensorList.length) {
+          this.setData({
+            opearationType: 'auto',
+          })
           this.addSensorPopup()
         } else {
           Toast({ message: '尚未添加传感器', zIndex: 9999 })
@@ -428,6 +454,27 @@ ComponentWithComputed({
       })
     },
     /* 设置场景条件弹窗 end */
+    /* 设置手动场景——房间 */
+    handleSceneRoomEditCancel() {
+      this.setData({
+        showEditRoomPopup: false,
+      })
+    },
+    handleRoomReturn() {
+      this.setData({
+        showEditRoomPopup: false,
+      })
+      this.handleConditionShow()
+    },
+    async handleSceneRoomEditConfirm(e: { detail: string }) {
+      this.setData({
+        roomId: e.detail,
+        showEditRoomPopup: false,
+        _isEditCondition: true
+      })
+      this.updateSceneDeviceConditionsFlatten()
+    },
+    /* 设置手动场景——房间 */
     /**
      * 增加传感器做场景条件
      */
@@ -466,9 +513,13 @@ ComponentWithComputed({
     },
     /* 时间条件 end */
     handleActionShow() {
-      this.setData({
-        showEditActionPopup: true,
-      })
+      if (this.data.opearationType === 'auto') {
+        this.setData({
+          showEditActionPopup: true,
+        })
+      } else {
+        this.handleSelectCardShow()
+      }
     },
     handleActionClose() {
       this.setData({
@@ -720,6 +771,18 @@ ComponentWithComputed({
     updateSceneDeviceConditionsFlatten() {
       const sceneDeviceConditionsFlatten = [] as AutoScene.AutoSceneFlattenCondition[]
 
+      if (this.data.roomId !== '') {
+        sceneDeviceConditionsFlatten.push({
+          uniId: 'room',
+          name: '手动点击场景',
+          desc: [roomStore.roomList.find(item => item.roomId === this.data.roomId)?.roomName ?? roomStore.roomList[0].roomName],
+          pic: '/package-automation/assets/imgs/automation/touch-materialized.png',
+          productId: 'touch',
+          property: {},
+          type: 5,
+        })
+      }
+
       if (this.data.timeCondition.time !== '') {
         sceneDeviceConditionsFlatten.push({
           uniId: 'time',
@@ -937,6 +1000,10 @@ ComponentWithComputed({
     },
 
     async handleSave() {
+      if (this.data.opearationType === 'yijian') {
+        this.go2dispatch()
+        return;
+      }
       if (
         this.data.autoSceneId &&
         (this.data.sceneDeviceActionsLength === 0 || this.data.sceneDeviceConditionsFlatten.length === 0)
@@ -1147,6 +1214,57 @@ ComponentWithComputed({
           },
         })
       }
+    },
+    async go2dispatch() {
+      // 检查场景名是否合法
+      if (!this.data.sceneName) {
+        Toast({
+          message: '场景名不能为空',
+          zIndex: 99999,
+        })
+        return
+      }
+      if (checkInputNameIllegal(this.data.sceneName)) {
+        Toast({
+          message: '场景名称不能用特殊符号或表情',
+          zIndex: 99999,
+        })
+        return
+      }
+      if (this.data.sceneName.length > 15) {
+        Toast({
+          message: '场景名称不能超过15个字符',
+          zIndex: 99999,
+        })
+        return
+      }
+      // 场景动作数据统一在scene-request-list页面处理
+
+      const newSceneData = {
+        conditionType: '0',
+        deviceActions: [],
+        deviceConditions: [],
+        houseId: homeStore.currentHomeDetail.houseId,
+        roomId: roomStore.roomList[roomStore.currentRoomIndex].roomId,
+        sceneIcon: this.data.sceneIcon,
+        sceneName: this.data.sceneName,
+        sceneType: '0',
+        orderNum: 0,
+      } as Scene.AddSceneDto
+
+      // 将新场景排到最后,orderNum可能存在跳号的情况
+      sceneStore.sceneList.forEach((scene) => {
+        if (scene.orderNum && scene.orderNum >= newSceneData.orderNum) {
+          newSceneData.orderNum = scene.orderNum + 1
+        }
+      })
+
+      storage.set('scene_data', newSceneData)
+      storage.set('sceneDeviceActionsFlatten', this.data.sceneDeviceActionsFlatten)
+
+      wx.navigateTo({
+        url: '/package-automation/scene-request-list-yijian/index',
+      })
     },
     async handleAutoSceneDelete() {
       const res = await Dialog.confirm({
