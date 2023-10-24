@@ -5,7 +5,6 @@
     <text class="h-40rpx text-28rpx text-black-tips mt-8rpx font-normal">非必选项</text>
 
     <view class="w-686rpx h-146rpx mt-44rpx mb-80rpx relative flex justify-between items-center" bindtap="handleLinkSwitchPopup">
-
       <view class="flex flex-col items-start ml-160rpx justify-center" slot="title">
         <text class="text-32rpx text-hex-373cdf font-medium h-44rpx">关联智能开关</text>
         <text class="text-24rpx text-tip-scene font-normal h-34rpx mt-10rpx">可通过智能开关一键触发场景</text>

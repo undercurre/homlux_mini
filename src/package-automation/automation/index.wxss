@@ -47,6 +47,6 @@
 
 .tab-active .van-ellipsis {
   font-size: 32rpx;
-  color: #27282A;
+  color: #27282a;
   font-weight: 500;
 }

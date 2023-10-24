@@ -6,7 +6,7 @@ Component({
   properties: {
     checked: {
       type: Boolean,
-      value: false
+      value: false,
     },
   },
 
@@ -19,12 +19,12 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    onSwitchChange: function (e: { detail: { value: boolean; }; }) {
+    onSwitchChange: function (e: { detail: { value: boolean } }) {
       this.setData({
-        checked: !this.properties.checked
-      });
-      const checked = e.detail.value;
-      this.triggerEvent("switchchange", { checked });
+        checked: !this.properties.checked,
+      })
+      const checked = e.detail.value
+      this.triggerEvent('switchchange', { checked })
     },
-  }
+  },
 })

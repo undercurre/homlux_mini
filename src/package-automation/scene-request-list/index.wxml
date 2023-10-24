@@ -28,14 +28,12 @@
   </scroll-view>
 
   <view class="flex flex-row gap-x-46rpx px-32rpx" wx:if="{{finishNum === deviceList.length}}">
-
     <view class="flex w-686rpx gap-x-46rpx">
       <van-button class="flex-1" size="large" bind:click="goBack">上一步</van-button>
       <van-button type="primary" class="flex-1" size="large" bind:click="goBack">确定</van-button>
     </view>
 
     <van-button wx:if="{{successNum === deviceList.length}}" class="w-full" type="primary" size="large" bind:click="goBack">完成</van-button>
-
 
     <block wx:else>
       <van-button class="w-full" size="large" bind:click="goBack">跳过</van-button>

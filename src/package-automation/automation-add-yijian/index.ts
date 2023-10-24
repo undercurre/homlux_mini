@@ -429,7 +429,7 @@ ComponentWithComputed({
         })
       } else if (e.detail === 'touch') {
         this.setData({
-          showEditRoomPopup: true
+          showEditRoomPopup: true,
         })
       } else {
         if (this.data.sensorList.length) {
@@ -740,7 +740,10 @@ ComponentWithComputed({
         sceneDeviceConditionsFlatten.push({
           uniId: 'room',
           name: '手动点击场景',
-          desc: [roomStore.roomList.find(item => item.roomId === this.data.roomId)?.roomName ?? roomStore.roomList[0].roomName],
+          desc: [
+            roomStore.roomList.find((item) => item.roomId === this.data.roomId)?.roomName ??
+              roomStore.roomList[0].roomName,
+          ],
           pic: '/package-automation/assets/imgs/automation/touch-materialized.png',
           productId: 'touch',
           property: {},
@@ -1278,7 +1281,7 @@ ComponentWithComputed({
     selectAdviceName(e: { currentTarget: { dataset: { text: string } } }) {
       const name = e.currentTarget.dataset.text
       this.setData({
-        sceneName: name
+        sceneName: name,
       })
     },
     handleSceneRoomEditCancel() {
@@ -1290,7 +1293,7 @@ ComponentWithComputed({
       this.setData({
         roomId: e.detail,
         showEditRoomPopup: false,
-        _isEditCondition: true
+        _isEditCondition: true,
       })
       this.updateSceneDeviceConditionsFlatten()
     },

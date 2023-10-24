@@ -22,7 +22,6 @@ import {
   rpx2px,
   _get,
   throttle,
-  toPropertyDesc,
   isConnect,
   verifyNetwork,
   Logger,
@@ -920,7 +919,7 @@ ComponentWithComputed({
 
     handleSceneTap() {
       wx.navigateTo({
-        url: '/package-room-control/scene-list/index',
+        url: '/package-automation/automation/index',
       })
     },
     /** 点击创建场景按钮回调 */
@@ -930,89 +929,90 @@ ComponentWithComputed({
         return
       }
 
-      // 补充actions
-      const addSceneActions = [] as Device.ActionItem[]
+      // 逻辑已过时，可删除，暂时保留一段时间
+      // // 补充actions
+      // const addSceneActions = [] as Device.ActionItem[]
 
-      // 排除已经是场景开关的开关或者离线的设备
-      // ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
-      let deviceList = [] as Device.DeviceItem[]
+      // // 排除已经是场景开关的开关或者离线的设备
+      // // ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
+      // let deviceList = [] as Device.DeviceItem[]
 
-      for (const list of this.data.devicePageList) {
-        deviceList = deviceList.concat(list)
-      }
+      // for (const list of this.data.devicePageList) {
+      //   deviceList = deviceList.concat(list)
+      // }
 
-      const selectList = deviceList.filter((device) => {
-        let [, switchId] = device.uniId.split(':')
+      // const selectList = deviceList.filter((device) => {
+      //   let [, switchId] = device.uniId.split(':')
 
-        switchId = switchId ?? MODEL_NAME[device.proType]
+      //   switchId = switchId ?? MODEL_NAME[device.proType]
 
-        return device.mzgdPropertyDTOList[switchId]?.ButtonMode !== 2 && device.onLineStatus
-      })
-
-      if (!selectList.length) {
-        Toast('所有设备已离线，无法创建场景')
-        return
-      }
-
-      selectList.forEach((device) => {
-        if (device.proType === PRO_TYPE.switch) {
-          // 开关
-          const modelName = device.uniId.split(':')[1]
-          console.log(Boolean(device.mzgdPropertyDTOList[modelName]))
-          console.log(modelName)
-          let power
-          if (device.mzgdPropertyDTOList[modelName]) {
-            power = device.mzgdPropertyDTOList[modelName].power
-          } else {
-            power = false
-          }
-          const desc = toPropertyDesc(device.proType, device.mzgdPropertyDTOList[modelName])
-
-          addSceneActions.push({
-            uniId: device.uniId,
-            name: device.switchInfoDTOList[0].switchName + ' | ' + device.deviceName,
-            desc: desc,
-            pic: device.switchInfoDTOList[0].pic,
-            proType: device.proType,
-            deviceType: device.deviceType,
-            value: {
-              modelName,
-              power,
-            },
-          })
-        } else {
-          const modelName = MODEL_NAME[device.proType]
-          const properties = device.mzgdPropertyDTOList[modelName]
-          const desc = toPropertyDesc(device.proType, properties)
-
-          const action = {
-            uniId: device.uniId,
-            name: device.deviceName,
-            desc,
-            pic: device.pic,
-            proType: device.proType,
-            deviceType: device.deviceType,
-            value: {
-              modelName,
-              ...properties,
-            } as IAnyObject,
-          }
-
-          addSceneActions.push(action)
-        }
-      })
-      runInAction(() => {
-        sceneStore.addSceneActions = addSceneActions
-      })
-      this.setData({
-        editSelectMode: false,
-        editSelectList: [],
-        showBeforeAddScenePopup: true,
-      })
-
-      // wx.navigateTo({
-      //   url: '/package-automation/automation/index'
+      //   return device.mzgdPropertyDTOList[switchId]?.ButtonMode !== 2 && device.onLineStatus
       // })
+
+      // if (!selectList.length) {
+      //   Toast('所有设备已离线，无法创建场景')
+      //   return
+      // }
+
+      // selectList.forEach((device) => {
+      //   if (device.proType === PRO_TYPE.switch) {
+      //     // 开关
+      //     const modelName = device.uniId.split(':')[1]
+      //     console.log(Boolean(device.mzgdPropertyDTOList[modelName]))
+      //     console.log(modelName)
+      //     let power
+      //     if (device.mzgdPropertyDTOList[modelName]) {
+      //       power = device.mzgdPropertyDTOList[modelName].power
+      //     } else {
+      //       power = false
+      //     }
+      //     const desc = toPropertyDesc(device.proType, device.mzgdPropertyDTOList[modelName])
+
+      //     addSceneActions.push({
+      //       uniId: device.uniId,
+      //       name: device.switchInfoDTOList[0].switchName + ' | ' + device.deviceName,
+      //       desc: desc,
+      //       pic: device.switchInfoDTOList[0].pic,
+      //       proType: device.proType,
+      //       deviceType: device.deviceType,
+      //       value: {
+      //         modelName,
+      //         power,
+      //       },
+      //     })
+      //   } else {
+      //     const modelName = MODEL_NAME[device.proType]
+      //     const properties = device.mzgdPropertyDTOList[modelName]
+      //     const desc = toPropertyDesc(device.proType, properties)
+
+      //     const action = {
+      //       uniId: device.uniId,
+      //       name: device.deviceName,
+      //       desc,
+      //       pic: device.pic,
+      //       proType: device.proType,
+      //       deviceType: device.deviceType,
+      //       value: {
+      //         modelName,
+      //         ...properties,
+      //       } as IAnyObject,
+      //     }
+
+      //     addSceneActions.push(action)
+      //   }
+      // })
+      // runInAction(() => {
+      //   sceneStore.addSceneActions = addSceneActions
+      // })
+      // this.setData({
+      //   editSelectMode: false,
+      //   editSelectList: [],
+      //   showBeforeAddScenePopup: true,
+      // })
+
+      wx.navigateTo({
+        url: '/package-automation/automation-add/index',
+      })
     },
 
     /**

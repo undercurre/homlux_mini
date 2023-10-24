@@ -2,7 +2,6 @@ import { storage } from '../../utils/index'
 
 // package-automation/scene-success/index.ts
 Component({
-
   /**
    * 页面的初始数据
    */
@@ -17,7 +16,7 @@ Component({
     go2SceneIndex() {
       wx.navigateBack({
         delta: 3,
-      });
-    }
+      })
+    },
   },
 })

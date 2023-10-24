@@ -40,8 +40,8 @@ ComponentWithComputed({
       type: Array,
     },
     sceneid: {
-      type: String
-    }
+      type: String,
+    },
   },
 
   /**

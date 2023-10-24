@@ -25,7 +25,7 @@
           <view class="mr-38rpx flex">
             <view class="scene-icon p-4rpx bg-hex-fff rounded-999" wx:for="{{sceneListInBar}}" wx:key="sceneId">
               <view class="bg-hex-eff0f3 rounded-999">
-                <svg-icon name="scene:{{item.sceneIcon}}" width="52rpx" height="52rpx" />
+                <image class="block w-52 h-52" src="/assets/img/auto-scene/{{item.sceneIcon}}.png"></image>
               </view>
             </view>
           </view>

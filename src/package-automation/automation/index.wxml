@@ -48,7 +48,7 @@
           </van-cell>
         </van-cell-group>
         <view wx:if="{{roomYijianSceneListComputed.length === 0}}" class="flex flex-col items-center pt-86rpx">
-          <image src="../assets/imgs/automation/no-scene.png" class="w-300rpx  h-300rpx"></image>
+          <image src="../assets/imgs/automation/no-scene.png" class="w-300rpx h-300rpx"></image>
           <text class="text-32rpx text-hex-555659 mt-98rpx">暂无一键场景</text>
         </view>
         <!-- 顶开下面的内容高度 -->
@@ -78,7 +78,7 @@
         <van-cell-group wx:for="{{allRoomAutoSceneListComputed}}" wx:key="sceneId" inset>
           <van-cell label="{{item.desc}}" label-class="cell-lable" center border="{{false}}" clickable data-autosceneid="{{item.sceneId}}" bind:click="toEditAutoScene">
             <view slot="icon" class="rounded-32rpx p-16rpx mr-16rpx flex">
-              <image class="w-72 h-72" src="/package-automation/assets/imgs/auto-scene/{{item.sceneIcon}}.png"></image>
+              <image class="w-72 h-72" src="/assets/img/auto-scene/{{item.sceneIcon}}.png"></image>
             </view>
             <view slot="title" class="w-384rpx h-44rpx cell-title">
               <text>{{item.sceneName}}</text>

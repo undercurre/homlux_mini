@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
-import Dialog from '@vant/weapp/dialog/dialog';
+import Dialog from '@vant/weapp/dialog/dialog'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { storage, emitter, getCurrentPageParams } from '../../utils/index'
 import { addScene, retryScene, updateScene } from '../../apis/index'
@@ -40,14 +40,14 @@ ComponentWithComputed({
           title: '创建失败',
           message: '部分设备配置自动化失败，请确保所有设备在线后重试',
           showCancelButton: false,
-          confirmButtonText: '我知道了'
+          confirmButtonText: '我知道了',
         })
           .then(() => {
             // on confirm
           })
           .catch(() => {
             // on cancel
-          });
+          })
       }
 
       if (data.finishNum !== data.deviceList.length) {
@@ -156,7 +156,7 @@ ComponentWithComputed({
         }
       })
       this.setData({
-        opearationType: pageParams.sceneId ? 'edit' : 'add'
+        opearationType: pageParams.sceneId ? 'edit' : 'add',
       })
       const promise = pageParams.sceneId
         ? updateScene(sceneData as Scene.UpdateSceneDto)
@@ -188,14 +188,14 @@ ComponentWithComputed({
           title: '创建失败',
           message: '部分设备配置自动化失败，请确保所有设备在线后重试',
           showCancelButton: false,
-          confirmButtonText: '我知道了'
+          confirmButtonText: '我知道了',
         })
           .then(() => {
             // on confirm
           })
           .catch(() => {
             // on cancel
-          });
+          })
       }
     },
 
@@ -215,7 +215,7 @@ ComponentWithComputed({
   methods: {
     handleAddScenePopupClose() {
       this.setData({
-        linkSwitchPopup: false
+        linkSwitchPopup: false,
       })
     },
     handleShowAddSceneSuccess() {
@@ -227,7 +227,7 @@ ComponentWithComputed({
     },
     linkSwitch() {
       this.setData({
-        linkSwitchPopup: true
+        linkSwitchPopup: true,
       })
     },
     async retry() {
