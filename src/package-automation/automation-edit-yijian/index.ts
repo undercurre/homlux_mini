@@ -4,7 +4,7 @@ import { deleteScene, findDevice, updateScene } from '../../apis/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { deviceStore, sceneStore, homeStore, roomStore } from '../../store/index'
-import { PRO_TYPE, SENSOR_TYPE, MODEL_NAME } from '../../config/index'
+import { PRO_TYPE, SENSOR_TYPE, MODEL_NAME, sceneImgDir } from '../../config/index'
 import {
   toPropertyDesc,
   storage,
@@ -27,6 +27,7 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
+    sceneImgDir,
     roomId: '',
     showEditRoomPopup: false,
     adviceSceneNameList: adviceSceneNameList,
@@ -233,7 +234,6 @@ ComponentWithComputed({
         const tempSceneDeviceActionsFlatten = [] as AutoScene.AutoSceneFlattenAction[]
 
         sceneInfo.deviceActions.forEach((action) => {
-
           //设备
           let deviceUniId = action.deviceId
           if (action.proType === PRO_TYPE.switch) {

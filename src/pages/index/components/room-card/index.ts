@@ -3,6 +3,8 @@ import { runInAction } from 'mobx-miniprogram'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { execScene } from '../../../../apis/scene'
 import { roomBinding, roomStore } from '../../../../store/index'
+import { sceneImgDir } from '../../../../config/index'
+
 ComponentWithComputed({
   options: {},
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding] })],
@@ -57,6 +59,7 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
+    sceneImgDir,
     sceneClickId: '',
   },
 

@@ -1,4 +1,5 @@
 import { rpx2px } from '../utils/index'
+import { ossDomain } from '../config/index'
 
 // 设备列表，每次加载的条数 应该为4的倍数
 export const LIST_PAGE = 20
@@ -54,7 +55,7 @@ export const SENSOR_TYPE = {
 export const sensorList: Record<string, string>[] = [
   {
     icon: '/package-distribution/assets/guide/sensor-body.png',
-    img: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/sensor_body.gif',
+    img: `${ossDomain}/homlux/sensor_body.gif`,
     name: '人体传感器',
     desc: '① 确认传感器电池已安装好\n② 长按球体顶部「配网按键」5秒以上，至指示灯开始闪烁（1秒/次）',
     path: 'sensor_door.gif',
@@ -62,7 +63,7 @@ export const sensorList: Record<string, string>[] = [
   },
   {
     icon: '/package-distribution/assets/guide/sensor-door.png',
-    img: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/sensor_door.gif',
+    img: `${ossDomain}/homlux/sensor_door.gif`,
     name: '门磁传感器',
     desc: '① 确认传感器电池已安装好\n② 长按顶部「配网按键」5秒以上，至指示灯开始闪烁（1秒/次）',
     path: '',
@@ -70,7 +71,7 @@ export const sensorList: Record<string, string>[] = [
   },
   {
     icon: '/package-distribution/assets/guide/sensor-switch.png',
-    img: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/sensor_switch.gif',
+    img: `${ossDomain}/homlux/sensor_switch.gif`,
     name: '无线开关',
     desc: '① 确认传感器电池已安装好\n② 点击「开关键」，随后立刻长按5秒以上，至指示灯开始闪烁（1秒/次）',
     path: '',

@@ -1,5 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehavior from '../../behaviors/pageBehaviors'
+import { ossDomain } from '../../config/index'
 import { othersStore } from '../../store/index'
 import { storage } from '../../utils/index'
 
@@ -10,8 +11,8 @@ ComponentWithComputed({
     checkImg: '/assets/img/base/check.png',
     uncheckImg: '/assets/img/base/uncheck.png',
     shots: {
-      img0: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/shot0.png',
-      img1: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/shot1.png',
+      img0: `${ossDomain}/homlux/shot0.png`,
+      img1: `${ossDomain}/homlux/shot1.png`,
     },
     defaultPage: '',
     prevPages: 0,

@@ -10,7 +10,7 @@ import {
 } from '../../../../apis/index'
 import { sceneList, SCREEN_PID } from '../../../../config/index'
 import { deviceStore, homeStore, roomStore, sceneStore } from '../../../../store/index'
-import { storage,  emitter } from '../../../../utils/index'
+import { storage, emitter } from '../../../../utils/index'
 
 ComponentWithComputed({
   options: {

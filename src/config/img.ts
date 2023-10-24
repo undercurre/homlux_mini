@@ -1,13 +1,11 @@
 // import { getEnv } from './index'
 
-//小程序（图片存放）
-const domain = 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux' // 对应项目的ossFile目录
-
+// 小程序（图片存放）
+export const ossDomain = 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com' // ossFile根目录
 // const imgBaseUrl = `${domain}/${getEnv() === 'sit' || getEnv() == 'dev' ? 'sit' : 'prod'}`
-
-export const ShareImgUrl = `${domain}/welcome.png`
-
-export const meijuImgDir = `${domain}/meiju`
+export const ShareImgUrl = `${ossDomain}/homlux/welcome.png`
+export const meijuImgDir = `${ossDomain}/homlux/meiju`
+export const sceneImgDir = `${ossDomain}/homlux/auto-scene`
 
 // https://www.smartmidea.net/projects/sit/meiju-lite-assets/shareImg/meiju/addDeviceAboutImg/ic_2.4GHzremind@3x.png
 // 美居配网迁移的图片

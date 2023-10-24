@@ -4,7 +4,7 @@ import { deleteScene, findDevice, addScene, updateScene } from '../../apis/index
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { deviceStore, sceneStore, homeStore, autosceneStore, roomStore } from '../../store/index'
-import { PRO_TYPE, SENSOR_TYPE, MODEL_NAME } from '../../config/index'
+import { PRO_TYPE, SENSOR_TYPE, MODEL_NAME, sceneImgDir } from '../../config/index'
 import { toPropertyDesc, storage, getCurrentPageParams, strUtil, checkInputNameIllegal } from '../../utils/index'
 import { adviceSceneNameList } from '../../config/scene'
 import { roomBinding } from '../../store/index'
@@ -20,6 +20,7 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
+    sceneImgDir,
     roomId: '',
     showEditRoomPopup: false,
     adviceSceneNameList: adviceSceneNameList,

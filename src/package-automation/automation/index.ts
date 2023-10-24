@@ -7,6 +7,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { strUtil } from '../../utils/strUtil'
 import { execScene } from '../../apis/index'
 import { emitter } from '../../utils/index'
+import { sceneImgDir } from '../../config/index'
 // import { reaction } from 'mobx-miniprogram'
 // import { emitter } from '../../utils/index'
 
@@ -17,6 +18,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    sceneImgDir,
     editBack: false,
     hasAutoScene: true,
     // autoSceneList: [] as AutoScene.AutoSceneItem[],
@@ -121,7 +123,7 @@ ComponentWithComputed({
         })
     },
     roomTab() {
-      let tempRoomList = roomStore.roomList.map((item) => {
+      const tempRoomList = roomStore.roomList.map((item) => {
         return {
           roomId: item.roomId,
           roomName: item.roomName,

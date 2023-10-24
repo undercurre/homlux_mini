@@ -35,7 +35,7 @@
         <van-cell-group wx:for="{{roomYijianSceneListComputed}}" wx:key="sceneId" inset>
           <van-cell label="{{item.desc}}" label-class="cell-lable" center border="{{false}}" clickable data-sceneId="{{item.sceneId}}" bind:click="toEditYijianScene">
             <view slot="icon" class="rounded-32rpx p-16rpx mr-16rpx flex">
-              <image class="w-72 h-72" src="/package-automation/assets/imgs/auto-scene/{{item.sceneIcon}}.png"></image>
+              <image class="w-72 h-72" src="{{sceneImgDir}}/{{item.sceneIcon}}.png"></image>
             </view>
             <view slot="title" class="w-384rpx h-44rpx cell-title">
               <text>{{item.sceneName}}</text>
@@ -78,7 +78,7 @@
         <van-cell-group wx:for="{{allRoomAutoSceneListComputed}}" wx:key="sceneId" inset>
           <van-cell label="{{item.desc}}" label-class="cell-lable" center border="{{false}}" clickable data-autosceneid="{{item.sceneId}}" bind:click="toEditAutoScene">
             <view slot="icon" class="rounded-32rpx p-16rpx mr-16rpx flex">
-              <image class="w-72 h-72" src="/assets/img/auto-scene/{{item.sceneIcon}}.png"></image>
+              <image class="w-72 h-72" src="{{sceneImgDir}}/{{item.sceneIcon}}.png"></image>
             </view>
             <view slot="title" class="w-384rpx h-44rpx cell-title">
               <text>{{item.sceneName}}</text>

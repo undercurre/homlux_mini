@@ -1,4 +1,4 @@
-import { autoSceneIconList } from '../../../../config/index'
+import { autoSceneIconList, sceneImgDir } from '../../../../config/index'
 
 Component({
   options: {},
@@ -30,6 +30,7 @@ Component({
    * 组件的初始数据
    */
   data: {
+    sceneImgDir,
     icon: '',
     // contentHeight: 0,
     autoSceneIconList,

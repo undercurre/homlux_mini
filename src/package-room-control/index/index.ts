@@ -36,6 +36,7 @@ import {
   CARD_H,
   MODEL_NAME,
   CARD_REFRESH_TIME,
+  sceneImgDir,
 } from '../../config/index'
 
 type DeviceCard = Device.DeviceItem & {
@@ -80,6 +81,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    sceneImgDir,
     _updating: false, // 列表更新中标志
     _diffWaitlist: [] as DeviceCard[], // 待更新列表
     // 待更新到视图的数据（updateDeviceList专用）
