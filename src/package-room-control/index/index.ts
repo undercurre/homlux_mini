@@ -13,7 +13,7 @@ import {
 } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { sendDevice, execScene, saveDeviceOrder, queryGroup } from '../../apis/index'
+import { sendDevice, execScene, saveDeviceOrder, queryGroup, queryAuthGetStatus } from '../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
 import {
   storage,
@@ -103,6 +103,9 @@ ComponentWithComputed({
     /** 控制面板 */
     controlPopup: false,
     showAddScenePopup: false,
+    showAuthDialog: false, // 显示确权弹层
+    deviceIdForQueryAuth: '', // 用于确权的设备id
+    _cardEventType: '' as 'card' | 'control', // 触发确权前的操作类型
     // 设备卡片列表，二维数组
     devicePageList: [] as DeviceCard[][],
     /** 待创建面板的设备选择弹出框 */
@@ -1013,15 +1016,38 @@ ComponentWithComputed({
     },
 
     /**
-     * @name 根据是否编辑状态，选择卡片点击事件
+     * @description 如果在编辑状态，则选择或取消选择卡片；不在编辑状态，则弹出控制弹框
      * @param e 设备属性
      */
-    handleCardTap(e: { detail: DeviceCard & { clientRect: WechatMiniprogram.ClientRect } }) {
+    async handleCardTap(e: { detail: DeviceCard & { clientRect: WechatMiniprogram.ClientRect } }) {
       if (this.data.editSelectMode) {
         this.handleCardEditSelect(e)
+      } else if (e.detail.deviceType === 3) {
+        const { deviceId } = e.detail
+        const res = await queryAuthGetStatus({ deviceId })
+        // 若设备未确权、待确权，则弹出指引弹窗
+        if (res.result.status === 1 || res.result.status === 2) {
+          this.setData({ showAuthDialog: true, deviceIdForQueryAuth: deviceId })
+          this.data._cardEventType = 'card'
+        }
       } else {
         this.handleCardCommonTap(e)
       }
+    },
+
+    handleAuthSuccess() {
+      const detail = deviceStore.deviceList.find((d) => d.deviceId === this.data.deviceIdForQueryAuth) as DeviceCard
+
+      if (this.data._cardEventType === 'card') {
+        this.handleCardCommonTap({ detail })
+      } else {
+        this.handleControlTap({ detail })
+      }
+      this.setData({ showAuthDialog: false })
+    },
+
+    handleAuthCancel() {
+      this.setData({ showAuthDialog: false })
     },
 
     // 编辑模式下再点选
@@ -1071,7 +1097,7 @@ ComponentWithComputed({
       this.setData(diffData)
     },
 
-    handleCardCommonTap(e: { detail: DeviceCard & { clientRect: WechatMiniprogram.ClientRect } }) {
+    handleCardCommonTap(e: { detail: DeviceCard }) {
       const { uniId } = e.detail // 灯的 deviceId===uniId
       const isChecked = this.data.checkedList.includes(uniId) // 点击卡片前，卡片是否选中
       const toCheck = !isChecked // 本次点击需执行的选中状态
@@ -1094,19 +1120,6 @@ ComponentWithComputed({
       // 选择灯卡片时，同步设备状态到控制弹窗
       if (toCheck) {
         diffData.checkedDeviceInfo = e.detail
-        // const modelName = MODEL_NAME[e.detail.proType]
-        // const prop = e.detail.mzgdPropertyDTOList[modelName]
-        // if (e.detail.proType === PRO_TYPE.light) {
-        //   if (!isNullOrUnDef(prop.brightness)) diffData['lightStatus.brightness'] = prop.brightness
-        //   if (!isNullOrUnDef(prop.colorTemperature)) diffData['lightStatus.colorTemperature'] = prop.colorTemperature
-        //   if (!isNullOrUnDef(prop.power)) diffData['lightStatus.power'] = prop.power
-        //   if (!isNullOrUnDef(e.detail.canLanCtrl)) diffData['lightStatus.canLanCtrl'] = e.detail.canLanCtrl
-        //   if (!isNullOrUnDef(e.detail.onLineStatus)) diffData['lightStatus.onLineStatus'] = e.detail.onLineStatus
-        // } else if (e.detail.proType === PRO_TYPE.curtain) {
-        //   diffData.curtainStatus = {
-        //     position: prop.curtain_position,
-        //   }
-        // }
       }
 
       // 合并数据变化
@@ -1117,10 +1130,26 @@ ComponentWithComputed({
       this.setData(diffData)
 
       // 弹起popup后，选中卡片滚动到视图中央，以免被遮挡
+      // type: DeviceCard & { clientRect: WechatMiniprogram.ClientRect }
       // 作用不大，减小渲染压力，暂时注释
       // this.setData({
       //   scrollTop: this.data.scrollTop + e.detail.clientRect.top - this.data.scrollViewHeight / 2,
       // })
+    },
+
+    async queryAuthBeforeControlTap(e: { detail: DeviceCard }) {
+      if (e.detail.deviceType !== 3) {
+        this.handleControlTap(e)
+        return
+      }
+
+      const { deviceId } = e.detail
+      const res = await queryAuthGetStatus({ deviceId })
+      // 若设备未确权、待确权，则弹出指引弹窗
+      if (res.result.status === 1 || res.result.status === 2) {
+        this.setData({ showAuthDialog: true, deviceIdForQueryAuth: deviceId })
+        this.data._cardEventType = 'control'
+      }
     },
 
     // 卡片点击时，按品类调用对应方法
