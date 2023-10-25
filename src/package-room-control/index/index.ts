@@ -623,12 +623,11 @@ ComponentWithComputed({
         }
         // !! 整个列表刷新
         else {
-          this.setData({
-            devicePageList: [], // 清空
-            deviceListInited: false,
-          })
           console.log('▤ [updateDeviceList] 列表重新加载')
         }
+
+        const oldListPageLength = this.data.devicePageList.length
+        const newListPageLength = Math.ceil(_list.length / LIST_PAGE)
 
         // 拆分为二维数组，以便分页渲染
         for (let groupIndex = 0; _list.length > 0; ++groupIndex) {
@@ -638,9 +637,20 @@ ComponentWithComputed({
           this.setData(diffData)
         }
 
-        this.setData({
-          deviceListInited: true,
-        })
+        // 直接清空旧列表，再重新加载会引导闪烁，此处只清空‘旧列表比新列表多出的项’
+        if (oldListPageLength > newListPageLength) {
+          for (let groupIndex = newListPageLength; groupIndex < oldListPageLength; ++groupIndex) {
+            const diffData = {} as IAnyObject
+            diffData[`devicePageList[${groupIndex}]`] = []
+            this.setData(diffData)
+          }
+        }
+
+        if (!this.data.deviceListInited) {
+          this.setData({
+            deviceListInited: true,
+          })
+        }
 
         Logger.log('▤ [updateDeviceList] 列表更新完成', this.data.devicePageList)
       }
