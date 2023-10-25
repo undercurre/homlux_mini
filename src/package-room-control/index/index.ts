@@ -243,6 +243,11 @@ ComponentWithComputed({
     toolboxContentHeight(data) {
       return data.roomHasLight ? 150 : 60
     },
+    // 当前房间灯组数量
+    groupCount() {
+      const groups = deviceStore.deviceFlattenList.filter((d) => d.deviceType === 4)
+      return groups.length
+    },
   },
 
   watch: {
@@ -550,20 +555,6 @@ ComponentWithComputed({
               originDevice.proType === PRO_TYPE.curtain // 因为【灯】异常推送较多，暂时不对弹框中的设备状态进行更新
             ) {
               this.data._diffCards.data.checkedDeviceInfo = device
-              // const prop = transferDeviceProperty(originDevice.proType, device!.mzgdPropertyDTOList[modelName])
-              // 因为【灯】异常推送较多，暂时不对弹框中的设备状态进行更新
-              //   if (originDevice.proType === PRO_TYPE.light) {
-              //     diffData.lightStatus = {
-              //       Level: prop.Level,
-              //       ColorTemp: prop.ColorTemp,
-              //       OnOff: prop.OnOff,
-              //     }
-              //   } else
-              // if (originDevice.proType === PRO_TYPE.curtain) {
-              //   this.data._diffCards.data.curtainStatus = {
-              //     position: prop.curtain_position,
-              //   }
-              // }
             }
 
             // 处理更新逻辑
@@ -774,6 +765,10 @@ ComponentWithComputed({
      */
     movableChangeThrottle: throttle(function (this: IAnyObject, e: WechatMiniprogram.TouchEvent) {
       const targetOrder = getIndex(e.detail.x, e.detail.y)
+      // 如果拖动目标是灯组所在的位置
+      if (this.data.groupCount && targetOrder < this.data.groupCount) {
+        return
+      }
       if (this.data.placeholder.orderNum !== targetOrder) {
         const oldOrder = this.data.placeholder.orderNum
         // 节流操作，可能导致movableTouchEnd后仍有movableChange需要执行，丢弃掉

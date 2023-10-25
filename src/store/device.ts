@@ -65,6 +65,7 @@ export const deviceStore = observable({
           mzgdPropertyDTOList: {
             [modelName]: device.mzgdPropertyDTOList[modelName],
           },
+          orderNum: device.deviceType === 4 ? -1 : device.orderNum, // 灯组强制排前面
         })
       }
     })
