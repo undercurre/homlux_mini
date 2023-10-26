@@ -1040,7 +1040,7 @@ ComponentWithComputed({
       // 不在编辑状态，如果是WIFI设备
       else if (e.detail.deviceType === 3) {
         const { deviceId } = e.detail
-        const res = await queryAuthGetStatus({ deviceId })
+        const res = await queryAuthGetStatus({ houseId: homeStore.currentHomeId, deviceId })
         // 若设备未确权、待确权，则弹出指引弹窗
         if (res.result.status === 1 || res.result.status === 2) {
           this.setData({ showAuthDialog: true, deviceIdForQueryAuth: deviceId })
@@ -1163,7 +1163,7 @@ ComponentWithComputed({
       // 如果是WIFI设备
       if (e.detail.deviceType === 3) {
         const { deviceId } = e.detail
-        const res = await queryAuthGetStatus({ deviceId })
+        const res = await queryAuthGetStatus({ houseId: homeStore.currentHomeId, deviceId })
         // 若设备未确权、待确权，则弹出指引弹窗
         if (res.result.status === 1 || res.result.status === 2) {
           this.setData({ showAuthDialog: true, deviceIdForQueryAuth: deviceId })

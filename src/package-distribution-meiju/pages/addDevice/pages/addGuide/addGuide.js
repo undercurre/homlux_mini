@@ -18,6 +18,7 @@ import { typesPreserveAfterCheckGuideByA0 } from '../../config/index'
 import { imgesList } from '../../../assets/js/shareImg.js'
 
 import app from '../../../../common/app'
+import { homeStore } from '../../../../../store'
 
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const checkAuthMixin = require('../../mixins/checkAuthMixin')
@@ -699,7 +700,7 @@ Page({
       })
   },
   async queryGuideInfo(mode, type, sn8) {
-    const res = await queryGuideInfo({ sn8, type, mode: mode.toString() })
+    const res = await queryGuideInfo({ houseId: homeStore.currentHomeId, sn8, type, mode: mode.toString() })
 
     Logger.console('queryGuideInfo', res)
 

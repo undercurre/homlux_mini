@@ -99,7 +99,7 @@ ComponentWithComputed({
      */
     async toBindDevice() {
       const { sn8, type, mode } = app.addDeviceInfo
-      const res = await queryGuideInfo({ sn8, type, mode: mode.toString() })
+      const res = await queryGuideInfo({ houseId: homeStore.currentHomeId, sn8, type, mode: mode.toString() })
 
       Logger.console('queryGuideInfo', res)
 

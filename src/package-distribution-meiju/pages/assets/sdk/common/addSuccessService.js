@@ -1,4 +1,5 @@
 import { queryAuthGetStatus } from '../../../../../apis/index'
+import { homeStore } from '../../../../../store/index'
 
 const addSuccessService = {
   /**
@@ -7,7 +8,7 @@ const addSuccessService = {
    */
   async getApplianceAuthType(applianceCode) {
     console.debug('addSuccessService-getApplianceAuthType')
-    const res = await queryAuthGetStatus({ deviceId: applianceCode })
+    const res = await queryAuthGetStatus({ houseId: homeStore.currentHomeId, deviceId: applianceCode })
 
     return res
   },

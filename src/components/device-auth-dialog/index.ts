@@ -2,6 +2,7 @@ import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { confirmDeviceAuth, queryAuthGetStatus, queryDeviceSpecifiedInfo } from '../../apis/index'
+import { homeStore } from '../../store/index'
 
 let secondTimeId = 0 // 倒计时器
 const second = 10 // 倒计时时长
@@ -86,7 +87,10 @@ ComponentWithComputed({
    */
   methods: {
     async init() {
-      const guideInfoRes = await queryDeviceSpecifiedInfo({ deviceId: this.data.deviceId })
+      const guideInfoRes = await queryDeviceSpecifiedInfo({
+        houseId: homeStore.currentHomeId,
+        deviceId: this.data.deviceId,
+      })
 
       if (!guideInfoRes.success) {
         Toast({ message: '查询确权指引失败', zIndex: 9999 })
@@ -102,7 +106,7 @@ ComponentWithComputed({
     },
 
     async queryAuthGetStatus() {
-      const res = await queryAuthGetStatus({ deviceId: this.data.deviceId })
+      const res = await queryAuthGetStatus({ houseId: homeStore.currentHomeId, deviceId: this.data.deviceId })
 
       // 弹框取消后或者倒计时结束，取消轮询确权状态
       if (!res.success || this.data.time <= 0 || !this.data.isShow) {
@@ -142,7 +146,7 @@ ComponentWithComputed({
         isShowRetryButton: false,
       })
 
-      const confirmRes = await confirmDeviceAuth({ deviceId: this.data.deviceId })
+      const confirmRes = await confirmDeviceAuth({ houseId: homeStore.currentHomeId, deviceId: this.data.deviceId })
 
       if (!confirmRes.success) {
         Toast({ message: '下发进入确权指令失败', zIndex: 9999 })

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import { checkApExists, queryAuthGetStatus } from '../../../../../../apis/index'
 import { Logger } from '../../../../../../utils/index'
+import { homeStore } from '../../../../../../store/index'
 
 import { getReqId, getStamp } from 'm-utilsdk/index'
 import { showToast } from '../../../../../utils/util'
@@ -272,6 +273,7 @@ module.exports = Behavior({
     //查询设备是否连上云
     async checkApExists(sn, forceValidRandomCode, randomCode = '') {
       const res = await checkApExists({
+        houseId: homeStore.currentHomeId,
         sn,
         randomCode,
         forceValidRandomCode,
@@ -540,7 +542,7 @@ module.exports = Behavior({
      */
     async getApplianceAuthType(applianceCode) {
       Logger.console('addDeviceMixin.js,  getApplianceAuthType')
-      const res = await queryAuthGetStatus({ deviceId: applianceCode })
+      const res = await queryAuthGetStatus({ houseId: homeStore.currentHomeId, deviceId: applianceCode })
 
       return res
     },

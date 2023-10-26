@@ -1,10 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
-import {
-  bindMideaDevice,
-  queryAuthGetStatus,
-  queryDeviceSpecifiedInfo,
-  queryGuideInfo,
-} from '../../../../../apis/index'
+import { bindMideaDevice, queryAuthGetStatus, queryGuideInfo } from '../../../../../apis/index'
 import { homeStore, roomStore } from '../../../../../store/index'
 import { Logger, strUtil } from '../../../../../utils/index'
 import app from '../../../../common/app'
@@ -1088,7 +1083,7 @@ Page({
   async getNetworkGuide() {
     let { type, sn8, mode } = app.addDeviceInfo
 
-    const res = await queryGuideInfo({ sn8, type, mode: mode.toString() })
+    const res = await queryGuideInfo({ houseId: homeStore.currentHomeId, sn8, type, mode: mode.toString() })
 
     Logger.console('二次验证-重新连接-配网指引信息', res)
 
@@ -2216,7 +2211,7 @@ Page({
 
     console.log('bindMideaDevice', res)
 
-    await queryAuthGetStatus({ deviceId: this.data.deviceId })
+    await queryAuthGetStatus({ houseId: homeStore.currentHomeId, deviceId: this.data.deviceId })
 
     if (res.success) {
       app.addDeviceInfo.applianceCode = this.data.deviceId
