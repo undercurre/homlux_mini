@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 import pageBehaviors from '../../../../../behaviors/pageBehaviors'
 import { Logger } from '../../../../../utils/index'
+import { homeStore } from '../../../../../store/index'
 import { queryGuideInfo } from '../../../../../apis/index'
 
 import { addDeviceTime } from '../../../assets/js/utils'
@@ -18,8 +19,6 @@ import { typesPreserveAfterCheckGuideByA0 } from '../../config/index'
 import { imgesList } from '../../../assets/js/shareImg.js'
 
 import app from '../../../../common/app'
-import { homeStore } from '../../../../../store'
-
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const checkAuthMixin = require('../../mixins/checkAuthMixin')
 const netWordMixin = require('../../../assets/js/netWordMixin')
