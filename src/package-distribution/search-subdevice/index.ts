@@ -10,7 +10,7 @@ import { getUnbindSensor, sendCmdAddSubdevice, bindDevice, batchUpdate, isDevice
 import lottie from 'lottie-miniprogram'
 import { addDevice } from '../assets/search-subdevice/lottie/index'
 import PromiseQueue from '../../lib/promise-queue'
-import { PRO_TYPE } from '../../config/index'
+import { PRO_TYPE, defaultImgDir } from '../../config/index'
 import dayjs from 'dayjs'
 
 type StatusName = 'discover' | 'requesting' | 'success' | 'error'
@@ -26,6 +26,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    defaultImgDir,
     _startTime: 0,
     _gatewayInfo: {
       channel: 0,

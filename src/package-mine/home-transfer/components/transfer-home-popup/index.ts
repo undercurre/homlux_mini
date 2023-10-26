@@ -5,6 +5,7 @@ import { changeUserHouse, queryHouseUserList } from '../../../../apis/index'
 import { emitter, goHome } from '../../../../utils/index'
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
+import { defaultImgDir } from '../../../../config/index'
 
 Component({
   options: {},
@@ -24,6 +25,7 @@ Component({
    * 组件的初始数据
    */
   data: {
+    defaultImgDir,
     selectIndex: -1,
     userList: [] as Home.HouseUserItem[],
   },

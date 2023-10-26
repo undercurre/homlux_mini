@@ -7,7 +7,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { strUtil } from '../../utils/strUtil'
 import { execScene } from '../../apis/index'
 import { emitter } from '../../utils/index'
-import { sceneImgDir } from '../../config/index'
+import { sceneImgDir, defaultImgDir } from '../../config/index'
 // import { reaction } from 'mobx-miniprogram'
 // import { emitter } from '../../utils/index'
 
@@ -19,6 +19,7 @@ ComponentWithComputed({
    */
   data: {
     sceneImgDir,
+    defaultImgDir,
     editBack: false,
     hasAutoScene: true,
     // autoSceneList: [] as AutoScene.AutoSceneItem[],

@@ -2,7 +2,7 @@ import pageBehavior from '../../behaviors/pageBehaviors'
 // import Toast from '@vant/weapp/toast/toast'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { queryAutoSceneLogByHouseId } from '../../apis/scene'
-import { sceneImgDir } from '../../config/index'
+import { sceneImgDir, defaultImgDir } from '../../config/index'
 import { homeStore } from '../../store/home'
 import dayjs from 'dayjs'
 
@@ -17,6 +17,7 @@ ComponentWithComputed({
    */
   data: {
     sceneImgDir,
+    defaultImgDir,
     contentHeight: 0,
     isRefreshing: false,
     isAllLogs: false,

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 import { queryUserInfo } from '../../../../../apis/index'
 import { isConnect, goHome } from '../../../../../utils/index'
+import { defaultImgDir } from '../../../../../config/index'
 
 import app from '../../../../common/app'
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
@@ -24,6 +25,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    defaultImgDir,
     deviceName: '',
     isCanSeePsw: true,
     pswInputType: false,

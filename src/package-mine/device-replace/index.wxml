@@ -3,7 +3,7 @@
 
   <view class="grow flex flex-col pt-40rpx">
     <block wx:if="{{status === 'introduce'}}">
-      <tips-box text="当某个设备损坏或需要更换时，您可以使用设备替换功能，用新设备完全替换该设备，新设备将继承以下数据：" icon="/assets/img/default-img/new-device-replace.png"></tips-box>
+      <tips-box text="当某个设备损坏或需要更换时，您可以使用设备替换功能，用新设备完全替换该设备，新设备将继承以下数据：" icon="{{defaultImgDir}}/new-device-replace.png"></tips-box>
 
       <view class="pt-32rpx px-64rpx">
         <view class="text-24 leading-46rpx text-black-tips">
@@ -87,12 +87,12 @@
 
     <block wx:if="{{status === 'replaceFinish'}}">
       <steps active="{{2}}"></steps>
-      <tips-box text="设备替换完成" icon="/assets/img/default-img/success.png"></tips-box>
+      <tips-box text="设备替换完成" icon="{{defaultImgDir}}/success.png"></tips-box>
     </block>
 
     <block wx:if="{{status === 'replaceFail'}}">
       <steps active="{{2}}"></steps>
-      <tips-box text="设备替换失败" icon="/assets/img/default-img/error.png"></tips-box>
+      <tips-box text="设备替换失败" icon="{{defaultImgDir}}/error.png"></tips-box>
     </block>
   </view>
 

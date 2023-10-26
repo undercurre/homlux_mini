@@ -5,7 +5,7 @@
     <view>
       <text class="block text-40 text-black-2a pt-60rpx">请用手机连接智能网关无线网络</text>
 
-      <image class="mt-48rpx mb-70rpx w-664 h-372" src="/assets/img/default-img/link-wifi.png"></image>
+      <image class="mt-48rpx mb-70rpx w-664 h-372" src="{{defaultImgDir}}/link-wifi.png"></image>
 
       <view class="flex flex-row items-center">
         <image class="w-30 h-30" src="/assets/img/distribution/icon-wifi.png"></image>

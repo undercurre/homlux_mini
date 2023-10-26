@@ -29,7 +29,7 @@
       <view wx:else>
         <view class="h-102rpx"></view>
         <view class="flex items-center flex-col w-750rpx">
-          <image src="/assets/img/default-img/no-log.png" class="w-300rpx h-300rpx"></image>
+          <image src="{{defaultImgDir}}/no-log.png" class="w-300rpx h-300rpx"></image>
           <text class="text-32rpx text-black-59 mt-96rpx">尚未有日志记录</text>
         </view>
       </view>

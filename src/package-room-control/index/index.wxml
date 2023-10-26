@@ -9,7 +9,7 @@
   <nav-bar title="{{title}}" z-index="{{113}}" left-arrow bind:leftTap="goBack" disabled="{{opacity === 0}}"></nav-bar>
   <!-- 家庭无设备，或只有网关 -->
   <view wx:if="{{!roomHasDevice}}" class="w-full flex flex-col items-center">
-    <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx mt-64rpx"></image>
+    <image src="{{defaultImgDir}}/no-device.png" class="w-300rpx h-300rpx mt-64rpx"></image>
     <text class="text-black-59 text-28rpx mt-48rpx text-center leading-48rpx">{{'房间内还未添加\n可控制的设备'}}</text>
     <van-button wx:if="{{canAddDevice}}" type="primary" class="mt-290rpx w-686rpx" size="large" bind:click="handleAddDevice">立即添加</van-button>
   </view>

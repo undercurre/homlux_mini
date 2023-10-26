@@ -5,7 +5,7 @@ import pageBehaviors from '../../behaviors/pageBehaviors'
 import { getCurrentPageParams, checkInputNameIllegal, Logger } from '../../utils/index'
 import { queryDeviceInfoByDeviceId, editDeviceInfo, batchUpdate } from '../../apis/index'
 import { homeBinding, homeStore, roomBinding, deviceStore } from '../../store/index'
-import { PRO_TYPE } from '../../config/index'
+import { PRO_TYPE, defaultImgDir } from '../../config/index'
 import cacheData from '../common/cacheData'
 
 ComponentWithComputed({
@@ -20,6 +20,7 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
+    defaultImgDir,
     deviceInfo: { deviceId: '', deviceName: '', roomId: '', proType: '', sn: '', switchList: [] as IAnyObject[] },
   },
 

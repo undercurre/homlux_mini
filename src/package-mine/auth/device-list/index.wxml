@@ -10,7 +10,7 @@
 
   <view id="content" class="flex-1">
     <view wx:if="{{deviceList.length === 0}}" class="w-750rpx h-400rpx mt-80rpx flex flex-col items-center">
-      <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx"></image>
+      <image src="{{defaultImgDir}}/no-device.png" class="w-300rpx h-300rpx"></image>
       <text class="text-28rpx text-black-59 mt-48rpx mb-64rpx">暂无可同步设备</text>
     </view>
     <scroll-view wx:else enhanced scroll-y show-scrollbar="{{false}}" style="height: {{listHeight}}px;">

@@ -12,6 +12,7 @@ import {
   FREQUENCY_TIME,
   SEEK_INTERVAL,
 } from '../../config/remoter'
+import { defaultImgDir } from '../../config/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
 import Toast from '@vant/weapp/toast/toast'
@@ -22,6 +23,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    defaultImgDir,
     MIN_RSSI,
     _envVersion: 'release', // 当前小程序环境，默认为发布版，用于屏蔽部分实验功能
     _listenLocationTimeId: 0, // 监听系统位置信息是否打开的计时器， 0为不存在监听

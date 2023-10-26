@@ -6,6 +6,7 @@ export const ossDomain = 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com' 
 export const ShareImgUrl = `${ossDomain}/homlux/welcome.png`
 export const meijuImgDir = `${ossDomain}/homlux/meiju`
 export const sceneImgDir = `${ossDomain}/homlux/auto-scene`
+export const defaultImgDir = `${ossDomain}/homlux/default-img`
 
 // https://www.smartmidea.net/projects/sit/meiju-lite-assets/shareImg/meiju/addDeviceAboutImg/ic_2.4GHzremind@3x.png
 // 美居配网迁移的图片

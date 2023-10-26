@@ -3,7 +3,7 @@
 
   <block wx:if="{{isCanAddDevice}}">
     <view class="grow flex flex-col justify-between" wx:if="{{netType==1}}">
-      <tips-box icon="/assets/img/default-img/link-wifi.png" text="仅支持2.4GHZ的WIFI"></tips-box>
+      <tips-box icon="{{defaultImgDir}}/link-wifi.png" text="仅支持2.4GHZ的WIFI"></tips-box>
 
       <view class="grow px-48rpx pt-100rpx">
         <van-field value="{{ bindWifiTest.SSIDContent }}" placeholder="{{!continueConnectWifi ? '未获取到家庭WiFi' : '输入 WiFi 名称'}}" custom-style="margin-bottom: 32rpx;margin-top: 40rpx;padding: 16rpx 32rpx;border-radius: 24rpx;" clearable="{{true}}" bind:input="inputSSIDContent" border="{{false}}">

@@ -12,11 +12,11 @@
 
 <!-- 背景 -->
 <view style="z-index: -1" class="fixed left-0 top-0 w-100vw h-100vh">
-  <image src="/assets/img/home/bg.jpg" style="width: 100vw; height: 100vh"></image>
+  <image src="{{defaultImgDir}}/bg.jpg" style="width: 100vw; height: 100vh"></image>
 </view>
 
 <view wx:if="{{foundList.length === 0 && !hasRemoter}}" class="mt-80rpx flex flex-col items-center">
-  <tips-box text="没有发现新设备～" icon="/assets/img/default-img/no-found.png"></tips-box>
+  <tips-box text="没有发现新设备～" icon="{{defaultImgDir}}/no-found.png"></tips-box>
 
   <block wx:if="{{canShowNotFound}}">
     <template is="notFoundMsg"></template>

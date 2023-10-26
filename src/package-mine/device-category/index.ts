@@ -3,8 +3,8 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { deviceBinding } from '../../store/index'
 import { getCurrentPageParams } from '../../utils/index'
-import { SCREEN_PID, PRO_TYPE } from '../../config/device'
 import { emitter } from '../../utils/eventBus'
+import { SCREEN_PID, PRO_TYPE, defaultImgDir } from '../../config/index'
 
 ComponentWithComputed({
   options: {},
@@ -17,9 +17,9 @@ ComponentWithComputed({
   data: {
     pageParam: '',
     defaultImg: {
-      gateway: '../../assets/img/default-img/only-gateway.png',
-      sensor: '../../assets/img/default-img/sensor.png',
-      screen: '../../assets/img/default-img/smart_screen.png',
+      gateway: `${defaultImgDir}/only-gateway.png`,
+      sensor: `${defaultImgDir}/sensor.png`,
+      screen: `${defaultImgDir}/smart_screen.png`,
     },
   },
 

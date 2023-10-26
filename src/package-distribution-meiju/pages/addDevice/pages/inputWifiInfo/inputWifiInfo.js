@@ -2,7 +2,7 @@
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../../../../behaviors/pageBehaviors'
-import { imgList } from '../../../../../config/img'
+import { imgList, defaultImgDir } from '../../../../../config/img'
 
 import computedBehavior from '../../../../utils/miniprogram-computed.js'
 import { getFullPageUrl } from '../../../../utils/util'
@@ -36,6 +36,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    defaultImgDir,
     currentHomeGroupId: '',
     isInitWifiSuccess: false,
     isCanSeePsw: true,

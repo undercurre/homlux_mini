@@ -2,6 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
 import { bindMeiju, getMeijuDeviceList, syncMeijuDeviceList, delDeviceSubscribe } from '../../../apis/index'
 import { delay } from '../../../utils/index'
+import { defaultImgDir } from '../../../config/index'
 import { homeStore, homeBinding } from '../../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
@@ -13,6 +14,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    defaultImgDir,
     deviceList: [] as Meiju.MeijuDevice[],
     listHeight: 0,
   },

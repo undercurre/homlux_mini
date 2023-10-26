@@ -15,7 +15,7 @@ import {
   deviceStore,
 } from '../../store/index'
 import { storage, throttle, emitter, WSEventType, showLoading, hideLoading, strUtil } from '../../utils/index'
-import { PRO_TYPE, ROOM_CARD_H, ROOM_CARD_M } from '../../config/index'
+import { PRO_TYPE, ROOM_CARD_H, ROOM_CARD_M, defaultImgDir } from '../../config/index'
 import { allDevicePowerControl, updateRoomSort, updateDefaultHouse, changeUserHouse } from '../../apis/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 
@@ -48,6 +48,7 @@ ComponentWithComputed({
     pageBehavior,
   ],
   data: {
+    defaultImgDir,
     navigationBarAndStatusBarHeight:
       (storage.get<number>('statusBarHeight') as number) +
       (storage.get<number>('navigationBarHeight') as number) +

@@ -1,5 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
+import { defaultImgDir } from '../../config/index'
 
 ComponentWithComputed({
   options: {},
@@ -12,7 +13,9 @@ ComponentWithComputed({
   /**
    * 组件的初始数据
    */
-  data: {},
+  data: {
+    defaultImgDir,
+  },
 
   lifetimes: {
     ready() {},

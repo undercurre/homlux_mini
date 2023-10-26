@@ -2,11 +2,11 @@
 
 <!-- 背景 -->
 <view class="bg-z-index fixed left-0 top-0 w-100vw h-100vh" bindtouchstart="hideMenu">
-  <image src="/assets/img/home/bg.jpg" class="bg-image"></image>
+  <image src="{{defaultImgDir}}/bg.jpg" class="bg-image"></image>
 </view>
 
 <view style="height: calc(120rpx + {{navigationBarAndStatusBarHeight}});" class="fixed left-0 top-0 z-110 overflow-hidden w-750rpx" bindtap="hideMenu">
-  <image src="/assets/img/home/bg.jpg" class="bg-image absolute z-111"></image>
+  <image src="{{defaultImgDir}}/bg.jpg" class="bg-image absolute z-111"></image>
   <view class="w-750rpx flex justify-between pt-28rpx left-0 absolute z-112" style="top: {{navigationBarAndStatusBarHeight}};">
     <!-- 全屋开关 -->
     <view class="ml-24rpx">
@@ -53,7 +53,7 @@
     </scroll-view>
     <!-- 无设备时显示 -->
     <view wx:else class="w-full mt-68rpx flex flex-col items-center">
-      <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx"></image>
+      <image src="{{defaultImgDir}}/no-device.png" class="w-300rpx h-300rpx"></image>
       <text class="text-32rpx text-black-59 mt-44rpx mb-32rpx">尚未添加设备</text>
       <text class="text-24rpx text-black-59 mb-224rpx opacity-40">立即添加设备，开启智慧照明</text>
       <van-button bind:click="goToWhenConnected" data-url="/package-distribution/choose-device/index" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-class="add-immediately-btn" wx:if="{{isInit && !hasDevice && (isCreator || isAdmin)}}"> <text class="text-white text-36rpx font-normal">添加智能设备</text> </van-button>
@@ -76,11 +76,11 @@
 
 <!-- 未登录 -->
 <view wx:if="{{!isLogin}}">
-  <image src="/assets/img/home/bg.jpg" class="bg-image fixed z-200 left-0 top-0"></image>
+  <image src="{{defaultImgDir}}/bg.jpg" class="bg-image fixed z-200 left-0 top-0"></image>
   <view class="fixed z-201 left-0 w-750rpx flex flex-col" style="top: {{statusBarHeight}};">
     <text class="text-hex-1e2c46 text-48rpx font-semibold single-text block ml-32rpx mt-8rpx">我的家庭</text>
     <view class="flex items-center flex-col w-750rpx mt-66rpx">
-      <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx"></image>
+      <image src="{{defaultImgDir}}/no-device.png" class="w-300rpx h-300rpx"></image>
       <text class="text-32rpx text-black-59 mt-44rpx mb-32rpx">尚未登录</text>
       <text class="text-24rpx text-black-59 mb-224rpx opacity-40">登录即可控制设备，开启智慧照明</text>
       <van-button bind:click="goToWhenConnected" data-url="/pages/login/index" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-class="add-immediately-btn">

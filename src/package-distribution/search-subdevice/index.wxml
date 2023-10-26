@@ -61,7 +61,7 @@
     </block>
 
     <view class="grow flex flex-col justify-between" wx:if="{{status === 'requesting' && (successList.length + failList.length) === selectedList.length && failList.length !== selectedList.length}}">
-      <tips-box text="{{successList.length}}个设备添加成功！" icon="/assets/img/default-img/success.png"></tips-box>
+      <tips-box text="{{successList.length}}个设备添加成功！" icon="{{defaultImgDir}}/success.png"></tips-box>
 
       <view wx:if="{{failList.length > 0}}" class="px-24rpx pt-90rpx grow shrink flex flex-col">
         <view class="flex flex-row items-center justify-between pb-24rpx">
@@ -103,7 +103,7 @@
     </view>
 
     <block wx:if="{{status === 'requesting' && failList.length === selectedList.length}}">
-      <tips-box text="添加失败！" icon="/assets/img/default-img/no-found.png"></tips-box>
+      <tips-box text="添加失败！" icon="{{defaultImgDir}}/no-found.png"></tips-box>
 
       <view class="grow px-88rpx pt-180rpx">
         <view class="text-28 text-black-2a">

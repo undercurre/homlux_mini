@@ -3,7 +3,7 @@
   <view class="page-container link-fail-container">
     <nav-bar title="添加设备"></nav-bar>
 
-    <tips-box text="设备添加失败！" icon="/assets/img/default-img/error.png"></tips-box>
+    <tips-box text="设备添加失败！" icon="{{defaultImgDir}}/error.png"></tips-box>
 
     <view class="p-32rpx">
       <view class="pb-32rpx" wx:for="{{ failUiData.guideDesc }}" wx:key="*this" wx:for-item="failUiDataItem" wx:for-index="failUiDataindex">

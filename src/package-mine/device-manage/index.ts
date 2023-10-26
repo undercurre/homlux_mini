@@ -5,7 +5,7 @@ import pageBehavior from '../../behaviors/pageBehaviors'
 import { emitter, WSEventType } from '../../utils/eventBus'
 import { queryDeviceInfoByDeviceId } from '../../apis/index'
 import { runInAction } from 'mobx-miniprogram'
-import { PRO_TYPE, SCREEN_PID } from '../../config/index'
+import { PRO_TYPE, SCREEN_PID, defaultImgDir } from '../../config/index'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, deviceBinding] }), pageBehavior],
@@ -13,6 +13,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    defaultImgDir,
     roomSelect: '0',
     listHeight: 0,
     roomSelectMenu: {

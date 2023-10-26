@@ -5,6 +5,7 @@ import { queryDeviceOnlineStatus, bindDevice } from '../../apis/index'
 import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
 import { WifiSocket, getCurrentPageParams, strUtil, isAndroid, isAndroid10Plus, Logger } from '../../utils/index'
 import { stepListForBind, stepListForChangeWiFi } from './conifg'
+import { defaultImgDir } from '../../config/index'
 
 let start = 0
 
@@ -27,6 +28,7 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
+    defaultImgDir,
     type: '', // query: 校验网关状态，bind: 绑定网关，changeWifi： 更改wifi
     isShowForceBindTips: false,
     isAndroid10Plus: false,

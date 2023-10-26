@@ -7,6 +7,7 @@ import { StatusType } from './typings'
 import { deviceReplace } from '../../apis/index'
 // import { deviceReplace } from 'js-homos'
 import { emitter } from '../../utils/eventBus'
+import { defaultImgDir } from '../../config/index'
 
 ComponentWithComputed({
   options: {},
@@ -16,6 +17,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    defaultImgDir,
     status: 'introduce' as StatusType,
     isSelectOldDevice: false,
     isSelectNewDevice: false,

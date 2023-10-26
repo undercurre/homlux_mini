@@ -4,7 +4,7 @@
 
     <view class="max-h-45vh overflow-auto px-16rpx">
       <view wx:for="{{userList}}" wx:key="userId" class="flex flex-row items-center py-40rpx border-0 {{index + 1 === userList.length ? '' : 'border-solid border-b-1rpx border-hex-ddd'}}" bind:tap="selectUser" data-index="{{index}}">
-        <image class="w-92rpx h-92rpx rounded-full" src="{{ item.headImageUrl ? item.headImageUrl : '/assets/img/default-img/default-avatar.png'}}"></image>
+        <image class="w-92rpx h-92rpx rounded-full" src="{{ item.headImageUrl ? item.headImageUrl : defaultImgDir + '/default-avatar.png'}}"></image>
 
         <view class="px-48rpx grow flex flex-col">
           <text class="text-32 leading-44rpx text-black-2a pb-8rpx">{{ item.userName }}</text>

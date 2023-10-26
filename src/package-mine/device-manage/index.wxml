@@ -8,7 +8,7 @@
 
   <!-- 无设备 -->
   <view wx:if="{{deviceListCompited.length === 0}}" class="w-750rpx h-100vh mt-80rpx flex flex-col items-center">
-    <image src="/assets/img/default-img/no-device.png" class="w-300rpx h-300rpx"></image>
+    <image src="{{defaultImgDir}}/no-device.png" class="w-300rpx h-300rpx"></image>
     <text class="text-28rpx text-black-59 mt-48rpx mb-64rpx">暂无设备</text>
   </view>
   <!-- 设备列表 -->
