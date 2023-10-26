@@ -58,7 +58,7 @@
         </view>
       </van-cell>
       <view wx:else>
-        <view class="flex flex-row items-center bg-hex-fff rounded-32rpx px-40rpx py-32rpx mb-24rpx relative" wx:for="{{sceneDeviceConditionsFlatten}}" bindtap="handleAutoSceneConditionEdit" data-productId="{{item.productId}}" data-index="{{index}}" wx:key="uniId">
+        <view class="flex flex-row items-center bg-hex-fff rounded-32rpx px-40rpx py-32rpx mb-24rpx relative" wx:for="{{sceneDeviceConditionsFlatten}}" bindtap="handleSceneConditionEdit" data-productId="{{item.productId}}" data-index="{{index}}" wx:key="uniId">
           <view class="w-72 h-72 rounded-full">
             <image src="{{item.pic}}" class="w-72 h-72" />
           </view>

@@ -772,7 +772,7 @@ ComponentWithComputed({
     updateSceneDeviceConditionsFlatten() {
       const sceneDeviceConditionsFlatten = [] as AutoScene.AutoSceneFlattenCondition[]
 
-      if (this.data.roomId !== '') {
+      if (this.data.roomId !== '' && this.data.opearationType === 'yijian') {
         sceneDeviceConditionsFlatten.push({
           uniId: 'room',
           name: '手动点击场景',
@@ -887,13 +887,17 @@ ComponentWithComputed({
         this.setData({
           showTimeConditionPopup: true,
         })
-      } else {
+      } else if (action.productId === 'sensor') {
         this.setData({
           editingSensorType: action.productId,
           editingSensorAbility: action.desc,
           editingSensorProperty: action.property,
           editingUniId: action.uniId,
           showEditSensorPopup: true,
+        })
+      } else {
+        this.setData({
+          showEditRoomPopup: true,
         })
       }
     },

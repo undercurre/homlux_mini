@@ -159,6 +159,9 @@ declare namespace Device {
     proType: string
     deviceType: number
     value: IAnyObject
+    //前端拖拽时用的绝对唯一的Id
+    orderNum?: number
+    dragId?: string
   }
 
   /** 批量修改设备 */
