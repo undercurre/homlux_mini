@@ -1,8 +1,8 @@
 <view class="page-container flex flex-col">
-  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBackHome" title="选择家庭"></nav-bar>
+  <nav-bar leftArrow="{{true}}" bind:leftTap="goBackHome" title="选择家庭"></nav-bar>
 
   <view class="px-40rpx mt-20rpx">
-    <text class="text-hex-555659 text-28">请选择需要关联的家庭</text>
+    <text class="text-hex-555659 text-28">请选择需要关联的美居家庭</text>
   </view>
 
   <view id="content" class="flex-1">
