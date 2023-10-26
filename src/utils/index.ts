@@ -140,13 +140,13 @@ export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
         endCount++
         break
       case PRO_TYPE.light:
-        // release-1030 将改为全部显示
-        // 终端卡片数，计算已在灯组中的单灯，不计算灯组
+        // release-1030 将改为灯组和单灯全部显示
+        // 终端卡片数，计算已在灯组中的单灯，也计算灯组
+        endCount++
         // 灯数及亮灯数不计算灯组
         if (device.deviceType === 4) {
           return
         }
-        endCount++
         lightCount++
         if (!device.onLineStatus) break
         if (device.mzgdPropertyDTOList['light'].power) {
