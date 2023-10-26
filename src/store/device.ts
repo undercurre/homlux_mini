@@ -38,7 +38,7 @@ export const deviceStore = observable({
    */
   get deviceFlattenList() {
     const list = [] as Device.DeviceItem[]
-    this.deviceList.forEach((device) => {
+    this.allRoomDeviceList.forEach((device) => {
       // 开关面板需要前端拆分处理
       if (device.proType === PRO_TYPE.switch) {
         device.switchInfoDTOList?.forEach((switchItem) => {

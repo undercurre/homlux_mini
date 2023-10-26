@@ -46,7 +46,7 @@
     </van-cell-group>
     <view class="h-48rpx mt-64rpx mb-36rpx mx-48rpx flex justify-between align-center">
       <text class="text-40rpx font-medium text-hex-1a1a1c leading-48rpx">如果</text>
-      <image wx:if="{{sceneDeviceConditionsFlatten.length && !timeCondition.time}}" class="w-48 h-48" src="/package-automation/assets/imgs/automation/add.png" bindtap="addSensorPopup"></image>
+      <!-- <image wx:if="{{sceneDeviceConditionsFlatten.length && !timeCondition.time}}" class="w-48 h-48" src="/package-automation/assets/imgs/automation/add.png" bindtap="addSensorPopup"></image> -->
     </view>
     <van-cell-group inset>
       <van-cell border="{{false}}" clickable="{{true}}" bind:click="handleConditionShow" wx:if="{{!sceneDeviceConditionsFlatten.length}}">

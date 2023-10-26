@@ -65,6 +65,8 @@ ComponentWithComputed({
       const sceneData = storage.get('scene_data') as Scene.AddSceneDto | Scene.UpdateSceneDto
       const sceneDeviceActionsFlatten = storage.get('sceneDeviceActionsFlatten') as Device.ActionItem[]
 
+      console.log('scene-request-flatten', sceneDeviceActionsFlatten)
+
       const selectIdList = sceneDeviceActionsFlatten.map((item) => item.uniId)
 
       const deviceList = deviceStore.deviceFlattenList
@@ -81,12 +83,13 @@ ComponentWithComputed({
         })
 
       // 处理发送请求的deviceActions字段数据
-      const deviceMap = deviceStore.deviceMap
+      const deviceMap = deviceStore.allRoomDeviceMap
       // switch需要特殊处理
       const switchDeviceMap = {} as Record<string, IAnyObject[]>
 
       sceneDeviceActionsFlatten.forEach((action) => {
         const device = deviceMap[action.uniId]
+        console.log('该设备', device)
 
         if (action.proType === PRO_TYPE.switch) {
           const deviceId = action.uniId.split(':')[0]

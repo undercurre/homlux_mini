@@ -46,7 +46,7 @@ ComponentWithComputed({
     isYijian: true,
     active: 1,
     scrollTop: 0,
-    selectedRoomId: 'all',
+    selectedRoomId: '',
   },
   computed: {
     allRoomYijianSceneListComputed() {
@@ -104,14 +104,16 @@ ComponentWithComputed({
         data.editBack = false
       }
 
-      if (data.selectedRoomId === 'all') {
-        return listData.map((item) => {
-          return {
-            ...item,
-            desc: getDesc(item),
-            sceneName: getSceneName(item),
-          }
-        })
+      if (data.selectedRoomId === '') {
+        return listData
+          .filter((item) => item.roomId === roomStore.roomList[0].roomId)
+          .map((item) => {
+            return {
+              ...item,
+              desc: getDesc(item),
+              sceneName: getSceneName(item),
+            }
+          })
       }
       return listData
         .filter((item) => item.roomId === data.selectedRoomId)
@@ -129,10 +131,6 @@ ComponentWithComputed({
           roomId: item.roomId,
           roomName: item.roomName,
         }
-      })
-      tempRoomList.unshift({
-        roomId: 'all',
-        roomName: '全屋',
       })
       return tempRoomList
     },
@@ -231,12 +229,8 @@ ComponentWithComputed({
         // 修改switch标记
         isYijian: !this.data.isYijian,
         // 修改按钮的地址
-        automationLog: !this.data.isYijian
-          ? '/package-automation/automation-log/index'
-          : '/package-automation/automation-log/index',
-        automationAdd: !this.data.isYijian
-          ? '/package-automation/automation-add-yijian/index'
-          : '/package-automation/automation-add/index',
+        automationLog: '/package-automation/automation-log/index',
+        automationAdd: '/package-automation/automation-add/index',
       })
     },
     onUnload() {
@@ -247,7 +241,11 @@ ComponentWithComputed({
     ready() {
       emitter.off('sceneEdit')
       emitter.on('sceneEdit', () => {
-        sceneBinding.store.updateAllRoomSceneList().then(() => (this.data.editBack = true))
+        sceneBinding.store.updateAllRoomSceneList().then(() =>
+          this.setData({
+            editBack: true,
+          }),
+        )
       })
     },
   },
