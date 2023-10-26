@@ -56,7 +56,12 @@
   },
   "libVersion": "2.30.0",
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      {
+        "value": "ossFile",
+        "type": "folder"
+      }
+    ],
     "include": []
   },
   "appid": "wxd534524a35f2b601",
