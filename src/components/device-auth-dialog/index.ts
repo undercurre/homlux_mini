@@ -61,7 +61,7 @@ ComponentWithComputed({
               }
             })
           },
-        })
+        }).catch(() => 'cancel')
       } else {
         Dialog.close()
       }

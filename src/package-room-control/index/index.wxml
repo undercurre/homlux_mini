@@ -63,7 +63,7 @@
 
           <view wx:for="{{devicePageList}}" wx:for-item="group" wx:key="g" wx:for-index="g" class="flex flex-row flex-wrap">
             <movable-view wx:for="{{group}}" wx:key="uniId" data-index="{{index}}" data-group="{{g}}" data-ordernum="{{item.orderNum}}" x="{{item.x}}" y="{{item.y}}" direction="all" friction="{{999}}" damping="{{100}}" bind:longpress="movableTouchStart" bind:touchend="movableTouchEnd" catch:change="movableChange" class="{{ index === placeholder.index && g === placeholder.groupIndex ? 'z-100' : 'z-1' }}" disabled="{{!isMoving || item.deviceType === 4}}">
-              <device-card class="w-180rpx pb-16rpx pt-16rpx flex justify-center {{editSelectMode && (index !== placeholder.index || g !== placeholder.groupIndex) ? 'shake' : ''}}" showControl="{{!editSelectMode}}" showShadow showGradientBg edit-mode="{{editSelectMode}}" device-info="{{item}}" data-item="{{item}}" select="{{item.select}}" bind:controlTap="handleControlTap" bind:cardTap="handleCardTap" bind:offlineTap="handleShowDeviceOffline" bind:longPress="handleLongpress" />
+              <device-card class="w-180rpx pb-16rpx pt-16rpx flex justify-center {{editSelectMode && (index !== placeholder.index || g !== placeholder.groupIndex) ? 'shake' : ''}}" showControl="{{!editSelectMode}}" showShadow showGradientBg edit-mode="{{editSelectMode}}" device-info="{{item}}" data-item="{{item}}" select="{{item.select}}" bind:controlTap="queryAuthBeforeControlTap" bind:cardTap="handleCardTap" bind:offlineTap="handleShowDeviceOffline" bind:longPress="handleLongpress" />
             </movable-view>
           </view>
         </movable-area>
@@ -110,4 +110,4 @@
   </view>
 </van-dialog>
 
-<device-auth-dialog device-id="178120883719670" is-show="{{false}}"></device-auth-dialog>
+<device-auth-dialog device-id="{{deviceIdForQueryAuth}}" is-show="{{showAuthDialog}}" bind:success="handleAuthSuccess" bind:cancel="handleAuthCancel"></device-auth-dialog>
