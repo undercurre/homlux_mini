@@ -34,11 +34,12 @@ export const deviceStore = observable({
   },
 
   /**
+   * @description 房间设备列表
    * 将有多个按键的开关拍扁，保证每个设备和每个按键都是独立一个item，并且uniId唯一
    */
   get deviceFlattenList() {
     const list = [] as Device.DeviceItem[]
-    this.allRoomDeviceList.forEach((device) => {
+    this.deviceList.forEach((device) => {
       // 开关面板需要前端拆分处理
       if (device.proType === PRO_TYPE.switch) {
         device.switchInfoDTOList?.forEach((switchItem) => {
