@@ -102,6 +102,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       }
 
       if (requestOption.isDefaultErrorTips) {
+        Logger.error('✘断网提示:' + requestOption.url + ' 失败，原因：' + err.errMsg, requestOption.data)
         wx.showToast({
           title: '当前无法连接网络\n请检查网络设置',
           icon: 'none',
