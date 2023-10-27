@@ -1,7 +1,7 @@
-<view class="page-container flex flex-col justify-between" wx:if="{{!isAuth}}">
+<view class="page-container flex flex-col" wx:if="{{!isAuth}}">
   <nav-bar leftArrow bind:leftTap="goBack"></nav-bar>
 
-  <view>
+  <view class="grow">
     <view class="px-64rpx pt-30rpx">
       <text class="text-56rpx text-hex-27282A leading-none">登录美的美居</text>
     </view>
@@ -28,3 +28,5 @@
 </view>
 
 <van-toast id="van-toast" />
+
+<van-dialog id="van-dialog" />

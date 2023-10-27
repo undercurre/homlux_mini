@@ -9,6 +9,11 @@ export type BaseRequestOptions<T extends AnyResType> = WechatMiniprogram.Request
    * 是否打印请求和响应
    */
   log?: boolean
+
+  /**
+   * 是否使用默认错误提示
+   */
+  isDefaultErrorTips?: boolean
   /**
    * 单独接口请求成功处理
    */
@@ -96,11 +101,14 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
         Logger.error('✘请求URL:' + requestOption.url + ' 失败，原因：' + err.errMsg, requestOption.data)
       }
 
-      wx.showToast({
-        title: '当前无法连接网络\n请检查网络设置',
-        icon: 'none',
-        duration: 2000,
-      })
+      if (requestOption.isDefaultErrorTips) {
+        wx.showToast({
+          title: '当前无法连接网络\n请检查网络设置',
+          icon: 'none',
+          duration: 2000,
+        })
+      }
+
       const data = handler ? handler(err) : (err as unknown as T)
       resolve(data)
     }

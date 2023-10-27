@@ -20,6 +20,7 @@ import { othersStore } from './others'
 import { roomStore } from './room'
 import { userStore } from './user'
 import { deviceCount } from '../utils/index'
+import { userRole } from '../config/home'
 
 export const homeStore = observable({
   key: '', // 局域网本地场景key
@@ -41,6 +42,14 @@ export const homeStore = observable({
     }
 
     return houseId
+  },
+
+  // 是否创建者
+  get isCreator() {
+    if (this.currentHomeDetail) {
+      return this.currentHomeDetail.houseUserAuth === userRole.creator
+    }
+    return false
   },
 
   // 是否管理员权限+

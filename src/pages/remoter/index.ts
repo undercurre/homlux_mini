@@ -428,10 +428,11 @@ ComponentWithComputed({
     //   }
     // },
 
-    onPageScroll(e: { detail: { scrollTop: number } }) {
-      this.setData({
-        scrollTop: e.detail.scrollTop,
-      })
+    onPageScroll() {
+      // console.log(e.detail)
+      // this.setData({
+      //   scrollTop: e.detail.scrollTop,
+      // })
       this.initDrag()
     },
     /**

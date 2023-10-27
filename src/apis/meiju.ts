@@ -131,6 +131,7 @@ export async function checkApExists(params: {
   }>({
     log: true,
     loading: false,
+    isDefaultErrorTips: false,
     url: '/v1/thirdparty/midea/device/apExists',
     data: params,
   })
