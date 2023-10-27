@@ -1,5 +1,5 @@
 import { rpx2px } from '../utils/index'
-import { ossDomain } from '../config/index'
+import { ossDomain } from './img'
 
 // 设备列表，每次加载的条数 应该为4的倍数
 export const LIST_PAGE = 20

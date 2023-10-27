@@ -207,11 +207,14 @@ ComponentWithComputed({
       false,
     ),
     handlePowerTap() {
-      // 如果设备离线，刚转为点击卡片
+      // 如果设备离线，则转为点击卡片
       if (!this.data.canCtrl) {
         this.handleCardTap()
         return
       }
+
+      // 如果控制图片不存在，则不可能点击控制按钮
+      if (!this.data.controlBtnPic) return
 
       // 振动反馈
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
