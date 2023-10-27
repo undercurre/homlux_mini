@@ -28,7 +28,7 @@ ComponentWithComputed({
       return '未连接'
     },
     bleIcon(data) {
-      const iconName = data.device.DISCOVERED === 0 ? 'bleOff' : 'bleOn'
+      const iconName = data.device.DISCOVERED === 1 ? 'bleOn' : 'bleOff'
       return `/assets/img/base/${iconName}.png`
     },
     action(data) {
