@@ -106,6 +106,7 @@ const mzaioRequestWithMethod = mzaioRequest as mzaioRequestWithMethod
 ;(['get', 'post', 'put', 'delete'] as const).forEach((method) => {
   mzaioRequestWithMethod[method] = (options) => {
     return mzaioRequest({
+      isDefaultErrorTips: true,
       ...options,
       method: method.toUpperCase() as 'GET' | 'POST' | 'PUT' | 'DELETE',
     })

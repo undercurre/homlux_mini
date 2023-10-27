@@ -88,7 +88,7 @@ ComponentWithComputed({
           url: '/package-distribution-meiju/pages/check-auth/index',
         })
       } else {
-        Toast(res.msg)
+        Toast(res.msg) // 当前美居账号已绑定在家庭XXXX”改为“当前美居家庭已绑定在HOMLUX家庭XXXX
       }
     },
   },

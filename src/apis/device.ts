@@ -71,6 +71,7 @@ export async function queryDeviceOnlineStatus(
   return await mzaioRequest.post<{ deviceId: string; onlineStatus: number }>({
     log: false,
     loading: options?.loading ?? false,
+    isDefaultErrorTips: false,
     url: '/v1/device/queryDeviceOnlineStatus',
     data,
   })
