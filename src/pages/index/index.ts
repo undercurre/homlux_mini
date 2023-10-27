@@ -258,7 +258,7 @@ ComponentWithComputed({
             y: currentIndex === index ? this.data.roomPos[room.roomId].y : accumulatedY,
           }
           // 若场景列表为空，或正在拖动，则使用 ROOM_CARD_M
-          accumulatedY += !room.endCount || !room.sceneList.length || isMoving === true ? ROOM_CARD_M : ROOM_CARD_H
+          accumulatedY += !room.sceneList.length || isMoving === true ? ROOM_CARD_M : ROOM_CARD_H
         })
 
       // 拖动模式，不改变高度
