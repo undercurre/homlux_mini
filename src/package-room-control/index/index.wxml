@@ -35,7 +35,7 @@
       <!-- 全房间亮度控制 -->
       <view class="slider-box">
         <image src="/package-room-control/assets/img/bright.png" class="w-48rpx h-48rpx" />
-        <mz-slider disabled="{{!roomLight.power}}" catch:slideChange="handleLevelChange" catch:slideEnd="handleLevelChange" value="{{roomLight.brightness}}" custom-class="slider-brightness-bar" active-color="rgba(0,0,0,0)" bar-height="{{16}}" use-button-slot data-min="{{1}}" data-is-btn-inset="{{false}}" data-key="roomBrightness" data-show-toast="{{true}}" formatter="{{brightnessFormatter}}">
+        <mz-slider disabled="{{!roomLight.power}}" catch:slideChange="handleLevelChange" catch:slideEnd="handleLevelChange" value="{{roomLight.brightness}}" custom-class="slider-brightness-bar" active-color="linear-gradient(90deg, rgba(80, 127, 255, 1) 0%, #ffffff 100%)" bar-height="{{16}}" use-button-slot data-min="{{1}}" data-is-btn-inset="{{false}}" data-key="roomBrightness" data-show-toast="{{true}}" formatter="{{brightnessFormatter}}">
           <image slot="button" src="/package-room-control/assets/img/btn.png" class="w-72rpx h-72rpx" />
         </mz-slider>
       </view>

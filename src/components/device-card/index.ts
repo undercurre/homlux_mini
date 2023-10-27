@@ -242,6 +242,9 @@ ComponentWithComputed({
       this.controlThrottle()
     },
     handleLongPress() {
+      // 振动反馈
+      if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
+
       this.createSelectorQuery()
         .select('#card')
         .boundingClientRect()

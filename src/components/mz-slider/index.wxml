@@ -13,5 +13,8 @@
     <view wx:else class="mz-slider-button"></view>
   </view>
 
-  <view wx:if="{{showToast}}" id="slider-toast" class="slider-toast" style="opacity: 0">{{ formattedValue }}</view>
+  <view wx:if="{{showToast}}" id="slider-toast" class="slider-toast" style="opacity: 0">
+    <text class="text-white text-26">{{ formattedValue }}</text>
+    <view class="arrow absolute w-0 h-0"></view>
+  </view>
 </view>

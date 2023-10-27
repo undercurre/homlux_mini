@@ -30,9 +30,17 @@
 .slider-toast {
   position: absolute;
   background: rgba(0, 0, 0, 0.72);
-  color: #fff;
   padding: 10rpx 16rpx;
-  font-size: 26rpx;
-  top: -76rpx;
+  top: -80rpx;
   border-radius: 18rpx;
+}
+
+.arrow {
+  border-top: 8rpx solid #454546;
+  border-bottom: 8rpx solid transparent;
+  border-left: 8rpx solid transparent;
+  border-right: 8rpx solid transparent;
+  top: 62rpx;
+  left: 50%;
+  margin-left: -4rpx;
 }
