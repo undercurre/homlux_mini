@@ -14,16 +14,16 @@ ComponentWithComputed({
 
   computed: {
     linkDesc(data) {
-      if (data.item?.linkName) {
-        return '已关联：' + data.item.linkName
+      if (data.item?.data?.linkName) {
+        return '已关联：' + data.item.data.linkName
       }
       return '暂未关联开关'
     },
     sceneName(data) {
-      if (data.item?.sceneName?.length && data.item?.sceneName?.length > 10) {
-        return data.item.sceneName.slice(0, 8) + '...'
+      if (data.item?.data?.sceneName?.length && data.item?.data?.sceneName?.length > 10) {
+        return data.item.data.sceneName.slice(0, 8) + '...'
       } else {
-        return data.item.sceneName
+        return data.item.data.sceneName
       }
     },
   },

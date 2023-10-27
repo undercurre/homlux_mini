@@ -59,9 +59,7 @@
         "automation/index",
         "automation-log/index",
         "automation-add/index",
-        "automation-add-yijian/index",
         "automation-edit-yijian/index",
-        "scene-request-list/index",
         "scene-request-list-yijian/index",
         "scene-success/index"
       ]

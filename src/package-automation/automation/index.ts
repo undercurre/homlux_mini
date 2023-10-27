@@ -1,11 +1,11 @@
 import { storage } from '../../utils/storage'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { autosceneBinding, deviceStore, roomStore, sceneBinding, sceneStore, userBinding } from '../../store/index'
+import { autosceneBinding, deviceStore, homeBinding, homeStore, roomStore, sceneBinding, sceneStore, userBinding } from '../../store/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { strUtil } from '../../utils/strUtil'
-import { execScene } from '../../apis/index'
+import { execScene, updateSceneSort } from '../../apis/index'
 import { emitter } from '../../utils/index'
 import { sceneImgDir, defaultImgDir } from '../../config/index'
 // import { reaction } from 'mobx-miniprogram'
@@ -13,14 +13,15 @@ import { sceneImgDir, defaultImgDir } from '../../config/index'
 
 // pages/login/index.ts
 ComponentWithComputed({
-  behaviors: [BehaviorWithStore({ storeBindings: [autosceneBinding, userBinding] }), pageBehaviors],
+  behaviors: [BehaviorWithStore({ storeBindings: [autosceneBinding, userBinding, sceneBinding, homeBinding] }), pageBehaviors],
   /**
    * 页面的初始数据
    */
   data: {
+    // 用于存储一键场景列表
+    listData: [] as IAnyObject[],
     sceneImgDir,
     defaultImgDir,
-    editBack: false,
     hasAutoScene: true,
     // autoSceneList: [] as AutoScene.AutoSceneItem[],
 
@@ -44,7 +45,7 @@ ComponentWithComputed({
       'px',
     // 当前为一键场景/自动场景
     isYijian: true,
-    active: 1,
+    active: '',
     scrollTop: 0,
     selectedRoomId: '',
   },
@@ -62,69 +63,6 @@ ComponentWithComputed({
           }
         })
     },
-    roomYijianSceneListComputed(data) {
-      const listData = [] as IAnyObject[]
-      const deviceMap = deviceStore.allRoomDeviceMap
-
-      sceneStore.allRoomSceneList.forEach((scene: Scene.SceneItem) => {
-        let linkName = ''
-        if (scene.deviceConditions?.length > 0) {
-          const device = deviceMap[scene.deviceConditions[0].deviceId]
-          const switchName = device.switchInfoDTOList.find(
-            (switchItem) => switchItem.switchId === scene.deviceConditions[0].controlEvent[0].modelName.toString(),
-          )?.switchName
-
-          linkName = `${switchName} | ${device.deviceName}`
-        }
-
-        listData.push({
-          ...scene,
-          dragId: scene.sceneId,
-          linkName,
-          sceneIcon: scene.sceneIcon,
-        })
-      })
-
-      function getDesc(data: IAnyObject) {
-        if (data.linkName) {
-          return '已关联：' + data.linkName
-        }
-        return '暂未关联开关'
-      }
-
-      function getSceneName(data: IAnyObject) {
-        if (data?.sceneName?.length && data?.sceneName?.length > 10) {
-          return data.sceneName.slice(0, 8) + '...'
-        } else {
-          return data.sceneName
-        }
-      }
-
-      if (data.editBack) {
-        data.editBack = false
-      }
-
-      if (data.selectedRoomId === '') {
-        return listData
-          .filter((item) => item.roomId === roomStore.roomList[0].roomId)
-          .map((item) => {
-            return {
-              ...item,
-              desc: getDesc(item),
-              sceneName: getSceneName(item),
-            }
-          })
-      }
-      return listData
-        .filter((item) => item.roomId === data.selectedRoomId)
-        .map((item) => {
-          return {
-            ...item,
-            desc: getDesc(item),
-            sceneName: getSceneName(item),
-          }
-        })
-    },
     roomTab() {
       const tempRoomList = roomStore.roomList.map((item) => {
         return {
@@ -136,15 +74,18 @@ ComponentWithComputed({
     },
   },
   methods: {
+    // 页面滚动
     onPageScroll(e: { scrollTop: number }) {
       this.setData({
         scrollTop: e.scrollTop,
       })
     },
     onYijianRoomChange(event: { detail: { name: string } }) {
+      this.data.selectedRoomId = event.detail.name
       this.setData({
         selectedRoomId: event.detail.name,
       })
+      this.updateList()
     },
     onLoad() {
       // 更新tabbar状态
@@ -172,13 +113,18 @@ ComponentWithComputed({
       // emitter.on('scene_enabled', () => {
       //   autosceneBinding.store.updateAllRoomAutoSceneList()
       // })
+      console.log(roomStore.currentRoom, roomStore.currentRoomIndex)
+    
       // 加载一键场景列表
       sceneBinding.store.updateAllRoomSceneList()
       // 加载自动化列表
       autosceneBinding.store.updateAllRoomAutoSceneList()
     },
     // onShow() {
-
+    //   this.setData({
+    //     selectedRoomId: roomStore.currentRoom.roomId,
+    //     active: roomStore.currentRoomIndex,
+    //   })
     // },
     // onUnload() {
     //   emitter.off('scene_add')
@@ -192,6 +138,42 @@ ComponentWithComputed({
       })
     },
 
+    updateList() {
+      if (this.data.selectedRoomId === '') {
+        this.data.selectedRoomId = roomStore.roomList[0].roomId
+      }
+      const listData = [] as IAnyObject[]
+      const deviceMap = deviceStore.allRoomDeviceMap
+
+      sceneStore.allRoomSceneList.filter(item => item.roomId === this.data.selectedRoomId).forEach((scene: Scene.SceneItem) => {
+        let linkName = ''
+        if (scene.deviceConditions?.length > 0) {
+          const device = deviceMap[scene.deviceConditions[0].deviceId]
+          const switchName = device.switchInfoDTOList.find(
+            (switchItem) => switchItem.switchId === scene.deviceConditions[0].controlEvent[0].modelName.toString(),
+          )?.switchName
+
+          linkName = `${switchName} | ${device.deviceName}`
+        }
+
+        listData.push({
+          ...scene,
+          dragId: scene.sceneId,
+          linkName,
+          sceneIcon: scene.sceneIcon,
+        })
+      })
+      this.setData({
+        listData,
+      })
+
+      // 防止场景为空，drag为null·
+      if (listData.length) {
+        const drag = this.selectComponent('#yijian')
+        drag.init()
+      }
+    },
+
     async execYijianScene(e: { detail: Scene.SceneItem }) {
       const res = await execScene(e.detail.sceneId)
       if (res.success) {
@@ -199,6 +181,36 @@ ComponentWithComputed({
       } else {
         Toast('执行失败')
       }
+    },
+
+    toSetting(e: { detail: Scene.SceneItem }) {
+      if (this.data.isCreator || this.data.isAdmin) {
+        wx.navigateTo({
+          url: strUtil.getUrlWithParams(this.data.urls.automationEditYijian, { yijianSceneId: e.detail.sceneId }),
+        })
+      } else {
+        Toast('您当前身份为访客，无法编辑场景')
+      }
+    },
+
+    async handleSortEnd(e: { detail: { listData: Scene.SceneItem[] } }) {
+      console.log('handleSortEnd', e)
+      const sceneSortList = [] as { orderNum: number; sceneId: string }[]
+      e.detail.listData.forEach((item, index) => {
+        if (item.orderNum != index) {
+          sceneSortList.push({
+            orderNum: index,
+            sceneId: item.sceneId,
+          })
+        }
+      })
+      if (sceneSortList.length === 0) {
+        return
+      }
+      await updateSceneSort({ sceneSortList })
+      await sceneStore.updateAllRoomSceneList()
+      homeStore.updateRoomCardList()
+      this.updateList()
     },
 
     changeAutoSceneEnabled(e: { currentTarget: { dataset: { isenabled: '0' | '1'; sceneid: string } } }) {
@@ -221,7 +233,7 @@ ComponentWithComputed({
       })
     },
     //阻止事件冒泡
-    stopPropagation() {},
+    stopPropagation() { },
 
     // 场景类型变更
     handleSceneType() {
@@ -232,6 +244,7 @@ ComponentWithComputed({
         automationLog: '/package-automation/automation-log/index',
         automationAdd: '/package-automation/automation-add/index',
       })
+      this.updateList()
     },
     onUnload() {
       emitter.off('sceneEdit')
@@ -239,13 +252,19 @@ ComponentWithComputed({
   },
   lifetimes: {
     ready() {
+            this.setData({
+        selectedRoomId: roomStore.currentRoom.roomId,
+        active: roomStore.currentRoom.roomId
+      })
+      this.updateList()
+      sceneBinding.store.updateAllRoomSceneList().then(() => {
+        this.updateList()
+      })
       emitter.off('sceneEdit')
       emitter.on('sceneEdit', () => {
-        sceneBinding.store.updateAllRoomSceneList().then(() =>
-          this.setData({
-            editBack: true,
-          }),
-        )
+        Promise.all([sceneStore.updateAllRoomSceneList(), sceneStore.updateSceneList()]).then(() => {
+          this.updateList()
+        })
       })
     },
   },

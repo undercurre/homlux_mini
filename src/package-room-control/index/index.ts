@@ -931,6 +931,7 @@ ComponentWithComputed({
 
     handleSceneTap() {
       wx.navigateTo({
+        //  url: '/package-room-control/scene-list/index',
         url: '/package-automation/automation/index',
       })
     },

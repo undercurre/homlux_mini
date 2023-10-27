@@ -9,7 +9,7 @@
   color: #555659 !important;
 }
 .cell {
-  margin-top: 24rpx;
+  margin: 0 16px !important;
   box-shadow: 0px 4px 40px 0px rgba(97, 109, 136, 0.12);
 }
 .btn-raw {
