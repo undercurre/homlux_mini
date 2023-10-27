@@ -148,14 +148,14 @@ ComponentWithComputed({
         return `${(value / 100) * (maxColorTemp - minColorTemp) + minColorTemp}K`
       }
     },
-    // 房间存在可显示的开关或灯具
+    // 房间存在可显示的灯具
     roomHasLight(data) {
       if (data.allRoomDeviceList) {
         return (
           (data.allRoomDeviceList as DeviceCard[]).filter(
             (device) =>
               device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
-              (device.proType === PRO_TYPE.light || device.proType === PRO_TYPE.switch),
+              device.proType === PRO_TYPE.light,
           ).length > 0
         )
       }
