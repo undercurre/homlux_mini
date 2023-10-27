@@ -25,8 +25,8 @@ var toastActived = {}
  * 滑条的最小值最大值，默认 0~100
  * 按钮默认内嵌在滑条容器内
  */
-var min = 0
-var max = 100
+var min = {}
+var max = {}
 var isBtnInset = {}
 
 // 处理属性初始化，以及变更
@@ -41,13 +41,9 @@ function propObserver(newValue, oldValue, ownerInstance) {
 
     // 未初始化
     // if (!isBtnInset[key]) {
-    if (dataset.min !== undefined) min = dataset.min
-    if (dataset.max !== undefined) max = dataset.max
-    if (dataset.isBtnInset !== undefined) {
-      isBtnInset[key] = dataset.isBtnInset
-    } else {
-      isBtnInset[key] = true
-    }
+    dataset.min === undefined ? (min[key] = 0) : (min[key] = dataset.min)
+    dataset.max === undefined ? (max[key] = 100) : (max[key] = dataset.max)
+    dataset.isBtnInset === undefined ? (isBtnInset[key] = true) : (isBtnInset[key] = dataset.isBtnInset)
 
     sliderBar[key] = ownerInstance.selectComponent('.mz-slider-bar')
     sliderBtn[key] = ownerInstance.selectComponent('.button')
@@ -57,12 +53,12 @@ function propObserver(newValue, oldValue, ownerInstance) {
     if (dataset.showToast) {
       sliderToast[key] = ownerInstance.selectComponent('.slider-toast')
     }
-    console.log('propObserver', newValue, oldValue, key)
+    console.log('propObserver', newValue, oldValue, key, 'min:', min[key])
 
     if (!sliderInfo[key]) {
       return
     }
-    var width = ((newValue - min) / (max - min)) * sliderInfo[key].width
+    var width = ((newValue - min[key]) / (max[key] - min[key])) * sliderInfo[key].width
     changeBarStyle(width)
 
     // }
@@ -178,13 +174,13 @@ function changeToastStyle(_width, _active = true) {
 // ! 在此处处理 min~max 值的传化，组件中的事件处理则不必再逐一处理
 function updateValue(_width) {
   setValue[key] = Math.round(
-    (calcDragDis(_width, 0, sliderInfo[key].width) / sliderInfo[key].width) * (max - min) + min,
+    (calcDragDis(_width, 0, sliderInfo[key].width) / sliderInfo[key].width) * (max[key] - min[key]) + min[key],
   )
 }
 
 // 计算范围约束值
-function calcDragDis(_val, min = buttonInfo[key].width, max = sliderInfo[key].width) {
-  return Math.min(Math.max(_val, min), max)
+function calcDragDis(_val, _min = buttonInfo[key].width, _max = sliderInfo[key].width) {
+  return Math.min(Math.max(_val, _min), _max)
 }
 
 module.exports = {
