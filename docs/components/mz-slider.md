@@ -14,7 +14,7 @@
 | inactiveColor | string   | false | -      | 滑条未激活部分样式              |
 | value         | number   | false | 1      | 滑条当前值（min~max）           |
 | barHeight     | number   | false | 80     | 滑条高度(rpx)                   |
-| btnHeight     | number   | false | 80     | 滑条按钮高度(rpx)               |
+| btnHeight     | number   | false | 72     | 滑条按钮高度(rpx)               |
 | formatter     | function | false | -      | 内置的 toast 显示内容的格式化器 |
 
 ### dataset 传值
