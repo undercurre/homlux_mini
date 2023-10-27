@@ -112,7 +112,7 @@
     </view>  -->
  
     <view wx:if="{{ isYijian && !allRoomYijianSceneListComputed.length }}" class="w-full mt-182rpx flex flex-col items-center"> 
-      <image src="{{defaultImgDir}}/link-wifi.png" class="w-300rpx h-300rpx"></image> 
+      <image src="../assets/imgs/automation/none-scene.png" class="w-300rpx h-300rpx"></image> 
       <text class="text-32rpx text-black-59 mt-44rpx mb-32rpx">暂未创建一键场景</text> 
       <text class="text-24rpx text-black-59 mb-224rpx opacity-40">通过创建一键触发场景，便携操控全屋效果</text> 
       <van-button bind:click="goToWhenConnected" data-url="{{urls.automationAdd}}" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-class="add-immediately-btn" wx:if="{{true}}"> 
@@ -121,7 +121,7 @@
     </view> 
  
     <view wx:if="{{ !isYijian && !allRoomAutoSceneListComputed.length }}" class="w-full mt-182rpx flex flex-col items-center"> 
-      <image src="{{defaultImgDir}}/link-wifi.png" class="w-300rpx h-300rpx"></image> 
+      <image src="../assets/imgs/automation/none-scene.png" class="w-300rpx h-300rpx"></image> 
       <text class="text-32rpx text-black-59 mt-44rpx mb-32rpx">暂未创建自动场景</text> 
       <text class="text-24rpx text-black-59 mb-224rpx opacity-40">通过传感器、时间等条件自动控制灯光与窗帘</text> 
       <van-button bind:click="goToWhenConnected" data-url="{{urls.automationAdd}}" color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)" custom-class="add-immediately-btn" wx:if="{{true}}"> 
