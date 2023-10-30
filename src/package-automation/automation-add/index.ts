@@ -1253,7 +1253,7 @@ ComponentWithComputed({
         deviceActions: [],
         deviceConditions: [],
         houseId: homeStore.currentHomeDetail.houseId,
-        roomId: roomStore.roomList[roomStore.currentRoomIndex].roomId,
+        roomId: this.data.roomId === '' ? roomStore.roomList[roomStore.currentRoomIndex].roomId : this.data.roomId,
         sceneIcon: this.data.sceneIcon,
         sceneName: this.data.sceneName,
         sceneType: '0',
