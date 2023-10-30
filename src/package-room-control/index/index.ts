@@ -931,8 +931,8 @@ ComponentWithComputed({
 
     handleSceneTap() {
       wx.navigateTo({
-        url: '/package-room-control/scene-list/index',
-        // url: '/package-automation/automation/index',
+        //  url: '/package-room-control/scene-list/index',
+        url: '/package-automation/automation/index',
       })
     },
     /** 点击创建场景按钮回调 */

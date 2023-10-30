@@ -877,16 +877,8 @@ ComponentWithComputed({
       })
     },
     handleSceneEditConfirm(e: { detail: IAnyObject }) {
-      console.log('调节动作变更信息', e)
       const { _cacheDeviceMap } = this.data
-      const flattenEditIndex = this.data.sceneDeviceActionsFlatten.findIndex(
-        (item) => item.dragId === this.data.editingUniId,
-      )
-      const actionItem = this.data.sceneDeviceActionsFlatten[flattenEditIndex]
-      console.log('调节设备动作——找到动作', actionItem)
-      const listEditIndex = this.data.deviceList.findIndex((item) => item.uniId === actionItem.uniId)
-      const listItem = this.data.deviceList[listEditIndex]
-      console.log('调节设备动作——找到设备', actionItem)
+      const actionItem = this.data.sceneDeviceActionsFlatten[this.data.editIndex]
       const device = deviceStore.allRoomDeviceFlattenMap[actionItem.uniId]
 
       if (!_cacheDeviceMap[actionItem.uniId]) {
@@ -906,13 +898,9 @@ ComponentWithComputed({
           deviceId: device.deviceId,
           proType: device.proType,
           deviceType: device.deviceType,
-          modelName: actionItem.value?.modelName,
+          modelName: actionItem.value.modelName,
           property: oldProperty,
         }
-      }
-      listItem.property = {
-        ...listItem.property,
-        ...e.detail,
       }
 
       actionItem.value = {
@@ -920,19 +908,13 @@ ComponentWithComputed({
         ...e.detail,
       }
 
-      actionItem.desc = toPropertyDesc(actionItem.proType as string, actionItem.value)
+      actionItem.desc = toPropertyDesc(actionItem.proType, actionItem.value)
 
-      console.log('调节动作完成', actionItem, listItem)
-
-      this.setData(
-        {
-          sceneDeviceActionsFlatten: [...this.data.sceneDeviceActionsFlatten],
-          deviceList: [...this.data.deviceList],
-        },
-        () => {
-          this.updateSceneDeviceActionsFlatten()
-        },
-      )
+      this.setData({
+        _isEditAction: true,
+        sceneDeviceActionsFlatten: [...this.data.sceneDeviceActionsFlatten],
+        showEditPopup: '',
+      })
     },
 
     async go2dispatch() {
