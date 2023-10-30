@@ -17,7 +17,7 @@
   <view class="w-664 flex-col-center">
     <van-checkbox icon-size="14" class="text-24rpx" value="{{ isReady }}" bind:change="onReadyClick" use-icon-slot>
       <text class="text-24rpx">已完成以上操作</text>
-      <image class="h-32rpx w-32rpx mt-12rpx" slot="icon" src="{{ isReady ? checkImg : uncheckImg }}" />
+      <image class="h-32rpx w-32rpx" slot="icon" src="{{ isReady ? checkImg : uncheckImg }}" />
     </van-checkbox>
   </view>
   <view class="w-664 mt-32rpx mb-128rpx">
