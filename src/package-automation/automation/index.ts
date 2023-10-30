@@ -1,7 +1,16 @@
 import { storage } from '../../utils/storage'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { autosceneBinding, deviceStore, homeBinding, homeStore, roomStore, sceneBinding, sceneStore, userBinding } from '../../store/index'
+import {
+  autosceneBinding,
+  deviceStore,
+  homeBinding,
+  homeStore,
+  roomStore,
+  sceneBinding,
+  sceneStore,
+  userBinding,
+} from '../../store/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { strUtil } from '../../utils/strUtil'
@@ -13,7 +22,10 @@ import { sceneImgDir, defaultImgDir } from '../../config/index'
 
 // pages/login/index.ts
 ComponentWithComputed({
-  behaviors: [BehaviorWithStore({ storeBindings: [autosceneBinding, userBinding, sceneBinding, homeBinding] }), pageBehaviors],
+  behaviors: [
+    BehaviorWithStore({ storeBindings: [autosceneBinding, userBinding, sceneBinding, homeBinding] }),
+    pageBehaviors,
+  ],
   /**
    * 页面的初始数据
    */
@@ -114,7 +126,7 @@ ComponentWithComputed({
       //   autosceneBinding.store.updateAllRoomAutoSceneList()
       // })
       console.log(roomStore.currentRoom, roomStore.currentRoomIndex)
-    
+
       // 加载一键场景列表
       sceneBinding.store.updateAllRoomSceneList()
       // 加载自动化列表
@@ -145,24 +157,26 @@ ComponentWithComputed({
       const listData = [] as IAnyObject[]
       const deviceMap = deviceStore.allRoomDeviceMap
 
-      sceneStore.allRoomSceneList.filter(item => item.roomId === this.data.selectedRoomId).forEach((scene: Scene.SceneItem) => {
-        let linkName = ''
-        if (scene.deviceConditions?.length > 0) {
-          const device = deviceMap[scene.deviceConditions[0].deviceId]
-          const switchName = device.switchInfoDTOList.find(
-            (switchItem) => switchItem.switchId === scene.deviceConditions[0].controlEvent[0].modelName.toString(),
-          )?.switchName
+      sceneStore.allRoomSceneList
+        .filter((item) => item.roomId === this.data.selectedRoomId)
+        .forEach((scene: Scene.SceneItem) => {
+          let linkName = ''
+          if (scene.deviceConditions?.length > 0) {
+            const device = deviceMap[scene.deviceConditions[0].deviceId]
+            const switchName = device.switchInfoDTOList.find(
+              (switchItem) => switchItem.switchId === scene.deviceConditions[0].controlEvent[0].modelName.toString(),
+            )?.switchName
 
-          linkName = `${switchName} | ${device.deviceName}`
-        }
+            linkName = `${switchName} | ${device.deviceName}`
+          }
 
-        listData.push({
-          ...scene,
-          dragId: scene.sceneId,
-          linkName,
-          sceneIcon: scene.sceneIcon,
+          listData.push({
+            ...scene,
+            dragId: scene.sceneId,
+            linkName,
+            sceneIcon: scene.sceneIcon,
+          })
         })
-      })
       this.setData({
         listData,
       })
@@ -170,7 +184,7 @@ ComponentWithComputed({
       // 防止场景为空，drag为null·
       if (listData.length) {
         const drag = this.selectComponent('#yijian')
-        drag.init()
+        if (drag) drag.init()
       }
     },
 
@@ -233,7 +247,7 @@ ComponentWithComputed({
       })
     },
     //阻止事件冒泡
-    stopPropagation() { },
+    stopPropagation() {},
 
     // 场景类型变更
     handleSceneType() {
@@ -252,9 +266,9 @@ ComponentWithComputed({
   },
   lifetimes: {
     ready() {
-            this.setData({
+      this.setData({
         selectedRoomId: roomStore.currentRoom.roomId,
-        active: roomStore.currentRoom.roomId
+        active: roomStore.currentRoom.roomId,
       })
       this.updateList()
       sceneBinding.store.updateAllRoomSceneList().then(() => {

@@ -552,6 +552,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .w-64rpx{width:64rpx;}
 .w-642{width:642rpx;}
 .w-654rpx{width:654rpx;}
+.w-656rpx{width:656rpx;}
 .w-664{width:664rpx;}
 .w-686rpx{width:686rpx;}
 .w-702rpx{width:702rpx;}

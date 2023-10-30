@@ -616,7 +616,7 @@ ComponentWithComputed({
       //   const index = this.data.linkSelectList.findIndex((id) => id === item.uniId)
       //   return index !== -1 || item.deviceType === 6
       // })
-      console.log(this.data.sceneDevicelinkSelectList, tempSceneDeviceActionsFlatten.length)
+
       //从后面插入已选中的设备和场景s
       this.data.sceneDevicelinkSelectList.forEach((id) => {
         //每次选中的都push到最后
@@ -688,8 +688,6 @@ ComponentWithComputed({
         _isEditAction: isEditAction,
         sceneDevicelinkSelectList: [],
       })
-
-      console.log(this.data.sceneDevicelinkSelectList, tempSceneDeviceActionsFlatten.length)
 
       // 防止场景为空，drag为null·
       if (sceneDeviceActionsFlatten.length) {
@@ -840,45 +838,37 @@ ComponentWithComputed({
      * @param e
      * @returns
      */
-    handleAutoSceneActionEdit(e: { detail: number }) {
-      const index = e.detail
-      const action = this.data.sceneDeviceActionsFlatten[index]
-      console.log('handleAutoSceneActionEdit', action)
-      if (action.deviceType === 6) {
-        const delay = [0, 0] as number[]
-        delay[0] = Math.trunc(action.value.delayTime / 60)
-        delay[1] = Math.trunc(action.value.delayTime % 60)
-        this.setData({
-          delay,
-          editingDelayId: action.uniId,
-          showDelayPopup: true,
-        })
-      } else if (action.deviceType === 5) {
+    handleSceneActionEdit(e: WechatMiniprogram.TouchEvent) {
+      // 默认场景不可编辑场景设备数据
+      if (this.data.isDefault) {
         return
-      } else {
-        const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
-        const device = allRoomDeviceMap[action.uniId]
-        console.log('device', device)
-        let modelName = 'light'
-
-        if (action.proType === PRO_TYPE.switch) {
-          modelName = String(device.switchInfoDTOList[0].switchId)
-        }
-
-        device.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, modelName })
-
-        this.setData({
-          sceneEditTitle: action.name,
-          sceneEditInfo: {
-            ...action.value,
-            deviceType: device.deviceType,
-            gatewayId: device.gatewayId,
-            deviceId: device.deviceId,
-          },
-          showEditPopup: device.proType,
-          editingUniId: action.dragId,
-        })
       }
+
+      const { index } = e.currentTarget.dataset
+
+      const deviceAction = this.data.sceneDeviceActionsFlatten[index]
+      console.log(this.data.sceneDeviceActionsFlatten, index)
+      const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
+      const device = allRoomDeviceMap[deviceAction.uniId]
+      let modelName = 'light'
+
+      if (deviceAction.proType === PRO_TYPE.switch) {
+        modelName = device.switchInfoDTOList[0].switchId
+      }
+
+      device.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, modelName })
+
+      this.setData({
+        sceneEditTitle: deviceAction.name,
+        sceneEditInfo: {
+          ...deviceAction.value,
+          deviceType: device.deviceType,
+          gatewayId: device.gatewayId,
+          deviceId: device.deviceId,
+        },
+        showEditPopup: device.proType,
+        editIndex: index,
+      })
     },
     /* 编辑设备动作弹窗 start */
     handleEditPopupClose() {
@@ -888,12 +878,7 @@ ComponentWithComputed({
     },
     handleSceneEditConfirm(e: { detail: IAnyObject }) {
       const { _cacheDeviceMap } = this.data
-      const flattenEditIndex = this.data.sceneDeviceActionsFlatten.findIndex(
-        (item) => item.dragId === this.data.editingUniId,
-      )
-      const actionItem = this.data.sceneDeviceActionsFlatten[flattenEditIndex]
-      const listEditIndex = this.data.deviceList.findIndex((item) => item.uniId === actionItem.uniId)
-      const listItem = this.data.deviceList[listEditIndex]
+      const actionItem = this.data.sceneDeviceActionsFlatten[this.data.editIndex]
       const device = deviceStore.allRoomDeviceFlattenMap[actionItem.uniId]
 
       if (!_cacheDeviceMap[actionItem.uniId]) {
@@ -913,13 +898,9 @@ ComponentWithComputed({
           deviceId: device.deviceId,
           proType: device.proType,
           deviceType: device.deviceType,
-          modelName: actionItem.value?.modelName,
+          modelName: actionItem.value.modelName,
           property: oldProperty,
         }
-      }
-      listItem.property = {
-        ...listItem.property,
-        ...e.detail,
       }
 
       actionItem.value = {
@@ -927,17 +908,13 @@ ComponentWithComputed({
         ...e.detail,
       }
 
-      actionItem.desc = toPropertyDesc(actionItem.proType as string, actionItem.value)
+      actionItem.desc = toPropertyDesc(actionItem.proType, actionItem.value)
 
-      this.setData(
-        {
-          sceneDeviceActionsFlatten: [...this.data.sceneDeviceActionsFlatten],
-          deviceList: [...this.data.deviceList],
-        },
-        () => {
-          this.updateSceneDeviceActionsFlatten()
-        },
-      )
+      this.setData({
+        _isEditAction: true,
+        sceneDeviceActionsFlatten: [...this.data.sceneDeviceActionsFlatten],
+        showEditPopup: '',
+      })
     },
 
     async go2dispatch() {
@@ -971,7 +948,7 @@ ComponentWithComputed({
         deviceActions: [],
         deviceConditions: [],
         houseId: homeStore.currentHomeDetail.houseId,
-        roomId: roomStore.roomList[roomStore.currentRoomIndex].roomId,
+        roomId: this.data.roomId === '' ? roomStore.roomList[roomStore.currentRoomIndex].roomId : this.data.roomId,
         sceneIcon: this.data.sceneIcon,
         sceneName: this.data.sceneName,
         sceneType: '0',
@@ -1087,22 +1064,6 @@ ComponentWithComputed({
     //     duration: 300,
     //   })
     // },
-    async handleSortEnd(e: { detail: { listData: Device.ActionItem[] } }) {
-      e.detail.listData.forEach((item, index) => {
-        if (item.orderNum != index) {
-          item.orderNum = index
-        }
-      })
-      this.setData({
-        _isEditAction: true,
-        sceneDeviceActionsFlatten: e.detail.listData,
-      })
-      // 防止场景为空，drag为null·
-      if (e.detail.listData.length) {
-        const drag = this.selectComponent('#drag')
-        drag.init()
-      }
-    },
     selectAdviceName(e: { currentTarget: { dataset: { text: string } } }) {
       const name = e.currentTarget.dataset.text
       this.setData({

@@ -148,8 +148,6 @@ ComponentWithComputed({
       if (this.data.isControl) {
         this.controlSubDevice({ power: this.data.power })
       }
-
-      this.handleConfirm()
     },
     handleLevelDrag(e: { detail: number }) {
       this.setData({
@@ -159,8 +157,6 @@ ComponentWithComputed({
       if (this.data.isControl) {
         this.controlSubDevice({ brightness: this.data.brightness })
       }
-
-      this.handleChange()
     },
     handleLevelChange(e: { detail: number }) {
       this.setData({
@@ -170,8 +166,6 @@ ComponentWithComputed({
       if (this.data.isControl) {
         this.controlSubDevice({ brightness: this.data.brightness })
       }
-
-      this.handleConfirm()
     },
     handleColorTempChange(e: { detail: number }) {
       this.setData({
@@ -181,8 +175,6 @@ ComponentWithComputed({
       if (this.data.isControl) {
         this.controlSubDevice({ colorTemperature: this.data.colorTemperature })
       }
-
-      this.handleConfirm()
     },
     handleColorTempDrag(e: { detail: number }) {
       this.setData({

@@ -455,6 +455,7 @@ ComponentWithComputed({
       })
     },
     handleSceneActionEdit(e: WechatMiniprogram.TouchEvent) {
+      console.log('编辑action')
       // 默认场景不可编辑场景设备数据
       if (this.data.isDefault) {
         return
