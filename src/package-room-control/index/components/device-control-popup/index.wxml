@@ -89,17 +89,23 @@
         <view>
           <text class="text-26 text-hex-666666">设备日志</text>
         </view>
-        <view class="log-step"></view>
-        <scroll-view scroll-y enhanced show-scrollbar="{{false}}" style="height: 500rpx">
-          <view class="log-item" wx:for="{{logListView}}" wx:key="index">
-            <view class="flex flex-col">
-              <text class="text-32 text-hex-666666">{{item.time}}</text>
-              <text class="text-24 text-hex-8a8a8f">{{item.date}}</text>
+        <block wx:if="{{logListView.length}}">
+          <view class="log-step"></view>
+          <scroll-view scroll-y enhanced show-scrollbar="{{false}}" style="height: 500rpx">
+            <view class="log-item" wx:for="{{logListView}}" wx:key="index">
+              <view class="flex flex-col">
+                <text class="text-32 text-hex-666666">{{item.time}}</text>
+                <text class="text-24 text-hex-8a8a8f">{{item.date}}</text>
+              </view>
+              <text class="text-32 text-hex-000 ml-114rpx">{{item.content}}</text>
+              <view class="circle"></view>
             </view>
-            <text class="text-32 text-hex-000 ml-114rpx">{{item.content}}</text>
-            <view class="circle"></view>
-          </view>
-        </scroll-view>
+          </scroll-view>
+        </block>
+
+        <view wx:else class="flex flex-center" style="height: 500rpx">
+          <tips-box text="暂无记录" icon="{{defaultImgDir}}/no-log.png" size="240"></tips-box>
+        </view>
       </view>
     </view>
   </view>

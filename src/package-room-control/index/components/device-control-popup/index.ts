@@ -2,7 +2,15 @@ import { Logger, isArrEqual, throttle, showLoading, hideLoading, isNullOrUnDef }
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, deviceStore, sceneStore, homeStore } from '../../../../store/index'
-import { maxColorTemp, minColorTemp, MODEL_NAME, PRO_TYPE, SCREEN_PID, KNOB_PID } from '../../../../config/index'
+import {
+  maxColorTemp,
+  minColorTemp,
+  MODEL_NAME,
+  PRO_TYPE,
+  SCREEN_PID,
+  KNOB_PID,
+  defaultImgDir,
+} from '../../../../config/index'
 import {
   sendDevice,
   findDevice,
@@ -96,6 +104,7 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
+    defaultImgDir,
     show: false,
     lightInfoInner: {
       brightness: 10,
