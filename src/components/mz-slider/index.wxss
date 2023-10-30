@@ -12,15 +12,18 @@
   justify-content: flex-end;
   align-items: center;
 }
+
 .mz-slider-button {
   background-color: #fff;
   border-radius: 8rpx;
   height: 40rpx;
   width: 8rpx;
 }
+
 .mz-slider--disabled {
   opacity: 0.5;
 }
+
 .button-outset {
   position: absolute;
   top: 0;

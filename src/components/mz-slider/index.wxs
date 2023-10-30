@@ -163,8 +163,9 @@ function changeToastStyle(_width, _active = true) {
   var widthInRange = calcDragDis(_width, isBtnInset[key] ? buttonInfo[key].width : 0)
   var toastInfo = sliderToast[key].getBoundingClientRect()
   var toastLeft = widthInRange - toastInfo.width / 2
+  var compositeActive = _active || !toastActived[key]
   sliderToast[key].setStyle({
-    opacity: _active || !toastActived[key] ? 1 : 0,
+    opacity: compositeActive ? 1 : 0,
     transition: FADE_TRANSITION,
     transform: 'translateX(' + toastLeft + 'px)',
   })
