@@ -7,7 +7,7 @@ import { StatusType } from './typings'
 import { deviceReplace } from '../../apis/index'
 // import { deviceReplace } from 'js-homos'
 import { emitter } from '../../utils/eventBus'
-import { defaultImgDir } from '../../config/index'
+import { SCREEN_PID, defaultImgDir } from '../../config/index'
 
 ComponentWithComputed({
   options: {},
@@ -39,11 +39,12 @@ ComponentWithComputed({
 
       return deviceStore.allRoomDeviceList.filter((device) => {
         const isSubdevice = device.deviceType === 2
+        const isScreen = SCREEN_PID.includes(device.productId)
         const isFilterDevice = choosingNew
           ? device.productId === data.oldDeviceItem.productId && device.deviceId !== data.oldDeviceItem.deviceId
           : true
         const oldDeviceOrNewAndOnline = choosingNew ? device.onLineStatus : true
-        return isSubdevice && isFilterDevice && oldDeviceOrNewAndOnline
+        return isSubdevice && !isScreen && isFilterDevice && oldDeviceOrNewAndOnline
       })
     },
     nextBtnText(data) {
