@@ -8,6 +8,7 @@ import homos from 'js-homos'
 export function logout() {
   storage.remove('mobilePhone')
   storage.remove('token')
+  storage.remove('localKey') // 清除局域网的家庭key
   userStore.logout()
   homos.logout()
   closeWebSocket()
