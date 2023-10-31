@@ -1013,6 +1013,7 @@ ComponentWithComputed({
         {
           sceneDeviceActionsFlatten: [...this.data.sceneDeviceActionsFlatten],
           deviceList: [...this.data.deviceList],
+          showEditPopup: '',
         },
         () => {
           this.updateSceneDeviceActionsFlatten()
