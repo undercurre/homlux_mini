@@ -62,19 +62,6 @@ ComponentWithComputed({
     selectedRoomId: '',
   },
   computed: {
-    allRoomYijianSceneListComputed() {
-      return sceneStore.allRoomSceneList
-        .filter((item) => item !== null)
-        .map((item) => {
-          return {
-            desc: '描述',
-            sceneIcon: 'icon-1',
-            sceneId: item.sceneId,
-            sceneName: item.sceneName,
-            isEnabled: true,
-          }
-        })
-    },
     roomTab() {
       const tempRoomList = roomStore.roomList.map((item) => {
         return {
