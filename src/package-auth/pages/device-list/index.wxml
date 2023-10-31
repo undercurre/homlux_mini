@@ -32,4 +32,4 @@
 
 <van-toast id="van-toast" />
 
-<van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />
+<van-dialog id="van-dialog" />

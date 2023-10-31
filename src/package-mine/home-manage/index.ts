@@ -4,7 +4,14 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { roomBinding, homeBinding, userBinding, deviceBinding, homeStore } from '../../store/index'
-import { saveOrUpdateUserHouseInfo, delUserHouse, quitUserHouse, updateDefaultHouse } from '../../apis/index'
+import {
+  saveOrUpdateUserHouseInfo,
+  delUserHouse,
+  quitUserHouse,
+  updateDefaultHouse,
+  queryUserThirdPartyInfo,
+  delDeviceSubscribe,
+} from '../../apis/index'
 import { strUtil, checkInputNameIllegal, emitter } from '../../utils/index'
 
 ComponentWithComputed({
@@ -31,7 +38,6 @@ ComponentWithComputed({
     isFocus: false,
     isEditName: false,
     isShowSetting: false,
-    isTransferHome: false,
   },
 
   computed: {
@@ -87,7 +93,6 @@ ComponentWithComputed({
         homeStore.updateHomeInfo()
       })
     },
-    moved: function () {},
     detached: function () {
       emitter.off('homeInfoEdit')
       emitter.off('invite_user_house')
@@ -133,39 +138,87 @@ ComponentWithComputed({
     onSelectSetting(e: WechatMiniprogram.CustomEvent) {
       const name = e.detail.name
 
-      if (name === '重命名') {
-        this.editName()
-        return
-      }
+      switch (name) {
+        case '重命名':
+          this.editName()
+          break
 
-      if (name === '解散家庭') {
-        this.delHome()
-        return
-      }
+        case '解散家庭':
+          this.delHome()
+          break
 
-      if (name === '转让家庭') {
-        const list = homeBinding.store.homeList.filter((item) => item.houseCreatorFlag)
+        case '转让家庭':
+          this.toTransferHome()
+          break
 
-        if (list.length <= 1) {
-          Toast({
-            message: '请至少保留一个创建的家庭',
-          })
-
-          return
-        }
-
-        wx.navigateTo({
-          url: '/package-mine/home-transfer/index',
-        })
-        return
-      }
-
-      if (name === '退出家庭') {
-        this.quitHome()
-        return
+        case '退出家庭':
+          this.quitHome()
+          break
       }
     },
 
+    async toTransferHome() {
+      const list = homeBinding.store.homeList.filter((item) => item.houseCreatorFlag)
+
+      if (list.length <= 1) {
+        Toast({
+          message: '请至少保留一个创建的家庭',
+        })
+
+        return
+      }
+
+      // 增加美居授权校验及提醒，并提供取消授权入口和二次确认
+      const bindRes = await queryUserThirdPartyInfo(homeStore.currentHomeId, { loading: true })
+
+      const isAuth = bindRes.success ? bindRes.result[0].authStatus === 1 : false
+
+      if (!bindRes.success) {
+        Toast('查询美居授权状态失败')
+        return
+      }
+
+      if (isAuth) {
+        const res = await Dialog.confirm({
+          title: '当前家庭已绑定美居账号，转让家庭必须先解绑，确认是否解绑',
+        }).catch(() => 'cancel')
+
+        console.log('delHome', res)
+
+        if (res === 'cancel') {
+          return
+        }
+
+        const deBindRes = await this.deBindMeiju()
+
+        if (!deBindRes?.success) {
+          return
+        }
+      }
+
+      wx.navigateTo({
+        url: '/package-mine/home-transfer/index',
+      })
+    },
+
+    async deBindMeiju() {
+      const dialogRes = await Dialog.confirm({
+        title: '取消授权后，美居家庭的设备将从HOMLUX家庭移除，请谨慎操作。',
+      }).catch(() => 'cancel')
+
+      if (dialogRes === 'cancel') return
+
+      const res = await delDeviceSubscribe(homeStore.currentHomeId)
+      if (res.success) {
+        Toast('已解除绑定')
+
+        homeStore.updateRoomCardList()
+      } else {
+        Toast(res.msg)
+      }
+
+      return res
+    },
     /**
      * 创建家庭
      */
@@ -279,32 +332,6 @@ ComponentWithComputed({
       Toast(delRes.success ? '解散成功' : '解散失败')
 
       homeBinding.store.updateHomeInfo()
-    },
-
-    toTransferHome() {
-      const list = homeBinding.store.homeList.filter((item) => item.houseCreatorFlag)
-
-      if (list.length <= 1) {
-        Toast('请至少保留一个创建的家庭')
-
-        return
-      }
-
-      if (homeBinding.store.currentHomeDetail.userCount <= 1) {
-        Toast('没有其他成员可供转让')
-
-        return
-      }
-
-      this.setData({
-        isTransferHome: true,
-      })
-    },
-
-    closeTransferHome() {
-      this.setData({
-        isTransferHome: false,
-      })
     },
 
     async quitHome() {
