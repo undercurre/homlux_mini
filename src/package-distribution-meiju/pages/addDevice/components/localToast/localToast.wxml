@@ -1,3 +1,0 @@
-<view class="wrapper" animation="{{animationData}}">
-  <view class="content">{{content}}</view>
-</view>

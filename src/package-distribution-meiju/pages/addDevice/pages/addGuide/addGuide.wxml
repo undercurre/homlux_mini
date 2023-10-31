@@ -1,28 +1,30 @@
 <!--addDevice//pages/addGuide/addGuide.wxml-->
-<view class="page" id="{{brand}}">
+<view id="{{brand}}">
   <view class="container">
     <nav-bar leftArrow bind:leftTap="goBack"></nav-bar>
     <!-- ble guide -->
     <!--  -->
-    <view wx:if="{{guideType==='set'&&!noFound}}" class="check-guide">
-      <view class="addGuide-title addGuide-thick">
-        <block>
-          <text class="addGuide-title theme-font-color" wx:if="{{mode==9||mode==10}}">{{deviceName}}</text>
-          <text class="addGuide-title theme-font-color" wx:else>设置{{deviceName}}</text>
-        </block>
-      </view>
-      <image class="addGuide-mode5-img" src="{{checkGuideInfo.connectUrlA}}"></image>
-      <view wx:if="{{mode==0 || mode==9 || mode==10 || mode==100 || mode==103}}" class="add-guide-desc theme-font-color">请按步骤完成以下操作 </view>
-      <view wx:else class="add-guide-desc theme-font-color">请在<text class="blue2">{{time}}</text>秒内完成以下操作 </view>
-      <view class="desc-list-guide">
-        <rich-text class="add-guide-desc-content" nodes="{{currGuideInfo.currConnectDesc}}"></rich-text>
+    <view wx:if="{{guideType==='set'&&!noFound}}" class="grow shrink check-guide h-600">
+      <view class="grow overflow-auto">
+        <view class="addGuide-title addGuide-thick">
+          <block>
+            <text class="addGuide-title theme-font-color" wx:if="{{mode==9||mode==10}}">{{deviceName}}</text>
+            <text class="addGuide-title theme-font-color" wx:else>设置{{deviceName}}</text>
+          </block>
+        </view>
+        <image class="addGuide-mode5-img" src="{{checkGuideInfo.connectUrlA}}"></image>
+        <view wx:if="{{mode==0 || mode==9 || mode==10 || mode==100 || mode==103}}" class="add-guide-desc theme-font-color">请按步骤完成以下操作 </view>
+        <view wx:else class="add-guide-desc theme-font-color">请在<text class="blue2">{{time}}</text>秒内完成以下操作 </view>
+        <view class="desc-list-guide">
+          <rich-text class="add-guide-desc-content" nodes="{{currGuideInfo.currConnectDesc}}"></rich-text>
+        </view>
+
+        <view class="check-finish" wx:if="{{mode == 9 || mode == 10}}">
+          <van-button class="w-full" block type="primary" size="large" bind:click="openPlugin">下载并打开{{deviceName}}插件 </van-button>
+        </view>
       </view>
 
-      <view class="check-finish" wx:if="{{mode == 9 || mode == 10}}">
-        <van-button class="w-full" block type="primary" size="large" bind:click="openPlugin">下载并打开{{deviceName}}插件 </van-button>
-      </view>
-
-      <view wx:if="{{mode==0 || mode==100}}" class="check-finish">
+      <view wx:if="{{mode==0 || mode==100}}" class="check-finish pb-96rpx pt-20rpx">
         <view class="finish-sel flex-r" bindtap="finish">
           <image class="sel" src="{{isFinishUpAp?sel:noSel}}"></image>
           <text class="sel-text {{isFinishUpAp?'theme-font-color':''}}">已完成上述步骤</text>
@@ -97,7 +99,6 @@
         <view class="bluetoothOpenNotice">添加设备需开启手机蓝牙，并授权微信使用蓝牙权限</view>
       </view>
     </sure-center-dialog>
-    <local-toast id="localToast"></local-toast>
   </view>
   <mx-dialog id="mx-dialog" />
 
@@ -111,3 +112,5 @@
     </useSlot>
   </mx-dialog>
 </view>
+
+<van-toast id="van-toast" />

@@ -892,10 +892,6 @@
   flex-shrink: 0;
 }
 
-#meiju .check-finish {
-  margin-bottom: 40rpx;
-}
-
 #meiju .finish-sel {
   color: #666666;
   margin-bottom: 40rpx;
@@ -1699,9 +1695,6 @@
 /**
 联网失败页 link-fail
 */
-#meiju .link-fail-container {
-}
-
 #meiju .link-fail-heade {
   width: 100%;
   padding-left: 36rpx;

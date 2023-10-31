@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
+import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../../../../behaviors/pageBehaviors'
 import { Logger } from '../../../../../utils/index'
 import { homeStore } from '../../../../../store/index'
@@ -112,7 +113,7 @@ Page({
       ['checkGuideInfo.connectDesc']: this.guideDescFomat(guideInfo[nextIndex].connectDesc),
       ['checkGuideInfo.connectUrlA']: guideInfo[nextIndex].connectUrlA,
     })
-    this.localToast.showToast(`已切换至第${nextIndex + 1}种方式`)
+    Toast(`已切换至第${nextIndex + 1}种方式`)
   },
   async initAddGuide() {
     const self = this
@@ -836,7 +837,6 @@ Page({
     this.setData({
       brand: this.data.brand,
     })
-    this.localToast = this.selectComponent('#localToast')
     console.log('adddeviceinfo===', app.addDeviceInfo)
     this.initAddGuide()
   },
