@@ -468,11 +468,21 @@ ComponentWithComputed({
       this.handleConditionShow()
     },
     async handleSceneRoomEditConfirm(e: { detail: string }) {
-      this.setData({
-        roomId: e.detail,
-        showEditRoomPopup: false,
-        _isEditCondition: true,
-      })
+      const deviceListInRoom: Device.DeviceItem[] = deviceStore.allRoomDeviceFlattenList.filter(
+        (item) => item.roomId === e.detail,
+      )
+      console.log('默认选中', deviceListInRoom)
+      this.setData(
+        {
+          roomId: e.detail,
+          showEditRoomPopup: false,
+          _isEditCondition: true,
+          sceneDevicelinkSelectList: deviceListInRoom.map((item) => item.uniId),
+        },
+        () => {
+          this.updateSceneDeviceActionsFlatten()
+        },
+      )
       this.updateSceneDeviceConditionsFlatten()
     },
     /* 设置手动场景——房间 */
@@ -691,6 +701,7 @@ ComponentWithComputed({
       // })
 
       //从后面插入已选中的设备和场景
+      console.log('设备列表', this.data.deviceList)
       this.data.sceneDevicelinkSelectList.forEach((id) => {
         //每次选中的都push到最后
         const device = this.data.deviceList.find((item) => item.uniId === id)
