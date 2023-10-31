@@ -25,6 +25,7 @@ import {
   isConnect,
   verifyNetwork,
   Logger,
+  strUtil,
 } from '../../utils/index'
 import {
   maxColorTemp,
@@ -1028,7 +1029,9 @@ ComponentWithComputed({
       // })
 
       wx.navigateTo({
-        url: '/package-automation/automation-add/index',
+        url: strUtil.getUrlWithParams('/package-automation/automation-add/index', {
+          roomid: roomStore.currentRoom.roomId,
+        }),
       })
     },
 

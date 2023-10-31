@@ -176,7 +176,8 @@ ComponentWithComputed({
    */
   methods: {
     async onLoad() {
-      const { autosceneid } = getCurrentPageParams()
+      const { autosceneid, roomid } = getCurrentPageParams()
+      console.log('接收到roomid', roomid)
       this.setData({ autoSceneId: autosceneid, opearationType: 'auto' })
 
       //处理三个传感器、场景和设备列表
@@ -348,6 +349,25 @@ ComponentWithComputed({
           },
           () => {
             this.updateSceneDeviceActionsFlatten(false)
+            this.updateSceneDeviceConditionsFlatten()
+          },
+        )
+      }
+
+      if (roomid) {
+        const deviceListInRoom: Device.DeviceItem[] = deviceStore.allRoomDeviceFlattenList.filter(
+          (item) => item.roomId === roomid,
+        )
+        console.log('默认选中', deviceListInRoom)
+        this.setData(
+          {
+            roomId: roomid,
+            _isEditCondition: true,
+            sceneDevicelinkSelectList: deviceListInRoom.map((item) => item.uniId),
+            opearationType: 'yijian',
+          },
+          () => {
+            this.updateSceneDeviceActionsFlatten()
             this.updateSceneDeviceConditionsFlatten()
           },
         )
