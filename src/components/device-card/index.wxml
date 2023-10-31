@@ -3,7 +3,7 @@
   <view class="flex-col-center relative overflow-hidden card-clip w-160rpx h-216rpx rounded-32rpx">
     <!-- 单选和编辑选择，选中状态均使用描边样式 -->
     <view wx:if="{{select}}" class="w-160rpx h-216rpx absolute left-0 top-0 box-border select-border rounded-32rpx bg-hex-fff"></view>
-    <view wx:elif="{{isGroup}}" class="w-160rpx h-216rpx rounded-32rpx box-border show-group-bg white-border}}"></view>
+    <view wx:elif="{{isGroup && showSpecialBg}}" class="w-160rpx h-216rpx rounded-32rpx box-border show-group-bg white-border}}"></view>
     <view wx:else class="w-160rpx h-216rpx rounded-32rpx box-border {{showGradientBg?'show-control-bg white-border':'bg-hex-f9fbfe'}}"></view>
 
     <!-- 顶部标题 -->

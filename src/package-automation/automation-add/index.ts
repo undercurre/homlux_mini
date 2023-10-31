@@ -274,7 +274,7 @@ ComponentWithComputed({
                 name: scene.sceneName,
                 type: 5,
                 desc: [scene.roomName],
-                pic: `/assets/img/scene/${scene.sceneIcon}.png`,
+                pic: `https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/auto-scene/${scene.sceneIcon}.png`,
                 value: {},
                 orderNum: index,
                 dragId: scene.sceneId + Math.floor(Math.random() * 1001),
@@ -743,7 +743,7 @@ ComponentWithComputed({
               name: scene.sceneName,
               type: 5,
               desc: [scene.roomName],
-              pic: `/assets/img/scene/${scene.sceneIcon}.png`,
+              pic: `https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/auto-scene/${scene.sceneIcon}.png`,
               value: {},
               orderNum: 0,
               dragId: scene.sceneId + Math.floor(Math.random() * 1001),
@@ -883,21 +883,23 @@ ComponentWithComputed({
       const { index } = e.currentTarget.dataset
       const action = this.data.sceneDeviceConditionsFlatten[index]
 
+      console.log('condition type', this.data.sceneDeviceConditionsFlatten[index])
+
       if (action.productId === 'time') {
         this.setData({
           showTimeConditionPopup: true,
         })
-      } else if (action.productId === 'sensor') {
+      } else if (action.productId === 'touch') {
+        this.setData({
+          showEditRoomPopup: true,
+        })
+      } else {
         this.setData({
           editingSensorType: action.productId,
           editingSensorAbility: action.desc,
           editingSensorProperty: action.property,
           editingUniId: action.uniId,
           showEditSensorPopup: true,
-        })
-      } else {
-        this.setData({
-          showEditRoomPopup: true,
         })
       }
     },

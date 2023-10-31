@@ -42,6 +42,11 @@ ComponentWithComputed({
       type: Boolean,
       value: true,
     },
+    // 是否启用特殊背景
+    showSpecialBg: {
+      type: Boolean,
+      value: true,
+    },
   },
 
   /**

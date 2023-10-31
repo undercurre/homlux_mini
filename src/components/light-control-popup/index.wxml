@@ -28,6 +28,8 @@
         <van-button type="primary" class="flex-1" size="large" bind:click="handleConfirm">确定</van-button>
       </view>
     </view>
+
+    <view class="h-54rpx"></view>
   </view>
 </van-popup>
 
