@@ -1,4 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
+import Dialog from '@vant/weapp/dialog/dialog'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
 import { bindMeiju, getMeijuDeviceList, syncMeijuDeviceList, delDeviceSubscribe } from '../../../apis/index'
 import { delay } from '../../../utils/index'
@@ -80,6 +81,12 @@ ComponentWithComputed({
     },
 
     async debindMeiju() {
+      const dialogRes = await Dialog.confirm({
+        title: '取消授权后，美居家庭的设备将从HOMLUX家庭移除，请谨慎操作。',
+      }).catch(() => 'cancel')
+
+      if (dialogRes === 'cancel') return
+
       const res = await delDeviceSubscribe(this.data.currentHomeId)
       if (res.success) {
         Toast('已解除绑定')

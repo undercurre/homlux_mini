@@ -1,4 +1,3 @@
-/* package-mine/auth/index.wxss */
 .title-wrapper {
   background-color: transparent !important;
 }

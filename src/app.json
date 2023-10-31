@@ -26,10 +26,6 @@
         "room-detail/index",
         "member-manage/index",
         "device-replace/index",
-        "auth/index/index",
-        "auth/meiju/index",
-        "auth/home-list/index",
-        "auth/device-list/index",
         "ota/index",
         "device-manage/index",
         "device-manage/device-detail/index",
@@ -51,7 +47,13 @@
     },
     {
       "root": "package-auth",
-      "pages": ["auth-screen/index"]
+      "pages": [
+        "pages/auth-screen/index",
+        "pages/index/index",
+        "pages/meiju/index",
+        "pages/home-list/index",
+        "pages/device-list/index"
+      ]
     },
     {
       "root": "package-automation",

@@ -13,8 +13,8 @@ ComponentWithComputed({
    */
   data: {
     urls: {
-      meiju: '/package-mine/auth/meiju/index',
-      deviceList: '/package-mine/auth/device-list/index',
+      meiju: '/package-auth/pages/meiju/index',
+      deviceList: '/package-auth/pages/device-list/index',
     },
     authList: [] as Meiju.AuthItem[],
   },

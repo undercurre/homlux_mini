@@ -1,8 +1,8 @@
 import Toast from '@vant/weapp/toast/toast'
-import pageBehavior from '../../behaviors/pageBehaviors'
-import { authQrcode } from '../../apis/index'
-import { userStore } from '../../store/index'
-import { getCurrentPageParams } from '../../utils/index'
+import pageBehavior from '../../../behaviors/pageBehaviors'
+import { authQrcode } from '../../../apis/index'
+import { userStore } from '../../../store/index'
+import { getCurrentPageParams } from '../../../utils/index'
 
 Component({
   behaviors: [pageBehavior],

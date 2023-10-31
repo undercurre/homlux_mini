@@ -311,6 +311,7 @@ ComponentWithComputed({
           }
         }
         const now = new Date().valueOf()
+        // 邀请链接一天单次有效
         if (now - parseInt(time) > 86400000) {
           console.log('lmn>>>邀请超时')
           Dialog.confirm({

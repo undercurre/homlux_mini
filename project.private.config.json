@@ -117,7 +117,7 @@
         },
         {
           "name": "屏端授权页面",
-          "pathName": "package-auth/auth-screen/index",
+          "pathName": "package-auth/pages/auth-screen/index",
           "query": "token=111",
           "launchMode": "default",
           "scene": null

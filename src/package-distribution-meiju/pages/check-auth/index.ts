@@ -107,7 +107,7 @@ ComponentWithComputed({
     toBindMeijuHome() {
       storage.set('meiju_auth_entry', 'distribution-meiju')
       wx.redirectTo({
-        url: '/package-mine/auth/meiju/index',
+        url: '/package-auth/pages/meiju/index',
       })
     },
 

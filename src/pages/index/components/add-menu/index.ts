@@ -67,7 +67,7 @@ ComponentWithComputed({
           title: '连接其它平台',
           key: 'platform',
           icon: 'auth',
-          url: '/package-mine/auth/index/index',
+          url: '/package-auth/pages/index/index',
         })
       }
 

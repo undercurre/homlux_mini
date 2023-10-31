@@ -7,7 +7,6 @@ import { homeStore } from '../../../store/index'
 
 type HomeCard = { checked: boolean; index: number } & Meiju.MeijuHome
 
-// package-mine/auth/index.ts
 ComponentWithComputed({
   behaviors: [pageBehaviors],
   /**
@@ -70,7 +69,7 @@ ComponentWithComputed({
       if (entry === 'distribution-meiju') {
         this.bindMeijuHome()
       } else {
-        const url = `/package-mine/auth/device-list/index?homeId=${this.data.currentHome?.mideaHouseId}`
+        const url = `/package-auth/pages/device-list/index?homeId=${this.data.currentHome?.mideaHouseId}`
         wx.navigateTo({ url })
       }
     },
