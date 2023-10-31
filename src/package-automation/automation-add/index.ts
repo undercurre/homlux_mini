@@ -274,7 +274,7 @@ ComponentWithComputed({
                 name: scene.sceneName,
                 type: 5,
                 desc: [scene.roomName],
-                pic: `/assets/img/scene/${scene.sceneIcon}.png`,
+                pic: `https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/auto-scene/${scene.sceneIcon}.png`,
                 value: {},
                 orderNum: index,
                 dragId: scene.sceneId + Math.floor(Math.random() * 1001),
@@ -468,11 +468,21 @@ ComponentWithComputed({
       this.handleConditionShow()
     },
     async handleSceneRoomEditConfirm(e: { detail: string }) {
-      this.setData({
-        roomId: e.detail,
-        showEditRoomPopup: false,
-        _isEditCondition: true,
-      })
+      const deviceListInRoom: Device.DeviceItem[] = deviceStore.allRoomDeviceFlattenList.filter(
+        (item) => item.roomId === e.detail,
+      )
+      console.log('默认选中', deviceListInRoom)
+      this.setData(
+        {
+          roomId: e.detail,
+          showEditRoomPopup: false,
+          _isEditCondition: true,
+          sceneDevicelinkSelectList: deviceListInRoom.map((item) => item.uniId),
+        },
+        () => {
+          this.updateSceneDeviceActionsFlatten()
+        },
+      )
       this.updateSceneDeviceConditionsFlatten()
     },
     /* 设置手动场景——房间 */
@@ -691,6 +701,7 @@ ComponentWithComputed({
       // })
 
       //从后面插入已选中的设备和场景
+      console.log('设备列表', this.data.deviceList)
       this.data.sceneDevicelinkSelectList.forEach((id) => {
         //每次选中的都push到最后
         const device = this.data.deviceList.find((item) => item.uniId === id)
@@ -743,7 +754,7 @@ ComponentWithComputed({
               name: scene.sceneName,
               type: 5,
               desc: [scene.roomName],
-              pic: `/assets/img/scene/${scene.sceneIcon}.png`,
+              pic: `https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/auto-scene/${scene.sceneIcon}.png`,
               value: {},
               orderNum: 0,
               dragId: scene.sceneId + Math.floor(Math.random() * 1001),
@@ -883,21 +894,23 @@ ComponentWithComputed({
       const { index } = e.currentTarget.dataset
       const action = this.data.sceneDeviceConditionsFlatten[index]
 
+      console.log('condition type', this.data.sceneDeviceConditionsFlatten[index])
+
       if (action.productId === 'time') {
         this.setData({
           showTimeConditionPopup: true,
         })
-      } else if (action.productId === 'sensor') {
+      } else if (action.productId === 'touch') {
+        this.setData({
+          showEditRoomPopup: true,
+        })
+      } else {
         this.setData({
           editingSensorType: action.productId,
           editingSensorAbility: action.desc,
           editingSensorProperty: action.property,
           editingUniId: action.uniId,
           showEditSensorPopup: true,
-        })
-      } else {
-        this.setData({
-          showEditRoomPopup: true,
         })
       }
     },
@@ -1000,6 +1013,7 @@ ComponentWithComputed({
         {
           sceneDeviceActionsFlatten: [...this.data.sceneDeviceActionsFlatten],
           deviceList: [...this.data.deviceList],
+          showEditPopup: '',
         },
         () => {
           this.updateSceneDeviceActionsFlatten()

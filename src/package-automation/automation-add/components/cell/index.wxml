@@ -3,7 +3,7 @@
 <van-cell-group inset custom-class="cell" border="{{ false }}">
   <view class="flex flex-row items-center bg-hex-fff rounded-32rpx px-40rpx py-32rpx mb-24rpx relative" bindtap="handleActionEdit" data-index="{{item.data.orderNum}}">
     <view class="w-72 h-72 rounded-full">
-      <image src="{{item.data.pic}}" class="w-72 h-72" />
+      <image src="{{item.data.pic}}" class="w-72 h-72 bg-hex-F5F5F5 rounded-full" />
     </view>
 
     <view class="flex flex-col items-start ml-32rpx">

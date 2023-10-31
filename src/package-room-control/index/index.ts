@@ -559,7 +559,11 @@ ComponentWithComputed({
               originDevice!.select &&
               originDevice.proType === PRO_TYPE.curtain // 因为【灯】异常推送较多，暂时不对弹框中的设备状态进行更新
             ) {
-              this.data._diffCards.data.checkedDeviceInfo = device
+              const newVal = {
+                ...originDevice,
+                ...device,
+              }
+              this.data._diffCards.data.checkedDeviceInfo = newVal
             }
 
             // 处理更新逻辑
