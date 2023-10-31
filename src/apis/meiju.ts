@@ -16,6 +16,21 @@ export async function getMeijuHomeList(code?: string) {
 }
 
 /**
+ * 查询用户美居授权绑定关系
+ * @param houseId 美居家庭id
+ */
+export async function queryUserMideaAuthInfo(houseId: string) {
+  return await mzaioRequest.post<{ mideaHouseList: Meiju.MeijuHome[] }>({
+    log: true,
+    loading: false,
+    url: '/v1/mzgd/user/queryUserMideaAuthInfo',
+    data: {
+      houseId,
+    },
+  })
+}
+
+/**
  * 美居用户设备授权（同时返回美居设备列表）
  * @param mideaHouseId 美居家庭id
  * @param houseId Homlux 家庭id

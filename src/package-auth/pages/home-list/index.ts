@@ -1,8 +1,9 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
-import { bindMeiju, getMeijuHomeList } from '../../../apis/index'
+import { bindMeiju, getMeijuHomeList, queryUserMideaAuthInfo } from '../../../apis/index'
 import { delay, storage } from '../../../utils/index'
 import Toast from '@vant/weapp/toast/toast'
+import Dialog from '@vant/weapp/dialog/dialog'
 import { homeStore } from '../../../store/index'
 
 type HomeCard = { checked: boolean; index: number } & Meiju.MeijuHome
@@ -57,13 +58,25 @@ ComponentWithComputed({
 
     onCheckHome(e: { target: { dataset: { index: number } } }) {
       const diffData = {} as IAnyObject
-      diffData[`homeList[${e.target.dataset.index}].checked`] = true
+      const index = e.target.dataset.index
+
+      diffData[`homeList[${index}].checked`] = true
       diffData[`homeList[${this.data.currentHome.index}].checked`] = false
 
       this.setData(diffData)
     },
 
-    toConfirm() {
+    async toConfirm() {
+      const authRes = await queryUserMideaAuthInfo(this.data.currentHome?.mideaHouseId)
+
+      if (authRes.success) {
+        const dialogRes = await Dialog.confirm({
+          title: '当前美居帐号已绑定，若绑定至新Homlux家庭将清除相关数据，是否继续？',
+        }).catch(() => 'cancel')
+
+        if (dialogRes === 'cancel') return
+      }
+
       const entry = storage.get('meiju_auth_entry')
 
       if (entry === 'distribution-meiju') {
