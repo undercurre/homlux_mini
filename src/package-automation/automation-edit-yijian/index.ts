@@ -148,13 +148,15 @@ ComponentWithComputed({
         return data.effectiveTime.endTime
       }
     },
-    linkSelectList(data) {
-      if (data.selectCardType === 'sensor') {
-        return data.sensorlinkSelectList
-      } else {
-        return data.sceneDevicelinkSelectList
-      }
-    },
+    // linkSelectList(data) {
+    //   // if (data.selectCardType === 'sensor') {
+    //   //   return data.sensorlinkSelectList
+    //   // } else {
+    //   //   return data.sceneDevicelinkSelectList
+    //   // }
+    //   console.log(data.sceneDevicelinkSelectList)
+    //   return data.sceneDevicelinkSelectList
+    // },
     //只包含场景和设备的动作列表长度
     sceneDeviceActionsLength(data) {
       return data.sceneDeviceActionsFlatten.filter((item) => item.uniId.indexOf('DLY') === -1).length
@@ -234,6 +236,7 @@ ComponentWithComputed({
 
         //处理执行结果
         const tempSceneDeviceActionsFlatten = [] as Device.ActionItem[]
+        const tempSceneDevicelinkSelectList: string[] = []
 
         sceneInfo.deviceActions.forEach((action) => {
           //设备
@@ -249,6 +252,7 @@ ComponentWithComputed({
               //是开关面板
               const power = action.controlAction[0].power
               const desc = toPropertyDesc(device.proType, action.controlAction[0])
+              tempSceneDevicelinkSelectList.push(device.uniId)
               tempSceneDeviceActionsFlatten.push({
                 uniId: device.uniId,
                 name: `${device.switchInfoDTOList[0].switchName} | ${device.deviceName}`,
@@ -273,6 +277,7 @@ ComponentWithComputed({
                 }
               }
               const desc = toPropertyDesc(device.proType, property)
+              tempSceneDevicelinkSelectList.push(device.uniId)
               tempSceneDeviceActionsFlatten.push({
                 uniId: device.uniId,
                 name: device.deviceName,
@@ -292,14 +297,15 @@ ComponentWithComputed({
             console.log('设备不存在', action)
           }
         })
-
         this.setData(
           {
             sensorlinkSelectList,
+            sceneDevicelinkSelectList: tempSceneDevicelinkSelectList,
             sceneDeviceActionsFlatten: tempSceneDeviceActionsFlatten,
           },
           () => {
-            this.updateSceneDeviceActionsFlatten(false)
+            console.log('初始化已选择列表', this.data.sceneDevicelinkSelectList, this.data.sceneDeviceActionsFlatten)
+            this.updateSceneDeviceActionsFlatten()
             this.updateSceneDeviceConditionsFlatten()
           },
         )
@@ -519,6 +525,7 @@ ComponentWithComputed({
       })
     },
     async handleSelectCardSelect(e: { detail: string }) {
+      const tempSceneDevicelinkSelectList: string[] = this.data.sceneDevicelinkSelectList
       const sceneInfo = sceneStore.allRoomSceneList.find(
         (item) => item.sceneId === this.data.yijianSceneId,
       ) as Scene.SceneItem
@@ -531,6 +538,7 @@ ComponentWithComputed({
         if (device) {
           const property = deviceStore.allRoomDeviceFlattenMap[device.uniId].property
           const desc = toPropertyDesc(device.proType, property!)
+          tempSceneDevicelinkSelectList.push(device.uniId)
           this.data.sceneDeviceActionsFlatten.push({
             uniId: device.uniId,
             name: device.deviceName,
@@ -560,17 +568,22 @@ ComponentWithComputed({
 
       device.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, modelName })
 
-      this.setData({
-        sceneEditTitle: deviceAction.name,
-        sceneEditInfo: {
-          ...deviceAction.value,
-          deviceType: device.deviceType,
-          gatewayId: device.gatewayId,
-          deviceId: device.deviceId,
+      this.setData(
+        {
+          sceneDevicelinkSelectList: tempSceneDevicelinkSelectList,
+          sceneEditTitle: deviceAction.name,
+          sceneEditInfo: {
+            ...deviceAction.value,
+            deviceType: device.deviceType,
+            gatewayId: device.gatewayId,
+            deviceId: device.deviceId,
+          },
+          editIndex: index,
         },
-        showEditPopup: device.proType,
-        editIndex: index,
-      })
+        () => {
+          console.log('选择后', this.data.sceneDevicelinkSelectList)
+        },
+      )
     },
     handleSelectCardClose() {
       this.setData({
@@ -601,12 +614,37 @@ ComponentWithComputed({
         this.updateSceneDeviceActionsFlatten()
       }
     },
+    async handleSortEnd(e: { detail: { listData: Device.ActionItem[] } }) {
+      e.detail.listData.forEach((item, index) => {
+        if (item.orderNum != index) {
+          item.orderNum = index
+        }
+      })
+      this.setData({
+        _isEditAction: true,
+        sceneDeviceActionsFlatten: e.detail.listData,
+      })
+      // 防止场景为空，drag为null·
+      if (e.detail.listData.length) {
+        const drag = this.selectComponent('#drag')
+        drag.init()
+      }
+    },
     handleActionDelete(e: { detail: string }) {
+      console.log(e.detail)
       const dragId = e.detail
-
       const index = this.data.sceneDeviceActionsFlatten.findIndex((item) => item.dragId === dragId)
+      const deleteId = this.data.sceneDeviceActionsFlatten[index].uniId
       this.data.sceneDeviceActionsFlatten.splice(index, 1)
-      this.updateSceneDeviceActionsFlatten()
+      const afterSelected = this.data.sceneDevicelinkSelectList.filter((item) => item !== deleteId)
+      this.setData(
+        {
+          sceneDevicelinkSelectList: afterSelected,
+        },
+        () => {
+          this.updateSceneDeviceActionsFlatten()
+        },
+      )
     },
     updateSceneDeviceActionsFlatten(isEditAction = true) {
       const tempSceneDeviceActionsFlatten = this.data.sceneDeviceActionsFlatten as Device.ActionItem[]
@@ -624,6 +662,9 @@ ComponentWithComputed({
         if (device) {
           //是设备
           console.log('是设备', device)
+          if (this.data.sceneDeviceActionsFlatten.map((item) => item.uniId).includes(id)) {
+            return
+          }
           if (device.proType === PRO_TYPE.switch) {
             //是开关面板
             const modelName = device.uniId.split(':')[1]
@@ -686,13 +727,15 @@ ComponentWithComputed({
       this.setData({
         sceneDeviceActionsFlatten,
         _isEditAction: isEditAction,
-        sceneDevicelinkSelectList: [],
+        sceneDevicelinkSelectList: this.data.sceneDevicelinkSelectList,
       })
 
       // 防止场景为空，drag为null·
       if (sceneDeviceActionsFlatten.length) {
         const drag = this.selectComponent('#drag')
-        drag.init()
+        if (drag) {
+          drag.init()
+        }
       }
     },
     /* 条件方法 start */
@@ -838,13 +881,13 @@ ComponentWithComputed({
      * @param e
      * @returns
      */
-    handleSceneActionEdit(e: WechatMiniprogram.TouchEvent) {
+    handleSceneActionEdit(e: { detail: number }) {
       // 默认场景不可编辑场景设备数据
       if (this.data.isDefault) {
         return
       }
 
-      const { index } = e.currentTarget.dataset
+      const index = e.detail
 
       const deviceAction = this.data.sceneDeviceActionsFlatten[index]
       console.log(this.data.sceneDeviceActionsFlatten, index)
@@ -910,11 +953,16 @@ ComponentWithComputed({
 
       actionItem.desc = toPropertyDesc(actionItem.proType, actionItem.value)
 
-      this.setData({
-        _isEditAction: true,
-        sceneDeviceActionsFlatten: [...this.data.sceneDeviceActionsFlatten],
-        showEditPopup: '',
-      })
+      this.setData(
+        {
+          _isEditAction: true,
+          sceneDeviceActionsFlatten: [...this.data.sceneDeviceActionsFlatten],
+          showEditPopup: '',
+        },
+        () => {
+          this.updateSceneDeviceActionsFlatten()
+        },
+      )
     },
 
     async go2dispatch() {
