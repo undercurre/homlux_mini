@@ -1,6 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
+import { PRO_TYPE } from '../../config/index'
 import { deviceStore, roomStore } from '../../store/index'
-import { checkWifiSwitch } from '../../utils/index'
+import { checkWifiSwitch, sortDeivcesByConfig } from '../../utils/index'
 
 ComponentWithComputed({
   options: {},
@@ -131,6 +132,17 @@ ComponentWithComputed({
       return roomList
     },
     listComputed(data) {
+      if (data.list && data.cardType === 'device') {
+        const sortList = [PRO_TYPE.light + '4', PRO_TYPE.light + '2', PRO_TYPE.switch + '2']
+        console.log(
+          '原本顺序',
+          data.list.filter((item: Device.DeviceItem) => item.roomId === data.roomSelect),
+        )
+        return sortDeivcesByConfig(
+          data.list.filter((item: Scene.SceneItem | Device.DeviceItem) => item.roomId === data.roomSelect),
+          sortList,
+        )
+      }
       if (data.list) {
         return data.list.filter((item: Scene.SceneItem | Device.DeviceItem) => item.roomId === data.roomSelect)
       }
