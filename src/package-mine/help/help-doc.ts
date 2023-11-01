@@ -1,11 +1,22 @@
 export const helpList = [
   {
-    title: '智能照明使用说明',
-    value: 'homLuxHelp',
+    title: 'HOMLUX系统介绍',
+    type: 'homLuxSystemHelp',
+    url: '/homlux/book1/index.html',
   },
   {
-    title: '遥控器使用说明',
-    value: 'remoterHelp',
+    title: 'HOMLUX小程序用户指引',
+    type: 'homLuxMPHelp',
+    url: '/homlux/book2/index.html',
+  },
+  {
+    title: '四寸屏用户指引',
+    type: 'screenHelp',
+    url: '/homlux/book3/index.html',
+  },
+  {
+    title: '遥控器用户指引',
+    type: 'remoterHelp',
   },
 ]
 

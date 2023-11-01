@@ -3,5 +3,5 @@
 <nav-bar title="帮助中心" left-arrow bind:leftTap="goBack"></nav-bar>
 <view class="h-24rpx"> </view>
 <van-cell-group inset>
-  <van-cell wx:for="{{list}}" wx:key="value" title="{{item.title}}" is-link data-value="{{item.value}}" bind:click="handleTap"></van-cell>
+  <van-cell wx:for="{{helpList}}" wx:key="type" title="{{item.title}}" is-link data-value="{{item}}" bind:click="handleTap"></van-cell>
 </van-cell-group>

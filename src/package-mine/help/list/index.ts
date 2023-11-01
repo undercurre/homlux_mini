@@ -1,4 +1,5 @@
 import pageBehavior from '../../../behaviors/pageBehaviors'
+import { strUtil } from '../../../utils/index'
 import { helpList } from '../help-doc'
 
 Component({
@@ -7,21 +8,20 @@ Component({
    * 组件的初始数据
    */
   data: {
-    list: helpList,
+    helpList,
   },
 
-  lifetimes: {
-    ready() {},
-  },
   /**
    * 组件的方法列表
    */
   methods: {
     handleTap(e: WechatMiniprogram.TouchEvent) {
-      const helpType = e.currentTarget.dataset.value
-      const helpPage = '/package-mine/help/show/index'
+      const item = e.currentTarget.dataset.value
+      const helpPage =
+        item.type === 'remoterHelp' ? '/package-mine/help/show/index' : '/package-mine/help/webview/index'
+      const url = strUtil.getUrlWithParams(helpPage, item)
       wx.navigateTo({
-        url: `${helpPage}?page=${helpType}`,
+        url,
       })
     },
   },

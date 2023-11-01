@@ -34,7 +34,8 @@
         "guideline/index",
         "device-category/index",
         "help/list/index",
-        "help/show/index"
+        "help/show/index",
+        "help/webview/index"
       ]
     },
     {
