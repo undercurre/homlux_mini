@@ -26,7 +26,8 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    isShowRetryButton: true,
+    isShowRetryButton: false, // 是否展示重试按钮
+    status: 'waiting',
     confirmImgUrl: '',
     confirmDesc: '',
     time: 0,
@@ -36,8 +37,14 @@ ComponentWithComputed({
     title(data) {
       let str = '请按指引完成设置'
 
-      if (data.time > 0) {
-        str = str + `（${data.time}s）`
+      if (this.data.status === 'waiting') {
+        if (data.time > 0) {
+          str = str + `（${data.time}s）`
+        }
+      } else if (this.data.status === 'success') {
+        str = '配对成功'
+      } else if (this.data.status === 'fail') {
+        str = '配对失败'
       }
 
       return str
@@ -98,6 +105,8 @@ ComponentWithComputed({
       }
 
       this.setData({
+        status: 'waiting',
+        isShowRetryButton: false,
         confirmImgUrl: guideInfoRes.result.confirmImgUrl,
         confirmDesc: this.guideDescFomat(guideInfoRes.result.confirmDesc),
       })

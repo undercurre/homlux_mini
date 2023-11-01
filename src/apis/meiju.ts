@@ -20,7 +20,7 @@ export async function getMeijuHomeList(code?: string) {
  * @param houseId 美居家庭id
  */
 export async function queryUserMideaAuthInfo(houseId: string) {
-  return await mzaioRequest.post<{ mideaAuthFlag: boolean }>({
+  return await mzaioRequest.post<{ mideaAuthFlag: boolean; houseName: string }>({
     log: true,
     loading: false,
     url: '/v1/mzgd/user/queryUserMideaAuthInfo',

@@ -1,8 +1,10 @@
 <van-dialog id="van-dialog" use-slot title="此设备已绑定" show-cancel-button="{{true}}" show-confirm-button="{{isShowRetryButton}}" title="{{title}}" confirm-button-color="#488FFF" bind:cancel="cancel" bind:confirm="startAuth">
   <view class="py-64rpx px-46rpx">
-    <image wx:if="{{confirmImgUrl}}" class="mb-48rpx mx-auto w-530 h-296" src="{{confirmImgUrl}}"></image>
+    <template wx:if="{{status === 'waiting'}}">
+      <image wx:if="{{confirmImgUrl}}" class="mb-48rpx mx-auto w-530 h-296" src="{{confirmImgUrl}}"></image>
 
-    <rich-text class="text-28 leading-48rpx text-hex-666666 text-justify" nodes="{{confirmDesc}}"></rich-text>
+      <rich-text class="text-28 leading-48rpx text-hex-666666 text-justify" nodes="{{confirmDesc}}"></rich-text>
+    </template>
   </view>
 </van-dialog>
 

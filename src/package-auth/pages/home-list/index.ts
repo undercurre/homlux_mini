@@ -70,11 +70,13 @@ ComponentWithComputed({
       const authRes = await queryUserMideaAuthInfo(this.data.currentHome?.mideaHouseId)
 
       if (authRes.success && authRes.result.mideaAuthFlag) {
-        const dialogRes = await Dialog.confirm({
-          title: '当前美居帐号已绑定，若绑定至新Homlux家庭将清除相关数据，是否继续？',
-        }).catch(() => 'cancel')
+        const houseName = authRes.result.houseName
+        await Dialog.confirm({
+          title: `当前美居家庭已绑定Homlux家庭【${houseName}】，若绑定至新Homlux家庭请先在Homlux家庭【${houseName}】解绑`,
+          showCancelButton: false,
+        })
 
-        if (dialogRes === 'cancel') return
+        return
       }
 
       const entry = storage.get('meiju_auth_entry')
@@ -100,7 +102,7 @@ ComponentWithComputed({
           url: '/package-distribution-meiju/pages/check-auth/index',
         })
       } else {
-        Toast(res.msg) // 当前美居账号已绑定在家庭XXXX”改为“当前美居家庭已绑定在HOMLUX家庭XXXX
+        Toast(res.msg)
       }
     },
   },
