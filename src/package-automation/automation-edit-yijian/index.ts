@@ -601,7 +601,24 @@ ComponentWithComputed({
         this.updateSceneDeviceActionsFlatten()
       }
     },
+    async handleSortEnd(e: { detail: { listData: Device.ActionItem[] } }) {
+      e.detail.listData.forEach((item, index) => {
+        if (item.orderNum != index) {
+          item.orderNum = index
+        }
+      })
+      this.setData({
+        _isEditAction: true,
+        sceneDeviceActionsFlatten: e.detail.listData,
+      })
+      // 防止场景为空，drag为null·
+      if (e.detail.listData.length) {
+        const drag = this.selectComponent('#drag')
+        drag.init()
+      }
+    },
     handleActionDelete(e: { detail: string }) {
+      console.log(e.detail)
       const dragId = e.detail
 
       const index = this.data.sceneDeviceActionsFlatten.findIndex((item) => item.dragId === dragId)
@@ -692,7 +709,9 @@ ComponentWithComputed({
       // 防止场景为空，drag为null·
       if (sceneDeviceActionsFlatten.length) {
         const drag = this.selectComponent('#drag')
-        drag.init()
+        if (drag) {
+          drag.init()
+        }
       }
     },
     /* 条件方法 start */
