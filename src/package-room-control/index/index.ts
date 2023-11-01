@@ -606,8 +606,6 @@ ComponentWithComputed({
           // 接口返回开关面板数据以设备为一个整体，需要前端拆开后排序
           // 不再排除灯组
           // .filter((device) => !deviceStore.lightsInGroup.includes(device.deviceId))
-          // 排序，先按排序字段升序，相同则再按设备id升序
-          .sort((a, b) => a.orderNum - b.orderNum || parseInt(a.deviceId) - parseInt(b.deviceId))
           // 补充字段
           .map((device, index) => ({
             ...device,
