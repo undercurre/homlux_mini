@@ -135,10 +135,6 @@ ComponentWithComputed({
       minColorTemp,
       power: 0,
     },
-    // 房间亮度toast格式化
-    brightnessFormatter(value: number) {
-      return `${value}%`
-    },
   },
 
   computed: {

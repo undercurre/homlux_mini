@@ -139,7 +139,7 @@ ComponentWithComputed({
   computed: {
     colorTempK(data) {
       if (!data.lightInfoInner?.colorTemperature) {
-        return
+        return data.minColorTemp
       }
       return (data.lightInfoInner.colorTemperature / 100) * (data.maxColorTemp - data.minColorTemp) + data.minColorTemp
     },
@@ -781,12 +781,14 @@ ComponentWithComputed({
       this.lightSendDeviceControl('brightness')
     },
     handleColorTempChange(e: { detail: number }) {
+      console.log('handleColorTempChange', e.detail)
       this.setData({
         'lightInfoInner.colorTemperature': e.detail,
       })
       this.lightSendDeviceControl('colorTemperature')
     },
     handleColorTempDrag: throttle(function (this: IAnyObject, e: { detail: number }) {
+      console.log('handleColorTempDrag', e.detail)
       this.setData({
         'lightInfoInner.colorTemperature': e.detail,
       })
