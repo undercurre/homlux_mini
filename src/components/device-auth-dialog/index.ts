@@ -6,7 +6,7 @@ import { homeStore } from '../../store/index'
 import { imgList } from '../../config/index'
 
 let secondTimeId = 0 // 倒计时器
-const second = 6 // 倒计时时长
+const second = 60 // 倒计时时长
 
 ComponentWithComputed({
   /**
