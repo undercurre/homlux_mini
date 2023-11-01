@@ -72,7 +72,7 @@ ComponentWithComputed({
       if (authRes.success && authRes.result.mideaAuthFlag) {
         const houseName = authRes.result.houseName
         await Dialog.confirm({
-          title: `当前美居家庭已绑定Homlux家庭【${houseName}】，若绑定至新Homlux家庭请先在Homlux家庭【${houseName}】解绑`,
+          title: `当前美居家庭已绑定Homlux家庭【${houseName}】，若绑定至新Homlux家庭请先在原家庭解绑`,
           showCancelButton: false,
         })
 
