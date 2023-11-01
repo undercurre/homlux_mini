@@ -69,7 +69,7 @@ ComponentWithComputed({
     async toConfirm() {
       const authRes = await queryUserMideaAuthInfo(this.data.currentHome?.mideaHouseId)
 
-      if (authRes.success) {
+      if (authRes.success && authRes.result.mideaAuthFlag) {
         const dialogRes = await Dialog.confirm({
           title: '当前美居帐号已绑定，若绑定至新Homlux家庭将清除相关数据，是否继续？',
         }).catch(() => 'cancel')
