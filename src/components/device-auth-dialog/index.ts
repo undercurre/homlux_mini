@@ -3,9 +3,10 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { confirmDeviceAuth, queryAuthGetStatus, queryDeviceSpecifiedInfo } from '../../apis/index'
 import { homeStore } from '../../store/index'
+import { imgList } from '../../config/index'
 
 let secondTimeId = 0 // 倒计时器
-const second = 10 // 倒计时时长
+const second = 6 // 倒计时时长
 
 ComponentWithComputed({
   /**
@@ -59,6 +60,10 @@ ComponentWithComputed({
       }
 
       return str
+    },
+
+    tipImgUrl(data) {
+      return data.status === 'success' ? imgList.success : imgList.error
     },
   },
 
