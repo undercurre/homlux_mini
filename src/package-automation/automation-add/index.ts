@@ -674,6 +674,7 @@ ComponentWithComputed({
           sceneDevicelinkSelectList: [...this.data['sceneDevicelinkSelectList'], selectId],
         })
       }
+      this.updateSceneDeviceActionsFlatten()
     },
     handleSelectCardClose() {
       this.setData({
@@ -708,8 +709,17 @@ ComponentWithComputed({
       const dragId = e.detail
 
       const index = this.data.sceneDeviceActionsFlatten.findIndex((item) => item.dragId === dragId)
+      const deleteId = this.data.sceneDeviceActionsFlatten[index].uniId
       this.data.sceneDeviceActionsFlatten.splice(index, 1)
-      this.updateSceneDeviceActionsFlatten()
+      const afterSelected = this.data.sceneDevicelinkSelectList.filter((item) => item !== deleteId)
+      this.setData(
+        {
+          sceneDevicelinkSelectList: afterSelected,
+        },
+        () => {
+          this.updateSceneDeviceActionsFlatten()
+        },
+      )
     },
     updateSceneDeviceActionsFlatten(isEditAction = true) {
       const tempSceneDeviceActionsFlatten = this.data.sceneDeviceActionsFlatten as AutoScene.AutoSceneFlattenAction[]
@@ -723,6 +733,12 @@ ComponentWithComputed({
       //从后面插入已选中的设备和场景
       console.log('设备列表', this.data.deviceList)
       this.data.sceneDevicelinkSelectList.forEach((id) => {
+        if (
+          this.data.opearationType === 'yijian' &&
+          this.data.sceneDeviceActionsFlatten.map((item) => item.uniId).includes(id)
+        ) {
+          return
+        }
         //每次选中的都push到最后
         const device = this.data.deviceList.find((item) => item.uniId === id)
         if (device) {
@@ -790,7 +806,7 @@ ComponentWithComputed({
       this.setData({
         sceneDeviceActionsFlatten,
         _isEditAction: isEditAction,
-        sceneDevicelinkSelectList: [],
+        sceneDevicelinkSelectList: this.data.opearationType === 'auto' ? [] : this.data.sceneDevicelinkSelectList,
       })
 
       // 防止场景为空，drag为null·
