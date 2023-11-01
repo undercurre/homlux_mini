@@ -50,7 +50,7 @@ ComponentWithComputed({
     },
     handleDefaultPage() {
       const { defaultPage } = this.data
-      storage.set('defaultPage', defaultPage)
+      storage.set('defaultPage', defaultPage, null)
       othersStore.setDefaultPage(defaultPage)
       wx.switchTab({
         url: `/pages/${defaultPage}/index`,

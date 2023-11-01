@@ -67,6 +67,8 @@ export const homeStore = observable({
       runInAction(() => {
         othersStore.isInit = true
       })
+    } else {
+      console.log('[KS]本地缓存不存在或过期')
     }
     const res = await this.updateHomeList()
     if (res.success) {
@@ -80,6 +82,7 @@ export const homeStore = observable({
       // 全屋房间、设备加载
       await this.updateRoomCardList()
       othersStore.setIsInit(true)
+      console.log('[KS]云端数据加载成功')
     }
   },
 

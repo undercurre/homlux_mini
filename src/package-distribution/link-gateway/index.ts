@@ -183,7 +183,7 @@ ComponentWithComputed({
     async initWifi() {
       reportInfo = {}
 
-      const startRes = await wx.startWifi()
+      const startRes = await wx.startWifi().catch((err) => err)
 
       Logger.log('startWifi', startRes)
 
