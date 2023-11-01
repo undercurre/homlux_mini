@@ -3,9 +3,10 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { confirmDeviceAuth, queryAuthGetStatus, queryDeviceSpecifiedInfo } from '../../apis/index'
 import { homeStore } from '../../store/index'
+import { imgList } from '../../config/index'
 
 let secondTimeId = 0 // 倒计时器
-const second = 10 // 倒计时时长
+const second = 60 // 倒计时时长
 
 ComponentWithComputed({
   /**
@@ -26,7 +27,7 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    isShowRetryButton: true,
+    status: 'waiting',
     confirmImgUrl: '',
     confirmDesc: '',
     time: 0,
@@ -36,11 +37,33 @@ ComponentWithComputed({
     title(data) {
       let str = '请按指引完成设置'
 
-      if (data.time > 0) {
-        str = str + `（${data.time}s）`
+      if (data.status === 'waiting') {
+        if (data.time > 0) {
+          str = str + `（${data.time}s）`
+        }
+      } else if (data.status === 'success') {
+        str = '配对成功'
+      } else if (data.status === 'fail') {
+        str = '配对失败'
       }
 
       return str
+    },
+
+    confirmButtonText(data) {
+      let str = ''
+
+      if (data.status === 'success') {
+        str = '好的'
+      } else if (data.status === 'fail') {
+        str = '重试'
+      }
+
+      return str
+    },
+
+    tipImgUrl(data) {
+      return data.status === 'success' ? imgList.success : imgList.error
     },
   },
 
@@ -50,7 +73,6 @@ ComponentWithComputed({
         Dialog.confirm({
           context: this,
           cancelButtonText: '暂不设置',
-          confirmButtonText: '重试',
           beforeClose(action: string) {
             console.log('beforeClose', action)
             return new Promise((resolve) => {
@@ -94,10 +116,14 @@ ComponentWithComputed({
 
       if (!guideInfoRes.success) {
         Toast({ message: '查询确权指引失败', zIndex: 9999 })
+        this.setData({
+          status: 'fail',
+        })
         return
       }
 
       this.setData({
+        status: 'waiting',
         confirmImgUrl: guideInfoRes.result.confirmImgUrl,
         confirmDesc: this.guideDescFomat(guideInfoRes.result.confirmDesc),
       })
@@ -114,8 +140,9 @@ ComponentWithComputed({
       }
 
       if (res.result.status === 0) {
-        Toast({ message: '确权成功', zIndex: 9999 })
-        this.triggerEvent('success')
+        this.setData({
+          status: 'success',
+        })
         clearInterval(secondTimeId)
         return
       }
@@ -136,6 +163,14 @@ ComponentWithComputed({
       })
       clearInterval(secondTimeId)
     },
+
+    confirm() {
+      if (this.data.status === 'success') {
+        this.triggerEvent('success')
+      } else if (this.data.status === 'fail') {
+        this.startAuth()
+      }
+    },
     /**
      * 开始确权流程
      */
@@ -143,13 +178,16 @@ ComponentWithComputed({
       console.log('startAuth')
       this.setData({
         time: second,
-        isShowRetryButton: false,
+        status: 'waiting',
       })
 
       const confirmRes = await confirmDeviceAuth({ houseId: homeStore.currentHomeId, deviceId: this.data.deviceId })
 
       if (!confirmRes.success) {
         Toast({ message: '下发进入确权指令失败', zIndex: 9999 })
+        this.setData({
+          status: 'fail',
+        })
         return
       }
 
@@ -163,7 +201,7 @@ ComponentWithComputed({
         if (this.data.time <= 0) {
           clearInterval(secondTimeId)
           this.setData({
-            isShowRetryButton: true,
+            status: 'fail',
           })
         }
       }, 1000)

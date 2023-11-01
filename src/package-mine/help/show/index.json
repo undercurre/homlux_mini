@@ -1,8 +1,4 @@
 {
-  "backgroundTextStyle": "light",
-  "navigationBarBackgroundColor": "#ffffff",
-  "navigationBarTitleText": "帮助中心",
-  "navigationStyle": "custom",
-  "navigationBarTextStyle": "black",
+  "component": true,
   "usingComponents": {}
 }

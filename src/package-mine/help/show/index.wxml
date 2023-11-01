@@ -6,10 +6,8 @@
 <nav-bar title="{{title}}" z-index="{{113}}" left-arrow show-go-home bind:leftTap="goBack"></nav-bar>
 <view class="h-24rpx"> </view>
 
-<web-view wx:if="{{helpType === 'homLuxHelp' }}" src="{{webviewSrc}}"></web-view>
-
-<!-- 标题 -->
-<view wx:else class="w-750rpx flex-center">
+<!-- 遥控器用户指引 -->
+<view class="w-750rpx flex-center">
   <scroll-view scroll-x scroll-y style="width: 100vw; height: calc(100vh - navigationBarAndStatusBarHeight)">
     <view style="width: calc(100vw - 96rpx); margin-left: 48rpx">
       <rich-text wx:if="{{type === 'doc'}}" nodes="{{doc}}"></rich-text>

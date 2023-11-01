@@ -31,9 +31,13 @@ ComponentWithComputed({
       type: Number,
       value: 72,
     },
+    /**
+     * @description toast内容格式化器
+     * @default 默认显示百分比
+     */
     formatter: {
       type: null,
-      value: () => {},
+      value: (data: string | number) => `${data}%`,
     },
   },
 
@@ -47,7 +51,7 @@ ComponentWithComputed({
 
   computed: {
     formattedValue(data) {
-      return data.formatter(data.value)
+      return data.formatter(data.value) ?? ''
     },
   },
 
