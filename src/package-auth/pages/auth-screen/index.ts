@@ -3,6 +3,7 @@ import pageBehavior from '../../../behaviors/pageBehaviors'
 import { authQrcode } from '../../../apis/index'
 import { userStore } from '../../../store/index'
 import { getCurrentPageParams } from '../../../utils/index'
+import cacheData from '../../../package-distribution/common/cacheData'
 
 Component({
   behaviors: [pageBehavior],
@@ -38,8 +39,8 @@ Component({
         Toast({
           message: '授权成功',
           onClose: () => {
-            wx.navigateBack({
-              delta: 3,
+            wx.reLaunch({
+              url: cacheData.pageEntry,
             })
           },
         })

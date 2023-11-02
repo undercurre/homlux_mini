@@ -67,7 +67,7 @@ export async function queryDeviceOnlineStatus(
   data: { deviceType: '1' | '2' | '3'; sn?: string; deviceId?: string },
   options?: { loading?: boolean },
 ) {
-  // 	"onlineStauts": 在线离线状态(0:离线1:在线
+  // 	"onlineStatus": 在线离线状态(0:离线1:在线
   return await mzaioRequest.post<{ deviceId: string; onlineStatus: number }>({
     log: false,
     loading: options?.loading ?? false,

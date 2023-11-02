@@ -21,6 +21,7 @@ export async function peekNetwork() {
   return await mzaioRequest.post({
     log: false,
     loading: false,
+    isDefaultErrorTips: false,
     url: '/',
     timeout: 2000,
   })

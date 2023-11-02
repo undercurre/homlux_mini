@@ -480,17 +480,23 @@ ComponentWithComputed({
      * 用户点击展示/隐藏家庭选择
      */
     handleShowHomeSelectMenu() {
-      this.setData({
-        selectHomeMenu: {
-          x: '28rpx',
-          y:
-            (storage.get<number>('statusBarHeight') as number) +
-            (storage.get<number>('navigationBarHeight') as number) +
-            8 +
-            'px',
-          isShow: !this.data.selectHomeMenu.isShow,
-        },
-      })
+      const diffData = {} as IAnyObject
+      diffData.selectHomeMenu = {
+        x: '28rpx',
+        y:
+          (storage.get<number>('statusBarHeight') as number) +
+          (storage.get<number>('navigationBarHeight') as number) +
+          8 +
+          'px',
+        isShow: !this.data.selectHomeMenu.isShow,
+      }
+
+      // 关闭已打开的其他菜单
+      if (!this.data.selectHomeMenu.isShow && this.data.addMenu.isShow) {
+        diffData['addMenu.isShow'] = false
+      }
+
+      this.setData(diffData)
     },
     /**
      * 隐藏添加房间popup
@@ -512,6 +518,7 @@ ComponentWithComputed({
             'px',
           isShow: !this.data.addMenu.isShow,
         },
+        'selectHomeMenu.isShow': false,
       })
     },
 

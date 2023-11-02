@@ -129,7 +129,7 @@ ComponentWithComputed({
 
         await deviceStore.updateAllRoomDeviceList()
 
-        // 关闭扫描页面可能开启的蓝牙、wifi资源
+        // 关闭扫描页面可能开启的蓝牙资源
         wx.closeBluetoothAdapter()
 
         Logger.console('cacheData', cacheData)
