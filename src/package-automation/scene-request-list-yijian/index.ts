@@ -69,11 +69,12 @@ ComponentWithComputed({
 
       const selectIdList = sceneDeviceActionsFlatten.map((item) => item.uniId)
 
-      const deviceList = deviceStore.deviceFlattenList
+      const deviceList = deviceStore.allRoomDeviceFlattenList
         .filter((item) => selectIdList.includes(item.uniId))
         .map((item) => {
           if (item.proType === PRO_TYPE.switch) {
-            item.pic = item.switchInfoDTOList[0]?.pic
+            ;(item.pic = item.switchInfoDTOList[0]?.pic),
+              (item.deviceName = `${item.switchInfoDTOList[0].switchName} | ${item.deviceName}`)
           }
 
           return {

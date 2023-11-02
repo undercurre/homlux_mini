@@ -312,6 +312,7 @@ ComponentWithComputed({
                   orderNum: 0,
                   dragId: device.uniId + Math.floor(Math.random() * 1001),
                 })
+                console.log('添加开关面板', tempSceneDeviceActionsFlatten)
               } else {
                 let property = action.controlAction[0]
 
@@ -655,7 +656,8 @@ ComponentWithComputed({
       console.log('handleSelectCardSelect', e, e.detail)
 
       const selectId = e.detail
-      const listType = this.data.selectCardType === 'sensor' ? 'sensorlinkSelectList' : 'sceneDevicelinkSelectList'
+      const listType =
+        this.data.selectCardType === 'sensor' ? 'sensorlinkSelectList' : 'tempSceneDevicelinkSelectedList'
       // 取消选择逻辑
       if (this.data[listType].includes(selectId)) {
         const index = this.data[listType].findIndex((id) => id === selectId)
@@ -711,6 +713,9 @@ ComponentWithComputed({
           },
           () => {
             this.updateSceneDeviceActionsFlatten()
+            this.setData({
+              tempSceneDevicelinkSelectedList: [],
+            })
           },
         )
       }
