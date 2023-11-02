@@ -35,7 +35,7 @@ import {
   LIST_PAGE,
   CARD_W,
   CARD_H,
-  MODEL_NAME,
+  getModelName,
   CARD_REFRESH_TIME,
   sceneImgDir,
   defaultImgDir,
@@ -533,7 +533,7 @@ ComponentWithComputed({
             const modelName =
               originDevice.proType === PRO_TYPE.switch
                 ? originDevice.uniId.split(':')[1]
-                : MODEL_NAME[originDevice.proType]
+                : getModelName(originDevice.proType, originDevice.productId)
 
             // 如果mzgdPropertyDTOList、switchInfoDTOList字段存在，则覆盖更新
             if (device!.mzgdPropertyDTOList) {
@@ -1194,7 +1194,9 @@ ComponentWithComputed({
     // 卡片点击时，按品类调用对应方法
     async handleControlTap(e: { detail: DeviceCard }) {
       const device = { ...e.detail }
-      const modelName = device.switchInfoDTOList ? device.switchInfoDTOList[0].switchId : MODEL_NAME[e.detail.proType]
+      const modelName = device.switchInfoDTOList
+        ? device.switchInfoDTOList[0].switchId
+        : getModelName(device.proType, device.productId)
 
       // 若面板关联场景
       if (device.proType === PRO_TYPE.switch && device.mzgdPropertyDTOList[modelName].ButtonMode === 2) {

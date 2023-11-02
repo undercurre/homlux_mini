@@ -1,6 +1,6 @@
 import { observable, runInAction } from 'mobx-miniprogram'
 import { queryAllDevice } from '../apis/device'
-import { MODEL_NAME, PRO_TYPE } from '../config/index'
+import { getModelName, PRO_TYPE } from '../config/index'
 import { homeStore } from './home'
 import { roomStore } from './room'
 import { sceneStore } from './scene'
@@ -114,7 +114,7 @@ export const deviceStore = observable({
       }
       // 包括 PRO_TYPE.light PRO_TYPE.sensor在内，所有非网关、可显示的设备都用这种方案插值
       else if (device.proType !== PRO_TYPE.gateway) {
-        const modelName = MODEL_NAME[device.proType]
+        const modelName = getModelName(device.proType, device.productId)
         list.push({
           ...device,
           uniId: device.deviceId,

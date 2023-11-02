@@ -5,7 +5,7 @@ import { homeBinding, deviceStore, sceneStore, homeStore } from '../../../../sto
 import {
   maxColorTemp,
   minColorTemp,
-  MODEL_NAME,
+  getModelName,
   PRO_TYPE,
   SCREEN_PID,
   KNOB_PID,
@@ -50,7 +50,7 @@ ComponentWithComputed({
           return
         }
         const diffData = {} as IAnyObject
-        const modelName = MODEL_NAME[device.proType]
+        const modelName = getModelName(device.proType, device.productId)
         const prop = device.mzgdPropertyDTOList[modelName]
 
         // 初始化可控变量
