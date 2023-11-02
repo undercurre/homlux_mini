@@ -18,6 +18,7 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
+    dialogConfirmBtnColor: '#27282A',
     sceneImgDir,
     opearationType: 'yijian', // yijian是一键场景，auto是自动化场景
     roomId: '',
@@ -1134,7 +1135,24 @@ ComponentWithComputed({
       })
 
       if (isToast) {
-        Toast({ message: '同一时间段内，同一设备或场景不能重复选择。请增加延时或删除设备/场景。', zIndex: 9999 })
+        this.setData(
+          {
+            dialogConfirmBtnColor: '#488FFF',
+          },
+          () => {
+            Dialog.confirm({
+              title: '创建失败',
+              message: '同一时间段内，同一设备或场景不能重复选择。请增加延时或删除设备/场景。',
+              showCancelButton: false,
+              confirmButtonText: '我知道了',
+              zIndex: 9999,
+            }).then(() => {
+              this.setData({
+                dialogConfirmBtnColor: '#27282A',
+              })
+            })
+          },
+        )
         return
       }
 
@@ -1143,6 +1161,7 @@ ComponentWithComputed({
         (this.data.sceneDeviceActionsLength === 0 || this.data.sceneDeviceConditionsFlatten.length === 0)
       ) {
         // 删完actions或conditions按照删除场景处理
+
         const res = await Dialog.confirm({
           title: '清空条件或动作将会删除场景，是否确定？',
           confirmButtonText: '确定',

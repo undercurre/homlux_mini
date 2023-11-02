@@ -119,4 +119,4 @@
 <curtain-control-popup show="{{showEditPopup === '0x14'}}" title="{{sceneEditTitle}}" deviceInfo="{{sceneEditInfo}}" bind:confirm="handleSceneEditConfirm" bind:close="handleEditPopupClose"></curtain-control-popup>
 <edit-sensor-popup show="{{showEditSensorPopup}}" productId="{{editingSensorType}}" checkList="{{editingSensorAbility}}" controlAction="{{editingSensorProperty}}" bind:confirm="handleEditSensorConfirm" bind:close="handleEditSensorClose"></edit-sensor-popup>
 <van-toast id="van-toast" />
-<van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />
+<van-dialog id="van-dialog" confirm-button-color="{{dialogConfirmBtnColor}}" cancel-button-color="#27282A" />
