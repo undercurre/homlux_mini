@@ -466,6 +466,10 @@ ComponentWithComputed({
     handleAllOff() {
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
       allDevicePowerControl({ houseId: homeStore.currentHomeId, onOff: 0 })
+
+      wx.reportEvent('home_all_off', {
+        house_id: homeStore.currentHomeId,
+      })
     },
     /**
      * 用户切换家庭
