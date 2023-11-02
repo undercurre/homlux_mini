@@ -1,11 +1,11 @@
 <wxs module="handler" src="./index.wxs"></wxs>
 
 <!-- 背景 -->
-<view class="bg-z-index fixed left-0 top-0 w-100vw h-100vh" bindtouchstart="hideMenu">
+<view class="bg-z-index fixed left-0 top-0 w-100vw h-100vh" bind:touchstart="hideMenu">
   <image src="{{defaultImgDir}}/bg.jpg" class="bg-image"></image>
 </view>
 
-<view style="height: calc(120rpx + {{navigationBarAndStatusBarHeight}});" class="fixed left-0 top-0 z-110 overflow-hidden w-750rpx" bindtap="hideMenu">
+<view style="height: calc(120rpx + {{navigationBarAndStatusBarHeight}});" class="fixed left-0 top-0 z-110 overflow-hidden w-750rpx" bind:tap="hideMenu">
   <image src="{{defaultImgDir}}/bg.jpg" class="bg-image absolute z-111"></image>
   <view class="w-750rpx flex justify-between pt-28rpx left-0 absolute z-112" style="top: {{navigationBarAndStatusBarHeight}};">
     <!-- 全屋开关 -->
@@ -15,14 +15,14 @@
       </view>
     </view>
 
-    <view wx:if="{{isCreator || isAdmin}}" class="mr-36rpx mt-8rpx" data-mark="addIcon" id="addIcon" catchtap="showAddMenu">
+    <view wx:if="{{isCreator || isAdmin}}" class="mr-36rpx mt-8rpx" data-mark="addIcon" id="addIcon" catch:tap="showAddMenu">
       <image src="/assets/img/home/add.png" class="w-64rpx h-64rpx"></image>
     </view>
   </view>
 </view>
 <!-- 导航栏 -->
 <nav-bar z-index="{{113}}">
-  <view catchtap="handleShowHomeSelectMenu" wx:if="{{currentHomeName}}">
+  <view catch:tap="handleShowHomeSelectMenu" wx:if="{{currentHomeName}}">
     <view class="absolute top-8rpx left-32rpx">
       <text class="text-hex-1e2c46 text-48rpx font-semibold">{{currentHomeName}}</text>
       <svg-icon id="homeSelectArrow" class="absolute home-select-arrow" color="#1E2C46" name="material-symbols:arrow-drop-down-rounded" width="48rpx" height="48rpx" />
@@ -30,7 +30,7 @@
   </view>
 </nav-bar>
 <view class="h-114rpx"></view>
-<view class="flex flex-col" bindtap="hideMenu">
+<view class="flex flex-col" bind:tap="hideMenu">
   <!-- 主体内容 -->
   <view class="flex flex-1 w-full box-border" id="content">
     <!-- 有设备时显示 FIXME 拖拽时不能滚动 -->

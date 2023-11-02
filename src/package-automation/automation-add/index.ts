@@ -59,6 +59,7 @@ ComponentWithComputed({
     sensorList: [] as Device.DeviceItem[],
     /** 已选中设备或场景 TODO */
     sceneDevicelinkSelectList: [] as string[],
+    tempSceneDevicelinkSelectedList: [] as string[],
     /** 已选中的传感器 */
     sensorlinkSelectList: [] as string[],
     selectCardType: 'device', //设备卡片：'device'  场景卡片： 'scene'  传感器卡片：'sensor'
@@ -98,7 +99,7 @@ ComponentWithComputed({
       } else if (data.selectCardType === 'sensor') {
         return data.sensorList
       } else {
-        return data.deviceList
+        return data.deviceList.filter((item) => !data.sceneDevicelinkSelectList.includes(item.uniId))
       }
     },
     cardType(data) {
@@ -143,7 +144,7 @@ ComponentWithComputed({
       if (data.selectCardType === 'sensor') {
         return data.sensorlinkSelectList
       } else {
-        return data.sceneDevicelinkSelectList
+        return data.tempSceneDevicelinkSelectedList
       }
     },
     //只包含场景和设备的动作列表长度
@@ -671,10 +672,9 @@ ComponentWithComputed({
         })
       } else {
         this.setData({
-          sceneDevicelinkSelectList: [...this.data['sceneDevicelinkSelectList'], selectId],
+          tempSceneDevicelinkSelectedList: [...this.data['tempSceneDevicelinkSelectedList'], selectId],
         })
       }
-      this.updateSceneDeviceActionsFlatten()
     },
     handleSelectCardClose() {
       this.setData({
@@ -702,7 +702,17 @@ ComponentWithComputed({
           _isEditCondition: true,
         })
       } else {
-        this.updateSceneDeviceActionsFlatten()
+        this.setData(
+          {
+            sceneDevicelinkSelectList: [
+              ...this.data['sceneDevicelinkSelectList'],
+              ...this.data['tempSceneDevicelinkSelectedList'],
+            ],
+          },
+          () => {
+            this.updateSceneDeviceActionsFlatten()
+          },
+        )
       }
     },
     handleActionDelete(e: { detail: string }) {
@@ -722,6 +732,7 @@ ComponentWithComputed({
       )
     },
     updateSceneDeviceActionsFlatten(isEditAction = true) {
+      console.log('执行动作表', this.data.sceneDeviceActionsFlatten)
       const tempSceneDeviceActionsFlatten = this.data.sceneDeviceActionsFlatten as AutoScene.AutoSceneFlattenAction[]
 
       //删除取消选中的设备和场景 //可选多设备改造后无需删除
@@ -738,6 +749,22 @@ ComponentWithComputed({
           this.data.sceneDeviceActionsFlatten.map((item) => item.uniId).includes(id)
         ) {
           return
+          // 在自动化的时候，找到队列中最后一个相同的设备，看他后面有没有延时，有就不return，没有就依旧return
+          // const deviceCondition = (element: AutoScene.AutoSceneFlattenAction) => element.uniId === id;
+          // const delayCondition = (element: AutoScene.AutoSceneFlattenAction) => element.type === 6;
+          // const lastDeviceIndex = this.data.sceneDeviceActionsFlatten.reduceRight((lastIndex: number, currentElement: AutoScene.AutoSceneFlattenAction, currentIndex: number) => {
+          //   if (lastIndex === -1 && deviceCondition(currentElement)) {
+          //     return currentIndex
+          //   }
+          //   return lastIndex
+          // }, -1)
+          // const lastDelayIndex = this.data.sceneDeviceActionsFlatten.reduceRight((lastIndex: number, currentElement: AutoScene.AutoSceneFlattenAction, currentIndex: number) => {
+          //   if (lastIndex === -1 && delayCondition(currentElement)) {
+          //     return currentIndex
+          //   }
+          //   return lastIndex
+          // }, -1)
+          // if (lastDelayIndex > lastDeviceIndex && this.data.opearationType === 'auto') { } else { return }
         }
         //每次选中的都push到最后
         const device = this.data.deviceList.find((item) => item.uniId === id)
@@ -807,6 +834,8 @@ ComponentWithComputed({
         sceneDeviceActionsFlatten,
         _isEditAction: isEditAction,
         sceneDevicelinkSelectList: this.data.opearationType === 'auto' ? [] : this.data.sceneDevicelinkSelectList,
+        tempSceneDevicelinkSelectedList:
+          this.data.opearationType === 'auto' ? [] : this.data.tempSceneDevicelinkSelectedList,
       })
 
       // 防止场景为空，drag为null·
@@ -1062,6 +1091,41 @@ ComponentWithComputed({
         this.go2dispatch()
         return
       }
+      // 判断是否有非法重复的动作
+      // 在自动化的时候，找到队列中最后一个相同的设备，看他后面有没有延时，有就不return，没有就依旧return
+      const condition = (element: AutoScene.AutoSceneFlattenAction) => element.type === 6
+      // 按延时分段
+      const segmentedArray = this.data.sceneDeviceActionsFlatten.reduce(
+        (result: Array<Array<AutoScene.AutoSceneFlattenAction>>, obj) => {
+          const lastSegment = result[result.length - 1]
+          if (condition(obj)) {
+            result.push([])
+          } else {
+            lastSegment.push(obj)
+          }
+          return result
+        },
+        [[]],
+      )
+      console.log('分段结果', segmentedArray)
+      let isToast = false
+      // 检查分段中是否存在相同的设备
+      segmentedArray.forEach((item) => {
+        const actionIds = item.map((item) => item.uniId)
+        const quchongSet = new Set(actionIds)
+        const quchongIds = Array.from(quchongSet)
+        console.log(actionIds, quchongIds)
+        if (quchongIds.length !== actionIds.length) {
+          console.log('弹出警告')
+          isToast = true
+        }
+      })
+
+      if (isToast) {
+        Toast({ message: '同一时间段内，同一设备或场景不能重复选择。请增加延时或删除设备/场景。', zIndex: 9999 })
+        return
+      }
+
       if (
         this.data.autoSceneId &&
         (this.data.sceneDeviceActionsLength === 0 || this.data.sceneDeviceConditionsFlatten.length === 0)

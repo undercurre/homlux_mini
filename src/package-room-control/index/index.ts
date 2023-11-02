@@ -234,9 +234,11 @@ ComponentWithComputed({
         (storage.get('navigationBarHeight') as number) -
         data.toolboxContentHeight -
         10 // 场景
-      if (data.controlPopup) {
-        baseHeight -= rpx2px(600)
-      } else if (data.editSelectMode) {
+      // 控制点击时有蒙层，不再需要调整滚动区域
+      // if (data.controlPopup) {
+      //   baseHeight -= rpx2px(600)
+      // } else
+      if (data.editSelectMode) {
         baseHeight -= rpx2px(368)
       }
       return baseHeight + 'px'

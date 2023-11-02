@@ -68,6 +68,7 @@ ComponentWithComputed({
     sensorList: [] as Device.DeviceItem[],
     /** 已选中设备或场景 TODO */
     sceneDevicelinkSelectList: [] as string[],
+    tempSceneDevicelinkSelectedList: [] as string[],
     /** 已选中的传感器 */
     sensorlinkSelectList: [] as string[],
     selectCardType: 'device', //设备卡片：'device'  场景卡片： 'scene'  传感器卡片：'sensor'
@@ -107,7 +108,7 @@ ComponentWithComputed({
       } else if (data.selectCardType === 'sensor') {
         return data.sensorList
       } else {
-        return data.deviceList
+        return data.deviceList.filter((item) => !data.sceneDevicelinkSelectList.includes(item.uniId))
       }
     },
     cardType(data) {
@@ -570,7 +571,7 @@ ComponentWithComputed({
 
       this.setData(
         {
-          sceneDevicelinkSelectList: tempSceneDevicelinkSelectList,
+          tempSceneDevicelinkSelectedList: tempSceneDevicelinkSelectList,
           sceneEditTitle: deviceAction.name,
           sceneEditInfo: {
             ...deviceAction.value,
@@ -581,7 +582,7 @@ ComponentWithComputed({
           editIndex: index,
         },
         () => {
-          console.log('选择后', this.data.sceneDevicelinkSelectList)
+          console.log('选择后', this.data.sceneDevicelinkSelectList, this.data.tempSceneDevicelinkSelectList)
         },
       )
     },
@@ -611,7 +612,17 @@ ComponentWithComputed({
           _isEditCondition: true,
         })
       } else {
-        this.updateSceneDeviceActionsFlatten()
+        this.setData(
+          {
+            sceneDevicelinkSelectList: [
+              ...this.data['sceneDevicelinkSelectList'],
+              ...this.data['tempSceneDevicelinkSelectedList'],
+            ],
+          },
+          () => {
+            this.updateSceneDeviceActionsFlatten()
+          },
+        )
       }
     },
     async handleSortEnd(e: { detail: { listData: Device.ActionItem[] } }) {
