@@ -27,6 +27,9 @@ module.exports = {
   // 是否使用tab格式化： 不使用
   useTabs: false,
 
+  // 每行强制使用单个属性
+  singleAttributePerLine: true,
+
   // 重写配置，适配微信
   overrides: [
     {
