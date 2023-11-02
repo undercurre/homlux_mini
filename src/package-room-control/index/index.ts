@@ -295,7 +295,7 @@ ComponentWithComputed({
         }
 
         if (e.result.eventType === WSEventType.device_property) {
-          // 房间状态上报
+          // 房间状态上报，只响应开关状态的变更
           if (e.result.eventData.deviceId === roomStore.currentRoom.groupId) {
             const { event } = e.result.eventData
             this.setData({
@@ -385,6 +385,17 @@ ComponentWithComputed({
             url: '/pages/index/index',
           })
         }
+      })
+    },
+
+    // 响应控制弹窗中单灯/灯组的控制变化，直接按本地设备列表数值以及设置值，刷新房间灯的状态
+    refreshLightStatus() {
+      console.log('本地更新房间灯状态', deviceStore.lightStatusInRoom)
+
+      const { brightness, colorTemperature } = deviceStore.lightStatusInRoom
+      this.setData({
+        'roomLight.brightness': brightness,
+        'roomLight.colorTemperature': colorTemperature,
       })
     },
 

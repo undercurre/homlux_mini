@@ -774,11 +774,12 @@ ComponentWithComputed({
         'lightInfoInner.brightness': e.detail,
       })
     }),
-    handleLevelChange(e: { detail: number }) {
+    async handleLevelChange(e: { detail: number }) {
       this.setData({
         'lightInfoInner.brightness': e.detail,
       })
       this.lightSendDeviceControl('brightness')
+      this.triggerEvent('lightStatusChange')
     },
     handleColorTempChange(e: { detail: number }) {
       console.log('handleColorTempChange', e.detail)
@@ -786,6 +787,7 @@ ComponentWithComputed({
         'lightInfoInner.colorTemperature': e.detail,
       })
       this.lightSendDeviceControl('colorTemperature')
+      this.triggerEvent('lightStatusChange')
     },
     handleColorTempDrag: throttle(function (this: IAnyObject, e: { detail: number }) {
       console.log('handleColorTempDrag', e.detail)
