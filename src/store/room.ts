@@ -21,6 +21,13 @@ export const roomStore = observable({
     return this.roomList[this.currentRoomIndex]
   },
 
+  get lightOnInHouse(): number {
+    const { roomList } = this
+    let count = 0
+    roomList.forEach((room) => (count += room.lightOnCount))
+    return count
+  },
+
   /**
    * 更新房间开灯数量
    * ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
