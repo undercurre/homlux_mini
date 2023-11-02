@@ -471,7 +471,9 @@ ComponentWithComputed({
 
         await delay(1000) // 强行延时,以免dom结构还没生成
 
-        await this.startAnimation()
+        const tempRes = await this.startAnimation()
+
+        Logger.log('startAnimation-end', tempRes)
 
         type PromiseThunk = () => Promise<any>
         const zigbeeTaskList = [] as PromiseThunk[]
