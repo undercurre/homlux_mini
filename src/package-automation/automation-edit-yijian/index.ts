@@ -245,28 +245,40 @@ ComponentWithComputed({
           if (action.proType === PRO_TYPE.switch) {
             deviceUniId = `${action.deviceId}:${action.controlAction[0].modelName}`
           }
-          const device = this.data.deviceList.find((item) => item.uniId === deviceUniId)
-
+          let device = this.data.deviceList.find((item) => item.uniId === deviceUniId)
+          console.log('找到选项', device)
           if (device) {
             //是设备
             if (device.proType === PRO_TYPE.switch) {
               //是开关面板
-              const power = action.controlAction[0].power
-              const desc = toPropertyDesc(device.proType, action.controlAction[0])
-              tempSceneDevicelinkSelectList.push(device.uniId)
-              tempSceneDeviceActionsFlatten.push({
-                uniId: device.uniId,
-                name: `${device.switchInfoDTOList[0].switchName} | ${device.deviceName}`,
-                deviceType: device.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
-                desc,
-                pic: device.switchInfoDTOList[0].pic,
-                proType: PRO_TYPE.switch,
-                value: {
-                  modelName: action.controlAction[0].modelName,
-                  power,
-                },
-                orderNum: 0,
-                dragId: device.uniId + Math.floor(Math.random() * 1001),
+              action.controlAction.forEach((switchInPanel, switchIndex) => {
+                deviceUniId = `${action.deviceId}:${action.controlAction[switchIndex].modelName}`
+                device = this.data.deviceList.find((item) => item.uniId === deviceUniId)
+                if (device) {
+                  console.log('找到选项', device)
+                  const power = action.controlAction[switchIndex].power
+                  const desc = toPropertyDesc(device.proType, action.controlAction[switchIndex])
+                  tempSceneDevicelinkSelectList.push(device.uniId)
+                  tempSceneDeviceActionsFlatten.push({
+                    uniId: device.uniId,
+                    name: `${device.switchInfoDTOList[0].switchName} | ${device.deviceName}`,
+                    deviceType: device.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
+                    desc,
+                    pic: device.switchInfoDTOList[0].pic,
+                    proType: PRO_TYPE.switch,
+                    value: {
+                      modelName: action.controlAction[switchIndex].modelName,
+                      power,
+                    },
+                    orderNum: 0,
+                    dragId: device.uniId + Math.floor(Math.random() * 1001),
+                  })
+                  console.log(
+                    '初始化',
+                    switchInPanel,
+                    `${device.switchInfoDTOList[0].switchName} | ${device.deviceName}`,
+                  )
+                }
               })
             } else {
               let property = action.controlAction[0]
@@ -526,63 +538,64 @@ ComponentWithComputed({
       })
     },
     async handleSelectCardSelect(e: { detail: string }) {
-      const tempSceneDevicelinkSelectList: string[] = this.data.sceneDevicelinkSelectList
-      const sceneInfo = sceneStore.allRoomSceneList.find(
-        (item) => item.sceneId === this.data.yijianSceneId,
-      ) as Scene.SceneItem
-      console.log('当前场景', sceneInfo)
-      // 添加操作设备
-      let index = this.data.sceneDeviceActionsFlatten.findIndex((item) => item.uniId === e.detail)
+      let tempSceneDevicelinkSelectList: string[] = [...this.data.tempSceneDevicelinkSelectedList]
+      // const sceneInfo = sceneStore.allRoomSceneList.find(
+      //   (item) => item.sceneId === this.data.yijianSceneId,
+      // ) as Scene.SceneItem
+      // console.log('当前场景', sceneInfo)
+      // // 添加操作设备
+      const index = tempSceneDevicelinkSelectList.findIndex((item) => item === e.detail)
       if (index === -1) {
+        tempSceneDevicelinkSelectList.push(e.detail)
         // 添加该动作
-        const device = this.data.deviceList.find((item) => item.uniId === e.detail)
-        if (device) {
-          const property = deviceStore.allRoomDeviceFlattenMap[device.uniId].property
-          const desc = toPropertyDesc(device.proType, property!)
-          tempSceneDevicelinkSelectList.push(device.uniId)
-          this.data.sceneDeviceActionsFlatten.push({
-            uniId: device.uniId,
-            name: device.deviceName,
-            deviceType: device.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
-            desc,
-            pic: device.pic as string,
-            proType: device.proType,
-            value: {
-              ...property,
-              modelName: MODEL_NAME[device.proType],
-            },
-            orderNum: 0,
-            dragId: device.uniId + Math.floor(Math.random() * 1001),
-          })
-        }
+        // const device = this.data.deviceList.find((item) => item.uniId === e.detail)
+        // if (device) {
+        // const property = deviceStore.allRoomDeviceFlattenMap[device.uniId].property
+        // const desc = toPropertyDesc(device.proType, property!)
+        // this.data.sceneDeviceActionsFlatten.push({
+        //   uniId: device.uniId,
+        //   name: device.deviceName,
+        //   deviceType: device.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
+        //   desc,
+        //   pic: device.pic as string,
+        //   proType: device.proType,
+        //   value: {
+        //     ...property,
+        //     modelName: MODEL_NAME[device.proType],
+        //   },
+        //   orderNum: 0,
+        //   dragId: device.uniId + Math.floor(Math.random() * 1001),
+        // })
+        // }
+      } else {
+        tempSceneDevicelinkSelectList = tempSceneDevicelinkSelectList.filter((item) => item !== e.detail)
       }
-      index = this.data.sceneDeviceActionsFlatten.findIndex((item) => item.uniId === e.detail)
-      const deviceAction = this.data.sceneDeviceActionsFlatten[index]
-      const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
-      console.log(deviceAction)
-      const device = allRoomDeviceMap[deviceAction.uniId]
-      let modelName = 'light'
+      // index = this.data.sceneDeviceActionsFlatten.findIndex((item) => item.uniId === e.detail)
+      // const deviceAction = this.data.sceneDeviceActionsFlatten[index]
+      // const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
+      // const device = allRoomDeviceMap[deviceAction.uniId]
+      // let modelName = 'light'
 
-      if (deviceAction.proType === PRO_TYPE.switch) {
-        modelName = device.switchInfoDTOList[0].switchId
-      }
+      // if (deviceAction.proType === PRO_TYPE.switch) {
+      //   modelName = device.switchInfoDTOList[0].switchId
+      // }
 
-      device.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, modelName })
+      // device.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, modelName })
 
       this.setData(
         {
           tempSceneDevicelinkSelectedList: tempSceneDevicelinkSelectList,
-          sceneEditTitle: deviceAction.name,
-          sceneEditInfo: {
-            ...deviceAction.value,
-            deviceType: device.deviceType,
-            gatewayId: device.gatewayId,
-            deviceId: device.deviceId,
-          },
-          editIndex: index,
+          // sceneEditTitle: deviceAction.name,
+          // sceneEditInfo: {
+          //   ...deviceAction.value,
+          //   deviceType: device.deviceType,
+          //   gatewayId: device.gatewayId,
+          //   deviceId: device.deviceId,
+          // },
+          // editIndex: index,
         },
         () => {
-          console.log('选择后', this.data.sceneDevicelinkSelectList, this.data.tempSceneDevicelinkSelectList)
+          console.log('选择后', this.data.sceneDevicelinkSelectList, this.data.tempSceneDevicelinkSelectedList)
         },
       )
     },
@@ -602,7 +615,7 @@ ComponentWithComputed({
       }
     },
     async handleSelectCardConfirm() {
-      // console.log('handleSelectCardConfirm', e)
+      console.log('handleSelectCardConfirm')
       this.setData({
         showSelectCardPopup: false,
       })
@@ -621,6 +634,9 @@ ComponentWithComputed({
           },
           () => {
             this.updateSceneDeviceActionsFlatten()
+            this.setData({
+              tempSceneDevicelinkSelectedList: [],
+            })
           },
         )
       }
