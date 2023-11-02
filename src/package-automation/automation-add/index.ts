@@ -4,7 +4,7 @@ import { deleteScene, findDevice, addScene, updateScene } from '../../apis/index
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { deviceStore, sceneStore, homeStore, autosceneStore, roomStore } from '../../store/index'
-import { PRO_TYPE, SENSOR_TYPE, MODEL_NAME, sceneImgDir } from '../../config/index'
+import { PRO_TYPE, SENSOR_TYPE, getModelName, sceneImgDir } from '../../config/index'
 import { toPropertyDesc, storage, getCurrentPageParams, strUtil, checkInputNameIllegal } from '../../utils/index'
 import { adviceSceneNameList } from '../../config/scene'
 
@@ -332,7 +332,7 @@ ComponentWithComputed({
                   proType: device.proType,
                   value: {
                     ...property,
-                    modelName: MODEL_NAME[device.proType],
+                    modelName: getModelName(device.proType, device.productId),
                   },
                   orderNum: 0,
                   dragId: device.uniId + Math.floor(Math.random() * 1001),

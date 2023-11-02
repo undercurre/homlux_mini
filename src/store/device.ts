@@ -1,6 +1,6 @@
 import { observable, runInAction } from 'mobx-miniprogram'
 import { queryAllDevice } from '../apis/device'
-import { MODEL_NAME, PRO_TYPE } from '../config/index'
+import { getModelName, PRO_TYPE } from '../config/index'
 import { homeStore } from './home'
 import { roomStore } from './room'
 import { sceneStore } from './scene'
@@ -40,6 +40,36 @@ export const deviceStore = observable({
   get deviceFlattenList(): Device.DeviceItem[] {
     const { roomId = 0 } = roomStore.currentRoom ?? {}
     return this.allRoomDeviceFlattenList.filter((device) => device.roomId === roomId)
+  },
+
+  // 房间所有灯的亮度计算
+  get lightStatusInRoom(): { brightness: number; colorTemperature: number } {
+    let sumOfBrightness = 0,
+      sumOfColorTemp = 0,
+      count = 0
+    this.deviceFlattenList.forEach((device) => {
+      const { proType, deviceType, mzgdPropertyDTOList, onLineStatus } = device
+
+      // 只需要灯需要参与计算，过滤属性数据不完整的数据，过滤灯组，过滤不在线设备，过滤未开启设备
+      if (
+        proType !== PRO_TYPE.light ||
+        deviceType === 4 ||
+        onLineStatus !== 1 ||
+        mzgdPropertyDTOList?.light?.power !== 1
+      ) {
+        return
+      }
+
+      sumOfBrightness += mzgdPropertyDTOList.light?.brightness ?? 0
+      sumOfColorTemp += mzgdPropertyDTOList.light?.colorTemperature ?? 0
+      count++
+    })
+
+    if (count === 0) {
+      return { brightness: 0, colorTemperature: 0 }
+    }
+
+    return { brightness: sumOfBrightness / count, colorTemperature: sumOfColorTemp / count }
   },
 
   /**
@@ -84,7 +114,7 @@ export const deviceStore = observable({
       }
       // 包括 PRO_TYPE.light PRO_TYPE.sensor在内，所有非网关、可显示的设备都用这种方案插值
       else if (device.proType !== PRO_TYPE.gateway) {
-        const modelName = MODEL_NAME[device.proType]
+        const modelName = getModelName(device.proType, device.productId)
         list.push({
           ...device,
           uniId: device.deviceId,

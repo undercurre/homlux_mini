@@ -5,7 +5,7 @@ import { homeBinding, deviceStore, sceneStore, homeStore } from '../../../../sto
 import {
   maxColorTemp,
   minColorTemp,
-  MODEL_NAME,
+  getModelName,
   PRO_TYPE,
   SCREEN_PID,
   KNOB_PID,
@@ -50,7 +50,7 @@ ComponentWithComputed({
           return
         }
         const diffData = {} as IAnyObject
-        const modelName = MODEL_NAME[device.proType]
+        const modelName = getModelName(device.proType, device.productId)
         const prop = device.mzgdPropertyDTOList[modelName]
 
         // 初始化可控变量
@@ -774,11 +774,12 @@ ComponentWithComputed({
         'lightInfoInner.brightness': e.detail,
       })
     }),
-    handleLevelChange(e: { detail: number }) {
+    async handleLevelChange(e: { detail: number }) {
       this.setData({
         'lightInfoInner.brightness': e.detail,
       })
       this.lightSendDeviceControl('brightness')
+      this.triggerEvent('lightStatusChange')
     },
     handleColorTempChange(e: { detail: number }) {
       console.log('handleColorTempChange', e.detail)
@@ -786,6 +787,7 @@ ComponentWithComputed({
         'lightInfoInner.colorTemperature': e.detail,
       })
       this.lightSendDeviceControl('colorTemperature')
+      this.triggerEvent('lightStatusChange')
     },
     handleColorTempDrag: throttle(function (this: IAnyObject, e: { detail: number }) {
       console.log('handleColorTempDrag', e.detail)
