@@ -273,7 +273,11 @@ ComponentWithComputed({
                     orderNum: 0,
                     dragId: device.uniId + Math.floor(Math.random() * 1001),
                   })
-                  console.log('初始化', `${device.switchInfoDTOList[0].switchName} | ${device.deviceName}`)
+                  console.log(
+                    '初始化',
+                    switchInPanel,
+                    `${device.switchInfoDTOList[0].switchName} | ${device.deviceName}`,
+                  )
                 }
               })
             } else {
