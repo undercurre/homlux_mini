@@ -132,6 +132,7 @@ ComponentWithComputed({
         panId: parseInt(panId),
       }
 
+      // 如果是绑定传感器，需要一些前置操作
       if (proType === PRO_TYPE.sensor) {
         bleDevicesStore.reset()
 
@@ -212,6 +213,14 @@ ComponentWithComputed({
       runInAction(() => {
         bleDevicesBinding.store.bleDeviceList = list
       })
+
+      // 从错误的配网入口进入绑定的传感器
+      const errList = res.result.filter(
+        (device) => this.data._sensorList.includes(device.deviceId) && device.productId !== this.data._productId,
+      )
+      if (errList.length) {
+        Toast('传感器配网失败，请检查网络及配网入口')
+      }
     },
     startAnimation() {
       Logger.log('动画开始')
