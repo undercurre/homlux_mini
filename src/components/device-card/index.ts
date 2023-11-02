@@ -1,5 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { proName, PRO_TYPE, defaultImgDir } from '../../config/index'
+import { proName, PRO_TYPE, defaultImgDir, getModelName } from '../../config/index'
 import { throttle } from '../../utils/index'
 
 const CONTROL_INTERVAL = 3000 // 开关操作间隔时间
@@ -147,7 +147,8 @@ ComponentWithComputed({
     },
     lowBattery(data) {
       if (data.deviceInfo.proType === PRO_TYPE.sensor) {
-        return !!data.deviceInfo.mzgdPropertyDTOList?.wallSwitch1.batteryAlarmState
+        const modelName = getModelName(PRO_TYPE.sensor, data.deviceInfo.productId)
+        return !!data.deviceInfo.mzgdPropertyDTOList[modelName]?.batteryAlarmState
       }
       return false
     },

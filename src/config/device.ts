@@ -25,12 +25,33 @@ export const PRO_TYPE = {
   sensor: '0xBC',
 } as const
 
-// proType -> 设备modelName，// !! 多路面板modelName为wallSwitch\d，直接从switchInfoDTOList获取
+// productId -> 设备modelName，暂时为传感器专用
+export const SENSOR_MODEL_NAME = {
+  'midea.ir.201': 'irDetector',
+  'midea.magnet.001.201': 'magnet',
+  'midea.freepad.001.201': 'freepad',
+} as Record<string, string>
+
+// proType  -> 设备modelName
 export const MODEL_NAME = {
   '0x13': 'light',
   '0x14': 'curtain',
   '0xBC': 'wallSwitch1',
 } as Record<string, string>
+
+/**
+ * @description 综合获取modelName的方法，proType & productId -> 设备modelName
+ * !! 多路面板modelName为wallSwitch\d，直接从switchInfoDTOList获取
+ * @param proType
+ * @param productId
+ */
+export const getModelName = (proType: string, productId: string) => {
+  if (proType === PRO_TYPE.sensor) {
+    return SENSOR_MODEL_NAME[productId]
+  }
+
+  return MODEL_NAME[proType]
+}
 
 // 智慧屏pid:  四寸屏：pkey:t1ae5ff32ae84b60b159676556aafbf7 psecret: e953d99rb7ef4b55  pid : zk527b6c944a454e9fb15d3cc1f4d55b 十寸屏  pkey:j1ae3ez32ae84b60b159676556aafbf7 psecret: m95fd9grb7ef4b55  pid:ok523b6c941a454e9fb15d3cc1f4d55b
 export const SCREEN_PID: readonly string[] = ['zk527b6c944a454e9fb15d3cc1f4d55b', 'ok523b6c941a454e9fb15d3cc1f4d55b']

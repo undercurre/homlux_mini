@@ -35,7 +35,7 @@ import {
   LIST_PAGE,
   CARD_W,
   CARD_H,
-  MODEL_NAME,
+  getModelName,
   CARD_REFRESH_TIME,
   sceneImgDir,
   defaultImgDir,
@@ -295,7 +295,7 @@ ComponentWithComputed({
         }
 
         if (e.result.eventType === WSEventType.device_property) {
-          // 房间状态上报
+          // 房间状态上报，只响应开关状态的变更
           if (e.result.eventData.deviceId === roomStore.currentRoom.groupId) {
             const { event } = e.result.eventData
             this.setData({
@@ -385,6 +385,17 @@ ComponentWithComputed({
             url: '/pages/index/index',
           })
         }
+      })
+    },
+
+    // 响应控制弹窗中单灯/灯组的控制变化，直接按本地设备列表数值以及设置值，刷新房间灯的状态
+    refreshLightStatus() {
+      console.log('本地更新房间灯状态', deviceStore.lightStatusInRoom)
+
+      const { brightness, colorTemperature } = deviceStore.lightStatusInRoom
+      this.setData({
+        'roomLight.brightness': brightness,
+        'roomLight.colorTemperature': colorTemperature,
       })
     },
 
@@ -522,7 +533,7 @@ ComponentWithComputed({
             const modelName =
               originDevice.proType === PRO_TYPE.switch
                 ? originDevice.uniId.split(':')[1]
-                : MODEL_NAME[originDevice.proType]
+                : getModelName(originDevice.proType, originDevice.productId)
 
             // 如果mzgdPropertyDTOList、switchInfoDTOList字段存在，则覆盖更新
             if (device!.mzgdPropertyDTOList) {
@@ -1183,7 +1194,9 @@ ComponentWithComputed({
     // 卡片点击时，按品类调用对应方法
     async handleControlTap(e: { detail: DeviceCard }) {
       const device = { ...e.detail }
-      const modelName = device.switchInfoDTOList ? device.switchInfoDTOList[0].switchId : MODEL_NAME[e.detail.proType]
+      const modelName = device.switchInfoDTOList
+        ? device.switchInfoDTOList[0].switchId
+        : getModelName(device.proType, device.productId)
 
       // 若面板关联场景
       if (device.proType === PRO_TYPE.switch && device.mzgdPropertyDTOList[modelName].ButtonMode === 2) {

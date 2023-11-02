@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { MODEL_NAME, PRO_TYPE, SCREEN_PID } from '../../../../config/index'
+import { getModelName, PRO_TYPE, SCREEN_PID } from '../../../../config/index'
 import { waitingBatchDeleteDevice, batchUpdate, renameGroup } from '../../../../apis/index'
 import { deviceBinding, deviceStore, homeStore, roomBinding, roomStore } from '../../../../store/index'
 import Toast from '@vant/weapp/toast/toast'
@@ -549,7 +549,7 @@ ComponentWithComputed({
             }
           }
         } else {
-          const modelName = MODEL_NAME[device.proType]
+          const modelName = getModelName(device.proType, device.productId)
           this.data.moveWaitlist.push(`${device.deviceId}:${modelName}`)
         }
       })

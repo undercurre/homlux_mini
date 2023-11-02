@@ -85,7 +85,7 @@
 </view>
 
 <!-- 设备控制弹窗 -->
-<device-control-popup controlPopup="{{controlPopup}}" deviceInfo="{{checkedDeviceInfo}}" checkedList="{{checkedList}}" bind:popMove="handlePopMove" bind:updateDevice="updateQueue"></device-control-popup>
+<device-control-popup controlPopup="{{controlPopup}}" deviceInfo="{{checkedDeviceInfo}}" checkedList="{{checkedList}}" bind:popMove="handlePopMove" bind:updateDevice="updateQueue" bind:lightStatusChange="refreshLightStatus"></device-control-popup>
 
 <before-add-scene-popup show="{{showBeforeAddScenePopup}}" bind:close="handleBeforeAddScenePopupClose" bind:next="handleBeforeAddScenePopupNext" bind:delete="handleBeforeAddScenePopupDelete" />
 
