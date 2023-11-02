@@ -70,7 +70,7 @@ App<IAppOption>({
 
     // 监听内存不足告警事件
     wx.onMemoryWarning(function () {
-      Logger.error('onMemoryWarningReceive')
+      Logger.debug('onMemoryWarningReceive')
     })
   },
 
