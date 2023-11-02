@@ -533,9 +533,15 @@ ComponentWithComputed({
       if (this.data.isDefault) {
         return
       }
-      this.setData({
-        showSelectCardPopup: true,
-      })
+      if (
+        this.data.deviceList.filter((item) => !this.data.sceneDevicelinkSelectList.includes(item.uniId)).length === 0
+      ) {
+        Toast({ message: '手动点击场景已无设备选择', zIndex: 9999 })
+      } else {
+        this.setData({
+          showSelectCardPopup: true,
+        })
+      }
     },
     async handleSelectCardSelect(e: { detail: string }) {
       let tempSceneDevicelinkSelectList: string[] = [...this.data.tempSceneDevicelinkSelectedList]
