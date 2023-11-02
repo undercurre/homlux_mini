@@ -9,7 +9,7 @@ ComponentWithComputed({
     webviewSrc: '',
     domainMap: {
       dev: 'https://test.meizgd.com',
-      sit: 'https://test.meizgd.com',
+      sit: 'https://mzaio.meizgd.com',
       prod: 'https://mzaio.meizgd.com',
     },
   },
