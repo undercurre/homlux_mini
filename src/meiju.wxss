@@ -1083,13 +1083,9 @@
   color: #8a8a8f;
 }
 
-#meiju .linkAp-step {
-  padding-bottom: 100rpx;
-}
-
 #meiju .detail-stepes {
   width: 91.5%;
-  margin: 40rpx auto 450rpx;
+  margin: 40rpx auto;
   padding: 0rpx 0rpx 0rpx 32rpx;
   background: #f9f9f9;
   border-radius: 16rpx;
@@ -1153,15 +1149,6 @@
 
 #meiju .andriod-line {
   border: 1px solid #e5e5e5;
-  width: 594rpx;
-  margin-left: 31rpx;
-  background-color: #e5e5e5;
-}
-
-#meiju .andriod-line {
-  border: 1px solid #e5e5e5;
-  width: 594rpx;
-  margin-left: 31rpx;
   background-color: #e5e5e5;
 }
 
