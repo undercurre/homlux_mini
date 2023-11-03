@@ -47,30 +47,12 @@
             data-wifi-info="{{wifiItem}}"
             style="opacity:{{wifiItem.isCan?'1':'0.7'}}"
           >
-            <view
-              class="left"
-              wx:if="{{brand != 'colmo'}}"
-            >
+            <view class="left">
               <image
                 class="wifi-strength"
                 src="{{wifiItem.class}}"
               ></image>
               <view class="wifi-name">{{wifiItem.SSID}}</view>
-            </view>
-            <view
-              class="left"
-              wx:else
-            >
-              <image
-                class="wifi-strength"
-                src="{{wifiItem.class}}"
-                style="opacity:{{wifiItem.isCan?'1':'0.2'}}"
-              ></image>
-              <view
-                class="wifi-name"
-                style="color:{{wifiItem.isCan?'#fff':'rgba(255,255,255,0.25)'}};"
-                >{{wifiItem.SSID}}</view
-              >
             </view>
             <view class="right">
               <view
