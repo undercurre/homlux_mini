@@ -49,7 +49,7 @@
   line-height: 55px;
   font-family: PingFangSC-Regular;
   font-size: 16px;
-  color: #267aff;
+  color: #488fff;
   letter-spacing: 0;
   text-align: center;
   border-top: 1px solid #f3f3f3;
@@ -72,7 +72,7 @@
   border-radius: 0px;
   font-size: 16px;
   /* width: 140px; */
-  color: #267aff;
+  color: #488fff;
   background-color: transparent;
   text-align: center;
 }

@@ -48,7 +48,7 @@ Component({
     // wifiList: [],
     isRefresh: false, //是否在刷新
     isCanUse: {
-      meiju: '#267AFF',
+      meiju: '#488FFF',
       colmo: '#AF6437',
       toshiba: '#E61E1E',
     },

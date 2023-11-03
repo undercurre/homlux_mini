@@ -54,14 +54,14 @@
   line-height: 92rpx;
   text-align: center;
   border-radius: 48rpx;
-  background: #267aff;
+  background: #488fff;
   color: #fff;
   position: absolute;
   bottom: 48rpx;
 }
 
 .btn {
-  color: #267aff;
+  color: #488fff;
 }
 
 .btnBox {

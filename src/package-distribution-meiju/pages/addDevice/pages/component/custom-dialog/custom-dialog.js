@@ -14,14 +14,12 @@ Component({
         content: '默认内容',
         cancelText: '取消',
         cancelColor: '#000000',
-        confirmColor: '#267AFF',
+        confirmColor: '#488FFF',
         confirmText: '确认',
         success(res) {
           console.log('点击了', res)
-          if (res.type == 'cancel') {
-          }
         },
-        fail(error) {},
+        fail() {},
       },
     },
   },

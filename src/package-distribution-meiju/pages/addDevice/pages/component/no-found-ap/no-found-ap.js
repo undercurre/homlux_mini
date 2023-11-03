@@ -68,7 +68,7 @@ Component({
         frameAnimate: 'frameAnimate',
       })
       // 寻找设备WiFi
-      if (this.data.system == 'Android') this.searchWiFi()
+      if (this.data.system === 'Android') this.searchWiFi()
     },
     hideFrame() {
       const that = this

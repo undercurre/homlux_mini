@@ -10,7 +10,7 @@
 }
 
 .blue {
-  color: #267aff;
+  color: #488fff;
   font-weight: 600;
 }
 
@@ -99,7 +99,7 @@
 }
 
 .switch-set .blue-text {
-  color: #267aff;
+  color: #488fff;
 }
 .switch-set image {
   display: block;
@@ -118,7 +118,7 @@
   margin-bottom: 40rpx;
 }
 .btn {
-  color: #267aff;
+  color: #488fff;
 }
 .btnView {
   width: 100%;

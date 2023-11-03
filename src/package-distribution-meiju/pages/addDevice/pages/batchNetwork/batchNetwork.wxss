@@ -171,7 +171,7 @@
   height: 92rpx;
   margin-left: 32rpx;
   margin-right: 32rpx;
-  background: #267aff;
+  background: #488fff;
   border-radius: 48rpx;
   font-size: 32rpx;
   color: #ffffff;

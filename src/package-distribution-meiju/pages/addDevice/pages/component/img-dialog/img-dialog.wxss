@@ -58,7 +58,7 @@
 .control {
   font-family: PingFangSC-Regular;
   font-size: 16px;
-  color: #267aff;
+  color: #488fff;
   letter-spacing: 0;
   text-align: center;
   display: flex;
@@ -76,8 +76,8 @@
   line-height: 92rpx;
   font-size: 16px;
   /* width: 140px; */
-  color: #267aff;
-  border: 2rpx solid #267aff;
+  color: #488fff;
+  border: 2rpx solid #488fff;
   text-align: center;
   margin-top: 116rpx;
 }
@@ -85,7 +85,7 @@
 .custom-dialog .confirm {
   /* float: right; */
   width: 328rpx;
-  background: #267aff;
+  background: #488fff;
   border-radius: 48rpx;
   height: 92rpx;
   line-height: 92rpx;

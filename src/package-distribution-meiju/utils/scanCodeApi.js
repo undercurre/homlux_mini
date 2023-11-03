@@ -336,9 +336,9 @@ function dynamicCodeAdd(scanCodeRes, getDeviceApImgAndName, showNotSupport, just
       title: '',
       content: `你正在添加${app.addDeviceInfo.deviceName},确定要继续吗？`,
       cancelText: '取消',
-      cancelColor: '#267AFF',
+      cancelColor: '#488FFF',
       confirmText: '确定',
-      confirmColor: '#267AFF',
+      confirmColor: '#488FFF',
       success(res) {
         if (res.confirm) {
           //确定
@@ -353,7 +353,7 @@ function dynamicCodeAdd(scanCodeRes, getDeviceApImgAndName, showNotSupport, just
       title: '',
       content: '该二维码无法识别，请扫描设备屏幕二维码',
       confirmText: '我知道了',
-      confirmColor: '#267AFF',
+      confirmColor: '#488FFF',
       showCancel: false,
     })
   }

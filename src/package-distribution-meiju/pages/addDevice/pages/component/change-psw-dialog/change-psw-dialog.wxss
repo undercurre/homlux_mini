@@ -73,7 +73,7 @@
   margin: 64rpx auto 0;
   width: 476rpx;
   height: 84rpx;
-  background: #267aff;
+  background: #488FFF;
   border-radius: 46rpx;
   font-family: PingFangSC-Medium;
   font-size: 32rpx;

@@ -70,8 +70,8 @@
   box-sizing: border-box;
   position: absolute;
   bottom: 0;
-  border-top-left-radius: 20rpx;
-  border-top-right-radius: 20rpx;
+  border-top-left-radius: 64rpx;
+  border-top-right-radius: 64rpx;
   z-index: 3;
 }
 
@@ -119,11 +119,11 @@
 }
 
 .close {
-  width: 24rpx;
-  height: 24rpx;
+  width: 40rpx;
+  height: 40rpx;
   position: absolute;
-  right: 42rpx;
-  top: 42rpx;
+  right: 48rpx;
+  top: 48rpx;
 }
 
 .searching {
@@ -184,9 +184,8 @@
   margin-top: 60rpx;
   width: 686rpx;
   height: 92rpx;
-  background: #267aff;
+  background: #488fff;
   border-radius: 48rpx;
-  font-family: PingFangSC-Medium;
   font-size: 32rpx;
   color: #ffffff;
   text-align: center;
@@ -199,7 +198,6 @@
   width: 686rpx;
   height: 92rpx;
   background: #af6437;
-  font-family: PingFangSC-Medium;
   font-size: 32rpx;
   color: #ffffff;
   text-align: center;
@@ -208,20 +206,18 @@
 }
 
 .title {
-  font-family: PingFangSC-Medium;
   font-size: 36rpx;
-  color: #333333;
+  color: #27282a;
   text-align: center;
   font-weight: 500;
   line-height: 50rpx;
-  margin: 30rpx auto;
+  margin: 50rpx auto 0;
 }
 
 .step {
-  font-family: PingFangSC-Regular;
   font-size: 28rpx;
-  color: #000000;
-  line-height: 48rpx;
+  color: #27282a;
+  line-height: 40rpx;
   font-weight: 400;
   margin-top: 48rpx;
   padding: 0 40rpx;
@@ -229,7 +225,7 @@
 }
 
 .btn {
-  color: #267aff;
+  color: #488fff;
 }
 
 .bottom {

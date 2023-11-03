@@ -208,9 +208,9 @@ Page({
         title: '',
         content: '',
         cancelText: cancelText,
-        cancelColor: '#267AFF',
+        cancelColor: '#488FFF',
         comfirmText: comfirmText,
-        comfirmColor: '#267AFF',
+        comfirmColor: '#488FFF',
         success: function async(res) {
           console.log('click buttomButon res', res)
           if (res.confirm) {

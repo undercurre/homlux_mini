@@ -630,7 +630,7 @@ Page({
         desc: '请确认并重新输入密码',
         wifiInfo: self.data.bindWifiInfo,
         confirmText: '重试',
-        confirmColor: '#267AFF',
+        confirmColor: '#488FFF',
         success(res) {
           console.log(res)
           if (res.confirm) {
@@ -663,7 +663,7 @@ Page({
         show: true,
         title: '请确认WiFi密码',
         wifiInfo: self.data.bindWifiInfo,
-        confirmColor: '#267AFF',
+        confirmColor: '#488FFF',
         desc: this.data.brand === 'colmo' ? '请确认并重新输入密码' : '',
         confirmText: this.data.brand === 'colmo' ? '确定' : '确认',
         success(res) {

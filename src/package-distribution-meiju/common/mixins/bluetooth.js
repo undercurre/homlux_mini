@@ -960,7 +960,7 @@ module.exports = Behavior({
           confirmText: '好的',
           confirmColor: '#458BFF',
           showCancel: false,
-          success(res) {},
+          success() {},
         })
       } else {
         wx.showModal({
@@ -1030,19 +1030,19 @@ module.exports = Behavior({
       // this.closeWifiScan()
       clearTimeout(timer)
       clearTimeout(timer1)
-      if (item.fm == 'scanCode') {
+      if (item.fm === 'scanCode') {
         //兼容扫码触发蓝牙自发现处理
         this.data.isScanCodeSuccess = true
       }
       //获取后台配置对应的配网方式
-      if (item.fm == 'scanCode' || item.fm == 'autoFound') {
+      if (item.fm === 'scanCode' || item.fm === 'autoFound') {
         try {
           let guideInfo = addDeviceInfo.guideInfo
           // ap自发现不请求配网指引
           if (addDeviceInfo.fmType != 'ap' && !addDeviceInfo.guideInfo) {
             guideInfo = await this.getAddDeviceGuide(item.fm, addDeviceInfo)
           }
-          if (item.fm == 'scanCode') {
+          if (item.fm === 'scanCode') {
             //扫码去后台配置的配网方式
             app.addDeviceInfo.mode = guideInfo.data.data.mainConnectinfoList[0].mode //重置配网方式
           }
@@ -1096,7 +1096,7 @@ module.exports = Behavior({
           // wx.showModal({
           //   content: '该设备暂不支持小程序配网，我们会尽快开放，敬请期待',
           //   confirmText: '我知道了',
-          //   confirmColor: '#267aff',
+          //   confirmColor: '#488FFF',
           //   showCancel: false,
           // })
           Dialog.confirm({
