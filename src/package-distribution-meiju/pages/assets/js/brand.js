@@ -867,12 +867,12 @@ const config = {
      */
     qrcode: '//qrcode.midea.com',
     dialogStyle: {
-      confirmButtonColor: '#267AFF',
+      confirmButtonColor: '#488FFF',
       confirmButtonColor2: '#0078FF',
       confirmButtonColor3: '#458BFF',
       cancelButtonColor: '#000000',
       cancelButtonColor2: '#0078FF',
-      cancelButtonColor3: '#267AFF',
+      cancelButtonColor3: '#488FFF',
       cancelButtonColor4: '#458BFF',
       disableClickColor: 'rgba(38,122,255,0.50)',
     },
@@ -921,12 +921,12 @@ const config = {
      */
     qrcode: '//tsqrcode.midea.com',
     dialogStyle: {
-      confirmButtonColor: '#267AFF',
+      confirmButtonColor: '#488FFF',
       confirmButtonColor2: '#0078FF',
       confirmButtonColor3: '#458BFF',
       cancelButtonColor: '#000000',
       cancelButtonColor2: '#0078FF',
-      cancelButtonColor3: '#267AFF',
+      cancelButtonColor3: '#488FFF',
       cancelButtonColor4: '#458BFF',
     },
     iconStyle: {

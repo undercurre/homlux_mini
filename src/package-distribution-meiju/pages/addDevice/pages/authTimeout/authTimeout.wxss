@@ -41,6 +41,6 @@
   line-height: 92rpx;
   text-align: center;
   border-radius: 48rpx;
-  background: #267aff;
+  background: #488fff;
   color: #fff;
 }

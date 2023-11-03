@@ -567,7 +567,7 @@ Page({
       wx.showModal({
         content: '该设备暂不支持小程序配网，我们会尽快开放，敬请期待',
         confirmText: '我知道了',
-        confirmColor: '#267aff',
+        confirmColor: '#488FFF',
         showCancel: false,
       })
       return

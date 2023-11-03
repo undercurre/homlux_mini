@@ -44,140 +44,16 @@
   font-weight: 500;
 }
 
-/* .info {
-  margin: 50rpx 0rpx;
-  padding-left: 52rpx;
-} */
-
-/* .sn4 {
-  font-size: 48rpx;
-  letter-spacing: 0;
-  text-align: center;
-  line-height: 52rpx;
-  font-weight: 600;
-  color: #8A8A8F;
-} */
-
-/* .pad {
-  font-size: 30rpx;
-  letter-spacing: 0;
-  text-align: center;
-  line-height: 52rpx;
-} */
-
-/* .copy {
-  width: 100rpx;
-  height: 60rpx;
-  background: #E9F1FF;
-  border-radius: 40rpx;
-  font-size: 26rpx;
-  margin-left: 24rpx;
-  color: #267AFF;
-  letter-spacing: 0;
-  text-align: center;
-  line-height: 60rpx;
-  font-weight: 500;
-} */
-
-/* .wifi-img,
-.psw-img {
-  display: inline-block;
-  width: 48rpx;
-  height: 48rpx;
-} */
-
 .wifi-img {
   margin-top: 5rpx;
   margin-right: 5rpx;
 }
-
-/* .wifi-name,
-.psw-name {
-  font-size: 48rpx;
-  color: #FE1E10;
-  letter-spacing: 0;
-  text-align: center;
-  line-height: 52rpx;
-  font-weight: 600;
-} */
 
 .rc {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
-
-.content {
-  padding: 0 4.3%;
-}
-
-/* .no-found-wifi {
-  font-size: 32rpx;
-  margin: 0rpx 0 50rpx 0;
-  color: #267AFF;
-  text-align: center;
-  line-height: 32rpx;
-  font-weight: 500;
-} */
-
-/* .switch-wifi-btn {
-  margin-top: 30rpx;
-  width: 91.5%;
-  height: 42px;
-  margin: auto;
-  border-radius: 21px;
-  line-height: 42px;
-  background: #267AFF;
-  text-align-last: center;
-  font-size: 16px;
-  color: #fff;
-} */
-
-/* .bottom-button {
-  padding: 20rpx 0rpx;
-  width: 100%;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  background-color: #FFFFFF;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-} */
-
-/* Ios */
-/* .ios-desc {
-  padding: 0rpx 32rpx;
-  font-size: 36rpx;
-  color: #000000;
-  letter-spacing: 0;
-  line-height: 56rpx;
-  font-weight: 500;
-} */
-
-/* .detail-stepes {
-  width: 91.5%;
-  margin: 40rpx auto 450rpx;
-  padding: 0rpx 0rpx 0rpx 32rpx;
-  background: #F9F9F9;
-  border-radius: 16rpx;
-} */
-
-/* .detail-title {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20rpx;
-  font-family: PingFangSC-Medium;
-  font-size: 28rpx;
-  color: #267AFF;
-  letter-spacing: 0;
-  line-height: 28rpx;
-  font-weight: 500;
-} */
 
 .detail-title .expand {
   margin-left: 20rpx;
@@ -186,51 +62,10 @@
   height: 40rpx;
 }
 
-/* .step {
-  padding-bottom: 100rpx;
-} */
-
-/* .detail-step {
-  height: 216rpx;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-} */
-
-/* .detail-img {
-  display: block;
-  width: 332rpx;
-  height: 194rpx;
-} */
-
-/* .detail-text {
-  display: block;
-  width: 380rpx;
-  font-family: PingFangSC-Semibold;
-  font-size: 28rpx;
-  color: #666666;
-  letter-spacing: 0;
-  line-height: 36rpx;
-} */
-
 .detail-one {
   display: flex;
   align-items: center;
 }
-
-/* .line {
-  width: 655rpx;
-  border: 1px solid #E5E5E5;
-  margin-left: 31rpx;
-} */
-
-/* .andriod-line {
-  border: 1px solid #E5E5E5;
-  width: 594rpx;
-  margin-left: 31rpx;
-  background-color: #E5E5E5;
-} */
 
 .step-four {
   position: relative;
@@ -248,20 +83,6 @@
   top: 130rpx;
   font-size: 24rpx;
 }
-/* .step-num {
-  background-color: #FFFFFF;
-  width:32rpx;
-  height:32rpx;
-  padding:0 14rpx;
-  border-radius:50%;
-  line-height: 32rpx;
-  text-align: center;
-} */
-
-/* .gif-size{
-  width: 480rpx;
-  height: 384rpx;
-} */
 
 #colmo .colmo-stop-go-link {
   background-color: rgba(255, 255, 255, 0.1);

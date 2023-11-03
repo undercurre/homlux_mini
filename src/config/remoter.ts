@@ -177,9 +177,8 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
     },
   },
   '26': {
-    // MY-S5X28-Y5W
+    // MY-S5X28-Y5W // 0010 无人感
     '02': {
-      // 0010 无人感
       deviceName: '浴霸',
       devicePic: '/assets/img/remoter/bathHeater.png',
       joystick: {
@@ -272,9 +271,8 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
         },
       ],
     },
-    // MY-S5X28-Y6W
+    // MY-S5X28-Y6W // 0110
     '06': {
-      // 0110
       deviceName: '浴霸',
       devicePic: '/assets/img/remoter/bathHeater.png',
       joystick: {
@@ -367,26 +365,51 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
         },
       ],
     },
-    // MY-S5X30-A70
-    '07': {
-      // 0111
+    // MY-S5X30-A70W // TODO 0111 温度可调，暂时未匹配
+    // MY-S5X30-A70W // 1111 温度可调，色温可调
+    '0f': {
       deviceName: '浴霸',
       devicePic: '/assets/img/remoter/bathHeater.png',
-      showTemperature: true,
+      showTemperature: false, // TODO 暂时不予实现
+      joystick: {
+        up: {
+          key: 'BATH_BRIGHT_PLUS',
+          icon: '/package-remoter/assets/bright1.png',
+          iconActive: '/package-remoter/assets/bright0.png',
+        },
+        right: {
+          key: 'BATH_TEMPERATURE_ADD',
+          icon: '/package-remoter/assets/temp3.png',
+          iconActive: '/package-remoter/assets/temp2.png',
+        },
+        down: {
+          key: 'BATH_BRIGHT_MINUS',
+          icon: '/package-remoter/assets/bright3.png',
+          iconActive: '/package-remoter/assets/bright2.png',
+        },
+        left: {
+          key: 'BATH_TEMPERATURE_SUB',
+          icon: '/package-remoter/assets/temp1.png',
+          iconActive: '/package-remoter/assets/temp0.png',
+        },
+        middle: {
+          key: 'FACTORY',
+        },
+      },
       mList: [
+        // {
+        //   key: 'TEMPERATURE_SETTING_ADD',
+        //   name: '温度+',
+        // },
+        // {
+        //   key: 'TEMPERATURE_SETTING_SUB',
+        //   name: '温度-',
+        // },
         {
-          key: 'TEMPERATURE_ADD',
-          name: '温度+',
-        },
-        {
-          key: 'TEMPERATURE_SUB',
-          name: '温度-',
-        },
-        {
-          key: 'BATH_AUTO',
-          icon: '/package-remoter/assets/scene81.png',
-          iconActive: '/package-remoter/assets/scene80.png',
-          name: '安心沐浴',
+          key: 'BATH_WARM_UP',
+          icon: '/package-remoter/assets/scene01.png',
+          iconActive: '/package-remoter/assets/scene00.png',
+          name: '取暖',
         },
         {
           key: 'BATH_WIND',
@@ -405,6 +428,13 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
           icon: '/package-remoter/assets/sceneB1.png',
           iconActive: '/package-remoter/assets/sceneB0.png',
           name: '干燥',
+        },
+        {
+          key: 'BATH_AUTO',
+          icon: '/package-remoter/assets/scene81.png',
+          iconActive: '/package-remoter/assets/scene80.png',
+          name: '安心沐浴',
+          btnWidth: '654rpx',
         },
       ],
       bList: [
@@ -481,6 +511,9 @@ export const CMD: Record<string, number> = {
   BATH_BRIGHT_PLUS_ACC: 0x0c, // 亮度+，长按与短按指令暂用一个
   BATH_BRIGHT_MINUS: 0x0a, // 亮度- 短按
   BATH_BRIGHT_MINUS_ACC: 0x0a, // 亮度- 长按
+  BATH_TEMPERATURE_ADD: 0x88, // 温度+
+  BATH_TEMPERATURE_SUB: 0x81, // 温度-
+  BATH_WARM_UP: 0x8c, // 取暖
 
   // 厂测指令（调试用）
   FACTORY: 0x13,

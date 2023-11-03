@@ -243,9 +243,9 @@ Page({
       //       title: '',
       //       content: '搜索到设备蓝牙信号，可为您自动完成连接',
       //       cancelText: '取消',
-      //       cancelColor: '#267AFF',
+      //       cancelColor: '#488FFF',
       //       confirmText: '自动连接',
-      //       confirmColor: '#267AFF',
+      //       confirmColor: '#488FFF',
       //       success(res) {
       //         if (res.confirm) {
       //           // 转换为蓝牙配网
@@ -417,9 +417,9 @@ Page({
                 title: '未靠近设备',
                 content: '请尝试重新靠近',
                 cancelText: '退出',
-                cancelColor: '#267AFF',
+                cancelColor: '#488FFF',
                 confirmText: '重试',
-                confirmColor: '#267AFF',
+                confirmColor: '#488FFF',
                 success(res) {
                   if (res.confirm) {
                     // 重试
@@ -433,9 +433,9 @@ Page({
                 title: '未靠近设备',
                 content: '你可以跳过该步骤，后续再通过操作设备进行验证',
                 cancelText: '重试',
-                cancelColor: '#267AFF',
+                cancelColor: '#488FFF',
                 confirmText: '跳过',
-                confirmColor: '#267AFF',
+                confirmColor: '#488FFF',
                 success(res) {
                   if (res.confirm) {
                     //跳过
@@ -575,7 +575,7 @@ Page({
           title: '',
           content: '该二维码无法识别，请扫描设备屏幕二维码',
           confirmText: '我知道了',
-          confirmColor: '#267AFF',
+          confirmColor: '#488FFF',
           showCancel: false,
           success() {},
         })
@@ -594,9 +594,9 @@ Page({
         title: '',
         content: `你正在添加${deviceName},确定要继续吗？`,
         cancelText: '取消',
-        cancelColor: '#267AFF',
+        cancelColor: '#488FFF',
         confirmText: '确定',
-        confirmColor: '#267AFF',
+        confirmColor: '#488FFF',
         success(res) {
           if (res.confirm) {
             //确定
@@ -611,7 +611,7 @@ Page({
         title: '',
         content: '该二维码无法识别，请扫描设备屏幕二维码',
         confirmText: '我知道了',
-        confirmColor: '#267AFF',
+        confirmColor: '#488FFF',
         showCancel: false,
       })
     }

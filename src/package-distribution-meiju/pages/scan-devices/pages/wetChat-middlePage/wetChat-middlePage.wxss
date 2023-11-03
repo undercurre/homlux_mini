@@ -64,7 +64,7 @@
   margin-top: 20rpx;
   font-family: PingFangSC-Medium;
   font-size: 28rpx;
-  color: #267aff;
+  color: #488fff;
   letter-spacing: 0;
   font-weight: 500;
   display: flex;
@@ -97,7 +97,7 @@
 .btn {
   width: 683rpx;
   height: 92rpx;
-  background: #267aff;
+  background: #488fff;
   border-radius: 48rpx;
   font-family: PingFangSC-Medium;
   font-size: 32rpx;

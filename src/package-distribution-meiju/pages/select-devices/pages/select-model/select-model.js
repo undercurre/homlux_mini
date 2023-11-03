@@ -253,7 +253,7 @@ Page({
       wx.showModal({
         content: '该设备仅支持在美的美居App添加',
         confirmText: '我知道了',
-        confirmColor: '#267aff',
+        confirmColor: '#488FFF',
         showCancel: false,
       })
       setTimeout(() => {
@@ -269,7 +269,7 @@ Page({
       wx.showModal({
         content: '该设备仅支持在美的美居App添加',
         confirmText: '我知道了',
-        confirmColor: '#267aff',
+        confirmColor: '#488FFF',
         showCancel: false,
       })
       setTimeout(() => {
