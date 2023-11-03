@@ -1,7 +1,5 @@
-// pages/protocalList/index.ts
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { storage, setCurrentEnv, logout, socketSend } from '../../utils/index'
-// @ts-ignore
+import { storage, setCurrentEnv, logout } from '../../utils/index'
 import meta from '../../meta'
 
 Component({
@@ -101,9 +99,6 @@ Component({
       this.setData({
         showVersion: !this.data.showVersion,
       })
-    },
-    wsSend() {
-      socketSend(`[${new Date().toLocaleString()}] 小程序端主动发送消息测试`)
     },
   },
 })

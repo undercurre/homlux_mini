@@ -14,7 +14,7 @@ import {
   roomStore,
   deviceStore,
 } from '../../store/index'
-import { storage, throttle, emitter, WSEventType, showLoading, hideLoading, strUtil } from '../../utils/index'
+import { storage, throttle, emitter, WSEventType, showLoading, hideLoading, strUtil, delay } from '../../utils/index'
 import { PRO_TYPE, ROOM_CARD_H, ROOM_CARD_M, defaultImgDir } from '../../config/index'
 import { allDevicePowerControl, updateRoomSort, updateDefaultHouse, changeUserHouse } from '../../apis/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
@@ -463,9 +463,17 @@ ComponentWithComputed({
     /**
      * 点击全屋关按钮
      */
-    handleAllOff() {
+    async handleAllOff() {
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
+      const _old_light_on_in_house = roomStore.lightOnInHouse // 控制前的亮灯数
       allDevicePowerControl({ houseId: homeStore.currentHomeId, onOff: 0 })
+
+      await delay(3000)
+      wx.reportEvent('home_all_off', {
+        house_id: homeStore.currentHomeId,
+        light_on_in_house: _old_light_on_in_house,
+        light_on_after_seconds: roomStore.lightOnInHouse,
+      })
     },
     /**
      * 用户切换家庭
