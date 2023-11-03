@@ -145,9 +145,10 @@ ComponentWithComputed({
       const addr = this.data.isFactoryMode ? FACTORY_ADDR : remoterStore.curAddr
 
       // 温度特别设值 TODO 重构为更通用方法
-      const isTempSetting = ['TEMPERATURE_ADD', 'TEMPERATURE_SUB'].includes(key)
+      const isTempSetting = ['TEMPERATURE_SETTING_ADD', 'TEMPERATURE_SETTING_SUB'].includes(key)
       if (isTempSetting) {
-        let setTemperture = key === 'TEMPERATURE_ADD' ? this.data.setTemperture + 1 : this.data.setTemperture - 1
+        let setTemperture =
+          key === 'TEMPERATURE_SETTING_ADD' ? this.data.setTemperture + 1 : this.data.setTemperture - 1
         setTemperture = Math.min(Math.max(setTemperture, MIN_TEMPERATURE), MAX_TEMPERATURE)
         this.setData({ setTemperture })
       }

@@ -24,6 +24,7 @@ declare namespace Remoter {
     icon?: string
     iconActive?: string
     name?: string
+    btnWidth?: string
   }
 
   interface ConfigItem {
