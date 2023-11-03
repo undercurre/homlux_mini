@@ -662,8 +662,13 @@ ComponentWithComputed({
     },
     async handleSelectCardSelect(e: { detail: string }) {
       console.log('handleSelectCardSelect', e, e.detail)
-
       const selectId = e.detail
+      if (this.data.selectCardType === 'device') {
+        const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
+        const device = allRoomDeviceMap[e.detail]
+        const modelName = 'light'
+        findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, modelName })
+      }
       const listType =
         this.data.selectCardType === 'sensor' ? 'sensorlinkSelectList' : 'tempSceneDevicelinkSelectedList'
       // 取消选择逻辑

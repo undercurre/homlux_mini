@@ -550,6 +550,11 @@ ComponentWithComputed({
       // ) as Scene.SceneItem
       // console.log('当前场景', sceneInfo)
       // // 添加操作设备
+      const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
+      const device = allRoomDeviceMap[e.detail]
+      const modelName = 'light'
+      findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, modelName })
+
       const index = tempSceneDevicelinkSelectList.findIndex((item) => item === e.detail)
       if (index === -1) {
         tempSceneDevicelinkSelectList.push(e.detail)
