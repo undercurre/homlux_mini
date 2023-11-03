@@ -100,7 +100,9 @@ ComponentWithComputed({
       } else if (data.selectCardType === 'sensor') {
         return data.sensorList
       } else {
-        return data.deviceList.filter((item) => !data.sceneDevicelinkSelectList.includes(item.uniId))
+        return data.deviceList.filter(
+          (item) => !data.sceneDevicelinkSelectList.includes(item.uniId) && item.onLineStatus === 1,
+        )
       }
     },
     cardType(data) {
