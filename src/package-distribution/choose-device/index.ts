@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { strUtil } from '../../utils/index'
+// import { strUtil } from '../../utils/index'
 import cacheData from '../common/cacheData'
 
 ComponentWithComputed({
@@ -36,17 +36,17 @@ ComponentWithComputed({
         name: '传感器',
         path: '/package-distribution/choose-sensor/index',
       },
-      {
-        icon: '/package-distribution/assets/guide/curtain.png',
-        name: '窗帘',
-        path: strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
-          proType: '14',
-          sn8: '79700Z76',
-          productId: 'SC-1/M2-Z',
-          deviceImg: '/package-distribution/assets/guide/curtain.png',
-          mode: 0,
-        } as Meiju.IProductItem),
-      },
+      // {
+      //   icon: '/package-distribution/assets/guide/curtain.png',
+      //   name: '窗帘',
+      //   path: strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
+      //     proType: '14',
+      //     sn8: '79700Z76',
+      //     productId: 'SC-1/M2-Z',
+      //     deviceImg: '/package-distribution/assets/guide/curtain.png',
+      //     mode: 0,
+      //   } as Meiju.IProductItem),
+      // },
     ],
   },
 
