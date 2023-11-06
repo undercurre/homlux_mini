@@ -444,6 +444,26 @@ ComponentWithComputed({
       this.reloadData()
     }, 4000),
 
+    // 只单独更新列表
+    async reloadDeviceList() {
+      Logger.log('reloadData', isConnect())
+      // 未连接网络，所有设备直接设置为离线
+      if (!isConnect()) {
+        this.updateQueue({ isRefresh: true, onLineStatus: 0 })
+        return
+      }
+
+      await deviceStore.updateAllRoomDeviceList()
+      this.updateQueue({ isRefresh: true })
+
+      this.queryGroupInfo()
+    },
+
+    // 节流更新设备列表
+    reloadDeviceListThrottle: throttle(function (this: IAnyObject) {
+      this.reloadDeviceList()
+    }, 3000),
+
     // 页面滚动
     onPageScroll(e: { detail: { scrollTop: number } }) {
       this.data.scrollTop = e?.detail?.scrollTop || 0
