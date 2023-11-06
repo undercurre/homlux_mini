@@ -1,7 +1,7 @@
 // service模块存放项目的相关业务代码
 import { connectHouseSocket } from '../apis/websocket'
 import { homeStore, userStore } from '../store/index'
-import { isLogon, Logger, storage, isConnect } from './index'
+import { isLogon, Logger, storage, isConnect, verifyNetwork } from './index'
 import { emitter } from './eventBus'
 import homos from 'js-homos'
 
@@ -31,7 +31,7 @@ const heartbeatInfo = {
 }
 
 export async function startWebsocketService() {
-  // 检测未登录或者是否已经正在连接，以免重复连接 todo: 调试，暂时屏蔽ws连接
+  // 检测未登录或者是否已经正在连接，以免重复连接
   if (!storage.get<string>('token') || isConnecting || !isConnect()) {
     Logger.log('不进行ws连接,isConnecting:', isConnecting, 'isConnect()', isConnect())
     return
@@ -102,7 +102,10 @@ export async function startWebsocketService() {
       Logger.error('转json失败：', err)
     }
   })
-  socketTask.onError((err) => {
+  socketTask.onError(async (err) => {
+    // 发生错误一般由于网络问题，先检查网络可访问性
+    await verifyNetwork()
+
     // 可能短时间内连续触发多次onError
     Logger.error('socket错误onError：', err, 'socketIsConnect', socketIsConnect)
     isConnecting = false

@@ -17,6 +17,7 @@ export async function getHomeList(options?: { loading?: boolean }) {
  */
 export async function queryUserHouseInfo({ houseId = '', defaultHouseFlag = true }, options?: { loading?: boolean }) {
   return await mzaioRequest.post<Home.IHomeDetail>({
+    isDefaultErrorTips: false,
     log: true,
     loading: options?.loading ?? false,
     url: '/v1/mzgd/user/queryUserHouseInfo',

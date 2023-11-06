@@ -170,6 +170,7 @@ export async function controlDevice(
 
   return await mzaioRequest.post<IAnyObject>({
     log: true,
+    isDefaultErrorTips: false,
     loading: option?.loading || false,
     url: '/v1/device/down',
     data: data,
@@ -867,6 +868,7 @@ export async function groupControl(
   }
 
   return await mzaioRequest.post({
+    isDefaultErrorTips: false,
     log: true,
     loading: options?.loading ?? false,
     url: '/v1/mzgd/scene/groupControl',
