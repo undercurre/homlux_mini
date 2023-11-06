@@ -462,6 +462,7 @@ ComponentWithComputed({
       })
     },
     onActionClicked() {
+      console.log('点击加号')
       if (this.data.deviceList.length) {
         this.setData({
           selectCardType: 'device',
@@ -1122,7 +1123,7 @@ ComponentWithComputed({
     },
     async handleAutoSceneDelete() {
       const res = await Dialog.confirm({
-        title: '确定删除该场景？',
+        title: this.data.isDefault ? '默认场景删除后不可恢复，确定删除该默认场景？' : '确定删除该场景？',
         zIndex: 9999,
       }).catch(() => 'cancel')
 
