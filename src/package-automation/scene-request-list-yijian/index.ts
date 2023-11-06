@@ -20,6 +20,7 @@ ComponentWithComputed({
   data: {
     opearationType: 'add', // add创建edit编辑
     sceneId: '',
+    isDefault: false,
     _sceneData: {} as Scene.AddSceneDto | Scene.UpdateSceneDto,
     deviceList: Array<Device.DeviceItem>(),
     linkSwitchPopup: false,
@@ -62,12 +63,25 @@ ComponentWithComputed({
   lifetimes: {
     async ready() {
       const pageParams = getCurrentPageParams()
+
       const sceneData = storage.get('scene_data') as Scene.AddSceneDto | Scene.UpdateSceneDto
+
       const sceneDeviceActionsFlatten = storage.get('sceneDeviceActionsFlatten') as Device.ActionItem[]
 
       console.log('scene-request-flatten', sceneDeviceActionsFlatten)
 
       const selectIdList = sceneDeviceActionsFlatten.map((item) => item.uniId)
+
+      // 找到这个sceneInfo
+      if (pageParams.sceneId) {
+        const curSceneInfo = sceneStore.allRoomSceneList.find(
+          (item) => item.sceneId === pageParams.sceneId,
+        ) as Scene.SceneItem
+        this.data.isDefault = curSceneInfo.isDefault === '1'
+        this.setData({
+          isDefault: curSceneInfo.isDefault === '1',
+        })
+      }
 
       const deviceList = deviceStore.allRoomDeviceFlattenList
         .filter((item) => selectIdList.includes(item.uniId))
@@ -79,7 +93,7 @@ ComponentWithComputed({
 
           return {
             ...item,
-            status: 'waiting',
+            status: this.data.isDefault ? 'success' : 'waiting',
           }
         })
 
@@ -225,6 +239,7 @@ ComponentWithComputed({
     handleShowAddSceneSuccess() {
       if (this.data.opearationType === 'edit') {
         wx.navigateBack()
+        emitter.emit('sceneEdit')
       } else {
         wx.navigateTo({ url: '/package-automation/scene-success/index' })
       }
