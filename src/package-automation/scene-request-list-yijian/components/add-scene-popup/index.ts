@@ -29,10 +29,11 @@ ComponentWithComputed({
             this.getHeight()
           }, 100)
         }
+        console.log('一键关联的智能开关', sceneStore.sceneSwitchMap[this.data.sceneid])
         this.setData({
           sceneIcon: 'general',
           sceneName: '',
-          linkSwitch: '',
+          linkSwitch: sceneStore.sceneSwitchMap[this.data.sceneid] || '',
         })
       },
     },
@@ -320,7 +321,8 @@ ComponentWithComputed({
           showLinkPopup: false,
         })
         emitter.emit('sceneEdit')
-        Toast({ message: '关联成功', zIndex: 9999 })
+        console.log('关联结果', this.data.linkSwitch ? '关联取消成功' : '关联成功')
+        Toast({ message: this.data.linkSwitch ? '关联成功' : '关联取消成功', zIndex: 9999 })
       } else {
         this.setData({
           linkSwitch: '',
