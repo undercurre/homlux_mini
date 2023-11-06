@@ -173,6 +173,7 @@ ComponentWithComputed({
               actionStatus: false,
               saved: false,
               defaultAction: 0,
+              DISCOVERED: 1,
             })
           }
         })
