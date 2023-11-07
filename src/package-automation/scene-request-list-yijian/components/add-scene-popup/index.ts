@@ -238,6 +238,56 @@ ComponentWithComputed({
       })
     },
     async handleLinkPopupConfirm() {
+      if (this.data.linkSelectList[0]) {
+        const [deviceId, switchId] = this.data.linkSelectList[0].split(':')
+        // 查询所选面板与其他开关和灯的关联关系
+        const resRelated = await Promise.all([
+          getRelLampInfo({
+            primaryDeviceId: deviceId,
+            primarySwitchId: switchId,
+          }),
+          getRelDeviceInfo({
+            primaryDeviceId: deviceId,
+            primarySwitchId: switchId,
+          }),
+        ])
+
+        if (!resRelated[0].success || !resRelated[1].success) {
+          Toast({ message: '查询设备信息失败', zIndex: 9999 })
+          return
+        }
+
+        const lampRelList = resRelated[0].result.lampRelList
+        const switchRelList = resRelated[1].result.primaryRelDeviceInfo.concat(resRelated[1].result.secondRelDeviceInfo)
+        const switchSceneConditionMap = deviceStore.switchSceneConditionMap
+        let linkDesc = ''
+
+        if (lampRelList.length) {
+          linkDesc = '灯具'
+        } else if (switchRelList.length) {
+          linkDesc = '开关'
+        } else if (switchSceneConditionMap[this.data.linkSelectList[0]]) {
+          linkDesc = '其他场景'
+        }
+
+        if (linkDesc) {
+          const dialigRes = await Dialog.confirm({
+            title: `此开关已关联${linkDesc}，确定变更？`,
+            cancelButtonText: '取消',
+            confirmButtonText: '变更',
+            zIndex: 2000,
+            context: this,
+          })
+            .then(() => true)
+            .catch(() => false)
+
+          if (!dialigRes) return
+        }
+
+        this.data._linkSwitchRefInfo.lampRelList = lampRelList
+        this.data._linkSwitchRefInfo.switchRelList = switchRelList
+      }
+
       this.setData({
         linkSwitch: this.data.linkSelectList[0] ? this.data.linkSelectList[0] : '',
       })
@@ -321,8 +371,9 @@ ComponentWithComputed({
           showLinkPopup: false,
         })
         emitter.emit('sceneEdit')
-        console.log('关联结果', this.data.linkSwitch ? '关联取消成功' : '关联成功')
-        Toast({ message: this.data.linkSwitch ? '关联成功' : '关联取消成功', zIndex: 9999 })
+        if (this.data.linkSwitch) {
+          Toast({ message: '关联成功', zIndex: 9999 })
+        }
       } else {
         this.setData({
           linkSwitch: '',
@@ -346,54 +397,54 @@ ComponentWithComputed({
         return
       }
 
-      const [deviceId, switchId] = switchUnid.split(':')
+      // const [deviceId, switchId] = switchUnid.split(':')
 
-      // 查询所选面板与其他开关和灯的关联关系
-      const res = await Promise.all([
-        getRelLampInfo({
-          primaryDeviceId: deviceId,
-          primarySwitchId: switchId,
-        }),
-        getRelDeviceInfo({
-          primaryDeviceId: deviceId,
-          primarySwitchId: switchId,
-        }),
-      ])
+      // // 查询所选面板与其他开关和灯的关联关系
+      // const res = await Promise.all([
+      //   getRelLampInfo({
+      //     primaryDeviceId: deviceId,
+      //     primarySwitchId: switchId,
+      //   }),
+      //   getRelDeviceInfo({
+      //     primaryDeviceId: deviceId,
+      //     primarySwitchId: switchId,
+      //   }),
+      // ])
 
-      if (!res[0].success || !res[1].success) {
-        Toast({ message: '查询设备信息失败', zIndex: 9999 })
-        return
-      }
+      // if (!res[0].success || !res[1].success) {
+      //   Toast({ message: '查询设备信息失败', zIndex: 9999 })
+      //   return
+      // }
 
-      const lampRelList = res[0].result.lampRelList
-      const switchRelList = res[1].result.primaryRelDeviceInfo.concat(res[1].result.secondRelDeviceInfo)
-      const switchSceneConditionMap = deviceStore.switchSceneConditionMap
-      let linkDesc = ''
+      // const lampRelList = res[0].result.lampRelList
+      // const switchRelList = res[1].result.primaryRelDeviceInfo.concat(res[1].result.secondRelDeviceInfo)
+      // const switchSceneConditionMap = deviceStore.switchSceneConditionMap
+      // let linkDesc = ''
 
-      if (lampRelList.length) {
-        linkDesc = '灯具'
-      } else if (switchRelList.length) {
-        linkDesc = '开关'
-      } else if (switchSceneConditionMap[switchUnid]) {
-        linkDesc = '其他场景'
-      }
+      // if (lampRelList.length) {
+      //   linkDesc = '灯具'
+      // } else if (switchRelList.length) {
+      //   linkDesc = '开关'
+      // } else if (switchSceneConditionMap[switchUnid]) {
+      //   linkDesc = '其他场景'
+      // }
 
-      if (linkDesc) {
-        const dialigRes = await Dialog.confirm({
-          title: `此开关已关联${linkDesc}，确定变更？`,
-          cancelButtonText: '取消',
-          confirmButtonText: '变更',
-          zIndex: 2000,
-          context: this,
-        })
-          .then(() => true)
-          .catch(() => false)
+      // if (linkDesc) {
+      //   const dialigRes = await Dialog.confirm({
+      //     title: `此开关已关联${linkDesc}，确定变更？`,
+      //     cancelButtonText: '取消',
+      //     confirmButtonText: '变更',
+      //     zIndex: 2000,
+      //     context: this,
+      //   })
+      //     .then(() => true)
+      //     .catch(() => false)
 
-        if (!dialigRes) return
-      }
+      //   if (!dialigRes) return
+      // }
 
-      this.data._linkSwitchRefInfo.lampRelList = lampRelList
-      this.data._linkSwitchRefInfo.switchRelList = switchRelList
+      // this.data._linkSwitchRefInfo.lampRelList = lampRelList
+      // this.data._linkSwitchRefInfo.switchRelList = switchRelList
 
       this.setData({
         linkSelectList: [switchUnid],
