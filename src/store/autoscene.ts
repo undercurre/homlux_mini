@@ -13,29 +13,38 @@ export const autosceneStore = observable({
 
   get allRoomAutoSceneListComputed() {
     const templist = [...this.allRoomAutoSceneList]
-    return templist.map((item: AutoScene.AutoSceneItem) => {
-      const desc = strUtil.transDesc(item.effectiveTime, item.timeConditions[0])
-      item.desc = desc.length > 18 ? desc.substring(0, 18) + '...' : desc
-      const reg = /^icon-\d+$/ //自动化场景图标统一为该名称格式
-      if (!reg.test(item.sceneIcon)) item.sceneIcon = 'icon-1'
-      item.deviceActions.forEach((action) => {
-        if (action.proType === PRO_TYPE.light) {
-          const device = deviceStore.allRoomDeviceFlattenList.find((item) => item.uniId === action.deviceId)
-          if (device) {
-            runInAction(() => {
-              action.controlAction[0] = {
-                ...action.controlAction[0],
-                minColorTemp: device.property!.minColorTemp,
-                maxColorTemp: device.property!.maxColorTemp,
-              }
-            })
-          } else {
-            console.log('allRoomAutoSceneListComputed设备不存在', action)
-          }
+    try {
+      return templist.map((item: AutoScene.AutoSceneItem) => {
+        if (item.timeConditions !== null) {
+          const desc = strUtil.transDesc(item.effectiveTime, item.timeConditions[0])
+          item.desc = desc.length > 18 ? desc.substring(0, 18) + '...' : desc
+        } else {
+          item.desc = ''
         }
+        const reg = /^icon-\d+$/ //自动化场景图标统一为该名称格式
+        if (!reg.test(item.sceneIcon)) item.sceneIcon = 'icon-1'
+        item.deviceActions.forEach((action) => {
+          if (action.proType === PRO_TYPE.light) {
+            const device = deviceStore.allRoomDeviceFlattenList.find((item) => item.uniId === action.deviceId)
+            if (device) {
+              runInAction(() => {
+                action.controlAction[0] = {
+                  ...action.controlAction[0],
+                  minColorTemp: device.property!.minColorTemp,
+                  maxColorTemp: device.property!.maxColorTemp,
+                }
+              })
+            } else {
+              console.log('allRoomAutoSceneListComputed设备不存在', action)
+            }
+          }
+        })
+        return item
       })
-      return item
-    })
+    } catch (e) {
+      console.log('自动化场景列表处理出错', e)
+      return []
+    }
   },
 
   async changeAutoSceneEnabled(data: { sceneId: string; isEnabled: '1' | '0' }) {
@@ -61,6 +70,8 @@ export const autosceneStore = observable({
       runInAction(() => {
         this.allRoomAutoSceneList = [...list]
       })
+    } else {
+      this.allRoomAutoSceneList = []
     }
   },
 })

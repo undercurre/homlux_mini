@@ -1,5 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { proName, PRO_TYPE } from '../../config/index'
+import { proName, PRO_TYPE, defaultImgDir, getModelName } from '../../config/index'
 import { throttle } from '../../utils/index'
 
 const CONTROL_INTERVAL = 3000 // 开关操作间隔时间
@@ -42,6 +42,11 @@ ComponentWithComputed({
       type: Boolean,
       value: true,
     },
+    // 是否启用特殊背景
+    showSpecialBg: {
+      type: Boolean,
+      value: true,
+    },
   },
 
   /**
@@ -68,7 +73,7 @@ ComponentWithComputed({
   computed: {
     picUrl(data) {
       if (data.isLoadImgError) {
-        return '/assets/img/default-img/default-device.png'
+        return `${defaultImgDir}/default-device.png`
       }
       if (data.deviceInfo.proType === PRO_TYPE.switch && data.showBtnDetail) {
         return data.deviceInfo?.switchInfoDTOList[0]?.pic
@@ -135,6 +140,22 @@ ComponentWithComputed({
     canCtrl(data) {
       return data.deviceInfo.onLineStatus || data.deviceInfo.canLanCtrl
     },
+
+    // 设备是灯组
+    isGroup(data) {
+      return data.deviceInfo.deviceType === 4
+    },
+    lowBattery(data) {
+      if (data.deviceInfo.proType === PRO_TYPE.sensor) {
+        const modelName = getModelName(PRO_TYPE.sensor, data.deviceInfo.productId)
+        return !!data.deviceInfo.mzgdPropertyDTOList[modelName]?.batteryAlarmState
+      }
+      return false
+    },
+    // 在卡片上有控制按钮的
+    hasControl(data) {
+      return data.deviceInfo.proType !== PRO_TYPE.sensor
+    },
   },
 
   /**
@@ -192,11 +213,14 @@ ComponentWithComputed({
       false,
     ),
     handlePowerTap() {
-      // 如果设备离线，刚转为点击卡片
+      // 如果设备离线，则转为点击卡片
       if (!this.data.canCtrl) {
         this.handleCardTap()
         return
       }
+
+      // 如果控制图片不存在，则不可能点击控制按钮
+      if (!this.data.controlBtnPic) return
 
       // 振动反馈
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
@@ -227,6 +251,9 @@ ComponentWithComputed({
       this.controlThrottle()
     },
     handleLongPress() {
+      // 振动反馈
+      if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
+
       this.createSelectorQuery()
         .select('#card')
         .boundingClientRect()

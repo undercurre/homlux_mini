@@ -1,6 +1,7 @@
 /**app.wxss**/
 @import './unocss.wxss';
 @import './vantReset.wxss';
+@import 'meiju.wxss';
 
 .container {
   height: 100%;
@@ -43,4 +44,8 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+}
+
+.test {
+  background-color: aliceblue;
 }

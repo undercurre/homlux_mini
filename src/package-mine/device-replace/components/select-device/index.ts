@@ -1,6 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { roomBinding, deviceBinding } from '../../../../store/index'
+import { SCREEN_PID } from '../../../../config/index'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, deviceBinding] })],
@@ -55,10 +56,11 @@ ComponentWithComputed({
     showDeviceList(data) {
       const list = data.choosingNew ? data.list : data.allRoomDeviceList
 
-      return list.filter((d) => {
-        const isSubdevice = d.deviceType === 2
-        const isCurrentRoom = data.roomSelect === '0' ? true : d.roomId === data.roomSelect
-        return isSubdevice && isCurrentRoom
+      return list.filter((device) => {
+        const isScreen = SCREEN_PID.includes(device.productId)
+        const isSubdevice = device.deviceType === 2
+        const isCurrentRoom = data.roomSelect === '0' ? true : device.roomId === data.roomSelect
+        return isSubdevice && isCurrentRoom && !isScreen
       })
     },
   },

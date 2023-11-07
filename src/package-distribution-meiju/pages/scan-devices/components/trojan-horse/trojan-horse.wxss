@@ -1,0 +1,50 @@
+.containers0 {
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.two-box {
+  margin: 0 auto;
+}
+
+.swing {
+  width: 128rpx;
+  height: 128rpx;
+}
+
+.content {
+  width: 100%;
+  height: 28rpx;
+  text-align: center;
+  font-family: PingFangSC-Regular;
+  font-size: 28rpx;
+  color: #8a8a8f;
+  letter-spacing: 0;
+  text-align: center;
+  line-height: 28rpx;
+  font-weight: 400;
+  margin-top: 32rpx;
+  /* display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center; */
+}
+
+/* .dots:after {
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: bottom;
+  animation: ellipsis 2s infinite;
+  content: "\2026";
+  }
+  @keyframes ellipsis {
+  from {
+  width: 2px;
+  }
+  to {
+  width: 15px;
+  }
+  } */

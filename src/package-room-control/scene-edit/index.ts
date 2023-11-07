@@ -3,7 +3,7 @@ import Toast from '@vant/weapp/toast/toast'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { deviceStore, homeStore, sceneStore } from '../../store/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { PRO_TYPE, SCREEN_PID } from '../../config/index'
+import { KNOB_PID, PRO_TYPE, SCREEN_PID } from '../../config/index'
 import {
   deleteScene,
   findDevice,
@@ -140,7 +140,10 @@ ComponentWithComputed({
 
       const linkSwitch = sceneStore.sceneSwitchMap[sceneInfo.sceneId] || ''
       const switchList = deviceStore.allRoomDeviceFlattenList.filter(
-        (device) => device.proType === PRO_TYPE.switch && !SCREEN_PID.includes(device.productId),
+        (device) =>
+          device.proType === PRO_TYPE.switch &&
+          !SCREEN_PID.includes(device.productId) &&
+          !KNOB_PID.includes(device.productId),
       )
 
       wx.createSelectorQuery()
@@ -452,6 +455,7 @@ ComponentWithComputed({
       })
     },
     handleSceneActionEdit(e: WechatMiniprogram.TouchEvent) {
+      console.log('编辑action')
       // 默认场景不可编辑场景设备数据
       if (this.data.isDefault) {
         return

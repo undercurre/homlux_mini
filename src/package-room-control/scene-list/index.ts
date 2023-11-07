@@ -6,6 +6,7 @@ import { deviceStore, homeBinding, homeStore, sceneBinding, sceneStore } from '.
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { execScene, updateSceneSort } from '../../apis/scene'
 import { storage, emitter, strUtil } from '../../utils/index'
+import { defaultImgDir } from '../../config/index'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [sceneBinding, homeBinding] }), pageBehavior],
@@ -13,6 +14,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    defaultImgDir,
     navigationBarAndStatusBarHeight:
       (storage.get<number>('statusBarHeight') as number) +
       (storage.get<number>('navigationBarHeight') as number) +

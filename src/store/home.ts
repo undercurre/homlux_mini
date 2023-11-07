@@ -20,6 +20,7 @@ import { othersStore } from './others'
 import { roomStore } from './room'
 import { userStore } from './user'
 import { deviceCount } from '../utils/index'
+import { userRole } from '../config/home'
 
 export const homeStore = observable({
   key: '', // 局域网本地场景key
@@ -43,6 +44,14 @@ export const homeStore = observable({
     return houseId
   },
 
+  // 是否创建者
+  get isCreator() {
+    if (this.currentHomeDetail) {
+      return this.currentHomeDetail.houseUserAuth === userRole.creator
+    }
+    return false
+  },
+
   // 是否管理员权限+
   get isManager() {
     return this.currentHomeDetail.houseUserAuth === 1 || this.currentHomeDetail.houseUserAuth === 2
@@ -58,6 +67,8 @@ export const homeStore = observable({
       runInAction(() => {
         othersStore.isInit = true
       })
+    } else {
+      console.log('[KS]本地缓存不存在或过期')
     }
     const res = await this.updateHomeList()
     if (res.success) {
@@ -71,6 +82,7 @@ export const homeStore = observable({
       // 全屋房间、设备加载
       await this.updateRoomCardList()
       othersStore.setIsInit(true)
+      console.log('[KS]云端数据加载成功')
     }
   },
 
@@ -172,7 +184,7 @@ export const homeStore = observable({
           room.roomSceneList = room.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
         }
 
-        const { lightOnCount, endCount, lightCount } = deviceCount(roomDeviceList, deviceStore.lightsInGroup)
+        const { lightOnCount, endCount, lightCount } = deviceCount(roomDeviceList)
         room.roomInfo.lightOnCount = lightOnCount
         room.roomInfo.endCount = endCount
         room.roomInfo.lightCount = lightCount
@@ -180,6 +192,7 @@ export const homeStore = observable({
       runInAction(() => {
         roomStore.roomList = data[1].result.roomInfoList.map((room) => ({
           roomId: room.roomInfo.roomId,
+          groupId: room.roomInfo.groupId,
           roomIcon: room.roomInfo.roomIcon || 'drawing-room',
           roomName: room.roomInfo.roomName,
           lightOnCount: room.roomInfo.lightOnCount,

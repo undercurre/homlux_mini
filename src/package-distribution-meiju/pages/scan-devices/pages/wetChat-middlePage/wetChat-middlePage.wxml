@@ -1,0 +1,56 @@
+<!-- <privacy-popup></privacy-popup> -->
+<view class="container">
+  <!-- 小木马加载中 -->
+  <trojan-horse isShowHorse="{{isHourse && locationNotice.length==0 && bluetoothNotice.length==0}}" />
+
+  <!--位置授权以及是否打开提示start-->
+  <view wx:if="{{locationNotice.length!=0}}">
+    <view class="imgView">
+      <image class="img" src="{{baseImgUrl + 'img_weizhi@2x.png'}}"></image>
+      <view class="notice">请打开位置权限，以便获取无线网络信息进行联网</view>
+    </view>
+    <view class="noticeList">
+      <view class="line" wx:for="{{locationNotice}}" wx:key="index" wx:for-item="item">
+        <view wx:if="{{locationNotice.length!=1}}" class="no">{{index+1}}</view>
+        <view class="content">{{item}}</view>
+      </view>
+    </view>
+    <view class="lookGuide {{locationNotice.length<=1 ? 'one': 'more'}}" bindtap="lookLocationGuide">
+      <view>查看详细指引</view>
+      <image class="goIcon" src="{{baseImgUrl + '_@2x.png'}}"></image>
+    </view>
+    <view class="btnBox">
+      <view class="btn" data-type="location" bindtap="auth">已开启上述权限</view>
+    </view>
+  </view>
+  <!--位置授权以及是否打开提示end-->
+
+  <!--蓝牙授权以及是否打开提示start-->
+  <view wx:if="{{bluetoothNotice.length!=0 && locationNotice.length==0}}">
+    <view class="imgView">
+      <image class="img" src="{{baseImgUrl + 'img_lanya@2x.png'}}"></image>
+      <view class="notice">请打开蓝牙权限，以便进行蓝牙设备联网</view>
+    </view>
+    <view class="noticeList">
+      <view class="line" wx:for="{{bluetoothNotice}}" wx:key="index" wx:for-item="item">
+        <view wx:if="{{bluetoothNotice.length!=1}}" class="no">{{index+1}}</view>
+        <view class="content">{{item}}</view>
+      </view>
+    </view>
+    <view class="lookGuide {{bluetoothNotice.length<=1 ? 'one': 'more'}}" bindtap="lookBluetoothGuide">
+      <view>查看详细指引</view>
+      <image class="goIcon" src="{{baseImgUrl + '_@2x.png'}}"></image>
+    </view>
+    <view class="btnBox">
+      <view class="btn" data-type="bluetooth" bindtap="auth">已开启上述权限</view>
+    </view>
+  </view>
+  <!--蓝牙授权以及是否打开提示end-->
+
+  <!--dialog弹窗组件-->
+  <view>
+    <block>
+      <sure-center-dialog isShowSureDialog="{{ isSureDialog }}" bind:makeSure="makeSure" title="{{ dialogMixinsTitle }}" content="{{ dialogMixinsContent }}" dialogMixinsBtns="{{ dialogMixinsBtns }}"></sure-center-dialog>
+    </block>
+  </view>
+</view>

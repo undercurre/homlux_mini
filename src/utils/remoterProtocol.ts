@@ -73,14 +73,23 @@ const _parseEncryptFlag = (encryptFlag: string) => {
   }
 }
 
-// 转换设备状态
+/**
+ * @name 转换设备状态
+ * @description
+ * @returns key 命名须与 src\config\remoter.ts 中的 actions.key 保持一致
+ */
 const _parsePayload = (payload: string, deviceType: string) => {
   const rxBuf = new ArrayBuffer(payload.length) // 申请内存
   const rxU16 = new Uint16Array(rxBuf)
   for (let i = 0; i < payload.length / 2; ++i) {
     rxU16[i] = parseInt(payload.slice(i * 2, i * 2 + 2), 16)
   }
-
+  if (deviceType === '13') {
+    return {
+      LIGHT_LAMP: !!(rxU16[0] & BIT_0),
+      LIGHT_NIGHT_LAMP: rxU16[8] === 0x06,
+    }
+  }
   if (deviceType === '26') {
     return {
       BATH_WARM: !!(rxU16[4] & BIT_5),
@@ -249,19 +258,39 @@ const _handleBleResponse = (response: string) => {
 }
 
 /**
- * 根据电控协议生成设备指令数据
+ * 根据电控协议生成设备指令
  */
 const _generalCmdString = (key: number) => {
-  const channel = 0x01
-  const version = 0x01
-  const sequence = 0x00
-  const sum = (channel + version + sequence + key) % 256
-  const data = [channel, version, sequence, key]
-  // Byte4...Byte14 预留，默认0x00
+  const channel = 0x01 // 通道，固定值
+  const version = 0x01 // 协议版本
+  const cmdType = 0x00 // 命令号
+  const sum = (channel + version + cmdType + key) % 256
+  const data = [channel, version, cmdType, key]
+  // 其余字节预留，默认0x00
   for (let i = 4; i <= 14; ++i) {
     data[i] = 0x00
   }
   data.push(sum)
+  return data.map((byte) => byte.toString(16).padStart(2, '0')).join('')
+}
+
+/**
+ * 根据电控协议生成设备设值指令
+ */
+const _generalSettingString = (values: number[]) => {
+  const channel = 0x01 // 通道，固定值
+  const version = 0x01 // 协议版本
+  const cmdType = 0x01 // 命令号
+  let sum = channel + version + cmdType
+  const data = [channel, version, cmdType, ...values]
+  for (let v of values) {
+    sum += v
+  }
+  // 其余字节预留，默认0x00
+  for (let i = 3 + values.length; i <= 14; ++i) {
+    data[i] = 0x00
+  }
+  data.push(sum % 256)
   return data.map((byte) => byte.toString(16).padStart(2, '0')).join('')
 }
 
@@ -273,4 +302,5 @@ export default {
   handleBluetoothResponse: _handleBluetoothResponse,
   handleBleResponse: _handleBleResponse,
   generalCmdString: _generalCmdString,
+  generalSettingString: _generalSettingString,
 }

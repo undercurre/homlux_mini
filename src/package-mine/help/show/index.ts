@@ -1,8 +1,7 @@
 import { storage } from '../../../utils/index'
-import { helpList, remoterHelp } from '../help-doc'
+import { remoterHelp } from '../help-doc'
 import pageBehavior from '../../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { getEnv } from '../../../config/index'
 
 ComponentWithComputed({
   behaviors: [pageBehavior],
@@ -12,43 +11,24 @@ ComponentWithComputed({
    */
   data: {
     navigationBarAndStatusBarHeight:
-      (storage.get<number>('statusBarHeight') as number) +
-      (storage.get<number>('navigationBarHeight') as number) +
-      'px',
+      (storage.get('statusBarHeight') as number) + (storage.get('navigationBarHeight') as number) + 'px',
     type: '',
     doc: '',
     title: '',
     url: '',
-    width: '',
-    height: '',
     remoterHelp,
-    helpType: '',
-    homLuxHelp: {
-      dev: 'https://test.meizgd.com/homlux',
-      sit: 'https://test.meizgd.com/homlux',
-      prod: 'https://mzaio.meizgd.com/homlux',
-    },
-  },
-  computed: {
-    webviewSrc(data) {
-      return data.homLuxHelp[getEnv()]
-    },
   },
 
   /**
    * 组件的方法列表
    */
   methods: {
-    onLoad(e: { page: string }) {
-      console.log(e)
-      this.setData({
-        helpType: e.page,
-      })
-      const help = helpList.find((h) => h.value === e.page)
-      if (help) {
+    onLoad(e: { type: string; title: string }) {
+      const doc = this.data[e.type]
+      if (doc) {
         this.setData({
-          title: help.title,
-          doc: this.data[help.value],
+          title: e.title,
+          doc,
           type: 'doc',
         })
       }

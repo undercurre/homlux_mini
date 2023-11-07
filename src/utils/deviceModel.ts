@@ -105,7 +105,7 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
   }
 
   if (proType === PRO_TYPE.switch) {
-    !isNullOrUnDef(property.power) && descList.push(property.power ? '打开' : '关闭')
+    !isNullOrUnDef(property) && !isNullOrUnDef(property.power) && descList.push(property.power ? '打开' : '关闭')
   }
 
   if (proType === PRO_TYPE.curtain) {
@@ -124,7 +124,7 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
       descList.push(property.IlluminanceLevelStatus === '2' ? '环境光亮' : '环境光暗')
     !isNullOrUnDef(property.doorStatus) &&
       descList.push(
-        property.doorStatus ? (!isNullOrUnDef(property.PIRToUnoccupiedDelay) ? '超时未关' : '打开') : '关闭',
+        property.doorStatus ? (!isNullOrUnDef(property.PIRToUnoccupiedDelay) ? '超时未关闭' : '打开') : '关闭',
       )
     !isNullOrUnDef(property.buttonClicked) &&
       descList.push(property.buttonClicked === 1 ? '单击' : property.buttonClicked === 2 ? '双击' : '长按')

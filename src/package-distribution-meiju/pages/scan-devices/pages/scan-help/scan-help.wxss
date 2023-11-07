@@ -1,0 +1,23 @@
+/* distribution-network/scan-devices/pages/scan-help/scan-help.wxss */
+page {
+  background: #f9f9f9;
+}
+.text {
+  width: 622rpx;
+  margin: 60rpx auto;
+  font-family: PingFangSC-Regular;
+  font-size: 28rpx;
+  color: #333333;
+  letter-spacing: -0.78px;
+  line-height: 56rpx;
+  font-weight: 400;
+}
+/* .head-img {
+  width: 480rpx;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+.head-img image {
+  width: 100%;
+} */

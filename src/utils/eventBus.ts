@@ -1,6 +1,7 @@
 import mitt, { Emitter } from 'mitt'
 import { Logger } from './log'
 import { goHome } from './app'
+import { StringQueue } from './strUtil'
 import { homeStore, userStore } from '../store/index'
 
 type Events = {
@@ -101,7 +102,8 @@ export const WSEventType = {
 
 export const emitter: Emitter<Events> = mitt<Events>()
 
-const receiveMsgIdMap = {} as { [x: string]: boolean }
+// 暂定最多缓存100个msgId,以免缓存的msgId太多，影响性能
+const receiveMsgIdQueue = new StringQueue(100)
 
 emitter.on('msgPush', (res) => {
   const { reqId, result } = res
@@ -110,15 +112,13 @@ emitter.on('msgPush', (res) => {
   // 目前云端ws仅部分消息类型增加了reqId字段，明确哪个类型的消息需要的云端才会增加
   if (reqId) {
     // 根据reqId判断ws和mqtt推送的消息是否重复，是则不重复处理，忽略该消息
-    if (receiveMsgIdMap[reqId]) {
+    if (receiveMsgIdQueue.includes(reqId)) {
       Logger.console('✘ 重复push消息：', res)
-
-      delete receiveMsgIdMap[reqId]
 
       return
     }
 
-    receiveMsgIdMap[reqId] = true
+    receiveMsgIdQueue.push(reqId)
   }
 
   Logger.console('☄ 推送消息：', res, eventType)

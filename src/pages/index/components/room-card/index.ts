@@ -3,6 +3,8 @@ import { runInAction } from 'mobx-miniprogram'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { execScene } from '../../../../apis/scene'
 import { roomBinding, roomStore } from '../../../../store/index'
+import { sceneImgDir } from '../../../../config/index'
+
 ComponentWithComputed({
   options: {},
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding] })],
@@ -22,7 +24,7 @@ ComponentWithComputed({
 
   computed: {
     showScene(data) {
-      return !data.isMoving && data.roomInfo.endCount > 0
+      return !data.isMoving
     },
     sceneList(data) {
       return data.roomInfo.sceneList.map((scene: Scene.SceneBase) => {
@@ -39,7 +41,7 @@ ComponentWithComputed({
       return []
     },
     hasBottomPadding(data) {
-      return data.roomInfo.endCount > 0 && data.roomInfo.sceneList.length > 0 && !data.isMoving
+      return data.roomInfo.sceneList.length > 0 && !data.isMoving
     },
     desc(data) {
       if (data.sceneList && data.deviceListComputed) {
@@ -57,6 +59,7 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
+    sceneImgDir,
     sceneClickId: '',
   },
 

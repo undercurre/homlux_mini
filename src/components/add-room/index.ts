@@ -55,6 +55,7 @@ Component({
 
       this.setData({
         roomInfo: {
+          hasEditName: Boolean(this.data.roomName),
           name: this.data.roomName,
           icon: this.data.roomIcon || 'parents-room',
         },
@@ -67,6 +68,7 @@ Component({
    */
   data: {
     roomInfo: {
+      hasEditName: false,
       name: '',
       icon: 'parents-room',
     },
@@ -130,6 +132,7 @@ Component({
       console.log('changeRoomName', event)
 
       this.setData({
+        'roomInfo.hasEditName': true,
         'roomInfo.name': event.detail || '',
       })
     },
@@ -179,14 +182,23 @@ Component({
       this.triggerEvent('close')
     },
     /**
-     * @name 图标选中操作
+     * 图标选中操作
      */
     selectIcon({ currentTarget }: WechatMiniprogram.BaseEvent) {
       console.log('selectIcon', currentTarget)
-      const { icon } = currentTarget.dataset
-      this.setData({
-        'roomInfo.icon': icon,
-      })
+      const { icon, text } = currentTarget.dataset
+
+      if (this.data.roomInfo.name && this.data.roomInfo.hasEditName) {
+        this.setData({
+          'roomInfo.icon': icon,
+        })
+      } else {
+        this.setData({
+          'roomInfo.name': text,
+          'roomInfo.icon': icon,
+          'roomInfo.hasEditName': false,
+        })
+      }
     },
   },
 })

@@ -117,7 +117,7 @@
         },
         {
           "name": "屏端授权页面",
-          "pathName": "package-auth/auth-screen/index",
+          "pathName": "package-auth/pages/auth-screen/index",
           "query": "token=111",
           "launchMode": "default",
           "scene": null
@@ -132,6 +132,55 @@
         {
           "name": "转让家庭",
           "pathName": "package-mine/home-transfer/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "美居授权确认页面",
+          "pathName": "package-distribution-meiju/pages/check-auth/index",
+          "query": "proType=14&sn8=79700Z76",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "配网指引页面",
+          "pathName": "package-distribution-meiju/pages/addDevice/pages/addGuide/addGuide",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "选择设备界面",
+          "pathName": "package-distribution/choose-device/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "连接热点linkAP",
+          "pathName": "package-distribution-meiju/pages/addDevice/pages/linkAp/linkAp",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "美居配网-连接家庭inputWifiInfo",
+          "pathName": "package-distribution-meiju/pages/addDevice/pages/inputWifiInfo/inputWifiInfo",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "连接设备页面",
+          "pathName": "package-distribution-meiju/pages/addDevice/pages/linkDevice/linkDevice",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "联网失败页面",
+          "pathName": "package-distribution-meiju/pages/addDevice/pages/linkNetFail/linkNetFail",
           "query": "",
           "launchMode": "default",
           "scene": null

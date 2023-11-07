@@ -1,8 +1,16 @@
-import { Logger, isArrEqual, throttle, showLoading, hideLoading } from '../../../../utils/index'
+import { Logger, isArrEqual, showLoading, hideLoading, isNullOrUnDef } from '../../../../utils/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, deviceStore, sceneStore, homeStore } from '../../../../store/index'
-import { maxColorTemp, minColorTemp, PRO_TYPE, SCREEN_PID } from '../../../../config/index'
+import {
+  maxColorTemp,
+  minColorTemp,
+  getModelName,
+  PRO_TYPE,
+  SCREEN_PID,
+  KNOB_PID,
+  defaultImgDir,
+} from '../../../../config/index'
 import {
   sendDevice,
   findDevice,
@@ -14,6 +22,7 @@ import {
   getRelDeviceInfo,
   editSwitchAndSwitchAssociated,
   delSwitchAndSwitchAssociated,
+  getSensorLogs,
 } from '../../../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
@@ -28,10 +37,49 @@ ComponentWithComputed({
     pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
   },
 
-  /**
-   * 组件的属性列表
-   */
   properties: {
+    /**
+     * 选中设备的属性
+     */
+    deviceInfo: {
+      type: Object,
+      value: {} as Device.DeviceItem,
+      observer(device) {
+        console.log('deviceInfo', device)
+        if (!Object.keys(device).length) {
+          return
+        }
+        const diffData = {} as IAnyObject
+        const modelName = getModelName(device.proType, device.productId)
+        const prop = device.mzgdPropertyDTOList[modelName]
+
+        // 初始化可控变量
+        if (device.proType === PRO_TYPE.light) {
+          if (!isNullOrUnDef(prop.brightness)) diffData['lightInfoInner.brightness'] = prop.brightness
+          if (!isNullOrUnDef(prop.colorTemperature)) diffData['lightInfoInner.colorTemperature'] = prop.colorTemperature
+        } else if (device.proType === PRO_TYPE.curtain) {
+          diffData.curtainInfo = {
+            position: prop.curtain_position,
+          }
+        }
+
+        // 初始化设备属性
+        diffData.deviceProp = prop
+
+        // 色温范围计算
+        if (device.proType === PRO_TYPE.light) {
+          const { minColorTemp, maxColorTemp } = device.mzgdPropertyDTOList['light'].colorTempRange!
+          diffData.minColorTemp = minColorTemp
+          diffData.maxColorTemp = maxColorTemp
+        }
+        // 是否智慧屏判断
+        else if (device.proType === PRO_TYPE.switch) {
+          diffData.isScreen = SCREEN_PID.includes(device.productId)
+          diffData.isKnob = KNOB_PID.includes(device.productId)
+        }
+        this.setData(diffData)
+      },
+    },
     controlPopup: {
       type: Boolean,
       value: true,
@@ -40,62 +88,15 @@ ComponentWithComputed({
         console.log('controlPopup %s, trigger popupMove()', value)
         this.popupMove()
         this.updateLinkInfo()
+        this.updateSensorLogs()
       },
     },
     checkedList: {
       type: Array,
       value: [] as string[],
-      observer(value) {
-        this.updateLinkInfo()
-        if (value.length) {
-          const deviceId = this.data.checkedList[0]?.split(':')[0]
-          const { deviceMap } = deviceStore
-          const device = deviceMap[deviceId]
-
-          if (!device) {
-            return
-          }
-          // 色温范围计算
-          if (device.proType === PRO_TYPE.light) {
-            const { minColorTemp, maxColorTemp } = device.mzgdPropertyDTOList['light'].colorTempRange!
-            this.setData({
-              minColorTemp,
-              maxColorTemp,
-            })
-          }
-          // 是否智慧屏判断
-          else if (device.proType === PRO_TYPE.switch) {
-            const isScreen = SCREEN_PID.includes(device.productId)
-            this.setData({
-              isScreen,
-            })
-          }
-        }
+      observer() {
+        this.updateLinkInfo() // TODO 此属性 observer 是否可以取消或合并
       },
-    },
-    lightStatus: {
-      type: Object,
-      value: {} as Record<string, number>,
-      observer(value) {
-        this.setData({
-          isLanCtl: value.canLanCtrl && !value.onLineStatus,
-          'lightInfoInner.brightness': value.brightness ?? 0,
-          'lightInfoInner.colorTemperature': value.colorTemperature ?? 0,
-        })
-      },
-    },
-    curtainStatus: {
-      type: Object,
-      value: {} as Record<string, string>,
-      observer(value) {
-        this.setData({
-          'curtainInfo.position': value.position ?? 0,
-        })
-      },
-    },
-    checkedType: {
-      type: Array,
-      value: [] as string[],
     },
   },
 
@@ -103,23 +104,19 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    info: {
-      bottomBarHeight: 0,
-      componentHeight: 0,
-      divideRpxByPx: 0,
-    },
-    isLanCtl: false, // 是否局域网控制状态
+    defaultImgDir,
     show: false,
-    tab: '' as '' | 'light' | 'switch' | 'curtain',
     lightInfoInner: {
       brightness: 10,
       colorTemperature: 20,
     },
-    maxColorTemp,
-    minColorTemp,
     curtainInfo: {
       position: 0,
     },
+    deviceProp: {} as Device.mzgdPropertyDTO,
+    logList: [] as Device.Log[], // 设备（传感器）日志列表
+    maxColorTemp,
+    minColorTemp,
     /** 提供给关联选择的列表 */
     list: [] as (Device.DeviceItem | Scene.SceneItem)[],
     /** 当前选中的开关，处于是什么关联模式, 可多选 */
@@ -129,8 +126,6 @@ ComponentWithComputed({
     /** 已选中设备或场景 TODO */
     linkSelectList: [] as string[],
     showLinkPopup: false,
-    allOnPress: false,
-    allOffPress: false,
     _switchRelInfo: {
       switchUniId: '', // 当前记录关联信息的面板，清空了才会重新更新数据
       lampRelList: Array<Device.IMzgdLampRelGetDTO>(), // 当前面板的灯关联数据
@@ -138,29 +133,15 @@ ComponentWithComputed({
     },
     _allSwitchLampRelList: Array<Device.IMzgdLampDeviceInfoDTO>(), // 家庭所有面板的灯关联关系数据
     isScreen: false, // 当前选中项是否智慧屏
+    isKnob: false, // 当前选中项是否旋钮开关
   },
 
   computed: {
     colorTempK(data) {
+      if (!data.lightInfoInner?.colorTemperature) {
+        return data.minColorTemp
+      }
       return (data.lightInfoInner.colorTemperature / 100) * (data.maxColorTemp - data.minColorTemp) + data.minColorTemp
-    },
-    lightTab(data) {
-      if (data.checkedType) {
-        return data.checkedType.includes('light')
-      }
-      return false
-    },
-    switchTab(data) {
-      if (data.checkedType) {
-        return data.checkedType.includes('switch')
-      }
-      return false
-    },
-    curtainTab(data) {
-      if (data.checkedType) {
-        return data.checkedType.includes('curtain')
-      }
-      return false
     },
 
     // 是否关联智能开关，模板语法不支持Array.includes,改为通过计算属性控制
@@ -194,34 +175,21 @@ ComponentWithComputed({
       }
       return title
     },
-  },
-
-  watch: {
-    /**
-     * 监听当前选择类型
-     * TODO 不使用watch？
-     */
-    checkedType(value) {
-      if (value.length > 0) {
-        if (!value.includes(this.data.tab)) {
-          this.setData({
-            tab: value[0],
-          })
-        }
-      } else {
-        this.setData({
-          tab: '',
-        })
-      }
+    // 是否局域网可控
+    isLanCtl(data) {
+      return !data.deviceInfo.onLineStatus && data.deviceInfo.canLanCtrl
     },
-    // allRoomDeviceList() {
-    //   Logger.log('device-control-popup:watch-allRoomDeviceList')
-    //   this.updateLinkInfo()
-    // },
-  },
-
-  lifetimes: {
-    ready() {},
+    logListView(data) {
+      return data.logList.map((log) => {
+        const { reportAt } = log
+        const [date, time] = reportAt.split(' ')
+        return {
+          content: log.content,
+          date,
+          time,
+        }
+      })
+    },
   },
 
   /**
@@ -229,7 +197,7 @@ ComponentWithComputed({
    */
   methods: {
     sliderTap() {
-      if (!this.data.lightStatus.power) {
+      if (!this.data.deviceProp.power) {
         Toast('请先开灯')
       }
     },
@@ -306,6 +274,17 @@ ComponentWithComputed({
 
       this.setData({
         linkType: linkType,
+      })
+    },
+    async updateSensorLogs() {
+      const { deviceId, proType } = this.data.deviceInfo
+      if (proType !== PRO_TYPE.sensor) {
+        return
+      }
+      const res = await getSensorLogs({ deviceId, houseId: homeStore.currentHomeId })
+      console.log(res)
+      this.setData({
+        logList: res.result,
       })
     },
     handleClose() {
@@ -756,32 +735,29 @@ ComponentWithComputed({
 
       hideLoading()
     },
-    handleTabTap(e: { currentTarget: { dataset: { tab: 'light' | 'switch' | 'curtain' } } }) {
-      this.setData({
-        tab: e.currentTarget.dataset.tab,
-      })
-    },
     async lightSendDeviceControl(type: 'colorTemperature' | 'brightness') {
       const deviceId = this.data.checkedList[0]
+      const { proType, deviceType, gatewayId } = this.data.deviceInfo
       const device = deviceStore.deviceMap[deviceId]
-      if (deviceId.indexOf(':') !== -1 || device.proType !== PRO_TYPE.light) {
+      if (deviceId.indexOf(':') !== -1 || proType !== PRO_TYPE.light) {
         return
       }
 
-      const oldValue = device.mzgdPropertyDTOList['light'][type]
+      const oldValue = this.data.deviceInfo[type]
 
       // 即时改变devicePageList，以便场景引用
       runInAction(() => {
-        device.mzgdPropertyDTOList['light'][type] = this.data.lightInfoInner[type]
+        deviceStore.deviceMap[deviceId].mzgdPropertyDTOList['light'][type] = this.data.lightInfoInner[type]
       })
+      device.mzgdPropertyDTOList['light'][type] = this.data.lightInfoInner[type]
       this.triggerEvent('updateDevice', device)
 
       const res = await sendDevice({
-        proType: device.proType,
-        deviceType: device.deviceType,
-        gatewayId: device.gatewayId,
+        proType,
+        deviceType,
+        gatewayId,
         deviceId,
-        modelName: device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1',
+        modelName: proType === PRO_TYPE.light ? 'light' : 'wallSwitch1',
         property: {
           [type]: this.data.lightInfoInner[type],
         },
@@ -793,34 +769,31 @@ ComponentWithComputed({
         Toast('控制失败')
       }
     },
-    handleLevelDrag: throttle(function (this: IAnyObject, e: { detail: number }) {
+    async handleLevelDrag(e: { detail: number }) {
       this.setData({
         'lightInfoInner.brightness': e.detail,
       })
-    }),
-    handleLevelChange(e: { detail: number }) {
+    },
+    async handleLevelChange(e: { detail: number }) {
       this.setData({
         'lightInfoInner.brightness': e.detail,
       })
       this.lightSendDeviceControl('brightness')
-    },
-    handleLevelDragEnd() {
-      this.lightSendDeviceControl('brightness')
-    },
-    handleColorTempDragEnd() {
-      this.lightSendDeviceControl('colorTemperature')
+      this.triggerEvent('lightStatusChange')
     },
     handleColorTempChange(e: { detail: number }) {
+      console.log('handleColorTempChange', e.detail)
       this.setData({
         'lightInfoInner.colorTemperature': e.detail,
       })
       this.lightSendDeviceControl('colorTemperature')
+      this.triggerEvent('lightStatusChange')
     },
-    handleColorTempDrag: throttle(function (this: IAnyObject, e: { detail: number }) {
+    handleColorTempDrag(e: { detail: number }) {
       this.setData({
         'lightInfoInner.colorTemperature': e.detail,
       })
-    }),
+    },
 
     findDevice(device: Device.DeviceItem) {
       let modelName = 'light'
@@ -832,8 +805,7 @@ ComponentWithComputed({
     },
     toDetail() {
       const deviceId = this.data.checkedList[0].split(':')[0]
-      const deviceMap = deviceStore.deviceMap
-      const { deviceType, productId, gatewayId } = deviceMap[deviceId]
+      const { deviceType, productId, gatewayId } = this.data.deviceInfo
       const pageName = deviceType === 4 ? 'group-detail' : 'device-detail'
       const _deviceId = SCREEN_PID.includes(productId) ? gatewayId : deviceId
 
@@ -845,14 +817,14 @@ ComponentWithComputed({
     },
     async curtainControl(property: IAnyObject) {
       const deviceId = this.data.checkedList[0]
-      const device = deviceStore.deviceMap[deviceId]
-      if (device.proType !== PRO_TYPE.curtain) {
+      const { deviceType, proType } = this.data.deviceInfo
+      if (proType !== PRO_TYPE.curtain) {
         return
       }
 
       const res = await sendDevice({
-        proType: device.proType,
-        deviceType: device.deviceType,
+        proType,
+        deviceType,
         deviceId,
         property,
       })

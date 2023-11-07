@@ -7,6 +7,7 @@ import { StatusType } from './typings'
 import { deviceReplace } from '../../apis/index'
 // import { deviceReplace } from 'js-homos'
 import { emitter } from '../../utils/eventBus'
+import { SCREEN_PID, defaultImgDir } from '../../config/index'
 
 ComponentWithComputed({
   options: {},
@@ -16,6 +17,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    defaultImgDir,
     status: 'introduce' as StatusType,
     isSelectOldDevice: false,
     isSelectNewDevice: false,
@@ -37,11 +39,12 @@ ComponentWithComputed({
 
       return deviceStore.allRoomDeviceList.filter((device) => {
         const isSubdevice = device.deviceType === 2
+        const isScreen = SCREEN_PID.includes(device.productId)
         const isFilterDevice = choosingNew
           ? device.productId === data.oldDeviceItem.productId && device.deviceId !== data.oldDeviceItem.deviceId
           : true
         const oldDeviceOrNewAndOnline = choosingNew ? device.onLineStatus : true
-        return isSubdevice && isFilterDevice && oldDeviceOrNewAndOnline
+        return isSubdevice && !isScreen && isFilterDevice && oldDeviceOrNewAndOnline
       })
     },
     nextBtnText(data) {

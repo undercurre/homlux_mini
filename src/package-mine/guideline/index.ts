@@ -1,5 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
+import { ossDomain } from '../../config/index'
 import { storage } from '../../utils/index'
 
 // 设备类型
@@ -14,9 +15,9 @@ ComponentWithComputed({
    */
   data: {
     url: {
-      duerVoice: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/intro.png',
-      miVoice: 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/aIntro.png',
-      bleEnable: `https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/ble-${system}.png`,
+      duerVoice: `${ossDomain}/intro.png`,
+      miVoice: `${ossDomain}/homlux/aIntro.png`,
+      bleEnable: `${ossDomain}/homlux/ble-${system}.png`,
     },
     showImg: '',
   },

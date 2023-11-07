@@ -1,13 +1,14 @@
 // service模块存放项目的相关业务代码
 import { connectHouseSocket } from '../apis/websocket'
 import { homeStore, userStore } from '../store/index'
-import { isLogon, Logger, storage, isConnect } from './index'
+import { isLogon, Logger, storage, isConnect, verifyNetwork } from './index'
 import { emitter } from './eventBus'
 import homos from 'js-homos'
 
 export function logout() {
   storage.remove('mobilePhone')
   storage.remove('token')
+  storage.remove('localKey') // 清除局域网的家庭key
   userStore.logout()
   homos.logout()
   closeWebSocket()
@@ -101,7 +102,10 @@ export async function startWebsocketService() {
       Logger.error('转json失败：', err)
     }
   })
-  socketTask.onError((err) => {
+  socketTask.onError(async (err) => {
+    // 发生错误一般由于网络问题，先检查网络可访问性
+    await verifyNetwork()
+
     // 可能短时间内连续触发多次onError
     Logger.error('socket错误onError：', err, 'socketIsConnect', socketIsConnect)
     isConnecting = false

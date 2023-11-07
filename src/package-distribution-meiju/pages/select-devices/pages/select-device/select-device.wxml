@@ -1,0 +1,45 @@
+<view id="{{brand}}">
+  <view class="container">
+    <view class="product-select">
+      <view class="select-input" bindtap="goSearch">
+        <view class="input-sec">
+          <view wx:if="{{brand != 'colmo'}}" class="input-icon" style="background-image:url({{ searchIconImg }});"></view>
+          <image wx:else class="colmo-search" src="{{searchIcon}}"></image>
+          <text class="input-text-model">请输入设备型号或系列</text>
+        </view>
+      </view>
+      <view class="main-content">
+        <view class="left-list">
+          <scroll-view scroll-y="{{true}}" style="height: {{ scrollHeight }}px">
+            <view style="padding-bottom: {{ bottomPadding }}rpx">
+              <view class="select-left-item {{ currentIndex == index ? 'active-tag' : '' }}" wx:for="{{ productList }}" wx:key="index" wx:for-item="item" wx:for-index="index" data-category="{{ item.categoryName}}" data-index="{{ index }}" bindtap="itemClicked">
+                <text>{{item.categoryName}}</text>
+                <view class="active-line" wx:if="{{ currentIndex == index }}"></view>
+              </view>
+            </view>
+          </scroll-view>
+        </view>
+        <view class="right-list">
+          <scroll-view style="height: {{ scrollHeight }}px" scroll-into-view="{{ targetId }}" scroll-y="{{true}}" scroll-with-animation="{{true}}" bindscroll="onScroll">
+            <view style="padding-bottom: {{ bottomPadding }}rpx">
+              <view class="right-item" wx:for="{{ productList }}" wx:key="index" wx:for-item="item" wx:for-index="index">
+                <view class="item-prod" id="prod-item-{{ item.id }}">
+                  <view class="prod-name">{{ item.categoryName }}</view>
+                  <view class="prod-list">
+                    <view class="prod-item" wx:for="{{ item.list0 }}" wx:for-item="prodItem" wx:key="index" wx:for-index="prodIndex" data-icategory="{{ item.categoryName }}" data-product="{{ prodItem.isProduct }}" data-name="{{ prodItem.product ? prodItem.product.productName : prodItem.categoryName }}" data-category="{{ prodItem.category }}" data-pcategory="{{ prodItem.product.category }}" data-img="{{ prodItem.product.productImg }}" data-id="{{ prodItem.product.productId }}" data-enterprise="{{ prodItem.product.enterpriseCode }}" data-code="{{ prodItem.product.code }}" bindtap="prodClicked">
+                      <view class="prod-img-box">
+                        <image src="{{ prodItem.product ? prodItem.product.productImg : prodItem.imgUrl }}" mode="aspectFit"></image>
+                      </view>
+                      <text class="theme-font-color select-prod-name">{{ prodItem.product ? prodItem.product.productName : prodItem.categoryName }}</text>
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </scroll-view>
+        </view>
+      </view>
+    </view>
+  </view>
+  <mx-dialog id="mx-dialog" />
+</view>

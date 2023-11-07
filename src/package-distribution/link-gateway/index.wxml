@@ -1,5 +1,5 @@
 <view class="page-container flex flex-col">
-  <nav-bar background="transparent" leftArrow="{{true}}" bind:leftTap="goBack" title="{{pageTitle}}"></nav-bar>
+  <nav-bar leftArrow="{{true}}" bind:leftTap="goBack" title="{{pageTitle}}"></nav-bar>
 
   <view wx:if="{{!isConnectDevice && isAndroid10Plus}}" class="grow px-32rpx flex flex-col justify-between">
     <view>
@@ -8,13 +8,13 @@
       <image class="mt-48rpx mb-70rpx w-664 h-372" src="/package-distribution/assets/link-gateway/wifi-tips.png"></image>
 
       <view class="flex flex-row items-center">
-        <image class="w-40 h-30" src="/package-distribution/assets/link-gateway/icon-wifi.png"></image>
+        <image class="w-30 h-30" src="/assets/img/distribution/icon-wifi.png"></image>
 
         <text class="px-30rpx leading-56rpx text-40 text-black-2a font-semibold">{{ apSSID }}</text>
       </view>
 
       <view class="flex flex-row items-center pt-40rpx">
-        <image class="w-28 h-36" src="/package-distribution/assets/link-gateway/icon-pw.png"></image>
+        <image class="w-36 h-36" src="/assets/img/distribution/icon-pw.png"></image>
 
         <text class="px-30rpx leading-56rpx text-40 text-black-2a font-semibold">12345678</text>
 
@@ -27,7 +27,7 @@
 
   <view wx:else class="grow flex flex-col">
     <view wx:if="{{!isConnectDevice && apSSID}}" class="absolute w-full flex flex-row items-center justify-center py-30rpx tips-view">
-      <image class="w-36 h-36 mr-16rpx" src="/package-distribution/assets/link-gateway/icon-info.png"></image>
+      <image class="w-36 h-36 mr-16rpx" src="/assets/img/distribution/icon-info.png"></image>
 
       <text class="text-24 leading-34rpx text-black-2a">请允许微信加入“{{apSSID}}”，以便自动连接设备</text>
     </view>

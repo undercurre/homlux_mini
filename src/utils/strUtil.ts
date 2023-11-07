@@ -169,3 +169,36 @@ export const strUtil = {
     }${Math.trunc((seconds % 3600) % 60) > 0 ? Math.trunc((seconds % 3600) % 60) + '秒' : ''}`
   },
 }
+
+/**
+ * 实现一个指定长度的字符串队列
+ * 当队列长度超过上限时把最早进入队列的数据出栈
+ */
+export class StringQueue {
+  private queue: string[]
+  private readonly maxLength: number
+
+  constructor(maxLength: number) {
+    this.queue = []
+    this.maxLength = maxLength
+  }
+
+  push(str: string): void {
+    if (this.queue.length >= this.maxLength) {
+      this.queue.shift()
+    }
+    this.queue.push(str)
+  }
+
+  pop(): string | undefined {
+    return this.queue.shift()
+  }
+
+  size(): number {
+    return this.queue.length
+  }
+
+  includes(str: string): boolean {
+    return this.queue.includes(str)
+  }
+}

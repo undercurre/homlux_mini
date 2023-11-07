@@ -55,7 +55,7 @@ ComponentWithComputed({
             // url: '/package-distribution/scan/index',
           },
           {
-            title: '创建自动化',
+            title: '创建场景',
             key: 'auto',
             icon: 'auto',
             url: '/package-automation/automation-add/index',
@@ -67,7 +67,7 @@ ComponentWithComputed({
           title: '连接其它平台',
           key: 'platform',
           icon: 'auth',
-          url: '/package-mine/auth/index/index',
+          url: '/package-auth/pages/index/index',
         })
       }
 

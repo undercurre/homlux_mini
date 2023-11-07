@@ -2,16 +2,17 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { runInAction } from 'mobx-miniprogram'
 import Toast from '@vant/weapp/toast/toast'
-import { homeBinding, roomBinding, homeStore, deviceStore } from '../../store/index'
+import { deviceStore, homeBinding, homeStore, roomBinding } from '../../store/index'
 import { bleDevicesBinding, bleDevicesStore } from '../store/bleDeviceStore'
-import { getCurrentPageParams, emitter, Logger, delay } from '../../utils/index'
+import { delay, emitter, getCurrentPageParams, Logger } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { getUnbindSensor, sendCmdAddSubdevice, bindDevice, batchUpdate, isDeviceOnline } from '../../apis/index'
+import { batchUpdate, bindDevice, getUnbindSensor, isDeviceOnline, sendCmdAddSubdevice } from '../../apis/index'
 import lottie from 'lottie-miniprogram'
 import { addDevice } from '../assets/search-subdevice/lottie/index'
 import PromiseQueue from '../../lib/promise-queue'
-import { PRO_TYPE } from '../../config/index'
+import { defaultImgDir, PRO_TYPE } from '../../config/index'
 import dayjs from 'dayjs'
+import cacheData from '../common/cacheData'
 
 type StatusName = 'discover' | 'requesting' | 'success' | 'error'
 
@@ -26,6 +27,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    defaultImgDir,
     _startTime: 0,
     _gatewayInfo: {
       channel: 0,
@@ -130,6 +132,7 @@ ComponentWithComputed({
         panId: parseInt(panId),
       }
 
+      // 如果是绑定传感器，需要一些前置操作
       if (proType === PRO_TYPE.sensor) {
         bleDevicesStore.reset()
 
@@ -210,32 +213,52 @@ ComponentWithComputed({
       runInAction(() => {
         bleDevicesBinding.store.bleDeviceList = list
       })
+
+      // 从错误的配网入口进入绑定的传感器
+      const errList = res.result.filter(
+        (device) => this.data._sensorList.includes(device.deviceId) && device.productId !== this.data._productId,
+      )
+      if (errList.length) {
+        Toast('传感器配网失败，请检查网络及配网入口')
+      }
     },
     startAnimation() {
-      // 加载动画
-      this.createSelectorQuery()
-        .selectAll('#canvas')
-        .node((res: IAnyObject) => {
-          if (!res || !res.length) {
-            return
-          }
-          const canvas = res[0].node
-          const context = canvas.getContext('2d')
+      Logger.log('动画开始')
 
-          canvas.width = 400
-          canvas.height = 400
+      return new Promise((resolve) => {
+        // 加载动画
+        this.createSelectorQuery()
+          .selectAll('#canvas')
+          .node((res: IAnyObject) => {
+            if (!res || !res.length) {
+              Logger.error('startAnimation获取canvas节点失败', res)
+              resolve(false)
+              return
+            }
+            const canvas = res[0].node
+            const context = canvas.getContext('2d')
 
-          lottie.setup(canvas)
-          lottie.loadAnimation({
-            loop: true,
-            autoplay: true,
-            animationData: JSON.parse(addDevice),
-            rendererSettings: {
-              context,
-            },
+            canvas.width = 400
+            canvas.height = 400
+
+            lottie.setup(canvas)
+            lottie.loadAnimation({
+              loop: true,
+              autoplay: true,
+              animationData: JSON.parse(addDevice),
+              rendererSettings: {
+                context,
+              },
+            })
+
+            resolve(true)
           })
-        })
-        .exec()
+          .exec()
+      }).catch((err) => {
+        Logger.error('startAnimation-catch', err)
+
+        return false
+      })
     },
 
     // 切换选择发现的设备
@@ -455,11 +478,11 @@ ComponentWithComputed({
           status: 'requesting',
         })
 
-        setTimeout(() => {
-          this.startAnimation()
-        }, 300)
+        await delay(1000) // 强行延时,以免dom结构还没生成
 
-        await delay(1500) // 强行延时，等待上面的动画渲染完毕，以免和蓝牙逻辑同事发生导致动画卡顿
+        const tempRes = await this.startAnimation()
+
+        Logger.log('startAnimation-end', tempRes)
 
         type PromiseThunk = () => Promise<any>
         const zigbeeTaskList = [] as PromiseThunk[]
@@ -839,7 +862,9 @@ ComponentWithComputed({
       wx.closeBluetoothAdapter()
       bleDevicesStore.reset()
 
-      this.goBackPrev()
+      wx.reLaunch({
+        url: cacheData.pageEntry,
+      })
     },
 
     toggleSelectAll() {
@@ -848,12 +873,6 @@ ComponentWithComputed({
           ...item,
           isChecked: !this.data.isAllSelected,
         }))
-      })
-    },
-
-    goBackPrev() {
-      wx.navigateBack({
-        delta: this.data.proType === PRO_TYPE.sensor ? 4 : 3,
       })
     },
   },

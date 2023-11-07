@@ -21,6 +21,13 @@ export const roomStore = observable({
     return this.roomList[this.currentRoomIndex]
   },
 
+  get lightOnInHouse(): number {
+    const { roomList } = this
+    let count = 0
+    roomList.forEach((room) => (count += room.lightOnCount))
+    return count
+  },
+
   /**
    * 更新房间开灯数量
    * ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
@@ -38,7 +45,7 @@ export const roomStore = observable({
       })
     roomStore.roomList.forEach((roomInfo) => {
       const roomDeviceList = list[roomInfo.roomId]
-      const { lightOnCount, endCount, lightCount } = deviceCount(roomDeviceList, deviceStore.lightsInGroup)
+      const { lightOnCount, endCount, lightCount } = deviceCount(roomDeviceList)
 
       roomInfo.lightOnCount = lightOnCount
       roomInfo.endCount = endCount
@@ -67,7 +74,7 @@ export const roomStore = observable({
           room.roomSceneList = room.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
         }
 
-        const { lightOnCount, endCount, lightCount } = deviceCount(roomDeviceList, deviceStore.lightsInGroup)
+        const { lightOnCount, endCount, lightCount } = deviceCount(roomDeviceList)
 
         room.roomInfo.lightOnCount = lightOnCount
         room.roomInfo.endCount = endCount
@@ -77,6 +84,7 @@ export const roomStore = observable({
       runInAction(() => {
         roomStore.roomList = res.result.roomInfoList.map((room) => ({
           roomId: room.roomInfo.roomId,
+          groupId: room.roomInfo.groupId,
           roomIcon: room.roomInfo.roomIcon || 'drawing-room',
           roomName: room.roomInfo.roomName,
           sceneList: room.roomSceneList,

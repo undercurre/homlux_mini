@@ -93,7 +93,7 @@ declare namespace Scene {
     sceneName: string
     /**
      * 场景类型
-     * 0-没有条件，1-有条件
+     * 0-没条件，1-有条件
      */
     sceneType: string
     orderNum: number
@@ -109,6 +109,7 @@ declare namespace Scene {
     deviceConditions?: DeviceCondition[]
     sceneIcon?: string
     sceneId?: string
+    roomId?: string
     sceneName?: string
     /** 更新类型
      * 0-仅更新名称和icon，1-删除结果 2-取消绑定 3-更新绑定 4-删除结果与取消绑定 5-删除结果与更新绑定

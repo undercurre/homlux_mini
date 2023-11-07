@@ -28,7 +28,7 @@
           <scene-card class="mt-24rpx" wx:for="{{listComputed}}" wx:key="sceneId" bind:cardTap="handleCardTap" scene-info="{{item}}" select="{{module.includes(selectList, item.sceneId)}}" />
         </view>
         <view wx:else class="w-686rpx grid grid-cols-4 gap-x-20rpx gap-y-24rpx">
-          <device-card wx:for="{{listComputed}}" wx:key="uniId" bind:cardTap="handleCardTap" device-info="{{item}}" select="{{module.includes(selectList, item.uniId)}}" bind:offlineTap="handleOfflineTap" />
+          <device-card wx:for="{{listComputed}}" wx:key="uniId" bind:cardTap="handleCardTap" device-info="{{item}}" showSpecialBg="{{false}}" select="{{module.includes(selectList, item.uniId)}}" bind:offlineTap="handleOfflineTap" />
         </view>
       </view>
     </scroll-view>

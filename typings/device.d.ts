@@ -98,6 +98,10 @@ declare namespace Device {
     updateStamp: number
 
     canLanCtrl?: boolean // 是否可以局域网控制,前端自定义属性
+    colorTempRangeMap: {
+      maxColorTemp: number
+      minColorTemp: number
+    }
   }
 
   interface MzgdPropertyDTO {
@@ -155,6 +159,9 @@ declare namespace Device {
     proType: string
     deviceType: number
     value: IAnyObject
+    //前端拖拽时用的绝对唯一的Id
+    orderNum?: number
+    dragId?: string
   }
 
   /** 批量修改设备 */
@@ -228,5 +235,10 @@ declare namespace Device {
     deviceName: string
     gatewayId: string
     productName: string
+  }
+
+  type Log = {
+    content: string
+    reportAt: string
   }
 }

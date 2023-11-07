@@ -5,7 +5,7 @@ export * from './room'
 export * from './user'
 export * from './ota'
 export * from './scene'
-export * from './auth'
+export * from './meiju'
 
 export async function login(data: object) {
   return await mzaioRequest.post<User.UserLoginRes>({
@@ -19,8 +19,9 @@ export async function login(data: object) {
 // 测试网络连接状态用
 export async function peekNetwork() {
   return await mzaioRequest.post({
-    log: true,
+    log: false,
     loading: false,
+    isDefaultErrorTips: false,
     url: '/',
     timeout: 2000,
   })

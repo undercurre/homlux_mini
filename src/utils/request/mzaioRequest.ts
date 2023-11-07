@@ -43,7 +43,7 @@ const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: Base
   const reqId = Date.now()
   options.data = Object.assign(
     {
-      reqId,
+      reqId: reqId.toString(),
       frontendType: 'WeApp',
       systemSource: storage.get<string>('system'),
       timestamp: reqId,
@@ -64,7 +64,7 @@ const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: Base
       // token过期，跳转到登录
       if ((result.data as unknown as { code: number }).code === TOKEN_EXPIRED) {
         logout()
-      } else if (!(result.data as unknown as { success: boolean }).success) {
+      } else if (!(result.data as unknown as { success: boolean }).success && options.log) {
         Logger.error('接口已响应，但返回异常', options, result.data)
       }
 
@@ -81,8 +81,6 @@ const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: Base
       return result.data
     },
     generalFailHandler: (error) => {
-      Logger.error('请求失败，原因：', options, error.errMsg)
-
       const cost_time = Date.now() - start
 
       wx.reportEvent('wxdata_perf_monitor', {
@@ -108,6 +106,7 @@ const mzaioRequestWithMethod = mzaioRequest as mzaioRequestWithMethod
 ;(['get', 'post', 'put', 'delete'] as const).forEach((method) => {
   mzaioRequestWithMethod[method] = (options) => {
     return mzaioRequest({
+      isDefaultErrorTips: true,
       ...options,
       method: method.toUpperCase() as 'GET' | 'POST' | 'PUT' | 'DELETE',
     })

@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { MODEL_NAME, PRO_TYPE, SCREEN_PID } from '../../../../config/index'
+import { getModelName, PRO_TYPE, SCREEN_PID } from '../../../../config/index'
 import { waitingBatchDeleteDevice, batchUpdate, renameGroup } from '../../../../apis/index'
 import { deviceBinding, deviceStore, homeStore, roomBinding, roomStore } from '../../../../store/index'
 import Toast from '@vant/weapp/toast/toast'
@@ -291,6 +291,15 @@ ComponentWithComputed({
     },
     handleBatchMove() {
       const actionFn = async () => {
+        // 可能存在未重新开始移动，目标已被移动成功的情况
+        if (!this.data.moveWaitlist.length) {
+          this.triggerEvent('updateList')
+          Toast({
+            message: '已成功移动',
+            zIndex: 9999,
+          })
+          return
+        }
         this.data.moveFailCount = 0 // 清空失败计数
         const map = {} as Record<string, Device.DeviceInfoUpdateVo>
         this.data.moveWaitlist.forEach((uniId: string) => {
@@ -549,7 +558,7 @@ ComponentWithComputed({
             }
           }
         } else {
-          const modelName = MODEL_NAME[device.proType]
+          const modelName = getModelName(device.proType, device.productId)
           this.data.moveWaitlist.push(`${device.deviceId}:${modelName}`)
         }
       })

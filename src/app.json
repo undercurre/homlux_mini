@@ -13,6 +13,7 @@
         "change-wifi-success/index",
         "choose-device/index",
         "choose-sensor/index",
+        "choose-light/index",
         "connect-guide/index"
       ]
     },
@@ -25,10 +26,6 @@
         "room-detail/index",
         "member-manage/index",
         "device-replace/index",
-        "auth/index/index",
-        "auth/meiju/index",
-        "auth/home-list/index",
-        "auth/device-list/index",
         "ota/index",
         "device-manage/index",
         "device-manage/device-detail/index",
@@ -37,7 +34,8 @@
         "guideline/index",
         "device-category/index",
         "help/list/index",
-        "help/show/index"
+        "help/show/index",
+        "help/webview/index"
       ]
     },
     {
@@ -50,15 +48,41 @@
     },
     {
       "root": "package-auth",
-      "pages": ["auth-screen/index"]
+      "pages": [
+        "pages/auth-screen/index",
+        "pages/index/index",
+        "pages/meiju/index",
+        "pages/home-list/index",
+        "pages/device-list/index"
+      ]
     },
     {
       "root": "package-automation",
-      "pages": ["automation/index", "automation-log/index", "automation-add/index"]
+      "pages": [
+        "automation/index",
+        "automation-log/index",
+        "automation-add/index",
+        "automation-edit-yijian/index",
+        "scene-request-list-yijian/index",
+        "scene-success/index"
+      ]
     },
     {
       "root": "package-remoter",
       "pages": ["pannel/index", "setting/index"]
+    },
+    {
+      "root": "package-distribution-meiju",
+      "pages": [
+        "pages/check-auth/index",
+        "pages/addDevice/pages/inputWifiInfo/inputWifiInfo",
+        "pages/addDevice/pages/addGuide/addGuide",
+        "pages/user-gudie/pages/location-guide/location-guide",
+        "pages/addDevice/pages/addFail/addFail",
+        "pages/addDevice/pages/linkDevice/linkDevice",
+        "pages/addDevice/pages/linkNetFail/linkNetFail",
+        "pages/addDevice/pages/linkAp/linkAp"
+      ]
     }
   ],
   "preloadRule": {

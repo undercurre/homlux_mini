@@ -1,5 +1,4 @@
-import { showLoading, hideLoading } from '../index'
-import { Logger } from '../log'
+import { hideLoading, showLoading, Logger } from '../index'
 
 export type BaseRequestOptions<T extends AnyResType> = WechatMiniprogram.RequestOption<T> & {
   /**
@@ -10,6 +9,11 @@ export type BaseRequestOptions<T extends AnyResType> = WechatMiniprogram.Request
    * 是否打印请求和响应
    */
   log?: boolean
+
+  /**
+   * 是否使用默认错误提示
+   */
+  isDefaultErrorTips?: boolean
   /**
    * 单独接口请求成功处理
    */
@@ -91,29 +95,29 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
     }
 
     // 请求失败回调处理
-    if (requestOption.failHandler) {
-      const handler = requestOption.failHandler
-      requestOption.fail = (err) => {
-        if (requestOption.log) {
-          Logger.error('✘请求URL:' + requestOption.url + ' 失败，原因：' + err.errMsg, requestOption.data)
-        }
-        resolve(handler(err))
+    const handler = requestOption.failHandler || requestOption.generalFailHandler
+    requestOption.fail = (err) => {
+      if (requestOption.log) {
+        Logger.error('✘请求URL:' + requestOption.url + ' 失败，原因：' + err.errMsg, requestOption.data)
       }
-    } else {
-      requestOption.fail = (err) => {
-        if (requestOption.log) {
-          Logger.error('✘请求URL:' + requestOption.url + ' 失败，失败原因：' + err.errMsg, requestOption.data)
-        }
-        const data = requestOption.generalFailHandler ? requestOption.generalFailHandler(err) : (err as unknown as T)
-        resolve(data)
+
+      if (requestOption.isDefaultErrorTips) {
+        Logger.error('✘断网提示:' + requestOption.url + ' 失败，原因：' + err.errMsg, requestOption.data)
+        wx.showToast({
+          title: '当前无法连接网络\n请检查网络设置',
+          icon: 'none',
+          duration: 2000,
+        })
       }
+
+      const data = handler ? handler(err) : (err as unknown as T)
+      resolve(data)
     }
 
     // 请求发起时的提示
     if (requestOption.log) {
       Logger.console(`» 发起请求 ${requestOption.url} 参数：\n`, requestOption.data)
     }
-
     wx.request({
       ...requestOption,
       complete() {

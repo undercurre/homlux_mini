@@ -60,7 +60,7 @@
   </view>
 </van-popup>
 
-<van-dialog id="van-dialog" confirm-button-color="#27282A" cancel-button-color="#27282A" />
+<van-dialog id="van-dialog" />
 
 <transfer-home-popup wx:if="{{currentHomeDetail.houseUserAuth === 1}}" show="{{isTransferHome}}" bind:close="closeTransferHome"></transfer-home-popup>
 

@@ -24,12 +24,14 @@ declare namespace Remoter {
     icon?: string
     iconActive?: string
     name?: string
+    btnWidth?: string
   }
 
   interface ConfigItem {
     deviceName: string
     devicePic: string
     joystick?: Record<string, ButtonRes>
+    showTemperature?: boolean
     mList?: ButtonRes[]
     bList?: ButtonRes[]
     actions: ButtonRes[]

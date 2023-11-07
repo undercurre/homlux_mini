@@ -11,6 +11,7 @@ import {
   removeNetworkStatusListen,
   verifyNetwork,
   isLogon,
+  getCurrentPageUrl,
 } from './utils/index'
 import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore, userStore } from './store/index'
@@ -69,7 +70,7 @@ App<IAppOption>({
 
     // 监听内存不足告警事件
     wx.onMemoryWarning(function () {
-      Logger.error('onMemoryWarningReceive')
+      Logger.debug('onMemoryWarningReceive')
     })
   },
 
@@ -118,7 +119,9 @@ App<IAppOption>({
   },
 
   onError(msg: string) {
-    Logger.error('app-onError', msg)
+    const pageUrl = getCurrentPageUrl()
+
+    Logger.error(`【${pageUrl}】app-onError`, msg)
   },
 
   globalData: {

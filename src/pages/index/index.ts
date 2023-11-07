@@ -14,8 +14,8 @@ import {
   roomStore,
   deviceStore,
 } from '../../store/index'
-import { storage, throttle, emitter, WSEventType, showLoading, hideLoading, strUtil } from '../../utils/index'
-import { PRO_TYPE, ROOM_CARD_H, ROOM_CARD_M } from '../../config/index'
+import { storage, throttle, emitter, WSEventType, showLoading, hideLoading, strUtil, delay } from '../../utils/index'
+import { PRO_TYPE, ROOM_CARD_H, ROOM_CARD_M, defaultImgDir } from '../../config/index'
 import { allDevicePowerControl, updateRoomSort, updateDefaultHouse, changeUserHouse } from '../../apis/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 
@@ -48,6 +48,7 @@ ComponentWithComputed({
     pageBehavior,
   ],
   data: {
+    defaultImgDir,
     navigationBarAndStatusBarHeight:
       (storage.get<number>('statusBarHeight') as number) +
       (storage.get<number>('navigationBarHeight') as number) +
@@ -88,6 +89,7 @@ ComponentWithComputed({
     scrollTop: 0,
     _scrolledWhenMoving: false, // 拖拽时，被动发生了滚动
     _lastClientY: 0, // 上次触控采样时 的Y坐标
+    _isFirstShow: true, // 是否首次加载
   },
   computed: {
     currentHomeName(data) {
@@ -175,6 +177,11 @@ ComponentWithComputed({
       emitter.off('wsReceive')
     },
     async onShow() {
+      if (!this.data._isFirstShow) {
+        homeStore.updateRoomCardList()
+      }
+      this.data._isFirstShow = false
+
       setTimeout(() => {
         this.acceptShare()
       }, 1000)
@@ -257,7 +264,7 @@ ComponentWithComputed({
             y: currentIndex === index ? this.data.roomPos[room.roomId].y : accumulatedY,
           }
           // 若场景列表为空，或正在拖动，则使用 ROOM_CARD_M
-          accumulatedY += !room.endCount || !room.sceneList.length || isMoving === true ? ROOM_CARD_M : ROOM_CARD_H
+          accumulatedY += !room.sceneList.length || isMoving === true ? ROOM_CARD_M : ROOM_CARD_H
         })
 
       // 拖动模式，不改变高度
@@ -310,6 +317,7 @@ ComponentWithComputed({
           }
         }
         const now = new Date().valueOf()
+        // 邀请链接一天单次有效
         if (now - parseInt(time) > 86400000) {
           console.log('lmn>>>邀请超时')
           Dialog.confirm({
@@ -461,9 +469,17 @@ ComponentWithComputed({
     /**
      * 点击全屋关按钮
      */
-    handleAllOff() {
+    async handleAllOff() {
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
+      const _old_light_on_in_house = roomStore.lightOnInHouse // 控制前的亮灯数
       allDevicePowerControl({ houseId: homeStore.currentHomeId, onOff: 0 })
+
+      await delay(3000)
+      wx.reportEvent('home_all_off', {
+        house_id: homeStore.currentHomeId,
+        light_on_in_house: _old_light_on_in_house,
+        light_on_after_seconds: roomStore.lightOnInHouse,
+      })
     },
     /**
      * 用户切换家庭
@@ -478,17 +494,23 @@ ComponentWithComputed({
      * 用户点击展示/隐藏家庭选择
      */
     handleShowHomeSelectMenu() {
-      this.setData({
-        selectHomeMenu: {
-          x: '28rpx',
-          y:
-            (storage.get<number>('statusBarHeight') as number) +
-            (storage.get<number>('navigationBarHeight') as number) +
-            8 +
-            'px',
-          isShow: !this.data.selectHomeMenu.isShow,
-        },
-      })
+      const diffData = {} as IAnyObject
+      diffData.selectHomeMenu = {
+        x: '28rpx',
+        y:
+          (storage.get<number>('statusBarHeight') as number) +
+          (storage.get<number>('navigationBarHeight') as number) +
+          8 +
+          'px',
+        isShow: !this.data.selectHomeMenu.isShow,
+      }
+
+      // 关闭已打开的其他菜单
+      if (!this.data.selectHomeMenu.isShow && this.data.addMenu.isShow) {
+        diffData['addMenu.isShow'] = false
+      }
+
+      this.setData(diffData)
     },
     /**
      * 隐藏添加房间popup
@@ -510,6 +532,7 @@ ComponentWithComputed({
             'px',
           isShow: !this.data.addMenu.isShow,
         },
+        'selectHomeMenu.isShow': false,
       })
     },
 

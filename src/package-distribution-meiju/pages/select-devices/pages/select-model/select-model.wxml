@@ -1,0 +1,96 @@
+<!-- <view class="product-select">
+  <view class="select-input" bindtap="goSearch">
+    <view class="input-sec">
+      <view class="input-icon" style="background-image:url({{ searchIconImg }});"></view>
+      <text class="input-text">请输入设备型号或系列</text>
+    </view>
+  </view>
+  <block wx:if="{{ loadFlag }}">
+    <block wx:if="{{ productList.length }}">
+      <view class="main-content">
+        <scroll-view
+          scroll-y="{{true}}"
+          style="height: {{ scrollHeight }}px"
+          bindscrolltolower="loadMoreData"
+          lower-threshold="200"
+        >
+          <view class="content-list" style="padding-bottom: {{ isIphoneX ? '60' : '0' }}rpx">
+            <view
+              class="content-item"
+              wx:for="{{ productList }}"
+              wx:key="index"
+              wx:for-item="item"
+              wx:for-index="index"
+              data-img="{{ item.productImg }}"
+              data-category="{{ item.category }}"
+              data-id="{{ item.productId }}"
+              data-enterprise="{{ item.enterpriseCode }}"
+              data-code="{{ item.code }}"
+              bindtap="prodClicked"
+            >
+              <view class="left-section">
+                <image src="{{ item.productImg }}" class="left-image" mode="aspectFit"></image>
+              </view>
+              <view class="item-desc">
+                <view class="desc-section">
+                  <view>{{ item.productId }}</view>
+                  <view class="desc-detail">{{ item.productName }}</view>
+                </view>
+              </view>
+              <view class="icon-right" style="background-image:url({{ searchIconImg }});"></view>
+            </view>
+          </view>
+        </scroll-view>
+      </view>
+    </block>
+    <block wx:else>
+      <view class="search-result">
+        <image src="{{ notFoundImg }}"></image>
+        <view>抱歉</view>
+        <view class="result-text">没有找到“{{ prodName }}”相关的产品</view>
+      </view>
+    </block>
+  </block>
+</view> -->
+
+<view id="{{brand}}">
+  <view class="product-select container">
+    <view class="select-input" bindtap="goSearch">
+      <view class="input-sec">
+        <view wx:if="{{brand != 'colmo'}}" class="input-icon" style="background-image:url({{ searchIconImg }});"></view>
+        <image wx:else class="colmo-search" src="{{searchIcon}}"></image>
+        <text class="input-text-model">请输入设备型号或系列</text>
+      </view>
+    </view>
+    <block wx:if="{{ loadFlag }}">
+      <block wx:if="{{ productList.length }}">
+        <view class="main-content">
+          <scroll-view scroll-y="{{true}}" style="height: {{ scrollHeight }}px" bindscrolltolower="loadMoreData" lower-threshold="200">
+            <view class="content-list" style="padding-bottom: {{ isIphoneX ? '60' : '0' }}rpx">
+              <view class="content-item" wx:for="{{ productList }}" wx:key="index" wx:for-item="item" wx:for-index="index" data-img="{{ item.productImg }}" data-category="{{ item.category }}" data-id="{{ item.productId }}" data-enterprise="{{ item.enterpriseCode }}" data-code="{{ item.code }}" bindtap="prodClicked">
+                <view class="left-section" wx:if="{{brand == 'meiju'}}">
+                  <image src="{{ item.productImg }}" class="left-image" mode="aspectFit"></image>
+                </view>
+                <view class="item-desc">
+                  <view class="desc-section">
+                    <view>{{ item.productId }}</view>
+                    <view class="desc-detail">{{ item.productName }}</view>
+                  </view>
+                </view>
+                <view class="icon-right" style="background-image:url({{ searchIconImg }});"></view>
+              </view>
+            </view>
+          </scroll-view>
+        </view>
+      </block>
+      <block wx:else>
+        <view class="search-result">
+          <image src="{{ notFoundImg }}"></image>
+          <view>抱歉</view>
+          <view class="result-text">没有找到“{{ prodName }}”相关的产品</view>
+        </view>
+      </block>
+    </block>
+  </view>
+  <mx-dialog id="mx-dialog" />
+</view>

@@ -495,7 +495,7 @@ ComponentWithComputed({
         // 智慧屏扫码绑定
         else if (pageParams.mode === '10') {
           wx.redirectTo({
-            url: strUtil.getUrlWithParams('/package-auth/auth-screen/index', {
+            url: strUtil.getUrlWithParams('/package-auth/pages/auth-screen/index', {
               code: pageParams.code,
             }),
           })

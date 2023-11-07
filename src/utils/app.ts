@@ -190,3 +190,9 @@ export function checkWifiSwitch() {
 export function isLogon() {
   return Boolean(storage.get<string>('token'))
 }
+
+// 是否处于开发工具调试模式（PC端）
+export function isDevMode() {
+  const { platform } = wx.getSystemInfoSync()
+  return platform === 'devtools'
+}

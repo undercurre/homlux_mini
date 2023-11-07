@@ -13,7 +13,7 @@ import {
 } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { sendDevice, execScene, saveDeviceOrder } from '../../apis/index'
+import { sendDevice, execScene, saveDeviceOrder, queryGroup, queryAuthGetStatus } from '../../apis/index'
 import Toast from '@vant/weapp/toast/toast'
 import {
   storage,
@@ -22,14 +22,24 @@ import {
   rpx2px,
   _get,
   throttle,
-  toPropertyDesc,
-  isNullOrUnDef,
-  transferDeviceProperty,
   isConnect,
   verifyNetwork,
   Logger,
+  strUtil,
 } from '../../utils/index'
-import { proName, PRO_TYPE, LIST_PAGE, CARD_W, CARD_H, MODEL_NAME, CARD_REFRESH_TIME } from '../../config/index'
+import {
+  maxColorTemp,
+  minColorTemp,
+  proName,
+  PRO_TYPE,
+  LIST_PAGE,
+  CARD_W,
+  CARD_H,
+  getModelName,
+  CARD_REFRESH_TIME,
+  sceneImgDir,
+  defaultImgDir,
+} from '../../config/index'
 
 type DeviceCard = Device.DeviceItem & {
   x: string
@@ -73,6 +83,8 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    sceneImgDir,
+    defaultImgDir,
     _updating: false, // 列表更新中标志
     _diffWaitlist: [] as DeviceCard[], // 待更新列表
     // 待更新到视图的数据（updateDeviceList专用）
@@ -86,6 +98,7 @@ ComponentWithComputed({
       (storage.get<number>('navigationBarHeight') as number) +
       'px',
     movableAreaHeight: 236, // 可移动区域高度
+    toolboxTop: (storage.get('statusBarHeight') as number) + (storage.get('navigationBarHeight') as number), // 工具栏上边补白
     /** 展示点中离线设备弹窗 */
     showDeviceOffline: false,
     /** 点击的离线设备的信息 */
@@ -93,28 +106,18 @@ ComponentWithComputed({
     /** 控制面板 */
     controlPopup: false,
     showAddScenePopup: false,
+    showAuthDialog: false, // 显示确权弹层
+    deviceIdForQueryAuth: '', // 用于确权的设备id
+    _cardEventType: '' as 'card' | 'control', // 触发确权前的操作类型
     // 设备卡片列表，二维数组
     devicePageList: [] as DeviceCard[][],
     /** 待创建面板的设备选择弹出框 */
     showBeforeAddScenePopup: false,
-    /** 添加场景成功提示 */
-    showAddSceneSuccess: false,
-    /** 添加场景成功提示位置 */
-    sceneTitlePosition: {
-      x: 0,
-      y: 0,
-    },
-    /** 是否提示用户如何创建场景 */
-    showAddSceneTips: false,
-    /** 场景提示部分位置 */
-    sceneTipsPositionStyle: '',
     scrollTop: 0,
     checkedList: [] as string[], // 已选择设备的id列表
     editSelectList: [] as string[], // 编辑状态下，已勾选的设备id列表
     editSelectMode: false, // 是否编辑状态
-    lightStatus: {} as Record<string, number>, // 当前选择的灯具的状态
-    curtainStatus: {} as Record<string, string>, // 当前选择的窗帘的状态
-    checkedType: [] as string[], // 已选择设备的类型
+    checkedDeviceInfo: {} as DeviceCard, // 选中设备的数据
     deviceListInited: false, // 设备列表是否初始化完毕
     isMoving: false, // 是否正在拖拽中
     hasMoved: false, // 排序变更过
@@ -125,16 +128,31 @@ ComponentWithComputed({
       x: '',
       y: '',
     },
+    roomLight: {
+      brightness: 0,
+      colorTemperature: 0,
+      maxColorTemp,
+      minColorTemp,
+      power: 0,
+    },
   },
 
   computed: {
-    roomHasGateway(data) {
+    // 房间亮度toast格式化
+    colorTempFormatter(data) {
+      const { maxColorTemp, minColorTemp } = data.roomLight
+      return (value: number) => {
+        return `${(value / 100) * (maxColorTemp - minColorTemp) + minColorTemp}K`
+      }
+    },
+    // 房间存在可显示的灯具
+    roomHasLight(data) {
       if (data.allRoomDeviceList) {
         return (
           (data.allRoomDeviceList as DeviceCard[]).filter(
             (device) =>
               device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
-              device.proType === PRO_TYPE.gateway,
+              device.proType === PRO_TYPE.light,
           ).length > 0
         )
       }
@@ -147,8 +165,7 @@ ComponentWithComputed({
           (data.allRoomDeviceList as DeviceCard[]).filter(
             (device) =>
               device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
-              device.proType !== PRO_TYPE.gateway &&
-              device.proType !== PRO_TYPE.sensor,
+              device.proType !== PRO_TYPE.gateway,
           ).length > 0
         )
       }
@@ -174,18 +191,6 @@ ComponentWithComputed({
       }
       return {}
     },
-    hasSelectLight(data) {
-      if (data.checkedType) {
-        return data.checkedType.includes('light')
-      }
-      return false
-    },
-    hasSelectSwitch(data) {
-      if (data.checkedType) {
-        return data.checkedType.includes('switch')
-      }
-      return false
-    },
     // 设备批量选择按钮文字
     allSelectBtnText(data) {
       return data.checkedList && data.checkedList.length > 0 ? '全不选' : '全选'
@@ -196,7 +201,9 @@ ComponentWithComputed({
         return false
       }
       const { deviceMap } = deviceStore
-      return data.checkedList.some((uniId) => uniId.indexOf(':') === -1 && deviceMap[uniId].proType === PRO_TYPE.light)
+      return data.checkedList.some(
+        (uniId: string) => uniId.indexOf(':') === -1 && deviceMap[uniId].proType === PRO_TYPE.light,
+      )
     },
     /** 是否只控制选中一个开关 */
     // TODO 代码可删除
@@ -222,15 +229,28 @@ ComponentWithComputed({
     // 可滚动区域高度
     scrollViewHeight(data) {
       let baseHeight =
-        (storage.get<number>('windowHeight') as number) -
-        (storage.get<number>('statusBarHeight') as number) -
-        (storage.get<number>('navigationBarHeight') as number)
-      if (data.controlPopup) {
-        baseHeight -= rpx2px(600)
-      } else if (data.editSelectMode) {
+        (storage.get('windowHeight') as number) -
+        (storage.get('statusBarHeight') as number) -
+        (storage.get('navigationBarHeight') as number) -
+        data.toolboxContentHeight -
+        10 // 场景
+      // 控制点击时有蒙层，不再需要调整滚动区域
+      // if (data.controlPopup) {
+      //   baseHeight -= rpx2px(600)
+      // } else
+      if (data.editSelectMode) {
         baseHeight -= rpx2px(368)
       }
-      return baseHeight
+      return baseHeight + 'px'
+    },
+    // 工具栏内容区域高度
+    toolboxContentHeight(data) {
+      return data.roomHasLight ? 150 : 60
+    },
+    // 当前房间灯组数量
+    groupCount() {
+      const groups = deviceStore.deviceFlattenList.filter((d) => d.deviceType === 4)
+      return groups.length
     },
   },
 
@@ -252,23 +272,6 @@ ComponentWithComputed({
       // this.setUpdatePerformanceListener({withDataPaths: true}, (res) => {
       //   console.debug('setUpdatePerformanceListener', res, res.pendingStartTimestamp - res.updateStartTimestamp, res.updateEndTimestamp - res.updateStartTimestamp, dayjs().format('YYYY-MM-DD HH:mm:ss'))
       // })
-
-      // 是否点击过场景使用提示的我知道了，如果没点击过就显示
-      const hasKnownUseAddScene = storage.get<boolean>('hasKnownUseAddScene')
-      if (!hasKnownUseAddScene) {
-        this.createSelectorQuery()
-          .select('#scene-card')
-          .boundingClientRect((res) => {
-            console.log('#scene-card', res)
-            if (res) {
-              this.setData({
-                showAddSceneTips: true,
-                sceneTipsPositionStyle: `left: ${res.left}px;top: ${res.top}px;width: ${res.width}px;height: ${res.height}px;`,
-              })
-            }
-          })
-          .exec()
-      }
     },
 
     async onShow() {
@@ -292,6 +295,18 @@ ComponentWithComputed({
         }
 
         if (e.result.eventType === WSEventType.device_property) {
+          // 房间状态上报，只响应开关状态的变更
+          if (e.result.eventData.deviceId === roomStore.currentRoom.groupId) {
+            const { event } = e.result.eventData
+            this.setData({
+              'roomLight.power': event.power,
+              // roomLight: {
+              //   brightness: event.brightness,
+              //   colorTemperature: event.colorTemperature,
+              //   power: event.power,
+              // },
+            })
+          }
           // 如果有传更新的状态数据过来，直接更新store
           const deviceInHouse = deviceStore.allRoomDeviceList.find(
             (device) => device.deviceId === e.result.eventData.deviceId,
@@ -373,6 +388,35 @@ ComponentWithComputed({
       })
     },
 
+    // 响应控制弹窗中单灯/灯组的控制变化，直接按本地设备列表数值以及设置值，刷新房间灯的状态
+    refreshLightStatus() {
+      console.log('本地更新房间灯状态', deviceStore.lightStatusInRoom)
+
+      const { brightness, colorTemperature } = deviceStore.lightStatusInRoom
+      this.setData({
+        'roomLight.brightness': brightness,
+        'roomLight.colorTemperature': colorTemperature,
+      })
+    },
+
+    // 查询房间分组详情
+    async queryGroupInfo() {
+      const res = await queryGroup({ groupId: roomStore.currentRoom.groupId })
+      if (res.success) {
+        const roomStatus = res.result.controlAction[0]
+        const { colorTempRangeMap } = res.result
+        this.setData({
+          roomLight: {
+            brightness: roomStatus.brightness,
+            colorTemperature: roomStatus.colorTemperature,
+            maxColorTemp: colorTempRangeMap.maxColorTemp,
+            minColorTemp: colorTempRangeMap.minColorTemp,
+            power: roomStatus.power,
+          },
+        })
+      }
+    },
+
     async reloadData() {
       Logger.log('reloadData', isConnect())
       // 未连接网络，所有设备直接设置为离线
@@ -386,6 +430,7 @@ ComponentWithComputed({
           homeStore.updateRoomCardList(),
           sceneStore.updateSceneList(),
           sceneStore.updateAllRoomSceneList(),
+          this.queryGroupInfo(),
         ])
 
         this.updateQueue({ isRefresh: true })
@@ -399,13 +444,28 @@ ComponentWithComputed({
       this.reloadData()
     }, 4000),
 
+    // 只单独更新列表
+    async reloadDeviceList() {
+      Logger.log('reloadData', isConnect())
+      // 未连接网络，所有设备直接设置为离线
+      if (!isConnect()) {
+        this.updateQueue({ isRefresh: true, onLineStatus: 0 })
+        return
+      }
+
+      await deviceStore.updateAllRoomDeviceList()
+      this.updateQueue({ isRefresh: true })
+
+      this.queryGroupInfo()
+    },
+
+    // 节流更新设备列表
+    reloadDeviceListThrottle: throttle(function (this: IAnyObject) {
+      this.reloadDeviceList()
+    }, 3000),
+
     // 页面滚动
     onPageScroll(e: { detail: { scrollTop: number } }) {
-      if (e?.detail?.scrollTop !== 0) {
-        this.setData({
-          showAddSceneTips: false,
-        })
-      }
       this.data.scrollTop = e?.detail?.scrollTop || 0
     },
 
@@ -421,12 +481,6 @@ ComponentWithComputed({
         clearTimeout(this.data._wait_timeout)
         this.data._wait_timeout = null
       }
-    },
-    handleKnownAddSceneTap() {
-      storage.set('hasKnownUseAddScene', true, null)
-      this.setData({
-        showAddSceneTips: false,
-      })
     },
     handleShowDeviceOffline(e: { detail: DeviceCard }) {
       this.setData({
@@ -499,7 +553,7 @@ ComponentWithComputed({
             const modelName =
               originDevice.proType === PRO_TYPE.switch
                 ? originDevice.uniId.split(':')[1]
-                : MODEL_NAME[originDevice.proType]
+                : getModelName(originDevice.proType, originDevice.productId)
 
             // 如果mzgdPropertyDTOList、switchInfoDTOList字段存在，则覆盖更新
             if (device!.mzgdPropertyDTOList) {
@@ -532,22 +586,14 @@ ComponentWithComputed({
             if (
               device!.mzgdPropertyDTOList &&
               this.data.checkedList.includes(originDevice!.deviceId) &&
-              originDevice!.select
+              originDevice!.select &&
+              originDevice.proType === PRO_TYPE.curtain // 因为【灯】异常推送较多，暂时不对弹框中的设备状态进行更新
             ) {
-              const prop = transferDeviceProperty(originDevice.proType, device!.mzgdPropertyDTOList[modelName])
-              // 因为【灯】异常推送较多，暂时不对弹框中的设备状态进行更新
-              //   if (originDevice.proType === PRO_TYPE.light) {
-              //     diffData.lightStatus = {
-              //       Level: prop.Level,
-              //       ColorTemp: prop.ColorTemp,
-              //       OnOff: prop.OnOff,
-              //     }
-              //   } else
-              if (originDevice.proType === PRO_TYPE.curtain) {
-                this.data._diffCards.data.curtainStatus = {
-                  position: prop.curtain_position,
-                }
+              const newVal = {
+                ...originDevice,
+                ...device,
               }
+              this.data._diffCards.data.checkedDeviceInfo = newVal
             }
 
             // 处理更新逻辑
@@ -591,10 +637,8 @@ ComponentWithComputed({
 
         const _list = flattenList
           // 接口返回开关面板数据以设备为一个整体，需要前端拆开后排序
-          // 排除灯组
-          .filter((device) => !deviceStore.lightsInGroup.includes(device.deviceId))
-          // 排序，先按排序字段升序，相同则再按设备id升序
-          .sort((a, b) => a.orderNum - b.orderNum || parseInt(a.deviceId) - parseInt(b.deviceId))
+          // 不再排除灯组
+          // .filter((device) => !deviceStore.lightsInGroup.includes(device.deviceId))
           // 补充字段
           .map((device, index) => ({
             ...device,
@@ -613,12 +657,11 @@ ComponentWithComputed({
         }
         // !! 整个列表刷新
         else {
-          this.setData({
-            devicePageList: [], // 清空
-            deviceListInited: false,
-          })
           console.log('▤ [updateDeviceList] 列表重新加载')
         }
+
+        const oldListPageLength = this.data.devicePageList.length
+        const newListPageLength = Math.ceil(_list.length / LIST_PAGE)
 
         // 拆分为二维数组，以便分页渲染
         for (let groupIndex = 0; _list.length > 0; ++groupIndex) {
@@ -628,9 +671,20 @@ ComponentWithComputed({
           this.setData(diffData)
         }
 
-        this.setData({
-          deviceListInited: true,
-        })
+        // 直接清空旧列表，再重新加载会引导闪烁，此处只清空‘旧列表比新列表多出的项’
+        if (oldListPageLength > newListPageLength) {
+          for (let groupIndex = newListPageLength; groupIndex < oldListPageLength; ++groupIndex) {
+            const diffData = {} as IAnyObject
+            diffData[`devicePageList[${groupIndex}]`] = []
+            this.setData(diffData)
+          }
+        }
+
+        if (!this.data.deviceListInited) {
+          this.setData({
+            deviceListInited: true,
+          })
+        }
 
         Logger.log('▤ [updateDeviceList] 列表更新完成', this.data.devicePageList)
       }
@@ -758,6 +812,10 @@ ComponentWithComputed({
      */
     movableChangeThrottle: throttle(function (this: IAnyObject, e: WechatMiniprogram.TouchEvent) {
       const targetOrder = getIndex(e.detail.x, e.detail.y)
+      // 如果拖动目标是灯组所在的位置
+      if (this.data.groupCount && targetOrder < this.data.groupCount) {
+        return
+      }
       if (this.data.placeholder.orderNum !== targetOrder) {
         const oldOrder = this.data.placeholder.orderNum
         // 节流操作，可能导致movableTouchEnd后仍有movableChange需要执行，丢弃掉
@@ -905,7 +963,8 @@ ComponentWithComputed({
 
     handleSceneTap() {
       wx.navigateTo({
-        url: '/package-room-control/scene-list/index',
+        //  url: '/package-room-control/scene-list/index',
+        url: '/package-automation/automation/index',
       })
     },
     /** 点击创建场景按钮回调 */
@@ -915,90 +974,133 @@ ComponentWithComputed({
         return
       }
 
-      // 补充actions
-      const addSceneActions = [] as Device.ActionItem[]
+      // 逻辑已过时，可删除，暂时保留一段时间
+      // // 补充actions
+      // const addSceneActions = [] as Device.ActionItem[]
 
-      // 排除已经是场景开关的开关或者离线的设备
-      // ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
-      let deviceList = [] as Device.DeviceItem[]
+      // // 排除已经是场景开关的开关或者离线的设备
+      // // ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
+      // let deviceList = [] as Device.DeviceItem[]
 
-      for (const list of this.data.devicePageList) {
-        deviceList = deviceList.concat(list)
-      }
+      // for (const list of this.data.devicePageList) {
+      //   deviceList = deviceList.concat(list)
+      // }
 
-      const selectList = deviceList.filter((device) => {
-        let [, switchId] = device.uniId.split(':')
+      // const selectList = deviceList.filter((device) => {
+      //   let [, switchId] = device.uniId.split(':')
 
-        switchId = switchId ?? MODEL_NAME[device.proType]
+      //   switchId = switchId ?? MODEL_NAME[device.proType]
 
-        return device.mzgdPropertyDTOList[switchId]?.ButtonMode !== 2 && device.onLineStatus
-      })
+      //   return device.mzgdPropertyDTOList[switchId]?.ButtonMode !== 2 && device.onLineStatus
+      // })
 
-      if (!selectList.length) {
-        Toast('所有设备已离线，无法创建场景')
-        return
-      }
+      // if (!selectList.length) {
+      //   Toast('所有设备已离线，无法创建场景')
+      //   return
+      // }
 
-      selectList.forEach((device) => {
-        if (device.proType === PRO_TYPE.switch) {
-          // 开关
-          const modelName = device.uniId.split(':')[1]
-          const power = device.mzgdPropertyDTOList[modelName].power
-          const desc = toPropertyDesc(device.proType, device.mzgdPropertyDTOList[modelName])
+      // selectList.forEach((device) => {
+      //   if (device.proType === PRO_TYPE.switch) {
+      //     // 开关
+      //     const modelName = device.uniId.split(':')[1]
+      //     console.log(Boolean(device.mzgdPropertyDTOList[modelName]))
+      //     console.log(modelName)
+      //     let power
+      //     if (device.mzgdPropertyDTOList[modelName]) {
+      //       power = device.mzgdPropertyDTOList[modelName].power
+      //     } else {
+      //       power = false
+      //     }
+      //     const desc = toPropertyDesc(device.proType, device.mzgdPropertyDTOList[modelName])
 
-          addSceneActions.push({
-            uniId: device.uniId,
-            name: device.switchInfoDTOList[0].switchName + ' | ' + device.deviceName,
-            desc: desc,
-            pic: device.switchInfoDTOList[0].pic,
-            proType: device.proType,
-            deviceType: device.deviceType,
-            value: {
-              modelName,
-              power,
-            },
-          })
-        } else {
-          const modelName = MODEL_NAME[device.proType]
-          const properties = device.mzgdPropertyDTOList[modelName]
-          const desc = toPropertyDesc(device.proType, properties)
+      //     addSceneActions.push({
+      //       uniId: device.uniId,
+      //       name: device.switchInfoDTOList[0].switchName + ' | ' + device.deviceName,
+      //       desc: desc,
+      //       pic: device.switchInfoDTOList[0].pic,
+      //       proType: device.proType,
+      //       deviceType: device.deviceType,
+      //       value: {
+      //         modelName,
+      //         power,
+      //       },
+      //     })
+      //   } else {
+      //     const modelName = MODEL_NAME[device.proType]
+      //     const properties = device.mzgdPropertyDTOList[modelName]
+      //     const desc = toPropertyDesc(device.proType, properties)
 
-          const action = {
-            uniId: device.uniId,
-            name: device.deviceName,
-            desc,
-            pic: device.pic,
-            proType: device.proType,
-            deviceType: device.deviceType,
-            value: {
-              modelName,
-              ...properties,
-            } as IAnyObject,
-          }
+      //     const action = {
+      //       uniId: device.uniId,
+      //       name: device.deviceName,
+      //       desc,
+      //       pic: device.pic,
+      //       proType: device.proType,
+      //       deviceType: device.deviceType,
+      //       value: {
+      //         modelName,
+      //         ...properties,
+      //       } as IAnyObject,
+      //     }
 
-          addSceneActions.push(action)
-        }
-      })
-      runInAction(() => {
-        sceneStore.addSceneActions = addSceneActions
-      })
-      this.setData({
-        editSelectMode: false,
-        editSelectList: [],
-        showBeforeAddScenePopup: true,
+      //     addSceneActions.push(action)
+      //   }
+      // })
+      // runInAction(() => {
+      //   sceneStore.addSceneActions = addSceneActions
+      // })
+      // this.setData({
+      //   editSelectMode: false,
+      //   editSelectList: [],
+      //   showBeforeAddScenePopup: true,
+      // })
+
+      wx.navigateTo({
+        url: strUtil.getUrlWithParams('/package-automation/automation-add/index', {
+          roomid: roomStore.currentRoom.roomId,
+        }),
       })
     },
 
     /**
-     * @name 根据是否编辑状态，选择卡片点击事件
+     * @description 卡片点击事件处理
      * @param e 设备属性
      */
-    handleCardTap(e: { detail: DeviceCard & { clientRect: WechatMiniprogram.ClientRect } }) {
+    async handleCardTap(e: { detail: DeviceCard & { clientRect: WechatMiniprogram.ClientRect } }) {
+      // 如果在编辑状态，则选择或取消选择卡片
       if (this.data.editSelectMode) {
         this.handleCardEditSelect(e)
-      } else {
-        this.handleCardCommonTap(e)
+        return
       }
+      // 不在编辑状态，如果是WIFI设备
+      else if (e.detail.deviceType === 3) {
+        const { deviceId } = e.detail
+        const res = await queryAuthGetStatus({ houseId: homeStore.currentHomeId, deviceId })
+        // 若设备未确权、待确权，则弹出指引弹窗
+        if (res.result.status === 1 || res.result.status === 2) {
+          this.setData({ showAuthDialog: true, deviceIdForQueryAuth: deviceId })
+          this.data._cardEventType = 'card'
+          return
+        }
+      }
+
+      // 其余情况正常响应点击
+      this.handleCardCommonTap(e)
+    },
+
+    handleAuthSuccess() {
+      const detail = deviceStore.deviceList.find((d) => d.deviceId === this.data.deviceIdForQueryAuth) as DeviceCard
+
+      if (this.data._cardEventType === 'card') {
+        this.handleCardCommonTap({ detail })
+      } else {
+        this.handleControlTap({ detail })
+      }
+      this.setData({ showAuthDialog: false })
+    },
+
+    handleAuthCancel() {
+      this.setData({ showAuthDialog: false })
     },
 
     // 编辑模式下再点选
@@ -1048,7 +1150,7 @@ ComponentWithComputed({
       this.setData(diffData)
     },
 
-    handleCardCommonTap(e: { detail: DeviceCard & { clientRect: WechatMiniprogram.ClientRect } }) {
+    handleCardCommonTap(e: { detail: DeviceCard }) {
       const { uniId } = e.detail // 灯的 deviceId===uniId
       const isChecked = this.data.checkedList.includes(uniId) // 点击卡片前，卡片是否选中
       const toCheck = !isChecked // 本次点击需执行的选中状态
@@ -1070,19 +1172,7 @@ ComponentWithComputed({
 
       // 选择灯卡片时，同步设备状态到控制弹窗
       if (toCheck) {
-        const modelName = MODEL_NAME[e.detail.proType]
-        const prop = e.detail.mzgdPropertyDTOList[modelName]
-        if (e.detail.proType === PRO_TYPE.light) {
-          if (!isNullOrUnDef(prop.brightness)) diffData['lightStatus.brightness'] = prop.brightness
-          if (!isNullOrUnDef(prop.colorTemperature)) diffData['lightStatus.colorTemperature'] = prop.colorTemperature
-          if (!isNullOrUnDef(prop.power)) diffData['lightStatus.power'] = prop.power
-          if (!isNullOrUnDef(e.detail.canLanCtrl)) diffData['lightStatus.canLanCtrl'] = e.detail.canLanCtrl
-          if (!isNullOrUnDef(e.detail.onLineStatus)) diffData['lightStatus.onLineStatus'] = e.detail.onLineStatus
-        } else if (e.detail.proType === PRO_TYPE.curtain) {
-          diffData.curtainStatus = {
-            position: prop.curtain_position,
-          }
-        }
+        diffData.checkedDeviceInfo = e.detail
       }
 
       // 合并数据变化
@@ -1092,20 +1182,41 @@ ComponentWithComputed({
       // 更新视图
       this.setData(diffData)
 
-      // TODO 冗余操作，是否可以取消设值
-      this.updateSelectType()
-
       // 弹起popup后，选中卡片滚动到视图中央，以免被遮挡
+      // type: DeviceCard & { clientRect: WechatMiniprogram.ClientRect }
       // 作用不大，减小渲染压力，暂时注释
       // this.setData({
       //   scrollTop: this.data.scrollTop + e.detail.clientRect.top - this.data.scrollViewHeight / 2,
       // })
     },
 
+    /**
+     * @description 卡片控制事件处理
+     * @param e 设备属性
+     */
+    async queryAuthBeforeControlTap(e: { detail: DeviceCard }) {
+      // 如果是WIFI设备
+      if (e.detail.deviceType === 3) {
+        const { deviceId } = e.detail
+        const res = await queryAuthGetStatus({ houseId: homeStore.currentHomeId, deviceId })
+        // 若设备未确权、待确权，则弹出指引弹窗
+        if (res.result.status === 1 || res.result.status === 2) {
+          this.setData({ showAuthDialog: true, deviceIdForQueryAuth: deviceId })
+          this.data._cardEventType = 'control'
+          return
+        }
+      }
+
+      // 其余情况正常响应控制事件
+      this.handleControlTap(e)
+    },
+
     // 卡片点击时，按品类调用对应方法
     async handleControlTap(e: { detail: DeviceCard }) {
       const device = { ...e.detail }
-      const modelName = device.switchInfoDTOList ? device.switchInfoDTOList[0].switchId : MODEL_NAME[e.detail.proType]
+      const modelName = device.switchInfoDTOList
+        ? device.switchInfoDTOList[0].switchId
+        : getModelName(device.proType, device.productId)
 
       // 若面板关联场景
       if (device.proType === PRO_TYPE.switch && device.mzgdPropertyDTOList[modelName].ButtonMode === 2) {
@@ -1139,9 +1250,9 @@ ComponentWithComputed({
       // 不等待云端，即时改变视图，提升操作手感 // TODO 不插入队列
       device.mzgdPropertyDTOList[modelName].power = newOnOff
       this.updateQueue(device)
-      this.setData({
-        'lightStatus.power': newOnOff,
-      })
+      // this.setData({
+      //   'lightStatus.power': newOnOff,
+      // })
 
       const res = await sendDevice({
         proType: device.proType,
@@ -1155,9 +1266,9 @@ ComponentWithComputed({
       if (!res.success) {
         device.mzgdPropertyDTOList[modelName].power = OldOnOff
         this.updateQueue(device)
-        this.setData({
-          'lightStatus.power': OldOnOff,
-        })
+        // this.setData({
+        //   'lightStatus.power': OldOnOff,
+        // })
         Toast('控制失败')
       }
 
@@ -1193,25 +1304,8 @@ ComponentWithComputed({
       })
     },
     handleShowAddSceneSuccess() {
-      this.setData({
-        showAddSceneSuccess: false,
-      })
-
       wx.navigateTo({
         url: '/package-room-control/scene-request-list/index',
-      })
-    },
-    updateSelectType() {
-      const typeList = new Set()
-      this.data.checkedList.forEach((deviceId: string) => {
-        if (deviceId.includes(':')) {
-          typeList.add('switch')
-          return
-        }
-        typeList.add(this.data.deviceIdTypeMap[deviceId])
-      })
-      this.setData({
-        checkedType: Array.from(typeList) as string[],
       })
     },
     /** 点击空位的操作 */
@@ -1291,6 +1385,44 @@ ComponentWithComputed({
       wx.navigateTo({
         url: `/package-distribution/wifi-connect/index?type=changeWifi&sn=${gateway.sn}`,
       })
+    },
+    handleLevelChange(e: { detail: number }) {
+      this.setData({
+        'roomLight.brightness': e.detail,
+      })
+    },
+    handleLevelEnd(e: { detail: number }) {
+      this.setData({
+        'roomLight.brightness': e.detail,
+      })
+      this.lightSendDeviceControl('brightness')
+    },
+    handleColorTempChange(e: { detail: number }) {
+      this.setData({
+        'roomLight.colorTemperature': e.detail,
+      })
+    },
+    handleColorTempEnd(e: { detail: number }) {
+      this.setData({
+        'roomLight.colorTemperature': e.detail,
+      })
+      this.lightSendDeviceControl('colorTemperature')
+    },
+    async lightSendDeviceControl(type: 'colorTemperature' | 'brightness') {
+      const deviceId = roomStore.currentRoom.groupId
+
+      const res = await sendDevice({
+        proType: PRO_TYPE.light,
+        deviceType: 4,
+        deviceId,
+        property: {
+          [type]: this.data.roomLight[type],
+        },
+      })
+
+      if (!res.success) {
+        Toast('控制失败')
+      }
     },
   },
 })

@@ -1,6 +1,7 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { logout, storage, strUtil } from '../../utils/index'
 import { userBinding, homeBinding, userStore } from '../../store/index'
+import { defaultImgDir } from '../../config/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 
 Component({
@@ -9,6 +10,7 @@ Component({
    * 页面的初始数据
    */
   data: {
+    defaultImgDir,
     managerList: [
       {
         icon: '/assets/img/mine/home.png',
@@ -38,6 +40,12 @@ Component({
       deviceCategory: '/package-mine/device-category/index',
       defaultPageSetting: '/pages/start/index',
     },
+    scrollViewHeight:
+      (storage.get('windowHeight') as number) -
+      (storage.get('statusBarHeight') as number) -
+      (storage.get('navigationBarHeight') as number) -
+      (storage.get('bottomBarHeight') as number) +
+      'px',
   },
   pageLifetimes: {
     show() {

@@ -14,6 +14,7 @@ export * from './log'
 export * from './deviceModel'
 export * from './network'
 export * from './capacity'
+export * from './sort'
 
 import { PRO_TYPE } from '../config/index'
 
@@ -129,7 +130,7 @@ export function _get(obj: object, path: string, defaultVal = undefined) {
  *  lightCount: 灯与面板总数量（不排除关联，面板按拆分设备计数）
  * }
  */
-export function deviceCount(list: Device.DeviceItem[], lightsInGroup: string[]): Record<string, number> {
+export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
   let lightOnCount = 0
   let endCount = 0
   let lightCount = 0
@@ -140,12 +141,9 @@ export function deviceCount(list: Device.DeviceItem[], lightsInGroup: string[]):
         endCount++
         break
       case PRO_TYPE.light:
-        // 终端卡片数，不计算已在灯组中的单灯
-        // TODO release-1030 将改为全部显示
-        if (!lightsInGroup.includes(device.deviceId)) {
-          endCount++
-        }
-
+        // release-1030 将改为灯组和单灯全部显示
+        // 终端卡片数，计算已在灯组中的单灯，也计算灯组
+        endCount++
         // 灯数及亮灯数不计算灯组
         if (device.deviceType === 4) {
           return
@@ -169,6 +167,10 @@ export function deviceCount(list: Device.DeviceItem[], lightsInGroup: string[]):
             lightOnCount++
           }
         })
+        break
+      // 传感器统计控制卡片数
+      case PRO_TYPE.sensor:
+        endCount++
         break
       // 网关及其他类型，不作统计
       case PRO_TYPE.gateway:
