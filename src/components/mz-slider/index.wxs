@@ -140,13 +140,18 @@ function onTouchend(event, ownerInstance) {
 
 // 滑条样式处理
 function changeBarStyle(_width) {
-  var widthInRange = calcDragDis(_width, isBtnInset[key] ? buttonInfo[key].width : 0)
+  var minWidth = isBtnInset[key] ? buttonInfo[key].width / 2 : 0
+  var maxWidth = isBtnInset[key] ? sliderInfo[key].width - buttonInfo[key].width / 2 : sliderInfo[key].width
+  var widthInRange = calcDragDis(_width, minWidth, maxWidth)
+  var sliderBarWidth = isBtnInset[key] ? widthInRange + buttonInfo[key].width / 2 : widthInRange
+
   // 已激活的滑条宽度处理
   sliderBar[key].setStyle({
-    width: widthInRange + 'px',
+    width: sliderBarWidth + 'px',
   })
-  // 滑动按钮位置处理
+
   if (!isBtnInset[key]) {
+    // 滑动按钮位置处理
     var btnX = widthInRange - buttonInfo[key].width / 2
     sliderBtn[key].setStyle({
       transform: 'translateX(' + btnX + 'px)',
