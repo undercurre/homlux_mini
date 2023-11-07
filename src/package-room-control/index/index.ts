@@ -1390,9 +1390,19 @@ ComponentWithComputed({
       this.setData({
         'roomLight.brightness': e.detail,
       })
+    },
+    handleLevelEnd(e: { detail: number }) {
+      this.setData({
+        'roomLight.brightness': e.detail,
+      })
       this.lightSendDeviceControl('brightness')
     },
     handleColorTempChange(e: { detail: number }) {
+      this.setData({
+        'roomLight.colorTemperature': e.detail,
+      })
+    },
+    handleColorTempEnd(e: { detail: number }) {
       this.setData({
         'roomLight.colorTemperature': e.detail,
       })

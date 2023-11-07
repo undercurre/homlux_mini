@@ -91,7 +91,7 @@
         <mz-slider
           disabled="{{!roomLight.power}}"
           catch:slideChange="handleLevelChange"
-          catch:slideEnd="handleLevelChange"
+          catch:slideEnd="handleLevelEnd"
           value="{{roomLight.brightness}}"
           custom-class="slider-brightness-bar"
           active-color="linear-gradient(90deg, rgba(80, 127, 255, 1) 0%, #ffffff 100%)"
@@ -119,7 +119,7 @@
         <mz-slider
           disabled="{{!roomLight.power}}"
           catch:slideChange="handleColorTempChange"
-          catch:slideEnd="handleColorTempChange"
+          catch:slideEnd="handleColorTempEnd"
           value="{{roomLight.colorTemperature}}"
           custom-class="slider-color-temp-bar"
           active-color="rgba(0,0,0,0)"

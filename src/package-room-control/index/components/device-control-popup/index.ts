@@ -1,4 +1,4 @@
-import { Logger, isArrEqual, throttle, showLoading, hideLoading, isNullOrUnDef } from '../../../../utils/index'
+import { Logger, isArrEqual, showLoading, hideLoading, isNullOrUnDef } from '../../../../utils/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, deviceStore, sceneStore, homeStore } from '../../../../store/index'
@@ -769,11 +769,11 @@ ComponentWithComputed({
         Toast('控制失败')
       }
     },
-    handleLevelDrag: throttle(function (this: IAnyObject, e: { detail: number }) {
+    async handleLevelDrag(e: { detail: number }) {
       this.setData({
         'lightInfoInner.brightness': e.detail,
       })
-    }),
+    },
     async handleLevelChange(e: { detail: number }) {
       this.setData({
         'lightInfoInner.brightness': e.detail,
@@ -789,12 +789,11 @@ ComponentWithComputed({
       this.lightSendDeviceControl('colorTemperature')
       this.triggerEvent('lightStatusChange')
     },
-    handleColorTempDrag: throttle(function (this: IAnyObject, e: { detail: number }) {
-      console.log('handleColorTempDrag', e.detail)
+    handleColorTempDrag(e: { detail: number }) {
       this.setData({
         'lightInfoInner.colorTemperature': e.detail,
       })
-    }),
+    },
 
     findDevice(device: Device.DeviceItem) {
       let modelName = 'light'
