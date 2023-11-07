@@ -1,5 +1,5 @@
 // 值变化节流时间
-var THROTTLE_TIME = 400
+var THROTTLE_TIME = 150
 
 // Toast 淡入淡出过渡动画
 var FADE_TRANSITION = 'opacity 0.3s'
@@ -20,6 +20,7 @@ var sliderInfo = {}
 var buttonInfo = {}
 var sliderToast = {}
 var toastActived = {}
+var isMoving = {} // 是否处理拖动中
 
 /**
  * 滑条的最小值最大值，默认 0~100
@@ -38,6 +39,9 @@ function propObserver(newValue, oldValue, ownerInstance) {
     // 获取组件设置
     var dataset = ownerInstance.getDataset()
     if (dataset.key !== undefined) key = dataset.key
+
+    // 如果正在拖动，则不响应值变化
+    if (isMoving[key]) return
 
     // 未初始化
     // if (!isBtnInset[key]) {
@@ -70,6 +74,7 @@ function onTouchstart(event, ownerInstance) {
   if (dataset.key !== undefined) key = dataset.key
   var touch = event.touches[0] || event.changedTouches[0]
   var barWidth = touch.clientX - sliderInfo[key].left
+  isMoving[key] = true
   changeBarStyle(barWidth)
   updateValue(barWidth)
   ownerInstance.callMethod('touchstart', { value: setValue[key] })
@@ -83,7 +88,6 @@ function onTouchmove(event, ownerInstance) {
   var barWidth = touch.clientX - sliderInfo[key].left
 
   updateValue(barWidth)
-
   changeBarStyle(barWidth)
 
   // 气泡提示
@@ -103,6 +107,8 @@ function onTouchmove(event, ownerInstance) {
 function onTouchend(event, ownerInstance) {
   var dataset = ownerInstance.getDataset()
   if (dataset.key !== undefined) key = dataset.key
+
+  isMoving[key] = false
 
   // 气泡提示
   if (dataset.showToast) {
