@@ -291,6 +291,15 @@ ComponentWithComputed({
     },
     handleBatchMove() {
       const actionFn = async () => {
+        // 可能存在未重新开始移动，目标已被移动成功的情况
+        if (!this.data.moveWaitlist.length) {
+          this.triggerEvent('updateList')
+          Toast({
+            message: '已成功移动',
+            zIndex: 9999,
+          })
+          return
+        }
         this.data.moveFailCount = 0 // 清空失败计数
         const map = {} as Record<string, Device.DeviceInfoUpdateVo>
         this.data.moveWaitlist.forEach((uniId: string) => {
