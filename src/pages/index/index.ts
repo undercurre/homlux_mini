@@ -89,6 +89,7 @@ ComponentWithComputed({
     scrollTop: 0,
     _scrolledWhenMoving: false, // 拖拽时，被动发生了滚动
     _lastClientY: 0, // 上次触控采样时 的Y坐标
+    _isFirstShow: true, // 是否首次加载
   },
   computed: {
     currentHomeName(data) {
@@ -176,6 +177,11 @@ ComponentWithComputed({
       emitter.off('wsReceive')
     },
     async onShow() {
+      if (!this.data._isFirstShow) {
+        homeStore.updateRoomCardList()
+      }
+      this.data._isFirstShow = false
+
       setTimeout(() => {
         this.acceptShare()
       }, 1000)
