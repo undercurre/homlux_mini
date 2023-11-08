@@ -812,12 +812,16 @@ ComponentWithComputed({
      */
     movableChangeThrottle: throttle(function (this: IAnyObject, e: WechatMiniprogram.TouchEvent) {
       const targetOrder = getIndex(e.detail.x, e.detail.y)
+      const oldOrder = this.data.placeholder.orderNum
       // 如果拖动目标是灯组所在的位置
-      if (this.data.groupCount && targetOrder < this.data.groupCount) {
+      if (
+        this.data.groupCount && // 有灯组
+        ((targetOrder < this.data.groupCount && oldOrder >= this.data.groupCount) || // 非灯组不能移入灯组
+          (oldOrder < this.data.groupCount && targetOrder >= this.data.groupCount)) // 灯组不能移入非灯组
+      ) {
         return
       }
       if (this.data.placeholder.orderNum !== targetOrder) {
-        const oldOrder = this.data.placeholder.orderNum
         // 节流操作，可能导致movableTouchEnd后仍有movableChange需要执行，丢弃掉
         if (oldOrder < 0) {
           return

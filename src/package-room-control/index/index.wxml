@@ -187,7 +187,7 @@
               bind:touchend="movableTouchEnd"
               catch:change="movableChange"
               class="{{ index === placeholder.index && g === placeholder.groupIndex ? 'z-100' : 'z-1' }}"
-              disabled="{{!isMoving || item.deviceType === 4}}"
+              disabled="{{!isMoving}}"
             >
               <device-card
                 class="w-180rpx pb-16rpx pt-16rpx flex justify-center {{editSelectMode && (index !== placeholder.index || g !== placeholder.groupIndex) ? 'shake' : ''}}"

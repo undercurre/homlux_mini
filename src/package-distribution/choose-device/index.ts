@@ -69,17 +69,6 @@ ComponentWithComputed({
           mode: 0,
         } as Meiju.IProductItem),
       },
-      // {
-      //   icon: '/package-distribution/assets/guide/curtain.png',
-      //   name: '传感器',
-      //   path: strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
-      //     proType: '21',
-      //     sn8: 'M0100035',
-      //     productId: 'MLY-D60W',
-      //     deviceImg: '/package-distribution/assets/guide/curtain.png',
-      //     mode: 0,
-      //   } as Meiju.IProductItem),
-      // },
     ],
   },
 
