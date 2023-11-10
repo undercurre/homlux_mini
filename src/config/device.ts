@@ -16,13 +16,15 @@ export const CARD_H = rpx2px(236)
 export const ROOM_CARD_H = rpx2px(336)
 export const ROOM_CARD_M = rpx2px(152) // 折叠后高度
 
-// 设备品类码
+// 设备 modelName -> 品类码
 export const PRO_TYPE = {
   light: '0x13',
   switch: '0x21',
   curtain: '0x14',
   gateway: '0x16',
   sensor: '0xBC',
+  clothesDryingRack: '0x17',
+  bathHeat: '0x26',
 } as const
 
 // productId -> 设备modelName，暂时为传感器专用
@@ -30,13 +32,6 @@ export const SENSOR_MODEL_NAME = {
   'midea.ir.201': 'irDetector',
   'midea.magnet.001.201': 'magnet',
   'midea.freepad.001.201': 'freepad',
-} as Record<string, string>
-
-// proType  -> 设备modelName
-export const MODEL_NAME = {
-  '0x13': 'light',
-  '0x14': 'curtain',
-  '0xBC': 'wallSwitch1',
 } as Record<string, string>
 
 /**
@@ -50,7 +45,7 @@ export const getModelName = (proType: string, productId: string) => {
     return SENSOR_MODEL_NAME[productId]
   }
 
-  return MODEL_NAME[proType]
+  return proName[proType]
 }
 
 // 智慧屏pid:  四寸屏：pkey:t1ae5ff32ae84b60b159676556aafbf7 psecret: e953d99rb7ef4b55  pid : zk527b6c944a454e9fb15d3cc1f4d55b 十寸屏  pkey:j1ae3ez32ae84b60b159676556aafbf7 psecret: m95fd9grb7ef4b55  pid:ok523b6c941a454e9fb15d3cc1f4d55b
@@ -59,11 +54,15 @@ export const SCREEN_PID: readonly string[] = ['zk527b6c944a454e9fb15d3cc1f4d55b'
 // 旋钮开关pid
 export const KNOB_PID: readonly string[] = ['midea.knob.001.003']
 
+// 设备品类码 -> modelName
 export const proName: Record<string, string> = {
   '0x13': 'light',
   '0x14': 'curtain',
   '0x21': 'switch',
   '0x16': 'gateway',
+  '0x17': 'clothesDryingRack',
+  '0x26': 'bathHeat',
+  '0xBC': 'sensor',
 } as const
 
 // 传感器类型，通过productId区分

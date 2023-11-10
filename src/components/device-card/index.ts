@@ -145,10 +145,21 @@ ComponentWithComputed({
     isGroup(data) {
       return data.deviceInfo.deviceType === 4
     },
+    // 设备是传感器，显示电量状态
     lowBattery(data) {
       if (data.deviceInfo.proType === PRO_TYPE.sensor) {
         const modelName = getModelName(PRO_TYPE.sensor, data.deviceInfo.productId)
-        return !!data.deviceInfo.mzgdPropertyDTOList[modelName]?.batteryAlarmState
+        const prop = data.deviceInfo.mzgdPropertyDTOList[modelName]
+        return !!prop?.batteryAlarmState
+      }
+      return false
+    },
+    // 设备是浴霸，显示运行状态
+    isRunning(data) {
+      if (data.deviceInfo.proType === PRO_TYPE.bathHeat) {
+        const modelName = getModelName(PRO_TYPE.bathHeat, data.deviceInfo.productId)
+        const prop = data.deviceInfo.mzgdPropertyDTOList[modelName]
+        return prop?.mode !== 'close_all'
       }
       return false
     },

@@ -168,8 +168,10 @@ export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
           }
         })
         break
-      // 传感器统计控制卡片数
+      // 传感器、晾衣架、浴霸统计控制卡片数
       case PRO_TYPE.sensor:
+      case PRO_TYPE.clothesDryingRack:
+      case PRO_TYPE.bathHeat:
         endCount++
         break
       // 网关及其他类型，不作统计
