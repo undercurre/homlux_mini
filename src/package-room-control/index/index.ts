@@ -232,14 +232,12 @@ ComponentWithComputed({
         (storage.get('windowHeight') as number) -
         (storage.get('statusBarHeight') as number) -
         (storage.get('navigationBarHeight') as number) -
+        (storage.get('bottomBarHeight') as number) -
         data.toolboxContentHeight -
         10 // 场景
-      // 控制点击时有蒙层，不再需要调整滚动区域
-      // if (data.controlPopup) {
-      //   baseHeight -= rpx2px(600)
-      // } else
+      // 编辑弹框高度
       if (data.editSelectMode) {
-        baseHeight -= rpx2px(368)
+        baseHeight -= rpx2px(298)
       }
       return baseHeight + 'px'
     },
