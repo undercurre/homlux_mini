@@ -125,7 +125,8 @@ ComponentWithComputed({
   },
   watch: {
     isInit(data) {
-      if (data) {
+      const loading = !data
+      if (!loading) {
         this.animate(
           '#skeleton',
           [
@@ -137,11 +138,7 @@ ComponentWithComputed({
             },
           ],
           200,
-          () => {
-            this.setData({
-              loading: false,
-            })
-          },
+          () => this.setData({ loading }),
         )
       }
     },
