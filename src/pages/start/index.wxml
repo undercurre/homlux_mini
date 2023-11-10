@@ -32,7 +32,7 @@
           src="{{ shots.img0 }}"
         />
         <image
-          class="h-48 w-48 mt-48rpx"
+          class="h-48 w-48 mt-40rpx"
           slot="icon"
           src="{{ defaultPage === 'index' ? checkImg : uncheckImg }}"
         />

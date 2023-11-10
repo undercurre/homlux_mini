@@ -32,7 +32,8 @@
       bind:change="onAgreeClick"
     >
       <text class="text-24rpx">
-        我已阅读并同意<text
+        <text>我已阅读并同意</text>
+        <text
           style="color: #169bd5"
           data-value="privacyPolicy"
           catchtap="toPage"
@@ -55,7 +56,7 @@
         >
       </text>
       <image
-        class="h-48 w-48 mt-8rpx"
+        class="h-48 w-48"
         slot="icon"
         src="{{ isAgree ? checkImg : uncheckImg }}"
       />
