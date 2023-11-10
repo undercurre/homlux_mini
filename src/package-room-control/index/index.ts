@@ -233,8 +233,7 @@ ComponentWithComputed({
         (storage.get('statusBarHeight') as number) -
         (storage.get('navigationBarHeight') as number) -
         (storage.get('bottomBarHeight') as number) -
-        data.toolboxContentHeight -
-        10 // 场景
+        data.toolboxContentHeight // 场景
       // 编辑弹框高度
       if (data.editSelectMode) {
         baseHeight -= rpx2px(298)
