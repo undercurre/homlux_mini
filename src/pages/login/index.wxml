@@ -56,7 +56,7 @@
         >
       </text>
       <image
-        class="h-48 w-48"
+        class="h-36 w-36"
         slot="icon"
         src="{{ isAgree ? checkImg : uncheckImg }}"
       />
