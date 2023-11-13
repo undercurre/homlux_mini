@@ -80,23 +80,20 @@ ComponentWithComputed({
         this.setData(diffData)
       },
     },
-    controlPopup: {
+    // 是否显示弹窗（简化逻辑，即原controlPopup参数）
+    show: {
       type: Boolean,
-      value: true,
+      value: false,
       observer(value) {
-        // controlPopup 变化触发弹窗展开或收起（折叠）
-        console.log('controlPopup %s, trigger popupMove()', value)
-        this.popupMove()
-        this.updateLinkInfo()
-        this.updateSensorLogs()
+        if (value) {
+          this.updateLinkInfo()
+          this.updateSensorLogs()
+        }
       },
     },
     checkedList: {
       type: Array,
       value: [] as string[],
-      observer() {
-        this.updateLinkInfo() // TODO 此属性 observer 是否可以取消或合并
-      },
     },
   },
 
@@ -201,12 +198,6 @@ ComponentWithComputed({
         Toast('请先开灯')
       }
     },
-    popupMove() {
-      const { checkedList } = this.data
-      this.setData({
-        show: checkedList.length > 0,
-      })
-    },
 
     /**
      * 根据面板ID和面板开关获取关联的灯
@@ -242,11 +233,7 @@ ComponentWithComputed({
       const switchUniId = this.data.checkedList[0]
       const switchRelInfo = this.data._switchRelInfo
       // 仅弹窗时且选择的是开关面板时触发，通过_switchRelInfo.switchUniId标志是否为空来防止重复请求
-      if (
-        !this.data.controlPopup ||
-        !this.data.checkedList[0]?.includes(':') ||
-        switchUniId === switchRelInfo.switchUniId
-      ) {
+      if (!this.data.checkedList[0]?.includes(':') || switchUniId === switchRelInfo.switchUniId) {
         return
       }
 
@@ -288,7 +275,7 @@ ComponentWithComputed({
       })
     },
     handleClose() {
-      this.triggerEvent('popMove', 'down')
+      this.triggerEvent('close')
     },
     handleLinkPopup() {
       const switchUniId = this.data.checkedList[0]

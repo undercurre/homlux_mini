@@ -103,8 +103,8 @@ ComponentWithComputed({
     showDeviceOffline: false,
     /** 点击的离线设备的信息 */
     officeDeviceInfo: {} as DeviceCard,
-    /** 控制面板 */
-    controlPopup: false,
+    /** 弹层要控制的设备品类 */
+    controlType: '',
     showAddScenePopup: false,
     showAuthDialog: false, // 显示确权弹层
     deviceIdForQueryAuth: '', // 用于确权的设备id
@@ -248,6 +248,14 @@ ComponentWithComputed({
     groupCount() {
       const groups = deviceStore.deviceFlattenList.filter((d) => d.deviceType === 4)
       return groups.length
+    },
+    /**
+     * 是否打开控制面板（除浴霸和晾衣）
+     * TODO 将灯和开关控制也解耦出来
+     */
+    isShowCommonControl(data) {
+      const { controlType } = data
+      return controlType && controlType !== PRO_TYPE.bathHeat && controlType !== PRO_TYPE.clothesDryingRack
     },
   },
 
@@ -1152,6 +1160,7 @@ ComponentWithComputed({
     },
 
     handleCardCommonTap(e: { detail: DeviceCard }) {
+      console.log('e.detail', e.detail)
       const { uniId } = e.detail // 灯的 deviceId===uniId
       const isChecked = this.data.checkedList.includes(uniId) // 点击卡片前，卡片是否选中
       const toCheck = !isChecked // 本次点击需执行的选中状态
@@ -1165,10 +1174,9 @@ ComponentWithComputed({
       // 选择样式渲染
       this.toSelect(uniId)
 
-      // 选择时的卡片样式渲染
       const diffData = {} as IAnyObject
 
-      // 选择逻辑
+      // 选择项，只能单选，但仍沿用数组的形式
       this.data.checkedList = toCheck ? [uniId] : []
 
       // 选择灯卡片时，同步设备状态到控制弹窗
@@ -1178,7 +1186,7 @@ ComponentWithComputed({
 
       // 合并数据变化
       diffData.checkedList = [...this.data.checkedList]
-      diffData.controlPopup = toCheck
+      diffData.controlType = e.detail.proType
 
       // 更新视图
       this.setData(diffData)
@@ -1276,12 +1284,6 @@ ComponentWithComputed({
       // 首页需要更新灯光打开个数
       homeStore.updateCurrentHomeDetail()
     },
-
-    handlePopMove(e: { detail: 'up' | 'down' }) {
-      if (e.detail === 'down') {
-        this.cancelCheckAndPops()
-      }
-    },
     handleAddScenePopupClose() {
       this.setData({
         showAddScenePopup: false,
@@ -1315,7 +1317,8 @@ ComponentWithComputed({
     },
     /** 取消单选，收起弹窗 */
     cancelCheckAndPops() {
-      if (!this.data.controlPopup) {
+      // 有选中项才执行置反操作
+      if (!this.data.controlType) {
         return
       }
 
@@ -1326,7 +1329,7 @@ ComponentWithComputed({
       // 收起弹窗
       this.setData({
         checkedList: [],
-        controlPopup: false,
+        controlType: '',
       })
     },
     // 长按选择，进入编辑状态

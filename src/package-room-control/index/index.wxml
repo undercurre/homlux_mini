@@ -256,11 +256,19 @@
 </view>
 
 <!-- 设备控制弹窗 -->
+<bath-control-popup
+  show="{{controlType === '0x26'}}"
+  title="{{sceneEditTitle}}"
+  lightInfo="{{checkedDeviceInfo}}"
+  bind:confirm="handleSceneEditConfirm"
+  bind:close="handleEditPopupClose"
+></bath-control-popup>
+
 <device-control-popup
-  controlPopup="{{controlPopup}}"
+  show="{{isShowCommonControl}}"
   deviceInfo="{{checkedDeviceInfo}}"
   checkedList="{{checkedList}}"
-  bind:popMove="handlePopMove"
+  bind:close="cancelCheckAndPops"
   bind:updateDevice="updateQueue"
   bind:lightStatusChange="refreshLightStatus"
 ></device-control-popup>
