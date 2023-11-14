@@ -20,8 +20,6 @@
     "compileHotReLoad": false,
     "lazyloadPlaceholderEnable": false,
     "useMultiFrameRuntime": true,
-    "useApiHook": true,
-    "useApiHostProcess": true,
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
@@ -54,7 +52,8 @@
     "tabIndent": "insertSpaces",
     "tabSize": 2
   },
-  "libVersion": "2.30.0",
+  "appid": "wxd534524a35f2b601",
+  "condition": {},
   "packOptions": {
     "ignore": [
       {
@@ -64,9 +63,6 @@
     ],
     "include": []
   },
-  "appid": "wxd534524a35f2b601",
-  "projectname": "HomLux",
-  "condition": {},
   "scripts": {
     "beforeCompile": "node ./build/releaseTime.js",
     "beforePreview": "node ./build/releaseTime.js"
