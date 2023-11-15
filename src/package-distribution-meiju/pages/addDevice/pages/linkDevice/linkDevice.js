@@ -83,20 +83,6 @@ Page({
     time: 80,
     curStep: 0,
     currentRoomId: 0,
-    progressList: [
-      {
-        name: '连接准备',
-        isFinish: false,
-      },
-      {
-        name: '设备联网',
-        isFinish: false,
-      },
-      {
-        name: '帐号绑定',
-        isFinish: false,
-      },
-    ],
     isOnbleResp: true,
     bindWifiInfo: {},
     isCancelHuaLinOn: false, //是否取消监听华凌直连
@@ -160,12 +146,6 @@ Page({
   isBleRespond40: false, // 蓝牙是否响应0x40指令
   computed: {},
   async init() {
-    Logger.log('init')
-    setTimeout(() => {
-      this.setData({
-        curStep: 1,
-      })
-    }, 2000)
     let {
       deviceId,
       deviceName,
@@ -235,7 +215,6 @@ Page({
         this.data.udpAdData = await this.getUdpInfo()
         this.setData({
           curStep: 1,
-          'progressList[0].isFinish': true,
         })
         if (this.data.udpAdData.tcpIp === '0.0.0.0') {
           this.data.udpAdData.tcpIp = '192.168.1.1'
@@ -285,7 +264,6 @@ Page({
             console.log('sn解密后', plainTextSn)
             this.setData({
               curStep: 1,
-              'progressList[0].isFinish': true,
             })
             //校验绑定码成功
             console.log('on neg success----------------', res)
@@ -295,9 +273,8 @@ Page({
               this.setData({
                 //完成进度条
                 curStep: 2,
-                'progressList[1].isFinish': true,
               })
-              // 'progressList[2].isFinish': true,
+
               wx.closeBLEConnection({
                 deviceId: app.addDeviceInfo.deviceId,
               })
@@ -366,14 +343,12 @@ Page({
           }
           this.setData({
             curStep: 1,
-            'progressList[0].isFinish': true,
           })
           this.againGetAPExists(this.data.sn, this.data.blueRandomCode, async (resp) => {
             console.log('设备成功连上云', resp)
             this.setData({
               //完成进度条
               curStep: 2,
-              'progressList[1].isFinish': true,
             })
             this.data.autoCloseBleConnection = true
             wx.closeBLEConnection({
@@ -417,7 +392,6 @@ Page({
           console.log('sn解密后', plainTextSn)
           app.addDeviceInfo.msmartBleWrite = this.writeData //蓝牙写入方法暂存
           this.linkSuccess()
-          // app.addDeviceInfo.sn = this.data.sn
         })
         break
 
@@ -435,14 +409,12 @@ Page({
           msmartBleWrite(wifiInfoOrder) //蓝牙写入
           this.setData({
             curStep: 1,
-            'progressList[0].isFinish': true,
           })
           this.againGetAPExists(this.data.sn, this.data.blueRandomCode, async (resp) => {
             console.log('设备成功连上云', resp)
             this.setData({
               //完成进度条
               curStep: 2,
-              'progressList[1].isFinish': true,
             })
             let bindRes = await this.bindDeviceToHome()
             console.log('绑定设备至默认家庭房间', resp)
@@ -482,16 +454,13 @@ Page({
             this.data.msmartBlueLinkNetYetWifiInfo = true //发送了wifi信息
             this.setData({
               curStep: 1,
-              'progressList[0].isFinish': true,
             })
             this.againGetAPExists(this.data.sn, this.data.blueRandomCode, async (resp) => {
               console.log('设备成功连上云', resp)
               this.setData({
                 //完成进度条
                 curStep: 2,
-                'progressList[1].isFinish': true,
               })
-              // progressList[2].isFinish': true
               wx.closeBLEConnection({
                 deviceId: app.addDeviceInfo.deviceId,
               })
@@ -530,8 +499,7 @@ Page({
           app.addDeviceInfo.sn = this.data.sn
           this.setData({
             //完成进度条
-            curStep: 2,
-            'progressList[2].isFinish': true,
+            curStep: 3,
           })
           wx.reLaunch({
             url: paths.addSuccess,
@@ -555,8 +523,7 @@ Page({
           app.addDeviceInfo.deviceName = bindReset.data.data.name
           this.setData({
             //完成进度条
-            curStep: 2,
-            'progressList[2].isFinish': true,
+            curStep: 3,
           })
           wx.reLaunch({
             url: paths.addSuccess,
@@ -1775,12 +1742,9 @@ Page({
         }
 
         Logger.console('绑定成功')
-        this.setData({
-          curStep: 2,
-        })
         if (bindRes) {
           this.setData({
-            'progressList[2].isFinish': true,
+            curStep: 3,
           })
           clearInterval(timer)
           if (this.tcp) {
@@ -1827,6 +1791,7 @@ Page({
         this.data.timeoutNum = this.data.timeoutNum + 1
         console.log('接口超时错误=========', this.data.timeoutNum)
         if (this.data.timeoutNum === 4) {
+          Logger.debug('提示断开设备热点，连接家庭wifi')
           //超时3次
           clearInterval(timer) //停止计时
 
@@ -1980,7 +1945,6 @@ Page({
               })
               console.log('遥控设备绑定结果', bindRemoteDeviceResp)
             } catch (error) {
-              // showToast('遥控设备绑定失败', error)
               console.log('遥控设备绑定失败', error)
             }
             this.setData({
@@ -2230,8 +2194,7 @@ Page({
     try {
       let bindRes = await requestWithTry(this.bindDeviceToHome, 3)
       self.setData({
-        curStep: 2,
-        'progressList[2].isFinish': true,
+        curStep: 3,
       })
       clearInterval(timer)
       this.data.isOnbleResp = false
