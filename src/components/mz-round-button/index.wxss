@@ -28,7 +28,6 @@
 }
 
 .text-wrapper {
-  width: 80rpx;
   height: 42rpx;
   line-height: 42rpx;
   margin-left: 16rpx;

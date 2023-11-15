@@ -27,14 +27,14 @@
     </view>
 
     <view class="w-686rpx">
-      <view class="flex flex-row justify-center items-start mt-64rpx">
-        <text class="text-28rpx text-hex-fff leading-none">℃</text>
-        <text class="text-124rpx text-hex-495264 leading-none">26</text>
-        <text class="text-28rpx text-hex-515d75">℃</text>
+      <view class="flex flex-row justify-center items-end mt-64rpx">
+        <text class="text-28rpx text-hex-fff leading-none">cm</text>
+        <text class="text-124rpx text-hex-495264 leading-none">0</text>
+        <text class="text-28rpx text-hex-515d75">cm</text>
       </view>
 
       <view class="text-center mt-30rpx">
-        <text class="text-24 text-hex-a2a2a2">室内温度</text>
+        <text class="text-24 text-hex-a2a2a2">一键晾衣高度</text>
       </view>
 
       <view class="flex flex-row justify-evenly rounded-32rpx bg-hex-f7f8f9 mt-30rpx py-24rpx">
@@ -62,7 +62,7 @@
           btnStyle="{{largeBtnStyle}}"
           size="{{64}}"
           textColor="#a2a2a2"
-          textWidth="50rpx"
+          textWidth="{{item.textWidth}}"
         ></mz-round-button>
       </view>
 

@@ -1086,7 +1086,10 @@ ComponentWithComputed({
         const { deviceId } = e.detail
         const res = await queryAuthGetStatus({ houseId: homeStore.currentHomeId, deviceId })
         // 若设备未确权、待确权，则弹出指引弹窗
-        if (res.result.status === 1 || res.result.status === 2) {
+        if (!res.success) {
+          Toast('设备确权异常')
+          return
+        } else if (res.result.status === 1 || res.result.status === 2) {
           this.setData({ showAuthDialog: true, deviceIdForQueryAuth: deviceId })
           this.data._cardEventType = 'card'
           return
