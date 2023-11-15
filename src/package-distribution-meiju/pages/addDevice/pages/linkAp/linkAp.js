@@ -213,7 +213,7 @@ Page({
         console.log('wifi info', res, res.SSID.includes(`${brandName}_${type}`), !self.data.isLinkDeviceWifi)
         if (res.SSID.toLocaleLowerCase().includes(`${brandName}_${type}`) && !self.data.isLinkDeviceWifi) {
           self.data.isLinkDeviceWifi = true
-          console.log('连上了设备ap 111')
+          console.log('连上了设备ap', res)
           //重置当前连接热点信息
           app.addDeviceInfo.BSSID = res.BSSID
           app.addDeviceInfo.ssid = res.SSID
