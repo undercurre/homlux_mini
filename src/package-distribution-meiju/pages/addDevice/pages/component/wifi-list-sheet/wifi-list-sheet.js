@@ -119,10 +119,10 @@ Component({
         frequency = item.frequency
 
         if (!isSupport5G && (wifiName.includes('5G') || wifiName.includes('5g'))) {
-          item.desc = '不支持5GHz WiFi'
+          item.desc = '不支持5GHz Wi-Fi'
           item.isCan = 0 //是否可用
         } else if (!isSupport5G && frequency >= 5000) {
-          item.desc = '不支持5GHz WiFi'
+          item.desc = '不支持5GHz Wi-Fi'
           item.isCan = 0 //是否可用
         } else if (addDeviceSDK.isDeviceAp(wifiName)) {
           item.desc = '暂不支持智能设备网络'

@@ -95,7 +95,7 @@ export class WifiSocket {
       return {
         errCode: -2,
         success: false,
-        msg: '仅跳转系统wifi页。重复请求：已经正在等待连接网关热点',
+        msg: '仅跳转系统Wi-Fi页。重复请求：已经正在等待连接网关热点',
       }
     }
 

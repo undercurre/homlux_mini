@@ -19,7 +19,7 @@ const failTextData = {
     mainTitle: 'XX联网失败',
     nextTitle: 'XX联网过程出错',
     guideDesc: [
-      '请确保连接家庭2.4GHz WiFi，不可连接5GHz WiFi',
+      '请确保连接家庭2.4GHz Wi-Fi，不可连接5GHz Wi-Fi',
       '请确保家庭WiFi与密码填写正确，并确保该WiFi网络畅通 测试一下',
       '请将路由器尽量靠近设备',
     ],
@@ -179,7 +179,7 @@ const failTextData = {
     errorCode: '180004',
     mainTitle: 'XX联网失败   ',
     nextTitle: 'XX无法接连路由器',
-    guideDesc: ['请确保连接家庭2.4GHz WiFi，不可连接5GHz WiFi；', '请确保家庭WiFi与密码填写正确。'],
+    guideDesc: ['请确保连接家庭2.4GHz Wi-Fi，不可连接5GHz Wi-Fi；', '请确保家庭WiFi与密码填写正确。'],
     isTest: false, //是否有测试一下
     isNeedInputPsw: true,
   },
@@ -198,7 +198,7 @@ const failTextData = {
     errorCode: '180005',
     mainTitle: '联网失败',
     nextTitle: '无法接连路由器',
-    guideDesc: ['1、请确保连接家庭2.4GHz WiFi，不可连接5GHz WiFi；', '2、请确保家庭WiFi与密码填写正确。'],
+    guideDesc: ['1、请确保连接家庭2.4GHz Wi-Fi，不可连接5GHz WiFi；', '2、请确保家庭WiFi与密码填写正确。'],
     isTest: false,
   },
   180006: {

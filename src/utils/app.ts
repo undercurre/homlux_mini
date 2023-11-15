@@ -174,7 +174,7 @@ export function checkWifiSwitch() {
 
     if (!systemSetting.wifiEnabled) {
       wx.showModal({
-        content: '请打开手机WIFI',
+        content: '请打开手机Wi-Fi',
         showCancel: false,
         confirmText: '我知道了',
         confirmColor: '#488FFF',
