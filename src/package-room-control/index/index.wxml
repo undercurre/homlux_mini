@@ -258,11 +258,19 @@
 <!-- 设备控制弹窗 -->
 <bath-control-popup
   show="{{controlType === '0x26'}}"
-  title="{{sceneEditTitle}}"
-  lightInfo="{{checkedDeviceInfo}}"
+  isShowSetting="{{true}}"
+  deviceInfo="{{checkedDeviceInfo}}"
   bind:confirm="handleSceneEditConfirm"
-  bind:close="handleEditPopupClose"
+  bind:close="cancelCheckAndPops"
 ></bath-control-popup>
+
+<airer-control-popup
+  show="{{controlType === '0x17'}}"
+  isShowSetting="{{true}}"
+  deviceInfo="{{checkedDeviceInfo}}"
+  bind:confirm="handleSceneEditConfirm"
+  bind:close="cancelCheckAndPops"
+></airer-control-popup>
 
 <device-control-popup
   show="{{isShowCommonControl}}"

@@ -174,6 +174,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .mt-26rpx{margin-top:26rpx;}
 .mt-276rpx{margin-top:276rpx;}
 .mt-28rpx{margin-top:28rpx;}
+.mt-30rpx{margin-top:30rpx;}
 .mt-32rpx{margin-top:32rpx;}
 .mt-36rpx{margin-top:36rpx;}
 .mt-38rpx{margin-top:38rpx;}
@@ -185,6 +186,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .mt-50rpx{margin-top:50rpx;}
 .mt-56rpx{margin-top:56rpx;}
 .mt-5rpx{margin-top:5rpx;}
+.mt-60rpx{margin-top:60rpx;}
 .mt-64rpx{margin-top:64rpx;}
 .mt-66rpx{margin-top:66rpx;}
 .mt-68rpx{margin-top:68rpx;}
@@ -227,6 +229,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .bg-hex-F6F6F8{--un-bg-opacity:1;background-color:rgba(246,246,248,var(--un-bg-opacity));}
 .bg-hex-f6fafd,
 .bg-hex-F6FAFD{--un-bg-opacity:1;background-color:rgba(246,250,253,var(--un-bg-opacity));}
+.bg-hex-f7f8f9{--un-bg-opacity:1;background-color:rgba(247,248,249,var(--un-bg-opacity));}
 .bg-hex-f9fbfe,
 .bg-hex-F9FBFE{--un-bg-opacity:1;background-color:rgba(249,251,254,var(--un-bg-opacity));}
 .bg-hex-fff,
@@ -264,6 +267,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .rounded-full{border-radius:9999px;}
 .rounded-none{border-radius:0;}
 .border-solid{border-style:solid;}
+.text-124rpx{font-size:124rpx;}
 .text-18rpx{font-size:18rpx;}
 .text-20rpx{font-size:20rpx;}
 .text-22rpx{font-size:22rpx;}
@@ -332,6 +336,8 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .text-hex-333333{--un-text-opacity:1;color:rgba(51,51,51,var(--un-text-opacity));}
 .text-hex-353535{--un-text-opacity:1;color:rgba(53,53,53,var(--un-text-opacity));}
 .text-hex-373cdf{--un-text-opacity:1;color:rgba(55,60,223,var(--un-text-opacity));}
+.text-hex-495264{--un-text-opacity:1;color:rgba(73,82,100,var(--un-text-opacity));}
+.text-hex-515d75{--un-text-opacity:1;color:rgba(81,93,117,var(--un-text-opacity));}
 .text-hex-666,
 .text-hex-666666{--un-text-opacity:1;color:rgba(102,102,102,var(--un-text-opacity));}
 .text-hex-6e6f74{--un-text-opacity:1;color:rgba(110,111,116,var(--un-text-opacity));}

@@ -17,6 +17,23 @@ ComponentWithComputed({
       type: String,
       value: '',
     },
+    textColor: {
+      type: String,
+      value: '',
+    },
+    textWidth: {
+      type: String,
+      value: '80rpx',
+    },
+    // icon-wrapper 的长宽，rpx 为单位
+    size: {
+      type: Number,
+      value: 48,
+    },
+    btnStyle: {
+      type: String,
+      value: '',
+    },
   },
 
   /**
@@ -24,7 +41,12 @@ ComponentWithComputed({
    */
   data: {},
 
-  computed: {},
+  computed: {
+    wrapperStyle(data) {
+      const { size } = data
+      return `width: ${size}rpx; height: ${size}rpx;`
+    },
+  },
 
   methods: {
     handleTouchStart(e: WechatMiniprogram.TouchEvent) {
