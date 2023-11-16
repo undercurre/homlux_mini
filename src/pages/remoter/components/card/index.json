@@ -2,6 +2,6 @@
   "component": true,
   "styleIsolation": "apply-shared",
   "usingComponents": {
-    "mz-button": "/components/mz-round-button/index"
+    "mz-button": "../mz-button/index"
   }
 }

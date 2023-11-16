@@ -39,7 +39,7 @@ const MOCK_DEVICES = [
     devicePic: '/assets/img/remoter/bathHeater.png',
     deviceName: '浴霸A70 Mock',
     deviceType: '26',
-    deviceModel: '07',
+    deviceModel: '0f',
     saved: true,
     actionStatus: true,
     defaultAction: 0,
