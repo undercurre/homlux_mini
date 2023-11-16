@@ -5,10 +5,11 @@
 
 <view
   class="mz-button"
-  catch:touchstart="{{handler.touchStart}}"
-  catch:touchend="{{handler.touchEnd}}"
-  catch:tap="handleTap"
+  bind:touchstart="{{handler.touchStart}}"
+  bind:touchend="{{handler.touchEnd}}"
   style="{{btnStyle}}"
+  isOn="{{isOn}}"
+  change:isOn="{{handler.propObserver}}"
 >
   <view
     class="icon-wrapper"

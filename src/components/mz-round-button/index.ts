@@ -34,6 +34,10 @@ ComponentWithComputed({
       type: String,
       value: '',
     },
+    isOn: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /**
@@ -49,12 +53,8 @@ ComponentWithComputed({
   },
 
   methods: {
-    handleTouchStart(e: WechatMiniprogram.TouchEvent) {
-      this.triggerEvent('touchstart', e)
+    handleTouchStart() {
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
-    },
-    handleLongPress(e: WechatMiniprogram.TouchEvent) {
-      this.triggerEvent('longpress', e.detail)
     },
     handleTouchEnd(e: WechatMiniprogram.TouchEvent) {
       this.triggerEvent('touchend', e.detail)

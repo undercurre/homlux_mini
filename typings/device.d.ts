@@ -18,6 +18,9 @@ declare namespace Device {
     curtain_position?: string
     curtain_status?: string
     curtain_direction?: 'positive' | 'reverse' // 窗帘开合方向
+    mode?: string // 浴霸模式，'close_all' | 'heating' | 'bath' | 'ventilation' | 'drying' | 'blowing' | 'soft_wind'，双模式用,分隔
+    light_mode?: 'close_all' | 'main_light' | 'night_light' // 浴霸照明状态
+    heating_temperature?: string // 浴霸加热温度
   }
   /** 设备列表项 */
   interface DeviceItem {

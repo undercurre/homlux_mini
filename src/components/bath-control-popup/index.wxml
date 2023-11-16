@@ -6,7 +6,6 @@
   bind:close="handleClose"
   closeable
   lock-scroll="{{true}}"
-  catchtouchmove="true"
 >
   <view class="w-full bg-white flex-col flex items-center py-20rpx">
     <view class="flex justify-evenly w-686rpx mt-10rpx relative">
@@ -29,7 +28,7 @@
     <view class="w-686rpx">
       <view class="flex flex-row justify-center items-start mt-64rpx">
         <text class="text-28rpx text-hex-fff leading-none">℃</text>
-        <text class="text-124rpx text-hex-495264 leading-none">26</text>
+        <text class="text-124rpx text-hex-495264 leading-none">{{prop.current_temperature || '--'}}</text>
         <text class="text-28rpx text-hex-515d75">℃</text>
       </view>
 
@@ -45,9 +44,12 @@
           iconActive="{{item.iconActive}}"
           text="{{item.text}}"
           data-key="{{item.key}}"
+          data-rebound="{{item.rebound}}"
+          isOn="{{item.on}}"
           size="{{80}}"
           round="{{20}}"
           textColor="#a2a2a2"
+          bind:touchstart="handleBtnTap"
         ></mz-icon-button>
       </view>
 
@@ -59,10 +61,12 @@
           iconActive="{{item.iconActive}}"
           text="{{item.text}}"
           data-key="{{item.key}}"
+          isOn="{{item.on}}"
           btnStyle="{{largeBtnStyle}}"
           size="{{64}}"
           textColor="#a2a2a2"
           textWidth="50rpx"
+          bind:touchstart="handleBtnTap"
         ></mz-round-button>
       </view>
 

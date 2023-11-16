@@ -3,7 +3,6 @@
   position="bottom"
   round
   closeable
-  catch:touchmove="true"
   bind:close="handleClose"
 >
   <view class="w-750rpx bg-white flex-col flex items-center py-20rpx">

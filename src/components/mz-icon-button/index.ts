@@ -34,6 +34,14 @@ ComponentWithComputed({
       type: String,
       value: '#f7f8f9',
     },
+    bgColorActive: {
+      type: String,
+      value: '#488fff',
+    },
+    isOn: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /**
@@ -43,17 +51,14 @@ ComponentWithComputed({
 
   computed: {
     wrapperStyle(data) {
-      const { size, round, bgColor } = data
-      return `width: ${size}rpx; height: ${size}rpx; border-radius: ${round}rpx; background-color: ${bgColor};`
+      const { size, round, bgColor, bgColorActive, isOn } = data
+      const _bgColor = isOn ? bgColorActive : bgColor
+      return `width: ${size}rpx; height: ${size}rpx; border-radius: ${round}rpx; background-color: ${_bgColor};`
     },
   },
-
   methods: {
     handleTouchStart() {
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
-    },
-    handleLongPress(e: WechatMiniprogram.TouchEvent) {
-      this.triggerEvent('longpress', e.detail)
     },
     handleTouchEnd(e: WechatMiniprogram.TouchEvent) {
       this.triggerEvent('touchend', e.detail)

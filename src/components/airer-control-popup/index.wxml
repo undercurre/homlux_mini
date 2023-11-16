@@ -6,7 +6,6 @@
   bind:close="handleClose"
   closeable
   lock-scroll="{{true}}"
-  catchtouchmove="true"
 >
   <view class="w-full bg-white flex-col flex items-center py-20rpx">
     <view class="flex justify-evenly w-686rpx mt-10rpx relative">

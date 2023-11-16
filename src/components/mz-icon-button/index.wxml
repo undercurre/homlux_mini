@@ -7,6 +7,8 @@
   class="mz-button flex-col-center"
   bind:touchstart="{{handler.touchStart}}"
   bind:touchend="{{handler.touchEnd}}"
+  isOn="{{isOn}}"
+  change:isOn="{{handler.propObserver}}"
 >
   <view
     class="icon-wrapper"

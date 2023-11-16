@@ -254,6 +254,28 @@ export async function sendDevice(
         }
 
         promise = controlDevice(params, option)
+      } else if (data.proType === PRO_TYPE.bathHeat) {
+        const downData = property
+
+        params = {
+          deviceId: data.deviceId,
+          deviceType: data.deviceType,
+          method: 'wifiBathHeatControl',
+          inputData: [downData],
+        }
+
+        promise = controlDevice(params, option)
+      } else if (data.proType === PRO_TYPE.clothesDryingRack) {
+        const downData = property
+
+        params = {
+          deviceId: data.deviceId,
+          deviceType: data.deviceType,
+          method: 'wifiClothesDryingRackControl',
+          inputData: [downData],
+        }
+
+        promise = controlDevice(params, option)
       }
 
       break
