@@ -22,7 +22,12 @@ ComponentWithComputed({
   /**
    * 组件的属性列表
    */
-  properties: {},
+  properties: {
+    isManual: {
+      type: Boolean,
+      value: false,
+    },
+  },
 
   /**
    * 组件的初始数据
@@ -60,7 +65,7 @@ ComponentWithComputed({
     async ready() {
       const pageParams = getCurrentPageParams()
 
-      Logger.log('ready', pageParams)
+      Logger.log('ready', pageParams, 'isManual', this.data.isManual)
 
       this.setData({
         type: pageParams.type,

@@ -145,6 +145,13 @@ Page({
   isBleRespond63: false, // 蓝牙是否响应0x63-03指令
   isBleRespond40: false, // 蓝牙是否响应0x40指令
   computed: {},
+
+  observers: {
+    curStep: function (curStep) {
+      Logger.log('curStep----:', curStep)
+    },
+  },
+
   async init() {
     let {
       deviceId,

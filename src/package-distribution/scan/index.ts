@@ -48,7 +48,14 @@ ComponentWithComputed({
 
       return allRoomDeviceList.filter((item) => item.deviceType === 1)
     },
+    isShowTips(data) {
+      return (data.scanType === 'subdevice' && data.isBlePermit) || data.scanType === 'gateway'
+    },
     tipsText(data: IAnyObject) {
+      if (data.scanType === 'gateway') {
+        return '找不到二维码，尝试手动添加'
+      }
+
       if (!data.available) {
         return '打开手机蓝牙发现附近子设备'
       }
@@ -100,6 +107,13 @@ ComponentWithComputed({
       this.setData({
         scanType: query.type,
       })
+    },
+
+    /**
+     * 手动添加网关
+     */
+    addGatewayManually() {
+      this.bindGateway({ isManual: true })
     },
     // 检查是否通过微信扫码直接进入该界面时判断场景值
     checkWxScanEnter() {
@@ -490,7 +504,11 @@ ComponentWithComputed({
         }
         // 网关绑定逻辑
         else if (pageParams.mode === '02') {
-          await this.bindGateway(pageParams)
+          await this.bindGateway({
+            pid: pageParams.pid,
+            ssid: pageParams.ssid,
+            isManual: false,
+          })
         }
         // 智慧屏扫码绑定
         else if (pageParams.mode === '10') {
@@ -515,18 +533,27 @@ ComponentWithComputed({
       }, 2000)
     },
 
-    async bindGateway(params: IAnyObject) {
-      const res = await checkDevice(
-        {
-          productId: params.pid,
-        },
-        { loading: false },
-      )
+    async bindGateway(params: { pid?: string; ssid?: string; isManual: boolean }) {
+      let proType = '0x16'
+      let productName = ''
+      const ssid = params.ssid || '^midea_16_'
 
-      if (!res.success) {
-        Toast('验证产品信息失败')
+      if (!params.isManual) {
+        const res = await checkDevice(
+          {
+            productId: params.pid,
+          },
+          { loading: false },
+        )
 
-        return
+        if (!res.success) {
+          Toast('验证产品信息失败')
+
+          return
+        }
+
+        proType = res.result.proType
+        productName = res.result.productName
       }
 
       // 预校验wifi开关是否打开
@@ -535,16 +562,17 @@ ComponentWithComputed({
       }
 
       wx.reportEvent('add_device', {
-        pro_type: res.result.proType,
+        pro_type: proType,
         model_id: params.pid,
         add_type: 'qrcode',
       })
 
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/link-gateway/index', {
-          apSSID: params.ssid,
-          deviceName: res.result.productName,
+          apSSID: ssid,
+          deviceName: productName,
           type: 'query',
+          isManual: params.isManual,
         }),
       })
     },
