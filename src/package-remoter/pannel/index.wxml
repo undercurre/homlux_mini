@@ -157,7 +157,7 @@
     class="main-control"
     wx:if="{{curRemoter.bList}}"
   >
-    <mz-icon-button
+    <mz-button-bottom
       wx:for="{{curRemoter.bList}}"
       wx:key="index"
       icon="{{item.icon}}"
@@ -165,7 +165,7 @@
       bind:touchstart="toSendCmd"
       text="{{item.name}}"
       data-key="{{item.key}}"
-    ></mz-icon-button>
+    ></mz-button-bottom>
   </view>
 </view>
 
