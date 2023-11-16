@@ -1,7 +1,7 @@
 <van-dialog
   id="van-dialog"
   use-slot
-  show-cancel-button="{{true}}"
+  show-cancel-button="{{status !== 'success'}}"
   show-confirm-button="{{status !== 'waiting'}}"
   title="{{title}}"
   confirm-button-color="#488FFF"
