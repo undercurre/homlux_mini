@@ -303,7 +303,6 @@ module.exports = Behavior({
     },
     //新 轮询查询设备是否连上云
     newAgainGetAPExists(sn, forceValidRandomCode, randomCode = '', timeout, callBack, callFail) {
-      Logger.console('newAgainGetAPExists')
       let timeoutID
       const timeoutPromise = new Promise((resolve) => {
         timeoutID = setTimeout(resolve, 5000, { success: false, msg: 'WEB TIMEOUT' })
@@ -381,8 +380,7 @@ module.exports = Behavior({
     },
     //根据企业码返回企业热点名
     getBrandBname() {
-      let brandName = 'midea'
-      return brandName
+      return 'midea'
     },
     //生成错误码
     creatErrorCode({ platform, module, errorCode, isCustom }) {

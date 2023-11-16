@@ -302,16 +302,6 @@ Page({
         that.data.clickFLag = false
       }
       if (!locationRes.isCanLocation) {
-        // Dialog.confirm({
-        //   title: '请开启位置权限',
-        //   message: locationRes.permissionTextAll,
-        //   showCancelButton: true,
-        //   cancelButtonText: '放弃',
-        //   confirmButtonText: '查看指引',
-        //   confirmButtonColor: '#488FFF',
-        // }).then(() => {}).catch(err => {
-        //   console.log('cancel', err)
-        // })
         const obj = {
           title: '请开启位置权限',
           message: locationRes.permissionTextAll,

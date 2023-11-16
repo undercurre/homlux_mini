@@ -210,7 +210,6 @@ Page({
     wifiMgr
       .getConnectedWifi()
       .then((res) => {
-        console.log('wifi info', res, res.SSID.includes(`${brandName}_${type}`), !self.data.isLinkDeviceWifi)
         if (res.SSID.toLocaleLowerCase().includes(`${brandName}_${type}`) && !self.data.isLinkDeviceWifi) {
           self.data.isLinkDeviceWifi = true
           console.log('连上了设备ap', res)

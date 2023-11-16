@@ -1,5 +1,4 @@
 {
-  "navigationStyle": "custom",
   "usingComponents": {
     "link-device-header": "/package-distribution-meiju/pages/addDevice/pages/component/link-device-header/link-device-header",
     "custom-dialog": "/package-distribution-meiju/pages/addDevice/pages/component/custom-dialog/custom-dialog",

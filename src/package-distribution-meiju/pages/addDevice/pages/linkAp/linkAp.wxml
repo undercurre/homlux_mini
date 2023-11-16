@@ -3,14 +3,14 @@
   src="../utils/filter.wxs"
   module="tools"
 />
-<view id="{{brand}}">
+<view id="meiju">
   <view class="page-container theme-bg-color flex flex-col">
     <nav-bar
       leftArrow
       bind:leftTap="goBack"
     ></nav-bar>
 
-    <view class="px-40rpx grow overflow-auto h-600">
+    <view class="px-40rpx grow overflow-y-auto overflow-x-hidden box-border h-600">
       <view class="leading-56rpx py-50rpx text-40 text-hex-27282A font-medium">请用手机连上{{deviceName}}无线网络</view>
 
       <view class="guide-gif">
@@ -61,13 +61,13 @@
       >
         <view>
           <view
-            class="detail-title special-font-color"
+            class="detail-title"
             bindtap="switchShowDetail"
           >
             <text class="detail-title-text">查看详细连接步骤</text>
             <image
               class="expand"
-              src="{{isShowStepDetail?detailExpand:detailPackUp}}"
+              src="{{!isShowStepDetail?detailExpand:detailPackUp}}"
             ></image>
           </view>
           <view>
@@ -143,11 +143,11 @@
             <view class="detail-content">
               <view
                 class="detail-one detail-step"
-                style="height:{{brand==='colmo'?'124rpx':'128rpx'}} "
+                style="height: 128rpx"
               >
                 <text
                   class="detail-text"
-                  style="width:{{brand==='colmo'?'90%':'100%'}} "
+                  style="width: 100%"
                 >
                   <text class="step-num">1</text> 点击下方“去连接”进入系统设置页</text
                 >
