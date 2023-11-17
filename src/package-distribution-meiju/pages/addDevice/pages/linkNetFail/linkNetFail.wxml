@@ -37,7 +37,7 @@
             <van-field
               value="{{ bindWifiInfo.SSIDContent }}"
               placeholder="{{wifiInputPlaceholder}}"
-              custom-style="margin-bottom: 32rpx;margin-top: 40rpx;padding: 16rpx 32rpx;border-radius: 24rpx;"
+              custom-style="margin-bottom: 32rpx;margin-top: 40rpx;padding: 32rpx 32rpx;border-radius: 24rpx;"
               clearable="{{true}}"
               bind:input="inputSSIDContent"
               border="{{false}}"
@@ -47,6 +47,8 @@
                 slot="button"
                 type="primary"
                 plain
+                size="mini"
+                custom-style="font-size: 28rpx"
                 bind:click="clickSwitchWifi"
                 >切换Wi-Fi
               </van-button>
@@ -56,7 +58,7 @@
               value="{{ bindWifiInfo.PswContent }}"
               placeholder="请输入Wi-Fi密码"
               password="{{!isCanSeePsw}}"
-              custom-style="padding: 16rpx 32rpx;border-radius: 24rpx;"
+              custom-style="padding: 24rpx 32rpx;border-radius: 24rpx;"
               bind:input="getPsw"
               use-button-slot
               border="{{false}}"
