@@ -28,7 +28,6 @@ Page({
     defaultImgDir,
     deviceName: '',
     isCanSeePsw: true,
-    pswInputType: false,
     bindWifiInfo: {
       BSSID: '',
       EncryptType: '',
@@ -56,7 +55,7 @@ Page({
     isSupport5G: false, //是否支持5gwifi
     spaceTip: '', //输入的wifi密码包含空格提示
     tempPsw: '', //暂存密码用于密码限制输入判断
-    continueConnectWifi: false, //是否手动输入连wifi  false:不是手动输入，true是手动输入
+    isManualInputWifi: false, //是否手动输入连wifi  false:不是手动输入，true是手动输入
     brand: '',
     dialogStyle: brandStyle.brandConfig.dialogStyle, //弹窗样式
     brandConfig: brandStyle.brandConfig,
@@ -113,7 +112,7 @@ Page({
       mode,
       curWifiInfo,
       guideInfo,
-      continueConnectWifi,
+      isManualInputWifi,
     } = app.addDeviceInfo
     // 组合设备新增逻辑
     let deviceInfo
@@ -138,7 +137,7 @@ Page({
         isDeviceLinkCloud: isDeviceLinkCloud,
         plainSn: plainSn,
         isSupport5G: (guideInfo && guideInfo.wifiFrequencyBand) == 2 ? true : false,
-        continueConnectWifi: continueConnectWifi,
+        isManualInputWifi: isManualInputWifi,
       })
     }
     this.data.deviceInfo = deviceInfo
@@ -400,7 +399,6 @@ Page({
   switchPswShow() {
     this.setData({
       isCanSeePsw: !this.data.isCanSeePsw,
-      pswInputType: !this.data.pswInputType,
     })
   },
   getPsw(e) {

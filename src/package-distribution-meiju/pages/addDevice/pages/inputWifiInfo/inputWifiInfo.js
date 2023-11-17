@@ -3,6 +3,8 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../../../../behaviors/pageBehaviors'
 import { imgList, defaultImgDir } from '../../../../../config/img'
+import {Logger, delay} from "../../../../../utils/index";
+import app from '../../../../common/app'
 
 import computedBehavior from '../../../../utils/miniprogram-computed.js'
 import { getFullPageUrl } from '../../../../utils/util'
@@ -15,16 +17,14 @@ import { addDeviceSDK } from '../../../../utils/addDeviceSDK.js'
 import { checkPermission } from '../../../../common/js/checkPermissionTip'
 import { setWifiStorage } from '../../utils/wifiStorage'
 import { environment } from '../../../../common/js/api'
-import { brandConfig } from '../../../assets/js/brand'
+import brandStyle from '../../../assets/js/brand'
 import { commonDialog } from '../../../assets/js/commonDialog'
-import app from '../../../../common/app'
 
 const addDeviceMixin = require('../assets/js/addDeviceMixin')
 const checkAuthMixin = require('../../mixins/checkAuthMixin')
 const netWordMixin = require('../../../assets/js/netWordMixin')
 const paths = require('../../../../utils/paths')
 const bluetooth = require('../../../../common/mixins/bluetooth.js')
-const brandStyle = require('../../../assets/js/brand.js')
 let wifiMgr = new WifiMgr()
 
 let interval = null
@@ -40,7 +40,6 @@ Page({
     currentHomeGroupId: '',
     isInitWifiSuccess: false,
     isCanSeePsw: true,
-    pswInputType: false,
     wifiDialogShow: false,
     wifiInputPlaceholder: '未获取到家庭WiFi',
     wifiInputRightText: '重新获取',
@@ -96,22 +95,17 @@ Page({
     spaceTip: ' ', //输入的wifi密码包含空格提示
     tempPsw: '', //暂存密码用于密码限制输入判断
     otherAndroidSystem: true, //是否非小米系的其他系统 true:是(非小米)  false:否(是小米或红米)
-    continueConnectWifi: false, //是否继续连wifi (手动输入) false:不是手动输入，true是手动输入
+    isManualInputWifi: false, //是否手动输入wifi false:不是手动输入，true是手动输入
     ishowDialog: false, //是否显示操作指引弹窗
     focusWifiName: false, //是否聚焦wifi名输入框
     focusWifiPwd: false, //是否聚焦wifi密码输入框
-    brand: '',
     dialogStyle: brandStyle.brandConfig.dialogStyle, //弹窗样式
-    brandConfig,
     locationResFlag: '',
   },
 
   ifFindMatchedBlueDevice: false, // 非自发现是否匹配到设备蓝牙
 
   computed: {
-    showNextText() {
-      return '下一步'
-    },
     //当前连接wifi提示
     tipText() {
       // return `这个可能是一个5GHz WiFi，可能无法连接，请切换至2.4GHz WiFi`
@@ -144,16 +138,12 @@ Page({
    * 生命周期函数--监听页面加载
    */
   async onLoad() {
-    this.data.brand = brandStyle.brand
     this.setData({
-      brand: this.data.brand,
       guideImg: imgList['linkGuide'],
-      wifiConnect: imgList['wifiConnect'],
-      questinoImg: imgList['questino'],
     })
 
     console.log('addDeviceInfo====', app.addDeviceInfo)
-    const { deviceImg, deviceName, type, sn8, ssid, mode, guideInfo, enterprise, brandName, fm } = app.addDeviceInfo
+    const { deviceImg, deviceName, type, sn8, mode, guideInfo, fm } = app.addDeviceInfo
 
     if (!deviceImg || !deviceName) {
       // 设备图片或名称缺失则补全
@@ -180,20 +170,12 @@ Page({
     if (mode == 0) {
       this.getWifisList()
     }
-    this.getAgainCheckList() //提前获取需二次确权设备固件名单
-
-    if (app.addDeviceInfo.mode == 0) {
-      this.getWifisList()
-    }
     this.wifiListSheet = this.selectComponent('#wifi-list-sheet') //组件的id
     try {
       app.addDeviceInfo.apUtils = await require.async('../../../assets/asyncSubpackages/apUtils.js') //分包异步加载
     } catch (error) {
-      console.log('------------mode-------------')
+      Logger.error('apUtils', error)
     }
-    console.log('------------mode-------------')
-    console.log('mode:', mode)
-    console.log('fm:', fm)
     // todo: 暂时屏蔽蓝牙扫描功能，接口开发不完整
     // if (mode == 0 || mode == 3) {
     //   if (fm === 'autoFound') {
@@ -209,6 +191,41 @@ Page({
     //     })
     //   }
     // }
+  },
+
+  /**
+   * 生命周期函数--监听页面显示
+   */
+  async onShow() {
+    this.data.clickNetFLag = false //解决防重标志位没有被清除的问题
+    this.checkNet()
+    this.data.pageStatus = 'show'
+    //如果是蓝牙配网则判断蓝牙是否授权
+    if (addDeviceSDK.bluetoothAuthModes.includes(app.addDeviceInfo.mode)) {
+      this.bluetoothAuthorize()
+    }
+    this.noLoactionTip()
+    app.globalData.isCanClearFound = true //配网流程返回首页或设备发现页清除ap蓝牙自发现已发现的设备信息
+  },
+
+  /**
+   * 生命周期函数--监听页面隐藏
+   */
+  onHide: function () {
+    this.data.pageStatus = 'hide'
+    clearInterval(interval)
+  },
+
+  /**
+   * 生命周期函数--监听页面卸载
+   */
+  onUnload: function () {
+    this.data.pageStatus = 'unload'
+    //重全局变量
+    clearInterval(interval)
+    wx.offBluetoothDeviceFound()
+    wx.stopBluetoothDevicesDiscovery()
+    console.log('监听页面卸载')
   },
   //点击跳转wifi频率指引页
   goTofrequencyGuide() {
@@ -290,7 +307,6 @@ Page({
     }
     this.data.clickFLag = true
     const res = wx.getSystemInfoSync()
-    console.log(res.system)
     if (res.system.includes('Android')) {
       let locationRes
       try {
@@ -348,19 +364,6 @@ Page({
   removeLinkNetRecordStorage() {
     wx.removeStorageSync('linkNetRecord')
   },
-  //提前获取需二次确权设备固件名单
-  async getAgainCheckList() {
-    try {
-      app.addDeviceInfo.againCheckList = await this.getTwoLinkNetList()
-      wx.setStorageSync('againCheckList', app.addDeviceInfo.againCheckList)
-    } catch (error) {
-      if (wx.getStorageSync('againCheckList')) {
-        app.addDeviceInfo.againCheckList = wx.getStorageSync('againCheckList')
-      } else {
-        app.addDeviceInfo.againCheckList = await this.getTwoLinkNetList()
-      }
-    }
-  },
   getAddDeviceInfo() {
     let addDeviceInfo = {
       deviceName: '冰箱二代combo',
@@ -376,7 +379,6 @@ Page({
     }
     app.addDeviceInfo = addDeviceInfo
   },
-  //clickWifiInputRightText
   clickWifiInputRightText() {
     let that = this
     if (this.data.isGetCurLinkWifiInfo) {
@@ -398,26 +400,18 @@ Page({
     let that = this
     //获取当前连接wifi信息
     wifiMgr
-      .getConnectedWifi(this.data.system)
+      .getConnectedWifi()
       .then((res) => {
         console.log('获取当前连接wifi信息', res)
         let storageWifiListV1 = wx.getStorageSync('storageWifiListV1')
         if (storageWifiListV1 && storageWifiListV1[environment].length && decodeWifi(storageWifiListV1[environment])) {
-          console.log('有对应环境的缓存wifi信息')
-          // if (typeof wx.getStorageSync('bindWifiInfo') == 'object') { //未加密的做处理
-          //     console.log('未加密的wifi信息')
-          //     let bindWifiInfo = wx.getStorageSync('bindWifiInfo')
-          //     wx.setStorageSync('bindWifiInfo', encyptWifi(bindWifiInfo))
-          // }
           let storageWifiList = decodeWifi(wx.getStorageSync('storageWifiListV1')[environment])
-          console.log('uuuuuuuuuuuuuuu', storageWifiList, res.BSSID)
           if (Array.isArray(storageWifiList)) {
             let isHasPsw = false
             let wifiNum = null
             storageWifiList.forEach((item, index) => {
               if (item.SSIDContent == res.SSID) {
                 //调整为用wifi名作为标示
-                console.log('有这个wifi的storage')
                 isHasPsw = true
                 wifiNum = index
               }
@@ -450,7 +444,6 @@ Page({
           }
         } else {
           //没有wifi storage 直接取当前连接的wifi
-          console.log('没有对应环境的缓存wifi信息')
           that.initBindWifiTest(res.BSSID, res.SSID, res.SSID.length, '01', '12', res.signalStrength, res.frequency)
         }
         that.data.isGetCurLinkWifiInfo = true
@@ -524,7 +517,7 @@ Page({
         //还是之前连接的wifi
         console.log('还是同一个wifi')
         if (this.data.pageStatus == 'show') {
-          this.delay(1500).then(() => {
+          delay(1500).then(() => {
             this.loopGetWifiInfo()
           })
         }
@@ -534,7 +527,7 @@ Page({
     } catch (error) {
       console.log('[get connected wifi fail]', error)
       if (this.data.pageStatus == 'show') {
-        this.delay(1500).then((end) => {
+        delay(1500).then((end) => {
           this.loopGetWifiInfo()
         })
       }
@@ -544,27 +537,17 @@ Page({
   //刷新wifi列表
   refreshWifiList() {
     console.log('刷新wifi列表=====')
-    // this.setData({
-    //     wifiList: []
-    // })
     this.getWifiList()
   },
 
   //获取wifi列表信息
   getWifisList() {
     let that = this
-    // wx.getSystemInfo({
-    //     success(res) {
-    //         that.setData({
-    //             platform: res.platform
-    //         })
-    //     }
-    // })
     const res = wx.getSystemInfoSync()
     this.setData({
       platform: res.platform,
     })
-    if (this.data.platform == 'android') {
+    if (this.data.platform === 'android') {
       wifiMgr.getWifiSortByFrequency(
         (wifiList) => {
           that.setData({
@@ -650,10 +633,9 @@ Page({
     })
   },
   switchPswShow() {
-    let { isCanSeePsw, pswInputType } = this.data
+    let { isCanSeePsw } = this.data
     this.setData({
       isCanSeePsw: !isCanSeePsw,
-      pswInputType: !pswInputType,
     })
   },
   // wifi输入框聚焦
@@ -718,7 +700,6 @@ Page({
         'bindWifiTest.PswLength': string2Uint8Array(psw).length, //psw.length,
       })
     }
-    console.log('输入的WiFi密码', this.data.bindWifiTest)
     if (e.detail.value.length !== this.data.bindWifiTest.PswContent.length) {
       return {
         value: this.data.bindWifiTest.PswContent,
@@ -782,7 +763,7 @@ Page({
     }
     setWifiStorage(this.data.bindWifiTest)
     app.addDeviceInfo.curWifiInfo = this.data.bindWifiTest //共享选取的wifi
-    app.addDeviceInfo.continueConnectWifi = this.data.continueConnectWifi // 保存是否手动输入的状态->失败页linkNetFail需要用到
+    app.addDeviceInfo.isManualInputWifi = this.data.isManualInputWifi // 保存是否手动输入的状态->失败页linkNetFail需要用到
     console.log('addDeviceInfo====', app.addDeviceInfo)
     const { deviceName, type, blueVersion, mode, fm, enterprise, ssid, isCheck } = app.addDeviceInfo
     this.searchBlueStopTimeout && clearTimeout(this.searchBlueStopTimeout)
@@ -983,10 +964,9 @@ Page({
     })
   },
   chooseWifi(e) {
-    var item = e.currentTarget.dataset.item
+    const item = e.currentTarget.dataset.item
     this.initBindWifiTest(item.BSSID, item.SSID, item.SSID.length, '01', '12', item.signalStrength, item.frequency)
-    // console.log(e);
-    console.log(item)
+    console.log('chooseWifi', item)
     this.hideWifiList()
   },
   initBindWifiTest(BSSID, SSIDContent, SSIDLength, EncryptType, chain, signalStrength, frequency) {
@@ -1020,11 +1000,9 @@ Page({
 
   async checkNet() {
     try {
-      await wifiMgr.getConnectedWifi()
-
-      if (this.data.continueConnectWifi) {
+      if (this.data.isManualInputWifi) {
         this.setData({
-          continueConnectWifi: false,
+          isManualInputWifi: false,
         })
       }
       this.setData({
@@ -1037,7 +1015,7 @@ Page({
       }
       this.getCurLinkWifiInfo()
     } catch (error) {
-      if (this.data.continueConnectWifi) {
+      if (this.data.isManualInputWifi) {
         return
       }
       console.log('非wifi状态', error)
@@ -1048,12 +1026,11 @@ Page({
         //只触发一次
         this.data.isLoad = false
       }
-      // todo: 暂时注释
-      // if (this.data.pageStatus === 'show') {
-      //   this.delay(5000).then((end) => {
-      //     this.checkNet()
-      //   })
-      // }
+      if (this.data.pageStatus === 'show') {
+        delay(5000).then(() => {
+          this.checkNet()
+        })
+      }
     }
   },
   //当前手机网络状态
@@ -1069,11 +1046,6 @@ Page({
           reject(error)
         },
       })
-    })
-  },
-  delay(milSec) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, milSec)
     })
   },
   skip() {
@@ -1253,61 +1225,6 @@ Page({
     }
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {},
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  async onShow() {
-    this.data.clickNetFLag = false //解决防重标志位没有被清除的问题
-    this.checkNet()
-    this.data.pageStatus = 'show'
-    //如果是蓝牙配网则判断蓝牙是否授权
-    if (addDeviceSDK.bluetoothAuthModes.includes(app.addDeviceInfo.mode)) {
-      this.bluetoothAuthorize()
-    }
-    this.noLoactionTip()
-    app.globalData.isCanClearFound = true //配网流程返回首页或设备发现页清除ap蓝牙自发现已发现的设备信息
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-    this.data.pageStatus = 'hide'
-    clearInterval(interval)
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-    this.data.pageStatus = 'unload'
-    //重全局变量
-    clearInterval(interval)
-    wx.offBluetoothDeviceFound()
-    wx.stopBluetoothDevicesDiscovery()
-    console.log('监听页面卸载')
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {},
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {},
-
-  /**
-   * 用户点击右上角分享
-   */
-  // onShareAppMessage: function () {},
-
   //去连接wifi 提示弹窗
   async connectWifi() {
     // 判断是否有精准定位，安卓 系统》=12
@@ -1325,6 +1242,7 @@ Page({
         .then((text) => {
           // 切换wifi登记页
           this.setData({
+            isManualInputWifi: true,
             netType: 1, //非wifi
           })
         })

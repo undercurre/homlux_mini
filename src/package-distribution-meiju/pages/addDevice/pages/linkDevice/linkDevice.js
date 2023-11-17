@@ -1724,6 +1724,7 @@ Component({
             errorCode: 4013,
             isCustom: true,
           })
+          // againCheckList逻辑已去除
           let { type, againCheckList, moduleVersion } = app.addDeviceInfo
           //sta阶段
           if (this.isAgainCheck(againCheckList, type, moduleVersion)) {

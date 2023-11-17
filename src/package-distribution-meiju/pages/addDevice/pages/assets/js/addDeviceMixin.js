@@ -219,30 +219,6 @@ module.exports = Behavior({
       let res = wx.getSystemInfoSync()
       return res.system.includes('Android') || ssid
     },
-    //获取当前家庭默认id
-    getCurrentHomeGroupId() {
-      //获取家庭列表
-      return '1111'
-    },
-    //获取自启热点 无后确权固件名单
-    getTwoLinkNetList() {
-      let params = {
-        reqId: getReqId(),
-        stamp: getStamp(),
-      }
-      return new Promise((resolve, reject) => {
-        // requestService
-        //   .request('firmwareList', params)
-        //   .then((resp) => {
-        //     console.log('获取自启热点 无后确权固件名单 resp', resp.data.data)
-        //     resolve(resp.data.data)
-        //   })
-        //   .catch((error) => {
-        //     console.log('获取自启热点 无后确权固件名单 error', error)
-        //     reject(error)
-        //   })
-      })
-    },
     //获取系统信息
     wxGetSystemInfo() {
       return new Promise((resolve) => {

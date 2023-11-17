@@ -43,6 +43,7 @@
               border="{{false}}"
             >
               <van-button
+                      wx:if="{{!isManualInputWifi}}"
                 slot="button"
                 type="primary"
                 plain
@@ -69,7 +70,7 @@
                 custom-style="border: 0;"
               >
                 <svg-icon
-                  name="icon-park-outline:preview-{{!isShowPw ? 'close-one' : 'open'}}"
+                  name="icon-park-outline:preview-{{!isCanSeePsw ? 'close-one' : 'open'}}"
                   color="#555659"
                   height="56rpx"
                 ></svg-icon>

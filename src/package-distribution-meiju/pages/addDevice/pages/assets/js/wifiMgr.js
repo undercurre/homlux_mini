@@ -255,7 +255,7 @@ export default class WifiMgr {
         return
       }
       wx.startWifi({
-        success(res) {
+        success() {
           wx.getConnectedWifi({
             partialInfo: isiOS, //是否只返回部分wifi信息，去掉可能拿不到 SSID
             success: (res) => {

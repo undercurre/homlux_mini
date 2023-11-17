@@ -5,6 +5,8 @@ import { addDeviceSDK } from '../../../../../utils/addDeviceSDK.js'
 import { imgesList } from '../../../../assets/js/shareImg.js'
 import { imgBaseUrl } from '../../../../../common/js/api'
 const imgUrl = imgBaseUrl.url + '/shareImg/meiju'
+import app from '../../../../../common/app'
+
 Component({
   externalClasses: ['frame', 'wifi-list-title', 'blue', 'wifi-item', 'left'],
   behaviors: [addDeviceMixin, computedBehavior],
@@ -44,8 +46,7 @@ Component({
     wrapAnimate: 'wrapAnimate',
     bgOpacity: 0,
     frameAnimate: 'frameAnimate',
-    isIphoneX: getApp().globalData.isIphoneX,
-    // wifiList: [],
+    isIphoneX: app.globalData.isIphoneX,
     isRefresh: false, //是否在刷新
     isCanUse: {
       meiju: '#488FFF',
@@ -61,8 +62,7 @@ Component({
 
   computed: {
     fomatWifiList() {
-      let { wifiList, isGetDeviceWifi, isSupport5G, brandName, type } = this.properties
-      console.log('wifi列表 this.properties', this.properties)
+      let { wifiList, isGetDeviceWifi, isSupport5G } = this.properties
       let wifiName
       let signalStrength
       let frequency
@@ -71,11 +71,10 @@ Component({
       }
       if (isGetDeviceWifi) {
         //只显示设备ap
-        wifiList = wifiList.filter((item, index) => {
+        wifiList = wifiList.filter((item) => {
           wifiName = item.SSID.toLocaleLowerCase()
           return addDeviceSDK.isDeviceAp(wifiName)
         })
-        console.log('只显示ap热点222', wifiList)
         wifiList.forEach((item, index) => {
           wifiName = item.SSID
           signalStrength = item.signalStrength
@@ -108,10 +107,6 @@ Component({
         })
         return wifiList
       }
-      // wifiList = wifiList.filter((item, index) => {
-      //   wifiName = item.SSID.toLocaleLowerCase()
-      //   return wifiName.length
-      // })
       wifiList.forEach((item, index) => {
         item.SSID = item.SSID.trim()
         wifiName = item.SSID.toLocaleLowerCase()
@@ -156,7 +151,6 @@ Component({
           return b.isCan - a.isCan //可用的排前
         }
       })
-      // console.log('格式化后 wifi列表', wifiList)
       return wifiList
     },
   },
