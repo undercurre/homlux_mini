@@ -798,8 +798,6 @@ ComponentWithComputed({
       wx.navigateTo({
         url: `/package-mine/device-manage/${pageName}/index?deviceId=${_deviceId}`,
       })
-
-      this.triggerEvent('popMove', 'down')
     },
     async curtainControl(property: IAnyObject) {
       const deviceId = this.data.checkedList[0]

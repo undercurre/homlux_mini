@@ -278,6 +278,13 @@ ComponentWithComputed({
         return
       }
     },
+    toDetail() {
+      const { deviceId } = this.data.deviceInfo
+
+      wx.navigateTo({
+        url: `/package-mine/device-manage/device-detail/index?deviceId=${deviceId}`,
+      })
+    },
 
     handleClose() {
       this.triggerEvent('close')

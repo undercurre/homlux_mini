@@ -53,7 +53,7 @@
         ></mz-icon-button>
       </view>
 
-      <view class="flex flex-row justify-between mt-32rpx">
+      <view class="flex flex-row justify-between mt-32rpx mb-64rpx">
         <mz-round-button
           wx:for="{{largeBtnList}}"
           wx:key="key"
@@ -70,13 +70,9 @@
         ></mz-round-button>
       </view>
 
-      <view
-        wx:if="{{isShowConfirm}}"
-        class="mt-10rpx"
-      >
+      <view wx:if="{{isShowConfirm}}">
         <van-button
           type="primary"
-          class="mt-10rpx"
           size="large"
           bind:click="handleConfirm"
           >确定</van-button
