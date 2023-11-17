@@ -1,6 +1,6 @@
-import {envMap, setEnv} from '../config/index'
-import {storage} from './storage'
-import {Logger} from "./log";
+import { envMap, setEnv } from '../config/index'
+import { storage } from './storage'
+import { Logger } from './log'
 // import QQMapWX from '../lib/qqmap-wx-jssdk'
 // import { QQMapConfig } from '../config/index'
 
@@ -16,12 +16,12 @@ Logger.debug('accountInfo', accountInfo)
  */
 export function goHome() {
   const defaultPage = (storage.get<string>('defaultPage') ?? '') as string
-  wx.switchTab({url: `/pages/${defaultPage}/index`})
+  wx.switchTab({ url: `/pages/${defaultPage}/index` })
 }
 
 export function setNavigationBarAndBottomBarHeight() {
-  const {statusBarHeight, platform, windowWidth, windowHeight, safeArea, system} = wx.getSystemInfoSync()
-  const {top, height} = wx.getMenuButtonBoundingClientRect()
+  const { statusBarHeight, platform, windowWidth, windowHeight, safeArea, system } = wx.getSystemInfoSync()
+  const { top, height } = wx.getMenuButtonBoundingClientRect()
 
   // 手机系统
   storage.set('system', system, null)
@@ -146,7 +146,7 @@ export function isRelease() {
  */
 export function setCurrentEnv(env?: ENV_TYPE) {
   const info = wx.getAccountInfoSync()
-  const {envVersion} = info.miniProgram
+  const { envVersion } = info.miniProgram
   const storageKey = `${envVersion}_env`
   let envStr = env ?? (storage.get(storageKey) as ENV_TYPE)
 
@@ -196,6 +196,6 @@ export function isLogon() {
 
 // 是否处于开发工具调试模式（PC端）
 export function isDevMode() {
-  const {platform} = wx.getSystemInfoSync()
+  const { platform } = wx.getSystemInfoSync()
   return platform === 'devtools'
 }

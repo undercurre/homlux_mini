@@ -3,7 +3,7 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../../../../behaviors/pageBehaviors'
 import { imgList, defaultImgDir } from '../../../../../config/img'
-import {Logger, delay} from "../../../../../utils/index";
+import { Logger, delay } from '../../../../../utils/index'
 import app from '../../../../common/app'
 
 import computedBehavior from '../../../../utils/miniprogram-computed.js'

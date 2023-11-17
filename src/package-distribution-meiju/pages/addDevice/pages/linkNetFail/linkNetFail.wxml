@@ -43,7 +43,7 @@
               border="{{false}}"
             >
               <van-button
-                      wx:if="{{!isManualInputWifi}}"
+                wx:if="{{!isManualInputWifi}}"
                 slot="button"
                 type="primary"
                 plain
