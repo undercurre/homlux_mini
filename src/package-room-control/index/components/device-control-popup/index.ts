@@ -45,7 +45,6 @@ ComponentWithComputed({
       type: Object,
       value: {} as Device.DeviceItem,
       observer(device) {
-        console.log('deviceInfo', device)
         if (!Object.keys(device).length) {
           return
         }
@@ -799,8 +798,6 @@ ComponentWithComputed({
       wx.navigateTo({
         url: `/package-mine/device-manage/${pageName}/index?deviceId=${_deviceId}`,
       })
-
-      this.triggerEvent('popMove', 'down')
     },
     async curtainControl(property: IAnyObject) {
       const deviceId = this.data.checkedList[0]
