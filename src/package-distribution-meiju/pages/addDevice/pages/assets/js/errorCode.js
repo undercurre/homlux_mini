@@ -106,7 +106,7 @@ const failTextData = {
     nextTitle: '手机无法连接设备',
     guideDesc: [
       '请将手机尽量靠近设备',
-      '请在系统的WiFi设置页面中关闭“自动切换WiFi”等类似开关设置',
+      '建议在手机系统的WiFi设置页面中关闭“自动切换WiFi”功能',
       '请确认已开启“本地网络”系统授权。（仅iOS展示）',
     ],
     isTest: false, //是否有测试一下
@@ -135,7 +135,7 @@ const failTextData = {
     errorCode: '4038',
     mainTitle: 'XX联网失败',
     nextTitle: '手机无法连接设备',
-    guideDesc: ['请将手机尽量靠近设备', '请在系统的WiFi设置页面中关闭“自动切换WiFi”等类似开关'],
+    guideDesc: ['请将手机尽量靠近设备', '建议在手机系统的WiFi设置页面中关闭“自动切换WiFi”功能'],
     isTest: false, //是否有测试一下
     isNeedInputPsw: false,
     msg: 'AP配网，连接设备发生IO错误',
