@@ -16,6 +16,7 @@ ComponentWithComputed({
   data: {
     homeList: [] as HomeCard[],
     listHeight: 0,
+    loading: false,
   },
 
   computed: {
@@ -67,6 +68,12 @@ ComponentWithComputed({
     },
 
     async toConfirm() {
+      if (this.data.loading) {
+        return
+      }
+      this.setData({
+        loading: true,
+      })
       const authRes = await queryUserMideaAuthInfo(this.data.currentHome?.mideaHouseId)
 
       if (authRes.success && authRes.result.mideaAuthFlag) {
@@ -75,6 +82,9 @@ ComponentWithComputed({
           title: `当前美居家庭已绑定Homlux家庭【${houseName}】，若绑定至新Homlux家庭请先在原家庭解绑`,
           showCancelButton: false,
         })
+        this.setData({
+          loading: false,
+        })
 
         return
       }
@@ -82,7 +92,10 @@ ComponentWithComputed({
       const entry = storage.get('meiju_auth_entry')
 
       if (entry === 'distribution-meiju') {
-        this.bindMeijuHome()
+        await this.bindMeijuHome()
+        this.setData({
+          loading: false,
+        })
       } else {
         const url = `/package-auth/pages/device-list/index?homeId=${this.data.currentHome?.mideaHouseId}`
         wx.navigateTo({ url })
