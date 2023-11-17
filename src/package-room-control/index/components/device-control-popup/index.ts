@@ -45,7 +45,6 @@ ComponentWithComputed({
       type: Object,
       value: {} as Device.DeviceItem,
       observer(device) {
-        console.log('deviceInfo', device)
         if (!Object.keys(device).length) {
           return
         }

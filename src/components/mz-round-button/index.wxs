@@ -11,7 +11,7 @@ function propObserver(newValue, oldValue, ownerInstance) {
   var key = ownerInstance.getDataset().key
   isOn[key] = newValue
 
-  console.log(key, 'propObserver: isOn', newValue)
+  console.log(key, 'propObserver, isOn === ', newValue)
 
   // 点击中不必响应值变化
   if (isPressed[key]) {

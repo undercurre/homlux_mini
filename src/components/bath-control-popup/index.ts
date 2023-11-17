@@ -11,6 +11,43 @@ type BtnItem = {
   rebound?: boolean // 按钮是否自动回弹状态
 }
 
+// 互斥的属性列表
+const MUTEX_PROP = ['blowing', 'heating', 'close_all']
+
+// 不需要替换的属性
+const SHOULD_NOT_REPLACE = ['heating']
+/**
+ * @name 属性切换
+ * @param mode 原有的属性字符串，用逗号分隔
+ * @param key 要比较的属性
+ */
+const toggleProp = (mode: string, key: string): string => {
+  const arr = mode.split(',')
+  console.log('[toggleProp trigger]', arr, key)
+  // key已存在，则移除
+  if (arr.includes(key)) {
+    if (!SHOULD_NOT_REPLACE.includes(key)) {
+      arr.splice(arr.indexOf(key), 1)
+    }
+  }
+  // 如果key是互斥属性，则先移除列表中可能存在的互斥属性
+  else {
+    if (MUTEX_PROP.includes(key)) {
+      MUTEX_PROP.forEach((item) => {
+        const index = arr.indexOf(item)
+        if (index !== -1) {
+          arr.splice(arr.indexOf(item), 1)
+        }
+      })
+    }
+
+    arr.push(key)
+  }
+
+  console.log('[toggleProp result]', arr)
+  return arr.join(',')
+}
+
 ComponentWithComputed({
   options: {
     pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
@@ -111,14 +148,15 @@ ComponentWithComputed({
     // 按钮组，转为数组格式
     btnList(data) {
       const { btnListMap, prop } = data
+      const { mode = '' } = prop
       const res = Object.keys(btnListMap).map((key: string) => {
         let on = false
         switch (key) {
           case 'heating_strong':
-            on = prop.mode === 'heating' && Number(prop.heating_temperature) >= 43
+            on = mode.indexOf('heating') > -1 && Number(prop.heating_temperature) >= 43
             break
           case 'heating_soft':
-            on = prop.mode === 'heating' && Number(prop.heating_temperature) <= 42
+            on = mode.indexOf('heating') > -1 && Number(prop.heating_temperature) <= 42
             break
           case 'main_light':
           case 'night_light':
@@ -128,7 +166,7 @@ ComponentWithComputed({
           case 'close_all':
             break
           default:
-            on = (prop.mode ?? '').indexOf(key) > -1
+            on = mode.indexOf(key) > -1
             break
         }
         return {
@@ -150,7 +188,6 @@ ComponentWithComputed({
           key,
         }
       })
-      console.log(res)
       return res
     },
   },
@@ -162,12 +199,12 @@ ComponentWithComputed({
     async handleBtnTap(e: WechatMiniprogram.CustomEvent) {
       const key = e.currentTarget.dataset.key as string
       const { prop } = this.data
+      const { mode = '' } = prop
       const property = {} as IAnyObject
 
-      // TODO 换气、吹风特殊处理，前端操作不互斥
       switch (key) {
         case 'heating_strong':
-          if (prop.mode === 'heating' && Number(prop.heating_temperature) >= 43) {
+          if (mode.indexOf('heating') > -1 && Number(prop.heating_temperature) >= 43) {
             property.mode_close = 'heating'
             this.setData({
               'prop.mode': 'close_all',
@@ -176,13 +213,13 @@ ComponentWithComputed({
             property.mode_enable = 'heating'
             property.heating_temperature = '45'
             this.setData({
-              'prop.mode': 'heating',
+              'prop.mode': toggleProp(mode, 'heating'),
               'prop.heating_temperature': '45',
             })
           }
           break
         case 'heating_soft':
-          if (prop.mode === 'heating' && Number(prop.heating_temperature) <= 42) {
+          if (mode.indexOf('heating') > -1 && Number(prop.heating_temperature) <= 42) {
             property.mode_close = 'heating'
             this.setData({
               'prop.mode': 'close_all',
@@ -191,13 +228,11 @@ ComponentWithComputed({
             property.mode_enable = 'heating'
             property.heating_temperature = '30'
             this.setData({
-              'prop.mode': 'heating',
+              'prop.mode': toggleProp(mode, 'heating'),
               'prop.heating_temperature': '30',
             })
           }
           break
-        // case 'ventilation':
-        //   break
         case 'main_light':
         case 'night_light': {
           const light_mode = prop.light_mode === key ? 'close_all' : key
@@ -215,18 +250,19 @@ ComponentWithComputed({
           })
           break
 
-        default:
-          if ((prop.mode ?? '').indexOf(key) > -1) {
+        default: {
+          const newMode = toggleProp(mode, key)
+          // console.log('toggleProp newMode', newMode)
+          this.setData({
+            'prop.mode': newMode,
+          })
+
+          if (newMode === 'close_all' || mode.indexOf(key) > -1) {
             property.mode_close = key
-            this.setData({
-              'prop.mode': 'close_all',
-            })
           } else {
             property.mode_enable = key
-            this.setData({
-              'prop.mode': key,
-            })
           }
+        }
       }
 
       const res = await sendDevice({
