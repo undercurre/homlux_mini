@@ -113,7 +113,7 @@ ComponentWithComputed({
      * 手动添加网关
      */
     addGatewayManually() {
-      this.bindGateway({ isManual: true })
+      this.bindGateway({ addType: 'manual' })
     },
     // 检查是否通过微信扫码直接进入该界面时判断场景值
     checkWxScanEnter() {
@@ -507,7 +507,7 @@ ComponentWithComputed({
           await this.bindGateway({
             pid: pageParams.pid,
             ssid: pageParams.ssid,
-            isManual: false,
+            addType: 'qrcode',
           })
         }
         // 智慧屏扫码绑定
@@ -533,21 +533,21 @@ ComponentWithComputed({
       }, 2000)
     },
 
-    async bindGateway(params: { pid?: string; ssid?: string; isManual: boolean }) {
+    async bindGateway(params: { pid?: string; ssid?: string; addType: 'qrcode' | 'manual' }) {
       let proType = '0x16'
-      let productName = ''
-      const ssid = params.ssid || '^midea_16_'
+      let productName = '网关'
+      const { pid, ssid, addType } = params
 
-      if (!params.isManual) {
+      if (addType === 'qrcode') {
         const res = await checkDevice(
           {
-            productId: params.pid,
+            productId: pid,
           },
           { loading: false },
         )
 
         if (!res.success) {
-          Toast('验证产品信息失败')
+          Toast('请检查网络设置')
 
           return
         }
@@ -563,16 +563,16 @@ ComponentWithComputed({
 
       wx.reportEvent('add_device', {
         pro_type: proType,
-        model_id: params.pid,
+        model_id: pid,
         add_type: 'qrcode',
       })
 
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/link-gateway/index', {
-          apSSID: ssid,
+          apSSID: ssid || 'midea_16_',
           deviceName: productName,
           type: 'query',
-          isManual: params.isManual,
+          addType,
         }),
       })
     },

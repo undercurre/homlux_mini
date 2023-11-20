@@ -7,7 +7,7 @@
 
   <!-- 仅检测当前是手动连接方式或者安卓10+还没去连接网关wifi时显示-->
   <view
-    wx:if="{{!isConnectDevice && (isManual || isAndroid10Plus)}}"
+    wx:if="{{hasInit && !hasLinkDevice && (isManual || isAndroid10Plus)}}"
     class="grow px-32rpx flex flex-col justify-between"
   >
     <view>
@@ -24,7 +24,7 @@
           src="/assets/img/distribution/icon-wifi.png"
         ></image>
 
-        <text class="px-30rpx leading-56rpx text-40 text-black-2a font-semibold">{{ apSSID }}</text>
+        <text class="px-30rpx leading-56rpx text-40 text-black-2a font-semibold">{{ showApSSID }}</text>
       </view>
 
       <view class="flex flex-row items-center pt-40rpx">
@@ -63,7 +63,7 @@
     class="grow flex flex-col"
   >
     <view
-      wx:if="{{!isConnectDevice && apSSID}}"
+      wx:if="{{(!isManual && !isAndroid10Plus) && !hasLinkDevice && apSSID}}"
       class="absolute w-full flex flex-row items-center justify-center py-30rpx tips-view"
     >
       <image
@@ -71,7 +71,7 @@
         src="/assets/img/distribution/icon-info.png"
       ></image>
 
-      <text class="text-24 leading-34rpx text-black-2a">请允许微信加入“{{apSSID}}”，以便自动连接设备</text>
+      <text class="text-24 leading-34rpx text-black-2a">请允许微信加入“{{showApSSID}}”，以便自动连接设备</text>
     </view>
 
     <block wx:if="{{type === 'query'}}">

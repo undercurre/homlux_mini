@@ -23,9 +23,14 @@ ComponentWithComputed({
    * 组件的属性列表
    */
   properties: {
-    isManual: {
-      type: Boolean,
-      value: false,
+    addType: {
+      type: String,
+      value: 'qrcode',
+    },
+    // 连接网关，进行的业务流程, query: 校验网关状态，bind: 绑定网关，changeWifi： 更改wifi
+    type: {
+      type: String,
+      value: '',
     },
   },
 
@@ -33,11 +38,10 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
+    hasInit: false,
     defaultImgDir,
-    type: '', // query: 校验网关状态，bind: 绑定网关，changeWifi： 更改wifi
     isShowForceBindTips: false,
-    isAndroid10Plus: false,
-    isConnectDevice: false,
+    isAndroid10Plus: isAndroid10Plus(),
     status: 'linking',
     apSSID: '',
     _queryCloudTimeId: 0,
@@ -59,22 +63,37 @@ ComponentWithComputed({
 
       return title
     },
+
+    // 判断手机是否已经连接上设备并完成通讯
+    hasLinkDevice(data) {
+      return data.activeIndex >= 1
+    },
+
+    showApSSID(data) {
+      const { apSSID, isManual } = data
+
+      return isManual ? `${apSSID}XXXX` : apSSID
+    },
+
+    isManual(data) {
+      return data.addType === 'manual'
+    },
   },
 
   lifetimes: {
     async ready() {
       const pageParams = getCurrentPageParams()
+      const { apSSID } = pageParams
 
-      Logger.log('ready', pageParams, 'isManual', this.data.isManual)
+      Logger.log('ready', pageParams, 'hasInit', this.data.hasInit)
 
       this.setData({
-        type: pageParams.type,
-        apSSID: pageParams.apSSID,
-        stepList: pageParams.type === 'changeWifi' ? stepListForChangeWiFi : stepListForBind, // 绑定流程和更改wifi的步骤流程不同
+        apSSID: apSSID,
+        stepList: this.data.type === 'changeWifi' ? stepListForChangeWiFi : stepListForBind, // 绑定流程和更改wifi的步骤流程不同
       })
 
       // 仅检验网关信息时校验位置权限
-      if (pageParams.type === 'query') {
+      if (this.data.type === 'query') {
         const auth = await this.authLocationPermission()
 
         if (!auth) {
@@ -195,31 +214,33 @@ ComponentWithComputed({
       if (isAndroid()) {
         // 无法访问互联网的情况下，wx.getWifiList()调用不成功,猜测微信存在查询外网接口信息的流程，堵塞流程，
         // 需在可访问外网时先调用一次，后面即使断网，再次调用getWifiList也能正常调用
-        const wifiListRes = await wx.getWifiList().catch((err) => err)
-
-        Logger.log('wifiListRes', wifiListRes)
+        wx.getWifiList().catch((err) => Logger.error('getWifiList', err))
       }
 
       start = Date.now()
 
-      this.data._socket = new WifiSocket({ ssid: this.data.apSSID })
+      this.data._socket = new WifiSocket({
+        ssid: this.data.apSSID,
+        isAccurateMatchWiFi: !this.data.isManual,
+        onWifiConnected: () => {
+          this.sendMessage()
+        },
+      })
 
-      const isConnect = await this.data._socket.isConnectDeviceWifi()
-
-      if (!isAndroid10Plus() || isConnect) {
+      if (!this.data.isManual && !this.data.isAndroid10Plus) {
         this.connectWifi()
-      } else {
-        this.setData({
-          isAndroid10Plus: isAndroid10Plus(),
-        })
       }
+
+      this.setData({
+        hasInit: true,
+      })
     },
 
     async connectWifi() {
       try {
         const now = Date.now()
 
-        const connectRes = await this.data._socket.connect()
+        const connectRes = await this.data._socket.connectWifi()
 
         Logger.log(`连接${this.data.apSSID}时长：`, Date.now() - now, connectRes, dayjs().format('HH:mm:ss'))
 
@@ -229,18 +250,23 @@ ComponentWithComputed({
           return
         }
 
-        // 重复请求_socket.connect()接口
-        if (connectRes.errCode === -2) {
-          return
-        }
-
         if (!connectRes.success) {
           throw connectRes
         }
 
+        reportInfo.connect_wifi_time = Date.now() - now
+      } catch (err) {
+        Logger.error('connectWifi-err', err)
+      }
+    },
+
+    // 连接wifi后与网关通信
+    async sendMessage() {
+      try {
+        const now = Date.now()
+
         this.setData({
           activeIndex: 1,
-          isConnectDevice: true,
         })
 
         reportInfo.connect_wifi_time = Date.now() - now
@@ -355,7 +381,7 @@ ComponentWithComputed({
 
       // 防止强绑情况网关还没断开原有连接，需要延迟查询
       setTimeout(() => {
-        this.queryDeviceOnlineStatus(params.sn, params.type)
+        this.queryDeviceOnlineStatus(params.sn, this.data.type)
       }, 10000)
 
       this.data._socket.close()
@@ -442,6 +468,7 @@ ComponentWithComputed({
         apSSID: pageParams.apSSID,
         method: gatewayStatus.method,
         deviceName: pageParams.deviceName,
+        addType: this.data.addType,
       }
 
       Logger.debug('网关检查流程耗时：', Date.now() - start)

@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { aesUtil, delay, strUtil, Logger } from '../utils/index'
+import { aesUtil, delay, Logger, strUtil } from '../utils/index'
 import { isAndroid, isAndroid10Plus } from './app'
 
 let _instance: WifiSocket | null = null
@@ -9,6 +9,8 @@ let tcpClient: WechatMiniprogram.TCPSocket | null = null
 let udpClient: WechatMiniprogram.UDPSocket | undefined = undefined
 
 export class WifiSocket {
+  isAccurateMatchWiFi = true // 是否精确匹配wifi
+
   time = dayjs().format('HH:mm:ss')
 
   SSID = ''
@@ -28,13 +30,13 @@ export class WifiSocket {
 
   queryWifiTimeId = 0 // 查询当前wiFi延时器
 
-  wifiTimeoutTimeId = 0 // wifi超时计时器
-
   cmdCallbackMap: IAnyObject = {}
 
   onMessageHandlerList: ((data: IAnyObject) => void)[] = []
 
-  constructor(params: { ssid: string }) {
+  onWifiConnected?: () => void
+
+  constructor(params: { ssid: string; isAccurateMatchWiFi?: boolean; onWifiConnected?: () => void }) {
     if (_instance && _instance.SSID === params.ssid) {
       Logger.log('WifiSocket实例重用')
       return _instance
@@ -47,9 +49,31 @@ export class WifiSocket {
 
     this.SSID = params.ssid
 
+    this.isAccurateMatchWiFi = params.isAccurateMatchWiFi ?? true
+
     this.key = `homlux@midea${params.ssid.substr(-4, 4)}`
 
     this.queryWifiTimeId = 0
+
+    // 监听设备热点连接事件
+    if (params.onWifiConnected) {
+      this.onWifiConnected = params.onWifiConnected
+    }
+
+    const queryWifi = async () => {
+      const isConnected = await this.isConnectDeviceWifi()
+
+      if (isConnected && this.onWifiConnected) {
+        this.onWifiConnected()
+      } else {
+        this.queryWifiTimeId = setTimeout(() => {
+          queryWifi()
+        }, 2000)
+      }
+    }
+
+    // 由于onWifiConnected不可靠，在安卓端存在监听不到的情况，改为轮询getConnectedWifi
+    queryWifi()
 
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     _instance = this
@@ -59,9 +83,17 @@ export class WifiSocket {
     const connectedRes = await wx.getConnectedWifi().catch((err) => err)
 
     Logger.log('获取当前wifi信息：', connectedRes)
+    let reg = new RegExp(`^${this.SSID}$`)
 
-    if (connectedRes && (connectedRes as IAnyObject).wifi?.SSID === this.SSID) {
+    // 判断是否精确匹配设备热点·
+    if (!this.isAccurateMatchWiFi) {
+      reg = new RegExp(`^${this.SSID}.{4}$`)
+    }
+
+    if (connectedRes && reg.test(connectedRes.wifi?.SSID)) {
       Logger.log(`检测目标wifi：${this.SSID}已连接`)
+      this.key = `homlux@midea${connectedRes.wifi.SSID.slice(-4)}`
+
       return true
     } else {
       return false
@@ -69,12 +101,13 @@ export class WifiSocket {
   }
 
   async connectWifi() {
+    // 非准确匹配wifi名的情况或者安卓10+需要手动连接wifi
     const connectRes = await wx
       .connectWifi({
         SSID: this.SSID,
         password: this.pw,
         partialInfo: false,
-        maunal: isAndroid10Plus(), // Android 微信客户端 7.0.22 以上版本，connectWifi 的实现在 Android 10 及以上的手机无法生效，需要配置 maunal 来连接 wifi。详情参考官方文档
+        maunal: !this.isAccurateMatchWiFi || isAndroid10Plus(), // Android 微信客户端 7.0.22 以上版本，connectWifi 的实现在 Android 10 及以上的手机无法生效，需要配置 maunal 来连接 wifi。详情参考官方文档
       })
       .catch((err) => err)
 
@@ -84,63 +117,6 @@ export class WifiSocket {
       ...connectRes,
       success: connectRes.errCode === 0 || connectRes.errMsg.includes('ok'),
     }
-  }
-
-  async connect() {
-    Logger.log('queryWifiTimeId', this.queryWifiTimeId, this)
-    // 兼容Android10+,避免重复触发轮询wifi逻辑
-    if (this.queryWifiTimeId !== 0) {
-      await this.connectWifi()
-
-      return {
-        errCode: -2,
-        success: false,
-        msg: '仅跳转系统Wi-Fi页。重复请求：已经正在等待连接网关热点',
-      }
-    }
-
-    const successRes = { success: true, errCode: 0 }
-
-    const isConnect = await this.isConnectDeviceWifi()
-
-    if (isConnect) {
-      return successRes
-    }
-
-    const connectWifiRes = await this.connectWifi()
-
-    if (!connectWifiRes.success) {
-      return connectWifiRes
-    }
-
-    return new Promise<{ errCode: number; success: boolean; msg?: string }>((resolve) => {
-      // 连接热点超时回调
-      this.wifiTimeoutTimeId = setTimeout(() => {
-        Logger.error('连接热点超时:60s', this.queryWifiTimeId)
-        clearTimeout(this.queryWifiTimeId)
-        this.queryWifiTimeId = 0
-        this.wifiTimeoutTimeId = 0
-        resolve({ success: false, errCode: -1 })
-      }, 60000)
-
-      const queryWifi = async () => {
-        const isConnected = await this.isConnectDeviceWifi()
-
-        if (isConnected) {
-          clearTimeout(this.wifiTimeoutTimeId)
-
-          resolve(successRes)
-        } else if (this.wifiTimeoutTimeId) {
-          // 关闭小程序后，过一段时间重启，连接热点超时，this.queryWifiTimeId延时器没有成功取消，需要通过this.queryWifiTimeId标识过滤取消
-          this.queryWifiTimeId = setTimeout(() => {
-            queryWifi()
-          }, 1500)
-        }
-      }
-
-      // 由于onWifiConnected不可靠，在安卓端存在监听不到的情况，改为轮询getConnectedWifi
-      queryWifi()
-    })
   }
 
   async init() {
@@ -427,9 +403,9 @@ export class WifiSocket {
   }
 
   /**
-         "bind":0,  //绑定状态 0：未绑定  1：WIFI已绑定  2:有线已绑定
-         "method":"wifi" //无线配网："wifi"，有线配网:"eth"
-     */
+   "bind":0,  //绑定状态 0：未绑定  1：WIFI已绑定  2:有线已绑定
+   "method":"wifi" //无线配网："wifi"，有线配网:"eth"
+   */
   async getGatewayStatus() {
     const res = await this.sendCmd({
       topic: '/gateway/net/status',
@@ -464,16 +440,12 @@ export class WifiSocket {
 
     udpClient?.close()
 
-    // 清除相关定时器
+    // 清除查询是否连接设备热点查询及回调
     if (this.queryWifiTimeId !== 0) {
       clearTimeout(this.queryWifiTimeId)
       this.queryWifiTimeId = 0
     }
-
-    if (this.wifiTimeoutTimeId !== 0) {
-      clearTimeout(this.wifiTimeoutTimeId)
-      this.wifiTimeoutTimeId = 0
-    }
+    this.onWifiConnected = undefined
 
     _instance = null
   }
