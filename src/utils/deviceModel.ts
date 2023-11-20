@@ -130,5 +130,30 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
       descList.push(property.buttonClicked === 1 ? '单击' : property.buttonClicked === 2 ? '双击' : '长按')
   }
 
+  if (proType === PRO_TYPE.bathHeat) {
+    const { mode, light_mode, heating_temperature } = property
+    if (mode.indexOf('close_all') > -1) {
+      descList.push('待机')
+    }
+    if (mode.indexOf('heating') > -1) {
+      if (Number(heating_temperature) >= 43) {
+        descList.push('强暖')
+      } else if (heating_temperature <= 42) {
+        descList.push('弱暖')
+      }
+    }
+    if (mode.indexOf('ventilation') > -1) {
+      descList.push('换气')
+    }
+    if (mode.indexOf('blowing') > -1) {
+      descList.push('吹风')
+    }
+    if (light_mode === 'main_light') {
+      descList.push('照明')
+    } else if (light_mode === 'night_light') {
+      descList.push('夜灯')
+    }
+  }
+
   return descList
 }

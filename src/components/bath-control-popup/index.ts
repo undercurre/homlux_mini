@@ -80,11 +80,11 @@ ComponentWithComputed({
     },
     deviceInfo: {
       type: Object,
-      value: {} as Device.DeviceItem,
+      value: {},
       observer(value) {
-        if (value?.mzgdPropertyDTOList?.bathHeat) {
+        if (value) {
           this.setData({
-            prop: value.mzgdPropertyDTOList.bathHeat,
+            prop: value as Device.DeviceItem & Device.mzgdPropertyDTO,
           })
         }
       },
@@ -98,7 +98,7 @@ ComponentWithComputed({
     power: 0,
     brightness: 1,
     colorTemperature: 0,
-    prop: {} as Device.mzgdPropertyDTO,
+    prop: {} as Device.DeviceItem & Device.mzgdPropertyDTO,
     largeBtnStyle: 'height: 112rpx; width: 280rpx; border-radius: 32rpx; background-color: #f7f8f9;',
     // 按钮组对象
     btnListMap: {
@@ -157,10 +157,6 @@ ComponentWithComputed({
             break
           case 'heating_soft':
             on = mode.indexOf('heating') > -1 && Number(prop.heating_temperature) <= 42
-            break
-          case 'main_light':
-          case 'night_light':
-            on = prop.light_mode === key
             break
           // 全关状态不显示
           case 'close_all':
@@ -290,7 +286,10 @@ ComponentWithComputed({
       this.triggerEvent('close')
     },
     handleConfirm() {
-      this.triggerEvent('confirm')
+      this.triggerEvent('confirm', {
+        ...this.data.deviceInfo,
+        ...this.data.prop,
+      })
     },
   },
 })

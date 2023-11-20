@@ -215,8 +215,7 @@ ComponentWithComputed({
       this.setData({
         sceneList: [...sceneStore.allRoomSceneList],
         deviceList: deviceStore.allRoomDeviceFlattenList.filter(
-          (item) =>
-            item.proType === PRO_TYPE.light || item.proType === PRO_TYPE.switch || item.proType === PRO_TYPE.curtain,
+          (item) => item.proType !== PRO_TYPE.gateway && item.proType !== PRO_TYPE.sensor,
         ),
         sensorList,
       })
@@ -283,13 +282,10 @@ ComponentWithComputed({
                 }
               })
             } else {
-              let property = action.controlAction[0]
-
-              if (action.proType === PRO_TYPE.light) {
-                property = {
-                  ...device.mzgdPropertyDTOList['light'],
-                  ...property,
-                }
+              const modelName = getModelName(device.proType, device.productId)
+              const property = {
+                ...device.mzgdPropertyDTOList[modelName],
+                ...action.controlAction[0],
               }
               const desc = toPropertyDesc(device.proType, property)
               tempSceneDevicelinkSelectList.push(device.uniId)

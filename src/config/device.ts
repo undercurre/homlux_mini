@@ -58,9 +58,9 @@ export const KNOB_PID: readonly string[] = ['midea.knob.001.003']
 export const proName: Record<string, string> = {
   '0x13': 'light',
   '0x14': 'curtain',
-  '0x21': 'switch',
   '0x16': 'gateway',
   '0x17': 'clothesDryingRack',
+  '0x21': 'switch',
   '0x26': 'bathHeat',
   '0xBC': 'sensor',
 } as const

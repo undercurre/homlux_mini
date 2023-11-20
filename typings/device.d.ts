@@ -64,10 +64,6 @@ declare namespace Device {
     pic: string
     /**
      * 品类码
-     * light: '0x13',
-     * switch: '0x21',
-     * curtain: '0x14',
-     * gateway: '0x16',
      */
     proType: string
     /** 产品Id */
