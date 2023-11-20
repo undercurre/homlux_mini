@@ -202,8 +202,7 @@ ComponentWithComputed({
       this.setData({
         sceneList: [...sceneStore.allRoomSceneList],
         deviceList: deviceStore.allRoomDeviceFlattenList.filter(
-          (item) =>
-            item.proType === PRO_TYPE.light || item.proType === PRO_TYPE.switch || item.proType === PRO_TYPE.curtain,
+          (item) => item.proType !== PRO_TYPE.gateway && item.proType !== PRO_TYPE.sensor,
         ),
         sensorList,
       })
@@ -791,42 +790,26 @@ ComponentWithComputed({
         if (device) {
           //是设备
           console.log('是设备', device)
-          if (device.proType === PRO_TYPE.switch) {
-            //是开关面板
-            const modelName = device.uniId.split(':')[1]
-            const power = device.property!.power
-            const desc = toPropertyDesc(device.proType, device.property!)
-            tempSceneDeviceActionsFlatten.push({
-              uniId: device.uniId,
-              name: `${device.switchInfoDTOList[0].switchName} | ${device.deviceName}`,
-              type: device.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
-              desc,
-              pic: device.switchInfoDTOList[0].pic,
-              proType: PRO_TYPE.switch,
-              value: {
-                modelName,
-                power,
-              },
-              orderNum: 0,
-              dragId: device.uniId + Math.floor(Math.random() * 1001),
-            })
-          } else {
-            const desc = toPropertyDesc(device.proType, device.property!)
-            tempSceneDeviceActionsFlatten.push({
-              uniId: device.uniId,
-              name: device.deviceName,
-              type: device.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
-              desc,
-              pic: device.pic as string,
-              proType: device.proType,
-              value: {
-                modelName: 'light',
-                ...device.property,
-              },
-              orderNum: 0,
-              dragId: device.uniId + Math.floor(Math.random() * 1001),
-            })
-          }
+          const isSwitch = device.proType === PRO_TYPE.switch
+          const name = isSwitch ? `${device.switchInfoDTOList[0].switchName} | ${device.deviceName}` : device.deviceName
+          const modelName = isSwitch ? device.uniId.split(':')[1] : getModelName(device.proType, device.productId)
+          const pic = isSwitch ? device.switchInfoDTOList[0].pic : device.pic
+          const desc = toPropertyDesc(device.proType, device.property!)
+
+          tempSceneDeviceActionsFlatten.push({
+            uniId: device.uniId,
+            name,
+            type: device.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
+            desc,
+            pic,
+            proType: device.proType,
+            value: {
+              modelName,
+              ...device.property,
+            },
+            orderNum: 0,
+            dragId: device.uniId + Math.floor(Math.random() * 1001),
+          })
         } else {
           const scene = this.data.sceneList.find((item) => item.sceneId === id)
           if (scene) {
@@ -1321,8 +1304,11 @@ ComponentWithComputed({
                 // }
               } else if (device.proType === PRO_TYPE.curtain) {
                 ctrlAction.curtain_position = property.curtain_position
+              } else if (device.proType === PRO_TYPE.bathHeat) {
+                ctrlAction.light_mode = property.light_mode
+                ctrlAction.mode = property.mode
+                ctrlAction.heating_temperature = property.heating_temperature
               }
-
               newSceneData.deviceActions.push({
                 controlAction: [ctrlAction],
                 deviceId: action.uniId,

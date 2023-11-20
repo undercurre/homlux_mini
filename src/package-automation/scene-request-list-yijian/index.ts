@@ -134,6 +134,10 @@ ComponentWithComputed({
             // }
           } else if (device.proType === PRO_TYPE.curtain) {
             ctrlAction.curtain_position = property.curtain_position
+          } else if (device.proType === PRO_TYPE.bathHeat) {
+            ctrlAction.light_mode = property.light_mode
+            ctrlAction.mode = property.mode
+            ctrlAction.heating_temperature = property.heating_temperature
           }
 
           sceneData?.deviceActions?.push({

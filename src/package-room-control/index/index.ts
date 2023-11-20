@@ -391,6 +391,14 @@ ComponentWithComputed({
           })
         }
       })
+
+      // FIXME 局域网可控时，全房间灯光控制未变更状态
+      // emitter.on('msgPush', () => {
+      //   const hasLight = deviceStore.deviceList.some((d) => d.canLanCtrl)
+      //   this.setData({
+      //     power: hasLight ? 1 : 0,
+      //   })
+      // })
     },
 
     // 响应控制弹窗中单灯/灯组的控制变化，直接按本地设备列表数值以及设置值，刷新房间灯的状态
@@ -592,11 +600,12 @@ ComponentWithComputed({
               device!.mzgdPropertyDTOList &&
               this.data.checkedList.includes(originDevice!.deviceId) &&
               originDevice!.select &&
-              originDevice.proType === PRO_TYPE.curtain // 因为【灯】异常推送较多，暂时不对弹框中的设备状态进行更新
+              (originDevice.proType === PRO_TYPE.curtain || originDevice.proType === PRO_TYPE.bathHeat) // 因为【灯】异常推送较多，暂时不对弹框中的设备状态进行更新
             ) {
               const newVal = {
                 ...originDevice,
                 ...device,
+                ...device.mzgdPropertyDTOList[modelName],
               }
               this.data._diffCards.data.checkedDeviceInfo = newVal
             }
@@ -1184,7 +1193,11 @@ ComponentWithComputed({
 
       // 选择灯卡片时，同步设备状态到控制弹窗
       if (toCheck) {
-        diffData.checkedDeviceInfo = e.detail
+        const modelName = getModelName(e.detail.proType, e.detail.productId)
+        diffData.checkedDeviceInfo = {
+          ...e.detail,
+          ...e.detail.mzgdPropertyDTOList[modelName],
+        }
       }
 
       // 合并数据变化

@@ -319,6 +319,14 @@
   bind:confirm="handleSceneEditConfirm"
   bind:close="handleEditPopupClose"
 ></curtain-control-popup>
+<bath-control-popup
+  show="{{showEditPopup === '0x26'}}"
+  isShowConfirm="{{true}}"
+  deviceInfo="{{sceneEditInfo}}"
+  bind:confirm="handleSceneEditConfirm"
+  bind:close="handleEditPopupClose"
+></bath-control-popup>
+
 <edit-sensor-popup
   show="{{showEditSensorPopup}}"
   productId="{{editingSensorType}}"

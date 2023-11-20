@@ -260,7 +260,6 @@
   show="{{controlType === '0x26'}}"
   isShowSetting="{{true}}"
   deviceInfo="{{checkedDeviceInfo}}"
-  bind:confirm="handleSceneEditConfirm"
   bind:close="cancelCheckAndPops"
 ></bath-control-popup>
 
@@ -268,7 +267,6 @@
   show="{{controlType === '0x17'}}"
   isShowSetting="{{true}}"
   deviceInfo="{{checkedDeviceInfo}}"
-  bind:confirm="handleSceneEditConfirm"
   bind:close="cancelCheckAndPops"
 ></airer-control-popup>
 
