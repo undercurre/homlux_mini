@@ -95,13 +95,11 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    power: 0,
-    brightness: 1,
-    colorTemperature: 0,
+    // 组件私有属性，用于设值显示
     prop: {} as Device.DeviceItem & Device.mzgdPropertyDTO,
     largeBtnStyle: 'height: 112rpx; width: 280rpx; border-radius: 32rpx; background-color: #f7f8f9;',
     // 按钮组对象
-    btnListMap: {
+    btnMap: {
       close_all: {
         text: '待机',
         icon: '../../assets/img/function/f00.png',
@@ -147,9 +145,9 @@ ComponentWithComputed({
   computed: {
     // 按钮组，转为数组格式
     btnList(data) {
-      const { btnListMap, prop } = data
+      const { btnMap, prop } = data
       const { mode = '' } = prop
-      const res = Object.keys(btnListMap).map((key: string) => {
+      const res = Object.keys(btnMap).map((key: string) => {
         let on = false
         switch (key) {
           case 'heating_strong':
@@ -166,7 +164,7 @@ ComponentWithComputed({
             break
         }
         return {
-          ...btnListMap[key],
+          ...btnMap[key],
           on,
           key,
         }
@@ -270,7 +268,7 @@ ComponentWithComputed({
       })
 
       if (!res.success) {
-        Toast('控制失败')
+        Toast({ message: '控制失败', zIndex: 9999 })
         return
       }
     },

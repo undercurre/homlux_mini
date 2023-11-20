@@ -600,7 +600,9 @@ ComponentWithComputed({
               device!.mzgdPropertyDTOList &&
               this.data.checkedList.includes(originDevice!.deviceId) &&
               originDevice!.select &&
-              (originDevice.proType === PRO_TYPE.curtain || originDevice.proType === PRO_TYPE.bathHeat) // 因为【灯】异常推送较多，暂时不对弹框中的设备状态进行更新
+              (originDevice.proType === PRO_TYPE.curtain ||
+                originDevice.proType === PRO_TYPE.bathHeat ||
+                originDevice.proType === PRO_TYPE.clothesDryingRack) // 因为【灯】异常推送较多，暂时不对弹框中的设备状态进行更新
             ) {
               const newVal = {
                 ...originDevice,
@@ -1191,7 +1193,7 @@ ComponentWithComputed({
       // 选择项，只能单选，但仍沿用数组的形式
       this.data.checkedList = toCheck ? [uniId] : []
 
-      // 选择灯卡片时，同步设备状态到控制弹窗
+      // 选择卡片时，同步设备状态到控制弹窗
       if (toCheck) {
         const modelName = getModelName(e.detail.proType, e.detail.productId)
         diffData.checkedDeviceInfo = {

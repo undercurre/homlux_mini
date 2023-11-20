@@ -165,7 +165,11 @@ ComponentWithComputed({
     },
     // 在卡片上有控制按钮的
     hasControl(data) {
-      return data.deviceInfo.proType !== PRO_TYPE.sensor
+      return (
+        data.deviceInfo.proType !== PRO_TYPE.sensor &&
+        data.deviceInfo.proType !== PRO_TYPE.bathHeat &&
+        data.deviceInfo.proType !== PRO_TYPE.clothesDryingRack
+      )
     },
   },
 

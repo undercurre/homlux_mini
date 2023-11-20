@@ -21,6 +21,10 @@ declare namespace Device {
     mode?: string // 浴霸模式，'close_all' | 'heating' | 'bath' | 'ventilation' | 'drying' | 'blowing' | 'soft_wind'，双模式用,分隔
     light_mode?: 'close_all' | 'main_light' | 'night_light' // 浴霸照明状态
     heating_temperature?: string // 浴霸加热温度
+    updown?: string // 晾衣架升降 'up' | 'down' | 'pause'
+    light: string // 晾衣架灯 'on' | 'off'
+    laundry: string // 晾衣架一键晾衣 'on' | 'off'
+    custom_height: number // 一键晾衣高度W
   }
   /** 设备列表项 */
   interface DeviceItem {
