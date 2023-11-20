@@ -1,15 +1,9 @@
-import { deviceStore, homeStore, sceneStore } from '../store/index'
+import { deviceStore, homeStore } from '../store/index'
 import homOs from 'js-homos'
-import { Logger, emitter, debounce, isConnect } from './index'
+import { Logger, emitter, debounce } from './index'
 
 export async function initHomeOs() {
-  const promiseList = [homeStore.initLocalKey()]
-
-  // 避免无效的请求
-  if (isConnect()) {
-    promiseList.push(sceneStore.updateAllRoomSceneList())
-  }
-  await Promise.all(promiseList)
+  await homeStore.initLocalKey()
 
   // 调试阶段可写死传递host参数，PC模拟调试
   homOs.login({

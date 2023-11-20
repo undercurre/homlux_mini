@@ -14,7 +14,7 @@ import {
   getCurrentPageUrl,
 } from './utils/index'
 import svgs from './assets/svg/index'
-import { deviceStore, homeStore, othersStore, userStore } from './store/index'
+import { deviceStore, homeStore, othersStore, sceneStore, userStore } from './store/index'
 import { reaction } from 'mobx-miniprogram'
 import homOs from 'js-homos'
 import mqtt from './lib/mqtt.min.js' // 暂时只能使用4.2.1版本，高版本有bug，判断错运行环境
@@ -100,9 +100,12 @@ App<IAppOption>({
     startWebsocketService()
 
     // 首次进入有onLaunch不必加载
+    // homOS本地控制要求场景数据保持尽可能实时，需要小程序回到前台刷新场景和设备列表数据
     if (!firstOnShow) {
       deviceStore.updateAllRoomDeviceList()
       homeStore.updateHomeInfo()
+
+      sceneStore.updateAllRoomSceneList(homeStore.currentHomeId, { isDefaultErrorTips: false })
     }
   },
 

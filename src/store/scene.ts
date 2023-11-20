@@ -74,8 +74,8 @@ export const sceneStore = observable({
     }
   },
 
-  async updateAllRoomSceneList(houseId: string = homeStore.currentHomeId) {
-    const res = await querySceneListByHouseId(houseId)
+  async updateAllRoomSceneList(houseId: string = homeStore.currentHomeId, options?: { isDefaultErrorTips: boolean }) {
+    const res = await querySceneListByHouseId(houseId, options)
     if (res.success) {
       const list = res.result
         .filter((scene) => scene.deviceActions && scene.deviceActions.length)
