@@ -63,7 +63,7 @@
     class="grow flex flex-col"
   >
     <view
-      wx:if="{{(!isManual && !isAndroid10Plus) && !hasLinkDevice && apSSID}}"
+      wx:if="{{hasInit && (!isManual && !isAndroid10Plus) && !hasLinkDevice && apSSID}}"
       class="absolute w-full flex flex-row items-center justify-center py-30rpx tips-view"
     >
       <image
