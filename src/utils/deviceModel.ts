@@ -155,5 +155,24 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
     }
   }
 
+  if (proType === PRO_TYPE.clothesDryingRack) {
+    const { updown, laundry, light } = property
+    if (updown === 'up') {
+      descList.push('上升')
+    }
+    if (updown === 'down') {
+      descList.push('下降')
+    }
+    if (updown === 'pause') {
+      descList.push('暂停')
+    }
+    if (laundry === 'on') {
+      descList.push('一键晾衣')
+    }
+    if (light === 'on') {
+      descList.push('照明')
+    }
+  }
+
   return descList
 }

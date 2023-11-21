@@ -138,6 +138,10 @@ ComponentWithComputed({
             ctrlAction.light_mode = property.light_mode
             ctrlAction.mode = property.mode
             ctrlAction.heating_temperature = property.heating_temperature
+          } else if (device.proType === PRO_TYPE.clothesDryingRack) {
+            ctrlAction.updown = property.updown
+            ctrlAction.laundry = property.laundry
+            ctrlAction.light = property.light
           }
 
           sceneData?.deviceActions?.push({

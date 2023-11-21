@@ -10,7 +10,7 @@
   <view class="w-full bg-white flex-col flex items-center py-20rpx">
     <view class="flex justify-evenly w-686rpx mt-10rpx relative">
       <view class="flex-col-center">
-        <text class="mx-24rpx mt-16rpx tab-title">{{deviceInfo.deviceName}}</text>
+        <text class="mx-24rpx mt-16rpx tab-title">{{title || deviceInfo.deviceName}}</text>
       </view>
       <!-- 设置、关闭按钮 -->
       <view
