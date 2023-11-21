@@ -28,7 +28,7 @@
       <view class="flex flex-row items-center pt-50rpx">
         <image
           class="w-48 h-48"
-          src="/src/assets/img/distribution/icon-wifi.png"
+          src="/assets/img/distribution/icon-wifi.png"
         ></image>
 
         <text class="px-40rpx leading-44rpx text-32 text-hex-27282A">{{brandName}}_{{tools.toLocaleLowerCase(type)}}_XXXX</text>
@@ -37,7 +37,7 @@
       <view class="flex flex-row items-center pt-40rpx">
         <image
           class="w-48 h-48"
-          src="/src/assets/img/distribution/icon-pw.png"
+          src="/assets/img/distribution/icon-pw.png"
         ></image>
 
         <text class="px-40rpx leading-44rpx text-32 text-hex-27282A">12345678</text>
