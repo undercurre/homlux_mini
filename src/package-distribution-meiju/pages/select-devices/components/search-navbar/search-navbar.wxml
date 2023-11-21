@@ -1,4 +1,0 @@
-<view class="search-nav-header" style="top:{{statusBarHeight + 6}}px">
-  <text class="left-text theme-font-color" bindtap="actionGoBack">取消</text>
-  <view class="title theme-font-color">搜索</view>
-</view>

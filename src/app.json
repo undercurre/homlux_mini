@@ -75,13 +75,13 @@
       "root": "package-distribution-meiju",
       "pages": [
         "pages/check-auth/index",
-        "pages/addDevice/pages/inputWifiInfo/inputWifiInfo",
-        "pages/addDevice/pages/addGuide/addGuide",
-        "pages/user-gudie/pages/location-guide/location-guide",
-        "pages/addDevice/pages/addFail/addFail",
-        "pages/addDevice/pages/linkDevice/linkDevice",
-        "pages/addDevice/pages/linkNetFail/linkNetFail",
-        "pages/addDevice/pages/linkAp/linkAp"
+        "pages/inputWifiInfo/inputWifiInfo",
+        "pages/addGuide/addGuide",
+        "pages/location-guide/location-guide",
+        "pages/addFail/addFail",
+        "pages/linkDevice/linkDevice",
+        "pages/linkNetFail/linkNetFail",
+        "pages/linkAp/linkAp"
       ]
     }
   ],

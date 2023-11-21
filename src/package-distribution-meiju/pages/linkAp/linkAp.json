@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "no-found-ap": "/package-distribution-meiju/pages/addDevice/pages/component/no-found-ap/no-found-ap",
+    "wifi-list-sheet": "/package-distribution-meiju/pages/addDevice/pages/component/wifi-list-sheet/wifi-list-sheet"
+  }
+}

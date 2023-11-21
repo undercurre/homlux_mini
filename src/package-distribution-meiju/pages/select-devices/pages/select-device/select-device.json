@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "选择设备类型",
-  "usingComponents": {
-    "mx-dialog": "/miniprogram_npm/m-ui/mx-dialog/index"
-  }
-}
