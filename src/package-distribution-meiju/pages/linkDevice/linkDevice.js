@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
-import { bindMideaDevice, queryAuthGetStatus, queryGuideInfo } from '../../../apis'
+import { bindMideaDevice, queryAuthGetStatus, queryGuideInfo } from '../../../apis/index'
 import { homeStore, roomStore } from '../../../store/index'
 import { Logger, strUtil } from '../../../utils/index'
 import app from '../../common/app'
