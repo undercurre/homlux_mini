@@ -14,8 +14,8 @@
         bindtap="handleAllSelectToggle"
       >
         <image
-          src="/assets/img/base/{{isAllSelect?'check':'uncheck'}}.png"
-          class="w-48 h-48"
+          src="/assets/img/base/{{isAllSelect?'check2':'uncheck2'}}.png"
+          class="w-32 h-32"
         />
         <text class="text-28rpx text-hex-555659 ml-16rpx">全选</text>
       </view>

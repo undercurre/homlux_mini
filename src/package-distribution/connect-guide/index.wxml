@@ -83,7 +83,7 @@
         </view>
 
         <image
-          class="w-48 h-48"
+          class="w-32 h-32"
           src="{{ item.deviceId === selectGatewayId ? '/assets/img/base/check.png' : '/assets/img/base/uncheck.png' }}"
         />
       </view>
