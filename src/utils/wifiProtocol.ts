@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import { aesUtil, delay, Logger, strUtil } from '../utils/index'
-import { isAndroid, isAndroid10Plus } from './app'
+import { isAndroid, isAndroid10Plus } from './system'
 
 let _instance: WifiSocket | null = null
 

@@ -1,6 +1,6 @@
 // import cryptoUtils from './remoterCrypto'
 import remoterProtocol from './remoterProtocol'
-import { hideLoading, isAndroid, showLoading } from './app'
+import { hideLoading, isAndroid, showLoading } from './system'
 import { delay, Logger } from '../utils/index'
 import { CMD } from '../config/remoter'
 
