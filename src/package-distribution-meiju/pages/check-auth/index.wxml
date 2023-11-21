@@ -1,17 +1,32 @@
-<view class="page-container flex flex-col" wx:if="{{!isAuth}}">
-  <nav-bar leftArrow bind:leftTap="goBack"></nav-bar>
+<view
+  class="page-container flex flex-col"
+  wx:if="{{!isAuth}}"
+>
+  <nav-bar
+    leftArrow
+    bind:leftTap="goBack"
+  ></nav-bar>
 
   <view class="grow">
     <view class="px-64rpx pt-30rpx">
-      <text class="text-56rpx text-hex-27282A leading-none">登录美的美居</text>
+      <text class="text-56rpx text-hex-27282A leading-none">授权美的美居</text>
     </view>
 
     <view class="flex flex-row gap-x-36rpx items-center justify-center py-170rpx">
-      <image src="/assets/img/login/logo.png" class="w-128 h-128"></image>
+      <image
+        src="/assets/img/login/logo.png"
+        class="w-128 h-128"
+      ></image>
 
-      <image src="/package-distribution-meiju/assets/check-auth/arrow.png" class="w-64 h-64"></image>
+      <image
+        src="/package-distribution-meiju/assets/check-auth/arrow.png"
+        class="w-64 h-64"
+      ></image>
 
-      <image src="/assets/img/logo/meiju.png" class="w-128 h-128"></image>
+      <image
+        src="/assets/img/logo/meiju.png"
+        class="w-128 h-128"
+      ></image>
     </view>
 
     <view class="px-48rpx pt-30rpx">
@@ -22,8 +37,22 @@
   </view>
 
   <view class="flex flex-col items-center px-32rpx">
-    <mz-checkbox class="pb-32rpx" checked="{{isAgree}}" disabled="{{seconds > 0}}" bind:change="toAgree" label="{{tipsText}}"></mz-checkbox>
-    <van-button class="w-full" type="primary" block size="large" bind:click="toBindMeijuHome" disabled="{{!isAgree}}">确定</van-button>
+    <mz-checkbox
+      class="pb-32rpx"
+      checked="{{isAgree}}"
+      disabled="{{seconds > 0}}"
+      bind:change="toAgree"
+      label="{{tipsText}}"
+    ></mz-checkbox>
+    <van-button
+      class="w-full"
+      type="primary"
+      block
+      size="large"
+      bind:click="toBindMeijuHome"
+      disabled="{{!isAgree}}"
+      >确定</van-button
+    >
   </view>
 </view>
 
