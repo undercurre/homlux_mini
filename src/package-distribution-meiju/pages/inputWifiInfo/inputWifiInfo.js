@@ -2,8 +2,8 @@
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
-import { imgList, defaultImgDir } from '../../../config/img'
-import { Logger, delay } from '../../../utils/index'
+import { defaultImgDir, imgList } from '../../../config/img'
+import { delay, isAndroid, Logger } from '../../../utils/index'
 import app from '../../common/app'
 
 import computedBehavior from '../../utils/miniprogram-computed.js'
@@ -239,13 +239,10 @@ Page({
     let that = this
     let storageWifiListV1 = wx.getStorageSync('storageWifiListV1')
     if (storageWifiListV1 && storageWifiListV1[environment].length && decodeWifi(storageWifiListV1[environment])) {
-      console.log('有对应环境的缓存wifi信息')
       let storageWifiList = decodeWifi(wx.getStorageSync('storageWifiListV1')[environment])
-      console.log('uuuuuuuuuuuuuuu', storageWifiList, res.BSSID)
       let isHasPsw = false
       let wifiNum = null
       storageWifiList.forEach((item, index) => {
-        // if (item.BSSID == res.BSSID) {
         if (item.SSIDContent == res.SSID) {
           console.log('有这个wifi的storage')
           isHasPsw = true
@@ -300,14 +297,16 @@ Page({
 
   //切换wifi
   async inputPageSwitchWifi() {
-    let that = this
+    console.debug('inputPageSwitchWifi')
     if (this.data.clickFLag) {
       console.log('进入防重逻辑')
       return
     }
-    this.data.clickFLag = true
-    const res = wx.getSystemInfoSync()
-    if (res.system.includes('Android')) {
+
+    this.setData({
+      clickFLag: true,
+    })
+    if (isAndroid()) {
       let locationRes
       try {
         this.locationAuthorize()
@@ -315,7 +314,9 @@ Page({
         this.data.locationResFlag = locationRes
         console.log('[loactionRes]', locationRes)
       } catch (error) {
-        that.data.clickFLag = false
+        this.setData({
+          clickFLag: false,
+        })
       }
       if (!locationRes.isCanLocation) {
         const obj = {
@@ -329,7 +330,9 @@ Page({
         }
         //调用通用弹框组件
         commonDialog.showCommonDialog(obj)
-        that.data.clickFLag = false
+        this.setData({
+          clickFLag: false,
+        })
         setTimeout(() => {
           this.data.actionScanClickFlag = false
         }, 1500)
@@ -341,19 +344,15 @@ Page({
       this.setData({
         wifiList: this.data.wifiList,
       })
-      setTimeout(() => {
-        that.setData({
-          clickFLag: false,
-        })
-      }, 1000)
     } else {
       this.switchWifi()
-      setTimeout(() => {
-        that.setData({
-          clickFLag: false,
-        })
-      }, 1000)
     }
+
+    setTimeout(() => {
+      this.setData({
+        clickFLag: false,
+      })
+    }, 500)
   },
 
   //点击连接wifi
@@ -364,28 +363,13 @@ Page({
   removeLinkNetRecordStorage() {
     wx.removeStorageSync('linkNetRecord')
   },
-  getAddDeviceInfo() {
-    let addDeviceInfo = {
-      deviceName: '冰箱二代combo',
-      deviceId: 'A0:68:1C:74:CB:BE', //设备蓝牙id
-      mac: 'A0:68:1C:74:CB:BE', //设备mac combo:'A0:68:1C:74:CC:4A'  一代：'84:7C:9B:77:2D:47' 华凌：'A0:68:1C:BC:38:27'
-      type: 'CA', //设备品类 AC
-      sn8: '001A0481',
-      deviceImg: '', //设备图片
-      moduleType: 1, //模组类型 0：ble 1:ble+weifi
-      blueVersion: 2, //蓝牙版本 1:1代  2：2代
-      mode: 3,
-      fm: 'nfc',
-    }
-    app.addDeviceInfo = addDeviceInfo
-  },
   clickWifiInputRightText() {
     let that = this
     if (this.data.isGetCurLinkWifiInfo) {
       that.showWifiList()
     } else {
       that.nowNetType().then((networkType) => {
-        if (networkType != 'wifi') {
+        if (networkType !== 'wifi') {
           this.setData({
             netType: 0,
           })
@@ -516,7 +500,7 @@ Page({
       if (wifiInfo.SSID == SSIDContent) {
         //还是之前连接的wifi
         console.log('还是同一个wifi')
-        if (this.data.pageStatus == 'show') {
+        if (this.data.pageStatus === 'show') {
           delay(1500).then(() => {
             this.loopGetWifiInfo()
           })
@@ -526,8 +510,8 @@ Page({
       this.getCurLinkWifiInfo()
     } catch (error) {
       console.log('[get connected wifi fail]', error)
-      if (this.data.pageStatus == 'show') {
-        delay(1500).then((end) => {
+      if (this.data.pageStatus === 'show') {
+        delay(1500).then(() => {
           this.loopGetWifiInfo()
         })
       }
@@ -571,7 +555,7 @@ Page({
           success() {
             console.log('初始化wifi成功')
             that.data.isInitWifiSuccess = true
-            if (platform == 'ios') {
+            if (platform === 'ios') {
               //获取当前连接wifi信息 弹出确认窗口
               that.getCurLinkWifiInfo()
             } else {
@@ -668,12 +652,12 @@ Page({
       })
     }
     //中文,中文符号,表情校验
-    let reg = /^[0-9a-zA-Z{}#%*+=_|~<>€£¥·•.,?!'-/:;()$&@"^\\[\]]+$/
+    let reg = /^[\da-zA-Z{}#%*+=_|~<>€£¥·•.,?!'-/:;()$&@"^\\[\]]+$/
     let deal = psw.replace(/\s/g, '').replaceAll('…', '...') //ios手机 连续输入三个...会转为…符号，将…装为...
     if (deal != '' && !reg.test(deal)) {
       let checkRes =
         // eslint-disable-next-line no-misleading-character-class
-        /[\uD83C|\uD83D|\uD83E][\uDC00-\uDFFF][\u200D|\uFE0F]|[\uD83C|\uD83D|\uD83E][\uDC00-\uDFFF]|[0-9|*|#]\uFE0F\u20E3|[0-9|#]\u20E3|[\u203C-\u3299]\uFE0F\u200D|[\u203C-\u3299]\uFE0F|[\u2122-\u2B55]|\u303D|[A9|AE]\u3030|\uA9|\uAE|\u3030/gi.test(
+        /[\uD83C|\uD83D|\uD83E][\uDC00-\uDFFF][\u200D|\uFE0F]|[\uD83C|\uD83D|\uD83E][\uDC00-\uDFFF]|[\d|*|#]\uFE0F\u20E3|[\d|#]\u20E3|[\u203C-\u3299]\uFE0F\u200D|[\u203C-\u3299]\uFE0F|[\u2122-\u2B55]|\u303D|[A9|AE]\u3030|\uA9|\uAE|\u3030/gi.test(
           psw,
         )
       if (/[\u4e00-\u9fa5]/gi.test(psw)) {
@@ -1239,7 +1223,7 @@ Page({
         confirmButtonText: '手动输入',
         confirmButtonColor: '#488FFF',
       })
-        .then((text) => {
+        .then(() => {
           // 切换wifi登记页
           this.setData({
             isManualInputWifi: true,
@@ -1281,7 +1265,7 @@ Page({
           confirmButtonText: '手动输入',
           confirmButtonColor: '#488FFF',
         })
-          .then((text) => {
+          .then(() => {
             // 切换wifi登记页
             this.setData({
               netType: 1, //非wifi
@@ -1296,22 +1280,20 @@ Page({
 
   toNum(num) {
     num = num.toString()
-    var version = num.split('.')
-    var num_place = ['', '0', '00', '000', '0000'],
+    const version = num.split('.')
+    const num_place = ['', '0', '00', '000', '0000'],
       r = num_place.reverse()
-    for (var i = 0; i < version.length; i++) {
-      var len = version[i].length
+    for (let i = 0; i < version.length; i++) {
+      const len = version[i].length
       version[i] = r[len] + version[i]
     }
-    var res = version.join('')
-    return res
+    return version.join('')
   },
 
   //判断是否有精准定位，安卓 系统》=12
   systemGrade() {
     let result = false //true 有精准定位
-    let { system, brand } = systemInfo
-    brand = brand.toLowerCase()
+    let { system } = systemInfo
     let systemNum = system.split(' ')[1]
     let phoneSystem = system.split(' ')[0]
     // console.log(this.toNum('10.0.1'))
