@@ -16,7 +16,6 @@ import { getDeviceCategoryAndSn8, getScanRespPackInfo } from '../../utils/blueAd
 import paths from '../../utils/paths'
 import { addDeviceSDK } from '../../utils/addDeviceSDK'
 import { checkPermission } from '../../common/js/checkPermissionTip'
-import { typesPreserveAfterCheckGuideByA0 } from '../addDevice/config'
 import { imgesList } from '../assets/js/shareImg.js'
 
 import app from '../../common/app'
@@ -116,14 +115,12 @@ Page({
     Toast(`已切换至第${nextIndex + 1}种方式`)
   },
   async initAddGuide() {
-    const self = this
     let {
       isFromScanCode,
       moduleType,
       deviceName,
       type,
       sn8,
-      ssid,
       deviceId,
       blueVersion,
       deviceImg,
@@ -131,7 +128,6 @@ Page({
       fm, //无来源 默认扫码
       guideInfo, //配网指引
       ifNearby,
-      hadChangeBlue, //是否ap转蓝牙
     } = app.addDeviceInfo
     let needTimingMode = [3, 5, 20, 21, 30]
     if (needTimingMode.includes(mode)) {
@@ -318,21 +314,10 @@ Page({
    * 获取靠近确权相关参数
    */
   async getNearbyParams() {
-    Logger.console('getNearbyParams', app.addDeviceInfo)
-    const { mode, type } = app.addDeviceInfo
     this.setData({
       distance: '1.2',
     })
     app.addDeviceInfo.downlinkThreshold = -60
-    if (mode == 3) {
-      // 部分品类使用A0获取后确权指引，此时没有A0需展示跳过按钮
-      if (typesPreserveAfterCheckGuideByA0.includes(type)) {
-        console.log('@module addGuide.js\n@method initAddGuide\n@desc A0获取后确权指引品类，展示跳过按钮')
-        this.setData({
-          ifAllowSkipNear: true,
-        })
-      }
-    }
   },
   /**
    * 重试靠近确权
@@ -617,7 +602,7 @@ Page({
     }
   },
   //校验是否手动确权
-  async checkSetConfig(type, sn8, fm) {
+  async checkSetConfig(type) {
     console.log('@module addGuide.js\n@method checkSetConfig\n@desc 手动确权品类\n', type)
     const self = this
     openAdapter()
