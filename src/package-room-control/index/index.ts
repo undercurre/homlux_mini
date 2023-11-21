@@ -244,11 +244,6 @@ ComponentWithComputed({
     toolboxContentHeight(data) {
       return data.roomHasLight ? 150 : 60
     },
-    // 当前房间灯组数量
-    groupCount() {
-      const groups = deviceStore.deviceFlattenList.filter((d) => d.deviceType === 4)
-      return groups.length
-    },
     /**
      * 是否打开控制面板（除浴霸和晾衣）
      * TODO 将灯和开关控制也解耦出来
@@ -392,13 +387,13 @@ ComponentWithComputed({
         }
       })
 
-      // FIXME 局域网可控时，全房间灯光控制未变更状态
-      // emitter.on('msgPush', () => {
-      //   const hasLight = deviceStore.deviceList.some((d) => d.canLanCtrl)
-      //   this.setData({
-      //     power: hasLight ? 1 : 0,
-      //   })
-      // })
+      // 局域网可控时，全房间灯光控制变更
+      emitter.on('msgPush', () => {
+        const hasLightOn = deviceStore.deviceList.some((d) => d.canLanCtrl && d.mzgdPropertyDTOList?.light?.power === 1)
+        this.setData({
+          'roomLight.power': hasLightOn ? 1 : 0,
+        })
+      })
     },
 
     // 响应控制弹窗中单灯/灯组的控制变化，直接按本地设备列表数值以及设置值，刷新房间灯的状态
@@ -831,9 +826,9 @@ ComponentWithComputed({
       const oldOrder = this.data.placeholder.orderNum
       // 如果拖动目标是灯组所在的位置
       if (
-        this.data.groupCount && // 有灯组
-        ((targetOrder < this.data.groupCount && oldOrder >= this.data.groupCount) || // 非灯组不能移入灯组
-          (oldOrder < this.data.groupCount && targetOrder >= this.data.groupCount)) // 灯组不能移入非灯组
+        deviceStore.groupCount && // 有灯组
+        ((targetOrder < deviceStore.groupCount && oldOrder >= deviceStore.groupCount) || // 非灯组不能移入灯组
+          (oldOrder < deviceStore.groupCount && targetOrder >= deviceStore.groupCount)) // 灯组不能移入非灯组
       ) {
         return
       }
