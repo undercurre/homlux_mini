@@ -244,11 +244,6 @@ ComponentWithComputed({
     toolboxContentHeight(data) {
       return data.roomHasLight ? 150 : 60
     },
-    // 当前房间灯组数量
-    groupCount() {
-      const groups = deviceStore.deviceFlattenList.filter((d) => d.deviceType === 4)
-      return groups.length
-    },
     /**
      * 是否打开控制面板（除浴霸和晾衣）
      * TODO 将灯和开关控制也解耦出来
@@ -831,9 +826,9 @@ ComponentWithComputed({
       const oldOrder = this.data.placeholder.orderNum
       // 如果拖动目标是灯组所在的位置
       if (
-        this.data.groupCount && // 有灯组
-        ((targetOrder < this.data.groupCount && oldOrder >= this.data.groupCount) || // 非灯组不能移入灯组
-          (oldOrder < this.data.groupCount && targetOrder >= this.data.groupCount)) // 灯组不能移入非灯组
+        deviceStore.groupCount && // 有灯组
+        ((targetOrder < deviceStore.groupCount && oldOrder >= deviceStore.groupCount) || // 非灯组不能移入灯组
+          (oldOrder < deviceStore.groupCount && targetOrder >= deviceStore.groupCount)) // 灯组不能移入非灯组
       ) {
         return
       }

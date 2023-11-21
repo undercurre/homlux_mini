@@ -42,6 +42,13 @@ export const deviceStore = observable({
     return this.allRoomDeviceFlattenList.filter((device) => device.roomId === roomId)
   },
 
+  // 当前房间灯组数量
+  get groupCount(): number {
+    const { roomId = 0 } = roomStore.currentRoom ?? {}
+    const groups = this.allRoomDeviceList.filter((device) => device.roomId === roomId && device.deviceType === 4)
+    return groups.length
+  },
+
   // 房间所有灯的亮度计算
   get lightStatusInRoom(): { brightness: number; colorTemperature: number } {
     let sumOfBrightness = 0,
