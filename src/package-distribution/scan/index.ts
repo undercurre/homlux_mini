@@ -427,7 +427,7 @@ ComponentWithComputed({
               quality: 70,
             })
 
-            console.log('compressRes', compressRes)
+            Logger.log('compressRes', compressRes)
 
             const stat = fs.statSync(compressRes.tempFilePath, false) as WechatMiniprogram.Stats
             file.tempFilePath = compressRes.tempFilePath
@@ -436,9 +436,31 @@ ComponentWithComputed({
 
           const result = fs.readFileSync(file.tempFilePath)
 
-          console.log('readFile', result)
+          Logger.log('readFile', result)
 
-          this.uploadFile({ fileUrl: file.tempFilePath, fileSize: file.size, binary: result })
+          const uploadRes = await this.uploadFile({ fileUrl: file.tempFilePath, fileSize: file.size, binary: result })
+
+          if (!uploadRes.success) {
+            Logger.error('上传二维码失败', uploadRes)
+            hideLoading()
+            Toast('上传二维码失败')
+            return
+          }
+
+          await delay(3000) // 由于有可能图片还没上传完毕，需要延迟调用解析图片接口
+
+          const query = await queryWxImgQrCode(uploadRes.result.downloadUrl)
+
+          hideLoading()
+          if (query.success) {
+            this.handleScanUrl(query.result.qrCodeUrl)
+          } else {
+            Logger.error('uploadFile-err', res)
+            Toast('无效二维码')
+            this.setData({
+              isScan: false,
+            })
+          }
         },
       })
     },
@@ -451,34 +473,34 @@ ComponentWithComputed({
       // 获取集团oss上传服务相关信息
       const { result } = await getUploadFileForOssInfo(nameArr[nameArr.length - 1])
 
-      // 上传图片到集团OSS服务
-      wx.request({
-        url: result.uploadUrl, //仅为示例，并非真实的接口地址
-        method: 'PUT',
-        data: binary,
-        header: {
-          'content-type': 'binary',
-          Certification: result.certification,
-          'X-amz-date': dayjs().subtract(8, 'hour').format('ddd,D MMM YYYY HH:mm:ss [GMT]'), // gmt时间慢8小时
-          'Content-Length': fileSize,
-          'X-amz-acl': 'public-read',
-        },
-        success: async (res) => {
-          console.log('uploadFile-success', res)
-          await delay(3000) // 由于有可能图片还没上传完毕，需要延迟调用解析图片接口
+      Logger.log('getUploadFileForOssInfo', result)
 
-          const query = await queryWxImgQrCode(result.downloadUrl)
-
-          if (query.success) {
-            this.handleScanUrl(query.result.qrCodeUrl)
-          } else {
-            hideLoading()
-            Toast('无效二维码')
-            this.setData({
-              isScan: false,
+      return new Promise<{ success: boolean; result: IAnyObject }>((resolve) => {
+        // 上传图片到集团OSS服务
+        wx.request({
+          url: result.uploadUrl,
+          method: 'PUT',
+          data: binary,
+          header: {
+            'content-type': 'binary',
+            Certification: result.certification,
+            'X-amz-date': dayjs().subtract(8, 'hour').format('ddd,D MMM YYYY HH:mm:ss [GMT]'), // gmt时间慢8小时
+            'Content-Length': fileSize,
+            'X-amz-acl': 'public-read',
+          },
+          success: (res) => {
+            Logger.log('uploadFile-success', res)
+            resolve({
+              success: true,
+              result: {
+                uploadUrl: result.uploadUrl,
+              },
             })
-          }
-        },
+          },
+          fail: (err) => {
+            Logger.error('uploadFile-fail', err)
+          },
+        })
       })
     },
 
