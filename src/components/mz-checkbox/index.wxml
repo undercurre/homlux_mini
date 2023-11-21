@@ -8,7 +8,7 @@
   >
     <image
       slot="icon"
-      class="w-48 h-48"
+      class="w-36 h-36"
       src="{{ checked ? '/assets/img/base/check.png' : '/assets/img/base/uncheck.png' }}"
     />
 
