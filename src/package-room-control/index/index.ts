@@ -392,13 +392,13 @@ ComponentWithComputed({
         }
       })
 
-      // FIXME 局域网可控时，全房间灯光控制未变更状态
-      // emitter.on('msgPush', () => {
-      //   const hasLight = deviceStore.deviceList.some((d) => d.canLanCtrl)
-      //   this.setData({
-      //     power: hasLight ? 1 : 0,
-      //   })
-      // })
+      // 局域网可控时，全房间灯光控制变更
+      emitter.on('msgPush', () => {
+        const hasLightOn = deviceStore.deviceList.some((d) => d.canLanCtrl && d.mzgdPropertyDTOList?.light?.power === 1)
+        this.setData({
+          'roomLight.power': hasLightOn ? 1 : 0,
+        })
+      })
     },
 
     // 响应控制弹窗中单灯/灯组的控制变化，直接按本地设备列表数值以及设置值，刷新房间灯的状态
