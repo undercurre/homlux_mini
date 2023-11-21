@@ -3,7 +3,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
 import { deviceStore, homeBinding, homeStore, otaStore, roomBinding, roomStore } from '../../../store/index'
 import pageBehavior from '../../../behaviors/pageBehaviors'
-import { waitingDeleteDevice, editDeviceInfo, queryDeviceInfoByDeviceId } from '../../../apis/index'
+import { waitingDeleteDevice, editDeviceInfo, queryDeviceInfoByDeviceId, sendDevice } from '../../../apis/index'
 import { proName, PRO_TYPE, SCREEN_PID } from '../../../config/index'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { emitter } from '../../../utils/index'
@@ -19,6 +19,7 @@ ComponentWithComputed({
     deviceName: '',
     showEditNamePopup: false,
     showEditRoomPopup: false,
+    showEditLaundryPopup: false,
     deviceInfo: {} as Device.DeviceItem,
     firstShow: true,
   },
@@ -54,6 +55,9 @@ ComponentWithComputed({
     isSubDeviceOrGateway(data) {
       return [1, 2].includes(data.deviceInfo.deviceType)
     },
+    isLaundry(data) {
+      return data.deviceInfo.proType === PRO_TYPE.clothesDryingRack
+    },
     belongsToGateway(data) {
       if (data.deviceInfo.gatewayId) {
         const gateway = deviceStore.allRoomDeviceList.find((device) => device.deviceId === data.deviceInfo.gatewayId)
@@ -79,6 +83,13 @@ ComponentWithComputed({
      */
     hasSwitchSetting(data) {
       return data.deviceInfo.proType === PRO_TYPE.switch || SCREEN_PID.includes(data.deviceInfo.productId)
+    },
+    laundryHeight(data) {
+      if (data.deviceInfo.proType === PRO_TYPE.clothesDryingRack) {
+        const modelName = 'clothesDryingRack'
+        return data.deviceInfo.mzgdPropertyDTOList[modelName].custom_height
+      }
+      return 0
     },
   },
 
@@ -215,6 +226,35 @@ ComponentWithComputed({
           deviceName: res.result.deviceName,
           roomId: res.result.roomId,
         })
+      }
+    },
+    toSetLaundry() {
+      this.setData({
+        showEditLaundryPopup: true,
+      })
+    },
+    handleLaundryEditCancel() {
+      this.setData({
+        showEditLaundryPopup: false,
+      })
+    },
+    async handleLaundryEditConfirm(e: WechatMiniprogram.CustomEvent) {
+      const custom_height = Number(e.detail) * 10 + 30
+      const res = await sendDevice({
+        deviceId: this.data.deviceInfo.deviceId,
+        deviceType: this.data.deviceInfo.deviceType,
+        proType: PRO_TYPE.clothesDryingRack,
+        modelName: 'clothesDryingRack',
+        property: { custom_height },
+      })
+      if (res.success) {
+        Toast('设置成功')
+        this.setData({
+          showEditLaundryPopup: false,
+          'deviceInfo.mzgdPropertyDTOList.clothesDryingRack.custom_height': custom_height,
+        })
+      } else {
+        Toast('设置失败')
       }
     },
 
