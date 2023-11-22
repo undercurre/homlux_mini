@@ -3,7 +3,6 @@ import { checkApExists, queryAuthGetStatus } from '../../../../../../apis/index'
 import { Logger } from '../../../../../../utils/index'
 import { homeStore } from '../../../../../../store/index'
 
-import { getReqId, getStamp } from 'm-utilsdk/index'
 import { showToast } from '../../../../../utils/util'
 import { creatErrorCode, failTextData } from './errorCode'
 import paths from '../../../../../utils/paths'

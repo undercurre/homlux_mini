@@ -4,14 +4,11 @@ import { homeStore, roomStore } from '../../../store/index'
 import { Logger, strUtil } from '../../../utils/index'
 import app from '../../common/app'
 
-import DeviceComDecorator from '../addDevice/pages/wahinProtocol/utils/ac-service/DeviceComDecorator'
-import BluetoothConn from '../addDevice/pages/wahinProtocol/bluetooth/bluetooth-conn.js'
 import {
   ab2hex,
   asiiCode2Str,
   cloudDecrypt,
   cloudEncrypt,
-  concatUint8Array,
   formatTime,
   getRandomString,
   getStamp,
@@ -22,14 +19,12 @@ import {
   isEmptyObject,
   string2Uint8Array,
   toHexString,
-  uintArray2String,
 } from 'm-utilsdk/index'
 import { getScanRespPackInfo, getSn8 } from '../../utils/blueAdDataParse'
 import { constructionBleOrder, paesrBleResponData } from '../../utils/ble/ble-order'
 import { api, imgBaseUrl } from '../../common/js/api'
 import { apParamsSet } from '../addDevice/pages/assets/js/apParamsSet'
 
-import { service } from '../addDevice/pages/assets/js/service'
 import WifiMgr from '../addDevice/pages/assets/js/wifiMgr'
 import { addDeviceSDK } from '../../utils/addDeviceSDK'
 import computedBehavior from '../../utils/miniprogram-computed.js'
@@ -41,7 +36,6 @@ import { imgesList } from '../assets/js/shareImg.js'
 
 const bleNeg = require('../../utils/ble/ble-negotiation')
 const addDeviceMixin = require('../addDevice/pages/assets/js/addDeviceMixin')
-const wahinMixin = require('../addDevice/pages/wahinProtocol/mixin/wahinMixin')
 const netWordMixin = require('../assets/js/netWordMixin')
 const paths = require('../../utils/paths')
 let checkLinkFamilyWifTimer
@@ -56,7 +50,7 @@ let wifiMgr = new WifiMgr()
 const queryWifiDelay = 15000
 
 Component({
-  behaviors: [bleNeg, addDeviceMixin, wahinMixin, netWordMixin, computedBehavior],
+  behaviors: [bleNeg, addDeviceMixin, netWordMixin, computedBehavior],
   /**
    * 页面的初始数据
    */
@@ -84,8 +78,6 @@ Component({
     currentRoomId: 0,
     isOnbleResp: true,
     bindWifiInfo: {},
-    isCancelHuaLinOn: false, //是否取消监听华凌直连
-    isCancelOnwaHinLink: false, //是否取消监听华凌配网
     udpAdData: {}, //udp广播
     randomCode: '',
     blueRandomCode: '', //蓝牙配网随机数
@@ -365,21 +357,6 @@ Component({
             })
             this.resisterBleDataChanged(this.handleBLEDataChanged) // 注册蓝牙信息改变监听
           })
-          break
-        case 20:
-          //先直连 后配网 （遥控器协议）
-          this.wahinBleBind(deviceId, adData, mode)
-          break
-        case 21:
-          //后配网 遥控器
-          console.log('adddviceinfo--------', app.addDeviceInfo)
-          this.data.sn = app.addDeviceInfo.sn
-          key = app.globalData.isLogon ? app.globalData.userData.key : ''
-          plainTextSn = cloudDecrypt(this.data.sn, key, api.appKey)
-          this.data.plainSn = plainTextSn
-          app.addDeviceInfo.plainSn = plainTextSn
-          console.log('sn解密后', plainTextSn)
-          this.wahinBleBind(deviceId, adData, mode)
           break
 
         case 30:
@@ -1790,6 +1767,7 @@ Component({
             }
           } else {
             //绑定设备接口失败，跳转配网失败页
+            Logger.debug('绑定设备接口失败，跳转配网失败页')
             this.goLinkDeviceFailPage()
           }
         },
@@ -1823,151 +1801,6 @@ Component({
           }
         },
       )
-    },
-    //ap end
-    async wahinBleBind(deviceId, adData, mode) {
-      let wahinLogonRes
-      try {
-        wahinLogonRes = await this.wahinLogin() //华凌登录
-        console.log('华凌登录成功===============', wahinLogonRes)
-      } catch (error) {
-        console.log('华凌登录失败===============', error)
-      }
-      if (!wahinLogonRes) {
-        return
-      }
-      let device = {}
-      device.advertisData = hexStringToArrayBuffer(adData)
-      let category = device.advertisData.slice(11, 13)
-      device.category = uintArray2String(new Uint8Array(category))
-      category = hexString2Uint8Array(uintArray2String(category))
-      let sn8 = device.advertisData.slice(3, 11)
-      device.sn8 = uintArray2String(sn8)
-      device.sn3 = device.sn8.substring(0, 3)
-      let mac = new Uint8Array(device.advertisData.slice(21, 27)).reverse()
-      device.mac = ab2hex(mac)
-      device.deviceId = deviceId
-      device.advertisData = concatUint8Array([category, sn8, mac])
-      console.log('pppppppp--------', device)
-      console.log('bluetoothCon--------', deviceId, app.openId6)
-      await this.refreshCacheOpenBluetoothAdapter() //重启蓝牙模块
-      app.bluetoothConn = new BluetoothConn({
-        device,
-        openId6: app.openId6,
-        deviceId: deviceId,
-        sessionKey: '',
-        advertisData: device.advertisData,
-        success: () => {
-          console.log('blue success=============')
-          let bindType = 1
-          app.globalData.DeviceComDecorator = new DeviceComDecorator(app.bluetoothConn, deviceId, bindType)
-          if (mode == 21) {
-            //数字遥控配网
-            this.remoteSendWifiInfo(this.data.bindWifiInfo)
-            //使用查询云端设备是否连上云会有1321的问题 所以使用监听设备返回
-            app.bluetoothConn.event.on('receiveMessage', async (data) => {
-              if (mode != 21) return
-              if (this.data.isCancelOnwaHinLink) return
-              console.log('receiveMessage', data)
-              //判断04，
-              if (data[0] == 0x00) {
-                console.log('收到00 进入待配网')
-                this.setData({
-                  isReady: 1,
-                })
-              }
-              if (data[0] == 0x04 && this.data.isReady == 1) {
-                console.log('开始绑定设备')
-                this.data.sn = app.addDeviceInfo.sn
-                let resp = await this.bindDeviceToHome()
-                console.log('app.addDeviceInfo.sn', app.addDeviceInfo.sn)
-                app.addDeviceInfo.cloudBackDeviceInfo = resp.data.data
-                app.addDeviceInfo.cloudBackDeviceInfo.roomName = this.data.currentRoomName
-                this.data.isCancelOnwaHinLink = true
-                clearInterval(timer)
-                wx.navigateTo({
-                  url: paths.wifiSuccessSimple,
-                })
-                let btMac = this.data.btMac ? this.data.btMac.toLocaleUpperCase() : ''
-                let remoteDeviceList = wx.getStorageSync('remoteDeviceList')
-                  ? wx.getStorageSync('remoteDeviceList')
-                  : []
-                remoteDeviceList = remoteDeviceList.filter((item) => item.btMac != btMac)
-                wx.setStorageSync('remoteDeviceList', remoteDeviceList)
-                app.addDeviceInfo.mode = '' //置空模式
-              } else if (data[0] == 0x02) {
-                // this.showToast('不支持该指定的入网模式')
-                console.log('不支持该指定的入网模式')
-              } else if (data[0] == 0x03) {
-                // this.showToast('连接路由器成功')
-                console.log('连接路由器成功')
-              } else if (data[0] == 0x05 && this.data.isReady == 1) {
-                console.log('连接路由器失败，请重试')
-                this.data.isCancelOnwaHinLink = true
-                this.goLinkDeviceFailPage()
-              }
-            })
-
-            return
-          }
-          app.globalData.DeviceComDecorator.querySN()
-          app.bluetoothConn.event.on('receiveMessage', async (data) => {
-            if (mode != 20) return
-            if (this.data.isCancelHuaLinOn) return
-            console.log('receiveMessage eeeeeeeeee', data)
-            if (ab2hex(data).slice(0, 12) === '303030303030') {
-              let snAsiiArr = hexString2Uint8Array(ab2hex(data))
-              let sn = asiiCode2Str(snAsiiArr)
-              this.data.plainSn = sn
-              app.addDeviceInfo.plainSn = sn
-              console.log('原始sn--------------', sn)
-              let key = app.globalData.userData.key
-              let appKey = api.appKey
-              let applianceType = app.addDeviceInfo.type.includes('0x')
-                ? app.addDeviceInfo.type
-                : '0x' + app.addDeviceInfo.type
-              let btMac = this.data.btMac ? this.data.btMac.replace(/:/g, '') : ''
-              this.data.sn = cloudEncrypt(sn, key, appKey)
-              app.addDeviceInfo.sn = this.data.sn
-              console.log('sn--------------', this.data.sn)
-              clearInterval(timer)
-              let reqData = {
-                applianceName: this.data.deviceName,
-                homegroupId: this.data.currentHomeGroupId,
-                roomId: this.data.currentRoomId,
-                sn: this.data.sn,
-                applianceType: applianceType,
-                btMac: btMac,
-                modelNumber: '',
-              }
-              let bindRemoteDeviceResp = null
-              try {
-                bindRemoteDeviceResp = await service.bindRemoteDevice(reqData)
-                Object.assign(bindRemoteDeviceResp, {
-                  btMac: btMac,
-                  sn8: this.data.addDeviceInfo.sn8,
-                  sn: this.data.sn,
-                  name: this.data.deviceName,
-                  deviceImg: this.data.deviceImg,
-                })
-                console.log('遥控设备绑定结果', bindRemoteDeviceResp)
-              } catch (error) {
-                console.log('遥控设备绑定失败', error)
-              }
-              this.setData({
-                curStep: 2,
-              })
-              wx.navigateTo({
-                url: paths.addSuccess,
-              })
-              wx.closeBLEConnection({
-                //断开连接
-                deviceId: app.addDeviceInfo.deviceId,
-              })
-            }
-          })
-        },
-      })
     },
     refreshCacheOpenBluetoothAdapter() {
       return new Promise((r, j) => {
@@ -2131,9 +1964,6 @@ Component({
         wx.closeBLEConnection({
           deviceId: app.addDeviceInfo.deviceId,
         })
-      }
-      if (mode == 20) {
-        self.data.isCancelHuaLinOn = true
       }
       if (mode == 21) {
         app.addDeviceInfo.mode = '' //置空模式
@@ -2405,6 +2235,8 @@ Component({
         })
       }
 
+      Logger.debug('app.addDeviceInfo', app.addDeviceInfo)
+
       const { mode } = app.addDeviceInfo
 
       // step2: 关闭相关进程和连接
@@ -2435,6 +2267,7 @@ Component({
           url: paths.addFail,
         })
       } else {
+        Logger.debug('reLaunch-linkNetFail')
         wx.reLaunch({
           url: paths.linkNetFail,
         })
@@ -2443,7 +2276,7 @@ Component({
     /**
      * 生命周期函数--监听页面加载
      */
-    async onLoad() {
+    onLoad() {
       this.data.brand = brandStyle.brand
       this.setData({
         brand: this.data.brand,
@@ -2452,8 +2285,10 @@ Component({
         loadingImg: './assets/img/loading_spot.png',
         closeImg: imgUrl + imgesList['closeImg'],
       })
+      Logger.debug('清空组合设备数据', this)
       // 清空组合设备数据
-      ;(app.combinedDeviceInfo = [{ sn: '', a0: '' }]), this.init()
+      app.combinedDeviceInfo = [{ sn: '', a0: '' }]
+      this.init()
     },
 
     /**
@@ -2497,15 +2332,5 @@ Component({
         this.finishTcp()
       }
     },
-
-    /**
-     * 页面相关事件处理函数--监听用户下拉动作
-     */
-    onPullDownRefresh: function () {},
-
-    /**
-     * 页面上拉触底事件的处理函数
-     */
-    onReachBottom: function () {},
   },
 })
