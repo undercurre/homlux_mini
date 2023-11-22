@@ -154,12 +154,14 @@ ComponentWithComputed({
       }
       return false
     },
-    // 设备是浴霸，显示运行状态
+    // 特定设备，显示工作状态
     isRunning(data) {
+      const modelName = getModelName(data.deviceInfo.proType, data.deviceInfo.productId)
+      const prop = data.deviceInfo.mzgdPropertyDTOList[modelName]
       if (data.deviceInfo.proType === PRO_TYPE.bathHeat) {
-        const modelName = getModelName(PRO_TYPE.bathHeat, data.deviceInfo.productId)
-        const prop = data.deviceInfo.mzgdPropertyDTOList[modelName]
-        return prop?.mode !== 'close_all'
+        return prop?.mode !== 'close_all' || prop?.light_mode !== 'close_all'
+      } else if (data.deviceInfo.proType === PRO_TYPE.clothesDryingRack) {
+        return prop?.updown !== 'pause' || prop?.light === 'on'
       }
       return false
     },

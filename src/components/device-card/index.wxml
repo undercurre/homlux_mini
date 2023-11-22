@@ -83,7 +83,7 @@
       <text
         wx:elif="{{isRunning}}"
         class="text-24rpx text-hex-555659"
-        >运行中</text
+        >工作中</text
       >
       <text
         wx:elif="{{lowBattery}}"
