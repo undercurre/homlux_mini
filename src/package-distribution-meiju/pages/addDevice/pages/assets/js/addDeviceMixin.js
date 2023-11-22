@@ -272,7 +272,7 @@ module.exports = Behavior({
         }
       })
 
-      console.log(`查询设备是否连上云参数`, sn, randomCode, forceValidRandomCode, 'res', res)
+      console.log('查询设备是否连上云res', res)
 
       return res
     },

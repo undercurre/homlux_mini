@@ -705,7 +705,7 @@ Component({
      */
     tcpOnMessage(res) {
       const decodeMsg = this.apUtils.decode2body(ab2hex(res.message))
-      console.log('@module linkDevice.js\n@method tcpOnMessage\n@desc tcp消息响应\n', decodeMsg)
+      Logger.log('tcp消息响应\n', decodeMsg)
       // 组合设备（0074指令）模组回报
       if (decodeMsg.type === '8074') {
         this.isTcpRespond0074 = true
@@ -769,6 +769,7 @@ Component({
         if (code == 0) {
           console.log('模组响应收到wifi信息')
           this.data.deviceRecWifiInfo = true
+          this.finishTcp()
         } else {
           //两次配网同样的错误才会响应 wb01
           console.log('8070 配网响应错误：', this.apUtils.linkAPerrorMsg[code])
@@ -2245,7 +2246,7 @@ Component({
         // AP
         this.data.isStopGetExists = true // 停止查询设备是否联网
         udpCycTimer && clearInterval(udpCycTimer)
-        this.tcp && this.finishTcp()
+        this.finishTcp()
       }
       const needCloseBLEConnection = [3, 5, 20, 21, 31]
       if (needCloseBLEConnection.includes(mode)) {
@@ -2328,9 +2329,7 @@ Component({
       clearInterval(timer)
       clearInterval(udpCycTimer)
       this.data.isStopGetExists = true //停止查询设备联网
-      if (this.tcp) {
-        this.finishTcp()
-      }
+      this.finishTcp()
     },
   },
 })

@@ -72,10 +72,10 @@ export default class WifiMgr {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     let that = this
     wx.startWifi({
-      success(res) {
+      success() {
         that.getWifiListFunc()
       },
-      fail(res) {
+      fail() {
         wx.showToast({
           title: '初始化WiFi失败',
           icon: 'none',
