@@ -125,21 +125,9 @@ ComponentWithComputed({
   },
   watch: {
     isInit(data) {
-      const loading = !data
-      if (!loading) {
-        this.animate(
-          '#skeleton',
-          [
-            {
-              opacity: 1,
-            },
-            {
-              opacity: 0,
-            },
-          ],
-          200,
-          () => this.setData({ loading }),
-        )
+      // 如果已初始化，但仍在loading
+      if (this.data.loading && data) {
+        this.setData({ loading: !data })
       }
     },
     roomList() {
