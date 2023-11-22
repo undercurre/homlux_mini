@@ -709,12 +709,7 @@ ComponentWithComputed({
         await this.editAssocite()
       }
 
-      await Promise.all([
-        // sceneStore.updateSceneList(),
-        sceneStore.updateAllRoomSceneList(),
-        // deviceStore.updateSubDeviceList(),
-        deviceStore.updateAllRoomDeviceList(),
-      ])
+      await Promise.all([sceneStore.updateAllRoomSceneList(), deviceStore.updateAllRoomDeviceList()])
 
       this.data._switchRelInfo.switchUniId = '' // 置空标志位，否则不会更新数据
       this.updateLinkInfo()

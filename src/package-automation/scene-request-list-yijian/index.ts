@@ -228,8 +228,6 @@ ComponentWithComputed({
     detached() {
       emitter.off('scene_device_result_status')
       sceneStore.updateAllRoomSceneList()
-      sceneStore.updateSceneList()
-      // deviceStore.updateSubDeviceList()
       deviceStore.updateAllRoomDeviceList()
       homeStore.updateRoomCardList()
     },
