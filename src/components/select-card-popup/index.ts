@@ -110,7 +110,7 @@ ComponentWithComputed({
   data: {
     roomSelect: '',
     showDeviceOffline: false,
-    officeDeviceInfo: {} as Device.DeviceItem,
+    offlineDevice: {} as Device.DeviceItem,
   },
 
   computed: {
@@ -162,7 +162,7 @@ ComponentWithComputed({
     handleOfflineTap(e: { detail: Device.DeviceItem }) {
       this.setData({
         showDeviceOffline: true,
-        officeDeviceInfo: e.detail,
+        offlineDevice: e.detail,
       })
       this.triggerEvent('offlineTap', e.detail)
     },
@@ -177,7 +177,7 @@ ComponentWithComputed({
         return
       }
 
-      const gateway = deviceStore.allRoomDeviceMap[this.data.officeDeviceInfo.gatewayId]
+      const gateway = deviceStore.allRoomDeviceMap[this.data.offlineDevice.gatewayId]
       wx.navigateTo({
         url: `/package-distribution/wifi-connect/index?type=changeWifi&sn=${gateway.sn}`,
       })

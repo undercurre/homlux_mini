@@ -7,7 +7,7 @@ import {
   deleteHouseUser,
   inviteHouseUser,
   saveOrUpdateUserHouseInfo,
-  getRoomList,
+  queryRoomList,
   updateDefaultHouse,
   getShareId,
   queryAllDevice,
@@ -137,7 +137,7 @@ export const homeStore = observable({
       })
       // await deviceStore.updateAllRoomDeviceList(undefined, options) // 重复加载
       await roomStore.updateRoomList(options)
-      this.homeDataPersistence()
+      this.saveHomeDate()
       return
     } else {
       console.error('获取家庭信息失败', res)
@@ -150,7 +150,7 @@ export const homeStore = observable({
    */
   async updateRoomCardList(options?: { loading: boolean }) {
     const homeId = homeStore.currentHomeId
-    const data = await Promise.all([queryAllDevice(homeId, options), getRoomList(homeId, options)])
+    const data = await Promise.all([queryAllDevice(homeId, options), queryRoomList(homeId, options)])
     if (data[0].success) {
       const list = {} as Record<string, Device.DeviceItem[]>
       data[0].result
@@ -201,7 +201,7 @@ export const homeStore = observable({
         }))
       })
     }
-    this.homeDataPersistence()
+    this.saveHomeDate()
   },
 
   /**
@@ -309,7 +309,7 @@ export const homeStore = observable({
   /**
    * 缓存主要的初始数据
    */
-  async homeDataPersistence() {
+  async saveHomeDate() {
     if (!userStore.isLogin) {
       return
     }

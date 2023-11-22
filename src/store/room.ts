@@ -1,5 +1,5 @@
 import { observable, runInAction } from 'mobx-miniprogram'
-import { getRoomList } from '../apis/index'
+import { queryRoomList } from '../apis/index'
 import { PRO_TYPE } from '../config/index'
 import { deviceStore } from './device'
 import { homeStore } from './home'
@@ -59,7 +59,7 @@ export const roomStore = observable({
   },
 
   async updateRoomList(options?: { loading: boolean }) {
-    const res = await getRoomList(homeStore.currentHomeId, options)
+    const res = await queryRoomList(homeStore.currentHomeId, options)
     if (res.success) {
       res.result.roomInfoList.forEach((room) => {
         const roomDeviceList = roomStore.roomDeviceList[room.roomInfo.roomId]
