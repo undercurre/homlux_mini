@@ -307,18 +307,14 @@ ComponentWithComputed({
         }
 
         if (e.result.eventType === WSEventType.device_property) {
-          // 房间状态上报，只响应开关状态的变更
-          if (e.result.eventData.deviceId === roomStore.currentRoom.groupId) {
-            const { event } = e.result.eventData
-            this.setData({
-              'roomLight.power': event.power,
-              // roomLight: {
-              //   brightness: event.brightness,
-              //   colorTemperature: event.colorTemperature,
-              //   power: event.power,
-              // },
-            })
-          }
+          // 房间状态上报，只响应开关状态的变更 // 已由msgPush触发更新，此处可删除
+          // if (e.result.eventData.deviceId === roomStore.currentRoom.groupId) {
+          //   const { event } = e.result.eventData
+          //   console.log('[房间状态上报]', roomStore.currentRoom.groupId, event.power)
+          //   this.setData({
+          //     'roomLight.power': event.power,
+          //   })
+          // }
           // 如果有传更新的状态数据过来，直接更新store
           const deviceInHouse = deviceStore.allRoomDeviceList.find(
             (device) => device.deviceId === e.result.eventData.deviceId,
@@ -399,9 +395,9 @@ ComponentWithComputed({
         }
       })
 
-      // 局域网可控时，全房间灯光控制变更
+      // 子设备状态变更，刷新全房间灯光可控状态
       emitter.on('msgPush', () => {
-        const hasLightOn = deviceStore.deviceList.some((d) => d.canLanCtrl && d.mzgdPropertyDTOList?.light?.power === 1)
+        const hasLightOn = deviceStore.deviceList.some((d) => d.mzgdPropertyDTOList?.light?.power === 1)
         this.setData({
           'roomLight.power': hasLightOn ? 1 : 0,
         })
