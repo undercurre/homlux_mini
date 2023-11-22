@@ -4,7 +4,10 @@
 />
 <view id="{{brand}}">
   <view class="page-container">
-    <nav-bar title="添加设备"></nav-bar>
+    <nav-bar
+      background="#eef2f7"
+      title="添加设备"
+    ></nav-bar>
 
     <tips-box
       text="设备添加失败！"

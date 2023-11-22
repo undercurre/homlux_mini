@@ -22,9 +22,6 @@ const failTextData = {
       '请确保连接家庭2.4GHz Wi-Fi，不可连接5GHz Wi-Fi',
       '请确保家庭WiFi与密码填写正确，并确保该WiFi网络畅通 测试一下',
       '请将路由器尽量靠近设备',
-      '请确认已开启“本地网络”系统授权；（仅iOS展示）',
-      '若路由器设置了Mac地址白名单，请解除白名单，或将XX的Mac地址添加到白名单；',
-      '请确保路由器的DHCP功能已开启。',
     ],
     isTest: true, //是否有测试一下
     isNeedInputPsw: true, //是否需要WiFi密码确认框
