@@ -3,7 +3,7 @@
   "projectname": "HomLux",
   "setting": {
     "compileHotReLoad": false,
-    "urlCheck": false,
+    "urlCheck": true,
     "bigPackageSizeSupport": true
   },
   "libVersion": "3.0.2",

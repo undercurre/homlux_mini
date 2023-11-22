@@ -46,7 +46,7 @@ export function setEnv(val: ENV_TYPE) {
  * 返回内嵌H5页面的基本路径
  */
 export function getH5BaseUrl() {
-  return mzaioDomain[env]
+  return `${mzaioDomain[env]}/meiju`
 }
 
 // wx的环境名称 --> 云端环境名称

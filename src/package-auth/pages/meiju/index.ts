@@ -37,7 +37,7 @@ ComponentWithComputed({
           client_id: config.client_id,
           state: 1,
           response_type: 'code',
-          redirect_uri: strUtil.getUrlWithParams(`${getH5BaseUrl()}/meiju/index.html`, {
+          redirect_uri: strUtil.getUrlWithParams(`${getH5BaseUrl()}/index.html`, {
             miniProgramUrl: '/package-auth/pages/home-list/index',
           }),
         }),

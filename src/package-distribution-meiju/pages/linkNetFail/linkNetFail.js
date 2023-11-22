@@ -666,11 +666,11 @@ Page({
       })
       return
     } else if (text.indexOf('Mac地址') !== -1) {
-      url = `${getH5BaseUrl()}/macGuide.html`
+      url = `${getH5BaseUrl()}/guide/macGuide.html`
       // title = '操作指引'
       title = ''
     } else if (text.indexOf('DHCP') !== -1) {
-      url = `${getH5BaseUrl()}/dhcpGuide.html`
+      url = `${getH5BaseUrl()}/guide/dhcpGuide.html`
       // title = '操作指引'
       title = ''
     }
