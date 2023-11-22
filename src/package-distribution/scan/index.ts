@@ -475,7 +475,7 @@ ComponentWithComputed({
 
       Logger.log('getUploadFileForOssInfo', result)
 
-      return new Promise<{ success: boolean; result: IAnyObject }>((resolve) => {
+      return new Promise<{ success: boolean; result: { uploadUrl: string; downloadUrl: string } }>((resolve) => {
         // 上传图片到集团OSS服务
         wx.request({
           url: result.uploadUrl,
@@ -494,11 +494,19 @@ ComponentWithComputed({
               success: true,
               result: {
                 uploadUrl: result.uploadUrl,
+                downloadUrl: result.downloadUrl,
               },
             })
           },
           fail: (err) => {
             Logger.error('uploadFile-fail', err)
+            resolve({
+              success: false,
+              result: {
+                uploadUrl: '',
+                downloadUrl: '',
+              },
+            })
           },
         })
       })
