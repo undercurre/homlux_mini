@@ -279,7 +279,6 @@ ComponentWithComputed({
       // 首次进入
       if (this.data._firstShow) {
         this.data._firstShow = false
-        sceneStore.updateSceneList()
         sceneStore.updateAllRoomSceneList()
         this.updateQueue({ isRefresh: true })
         this.queryGroupInfo()
@@ -447,12 +446,7 @@ ComponentWithComputed({
       }
 
       try {
-        await Promise.all([
-          homeStore.updateRoomCardList(),
-          sceneStore.updateSceneList(),
-          sceneStore.updateAllRoomSceneList(),
-          this.queryGroupInfo(),
-        ])
+        await Promise.all([homeStore.updateRoomCardList(), sceneStore.updateAllRoomSceneList(), this.queryGroupInfo()])
 
         this.updateQueue({ isRefresh: true })
       } finally {

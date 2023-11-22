@@ -30,13 +30,12 @@ ComponentWithComputed({
 
   lifetimes: {
     ready() {
-      this.updateList()
-      sceneStore.updateSceneList().then(() => {
+      sceneStore.updateAllRoomSceneList().then(() => {
         this.updateList()
       })
       emitter.off('sceneEdit')
       emitter.on('sceneEdit', () => {
-        Promise.all([sceneStore.updateAllRoomSceneList(), sceneStore.updateSceneList()]).then(() => {
+        sceneStore.updateAllRoomSceneList().then(() => {
           this.updateList()
         })
       })
@@ -90,7 +89,7 @@ ComponentWithComputed({
 
     async onPullDownRefresh() {
       try {
-        await sceneStore.updateSceneList()
+        await sceneStore.updateAllRoomSceneList()
       } finally {
         this.setData({
           isRefresh: false,
@@ -133,7 +132,7 @@ ComponentWithComputed({
         return
       }
       await updateSceneSort({ sceneSortList })
-      await sceneStore.updateSceneList()
+      await sceneStore.updateAllRoomSceneList()
       homeStore.updateRoomCardList()
       this.updateList()
     },
