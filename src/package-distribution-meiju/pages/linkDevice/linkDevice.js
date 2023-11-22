@@ -73,7 +73,7 @@ Component({
     moduleType: '',
     addDeviceInfo: {},
     combinedDeviceInfo: [{ sn: '', a0: '' }],
-    time: 80,
+    time: 4,
     curStep: 0,
     currentRoomId: 0,
     isOnbleResp: true,
@@ -2286,7 +2286,6 @@ Component({
         loadingImg: './assets/img/loading_spot.png',
         closeImg: imgUrl + imgesList['closeImg'],
       })
-      Logger.debug('清空组合设备数据', this)
       // 清空组合设备数据
       app.combinedDeviceInfo = [{ sn: '', a0: '' }]
       this.init()

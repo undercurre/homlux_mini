@@ -8,6 +8,7 @@ module.exports = {
   linkDevice: '/package-distribution-meiju/pages/linkDevice/linkDevice',
   linkNetFail: '/package-distribution-meiju/pages/linkNetFail/linkNetFail',
   locationGuide: '/package-distribution-meiju/pages/location-guide/location-guide', //开启定位指引
+  webView: '/package-distribution-meiju/pages/webView/webView',
 
   addSuccess: '/package-distribution-meiju/pages/addDevice/pages/addSuccess/addSuccess',
   unSupportDevice: '/pages/unSupportDevice/unSupportDevice',

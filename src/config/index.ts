@@ -6,10 +6,16 @@ export * from './img'
 
 let env: ENV_TYPE = 'dev'
 
+export const mzaioDomain: ConfigWithEnv<string> = {
+  dev: 'https://test.meizgd.com',
+  sit: 'https://sit.meizgd.com',
+  prod: 'https://mzaio.meizgd.com',
+}
+
 export const mzaioBaseURL: ConfigWithEnv<string> = {
-  dev: 'https://test.meizgd.com/mzaio',
-  sit: 'https://sit.meizgd.com/mzaio',
-  prod: 'https://mzaio.meizgd.com/mzaio',
+  dev: `${mzaioDomain.dev}/mzaio`,
+  sit: `${mzaioDomain.sit}/mzaio`,
+  prod: `${mzaioDomain.prod}/mzaio`,
 }
 
 export const storageExpire = 60 * 60 * 24 * 30
@@ -34,6 +40,13 @@ export function getEnv() {
 
 export function setEnv(val: ENV_TYPE) {
   env = val
+}
+
+/**
+ * 返回内嵌H5页面的基本路径
+ */
+export function getH5BaseUrl() {
+  return mzaioDomain[env]
 }
 
 // wx的环境名称 --> 云端环境名称

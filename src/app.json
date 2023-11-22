@@ -78,9 +78,11 @@
         "pages/inputWifiInfo/inputWifiInfo",
         "pages/addGuide/addGuide",
         "pages/location-guide/location-guide",
+        "pages/addDevice/pages/localNetGuide/localNetGuide",
         "pages/addFail/addFail",
         "pages/linkDevice/linkDevice",
         "pages/linkNetFail/linkNetFail",
+        "pages/webView/webView",
         "pages/linkAp/linkAp"
       ]
     }

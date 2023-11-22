@@ -3,7 +3,7 @@
   module="tools"
 />
 <view id="{{brand}}">
-  <view class="page-container link-fail-container">
+  <view class="page-container">
     <nav-bar title="添加设备"></nav-bar>
 
     <tips-box

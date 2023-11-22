@@ -1,21 +1,22 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-this-alias */
 import { queryUserInfo } from '../../../apis/index'
-import { isConnect, goHome } from '../../../utils/index'
-import { defaultImgDir } from '../../../config/index'
+import { goHome, isConnect } from '../../../utils/index'
+import { defaultImgDir, getH5BaseUrl } from '../../../config/index'
 
 import app from '../../common/app'
-const addDeviceMixin = require('../addDevice/pages/assets/js/addDeviceMixin')
-const netWordMixin = require('../assets/js/netWordMixin')
-import { string2Uint8Array, isEmptyObject } from 'm-utilsdk/index'
+import { isEmptyObject, string2Uint8Array } from 'm-utilsdk/index'
 import { showToast } from '../../utils/util'
 import paths from '../../utils/paths'
-import { environment, commonH5Api } from '../../common/js/api'
+import { environment } from '../../common/js/api'
 import { decodeWifi } from '../assets/js/utils'
 import computedBehavior from '../../utils/miniprogram-computed.js'
 import { addDeviceSDK } from '../../utils/addDeviceSDK.js'
 import { setWifiStorage } from '../addDevice/utils/wifiStorage'
 
 import WifiMgr from '../addDevice/pages/assets/js/wifiMgr'
+
+const addDeviceMixin = require('../addDevice/pages/assets/js/addDeviceMixin')
+const netWordMixin = require('../assets/js/netWordMixin')
 
 const brandStyle = require('../assets/js/brand.js')
 let wifiMgr = new WifiMgr()
@@ -28,6 +29,7 @@ Page({
     defaultImgDir,
     deviceName: '',
     isCanSeePsw: true,
+    wifiInputPlaceholder: '未获取到家庭WiFi',
     bindWifiInfo: {
       BSSID: '',
       EncryptType: '',
@@ -657,35 +659,26 @@ Page({
     const text = e.target.dataset.text
     let url
     let title
-    if (text.indexOf('本地网络') != -1) {
+    if (text.indexOf('本地网络') !== -1) {
       let permissionTypeList = { localNet: false } //本地网络未开
       wx.navigateTo({
         url: paths.localNetGuide + `?permissionTypeList=${JSON.stringify(permissionTypeList)}`,
       })
       return
-    } else if (text.indexOf('Mac地址') != -1) {
-      url = `${commonH5Api.url}macGuide.html`
+    } else if (text.indexOf('Mac地址') !== -1) {
+      url = `${getH5BaseUrl()}/macGuide.html`
       // title = '操作指引'
       title = ''
-    } else if (text.indexOf('DHCP') != -1) {
-      url = `${commonH5Api.url}dhcpGuide.html`
+    } else if (text.indexOf('DHCP') !== -1) {
+      url = `${getH5BaseUrl()}/dhcpGuide.html`
       // title = '操作指引'
       title = ''
-    } else if (text.indexOf('qmark') != -1) {
-      url = `${commonH5Api.url}problem.html`
-      title = '常见问题'
     }
     console.log('url:', url)
     console.log('title:', title)
-    if (this.data.brand !== 'colmo') {
-      wx.navigateTo({
-        url: `${paths.webView}?webViewUrl=${encodeURIComponent(url)}&pageTitle=${title}`,
-      })
-    } else {
-      wx.navigateTo({
-        url: `/pages/webview/webview?webviewUrl=${encodeURIComponent(url)}&pageTitle=${title}`,
-      })
-    }
+    wx.navigateTo({
+      url: `${paths.webView}?webViewUrl=${encodeURIComponent(url)}&pageTitle=${title}`,
+    })
   },
 
   inputSSIDContent(e) {

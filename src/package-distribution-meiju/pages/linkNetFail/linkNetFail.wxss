@@ -1,12 +1,10 @@
-.page {
-  font-family: PingFangSC-Medium;
-  padding-bottom: 220rpx;
+.page-container {
+  padding-bottom: 184rpx;
 }
 
 .flex-c {
   display: flex;
   flex-direction: column;
-  /* justify-content: center; */
   align-items: center;
 }
 
@@ -18,22 +16,6 @@
   align-items: center;
   justify-content: center;
 }
-
-/* .phone-img {
-    width: 196rpx;
-    height: 196rpx;
-}
-
-.blue-tooth-img {
-    width: 30rpx;
-    height: 30rpx;
-    margin: 0px 30rpx;
-} */
-
-/* .device-img {
-    width: 196rpx;
-    height: 196rpx;
-} */
 
 .fail-image {
   margin: 0rpx auto 32rpx;
@@ -63,13 +45,6 @@
   font-weight: 400;
 }
 
-/* .desc-list-fail {
-    margin: auto;
-    margin-top: 4vh;
-    width: 91.5%;
-    align-items: center;
-} */
-
 .r {
   display: flex;
   align-items: flex-start;
@@ -94,20 +69,6 @@
   font-size: 32rpx;
 }
 
-/* .c4,
-.c6 {
-    width: 100%;
-    height: 80rpx;
-    box-sizing: border-box;
-    margin: auto;
-    text-align: left;
-    border: 1px solid #C7C7CC;
-    border-radius: 23px;
-    padding-left: 20px;
-    margin-top: 8px;
-    position: relative;
-} */
-
 .tip {
   display: flex;
   align-items: center;
@@ -115,7 +76,6 @@
 
 .tips {
   width: 685rpx;
-  margin: auto;
   display: flex;
   align-items: top;
   margin: 30rpx auto;
@@ -132,21 +92,8 @@
   vertical-align: top;
 }
 
-/* .ping-net {
-    color: #488FFF;
-    letter-spacing: 0;
-    font-weight: 500;
-} */
-
-/* .psw-input {
-  width: 85%;
-  height: 80rpx;
-  line-height: 80rpx;
-} */
-
 .switch-wifi {
   z-index: 100;
-  font-family: PingFangSC-Medium;
   font-size: 14px;
   color: #488fff;
   line-height: 24px;
@@ -220,10 +167,8 @@
 }
 
 .back-to-index {
-  font-family: PingFangSC-Medium;
   font-size: 16px;
   color: #488fff;
-  text-align: center;
   line-height: 16px;
   font-weight: 500;
   text-align: center;
@@ -231,22 +176,8 @@
 
 .spaceTips {
   width: 685rpx;
-  margin: auto;
   display: flex;
   align-items: top;
   margin: 30rpx auto;
   padding-left: 30rpx;
 }
-
-/* #colmo .confirm{
-    width: 686rpx;
-    background: #AF6437;
-    border-radius: 0;
-    flex: 0.9;
-    height: 92rpx;
-    line-height: 92rpx;
-    font-size: 32rpx;
-    text-align: center;
-    font-weight: 500;
-    color:#fff;
-} */

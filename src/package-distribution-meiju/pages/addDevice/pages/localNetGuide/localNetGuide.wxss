@@ -20,7 +20,6 @@
 
 .item-box {
   width: 100%;
-  background-color: #ffffff;
 }
 
 .item {
@@ -28,7 +27,6 @@
   margin: auto;
   margin-top: 16px;
   padding: 0px 9px 30px;
-  background: #f9f9f9;
   border-radius: 12px;
   overflow: hidden;
 }
@@ -37,7 +35,6 @@
   padding: 0px 10px;
   box-sizing: border-box;
   height: 54px;
-  line-height: 54px;
   font-size: 16px;
   color: #000000;
   letter-spacing: 0;
@@ -66,10 +63,6 @@
   width: 168px;
   float: left;
   margin-top: 11px;
-  /* display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center; */
 }
 
 .img-text {
@@ -80,17 +73,6 @@
   font-size: 12px;
   color: #666666;
   letter-spacing: 0;
-  text-align: center;
   line-height: 17px;
   font-weight: 400;
-}
-
-.no-more {
-  padding: 48rpx 0rpx 84rpx 0rpx;
-  text-align: center;
-  font-size: 10px;
-  color: #c7c7cc;
-  letter-spacing: -0.28px;
-  font-weight: 500;
-  background-color: #fff;
 }
