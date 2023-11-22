@@ -11,6 +11,13 @@
     "miniprogram": {
       "list": [
         {
+          "name": "连接设备页面",
+          "pathName": "package-distribution-meiju/pages/linkDevice/linkDevice",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "我的",
           "pathName": "pages/mine/index",
           "query": "",
@@ -145,7 +152,7 @@
         },
         {
           "name": "配网指引页面",
-          "pathName": "package-distribution-meiju/pages/addDevice/pages/addGuide/addGuide",
+          "pathName": "package-distribution-meiju/pages/addGuide/addGuide",
           "query": "",
           "launchMode": "default",
           "scene": null
@@ -159,28 +166,21 @@
         },
         {
           "name": "连接热点linkAP",
-          "pathName": "package-distribution-meiju/pages/addDevice/pages/linkAp/linkAp",
+          "pathName": "package-distribution-meiju/pages/linkAp/linkAp",
           "query": "",
           "launchMode": "default",
           "scene": null
         },
         {
           "name": "美居配网-连接家庭inputWifiInfo",
-          "pathName": "package-distribution-meiju/pages/addDevice/pages/inputWifiInfo/inputWifiInfo",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "连接设备页面",
-          "pathName": "package-distribution-meiju/pages/addDevice/pages/linkDevice/linkDevice",
+          "pathName": "package-distribution-meiju/pages/inputWifiInfo/inputWifiInfo",
           "query": "",
           "launchMode": "default",
           "scene": null
         },
         {
           "name": "联网失败页面",
-          "pathName": "package-distribution-meiju/pages/addDevice/pages/linkNetFail/linkNetFail",
+          "pathName": "package-distribution-meiju/pages/linkNetFail/linkNetFail",
           "query": "",
           "launchMode": "default",
           "scene": null
