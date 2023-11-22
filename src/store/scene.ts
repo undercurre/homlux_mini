@@ -19,7 +19,7 @@ export const sceneStore = observable({
    */
   addSceneActions: [] as Device.ActionItem[],
 
-  get sceneIdMp(): Record<string, Scene.SceneItem> {
+  get sceneIdMap(): Record<string, Scene.SceneItem> {
     return Object.fromEntries(sceneStore.allRoomSceneList.map((scene) => [scene.sceneId, scene]))
   },
 

@@ -1,6 +1,6 @@
 import { mzaioRequest } from '../utils/index'
 
-export async function getRoomList(houseId: string, options?: { loading?: boolean }) {
+export async function queryRoomList(houseId: string, options?: { loading?: boolean }) {
   return await mzaioRequest.post<{ roomInfoList: Room.RoomItem[] }>({
     log: true,
     loading: options?.loading ?? false,

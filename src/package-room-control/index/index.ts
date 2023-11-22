@@ -85,6 +85,7 @@ ComponentWithComputed({
   data: {
     sceneImgDir,
     defaultImgDir,
+    _firstShow: true,
     _updating: false, // 列表更新中标志
     _diffWaitlist: [] as DeviceCard[], // 待更新列表
     // 待更新到视图的数据（updateDeviceList专用）
@@ -102,7 +103,7 @@ ComponentWithComputed({
     /** 展示点中离线设备弹窗 */
     showDeviceOffline: false,
     /** 点击的离线设备的信息 */
-    officeDeviceInfo: {} as DeviceCard,
+    offlineDevice: {} as DeviceCard,
     /** 弹层要控制的设备品类 */
     controlType: '',
     showAddScenePopup: false,
@@ -275,9 +276,21 @@ ComponentWithComputed({
     },
 
     async onShow() {
-      await verifyNetwork()
-      // 加载数据
-      this.reloadData()
+      // 首次进入
+      if (this.data._firstShow) {
+        this.data._firstShow = false
+        sceneStore.updateSceneList()
+        sceneStore.updateAllRoomSceneList()
+        this.updateQueue({ isRefresh: true })
+        this.queryGroupInfo()
+      }
+      // 从别的页面返回，或从挂起状态恢复
+      else {
+        // 验证网络状态
+        await verifyNetwork()
+        // 加载数据
+        this.reloadData()
+      }
 
       Logger.log('room-onShow')
       emitter.on('deviceListRetrieve', () => {
@@ -454,7 +467,7 @@ ComponentWithComputed({
 
     // 只单独更新列表
     async reloadDeviceList() {
-      Logger.log('reloadData', isConnect())
+      Logger.log('Only ReloadDeviceList', isConnect())
       // 未连接网络，所有设备直接设置为离线
       if (!isConnect()) {
         this.updateQueue({ isRefresh: true, onLineStatus: 0 })
@@ -493,7 +506,7 @@ ComponentWithComputed({
     handleShowDeviceOffline(e: { detail: DeviceCard }) {
       this.setData({
         showDeviceOffline: true,
-        officeDeviceInfo: e.detail,
+        offlineDevice: e.detail,
       })
     },
     handleCloseDeviceOffline() {
@@ -508,15 +521,15 @@ ComponentWithComputed({
       }
       const switchId = device.uniId.split(':')[1]
       const switchSceneConditionMap = deviceStore.switchSceneConditionMap
-      const sceneIdMp = sceneStore.sceneIdMp
+      const sceneIdMap = sceneStore.sceneIdMap
       const uId = `${device.deviceId}:${switchId}`
 
       if (
         switchSceneConditionMap[uId] &&
-        sceneIdMp[switchSceneConditionMap[uId]] &&
-        sceneIdMp[switchSceneConditionMap[uId]].sceneName
+        sceneIdMap[switchSceneConditionMap[uId]] &&
+        sceneIdMap[switchSceneConditionMap[uId]].sceneName
       ) {
-        return sceneIdMp[switchSceneConditionMap[uId]].sceneName.slice(0, 4)
+        return sceneIdMap[switchSceneConditionMap[uId]].sceneName.slice(0, 4)
       }
       return ''
     },
@@ -1398,7 +1411,7 @@ ComponentWithComputed({
       wx.navigateTo({ url: '/package-distribution/choose-device/index' })
     },
     handleRebindGateway() {
-      const gateway = deviceStore.allRoomDeviceMap[this.data.officeDeviceInfo.gatewayId]
+      const gateway = deviceStore.allRoomDeviceMap[this.data.offlineDevice.gatewayId]
       wx.navigateTo({
         url: `/package-distribution/wifi-connect/index?type=changeWifi&sn=${gateway.sn}`,
       })

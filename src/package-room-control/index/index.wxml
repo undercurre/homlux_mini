@@ -307,7 +307,7 @@
 
 <van-dialog
   use-slot
-  title="{{officeDeviceInfo.deviceName}}离线"
+  title="{{offlineDevice.deviceName}}离线"
   show="{{ showDeviceOffline }}"
   confirm-button-color="#488FFF"
   confirmButtonText="我知道了"
@@ -315,7 +315,7 @@
 >
   <view class="flex-col-center w-full">
     <image
-      src="{{officeDeviceInfo.pic}}"
+      src="{{offlineDevice.pic}}"
       class="w-160rpx h-160rpx mt-70rpx"
     />
     <view class="flex flex-col mt-88rpx">
