@@ -87,8 +87,9 @@ ComponentWithComputed({
     defaultImgDir,
     _firstShow: true,
     _updating: false, // 列表更新中标志
-    _diffWaitlist: [] as DeviceCard[], // 待更新列表
-    // 待更新到视图的数据（updateDeviceList专用）
+    // 更新等待队列
+    _diffWaitlist: [] as DeviceCard[],
+    // 待更新到视图的数据，便于多个更新合并到一次setData中（updateDeviceList专用）
     _diffCards: {
       data: {} as IAnyObject,
       created: 0, // 创建时间
@@ -316,9 +317,8 @@ ComponentWithComputed({
           //   })
           // }
           // 如果有传更新的状态数据过来，直接更新store
-          const deviceInHouse = deviceStore.allRoomDeviceList.find(
-            (device) => device.deviceId === e.result.eventData.deviceId,
-          )
+          const deviceInHouse = deviceStore.allRoomDeviceMap[e.result.eventData.deviceId]
+
           if (deviceInHouse) {
             runInAction(() => {
               deviceInHouse.mzgdPropertyDTOList[e.result.eventData.modelName] = {
@@ -330,9 +330,8 @@ ComponentWithComputed({
           }
 
           // 组装要更新的设备数据
-          const deviceInRoom = deviceStore.deviceList.find(
-            (device) => device.deviceId === e.result.eventData.deviceId,
-          ) as DeviceCard
+          const deviceInRoom = deviceStore.deviceMap[e.result.eventData.deviceId]
+
           if (deviceInRoom) {
             runInAction(() => {
               deviceInRoom.mzgdPropertyDTOList[e.result.eventData.modelName] = {
@@ -350,26 +349,29 @@ ComponentWithComputed({
           device.mzgdPropertyDTOList[e.result.eventData.modelName] = {
             ...e.result.eventData.event,
           }
-          // 按物模型属性，WIFI灯状态更新与zigbee灯统一，此处冗余逻辑已不需要
-          // if (Object.prototype.hasOwnProperty.call(e.result.eventData.event, 'power')) {
-          //   device.mzgdPropertyDTOList[e.result.eventData.modelName].power = e.result.eventData.event.power === 'on' ? 1 : 0
-          // }
+
           this.updateQueue(device)
           return
         }
-        // 更新设备在线状态
-        // FIXME 不是专用事件，需要云端支持，以减少监听的数量
-        else if (
-          e.result.eventType === WSEventType.screen_online_status_sub_device ||
-          e.result.eventType === WSEventType.screen_online_status_wifi_device
-        ) {
-          const { deviceId, modelName, status } = e.result.eventData
-          const device = {} as DeviceCard
-          device.deviceId = deviceId
-          device.uniId = modelName ? `${deviceId}:${modelName}` : deviceId
-          device.onLineStatus = status
-          this.updateQueue(device)
-        }
+        // 额外的更新设备在线状态
+        // FIXME 面板按键未处理
+        // TODO 一般使用device_online_status即可，暂时删除，如有遗漏需要云端支持，以减少信息的数量
+        // else if (
+        //   e.result.eventType === WSEventType.screen_online_status_sub_device ||
+        //   e.result.eventType === WSEventType.screen_online_status_wifi_device
+        // ) {
+        //   const { deviceId, status } = e.result.eventData
+        //   const deviceInRoom = deviceStore.deviceMap[deviceId]
+        //   if (!deviceInRoom || deviceInRoom.onLineStatus === status) {
+        //     return
+        //   }
+        //   const modelName = getModelName(deviceInRoom.proType, deviceInRoom.productId)
+        //   const device = {} as DeviceCard
+        //   device.deviceId = deviceId
+        //   device.uniId = modelName ? `${deviceId}:${modelName}` : deviceId
+        //   device.onLineStatus = status
+        //   this.updateQueue(device)
+        // }
         // 节流更新本地数据
         else if (
           [
@@ -546,6 +548,7 @@ ComponentWithComputed({
               return d.deviceId === device!.deviceId
             }
           })
+
           if (index !== -1) {
             originDevice = this.data.devicePageList[groupIndex][index]
             // const diffData = {} as IAnyObject
@@ -605,7 +608,7 @@ ComponentWithComputed({
               const newVal = {
                 ...originDevice,
                 ...device,
-                ...device.mzgdPropertyDTOList[modelName],
+                ...device.mzgdPropertyDTOList[modelName], // 设备属性扁平化（一维、冗余），以便与场景弹框统一逻辑
               }
               this.data._diffCards.data.checkedDeviceInfo = newVal
             }
@@ -628,7 +631,7 @@ ComponentWithComputed({
                   data: {},
                   created: 0,
                 }
-                console.log('▤ [%s, %s] 更新完成，已等待 %sms', groupIndex, index, this.data._diffCards.data, wait)
+                console.log('▤ [%s, %s] 更新完成，已等待 %sms', groupIndex, index, wait)
               } else {
                 console.log('▤ [%s, %s] 更新推迟，已等待 %sms', groupIndex, index, wait)
               }
