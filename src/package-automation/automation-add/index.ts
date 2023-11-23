@@ -316,14 +316,12 @@ ComponentWithComputed({
                 })
                 console.log('添加开关面板', tempSceneDeviceActionsFlatten)
               } else {
-                let property = action.controlAction[0]
-
-                if (action.proType === PRO_TYPE.light) {
-                  property = {
-                    ...device.mzgdPropertyDTOList['light'],
-                    ...property,
-                  }
+                const modelName = getModelName(device.proType, device.productId)
+                const property = {
+                  ...device.mzgdPropertyDTOList[modelName],
+                  ...action.controlAction[0],
                 }
+
                 const desc = toPropertyDesc(device.proType, property)
                 tempSceneDeviceActionsFlatten.push({
                   uniId: device.uniId,
@@ -1306,8 +1304,16 @@ ComponentWithComputed({
                 ctrlAction.curtain_position = property.curtain_position
               } else if (device.proType === PRO_TYPE.bathHeat) {
                 ctrlAction.light_mode = property.light_mode
-                ctrlAction.mode = property.mode
                 ctrlAction.heating_temperature = property.heating_temperature
+                if (property.mode.indexOf('close_all') > -1) {
+                  ctrlAction.mode_close = property.mode
+                } else {
+                  ctrlAction.mode_enable = property.mode
+                }
+              } else if (device.proType === PRO_TYPE.clothesDryingRack) {
+                ctrlAction.updown = property.updown
+                ctrlAction.laundry = property.laundry
+                ctrlAction.light = property.light
               }
               newSceneData.deviceActions.push({
                 controlAction: [ctrlAction],
