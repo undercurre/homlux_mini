@@ -110,21 +110,25 @@ ComponentWithComputed({
         text: '强暖',
         icon: '../../assets/img/function/f10.png',
         iconActive: '../../assets/img/function/f11.png',
+        rebound: true,
       },
       heating_soft: {
         text: '弱暖',
         icon: '../../assets/img/function/f20.png',
         iconActive: '../../assets/img/function/f21.png',
+        rebound: true,
       },
       ventilation: {
         text: '换气',
         icon: '../../assets/img/function/f30.png',
         iconActive: '../../assets/img/function/f31.png',
+        rebound: true,
       },
       blowing: {
         text: '吹风',
         icon: '../../assets/img/function/f40.png',
         iconActive: '../../assets/img/function/f41.png',
+        rebound: true,
       },
     } as Record<string, BtnItem>,
     // 下方大按钮对象
@@ -133,11 +137,13 @@ ComponentWithComputed({
         text: '照明',
         icon: '../../assets/img/function/f50.png',
         iconActive: '../../assets/img/function/f51.png',
+        rebound: true,
       },
       night_light: {
         text: '夜灯',
         icon: '../../assets/img/function/f60.png',
         iconActive: '../../assets/img/function/f61.png',
+        rebound: true,
       },
     } as Record<string, BtnItem>,
   },
@@ -188,6 +194,7 @@ ComponentWithComputed({
 
   /**
    * 组件的方法列表
+   * 页面视图使用设备状态值，暂时屏蔽所有的即时值设置
    */
   methods: {
     async handleBtnTap(e: WechatMiniprogram.CustomEvent) {
@@ -200,56 +207,56 @@ ComponentWithComputed({
         case 'heating_strong':
           if (mode.indexOf('heating') > -1 && Number(prop.heating_temperature) >= 43) {
             property.mode_close = 'heating'
-            this.setData({
-              'prop.mode': 'close_all',
-            })
+            // this.setData({
+            //   'prop.mode': 'close_all',
+            // })
           } else {
             property.mode_enable = 'heating'
             property.heating_temperature = '45'
-            this.setData({
-              'prop.mode': toggleProp(mode, 'heating'),
-              'prop.heating_temperature': '45',
-            })
+            // this.setData({
+            //   'prop.mode': toggleProp(mode, 'heating'),
+            //   'prop.heating_temperature': '45',
+            // })
           }
           break
         case 'heating_soft':
           if (mode.indexOf('heating') > -1 && Number(prop.heating_temperature) <= 42) {
             property.mode_close = 'heating'
-            this.setData({
-              'prop.mode': 'close_all',
-            })
+            // this.setData({
+            //   'prop.mode': 'close_all',
+            // })
           } else {
             property.mode_enable = 'heating'
             property.heating_temperature = '30'
-            this.setData({
-              'prop.mode': toggleProp(mode, 'heating'),
-              'prop.heating_temperature': '30',
-            })
+            // this.setData({
+            //   'prop.mode': toggleProp(mode, 'heating'),
+            //   'prop.heating_temperature': '30',
+            // })
           }
           break
         case 'main_light':
         case 'night_light': {
           const light_mode = prop.light_mode === key ? 'close_all' : key
           property.light_mode = light_mode
-          this.setData({
-            'prop.light_mode': light_mode,
-          })
+          // this.setData({
+          //   'prop.light_mode': light_mode,
+          // })
           break
         }
         // ! 待机指令注意为 mode_close
         case 'close_all':
           property.mode_close = key
-          this.setData({
-            'prop.mode': key,
-          })
+          // this.setData({
+          //   'prop.mode': key,
+          // })
           break
 
         default: {
           const newMode = toggleProp(mode, key)
           // console.log('toggleProp newMode', newMode)
-          this.setData({
-            'prop.mode': newMode,
-          })
+          // this.setData({
+          //   'prop.mode': newMode,
+          // })
 
           if (newMode === 'close_all' || mode.indexOf(key) > -1) {
             property.mode_close = key

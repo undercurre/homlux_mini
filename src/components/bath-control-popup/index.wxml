@@ -62,6 +62,7 @@
           text="{{item.text}}"
           data-key="{{item.key}}"
           isOn="{{item.on}}"
+          data-rebound="{{item.rebound}}"
           btnStyle="{{largeBtnStyle}}"
           size="{{64}}"
           textColor="#a2a2a2"
