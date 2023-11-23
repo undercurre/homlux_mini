@@ -59,10 +59,10 @@ ComponentWithComputed({
     title: {
       type: String,
     },
-    // 是否下发控制命令
-    isControl: {
+    // 是否使用设置值，即时渲染视图显示
+    useSettingValue: {
       type: Boolean,
-      value: true,
+      value: false,
     },
     show: {
       type: Boolean,
@@ -199,7 +199,7 @@ ComponentWithComputed({
   methods: {
     async handleBtnTap(e: WechatMiniprogram.CustomEvent) {
       const key = e.currentTarget.dataset.key as string
-      const { prop } = this.data
+      const { prop, useSettingValue } = this.data
       const { mode = '' } = prop
       const property = {} as IAnyObject
 
@@ -207,60 +207,100 @@ ComponentWithComputed({
         case 'heating_strong':
           if (mode.indexOf('heating') > -1 && Number(prop.heating_temperature) >= 43) {
             property.mode_close = 'heating'
-            // this.setData({
-            //   'prop.mode': 'close_all',
-            // })
+            if (useSettingValue) {
+              this.setData({
+                'prop.mode': 'close_all',
+              })
+            }
           } else {
             property.mode_enable = 'heating'
             property.heating_temperature = '45'
-            // this.setData({
-            //   'prop.mode': toggleProp(mode, 'heating'),
-            //   'prop.heating_temperature': '45',
-            // })
+            if (useSettingValue) {
+              this.setData({
+                'prop.mode': toggleProp(mode, 'heating'),
+                'prop.heating_temperature': '45',
+              })
+            }
           }
           break
         case 'heating_soft':
           if (mode.indexOf('heating') > -1 && Number(prop.heating_temperature) <= 42) {
             property.mode_close = 'heating'
-            // this.setData({
-            //   'prop.mode': 'close_all',
-            // })
+            if (useSettingValue) {
+              this.setData({
+                'prop.mode': 'close_all',
+              })
+            }
           } else {
             property.mode_enable = 'heating'
             property.heating_temperature = '30'
-            // this.setData({
-            //   'prop.mode': toggleProp(mode, 'heating'),
-            //   'prop.heating_temperature': '30',
-            // })
+            if (useSettingValue) {
+              this.setData({
+                'prop.mode': toggleProp(mode, 'heating'),
+                'prop.heating_temperature': '30',
+              })
+            }
           }
           break
         case 'main_light':
         case 'night_light': {
           const light_mode = prop.light_mode === key ? 'close_all' : key
           property.light_mode = light_mode
-          // this.setData({
-          //   'prop.light_mode': light_mode,
-          // })
+          if (useSettingValue) {
+            this.setData({
+              'prop.light_mode': light_mode,
+            })
+          }
           break
         }
+        case 'ventilation': {
+          const arr = mode.split(',')
+          // key已存在，则移除
+          if (arr.includes(key)) {
+            arr.splice(arr.indexOf(key), 1)
+            property.mode_close = key
+          }
+          // key不存在，即添加，并移除待机
+          else {
+            if (arr.includes('close_all')) {
+              arr.splice(arr.indexOf('close_all'), 1)
+            }
+            arr.push(key)
+            property.mode_enable = key
+          }
+          if (useSettingValue) {
+            this.setData({
+              'prop.mode': arr.join(','),
+            })
+          }
+          break
+        }
+
         // ! 待机指令注意为 mode_close
         case 'close_all':
           property.mode_close = key
-          // this.setData({
-          //   'prop.mode': key,
-          // })
+          if (useSettingValue) {
+            this.setData({
+              'prop.mode': key,
+            })
+          }
           break
 
         default: {
           const newMode = toggleProp(mode, key)
           // console.log('toggleProp newMode', newMode)
-          // this.setData({
-          //   'prop.mode': newMode,
-          // })
+          if (useSettingValue) {
+            this.setData({
+              'prop.mode': newMode,
+            })
+          }
 
+          // 如果关闭某个属性，或者置为全关，则用mode_close
           if (newMode === 'close_all' || mode.indexOf(key) > -1) {
             property.mode_close = key
-          } else {
+          }
+          // 如果开启某个属性，则用mode_enable
+          else {
             property.mode_enable = key
           }
         }
