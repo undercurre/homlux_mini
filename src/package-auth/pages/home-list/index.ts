@@ -6,7 +6,7 @@ import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { homeStore } from '../../../store/index'
 
-type HomeCard = { checked: boolean; index: number } & Meiju.MeijuHome
+type HomeCard = Meiju.MeijuHome
 
 ComponentWithComputed({
   behaviors: [pageBehaviors],
@@ -17,11 +17,12 @@ ComponentWithComputed({
     homeList: [] as HomeCard[],
     listHeight: 0,
     loading: false,
+    checkIndex: 0, // 选择的家庭index
   },
 
   computed: {
     currentHome(data) {
-      return data.homeList.find((home) => home.checked) || ({} as HomeCard)
+      return data.homeList[data.checkIndex] || ({} as HomeCard)
     },
   },
 
@@ -32,11 +33,8 @@ ComponentWithComputed({
       const res = await getMeijuHomeList(query.code)
 
       if (res.success) {
-        const homeList = res.result.mideaHouseList.map((home, index) => ({
-          ...home,
-          index,
-          checked: index === 0, // 默认选中第一个
-        }))
+        const homeList = res.result.mideaHouseList
+
         this.setData({
           homeList,
         })
@@ -58,13 +56,15 @@ ComponentWithComputed({
     },
 
     onCheckHome(e: { target: { dataset: { index: number } } }) {
-      const diffData = {} as IAnyObject
       const index = e.target.dataset.index
 
-      diffData[`homeList[${index}].checked`] = true
-      diffData[`homeList[${this.data.currentHome.index}].checked`] = false
+      if (this.data.checkIndex === index) {
+        return
+      }
 
-      this.setData(diffData)
+      this.setData({
+        checkIndex: index,
+      })
     },
 
     async toConfirm() {
