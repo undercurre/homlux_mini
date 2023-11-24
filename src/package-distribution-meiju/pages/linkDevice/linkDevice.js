@@ -1985,12 +1985,8 @@ Component({
       })
     },
     async bindDeviceToHome(bindInfo) {
-      const self = this
-      Logger.console('bindDeviceToHome', this, self)
-
       console.log(
         'bindDeviceToHome开始绑定设备',
-        this,
         this.data.deviceId,
         'bindInfo',
         bindInfo,

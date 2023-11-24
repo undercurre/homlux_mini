@@ -91,6 +91,10 @@
     "pages/index/index": {
       "network": "all",
       "packages": ["package-room-control", "package-distribution", "package-mine", "package-automation"]
+    },
+    "package-distribution/choose-device/index": {
+      "network": "all",
+      "packages": ["package-distribution-meiju"]
     }
   },
   "tabBar": {

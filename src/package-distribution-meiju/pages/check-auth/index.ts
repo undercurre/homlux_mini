@@ -53,6 +53,7 @@ ComponentWithComputed({
 
       if (!res.success) {
         Toast('查询美居授权状态失败')
+        wx.navigateBack()
         return
       }
 

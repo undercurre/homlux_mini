@@ -314,9 +314,13 @@ Page({
         this.data.locationResFlag = locationRes
         console.log('[loactionRes]', locationRes)
       } catch (error) {
+        Logger.error('inputPageSwitchWifi', error)
         this.setData({
           clickFLag: false,
         })
+
+        Toast('当前网络信号不佳，请检查网络设置')
+        return
       }
       if (!locationRes.isCanLocation) {
         const obj = {
@@ -749,7 +753,8 @@ Page({
     app.addDeviceInfo.curWifiInfo = this.data.bindWifiTest //共享选取的wifi
     app.addDeviceInfo.isManualInputWifi = this.data.isManualInputWifi // 保存是否手动输入的状态->失败页linkNetFail需要用到
     console.log('addDeviceInfo====', app.addDeviceInfo)
-    const { deviceName, type, blueVersion, mode, fm, enterprise, ssid, isCheck } = app.addDeviceInfo
+    const { type, blueVersion, mode, fm, enterprise, ssid, isCheck } = app.addDeviceInfo
+    app.addDeviceInfo.deviceName = deviceImgMap[type].title
     this.searchBlueStopTimeout && clearTimeout(this.searchBlueStopTimeout)
     wx.offBluetoothDeviceFound()
     wx.stopBluetoothDevicesDiscovery()
@@ -790,9 +795,6 @@ Page({
         let page = getFullPageUrl()
         if (result && page.includes('addDevice/pages/inputWifiInfo/inputWifiInfo')) {
           pass = true
-          if (!deviceName) {
-            app.addDeviceInfo.deviceName = deviceImgMap[type].title
-          }
           wx.navigateTo({
             url: paths.linkAp,
             complete() {
