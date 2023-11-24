@@ -259,7 +259,6 @@ export default class WifiMgr {
           wx.getConnectedWifi({
             partialInfo: isiOS, //是否只返回部分wifi信息，去掉可能拿不到 SSID
             success: (res) => {
-              console.info('@module wifiMgr.js\n@method getConnectedWifi\n@desc 微信接口获取的当前wifi信息\n', res)
               /**
                * 微信低版本存在缺陷：BSSID每一段如果以0开头会被省略
                * 以下做兼容处理，若被省略则补上0

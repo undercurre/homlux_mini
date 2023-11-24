@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import Dialog from '@vant/weapp/dialog/dialog'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { queryDeviceOnlineStatus, bindDevice } from '../../apis/index'
@@ -457,7 +458,22 @@ ComponentWithComputed({
       }
     },
 
-    reScan() {
+    async reScan() {
+      this.setData({
+        isShowForceBindTips: false,
+      })
+
+      const dialogRes = await Dialog.confirm({
+        title: '确认是否退出添加智能网关流程',
+      }).catch(() => 'cancel')
+
+      if (dialogRes === 'cancel') {
+        this.setData({
+          isShowForceBindTips: true,
+        })
+        return
+      }
+
       wx.navigateBack()
     },
 

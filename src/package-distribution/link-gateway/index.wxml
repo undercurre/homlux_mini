@@ -101,7 +101,7 @@
   title="此设备已绑定"
   show="{{ isShowForceBindTips }}"
   show-cancel-button="{{false}}"
-  confirm-button-text="取消"
+  confirm-button-text="退出"
   confirm-button-color="#488FFF"
   bind:confirm="reScan"
 >

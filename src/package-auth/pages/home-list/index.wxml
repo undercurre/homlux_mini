@@ -33,7 +33,7 @@
           data-index="{{index}}"
         >
           <image
-            wx:if="{{item.checked}}"
+            wx:if="{{checkIndex === index}}"
             slot="right-icon"
             src="/assets/img/member-manage/tick.png"
             class="w-48 h-48"
