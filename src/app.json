@@ -94,7 +94,7 @@
     },
     "package-distribution/choose-device/index": {
       "network": "all",
-      "packages": ["package-distribution-meiju"]
+      "packages": ["package-distribution-meiju", "package-auth"]
     }
   },
   "tabBar": {

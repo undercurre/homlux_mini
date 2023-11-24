@@ -154,7 +154,7 @@ Page({
         typeAndName = this.getDeviceImgAndName(type, sn8)
       }
       if (!deviceImg) app.addDeviceInfo.deviceImg = typeAndName.deviceImg
-      if (!deviceName) app.addDeviceInfo.deviceName = typeAndName.deviceName
+      app.addDeviceInfo.deviceName = typeAndName.deviceName
     }
     this.setData({
       deviceName: deviceName || app.addDeviceInfo.deviceName,
@@ -439,9 +439,11 @@ Page({
           wifiInputRightText: '切换WiFi',
           netType: 1,
         })
+
+        console.log('getConnectedWifi-res', res)
       })
       .catch((err) => {
-        console.log('getConnectedWifi', err)
+        console.log('getConnectedWifi-catch', err)
 
         that.setData({
           netType: 0,
@@ -458,7 +460,6 @@ Page({
             icon: 'none',
           })
         }
-        console.log('getConnectedWifi', err)
       })
   },
 
@@ -986,6 +987,8 @@ Page({
 
   async checkNet() {
     try {
+      await wifiMgr.getConnectedWifi()
+
       if (this.data.isManualInputWifi) {
         this.setData({
           isManualInputWifi: false,
