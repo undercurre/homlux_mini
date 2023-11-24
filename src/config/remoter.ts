@@ -581,13 +581,13 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
       },
       mList: [
         {
-          key: 'BATH_WIND',
+          key: 'KITCHEN_WIND_STRONG',
           icon: '/package-remoter/assets/scene91.png',
           iconActive: '/package-remoter/assets/scene90.png',
           name: '强风',
         },
         {
-          key: 'BATH_WIND',
+          key: 'KITCHEN_WIND_SOFT',
           icon: '/package-remoter/assets/scene91.png',
           iconActive: '/package-remoter/assets/scene90.png',
           name: '弱风',
@@ -677,6 +677,10 @@ export const CMD: Record<string, number> = {
   BATH_TEMPERATURE_ADD: 0x88, // 温度+
   BATH_TEMPERATURE_SUB: 0x81, // 温度-
   BATH_WARM_UP: 0x8c, // 取暖
+
+  // 凉霸（其余指令同浴霸）
+  KITCHEN_WIND_STRONG: 0x02, // 强风
+  KITCHEN_WIND_SOFT: 0x03, // 弱风
 
   // 厂测指令（调试用）
   FACTORY: 0x13,
