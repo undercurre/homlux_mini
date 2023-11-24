@@ -24,7 +24,7 @@ const MOCK_DEVICES = [
     addr: '112233445566',
     devicePic: '/assets/img/remoter/bathHeater.png',
     deviceName: '凉霸Q20 Mock',
-    deviceType: '26',
+    deviceType: '40',
     deviceModel: '03',
     saved: true,
     actionStatus: true,
