@@ -1016,7 +1016,7 @@ Page({
         this.data.isLoad = false
       }
       if (this.data.pageStatus === 'show') {
-        delay(5000).then(() => {
+        delay(3000).then(() => {
           this.checkNet()
         })
       }
