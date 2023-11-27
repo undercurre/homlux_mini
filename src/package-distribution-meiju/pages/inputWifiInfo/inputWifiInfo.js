@@ -41,7 +41,7 @@ Page({
     isInitWifiSuccess: false,
     isCanSeePsw: true,
     wifiDialogShow: false,
-    wifiInputPlaceholder: '未获取到家庭WiFi',
+    wifiInputPlaceholder: '未获取到家庭Wi-Fi',
     wifiInputRightText: '重新获取',
     isGetCurLinkWifiInfo: false, //是否获取到当前连接wifi信息
 

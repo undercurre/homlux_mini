@@ -51,7 +51,7 @@ export default class WifiMgr {
         },
         fail(res) {
           wx.showToast({
-            title: '初始化WiFi失败',
+            title: '初始化Wi-Fi失败',
             icon: 'none',
             duration: 3000,
           })
@@ -77,7 +77,7 @@ export default class WifiMgr {
       },
       fail() {
         wx.showToast({
-          title: '初始化WiFi失败',
+          title: '初始化Wi-Fi失败',
           icon: 'none',
           duration: 3000,
         })

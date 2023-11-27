@@ -78,7 +78,7 @@ Component({
         wifiList.forEach((item, index) => {
           wifiName = item.SSID
           signalStrength = item.signalStrength
-          item.desc = '使用此WiFi'
+          item.desc = '使用此Wi-Fi'
           item.isCan = 1
           //wiif 强度分级
           if (signalStrength >= 99) {
