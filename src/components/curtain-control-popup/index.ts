@@ -86,7 +86,6 @@ ComponentWithComputed({
         curtain_position: curtain_position,
       })
 
-      this.handleConfirm()
     },
   },
 })
