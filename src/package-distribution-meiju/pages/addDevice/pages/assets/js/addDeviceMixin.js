@@ -417,7 +417,7 @@ module.exports = Behavior({
           // 展示二次确认弹窗
           const self = this
           wx.showModal({
-            content: '请直接到手机设置页进行连接，连接后返回本页面',
+            content: '请到手机设置连接家庭Wi-Fi，连接后返回本页面',
             cancelText: '暂不设置',
             cancelColor: '#999',
             confirmText: '立即前往',
