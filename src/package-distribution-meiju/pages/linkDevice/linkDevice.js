@@ -1649,6 +1649,17 @@ Component({
       order.setModuleServerDomain = apParamsSet.setModuleServerDomain()
       order.setModuleServerPort = apParamsSet.setModuleServerPort()
       order.setfeature = apParamsSet.setfeature()
+      if (app.addDeviceInfo.ifSupportAds) {
+        // 支持ADS集群ID
+        const setAdsId = apParamsSet.setAdsId()
+        if (!setAdsId) {
+          this.goLinkDeviceFailPage(4160)
+          return
+        }
+        order.setAdsId = setAdsId
+      }
+
+      order.setAdsId = ''
       console.log('@module linkDevice.js\n@method constrLinknetorder\n@desc 配网指令对象\n', order)
       order.total = Object.values(order).join('')
       console.log('@module linkDevice.js\n@method constrLinknetorder\n@desc 配网指令对象值连接结果\n', order.total)
