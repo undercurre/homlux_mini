@@ -576,6 +576,7 @@ ComponentWithComputed({
           { loading: false },
         )
 
+        Logger.log('checkDevice', res)
         if (!res.success) {
           Toast('请检查网络设置')
 

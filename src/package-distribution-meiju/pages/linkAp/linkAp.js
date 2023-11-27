@@ -36,7 +36,7 @@ Page({
     isGetDeviceWifi: false, //是否只显示设备ap
     readingTimer: 3, //阅读页面时间 秒
     isGetWifiList: true, //是否获取wifi列表
-    wifiListTitle: '选择家庭WIFI',
+    wifiListTitle: '选择家庭Wi-Fi',
     guideGif: '',
     netStatusChange: false, //网络状态是否变化
     pageStatus: 'show', //页面状态

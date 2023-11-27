@@ -41,7 +41,7 @@ Page({
     isInitWifiSuccess: false,
     isCanSeePsw: true,
     wifiDialogShow: false,
-    wifiInputPlaceholder: '未获取到家庭WiFi',
+    wifiInputPlaceholder: '未获取到家庭Wi-Fi',
     wifiInputRightText: '重新获取',
     isGetCurLinkWifiInfo: false, //是否获取到当前连接wifi信息
 
@@ -85,7 +85,7 @@ Page({
     nexText: '', //下一步的按钮文案
     isSupport5G: false, //设备是否支持5Gwifi配网
     isGetWifiList: true, //是否获取wifi列表
-    wifiListTitle: '选择家庭WIFI',
+    wifiListTitle: '选择家庭Wi-Fi',
     isTipIosUpVersion: false, //是否提示ios升级版本
     pageStatus: 'show', //页面状态
     isCanAddDevice: true, //是否可添加设备

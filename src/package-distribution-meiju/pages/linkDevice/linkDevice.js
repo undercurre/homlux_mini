@@ -2224,6 +2224,7 @@ Component({
      */
     goLinkDeviceFailPage(errorCode, isCustom = true) {
       Logger.debug('goLinkDeviceFailPage', errorCode)
+      errorCode = 1307 // 写死错误码，统一展示所有错误
       // step1: 创建错误码
       if (errorCode) {
         app.addDeviceInfo.errorCode = this.creatErrorCode({

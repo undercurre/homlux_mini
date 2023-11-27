@@ -20,7 +20,7 @@ const failTextData = {
     nextTitle: 'XX联网过程出错',
     guideDesc: [
       '请确保连接家庭2.4GHz Wi-Fi，不可连接5GHz Wi-Fi',
-      '请确保家庭WiFi与密码填写正确，并确保该WiFi网络畅通 测试一下',
+      '请确保家庭Wi-Fi与密码填写正确，并确保该Wi-Fi网络畅通 测试一下',
       '请将路由器尽量靠近设备',
     ],
     isTest: true, //是否有测试一下

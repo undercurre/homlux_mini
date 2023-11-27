@@ -29,7 +29,7 @@ Page({
     defaultImgDir,
     deviceName: '',
     isCanSeePsw: true,
-    wifiInputPlaceholder: '未获取到家庭WiFi',
+    wifiInputPlaceholder: '未获取到家庭Wi-Fi',
     bindWifiInfo: {
       BSSID: '',
       EncryptType: '',
