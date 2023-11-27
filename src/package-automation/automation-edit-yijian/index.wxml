@@ -46,6 +46,7 @@
         name="sceneNameInput"
         value="{{sceneName}}"
         size="large"
+        maxlength="15"
         placeholder="给场景取个名字"
         placeholder-style="text-align: center;"
         clearable="{{true}}"
