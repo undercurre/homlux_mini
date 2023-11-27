@@ -152,8 +152,8 @@ Component({
         return
       }
 
-      if (this.data.roomInfo.name.length > 5) {
-        Toast('名称不能超过5个字符')
+      if (this.data.roomInfo.name.length > 8) {
+        Toast('名称不能超过8个字符')
         return
       }
 
