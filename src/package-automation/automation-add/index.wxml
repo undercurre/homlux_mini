@@ -46,6 +46,7 @@
         value="{{sceneName}}"
         size="large"
         placeholder="给场景取个名字"
+        maxlength="15"
         clearable="{{true}}"
         placeholder-style="text-align: center;"
         custom-style="padding: 24rpx 40rpx;border-radius: 32rpx;width:530rpx;height:96rpx;text-align:center;"

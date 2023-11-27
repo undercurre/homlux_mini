@@ -6,6 +6,14 @@
 
     <curtain-slider class="mt-68rpx" value="{{curtain_position}}" bind:change="handleChange"></curtain-slider>
     <view class="h-96rpx"></view>
+    <view class="w-560rpx">
+        <van-button
+          type="primary"
+          size="large"
+          bind:click="handleConfirm"
+          >确定</van-button
+        >
+      </view>
   </view>
 </van-popup>
 
