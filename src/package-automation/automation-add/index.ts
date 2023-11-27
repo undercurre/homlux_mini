@@ -901,8 +901,12 @@ ComponentWithComputed({
       })
     },
     handleConditionDelete(e: WechatMiniprogram.TouchEvent) {
-      console.log('删除', e)
+      this.setData({
+        sceneDeviceActionsFlatten: [],
+        sceneDevicelinkSelectList: []
+      })
       const uniId = e.currentTarget.dataset.info.uniId
+      console.log('删除条件', uniId)
       if (this.data.sensorlinkSelectList.includes(uniId)) {
         const index = this.data.sensorlinkSelectList.findIndex((id) => id === uniId)
         this.data.sensorlinkSelectList.splice(index, 1)
