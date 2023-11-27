@@ -28,12 +28,7 @@ ComponentWithComputed({
     seconds: 3,
   },
 
-  computed: {
-    tipsText(data) {
-      const { seconds } = data
-      return '我知道了' + (seconds ? `（${seconds}s）` : '')
-    },
-  },
+  computed: {},
   lifetimes: {
     async ready() {
       const { proType, sn8, deviceImg, productId, mode } = this.data
@@ -52,20 +47,8 @@ ComponentWithComputed({
       const isAuth = res.success ? res.result[0].authStatus === 1 : false
 
       if (!res.success) {
-        Toast('查询美居授权状态失败')
-        wx.navigateBack()
-        return
-      }
-
-      if (isAuth) {
-        this.toBindDevice()
-        return
-      }
-
-      // 请联系家庭创建者完成美的美居授权。
-      if (!homeStore.isCreator) {
         Dialog.alert({
-          title: '请联系HOMLUX家庭创建者完成美的美居授权，路径：我的-连接其他平台-美的美居。',
+          title: '查询美居授权状态失败，请联系开发',
           showCancelButton: false,
           confirmButtonText: '我知道了',
         }).then(() => {
@@ -74,42 +57,22 @@ ComponentWithComputed({
         return
       }
 
-      this.setData({
-        isAuth,
-      })
-
-      const timeId = setInterval(() => {
-        this.data.seconds--
-
-        this.setData({
-          seconds: this.data.seconds,
-        })
-
-        if (this.data.seconds <= 0) {
-          clearInterval(timeId)
-        }
-      }, 1000)
-    },
-  },
-  methods: {
-    toAgree(e: { detail: boolean }) {
-      console.log('toAgree', e)
-
-      if (this.data.seconds > 0) {
+      if (isAuth) {
+        this.toBindDevice()
         return
       }
 
-      this.setData({
-        isAgree: e.detail,
-      })
+      this.toBindMeijuHome()
     },
+  },
+  methods: {
     /**
-     * 确认绑定美居账号
+     * 跳转绑定美居账号
      */
     toBindMeijuHome() {
       storage.set('meiju_auth_entry', 'distribution-meiju')
       wx.redirectTo({
-        url: '/package-auth/pages/meiju/index',
+        url: '/package-auth/pages/confirm-auth/index',
       })
     },
 
@@ -160,36 +123,27 @@ ComponentWithComputed({
         linkType: getLinkType(mode),
         guideInfo: guideInfoList,
       }
-      const modeArr = addDeviceSDK.supportAddDeviceMode
 
-      if (modeArr.indexOf(mode) >= 0) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      app.addDeviceInfo = Object.assign(app.addDeviceInfo, addDeviceInfo)
+      console.log('addDeviceInfo', app.addDeviceInfo)
+      if (addDeviceSDK.isCanWb01BindBLeAfterWifi(type, sn8)) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        app.addDeviceInfo = Object.assign(app.addDeviceInfo, addDeviceInfo)
-        console.log('addDeviceInfo', app.addDeviceInfo)
-        if (addDeviceSDK.isCanWb01BindBLeAfterWifi(type, sn8)) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          app.addDeviceInfo.mode = 30
-          wx.redirectTo({
-            url: addGuide,
-          })
-          return
-        }
-        if (mode == 5 || mode == 9 || mode == 10 || mode == 100 || mode == 103) {
-          wx.redirectTo({
-            url: addGuide,
-          })
-        } else if (mode == 0 || mode == 3) {
-          wx.redirectTo({
-            url: inputWifiInfo,
-          })
-        }
-      } else {
-        wx.showModal({
-          content: '该设备暂不支持小程序配网，我们会尽快开放，敬请期待',
-          confirmText: '我知道了',
-          showCancelButton: false,
+        app.addDeviceInfo.mode = 30
+        wx.redirectTo({
+          url: addGuide,
+        })
+        return
+      }
+      if (mode == 5 || mode == 9 || mode == 10 || mode == 100 || mode == 103) {
+        wx.redirectTo({
+          url: addGuide,
+        })
+      } else if (mode == 0 || mode == 3) {
+        wx.redirectTo({
+          url: inputWifiInfo,
         })
       }
     },

@@ -437,6 +437,7 @@ ComponentWithComputed({
 
         // 若为其余蓝牙子设备，则监听云端推送，判断哪些子设备绑定成功
         emitter.on('bind_device', (data) => {
+          Logger.log(`绑定推送：bind_device`, data)
           const bleDevice = bleDevicesStore.bleDeviceList.find(
             (item) => item.isChecked && item.zigbeeMac === data.deviceId,
           )
