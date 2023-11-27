@@ -1,4 +1,4 @@
-import { getEnv } from '../../../../../../config'
+import { getEnv } from '../../../../../../config/index'
 import { dec2hex } from 'm-utilsdk/index'
 import { constantFun } from './constantFun'
 

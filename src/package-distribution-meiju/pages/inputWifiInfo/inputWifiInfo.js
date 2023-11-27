@@ -764,14 +764,14 @@ Page({
     if (mode == 0 && fm === 'autoFound') {
       //自发现ap
       if (this.isCanDrivingLinkDeviceAp(ssid)) {
-        wx.navigateTo({
+        wx.redirectTo({
           url: paths.linkAp, //手动连接ap页
           complete() {
             self.data.clickNetFLag = false
           },
         })
       } else {
-        wx.navigateTo({
+        wx.redirectTo({
           url: paths.linkAp, //手动连接ap页
           complete() {
             self.data.clickNetFLag = false
@@ -796,7 +796,7 @@ Page({
         let page = getFullPageUrl()
         if (result && page.includes('addDevice/pages/inputWifiInfo/inputWifiInfo')) {
           pass = true
-          wx.navigateTo({
+          wx.redirectTo({
             url: paths.linkAp,
             complete() {
               self.data.clickNetFLag = false
@@ -829,7 +829,7 @@ Page({
     if (mode == 20 || mode == 21) {
       //做了直连
       app.addDeviceInfo.mode = 21 //去配网
-      wx.navigateTo({
+      wx.redirectTo({
         url: paths.linkDevice,
         complete() {
           self.data.clickNetFLag = false
@@ -840,7 +840,7 @@ Page({
     }
     if (mode == 31) {
       //masmart做了直连 去配网
-      wx.navigateTo({
+      wx.redirectTo({
         url: paths.linkDevice,
         complete() {
           self.data.clickNetFLag = false
@@ -849,7 +849,7 @@ Page({
       return
     }
     if ((mode == 5 && fm === 'autoFound' && blueVersion != 1) || (mode == 3 && fm === 'bluePugin')) {
-      wx.navigateTo({
+      wx.redirectTo({
         url: paths.linkDevice,
         complete() {
           self.data.clickNetFLag = false
@@ -860,7 +860,7 @@ Page({
     if (mode == 3) {
       if (fm !== 'autoFound' && !this.ifFindMatchedBlueDevice) {
         // 非自发现未匹配到设备蓝牙，跳转配网指引页
-        wx.navigateTo({
+        wx.redirectTo({
           url: paths.addGuide,
           complete() {
             self.data.clickNetFLag = false
@@ -870,7 +870,7 @@ Page({
       }
       if (isCheck) {
         // 设备已确权，跳转联网进度页
-        wx.navigateTo({
+        wx.redirectTo({
           url: paths.linkDevice,
           complete() {
             self.data.clickNetFLag = false
@@ -880,7 +880,7 @@ Page({
       }
       if (blueVersion == 1) {
         // 一代蓝牙，跳转配网指引页
-        wx.navigateTo({
+        wx.redirectTo({
           url: paths.addGuide,
           complete() {
             self.data.clickNetFLag = false
@@ -890,7 +890,7 @@ Page({
       }
       if (this.ifNearbyChecked) {
         // 靠近确权成功，跳转联网进度页
-        wx.navigateTo({
+        wx.redirectTo({
           url: paths.linkDevice,
           complete() {
             self.data.clickNetFLag = false
@@ -900,7 +900,7 @@ Page({
       } else {
         // 靠近确权失败，跳转靠近确权
         app.addDeviceInfo.ifNearby = true
-        wx.navigateTo({
+        wx.redirectTo({
           url: paths.addGuide,
           complete() {
             self.data.clickNetFLag = false
@@ -910,7 +910,7 @@ Page({
       }
     }
 
-    wx.navigateTo({
+    wx.redirectTo({
       url: paths.addGuide,
       complete() {
         self.data.clickNetFLag = false
