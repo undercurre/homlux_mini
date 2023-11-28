@@ -9,7 +9,6 @@ import {
   asiiCode2Str,
   cloudEncrypt,
   hexCharCodeToStr,
-  stringToHex,
 } from 'm-utilsdk/index'
 import { api } from '../../../common/js/api'
 import { Logger } from '../../../../utils/index'
@@ -272,6 +271,8 @@ function construOrder(params) {
     deviceInfo +
     keep
   header = header.toLocaleLowerCase()
+  console.debug('signStr', signStr)
+  console.debug('signHex', signHex)
   let EncKey = md5(signStr)
   let enCodeBody = encode(params.body, EncKey, 'hex', 'hex')
   //签名
