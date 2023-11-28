@@ -59,7 +59,6 @@ App<IAppOption>({
     reaction(
       () => homeStore.currentHomeDetail.houseId,
       async () => {
-        console.debug('监听houseId变化', homeStore.currentHomeDetail.houseId)
         closeWebSocket()
         startWebsocketService()
 
@@ -102,8 +101,8 @@ App<IAppOption>({
     // 首次进入有onLaunch不必加载
     // homOS本地控制要求场景数据保持尽可能实时，需要小程序回到前台刷新场景和设备列表数据
     if (!firstOnShow) {
-      deviceStore.updateAllRoomDeviceList()
-      homeStore.updateHomeInfo()
+      deviceStore.updateAllRoomDeviceList(homeStore.currentHomeId, { isDefaultErrorTips: false })
+      homeStore.updateHomeInfo({ isDefaultErrorTips: false })
 
       sceneStore.updateAllRoomSceneList(homeStore.currentHomeId, { isDefaultErrorTips: false })
     }

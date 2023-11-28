@@ -11,6 +11,22 @@ type mzaioResponseRowData<T extends AnyResType = AnyResType> = {
   result: T
 }
 
+export interface IApiRequestOption {
+  /**
+   * 可以传入是否展示loading，自定义成功或者失败回调
+   */
+  loading?: boolean
+  /**
+   * 是否打印请求和响应
+   */
+  log?: boolean
+
+  /**
+   * 是否使用默认错误提示，默认true
+   */
+  isDefaultErrorTips?: boolean
+}
+
 type mzaioRequest = <T extends AnyResType>(options: BaseRequestOptions<T>) => Promise<mzaioResponseRowData<T>>
 
 // 封装好http method的请求实例
@@ -93,7 +109,7 @@ const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: Base
 
       return {
         code: -1,
-        msg: '当前无法连接网络,请检查网络设置',
+        msg: error.errMsg,
         success: false,
       } as unknown as T
     },

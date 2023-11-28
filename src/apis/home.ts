@@ -1,13 +1,14 @@
-import { mzaioRequest } from '../utils/index'
+import { IApiRequestOption, mzaioRequest } from '../utils/index'
 import { userBinding } from '../store/index'
 
 /**
  * 查询家庭列表
  */
-export async function getHomeList(options?: { loading?: boolean }) {
+export async function getHomeList(options?: IApiRequestOption) {
   return await mzaioRequest.post<Home.IHomeItem[]>({
     log: true,
     loading: options?.loading ?? false,
+    isDefaultErrorTips: options?.isDefaultErrorTips ?? true,
     url: '/v1/mzgd/user/house/queryHouseList',
   })
 }
@@ -15,7 +16,7 @@ export async function getHomeList(options?: { loading?: boolean }) {
 /**
  * 查询美智用户家庭信息
  */
-export async function queryUserHouseInfo({ houseId = '', defaultHouseFlag = true }, options?: { loading?: boolean }) {
+export async function queryUserHouseInfo({ houseId = '', defaultHouseFlag = true }, options?: IApiRequestOption) {
   return await mzaioRequest.post<Home.IHomeDetail>({
     isDefaultErrorTips: false,
     log: true,

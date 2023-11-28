@@ -3,7 +3,7 @@ import { queryRoomList } from '../apis/index'
 import { PRO_TYPE } from '../config/index'
 import { deviceStore } from './device'
 import { homeStore } from './home'
-import { deviceCount } from '../utils/index'
+import { deviceCount, IApiRequestOption } from '../utils/index'
 
 export const roomStore = observable({
   /**
@@ -58,7 +58,7 @@ export const roomStore = observable({
     })
   },
 
-  async updateRoomList(options?: { loading: boolean }) {
+  async updateRoomList(options?: IApiRequestOption) {
     const res = await queryRoomList(homeStore.currentHomeId, options)
     if (res.success) {
       res.result.roomInfoList.forEach((room) => {

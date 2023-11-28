@@ -14,7 +14,7 @@ import {
   queryLocalKey,
 } from '../apis/index'
 import { PRO_TYPE } from '../config/index'
-import { asyncStorage, storage, Logger } from '../utils/index'
+import { asyncStorage, storage, Logger, IApiRequestOption } from '../utils/index'
 import { deviceStore } from './device'
 import { othersStore } from './others'
 import { roomStore } from './room'
@@ -87,7 +87,7 @@ export const homeStore = observable({
   /**
    * 更新家庭列表同时更新当前信息
    */
-  async updateHomeInfo(options?: { loading: boolean }) {
+  async updateHomeInfo(options?: IApiRequestOption) {
     const res = await this.updateHomeList(options)
 
     if (res.success) {
@@ -101,7 +101,7 @@ export const homeStore = observable({
   /**
    * 更新家庭列表数据
    */
-  async updateHomeList(options?: { loading: boolean }) {
+  async updateHomeList(options?: IApiRequestOption) {
     const res = await getHomeList(options)
 
     if (res.success) {
@@ -124,7 +124,7 @@ export const homeStore = observable({
   /**
    * 更新当前家庭详细信息
    */
-  async updateCurrentHomeDetail(options?: { loading: boolean }) {
+  async updateCurrentHomeDetail(options?: IApiRequestOption) {
     const res = await queryUserHouseInfo(
       {
         houseId: this.currentHomeId,

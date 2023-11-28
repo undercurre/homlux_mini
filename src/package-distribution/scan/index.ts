@@ -578,7 +578,7 @@ ComponentWithComputed({
 
         Logger.log('checkDevice', res)
         if (!res.success) {
-          Toast(res.code === -1 ? res.msg : '二维码校验失败，请检查二维码是否正确')
+          Toast(res.code === -1 ? '当前无法连接网络，请检查网络设置' : '二维码校验失败，请检查二维码是否正确')
 
           return
         }

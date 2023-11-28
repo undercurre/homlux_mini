@@ -3,6 +3,7 @@ import { querySceneListByHouseId } from '../apis/scene'
 import { PRO_TYPE } from '../config/device'
 import { homeStore } from './home'
 import { roomStore } from './room'
+import { IApiRequestOption } from '../utils'
 
 export const sceneStore = observable({
   /**
@@ -67,7 +68,7 @@ export const sceneStore = observable({
     return map
   },
 
-  async updateAllRoomSceneList(houseId: string = homeStore.currentHomeId, options?: { isDefaultErrorTips: boolean }) {
+  async updateAllRoomSceneList(houseId: string = homeStore.currentHomeId, options?: IApiRequestOption) {
     const res = await querySceneListByHouseId(houseId, options)
     if (res.success) {
       const list = res.result

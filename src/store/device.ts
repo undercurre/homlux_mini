@@ -5,6 +5,7 @@ import { homeStore } from './home'
 import { roomStore } from './room'
 import { sceneStore } from './scene'
 import homOs from 'js-homos'
+import { IApiRequestOption } from '../utils'
 
 export const deviceStore = observable({
   /**
@@ -178,7 +179,7 @@ export const deviceStore = observable({
     return map
   },
 
-  async updateAllRoomDeviceList(houseId: string = homeStore.currentHomeId, options?: { loading: boolean }) {
+  async updateAllRoomDeviceList(houseId: string = homeStore.currentHomeId, options?: IApiRequestOption) {
     const res = await queryAllDevice(houseId, options)
     if (res.success) {
       const list = {} as Record<string, Device.DeviceItem[]>
