@@ -1,4 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
+import { isNullOrUnDef } from '../../utils/index'
 
 ComponentWithComputed({
   externalClasses: ['custom-class'],
@@ -58,11 +59,18 @@ ComponentWithComputed({
   lifetimes: {
     attached() {
       // 将 dataset 数据传到组件变量中
-      this.setData({
-        isBtnInset: this.dataset.isBtnInset as unknown as boolean,
-        showToast: this.dataset.showToast as unknown as boolean,
+      const diffData = {
         btnTop: this.data.barHeight / 2 - this.data.btnHeight / 2 + 'rpx',
-      })
+      } as IAnyObject
+
+      if (!isNullOrUnDef(this.dataset.isBtnInset)) {
+        diffData.isBtnInset = this.dataset.isBtnInset
+      }
+      if (!isNullOrUnDef(this.dataset.showToast)) {
+        diffData.showToast = this.dataset.showToast
+      }
+
+      this.setData(diffData)
     },
   },
   /**
