@@ -85,7 +85,8 @@ ComponentWithComputed({
   data: {
     sceneImgDir,
     defaultImgDir,
-    _firstShow: true,
+    _firstShow: true, // 是否首次进入
+    _from: '', // 页面进入来源
     _updating: false, // 列表更新中标志
     // 更新等待队列
     _diffWaitlist: [] as DeviceCard[],
@@ -269,16 +270,18 @@ ComponentWithComputed({
     /**
      * 生命周期函数--监听页面加载
      */
-    async onLoad() {
-      Logger.log('room-onLoad')
+    async onLoad(query: { from?: string }) {
+      Logger.log('room-onLoad', query)
+      this.data._from = query.from ?? ''
       // this.setUpdatePerformanceListener({withDataPaths: true}, (res) => {
       //   console.debug('setUpdatePerformanceListener', res, res.pendingStartTimestamp - res.updateStartTimestamp, res.updateEndTimestamp - res.updateStartTimestamp, dayjs().format('YYYY-MM-DD HH:mm:ss'))
       // })
     },
 
     async onShow() {
+      Logger.log('room-onShow, _firstShow', this.data._firstShow)
       // 首次进入
-      if (this.data._firstShow) {
+      if (this.data._firstShow && this.data._from !== 'addDevice') {
         this.data._firstShow = false
         sceneStore.updateAllRoomSceneList()
         this.updateQueue({ isRefresh: true })
@@ -292,7 +295,6 @@ ComponentWithComputed({
         this.reloadData()
       }
 
-      Logger.log('room-onShow')
       emitter.on('deviceListRetrieve', () => {
         console.log('deviceListRetrieve，isConnect', isConnect())
         this.reloadDataThrottle()
