@@ -625,6 +625,7 @@ export async function checkDevice(
   return await mzaioRequest.post<Device.MzgdProTypeDTO>({
     log: true,
     loading: options?.loading ?? false,
+    isDefaultErrorTips: false,
     url: '/v1/device/checkDevice',
     data,
   })

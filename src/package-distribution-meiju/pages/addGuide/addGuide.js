@@ -687,8 +687,6 @@ Page({
   async queryGuideInfo(mode, type, sn8) {
     const res = await queryGuideInfo({ houseId: homeStore.currentHomeId, sn8, type, mode: mode.toString() })
 
-    Logger.console('queryGuideInfo', res)
-
     if (!res.success) {
       this.noGuide()
       return

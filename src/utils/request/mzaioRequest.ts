@@ -93,7 +93,7 @@ const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: Base
 
       return {
         code: -1,
-        msg: error.errMsg,
+        msg: '当前无法连接网络,请检查网络设置',
         success: false,
       } as unknown as T
     },
