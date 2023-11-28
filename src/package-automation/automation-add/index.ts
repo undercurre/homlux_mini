@@ -321,7 +321,9 @@ ComponentWithComputed({
                   ...device.mzgdPropertyDTOList[modelName],
                   ...action.controlAction[0],
                 }
-
+                if (device.proType === PRO_TYPE.bathHeat) {
+                  property.mode = action.controlAction[0].mode_enable ?? action.controlAction[0].mode_close
+                }
                 const desc = toPropertyDesc(device.proType, property)
                 tempSceneDeviceActionsFlatten.push({
                   uniId: device.uniId,
@@ -903,7 +905,7 @@ ComponentWithComputed({
     handleConditionDelete(e: WechatMiniprogram.TouchEvent) {
       this.setData({
         sceneDeviceActionsFlatten: [],
-        sceneDevicelinkSelectList: []
+        sceneDevicelinkSelectList: [],
       })
       const uniId = e.currentTarget.dataset.info.uniId
       console.log('删除条件', uniId)
