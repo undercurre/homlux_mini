@@ -57,7 +57,7 @@ function propObserver(newValue, oldValue, ownerInstance) {
     if (dataset.showToast) {
       sliderToast[key] = ownerInstance.selectComponent('.slider-toast')
     }
-    console.log('propObserver', newValue, oldValue, key, 'min:', min[key])
+    // console.log('propObserver', newValue, oldValue, key, 'min:', min[key])
 
     if (!sliderInfo[key]) {
       return
@@ -66,7 +66,7 @@ function propObserver(newValue, oldValue, ownerInstance) {
     changeBarStyle(width)
 
     // }
-  }, 100)
+  }, 500)
 }
 
 function onTouchstart(event, ownerInstance) {
