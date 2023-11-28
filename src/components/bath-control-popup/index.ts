@@ -270,7 +270,7 @@ ComponentWithComputed({
           }
           if (useSettingValue) {
             this.setData({
-              'prop.mode': arr.join(','),
+              'prop.mode': arr.join(',') || 'close_all',
             })
           }
           break
@@ -291,7 +291,7 @@ ComponentWithComputed({
           // console.log('toggleProp newMode', newMode)
           if (useSettingValue) {
             this.setData({
-              'prop.mode': newMode,
+              'prop.mode': newMode || 'close_all',
             })
           }
 

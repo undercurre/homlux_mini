@@ -287,6 +287,9 @@ ComponentWithComputed({
                 ...device.mzgdPropertyDTOList[modelName],
                 ...action.controlAction[0],
               }
+              if (device.proType === PRO_TYPE.bathHeat) {
+                property.mode = action.controlAction[0].mode_enable ?? action.controlAction[0].mode_close
+              }
               const desc = toPropertyDesc(device.proType, property)
               tempSceneDevicelinkSelectList.push(device.uniId)
               tempSceneDeviceActionsFlatten.push({

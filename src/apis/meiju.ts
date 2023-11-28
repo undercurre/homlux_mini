@@ -47,12 +47,12 @@ export async function bindMeiju({ houseId, mideaHouseId }: { houseId: string; mi
 /**
  * 获取美居设备列表（已授权）
  */
-export async function getMeijuDeviceList() {
+export async function getMeijuDeviceList(houseId: string) {
   return await mzaioRequest.post<Meiju.MeijuDevice[]>({
     log: true,
     loading: false,
     url: '/v1/thirdparty/midea/device/list',
-    data: {},
+    data: { houseId },
   })
 }
 
