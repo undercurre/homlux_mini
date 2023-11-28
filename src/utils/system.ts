@@ -197,3 +197,11 @@ export function isDevMode() {
   const { platform } = wx.getSystemInfoSync()
   return platform === 'devtools'
 }
+
+export function shouNoNetTips() {
+  wx.showToast({
+    title: '当前无法连接网络\n请检查网络设置',
+    icon: 'none',
+    duration: 2000,
+  })
+}

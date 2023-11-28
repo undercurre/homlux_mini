@@ -1,4 +1,4 @@
-import { hideLoading, showLoading, Logger } from '../index'
+import { hideLoading, showLoading, Logger, shouNoNetTips } from '../index'
 
 export type BaseRequestOptions<T extends AnyResType> = WechatMiniprogram.RequestOption<T> & {
   /**
@@ -95,11 +95,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       }
 
       if (requestOption.isDefaultErrorTips) {
-        wx.showToast({
-          title: '当前无法连接网络\n请检查网络设置',
-          icon: 'none',
-          duration: 2000,
-        })
+        shouNoNetTips()
       }
 
       const data = failHandler ? failHandler(err) : (err as unknown as T)

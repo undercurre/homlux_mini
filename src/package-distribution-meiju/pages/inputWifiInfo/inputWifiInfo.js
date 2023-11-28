@@ -3,7 +3,7 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
 import { defaultImgDir, imgList } from '../../../config/img'
-import { delay, isAndroid, Logger } from '../../../utils/index'
+import { delay, isAndroid, Logger, shouNoNetTips } from '../../../utils/index'
 import app from '../../common/app'
 
 import computedBehavior from '../../utils/miniprogram-computed.js'
@@ -714,12 +714,19 @@ Page({
     this.setData({
       isLoadingNext: true,
     })
-    let locationRes = await checkPermission.loaction()
+    let locationRes = await checkPermission.loaction().catch((err) => {
+      return false
+    })
     console.log('[loactionRes]', locationRes)
 
     this.setData({
       isLoadingNext: false,
     })
+
+    if (!locationRes) {
+      shouNoNetTips()
+      return
+    }
     if (!locationRes.isCanLocation) {
       const obj = {
         title: '请开启位置权限',
