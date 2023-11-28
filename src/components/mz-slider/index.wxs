@@ -150,6 +150,7 @@ function changeBarStyle(_width) {
   var maxWidth = isBtnInset[key] ? sliderInfo[key].width - buttonInfo[key].width / 2 : sliderInfo[key].width
   var widthInRange = calcDragDis(_width, minWidth, maxWidth)
   var sliderBarWidth = isBtnInset[key] ? widthInRange + buttonInfo[key].width / 2 : widthInRange
+  console.log('[sliderBarWidth]', sliderBarWidth)
 
   // 已激活的滑条宽度处理
   sliderBar[key].setStyle({
