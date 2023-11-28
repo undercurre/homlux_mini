@@ -36,6 +36,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    isLoadingNext: false, // 下一步按钮的loading标志
     defaultImgDir,
     currentHomeGroupId: '',
     isInitWifiSuccess: false,
@@ -336,9 +337,6 @@ Page({
         this.setData({
           clickFLag: false,
         })
-        setTimeout(() => {
-          this.data.actionScanClickFlag = false
-        }, 1500)
         return
       }
       //安卓且获取到wifi列表
@@ -702,35 +700,26 @@ Page({
   },
   //下一步
   async configNetWork() {
+    Logger.log('configNetWork')
     let self = this
-    if (this.data.clickNetFLag) {
-      return
-    }
-    this.data.clickNetFLag = true
     console.log('bindWifiTest:', this.data.bindWifiTest)
-    let { PswContent, SSIDContent } = this.data.bindWifiTest
-    if (!SSIDContent) {
-      Toast('请输入WiFi名称')
-      self.data.clickNetFLag = false
-      return
-    }
-    if (!PswContent) {
-      let checkInputPswRes = await this.checkInputPsw()
-      if (checkInputPswRes.action === 'cancel') {
-        //输入密码
-        self.data.clickNetFLag = false
-        return
-      }
-    }
+    let { PswContent } = this.data.bindWifiTest
     if (PswContent && PswContent.length < 8) {
       Toast('密码长度不足8位')
-      self.data.clickNetFLag = false
       return
     }
 
     this.locationAuthorize()
+
+    this.setData({
+      isLoadingNext: true,
+    })
     let locationRes = await checkPermission.loaction()
     console.log('[loactionRes]', locationRes)
+
+    this.setData({
+      isLoadingNext: false,
+    })
     if (!locationRes.isCanLocation) {
       const obj = {
         title: '请开启位置权限',
@@ -743,10 +732,7 @@ Page({
       }
       //调用通用弹框组件
       commonDialog.showCommonDialog(obj)
-      self.data.clickNetFLag = false
-      setTimeout(() => {
-        this.data.actionScanClickFlag = false
-      }, 1500)
+      this.data.clickNetFLag = false
       return
     }
     setWifiStorage(this.data.bindWifiTest)
