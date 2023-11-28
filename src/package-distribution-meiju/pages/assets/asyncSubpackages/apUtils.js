@@ -271,8 +271,6 @@ function construOrder(params) {
     deviceInfo +
     keep
   header = header.toLocaleLowerCase()
-  console.debug('signStr', signStr)
-  console.debug('signHex', signHex)
   let EncKey = md5(signStr)
   let enCodeBody = encode(params.body, EncKey, 'hex', 'hex')
   //签名

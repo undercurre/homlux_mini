@@ -297,7 +297,6 @@ Page({
 
   //切换wifi
   async inputPageSwitchWifi() {
-    console.debug('inputPageSwitchWifi')
     if (this.data.clickFLag) {
       console.log('进入防重逻辑')
       return

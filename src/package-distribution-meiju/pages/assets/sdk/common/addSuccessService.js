@@ -7,7 +7,6 @@ const addSuccessService = {
    * @param {*} applianceCode
    */
   async getApplianceAuthType(applianceCode) {
-    console.debug('addSuccessService-getApplianceAuthType')
     const res = await queryAuthGetStatus({ houseId: homeStore.currentHomeId, deviceId: applianceCode })
 
     return res
