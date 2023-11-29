@@ -74,7 +74,7 @@ Component({
     moduleType: '',
     addDeviceInfo: {},
     combinedDeviceInfo: [{ sn: '', a0: '' }],
-    time: 8,
+    time: 80,
     curStep: 0,
     currentRoomId: 0,
     isOnbleResp: true,
