@@ -3,10 +3,20 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
 import dayjs from 'dayjs'
-import { deviceBinding, homeBinding } from '../../store/index'
+import { deviceBinding } from '../../store/index'
 import { bleDevicesBinding, bleDevicesStore } from '../store/bleDeviceStore'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { checkWifiSwitch, strUtil, showLoading, hideLoading, delay, Logger, isAndroid } from '../../utils/index'
+import {
+  checkWifiSwitch,
+  strUtil,
+  showLoading,
+  hideLoading,
+  delay,
+  Logger,
+  isAndroid,
+  isConnect,
+  shouNoNetTips,
+} from '../../utils/index'
 import { getGwNetworkInfo, checkDevice, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
 
 ComponentWithComputed({
@@ -68,7 +78,14 @@ ComponentWithComputed({
     async ready() {
       bleDevicesBinding.store.reset()
 
-      await homeBinding.store.updateHomeInfo()
+      Logger.log(
+        'scanPage',
+        'wx.getEnterOptionsSync()',
+        wx.getEnterOptionsSync(),
+        'getCurrentPages()',
+        getCurrentPages(),
+      )
+      // await homeBinding.store.updateHomeInfo()
     },
     detached() {
       bleDevicesStore.stopBLeDiscovery()
@@ -82,6 +99,8 @@ ComponentWithComputed({
       this.setData({
         isShowPage: true,
       })
+
+      this.checkNet()
 
       // 子设备配网页，蓝牙权限及开关已开情况下
       this.data.scanType === 'subdevice' &&
@@ -107,6 +126,16 @@ ComponentWithComputed({
       this.setData({
         scanType: query.type,
       })
+    },
+
+    checkNet() {
+      const isValidNet = isConnect()
+
+      if (!isValidNet) {
+        shouNoNetTips()
+      }
+
+      return isValidNet
     },
 
     /**
@@ -178,7 +207,7 @@ ComponentWithComputed({
      */
     async checkSystemBleSwitch() {
       // 没有打开系统蓝牙开关异常处理
-      if (!bleDevicesStore.available) {
+      if (this.data.scanType === 'subdevice' && !bleDevicesStore.available) {
         Dialog.alert({
           message: '请打开手机蓝牙，用于发现附近的子设备',
           showCancelButton: false,
@@ -567,6 +596,11 @@ ComponentWithComputed({
       let proType = '0x16'
       let productName = '网关'
       const { pid, ssid, addType } = params
+
+      // 保证网络正常才能进入下一步
+      if (!this.checkNet()) {
+        return
+      }
 
       if (addType === 'qrcode') {
         const res = await checkDevice(

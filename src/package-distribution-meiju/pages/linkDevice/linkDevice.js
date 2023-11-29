@@ -48,7 +48,7 @@ let appKey = api.appKey
 const brandStyle = require('../assets/js/brand.js')
 const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
 let wifiMgr = new WifiMgr()
-const queryWifiDelay = 15000
+const queryWifiDelay = 5000
 
 Component({
   behaviors: [bleNeg, addDeviceMixin, netWordMixin, computedBehavior],

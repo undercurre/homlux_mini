@@ -202,6 +202,6 @@ export function shouNoNetTips() {
   wx.showToast({
     title: '当前无法连接网络\n请检查网络设置',
     icon: 'none',
-    duration: 2000,
+    duration: 2500,
   })
 }
