@@ -1735,7 +1735,7 @@
 
 #meiju .tip-list-fail {
   width: 88%;
-  margin: 24rpx auto 24rpx;
+  margin: 20rpx auto 0;
   text-align: left;
   vertical-align: top;
 }
