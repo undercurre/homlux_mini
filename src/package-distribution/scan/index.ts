@@ -8,16 +8,16 @@ import { bleDevicesBinding, bleDevicesStore } from '../store/bleDeviceStore'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import {
   checkWifiSwitch,
-  strUtil,
-  showLoading,
-  hideLoading,
   delay,
-  Logger,
+  hideLoading,
   isAndroid,
   isConnect,
+  Logger,
   shouNoNetTips,
+  showLoading,
+  strUtil,
 } from '../../utils/index'
-import { getGwNetworkInfo, checkDevice, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
+import { checkDevice, getGwNetworkInfo, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -40,9 +40,10 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
+    _isFromWxScan: false, // 是否通过微信扫码直接进入
     _listenLocationTimeId: 0, // 监听系统位置信息是否打开的计时器， 0为不存在监听
-    needCheckCamera: true, // 是否需要重新检查摄像头权限
-    isBlePermit: false,
+    _needCheckCamera: true, // 是否需要重新检查摄像头权限
+    _isBlePermit: false, // 微信是否已经授权蓝牙
     isShowPage: false,
     isShowGatewayList: false, // 是否展示选择网关列表弹窗
     isShowNoGatewayTips: false, // 是否展示添加网关提示弹窗
@@ -64,7 +65,7 @@ ComponentWithComputed({
       return allRoomDeviceList.filter((item) => item.deviceType === 1)
     },
     isShowTips(data) {
-      return (data.scanType === 'subdevice' && data.isBlePermit) || data.scanType === 'gateway'
+      return (data.scanType === 'subdevice' && data._isBlePermit) || data.scanType === 'gateway'
     },
     tipsText(data: IAnyObject) {
       if (data.scanType === 'gateway') {
@@ -107,10 +108,10 @@ ComponentWithComputed({
         }
 
         this.setData({
+          _isFromWxScan: true,
           scanType: modeMap[pageParams.mode as '01' | '02' | '10'],
         })
       }
-      // await homeBinding.store.updateHomeInfo() // 删除多余接口请求，待验证
     },
     detached() {
       bleDevicesStore.stopBLeDiscovery()
@@ -129,7 +130,7 @@ ComponentWithComputed({
 
       // 子设备配网页，蓝牙权限及开关已开情况下
       this.data.scanType === 'subdevice' &&
-        this.data.isBlePermit &&
+        this.data._isBlePermit &&
         bleDevicesStore.available &&
         bleDevicesStore.startBleDiscovery()
     },
@@ -229,33 +230,6 @@ ComponentWithComputed({
       return bleDevicesStore.available
     },
 
-    /**
-     * 检查微信蓝牙权限
-     */
-    async checkBlePermission() {
-      showLoading()
-      // 没有打开微信蓝牙授权异常处理
-
-      this.setData({
-        needCheckCamera: true,
-      })
-
-      Dialog.alert({
-        message: '请授权使用蓝牙，否则无法正常扫码配网',
-        showCancelButton: true,
-        cancelButtonText: '返回',
-        confirmButtonText: '去设置',
-        confirmButtonOpenType: 'openSetting',
-      }).catch(() => {
-        // on cancel
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        this.goBack() // 拒绝授权摄像头，则退出当前页面
-      })
-
-      hideLoading()
-    },
-
     async initBle() {
       // 若已经进入搜索蓝牙状态，无需重复初始化
       if (bleDevicesStore.discovering) {
@@ -271,25 +245,35 @@ ComponentWithComputed({
 
       Logger.log('scan-openBleRes', openBleRes)
 
+      // 优先判断微信授权设置
       // 判断是否授权蓝牙 安卓、IOS返回错误格式不一致
       if (openBleRes.errno === 103 || openBleRes.errMsg.includes('auth deny')) {
-        this.checkBlePermission()
+        // 没有打开微信蓝牙授权异常处理
+        this.setData({
+          _needCheckCamera: true,
+        })
 
-        // 优先判断微信授权设置
+        Dialog.alert({
+          message: '请授权使用蓝牙，否则无法正常扫码配网',
+          showCancelButton: true,
+          cancelButtonText: '返回',
+          confirmButtonText: '去设置',
+          confirmButtonOpenType: 'openSetting',
+        }).catch(() => {
+          this.goBack() // 拒绝授权摄像头，则退出当前页面
+        })
         return
-      }
+      } else if (openBleRes.errCode === 10001) {
+        // 系统没有打开蓝牙
+        Dialog.alert({
+          message: '请打开手机蓝牙，用于发现附近的子设备',
+          showCancelButton: false,
+          confirmButtonText: '我知道了',
+        })
 
-      this.setData({
-        isBlePermit: true,
-      })
-
-      // 系统是否已打开蓝牙
-      const res = await this.checkSystemBleSwitch()
-
-      if (!res) {
         const listen = (res: WechatMiniprogram.OnBluetoothAdapterStateChangeCallbackResult) => {
           if (res.available) {
-            bleDevicesStore.startBleDiscovery()
+            this.data.scanType === 'subdevice' && bleDevicesStore.startBleDiscovery()
             this.checkWxScanEnter()
 
             bleDevicesStore.offBluetoothAdapterStateChange()
@@ -297,9 +281,13 @@ ComponentWithComputed({
         }
         bleDevicesStore.onBluetoothAdapterStateChange(listen)
       } else {
-        bleDevicesStore.startBleDiscovery()
+        this.data.scanType === 'subdevice' && bleDevicesStore.startBleDiscovery()
         this.checkWxScanEnter()
       }
+
+      this.setData({
+        _isBlePermit: true,
+      })
     },
 
     onCloseGwList() {
@@ -338,7 +326,7 @@ ComponentWithComputed({
       if (!settingRes.authSetting['scope.camera']) {
         // 跳转过权限设置页均需要重置needCheckCamera状态，回来后需要重新检查摄像头权限
         this.setData({
-          needCheckCamera: true,
+          _needCheckCamera: true,
         })
 
         Dialog.alert({
@@ -355,7 +343,7 @@ ComponentWithComputed({
         })
       } else {
         this.setData({
-          needCheckCamera: false,
+          _needCheckCamera: false,
         })
       }
 
@@ -397,7 +385,7 @@ ComponentWithComputed({
 
     async initCameraDone() {
       Logger.log('initCameraDone', this.data.scanType)
-      if (this.data.needCheckCamera) {
+      if (this.data._needCheckCamera) {
         const flag = await this.checkCameraPerssion()
 
         if (!flag) {
@@ -653,14 +641,23 @@ ComponentWithComputed({
         add_type: 'qrcode',
       })
 
-      wx.navigateTo({
-        url: strUtil.getUrlWithParams('/package-distribution/link-gateway/index', {
-          apSSID: ssid || 'midea_16_',
-          deviceName: productName,
-          type: 'query',
-          addType,
-        }),
+      const jumpUrl = strUtil.getUrlWithParams('/package-distribution/link-gateway/index', {
+        apSSID: ssid || 'midea_16_',
+        deviceName: productName,
+        type: 'query',
+        addType,
       })
+
+      // 从微信扫码进入的，跳转不保存当前页面历史记录，否则会无法正常返回
+      if (this.data._isFromWxScan) {
+        wx.redirectTo({
+          url: jumpUrl,
+        })
+      } else {
+        wx.navigateTo({
+          url: jumpUrl,
+        })
+      }
     },
 
     async bindSubDevice(params: IAnyObject) {
@@ -798,16 +795,25 @@ ComponentWithComputed({
         }
       }
 
-      wx.navigateTo({
-        url: strUtil.getUrlWithParams('/package-distribution/add-subdevice/index', {
-          mac: this.data.deviceInfo.mac,
-          gatewayId: deviceId,
-          gatewaySn: sn,
-          channel: networkInfo.channel || 0,
-          panId: networkInfo.panId || 0,
-          extPanId: networkInfo.extPanId || '',
-        }),
+      const jumpUrl = strUtil.getUrlWithParams('/package-distribution/add-subdevice/index', {
+        mac: this.data.deviceInfo.mac,
+        gatewayId: deviceId,
+        gatewaySn: sn,
+        channel: networkInfo.channel || 0,
+        panId: networkInfo.panId || 0,
+        extPanId: networkInfo.extPanId || '',
       })
+
+      // 从微信扫码进入的，跳转不保存当前页面历史记录，否则会无法正常返回
+      if (this.data._isFromWxScan) {
+        wx.redirectTo({
+          url: jumpUrl,
+        })
+      } else {
+        wx.navigateTo({
+          url: jumpUrl,
+        })
+      }
     },
   },
 })
