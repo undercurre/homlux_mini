@@ -166,14 +166,6 @@ ComponentWithComputed({
     // 检查是否通过微信扫码直接进入该界面时判断场景值
     checkWxScanEnter() {
       const params = wx.getEnterOptionsSync()
-      Logger.log(
-        'scanPage',
-        params,
-        'wx.getEnterOptionsSync()',
-        wx.getEnterOptionsSync(),
-        'getCurrentPages()',
-        getCurrentPages(),
-      )
 
       // 判断通过微信扫码直接进入该界面时判断场景值
       if (getCurrentPages().length === 1 && params.scene === 1011) {

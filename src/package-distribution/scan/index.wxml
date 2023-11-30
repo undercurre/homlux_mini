@@ -32,7 +32,6 @@
           src="/package-distribution/assets/scan/scan-area.png"
         ></image>
         <image
-          wx:if="{{discovering}}"
           src="/package-distribution/assets/scan/scan-line.png"
           class="scan-line {{ isScan && 'pause'}}"
         ></image>
@@ -46,7 +45,7 @@
         class="inline-block flex flex-row items-center bg-hex-5A5A5A rounded-32rpx leading-74rpx px-28rpx w-min-380"
       >
         <image
-          wx:if="{{discovering}}"
+          wx:if="{{scanType === 'subdevice' && discovering}}"
           class="w-28 h-28 rotate"
           src="/package-distribution/assets/scan/scaning.png"
         ></image>
@@ -62,7 +61,7 @@
           type="primary"
           size="small"
           bind:click="addNearSubdevice"
-          wx:if="{{discovering && bleDeviceList.length}}"
+          wx:if="{{scanType === 'subdevice' && discovering && bleDeviceList.length}}"
           custom-style="height: 52rpx;margin-top: -8rpx;"
           >立即添加</van-button
         >
