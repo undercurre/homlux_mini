@@ -12,31 +12,35 @@ type BtnItem = {
 }
 
 // 互斥的属性列表
-const MUTEX_PROP = ['blowing', 'heating', 'close_all']
-
-// 不需要替换的属性
-const SHOULD_NOT_REPLACE = ['heating']
+const MUTEX_PROP = ['blowing', 'heating']
 /**
  * @name 属性切换
  * @param mode 原有的属性字符串，用逗号分隔
  * @param key 要比较的属性
+ * @param toRemove key存在时，是否要删除
  */
-const toggleProp = (mode: string, key: string): string => {
+const toggleProp = (mode: string, key: string, toRemove = true): string => {
   const arr = mode.split(',')
-  console.log('[toggleProp trigger]', arr, key)
+  // console.log('[toggleProp trigger]', arr, key)
   // key已存在，则移除
   if (arr.includes(key)) {
-    if (!SHOULD_NOT_REPLACE.includes(key)) {
+    if (toRemove) {
       arr.splice(arr.indexOf(key), 1)
     }
+    if (key !== 'close_all' && !arr.length) {
+      arr.push('close_all')
+    }
   }
-  // 如果key是互斥属性，则先移除列表中可能存在的互斥属性
+  // key不存在，即添加，并移除待机
   else {
+    if (arr.includes('close_all')) {
+      arr.splice(arr.indexOf('close_all'), 1)
+    }
     if (MUTEX_PROP.includes(key)) {
       MUTEX_PROP.forEach((item) => {
         const index = arr.indexOf(item)
         if (index !== -1) {
-          arr.splice(arr.indexOf(item), 1)
+          arr.splice(index, 1)
         }
       })
     }
@@ -44,7 +48,7 @@ const toggleProp = (mode: string, key: string): string => {
     arr.push(key)
   }
 
-  console.log('[toggleProp result]', arr)
+  // console.log('[toggleProp result]', arr)
   return arr.join(',')
 }
 
@@ -59,10 +63,28 @@ ComponentWithComputed({
     title: {
       type: String,
     },
-    // 是否使用设置值，即时渲染视图显示
-    useSettingValue: {
+    // 是否场景设置（使用设置值），即时渲染视图显示
+    isSceneSetting: {
       type: Boolean,
       value: false,
+      observer(value) {
+        if (value) {
+          this.setData({
+            // 场景中，待机按钮状态不回弹
+            'btnMap.close_all.rebound': false,
+            // 场景设置增加关灯按钮
+            largeBtnMap: {
+              close_all: {
+                text: '关灯',
+                icon: '../../assets/img/function/f00.png',
+                iconActive: '../../assets/img/function/f01.png',
+                rebound: true,
+              },
+              ...this.data.largeBtnMap,
+            },
+          })
+        }
+      },
     },
     show: {
       type: Boolean,
@@ -82,7 +104,7 @@ ComponentWithComputed({
       type: Object,
       value: {},
       observer(value) {
-        if (value) {
+        if (value && this.data._canSyncCloudData) {
           this.setData({
             prop: value as Device.DeviceItem & Device.mzgdPropertyDTO,
           })
@@ -95,9 +117,10 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    // 组件私有属性，用于设值显示
-    prop: {} as Device.DeviceItem & Device.mzgdPropertyDTO,
-    largeBtnStyle: 'height: 112rpx; width: 280rpx; border-radius: 32rpx; background-color: #f7f8f9;',
+    _canSyncCloudData: true, // 是否响应云端变更
+    _controlTimer: null as null | number, // 控制后计时器
+    // 用于视图显示
+    prop: {} as IAnyObject,
     // 按钮组对象
     btnMap: {
       close_all: {
@@ -110,25 +133,21 @@ ComponentWithComputed({
         text: '强暖',
         icon: '../../assets/img/function/f10.png',
         iconActive: '../../assets/img/function/f11.png',
-        rebound: true,
       },
       heating_soft: {
         text: '弱暖',
         icon: '../../assets/img/function/f20.png',
         iconActive: '../../assets/img/function/f21.png',
-        rebound: true,
       },
       ventilation: {
         text: '换气',
         icon: '../../assets/img/function/f30.png',
         iconActive: '../../assets/img/function/f31.png',
-        rebound: true,
       },
       blowing: {
         text: '吹风',
         icon: '../../assets/img/function/f40.png',
         iconActive: '../../assets/img/function/f41.png',
-        rebound: true,
       },
     } as Record<string, BtnItem>,
     // 下方大按钮对象
@@ -137,13 +156,11 @@ ComponentWithComputed({
         text: '照明',
         icon: '../../assets/img/function/f50.png',
         iconActive: '../../assets/img/function/f51.png',
-        rebound: true,
       },
       night_light: {
         text: '夜灯',
         icon: '../../assets/img/function/f60.png',
         iconActive: '../../assets/img/function/f61.png',
-        rebound: true,
       },
     } as Record<string, BtnItem>,
   },
@@ -151,7 +168,7 @@ ComponentWithComputed({
   computed: {
     // 按钮组，转为数组格式
     btnList(data) {
-      const { btnMap, prop } = data
+      const { btnMap, prop, isSceneSetting } = data
       const { mode = '' } = prop
       const res = Object.keys(btnMap).map((key: string) => {
         let on = false
@@ -164,10 +181,10 @@ ComponentWithComputed({
             break
           // 全关状态不显示
           case 'close_all':
+            on = isSceneSetting && mode.indexOf(key) > -1
             break
           default:
             on = mode.indexOf(key) > -1
-            break
         }
         return {
           ...btnMap[key],
@@ -190,6 +207,20 @@ ComponentWithComputed({
       })
       return res
     },
+    largeBtnStyle(data) {
+      const { isSceneSetting } = data
+      const width = isSceneSetting ? '170rpx' : '280rpx'
+      return `height: 112rpx; width: ${width}; border-radius: 32rpx; background-color: #f7f8f9;`
+    },
+  },
+
+  lifetimes: {
+    detached() {
+      if (this.data._controlTimer) {
+        clearTimeout(this.data._controlTimer)
+        this.data._controlTimer = null
+      }
+    },
   },
 
   /**
@@ -197,114 +228,102 @@ ComponentWithComputed({
    * 页面视图使用设备状态值，暂时屏蔽所有的即时值设置
    */
   methods: {
-    async handleBtnTap(e: WechatMiniprogram.CustomEvent) {
+    async handleModeTap(e: WechatMiniprogram.CustomEvent) {
       const key = e.currentTarget.dataset.key as string
-      const { prop, useSettingValue } = this.data
-      const { mode = '' } = prop
-      const property = {} as IAnyObject
+      const { prop } = this.data
+      const { mode = '', heating_temperature } = prop
+      const property = {} as IAnyObject // 本次要发送的指令
 
       switch (key) {
-        case 'heating_strong':
-          if (mode.indexOf('heating') > -1 && Number(prop.heating_temperature) >= 43) {
-            property.mode_close = 'heating'
-            if (useSettingValue) {
-              this.setData({
-                'prop.mode': 'close_all',
-              })
-            }
+        case 'heating_strong': {
+          const isStrong = mode.indexOf('heating') > -1 && Number(heating_temperature) >= 43
+          if (isStrong) {
+            property.mode = toggleProp(mode, 'heating')
           } else {
-            property.mode_enable = 'heating'
+            property.mode = toggleProp(mode, 'heating', false)
             property.heating_temperature = '45'
-            if (useSettingValue) {
-              this.setData({
-                'prop.mode': toggleProp(mode, 'heating'),
-                'prop.heating_temperature': '45',
-              })
-            }
           }
           break
-        case 'heating_soft':
-          if (mode.indexOf('heating') > -1 && Number(prop.heating_temperature) <= 42) {
-            property.mode_close = 'heating'
-            if (useSettingValue) {
-              this.setData({
-                'prop.mode': 'close_all',
-              })
-            }
+        }
+        case 'heating_soft': {
+          const isSoft = mode.indexOf('heating') > -1 && Number(heating_temperature) <= 42
+          if (isSoft) {
+            property.mode = toggleProp(mode, 'heating')
           } else {
-            property.mode_enable = 'heating'
+            property.mode = toggleProp(mode, 'heating', false)
             property.heating_temperature = '30'
-            if (useSettingValue) {
-              this.setData({
-                'prop.mode': toggleProp(mode, 'heating'),
-                'prop.heating_temperature': '30',
-              })
-            }
-          }
-          break
-        case 'main_light':
-        case 'night_light': {
-          const light_mode = prop.light_mode === key ? 'close_all' : key
-          property.light_mode = light_mode
-          if (useSettingValue) {
-            this.setData({
-              'prop.light_mode': light_mode,
-            })
           }
           break
         }
-        case 'ventilation': {
-          const arr = mode.split(',')
-          // key已存在，则移除
-          if (arr.includes(key)) {
-            arr.splice(arr.indexOf(key), 1)
-            property.mode_close = key
-          }
-          // key不存在，即添加，并移除待机
-          else {
-            if (arr.includes('close_all')) {
-              arr.splice(arr.indexOf('close_all'), 1)
-            }
-            arr.push(key)
-            property.mode_enable = key
-          }
-          if (useSettingValue) {
-            this.setData({
-              'prop.mode': arr.join(',') || 'close_all',
-            })
+        // 待机
+        case 'close_all': {
+          if (mode?.indexOf(key) > -1 && this.data.isSceneSetting) {
+            delete prop.mode
+          } else {
+            property.mode = key
           }
           break
         }
 
-        // ! 待机指令注意为 mode_close
-        case 'close_all':
-          property.mode_close = key
-          if (useSettingValue) {
-            this.setData({
-              'prop.mode': key,
-            })
-          }
-          break
-
+        // blow && ventilation
         default: {
-          const newMode = toggleProp(mode, key)
-          // console.log('toggleProp newMode', newMode)
-          if (useSettingValue) {
-            this.setData({
-              'prop.mode': newMode || 'close_all',
-            })
-          }
-
-          // 如果关闭某个属性，或者置为全关，则用mode_close
-          if (newMode === 'close_all' || mode.indexOf(key) > -1) {
-            property.mode_close = key
-          }
-          // 如果开启某个属性，则用mode_enable
-          else {
-            property.mode_enable = key
-          }
+          property.mode = toggleProp(mode, key)
         }
       }
+
+      // 即时使用设置值渲染
+      this.setData({
+        prop: {
+          ...prop,
+          ...property,
+        },
+      })
+
+      this.toSendDevice(property)
+    },
+    async handleLightModeTap(e: WechatMiniprogram.CustomEvent) {
+      const key = e.currentTarget.dataset.key as string
+      const { prop } = this.data
+      const { light_mode = '' } = prop
+      const property = {} as IAnyObject // 本次要发送的指令
+
+      switch (key) {
+        case 'main_light':
+        case 'night_light': {
+          property.light_mode = light_mode === key ? 'close_all' : key
+          break
+        }
+        // 关灯
+        case 'close_all': {
+          if (light_mode?.indexOf(key) > -1 && this.data.isSceneSetting) {
+            delete prop.light_mode
+          } else {
+            property.light_mode = key
+          }
+          break
+        }
+      }
+
+      // 即时使用设置值渲染
+      this.setData({
+        prop: {
+          ...prop,
+          ...property,
+        },
+      })
+
+      this.toSendDevice(property)
+    },
+    async toSendDevice(property: IAnyObject) {
+      // 设置后N秒内屏蔽上报
+      if (this.data._controlTimer) {
+        clearTimeout(this.data._controlTimer)
+        this.data._controlTimer = null
+      }
+      this.data._canSyncCloudData = false
+      this.data._controlTimer = setTimeout(() => {
+        this.data._canSyncCloudData = true
+      }, 5000)
 
       const res = await sendDevice({
         deviceId: this.data.deviceInfo.deviceId,
@@ -331,10 +350,18 @@ ComponentWithComputed({
       this.triggerEvent('close')
     },
     handleConfirm() {
-      this.triggerEvent('confirm', {
-        ...this.data.deviceInfo,
-        ...this.data.prop,
-      })
+      const modeOn = this.data.btnList.filter((item) => item.on).map((item) => item.key)
+      const lightModeOn = this.data.largeBtnList.filter((item) => item.on).map((item) => item.key)
+      console.log('handleConfirm', modeOn, lightModeOn)
+
+      const diffData = {} as IAnyObject
+      if (modeOn.length) {
+        diffData.mode = modeOn.join(',')
+      }
+      if (lightModeOn.length) {
+        diffData.light_mode = lightModeOn.join(',')
+      }
+      this.triggerEvent('confirm', diffData)
     },
   },
 })

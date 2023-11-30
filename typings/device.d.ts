@@ -25,6 +25,7 @@ declare namespace Device {
     light: string // 晾衣架灯 'on' | 'off'
     laundry: string // 晾衣架一键晾衣 'on' | 'off'
     custom_height: number // 一键晾衣高度W
+    location_status: string // 晾衣架位置 'lower_limit' | 'upper_limit' | 'normal'
   }
   /** 设备列表项 */
   interface DeviceItem {
