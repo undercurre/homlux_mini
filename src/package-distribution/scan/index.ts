@@ -564,7 +564,6 @@ ComponentWithComputed({
 
         Logger.log('scanParams', pageParams)
 
-        showLoading()
         // mode 配网方式 （00代表AP配网，01代表蓝牙配网， 02代表AP+有线）
         // 带蓝牙子设备
         if (pageParams.mode === '01') {
@@ -588,7 +587,6 @@ ComponentWithComputed({
         } else {
           throw '无效二维码'
         }
-        hideLoading()
       } catch (err) {
         Toast(err as string)
       }
@@ -616,7 +614,7 @@ ComponentWithComputed({
           {
             productId: pid,
           },
-          { loading: false },
+          { loading: true },
         )
 
         Logger.log('checkDevice', res)
@@ -670,6 +668,8 @@ ComponentWithComputed({
         checkData.mac = mac
       }
 
+      showLoading()
+
       const res = await checkDevice(checkData, { loading: false })
 
       if (!res.success) {
@@ -691,6 +691,8 @@ ComponentWithComputed({
       if (flag) {
         this.addSingleSubdevice()
       }
+
+      hideLoading()
     },
 
     /**
