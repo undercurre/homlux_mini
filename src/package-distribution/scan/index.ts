@@ -83,8 +83,8 @@ ComponentWithComputed({
     async ready() {
       bleDevicesBinding.store.reset()
 
-      const params = wx.getLaunchOptionsSync()
-      Logger.log('scanPage', params, 'getEnterOptionsSync', wx.getEnterOptionsSync())
+      const params = wx.getEnterOptionsSync()
+      Logger.log('scanPage', params)
 
       // 判断通过微信扫码直接进入该界面时,初始化scanType
       if (getCurrentPages().length === 1 && params.scene === 1011) {
@@ -165,7 +165,7 @@ ComponentWithComputed({
     },
     // 检查是否通过微信扫码直接进入该界面时判断场景值
     checkWxScanEnter() {
-      const params = wx.getLaunchOptionsSync()
+      const params = wx.getEnterOptionsSync()
       Logger.log(
         'scanPage',
         params,
@@ -265,8 +265,8 @@ ComponentWithComputed({
     },
 
     async initBle() {
-      // 蓝牙子设备配网需要用到蓝牙功能
-      if (this.data.scanType !== 'subdevice' || bleDevicesStore.discovering) {
+      // 若已经进入搜索蓝牙状态，无需重复初始化
+      if (bleDevicesStore.discovering) {
         return
       }
 
