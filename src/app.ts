@@ -82,7 +82,7 @@ App<IAppOption>({
     this.globalData.firstOnShow = false
 
     // 用户热启动app，建立ws连接，并且再更新一次数据
-    Logger.log('app-onShow, isConnect:', isConnect(), homeStore.currentHomeId)
+    Logger.log('app-onShow, isConnect:', isConnect())
 
     if (!homeStore.currentHomeId || !isLogon()) {
       return

@@ -28,7 +28,13 @@ ComponentWithComputed({
   /**
    * 组件的属性列表
    */
-  properties: {},
+  properties: {
+    // 进入扫码页的入口
+    scanType: {
+      type: String,
+      value: '',
+    },
+  },
 
   /**
    * 组件的初始数据
@@ -41,7 +47,6 @@ ComponentWithComputed({
     isShowGatewayList: false, // 是否展示选择网关列表弹窗
     isShowNoGatewayTips: false, // 是否展示添加网关提示弹窗
     isScan: false, // 是否正在扫码
-    scanType: '', // 扫码页的种类
     isFlash: false,
     selectGateway: {
       deviceId: '',
@@ -78,14 +83,34 @@ ComponentWithComputed({
     async ready() {
       bleDevicesBinding.store.reset()
 
-      Logger.log(
-        'scanPage',
-        'wx.getEnterOptionsSync()',
-        wx.getEnterOptionsSync(),
-        'getCurrentPages()',
-        getCurrentPages(),
-      )
-      // await homeBinding.store.updateHomeInfo()
+      const params = wx.getLaunchOptionsSync()
+      Logger.log('scanPage', params, 'getEnterOptionsSync', wx.getEnterOptionsSync())
+
+      // 判断通过微信扫码直接进入该界面时,初始化scanType
+      if (getCurrentPages().length === 1 && params.scene === 1011) {
+        const scanUrl = decodeURIComponent(params.query.q)
+
+        Logger.log('scanUrl', scanUrl)
+
+        if (!this.isValidLink(scanUrl)) {
+          Toast('无效二维码')
+          return
+        }
+
+        const pageParams = strUtil.getUrlParams(scanUrl)
+
+        Logger.log('scanParams', pageParams)
+        const modeMap = {
+          '01': 'subdevice',
+          '02': 'gateway',
+          '10': 'screen',
+        }
+
+        this.setData({
+          scanType: modeMap[pageParams.mode as '01' | '02' | '10'],
+        })
+      }
+      // await homeBinding.store.updateHomeInfo() // 删除多余接口请求，待验证
     },
     detached() {
       bleDevicesStore.stopBLeDiscovery()
@@ -122,12 +147,6 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    async onLoad(query: { type?: string }) {
-      this.setData({
-        scanType: query.type,
-      })
-    },
-
     checkNet() {
       const isValidNet = isConnect()
 
@@ -156,7 +175,7 @@ ComponentWithComputed({
         getCurrentPages(),
       )
 
-      // 防止重复判断,仅通过微信扫码直接进入该界面时判断场景值
+      // 判断通过微信扫码直接进入该界面时判断场景值
       if (getCurrentPages().length === 1 && params.scene === 1011) {
         const scanUrl = decodeURIComponent(params.query.q)
 
@@ -385,7 +404,7 @@ ComponentWithComputed({
     },
 
     async initCameraDone() {
-      Logger.log('initCameraDone')
+      Logger.log('initCameraDone', this.data.scanType)
       if (this.data.needCheckCamera) {
         const flag = await this.checkCameraPerssion()
 
@@ -541,13 +560,23 @@ ComponentWithComputed({
       })
     },
 
+    /**
+     * 检查是否有效的二维码链接
+     * @param url
+     */
+    isValidLink(url: string) {
+      const pageParams = strUtil.getUrlParams(url) as IAnyObject
+
+      return url.includes('meizgd.com/homlux/qrCode.html') && ['01', '02', '10'].includes(pageParams.mode)
+    },
+
     async handleScanUrl(url: string) {
       try {
         this.setData({
           isScan: true,
         })
 
-        if (!url.includes('meizgd.com/homlux/qrCode.html')) {
+        if (!this.isValidLink(url)) {
           throw '无效二维码'
         }
 

@@ -12,7 +12,7 @@ ComponentWithComputed({
   properties: {},
 
   /**
-   * 组件的初始数据  /package-distribution/scan/index?type=subdevice
+   * 组件的初始数据
    */
   data: {
     deviceList: [
@@ -32,25 +32,25 @@ ComponentWithComputed({
         icon: `${productImgDir}/downlight.png`,
         name: '筒射灯',
         tag: 'zigbee',
-        path: '/package-distribution/scan/index?type=subdevice',
+        path: '/package-distribution/scan/index?scanType=subdevice',
       },
       {
         icon: `${productImgDir}/magnetic-track-light.png`,
         name: '磁吸灯',
         tag: 'zigbee',
-        path: '/package-distribution/scan/index?type=subdevice',
+        path: '/package-distribution/scan/index?scanType=subdevice',
       },
       {
         icon: `${productImgDir}/tape-light.png`,
         name: 'CW灯带',
         tag: 'zigbee',
-        path: '/package-distribution/scan/index?type=subdevice',
+        path: '/package-distribution/scan/index?scanType=subdevice',
       },
       {
         icon: `${productImgDir}/switch.png`,
         name: '智能开关',
         tag: 'zigbee',
-        path: '/package-distribution/scan/index?type=subdevice',
+        path: '/package-distribution/scan/index?scanType=subdevice',
       },
     ],
   },
