@@ -29,7 +29,7 @@
     <view class="px-48rpx pt-30rpx">
       <text class="block pb-40rpx text-hex-27282A text-32rpx leading-none">请按照以下步骤操作：</text>
 
-      <text class="block text-28rpx text-hex-555659 leading-48rpx text-justify"> 请登录美居APP帐号，美的系列产品可直接通过Homlux美的照明小程序完成设备联网。完成后，设备数据信息将同步到美的美居APP和Homlux美的照明小程序中。 </text>
+      <text class="block text-28rpx text-hex-555659 leading-48rpx text-justify">{{tips}}</text>
     </view>
   </view>
 
