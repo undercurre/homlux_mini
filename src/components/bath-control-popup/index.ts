@@ -63,7 +63,7 @@ ComponentWithComputed({
     title: {
       type: String,
     },
-    // 是否场景设置（使用设置值），即时渲染视图显示
+    // 是否场景设置（使用设置值），
     isSceneSetting: {
       type: Boolean,
       value: false,
@@ -119,8 +119,7 @@ ComponentWithComputed({
   data: {
     _canSyncCloudData: true, // 是否响应云端变更
     _controlTimer: null as null | number, // 控制后计时器
-    // 用于视图显示
-    prop: {} as IAnyObject,
+    prop: {} as IAnyObject, // 用于视图显示
     // 按钮组对象
     btnMap: {
       close_all: {

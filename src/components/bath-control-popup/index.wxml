@@ -26,15 +26,17 @@
     </view>
 
     <view class="w-686rpx">
-      <view class="flex flex-row justify-center items-start mt-64rpx">
-        <text class="text-28rpx text-hex-fff leading-none">℃</text>
-        <text class="text-124rpx text-hex-495264 leading-none">{{prop.current_temperature || '--'}}</text>
-        <text class="text-28rpx text-hex-515d75">℃</text>
-      </view>
+      <block wx:if="{{!isSceneSetting}}">
+        <view class="flex flex-row justify-center items-start mt-64rpx">
+          <text class="text-28rpx text-hex-fff leading-none">℃</text>
+          <text class="text-124rpx text-hex-495264 leading-none">{{prop.current_temperature || '--'}}</text>
+          <text class="text-28rpx text-hex-515d75">℃</text>
+        </view>
 
-      <view class="text-center mt-30rpx">
-        <text class="text-24 text-hex-a2a2a2">室内温度</text>
-      </view>
+        <view class="text-center mt-30rpx">
+          <text class="text-24 text-hex-a2a2a2">室内温度</text>
+        </view>
+      </block>
 
       <view class="flex flex-row justify-evenly rounded-32rpx bg-hex-f7f8f9 mt-30rpx py-24rpx">
         <mz-icon-button

@@ -173,6 +173,8 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
     }
     if (light === 'on') {
       descList.push('照明')
+    } else if (light === 'off') {
+      descList.push('关灯')
     }
   }
 

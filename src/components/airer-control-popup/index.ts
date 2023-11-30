@@ -9,6 +9,7 @@ type BtnItem = {
   iconActive: string
   on?: boolean // 按钮是否激活状态
   rebound?: boolean // 按钮是否自动回弹状态
+  textWidth?: string // 按钮文字宽度
 }
 
 ComponentWithComputed({
@@ -22,10 +23,29 @@ ComponentWithComputed({
     title: {
       type: String,
     },
-    // 是否下发控制命令
-    isControl: {
+    // 是否场景设置
+    isSceneSetting: {
       type: Boolean,
-      value: true,
+      value: false,
+      observer(value) {
+        if (value) {
+          this.setData({
+            // 场景设置增加关灯按钮，调整按钮宽度
+            largeBtnMap: {
+              off: {
+                text: '关灯',
+                icon: '../../assets/img/function/f00.png',
+                iconActive: '../../assets/img/function/f01.png',
+              },
+              ...this.data.largeBtnMap,
+              laundry: {
+                ...this.data.largeBtnMap.laundry,
+                textWidth: '48rpx',
+              },
+            },
+          })
+        }
+      },
     },
     show: {
       type: Boolean,
@@ -45,7 +65,7 @@ ComponentWithComputed({
       type: Object,
       value: {},
       observer(value) {
-        if (value) {
+        if (value && this.data._canSyncCloudData) {
           this.setData({
             prop: value as Device.DeviceItem & Device.mzgdPropertyDTO,
           })
@@ -58,9 +78,9 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    // 组件私有属性，用于设值显示
-    prop: {} as Device.DeviceItem & Device.mzgdPropertyDTO,
-    largeBtnStyle: 'height: 112rpx; width: 280rpx; border-radius: 32rpx; background-color: #f7f8f9;',
+    _canSyncCloudData: true, // 是否响应云端变更
+    _controlTimer: null as null | number, // 控制后计时器
+    prop: {} as IAnyObject, // 用于视图显示
     // 按钮组
     btnMap: {
       up: {
@@ -81,32 +101,39 @@ ComponentWithComputed({
     } as Record<string, BtnItem>,
     // 下方大按钮
     largeBtnMap: {
-      light: {
+      on: {
         text: '照明',
         icon: '../../assets/img/function/f50.png',
         iconActive: '../../assets/img/function/f51.png',
-        textWidth: '50rpx',
       },
       laundry: {
         text: '一键晾衣',
         icon: '../../assets/img/function/fa0.png',
         iconActive: '../../assets/img/function/fa1.png',
         textWidth: '96rpx',
+        disabled: false,
       },
-    },
+    } as Record<string, BtnItem>,
   },
 
   computed: {
     // 按钮组，转为数组格式
     btnList(data) {
       const { btnMap, prop } = data
-      const { updown = 'pause' } = prop
+      const { updown, location_status } = prop
       const res = Object.keys(btnMap).map((key: string) => {
         const on = updown === key
+        const disabled =
+          (key === 'up' && updown === 'up') ||
+          (key === 'pause' && updown === 'pause') ||
+          (key === 'down' && updown === 'down') ||
+          (key === 'up' && location_status === 'upper_limit') ||
+          (key === 'down' && location_status === 'lower_limit')
 
         return {
           ...btnMap[key],
           on,
+          disabled,
           key,
         }
       })
@@ -116,14 +143,33 @@ ComponentWithComputed({
     largeBtnList(data) {
       const { largeBtnMap, prop } = data
       const res = Object.keys(largeBtnMap).map((key) => {
-        const on = prop[key as 'laundry' | 'light'] === 'on'
+        // 照明关闭，则【关灯】按钮点亮
+        const on = key === 'laundry' ? prop['laundry'] === 'on' : prop['light'] === key
+        // 未设置晾衣高度，则一键晾衣按钮禁用
+        const disabled = key === 'laundry' && !data.custom_height
+
         return {
-          ...largeBtnMap[key as 'laundry' | 'light'],
+          ...largeBtnMap[key],
           on,
+          disabled,
           key,
         }
       })
       return res
+    },
+    largeBtnStyle(data) {
+      const { isSceneSetting } = data
+      const width = isSceneSetting ? '170rpx' : '280rpx'
+      return `height: 112rpx; width: ${width}; border-radius: 32rpx; background-color: #f7f8f9;`
+    },
+  },
+
+  lifetimes: {
+    detached() {
+      if (this.data._controlTimer) {
+        clearTimeout(this.data._controlTimer)
+        this.data._controlTimer = null
+      }
     },
   },
 
@@ -137,41 +183,98 @@ ComponentWithComputed({
       const property = {} as IAnyObject
 
       switch (key) {
-        case 'up':
+        case 'up': {
+          if (prop.updown === key) {
+            if (this.data.isSceneSetting) {
+              delete prop.updown
+            } else {
+              Toast({ message: '已在上升中', zIndex: 9999 })
+              return
+            }
+          } else if (prop.location_status === 'upper_limit' && !this.data.isSceneSetting) {
+            Toast({ message: '已到达最高点', zIndex: 9999 })
+          } else if (prop.updown !== key) {
+            property.updown = key
+          }
+          break
+        }
         case 'down':
+          if (prop.location_status === 'lower_limit' && !this.data.isSceneSetting) {
+            Toast({ message: '已到达最低点', zIndex: 9999 })
+          } else if (prop.updown === key) {
+            if (this.data.isSceneSetting) {
+              delete prop.updown
+            } else {
+              Toast({ message: '已在下降中', zIndex: 9999 })
+              return
+            }
+          } else {
+            property.updown = key
+          }
+          break
         case 'pause':
-          property.updown = key
-          this.setData({
-            'prop.updown': key,
-          })
+          if (prop.updown === key) {
+            if (this.data.isSceneSetting) {
+              delete prop.updown
+            } else {
+              Toast({ message: '已暂停', zIndex: 9999 })
+              return
+            }
+          } else {
+            property.updown = key
+          }
           break
 
-        case 'light': {
+        case 'on': {
           const setValue = prop.light === 'on' ? 'off' : 'on'
           property.light = setValue
-          this.setData({
-            'prop.light': setValue,
-          })
+          break
+        }
 
+        case 'off': {
+          if (prop.light === 'on') {
+            property.light = 'off'
+          } else {
+            delete prop.light
+          }
           break
         }
 
         case 'laundry': {
-          console.log('custom_height', prop.custom_height)
-          if (prop.custom_height) {
+          if (prop.laundry === 'on') {
+            if (this.data.isSceneSetting) {
+              delete prop.laundry
+            } else {
+              Toast({ message: '一键晾衣执行中', zIndex: 9999 })
+              return
+            }
+          } else if (prop.custom_height) {
             property.laundry = 'on'
-            this.setData({
-              'prop.laundry': 'on',
-            })
           } else {
             Toast({ message: '请先设置好一键晾衣高度', zIndex: 9999 })
             return
           }
           break
         }
-
-        default:
       }
+
+      // 即时使用设置值渲染
+      this.setData({
+        prop: {
+          ...prop,
+          ...property,
+        },
+      })
+
+      // 设置后N秒内屏蔽上报
+      if (this.data._controlTimer) {
+        clearTimeout(this.data._controlTimer)
+        this.data._controlTimer = null
+      }
+      this.data._canSyncCloudData = false
+      this.data._controlTimer = setTimeout(() => {
+        this.data._canSyncCloudData = true
+      }, 2000)
 
       const res = await sendDevice({
         deviceId: this.data.deviceInfo.deviceId,
@@ -198,10 +301,27 @@ ComponentWithComputed({
       this.triggerEvent('close')
     },
     handleConfirm() {
-      this.triggerEvent('confirm', {
-        ...this.data.deviceInfo,
-        ...this.data.prop,
-      })
+      const upDownOn = this.data.btnList.filter((item) => item.on).map((item) => item.key)
+      const lightSetting = this.data.largeBtnList
+        .filter((item) => item.key !== 'laundry' && item.on)
+        .map((item) => item.key)
+      const laundrySetting = this.data.largeBtnList
+        .filter((item) => item.key === 'laundry' && item.on)
+        .map((item) => item.key)
+
+      console.log('handleConfirm', upDownOn, lightSetting, laundrySetting)
+
+      const diffData = {} as IAnyObject
+      if (upDownOn.length) {
+        diffData.updown = upDownOn[0]
+      }
+      if (lightSetting.length) {
+        diffData.light = lightSetting[0]
+      }
+      if (laundrySetting.length) {
+        diffData.laundry = laundrySetting[0]
+      }
+      this.triggerEvent('confirm', diffData)
     },
   },
 })

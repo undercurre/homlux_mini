@@ -332,6 +332,7 @@
   show="{{showEditPopup === '0x17'}}"
   title="{{sceneEditTitle}}"
   isShowConfirm="{{true}}"
+  isSceneSetting="{{true}}"
   deviceInfo="{{sceneEditInfo}}"
   bind:confirm="handleSceneEditConfirm"
   bind:close="handleEditPopupClose"
