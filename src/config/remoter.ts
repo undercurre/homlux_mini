@@ -22,6 +22,7 @@ export const MIN_TEMPERATURE = 20
 
 /**
  * @description 设备交互数据配置，按设备类型区分
+ * TODO REFACTOR 随着型号增加，这样做功能配置会很臃肿，参考美居晾衣架等品类进行重构
  * { deviceType: { deviceModel: { configDetail }}}
  */
 export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = {
@@ -177,6 +178,98 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
     },
   },
   '26': {
+    // Q30 // 0001 不支持摆风
+    '01': {
+      deviceName: '浴霸',
+      devicePic: '/assets/img/remoter/bathHeater.png',
+      joystick: {
+        up: {
+          key: 'BATH_BRIGHT_PLUS',
+          icon: '/package-remoter/assets/bright1.png',
+          iconActive: '/package-remoter/assets/bright0.png',
+        },
+        right: {
+          key: 'BATH_TEMPERATURE_ADD',
+          icon: '/package-remoter/assets/temp3.png',
+          iconActive: '/package-remoter/assets/temp2.png',
+        },
+        down: {
+          key: 'BATH_BRIGHT_MINUS',
+          icon: '/package-remoter/assets/bright3.png',
+          iconActive: '/package-remoter/assets/bright2.png',
+        },
+        left: {
+          key: 'BATH_TEMPERATURE_SUB',
+          icon: '/package-remoter/assets/temp1.png',
+          iconActive: '/package-remoter/assets/temp0.png',
+        },
+        middle: {
+          key: 'FACTORY',
+        },
+      },
+      mList: [
+        {
+          key: 'BATH_AUTO',
+          icon: '/package-remoter/assets/scene81.png',
+          iconActive: '/package-remoter/assets/scene80.png',
+          name: '安心沐浴',
+        },
+        {
+          key: 'BATH_WIND',
+          icon: '/package-remoter/assets/scene91.png',
+          iconActive: '/package-remoter/assets/scene90.png',
+          name: '吹风',
+        },
+        {
+          key: 'BATH_VENTILATE',
+          icon: '/package-remoter/assets/scene91.png',
+          iconActive: '/package-remoter/assets/scene90.png',
+          name: '换气',
+        },
+        {
+          key: 'BATH_DRY',
+          icon: '/package-remoter/assets/sceneB1.png',
+          iconActive: '/package-remoter/assets/sceneB0.png',
+          name: '干燥',
+        },
+      ],
+      bList: [
+        {
+          key: 'BATH_LAMP',
+          icon: '/package-remoter/assets/power1.png',
+          iconActive: '/package-remoter/assets/power0.png',
+          name: '照明',
+        },
+        {
+          key: 'BATH_ALL_OFF',
+          icon: '/package-remoter/assets/power1.png',
+          iconActive: '/package-remoter/assets/power0.png',
+          name: '待机',
+        },
+      ],
+      actions: [
+        {
+          key: 'BATH_LAMP',
+          name: '照明',
+        },
+        {
+          key: 'BATH_ALL_OFF',
+          name: '待机',
+        },
+        {
+          key: 'BATH_WIND',
+          name: '吹风',
+        },
+        {
+          key: 'BATH_VENTILATE',
+          name: '换气',
+        },
+        {
+          key: 'BATH_DRY',
+          name: '干燥',
+        },
+      ],
+    },
     // MY-S5X28-Y5W // 0010 无人感
     '02': {
       deviceName: '浴霸',
@@ -282,10 +375,9 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
           iconActive: '/package-remoter/assets/bright0.png',
         },
         right: {
-          key: 'BATH_WARM_STRONG',
-          icon: '/package-remoter/assets/warm3.png',
-          iconActive: '/package-remoter/assets/warm2.png',
-          name: '强暖',
+          key: 'BATH_TEMPERATURE_ADD',
+          icon: '/package-remoter/assets/temp3.png',
+          iconActive: '/package-remoter/assets/temp2.png',
         },
         down: {
           key: 'BATH_BRIGHT_MINUS',
@@ -293,16 +385,21 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
           iconActive: '/package-remoter/assets/bright2.png',
         },
         left: {
-          key: 'BATH_WARM_SOFT',
-          icon: '/package-remoter/assets/warm1.png',
-          iconActive: '/package-remoter/assets/warm0.png',
-          name: '弱暖',
+          key: 'BATH_TEMPERATURE_SUB',
+          icon: '/package-remoter/assets/temp1.png',
+          iconActive: '/package-remoter/assets/temp0.png',
         },
         middle: {
           key: 'FACTORY',
         },
       },
       mList: [
+        {
+          key: 'BATH_AUTO',
+          icon: '/package-remoter/assets/scene81.png',
+          iconActive: '/package-remoter/assets/scene80.png',
+          name: '安心沐浴',
+        },
         {
           key: 'BATH_WIND',
           icon: '/package-remoter/assets/scene91.png',
@@ -314,6 +411,18 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
           icon: '/package-remoter/assets/sceneA1.png',
           iconActive: '/package-remoter/assets/sceneA0.png',
           name: '换气',
+        },
+        {
+          key: 'BATH_SWING',
+          icon: '/package-remoter/assets/sceneA1.png',
+          iconActive: '/package-remoter/assets/sceneA0.png',
+          name: '摆风',
+        },
+        {
+          key: 'BATH_DRY',
+          icon: '/package-remoter/assets/sceneB1.png',
+          iconActive: '/package-remoter/assets/sceneB0.png',
+          name: '干燥',
         },
       ],
       bList: [
@@ -598,6 +707,12 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
           iconActive: '/package-remoter/assets/sceneA0.png',
           name: '换气',
           btnWidth: '654rpx',
+        },
+        {
+          key: 'BATH_SWING',
+          icon: '/package-remoter/assets/sceneA1.png',
+          iconActive: '/package-remoter/assets/sceneA0.png',
+          name: '摆风',
         },
       ],
       bList: [
