@@ -22,6 +22,7 @@ export const MIN_TEMPERATURE = 20
 
 /**
  * @description 设备交互数据配置，按设备类型区分
+ * TODO REFACTOR 随着型号增加，这样做功能配置会很臃肿，参考美居晾衣架等品类进行重构
  * { deviceType: { deviceModel: { configDetail }}}
  */
 export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = {
