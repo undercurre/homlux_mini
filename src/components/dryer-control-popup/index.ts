@@ -265,6 +265,19 @@ ComponentWithComputed({
         }
       }
 
+      if (prop.errorCode === 2) {
+        Toast({ message: '遇到障碍物', zIndex: 9999 })
+        return
+      }
+      if (prop.errorCode === 5) {
+        Toast({ message: '负载过重，请减轻负载', zIndex: 9999 })
+        return
+      }
+      if (prop.errorCode === 6) {
+        Toast({ message: '电机过热，请稍后再使用', zIndex: 9999 })
+        return
+      }
+
       // 即时使用设置值渲染
       this.setData({
         prop: {
