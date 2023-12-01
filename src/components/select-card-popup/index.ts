@@ -109,7 +109,6 @@ ComponentWithComputed({
    */
   data: {
     roomSelect: '',
-    showDeviceOffline: false,
     offlineDevice: {} as Device.DeviceItem,
   },
 
@@ -157,18 +156,6 @@ ComponentWithComputed({
     handleRoomSelect(e: WechatMiniprogram.TouchEvent) {
       this.setData({
         roomSelect: e.currentTarget.dataset.item.roomId,
-      })
-    },
-    handleOfflineTap(e: { detail: Device.DeviceItem }) {
-      this.setData({
-        showDeviceOffline: true,
-        offlineDevice: e.detail,
-      })
-      this.triggerEvent('offlineTap', e.detail)
-    },
-    handleCloseDeviceOffline() {
-      this.setData({
-        showDeviceOffline: false,
       })
     },
     handleRebindGateway() {

@@ -300,7 +300,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .leading-46rpx{line-height:46rpx;}
 .leading-48rpx{line-height:48rpx;}
 .leading-50rpx{line-height:50rpx;}
-.leading-52rpx{line-height:52rpx;}
 .leading-56rpx{line-height:56rpx;}
 .leading-72rpx{line-height:72rpx;}
 .leading-74rpx{line-height:74rpx;}
