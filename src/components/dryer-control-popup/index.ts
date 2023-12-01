@@ -189,7 +189,6 @@ ComponentWithComputed({
               delete prop.updown
             } else {
               Toast({ message: '已在上升中', zIndex: 9999 })
-              return
             }
           } else if (prop.location_status === 'upper_limit' && !this.data.isSceneSetting) {
             Toast({ message: '已到达最高点', zIndex: 9999 })
@@ -210,7 +209,6 @@ ComponentWithComputed({
               delete prop.updown
             } else {
               Toast({ message: '已在下降中', zIndex: 9999 })
-              return
             }
           } else {
             property.updown = key
@@ -226,7 +224,6 @@ ComponentWithComputed({
               delete prop.updown
             } else {
               Toast({ message: '已暂停', zIndex: 9999 })
-              return
             }
           } else {
             property.updown = key
@@ -254,7 +251,6 @@ ComponentWithComputed({
               delete prop.laundry
             } else {
               Toast({ message: '一键晾衣执行中', zIndex: 9999 })
-              return
             }
           } else if (prop.custom_height) {
             property.laundry = 'on'
