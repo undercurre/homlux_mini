@@ -195,6 +195,10 @@ ComponentWithComputed({
             Toast({ message: '已到达最高点', zIndex: 9999 })
           } else if (prop.updown !== key) {
             property.updown = key
+            // 如果在最低点，则即时取消下限标志
+            if (prop.location_status === 'lower_limit') {
+              prop.location_status = 'normal'
+            }
           }
           break
         }
@@ -210,6 +214,10 @@ ComponentWithComputed({
             }
           } else {
             property.updown = key
+            // 如果在最高点，则即时取消上限标志
+            if (prop.location_status === 'upper_limit') {
+              prop.location_status = 'normal'
+            }
           }
           break
         case 'pause':
