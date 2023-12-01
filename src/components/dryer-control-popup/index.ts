@@ -256,7 +256,6 @@ ComponentWithComputed({
             property.laundry = 'on'
           } else {
             Toast({ message: '请先设置好一键晾衣高度', zIndex: 9999 })
-            return
           }
           break
         }
