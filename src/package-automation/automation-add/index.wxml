@@ -329,7 +329,7 @@
   bind:confirm="handleSceneEditConfirm"
   bind:close="handleEditPopupClose"
 ></bath-control-popup>
-<airer-control-popup
+<dryer-control-popup
   show="{{showEditPopup === '0x17'}}"
   title="{{sceneEditTitle}}"
   isShowConfirm="{{true}}"
@@ -337,7 +337,7 @@
   deviceInfo="{{sceneEditInfo}}"
   bind:confirm="handleSceneEditConfirm"
   bind:close="handleEditPopupClose"
-></airer-control-popup>
+></dryer-control-popup>
 <edit-sensor-popup
   show="{{showEditSensorPopup}}"
   productId="{{editingSensorType}}"
