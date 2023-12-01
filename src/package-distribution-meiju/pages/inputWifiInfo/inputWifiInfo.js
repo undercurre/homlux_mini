@@ -3,7 +3,7 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
 import { defaultImgDir, imgList } from '../../../config/img'
-import { delay, isAndroid, Logger } from '../../../utils/index'
+import { delay, isAndroid, Logger, shouNoNetTips } from '../../../utils/index'
 import app from '../../common/app'
 
 import computedBehavior from '../../utils/miniprogram-computed.js'
@@ -36,6 +36,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    isLoadingNext: false, // 下一步按钮的loading标志
     defaultImgDir,
     currentHomeGroupId: '',
     isInitWifiSuccess: false,
@@ -297,7 +298,6 @@ Page({
 
   //切换wifi
   async inputPageSwitchWifi() {
-    console.debug('inputPageSwitchWifi')
     if (this.data.clickFLag) {
       console.log('进入防重逻辑')
       return
@@ -337,9 +337,6 @@ Page({
         this.setData({
           clickFLag: false,
         })
-        setTimeout(() => {
-          this.data.actionScanClickFlag = false
-        }, 1500)
         return
       }
       //安卓且获取到wifi列表
@@ -703,35 +700,33 @@ Page({
   },
   //下一步
   async configNetWork() {
+    Logger.log('configNetWork')
     let self = this
-    if (this.data.clickNetFLag) {
-      return
-    }
-    this.data.clickNetFLag = true
     console.log('bindWifiTest:', this.data.bindWifiTest)
-    let { PswContent, SSIDContent } = this.data.bindWifiTest
-    if (!SSIDContent) {
-      Toast('请输入WiFi名称')
-      self.data.clickNetFLag = false
-      return
-    }
-    if (!PswContent) {
-      let checkInputPswRes = await this.checkInputPsw()
-      if (checkInputPswRes.action === 'cancel') {
-        //输入密码
-        self.data.clickNetFLag = false
-        return
-      }
-    }
+    let { PswContent } = this.data.bindWifiTest
     if (PswContent && PswContent.length < 8) {
       Toast('密码长度不足8位')
-      self.data.clickNetFLag = false
       return
     }
 
     this.locationAuthorize()
-    let locationRes = await checkPermission.loaction()
+
+    this.setData({
+      isLoadingNext: true,
+    })
+    let locationRes = await checkPermission.loaction().catch((err) => {
+      return false
+    })
     console.log('[loactionRes]', locationRes)
+
+    this.setData({
+      isLoadingNext: false,
+    })
+
+    if (!locationRes) {
+      shouNoNetTips()
+      return
+    }
     if (!locationRes.isCanLocation) {
       const obj = {
         title: '请开启位置权限',
@@ -744,10 +739,7 @@ Page({
       }
       //调用通用弹框组件
       commonDialog.showCommonDialog(obj)
-      self.data.clickNetFLag = false
-      setTimeout(() => {
-        this.data.actionScanClickFlag = false
-      }, 1500)
+      this.data.clickNetFLag = false
       return
     }
     setWifiStorage(this.data.bindWifiTest)
@@ -764,14 +756,14 @@ Page({
     if (mode == 0 && fm === 'autoFound') {
       //自发现ap
       if (this.isCanDrivingLinkDeviceAp(ssid)) {
-        wx.navigateTo({
+        wx.redirectTo({
           url: paths.linkAp, //手动连接ap页
           complete() {
             self.data.clickNetFLag = false
           },
         })
       } else {
-        wx.navigateTo({
+        wx.redirectTo({
           url: paths.linkAp, //手动连接ap页
           complete() {
             self.data.clickNetFLag = false
@@ -796,7 +788,7 @@ Page({
         let page = getFullPageUrl()
         if (result && page.includes('addDevice/pages/inputWifiInfo/inputWifiInfo')) {
           pass = true
-          wx.navigateTo({
+          wx.redirectTo({
             url: paths.linkAp,
             complete() {
               self.data.clickNetFLag = false
@@ -829,7 +821,7 @@ Page({
     if (mode == 20 || mode == 21) {
       //做了直连
       app.addDeviceInfo.mode = 21 //去配网
-      wx.navigateTo({
+      wx.redirectTo({
         url: paths.linkDevice,
         complete() {
           self.data.clickNetFLag = false
@@ -840,7 +832,7 @@ Page({
     }
     if (mode == 31) {
       //masmart做了直连 去配网
-      wx.navigateTo({
+      wx.redirectTo({
         url: paths.linkDevice,
         complete() {
           self.data.clickNetFLag = false
@@ -849,7 +841,7 @@ Page({
       return
     }
     if ((mode == 5 && fm === 'autoFound' && blueVersion != 1) || (mode == 3 && fm === 'bluePugin')) {
-      wx.navigateTo({
+      wx.redirectTo({
         url: paths.linkDevice,
         complete() {
           self.data.clickNetFLag = false
@@ -860,7 +852,7 @@ Page({
     if (mode == 3) {
       if (fm !== 'autoFound' && !this.ifFindMatchedBlueDevice) {
         // 非自发现未匹配到设备蓝牙，跳转配网指引页
-        wx.navigateTo({
+        wx.redirectTo({
           url: paths.addGuide,
           complete() {
             self.data.clickNetFLag = false
@@ -870,7 +862,7 @@ Page({
       }
       if (isCheck) {
         // 设备已确权，跳转联网进度页
-        wx.navigateTo({
+        wx.redirectTo({
           url: paths.linkDevice,
           complete() {
             self.data.clickNetFLag = false
@@ -880,7 +872,7 @@ Page({
       }
       if (blueVersion == 1) {
         // 一代蓝牙，跳转配网指引页
-        wx.navigateTo({
+        wx.redirectTo({
           url: paths.addGuide,
           complete() {
             self.data.clickNetFLag = false
@@ -890,7 +882,7 @@ Page({
       }
       if (this.ifNearbyChecked) {
         // 靠近确权成功，跳转联网进度页
-        wx.navigateTo({
+        wx.redirectTo({
           url: paths.linkDevice,
           complete() {
             self.data.clickNetFLag = false
@@ -900,7 +892,7 @@ Page({
       } else {
         // 靠近确权失败，跳转靠近确权
         app.addDeviceInfo.ifNearby = true
-        wx.navigateTo({
+        wx.redirectTo({
           url: paths.addGuide,
           complete() {
             self.data.clickNetFLag = false
@@ -910,7 +902,7 @@ Page({
       }
     }
 
-    wx.navigateTo({
+    wx.redirectTo({
       url: paths.addGuide,
       complete() {
         self.data.clickNetFLag = false

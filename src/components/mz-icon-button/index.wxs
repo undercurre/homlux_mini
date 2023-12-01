@@ -26,6 +26,10 @@ function propObserver(newValue, oldValue, ownerInstance) {
 function touchStart(event, ownerInstance) {
   var key = ownerInstance.getDataset().key
   var rebound = ownerInstance.getDataset().rebound
+  var disabled = ownerInstance.getDataset().disabled
+  if (disabled) {
+    return
+  }
   ownerInstance.callMethod('handleTouchStart', event)
 
   var iWrapper = ownerInstance.selectComponent('.icon-wrapper')
@@ -60,6 +64,10 @@ function touchStart(event, ownerInstance) {
 }
 
 function touchEnd(event, ownerInstance) {
+  var disabled = ownerInstance.getDataset().disabled
+  if (disabled) {
+    return
+  }
   var key = ownerInstance.getDataset().key
   var rebound = ownerInstance.getDataset().rebound
 

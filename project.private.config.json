@@ -11,7 +11,7 @@
     "miniprogram": {
       "list": [
         {
-          "name": "连接设备页面",
+          "name": "连接设备页面（美居）",
           "pathName": "package-distribution-meiju/pages/linkDevice/linkDevice",
           "query": "",
           "launchMode": "default",

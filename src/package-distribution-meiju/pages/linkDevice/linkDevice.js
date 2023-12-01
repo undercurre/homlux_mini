@@ -33,6 +33,7 @@ import { setWifiStorage } from '../addDevice/utils/wifiStorage'
 
 import Dialog from '../../../miniprogram_npm/m-ui/mx-dialog/dialog'
 import { imgesList } from '../assets/js/shareImg.js'
+import { blueParamsSet } from '../addDevice/pages/assets/js/blueParamsSet'
 
 const bleNeg = require('../../utils/ble/ble-negotiation')
 const addDeviceMixin = require('../addDevice/pages/assets/js/addDeviceMixin')
@@ -47,7 +48,7 @@ let appKey = api.appKey
 const brandStyle = require('../assets/js/brand.js')
 const imgUrl = imgBaseUrl.url + '/shareImg/' + brandStyle.brand
 let wifiMgr = new WifiMgr()
-const queryWifiDelay = 15000
+const queryWifiDelay = 5000
 
 Component({
   behaviors: [bleNeg, addDeviceMixin, netWordMixin, computedBehavior],
@@ -600,7 +601,6 @@ Component({
      * 蓝牙配网密码错误弹窗
      */
     bluePswFailDialog() {
-      Logger.debug('bluePswFailDialog')
       const self = this
       const { blueVersion, mode, msmartBleWrite } = app.addDeviceInfo
       clearInterval(timer) // 暂停页面计时
@@ -1188,6 +1188,7 @@ Component({
               this.data.udpMsgBody = this.apUtils.decode2body(hexMsg).body
               let adData = this.apUtils.parseUdpBody(this.data.udpMsgBody)
               console.log('获取udp返回', adData)
+              this.setIfSupportAds(adData)
               if (hexCharCodeToStr(adData.ssid).toLocaleLowerCase() === app.addDeviceInfo.ssid.toLocaleLowerCase()) {
                 //校验响应包
                 resolve(adData)
@@ -1256,6 +1257,7 @@ Component({
                 this.data.udpMsgBody = udpMsgBody.body
                 let adData = this.apUtils.parseUdpBody(this.data.udpMsgBody)
                 console.log('adData', adData)
+                this.setIfSupportAds(adData)
                 if (hexCharCodeToStr(adData.ssid).toLocaleLowerCase() === app.addDeviceInfo.ssid.toLocaleLowerCase()) {
                   //过滤偶现没有版本信息的包
                   resolve(adData)
@@ -1621,6 +1623,30 @@ Component({
       return order0074
     },
     /**
+     * 判断是否支持集群功能
+     * @param {object|string} adData 广播包信息
+     */
+    setIfSupportAds(adData) {
+      const { mode } = app.addDeviceInfo
+      let binArrayADS
+      if (mode == 0) {
+        // AP
+        binArrayADS = hex2bin(adData.add2)
+        app.addDeviceInfo.ifSupportAds = !!binArrayADS[0]
+      } else {
+        // 二代蓝牙
+        const hex = adData.substr(38, 2)
+        binArrayADS = hex2bin(hex)
+        app.addDeviceInfo.ifSupportAds = !!(binArrayADS[2] && binArrayADS[3])
+      }
+      console.log('@module linkDevice.js\n@method setIfSupportAds\n@desc 判断是否支持集群功能\n', {
+        adData,
+        mode,
+        binArrayADS,
+        ifSupportAds: app.addDeviceInfo.ifSupportAds,
+      })
+    },
+    /**
      * 构造AP配网指令
      */
     constrLinknetorder() {
@@ -1649,6 +1675,16 @@ Component({
       order.setModuleServerDomain = apParamsSet.setModuleServerDomain()
       order.setModuleServerPort = apParamsSet.setModuleServerPort()
       order.setfeature = apParamsSet.setfeature()
+      if (app.addDeviceInfo.ifSupportAds) {
+        // 支持ADS集群ID
+        const setAdsId = apParamsSet.setAdsId()
+        if (!setAdsId) {
+          this.goLinkDeviceFailPage(4160)
+          return
+        }
+        order.setAdsId = setAdsId // 该参数如果不传，会导致无法在不同环境下切换配网
+      }
+
       console.log('@module linkDevice.js\n@method constrLinknetorder\n@desc 配网指令对象\n', order)
       order.total = Object.values(order).join('')
       console.log('@module linkDevice.js\n@method constrLinknetorder\n@desc 配网指令对象值连接结果\n', order.total)
@@ -1887,6 +1923,12 @@ Component({
       chain[0] = this.data.bindWifiTest.chain
       let chainHex = toHexString(chain)
 
+      let setRegionId = blueParamsSet.setRegionId()
+      let setfeature = blueParamsSet.setfeature()
+      let setCountryTimezone = blueParamsSet.setCountryTimezone()
+      let setModuleServerDomain = blueParamsSet.setModuleServerDomain()
+      let setModuleServerPort = blueParamsSet.setModuleServerPort()
+      let setChannels = blueParamsSet.setChannels()
       let order
       let data
       console.log('@module linkDevice.js\n@method sendWifiInfo\n@desc 会话密钥\n', app.globalData.bleSessionSecret)
@@ -1897,7 +1939,32 @@ Component({
       }
       if (blueVersion == 2) {
         let mode = app.addDeviceInfo.isCheck ? '02' : '01' //0x01：连接，存储配网参数； 0x02：连接，存储配网参数，并无需确权。
-        data = mode + bssid + encryptType + ssidLengthAndPswLength + ssidAndPswHex + randomHex + chainHex
+        this.setIfSupportAds(app.addDeviceInfo.adData)
+        if (app.addDeviceInfo.ifSupportAds) {
+          // 支持ADS集群ID
+          const setAdsId = blueParamsSet.setAdsId()
+          if (!setAdsId) {
+            this.goLinkDeviceFailPage(4164)
+            return
+          }
+          data =
+            mode +
+            bssid +
+            encryptType +
+            ssidLengthAndPswLength +
+            ssidAndPswHex +
+            randomHex +
+            chainHex +
+            setRegionId +
+            setfeature +
+            setCountryTimezone +
+            setModuleServerDomain +
+            setModuleServerPort +
+            setChannels +
+            setAdsId
+        } else {
+          data = mode + bssid + encryptType + ssidLengthAndPswLength + ssidAndPswHex + randomHex + chainHex
+        }
         console.log('@module linkDevice.js\n@method sendWifiInfo\n@desc 二代蓝牙原始配网指令\n', data)
         order = constructionBleOrder(0x69, data, app.globalData.bleSessionSecret)
       }
@@ -1905,6 +1972,7 @@ Component({
       console.log('@module linkDevice.js\n@method sendWifiInfo\n@desc 编码后配网指令\n', order)
       if (ifWrite) {
         this.writeData(order)
+        getApp().setMethodCheckingLog('蓝牙配网发送配网指令', order)
       } else {
         return order
       }
@@ -2265,7 +2333,6 @@ Component({
           url: paths.addFail,
         })
       } else {
-        Logger.debug('reLaunch-linkNetFail')
         wx.reLaunch({
           url: paths.linkNetFail,
         })

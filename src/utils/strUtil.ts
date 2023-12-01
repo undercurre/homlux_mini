@@ -168,6 +168,24 @@ export const strUtil = {
       Math.trunc((seconds % 3600) / 60) > 0 ? Math.trunc((seconds % 3600) / 60) + '分' : ''
     }${Math.trunc((seconds % 3600) % 60) > 0 ? Math.trunc((seconds % 3600) % 60) + '秒' : ''}`
   },
+
+  /**
+   * 计算字符串长度，数字、英文、字母为1，中文为2
+   * @param str 要计算的字符串
+   * @returns number
+   */
+  getLength(str: string) {
+    let count = 0
+    for (let i = 0; i < str.length; i++) {
+      if (/[\u4e00-\u9fa5]/.test(str[i])) {
+        // 判断是否为中文字符
+        count += 2
+      } else {
+        count += 1
+      }
+    }
+    return count
+  },
 }
 
 /**

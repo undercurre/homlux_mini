@@ -3,11 +3,10 @@ import pageBehaviors from '../../../behaviors/pageBehaviors'
 import { homeStore } from '../../../store/index'
 import app from '../../common/app'
 import { queryGuideInfo, queryUserThirdPartyInfo } from '../../../apis/index'
-import { Logger, storage } from '../../../utils/index'
+import { delay, Logger, storage } from '../../../utils/index'
 import { addDeviceSDK } from '../../utils/addDeviceSDK'
 import { addGuide, inputWifiInfo } from '../../utils/paths.js'
 import Toast from '@vant/weapp/toast/toast'
-import Dialog from '@vant/weapp/dialog/dialog'
 import { meijuImgDir } from '../../../config/img'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { getLinkType } = require('../assets/js/utils.js')
@@ -46,14 +45,11 @@ ComponentWithComputed({
 
       const isAuth = res.success ? res.result[0].authStatus === 1 : false
 
+      Logger.log('queryUserThirdPartyInfo', res)
       if (!res.success) {
-        Dialog.alert({
-          title: '查询美居授权状态失败，请联系开发',
-          showCancelButton: false,
-          confirmButtonText: '我知道了',
-        }).then(() => {
-          this.goBack()
-        })
+        await delay(2000) // 等待默认的无网络提示消失后再返回
+
+        this.goBack()
         return
       }
 
@@ -82,8 +78,6 @@ ComponentWithComputed({
     async toBindDevice() {
       const { sn8, type, mode } = app.addDeviceInfo
       const res = await queryGuideInfo({ houseId: homeStore.currentHomeId, sn8, type, mode: mode.toString() })
-
-      Logger.console('queryGuideInfo', res)
 
       if (!res.success) {
         Toast('获取配网指引失败')

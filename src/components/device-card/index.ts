@@ -159,9 +159,14 @@ ComponentWithComputed({
       const modelName = getModelName(data.deviceInfo.proType, data.deviceInfo.productId)
       const prop = data.deviceInfo.mzgdPropertyDTOList[modelName]
       if (data.deviceInfo.proType === PRO_TYPE.bathHeat) {
-        return prop?.mode !== 'close_all' || prop?.light_mode !== 'close_all'
+        return (
+          prop?.mode === 'heat' ||
+          prop?.mode === 'blowing' ||
+          prop?.mode === 'ventilation' ||
+          prop?.light_mode !== 'close_all'
+        )
       } else if (data.deviceInfo.proType === PRO_TYPE.clothesDryingRack) {
-        return prop?.updown !== 'pause' || prop?.light === 'on'
+        return prop?.location_status !== 'upper_limit' || prop?.light === 'on'
       }
       return false
     },

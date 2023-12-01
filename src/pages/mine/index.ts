@@ -32,13 +32,13 @@ Component({
       homeControl: '/package-mine/home-manage/index',
       automation: '/package-automation/automation/index',
       voiceControl: '/package-mine/voice-control/index',
-      ota: '/package-mine/ota/index',
+      auth: '/package-auth/pages/index/index',
       deviceReplace: '/package-mine/device-replace/index',
       feedback: '/package-mine/feedback/index',
       help: '/package-mine/help/list/index',
       about: '/package-protocol/protocol-list/index',
       deviceCategory: '/package-mine/device-category/index',
-      defaultPageSetting: '/pages/start/index',
+      setting: '/package-mine/setting/index',
     },
     scrollViewHeight:
       (storage.get('windowHeight') as number) -

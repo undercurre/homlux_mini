@@ -1,4 +1,4 @@
-import { delay, mzaioRequest, showLoading, hideLoading, Logger } from '../utils/index'
+import { delay, mzaioRequest, showLoading, hideLoading, Logger, IApiRequestOption } from '../utils/index'
 import { PRO_TYPE } from '../config/index'
 import homOs from 'js-homos'
 import { deviceStore } from '../store/index'
@@ -6,10 +6,11 @@ import { deviceStore } from '../store/index'
 /**
  * 设备管理-根据家庭id查询全屋的设备
  */
-export async function queryAllDevice(houseId: string, options?: { loading?: boolean }) {
+export async function queryAllDevice(houseId: string, options?: IApiRequestOption) {
   return await mzaioRequest.post<Device.DeviceItem[]>({
     log: true,
     loading: options?.loading ?? false,
+    isDefaultErrorTips: options?.isDefaultErrorTips ?? true,
     url: '/v1/device/queryDeviceInfoByHouseId',
     data: {
       houseId,
@@ -625,6 +626,7 @@ export async function checkDevice(
   return await mzaioRequest.post<Device.MzgdProTypeDTO>({
     log: true,
     loading: options?.loading ?? false,
+    isDefaultErrorTips: false,
     url: '/v1/device/checkDevice',
     data,
   })

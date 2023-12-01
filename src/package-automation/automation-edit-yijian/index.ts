@@ -282,9 +282,9 @@ ComponentWithComputed({
                 }
               })
             } else {
-              const modelName = getModelName(device.proType, device.productId)
+              // const modelName = getModelName(device.proType, device.productId)
               const property = {
-                ...device.mzgdPropertyDTOList[modelName],
+                // ...device.mzgdPropertyDTOList[modelName],
                 ...action.controlAction[0],
               }
               const desc = toPropertyDesc(device.proType, property)
@@ -984,7 +984,7 @@ ComponentWithComputed({
       }
 
       actionItem.value = {
-        ...actionItem.value,
+        // ...actionItem.value,
         ...e.detail,
       }
 

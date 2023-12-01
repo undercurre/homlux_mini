@@ -137,11 +137,7 @@ ComponentWithComputed({
           } else if (device.proType === PRO_TYPE.bathHeat) {
             ctrlAction.light_mode = property.light_mode
             ctrlAction.heating_temperature = property.heating_temperature
-            if (property.mode.indexOf('close_all') > -1) {
-              ctrlAction.mode_close = property.mode
-            } else {
-              ctrlAction.mode_enable = property.mode
-            }
+            ctrlAction.mode = property.mode
           } else if (device.proType === PRO_TYPE.clothesDryingRack) {
             ctrlAction.updown = property.updown
             ctrlAction.laundry = property.laundry

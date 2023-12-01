@@ -1,4 +1,4 @@
-import { hideLoading, showLoading, Logger } from '../index'
+import { hideLoading, showLoading, Logger, shouNoNetTips } from '../index'
 
 export type BaseRequestOptions<T extends AnyResType> = WechatMiniprogram.RequestOption<T> & {
   /**
@@ -11,7 +11,7 @@ export type BaseRequestOptions<T extends AnyResType> = WechatMiniprogram.Request
   log?: boolean
 
   /**
-   * 是否使用默认错误提示
+   * 是否使用默认错误提示，默认true
    */
   isDefaultErrorTips?: boolean
   /**
@@ -61,56 +61,44 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
     }
 
     const start = Date.now()
+    const successHandler = requestOption.successHandler || requestOption.generalSuccessHandler
+
     // 请求成功回调处理
-    if (requestOption.successHandler) {
-      // 如果有传入successHandler，就只使用successHandler进行特殊处理
-      const handler = requestOption.successHandler
-      requestOption.success = (result) => {
-        // 是否打印请求结果
-        if (requestOption.log) {
-          Logger.console(
-            '请求URL:' + requestOption.url + ' 成功，参数：',
-            requestOption.data,
-            '，请求结果：',
-            result.data,
-            '\n请求用时:',
-            Date.now() - start,
-          )
-        }
-        const afterProcessResult = handler(result)
-        resolve(afterProcessResult)
+    requestOption.success = (result) => {
+      if (requestOption.loading) {
+        hideLoading()
       }
-    } else {
-      // 否则就只使用generalSuccessHandler进行通用处理或者generalSuccessHandler不存在则不处理直接返回
-      requestOption.success = (result) => {
+
+      // 是否打印请求结果
+      if (requestOption.log) {
         const cost_time = Date.now() - start
 
-        if (requestOption.log) {
-          Logger.console(`✔ ${requestOption.url} 用时 ${cost_time} ms\n`, result.data)
-        }
-
-        const data = requestOption.generalSuccessHandler ? requestOption.generalSuccessHandler(result) : result.data
-        resolve(data)
+        Logger.console(`✔ ${requestOption.url} 用时 ${cost_time} ms\n`, result.data)
       }
+
+      // 如果有传入successHandler，就使用successHandler进行特殊处理
+      const afterProcessResult = successHandler ? successHandler(result) : result.data
+
+      resolve(afterProcessResult)
     }
 
     // 请求失败回调处理
-    const handler = requestOption.failHandler || requestOption.generalFailHandler
+    const failHandler = requestOption.failHandler || requestOption.generalFailHandler
+
     requestOption.fail = (err) => {
+      if (requestOption.loading) {
+        hideLoading()
+      }
+
       if (requestOption.log) {
         Logger.error('✘请求URL:' + requestOption.url + ' 失败，原因：' + err.errMsg, requestOption.data)
       }
 
       if (requestOption.isDefaultErrorTips) {
-        Logger.error('✘断网提示:' + requestOption.url + ' 失败，原因：' + err.errMsg, requestOption.data)
-        wx.showToast({
-          title: '当前无法连接网络\n请检查网络设置',
-          icon: 'none',
-          duration: 2000,
-        })
+        shouNoNetTips()
       }
 
-      const data = handler ? handler(err) : (err as unknown as T)
+      const data = failHandler ? failHandler(err) : (err as unknown as T)
       resolve(data)
     }
 
@@ -120,11 +108,6 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
     }
     wx.request({
       ...requestOption,
-      complete() {
-        if (requestOption.loading) {
-          hideLoading()
-        }
-      },
     })
   })
 }

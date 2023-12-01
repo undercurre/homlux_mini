@@ -13,9 +13,7 @@ export default BehaviorWithComputed({
       const pages = getCurrentPages()
 
       if (pages.length <= 1) {
-        wx.switchTab({
-          url: '/pages/index/index',
-        })
+        this.goBackHome()
       } else {
         wx.navigateBack()
       }

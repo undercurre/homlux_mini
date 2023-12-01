@@ -5,6 +5,7 @@ import { homeStore } from './home'
 import { roomStore } from './room'
 import { sceneStore } from './scene'
 import homOs from 'js-homos'
+import { IApiRequestOption } from '../utils'
 
 export const deviceStore = observable({
   /**
@@ -134,9 +135,9 @@ export const deviceStore = observable({
       }
     })
 
-    // 排序算法：先按orderNum升序；灯组类型靠前；再按设备id升序
+    // 排序算法：灯组类型靠前；再按orderNum升序；再按设备id升序
     return list.sort(
-      (a, b) => a.orderNum - b.orderNum || (b.deviceType === 4 ? 1 : -1) || parseInt(a.deviceId) - parseInt(b.deviceId),
+      (a, b) => (b.deviceType === 4 ? 1 : -1) || a.orderNum - b.orderNum || parseInt(a.deviceId) - parseInt(b.deviceId),
     )
   },
 
@@ -178,7 +179,7 @@ export const deviceStore = observable({
     return map
   },
 
-  async updateAllRoomDeviceList(houseId: string = homeStore.currentHomeId, options?: { loading: boolean }) {
+  async updateAllRoomDeviceList(houseId: string = homeStore.currentHomeId, options?: IApiRequestOption) {
     const res = await queryAllDevice(houseId, options)
     if (res.success) {
       const list = {} as Record<string, Device.DeviceItem[]>

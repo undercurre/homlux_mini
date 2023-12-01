@@ -240,6 +240,7 @@
   catch:select="handleLinkSelect"
   catch:confirm="handleLinkPopupConfirm"
   catch:cancel="handleLinkPopupReturn"
+  catch:handleOfflineTap="handleOfflineTap"
 />
 
 <van-toast id="van-toast" />

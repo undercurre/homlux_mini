@@ -20,7 +20,7 @@ ComponentWithComputed({
       {
         icon: `${productImgDir}/gateway.png`,
         name: '智能网关',
-        path: '/package-distribution/scan/index?type=gateway',
+        path: '/package-distribution/scan/index?scanType=gateway',
       },
       {
         icon: `${productImgDir}/subdevice.png`,
@@ -30,7 +30,7 @@ ComponentWithComputed({
       {
         icon: `${productImgDir}/screen.png`,
         name: '智慧屏',
-        path: '/package-distribution/scan/index?type=screen',
+        path: '/package-distribution/scan/index?scanType=screen',
       },
       {
         icon: `${productImgDir}/sensor.png`,

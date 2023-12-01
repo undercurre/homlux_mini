@@ -31,7 +31,7 @@ App<IAppOption>({
     // 获取状态栏、顶部栏、底部栏高度
     setNavigationBarAndBottomBarHeight()
 
-    homOs.init({ mqttLib: mqtt })
+    homOs.init({ mqttLib: mqtt, isDebug: true })
 
     // 从缓存中读取默认首页
     const defaultPage = (storage.get<string>('defaultPage') ?? '') as string
@@ -59,7 +59,6 @@ App<IAppOption>({
     reaction(
       () => homeStore.currentHomeDetail.houseId,
       async () => {
-        console.debug('监听houseId变化', homeStore.currentHomeDetail.houseId)
         closeWebSocket()
         startWebsocketService()
 
@@ -83,13 +82,13 @@ App<IAppOption>({
     this.globalData.firstOnShow = false
 
     // 用户热启动app，建立ws连接，并且再更新一次数据
-    Logger.log('app-onShow, isConnect:', isConnect(), homeStore.currentHomeId)
+    Logger.log('app-onShow, isConnect:', isConnect(), 'isLogon', isLogon())
 
-    if (!homeStore.currentHomeId || !isLogon()) {
+    // 非登录状态，终止下面逻辑，且发现当前非主包页面（当前主包页面均可不需要登录访问），强制跳转登录
+    if (!isLogon()) {
       return
     }
 
-    // 以下逻辑需要在已登录状态
     initHomeOs()
 
     if (!isConnect()) {
@@ -102,8 +101,8 @@ App<IAppOption>({
     // 首次进入有onLaunch不必加载
     // homOS本地控制要求场景数据保持尽可能实时，需要小程序回到前台刷新场景和设备列表数据
     if (!firstOnShow) {
-      deviceStore.updateAllRoomDeviceList()
-      homeStore.updateHomeInfo()
+      deviceStore.updateAllRoomDeviceList(homeStore.currentHomeId, { isDefaultErrorTips: false })
+      homeStore.updateHomeInfo({ isDefaultErrorTips: false })
 
       sceneStore.updateAllRoomSceneList(homeStore.currentHomeId, { isDefaultErrorTips: false })
     }

@@ -27,6 +27,7 @@
         "member-manage/index",
         "device-replace/index",
         "ota/index",
+        "setting/index",
         "device-manage/index",
         "device-manage/device-detail/index",
         "device-manage/group-detail/index",

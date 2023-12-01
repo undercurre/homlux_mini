@@ -110,17 +110,11 @@ ComponentWithComputed({
     },
     // 是否显示全局控制开关（需要有灯或者开关）
     isShowHomeControl(data) {
-      let hasLightOrSwitch = false
-      if (data.allRoomDeviceList) {
-        data.allRoomDeviceList.some((device: Device.DeviceItem) => {
-          if (([PRO_TYPE.light, PRO_TYPE.switch] as string[]).includes(device.proType)) {
-            hasLightOrSwitch = true
-            return true
-          }
-          return false
-        })
+      if (!data.allRoomDeviceList?.length) {
+        return false
       }
-      return hasLightOrSwitch
+      const lightTypes = [PRO_TYPE.light, PRO_TYPE.switch, PRO_TYPE.bathHeat, PRO_TYPE.clothesDryingRack] as string[]
+      return data.allRoomDeviceList.some((device: Device.DeviceItem) => lightTypes.includes(device.proType))
     },
   },
   watch: {

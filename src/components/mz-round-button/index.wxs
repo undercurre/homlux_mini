@@ -38,7 +38,11 @@ function propObserver(newValue, oldValue, ownerInstance) {
 function touchStart(event, ownerInstance) {
   var key = ownerInstance.getDataset().key
   var rebound = ownerInstance.getDataset().rebound
+  var disabled = ownerInstance.getDataset().disabled
   ownerInstance.callMethod('handleTouchStart', event)
+  if (disabled) {
+    return
+  }
 
   console.log(key, isOn[key])
 
@@ -83,6 +87,10 @@ function touchStart(event, ownerInstance) {
 }
 
 function touchEnd(event, ownerInstance) {
+  var disabled = ownerInstance.getDataset().disabled
+  if (disabled) {
+    return
+  }
   var key = ownerInstance.getDataset().key
   var rebound = ownerInstance.getDataset().rebound
 

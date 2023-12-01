@@ -126,7 +126,9 @@
   <view class="flex flex-col items-center py-46rpx text-28 text-hex-666 leading-48rpx">
     <view class="flex flex-col">
       <text>1.请确定网关是否已通电</text>
-      <text>2.请将手机尽量靠近网关</text>
+      <text>2.请检查WIFI账号密码是否正确</text>
+      <text>3.请确认路由器是否正常工作</text>
+      <text>4.请确认手机网络是否正常</text>
     </view>
   </view>
 </van-dialog>

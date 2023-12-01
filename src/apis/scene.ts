@@ -1,4 +1,4 @@
-import { Logger, mzaioRequest } from '../utils/index'
+import { IApiRequestOption, Logger, mzaioRequest } from '../utils/index'
 import homOs from 'js-homos'
 import { sceneStore } from '../store/index'
 
@@ -13,10 +13,7 @@ export async function querySceneList(roomId: string, options?: { loading?: boole
   })
 }
 
-export async function querySceneListByHouseId(
-  houseId: string,
-  options?: { loading?: boolean; isDefaultErrorTips?: boolean },
-) {
+export async function querySceneListByHouseId(houseId: string, options?: IApiRequestOption) {
   return await mzaioRequest.post<Scene.SceneItem[]>({
     log: true,
     loading: options?.loading ?? false,

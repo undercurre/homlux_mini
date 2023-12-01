@@ -24,7 +24,7 @@ Component({
    * 组件的初始数据
    */
   data: {
-    currentIndex: 0,
+    currentIndex: -1,
     columns: Array.from({ length: 10 }, (_, i) => `${i * 10 + 30}cm`),
     _newIndex: 0,
   },

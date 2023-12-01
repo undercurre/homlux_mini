@@ -1,7 +1,7 @@
 <view class="page-container flex flex-col">
   <nav-bar
     leftArrow="{{true}}"
-    bind:leftTap="goBackHome"
+    bind:leftTap="goBack"
     title="选择家庭"
   ></nav-bar>
 

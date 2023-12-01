@@ -16,7 +16,7 @@
 
     <view class="p-32rpx">
       <view
-        class="pb-32rpx"
+        class="pb-24rpx"
         wx:for="{{ failUiData.guideDesc }}"
         wx:key="*this"
         wx:for-item="failUiDataItem"
@@ -36,11 +36,11 @@
         </view>
 
         <view wx:if="{{tools.isNeedWifiConfirmInput(failUiDataItem)}}">
-          <view class="py-24rpx">
+          <view>
             <van-field
               value="{{ bindWifiInfo.SSIDContent }}"
               placeholder="{{wifiInputPlaceholder}}"
-              custom-style="margin-bottom: 32rpx;margin-top: 40rpx;padding: 32rpx 32rpx;border-radius: 24rpx;"
+              custom-style="margin-bottom: 24rpx;margin-top: 24rpx;padding: 32rpx 32rpx;border-radius: 24rpx;"
               clearable="{{true}}"
               bind:input="inputSSIDContent"
               border="{{false}}"
@@ -96,7 +96,7 @@
           >
             <view class="tip-text">{{spaceTip}}</view>
           </view>
-          <view class="tip-list-fail text-hex-A2A2A2 text-24 leading-52rpx">
+          <view class="tip-list-fail text-hex-A2A2A2 text-24 leading-40rpx">
             <view class="tip-fail">
               <text class="circle"></text>
               <text>仅支持 2.4GHz Wi-Fi</text>

@@ -316,12 +316,11 @@ ComponentWithComputed({
                 })
                 console.log('添加开关面板', tempSceneDeviceActionsFlatten)
               } else {
-                const modelName = getModelName(device.proType, device.productId)
+                // const modelName = getModelName(device.proType, device.productId)
                 const property = {
-                  ...device.mzgdPropertyDTOList[modelName],
+                  // ...device.mzgdPropertyDTOList[modelName],
                   ...action.controlAction[0],
                 }
-
                 const desc = toPropertyDesc(device.proType, property)
                 tempSceneDeviceActionsFlatten.push({
                   uniId: device.uniId,
@@ -903,7 +902,7 @@ ComponentWithComputed({
     handleConditionDelete(e: WechatMiniprogram.TouchEvent) {
       this.setData({
         sceneDeviceActionsFlatten: [],
-        sceneDevicelinkSelectList: []
+        sceneDevicelinkSelectList: [],
       })
       const uniId = e.currentTarget.dataset.info.uniId
       console.log('删除条件', uniId)
@@ -1073,7 +1072,7 @@ ComponentWithComputed({
       }
 
       actionItem.value = {
-        ...actionItem.value,
+        // ...actionItem.value,
         ...e.detail,
       }
 
@@ -1309,11 +1308,7 @@ ComponentWithComputed({
               } else if (device.proType === PRO_TYPE.bathHeat) {
                 ctrlAction.light_mode = property.light_mode
                 ctrlAction.heating_temperature = property.heating_temperature
-                if (property.mode.indexOf('close_all') > -1) {
-                  ctrlAction.mode_close = property.mode
-                } else {
-                  ctrlAction.mode_enable = property.mode
-                }
+                ctrlAction.mode = property.mode
               } else if (device.proType === PRO_TYPE.clothesDryingRack) {
                 ctrlAction.updown = property.updown
                 ctrlAction.laundry = property.laundry
