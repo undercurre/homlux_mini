@@ -141,8 +141,11 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    async handleCardTap(e: { detail: { uniId?: string; sceneId?: string } }) {
+    handleCardTap(e: { detail: { uniId?: string; sceneId?: string } }) {
       this.triggerEvent('select', e.detail.sceneId || e.detail.uniId)
+    },
+    handleOfflineTap(e: { detail: { uniId?: string; sceneId?: string } }) {
+      this.triggerEvent('handleOfflineTap', e.detail.sceneId || e.detail.uniId)
     },
     handleClose() {
       this.triggerEvent('close')

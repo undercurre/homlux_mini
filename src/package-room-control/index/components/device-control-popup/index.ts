@@ -321,6 +321,24 @@ ComponentWithComputed({
       })
     },
 
+    /**
+     * 离线设备卡片选择事件
+     * 存在之前关联的设备突然离线了,导致无法取消选择的情况，需要单独处理
+     */
+    handleOfflineTap(e: { detail: string }) {
+      const selectId = e.detail
+
+      if (this.data.linkSelectList.includes(selectId)) {
+        const index = this.data.linkSelectList.findIndex((id) => id === selectId)
+        this.data.linkSelectList.splice(index, 1)
+        this.setData({
+          linkSelectList: [...this.data.linkSelectList],
+        })
+      } else {
+        Toast({ message: '设备已离线', zIndex: 9999 })
+      }
+    },
+
     async handleLinkSelect(e: { detail: string }) {
       const deviceMap = deviceStore.allRoomDeviceFlattenMap
       const switchUniId = this.data.checkedList[0]
