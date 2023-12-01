@@ -35,6 +35,9 @@ function propObserver(newValue, oldValue, ownerInstance) {
   if (newValue === oldValue) {
     return
   }
+  var dataset = ownerInstance.getDataset()
+  if (dataset.key !== undefined) key = dataset.key
+
   ownerInstance.setTimeout(function () {
     // 如果正在拖动，则不响应值变化
     if (isMoving[key]) return

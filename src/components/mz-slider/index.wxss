@@ -7,6 +7,7 @@
 .mz-slider-bar {
   background-color: rgb(80, 127, 255);
   border-radius: 24rpx;
+  width: 2rpx;
   height: 100%;
   display: flex;
   justify-content: flex-end;

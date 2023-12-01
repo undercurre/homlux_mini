@@ -166,7 +166,7 @@ ComponentWithComputed({
           prop?.light_mode !== 'close_all'
         )
       } else if (data.deviceInfo.proType === PRO_TYPE.clothesDryingRack) {
-        return prop?.updown !== 'pause' || prop?.light === 'on'
+        return prop?.location_status !== 'upper_limit' || prop?.light === 'on'
       }
       return false
     },

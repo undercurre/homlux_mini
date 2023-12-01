@@ -189,7 +189,6 @@ ComponentWithComputed({
               delete prop.updown
             } else {
               Toast({ message: '已在上升中', zIndex: 9999 })
-              return
             }
           } else if (prop.location_status === 'upper_limit' && !this.data.isSceneSetting) {
             Toast({ message: '已到达最高点', zIndex: 9999 })
@@ -210,7 +209,6 @@ ComponentWithComputed({
               delete prop.updown
             } else {
               Toast({ message: '已在下降中', zIndex: 9999 })
-              return
             }
           } else {
             property.updown = key
@@ -226,7 +224,6 @@ ComponentWithComputed({
               delete prop.updown
             } else {
               Toast({ message: '已暂停', zIndex: 9999 })
-              return
             }
           } else {
             property.updown = key
@@ -254,16 +251,31 @@ ComponentWithComputed({
               delete prop.laundry
             } else {
               Toast({ message: '一键晾衣执行中', zIndex: 9999 })
-              return
             }
           } else if (prop.custom_height) {
             property.laundry = 'on'
+            // 如果在最高最低点，则即时取消上下限标志
+            if (prop.location_status !== 'normal') {
+              prop.location_status = 'normal'
+            }
           } else {
             Toast({ message: '请先设置好一键晾衣高度', zIndex: 9999 })
-            return
           }
           break
         }
+      }
+
+      if (prop.errorCode === 2) {
+        Toast({ message: '遇到障碍物', zIndex: 9999 })
+        return
+      }
+      if (prop.errorCode === 5) {
+        Toast({ message: '负载过重，请减轻负载', zIndex: 9999 })
+        return
+      }
+      if (prop.errorCode === 6) {
+        Toast({ message: '电机过热，请稍后再使用', zIndex: 9999 })
+        return
       }
 
       // 即时使用设置值渲染
