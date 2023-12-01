@@ -232,6 +232,12 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
           iconActive: '/package-remoter/assets/sceneB0.png',
           name: '干燥',
         },
+        {
+          key: 'BATH_WARM_UP',
+          icon: '/package-remoter/assets/scene01.png',
+          iconActive: '/package-remoter/assets/scene00.png',
+          name: '取暖',
+        },
       ],
       bList: [
         {
@@ -423,6 +429,12 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
           icon: '/package-remoter/assets/sceneB1.png',
           iconActive: '/package-remoter/assets/sceneB0.png',
           name: '干燥',
+        },
+        {
+          key: 'BATH_WARM_UP',
+          icon: '/package-remoter/assets/scene01.png',
+          iconActive: '/package-remoter/assets/scene00.png',
+          name: '取暖',
         },
       ],
       bList: [
@@ -706,7 +718,6 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
           icon: '/package-remoter/assets/sceneA1.png',
           iconActive: '/package-remoter/assets/sceneA0.png',
           name: '换气',
-          btnWidth: '654rpx',
         },
         {
           key: 'BATH_SWING',
