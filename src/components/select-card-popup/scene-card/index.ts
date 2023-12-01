@@ -1,4 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
+import { formLimitString } from '../../../utils/index'
 
 ComponentWithComputed({
   options: {},
@@ -24,6 +25,9 @@ ComponentWithComputed({
     style(data) {
       return `border: 4rpx solid ${data.select ? '#507FFF' : 'rgba(0,0,0,0)'};`
     },
+    sceneInfoCustomName(data) {
+      return formLimitString(data.sceneInfo.sceneName, 5, 2, 2)
+    }
   },
 
   /**

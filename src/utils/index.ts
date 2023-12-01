@@ -15,6 +15,7 @@ export * from './deviceModel'
 export * from './network'
 export * from './capacity'
 export * from './sort'
+export * from './nameFormater'
 
 import { PRO_TYPE } from '../config/index'
 

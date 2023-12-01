@@ -4,6 +4,7 @@ import { homeStore } from './home'
 import { strUtil } from '../utils/index'
 import { PRO_TYPE } from '../config/index'
 import { deviceStore } from './device'
+import { formLimitString } from '../utils/index'
 
 export const autosceneStore = observable({
   /**
@@ -39,6 +40,7 @@ export const autosceneStore = observable({
             }
           }
         })
+        item.sceneName = formLimitString(item.sceneName, 13, 9, 2)
         return item
       })
     } catch (e) {
