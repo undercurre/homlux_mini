@@ -254,6 +254,10 @@ ComponentWithComputed({
             }
           } else if (prop.custom_height) {
             property.laundry = 'on'
+            // 如果在最高最低点，则即时取消上下限标志
+            if (prop.location_status !== 'normal') {
+              prop.location_status = 'normal'
+            }
           } else {
             Toast({ message: '请先设置好一键晾衣高度', zIndex: 9999 })
           }
