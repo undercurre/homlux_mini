@@ -1,6 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { deviceStore, roomStore } from '../../store/index'
-import { checkWifiSwitch } from '../../utils/index'
+import { roomStore } from '../../store/index'
 
 ComponentWithComputed({
   options: {},
@@ -159,17 +158,6 @@ ComponentWithComputed({
     handleRoomSelect(e: WechatMiniprogram.TouchEvent) {
       this.setData({
         roomSelect: e.currentTarget.dataset.item.roomId,
-      })
-    },
-    handleRebindGateway() {
-      // 预校验wifi开关是否打开
-      if (!checkWifiSwitch()) {
-        return
-      }
-
-      const gateway = deviceStore.allRoomDeviceMap[this.data.offlineDevice.gatewayId]
-      wx.navigateTo({
-        url: `/package-distribution/wifi-connect/index?type=changeWifi&sn=${gateway.sn}`,
       })
     },
     blank() {},
