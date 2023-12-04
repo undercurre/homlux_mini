@@ -353,14 +353,21 @@ ComponentWithComputed({
       const lightModeOn = this.data.largeBtnList.filter((item) => item.on).map((item) => item.key)
       console.log('handleConfirm', modeOn, lightModeOn)
 
-      const diffData = {} as IAnyObject
+      const actionsData = {} as IAnyObject
       if (modeOn.length) {
-        diffData.mode = modeOn.join(',')
+        actionsData.mode = modeOn.join(',')
+        if (modeOn.includes('heating_soft')) {
+          actionsData.mode.replace('heating_soft', 'heating')
+          actionsData.heating_temperature = '30'
+        } else if (modeOn.includes('heating_strong')) {
+          actionsData.mode.replace('heating_strong', 'heating')
+          actionsData.heating_temperature = '45'
+        }
       }
       if (lightModeOn.length) {
-        diffData.light_mode = lightModeOn.join(',')
+        actionsData.light_mode = lightModeOn.join(',')
       }
-      this.triggerEvent('confirm', diffData)
+      this.triggerEvent('confirm', actionsData)
     },
   },
 })
