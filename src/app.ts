@@ -40,7 +40,7 @@ App<IAppOption>({
       othersStore.setDefaultPage(defaultPage)
     }
 
-    // 如果用户已经登录，开始请求数据
+    // 如果用户已经登录，开始请求数据[用户][家庭列表、全屋房间、全屋设备]
     if (isLogon()) {
       try {
         userStore.setIsLogin(true)
@@ -103,9 +103,10 @@ App<IAppOption>({
     if (!firstOnShow) {
       deviceStore.updateAllRoomDeviceList(homeStore.currentHomeId, { isDefaultErrorTips: false })
       homeStore.updateHomeInfo({ isDefaultErrorTips: false })
-
-      sceneStore.updateAllRoomSceneList(homeStore.currentHomeId, { isDefaultErrorTips: false })
     }
+
+    // 全屋场景数据加载
+    sceneStore.updateAllRoomSceneList(homeStore.currentHomeId, { isDefaultErrorTips: false })
   },
 
   onHide() {
