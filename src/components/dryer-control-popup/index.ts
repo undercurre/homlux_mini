@@ -198,6 +198,10 @@ ComponentWithComputed({
             if (prop.location_status === 'lower_limit') {
               prop.location_status = 'normal'
             }
+            // 场景设置时互斥
+            if (this.data.isSceneSetting) {
+              prop.laundry = 'off'
+            }
           }
           break
         }
@@ -216,6 +220,10 @@ ComponentWithComputed({
             if (prop.location_status === 'upper_limit') {
               prop.location_status = 'normal'
             }
+            // 场景设置时互斥
+            if (this.data.isSceneSetting) {
+              prop.laundry = 'off'
+            }
           }
           break
         case 'pause':
@@ -227,6 +235,10 @@ ComponentWithComputed({
             }
           } else {
             property.updown = key
+            // 场景设置时互斥
+            if (this.data.isSceneSetting) {
+              prop.laundry = 'off'
+            }
           }
           break
 
@@ -257,6 +269,10 @@ ComponentWithComputed({
             // 如果在最高最低点，则即时取消上下限标志
             if (prop.location_status !== 'normal') {
               prop.location_status = 'normal'
+            }
+            // 场景设置时互斥
+            if (this.data.isSceneSetting) {
+              prop.updown = ''
             }
           } else {
             Toast({ message: '请先设置好一键晾衣高度', zIndex: 9999 })
@@ -321,25 +337,21 @@ ComponentWithComputed({
       this.triggerEvent('close')
     },
     handleConfirm() {
-      const upDownOn = this.data.btnList.filter((item) => item.on).map((item) => item.key)
-      const lightSetting = this.data.largeBtnList
-        .filter((item) => item.key !== 'laundry' && item.on)
-        .map((item) => item.key)
-      const laundrySetting = this.data.largeBtnList
-        .filter((item) => item.key === 'laundry' && item.on)
-        .map((item) => item.key)
+      const upDownOn = this.data.btnList.filter((item) => item.on)
+      const lightSetting = this.data.largeBtnList.filter((item) => item.key !== 'laundry' && item.on)
+      const laundrySetting = this.data.largeBtnList.filter((item) => item.key === 'laundry' && item.on)
 
       console.log('handleConfirm', upDownOn, lightSetting, laundrySetting)
 
       const diffData = {} as IAnyObject
       if (upDownOn.length) {
-        diffData.updown = upDownOn[0]
+        diffData.updown = upDownOn[0].key
       }
       if (lightSetting.length) {
-        diffData.light = lightSetting[0]
+        diffData.light = lightSetting[0].key
       }
       if (laundrySetting.length) {
-        diffData.laundry = laundrySetting[0]
+        diffData.laundry = 'on'
       }
       this.triggerEvent('confirm', diffData)
     },
