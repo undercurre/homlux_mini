@@ -264,15 +264,17 @@ ComponentWithComputed({
             } else {
               Toast({ message: '一键晾衣执行中', zIndex: 9999 })
             }
-          } else if (prop.custom_height) {
+          } else if (this.data.isSceneSetting) {
+            // 场景设置时互斥
+            prop.updown = ''
+            property.laundry = 'on'
+          }
+          // 控制时要先判断是否已设置一键晾衣高度
+          else if (prop.custom_height) {
             property.laundry = 'on'
             // 如果在最高最低点，则即时取消上下限标志
             if (prop.location_status !== 'normal') {
               prop.location_status = 'normal'
-            }
-            // 场景设置时互斥
-            if (this.data.isSceneSetting) {
-              prop.updown = ''
             }
           } else {
             Toast({ message: '请先设置好一键晾衣高度', zIndex: 9999 })
