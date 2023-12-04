@@ -40,7 +40,9 @@ export const autosceneStore = observable({
             }
           }
         })
-        item.sceneName = formLimitString(item.sceneName, 13, 9, 2)
+        runInAction(() => {
+          item.sceneName = formLimitString(item.sceneName, 13, 9, 2)
+        })
         return item
       })
     } catch (e) {
