@@ -351,22 +351,23 @@ ComponentWithComputed({
     handleConfirm() {
       const modeOn = this.data.btnList.filter((item) => item.on).map((item) => item.key)
       const lightModeOn = this.data.largeBtnList.filter((item) => item.on).map((item) => item.key)
-      console.log('handleConfirm', modeOn, lightModeOn)
 
       const actionsData = {} as IAnyObject
       if (modeOn.length) {
         actionsData.mode = modeOn.join(',')
-        if (modeOn.includes('heating_soft')) {
-          actionsData.mode.replace('heating_soft', 'heating')
+        if (actionsData.mode.indexOf('heating_soft') > -1) {
+          actionsData.mode = actionsData.mode.replace('heating_soft', 'heating')
           actionsData.heating_temperature = '30'
-        } else if (modeOn.includes('heating_strong')) {
-          actionsData.mode.replace('heating_strong', 'heating')
+        } else if (actionsData.mode.indexOf('heating_strong') > -1) {
+          actionsData.mode = actionsData.mode.replace('heating_strong', 'heating')
           actionsData.heating_temperature = '45'
         }
       }
       if (lightModeOn.length) {
         actionsData.light_mode = lightModeOn.join(',')
       }
+      console.log('handleConfirm', actionsData)
+
       this.triggerEvent('confirm', actionsData)
     },
   },
