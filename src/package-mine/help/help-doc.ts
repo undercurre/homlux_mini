@@ -25,7 +25,7 @@ export const remoterHelp = `
 1、 设备是否需要联网？
 </p>
 <p style="font-size:14px;color: #555659; margin: 10px auto;">
-不需要，“遥控器”小程序通过蓝牙和设备近距离通信，设备不需要连接WIFI。手机需要能联网才能加载“遥控器”小程序。
+不需要，“遥控器”小程序通过蓝牙和设备近距离通信，设备不需要连接Wi-Fi。手机需要能联网才能加载“遥控器”小程序。
 </p>
 
 <p style="font-size:16px;font-weight: 600; line-height: 2;">

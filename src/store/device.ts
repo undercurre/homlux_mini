@@ -5,6 +5,7 @@ import { homeStore } from './home'
 import { roomStore } from './room'
 import { sceneStore } from './scene'
 import homOs from 'js-homos'
+import { IApiRequestOption } from '../utils'
 
 export const deviceStore = observable({
   /**
@@ -40,6 +41,13 @@ export const deviceStore = observable({
   get deviceFlattenList(): Device.DeviceItem[] {
     const { roomId = 0 } = roomStore.currentRoom ?? {}
     return this.allRoomDeviceFlattenList.filter((device) => device.roomId === roomId)
+  },
+
+  // 当前房间灯组数量
+  get groupCount(): number {
+    const { roomId = 0 } = roomStore.currentRoom ?? {}
+    const groups = this.allRoomDeviceList.filter((device) => device.roomId === roomId && device.deviceType === 4)
+    return groups.length
   },
 
   // 房间所有灯的亮度计算
@@ -122,13 +130,15 @@ export const deviceStore = observable({
           mzgdPropertyDTOList: {
             [modelName]: device.mzgdPropertyDTOList[modelName],
           },
-          orderNum: device.deviceType === 4 ? -1 : device.orderNum, // 灯组强制排前面
+          // orderNum: device.deviceType === 4 ? -1 : device.orderNum, // 灯组强制排前面
         })
       }
     })
 
-    // 排序，先按排序字段升序，相同则再按设备id升序
-    return list.sort((a, b) => a.orderNum - b.orderNum || parseInt(a.deviceId) - parseInt(b.deviceId))
+    // 排序算法：灯组类型靠前；再按orderNum升序；再按设备id升序
+    return list.sort(
+      (a, b) => (b.deviceType === 4 ? 1 : -1) || a.orderNum - b.orderNum || parseInt(a.deviceId) - parseInt(b.deviceId),
+    )
   },
 
   /**
@@ -169,7 +179,7 @@ export const deviceStore = observable({
     return map
   },
 
-  async updateAllRoomDeviceList(houseId: string = homeStore.currentHomeId, options?: { loading: boolean }) {
+  async updateAllRoomDeviceList(houseId: string = homeStore.currentHomeId, options?: IApiRequestOption) {
     const res = await queryAllDevice(houseId, options)
     if (res.success) {
       const list = {} as Record<string, Device.DeviceItem[]>

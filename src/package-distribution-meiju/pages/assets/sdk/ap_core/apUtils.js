@@ -12,7 +12,6 @@ import {
 import { api } from '../../../../common/js/api'
 import { Logger } from '../../../../../utils/index'
 
-console.debug('[ap_core]signHex')
 let signStr = 'xhdiwjnchekd4d512chdjx5d8e4c394D2D7S'
 let signHex = '78686469776a6e6368656b6434643531326368646a783564386534633339344432443753'
 let MAS_KEY = {

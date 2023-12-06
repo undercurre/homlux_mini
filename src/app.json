@@ -27,6 +27,7 @@
         "member-manage/index",
         "device-replace/index",
         "ota/index",
+        "setting/index",
         "device-manage/index",
         "device-manage/device-detail/index",
         "device-manage/group-detail/index",
@@ -53,6 +54,7 @@
         "pages/index/index",
         "pages/meiju/index",
         "pages/home-list/index",
+        "pages/confirm-auth/index",
         "pages/device-list/index"
       ]
     },
@@ -75,13 +77,15 @@
       "root": "package-distribution-meiju",
       "pages": [
         "pages/check-auth/index",
-        "pages/addDevice/pages/inputWifiInfo/inputWifiInfo",
-        "pages/addDevice/pages/addGuide/addGuide",
-        "pages/user-gudie/pages/location-guide/location-guide",
-        "pages/addDevice/pages/addFail/addFail",
-        "pages/addDevice/pages/linkDevice/linkDevice",
-        "pages/addDevice/pages/linkNetFail/linkNetFail",
-        "pages/addDevice/pages/linkAp/linkAp"
+        "pages/inputWifiInfo/inputWifiInfo",
+        "pages/addGuide/addGuide",
+        "pages/location-guide/location-guide",
+        "pages/addDevice/pages/localNetGuide/localNetGuide",
+        "pages/addFail/addFail",
+        "pages/linkDevice/linkDevice",
+        "pages/linkNetFail/linkNetFail",
+        "pages/webView/webView",
+        "pages/linkAp/linkAp"
       ]
     }
   ],
@@ -89,6 +93,10 @@
     "pages/index/index": {
       "network": "all",
       "packages": ["package-room-control", "package-distribution", "package-mine", "package-automation"]
+    },
+    "package-distribution/choose-device/index": {
+      "network": "all",
+      "packages": ["package-distribution-meiju", "package-auth"]
     }
   },
   "tabBar": {

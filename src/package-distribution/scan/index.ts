@@ -3,11 +3,21 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
 import dayjs from 'dayjs'
-import { deviceBinding, homeBinding } from '../../store/index'
+import { deviceBinding } from '../../store/index'
 import { bleDevicesBinding, bleDevicesStore } from '../store/bleDeviceStore'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { checkWifiSwitch, strUtil, showLoading, hideLoading, delay, Logger, isAndroid } from '../../utils/index'
-import { getGwNetworkInfo, checkDevice, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
+import {
+  checkWifiSwitch,
+  delay,
+  hideLoading,
+  isAndroid,
+  isConnect,
+  Logger,
+  shouNoNetTips,
+  showLoading,
+  strUtil,
+} from '../../utils/index'
+import { checkDevice, getGwNetworkInfo, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -18,20 +28,26 @@ ComponentWithComputed({
   /**
    * 组件的属性列表
    */
-  properties: {},
+  properties: {
+    // 进入扫码页的入口
+    scanType: {
+      type: String,
+      value: '',
+    },
+  },
 
   /**
    * 组件的初始数据
    */
   data: {
+    _isFromWxScan: false, // 是否通过微信扫码直接进入
     _listenLocationTimeId: 0, // 监听系统位置信息是否打开的计时器， 0为不存在监听
-    needCheckCamera: true, // 是否需要重新检查摄像头权限
-    isBlePermit: false,
+    _needCheckCamera: true, // 是否需要重新检查摄像头权限
+    _isBlePermit: false, // 微信是否已经授权蓝牙
     isShowPage: false,
     isShowGatewayList: false, // 是否展示选择网关列表弹窗
     isShowNoGatewayTips: false, // 是否展示添加网关提示弹窗
     isScan: false, // 是否正在扫码
-    scanType: '', // 扫码页的种类
     isFlash: false,
     selectGateway: {
       deviceId: '',
@@ -48,7 +64,14 @@ ComponentWithComputed({
 
       return allRoomDeviceList.filter((item) => item.deviceType === 1)
     },
+    isShowTips(data) {
+      return (data.scanType === 'subdevice' && data._isBlePermit) || data.scanType === 'gateway'
+    },
     tipsText(data: IAnyObject) {
+      if (data.scanType === 'gateway') {
+        return '找不到二维码，尝试手动添加'
+      }
+
       if (!data.available) {
         return '打开手机蓝牙发现附近子设备'
       }
@@ -61,7 +84,34 @@ ComponentWithComputed({
     async ready() {
       bleDevicesBinding.store.reset()
 
-      await homeBinding.store.updateHomeInfo()
+      const params = wx.getEnterOptionsSync()
+      Logger.log('scanPage', params)
+
+      // 判断通过微信扫码直接进入该界面时,初始化scanType
+      if (getCurrentPages().length === 1 && params.scene === 1011) {
+        const scanUrl = decodeURIComponent(params.query.q)
+
+        Logger.log('scanUrl', scanUrl)
+
+        if (!this.isValidLink(scanUrl)) {
+          Toast('无效二维码')
+          return
+        }
+
+        const pageParams = strUtil.getUrlParams(scanUrl)
+
+        Logger.log('scanParams', pageParams)
+        const modeMap = {
+          '01': 'subdevice',
+          '02': 'gateway',
+          '10': 'screen',
+        }
+
+        this.setData({
+          _isFromWxScan: true,
+          scanType: modeMap[pageParams.mode as '01' | '02' | '10'],
+        })
+      }
     },
     detached() {
       bleDevicesStore.stopBLeDiscovery()
@@ -76,9 +126,11 @@ ComponentWithComputed({
         isShowPage: true,
       })
 
+      this.checkNet()
+
       // 子设备配网页，蓝牙权限及开关已开情况下
       this.data.scanType === 'subdevice' &&
-        this.data.isBlePermit &&
+        this.data._isBlePermit &&
         bleDevicesStore.available &&
         bleDevicesStore.startBleDiscovery()
     },
@@ -96,24 +148,27 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    async onLoad(query: { type?: string }) {
-      this.setData({
-        scanType: query.type,
-      })
+    checkNet() {
+      const isValidNet = isConnect()
+
+      if (!isValidNet) {
+        shouNoNetTips()
+      }
+
+      return isValidNet
+    },
+
+    /**
+     * 手动添加网关
+     */
+    addGatewayManually() {
+      this.bindGateway({ addType: 'manual' })
     },
     // 检查是否通过微信扫码直接进入该界面时判断场景值
     checkWxScanEnter() {
-      const params = wx.getLaunchOptionsSync()
-      Logger.log(
-        'scanPage',
-        params,
-        'wx.getEnterOptionsSync()',
-        wx.getEnterOptionsSync(),
-        'getCurrentPages()',
-        getCurrentPages(),
-      )
+      const params = wx.getEnterOptionsSync()
 
-      // 防止重复判断,仅通过微信扫码直接进入该界面时判断场景值
+      // 判断通过微信扫码直接进入该界面时判断场景值
       if (getCurrentPages().length === 1 && params.scene === 1011) {
         const scanUrl = decodeURIComponent(params.query.q)
 
@@ -164,7 +219,7 @@ ComponentWithComputed({
      */
     async checkSystemBleSwitch() {
       // 没有打开系统蓝牙开关异常处理
-      if (!bleDevicesStore.available) {
+      if (this.data.scanType === 'subdevice' && !bleDevicesStore.available) {
         Dialog.alert({
           message: '请打开手机蓝牙，用于发现附近的子设备',
           showCancelButton: false,
@@ -175,36 +230,9 @@ ComponentWithComputed({
       return bleDevicesStore.available
     },
 
-    /**
-     * 检查微信蓝牙权限
-     */
-    async checkBlePermission() {
-      showLoading()
-      // 没有打开微信蓝牙授权异常处理
-
-      this.setData({
-        needCheckCamera: true,
-      })
-
-      Dialog.alert({
-        message: '请授权使用蓝牙，否则无法正常扫码配网',
-        showCancelButton: true,
-        cancelButtonText: '返回',
-        confirmButtonText: '去设置',
-        confirmButtonOpenType: 'openSetting',
-      }).catch(() => {
-        // on cancel
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        this.goBack() // 拒绝授权摄像头，则退出当前页面
-      })
-
-      hideLoading()
-    },
-
     async initBle() {
-      // 蓝牙子设备配网需要用到蓝牙功能
-      if (this.data.scanType !== 'subdevice' || bleDevicesStore.discovering) {
+      // 若已经进入搜索蓝牙状态，无需重复初始化
+      if (bleDevicesStore.discovering) {
         return
       }
 
@@ -217,25 +245,35 @@ ComponentWithComputed({
 
       Logger.log('scan-openBleRes', openBleRes)
 
+      // 优先判断微信授权设置
       // 判断是否授权蓝牙 安卓、IOS返回错误格式不一致
       if (openBleRes.errno === 103 || openBleRes.errMsg.includes('auth deny')) {
-        this.checkBlePermission()
+        // 没有打开微信蓝牙授权异常处理
+        this.setData({
+          _needCheckCamera: true,
+        })
 
-        // 优先判断微信授权设置
+        Dialog.alert({
+          message: '请授权使用蓝牙，否则无法正常扫码配网',
+          showCancelButton: true,
+          cancelButtonText: '返回',
+          confirmButtonText: '去设置',
+          confirmButtonOpenType: 'openSetting',
+        }).catch(() => {
+          this.goBack() // 拒绝授权摄像头，则退出当前页面
+        })
         return
-      }
+      } else if (openBleRes.errCode === 10001) {
+        // 系统没有打开蓝牙
+        Dialog.alert({
+          message: '请打开手机蓝牙，用于发现附近的子设备',
+          showCancelButton: false,
+          confirmButtonText: '我知道了',
+        })
 
-      this.setData({
-        isBlePermit: true,
-      })
-
-      // 系统是否已打开蓝牙
-      const res = await this.checkSystemBleSwitch()
-
-      if (!res) {
         const listen = (res: WechatMiniprogram.OnBluetoothAdapterStateChangeCallbackResult) => {
           if (res.available) {
-            bleDevicesStore.startBleDiscovery()
+            this.data.scanType === 'subdevice' && bleDevicesStore.startBleDiscovery()
             this.checkWxScanEnter()
 
             bleDevicesStore.offBluetoothAdapterStateChange()
@@ -243,9 +281,13 @@ ComponentWithComputed({
         }
         bleDevicesStore.onBluetoothAdapterStateChange(listen)
       } else {
-        bleDevicesStore.startBleDiscovery()
+        this.data.scanType === 'subdevice' && bleDevicesStore.startBleDiscovery()
         this.checkWxScanEnter()
       }
+
+      this.setData({
+        _isBlePermit: true,
+      })
     },
 
     onCloseGwList() {
@@ -284,7 +326,7 @@ ComponentWithComputed({
       if (!settingRes.authSetting['scope.camera']) {
         // 跳转过权限设置页均需要重置needCheckCamera状态，回来后需要重新检查摄像头权限
         this.setData({
-          needCheckCamera: true,
+          _needCheckCamera: true,
         })
 
         Dialog.alert({
@@ -301,7 +343,7 @@ ComponentWithComputed({
         })
       } else {
         this.setData({
-          needCheckCamera: false,
+          _needCheckCamera: false,
         })
       }
 
@@ -342,8 +384,8 @@ ComponentWithComputed({
     },
 
     async initCameraDone() {
-      Logger.log('initCameraDone')
-      if (this.data.needCheckCamera) {
+      Logger.log('initCameraDone', this.data.scanType)
+      if (this.data._needCheckCamera) {
         const flag = await this.checkCameraPerssion()
 
         if (!flag) {
@@ -413,7 +455,7 @@ ComponentWithComputed({
               quality: 70,
             })
 
-            console.log('compressRes', compressRes)
+            Logger.log('compressRes', compressRes)
 
             const stat = fs.statSync(compressRes.tempFilePath, false) as WechatMiniprogram.Stats
             file.tempFilePath = compressRes.tempFilePath
@@ -422,9 +464,31 @@ ComponentWithComputed({
 
           const result = fs.readFileSync(file.tempFilePath)
 
-          console.log('readFile', result)
+          Logger.log('readFile', result)
 
-          this.uploadFile({ fileUrl: file.tempFilePath, fileSize: file.size, binary: result })
+          const uploadRes = await this.uploadFile({ fileUrl: file.tempFilePath, fileSize: file.size, binary: result })
+
+          if (!uploadRes.success) {
+            Logger.error('上传二维码失败', uploadRes)
+            hideLoading()
+            Toast('上传二维码失败')
+            return
+          }
+
+          await delay(3000) // 由于有可能图片还没上传完毕，需要延迟调用解析图片接口
+
+          const query = await queryWxImgQrCode(uploadRes.result.downloadUrl)
+
+          hideLoading()
+          if (query.success) {
+            this.handleScanUrl(query.result.qrCodeUrl)
+          } else {
+            Logger.error('uploadFile-err', res)
+            Toast('无效二维码')
+            this.setData({
+              isScan: false,
+            })
+          }
         },
       })
     },
@@ -437,35 +501,53 @@ ComponentWithComputed({
       // 获取集团oss上传服务相关信息
       const { result } = await getUploadFileForOssInfo(nameArr[nameArr.length - 1])
 
-      // 上传图片到集团OSS服务
-      wx.request({
-        url: result.uploadUrl, //仅为示例，并非真实的接口地址
-        method: 'PUT',
-        data: binary,
-        header: {
-          'content-type': 'binary',
-          Certification: result.certification,
-          'X-amz-date': dayjs().subtract(8, 'hour').format('ddd,D MMM YYYY HH:mm:ss [GMT]'), // gmt时间慢8小时
-          'Content-Length': fileSize,
-          'X-amz-acl': 'public-read',
-        },
-        success: async (res) => {
-          console.log('uploadFile-success', res)
-          await delay(3000) // 由于有可能图片还没上传完毕，需要延迟调用解析图片接口
+      Logger.log('getUploadFileForOssInfo', result)
 
-          const query = await queryWxImgQrCode(result.downloadUrl)
-
-          if (query.success) {
-            this.handleScanUrl(query.result.qrCodeUrl)
-          } else {
-            hideLoading()
-            Toast('无效二维码')
-            this.setData({
-              isScan: false,
+      return new Promise<{ success: boolean; result: { uploadUrl: string; downloadUrl: string } }>((resolve) => {
+        // 上传图片到集团OSS服务
+        wx.request({
+          url: result.uploadUrl,
+          method: 'PUT',
+          data: binary,
+          header: {
+            'content-type': 'binary',
+            Certification: result.certification,
+            'X-amz-date': dayjs().subtract(8, 'hour').format('ddd,D MMM YYYY HH:mm:ss [GMT]'), // gmt时间慢8小时
+            'Content-Length': fileSize,
+            'X-amz-acl': 'public-read',
+          },
+          success: (res) => {
+            Logger.log('uploadFile-success', res)
+            resolve({
+              success: true,
+              result: {
+                uploadUrl: result.uploadUrl,
+                downloadUrl: result.downloadUrl,
+              },
             })
-          }
-        },
+          },
+          fail: (err) => {
+            Logger.error('uploadFile-fail', err)
+            resolve({
+              success: false,
+              result: {
+                uploadUrl: '',
+                downloadUrl: '',
+              },
+            })
+          },
+        })
       })
+    },
+
+    /**
+     * 检查是否有效的二维码链接
+     * @param url
+     */
+    isValidLink(url: string) {
+      const pageParams = strUtil.getUrlParams(url) as IAnyObject
+
+      return url.includes('meizgd.com/homlux/qrCode.html') && ['01', '02', '10'].includes(pageParams.mode)
     },
 
     async handleScanUrl(url: string) {
@@ -474,7 +556,7 @@ ComponentWithComputed({
           isScan: true,
         })
 
-        if (!url.includes('meizgd.com/homlux/qrCode.html')) {
+        if (!this.isValidLink(url)) {
           throw '无效二维码'
         }
 
@@ -482,7 +564,6 @@ ComponentWithComputed({
 
         Logger.log('scanParams', pageParams)
 
-        showLoading()
         // mode 配网方式 （00代表AP配网，01代表蓝牙配网， 02代表AP+有线）
         // 带蓝牙子设备
         if (pageParams.mode === '01') {
@@ -490,7 +571,11 @@ ComponentWithComputed({
         }
         // 网关绑定逻辑
         else if (pageParams.mode === '02') {
-          await this.bindGateway(pageParams)
+          await this.bindGateway({
+            pid: pageParams.pid,
+            ssid: pageParams.ssid,
+            addType: 'qrcode',
+          })
         }
         // 智慧屏扫码绑定
         else if (pageParams.mode === '10') {
@@ -502,7 +587,6 @@ ComponentWithComputed({
         } else {
           throw '无效二维码'
         }
-        hideLoading()
       } catch (err) {
         Toast(err as string)
       }
@@ -515,18 +599,33 @@ ComponentWithComputed({
       }, 2000)
     },
 
-    async bindGateway(params: IAnyObject) {
-      const res = await checkDevice(
-        {
-          productId: params.pid,
-        },
-        { loading: false },
-      )
+    async bindGateway(params: { pid?: string; ssid?: string; addType: 'qrcode' | 'manual' }) {
+      let proType = '0x16'
+      let productName = '网关'
+      const { pid, ssid, addType } = params
 
-      if (!res.success) {
-        Toast('验证产品信息失败')
-
+      // 保证网络正常才能进入下一步
+      if (!this.checkNet()) {
         return
+      }
+
+      if (addType === 'qrcode') {
+        const res = await checkDevice(
+          {
+            productId: pid,
+          },
+          { loading: true },
+        )
+
+        Logger.log('checkDevice', res)
+        if (!res.success) {
+          Toast(res.code === -1 ? '当前无法连接网络，请检查网络设置' : '二维码校验失败，请检查二维码是否正确')
+
+          return
+        }
+
+        proType = res.result.proType
+        productName = res.result.productName
       }
 
       // 预校验wifi开关是否打开
@@ -535,18 +634,28 @@ ComponentWithComputed({
       }
 
       wx.reportEvent('add_device', {
-        pro_type: res.result.proType,
-        model_id: params.pid,
+        pro_type: proType,
+        model_id: pid,
         add_type: 'qrcode',
       })
 
-      wx.navigateTo({
-        url: strUtil.getUrlWithParams('/package-distribution/link-gateway/index', {
-          apSSID: params.ssid,
-          deviceName: res.result.productName,
-          type: 'query',
-        }),
+      const jumpUrl = strUtil.getUrlWithParams('/package-distribution/link-gateway/index', {
+        apSSID: ssid || 'midea_16_',
+        deviceName: productName,
+        type: 'query',
+        addType,
       })
+
+      // 从微信扫码进入的，跳转不保存当前页面历史记录，否则会无法正常返回
+      if (this.data._isFromWxScan) {
+        wx.redirectTo({
+          url: jumpUrl,
+        })
+      } else {
+        wx.navigateTo({
+          url: jumpUrl,
+        })
+      }
     },
 
     async bindSubDevice(params: IAnyObject) {
@@ -558,6 +667,8 @@ ComponentWithComputed({
       } else if (mac) {
         checkData.mac = mac
       }
+
+      showLoading()
 
       const res = await checkDevice(checkData, { loading: false })
 
@@ -580,6 +691,8 @@ ComponentWithComputed({
       if (flag) {
         this.addSingleSubdevice()
       }
+
+      hideLoading()
     },
 
     /**
@@ -684,16 +797,25 @@ ComponentWithComputed({
         }
       }
 
-      wx.navigateTo({
-        url: strUtil.getUrlWithParams('/package-distribution/add-subdevice/index', {
-          mac: this.data.deviceInfo.mac,
-          gatewayId: deviceId,
-          gatewaySn: sn,
-          channel: networkInfo.channel || 0,
-          panId: networkInfo.panId || 0,
-          extPanId: networkInfo.extPanId || '',
-        }),
+      const jumpUrl = strUtil.getUrlWithParams('/package-distribution/add-subdevice/index', {
+        mac: this.data.deviceInfo.mac,
+        gatewayId: deviceId,
+        gatewaySn: sn,
+        channel: networkInfo.channel || 0,
+        panId: networkInfo.panId || 0,
+        extPanId: networkInfo.extPanId || '',
       })
+
+      // 从微信扫码进入的，跳转不保存当前页面历史记录，否则会无法正常返回
+      if (this.data._isFromWxScan) {
+        wx.redirectTo({
+          url: jumpUrl,
+        })
+      } else {
+        wx.navigateTo({
+          url: jumpUrl,
+        })
+      }
     },
   },
 })

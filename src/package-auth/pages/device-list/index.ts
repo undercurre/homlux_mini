@@ -23,6 +23,9 @@ ComponentWithComputed({
   computed: {},
 
   methods: {
+    /**
+     * @param query.homeId 上一页选择的美居家庭id
+     */
     async onLoad(query: { homeId: string }) {
       console.log('device list onload', query, this.data.currentHomeId)
       // 带 homeId，未绑定
@@ -41,7 +44,7 @@ ComponentWithComputed({
       }
       // 不带 homeId，从第三方列表页直接进入
       else {
-        const res = await getMeijuDeviceList()
+        const res = await getMeijuDeviceList(this.data.currentHomeId)
         if (res.success) {
           const deviceList = res.result
           this.setData({

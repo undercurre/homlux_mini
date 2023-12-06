@@ -42,23 +42,9 @@ export const deviceImgMap = {
     onlineIcon: 'blue_13',
     offlineIcon: 'gray_13',
   },
-  '1B': {
-    title: '美的路由器',
-    deviceType: '1B',
-    onlineIcon: 'blue_1b',
-    offlineIcon: 'gray_1b',
-  },
-  '1D': {
-    title: '空调伴侣',
-    deviceType: '1D',
-    onlineIcon: 'blue_1d',
-    offlineIcon: 'gray_1d',
-  },
-  '1F': {
-    title: '燃气传感器',
-    deviceType: '1F',
-    onlineIcon: 'blue_1f',
-    offlineIcon: 'gray_1f',
+  14: {
+    title: '智能窗帘',
+    deviceType: '14',
   },
   20: {
     title: '智能门锁',

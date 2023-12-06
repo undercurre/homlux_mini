@@ -1,13 +1,5 @@
 import { toHexString, string2Uint8Array, dec2hex } from 'm-utilsdk/index'
-import { api, environment } from '../../../../../common/js/api'
-
-let signStr = 'xhdiwjnchekd4d512chdjx5d8e4c394D2D7S'
-let signHex = '78686469776a6e6368656b6434643531326368646a783564386534633339344432443753'
-let MAS_KEY = {
-  dev: '143320d6c73144d083baf9f5b1a7acc9',
-  sit: '143320d6c73144d083baf9f5b1a7acc9',
-  prod: 'ad0ee21d48a64bf49f4fb583ab76e799',
-}
+import { environment } from '../../../../../common/js/api'
 
 /**
  * author : lisin
@@ -57,7 +49,6 @@ const constantFun = {
   },
 
   getDefaultDomain() {
-    console.debug('getDefaultDomain', environment)
     if (environment === 'sit') {
       return toHexString(string2Uint8Array('iotlab.midea.com.cn'))
     }

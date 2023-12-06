@@ -145,16 +145,38 @@ ComponentWithComputed({
     isGroup(data) {
       return data.deviceInfo.deviceType === 4
     },
+    // 设备是传感器，显示电量状态
     lowBattery(data) {
       if (data.deviceInfo.proType === PRO_TYPE.sensor) {
         const modelName = getModelName(PRO_TYPE.sensor, data.deviceInfo.productId)
-        return !!data.deviceInfo.mzgdPropertyDTOList[modelName]?.batteryAlarmState
+        const prop = data.deviceInfo.mzgdPropertyDTOList[modelName]
+        return !!prop?.batteryAlarmState
+      }
+      return false
+    },
+    // 特定设备，显示工作状态
+    isRunning(data) {
+      const modelName = getModelName(data.deviceInfo.proType, data.deviceInfo.productId)
+      const prop = data.deviceInfo.mzgdPropertyDTOList[modelName]
+      if (data.deviceInfo.proType === PRO_TYPE.bathHeat) {
+        return (
+          prop?.mode === 'heat' ||
+          prop?.mode === 'blowing' ||
+          prop?.mode === 'ventilation' ||
+          prop?.light_mode !== 'close_all'
+        )
+      } else if (data.deviceInfo.proType === PRO_TYPE.clothesDryingRack) {
+        return prop?.location_status !== 'upper_limit' || prop?.light === 'on'
       }
       return false
     },
     // 在卡片上有控制按钮的
     hasControl(data) {
-      return data.deviceInfo.proType !== PRO_TYPE.sensor
+      return (
+        data.deviceInfo.proType !== PRO_TYPE.sensor &&
+        data.deviceInfo.proType !== PRO_TYPE.bathHeat &&
+        data.deviceInfo.proType !== PRO_TYPE.clothesDryingRack
+      )
     },
   },
 

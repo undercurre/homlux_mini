@@ -290,6 +290,10 @@ export class BleClient {
   }
 
   async startZigbeeNet({ channel = 0, panId = 0, extPanId = '' }) {
+    // 若panId为65535（0xFFFF），无效,导致无法成功配网，强制改为0
+    if (panId === 65535) {
+      panId = 0
+    }
     const panIdHexArr = strUtil.hexStringToArrayUnit8(panId.toString(16).toUpperCase().padStart(4, '0'), 2).reverse()
     const exPanIdHexArr = strUtil.hexStringToArrayUnit8(extPanId || '0000000000000000', 2).reverse()
 

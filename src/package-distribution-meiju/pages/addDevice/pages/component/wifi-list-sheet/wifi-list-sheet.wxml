@@ -23,7 +23,7 @@
         wx:if="{{isGetDeviceWifi&&fomatWifiList.length==0}}"
         class="no-found-device-wifi"
       >
-        <text>未找到设备WiFi</text>
+        <text>未找到设备Wi-Fi</text>
         <text
           class="set-device blue"
           bindtap="setDevice"
@@ -66,7 +66,7 @@
             class="no-found-wifi"
             bindtap="noFoudWifi"
           >
-            <text style="font-size: 28rpx">没有所需WiFi？</text>
+            <text style="font-size: 28rpx">没有所需Wi-Fi？</text>
             <text
               class="blue"
               bindtap="goToSetPage"

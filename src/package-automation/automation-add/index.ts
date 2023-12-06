@@ -202,8 +202,7 @@ ComponentWithComputed({
       this.setData({
         sceneList: [...sceneStore.allRoomSceneList],
         deviceList: deviceStore.allRoomDeviceFlattenList.filter(
-          (item) =>
-            item.proType === PRO_TYPE.light || item.proType === PRO_TYPE.switch || item.proType === PRO_TYPE.curtain,
+          (item) => item.proType !== PRO_TYPE.gateway && item.proType !== PRO_TYPE.sensor,
         ),
         sensorList,
       })
@@ -317,13 +316,10 @@ ComponentWithComputed({
                 })
                 console.log('添加开关面板', tempSceneDeviceActionsFlatten)
               } else {
-                let property = action.controlAction[0]
-
-                if (action.proType === PRO_TYPE.light) {
-                  property = {
-                    ...device.mzgdPropertyDTOList['light'],
-                    ...property,
-                  }
+                // const modelName = getModelName(device.proType, device.productId)
+                const property = {
+                  // ...device.mzgdPropertyDTOList[modelName],
+                  ...action.controlAction[0],
                 }
                 const desc = toPropertyDesc(device.proType, property)
                 tempSceneDeviceActionsFlatten.push({
@@ -791,42 +787,26 @@ ComponentWithComputed({
         if (device) {
           //是设备
           console.log('是设备', device)
-          if (device.proType === PRO_TYPE.switch) {
-            //是开关面板
-            const modelName = device.uniId.split(':')[1]
-            const power = device.property!.power
-            const desc = toPropertyDesc(device.proType, device.property!)
-            tempSceneDeviceActionsFlatten.push({
-              uniId: device.uniId,
-              name: `${device.switchInfoDTOList[0].switchName} | ${device.deviceName}`,
-              type: device.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
-              desc,
-              pic: device.switchInfoDTOList[0].pic,
-              proType: PRO_TYPE.switch,
-              value: {
-                modelName,
-                power,
-              },
-              orderNum: 0,
-              dragId: device.uniId + Math.floor(Math.random() * 1001),
-            })
-          } else {
-            const desc = toPropertyDesc(device.proType, device.property!)
-            tempSceneDeviceActionsFlatten.push({
-              uniId: device.uniId,
-              name: device.deviceName,
-              type: device.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
-              desc,
-              pic: device.pic as string,
-              proType: device.proType,
-              value: {
-                modelName: 'light',
-                ...device.property,
-              },
-              orderNum: 0,
-              dragId: device.uniId + Math.floor(Math.random() * 1001),
-            })
-          }
+          const isSwitch = device.proType === PRO_TYPE.switch
+          const name = isSwitch ? `${device.switchInfoDTOList[0].switchName} | ${device.deviceName}` : device.deviceName
+          const modelName = isSwitch ? device.uniId.split(':')[1] : getModelName(device.proType, device.productId)
+          const pic = isSwitch ? device.switchInfoDTOList[0].pic : device.pic
+          const desc = toPropertyDesc(device.proType, device.property!)
+
+          tempSceneDeviceActionsFlatten.push({
+            uniId: device.uniId,
+            name,
+            type: device.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
+            desc,
+            pic,
+            proType: device.proType,
+            value: {
+              modelName,
+              ...device.property,
+            },
+            orderNum: 0,
+            dragId: device.uniId + Math.floor(Math.random() * 1001),
+          })
         } else {
           const scene = this.data.sceneList.find((item) => item.sceneId === id)
           if (scene) {
@@ -920,8 +900,12 @@ ComponentWithComputed({
       })
     },
     handleConditionDelete(e: WechatMiniprogram.TouchEvent) {
-      console.log('删除', e)
+      this.setData({
+        sceneDeviceActionsFlatten: [],
+        sceneDevicelinkSelectList: [],
+      })
       const uniId = e.currentTarget.dataset.info.uniId
+      console.log('删除条件', uniId)
       if (this.data.sensorlinkSelectList.includes(uniId)) {
         const index = this.data.sensorlinkSelectList.findIndex((id) => id === uniId)
         this.data.sensorlinkSelectList.splice(index, 1)
@@ -1088,7 +1072,7 @@ ComponentWithComputed({
       }
 
       actionItem.value = {
-        ...actionItem.value,
+        // ...actionItem.value,
         ...e.detail,
       }
 
@@ -1321,8 +1305,15 @@ ComponentWithComputed({
                 // }
               } else if (device.proType === PRO_TYPE.curtain) {
                 ctrlAction.curtain_position = property.curtain_position
+              } else if (device.proType === PRO_TYPE.bathHeat) {
+                ctrlAction.light_mode = property.light_mode
+                ctrlAction.heating_temperature = property.heating_temperature
+                ctrlAction.mode = property.mode
+              } else if (device.proType === PRO_TYPE.clothesDryingRack) {
+                ctrlAction.updown = property.updown
+                ctrlAction.laundry = property.laundry
+                ctrlAction.light = property.light
               }
-
               newSceneData.deviceActions.push({
                 controlAction: [ctrlAction],
                 deviceId: action.uniId,

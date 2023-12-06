@@ -109,6 +109,7 @@ export const bleDevicesStore = observable({
       }
     })
 
+    // 获取初始的蓝牙开关状态
     const systemSetting = wx.getSystemSetting()
 
     runInAction(() => {

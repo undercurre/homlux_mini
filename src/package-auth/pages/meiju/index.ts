@@ -1,5 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { getEnv } from '../../../config/index'
+import { getEnv, getH5BaseUrl } from '../../../config/index'
 import { strUtil } from '../../../utils/index'
 
 // 美居登录页面调整配置
@@ -7,17 +7,14 @@ const meijuLoginMap = {
   dev: {
     domain: 'https://api-sit.smartmidea.net',
     client_id: '5324570e51b5048bf74a27b97f0178e2',
-    H5Domain: 'https://test.meizgd.com',
   },
   sit: {
     domain: 'https://api-sit.smartmidea.net',
     client_id: '6f54fcabcf63943cd8793d193bb3b139',
-    H5Domain: 'https://sit.meizgd.com',
   },
   prod: {
     domain: 'https://api-prod.smartmidea.net',
     client_id: 'e7dcf22e23bcc7d574aa7d9b1d45736b',
-    H5Domain: 'https://mzaio.meizgd.com',
   },
 }
 
@@ -32,14 +29,15 @@ ComponentWithComputed({
 
   lifetimes: {
     ready() {
-      const config = meijuLoginMap[getEnv()]
+      const env = getEnv()
+      const config = meijuLoginMap[env]
 
       this.setData({
         webviewSrc: strUtil.getUrlWithParams(`${config.domain}/v2/open/oauth2/authorize`, {
           client_id: config.client_id,
           state: 1,
           response_type: 'code',
-          redirect_uri: strUtil.getUrlWithParams(`${config.H5Domain}/meiju/index.html`, {
+          redirect_uri: strUtil.getUrlWithParams(`${getH5BaseUrl()}/index.html`, {
             miniProgramUrl: '/package-auth/pages/home-list/index',
           }),
         }),

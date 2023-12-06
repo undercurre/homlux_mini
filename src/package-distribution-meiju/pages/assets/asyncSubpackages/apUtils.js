@@ -9,7 +9,6 @@ import {
   asiiCode2Str,
   cloudEncrypt,
   hexCharCodeToStr,
-  stringToHex,
 } from 'm-utilsdk/index'
 import { api } from '../../../common/js/api'
 import { Logger } from '../../../../utils/index'

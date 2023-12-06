@@ -90,6 +90,7 @@ ComponentWithComputed({
     _scrolledWhenMoving: false, // 拖拽时，被动发生了滚动
     _lastClientY: 0, // 上次触控采样时 的Y坐标
     _isFirstShow: true, // 是否首次加载
+    _from: '', // 页面进入来源
   },
   computed: {
     currentHomeName(data) {
@@ -110,39 +111,18 @@ ComponentWithComputed({
     },
     // 是否显示全局控制开关（需要有灯或者开关）
     isShowHomeControl(data) {
-      let hasLightOrSwitch = false
-      if (data.allRoomDeviceList) {
-        data.allRoomDeviceList.some((device: Device.DeviceItem) => {
-          if (([PRO_TYPE.light, PRO_TYPE.switch] as string[]).includes(device.proType)) {
-            hasLightOrSwitch = true
-            return true
-          }
-          return false
-        })
+      if (!data.allRoomDeviceList?.length) {
+        return false
       }
-      return hasLightOrSwitch
+      const lightTypes = [PRO_TYPE.light, PRO_TYPE.switch, PRO_TYPE.bathHeat, PRO_TYPE.clothesDryingRack] as string[]
+      return data.allRoomDeviceList.some((device: Device.DeviceItem) => lightTypes.includes(device.proType))
     },
   },
   watch: {
     isInit(data) {
-      if (data) {
-        this.animate(
-          '#skeleton',
-          [
-            {
-              opacity: 1,
-            },
-            {
-              opacity: 0,
-            },
-          ],
-          200,
-          () => {
-            this.setData({
-              loading: false,
-            })
-          },
-        )
+      // 如果已初始化，但仍在loading
+      if (this.data.loading && data) {
+        this.setData({ loading: !data })
       }
     },
     roomList() {
@@ -152,7 +132,8 @@ ComponentWithComputed({
 
   methods: {
     // 生命周期或者其他钩子
-    onLoad() {
+    async onLoad(query: { from?: string }) {
+      this.data._from = query.from ?? ''
       // 若未设置过默认页，则跳转到start页选择首页
       if (!othersStore.defaultPage) {
         wx.reLaunch({
@@ -177,7 +158,7 @@ ComponentWithComputed({
       emitter.off('wsReceive')
     },
     async onShow() {
-      if (!this.data._isFirstShow) {
+      if (!this.data._isFirstShow || this.data._from === 'addDevice') {
         homeStore.updateRoomCardList()
       }
       this.data._isFirstShow = false

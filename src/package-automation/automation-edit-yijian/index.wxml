@@ -46,6 +46,7 @@
         name="sceneNameInput"
         value="{{sceneName}}"
         size="large"
+        maxlength="15"
         placeholder="给场景取个名字"
         placeholder-style="text-align: center;"
         clearable="{{true}}"
@@ -318,6 +319,24 @@
   bind:confirm="handleSceneEditConfirm"
   bind:close="handleEditPopupClose"
 ></curtain-control-popup>
+<bath-control-popup
+  show="{{showEditPopup === '0x26'}}"
+  title="{{sceneEditTitle}}"
+  isShowConfirm="{{true}}"
+  isSceneSetting="{{true}}"
+  deviceInfo="{{sceneEditInfo}}"
+  bind:confirm="handleSceneEditConfirm"
+  bind:close="handleEditPopupClose"
+></bath-control-popup>
+<dryer-control-popup
+  show="{{showEditPopup === '0x17'}}"
+  title="{{sceneEditTitle}}"
+  isShowConfirm="{{true}}"
+  isSceneSetting="{{true}}"
+  deviceInfo="{{sceneEditInfo}}"
+  bind:confirm="handleSceneEditConfirm"
+  bind:close="handleEditPopupClose"
+></dryer-control-popup>
 <edit-sensor-popup
   show="{{showEditSensorPopup}}"
   productId="{{editingSensorType}}"

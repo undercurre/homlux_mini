@@ -1,6 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { deviceStore, roomStore } from '../../store/index'
-import { checkWifiSwitch } from '../../utils/index'
+import { roomStore } from '../../store/index'
 
 ComponentWithComputed({
   options: {},
@@ -109,8 +108,7 @@ ComponentWithComputed({
    */
   data: {
     roomSelect: '',
-    showDeviceOffline: false,
-    officeDeviceInfo: {} as Device.DeviceItem,
+    offlineDevice: {} as Device.DeviceItem,
   },
 
   computed: {
@@ -142,8 +140,11 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    async handleCardTap(e: { detail: { uniId?: string; sceneId?: string } }) {
+    handleCardTap(e: { detail: { uniId?: string; sceneId?: string } }) {
       this.triggerEvent('select', e.detail.sceneId || e.detail.uniId)
+    },
+    handleOfflineTap(e: { detail: { uniId?: string; sceneId?: string } }) {
+      this.triggerEvent('handleOfflineTap', e.detail.sceneId || e.detail.uniId)
     },
     handleClose() {
       this.triggerEvent('close')
@@ -157,29 +158,6 @@ ComponentWithComputed({
     handleRoomSelect(e: WechatMiniprogram.TouchEvent) {
       this.setData({
         roomSelect: e.currentTarget.dataset.item.roomId,
-      })
-    },
-    handleOfflineTap(e: { detail: Device.DeviceItem }) {
-      this.setData({
-        showDeviceOffline: true,
-        officeDeviceInfo: e.detail,
-      })
-      this.triggerEvent('offlineTap', e.detail)
-    },
-    handleCloseDeviceOffline() {
-      this.setData({
-        showDeviceOffline: false,
-      })
-    },
-    handleRebindGateway() {
-      // 预校验wifi开关是否打开
-      if (!checkWifiSwitch()) {
-        return
-      }
-
-      const gateway = deviceStore.allRoomDeviceMap[this.data.officeDeviceInfo.gatewayId]
-      wx.navigateTo({
-        url: `/package-distribution/wifi-connect/index?type=changeWifi&sn=${gateway.sn}`,
       })
     },
     blank() {},

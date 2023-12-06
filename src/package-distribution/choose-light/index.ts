@@ -1,6 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-// import { strUtil } from '../../utils/index'
+import { strUtil } from '../../utils/index'
+import { productImgDir } from '../../config/index'
 
 ComponentWithComputed({
   options: {},
@@ -11,45 +12,45 @@ ComponentWithComputed({
   properties: {},
 
   /**
-   * 组件的初始数据  /package-distribution/scan/index?type=subdevice
+   * 组件的初始数据
    */
   data: {
     deviceList: [
-      // {
-      //   icon: '/package-distribution/assets/guide/light-wifi.png',
-      //   name: '吸顶灯',
-      //   tag: 'wifi',
-      //   path: strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
-      //     proType: '13',
-      //     sn8: '7909AC81',
-      //     productId: '美的智能吸顶灯',
-      //     deviceImg: '/package-distribution/assets/guide/light-wifi.png',
-      //     mode: 0,
-      //   } as Meiju.IProductItem),
-      // },
       {
-        icon: '/package-distribution/assets/guide/downlight.png',
+        icon: `${productImgDir}/light-wifi.png`,
+        name: '吸顶灯',
+        tag: 'wifi',
+        path: strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
+          proType: '13',
+          sn8: '7909AC81',
+          productId: '美的智能吸顶灯',
+          deviceImg: `${productImgDir}/light-wifi.png`,
+          mode: 0,
+        } as Meiju.IProductItem),
+      },
+      {
+        icon: `${productImgDir}/downlight.png`,
         name: '筒射灯',
         tag: 'zigbee',
-        path: '/package-distribution/scan/index?type=subdevice',
+        path: '/package-distribution/scan/index?scanType=subdevice',
       },
       {
-        icon: '/package-distribution/assets/guide/magnetic-track-light.png',
+        icon: `${productImgDir}/magnetic-track-light.png`,
         name: '磁吸灯',
         tag: 'zigbee',
-        path: '/package-distribution/scan/index?type=subdevice',
+        path: '/package-distribution/scan/index?scanType=subdevice',
       },
       {
-        icon: '/package-distribution/assets/guide/tape-light.png',
+        icon: `${productImgDir}/tape-light.png`,
         name: 'CW灯带',
         tag: 'zigbee',
-        path: '/package-distribution/scan/index?type=subdevice',
+        path: '/package-distribution/scan/index?scanType=subdevice',
       },
       {
-        icon: '/package-distribution/assets/guide/switch.png',
+        icon: `${productImgDir}/switch.png`,
         name: '智能开关',
         tag: 'zigbee',
-        path: '/package-distribution/scan/index?type=subdevice',
+        path: '/package-distribution/scan/index?scanType=subdevice',
       },
     ],
   },

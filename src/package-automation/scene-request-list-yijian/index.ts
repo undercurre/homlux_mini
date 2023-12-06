@@ -134,6 +134,14 @@ ComponentWithComputed({
             // }
           } else if (device.proType === PRO_TYPE.curtain) {
             ctrlAction.curtain_position = property.curtain_position
+          } else if (device.proType === PRO_TYPE.bathHeat) {
+            ctrlAction.light_mode = property.light_mode
+            ctrlAction.heating_temperature = property.heating_temperature
+            ctrlAction.mode = property.mode
+          } else if (device.proType === PRO_TYPE.clothesDryingRack) {
+            ctrlAction.updown = property.updown
+            ctrlAction.laundry = property.laundry
+            ctrlAction.light = property.light
           }
 
           sceneData?.deviceActions?.push({
@@ -220,8 +228,6 @@ ComponentWithComputed({
     detached() {
       emitter.off('scene_device_result_status')
       sceneStore.updateAllRoomSceneList()
-      sceneStore.updateSceneList()
-      // deviceStore.updateSubDeviceList()
       deviceStore.updateAllRoomDeviceList()
       homeStore.updateRoomCardList()
     },

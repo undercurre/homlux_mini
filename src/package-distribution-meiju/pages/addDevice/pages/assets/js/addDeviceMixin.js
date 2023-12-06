@@ -3,7 +3,6 @@ import { checkApExists, queryAuthGetStatus } from '../../../../../../apis/index'
 import { Logger } from '../../../../../../utils/index'
 import { homeStore } from '../../../../../../store/index'
 
-import { getReqId, getStamp } from 'm-utilsdk/index'
 import { showToast } from '../../../../../utils/util'
 import { creatErrorCode, failTextData } from './errorCode'
 import paths from '../../../../../utils/paths'
@@ -219,30 +218,6 @@ module.exports = Behavior({
       let res = wx.getSystemInfoSync()
       return res.system.includes('Android') || ssid
     },
-    //获取当前家庭默认id
-    getCurrentHomeGroupId() {
-      //获取家庭列表
-      return '1111'
-    },
-    //获取自启热点 无后确权固件名单
-    getTwoLinkNetList() {
-      let params = {
-        reqId: getReqId(),
-        stamp: getStamp(),
-      }
-      return new Promise((resolve, reject) => {
-        // requestService
-        //   .request('firmwareList', params)
-        //   .then((resp) => {
-        //     console.log('获取自启热点 无后确权固件名单 resp', resp.data.data)
-        //     resolve(resp.data.data)
-        //   })
-        //   .catch((error) => {
-        //     console.log('获取自启热点 无后确权固件名单 error', error)
-        //     reject(error)
-        //   })
-      })
-    },
     //获取系统信息
     wxGetSystemInfo() {
       return new Promise((resolve) => {
@@ -297,13 +272,12 @@ module.exports = Behavior({
         }
       })
 
-      console.log(`查询设备是否连上云参数`, sn, randomCode, forceValidRandomCode, 'res', res)
+      console.log('查询设备是否连上云res', res)
 
       return res
     },
     //新 轮询查询设备是否连上云
     newAgainGetAPExists(sn, forceValidRandomCode, randomCode = '', timeout, callBack, callFail) {
-      Logger.console('newAgainGetAPExists')
       let timeoutID
       const timeoutPromise = new Promise((resolve) => {
         timeoutID = setTimeout(resolve, 5000, { success: false, msg: 'WEB TIMEOUT' })
@@ -381,8 +355,7 @@ module.exports = Behavior({
     },
     //根据企业码返回企业热点名
     getBrandBname() {
-      let brandName = 'midea'
-      return brandName
+      return 'midea'
     },
     //生成错误码
     creatErrorCode({ platform, module, errorCode, isCustom }) {
@@ -441,11 +414,10 @@ module.exports = Behavior({
       }
       if (res.system.includes('iOS')) {
         if (iOSReConfirm) {
-          console.log('hhahhahaah')
           // 展示二次确认弹窗
           const self = this
           wx.showModal({
-            content: '请直接到系统设置页进行连接，连接后返回本页面',
+            content: '请到手机设置连接家庭Wi-Fi，连接后返回本页面',
             cancelText: '暂不设置',
             cancelColor: '#999',
             confirmText: '立即前往',

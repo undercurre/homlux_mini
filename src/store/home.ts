@@ -7,14 +7,14 @@ import {
   deleteHouseUser,
   inviteHouseUser,
   saveOrUpdateUserHouseInfo,
-  getRoomList,
+  queryRoomList,
   updateDefaultHouse,
   getShareId,
   queryAllDevice,
   queryLocalKey,
 } from '../apis/index'
 import { PRO_TYPE } from '../config/index'
-import { asyncStorage, storage, Logger } from '../utils/index'
+import { asyncStorage, storage, Logger, IApiRequestOption } from '../utils/index'
 import { deviceStore } from './device'
 import { othersStore } from './others'
 import { roomStore } from './room'
@@ -64,11 +64,9 @@ export const homeStore = observable({
   async homeInit() {
     const success = this.loadHomeDataFromStorage()
     if (success) {
-      runInAction(() => {
-        othersStore.isInit = true
-      })
+      othersStore.setIsInit(true)
     } else {
-      console.log('[KS]本地缓存不存在或过期')
+      console.log('[KS]本地缓存不存在或过期, isInit:', othersStore.isInit)
     }
     const res = await this.updateHomeList()
     if (res.success) {
@@ -82,14 +80,14 @@ export const homeStore = observable({
       // 全屋房间、设备加载
       await this.updateRoomCardList()
       othersStore.setIsInit(true)
-      console.log('[KS]云端数据加载成功')
+      console.log('[KS]云端数据加载成功, isInit:', othersStore.isInit)
     }
   },
 
   /**
    * 更新家庭列表同时更新当前信息
    */
-  async updateHomeInfo(options?: { loading: boolean }) {
+  async updateHomeInfo(options?: IApiRequestOption) {
     const res = await this.updateHomeList(options)
 
     if (res.success) {
@@ -103,7 +101,7 @@ export const homeStore = observable({
   /**
    * 更新家庭列表数据
    */
-  async updateHomeList(options?: { loading: boolean }) {
+  async updateHomeList(options?: IApiRequestOption) {
     const res = await getHomeList(options)
 
     if (res.success) {
@@ -126,7 +124,7 @@ export const homeStore = observable({
   /**
    * 更新当前家庭详细信息
    */
-  async updateCurrentHomeDetail(options?: { loading: boolean }) {
+  async updateCurrentHomeDetail(options?: IApiRequestOption) {
     const res = await queryUserHouseInfo(
       {
         houseId: this.currentHomeId,
@@ -139,7 +137,7 @@ export const homeStore = observable({
       })
       // await deviceStore.updateAllRoomDeviceList(undefined, options) // 重复加载
       await roomStore.updateRoomList(options)
-      this.homeDataPersistence()
+      this.saveHomeDate()
       return
     } else {
       console.error('获取家庭信息失败', res)
@@ -152,7 +150,7 @@ export const homeStore = observable({
    */
   async updateRoomCardList(options?: { loading: boolean }) {
     const homeId = homeStore.currentHomeId
-    const data = await Promise.all([queryAllDevice(homeId, options), getRoomList(homeId, options)])
+    const data = await Promise.all([queryAllDevice(homeId, options), queryRoomList(homeId, options)])
     if (data[0].success) {
       const list = {} as Record<string, Device.DeviceItem[]>
       data[0].result
@@ -203,7 +201,7 @@ export const homeStore = observable({
         }))
       })
     }
-    this.homeDataPersistence()
+    this.saveHomeDate()
   },
 
   /**
@@ -311,7 +309,7 @@ export const homeStore = observable({
   /**
    * 缓存主要的初始数据
    */
-  async homeDataPersistence() {
+  async saveHomeDate() {
     if (!userStore.isLogin) {
       return
     }

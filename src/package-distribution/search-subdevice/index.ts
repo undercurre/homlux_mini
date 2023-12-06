@@ -4,7 +4,7 @@ import { runInAction } from 'mobx-miniprogram'
 import Toast from '@vant/weapp/toast/toast'
 import { deviceStore, homeBinding, homeStore, roomBinding } from '../../store/index'
 import { bleDevicesBinding, bleDevicesStore } from '../store/bleDeviceStore'
-import { delay, emitter, getCurrentPageParams, Logger } from '../../utils/index'
+import { delay, emitter, getCurrentPageParams, Logger, strUtil } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { batchUpdate, bindDevice, getUnbindSensor, isDeviceOnline, sendCmdAddSubdevice } from '../../apis/index'
 import lottie from 'lottie-miniprogram'
@@ -437,6 +437,7 @@ ComponentWithComputed({
 
         // 若为其余蓝牙子设备，则监听云端推送，判断哪些子设备绑定成功
         emitter.on('bind_device', (data) => {
+          Logger.log(`绑定推送：bind_device`, data)
           const bleDevice = bleDevicesStore.bleDeviceList.find(
             (item) => item.isChecked && item.zigbeeMac === data.deviceId,
           )
@@ -863,7 +864,9 @@ ComponentWithComputed({
       bleDevicesStore.reset()
 
       wx.reLaunch({
-        url: cacheData.pageEntry,
+        url: strUtil.getUrlWithParams(cacheData.pageEntry, {
+          from: 'addDevice',
+        }),
       })
     },
 

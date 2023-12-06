@@ -1,6 +1,6 @@
 import mitt, { Emitter } from 'mitt'
 import { Logger } from './log'
-import { goHome } from './app'
+import { goHome } from './system'
 import { StringQueue } from './strUtil'
 import { homeStore, userStore } from '../store/index'
 

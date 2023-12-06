@@ -1,6 +1,6 @@
+import { getEnv } from '../../../../../../config/index'
 import { dec2hex } from 'm-utilsdk/index'
 import { constantFun } from './constantFun'
-import app from '../../../../../common/app'
 
 /**
  * author : lisin
@@ -86,7 +86,7 @@ const apParamsSet = {
     // let id = clusterId.substring(2, 4) // 集群，由各平台约定，默认(至少一个)：01（阿里云）04:（华为云）
     // let env = clusterId.substring(4, 6) // 环境，01：生产，02：sit，03：uat，04：dev
     // let content = platformId + id + env
-    let content = '010101'
+    let content = `0101${getEnv() === 'prod' ? '01' : '02'}`
     return this.setParamsFormat(tag, len, content)
   },
 }

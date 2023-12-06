@@ -5,7 +5,6 @@ const isMasEnv = config.isMasEnv
 const masPrefix = config.masPrefix
 const domain = config.domain
 const cloudDomain = config.cloudDomain
-const imageDomain = config.imageDomain
 const agreementDomain = config.agreementDomain
 const apiKey = config.apiKey
 const appKey = config.appKey
@@ -17,7 +16,7 @@ const myxAppkey = config.myxAppkey
 const myxSecret = config.myxSecret
 const qwid = config.qwid
 const serviceAppid = config.serviceAppid
-var api = {
+const api = {
   isMasEnv: isMasEnv,
   urlPrefix: `${domain[`${environment}`]}` + (isMasEnv ? masPrefix : ''),
   apiKey: `${apiKey[`${environment}`]}`,
@@ -229,19 +228,6 @@ var api = {
     api: '/v1/appliance/home/bind_lite',
   },
 
-  //首页浮窗接口带token
-  // getOnlineAdvertisement_token: {
-  //   url: `${domain[`${environment}`] + masPrefix}/api-service/advertisement/getOnlineAdvertisementWithToken`,
-  //   masUrl: `${domain[`${environment}`] + masPrefix}/api-service/advertisement/getOnlineAdvertisementWithToken`,
-  //   api: "/api-service/advertisement/getOnlineAdvertisementWithToken"
-  // },
-  // //首页浮窗接口不带token
-  // getOnlineAdvertisement: {
-  //   url: `${domain[`${environment}`] + masPrefix}/api-service/advertisement/getOnlineAdvertisement`,
-  //   masUrl: `${domain[`${environment}`] + masPrefix}/api-service/advertisement/getOnlineAdvertisement`,
-  //   api: "/api-service/advertisement/getOnlineAdvertisement"
-  // },
-
   //美云销  新广告api
   getAdvertisement: {
     url: `${domain[`${environment}`] + masPrefix}/api/mcsp_cc/cc-web/mcsp/content/external/ad/list.do`,
@@ -447,55 +433,16 @@ var api = {
     masUrl: `${domain[`${environment}`] + masPrefix}/v1/replaceRepairCard/typeCheck`,
     api: '/v1/replaceRepairCard/typeCheck',
   },
-  // 以换代修-我的订单-订单列表和详情查询
-  // orderList: {
-  //   url: `${domain[`${environment}`] + masPrefix}/ccrm2-core/saleOrderApi/orderList`,
-  //   masUrl: `${domain[`${environment}`] + masPrefix}/ccrm2-core/saleOrderApi/orderList`,
-  //   api: '/ccrm2-core/saleOrderApi/orderList',
-  // },
-
-  // 已替换接口，但还没进行联调
-  // 入参：pagination：{
-  //   pageSize：100
-  // }
   orderList: {
     url: `${domain[`${environment}`] + masPrefix}/member/behavior/listOrder.do`,
     masUrl: `${domain[`${environment}`] + masPrefix}/member/behavior/listOrder.do`,
     api: '/member/behavior/listOrder.do',
   },
-  // 以换代修-我的发票-发票列表和详情查询
-  // invoiceList: {
-  //   url: `${domain[`${environment}`] + masPrefix}/ccrm2-core/saleOrderApi/invoiceList`,
-  //   masUrl: `${domain[`${environment}`] + masPrefix}/ccrm2-core/saleOrderApi/invoiceList`,
-  //   api: '/ccrm2-core/saleOrderApi/invoiceList',
-  // },
-
-  //已替换接口，但还没进行联调
-  // 入参：pagination：{
-  //   pageSize：100
-  // }
   invoiceList: {
     url: `${domain[`${environment}`] + masPrefix}/member/invoice/listInvoice.do`,
     masUrl: `${domain[`${environment}`] + masPrefix}/member/invoice/listInvoice.do`,
     api: '/member/invoice/listInvoice.do',
   },
-  // 以换代修-提交以换代修申请
-  // userProductUpdate: {
-  //   url: `${domain[`${environment}`] + masPrefix}/ccrm2-core/userProduct/update`,
-  //   masUrl: `${domain[`${environment}`] + masPrefix}/ccrm2-core/userProduct/update`,
-  //   api: '/ccrm2-core/userProduct/update',
-  // },
-  //以换代修-提交以换代修申请（家电修改）已替换接口，但还没进行联调
-  // 入参：
-  // restParams ：{
-  //   productModel，//产品型号
-  //   productBrand，//产品品牌
-  //   productName，//家电名称,
-  //   outerOrderId,// 关联订单号
-  //   buyDate,// 购买日期  2021-07-02 13:43:46
-  //   invoiceIds [],//关联发票id
-  //   sourceSys// 来源系统
-  // }
   userProductUpdate: {
     url: `${domain[`${environment}`] + masPrefix}/member/behavior/appliance/modify.do`,
     masUrl: `${domain[`${environment}`] + masPrefix}/member/behavior/appliance/modify.do`,
@@ -729,13 +676,6 @@ var api = {
   },
 }
 
-let imageApi = {
-  environment: environment,
-  getImagePath: {
-    url: `${imageDomain[`${environment}`]}`,
-  },
-}
-
 //小程序（图片存放）
 let imgBaseUrl = {
   environment: environment,
@@ -754,40 +694,18 @@ let baseImgApi = {
 let deviceImgApi = {
   environment: environment,
   url:
-    environment == 'sit' || environment == 'dev'
+    environment === 'sit' || environment === 'dev'
       ? `${agreementDomain[`${environment}`]}/projects/sit/meiju-lite-assets/deviceImg/`
       : `${agreementDomain[`${environment}`]}/projects/sit/meiju-lite-assets/deviceImg/`,
-}
-//服务中心（图片存放）
-let mideaServiceImgApi = {
-  environment: environment,
-  url:
-    environment == 'sit' || environment == 'dev'
-      ? `${agreementDomain[`${environment}`]}/projects/sit/meiju-lite-assets/mideaServices/images/`
-      : `${agreementDomain[`${environment}`]}/projects/meiju-lite-assets/mideaServices/images/`,
 }
 
 //通用web-view路径
 let commonH5Api = {
   environment: environment,
   url:
-    environment == 'sit' || environment == 'dev'
+    environment === 'sit' || environment === 'dev'
       ? `${agreementDomain[`${environment}`]}/projects/sit/midea-meiju-lite-h5/`
       : `${agreementDomain[`${environment}`]}/projects/midea-meiju-lite-h5/`,
 }
 
-// 多小程序公用路径
-let publicImg = {
-  meiju: {
-    environment: environment,
-    url:
-      environment == 'sit' || environment == 'dev'
-        ? `${agreementDomain[`${environment}`]}/projects/sit/meiju-lite-assets/mainContent/images/`
-        : `${agreementDomain[`${environment}`]}/projects/meiju-lite-assets/mainContent/images/`,
-  },
-  colmo: {
-    url: 'https://pic.mdcdn.cn/h5/img/colmomini',
-  },
-}
-
-export { environment, api, imageApi, imgBaseUrl, baseImgApi, deviceImgApi, mideaServiceImgApi, commonH5Api }
+export { environment, api, imgBaseUrl, baseImgApi, deviceImgApi, commonH5Api }

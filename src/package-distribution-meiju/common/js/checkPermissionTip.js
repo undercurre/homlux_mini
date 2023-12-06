@@ -17,7 +17,7 @@ const checkPermission = {
         forceUpdate,
       }),
     ])
-    console.log('[system and setting info]', res)
+    console.log('checkPermission-loaction', res)
     //未开 系统位置开关 未授权给微信
     if (!res[0].locationEnabled) {
       permissionText.push('开启手机定位')

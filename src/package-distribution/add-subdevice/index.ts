@@ -4,7 +4,7 @@ import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
 import { bleUtil, strUtil, BleClient, getCurrentPageParams, emitter, Logger } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { sendCmdAddSubdevice, bindDevice, isDeviceOnline, batchGetProductInfoByBPid } from '../../apis/index'
-import { defaultImgDir } from '../../config/index'
+import { defaultImgDir, productImgDir } from '../../config/index'
 import { IBleDevice } from './typings'
 import dayjs from 'dayjs'
 
@@ -22,6 +22,7 @@ ComponentWithComputed({
    */
   data: {
     defaultImgDir,
+    productImgDir,
     _timeId: 0,
     status: 'linking' as StatusName,
     activeIndex: 0,

@@ -1,5 +1,0 @@
-<view class="header" style="top:{{statusBarHeight+ 6}}px">
-  <image class="back" src="{{backIcon}}" bindtap="clickBack"></image>
-  <!-- <mx-icon name="arrow-left" bind:click="clickBack" color="{{buttonColor}}"  size="20px"/> -->
-  <view class="title">{{ navBarName }}</view>
-</view>

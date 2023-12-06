@@ -12,3 +12,7 @@
 .bottom-transform {
   transform: translateY(100%);
 }
+
+.edit-box-height {
+  height: calc(env(safe-area-inset-bottom) + 298rpx);
+}

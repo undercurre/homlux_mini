@@ -24,7 +24,6 @@ const bleNegotiationService = {
    * 获取0101指令
    */
   acquirePublicKey() {
-    console.debug('----bleNegotiationService.js   acquirePublicKey-----')
     return new Promise((resolve, reject) => {
       let reqData = {
         reqId: getReqId(),

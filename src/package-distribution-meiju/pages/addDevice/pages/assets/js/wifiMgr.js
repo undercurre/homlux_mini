@@ -51,7 +51,7 @@ export default class WifiMgr {
         },
         fail(res) {
           wx.showToast({
-            title: '初始化WiFi失败',
+            title: '初始化Wi-Fi失败',
             icon: 'none',
             duration: 3000,
           })
@@ -72,12 +72,12 @@ export default class WifiMgr {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     let that = this
     wx.startWifi({
-      success(res) {
+      success() {
         that.getWifiListFunc()
       },
-      fail(res) {
+      fail() {
         wx.showToast({
-          title: '初始化WiFi失败',
+          title: '初始化Wi-Fi失败',
           icon: 'none',
           duration: 3000,
         })
@@ -255,11 +255,10 @@ export default class WifiMgr {
         return
       }
       wx.startWifi({
-        success(res) {
+        success() {
           wx.getConnectedWifi({
             partialInfo: isiOS, //是否只返回部分wifi信息，去掉可能拿不到 SSID
             success: (res) => {
-              console.info('@module wifiMgr.js\n@method getConnectedWifi\n@desc 微信接口获取的当前wifi信息\n', res)
               /**
                * 微信低版本存在缺陷：BSSID每一段如果以0开头会被省略
                * 以下做兼容处理，若被省略则补上0

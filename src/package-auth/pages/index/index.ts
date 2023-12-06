@@ -4,6 +4,7 @@ import { queryUserThirdPartyInfo } from '../../../apis/index'
 import { homeBinding } from '../../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
+import { storage } from '../../../utils/index'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] }), pageBehaviors],
@@ -13,7 +14,7 @@ ComponentWithComputed({
    */
   data: {
     urls: {
-      meiju: '/package-auth/pages/meiju/index',
+      meiju: '/package-auth/pages/confirm-auth/index',
       deviceList: '/package-auth/pages/device-list/index',
     },
     authList: [] as Meiju.AuthItem[],
@@ -41,6 +42,8 @@ ComponentWithComputed({
       }
     },
     toAuth() {
+      storage.set('meiju_auth_entry', 'package-auth-index')
+
       const url = this.data.isMeijuAuth ? this.data.urls.deviceList : this.data.urls.meiju
       wx.navigateTo({
         url,

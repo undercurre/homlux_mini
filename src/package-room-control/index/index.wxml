@@ -151,7 +151,7 @@
         scroll-y
         enhanced
         show-scrollbar="{{false}}"
-        style="height: {{ scrollViewHeight }}; margin-top: {{toolboxContentHeight + 10}}px"
+        style="height: {{ scrollViewHeight }}; margin-top: {{toolboxContentHeight}}px"
         bindscroll="onPageScroll"
         scroll-top="{{scrollTop}}"
         scroll-with-animation="{{true}}"
@@ -187,7 +187,7 @@
               bind:touchend="movableTouchEnd"
               catch:change="movableChange"
               class="{{ index === placeholder.index && g === placeholder.groupIndex ? 'z-100' : 'z-1' }}"
-              disabled="{{!isMoving || item.deviceType === 4}}"
+              disabled="{{!isMoving}}"
             >
               <device-card
                 class="w-180rpx pb-16rpx pt-16rpx flex justify-center {{editSelectMode && (index !== placeholder.index || g !== placeholder.groupIndex) ? 'shake' : ''}}"
@@ -256,11 +256,25 @@
 </view>
 
 <!-- 设备控制弹窗 -->
+<bath-control-popup
+  show="{{controlType === '0x26'}}"
+  isShowSetting="{{true}}"
+  deviceInfo="{{checkedDeviceInfo}}"
+  bind:close="cancelCheckAndPops"
+></bath-control-popup>
+
+<dryer-control-popup
+  show="{{controlType === '0x17'}}"
+  isShowSetting="{{true}}"
+  deviceInfo="{{checkedDeviceInfo}}"
+  bind:close="cancelCheckAndPops"
+></dryer-control-popup>
+
 <device-control-popup
-  controlPopup="{{controlPopup}}"
+  show="{{isShowCommonControl}}"
   deviceInfo="{{checkedDeviceInfo}}"
   checkedList="{{checkedList}}"
-  bind:popMove="handlePopMove"
+  bind:close="cancelCheckAndPops"
   bind:updateDevice="updateQueue"
   bind:lightStatusChange="refreshLightStatus"
 ></device-control-popup>
@@ -293,7 +307,7 @@
 
 <van-dialog
   use-slot
-  title="{{officeDeviceInfo.deviceName}}离线"
+  title="{{offlineDevice.deviceName}}离线"
   show="{{ showDeviceOffline }}"
   confirm-button-color="#488FFF"
   confirmButtonText="我知道了"
@@ -301,7 +315,7 @@
 >
   <view class="flex-col-center w-full">
     <image
-      src="{{officeDeviceInfo.pic}}"
+      src="{{offlineDevice.pic}}"
       class="w-160rpx h-160rpx mt-70rpx"
     />
     <view class="flex flex-col mt-88rpx">

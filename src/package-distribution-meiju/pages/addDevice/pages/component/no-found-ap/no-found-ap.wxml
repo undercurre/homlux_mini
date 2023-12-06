@@ -9,7 +9,7 @@
   >
     <view
       catchtap="catchNone"
-      class="frame pad-t-100 no-found-frame"
+      class="frame pb-96rpx"
     >
       <image
         class="close"
@@ -27,7 +27,7 @@
           </view>
         </block>
         <block wx:else>
-          <view class="title">
+          <view class="popup-title">
             <text>已找到设备无线网络</text>
           </view>
           <view class="foundAp">
@@ -46,16 +46,21 @@
                 src="{{noFoundApSwitch}}"
               ></image>
             </view>
-            <view
-              class="foundAp-btn-colmo"
-              bindtap="onConfirmFoundWiFi"
-              >去连接</view
-            >
+
+            <view class="w-full flex flex-row gap-x-46rpx mt-32rpx">
+              <van-button
+                class="w-full"
+                type="primary"
+                size="large"
+                bind:click="onConfirmFoundWiFi"
+                >去连接</van-button
+              >
+            </view>
           </view>
         </block>
       </block>
       <block wx:else>
-        <view class="title">
+        <view class="popup-title">
           <text>请按如下步骤检查</text>
         </view>
         <view class="main">

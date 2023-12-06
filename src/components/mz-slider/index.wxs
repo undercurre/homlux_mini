@@ -35,38 +35,23 @@ function propObserver(newValue, oldValue, ownerInstance) {
   if (newValue === oldValue) {
     return
   }
-  ownerInstance.setTimeout(function () {
-    // 获取组件设置
-    var dataset = ownerInstance.getDataset()
-    if (dataset.key !== undefined) key = dataset.key
+  var dataset = ownerInstance.getDataset()
+  if (dataset.key !== undefined) key = dataset.key
 
+  ownerInstance.setTimeout(function () {
     // 如果正在拖动，则不响应值变化
     if (isMoving[key]) return
 
-    // 未初始化
-    // if (!isBtnInset[key]) {
-    dataset.min === undefined ? (min[key] = 0) : (min[key] = dataset.min)
-    dataset.max === undefined ? (max[key] = 100) : (max[key] = dataset.max)
-    dataset.isBtnInset === undefined ? (isBtnInset[key] = true) : (isBtnInset[key] = dataset.isBtnInset)
+    init(ownerInstance)
+    // console.log('propObserver', newValue, oldValue, key, 'min:', min[key])
 
-    sliderBar[key] = ownerInstance.selectComponent('.mz-slider-bar')
-    sliderBtn[key] = ownerInstance.selectComponent('.button')
-    sliderInfo[key] = ownerInstance.selectComponent('.mz-slider').getBoundingClientRect()
-    buttonInfo[key] = sliderBtn[key].getBoundingClientRect()
-
-    if (dataset.showToast) {
-      sliderToast[key] = ownerInstance.selectComponent('.slider-toast')
-    }
-    console.log('propObserver', newValue, oldValue, key, 'min:', min[key])
-
-    if (!sliderInfo[key]) {
+    // 初始化失败，不执行
+    if (!buttonInfo[key].width) {
       return
     }
     var width = ((newValue - min[key]) / (max[key] - min[key])) * sliderInfo[key].width
-    changeBarStyle(width)
-
-    // }
-  }, 100)
+    changeBarStyle(ownerInstance, width)
+  }, 300)
 }
 
 function onTouchstart(event, ownerInstance) {
@@ -75,7 +60,7 @@ function onTouchstart(event, ownerInstance) {
   var touch = event.touches[0] || event.changedTouches[0]
   var barWidth = touch.clientX - sliderInfo[key].left
   isMoving[key] = true
-  changeBarStyle(barWidth)
+  changeBarStyle(ownerInstance, barWidth)
   updateValue(barWidth)
   ownerInstance.callMethod('touchstart', { value: setValue[key] })
 }
@@ -88,7 +73,7 @@ function onTouchmove(event, ownerInstance) {
   var barWidth = touch.clientX - sliderInfo[key].left
 
   updateValue(barWidth)
-  changeBarStyle(barWidth)
+  changeBarStyle(ownerInstance, barWidth)
 
   // 气泡提示
   if (dataset.showToast) {
@@ -108,7 +93,10 @@ function onTouchend(event, ownerInstance) {
   var dataset = ownerInstance.getDataset()
   if (dataset.key !== undefined) key = dataset.key
 
-  isMoving[key] = false
+  // 延迟结束点拖动状态
+  ownerInstance.setTimeout(function () {
+    isMoving[key] = false
+  }, 300)
 
   // 气泡提示
   if (dataset.showToast) {
@@ -144,12 +132,38 @@ function onTouchend(event, ownerInstance) {
   ownerInstance.callMethod('handleEnd', { value: setValue[key] })
 }
 
+// 初始化，获取组件设置
+function init(_inst) {
+  var dataset = _inst.getDataset()
+  if (dataset.key !== undefined) key = dataset.key
+
+  dataset.min === undefined ? (min[key] = 0) : (min[key] = dataset.min)
+  dataset.max === undefined ? (max[key] = 100) : (max[key] = dataset.max)
+  dataset.isBtnInset === undefined ? (isBtnInset[key] = true) : (isBtnInset[key] = dataset.isBtnInset)
+
+  sliderBtn[key] = _inst.selectComponent('.button')
+  sliderBar[key] = _inst.selectComponent('.mz-slider-bar')
+  sliderInfo[key] = _inst.selectComponent('.mz-slider').getBoundingClientRect()
+  buttonInfo[key] = sliderBtn[key].getBoundingClientRect()
+
+  if (dataset.showToast) {
+    sliderToast[key] = _inst.selectComponent('.slider-toast')
+  }
+}
+
 // 滑条样式处理
-function changeBarStyle(_width) {
+function changeBarStyle(_inst, _width) {
+  if (!buttonInfo[key].width) {
+    init(_inst)
+  }
+
   var minWidth = isBtnInset[key] ? buttonInfo[key].width / 2 : 0
   var maxWidth = isBtnInset[key] ? sliderInfo[key].width - buttonInfo[key].width / 2 : sliderInfo[key].width
   var widthInRange = calcDragDis(_width, minWidth, maxWidth)
   var sliderBarWidth = isBtnInset[key] ? widthInRange + buttonInfo[key].width / 2 : widthInRange
+
+  // console.log('sliderInfo[key].width', JSON.stringify(sliderInfo[key].width), key)
+  console.log('[sliderBarWidth]', sliderBarWidth)
 
   // 已激活的滑条宽度处理
   sliderBar[key].setStyle({

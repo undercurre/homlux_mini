@@ -130,5 +130,53 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
       descList.push(property.buttonClicked === 1 ? '单击' : property.buttonClicked === 2 ? '双击' : '长按')
   }
 
+  if (proType === PRO_TYPE.bathHeat) {
+    const { mode, light_mode, heating_temperature } = property
+    if (mode?.indexOf('close_all') > -1) {
+      descList.push('待机')
+    }
+    if (mode?.indexOf('heating') > -1) {
+      if (Number(heating_temperature) >= 43) {
+        descList.push('强暖')
+      } else if (heating_temperature <= 42) {
+        descList.push('弱暖')
+      }
+    }
+    if (mode?.indexOf('ventilation') > -1) {
+      descList.push('换气')
+    }
+    if (mode?.indexOf('blowing') > -1) {
+      descList.push('吹风')
+    }
+    if (light_mode === 'main_light') {
+      descList.push('照明')
+    } else if (light_mode === 'night_light') {
+      descList.push('夜灯')
+    } else if (light_mode === 'close_all') {
+      descList.push('关灯')
+    }
+  }
+
+  if (proType === PRO_TYPE.clothesDryingRack) {
+    const { updown, laundry, light } = property
+    if (updown === 'up') {
+      descList.push('上升')
+    }
+    if (updown === 'down') {
+      descList.push('下降')
+    }
+    if (updown === 'pause') {
+      descList.push('暂停')
+    }
+    if (laundry === 'on') {
+      descList.push('一键晾衣')
+    }
+    if (light === 'on') {
+      descList.push('照明')
+    } else if (light === 'off') {
+      descList.push('关灯')
+    }
+  }
+
   return descList
 }

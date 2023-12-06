@@ -19,8 +19,8 @@ const failTextData = {
     mainTitle: 'XX联网失败',
     nextTitle: 'XX联网过程出错',
     guideDesc: [
-      '请确保连接家庭2.4GHz WiFi，不可连接5GHz WiFi',
-      '请确保家庭WiFi与密码填写正确，并确保该WiFi网络畅通 测试一下',
+      '请确保连接家庭2.4GHz Wi-Fi，不可连接5GHz Wi-Fi',
+      '请确保家庭Wi-Fi与密码填写正确，并确保该Wi-Fi网络畅通 测试一下',
       '请将路由器尽量靠近设备',
     ],
     isTest: true, //是否有测试一下
@@ -73,8 +73,9 @@ const failTextData = {
     nextTitle: 'XX无法接连路由器',
     guideDesc: [
       '请确保家庭WiFi与密码填写正确，并确保该WiFi网络畅通 测试一下',
-      '请将路由器尽量靠近设备',
+      '请确保设备通电状态',
       '请确认已开启“本地网络”系统授权；（仅iOS展示）',
+      '请将路由器尽量靠近设备',
       '若路由器设置了Mac地址白名单，请解除白名单，或将XX的Mac地址添加到白名单',
       '请确保路由器的DHCP功能已开启',
     ],
@@ -106,7 +107,7 @@ const failTextData = {
     nextTitle: '手机无法连接设备',
     guideDesc: [
       '请将手机尽量靠近设备',
-      '请在系统的WiFi设置页面中关闭“自动切换WiFi”等类似开关设置',
+      '建议在手机系统的WiFi设置页面中关闭“自动切换WiFi”功能',
       '请确认已开启“本地网络”系统授权。（仅iOS展示）',
     ],
     isTest: false, //是否有测试一下
@@ -135,7 +136,7 @@ const failTextData = {
     errorCode: '4038',
     mainTitle: 'XX联网失败',
     nextTitle: '手机无法连接设备',
-    guideDesc: ['请将手机尽量靠近设备', '请在系统的WiFi设置页面中关闭“自动切换WiFi”等类似开关'],
+    guideDesc: ['请将手机尽量靠近设备', '建议在手机系统的WiFi设置页面中关闭“自动切换WiFi”功能'],
     isTest: false, //是否有测试一下
     isNeedInputPsw: false,
     msg: 'AP配网，连接设备发生IO错误',
@@ -179,7 +180,7 @@ const failTextData = {
     errorCode: '180004',
     mainTitle: 'XX联网失败   ',
     nextTitle: 'XX无法接连路由器',
-    guideDesc: ['请确保连接家庭2.4GHz WiFi，不可连接5GHz WiFi；', '请确保家庭WiFi与密码填写正确。'],
+    guideDesc: ['请确保连接家庭2.4GHz Wi-Fi，不可连接5GHz Wi-Fi；', '请确保家庭WiFi与密码填写正确。'],
     isTest: false, //是否有测试一下
     isNeedInputPsw: true,
   },
@@ -198,7 +199,7 @@ const failTextData = {
     errorCode: '180005',
     mainTitle: '联网失败',
     nextTitle: '无法接连路由器',
-    guideDesc: ['1、请确保连接家庭2.4GHz WiFi，不可连接5GHz WiFi；', '2、请确保家庭WiFi与密码填写正确。'],
+    guideDesc: ['1、请确保连接家庭2.4GHz Wi-Fi，不可连接5GHz WiFi；', '2、请确保家庭WiFi与密码填写正确。'],
     isTest: false,
   },
   180006: {

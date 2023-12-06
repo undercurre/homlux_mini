@@ -46,6 +46,7 @@
         value="{{sceneName}}"
         size="large"
         placeholder="给场景取个名字"
+        maxlength="15"
         clearable="{{true}}"
         placeholder-style="text-align: center;"
         custom-style="padding: 24rpx 40rpx;border-radius: 32rpx;width:530rpx;height:96rpx;text-align:center;"
@@ -319,6 +320,24 @@
   bind:confirm="handleSceneEditConfirm"
   bind:close="handleEditPopupClose"
 ></curtain-control-popup>
+<bath-control-popup
+  show="{{showEditPopup === '0x26'}}"
+  title="{{sceneEditTitle}}"
+  isShowConfirm="{{true}}"
+  isSceneSetting="{{true}}"
+  deviceInfo="{{sceneEditInfo}}"
+  bind:confirm="handleSceneEditConfirm"
+  bind:close="handleEditPopupClose"
+></bath-control-popup>
+<dryer-control-popup
+  show="{{showEditPopup === '0x17'}}"
+  title="{{sceneEditTitle}}"
+  isShowConfirm="{{true}}"
+  isSceneSetting="{{true}}"
+  deviceInfo="{{sceneEditInfo}}"
+  bind:confirm="handleSceneEditConfirm"
+  bind:close="handleEditPopupClose"
+></dryer-control-popup>
 <edit-sensor-popup
   show="{{showEditSensorPopup}}"
   productId="{{editingSensorType}}"

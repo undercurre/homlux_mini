@@ -1,4 +1,4 @@
-import { delay, mzaioRequest, showLoading, hideLoading, Logger } from '../utils/index'
+import { delay, mzaioRequest, showLoading, hideLoading, Logger, IApiRequestOption } from '../utils/index'
 import { PRO_TYPE } from '../config/index'
 import homOs from 'js-homos'
 import { deviceStore } from '../store/index'
@@ -6,10 +6,11 @@ import { deviceStore } from '../store/index'
 /**
  * 设备管理-根据家庭id查询全屋的设备
  */
-export async function queryAllDevice(houseId: string, options?: { loading?: boolean }) {
+export async function queryAllDevice(houseId: string, options?: IApiRequestOption) {
   return await mzaioRequest.post<Device.DeviceItem[]>({
     log: true,
     loading: options?.loading ?? false,
+    isDefaultErrorTips: options?.isDefaultErrorTips ?? true,
     url: '/v1/device/queryDeviceInfoByHouseId',
     data: {
       houseId,
@@ -22,6 +23,22 @@ export async function queryAllDevice(houseId: string, options?: { loading?: bool
  * 1：开 0：关
  */
 export async function allDevicePowerControl(data: { houseId: string; onOff: number }, options?: { loading?: boolean }) {
+  // TODO 判断是否局域网控制
+  if (homOs.isHostConnected()) {
+    const localRes = await homOs.houseControl({
+      houseId: data.houseId,
+      power: data.onOff,
+    })
+
+    Logger.log('localRes', localRes)
+
+    if (localRes.success) {
+      return localRes
+    } else {
+      Logger.error('局域网调用失败，改走云端链路')
+    }
+  }
+
   return await mzaioRequest.post<IAnyObject>({
     log: false,
     loading: options?.loading ?? false,
@@ -234,6 +251,28 @@ export async function sendDevice(
           deviceId: data.deviceId,
           deviceType: data.deviceType,
           method: 'wifiCurtainControl',
+          inputData: [downData],
+        }
+
+        promise = controlDevice(params, option)
+      } else if (data.proType === PRO_TYPE.bathHeat) {
+        const downData = property
+
+        params = {
+          deviceId: data.deviceId,
+          deviceType: data.deviceType,
+          method: 'wifiBathHeatControl',
+          inputData: [downData],
+        }
+
+        promise = controlDevice(params, option)
+      } else if (data.proType === PRO_TYPE.clothesDryingRack) {
+        const downData = property
+
+        params = {
+          deviceId: data.deviceId,
+          deviceType: data.deviceType,
+          method: 'wifiClothesDryingRackControl',
           inputData: [downData],
         }
 
@@ -587,6 +626,7 @@ export async function checkDevice(
   return await mzaioRequest.post<Device.MzgdProTypeDTO>({
     log: true,
     loading: options?.loading ?? false,
+    isDefaultErrorTips: false,
     url: '/v1/device/checkDevice',
     data,
   })
