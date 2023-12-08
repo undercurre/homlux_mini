@@ -14,7 +14,7 @@ import {
   queryLocalKey,
 } from '../apis/index'
 import { PRO_TYPE } from '../config/index'
-import { asyncStorage, storage, Logger, IApiRequestOption } from '../utils/index'
+import { asyncStorage, storage, Logger, IApiRequestOption, isConnect } from '../utils/index'
 import { deviceStore } from './device'
 import { othersStore } from './others'
 import { roomStore } from './room'
@@ -330,16 +330,15 @@ export const homeStore = observable({
    * 更新homos通信key，由于无法host端无法通知客户端key是否过期，只能每次请求云端刷新
    */
   async initLocalKey() {
-    await this.updateLocalKey()
-    // const key = storage.get('localKey') as string
-    //
-    // console.debug('key', key)
-    //
-    // if (key) {
-    //   this.key = key
-    // } else {
-    //   await this.updateLocalKey()
-    // }
+    if (isConnect()) {
+      await this.updateLocalKey()
+    }
+
+    if (!this.key) {
+      const key = storage.get('localKey') as string
+
+      this.key = key
+    }
   },
 
   async updateLocalKey() {
