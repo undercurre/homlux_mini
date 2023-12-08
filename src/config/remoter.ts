@@ -178,7 +178,7 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
     },
   },
   '26': {
-    // Q30 // 0001 不支持摆风
+    // Q30系列 // 0001 不支持摆风，可调温
     '01': {
       deviceName: '浴霸',
       devicePic: '/assets/img/remoter/bathHeater.png',
@@ -276,7 +276,7 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
         },
       ],
     },
-    // MY-S5X28-Y5W // 0010 无人感
+    // Y5系列 // 0010 无人感，支持摆风，不可调温（无法判断是否可以调光）
     '02': {
       deviceName: '浴霸',
       devicePic: '/assets/img/remoter/bathHeater.png',
@@ -370,7 +370,7 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
         },
       ],
     },
-    // Q20 // 0011 温度可调 支持摆风 不支持人感 色温不可调
+    // Q20系列 // 0011 可调温 支持摆风 不支持人感 色温不可调
     '03': {
       deviceName: '浴霸',
       devicePic: '/assets/img/remoter/bathHeater.png',
@@ -474,7 +474,7 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
         },
       ],
     },
-    // MY-S5X28-Y6W // 0110
+    // Y6系列 // 0110 有人感
     '06': {
       deviceName: '浴霸',
       devicePic: '/assets/img/remoter/bathHeater.png',
@@ -568,8 +568,106 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
         },
       ],
     },
-    // MY-S5X30-A70W // TODO 0111 温度可调，暂时未匹配
-    // MY-S5X30-A70W // 1111 温度可调，色温可调
+    // A80系列 // 0111 温度可调
+    '07': {
+      deviceName: '浴霸',
+      devicePic: '/assets/img/remoter/bathHeater.png',
+      joystick: {
+        up: {
+          key: 'BATH_BRIGHT_PLUS',
+          icon: '/package-remoter/assets/bright1.png',
+          iconActive: '/package-remoter/assets/bright0.png',
+        },
+        right: {
+          key: 'BATH_TEMPERATURE_ADD',
+          icon: '/package-remoter/assets/temp3.png',
+          iconActive: '/package-remoter/assets/temp2.png',
+        },
+        down: {
+          key: 'BATH_BRIGHT_MINUS',
+          icon: '/package-remoter/assets/bright3.png',
+          iconActive: '/package-remoter/assets/bright2.png',
+        },
+        left: {
+          key: 'BATH_TEMPERATURE_SUB',
+          icon: '/package-remoter/assets/temp1.png',
+          iconActive: '/package-remoter/assets/temp0.png',
+        },
+        middle: {
+          key: 'FACTORY',
+        },
+      },
+      mList: [
+        {
+          key: 'BATH_WARM_UP',
+          icon: '/package-remoter/assets/scene01.png',
+          iconActive: '/package-remoter/assets/scene00.png',
+          name: '取暖',
+        },
+        {
+          key: 'BATH_WIND',
+          icon: '/package-remoter/assets/scene91.png',
+          iconActive: '/package-remoter/assets/scene90.png',
+          name: '吹风',
+        },
+        {
+          key: 'BATH_VENTILATE',
+          icon: '/package-remoter/assets/sceneA1.png',
+          iconActive: '/package-remoter/assets/sceneA0.png',
+          name: '换气',
+        },
+        {
+          key: 'BATH_DRY',
+          icon: '/package-remoter/assets/sceneB1.png',
+          iconActive: '/package-remoter/assets/sceneB0.png',
+          name: '干燥',
+        },
+        {
+          key: 'BATH_AUTO',
+          icon: '/package-remoter/assets/scene81.png',
+          iconActive: '/package-remoter/assets/scene80.png',
+          name: '安心沐浴',
+          btnWidth: '654rpx',
+        },
+      ],
+      bList: [
+        {
+          key: 'BATH_LAMP',
+          icon: '/package-remoter/assets/power1.png',
+          iconActive: '/package-remoter/assets/power0.png',
+          name: '照明',
+        },
+        {
+          key: 'BATH_ALL_OFF',
+          icon: '/package-remoter/assets/power1.png',
+          iconActive: '/package-remoter/assets/power0.png',
+          name: '待机',
+        },
+      ],
+      actions: [
+        {
+          key: 'BATH_LAMP',
+          name: '照明',
+        },
+        {
+          key: 'BATH_ALL_OFF',
+          name: '待机',
+        },
+        {
+          key: 'BATH_WIND',
+          name: '吹风',
+        },
+        {
+          key: 'BATH_VENTILATE',
+          name: '换气',
+        },
+        {
+          key: 'BATH_DRY',
+          name: '干燥',
+        },
+      ],
+    },
+    // A70系列 // 1111 温度可调，色温可调
     '0f': {
       deviceName: '浴霸',
       devicePic: '/assets/img/remoter/bathHeater.png',
@@ -679,8 +777,92 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
     },
   },
   '40': {
-    // L8 // 0011 温度可调 支持摆风 不支持人感 色温不可调
+    // L8、B8 // 0011 支持摆风，电控无法区分L8和B8（B8带小夜灯）
     '03': {
+      deviceName: '凉霸',
+      devicePic: '/assets/img/remoter/bathHeater.png',
+      joystick: {
+        up: {
+          key: 'BATH_BRIGHT_PLUS',
+          icon: '/package-remoter/assets/bright1.png',
+          iconActive: '/package-remoter/assets/bright0.png',
+        },
+        right: {},
+        down: {
+          key: 'BATH_BRIGHT_MINUS',
+          icon: '/package-remoter/assets/bright3.png',
+          iconActive: '/package-remoter/assets/bright2.png',
+        },
+        left: {},
+        middle: {
+          key: 'FACTORY',
+        },
+      },
+      mList: [
+        {
+          key: 'KITCHEN_WIND_STRONG',
+          icon: '/package-remoter/assets/scene91.png',
+          iconActive: '/package-remoter/assets/scene90.png',
+          name: '强风',
+        },
+        {
+          key: 'KITCHEN_WIND_SOFT',
+          icon: '/package-remoter/assets/scene91.png',
+          iconActive: '/package-remoter/assets/scene90.png',
+          name: '弱风',
+        },
+        {
+          key: 'BATH_VENTILATE',
+          icon: '/package-remoter/assets/sceneA1.png',
+          iconActive: '/package-remoter/assets/sceneA0.png',
+          name: '换气',
+        },
+        {
+          key: 'BATH_SWING',
+          icon: '/package-remoter/assets/sceneA1.png',
+          iconActive: '/package-remoter/assets/sceneA0.png',
+          name: '摆风',
+        },
+      ],
+      bList: [
+        {
+          key: 'BATH_LAMP',
+          icon: '/package-remoter/assets/power1.png',
+          iconActive: '/package-remoter/assets/power0.png',
+          name: '照明',
+        },
+        {
+          key: 'BATH_ALL_OFF',
+          icon: '/package-remoter/assets/power1.png',
+          iconActive: '/package-remoter/assets/power0.png',
+          name: '待机',
+        },
+      ],
+      actions: [
+        {
+          key: 'BATH_LAMP',
+          name: '照明',
+        },
+        {
+          key: 'BATH_ALL_OFF',
+          name: '待机',
+        },
+        {
+          key: 'BATH_WIND',
+          name: '吹风',
+        },
+        {
+          key: 'BATH_VENTILATE',
+          name: '换气',
+        },
+        {
+          key: 'BATH_DRY',
+          name: '干燥',
+        },
+      ],
+    },
+    // B7系列 // 0111 支持摆风，带人感
+    '07': {
       deviceName: '凉霸',
       devicePic: '/assets/img/remoter/bathHeater.png',
       joystick: {
