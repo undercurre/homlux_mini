@@ -326,16 +326,20 @@ export const homeStore = observable({
     await asyncStorage.set('homeData', data, 60 * 60 * 24) // 缓存有效期一天
   },
 
+  /**
+   * 更新homos通信key，由于无法host端无法通知客户端key是否过期，只能每次请求云端刷新
+   */
   async initLocalKey() {
-    const key = storage.get('localKey') as string
-
-    console.debug('key', key)
-
-    if (key) {
-      this.key = key
-    } else {
-      await this.updateLocalKey()
-    }
+    await this.updateLocalKey()
+    // const key = storage.get('localKey') as string
+    //
+    // console.debug('key', key)
+    //
+    // if (key) {
+    //   this.key = key
+    // } else {
+    //   await this.updateLocalKey()
+    // }
   },
 
   async updateLocalKey() {

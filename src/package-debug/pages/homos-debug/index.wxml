@@ -1,0 +1,36 @@
+<nav-bar
+  title="HomOS调试"
+  left-arrow
+  bind:leftTap="goBack"
+></nav-bar>
+
+<van-button
+  type="primary"
+  bind:click="readLogNative"
+  >读取本地日志</van-button
+>
+
+<van-button
+  type="primary"
+  bind:click="clearLogNative"
+  >清空本地日志</van-button
+>
+
+<scroll-view class="h-800">
+  <van-cell
+    title="{{item}}"
+    wx:for="{{logList}}"
+    wx:key="index"
+  >
+    <!--    <view slot="title">-->
+    <!--      <view class="van-cell-text">单元格</view>-->
+    <!--      <van-tag type="danger">标签</van-tag>-->
+    <!--    </view>-->
+  </van-cell>
+</scroll-view>
+
+<rich-text
+  nodes="{{logText}}"
+  user-select="{{true}}"
+  type="text"
+></rich-text>
