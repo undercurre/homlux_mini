@@ -34,7 +34,9 @@ ComponentWithComputed({
   },
 
   lifetimes: {
-    ready() {},
+    ready() {
+      this.readLogNative()
+    },
   },
   /**
    * 组件的方法列表
@@ -49,7 +51,7 @@ ComponentWithComputed({
           const text = res.data as string
 
           this.setData({
-            logList: text.split('\n'),
+            logList: text.split('\n').reverse(),
           })
         },
         fail(err) {

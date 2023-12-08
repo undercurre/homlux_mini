@@ -9,7 +9,7 @@ export async function initHomeOs() {
   homOs.login({
     homeId: homeStore.currentHomeDetail.houseId,
     key: homeStore.key,
-    host: { ip: '192.168.0.37', devId: '1701438900167637', SSID: 'test' },
+    // host: { ip: '192.168.0.37', devId: '1701438900167637', SSID: 'test' },
   })
 
   homOs.onMessage((res: { topic: string; reqId?: string; data: IAnyObject; ts: string }) => {

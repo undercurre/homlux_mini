@@ -7,7 +7,7 @@
 <van-button
   type="primary"
   bind:click="readLogNative"
-  >读取本地日志</van-button
+  >刷新本地日志</van-button
 >
 
 <van-button
@@ -16,17 +16,17 @@
   >清空本地日志</van-button
 >
 
-<scroll-view class="h-800">
-  <van-cell
-    title="{{item}}"
+<scroll-view
+  class="h-1000"
+  scroll-y
+>
+  <view
     wx:for="{{logList}}"
     wx:key="index"
+    class="border-b-1 border-hex-d3d3d3 border-solid"
   >
-    <!--    <view slot="title">-->
-    <!--      <view class="van-cell-text">单元格</view>-->
-    <!--      <van-tag type="danger">标签</van-tag>-->
-    <!--    </view>-->
-  </van-cell>
+    <text class="text-24 leading-30rpx">{{item}}</text>
+  </view>
 </scroll-view>
 
 <rich-text
