@@ -208,19 +208,13 @@ ComponentWithComputed({
     },
 
     /**
-     * 检查系统蓝牙开关
+     * 点击提示
      */
-    async checkSystemBleSwitch() {
+    clickTips() {
       // 没有打开系统蓝牙开关异常处理
-      if (this.data.scanType === 'subdevice' && !bleDevicesStore.available) {
-        Dialog.alert({
-          message: '请打开手机蓝牙，用于发现附近的子设备',
-          showCancelButton: false,
-          confirmButtonText: '我知道了',
-        })
+      if (this.data.scanType === 'subdevice') {
+        this.checkBlePermission()
       }
-
-      return bleDevicesStore.available
     },
 
     /**
