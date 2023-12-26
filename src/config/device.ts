@@ -4,6 +4,12 @@ import { ossDomain, productImgDir } from './img'
 // 设备列表，每次加载的条数 应该为4的倍数
 export const LIST_PAGE = 20
 
+// 依赖 WebSocket 更新设备数据的最大设备数
+export const MAX_DEVICES_USING_WS = 20
+
+// 不依赖 WebSocket 更新时的设备列表更新间隔（ms）
+export const NO_WS_REFRESH_INTERVAL = 20000
+
 /**
  * @name 设备卡片更新时间阈值
  * @description 等待时间小于这个值的，均不即时更新，与后面的更新合并，或到到队列清空时一起更新

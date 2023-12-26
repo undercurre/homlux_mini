@@ -165,7 +165,7 @@ ComponentWithComputed({
   },
 
   computed: {
-    // 按钮组，转为数组格式
+    // 按钮组视图数据，转为数组格式 // 2023.12.25 与【调温款】浴霸统一取暖范围值
     btnList(data) {
       const { btnMap, prop, isSceneSetting } = data
       const { mode = '' } = prop
@@ -173,10 +173,10 @@ ComponentWithComputed({
         let on = false
         switch (key) {
           case 'heating_strong':
-            on = mode.indexOf('heating') > -1 && Number(prop.heating_temperature) >= 43
+            on = mode.indexOf('heating') > -1 && Number(prop.heating_temperature) >= 37 // 实际上报值为55
             break
           case 'heating_soft':
-            on = mode.indexOf('heating') > -1 && Number(prop.heating_temperature) <= 42
+            on = mode.indexOf('heating') > -1 && Number(prop.heating_temperature) <= 36 // 实际上报值为30
             break
           // 全关状态不显示
           case 'close_all':
@@ -193,7 +193,7 @@ ComponentWithComputed({
       })
       return res
     },
-    // 下方大按钮，转为数组格式
+    // 下方大按钮视图数据，转为数组格式
     largeBtnList(data) {
       const { largeBtnMap, prop } = data
       const res = Object.keys(largeBtnMap).map((key: string) => {

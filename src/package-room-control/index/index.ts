@@ -39,6 +39,8 @@ import {
   CARD_REFRESH_TIME,
   sceneImgDir,
   defaultImgDir,
+  MAX_DEVICES_USING_WS,
+  NO_WS_REFRESH_INTERVAL,
 } from '../../config/index'
 
 type DeviceCard = Device.DeviceItem & {
@@ -138,6 +140,7 @@ ComponentWithComputed({
       minColorTemp,
       power: 0,
     },
+    _timeId: null as null | number,
   },
 
   computed: {
@@ -285,6 +288,7 @@ ComponentWithComputed({
         this.updateQueue({ isRefresh: true })
         // sceneStore.updateAllRoomSceneList()
         this.queryGroupInfo()
+        this.autoRefreshDevice()
         this.data._firstShow = false
       }
       // 从别的页面返回，或从挂起状态恢复
@@ -449,6 +453,8 @@ ComponentWithComputed({
         await Promise.all([homeStore.updateRoomCardList(), sceneStore.updateAllRoomSceneList(), this.queryGroupInfo()])
 
         this.updateQueue({ isRefresh: true })
+
+        this.autoRefreshDevice()
       } finally {
         wx.stopPullDownRefresh()
       }
@@ -477,6 +483,7 @@ ComponentWithComputed({
     // 节流更新设备列表
     reloadDeviceListThrottle: throttle(function (this: IAnyObject) {
       this.reloadDeviceList()
+      this.autoRefreshDevice()
     }, 3000),
 
     // 页面滚动
@@ -495,6 +502,11 @@ ComponentWithComputed({
       if (this.data._wait_timeout) {
         clearTimeout(this.data._wait_timeout)
         this.data._wait_timeout = null
+      }
+
+      if (this.data._timeId) {
+        clearTimeout(this.data._timeId)
+        this.data._timeId = null
       }
     },
     handleShowDeviceOffline(e: { detail: DeviceCard }) {
@@ -1448,6 +1460,27 @@ ComponentWithComputed({
       if (!res.success) {
         Toast('控制失败')
       }
+    },
+    // 定时更新设备列表，符合条件则递归执行
+    autoRefreshDevice() {
+      console.log('[autoRefreshDevice]')
+      const noAutoRefresh = deviceStore.allRoomDeviceList.length < MAX_DEVICES_USING_WS
+      if (this.data._timeId) {
+        if (noAutoRefresh) {
+          clearTimeout(this.data._timeId)
+          this.data._timeId = null
+        }
+        return
+      }
+      if (noAutoRefresh) {
+        return
+      }
+
+      this.data._timeId = setTimeout(() => {
+        this.data._timeId = null
+        this.reloadDeviceList()
+        this.autoRefreshDevice()
+      }, NO_WS_REFRESH_INTERVAL)
     },
   },
 })
