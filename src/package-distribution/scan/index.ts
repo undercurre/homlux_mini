@@ -255,7 +255,7 @@ ComponentWithComputed({
     },
 
     async initBle() {
-      // 若已经进入搜索蓝牙状态，无需重复初始化
+      // 若已经进入搜索蓝牙状态或者非添加子设备模式，无需重复初始化
       if (this.data.scanType !== 'subdevice' || bleDevicesStore.discovering) {
         return
       }
