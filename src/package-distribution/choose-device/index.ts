@@ -40,6 +40,7 @@ ComponentWithComputed({
       {
         icon: `${productImgDir}/curtain.png`,
         name: '窗帘',
+        type: 'meiju',
         path: strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
           proType: '14',
           sn8: '79700Z76',
@@ -51,6 +52,7 @@ ComponentWithComputed({
       {
         icon: `${productImgDir}/bath-heater.png`,
         name: '浴霸',
+        type: 'meiju',
         path: strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
           proType: '26',
           sn8: 'M0100032',
@@ -62,6 +64,7 @@ ComponentWithComputed({
       {
         icon: `${productImgDir}/laundry.png`,
         name: '晾衣机',
+        type: 'meiju',
         path: strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
           proType: '17',
           sn8: 'M0100035',

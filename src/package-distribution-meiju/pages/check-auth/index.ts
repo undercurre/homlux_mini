@@ -2,8 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
 import { homeStore } from '../../../store/index'
 import app from '../../common/app'
-import { queryGuideInfo, queryUserThirdPartyInfo } from '../../../apis/index'
-import { delay, Logger, storage } from '../../../utils/index'
+import { queryGuideInfo } from '../../../apis/index'
 import { addDeviceSDK } from '../../utils/addDeviceSDK'
 import { addGuide, inputWifiInfo } from '../../utils/paths.js'
 import Toast from '@vant/weapp/toast/toast'
@@ -41,37 +40,10 @@ ComponentWithComputed({
         app.addDeviceInfo.productId = productId
       }
 
-      const res = await queryUserThirdPartyInfo(homeStore.currentHomeId, { loading: true })
-
-      const isAuth = res.success ? res.result[0].authStatus === 1 : false
-
-      Logger.log('queryUserThirdPartyInfo', res)
-      if (!res.success) {
-        await delay(2000) // 等待默认的无网络提示消失后再返回
-
-        this.goBack()
-        return
-      }
-
-      if (isAuth) {
-        this.toBindDevice()
-        return
-      }
-
-      this.toBindMeijuHome()
+      this.toBindDevice()
     },
   },
   methods: {
-    /**
-     * 跳转绑定美居账号
-     */
-    toBindMeijuHome() {
-      storage.set('meiju_auth_entry', 'distribution-meiju')
-      wx.redirectTo({
-        url: '/package-auth/pages/confirm-auth/index',
-      })
-    },
-
     /**
      * 前往配网流程页面
      */

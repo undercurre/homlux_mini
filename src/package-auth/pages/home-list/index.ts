@@ -98,7 +98,7 @@ ComponentWithComputed({
         })
       } else {
         const url = `/package-auth/pages/device-list/index?homeId=${this.data.currentHome?.mideaHouseId}`
-        wx.navigateTo({ url })
+        wx.redirectTo({ url })
       }
     },
 
@@ -111,9 +111,7 @@ ComponentWithComputed({
       if (res.success) {
         storage.remove('meiju_auth_entry') // 清除缓存标志，以免影响其他逻辑
 
-        wx.redirectTo({
-          url: '/package-distribution-meiju/pages/check-auth/index',
-        })
+        wx.navigateBack()
       } else {
         Toast(res.msg)
       }
