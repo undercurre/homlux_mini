@@ -48,6 +48,13 @@ ComponentWithComputed({
     show: {
       type: Boolean,
       value: false,
+      observer(value) {
+        if (value) {
+          this.setData({
+            prop: this.data.deviceInfo,
+          })
+        }
+      },
     },
     // 是否显示进入详情页的按钮
     isShowSetting: {
