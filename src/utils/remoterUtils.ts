@@ -4,6 +4,9 @@ import { hideLoading, isAndroid, showLoading } from './system'
 import { delay, Logger } from '../utils/index'
 import { CMD } from '../config/remoter'
 
+// 是否广播中
+let isAdvertising = false
+
 /**
  * @description 建立本地作为蓝牙[低功耗外围设备]的服务端
  */
@@ -39,6 +42,15 @@ export async function bleAdvertising(
     Logger.log('server is Not existed')
     return
   }
+  if (isAdvertising) {
+    Logger.log('aborted by last adv')
+    return
+  }
+  isAdvertising = true
+
+  // 振动逻辑放到有效广播后
+  if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
+
   const advertiseRequest = {} as WechatMiniprogram.AdvertiseReqObj
 
   if (isAndroid()) {
@@ -67,6 +79,8 @@ export async function bleAdvertising(
     await stopAdvertising(server)
     await bleAdvertisingEnd(server, { addr, isFactory })
   }
+
+  isAdvertising = false
 }
 
 /**
