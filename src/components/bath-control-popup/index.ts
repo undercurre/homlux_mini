@@ -11,47 +11,6 @@ type BtnItem = {
   rebound?: boolean // 按钮是否自动回弹状态
 }
 
-// 互斥的属性列表
-const MUTEX_PROP = ['blowing', 'heating']
-/**
- * @name 属性切换
- * @param mode 原有的属性字符串，用逗号分隔
- * @param key 要比较的属性
- * @param toRemove key存在时，是否要删除
- */
-const toggleProp = (mode: string, key: string, toRemove = true): string => {
-  const arr = mode.split(',')
-  // console.log('[toggleProp trigger]', arr, key)
-  // key已存在，则移除
-  if (arr.includes(key)) {
-    if (toRemove) {
-      arr.splice(arr.indexOf(key), 1)
-    }
-    if (key !== 'close_all' && !arr.length) {
-      arr.push('close_all')
-    }
-  }
-  // key不存在，即添加，并移除待机
-  else {
-    if (arr.includes('close_all')) {
-      arr.splice(arr.indexOf('close_all'), 1)
-    }
-    if (MUTEX_PROP.includes(key)) {
-      MUTEX_PROP.forEach((item) => {
-        const index = arr.indexOf(item)
-        if (index !== -1) {
-          arr.splice(index, 1)
-        }
-      })
-    }
-
-    arr.push(key)
-  }
-
-  // console.log('[toggleProp result]', arr)
-  return arr.join(',')
-}
-
 ComponentWithComputed({
   options: {
     pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
@@ -235,21 +194,23 @@ ComponentWithComputed({
 
       switch (key) {
         case 'heating_strong': {
-          const isStrong = mode.indexOf('heating') > -1 && Number(heating_temperature) >= 43
+          const isStrong = mode.indexOf('heating') > -1 && Number(heating_temperature) >= 37
           if (isStrong) {
-            property.mode = toggleProp(mode, 'heating')
+            delete prop.mode
+            property.mode = 'close_all'
           } else {
-            property.mode = toggleProp(mode, 'heating', false)
+            property.mode = 'heating'
             property.heating_temperature = '45'
           }
           break
         }
         case 'heating_soft': {
-          const isSoft = mode.indexOf('heating') > -1 && Number(heating_temperature) <= 42
+          const isSoft = mode.indexOf('heating') > -1 && Number(heating_temperature) <= 36
           if (isSoft) {
-            property.mode = toggleProp(mode, 'heating')
+            delete prop.mode
+            property.mode = 'close_all'
           } else {
-            property.mode = toggleProp(mode, 'heating', false)
+            property.mode = 'heating'
             property.heating_temperature = '30'
           }
           break
@@ -264,13 +225,17 @@ ComponentWithComputed({
           break
         }
 
-        // blow && ventilation
+        // blow && ventilation && drying
         default: {
-          property.mode = toggleProp(mode, key)
+          property.mode = key
         }
       }
 
       // 即时使用设置值渲染
+      console.log('handleModeTap', {
+        ...prop,
+        ...property,
+      })
       this.setData({
         prop: {
           ...prop,

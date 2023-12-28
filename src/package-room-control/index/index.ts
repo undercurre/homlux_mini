@@ -1353,7 +1353,7 @@ ComponentWithComputed({
     },
     // 定时更新设备列表，符合条件则递归执行
     autoRefreshDevice() {
-      console.log('[autoRefreshDevice]')
+      Logger.log('[autoRefreshDevice]')
       const noAutoRefresh = deviceStore.allRoomDeviceList.length < MAX_DEVICES_USING_WS
       if (this.data._timeId) {
         if (noAutoRefresh) {
