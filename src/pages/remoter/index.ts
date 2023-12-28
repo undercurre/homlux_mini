@@ -15,7 +15,6 @@ import {
 import { defaultImgDir } from '../../config/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
-import Toast from '@vant/weapp/toast/toast'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [remoterBinding] }), pageBehaviors],
@@ -326,7 +325,8 @@ ComponentWithComputed({
       const now = new Date().getTime()
       console.log('now - this.data._timer', now - this.data._timer)
       if (now - this.data._timer < FREQUENCY_TIME) {
-        Toast('操作太频繁啦~')
+        // Toast('操作太频繁啦~')
+        return
       }
       this.data._timer = now
 

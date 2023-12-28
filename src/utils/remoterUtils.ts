@@ -34,7 +34,7 @@ export async function bleAdvertising(
   server: WechatMiniprogram.BLEPeripheralServer | null,
   params: { addr: string; payload: string; comId?: string; autoEnd?: boolean; INTERVAL?: number; isFactory?: boolean },
 ) {
-  const { addr, payload, comId = '0x4D11', INTERVAL = 800, autoEnd = true, isFactory } = params
+  const { addr, payload, comId = '0x4D11', INTERVAL = 500, autoEnd = true, isFactory } = params
   if (!server) {
     Logger.log('server is Not existed')
     return
@@ -79,7 +79,7 @@ export async function bleAdvertisingEnd(
   server: WechatMiniprogram.BLEPeripheralServer,
   params: { addr: string; comId?: string; INTERVAL?: number; isFactory?: boolean },
 ) {
-  const { addr, comId = '0x4D11', INTERVAL = 800, isFactory } = params
+  const { addr, comId = '0x4D11', INTERVAL = 500, isFactory } = params
   const payload = remoterProtocol.generalCmdString(CMD.END) // 固定发这个指令
   const advertiseRequest = {} as WechatMiniprogram.AdvertiseReqObj
 
@@ -152,7 +152,7 @@ export function stopAdvertising(server: WechatMiniprogram.BLEPeripheralServer) {
 }
 
 /**
- * 基于连接的低功耗蓝牙设备服务
+ * 基于[连接]的低功耗蓝牙设备服务
  */
 export class BleService {
   addr: string

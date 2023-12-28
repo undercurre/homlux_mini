@@ -8,7 +8,7 @@ export const SEEK_TIMEOUT = 2500
 export const SEEK_TIMEOUT_CONTROLED = 1000
 
 // 操作频繁提示的间隔时间
-export const FREQUENCY_TIME = 300
+export const FREQUENCY_TIME = 1000
 
 // 定时轮询设备状态的间隔时间
 export const SEEK_INTERVAL = 8000
