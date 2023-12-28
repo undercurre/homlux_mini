@@ -93,7 +93,7 @@ export async function startWebsocketService() {
         heartbeatInfo.lastMsgId = message.msgId
       }
       // 设备较多时禁用基于消息更新单一设备的机制
-      else if (eventType !== 'device_property' && deviceStore.allRoomDeviceList.length < MAX_DEVICES_USING_WS) {
+      else if (eventType !== 'device_property' || deviceStore.allRoomDeviceList.length < MAX_DEVICES_USING_WS) {
         emitter.emit('msgPush', {
           source: 'ws',
           reqId: eventData.reqId,
