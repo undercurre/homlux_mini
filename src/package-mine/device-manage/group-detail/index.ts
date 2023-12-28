@@ -34,13 +34,17 @@ ComponentWithComputed({
     },
     /**
      * @description 可被添加到灯组的单灯列表
-     * 不能已在灯组中
+     * 不能是灯组
+     * 不在当前灯组
      */
-    lightListToAdd() {
-      const { deviceFlattenList, lightsInGroup } = deviceStore
+    lightListToAdd(data) {
+      const { groupDeviceList } = data.deviceInfo
+      const { deviceFlattenList } = deviceStore
       return deviceFlattenList.filter(
         (device) =>
-          device.proType === PRO_TYPE.light && device.deviceType !== 4 && !lightsInGroup.includes(device.deviceId),
+          device.proType === PRO_TYPE.light &&
+          device.deviceType !== 4 &&
+          !groupDeviceList?.map((d) => d.deviceId).includes(device.deviceId),
       )
     },
     canAddDevice(data) {
