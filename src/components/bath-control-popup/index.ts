@@ -227,7 +227,12 @@ ComponentWithComputed({
 
         // blow && ventilation && drying
         default: {
-          property.mode = key
+          if (mode?.indexOf(key) > -1) {
+            delete prop.mode
+            property.mode = 'close_all'
+          } else {
+            property.mode = key
+          }
         }
       }
 
