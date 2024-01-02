@@ -31,7 +31,7 @@ App<IAppOption>({
     // 获取状态栏、顶部栏、底部栏高度
     setNavigationBarAndBottomBarHeight()
 
-    homOs.init({ mqttLib: mqtt, isDebug: true })
+    homOs.init({ mqttLib: mqtt, isDebug: true, isNativeLog: true })
 
     // 从缓存中读取默认首页
     const defaultPage = (storage.get<string>('defaultPage') ?? '') as string

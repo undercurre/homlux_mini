@@ -968,3 +968,18 @@ export async function queryLocalKey(
     data,
   })
 }
+
+/**
+ * 标记该网关sn是哪个平台
+ */
+export async function verifySn(sn: string, options?: { loading?: boolean }) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/verifySn',
+    data: {
+      sn,
+      systemType: '1',
+    },
+  })
+}

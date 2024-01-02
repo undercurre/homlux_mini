@@ -1071,10 +1071,14 @@ ComponentWithComputed({
         ...e.detail,
       }
 
-      actionItem.value = {
-        // ...actionItem.value,
-        ...e.detail,
-      }
+      const _proType = _cacheDeviceMap[actionItem.uniId].proType
+      const coverTypes = _proType === PRO_TYPE.bathHeat || _proType === PRO_TYPE.clothesDryingRack
+      actionItem.value = coverTypes
+        ? e.detail
+        : {
+            ...actionItem.value,
+            ...e.detail,
+          }
 
       actionItem.desc = toPropertyDesc(actionItem.proType as string, actionItem.value)
 

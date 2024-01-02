@@ -14,8 +14,25 @@ import {
   roomStore,
   deviceStore,
 } from '../../store/index'
-import { storage, throttle, emitter, WSEventType, showLoading, hideLoading, strUtil, delay } from '../../utils/index'
-import { PRO_TYPE, ROOM_CARD_H, ROOM_CARD_M, defaultImgDir } from '../../config/index'
+import {
+  storage,
+  throttle,
+  emitter,
+  WSEventType,
+  showLoading,
+  hideLoading,
+  strUtil,
+  delay,
+  Logger,
+} from '../../utils/index'
+import {
+  MAX_DEVICES_USING_WS,
+  NO_WS_REFRESH_INTERVAL,
+  PRO_TYPE,
+  ROOM_CARD_H,
+  ROOM_CARD_M,
+  defaultImgDir,
+} from '../../config/index'
 import { allDevicePowerControl, updateRoomSort, updateDefaultHouse, changeUserHouse } from '../../apis/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 
@@ -91,6 +108,7 @@ ComponentWithComputed({
     _lastClientY: 0, // 上次触控采样时 的Y坐标
     _isFirstShow: true, // 是否首次加载
     _from: '', // 页面进入来源
+    _timeId: null as null | number,
   },
   computed: {
     currentHomeName(data) {
@@ -156,6 +174,11 @@ ComponentWithComputed({
       // 隐藏之前展示的下拉菜单
       this.hideMenu()
       emitter.off('wsReceive')
+
+      if (this.data._timeId) {
+        clearTimeout(this.data._timeId)
+        this.data._timeId = null
+      }
     },
     async onShow() {
       if (!this.data._isFirstShow || this.data._from === 'addDevice') {
@@ -171,6 +194,9 @@ ComponentWithComputed({
           loading: true,
         })
       }
+
+      this.autoRefreshDevice()
+
       emitter.off('wsReceive')
       emitter.on('wsReceive', (res) => {
         if (res.result.eventType === 'device_property') {
@@ -219,8 +245,9 @@ ComponentWithComputed({
     },
 
     // 节流更新房间卡片信息
-    updateRoomDataThrottle: throttle(() => {
+    updateRoomDataThrottle: throttle(function (this: IAnyObject) {
       homeStore.updateRoomCardList()
+      this.autoRefreshDevice()
     }, 3000),
 
     // 节流更新房间卡片信息
@@ -670,6 +697,27 @@ ComponentWithComputed({
       runInAction(() => {
         roomStore.roomList = list
       })
+    },
+    // 定时更新设备列表，符合条件则递归执行
+    autoRefreshDevice() {
+      Logger.log('[autoRefreshDevice]')
+      const noAutoRefresh = deviceStore.allRoomDeviceList.length < MAX_DEVICES_USING_WS
+      if (this.data._timeId) {
+        if (noAutoRefresh) {
+          clearTimeout(this.data._timeId)
+          this.data._timeId = null
+        }
+        return
+      }
+      if (noAutoRefresh) {
+        return
+      }
+
+      this.data._timeId = setTimeout(() => {
+        this.data._timeId = null
+        homeStore.updateRoomCardList()
+        this.autoRefreshDevice()
+      }, NO_WS_REFRESH_INTERVAL)
     },
   },
 })

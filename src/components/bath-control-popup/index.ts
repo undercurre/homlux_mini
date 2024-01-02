@@ -11,47 +11,6 @@ type BtnItem = {
   rebound?: boolean // 按钮是否自动回弹状态
 }
 
-// 互斥的属性列表
-const MUTEX_PROP = ['blowing', 'heating']
-/**
- * @name 属性切换
- * @param mode 原有的属性字符串，用逗号分隔
- * @param key 要比较的属性
- * @param toRemove key存在时，是否要删除
- */
-const toggleProp = (mode: string, key: string, toRemove = true): string => {
-  const arr = mode.split(',')
-  // console.log('[toggleProp trigger]', arr, key)
-  // key已存在，则移除
-  if (arr.includes(key)) {
-    if (toRemove) {
-      arr.splice(arr.indexOf(key), 1)
-    }
-    if (key !== 'close_all' && !arr.length) {
-      arr.push('close_all')
-    }
-  }
-  // key不存在，即添加，并移除待机
-  else {
-    if (arr.includes('close_all')) {
-      arr.splice(arr.indexOf('close_all'), 1)
-    }
-    if (MUTEX_PROP.includes(key)) {
-      MUTEX_PROP.forEach((item) => {
-        const index = arr.indexOf(item)
-        if (index !== -1) {
-          arr.splice(index, 1)
-        }
-      })
-    }
-
-    arr.push(key)
-  }
-
-  // console.log('[toggleProp result]', arr)
-  return arr.join(',')
-}
-
 ComponentWithComputed({
   options: {
     pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
@@ -89,6 +48,13 @@ ComponentWithComputed({
     show: {
       type: Boolean,
       value: false,
+      observer(value) {
+        if (value) {
+          this.setData({
+            prop: this.data.deviceInfo,
+          })
+        }
+      },
     },
     // 是否显示进入详情页的按钮
     isShowSetting: {
@@ -165,7 +131,7 @@ ComponentWithComputed({
   },
 
   computed: {
-    // 按钮组，转为数组格式
+    // 按钮组视图数据，转为数组格式 // 2023.12.25 与【调温款】浴霸统一取暖范围值
     btnList(data) {
       const { btnMap, prop, isSceneSetting } = data
       const { mode = '' } = prop
@@ -173,10 +139,10 @@ ComponentWithComputed({
         let on = false
         switch (key) {
           case 'heating_strong':
-            on = mode.indexOf('heating') > -1 && Number(prop.heating_temperature) >= 43
+            on = mode.indexOf('heating') > -1 && Number(prop.heating_temperature) >= 37 // 实际上报值为55
             break
           case 'heating_soft':
-            on = mode.indexOf('heating') > -1 && Number(prop.heating_temperature) <= 42
+            on = mode.indexOf('heating') > -1 && Number(prop.heating_temperature) <= 36 // 实际上报值为30
             break
           // 全关状态不显示
           case 'close_all':
@@ -193,7 +159,7 @@ ComponentWithComputed({
       })
       return res
     },
-    // 下方大按钮，转为数组格式
+    // 下方大按钮视图数据，转为数组格式
     largeBtnList(data) {
       const { largeBtnMap, prop } = data
       const res = Object.keys(largeBtnMap).map((key: string) => {
@@ -235,21 +201,23 @@ ComponentWithComputed({
 
       switch (key) {
         case 'heating_strong': {
-          const isStrong = mode.indexOf('heating') > -1 && Number(heating_temperature) >= 43
+          const isStrong = mode.indexOf('heating') > -1 && Number(heating_temperature) >= 37
           if (isStrong) {
-            property.mode = toggleProp(mode, 'heating')
+            delete prop.mode
+            property.mode = 'close_all'
           } else {
-            property.mode = toggleProp(mode, 'heating', false)
+            property.mode = 'heating'
             property.heating_temperature = '45'
           }
           break
         }
         case 'heating_soft': {
-          const isSoft = mode.indexOf('heating') > -1 && Number(heating_temperature) <= 42
+          const isSoft = mode.indexOf('heating') > -1 && Number(heating_temperature) <= 36
           if (isSoft) {
-            property.mode = toggleProp(mode, 'heating')
+            delete prop.mode
+            property.mode = 'close_all'
           } else {
-            property.mode = toggleProp(mode, 'heating', false)
+            property.mode = 'heating'
             property.heating_temperature = '30'
           }
           break
@@ -264,13 +232,22 @@ ComponentWithComputed({
           break
         }
 
-        // blow && ventilation
+        // blow && ventilation && drying
         default: {
-          property.mode = toggleProp(mode, key)
+          if (mode?.indexOf(key) > -1) {
+            delete prop.mode
+            property.mode = 'close_all'
+          } else {
+            property.mode = key
+          }
         }
       }
 
       // 即时使用设置值渲染
+      console.log('handleModeTap', {
+        ...prop,
+        ...property,
+      })
       this.setData({
         prop: {
           ...prop,

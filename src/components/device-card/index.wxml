@@ -6,6 +6,11 @@
 >
   <!-- IOS 下card-clip会把box-shadow同时剪裁掉，故增加一层处理 -->
   <view class="flex-col-center relative overflow-hidden card-clip w-160rpx h-216rpx rounded-32rpx">
+    <text
+      wx-if="{{deviceInfo.canLanCtrl}}"
+      class="absolute text-20 right-0 top-0 text-hex-33c519"
+      >局</text
+    >
     <!-- 单选和编辑选择，选中状态均使用描边样式 -->
     <view
       wx:if="{{select}}"

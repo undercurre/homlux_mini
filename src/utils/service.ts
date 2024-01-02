@@ -1,6 +1,7 @@
 // service模块存放项目的相关业务代码
 import { connectHouseSocket } from '../apis/websocket'
-import { homeStore, userStore } from '../store/index'
+import { homeStore, userStore, deviceStore } from '../store/index'
+import { MAX_DEVICES_USING_WS } from '../config/index'
 import { isLogon, Logger, storage, isConnect, verifyNetwork } from './index'
 import { emitter } from './eventBus'
 import homos from 'js-homos'
@@ -85,12 +86,14 @@ export async function startWebsocketService() {
 
       // Logger.console('Ⓦ 收到ws信息：', res)
 
-      const { topic, message, eventData } = res.result
+      const { topic, message, eventData, eventType } = res.result
 
       if (topic === 'heartbeatTopic') {
         // 缓存上一次收到的心跳包id
         heartbeatInfo.lastMsgId = message.msgId
-      } else {
+      }
+      // 设备较多时禁用基于消息更新单一设备的机制
+      else if (eventType !== 'device_property' || deviceStore.allRoomDeviceList.length < MAX_DEVICES_USING_WS) {
         emitter.emit('msgPush', {
           source: 'ws',
           reqId: eventData.reqId,

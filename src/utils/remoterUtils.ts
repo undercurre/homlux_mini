@@ -4,6 +4,9 @@ import { hideLoading, isAndroid, showLoading } from './system'
 import { delay, Logger } from '../utils/index'
 import { CMD } from '../config/remoter'
 
+// 是否广播中
+let isAdvertising = false
+
 /**
  * @description 建立本地作为蓝牙[低功耗外围设备]的服务端
  */
@@ -34,11 +37,20 @@ export async function bleAdvertising(
   server: WechatMiniprogram.BLEPeripheralServer | null,
   params: { addr: string; payload: string; comId?: string; autoEnd?: boolean; INTERVAL?: number; isFactory?: boolean },
 ) {
-  const { addr, payload, comId = '0x4D11', INTERVAL = 800, autoEnd = true, isFactory } = params
+  const { addr, payload, comId = '0x4D11', INTERVAL = 500, autoEnd = true, isFactory } = params
   if (!server) {
     Logger.log('server is Not existed')
     return
   }
+  if (isAdvertising) {
+    Logger.log('aborted by last adv')
+    return
+  }
+  isAdvertising = true
+
+  // 振动逻辑放到有效广播后
+  if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
+
   const advertiseRequest = {} as WechatMiniprogram.AdvertiseReqObj
 
   if (isAndroid()) {
@@ -67,6 +79,8 @@ export async function bleAdvertising(
     await stopAdvertising(server)
     await bleAdvertisingEnd(server, { addr, isFactory })
   }
+
+  isAdvertising = false
 }
 
 /**
@@ -79,7 +93,7 @@ export async function bleAdvertisingEnd(
   server: WechatMiniprogram.BLEPeripheralServer,
   params: { addr: string; comId?: string; INTERVAL?: number; isFactory?: boolean },
 ) {
-  const { addr, comId = '0x4D11', INTERVAL = 800, isFactory } = params
+  const { addr, comId = '0x4D11', INTERVAL = 500, isFactory } = params
   const payload = remoterProtocol.generalCmdString(CMD.END) // 固定发这个指令
   const advertiseRequest = {} as WechatMiniprogram.AdvertiseReqObj
 
@@ -152,7 +166,7 @@ export function stopAdvertising(server: WechatMiniprogram.BLEPeripheralServer) {
 }
 
 /**
- * 基于连接的低功耗蓝牙设备服务
+ * 基于[连接]的低功耗蓝牙设备服务
  */
 export class BleService {
   addr: string

@@ -23,18 +23,10 @@
 
   <block wx:if="{{envVersion !== 'release'}}">
     <van-cell
-      icon="/assets/img/mine/about.png"
-      title="切换环境【{{curEnv}}】"
+      title="调试工具【{{curEnv}}】"
       is-link
       center
-      bind:click="toggleEnv"
-    />
-    <van-cell
-      icon="/assets/img/mine/deviceReplace.png"
-      title="添加虚拟设备"
-      is-link
-      center
-      bind:click="addVirtualDevice"
+      bind:click="toDebugUtil"
     />
   </block>
 
@@ -47,7 +39,6 @@
   />
   <van-cell
     wx:elif="{{envVersion !== 'release' && releaseTime}}"
-    icon="/assets/img/mine/upgrade.png"
     title="发布时间"
     value="{{releaseTime}}"
     center

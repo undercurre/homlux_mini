@@ -1,7 +1,7 @@
 <view class="page-container flex flex-col">
   <nav-bar
     leftArrow="{{true}}"
-    bind:leftTap="goBackHome"
+    bind:leftTap="goBack"
     title="美的美居"
   ></nav-bar>
 
@@ -10,8 +10,6 @@
       title="我的家庭"
       label="已同步{{deviceList.length}}个设备"
       center
-      data-url="{{urls.meiju}}"
-      bind:click="goTo"
       border="{{false}}"
       custom-class="title-wrapper"
     >

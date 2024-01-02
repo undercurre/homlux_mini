@@ -19,6 +19,7 @@ ComponentWithComputed({
       {
         icon: `${productImgDir}/light-wifi.png`,
         name: '吸顶灯',
+        type: 'meiju',
         tag: 'wifi',
         path: strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
           proType: '13',

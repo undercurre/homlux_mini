@@ -12,7 +12,6 @@ import {
 } from '../../utils/remoterUtils'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
-import Toast from '@vant/weapp/toast/toast'
 
 // 可以开灯的指令，若上次为为这些指令，则关灯
 const ON_KEYS = ['LIGHT_LAMP_ON', 'LIGHT_NIGHT_LAMP', 'LIGHT_SCENE_DAILY', 'LIGHT_SCENE_RELAX', 'LIGHT_SCENE_SLEEP']
@@ -162,7 +161,8 @@ ComponentWithComputed({
       const now = new Date().getTime()
       console.log('now - this.data._timer', now - this.data._timer)
       if (now - this.data._timer < FREQUENCY_TIME) {
-        Toast('操作太频繁啦~')
+        console.log('丢弃频繁操作')
+        return
       }
       this.data._timer = now
 

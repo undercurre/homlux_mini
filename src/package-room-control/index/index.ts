@@ -39,6 +39,8 @@ import {
   CARD_REFRESH_TIME,
   sceneImgDir,
   defaultImgDir,
+  MAX_DEVICES_USING_WS,
+  NO_WS_REFRESH_INTERVAL,
 } from '../../config/index'
 
 type DeviceCard = Device.DeviceItem & {
@@ -108,14 +110,12 @@ ComponentWithComputed({
     offlineDevice: {} as DeviceCard,
     /** 弹层要控制的设备品类 */
     controlType: '',
-    showAddScenePopup: false,
     showAuthDialog: false, // 显示确权弹层
     deviceIdForQueryAuth: '', // 用于确权的设备id
     _cardEventType: '' as 'card' | 'control', // 触发确权前的操作类型
     // 设备卡片列表，二维数组
     devicePageList: [] as DeviceCard[][],
     /** 待创建面板的设备选择弹出框 */
-    showBeforeAddScenePopup: false,
     scrollTop: 0,
     checkedList: [] as string[], // 已选择设备的id列表
     editSelectList: [] as string[], // 编辑状态下，已勾选的设备id列表
@@ -138,6 +138,7 @@ ComponentWithComputed({
       minColorTemp,
       power: 0,
     },
+    _timeId: null as null | number,
   },
 
   computed: {
@@ -285,6 +286,7 @@ ComponentWithComputed({
         this.updateQueue({ isRefresh: true })
         // sceneStore.updateAllRoomSceneList()
         this.queryGroupInfo()
+        this.autoRefreshDevice()
         this.data._firstShow = false
       }
       // 从别的页面返回，或从挂起状态恢复
@@ -449,6 +451,8 @@ ComponentWithComputed({
         await Promise.all([homeStore.updateRoomCardList(), sceneStore.updateAllRoomSceneList(), this.queryGroupInfo()])
 
         this.updateQueue({ isRefresh: true })
+
+        this.autoRefreshDevice()
       } finally {
         wx.stopPullDownRefresh()
       }
@@ -477,6 +481,7 @@ ComponentWithComputed({
     // 节流更新设备列表
     reloadDeviceListThrottle: throttle(function (this: IAnyObject) {
       this.reloadDeviceList()
+      this.autoRefreshDevice()
     }, 3000),
 
     // 页面滚动
@@ -495,6 +500,11 @@ ComponentWithComputed({
       if (this.data._wait_timeout) {
         clearTimeout(this.data._wait_timeout)
         this.data._wait_timeout = null
+      }
+
+      if (this.data._timeId) {
+        clearTimeout(this.data._timeId)
+        this.data._timeId = null
       }
     },
     handleShowDeviceOffline(e: { detail: DeviceCard }) {
@@ -997,87 +1007,6 @@ ComponentWithComputed({
         return
       }
 
-      // 逻辑已过时，可删除，暂时保留一段时间
-      // // 补充actions
-      // const addSceneActions = [] as Device.ActionItem[]
-
-      // // 排除已经是场景开关的开关或者离线的设备
-      // // ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
-      // let deviceList = [] as Device.DeviceItem[]
-
-      // for (const list of this.data.devicePageList) {
-      //   deviceList = deviceList.concat(list)
-      // }
-
-      // const selectList = deviceList.filter((device) => {
-      //   let [, switchId] = device.uniId.split(':')
-
-      //   switchId = switchId ?? MODEL_NAME[device.proType]
-
-      //   return device.mzgdPropertyDTOList[switchId]?.ButtonMode !== 2 && device.onLineStatus
-      // })
-
-      // if (!selectList.length) {
-      //   Toast('所有设备已离线，无法创建场景')
-      //   return
-      // }
-
-      // selectList.forEach((device) => {
-      //   if (device.proType === PRO_TYPE.switch) {
-      //     // 开关
-      //     const modelName = device.uniId.split(':')[1]
-      //     console.log(Boolean(device.mzgdPropertyDTOList[modelName]))
-      //     console.log(modelName)
-      //     let power
-      //     if (device.mzgdPropertyDTOList[modelName]) {
-      //       power = device.mzgdPropertyDTOList[modelName].power
-      //     } else {
-      //       power = false
-      //     }
-      //     const desc = toPropertyDesc(device.proType, device.mzgdPropertyDTOList[modelName])
-
-      //     addSceneActions.push({
-      //       uniId: device.uniId,
-      //       name: device.switchInfoDTOList[0].switchName + ' | ' + device.deviceName,
-      //       desc: desc,
-      //       pic: device.switchInfoDTOList[0].pic,
-      //       proType: device.proType,
-      //       deviceType: device.deviceType,
-      //       value: {
-      //         modelName,
-      //         power,
-      //       },
-      //     })
-      //   } else {
-      //     const modelName = MODEL_NAME[device.proType]
-      //     const properties = device.mzgdPropertyDTOList[modelName]
-      //     const desc = toPropertyDesc(device.proType, properties)
-
-      //     const action = {
-      //       uniId: device.uniId,
-      //       name: device.deviceName,
-      //       desc,
-      //       pic: device.pic,
-      //       proType: device.proType,
-      //       deviceType: device.deviceType,
-      //       value: {
-      //         modelName,
-      //         ...properties,
-      //       } as IAnyObject,
-      //     }
-
-      //     addSceneActions.push(action)
-      //   }
-      // })
-      // runInAction(() => {
-      //   sceneStore.addSceneActions = addSceneActions
-      // })
-      // this.setData({
-      //   editSelectMode: false,
-      //   editSelectList: [],
-      //   showBeforeAddScenePopup: true,
-      // })
-
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-automation/automation-add/index', {
           roomid: roomStore.currentRoom.roomId,
@@ -1305,33 +1234,6 @@ ComponentWithComputed({
       // 首页需要更新灯光打开个数
       homeStore.updateCurrentHomeDetail()
     },
-    handleAddScenePopupClose() {
-      this.setData({
-        showAddScenePopup: false,
-      })
-    },
-    handleAddScenePopupReturn() {
-      this.setData({
-        showAddScenePopup: false,
-        showBeforeAddScenePopup: true,
-      })
-    },
-    handleBeforeAddScenePopupClose() {
-      this.setData({
-        showBeforeAddScenePopup: false,
-      })
-    },
-    handleBeforeAddScenePopupNext() {
-      this.setData({
-        showBeforeAddScenePopup: false,
-        showAddScenePopup: true,
-      })
-    },
-    handleShowAddSceneSuccess() {
-      wx.navigateTo({
-        url: '/package-room-control/scene-request-list/index',
-      })
-    },
     /** 点击空位的操作 */
     handleScreenTap() {
       this.cancelCheckAndPops()
@@ -1448,6 +1350,27 @@ ComponentWithComputed({
       if (!res.success) {
         Toast('控制失败')
       }
+    },
+    // 定时更新设备列表，符合条件则递归执行
+    autoRefreshDevice() {
+      Logger.log('[autoRefreshDevice]')
+      const noAutoRefresh = deviceStore.allRoomDeviceList.length < MAX_DEVICES_USING_WS
+      if (this.data._timeId) {
+        if (noAutoRefresh) {
+          clearTimeout(this.data._timeId)
+          this.data._timeId = null
+        }
+        return
+      }
+      if (noAutoRefresh) {
+        return
+      }
+
+      this.data._timeId = setTimeout(() => {
+        this.data._timeId = null
+        this.reloadDeviceList()
+        this.autoRefreshDevice()
+      }, NO_WS_REFRESH_INTERVAL)
     },
   },
 })

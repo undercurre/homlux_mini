@@ -3,13 +3,20 @@
   "projectname": "HomLux",
   "setting": {
     "compileHotReLoad": true,
-    "urlCheck": true,
+    "urlCheck": false,
     "bigPackageSizeSupport": true
   },
   "libVersion": "3.0.2",
   "condition": {
     "miniprogram": {
       "list": [
+        {
+          "name": "HomOS调试",
+          "pathName": "package-debug/pages/homos-debug/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
         {
           "name": "连接设备页面（美居）",
           "pathName": "package-distribution-meiju/pages/linkDevice/linkDevice",

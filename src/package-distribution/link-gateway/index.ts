@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { queryDeviceOnlineStatus, bindDevice } from '../../apis/index'
+import { queryDeviceOnlineStatus, bindDevice, verifySn } from '../../apis/index'
 import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
 import { WifiSocket, getCurrentPageParams, strUtil, isAndroid, isAndroid10Plus, Logger } from '../../utils/index'
 import { stepListForBind, stepListForChangeWiFi } from './conifg'
@@ -358,6 +358,8 @@ ComponentWithComputed({
 
       // 防止强绑情况选网关还没断开原有连接，需要延迟查询
       this.data._queryCloudTimeId = setTimeout(() => {
+        verifySn(setRes.sn)
+
         this.queryDeviceOnlineStatus(setRes.sn)
       }, 10000)
 

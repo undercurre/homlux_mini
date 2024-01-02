@@ -1,8 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
-import { homeStore } from '../../../store/index'
-import Dialog from '@vant/weapp/dialog/dialog'
-// import { storage } from '../../../utils/index'
 
 ComponentWithComputed({
   behaviors: [pageBehaviors],
@@ -28,18 +25,6 @@ ComponentWithComputed({
   },
   lifetimes: {
     async ready() {
-      // 请联系家庭创建者完成美的美居授权。
-      if (!homeStore.isCreator) {
-        Dialog.alert({
-          title: '请联系HOMLUX家庭创建者完成美的美居授权，路径：我的-连接其他平台-美的美居。',
-          showCancelButton: false,
-          confirmButtonText: '我知道了',
-        }).then(() => {
-          this.goBack()
-        })
-        return
-      }
-
       const timeId = setInterval(() => {
         this.data.seconds--
 

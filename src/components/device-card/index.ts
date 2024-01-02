@@ -160,7 +160,7 @@ ComponentWithComputed({
       const prop = data.deviceInfo.mzgdPropertyDTOList[modelName]
       if (data.deviceInfo.proType === PRO_TYPE.bathHeat) {
         return (
-          prop?.mode === 'heat' ||
+          prop?.mode === 'heating' ||
           prop?.mode === 'blowing' ||
           prop?.mode === 'ventilation' ||
           prop?.light_mode !== 'close_all'
