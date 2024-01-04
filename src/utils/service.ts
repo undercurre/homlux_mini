@@ -43,7 +43,7 @@ export async function startWebsocketService() {
     Logger.log('已存在ws连接，正在关闭已有连接')
     await socketTask?.close({ code: 1000 })
   }
-  socketTask = connectHouseSocket(homeStore.currentHomeDetail.houseId)
+  socketTask = connectHouseSocket(homeStore.currentHomeId)
   socketTask.onClose(onSocketClose)
   socketTask.onOpen((res) => {
     isConnecting = false
