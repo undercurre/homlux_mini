@@ -33,8 +33,17 @@ const heartbeatInfo = {
 
 export async function startWebsocketService() {
   // 检测未登录或者是否已经正在连接，以免重复连接
-  if (!isLogon() || isConnecting || !isConnect()) {
-    Logger.log('不进行ws连接,isConnecting:', isConnecting, 'isLogon', isLogon(), 'isConnect()', isConnect())
+  if (!isLogon() || isConnecting || !isConnect() || !homeStore.currentHomeId) {
+    Logger.log(
+      '不进行ws连接,isConnecting:',
+      isConnecting,
+      'isLogon',
+      isLogon(),
+      'isConnect()',
+      isConnect(),
+      'homeStore.currentHomeId',
+      homeStore.currentHomeId,
+    )
     return
   }
 
