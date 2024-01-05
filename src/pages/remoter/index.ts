@@ -92,9 +92,7 @@ ComponentWithComputed({
       // 版本获取
       const info = wx.getAccountInfoSync()
       this.data._envVersion = info.miniProgram.envVersion
-    },
 
-    async onShow() {
       await initBleCapacity()
 
       // 监听扫描到新设备事件
@@ -106,6 +104,10 @@ ComponentWithComputed({
             .filter((item) => !!item) || []
 
         console.log('搜寻到的设备列表：', recoveredList)
+
+        if (!recoveredList?.length) {
+          return
+        }
 
         // 在终止搜寻前先记录本次搜索的操作方式
         const isUserControlled = this.data.isSeeking
@@ -179,7 +181,9 @@ ComponentWithComputed({
 
         this.setData({ foundList })
       })
+    },
 
+    async onShow() {
       await delay(0)
 
       // 首次进入，由用户手动操作；非首次进入（返回），自动搜索一轮设备
@@ -193,21 +197,26 @@ ComponentWithComputed({
     },
 
     onHide() {
-      console.log('detached on Index')
+      console.log('onHide on Index')
 
-      this.endSeek()
       wx.offBluetoothAdapterStateChange() // 移除蓝牙适配器状态变化事件的全部监听函数
-      wx.offBluetoothDeviceFound() // 移除搜索到新设备的事件的全部监听函数
       // wx.offBLECharacteristicValueChange() // 移除蓝牙低功耗设备的特征值变化事件的全部监听函数
 
+      // 移除系统位置信息开关状态的监听
+      if (this.data._listenLocationTimeId) {
+        clearInterval(this.data._listenLocationTimeId)
+      }
+    },
+
+    onUnload() {
+      emitter.off('remoterChanged')
+      wx.offBluetoothDeviceFound() // 移除搜索到新设备的事件的全部监听函数
+
+      this.endSeek()
       // 关闭外围设备服务端
       if (this.data._bleServer) {
         this.data._bleServer.close()
         this.data._bleServer = null
-      }
-      // 移除系统位置信息开关状态的监听
-      if (this.data._listenLocationTimeId) {
-        clearInterval(this.data._listenLocationTimeId)
       }
 
       // 取消计时器
@@ -221,30 +230,12 @@ ComponentWithComputed({
       }
     },
 
-    onUnload() {
-      emitter.off('remoterChanged')
-    },
-
     toggleDebug() {
       if (this.data._envVersion === 'release') {
         return
       }
 
       this.setData({ isDebugMode: !this.data.isDebugMode })
-    },
-
-    // 轮询设备列表
-    toPoll() {
-      // 如果已有定时，先清除，以便重复触发轮询
-      if (this.data._time_id_poll) {
-        clearTimeout(this.data._time_id_poll)
-        this.data._time_id_poll = null
-      }
-
-      // 如果未有定时，并且存在列表，则开始静默轮询
-      if (!this.data._time_id_poll && remoterStore.hasRemoter) {
-        this.data._time_id_poll = setTimeout(() => this.toSeek(), SEEK_INTERVAL)
-      }
     },
 
     // 拖拽列表初始化
@@ -277,7 +268,7 @@ ComponentWithComputed({
         ...newDevice,
         orderNum,
         defaultAction: 0,
-      })
+      } as Remoter.DeviceRx)
 
       this.setData({
         foundListHolder: !this.data.foundList.length,
@@ -308,8 +299,9 @@ ComponentWithComputed({
       }
       // 跳转到控制页
       else {
+        const page = deviceType === '13' ? 'light' : 'pannel'
         wx.navigateTo({
-          url: `/package-remoter/pannel/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceModel=${deviceModel}&addr=${addr}`,
+          url: `/package-remoter/${page}/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceModel=${deviceModel}&addr=${addr}`,
         })
       }
     },
@@ -339,7 +331,7 @@ ComponentWithComputed({
         key = this.data._lastPowerKey === `${key}_OFF` ? `${key}_ON` : `${key}_OFF`
         this.data._lastPowerKey = key
       }
-      const payload = remoterProtocol.generalCmdString(CMD[key])
+      const payload = remoterProtocol.generalCmdString([CMD[key]])
 
       // 建立BLE外围设备服务端
       if (!this.data._bleServer) {
@@ -353,6 +345,19 @@ ComponentWithComputed({
       })
 
       await this.toSeek()
+    },
+    // 轮询设备列表
+    toPoll() {
+      // 如果已有定时，先清除，以便重复触发轮询
+      if (this.data._time_id_poll) {
+        clearTimeout(this.data._time_id_poll)
+        this.data._time_id_poll = null
+      }
+
+      // 如果未有定时，并且存在列表，则开始静默轮询
+      if (!this.data._time_id_poll && remoterStore.hasRemoter) {
+        this.data._time_id_poll = setTimeout(() => this.toSeek(), SEEK_INTERVAL)
+      }
     },
     /**
      * @description 搜索设备
@@ -440,7 +445,7 @@ ComponentWithComputed({
      * 拖拽结束相关
      * @param e
      */
-    async handleSortEnd(e: { detail: { listData: Remoter.DeviceItem[] } }) {
+    async handleSortEnd(e: { detail: { listData: Remoter.DeviceRx[] } }) {
       // 更新列表数据
       remoterStore.saveRmStore(
         e.detail.listData.map((item, index) => ({

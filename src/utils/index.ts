@@ -203,3 +203,8 @@ export const getRect = function (context: any, selector: string, needAll = false
       .exec()
   })
 }
+
+// 计算范围约束值
+export const rangeValue = (_val: number, _min: number, _max: number) => {
+  return Math.min(Math.max(_val, _min), _max)
+}

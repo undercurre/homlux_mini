@@ -1,0 +1,171 @@
+<view class="page-container flex flex-col">
+  <nav-bar
+    background="transparent"
+    leftArrow="{{true}}"
+    bind:leftTap="goBack"
+    bind:longpress="toggleDebug"
+    title="{{curRemoter.deviceName}}"
+  ></nav-bar>
+
+  <view
+    class="tool-bar"
+    style="top: {{toolbarMarginTop}}"
+  >
+    <!-- 工厂产测模式 -->
+    <div
+      class="img-wrapper"
+      bind:tap="toggleAddr"
+      wx:if="{{isDebugMode}}"
+    >
+      <text class="text-18rpx mr-10rpx">{{curAddrText}}</text>
+      <image
+        class="w-48 h-48"
+        src="/assets/img/mine/sensor.png"
+      ></image>
+    </div>
+    <div
+      class="img-wrapper"
+      bind:tap="toSetting"
+    >
+      <image
+        class="w-48 h-48"
+        src="/assets/img/home-manage/setting.png"
+      ></image>
+    </div>
+  </view>
+
+  <view class="flex-col-center flex-1">
+    <view class="text-24rpx">
+      <text wx:if="{{deviceInfo.DELAY_OFF}}">离关灯还有：{{deviceInfo.DELAY_OFF}}分钟</text>
+    </view>
+    <!-- 亮度控制 -->
+    <view class="slider-box">
+      <image
+        src="../assets/bright.png"
+        class="w-48rpx h-48rpx mr-32rpx"
+      />
+      <mz-slider
+        disabled="{{!deviceInfo.LIGHT_LAMP}}"
+        catch:slideChange="handleLevelChange"
+        catch:slideEnd="toSendCmd"
+        value="{{brightView}}"
+        custom-class="slider-brightness-bar"
+        active-color="linear-gradient(90deg, rgba(80, 127, 255, 1) 0%, #ffffff 100%)"
+        bar-height="{{16}}"
+        use-button-slot
+        data-min="{{1}}"
+        data-is-btn-inset="{{false}}"
+        data-key="LIGHT_BRIGHT"
+        data-type="SETUP"
+        data-show-toast="{{true}}"
+      >
+        <image
+          slot="button"
+          src="../assets/btn.png"
+          class="w-72rpx h-72rpx"
+        />
+      </mz-slider>
+    </view>
+
+    <!-- 色温控制 -->
+    <view class="slider-box">
+      <image
+        src="../assets/colorTemp.png"
+        class="w-48rpx h-48rpx mr-32rpx"
+      />
+      <mz-slider
+        disabled="{{!deviceInfo.LIGHT_LAMP}}"
+        catch:slideChange="handleColorTempChange"
+        catch:slideEnd="toSendCmd"
+        value="{{colorTempView}}"
+        custom-class="slider-color-temp-bar"
+        active-color="rgba(0,0,0,0)"
+        bar-height="{{16}}"
+        use-button-slot
+        data-is-btn-inset="{{false}}"
+        data-key="LIGHT_COLOR_TEMP"
+        data-type="SETUP"
+        data-show-toast="{{true}}"
+        formatter="{{colorTempFormatter}}"
+      >
+        <image
+          slot="button"
+          src="../assets/btn.png"
+          class="w-72rpx h-72rpx"
+        />
+      </mz-slider>
+    </view>
+
+    <view class="flex flex-row justify-evenly flex-wrap mt-36rpx w-full">
+      <mz-button
+        icon="/package-remoter/assets/scene01.png"
+        iconActive="/package-remoter/assets/scene00.png"
+        bind:btnTouch="toSendCmd"
+        class="mt-64rpx"
+        textWidth="128rpx"
+        type="square"
+        text="明亮"
+        value="{{[100, 5700]}}"
+        data-key="LIGHT_SCENE_MIX"
+      ></mz-button>
+      <mz-button
+        icon="/package-remoter/assets/scene11.png"
+        iconActive="/package-remoter/assets/scene10.png"
+        bind:btnTouch="toSendCmd"
+        class="mt-64rpx"
+        textWidth="128rpx"
+        type="square"
+        text="柔和"
+        value="{{[50, 3000]}}"
+        data-key="LIGHT_SCENE_MIX"
+      ></mz-button>
+      <mz-button
+        icon="/package-remoter/assets/scene21.png"
+        iconActive="/package-remoter/assets/scene20.png"
+        bind:btnTouch="toSendCmd"
+        class="mt-64rpx"
+        textWidth="128rpx"
+        type="square"
+        text="延时关"
+        data-key="LIGHT_SCENE_DELAY_OFF"
+      ></mz-button>
+      <mz-button
+        icon="/package-remoter/assets/scene31.png"
+        iconActive="/package-remoter/assets/scene30.png"
+        bind:btnTouch="toSendCmd"
+        class="mt-64rpx"
+        textWidth="128rpx"
+        type="square"
+        text="助眠"
+        data-key="LIGHT_SCENE_SLEEP"
+      ></mz-button>
+    </view>
+  </view>
+
+  <view class="main-control">
+    <mz-button-bottom
+      icon="/package-remoter/assets/power1.png"
+      iconActive="/package-remoter/assets/power0.png"
+      bind:btnTouch="toSendCmd"
+      text="照明"
+      data-key="LIGHT_LAMP"
+      data-type="TOGGLE"
+    ></mz-button-bottom>
+    <mz-button-bottom
+      icon="/package-remoter/assets/power1.png"
+      iconActive="/package-remoter/assets/power0.png"
+      bind:btnTouch="toSendCmd"
+      text="夜灯"
+      data-key="LIGHT_SCENE_MIX"
+      value="{{[1, 3000]}}"
+    ></mz-button-bottom>
+  </view>
+</view>
+
+<van-dialog
+  id="van-dialog"
+  confirm-button-color="#488FFF"
+  cancel-button-color="#27282A"
+/>
+
+<van-toast id="van-toast" />

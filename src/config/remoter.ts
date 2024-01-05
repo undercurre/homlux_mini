@@ -16,9 +16,22 @@ export const SEEK_INTERVAL = 8000
 // 工厂调试用Mac地址
 export const FACTORY_ADDR = '112233445566'
 
+// 默认加密
+export const DEFAULT_ENCRYPT = true
+
 // 浴霸温度最大最小值
 export const MAX_TEMPERATURE = 40
 export const MIN_TEMPERATURE = 20
+
+/**
+ * 灯类色温范围
+ * {key} === {品类码}{型号码}
+ * 型号码: 0x01 吸顶灯; 0x02 风扇灯
+ */
+export const COLORTEMP_RANGE: Record<string, number[]> = {
+  '1301': [3000, 5700],
+  '1302': [2700, 6500],
+}
 
 /**
  * @description 设备交互数据配置，按设备类型区分
@@ -30,79 +43,10 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
     '01': {
       deviceName: '吸顶灯',
       devicePic: '/assets/img/remoter/ceilLight.png',
-      joystick: {
-        up: {
-          key: 'LIGHT_BRIGHT_PLUS',
-          longpress: 'LIGHT_BRIGHT_PLUS_ACC',
-          icon: '/package-remoter/assets/bright1.png',
-          iconActive: '/package-remoter/assets/bright0.png',
-        },
-        right: {
-          key: 'LIGHT_COLOR_TEMP_PLUS',
-          longpress: 'LIGHT_COLOR_TEMP_PLUS_ACC',
-          icon: '/package-remoter/assets/light2.png',
-          iconActive: '/package-remoter/assets/light0.png',
-        },
-        down: {
-          key: 'LIGHT_BRIGHT_MINUS',
-          longpress: 'LIGHT_BRIGHT_MINUS_ACC',
-          icon: '/package-remoter/assets/bright3.png',
-          iconActive: '/package-remoter/assets/bright2.png',
-        },
-        left: {
-          key: 'LIGHT_COLOR_TEMP_MINUS',
-          longpress: 'LIGHT_COLOR_TEMP_MINUS_ACC',
-          icon: '/package-remoter/assets/light1.png',
-          iconActive: '/package-remoter/assets/light0.png',
-        },
-        middle: {
-          key: 'FACTORY',
-        },
-      },
-      mList: [
-        {
-          key: 'LIGHT_SCENE_DAILY',
-          icon: '/package-remoter/assets/scene01.png',
-          iconActive: '/package-remoter/assets/scene00.png',
-          name: '日常',
-        },
-        {
-          key: 'LIGHT_SCENE_RELAX',
-          icon: '/package-remoter/assets/scene11.png',
-          iconActive: '/package-remoter/assets/scene10.png',
-          name: '休闲',
-        },
-        {
-          key: 'LIGHT_SCENE_DELAY_OFF',
-          icon: '/package-remoter/assets/scene21.png',
-          iconActive: '/package-remoter/assets/scene20.png',
-          name: '延时关',
-        },
-        {
-          key: 'LIGHT_SCENE_SLEEP',
-          icon: '/package-remoter/assets/scene31.png',
-          iconActive: '/package-remoter/assets/scene30.png',
-          name: '助眠',
-        },
-      ],
-      bList: [
-        {
-          key: 'LIGHT_LAMP', // 模糊匹配指令，需要有特殊的反转逻辑转换为真实指令
-          icon: '/package-remoter/assets/power1.png',
-          iconActive: '/package-remoter/assets/power0.png',
-          name: '照明',
-        },
-        {
-          key: 'LIGHT_NIGHT_LAMP',
-          icon: '/package-remoter/assets/power1.png',
-          iconActive: '/package-remoter/assets/power0.png',
-          name: '小夜灯',
-        },
-      ],
       actions: [
         {
           key: 'LIGHT_NIGHT_LAMP',
-          name: '小夜灯',
+          name: '夜灯',
         },
         {
           key: 'LIGHT_LAMP',
@@ -951,20 +895,18 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
 // 控制指令
 export const CMD: Record<string, number> = {
   // 吸顶灯
-  LIGHT_LAMP_ON: 0x06, // 开灯
-  LIGHT_LAMP_OFF: 0x07, // 关灯
-  LIGHT_BRIGHT_PLUS_ACC: 0x3c, // 亮度+ 长按
-  LIGHT_BRIGHT_MINUS_ACC: 0x3a, // 亮度- 长按
-  LIGHT_COLOR_TEMP_PLUS_ACC: 0x35, // 色温+ 长按
-  LIGHT_COLOR_TEMP_MINUS_ACC: 0x31, // 色温- 长按
+  LIGHT_LAMP: 0x06, // 开关灯
+  LIGHT_BRIGHT: 0x51, // 亮度设值
+  LIGHT_COLOR_TEMP: 0x55, // 色温设置
   LIGHT_BRIGHT_PLUS: 0x2c, // 亮度+ 短按
   LIGHT_BRIGHT_MINUS: 0x2a, // 亮度- 短按
   LIGHT_COLOR_TEMP_PLUS: 0x25, // 色温+ 短按
   LIGHT_COLOR_TEMP_MINUS: 0x21, // 色温- 短按
   LIGHT_SCENE_DAILY: 0x19, // 日常
   LIGHT_SCENE_RELAX: 0x1a, // 休闲
-  LIGHT_SCENE_DELAY_OFF: 0x1d, // 延时关
+  LIGHT_SCENE_DELAY_OFF: 0x1d, // 延时关（延时2分钟关灯）
   LIGHT_SCENE_SLEEP: 0x1b, // 助眠
+  LIGHT_SCENE_MIX: 0x5b, // 亮度及色温同时设置
   LIGHT_NIGHT_LAMP: 0x1c, // 小夜灯
 
   // 浴霸

@@ -17,6 +17,9 @@ ComponentWithComputed({
       type: String,
       value: '',
     },
+    value: {
+      type: Object,
+    },
   },
 
   /**
@@ -29,6 +32,7 @@ ComponentWithComputed({
   methods: {
     handleTouchStart() {
       // if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
+      this.triggerEvent('btnTouch', this.data.value)
     },
     handleLongPress(e: WechatMiniprogram.TouchEvent) {
       this.triggerEvent('longpress', e.detail)
