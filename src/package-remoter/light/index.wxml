@@ -105,6 +105,7 @@
         textWidth="128rpx"
         type="square"
         text="明亮"
+        data-dir="U"
         value="{{[100, 5700]}}"
         data-key="LIGHT_SCENE_MIX"
       ></mz-button>
@@ -116,6 +117,7 @@
         textWidth="128rpx"
         type="square"
         text="柔和"
+        data-dir="L"
         value="{{[50, 3000]}}"
         data-key="LIGHT_SCENE_MIX"
       ></mz-button>
@@ -127,6 +129,7 @@
         textWidth="128rpx"
         type="square"
         text="延时关"
+        data-dir="D"
         data-key="LIGHT_SCENE_DELAY_OFF"
       ></mz-button>
       <mz-button
@@ -137,6 +140,7 @@
         textWidth="128rpx"
         type="square"
         text="助眠"
+        data-dir="R"
         data-key="LIGHT_SCENE_SLEEP"
       ></mz-button>
     </view>

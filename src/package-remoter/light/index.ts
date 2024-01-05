@@ -205,6 +205,11 @@ ComponentWithComputed({
 
       Logger.log('toSendCmd', key, { payload, addr, isFactory: this.data.isFactoryMode })
 
+      // 记录点击按键序列，作为进入调试模式的前置操作
+      const { dir } = e.target.dataset
+      this.data._keyQueue.shift()
+      this.data._keyQueue.push(dir)
+
       const now = new Date().getTime()
       console.log('now - this.data._timer', now - this.data._timer)
       if (now - this.data._timer < FREQUENCY_TIME) {
@@ -219,11 +224,6 @@ ComponentWithComputed({
         payload,
         isFactory: this.data.isFactoryMode,
       })
-
-      // 记录点击按键序列，作为进入调试模式的前置操作
-      const { dir } = e.target.dataset
-      this.data._keyQueue.shift()
-      this.data._keyQueue.push(dir)
     },
     async handleTouchEnd() {
       // 主动广播结束指令
