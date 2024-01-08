@@ -39,7 +39,7 @@ ComponentWithComputed({
       if (data.successNum < data.deviceList.length && data.finishNum === data.deviceList.length) {
         Dialog.confirm({
           title: '创建失败',
-          message: '部分设备配置自动化失败，请确保所有设备在线后重试',
+          message: '部分设备配置一键场景失败，请确保所有设备在线后重试',
           showCancelButton: false,
           confirmButtonText: '我知道了',
         })
@@ -212,7 +212,7 @@ ComponentWithComputed({
         // })
         Dialog.confirm({
           title: '创建失败',
-          message: '部分设备配置自动化失败，请确保所有设备在线后重试',
+          message: '部分设备配置一键场景失败，请确保所有设备在线后重试',
           showCancelButton: false,
           confirmButtonText: '我知道了',
         })
