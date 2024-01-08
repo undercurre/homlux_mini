@@ -82,7 +82,14 @@ App<IAppOption>({
     this.globalData.firstOnShow = false
 
     // 用户热启动app，建立ws连接，并且再更新一次数据
-    Logger.log('app-onShow, isConnect:', isConnect(), 'isLogon', isLogon())
+    Logger.log(
+      'app-onShow, isConnect:',
+      isConnect(),
+      'isLogon',
+      isLogon(),
+      'homeStore.currentHomeId',
+      homeStore.currentHomeId,
+    )
 
     // 非登录状态，终止下面逻辑，且发现当前非主包页面（当前主包页面均可不需要登录访问），强制跳转登录
     if (!isLogon()) {
