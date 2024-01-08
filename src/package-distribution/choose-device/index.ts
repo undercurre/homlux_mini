@@ -25,7 +25,7 @@ ComponentWithComputed({
       {
         icon: `${productImgDir}/subdevice.png`,
         name: '开关/灯具',
-        path: '/package-distribution/choose-light/index',
+        path: '/package-distribution/choose-model/index?proType=0x13',
       },
       {
         icon: `${productImgDir}/screen.png`,
@@ -72,6 +72,11 @@ ComponentWithComputed({
           deviceImg: `${productImgDir}/laundry.png`,
           mode: 0,
         } as Meiju.IProductItem),
+      },
+      {
+        icon: `${productImgDir}/laundry.png`,
+        name: '空调',
+        path: '/package-distribution/choose-model/index?proType=0xAC',
       },
     ],
   },

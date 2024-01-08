@@ -103,4 +103,13 @@ export const sensorList: Record<string, string>[] = [
     path: '',
     productId: 'midea.freepad.001.201',
   },
+  {
+    isHide: '1',
+    icon: `${productImgDir}/VRF.png`,
+    img: `${ossDomain}/homlux/guide/485.gif`,
+    name: '中弘网关',
+    desc: '1、中弘网关BUS接口的A\\B口分别与智慧屏的485 接口A\\B口对接。\n2、接通电源并等待中弘网关工作指示灯变为绿色慢闪状态。',
+    path: '',
+    productId: 'zhonghong.cac.002',
+  },
 ]

@@ -14,7 +14,6 @@
       wx:key="index"
       deviceInfo="{{item}}"
       class="ml-48rpx mt-48rpx"
-      bind:click="clickCard"
     ></device-showcase>
   </view>
 </view>
