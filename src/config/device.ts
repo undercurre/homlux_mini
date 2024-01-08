@@ -29,8 +29,12 @@ export const PRO_TYPE = {
   curtain: '0x14',
   gateway: '0x16',
   sensor: '0xBC',
-  clothesDryingRack: '0x17',
-  bathHeat: '0x26',
+  clothesDryingRack: '0x17', // 晾衣机
+  bathHeat: '0x26', // 浴霸
+  airConditioner: '0xAC', // wifi空调
+  freshAir: '0xCE', // 新风
+  floorHeating: '0xCF', // 地暖
+  centralAirConditioning: '0xCC', // 中弘网关空调，中央空调
 } as const
 
 // productId -> 设备modelName，暂时为传感器专用
@@ -110,6 +114,6 @@ export const sensorList: Record<string, string>[] = [
     name: '中弘网关',
     desc: '1、中弘网关BUS接口的A\\B口分别与智慧屏的485 接口A\\B口对接。\n2、接通电源并等待中弘网关工作指示灯变为绿色慢闪状态。',
     path: '',
-    productId: 'zhonghong.cac.002',
+    productId: 'zhonghong.heat.001,zhonghong.air.001,zhonghong.cac.002',
   },
 ]

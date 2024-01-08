@@ -132,8 +132,10 @@ ComponentWithComputed({
         panId: parseInt(panId),
       }
 
-      // 如果是绑定传感器，需要一些前置操作
-      if (proType === PRO_TYPE.sensor) {
+      const manualZigbeeList = [PRO_TYPE.sensor, PRO_TYPE.centralAirConditioning] // 需要手动起网配网的zigbee设备
+
+      // 如果是绑定传感器、中央空调，需要一些前置操作
+      if (manualZigbeeList.includes(proType)) {
         bleDevicesStore.reset()
 
         const res = await this.startGwAddMode(false)
@@ -149,7 +151,7 @@ ComponentWithComputed({
           Logger.log('bind_device', data)
 
           // 过滤非传感器设备
-          if (data.proType !== PRO_TYPE.sensor) {
+          if (!manualZigbeeList.includes(proType)) {
             return
           }
 
@@ -184,20 +186,23 @@ ComponentWithComputed({
      * @description 主动查询已入网设备
      */
     async findSensor() {
-      // 已绑定的相同设备数量
-      const bindNum = deviceStore.allRoomDeviceList.filter(
-        (item) => item.proType === PRO_TYPE.sensor && item.productId === this.data._productId,
-      ).length
-
       const { gatewayId } = getCurrentPageParams()
       const res = await getUnbindSensor({ gatewayId })
       const list = res.result
         // 过滤非本次加入的传感器，过滤非指定型号传感器
         .filter(
-          (device) => this.data._sensorList.includes(device.deviceId) && device.productId === this.data._productId,
+          (device) =>
+            this.data._sensorList.includes(device.deviceId) && this.data._productId.includes(device.productId) >= 0,
         )
-        .map((device, index) => {
-          const deviceNum = bindNum + index // 已有相同设备数量
+        .map((device) => {
+          // 已绑定的相同设备数量
+          const bindNum = deviceStore.allRoomDeviceList.filter(
+            (item) => this.data._productId.includes(item.productId) >= 0,
+          ).length
+
+          const newNum = bleDevicesStore.bleDeviceList.filter((item) => item.productId === device.productId).length // 已新发现的相同设备数量
+
+          const deviceNum = bindNum + newNum // 已有相同设备数量
           return {
             ...device,
             name: `${device.productName}${deviceNum > 0 ? deviceNum + 1 : ''}`,

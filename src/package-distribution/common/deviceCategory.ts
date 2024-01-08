@@ -75,7 +75,7 @@ export default {
         icon: `${productImgDir}/VRF.png`,
         name: 'VRF控制器',
         tag: 'zigbee',
-        path: '/package-distribution/connect-guide/index?modelId=zhonghong.cac.002',
+        path: '/package-distribution/connect-guide/index?modelId=zhonghong.heat.001,zhonghong.air.001,zhonghong.cac.002',
       },
     ],
   },
