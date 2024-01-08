@@ -40,7 +40,7 @@ ComponentWithComputed({
     urls: {
       automationLogYijian: '/package-automation/automation-log/index',
       automationAddYijian: '/package-automation/automation-add/index',
-      automationEditYijian: '/package-automation/automation-edit-yijian/index',
+      automationEditYijian: '/package-automation/automation-add/index',
       automationLog: '/package-automation/automation-log/index',
       automationAdd: '/package-automation/automation-add/index',
     },
@@ -187,7 +187,10 @@ ComponentWithComputed({
     toSetting(e: { detail: Scene.SceneItem }) {
       if (this.data.isCreator || this.data.isAdmin) {
         wx.navigateTo({
-          url: strUtil.getUrlWithParams(this.data.urls.automationEditYijian, { yijianSceneId: e.detail.sceneId }),
+          url: strUtil.getUrlWithParams(this.data.urls.automationEditYijian, {
+            yijianSceneId: e.detail.sceneId,
+            roomid: roomStore.currentRoom.roomId,
+          }),
         })
       } else {
         Toast('您当前身份为访客，无法编辑场景')
@@ -230,7 +233,10 @@ ComponentWithComputed({
       const { sceneid } = e.currentTarget.dataset
 
       wx.navigateTo({
-        url: strUtil.getUrlWithParams(this.data.urls.automationEditYijian, { yijianSceneId: sceneid }),
+        url: strUtil.getUrlWithParams(this.data.urls.automationEditYijian, {
+          yijianSceneId: sceneid,
+          roomid: roomStore.currentRoom.roomId,
+        }),
       })
     },
     //阻止事件冒泡
