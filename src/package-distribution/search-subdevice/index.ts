@@ -153,7 +153,7 @@ ComponentWithComputed({
 
         // 有WS时，触发前端查询绑定信息
         emitter.on('bind_device', (data) => {
-          Logger.log('bind_device', data, this.data._productId, this.data.isManual)
+          Logger.log('bind_device', data)
 
           // 过滤非指定型号的子设备
           if (!this.data._productId.includes(data.productId)) {
@@ -199,7 +199,6 @@ ComponentWithComputed({
 
       const res = await queryDeviceProInfo({ productId: device.productId })
 
-      Logger.log('queryDeviceProInfo', res)
       if (!res.success) {
         return
       }
@@ -230,7 +229,6 @@ ComponentWithComputed({
           icon: productInfo.icon,
           switchList: [],
         })
-        Logger.log('bleDeviceList', bleDeviceList)
       })
     },
     startAnimation() {
