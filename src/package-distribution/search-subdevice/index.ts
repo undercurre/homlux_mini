@@ -6,7 +6,7 @@ import { deviceStore, homeBinding, homeStore, roomBinding } from '../../store/in
 import { bleDevicesBinding, bleDevicesStore } from '../store/bleDeviceStore'
 import { delay, emitter, getCurrentPageParams, Logger, strUtil } from '../../utils/index'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { batchUpdate, bindDevice, isDeviceOnline, sendCmdAddSubdevice } from '../../apis/index'
+import { batchUpdate, bindDevice, isDeviceOnline, sendCmdAddSubdevice, queryDeviceProInfo } from '../../apis/index'
 import lottie from 'lottie-miniprogram'
 import { addDevice } from '../assets/search-subdevice/lottie/index'
 import PromiseQueue from '../../lib/promise-queue'
@@ -197,13 +197,14 @@ ComponentWithComputed({
         return
       }
 
-      // const res = await checkDevice({ productId: device.productId })
+      const res = await queryDeviceProInfo({ productId: device.productId })
 
-      // Logger.log('checkDevice', res)
-      // if (!res.success) {
-      //   return
-      // }
+      Logger.log('queryDeviceProInfo', res)
+      if (!res.success) {
+        return
+      }
 
+      const productInfo = res.result[0]
       // 已绑定的相同设备数量
       const bindNum = deviceStore.allRoomDeviceList.filter((item) => device.productId === item.productId).length
 
@@ -211,18 +212,9 @@ ComponentWithComputed({
 
       const deviceNum = bindNum + newNum // 已有相同设备数量
 
-      const map = {
-        'zhonghong.heat.001': '地暖',
-        'zhonghong.air.001': '新风',
-        'zhonghong.cac.002': '空调',
-      }
-
       runInAction(() => {
         bleDevicesBinding.store.bleDeviceList = bleDeviceList.concat({
-          name: `${
-            device.productName ||
-            map[device.productId as 'zhonghong.heat.001' | 'zhonghong.air.001' | 'zhonghong.cac.002']
-          }${deviceNum > 0 ? deviceNum + 1 : ''}`,
+          name: `${productInfo.productName}${deviceNum > 0 ? deviceNum + 1 : ''}`,
           proType: device.proType,
           productId: device.productId,
           isChecked: true,
@@ -230,12 +222,12 @@ ComponentWithComputed({
           deviceUuid: device.deviceId,
           roomId: roomBinding.store.currentRoom.roomId, // 默认为当前房间
           roomName: roomBinding.store.currentRoom.roomName,
-          mac: device.deviceId,
+          mac: '',
           signal: '',
           zigbeeMac: device.deviceId,
           isConfig: '',
           RSSI: 50,
-          icon: '',
+          icon: productInfo.icon,
           switchList: [],
         })
         Logger.log('bleDeviceList', bleDeviceList)

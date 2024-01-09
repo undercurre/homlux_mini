@@ -155,6 +155,17 @@ declare namespace Device {
     roomId: string
   }
 
+  // 产品基本信息
+  interface MzgdDeviceProTypeInfoEntity {
+    bluetoothPid: string
+    deviceType: number
+    icon: string
+    modelId: string
+    proType: string
+    productId: number
+    productName: string
+  }
+
   interface ActionItem {
     uniId: string
     name: string

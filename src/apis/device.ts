@@ -615,6 +615,24 @@ export async function uploadDeviceLog(
 /**
  * 根据sn去查设备的mac、图片、品类
  */
+export async function queryDeviceProInfo(
+  data: {
+    productId: string
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<Device.MzgdDeviceProTypeInfoEntity[]>({
+    log: true,
+    loading: options?.loading ?? false,
+    isDefaultErrorTips: false,
+    url: '/v1/device/queryDeviceProInfo',
+    data,
+  })
+}
+
+/**
+ * 根据sn去查设备的mac、图片、品类
+ */
 export async function checkDevice(
   data: {
     dsn?: string
