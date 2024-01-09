@@ -1181,6 +1181,7 @@ ComponentWithComputed({
         return
       }
 
+      // 窗帘
       if (device.proType === PRO_TYPE.curtain) {
         const OldPosition = device.mzgdPropertyDTOList[modelName].curtain_position
         const NewPosition = Number(OldPosition) > 0 ? '0' : '100'
@@ -1197,16 +1198,13 @@ ComponentWithComputed({
         return
       }
 
-      // 灯和面板
+      // 灯和面板、空调
       const OldOnOff = device.mzgdPropertyDTOList[modelName].power
       const newOnOff = OldOnOff ? 0 : 1
 
       // 不等待云端，即时改变视图，提升操作手感 // TODO 不插入队列
       device.mzgdPropertyDTOList[modelName].power = newOnOff
       this.updateQueue(device)
-      // this.setData({
-      //   'lightStatus.power': newOnOff,
-      // })
 
       const res = await sendDevice({
         proType: device.proType,
@@ -1214,15 +1212,13 @@ ComponentWithComputed({
         deviceId: device.deviceId,
         modelName,
         gatewayId: device.gatewayId,
-        property: { power: newOnOff, time: 500 },
+        property: { power: newOnOff, time: 500 }, // time 500为灯光渐变时间，灯专用
       })
 
       if (!res.success) {
         device.mzgdPropertyDTOList[modelName].power = OldOnOff
         this.updateQueue(device)
-        // this.setData({
-        //   'lightStatus.power': OldOnOff,
-        // })
+
         Toast('控制失败')
       }
 

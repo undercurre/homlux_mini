@@ -232,54 +232,27 @@ export async function sendDevice(
       promise = controlDevice(params, option)
       break
 
-    case 3:
-      if (data.proType === PRO_TYPE.light) {
-        const downData = property
+    case 3: {
+      const method =
+        {
+          [PRO_TYPE.light]: 'wifiLampControl',
+          [PRO_TYPE.curtain]: 'wifiCurtainControl',
+          [PRO_TYPE.bathHeat]: 'wifiBathHeatControl',
+          [PRO_TYPE.clothesDryingRack]: 'wifiClothesDryingRackControl',
+          [PRO_TYPE.airConditioner]: 'wifiAirControl',
+        }[data.proType] ?? ''
 
-        params = {
-          deviceId: data.deviceId,
-          deviceType: data.deviceType,
-          method: 'wifiLampControl',
-          inputData: [downData],
-        }
-
-        promise = controlDevice(params, option)
-      } else if (data.proType === PRO_TYPE.curtain) {
-        const downData = property
-
-        params = {
-          deviceId: data.deviceId,
-          deviceType: data.deviceType,
-          method: 'wifiCurtainControl',
-          inputData: [downData],
-        }
-
-        promise = controlDevice(params, option)
-      } else if (data.proType === PRO_TYPE.bathHeat) {
-        const downData = property
-
-        params = {
-          deviceId: data.deviceId,
-          deviceType: data.deviceType,
-          method: 'wifiBathHeatControl',
-          inputData: [downData],
-        }
-
-        promise = controlDevice(params, option)
-      } else if (data.proType === PRO_TYPE.clothesDryingRack) {
-        const downData = property
-
-        params = {
-          deviceId: data.deviceId,
-          deviceType: data.deviceType,
-          method: 'wifiClothesDryingRackControl',
-          inputData: [downData],
-        }
-
-        promise = controlDevice(params, option)
+      params = {
+        deviceId: data.deviceId,
+        deviceType: data.deviceType,
+        method,
+        inputData: [property],
       }
 
+      promise = controlDevice(params, option)
+
       break
+    }
 
     case 4:
       promise = groupControl(

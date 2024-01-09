@@ -73,6 +73,7 @@ export const proName: Record<string, string> = {
   '0x21': 'switch',
   '0x26': 'bathHeat',
   '0xBC': 'sensor',
+  '0xAC': 'airConditioner',
 } as const
 
 // 传感器类型，通过productId区分
