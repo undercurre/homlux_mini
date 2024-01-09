@@ -45,10 +45,9 @@ export const roomStore = observable({
       })
     roomStore.roomList.forEach((roomInfo) => {
       const roomDeviceList = list[roomInfo.roomId]
-      const { lightOnCount, endCount, lightCount } = deviceCount(roomDeviceList)
+      const { lightOnCount, lightCount } = deviceCount(roomDeviceList)
 
       roomInfo.lightOnCount = lightOnCount
-      roomInfo.endCount = endCount
       roomInfo.lightCount = lightCount
     })
 
@@ -74,10 +73,9 @@ export const roomStore = observable({
           room.roomSceneList = room.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
         }
 
-        const { lightOnCount, endCount, lightCount } = deviceCount(roomDeviceList)
+        const { lightOnCount, lightCount } = deviceCount(roomDeviceList)
 
         room.roomInfo.lightOnCount = lightOnCount
-        room.roomInfo.endCount = endCount
         room.roomInfo.lightCount = lightCount
       })
 
@@ -90,7 +88,6 @@ export const roomStore = observable({
           sceneList: room.roomSceneList,
           deviceNum: room.roomInfo.deviceNum,
           lightOnCount: room.roomInfo.lightOnCount,
-          endCount: room.roomInfo.endCount,
           lightCount: room.roomInfo.lightCount,
         }))
       })
