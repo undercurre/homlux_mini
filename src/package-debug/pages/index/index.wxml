@@ -26,4 +26,13 @@
     link-type="navigateTo"
     url="/package-debug/pages/homos-debug/index"
   />
+
+  <van-cell title="云端websocket连接">
+    <view slot="right-icon">
+      <van-switch
+        checked="{{ isWsOn }}"
+        bind:change="toggleWs"
+      />
+    </view>
+  </van-cell>
 </van-cell-group>

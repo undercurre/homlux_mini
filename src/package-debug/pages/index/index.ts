@@ -1,5 +1,5 @@
 import pageBehavior from '../../../behaviors/pageBehaviors'
-import { storage, setCurrentEnv, logout } from '../../../utils/index'
+import { storage, setCurrentEnv, logout, startWebsocketService, closeWebSocket } from '../../../utils/index'
 
 Component({
   behaviors: [pageBehavior],
@@ -15,6 +15,7 @@ Component({
     envVersion: 'release', // 当前小程序版本，体验版or 正式环境
     curEnv: 'prod', // 当前选择的云端环境
     version: '', // 生产环境版本号
+    isWsOn: true,
   },
 
   lifetimes: {
@@ -54,6 +55,14 @@ Component({
           console.log(res.errMsg)
         },
       })
+    },
+    toggleWs({ detail }: { detail: boolean }) {
+      this.setData({ isWsOn: detail })
+      if (detail) {
+        startWebsocketService()
+      } else {
+        closeWebSocket()
+      }
     },
   },
 })
