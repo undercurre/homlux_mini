@@ -92,12 +92,6 @@ ComponentWithComputed({
         }
         return isClosed ? '/assets/img/base/curtain-open.png' : '/assets/img/base/curtain-close.png'
       }
-      // 灯及灯组
-      else if (data.deviceInfo.proType === PRO_TYPE.light) {
-        return data.deviceInfo.mzgdPropertyDTOList['light'].power
-          ? '/assets/img/base/power-on.png'
-          : '/assets/img/base/power-off.png'
-      }
       // 面板
       else if (data.deviceInfo.proType === PRO_TYPE.switch && data.deviceInfo.switchInfoDTOList[0]) {
         // ! 确保带有switchInfoDTOList
@@ -107,6 +101,13 @@ ComponentWithComputed({
           return ''
         }
         return data.deviceInfo.mzgdPropertyDTOList[switchId].power
+          ? '/assets/img/base/power-on.png'
+          : '/assets/img/base/power-off.png'
+      }
+      // PRO_TYPE中已定义的，包括灯及灯组、空调等
+      else if (Object.keys(proName).includes(data.deviceInfo.proType)) {
+        const modeName = getModelName(data.deviceInfo.proType, data.deviceInfo.productId)
+        return data.deviceInfo.mzgdPropertyDTOList[modeName].power
           ? '/assets/img/base/power-on.png'
           : '/assets/img/base/power-off.png'
       }

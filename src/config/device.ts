@@ -29,6 +29,7 @@ export const PRO_TYPE = {
   curtain: '0x14',
   gateway: '0x16',
   sensor: '0xBC',
+  airConditioner: '0xAC',
   clothesDryingRack: '0x17',
   bathHeat: '0x26',
 } as const
@@ -69,6 +70,7 @@ export const proName: Record<string, string> = {
   '0x21': 'switch',
   '0x26': 'bathHeat',
   '0xBC': 'sensor',
+  '0xAC': 'airConditioner',
 } as const
 
 // 传感器类型，通过productId区分
