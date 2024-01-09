@@ -2,7 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { deviceBinding } from '../../store/index'
-import { PRO_TYPE, sensorList } from '../../config/index'
+import { sensorList } from '../../config/index'
 import { strUtil } from '../../utils/index'
 import Dialog from '@vant/weapp/dialog/dialog'
 
@@ -80,8 +80,8 @@ ComponentWithComputed({
         wx.navigateTo({
           url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
             gatewayId: this.data.selectGatewayId,
-            proType: PRO_TYPE.sensor,
-            productId: this.data.currentSensor,
+            _productId: this.data.currentSensor,
+            isManual: '1',
           }),
         })
       }
@@ -109,8 +109,8 @@ ComponentWithComputed({
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
           gatewayId: this.data.selectGatewayId,
-          proType: PRO_TYPE.sensor,
-          productId: this.data.currentSensor,
+          _productId: this.data.currentSensor,
+          isManual: '1',
         }),
       })
     },

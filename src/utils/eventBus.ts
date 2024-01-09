@@ -16,6 +16,8 @@ type Events = {
   bind_device: {
     deviceId: string
     proType: string
+    productId: string
+    productName: string
   } // 绑定子设备
   wsReceive: {
     result: {
