@@ -14,7 +14,7 @@
     <!-- 工厂产测模式 -->
     <div
       class="img-wrapper"
-      bind:tap="toggleAddr"
+      bind:tap="toggleFactoryMode"
       wx:if="{{isDebugMode}}"
     >
       <text class="text-18rpx mr-10rpx">{{curAddrText}}</text>
@@ -142,6 +142,15 @@
         text="助眠"
         data-dir="R"
         data-key="LIGHT_SCENE_SLEEP"
+      ></mz-button>
+      <mz-button
+        wx:if="{{isFactoryMode}}"
+        bind:btnTouch="toSendCmd"
+        class="mt-64rpx"
+        imgWidth="650rpx"
+        type="square"
+        text="发送厂测指令"
+        data-key="FACTORY"
       ></mz-button>
     </view>
   </view>

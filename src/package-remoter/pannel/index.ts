@@ -284,7 +284,8 @@ ComponentWithComputed({
       this.setData({ isDebugMode: !this.data.isDebugMode, isFactoryMode: false })
     },
 
-    toggleAddr() {
+    // 切换厂测模式
+    toggleFactoryMode() {
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
 
       this.setData({ isFactoryMode: !this.data.isFactoryMode })

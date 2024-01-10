@@ -260,7 +260,7 @@ ComponentWithComputed({
       this.setData({ isDebugMode: !this.data.isDebugMode, isFactoryMode: false })
     },
 
-    toggleAddr() {
+    toggleFactoryMode() {
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
 
       this.setData({ isFactoryMode: !this.data.isFactoryMode })

@@ -150,7 +150,7 @@ const _createBluetoothProtocol = (params: { addr: string; data: string; opcode?:
 /**
  * @description 按发送协议拼接数据
  * @param params.isEncrypt 是否加密
- * @param params.isFactory 是否工厂产测模式，模拟实体遥控器
+ * @param params.isFactory 是否工厂产测模式；产测模式时，需要模拟实体遥控器从设备发出
  */
 const createBleProtocol = (params: { payload: string; addr: string; isEncrypt?: boolean; isFactory?: boolean }) => {
   const { payload, addr, isEncrypt = DEFAULT_ENCRYPT, isFactory = false } = params
