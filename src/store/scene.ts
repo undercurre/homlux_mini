@@ -3,7 +3,7 @@ import { querySceneListByHouseId } from '../apis/scene'
 import { PRO_TYPE } from '../config/device'
 import { homeStore } from './home'
 import { roomStore } from './room'
-import { IApiRequestOption } from '../utils'
+import { IApiRequestOption } from '../utils/index'
 
 export const sceneStore = observable({
   /**

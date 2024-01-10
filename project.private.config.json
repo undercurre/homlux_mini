@@ -15,7 +15,11 @@
           "pathName": "package-debug/pages/homos-debug/index",
           "query": "",
           "launchMode": "default",
-          "scene": null
+          "scene": null,
+          "partialCompile": {
+            "enabled": true,
+            "pages": []
+          }
         },
         {
           "name": "连接设备页面（美居）",

@@ -5,7 +5,7 @@ import { homeStore } from './home'
 import { roomStore } from './room'
 import { sceneStore } from './scene'
 import homOs from 'js-homos'
-import { IApiRequestOption } from '../utils'
+import { IApiRequestOption } from '../utils/index'
 
 export const deviceStore = observable({
   /**
