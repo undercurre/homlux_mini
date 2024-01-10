@@ -31,6 +31,10 @@ const heartbeatInfo = {
   lastMsgId: 0, // 上一次的心跳包消息Id
 }
 
+export function isWsConnected() {
+  return socketIsConnect
+}
+
 export async function startWebsocketService() {
   // 检测未登录或者是否已经正在连接，以免重复连接
   if (!isLogon() || isConnecting || !isConnect() || !homeStore.currentHomeId) {

@@ -15,6 +15,7 @@ import dayjs from 'dayjs'
 import cacheData from '../common/cacheData'
 
 type StatusName = 'discover' | 'requesting' | 'success' | 'error'
+const productInfoMap: Record<string, Device.MzgdDeviceProTypeInfoEntity> = {}
 
 ComponentWithComputed({
   options: {
@@ -190,20 +191,26 @@ ComponentWithComputed({
     /**
      * @description 主动查询已入网设备
      */
-    async findSensor(device: { deviceId: string; productId: string; proType: string; productName: string }) {
+    async findSensor(device: { deviceId: string; productId: string; proType: string }) {
       const bleDeviceList = bleDevicesStore.bleDeviceList
       // 避免添加重复推送的设备
       if (bleDeviceList.findIndex((item) => item.zigbeeMac === device.deviceId) >= 0) {
         return
       }
 
-      const res = await queryDeviceProInfo({ productId: device.productId })
+      let productInfo: Device.MzgdDeviceProTypeInfoEntity = productInfoMap[device.productId]
 
-      if (!res.success) {
-        return
+      if (!productInfo) {
+        const res = await queryDeviceProInfo({ productId: device.productId })
+
+        if (!res.success) {
+          return
+        }
+
+        productInfo = res.result[0]
+        productInfoMap[device.productId] = productInfo // 缓存产品信息，避免重复查询
       }
 
-      const productInfo = res.result[0]
       // 已绑定的相同设备数量
       const bindNum = deviceStore.allRoomDeviceList.filter((item) => device.productId === item.productId).length
 
@@ -865,8 +872,8 @@ ComponentWithComputed({
 
     finish() {
       homeBinding.store.updateCurrentHomeDetail()
-      wx.closeBluetoothAdapter()
       bleDevicesStore.reset()
+      wx.closeBluetoothAdapter()
 
       wx.reLaunch({
         url: strUtil.getUrlWithParams(cacheData.pageEntry, {
