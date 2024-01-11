@@ -183,21 +183,13 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
       deviceName: '浴霸',
       devicePic: '/assets/img/remoter/bathHeater.png',
       joystick: {
-        up: {
-          key: 'BATH_BRIGHT_PLUS',
-          icon: '/package-remoter/assets/bright1.png',
-          iconActive: '/package-remoter/assets/bright0.png',
-        },
+        up: {},
         right: {
           key: 'BATH_TEMPERATURE_ADD',
           icon: '/package-remoter/assets/temp3.png',
           iconActive: '/package-remoter/assets/temp2.png',
         },
-        down: {
-          key: 'BATH_BRIGHT_MINUS',
-          icon: '/package-remoter/assets/bright3.png',
-          iconActive: '/package-remoter/assets/bright2.png',
-        },
+        down: {},
         left: {
           key: 'BATH_TEMPERATURE_SUB',
           icon: '/package-remoter/assets/temp1.png',
@@ -375,21 +367,13 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
       deviceName: '浴霸',
       devicePic: '/assets/img/remoter/bathHeater.png',
       joystick: {
-        up: {
-          key: 'BATH_BRIGHT_PLUS',
-          icon: '/package-remoter/assets/bright1.png',
-          iconActive: '/package-remoter/assets/bright0.png',
-        },
+        up: {},
         right: {
           key: 'BATH_TEMPERATURE_ADD',
           icon: '/package-remoter/assets/temp3.png',
           iconActive: '/package-remoter/assets/temp2.png',
         },
-        down: {
-          key: 'BATH_BRIGHT_MINUS',
-          icon: '/package-remoter/assets/bright3.png',
-          iconActive: '/package-remoter/assets/bright2.png',
-        },
+        down: {},
         left: {
           key: 'BATH_TEMPERATURE_SUB',
           icon: '/package-remoter/assets/temp1.png',
@@ -781,23 +765,6 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
     '03': {
       deviceName: '凉霸',
       devicePic: '/assets/img/remoter/bathHeater.png',
-      joystick: {
-        up: {
-          key: 'BATH_BRIGHT_PLUS',
-          icon: '/package-remoter/assets/bright1.png',
-          iconActive: '/package-remoter/assets/bright0.png',
-        },
-        right: {},
-        down: {
-          key: 'BATH_BRIGHT_MINUS',
-          icon: '/package-remoter/assets/bright3.png',
-          iconActive: '/package-remoter/assets/bright2.png',
-        },
-        left: {},
-        middle: {
-          key: 'FACTORY',
-        },
-      },
       mList: [
         {
           key: 'KITCHEN_WIND_STRONG',
