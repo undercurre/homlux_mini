@@ -45,6 +45,7 @@ ComponentWithComputed({
     _lastPowerKey: '', // 记录上一次点击‘照明’时的指令键，用于反转处理
     _firstLoad: true, // 页面首次打开
     _timer: 0, // 记录上次指令时间
+    _holdBleScan: false, // onHide时保持蓝牙扫描的标志
     debugStr: '[rx]',
     isDebugMode: false,
   },
@@ -184,6 +185,8 @@ ComponentWithComputed({
     },
 
     async onShow() {
+      this.data._holdBleScan = false
+
       await delay(0)
 
       // 首次进入，由用户手动操作；非首次进入（返回），自动搜索一轮设备
@@ -206,29 +209,31 @@ ComponentWithComputed({
       if (this.data._listenLocationTimeId) {
         clearInterval(this.data._listenLocationTimeId)
       }
+
+      if (!this.data._holdBleScan) {
+        emitter.off('remoterChanged')
+        wx.offBluetoothDeviceFound() // 移除搜索到新设备的事件的全部监听函数
+
+        this.endSeek()
+        // 关闭外围设备服务端
+        if (this.data._bleServer) {
+          this.data._bleServer.close()
+          this.data._bleServer = null
+        }
+
+        // 取消计时器
+        if (this.data._time_id_end) {
+          clearTimeout(this.data._time_id_end)
+          this.data._time_id_end = null
+        }
+        if (this.data._time_id_poll) {
+          clearTimeout(this.data._time_id_poll)
+          this.data._time_id_poll = null
+        }
+      }
     },
 
-    onUnload() {
-      emitter.off('remoterChanged')
-      wx.offBluetoothDeviceFound() // 移除搜索到新设备的事件的全部监听函数
-
-      this.endSeek()
-      // 关闭外围设备服务端
-      if (this.data._bleServer) {
-        this.data._bleServer.close()
-        this.data._bleServer = null
-      }
-
-      // 取消计时器
-      if (this.data._time_id_end) {
-        clearTimeout(this.data._time_id_end)
-        this.data._time_id_end = null
-      }
-      if (this.data._time_id_poll) {
-        clearTimeout(this.data._time_id_poll)
-        this.data._time_id_poll = null
-      }
-    },
+    onUnload() {},
 
     toggleDebug() {
       if (this.data._envVersion === 'release') {
@@ -299,6 +304,7 @@ ComponentWithComputed({
       }
       // 跳转到控制页
       else {
+        this.data._holdBleScan = true
         const page = deviceType === '13' ? 'light' : 'pannel'
         wx.navigateTo({
           url: `/package-remoter/${page}/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceModel=${deviceModel}&addr=${addr}`,
