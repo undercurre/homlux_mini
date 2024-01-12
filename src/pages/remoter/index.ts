@@ -305,7 +305,10 @@ ComponentWithComputed({
       // 跳转到控制页
       else {
         this.data._holdBleScan = true
-        const page = deviceType === '13' ? 'light' : 'pannel'
+        let page = 'pannel'
+        if (deviceType === '13') {
+          page = deviceModel === '01' ? 'light' : 'fan'
+        }
         wx.navigateTo({
           url: `/package-remoter/${page}/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceModel=${deviceModel}&addr=${addr}`,
         })

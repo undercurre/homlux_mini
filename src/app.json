@@ -75,7 +75,7 @@
     },
     {
       "root": "package-remoter",
-      "pages": ["pannel/index", "light/index", "setting/index"]
+      "pages": ["pannel/index", "light/index", "fan/index", "setting/index"]
     },
     {
       "root": "package-distribution-meiju",

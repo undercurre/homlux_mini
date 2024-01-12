@@ -170,6 +170,24 @@ export const remoterStore = observable({
     return remoterList.findIndex((d) => d.addr === curAddr)
   },
 
+  // // 是否有夜灯模式
+  // get hasNightLamp(): boolean {
+  //   const { deviceModel, deviceType } = this.curRemoter
+  //   if (!deviceModel || !deviceType) {
+  //     return false
+  //   }
+  //   return deviceType === '13' && deviceModel === '01'
+  // },
+
+  // // 是否有风扇功能
+  // get hasFan(): boolean {
+  //   const { deviceModel, deviceType } = this.curRemoter
+  //   if (!deviceModel || !deviceType) {
+  //     return false
+  //   }
+  //   return deviceType === '13' && deviceModel === '02'
+  // },
+
   // 从本地缓存初始化/重置【我的设备】列表
   retrieveRmStore() {
     const defaultList = isDevMode() ? MOCK_DEVICES : [] // 是否开启模拟数据，用于模型器样式调整

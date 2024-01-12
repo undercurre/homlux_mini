@@ -895,7 +895,7 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
 // 控制指令
 export const CMD: Record<string, number> = {
   // 吸顶灯
-  LIGHT_LAMP: 0x06, // 开关灯
+  LIGHT_LAMP: 0x06, // 灯开关
   LIGHT_BRIGHT: 0x51, // 亮度设值
   LIGHT_COLOR_TEMP: 0x55, // 色温设置
   LIGHT_BRIGHT_PLUS: 0x2c, // 亮度+ 短按
@@ -908,6 +908,24 @@ export const CMD: Record<string, number> = {
   LIGHT_SCENE_SLEEP: 0x1b, // 助眠
   LIGHT_SCENE_MIX: 0x5b, // 亮度及色温同时设置
   LIGHT_NIGHT_LAMP: 0x1c, // 小夜灯
+
+  // 风扇灯
+  FAN_POWER: 0x09, // 风扇开关
+  FAN_NEGATIVE: 0x1c, // 风扇正反转
+  FAN_NATRUE: 0x1b, // 自然风
+  FAN_SPEED_1: 0x19, // 1档风
+  FAN_SPEED_2: 0x1a, // 2档风
+  FAN_SPEED_3: 0x81, // 3档风
+  FAN_SPEED_4: 0x88, // 4档风
+  FAN_SPEED_5: 0x85, // 5档风
+  FAN_SPEED_6: 0x86, // 6档风
+  FAN_DELAY_OFF_CANCEL: 0x50, // 延时关风扇取消
+  FAN_DELAY_OFF_1: 0x52, // 延时1小时关风扇
+  FAN_DELAY_OFF_2: 0x53, // 延时2小时关风扇
+  FAN_DELAY_OFF_3: 0x54, // 延时3小时关风扇
+  FAN_DELAY_OFF_4: 0x56, // 延时4小时关风扇
+  FAN_DELAY_OFF_5: 0x57, // 延时5小时关风扇
+  FAN_DELAY_OFF_6: 0x58, // 延时6小时关风扇
 
   // 浴霸
   BATH_ALL_OFF: 0x0d, // 全关，待机
@@ -937,4 +955,70 @@ export const CMD: Record<string, number> = {
 
   // 指令终止（松手时发送）
   END: 0x00,
+}
+
+// 下拉选项配置
+export const ACTIONSHEET_MAP: Record<string, IAnyObject> = {
+  FAN_SPEED: {
+    title: '风速',
+    columns: [
+      {
+        text: '1档风',
+        key: 'FAN_SPEED_1',
+      },
+      {
+        text: '2档风',
+        key: 'FAN_SPEED_2',
+      },
+      {
+        text: '3档风',
+        key: 'FAN_SPEED_3',
+      },
+      {
+        text: '4档风',
+        key: 'FAN_SPEED_4',
+      },
+      {
+        text: '5档风',
+        key: 'FAN_SPEED_5',
+      },
+      {
+        text: '6档风',
+        key: 'FAN_SPEED_6',
+      },
+    ],
+  },
+  FAN_DELAY_OFF: {
+    title: '风扇延时关',
+    columns: [
+      {
+        text: '1小时',
+        key: 'FAN_DELAY_OFF_1',
+      },
+      {
+        text: '2小时',
+        key: 'FAN_DELAY_OFF_2',
+      },
+      {
+        text: '3小时',
+        key: 'FAN_DELAY_OFF_3',
+      },
+      {
+        text: '4小时',
+        key: 'FAN_DELAY_OFF_4',
+      },
+      {
+        text: '5小时',
+        key: 'FAN_DELAY_OFF_5',
+      },
+      {
+        text: '6小时',
+        key: 'FAN_DELAY_OFF_6',
+      },
+      {
+        text: '取消延时关',
+        key: 'FAN_DELAY_OFF_CANCEL',
+      },
+    ],
+  },
 }
