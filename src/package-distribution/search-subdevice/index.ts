@@ -218,25 +218,25 @@ ComponentWithComputed({
 
       const deviceNum = bindNum + newNum // 已有相同设备数量
 
-      runInAction(() => {
-        bleDevicesBinding.store.bleDeviceList = bleDeviceList.concat({
-          name: `${productInfo.productName}${deviceNum > 0 ? deviceNum + 1 : ''}`,
-          proType: device.proType,
-          productId: device.productId,
-          isChecked: true,
-          status: 'waiting' as const,
-          deviceUuid: device.deviceId,
-          roomId: roomBinding.store.currentRoom.roomId, // 默认为当前房间
-          roomName: roomBinding.store.currentRoom.roomName,
-          mac: '',
-          signal: '',
-          zigbeeMac: device.deviceId,
-          isConfig: '',
-          RSSI: 50,
-          icon: productInfo.icon,
-          switchList: [],
-        })
+      bleDevicesBinding.store.bleDeviceList.push({
+        name: `${productInfo.productName}${deviceNum > 0 ? deviceNum + 1 : ''}`,
+        proType: device.proType,
+        productId: device.productId,
+        isChecked: true,
+        status: 'waiting' as const,
+        deviceUuid: device.deviceId,
+        roomId: roomBinding.store.currentRoom.roomId, // 默认为当前房间
+        roomName: roomBinding.store.currentRoom.roomName,
+        mac: '',
+        signal: '',
+        zigbeeMac: device.deviceId,
+        isConfig: '',
+        RSSI: 50,
+        icon: productInfo.icon,
+        switchList: [],
       })
+
+      bleDevicesStore.updateBleDeviceListThrottle()
     },
     startAnimation() {
       Logger.log('动画开始')
@@ -316,6 +316,9 @@ ComponentWithComputed({
     // 确认添加传感器
     async confirmAddSensor() {
       this.setData({ confirmLoading: true })
+      // 终止配网指令下发
+      this.stopGwAddMode()
+
       try {
         const selectedList = bleDevicesBinding.store.bleDeviceList.filter((item: Device.ISubDevice) => item.isChecked)
 
