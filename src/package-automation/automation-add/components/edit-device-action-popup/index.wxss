@@ -1,0 +1,32 @@
+.cell {
+  background-color: #f9fbfe !important;
+}
+.cell-disabled {
+  background-color: #f9fbfe !important;
+}
+.cell:active {
+  background-color: #e7e8e9 !important;
+}
+.disabled {
+  opacity: 0.5 !important;
+}
+.cell-value {
+  font-size: 28rpx !important;
+  color: #555659 !important;
+  text-align: right !important;
+  margin-right: 12rpx;
+}
+.cell-border::after {
+  border-width: 2rpx !important;
+  border-color: #ffffff !important;
+}
+.cell-title {
+  color: #27282a !important;
+}
+.cell-right-icon {
+  width: 32rpx;
+  height: 32rpx;
+}
+.week-background {
+  background-image: linear-gradient(165deg, #468cfb 0%, #6ba3fc 100%);
+}

@@ -5,6 +5,8 @@ import pageBehavior from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { deviceStore, sceneStore, homeStore, autosceneStore, roomStore } from '../../store/index'
 import { PRO_TYPE, SENSOR_TYPE, getModelName, sceneImgDir } from '../../config/index'
+import { isNullOrUnDef } from '../../utils/index'
+
 import {
   toPropertyDesc,
   storage,
@@ -343,6 +345,9 @@ ComponentWithComputed({
                     ...property,
                     modelName: getModelName(device.proType, device.productId),
                   },
+                  sceneProperty: {
+                    ...property,
+                  },
                   orderNum: 0,
                   dragId: device.uniId + Math.floor(Math.random() * 1001),
                 })
@@ -445,6 +450,9 @@ ComponentWithComputed({
                 value: {
                   ...property,
                   modelName: getModelName(device.proType, device.productId),
+                },
+                sceneProperty: {
+                  ...property,
                 },
                 orderNum: 0,
                 dragId: device.uniId + Math.floor(Math.random() * 1001),
@@ -905,11 +913,26 @@ ComponentWithComputed({
         if (device) {
           //是设备
           console.log('是设备', device)
-          const isSwitch = device.proType === PRO_TYPE.switch
-          const name = isSwitch ? `${device.switchInfoDTOList[0].switchName} | ${device.deviceName}` : device.deviceName
-          const modelName = isSwitch ? device.uniId.split(':')[1] : getModelName(device.proType, device.productId)
-          const pic = isSwitch ? device.switchInfoDTOList[0].pic : device.pic
-          const desc = toPropertyDesc(device.proType, device.property!)
+          let name = ''
+          let modelName = ''
+          let pic = ''
+          let desc: string[] = []
+          if (device.proType === PRO_TYPE.switch) {
+            name = `${device.switchInfoDTOList[0].switchName} | ${device.deviceName}`
+            modelName = device.uniId.split(':')[1]
+            pic = device.switchInfoDTOList[0].pic
+            desc = toPropertyDesc(device.proType, device.property!)
+          } else {
+            name = device.deviceName
+            modelName = getModelName(device.proType, device.productId)
+            pic = device.pic
+            if (device.proType === PRO_TYPE.airConditioner) {
+              if (isNullOrUnDef(device.sceneProperty)) device.sceneProperty = { power: 0 }
+              desc = toPropertyDesc(device.proType, device.sceneProperty)
+            } else {
+              desc = toPropertyDesc(device.proType, device.property!)
+            }
+          }
 
           tempSceneDeviceActionsFlatten.push({
             uniId: device.uniId,
@@ -921,6 +944,10 @@ ComponentWithComputed({
             value: {
               modelName,
               ...device.property,
+            },
+            sceneProperty: {
+              modelName,
+              ...device.sceneProperty,
             },
             orderNum: 0,
             dragId: device.uniId + Math.floor(Math.random() * 1001),
@@ -943,6 +970,7 @@ ComponentWithComputed({
           }
         }
       })
+      console.log('tempSceneDeviceActionsFlatten', tempSceneDeviceActionsFlatten)
 
       //增加排序顺序字段
       const sceneDeviceActionsFlatten = tempSceneDeviceActionsFlatten.map((item, index) => {
@@ -1149,6 +1177,8 @@ ComponentWithComputed({
             deviceType: device.deviceType,
             gatewayId: device.gatewayId,
             deviceId: device.deviceId,
+            proType: device.proType,
+            sceneProperty: { ...action.sceneProperty },
           },
           showEditPopup: device.proType,
           editingUniId: action.dragId,
@@ -1161,7 +1191,25 @@ ComponentWithComputed({
         showEditPopup: '',
       })
     },
+    handleSceneDeviceEditConfirm(e: { detail: IAnyObject }) {
+      console.log('handleSceneDeviceEditConfirm', e)
+      const flattenEditIndex = this.data.sceneDeviceActionsFlatten.findIndex(
+        (item) => item.dragId === this.data.editingUniId,
+      )
+      const actionItem = this.data.sceneDeviceActionsFlatten[flattenEditIndex]
+      actionItem.sceneProperty = e.detail
+      actionItem.desc = toPropertyDesc(actionItem.proType as string, actionItem.sceneProperty)
+      this.setData(
+        {
+          showEditPopup: '',
+        },
+        () => {
+          this.updateSceneDeviceActionsFlatten()
+        },
+      )
+    },
     handleSceneEditConfirm(e: { detail: IAnyObject }) {
+      console.log('handleSceneEditConfirm', e)
       const { _cacheDeviceMap } = this.data
       const flattenEditIndex = this.data.sceneDeviceActionsFlatten.findIndex(
         (item) => item.dragId === this.data.editingUniId,
@@ -1420,7 +1468,7 @@ ComponentWithComputed({
               })
             } else {
               const property = action.value
-              const ctrlAction = {} as IAnyObject
+              let ctrlAction = {} as IAnyObject
 
               if (device.deviceType === 2) {
                 ctrlAction.modelName = device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1'
@@ -1447,6 +1495,8 @@ ComponentWithComputed({
                 ctrlAction.updown = property.updown
                 ctrlAction.laundry = property.laundry
                 ctrlAction.light = property.light
+              } else if (device.proType === PRO_TYPE.airConditioner) {
+                ctrlAction = action.sceneProperty!
               }
               newSceneData.deviceActions.push({
                 controlAction: [ctrlAction],

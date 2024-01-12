@@ -66,7 +66,7 @@ ComponentWithComputed({
 
       const sceneData = storage.get('scene_data') as Scene.AddSceneDto | Scene.UpdateSceneDto
 
-      const sceneDeviceActionsFlatten = storage.get('sceneDeviceActionsFlatten') as Device.ActionItem[]
+      const sceneDeviceActionsFlatten = storage.get('sceneDeviceActionsFlatten') as AutoScene.AutoSceneFlattenAction[]
 
       console.log('scene-request-flatten', sceneDeviceActionsFlatten)
 
@@ -115,7 +115,7 @@ ComponentWithComputed({
           }
         } else {
           const property = action.value
-          const ctrlAction = {} as IAnyObject
+          let ctrlAction = {} as IAnyObject
 
           if (device.deviceType === 2) {
             ctrlAction.modelName = device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1'
@@ -142,8 +142,9 @@ ComponentWithComputed({
             ctrlAction.updown = property.updown
             ctrlAction.laundry = property.laundry
             ctrlAction.light = property.light
+          } else if (device.proType === PRO_TYPE.airConditioner) {
+            ctrlAction = action.sceneProperty!
           }
-
           sceneData?.deviceActions?.push({
             controlAction: [ctrlAction],
             deviceId: action.uniId,

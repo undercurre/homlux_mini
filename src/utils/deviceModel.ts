@@ -1,4 +1,4 @@
-import { PRO_TYPE } from '../config/index'
+import { PRO_TYPE, airConditionerMode } from '../config/index'
 import { isNullOrUnDef } from './index'
 
 /**
@@ -90,6 +90,10 @@ export function toWifiProperty(proType: string, properties: IAnyObject) {
  * @param property 设备属性
  */
 export function toPropertyDesc(proType: string, property: IAnyObject) {
+  if (isNullOrUnDef(property)) {
+    console.warn('转换属性描述失败，属性集为空')
+    return []
+  }
   const descList = [] as string[]
   if (proType === PRO_TYPE.light) {
     !isNullOrUnDef(property.power) && descList.push(property.power ? '打开' : '关闭')
@@ -178,5 +182,29 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
     }
   }
 
+  if (proType === PRO_TYPE.airConditioner) {
+    !isNullOrUnDef(property.power) && descList.push(property.power === 1 ? '开启' : '关闭')
+    !isNullOrUnDef(property.mode) && descList.push(airConditionerMode[property.mode])
+    !isNullOrUnDef(property.temperature) && descList.push(`${property.temperature}℃`)
+    !isNullOrUnDef(property.wind_speed) && descList.push(transferWindSpeedProperty(property.wind_speed) + '风')
+  }
+
   return descList
+}
+
+export function transferWindSpeedProperty(windSpeed: number) {
+  if (isNullOrUnDef(windSpeed)) {
+    console.warn('转换风速描述失败，属性值为空')
+    return ''
+  }
+  if (windSpeed <= 40) {
+    return '1档'
+  } else if (windSpeed <= 60) {
+    return '2档'
+  } else if (windSpeed <= 100) {
+    return '3档'
+  } else if (windSpeed <= 102) {
+    return '自动'
+  }
+  return ''
 }

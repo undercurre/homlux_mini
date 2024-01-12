@@ -312,6 +312,13 @@
   bind:confirm="handleSelectCardConfirm"
   bind:cancel="handleSelectCardReturn"
 ></select-card-popup>
+<edit-device-action-popup
+  show="{{showEditPopup === '0xAC'}}"
+  title="{{sceneEditTitle}}"
+  deviceActionInfo="{{sceneEditInfo}}"
+  bind:confirm="handleSceneDeviceEditConfirm"
+  bind:close="handleEditPopupClose"
+></edit-device-action-popup>
 <light-control-popup
   show="{{showEditPopup === '0x13'}}"
   title="{{sceneEditTitle}}"

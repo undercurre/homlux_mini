@@ -29,6 +29,7 @@ declare namespace Device {
   }
   /** 设备列表项 */
   interface DeviceItem {
+    sceneProperty?: IAnyObject //待下发的设备场景属性
     // 接口返回值属性
     deviceId: string
     deviceName: string
