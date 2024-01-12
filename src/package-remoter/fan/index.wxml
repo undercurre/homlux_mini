@@ -38,7 +38,7 @@
 
   <view class="flex-col-center flex-1">
     <view class="text-24rpx">
-      <text wx:if="{{deviceInfo.DELAY_OFF}}">离关灯还有：{{deviceInfo.DELAY_OFF}}分钟</text>
+      <text wx:if="{{deviceInfo.DELAY_OFF}}">离关风扇还有：{{deviceInfo.DELAY_OFF}}分钟</text>
     </view>
     <!-- 亮度控制 -->
     <view class="slider-box">
@@ -120,6 +120,7 @@
         text="延时关"
         data-dir="L"
         data-key="FAN_DELAY_OFF"
+        disabled="{{!deviceInfo.FAN_SWITCH}}"
       ></mz-button>
       <mz-button
         icon="/package-remoter/assets/scene31.png"
@@ -169,7 +170,7 @@
       iconActive="/package-remoter/assets/power0.png"
       bind:btnTouch="toSendCmd"
       text="风扇"
-      data-key="FAN_POWER"
+      data-key="FAN_SWITCH"
       data-type="TOGGLE"
     ></mz-button-bottom>
   </view>

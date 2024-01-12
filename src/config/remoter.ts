@@ -910,7 +910,7 @@ export const CMD: Record<string, number> = {
   LIGHT_NIGHT_LAMP: 0x1c, // 小夜灯
 
   // 风扇灯
-  FAN_POWER: 0x09, // 风扇开关
+  FAN_SWITCH: 0x09, // 风扇开关
   FAN_NEGATIVE: 0x1c, // 风扇正反转
   FAN_NATRUE: 0x1b, // 自然风
   FAN_SPEED_1: 0x19, // 1档风

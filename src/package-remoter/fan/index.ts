@@ -12,6 +12,7 @@ import {
 } from '../../utils/remoterUtils'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
+import Toast from '@vant/weapp/toast/toast'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [remoterBinding] }), pageBehaviors],
@@ -285,8 +286,14 @@ ComponentWithComputed({
     },
 
     showActionSheet(e: WechatMiniprogram.TouchEvent) {
+      const actionSheetType = e.target.dataset.key
+      console.log('showActionSheet', this.data.deviceInfo)
+      if (actionSheetType === 'FAN_DELAY_OFF' && !this.data.deviceInfo.FAN_SWITCH) {
+        Toast('风扇已关闭')
+        return
+      }
       this.setData({
-        actionSheetType: e.target.dataset.key,
+        actionSheetType,
         isShowPopup: true,
       })
     },
