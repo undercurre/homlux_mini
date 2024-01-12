@@ -1,8 +1,7 @@
-// pages/protocalList/index.ts
 import pageBehavior from '../../../behaviors/pageBehaviors'
-import { Logger, emitter } from '../../../utils'
-import { queryDeviceOnlineStatus, sendCmdAddSubdevice, bindDevice } from '../../../apis'
-import { deviceStore, homeStore } from '../../../store'
+import { Logger, emitter } from '../../../utils/index'
+import { queryDeviceOnlineStatus, sendCmdAddSubdevice, bindDevice } from '../../../apis/index'
+import { deviceStore, homeStore } from '../../../store/index'
 
 Component({
   behaviors: [pageBehavior],

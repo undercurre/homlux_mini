@@ -74,7 +74,7 @@ ComponentWithComputed({
         } as Meiju.IProductItem),
       },
       {
-        icon: `${productImgDir}/laundry.png`,
+        icon: `${productImgDir}/air-conditioner-hang.png`,
         name: '空调',
         path: '/package-distribution/choose-model/index?proType=0xAC',
       },

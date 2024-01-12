@@ -11,11 +11,22 @@
     "miniprogram": {
       "list": [
         {
+          "name": "添加中弘网关",
+          "pathName": "package-distribution/connect-guide/index",
+          "query": "modelId=zhonghong.heat.001%2Czhonghong.air.001%2Czhonghong.cac.002",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "HomOS调试",
           "pathName": "package-debug/pages/homos-debug/index",
           "query": "",
           "launchMode": "default",
-          "scene": null
+          "scene": null,
+          "partialCompile": {
+            "enabled": true,
+            "pages": []
+          }
         },
         {
           "name": "连接设备页面（美居）",

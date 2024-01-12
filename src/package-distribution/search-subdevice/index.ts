@@ -15,6 +15,7 @@ import dayjs from 'dayjs'
 import cacheData from '../common/cacheData'
 
 type StatusName = 'discover' | 'requesting' | 'success' | 'error'
+const productInfoMap: Record<string, Device.MzgdDeviceProTypeInfoEntity> = {}
 
 ComponentWithComputed({
   options: {
@@ -190,20 +191,26 @@ ComponentWithComputed({
     /**
      * @description 主动查询已入网设备
      */
-    async findSensor(device: { deviceId: string; productId: string; proType: string; productName: string }) {
+    async findSensor(device: { deviceId: string; productId: string; proType: string }) {
       const bleDeviceList = bleDevicesStore.bleDeviceList
       // 避免添加重复推送的设备
       if (bleDeviceList.findIndex((item) => item.zigbeeMac === device.deviceId) >= 0) {
         return
       }
 
-      const res = await queryDeviceProInfo({ productId: device.productId })
+      let productInfo: Device.MzgdDeviceProTypeInfoEntity = productInfoMap[device.productId]
 
-      if (!res.success) {
-        return
+      if (!productInfo) {
+        const res = await queryDeviceProInfo({ proType: device.proType, productId: device.productId })
+
+        if (!res.success) {
+          return
+        }
+
+        productInfo = res.result
+        productInfoMap[device.productId] = productInfo // 缓存产品信息，避免重复查询
       }
 
-      const productInfo = res.result[0]
       // 已绑定的相同设备数量
       const bindNum = deviceStore.allRoomDeviceList.filter((item) => device.productId === item.productId).length
 
@@ -211,25 +218,25 @@ ComponentWithComputed({
 
       const deviceNum = bindNum + newNum // 已有相同设备数量
 
-      runInAction(() => {
-        bleDevicesBinding.store.bleDeviceList = bleDeviceList.concat({
-          name: `${productInfo.productName}${deviceNum > 0 ? deviceNum + 1 : ''}`,
-          proType: device.proType,
-          productId: device.productId,
-          isChecked: true,
-          status: 'waiting' as const,
-          deviceUuid: device.deviceId,
-          roomId: roomBinding.store.currentRoom.roomId, // 默认为当前房间
-          roomName: roomBinding.store.currentRoom.roomName,
-          mac: '',
-          signal: '',
-          zigbeeMac: device.deviceId,
-          isConfig: '',
-          RSSI: 50,
-          icon: productInfo.icon,
-          switchList: [],
-        })
+      bleDevicesBinding.store.bleDeviceList.push({
+        name: `${productInfo.productName}${deviceNum > 0 ? deviceNum + 1 : ''}`,
+        proType: device.proType,
+        productId: device.productId,
+        isChecked: true,
+        status: 'waiting' as const,
+        deviceUuid: device.deviceId,
+        roomId: roomBinding.store.currentRoom.roomId, // 默认为当前房间
+        roomName: roomBinding.store.currentRoom.roomName,
+        mac: '',
+        signal: '',
+        zigbeeMac: device.deviceId,
+        isConfig: '',
+        RSSI: 50,
+        icon: productInfo.icon,
+        switchList: [],
       })
+
+      bleDevicesStore.updateBleDeviceListThrottle()
     },
     startAnimation() {
       Logger.log('动画开始')
@@ -309,6 +316,9 @@ ComponentWithComputed({
     // 确认添加传感器
     async confirmAddSensor() {
       this.setData({ confirmLoading: true })
+      // 终止配网指令下发
+      this.stopGwAddMode()
+
       try {
         const selectedList = bleDevicesBinding.store.bleDeviceList.filter((item: Device.ISubDevice) => item.isChecked)
 
@@ -865,8 +875,8 @@ ComponentWithComputed({
 
     finish() {
       homeBinding.store.updateCurrentHomeDetail()
-      wx.closeBluetoothAdapter()
       bleDevicesStore.reset()
+      wx.closeBluetoothAdapter()
 
       wx.reLaunch({
         url: strUtil.getUrlWithParams(cacheData.pageEntry, {
