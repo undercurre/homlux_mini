@@ -129,7 +129,7 @@ ComponentWithComputed({
 
         // 用户主动搜索，刷新发现列表
         const foundList = [] as Remoter.DeviceDetail[]
-        recoveredList.forEach((item) => {
+        recoveredList.forEach((item, index) => {
           const isSavedDevice = remoterStore.deviceAddrs.includes(item!.addr)
           if (
             item!.RSSI >= this.data.MIN_RSSI && // 过滤弱信号设备
@@ -151,7 +151,7 @@ ComponentWithComputed({
             const newDeviceCount = foundList.filter(
               (device) => device.deviceType === deviceType && device.deviceModel === deviceModel,
             ).length
-            const deviceNameSuffix = savedDeviceCount + newDeviceCount + 1
+            const deviceNameSuffix = savedDeviceCount + newDeviceCount + index + 1
 
             // 如果设备名已存在，则加上编号后缀，以避免同名混淆
             const hasSavedName = remoterStore.deviceNames.includes(config.deviceName)
