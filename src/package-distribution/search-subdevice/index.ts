@@ -201,13 +201,13 @@ ComponentWithComputed({
       let productInfo: Device.MzgdDeviceProTypeInfoEntity = productInfoMap[device.productId]
 
       if (!productInfo) {
-        const res = await queryDeviceProInfo({ productId: device.productId })
+        const res = await queryDeviceProInfo({ proType: device.proType, productId: device.productId })
 
         if (!res.success) {
           return
         }
 
-        productInfo = res.result[0]
+        productInfo = res.result
         productInfoMap[device.productId] = productInfo // 缓存产品信息，避免重复查询
       }
 
