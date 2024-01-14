@@ -9,5 +9,5 @@ export const airConditionerMode: AirConditionerMode = {
   cool: '制冷',
   heat: '制热',
   fan: '送风',
-  dry: '除湿',
+  dry: '抽湿',
 }

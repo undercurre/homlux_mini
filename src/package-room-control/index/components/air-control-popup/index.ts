@@ -1,16 +1,8 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import { sendDevice } from '../../../../apis/index'
-import { PRO_TYPE } from '../../../../config/index'
-
-type BtnItem = {
-  text: string
-  icon: string
-  iconActive: string
-  on?: boolean // 按钮是否激活状态
-  rebound?: boolean // 按钮是否自动回弹状态
-  textWidth?: string // 按钮文字宽度
-}
+import { PRO_TYPE, airConditionerMode } from '../../../../config/index'
+import { transferWindSpeedProperty } from '../../../../utils/index'
 
 ComponentWithComputed({
   options: {
@@ -38,7 +30,7 @@ ComponentWithComputed({
       observer(value) {
         if (value && this.data._canSyncCloudData) {
           this.setData({
-            prop: value as Device.DeviceItem & Device.mzgdPropertyDTO,
+            propView: value as Device.DeviceItem & Device.mzgdPropertyDTO,
           })
         }
       },
@@ -51,82 +43,82 @@ ComponentWithComputed({
   data: {
     _canSyncCloudData: true, // 是否响应云端变更
     _controlTimer: null as null | number, // 控制后计时器
-    prop: {} as IAnyObject, // 用于视图显示
-    // 按钮组
-    btnMap: {
-      up: {
-        text: '上升',
-        icon: '../../assets/img/function/f70.png',
-        iconActive: '../../assets/img/function/f71.png',
+    propView: {} as IAnyObject, // 用于视图显示
+    isShowPicker: false,
+    pickerIndex: 0,
+    pickerValue: '',
+    pickerType: '',
+    pickerList: {
+      mode: {
+        title: '模式',
+        columns: Object.keys(airConditionerMode).map((key) => ({ text: airConditionerMode[key], key })),
       },
-      pause: {
-        text: '暂停',
-        icon: '../../assets/img/function/f80.png',
-        iconActive: '../../assets/img/function/f81.png',
+      wind_speed: {
+        title: '风速',
+        columns: [
+          {
+            text: '1档',
+            key: 40,
+          },
+          {
+            text: '2档',
+            key: 60,
+          },
+          {
+            text: '3档',
+            key: 100,
+          },
+          {
+            text: '自动风',
+            key: 102,
+          },
+        ],
       },
-      down: {
-        text: '下降',
-        icon: '../../assets/img/function/f90.png',
-        iconActive: '../../assets/img/function/f91.png',
-      },
-    } as Record<string, BtnItem>,
-    // 下方大按钮
-    largeBtnMap: {
-      on: {
-        text: '照明',
-        icon: '../../assets/img/function/f50.png',
-        iconActive: '../../assets/img/function/f51.png',
-      },
-      laundry: {
-        text: '一键晾衣',
-        icon: '../../assets/img/function/fa0.png',
-        iconActive: '../../assets/img/function/fa1.png',
-        textWidth: '96rpx',
-        disabled: false,
-      },
-    } as Record<string, BtnItem>,
+    } as Record<string, { title: string; columns: IAnyObject[] }>,
   },
 
   computed: {
-    // 按钮组，转为数组格式
-    btnList(data) {
-      const { btnMap, prop } = data
-      const { updown, location_status } = prop
-      const res = Object.keys(btnMap).map((key: string) => {
-        const on = updown === key
-        const disabled =
-          (key === 'up' && updown === 'up') ||
-          (key === 'pause' && updown === 'pause') ||
-          (key === 'down' && updown === 'down') ||
-          (key === 'up' && location_status === 'upper_limit') ||
-          (key === 'down' && location_status === 'lower_limit')
-
-        return {
-          ...btnMap[key],
-          on,
-          disabled,
-          key,
-        }
-      })
-      return res
+    disabledMinus(data) {
+      const { temperature, power, mode } = data.propView
+      return temperature <= 17 || power !== 1 || mode === 'fan'
     },
-    // 下方大按钮，转为数组格式
-    largeBtnList(data) {
-      const { largeBtnMap, prop } = data
-      const res = Object.keys(largeBtnMap).map((key) => {
-        // 照明关闭，则【关灯】按钮点亮
-        const on = key === 'laundry' ? prop['laundry'] === 'on' : prop['light'] === key
-        // 未设置晾衣高度，则一键晾衣按钮禁用
-        const disabled = key === 'laundry' && !data.custom_height
-
-        return {
-          ...largeBtnMap[key],
-          on,
-          disabled,
-          key,
-        }
-      })
-      return res
+    disabledPlus(data) {
+      const { temperature, power, mode } = data.propView
+      return temperature >= 30 || power !== 1 || mode === 'fan'
+    },
+    disabledSlider(data) {
+      const { power, mode } = data.propView
+      return power !== 1 || mode === 'fan'
+    },
+    disabledMode(data) {
+      const { power } = data.propView
+      return power !== 1
+    },
+    disabledWindSpeed(data) {
+      const { power, mode } = data.propView
+      return power !== 1 || mode === 'dry'
+    },
+    pickerTitle(data) {
+      const { pickerList, pickerType } = data
+      if (!pickerType) {
+        return ''
+      }
+      return pickerList[pickerType].title
+    },
+    pickerColumns(data) {
+      const { pickerList, pickerType } = data
+      if (!pickerType) {
+        return []
+      }
+      return pickerList[pickerType].columns
+    },
+    currentMode(data) {
+      const { mode = '' } = data.propView
+      return airConditionerMode[mode] ?? ''
+    },
+    currentWindLevel(data) {
+      const { wind_speed = 1 } = data.propView
+      return transferWindSpeedProperty(wind_speed)
     },
   },
 
@@ -143,18 +135,27 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    async handleBtnTap() {
-      // const key = e.currentTarget.dataset.key as string
-      // const { prop } = this.data
-      const property = {} as IAnyObject
+    async handleBtnTap(e: WechatMiniprogram.CustomEvent) {
+      let key = e.currentTarget.dataset.key as string
+      let setValue = e.detail as unknown as number | string
 
-      // 即时使用设置值渲染
-      // this.setData({
-      //   prop: {
-      //     ...prop,
-      //     ...property,
-      //   },
-      // })
+      // 温度加减逻辑处理，前端先计算实际温度值
+      if (key === 'minus') {
+        if (this.data.disabledMinus) {
+          return
+        }
+        key = 'temperature'
+        setValue = this.data.deviceInfo.temperature - 1
+      } else if (key === 'plus') {
+        if (this.data.disabledPlus) {
+          return
+        }
+        key = 'temperature'
+        setValue = Math.min(30, this.data.deviceInfo.temperature + 1)
+      }
+      this.setData({
+        [`propView.${key}`]: setValue,
+      })
 
       // 设置后N秒内屏蔽上报
       if (this.data._controlTimer) {
@@ -169,9 +170,10 @@ ComponentWithComputed({
       const res = await sendDevice({
         deviceId: this.data.deviceInfo.deviceId,
         deviceType: this.data.deviceInfo.deviceType,
-        proType: PRO_TYPE.clothesDryingRack,
-        modelName: 'clothesDryingRack',
-        property,
+        proType: PRO_TYPE.airConditioner,
+        property: {
+          [key]: setValue,
+        },
       })
 
       if (!res.success) {
@@ -179,8 +181,15 @@ ComponentWithComputed({
         return
       }
     },
-    handleSlideEnd(e: WechatMiniprogram.CustomEvent) {
-      console.log('handleSlideEnd', e)
+    // 温度滑条拖动过程
+    handleSlideChange(e: WechatMiniprogram.CustomEvent) {
+      const { propView } = this.data
+      this.setData({
+        propView: {
+          ...propView,
+          temperature: e.detail,
+        },
+      })
     },
     toDetail() {
       const { deviceId } = this.data.deviceInfo
@@ -190,8 +199,44 @@ ComponentWithComputed({
       })
     },
 
+    showPicker(e: WechatMiniprogram.CustomEvent) {
+      const key = e.currentTarget.dataset.key as string
+      if (key === 'wind_speed' && this.data.disabledWindSpeed) {
+        return
+      }
+      this.setData({
+        isShowPicker: true,
+        pickerType: key,
+      })
+    },
+
     handleClose() {
       this.triggerEvent('close')
+    },
+    onPickerChange(e: WechatMiniprogram.CustomEvent) {
+      this.setData({
+        pickerIndex: e.detail.index,
+        pickerValue: e.detail.value.key,
+      })
+    },
+    handlePickerClose() {
+      this.setData({
+        isShowPicker: false,
+      })
+    },
+    handlePickerConfirm() {
+      this.setData({
+        isShowPicker: false,
+      })
+      // 构造相同的数据结构，调用发送指令方法
+      this.handleBtnTap({
+        currentTarget: {
+          dataset: {
+            key: this.data.pickerType,
+          },
+        },
+        detail: this.data.pickerValue,
+      } as unknown as WechatMiniprogram.TouchEvent)
     },
   },
 })

@@ -5,6 +5,7 @@ ComponentWithComputed({
     styleIsolation: 'apply-shared',
   },
   properties: {
+    disabled: Boolean,
     icon: {
       type: String,
       value: '',
