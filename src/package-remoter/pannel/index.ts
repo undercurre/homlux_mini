@@ -268,9 +268,9 @@ ComponentWithComputed({
 
     toggleDebug() {
       // 只用于开发环境、体验环境
-      if (this.data._envVersion === 'release') {
-        return
-      }
+      // if (this.data._envVersion === 'release') {
+      //   return
+      // }
 
       // 进入调试模式，按键序列满足上上下下左左右右
       const q = this.data._keyQueue.join('')
