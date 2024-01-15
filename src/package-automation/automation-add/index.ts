@@ -926,7 +926,7 @@ ComponentWithComputed({
             name = device.deviceName
             modelName = getModelName(device.proType, device.productId)
             pic = device.pic
-            if (device.proType === PRO_TYPE.airConditioner) {
+            if (this.isNewScenarioSettingSupported(device.proType)) {
               if (isNullOrUnDef(device.sceneProperty)) device.sceneProperty = { power: 0 }
               desc = toPropertyDesc(device.proType, device.sceneProperty)
             } else {
@@ -1495,7 +1495,7 @@ ComponentWithComputed({
                 ctrlAction.updown = property.updown
                 ctrlAction.laundry = property.laundry
                 ctrlAction.light = property.light
-              } else if (device.proType === PRO_TYPE.airConditioner) {
+              } else if (this.isNewScenarioSettingSupported(device.proType)) {
                 ctrlAction = action.sceneProperty!
               }
               newSceneData.deviceActions.push({
@@ -1734,5 +1734,12 @@ ComponentWithComputed({
       }
     },
     /* 执行结果拖拽相关方法 end */
+    /**
+     * 是否支持新的场景设置方案
+     */
+    isNewScenarioSettingSupported(proType:string){
+      return proType === PRO_TYPE.airConditioner || proType === PRO_TYPE.freshAir ||proType === PRO_TYPE.floorHeating ||proType === PRO_TYPE.centralAirConditioning
+    }
   },
+
 })

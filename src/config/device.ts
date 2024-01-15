@@ -74,6 +74,9 @@ export const proName: Record<string, string> = {
   '0x26': 'bathHeat',
   '0xBC': 'sensor',
   '0xAC': 'airConditioner',
+  '0xCE': 'freshAir', // 新风
+  '0xCF': 'floorHeating', // 地暖
+  '0xCC': 'airConditioner', // 中弘网关空调，中央空调
 } as const
 
 // 传感器类型，通过productId区分

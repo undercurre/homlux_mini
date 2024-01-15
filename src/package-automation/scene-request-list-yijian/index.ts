@@ -142,7 +142,7 @@ ComponentWithComputed({
             ctrlAction.updown = property.updown
             ctrlAction.laundry = property.laundry
             ctrlAction.light = property.light
-          } else if (device.proType === PRO_TYPE.airConditioner) {
+          } else if (this.isNewScenarioSettingSupported(device.proType)) {
             ctrlAction = action.sceneProperty!
           }
           sceneData?.deviceActions?.push({
@@ -301,5 +301,11 @@ ComponentWithComputed({
         })
       }
     },
+    /**
+     * 是否支持新的场景设置方案
+     */
+    isNewScenarioSettingSupported(proType:string){
+      return proType === PRO_TYPE.airConditioner || proType === PRO_TYPE.freshAir ||proType === PRO_TYPE.floorHeating ||proType === PRO_TYPE.centralAirConditioning
+    }
   },
 })
