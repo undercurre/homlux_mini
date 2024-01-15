@@ -92,7 +92,7 @@ export const scenePropertyOptions = {
     { title: '2档', key: 'wind_speed', value: 60 },
     { title: '3档', key: 'wind_speed', value: 80 },
   ],
-  cacMode:[
+  cacMode: [
     { title: '不设置', key: 'mode', value: 0 },
     { title: '制冷', key: 'mode', value: 1 },
     { title: '制热', key: 'mode', value: 8 },

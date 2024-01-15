@@ -1737,9 +1737,13 @@ ComponentWithComputed({
     /**
      * 是否支持新的场景设置方案
      */
-    isNewScenarioSettingSupported(proType:string){
-      return proType === PRO_TYPE.airConditioner || proType === PRO_TYPE.freshAir ||proType === PRO_TYPE.floorHeating ||proType === PRO_TYPE.centralAirConditioning
-    }
+    isNewScenarioSettingSupported(proType: string) {
+      return (
+        proType === PRO_TYPE.airConditioner ||
+        proType === PRO_TYPE.freshAir ||
+        proType === PRO_TYPE.floorHeating ||
+        proType === PRO_TYPE.centralAirConditioning
+      )
+    },
   },
-
 })

@@ -209,8 +209,8 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
 }
 /**
  * 转换WIFI空调的风速描述
- * @param windSpeed 
- * @returns 
+ * @param windSpeed
+ * @returns
  */
 export function transferWindSpeedProperty(windSpeed: number) {
   if (isNullOrUnDef(windSpeed)) {
