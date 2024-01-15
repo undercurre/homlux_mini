@@ -20,3 +20,7 @@
   font-size: 24rpx;
   color: #555659;
 }
+
+.disabled {
+  opacity: 0.5;
+}

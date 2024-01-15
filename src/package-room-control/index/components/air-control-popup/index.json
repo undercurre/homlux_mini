@@ -4,6 +4,7 @@
   "usingComponents": {
     "drop-button": "../../components/drop-button/index",
     "mz-slider": "/components/mz-slider/index",
+    "van-picker": "@vant/weapp/picker/index",
     "icon-button": "../../components/icon-button/index"
   }
 }

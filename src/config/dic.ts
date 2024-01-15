@@ -6,7 +6,7 @@ export const AC_MODE = {
   cool: '制冷',
   heat: '制热',
   fan: '送风',
-  dry: '除湿',
+  dry: '抽湿',
 } as Record<string, string>
 
 export const CAC_MODE = {

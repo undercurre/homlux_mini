@@ -4,7 +4,7 @@
 ></wxs>
 
 <view
-  class="mz-button flex-col-center"
+  class="mz-button flex-col-center {{ disabled ? 'disabled' : '' }}"
   bind:touchstart="{{handler.touchStart}}"
   bind:touchend="{{handler.touchEnd}}"
 >
