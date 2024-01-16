@@ -46,12 +46,16 @@
         <view>
           <view class="flex flex-row justify-center items-start mt-64rpx">
             <text class="text-28rpx text-hex-fff leading-none">℃</text>
-            <text class="text-124rpx text-hex-495264 leading-none">{{propView.temperature}}</text>
+            <text class="text-124rpx text-hex-495264 leading-none">{{temperature}}</text>
             <text class="text-28rpx text-hex-515d75">℃</text>
           </view>
 
-          <view class="text-center mt-30rpx">
-            <text class="text-24 text-hex-a2a2a2">室内温度：{{propView.indoor_temperature || '--'}}℃</text>
+          <view class="text-center mt-30rpx h-36">
+            <text
+              wx:if="{{showIndoorTemp}}"
+              class="text-24 text-hex-a2a2a2"
+              >室内温度：{{showIndoorTemp}}℃</text
+            >
           </view>
         </view>
 
@@ -79,7 +83,7 @@
           bind:slideChange="handleSlideChange"
           value="{{propView.temperature}}"
           barHeight="36"
-          data-min="{{17}}"
+          data-min="{{minTemp}}"
           data-max="{{30}}"
           active-color="#488FFF"
           data-key="temperature"
