@@ -40,7 +40,7 @@
 
     <view class="pt-80rpx h-300 grow shrink camera-mask flex flex-col items-center justify-between">
       <view
-        wx:if="{{isShowTips}}"
+        wx:if="{{tipsText}}"
         class="inline-block flex flex-row items-center bg-hex-5A5A5A rounded-32rpx leading-74rpx px-28rpx w-min-380"
       >
         <image
@@ -59,18 +59,8 @@
           class="ml-24rpx"
           type="primary"
           size="small"
-          bind:click="addNearSubdevice"
-          wx:if="{{scanType === 'subdevice' && discovering && bleDeviceList.length}}"
-          custom-style="height: 52rpx;margin-top: -8rpx;"
-          >立即添加</van-button
-        >
-
-        <van-button
-          class="ml-24rpx"
-          type="primary"
-          size="small"
-          bind:click="addGatewayManually"
-          wx:if="{{scanType === 'gateway'}}"
+          bind:click="handelAddDevice"
+          wx:if="{{isShowAddBtn}}"
           custom-style="height: 52rpx;margin-top: -8rpx;"
           >立即添加</van-button
         >

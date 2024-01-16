@@ -6,15 +6,13 @@ export default {
     name: '开关/灯具',
     modelList: [
       {
-        icon: `${productImgDir}/light-wifi.png`,
+        icon: `${productImgDir}/0x13.png`,
         name: '吸顶灯',
         source: 'meiju',
         tag: 'wifi',
         path: strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
           proType: '13',
           sn8: '7909AC81',
-          productId: '美的智能吸顶灯',
-          deviceImg: `${productImgDir}/light-wifi.png`,
           mode: 0,
         } as Meiju.IProductItem),
       },
@@ -48,28 +46,32 @@ export default {
     name: '空调',
     modelList: [
       {
-        icon: `${productImgDir}/air-conditioner-hang.png`,
+        icon: `${productImgDir}/0xAC-hang.png`,
         name: '挂机空调',
+        source: 'meiju',
         tag: 'wifi',
-        path: strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
-          proType: 'AC',
-          sn8: '222Z3131',
-          productId: 'KFR-72L/DX1-1[Y]',
-          deviceImg: `${productImgDir}/air-conditioner-hang.png`,
-          mode: 0,
-        } as Meiju.IProductItem),
+        path: `/package-distribution/scan/index?scanType=meijuDevice&meijuPath=${encodeURIComponent(
+          strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
+            proType: 'AC',
+            sn8: '22011809,22011901',
+            deviceImg: `${productImgDir}/0xAC-hang.png`,
+            mode: 0,
+          } as Meiju.IProductItem),
+        )}`,
       },
       {
-        icon: `${productImgDir}/air-conditioner-cabinet.png`,
-        name: '挂机空调',
+        icon: `${productImgDir}/0xAC-cabinet.png`,
+        name: '柜机空调',
+        source: 'meiju',
         tag: 'wifi',
-        path: strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
-          proType: 'AC',
-          sn8: '22251659',
-          productId: 'KFR-51L/DX1-1',
-          deviceImg: `${productImgDir}/air-conditioner-cabinet.png`,
-          mode: 0,
-        } as Meiju.IProductItem),
+        path: `/package-distribution/scan/index?scanType=meijuDevice&meijuPath=${encodeURIComponent(
+          strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
+            proType: 'AC',
+            sn8: '222G0077,22050675',
+            deviceImg: `${productImgDir}/0xAC-cabinet.png`,
+            mode: 0,
+          } as Meiju.IProductItem),
+        )}`,
       },
       {
         icon: `${productImgDir}/VRF.png`,

@@ -6,7 +6,7 @@ import { queryGuideInfo } from '../../../apis/index'
 import { addDeviceSDK } from '../../utils/addDeviceSDK'
 import { addGuide, inputWifiInfo } from '../../utils/paths.js'
 import Toast from '@vant/weapp/toast/toast'
-import { meijuImgDir } from '../../../config/img'
+import { meijuImgDir, productImgDir } from '../../../config/img'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { getLinkType } = require('../assets/js/utils.js')
 
@@ -33,11 +33,14 @@ ComponentWithComputed({
       console.log('check-auth', proType, sn8)
 
       if (sn8) {
+        const sn8List = sn8.split(',')
+
         app.addDeviceInfo.type = proType
-        app.addDeviceInfo.sn8 = sn8
+        app.addDeviceInfo.sn8 = sn8List[0]
         app.addDeviceInfo.mode = mode
-        app.addDeviceInfo.deviceImg = deviceImg
+        app.addDeviceInfo.deviceImg = deviceImg || `${productImgDir}/0x${proType}.png`
         app.addDeviceInfo.productId = productId
+        app.addDeviceInfo.sn8List = sn8List
       }
 
       this.toBindDevice()
@@ -48,41 +51,55 @@ ComponentWithComputed({
      * 前往配网流程页面
      */
     async toBindDevice() {
-      const { sn8, type, mode } = app.addDeviceInfo
-      const res = await queryGuideInfo({ houseId: homeStore.currentHomeId, sn8, type, mode: mode.toString() })
+      const { sn8, type, mode, sn8List } = app.addDeviceInfo
 
-      if (!res.success) {
-        Toast('获取配网指引失败')
-        return
+      const guideInfoList = []
+      const promiseList = []
+
+      // 请求多个sn8的配网数据
+      for (const sn8Item of sn8List) {
+        promiseList.push(
+          queryGuideInfo({ houseId: homeStore.currentHomeId, sn8: sn8Item, type, mode: mode.toString() }),
+        )
       }
 
-      const guideInfo = res.result
-      const connectDesc = guideInfo.mainConnectTypeDesc
-      let connectUrl = guideInfo.mainConnectTypeUrlList[0]
-      const guideInfoList = []
+      const resList = await Promise.all(promiseList)
 
-      // 若品类为浴霸，写死附加型号为R1的配网方式，并固定配网图
-      if (type === '26') {
-        guideInfoList.push({
-          connectDesc:
-            '① 浴霸接通电源\n② 检查遥控器是否能够控制浴霸(如：按遥控器「照明」键，浴霸灯亮)\n③ 长按遥控器「+」键「5」秒，听到“嘀”提示音，数秒内WiFi指示灯闪烁，表示设置成功',
-          connectUrlA: 'http://midea-file.oss-cn-hangzhou.aliyuncs.com/2021/5/31/9/vLzXTxNBLxzGKAErIpYf.gif',
+      // 遍历返回的配网数据
+      for (const res of resList) {
+        if (!res.success) {
+          Toast('获取配网指引失败')
+          return
+        }
+
+        const guideInfo = res.result
+        const connectDesc = guideInfo.mainConnectTypeDesc
+        let connectUrl = guideInfo.mainConnectTypeUrlList[0]
+
+        // 若品类为浴霸，写死附加型号为R1的配网方式，并固定配网图
+        if (type === '26') {
+          guideInfoList.push({
+            connectDesc:
+              '① 浴霸接通电源\n② 检查遥控器是否能够控制浴霸(如：按遥控器「照明」键，浴霸灯亮)\n③ 长按遥控器「+」键「5」秒，听到“嘀”提示音，数秒内WiFi指示灯闪烁，表示设置成功',
+            connectUrlA: 'http://midea-file.oss-cn-hangzhou.aliyuncs.com/2021/5/31/9/vLzXTxNBLxzGKAErIpYf.gif',
+            isAutoConnect: guideInfo.isAutoConnect,
+            code: guideInfo.modelCode,
+            wifiFrequencyBand: guideInfo.wifiFrequencyBand,
+          })
+
+          connectUrl = `${meijuImgDir}/addDevice/bath-heater-guide.gif`
+        }
+
+        guideInfoList.unshift({
+          connectDesc,
+          connectUrlA: connectUrl,
           isAutoConnect: guideInfo.isAutoConnect,
           code: guideInfo.modelCode,
           wifiFrequencyBand: guideInfo.wifiFrequencyBand,
         })
-
-        connectUrl = `${meijuImgDir}/addDevice/bath-heater-guide.gif`
       }
 
-      guideInfoList.unshift({
-        connectDesc,
-        connectUrlA: connectUrl,
-        isAutoConnect: guideInfo.isAutoConnect,
-        code: guideInfo.modelCode,
-        wifiFrequencyBand: guideInfo.wifiFrequencyBand,
-      })
-      //0,3 跳inputWifiInfo, 5 跳addguide
+      // 0,3 跳inputWifiInfo, 5 跳addguide
       const addDeviceInfo = {
         enterprise: '0000',
         fm: 'selectType',

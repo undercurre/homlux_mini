@@ -218,7 +218,7 @@ ComponentWithComputed({
 
       const deviceNum = bindNum + newNum // 已有相同设备数量
 
-      bleDevicesBinding.store.bleDeviceList.push({
+      bleDeviceList.push({
         name: `${productInfo.productName}${deviceNum > 0 ? deviceNum + 1 : ''}`,
         proType: device.proType,
         productId: device.productId,
