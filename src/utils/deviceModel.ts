@@ -1,4 +1,4 @@
-import { PRO_TYPE, airConditionerMode } from '../config/index'
+import { PRO_TYPE, AC_MODE, CAC_MODE, CAC_FA_WINDSPEED } from '../config/index'
 import { isNullOrUnDef } from './index'
 
 /**
@@ -184,14 +184,34 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
 
   if (proType === PRO_TYPE.airConditioner) {
     !isNullOrUnDef(property.power) && descList.push(property.power === 1 ? '开启' : '关闭')
-    !isNullOrUnDef(property.mode) && descList.push(airConditionerMode[property.mode])
+    !isNullOrUnDef(property.mode) && descList.push(AC_MODE[property.mode])
     !isNullOrUnDef(property.temperature) && descList.push(`${property.temperature}℃`)
     !isNullOrUnDef(property.wind_speed) && descList.push(transferWindSpeedProperty(property.wind_speed) + '风')
+  }
+  if (proType === PRO_TYPE.centralAirConditioning) {
+    !isNullOrUnDef(property.power) && descList.push(property.power === 1 ? '开启' : '关闭')
+    !isNullOrUnDef(property.mode) && descList.push(CAC_MODE[`mode_${property.mode}`])
+    !isNullOrUnDef(property.targetTemperature) && descList.push(`${property.targetTemperature}℃`)
+    !isNullOrUnDef(property.windSpeed) && descList.push(CAC_FA_WINDSPEED[`windSpeed_${property.windSpeed}`] + '风')
+  }
+
+  if (proType === PRO_TYPE.freshAir) {
+    !isNullOrUnDef(property.power) && descList.push(property.power === 1 ? '开启' : '关闭')
+    !isNullOrUnDef(property.windSpeed) && descList.push(CAC_FA_WINDSPEED[`windSpeed_${property.windSpeed}`] + '风')
+  }
+
+  if (proType === PRO_TYPE.floorHeating) {
+    !isNullOrUnDef(property.power) && descList.push(property.power === 1 ? '开启' : '关闭')
+    !isNullOrUnDef(property.targetTemperature) && descList.push(`${property.targetTemperature}℃`)
   }
 
   return descList
 }
-
+/**
+ * 转换WIFI空调的风速描述
+ * @param windSpeed
+ * @returns
+ */
 export function transferWindSpeedProperty(windSpeed: number) {
   if (isNullOrUnDef(windSpeed)) {
     console.warn('转换风速描述失败，属性值为空')

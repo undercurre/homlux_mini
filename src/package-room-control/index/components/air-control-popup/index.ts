@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import { sendDevice } from '../../../../apis/index'
-import { PRO_TYPE, airConditionerMode } from '../../../../config/index'
+import { PRO_TYPE, AC_MODE } from '../../../../config/index'
 import { transferWindSpeedProperty } from '../../../../utils/index'
 
 ComponentWithComputed({
@@ -51,7 +51,7 @@ ComponentWithComputed({
     pickerList: {
       mode: {
         title: '模式',
-        columns: Object.keys(airConditionerMode).map((key) => ({ text: airConditionerMode[key], key })),
+        columns: Object.keys(AC_MODE).map((key) => ({ text: AC_MODE[key], key })),
       },
       wind_speed: {
         title: '风速',
@@ -78,9 +78,25 @@ ComponentWithComputed({
   },
 
   computed: {
+    minTemp(data) {
+      const { proType } = data.propView
+      return proType === PRO_TYPE.centralAirConditioning ? 16 : 17
+    },
+    step(data) {
+      const { proType } = data.propView
+      return proType === PRO_TYPE.centralAirConditioning ? 1 : 0.5
+    },
+    temperature(data) {
+      const { proType, temperature, currentTemperature, small_temperature } = data.propView
+      if (proType === PRO_TYPE.centralAirConditioning) {
+        return currentTemperature
+      }
+      return temperature + small_temperature
+    },
     disabledMinus(data) {
-      const { temperature, power, mode } = data.propView
-      return temperature <= 17 || power !== 1 || mode === 'fan'
+      const { minTemp, temperature } = data
+      const { power, mode } = data.propView
+      return temperature <= minTemp || power !== 1 || mode === 'fan'
     },
     disabledPlus(data) {
       const { temperature, power, mode } = data.propView
@@ -98,6 +114,13 @@ ComponentWithComputed({
       const { power, mode } = data.propView
       return power !== 1 || mode === 'dry'
     },
+    showIndoorTemp(data) {
+      const { indoor_temperature } = data.propView
+      if (!indoor_temperature || indoor_temperature === 255) {
+        return null
+      }
+      return indoor_temperature
+    },
     pickerTitle(data) {
       const { pickerList, pickerType } = data
       if (!pickerType) {
@@ -114,7 +137,7 @@ ComponentWithComputed({
     },
     currentMode(data) {
       const { mode = '' } = data.propView
-      return airConditionerMode[mode] ?? ''
+      return AC_MODE[mode] ?? ''
     },
     currentWindLevel(data) {
       const { wind_speed = 1 } = data.propView
@@ -138,6 +161,7 @@ ComponentWithComputed({
     async handleBtnTap(e: WechatMiniprogram.CustomEvent) {
       let key = e.currentTarget.dataset.key as string
       let setValue = e.detail as unknown as number | string
+      const property = {} as IAnyObject
 
       // 温度加减逻辑处理，前端先计算实际温度值
       if (key === 'minus') {
@@ -145,17 +169,31 @@ ComponentWithComputed({
           return
         }
         key = 'temperature'
-        setValue = this.data.deviceInfo.temperature - 1
+        setValue = this.data.temperature - this.data.step
       } else if (key === 'plus') {
         if (this.data.disabledPlus) {
           return
         }
         key = 'temperature'
-        setValue = Math.min(30, this.data.deviceInfo.temperature + 1)
+        setValue = this.data.temperature + this.data.step
       }
-      this.setData({
-        [`propView.${key}`]: setValue,
-      })
+
+      // 包括温度加减
+      if (key === 'temperature') {
+        const intTemp = Math.floor(setValue as number)
+        const floatTemp = (setValue as number) - intTemp
+        property[key] = intTemp
+        property['small_temperature'] = floatTemp
+        this.setData({
+          'propView.temperature': intTemp,
+          'propView.small_temperature': floatTemp,
+        })
+      } else {
+        property[key] = setValue
+        this.setData({
+          [`propView.${key}`]: setValue,
+        })
+      }
 
       // 设置后N秒内屏蔽上报
       if (this.data._controlTimer) {
@@ -171,9 +209,7 @@ ComponentWithComputed({
         deviceId: this.data.deviceInfo.deviceId,
         deviceType: this.data.deviceInfo.deviceType,
         proType: PRO_TYPE.airConditioner,
-        property: {
-          [key]: setValue,
-        },
+        property,
       })
 
       if (!res.success) {

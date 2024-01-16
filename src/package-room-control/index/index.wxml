@@ -271,7 +271,7 @@
 ></dryer-control-popup>
 
 <air-control-popup
-  show="{{controlType === '0xAC'}}"
+  show="{{controlType === '0xAC' || controlType === '0xCC'}}"
   isShowSetting="{{true}}"
   deviceInfo="{{checkedDeviceInfo}}"
   bind:close="cancelCheckAndPops"

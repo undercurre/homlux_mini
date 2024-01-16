@@ -92,4 +92,27 @@ export const scenePropertyOptions = {
     { title: '2档', key: 'wind_speed', value: 60 },
     { title: '3档', key: 'wind_speed', value: 80 },
   ],
+  cacMode: [
+    { title: '不设置', key: 'mode', value: 0 },
+    { title: '制冷', key: 'mode', value: 1 },
+    { title: '制热', key: 'mode', value: 8 },
+    { title: '送风', key: 'mode', value: 4 },
+    { title: '除湿', key: 'mode', value: 2 },
+  ],
+  cacTemperature: Array.from({ length: 16 }, (_, i) => ({
+    title: i === 0 ? '不设置' : `${i + 15}℃`,
+    value: i === 0 ? i : i + 15,
+    key: 'targetTemperature',
+  })),
+  CacFaWindSpeed: [
+    { title: '不设置', key: 'windSpeed', value: 0 },
+    { title: '1档', key: 'windSpeed', value: 4 },
+    { title: '2档', key: 'windSpeed', value: 2 },
+    { title: '3档', key: 'windSpeed', value: 1 },
+  ],
+  fhTemperature: Array.from({ length: 87 }, (_, i) => ({
+    title: i === 0 ? '不设置' : `${i + 4}℃`,
+    value: i === 0 ? i : i + 4,
+    key: 'targetTemperature',
+  })),
 }
