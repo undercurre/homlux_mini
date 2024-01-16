@@ -13,8 +13,6 @@ ComponentWithComputed({
     dataInfo: {
       type: Object,
       observer(value) {
-        console.log('dataInfo,', value, typeof value)
-
         if (typeof value === 'object') {
           if (Object.keys(value).length == 0) {
             this.setData({
@@ -37,26 +35,6 @@ ComponentWithComputed({
         }
       },
     },
-    // value: {
-    //   type: Array,
-    //   value: [0],
-    // },
-    showCancel: {
-      type: Boolean,
-      value: true,
-    },
-    cancelText: {
-      type: String,
-      value: '取消',
-    },
-    showConfirm: {
-      type: Boolean,
-      value: true,
-    },
-    confirmText: {
-      type: String,
-      value: '确定',
-    },
   },
 
   /**
@@ -72,20 +50,6 @@ ComponentWithComputed({
         (item) => item.title,
       )
     },
-    // value(data) {
-    //   console.log('wwwwwww', data.dataInfo)
-
-    //   if (Object.keys(data.dataInfo).length == 0) return [0]
-    //   const tempValue = scenePropertyOptions[data.dataInfo.propertyKey as keyof typeof scenePropertyOptions].findIndex(
-    //     (item) => item.value === data.dataInfo.value,
-    //   )
-    //   console.log('wwwwwww222', tempValue)
-    //   if (tempValue < 0) {
-    //     return [0]
-    //   } else {
-    //     return [tempValue]
-    //   }
-    // },
   },
   /**
    * 组件的方法列表

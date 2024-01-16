@@ -1,0 +1,7 @@
+.secondary-popup-btn {
+  background-color: #ffffff;
+}
+
+.secondary-popup-btn:active {
+  background-color: #e7e8e9;
+}

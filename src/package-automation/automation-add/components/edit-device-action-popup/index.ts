@@ -2,6 +2,8 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { PRO_TYPE } from '../../../../config/index'
 import { AC_MODE, CAC_FA_WINDSPEED, CAC_MODE } from '../../../../config/index'
 import { transferWindSpeedProperty } from '../../../../utils/index'
+import { sendDevice } from '../../../../apis/index'
+import Toast from '@vant/weapp/toast/toast'
 
 ComponentWithComputed({
   options: {
@@ -235,7 +237,6 @@ ComponentWithComputed({
       })
     },
     onPropertyPopupConfirm(e: { detail: IAnyObject }) {
-      console.log(e, this.data.deviceActionInfo.sceneProperty)
       const sceneProperty = this.data.deviceActionInfo.sceneProperty
       if (e.detail.optionTitle === '不设置') {
         delete sceneProperty[e.detail.key]
@@ -266,6 +267,20 @@ ComponentWithComputed({
         showPropertyPopup: false,
       })
       console.log(this.data.deviceActionInfo.sceneProperty)
+    },
+    async handleTry() {
+      const res = await sendDevice({
+        deviceId: this.data.deviceActionInfo.deviceId,
+        deviceType: this.data.deviceActionInfo.deviceType,
+        proType: this.data.deviceActionInfo.proType,
+        property: this.data.deviceActionInfo.sceneProperty,
+      })
+
+      if (!res.success) {
+        Toast({ message: '控制失败', zIndex: 9999 })
+        return
+      }
+      Toast({ message: '控制成功', zIndex: 9999 })
     },
   },
 })
