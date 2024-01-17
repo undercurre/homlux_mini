@@ -1,12 +1,19 @@
 import dayjs from 'dayjs'
-import { aesUtil, delay, Logger, strUtil } from '../utils/index'
-import { isAndroid, isAndroid10Plus } from './system'
+import { aesUtil, delay, Logger, strUtil, isAndroid, isAndroid10Plus } from '../../utils/index'
 
 let _instance: WifiSocket | null = null
 
 let tcpClient: WechatMiniprogram.TCPSocket | null = null
 
 let udpClient: WechatMiniprogram.UDPSocket | undefined = undefined
+
+function decodeCmd(message: ArrayBuffer, key: string) {
+  const msg = strUtil.ab2hex(message)
+
+  const reply = aesUtil.decrypt(msg, key)
+
+  return JSON.parse(reply) as { topic: string; reqId: string; data: IAnyObject }
+}
 
 export class WifiSocket {
   isAccurateMatchWiFi = true // 是否精确匹配wifi
@@ -459,12 +466,4 @@ export class WifiSocket {
       this.onMessageHandlerList.push(handler)
     }
   }
-}
-
-function decodeCmd(message: ArrayBuffer, key: string) {
-  const msg = strUtil.ab2hex(message)
-
-  const reply = aesUtil.decrypt(msg, key)
-
-  return JSON.parse(reply) as { topic: string; reqId: string; data: IAnyObject }
 }

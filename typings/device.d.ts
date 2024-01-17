@@ -242,7 +242,7 @@ declare namespace Device {
     icon: string
     productId: string
     switchList: Device.ISwitch[]
-    client?: import('../src/utils/index').BleClient
+    client?: import('../src/package-distribution/common/bleProtocol').BleClient
     status: 'waiting' | 'zigbeeBind' | 'fail' | 'success' // 配网状态  zigbeeBind
     isChecked: boolean // 是否被选中
   }

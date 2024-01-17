@@ -1,10 +1,83 @@
-import { aesUtil, delay, strUtil, Logger, isAndroid } from './index'
+import { aesUtil, delay, strUtil, Logger, isAndroid } from '../../utils/index'
 
 // 定义了与BLE通路相关的所有事件/动作/命令的集合；其值域及表示意义为：对HOMLUX设备主控与app之间可能的各种操作的概括分类
 const CmdTypeMap = {
   DEVICE_CONTROL: 0x00, // 控制
   DEVICE_INFO_QUREY: 0x01, // 查询
 } as const
+
+export const bleUtil = {
+  transferBroadcastData(advertisData: ArrayBuffer) {
+    const msgStr = strUtil.ab2hex(advertisData)
+    const macStr = msgStr.substr(6, 16)
+
+    let arr = []
+
+    for (let i = 0; i < macStr.length; i = i + 2) {
+      arr.push(macStr.substr(i, 2).toUpperCase())
+    }
+
+    arr = arr.reverse()
+
+    const zigbeeMac = arr.join('')
+
+    return {
+      brand: msgStr.substr(0, 4),
+      isConfig: msgStr.substr(4, 2),
+      mac: zigbeeMac.substr(0, 6) + zigbeeMac.substr(-6, 6),
+      zigbeeMac,
+      proType: `0x${msgStr.slice(22, 24)}`,
+      bluetoothPid: `0x${msgStr.slice(24, 26)}`,
+      version: msgStr.slice(26, 28),
+      protocolVersion: msgStr.slice(-2),
+    }
+  },
+
+  getCheckNum(msgArr: Array<number>) {
+    let sum = 0
+
+    for (let i = 0; i < msgArr.length; i++) {
+      sum += msgArr[i]
+    }
+
+    const temp = sum.toString(2).padStart(8, '0').slice(-8) // 校验码仅取后2位16进制数字
+
+    sum = parseInt(this.exchange(temp), 2)
+    sum += 1
+
+    // 防止补码+1后，数据溢出
+    if (sum >= 256) {
+      sum = sum - 256
+    }
+
+    return sum
+  },
+
+  exchange(str: string) {
+    const arr = str.split('')
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i] === '0') {
+        arr[i] = '1'
+      } else {
+        arr[i] = '0'
+      }
+    }
+    str = arr.join('')
+    return str
+  },
+}
+
+const bleDeviceMap = {} as IAnyObject
+
+const deviceUuidMap = {} as IAnyObject
+
+wx.onBLEConnectionStateChange(function (res) {
+  bleDeviceMap[res.deviceId] = res.connected
+
+  const deviceId = res.deviceId
+
+  Logger.log(`【${deviceUuidMap[deviceId] || deviceId}】蓝牙已${res.connected ? '连接' : '断开'}`)
+})
 
 export class BleClient {
   mac: string
@@ -379,76 +452,3 @@ export class BleClient {
     return res
   }
 }
-
-export const bleUtil = {
-  transferBroadcastData(advertisData: ArrayBuffer) {
-    const msgStr = strUtil.ab2hex(advertisData)
-    const macStr = msgStr.substr(6, 16)
-
-    let arr = []
-
-    for (let i = 0; i < macStr.length; i = i + 2) {
-      arr.push(macStr.substr(i, 2).toUpperCase())
-    }
-
-    arr = arr.reverse()
-
-    const zigbeeMac = arr.join('')
-
-    return {
-      brand: msgStr.substr(0, 4),
-      isConfig: msgStr.substr(4, 2),
-      mac: zigbeeMac.substr(0, 6) + zigbeeMac.substr(-6, 6),
-      zigbeeMac,
-      proType: `0x${msgStr.slice(22, 24)}`,
-      bluetoothPid: `0x${msgStr.slice(24, 26)}`,
-      version: msgStr.slice(26, 28),
-      protocolVersion: msgStr.slice(-2),
-    }
-  },
-
-  getCheckNum(msgArr: Array<number>) {
-    let sum = 0
-
-    for (let i = 0; i < msgArr.length; i++) {
-      sum += msgArr[i]
-    }
-
-    const temp = sum.toString(2).padStart(8, '0').slice(-8) // 校验码仅取后2位16进制数字
-
-    sum = parseInt(this.exchange(temp), 2)
-    sum += 1
-
-    // 防止补码+1后，数据溢出
-    if (sum >= 256) {
-      sum = sum - 256
-    }
-
-    return sum
-  },
-
-  exchange(str: string) {
-    const arr = str.split('')
-    for (let i = 0; i < arr.length; i++) {
-      if (arr[i] === '0') {
-        arr[i] = '1'
-      } else {
-        arr[i] = '0'
-      }
-    }
-    str = arr.join('')
-    return str
-  },
-}
-
-export const bleDeviceMap = {} as IAnyObject
-
-const deviceUuidMap = {} as IAnyObject
-
-wx.onBLEConnectionStateChange(function (res) {
-  bleDeviceMap[res.deviceId] = res.connected
-
-  const deviceId = res.deviceId
-
-  Logger.log(`【${deviceUuidMap[deviceId] || deviceId}】蓝牙已${res.connected ? '连接' : '断开'}`)
-})
