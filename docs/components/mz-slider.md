@@ -24,6 +24,7 @@
 | key        | string  | false | 'common' | 区分不同的组件实例                   |
 | min        | number  | false | 0        | 最小值                               |
 | max        | number  | false | 100      | 最大值                               |
+| step       | number  | false | 1        | 拖动步长                             |
 | isBtnInset | boolean | false | true     | 按钮是否内嵌在滑条内部（不超出两端） |
 | showToast  | boolean | false | false    | 拖动按钮时，是否显示内置的 toast     |
 
