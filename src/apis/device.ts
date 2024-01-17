@@ -215,12 +215,20 @@ export async function sendDevice(
   let promise
 
   switch (data.deviceType) {
-    case 2:
+    case 2: {
+      const method =
+        {
+          [PRO_TYPE.light]: 'lightControlNew',
+          [PRO_TYPE.gateway]: 'panelSingleControlNew',
+          [PRO_TYPE.switch]: 'panelSingleControlNew',
+          [PRO_TYPE.centralAirConditioning]: 'airControl',
+        }[data.proType] ?? ''
+
       params = {
         topic: '/subdevice/control',
         deviceId: data.gatewayId as string,
         deviceType: data.deviceType,
-        method: data.proType === PRO_TYPE.light ? 'lightControlNew' : 'panelSingleControlNew',
+        method,
         inputData: [
           {
             devId: data.deviceId,
@@ -231,6 +239,7 @@ export async function sendDevice(
       }
       promise = controlDevice(params, option)
       break
+    }
 
     case 3: {
       const method =

@@ -1,4 +1,4 @@
-var btn = require('../../../../../commons/wxs/btn.wxs')
+var btn = require('../../../../commons/wxs/btn.wxs')
 
 var isPressed = false // 当前是否点击状态
 var timerId // 计时器

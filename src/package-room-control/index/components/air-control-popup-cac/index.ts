@@ -1,9 +1,8 @@
-// src\package-room-control\index\components\air-control-popup\index.ts
+// src\package-room-control\index\components\air-control-popup-cac\index.ts
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import { sendDevice } from '../../../../apis/index'
-import { AC_MODE } from '../../../../config/index'
-import { transferWindSpeedProperty } from '../../../../utils/index'
+import { CAC_MODE, CAC_FA_WINDSPEED, proName } from '../../../../config/index'
 
 ComponentWithComputed({
   options: {
@@ -51,52 +50,48 @@ ComponentWithComputed({
     pickerType: '',
     pickerTitleMap: {
       mode: '模式',
-      wind_speed: '风速',
+      windSpeed: '风速',
     } as Record<string, string>,
-    pickerList: {
-      mode: Object.keys(AC_MODE).map((key) => ({ text: AC_MODE[key], value: key })),
-      wind_speed: [
+    cacPickerList: {
+      mode: Object.keys(CAC_MODE).map((key) => ({ text: CAC_MODE[key], value: key.split('_')[1] })),
+      windSpeed: [
         {
           text: '1档',
-          value: 40,
+          value: 4,
         },
         {
           text: '2档',
-          value: 60,
+          value: 2,
         },
         {
           text: '3档',
-          value: 100,
-        },
-        {
-          text: '自动',
-          value: 102,
+          value: 1,
         },
       ],
     } as Record<string, IAnyObject[]>,
-    step: 0.5,
-    minTemp: 17,
+    step: 1,
+    minTemp: 16,
     maxTemp: 30,
   },
 
   computed: {
     temperature(data) {
-      const { temperature, small_temperature } = data.propView
-      return temperature + small_temperature
+      const { currentTemperature, targetTemperature } = data.propView
+      return targetTemperature ?? currentTemperature
     },
     disabledMinus(data) {
-      const { minTemp, temperature } = data
-      const { power, mode } = data.propView
-      return temperature <= minTemp || power !== 1 || mode === 'fan'
+      const { minTemp } = data
+      const { targetTemperature, power, mode } = data.propView
+      return targetTemperature <= minTemp || power !== 1 || mode === '4'
     },
     disabledPlus(data) {
       const { maxTemp } = data
-      const { temperature, power, mode } = data.propView
-      return temperature >= maxTemp || power !== 1 || mode === 'fan'
+      const { targetTemperature, power, mode } = data.propView
+      return targetTemperature >= maxTemp || power !== 1 || mode === '4'
     },
     disabledSlider(data) {
       const { power, mode } = data.propView
-      return power !== 1 || mode === 'fan'
+      return power !== 1 || mode === '4'
     },
     disabledMode(data) {
       const { power } = data.propView
@@ -104,14 +99,14 @@ ComponentWithComputed({
     },
     disabledWindSpeed(data) {
       const { power, mode } = data.propView
-      return power !== 1 || mode === 'dry'
+      return power !== 1 || mode === '8'
     },
     showIndoorTemp(data) {
-      const { indoor_temperature } = data.propView
-      if (!indoor_temperature || indoor_temperature === 255) {
+      const { currentTemperature } = data.propView
+      if (!currentTemperature || currentTemperature === 255) {
         return null
       }
-      return indoor_temperature
+      return currentTemperature
     },
     pickerTitle(data) {
       const { pickerTitleMap, pickerType } = data
@@ -121,19 +116,19 @@ ComponentWithComputed({
       return pickerTitleMap[pickerType]
     },
     pickerColumns(data) {
-      const { pickerList, pickerType } = data
+      const { cacPickerList, pickerType } = data
       if (!pickerType) {
         return []
       }
-      return pickerList[pickerType]
+      return cacPickerList[pickerType]
     },
     currentMode(data) {
       const { mode = '' } = data.propView
-      return AC_MODE[mode] ?? ''
+      return CAC_MODE[`mode_${mode}`] ?? ''
     },
     currentWindLevel(data) {
-      const { wind_speed = 1 } = data.propView
-      return transferWindSpeedProperty(wind_speed) ?? ''
+      const { windSpeed = 1 } = data.propView
+      return CAC_FA_WINDSPEED[`windSpeed_${windSpeed}`] ?? ''
     },
   },
 
@@ -160,32 +155,20 @@ ComponentWithComputed({
         if (this.data.disabledMinus) {
           return
         }
-        key = 'temperature'
+        key = 'targetTemperature'
         setValue = this.data.temperature - this.data.step
       } else if (key === 'plus') {
         if (this.data.disabledPlus) {
           return
         }
-        key = 'temperature'
+        key = 'targetTemperature'
         setValue = this.data.temperature + this.data.step
       }
 
-      // 包括温度加减
-      if (key === 'temperature') {
-        const intTemp = Math.floor(setValue as number)
-        const floatTemp = (setValue as number) - intTemp
-        property[key] = intTemp
-        property['small_temperature'] = floatTemp
-        this.setData({
-          'propView.temperature': intTemp,
-          'propView.small_temperature': floatTemp,
-        })
-      } else {
-        property[key] = setValue
-        this.setData({
-          [`propView.${key}`]: setValue,
-        })
-      }
+      property[key] = setValue
+      this.setData({
+        [`propView.${key}`]: setValue,
+      })
 
       // 设置后N秒内屏蔽上报
       if (this.data._controlTimer) {
@@ -201,6 +184,8 @@ ComponentWithComputed({
         deviceId: this.data.deviceInfo.deviceId,
         deviceType: this.data.deviceInfo.deviceType,
         proType: this.data.deviceInfo.proType,
+        modelName: proName[this.data.deviceInfo.proType],
+        gatewayId: this.data.deviceInfo.gatewayId,
         property,
       })
 
@@ -229,17 +214,12 @@ ComponentWithComputed({
 
     showPicker(e: WechatMiniprogram.CustomEvent) {
       const key = e.currentTarget.dataset.key as string
-      if (key === 'wind_speed' && this.data.disabledWindSpeed) {
+      if (key === 'windSpeed' && this.data.disabledWindSpeed) {
         return
       }
-      const pickerValue = this.data.deviceInfo[key]
-      const pickerText = key === 'wind_speed' ? this.data.currentWindLevel : this.data.currentMode
-      const pickerIndex = this.data.pickerList[key].findIndex((p) => p.text === pickerText)
       this.setData({
         isShowPicker: true,
         pickerType: key,
-        pickerIndex,
-        pickerValue,
       })
     },
 
