@@ -35,7 +35,7 @@ ComponentWithComputed({
       {
         icon: `${productImgDir}/sensor.png`,
         name: '传感器',
-        path: '/package-distribution/choose-sensor/index',
+        path: '/package-distribution/choose-model/index?proType=0xBC',
       },
       {
         icon: `${productImgDir}/0x14.png`,
