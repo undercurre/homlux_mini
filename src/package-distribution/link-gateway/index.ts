@@ -107,12 +107,6 @@ ComponentWithComputed({
 
       this.initWifi()
     },
-    attached() {
-      // 调用时机不能早于 attached
-      this.setUpdatePerformanceListener({ withDataPaths: true }, (res) => {
-        Logger.log('setUpdatePerformanceListener', res)
-      })
-    },
     detached() {
       this.data._socket?.close()
 
