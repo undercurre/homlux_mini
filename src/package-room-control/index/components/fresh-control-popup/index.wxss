@@ -1,0 +1,19 @@
+.tab-title {
+  color: #27282a;
+  font-weight: 600;
+}
+
+.slider-button {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 10rpx;
+  margin-right: -2rpx;
+  background-color: #ffffff;
+}
+
+.slider-dot {
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background-color: #e7e7e7;
+}

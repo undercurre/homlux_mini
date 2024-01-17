@@ -8,6 +8,8 @@
     "bath-control-popup": "/components/bath-control-popup/index",
     "dryer-control-popup": "/components/dryer-control-popup/index",
     "air-control-popup": "./components/air-control-popup/index",
+    "fresh-control-popup": "./components/fresh-control-popup/index",
+    "heat-control-popup": "./components/heat-control-popup/index",
     "air-control-popup-cac": "./components/air-control-popup-cac/index",
     "device-auth-dialog": "/components/device-auth-dialog/index",
     "batch-edit": "./components/batch-edit/index",
