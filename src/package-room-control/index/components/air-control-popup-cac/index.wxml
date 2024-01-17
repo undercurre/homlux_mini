@@ -86,7 +86,7 @@
           data-min="{{minTemp}}"
           data-max="{{maxTemp}}"
           active-color="#488FFF"
-          data-key="temperature"
+          data-key="targetTemperature"
           use-button-slot
         >
           <view
@@ -116,7 +116,7 @@
           text="{{currentWindLevel || '风速'}}"
           textColor="#a2a2a2"
           bind:touchstart="showPicker"
-          data-key="wind_speed"
+          data-key="windSpeed"
         ></drop-button>
       </view>
     </view>

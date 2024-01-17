@@ -1,3 +1,4 @@
+// src\components\bath-control-popup\index.ts
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import { sendDevice } from '../../apis/index'
