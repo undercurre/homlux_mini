@@ -76,7 +76,7 @@
         ></icon-button>
       </view>
 
-      <view class="py-64rpx">
+      <view class="py-64rpx px-8rpx">
         <mz-slider
           disabled="{{disabledSlider}}"
           bind:slideEnd="handleBtnTap"
@@ -120,6 +120,8 @@
         ></drop-button>
       </view>
     </view>
+
+    <view class="h-96rpx"></view>
   </view>
 </van-popup>
 

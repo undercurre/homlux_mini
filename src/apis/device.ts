@@ -222,6 +222,8 @@ export async function sendDevice(
           [PRO_TYPE.gateway]: 'panelSingleControlNew',
           [PRO_TYPE.switch]: 'panelSingleControlNew',
           [PRO_TYPE.centralAirConditioning]: 'airControl',
+          [PRO_TYPE.floorHeating]: 'airControl',
+          [PRO_TYPE.freshAir]: 'airControl',
         }[data.proType] ?? ''
 
       params = {

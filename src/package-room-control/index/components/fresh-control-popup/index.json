@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "styleIsolation": "apply-shared",
+  "usingComponents": {
+    "mz-slider": "/components/mz-slider/index",
+    "icon-button": "../../components/icon-button/index"
+  }
+}
