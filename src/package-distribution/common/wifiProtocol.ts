@@ -288,7 +288,7 @@ export class WifiSocket {
     tcpClient?.onError((res) => {
       Logger.log('tcpClient.onError', res)
 
-      // tcp连接被设备端主动关闭的情况处理
+      // tcp连接被设备端主动关闭的情况处理，网关端检测到tcp连接超过50s左右没有消息发送会在自动关闭连接
       if (res.errMsg.includes('close') && this.deviceInfo.isConnectTcp) {
         this.deviceInfo.isConnectTcp = false
         tcpClient?.close()
@@ -299,10 +299,6 @@ export class WifiSocket {
       Logger.log('tcpClient.onClose', res)
       this.deviceInfo.isConnectTcp = false
     })
-  }
-
-  closeTcp() {
-    tcpClient?.close()
   }
 
   initUdpSocket() {
