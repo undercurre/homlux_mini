@@ -87,6 +87,7 @@
           data-max="{{maxTemp}}"
           active-color="#488FFF"
           data-key="temperature"
+          data-step="{{0.5}}"
           use-button-slot
         >
           <view

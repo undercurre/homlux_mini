@@ -15,11 +15,6 @@ ComponentWithComputed({
     useButtonSlot: Boolean,
     activeColor: String,
     inactiveColor: String,
-    // TODO 步长属性未实现
-    step: {
-      type: Number,
-      value: 1,
-    },
     value: {
       type: Number,
       value: 1,

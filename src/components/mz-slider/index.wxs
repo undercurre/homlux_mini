@@ -21,13 +21,16 @@ var buttonInfo = {}
 var sliderToast = {}
 var toastActived = {}
 var isMoving = {} // 是否处理拖动中
+var step = {} // 步长
 
 /**
  * 滑条的最小值最大值，默认 0~100
- * 按钮默认内嵌在滑条容器内
  */
 var min = {}
 var max = {}
+/**
+ * 按钮默认内嵌在滑条容器内
+ */
 var isBtnInset = {}
 
 // 处理属性初始化，以及变更
@@ -61,7 +64,6 @@ function onTouchstart(event, ownerInstance) {
   var barWidth = touch.clientX - sliderInfo[key].left
   isMoving[key] = true
   changeBarStyle(ownerInstance, barWidth)
-  updateValue(barWidth)
   ownerInstance.callMethod('touchstart', { value: setValue[key] })
 }
 
@@ -72,7 +74,6 @@ function onTouchmove(event, ownerInstance) {
   var touch = event.touches[0] || event.changedTouches[0]
   var barWidth = touch.clientX - sliderInfo[key].left
 
-  updateValue(barWidth)
   changeBarStyle(ownerInstance, barWidth)
 
   // 气泡提示
@@ -139,6 +140,7 @@ function init(_inst) {
 
   dataset.min === undefined ? (min[key] = 0) : (min[key] = dataset.min)
   dataset.max === undefined ? (max[key] = 100) : (max[key] = dataset.max)
+  dataset.step === undefined ? (step[key] = 1) : (step[key] = dataset.step)
   dataset.isBtnInset === undefined ? (isBtnInset[key] = true) : (isBtnInset[key] = dataset.isBtnInset)
 
   sliderBtn[key] = _inst.selectComponent('.button')
@@ -161,22 +163,32 @@ function changeBarStyle(_inst, _width) {
   var maxWidth = isBtnInset[key] ? sliderInfo[key].width - buttonInfo[key].width / 2 : sliderInfo[key].width
   var widthInRange = calcDragDis(_width, minWidth, maxWidth)
   var sliderBarWidth = isBtnInset[key] ? widthInRange + buttonInfo[key].width / 2 : widthInRange
+  var count = max[key] - min[key] // 被等分的总份数
+  var chunkWidth = (maxWidth - minWidth) / count // 每份的长度
+  var countActive = isBtnInset[key]
+    ? Math.round((sliderBarWidth - buttonInfo[key].width) / chunkWidth)
+    : Math.round(sliderBarWidth / chunkWidth) // 选中的份数
 
-  // console.log('sliderInfo[key].width', JSON.stringify(sliderInfo[key].width), key)
-  console.log('[sliderBarWidth]', sliderBarWidth)
-
-  // 已激活的滑条宽度处理
-  sliderBar[key].setStyle({
-    width: sliderBarWidth + 'px',
-  })
-
-  if (!isBtnInset[key]) {
-    // 滑动按钮位置处理
-    var btnX = widthInRange - buttonInfo[key].width / 2
+  // 已激活的滑条宽度及滑动按钮位置处理
+  if (isBtnInset[key]) {
+    var fixedSliderBarWidth = countActive * chunkWidth + buttonInfo[key].width
+    // console.log('[sliderBarWidth]', sliderBarWidth, 'count', count, 'countActive', countActive)
+    sliderBar[key].setStyle({
+      width: fixedSliderBarWidth + 'px',
+    })
+  } else {
+    var fixedSliderBarWidth = countActive * chunkWidth
+    sliderBar[key].setStyle({
+      width: fixedSliderBarWidth + 'px',
+    })
     sliderBtn[key].setStyle({
-      transform: 'translateX(' + btnX + 'px)',
+      transform: 'translateX(' + (countActive * chunkWidth - buttonInfo[key].width / 2) + 'px)',
     })
   }
+
+  // 宽度转为设置值
+  // ! 在此处处理 min~max 值的传化，组件中的事件处理则不必再逐一处理
+  setValue[key] = countActive + min[key]
 }
 
 /**
@@ -194,14 +206,6 @@ function changeToastStyle(_width, _active = true) {
     transition: FADE_TRANSITION,
     transform: 'translateX(' + toastLeft + 'px)',
   })
-}
-
-// 宽度转为设置值
-// ! 在此处处理 min~max 值的传化，组件中的事件处理则不必再逐一处理
-function updateValue(_width) {
-  setValue[key] = Math.round(
-    (calcDragDis(_width, 0, sliderInfo[key].width) / sliderInfo[key].width) * (max[key] - min[key]) + min[key],
-  )
 }
 
 // 计算范围约束值
