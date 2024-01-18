@@ -217,12 +217,18 @@ export function transferWindSpeedProperty(windSpeed: number) {
     console.warn('转换风速描述失败，属性值为空')
     return ''
   }
-  if (windSpeed <= 40) {
+  if (windSpeed < 20) {
     return '1档'
-  } else if (windSpeed <= 60) {
+  } else if (windSpeed < 40) {
     return '2档'
-  } else if (windSpeed <= 100) {
+  } else if (windSpeed < 60) {
     return '3档'
+  } else if (windSpeed < 80) {
+    return '4档'
+  } else if (windSpeed < 100) {
+    return '5档'
+  } else if (windSpeed === 100) {
+    return '6档'
   } else if (windSpeed <= 102) {
     return '自动'
   }

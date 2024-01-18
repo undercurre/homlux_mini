@@ -58,14 +58,26 @@ ComponentWithComputed({
       wind_speed: [
         {
           text: '1档',
-          value: 40,
+          value: 1,
         },
         {
           text: '2档',
-          value: 60,
+          value: 20,
         },
         {
           text: '3档',
+          value: 40,
+        },
+        {
+          text: '4档',
+          value: 60,
+        },
+        {
+          text: '5档',
+          value: 80,
+        },
+        {
+          text: '6档',
           value: 100,
         },
         {
@@ -81,7 +93,7 @@ ComponentWithComputed({
 
   computed: {
     temperature(data) {
-      const { temperature, small_temperature } = data.propView
+      const { temperature = data.minTemp, small_temperature = 0 } = data.propView
       return temperature + small_temperature
     },
     disabledMinus(data) {
