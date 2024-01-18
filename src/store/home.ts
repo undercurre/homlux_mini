@@ -135,7 +135,7 @@ export const homeStore = observable({
       runInAction(() => {
         homeStore.currentHomeDetail = Object.assign({ houseId: this.currentHomeId }, res.result)
       })
-      // await deviceStore.updateAllRoomDeviceList(undefined, options) // 重复加载
+
       await roomStore.updateRoomList(options)
       this.saveHomeDate()
       return
@@ -328,7 +328,8 @@ export const homeStore = observable({
    * 更新homos通信key，由于无法host端无法通知客户端key是否过期，只能每次请求云端刷新
    */
   async initLocalKey() {
-    if (isConnect()) {
+    // key为空时才查询云端接口，避免反复查询
+    if (isConnect() && !this.key) {
       await this.updateLocalKey()
     }
 
@@ -345,7 +346,7 @@ export const homeStore = observable({
     if (res.success) {
       this.key = res.result
       // key的有效期是30天，设置缓存过期时间25天
-      storage.set('localKey', this.key, Date.now() + 1000 * 60 * 60 * 24 * 25)
+      storage.set('localKey', this.key, Date.now() + 1000 * 60 * 60 * 24 * 20)
     }
   },
 
