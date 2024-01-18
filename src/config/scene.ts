@@ -88,9 +88,12 @@ export const scenePropertyOptions = {
   acWindSpeed: [
     { title: '不设置', key: 'wind_speed', value: 0 },
     { title: '自动', key: 'wind_speed', value: 102 },
-    { title: '1档', key: 'wind_speed', value: 40 },
-    { title: '2档', key: 'wind_speed', value: 60 },
-    { title: '3档', key: 'wind_speed', value: 80 },
+    { title: '1档', key: 'wind_speed', value: 1 },
+    { title: '2档', key: 'wind_speed', value: 20 },
+    { title: '3档', key: 'wind_speed', value: 40 },
+    { title: '4档', key: 'wind_speed', value: 60 },
+    { title: '5档', key: 'wind_speed', value: 80 },
+    { title: '6档', key: 'wind_speed', value: 100 },
   ],
   cacMode: [
     { title: '不设置', key: 'mode', value: 0 },
