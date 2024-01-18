@@ -183,21 +183,13 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
       deviceName: '浴霸',
       devicePic: '/assets/img/remoter/bathHeater.png',
       joystick: {
-        up: {
-          key: 'BATH_BRIGHT_PLUS',
-          icon: '/package-remoter/assets/bright1.png',
-          iconActive: '/package-remoter/assets/bright0.png',
-        },
+        up: {},
         right: {
           key: 'BATH_TEMPERATURE_ADD',
           icon: '/package-remoter/assets/temp3.png',
           iconActive: '/package-remoter/assets/temp2.png',
         },
-        down: {
-          key: 'BATH_BRIGHT_MINUS',
-          icon: '/package-remoter/assets/bright3.png',
-          iconActive: '/package-remoter/assets/bright2.png',
-        },
+        down: {},
         left: {
           key: 'BATH_TEMPERATURE_SUB',
           icon: '/package-remoter/assets/temp1.png',
@@ -375,21 +367,13 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
       deviceName: '浴霸',
       devicePic: '/assets/img/remoter/bathHeater.png',
       joystick: {
-        up: {
-          key: 'BATH_BRIGHT_PLUS',
-          icon: '/package-remoter/assets/bright1.png',
-          iconActive: '/package-remoter/assets/bright0.png',
-        },
+        up: {},
         right: {
           key: 'BATH_TEMPERATURE_ADD',
           icon: '/package-remoter/assets/temp3.png',
           iconActive: '/package-remoter/assets/temp2.png',
         },
-        down: {
-          key: 'BATH_BRIGHT_MINUS',
-          icon: '/package-remoter/assets/bright3.png',
-          iconActive: '/package-remoter/assets/bright2.png',
-        },
+        down: {},
         left: {
           key: 'BATH_TEMPERATURE_SUB',
           icon: '/package-remoter/assets/temp1.png',
@@ -781,35 +765,18 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
     '03': {
       deviceName: '凉霸',
       devicePic: '/assets/img/remoter/bathHeater.png',
-      joystick: {
-        up: {
-          key: 'BATH_BRIGHT_PLUS',
-          icon: '/package-remoter/assets/bright1.png',
-          iconActive: '/package-remoter/assets/bright0.png',
-        },
-        right: {},
-        down: {
-          key: 'BATH_BRIGHT_MINUS',
-          icon: '/package-remoter/assets/bright3.png',
-          iconActive: '/package-remoter/assets/bright2.png',
-        },
-        left: {},
-        middle: {
-          key: 'FACTORY',
-        },
-      },
       mList: [
         {
           key: 'KITCHEN_WIND_STRONG',
           icon: '/package-remoter/assets/scene91.png',
           iconActive: '/package-remoter/assets/scene90.png',
-          name: '强风',
+          name: '强吹风',
         },
         {
           key: 'KITCHEN_WIND_SOFT',
           icon: '/package-remoter/assets/scene91.png',
           iconActive: '/package-remoter/assets/scene90.png',
-          name: '弱风',
+          name: '吹风',
         },
         {
           key: 'BATH_VENTILATE',
@@ -848,16 +815,8 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
           name: '待机',
         },
         {
-          key: 'BATH_WIND',
-          name: '吹风',
-        },
-        {
           key: 'BATH_VENTILATE',
           name: '换气',
-        },
-        {
-          key: 'BATH_DRY',
-          name: '干燥',
         },
       ],
     },
@@ -887,13 +846,13 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
           key: 'KITCHEN_WIND_STRONG',
           icon: '/package-remoter/assets/scene91.png',
           iconActive: '/package-remoter/assets/scene90.png',
-          name: '强风',
+          name: '强吹风',
         },
         {
           key: 'KITCHEN_WIND_SOFT',
           icon: '/package-remoter/assets/scene91.png',
           iconActive: '/package-remoter/assets/scene90.png',
-          name: '弱风',
+          name: '吹风',
         },
         {
           key: 'BATH_VENTILATE',
@@ -932,16 +891,8 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
           name: '待机',
         },
         {
-          key: 'BATH_WIND',
-          name: '吹风',
-        },
-        {
           key: 'BATH_VENTILATE',
           name: '换气',
-        },
-        {
-          key: 'BATH_DRY',
-          name: '干燥',
         },
       ],
     },
@@ -987,8 +938,8 @@ export const CMD: Record<string, number> = {
   BATH_WARM_UP: 0x8c, // 取暖
 
   // 凉霸（其余指令同浴霸）
-  KITCHEN_WIND_STRONG: 0x02, // 强风
-  KITCHEN_WIND_SOFT: 0x03, // 弱风
+  KITCHEN_WIND_STRONG: 0x02, // 强吹风
+  KITCHEN_WIND_SOFT: 0x03, // 吹风（弱风）
 
   // 厂测指令（调试用）
   FACTORY: 0x13,
