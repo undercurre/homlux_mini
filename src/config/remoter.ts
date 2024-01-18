@@ -57,62 +57,16 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
     '02': {
       deviceName: '风扇灯',
       devicePic: '/assets/img/remoter/fanLight.png',
-      joystick: {
-        up: {
-          key: 'LIGHT_BRIGHT_PLUS',
-          icon: '/package-remoter/assets/bright1.png',
-          iconActive: '/package-remoter/assets/bright0.png',
-        },
-        right: {
-          key: 'LIGHT_COLOR_TEMP_PLUS',
-          icon: '/package-remoter/assets/light2.png',
-          iconActive: '/package-remoter/assets/light0.png',
-        },
-        down: {
-          key: 'LIGHT_BRIGHT_MINUS',
-          icon: '/package-remoter/assets/bright3.png',
-          iconActive: '/package-remoter/assets/bright2.png',
-        },
-        left: {
-          key: 'LIGHT_COLOR_TEMP_MINUS',
-          icon: '/package-remoter/assets/light1.png',
-          iconActive: '/package-remoter/assets/light0.png',
-        },
-      },
-      mList: [
+      actions: [
         {
-          icon: '/package-remoter/assets/scene41.png',
-          iconActive: '/package-remoter/assets/scene40.png',
-          name: '风速减',
-        },
-        {
-          icon: '/package-remoter/assets/scene51.png',
-          iconActive: '/package-remoter/assets/scene50.png',
-          name: '风速加',
-        },
-        {
-          icon: '/package-remoter/assets/scene61.png',
-          iconActive: '/package-remoter/assets/scene60.png',
-          name: '定时',
-        },
-        {
-          icon: '/package-remoter/assets/scene71.png',
-          iconActive: '/package-remoter/assets/scene70.png',
-          name: '负离子',
+          key: 'LIGHT_NIGHT_LAMP',
+          name: '小夜灯',
         },
       ],
-      bList: [
-        {
-          icon: '/package-remoter/assets/power1.png',
-          iconActive: '/package-remoter/assets/power0.png',
-          name: '照明',
-        },
-        {
-          icon: '/package-remoter/assets/power1.png',
-          iconActive: '/package-remoter/assets/power0.png',
-          name: '风扇',
-        },
-      ],
+    },
+    '03': {
+      deviceName: '风扇灯',
+      devicePic: '/assets/img/remoter/fanLight.png',
       actions: [
         {
           key: 'LIGHT_NIGHT_LAMP',

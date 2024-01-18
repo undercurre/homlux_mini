@@ -18,6 +18,34 @@ const MOCK_DEVICES = [
     DISCOVERED: 0,
   },
   {
+    dragId: '112233445569',
+    orderNum: 1,
+    deviceId: '0',
+    addr: '112233445569',
+    devicePic: '/assets/img/remoter/bathHeater.png',
+    deviceName: '风扇灯Mock',
+    deviceType: '13',
+    deviceModel: '02',
+    saved: true,
+    actionStatus: true,
+    defaultAction: 0,
+    DISCOVERED: 0,
+  },
+  {
+    dragId: '112233445570',
+    orderNum: 1,
+    deviceId: '0',
+    addr: '112233445570',
+    devicePic: '/assets/img/remoter/bathHeater.png',
+    deviceName: '风扇灯基础款Mock',
+    deviceType: '13',
+    deviceModel: '03',
+    saved: true,
+    actionStatus: true,
+    defaultAction: 0,
+    DISCOVERED: 0,
+  },
+  {
     dragId: '112233445566',
     orderNum: 1,
     deviceId: '0',
@@ -188,6 +216,15 @@ export const remoterStore = observable({
   //   return deviceType === '13' && deviceModel === '02'
   // },
 
+  // 是否有调色调亮度功能
+  get hasColorBright(): boolean {
+    const { deviceModel, deviceType } = this.curRemoter
+    if (!deviceModel || !deviceType) {
+      return false
+    }
+    return deviceType === '13' && (deviceModel === '01' || deviceModel === '02')
+  },
+
   // 从本地缓存初始化/重置【我的设备】列表
   retrieveRmStore() {
     const defaultList = isDevMode() ? MOCK_DEVICES : [] // 是否开启模拟数据，用于模型器样式调整
@@ -296,6 +333,6 @@ export const remoterStore = observable({
 
 export const remoterBinding = {
   store: remoterStore,
-  fields: ['hasRemoter', 'remoterViewList', 'curRemoter', 'remoterList'],
+  fields: ['hasRemoter', 'hasColorBright', 'remoterViewList', 'curRemoter', 'remoterList'],
   actions: [],
 }

@@ -41,7 +41,10 @@
       <text wx:if="{{deviceInfo.DELAY_OFF}}">离关风扇还有：{{deviceInfo.DELAY_OFF}}分钟</text>
     </view>
     <!-- 亮度控制 -->
-    <view class="slider-box">
+    <view
+      class="slider-box"
+      wx:if="{{hasColorBright}}"
+    >
       <image
         src="../assets/bright.png"
         class="w-48rpx h-48rpx mr-32rpx"
@@ -70,7 +73,10 @@
     </view>
 
     <!-- 色温控制 -->
-    <view class="slider-box">
+    <view
+      class="slider-box"
+      wx:if="{{hasColorBright}}"
+    >
       <image
         src="../assets/colorTemp.png"
         class="w-48rpx h-48rpx mr-32rpx"
