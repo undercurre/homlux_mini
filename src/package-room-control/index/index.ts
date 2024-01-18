@@ -483,11 +483,8 @@ ComponentWithComputed({
     onPageScroll(e: { detail: { scrollTop: number } }) {
       this.data.scrollTop = e?.detail?.scrollTop || 0
     },
-
-    // onUnload() {},
-    onHide() {
-      console.log('onHide')
-
+    clear() {
+      console.log('[room onHide/onUnload] clear()')
       // 解除监听
       emitter.off('wsReceive')
       emitter.off('deviceListRetrieve')
@@ -501,6 +498,13 @@ ComponentWithComputed({
         clearTimeout(this.data._timeId)
         this.data._timeId = null
       }
+    },
+
+    onUnload() {
+      this.clear()
+    },
+    onHide() {
+      this.clear()
     },
     handleShowDeviceOffline(e: { detail: DeviceCard }) {
       this.setData({
