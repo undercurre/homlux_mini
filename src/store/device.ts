@@ -102,7 +102,8 @@ export const deviceStore = observable({
     const list = [] as Device.DeviceItem[]
     this.allRoomDeviceList.forEach((device) => {
       // 过滤属性数据不完整的数据
-      if (!device.mzgdPropertyDTOList) {
+      // WIFI设备可以不过滤此条件
+      if (!device.mzgdPropertyDTOList && device.deviceType !== 3) {
         return
       }
       // 开关面板需要前端拆分处理
@@ -120,17 +121,19 @@ export const deviceStore = observable({
           })
         })
       }
-      // 包括 PRO_TYPE.light PRO_TYPE.sensor在内，所有非网关、可显示的设备都用这种方案插值
+      // 所有非网关、可显示的设备都用这种方案插值
       else if (device.proType !== PRO_TYPE.gateway) {
         const modelName = getModelName(device.proType, device.productId)
+        const property = device.mzgdPropertyDTOList
+          ? device.mzgdPropertyDTOList[modelName]
+          : ({} as Device.mzgdPropertyDTO)
+        const onLineStatus = device.mzgdPropertyDTOList ? device.onLineStatus : 0 // 如果没有设备属性，则直接置为0 // ! WIFI设备，较低机率出现设备在线但属性为空的情况
         list.push({
           ...device,
+          onLineStatus,
           uniId: device.deviceId,
-          property: device.mzgdPropertyDTOList[modelName],
-          mzgdPropertyDTOList: {
-            [modelName]: device.mzgdPropertyDTOList[modelName],
-          },
-          // orderNum: device.deviceType === 4 ? -1 : device.orderNum, // 灯组强制排前面
+          property,
+          mzgdPropertyDTOList: { [modelName]: property },
         })
       }
     })
