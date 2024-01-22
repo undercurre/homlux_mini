@@ -45,6 +45,10 @@ ComponentWithComputed({
       const { deviceModel, deviceType } = data.curRemoter ?? {}
       console.log('[colorTempFormatter]', deviceModel, deviceType)
 
+      if (!data.hasColorBright) {
+        return
+      }
+
       // 未读取到型号时直接返回
       if (!deviceModel || !deviceType) {
         return (value: number) => {
@@ -69,11 +73,17 @@ ComponentWithComputed({
     },
     // 亮度百分比显示
     brightView(data) {
+      if (!data.hasColorBright) {
+        return
+      }
       const { LIGHT_BRIGHT = 0 } = data.deviceInfo
       return Math.round((LIGHT_BRIGHT / 255) * 100)
     },
     // 色温百分比显示
     colorTempView(data) {
+      if (!data.hasColorBright) {
+        return
+      }
       const { LIGHT_COLOR_TEMP = 0 } = data.deviceInfo
       return Math.round((LIGHT_COLOR_TEMP / 255) * 100)
     },
