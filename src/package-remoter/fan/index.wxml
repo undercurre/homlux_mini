@@ -106,8 +106,8 @@
 
     <view class="flex flex-row justify-evenly flex-wrap mt-36rpx w-full">
       <mz-button
-        icon="/package-remoter/assets/scene21.png"
-        iconActive="/package-remoter/assets/scene20.png"
+        icon="/package-remoter/assets/scene91.png"
+        iconActive="/package-remoter/assets/scene90.png"
         bind:btnTouch="showActionSheet"
         class="mt-64rpx"
         textWidth="128rpx"
@@ -129,8 +129,8 @@
         disabled="{{!deviceInfo.FAN_SWITCH}}"
       ></mz-button>
       <mz-button
-        icon="/package-remoter/assets/scene31.png"
-        iconActive="/package-remoter/assets/scene30.png"
+        icon="/package-remoter/assets/sceneA1.png"
+        iconActive="/package-remoter/assets/sceneA0.png"
         bind:btnTouch="toSendCmd"
         class="mt-64rpx"
         textWidth="128rpx"
@@ -140,8 +140,8 @@
         data-key="FAN_NEGATIVE"
       ></mz-button>
       <mz-button
-        icon="/package-remoter/assets/scene31.png"
-        iconActive="/package-remoter/assets/scene30.png"
+        icon="/package-remoter/assets/scene71.png"
+        iconActive="/package-remoter/assets/scene70.png"
         bind:btnTouch="toSendCmd"
         class="mt-64rpx"
         textWidth="128rpx"
