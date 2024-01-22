@@ -63,7 +63,7 @@ ComponentWithComputed({
         .exec((res) => {
           if (res[0] && res[0].height) {
             this.setData({
-              listHeight: res[0].height - 20,
+              listHeight: res[0].height,
             })
           }
         })
