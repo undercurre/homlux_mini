@@ -84,3 +84,9 @@ export const SENSOR_TYPE = {
   doorsensor: 'midea.magnet.001.201',
   freepad: 'midea.freepad.001.201',
 } as const
+
+// productId常量集合
+export const PRODUCT_ID = {
+  screen_4: 'zk527b6c944a454e9fb15d3cc1f4d55b',
+  screen_10: 'ok523b6c941a454e9fb15d3cc1f4d55b',
+}

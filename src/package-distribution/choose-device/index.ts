@@ -53,7 +53,7 @@ ComponentWithComputed({
         type: 'meiju',
         path: strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
           proType: '26',
-          sn8: 'M0100032',
+          sn8: 'M0100032,57066708',
           mode: 0,
         } as Meiju.IProductItem),
       },

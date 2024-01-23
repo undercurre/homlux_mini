@@ -76,21 +76,12 @@ ComponentWithComputed({
         const connectDesc = guideInfo.mainConnectTypeDesc
         let connectUrl = guideInfo.mainConnectTypeUrlList[0]
 
-        // 若品类为浴霸，写死附加型号为R1的配网方式，并固定配网图
-        if (type === '26') {
-          guideInfoList.push({
-            connectDesc:
-              '① 浴霸接通电源\n② 检查遥控器是否能够控制浴霸(如：按遥控器「照明」键，浴霸灯亮)\n③ 长按遥控器「+」键「5」秒，听到“嘀”提示音，数秒内WiFi指示灯闪烁，表示设置成功',
-            connectUrlA: 'http://midea-file.oss-cn-hangzhou.aliyuncs.com/2021/5/31/9/vLzXTxNBLxzGKAErIpYf.gif',
-            isAutoConnect: guideInfo.isAutoConnect,
-            code: guideInfo.modelCode,
-            wifiFrequencyBand: guideInfo.wifiFrequencyBand,
-          })
-
+        // 若品类为浴霸，首个配网指引固定配网图
+        if (type === '26' && guideInfo.modelCode === 'M0100032') {
           connectUrl = `${meijuImgDir}/addDevice/bath-heater-guide.gif`
         }
 
-        guideInfoList.unshift({
+        guideInfoList.push({
           connectDesc,
           connectUrlA: connectUrl,
           isAutoConnect: guideInfo.isAutoConnect,

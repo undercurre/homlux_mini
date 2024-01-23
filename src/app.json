@@ -5,6 +5,7 @@
       "root": "package-distribution",
       "pages": [
         "scan/index",
+        "pages/auth-screen/index",
         "link-gateway/index",
         "wifi-connect/index",
         "add-subdevice/index",
@@ -53,7 +54,6 @@
     {
       "root": "package-auth",
       "pages": [
-        "pages/auth-screen/index",
         "pages/index/index",
         "pages/meiju/index",
         "pages/home-list/index",
