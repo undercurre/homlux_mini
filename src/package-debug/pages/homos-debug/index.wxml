@@ -4,20 +4,6 @@
   bind:leftTap="goBack"
 ></nav-bar>
 
-<view class="flex flex-row">
-  <van-button
-    type="primary"
-    bind:click="readLogNative"
-    >刷新本地日志</van-button
-  >
-
-  <van-button
-    type="primary"
-    bind:click="clearLogNative"
-    >清空本地日志</van-button
-  >
-</view>
-
 <van-dropdown-menu>
   <van-dropdown-item
     value="{{ selectRoomId }}"

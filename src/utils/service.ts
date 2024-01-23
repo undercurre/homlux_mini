@@ -11,6 +11,7 @@ export function logout() {
   storage.remove('token')
   storage.remove('localKey') // 清除局域网的家庭key
   userStore.logout()
+  homeStore.reset() // 清空家庭数据
   homos.logout()
   closeWebSocket()
 

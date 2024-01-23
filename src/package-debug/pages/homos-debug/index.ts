@@ -1,14 +1,10 @@
 import pageBehavior from '../../../behaviors/pageBehaviors'
 import { deviceBinding, deviceStore, roomBinding, roomStore } from '../../../store/index'
-import homOS from 'js-homos'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { runInAction } from 'mobx-miniprogram'
 import { getModelName, PRO_TYPE } from '../../../config/index'
 import { sendDevice } from '../../../apis/index'
-
-const fs = wx.getFileSystemManager()
-const logFilePath = homOS.getLogFilePath()
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, deviceBinding] }), pageBehavior],
@@ -86,36 +82,6 @@ ComponentWithComputed({
           })
         }
       }
-    },
-    readLogNative() {
-      fs.readFile({
-        filePath: logFilePath,
-        encoding: 'utf8',
-        success: (res) => {
-          console.log('readFile-success', res)
-          const text = res.data as string
-
-          this.setData({
-            logList: text.split('\n').reverse(),
-          })
-        },
-        fail(err) {
-          console.log('readFile-fail', err)
-        },
-      })
-    },
-
-    clearLogNative() {
-      fs.writeFile({
-        filePath: logFilePath,
-        data: '',
-        success(res) {
-          console.log('removeSavedFile-success', res)
-        },
-        fail(err) {
-          console.log('removeSavedFile-fail', err)
-        },
-      })
     },
   },
 })

@@ -34,6 +34,23 @@ export const homeStore = observable({
 
   shareId: '',
 
+  /**
+   * 退出登录时清空数据
+   */
+  reset() {
+    this.key = ''
+    this.homeList = []
+    this.currentHomeDetail = {
+      houseId: '',
+      houseName: '',
+      houseUserAuth: 3,
+      deviceCount: 0,
+      userCount: 0,
+      houseArea: '',
+      roomCount: 0,
+    }
+  },
+
   get currentHomeId() {
     let houseId = this.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
 
