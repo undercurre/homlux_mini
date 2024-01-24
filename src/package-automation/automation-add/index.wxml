@@ -306,7 +306,7 @@
   cardType="{{cardType}}"
   list="{{list}}"
   selectList="{{linkSelectList}}"
-  showCancel="{{selectCardType !== 'sensor'||!sceneDeviceConditionsFlatten.length}}"
+  showCancel="{{(selectCardType !== 'sensor'||!sceneDeviceConditionsFlatten.length) && opearationType === 'auto'}}"
   bind:select="handleSelectCardSelect"
   bind:close="handleSelectCardClose"
   bind:confirm="handleSelectCardConfirm"
