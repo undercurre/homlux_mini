@@ -103,8 +103,8 @@ export const deviceStore = observable({
     this.allRoomDeviceList.forEach((device) => {
       // 过滤属性数据不完整的数据
       // WIFI设备可以不过滤此条件
-      const hasProps = isNullOrUnDef(device.mzgdPropertyDTOList) || isEmptyObject(device.mzgdPropertyDTOList)
-      if (!hasProps && device.deviceType !== 3) {
+      const noProps = isNullOrUnDef(device.mzgdPropertyDTOList) || isEmptyObject(device.mzgdPropertyDTOList)
+      if (noProps && device.deviceType !== 3) {
         return
       }
       // 开关面板需要前端拆分处理
@@ -125,7 +125,7 @@ export const deviceStore = observable({
       // 所有非网关、可显示的设备都用这种方案插值
       else if (device.proType !== PRO_TYPE.gateway) {
         const modelName = getModelName(device.proType, device.productId)
-        const property = hasProps ? device.mzgdPropertyDTOList[modelName] : ({} as Device.mzgdPropertyDTO)
+        const property = noProps ? ({} as Device.mzgdPropertyDTO) : device.mzgdPropertyDTOList[modelName]
         const onLineStatus = device.mzgdPropertyDTOList ? device.onLineStatus : 0 // 如果没有设备属性，则直接置为0 // ! WIFI设备，较低机率出现设备在线但属性为空的情况
         list.push({
           ...device,

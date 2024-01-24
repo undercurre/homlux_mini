@@ -52,7 +52,7 @@
 
     <!-- 控制按钮、场景关联 -->
     <view
-      wx:if="{{showControl && canCtrl}}"
+      wx:if="{{showControl && hasControl && canCtrl}}"
       class="absolute left-0 bottom-0 w-160rpx flex-col-center"
       catch:tap="handlePowerTap"
     >
