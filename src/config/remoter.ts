@@ -45,12 +45,12 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
       devicePic: '/assets/img/remoter/ceilLight.png',
       actions: [
         {
-          key: 'LIGHT_NIGHT_LAMP',
-          name: '夜灯',
-        },
-        {
           key: 'LIGHT_LAMP',
           name: '照明',
+        },
+        {
+          key: 'LIGHT_NIGHT_LAMP',
+          name: '夜灯',
         },
       ],
     },
@@ -59,8 +59,12 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
       devicePic: '/assets/img/remoter/fanLight.png',
       actions: [
         {
-          key: 'LIGHT_NIGHT_LAMP',
-          name: '小夜灯',
+          key: 'LIGHT_LAMP',
+          name: '照明',
+        },
+        {
+          key: 'FAN_SWITCH',
+          name: '风扇',
         },
       ],
     },
@@ -69,8 +73,12 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
       devicePic: '/assets/img/remoter/fanLight.png',
       actions: [
         {
-          key: 'LIGHT_NIGHT_LAMP',
-          name: '小夜灯',
+          key: 'LIGHT_LAMP',
+          name: '照明',
+        },
+        {
+          key: 'FAN_SWITCH',
+          name: '风扇',
         },
       ],
     },
