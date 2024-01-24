@@ -42,14 +42,6 @@ export async function bleAdvertising(
     Logger.log('server is Not existed')
     return
   }
-  if (isAdvertising) {
-    Logger.log('aborted by last adv')
-    return
-  }
-  isAdvertising = true
-
-  // 振动逻辑放到有效广播后
-  if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
 
   const advertiseRequest = {} as WechatMiniprogram.AdvertiseReqObj
 
@@ -128,6 +120,15 @@ export function startAdvertising(
   advertiseRequest: WechatMiniprogram.AdvertiseReqObj,
 ) {
   return new Promise((resolve, reject) => {
+    if (isAdvertising) {
+      Logger.log('aborted by last adv')
+      return
+    }
+    isAdvertising = true
+
+    // 振动逻辑放到有效广播后
+    if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
+
     server.startAdvertising({
       powerLevel: 'high',
       advertiseRequest,
