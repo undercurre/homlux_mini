@@ -303,6 +303,7 @@ ComponentWithComputed({
         return
       }
       this.setData({
+        selectKey: '', // 重置上一次选择
         actionSheetType,
         isShowPopup: true,
       })
