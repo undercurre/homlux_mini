@@ -4,7 +4,7 @@ import { deleteScene, findDevice, addScene, updateScene } from '../../apis/index
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { deviceStore, sceneStore, homeStore, autosceneStore, roomStore } from '../../store/index'
-import { PRO_TYPE, SENSOR_TYPE, getModelName, sceneImgDir } from '../../config/index'
+import { PRO_TYPE, getModelName, sceneImgDir, PRODUCT_ID } from '../../config/index'
 import { isNullOrUnDef } from '../../utils/index'
 
 import {
@@ -202,9 +202,9 @@ ComponentWithComputed({
       ])
       const sensorList = deviceStore.allRoomDeviceFlattenList.filter((item) => item.proType === PRO_TYPE.sensor)
       sensorList.forEach((item) => {
-        if (item.productId === SENSOR_TYPE.humanSensor) {
+        if (item.productId === PRODUCT_ID.humanSensor) {
           item.property = { occupancy: 1, modelName: 'irDetector' }
-        } else if (item.productId === SENSOR_TYPE.doorsensor) {
+        } else if (item.productId === PRODUCT_ID.doorSensor) {
           item.property = { doorStatus: 1, modelName: 'magnet' }
         } else {
           item.property = { buttonClicked: 1, modelName: 'freepad' }
