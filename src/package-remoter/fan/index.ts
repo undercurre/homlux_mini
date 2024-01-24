@@ -316,11 +316,10 @@ ComponentWithComputed({
     },
 
     handleConfirm() {
+      const key = this.data.selectKey || this.data.actionSheetColumns[this.data.actionSheetIndex].key
       this.toSendCmd({
         target: {
-          dataset: {
-            key: this.data.selectKey,
-          },
+          dataset: { key },
         },
       } as unknown as WechatMiniprogram.TouchEvent)
       this.setData({
