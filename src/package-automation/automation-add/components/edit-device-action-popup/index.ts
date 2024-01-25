@@ -36,7 +36,13 @@ ComponentWithComputed({
     cellList(data) {
       const list = []
       if (data.deviceActionInfo.proType === PRO_TYPE.airConditioner) {
-        const { power = 0, mode = '', temperature = 0, wind_speed = 0 } = data.deviceActionInfo.sceneProperty
+        const {
+          power = 0,
+          mode = '',
+          temperature = 0,
+          small_temperature = 0,
+          wind_speed = 0,
+        } = data.deviceActionInfo.sceneProperty
 
         list.push(
           { title: '电源', key: 'power', propertyKey: 'power', disabled: false, value: power === 0 ? '关闭' : '开启' },
@@ -52,7 +58,7 @@ ComponentWithComputed({
             key: 'temperature',
             propertyKey: 'acTemperature',
             disabled: power === 0 || mode === 'fan',
-            value: temperature === 0 ? '不设置' : `${temperature}℃`,
+            value: temperature === 0 ? '不设置' : `${temperature + small_temperature}℃`,
           },
           {
             title: '风速',
@@ -130,12 +136,19 @@ ComponentWithComputed({
       const info = e.currentTarget.dataset.item
       if (info.disabled) return
       if (this.data.deviceActionInfo.proType === PRO_TYPE.airConditioner) {
-        const { power = 0, mode = '', temperature = 0, wind_speed = 0 } = this.data.deviceActionInfo.sceneProperty
+        const {
+          power = 0,
+          mode = '',
+          temperature = 0,
+          small_temperature = 0,
+          wind_speed = 0,
+        } = this.data.deviceActionInfo.sceneProperty
         const tempInfo = {
           power,
           mode,
           temperature,
           wind_speed,
+          small_temperature,
         }
         this.setData(
           {
@@ -143,7 +156,10 @@ ComponentWithComputed({
               title: info.title,
               key: info.key,
               propertyKey: info.propertyKey,
-              value: tempInfo[info.key as keyof typeof tempInfo],
+              value:
+                info.propertyKey === 'acTemperature'
+                  ? tempInfo['temperature'] + tempInfo['small_temperature']
+                  : tempInfo[info.key as keyof typeof tempInfo],
             },
           },
           () => {
@@ -239,9 +255,22 @@ ComponentWithComputed({
     onPropertyPopupConfirm(e: { detail: IAnyObject }) {
       const sceneProperty = this.data.deviceActionInfo.sceneProperty
       if (e.detail.optionTitle === '不设置') {
-        delete sceneProperty[e.detail.key]
+        if (e.detail.propertyKey === 'acTemperature') {
+          delete sceneProperty['temperature']
+          delete sceneProperty['small_temperature']
+        } else {
+          delete sceneProperty[e.detail.key]
+        }
       } else {
-        sceneProperty[e.detail.key] = e.detail.value
+        //家用WiFi空调的温度需要把整数和小数部分拆开
+        if (e.detail.propertyKey === 'acTemperature') {
+          const temperature = Math.floor(e.detail.value) // 获取整数部分
+          const small_temperature = e.detail.value % 1 // 获取小数部分
+          sceneProperty['temperature'] = temperature
+          sceneProperty['small_temperature'] = small_temperature
+        } else {
+          sceneProperty[e.detail.key] = e.detail.value
+        }
       }
       //如果电源为关闭，不能调节其他属性
       if (e.detail.propertyKey === 'power' && e.detail.value === 0) {
@@ -256,7 +285,10 @@ ComponentWithComputed({
       if (e.detail.propertyKey === 'acMode' && (e.detail.value === 'auto' || e.detail.value === 'dry'))
         sceneProperty['wind_speed'] = 102
       //WIFI空调模式为送风时不能调节温度
-      if (e.detail.propertyKey === 'acMode' && e.detail.value === 'fan') delete sceneProperty['temperature']
+      if (e.detail.propertyKey === 'acMode' && e.detail.value === 'fan') {
+        delete sceneProperty['temperature']
+        delete sceneProperty['small_temperature']
+      }
       //485中央空调模式为送风时不能调节温度
       if (e.detail.propertyKey === 'cacMode' && e.detail.value === 4) delete sceneProperty['targetTemperature']
       //485中央空调模式为除湿时不能调节风速

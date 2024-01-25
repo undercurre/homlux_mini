@@ -185,7 +185,9 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
   if (proType === PRO_TYPE.airConditioner) {
     !isNullOrUnDef(property.power) && descList.push(property.power === 1 ? '开启' : '关闭')
     !isNullOrUnDef(property.mode) && descList.push(AC_MODE[property.mode])
-    !isNullOrUnDef(property.temperature) && descList.push(`${property.temperature}℃`)
+    !isNullOrUnDef(property.temperature) &&
+      !isNullOrUnDef(property.small_temperature) &&
+      descList.push(`${property.temperature + property.small_temperature}℃`)
     !isNullOrUnDef(property.wind_speed) && descList.push(transferWindSpeedProperty(property.wind_speed) + '风')
   }
   if (proType === PRO_TYPE.centralAirConditioning) {

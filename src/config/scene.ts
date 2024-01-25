@@ -80,9 +80,9 @@ export const scenePropertyOptions = {
     { title: '送风', key: 'mode', value: 'fan' },
     { title: '除湿', key: 'mode', value: 'dry' },
   ],
-  acTemperature: Array.from({ length: 15 }, (_, i) => ({
-    title: i === 0 ? '不设置' : `${i + 16}℃`,
-    value: i === 0 ? i : i + 16,
+  acTemperature: Array.from({ length: 28 }, (_, i) => ({
+    title: i === 0 ? '不设置' : `${0.5 * i + 16.5}℃`,
+    value: i === 0 ? i : 0.5 * i + 16.5,
     key: 'temperature',
   })),
   acWindSpeed: [
