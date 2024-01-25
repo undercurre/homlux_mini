@@ -38,17 +38,19 @@ export const homeStore = observable({
    * 退出登录时清空数据
    */
   reset() {
-    this.key = ''
-    this.homeList = []
-    this.currentHomeDetail = {
-      houseId: '',
-      houseName: '',
-      houseUserAuth: 3,
-      deviceCount: 0,
-      userCount: 0,
-      houseArea: '',
-      roomCount: 0,
-    }
+    runInAction(() => {
+      this.key = ''
+      this.homeList = []
+      this.currentHomeDetail = {
+        houseId: '',
+        houseName: '',
+        houseUserAuth: 3,
+        deviceCount: 0,
+        userCount: 0,
+        houseArea: '',
+        roomCount: 0,
+      }
+    })
   },
 
   get currentHomeId() {
