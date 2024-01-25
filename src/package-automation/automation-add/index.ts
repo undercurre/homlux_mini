@@ -1017,6 +1017,14 @@ ComponentWithComputed({
           property: {},
           type: 5,
         })
+        //删除已设置的时间条件
+        if (this.data.timeCondition.time !== '') {
+          this.setData({
+            'timeCondition.time': '',
+            'timeCondition.timePeriod': '',
+            'timeCondition.timeType': '',
+          })
+        }
       }
 
       if (this.data.timeCondition.time !== '') {
