@@ -4,7 +4,7 @@ import { deleteScene, findDevice, addScene, updateScene } from '../../apis/index
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { deviceStore, sceneStore, homeStore, autosceneStore, roomStore } from '../../store/index'
-import { PRO_TYPE, getModelName, sceneImgDir, PRODUCT_ID } from '../../config/index'
+import { PRO_TYPE, getModelName, sceneImgDir, PRODUCT_ID, SCREEN_PID } from '../../config/index'
 import { isNullOrUnDef } from '../../utils/index'
 
 import {
@@ -788,12 +788,20 @@ ComponentWithComputed({
     async handleSelectCardSelect(e: { detail: string }) {
       console.log('handleSelectCardSelect', e, e.detail)
       const selectId = e.detail
-      //FIXME:什么设备需要找一找
       if (this.data.selectCardType === 'device') {
         const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
         const device = allRoomDeviceMap[e.detail]
-        const modelName = 'light'
-        findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, modelName })
+        //只有开关面板和zigbee灯需要下发找一找
+        if (
+          (device.proType === PRO_TYPE.switch && !SCREEN_PID.includes(device.productId)) ||
+          device.proType === PRO_TYPE.light
+        ) {
+          let modelName = 'light'
+          if (device.proType === PRO_TYPE.switch) {
+            modelName = device.switchInfoDTOList[0].switchId
+          }
+          findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, modelName })
+        }
       }
       const listType =
         this.data.selectCardType === 'sensor' ? 'sensorlinkSelectList' : 'tempSceneDevicelinkSelectedList'
