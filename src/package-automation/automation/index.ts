@@ -132,6 +132,10 @@ ComponentWithComputed({
     //   emitter.off('scene_enabled')
     // },
     toPage(e: { currentTarget: { dataset: { url: string } } }) {
+      if (e.currentTarget.dataset.url.includes('automation-add/index') && this.data.isVisitor) {
+        Toast('仅创建者与管理员可创建场景')
+        return
+      }
       wx.navigateTo({
         url: e.currentTarget.dataset.url,
       })
@@ -218,16 +222,24 @@ ComponentWithComputed({
     },
 
     changeAutoSceneEnabled(e: { currentTarget: { dataset: { isenabled: '0' | '1'; sceneid: string } } }) {
+      if (this.data.isVisitor) {
+        Toast('您当前身份为访客，无法编辑场景')
+        return
+      }
       const { isenabled, sceneid } = e.currentTarget.dataset
       const isEnabled = isenabled === '0' ? '1' : '0'
       autosceneBinding.store.changeAutoSceneEnabled({ sceneId: sceneid, isEnabled })
     },
     toEditAutoScene(e: { currentTarget: { dataset: { autosceneid: string } } }) {
-      const { autosceneid } = e.currentTarget.dataset
+      if (this.data.isCreator || this.data.isAdmin) {
+        const { autosceneid } = e.currentTarget.dataset
 
-      wx.navigateTo({
-        url: strUtil.getUrlWithParams(this.data.urls.automationAdd, { autosceneid }),
-      })
+        wx.navigateTo({
+          url: strUtil.getUrlWithParams(this.data.urls.automationAdd, { autosceneid }),
+        })
+      } else {
+        Toast('您当前身份为访客，无法编辑场景')
+      }
     },
     toEditYijianScene(e: { currentTarget: { dataset: { sceneid: string } } }) {
       const { sceneid } = e.currentTarget.dataset
