@@ -146,9 +146,9 @@
 
           <view class="flex flex-col items-start ml-32rpx">
             <text class="text-32rpx text-black-2a font-medium leading-none mt-10rpx">{{item.name}}</text>
-            <view class="flex flex-row gap-x-20rpx text-26 text-black-tips mt-22rpx leading-56rpx">
+            <view class="flex flex-row flex-wrap gap-x-16rpx gap-y-16rpx text-26 text-black-tips mt-22rpx">
               <text
-                class="px-24rpx bg-hex-F4F5F8 rounded-32rpx"
+                class="px-24rpx bg-hex-F4F5F8 rounded-32rpx leading-56rpx h-56rpx"
                 wx:for="{{item.desc}}"
                 wx:key="index"
                 >{{item}}</text
