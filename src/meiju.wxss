@@ -940,7 +940,7 @@
 
 #meiju .switch-set {
   text-align: center;
-  padding-bottom: 40rpx;
+  padding-bottom: 96rpx;
   font-size: 28rpx;
   display: flex;
   align-items: center;
