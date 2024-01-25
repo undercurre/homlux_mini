@@ -112,9 +112,7 @@ ComponentWithComputed({
       } else if (data.selectCardType === 'sensor') {
         return data.sensorList
       } else {
-        return data.deviceList.filter(
-          (item) => !data.sceneDevicelinkSelectList.includes(item.uniId) && item.onLineStatus === 1,
-        )
+        return data.deviceList.filter((item) => !data.sceneDevicelinkSelectList.includes(item.uniId))
       }
     },
     cardType(data) {
@@ -477,15 +475,15 @@ ComponentWithComputed({
         return
       }
       if (roomid) {
-        const deviceListInRoom: Device.DeviceItem[] = deviceStore.allRoomDeviceFlattenList.filter(
-          (item) => item.roomId === roomid,
+        const onlineDeviceListInRoom: Device.DeviceItem[] = deviceStore.allRoomDeviceFlattenList.filter(
+          (item) => item.roomId === roomid && item.onLineStatus === 1,
         )
-        console.log('默认选中', deviceListInRoom)
+        console.log('默认选中', onlineDeviceListInRoom)
         this.setData(
           {
             roomId: roomid,
             _isEditCondition: true,
-            sceneDevicelinkSelectList: deviceListInRoom.map((item) => item.uniId),
+            sceneDevicelinkSelectList: onlineDeviceListInRoom.map((item) => item.uniId),
             opearationType: 'yijian',
           },
           () => {
@@ -611,16 +609,16 @@ ComponentWithComputed({
       this.handleConditionShow()
     },
     async handleSceneRoomEditConfirm(e: { detail: string }) {
-      const deviceListInRoom: Device.DeviceItem[] = deviceStore.allRoomDeviceFlattenList.filter(
-        (item) => item.roomId === e.detail,
+      const onlineDeviceListInRoom: Device.DeviceItem[] = deviceStore.allRoomDeviceFlattenList.filter(
+        (item) => item.roomId === e.detail && item.onLineStatus === 1,
       )
-      console.log('默认选中', deviceListInRoom)
+      console.log('默认选中', onlineDeviceListInRoom)
       this.setData(
         {
           roomId: e.detail,
           showEditRoomPopup: false,
           _isEditCondition: true,
-          sceneDevicelinkSelectList: deviceListInRoom.map((item) => item.uniId),
+          sceneDevicelinkSelectList: onlineDeviceListInRoom.map((item) => item.uniId),
         },
         () => {
           this.updateSceneDeviceActionsFlatten()
@@ -784,9 +782,13 @@ ComponentWithComputed({
         })
       }
     },
+    handleSelectCardOfflineTap() {
+      Toast({ message: '设备已离线', zIndex: 9999 })
+    },
     async handleSelectCardSelect(e: { detail: string }) {
       console.log('handleSelectCardSelect', e, e.detail)
       const selectId = e.detail
+      //FIXME:什么设备需要找一找
       if (this.data.selectCardType === 'device') {
         const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
         const device = allRoomDeviceMap[e.detail]
