@@ -806,6 +806,7 @@ ComponentWithComputed({
       const pageName = deviceType === 4 ? 'group-detail' : 'device-detail'
       const _deviceId = SCREEN_PID.includes(productId) ? gatewayId : deviceId
 
+      this.triggerEvent('close')
       wx.navigateTo({
         url: `/package-mine/device-manage/${pageName}/index?deviceId=${_deviceId}`,
       })
