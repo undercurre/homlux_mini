@@ -116,7 +116,7 @@ ComponentWithComputed({
     },
     disabledWindSpeed(data) {
       const { power, mode } = data.propView
-      return power !== 1 || mode === 'dry'
+      return power !== 1 || mode === 'dry' || mode === 'auto'
     },
     showIndoorTemp(data) {
       const { indoor_temperature } = data.propView
@@ -192,6 +192,13 @@ ComponentWithComputed({
           'propView.temperature': intTemp,
           'propView.small_temperature': floatTemp,
         })
+      } else if (key === 'mode' && (setValue === 'auto' || setValue === 'dry')) {
+        property[key] = setValue
+        property['wind_speed'] = 102
+        this.setData({
+          [`propView.${key}`]: setValue,
+          [`propView.wind_speed`]: 102,
+        })
       } else {
         property[key] = setValue
         this.setData({
@@ -242,6 +249,9 @@ ComponentWithComputed({
     showPicker(e: WechatMiniprogram.CustomEvent) {
       const key = e.currentTarget.dataset.key as string
       if (key === 'wind_speed' && this.data.disabledWindSpeed) {
+        return
+      }
+      if (key === 'mode' && this.data.disabledMode) {
         return
       }
       const pickerValue = this.data.deviceInfo[key]
