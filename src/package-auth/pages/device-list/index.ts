@@ -30,7 +30,7 @@ ComponentWithComputed({
       console.log('device list onload', query, this.data.currentHomeId)
       // 带 homeId，未绑定
       if (query?.homeId) {
-        const res = await bindMeiju({ mideaHouseId: query.homeId, houseId: this.data.currentHomeId })
+        const res = await bindMeiju({ mideaHouseId: query.homeId, houseId: this.data.currentHomeId }, { loading: true })
 
         if (res.success) {
           const deviceList = res.result

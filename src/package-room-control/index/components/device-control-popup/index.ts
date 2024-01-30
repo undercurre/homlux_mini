@@ -359,7 +359,13 @@ ComponentWithComputed({
       // 关联开关和灯时，选择设备的预校验
       if (['light', 'switch'].includes(this.data.selectLinkType)) {
         const device = deviceMap[selectId]
-        device.deviceType === 2 && this.findDevice(device)
+        device.deviceType === 2 &&
+          findDevice({
+            proType: device.proType,
+            gatewayId: device.gatewayId,
+            devId: device.deviceId,
+            switchInfoDTOList: device.switchInfoDTOList,
+          })
 
         const linkScene = switchSceneConditionMap[selectId]
 
@@ -794,14 +800,6 @@ ComponentWithComputed({
       })
     },
 
-    findDevice(device: Device.DeviceItem) {
-      let modelName = 'light'
-      if (device.proType === PRO_TYPE.switch) {
-        modelName = device.switchInfoDTOList[0].switchId
-      }
-
-      findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, modelName })
-    },
     toDetail() {
       const deviceId = this.data.checkedList[0].split(':')[0]
       const { deviceType, productId, gatewayId } = this.data.deviceInfo
