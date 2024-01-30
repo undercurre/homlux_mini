@@ -1,19 +1,18 @@
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
-import { deleteScene, findDevice, addScene, updateScene } from '../../apis/index'
+import { addScene, deleteScene, findDevice, updateScene } from '../../apis/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { deviceStore, sceneStore, homeStore, autosceneStore, roomStore } from '../../store/index'
-import { PRO_TYPE, getModelName, sceneImgDir, PRODUCT_ID, SCREEN_PID } from '../../config/index'
-import { isNullOrUnDef } from '../../utils/index'
-
+import { autosceneStore, deviceStore, homeStore, roomStore, sceneStore } from '../../store/index'
+import { getModelName, PRO_TYPE, PRODUCT_ID, sceneImgDir, SCREEN_PID } from '../../config/index'
 import {
-  toPropertyDesc,
-  storage,
-  getCurrentPageParams,
-  strUtil,
   checkInputNameIllegal,
   emitter,
+  getCurrentPageParams,
+  isNullOrUnDef,
+  storage,
+  strUtil,
+  toPropertyDesc,
 } from '../../utils/index'
 import { adviceSceneNameList } from '../../config/scene'
 
@@ -796,11 +795,13 @@ ComponentWithComputed({
           (device.proType === PRO_TYPE.switch && !SCREEN_PID.includes(device.productId)) ||
           device.proType === PRO_TYPE.light
         ) {
-          let modelName = 'light'
-          if (device.proType === PRO_TYPE.switch) {
-            modelName = device.switchInfoDTOList[0].switchId
-          }
-          findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, modelName })
+          device.deviceType === 2 &&
+            findDevice({
+              proType: device.proType,
+              gatewayId: device.gatewayId,
+              devId: device.deviceId,
+              switchInfoDTOList: device.switchInfoDTOList,
+            })
         }
       }
       const listType =
@@ -1180,13 +1181,14 @@ ComponentWithComputed({
         const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
         const device = allRoomDeviceMap[action.uniId]
         console.log('device', device)
-        let modelName = 'light'
 
-        if (action.proType === PRO_TYPE.switch) {
-          modelName = String(device.switchInfoDTOList[0].switchId)
-        }
-
-        device.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, modelName })
+        device.deviceType === 2 &&
+          findDevice({
+            proType: device.proType,
+            gatewayId: device.gatewayId,
+            devId: device.deviceId,
+            switchInfoDTOList: device.switchInfoDTOList,
+          })
 
         this.setData({
           sceneEditTitle: action.name,

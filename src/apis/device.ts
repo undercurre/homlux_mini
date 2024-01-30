@@ -304,18 +304,31 @@ export async function sendCmdAddSubdevice(
 }
 
 /**
- * 云端找一找接口
+ * 云端找一找接口，目前仅支持网关子设备，灯和面板
  * Identify 闪多少秒
  */
 export async function findDevice(
   {
     gatewayId,
     devId,
-    modelName = 'wallSwitch1',
+    proType,
     Identify = 3,
-  }: { gatewayId: string; devId: string; modelName?: string; Identify?: number },
+    switchInfoDTOList = [],
+  }: {
+    gatewayId: string
+    proType: string
+    devId: string
+    Identify?: number
+    switchInfoDTOList?: Device.MzgdPanelSwitchInfoDTO[]
+  },
   options?: { loading?: boolean },
 ) {
+  let modelName = 'light'
+
+  if (proType === PRO_TYPE.switch) {
+    modelName = switchInfoDTOList[0].switchId
+  }
+
   return await controlDevice(
     {
       topic: '/subdevice/control',

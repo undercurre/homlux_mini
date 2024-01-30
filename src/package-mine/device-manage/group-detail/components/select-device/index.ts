@@ -1,6 +1,8 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { roomBinding, deviceBinding } from '../../../../../store/index'
+import { PRO_TYPE, SCREEN_PID } from '../../../../../config/index'
+import { findDevice } from '../../../../../apis/index'
 
 type DeviceCard = Device.DeviceItem & {
   select: boolean
@@ -54,7 +56,26 @@ ComponentWithComputed({
   methods: {
     handleCardTap(e: { currentTarget: { dataset: { index: number } } }) {
       const { index } = e.currentTarget.dataset
-      const oldSelect = this.data.lightList[index].select
+      const device = this.data.lightList[index]
+      const oldSelect = device.select
+
+      console.debug('handleCardTap', device)
+
+      if (!oldSelect) {
+        //只有开关面板和zigbee灯需要下发找一找
+        if (
+          (device.proType === PRO_TYPE.switch && !SCREEN_PID.includes(device.productId)) ||
+          device.proType === PRO_TYPE.light
+        ) {
+          device.deviceType === 2 &&
+            findDevice({
+              proType: device.proType,
+              gatewayId: device.gatewayId,
+              devId: device.deviceId,
+              switchInfoDTOList: device.switchInfoDTOList,
+            })
+        }
+      }
       this.setData({
         [`lightList[${index}].select`]: !oldSelect,
       })
