@@ -147,6 +147,18 @@ ComponentWithComputed({
       const { wind_speed = 1 } = data.propView
       return transferWindSpeedProperty(wind_speed) ?? ''
     },
+    currentWindLevelPng(data) {
+      const { wind_speed = 1 } = data.propView
+      if (wind_speed <= 20) {
+        return 'wind_1'
+      } else if (wind_speed <= 60) {
+        return 'wind_2'
+      } else if (wind_speed <= 100) {
+        return 'wind_3'
+      } else {
+        return 'wind_auto'
+      }
+    },
   },
 
   lifetimes: {
