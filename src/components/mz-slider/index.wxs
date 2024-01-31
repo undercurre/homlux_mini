@@ -159,11 +159,13 @@ function changeBarStyle(_inst, _width) {
     init(_inst)
   }
 
+  // 滑条宽度范围
   var minWidth = isBtnInset[key] ? buttonInfo[key].width / 2 : 0
   var maxWidth = isBtnInset[key] ? sliderInfo[key].width - buttonInfo[key].width / 2 : sliderInfo[key].width
   var widthInRange = calcDragDis(_width, minWidth, maxWidth)
+
   var sliderBarWidth = isBtnInset[key] ? widthInRange + buttonInfo[key].width / 2 : widthInRange
-  var count = max[key] - min[key] // 被等分的总份数
+  var count = (max[key] - min[key]) / step[key] // 被等分的总份数
   var chunkWidth = (maxWidth - minWidth) / count // 每份的长度
   var countActive = isBtnInset[key]
     ? Math.round((sliderBarWidth - buttonInfo[key].width) / chunkWidth)
@@ -188,7 +190,7 @@ function changeBarStyle(_inst, _width) {
 
   // 宽度转为设置值
   // ! 在此处处理 min~max 值的传化，组件中的事件处理则不必再逐一处理
-  setValue[key] = countActive + min[key]
+  setValue[key] = countActive * step[key] + min[key]
 }
 
 /**
