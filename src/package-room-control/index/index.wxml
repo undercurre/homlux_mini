@@ -257,7 +257,6 @@
 
 <!-- 设备控制弹窗 -->
 <bath-control-popup
-  wx:if="{{controlType === '0x26'}}"
   show="{{controlType === '0x26'}}"
   isShowSetting="{{true}}"
   deviceInfo="{{checkedDeviceInfo}}"
@@ -265,7 +264,6 @@
 ></bath-control-popup>
 
 <dryer-control-popup
-  wx:if="{{controlType === '0x17'}}"
   show="{{controlType === '0x17'}}"
   isShowSetting="{{true}}"
   deviceInfo="{{checkedDeviceInfo}}"
@@ -273,7 +271,6 @@
 ></dryer-control-popup>
 
 <air-control-popup
-  wx:if="{{controlType === '0xAC'}}"
   show="{{controlType === '0xAC'}}"
   isShowSetting="{{true}}"
   deviceInfo="{{checkedDeviceInfo}}"
@@ -281,7 +278,6 @@
 ></air-control-popup>
 
 <air-control-popup-cac
-  wx:if="{{controlType === '0xCC'}}"
   show="{{controlType === '0xCC'}}"
   isShowSetting="{{true}}"
   deviceInfo="{{checkedDeviceInfo}}"
