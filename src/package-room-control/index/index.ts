@@ -352,31 +352,31 @@ ComponentWithComputed({
           this.updateQueue(device)
           return
         }
-        // 额外的更新设备在线状态
-        // FIXME 面板按键未处理
-        // TODO 一般使用device_online_status即可，暂时删除，如有遗漏需要云端支持，以减少信息的数量
-        // else if (
-        //   e.result.eventType === WSEventType.screen_online_status_sub_device ||
-        //   e.result.eventType === WSEventType.screen_online_status_wifi_device
-        // ) {
-        //   const { deviceId, status } = e.result.eventData
-        //   const deviceInRoom = deviceStore.deviceMap[deviceId]
-        //   if (!deviceInRoom || deviceInRoom.onLineStatus === status) {
-        //     return
-        //   }
-        //   const modelName = getModelName(deviceInRoom.proType, deviceInRoom.productId)
-        //   const device = {} as DeviceCard
-        //   device.deviceId = deviceId
-        //   device.uniId = modelName ? `${deviceId}:${modelName}` : deviceId
-        //   device.onLineStatus = status
-        //   this.updateQueue(device)
-        // }
+        // 更新设备在线状态
+        // 网关 device_online_status；WIFI设备 screen_online_status_wifi_device
+        // 子设备 screen_online_status_sub_device
+        else if (
+          e.result.eventType === WSEventType.device_online_status ||
+          e.result.eventType === WSEventType.device_offline_status ||
+          e.result.eventType === WSEventType.screen_online_status_sub_device ||
+          e.result.eventType === WSEventType.screen_online_status_wifi_device
+        ) {
+          const { deviceId, status } = e.result.eventData
+          const deviceInRoom = deviceStore.deviceMap[deviceId]
+          if (!deviceInRoom || deviceInRoom.onLineStatus === status) {
+            return
+          }
+          const modelName = getModelName(deviceInRoom.proType, deviceInRoom.productId)
+          const device = {} as DeviceCard
+          device.deviceId = deviceId
+          device.uniId = modelName ? `${deviceId}:${modelName}` : deviceId
+          device.onLineStatus = status
+          this.updateQueue(device)
+        }
         // 节流更新本地数据
         else if (
           [
             WSEventType.device_replace,
-            WSEventType.device_online_status,
-            WSEventType.device_offline_status,
             WSEventType.group_upt,
             // WSEventType.group_device_result_status,
             // WSEventType.device_del,
