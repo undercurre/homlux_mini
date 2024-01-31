@@ -1,3 +1,5 @@
+@import '../../../../commons/templates/secondaryPopup.wxss';
+
 .tab-title {
   color: #27282a;
   font-weight: 600;
