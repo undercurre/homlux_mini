@@ -97,10 +97,10 @@
         </mz-slider>
       </view>
 
-      <view class="flex flex-row justify-evenly rounded-24rpx bg-hex-f7f8f9 mt-30rpx">
+      <view class="flex flex-row justify-evenly items-center rounded-24rpx bg-hex-f7f8f9 mt-30rpx">
         <drop-button
           disabled="{{disabledMode}}"
-          icon="/package-room-control/assets/img/mode_{{propView.mode}}.png"
+          icon="/package-room-control/assets/img/mode_{{propView.mode || 'auto'}}.png"
           size="{{80}}"
           round="{{20}}"
           text="{{currentMode}}"
@@ -108,10 +108,10 @@
           bind:touchstart="showPicker"
           data-key="mode"
         ></drop-button>
-
+        <view><view class="w-2rpx h-40rpx bg-hex-dddddd"></view></view>
         <drop-button
           disabled="{{disabledWindSpeed}}"
-          icon="/package-room-control/assets/img/{{currentWindLevelPng}}.png"
+          icon="/package-room-control/assets/img/{{currentWindLevelPng || 'wind_auto'}}.png"
           size="{{80}}"
           round="{{20}}"
           text="{{currentWindLevel || '风速'}}"
@@ -125,46 +125,30 @@
     <view class="h-96rpx"></view>
   </view>
 </van-popup>
-
+<import src="/commons/templates/secondaryPopup.wxml" />
 <van-popup
   show="{{ isShowPicker }}"
+  z-index="1002"
   round
   position="bottom"
-  bind:close="handlePickerClose"
-  closeable
-  safe-area-inset-bottom="{{false}}"
-  z-index="1002"
+  bind:close="handleCancel"
+  catchtouchmove="blank"
 >
-  <view class="w-750rpx flex flex-col items-center">
-    <text class="h-50rpx text-36rpx text-black-2a mt-48rpx font-medium">{{pickerTitle}}</text>
-
-    <view class="w-750rpx">
-      <van-picker
-        columns="{{ pickerColumns }}"
-        default-index="{{pickerIndex}}"
-        bind:change="onPickerChange"
-      />
-    </view>
-
-    <view class="h-96rpx"></view>
-    <view class="flex w-686rpx gap-x-46rpx">
-      <van-button
-        class="flex-1"
-        size="large"
-        bind:click="handlePickerClose"
-        >取消</van-button
-      >
-
-      <van-button
-        type="primary"
-        class="flex-1"
-        size="large"
-        bind:click="handlePickerConfirm"
-        >确认</van-button
-      >
-    </view>
-
-    <view class="h-96rpx"></view>
+  <view class="w-750rpx h-600rpx relative flex flex-col items-center">
+    <template
+      is="title"
+      data="{{title:pickerTitle}}"
+    />
+    <view class="h-52rpx"></view>
+    <time-picker-view
+      value="{{[pickerIndex]}}"
+      colFir="{{pickerColumns}}"
+      colSec="{{[]}}"
+      colFirUnit=""
+      bind:change="onPickerChange"
+    ></time-picker-view>
+    <view class="h-62rpx"></view>
+    <template is="bottom-btn" />
   </view>
 </van-popup>
 

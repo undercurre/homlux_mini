@@ -211,7 +211,8 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .bg-blue,
 .bg-hex-488fff{--un-bg-opacity:1;background-color:rgba(72,143,255,var(--un-bg-opacity));}
 .bg-gray-dd,
-.bg-hex-ddd{--un-bg-opacity:1;background-color:rgba(221,221,221,var(--un-bg-opacity));}
+.bg-hex-ddd,
+.bg-hex-dddddd{--un-bg-opacity:1;background-color:rgba(221,221,221,var(--un-bg-opacity));}
 .bg-hex-000{--un-bg-opacity:1;background-color:rgba(0,0,0,var(--un-bg-opacity));}
 .bg-hex-5A5A5A{--un-bg-opacity:1;background-color:rgba(90,90,90,var(--un-bg-opacity));}
 .bg-hex-717171{--un-bg-opacity:1;background-color:rgba(113,113,113,var(--un-bg-opacity));}

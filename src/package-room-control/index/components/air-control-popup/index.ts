@@ -86,6 +86,7 @@ ComponentWithComputed({
         },
       ],
     } as Record<string, IAnyObject[]>,
+    pickerColumns: Array.from({ length: 10 }) as string[], //HACK:初始化pickerColumns时如果长度不足会导致首次选项错误
     step: 0.5,
     minTemp: 17,
     maxTemp: 30,
@@ -131,13 +132,6 @@ ComponentWithComputed({
         return ''
       }
       return pickerTitleMap[pickerType]
-    },
-    pickerColumns(data) {
-      const { pickerList, pickerType } = data
-      if (!pickerType) {
-        return []
-      }
-      return pickerList[pickerType]
     },
     currentMode(data) {
       const { mode = '' } = data.propView
@@ -271,29 +265,39 @@ ComponentWithComputed({
       const pickerValue = this.data.deviceInfo[key]
       const pickerText = key === 'wind_speed' ? this.data.currentWindLevel : this.data.currentMode
       const pickerIndex = this.data.pickerList[key].findIndex((p) => p.text === pickerText)
-      this.setData({
-        isShowPicker: true,
-        pickerType: key,
-        pickerIndex,
-        pickerValue,
-      })
+      const pickerColumns = this.data.pickerList[key].map((item) => item.text)
+      this.setData(
+        {
+          pickerType: key,
+          pickerColumns,
+          pickerIndex,
+          pickerValue,
+        },
+        () => {
+          this.setData({
+            isShowPicker: true,
+          })
+        },
+      )
     },
 
     handleClose() {
       this.triggerEvent('close')
     },
     onPickerChange(e: WechatMiniprogram.CustomEvent) {
+      console.log(e)
+      const { pickerList, pickerType } = this.data
       this.setData({
-        pickerIndex: e.detail.index,
-        pickerValue: e.detail.value.value,
+        pickerIndex: e.detail[0],
+        pickerValue: pickerList[pickerType][e.detail[0]].value,
       })
     },
-    handlePickerClose() {
+    handleCancel() {
       this.setData({
         isShowPicker: false,
       })
     },
-    handlePickerConfirm() {
+    handleConfirm() {
       this.setData({
         isShowPicker: false,
       })
@@ -307,5 +311,6 @@ ComponentWithComputed({
         detail: this.data.pickerValue,
       } as unknown as WechatMiniprogram.TouchEvent)
     },
+    blank() {},
   },
 })
