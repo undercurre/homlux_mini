@@ -122,6 +122,7 @@ export function startAdvertising(
   return new Promise((resolve, reject) => {
     if (isAdvertising) {
       Logger.log('aborted by last adv')
+      reject()
       return
     }
     isAdvertising = true

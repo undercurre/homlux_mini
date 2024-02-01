@@ -166,6 +166,7 @@ const createBleProtocol = (params: { payload: string; addr: string; isEncrypt?: 
   const encryptType = isEncrypt ? '0001' : '0000'
   const encryptIndex = Math.round(Math.random() * 15)
   const encryptIndexBin = encryptIndex.toString(2).padStart(4, '0')
+
   const dataArr = [VBCV, parseInt(`${encryptType}${encryptIndexBin}`, 2)]
 
   // addr
@@ -189,7 +190,7 @@ const createBleProtocol = (params: { payload: string; addr: string; isEncrypt?: 
     // )
     dataArr.push(channel, ...encrytpedData)
   }
-  console.log('dataArr', dataArr)
+  console.log('加密后数据序列', dataArr.map((item) => item.toString(16).padStart(2, '0')).join(','))
 
   // const buffer = new ArrayBuffer(dataArr.length)
   // const dataView = new DataView(buffer)
@@ -206,7 +207,7 @@ const createBleProtocol = (params: { payload: string; addr: string; isEncrypt?: 
 const _createAndroidBleRequest = (params: { payload: string; addr: string; isFactory?: boolean }): Uint8Array => {
   const { payload, addr, isFactory } = params
   const manufacturerData = createBleProtocol({ payload, addr, isFactory })
-  // console.log('manufacturerData', manufacturerData)
+  // console.log('[Android]manufacturerData', manufacturerData)
   const commandData = new Uint8Array(manufacturerData.length)
   commandData.set(manufacturerData)
   return commandData
@@ -236,6 +237,7 @@ const _createIOSBleRequest = (params: {
     const hex2 = (manufacturerData[i + 1] ?? '00').toString(16).padStart(2, '0')
     arrayData.push(hex2.concat(hex1))
   }
+  // console.log('[iOS]arrayData', arrayData)
   return arrayData
 }
 
@@ -295,7 +297,7 @@ const _handleBleResponse = (response: string) => {
  * cmdType 命令号。灯协议，固定为0x00，实际上未使用；浴霸协议，控制键值为0x00，参数设置0x01；故统一按浴霸规则发送
  */
 const _generalCmdString = (values: number[]) => {
-  console.log('_generalCmdString', values)
+  console.log('指令序列', ...values)
   const channel = 0x01 // 通道，固定值
   const version = 0x01 // 协议版本
   const cmdType = values.length > 1 ? 0x01 : 0x00
