@@ -208,3 +208,18 @@ export const getRect = function (context: any, selector: string, needAll = false
 export const rangeValue = (_val: number, _min: number, _max: number) => {
   return Math.min(Math.max(_val, _min), _max)
 }
+
+/**
+ * 检查数据有没有重复项
+ * @param data 需要比对的数据
+ * @returns 若有则返回首个发现的重复项，没有则返回false
+ */
+export const hasRepeat = (data: (number | string)[]) => {
+  const list = [...data].sort() // sort 会改变源数据，需要先复制再处理
+  for (let i = 0; i < list.length - 1; ++i) {
+    if (list[i] === list[i + 1]) {
+      return list[i]
+    }
+  }
+  return false
+}

@@ -1,5 +1,6 @@
 import cryptoUtils from './remoterCrypto'
 import { DEFAULT_ENCRYPT, deviceConfig } from '../config/remoter'
+import { hasRepeat } from '../utils/index'
 
 // bit位定义
 export const BIT_0 = 0x01 << 0 //1     0x01
@@ -151,9 +152,22 @@ const _createBluetoothProtocol = (params: { addr: string; data: string; opcode?:
  * @description 按发送协议拼接数据
  * @param params.isEncrypt 是否加密
  * @param params.isFactory 是否工厂产测模式；产测模式时，需要模拟实体遥控器从设备发出
+ * @param params.encryptIndex 加密索引，如遇到特殊情况，可指定索引位置
  */
-const createBleProtocol = (params: { payload: string; addr: string; isEncrypt?: boolean; isFactory?: boolean }) => {
-  const { payload, addr, isEncrypt = DEFAULT_ENCRYPT, isFactory = false } = params
+const createBleProtocol = (params: {
+  payload: string
+  addr: string
+  isEncrypt?: boolean
+  isFactory?: boolean
+  encryptIndex?: number
+}) => {
+  const {
+    payload,
+    addr,
+    isEncrypt = DEFAULT_ENCRYPT,
+    isFactory = false,
+    encryptIndex = Math.round(Math.random() * 15),
+  } = params
   // 第一个字节
   const version = '0001'
   const src = isFactory ? 0 : 1 // 0:设备发出  1:手机发出
@@ -164,7 +178,6 @@ const createBleProtocol = (params: { payload: string; addr: string; isEncrypt?: 
 
   // 第二个字节
   const encryptType = isEncrypt ? '0001' : '0000'
-  const encryptIndex = Math.round(Math.random() * 15)
   const encryptIndexBin = encryptIndex.toString(2).padStart(4, '0')
 
   const dataArr = [VBCV, parseInt(`${encryptType}${encryptIndexBin}`, 2)]
@@ -227,17 +240,38 @@ const _createIOSBleRequest = (params: {
   isFactory?: boolean
 }): string[] => {
   const { payload, addr, comId, isFactory } = params
-
   const manufacturerId = comId.slice(2)
   const manufacturerData = createBleProtocol({ payload, addr, isFactory })
-  const arrayData: string[] = []
-  arrayData.push(manufacturerId)
-  for (let i = 0; i < manufacturerData.length; i += 2) {
-    const hex1 = manufacturerData[i].toString(16).padStart(2, '0')
-    const hex2 = (manufacturerData[i + 1] ?? '00').toString(16).padStart(2, '0')
-    arrayData.push(hex2.concat(hex1))
+
+  const getArrayData = (_data: number[]) => {
+    const arr: string[] = []
+    arr.push(manufacturerId)
+    for (let i = 0; i < _data.length; i += 2) {
+      const hex1 = _data[i].toString(16).padStart(2, '0')
+      const hex2 = (_data[i + 1] ?? '00').toString(16).padStart(2, '0')
+      arr.push(hex2.concat(hex1))
+    }
+    return arr
   }
-  // console.log('[iOS]arrayData', arrayData)
+
+  // 先使用随机索引，如无重复项则直接发送
+  let arrayData = getArrayData(manufacturerData)
+  let isRepeat = hasRepeat(arrayData)
+  console.log('[iOS]arrayData', arrayData, 'isRepeat', isRepeat)
+  if (!isRepeat) {
+    return arrayData
+  }
+
+  // 如果存在重复项，则重新依次生成，直到无重复项为止
+  for (let i = 0; i < 16; ++i) {
+    const mData = createBleProtocol({ payload, addr, isFactory, encryptIndex: i })
+    arrayData = getArrayData(mData)
+    isRepeat = hasRepeat(arrayData)
+    console.log('[iOS]arrayData', arrayData, 'isRepeat', isRepeat, i)
+    if (!isRepeat) {
+      return arrayData
+    }
+  }
   return arrayData
 }
 
@@ -310,7 +344,9 @@ const _generalCmdString = (values: number[]) => {
   for (let i = 3 + values.length; i <= 14; ++i) {
     data[i] = 0x00
   }
-  data.push(sum % 256)
+
+  data.push(sum % 256) // 校验码
+
   return data.map((byte) => byte.toString(16).padStart(2, '0')).join('')
 }
 

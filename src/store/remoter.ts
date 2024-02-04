@@ -32,10 +32,10 @@ const MOCK_DEVICES = [
     DISCOVERED: 0,
   },
   {
-    dragId: '112233445570',
+    dragId: '100101041280',
     orderNum: 1,
     deviceId: '0',
-    addr: '112233445570',
+    addr: '100101041280',
     devicePic: '/assets/img/remoter/bathHeater.png',
     deviceName: '风扇灯基础款Mock',
     deviceType: '13',
