@@ -324,6 +324,30 @@ ComponentWithComputed({
                   dragId: device.uniId + Math.floor(Math.random() * 1001),
                 })
                 console.log('添加开关面板', tempSceneDeviceActionsFlatten)
+              } else if (device.proType === PRO_TYPE.light) {
+                const modelName = getModelName(device.proType, device.productId)
+                const property = {
+                  ...device.mzgdPropertyDTOList[modelName],
+                  ...action.controlAction[0],
+                }
+                const desc = toPropertyDesc(device.proType, property)
+                tempSceneDeviceActionsFlatten.push({
+                  uniId: device.uniId,
+                  name: device.deviceName,
+                  type: device.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
+                  desc,
+                  pic: device.pic as string,
+                  proType: device.proType,
+                  value: {
+                    ...property,
+                    modelName: getModelName(device.proType, device.productId),
+                  },
+                  sceneProperty: {
+                    ...property,
+                  },
+                  orderNum: 0,
+                  dragId: device.uniId + Math.floor(Math.random() * 1001),
+                })
               } else {
                 // const modelName = getModelName(device.proType, device.productId)
                 const property = {
@@ -428,6 +452,31 @@ ComponentWithComputed({
                     `${device.switchInfoDTOList[0].switchName} | ${device.deviceName}`,
                   )
                 }
+              })
+            } else if (device.proType === PRO_TYPE.light) {
+              const modelName = getModelName(device.proType, device.productId)
+              const property = {
+                ...device.mzgdPropertyDTOList[modelName],
+                ...action.controlAction[0],
+              }
+              const desc = toPropertyDesc(device.proType, property)
+              tempSceneDevicelinkSelectList.push(device.uniId)
+              tempSceneDeviceActionsFlatten.push({
+                uniId: device.uniId,
+                name: device.deviceName,
+                type: device.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
+                desc,
+                pic: device.pic as string,
+                proType: device.proType,
+                value: {
+                  ...property,
+                  modelName: getModelName(device.proType, device.productId),
+                },
+                sceneProperty: {
+                  ...property,
+                },
+                orderNum: 0,
+                dragId: device.uniId + Math.floor(Math.random() * 1001),
               })
             } else {
               // const modelName = getModelName(device.proType, device.productId)
