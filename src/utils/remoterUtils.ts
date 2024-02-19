@@ -105,7 +105,7 @@ export async function bleAdvertisingEnd(
   }
 
   // 需要连发多次指令以防丢包
-  await startAdvertising(server, advertiseRequest)
+  await startAdvertising(server, advertiseRequest, false)
   await delay(INTERVAL)
   await stopAdvertising(server)
 }
@@ -114,21 +114,23 @@ export async function bleAdvertisingEnd(
  * @description 将 server.startAdvertising 封装为Promise
  * @param server
  * @param advertiseRequest
+ * @param vibrate 发指令时是否振动
  */
 export function startAdvertising(
   server: WechatMiniprogram.BLEPeripheralServer,
   advertiseRequest: WechatMiniprogram.AdvertiseReqObj,
+  vibrate = true,
 ) {
   return new Promise((resolve, reject) => {
     if (isAdvertising) {
-      Logger.log('aborted by last adv')
+      Logger.log('[Advertisng aborted by last one]')
       reject()
       return
     }
     isAdvertising = true
 
     // 振动逻辑放到有效广播后
-    if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
+    if (wx.vibrateShort && vibrate) wx.vibrateShort({ type: 'heavy' })
 
     server.startAdvertising({
       powerLevel: 'high',
