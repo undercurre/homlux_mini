@@ -1,17 +1,9 @@
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { initBleCapacity, storage, unique, isNullOrUnDef, emitter, delay } from '../../utils/index'
+import { initBleCapacity, storage, unique, isNullOrUnDef, emitter, delay, Logger } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import { createBleServer, bleAdvertising } from '../../utils/remoterUtils'
-import {
-  deviceConfig,
-  MIN_RSSI,
-  SEEK_TIMEOUT,
-  SEEK_TIMEOUT_CONTROLED,
-  CMD,
-  FREQUENCY_TIME,
-  SEEK_INTERVAL,
-} from '../../config/remoter'
+import { deviceConfig, MIN_RSSI, CMD, FREQUENCY_TIME, SEEK_INTERVAL, SEEK_TIMEOUT } from '../../config/remoter'
 import { defaultImgDir } from '../../config/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
@@ -35,7 +27,8 @@ ComponentWithComputed({
       (storage.get('navigationBarHeight') as number),
     showTips: false, // 首次进入显示操作提示
     tipsStep: 0,
-    isSeeking: false, // 正在主动搜索设备（不标记静默搜索的情况）
+    isSeeking: false, // 正在主动搜索设备
+    _isDiscoverying: false, // 正在搜索设备（包括静默更新状态的情况）
     foundListHolder: false, // 临时显示发现列表的点位符
     canShowNotFound: false, // 已搜索过至少一次但未找到
     foundList: [] as Remoter.DeviceItem[], // 搜索到的设备
@@ -87,9 +80,6 @@ ComponentWithComputed({
       //   console.log('onBLECharacteristicValueChange', remoterCrypto.ab2hex(res.value))
       // })
 
-      // 搜索一轮设备
-      // this.toSeek()
-
       // 版本获取
       const info = wx.getAccountInfoSync()
       this.data._envVersion = info.miniProgram.envVersion
@@ -112,7 +102,7 @@ ComponentWithComputed({
       if (this.data._firstLoad) {
         this.data._firstLoad = false
       } else {
-        this.toSeek()
+        this.toPoll()
       }
       // 获取已连接的设备
       // this.getConnectedDevices()
@@ -273,8 +263,6 @@ ComponentWithComputed({
         addr,
         payload,
       })
-
-      await this.toSeek()
     },
     // 轮询设备列表
     toPoll() {
@@ -295,34 +283,31 @@ ComponentWithComputed({
      */
     async toSeek(e?: WechatMiniprogram.TouchEvent) {
       const isUserControlled = !!e // 若从wxml调用，即为用户主动操作
-      const interval = isUserControlled ? SEEK_TIMEOUT_CONTROLED : SEEK_TIMEOUT // 在template中调用时，会误传入非number参数
 
-      // 若用户主动搜索，检查权限，并显示搜索中状态
+      // 若用户主动搜索，则设置搜索中标志
       if (isUserControlled) {
-        await initBleCapacity()
-
-        this.endSeek()
-
         this.setData({
           isSeeking: true,
         })
       }
 
-      // 开始搜寻附近的蓝牙外围设备
-      wx.startBluetoothDevicesDiscovery({
-        allowDuplicatesKey: true,
-        powerLevel: 'high',
-        interval,
-        fail(err) {
-          console.log('startBluetoothDevicesDiscoveryErr', err)
-        },
-        success: () => console.log('开始搜寻蓝牙外围设备'),
-      })
+      if (this.data._isDiscoverying) {
+        console.log('[上一轮搜索仍未结束]')
+      } else {
+        this.data._isDiscoverying = true
 
-      // 如果一直找不到，也自动停止搜索
-      // !! 停止时间要稍长于 SEEK_TIMEOUT，否则会导致监听方法不执行
-      this.data._time_id_end = setTimeout(() => this.endSeek(), interval + 500)
+        // 开始搜寻附近的蓝牙外围设备
+        wx.startBluetoothDevicesDiscovery({
+          allowDuplicatesKey: true,
+          powerLevel: 'high',
+          interval: 50,
+          fail: (err) => Logger.log('[startBluetoothDevicesDiscoveryErr]', err),
+          success: () => Logger.log('[startBluetoothDevicesDiscoverySuccess]'),
+        })
 
+        // 如果一直找不到，也自动停止搜索
+        this.data._time_id_end = setTimeout(() => this.endSeek(), SEEK_TIMEOUT)
+      }
       // 递归调用轮询方法
       this.toPoll()
     },
@@ -333,11 +318,14 @@ ComponentWithComputed({
         this.data._time_id_end = null
       }
       wx.stopBluetoothDevicesDiscovery({
-        success: () => console.log('停止搜寻蓝牙外围设备'),
-      })
-      this.setData({
-        isSeeking: false,
-        canShowNotFound: true,
+        success: () => {
+          Logger.log('[stopBluetoothDevicesDiscovery]')
+          this.data._isDiscoverying = false
+          this.setData({
+            isSeeking: false,
+            canShowNotFound: true,
+          })
+        },
       })
     },
 
