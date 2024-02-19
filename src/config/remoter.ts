@@ -2,13 +2,13 @@
 export const MIN_RSSI = -65
 
 // 搜寻超时时间
-export const SEEK_TIMEOUT = 1000
+export const SEEK_TIMEOUT = 5000
 
 // 操作间隔时间
 export const FREQUENCY_TIME = 700
 
-// 轮询设备状态的间隔时间
-export const SEEK_INTERVAL = 5000
+// 轮询设备状态的上报间隔时间
+export const SEEK_INTERVAL = 2000
 
 // 工厂调试用Mac地址
 export const FACTORY_ADDR = '112233445566'

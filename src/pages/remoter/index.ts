@@ -34,9 +34,7 @@ ComponentWithComputed({
     foundList: [] as Remoter.DeviceItem[], // 搜索到的设备
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
     _time_id_end: null as number | null, // 定时终止搜索设备
-    _time_id_poll: null as number | null, // 定时轮询设备状态
     _lastPowerKey: '', // 记录上一次点击‘照明’时的指令键，用于反转处理
-    _firstLoad: true, // 页面首次打开
     _timer: 0, // 记录上次指令时间
     _holdBleScan: false, // onHide时保持蓝牙扫描的标志
     debugStr: '[rx]',
@@ -98,11 +96,9 @@ ComponentWithComputed({
 
       await delay(0)
 
-      // 首次进入，由用户手动操作；非首次进入（返回），自动搜索一轮设备
-      if (this.data._firstLoad) {
-        this.data._firstLoad = false
-      } else {
-        this.toPoll()
+      // 如果未在发现模式，则搜索设备
+      if (!this.data._isDiscoverying) {
+        this.toSeek()
       }
       // 获取已连接的设备
       // this.getConnectedDevices()
@@ -135,15 +131,12 @@ ComponentWithComputed({
           clearTimeout(this.data._time_id_end)
           this.data._time_id_end = null
         }
-        if (this.data._time_id_poll) {
-          clearTimeout(this.data._time_id_poll)
-          this.data._time_id_poll = null
-        }
       }
     },
 
     onUnload() {
       console.log('onUnload on Index')
+      this.endSeek()
     },
 
     toggleDebug() {
@@ -168,9 +161,6 @@ ComponentWithComputed({
       remoterStore.retrieveRmStore()
 
       this.initDrag()
-
-      // 设备列表变更，同时更新轮询设置
-      this.toPoll()
     },
 
     // 将新发现设备, 添加到[我的设备]
@@ -264,19 +254,7 @@ ComponentWithComputed({
         payload,
       })
     },
-    // 轮询设备列表
-    toPoll() {
-      // 如果已有定时，先清除，以便重复触发轮询
-      if (this.data._time_id_poll) {
-        clearTimeout(this.data._time_id_poll)
-        this.data._time_id_poll = null
-      }
 
-      // 如果未有定时，并且存在列表，则开始静默轮询
-      if (!this.data._time_id_poll && remoterStore.hasRemoter) {
-        this.data._time_id_poll = setTimeout(() => this.toSeek(), SEEK_INTERVAL)
-      }
-    },
     /**
      * @description 搜索设备
      * @param isUserControlled 是否用户主动操作
@@ -289,10 +267,17 @@ ComponentWithComputed({
         this.setData({
           isSeeking: true,
         })
+        this.data._time_id_end = setTimeout(
+          () =>
+            this.setData({
+              isSeeking: false,
+            }),
+          SEEK_TIMEOUT,
+        )
       }
 
       if (this.data._isDiscoverying) {
-        console.log('[上一轮搜索仍未结束]')
+        console.log('[已在发现中且未停止]')
       } else {
         this.data._isDiscoverying = true
 
@@ -300,16 +285,11 @@ ComponentWithComputed({
         wx.startBluetoothDevicesDiscovery({
           allowDuplicatesKey: true,
           powerLevel: 'high',
-          interval: 50,
+          interval: SEEK_INTERVAL,
           fail: (err) => Logger.log('[startBluetoothDevicesDiscoveryErr]', err),
           success: () => Logger.log('[startBluetoothDevicesDiscoverySuccess]'),
         })
-
-        // 如果一直找不到，也自动停止搜索
-        this.data._time_id_end = setTimeout(() => this.endSeek(), SEEK_TIMEOUT)
       }
-      // 递归调用轮询方法
-      this.toPoll()
     },
     // 停止搜索设备
     endSeek() {
@@ -327,6 +307,8 @@ ComponentWithComputed({
           })
         },
       })
+
+      this.data._isDiscoverying = false
     },
 
     // 处理搜索到的设备
@@ -344,9 +326,6 @@ ComponentWithComputed({
 
       // 在终止搜寻前先记录本次搜索的操作方式
       const isUserControlled = this.data.isSeeking
-
-      // 找到设备，即终止搜寻
-      this.endSeek()
 
       // 更新我的设备列表
       remoterStore.renewRmState(recoveredList as Remoter.DeviceRx[])
