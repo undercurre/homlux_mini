@@ -93,10 +93,10 @@ ComponentWithComputed({
         return isClosed ? '/assets/img/base/curtain-open.png' : '/assets/img/base/curtain-close.png'
       }
       // 面板
-      else if (data.deviceInfo.proType === PRO_TYPE.switch && data.deviceInfo.switchInfoDTOList[0]) {
+      else if (data.deviceInfo.proType === PRO_TYPE.switch) {
         // ! 确保带有switchInfoDTOList
-        const switchId = data.deviceInfo.switchInfoDTOList[0].switchId
-        if (!data.deviceInfo.mzgdPropertyDTOList[switchId]) {
+        const switchId = data.deviceInfo.switchInfoDTOList[0]?.switchId
+        if (!switchId || !data.deviceInfo.mzgdPropertyDTOList[switchId]) {
           // 万一设备没有开关属性，不显示
           return ''
         }

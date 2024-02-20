@@ -53,7 +53,7 @@ ComponentWithComputed({
       windSpeed: '风速',
     } as Record<string, string>,
     cacPickerList: {
-      mode: Object.keys(CAC_MODE).map((key) => ({ text: CAC_MODE[key], value: key.split('_')[1] })),
+      mode: Object.keys(CAC_MODE).map((key) => ({ text: CAC_MODE[key], value: parseInt(key.split('_')[1]) })),
       windSpeed: [
         {
           text: '1档',
@@ -82,16 +82,16 @@ ComponentWithComputed({
     disabledMinus(data) {
       const { minTemp } = data
       const { targetTemperature, power, mode } = data.propView
-      return targetTemperature <= minTemp || power !== 1 || mode === '4'
+      return targetTemperature <= minTemp || power !== 1 || parseInt(mode) === 4
     },
     disabledPlus(data) {
       const { maxTemp } = data
       const { targetTemperature, power, mode } = data.propView
-      return targetTemperature >= maxTemp || power !== 1 || mode === '4'
+      return targetTemperature >= maxTemp || power !== 1 || parseInt(mode) === 4
     },
     disabledSlider(data) {
       const { power, mode } = data.propView
-      return power !== 1 || mode === '4'
+      return power !== 1 || parseInt(mode) === 4
     },
     disabledMode(data) {
       const { power } = data.propView
@@ -99,7 +99,7 @@ ComponentWithComputed({
     },
     disabledWindSpeed(data) {
       const { power, mode } = data.propView
-      return power !== 1 || mode === '8'
+      return power !== 1 || parseInt(mode) === 8
     },
     showIndoorTemp(data) {
       const { currentTemperature } = data.propView

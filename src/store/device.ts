@@ -138,9 +138,15 @@ export const deviceStore = observable({
     })
 
     // 排序算法：灯组类型靠前；再按orderNum升序；再按设备id升序
-    return list.sort(
-      (a, b) => (b.deviceType === 4 ? 1 : -1) || a.orderNum - b.orderNum || parseInt(a.deviceId) - parseInt(b.deviceId),
-    )
+    return list.sort((a, b) => {
+      if (a.deviceType === 4 && b.deviceType !== 4) {
+        return -1
+      } else if (a.deviceType !== 4 && b.deviceType === 4) {
+        return 1
+      } else {
+        return a.orderNum !== b.orderNum ? a.orderNum - b.orderNum : parseInt(a.deviceId) - parseInt(b.deviceId)
+      }
+    })
   },
 
   /**
