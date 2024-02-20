@@ -849,6 +849,7 @@ ComponentWithComputed({
       ) {
         return
       }
+
       if (this.data.placeholder.orderNum !== targetOrder) {
         // 节流操作，可能导致movableTouchEnd后仍有movableChange需要执行，丢弃掉
         if (oldOrder < 0) {
@@ -868,8 +869,8 @@ ComponentWithComputed({
         for (const groupIndex in this.data.devicePageList) {
           const group = this.data.devicePageList[groupIndex]
           for (const index in group) {
-            const _orderNum = group[index].orderNum
-            const isForward = oldOrder < targetOrder
+            const _orderNum = group[index].orderNum // 暂存排序
+            const isForward = oldOrder < targetOrder // 是否向前移动（队列末端为前）
             if (
               (isForward && _orderNum > oldOrder && _orderNum <= targetOrder) ||
               (!isForward && _orderNum >= targetOrder && _orderNum < oldOrder)
@@ -963,6 +964,7 @@ ComponentWithComputed({
         const group = this.data.devicePageList[groupIndex]
         for (const index in group) {
           const device = group[index]
+          console.log('[handleSortSaving]', device, index)
           if (device.proType !== PRO_TYPE.switch) {
             deviceOrderData.deviceInfoByDeviceVoList.push({
               deviceId: device.deviceId,
