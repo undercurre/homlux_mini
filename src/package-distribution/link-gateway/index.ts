@@ -49,6 +49,7 @@ ComponentWithComputed({
     apSSID: '',
     _queryCloudTimeId: 0,
     _queryTimes: 50, // 网关发送绑定指令后查询云端最大次数
+    _isNeedLinkDevice: true, // 当前是否需要保持连接设备热点
     activeIndex: 0,
     stepList: [],
     _socket: null as WifiSocket | null,
@@ -225,8 +226,23 @@ ComponentWithComputed({
       this.data._socket = new WifiSocket({
         ssid: this.data.apSSID,
         isAccurateMatchWiFi: !this.data.isManual,
-        onWifiConnected: () => {
-          this.sendMessage()
+        onConnectionStateChange: (connected) => {
+          Logger.debug('onConnectionStateChange', connected, 'this.data._isNeedLinkDevice', this.data._isNeedLinkDevice)
+
+          if (connected) {
+            this.sendMessage()
+          } else if (!connected && this.data._isNeedLinkDevice) {
+            Logger.error('设备连接中断')
+
+            this.setData({
+              isShowForceBindTips: false,
+            })
+            Dialog.alert({
+              title: '设备连接中断,请检查手机连接的wifi是否正确',
+            }).then(() => {
+              this.goBack()
+            })
+          }
         },
       })
 
@@ -349,6 +365,7 @@ ComponentWithComputed({
 
       Logger.debug('app-网关耗时：', Date.now() - start, '发送绑定指令耗时：', Date.now() - begin)
 
+      this.data._isNeedLinkDevice = false
       if (!setRes.success) {
         this.toErrorStatus()
         return
@@ -387,6 +404,8 @@ ComponentWithComputed({
       })
 
       Logger.log('change', res)
+
+      this.data._isNeedLinkDevice = false
       if (!res.success) {
         this.toErrorStatus()
         return

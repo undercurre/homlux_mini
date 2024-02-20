@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { aesUtil, delay, Logger, strUtil, isAndroid, isAndroid10Plus } from '../../utils/index'
+import { aesUtil, delay, isAndroid, isAndroid10Plus, Logger, strUtil } from '../../utils/index'
 
 let _instance: WifiSocket | null = null
 
@@ -16,6 +16,8 @@ function decodeCmd(message: ArrayBuffer, key: string) {
 }
 
 export class WifiSocket {
+  isConnectWifi = false // 是否已经连接上设备wifi
+
   isAccurateMatchWiFi = true // 是否精确匹配wifi
 
   time = dayjs().format('HH:mm:ss')
@@ -41,9 +43,14 @@ export class WifiSocket {
 
   onMessageHandlerList: ((data: IAnyObject) => void)[] = []
 
-  onWifiConnected?: () => void
+  // 目标设备热点连接状态变化回调函数
+  onConnectionStateChange?: (connected: boolean) => void
 
-  constructor(params: { ssid: string; isAccurateMatchWiFi?: boolean; onWifiConnected?: () => void }) {
+  constructor(params: {
+    ssid: string
+    isAccurateMatchWiFi?: boolean
+    onConnectionStateChange?: (connected: boolean) => void
+  }) {
     if (_instance && _instance.SSID === params.ssid) {
       Logger.log('WifiSocket实例重用')
       return _instance
@@ -63,24 +70,32 @@ export class WifiSocket {
     this.queryWifiTimeId = 0
 
     // 监听设备热点连接事件
-    if (params.onWifiConnected) {
-      this.onWifiConnected = params.onWifiConnected
+    if (params.onConnectionStateChange) {
+      this.onConnectionStateChange = params.onConnectionStateChange
     }
 
-    const queryWifi = async () => {
+    const updateConnectionState = async () => {
+      // 由于onWifiConnected不可靠，在安卓端存在监听不到的情况，改为轮询getConnectedWifi
       const isConnected = await this.isConnectDeviceWifi()
 
-      if (isConnected && this.onWifiConnected) {
-        this.onWifiConnected()
-      } else {
-        this.queryWifiTimeId = setTimeout(() => {
-          queryWifi()
-        }, 2000)
+      // 热点连接状态发生变化时，重新查询设备是否连接wifi
+      if (isConnected !== this.isConnectWifi) {
+        this.isConnectWifi = isConnected
+
+        this.onConnectionStateChange && this.onConnectionStateChange(isConnected)
       }
+
+      // 监听断开目标设备热点的轮询频率降低
+      this.queryWifiTimeId = setTimeout(
+        () => {
+          updateConnectionState()
+        },
+        this.isConnectWifi ? 5000 : 2000,
+      )
     }
 
-    // 由于onWifiConnected不可靠，在安卓端存在监听不到的情况，改为轮询getConnectedWifi
-    queryWifi()
+    // 存在监听连接状态变化监听的情况下，轮询当前设备的连接的wifi
+    updateConnectionState()
 
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     _instance = this
@@ -448,7 +463,7 @@ export class WifiSocket {
       clearTimeout(this.queryWifiTimeId)
       this.queryWifiTimeId = 0
     }
-    this.onWifiConnected = undefined
+    this.onConnectionStateChange = undefined
 
     _instance = null
   }
