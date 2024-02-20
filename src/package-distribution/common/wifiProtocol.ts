@@ -133,8 +133,6 @@ export class WifiSocket {
       })
       .catch((err) => err)
 
-    Logger.log('wx.connectWifi', connectRes)
-
     return {
       ...connectRes,
       success: connectRes.errCode === 0 || connectRes.errMsg.includes('ok'),
@@ -160,9 +158,6 @@ export class WifiSocket {
     }
 
     this.initTcpSocket()
-
-    // 防止还在初始化socket，用户点击触发了connect方法，导致udp重复初始化
-    this.queryWifiTimeId = 0
 
     return { errCode: 0, success: true, msg: '初始化成功' }
   }

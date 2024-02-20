@@ -1,10 +1,9 @@
-import dayjs from 'dayjs'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { queryDeviceOnlineStatus, bindDevice, verifySn } from '../../apis/index'
-import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
-import { getCurrentPageParams, strUtil, isAndroid, isAndroid10Plus, Logger } from '../../utils/index'
+import { bindDevice, queryDeviceOnlineStatus, verifySn } from '../../apis/index'
+import { deviceBinding, homeBinding, roomBinding } from '../../store/index'
+import { getCurrentPageParams, isAndroid, isAndroid10Plus, Logger, strUtil } from '../../utils/index'
 import { WifiSocket } from '../common/wifiProtocol'
 import { stepListForBind, stepListForChangeWiFi } from './conifg'
 import { defaultImgDir } from '../../config/index'
@@ -261,8 +260,6 @@ ComponentWithComputed({
 
         const connectRes = await this.data._socket.connectWifi()
 
-        Logger.log(`连接${this.data.apSSID}时长：`, Date.now() - now, connectRes, dayjs().format('HH:mm:ss'))
-
         // 针对IOS用户 加入网关热点wifi的系统弹窗的取消操作
         if (connectRes.errCode === 12007) {
           wx.navigateBack()
@@ -312,8 +309,8 @@ ComponentWithComputed({
     },
 
     /**
-         "bind":0,  //绑定状态 0：未绑定  1：WIFI已绑定  2:有线已绑定
-         "method":"wifi" //无线配网："wifi"，有线配网:"eth"
+     "bind":0,  //绑定状态 0：未绑定  1：WIFI已绑定  2:有线已绑定
+     "method":"wifi" //无线配网："wifi"，有线配网:"eth"
      */
     async getGatewayStatus() {
       const res = await this.data._socket.getGatewayStatus()
