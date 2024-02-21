@@ -90,7 +90,7 @@ export async function bleAdvertising(
  * @description 发送终止指令的广播
  * @param server
  * @param params.addr 蓝牙地址
- * @param params.INTERVAL 广播时长
+ * @param params.INTERVAL 保底的广播时长
  */
 export async function bleAdvertisingEnd(
   server: WechatMiniprogram.BLEPeripheralServer,
@@ -120,10 +120,12 @@ export async function bleAdvertisingEnd(
   // 需要连发多次指令以防丢包
   await startAdvertising(server, advertiseRequest, { vibrate: false })
   await delay(isAndroid() ? INTERVAL * 2 : INTERVAL)
+
+  // 设置可被打断的标志
   isAdvertising = false
   isAbortableAdvertising = true
 
-  await delay(isAndroid() ? INTERVAL * 2 : INTERVAL) // 发送双倍的终止指令包
+  await delay(isAndroid() ? 2000 : 1000) // 无操作时发送更多的终止指令包确保下一次指令执行
 
   await stopAdvertising(server)
 }
