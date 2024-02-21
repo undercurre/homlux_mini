@@ -8,7 +8,7 @@ export const SEEK_TIMEOUT = 5000
 export const FREQUENCY_TIME = 700
 
 // 轮询设备状态的上报间隔时间
-export const SEEK_INTERVAL = 2000
+export const SEEK_INTERVAL = 4000
 
 // 工厂调试用Mac地址
 export const FACTORY_ADDR = '112233445566'
