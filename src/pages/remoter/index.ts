@@ -343,6 +343,7 @@ ComponentWithComputed({
 
       // 用户主动搜索，刷新发现列表
       const foundList = [] as Remoter.DeviceDetail[]
+      const newDeviceCountMap = {} as IAnyObject
       recoveredList.forEach((item) => {
         const isSavedDevice = remoterStore.deviceAddrs.includes(item!.addr)
         if (
@@ -358,21 +359,25 @@ ComponentWithComputed({
             return
           }
 
-          // 同品类同型号设备的数量，包括已保存、新发现
-          const savedDeviceCount = remoterStore.remoterList.filter(
-            (device) => device.deviceType === deviceType && device.deviceModel === deviceModel,
-          ).length
-          const newDeviceCount = foundList.filter(
-            (device) => device.deviceType === deviceType && device.deviceModel === deviceModel,
-          ).length
-          const deviceNameSuffix = savedDeviceCount + newDeviceCount + 1
+          // 同默认名字设备的数量，包括已保存、新发现
+          const savedDeviceCount = remoterStore.remoterList.filter((device) => {
+            if (device.deviceType === '13') {
+              return device.deviceType === deviceType && device.deviceModel === deviceModel
+            }
+            return device.deviceType === deviceType
+          }).length
+          const uniqueType = deviceType === '13' ? `${deviceType}${deviceModel}` : deviceType
+          const newDeviceCount = newDeviceCountMap[uniqueType] ?? 0
+          newDeviceCountMap[uniqueType] = newDeviceCount + 1
 
-          // 如果设备名已存在，则加上编号后缀，以避免同名混淆
-          const hasSavedName = remoterStore.deviceNames.includes(config.deviceName)
-          const hasFoundName = foundList.findIndex((d) => d.deviceName === config.deviceName) > -1
-          const deviceName = hasSavedName || hasFoundName ? config.deviceName + deviceNameSuffix : config.deviceName
+          const deviceNameSuffix = savedDeviceCount + newDeviceCount
 
-          console.log({ savedDeviceCount, newDeviceCount, hasSavedName, hasFoundName })
+          // 如果设备名已存在，则加上编号后缀，以避免同名混淆 // TODO 更名后仍和已保存的名字后缀存在一样的情况，未处理
+          // const hasSavedName = remoterStore.deviceNames.includes(config.deviceName)
+          // const hasFoundName = foundList.findIndex((d) => d.deviceName === config.deviceName) > -1
+          const deviceName = deviceNameSuffix ? config.deviceName + deviceNameSuffix : config.deviceName
+
+          console.log({ savedDeviceCount, newDeviceCount }, newDeviceCountMap)
 
           // 更新发现设备列表
           foundList.push({
