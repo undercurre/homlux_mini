@@ -461,7 +461,7 @@ ComponentWithComputed({
 
       // 上报当前网关sn，告知网关将要配到对应业务系统，仅上报一次
       // 校验res,检查当前网络是否正常，防止当前网络无法访问云端导致上报失败，部分安卓断开网关热点连上新WiFi较慢
-      if (res && !this.data._hasVerifySn) {
+      if (res && res.result && !this.data._hasVerifySn) {
         this.reportSnToCloud(sn)
       }
 

@@ -85,6 +85,7 @@ export const bleDevicesStore = observable({
 
   reset() {
     Logger.log('重置蓝牙store')
+    bleUtil.initBle()
     wx.offBluetoothAdapterStateChange()
 
     wx.onBluetoothAdapterStateChange((res) => {
