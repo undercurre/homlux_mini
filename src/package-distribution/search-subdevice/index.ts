@@ -13,6 +13,7 @@ import PromiseQueue from '../../lib/promise-queue'
 import { defaultImgDir } from '../../config/index'
 import dayjs from 'dayjs'
 import cacheData from '../common/cacheData'
+import { checkedDeviceListTest } from '../../config/test'
 
 type StatusName = 'discover' | 'requesting' | 'success' | 'error'
 const productInfoMap: Record<string, Device.MzgdDeviceProTypeInfoEntity> = {}
@@ -125,7 +126,7 @@ ComponentWithComputed({
     async ready() {
       // 开始配子设备后，侧滑离开当前页面时，重置发现的蓝牙设备列表的状态，以免返回扫码页重进当前页面时状态不对
       bleDevicesStore.bleDeviceList.forEach((item) => {
-        item.isChecked = false
+        item.isChecked = checkedDeviceListTest.includes(item.mac.slice(-4)) || false
         item.status = 'waiting'
       })
 
@@ -437,6 +438,7 @@ ComponentWithComputed({
 
     async beginAddBleDevice(list: Device.ISubDevice[]) {
       try {
+        this.data._errorList = [] // 重试,清空原因列表
         // 先关闭可能正在连接的子设备
         await this.stopFlash(this.data.flashInfo.mac)
 
@@ -539,8 +541,6 @@ ComponentWithComputed({
                   Logger.debug(`【${item.mac}】蓝牙任务开始`)
                   await this.startZigbeeNet(item)
 
-                  await item.client?.close()
-
                   Logger.debug(`【${item.mac}】蓝牙任务结束`)
                 })
               } else {
@@ -573,7 +573,7 @@ ComponentWithComputed({
 
         Logger.log(
           '配网设备list',
-          list.map((item) => item.zigbeeMac),
+          list.map((item) => item.mac),
         )
 
         this.data._zigbeeTaskQueue.add(zigbeeTaskList)
@@ -623,8 +623,6 @@ ComponentWithComputed({
             }, timeout * 1000)
 
             return
-          } else if (!configRes?.success) {
-            Logger.error(`【${bleDevice.mac}】getZigbeeState失败：`, configRes)
           }
         }
 
@@ -640,6 +638,9 @@ ComponentWithComputed({
         const res = await bleDevice.client?.startZigbeeNet({ channel, extPanId, panId })
 
         if (res?.success) {
+          // 配网指令发送成功，需要手动关闭蓝牙连接，发送失败会自动关闭,无需手动调用
+          await bleDevice.client?.close()
+
           // 兼容新固件逻辑，子设备重复配网同一个网关，网关不会上报子设备入网，必须app手动查询设备入网状态
           if (res?.code === '02') {
             const isOnline = await isDeviceOnline({ devIds: [bleDevice.zigbeeMac] })
