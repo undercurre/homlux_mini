@@ -318,7 +318,7 @@ ComponentWithComputed({
           .map((item) => remoterProtocol.searchDeviceCallBack(item)) // 过滤不支持的设备
           .filter((item) => !!item) || []
 
-      console.log('搜寻到的设备列表：', recoveredList)
+      // console.log('搜寻到的设备列表：', recoveredList)
 
       if (!recoveredList?.length) {
         return

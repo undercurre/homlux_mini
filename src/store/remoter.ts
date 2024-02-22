@@ -279,7 +279,7 @@ export const remoterStore = observable({
       }
     })
 
-    console.log('renewRmState', list)
+    // console.log('renewRmState', list)
     runInAction(() => {
       this.remoterList = list
     })

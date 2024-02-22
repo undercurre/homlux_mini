@@ -60,7 +60,7 @@ export async function bleAdvertising(
 
   if (isAndroid()) {
     const manufacturerSpecificData = remoterProtocol.createAndroidBleRequest({ payload, addr, isFactory })
-    Logger.log('开始广播, comId:', comId) // , cryptoUtils.ab2hex(manufacturerSpecificData).slice(0)
+    Logger.log('广播数据准备', comId, '时长', isAndroid() ? INTERVAL * 2 : INTERVAL) // , cryptoUtils.ab2hex(manufacturerSpecificData).slice(0)
 
     advertiseRequest.manufacturerData = [
       {
@@ -79,9 +79,9 @@ export async function bleAdvertising(
   await startAdvertising(server, advertiseRequest)
   await delay(isAndroid() ? INTERVAL * 2 : INTERVAL)
 
-  // 主动终止控制指令广播，并发终止指令广播
+  // 自动终止控制指令广播，并发终止指令广播
   if (autoEnd) {
-    await stopAdvertising(server)
+    await stopAdvertising(server, '指令广播自动终止')
     await bleAdvertisingEnd(server, { addr, isFactory })
   }
 }
@@ -96,11 +96,11 @@ export async function bleAdvertisingEnd(
   server: WechatMiniprogram.BLEPeripheralServer,
   params: { addr: string; comId?: string; INTERVAL?: number; isFactory?: boolean },
 ) {
-  const { addr, comId = '0x4D11', INTERVAL = 300, isFactory } = params
+  const { addr, comId = '0x4D11', INTERVAL = 600, isFactory } = params
   const payload = remoterProtocol.generalCmdString([CMD.END]) // 固定发这个指令
   const advertiseRequest = {} as WechatMiniprogram.AdvertiseReqObj
 
-  Logger.log('开始广播[0x00]')
+  Logger.log('广播数据准备[0x00]')
 
   if (isAndroid()) {
     const manufacturerSpecificData = remoterProtocol.createAndroidBleRequest({ payload, addr, isFactory })
@@ -119,15 +119,19 @@ export async function bleAdvertisingEnd(
 
   // 需要连发多次指令以防丢包
   await startAdvertising(server, advertiseRequest, { vibrate: false })
-  await delay(isAndroid() ? INTERVAL * 2 : INTERVAL)
+  await delay(INTERVAL)
 
   // 设置可被打断的标志
   isAdvertising = false
   isAbortableAdvertising = true
 
-  await delay(isAndroid() ? 2000 : 1000) // 无操作时发送更多的终止指令包确保下一次指令执行
-
-  await stopAdvertising(server)
+  await delay(2000) // 无操作时发送更多的终止指令包确保下一次指令执行
+  setTimeout(() => {
+    // 如果未被打断过，则需要再停止一下
+    if (isAbortableAdvertising) {
+      stopAdvertising(server, '0x00未被中断过，终止')
+    }
+  }, 2000)
 }
 
 /**
@@ -136,20 +140,21 @@ export async function bleAdvertisingEnd(
  * @param advertiseRequest
  * @param option.vibrate 发指令时是否振动
  */
-export function startAdvertising(
+export async function startAdvertising(
   server: WechatMiniprogram.BLEPeripheralServer,
   advertiseRequest: WechatMiniprogram.AdvertiseReqObj,
   option: { vibrate?: boolean } = { vibrate: true },
 ) {
+  if (isAdvertising) {
+    Logger.log('[Advertisng aborted by last one]')
+    return
+  } else if (isAbortableAdvertising) {
+    await stopAdvertising(server, '终止进行中的广播')
+    await delay(0)
+    Logger.log('[Advertisng aborted by A new one]')
+  }
+
   return new Promise((resolve, reject) => {
-    if (isAdvertising) {
-      Logger.log('[Advertisng aborted by last one]')
-      reject()
-      return
-    } else if (isAbortableAdvertising) {
-      Logger.log('[Advertisng aborted by A new one]')
-      stopAdvertising(server)
-    }
     isAdvertising = true
 
     // 振动逻辑放到有效广播后
@@ -159,7 +164,7 @@ export function startAdvertising(
       powerLevel: 'high',
       advertiseRequest,
       success(res) {
-        Logger.log('发送广播成功')
+        Logger.log('广播中...')
         resolve(res)
       },
       fail(err) {
@@ -175,11 +180,11 @@ export function startAdvertising(
  * @param server
  * @param advertiseRequest
  */
-export function stopAdvertising(server: WechatMiniprogram.BLEPeripheralServer) {
+export function stopAdvertising(server: WechatMiniprogram.BLEPeripheralServer, logs?: string) {
   return new Promise((resolve, reject) => {
     server.stopAdvertising({
       success(res) {
-        Logger.log('停止广播成功')
+        Logger.log('停止广播成功', logs ?? '')
         resolve(res)
       },
       fail(err) {

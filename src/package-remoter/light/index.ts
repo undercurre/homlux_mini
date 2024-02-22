@@ -145,7 +145,7 @@ ComponentWithComputed({
      * @name 广播控制指令
      */
     async toSendCmd(e: WechatMiniprogram.TouchEvent) {
-      console.log('toSendCmd', e)
+      // console.log('toSendCmd', e)
       if (!this.data._bleServer && !isDevMode) {
         this.data._bleServer = await createBleServer()
       }
@@ -157,7 +157,7 @@ ComponentWithComputed({
 
       const addr = this.data.isFactoryMode ? FACTORY_ADDR : remoterStore.curAddr
       const { type } = e.target.dataset
-      console.log('[deviceInfo] before setting', this.data.deviceInfo)
+      console.log('[控制指令前的设备状态]', this.data.deviceInfo)
 
       const params = [CMD[key]]
       // 色温和亮度同时设置的特殊指令
