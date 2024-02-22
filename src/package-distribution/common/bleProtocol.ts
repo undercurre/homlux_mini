@@ -367,7 +367,8 @@ export class BleClient {
     })
 
     const result = {
-      ...res,
+      code: res.code,
+      success: res.success,
       result: {
         zigbeeMac: '',
       },
@@ -396,7 +397,8 @@ export class BleClient {
     const res = await this.sendCmd({ cmdType: CmdTypeMap.DEVICE_INFO_QUREY, data: [0x01] })
 
     const result = {
-      ...res,
+      code: res.code,
+      success: res.success,
       result: {
         isConfig: '',
       },
@@ -422,7 +424,8 @@ export class BleClient {
     Logger.log(`【${this.mac}】getLightState`, res)
 
     return {
-      ...res,
+      code: res.code,
+      success: res.success,
       result: {},
     }
   }
