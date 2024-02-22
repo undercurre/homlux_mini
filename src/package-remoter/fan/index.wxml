@@ -113,7 +113,6 @@
         textWidth="128rpx"
         type="square"
         text="风速"
-        data-dir="U"
         data-key="FAN_SPEED"
       ></mz-button>
       <mz-button
@@ -124,7 +123,6 @@
         textWidth="128rpx"
         type="square"
         text="延时关"
-        data-dir="L"
         data-key="FAN_DELAY_OFF"
         disabled="{{!deviceInfo.FAN_SWITCH}}"
       ></mz-button>
@@ -158,6 +156,14 @@
         type="square"
         text="发送厂测指令"
         data-key="FACTORY"
+      ></mz-button>
+      <mz-button
+        wx:if="{{isDebugMode}}"
+        bind:btnTouch="autoCMD"
+        class="mt-64rpx"
+        imgWidth="650rpx"
+        type="square"
+        text="发送50次指令"
       ></mz-button>
     </view>
   </view>

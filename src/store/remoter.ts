@@ -23,7 +23,7 @@ const MOCK_DEVICES = [
     deviceId: '0',
     addr: '112233445569',
     devicePic: '/assets/img/remoter/bathHeater.png',
-    deviceName: '风扇灯Mock',
+    deviceName: '风扇灯智能款Mock',
     deviceType: '13',
     deviceModel: '02',
     saved: true,

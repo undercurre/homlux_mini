@@ -14,6 +14,8 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
 import Toast from '@vant/weapp/toast/toast'
 
+let auto_timer = null as number | null
+
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [remoterBinding] }), pageBehaviors],
 
@@ -169,6 +171,14 @@ ComponentWithComputed({
       if (remoterStore.curRemoter.connected) {
         this.data._bleService?.close()
       }
+      if (auto_timer) {
+        clearInterval(auto_timer)
+      }
+    },
+    onHide() {
+      if (auto_timer) {
+        clearInterval(auto_timer)
+      }
     },
     /**
      * @name 广播控制指令
@@ -252,6 +262,7 @@ ComponentWithComputed({
         addr,
         payload,
         isFactory: this.data.isFactoryMode,
+        debug: this.data.isDebugMode,
       })
     },
     async handleTouchEnd() {
@@ -281,7 +292,7 @@ ComponentWithComputed({
       const q = this.data._keyQueue.join('')
       this.data._keyQueue = ['', '', '', '', '', '', '', ''] // 清空
       console.log('toggleDebug', q)
-      if (!this.data.isDebugMode && q !== 'UUDDLLRR') {
+      if (!this.data.isDebugMode && q !== 'DDRRDDRR') {
         return
       }
 
@@ -293,6 +304,29 @@ ComponentWithComputed({
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
 
       this.setData({ isFactoryMode: !this.data.isFactoryMode })
+    },
+
+    // 自动连续发送50次开灯指令，间隔2秒
+    autoCMD() {
+      if (!this.data.isDebugMode) {
+        return
+      }
+      const key = 'LIGHT_LAMP'
+
+      let count = 0
+
+      auto_timer = setInterval(() => {
+        this.toSendCmd({
+          target: {
+            dataset: { key },
+          },
+        } as unknown as WechatMiniprogram.TouchEvent),
+          console.warn(`${key} 第${count}次执行`)
+
+        if (++count >= 50 && auto_timer) {
+          clearInterval(auto_timer)
+        }
+      }, 3500)
     },
 
     showActionSheet(e: WechatMiniprogram.TouchEvent) {

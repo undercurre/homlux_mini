@@ -3,6 +3,7 @@ import remoterProtocol from './remoterProtocol'
 import { hideLoading, isAndroid, showLoading } from './system'
 import { delay, Logger } from '../utils/index'
 import { CMD } from '../config/remoter'
+import Toast from '@vant/weapp/toast/toast'
 
 // 是否广播中
 let isAdvertising = false
@@ -48,15 +49,23 @@ export function createBleServer() {
  */
 export async function bleAdvertising(
   server: WechatMiniprogram.BLEPeripheralServer | null,
-  params: { addr: string; payload: string; comId?: string; autoEnd?: boolean; INTERVAL?: number; isFactory?: boolean },
+  params: {
+    addr: string
+    payload: string
+    comId?: string
+    autoEnd?: boolean
+    INTERVAL?: number
+    isFactory?: boolean
+    debug?: boolean
+  },
 ) {
-  const { addr, payload, comId = '0x4D11', INTERVAL = 600, autoEnd = true, isFactory } = params
+  const { addr, payload, comId = '0x4D11', INTERVAL = 600, autoEnd = true, isFactory, debug = false } = params
   if (!server) {
     Logger.log('[server is Not existed]')
     return
   }
 
-  const advertiseRequest = {} as WechatMiniprogram.AdvertiseReqObj
+  const advertiseRequest = {} as WechatMiniprogram.AdvertiseReqObj & { payload: string }
 
   if (isAndroid()) {
     const manufacturerSpecificData = remoterProtocol.createAndroidBleRequest({ payload, addr, isFactory })
@@ -75,14 +84,16 @@ export async function bleAdvertising(
     advertiseRequest.serviceUuids = serviceUuids
   }
 
+  advertiseRequest.payload = payload
+
   // 需要连发多次指令以防丢包
-  await startAdvertising(server, advertiseRequest)
+  await startAdvertising(server, advertiseRequest, { vibrate: true, debug })
   await delay(isAndroid() ? INTERVAL * 2 : INTERVAL)
 
   // 自动终止控制指令广播，并发终止指令广播
   if (autoEnd) {
     await stopAdvertising(server, '指令广播自动终止')
-    await bleAdvertisingEnd(server, { addr, isFactory })
+    await bleAdvertisingEnd(server, { addr, isFactory, debug })
   }
 }
 
@@ -94,11 +105,11 @@ export async function bleAdvertising(
  */
 export async function bleAdvertisingEnd(
   server: WechatMiniprogram.BLEPeripheralServer,
-  params: { addr: string; comId?: string; INTERVAL?: number; isFactory?: boolean },
+  params: { addr: string; comId?: string; INTERVAL?: number; isFactory?: boolean; debug?: boolean },
 ) {
-  const { addr, comId = '0x4D11', INTERVAL = 600, isFactory } = params
+  const { addr, comId = '0x4D11', INTERVAL = 600, isFactory, debug = false } = params
   const payload = remoterProtocol.generalCmdString([CMD.END]) // 固定发这个指令
-  const advertiseRequest = {} as WechatMiniprogram.AdvertiseReqObj
+  const advertiseRequest = {} as WechatMiniprogram.AdvertiseReqObj & { payload: string }
 
   Logger.log('广播数据准备[0x00]')
 
@@ -117,19 +128,21 @@ export async function bleAdvertisingEnd(
     advertiseRequest.serviceUuids = serviceUuids
   }
 
+  advertiseRequest.payload = payload
+
   // 需要连发多次指令以防丢包
-  await startAdvertising(server, advertiseRequest, { vibrate: false })
+  await startAdvertising(server, advertiseRequest, { vibrate: false, debug })
   await delay(INTERVAL)
 
   // 设置可被打断的标志
   isAdvertising = false
   isAbortableAdvertising = true
 
-  await delay(2000) // 无操作时发送更多的终止指令包确保下一次指令执行
+  // 无操作时发送更多的终止指令包确保下一次指令执行
   setTimeout(() => {
     // 如果未被打断过，则需要再停止一下
     if (isAbortableAdvertising) {
-      stopAdvertising(server, '0x00未被中断过，终止')
+      stopAdvertising(server, '（此前0x00未被中断过终止）')
     }
   }, 2000)
 }
@@ -142,14 +155,14 @@ export async function bleAdvertisingEnd(
  */
 export async function startAdvertising(
   server: WechatMiniprogram.BLEPeripheralServer,
-  advertiseRequest: WechatMiniprogram.AdvertiseReqObj,
-  option: { vibrate?: boolean } = { vibrate: true },
+  advertiseRequest: WechatMiniprogram.AdvertiseReqObj & { payload: string },
+  option: { vibrate?: boolean; debug?: boolean } = { vibrate: true, debug: false },
 ) {
   if (isAdvertising) {
     Logger.log('[Advertisng aborted by last one]')
     return
   } else if (isAbortableAdvertising) {
-    await stopAdvertising(server, '终止进行中的广播')
+    await stopAdvertising(server, '（终止进行中的广播）')
     await delay(0)
     Logger.log('[Advertisng aborted by A new one]')
   }
@@ -164,7 +177,10 @@ export async function startAdvertising(
       powerLevel: 'high',
       advertiseRequest,
       success(res) {
-        Logger.log('广播中...')
+        Logger.log('广播中...', advertiseRequest.payload)
+        if (option.debug && advertiseRequest.payload) {
+          Toast(advertiseRequest.payload)
+        }
         resolve(res)
       },
       fail(err) {

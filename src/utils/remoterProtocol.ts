@@ -331,7 +331,7 @@ const _handleBleResponse = (response: string) => {
  * cmdType 命令号。灯协议，固定为0x00，实际上未使用；浴霸协议，控制键值为0x00，参数设置0x01；故统一按浴霸规则发送
  */
 const _generalCmdString = (values: number[]) => {
-  console.log('[指令码]', ...values.map((item) => item.toString().padStart(2, '0')))
+  // console.log('[指令码]', ...values.map((item) => item.toString().padStart(2, '0')))
   const channel = 0x01 // 通道，固定值
   const version = 0x01 // 协议版本
   const cmdType = values.length > 1 ? 0x01 : 0x00
