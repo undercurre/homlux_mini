@@ -169,6 +169,10 @@ ComponentWithComputed({
           loading: false,
         })
       }
+      if (this.data._timeId) {
+        clearTimeout(this.data._timeId)
+        this.data._timeId = null
+      }
     },
     onHide() {
       // 隐藏之前展示的下拉菜单

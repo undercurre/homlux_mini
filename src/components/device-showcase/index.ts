@@ -36,7 +36,7 @@ ComponentWithComputed({
       })
 
       // 绑定美居设备时，检查美居授权。
-      if (this.data.deviceInfo.type === 'meiju') {
+      if (this.data.deviceInfo.source === 'meiju') {
         const res = await queryUserThirdPartyInfo(homeStore.currentHomeId, { loading: true })
 
         const isAuth = res.success ? res.result[0].authStatus === 1 : false

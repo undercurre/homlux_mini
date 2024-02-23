@@ -3,6 +3,10 @@ import homOs from 'js-homos'
 import { Logger, emitter, debounce } from './index'
 
 export async function initHomeOs() {
+  if (!homeStore.currentHomeId) {
+    Logger.debug('initHomeOs终止, homeStore.currentHomeId:', homeStore.currentHomeId)
+    return
+  }
   await homeStore.initLocalKey()
 
   // 调试阶段可写死传递host参数，PC模拟调试

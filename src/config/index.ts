@@ -3,6 +3,7 @@ export * from './code'
 export * from './device'
 export * from './light'
 export * from './img'
+export * from './dic'
 
 let env: ENV_TYPE = 'dev'
 

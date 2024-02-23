@@ -215,12 +215,22 @@ export async function sendDevice(
   let promise
 
   switch (data.deviceType) {
-    case 2:
+    case 2: {
+      const method =
+        {
+          [PRO_TYPE.light]: 'lightControlNew',
+          [PRO_TYPE.gateway]: 'panelSingleControlNew',
+          [PRO_TYPE.switch]: 'panelSingleControlNew',
+          [PRO_TYPE.centralAirConditioning]: 'airControl',
+          [PRO_TYPE.floorHeating]: 'airControl',
+          [PRO_TYPE.freshAir]: 'airControl',
+        }[data.proType] ?? ''
+
       params = {
         topic: '/subdevice/control',
         deviceId: data.gatewayId as string,
         deviceType: data.deviceType,
-        method: data.proType === PRO_TYPE.light ? 'lightControlNew' : 'panelSingleControlNew',
+        method,
         inputData: [
           {
             devId: data.deviceId,
@@ -231,55 +241,29 @@ export async function sendDevice(
       }
       promise = controlDevice(params, option)
       break
+    }
 
-    case 3:
-      if (data.proType === PRO_TYPE.light) {
-        const downData = property
+    case 3: {
+      const method =
+        {
+          [PRO_TYPE.light]: 'wifiLampControl',
+          [PRO_TYPE.curtain]: 'wifiCurtainControl',
+          [PRO_TYPE.bathHeat]: 'wifiBathHeatControl',
+          [PRO_TYPE.clothesDryingRack]: 'wifiClothesDryingRackControl',
+          [PRO_TYPE.airConditioner]: 'wifiAirControl',
+        }[data.proType] ?? ''
 
-        params = {
-          deviceId: data.deviceId,
-          deviceType: data.deviceType,
-          method: 'wifiLampControl',
-          inputData: [downData],
-        }
-
-        promise = controlDevice(params, option)
-      } else if (data.proType === PRO_TYPE.curtain) {
-        const downData = property
-
-        params = {
-          deviceId: data.deviceId,
-          deviceType: data.deviceType,
-          method: 'wifiCurtainControl',
-          inputData: [downData],
-        }
-
-        promise = controlDevice(params, option)
-      } else if (data.proType === PRO_TYPE.bathHeat) {
-        const downData = property
-
-        params = {
-          deviceId: data.deviceId,
-          deviceType: data.deviceType,
-          method: 'wifiBathHeatControl',
-          inputData: [downData],
-        }
-
-        promise = controlDevice(params, option)
-      } else if (data.proType === PRO_TYPE.clothesDryingRack) {
-        const downData = property
-
-        params = {
-          deviceId: data.deviceId,
-          deviceType: data.deviceType,
-          method: 'wifiClothesDryingRackControl',
-          inputData: [downData],
-        }
-
-        promise = controlDevice(params, option)
+      params = {
+        deviceId: data.deviceId,
+        deviceType: data.deviceType,
+        method,
+        inputData: [property],
       }
 
+      promise = controlDevice(params, option)
+
       break
+    }
 
     case 4:
       promise = groupControl(
@@ -320,18 +304,31 @@ export async function sendCmdAddSubdevice(
 }
 
 /**
- * 云端找一找接口
+ * 云端找一找接口，目前仅支持网关子设备，灯和面板
  * Identify 闪多少秒
  */
 export async function findDevice(
   {
     gatewayId,
     devId,
-    modelName = 'wallSwitch1',
+    proType,
     Identify = 3,
-  }: { gatewayId: string; devId: string; modelName?: string; Identify?: number },
+    switchInfoDTOList = [],
+  }: {
+    gatewayId: string
+    proType: string
+    devId: string
+    Identify?: number
+    switchInfoDTOList?: Device.MzgdPanelSwitchInfoDTO[]
+  },
   options?: { loading?: boolean },
 ) {
+  let modelName = 'light'
+
+  if (proType === PRO_TYPE.switch) {
+    modelName = switchInfoDTOList[0].switchId
+  }
+
   return await controlDevice(
     {
       topic: '/subdevice/control',
@@ -608,6 +605,25 @@ export async function uploadDeviceLog(
     log: true,
     loading: options?.loading ?? false,
     url: '/v1/device/uploadDeviceLog',
+    data,
+  })
+}
+
+/**
+ * 查询产品信息
+ */
+export async function queryDeviceProInfo(
+  data: {
+    proType: string
+    productId: string
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post<Device.MzgdDeviceProTypeInfoEntity>({
+    log: true,
+    loading: options?.loading ?? false,
+    isDefaultErrorTips: false,
+    url: '/v1/device/queryDeviceProInfo',
     data,
   })
 }

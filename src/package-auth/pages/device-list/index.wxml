@@ -1,4 +1,7 @@
-<view class="page-container flex flex-col">
+<view
+  class="page-container flex flex-1 flex-col"
+  style="padding-bottom: 0"
+>
   <nav-bar
     leftArrow="{{true}}"
     bind:leftTap="goBack"
@@ -29,7 +32,7 @@
 
   <view
     id="content"
-    class="flex-1"
+    class="flex flex-1"
   >
     <view
       wx:if="{{deviceList.length === 0}}"
@@ -48,6 +51,8 @@
       show-scrollbar="{{false}}"
       style="height: {{listHeight}}px;"
     >
+      <!-- 解决滑动问题 -->
+      <view style="height: 1px"></view>
       <van-cell-group
         wx:for="{{deviceList}}"
         wx:key="deviceId"
@@ -65,27 +70,25 @@
     </scroll-view>
   </view>
 
-  <view class="list-bottom-placeholder"> </view>
-</view>
-
-<view
-  class="fixed bottom-0 flex flex-col pt-30rpx w-750rpx px-32rpx box-border"
-  style="height: calc(212rpx + env(safe-area-inset-bottom))"
->
   <view
-    class="text-center pb-32rpx"
-    bindtap="debindMeiju"
+    class="flex flex-col pt-30rpx w-750rpx px-32rpx box-border"
+    style="height: calc(212rpx + env(safe-area-inset-bottom))"
   >
-    <text class="text-32rpx text-hex-555659">解除绑定</text>
+    <view
+      class="text-center pb-32rpx"
+      bindtap="debindMeiju"
+    >
+      <text class="text-32rpx text-hex-555659">解除绑定</text>
+    </view>
+    <van-button
+      class="w-full"
+      size="large"
+      type="primary"
+      block
+      bind:click="goBackHome"
+      >返回首页</van-button
+    >
   </view>
-  <van-button
-    class="w-full"
-    size="large"
-    type="primary"
-    block
-    bind:click="goBackHome"
-    >返回首页</van-button
-  >
 </view>
 
 <van-toast id="van-toast" />

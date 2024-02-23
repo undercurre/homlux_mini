@@ -1,0 +1,109 @@
+<van-popup
+  show="{{ show }}"
+  z-index="1002"
+  round
+  position="bottom"
+  bind:close="handleClose"
+  closeable
+  lock-scroll="{{true}}"
+>
+  <view class="w-full bg-white flex-col flex items-center pt-20rpx">
+    <view class="flex justify-evenly w-686rpx mt-10rpx relative">
+      <view class="flex-col-center">
+        <text class="mx-24rpx mt-16rpx tab-title">{{title || deviceInfo.deviceName}}</text>
+      </view>
+      <!-- 设置、关闭按钮 -->
+      <view
+        wx:if="{{isShowSetting}}"
+        class="absolute left-20rpx top-16rpx"
+        bind:tap="toDetail"
+      >
+        <image
+          class="w-48 h-48"
+          src="/assets/img/home-manage/setting.png"
+        ></image>
+      </view>
+    </view>
+
+    <view class="w-686rpx">
+      <view class="flex flex-row justify-between items-center px-32rpx">
+        <!-- 温度减 -->
+        <icon-button
+          disabled="{{disabledMinus}}"
+          isOn="{{false}}"
+          size="{{74}}"
+          round="{{37}}"
+          bgColor="#f7f8f9"
+          bgColorActive="#cccccc"
+          icon="/package-room-control/assets/img/minus.png"
+          iconActive="/package-room-control/assets/img/minusOn.png"
+          textColor="#a2a2a2"
+          data-rebound="{{true}}"
+          bind:touchstart="handleBtnTap"
+          data-key="minus"
+        ></icon-button>
+
+        <view>
+          <view class="flex flex-row justify-center items-start mt-64rpx">
+            <text class="text-28rpx text-hex-fff leading-none">℃</text>
+            <text class="text-124rpx text-hex-495264 leading-none">{{temperature}}</text>
+            <text class="text-28rpx text-hex-515d75">℃</text>
+          </view>
+
+          <view class="text-center mt-30rpx h-36">
+            <text
+              wx:if="{{showIndoorTemp}}"
+              class="text-24 text-hex-a2a2a2"
+              >室内温度：{{showIndoorTemp}}℃</text
+            >
+          </view>
+        </view>
+
+        <!-- 温度加 -->
+        <icon-button
+          disabled="{{disabledPlus}}"
+          isOn="{{false}}"
+          size="{{74}}"
+          round="{{37}}"
+          bgColor="#f7f8f9"
+          bgColorActive="#cccccc"
+          icon="/package-room-control/assets/img/plus.png"
+          iconActive="/package-room-control/assets/img/plusOn.png"
+          textColor="#a2a2a2"
+          data-rebound="{{true}}"
+          bind:touchstart="handleBtnTap"
+          data-key="plus"
+        ></icon-button>
+      </view>
+
+      <view class="pt-64rpx pb-16rpx px-8rpx">
+        <mz-slider
+          disabled="{{disabledSlider}}"
+          bind:slideEnd="handleBtnTap"
+          bind:slideChange="handleSlideChange"
+          value="{{temperature}}"
+          barHeight="36"
+          data-min="{{minTemp}}"
+          data-max="{{maxTemp}}"
+          active-color="#488FFF"
+          data-key="targetTemperature"
+          use-button-slot
+        >
+          <view
+            slot="button"
+            class="slider-button"
+          />
+        </mz-slider>
+      </view>
+
+      <view class="flex justify-between">
+        <text class="text-24 text-hex-9b9b9e">{{minTemp}}℃</text>
+        <text class="text-24 text-hex-9b9b9e">{{maxTemp}}℃</text>
+      </view>
+    </view>
+
+    <view class="h-96rpx"></view>
+  </view>
+</van-popup>
+
+<van-toast id="van-toast" />

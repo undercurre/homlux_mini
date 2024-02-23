@@ -1,0 +1,10 @@
+{
+  "component": true,
+  "styleIsolation": "apply-shared",
+  "usingComponents": {
+    "drop-button": "../../components/drop-button/index",
+    "mz-slider": "/components/mz-slider/index",
+    "icon-button": "../../components/icon-button/index",
+    "time-picker-view": "../../../../components/time-picker-view/index"
+  }
+}

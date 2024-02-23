@@ -36,9 +36,6 @@ type roomInfo = {
   // 统计多少灯打开（多开开关单独计算）（取代云端deviceLightOnNum）
   lightOnCount: number
 
-  // 非网关设备数
-  endCount: number
-
   // 灯与面板总数量
   lightCount: number
 }

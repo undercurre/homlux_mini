@@ -44,7 +44,6 @@ declare namespace Meiju {
     proType: string // 品类码，不包含0x
     sn8: string // sn8
     mode: number // 配网模式 （0:AP，1:快连，2:声波，3:蓝牙，4:零配，5:WIFI,6:ZigBee）
-    productId: string // 产品型号，如SC-1/M2-Z
-    deviceImg: string // 产品图片
+    deviceImg?: string // 产品图片
   }
 }

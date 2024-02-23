@@ -1,0 +1,14 @@
+@import '../../../../commons/templates/secondaryPopup.wxss';
+
+.tab-title {
+  color: #27282a;
+  font-weight: 600;
+}
+
+.slider-button {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 10rpx;
+  margin-right: -2rpx;
+  background-color: #ffffff;
+}

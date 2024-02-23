@@ -18,14 +18,14 @@ ComponentWithComputed({
   data: {
     deviceList: [
       {
-        icon: `${productImgDir}/gateway.png`,
+        icon: `${productImgDir}/0x16.png`,
         name: '智能网关',
         path: '/package-distribution/scan/index?scanType=gateway',
       },
       {
         icon: `${productImgDir}/subdevice.png`,
         name: '开关/灯具',
-        path: '/package-distribution/choose-light/index',
+        path: '/package-distribution/choose-model/index?proType=0x13',
       },
       {
         icon: `${productImgDir}/screen.png`,
@@ -35,43 +35,42 @@ ComponentWithComputed({
       {
         icon: `${productImgDir}/sensor.png`,
         name: '传感器',
-        path: '/package-distribution/choose-sensor/index',
+        path: '/package-distribution/choose-model/index?proType=0xBC',
       },
       {
-        icon: `${productImgDir}/curtain.png`,
+        icon: `${productImgDir}/0x14.png`,
         name: '窗帘',
         type: 'meiju',
         path: strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
           proType: '14',
           sn8: '79700Z76',
-          productId: 'SC-1/M2-Z',
-          deviceImg: `${productImgDir}/curtain.png`,
           mode: 0,
         } as Meiju.IProductItem),
       },
       {
-        icon: `${productImgDir}/bath-heater.png`,
+        icon: `${productImgDir}/0x26.png`,
         name: '浴霸',
         type: 'meiju',
         path: strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
           proType: '26',
-          sn8: 'M0100032',
-          productId: 'MY-S5X28-Y5W',
-          deviceImg: `${productImgDir}/bath-heater.png`,
+          sn8: 'M0100032,57066708',
           mode: 0,
         } as Meiju.IProductItem),
       },
       {
-        icon: `${productImgDir}/laundry.png`,
+        icon: `${productImgDir}/0x17.png`,
         name: '晾衣机',
         type: 'meiju',
         path: strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
           proType: '17',
           sn8: 'M0100035',
-          productId: 'MLY-D60W',
-          deviceImg: `${productImgDir}/laundry.png`,
           mode: 0,
         } as Meiju.IProductItem),
+      },
+      {
+        icon: `${productImgDir}/0xAC.png`,
+        name: '空调',
+        path: '/package-distribution/choose-model/index?proType=0xAC',
       },
     ],
   },

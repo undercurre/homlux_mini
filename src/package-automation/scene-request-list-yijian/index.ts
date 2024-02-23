@@ -39,7 +39,7 @@ ComponentWithComputed({
       if (data.successNum < data.deviceList.length && data.finishNum === data.deviceList.length) {
         Dialog.confirm({
           title: '创建失败',
-          message: '部分设备配置自动化失败，请确保所有设备在线后重试',
+          message: '部分设备配置一键场景失败，请确保所有设备在线后重试',
           showCancelButton: false,
           confirmButtonText: '我知道了',
         })
@@ -66,7 +66,7 @@ ComponentWithComputed({
 
       const sceneData = storage.get('scene_data') as Scene.AddSceneDto | Scene.UpdateSceneDto
 
-      const sceneDeviceActionsFlatten = storage.get('sceneDeviceActionsFlatten') as Device.ActionItem[]
+      const sceneDeviceActionsFlatten = storage.get('sceneDeviceActionsFlatten') as AutoScene.AutoSceneFlattenAction[]
 
       console.log('scene-request-flatten', sceneDeviceActionsFlatten)
 
@@ -115,7 +115,7 @@ ComponentWithComputed({
           }
         } else {
           const property = action.value
-          const ctrlAction = {} as IAnyObject
+          let ctrlAction = {} as IAnyObject
 
           if (device.deviceType === 2) {
             ctrlAction.modelName = device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1'
@@ -142,8 +142,9 @@ ComponentWithComputed({
             ctrlAction.updown = property.updown
             ctrlAction.laundry = property.laundry
             ctrlAction.light = property.light
+          } else if (this.isNewScenarioSettingSupported(device.proType)) {
+            ctrlAction = action.sceneProperty!
           }
-
           sceneData?.deviceActions?.push({
             controlAction: [ctrlAction],
             deviceId: action.uniId,
@@ -212,7 +213,7 @@ ComponentWithComputed({
         // })
         Dialog.confirm({
           title: '创建失败',
-          message: '部分设备配置自动化失败，请确保所有设备在线后重试',
+          message: '部分设备配置一键场景失败，请确保所有设备在线后重试',
           showCancelButton: false,
           confirmButtonText: '我知道了',
         })
@@ -299,6 +300,17 @@ ComponentWithComputed({
           message: '重试失败',
         })
       }
+    },
+    /**
+     * 是否支持新的场景设置方案
+     */
+    isNewScenarioSettingSupported(proType: string) {
+      return (
+        proType === PRO_TYPE.airConditioner ||
+        proType === PRO_TYPE.freshAir ||
+        proType === PRO_TYPE.floorHeating ||
+        proType === PRO_TYPE.centralAirConditioning
+      )
     },
   },
 })

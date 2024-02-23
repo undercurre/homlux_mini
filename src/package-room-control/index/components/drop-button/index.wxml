@@ -1,0 +1,16 @@
+<view class="mz-button flex items-center justify-evenly {{ disabled ? 'disabled' : '' }}">
+  <image
+    class="icon ml-40rpx"
+    src="{{icon}}"
+  ></image>
+  <view
+    class="text"
+    wx:if="{{text}}"
+    >{{text}}</view
+  >
+  <image
+    class="drop mb-16rpx mr-44rpx"
+    src="/package-room-control/assets/img/drop.png"
+  ></image>
+  <slot></slot>
+</view>

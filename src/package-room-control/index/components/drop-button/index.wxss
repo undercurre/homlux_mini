@@ -1,0 +1,30 @@
+.mz-button {
+  position: relative;
+  width: 344rpx;
+  height: 88rpx;
+  border-radius: 24rpx;
+}
+
+.mz-button:active {
+  background-color: #e7e8e9;
+}
+
+.icon {
+  width: 48rpx;
+  height: 48rpx;
+}
+
+.text {
+  margin-left: 16rpx;
+  font-size: 24rpx;
+  color: #555659;
+}
+
+.drop {
+  width: 32rpx;
+  height: 32rpx;
+}
+
+.disabled {
+  opacity: 0.5;
+}

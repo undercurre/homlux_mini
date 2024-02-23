@@ -1,4 +1,6 @@
 {
   "component": true,
-  "usingComponents": {}
+  "usingComponents": {
+    "van-switch": "@vant/weapp/switch/index"
+  }
 }

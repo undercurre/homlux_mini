@@ -66,6 +66,7 @@ declare namespace AutoScene {
 
     proType?: string
     value: IAnyObject
+    sceneProperty?: IAnyObject //用于空调，485等设备以新的方式接入场景
     //前端拖拽时用的绝对唯一的Id
     dragId: string
   }

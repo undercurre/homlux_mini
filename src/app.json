@@ -5,6 +5,7 @@
       "root": "package-distribution",
       "pages": [
         "scan/index",
+        "pages/auth-screen/index",
         "link-gateway/index",
         "wifi-connect/index",
         "add-subdevice/index",
@@ -12,8 +13,7 @@
         "bind-home/index",
         "change-wifi-success/index",
         "choose-device/index",
-        "choose-sensor/index",
-        "choose-light/index",
+        "choose-model/index",
         "connect-guide/index"
       ]
     },
@@ -54,7 +54,6 @@
     {
       "root": "package-auth",
       "pages": [
-        "pages/auth-screen/index",
         "pages/index/index",
         "pages/meiju/index",
         "pages/home-list/index",
@@ -68,7 +67,6 @@
         "automation/index",
         "automation-log/index",
         "automation-add/index",
-        "automation-edit-yijian/index",
         "scene-request-list-yijian/index",
         "scene-success/index"
       ]

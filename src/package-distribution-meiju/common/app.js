@@ -6,6 +6,7 @@ const app = {
     combinedDeviceFlag: false, // 存在辅设备标识
     type: '', // 品类码
     sn8: '', // sn8
+    sn8List: [],
     linkType: '',
     mode: 0,
     productId: '',

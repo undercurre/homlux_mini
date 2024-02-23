@@ -102,7 +102,6 @@ ComponentWithComputed({
       (storage.get<number>('statusBarHeight') as number) +
       (storage.get<number>('navigationBarHeight') as number) +
       'px',
-    movableAreaHeight: 236, // 可移动区域高度
     toolboxTop: (storage.get('statusBarHeight') as number) + (storage.get('navigationBarHeight') as number), // 工具栏上边补白
     /** 展示点中离线设备弹窗 */
     showDeviceOffline: false,
@@ -256,14 +255,10 @@ ComponentWithComputed({
       const { controlType } = data
       return controlType && controlType !== PRO_TYPE.bathHeat && controlType !== PRO_TYPE.clothesDryingRack
     },
-  },
-
-  watch: {
-    // 设备数变化时，刷新可移动区域高度
-    'currentRoom.endCount'(value) {
-      this.setData({
-        movableAreaHeight: Math.ceil(value / 4) * 236,
-      })
+    // 设备卡片可移动区域高度
+    movableAreaHeight(data) {
+      const { deviceFlattenList } = data
+      return Math.ceil((deviceFlattenList?.length ?? 4) / 4) * 236
     },
   },
 
@@ -357,31 +352,31 @@ ComponentWithComputed({
           this.updateQueue(device)
           return
         }
-        // 额外的更新设备在线状态
-        // FIXME 面板按键未处理
-        // TODO 一般使用device_online_status即可，暂时删除，如有遗漏需要云端支持，以减少信息的数量
-        // else if (
-        //   e.result.eventType === WSEventType.screen_online_status_sub_device ||
-        //   e.result.eventType === WSEventType.screen_online_status_wifi_device
-        // ) {
-        //   const { deviceId, status } = e.result.eventData
-        //   const deviceInRoom = deviceStore.deviceMap[deviceId]
-        //   if (!deviceInRoom || deviceInRoom.onLineStatus === status) {
-        //     return
-        //   }
-        //   const modelName = getModelName(deviceInRoom.proType, deviceInRoom.productId)
-        //   const device = {} as DeviceCard
-        //   device.deviceId = deviceId
-        //   device.uniId = modelName ? `${deviceId}:${modelName}` : deviceId
-        //   device.onLineStatus = status
-        //   this.updateQueue(device)
-        // }
+        // 更新设备在线状态
+        // 网关 device_online_status；WIFI设备 screen_online_status_wifi_device
+        // 子设备 screen_online_status_sub_device
+        else if (
+          e.result.eventType === WSEventType.device_online_status ||
+          e.result.eventType === WSEventType.device_offline_status ||
+          e.result.eventType === WSEventType.screen_online_status_sub_device ||
+          e.result.eventType === WSEventType.screen_online_status_wifi_device
+        ) {
+          const { deviceId, status } = e.result.eventData
+          const deviceInRoom = deviceStore.deviceMap[deviceId]
+          if (!deviceInRoom || deviceInRoom.onLineStatus === status) {
+            return
+          }
+          const modelName = getModelName(deviceInRoom.proType, deviceInRoom.productId)
+          const device = {} as DeviceCard
+          device.deviceId = deviceId
+          device.uniId = modelName ? `${deviceId}:${modelName}` : deviceId
+          device.onLineStatus = status
+          this.updateQueue(device)
+        }
         // 节流更新本地数据
         else if (
           [
             WSEventType.device_replace,
-            WSEventType.device_online_status,
-            WSEventType.device_offline_status,
             WSEventType.group_upt,
             // WSEventType.group_device_result_status,
             // WSEventType.device_del,
@@ -488,11 +483,8 @@ ComponentWithComputed({
     onPageScroll(e: { detail: { scrollTop: number } }) {
       this.data.scrollTop = e?.detail?.scrollTop || 0
     },
-
-    // onUnload() {},
-    onHide() {
-      console.log('onHide')
-
+    clear() {
+      console.log('[room onHide/onUnload] clear()')
       // 解除监听
       emitter.off('wsReceive')
       emitter.off('deviceListRetrieve')
@@ -506,6 +498,13 @@ ComponentWithComputed({
         clearTimeout(this.data._timeId)
         this.data._timeId = null
       }
+    },
+
+    onUnload() {
+      this.clear()
+    },
+    onHide() {
+      this.clear()
     },
     handleShowDeviceOffline(e: { detail: DeviceCard }) {
       this.setData({
@@ -850,6 +849,7 @@ ComponentWithComputed({
       ) {
         return
       }
+
       if (this.data.placeholder.orderNum !== targetOrder) {
         // 节流操作，可能导致movableTouchEnd后仍有movableChange需要执行，丢弃掉
         if (oldOrder < 0) {
@@ -869,8 +869,8 @@ ComponentWithComputed({
         for (const groupIndex in this.data.devicePageList) {
           const group = this.data.devicePageList[groupIndex]
           for (const index in group) {
-            const _orderNum = group[index].orderNum
-            const isForward = oldOrder < targetOrder
+            const _orderNum = group[index].orderNum // 暂存排序
+            const isForward = oldOrder < targetOrder // 是否向前移动（队列末端为前）
             if (
               (isForward && _orderNum > oldOrder && _orderNum <= targetOrder) ||
               (!isForward && _orderNum >= targetOrder && _orderNum < oldOrder)
@@ -964,6 +964,7 @@ ComponentWithComputed({
         const group = this.data.devicePageList[groupIndex]
         for (const index in group) {
           const device = group[index]
+          console.log('[handleSortSaving]', device, index)
           if (device.proType !== PRO_TYPE.switch) {
             deviceOrderData.deviceInfoByDeviceVoList.push({
               deviceId: device.deviceId,
@@ -1186,6 +1187,7 @@ ComponentWithComputed({
         return
       }
 
+      // 窗帘
       if (device.proType === PRO_TYPE.curtain) {
         const OldPosition = device.mzgdPropertyDTOList[modelName].curtain_position
         const NewPosition = Number(OldPosition) > 0 ? '0' : '100'
@@ -1202,16 +1204,13 @@ ComponentWithComputed({
         return
       }
 
-      // 灯和面板
+      // 灯和面板、空调
       const OldOnOff = device.mzgdPropertyDTOList[modelName].power
       const newOnOff = OldOnOff ? 0 : 1
 
       // 不等待云端，即时改变视图，提升操作手感 // TODO 不插入队列
       device.mzgdPropertyDTOList[modelName].power = newOnOff
       this.updateQueue(device)
-      // this.setData({
-      //   'lightStatus.power': newOnOff,
-      // })
 
       const res = await sendDevice({
         proType: device.proType,
@@ -1219,15 +1218,13 @@ ComponentWithComputed({
         deviceId: device.deviceId,
         modelName,
         gatewayId: device.gatewayId,
-        property: { power: newOnOff, time: 500 },
+        property: { power: newOnOff, time: 500 }, // time 500为灯光渐变时间，灯专用
       })
 
       if (!res.success) {
         device.mzgdPropertyDTOList[modelName].power = OldOnOff
         this.updateQueue(device)
-        // this.setData({
-        //   'lightStatus.power': OldOnOff,
-        // })
+
         Toast('控制失败')
       }
 
