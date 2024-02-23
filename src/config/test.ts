@@ -62,7 +62,6 @@ export const checkedDeviceListTest = [
   'B432',
   '13EB',
   '025D',
-  'B435',
   '97DA',
   '42BF',
 ] // todo: 过道mac清单
