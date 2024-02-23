@@ -41,6 +41,7 @@ import {
   defaultImgDir,
   MAX_DEVICES_USING_WS,
   NO_WS_REFRESH_INTERVAL,
+  NO_UPDATE_INTERVAL,
 } from '../../config/index'
 
 type DeviceCard = Device.DeviceItem & {
@@ -90,6 +91,7 @@ ComponentWithComputed({
     _firstShow: true, // 是否首次进入
     _from: '', // 页面进入来源
     _updating: false, // 列表更新中标志
+    _delayUpdateFlag: false, // 列表延迟更新标志
     // 更新等待队列
     _diffWaitlist: [] as DeviceCard[],
     // 待更新到视图的数据，便于多个更新合并到一次setData中（updateDeviceList专用）
@@ -307,14 +309,6 @@ ComponentWithComputed({
         }
 
         if (e.result.eventType === WSEventType.device_property) {
-          // 房间状态上报，只响应开关状态的变更 // 已由msgPush触发更新，此处可删除
-          // if (e.result.eventData.deviceId === roomStore.currentRoom.groupId) {
-          //   const { event } = e.result.eventData
-          //   console.log('[房间状态上报]', roomStore.currentRoom.groupId, event.power)
-          //   this.setData({
-          //     'roomLight.power': event.power,
-          //   })
-          // }
           // 如果有传更新的状态数据过来，直接更新store
           const deviceInHouse = deviceStore.allRoomDeviceMap[e.result.eventData.deviceId]
 
@@ -476,14 +470,13 @@ ComponentWithComputed({
     // 节流更新设备列表
     reloadDeviceListThrottle: throttle(function (this: IAnyObject) {
       this.reloadDeviceList()
-      this.autoRefreshDevice()
     }, 3000),
 
     // 页面滚动
     onPageScroll(e: { detail: { scrollTop: number } }) {
       this.data.scrollTop = e?.detail?.scrollTop || 0
     },
-    clear() {
+    clearJobs() {
       console.log('[room onHide/onUnload] clear()')
       // 解除监听
       emitter.off('wsReceive')
@@ -501,10 +494,10 @@ ComponentWithComputed({
     },
 
     onUnload() {
-      this.clear()
+      this.clearJobs()
     },
     onHide() {
-      this.clear()
+      this.clearJobs()
     },
     handleShowDeviceOffline(e: { detail: DeviceCard }) {
       this.setData({
@@ -779,6 +772,14 @@ ComponentWithComputed({
       if (!this.data._updating) {
         const diff = this.data._diffWaitlist.shift()
         this.data._updating = true
+
+        this.data._delayUpdateFlag = true
+        Logger.log('_delayUpdateFlag', this.data._delayUpdateFlag)
+        setTimeout(() => {
+          this.data._delayUpdateFlag = false
+          Logger.log('_delayUpdateFlag', this.data._delayUpdateFlag)
+        }, NO_UPDATE_INTERVAL)
+
         this.updateDeviceList(diff)
       }
     },
@@ -1350,22 +1351,24 @@ ComponentWithComputed({
     },
     // 定时更新设备列表，符合条件则递归执行
     autoRefreshDevice() {
-      Logger.log('[autoRefreshDevice]')
-      const noAutoRefresh = deviceStore.allRoomDeviceList.length < MAX_DEVICES_USING_WS
-      if (this.data._timeId) {
-        if (noAutoRefresh) {
+      Logger.log('[autoRefreshDevice]devices amount:', deviceStore.allRoomDeviceList.length)
+
+      if (deviceStore.allRoomDeviceList.length < MAX_DEVICES_USING_WS) {
+        if (this.data._timeId) {
           clearTimeout(this.data._timeId)
           this.data._timeId = null
         }
         return
       }
-      if (noAutoRefresh) {
-        return
-      }
 
+      if (this.data._timeId) {
+        clearTimeout(this.data._timeId)
+      }
       this.data._timeId = setTimeout(() => {
-        this.data._timeId = null
-        this.reloadDeviceList()
+        // 如果最近刚更新过，则本次自动更新跳过
+        if (!this.data._delayUpdateFlag) {
+          this.reloadDeviceList()
+        }
         this.autoRefreshDevice()
       }, NO_WS_REFRESH_INTERVAL)
     },
