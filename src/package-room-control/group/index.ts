@@ -18,6 +18,7 @@ ComponentWithComputed({
     groupId: '',
     presetNames: ['筒灯', '射灯', '吊灯', '灯组'],
     showGroupFailTips: false,
+    listHeight: 0,
   },
   computed: {
     pageTitle(data) {
@@ -57,6 +58,17 @@ ComponentWithComputed({
         } else {
           await this.updateGroup()
         }
+
+        wx.createSelectorQuery()
+          .select('#content')
+          .boundingClientRect()
+          .exec((res) => {
+            if (res[0] && res[0].height) {
+              this.setData({
+                listHeight: res[0].height,
+              })
+            }
+          })
 
         // 超时控制
         const TIME_OUT = Math.min(Math.max(8000, this.data.deviceList.length * 1000), 120000)
