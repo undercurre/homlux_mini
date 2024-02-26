@@ -89,10 +89,8 @@ ComponentWithComputed({
       const { LIGHT_COLOR_TEMP = 0 } = data.deviceInfo
       return Math.round((LIGHT_COLOR_TEMP / 255) * 100)
     },
-    connectIcon() {
-      return remoterStore.curRemoter?.connected
-        ? '/assets/img/base/scene-switch-btn.png'
-        : '/assets/img/base/offline.png'
+    connectIcon(data) {
+      return data.deviceInfo.connected ? '/assets/img/base/scene-switch-btn.png' : '/assets/img/base/offline.png'
     },
     curAddrText(data) {
       if (!data.isDebugMode) {
@@ -257,13 +255,19 @@ ComponentWithComputed({
       }
       this.data._timer = now
 
+      // DEBUG 蓝牙连接模式
+      if (this.data.deviceInfo.connected) {
+        await this.data._bleService?.sendCmd(payload)
+      }
       // 广播控制指令
-      bleAdvertising(this.data._bleServer, {
-        addr,
-        payload,
-        isFactory: this.data.isFactoryMode,
-        debug: this.data.isDebugMode,
-      })
+      else {
+        bleAdvertising(this.data._bleServer, {
+          addr,
+          payload,
+          isFactory: this.data.isFactoryMode,
+          debug: this.data.isDebugMode,
+        })
+      }
     },
     async handleTouchEnd() {
       // 主动广播结束指令
@@ -282,12 +286,28 @@ ComponentWithComputed({
       })
     },
 
-    toggleDebug() {
-      // 只用于开发环境、体验环境
-      if (this.data._envVersion === 'release') {
-        return
+    // 建立蓝牙连接（调试用）
+    async toggleBleMode() {
+      if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
+      const { connected } = this.data.deviceInfo
+      const { addr, deviceId } = remoterStore.curRemoter
+      console.log(remoterStore.curRemoter)
+      if (!this.data._bleService) {
+        this.data._bleService = new BleService({ addr, deviceId })
       }
+      if (!connected) {
+        await this.data._bleService.connect()
+        await this.data._bleService.init()
+      } else {
+        await this.data._bleService.close()
+      }
+      // TODO 更新连接状态
+      const diffData = {} as IAnyObject
+      diffData['deviceInfo.connected'] = !connected
+      this.setData(diffData)
+    },
 
+    toggleDebug() {
       // 进入调试模式，按键序列满足上上下下左左右右
       const q = this.data._keyQueue.join('')
       this.data._keyQueue = ['', '', '', '', '', '', '', ''] // 清空

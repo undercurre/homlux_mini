@@ -25,6 +25,17 @@
         src="/assets/img/mine/sensor.png"
       ></image>
     </div>
+    <!-- 基于连接的指令调试 -->
+    <div
+      class="img-wrapper"
+      bind:tap="toggleBleMode"
+      wx:if="{{isDebugMode}}"
+    >
+      <image
+        class="w-48 h-48"
+        src="{{connectIcon}}"
+      ></image>
+    </div>
     <div
       class="img-wrapper"
       bind:tap="toSetting"
