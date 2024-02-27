@@ -78,6 +78,7 @@
 
       <view class="py-64rpx px-8rpx">
         <mz-slider
+          wx:if="{{show}}"
           disabled="{{disabledSlider}}"
           bind:slideEnd="handleBtnTap"
           bind:slideChange="handleSlideChange"
