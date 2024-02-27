@@ -359,6 +359,7 @@ ComponentWithComputed({
       // 关联开关和灯时，选择设备的预校验
       if (['light', 'switch'].includes(this.data.selectLinkType)) {
         const device = deviceMap[selectId]
+
         device.deviceType === 2 &&
           findDevice({
             proType: device.proType,
