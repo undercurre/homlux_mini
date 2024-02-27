@@ -99,7 +99,7 @@ ComponentWithComputed({
     },
     disabledWindSpeed(data) {
       const { power, mode } = data.propView
-      return power !== 1 || parseInt(mode) === 8
+      return power !== 1 || parseInt(mode) === 2
     },
     showIndoorTemp(data) {
       const { currentTemperature } = data.propView

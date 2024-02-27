@@ -11,9 +11,9 @@ export const AC_MODE = {
 
 export const CAC_MODE = {
   mode_1: '制冷',
-  mode_8: '制热',
-  mode_4: '送风',
   mode_2: '除湿',
+  mode_4: '送风',
+  mode_8: '制热',
 } as Record<string, string>
 
 export const CAC_FA_WINDSPEED = {
