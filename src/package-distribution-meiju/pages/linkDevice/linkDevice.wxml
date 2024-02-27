@@ -13,7 +13,7 @@
       >
         <image
           class="w-36 h-36 mr-16rpx"
-          src="/assets/img/distribution/icon-info.png"
+          src="/assets/img/base/info.png"
         ></image>
 
         <text class="text-22 leading-34rpx text-hex-555659 text-left">若提示WIFI网络不佳或网络无法使用，请继续保持连接该Wi-Fi</text>

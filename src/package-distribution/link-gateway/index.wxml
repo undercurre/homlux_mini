@@ -68,7 +68,7 @@
     >
       <image
         class="w-36 h-36 mr-16rpx"
-        src="/assets/img/distribution/icon-info.png"
+        src="/assets/img/base/info.png"
       ></image>
 
       <text class="text-24 leading-34rpx text-black-2a">请允许微信加入“{{showApSSID}}”，以便自动连接设备</text>

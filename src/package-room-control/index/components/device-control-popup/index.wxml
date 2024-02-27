@@ -29,7 +29,7 @@
     >
       <image
         class="w-36 h-36 ml-48rpx"
-        src="/package-room-control/assets/img/info.png"
+        src="/assets/img/base/info.png"
       ></image>
       <text class="text-hex-555659 text-24 ml-32rpx">当前设备仅支持局域网控制，请检查您的网络！</text>
     </view>
@@ -241,6 +241,7 @@
   catch:confirm="handleLinkPopupConfirm"
   catch:cancel="handleLinkPopupReturn"
   catch:handleOfflineTap="handleOfflineTap"
+  tipsText="{{selectLinkType === 'light' ? '关联非同网关灯/灯组时控制可能会存在延时' : ''}}"
 />
 
 <van-toast id="van-toast" />
