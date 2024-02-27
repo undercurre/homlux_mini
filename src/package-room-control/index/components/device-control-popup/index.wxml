@@ -241,7 +241,7 @@
   catch:confirm="handleLinkPopupConfirm"
   catch:cancel="handleLinkPopupReturn"
   catch:handleOfflineTap="handleOfflineTap"
-  tipsText="{{selectLinkType === 'light' ? '关联非同网关灯/灯组时控制可能会存在延时' : ''}}"
+  tipsText="{{selectLinkType === 'light' ? '关联不同网关灯/灯组时控制可能会存在延时' : ''}}"
 />
 
 <van-toast id="van-toast" />
