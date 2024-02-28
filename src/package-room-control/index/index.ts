@@ -360,6 +360,11 @@ ComponentWithComputed({
           if (!deviceInRoom || deviceInRoom.onLineStatus === status) {
             return
           }
+          // 更新状态
+          runInAction(() => {
+            deviceInRoom.onLineStatus = status
+          })
+          // 更新视图
           const modelName = getModelName(deviceInRoom.proType, deviceInRoom.productId)
           const device = {} as DeviceCard
           device.deviceId = deviceId
