@@ -353,9 +353,13 @@ export const homeStore = observable({
     }
 
     if (!this.key) {
-      const key = storage.get('localKey') as string
+      const localKey = storage.get('localKey') as string
 
-      this.key = key
+      if (localKey) {
+        this.key = localKey
+      } else {
+        Logger.debug('没有本地Key')
+      }
     }
   },
 
