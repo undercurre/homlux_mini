@@ -2,7 +2,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import { sendDevice } from '../../../../apis/index'
-import { CAC_MODE, CAC_FA_WINDSPEED, proName } from '../../../../config/index'
+import { CAC_MODE, CAC_FA_WINDSPEED, MODE_ICON_MAP, WIND_ICON_MAP, proName } from '../../../../config/index'
 
 ComponentWithComputed({
   options: {
@@ -129,6 +129,14 @@ ComponentWithComputed({
     currentWindLevel(data) {
       const { windSpeed = 1 } = data.propView
       return CAC_FA_WINDSPEED[`windSpeed_${windSpeed}`] ?? ''
+    },
+    modeIcon(data) {
+      const { mode = 1 } = data.propView
+      return `/package-room-control/assets/img/mode_${MODE_ICON_MAP[mode]}.png`
+    },
+    windIcon(data) {
+      const { windSpeed = 1 } = data.propView
+      return `/package-room-control/assets/img/${WIND_ICON_MAP[windSpeed]}.png`
     },
   },
 

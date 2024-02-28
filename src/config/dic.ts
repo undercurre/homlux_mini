@@ -16,6 +16,21 @@ export const CAC_MODE = {
   mode_8: '制热',
 } as Record<string, string>
 
+// 485空调模式图标映射
+export const MODE_ICON_MAP = {
+  1: 'cool',
+  2: 'dry',
+  4: 'fan',
+  8: 'heat',
+} as Record<string, string>
+
+// 485空调风速图标映射
+export const WIND_ICON_MAP = {
+  1: 'wind_3',
+  2: 'wind_2',
+  4: 'wind_1',
+} as Record<string, string>
+
 export const CAC_FA_WINDSPEED = {
   windSpeed_1: '3档',
   windSpeed_2: '2档',
