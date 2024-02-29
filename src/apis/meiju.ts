@@ -1,4 +1,4 @@
-import { mzaioRequest } from '../utils/index'
+import { IApiRequestOption, mzaioRequest } from '../utils/index'
 
 /**
  * 查询美居家庭列表
@@ -7,7 +7,7 @@ import { mzaioRequest } from '../utils/index'
 export async function getMeijuHomeList(code?: string) {
   return await mzaioRequest.post<{ mideaHouseList: Meiju.MeijuHome[] }>({
     log: true,
-    loading: false,
+    loading: true,
     url: '/v1/mzgd/user/queryMideaUserHouseInfo',
     data: {
       code,
@@ -35,10 +35,13 @@ export async function queryUserMideaAuthInfo(houseId: string) {
  * @param mideaHouseId 美居家庭id
  * @param houseId Homlux 家庭id
  */
-export async function bindMeiju({ houseId, mideaHouseId }: { houseId: string; mideaHouseId: string }) {
+export async function bindMeiju(
+  { houseId, mideaHouseId }: { houseId: string; mideaHouseId: string },
+  options?: IApiRequestOption,
+) {
   return await mzaioRequest.post<Meiju.MeijuDevice[]>({
     log: true,
-    loading: false,
+    loading: options?.loading ?? false,
     url: '/v1/thirdparty/midea/device/bindHouseRoom',
     data: { houseId, mideaHouseId },
   })
@@ -50,7 +53,7 @@ export async function bindMeiju({ houseId, mideaHouseId }: { houseId: string; mi
 export async function getMeijuDeviceList(houseId: string) {
   return await mzaioRequest.post<Meiju.MeijuDevice[]>({
     log: true,
-    loading: false,
+    loading: true,
     url: '/v1/thirdparty/midea/device/list',
     data: { houseId },
   })

@@ -30,8 +30,8 @@ ComponentWithComputed({
     },
   },
 
-  methods: {
-    async onLoad() {
+  pageLifetimes: {
+    async show() {
       const res = await queryUserThirdPartyInfo(this.data.currentHomeId)
 
       if (res.success) {
@@ -42,6 +42,9 @@ ComponentWithComputed({
         Toast(res.msg)
       }
     },
+  },
+
+  methods: {
     toAuth() {
       storage.set('meiju_auth_entry', 'package-auth-index')
 

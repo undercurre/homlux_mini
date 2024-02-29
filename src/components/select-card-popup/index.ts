@@ -101,6 +101,13 @@ ComponentWithComputed({
       type: String,
       value: '确定',
     },
+
+    /**
+     * 弹窗提示文案
+     */
+    tipsText: {
+      type: String,
+    },
   },
 
   /**

@@ -169,6 +169,10 @@ ComponentWithComputed({
           loading: false,
         })
       }
+      if (this.data._timeId) {
+        clearTimeout(this.data._timeId)
+        this.data._timeId = null
+      }
     },
     onHide() {
       // 隐藏之前展示的下拉菜单
@@ -700,21 +704,21 @@ ComponentWithComputed({
     },
     // 定时更新设备列表，符合条件则递归执行
     autoRefreshDevice() {
-      Logger.log('[autoRefreshDevice]')
-      const noAutoRefresh = deviceStore.allRoomDeviceList.length < MAX_DEVICES_USING_WS
-      if (this.data._timeId) {
-        if (noAutoRefresh) {
+      Logger.log('[autoRefreshDevice]devices amount:', deviceStore.allRoomDeviceList.length)
+
+      if (deviceStore.allRoomDeviceList.length < MAX_DEVICES_USING_WS) {
+        if (this.data._timeId) {
           clearTimeout(this.data._timeId)
           this.data._timeId = null
         }
         return
       }
-      if (noAutoRefresh) {
-        return
+
+      if (this.data._timeId) {
+        clearTimeout(this.data._timeId)
       }
 
       this.data._timeId = setTimeout(() => {
-        this.data._timeId = null
         homeStore.updateRoomCardList()
         this.autoRefreshDevice()
       }, NO_WS_REFRESH_INTERVAL)

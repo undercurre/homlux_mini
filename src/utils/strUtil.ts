@@ -32,19 +32,31 @@ export const strUtil = {
   },
 
   /**
-   * 分割16进制字符串，转化成对应num个字节数组，
+   * 字符串格式的16进制数转换成指定字节数的16进制数数组，高位在后
    * 此正则只针对十六进制
-   * 输入多于六个字符，超过的字符如果不属于十六进制会变成NaN
-   * @param str 16进制字符串
-   * @param num 要拆分的字节数的个体单位
+   * @param hexString 16进制字符串
+   * @param numBytes 要拆分的个体单位包含的字节
    */
-  hexStringToArrayUnit8(str: string, num: number) {
-    const reg = new RegExp(`([0-9a-fA-F]{${num}})`)
-    let arr = str.split(reg)
+  hexStringToBytes(hexString: string, numBytes = 1) {
+    const reg = new RegExp(`([0-9a-fA-F]{${numBytes * 2}})`)
+    let arr = hexString.split(reg)
 
     arr = arr.filter((item) => item != '')
 
     return arr.map((item) => parseInt('0x' + item))
+  },
+
+  /**
+   * 将16进制字符串高低位顺序进行反转，（高位在后 -> 高位在前   或者  高位在前 -> 高位在后）
+   * @param hex
+   */
+  reverseHexStr(hex: string) {
+    let result = ''
+    for (let i = hex.length - 2; i >= 0; i -= 2) {
+      result += hex.slice(i, i + 2)
+    }
+
+    return result
   },
 
   /**
@@ -152,13 +164,27 @@ export const strUtil = {
     if (timeConditions && timeConditions.time) {
       return `${timeConditions.time} ${strUtil.transPeriodDesc(timeConditions.timeType, timeConditions.timePeriod)}`
     } else {
-      return `${effectiveTime.startTime.substring(0, 5)}-${strUtil.transEndTimeDesc(
-        effectiveTime.startTime.substring(0, 5),
-        effectiveTime.endTime.substring(0, 5),
-      )} ${strUtil.transPeriodDesc(effectiveTime.timeType, effectiveTime.timePeriod)}`
+      if (strUtil.isAllday(effectiveTime)) {
+        return `${strUtil.transPeriodDesc(effectiveTime.timeType, effectiveTime.timePeriod)}`
+      } else {
+        return `${effectiveTime.startTime.substring(0, 5)}-${strUtil.transEndTimeDesc(
+          effectiveTime.startTime.substring(0, 5),
+          effectiveTime.endTime.substring(0, 5),
+        )} ${strUtil.transPeriodDesc(effectiveTime.timeType, effectiveTime.timePeriod)}`
+      }
     }
   },
-
+  isAllday(effectiveTime: AutoScene.effectiveTime) {
+    const start = effectiveTime.startTime.split(':')
+    const startMin = Number(start[0]) * 60 + Number(start[1])
+    const end = effectiveTime.endTime.split(':')
+    const endMin = Number(end[0]) * 60 + Number(end[1])
+    if (startMin - endMin === 1 || (startMin === 0 && endMin === 1439)) {
+      return true
+    } else {
+      return false
+    }
+  },
   /**
    * 传入秒数，转化为时分秒格式
    * @param seconds

@@ -1,5 +1,4 @@
 import { rpx2px } from '../utils/index'
-import { ossDomain, productImgDir } from './img'
 
 // 设备列表，每次加载的条数 应该为4的倍数
 export const LIST_PAGE = 20
@@ -9,6 +8,9 @@ export const MAX_DEVICES_USING_WS = 20
 
 // 不依赖 WebSocket 更新时的设备列表更新间隔（ms）
 export const NO_WS_REFRESH_INTERVAL = 20000
+
+// 遇到更新延迟标志时，延迟的时长（ms）
+export const NO_UPDATE_INTERVAL = 10000
 
 /**
  * @name 设备卡片更新时间阈值
@@ -29,8 +31,12 @@ export const PRO_TYPE = {
   curtain: '0x14',
   gateway: '0x16',
   sensor: '0xBC',
-  clothesDryingRack: '0x17',
-  bathHeat: '0x26',
+  clothesDryingRack: '0x17', // 晾衣机
+  bathHeat: '0x26', // 浴霸
+  airConditioner: '0xAC', // wifi空调
+  freshAir: '0xCE', // 新风
+  floorHeating: '0xCF', // 地暖
+  centralAirConditioning: '0xCC', // 中弘网关空调，中央空调
 } as const
 
 // productId -> 设备modelName，暂时为传感器专用
@@ -54,9 +60,6 @@ export const getModelName = (proType: string, productId: string) => {
   return proName[proType]
 }
 
-// 智慧屏pid:  四寸屏：pkey:t1ae5ff32ae84b60b159676556aafbf7 psecret: e953d99rb7ef4b55  pid : zk527b6c944a454e9fb15d3cc1f4d55b 十寸屏  pkey:j1ae3ez32ae84b60b159676556aafbf7 psecret: m95fd9grb7ef4b55  pid:ok523b6c941a454e9fb15d3cc1f4d55b
-export const SCREEN_PID: readonly string[] = ['zk527b6c944a454e9fb15d3cc1f4d55b', 'ok523b6c941a454e9fb15d3cc1f4d55b']
-
 // 旋钮开关pid
 export const KNOB_PID: readonly string[] = ['midea.knob.001.003']
 
@@ -69,38 +72,20 @@ export const proName: Record<string, string> = {
   '0x21': 'switch',
   '0x26': 'bathHeat',
   '0xBC': 'sensor',
+  '0xAC': 'airConditioner',
+  '0xCE': 'freshAir', // 新风
+  '0xCF': 'floorHeating', // 地暖
+  '0xCC': 'airConditioner', // 中弘网关空调，中央空调
 } as const
 
-// 传感器类型，通过productId区分
-export const SENSOR_TYPE = {
-  humanSensor: 'midea.ir.201',
-  doorsensor: 'midea.magnet.001.201',
-  freepad: 'midea.freepad.001.201',
-} as const
+// productId常量集合
+export const PRODUCT_ID = {
+  screen_4: 'zk527b6c944a454e9fb15d3cc1f4d55b', // 4寸屏
+  screen_10: 'ok523b6c941a454e9fb15d3cc1f4d55b', // 10寸屏
+  humanSensor: 'midea.ir.201', // 人体传感器
+  doorSensor: 'midea.magnet.001.201', // 门磁传感器
+  freePad: 'midea.freepad.001.201', // 无线开关
+}
 
-export const sensorList: Record<string, string>[] = [
-  {
-    icon: `${productImgDir}/sensor-body.png`,
-    img: `${ossDomain}/homlux/sensor_body.gif`,
-    name: '人体传感器',
-    desc: '1、确认传感器电池已安装好\n2、长按球体顶部「配网按键」5秒以上，至指示灯开始闪烁（1秒/次）',
-    path: 'sensor_door.gif',
-    productId: 'midea.ir.201',
-  },
-  {
-    icon: `${productImgDir}/sensor-door.png`,
-    img: `${ossDomain}/homlux/sensor_door.gif`,
-    name: '门磁传感器',
-    desc: '1、确认传感器电池已安装好\n2、长按顶部「配网按键」5秒以上，至指示灯开始闪烁（1秒/次）',
-    path: '',
-    productId: 'midea.magnet.001.201',
-  },
-  {
-    icon: `${productImgDir}/sensor-switch.png`,
-    img: `${ossDomain}/homlux/sensor_switch.gif`,
-    name: '无线开关',
-    desc: '1、确认传感器电池已安装好\n2、点击「开关键」，随后立刻长按5秒以上，至指示灯开始闪烁（1秒/次）',
-    path: '',
-    productId: 'midea.freepad.001.201',
-  },
-]
+// 智慧屏pid:  四寸屏：pkey:t1ae5ff32ae84b60b159676556aafbf7 psecret: e953d99rb7ef4b55  pid : zk527b6c944a454e9fb15d3cc1f4d55b 十寸屏  pkey:j1ae3ez32ae84b60b159676556aafbf7 psecret: m95fd9grb7ef4b55  pid:ok523b6c941a454e9fb15d3cc1f4d55b
+export const SCREEN_PID: readonly string[] = [PRODUCT_ID.screen_4, PRODUCT_ID.screen_10] // 智慧屏pid集合

@@ -1,11 +1,10 @@
 import pageBehavior from '../../../behaviors/pageBehaviors'
-import { deviceBinding, roomBinding } from '../../../store/index'
-import homOS from 'js-homos'
+import { deviceBinding, deviceStore, roomBinding, roomStore } from '../../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
-
-const fs = wx.getFileSystemManager()
-const logFilePath = homOS.getLogFilePath()
+import { runInAction } from 'mobx-miniprogram'
+import { getModelName, PRO_TYPE } from '../../../config/index'
+import { sendDevice } from '../../../apis/index'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, deviceBinding] }), pageBehavior],
@@ -18,59 +17,71 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    selectGroupId: '',
+    selectDevice: [] as string[],
+    selectRoomId: '',
     logList: [] as string[],
   },
 
   computed: {
     showRoomList(data: IAnyObject) {
-      const list = data.roomList || []
+      const list = data.roomList || ([] as Room.RoomInfo[])
 
       return list.map((item: IAnyObject) => ({
         text: `${item.roomName}(${item.deviceNum})`,
-        value: item.groupId,
+        value: item.roomId,
       }))
+    },
+    showDeviceList(data: IAnyObject) {
+      const list = data.deviceList || ([] as Device.DeviceItem[])
+
+      return list.filter((item: Device.DeviceItem) => 1 || item.canLanCtrl)
     },
   },
 
   lifetimes: {
     ready() {
-      this.readLogNative()
+      // this.readLogNative()
     },
   },
   /**
    * 组件的方法列表
    */
   methods: {
-    readLogNative() {
-      fs.readFile({
-        filePath: logFilePath,
-        encoding: 'utf8',
-        success: (res) => {
-          console.log('readFile-success', res)
-          const text = res.data as string
-
-          this.setData({
-            logList: text.split('\n').reverse(),
-          })
-        },
-        fail(err) {
-          console.log('readFile-fail', err)
-        },
+    onChangeDevice(event: WechatMiniprogram.CustomEvent) {
+      this.setData({
+        selectDevice: event.detail as string[],
       })
     },
+    changeRoom(value: { detail: string }) {
+      const index = roomStore.roomList.findIndex((item) => item.roomId === value.detail)
 
-    clearLogNative() {
-      fs.writeFile({
-        filePath: logFilePath,
-        data: '',
-        success(res) {
-          console.log('removeSavedFile-success', res)
-        },
-        fail(err) {
-          console.log('removeSavedFile-fail', err)
-        },
+      runInAction(() => {
+        roomStore.currentRoomIndex = index
       })
+    },
+    async togglePower(event: WechatMiniprogram.BaseEvent) {
+      const power = parseInt(event.currentTarget.dataset.power)
+
+      for (const deviceId of this.data.selectDevice) {
+        console.log('deviceId', deviceId)
+        const device = deviceStore.deviceList.find((item) => item.deviceId === deviceId) as Device.DeviceItem
+
+        if (device.proType === PRO_TYPE.light) {
+          console.log('device', device)
+          const modelName = device.switchInfoDTOList
+            ? device.switchInfoDTOList[0].switchId
+            : getModelName(device.proType, device.productId)
+
+          sendDevice({
+            proType: device.proType,
+            deviceType: device.deviceType,
+            deviceId: device.deviceId,
+            modelName,
+            gatewayId: device.gatewayId,
+            property: { power: power, time: 500 }, // time 500为灯光渐变时间，灯专用
+          })
+        }
+      }
     },
   },
 })

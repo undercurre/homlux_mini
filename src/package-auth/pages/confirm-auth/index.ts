@@ -3,13 +3,7 @@ import pageBehaviors from '../../../behaviors/pageBehaviors'
 
 ComponentWithComputed({
   behaviors: [pageBehaviors],
-  properties: {
-    proType: String,
-    sn8: String,
-    deviceImg: String,
-    productId: String,
-    mode: Number,
-  },
+  properties: {},
 
   data: {
     isAgree: false,

@@ -5,7 +5,7 @@ import { homeStore } from './home'
 import { roomStore } from './room'
 import { sceneStore } from './scene'
 import homOs from 'js-homos'
-import { IApiRequestOption } from '../utils'
+import { IApiRequestOption, isNullOrUnDef, isEmptyObject } from '../utils/index'
 
 export const deviceStore = observable({
   /**
@@ -102,7 +102,9 @@ export const deviceStore = observable({
     const list = [] as Device.DeviceItem[]
     this.allRoomDeviceList.forEach((device) => {
       // 过滤属性数据不完整的数据
-      if (!device.mzgdPropertyDTOList) {
+      // WIFI设备可以不过滤此条件
+      const noProps = isNullOrUnDef(device.mzgdPropertyDTOList) || isEmptyObject(device.mzgdPropertyDTOList)
+      if (noProps && device.deviceType !== 3) {
         return
       }
       // 开关面板需要前端拆分处理
@@ -120,25 +122,31 @@ export const deviceStore = observable({
           })
         })
       }
-      // 包括 PRO_TYPE.light PRO_TYPE.sensor在内，所有非网关、可显示的设备都用这种方案插值
+      // 所有非网关、可显示的设备都用这种方案插值
       else if (device.proType !== PRO_TYPE.gateway) {
         const modelName = getModelName(device.proType, device.productId)
+        const property = noProps ? ({} as Device.mzgdPropertyDTO) : device.mzgdPropertyDTOList[modelName]
+        const onLineStatus = device.mzgdPropertyDTOList ? device.onLineStatus : 0 // 如果没有设备属性，则直接置为0 // ! WIFI设备，较低机率出现设备在线但属性为空的情况
         list.push({
           ...device,
+          onLineStatus,
           uniId: device.deviceId,
-          property: device.mzgdPropertyDTOList[modelName],
-          mzgdPropertyDTOList: {
-            [modelName]: device.mzgdPropertyDTOList[modelName],
-          },
-          // orderNum: device.deviceType === 4 ? -1 : device.orderNum, // 灯组强制排前面
+          property,
+          mzgdPropertyDTOList: { [modelName]: property },
         })
       }
     })
 
     // 排序算法：灯组类型靠前；再按orderNum升序；再按设备id升序
-    return list.sort(
-      (a, b) => (b.deviceType === 4 ? 1 : -1) || a.orderNum - b.orderNum || parseInt(a.deviceId) - parseInt(b.deviceId),
-    )
+    return list.sort((a, b) => {
+      if (a.deviceType === 4 && b.deviceType !== 4) {
+        return -1
+      } else if (a.deviceType !== 4 && b.deviceType === 4) {
+        return 1
+      } else {
+        return a.orderNum !== b.orderNum ? a.orderNum - b.orderNum : parseInt(a.deviceId) - parseInt(b.deviceId)
+      }
+    })
   },
 
   /**

@@ -40,7 +40,7 @@
 
     <view class="pt-80rpx h-300 grow shrink camera-mask flex flex-col items-center justify-between">
       <view
-        wx:if="{{isShowTips}}"
+        wx:if="{{tipsText}}"
         class="inline-block flex flex-row items-center bg-hex-5A5A5A rounded-32rpx leading-74rpx px-28rpx w-min-380"
       >
         <image
@@ -59,18 +59,8 @@
           class="ml-24rpx"
           type="primary"
           size="small"
-          bind:click="addNearSubdevice"
-          wx:if="{{scanType === 'subdevice' && discovering && bleDeviceList.length}}"
-          custom-style="height: 52rpx;margin-top: -8rpx;"
-          >立即添加</van-button
-        >
-
-        <van-button
-          class="ml-24rpx"
-          type="primary"
-          size="small"
-          bind:click="addGatewayManually"
-          wx:if="{{scanType === 'gateway'}}"
+          bind:click="handelAddDevice"
+          wx:if="{{isShowAddBtn}}"
           custom-style="height: 52rpx;margin-top: -8rpx;"
           >立即添加</van-button
         >
@@ -147,7 +137,7 @@
       </view>
     </view>
 
-    <view class="h-96"></view>
+    <view class="shrink-0 h-96"></view>
 
     <view class="flex flex-row gap-46rpx px-24rpx">
       <van-button
@@ -167,7 +157,7 @@
       >
     </view>
 
-    <view class="h-96"></view>
+    <view class="shrink-0 h-96"></view>
   </view>
 </van-popup>
 
@@ -180,7 +170,7 @@
     <text class="w-full block text-28 text-hex-666 pb-24rpx">添加此类网关子设备前，请先在家庭中添加智能网关或智慧屏，支持的型号有：</text>
 
     <text class="block w-full text-32 text-black-2a">1、智能网关MSGW-15</text>
-    <text class="block w-full text-32 text-black-2a">2、智慧屏D3ZZKP-Z</text>
+    <text class="block w-full text-32 text-black-2a">2、智慧屏D3ZZKP-Z、MSP-A101A-A1</text>
   </view>
 </van-dialog>
 

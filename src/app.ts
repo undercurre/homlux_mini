@@ -40,6 +40,19 @@ App<IAppOption>({
       othersStore.setDefaultPage(defaultPage)
     }
 
+    // 监听houseId变化(需要优先初始化监听，否则无法及时监听变化)，切换websocket连接,切换成对应家庭的sock连接
+    reaction(
+      () => homeStore.currentHomeDetail.houseId,
+      async () => {
+        console.debug('reaction -> homeStore.currentHomeDetail.houseId')
+        closeWebSocket()
+        startWebsocketService()
+
+        homeStore.key = '' // 清空旧家庭的homOS的key
+        initHomeOs()
+      },
+    )
+
     // 如果用户已经登录，开始请求数据[用户][家庭列表、全屋房间、全屋设备]
     if (isLogon()) {
       try {
@@ -54,18 +67,6 @@ App<IAppOption>({
     } else {
       othersStore.setIsInit(false)
     }
-
-    // 监听houseId变化，切换websocket连接,切换成对应家庭的sock连接
-    reaction(
-      () => homeStore.currentHomeDetail.houseId,
-      async () => {
-        closeWebSocket()
-        startWebsocketService()
-
-        await homeStore.updateLocalKey()
-        initHomeOs()
-      },
-    )
 
     // 监听内存不足告警事件
     wx.onMemoryWarning(function () {
@@ -82,27 +83,37 @@ App<IAppOption>({
     this.globalData.firstOnShow = false
 
     // 用户热启动app，建立ws连接，并且再更新一次数据
-    Logger.log('app-onShow, isConnect:', isConnect(), 'isLogon', isLogon())
+    console.log(
+      'app-onShow, isConnect:',
+      isConnect(),
+      'isLogon',
+      isLogon(),
+      'homeStore.currentHomeId',
+      homeStore.currentHomeId,
+    )
 
     // 非登录状态，终止下面逻辑，且发现当前非主包页面（当前主包页面均可不需要登录访问），强制跳转登录
     if (!isLogon()) {
       return
     }
 
-    initHomeOs()
+    // 首次进入有onLaunch不必加载
+    !firstOnShow && initHomeOs()
 
+    // 以下逻辑需要网络连接
     if (!isConnect()) {
       return
     }
 
-    // 以下逻辑需要网络连接
-    startWebsocketService()
-
     // 首次进入有onLaunch不必加载
     // homOS本地控制要求场景数据保持尽可能实时，需要小程序回到前台刷新场景和设备列表数据
     if (!firstOnShow) {
+      // 后面的接口依赖获取当前家庭Id
+      await homeStore.updateHomeInfo({ isDefaultErrorTips: false })
+
+      startWebsocketService()
+
       deviceStore.updateAllRoomDeviceList(homeStore.currentHomeId, { isDefaultErrorTips: false })
-      homeStore.updateHomeInfo({ isDefaultErrorTips: false })
     }
 
     // 全屋场景数据加载

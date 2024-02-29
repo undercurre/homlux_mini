@@ -1,0 +1,97 @@
+<import src="/commons/templates/popup.wxml" />
+<wxs module="tools"> function slice(arr, start) { return arr.slice(start); } module.exports = { slice: slice } </wxs>
+<van-popup
+  show="{{ show }}"
+  z-index="1002"
+  round
+  position="bottom"
+  bind:close="handleClose"
+  closeable
+  catchtouchmove="blank"
+>
+  <view class="w-750rpx relative flex flex-col items-center">
+    <template
+      is="title"
+      data="{{title}}"
+    />
+    <view
+      class="w-686rpx mt-48rpx"
+      wx:if="{{cellList.length}}"
+    >
+      <van-cell-group
+        inset
+        border="{{false}}"
+      >
+        <van-cell
+          border="{{false}}"
+          custom-class="{{cellList[0].disabled ? 'cell-disabled' : 'cell'}}"
+          center
+          data-item="{{cellList[0]}}"
+          bind:click="cellClicked"
+        >
+          <text
+            slot="title"
+            class="cell-title {{cellList[0].disabled ? 'disabled' : ''}}"
+            >{{cellList[0].title}}</text
+          >
+          <text class="cell-value {{cellList[0].disabled ? 'disabled' : ''}}">{{cellList[0].value}}</text>
+          <image
+            slot="right-icon"
+            class="cell-right-icon {{cellList[0].disabled ? 'disabled' : ''}}"
+            src="../../../../assets/img/home/more.png"
+          ></image>
+        </van-cell>
+      </van-cell-group>
+      <van-cell-group
+        inset
+        border="{{false}}"
+      >
+        <van-cell
+          wx:for="{{tools.slice(cellList, 1)}}"
+          wx:key="index"
+          border="{{index !== cellList.length - 2}}"
+          custom-class="{{item.disabled ? 'cell-disabled' : 'cell'}} cell-border"
+          center
+          data-item="{{item}}"
+          bind:click="cellClicked"
+        >
+          <text
+            slot="title"
+            class="cell-title {{item.disabled ? 'disabled' : ''}}"
+            >{{item.title}}</text
+          >
+          <text class="cell-value {{item.disabled ? 'disabled' : ''}}">{{item.value}}</text>
+          <image
+            slot="right-icon"
+            class="cell-right-icon {{cellList[0].disabled ? 'disabled' : ''}}"
+            src="../../../../assets/img/home/more.png"
+          ></image>
+        </van-cell>
+      </van-cell-group>
+    </view>
+    <view class="h-62rpx"></view>
+    <view class="flex w-686rpx gap-x-46rpx mb-38rpx">
+      <van-button
+        class="flex-1"
+        size="large"
+        bind:click="handleTry"
+        >试一试</van-button
+      >
+      <van-button
+        type="primary"
+        class="flex-1"
+        size="large"
+        bind:click="handleConfirm"
+        >确定</van-button
+      >
+    </view>
+  </view>
+</van-popup>
+<picker-view-popup
+  show="{{showPropertyPopup}}"
+  dataInfo="{{editingPropertyInfo}}"
+  bind:confirm="onPropertyPopupConfirm"
+  bind:close="onPropertyPopupClose"
+  bind:cancel="onPropertyPopupClose"
+></picker-view-popup>
+<van-toast id="van-toast" />

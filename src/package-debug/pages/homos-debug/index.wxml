@@ -4,17 +4,48 @@
   bind:leftTap="goBack"
 ></nav-bar>
 
-<van-button
-  type="primary"
-  bind:click="readLogNative"
-  >刷新本地日志</van-button
->
+<van-dropdown-menu>
+  <van-dropdown-item
+    value="{{ selectRoomId }}"
+    options="{{ showRoomList }}"
+    bind:change="changeRoom"
+  />
+</van-dropdown-menu>
 
-<van-button
-  type="primary"
-  bind:click="clearLogNative"
-  >清空本地日志</van-button
+<scroll-view
+  class="h-450"
+  scroll-y
 >
+  <van-checkbox-group
+    class="flex flex-row"
+    value="{{ selectDevice }}"
+    bind:change="onChangeDevice"
+  >
+    <van-checkbox
+      wx:for="{{showDeviceList}}"
+      class="mb-20rpx"
+      wx:key="deviceId"
+      name="{{item.deviceId}}"
+      >{{ item.deviceName }}</van-checkbox
+    >
+  </van-checkbox-group>
+</scroll-view>
+
+<view class="flex flex-row">
+  <van-button
+    type="primary"
+    data-power="1"
+    bind:click="togglePower"
+    >开灯</van-button
+  >
+
+  <van-button
+    type="primary"
+    data-power="0"
+    bind:click="togglePower"
+    >关灯</van-button
+  >
+</view>
 
 <scroll-view
   class="h-1000"

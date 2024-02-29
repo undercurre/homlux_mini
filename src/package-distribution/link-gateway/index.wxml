@@ -68,7 +68,7 @@
     >
       <image
         class="w-36 h-36 mr-16rpx"
-        src="/assets/img/distribution/icon-info.png"
+        src="/assets/img/base/info.png"
       ></image>
 
       <text class="text-24 leading-34rpx text-black-2a">请允许微信加入“{{showApSSID}}”，以便自动连接设备</text>
@@ -129,6 +129,7 @@
       <text>2.请检查WIFI账号密码是否正确</text>
       <text>3.请确认路由器是否正常工作</text>
       <text>4.请确认手机网络是否正常</text>
+      <text>5.请将手机尽量靠近网关</text>
     </view>
   </view>
 </van-dialog>

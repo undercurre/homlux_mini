@@ -11,14 +11,19 @@ let timeoutId: number | null
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, roomBinding] }), pageBehaviors],
   data: {
+    isEdit: false, // 是否编辑
     deviceList: [] as Device.DeviceItem[],
     status: 'processing' as StatusType,
     groupName: '',
     groupId: '',
     presetNames: ['筒灯', '射灯', '吊灯', '灯组'],
     showGroupFailTips: false,
+    listHeight: 0,
   },
   computed: {
+    pageTitle(data) {
+      return data.isEdit ? '编辑分组' : '创建分组'
+    },
     successList(data) {
       return data.deviceList.filter((device) => device.status === 'success')
     },
@@ -43,6 +48,7 @@ ComponentWithComputed({
         this.setData({
           deviceList,
           groupId: data.groupId,
+          isEdit: !!data.groupId,
           groupName: data.groupName ?? '灯组',
         })
 
@@ -52,6 +58,17 @@ ComponentWithComputed({
         } else {
           await this.updateGroup()
         }
+
+        wx.createSelectorQuery()
+          .select('#content')
+          .boundingClientRect()
+          .exec((res) => {
+            if (res[0] && res[0].height) {
+              this.setData({
+                listHeight: res[0].height,
+              })
+            }
+          })
 
         // 超时控制
         const TIME_OUT = Math.min(Math.max(8000, this.data.deviceList.length * 1000), 120000)
@@ -186,6 +203,30 @@ ComponentWithComputed({
       this.setData({
         groupName: e.detail,
       })
+    },
+
+    /**
+     * 跳过失败的设备
+     */
+    jumpFail() {
+      // 编辑灯组的情况
+      if (this.data.isEdit) {
+        this.endGroup()
+      } else {
+        this.nextStep()
+      }
+    },
+
+    /**
+     * 分组指令下发成功后，进入下一步
+     */
+    nextStep() {
+      // 编辑灯组的情况
+      if (this.data.isEdit) {
+        this.endGroup()
+      } else {
+        this.toRename()
+      }
     },
 
     endGroup() {

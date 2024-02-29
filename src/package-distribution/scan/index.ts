@@ -18,6 +18,7 @@ import {
   strUtil,
 } from '../../utils/index'
 import { checkDevice, getGwNetworkInfo, getUploadFileForOssInfo, queryWxImgQrCode } from '../../apis/index'
+import { actionScanResult, checkUrlType as isMideaQrCode } from '../common/meijuScanCodeApi'
 
 ComponentWithComputed({
   options: {
@@ -31,6 +32,11 @@ ComponentWithComputed({
   properties: {
     // 进入扫码页的入口
     scanType: {
+      type: String,
+      value: '',
+    },
+    // 美居设备配网的手动添加的跳转地址
+    meijuPath: {
       type: String,
       value: '',
     },
@@ -64,19 +70,29 @@ ComponentWithComputed({
 
       return allRoomDeviceList.filter((item) => item.deviceType === 1)
     },
-    isShowTips(data) {
-      return (data.scanType === 'subdevice' && data._isBlePermit) || data.scanType === 'gateway'
+    isShowAddBtn(data: IAnyObject) {
+      if (data.scanType === 'subdevice') {
+        return data.discovering && data.bleDeviceList.length
+      } else if (data.scanType === 'gateway' || data.scanType === 'meijuDevice') {
+        return true
+      } else {
+        return false
+      }
     },
     tipsText(data: IAnyObject) {
-      if (data.scanType === 'gateway') {
+      if (data.scanType === 'gateway' || data.scanType === 'meijuDevice') {
         return '找不到二维码，尝试手动添加'
       }
 
-      if (!data.available) {
-        return '打开手机蓝牙发现附近子设备'
+      if (data.scanType === 'subdevice' && data._isBlePermit) {
+        return !data.available
+          ? '打开手机蓝牙发现附近子设备'
+          : data.bleDeviceList?.length
+          ? `搜索到${data.bleDeviceList.length}个附近的子设备`
+          : '正在搜索附近子设备'
       }
 
-      return data.bleDeviceList?.length ? `搜索到${data.bleDeviceList.length}个附近的子设备` : '正在搜索附近子设备'
+      return ''
     },
   },
 
@@ -148,6 +164,20 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
+    /**
+     * 手动添加网关/美居wifi设备
+     */
+    handelAddDevice() {
+      if (this.data.scanType === 'subdevice') {
+        this.addNearSubdevice()
+      } else if (this.data.scanType === 'gateway') {
+        this.bindGateway({ addType: 'manual' })
+      } else if (this.data.scanType === 'meijuDevice') {
+        wx.navigateTo({
+          url: this.data.meijuPath,
+        })
+      }
+    },
     checkNet() {
       const isValidNet = isConnect()
 
@@ -158,12 +188,6 @@ ComponentWithComputed({
       return isValidNet
     },
 
-    /**
-     * 手动添加网关
-     */
-    addGatewayManually() {
-      this.bindGateway({ addType: 'manual' })
-    },
     // 检查是否通过微信扫码直接进入该界面时判断场景值
     handleWxScanUrl() {
       const params = wx.getEnterOptionsSync()
@@ -583,33 +607,48 @@ ComponentWithComputed({
           isScan: true,
         })
 
-        if (!this.isValidLink(url)) {
-          throw '无效二维码'
-        }
+        Logger.debug('handleScanUrl', url)
 
-        const pageParams = strUtil.getUrlParams(url)
+        if (this.isValidLink(url)) {
+          const pageParams = strUtil.getUrlParams(url)
 
-        Logger.log('scanParams', pageParams)
+          Logger.log('scanParams', pageParams)
 
-        // mode 配网方式 （00代表AP配网，01代表蓝牙配网， 02代表AP+有线）
-        // 带蓝牙子设备
-        if (pageParams.mode === '01') {
-          await this.bindSubDevice(pageParams)
-        }
-        // 网关绑定逻辑
-        else if (pageParams.mode === '02') {
-          await this.bindGateway({
-            pid: pageParams.pid,
-            ssid: pageParams.ssid,
-            addType: 'qrcode',
-          })
-        }
-        // 智慧屏扫码绑定
-        else if (pageParams.mode === '10') {
-          wx.redirectTo({
-            url: strUtil.getUrlWithParams('/package-auth/pages/auth-screen/index', {
-              code: pageParams.code,
-            }),
+          // mode 配网方式 （00代表AP配网，01代表蓝牙配网， 02代表AP+有线）
+          // 带蓝牙子设备
+          if (pageParams.mode === '01') {
+            await this.bindSubDevice(pageParams)
+          }
+          // 网关绑定逻辑
+          else if (pageParams.mode === '02') {
+            await this.bindGateway({
+              pid: pageParams.pid,
+              ssid: pageParams.ssid,
+              addType: 'qrcode',
+            })
+          }
+          // 智慧屏扫码绑定
+          else if (pageParams.mode === '10') {
+            wx.redirectTo({
+              url: strUtil.getUrlWithParams('/package-distribution/pages/auth-screen/index', {
+                code: pageParams.code,
+                pid: pageParams.pid || 'zk527b6c944a454e9fb15d3cc1f4d55b',
+              }),
+            })
+          }
+        } else if (isMideaQrCode(url)) {
+          const res = actionScanResult(url)
+
+          Logger.debug('actionScanResult', res)
+
+          const { deviceInfo } = res
+
+          wx.navigateTo({
+            url: strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
+              proType: deviceInfo.category,
+              sn8: deviceInfo.sn8,
+              mode: 0,
+            } as Meiju.IProductItem),
           })
         } else {
           throw '无效二维码'

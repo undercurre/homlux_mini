@@ -34,6 +34,25 @@ export const homeStore = observable({
 
   shareId: '',
 
+  /**
+   * 退出登录时清空数据
+   */
+  reset() {
+    runInAction(() => {
+      this.key = ''
+      this.homeList = []
+      this.currentHomeDetail = {
+        houseId: '',
+        houseName: '',
+        houseUserAuth: 3,
+        deviceCount: 0,
+        userCount: 0,
+        houseArea: '',
+        roomCount: 0,
+      }
+    })
+  },
+
   get currentHomeId() {
     let houseId = this.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
 
@@ -135,7 +154,7 @@ export const homeStore = observable({
       runInAction(() => {
         homeStore.currentHomeDetail = Object.assign({ houseId: this.currentHomeId }, res.result)
       })
-      // await deviceStore.updateAllRoomDeviceList(undefined, options) // 重复加载
+
       await roomStore.updateRoomList(options)
       this.saveHomeDate()
       return
@@ -182,9 +201,8 @@ export const homeStore = observable({
           room.roomSceneList = room.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
         }
 
-        const { lightOnCount, endCount, lightCount } = deviceCount(roomDeviceList)
+        const { lightOnCount, lightCount } = deviceCount(roomDeviceList)
         room.roomInfo.lightOnCount = lightOnCount
-        room.roomInfo.endCount = endCount
         room.roomInfo.lightCount = lightCount
       })
       runInAction(() => {
@@ -196,7 +214,6 @@ export const homeStore = observable({
           lightOnCount: room.roomInfo.lightOnCount,
           sceneList: room.roomSceneList,
           deviceNum: room.roomInfo.deviceNum,
-          endCount: room.roomInfo.endCount,
           lightCount: room.roomInfo.lightCount,
         }))
       })
@@ -330,14 +347,19 @@ export const homeStore = observable({
    * 更新homos通信key，由于无法host端无法通知客户端key是否过期，只能每次请求云端刷新
    */
   async initLocalKey() {
-    if (isConnect()) {
+    // key为空时才查询云端接口，避免反复查询
+    if (isConnect() && !this.key) {
       await this.updateLocalKey()
     }
 
     if (!this.key) {
-      const key = storage.get('localKey') as string
+      const localKey = storage.get('localKey') as string
 
-      this.key = key
+      if (localKey) {
+        this.key = localKey
+      } else {
+        Logger.debug('没有本地Key')
+      }
     }
   },
 
@@ -347,7 +369,7 @@ export const homeStore = observable({
     if (res.success) {
       this.key = res.result
       // key的有效期是30天，设置缓存过期时间25天
-      storage.set('localKey', this.key, Date.now() + 1000 * 60 * 60 * 24 * 25)
+      storage.set('localKey', this.key, Date.now() + 1000 * 60 * 60 * 24 * 20)
     }
   },
 

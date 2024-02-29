@@ -1,4 +1,4 @@
-import { PRO_TYPE } from '../config/index'
+import { PRO_TYPE, AC_MODE, CAC_MODE, CAC_FA_WINDSPEED } from '../config/index'
 import { isNullOrUnDef } from './index'
 
 /**
@@ -90,6 +90,10 @@ export function toWifiProperty(proType: string, properties: IAnyObject) {
  * @param property 设备属性
  */
 export function toPropertyDesc(proType: string, property: IAnyObject) {
+  if (isNullOrUnDef(property)) {
+    console.warn('转换属性描述失败，属性集为空')
+    return []
+  }
   const descList = [] as string[]
   if (proType === PRO_TYPE.light) {
     !isNullOrUnDef(property.power) && descList.push(property.power ? '打开' : '关闭')
@@ -178,5 +182,57 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
     }
   }
 
+  if (proType === PRO_TYPE.airConditioner) {
+    !isNullOrUnDef(property.power) && descList.push(property.power === 1 ? '开启' : '关闭')
+    !isNullOrUnDef(property.mode) && descList.push(AC_MODE[property.mode])
+    !isNullOrUnDef(property.temperature) &&
+      !isNullOrUnDef(property.small_temperature) &&
+      descList.push(`${property.temperature + property.small_temperature}℃`)
+    !isNullOrUnDef(property.wind_speed) && descList.push(transferWindSpeedProperty(property.wind_speed) + '风')
+  }
+  if (proType === PRO_TYPE.centralAirConditioning) {
+    !isNullOrUnDef(property.power) && descList.push(property.power === 1 ? '开启' : '关闭')
+    !isNullOrUnDef(property.mode) && descList.push(CAC_MODE[`mode_${property.mode}`])
+    !isNullOrUnDef(property.targetTemperature) && descList.push(`${property.targetTemperature}℃`)
+    !isNullOrUnDef(property.windSpeed) && descList.push(CAC_FA_WINDSPEED[`windSpeed_${property.windSpeed}`] + '风')
+  }
+
+  if (proType === PRO_TYPE.freshAir) {
+    !isNullOrUnDef(property.power) && descList.push(property.power === 1 ? '开启' : '关闭')
+    !isNullOrUnDef(property.windSpeed) && descList.push(CAC_FA_WINDSPEED[`windSpeed_${property.windSpeed}`] + '风')
+  }
+
+  if (proType === PRO_TYPE.floorHeating) {
+    !isNullOrUnDef(property.power) && descList.push(property.power === 1 ? '开启' : '关闭')
+    !isNullOrUnDef(property.targetTemperature) && descList.push(`${property.targetTemperature}℃`)
+  }
+
   return descList
+}
+/**
+ * 转换WIFI空调的风速描述
+ * @param windSpeed
+ * @returns
+ */
+export function transferWindSpeedProperty(windSpeed: number) {
+  if (isNullOrUnDef(windSpeed)) {
+    console.warn('转换风速描述失败，属性值为空')
+    return ''
+  }
+  if (windSpeed < 20) {
+    return '1档'
+  } else if (windSpeed < 40) {
+    return '2档'
+  } else if (windSpeed < 60) {
+    return '3档'
+  } else if (windSpeed < 80) {
+    return '4档'
+  } else if (windSpeed < 100) {
+    return '5档'
+  } else if (windSpeed === 100) {
+    return '6档'
+  } else if (windSpeed <= 102) {
+    return '自动'
+  }
+  return ''
 }

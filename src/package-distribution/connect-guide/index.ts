@@ -2,9 +2,10 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { deviceBinding } from '../../store/index'
-import { PRO_TYPE, sensorList } from '../../config/index'
 import { strUtil } from '../../utils/index'
 import Dialog from '@vant/weapp/dialog/dialog'
+import deviceCategory from '../common/deviceCategory'
+import { PRODUCT_ID } from '../../config/index'
 
 ComponentWithComputed({
   options: {},
@@ -18,25 +19,29 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    sensorList,
-    currentSensor: '',
+    proType: '', // 要展示的设备的品类
+    productId: '',
     isReady: false,
     checkImg: '/assets/img/base/check.png',
     uncheckImg: '/assets/img/base/uncheck.png',
     selectGatewayId: '', // TODO
-    // selectGatewayId: '1678182378474882', // TODO
     isShowGatewayList: false, // 是否展示选择网关列表弹窗
     isShowNoGatewayTips: false, // 是否展示添加网关提示弹窗
+    modelInfo: {} as IAnyObject,
   },
 
   computed: {
     gatewayList(data) {
       const allRoomDeviceList: Device.DeviceItem[] = (data as IAnyObject).allRoomDeviceList || []
 
-      return allRoomDeviceList.filter((item) => item.deviceType === 1)
-    },
-    currentGuide(data) {
-      return data.sensorList.find((sensor) => sensor.productId === data.currentSensor)
+      const productId_485 = 'zhonghong.heat.001,zhonghong.air.001,zhonghong.cac.002'
+      // 目前仅10寸屏支持485设备，当添加485设备时，仅可以选择十寸屏
+      return allRoomDeviceList.filter(
+        (item) =>
+          item.deviceType === 1 &&
+          ((data.productId === productId_485 && item.productId === PRODUCT_ID.screen_10) ||
+            data.productId !== productId_485),
+      )
     },
   },
 
@@ -44,26 +49,27 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    async onLoad(query: { modelId?: string; q?: string }) {
-      console.log(query)
+    async onLoad(query: { proType?: string; modelId?: string; q?: string }) {
+      console.log('onLoad', query)
 
-      let modelId = ''
-      // 页面跳转
-      if (query?.modelId) {
-        modelId = query.modelId
-      }
+      let modelId = query?.modelId ?? ''
+      let proType = query.proType ?? '0xBC' // 兼容存量的传感器二维码,默认0xBC
+
       // 扫码进入
-      else if (query?.q) {
+      if (query?.q) {
         const pageParams = strUtil.getUrlParams(decodeURIComponent(query.q))
         console.log(pageParams)
         modelId = pageParams.modelId
+        proType = pageParams.proType
       }
 
-      if (modelId) {
-        this.setData({
-          currentSensor: modelId,
-        })
-      }
+      const modelInfo = deviceCategory[proType].modelList.find((item) => item.productId === modelId)
+
+      this.setData({
+        proType,
+        productId: modelId,
+        modelInfo,
+      })
     },
     onReadyClick() {
       this.setData({
@@ -80,8 +86,8 @@ ComponentWithComputed({
         wx.navigateTo({
           url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
             gatewayId: this.data.selectGatewayId,
-            proType: PRO_TYPE.sensor,
-            productId: this.data.currentSensor,
+            _productId: this.data.productId,
+            isManual: '1',
           }),
         })
       }
@@ -109,8 +115,8 @@ ComponentWithComputed({
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-distribution/search-subdevice/index', {
           gatewayId: this.data.selectGatewayId,
-          proType: PRO_TYPE.sensor,
-          productId: this.data.currentSensor,
+          _productId: this.data.productId,
+          isManual: '1',
         }),
       })
     },
@@ -138,7 +144,7 @@ ComponentWithComputed({
         })
 
         Dialog.alert({
-          title: this.data.currentGuide?.name,
+          title: this.data.modelInfo.name,
           showCancelButton: false,
           confirmButtonText: '我知道了',
         })

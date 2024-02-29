@@ -1,7 +1,8 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
-import { bleUtil, strUtil, BleClient, getCurrentPageParams, emitter, Logger } from '../../utils/index'
+import { strUtil, getCurrentPageParams, emitter, Logger } from '../../utils/index'
+import { BleClient, bleUtil } from '../common/bleProtocol'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { sendCmdAddSubdevice, bindDevice, isDeviceOnline, batchGetProductInfoByBPid } from '../../apis/index'
 import { defaultImgDir, productImgDir } from '../../config/index'
@@ -34,6 +35,7 @@ ComponentWithComputed({
   lifetimes: {
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
     ready: async function () {
+      bleUtil.initBle()
       const pageParams = getCurrentPageParams()
       console.log('pageParams', pageParams)
 

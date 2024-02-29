@@ -466,13 +466,14 @@ ComponentWithComputed({
       const deviceAction = this.data.sceneDeviceActionsFlatten[index]
       const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
       const device = allRoomDeviceMap[deviceAction.uniId]
-      let modelName = 'light'
 
-      if (deviceAction.proType === PRO_TYPE.switch) {
-        modelName = device.switchInfoDTOList[0].switchId
-      }
-
-      device.deviceType === 2 && findDevice({ gatewayId: device.gatewayId, devId: device.deviceId, modelName })
+      device.deviceType === 2 &&
+        findDevice({
+          proType: device.proType,
+          gatewayId: device.gatewayId,
+          devId: device.deviceId,
+          switchInfoDTOList: device.switchInfoDTOList,
+        })
 
       this.setData({
         sceneEditTitle: deviceAction.name,

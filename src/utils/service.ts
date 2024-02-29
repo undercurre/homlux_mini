@@ -2,7 +2,7 @@
 import { connectHouseSocket } from '../apis/websocket'
 import { homeStore, userStore, deviceStore } from '../store/index'
 import { MAX_DEVICES_USING_WS } from '../config/index'
-import { isLogon, Logger, storage, isConnect, verifyNetwork } from './index'
+import { isLogon, Logger, storage, verifyNetwork } from './index'
 import { emitter } from './eventBus'
 import homos from 'js-homos'
 
@@ -11,6 +11,7 @@ export function logout() {
   storage.remove('token')
   storage.remove('localKey') // 清除局域网的家庭key
   userStore.logout()
+  homeStore.reset() // 清空家庭数据
   homos.logout()
   closeWebSocket()
 
@@ -31,19 +32,30 @@ const heartbeatInfo = {
   lastMsgId: 0, // 上一次的心跳包消息Id
 }
 
+export function isWsConnected() {
+  return socketIsConnect
+}
+
 export async function startWebsocketService() {
   // 检测未登录或者是否已经正在连接，以免重复连接
-  if (!isLogon() || isConnecting || !isConnect()) {
-    Logger.log('不进行ws连接,isConnecting:', isConnecting, 'isLogon', isLogon(), 'isConnect()', isConnect())
+  if (!isLogon() || isConnecting || !homeStore.currentHomeId) {
+    Logger.log(
+      '未登录或者已经正在连接，不进行ws连接,isConnecting:',
+      isConnecting,
+      'isLogon',
+      isLogon(),
+      'homeStore.currentHomeId',
+      homeStore.currentHomeId,
+    )
     return
   }
 
   isConnecting = true
   if (socketIsConnect) {
     Logger.log('已存在ws连接，正在关闭已有连接')
-    await socketTask?.close({ code: 1000 })
+    closeWebSocket()
   }
-  socketTask = connectHouseSocket(homeStore.currentHomeDetail.houseId)
+  socketTask = connectHouseSocket(homeStore.currentHomeId)
   socketTask.onClose(onSocketClose)
   socketTask.onOpen((res) => {
     isConnecting = false
@@ -67,7 +79,8 @@ export async function startWebsocketService() {
             if (msgId !== heartbeatInfo.lastMsgId) {
               // 3s内没有收到发出的心跳回复，认为socket断开需要重连
               Logger.error('socket心跳回复超时，重连')
-              socketTask?.close({ code: -1 })
+              // 微信隐藏逻辑 closeSocket:fail wcwss invalid code, the code must be either 1000, or between 3000 and 4999
+              socketTask?.close({ code: 3000, reason: 'socket心跳回复超时' })
               clearInterval(heartbeatInfo.timeId)
             } else {
               Logger.log('socket心跳回复')
@@ -113,7 +126,7 @@ export async function startWebsocketService() {
     Logger.error('socket错误onError：', err, 'socketIsConnect', socketIsConnect)
     isConnecting = false
     if (socketIsConnect) {
-      socketTask?.close({ code: -1 }) // code=-1代码ws报错重连
+      socketTask?.close({ code: 3000, reason: 'socket错误' }) // code=-1代码ws报错重连
     } else {
       delayConnectWS(15000)
     }
@@ -125,6 +138,7 @@ export async function startWebsocketService() {
  * @param delay 延迟时间
  */
 function delayConnectWS(delay = 5000) {
+  Logger.log('socket延迟重连', delay)
   clearTimeout(connectTimeId)
   connectTimeId = setTimeout(() => {
     Logger.log('socket开始重连')
@@ -153,13 +167,13 @@ export function socketSend(data: string | ArrayBuffer) {
  * @param e.code  -1:ws报错重连  1000: 正常主动关闭ws  4001: token校验不通过
  */
 function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {
-  Logger.log('socket已关闭连接', e)
+  Logger.debug('socket已关闭连接', e)
   socketIsConnect = false
   clearInterval(heartbeatInfo.timeId)
   const { code } = e
 
   if (code !== 1000 && code !== 4001) {
-    const delay = code === -1 ? 15000 : 5000 // ws报错重连一般是因为wifi无法访问外网，降低重连频率
+    const delay = code === 3000 ? 25000 : 5000 // ws报错重连一般是因为wifi无法访问外网，降低重连频率
 
     Logger.error('socket异常关闭连接')
     delayConnectWS(delay)
@@ -168,7 +182,16 @@ function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {
 
 export function closeWebSocket() {
   if (socketTask && socketIsConnect) {
-    socketTask.close({ code: 1000 })
+    socketTask.close({
+      code: 1000,
+      reason: '主动关闭',
+      success(res) {
+        Logger.debug('closeWebSocket-success', res)
+      },
+      fail(res) {
+        Logger.debug('closeWebSocket-fail', res)
+      },
+    })
     socketIsConnect = false
   }
 }

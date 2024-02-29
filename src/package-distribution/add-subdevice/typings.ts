@@ -1,4 +1,4 @@
-import { BleClient } from '../../utils'
+import { BleClient } from '../common/bleProtocol'
 
 export interface IBleDevice {
   deviceUuid: string

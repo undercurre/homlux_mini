@@ -1,10 +1,10 @@
-import dayjs from 'dayjs'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../behaviors/pageBehaviors'
-import { queryDeviceOnlineStatus, bindDevice, verifySn } from '../../apis/index'
-import { homeBinding, roomBinding, deviceBinding } from '../../store/index'
-import { WifiSocket, getCurrentPageParams, strUtil, isAndroid, isAndroid10Plus, Logger } from '../../utils/index'
+import { bindDevice, queryDeviceOnlineStatus, verifySn } from '../../apis/index'
+import { deviceBinding, homeBinding, roomBinding } from '../../store/index'
+import { getCurrentPageParams, isAndroid, isAndroid10Plus, Logger, strUtil } from '../../utils/index'
+import { WifiSocket } from '../common/wifiProtocol'
 import { stepListForBind, stepListForChangeWiFi } from './conifg'
 import { defaultImgDir } from '../../config/index'
 
@@ -39,6 +39,7 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
+    _hasVerifySn: false, // 是否已验证sn所属系统
     hasInit: false,
     defaultImgDir,
     isShowForceBindTips: false,
@@ -47,6 +48,7 @@ ComponentWithComputed({
     apSSID: '',
     _queryCloudTimeId: 0,
     _queryTimes: 50, // 网关发送绑定指令后查询云端最大次数
+    _isNeedLinkDevice: true, // 当前是否需要保持连接设备热点
     activeIndex: 0,
     stepList: [],
     _socket: null as WifiSocket | null,
@@ -223,8 +225,24 @@ ComponentWithComputed({
       this.data._socket = new WifiSocket({
         ssid: this.data.apSSID,
         isAccurateMatchWiFi: !this.data.isManual,
-        onWifiConnected: () => {
-          this.sendMessage()
+        onConnectionStateChange: (connected) => {
+          Logger.debug('onConnectionStateChange', connected, 'this.data._isNeedLinkDevice', this.data._isNeedLinkDevice)
+
+          // 存在用户误操作（手动连接网关，连续切换多个不同的网关热点，低概率），仅执行第一次回调的设备热点连接
+          if (this.data.activeIndex === 0 && connected) {
+            this.sendMessage()
+          } else if (!connected && this.data._isNeedLinkDevice) {
+            Logger.error('设备连接中断')
+
+            this.setData({
+              isShowForceBindTips: false,
+            })
+            Dialog.alert({
+              title: '设备连接中断,请检查手机连接的wifi是否正确',
+            }).then(() => {
+              this.goBack()
+            })
+          }
         },
       })
 
@@ -242,8 +260,6 @@ ComponentWithComputed({
         const now = Date.now()
 
         const connectRes = await this.data._socket.connectWifi()
-
-        Logger.log(`连接${this.data.apSSID}时长：`, Date.now() - now, connectRes, dayjs().format('HH:mm:ss'))
 
         // 针对IOS用户 加入网关热点wifi的系统弹窗的取消操作
         if (connectRes.errCode === 12007) {
@@ -294,8 +310,8 @@ ComponentWithComputed({
     },
 
     /**
-         "bind":0,  //绑定状态 0：未绑定  1：WIFI已绑定  2:有线已绑定
-         "method":"wifi" //无线配网："wifi"，有线配网:"eth"
+     "bind":0,  //绑定状态 0：未绑定  1：WIFI已绑定  2:有线已绑定
+     "method":"wifi" //无线配网："wifi"，有线配网:"eth"
      */
     async getGatewayStatus() {
       const res = await this.data._socket.getGatewayStatus()
@@ -347,6 +363,7 @@ ComponentWithComputed({
 
       Logger.debug('app-网关耗时：', Date.now() - start, '发送绑定指令耗时：', Date.now() - begin)
 
+      this.data._isNeedLinkDevice = false
       if (!setRes.success) {
         this.toErrorStatus()
         return
@@ -358,12 +375,20 @@ ComponentWithComputed({
 
       // 防止强绑情况选网关还没断开原有连接，需要延迟查询
       this.data._queryCloudTimeId = setTimeout(() => {
-        verifySn(setRes.sn)
-
         this.queryDeviceOnlineStatus(setRes.sn)
       }, 10000)
 
       this.data._socket.close()
+    },
+
+    /**
+     * 验证sn所属系统
+     * @param sn
+     */
+    async reportSnToCloud(sn: string) {
+      await verifySn(sn)
+
+      this.data._hasVerifySn = true
     },
 
     async changeWifi() {
@@ -377,6 +402,8 @@ ComponentWithComputed({
       })
 
       Logger.log('change', res)
+
+      this.data._isNeedLinkDevice = false
       if (!res.success) {
         this.toErrorStatus()
         return
@@ -431,7 +458,13 @@ ComponentWithComputed({
     async queryDeviceOnlineStatus(sn: string, type?: string) {
       const res = await queryDeviceOnlineStatus({ sn, deviceType: '1' })
 
-      Logger.log('queryDeviceOnlineStatus', res.result)
+      Logger.log('queryDeviceOnlineStatus', res, res.result)
+
+      // 上报当前网关sn，告知网关将要配到对应业务系统，仅上报一次
+      // 校验res,检查当前网络是否正常，防止当前网络无法访问云端导致上报失败，部分安卓断开网关热点连上新WiFi较慢
+      if (res && res.result && !this.data._hasVerifySn) {
+        this.reportSnToCloud(sn)
+      }
 
       if (res.success && res.result.onlineStatus === 1 && res.result.deviceId) {
         this.setData({

@@ -270,6 +270,36 @@
   bind:close="cancelCheckAndPops"
 ></dryer-control-popup>
 
+<air-control-popup
+  show="{{controlType === '0xAC'}}"
+  isShowSetting="{{true}}"
+  deviceInfo="{{checkedDeviceInfo}}"
+  bind:close="cancelCheckAndPops"
+></air-control-popup>
+
+<air-control-popup-cac
+  show="{{controlType === '0xCC'}}"
+  isShowSetting="{{true}}"
+  deviceInfo="{{checkedDeviceInfo}}"
+  bind:close="cancelCheckAndPops"
+></air-control-popup-cac>
+
+<fresh-control-popup
+  wx:if="{{controlType === '0xCE'}}"
+  show="{{controlType === '0xCE'}}"
+  isShowSetting="{{true}}"
+  deviceInfo="{{checkedDeviceInfo}}"
+  bind:close="cancelCheckAndPops"
+></fresh-control-popup>
+
+<heat-control-popup
+  wx:if="{{controlType === '0xCF'}}"
+  show="{{controlType === '0xCF'}}"
+  isShowSetting="{{true}}"
+  deviceInfo="{{checkedDeviceInfo}}"
+  bind:close="cancelCheckAndPops"
+></heat-control-popup>
+
 <device-control-popup
   show="{{isShowCommonControl}}"
   deviceInfo="{{checkedDeviceInfo}}"
