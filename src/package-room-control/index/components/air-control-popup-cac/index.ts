@@ -226,6 +226,9 @@ ComponentWithComputed({
       if (key === 'windSpeed' && this.data.disabledWindSpeed) {
         return
       }
+      if (key === 'mode' && this.data.disabledMode) {
+        return
+      }
       this.setData({
         isShowPicker: true,
         pickerType: key,
