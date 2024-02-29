@@ -78,7 +78,7 @@ export async function startWebsocketService() {
             // 根据onMessage监听topic === 'heartbeatTopic'消息，判断是否收到心跳回复，3s超时
             if (msgId !== heartbeatInfo.lastMsgId) {
               // 3s内没有收到发出的心跳回复，认为socket断开需要重连
-              Logger.error('socket心跳回复超时，重连', socketTask)
+              Logger.error('socket心跳回复超时，重连')
               // 微信隐藏逻辑 closeSocket:fail wcwss invalid code, the code must be either 1000, or between 3000 and 4999
               socketTask?.close({ code: 3000, reason: 'socket心跳回复超时' })
               clearInterval(heartbeatInfo.timeId)
