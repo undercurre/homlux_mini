@@ -291,6 +291,7 @@ ComponentWithComputed({
 
       storage.set('selected_home_wifi', this.data.wifiInfo) // 记住输入过的wifi信息，下次自动回填
 
+      // 兼容更改wifi的功能逻辑处理
       if (!pageParams.apSSID && pageParams.sn) {
         pageParams.apSSID = `midea_16_${(pageParams.sn as string).substr(-8, 4)}`
       }

@@ -53,7 +53,7 @@ export async function startWebsocketService() {
   isConnecting = true
   if (socketIsConnect) {
     Logger.log('已存在ws连接，正在关闭已有连接')
-    closeWebSocket()
+    await closeWebSocket()
   }
   socketTask = connectHouseSocket(homeStore.currentHomeId)
   socketTask.onClose(onSocketClose)
@@ -181,19 +181,24 @@ function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {
 }
 
 export function closeWebSocket() {
-  if (socketTask && socketIsConnect) {
-    socketTask.close({
-      code: 1000,
-      reason: '主动关闭',
-      success(res) {
-        Logger.debug('closeWebSocket-success', res)
-      },
-      fail(res) {
-        Logger.debug('closeWebSocket-fail', res)
-      },
-    })
-    socketIsConnect = false
-  }
+  return new Promise((resolve) => {
+    if (socketTask && socketIsConnect) {
+      socketTask.close({
+        code: 1000,
+        reason: '主动关闭',
+        success(res) {
+          Logger.debug('closeWebSocket-success', res)
+          resolve(true)
+        },
+        fail(res) {
+          Logger.debug('closeWebSocket-fail', res)
+          resolve(false)
+        },
+      })
+    } else {
+      resolve(true)
+    }
+  })
 }
 
 emitter.on('networkStatusChange', (res) => {

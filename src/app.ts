@@ -45,7 +45,7 @@ App<IAppOption>({
       () => homeStore.currentHomeDetail.houseId,
       async () => {
         console.debug('reaction -> homeStore.currentHomeDetail.houseId')
-        closeWebSocket()
+        await closeWebSocket()
         startWebsocketService()
 
         homeStore.key = '' // 清空旧家庭的homOS的key
