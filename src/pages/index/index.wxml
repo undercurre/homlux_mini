@@ -35,6 +35,14 @@
           <text class="text-28rpx font-semibold">一键关灯</text>
         </view>
       </view>
+      <!-- <view class="ml-24rpx">
+        <view
+          class="bg-hex-ffffff_42 w-180rpx h-80rpx rounded-40rpx flex items-center text-hex-2b4067 flex-center"
+          bind:tap="debugFunc"
+        >
+          <text class="text-28rpx font-semibold">十次开关</text>
+        </view>
+      </view> -->
 
       <view
         wx:if="{{isCreator || isAdmin}}"

@@ -33,7 +33,7 @@ import {
   ROOM_CARD_M,
   defaultImgDir,
 } from '../../config/index'
-import { allDevicePowerControl, updateRoomSort, updateDefaultHouse, changeUserHouse } from '../../apis/index'
+import { allDevicePowerControl, updateRoomSort, updateDefaultHouse, changeUserHouse, execScene } from '../../apis/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 
 type PosType = Record<'index' | 'y', number>
@@ -55,6 +55,8 @@ function getIndex(y: number) {
   const maxIndex = roomStore.roomList.length - 1 // 防止越界
   return Math.max(0, Math.min(maxIndex, Math.floor((y + ROOM_CARD_M / 2) / ROOM_CARD_M)))
 }
+
+let auto_timer = null as number | null
 
 ComponentWithComputed({
   options: {
@@ -722,6 +724,24 @@ ComponentWithComputed({
         homeStore.updateRoomCardList()
         this.autoRefreshDevice()
       }, NO_WS_REFRESH_INTERVAL)
+    },
+    // 调试用，自动执行十次全开全关场景
+    debugFunc() {
+      const allOff = '06adf3d7dd444cca992a4f38ec0e2721'
+      const allOn = '2a24ab3cce45476d92206f92cec1dc6f'
+
+      let count = 0
+      auto_timer = setInterval(() => {
+        console.warn(`第${count}次执行`)
+
+        if (++count >= 10 && auto_timer) {
+          clearInterval(auto_timer)
+        }
+
+        execScene(allOff)
+
+        setTimeout(() => execScene(allOn), 4000)
+      }, 8000)
     },
   },
 })

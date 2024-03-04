@@ -4,7 +4,7 @@ import { rpx2px } from '../utils/index'
 export const LIST_PAGE = 20
 
 // 依赖 WebSocket 更新设备数据的最大设备数
-export const MAX_DEVICES_USING_WS = 20
+export const MAX_DEVICES_USING_WS = 150
 
 // 不依赖 WebSocket 更新时的设备列表更新间隔（ms）
 export const NO_WS_REFRESH_INTERVAL = 20000
