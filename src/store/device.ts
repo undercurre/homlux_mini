@@ -1,11 +1,11 @@
 import { observable, runInAction } from 'mobx-miniprogram'
-import { queryAllDevice } from '../apis/device'
-import { getModelName, PRO_TYPE } from '../config/index'
+import { queryAllDevice, querySubDeviceList } from '../apis/device'
+import { PRO_TYPE } from '../config/index'
 import { homeStore } from './home'
 import { roomStore } from './room'
 import { sceneStore } from './scene'
 import homOs from 'js-homos'
-import { IApiRequestOption, isNullOrUnDef, isEmptyObject } from '../utils/index'
+import { IApiRequestOption, deviceFlatten } from '../utils/index'
 
 export const deviceStore = observable({
   /**
@@ -13,10 +13,11 @@ export const deviceStore = observable({
    */
   allRoomDeviceList: [] as Device.DeviceItem[],
 
-  get deviceList(): Device.DeviceItem[] {
-    const { roomId = 0 } = roomStore.currentRoom ?? {}
-    return this.allRoomDeviceList.filter((device) => device.roomId === roomId)
-  },
+  /**
+   * 当前房间设备
+   */
+  deviceList: [] as Device.DeviceItem[],
+
   /**
    * deviceId -> device 映射
    */
@@ -39,8 +40,7 @@ export const deviceStore = observable({
    * 将有多个按键的开关拍扁，保证每个设备和每个按键都是独立一个item，并且uniId唯一
    */
   get deviceFlattenList(): Device.DeviceItem[] {
-    const { roomId = 0 } = roomStore.currentRoom ?? {}
-    return this.allRoomDeviceFlattenList.filter((device) => device.roomId === roomId)
+    return deviceFlatten(this.deviceList)
   },
 
   // 当前房间灯组数量
@@ -99,54 +99,7 @@ export const deviceStore = observable({
     )
   },
   get allRoomDeviceFlattenList(): Device.DeviceItem[] {
-    const list = [] as Device.DeviceItem[]
-    this.allRoomDeviceList.forEach((device) => {
-      // 过滤属性数据不完整的数据
-      // WIFI设备可以不过滤此条件
-      const noProps = isNullOrUnDef(device.mzgdPropertyDTOList) || isEmptyObject(device.mzgdPropertyDTOList)
-      if (noProps && device.deviceType !== 3) {
-        return
-      }
-      // 开关面板需要前端拆分处理
-      if (device.proType === PRO_TYPE.switch) {
-        device.switchInfoDTOList?.forEach((switchItem) => {
-          list.push({
-            ...device,
-            property: device.mzgdPropertyDTOList[switchItem.switchId],
-            mzgdPropertyDTOList: {
-              [switchItem.switchId]: device.mzgdPropertyDTOList[switchItem.switchId],
-            },
-            switchInfoDTOList: [switchItem],
-            uniId: `${device.deviceId}:${switchItem.switchId}`,
-            orderNum: switchItem.orderNum,
-          })
-        })
-      }
-      // 所有非网关、可显示的设备都用这种方案插值
-      else if (device.proType !== PRO_TYPE.gateway) {
-        const modelName = getModelName(device.proType, device.productId)
-        const property = noProps ? ({} as Device.mzgdPropertyDTO) : device.mzgdPropertyDTOList[modelName]
-        const onLineStatus = device.mzgdPropertyDTOList ? device.onLineStatus : 0 // 如果没有设备属性，则直接置为0 // ! WIFI设备，较低机率出现设备在线但属性为空的情况
-        list.push({
-          ...device,
-          onLineStatus,
-          uniId: device.deviceId,
-          property,
-          mzgdPropertyDTOList: { [modelName]: property },
-        })
-      }
-    })
-
-    // 排序算法：灯组类型靠前；再按orderNum升序；再按设备id升序
-    return list.sort((a, b) => {
-      if (a.deviceType === 4 && b.deviceType !== 4) {
-        return -1
-      } else if (a.deviceType !== 4 && b.deviceType === 4) {
-        return 1
-      } else {
-        return a.orderNum !== b.orderNum ? a.orderNum - b.orderNum : parseInt(a.deviceId) - parseInt(b.deviceId)
-      }
-    })
+    return deviceFlatten(this.allRoomDeviceList)
   },
 
   /**
@@ -187,8 +140,12 @@ export const deviceStore = observable({
     return map
   },
 
+  /**
+   * 更新全屋设备列表
+   */
   async updateAllRoomDeviceList(houseId: string = homeStore.currentHomeId, options?: IApiRequestOption) {
     const res = await queryAllDevice(houseId, options)
+    const { roomId = '0' } = roomStore.currentRoom
     if (res.success) {
       const list = {} as Record<string, Device.DeviceItem[]>
       res.result
@@ -204,10 +161,41 @@ export const deviceStore = observable({
         roomStore.roomDeviceList = list
         deviceStore.allRoomDeviceList = res.result
 
+        if (roomId) {
+          deviceStore.deviceList = res.result.filter((device) => device.roomId === roomId)
+        }
+
         this.updateAllRoomDeviceListLanStatus(false)
       })
     } else {
       console.log('加载全屋设备失败！', res)
+    }
+  },
+
+  /**
+   * 更新当前房间设备列表
+   */
+  async updateRoomDeviceList(
+    houseId: string = homeStore.currentHomeId,
+    roomId: string = roomStore.currentRoom.roomId,
+    options?: IApiRequestOption,
+  ) {
+    const res = await querySubDeviceList({ houseId, roomId }, options)
+    if (res.success) {
+      const list = {} as Record<string, Device.DeviceItem[]>
+      res.result.forEach((device) => {
+        if (list[device.roomId]) {
+          list[device.roomId].push(device)
+        } else {
+          list[device.roomId] = [device]
+        }
+      })
+      runInAction(() => {
+        roomStore.roomDeviceList = list
+        deviceStore.deviceList = res.result
+      })
+    } else {
+      console.log('加载房间设备失败！', res)
     }
   },
 

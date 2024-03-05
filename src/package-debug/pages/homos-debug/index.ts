@@ -2,7 +2,6 @@ import pageBehavior from '../../../behaviors/pageBehaviors'
 import { deviceBinding, deviceStore, roomBinding, roomStore } from '../../../store/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { runInAction } from 'mobx-miniprogram'
 import { getModelName, PRO_TYPE } from '../../../config/index'
 import { sendDevice } from '../../../apis/index'
 
@@ -53,11 +52,7 @@ ComponentWithComputed({
       })
     },
     changeRoom(value: { detail: string }) {
-      const index = roomStore.roomList.findIndex((item) => item.roomId === value.detail)
-
-      runInAction(() => {
-        roomStore.currentRoomIndex = index
-      })
+      roomStore.setCurrentRoom(value.detail)
     },
     async togglePower(event: WechatMiniprogram.BaseEvent) {
       const power = parseInt(event.currentTarget.dataset.power)

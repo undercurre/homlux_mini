@@ -1,5 +1,4 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { runInAction } from 'mobx-miniprogram'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { execScene } from '../../../../apis/scene'
 import { roomBinding, roomStore } from '../../../../store/index'
@@ -84,10 +83,8 @@ ComponentWithComputed({
       execScene(e.currentTarget.dataset.value)
     },
     handleCardTap() {
-      const index = roomStore.roomList.findIndex((room) => room.roomId === this.data.roomInfo.roomId)
-      runInAction(() => {
-        roomStore.currentRoomIndex = index
-      })
+      roomStore.setCurrentRoom(this.data.roomInfo.roomId)
+
       wx.navigateTo({
         url: '/package-room-control/index/index',
       })

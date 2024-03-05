@@ -243,10 +243,8 @@ ComponentWithComputed({
       })
 
       // 房间选择恢复默认
-      if (roomStore.currentRoomIndex) {
-        runInAction(() => {
-          roomStore.currentRoomIndex = 0
-        })
+      if (roomStore.currentRoomId) {
+        roomStore.setCurrentRoom('0')
       }
     },
 
@@ -731,17 +729,18 @@ ComponentWithComputed({
       const allOn = '2a24ab3cce45476d92206f92cec1dc6f'
 
       let count = 0
+      const MAX_COUNT = 20
       auto_timer = setInterval(() => {
-        console.warn(`第${count}次执行`)
+        console.log(`第${count}次执行`)
 
-        if (++count >= 10 && auto_timer) {
+        if (++count >= MAX_COUNT && auto_timer) {
           clearInterval(auto_timer)
         }
 
         execScene(allOff)
 
-        setTimeout(() => execScene(allOn), 4000)
-      }, 8000)
+        setTimeout(() => execScene(allOn), 5000)
+      }, 10000)
     },
   },
 })

@@ -156,9 +156,7 @@ ComponentWithComputed({
       if (data.allRoomDeviceList) {
         return (
           (data.allRoomDeviceList as DeviceCard[]).filter(
-            (device) =>
-              device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
-              device.proType === PRO_TYPE.light,
+            (device) => device.roomId === roomStore.currentRoomId && device.proType === PRO_TYPE.light,
           ).length > 0
         )
       }
@@ -169,19 +167,14 @@ ComponentWithComputed({
       if (data.allRoomDeviceList?.length) {
         return (
           (data.allRoomDeviceList as DeviceCard[]).filter(
-            (device) =>
-              device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
-              device.proType !== PRO_TYPE.gateway,
+            (device) => device.roomId === roomStore.currentRoomId && device.proType !== PRO_TYPE.gateway,
           ).length > 0
         )
       }
       return false
     },
     title(data) {
-      if (data.roomList && data.roomList[data.currentRoomIndex]) {
-        return data.roomList[data.currentRoomIndex].roomName
-      }
-      return ''
+      return data.currentRoom?.roomName ?? ''
     },
     sceneListInBar(data) {
       if (data.sceneList) {
@@ -336,16 +329,16 @@ ComponentWithComputed({
           }
 
           // 组装要更新的设备数据
-          const deviceInRoom = deviceStore.deviceMap[eventData.deviceId]
+          // const deviceInRoom = deviceStore.deviceMap[eventData.deviceId]
 
-          if (deviceInRoom) {
-            runInAction(() => {
-              deviceInRoom.mzgdPropertyDTOList[eventData.modelName] = {
-                ...deviceInRoom.mzgdPropertyDTOList[eventData.modelName],
-                ...eventData.event,
-              }
-            })
-          }
+          // if (deviceInRoom) {
+          //   runInAction(() => {
+          //     deviceInRoom.mzgdPropertyDTOList[eventData.modelName] = {
+          //       ...deviceInRoom.mzgdPropertyDTOList[eventData.modelName],
+          //       ...eventData.event,
+          //     }
+          //   })
+          // }
 
           // 组装要更新的设备数据，更新的为flatten列表，结构稍不同
           const device = {} as DeviceCard
@@ -405,10 +398,7 @@ ComponentWithComputed({
           ].includes(eventType)
         ) {
           this.reloadDataThrottle(e)
-        } else if (
-          eventType === WSEventType.room_del &&
-          eventData.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId
-        ) {
+        } else if (eventType === WSEventType.room_del && eventData.roomId === roomStore.currentRoomId) {
           // 房间被删除，退出到首页
           await homeStore.updateRoomCardList()
           wx.redirectTo({
@@ -480,7 +470,7 @@ ComponentWithComputed({
         return
       }
 
-      await deviceStore.updateAllRoomDeviceList()
+      await deviceStore.updateRoomDeviceList()
       this.updateQueue({ isRefresh: true })
 
       this.queryGroupInfo()
@@ -815,7 +805,7 @@ ComponentWithComputed({
 
     // 基于云端更新数据
     async updateRoomListOnCloud() {
-      await deviceStore.updateAllRoomDeviceList()
+      await deviceStore.updateRoomDeviceList()
       this.updateQueue({ isRefresh: true })
     },
     // updateRoomListOnCloud: throttle(

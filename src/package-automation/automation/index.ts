@@ -112,7 +112,7 @@ ComponentWithComputed({
       // emitter.on('scene_enabled', () => {
       //   autosceneBinding.store.updateAllRoomAutoSceneList()
       // })
-      console.log(roomStore.currentRoom, roomStore.currentRoomIndex)
+      console.log(roomStore.currentRoom)
 
       // 加载一键场景列表
       sceneBinding.store.updateAllRoomSceneList()
