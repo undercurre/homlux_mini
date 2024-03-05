@@ -549,12 +549,12 @@ ComponentWithComputed({
 
               const waitingRes = await waitingZigbeeAdd
 
-              Logger.log(`【${item.mac}】waitingRes`, waitingRes)
-
+              Logger.log(`【${item.mac}】RSSI: ${item.RSSI}，waitingRes`, waitingRes)
               if (!waitingRes.success) {
                 item.status = 'fail'
                 Logger.error(`【${item.mac}】配网失败：`, waitingRes.msg)
-                this.data._errorList.push(`【${item.mac}】${waitingRes.msg}`)
+
+                this.data._errorList.push(`【${item.mac}】RSSI: ${item.RSSI}, ${waitingRes.msg}`)
 
                 wx.reportEvent('zigbee_error', {
                   model_id: item.productId,
@@ -661,6 +661,7 @@ ComponentWithComputed({
             this.handleZigbeeTimeout(bleDevice)
           }, timeout * 1000)
         } else if (deviceData.zigbeeRepeatTimes > 0) {
+          Logger.error(`【${bleDevice.mac}】RSSI: ${bleDevice.RSSI}`)
           // 配网指令失败重发
           await this.startZigbeeNet(bleDevice)
         } else {

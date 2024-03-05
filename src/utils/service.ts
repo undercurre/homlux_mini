@@ -22,7 +22,6 @@ export function logout() {
 
 // WS连接
 let socketTask: WechatMiniprogram.SocketTask | null = null
-let socketIsConnect = false // socket是否处于连接状态
 let connectTimeId = 0 // 连接socket的延时器
 let isConnecting = false // 是否正在连接ws
 
@@ -33,7 +32,7 @@ const heartbeatInfo = {
 }
 
 export function isWsConnected() {
-  return socketIsConnect
+  return !!socketTask
 }
 
 export async function startWebsocketService() {
@@ -51,7 +50,7 @@ export async function startWebsocketService() {
   }
 
   isConnecting = true
-  if (socketIsConnect) {
+  if (socketTask) {
     Logger.log('已存在ws连接，正在关闭已有连接')
     await closeWebSocket()
   }
@@ -59,7 +58,6 @@ export async function startWebsocketService() {
   socketTask.onClose(onSocketClose)
   socketTask.onOpen((res) => {
     isConnecting = false
-    socketIsConnect = true
     Logger.log('socket连接成功', res)
 
     // 30秒发一次心跳
@@ -123,10 +121,10 @@ export async function startWebsocketService() {
     await verifyNetwork()
 
     // 可能短时间内连续触发多次onError
-    Logger.error('socket错误onError：', err, 'socketIsConnect', socketIsConnect)
+    Logger.error('socket错误onError：', err, 'socketTask', socketTask)
     isConnecting = false
-    if (socketIsConnect) {
-      socketTask?.close({ code: 3000, reason: 'socket错误' }) // code=-1代码ws报错重连
+    if (socketTask) {
+      socketTask?.close({ code: 3000, reason: 'socket错误' }) // ws报错重连
     } else {
       delayConnectWS(15000)
     }
@@ -168,7 +166,6 @@ export function socketSend(data: string | ArrayBuffer) {
  */
 function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {
   Logger.debug('socket已关闭连接', e)
-  socketIsConnect = false
   clearInterval(heartbeatInfo.timeId)
   const { code } = e
 
@@ -182,12 +179,13 @@ function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {
 
 export function closeWebSocket() {
   return new Promise((resolve) => {
-    if (socketTask && socketIsConnect) {
+    if (socketTask) {
       socketTask.close({
         code: 1000,
         reason: '主动关闭',
         success(res) {
           Logger.debug('closeWebSocket-success', res)
+          socketTask = null
           resolve(true)
         },
         fail(res) {
@@ -203,7 +201,7 @@ export function closeWebSocket() {
 
 emitter.on('networkStatusChange', (res) => {
   // 已登录状态下，可以访问外网且当前没有ws连接的情况，发起ws连接
-  if (res.isConnectStatus && isLogon() && !socketIsConnect) {
-    startWebsocketService()
+  if (res.isConnectStatus && isLogon() && !socketTask) {
+    delayConnectWS(3000)
   }
 })

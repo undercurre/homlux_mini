@@ -38,8 +38,8 @@ export const bleDevicesStore = observable({
     wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
       const deviceList = res.devices
         .filter((item) => {
-          // 先过滤非homlux蓝牙子设备 以及【蓝牙信号值低于-80】的设备
-          return item.localName && item.localName.includes('homlux_ble') && item.RSSI > -80
+          // 先过滤非homlux蓝牙子设备 以及【蓝牙信号值低于-75】的设备
+          return item.localName && item.localName.includes('homlux_ble') && item.RSSI > -75
         })
         .map((item) => getBleDeviceBaseInfo(item))
         .filter((baseInfo) => {
