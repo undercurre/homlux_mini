@@ -121,7 +121,7 @@ ComponentWithComputed({
     },
     // onShow() {
     //   this.setData({
-    //     selectedRoomId: roomStore.currentRoom.roomId,
+    //     selectedRoomId: roomStore.currentRoomId,
     //     active: roomStore.currentRoomIndex,
     //   })
     // },
@@ -193,7 +193,7 @@ ComponentWithComputed({
         wx.navigateTo({
           url: strUtil.getUrlWithParams(this.data.urls.automationEditYijian, {
             yijianSceneId: e.detail.sceneId,
-            roomid: roomStore.currentRoom.roomId,
+            roomid: roomStore.currentRoomId,
           }),
         })
       } else {
@@ -247,7 +247,7 @@ ComponentWithComputed({
       wx.navigateTo({
         url: strUtil.getUrlWithParams(this.data.urls.automationEditYijian, {
           yijianSceneId: sceneid,
-          roomid: roomStore.currentRoom.roomId,
+          roomid: roomStore.currentRoomId,
         }),
       })
     },
@@ -272,8 +272,8 @@ ComponentWithComputed({
   lifetimes: {
     ready() {
       this.setData({
-        selectedRoomId: roomStore.currentRoom.roomId,
-        active: roomStore.currentRoom.roomId,
+        selectedRoomId: roomStore.currentRoomId,
+        active: roomStore.currentRoomId,
       })
       this.updateList()
       sceneBinding.store.updateAllRoomSceneList().then(() => {

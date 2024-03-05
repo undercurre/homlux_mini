@@ -130,7 +130,7 @@ export const deviceStore = observable({
    */
   async updateRoomDeviceList(
     houseId: string = homeStore.currentHomeId,
-    roomId: string = roomStore.currentRoom.roomId,
+    roomId: string = roomStore.currentRoomId,
     options?: IApiRequestOption,
   ) {
     const res = await querySubDeviceList({ houseId, roomId }, options)
