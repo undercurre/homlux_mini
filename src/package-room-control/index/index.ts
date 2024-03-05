@@ -288,7 +288,7 @@ ComponentWithComputed({
         const { eventType, eventData } = e.result
 
         // 过滤非本房间的消息
-        if (eventData.roomId !== roomStore.currentRoom.roomId) {
+        if (eventData.roomId !== roomStore.currentRoomId) {
           return
         }
 
@@ -298,20 +298,20 @@ ComponentWithComputed({
         }
 
         if (eventType === WSEventType.device_property) {
-          // 如果有传更新的状态数据过来，直接更新store
-          const deviceInHouse = deviceStore.allRoomDeviceMap[eventData.deviceId]
+          // DESERTED 直接更新store取消，后续改为按需刷新
+          // const deviceInHouse = deviceStore.allRoomDeviceMap[eventData.deviceId]
 
-          if (deviceInHouse) {
-            runInAction(() => {
-              deviceInHouse.mzgdPropertyDTOList[eventData.modelName] = {
-                ...deviceInHouse.mzgdPropertyDTOList[eventData.modelName],
-                ...eventData.event,
-              }
-            })
-            roomStore.updateRoomCardLightOnNum()
-          }
+          // if (deviceInHouse) {
+          //   runInAction(() => {
+          //     deviceInHouse.mzgdPropertyDTOList[eventData.modelName] = {
+          //       ...deviceInHouse.mzgdPropertyDTOList[eventData.modelName],
+          //       ...eventData.event,
+          //     }
+          //   })
+          //   roomStore.updateRoomCardLightOnNum()
+          // }
 
-          // 组装要更新的设备数据
+          // DESERTED 组装要更新的设备数据
           // const deviceInRoom = deviceStore.deviceMap[eventData.deviceId]
 
           // if (deviceInRoom) {
@@ -335,8 +335,8 @@ ComponentWithComputed({
           this.updateQueue(device)
 
           // 子设备状态变更，刷新全房间灯光可控状态
-          const hasLightOn = deviceStore.deviceList.some(
-            (d) => d.roomId === roomStore.currentRoom.roomId && d.mzgdPropertyDTOList?.light?.power === 1,
+          const hasLightOn = this.data.devicePageList.some((group) =>
+            group.some((d) => d.mzgdPropertyDTOList?.light?.power === 1),
           )
           this.setData({
             'roomLight.power': hasLightOn ? 1 : 0,
@@ -1040,7 +1040,7 @@ ComponentWithComputed({
 
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-automation/automation-add/index', {
-          roomid: roomStore.currentRoom.roomId,
+          roomid: roomStore.currentRoomId,
         }),
       })
     },
