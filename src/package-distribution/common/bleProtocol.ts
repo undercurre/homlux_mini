@@ -166,16 +166,6 @@ export class BleClient {
               },
             })
 
-            wx.getBLEDeviceRSSI({
-              deviceId: this.deviceUuid,
-              success: (res) => {
-                console.warn(`${this.mac}`, 'success', res)
-              },
-              fail: (res) => {
-                console.warn(`${this.mac}`, 'fail', res)
-              },
-            })
-
             throw err
           })
       }
