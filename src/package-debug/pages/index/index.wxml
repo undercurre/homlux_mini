@@ -35,4 +35,10 @@
       />
     </view>
   </van-cell>
+  <van-cell
+    title="开关灯压力测试"
+    is-link
+    center
+    bind:click="toggleTrials"
+  />
 </van-cell-group>
