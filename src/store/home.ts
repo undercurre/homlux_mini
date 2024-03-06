@@ -184,6 +184,10 @@ export const homeStore = observable({
       runInAction(() => {
         roomStore.roomDeviceList = list
         deviceStore.allRoomDeviceList = data[0].result
+        const { roomId = '0' } = roomStore.currentRoom
+        if (roomId) {
+          deviceStore.deviceList = data[0].result.filter((device) => device.roomId === roomId)
+        }
         deviceStore.updateAllRoomDeviceListLanStatus(false)
       })
     }
@@ -353,9 +357,13 @@ export const homeStore = observable({
     }
 
     if (!this.key) {
-      const key = storage.get('localKey') as string
+      const localKey = storage.get('localKey') as string
 
-      this.key = key
+      if (localKey) {
+        this.key = localKey
+      } else {
+        Logger.debug('没有本地Key')
+      }
     }
   },
 

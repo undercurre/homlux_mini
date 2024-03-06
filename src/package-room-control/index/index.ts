@@ -41,6 +41,7 @@ import {
   defaultImgDir,
   MAX_DEVICES_USING_WS,
   NO_WS_REFRESH_INTERVAL,
+  NO_UPDATE_INTERVAL,
 } from '../../config/index'
 
 type DeviceCard = Device.DeviceItem & {
@@ -90,6 +91,7 @@ ComponentWithComputed({
     _firstShow: true, // 是否首次进入
     _from: '', // 页面进入来源
     _updating: false, // 列表更新中标志
+    _delayUpdateFlag: false, // 列表延迟更新标志
     // 更新等待队列
     _diffWaitlist: [] as DeviceCard[],
     // 待更新到视图的数据，便于多个更新合并到一次setData中（updateDeviceList专用）
@@ -137,7 +139,8 @@ ComponentWithComputed({
       minColorTemp,
       power: 0,
     },
-    _timeId: null as null | number,
+    _timeId: null as null | number, // 自动刷新定时
+    _delayTimeId: null as null | number, // 延时更新定时
   },
 
   computed: {
@@ -153,9 +156,7 @@ ComponentWithComputed({
       if (data.allRoomDeviceList) {
         return (
           (data.allRoomDeviceList as DeviceCard[]).filter(
-            (device) =>
-              device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
-              device.proType === PRO_TYPE.light,
+            (device) => device.roomId === roomStore.currentRoomId && device.proType === PRO_TYPE.light,
           ).length > 0
         )
       }
@@ -166,19 +167,14 @@ ComponentWithComputed({
       if (data.allRoomDeviceList?.length) {
         return (
           (data.allRoomDeviceList as DeviceCard[]).filter(
-            (device) =>
-              device.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId &&
-              device.proType !== PRO_TYPE.gateway,
+            (device) => device.roomId === roomStore.currentRoomId && device.proType !== PRO_TYPE.gateway,
           ).length > 0
         )
       }
       return false
     },
     title(data) {
-      if (data.roomList && data.roomList[data.currentRoomIndex]) {
-        return data.roomList[data.currentRoomIndex].roomName
-      }
-      return ''
+      return data.currentRoom?.roomName ?? ''
     },
     sceneListInBar(data) {
       if (data.sceneList) {
@@ -207,23 +203,6 @@ ComponentWithComputed({
       return data.checkedList.some(
         (uniId: string) => uniId.indexOf(':') === -1 && deviceMap[uniId].proType === PRO_TYPE.light,
       )
-    },
-    /** 是否只控制选中一个开关 */
-    // TODO 代码可删除
-    isSwitchSelectOne(data) {
-      if (data.checkedList) {
-        const deviceMap = deviceStore.deviceFlattenMap
-        let selectSwitchNum = 0
-        data.checkedList.forEach((uniId: string) => {
-          if (uniId.includes(':')) {
-            if (deviceMap[uniId].proType === PRO_TYPE.switch) {
-              selectSwitchNum++
-            }
-          }
-        })
-        return !!selectSwitchNum
-      }
-      return false
     },
     // 判断是否是创建者或者管理员，其他角色不能添加设备
     canAddDevice(data) {
@@ -267,11 +246,18 @@ ComponentWithComputed({
      * 生命周期函数--监听页面加载
      */
     async onLoad(query: { from?: string }) {
-      Logger.log('room-onLoad', query)
+      Logger.log('[room-onLoad]', query)
       this.data._from = query.from ?? ''
-      // this.setUpdatePerformanceListener({withDataPaths: true}, (res) => {
-      //   console.debug('setUpdatePerformanceListener', res, res.pendingStartTimestamp - res.updateStartTimestamp, res.updateEndTimestamp - res.updateStartTimestamp, dayjs().format('YYYY-MM-DD HH:mm:ss'))
-      // })
+      this.setUpdatePerformanceListener({ withDataPaths: true }, (res) => {
+        Logger.debug(
+          '[Performance]',
+          '等待时长：',
+          res.updateStartTimestamp - res.pendingStartTimestamp,
+          '执行时长：',
+          res.updateEndTimestamp - res.updateStartTimestamp,
+          res.dataPaths ?? '',
+        )
+      })
     },
 
     async onShow() {
@@ -299,73 +285,84 @@ ComponentWithComputed({
 
       // ws消息处理
       emitter.on('wsReceive', async (e) => {
-        const { eventType } = e.result
+        const { eventType, eventData } = e.result
+
+        // 过滤非本房间的消息
+        if (eventData.roomId !== roomStore.currentRoomId) {
+          return
+        }
 
         if (eventType === WSEventType.updateHomeDataLanInfo) {
           this.updateQueue({ isRefresh: true })
           return
         }
 
-        if (e.result.eventType === WSEventType.device_property) {
-          // 房间状态上报，只响应开关状态的变更 // 已由msgPush触发更新，此处可删除
-          // if (e.result.eventData.deviceId === roomStore.currentRoom.groupId) {
-          //   const { event } = e.result.eventData
-          //   console.log('[房间状态上报]', roomStore.currentRoom.groupId, event.power)
-          //   this.setData({
-          //     'roomLight.power': event.power,
+        if (eventType === WSEventType.device_property) {
+          // DESERTED 直接更新store取消，后续改为按需刷新
+          // const deviceInHouse = deviceStore.allRoomDeviceMap[eventData.deviceId]
+
+          // if (deviceInHouse) {
+          //   runInAction(() => {
+          //     deviceInHouse.mzgdPropertyDTOList[eventData.modelName] = {
+          //       ...deviceInHouse.mzgdPropertyDTOList[eventData.modelName],
+          //       ...eventData.event,
+          //     }
+          //   })
+          //   roomStore.updateRoomCardLightOnNum()
+          // }
+
+          // DESERTED 组装要更新的设备数据
+          // const deviceInRoom = deviceStore.deviceMap[eventData.deviceId]
+
+          // if (deviceInRoom) {
+          //   runInAction(() => {
+          //     deviceInRoom.mzgdPropertyDTOList[eventData.modelName] = {
+          //       ...deviceInRoom.mzgdPropertyDTOList[eventData.modelName],
+          //       ...eventData.event,
+          //     }
           //   })
           // }
-          // 如果有传更新的状态数据过来，直接更新store
-          const deviceInHouse = deviceStore.allRoomDeviceMap[e.result.eventData.deviceId]
-
-          if (deviceInHouse) {
-            runInAction(() => {
-              deviceInHouse.mzgdPropertyDTOList[e.result.eventData.modelName] = {
-                ...deviceInHouse.mzgdPropertyDTOList[e.result.eventData.modelName],
-                ...e.result.eventData.event,
-              }
-            })
-            roomStore.updateRoomCardLightOnNum()
-          }
-
-          // 组装要更新的设备数据
-          const deviceInRoom = deviceStore.deviceMap[e.result.eventData.deviceId]
-
-          if (deviceInRoom) {
-            runInAction(() => {
-              deviceInRoom.mzgdPropertyDTOList[e.result.eventData.modelName] = {
-                ...deviceInRoom.mzgdPropertyDTOList[e.result.eventData.modelName],
-                ...e.result.eventData.event,
-              }
-            })
-          }
 
           // 组装要更新的设备数据，更新的为flatten列表，结构稍不同
           const device = {} as DeviceCard
-          device.deviceId = e.result.eventData.deviceId
-          device.uniId = `${e.result.eventData.deviceId}:${e.result.eventData.modelName}`
+          device.deviceId = eventData.deviceId
+          device.uniId = `${eventData.deviceId}:${eventData.modelName}`
           device.mzgdPropertyDTOList = {}
-          device.mzgdPropertyDTOList[e.result.eventData.modelName] = {
-            ...e.result.eventData.event,
+          device.mzgdPropertyDTOList[eventData.modelName] = {
+            ...eventData.event,
           }
 
           this.updateQueue(device)
+
+          // 子设备状态变更，刷新全房间灯光可控状态
+          const hasLightOn = this.data.devicePageList.some((group) =>
+            group.some((d) => d.mzgdPropertyDTOList?.light?.power === 1),
+          )
+          this.setData({
+            'roomLight.power': hasLightOn ? 1 : 0,
+          })
+
           return
         }
         // 更新设备在线状态
         // 网关 device_online_status；WIFI设备 screen_online_status_wifi_device
         // 子设备 screen_online_status_sub_device
         else if (
-          e.result.eventType === WSEventType.device_online_status ||
-          e.result.eventType === WSEventType.device_offline_status ||
-          e.result.eventType === WSEventType.screen_online_status_sub_device ||
-          e.result.eventType === WSEventType.screen_online_status_wifi_device
+          eventType === WSEventType.device_online_status ||
+          eventType === WSEventType.device_offline_status ||
+          eventType === WSEventType.screen_online_status_sub_device ||
+          eventType === WSEventType.screen_online_status_wifi_device
         ) {
-          const { deviceId, status } = e.result.eventData
+          const { deviceId, status } = eventData
           const deviceInRoom = deviceStore.deviceMap[deviceId]
           if (!deviceInRoom || deviceInRoom.onLineStatus === status) {
             return
           }
+          // 更新状态
+          runInAction(() => {
+            deviceInRoom.onLineStatus = status
+          })
+          // 更新视图
           const modelName = getModelName(deviceInRoom.proType, deviceInRoom.productId)
           const device = {} as DeviceCard
           device.deviceId = deviceId
@@ -381,13 +378,10 @@ ComponentWithComputed({
             // WSEventType.group_device_result_status,
             // WSEventType.device_del,
             WSEventType.bind_device,
-          ].includes(e.result.eventType)
+          ].includes(eventType)
         ) {
           this.reloadDataThrottle(e)
-        } else if (
-          e.result.eventType === WSEventType.room_del &&
-          e.result.eventData.roomId === roomStore.roomList[roomStore.currentRoomIndex].roomId
-        ) {
+        } else if (eventType === WSEventType.room_del && eventData.roomId === roomStore.currentRoomId) {
           // 房间被删除，退出到首页
           await homeStore.updateRoomCardList()
           wx.redirectTo({
@@ -395,21 +389,42 @@ ComponentWithComputed({
           })
         }
       })
-
-      // 子设备状态变更，刷新全房间灯光可控状态
-      emitter.on('msgPush', () => {
-        const hasLightOn = deviceStore.deviceList.some((d) => d.mzgdPropertyDTOList?.light?.power === 1)
-        this.setData({
-          'roomLight.power': hasLightOn ? 1 : 0,
-        })
-      })
     },
 
     // 响应控制弹窗中单灯/灯组的控制变化，直接按本地设备列表数值以及设置值，刷新房间灯的状态
     refreshLightStatus() {
-      console.log('本地更新房间灯状态', deviceStore.lightStatusInRoom)
+      let sumOfBrightness = 0,
+        sumOfColorTemp = 0,
+        count = 0,
+        brightness = 0,
+        colorTemperature = 0
 
-      const { brightness, colorTemperature } = deviceStore.lightStatusInRoom
+      // 房间所有灯的亮度计算
+      deviceStore.deviceFlattenList.forEach((device) => {
+        const { proType, deviceType, mzgdPropertyDTOList, onLineStatus } = device
+
+        // 只需要灯需要参与计算，过滤属性数据不完整的数据，过滤灯组，过滤不在线设备，过滤未开启设备
+        if (
+          proType !== PRO_TYPE.light ||
+          deviceType === 4 ||
+          onLineStatus !== 1 ||
+          mzgdPropertyDTOList?.light?.power !== 1
+        ) {
+          return
+        }
+
+        sumOfBrightness += mzgdPropertyDTOList.light?.brightness ?? 0
+        sumOfColorTemp += mzgdPropertyDTOList.light?.colorTemperature ?? 0
+        count++
+      })
+
+      if (count) {
+        brightness = sumOfBrightness / count
+        colorTemperature = sumOfColorTemp / count
+      }
+
+      console.log('本地更新房间灯状态', { brightness, colorTemperature })
+
       this.setData({
         'roomLight.brightness': brightness,
         'roomLight.colorTemperature': colorTemperature,
@@ -467,7 +482,7 @@ ComponentWithComputed({
         return
       }
 
-      await deviceStore.updateAllRoomDeviceList()
+      await deviceStore.updateRoomDeviceList()
       this.updateQueue({ isRefresh: true })
 
       this.queryGroupInfo()
@@ -476,14 +491,13 @@ ComponentWithComputed({
     // 节流更新设备列表
     reloadDeviceListThrottle: throttle(function (this: IAnyObject) {
       this.reloadDeviceList()
-      this.autoRefreshDevice()
     }, 3000),
 
     // 页面滚动
     onPageScroll(e: { detail: { scrollTop: number } }) {
       this.data.scrollTop = e?.detail?.scrollTop || 0
     },
-    clear() {
+    clearJobs() {
       console.log('[room onHide/onUnload] clear()')
       // 解除监听
       emitter.off('wsReceive')
@@ -498,13 +512,18 @@ ComponentWithComputed({
         clearTimeout(this.data._timeId)
         this.data._timeId = null
       }
+
+      if (this.data._delayTimeId) {
+        clearTimeout(this.data._delayTimeId)
+        this.data._delayTimeId = null
+      }
     },
 
     onUnload() {
-      this.clear()
+      this.clearJobs()
     },
     onHide() {
-      this.clear()
+      this.clearJobs()
     },
     handleShowDeviceOffline(e: { detail: DeviceCard }) {
       this.setData({
@@ -665,8 +684,6 @@ ComponentWithComputed({
 
         const _list = flattenList
           // 接口返回开关面板数据以设备为一个整体，需要前端拆开后排序
-          // 不再排除灯组
-          // .filter((device) => !deviceStore.lightsInGroup.includes(device.deviceId))
           // 补充字段
           .map((device, index) => ({
             ...device,
@@ -775,17 +792,30 @@ ComponentWithComputed({
         }
       }
 
-      // 未在更新中，从队首取一个执行
+      // 未在更新中
       if (!this.data._updating) {
-        const diff = this.data._diffWaitlist.shift()
+        const diff = this.data._diffWaitlist.shift() // 从队首取一个执行
         this.data._updating = true
+
+        if (this.data._delayTimeId) {
+          clearTimeout(this.data._delayTimeId)
+        }
+
+        this.data._delayUpdateFlag = true
+        Logger.log('_delayUpdateFlag', this.data._delayUpdateFlag)
+        this.data._delayTimeId = setTimeout(() => {
+          this.data._delayUpdateFlag = false
+          this.data._delayTimeId = null
+          Logger.log('_delayUpdateFlag', this.data._delayUpdateFlag)
+        }, NO_UPDATE_INTERVAL)
+
         this.updateDeviceList(diff)
       }
     },
 
     // 基于云端更新数据
     async updateRoomListOnCloud() {
-      await deviceStore.updateAllRoomDeviceList()
+      await deviceStore.updateRoomDeviceList()
       this.updateQueue({ isRefresh: true })
     },
     // updateRoomListOnCloud: throttle(
@@ -1010,7 +1040,7 @@ ComponentWithComputed({
 
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-automation/automation-add/index', {
-          roomid: roomStore.currentRoom.roomId,
+          roomid: roomStore.currentRoomId,
         }),
       })
     },
@@ -1350,22 +1380,24 @@ ComponentWithComputed({
     },
     // 定时更新设备列表，符合条件则递归执行
     autoRefreshDevice() {
-      Logger.log('[autoRefreshDevice]')
-      const noAutoRefresh = deviceStore.allRoomDeviceList.length < MAX_DEVICES_USING_WS
-      if (this.data._timeId) {
-        if (noAutoRefresh) {
+      Logger.log('[autoRefreshDevice]devices amount:', deviceStore.allRoomDeviceList.length)
+
+      if (deviceStore.allRoomDeviceList.length < MAX_DEVICES_USING_WS) {
+        if (this.data._timeId) {
           clearTimeout(this.data._timeId)
           this.data._timeId = null
         }
         return
       }
-      if (noAutoRefresh) {
-        return
-      }
 
+      if (this.data._timeId) {
+        clearTimeout(this.data._timeId)
+      }
       this.data._timeId = setTimeout(() => {
-        this.data._timeId = null
-        this.reloadDeviceList()
+        // 如果最近刚更新过，则本次自动更新跳过
+        if (!this.data._delayUpdateFlag) {
+          this.reloadDeviceList()
+        }
         this.autoRefreshDevice()
       }, NO_WS_REFRESH_INTERVAL)
     },

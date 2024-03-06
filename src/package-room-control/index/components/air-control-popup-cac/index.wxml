@@ -78,6 +78,7 @@
 
       <view class="py-64rpx px-8rpx">
         <mz-slider
+          wx:if="{{show}}"
           disabled="{{disabledSlider}}"
           bind:slideEnd="handleBtnTap"
           bind:slideChange="handleSlideChange"
@@ -99,7 +100,7 @@
       <view class="flex flex-row justify-evenly rounded-24rpx bg-hex-f7f8f9 mt-30rpx">
         <drop-button
           disabled="{{disabledMode}}"
-          icon="/package-room-control/assets/img/cold.png"
+          icon="{{modeIcon}}"
           size="{{80}}"
           round="{{20}}"
           text="{{currentMode}}"
@@ -110,7 +111,7 @@
 
         <drop-button
           disabled="{{disabledWindSpeed}}"
-          icon="/package-room-control/assets/img/wind.png"
+          icon="{{windIcon}}"
           size="{{80}}"
           round="{{20}}"
           text="{{currentWindLevel || '风速'}}"

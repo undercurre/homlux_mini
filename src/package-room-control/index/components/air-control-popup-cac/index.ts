@@ -2,7 +2,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import { sendDevice } from '../../../../apis/index'
-import { CAC_MODE, CAC_FA_WINDSPEED, proName } from '../../../../config/index'
+import { CAC_MODE, CAC_FA_WINDSPEED, MODE_ICON_MAP, WIND_ICON_MAP, proName } from '../../../../config/index'
 
 ComponentWithComputed({
   options: {
@@ -99,7 +99,7 @@ ComponentWithComputed({
     },
     disabledWindSpeed(data) {
       const { power, mode } = data.propView
-      return power !== 1 || parseInt(mode) === 8
+      return power !== 1 || parseInt(mode) === 2
     },
     showIndoorTemp(data) {
       const { currentTemperature } = data.propView
@@ -129,6 +129,14 @@ ComponentWithComputed({
     currentWindLevel(data) {
       const { windSpeed = 1 } = data.propView
       return CAC_FA_WINDSPEED[`windSpeed_${windSpeed}`] ?? ''
+    },
+    modeIcon(data) {
+      const { mode = 1 } = data.propView
+      return `/package-room-control/assets/img/mode_${MODE_ICON_MAP[mode]}.png`
+    },
+    windIcon(data) {
+      const { windSpeed = 1 } = data.propView
+      return `/package-room-control/assets/img/${WIND_ICON_MAP[windSpeed]}.png`
     },
   },
 
@@ -216,6 +224,9 @@ ComponentWithComputed({
     showPicker(e: WechatMiniprogram.CustomEvent) {
       const key = e.currentTarget.dataset.key as string
       if (key === 'windSpeed' && this.data.disabledWindSpeed) {
+        return
+      }
+      if (key === 'mode' && this.data.disabledMode) {
         return
       }
       this.setData({

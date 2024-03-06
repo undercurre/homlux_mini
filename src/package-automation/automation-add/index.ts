@@ -836,6 +836,18 @@ ComponentWithComputed({
     async handleSelectCardSelect(e: { detail: string }) {
       console.log('handleSelectCardSelect', e, e.detail)
       const selectId = e.detail
+
+      const listType =
+        this.data.selectCardType === 'sensor' ? 'sensorlinkSelectList' : 'tempSceneDevicelinkSelectedList'
+      // 取消选择逻辑
+      if (this.data[listType].includes(selectId)) {
+        const index = this.data[listType].findIndex((id) => id === selectId)
+        this.data[listType].splice(index, 1)
+        this.setData({
+          [`${listType}`]: [...this.data[listType]],
+        })
+        return
+      }
       if (this.data.selectCardType === 'device') {
         const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
         const device = allRoomDeviceMap[e.detail]
@@ -852,17 +864,6 @@ ComponentWithComputed({
               switchInfoDTOList: device.switchInfoDTOList,
             })
         }
-      }
-      const listType =
-        this.data.selectCardType === 'sensor' ? 'sensorlinkSelectList' : 'tempSceneDevicelinkSelectedList'
-      // 取消选择逻辑
-      if (this.data[listType].includes(selectId)) {
-        const index = this.data[listType].findIndex((id) => id === selectId)
-        this.data[listType].splice(index, 1)
-        this.setData({
-          [`${listType}`]: [...this.data[listType]],
-        })
-        return
       }
       if (this.data.selectCardType === 'sensor') {
         //传感器只单选
@@ -1711,7 +1712,7 @@ ComponentWithComputed({
         deviceActions: [],
         deviceConditions: [],
         houseId: homeStore.currentHomeDetail.houseId,
-        roomId: this.data.roomId === '' ? roomStore.roomList[roomStore.currentRoomIndex].roomId : this.data.roomId,
+        roomId: this.data.roomId === '' ? roomStore.currentRoomId : this.data.roomId,
         sceneIcon: this.data.sceneIcon,
         sceneName: this.data.sceneName,
         sceneType: '0',

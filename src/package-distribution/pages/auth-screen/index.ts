@@ -53,7 +53,7 @@ Component({
           message: '授权成功',
           onClose: () => {
             wx.reLaunch({
-              url: cacheData.pageEntry,
+              url: cacheData.pageEntry || '/pages/index/index',
             })
           },
         })

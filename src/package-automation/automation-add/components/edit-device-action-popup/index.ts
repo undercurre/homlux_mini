@@ -57,14 +57,14 @@ ComponentWithComputed({
             title: '温度',
             key: 'temperature',
             propertyKey: 'acTemperature',
-            disabled: power === 0 || mode === 'fan',
+            disabled: power === 0 || !mode || mode === 'fan',
             value: temperature === 0 ? '不设置' : `${temperature + small_temperature}℃`,
           },
           {
             title: '风速',
             key: 'wind_speed',
             propertyKey: 'acWindSpeed',
-            disabled: power === 0 || mode === 'auto' || mode === 'dry',
+            disabled: power === 0 || !mode || mode === 'auto' || mode === 'dry',
             value: wind_speed === 0 ? '不设置' : transferWindSpeedProperty(wind_speed),
           },
         )
@@ -85,14 +85,14 @@ ComponentWithComputed({
             title: '温度',
             key: 'targetTemperature',
             propertyKey: 'cacTemperature',
-            disabled: power === 0 || mode === 4,
+            disabled: power === 0 || !mode || mode === 4,
             value: targetTemperature === 0 ? '不设置' : `${targetTemperature}℃`,
           },
           {
             title: '风速',
             key: 'windSpeed',
             propertyKey: 'CacFaWindSpeed',
-            disabled: power === 0 || mode === 2,
+            disabled: power === 0 || !mode || mode === 2,
             value: windSpeed === 0 ? '不设置' : CAC_FA_WINDSPEED[`windSpeed_${windSpeed}`],
           },
         )
@@ -253,6 +253,7 @@ ComponentWithComputed({
       })
     },
     onPropertyPopupConfirm(e: { detail: IAnyObject }) {
+      console.log('onPropertyPopupConfirm', e.detail)
       const sceneProperty = this.data.deviceActionInfo.sceneProperty
       if (e.detail.optionTitle === '不设置') {
         if (e.detail.propertyKey === 'acTemperature') {
@@ -281,6 +282,12 @@ ComponentWithComputed({
           }
         }
       }
+      //WIFI空调模式为不设置时,不可设置温度和风速
+      if (e.detail.propertyKey === 'acMode' && e.detail.value === '') {
+        delete sceneProperty['temperature']
+        delete sceneProperty['small_temperature']
+        delete sceneProperty['wind_speed']
+      }
       //WIFI空调模式为自动和除湿时只能设置自动风
       if (e.detail.propertyKey === 'acMode' && (e.detail.value === 'auto' || e.detail.value === 'dry'))
         sceneProperty['wind_speed'] = 102
@@ -288,6 +295,11 @@ ComponentWithComputed({
       if (e.detail.propertyKey === 'acMode' && e.detail.value === 'fan') {
         delete sceneProperty['temperature']
         delete sceneProperty['small_temperature']
+      }
+      //485中央空调模式为不设置时,不可设置温度和风速
+      if (e.detail.propertyKey === 'cacMode' && e.detail.value === 0) {
+        delete sceneProperty['targetTemperature']
+        delete sceneProperty['windSpeed']
       }
       //485中央空调模式为送风时不能调节温度
       if (e.detail.propertyKey === 'cacMode' && e.detail.value === 4) delete sceneProperty['targetTemperature']

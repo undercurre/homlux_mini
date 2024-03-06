@@ -11,14 +11,14 @@ export const roomStore = observable({
    */
   roomList: [] as Room.RoomInfo[],
   /**
-   * 选择进入了哪个房间，在roomList中的index
+   * 选择进入了哪个房间的房间id
    */
-  currentRoomIndex: 0,
+  currentRoomId: '0',
   /** 全屋设备，对应房间id作为key，房间的设备列表作为key */
   roomDeviceList: {} as Record<string, Device.DeviceItem[]>,
 
   get currentRoom(): Room.RoomInfo {
-    return this.roomList[this.currentRoomIndex]
+    return this.roomList.find((room) => room.roomId === this.currentRoomId) ?? ({} as Room.RoomInfo)
   },
 
   get lightOnInHouse(): number {
@@ -26,6 +26,18 @@ export const roomStore = observable({
     let count = 0
     roomList.forEach((room) => (count += room.lightOnCount))
     return count
+  },
+
+  /**
+   * 设置当前房间id，同步筛选当前房间的设备列表
+   * @param id 要设置的房间id
+   */
+  setCurrentRoom(id: string) {
+    runInAction(() => {
+      roomStore.currentRoomId = id
+      deviceStore.deviceList = deviceStore.allRoomDeviceList.filter((device) => device.roomId === id)
+      deviceStore.updateAllRoomDeviceListLanStatus(false)
+    })
   },
 
   /**
@@ -97,6 +109,6 @@ export const roomStore = observable({
 
 export const roomBinding = {
   store: roomStore,
-  fields: ['roomList', 'currentRoomIndex', 'roomDeviceList', 'currentRoom'],
+  fields: ['roomList', 'currentRoomId', 'roomDeviceList', 'currentRoom'],
   actions: [],
 }

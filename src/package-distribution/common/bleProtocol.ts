@@ -157,6 +157,15 @@ export class BleClient {
             deviceId: this.deviceUuid,
           })
           .catch((err) => {
+            console.warn(`${this.mac}`, this.deviceUuid)
+
+            wx.getConnectedBluetoothDevices({
+              services: [],
+              success: (res) => {
+                console.warn('getConnectedBluetoothDevices', res, this.deviceUuid)
+              },
+            })
+
             throw err
           })
       }
@@ -324,7 +333,7 @@ export class BleClient {
       return {
         code: '-1',
         success: false,
-        error: err,
+        msg: err,
         data: '',
       }
     }
@@ -369,6 +378,7 @@ export class BleClient {
     const result = {
       code: res.code,
       success: res.success,
+      msg: res.msg,
       result: {
         zigbeeMac: '',
       },

@@ -24,6 +24,17 @@
       <text class="h-50rpx text-36rpx text-black-2a mt-44rpx font-medium">{{title}}</text>
     </view>
 
+    <view
+      class="box-tips"
+      wx:if="{{tipsText}}"
+    >
+      <image
+        class="w-36 h-36 ml-48rpx"
+        src="/assets/img/base/info.png"
+      ></image>
+      <text class="text-hex-555659 text-24 ml-32rpx">{{ tipsText }}</text>
+    </view>
+
     <scroll-view
       enhanced
       show-scrollbar="{{false}}"
@@ -95,8 +106,8 @@
         class="flex-1"
         size="large"
         bind:click="handleCancel"
-        >{{ cancelText }}</van-button
-      >
+        >{{ cancelText }}
+      </van-button>
 
       <van-button
         wx:if="{{showConfirm}}"
@@ -104,8 +115,8 @@
         class="flex-1"
         size="large"
         bind:click="handleConfirm"
-        >{{ confirmText }}</van-button
-      >
+        >{{ confirmText }}
+      </van-button>
     </view>
 
     <view class="h-96rpx"></view>

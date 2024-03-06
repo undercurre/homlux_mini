@@ -228,7 +228,8 @@ ComponentWithComputed({
         onConnectionStateChange: (connected) => {
           Logger.debug('onConnectionStateChange', connected, 'this.data._isNeedLinkDevice', this.data._isNeedLinkDevice)
 
-          if (connected) {
+          // 存在用户误操作（手动连接网关，连续切换多个不同的网关热点，低概率），仅执行第一次回调的设备热点连接
+          if (this.data.activeIndex === 0 && connected) {
             this.sendMessage()
           } else if (!connected && this.data._isNeedLinkDevice) {
             Logger.error('设备连接中断')

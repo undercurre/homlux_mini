@@ -45,7 +45,7 @@ App<IAppOption>({
       () => homeStore.currentHomeDetail.houseId,
       async () => {
         console.debug('reaction -> homeStore.currentHomeDetail.houseId')
-        closeWebSocket()
+        await closeWebSocket()
         startWebsocketService()
 
         homeStore.key = '' // 清空旧家庭的homOS的key
@@ -90,6 +90,8 @@ App<IAppOption>({
       isLogon(),
       'homeStore.currentHomeId',
       homeStore.currentHomeId,
+      'firstOnShow',
+      firstOnShow,
     )
 
     // 非登录状态，终止下面逻辑，且发现当前非主包页面（当前主包页面均可不需要登录访问），强制跳转登录
@@ -116,7 +118,7 @@ App<IAppOption>({
       deviceStore.updateAllRoomDeviceList(homeStore.currentHomeId, { isDefaultErrorTips: false })
     }
 
-    // 全屋场景数据加载
+    // 全屋场景数据加载, todo: 冷启动时，homeStore.currentHomeId还没初始化好，大概率查询失败
     sceneStore.updateAllRoomSceneList(homeStore.currentHomeId, { isDefaultErrorTips: false })
   },
 
