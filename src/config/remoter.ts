@@ -865,6 +865,10 @@ export const CMD: Record<string, number> = {
 
   // 指令终止（松手时发送）
   END: 0x00,
+
+  // 断开连接
+  DISCONNECT: 0x06,
+  DISCONNECT_VAL: 0xFE
 }
 
 // 下拉选项配置

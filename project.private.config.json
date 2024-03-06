@@ -11,6 +11,13 @@
     "miniprogram": {
       "list": [
         {
+          "name": "package-remoter/fan/index",
+          "pathName": "package-remoter/fan/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "屏端授权",
           "pathName": "package-distribution/pages/auth-screen/index",
           "query": "",

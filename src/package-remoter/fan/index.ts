@@ -348,6 +348,22 @@ ComponentWithComputed({
         }
       }, 3500)
     },
+    async sendDisconnectAd() {
+      if (!this.data._bleServer && !isDevMode) {
+        this.data._bleServer = await createBleServer()
+      }
+      const addr = this.data.isFactoryMode ? FACTORY_ADDR : remoterStore.curAddr
+      const params = [CMD['DISCONNECT'], CMD['DISCONNECT_VAL']]
+      const payload = remoterProtocol.generalCmdString(params)
+      const test = remoterProtocol.createBluetoothProtocol(payload)
+      console.log('lmn>>>sendDisconnectAd::test=', test)
+      // bleAdvertising(this.data._bleServer, {
+      //   addr,
+      //   payload,
+      //   isFactory: this.data.isFactoryMode,
+      //   debug: this.data.isDebugMode
+      // })
+    },
 
     showActionSheet(e: WechatMiniprogram.TouchEvent) {
       const actionSheetType = e.target.dataset.key

@@ -331,10 +331,7 @@ export class BleService {
         deviceId: this.deviceId,
         serviceId: this.serviceId,
         characteristicId: characteristic.uuid,
-        value: remoterProtocol.createBluetoothProtocol({
-          addr: this.addr,
-          data: payload,
-        }),
+        value: remoterProtocol.createBluetoothProtocol(payload),
       })
       .catch((err) => {
         throw err

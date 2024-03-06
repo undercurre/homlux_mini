@@ -9,41 +9,18 @@
     title="{{curRemoter.deviceName}}"
   ></nav-bar>
 
-  <view
-    class="tool-bar"
-    style="top: {{toolbarMarginTop}}"
-  >
+  <view class="tool-bar" style="top: {{toolbarMarginTop}}">
     <!-- 工厂产测模式 -->
-    <div
-      class="img-wrapper"
-      bind:tap="toggleFactoryMode"
-      wx:if="{{isDebugMode}}"
-    >
+    <div class="img-wrapper" bind:tap="toggleFactoryMode" wx:if="{{isDebugMode}}">
       <text class="text-18rpx mr-10rpx">{{curAddrText}}</text>
-      <image
-        class="w-48 h-48"
-        src="/assets/img/mine/sensor.png"
-      ></image>
+      <image class="w-48 h-48" src="/assets/img/mine/sensor.png"></image>
     </div>
     <!-- 基于连接的指令调试 -->
-    <div
-      class="img-wrapper"
-      bind:tap="toggleBleMode"
-      wx:if="{{isDebugMode}}"
-    >
-      <image
-        class="w-48 h-48"
-        src="{{connectIcon}}"
-      ></image>
+    <div class="img-wrapper" bind:tap="toggleBleMode" wx:if="{{isDebugMode}}">
+      <image class="w-48 h-48" src="{{connectIcon}}"></image>
     </div>
-    <div
-      class="img-wrapper"
-      bind:tap="toSetting"
-    >
-      <image
-        class="w-48 h-48"
-        src="/assets/img/home-manage/setting.png"
-      ></image>
+    <div class="img-wrapper" bind:tap="toSetting">
+      <image class="w-48 h-48" src="/assets/img/home-manage/setting.png"></image>
     </div>
   </view>
 
@@ -175,6 +152,14 @@
         imgWidth="650rpx"
         type="square"
         text="发送50次指令"
+      ></mz-button>
+      <mz-button
+        wx:if="{{isDebugMode}}"
+        bind:btnTouch="sendDisconnectAd"
+        class="mt-64rpx"
+        imgWidth="650rpx"
+        type="square"
+        text="发送断开广播"
       ></mz-button>
     </view>
   </view>
