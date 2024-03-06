@@ -39,7 +39,11 @@ type Events = {
   group_device_result_status: {
     devId: string
     modelName: string
-    errCode: number
+    eventData: {
+      devId: string
+      errCode: number
+      modelName: string
+    }
   }
   // 从websocket接受到信息 end
   deviceEdit: void
