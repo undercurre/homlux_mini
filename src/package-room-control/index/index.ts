@@ -204,23 +204,6 @@ ComponentWithComputed({
         (uniId: string) => uniId.indexOf(':') === -1 && deviceMap[uniId].proType === PRO_TYPE.light,
       )
     },
-    /** 是否只控制选中一个开关 */
-    // TODO 代码可删除
-    isSwitchSelectOne(data) {
-      if (data.checkedList) {
-        const deviceMap = deviceStore.deviceFlattenMap
-        let selectSwitchNum = 0
-        data.checkedList.forEach((uniId: string) => {
-          if (uniId.includes(':')) {
-            if (deviceMap[uniId].proType === PRO_TYPE.switch) {
-              selectSwitchNum++
-            }
-          }
-        })
-        return !!selectSwitchNum
-      }
-      return false
-    },
     // 判断是否是创建者或者管理员，其他角色不能添加设备
     canAddDevice(data) {
       return data.isCreator || data.isAdmin
@@ -305,7 +288,7 @@ ComponentWithComputed({
         const { eventType, eventData } = e.result
 
         // 过滤非本房间的消息
-        if (eventData.roomId !== roomStore.currentRoom.roomId) {
+        if (eventData.roomId !== roomStore.currentRoomId) {
           return
         }
 
@@ -315,20 +298,20 @@ ComponentWithComputed({
         }
 
         if (eventType === WSEventType.device_property) {
-          // 如果有传更新的状态数据过来，直接更新store
-          const deviceInHouse = deviceStore.allRoomDeviceMap[eventData.deviceId]
+          // DESERTED 直接更新store取消，后续改为按需刷新
+          // const deviceInHouse = deviceStore.allRoomDeviceMap[eventData.deviceId]
 
-          if (deviceInHouse) {
-            runInAction(() => {
-              deviceInHouse.mzgdPropertyDTOList[eventData.modelName] = {
-                ...deviceInHouse.mzgdPropertyDTOList[eventData.modelName],
-                ...eventData.event,
-              }
-            })
-            roomStore.updateRoomCardLightOnNum()
-          }
+          // if (deviceInHouse) {
+          //   runInAction(() => {
+          //     deviceInHouse.mzgdPropertyDTOList[eventData.modelName] = {
+          //       ...deviceInHouse.mzgdPropertyDTOList[eventData.modelName],
+          //       ...eventData.event,
+          //     }
+          //   })
+          //   roomStore.updateRoomCardLightOnNum()
+          // }
 
-          // 组装要更新的设备数据
+          // DESERTED 组装要更新的设备数据
           // const deviceInRoom = deviceStore.deviceMap[eventData.deviceId]
 
           // if (deviceInRoom) {
@@ -352,8 +335,8 @@ ComponentWithComputed({
           this.updateQueue(device)
 
           // 子设备状态变更，刷新全房间灯光可控状态
-          const hasLightOn = deviceStore.deviceList.some(
-            (d) => d.roomId === roomStore.currentRoom.roomId && d.mzgdPropertyDTOList?.light?.power === 1,
+          const hasLightOn = this.data.devicePageList.some((group) =>
+            group.some((d) => d.mzgdPropertyDTOList?.light?.power === 1),
           )
           this.setData({
             'roomLight.power': hasLightOn ? 1 : 0,
@@ -410,9 +393,38 @@ ComponentWithComputed({
 
     // 响应控制弹窗中单灯/灯组的控制变化，直接按本地设备列表数值以及设置值，刷新房间灯的状态
     refreshLightStatus() {
-      console.log('本地更新房间灯状态', deviceStore.lightStatusInRoom)
+      let sumOfBrightness = 0,
+        sumOfColorTemp = 0,
+        count = 0,
+        brightness = 0,
+        colorTemperature = 0
 
-      const { brightness, colorTemperature } = deviceStore.lightStatusInRoom
+      // 房间所有灯的亮度计算
+      deviceStore.deviceFlattenList.forEach((device) => {
+        const { proType, deviceType, mzgdPropertyDTOList, onLineStatus } = device
+
+        // 只需要灯需要参与计算，过滤属性数据不完整的数据，过滤灯组，过滤不在线设备，过滤未开启设备
+        if (
+          proType !== PRO_TYPE.light ||
+          deviceType === 4 ||
+          onLineStatus !== 1 ||
+          mzgdPropertyDTOList?.light?.power !== 1
+        ) {
+          return
+        }
+
+        sumOfBrightness += mzgdPropertyDTOList.light?.brightness ?? 0
+        sumOfColorTemp += mzgdPropertyDTOList.light?.colorTemperature ?? 0
+        count++
+      })
+
+      if (count) {
+        brightness = sumOfBrightness / count
+        colorTemperature = sumOfColorTemp / count
+      }
+
+      console.log('本地更新房间灯状态', { brightness, colorTemperature })
+
       this.setData({
         'roomLight.brightness': brightness,
         'roomLight.colorTemperature': colorTemperature,
@@ -672,8 +684,6 @@ ComponentWithComputed({
 
         const _list = flattenList
           // 接口返回开关面板数据以设备为一个整体，需要前端拆开后排序
-          // 不再排除灯组
-          // .filter((device) => !deviceStore.lightsInGroup.includes(device.deviceId))
           // 补充字段
           .map((device, index) => ({
             ...device,
@@ -1030,7 +1040,7 @@ ComponentWithComputed({
 
       wx.navigateTo({
         url: strUtil.getUrlWithParams('/package-automation/automation-add/index', {
-          roomid: roomStore.currentRoom.roomId,
+          roomid: roomStore.currentRoomId,
         }),
       })
     },

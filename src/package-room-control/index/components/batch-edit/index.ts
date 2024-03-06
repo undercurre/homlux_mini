@@ -149,7 +149,7 @@ ComponentWithComputed({
       return !data.editDeviceName
     },
     editRoomDisable(data) {
-      return roomStore.currentRoom.roomId === data.roomId
+      return roomStore.currentRoomId === data.roomId
     },
   },
 
@@ -239,19 +239,22 @@ ComponentWithComputed({
         return
       }
       const uniId = this.data.editSelectList[0]
-      const device = deviceStore.deviceFlattenMap[uniId]
+      const device = deviceStore.deviceFlattenList.find((d) => d.uniId === uniId)
+      if (!device) {
+        return
+      }
       if (uniId.includes(':')) {
         this.setData({
           showEditName: true,
-          editDeviceName: deviceStore.deviceFlattenMap[uniId].deviceName,
-          editSwitchName: deviceStore.deviceFlattenMap[uniId].switchInfoDTOList[0].switchName,
+          editDeviceName: device.deviceName,
+          editSwitchName: device.switchInfoDTOList[0].switchName,
           isEditSwitchName: true,
           editProType: device.proType,
         })
       } else {
         this.setData({
           showEditName: true,
-          editDeviceName: deviceStore.deviceFlattenMap[uniId].deviceName,
+          editDeviceName: device.deviceName,
           isEditSwitchName: false,
           editProType: device.proType,
         })
@@ -262,7 +265,10 @@ ComponentWithComputed({
         return
       }
       const uniId = this.data.editSelectList[0]
-      const device = deviceStore.deviceFlattenMap[uniId]
+      const device = deviceStore.deviceFlattenList.find((d) => d.uniId === uniId)
+      if (!device) {
+        return
+      }
       this.setData({
         showEditRoom: true,
         roomId: device.roomId,
@@ -389,6 +395,7 @@ ComponentWithComputed({
     },
     async handleConfirm() {
       if (this.data.showEditName) {
+        const uniId = this.data.editSelectList[0]
         if (this.data.editProType === PRO_TYPE.switch) {
           // 校验名字合法性
           if (checkInputNameIllegal(this.data.editSwitchName)) {
@@ -407,8 +414,11 @@ ComponentWithComputed({
             Toast('面板名称不能超过6个字符')
             return
           }
-          const [deviceId, switchId] = this.data.editSelectList[0].split(':')
-          const device = deviceStore.deviceFlattenMap[this.data.editSelectList[0]]
+          const [deviceId, switchId] = uniId.split(':')
+          const device = deviceStore.deviceFlattenList.find((d) => d.uniId === uniId)
+          if (!device) {
+            return
+          }
           const deviceInfoUpdateVoList = [] as Device.DeviceInfoUpdateVo[]
           let type = ''
           if (this.data.editSwitchName !== device.switchInfoDTOList[0].switchName) {
@@ -471,7 +481,10 @@ ComponentWithComputed({
         }
         // 修改灯属性
         else {
-          const device = deviceStore.deviceFlattenMap[this.data.editSelectList[0]]
+          const device = deviceStore.deviceFlattenList.find((d) => d.uniId === uniId)
+          if (!device) {
+            return
+          }
 
           if (checkInputNameIllegal(this.data.editDeviceName)) {
             Toast('设备名称不能用特殊符号或表情')
@@ -485,14 +498,14 @@ ComponentWithComputed({
             device.deviceType === 4
               ? // 灯组
                 await renameGroup({
-                  groupId: this.data.editSelectList[0],
+                  groupId: uniId,
                   groupName: this.data.editDeviceName,
                 })
               : // 单灯
                 await batchUpdate({
                   deviceInfoUpdateVoList: [
                     {
-                      deviceId: this.data.editSelectList[0],
+                      deviceId: uniId,
                       houseId: homeStore.currentHomeId,
                       deviceName: this.data.editDeviceName,
                       type: '0',

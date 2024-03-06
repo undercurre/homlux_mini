@@ -184,6 +184,10 @@ export const homeStore = observable({
       runInAction(() => {
         roomStore.roomDeviceList = list
         deviceStore.allRoomDeviceList = data[0].result
+        const { roomId = '0' } = roomStore.currentRoom
+        if (roomId) {
+          deviceStore.deviceList = data[0].result.filter((device) => device.roomId === roomId)
+        }
         deviceStore.updateAllRoomDeviceListLanStatus(false)
       })
     }
