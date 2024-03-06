@@ -297,6 +297,12 @@ ComponentWithComputed({
           return
         }
 
+        // 出现控制失败，控制与消息的对应关系已不可靠，刷新整体数据
+        if (eventType === WSEventType.control_fail) {
+          this.reloadDataThrottle()
+          return
+        }
+
         if (eventType === WSEventType.device_property) {
           // DESERTED 直接更新store取消，后续改为按需刷新
           // const deviceInHouse = deviceStore.allRoomDeviceMap[eventData.deviceId]
@@ -334,13 +340,15 @@ ComponentWithComputed({
 
           this.updateQueue(device)
 
-          // 子设备状态变更，刷新全房间灯光可控状态
-          const hasLightOn = this.data.devicePageList.some((group) =>
-            group.some((d) => d.mzgdPropertyDTOList?.light?.power === 1),
-          )
-          this.setData({
-            'roomLight.power': hasLightOn ? 1 : 0,
-          })
+          // 刷新全房间灯光可控状态
+          if (
+            eventData.deviceId === roomStore.currentRoom.groupId &&
+            this.data.roomLight.power !== eventData.event.power
+          ) {
+            this.setData({
+              'roomLight.power': eventData.event.power,
+            })
+          }
 
           return
         }
@@ -818,14 +826,6 @@ ComponentWithComputed({
       await deviceStore.updateRoomDeviceList()
       this.updateQueue({ isRefresh: true })
     },
-    // updateRoomListOnCloud: throttle(
-    //   async function (this: IAnyObject) {
-    //     await deviceStore.updateSubDeviceList()
-    //     this.updateQueue({ isRefresh: true })
-    //   },
-    //   4000,
-    //   false,
-    // ),
 
     /**
      * @description 更新选中状态并渲染
@@ -1361,6 +1361,11 @@ ComponentWithComputed({
         'roomLight.colorTemperature': e.detail,
       })
       this.lightSendDeviceControl('colorTemperature')
+    },
+    handleRoomLightTouch() {
+      if (!this.data.roomLight.power) {
+        Toast('控制房间色温和亮度前至少开启一盏灯')
+      }
     },
     async lightSendDeviceControl(type: 'colorTemperature' | 'brightness') {
       const deviceId = roomStore.currentRoom.groupId
