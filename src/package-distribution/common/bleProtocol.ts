@@ -161,8 +161,8 @@ export class BleClient {
 
             wx.getConnectedBluetoothDevices({
               services: [],
-              success(res) {
-                console.warn('getConnectedBluetoothDevices', res)
+              success: (res) => {
+                console.warn('getConnectedBluetoothDevices', res, this.deviceUuid)
               },
             })
 
