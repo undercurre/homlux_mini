@@ -15,7 +15,8 @@ export * from './capacity'
 export * from './sort'
 export * from './nameFormater'
 
-import { PRO_TYPE } from '../config/index'
+import { PRO_TYPE, getModelName } from '../config/index'
+import { isEmptyObject, isNullOrUnDef } from './is'
 
 export function delay(ms: number) {
   return new Promise<void>((resolve) => {
@@ -149,16 +150,16 @@ export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
         device.switchInfoDTOList.forEach((switchItem) => {
           lightCount++
           if (
-            device.onLineStatus &&
-            device.mzgdPropertyDTOList && // 避免个别设备未上报数据导致的整个页面异常
-            device.mzgdPropertyDTOList[switchItem.switchId]?.power &&
-            !device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode
+              device.onLineStatus &&
+              device.mzgdPropertyDTOList && // 避免个别设备未上报数据导致的整个页面异常
+              device.mzgdPropertyDTOList[switchItem.switchId]?.power &&
+              !device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode
           ) {
             lightOnCount++
           }
         })
         break
-      // 网关及其他类型，不作统计
+        // 网关及其他类型，不作统计
       case PRO_TYPE.gateway:
       default:
     }
@@ -173,16 +174,67 @@ export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
 export const getRect = function (context: any, selector: string, needAll = false) {
   return new Promise<any>((resolve, reject) => {
     wx.createSelectorQuery()
-      .in(context)
-      [needAll ? 'selectAll' : 'select'](selector)
-      .boundingClientRect((rect) => {
-        if (rect) {
-          resolve(rect)
-        } else {
-          reject(rect)
-        }
+        .in(context)
+        [needAll ? 'selectAll' : 'select'](selector)
+        .boundingClientRect((rect) => {
+          if (rect) {
+            resolve(rect)
+          } else {
+            reject(rect)
+          }
+        })
+        .exec()
+  })
+}
+
+export const deviceFlatten = function (originList: Device.DeviceItem[]) {
+  const list = [] as Device.DeviceItem[]
+  originList.forEach((device) => {
+    // 过滤属性数据不完整的数据
+    // WIFI设备可以不过滤此条件
+    const noProps = isNullOrUnDef(device.mzgdPropertyDTOList) || isEmptyObject(device.mzgdPropertyDTOList)
+    if (noProps && device.deviceType !== 3) {
+      return
+    }
+    // 开关面板需要前端拆分处理
+    if (device.proType === PRO_TYPE.switch) {
+      device.switchInfoDTOList?.forEach((switchItem) => {
+        list.push({
+          ...device,
+          property: device.mzgdPropertyDTOList[switchItem.switchId],
+          mzgdPropertyDTOList: {
+            [switchItem.switchId]: device.mzgdPropertyDTOList[switchItem.switchId],
+          },
+          switchInfoDTOList: [switchItem],
+          uniId: `${device.deviceId}:${switchItem.switchId}`,
+          orderNum: switchItem.orderNum,
+        })
       })
-      .exec()
+    }
+    // 所有非网关、可显示的设备都用这种方案插值
+    else if (device.proType !== PRO_TYPE.gateway) {
+      const modelName = getModelName(device.proType, device.productId)
+      const property = noProps ? ({} as Device.mzgdPropertyDTO) : device.mzgdPropertyDTOList[modelName]
+      const onLineStatus = device.mzgdPropertyDTOList ? device.onLineStatus : 0 // 如果没有设备属性，则直接置为0 // ! WIFI设备，较低机率出现设备在线但属性为空的情况
+      list.push({
+        ...device,
+        onLineStatus,
+        uniId: device.deviceId,
+        property,
+        mzgdPropertyDTOList: { [modelName]: property },
+      })
+    }
+  })
+
+  // 排序算法：灯组类型靠前；再按orderNum升序；再按设备id升序
+  return list.sort((a, b) => {
+    if (a.deviceType === 4 && b.deviceType !== 4) {
+      return -1
+    } else if (a.deviceType !== 4 && b.deviceType === 4) {
+      return 1
+    } else {
+      return a.orderNum !== b.orderNum ? a.orderNum - b.orderNum : parseInt(a.deviceId) - parseInt(b.deviceId)
+    }
   })
 }
 
