@@ -83,7 +83,10 @@
 
     <block wx:if="{{roomHasLight}}">
       <!-- 全房间亮度控制 -->
-      <view class="slider-box">
+      <view
+        class="slider-box"
+        bind:touchend="handleRoomLightTouch"
+      >
         <image
           src="/package-room-control/assets/img/bright.png"
           class="w-48rpx h-48rpx"
@@ -111,7 +114,10 @@
       </view>
 
       <!-- 全房间色温控制 -->
-      <view class="slider-box">
+      <view
+        class="slider-box"
+        bind:touchend="handleRoomLightTouch"
+      >
         <image
           src="/package-room-control/assets/img/colorTemp.png"
           class="w-48rpx h-48rpx"

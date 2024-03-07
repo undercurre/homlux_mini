@@ -300,6 +300,7 @@ ComponentWithComputed({
         // 可能存在未重新开始移动，目标已被移动成功的情况
         if (!this.data.moveWaitlist.length) {
           this.triggerEvent('updateList')
+          Dialog.close()
           Toast({
             message: '已成功移动',
             zIndex: 9999,
