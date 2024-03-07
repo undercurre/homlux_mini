@@ -78,7 +78,7 @@ export async function startWebsocketService() {
               // 3s内没有收到发出的心跳回复，认为socket断开需要重连
               Logger.error('socket心跳回复超时，重连')
               // 微信隐藏逻辑 closeSocket:fail wcwss invalid code, the code must be either 1000, or between 3000 and 4999
-              socketTask?.close({ code: 3000, reason: 'socket心跳回复超时' })
+              closeWebSocket(3000, 'socket心跳回复超时')
               clearInterval(heartbeatInfo.timeId)
             } else {
               Logger.log('socket心跳回复')
@@ -123,11 +123,7 @@ export async function startWebsocketService() {
     // 可能短时间内连续触发多次onError
     Logger.error('socket错误onError：', err, 'socketTask', socketTask)
     isConnecting = false
-    if (socketTask) {
-      socketTask?.close({ code: 3000, reason: 'socket错误' }) // ws报错重连
-    } else {
-      delayConnectWS(15000)
-    }
+    closeWebSocket(3000, 'socket错误') // ws报错重连
   })
 }
 
@@ -170,21 +166,21 @@ function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {
   const { code } = e
 
   if (code !== 1000 && code !== 4001) {
-    const delay = code === 3000 ? 25000 : 5000 // ws报错重连一般是因为wifi无法访问外网，降低重连频率
+    const delay = code === 3000 ? 15000 : 5000 // ws报错重连一般是因为wifi无法访问外网，降低重连频率
 
     Logger.error('socket异常关闭连接')
     delayConnectWS(delay)
   }
 }
 
-export function closeWebSocket() {
+export function closeWebSocket(code = 1000, reason = '正常主动关闭') {
   return new Promise((resolve) => {
     if (socketTask) {
       socketTask.close({
-        code: 1000,
-        reason: '主动关闭',
+        code,
+        reason,
         success(res) {
-          Logger.debug('closeWebSocket-success', res)
+          Logger.debug('closeWebSocket-success', res, socketTask)
           socketTask = null
           resolve(true)
         },

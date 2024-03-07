@@ -197,6 +197,11 @@ async function checkBleDeviceList(list: IBleBaseInfo[]) {
 
     const cloudDeviceInfo = checkRes.result.find((checkItem) => zigbeeMac === checkItem.mac) as Device.MzgdProTypeDTO
 
+    // 过滤非合法注册的设备
+    if (!cloudDeviceInfo.isValid) {
+      return false
+    }
+
     // 过滤已经配网的设备
     // 设备网络状态 0x00：未入网   0x01：正在入网   0x02:  已经入网
     // 但由于丢包情况，设备本地状态不可靠，需要查询云端是否存在该设备的绑定状态（是否存在家庭绑定关系）结合判断是否真正配网
@@ -205,9 +210,11 @@ async function checkBleDeviceList(list: IBleBaseInfo[]) {
 
     if (isBind) {
       Logger.console(`【${zigbeeMac}】已绑定`)
+    } else {
+      Logger.console(`【${zigbeeMac}】未绑定`, cloudDeviceInfo, isConfig)
     }
 
-    return cloudDeviceInfo.isValid && !isBind
+    return !isBind
   })
 
   // 判断是否存在合法的设备
