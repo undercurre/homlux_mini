@@ -94,7 +94,7 @@ ComponentWithComputed({
       emitter.on('group_device_result_status', (result) => {
         const diffData = {} as IAnyObject
         const index = this.data.deviceList.findIndex((device) => device.deviceId === result.devId)
-        const isSuccess = result.eventData.errCode === 0
+        const isSuccess = result.errCode === 0
 
         console.log('emitter====', result.devId, index)
 

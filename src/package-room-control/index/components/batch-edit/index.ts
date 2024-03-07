@@ -536,7 +536,7 @@ ComponentWithComputed({
         this.handleClose()
 
         emitter.on('group_device_result_status', (result) => {
-          if (result.eventData.errCode !== 0) {
+          if (result.errCode !== 0) {
             this.data.moveFailCount++
           }
           const uniId = `${result.devId}:${result.modelName}`
