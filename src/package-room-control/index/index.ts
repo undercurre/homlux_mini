@@ -42,6 +42,8 @@ import {
   MAX_DEVICES_USING_WS,
   NO_WS_REFRESH_INTERVAL,
   NO_UPDATE_INTERVAL,
+  SCREEN_PID,
+  ZHONGHONG_PID,
 } from '../../config/index'
 
 type DeviceCard = Device.DeviceItem & {
@@ -534,9 +536,15 @@ ComponentWithComputed({
       this.clearJobs()
     },
     handleShowDeviceOffline(e: { detail: DeviceCard }) {
+      const deviceInfo = e.detail
+
       this.setData({
         showDeviceOffline: true,
-        offlineDevice: e.detail,
+        offlineDevice: {
+          ...deviceInfo,
+          isScreen: SCREEN_PID.includes(deviceInfo.productId),
+          isZhongHong: ZHONGHONG_PID.includes(deviceInfo.productId),
+        },
       })
     },
     handleCloseDeviceOffline() {

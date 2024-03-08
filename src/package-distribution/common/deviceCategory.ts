@@ -1,4 +1,4 @@
-import { ossDomain, productImgDir } from '../../config/index'
+import { ossDomain, productImgDir, ZHONGHONG_PID } from '../../config/index'
 import { strUtil } from '../../utils/index'
 
 export default {
@@ -79,8 +79,8 @@ export default {
         guideImg: `${ossDomain}/homlux/guide/485.gif`,
         guideDesc:
           '1、中弘网关BUS接口的A\\B口分别与智慧屏的485 接口A\\B口对接。\n2、接通电源并等待中弘网关工作指示灯变为绿色慢闪状态。',
-        productId: 'zhonghong.heat.001,zhonghong.air.001,zhonghong.cac.002',
-        path: '/package-distribution/connect-guide/index?proType=0xAC&modelId=zhonghong.heat.001,zhonghong.air.001,zhonghong.cac.002',
+        productId: ZHONGHONG_PID.join(','),
+        path: `/package-distribution/connect-guide/index?proType=0xAC&modelId=${ZHONGHONG_PID.join(',')}`,
       },
     ],
   },

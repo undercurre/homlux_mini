@@ -29,7 +29,7 @@ export const bleDevicesStore = observable({
 
   startBleDiscovery() {
     if (this.discovering) {
-      Logger.error('已经正在搜索蓝牙')
+      Logger.debug('已经正在搜索蓝牙')
       return
     }
 

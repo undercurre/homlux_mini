@@ -85,7 +85,15 @@ export const PRODUCT_ID = {
   humanSensor: 'midea.ir.201', // 人体传感器
   doorSensor: 'midea.magnet.001.201', // 门磁传感器
   freePad: 'midea.freepad.001.201', // 无线开关
+  zhonghong_heat: 'zhonghong.heat.001', // 485地暖
+  zhonghong_air: 'zhonghong.air.001', // 485新风
+  zhonghong_cac: 'zhonghong.cac.002', // 485空调
 }
 
-// 智慧屏pid:  四寸屏：pkey:t1ae5ff32ae84b60b159676556aafbf7 psecret: e953d99rb7ef4b55  pid : zk527b6c944a454e9fb15d3cc1f4d55b 十寸屏  pkey:j1ae3ez32ae84b60b159676556aafbf7 psecret: m95fd9grb7ef4b55  pid:ok523b6c941a454e9fb15d3cc1f4d55b
 export const SCREEN_PID: readonly string[] = [PRODUCT_ID.screen_4, PRODUCT_ID.screen_10] // 智慧屏pid集合
+
+export const ZHONGHONG_PID: readonly string[] = [
+  PRODUCT_ID.zhonghong_heat,
+  PRODUCT_ID.zhonghong_air,
+  PRODUCT_ID.zhonghong_cac,
+] // 中弘485子设备pid集合
