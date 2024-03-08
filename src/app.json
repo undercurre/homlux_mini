@@ -1,5 +1,11 @@
 {
-  "pages": ["pages/start/index", "pages/index/index", "pages/login/index", "pages/mine/index", "pages/remoter/index"],
+  "pages": [
+    "pages/start/index",
+    "pages/index/index",
+    "pages/login/index",
+    "pages/mine/index",
+    "pages/remoter/index"
+  ],
   "subpackages": [
     {
       "root": "package-distribution",
@@ -41,15 +47,28 @@
     },
     {
       "root": "package-room-control",
-      "pages": ["index/index", "scene-edit/index", "scene-request-list/index", "scene-list/index", "group/index"]
+      "pages": [
+        "index/index",
+        "scene-edit/index",
+        "scene-request-list/index",
+        "scene-list/index",
+        "group/index"
+      ]
     },
     {
       "root": "package-protocol",
-      "pages": ["protocol-show/index", "protocol-list/index"]
+      "pages": [
+        "protocol-show/index",
+        "protocol-list/index"
+      ]
     },
     {
       "root": "package-debug",
-      "pages": ["pages/index/index", "pages/homos-debug/index", "pages/add-virtual-device/index"]
+      "pages": [
+        "pages/index/index",
+        "pages/homos-debug/index",
+        "pages/add-virtual-device/index"
+      ]
     },
     {
       "root": "package-auth",
@@ -73,7 +92,13 @@
     },
     {
       "root": "package-remoter",
-      "pages": ["pannel/index", "light/index", "fan/index", "setting/index"]
+      "pages": [
+        "pannel/index",
+        "light/index",
+        "fan/index",
+        "setting/index",
+        "fan-light/index"
+      ]
     },
     {
       "root": "package-distribution-meiju",
@@ -94,11 +119,19 @@
   "preloadRule": {
     "pages/index/index": {
       "network": "all",
-      "packages": ["package-room-control", "package-distribution", "package-mine", "package-automation"]
+      "packages": [
+        "package-room-control",
+        "package-distribution",
+        "package-mine",
+        "package-automation"
+      ]
     },
     "package-distribution/choose-device/index": {
       "network": "all",
-      "packages": ["package-distribution-meiju", "package-auth"]
+      "packages": [
+        "package-distribution-meiju",
+        "package-auth"
+      ]
     }
   },
   "tabBar": {
@@ -155,7 +188,9 @@
       "desc": "本应用访问位置信息，用于获取天气信息提示等功能"
     }
   },
-  "requiredPrivateInfos": ["getFuzzyLocation"],
+  "requiredPrivateInfos": [
+    "getFuzzyLocation"
+  ],
   "rendererOptions": {
     "skyline": {
       "defaultDisplayBlock": true

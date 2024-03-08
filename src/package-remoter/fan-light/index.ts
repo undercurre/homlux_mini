@@ -27,14 +27,17 @@ ComponentWithComputed({
       value: 2
     },
     btnList: [
-      { key: 'BRIGHT', name: '明亮', isOn: true, iconOn: '/package-remoter/assets/newUI/brightOn.png', iconOff: '/package-remoter/assets/newUI/birghtOff.png'},
-      { key: 'SOFT', name: '柔和', isOn: false, iconOn: '/package-remoter/assets/newUI/briOn.png', iconOff: '/package-remoter/assets/newUI/briOff.png'},
-      { key: 'SLEEP', name: '助眠', isOn: false, iconOn: '/package-remoter/assets/newUI/sleepOn.png', iconOff: '/package-remoter/assets/newUI/sleepOff.png'},
-      { key: 'DELAY', name: '延时关灯', isOn: false, iconOn: '/package-remoter/assets/newUI/delay2mOn.png', iconOff: '/package-remoter/assets/newUI/delay2mOff.png'}
+      { key: 'NATURN', name: '自然风', isOn: true, iconOn: '/package-remoter/assets/newUI/natureOn.png', iconOff: '/package-remoter/assets/newUI/natureOff.png'},
+      { key: 'BRI', name: '亮度', isOn: false, iconOn: '/package-remoter/assets/newUI/briOn.png', iconOff: '/package-remoter/assets/newUI/briOff.png'},
+      { key: 'COL', name: '色温', isOn: false, iconOn: '/package-remoter/assets/newUI/colorOn.png', iconOff: '/package-remoter/assets/newUI/colorOff.png'},
+      { key: 'ANION', name: '负离子', isOn: false, iconOn: '/package-remoter/assets/newUI/anionOn.png', iconOff: '/package-remoter/assets/newUI/anionOff.png'},
+      { key: 'TIMER', name: '定时', isOn: false, iconOn: '/package-remoter/assets/newUI/timerOn.png', iconOff: '/package-remoter/assets/newUI/timerOff.png'},
+      { key: 'DIR', name: '正反转', isOn: false, iconOn: '/package-remoter/assets/newUI/dirOn.png', iconOff: '/package-remoter/assets/newUI/dirOff.png'},
+      { key: 'DISPLAY', name: '屏显', isOn: false, iconOn: '/package-remoter/assets/newUI/displayOn.png', iconOff: '/package-remoter/assets/newUI/displayOff.png'}
     ],
     bottomList: [
       {name: '风扇', isOn: true, iconOn: '/package-remoter/assets/newUI/powerOn.png', iconOff: '/package-remoter/assets/newUI/powerOff.png'},
-      {name: '夜灯', isOn: false, iconOn: '/package-remoter/assets/newUI/nightOn.png', iconOff: '/package-remoter/assets/newUI/nightOff.png'}
+      {name: '照明', isOn: false, iconOn: '/package-remoter/assets/newUI/lightOn.png', iconOff: '/package-remoter/assets/newUI/lightOff.png'}
     ],
     isShowPopup: false,
     popupIndex: 0,
@@ -44,10 +47,7 @@ ComponentWithComputed({
     hourArr,
     minuteArr,
     curTimePickerIndex: [0, 0],
-    pickerIndexTemp: [0, 0],
-    curTabIndex: 0,
-    curBrightnessPercent: 40,
-    curColorTempPercent: 1
+    pickerIndexTemp: [0, 0]
   },
   watch: {
     curRemoter(value) {
@@ -74,10 +74,12 @@ ComponentWithComputed({
       }
       return arr
     },
-    popupTitle() {
-      // if (data.btnList[data.popupIndex].key === 'BRI') {
-      //   return `亮度 | ${data.curBirghtness}%`
-      // }
+    popupTitle(data) {
+      if (data.btnList[data.popupIndex].key === 'BRI') {
+        return `亮度 | ${data.curBirghtness}%`
+      } else if (data.btnList[data.popupIndex].key === 'COL') {
+        return `色温 | ${data.curColorPercent}K`
+      }
       return ''
     }
   },
@@ -128,6 +130,16 @@ ComponentWithComputed({
       if (list[index].key === 'BRI') {
         this.setData({
           isShowPopup: true,
+          popupIndex: index
+        })
+      } else if (list[index].key === 'COL') {
+        this.setData({
+          isShowPopup: true,
+          popupIndex: index
+        })
+      } else if (list[index].key === 'TIMER') {
+        this.setData({
+          isShowTimePicker: true,
           popupIndex: index
         })
       }
@@ -182,21 +194,6 @@ ComponentWithComputed({
           curTimePickerIndex: this.data.pickerIndexTemp
         })
       }, 100)
-    },
-    onTabClick(e: any) {
-      const index = e.detail.index
-      console.log('lmn>>>index=', index)
-    },
-    onBriSliderChange(e: any) {
-      const value = e.detail
-      console.log('lmn>>>value=', value)
-      this.setData({
-        curBrightnessPercent: 101 - value
-      })
-    },
-    onColSliderChange(e: any) {
-      const value = e.detail
-      console.log('lmn>>>value=', value)
     }
   }
 })

@@ -7,64 +7,40 @@
     </view>
   </nav-bar>
 
-  <!-- <view class="connect-block flex-center">
+  <view class="connect-block flex-center">
     <text class="text-28rpx font-normal">{{connectedText}}</text>
-  </view> -->
+  </view>
 
-  <mx-tabs class="top-tab-r" 
-    type="card"
-    color="#ffffff"
-    titleActiveColor="#515D75"
-    titleInactiveColor="#B5B5B5"
-    active="{{ curTabIndex }}"
-    bind:change="onTabClick">
-    <mx-tab title="亮度">
-      <view class="tab-page-r flex-center" style="height: 680rpx;">
-        <view class="v-slider-bor">
-          <text class="bri-val-text text-40rpx font-normal" style="color: {{curBrightnessPercent > 12 ? '#ffffff' : '#507FFF'}};">{{curBrightnessPercent}}%</text>
-          <van-slider
-            value="{{101 - curBrightnessPercent}}"
-            min="1"
-            max="100"
-            step="1"
-            vertical
-            active-color="#ffffff"
-            inactive-color="transparent"
-            bar-height="200rpx"
-            custom-class="slider-cus"
-            use-button-slot="true"
-            bind:change="onBriSliderChange">
-            <image slot="button" src="/package-remoter/assets/newUI/barH.png" class="bri-slder-tab-V"/>
-          </van-slider>
-        </view>
-      </view>
-    </mx-tab>
-    <mx-tab title="色温">
-      <view class="tab-page-r flex-center" style="height: 680rpx;">
-        <view class="v-slider-bor">
-          <van-slider
-            value="{{curColorTempPercent}}"
-            min="1"
-            max="100"
-            step="1"
-            vertical
-            active-color="transparent"
-            inactive-color="linear-gradient(0deg, #FCE9B1 0%, #FBF0D2 33%, #D5DAEC 66%, #7C9DF8 100%)"
-            bar-height="200rpx"
-            custom-class="slider-cus"
-            use-button-slot="true"
-            bind:change="onColSliderChange">
-            <image slot="button" src="/package-remoter/assets/newUI/circle.png" class="col-slder-tab-V"/>
-          </van-slider>
-        </view>
-      </view>
-    </mx-tab>
-  </mx-tabs>
+  <image class="fan-img" src="/package-remoter/assets/newUI/fan.png"></image>
+
+  <view class="gear-block">
+    <mx-slider
+      class="gear-slider"
+      min="{{gearSlicerConfig.min}}"
+      max="{{gearSlicerConfig.max}}"
+      step="{{gearSlicerConfig.step}}"
+      value="{{gearSlicerConfig.value}}"
+      bar-height="8"
+      active-color="#488FFF"
+      inactive-color="#F3F5FE"
+      useButtonSlot="true"
+      bind:change="onSliderChange">
+      <image slot="button" src="/package-remoter/assets/newUI/sliderBtn.png" class="slider-btn"/>
+    </mx-slider>
+  </view>
+
+  <view class="ind-block">
+    <view style="width: 64rpx; height: 64rpx; display: flex; justify-content: center;" wx:for="{{indArr}}" wx:key="key">
+      <text class="text-24rpx font-normal"
+        style="color: #8A8A8F; line-height: 64rpx;"
+        wx:key="item">{{item}}</text>
+    </view>
+  </view>
 
   <view class="btn-block">
-    <mx-scroll-list scroll-x="true" indicatorColor="#D6DCE4" indicatorActiveColor="#A5A8AF" indicator="{{false}}">
-      <view style="width: {{btnList.length * 170}}rpx; display: flex; flex-direction: row; margin-left: 35rpx;">
-        <view class="btn-item flex-center"
+    <mx-scroll-list scroll-x="true" indicatorColor="#D6DCE4" indicatorActiveColor="#A5A8AF">
+      <view style="width: {{btnList.length * 170}}rpx; display: flex; flex-direction: row;">
+        <view class="btn-item flex-center" 
           wx:for="{{btnList}}" wx:key="key"
           data-index="{{index}}"
           bind:tap="onBtnListClick">
