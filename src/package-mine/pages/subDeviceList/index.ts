@@ -21,7 +21,7 @@ ComponentWithComputed({
   },
 
   computed: {
-    deviceList(data) {
+    deviceList(data: IAnyObject) {
       const list = data.allRoomDeviceList?.length ? [...data.allRoomDeviceList] : []
       return list.filter((d) => d.gatewayId === data.deviceId)
     },
