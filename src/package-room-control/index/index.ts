@@ -55,6 +55,8 @@ type DeviceCard = Device.DeviceItem & {
   linkSceneName: string
   isRefresh: boolean // 是否整个列表刷新
   timestamp: number // 加入队列时打上的时间戳
+  isScreen?: boolean
+  isZhongHong?: boolean
 }
 
 /**
