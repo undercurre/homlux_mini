@@ -17,8 +17,6 @@ export async function initHomeOs() {
   })
 
   homOs.onMessage((res: { topic: string; reqId?: string; data: IAnyObject; ts: string }) => {
-    Logger.console('Ⓜ 收到mqtt推送：', res)
-
     const { topic, reqId, data } = res
 
     // 子设备状态变更
@@ -38,7 +36,6 @@ export async function initHomeOs() {
         },
       })
     } else if (topic === 'updateDeviceListLan' || topic === 'updateGroupListLan') {
-      Logger.console('mqtt局域网家庭设备、灯组数据更新')
       updateHomeDataLanInfo() // 防抖处理
     } else {
       Logger.console('➤ 未处理的mqtt推送：', res)
@@ -50,7 +47,7 @@ export async function initHomeOs() {
  * 局域网家庭设备、灯组数据更新
  */
 const updateHomeDataLanInfo = debounce(() => {
-  Logger.console('触发局域网家庭数据更新')
+  Logger.console('局域网家庭数据更新执行')
   deviceStore.updateAllRoomDeviceListLanStatus()
   emitter.emit('msgPush', {
     source: 'mqtt',
