@@ -122,53 +122,30 @@ export function _get(obj: object, path: string, defaultVal = undefined) {
 }
 
 /**
- * @description 设备数量统计
- * @param ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
- * @returns {
- *  lightOnCount: 统计多少灯打开（多开开关仍分别计数）（取代云端deviceLightOnNum）
- *  lightCount: 灯与面板总数量（不排除关联，面板按拆分设备计数）
- * }
+ * @description 判断某扁平设备，是否亮灯设备
+ * !! ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
  */
-export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
-  let lightOnCount = 0
-  let lightCount = 0
-
-  list?.forEach((device) => {
-    switch (device.proType) {
-      case PRO_TYPE.light:
-        // 灯数及亮灯数不计算灯组
-        if (device.deviceType === 4) {
-          return
-        }
-        lightCount++
-        if (!device.onLineStatus) break
-        if (device.mzgdPropertyDTOList['light'].power) {
-          lightOnCount++
-        }
-        break
-      case PRO_TYPE.switch:
-        device.switchInfoDTOList.forEach((switchItem) => {
-          lightCount++
-          if (
-            device.onLineStatus &&
-            device.mzgdPropertyDTOList && // 避免个别设备未上报数据导致的整个页面异常
-            device.mzgdPropertyDTOList[switchItem.switchId]?.power &&
-            !device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode
-          ) {
-            lightOnCount++
-          }
-        })
-        break
-      // 网关及其他类型，不作统计
-      case PRO_TYPE.gateway:
-      default:
-    }
-  })
-
-  return {
-    lightOnCount,
-    lightCount,
+export function isLightOn(device: Device.DeviceItem): boolean {
+  // 灯组、离线设备直接排除
+  if (device.deviceType === 4 || !device.onLineStatus) {
+    return false
   }
+  // 灯
+  if (device.proType === PRO_TYPE.light) {
+    return !!device.mzgdPropertyDTOList['light'].power
+  }
+
+  // 面板 // !! 多开开关的各路开关分别计数
+  const modelName = device.switchInfoDTOList[0]?.switchId
+
+  return !!(
+    (
+      modelName &&
+      device.proType === PRO_TYPE.switch &&
+      device.mzgdPropertyDTOList[modelName]?.power &&
+      !device.mzgdPropertyDTOList[modelName]?.ButtonMode
+    ) // 2和3不计数
+  )
 }
 
 export const getRect = function (context: any, selector: string, needAll = false) {

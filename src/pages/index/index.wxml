@@ -117,6 +117,7 @@
           >
             <room-card
               room-info="{{item}}"
+              room-light-summary="{{lightSummary[item.roomId]}}"
               data-room="{{item.roomId}}"
               isMoving="{{isMoving}}"
               bind:sceneSelect="handleSceneSelect"

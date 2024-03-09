@@ -7,19 +7,15 @@ import {
   deleteHouseUser,
   inviteHouseUser,
   saveOrUpdateUserHouseInfo,
-  queryRoomList,
   updateDefaultHouse,
   getShareId,
-  queryAllDevice,
   queryLocalKey,
 } from '../apis/index'
-import { PRO_TYPE } from '../config/index'
 import { asyncStorage, storage, Logger, IApiRequestOption, isConnect } from '../utils/index'
 import { deviceStore } from './device'
 import { othersStore } from './others'
 import { roomStore } from './room'
 import { userStore } from './user'
-import { deviceCount } from '../utils/index'
 import { userRole } from '../config/home'
 
 export const homeStore = observable({
@@ -167,61 +163,8 @@ export const homeStore = observable({
   /**
    * 更新当前家庭房间卡片列表
    */
-  async updateRoomCardList(options?: { loading: boolean }) {
-    const homeId = homeStore.currentHomeId
-    const data = await Promise.all([queryAllDevice(homeId, options), queryRoomList(homeId, options)])
-    if (data[0].success) {
-      const list = {} as Record<string, Device.DeviceItem[]>
-      data[0].result
-        ?.sort((a, b) => a.deviceId.localeCompare(b.deviceId))
-        .forEach((device) => {
-          if (list[device.roomId]) {
-            list[device.roomId].push(device)
-          } else {
-            list[device.roomId] = [device]
-          }
-        })
-      runInAction(() => {
-        roomStore.roomDeviceList = list
-        deviceStore.allRoomDeviceList = data[0].result
-        const { roomId = '0' } = roomStore.currentRoom
-        if (roomId) {
-          deviceStore.deviceList = data[0].result.filter((device) => device.roomId === roomId)
-        }
-        deviceStore.updateAllRoomDeviceListLanStatus(false)
-      })
-    }
-    if (data[1].success) {
-      data[1].result.roomInfoList.forEach((room) => {
-        const roomDeviceList = roomStore.roomDeviceList[room.roomInfo.roomId]
-        // 过滤一下默认场景，没灯过滤明亮柔和，没灯没开关全部过滤
-        const hasSwitch = roomDeviceList?.some((device) => device.proType === PRO_TYPE.switch) ?? false
-        const hasLight = roomDeviceList?.some((device) => device.proType === PRO_TYPE.light) ?? false
-        if (!hasSwitch && !hasLight) {
-          // 四个默认场景都去掉
-          room.roomSceneList = room.roomSceneList.filter((scene) => scene.isDefault === '0')
-        } else if (hasSwitch && !hasLight) {
-          // 只有开关，去掉默认的明亮、柔和
-          room.roomSceneList = room.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
-        }
-
-        const { lightOnCount, lightCount } = deviceCount(roomDeviceList)
-        room.roomInfo.lightOnCount = lightOnCount
-        room.roomInfo.lightCount = lightCount
-      })
-      runInAction(() => {
-        roomStore.roomList = data[1].result.roomInfoList.map((room) => ({
-          roomId: room.roomInfo.roomId,
-          groupId: room.roomInfo.groupId,
-          roomIcon: room.roomInfo.roomIcon || 'drawing-room',
-          roomName: room.roomInfo.roomName,
-          lightOnCount: room.roomInfo.lightOnCount,
-          sceneList: room.roomSceneList,
-          deviceNum: room.roomInfo.deviceNum,
-          lightCount: room.roomInfo.lightCount,
-        }))
-      })
-    }
+  async updateRoomCardList() {
+    await Promise.all([deviceStore.updateAllRoomDeviceList(), roomStore.updateRoomList()])
     this.saveHomeDate()
   },
 

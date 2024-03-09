@@ -308,31 +308,6 @@ ComponentWithComputed({
         }
 
         if (eventType === WSEventType.device_property) {
-          // DESERTED 直接更新store取消，后续改为按需刷新
-          // const deviceInHouse = deviceStore.allRoomDeviceMap[eventData.deviceId]
-
-          // if (deviceInHouse) {
-          //   runInAction(() => {
-          //     deviceInHouse.mzgdPropertyDTOList[eventData.modelName] = {
-          //       ...deviceInHouse.mzgdPropertyDTOList[eventData.modelName],
-          //       ...eventData.event,
-          //     }
-          //   })
-          //   roomStore.updateRoomCardLightOnNum()
-          // }
-
-          // DESERTED 组装要更新的设备数据
-          // const deviceInRoom = deviceStore.deviceMap[eventData.deviceId]
-
-          // if (deviceInRoom) {
-          //   runInAction(() => {
-          //     deviceInRoom.mzgdPropertyDTOList[eventData.modelName] = {
-          //       ...deviceInRoom.mzgdPropertyDTOList[eventData.modelName],
-          //       ...eventData.event,
-          //     }
-          //   })
-          // }
-
           // 组装要更新的设备数据，更新的为flatten列表，结构稍不同
           const device = {} as DeviceCard
           device.deviceId = eventData.deviceId
