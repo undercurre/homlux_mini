@@ -225,7 +225,7 @@ ComponentWithComputed({
           ) {
             return
           }
-          console.log('设备数：', deviceStore.allRoomDeviceFlattenList.length)
+          // console.log('设备数：', deviceStore.allRoomDeviceFlattenList.length)
           if (eventData.modelName === 'light' || eventData.modelName.indexOf('wallSwitch') > -1) {
             let { lightOnCount = 0 } = this.data.lightSummary[eventData.roomId] ?? {}
             const uniId = `${eventData.deviceId}:${eventData.modelName}`
@@ -239,7 +239,7 @@ ComponentWithComputed({
               return
             }
             const oldPower = isLightOn(device) // 查找设备旧的值，如果有变化才更新
-            console.log('[匹配到设备]oldPower', oldPower)
+            // console.log('[匹配到设备]oldPower', oldPower)
 
             if (!oldPower && eventData.event.power === 1) {
               lightOnCount++
