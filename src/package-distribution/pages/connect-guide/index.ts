@@ -5,7 +5,7 @@ import { deviceBinding } from '../../../store/index'
 import { strUtil } from '../../../utils/index'
 import Dialog from '@vant/weapp/dialog/dialog'
 import deviceCategory from '../../common/deviceCategory'
-import { PRODUCT_ID } from '../../../config/index'
+import { SCREEN_PID, ZHONGHONG_PID } from '../../../config/index'
 
 ComponentWithComputed({
   options: {},
@@ -34,12 +34,12 @@ ComponentWithComputed({
     gatewayList(data) {
       const allRoomDeviceList: Device.DeviceItem[] = (data as IAnyObject).allRoomDeviceList || []
 
-      const productId_485 = 'zhonghong.heat.001,zhonghong.air.001,zhonghong.cac.002'
-      // 目前仅10寸屏支持485设备，当添加485设备时，仅可以选择十寸屏
+      const productId_485 = ZHONGHONG_PID.join(',')
+      // 目前仅10寸屏、4寸屏支持485设备，当添加485设备时，仅可以选择智慧屏
       return allRoomDeviceList.filter(
         (item) =>
           item.deviceType === 1 &&
-          ((data.productId === productId_485 && item.productId === PRODUCT_ID.screen_10) ||
+          ((data.productId === productId_485 && SCREEN_PID.includes(item.productId)) ||
             data.productId !== productId_485),
       )
     },
