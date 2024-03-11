@@ -83,8 +83,11 @@ ComponentWithComputed({
       return ''
     },
     controlBtnPic(data) {
+      if (data.deviceInfo.proType === PRO_TYPE.gateway) {
+        return ''
+      }
       // 窗帘，位置大于0即为开启
-      if (data.deviceInfo.proType === PRO_TYPE.curtain) {
+      else if (data.deviceInfo.proType === PRO_TYPE.curtain) {
         const pos = data.deviceInfo.mzgdPropertyDTOList['curtain'].curtain_position
         const isClosed = pos === '0'
         if (data.isProcessing) {
@@ -174,6 +177,7 @@ ComponentWithComputed({
     // 在卡片上有控制按钮的
     hasControl(data) {
       return (
+        data.deviceInfo.proType !== PRO_TYPE.gateway &&
         data.deviceInfo.proType !== PRO_TYPE.sensor &&
         data.deviceInfo.proType !== PRO_TYPE.bathHeat &&
         data.deviceInfo.proType !== PRO_TYPE.clothesDryingRack

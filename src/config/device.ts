@@ -4,7 +4,7 @@ import { rpx2px } from '../utils/index'
 export const LIST_PAGE = 20
 
 // 依赖 WebSocket 更新设备数据的最大设备数
-export const MAX_DEVICES_USING_WS = 150
+export const MAX_DEVICES_USING_WS = 160
 
 // 不依赖 WebSocket 更新时的设备列表更新间隔（ms）
 export const NO_WS_REFRESH_INTERVAL = 20000
@@ -60,9 +60,6 @@ export const getModelName = (proType: string, productId: string) => {
   return proName[proType]
 }
 
-// 旋钮开关pid
-export const KNOB_PID: readonly string[] = ['midea.knob.001.003']
-
 // 设备品类码 -> modelName
 export const proName: Record<string, string> = {
   '0x13': 'light',
@@ -88,12 +85,18 @@ export const PRODUCT_ID = {
   zhonghong_heat: 'zhonghong.heat.001', // 485地暖
   zhonghong_air: 'zhonghong.air.001', // 485新风
   zhonghong_cac: 'zhonghong.cac.002', // 485空调
+  knob: 'midea.knob.001.003',
 }
 
-export const SCREEN_PID: readonly string[] = [PRODUCT_ID.screen_4, PRODUCT_ID.screen_10] // 智慧屏pid集合
+// 旋钮开关pid
+export const KNOB_PID: readonly string[] = [PRODUCT_ID.knob]
 
+// 智慧屏pid集合
+export const SCREEN_PID: readonly string[] = [PRODUCT_ID.screen_4, PRODUCT_ID.screen_10]
+
+// 中弘485子设备pid集合
 export const ZHONGHONG_PID: readonly string[] = [
   PRODUCT_ID.zhonghong_heat,
   PRODUCT_ID.zhonghong_air,
   PRODUCT_ID.zhonghong_cac,
-] // 中弘485子设备pid集合
+]

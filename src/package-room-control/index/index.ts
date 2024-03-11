@@ -170,9 +170,8 @@ ComponentWithComputed({
     roomHasDevice(data) {
       if (data.allRoomDeviceList?.length) {
         return (
-          (data.allRoomDeviceList as DeviceCard[]).filter(
-            (device) => device.roomId === roomStore.currentRoomId && device.proType !== PRO_TYPE.gateway,
-          ).length > 0
+          (data.allRoomDeviceList as DeviceCard[]).filter((device) => device.roomId === roomStore.currentRoomId)
+            .length > 0
         )
       }
       return false
