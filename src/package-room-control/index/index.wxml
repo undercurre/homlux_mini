@@ -251,7 +251,7 @@
             custom-class="round-btn-border"
             round
             bind:tap="goToWhenConnected"
-            data-url="/package-distribution/choose-device/index"
+            data-url="/package-distribution/pages/choose-device/index"
           >
             <text class="text-26rpx text-hex-555659">添加设备</text>
           </van-button>
