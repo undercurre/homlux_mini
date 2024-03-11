@@ -60,7 +60,10 @@ ComponentWithComputed({
       // 请求多个sn8的配网数据
       for (const sn8Item of sn8List) {
         promiseList.push(
-          queryGuideInfo({ houseId: homeStore.currentHomeId, sn8: sn8Item, type, mode: mode.toString() }),
+          queryGuideInfo(
+            { houseId: homeStore.currentHomeId, sn8: sn8Item, type, mode: mode.toString() },
+            { loading: true },
+          ),
         )
       }
 
