@@ -411,7 +411,7 @@ ComponentWithComputed({
             Toast('按键名称不能超过5个字符')
             return
           }
-          if (this.data.editSwitchName.length > 6) {
+          if (this.data.editDeviceName.length > 6) {
             Toast('面板名称不能超过6个字符')
             return
           }
