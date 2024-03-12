@@ -1241,9 +1241,6 @@ ComponentWithComputed({
 
         Toast('控制失败')
       }
-
-      // 首页需要更新灯光打开个数
-      homeStore.updateCurrentHomeDetail()
     },
     /** 点击空位的操作 */
     handleScreenTap() {

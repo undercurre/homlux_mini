@@ -108,7 +108,7 @@ export const deviceStore = observable({
     runInAction(() => {
       deviceStore.allRoomDeviceList = res.result
 
-      if (roomId) {
+      if (roomId && res.result?.length) {
         deviceStore.deviceList = res.result.filter((device) => device.roomId === roomId)
       }
 

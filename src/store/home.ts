@@ -49,7 +49,7 @@ export const homeStore = observable({
     })
   },
 
-  get currentHomeId() {
+  get currentHomeId(): string {
     let houseId = this.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
 
     if (!houseId && this.homeList.length) {
@@ -72,99 +72,98 @@ export const homeStore = observable({
     return this.currentHomeDetail.houseUserAuth === 1 || this.currentHomeDetail.houseUserAuth === 2
   },
 
-  // actions
   /**
    * 首页加载逻辑
    */
   async homeInit() {
+    // 加载本地缓存数据，以便页面快速呈现
     const success = this.loadHomeDataFromStorage()
     if (success) {
       othersStore.setIsInit(true)
     } else {
-      console.log('[KS]本地缓存不存在或过期, isInit:', othersStore.isInit)
+      Logger.log('[无本地缓存，或缓存已过期]')
     }
-    const res = await this.updateHomeList()
-    if (res.success) {
-      queryUserHouseInfo({ houseId: this.currentHomeId }).then((res) => {
-        if (res.success) {
-          runInAction(() => {
-            homeStore.currentHomeDetail = Object.assign({ houseId: this.currentHomeId }, res.result)
-          })
-        }
-      })
-      // 全屋房间、设备加载
-      await this.updateRoomCardList()
-      othersStore.setIsInit(true)
-      console.log('[KS]云端数据加载成功, isInit:', othersStore.isInit)
-    }
+
+    this.updateHomeInfo({ isInit: true })
+
+    othersStore.setIsInit(true)
+    Logger.log('云端数据加载成功, isInit:', othersStore.isInit)
   },
 
   /**
-   * 更新家庭列表同时更新当前信息
+   * 更新家庭列表，同时更新当前家庭详情信息、房间列表
+   * @param params.isInit 是否用于家庭数据更新
    */
-  async updateHomeInfo(options?: IApiRequestOption) {
-    const res = await this.updateHomeList(options)
-
-    if (res.success) {
-      return await this.updateCurrentHomeDetail(options)
-    } else {
-      console.log('this.currentHomeId', this.currentHomeId, 'this.homeList', this.homeList)
-      return Promise.reject('获取列表家庭失败')
+  async updateHomeInfo(params = { isInit: false }, options?: IApiRequestOption) {
+    const homeList = await this.updateHomeList(options)
+    if (!homeList.success) {
+      return Promise.reject()
     }
+
+    const homeInfo = await this.updateHomeDetail(options)
+    if (!homeInfo.success) {
+      return Promise.reject()
+    }
+
+    if (params.isInit) {
+      await deviceStore.updateAllRoomDeviceList()
+    }
+    await roomStore.updateRoomList(options)
+
+    this.saveHomeDate()
+
+    return
   },
 
   /**
-   * 更新家庭列表数据
+   * 更新家庭列表数据，如无默认家庭则默认选中第0个
    */
   async updateHomeList(options?: IApiRequestOption) {
     const res = await getHomeList(options)
 
-    if (res.success) {
-      runInAction(() => {
-        homeStore.homeList = res.result
-
-        const houseId = homeStore.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
-        // 首次进入或删除了默认家庭时，默认选中第0个
-        if (!houseId && homeStore.homeList.length) {
-          Logger.error('默认家庭为空，设置默认家庭')
-          updateDefaultHouse(homeStore.homeList[0].houseId)
-          homeStore.homeList[0].defaultHouseFlag = true
-        }
-      })
+    if (!res.success) {
+      console.log('this.currentHomeId', this.currentHomeId, 'this.homeList', res.result)
+      return Promise.reject('获取列表家庭失败')
     }
+
+    const houseId = res.result.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
+    // 首次进入或删除了默认家庭
+    if (!houseId && res.result.length) {
+      Logger.error('默认家庭为空，设置默认家庭')
+      updateDefaultHouse(res.result[0].houseId)
+      res.result[0].defaultHouseFlag = true
+    }
+
+    runInAction(() => {
+      this.homeList = res.result
+    })
 
     return res
   },
 
   /**
-   * 更新当前家庭详细信息
+   * 更新家庭详情
    */
-  async updateCurrentHomeDetail(options?: IApiRequestOption) {
-    const res = await queryUserHouseInfo(
-      {
-        houseId: this.currentHomeId,
-      },
-      options,
-    )
-    if (res.success) {
-      runInAction(() => {
-        homeStore.currentHomeDetail = Object.assign({ houseId: this.currentHomeId }, res.result)
-      })
-
-      await roomStore.updateRoomList(options)
-      this.saveHomeDate()
-      return
-    } else {
+  async updateHomeDetail(options?: IApiRequestOption) {
+    const res = await queryUserHouseInfo({ houseId: this.currentHomeId }, options)
+    if (!res.success) {
       console.error('获取家庭信息失败', res)
       return Promise.reject('获取家庭信息失败')
     }
+
+    runInAction(() => {
+      homeStore.currentHomeDetail = Object.assign({ houseId: this.currentHomeId }, res.result)
+    })
+
+    return res
   },
 
   /**
    * 更新当前家庭房间卡片列表
    */
   async updateRoomCardList() {
-    await Promise.all([deviceStore.updateAllRoomDeviceList(), roomStore.updateRoomList()])
+    await deviceStore.updateAllRoomDeviceList()
+    await roomStore.updateRoomList()
     this.saveHomeDate()
   },
 
@@ -271,7 +270,7 @@ export const homeStore = observable({
   },
 
   /**
-   * 缓存主要的初始数据
+   * 缓存token及初始数据（家庭列表，当前家庭详情，房间列表，全屋设备列表）
    */
   async saveHomeDate() {
     if (!userStore.isLogin) {
@@ -351,7 +350,7 @@ export const homeBinding = {
   actions: [
     'updateHomeInfo',
     'updateHomeList',
-    'updateCurrentHomeDetail',
+    // 'updateCurrentHomeDetail',
     'updateHomeMemberList',
     'updateMemberAuth',
     'deleteMember',

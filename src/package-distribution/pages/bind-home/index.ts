@@ -125,8 +125,6 @@ ComponentWithComputed({
       }
 
       if (res.success) {
-        homeBinding.store.updateCurrentHomeDetail()
-
         await deviceStore.updateAllRoomDeviceList()
 
         // 关闭扫描页面可能开启的蓝牙资源
