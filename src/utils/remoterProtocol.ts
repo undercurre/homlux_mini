@@ -120,16 +120,40 @@ const _parsePayload = (payload: string, deviceType: string, deviceModel?: string
 }
 
 //	创建蓝牙连接发送协议
-const _createBluetoothProtocol = (payload: string) => {
-  let commandData = []
-  for (let i = 1; i < payload.length; i+=2) {
-    commandData.push(parseInt(`${payload[i - 1]}${payload[i]}`, 16))
-  }
-  const buffer = new ArrayBuffer(16)
+const _createBluetoothProtocol = (params: { addr: string; data: string; opcode?: number }) => {
+  const { addr, opcode = 0x0b, data } = params
+  //	1. len
+  const commandData = [0x00]
+
+  //	2. sequence,opcode
+  const encryptIndex = Math.round(Math.random() * 15)
+  const sequenceOpcode = parseInt(encryptIndex.toString(2) + opcode.toString(2), 2)
+  commandData.push(sequenceOpcode)
+
+  //	3. encrypt data
+  const encrytpedData = cryptoUtils.enCodeData(data, addr, encryptIndex)
+  //console.log('蓝牙协议 加密后的数据:', encrytpedData)
+  commandData.push(...encrytpedData)
+
+  //	4. set length =>  payload length
+  commandData[0] = commandData.length - 2
+  //console.log('commandData', commandData, commandData.length)
+
+  //	5. create buffer
+  const buffer = new ArrayBuffer(commandData.length)
   const dataView = new DataView(buffer)
-  for (let i = 0; i < commandData.length && i < 16; i++) {
+  for (let i = 0; i < commandData.length; i++) {
     dataView.setInt8(i, commandData[i])
   }
+
+  const hexArr = Array.prototype.map.call(
+    new Uint8Array(buffer),
+    function(bit) {
+      return ('00' + bit.toString(16)).slice(-2)
+    }
+  )
+  console.log('lmn>>>full bin=', hexArr.join(','))
+
   return buffer
 }
 

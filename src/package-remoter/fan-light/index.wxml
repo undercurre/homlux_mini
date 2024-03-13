@@ -20,6 +20,7 @@
       max="{{gearSlicerConfig.max}}"
       step="{{gearSlicerConfig.step}}"
       value="{{gearSlicerConfig.value}}"
+      disabled="{{gearSlicerConfig.disable}}"
       bar-height="8"
       active-color="#488FFF"
       inactive-color="#F3F5FE"
@@ -44,7 +45,7 @@
           wx:for="{{btnList}}" wx:key="key"
           data-index="{{index}}"
           bind:tap="onBtnListClick">
-          <view class="btn-con flex-center" style="background-color: {{item.isOn ? '#488FFF' : '#ffffff'}};">
+          <view class="btn-con flex-center" style="background-color: {{item.isOn ? '#488FFF' : '#ffffff'}}; opacity: {{item.isEnable ? 1 : 0.4}};">
             <image style="width: 64rpx; height: 64rpx;" src="{{item.isOn ? item.iconOn : item.iconOff}}"></image>
           </view>
           <text class="text-26rpx font-normal" style="color: #666666;">{{item.name}}</text>
@@ -85,7 +86,7 @@
       
       <mz-slider
         wx:if="{{btnList[popupIndex].key === 'BRI'}}"
-        value="{{curBirghtness}}"
+        value="{{curBrightnessPercent}}"
         custom-class="slider-brightness-bar"
         active-color="linear-gradient(90deg, #80A0F4 0%, #D8DFF3 100%)"
         bar-height="{{80}}"
@@ -99,7 +100,7 @@
 
       <mz-slider
         wx:if="{{btnList[popupIndex].key === 'COL'}}"
-        value="{{curColorPercent}}"
+        value="{{curColorTempPercent}}"
         custom-class="slider-brightness-bar"
         inactive-color="linear-gradient(90deg, #FCE49D 0%, #F3EDE1 50%, #D8DFF3 100%)"
         active-color="transparent"
@@ -121,8 +122,7 @@
         <image style="height: 48rpx; width: 48rpx;" src="/package-remoter/assets/newUI/close.png"></image>
       </view>
 
-      <text class="unit-h text-28rpx font-normal" style="left: 294rpx;">时</text>
-      <text class="unit-h text-28rpx font-normal" style="left: 540rpx;">分</text>
+      <text class="unit-h text-28rpx font-normal" style="left: 420rpx; opacity: {{curTimePickerIndex[0] == 0 ? 0 : 1}};">小时</text>
       <view class="pick-block flex-center">
         <picker-view indicator-style="height: 56rpx;"
           style="width: 500rpx; height: 360rpx;"
@@ -130,14 +130,10 @@
           bindchange="onTimePickChange"
           bindpickend='onTimePickEnd'>
           <picker-view-column>
-            <view wx:for="{{hourArr}}" 
-              wx:key="key" 
-              style="line-height: 56rpx; text-align: center; font-size: 40rpx; color: #333333; font-weight: 500;">{{item}}</view>
-          </picker-view-column>
-          <picker-view-column>
-            <view wx:for="{{minuteArr}}" 
-            wx:key="key" 
-            style="line-height: 56rpx; text-align: center; font-size: 40rpx; color: #333333; font-weight: 500;">{{item}}</view>
+            <view wx:for="{{ hourArr }}" 
+              wx:key="key"
+              class="picker-cloumn-text"
+              style="font-size: {{item == 0 ? '32rpx' : '40rpx'}};">{{item == 0 ? '取消' : item}}</view>
           </picker-view-column>
         </picker-view>
       </view>

@@ -836,6 +836,7 @@ export const CMD: Record<string, number> = {
   FAN_DELAY_OFF_4: 0x56, // 延时4小时关风扇
   FAN_DELAY_OFF_5: 0x57, // 延时5小时关风扇
   FAN_DELAY_OFF_6: 0x58, // 延时6小时关风扇
+  CLOSE_DISPLAY: 0x8c, //关闭屏显
 
   // 浴霸
   BATH_ALL_OFF: 0x0d, // 全关，待机

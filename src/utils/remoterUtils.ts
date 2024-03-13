@@ -224,6 +224,8 @@ export class BleService {
   serviceId = ''
   characteristics = [] as WechatMiniprogram.BLECharacteristic[]
   isConnected = false
+  receCallback: null | ((data: string) => void) = null
+  connectStateCallback: null | ((isConnected: boolean) => void) = null
 
   constructor(device: { addr: string; deviceId: string }) {
     const { addr, deviceId } = device
@@ -237,30 +239,34 @@ export class BleService {
     showLoading('正在建立蓝牙连接')
     const startTime = Date.now()
 
-    Logger.log(`${this.addr} 开始连接蓝牙`)
+    Logger.log('lmn>>>', `${this.addr} 开始连接蓝牙`)
 
     // 会出现createBLEConnection一直没返回的情况（低概率）
     // 微信bug，安卓端timeout参数无效
     const connectRes = await wx
       .createBLEConnection({
         deviceId: this.deviceId,
-        timeout: 15000,
+        timeout: 10000,
       })
       .catch((err: WechatMiniprogram.BluetoothError) => err)
 
     const costTime = Date.now() - startTime
-    Logger.log(`${this.addr} connectRes `, connectRes, `连接蓝牙时间： ${costTime}ms`)
+    Logger.log('lmn>>>', `${this.addr} connectRes `, connectRes, `连接蓝牙时间： ${costTime}ms`)
 
     hideLoading()
 
     // 判断是否连接蓝牙，0为连接成功，-1为已经连接
     // 避免-1的情况，因为安卓如果重复调用 wx.createBLEConnection 创建连接，有可能导致系统持有同一设备多个连接的实例，导致调用 closeBLEConnection 的时候并不能真正的断开与设备的连接。占用蓝牙资源
     if (connectRes.errCode !== 0 && connectRes.errCode !== -1) {
-      throw {
+      return {
         code: -1,
         error: connectRes,
       }
     }
+
+    wx.onBLEConnectionStateChange((res) => {
+      if (res.deviceId == this.deviceId && this.connectStateCallback) this.connectStateCallback(res.connected)
+    })
 
     // 新连接，未记录过服务ID
     const res = await wx
@@ -270,7 +276,7 @@ export class BleService {
       .catch((err) => {
         throw err
       })
-    Logger.log('getBLEDeviceServices', res)
+    Logger.log('lmn>>>getBLEDeviceServices::res=', JSON.stringify(res))
 
     this.serviceId = res.services[0].uuid
 
@@ -315,10 +321,53 @@ export class BleService {
         throw err
       })
 
-    Logger.log('getBLEDeviceCharacteristics', characRes)
+    Logger.log('lmn>>>getBLEDeviceCharacteristics::', JSON.stringify(characRes))
 
     // 取第一个属性（固定，为可写可读可监听），不同品类的子设备的characteristicId不一样，同类的一样
     this.characteristics = characRes.characteristics
+    this.initNotify()
+  }
+
+  initNotify() {
+    const characteristic = this.characteristics.find((c) => c.properties.notify)
+    if (!characteristic) {
+      return
+    }
+    console.log('lmn>>>notiy uuid=', characteristic.uuid)
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const that = this
+    wx.notifyBLECharacteristicValueChange({
+      state: true,
+      deviceId: this.deviceId,
+      serviceId: this.serviceId,
+      characteristicId: characteristic.uuid,
+      success () {
+        console.log('lmn>>>', '启用通知成功')
+        wx.onBLECharacteristicValueChange((res) => {
+          const binStr = that.ab2hex(res.value)
+          console.log('lmn>>>rece data=', binStr)
+          if (that.receCallback) that.receCallback(binStr)
+        })
+      }
+    })
+  }
+
+  ab2hex(buffer: ArrayBuffer) {
+    const hexArr = Array.prototype.map.call(
+      new Uint8Array(buffer),
+      function(bit) {
+        return ('00' + bit.toString(16)).slice(-2)
+      }
+    )
+    return hexArr.join('');
+  }
+  
+  registerReceCallback(fun: (data: string)=>void) {
+    this.receCallback = fun
+  }
+
+  registerConnectState(fun: (isConnected: boolean)=>void) {
+    this.connectStateCallback = fun
   }
 
   async sendCmd(payload: string) {
@@ -326,21 +375,26 @@ export class BleService {
     if (!characteristic) {
       return
     }
+    console.log('lmn>>>sendCmd::payload bin=', payload)
     await wx
       .writeBLECharacteristicValue({
         deviceId: this.deviceId,
         serviceId: this.serviceId,
         characteristicId: characteristic.uuid,
-        value: remoterProtocol.createBluetoothProtocol(payload),
+        //value: remoterProtocol.createBluetoothProtocol(payload),
+        value: remoterProtocol.createBluetoothProtocol({
+          addr: this.addr,
+          data: payload,
+        }),
       })
       .catch((err) => {
         throw err
       })
 
     // 收到延迟，安卓平台上，在调用 wx.notifyBLECharacteristicValueChange 成功后立即调用本接口，在部分机型上会发生 10008 系统错误
-    if (isAndroid()) {
-      await delay(500)
-    }
+    // if (isAndroid()) {
+    //   await delay(500)
+    // }
   }
 
   async readState() {

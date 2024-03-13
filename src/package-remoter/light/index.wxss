@@ -174,8 +174,7 @@
 }
 .bri-val-text{
   position: absolute;
-  left: 0;
+  right: 58rpx;
   bottom: 40rpx;
-  width: 200rpx;
   text-align: center;
 }

@@ -21,7 +21,6 @@
     <mx-tab title="亮度">
       <view class="tab-page-r flex-center" style="height: 680rpx;">
         <view class="v-slider-bor">
-          <text class="bri-val-text text-40rpx font-normal" style="color: {{curBrightnessPercent > 12 ? '#ffffff' : '#507FFF'}};">{{curBrightnessPercent}}%</text>
           <van-slider
             value="{{101 - curBrightnessPercent}}"
             min="1"
@@ -33,9 +32,12 @@
             bar-height="200rpx"
             custom-class="slider-cus"
             use-button-slot="true"
-            bind:change="onBriSliderChange">
+            bind:change="onBriSliderChange"
+            bind:drag="onBriSliderDrag">
             <image slot="button" src="/package-remoter/assets/newUI/barH.png" class="bri-slder-tab-V"/>
           </van-slider>
+          <text class="bri-val-text text-36rpx font-normal"
+            style="color: {{ sliderBriTextColor }};">{{isBriDraging ? briDragTemp : curBrightnessPercent}}%</text>
         </view>
       </view>
     </mx-tab>
@@ -43,7 +45,7 @@
       <view class="tab-page-r flex-center" style="height: 680rpx;">
         <view class="v-slider-bor">
           <van-slider
-            value="{{curColorTempPercent}}"
+            value="{{101 - curColorTempPercent}}"
             min="1"
             max="100"
             step="1"
@@ -68,7 +70,7 @@
           wx:for="{{btnList}}" wx:key="key"
           data-index="{{index}}"
           bind:tap="onBtnListClick">
-          <view class="btn-con flex-center" style="background-color: {{item.isOn ? '#488FFF' : '#ffffff'}};">
+          <view class="btn-con flex-center" style="background-color: {{item.isOn ? '#488FFF' : '#ffffff'}}; opacity: {{item.isEnable ? 1 : 0.4}};">
             <image style="width: 64rpx; height: 64rpx;" src="{{item.isOn ? item.iconOn : item.iconOff}}"></image>
           </view>
           <text class="text-26rpx font-normal" style="color: #666666;">{{item.name}}</text>
@@ -99,79 +101,6 @@
     </view>
   </mx-tabbar>
 
-  <mx-popup round show="{{isShowPopup}}" position="bottom" bind:close="closePopup">
-    <view class="pup-block" style="height: 468rpx;">
-      <text class="text-36rpx font-semibold" style="margin-top: 42rpx; margin-bottom: 42rpx;">风扇灯</text>
-      <view class="popup-close" bind:tap="closePopup">
-        <image style="height: 48rpx; width: 48rpx;" src="/package-remoter/assets/newUI/close.png"></image>
-      </view>
-      <text class="text-32rpx font-normal popup-title">{{popupTitle}}</text>
-      
-      <mz-slider
-        wx:if="{{btnList[popupIndex].key === 'BRI'}}"
-        value="{{curBirghtness}}"
-        custom-class="slider-brightness-bar"
-        active-color="linear-gradient(90deg, #80A0F4 0%, #D8DFF3 100%)"
-        bar-height="{{80}}"
-        use-button-slot
-        data-min="{{1}}"
-        data-max="{{100}}"
-        data-show-toast="{{true}}"
-        catch:slideEnd="onBrightnessSliderEnd">
-        <image slot="button" src="/package-remoter/assets/newUI/tabV.png" class="bri-slder-tab"/>
-      </mz-slider>
-
-      <mz-slider
-        wx:if="{{btnList[popupIndex].key === 'COL'}}"
-        value="{{curColorPercent}}"
-        custom-class="slider-brightness-bar"
-        inactive-color="linear-gradient(90deg, #FCE49D 0%, #F3EDE1 50%, #D8DFF3 100%)"
-        active-color="transparent"
-        bar-height="{{80}}"
-        use-button-slot
-        data-min="{{1}}"
-        data-max="{{100}}"
-        data-show-toast="{{true}}"
-        catch:slideEnd="onColorSliderEnd">
-        <image slot="button" src="/package-remoter/assets/newUI/tabC.png" class="col-slder-tab"/>
-      </mz-slider>
-    </view>
-  </mx-popup>
-
-  <mx-popup round show="{{isShowTimePicker}}" position="bottom" bind:close="closePopup">
-    <view class="pup-block" style="height: 700rpx;">
-      <text class="text-36rpx font-semibold" style="margin-top: 42rpx; margin-bottom: 42rpx;">定时设置</text>
-      <view class="popup-close" bind:tap="closePopup">
-        <image style="height: 48rpx; width: 48rpx;" src="/package-remoter/assets/newUI/close.png"></image>
-      </view>
-
-      <text class="unit-h text-28rpx font-normal" style="left: 294rpx;">时</text>
-      <text class="unit-h text-28rpx font-normal" style="left: 540rpx;">分</text>
-      <view class="pick-block flex-center">
-        <picker-view indicator-style="height: 56rpx;"
-          style="width: 500rpx; height: 360rpx;"
-          value="{{ curTimePickerIndex }}"
-          bindchange="onTimePickChange"
-          bindpickend='onTimePickEnd'>
-          <picker-view-column>
-            <view wx:for="{{hourArr}}" 
-              wx:key="key" 
-              style="line-height: 56rpx; text-align: center; font-size: 40rpx; color: #333333; font-weight: 500;">{{item}}</view>
-          </picker-view-column>
-          <picker-view-column>
-            <view wx:for="{{minuteArr}}" 
-            wx:key="key" 
-            style="line-height: 56rpx; text-align: center; font-size: 40rpx; color: #333333; font-weight: 500;">{{item}}</view>
-          </picker-view-column>
-        </picker-view>
-      </view>
-
-      <mx-button 
-        custom-style="width: 686rpx; margin-top: 40rpx"
-        color="linear-gradient(90deg, #468CFB 0%, #6BA3FC 100%)"
-        type="default" bind:click="onPickTimeConfirm">确定</mx-button>
-    </view>
-  </mx-popup>
 </view>
 
 <van-toast id="van-toast" />

@@ -159,3 +159,9 @@
   top: 290rpx;
   color: #666666;
 }
+.picker-cloumn-text{
+  line-height: 56rpx; 
+  text-align: center;
+  color: #333333; 
+  font-weight: 500;
+}

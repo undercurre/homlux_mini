@@ -208,7 +208,7 @@ ComponentWithComputed({
         this.data._holdBleScan = true
         let page = 'pannel'
         if (deviceType === '13') {
-          page = deviceModel === '01' ? 'light' : 'fan'
+          page = deviceModel === '01' ? 'light' : 'fan-light'
         }
         wx.navigateTo({
           url: `/package-remoter/${page}/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceModel=${deviceModel}&addr=${addr}`,
@@ -238,8 +238,8 @@ ComponentWithComputed({
       // HACK 特殊的照明按钮反转处理
       let { key } = actions[defaultAction]
       if (key === 'LIGHT_LAMP') {
-        key = this.data._lastPowerKey === `${key}_OFF` ? `${key}_ON` : `${key}_OFF`
-        this.data._lastPowerKey = key
+        this.data._lastPowerKey = this.data._lastPowerKey === `${key}_OFF` ? `${key}_ON` : `${key}_OFF`
+        // this.data._lastPowerKey = key
       }
       const payload = remoterProtocol.generalCmdString([CMD[key]])
 
