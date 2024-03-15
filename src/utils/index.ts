@@ -126,8 +126,8 @@ export function _get(obj: object, path: string, defaultVal = undefined) {
  * !! ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
  */
 export function isLightOn(device: Device.DeviceItem): boolean {
-  // 灯组、离线设备直接排除
-  if (device.deviceType === 4 || !device.onLineStatus) {
+  // 网关、灯组、离线设备直接排除
+  if (device.deviceType === 1 || device.deviceType === 4 || !device.onLineStatus) {
     return false
   }
   // 灯
