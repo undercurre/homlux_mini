@@ -85,7 +85,7 @@ ComponentWithComputed({
     /**
      * @description 当前选项是否可以移动房间
      * 设备数量不能为0
-     * 设备均为子设备或WIFI设备
+     * 设备均为子设备或WIFI设备或86网关
      * 设备均在线
      */
     canMoveRoom(data) {
@@ -100,7 +100,7 @@ ComponentWithComputed({
         data.editSelectList.every((uId: string) => {
           const deviceId = uId.split(':')[0] // 不管有没有:
           const device = deviceStore.deviceMap[deviceId]
-          return [2, 3].includes(device.deviceType) && device.onLineStatus === 1
+          return [1, 2, 3].includes(device.deviceType) && device.onLineStatus === 1
         })
       )
     },
