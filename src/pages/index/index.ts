@@ -191,7 +191,7 @@ ComponentWithComputed({
     async onShow() {
       // 房间选择恢复默认
       if (roomStore.currentRoomId) {
-        roomStore.setCurrentRoom('0')
+        roomStore.setCurrentRoom('')
       }
 
       if (!this.data._isFirstShow || this.data._from === 'addDevice') {
