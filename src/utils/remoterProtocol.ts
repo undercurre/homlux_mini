@@ -97,12 +97,14 @@ const _parsePayload = (payload: string, deviceType: string, deviceModel?: string
     // 不同灯的专有属性
     if (deviceModel === '01') {
       res.DELAY_OFF = rxU16[7] // 延时关灯剩余分钟数，0表示延时关灯失效
-      res.LIGHT_NIGHT_LAMP = rxU16[8] === 0x06 // 小夜灯状态，0x06代表开启
+      res.LIGHT_NIGHT_LAMP = rxU16[8] === 0x06 // 小夜灯状态，0x06代表开启，0x9表示助眠状态
+      res.LIGHT_SCENE_SLEEP = rxU16[8] === 0x09
     } else if (deviceModel === '02' || deviceModel === '03') {
       res.DELAY_OFF = (rxU16[7] << 8) + rxU16[8] // 延时关风扇剩余分钟数
       res.FAN_SWITCH = !!(rxU16[9] & BIT_0) // 风扇开关状态
       res.FAN_NEGATIVE = !!(rxU16[9] & BIT_1) // 风扇是否反转状态
       res.FAN_NATURE = !!(rxU16[9] & BIT_2) // 风扇自然风状态
+      res.CLOSE_DISPLAY = !!(rxU16[9] & BIT_4) // 屏显
       res.SPEED = rxU16[10] // 风扇档位
     }
     return res
@@ -145,16 +147,19 @@ const _createBluetoothProtocol = (params: { addr: string; data: string; opcode?:
   for (let i = 0; i < commandData.length; i++) {
     dataView.setInt8(i, commandData[i])
   }
-
-  const hexArr = Array.prototype.map.call(
-    new Uint8Array(buffer),
-    function(bit) {
-      return ('00' + bit.toString(16)).slice(-2)
-    }
-  )
-  console.log('lmn>>>full bin=', hexArr.join(','))
-
   return buffer
+}
+
+const _analysisBluetoothProtocol = (params: { addr: string, dataArr: number[] }) => {
+  const { addr, dataArr } = params
+  if (dataArr.length < 3) return []
+  if (dataArr[0] != dataArr.length - 1) return []
+  const encryptIndex = (dataArr[1] & 0xF0) >> 4
+  const payload = dataArr.slice(2)
+  const hexArr = payload.map(item => {
+    return ('00' + item.toString(16)).slice(-2)
+  })
+  return cryptoUtils.enCodeData(hexArr.join(''), addr, encryptIndex)
 }
 
 /**
@@ -364,7 +369,9 @@ export default {
   createAndroidBleRequest: _createAndroidBleRequest,
   createIOSBleRequest: _createIOSBleRequest,
   createBluetoothProtocol: _createBluetoothProtocol,
+  analysisBluetoothProtocol: _analysisBluetoothProtocol,
   handleBluetoothResponse: _handleBluetoothResponse,
   handleBleResponse: _handleBleResponse,
   generalCmdString: _generalCmdString,
+  parsePayload: _parsePayload
 }

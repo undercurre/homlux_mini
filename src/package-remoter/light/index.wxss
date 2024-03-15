@@ -178,3 +178,6 @@
   bottom: 40rpx;
   text-align: center;
 }
+.high-select-color{
+  opacity: 0.3;
+}

@@ -67,10 +67,12 @@
     <mx-scroll-list scroll-x="true" indicatorColor="#D6DCE4" indicatorActiveColor="#A5A8AF" indicator="{{false}}">
       <view style="width: {{btnList.length * 170}}rpx; display: flex; flex-direction: row; margin-left: 35rpx;">
         <view class="btn-item flex-center"
+          hover-class='high-select-color'
           wx:for="{{btnList}}" wx:key="key"
           data-index="{{index}}"
           bind:tap="onBtnListClick">
-          <view class="btn-con flex-center" style="background-color: {{item.isOn ? '#488FFF' : '#ffffff'}}; opacity: {{item.isEnable ? 1 : 0.4}};">
+          <view class="btn-con flex-center"
+            style="background-color: {{item.isOn ? '#488FFF' : '#ffffff'}}; opacity: {{item.isEnable ? 1 : 0.4}};">
             <image style="width: 64rpx; height: 64rpx;" src="{{item.isOn ? item.iconOn : item.iconOff}}"></image>
           </view>
           <text class="text-26rpx font-normal" style="color: #666666;">{{item.name}}</text>
@@ -85,15 +87,19 @@
     bind:click="goToDevManage"
   >设备管理</mx-button>
 
+  <view style="width: 750rpx; height: 200rpx;"></view>
+
   <mx-tabbar class="bm-block" border-radius box-shadow>
     <view class="inner-block">
-      <view class="flex-center" 
-        style="flex-direction: column;" 
-        wx:for="{{bottomList}}" 
-        wx:key="key" 
-        data-index="{{index}}" 
+      <view class="flex-center"
+        hover-class='high-select-color'
+        style="flex-direction: column;"
+        wx:for="{{bottomList}}"
+        wx:key="key"
+        data-index="{{index}}"
         bind:tap="onBottomClick">
-        <view class="bottom-btn flex-center" style="background-color: {{item.isOn ? '#488FFF' : '#F1F5FA'}};">
+        <view class="bottom-btn flex-center"
+          style="background-color: {{item.isOn ? '#488FFF' : '#F1F5FA'}};">
           <image style="width: 64rpx; height: 64rpx;" src="{{item.isOn ? item.iconOn : item.iconOff}}"></image>
         </view>
         <text class="text-24rpx font-normal" style="color: #232323;">{{item.name}}</text>

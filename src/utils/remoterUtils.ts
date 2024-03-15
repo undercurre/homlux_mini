@@ -1,6 +1,10 @@
 // import cryptoUtils from './remoterCrypto'
 import remoterProtocol from './remoterProtocol'
-import { hideLoading, isAndroid, showLoading } from './system'
+import { 
+  // hideLoading, 
+  isAndroid, 
+  //showLoading 
+} from './system'
 import { delay, Logger } from '../utils/index'
 import { CMD } from '../config/remoter'
 import Toast from '@vant/weapp/toast/toast'
@@ -236,7 +240,7 @@ export class BleService {
 
   // 建立连接
   async connect() {
-    showLoading('正在建立蓝牙连接')
+    // showLoading('正在建立蓝牙连接')
     const startTime = Date.now()
 
     Logger.log('lmn>>>', `${this.addr} 开始连接蓝牙`)
@@ -253,7 +257,7 @@ export class BleService {
     const costTime = Date.now() - startTime
     Logger.log('lmn>>>', `${this.addr} connectRes `, connectRes, `连接蓝牙时间： ${costTime}ms`)
 
-    hideLoading()
+    // hideLoading()
 
     // 判断是否连接蓝牙，0为连接成功，-1为已经连接
     // 避免-1的情况，因为安卓如果重复调用 wx.createBLEConnection 创建连接，有可能导致系统持有同一设备多个连接的实例，导致调用 closeBLEConnection 的时候并不能真正的断开与设备的连接。占用蓝牙资源
@@ -276,7 +280,6 @@ export class BleService {
       .catch((err) => {
         throw err
       })
-    Logger.log('lmn>>>getBLEDeviceServices::res=', JSON.stringify(res))
 
     this.serviceId = res.services[0].uuid
 
@@ -292,16 +295,17 @@ export class BleService {
   }
 
   async close() {
-    showLoading('正在断开蓝牙连接')
+    //showLoading('正在断开蓝牙连接')
 
-    Logger.log(`${this.addr} ${this.deviceId} 开始关闭蓝牙连接`)
-    const res = await wx.closeBLEConnection({ deviceId: this.deviceId }).catch((err) => err)
+    //Logger.log(`${this.addr} ${this.deviceId} 开始关闭蓝牙连接`)
+    //const res = await wx.closeBLEConnection({ deviceId: this.deviceId }).catch((err) => err)
+    wx.closeBLEConnection({ deviceId: this.deviceId }).catch((err) => err)
 
     // 存在调用关闭蓝牙连接指令和与设备蓝牙连接真正断开有时间差，强制等待1s
-    await delay(1000)
+    // await delay(1000)
 
-    Logger.log(`${this.addr} closeBLEConnection`, res)
-    hideLoading()
+    //Logger.log(`${this.addr} closeBLEConnection`, res)
+    //hideLoading()
   }
 
   // 初始化蓝牙特征值
@@ -321,8 +325,6 @@ export class BleService {
         throw err
       })
 
-    Logger.log('lmn>>>getBLEDeviceCharacteristics::', JSON.stringify(characRes))
-
     // 取第一个属性（固定，为可写可读可监听），不同品类的子设备的characteristicId不一样，同类的一样
     this.characteristics = characRes.characteristics
     this.initNotify()
@@ -333,7 +335,6 @@ export class BleService {
     if (!characteristic) {
       return
     }
-    console.log('lmn>>>notiy uuid=', characteristic.uuid)
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this
     wx.notifyBLECharacteristicValueChange({
@@ -342,26 +343,19 @@ export class BleService {
       serviceId: this.serviceId,
       characteristicId: characteristic.uuid,
       success () {
-        console.log('lmn>>>', '启用通知成功')
         wx.onBLECharacteristicValueChange((res) => {
-          const binStr = that.ab2hex(res.value)
-          console.log('lmn>>>rece data=', binStr)
-          if (that.receCallback) that.receCallback(binStr)
+          const srcArr = Array.from(new Uint8Array(res.value))
+          const decodeArr = remoterProtocol.analysisBluetoothProtocol({addr: that.addr, dataArr: srcArr})
+          const hexStrArr = decodeArr.map(item => {
+            return ('00' + item.toString(16)).slice(-2)
+          })
+          console.log('lmn>>>rece data=', JSON.stringify(hexStrArr))
+          if (that.receCallback && hexStrArr.length > 0) that.receCallback(hexStrArr.join(''))
         })
       }
     })
   }
 
-  ab2hex(buffer: ArrayBuffer) {
-    const hexArr = Array.prototype.map.call(
-      new Uint8Array(buffer),
-      function(bit) {
-        return ('00' + bit.toString(16)).slice(-2)
-      }
-    )
-    return hexArr.join('');
-  }
-  
   registerReceCallback(fun: (data: string)=>void) {
     this.receCallback = fun
   }
@@ -381,7 +375,6 @@ export class BleService {
         deviceId: this.deviceId,
         serviceId: this.serviceId,
         characteristicId: characteristic.uuid,
-        //value: remoterProtocol.createBluetoothProtocol(payload),
         value: remoterProtocol.createBluetoothProtocol({
           addr: this.addr,
           data: payload,

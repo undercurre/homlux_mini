@@ -822,7 +822,7 @@ export const CMD: Record<string, number> = {
   // 风扇灯
   FAN_SWITCH: 0x09, // 风扇开关
   FAN_NEGATIVE: 0x1c, // 风扇正反转
-  FAN_NATRUE: 0x1b, // 自然风
+  FAN_NATURE: 0x1b, // 自然风
   FAN_SPEED_1: 0x19, // 1档风
   FAN_SPEED_2: 0x1a, // 2档风
   FAN_SPEED_3: 0x81, // 3档风

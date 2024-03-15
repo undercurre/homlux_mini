@@ -134,7 +134,7 @@
         type="square"
         text="自然风"
         data-dir="R"
-        data-key="FAN_NATRUE"
+        data-key="FAN_NATURE"
       ></mz-button>
       <mz-button
         wx:if="{{isFactoryMode}}"

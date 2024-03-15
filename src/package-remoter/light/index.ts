@@ -28,10 +28,14 @@ ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [remoterBinding] })],
   data: {
     isFactoryMode: false, // 工厂调试模式，按特定的地址发送指令
-    deviceInfo: {} as IAnyObject,
+    devStatus: {} as IAnyObject,
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
     _bleService: null as BleService | null,
+    isNeedConnectBLE: false,
     isBLEConnected: false,
+    devType: '',
+    devModel: '',
+    devAddr: '',
     gearSlicerConfig: {
       min: 1,
       max: 6,
@@ -49,7 +53,7 @@ ComponentWithComputed({
         iconOn: '/package-remoter/assets/newUI/delay2mOn.png', iconOff: '/package-remoter/assets/newUI/delay2mOff.png'}
     ],
     bottomList: [
-      { key: 'POWER', name: '风扇', isOn: true, iconOn: '/package-remoter/assets/newUI/powerOn.png', iconOff: '/package-remoter/assets/newUI/powerOff.png'},
+      { key: 'POWER', name: '开灯', isOn: false, iconOn: '/package-remoter/assets/newUI/powerOn.png', iconOff: '/package-remoter/assets/newUI/powerOff.png'},
       { key: 'NIGHT', name: '夜灯', isOn: false, iconOn: '/package-remoter/assets/newUI/nightOn.png', iconOff: '/package-remoter/assets/newUI/nightOff.png'}
     ],
     curTabIndex: 0,
@@ -60,12 +64,13 @@ ComponentWithComputed({
   },
   watch: {
     curRemoter(value) {
+      if (this.data.isBLEConnected || !value.deviceAttr) return
+      let temp = this.data.devStatus
+      Object.assign(temp, value.deviceAttr)
       this.setData({
-        deviceInfo: {
-          ...this.data.deviceInfo,
-          ...value.deviceAttr,
-        },
+        devStatus: temp
       })
+      this.updateView()
     },
   },
   computed: {
@@ -90,11 +95,18 @@ ComponentWithComputed({
       wx.navigateBack()
     },
     async onLoad(query: { deviceType: string; deviceModel: string; addr: string }) {
-      console.log('lmn>>>', JSON.stringify(query))
-      const { addr } = query
-      // this.setData({ deviceType, deviceModel, addr })
+      console.log('lmn>>>query=', JSON.stringify(query))
+      const { addr, deviceType, deviceModel } = query
       remoterStore.setAddr(addr)
       console.log('lmn>>>curRemoter=', JSON.stringify(remoterStore.curRemoter))
+      this.setData({
+        devType: deviceType,
+        devModel: deviceModel,
+        devAddr: addr,
+        isNeedConnectBLE: remoterStore.curRemoter.version >= 2,
+        devStatus: remoterStore.curRemoter.deviceAttr || {}
+      })
+      this.updateView()
 
       const bleInited = await initBleCapacity()
       if (!bleInited) {
@@ -102,15 +114,7 @@ ComponentWithComputed({
       }
       // 建立BLE外围设备服务端
       this.data._bleServer = await createBleServer()
-
-      this.setData({
-        deviceInfo: {
-          ...this.data.deviceInfo,
-          ...remoterStore.curRemoter.deviceAttr,
-        },
-      })
-      console.log('lmn>>>deviceInfo=', JSON.stringify(this.data.deviceInfo))
-      this.start()
+      if (this.data.isNeedConnectBLE) this.start()
     },
     onUnload() {
       if (this.data.isBLEConnected) {
@@ -121,7 +125,7 @@ ComponentWithComputed({
       this.sendBluetoothAd([CMD['DISCONNECT']])
       setTimeout(() => {
         this.startConnectBLE()
-      }, 1500);
+      }, 1000);
     },
     async sendBluetoothAd(paramsArr?: number[]) {
       if (!paramsArr || paramsArr.length == 0) return
@@ -174,7 +178,12 @@ ComponentWithComputed({
       }
     },
     receiveBluetoothData(data: string) {
-      console.log('lmn>>>receiveBluetoothData::data=', data)
+      const status = remoterProtocol.parsePayload(data.slice(2), this.data.devType, this.data.devModel)
+      console.log('lmn>>>receiveBluetoothData::status=', JSON.stringify(status))
+      this.setData({
+        devStatus: status
+      })
+      this.updateView()
     },
     bluetoothConnectChange(isConnected: boolean) {
       console.log('lmn>>>bluetoothConnectChange::isConnected=', isConnected)
@@ -185,23 +194,52 @@ ComponentWithComputed({
         isBLEConnected: isConnected
       })
     },
+    updateView() {
+      const status = this.data.devStatus
+      let bottom = this.data.bottomList
+      let btns = this.data.btnList
+      let bri = this.data.curBrightnessPercent
+      let col = this.data.curColorTempPercent
+      if (status.LIGHT_LAMP != undefined) {
+        bottom[0].isOn = status.LIGHT_LAMP
+      }
+      if (status.LIGHT_NIGHT_LAMP != undefined) {
+        bottom[1].isOn = status.LIGHT_NIGHT_LAMP
+      }
+      if (status.LIGHT_BRIGHT != undefined) {
+        bri = this.rang2Percent(status.LIGHT_BRIGHT)
+      }
+      if (status.LIGHT_COLOR_TEMP != undefined) {
+        col = this.rang2Percent(status.LIGHT_COLOR_TEMP)
+      }
+      if (status.LIGHT_SCENE_SLEEP !== undefined) {
+        for (let i = 0; i < btns.length; i++) {
+          if (btns[i].key === 'SLEEP') {
+            btns[i].isOn = status.LIGHT_SCENE_SLEEP
+            break
+          }
+        }
+      }
+      if (status.DELAY_OFF != undefined) {
+        for (let i = 0; i < btns.length; i++) {
+          if (btns[i].key === 'DELAY') {
+            btns[i].isOn = status.DELAY_OFF > 0
+            break
+          }
+        }
+      }
+      this.setData({
+        btnList: btns,
+        bottomList: bottom,
+        curBrightnessPercent: bri,
+        curColorTempPercent: col
+      })
+    },
     onBtnListClick(e: any) {
       const index = e.currentTarget.dataset.index
       const list = this.data.btnList
       if (!list[index].isEnable) return
-      list[index].isOn = !list[index].isOn
-      this.setData({
-        btnList: list
-      })
       const key = list[index].key
-      if (key === 'BRIGHT' || key === 'SOFT') {
-        setTimeout(() => {
-          list[index].isOn = false
-          this.setData({
-            btnList: list
-          })
-        }, 300);
-      }
       if (key === 'BRIGHT') {
         this.sendBluetoothCMD([CMD['LIGHT_SCENE_MIX'], 255, 255])
       } else if (key === 'SOFT') {
@@ -220,14 +258,10 @@ ComponentWithComputed({
     onBottomClick(e: any) {
       const index = e.currentTarget.dataset.index
       const list = this.data.bottomList
-      list[index].isOn = !list[index].isOn
-      this.setData({
-        bottomList: list
-      })
       if (list[index].key == 'POWER') {
         this.sendBluetoothCMD([CMD['LIGHT_LAMP']])
       } else if (list[index].key == 'NIGHT') {
-        this.sendBluetoothCMD([CMD['LIGHT_NIGHT_LAMP']])
+        this.sendBluetoothCMD([CMD['LIGHT_SCENE_MIX'], 12, 0])
       }
     },
     onTabClick(e: any) {
