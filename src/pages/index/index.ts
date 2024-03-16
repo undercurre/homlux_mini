@@ -261,6 +261,8 @@ ComponentWithComputed({
             WSEventType.device_replace,
             WSEventType.device_online_status,
             WSEventType.device_offline_status,
+            WSEventType.screen_online_status_sub_device,
+            WSEventType.screen_online_status_wifi_device,
             WSEventType.bind_device,
             WSEventType.scene_device_result_status,
             WSEventType.group_device_result_status,
