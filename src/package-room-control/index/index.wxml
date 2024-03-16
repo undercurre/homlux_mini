@@ -240,7 +240,7 @@
 
         <!-- 有列表时的添加按钮 -->
         <view
-          class="flex-col-center py-20rpx"
+          class="flex-col-center pt-40rpx pb-20rpx"
           wx:if="{{roomHasDevice}}"
         >
           <van-button
