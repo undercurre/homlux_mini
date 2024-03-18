@@ -55,7 +55,7 @@ Component({
                 }
 
                 if (!locationRes.errno) {
-                  Object.assign(params, { latitude: locationRes.latitude, longitude: locationRes.longitude })
+                  Object.assign(params, { lat: locationRes.latitude, lon: locationRes.longitude })
                 }
 
                 await this.login(params)
@@ -76,7 +76,7 @@ Component({
       })
     },
 
-    async login(data: { jsCode: string; code: string; latitude?: number; longitude?: number }) {
+    async login(data: { jsCode: string; code: string; lat?: number; lon?: number }) {
       const loginRes = await login(data)
       if (loginRes.success && loginRes.result) {
         console.log('loginRes', loginRes)
