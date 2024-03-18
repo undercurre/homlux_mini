@@ -101,6 +101,7 @@ declare namespace Device {
     controlAction: IAnyObject //自动化传感器使用
 
     updateStamp: number
+    createdTime: string // 入网时间
 
     canLanCtrl?: boolean // 是否可以局域网控制,前端自定义属性
     colorTempRangeMap: {

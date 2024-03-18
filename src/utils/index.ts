@@ -15,7 +15,7 @@ export * from './capacity'
 export * from './sort'
 export * from './nameFormater'
 
-import { PRO_TYPE, getModelName } from '../config/index'
+import { PRO_TYPE, SCREEN_PID, getModelName } from '../config/index'
 import { isEmptyObject, isNullOrUnDef } from './is'
 
 export function delay(ms: number) {
@@ -126,8 +126,8 @@ export function _get(obj: object, path: string, defaultVal = undefined) {
  * !! ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
  */
 export function isLightOn(device: Device.DeviceItem): boolean {
-  // 灯组、离线设备直接排除
-  if (device.deviceType === 4 || !device.onLineStatus) {
+  // 网关、灯组、离线设备直接排除
+  if (device.deviceType === 1 || device.deviceType === 4 || !device.onLineStatus) {
     return false
   }
   // 灯
@@ -164,13 +164,18 @@ export const getRect = function (context: any, selector: string, needAll = false
   })
 }
 
+/**
+ * 将设备列表扁平化，开关面板各个按键作为独立的设备
+ * @param originList 源列表
+ * @returns 扁平化的列表
+ */
 export const deviceFlatten = function (originList: Device.DeviceItem[]) {
   const list = [] as Device.DeviceItem[]
   originList.forEach((device) => {
     // 过滤属性数据不完整的数据
     // WIFI设备可以不过滤此条件
     const noProps = isNullOrUnDef(device.mzgdPropertyDTOList) || isEmptyObject(device.mzgdPropertyDTOList)
-    if (noProps && device.deviceType !== 3) {
+    if (noProps && device.deviceType !== 3 && device.proType !== PRO_TYPE.gateway) {
       return
     }
     // 开关面板需要前端拆分处理
@@ -188,11 +193,13 @@ export const deviceFlatten = function (originList: Device.DeviceItem[]) {
         })
       })
     }
-    // 所有非网关、可显示的设备都用这种方案插值
-    else if (device.proType !== PRO_TYPE.gateway) {
+    // 所有可显示的设备都用这种方案插值
+    else if (device.proType !== PRO_TYPE.gateway || !SCREEN_PID.includes(device.productId)) {
       const modelName = getModelName(device.proType, device.productId)
       const property = noProps ? ({} as Device.mzgdPropertyDTO) : device.mzgdPropertyDTOList[modelName]
-      const onLineStatus = device.mzgdPropertyDTOList ? device.onLineStatus : 0 // 如果没有设备属性，则直接置为0 // ! WIFI设备，较低机率出现设备在线但属性为空的情况
+      // 如果没有设备属性（网关暂除外），则直接置为0
+      // ! WIFI设备，较低机率出现设备在线但属性为空的情况
+      const onLineStatus = device.proType === PRO_TYPE.gateway || device.mzgdPropertyDTOList ? device.onLineStatus : 0
       list.push({
         ...device,
         onLineStatus,
@@ -203,14 +210,14 @@ export const deviceFlatten = function (originList: Device.DeviceItem[]) {
     }
   })
 
-  // 排序算法：灯组类型靠前；再按orderNum升序；再按设备id升序
+  // 排序算法：灯组类型靠前；再按orderNum升序；再按入网时间createdTime升序
   return list.sort((a, b) => {
     if (a.deviceType === 4 && b.deviceType !== 4) {
       return -1
     } else if (a.deviceType !== 4 && b.deviceType === 4) {
       return 1
     } else {
-      return a.orderNum !== b.orderNum ? a.orderNum - b.orderNum : parseInt(a.deviceId) - parseInt(b.deviceId)
+      return a.orderNum !== b.orderNum ? a.orderNum - b.orderNum : parseInt(a.createdTime) - parseInt(b.createdTime)
     }
   })
 }

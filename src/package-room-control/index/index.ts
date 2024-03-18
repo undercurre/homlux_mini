@@ -170,9 +170,8 @@ ComponentWithComputed({
     roomHasDevice(data) {
       if (data.allRoomDeviceList?.length) {
         return (
-          (data.allRoomDeviceList as DeviceCard[]).filter(
-            (device) => device.roomId === roomStore.currentRoomId && device.proType !== PRO_TYPE.gateway,
-          ).length > 0
+          (data.allRoomDeviceList as DeviceCard[]).filter((device) => device.roomId === roomStore.currentRoomId)
+            .length > 0
         )
       }
       return false
@@ -1242,9 +1241,6 @@ ComponentWithComputed({
 
         Toast('控制失败')
       }
-
-      // 首页需要更新灯光打开个数
-      homeStore.updateCurrentHomeDetail()
     },
     /** 点击空位的操作 */
     handleScreenTap() {

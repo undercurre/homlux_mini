@@ -876,7 +876,6 @@ ComponentWithComputed({
     },
 
     finish() {
-      homeBinding.store.updateCurrentHomeDetail()
       bleDevicesStore.reset()
       wx.closeBluetoothAdapter()
 

@@ -13,7 +13,7 @@ export const roomStore = observable({
   /**
    * 选择进入了哪个房间的房间id
    */
-  currentRoomId: '0',
+  currentRoomId: '',
 
   get currentRoom(): Room.RoomInfo {
     return this.roomList.find((room) => room.roomId === this.currentRoomId) ?? ({} as Room.RoomInfo)
@@ -25,9 +25,15 @@ export const roomStore = observable({
    */
   setCurrentRoom(id: string) {
     runInAction(() => {
-      roomStore.currentRoomId = id
-      deviceStore.deviceList = deviceStore.allRoomDeviceList.filter((device) => device.roomId === id)
-      deviceStore.updateAllRoomDeviceListLanStatus(false)
+      if (id) {
+        roomStore.currentRoomId = id
+        deviceStore.deviceList = deviceStore.allRoomDeviceList.filter((device) => device.roomId === id)
+        deviceStore.updateAllRoomDeviceListLanStatus(false)
+      }
+      // 重置为默认房间，不必刷新房间列表
+      else if (this.roomList?.length) {
+        roomStore.currentRoomId = this.roomList[0].roomId
+      }
     })
   },
 
@@ -50,6 +56,11 @@ export const roomStore = observable({
           room.roomSceneList = room.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
         }
       })
+
+      // 默认房间值未设置
+      if (!this.currentRoomId) {
+        this.setCurrentRoom('')
+      }
 
       runInAction(() => {
         roomStore.roomList = res.result.roomInfoList.map((room) => ({
