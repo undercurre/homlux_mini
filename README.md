@@ -163,3 +163,4 @@ component({
 4. [mobx 使用注意点](./docs/mobx使用说明.md)
 5. [request 使用注意点](./docs/request使用说明.md)
 6. [storage 使用注意点](./docs/storage使用说明.md)
+7. [遥控器开发说明](./docs/遥控器开发说明.md)

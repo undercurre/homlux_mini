@@ -2,23 +2,33 @@
 export const MIN_RSSI = -65
 
 // 搜寻超时时间
-export const SEEK_TIMEOUT = 2500
-
-// 控制后搜寻超时时间
-export const SEEK_TIMEOUT_CONTROLED = 1000
+export const SEEK_TIMEOUT = 5000
 
 // 操作间隔时间
 export const FREQUENCY_TIME = 700
 
-// 定时轮询设备状态的间隔时间
-export const SEEK_INTERVAL = 8000
+// 轮询设备状态的上报间隔时间
+export const SEEK_INTERVAL = 4000
 
 // 工厂调试用Mac地址
 export const FACTORY_ADDR = '112233445566'
 
+// 默认加密
+export const DEFAULT_ENCRYPT = true
+
 // 浴霸温度最大最小值
 export const MAX_TEMPERATURE = 40
 export const MIN_TEMPERATURE = 20
+
+/**
+ * 灯类色温范围
+ * {key} === {品类码}{型号码}
+ * 型号码: 0x01 吸顶灯; 0x02 风扇灯
+ */
+export const COLORTEMP_RANGE: Record<string, number[]> = {
+  '1301': [3000, 5700],
+  '1302': [2700, 6500],
+}
 
 /**
  * @description 设备交互数据配置，按设备类型区分
@@ -30,149 +40,42 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
     '01': {
       deviceName: '吸顶灯',
       devicePic: '/assets/img/remoter/ceilLight.png',
-      joystick: {
-        up: {
-          key: 'LIGHT_BRIGHT_PLUS',
-          longpress: 'LIGHT_BRIGHT_PLUS_ACC',
-          icon: '/package-remoter/assets/bright1.png',
-          iconActive: '/package-remoter/assets/bright0.png',
-        },
-        right: {
-          key: 'LIGHT_COLOR_TEMP_PLUS',
-          longpress: 'LIGHT_COLOR_TEMP_PLUS_ACC',
-          icon: '/package-remoter/assets/light2.png',
-          iconActive: '/package-remoter/assets/light0.png',
-        },
-        down: {
-          key: 'LIGHT_BRIGHT_MINUS',
-          longpress: 'LIGHT_BRIGHT_MINUS_ACC',
-          icon: '/package-remoter/assets/bright3.png',
-          iconActive: '/package-remoter/assets/bright2.png',
-        },
-        left: {
-          key: 'LIGHT_COLOR_TEMP_MINUS',
-          longpress: 'LIGHT_COLOR_TEMP_MINUS_ACC',
-          icon: '/package-remoter/assets/light1.png',
-          iconActive: '/package-remoter/assets/light0.png',
-        },
-        middle: {
-          key: 'FACTORY',
-        },
-      },
-      mList: [
-        {
-          key: 'LIGHT_SCENE_DAILY',
-          icon: '/package-remoter/assets/scene01.png',
-          iconActive: '/package-remoter/assets/scene00.png',
-          name: '日常',
-        },
-        {
-          key: 'LIGHT_SCENE_RELAX',
-          icon: '/package-remoter/assets/scene11.png',
-          iconActive: '/package-remoter/assets/scene10.png',
-          name: '休闲',
-        },
-        {
-          key: 'LIGHT_SCENE_DELAY_OFF',
-          icon: '/package-remoter/assets/scene21.png',
-          iconActive: '/package-remoter/assets/scene20.png',
-          name: '延时关',
-        },
-        {
-          key: 'LIGHT_SCENE_SLEEP',
-          icon: '/package-remoter/assets/scene31.png',
-          iconActive: '/package-remoter/assets/scene30.png',
-          name: '助眠',
-        },
-      ],
-      bList: [
-        {
-          key: 'LIGHT_LAMP', // 模糊匹配指令，需要有特殊的反转逻辑转换为真实指令
-          icon: '/package-remoter/assets/power1.png',
-          iconActive: '/package-remoter/assets/power0.png',
-          name: '照明',
-        },
-        {
-          key: 'LIGHT_NIGHT_LAMP',
-          icon: '/package-remoter/assets/power1.png',
-          iconActive: '/package-remoter/assets/power0.png',
-          name: '小夜灯',
-        },
-      ],
       actions: [
-        {
-          key: 'LIGHT_NIGHT_LAMP',
-          name: '小夜灯',
-        },
         {
           key: 'LIGHT_LAMP',
           name: '照明',
+        },
+        {
+          key: 'LIGHT_NIGHT_LAMP',
+          name: '夜灯',
         },
       ],
     },
     '02': {
       deviceName: '风扇灯',
       devicePic: '/assets/img/remoter/fanLight.png',
-      joystick: {
-        up: {
-          key: 'LIGHT_BRIGHT_PLUS',
-          icon: '/package-remoter/assets/bright1.png',
-          iconActive: '/package-remoter/assets/bright0.png',
-        },
-        right: {
-          key: 'LIGHT_COLOR_TEMP_PLUS',
-          icon: '/package-remoter/assets/light2.png',
-          iconActive: '/package-remoter/assets/light0.png',
-        },
-        down: {
-          key: 'LIGHT_BRIGHT_MINUS',
-          icon: '/package-remoter/assets/bright3.png',
-          iconActive: '/package-remoter/assets/bright2.png',
-        },
-        left: {
-          key: 'LIGHT_COLOR_TEMP_MINUS',
-          icon: '/package-remoter/assets/light1.png',
-          iconActive: '/package-remoter/assets/light0.png',
-        },
-      },
-      mList: [
+      actions: [
         {
-          icon: '/package-remoter/assets/scene41.png',
-          iconActive: '/package-remoter/assets/scene40.png',
-          name: '风速减',
-        },
-        {
-          icon: '/package-remoter/assets/scene51.png',
-          iconActive: '/package-remoter/assets/scene50.png',
-          name: '风速加',
-        },
-        {
-          icon: '/package-remoter/assets/scene61.png',
-          iconActive: '/package-remoter/assets/scene60.png',
-          name: '定时',
-        },
-        {
-          icon: '/package-remoter/assets/scene71.png',
-          iconActive: '/package-remoter/assets/scene70.png',
-          name: '负离子',
-        },
-      ],
-      bList: [
-        {
-          icon: '/package-remoter/assets/power1.png',
-          iconActive: '/package-remoter/assets/power0.png',
+          key: 'LIGHT_LAMP',
           name: '照明',
         },
         {
-          icon: '/package-remoter/assets/power1.png',
-          iconActive: '/package-remoter/assets/power0.png',
+          key: 'FAN_SWITCH',
           name: '风扇',
         },
       ],
+    },
+    '03': {
+      deviceName: '风扇灯',
+      devicePic: '/assets/img/remoter/fanLight.png',
       actions: [
         {
-          key: 'LIGHT_NIGHT_LAMP',
-          name: '小夜灯',
+          key: 'LIGHT_LAMP',
+          name: '照明',
+        },
+        {
+          key: 'FAN_SWITCH',
+          name: '风扇',
         },
       ],
     },
@@ -902,21 +805,38 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
 // 控制指令
 export const CMD: Record<string, number> = {
   // 吸顶灯
-  LIGHT_LAMP_ON: 0x06, // 开灯
-  LIGHT_LAMP_OFF: 0x07, // 关灯
-  LIGHT_BRIGHT_PLUS_ACC: 0x3c, // 亮度+ 长按
-  LIGHT_BRIGHT_MINUS_ACC: 0x3a, // 亮度- 长按
-  LIGHT_COLOR_TEMP_PLUS_ACC: 0x35, // 色温+ 长按
-  LIGHT_COLOR_TEMP_MINUS_ACC: 0x31, // 色温- 长按
+  LIGHT_LAMP: 0x06, // 灯开关
+  LIGHT_BRIGHT: 0x51, // 亮度设值
+  LIGHT_COLOR_TEMP: 0x55, // 色温设置
   LIGHT_BRIGHT_PLUS: 0x2c, // 亮度+ 短按
   LIGHT_BRIGHT_MINUS: 0x2a, // 亮度- 短按
   LIGHT_COLOR_TEMP_PLUS: 0x25, // 色温+ 短按
   LIGHT_COLOR_TEMP_MINUS: 0x21, // 色温- 短按
   LIGHT_SCENE_DAILY: 0x19, // 日常
   LIGHT_SCENE_RELAX: 0x1a, // 休闲
-  LIGHT_SCENE_DELAY_OFF: 0x1d, // 延时关
+  LIGHT_SCENE_DELAY_OFF: 0x1d, // 延时关（延时2分钟关灯）
   LIGHT_SCENE_SLEEP: 0x1b, // 助眠
+  LIGHT_SCENE_MIX: 0x5b, // 亮度及色温同时设置
   LIGHT_NIGHT_LAMP: 0x1c, // 小夜灯
+
+  // 风扇灯
+  FAN_SWITCH: 0x09, // 风扇开关
+  FAN_NEGATIVE: 0x1c, // 风扇正反转
+  FAN_NATURE: 0x1b, // 自然风
+  FAN_SPEED_1: 0x19, // 1档风
+  FAN_SPEED_2: 0x1a, // 2档风
+  FAN_SPEED_3: 0x81, // 3档风
+  FAN_SPEED_4: 0x88, // 4档风
+  FAN_SPEED_5: 0x85, // 5档风
+  FAN_SPEED_6: 0x86, // 6档风
+  FAN_DELAY_OFF_CANCEL: 0x50, // 延时关风扇取消
+  FAN_DELAY_OFF_1: 0x52, // 延时1小时关风扇
+  FAN_DELAY_OFF_2: 0x53, // 延时2小时关风扇
+  FAN_DELAY_OFF_3: 0x54, // 延时3小时关风扇
+  FAN_DELAY_OFF_4: 0x56, // 延时4小时关风扇
+  FAN_DELAY_OFF_5: 0x57, // 延时5小时关风扇
+  FAN_DELAY_OFF_6: 0x58, // 延时6小时关风扇
+  CLOSE_DISPLAY: 0x8c, //关闭屏显
 
   // 浴霸
   BATH_ALL_OFF: 0x0d, // 全关，待机
@@ -946,4 +866,73 @@ export const CMD: Record<string, number> = {
 
   // 指令终止（松手时发送）
   END: 0x00,
+
+  // 断开连接
+  DISCONNECT: 0xFE,
+}
+
+// 下拉选项配置
+export const ACTIONSHEET_MAP: Record<string, IAnyObject> = {
+  FAN_SPEED: {
+    title: '风速',
+    columns: [
+      {
+        text: '1档风',
+        key: 'FAN_SPEED_1',
+      },
+      {
+        text: '2档风',
+        key: 'FAN_SPEED_2',
+      },
+      {
+        text: '3档风',
+        key: 'FAN_SPEED_3',
+      },
+      {
+        text: '4档风',
+        key: 'FAN_SPEED_4',
+      },
+      {
+        text: '5档风',
+        key: 'FAN_SPEED_5',
+      },
+      {
+        text: '6档风',
+        key: 'FAN_SPEED_6',
+      },
+    ],
+  },
+  FAN_DELAY_OFF: {
+    title: '风扇延时关',
+    columns: [
+      {
+        text: '1小时',
+        key: 'FAN_DELAY_OFF_1',
+      },
+      {
+        text: '2小时',
+        key: 'FAN_DELAY_OFF_2',
+      },
+      {
+        text: '3小时',
+        key: 'FAN_DELAY_OFF_3',
+      },
+      {
+        text: '4小时',
+        key: 'FAN_DELAY_OFF_4',
+      },
+      {
+        text: '5小时',
+        key: 'FAN_DELAY_OFF_5',
+      },
+      {
+        text: '6小时',
+        key: 'FAN_DELAY_OFF_6',
+      },
+      {
+        text: '取消延时关',
+        key: 'FAN_DELAY_OFF_CANCEL',
+      },
+    ],
+  },
 }

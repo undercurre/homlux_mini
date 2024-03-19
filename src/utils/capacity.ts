@@ -94,15 +94,14 @@ export const consultSystemLocation = async () => {
   if (_listenLocationTimeId) {
     return
   }
+  const systemInfo = await wx.getSystemInfo()
 
-  const systemSetting = wx.getSystemSetting()
-
-  if (systemSetting.locationEnabled) {
+  if (systemInfo.locationEnabled && systemInfo.locationAuthorized) {
     return true
   }
 
   Dialog.confirm({
-    title: '请打开手机系统的位置信息开关',
+    title: '请打开手机系统的位置信息开关，并授权微信使用',
     cancelButtonText: '知道了',
     confirmButtonText: '查看指引',
   })
@@ -114,10 +113,10 @@ export const consultSystemLocation = async () => {
     .catch(() => Logger.error('未查看指引'))
 
   // 轮询设备
-  _listenLocationTimeId = setInterval(() => {
-    const systemSetting = wx.getSystemSetting()
+  _listenLocationTimeId = setInterval(async () => {
+    const systemInfo = await wx.getSystemInfo()
 
-    if (systemSetting.locationEnabled) {
+    if (systemInfo.locationEnabled) {
       clearInterval(_listenLocationTimeId)
       _listenLocationTimeId = 0
       initBleCapacity()

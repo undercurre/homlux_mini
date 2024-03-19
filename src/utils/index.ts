@@ -136,31 +136,31 @@ export function isLightOn(device: Device.DeviceItem): boolean {
   }
 
   // 面板 // !! 多开开关的各路开关分别计数
-  const modelName = device.switchInfoDTOList?.length && device.switchInfoDTOList[0]?.switchId
+  const modelName = device.switchInfoDTOList[0]?.switchId
 
   return !!(
-    (
-      modelName &&
-      device.proType === PRO_TYPE.switch &&
-      device.mzgdPropertyDTOList[modelName]?.power &&
-      !device.mzgdPropertyDTOList[modelName]?.ButtonMode
-    ) // 2和3不计数
+      (
+          modelName &&
+          device.proType === PRO_TYPE.switch &&
+          device.mzgdPropertyDTOList[modelName]?.power &&
+          !device.mzgdPropertyDTOList[modelName]?.ButtonMode
+      ) // 2和3不计数
   )
 }
 
 export const getRect = function (context: any, selector: string, needAll = false) {
   return new Promise<any>((resolve, reject) => {
     wx.createSelectorQuery()
-      .in(context)
-      [needAll ? 'selectAll' : 'select'](selector)
-      .boundingClientRect((rect) => {
-        if (rect) {
-          resolve(rect)
-        } else {
-          reject(rect)
-        }
-      })
-      .exec()
+        .in(context)
+        [needAll ? 'selectAll' : 'select'](selector)
+        .boundingClientRect((rect) => {
+          if (rect) {
+            resolve(rect)
+          } else {
+            reject(rect)
+          }
+        })
+        .exec()
   })
 }
 

@@ -25,6 +25,8 @@ declare namespace Remoter {
     iconActive?: string
     name?: string
     btnWidth?: string
+    type?: 'CMD' | 'SETUP' | 'TOGGLE' // 指令类型
+    opt?: 'PLUS' | 'MINUS' // 操作类型
   }
 
   interface ConfigItem {
@@ -44,12 +46,12 @@ declare namespace Remoter {
 
   type DeviceDetail = DeviceItem & ConfigItem
 
-  type DeviceRx = DeviceItem &
+  type DeviceRx = DeviceDetail &
     WechatMiniprogram.BlueToothDevice & {
       fullAdvertistData: string
       manufacturerId: string
       deviceType: string
-      deviceAttr: Record<string, boolean>
+      deviceAttr: IAnyObject
       payload: string
       version: number
       src: number

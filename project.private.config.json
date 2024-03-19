@@ -11,9 +11,9 @@
     "miniprogram": {
       "list": [
         {
-          "name": "绑定家庭",
-          "pathName": "package-distribution/pages/bind-home/index",
-          "query": "deviceId=1678247479980491",
+          "name": "package-remoter/fan/index",
+          "pathName": "package-remoter/fan/index",
+          "query": "",
           "launchMode": "default",
           "scene": null
         },
@@ -116,6 +116,13 @@
           "name": "添加智能网关",
           "pathName": "package-distribution/link-gateway/index",
           "query": "deviceName=智能网关&wifiSSID=xyh_wifi&apSSID=midea_16_E5FB&method=wifi",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "绑定家庭",
+          "pathName": "package-distribution/bind-home/index",
+          "query": "deviceId=1678247479980491",
           "launchMode": "default",
           "scene": null
         },

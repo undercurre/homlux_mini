@@ -1,0 +1,219 @@
+<import src="/commons/templates/popup.wxml" />
+
+<view class="page-container flex flex-col">
+  <nav-bar
+    background="transparent"
+    leftArrow="{{true}}"
+    bind:leftTap="goBack"
+    bind:longpress="toggleDebug"
+    title="{{curRemoter.deviceName}}"
+  ></nav-bar>
+
+  <view class="tool-bar" style="top: {{toolbarMarginTop}}">
+    <!-- 工厂产测模式 -->
+    <div class="img-wrapper" bind:tap="toggleFactoryMode" wx:if="{{isDebugMode}}">
+      <text class="text-18rpx mr-10rpx">{{curAddrText}}</text>
+      <image class="w-48 h-48" src="/assets/img/mine/sensor.png"></image>
+    </div>
+    <!-- 基于连接的指令调试 -->
+    <div class="img-wrapper" bind:tap="toggleBleMode" wx:if="{{isDebugMode}}">
+      <image class="w-48 h-48" src="{{connectIcon}}"></image>
+    </div>
+    <div class="img-wrapper" bind:tap="toSetting">
+      <image class="w-48 h-48" src="/assets/img/home-manage/setting.png"></image>
+    </div>
+  </view>
+
+  <view class="flex-col-center flex-1">
+    <view class="text-24rpx">
+      <text wx:if="{{deviceInfo.DELAY_OFF}}">离关风扇还有：{{deviceInfo.DELAY_OFF}}分钟</text>
+    </view>
+    <!-- 亮度控制 -->
+    <view
+      class="slider-box"
+      wx:if="{{hasColorBright}}"
+    >
+      <image
+        src="../assets/bright.png"
+        class="w-48rpx h-48rpx mr-32rpx"
+      />
+      <mz-slider
+        disabled="{{!deviceInfo.LIGHT_LAMP}}"
+        catch:slideChange="handleLevelChange"
+        catch:slideEnd="toSendCmd"
+        value="{{brightView}}"
+        custom-class="slider-brightness-bar"
+        active-color="linear-gradient(90deg, rgba(80, 127, 255, 1) 0%, #ffffff 100%)"
+        bar-height="{{16}}"
+        use-button-slot
+        data-min="{{1}}"
+        data-is-btn-inset="{{false}}"
+        data-key="LIGHT_BRIGHT"
+        data-type="SETUP"
+        data-show-toast="{{true}}"
+      >
+        <image
+          slot="button"
+          src="../assets/btn.png"
+          class="w-72rpx h-72rpx"
+        />
+      </mz-slider>
+    </view>
+
+    <!-- 色温控制 -->
+    <view
+      class="slider-box"
+      wx:if="{{hasColorBright}}"
+    >
+      <image
+        src="../assets/colorTemp.png"
+        class="w-48rpx h-48rpx mr-32rpx"
+      />
+      <mz-slider
+        disabled="{{!deviceInfo.LIGHT_LAMP}}"
+        catch:slideChange="handleColorTempChange"
+        catch:slideEnd="toSendCmd"
+        value="{{colorTempView}}"
+        custom-class="slider-color-temp-bar"
+        active-color="rgba(0,0,0,0)"
+        bar-height="{{16}}"
+        use-button-slot
+        data-is-btn-inset="{{false}}"
+        data-key="LIGHT_COLOR_TEMP"
+        data-type="SETUP"
+        data-show-toast="{{true}}"
+        formatter="{{colorTempFormatter}}"
+      >
+        <image
+          slot="button"
+          src="../assets/btn.png"
+          class="w-72rpx h-72rpx"
+        />
+      </mz-slider>
+    </view>
+
+    <view class="flex flex-row justify-evenly flex-wrap mt-36rpx w-full">
+      <mz-button
+        icon="/package-remoter/assets/scene91.png"
+        iconActive="/package-remoter/assets/scene90.png"
+        bind:btnTouch="showActionSheet"
+        class="mt-64rpx"
+        textWidth="128rpx"
+        type="square"
+        text="风速"
+        data-key="FAN_SPEED"
+      ></mz-button>
+      <mz-button
+        icon="/package-remoter/assets/scene21.png"
+        iconActive="/package-remoter/assets/scene20.png"
+        bind:btnTouch="showActionSheet"
+        class="mt-64rpx"
+        textWidth="128rpx"
+        type="square"
+        text="延时关"
+        data-key="FAN_DELAY_OFF"
+        disabled="{{!deviceInfo.FAN_SWITCH}}"
+      ></mz-button>
+      <mz-button
+        icon="/package-remoter/assets/sceneA1.png"
+        iconActive="/package-remoter/assets/sceneA0.png"
+        bind:btnTouch="toSendCmd"
+        class="mt-64rpx"
+        textWidth="128rpx"
+        type="square"
+        text="正反转"
+        data-dir="D"
+        data-key="FAN_NEGATIVE"
+      ></mz-button>
+      <mz-button
+        icon="/package-remoter/assets/scene71.png"
+        iconActive="/package-remoter/assets/scene70.png"
+        bind:btnTouch="toSendCmd"
+        class="mt-64rpx"
+        textWidth="128rpx"
+        type="square"
+        text="自然风"
+        data-dir="R"
+        data-key="FAN_NATURE"
+      ></mz-button>
+      <mz-button
+        wx:if="{{isFactoryMode}}"
+        bind:btnTouch="toSendCmd"
+        class="mt-64rpx"
+        imgWidth="650rpx"
+        type="square"
+        text="发送厂测指令"
+        data-key="FACTORY"
+      ></mz-button>
+      <mz-button
+        wx:if="{{isDebugMode}}"
+        bind:btnTouch="autoCMD"
+        class="mt-64rpx"
+        imgWidth="650rpx"
+        type="square"
+        text="发送50次指令"
+      ></mz-button>
+      <mz-button
+        wx:if="{{isDebugMode}}"
+        bind:btnTouch="sendDisconnectAd"
+        class="mt-64rpx"
+        imgWidth="650rpx"
+        type="square"
+        text="发送断开广播"
+      ></mz-button>
+    </view>
+  </view>
+
+  <view class="main-control">
+    <mz-button-bottom
+      icon="/package-remoter/assets/power1.png"
+      iconActive="/package-remoter/assets/power0.png"
+      bind:btnTouch="toSendCmd"
+      text="照明"
+      data-key="LIGHT_LAMP"
+      data-type="TOGGLE"
+    ></mz-button-bottom>
+    <mz-button-bottom
+      icon="/package-remoter/assets/power1.png"
+      iconActive="/package-remoter/assets/power0.png"
+      bind:btnTouch="toSendCmd"
+      text="风扇"
+      data-key="FAN_SWITCH"
+      data-type="TOGGLE"
+    ></mz-button-bottom>
+  </view>
+</view>
+
+<van-popup
+  show="{{ isShowPopup }}"
+  round
+  position="bottom"
+  bind:close="handleClose"
+  closeable
+  safe-area-inset-bottom="{{false}}"
+>
+  <view class="w-750rpx flex flex-col items-center">
+    <template
+      is="title"
+      data="{{title: '设置'}}"
+    />
+
+    <view class="w-750rpx">
+      <van-picker
+        columns="{{ actionSheetColumns }}"
+        default-index="{{ actionSheetIndex }}"
+        bind:change="actionSheetChange"
+      />
+    </view>
+
+    <template is="bottom-btn" />
+  </view>
+</van-popup>
+
+<van-dialog
+  id="van-dialog"
+  confirm-button-color="#488FFF"
+  cancel-button-color="#27282A"
+/>
+
+<van-toast id="van-toast" />

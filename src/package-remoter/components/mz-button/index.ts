@@ -5,6 +5,7 @@ ComponentWithComputed({
     styleIsolation: 'apply-shared',
   },
   properties: {
+    disabled: Boolean,
     img: {
       type: String,
       value: '',
@@ -66,6 +67,9 @@ ComponentWithComputed({
       type: String,
       value: 'row',
     },
+    value: {
+      type: Object,
+    },
   },
 
   /**
@@ -94,6 +98,7 @@ ComponentWithComputed({
 
   methods: {
     handleTouchStart() {
+      this.triggerEvent('btnTouch', this.data.value)
       // if (wx.vibrateShort && this.data.hasFeedback) wx.vibrateShort({ type: 'heavy' })
       // 预留逻辑，暂时未被调用
       // const innerAudioContext = wx.createInnerAudioContext()
