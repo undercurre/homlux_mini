@@ -300,7 +300,9 @@ ComponentWithComputed({
         // 可能存在未重新开始移动，目标已被移动成功的情况
         if (!this.data.moveWaitlist.length) {
           this.triggerEvent('updateList')
-          Dialog.close()
+          Dialog.close() // 关闭【前端超时】提示窗口
+          emitter.off('group_device_result_status') // 取消监听
+
           Toast({
             message: '已成功移动',
             zIndex: 9999,
