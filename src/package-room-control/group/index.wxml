@@ -113,7 +113,7 @@
     </block>
   </view>
 
-  <view class="flex flex-row">
+  <view class="flex flex-row list-bottom-placeholder">
     <van-button
       wx:if="{{status === 'hasFailure'}}"
       class="flex-1 mx-24rpx"
@@ -151,8 +151,6 @@
       >完成</van-button
     >
   </view>
-
-  <view class="list-bottom-placeholder"> </view>
 </view>
 
 <van-dialog
