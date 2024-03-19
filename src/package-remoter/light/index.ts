@@ -65,11 +65,12 @@ ComponentWithComputed({
   watch: {
     curRemoter(value) {
       if (this.data.isBLEConnected || !value.deviceAttr) return
-      let temp = this.data.devStatus
+      const temp = this.data.devStatus
       Object.assign(temp, value.deviceAttr)
       this.setData({
         devStatus: temp
       })
+      console.log('lmn>>>rece AD status=', JSON.stringify(temp))
       this.updateView()
     },
   },
@@ -83,10 +84,10 @@ ComponentWithComputed({
     sliderBriTextColor(data) {
       if (data.isBriDraging) {
         if (data.briDragTemp > 12) return '#ffffff'
-        else return '#507FFF'
+        else return '#7C9DF8'
       } else {
         if (data.curBrightnessPercent > 12) return '#ffffff'
-        else return '#507FFF'
+        else return '#7C9DF8'
       }
     }
   },
@@ -114,7 +115,7 @@ ComponentWithComputed({
       }
       // 建立BLE外围设备服务端
       this.data._bleServer = await createBleServer()
-      if (this.data.isNeedConnectBLE) this.start()
+      this.start()
     },
     onUnload() {
       if (this.data.isBLEConnected) {
@@ -122,10 +123,10 @@ ComponentWithComputed({
       }
     },
     start(){
-      this.sendBluetoothAd([CMD['DISCONNECT']])
       setTimeout(() => {
         this.startConnectBLE()
       }, 1000);
+      this.sendBluetoothAd([CMD['DISCONNECT']])
     },
     async sendBluetoothAd(paramsArr?: number[]) {
       if (!paramsArr || paramsArr.length == 0) return
@@ -156,12 +157,12 @@ ComponentWithComputed({
         const res = await this.data._bleService.connect()
         if (res.code == 0) {
           await this.data._bleService.init()
-          Toast('蓝牙连接成功')
+          // Toast('蓝牙连接成功')
           this.setData({
             isBLEConnected: true
           })
         } else {
-          Toast('蓝牙连接失败')
+          // Toast('蓝牙连接失败')
           this.setData({
             isBLEConnected: false
           })
@@ -196,8 +197,8 @@ ComponentWithComputed({
     },
     updateView() {
       const status = this.data.devStatus
-      let bottom = this.data.bottomList
-      let btns = this.data.btnList
+      const bottom = this.data.bottomList
+      const btns = this.data.btnList
       let bri = this.data.curBrightnessPercent
       let col = this.data.curColorTempPercent
       if (status.LIGHT_LAMP != undefined) {

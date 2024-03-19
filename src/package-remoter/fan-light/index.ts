@@ -55,11 +55,9 @@ ComponentWithComputed({
         iconOn: '/package-remoter/assets/newUI/briOn.png', iconOff: '/package-remoter/assets/newUI/briOff.png'},
       { key: 'COL', name: '色温', isOn: false, isEnable: true,
         iconOn: '/package-remoter/assets/newUI/colorOn.png', iconOff: '/package-remoter/assets/newUI/colorOff.png'},
-      // { key: 'ANION', name: '负离子', isOn: false, isEnable: true,
-      //   iconOn: '/package-remoter/assets/newUI/anionOn.png', iconOff: '/package-remoter/assets/newUI/anionOff.png'},
       { key: 'TIMER', name: '定时', isOn: false, isEnable: true,
         iconOn: '/package-remoter/assets/newUI/timerOn.png', iconOff: '/package-remoter/assets/newUI/timerOff.png'},
-      { key: 'DIR', name: '正反转', isOn: false, isEnable: true,
+      { key: 'DIR', name: '反转', isOn: false, isEnable: true,
         iconOn: '/package-remoter/assets/newUI/dirOn.png', iconOff: '/package-remoter/assets/newUI/dirOff.png'},
       { key: 'DISPLAY', name: '屏显', isOn: false, isEnable: true,
         iconOn: '/package-remoter/assets/newUI/displayOn.png', iconOff: '/package-remoter/assets/newUI/displayOff.png'}
@@ -80,11 +78,12 @@ ComponentWithComputed({
   watch: {
     curRemoter(value) {
       if (this.data.isBLEConnected || !value.deviceAttr) return
-      let temp = this.data.devStatus
+      const temp = this.data.devStatus
       Object.assign(temp, value.deviceAttr)
       this.setData({
         devStatus: temp
       })
+      console.log('lmn>>>rece AD status=', JSON.stringify(temp))
       this.updateView()
     },
   },
@@ -130,6 +129,7 @@ ComponentWithComputed({
         isNeedConnectBLE: remoterStore.curRemoter.version >= 2,
         devStatus: remoterStore.curRemoter.deviceAttr || {}
       })
+      this.configBtns()
       this.updateView()
 
       const bleInited = await initBleCapacity()
@@ -138,7 +138,23 @@ ComponentWithComputed({
       }
       // 建立BLE外围设备服务端
       this.data._bleServer = await createBleServer()
-      if (this.data.isNeedConnectBLE) this.start()
+      this.start()
+    },
+    configBtns() {
+      if (this.data.devModel == '03') {
+        const btns = this.data.btnList
+        const temp = []
+        for (let i = 0; i < btns.length; i++) {
+          if (btns[i].key == 'BRI' || btns[i].key == 'COL') {
+            continue
+          } else {
+            temp.push(btns[i])
+          }
+        }
+        this.setData({
+          btnList: temp
+        })
+      }
     },
     onUnload() {
       if (this.data.isBLEConnected) {
@@ -146,10 +162,10 @@ ComponentWithComputed({
       }
     },
     start(){
-      this.sendBluetoothAd([CMD['DISCONNECT']])
       setTimeout(() => {
         this.startConnectBLE()
       }, 1000);
+      this.sendBluetoothAd([CMD['DISCONNECT']])
     },
     async sendBluetoothAd(paramsArr?: number[]) {
       if (!paramsArr || paramsArr.length == 0) return
@@ -180,12 +196,12 @@ ComponentWithComputed({
         const res = await this.data._bleService.connect()
         if (res.code == 0) {
           await this.data._bleService.init()
-          Toast('蓝牙连接成功')
+          // Toast('蓝牙连接成功')
           this.setData({
             isBLEConnected: true
           })
         } else {
-          Toast('蓝牙连接失败')
+          // Toast('蓝牙连接失败')
           this.setData({
             isBLEConnected: false
           })
@@ -220,11 +236,11 @@ ComponentWithComputed({
     },
     updateView() {
       const status = this.data.devStatus
-      let bottom = this.data.bottomList
-      let btns = this.data.btnList
+      const bottom = this.data.bottomList
+      const btns = this.data.btnList
       let bri = this.data.curBrightnessPercent
       let col = this.data.curColorTempPercent
-      let gearConfig = this.data.gearSlicerConfig
+      const gearConfig = this.data.gearSlicerConfig
       let timeIndex = this.data.curTimePickerIndex
       if (status.FAN_SWITCH != undefined) {
         bottom[0].isOn = status.FAN_SWITCH
@@ -239,7 +255,8 @@ ComponentWithComputed({
         col = this.rang2Percent(status.LIGHT_COLOR_TEMP)
       }
       if (status.SPEED != undefined) {
-        gearConfig.value = status.SPEED > 6 ? 6 : status.SPEED < 1 ? 1 : status.SPEED
+        const val = status.SPEED  + 1
+        gearConfig.value = val > 6 ? 6 : val < 1 ? 1 : val
       }
       if (status.FAN_NATURE != undefined) {
         for (let i = 0; i < btns.length; i++) {
