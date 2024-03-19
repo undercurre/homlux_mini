@@ -3,7 +3,7 @@ import { queryRoomList } from '../apis/index'
 import { PRO_TYPE } from '../config/index'
 import { deviceStore } from './device'
 import { homeStore } from './home'
-import { deviceCount, IApiRequestOption } from '../utils/index'
+import { IApiRequestOption } from '../utils/index'
 
 export const roomStore = observable({
   /**
@@ -13,19 +13,10 @@ export const roomStore = observable({
   /**
    * 选择进入了哪个房间的房间id
    */
-  currentRoomId: '0',
-  /** 全屋设备，对应房间id作为key，房间的设备列表作为key */
-  roomDeviceList: {} as Record<string, Device.DeviceItem[]>,
+  currentRoomId: '',
 
   get currentRoom(): Room.RoomInfo {
     return this.roomList.find((room) => room.roomId === this.currentRoomId) ?? ({} as Room.RoomInfo)
-  },
-
-  get lightOnInHouse(): number {
-    const { roomList } = this
-    let count = 0
-    roomList.forEach((room) => (count += room.lightOnCount))
-    return count
   },
 
   /**
@@ -34,38 +25,15 @@ export const roomStore = observable({
    */
   setCurrentRoom(id: string) {
     runInAction(() => {
-      roomStore.currentRoomId = id
-      deviceStore.deviceList = deviceStore.allRoomDeviceList.filter((device) => device.roomId === id)
-      deviceStore.updateAllRoomDeviceListLanStatus(false)
-    })
-  },
-
-  /**
-   * 更新房间开灯数量
-   * ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
-   */
-  updateRoomCardLightOnNum() {
-    const list = {} as Record<string, Device.DeviceItem[]>
-    deviceStore.allRoomDeviceList
-      .sort((a, b) => a.deviceId.localeCompare(b.deviceId))
-      .forEach((device) => {
-        if (list[device.roomId]) {
-          list[device.roomId].push(device)
-        } else {
-          list[device.roomId] = [device]
-        }
-      })
-    roomStore.roomList.forEach((roomInfo) => {
-      const roomDeviceList = list[roomInfo.roomId]
-      const { lightOnCount, lightCount } = deviceCount(roomDeviceList)
-
-      roomInfo.lightOnCount = lightOnCount
-      roomInfo.lightCount = lightCount
-    })
-
-    runInAction(() => {
-      roomStore.roomDeviceList = list
-      roomStore.roomList = [...roomStore.roomList]
+      if (id) {
+        roomStore.currentRoomId = id
+        deviceStore.deviceList = deviceStore.allRoomDeviceList.filter((device) => device.roomId === id)
+        deviceStore.updateAllRoomDeviceListLanStatus(false)
+      }
+      // 重置为默认房间，不必刷新房间列表
+      else if (this.roomList?.length) {
+        roomStore.currentRoomId = this.roomList[0].roomId
+      }
     })
   },
 
@@ -73,10 +41,13 @@ export const roomStore = observable({
     const res = await queryRoomList(homeStore.currentHomeId, options)
     if (res.success) {
       res.result.roomInfoList.forEach((room) => {
-        const roomDeviceList = roomStore.roomDeviceList[room.roomInfo.roomId]
         // 过滤一下默认场景，没灯过滤明亮柔和，没灯没开关全部过滤
-        const hasSwitch = roomDeviceList?.some((device) => device.proType === PRO_TYPE.switch) ?? false
-        const hasLight = roomDeviceList?.some((device) => device.proType === PRO_TYPE.light) ?? false
+        const hasSwitch = deviceStore.allRoomDeviceList?.some(
+          (device) => device.roomId === room.roomInfo.roomId && device.proType === PRO_TYPE.switch,
+        )
+        const hasLight = deviceStore.allRoomDeviceList?.some(
+          (device) => device.roomId === room.roomInfo.roomId && device.proType === PRO_TYPE.light,
+        )
         if (!hasSwitch && !hasLight) {
           // 四个默认场景都去掉
           room.roomSceneList = room.roomSceneList.filter((scene) => scene.isDefault === '0')
@@ -84,12 +55,12 @@ export const roomStore = observable({
           // 只有开关，去掉默认的明亮、柔和
           room.roomSceneList = room.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
         }
-
-        const { lightOnCount, lightCount } = deviceCount(roomDeviceList)
-
-        room.roomInfo.lightOnCount = lightOnCount
-        room.roomInfo.lightCount = lightCount
       })
+
+      // 默认房间值未设置
+      if (!this.currentRoomId) {
+        this.setCurrentRoom('')
+      }
 
       runInAction(() => {
         roomStore.roomList = res.result.roomInfoList.map((room) => ({
@@ -99,8 +70,6 @@ export const roomStore = observable({
           roomName: room.roomInfo.roomName,
           sceneList: room.roomSceneList,
           deviceNum: room.roomInfo.deviceNum,
-          lightOnCount: room.roomInfo.lightOnCount,
-          lightCount: room.roomInfo.lightCount,
         }))
       })
     }
@@ -109,6 +78,6 @@ export const roomStore = observable({
 
 export const roomBinding = {
   store: roomStore,
-  fields: ['roomList', 'currentRoomId', 'roomDeviceList', 'currentRoom'],
+  fields: ['roomList', 'currentRoomId', 'currentRoom'],
   actions: [],
 }

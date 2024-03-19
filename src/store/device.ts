@@ -30,15 +30,19 @@ export const deviceStore = observable({
       deviceStore.allRoomDeviceList.map((device: Device.DeviceItem) => [device.deviceId, device]),
     )
   },
-
   /**
-   * @description 房间设备列表
+   * @description 全屋设备拍扁列表
    * 将有多个按键的开关拍扁，保证每个设备和每个按键都是独立一个item，并且uniId唯一
+   */
+  get allRoomDeviceFlattenList(): Device.DeviceItem[] {
+    return deviceFlatten(this.allRoomDeviceList)
+  },
+  /**
+   * @description 房间设备拍扁列表
    */
   get deviceFlattenList(): Device.DeviceItem[] {
     return deviceFlatten(this.deviceList)
   },
-
   // 当前房间灯组数量
   get groupCount(): number {
     const { roomId = 0 } = roomStore.currentRoom ?? {}
@@ -50,9 +54,6 @@ export const deviceStore = observable({
     return Object.fromEntries(
       deviceStore.allRoomDeviceFlattenList.map((device: Device.DeviceItem) => [device.uniId, device]),
     )
-  },
-  get allRoomDeviceFlattenList(): Device.DeviceItem[] {
-    return deviceFlatten(this.allRoomDeviceList)
   },
 
   /**
@@ -95,34 +96,24 @@ export const deviceStore = observable({
 
   /**
    * 更新全屋设备列表
+   * FIXME 只有非首次app.onShow时才执行
    */
   async updateAllRoomDeviceList(houseId: string = homeStore.currentHomeId, options?: IApiRequestOption) {
     const res = await queryAllDevice(houseId, options)
     const { roomId = '0' } = roomStore.currentRoom
-    if (res.success) {
-      const list = {} as Record<string, Device.DeviceItem[]>
-      res.result
-        ?.sort((a, b) => a.deviceId.localeCompare(b.deviceId))
-        .forEach((device) => {
-          if (list[device.roomId]) {
-            list[device.roomId].push(device)
-          } else {
-            list[device.roomId] = [device]
-          }
-        })
-      runInAction(() => {
-        roomStore.roomDeviceList = list
-        deviceStore.allRoomDeviceList = res.result
-
-        if (roomId) {
-          deviceStore.deviceList = res.result.filter((device) => device.roomId === roomId)
-        }
-
-        this.updateAllRoomDeviceListLanStatus(false)
-      })
-    } else {
+    if (!res.success) {
       console.log('加载全屋设备失败！', res)
     }
+
+    runInAction(() => {
+      deviceStore.allRoomDeviceList = res.result
+
+      if (roomId && res.result?.length) {
+        deviceStore.deviceList = res.result.filter((device) => device.roomId === roomId)
+      }
+
+      this.updateAllRoomDeviceListLanStatus(false)
+    })
   },
 
   /**
@@ -134,24 +125,13 @@ export const deviceStore = observable({
     options?: IApiRequestOption,
   ) {
     const res = await querySubDeviceList({ houseId, roomId }, options)
-    if (res.success) {
-      const list = {} as Record<string, Device.DeviceItem[]>
-      res.result.forEach((device) => {
-        if (list[device.roomId]) {
-          list[device.roomId].push(device)
-        } else {
-          list[device.roomId] = [device]
-        }
-      })
-      runInAction(() => {
-        roomStore.roomDeviceList = list
-        deviceStore.deviceList = res.result
-
-        this.updateAllRoomDeviceListLanStatus(false)
-      })
-    } else {
+    if (!res.success) {
       console.log('加载房间设备失败！', res)
     }
+    runInAction(() => {
+      deviceStore.deviceList = res.result
+      this.updateAllRoomDeviceListLanStatus(false)
+    })
   },
 
   /**

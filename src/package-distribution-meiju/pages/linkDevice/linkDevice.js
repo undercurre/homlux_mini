@@ -1797,7 +1797,7 @@ Component({
               }
             } else {
               wx.redirectTo({
-                url: strUtil.getUrlWithParams('/package-distribution/bind-home/index', {
+                url: strUtil.getUrlWithParams('/package-distribution/pages/bind-home/index', {
                   deviceId: this.data.deviceId,
                 }),
               })

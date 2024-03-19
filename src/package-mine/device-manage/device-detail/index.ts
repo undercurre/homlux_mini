@@ -6,7 +6,7 @@ import pageBehavior from '../../../behaviors/pageBehaviors'
 import { waitingDeleteDevice, editDeviceInfo, queryDeviceInfoByDeviceId, sendDevice } from '../../../apis/index'
 import { proName, PRO_TYPE, SCREEN_PID } from '../../../config/index'
 import Dialog from '@vant/weapp/dialog/dialog'
-import { emitter } from '../../../utils/index'
+import { emitter, strUtil } from '../../../utils/index'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [roomBinding, homeBinding] }), pageBehavior],
@@ -187,7 +187,6 @@ ComponentWithComputed({
         this.updateDeviceInfo()
         await homeStore.updateRoomCardList()
         await roomStore.updateRoomList()
-        roomStore.updateRoomCardLightOnNum()
         emitter.emit('deviceEdit')
       }
     },
@@ -261,6 +260,17 @@ ComponentWithComputed({
     clickMac() {
       wx.setClipboardData({
         data: this.data.mac,
+      })
+    },
+
+    /**
+     * 跳转子设备列表
+     */
+    toSubDeviceList() {
+      wx.navigateTo({
+        url: strUtil.getUrlWithParams('/package-mine/pages/subDeviceList/index', {
+          deviceId: this.data.deviceId,
+        }),
       })
     },
   },

@@ -59,7 +59,7 @@ App<IAppOption>({
         userStore.setIsLogin(true)
         const start = Date.now()
         console.log('开始时间', start / 1000)
-        await Promise.all([userStore.updateUserInfo(), homeStore.homeInit()])
+        await Promise.all([userStore.updateUserInfo(), homeStore.homeInit(), sceneStore.updateAllRoomSceneList()])
         console.log('加载完成时间', Date.now() / 1000, '用时', (Date.now() - start) / 1000 + 's')
       } catch (e) {
         Logger.error('appOnLaunch-err:', e)
@@ -111,15 +111,14 @@ App<IAppOption>({
     // homOS本地控制要求场景数据保持尽可能实时，需要小程序回到前台刷新场景和设备列表数据
     if (!firstOnShow) {
       // 后面的接口依赖获取当前家庭Id
-      await homeStore.updateHomeInfo({ isDefaultErrorTips: false })
+      await homeStore.updateHomeInfo({ isInit: false }, { isDefaultErrorTips: false })
 
       startWebsocketService()
 
+      // 全屋设备、场景数据加载
       deviceStore.updateAllRoomDeviceList(homeStore.currentHomeId, { isDefaultErrorTips: false })
+      sceneStore.updateAllRoomSceneList(homeStore.currentHomeId, { isDefaultErrorTips: false })
     }
-
-    // 全屋场景数据加载, todo: 冷启动时，homeStore.currentHomeId还没初始化好，大概率查询失败
-    sceneStore.updateAllRoomSceneList(homeStore.currentHomeId, { isDefaultErrorTips: false })
   },
 
   onHide() {

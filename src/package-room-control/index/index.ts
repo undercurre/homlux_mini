@@ -42,6 +42,8 @@ import {
   MAX_DEVICES_USING_WS,
   NO_WS_REFRESH_INTERVAL,
   NO_UPDATE_INTERVAL,
+  SCREEN_PID,
+  ZHONGHONG_PID,
 } from '../../config/index'
 
 type DeviceCard = Device.DeviceItem & {
@@ -53,6 +55,8 @@ type DeviceCard = Device.DeviceItem & {
   linkSceneName: string
   isRefresh: boolean // 是否整个列表刷新
   timestamp: number // 加入队列时打上的时间戳
+  isScreen?: boolean
+  isZhongHong?: boolean
 }
 
 /**
@@ -166,9 +170,8 @@ ComponentWithComputed({
     roomHasDevice(data) {
       if (data.allRoomDeviceList?.length) {
         return (
-          (data.allRoomDeviceList as DeviceCard[]).filter(
-            (device) => device.roomId === roomStore.currentRoomId && device.proType !== PRO_TYPE.gateway,
-          ).length > 0
+          (data.allRoomDeviceList as DeviceCard[]).filter((device) => device.roomId === roomStore.currentRoomId)
+            .length > 0
         )
       }
       return false
@@ -297,32 +300,13 @@ ComponentWithComputed({
           return
         }
 
+        // 出现控制失败，控制与消息的对应关系已不可靠，刷新整体数据
+        if (eventType === WSEventType.control_fail) {
+          this.reloadDataThrottle()
+          return
+        }
+
         if (eventType === WSEventType.device_property) {
-          // DESERTED 直接更新store取消，后续改为按需刷新
-          // const deviceInHouse = deviceStore.allRoomDeviceMap[eventData.deviceId]
-
-          // if (deviceInHouse) {
-          //   runInAction(() => {
-          //     deviceInHouse.mzgdPropertyDTOList[eventData.modelName] = {
-          //       ...deviceInHouse.mzgdPropertyDTOList[eventData.modelName],
-          //       ...eventData.event,
-          //     }
-          //   })
-          //   roomStore.updateRoomCardLightOnNum()
-          // }
-
-          // DESERTED 组装要更新的设备数据
-          // const deviceInRoom = deviceStore.deviceMap[eventData.deviceId]
-
-          // if (deviceInRoom) {
-          //   runInAction(() => {
-          //     deviceInRoom.mzgdPropertyDTOList[eventData.modelName] = {
-          //       ...deviceInRoom.mzgdPropertyDTOList[eventData.modelName],
-          //       ...eventData.event,
-          //     }
-          //   })
-          // }
-
           // 组装要更新的设备数据，更新的为flatten列表，结构稍不同
           const device = {} as DeviceCard
           device.deviceId = eventData.deviceId
@@ -334,13 +318,15 @@ ComponentWithComputed({
 
           this.updateQueue(device)
 
-          // 子设备状态变更，刷新全房间灯光可控状态
-          const hasLightOn = this.data.devicePageList.some((group) =>
-            group.some((d) => d.mzgdPropertyDTOList?.light?.power === 1),
-          )
-          this.setData({
-            'roomLight.power': hasLightOn ? 1 : 0,
-          })
+          // 刷新全房间灯光可控状态
+          if (
+            eventData.deviceId === roomStore.currentRoom.groupId &&
+            this.data.roomLight.power !== eventData.event.power
+          ) {
+            this.setData({
+              'roomLight.power': eventData.event.power,
+            })
+          }
 
           return
         }
@@ -526,9 +512,15 @@ ComponentWithComputed({
       this.clearJobs()
     },
     handleShowDeviceOffline(e: { detail: DeviceCard }) {
+      const deviceInfo = e.detail
+
       this.setData({
         showDeviceOffline: true,
-        offlineDevice: e.detail,
+        offlineDevice: {
+          ...deviceInfo,
+          isScreen: SCREEN_PID.includes(deviceInfo.productId),
+          isZhongHong: ZHONGHONG_PID.includes(deviceInfo.productId),
+        },
       })
     },
     handleCloseDeviceOffline() {
@@ -818,14 +810,6 @@ ComponentWithComputed({
       await deviceStore.updateRoomDeviceList()
       this.updateQueue({ isRefresh: true })
     },
-    // updateRoomListOnCloud: throttle(
-    //   async function (this: IAnyObject) {
-    //     await deviceStore.updateSubDeviceList()
-    //     this.updateQueue({ isRefresh: true })
-    //   },
-    //   4000,
-    //   false,
-    // ),
 
     /**
      * @description 更新选中状态并渲染
@@ -1257,9 +1241,6 @@ ComponentWithComputed({
 
         Toast('控制失败')
       }
-
-      // 首页需要更新灯光打开个数
-      homeStore.updateCurrentHomeDetail()
     },
     /** 点击空位的操作 */
     handleScreenTap() {
@@ -1332,12 +1313,12 @@ ComponentWithComputed({
         Toast('当前无法连接网络\n请检查网络设置')
         return
       }
-      wx.navigateTo({ url: '/package-distribution/choose-device/index' })
+      wx.navigateTo({ url: '/package-distribution/pages/choose-device/index' })
     },
     handleRebindGateway() {
       const gateway = deviceStore.allRoomDeviceMap[this.data.offlineDevice.gatewayId]
       wx.navigateTo({
-        url: `/package-distribution/wifi-connect/index?type=changeWifi&sn=${gateway.sn}`,
+        url: `/package-distribution/pages/wifi-connect/index?type=changeWifi&sn=${gateway.sn}`,
       })
     },
     handleLevelChange(e: { detail: number }) {
@@ -1361,6 +1342,11 @@ ComponentWithComputed({
         'roomLight.colorTemperature': e.detail,
       })
       this.lightSendDeviceControl('colorTemperature')
+    },
+    handleRoomLightTouch() {
+      if (!this.data.roomLight.power) {
+        Toast('控制房间色温和亮度前至少开启一盏灯')
+      }
     },
     async lightSendDeviceControl(type: 'colorTemperature' | 'brightness') {
       const deviceId = roomStore.currentRoom.groupId

@@ -1,4 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
+import Dialog from '@vant/weapp/dialog/dialog'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
 import { homeStore } from '../../../store/index'
 import app from '../../common/app'
@@ -59,7 +60,10 @@ ComponentWithComputed({
       // 请求多个sn8的配网数据
       for (const sn8Item of sn8List) {
         promiseList.push(
-          queryGuideInfo({ houseId: homeStore.currentHomeId, sn8: sn8Item, type, mode: mode.toString() }),
+          queryGuideInfo(
+            { houseId: homeStore.currentHomeId, sn8: sn8Item, type, mode: mode.toString() },
+            { loading: true },
+          ),
         )
       }
 
@@ -67,6 +71,15 @@ ComponentWithComputed({
 
       // 遍历返回的配网数据
       for (const res of resList) {
+        if (res.code === 9850) {
+          Dialog.alert({
+            title: '美居账号授权已过期，请重新授权',
+          }).then(() => {
+            this.goBack()
+          })
+          return
+        }
+
         if (!res.success) {
           Toast('获取配网指引失败')
           return
