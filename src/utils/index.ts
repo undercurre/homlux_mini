@@ -217,7 +217,7 @@ export const deviceFlatten = function (originList: Device.DeviceItem[]) {
     } else if (a.deviceType !== 4 && b.deviceType === 4) {
       return 1
     } else {
-      return a.orderNum !== b.orderNum ? a.orderNum - b.orderNum : b.createdTime.localeCompare(a.createdTime)
+      return a.orderNum !== b.orderNum ? a.orderNum - b.orderNum : a.createdTime.localeCompare(b.createdTime)
     }
   })
 }
