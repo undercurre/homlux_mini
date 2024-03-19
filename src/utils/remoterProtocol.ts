@@ -1,6 +1,5 @@
 import cryptoUtils from './remoterCrypto'
 import { DEFAULT_ENCRYPT, deviceConfig } from '../config/remoter'
-import { hasRepeat } from '../utils/index'
 
 // bit位定义
 export const BIT_0 = 0x01 << 0 //1     0x01
@@ -287,6 +286,16 @@ const _createIOSBleRequest = (params: {
     }
   }
   return arrayData
+}
+
+const hasRepeat = (data: (number | string)[]) => {
+  const list = [...data].sort()
+  for (let i = 0; i < list.length - 1; ++i) {
+    if (list[i] === list[i + 1]) {
+      return list[i]
+    }
+  }
+  return false
 }
 
 /**
