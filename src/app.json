@@ -96,7 +96,6 @@
       "pages": [
         "pannel/index",
         "light/index",
-        "fan/index",
         "setting/index",
         "fan-light/index"
       ]
