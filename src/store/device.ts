@@ -103,6 +103,7 @@ export const deviceStore = observable({
     const { roomId = '0' } = roomStore.currentRoom
     if (!res.success) {
       console.log('加载全屋设备失败！', res)
+      return
     }
 
     runInAction(() => {
