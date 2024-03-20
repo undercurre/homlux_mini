@@ -20,7 +20,7 @@
     bind:change="onTabClick">
     <mx-tab title="亮度">
       <view class="tab-page-r flex-center" style="height: 680rpx;">
-        <view class="v-slider-bor">
+        <view class="v-slider-bor" style="opacity: {{isBriSliderDisable ? 0.6 : 1}};">
           <van-slider
             value="{{101 - curBrightnessPercent}}"
             min="1"
@@ -28,10 +28,11 @@
             step="1"
             vertical
             active-color="#ffffff"
-            inactive-color="transparent"
+            inactive-color="linear-gradient(180deg, #B5C7FB 0%, #7C9DF8 100%)"
             bar-height="200rpx"
             custom-class="slider-cus"
             use-button-slot="true"
+            disabled="{{isBriSliderDisable}}"
             bind:change="onBriSliderChange"
             bind:drag="onBriSliderDrag">
             <image slot="button" src="/package-remoter/assets/newUI/barH.png" class="bri-slder-tab-V"/>
@@ -43,7 +44,7 @@
     </mx-tab>
     <mx-tab title="色温">
       <view class="tab-page-r flex-center" style="height: 680rpx;">
-        <view class="v-slider-bor">
+        <view class="v-slider-bor" style="opacity: {{isBriSliderDisable ? 0.6 : 1}};">
           <van-slider
             value="{{101 - curColorTempPercent}}"
             min="1"
@@ -55,6 +56,7 @@
             bar-height="200rpx"
             custom-class="slider-cus"
             use-button-slot="true"
+            disabled="{{isColSliderDisable}}"
             bind:change="onColSliderChange">
             <image slot="button" src="/package-remoter/assets/newUI/circle.png" class="col-slder-tab-V"/>
           </van-slider>
@@ -67,11 +69,11 @@
     <mx-scroll-list scroll-x="true" indicatorColor="#D6DCE4" indicatorActiveColor="#A5A8AF" indicator="{{false}}">
       <view style="width: {{btnList.length * 170}}rpx; display: flex; flex-direction: row; margin-left: 35rpx;">
         <view class="btn-item flex-center"
-          hover-class='high-select-color'
           wx:for="{{btnList}}" wx:key="key"
           data-index="{{index}}"
           bind:tap="onBtnListClick">
           <view class="btn-con flex-center"
+            hover-class="{{item.isEnable ? 'high-select' : ''}}"
             style="background-color: {{item.isOn ? '#488FFF' : '#ffffff'}}; opacity: {{item.isEnable ? 1 : 0.4}};">
             <image style="width: 64rpx; height: 64rpx;" src="{{item.isOn ? item.iconOn : item.iconOff}}"></image>
           </view>
@@ -92,14 +94,14 @@
   <mx-tabbar class="bm-block" border-radius box-shadow>
     <view class="inner-block">
       <view class="flex-center"
-        hover-class='high-select-color'
         style="flex-direction: column;"
         wx:for="{{bottomList}}"
         wx:key="key"
         data-index="{{index}}"
         bind:tap="onBottomClick">
         <view class="bottom-btn flex-center"
-          style="background-color: {{item.isOn ? '#488FFF' : '#F1F5FA'}};">
+          hover-class="{{item.isEnable ? 'high-select' : ''}}"
+          style="background-color: {{item.isOn ? '#488FFF' : '#F1F5FA'}}; opacity: {{item.isEnable ? 1 : 0.4}};">
           <image style="width: 64rpx; height: 64rpx;" src="{{item.isOn ? item.iconOn : item.iconOff}}"></image>
         </view>
         <text class="text-24rpx font-normal" style="color: #232323;">{{item.name}}</text>

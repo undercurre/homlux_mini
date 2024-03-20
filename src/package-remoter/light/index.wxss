@@ -159,7 +159,6 @@
   width: 200rpx;
   height: 540rpx;
   border-radius: 52rpx;
-  background-image: linear-gradient(180deg, #B5C7FB 0%, #7C9DF8 100%);
   overflow: hidden;
 }
 .bri-slder-tab-V{
@@ -178,6 +177,8 @@
   bottom: 40rpx;
   text-align: center;
 }
-.high-select-color{
-  opacity: 0.3;
+.high-select{
+  transform: scale(0.9);
+  transition: 0.2s;
+  animation: scaleAnimation 0.2s ease-in-out;
 }

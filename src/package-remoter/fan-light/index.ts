@@ -10,7 +10,6 @@ import {
   initBleCapacity, 
   // storage, 
   // isDevMode, 
-  // rangeValue 
 } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import { 
@@ -49,7 +48,7 @@ ComponentWithComputed({
       disable: false
     },
     btnList: [
-      { key: 'NATURN', name: '自然风', isOn: true, isEnable: true,
+      { key: 'NATURN', name: '自然风', isOn: false, isEnable: true,
         iconOn: '/package-remoter/assets/newUI/natureOn.png', iconOff: '/package-remoter/assets/newUI/natureOff.png'},
       { key: 'BRI', name: '亮度', isOn: false, isEnable: true,
         iconOn: '/package-remoter/assets/newUI/briOn.png', iconOff: '/package-remoter/assets/newUI/briOff.png'},
@@ -63,8 +62,10 @@ ComponentWithComputed({
         iconOn: '/package-remoter/assets/newUI/displayOn.png', iconOff: '/package-remoter/assets/newUI/displayOff.png'}
     ],
     bottomList: [
-      { key: 'POWER', name: '风扇', isOn: true, iconOn: '/package-remoter/assets/newUI/powerOn.png', iconOff: '/package-remoter/assets/newUI/powerOff.png'},
-      { key: 'LIGHT', name: '照明', isOn: false, iconOn: '/package-remoter/assets/newUI/lightOn.png', iconOff: '/package-remoter/assets/newUI/lightOff.png'}
+      { key: 'POWER', name: '风扇', isOn: false, isEnable: true,
+        iconOn: '/package-remoter/assets/newUI/powerOn.png', iconOff: '/package-remoter/assets/newUI/powerOff.png'},
+      { key: 'LIGHT', name: '照明', isOn: false, isEnable: true,
+        iconOn: '/package-remoter/assets/newUI/lightOn.png', iconOff: '/package-remoter/assets/newUI/lightOff.png'}
     ],
     isShowPopup: false,
     popupIndex: 0,
@@ -92,7 +93,7 @@ ComponentWithComputed({
       return data.isBLEConnected ? '#25CF42' : '#979EAD'
     },
     connectedText(data) {
-      return data.isBLEConnected ? '已连接' : '未连接'
+      return `风速 ｜ ${data.gearSlicerConfig.value}档`
     },
     indArr(data) {
       const arr:number[] = []
@@ -233,6 +234,7 @@ ComponentWithComputed({
       this.setData({
         isBLEConnected: isConnected
       })
+      this.updateViewEn()
     },
     updateView() {
       const status = this.data.devStatus
@@ -302,10 +304,34 @@ ComponentWithComputed({
         gearSlicerConfig: gearConfig,
         curTimePickerIndex: timeIndex
       })
+      this.updateViewEn()
+    },
+    updateViewEn() {
+      const bottom = this.data.bottomList
+      const gearConfig = this.data.gearSlicerConfig
+      const btns = this.data.btnList
+      const isFanDisable = !bottom[0].isOn && this.data.isBLEConnected
+      const isLightDisable = !bottom[1].isOn && this.data.isBLEConnected
+      gearConfig.disable = isFanDisable
+      for (let i = 0; i < btns.length; i++) {
+        if (btns[i].key === 'NATURN' || btns[i].key === 'TIMER' || btns[i].key === 'DIR') {
+          btns[i].isEnable = !isFanDisable
+        } else if (btns[i].key === 'BRI' || btns[i].key === 'COL') {
+          btns[i].isEnable = !isLightDisable
+        }
+      }
+      this.setData({
+        gearSlicerConfig: gearConfig,
+        btnList: btns
+      })
     },
     onSliderChange(e: any) {
       const value = e.detail
-      console.log('lmn>>>onSliderChange::value=', value)
+      const config = this.data.gearSlicerConfig
+      config.value = value
+      this.setData({
+        gearSlicerConfig: config
+      })
       const key = `FAN_SPEED_${value}`
       const para = [CMD[key]]
       if (para != undefined && para != null) {
@@ -317,6 +343,20 @@ ComponentWithComputed({
       const list = this.data.btnList
       if (!list[index].isEnable) return
       const key = list[index].key
+      if (key === 'NATURN' || key === 'DIR' || key === 'DISPLAY') {
+        list[index].isOn = !list[index].isOn
+        this.setData({
+          btnList: list
+        })
+        if (!this.data.isBLEConnected) {
+          setTimeout(() => {
+            list[index].isOn = false
+            this.setData({
+              btnList: list
+            })
+          }, 300);
+        }
+      }
       if (key === 'NATURN') {
         this.sendBluetoothCMD([CMD['FAN_NATURE']])
       } else if (key === 'DIR') {
@@ -343,6 +383,19 @@ ComponentWithComputed({
     onBottomClick(e: any) {
       const index = e.currentTarget.dataset.index
       const list = this.data.bottomList
+      if (!list[index].isEnable) return
+      list[index].isOn = !list[index].isOn
+      this.setData({
+        bottomList: list
+      })
+      if (!this.data.isBLEConnected) {
+        setTimeout(() => {
+          list[index].isOn = false
+          this.setData({
+            bottomList: list
+          })
+        }, 300);
+      }
       if (list[index].key == 'POWER') {
         this.sendBluetoothCMD([CMD['FAN_SWITCH']])
       } else if (list[index].key == 'LIGHT') {
