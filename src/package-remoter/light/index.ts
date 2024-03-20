@@ -10,7 +10,6 @@ import {
   initBleCapacity, 
   // storage, 
   // isDevMode, 
-  // rangeValue 
 } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import { 
@@ -36,12 +35,6 @@ ComponentWithComputed({
     devType: '',
     devModel: '',
     devAddr: '',
-    gearSlicerConfig: {
-      min: 1,
-      max: 6,
-      step: 1,
-      value: 2
-    },
     btnList: [
       { key: 'BRIGHT', name: '明亮', isOn: false, isEnable: true,
         iconOn: '/package-remoter/assets/newUI/brightOn.png', iconOff: '/package-remoter/assets/newUI/birghtOff.png'},
@@ -53,14 +46,18 @@ ComponentWithComputed({
         iconOn: '/package-remoter/assets/newUI/delay2mOn.png', iconOff: '/package-remoter/assets/newUI/delay2mOff.png'}
     ],
     bottomList: [
-      { key: 'POWER', name: '开灯', isOn: false, iconOn: '/package-remoter/assets/newUI/powerOn.png', iconOff: '/package-remoter/assets/newUI/powerOff.png'},
-      { key: 'NIGHT', name: '夜灯', isOn: false, iconOn: '/package-remoter/assets/newUI/nightOn.png', iconOff: '/package-remoter/assets/newUI/nightOff.png'}
+      { key: 'POWER', name: '开灯', isOn: false, isEnable: true,
+        iconOn: '/package-remoter/assets/newUI/powerOn.png', iconOff: '/package-remoter/assets/newUI/powerOff.png'},
+      { key: 'NIGHT', name: '夜灯', isOn: false, isEnable: true,
+        iconOn: '/package-remoter/assets/newUI/nightOn.png', iconOff: '/package-remoter/assets/newUI/nightOff.png'}
     ],
     curTabIndex: 0,
     isBriDraging: false,
     briDragTemp: 1,
     curBrightnessPercent: 1,
-    curColorTempPercent: 1
+    curColorTempPercent: 1,
+    isBriSliderDisable: false,
+    isColSliderDisable: false
   },
   watch: {
     curRemoter(value) {
@@ -194,6 +191,7 @@ ComponentWithComputed({
       this.setData({
         isBLEConnected: isConnected
       })
+      this.updateViewEn()
     },
     updateView() {
       const status = this.data.devStatus
@@ -235,12 +233,38 @@ ComponentWithComputed({
         curBrightnessPercent: bri,
         curColorTempPercent: col
       })
+      this.updateViewEn()
+    },
+    updateViewEn() {
+      const bottom = this.data.bottomList
+      const btns = this.data.btnList
+      const isLightDisable = !bottom[0].isOn && this.data.isBLEConnected
+      for (let i = 0; i < btns.length; i++) {
+        btns[i].isEnable = !isLightDisable
+      }
+      this.setData({
+        btnList: btns,
+        isBriSliderDisable: isLightDisable,
+        isColSliderDisable: isLightDisable
+      })
     },
     onBtnListClick(e: any) {
       const index = e.currentTarget.dataset.index
       const list = this.data.btnList
       if (!list[index].isEnable) return
       const key = list[index].key
+      list[index].isOn = !list[index].isOn
+      this.setData({
+        btnList: list
+      })
+      if (!this.data.isBLEConnected) {
+        setTimeout(() => {
+          list[index].isOn = false
+          this.setData({
+            btnList: list
+          })
+        }, 300);
+      }
       if (key === 'BRIGHT') {
         this.sendBluetoothCMD([CMD['LIGHT_SCENE_MIX'], 255, 255])
       } else if (key === 'SOFT') {
@@ -259,6 +283,19 @@ ComponentWithComputed({
     onBottomClick(e: any) {
       const index = e.currentTarget.dataset.index
       const list = this.data.bottomList
+      if (!list[index].isEnable) return
+      list[index].isOn = !list[index].isOn
+      this.setData({
+        bottomList: list
+      })
+      if (!this.data.isBLEConnected) {
+        setTimeout(() => {
+          list[index].isOn = false
+          this.setData({
+            bottomList: list
+          })
+        }, 300);
+      }
       if (list[index].key == 'POWER') {
         this.sendBluetoothCMD([CMD['LIGHT_LAMP']])
       } else if (list[index].key == 'NIGHT') {
