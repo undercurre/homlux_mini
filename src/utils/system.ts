@@ -196,7 +196,7 @@ export function isDevMode() {
   return platform === 'devtools'
 }
 
-export function shouNoNetTips() {
+export function showNoNetTips() {
   wx.showToast({
     title: '当前无法连接网络\n请检查网络设置',
     icon: 'none',
