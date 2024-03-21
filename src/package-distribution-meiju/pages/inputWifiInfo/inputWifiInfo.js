@@ -3,7 +3,7 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
 import { defaultImgDir, imgList } from '../../../config/img'
-import { delay, isAndroid, Logger, shouNoNetTips } from '../../../utils/index'
+import { delay, isAndroid, Logger, showNoNetTips } from '../../../utils/index'
 import app from '../../common/app'
 
 import computedBehavior from '../../utils/miniprogram-computed.js'
@@ -724,7 +724,7 @@ Page({
     })
 
     if (!locationRes) {
-      shouNoNetTips()
+      showNoNetTips()
       return
     }
     if (!locationRes.isCanLocation) {

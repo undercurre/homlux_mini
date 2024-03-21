@@ -17,10 +17,7 @@
         textStyle="margin-top: 28rpx;"
       ></tips-box>
 
-      <view
-        wx:if="{{bleDeviceList.length}}"
-        class="px-32rpx pt-86rpx grow shrink flex flex-col"
-      >
+      <view wx:if="{{bleDeviceList.length}}" class="px-32rpx pt-86rpx grow shrink flex flex-col">
         <view class="flex flex-row items-center justify-between pb-34rpx">
           <text class="text-26 text-black-59">发现{{bleDeviceList.length}}个附近的设备</text>
 
@@ -57,19 +54,10 @@
               data-index="{{index}}"
             >
               <view class="relative ml-10rpx my-20rpx border-4rpx border-solid border-hex-F6F6F8 rounded-full leading-0 p-10rpx">
-                <image
-                  src="{{item.icon}}"
-                  class="w-72 h-72"
-                ></image>
+                <image src="{{item.icon}}" class="w-72 h-72"></image>
 
-                <view
-                  wx:if="{{isManual === '0'}}"
-                  class="signal-box bottom-0 leading-0 rounded-14rpx {{ item.signal === 'weak' ? 'bg-hex-FFF4F4' : 'bg-hex-F4F8FF'}}"
-                >
-                  <image
-                    src="/package-distribution/assets/search-subdevice/signal-{{ item.signal }}.png"
-                    class="w-46 h-28"
-                  ></image>
+                <view wx:if="{{isManual === '0'}}" class="signal-box bottom-0 leading-0 rounded-14rpx {{ item.signal === 'weak' ? 'bg-hex-FFF4F4' : 'bg-hex-F4F8FF'}}">
+                  <image src="/package-distribution/assets/search-subdevice/signal-{{ item.signal }}.png" class="w-46 h-28"></image>
                 </view>
               </view>
 
@@ -89,19 +77,13 @@
               <view class="flex flex-row items-center pb-4rpx">
                 <text class="max-w-200 pr-24rpx text-32 text-black-2a single-text">{{ item.name }}</text>
 
-                <image
-                  class="w-60 h-38"
-                  src="/package-distribution/assets/search-subdevice/edit.png"
-                />
+                <image class="w-60 h-38" src="/package-distribution/assets/search-subdevice/edit.png" />
               </view>
 
               <text class="text-26 text-black-59 opacity-95">{{ item.roomName }}</text>
             </view>
 
-            <view
-              class="shrink-0"
-              wx:if="{{isManual === '0'}}"
-            >
+            <view class="shrink-0" wx:if="{{isManual === '0'}}">
               <van-button
                 plain
                 type="primary"
@@ -126,7 +108,7 @@
           size="large"
           bind:click="confirmAdd"
           disabled="{{selectedList.length===0}}"
-          >确认添加（已选{{selectedList.length}}个）
+        >确认添加（已选{{selectedList.length}}个）
         </van-button>
         <van-button
           wx:else
@@ -138,7 +120,7 @@
           disabled="{{selectedList.length===0}}"
           loading="{{confirmLoading}}"
           loading-text="添加中..."
-          >确认添加
+        >确认添加
         </van-button>
       </view>
     </block>
@@ -162,19 +144,10 @@
       </view>
     </block>
 
-    <view
-      class="grow flex flex-col justify-between"
-      wx:if="{{status === 'requesting' && (successList.length + failList.length) === selectedList.length && failList.length !== selectedList.length}}"
-    >
-      <tips-box
-        text="{{successList.length}}个设备添加成功！"
-        icon="{{defaultImgDir}}/success.png"
-      ></tips-box>
+    <view class="grow flex flex-col justify-between" wx:if="{{status === 'requesting' && (successList.length + failList.length) === selectedList.length && failList.length !== selectedList.length}}">
+      <tips-box text="{{successList.length}}个设备添加成功！" icon="{{defaultImgDir}}/success.png"></tips-box>
 
-      <view
-        wx:if="{{failList.length > 0}}"
-        class="px-24rpx pt-90rpx grow shrink flex flex-col"
-      >
+      <view wx:if="{{failList.length > 0}}" class="px-24rpx pt-90rpx grow shrink flex flex-col">
         <view class="flex flex-row items-center justify-between pb-24rpx">
           <text class="text-28 text-hex-000">以下{{failList.length}}个设备添加失败</text>
 
@@ -184,7 +157,7 @@
             size="small"
             type="info"
             bind:click="reAdd"
-            >重新添加
+          >重新添加
           </van-button>
         </view>
 
@@ -203,19 +176,10 @@
             data-rssi="{{item.RSSI}}"
           >
             <view class="relative my-20rpx border-4rpx border-solid border-hex-F6F6F8 rounded-full leading-0 p-10rpx">
-              <image
-                src="{{item.icon}}"
-                class="w-72 h-72"
-              ></image>
+              <image src="{{item.icon}}" class="w-72 h-72"></image>
 
-              <view
-                wx:if="{{isManual === '0'}}"
-                class="signal-box bottom-0 leading-0 rounded-14rpx {{ item.signal === 'weak' ? 'bg-hex-FFF4F4' : 'bg-hex-F4F8FF'}}"
-              >
-                <image
-                  src="/package-distribution/assets/search-subdevice/signal-{{ item.signal }}.png"
-                  class="w-46 h-28"
-                ></image>
+              <view wx:if="{{isManual === '0'}}" class="signal-box bottom-0 leading-0 rounded-14rpx {{ item.signal === 'weak' ? 'bg-hex-FFF4F4' : 'bg-hex-F4F8FF'}}">
+                <image src="/package-distribution/assets/search-subdevice/signal-{{ item.signal }}.png" class="w-46 h-28"></image>
               </view>
             </view>
 
@@ -227,19 +191,13 @@
               <view class="flex flex-row items-center pb-4rpx">
                 <text class="max-w-200 pr-24rpx text-32 text-black-2a single-text">{{ item.name }}</text>
 
-                <image
-                  class="w-60 h-38"
-                  src="/package-distribution/assets/search-subdevice/edit.png"
-                />
+                <image class="w-60 h-38" src="/package-distribution/assets/search-subdevice/edit.png" />
               </view>
 
               <text class="text-26 text-black-59 opacity-95">{{ item.roomName }}</text>
             </view>
 
-            <view
-              class="shrink-0"
-              wx:if="{{isManual === '0'}}"
-            >
+            <view class="shrink-0" wx:if="{{isManual === '0'}}">
               <van-button
                 plain
                 type="primary"
@@ -264,16 +222,13 @@
           block
           size="large"
           bind:click="finish"
-          >完成
+        >完成
         </van-button>
       </view>
     </view>
 
-    <block wx:if="{{status === 'requesting' && selectedList.length && failList.length === selectedList.length}}">
-      <tips-box
-        text="添加失败！"
-        icon="{{defaultImgDir}}/no-found.png"
-      ></tips-box>
+    <block wx:if="{{status === 'error' || (status === 'requesting' && selectedList.length && failList.length === selectedList.length)}}">
+      <tips-box text="添加失败！" icon="{{defaultImgDir}}/no-found.png"></tips-box>
 
       <view class="grow px-88rpx pt-180rpx">
         <view class="text-28 text-black-2a">
@@ -299,7 +254,7 @@
         type="primary"
         size="large"
         bind:click="finish"
-        >返回首页
+      >返回首页
       </van-button>
     </block>
   </view>
@@ -316,3 +271,4 @@
 ></edit-device-info>
 
 <van-toast id="van-toast" />
+

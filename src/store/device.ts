@@ -103,6 +103,7 @@ export const deviceStore = observable({
     const { roomId = '0' } = roomStore.currentRoom
     if (!res.success) {
       console.log('加载全屋设备失败！', res)
+      return
     }
 
     runInAction(() => {
@@ -127,7 +128,9 @@ export const deviceStore = observable({
     const res = await querySubDeviceList({ houseId, roomId }, options)
     if (!res.success) {
       console.log('加载房间设备失败！', res)
+      return
     }
+
     runInAction(() => {
       deviceStore.deviceList = res.result
       this.updateAllRoomDeviceListLanStatus(false)

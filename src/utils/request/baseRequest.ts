@@ -1,4 +1,4 @@
-import { hideLoading, showLoading, Logger, shouNoNetTips } from '../index'
+import { hideLoading, showLoading, Logger, showNoNetTips } from '../index'
 
 export type BaseRequestOptions<T extends AnyResType> = WechatMiniprogram.RequestOption<T> & {
   /**
@@ -91,11 +91,11 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       }
 
       if (requestOption.log) {
-        Logger.error('✘请求URL:' + requestOption.url + ' 失败，原因：' + err.errMsg, requestOption.data)
+        Logger.error('✘请求URL:' + requestOption.url + ' 失败，原因：', err)
       }
 
       if (requestOption.isDefaultErrorTips) {
-        shouNoNetTips()
+        showNoNetTips()
       }
 
       const data = failHandler ? failHandler(err) : (err as unknown as T)

@@ -3,7 +3,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
 import dayjs from 'dayjs'
-import { deviceBinding } from '../../../store/index'
+import { deviceBinding, deviceStore } from '../../../store/index'
 import { bleDevicesBinding, bleDevicesStore } from '../../store/bleDeviceStore'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
 import {
@@ -13,7 +13,7 @@ import {
   isAndroid,
   isConnect,
   Logger,
-  shouNoNetTips,
+  showNoNetTips,
   showLoading,
   strUtil,
 } from '../../../utils/index'
@@ -99,6 +99,7 @@ ComponentWithComputed({
   lifetimes: {
     async ready() {
       bleDevicesBinding.store.reset()
+      deviceStore.updateAllRoomDeviceList() // 刷新设备列表数据，防止设备列表不是最新，导致偶现添加子设备提示没有添加网关
 
       const params = wx.getEnterOptionsSync()
       Logger.log('scanPage', params)
@@ -182,7 +183,7 @@ ComponentWithComputed({
       const isValidNet = isConnect()
 
       if (!isValidNet) {
-        shouNoNetTips()
+        showNoNetTips()
       }
 
       return isValidNet

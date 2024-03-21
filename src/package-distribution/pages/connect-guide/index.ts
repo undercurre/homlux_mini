@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { deviceBinding } from '../../../store/index'
+import { deviceBinding, deviceStore } from '../../../store/index'
 import { strUtil } from '../../../utils/index'
 import Dialog from '@vant/weapp/dialog/dialog'
 import deviceCategory from '../../common/deviceCategory'
@@ -50,6 +50,8 @@ ComponentWithComputed({
    */
   methods: {
     async onLoad(query: { proType?: string; modelId?: string; q?: string }) {
+      deviceStore.updateAllRoomDeviceList() // 刷新设备列表数据，防止设备列表不是最新，导致偶现添加子设备提示没有添加网关
+
       console.log('onLoad', query)
 
       let modelId = query?.modelId ?? ''

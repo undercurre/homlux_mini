@@ -447,7 +447,12 @@ ComponentWithComputed({
         const res = await this.startGwAddMode()
 
         if (!res.success) {
-          Toast(res.code === 9882 ? '当前网关已离线，请重新选择' : res.msg)
+          // 仅网关离线时提示toast
+          res.code === 9882 && Toast('当前网关已离线，请重新选择')
+
+          this.setData({
+            status: 'error',
+          })
           deviceStore.updateAllRoomDeviceList() // 刷新设备列表数据，防止返回后还能选择到离线的网关
           return
         }
@@ -600,9 +605,10 @@ ComponentWithComputed({
     },
 
     async startZigbeeNet(bleDevice: Device.ISubDevice) {
+      const deviceData = this.data._deviceMap[bleDevice.mac]
+
       try {
         const timeout = 60 // 等待绑定推送，超时60s
-        const deviceData = this.data._deviceMap[bleDevice.mac]
 
         Logger.log(
           `【${bleDevice.mac}】配网指令，第${3 - deviceData.zigbeeRepeatTimes}次, 检测配网状态：${bleDevice.isConfig}`,
@@ -672,6 +678,10 @@ ComponentWithComputed({
         }
       } catch (err) {
         Logger.error(`【${bleDevice.mac}】startZigbeeNet-catch`, err)
+        deviceData.zigbeeAddCallback({
+          success: false,
+          msg: `子设备蓝牙配网异常-${JSON.stringify(err)}`,
+        })
       }
     },
 
