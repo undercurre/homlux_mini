@@ -74,7 +74,8 @@ ComponentWithComputed({
     isShowTimePicker: false,
     hourArr,
     curTimePickerIndex: [0],
-    pickerIndexTemp: [0]
+    pickerIndexTemp: [0],
+    conTimer: null as any
   },
   watch: {
     curRemoter(value) {
@@ -158,14 +159,18 @@ ComponentWithComputed({
       }
     },
     onUnload() {
+      clearTimeout(this.data.conTimer)
       if (this.data.isBLEConnected) {
         this.data._bleService?.close()
       }
     },
     start(){
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         this.startConnectBLE()
       }, 1000);
+      this.setData({
+        conTimer: timer
+      })
       this.sendBluetoothAd([CMD['DISCONNECT']])
     },
     async sendBluetoothAd(paramsArr?: number[]) {

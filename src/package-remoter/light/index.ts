@@ -57,7 +57,8 @@ ComponentWithComputed({
     curBrightnessPercent: 1,
     curColorTempPercent: 1,
     isBriSliderDisable: false,
-    isColSliderDisable: false
+    isColSliderDisable: false,
+    conTimer: null as any
   },
   watch: {
     curRemoter(value) {
@@ -115,14 +116,18 @@ ComponentWithComputed({
       this.start()
     },
     onUnload() {
+      clearTimeout(this.data.conTimer)
       if (this.data.isBLEConnected) {
         this.data._bleService?.close()
       }
     },
     start(){
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         this.startConnectBLE()
       }, 1000);
+      this.setData({
+        conTimer: timer
+      })
       this.sendBluetoothAd([CMD['DISCONNECT']])
     },
     async sendBluetoothAd(paramsArr?: number[]) {
@@ -257,7 +262,7 @@ ComponentWithComputed({
       this.setData({
         btnList: list
       })
-      if (!this.data.isBLEConnected) {
+      if (!this.data.isBLEConnected || key === 'BRIGHT' || key === 'SOFT') {
         setTimeout(() => {
           list[index].isOn = false
           this.setData({
@@ -299,7 +304,7 @@ ComponentWithComputed({
       if (list[index].key == 'POWER') {
         this.sendBluetoothCMD([CMD['LIGHT_LAMP']])
       } else if (list[index].key == 'NIGHT') {
-        this.sendBluetoothCMD([CMD['LIGHT_SCENE_MIX'], 12, 0])
+        this.sendBluetoothCMD([CMD['LIGHT_SCENE_MIX'], 1, 0])
       }
     },
     onTabClick(e: any) {
