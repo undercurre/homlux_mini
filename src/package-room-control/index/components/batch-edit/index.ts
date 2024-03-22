@@ -97,6 +97,7 @@ ComponentWithComputed({
       return (
         noScreen &&
         data.editSelectList?.length &&
+        data.editSelectList?.length <= 10 &&
         data.editSelectList.every((uId: string) => {
           const deviceId = uId.split(':')[0] // 不管有没有:
           const device = deviceStore.deviceMap[deviceId]
@@ -134,7 +135,7 @@ ComponentWithComputed({
         return !SCREEN_PID.includes(device.productId)
       })
 
-      return noScreen && data.editSelectList?.length
+      return noScreen && data.editSelectList?.length && data.editSelectList?.length <= 10
     },
     editDeviceNameTitle(data) {
       return data.editProType === PRO_TYPE.switch ? '面板名称' : '设备名称'
@@ -193,6 +194,7 @@ ComponentWithComputed({
     // TODO 处理分组解散的交互提示
     handleDeleteDialog() {
       if (!this.data.canDelete) {
+        Toast('每次可删除不多于10个设备')
         return
       }
       const hasSwitch = this.data.editSelectList.some((uniId: string) => uniId.includes(':'))
@@ -236,6 +238,7 @@ ComponentWithComputed({
     },
     handleEditNamePopup() {
       if (!this.data.canEditName) {
+        Toast('请选择一个设备')
         return
       }
       const uniId = this.data.editSelectList[0]
@@ -262,6 +265,7 @@ ComponentWithComputed({
     },
     handleMoveRoomPopup() {
       if (!this.data.canMoveRoom) {
+        Toast('每次可移动不多于10个设备')
         return
       }
       const uniId = this.data.editSelectList[0]
@@ -276,6 +280,7 @@ ComponentWithComputed({
     },
     handleCreateGroup() {
       if (!this.data.canGroup) {
+        Toast('请选择多个在线灯具')
         return
       }
       const lightList = this.data.editSelectList
@@ -493,7 +498,7 @@ ComponentWithComputed({
             Toast('设备名称不能用特殊符号或表情')
             return
           }
-          if (this.data.editSwitchName.length > 6) {
+          if (this.data.editDeviceName.length > 6) {
             Toast('设备名称不能超过6个字符')
             return
           }
