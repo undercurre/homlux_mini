@@ -5,7 +5,7 @@
 项目已经自带下面的依赖：
 
 - [UnoCSS](https://github.com/MellowCo/unocss-preset-weapp) 功能强大且性能极高的 CSS 引擎
-- [Tailwind](https://tailwindcss.com/)
+- [Tailwind](https://tailwindcss.com/docs/installation)
 - [MobX](https://github.com/wechat-miniprogram/mobx-miniprogram-bindings) 官方推荐的全局状态管理库
 - [computed](https://github.com/wechat-miniprogram/computed) 像写 Vue 一样写 computed 和 watch 吧
 - [Vant](https://vant-contrib.gitee.io/vant-weapp) 轻量、可靠的微信小程序组件库
