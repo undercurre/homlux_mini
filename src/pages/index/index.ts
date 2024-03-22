@@ -246,7 +246,7 @@ ComponentWithComputed({
             } else if (oldPower && eventData.event.power === 0) {
               lightOnCount = Math.max(0, lightOnCount - 1) // 防止异常上报导致小于0
             }
-            // FIXME 更新store数据以便比对，但不依赖store更新视频
+            // FIXME 更新store数据以便比对，但不依赖store更新视图
             device.mzgdPropertyDTOList[eventData.modelName].power = eventData.event.power
 
             this.setData({

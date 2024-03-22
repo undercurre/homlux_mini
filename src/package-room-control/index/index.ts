@@ -242,6 +242,14 @@ ComponentWithComputed({
       const { deviceFlattenList } = data
       return Math.ceil((deviceFlattenList?.length ?? 4) / 4) * 236
     },
+    // 房间灯光可控状态
+    hasRoomLightOn(data) {
+      const { devicePageList } = data
+      const flag = devicePageList.some((g) =>
+        g.some((d) => !!(d.proType === PRO_TYPE.light && d.mzgdPropertyDTOList['light'].power)),
+      )
+      return flag
+    },
   },
 
   methods: {
@@ -251,16 +259,20 @@ ComponentWithComputed({
     async onLoad(query: { from?: string }) {
       Logger.log('[room-onLoad]', query)
       this.data._from = query.from ?? ''
-      this.setUpdatePerformanceListener({ withDataPaths: true }, (res) => {
-        Logger.debug(
-          '[Performance]',
-          '等待时长：',
-          res.updateStartTimestamp - res.pendingStartTimestamp,
-          '执行时长：',
-          res.updateEndTimestamp - res.updateStartTimestamp,
-          res.dataPaths ?? '',
-        )
-      })
+
+      const info = wx.getAccountInfoSync()
+      if (info.miniProgram.envVersion === 'develop') {
+        this.setUpdatePerformanceListener({ withDataPaths: true }, (res) => {
+          Logger.debug(
+            '[Performance]',
+            '等待时长：',
+            res.updateStartTimestamp - res.pendingStartTimestamp,
+            '执行时长：',
+            res.updateEndTimestamp - res.updateStartTimestamp,
+            res.dataPaths ?? '',
+          )
+        })
+      }
     },
 
     async onShow() {
@@ -317,16 +329,6 @@ ComponentWithComputed({
           }
 
           this.updateQueue(device)
-
-          // 刷新全房间灯光可控状态
-          if (
-            eventData.deviceId === roomStore.currentRoom.groupId &&
-            this.data.roomLight.power !== eventData.event.power
-          ) {
-            this.setData({
-              'roomLight.power': eventData.event.power,
-            })
-          }
 
           return
         }
@@ -436,7 +438,7 @@ ComponentWithComputed({
     },
 
     async reloadData() {
-      Logger.log('reloadData', isConnect())
+      Logger.log('[reloadData]isConnect:', isConnect())
       // 未连接网络，所有设备直接设置为离线
       if (!isConnect()) {
         this.updateQueue({ isRefresh: true, onLineStatus: 0 })
@@ -654,7 +656,7 @@ ComponentWithComputed({
                   data: {},
                   created: 0,
                 }
-                console.log('▤ [%s, %s] 更新完成，已等待 %sms', groupIndex, index, wait)
+                Logger.debug('▤ [%s, %s] 更新完成，已等待 %sms', groupIndex, index, wait)
               } else {
                 console.log('▤ [%s, %s] 更新推迟，已等待 %sms', groupIndex, index, wait)
               }
@@ -691,11 +693,11 @@ ComponentWithComputed({
           }))
 
         if (!this.data.deviceListInited) {
-          Logger.log('▤ [updateDeviceList] 列表初始化')
+          Logger.debug('▤ [updateDeviceList] 列表初始化')
         }
         // !! 整个列表刷新
         else {
-          console.log('▤ [updateDeviceList] 列表重新加载')
+          Logger.debug('▤ [updateDeviceList] 列表重新加载')
         }
 
         const oldListPageLength = this.data.devicePageList.length
@@ -724,7 +726,7 @@ ComponentWithComputed({
           })
         }
 
-        Logger.log('▤ [updateDeviceList] 列表更新完成', this.data.devicePageList)
+        Logger.debug('▤ [updateDeviceList] 列表更新完成', this.data.devicePageList)
       }
 
       // 模拟堵塞任务执行
@@ -1345,7 +1347,7 @@ ComponentWithComputed({
       this.lightSendDeviceControl('colorTemperature')
     },
     handleRoomLightTouch() {
-      if (!this.data.roomLight.power) {
+      if (!this.data.hasRoomLightOn) {
         Toast('控制房间色温和亮度前至少开启一盏灯')
       }
     },
