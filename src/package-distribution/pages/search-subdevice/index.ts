@@ -50,8 +50,8 @@ ComponentWithComputed({
       panId: 0,
     },
     _proType: '',
-    _bleTaskQueue: new PromiseQueue({ concurrency: 3 }), // 允许同时进行蓝牙通讯配网的任务队列，暂定3个
-    _zigbeeTaskQueue: new PromiseQueue({ concurrency: 6 }), // 允许同时进行zigbee设备配网的任务队列，暂定6个
+    _bleTaskQueue: new PromiseQueue({ concurrency: 2 }), // 允许同时进行蓝牙通讯配网的任务队列，暂定3个
+    _zigbeeTaskQueue: new PromiseQueue({ concurrency: 3 }), // 允许同时进行zigbee设备配网的任务队列，暂定6个
     _id: Math.floor(Math.random() * 100),
     _errorList: [] as string[],
     _addModeTimeId: 0,
@@ -130,8 +130,8 @@ ComponentWithComputed({
         item.status = 'waiting'
       })
 
-      this.data._bleTaskQueue = new PromiseQueue({ concurrency: 3 })
-      this.data._zigbeeTaskQueue = new PromiseQueue({ concurrency: 6 })
+      this.data._bleTaskQueue = new PromiseQueue({ concurrency: 2 })
+      this.data._zigbeeTaskQueue = new PromiseQueue({ concurrency: 3 })
 
       bleDevicesStore.updateBleDeviceList()
 
