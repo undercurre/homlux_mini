@@ -493,7 +493,7 @@ ComponentWithComputed({
             Toast('设备名称不能用特殊符号或表情')
             return
           }
-          if (this.data.editSwitchName.length > 6) {
+          if (this.data.editDeviceName.length > 6) {
             Toast('设备名称不能超过6个字符')
             return
           }
