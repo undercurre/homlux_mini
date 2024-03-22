@@ -141,8 +141,9 @@ ComponentWithComputed({
     },
 
     // 设备是否可控
+    // !! 需要使用双否定将undefined null值转换为boolean，以免视图显示中判断异常
     canCtrl(data) {
-      return data.deviceInfo.onLineStatus || data.deviceInfo.canLanCtrl
+      return !!(data.deviceInfo.onLineStatus || data.deviceInfo.canLanCtrl)
     },
 
     // 设备是灯组
