@@ -67,19 +67,19 @@
           </van-cell>
 
           <van-cell
+            wx:if="{{deviceInfo.deviceType === 1}}"
+            title="网关子设备"
+            border="{{true}}"
+            is-link
+            bind:click="toSubDeviceList"
+          ></van-cell>
+
+          <van-cell
             wx:if="{{isSubDeviceOrGateway}}"
             title="Mac 地址"
             value="{{mac}}"
             border="{{false}}"
             bind:click="clickMac"
-          ></van-cell>
-
-          <van-cell
-            wx:if="{{deviceInfo.deviceType === 1}}"
-            title="网关子设备"
-            border="{{false}}"
-            is-link
-            bind:click="toSubDeviceList"
           ></van-cell>
 
           <van-cell

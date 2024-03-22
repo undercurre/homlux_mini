@@ -3,7 +3,7 @@ import { deviceBinding, otaStore } from '../../../store/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehavior from '../../../behaviors/pageBehaviors'
 import { emitter } from '../../../utils/eventBus'
-import { defaultImgDir } from '../../../config/index'
+import { defaultImgDir, SCREEN_PID } from '../../../config/index'
 
 ComponentWithComputed({
   properties: {
@@ -23,7 +23,9 @@ ComponentWithComputed({
   computed: {
     deviceList(data: IAnyObject) {
       const list = data.allRoomDeviceList?.length ? [...data.allRoomDeviceList] : []
-      return list.filter((d) => d.gatewayId === data.deviceId)
+
+      // 需要排除屏的2路开关
+      return list.filter((d) => d.gatewayId === data.deviceId && !SCREEN_PID.includes(d.productId))
     },
   },
 
