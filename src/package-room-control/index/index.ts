@@ -436,8 +436,7 @@ ComponentWithComputed({
       }
 
       try {
-        // TODO 检查场景更新是否异常
-        await Promise.all([this.reloadDeviceListThrottle(), this.queryGroupInfo()])
+        await Promise.all([this.reloadDeviceListThrottle(), sceneStore.updateAllRoomSceneList(), this.queryGroupInfo()])
 
         this.updateQueue({ isRefresh: true })
 

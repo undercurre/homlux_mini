@@ -15,6 +15,7 @@ import {
   othersStore,
   roomStore,
   deviceStore,
+  sceneStore,
 } from '../../store/index'
 import {
   storage,
@@ -297,6 +298,7 @@ ComponentWithComputed({
     // 节流更新房间卡片信息
     updateRoomDataThrottle: throttle(async function (this: IAnyObject) {
       await homeStore.updateRoomCardList()
+      await sceneStore.updateAllRoomSceneList()
       this.updateLightCount()
       this.autoRefreshDevice()
     }, 3000),
