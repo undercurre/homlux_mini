@@ -168,13 +168,8 @@ ComponentWithComputed({
     },
     // 房间存在可显示的设备
     roomHasDevice(data) {
-      if (data.allRoomDeviceList?.length) {
-        return (
-          (data.allRoomDeviceList as DeviceCard[]).filter((device) => device.roomId === roomStore.currentRoomId)
-            .length > 0
-        )
-      }
-      return false
+      const { devicePageList } = data
+      return devicePageList?.length > 1 || (devicePageList?.length === 1 && devicePageList[0].length > 0)
     },
     title(data) {
       return data.currentRoom?.roomName ?? ''
