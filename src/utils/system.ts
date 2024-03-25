@@ -198,7 +198,7 @@ export function isDevMode() {
 
 export function showNoNetTips() {
   wx.showToast({
-    title: '当前无法连接网络\n请检查网络设置',
+    title: '当前网络状况较差\n请检查网络设置',
     icon: 'none',
     duration: 2500,
   })
