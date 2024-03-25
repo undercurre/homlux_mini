@@ -4,7 +4,7 @@ import pageBehaviors from '../../behaviors/pageBehaviors'
 import { deviceStore, homeBinding, roomBinding } from '../../store/index'
 import { emitter } from '../../utils/index'
 import { StatusType } from './typings'
-import { addGroup, renameGroup, delGroup, updateGroup } from '../../apis/device'
+import { addGroup, renameGroup, delGroup, updateGroup, retryGroup } from '../../apis/device'
 
 let timeoutId: number | null
 
@@ -56,7 +56,14 @@ ComponentWithComputed({
         if (!this.data.groupId) {
           await this.addGroup()
         } else {
-          await this.updateGroup()
+          await updateGroup({
+            applianceGroupDtoList: this.data.deviceList.map((device) => ({
+              deviceId: device.deviceId,
+              deviceType: device.deviceType,
+              proType: device.proType,
+            })),
+            groupId: this.data.groupId,
+          })
         }
 
         wx.createSelectorQuery()
@@ -158,33 +165,31 @@ ComponentWithComputed({
       }
     },
 
-    async updateGroup() {
-      await updateGroup({
-        applianceGroupDtoList: this.data.deviceList.map((device) => ({
-          deviceId: device.deviceId,
-          deviceType: device.deviceType,
-          proType: device.proType,
-        })),
-        groupId: this.data.groupId,
-      })
-    },
+    async retryGroup() {
+      if (!this.data.groupId) {
+        this.addGroup()
+      } else {
+        await retryGroup({
+          applianceGroupDtoList: this.data.deviceList
+            .filter((device) => device.status === 'failed')
+            .map((device) => ({
+              deviceId: device.deviceId,
+              deviceType: device.deviceType,
+              proType: device.proType,
+            })),
+          groupId: this.data.groupId,
+        })
+      }
 
-    retryGroup() {
-      // 重新生成列表并设置状态为进行中
+      // 重新生成列表，未成功转为进行中，并设置状态为进行中
       const deviceList = this.data.deviceList.map((device) => ({
         ...device,
-        status: 'processing',
+        status: device.status === 'failed' ? 'processing' : device.status,
       }))
       this.setData({
         deviceList,
         status: 'processing',
       })
-
-      if (!this.data.groupId) {
-        this.addGroup()
-      } else {
-        this.updateGroup()
-      }
     },
 
     toRename() {

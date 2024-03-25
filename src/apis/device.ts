@@ -838,6 +838,24 @@ export async function updateGroup(
 }
 
 /**
+ * 重试分组
+ * @param applianceGroupDtoList 传要重试的设备
+ */
+export async function retryGroup(
+  data: {
+    applianceGroupDtoList: Device.GroupDTO[]
+    groupId: string
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/scene/groupRetry',
+    data,
+  })
+}
+/**
  * 查询分组详情
  */
 export async function queryGroup(
