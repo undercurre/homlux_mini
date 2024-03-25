@@ -155,16 +155,19 @@ ComponentWithComputed({
         return `${(value / 100) * (maxColorTemp - minColorTemp) + minColorTemp}K`
       }
     },
+    // 房间灯光可控状态
+    hasRoomLightOn(data) {
+      const { devicePageList } = data
+      const flag = devicePageList.some((g) =>
+        g.some((d) => !!(d.proType === PRO_TYPE.light && d.mzgdPropertyDTOList['light'].power)),
+      )
+      return flag
+    },
     // 房间存在可显示的灯具
     roomHasLight(data) {
-      if (data.allRoomDeviceList) {
-        return (
-          (data.allRoomDeviceList as DeviceCard[]).filter(
-            (device) => device.roomId === roomStore.currentRoomId && device.proType === PRO_TYPE.light,
-          ).length > 0
-        )
-      }
-      return false
+      const { devicePageList } = data
+      const flag = devicePageList.some((g) => g.some((d) => !!(d.proType === PRO_TYPE.light)))
+      return flag
     },
     // 房间存在可显示的设备
     roomHasDevice(data) {
@@ -237,14 +240,6 @@ ComponentWithComputed({
       const { deviceFlattenList } = data
       return Math.ceil((deviceFlattenList?.length ?? 4) / 4) * 236
     },
-    // 房间灯光可控状态
-    hasRoomLightOn(data) {
-      const { devicePageList } = data
-      const flag = devicePageList.some((g) =>
-        g.some((d) => !!(d.proType === PRO_TYPE.light && d.mzgdPropertyDTOList['light'].power)),
-      )
-      return flag
-    },
   },
 
   methods: {
@@ -298,7 +293,7 @@ ComponentWithComputed({
         const { eventType, eventData } = e.result
 
         // 过滤非本房间的消息
-        if (eventData.roomId !== roomStore.currentRoomId) {
+        if (eventData.roomId && eventData.roomId !== roomStore.currentRoomId) {
           return
         }
 
@@ -363,7 +358,7 @@ ComponentWithComputed({
             WSEventType.bind_device,
           ].includes(eventType)
         ) {
-          this.reloadDataThrottle(e)
+          this.reloadDeviceListThrottle(e)
         } else if (eventType === WSEventType.room_del && eventData.roomId === roomStore.currentRoomId) {
           // 房间被删除，退出到首页
           await homeStore.updateRoomCardList()
@@ -459,7 +454,7 @@ ComponentWithComputed({
 
     // 只单独更新列表
     async reloadDeviceList() {
-      Logger.log('Only ReloadDeviceList', isConnect())
+      Logger.log('[Only ReloadDeviceList]', isConnect())
       // 未连接网络，所有设备直接设置为离线
       if (!isConnect()) {
         this.updateQueue({ isRefresh: true, onLineStatus: 0 })
