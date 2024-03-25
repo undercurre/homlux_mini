@@ -140,7 +140,7 @@ ComponentWithComputed({
       }
       // 建立BLE外围设备服务端
       this.data._bleServer = await createBleServer()
-      this.start()
+      if (this.data.isNeedConnectBLE) this.start()
     },
     configBtns() {
       if (this.data.devModel == '03') {
