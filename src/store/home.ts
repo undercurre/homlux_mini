@@ -84,7 +84,7 @@ export const homeStore = observable({
       Logger.log('[无本地缓存，或缓存已过期]')
     }
 
-    this.updateHomeInfo({ isInit: true })
+    await this.updateHomeInfo({ isInit: true })
 
     othersStore.setIsInit(true)
     Logger.log('云端数据加载成功, isInit:', othersStore.isInit)
