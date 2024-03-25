@@ -15,7 +15,11 @@
           "pathName": "package-distribution/pages/bind-home/index",
           "query": "deviceId=177021372099879",
           "launchMode": "default",
-          "scene": null
+          "scene": null,
+          "partialCompile": {
+            "enabled": true,
+            "pages": []
+          }
         },
         {
           "name": "package-remoter/fan/index",

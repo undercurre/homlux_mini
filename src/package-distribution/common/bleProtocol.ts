@@ -302,14 +302,18 @@ export class BleClient {
         })
         .catch((err) => err)
 
-      const writeRes = await wx
-        .writeBLECharacteristicValue({
-          deviceId: this.deviceUuid,
-          serviceId: this.serviceId,
-          characteristicId: this.characteristicId,
-          value: buffer,
-        })
-        .catch((err) => err)
+      // 存在writeBLECharacteristicValue调用过程中蓝牙设备断开，导致writeBLECharacteristicValue没有回调，堵塞流程，需要增加超时机制
+      const writeRes = await Promise.race([
+        wx
+          .writeBLECharacteristicValue({
+            deviceId: this.deviceUuid,
+            serviceId: this.serviceId,
+            characteristicId: this.characteristicId,
+            value: buffer,
+          })
+          .catch((err) => err),
+        delay(3000).then(() => '调用writeBLECharacteristicValue超时'),
+      ])
 
       Logger.log(`【${this.mac}】writeBLECharacteristicValue`, writeRes)
 

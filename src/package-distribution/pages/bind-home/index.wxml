@@ -4,7 +4,7 @@
     title="添加设备"
   ></nav-bar>
 
-  <view class="box-border h-1000 grow flex flex-col justify-between pt-100rpx overflow-y-auto overscroll-y-none">
+  <view class="box-border h-1000 grow shrink flex flex-col justify-between pt-100rpx overflow-y-auto overscroll-y-none">
     <tips-box
       text="设备添加成功！"
       icon="{{defaultImgDir}}/success.png"
@@ -12,7 +12,7 @@
       text-style="{{isSwitch && 'margin-top: 24rpx;'}}"
     ></tips-box>
 
-    <view class="grow px-24rpx mt-28rpx">
+    <view class="grow shrink px-24rpx mt-28rpx">
       <edit-device-form
         device-name="{{deviceInfo.deviceName}}"
         room-id="{{deviceInfo.roomId}}"
