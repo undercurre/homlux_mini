@@ -1,4 +1,3 @@
-<!--addDevice//pages/linkDevice/linkDevice.wxml-->
 <view id="meiju">
   <view class="page-container page container">
     <nav-bar

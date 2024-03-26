@@ -319,6 +319,7 @@ export class BleClient {
 
       // 若发送蓝牙数据报错，直接返回
       if (writeRes.errCode !== 0) {
+        clearTimeout(timeId)
         throw writeRes
       } else {
         return replyPromise
