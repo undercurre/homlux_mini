@@ -75,7 +75,8 @@ ComponentWithComputed({
     hourArr,
     curTimePickerIndex: [0],
     pickerIndexTemp: [0],
-    conTimer: null as any
+    conTimer: null as any,
+    isHide: true
   },
   watch: {
     curRemoter(value) {
@@ -117,6 +118,9 @@ ComponentWithComputed({
   },
   methods: {
     goBack() {
+      this.setData({
+        isHide: true
+      })
       wx.navigateBack()
     },
     async onLoad(query: { deviceType: string; deviceModel: string; addr: string }) {
@@ -163,6 +167,16 @@ ComponentWithComputed({
       if (this.data.isBLEConnected) {
         this.data._bleService?.close()
       }
+    },
+    onShow() {
+      this.setData({
+        isHide: false
+      })
+    },
+    onHide() {
+      this.setData({
+        isHide: true
+      })
     },
     start(){
       const timer = setTimeout(() => {
@@ -233,7 +247,7 @@ ComponentWithComputed({
     },
     bluetoothConnectChange(isConnected: boolean) {
       console.log('lmn>>>bluetoothConnectChange::isConnected=', isConnected)
-      if (!isConnected) {
+      if (!isConnected && !this.data.isHide) {
         Toast('蓝牙连接已断开')
       }
       this.setData({
@@ -346,8 +360,15 @@ ComponentWithComputed({
     onBtnListClick(e: any) {
       const index = e.currentTarget.dataset.index
       const list = this.data.btnList
-      if (!list[index].isEnable) return
       const key = list[index].key
+      if (!list[index].isEnable) {
+        if (key === 'NATURN' || key === 'DIR' || key === 'DISPLAY') {
+          Toast('风扇未开启')
+        } else if (key === 'BRI' || key === 'COL') {
+          Toast('灯未开启')
+        }
+        return
+      }
       if (key === 'NATURN' || key === 'DIR' || key === 'DISPLAY') {
         list[index].isOn = !list[index].isOn
         this.setData({

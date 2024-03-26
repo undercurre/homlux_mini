@@ -16,14 +16,14 @@ let isAdvertising = false
 let isAbortableAdvertising = false
 
 // 建立BLE服务
-let _bleServer = null as WechatMiniprogram.BLEPeripheralServer | null
+let _bleServer = null as WechatMiniprogram.BLEPeripheralServer | any
 
 /**
  * @description 建立本地作为蓝牙[低功耗外围设备]的服务端
  */
 export function createBleServer() {
   return new Promise<WechatMiniprogram.BLEPeripheralServer>((resolve, reject) => {
-    if (_bleServer) {
+    if (_bleServer && _bleServer.serverId) {
       Logger.log('重用已有的BLE服务')
       resolve(_bleServer)
       return
@@ -254,19 +254,20 @@ export class BleService {
       })
       .catch((err: WechatMiniprogram.BluetoothError) => err)
 
-    const costTime = Date.now() - startTime
-    Logger.log('lmn>>>', `${this.addr} connectRes `, connectRes, `连接蓝牙时间： ${costTime}ms`)
-
     // hideLoading()
 
     // 判断是否连接蓝牙，0为连接成功，-1为已经连接
     // 避免-1的情况，因为安卓如果重复调用 wx.createBLEConnection 创建连接，有可能导致系统持有同一设备多个连接的实例，导致调用 closeBLEConnection 的时候并不能真正的断开与设备的连接。占用蓝牙资源
     if (connectRes.errCode !== 0 && connectRes.errCode !== -1) {
+      Logger.log('lmn>>>', `${this.addr} 尝试连接蓝牙失败`, connectRes)
       return {
         code: -1,
         error: connectRes,
       }
     }
+
+    const costTime = Date.now() - startTime
+    console.log('lmn>>>', `${this.addr} 连接蓝牙成功`, `耗时:${costTime}ms`)
 
     wx.onBLEConnectionStateChange((res) => {
       if (res.deviceId == this.deviceId && this.connectStateCallback) this.connectStateCallback(res.connected)
