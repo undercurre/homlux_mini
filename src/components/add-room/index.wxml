@@ -50,11 +50,11 @@
           >选择房间图标</text
         >
 
-        <view class="flex flex-row flex-wrap gap-x-60rpx gap-y-40rpx pl-16rpx">
+        <view class="flex flex-row flex-wrap pl-16rpx">
           <view
             wx:for="{{iconList}}"
             wx:key="icon"
-            class="flex justify-center items-center"
+            class="flex justify-center items-center mb-40rpx {{index % 4 !== 3 ? 'mr-60rpx' : ''}}"
             data-icon="{{item.icon}}"
             data-text="{{item.text}}"
             bind:tap="selectIcon"

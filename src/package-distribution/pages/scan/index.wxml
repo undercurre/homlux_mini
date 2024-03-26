@@ -139,9 +139,9 @@
 
     <view class="shrink-0 h-96"></view>
 
-    <view class="flex flex-row gap-46rpx px-24rpx">
+    <view class="flex flex-row px-24rpx">
       <van-button
-        class="grow"
+        class="grow mr-46rpx"
         size="large"
         bind:click="onCloseGwList"
         >取消
