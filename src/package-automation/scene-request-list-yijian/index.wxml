@@ -56,7 +56,7 @@
     </view>
   </scroll-view>
   <view
-    class="flex flex-row gap-x-46rpx px-32rpx"
+    class="flex flex-row justify-between px-32rpx"
     wx:if="{{finishNum === deviceList.length}}"
   >
     <van-button
