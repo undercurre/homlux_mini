@@ -28,7 +28,7 @@
     class="flex-1 w-750rpx"
     id="content"
   >
-    <view class="h-32rpx"></view>
+    <view class="h-32rpx scroll-top"></view>
     <view class="flex flex-row items-center justify-between mx-32rpx">
       <view
         class="h-110rpx w-110rpx relative bg-hex-fff rounded-55rpx"

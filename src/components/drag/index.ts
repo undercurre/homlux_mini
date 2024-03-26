@@ -156,6 +156,7 @@ Component({
         this.setData({
           dragging: false,
           updating: false,
+          wrapStyle: `height: ${this.data.rows * res[0].height}px`,
           baseData,
         })
       })
