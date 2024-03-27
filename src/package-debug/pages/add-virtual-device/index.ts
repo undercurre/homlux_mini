@@ -1,7 +1,22 @@
 import pageBehavior from '../../../behaviors/pageBehaviors'
-import { Logger, emitter } from '../../../utils/index'
+import { Logger, emitter, strUtil, aesUtil } from '../../../utils/index'
 import { queryDeviceOnlineStatus, sendCmdAddSubdevice, bindDevice } from '../../../apis/index'
 import { deviceStore, homeStore } from '../../../store/index'
+
+let udpClient: WechatMiniprogram.UDPSocket | undefined = undefined
+const key = 'homlux@midea5504'
+
+function decodeCmd(message: ArrayBuffer, key: string) {
+  const msg = strUtil.ab2hex(message)
+
+  console.log('decodeCmd', msg)
+
+  const reply = aesUtil.decrypt(msg, key)
+
+  console.log('reply', reply)
+
+  // return JSON.parse(reply) as { topic: string; reqId: string; data: IAnyObject }
+}
 
 Component({
   behaviors: [pageBehavior],
@@ -23,6 +38,7 @@ Component({
 
   lifetimes: {
     ready() {
+      console.log('test--ready')
       if (homeStore.currentHomeId === this.data.homeId) {
         emitter.on('bind_device', async (data) => {
           Logger.log(`收到绑定推送消息：子设备${data.deviceId}`)
@@ -30,17 +46,65 @@ Component({
           await this.requestBindDevice({ deviceId: data.deviceId, deviceName: `子设备${data.deviceId.slice(-4)}` })
         })
       }
+
+      this.initUdpSocket()
     },
     detached() {
+      console.log('test--detached')
       emitter.off('bind_device')
       clearInterval(this.data._timeId)
       homeStore.updateHomeInfo()
+      udpClient?.close()
+    },
+  },
+  pageLifetimes: {
+    show() {},
+    hide() {
+      console.log('test--hide')
+      udpClient?.close()
     },
   },
   /**
    * 组件的方法列表
    */
   methods: {
+    initUdpSocket() {
+      console.log('test--initUdpSocket')
+      udpClient = wx.createUDPSocket()
+
+      const port = udpClient.bind(6366)
+
+      Logger.log('port', port)
+
+      udpClient.onMessage((res) => {
+        Logger.log('udpClient.onMessage', res)
+        const reply = decodeCmd(res.message, key)
+
+        Logger.log('udpClient.reply', reply)
+      })
+
+      udpClient.onError((res) => {
+        Logger.log('udpClient.onError', res)
+      })
+
+      udpClient.onClose((res) => {
+        Logger.log('udpClient.onClose', res)
+      })
+
+      return port
+    },
+    sendUdp() {
+      const reqId = Date.now().toString()
+
+      udpClient.send({
+        address: '255.255.255.255',
+        port: 6266,
+        message: `test-${reqId}`,
+        setBroadcast: true,
+      })
+
+      console.log('sendUdp', reqId)
+    },
     async scanCode() {
       // 允许从相机和相册扫码
       const res = await wx

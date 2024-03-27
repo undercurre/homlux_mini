@@ -317,6 +317,7 @@ export class WifiSocket {
     const port = this.bindUdp()
 
     udpClient.onMessage((res) => {
+      Logger.log('udpClient.onMessage', res)
       this.handleReply(res.message)
     })
 
@@ -333,6 +334,8 @@ export class WifiSocket {
 
   handleReply(message: ArrayBuffer) {
     const reply = decodeCmd(message, this.key)
+
+    Logger.log('udpClient.handleReply', reply)
     const callback = this.cmdCallbackMap[reply.reqId]
 
     if (callback) {
