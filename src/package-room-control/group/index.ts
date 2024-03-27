@@ -158,7 +158,7 @@ ComponentWithComputed({
           deviceType: device.deviceType,
           proType: device.proType,
         })),
-        groupName: this.data.defaultGroupName, // 不经用户选择，自动命名
+        groupName: this.data.groupName, // 不经用户选择，自动命名
         houseId: this.data.currentHomeId,
         roomId: this.data.currentRoom.roomId,
       })
