@@ -96,6 +96,7 @@ ComponentWithComputed({
     isColSliderDisable: false,
     conTimer: null as any,
     isHide: true,
+    tryConnectCnt: 0
   },
   watch: {
     curRemoter(value) {
@@ -174,9 +175,11 @@ ComponentWithComputed({
     start() {
       const timer = setTimeout(() => {
         this.startConnectBLE()
-      }, 1000)
+      }, 2000)
+      const cnt = this.data.tryConnectCnt
       this.setData({
         conTimer: timer,
+        tryConnectCnt: cnt+1
       })
       this.sendBluetoothAd([CMD['DISCONNECT']])
     },
@@ -209,15 +212,16 @@ ComponentWithComputed({
         const res = await this.data._bleService.connect()
         if (res.code == 0) {
           await this.data._bleService.init()
-          // Toast('蓝牙连接成功')
           this.setData({
             isBLEConnected: true,
           })
         } else {
-          // Toast('蓝牙连接失败')
           this.setData({
             isBLEConnected: false,
           })
+          if (this.data.tryConnectCnt < 2) {
+            this.start()
+          }
         }
       }
     },
