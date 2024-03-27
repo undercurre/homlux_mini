@@ -9,7 +9,7 @@ import { storage, checkInputNameIllegal, emitter, showLoading, hideLoading } fro
 
 let timeId: number
 
-const MAX_MOVE_CARDS = 20 // 最多可以移动的设备数（按卡片计数）
+const MAX_MOVE_CARDS = 20 // 最多可以移动和删除的设备数（按卡片计数）
 
 ComponentWithComputed({
   options: {},
@@ -137,7 +137,7 @@ ComponentWithComputed({
         return !SCREEN_PID.includes(device.productId)
       })
 
-      return noScreen && data.editSelectList?.length && data.editSelectList?.length <= 10
+      return noScreen && data.editSelectList?.length && data.editSelectList?.length <= MAX_MOVE_CARDS
     },
     editDeviceNameTitle(data) {
       return data.editProType === PRO_TYPE.switch ? '面板名称' : '设备名称'
@@ -196,7 +196,7 @@ ComponentWithComputed({
     // TODO 处理分组解散的交互提示
     handleDeleteDialog() {
       if (!this.data.canDelete) {
-        Toast('每次可删除不多于10个设备')
+        Toast(`最多同时删除${MAX_MOVE_CARDS}个设备`)
         return
       }
       const hasSwitch = this.data.editSelectList.some((uniId: string) => uniId.includes(':'))
@@ -267,7 +267,7 @@ ComponentWithComputed({
     },
     handleMoveRoomPopup() {
       if (!this.data.canMoveRoom) {
-        Toast(`每次可移动不多于${MAX_MOVE_CARDS}个设备`)
+        Toast(`最多同时移动${MAX_MOVE_CARDS}个设备`)
         return
       }
       const uniId = this.data.editSelectList[0]
