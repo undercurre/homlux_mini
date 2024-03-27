@@ -3,7 +3,7 @@ import { Logger, emitter, strUtil, aesUtil } from '../../../utils/index'
 import { queryDeviceOnlineStatus, sendCmdAddSubdevice, bindDevice } from '../../../apis/index'
 import { deviceStore, homeStore } from '../../../store/index'
 
-let udpClient: WechatMiniprogram.UDPSocket | undefined = undefined
+let udpClient: WechatMiniprogram.UDPSocket = wx.createUDPSocket()
 const key = 'homlux@midea5504'
 
 function decodeCmd(message: ArrayBuffer, key: string) {
@@ -54,14 +54,14 @@ Component({
       emitter.off('bind_device')
       clearInterval(this.data._timeId)
       homeStore.updateHomeInfo()
-      udpClient?.close()
+      udpClient.close()
     },
   },
   pageLifetimes: {
     show() {},
     hide() {
       console.log('test--hide')
-      udpClient?.close()
+      udpClient.close()
     },
   },
   /**
