@@ -14,6 +14,7 @@ ComponentWithComputed({
     isEdit: false, // 是否编辑
     deviceList: [] as Device.DeviceItem[],
     status: 'processing' as StatusType,
+    defaultGroupName: '灯组', // 默认分组名称
     groupName: '',
     groupId: '',
     presetNames: ['筒灯', '射灯', '吊灯', '灯组'],
@@ -43,13 +44,14 @@ ComponentWithComputed({
           ...deviceStore.deviceMap[deviceId],
           status: 'processing',
         }))
+
         console.log(data.lightList, deviceList, deviceStore.deviceMap)
 
         this.setData({
           deviceList,
           groupId: data.groupId,
           isEdit: !!data.groupId,
-          groupName: data.groupName ?? '灯组',
+          groupName: data.groupName ?? this.data.defaultGroupName,
         })
 
         // 开始创建\更新分组
@@ -156,7 +158,7 @@ ComponentWithComputed({
           deviceType: device.deviceType,
           proType: device.proType,
         })),
-        groupName: '灯组',
+        groupName: this.data.defaultGroupName, // 不经用户选择，自动命名
         houseId: this.data.currentHomeId,
         roomId: this.data.currentRoom.roomId,
       })
@@ -239,11 +241,14 @@ ComponentWithComputed({
       wx.navigateBack()
     },
 
+    // 点击完成时，实际上灯组已存在，补充修改灯组名称
     finishBtn() {
-      renameGroup({
-        groupId: this.data.groupId,
-        groupName: this.data.groupName,
-      })
+      if (this.data.defaultGroupName !== this.data.groupName) {
+        renameGroup({
+          groupId: this.data.groupId,
+          groupName: this.data.groupName,
+        })
+      }
       this.endGroup()
     },
   },

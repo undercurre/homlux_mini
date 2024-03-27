@@ -35,6 +35,7 @@ import {
   PRO_TYPE,
   ROOM_CARD_H,
   ROOM_CARD_M,
+  ROOM_CARD_TOP,
   defaultImgDir,
 } from '../../config/index'
 import { allDevicePowerControl, updateRoomSort, updateDefaultHouse, changeUserHouse } from '../../apis/index'
@@ -107,6 +108,7 @@ ComponentWithComputed({
       y: 0,
       index: -1,
     } as PosType,
+    touchClientY: 0,
     scrollTop: 0,
     lightSummary: {} as Record<string, { lightCount: number; lightOnCount: number }>, // 灯总数、亮灯数统计，按房间id
     _scrolledWhenMoving: false, // 拖拽时，被动发生了滚动
@@ -317,7 +319,7 @@ ComponentWithComputed({
           roomPos[room.roomId] = {
             index,
             // 正在拖的卡片，不改变位置
-            y: currentIndex === index ? this.data.roomPos[room.roomId].y : accumulatedY,
+            y: currentIndex === index ? this.data.roomPos[room.roomId].y : accumulatedY + this.data.touchClientY,
           }
           // 若场景列表为空，或正在拖动，则使用 ROOM_CARD_M
           accumulatedY += !room.sceneList.length || isMoving === true ? ROOM_CARD_M : ROOM_CARD_H
@@ -334,6 +336,8 @@ ComponentWithComputed({
           accumulatedY,
         })
       }
+
+      // console.log('[currentIndex]', currentIndex, '[roomPos]', Object.values(roomPos))
     },
 
     acceptShare() {
@@ -611,10 +615,20 @@ ComponentWithComputed({
       const index = this.data.roomPos[rid].index
 
       const diffData = {} as IAnyObject
+      let touchClientY = 0
+      roomStore.roomList
+        .sort((a, b) => this.data.roomPos[a.roomId]?.index - this.data.roomPos[b.roomId]?.index)
+        .forEach((room, _i) => {
+          if (_i < index && room.sceneList.length) {
+            touchClientY += ROOM_CARD_M
+          }
+        })
+
+      diffData.touchClientY = touchClientY
       diffData.isMoving = true
       diffData.placeholder = {
         index,
-        y: getPos(index),
+        y: getPos(index) + this.data.touchClientY,
       }
 
       console.log('[movableTouchStart] diffData: ', diffData)
@@ -631,8 +645,7 @@ ComponentWithComputed({
      * 拖拽时触发的卡片移动效果
      */
     movableChangeThrottle: throttle(function (this: IAnyObject, e: WechatMiniprogram.TouchEvent) {
-      const TOP_HEIGHT = 170
-      const posY = (e.detail.y || e.touches[0]?.clientY) - TOP_HEIGHT + this.data.scrollTop
+      const posY = (e.detail.y || e.touches[0]?.clientY) - ROOM_CARD_TOP + this.data.scrollTop - this.data.touchClientY
       const targetOrder = getIndex(posY)
       if (this.data.placeholder.index === targetOrder) {
         return
@@ -649,7 +662,7 @@ ComponentWithComputed({
       const isForward = oldOrder < targetOrder
       const diffData = {} as IAnyObject
       diffData[`placeholder.index`] = targetOrder
-      diffData[`placeholder.y`] = getPos(targetOrder)
+      diffData[`placeholder.y`] = getPos(targetOrder) + this.data.touchClientY
 
       // 更新联动卡片的位置
       let moveCount = 0
@@ -661,7 +674,7 @@ ComponentWithComputed({
         ) {
           ++moveCount
           const dOrderNum = isForward ? _orderNum - 1 : _orderNum + 1
-          diffData[`roomPos.${room.roomId}.y`] = getPos(dOrderNum)
+          diffData[`roomPos.${room.roomId}.y`] = getPos(dOrderNum) + this.data.touchClientY
           diffData[`roomPos.${room.roomId}.index`] = dOrderNum
 
           // 减少遍历消耗
@@ -674,7 +687,7 @@ ComponentWithComputed({
       // 直接更新被拖拽卡片位置
       if (this.data._scrolledWhenMoving || this.data._system.indexOf('iOS') > -1) {
         const rid = e.currentTarget.dataset.rid
-        diffData[`roomPos.${rid}.y`] = getPos(targetOrder)
+        diffData[`roomPos.${rid}.y`] = getPos(targetOrder) + this.data.touchClientY
       }
 
       // 更新被拖拽卡片的排序num
@@ -693,7 +706,7 @@ ComponentWithComputed({
 
       console.log('[movableChange] diffData:', diffData)
       this.setData(diffData)
-    }, 50),
+    }, 500),
 
     movableTouchMove(e: WechatMiniprogram.TouchEvent) {
       this.movableChangeThrottle(e)
@@ -707,6 +720,7 @@ ComponentWithComputed({
 
       const diffData = {} as IAnyObject
       diffData.isMoving = false
+      diffData.touchClientY = 0
 
       // 修正卡片位置
       diffData[`roomPos.${e.currentTarget.dataset.rid}.y`] = dpos

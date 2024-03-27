@@ -136,7 +136,7 @@ export function isLightOn(device: Device.DeviceItem): boolean {
   }
 
   // 面板 // !! 多开开关的各路开关分别计数
-  const modelName = device.switchInfoDTOList[0]?.switchId
+  const modelName = device?.switchInfoDTOList && device.switchInfoDTOList[0]?.switchId
 
   return !!(
     (
