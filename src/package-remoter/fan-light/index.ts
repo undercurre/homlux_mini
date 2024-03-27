@@ -296,9 +296,9 @@ ComponentWithComputed({
     },
     bluetoothConnectChange(isConnected: boolean) {
       console.log('lmn>>>bluetoothConnectChange::isConnected=', isConnected)
-      if (!isConnected && !this.data.isHide) {
-        Toast('蓝牙连接已断开')
-      }
+      // if (!isConnected && !this.data.isHide) {
+      //   Toast('蓝牙连接已断开')
+      // }
       this.setData({
         isBLEConnected: isConnected,
       })
