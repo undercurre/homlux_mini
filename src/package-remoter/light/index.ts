@@ -1,23 +1,23 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { 
-  // ACTIONSHEET_MAP, 
-  CMD, 
-  // COLORTEMP_RANGE, 
-  FACTORY_ADDR, 
+import {
+  // ACTIONSHEET_MAP,
+  CMD,
+  // COLORTEMP_RANGE,
+  FACTORY_ADDR,
   // FREQUENCY_TIME,
 } from '../../config/remoter'
 import {
-  initBleCapacity, 
-  // storage, 
-  // isDevMode, 
+  initBleCapacity,
+  // storage,
+  // isDevMode,
 } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
-import { 
-  createBleServer, 
-  bleAdvertising, 
-  // bleAdvertisingEnd, 
-  // stopAdvertising, 
-  BleService 
+import {
+  createBleServer,
+  bleAdvertising,
+  // bleAdvertisingEnd,
+  // stopAdvertising,
+  BleService,
 } from '../../utils/remoterUtils'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
@@ -36,20 +36,56 @@ ComponentWithComputed({
     devModel: '',
     devAddr: '',
     btnList: [
-      { key: 'BRIGHT', name: '明亮', isOn: false, isEnable: true,
-        iconOn: '/package-remoter/assets/newUI/brightOn.png', iconOff: '/package-remoter/assets/newUI/birghtOff.png'},
-      { key: 'SOFT', name: '柔和', isOn: false, isEnable: true,
-        iconOn: '/package-remoter/assets/newUI/briOn.png', iconOff: '/package-remoter/assets/newUI/briOff.png'},
-      { key: 'SLEEP', name: '助眠', isOn: false, isEnable: true,
-        iconOn: '/package-remoter/assets/newUI/sleepOn.png', iconOff: '/package-remoter/assets/newUI/sleepOff.png'},
-      { key: 'DELAY', name: '延时关灯', isOn: false, isEnable: true,
-        iconOn: '/package-remoter/assets/newUI/delay2mOn.png', iconOff: '/package-remoter/assets/newUI/delay2mOff.png'}
+      {
+        key: 'BRIGHT',
+        name: '明亮',
+        isOn: false,
+        isEnable: true,
+        iconOn: '/package-remoter/assets/newUI/brightOn.png',
+        iconOff: '/package-remoter/assets/newUI/birghtOff.png',
+      },
+      {
+        key: 'SOFT',
+        name: '柔和',
+        isOn: false,
+        isEnable: true,
+        iconOn: '/package-remoter/assets/newUI/briOn.png',
+        iconOff: '/package-remoter/assets/newUI/briOff.png',
+      },
+      {
+        key: 'SLEEP',
+        name: '助眠',
+        isOn: false,
+        isEnable: true,
+        iconOn: '/package-remoter/assets/newUI/sleepOn.png',
+        iconOff: '/package-remoter/assets/newUI/sleepOff.png',
+      },
+      {
+        key: 'DELAY',
+        name: '延时关灯',
+        isOn: false,
+        isEnable: true,
+        iconOn: '/package-remoter/assets/newUI/delay2mOn.png',
+        iconOff: '/package-remoter/assets/newUI/delay2mOff.png',
+      },
     ],
     bottomList: [
-      { key: 'POWER', name: '开灯', isOn: false, isEnable: true,
-        iconOn: '/package-remoter/assets/newUI/powerOn.png', iconOff: '/package-remoter/assets/newUI/powerOff.png'},
-      { key: 'NIGHT', name: '夜灯', isOn: false, isEnable: true,
-        iconOn: '/package-remoter/assets/newUI/nightOn.png', iconOff: '/package-remoter/assets/newUI/nightOff.png'}
+      {
+        key: 'POWER',
+        name: '开灯',
+        isOn: false,
+        isEnable: true,
+        iconOn: '/package-remoter/assets/newUI/powerOn.png',
+        iconOff: '/package-remoter/assets/newUI/powerOff.png',
+      },
+      {
+        key: 'NIGHT',
+        name: '夜灯',
+        isOn: false,
+        isEnable: true,
+        iconOn: '/package-remoter/assets/newUI/nightOn.png',
+        iconOff: '/package-remoter/assets/newUI/nightOff.png',
+      },
     ],
     curTabIndex: 0,
     isBriDraging: false,
@@ -58,7 +94,8 @@ ComponentWithComputed({
     curColorTempPercent: 1,
     isBriSliderDisable: false,
     isColSliderDisable: false,
-    conTimer: null as any
+    conTimer: null as any,
+    isHide: true,
   },
   watch: {
     curRemoter(value) {
@@ -66,7 +103,7 @@ ComponentWithComputed({
       const temp = this.data.devStatus
       Object.assign(temp, value.deviceAttr)
       this.setData({
-        devStatus: temp
+        devStatus: temp,
       })
       console.log('lmn>>>rece AD status=', JSON.stringify(temp))
       this.updateView()
@@ -87,10 +124,13 @@ ComponentWithComputed({
         if (data.curBrightnessPercent > 12) return '#ffffff'
         else return '#7C9DF8'
       }
-    }
+    },
   },
   methods: {
     goBack() {
+      this.setData({
+        isHide: true,
+      })
       wx.navigateBack()
     },
     async onLoad(query: { deviceType: string; deviceModel: string; addr: string }) {
@@ -103,7 +143,7 @@ ComponentWithComputed({
         devModel: deviceModel,
         devAddr: addr,
         isNeedConnectBLE: remoterStore.curRemoter.version >= 2,
-        devStatus: remoterStore.curRemoter.deviceAttr || {}
+        devStatus: remoterStore.curRemoter.deviceAttr || {},
       })
       this.updateView()
 
@@ -121,12 +161,22 @@ ComponentWithComputed({
         this.data._bleService?.close()
       }
     },
-    start(){
+    onShow() {
+      this.setData({
+        isHide: false,
+      })
+    },
+    onHide() {
+      this.setData({
+        isHide: true,
+      })
+    },
+    start() {
       const timer = setTimeout(() => {
         this.startConnectBLE()
-      }, 1000);
+      }, 1000)
       this.setData({
-        conTimer: timer
+        conTimer: timer,
       })
       this.sendBluetoothAd([CMD['DISCONNECT']])
     },
@@ -141,7 +191,7 @@ ComponentWithComputed({
         addr,
         payload,
         isFactory: this.data.isFactoryMode,
-        debug: false
+        debug: false,
       })
     },
     async startConnectBLE() {
@@ -161,17 +211,18 @@ ComponentWithComputed({
           await this.data._bleService.init()
           // Toast('蓝牙连接成功')
           this.setData({
-            isBLEConnected: true
+            isBLEConnected: true,
           })
         } else {
           // Toast('蓝牙连接失败')
           this.setData({
-            isBLEConnected: false
+            isBLEConnected: false,
           })
         }
       }
     },
-    sendBluetoothCMD(paramsArr?: number[]) { // [3, 4, 5]
+    sendBluetoothCMD(paramsArr?: number[]) {
+      // [3, 4, 5]
       if (!paramsArr || paramsArr.length == 0) return
       if (this.data.isBLEConnected) {
         const payload = remoterProtocol.generalCmdString(paramsArr)
@@ -184,17 +235,17 @@ ComponentWithComputed({
       const status = remoterProtocol.parsePayload(data.slice(2), this.data.devType, this.data.devModel)
       console.log('lmn>>>receiveBluetoothData::status=', JSON.stringify(status))
       this.setData({
-        devStatus: status
+        devStatus: status,
       })
       this.updateView()
     },
     bluetoothConnectChange(isConnected: boolean) {
       console.log('lmn>>>bluetoothConnectChange::isConnected=', isConnected)
-      if (!isConnected) {
+      if (!isConnected && !this.data.isHide) {
         Toast('蓝牙连接已断开')
       }
       this.setData({
-        isBLEConnected: isConnected
+        isBLEConnected: isConnected,
       })
       this.updateViewEn()
     },
@@ -236,7 +287,7 @@ ComponentWithComputed({
         btnList: btns,
         bottomList: bottom,
         curBrightnessPercent: bri,
-        curColorTempPercent: col
+        curColorTempPercent: col,
       })
       this.updateViewEn()
     },
@@ -250,25 +301,28 @@ ComponentWithComputed({
       this.setData({
         btnList: btns,
         isBriSliderDisable: isLightDisable,
-        isColSliderDisable: isLightDisable
+        isColSliderDisable: isLightDisable,
       })
     },
     onBtnListClick(e: any) {
       const index = e.currentTarget.dataset.index
       const list = this.data.btnList
-      if (!list[index].isEnable) return
+      if (!list[index].isEnable) {
+        Toast('灯未开启')
+        return
+      }
       const key = list[index].key
       list[index].isOn = !list[index].isOn
       this.setData({
-        btnList: list
+        btnList: list,
       })
       if (!this.data.isBLEConnected || key === 'BRIGHT' || key === 'SOFT') {
         setTimeout(() => {
           list[index].isOn = false
           this.setData({
-            btnList: list
+            btnList: list,
           })
-        }, 300);
+        }, 300)
       }
       if (key === 'BRIGHT') {
         this.sendBluetoothCMD([CMD['LIGHT_SCENE_MIX'], 255, 255])
@@ -291,15 +345,15 @@ ComponentWithComputed({
       if (!list[index].isEnable) return
       list[index].isOn = !list[index].isOn
       this.setData({
-        bottomList: list
+        bottomList: list,
       })
       if (!this.data.isBLEConnected) {
         setTimeout(() => {
           list[index].isOn = false
           this.setData({
-            bottomList: list
+            bottomList: list,
           })
-        }, 300);
+        }, 300)
       }
       if (list[index].key == 'POWER') {
         this.sendBluetoothCMD([CMD['LIGHT_LAMP']])
@@ -310,38 +364,38 @@ ComponentWithComputed({
     onTabClick(e: any) {
       const index = e.detail.index
       this.setData({
-        curTabIndex: index
+        curTabIndex: index,
       })
     },
     onBriSliderDrag(e: any) {
       const value = e.detail.value
       this.setData({
         isBriDraging: true,
-        briDragTemp: 101 - value
+        briDragTemp: 101 - value,
       })
     },
     onBriSliderChange(e: any) {
       const value = e.detail
       this.setData({
         curBrightnessPercent: 101 - value,
-        isBriDraging: false
+        isBriDraging: false,
       })
       this.sendBluetoothCMD([CMD['LIGHT_BRIGHT'], this.percent2Rang(this.data.curBrightnessPercent)])
     },
     onColSliderChange(e: any) {
       const value = e.detail
       this.setData({
-        curColorTempPercent: 101 - value
+        curColorTempPercent: 101 - value,
       })
       this.sendBluetoothCMD([CMD['LIGHT_COLOR_TEMP'], this.percent2Rang(this.data.curColorTempPercent)])
     },
     percent2Rang(percent: number) {
       const value = percent > 100 ? 100 : percent < 0 ? 0 : percent
-      return Math.round(value / 100 * 255)
+      return Math.round((value / 100) * 255)
     },
     rang2Percent(rang: number) {
       const value = rang > 255 ? 255 : rang < 0 ? 0 : rang
-      return Math.round(value / 255 * 100)
-    }
-  }
+      return Math.round((value / 255) * 100)
+    },
+  },
 })

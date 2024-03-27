@@ -1,23 +1,23 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { 
+import {
   // ACTIONSHEET_MAP,
   CMD,
   // COLORTEMP_RANGE,
   FACTORY_ADDR,
   // FREQUENCY_TIME
 } from '../../config/remoter'
-import { 
-  initBleCapacity, 
-  // storage, 
-  // isDevMode, 
+import {
+  initBleCapacity,
+  // storage,
+  // isDevMode,
 } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
-import { 
+import {
   createBleServer,
   bleAdvertising,
   // bleAdvertisingEnd,
   // stopAdvertising,
-  BleService 
+  BleService,
 } from '../../utils/remoterUtils'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
@@ -45,27 +45,75 @@ ComponentWithComputed({
       max: 6,
       step: 1,
       value: 1,
-      disable: false
+      disable: false,
     },
     btnList: [
-      { key: 'NATURN', name: '自然风', isOn: false, isEnable: true,
-        iconOn: '/package-remoter/assets/newUI/natureOn.png', iconOff: '/package-remoter/assets/newUI/natureOff.png'},
-      { key: 'BRI', name: '亮度', isOn: false, isEnable: true,
-        iconOn: '/package-remoter/assets/newUI/briOn.png', iconOff: '/package-remoter/assets/newUI/briOff.png'},
-      { key: 'COL', name: '色温', isOn: false, isEnable: true,
-        iconOn: '/package-remoter/assets/newUI/colorOn.png', iconOff: '/package-remoter/assets/newUI/colorOff.png'},
-      { key: 'TIMER', name: '定时', isOn: false, isEnable: true,
-        iconOn: '/package-remoter/assets/newUI/timerOn.png', iconOff: '/package-remoter/assets/newUI/timerOff.png'},
-      { key: 'DIR', name: '反转', isOn: false, isEnable: true,
-        iconOn: '/package-remoter/assets/newUI/dirOn.png', iconOff: '/package-remoter/assets/newUI/dirOff.png'},
-      { key: 'DISPLAY', name: '屏显', isOn: false, isEnable: true,
-        iconOn: '/package-remoter/assets/newUI/displayOn.png', iconOff: '/package-remoter/assets/newUI/displayOff.png'}
+      {
+        key: 'NATURN',
+        name: '自然风',
+        isOn: false,
+        isEnable: true,
+        iconOn: '/package-remoter/assets/newUI/natureOn.png',
+        iconOff: '/package-remoter/assets/newUI/natureOff.png',
+      },
+      {
+        key: 'BRI',
+        name: '亮度',
+        isOn: false,
+        isEnable: true,
+        iconOn: '/package-remoter/assets/newUI/briOn.png',
+        iconOff: '/package-remoter/assets/newUI/briOff.png',
+      },
+      {
+        key: 'COL',
+        name: '色温',
+        isOn: false,
+        isEnable: true,
+        iconOn: '/package-remoter/assets/newUI/colorOn.png',
+        iconOff: '/package-remoter/assets/newUI/colorOff.png',
+      },
+      {
+        key: 'TIMER',
+        name: '定时',
+        isOn: false,
+        isEnable: true,
+        iconOn: '/package-remoter/assets/newUI/timerOn.png',
+        iconOff: '/package-remoter/assets/newUI/timerOff.png',
+      },
+      {
+        key: 'DIR',
+        name: '反转',
+        isOn: false,
+        isEnable: true,
+        iconOn: '/package-remoter/assets/newUI/dirOn.png',
+        iconOff: '/package-remoter/assets/newUI/dirOff.png',
+      },
+      {
+        key: 'DISPLAY',
+        name: '屏显',
+        isOn: false,
+        isEnable: true,
+        iconOn: '/package-remoter/assets/newUI/displayOn.png',
+        iconOff: '/package-remoter/assets/newUI/displayOff.png',
+      },
     ],
     bottomList: [
-      { key: 'POWER', name: '风扇', isOn: false, isEnable: true,
-        iconOn: '/package-remoter/assets/newUI/powerOn.png', iconOff: '/package-remoter/assets/newUI/powerOff.png'},
-      { key: 'LIGHT', name: '照明', isOn: false, isEnable: true,
-        iconOn: '/package-remoter/assets/newUI/lightOn.png', iconOff: '/package-remoter/assets/newUI/lightOff.png'}
+      {
+        key: 'POWER',
+        name: '风扇',
+        isOn: false,
+        isEnable: true,
+        iconOn: '/package-remoter/assets/newUI/powerOn.png',
+        iconOff: '/package-remoter/assets/newUI/powerOff.png',
+      },
+      {
+        key: 'LIGHT',
+        name: '照明',
+        isOn: false,
+        isEnable: true,
+        iconOn: '/package-remoter/assets/newUI/lightOn.png',
+        iconOff: '/package-remoter/assets/newUI/lightOff.png',
+      },
     ],
     isShowPopup: false,
     popupIndex: 0,
@@ -75,7 +123,8 @@ ComponentWithComputed({
     hourArr,
     curTimePickerIndex: [0],
     pickerIndexTemp: [0],
-    conTimer: null as any
+    conTimer: null as any,
+    isHide: true,
   },
   watch: {
     curRemoter(value) {
@@ -83,7 +132,7 @@ ComponentWithComputed({
       const temp = this.data.devStatus
       Object.assign(temp, value.deviceAttr)
       this.setData({
-        devStatus: temp
+        devStatus: temp,
       })
       console.log('lmn>>>rece AD status=', JSON.stringify(temp))
       this.updateView()
@@ -97,7 +146,7 @@ ComponentWithComputed({
       return `风速 ｜ ${data.gearSlicerConfig.value}档`
     },
     indArr(data) {
-      const arr:number[] = []
+      const arr: number[] = []
       for (let i = data.gearSlicerConfig.min; i <= data.gearSlicerConfig.max; i++) {
         arr.push(i)
       }
@@ -109,14 +158,17 @@ ComponentWithComputed({
       } else if (data.btnList[data.popupIndex].key === 'COL') {
         const arr = [2700, 6500]
         const rang = arr[1] - arr[0]
-        const result = Math.round(data.curColorTempPercent / 100 * rang) + arr[0]
+        const result = Math.round((data.curColorTempPercent / 100) * rang) + arr[0]
         return `色温 | ${result}K`
       }
       return ''
-    }
+    },
   },
   methods: {
     goBack() {
+      this.setData({
+        isHide: true,
+      })
       wx.navigateBack()
     },
     async onLoad(query: { deviceType: string; deviceModel: string; addr: string }) {
@@ -129,7 +181,7 @@ ComponentWithComputed({
         devModel: deviceModel,
         devAddr: addr,
         isNeedConnectBLE: remoterStore.curRemoter.version >= 2,
-        devStatus: remoterStore.curRemoter.deviceAttr || {}
+        devStatus: remoterStore.curRemoter.deviceAttr || {},
       })
       this.configBtns()
       this.updateView()
@@ -154,7 +206,7 @@ ComponentWithComputed({
           }
         }
         this.setData({
-          btnList: temp
+          btnList: temp,
         })
       }
     },
@@ -164,12 +216,22 @@ ComponentWithComputed({
         this.data._bleService?.close()
       }
     },
-    start(){
+    onShow() {
+      this.setData({
+        isHide: false,
+      })
+    },
+    onHide() {
+      this.setData({
+        isHide: true,
+      })
+    },
+    start() {
       const timer = setTimeout(() => {
         this.startConnectBLE()
-      }, 1000);
+      }, 1000)
       this.setData({
-        conTimer: timer
+        conTimer: timer,
       })
       this.sendBluetoothAd([CMD['DISCONNECT']])
     },
@@ -184,7 +246,7 @@ ComponentWithComputed({
         addr,
         payload,
         isFactory: this.data.isFactoryMode,
-        debug: false
+        debug: false,
       })
     },
     async startConnectBLE() {
@@ -204,17 +266,18 @@ ComponentWithComputed({
           await this.data._bleService.init()
           // Toast('蓝牙连接成功')
           this.setData({
-            isBLEConnected: true
+            isBLEConnected: true,
           })
         } else {
           // Toast('蓝牙连接失败')
           this.setData({
-            isBLEConnected: false
+            isBLEConnected: false,
           })
         }
       }
     },
-    sendBluetoothCMD(paramsArr?: number[]) { // [3, 4, 5]
+    sendBluetoothCMD(paramsArr?: number[]) {
+      // [3, 4, 5]
       if (!paramsArr || paramsArr.length == 0) return
       if (this.data.isBLEConnected) {
         const payload = remoterProtocol.generalCmdString(paramsArr)
@@ -227,17 +290,17 @@ ComponentWithComputed({
       const status = remoterProtocol.parsePayload(data.slice(2), this.data.devType, this.data.devModel)
       console.log('lmn>>>receiveBluetoothData::status=', JSON.stringify(status))
       this.setData({
-        devStatus: status
+        devStatus: status,
       })
       this.updateView()
     },
     bluetoothConnectChange(isConnected: boolean) {
       console.log('lmn>>>bluetoothConnectChange::isConnected=', isConnected)
-      if (!isConnected) {
+      if (!isConnected && !this.data.isHide) {
         Toast('蓝牙连接已断开')
       }
       this.setData({
-        isBLEConnected: isConnected
+        isBLEConnected: isConnected,
       })
       this.updateViewEn()
     },
@@ -262,7 +325,7 @@ ComponentWithComputed({
         col = this.rang2Percent(status.LIGHT_COLOR_TEMP)
       }
       if (status.SPEED != undefined) {
-        const val = status.SPEED  + 1
+        const val = status.SPEED + 1
         gearConfig.value = val > 6 ? 6 : val < 1 ? 1 : val
       }
       if (status.FAN_NATURE != undefined) {
@@ -307,7 +370,7 @@ ComponentWithComputed({
         curBrightnessPercent: bri,
         curColorTempPercent: col,
         gearSlicerConfig: gearConfig,
-        curTimePickerIndex: timeIndex
+        curTimePickerIndex: timeIndex,
       })
       this.updateViewEn()
     },
@@ -327,7 +390,7 @@ ComponentWithComputed({
       }
       this.setData({
         gearSlicerConfig: gearConfig,
-        btnList: btns
+        btnList: btns,
       })
     },
     onSliderChange(e: any) {
@@ -335,7 +398,7 @@ ComponentWithComputed({
       const config = this.data.gearSlicerConfig
       config.value = value
       this.setData({
-        gearSlicerConfig: config
+        gearSlicerConfig: config,
       })
       const key = `FAN_SPEED_${value}`
       const para = [CMD[key]]
@@ -346,20 +409,27 @@ ComponentWithComputed({
     onBtnListClick(e: any) {
       const index = e.currentTarget.dataset.index
       const list = this.data.btnList
-      if (!list[index].isEnable) return
       const key = list[index].key
+      if (!list[index].isEnable) {
+        if (key === 'NATURN' || key === 'DIR' || key === 'DISPLAY') {
+          Toast('风扇未开启')
+        } else if (key === 'BRI' || key === 'COL') {
+          Toast('灯未开启')
+        }
+        return
+      }
       if (key === 'NATURN' || key === 'DIR' || key === 'DISPLAY') {
         list[index].isOn = !list[index].isOn
         this.setData({
-          btnList: list
+          btnList: list,
         })
         if (!this.data.isBLEConnected) {
           setTimeout(() => {
             list[index].isOn = false
             this.setData({
-              btnList: list
+              btnList: list,
             })
-          }, 300);
+          }, 300)
         }
       }
       if (key === 'NATURN') {
@@ -371,12 +441,12 @@ ComponentWithComputed({
       } else if (key === 'BRI' || key === 'COL') {
         this.setData({
           isShowPopup: true,
-          popupIndex: index
+          popupIndex: index,
         })
       } else if (key === 'TIMER') {
         this.setData({
           isShowTimePicker: true,
-          popupIndex: index
+          popupIndex: index,
         })
       }
     },
@@ -391,15 +461,15 @@ ComponentWithComputed({
       if (!list[index].isEnable) return
       list[index].isOn = !list[index].isOn
       this.setData({
-        bottomList: list
+        bottomList: list,
       })
       if (!this.data.isBLEConnected) {
         setTimeout(() => {
           list[index].isOn = false
           this.setData({
-            bottomList: list
+            bottomList: list,
           })
-        }, 300);
+        }, 300)
       }
       if (list[index].key == 'POWER') {
         this.sendBluetoothCMD([CMD['FAN_SWITCH']])
@@ -410,20 +480,20 @@ ComponentWithComputed({
     closePopup() {
       this.setData({
         isShowPopup: false,
-        isShowTimePicker: false
+        isShowTimePicker: false,
       })
     },
     onBrightnessSliderEnd(e: any) {
       const value = e.detail
       this.setData({
-        curBrightnessPercent: value
+        curBrightnessPercent: value,
       })
       this.sendBluetoothCMD([CMD['LIGHT_BRIGHT'], this.percent2Rang(this.data.curBrightnessPercent)])
     },
     onColorSliderEnd(e: any) {
       const value = e.detail
       this.setData({
-        curColorTempPercent: value
+        curColorTempPercent: value,
       })
       this.sendBluetoothCMD([CMD['LIGHT_COLOR_TEMP'], this.percent2Rang(this.data.curColorTempPercent)])
     },
@@ -441,23 +511,23 @@ ComponentWithComputed({
     onTimePickChange(e: any) {
       const indexs = e.detail.value
       this.setData({
-        pickerIndexTemp: indexs
+        pickerIndexTemp: indexs,
       })
     },
     onTimePickEnd() {
       setTimeout(() => {
         this.setData({
-          curTimePickerIndex: this.data.pickerIndexTemp
+          curTimePickerIndex: this.data.pickerIndexTemp,
         })
       }, 100)
     },
     percent2Rang(percent: number) {
       const value = percent > 100 ? 100 : percent < 0 ? 0 : percent
-      return Math.round(value / 100 * 255)
+      return Math.round((value / 100) * 255)
     },
     rang2Percent(rang: number) {
       const value = rang > 255 ? 255 : rang < 0 ? 0 : rang
-      return Math.round(value / 255 * 100)
-    }
-  }
+      return Math.round((value / 255) * 100)
+    },
+  },
 })
