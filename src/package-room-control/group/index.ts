@@ -51,7 +51,7 @@ ComponentWithComputed({
           deviceList,
           groupId: data.groupId,
           isEdit: !!data.groupId,
-          groupName: data.groupName ?? this.data.defaultGroupName,
+          groupName: data.groupName || this.data.defaultGroupName,
         })
 
         // 开始创建\更新分组
