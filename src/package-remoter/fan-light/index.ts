@@ -74,7 +74,7 @@ ComponentWithComputed({
       },
       {
         key: 'TIMER',
-        name: '定时',
+        name: '风扇定时',
         isOn: false,
         isEnable: true,
         iconOn: '/package-remoter/assets/newUI/timerOn.png',
@@ -91,7 +91,7 @@ ComponentWithComputed({
       {
         key: 'DISPLAY',
         name: '屏显',
-        isOn: false,
+        isOn: true,
         isEnable: true,
         iconOn: '/package-remoter/assets/newUI/displayOn.png',
         iconOff: '/package-remoter/assets/newUI/displayOff.png',
@@ -124,7 +124,6 @@ ComponentWithComputed({
     curTimePickerIndex: [0],
     pickerIndexTemp: [0],
     conTimer: null as any,
-    isHide: true,
     tryConnectCnt: 0
   },
   watch: {
@@ -167,9 +166,6 @@ ComponentWithComputed({
   },
   methods: {
     goBack() {
-      this.setData({
-        isHide: true,
-      })
       wx.navigateBack()
     },
     async onLoad(query: { deviceType: string; deviceModel: string; addr: string }) {
@@ -200,7 +196,7 @@ ComponentWithComputed({
         const btns = this.data.btnList
         const temp = []
         for (let i = 0; i < btns.length; i++) {
-          if (btns[i].key == 'BRI' || btns[i].key == 'COL') {
+          if (btns[i].key == 'BRI' || btns[i].key == 'COL' || btns[i].key == 'DISPLAY') {
             continue
           } else {
             temp.push(btns[i])
@@ -216,16 +212,6 @@ ComponentWithComputed({
       if (this.data.isBLEConnected) {
         this.data._bleService?.close()
       }
-    },
-    onShow() {
-      this.setData({
-        isHide: false,
-      })
-    },
-    onHide() {
-      this.setData({
-        isHide: true,
-      })
     },
     start() {
       const timer = setTimeout(() => {
@@ -270,6 +256,7 @@ ComponentWithComputed({
           this.setData({
             isBLEConnected: true,
           })
+          this.updateViewEn()
         } else {
           this.setData({
             isBLEConnected: false,
@@ -300,9 +287,6 @@ ComponentWithComputed({
     },
     bluetoothConnectChange(isConnected: boolean) {
       console.log('lmn>>>bluetoothConnectChange::isConnected=', isConnected)
-      // if (!isConnected && !this.data.isHide) {
-      //   Toast('蓝牙连接已断开')
-      // }
       this.setData({
         isBLEConnected: isConnected,
       })
@@ -352,6 +336,7 @@ ComponentWithComputed({
         for (let i = 0; i < btns.length; i++) {
           if (btns[i].key === 'DISPLAY') {
             btns[i].isOn = status.CLOSE_DISPLAY
+            btns[i].isEnable = status.CLOSE_DISPLAY
             break
           }
         }
@@ -360,6 +345,13 @@ ComponentWithComputed({
         for (let i = 0; i < btns.length; i++) {
           if (btns[i].key === 'TIMER') {
             btns[i].isOn = status.DELAY_OFF > 0
+            if (status.DELAY_OFF > 0) {
+              const hour = Math.floor(status.DELAY_OFF / 60)
+              const min = status.DELAY_OFF % 60
+              btns[i].name = `剩余${hour > 10 ? '' : '0'}${hour}:${min > 10 ? '' : '0'}${min}`
+            } else {
+              btns[i].name = '风扇定时'
+            }
             break
           }
         }
@@ -390,6 +382,8 @@ ComponentWithComputed({
           btns[i].isEnable = !isFanDisable
         } else if (btns[i].key === 'BRI' || btns[i].key === 'COL') {
           btns[i].isEnable = !isLightDisable
+        } else if (btns[i].key === 'DISPLAY') {
+          if (!this.data.isBLEConnected) btns[i].isEnable = true
         }
       }
       this.setData({
@@ -415,10 +409,12 @@ ComponentWithComputed({
       const list = this.data.btnList
       const key = list[index].key
       if (!list[index].isEnable) {
-        if (key === 'NATURN' || key === 'DIR' || key === 'DISPLAY') {
+        if (key === 'NATURN' || key === 'DIR') {
           Toast('风扇未开启')
         } else if (key === 'BRI' || key === 'COL') {
           Toast('灯未开启')
+        } else if (key === 'DISPLAY') {
+          Toast('灯开启后，屏显将自动开启')
         }
         return
       }

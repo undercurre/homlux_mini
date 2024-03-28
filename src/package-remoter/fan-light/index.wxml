@@ -41,8 +41,9 @@
 
   <view class="btn-block">
     <mx-scroll-list scroll-x="true" indicatorColor="#D6DCE4" indicatorActiveColor="#A5A8AF" indicator="{{btnList.length > 4}}">
-      <view style="width: {{btnList.length * 170}}rpx; display: flex; flex-direction: row; margin-left: 35rpx;">
+      <view style="width: {{btnList.length >= 4 ? btnList.length * 170 : 715}}rpx; display: flex; flex-direction: row; margin-left: 35rpx;">
         <view class="btn-item flex-center"
+          style="margin-left: {{btnList.length >= 4 ? 0 : (700 - btnList.length * 170) / btnList.length / 2}}rpx; margin-right: {{btnList.length >= 4 ? 0 : (700 - btnList.length * 170) / btnList.length / 2}}rpx;"
           wx:for="{{btnList}}" wx:key="key"
           data-index="{{index}}"
           bind:tap="onBtnListClick">

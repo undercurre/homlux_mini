@@ -44,7 +44,8 @@
     </mx-tab>
     <mx-tab title="色温">
       <view class="tab-page-r flex-center" style="height: 680rpx;">
-        <view class="v-slider-bor" style="opacity: {{isBriSliderDisable ? 0.6 : 1}};">
+        <view class="v-slider-bor" 
+          style="opacity: {{isBriSliderDisable ? 0.6 : 1}};">
           <van-slider
             value="{{101 - curColorTempPercent}}"
             min="1"
@@ -52,9 +53,9 @@
             step="1"
             vertical
             active-color="transparent"
-            inactive-color="linear-gradient(0deg, #FCE9B1 0%, #FBF0D2 33%, #D5DAEC 66%, #7C9DF8 100%)"
+            inactive-color="transparent"
             bar-height="200rpx"
-            custom-class="slider-cus"
+            custom-class="slider-cus-2"
             use-button-slot="true"
             disabled="{{isColSliderDisable}}"
             bind:change="onColSliderChange">

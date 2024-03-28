@@ -95,7 +95,6 @@ ComponentWithComputed({
     isBriSliderDisable: false,
     isColSliderDisable: false,
     conTimer: null as any,
-    isHide: true,
     tryConnectCnt: 0
   },
   watch: {
@@ -129,9 +128,6 @@ ComponentWithComputed({
   },
   methods: {
     goBack() {
-      this.setData({
-        isHide: true,
-      })
       wx.navigateBack()
     },
     async onLoad(query: { deviceType: string; deviceModel: string; addr: string }) {
@@ -161,16 +157,6 @@ ComponentWithComputed({
       if (this.data.isBLEConnected) {
         this.data._bleService?.close()
       }
-    },
-    onShow() {
-      this.setData({
-        isHide: false,
-      })
-    },
-    onHide() {
-      this.setData({
-        isHide: true,
-      })
     },
     start() {
       const timer = setTimeout(() => {
@@ -215,6 +201,7 @@ ComponentWithComputed({
           this.setData({
             isBLEConnected: true,
           })
+          this.updateViewEn()
         } else {
           this.setData({
             isBLEConnected: false,
@@ -245,9 +232,6 @@ ComponentWithComputed({
     },
     bluetoothConnectChange(isConnected: boolean) {
       console.log('lmn>>>bluetoothConnectChange::isConnected=', isConnected)
-      // if (!isConnected && !this.data.isHide) {
-      //   Toast('蓝牙连接已断开')
-      // }
       this.setData({
         isBLEConnected: isConnected,
       })
@@ -267,6 +251,13 @@ ComponentWithComputed({
       }
       if (status.LIGHT_BRIGHT != undefined) {
         bri = this.rang2Percent(status.LIGHT_BRIGHT)
+        if (status.LIGHT_BRIGHT <= 0) {
+          bri = 0
+        } else if (status.LIGHT_BRIGHT > 255) {
+          bri = 100
+        } else {
+          bri = Math.floor(((status.LIGHT_BRIGHT - 1) * 99) / 254) + 1
+        }
       }
       if (status.LIGHT_COLOR_TEMP != undefined) {
         col = this.rang2Percent(status.LIGHT_COLOR_TEMP)
@@ -362,7 +353,7 @@ ComponentWithComputed({
       if (list[index].key == 'POWER') {
         this.sendBluetoothCMD([CMD['LIGHT_LAMP']])
       } else if (list[index].key == 'NIGHT') {
-        this.sendBluetoothCMD([CMD['LIGHT_SCENE_MIX'], 1, 0])
+        this.sendBluetoothCMD([CMD['LIGHT_NIGHT_LAMP']])
       }
     },
     onTabClick(e: any) {
