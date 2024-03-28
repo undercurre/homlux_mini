@@ -409,7 +409,7 @@ ComponentWithComputed({
       const list = this.data.btnList
       const key = list[index].key
       if (!list[index].isEnable) {
-        if (key === 'NATURN' || key === 'DIR') {
+        if (key === 'NATURN' || key === 'DIR' || key === 'TIMER') {
           Toast('风扇未开启')
         } else if (key === 'BRI' || key === 'COL') {
           Toast('灯未开启')
