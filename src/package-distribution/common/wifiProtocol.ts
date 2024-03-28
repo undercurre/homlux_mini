@@ -215,11 +215,13 @@ export class WifiSocket {
       return { success: true, msg: '已知IP' }
     }
 
-    await this.sendCmdForDeviceIp()
-
     // 获取IP重试，存在第一次获取超时的情况，尤其安卓端比较明显
-    if (!this.deviceInfo.ip) {
-      await this.sendCmdForDeviceIp()
+    for (let i = 0; i < 4; i++) {
+      if (!this.deviceInfo.ip) {
+        await this.sendCmdForDeviceIp()
+      } else {
+        break
+      }
     }
 
     // udp获取ip失败的情况，从本机Ip推断网关IP
