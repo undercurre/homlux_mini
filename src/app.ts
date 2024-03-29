@@ -58,9 +58,9 @@ App<IAppOption>({
       try {
         userStore.setIsLogin(true)
         const start = Date.now()
-        console.log('开始时间', start / 1000)
+        Logger.trace('[数据初始化开始]')
         await Promise.all([userStore.updateUserInfo(), homeStore.homeInit(), sceneStore.updateAllRoomSceneList()])
-        console.log('加载完成时间', Date.now() / 1000, '用时', (Date.now() - start) / 1000 + 's')
+        Logger.trace('[数据初始化完成] 耗时', `${Date.now() - start}ms`)
       } catch (e) {
         Logger.error('appOnLaunch-err:', e)
       }

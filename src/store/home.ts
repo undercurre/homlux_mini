@@ -89,7 +89,6 @@ export const homeStore = observable({
     await this.updateHomeInfo({ isInit: true })
 
     othersStore.setIsInit(true)
-    Logger.log('云端数据加载成功, isInit:', othersStore.isInit)
   },
 
   /**
