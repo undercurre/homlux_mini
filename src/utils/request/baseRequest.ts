@@ -91,7 +91,7 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       }
 
       if (requestOption.log) {
-        Logger.error('✘请求URL:' + requestOption.url + ' 失败，原因：', err)
+        Logger.error('✘请求URL:' + requestOption.url + ' 失败，原因：', err, 'requestOption', requestOption.data)
       }
 
       if (requestOption.isDefaultErrorTips) {
