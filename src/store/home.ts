@@ -46,6 +46,8 @@ export const homeStore = observable({
         houseArea: '',
         roomCount: 0,
       }
+
+      storage.remove('homeData')
     })
   },
 

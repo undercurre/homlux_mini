@@ -44,7 +44,7 @@ App<IAppOption>({
     reaction(
       () => homeStore.currentHomeDetail.houseId,
       async () => {
-        console.debug('reaction -> homeStore.currentHomeDetail.houseId')
+        Logger.debug('reaction -> homeStore.currentHomeDetail.houseId')
         await closeWebSocket()
         startWebsocketService()
 

@@ -174,14 +174,18 @@ function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {
 }
 
 export function closeWebSocket(code = 1000, reason = '正常主动关闭') {
+  // 关闭socket，需要把之前相关socket变量重置
+  isConnecting = false
+  clearTimeout(connectTimeId) // 取消准备重连的计时器
+
   return new Promise((resolve) => {
     if (socketTask) {
+      Logger.debug('开始关闭WebSocket')
       socketTask.close({
         code,
         reason,
         success(res) {
           Logger.debug('closeWebSocket-success', res, socketTask)
-          socketTask = null
           resolve(true)
         },
         fail(res) {
@@ -189,6 +193,7 @@ export function closeWebSocket(code = 1000, reason = '正常主动关闭') {
           resolve(false)
         },
       })
+      socketTask = null
     } else {
       resolve(true)
     }
