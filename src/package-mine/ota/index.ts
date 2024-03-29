@@ -16,7 +16,6 @@ ComponentWithComputed({
     contentHeight: 0,
     otaData: [{}],
     isUpdating: false,
-    hasUpdate: false,
     fromDevice: false,
     _pollingTimer: 0,
   },
@@ -58,7 +57,6 @@ ComponentWithComputed({
       if (isSuccess) {
         this.setData({
           isUpdating: otaStore.otaProductList.some((product) => product.updateStatus === 1),
-          hasUpdate: otaStore.otaProductList.length > 0,
           autoUpdate: !!otaStore.jobStatus,
         })
         if (this.data.isUpdating) {
@@ -89,7 +87,7 @@ ComponentWithComputed({
       })
     },
     handleUpdate() {
-      if (!this.data.hasUpdate) {
+      if (!otaStore.otaProductList.length) {
         return
       }
 
