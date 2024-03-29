@@ -104,10 +104,11 @@ ComponentWithComputed({
         const diffData = {} as IAnyObject
         const index = this.data.deviceList.findIndex((device) => device.deviceId === result.devId)
         const isSuccess = result.errCode === 0
+        const status = isSuccess ? 'success' : 'failed'
 
-        Logger.debug('[绑定结果上报]设备ID：', result.devId, `第${index}条上报`)
+        Logger.log('[绑定结果上报]设备ID：', result.devId, `第${index}条上报`, status)
 
-        diffData[`deviceList[${index}].status`] = isSuccess ? 'success' : 'failed'
+        diffData[`deviceList[${index}].status`] = status
 
         // 若这是最后一个上报，则变更页面状态
         if (this.data.failedList.length + this.data.successList.length === this.data.deviceList.length - 1) {
