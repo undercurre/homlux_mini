@@ -152,13 +152,12 @@
     class="w-750rpx flex flex-col items-center"
   >
     <view class="w-720rpx">
-      <!-- 设备卡片列表 -->
+      <!-- 设备卡片列表 bindscroll="onPageScroll" 暂时禁用-->
       <scroll-view
         scroll-y
         enhanced
         show-scrollbar="{{false}}"
         style="height: {{ scrollViewHeight }}; margin-top: {{toolboxContentHeight}}px"
-        bindscroll="onPageScroll"
         scroll-top="{{scrollTop}}"
         scroll-with-animation="{{true}}"
       >
