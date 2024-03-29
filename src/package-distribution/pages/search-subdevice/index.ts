@@ -304,6 +304,10 @@ ComponentWithComputed({
 
     // 确认添加子设备
     async confirmAdd() {
+      this.setData({
+        status: 'requesting',
+      })
+
       try {
         const selectedList = bleDevicesBinding.store.bleDeviceList.filter((item: Device.ISubDevice) => item.isChecked)
 
@@ -497,15 +501,9 @@ ComponentWithComputed({
           }
         })
 
-        this.setData({
-          status: 'requesting',
-        })
-
         await delay(1000) // 强行延时,以免dom结构还没生成
 
-        const tempRes = await this.startAnimation()
-
-        Logger.log('startAnimation-end', tempRes)
+        await this.startAnimation()
 
         type PromiseThunk = () => Promise<any>
         const zigbeeTaskList = [] as PromiseThunk[]
@@ -872,6 +870,10 @@ ComponentWithComputed({
 
     // 重新添加
     async reAdd() {
+      this.setData({
+        status: 'requesting',
+      })
+
       const failList = bleDevicesBinding.store.bleDeviceList.filter(
         (item: Device.ISubDevice) => item.isChecked && item.status === 'fail',
       )
