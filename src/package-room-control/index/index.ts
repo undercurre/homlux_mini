@@ -121,7 +121,7 @@ ComponentWithComputed({
     // 设备卡片列表，二维数组
     devicePageList: [] as DeviceCard[][],
     /** 待创建面板的设备选择弹出框 */
-    scrollTop: 0,
+    // scrollTop: 0,
     checkedList: [] as string[], // 已选择设备的id列表
     editSelectList: [] as string[], // 编辑状态下，已勾选的设备id列表
     editSelectMode: false, // 是否编辑状态
@@ -472,9 +472,9 @@ ComponentWithComputed({
     }, 3000),
 
     // 页面滚动
-    onPageScroll(e: { detail: { scrollTop: number } }) {
-      this.data.scrollTop = e?.detail?.scrollTop || 0
-    },
+    // onPageScroll(e: { detail: { scrollTop: number } }) {
+    //   this.data.scrollTop = e?.detail?.scrollTop || 0
+    // },
     clearJobs() {
       console.log('[room onHide/onUnload] clear()')
       // 解除监听
