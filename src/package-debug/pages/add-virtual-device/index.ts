@@ -2,6 +2,12 @@ import pageBehavior from '../../../behaviors/pageBehaviors'
 import { Logger, emitter } from '../../../utils/index'
 import { queryDeviceOnlineStatus, sendCmdAddSubdevice, bindDevice } from '../../../apis/index'
 import { deviceStore, homeStore } from '../../../store/index'
+import { WifiSocket } from './wifiProtocol'
+
+let _socket = new WifiSocket({
+  ssid: 'midea_16_5504',
+  isAccurateMatchWiFi: true,
+})
 
 Component({
   behaviors: [pageBehavior],
@@ -23,6 +29,7 @@ Component({
 
   lifetimes: {
     ready() {
+      console.log('test--ready')
       if (homeStore.currentHomeId === this.data.homeId) {
         emitter.on('bind_device', async (data) => {
           Logger.log(`收到绑定推送消息：子设备${data.deviceId}`)
@@ -30,17 +37,38 @@ Component({
           await this.requestBindDevice({ deviceId: data.deviceId, deviceName: `子设备${data.deviceId.slice(-4)}` })
         })
       }
+
+      _socket = new WifiSocket({
+        ssid: 'midea_16_5504',
+        isAccurateMatchWiFi: true,
+      })
+
+      _socket.init()
     },
     detached() {
+      console.log('test--detached')
       emitter.off('bind_device')
       clearInterval(this.data._timeId)
       homeStore.updateHomeInfo()
+      _socket.close()
+    },
+  },
+  pageLifetimes: {
+    show() {},
+    hide() {
+      console.log('test--hide')
+      _socket.close()
     },
   },
   /**
    * 组件的方法列表
    */
   methods: {
+    async sendUdp() {
+      for (let i = 0; i < 10; i++) {
+        await _socket.sendCmdForDeviceIp()
+      }
+    },
     async scanCode() {
       // 允许从相机和相册扫码
       const res = await wx

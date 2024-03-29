@@ -12,10 +12,10 @@ export function connectHouseSocket(houseId: string) {
     url: mzaioWSURL[getEnv()] + houseId,
     protocols: [storage.get<string>('token') as string],
     success(res) {
-      Logger.log('connectSocket-success', res)
+      Logger.log('发起websocket连接-success', res)
     },
     fail(res) {
-      Logger.error('connectSocket-fail', res)
+      Logger.error('发起websocket连接-fail', res)
     },
   })
 }

@@ -15,7 +15,8 @@ export * from './capacity'
 export * from './sort'
 export * from './nameFormater'
 
-import { PRO_TYPE } from '../config/index'
+import { PRO_TYPE, SCREEN_PID, getModelName } from '../config/index'
+import { isEmptyObject, isNullOrUnDef } from './is'
 
 export function delay(ms: number) {
   return new Promise<void>((resolve) => {
@@ -121,53 +122,30 @@ export function _get(obj: object, path: string, defaultVal = undefined) {
 }
 
 /**
- * @description 设备数量统计
- * @param ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
- * @returns {
- *  lightOnCount: 统计多少灯打开（多开开关仍分别计数）（取代云端deviceLightOnNum）
- *  lightCount: 灯与面板总数量（不排除关联，面板按拆分设备计数）
- * }
+ * @description 判断某扁平设备，是否亮灯设备
+ * !! ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
  */
-export function deviceCount(list: Device.DeviceItem[]): Record<string, number> {
-  let lightOnCount = 0
-  let lightCount = 0
-
-  list?.forEach((device) => {
-    switch (device.proType) {
-      case PRO_TYPE.light:
-        // 灯数及亮灯数不计算灯组
-        if (device.deviceType === 4) {
-          return
-        }
-        lightCount++
-        if (!device.onLineStatus) break
-        if (device.mzgdPropertyDTOList['light'].power) {
-          lightOnCount++
-        }
-        break
-      case PRO_TYPE.switch:
-        device.switchInfoDTOList.forEach((switchItem) => {
-          lightCount++
-          if (
-            device.onLineStatus &&
-            device.mzgdPropertyDTOList && // 避免个别设备未上报数据导致的整个页面异常
-            device.mzgdPropertyDTOList[switchItem.switchId]?.power &&
-            !device.mzgdPropertyDTOList[switchItem.switchId].ButtonMode
-          ) {
-            lightOnCount++
-          }
-        })
-        break
-      // 网关及其他类型，不作统计
-      case PRO_TYPE.gateway:
-      default:
-    }
-  })
-
-  return {
-    lightOnCount,
-    lightCount,
+export function isLightOn(device: Device.DeviceItem): boolean {
+  // 网关、灯组、离线设备直接排除
+  if (device.deviceType === 1 || device.deviceType === 4 || !device.onLineStatus) {
+    return false
   }
+  // 灯
+  if (device.proType === PRO_TYPE.light) {
+    return !!device.mzgdPropertyDTOList['light'].power
+  }
+
+  // 面板 // !! 多开开关的各路开关分别计数
+  const modelName = device?.switchInfoDTOList && device.switchInfoDTOList[0]?.switchId
+
+  return !!(
+    (
+      modelName &&
+      device.proType === PRO_TYPE.switch &&
+      device.mzgdPropertyDTOList[modelName]?.power &&
+      !device.mzgdPropertyDTOList[modelName]?.ButtonMode
+    ) // 2和3不计数
+  )
 }
 
 export const getRect = function (context: any, selector: string, needAll = false) {
@@ -183,5 +161,63 @@ export const getRect = function (context: any, selector: string, needAll = false
         }
       })
       .exec()
+  })
+}
+
+/**
+ * 将设备列表扁平化，开关面板各个按键作为独立的设备
+ * @param originList 源列表
+ * @returns 扁平化的列表
+ */
+export const deviceFlatten = function (originList: Device.DeviceItem[]) {
+  const list = [] as Device.DeviceItem[]
+  originList.forEach((device) => {
+    // 过滤属性数据不完整的数据
+    // WIFI设备可以不过滤此条件
+    const noProps = isNullOrUnDef(device.mzgdPropertyDTOList) || isEmptyObject(device.mzgdPropertyDTOList)
+    if (noProps && device.deviceType !== 3 && device.proType !== PRO_TYPE.gateway) {
+      return
+    }
+    // 开关面板需要前端拆分处理
+    if (device.proType === PRO_TYPE.switch) {
+      device.switchInfoDTOList?.forEach((switchItem) => {
+        list.push({
+          ...device,
+          property: device.mzgdPropertyDTOList[switchItem.switchId],
+          mzgdPropertyDTOList: {
+            [switchItem.switchId]: device.mzgdPropertyDTOList[switchItem.switchId],
+          },
+          switchInfoDTOList: [switchItem],
+          uniId: `${device.deviceId}:${switchItem.switchId}`,
+          orderNum: switchItem.orderNum,
+        })
+      })
+    }
+    // 所有可显示的设备都用这种方案插值
+    else if (device.proType !== PRO_TYPE.gateway || !SCREEN_PID.includes(device.productId)) {
+      const modelName = getModelName(device.proType, device.productId)
+      const property = noProps ? ({} as Device.mzgdPropertyDTO) : device.mzgdPropertyDTOList[modelName]
+      // 如果没有设备属性（网关暂除外），则直接置为0
+      // ! WIFI设备，较低机率出现设备在线但属性为空的情况
+      const onLineStatus = device.proType === PRO_TYPE.gateway || device.mzgdPropertyDTOList ? device.onLineStatus : 0
+      list.push({
+        ...device,
+        onLineStatus,
+        uniId: device.deviceId,
+        property,
+        mzgdPropertyDTOList: { [modelName]: property },
+      })
+    }
+  })
+
+  // 排序算法：灯组类型靠前；再按orderNum升序；再按入网时间createdTime升序
+  return list.sort((a, b) => {
+    if (a.deviceType === 4 && b.deviceType !== 4) {
+      return -1
+    } else if (a.deviceType !== 4 && b.deviceType === 4) {
+      return 1
+    } else {
+      return a.orderNum !== b.orderNum ? a.orderNum - b.orderNum : a.createdTime?.localeCompare(b.createdTime)
+    }
   })
 }

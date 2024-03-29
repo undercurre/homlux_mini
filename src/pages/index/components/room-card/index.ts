@@ -1,13 +1,9 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { runInAction } from 'mobx-miniprogram'
-import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { execScene } from '../../../../apis/scene'
-import { roomBinding, roomStore } from '../../../../store/index'
+import { roomStore } from '../../../../store/index'
 import { sceneImgDir } from '../../../../config/index'
 
 ComponentWithComputed({
-  options: {},
-  behaviors: [BehaviorWithStore({ storeBindings: [roomBinding] })],
   /**
    * 组件的属性列表
    */
@@ -19,6 +15,9 @@ ComponentWithComputed({
     isMoving: {
       type: Boolean,
       value: false,
+    },
+    roomLightSummary: {
+      type: Object,
     },
   },
 
@@ -34,24 +33,12 @@ ComponentWithComputed({
         }
       })
     },
-    deviceListComputed(data) {
-      if (data.roomDeviceList && data.roomInfo && data.roomInfo.roomId) {
-        return data.roomDeviceList[data.roomInfo.roomId] ?? []
-      }
-      return []
-    },
     hasBottomPadding(data) {
       return data.roomInfo.sceneList.length > 0 && !data.isMoving
     },
     desc(data) {
-      if (data.sceneList && data.deviceListComputed) {
-        return data.roomInfo.lightOnCount
-          ? data.roomInfo.lightOnCount + '盏灯亮起'
-          : data.roomInfo.lightCount > 0
-          ? '灯全部关闭'
-          : ''
-      }
-      return ''
+      const { lightCount, lightOnCount } = data.roomLightSummary ?? {}
+      return lightOnCount ? `${lightOnCount}盏灯亮起` : lightCount > 0 ? '灯全部关闭' : ''
     },
   },
 
@@ -84,10 +71,8 @@ ComponentWithComputed({
       execScene(e.currentTarget.dataset.value)
     },
     handleCardTap() {
-      const index = roomStore.roomList.findIndex((room) => room.roomId === this.data.roomInfo.roomId)
-      runInAction(() => {
-        roomStore.currentRoomIndex = index
-      })
+      roomStore.setCurrentRoom(this.data.roomInfo.roomId)
+
       wx.navigateTo({
         url: '/package-room-control/index/index',
       })

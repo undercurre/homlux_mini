@@ -282,7 +282,7 @@ ComponentWithComputed({
         deviceActions,
         sceneId,
       })
-
+      // FIXME: 重试失败后应将wating状态重置为fail
       if (res.success) {
         setTimeout(() => {
           this.data.deviceList.forEach((item) => {

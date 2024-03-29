@@ -23,7 +23,7 @@ export async function queryAllDevice(houseId: string, options?: IApiRequestOptio
  * 1：开 0：关
  */
 export async function allDevicePowerControl(data: { houseId: string; onOff: number }, options?: { loading?: boolean }) {
-  // TODO 判断是否局域网控制
+  // 判断是否局域网控制
   if (homOs.isHostConnected()) {
     const localRes = await homOs.houseControl({
       houseId: data.houseId,
@@ -837,6 +837,24 @@ export async function updateGroup(
   })
 }
 
+/**
+ * 重试分组
+ * @param applianceGroupDtoList 传要重试的设备
+ */
+export async function retryGroup(
+  data: {
+    applianceGroupDtoList: Device.GroupDTO[]
+    groupId: string
+  },
+  options?: { loading?: boolean },
+) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/scene/groupRetry',
+    data,
+  })
+}
 /**
  * 查询分组详情
  */

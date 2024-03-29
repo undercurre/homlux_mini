@@ -1,5 +1,5 @@
 .list-bottom-placeholder {
-  height: calc(env(safe-area-inset-bottom) + 80rpx);
+  padding-bottom: calc(96rpx + env(safe-area-inset-bottom));
 }
 
 .bg-select {

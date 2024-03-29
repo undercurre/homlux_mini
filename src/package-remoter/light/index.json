@@ -1,0 +1,12 @@
+{
+  "usingComponents": {
+    "van-slider": "@vant/weapp/slider/index",
+    "mz-button": "../components/mz-button/index",
+    "mz-button-bottom": "../components/mz-button-bottom/index",
+    "mx-scroll-list": "/miniprogram_npm/m-ui/mx-scroll-list/index",
+    "mx-button": "/miniprogram_npm/m-ui/mx-button/index",
+    "mx-tabbar": "/miniprogram_npm/m-ui/mx-tabbar/index",
+    "mx-tab": "/miniprogram_npm/m-ui/mx-tab/index",
+    "mx-tabs": "/miniprogram_npm/m-ui/mx-tabs/index"
+  }
+}

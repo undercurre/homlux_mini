@@ -7,19 +7,15 @@ import {
   deleteHouseUser,
   inviteHouseUser,
   saveOrUpdateUserHouseInfo,
-  queryRoomList,
   updateDefaultHouse,
   getShareId,
-  queryAllDevice,
   queryLocalKey,
 } from '../apis/index'
-import { PRO_TYPE } from '../config/index'
 import { asyncStorage, storage, Logger, IApiRequestOption, isConnect } from '../utils/index'
 import { deviceStore } from './device'
 import { othersStore } from './others'
 import { roomStore } from './room'
 import { userStore } from './user'
-import { deviceCount } from '../utils/index'
 import { userRole } from '../config/home'
 
 export const homeStore = observable({
@@ -53,7 +49,7 @@ export const homeStore = observable({
     })
   },
 
-  get currentHomeId() {
+  get currentHomeId(): string {
     let houseId = this.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
 
     if (!houseId && this.homeList.length) {
@@ -76,148 +72,98 @@ export const homeStore = observable({
     return this.currentHomeDetail.houseUserAuth === 1 || this.currentHomeDetail.houseUserAuth === 2
   },
 
-  // actions
   /**
    * 首页加载逻辑
    */
   async homeInit() {
+    // 加载本地缓存数据，以便页面快速呈现
     const success = this.loadHomeDataFromStorage()
     if (success) {
       othersStore.setIsInit(true)
     } else {
-      console.log('[KS]本地缓存不存在或过期, isInit:', othersStore.isInit)
+      Logger.log('[无本地缓存，或缓存已过期]')
     }
-    const res = await this.updateHomeList()
-    if (res.success) {
-      queryUserHouseInfo({ houseId: this.currentHomeId }).then((res) => {
-        if (res.success) {
-          runInAction(() => {
-            homeStore.currentHomeDetail = Object.assign({ houseId: this.currentHomeId }, res.result)
-          })
-        }
-      })
-      // 全屋房间、设备加载
-      await this.updateRoomCardList()
-      othersStore.setIsInit(true)
-      console.log('[KS]云端数据加载成功, isInit:', othersStore.isInit)
-    }
+
+    await this.updateHomeInfo({ isInit: true })
+
+    othersStore.setIsInit(true)
+    Logger.log('云端数据加载成功, isInit:', othersStore.isInit)
   },
 
   /**
-   * 更新家庭列表同时更新当前信息
+   * 更新家庭列表，同时更新当前家庭详情信息、房间列表
+   * @param params.isInit 是否用于家庭数据更新
    */
-  async updateHomeInfo(options?: IApiRequestOption) {
-    const res = await this.updateHomeList(options)
-
-    if (res.success) {
-      return await this.updateCurrentHomeDetail(options)
-    } else {
-      console.log('this.currentHomeId', this.currentHomeId, 'this.homeList', this.homeList)
-      return Promise.reject('获取列表家庭失败')
+  async updateHomeInfo(params = { isInit: false }, options?: IApiRequestOption) {
+    const homeList = await this.updateHomeList(options)
+    if (!homeList.success) {
+      return Promise.reject()
     }
+
+    const homeInfo = await this.updateHomeDetail(options)
+    if (!homeInfo.success) {
+      return Promise.reject()
+    }
+
+    if (params.isInit) {
+      await deviceStore.updateAllRoomDeviceList()
+    }
+    await roomStore.updateRoomList(options)
+
+    this.saveHomeDate()
+
+    return
   },
 
   /**
-   * 更新家庭列表数据
+   * 更新家庭列表数据，如无默认家庭则默认选中第0个
    */
   async updateHomeList(options?: IApiRequestOption) {
     const res = await getHomeList(options)
 
-    if (res.success) {
-      runInAction(() => {
-        homeStore.homeList = res.result
-
-        const houseId = homeStore.homeList.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
-        // 首次进入或删除了默认家庭时，默认选中第0个
-        if (!houseId && homeStore.homeList.length) {
-          Logger.error('默认家庭为空，设置默认家庭')
-          updateDefaultHouse(homeStore.homeList[0].houseId)
-          homeStore.homeList[0].defaultHouseFlag = true
-        }
-      })
+    if (!res.success) {
+      console.log('this.currentHomeId', this.currentHomeId, 'this.homeList', res.result)
+      return Promise.reject('获取列表家庭失败')
     }
+
+    const houseId = res.result.find((item: Home.IHomeItem) => item.defaultHouseFlag)?.houseId || ''
+    // 首次进入或删除了默认家庭
+    if (!houseId && res.result.length) {
+      Logger.error('默认家庭为空，设置默认家庭')
+      updateDefaultHouse(res.result[0].houseId)
+      res.result[0].defaultHouseFlag = true
+    }
+
+    runInAction(() => {
+      this.homeList = res.result
+    })
 
     return res
   },
 
   /**
-   * 更新当前家庭详细信息
+   * 更新家庭详情
    */
-  async updateCurrentHomeDetail(options?: IApiRequestOption) {
-    const res = await queryUserHouseInfo(
-      {
-        houseId: this.currentHomeId,
-      },
-      options,
-    )
-    if (res.success) {
-      runInAction(() => {
-        homeStore.currentHomeDetail = Object.assign({ houseId: this.currentHomeId }, res.result)
-      })
-
-      await roomStore.updateRoomList(options)
-      this.saveHomeDate()
-      return
-    } else {
+  async updateHomeDetail(options?: IApiRequestOption) {
+    const res = await queryUserHouseInfo({ houseId: this.currentHomeId }, options)
+    if (!res.success) {
       console.error('获取家庭信息失败', res)
       return Promise.reject('获取家庭信息失败')
     }
+
+    runInAction(() => {
+      homeStore.currentHomeDetail = Object.assign({ houseId: this.currentHomeId }, res.result)
+    })
+
+    return res
   },
 
   /**
    * 更新当前家庭房间卡片列表
    */
-  async updateRoomCardList(options?: { loading: boolean }) {
-    const homeId = homeStore.currentHomeId
-    const data = await Promise.all([queryAllDevice(homeId, options), queryRoomList(homeId, options)])
-    if (data[0].success) {
-      const list = {} as Record<string, Device.DeviceItem[]>
-      data[0].result
-        ?.sort((a, b) => a.deviceId.localeCompare(b.deviceId))
-        .forEach((device) => {
-          if (list[device.roomId]) {
-            list[device.roomId].push(device)
-          } else {
-            list[device.roomId] = [device]
-          }
-        })
-      runInAction(() => {
-        roomStore.roomDeviceList = list
-        deviceStore.allRoomDeviceList = data[0].result
-        deviceStore.updateAllRoomDeviceListLanStatus(false)
-      })
-    }
-    if (data[1].success) {
-      data[1].result.roomInfoList.forEach((room) => {
-        const roomDeviceList = roomStore.roomDeviceList[room.roomInfo.roomId]
-        // 过滤一下默认场景，没灯过滤明亮柔和，没灯没开关全部过滤
-        const hasSwitch = roomDeviceList?.some((device) => device.proType === PRO_TYPE.switch) ?? false
-        const hasLight = roomDeviceList?.some((device) => device.proType === PRO_TYPE.light) ?? false
-        if (!hasSwitch && !hasLight) {
-          // 四个默认场景都去掉
-          room.roomSceneList = room.roomSceneList.filter((scene) => scene.isDefault === '0')
-        } else if (hasSwitch && !hasLight) {
-          // 只有开关，去掉默认的明亮、柔和
-          room.roomSceneList = room.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
-        }
-
-        const { lightOnCount, lightCount } = deviceCount(roomDeviceList)
-        room.roomInfo.lightOnCount = lightOnCount
-        room.roomInfo.lightCount = lightCount
-      })
-      runInAction(() => {
-        roomStore.roomList = data[1].result.roomInfoList.map((room) => ({
-          roomId: room.roomInfo.roomId,
-          groupId: room.roomInfo.groupId,
-          roomIcon: room.roomInfo.roomIcon || 'drawing-room',
-          roomName: room.roomInfo.roomName,
-          lightOnCount: room.roomInfo.lightOnCount,
-          sceneList: room.roomSceneList,
-          deviceNum: room.roomInfo.deviceNum,
-          lightCount: room.roomInfo.lightCount,
-        }))
-      })
-    }
+  async updateRoomCardList() {
+    await deviceStore.updateAllRoomDeviceList()
+    await roomStore.updateRoomList()
     this.saveHomeDate()
   },
 
@@ -324,7 +270,7 @@ export const homeStore = observable({
   },
 
   /**
-   * 缓存主要的初始数据
+   * 缓存token及初始数据（家庭列表，当前家庭详情，房间列表，全屋设备列表）
    */
   async saveHomeDate() {
     if (!userStore.isLogin) {
@@ -404,7 +350,7 @@ export const homeBinding = {
   actions: [
     'updateHomeInfo',
     'updateHomeList',
-    'updateCurrentHomeDetail',
+    // 'updateCurrentHomeDetail',
     'updateHomeMemberList',
     'updateMemberAuth',
     'deleteMember',

@@ -1,0 +1,192 @@
+.container-pg{
+  width: 750rpx;
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: transparent;
+  z-index: 100;
+}
+.flex-center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.bg-img {
+  width: 750rpx;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 99;
+}
+.bg-img {
+  width: 750rpx;
+  min-height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+.title-block{
+  width: 370rpx;
+  height: 88rpx;
+  flex-direction: row;
+}
+.dot-block{
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 7rpx;
+  margin-right: 24rpx;
+}
+.connect-block {
+  width: 208rpx;
+  height: 72rpx;
+  border-radius: 36rpx;
+  margin-top: 46rpx;
+  background-color: #ffffff;
+  position: relative;
+  opacity: 0.6;
+}
+.slider-brightness-bar {
+  width: 592rpx;
+}
+.slider-btn{
+  width: 44rpx;
+  height: 44rpx;
+  margin-top: 14rpx;
+  margin-right: -14rpx;
+}
+.btn-block {
+  width: 750rpx;
+  height: 240rpx;
+  margin-top: 40rpx;
+}
+.btn-item{
+  height: 180rpx;
+  width: 170rpx;
+  flex-direction: column;
+}
+.btn-con {
+  width: 112rpx !important;
+  height: 112rpx !important;
+  box-shadow: 0px 0px 12px 0px rgba(0,0,0,0.04);
+  border-radius: 36rpx;
+  margin-bottom: 30rpx;
+}
+.inner-block{
+  height: 168rpx;
+  width: 750rpx;
+  flex-direction: row;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+.bottom-btn{
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 48rpx;
+  margin-bottom: 16rpx;
+}
+.pup-block{
+  width: 750rpx;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+.popup-close{
+  width: 48rpx;
+  height: 48rpx;
+  position: absolute;
+  top: 44rpx;
+  right: 48rpx;
+}
+.popup-title{
+  color: #555659;
+  width: 638rpx;
+  margin-top: 22rpx;
+}
+.slider-brightness-bar{
+  width: 654rpx;
+  margin-top: 42rpx;
+}
+.bri-slder-tab {
+  margin-top: 8rpx;
+  width: 22rpx;
+  height: 52rpx;
+}
+.col-slder-tab{
+  margin-top: 6rpx;
+  width: 52rpx;
+  height: 52rpx;
+}
+.pick-block{
+  width: 750rpx;
+  height: 360rpx;
+  flex-direction: row;
+}
+.unit-h{
+  position: absolute;
+  top: 290rpx;
+  color: #666666;
+}
+.container{
+  --tabs-nav-background-color: transparent;
+}
+.top-tab-r {
+  margin-top: 24rpx;
+  color: #000000;
+}
+.mx-tabs__nav{
+  width: 352rpx;
+  margin-left: 198rpx;
+}
+.tab-page-r {
+  width: 750rpx;
+  position: relative;
+  flex-direction: column;
+}
+.slider-cus {
+  height: 540rpx !important;
+  border-radius: 0 !important;
+}
+.slider-cus-2 {
+  height: 450rpx !important;
+  border-radius: 0 !important;
+  margin-top: 44rpx;
+}
+.v-slider-bor{
+  display: flex;
+  position: relative;
+  width: 200rpx;
+  height: 540rpx;
+  border-radius: 52rpx;
+  overflow: hidden;
+}
+.v-slider-bg{
+  background-image: linear-gradient(0deg, #FCE9B1 0%, #FBF0D2 33%, #D5DAEC 66%, #7C9DF8 100%);
+}
+.bri-slder-tab-V{
+  margin-top: 50rpx;
+  width: 64rpx;
+  height: 24rpx;
+}
+.col-slder-tab-V{
+  margin-top: 20rpx;
+  width: 102rpx;
+  height: 102rpx;
+}
+.bri-val-text{
+  position: absolute;
+  right: 58rpx;
+  bottom: 40rpx;
+  text-align: center;
+}
+.high-select{
+  transform: scale(0.9);
+  transition: 0.2s;
+  animation: scaleAnimation 0.2s ease-in-out;
+}

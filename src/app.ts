@@ -45,7 +45,7 @@ App<IAppOption>({
       () => homeStore.currentHomeDetail.houseId,
       async () => {
         console.debug('reaction -> homeStore.currentHomeDetail.houseId')
-        closeWebSocket()
+        await closeWebSocket()
         startWebsocketService()
 
         homeStore.key = '' // 清空旧家庭的homOS的key
@@ -59,7 +59,7 @@ App<IAppOption>({
         userStore.setIsLogin(true)
         const start = Date.now()
         console.log('开始时间', start / 1000)
-        await Promise.all([userStore.updateUserInfo(), homeStore.homeInit()])
+        await Promise.all([userStore.updateUserInfo(), homeStore.homeInit(), sceneStore.updateAllRoomSceneList()])
         console.log('加载完成时间', Date.now() / 1000, '用时', (Date.now() - start) / 1000 + 's')
       } catch (e) {
         Logger.error('appOnLaunch-err:', e)
@@ -90,6 +90,8 @@ App<IAppOption>({
       isLogon(),
       'homeStore.currentHomeId',
       homeStore.currentHomeId,
+      'firstOnShow',
+      firstOnShow,
     )
 
     // 非登录状态，终止下面逻辑，且发现当前非主包页面（当前主包页面均可不需要登录访问），强制跳转登录
@@ -109,15 +111,14 @@ App<IAppOption>({
     // homOS本地控制要求场景数据保持尽可能实时，需要小程序回到前台刷新场景和设备列表数据
     if (!firstOnShow) {
       // 后面的接口依赖获取当前家庭Id
-      await homeStore.updateHomeInfo({ isDefaultErrorTips: false })
+      await homeStore.updateHomeInfo({ isInit: false }, { isDefaultErrorTips: false })
 
       startWebsocketService()
 
+      // 全屋设备、场景数据加载
       deviceStore.updateAllRoomDeviceList(homeStore.currentHomeId, { isDefaultErrorTips: false })
+      sceneStore.updateAllRoomSceneList(homeStore.currentHomeId, { isDefaultErrorTips: false })
     }
-
-    // 全屋场景数据加载
-    sceneStore.updateAllRoomSceneList(homeStore.currentHomeId, { isDefaultErrorTips: false })
   },
 
   onHide() {

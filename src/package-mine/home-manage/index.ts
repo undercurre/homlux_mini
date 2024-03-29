@@ -189,12 +189,6 @@ ComponentWithComputed({
           return
         }
 
-        const dialogRes = await Dialog.confirm({
-          title: '取消授权后，美居家庭的设备将从HOMLUX家庭移除，请谨慎操作。',
-        }).catch(() => 'cancel')
-
-        if (dialogRes === 'cancel') return
-
         const deBindRes = await this.deBindMeiju()
 
         if (!deBindRes?.success) {

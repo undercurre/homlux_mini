@@ -2,6 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, homeStore } from '../../store/index'
 import { updateDefaultHouse } from '../../apis/index'
+import { hideLoading, showLoading } from '../../utils/index'
 
 ComponentWithComputed({
   options: {},
@@ -70,7 +71,9 @@ ComponentWithComputed({
       const res = await updateDefaultHouse(houseId)
 
       if (res.success) {
+        showLoading()
         await homeStore.homeInit()
+        hideLoading()
       }
       this.triggerEvent('afterSelected', { houseId })
     },

@@ -1,5 +1,5 @@
 import cryptoUtils from './remoterCrypto'
-import { deviceConfig } from '../config/remoter'
+import { DEFAULT_ENCRYPT, deviceConfig } from '../config/remoter'
 
 // bit位定义
 export const BIT_0 = 0x01 << 0 //1     0x01
@@ -41,7 +41,7 @@ const _searchDeviceCallBack = (device: WechatMiniprogram.BlueToothDevice) => {
     addr,
     deviceModel,
     payload,
-    deviceAttr: _parsePayload(payload, deviceType),
+    deviceAttr: _parsePayload(payload, deviceType, deviceModel),
   }
 }
 
@@ -78,17 +78,35 @@ const _parseEncryptFlag = (encryptFlag: string) => {
  * @description
  * @returns key 命名须与 src\config\remoter.ts 中的 actions.key 保持一致
  */
-const _parsePayload = (payload: string, deviceType: string) => {
+const _parsePayload = (payload: string, deviceType: string, deviceModel?: string) => {
   const rxBuf = new ArrayBuffer(payload.length) // 申请内存
   const rxU16 = new Uint16Array(rxBuf)
   for (let i = 0; i < payload.length / 2; ++i) {
     rxU16[i] = parseInt(payload.slice(i * 2, i * 2 + 2), 16)
   }
   if (deviceType === '13') {
-    return {
-      LIGHT_LAMP: !!(rxU16[0] & BIT_0),
-      LIGHT_NIGHT_LAMP: rxU16[8] === 0x06,
+    // 共有属性
+    const res: IAnyObject = {
+      LIGHT_LAMP: !!(rxU16[0] & BIT_0), // 开关
+      COLORTEMP_MIN: (rxU16[1] << 8) + rxU16[2], // 色温最小值
+      COLORTEMP_MAX: (rxU16[3] << 8) + rxU16[4], // 色温最大值
+      LIGHT_BRIGHT: rxU16[5], // 当前亮度
+      LIGHT_COLOR_TEMP: rxU16[6], // 当前色温
     }
+    // 不同灯的专有属性
+    if (deviceModel === '01') {
+      res.DELAY_OFF = rxU16[7] // 延时关灯剩余分钟数，0表示延时关灯失效
+      res.LIGHT_NIGHT_LAMP = rxU16[8] === 0x06 // 小夜灯状态，0x06代表开启，0x9表示助眠状态
+      res.LIGHT_SCENE_SLEEP = rxU16[8] === 0x09
+    } else if (deviceModel === '02' || deviceModel === '03') {
+      res.DELAY_OFF = (rxU16[7] << 8) + rxU16[8] // 延时关风扇剩余分钟数
+      res.FAN_SWITCH = !!(rxU16[9] & BIT_0) // 风扇开关状态
+      res.FAN_NEGATIVE = !!(rxU16[9] & BIT_1) // 风扇是否反转状态
+      res.FAN_NATURE = !!(rxU16[9] & BIT_2) // 风扇自然风状态
+      res.CLOSE_DISPLAY = !!(rxU16[9] & BIT_4) // 屏显
+      res.SPEED = rxU16[10] // 风扇档位
+    }
+    return res
   }
   if (deviceType === '26') {
     return {
@@ -115,12 +133,12 @@ const _createBluetoothProtocol = (params: { addr: string; data: string; opcode?:
 
   //	3. encrypt data
   const encrytpedData = cryptoUtils.enCodeData(data, addr, encryptIndex)
-  console.log('蓝牙协议 加密后的数据:', encrytpedData)
+  //console.log('蓝牙协议 加密后的数据:', encrytpedData)
   commandData.push(...encrytpedData)
 
   //	4. set length =>  payload length
   commandData[0] = commandData.length - 2
-  console.log('commandData', commandData, commandData.length)
+  //console.log('commandData', commandData, commandData.length)
 
   //	5. create buffer
   const buffer = new ArrayBuffer(commandData.length)
@@ -131,13 +149,38 @@ const _createBluetoothProtocol = (params: { addr: string; data: string; opcode?:
   return buffer
 }
 
+const _analysisBluetoothProtocol = (params: { addr: string, dataArr: number[] }) => {
+  const { addr, dataArr } = params
+  if (dataArr.length < 3) return []
+  if (dataArr[0] != dataArr.length - 1) return []
+  const encryptIndex = (dataArr[1] & 0xF0) >> 4
+  const payload = dataArr.slice(2)
+  const hexArr = payload.map(item => {
+    return ('00' + item.toString(16)).slice(-2)
+  })
+  return cryptoUtils.enCodeData(hexArr.join(''), addr, encryptIndex)
+}
+
 /**
  * @description 按发送协议拼接数据
  * @param params.isEncrypt 是否加密
- * @param params.isFactory 是否工厂产测模式，模拟实体遥控器
+ * @param params.isFactory 是否工厂产测模式；产测模式时，需要模拟实体遥控器从设备发出
+ * @param params.encryptIndex 加密索引，如遇到特殊情况，可指定索引位置
  */
-const createBleProtocol = (params: { payload: string; addr: string; isEncrypt?: boolean; isFactory?: boolean }) => {
-  const { payload, addr, isEncrypt = true, isFactory = false } = params
+const createBleProtocol = (params: {
+  payload: string
+  addr: string
+  isEncrypt?: boolean
+  isFactory?: boolean
+  encryptIndex?: number
+}) => {
+  const {
+    payload,
+    addr,
+    isEncrypt = DEFAULT_ENCRYPT,
+    isFactory = false,
+    encryptIndex = Math.round(Math.random() * 15),
+  } = params
   // 第一个字节
   const version = '0001'
   const src = isFactory ? 0 : 1 // 0:设备发出  1:手机发出
@@ -148,8 +191,8 @@ const createBleProtocol = (params: { payload: string; addr: string; isEncrypt?: 
 
   // 第二个字节
   const encryptType = isEncrypt ? '0001' : '0000'
-  const encryptIndex = Math.round(Math.random() * 15)
   const encryptIndexBin = encryptIndex.toString(2).padStart(4, '0')
+
   const dataArr = [VBCV, parseInt(`${encryptType}${encryptIndexBin}`, 2)]
 
   // addr
@@ -173,7 +216,7 @@ const createBleProtocol = (params: { payload: string; addr: string; isEncrypt?: 
     // )
     dataArr.push(channel, ...encrytpedData)
   }
-  console.log('dataArr', dataArr)
+  console.log('加密后数据序列', dataArr.map((item) => item.toString(16).padStart(2, '0')).join(','))
 
   // const buffer = new ArrayBuffer(dataArr.length)
   // const dataView = new DataView(buffer)
@@ -190,7 +233,7 @@ const createBleProtocol = (params: { payload: string; addr: string; isEncrypt?: 
 const _createAndroidBleRequest = (params: { payload: string; addr: string; isFactory?: boolean }): Uint8Array => {
   const { payload, addr, isFactory } = params
   const manufacturerData = createBleProtocol({ payload, addr, isFactory })
-  // console.log('manufacturerData', manufacturerData)
+  // console.log('[Android]manufacturerData', manufacturerData)
   const commandData = new Uint8Array(manufacturerData.length)
   commandData.set(manufacturerData)
   return commandData
@@ -210,17 +253,49 @@ const _createIOSBleRequest = (params: {
   isFactory?: boolean
 }): string[] => {
   const { payload, addr, comId, isFactory } = params
-
   const manufacturerId = comId.slice(2)
   const manufacturerData = createBleProtocol({ payload, addr, isFactory })
-  const arrayData: string[] = []
-  arrayData.push(manufacturerId)
-  for (let i = 0; i < manufacturerData.length; i += 2) {
-    const hex1 = manufacturerData[i].toString(16).padStart(2, '0')
-    const hex2 = (manufacturerData[i + 1] ?? '00').toString(16).padStart(2, '0')
-    arrayData.push(hex2.concat(hex1))
+
+  const getArrayData = (_data: number[]) => {
+    const arr: string[] = []
+    arr.push(manufacturerId)
+    for (let i = 0; i < _data.length; i += 2) {
+      const hex1 = _data[i].toString(16).padStart(2, '0')
+      const hex2 = (_data[i + 1] ?? '00').toString(16).padStart(2, '0')
+      arr.push(hex2.concat(hex1))
+    }
+    return arr
+  }
+
+  // 先使用随机索引，如无重复项则直接发送
+  let arrayData = getArrayData(manufacturerData)
+  let isRepeat = hasRepeat(arrayData)
+  console.log('[iOS]arrayData', arrayData, 'isRepeat', isRepeat)
+  if (!isRepeat) {
+    return arrayData
+  }
+
+  // 如果存在重复项，则重新依次生成，直到无重复项为止
+  for (let i = 0; i < 16; ++i) {
+    const mData = createBleProtocol({ payload, addr, isFactory, encryptIndex: i })
+    arrayData = getArrayData(mData)
+    isRepeat = hasRepeat(arrayData)
+    console.log('[iOS]arrayData', arrayData, 'isRepeat', isRepeat, i)
+    if (!isRepeat) {
+      return arrayData
+    }
   }
   return arrayData
+}
+
+const hasRepeat = (data: (number | string)[]) => {
+  const list = [...data].sort()
+  for (let i = 0; i < list.length - 1; ++i) {
+    if (list[i] === list[i + 1]) {
+      return list[i]
+    }
+  }
+  return false
 }
 
 /**
@@ -260,37 +335,41 @@ const _handleBleResponse = (response: string) => {
 /**
  * 根据电控协议生成设备指令
  */
-const _generalCmdString = (key: number) => {
-  const channel = 0x01 // 通道，固定值
-  const version = 0x01 // 协议版本
-  const cmdType = 0x00 // 命令号
-  const sum = (channel + version + cmdType + key) % 256
-  const data = [channel, version, cmdType, key]
-  // 其余字节预留，默认0x00
-  for (let i = 4; i <= 14; ++i) {
-    data[i] = 0x00
-  }
-  data.push(sum)
-  return data.map((byte) => byte.toString(16).padStart(2, '0')).join('')
-}
+// const _generalCmdString = (key: number) => {
+//   const channel = 0x01 // 通道，固定值
+//   const version = 0x01 // 协议版本
+//   const cmdType = 0x00 // 命令号
+//   const sum = (channel + version + cmdType + key) % 256
+//   const data = [channel, version, cmdType, key]
+//   // 其余字节预留，默认0x00
+//   for (let i = 4; i <= 14; ++i) {
+//     data[i] = 0x00
+//   }
+//   data.push(sum)
+//   return data.map((byte) => byte.toString(16).padStart(2, '0')).join('')
+// }
 
 /**
- * 根据电控协议生成设备设值指令
+ * 根据电控协议生成控制指令
+ * cmdType 命令号。灯协议，固定为0x00，实际上未使用；浴霸协议，控制键值为0x00，参数设置0x01；故统一按浴霸规则发送
  */
-const _generalSettingString = (values: number[]) => {
+const _generalCmdString = (values: number[]) => {
+  // console.log('[指令码]', ...values.map((item) => item.toString().padStart(2, '0')))
   const channel = 0x01 // 通道，固定值
   const version = 0x01 // 协议版本
-  const cmdType = 0x01 // 命令号
+  const cmdType = values.length > 1 ? 0x01 : 0x00
   let sum = channel + version + cmdType
   const data = [channel, version, cmdType, ...values]
-  for (let v of values) {
+  for (const v of values) {
     sum += v
   }
   // 其余字节预留，默认0x00
   for (let i = 3 + values.length; i <= 14; ++i) {
     data[i] = 0x00
   }
-  data.push(sum % 256)
+
+  data.push(sum % 256) // 校验码
+
   return data.map((byte) => byte.toString(16).padStart(2, '0')).join('')
 }
 
@@ -299,8 +378,9 @@ export default {
   createAndroidBleRequest: _createAndroidBleRequest,
   createIOSBleRequest: _createIOSBleRequest,
   createBluetoothProtocol: _createBluetoothProtocol,
+  analysisBluetoothProtocol: _analysisBluetoothProtocol,
   handleBluetoothResponse: _handleBluetoothResponse,
   handleBleResponse: _handleBleResponse,
   generalCmdString: _generalCmdString,
-  generalSettingString: _generalSettingString,
+  parsePayload: _parsePayload
 }

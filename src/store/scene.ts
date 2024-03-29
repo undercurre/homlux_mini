@@ -1,6 +1,5 @@
 import { observable, runInAction } from 'mobx-miniprogram'
 import { querySceneListByHouseId } from '../apis/scene'
-import { PRO_TYPE } from '../config/device'
 import { homeStore } from './home'
 import { roomStore } from './room'
 import { IApiRequestOption } from '../utils/index'
@@ -25,20 +24,8 @@ export const sceneStore = observable({
    */
   get sceneList(): Scene.SceneItem[] {
     const { roomId } = roomStore.currentRoom
-    const roomDeviceList = roomStore.roomDeviceList[roomId]
-    const hasSwitch = roomDeviceList?.some((device) => device.proType === PRO_TYPE.switch) ?? false
-    const hasLight = roomDeviceList?.some((device) => device.proType === PRO_TYPE.light) ?? false
-
-    let list = this.allRoomSceneList.filter((scene) => scene.roomId === roomId && scene.deviceActions?.length > 0)
-
-    if (!hasSwitch && !hasLight) {
-      // 四个默认场景都去掉
-      list = list.filter((scene) => scene.isDefault === '0')
-    } else if (hasSwitch && !hasLight) {
-      // 只有开关，去掉默认的明亮、柔和
-      list = list.filter((scene) => !['2', '3'].includes(scene.defaultType))
-    }
-    return list.sort((a, b) => a.orderNum - b.orderNum)
+    const roomInfo = roomStore.roomList.find((room) => room.roomId === roomId) ?? ({} as Room.RoomInfo)
+    return roomInfo?.sceneList
   },
 
   // 房间场景映射，未被使用，可删除

@@ -9,6 +9,8 @@ import { storage, checkInputNameIllegal, emitter, showLoading, hideLoading } fro
 
 let timeId: number
 
+const MAX_MOVE_CARDS = 20 // 最多可以移动和删除的设备数（按卡片计数）
+
 ComponentWithComputed({
   options: {},
 
@@ -85,7 +87,7 @@ ComponentWithComputed({
     /**
      * @description 当前选项是否可以移动房间
      * 设备数量不能为0
-     * 设备均为子设备或WIFI设备
+     * 设备均为子设备或WIFI设备或86网关
      * 设备均在线
      */
     canMoveRoom(data) {
@@ -97,10 +99,11 @@ ComponentWithComputed({
       return (
         noScreen &&
         data.editSelectList?.length &&
+        data.editSelectList?.length <= MAX_MOVE_CARDS &&
         data.editSelectList.every((uId: string) => {
           const deviceId = uId.split(':')[0] // 不管有没有:
           const device = deviceStore.deviceMap[deviceId]
-          return [2, 3].includes(device.deviceType) && device.onLineStatus === 1
+          return [1, 2, 3].includes(device.deviceType) && device.onLineStatus === 1
         })
       )
     },
@@ -125,16 +128,16 @@ ComponentWithComputed({
     /**
      * @description 可被删除
      * 设备数量大于1
-     * 非智慧屏开关
+     * 非智慧屏开关，非网关
      */
     canDelete(data) {
-      const noScreen = data.editSelectList.every((uId: string) => {
+      const noScreenOrGateway = data.editSelectList.every((uId: string) => {
         const deviceId = uId.split(':')[0]
         const device = deviceStore.deviceMap[deviceId]
-        return !SCREEN_PID.includes(device.productId)
+        return !SCREEN_PID.includes(device.productId) && device.proType !== PRO_TYPE.gateway
       })
 
-      return noScreen && data.editSelectList?.length
+      return noScreenOrGateway && data.editSelectList?.length && data.editSelectList?.length <= MAX_MOVE_CARDS
     },
     editDeviceNameTitle(data) {
       return data.editProType === PRO_TYPE.switch ? '面板名称' : '设备名称'
@@ -149,7 +152,7 @@ ComponentWithComputed({
       return !data.editDeviceName
     },
     editRoomDisable(data) {
-      return roomStore.currentRoom.roomId === data.roomId
+      return roomStore.currentRoomId === data.roomId
     },
   },
 
@@ -193,6 +196,7 @@ ComponentWithComputed({
     // TODO 处理分组解散的交互提示
     handleDeleteDialog() {
       if (!this.data.canDelete) {
+        Toast(`最多同时删除${MAX_MOVE_CARDS}个设备`)
         return
       }
       const hasSwitch = this.data.editSelectList.some((uniId: string) => uniId.includes(':'))
@@ -236,22 +240,26 @@ ComponentWithComputed({
     },
     handleEditNamePopup() {
       if (!this.data.canEditName) {
+        Toast('请选择一个设备')
         return
       }
       const uniId = this.data.editSelectList[0]
-      const device = deviceStore.deviceFlattenMap[uniId]
+      const device = deviceStore.deviceFlattenList.find((d) => d.uniId === uniId)
+      if (!device) {
+        return
+      }
       if (uniId.includes(':')) {
         this.setData({
           showEditName: true,
-          editDeviceName: deviceStore.deviceFlattenMap[uniId].deviceName,
-          editSwitchName: deviceStore.deviceFlattenMap[uniId].switchInfoDTOList[0].switchName,
+          editDeviceName: device.deviceName,
+          editSwitchName: device.switchInfoDTOList[0].switchName,
           isEditSwitchName: true,
           editProType: device.proType,
         })
       } else {
         this.setData({
           showEditName: true,
-          editDeviceName: deviceStore.deviceFlattenMap[uniId].deviceName,
+          editDeviceName: device.deviceName,
           isEditSwitchName: false,
           editProType: device.proType,
         })
@@ -259,10 +267,14 @@ ComponentWithComputed({
     },
     handleMoveRoomPopup() {
       if (!this.data.canMoveRoom) {
+        Toast(`最多同时移动${MAX_MOVE_CARDS}个设备`)
         return
       }
       const uniId = this.data.editSelectList[0]
-      const device = deviceStore.deviceFlattenMap[uniId]
+      const device = deviceStore.deviceFlattenList.find((d) => d.uniId === uniId)
+      if (!device) {
+        return
+      }
       this.setData({
         showEditRoom: true,
         roomId: device.roomId,
@@ -270,13 +282,18 @@ ComponentWithComputed({
     },
     handleCreateGroup() {
       if (!this.data.canGroup) {
+        Toast('请选择多个在线灯具')
         return
       }
       const lightList = this.data.editSelectList
+      const lightGroup = deviceStore.deviceList.filter((d) => d.deviceType === 4)
       wx.navigateTo({
         url: '/package-room-control/group/index',
         success: (res) => {
-          res.eventChannel.emit('createGroup', { lightList })
+          res.eventChannel.emit('createGroup', {
+            lightList,
+            groupName: lightGroup?.length ? `灯组${lightGroup.length + 1}` : '',
+          })
         },
       })
       this.triggerEvent('close')
@@ -294,6 +311,9 @@ ComponentWithComputed({
         // 可能存在未重新开始移动，目标已被移动成功的情况
         if (!this.data.moveWaitlist.length) {
           this.triggerEvent('updateList')
+          Dialog.close() // 关闭【前端超时】提示窗口
+          emitter.off('group_device_result_status') // 取消监听
+
           Toast({
             message: '已成功移动',
             zIndex: 9999,
@@ -389,6 +409,7 @@ ComponentWithComputed({
     },
     async handleConfirm() {
       if (this.data.showEditName) {
+        const uniId = this.data.editSelectList[0]
         if (this.data.editProType === PRO_TYPE.switch) {
           // 校验名字合法性
           if (checkInputNameIllegal(this.data.editSwitchName)) {
@@ -403,12 +424,15 @@ ComponentWithComputed({
             Toast('按键名称不能超过5个字符')
             return
           }
-          if (this.data.editSwitchName.length > 6) {
+          if (this.data.editDeviceName.length > 6) {
             Toast('面板名称不能超过6个字符')
             return
           }
-          const [deviceId, switchId] = this.data.editSelectList[0].split(':')
-          const device = deviceStore.deviceFlattenMap[this.data.editSelectList[0]]
+          const [deviceId, switchId] = uniId.split(':')
+          const device = deviceStore.deviceFlattenList.find((d) => d.uniId === uniId)
+          if (!device) {
+            return
+          }
           const deviceInfoUpdateVoList = [] as Device.DeviceInfoUpdateVo[]
           let type = ''
           if (this.data.editSwitchName !== device.switchInfoDTOList[0].switchName) {
@@ -451,7 +475,7 @@ ComponentWithComputed({
               zIndex: 9999,
             })
             this.handleClose()
-            await homeStore.updateRoomCardList()
+            // await homeStore.updateRoomCardList()
             this.triggerEvent('updateDevice', device)
 
             // 如果修改的是面板名称，则需要同时更新面板其余的按键对应的卡片
@@ -471,13 +495,16 @@ ComponentWithComputed({
         }
         // 修改灯属性
         else {
-          const device = deviceStore.deviceFlattenMap[this.data.editSelectList[0]]
+          const device = deviceStore.deviceFlattenList.find((d) => d.uniId === uniId)
+          if (!device) {
+            return
+          }
 
           if (checkInputNameIllegal(this.data.editDeviceName)) {
             Toast('设备名称不能用特殊符号或表情')
             return
           }
-          if (this.data.editSwitchName.length > 6) {
+          if (this.data.editDeviceName.length > 6) {
             Toast('设备名称不能超过6个字符')
             return
           }
@@ -485,14 +512,14 @@ ComponentWithComputed({
             device.deviceType === 4
               ? // 灯组
                 await renameGroup({
-                  groupId: this.data.editSelectList[0],
+                  groupId: uniId,
                   groupName: this.data.editDeviceName,
                 })
               : // 单灯
                 await batchUpdate({
                   deviceInfoUpdateVoList: [
                     {
-                      deviceId: this.data.editSelectList[0],
+                      deviceId: uniId,
                       houseId: homeStore.currentHomeId,
                       deviceName: this.data.editDeviceName,
                       type: '0',
@@ -506,7 +533,7 @@ ComponentWithComputed({
               zIndex: 9999,
             })
             this.handleClose()
-            await homeStore.updateRoomCardList()
+            // await homeStore.updateRoomCardList()
             device.deviceName = this.data.editDeviceName // 用于传参，更新视图
             this.triggerEvent('updateDevice', device)
           } else {

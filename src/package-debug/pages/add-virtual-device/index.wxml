@@ -32,6 +32,13 @@
     center
     bind:click="toMeiju"
   />
+
+  <van-cell
+    title="发送广播"
+    is-link
+    center
+    bind:click="sendUdp"
+  />
 </van-cell-group>
 
 <text class="block py-50rpx">添加的设备</text>

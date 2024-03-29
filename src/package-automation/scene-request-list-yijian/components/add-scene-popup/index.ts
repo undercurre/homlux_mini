@@ -103,7 +103,7 @@ ComponentWithComputed({
         deviceActions: [],
         deviceConditions: [],
         houseId: homeStore.currentHomeDetail.houseId,
-        roomId: roomStore.roomList[roomStore.currentRoomIndex].roomId,
+        roomId: roomStore.currentRoomId,
         sceneIcon: this.data.sceneIcon,
         sceneName: this.data.sceneName,
         sceneType: this.data.linkSwitch ? '1' : '0',

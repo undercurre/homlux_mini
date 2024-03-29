@@ -1797,7 +1797,7 @@ Component({
               }
             } else {
               wx.redirectTo({
-                url: strUtil.getUrlWithParams('/package-distribution/bind-home/index', {
+                url: strUtil.getUrlWithParams('/package-distribution/pages/bind-home/index', {
                   deviceId: this.data.deviceId,
                 }),
               })
@@ -2075,7 +2075,7 @@ Component({
       const res = await bindMideaDevice({
         deviceId: this.data.deviceId,
         houseId: homeStore.currentHomeId,
-        roomId: roomStore.currentRoom.roomId,
+        roomId: roomStore.currentRoomId,
         verificationCode: app.addDeviceInfo.verificationCode,
       })
 

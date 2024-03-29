@@ -22,7 +22,6 @@ export function logout() {
 
 // WS连接
 let socketTask: WechatMiniprogram.SocketTask | null = null
-let socketIsConnect = false // socket是否处于连接状态
 let connectTimeId = 0 // 连接socket的延时器
 let isConnecting = false // 是否正在连接ws
 
@@ -33,7 +32,7 @@ const heartbeatInfo = {
 }
 
 export function isWsConnected() {
-  return socketIsConnect
+  return !!socketTask
 }
 
 export async function startWebsocketService() {
@@ -51,15 +50,14 @@ export async function startWebsocketService() {
   }
 
   isConnecting = true
-  if (socketIsConnect) {
+  if (socketTask) {
     Logger.log('已存在ws连接，正在关闭已有连接')
-    closeWebSocket()
+    await closeWebSocket()
   }
   socketTask = connectHouseSocket(homeStore.currentHomeId)
   socketTask.onClose(onSocketClose)
   socketTask.onOpen((res) => {
     isConnecting = false
-    socketIsConnect = true
     Logger.log('socket连接成功', res)
 
     // 30秒发一次心跳
@@ -80,7 +78,7 @@ export async function startWebsocketService() {
               // 3s内没有收到发出的心跳回复，认为socket断开需要重连
               Logger.error('socket心跳回复超时，重连')
               // 微信隐藏逻辑 closeSocket:fail wcwss invalid code, the code must be either 1000, or between 3000 and 4999
-              socketTask?.close({ code: 3000, reason: 'socket心跳回复超时' })
+              closeWebSocket(3000, 'socket心跳回复超时')
               clearInterval(heartbeatInfo.timeId)
             } else {
               Logger.log('socket心跳回复')
@@ -97,7 +95,7 @@ export async function startWebsocketService() {
     try {
       const res = JSON.parse(e.data as string)
 
-      // Logger.console('Ⓦ 收到ws信息：', res)
+      Logger.console('Ⓦ 收到ws信息：', res.result.eventType ?? '', res.result.eventData ?? res.result)
 
       const { topic, message, eventData, eventType } = res.result
 
@@ -123,13 +121,9 @@ export async function startWebsocketService() {
     await verifyNetwork()
 
     // 可能短时间内连续触发多次onError
-    Logger.error('socket错误onError：', err, 'socketIsConnect', socketIsConnect)
+    Logger.error('socket错误onError：', err, 'socketTask', socketTask)
     isConnecting = false
-    if (socketIsConnect) {
-      socketTask?.close({ code: 3000, reason: 'socket错误' }) // code=-1代码ws报错重连
-    } else {
-      delayConnectWS(15000)
-    }
+    closeWebSocket(3000, 'socket错误') // ws报错重连
   })
 }
 
@@ -168,37 +162,42 @@ export function socketSend(data: string | ArrayBuffer) {
  */
 function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {
   Logger.debug('socket已关闭连接', e)
-  socketIsConnect = false
   clearInterval(heartbeatInfo.timeId)
   const { code } = e
 
   if (code !== 1000 && code !== 4001) {
-    const delay = code === 3000 ? 25000 : 5000 // ws报错重连一般是因为wifi无法访问外网，降低重连频率
+    const delay = code === 3000 ? 15000 : 5000 // ws报错重连一般是因为wifi无法访问外网，降低重连频率
 
     Logger.error('socket异常关闭连接')
     delayConnectWS(delay)
   }
 }
 
-export function closeWebSocket() {
-  if (socketTask && socketIsConnect) {
-    socketTask.close({
-      code: 1000,
-      reason: '主动关闭',
-      success(res) {
-        Logger.debug('closeWebSocket-success', res)
-      },
-      fail(res) {
-        Logger.debug('closeWebSocket-fail', res)
-      },
-    })
-    socketIsConnect = false
-  }
+export function closeWebSocket(code = 1000, reason = '正常主动关闭') {
+  return new Promise((resolve) => {
+    if (socketTask) {
+      socketTask.close({
+        code,
+        reason,
+        success(res) {
+          Logger.debug('closeWebSocket-success', res, socketTask)
+          socketTask = null
+          resolve(true)
+        },
+        fail(res) {
+          Logger.debug('closeWebSocket-fail', res)
+          resolve(false)
+        },
+      })
+    } else {
+      resolve(true)
+    }
+  })
 }
 
 emitter.on('networkStatusChange', (res) => {
   // 已登录状态下，可以访问外网且当前没有ws连接的情况，发起ws连接
-  if (res.isConnectStatus && isLogon() && !socketIsConnect) {
-    startWebsocketService()
+  if (res.isConnectStatus && isLogon() && !socketTask) {
+    delayConnectWS(3000)
   }
 })

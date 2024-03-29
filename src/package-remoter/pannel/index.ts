@@ -152,8 +152,8 @@ ComponentWithComputed({
         this.setData({ setTemperture })
       }
       const payload = isTempSetting
-        ? remoterProtocol.generalSettingString([0xff, 0xff, this.data.setTemperture])
-        : remoterProtocol.generalCmdString(CMD[key])
+        ? remoterProtocol.generalCmdString([0xff, 0xff, this.data.setTemperture]) // 浴霸 DEBUG
+        : remoterProtocol.generalCmdString([CMD[key]])
 
       const { dir } = e.target.dataset
       Logger.log('toSendCmd', key, dir, { payload, addr, isFactory: this.data.isFactoryMode })
@@ -194,7 +194,7 @@ ComponentWithComputed({
       }
 
       const addr = this.data.isFactoryMode ? FACTORY_ADDR : remoterStore.curAddr
-      const payload = remoterProtocol.generalCmdString(CMD[longpress])
+      const payload = remoterProtocol.generalCmdString([CMD[longpress]])
       console.log('handleLongPress', longpress, payload)
 
       // DEBUG 蓝牙连接模式 TODO 定时连续发指令
@@ -284,7 +284,8 @@ ComponentWithComputed({
       this.setData({ isDebugMode: !this.data.isDebugMode, isFactoryMode: false })
     },
 
-    toggleAddr() {
+    // 切换厂测模式
+    toggleFactoryMode() {
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
 
       this.setData({ isFactoryMode: !this.data.isFactoryMode })

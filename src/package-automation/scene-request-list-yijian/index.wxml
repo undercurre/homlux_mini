@@ -55,32 +55,26 @@
       ></mz-loading>
     </view>
   </scroll-view>
-
-  <view class="flex flex-row gap-x-46rpx px-32rpx">
+  <view
+    class="flex flex-row justify-between px-32rpx"
+    wx:if="{{finishNum === deviceList.length}}"
+  >
     <van-button
-      wx:if="{{successNum === deviceList.length && finishNum === deviceList.length}}"
-      class="w-full"
-      type="primary"
-      size="large"
+      wx:if="{{successNum < deviceList.length}}"
+      custom-class="double-btn"
+      custom-style="border: 2rpx solid #A2A2A2;"
+      color="transparent"
       bind:click="linkSwitch"
-      >下一步</van-button
     >
-
-    <block wx:if="{{successNum < deviceList.length && finishNum === deviceList.length}}">
-      <van-button
-        class="w-full"
-        size="large"
-        bind:click="linkSwitch"
-        >跳过</van-button
-      >
-      <van-button
-        class="w-full"
-        type="primary"
-        size="large"
-        bind:click="retry"
-        >重试</van-button
-      >
-    </block>
+      <text class="text-36rpx text-black-tips">跳过</text>
+    </van-button>
+    <van-button
+      type="primary"
+      custom-class="{{successNum < deviceList.length ? 'double-btn' : 'single-btn'}}"
+      bind:click="{{ successNum === deviceList.length ? 'linkSwitch' : 'retry'}}"
+    >
+      <text class="text-36rpx">{{ successNum === deviceList.length ? '下一步' : '重试'}}</text>
+    </van-button>
   </view>
 </view>
 

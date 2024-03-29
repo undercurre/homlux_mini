@@ -215,11 +215,13 @@ export class WifiSocket {
       return { success: true, msg: '已知IP' }
     }
 
-    await this.sendCmdForDeviceIp()
-
     // 获取IP重试，存在第一次获取超时的情况，尤其安卓端比较明显
-    if (!this.deviceInfo.ip) {
-      await this.sendCmdForDeviceIp()
+    for (let i = 0; i < 4; i++) {
+      if (!this.deviceInfo.ip) {
+        await this.sendCmdForDeviceIp()
+      } else {
+        break
+      }
     }
 
     // udp获取ip失败的情况，从本机Ip推断网关IP
@@ -333,6 +335,7 @@ export class WifiSocket {
 
   handleReply(message: ArrayBuffer) {
     const reply = decodeCmd(message, this.key)
+
     const callback = this.cmdCallbackMap[reply.reqId]
 
     if (callback) {
@@ -340,6 +343,7 @@ export class WifiSocket {
 
       delete this.cmdCallbackMap[reply.reqId] // 删除已经执行的callback
     } else {
+      Logger.log('udpClient.handleReply-onMessageHandlerList', reply)
       this.onMessageHandlerList.map((handler) => handler(reply))
     }
   }

@@ -117,6 +117,7 @@
           >
             <room-card
               room-info="{{item}}"
+              room-light-summary="{{lightSummary[item.roomId]}}"
               data-room="{{item.roomId}}"
               isMoving="{{isMoving}}"
               bind:sceneSelect="handleSceneSelect"
@@ -152,7 +153,7 @@
         <text class="text-24rpx text-black-59 mb-224rpx opacity-40">立即添加设备，开启智慧照明</text>
         <van-button
           bind:click="goToWhenConnected"
-          data-url="/package-distribution/choose-device/index"
+          data-url="/package-distribution/pages/choose-device/index"
           color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)"
           custom-class="add-immediately-btn"
           wx:if="{{isInit && !hasDevice && (isCreator || isAdmin)}}"

@@ -109,13 +109,16 @@ export async function delDeviceSubscribe(houseId: string) {
  * @param params.modelNumber 特殊设备型号（A0），如果存在则必传
  * @param params.type 设备品类(格式如AC)
  */
-export async function queryGuideInfo(params: {
-  houseId: string
-  mode: string
-  modelNumber?: string
-  sn8?: string
-  type: string
-}) {
+export async function queryGuideInfo(
+  params: {
+    houseId: string
+    mode: string
+    modelNumber?: string
+    sn8?: string
+    type: string
+  },
+  options?: IApiRequestOption,
+) {
   return await mzaioRequest.post<{
     isAutoConnect: string // 上电默认连接模式(0 不启动，1 AP，2 WIFI零配)
     mainConnectTypeDesc: string // 配网介绍
@@ -125,7 +128,7 @@ export async function queryGuideInfo(params: {
     wifiFrequencyBand: string // WIFI频段：1:2.4G，2:2.4G/5G
   }>({
     log: true,
-    loading: false,
+    loading: options?.loading ?? false,
     url: '/v1/thirdparty/midea/device/queryGuideInfo',
     data: params,
   })

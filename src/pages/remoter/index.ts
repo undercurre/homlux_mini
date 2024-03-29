@@ -1,17 +1,9 @@
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { initBleCapacity, storage, unique, isNullOrUnDef, emitter, delay } from '../../utils/index'
+import { initBleCapacity, storage, unique, isNullOrUnDef, emitter, delay, Logger } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import { createBleServer, bleAdvertising } from '../../utils/remoterUtils'
-import {
-  deviceConfig,
-  MIN_RSSI,
-  SEEK_TIMEOUT,
-  SEEK_TIMEOUT_CONTROLED,
-  CMD,
-  FREQUENCY_TIME,
-  SEEK_INTERVAL,
-} from '../../config/remoter'
+import { deviceConfig, MIN_RSSI, CMD, FREQUENCY_TIME, SEEK_INTERVAL, SEEK_TIMEOUT } from '../../config/remoter'
 import { defaultImgDir } from '../../config/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
@@ -35,16 +27,16 @@ ComponentWithComputed({
       (storage.get('navigationBarHeight') as number),
     showTips: false, // 首次进入显示操作提示
     tipsStep: 0,
-    isSeeking: false, // 正在主动搜索设备（不标记静默搜索的情况）
+    isSeeking: false, // 正在主动搜索设备
+    _isDiscoverying: false, // 正在搜索设备（包括静默更新状态的情况）
     foundListHolder: false, // 临时显示发现列表的点位符
     canShowNotFound: false, // 已搜索过至少一次但未找到
     foundList: [] as Remoter.DeviceItem[], // 搜索到的设备
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
-    _time_id_end: null as number | null, // 定时终止搜索设备
-    _time_id_poll: null as number | null, // 定时轮询设备状态
+    _time_id_end: null as any, // 定时终止搜索设备
     _lastPowerKey: '', // 记录上一次点击‘照明’时的指令键，用于反转处理
-    _firstLoad: true, // 页面首次打开
     _timer: 0, // 记录上次指令时间
+    _holdBleScan: false, // onHide时保持蓝牙扫描的标志
     debugStr: '[rx]',
     isDebugMode: false,
   },
@@ -86,111 +78,26 @@ ComponentWithComputed({
       //   console.log('onBLECharacteristicValueChange', remoterCrypto.ab2hex(res.value))
       // })
 
-      // 搜索一轮设备
-      // this.toSeek()
-
       // 版本获取
       const info = wx.getAccountInfoSync()
       this.data._envVersion = info.miniProgram.envVersion
     },
 
     async onShow() {
+      this.data._holdBleScan = false
+
       await initBleCapacity()
 
       // 监听扫描到新设备事件
       wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
         // console.log('onBluetoothDeviceFound', res)
-        const recoveredList =
-          unique(res.devices, 'deviceId') // 过滤重复设备
-            .map((item) => remoterProtocol.searchDeviceCallBack(item)) // 过滤不支持的设备
-            .filter((item) => !!item) || []
-
-        console.log('搜寻到的设备列表：', recoveredList)
-
-        // 在终止搜寻前先记录本次搜索的操作方式
-        const isUserControlled = this.data.isSeeking
-
-        // 找到设备，即终止搜寻
-        this.endSeek()
-
-        // 更新我的设备列表
-        remoterStore.renewRmState(recoveredList as Remoter.DeviceRx[])
-        this.initDrag()
-
-        // 显示设备调试信息
-        const rListRSSI = recoveredList.map((r) => `${r?.deviceType},${r?.deviceModel}:${r?.RSSI}`)
-        const debugStr = `[rx]${rListRSSI.join('|')}`
-        this.setData({ debugStr })
-
-        // 静默搜索，只处理已保存列表的设备
-        if (!isUserControlled) {
-          return
-        }
-
-        // 用户主动搜索，刷新发现列表
-        const foundList = [] as Remoter.DeviceDetail[]
-        const newDeviceCountMap = {} as IAnyObject
-        recoveredList.forEach((item) => {
-          const isSavedDevice = remoterStore.deviceAddrs.includes(item!.addr)
-          if (
-            item!.RSSI >= this.data.MIN_RSSI && // 过滤弱信号设备
-            !isSavedDevice // 排除已在我的设备列表的设备
-          ) {
-            const deviceType = item!.deviceType
-            const deviceModel = item!.deviceModel
-            const config = deviceConfig[deviceType][deviceModel]
-
-            if (!config) {
-              console.log('config NOT EXISTED in onBluetoothDeviceFound')
-              return
-            }
-
-            // 同默认名字设备的数量，包括已保存、新发现
-            const savedDeviceCount = remoterStore.remoterList.filter((device) => {
-              if (device.deviceType === '13') {
-                return device.deviceType === deviceType && device.deviceModel === deviceModel
-              }
-              return device.deviceType === deviceType
-            }).length
-            const uniqueType = deviceType === '13' ? `${deviceType}${deviceModel}` : deviceType
-            const newDeviceCount = newDeviceCountMap[uniqueType] ?? 0
-            newDeviceCountMap[uniqueType] = newDeviceCount + 1
-
-            const deviceNameSuffix = savedDeviceCount + newDeviceCount
-
-            // 如果设备名已存在，则加上编号后缀，以避免同名混淆 // TODO 更名后仍和已保存的名字后缀存在一样的情况，未处理
-            // const hasSavedName = remoterStore.deviceNames.includes(config.deviceName)
-            // const hasFoundName = foundList.findIndex((d) => d.deviceName === config.deviceName) > -1
-            const deviceName = deviceNameSuffix ? config.deviceName + deviceNameSuffix : config.deviceName
-
-            console.log({ savedDeviceCount, newDeviceCount }, newDeviceCountMap)
-
-            // 更新发现设备列表
-            foundList.push({
-              deviceId: item!.deviceId,
-              addr: item!.addr,
-              devicePic: config.devicePic,
-              actions: config.actions,
-              deviceName,
-              deviceType,
-              deviceModel,
-              actionStatus: false,
-              saved: false,
-              defaultAction: 0,
-              DISCOVERED: 1,
-            })
-          }
-        })
-
-        this.setData({ foundList })
+        this.resolveFoundDevices(res)
       })
 
       await delay(0)
 
-      // 首次进入，由用户手动操作；非首次进入（返回），自动搜索一轮设备
-      if (this.data._firstLoad) {
-        this.data._firstLoad = false
-      } else {
+      // 如果未在发现模式，则搜索设备
+      if (!this.data._isDiscoverying) {
         this.toSeek()
       }
       // 获取已连接的设备
@@ -198,36 +105,38 @@ ComponentWithComputed({
     },
 
     onHide() {
-      console.log('detached on Index')
+      console.log('onHide on Index')
 
-      this.endSeek()
       wx.offBluetoothAdapterStateChange() // 移除蓝牙适配器状态变化事件的全部监听函数
-      wx.offBluetoothDeviceFound() // 移除搜索到新设备的事件的全部监听函数
       // wx.offBLECharacteristicValueChange() // 移除蓝牙低功耗设备的特征值变化事件的全部监听函数
 
-      // 关闭外围设备服务端
-      if (this.data._bleServer) {
-        this.data._bleServer.close()
-        this.data._bleServer = null
-      }
       // 移除系统位置信息开关状态的监听
       if (this.data._listenLocationTimeId) {
         clearInterval(this.data._listenLocationTimeId)
       }
 
-      // 取消计时器
-      if (this.data._time_id_end) {
-        clearTimeout(this.data._time_id_end)
-        this.data._time_id_end = null
-      }
-      if (this.data._time_id_poll) {
-        clearTimeout(this.data._time_id_poll)
-        this.data._time_id_poll = null
+      if (!this.data._holdBleScan) {
+        emitter.off('remoterChanged')
+        wx.offBluetoothDeviceFound() // 移除搜索到新设备的事件的全部监听函数
+
+        this.endSeek()
+        // 关闭外围设备服务端
+        if (this.data._bleServer) {
+          this.data._bleServer.close()
+          this.data._bleServer = null
+        }
+
+        // 取消计时器
+        if (this.data._time_id_end) {
+          clearTimeout(this.data._time_id_end)
+          this.data._time_id_end = null
+        }
       }
     },
 
     onUnload() {
-      emitter.off('remoterChanged')
+      console.log('onUnload on Index')
+      this.endSeek()
     },
 
     toggleDebug() {
@@ -236,20 +145,6 @@ ComponentWithComputed({
       }
 
       this.setData({ isDebugMode: !this.data.isDebugMode })
-    },
-
-    // 轮询设备列表
-    toPoll() {
-      // 如果已有定时，先清除，以便重复触发轮询
-      if (this.data._time_id_poll) {
-        clearTimeout(this.data._time_id_poll)
-        this.data._time_id_poll = null
-      }
-
-      // 如果未有定时，并且存在列表，则开始静默轮询
-      if (!this.data._time_id_poll && remoterStore.hasRemoter) {
-        this.data._time_id_poll = setTimeout(() => this.toSeek(), SEEK_INTERVAL)
-      }
     },
 
     // 拖拽列表初始化
@@ -266,9 +161,6 @@ ComponentWithComputed({
       remoterStore.retrieveRmStore()
 
       this.initDrag()
-
-      // 设备列表变更，同时更新轮询设置
-      this.toPoll()
     },
 
     // 将新发现设备, 添加到[我的设备]
@@ -282,7 +174,7 @@ ComponentWithComputed({
         ...newDevice,
         orderNum,
         defaultAction: 0,
-      })
+      } as Remoter.DeviceRx)
 
       this.setData({
         foundListHolder: !this.data.foundList.length,
@@ -313,8 +205,13 @@ ComponentWithComputed({
       }
       // 跳转到控制页
       else {
+        this.data._holdBleScan = true
+        let page = 'pannel'
+        if (deviceType === '13') {
+          page = deviceModel === '01' ? 'light' : 'fan-light'
+        }
         wx.navigateTo({
-          url: `/package-remoter/pannel/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceModel=${deviceModel}&addr=${addr}`,
+          url: `/package-remoter/${page}/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceModel=${deviceModel}&addr=${addr}`,
         })
       }
     },
@@ -335,16 +232,25 @@ ComponentWithComputed({
       }
       this.data._timer = now
 
-      const { addr, actions, defaultAction } = e.detail
+      const { addr, actions, defaultAction, deviceType, deviceModel } = e.detail
       // const addr = '18392c0c5566' // 模拟遥控器mac
 
       // HACK 特殊的照明按钮反转处理
       let { key } = actions[defaultAction]
       if (key === 'LIGHT_LAMP') {
-        key = this.data._lastPowerKey === `${key}_OFF` ? `${key}_ON` : `${key}_OFF`
-        this.data._lastPowerKey = key
+        this.data._lastPowerKey = this.data._lastPowerKey === `${key}_OFF` ? `${key}_ON` : `${key}_OFF`
+        // this.data._lastPowerKey = key
+      } else if (key === 'LIGHT_NIGHT_LAMP') {
+        if (deviceType === '13' && deviceModel === '01') {
+          remoterStore.setAddr(addr)
+          const status = remoterStore.curRemoter.deviceAttr
+          if (status && status.LIGHT_NIGHT_LAMP == true) {
+            key = 'LIGHT_LAMP'
+          }
+        }
       }
-      const payload = remoterProtocol.generalCmdString(CMD[key])
+      console.log('lmn>>>CMD key=', key)
+      const payload = remoterProtocol.generalCmdString([CMD[key]])
 
       // 建立BLE外围设备服务端
       if (!this.data._bleServer) {
@@ -356,42 +262,43 @@ ComponentWithComputed({
         addr,
         payload,
       })
-
-      await this.toSeek()
     },
+
     /**
      * @description 搜索设备
      * @param isUserControlled 是否用户主动操作
      */
     async toSeek(e?: WechatMiniprogram.TouchEvent) {
       const isUserControlled = !!e // 若从wxml调用，即为用户主动操作
-      const interval = isUserControlled ? SEEK_TIMEOUT_CONTROLED : SEEK_TIMEOUT // 在template中调用时，会误传入非number参数
 
-      // 若用户主动搜索，检查权限，并显示搜索中状态
+      // 若用户主动搜索，则设置搜索中标志
       if (isUserControlled) {
-        await initBleCapacity()
-
         this.setData({
           isSeeking: true,
         })
+        this.data._time_id_end = setTimeout(
+          () =>
+            this.setData({
+              isSeeking: false,
+            }),
+          SEEK_TIMEOUT,
+        )
       }
 
-      // 开始搜寻附近的蓝牙外围设备
-      wx.startBluetoothDevicesDiscovery({
-        allowDuplicatesKey: true,
-        powerLevel: 'high',
-        interval,
-        fail(err) {
-          console.log('startBluetoothDevicesDiscoveryErr', err)
-        },
-      })
+      if (this.data._isDiscoverying) {
+        console.log('[已在发现中且未停止]')
+      } else {
+        this.data._isDiscoverying = true
 
-      // 如果一直找不到，也自动停止搜索
-      // !! 停止时间要稍长于 SEEK_TIMEOUT，否则会导致监听方法不执行
-      this.data._time_id_end = setTimeout(() => this.endSeek(), interval + 500)
-
-      // 递归调用轮询方法
-      this.toPoll()
+        // 开始搜寻附近的蓝牙外围设备
+        wx.startBluetoothDevicesDiscovery({
+          allowDuplicatesKey: true,
+          powerLevel: 'high',
+          interval: SEEK_INTERVAL,
+          fail: (err) => Logger.log('[startBluetoothDevicesDiscoveryErr]', err),
+          success: () => Logger.log('[startBluetoothDevicesDiscoverySuccess]'),
+        })
+      }
     },
     // 停止搜索设备
     endSeek() {
@@ -400,12 +307,105 @@ ComponentWithComputed({
         this.data._time_id_end = null
       }
       wx.stopBluetoothDevicesDiscovery({
-        success: () => console.log('停止搜寻蓝牙外围设备'),
+        success: () => {
+          Logger.log('[stopBluetoothDevicesDiscovery]')
+          this.data._isDiscoverying = false
+          this.setData({
+            isSeeking: false,
+            canShowNotFound: true,
+          })
+        },
       })
-      this.setData({
-        isSeeking: false,
-        canShowNotFound: true,
+
+      this.data._isDiscoverying = false
+    },
+
+    // 处理搜索到的设备
+    resolveFoundDevices(res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) {
+      const recoveredList =
+        unique(res.devices, 'deviceId') // 过滤重复设备
+          .map((item) => remoterProtocol.searchDeviceCallBack(item)) // 过滤不支持的设备
+          .filter((item) => !!item) || []
+
+      // console.log('搜寻到的设备列表：', recoveredList)
+
+      if (!recoveredList?.length) {
+        return
+      }
+
+      // 在终止搜寻前先记录本次搜索的操作方式
+      const isUserControlled = this.data.isSeeking
+
+      // 更新我的设备列表
+      remoterStore.renewRmState(recoveredList as Remoter.DeviceRx[])
+      this.initDrag()
+
+      // 显示设备调试信息
+      const rListRSSI = recoveredList.map((r) => `${r?.deviceType},${r?.deviceModel}:${r?.RSSI}`)
+      const debugStr = `[rx]${rListRSSI.join('|')}`
+      this.setData({ debugStr })
+
+      // 静默搜索，只处理已保存列表的设备
+      if (!isUserControlled) {
+        return
+      }
+
+      // 用户主动搜索，刷新发现列表
+      const foundList = [] as Remoter.DeviceDetail[]
+      const newDeviceCountMap = {} as IAnyObject
+      recoveredList.forEach((item) => {
+        const isSavedDevice = remoterStore.deviceAddrs.includes(item!.addr)
+        if (
+          item!.RSSI >= this.data.MIN_RSSI && // 过滤弱信号设备
+          !isSavedDevice // 排除已在我的设备列表的设备
+        ) {
+          const deviceType = item!.deviceType
+          const deviceModel = item!.deviceModel
+          const config = deviceConfig[deviceType][deviceModel]
+
+          if (!config) {
+            console.log('config NOT EXISTED in onBluetoothDeviceFound')
+            return
+          }
+
+          // 同默认名字设备的数量，包括已保存、新发现
+          const savedDeviceCount = remoterStore.remoterList.filter((device) => {
+            if (device.deviceType === '13') {
+              return device.deviceType === deviceType && device.deviceModel === deviceModel
+            }
+            return device.deviceType === deviceType
+          }).length
+          const uniqueType = deviceType === '13' ? `${deviceType}${deviceModel}` : deviceType
+          const newDeviceCount = newDeviceCountMap[uniqueType] ?? 0
+          newDeviceCountMap[uniqueType] = newDeviceCount + 1
+
+          const deviceNameSuffix = savedDeviceCount + newDeviceCount
+
+          // 如果设备名已存在，则加上编号后缀，以避免同名混淆 // TODO 更名后仍和已保存的名字后缀存在一样的情况，未处理
+          // const hasSavedName = remoterStore.deviceNames.includes(config.deviceName)
+          // const hasFoundName = foundList.findIndex((d) => d.deviceName === config.deviceName) > -1
+          const deviceName = deviceNameSuffix ? config.deviceName + deviceNameSuffix : config.deviceName
+
+          console.log({ savedDeviceCount, newDeviceCount }, newDeviceCountMap)
+
+          // 更新发现设备列表
+          foundList.push({
+            deviceId: item!.deviceId,
+            addr: item!.addr,
+            devicePic: config.devicePic,
+            actions: config.actions,
+            deviceName,
+            deviceType,
+            deviceModel,
+            actionStatus: false,
+            saved: false,
+            defaultAction: 0,
+            DISCOVERED: 1,
+          })
+        }
       })
+
+      this.setData({ foundList })
     },
 
     // 获取已建立连接的设备 暂时用不着
@@ -445,7 +445,7 @@ ComponentWithComputed({
      * 拖拽结束相关
      * @param e
      */
-    async handleSortEnd(e: { detail: { listData: Remoter.DeviceItem[] } }) {
+    async handleSortEnd(e: { detail: { listData: Remoter.DeviceRx[] } }) {
       // 更新列表数据
       remoterStore.saveRmStore(
         e.detail.listData.map((item, index) => ({

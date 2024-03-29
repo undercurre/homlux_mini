@@ -37,11 +37,11 @@
 
   <text class="label">选择房间</text>
 
-  <view class="flex flex-row flex-wrap gap-32rpx">
+  <view class="flex flex-row flex-wrap items-end">
     <text
       wx:for="{{roomList}}"
       wx:key="roomId"
-      class="px-32rpx rounded-28rpx text-28 leading-56rpx {{ item.roomId === deviceInfo.roomId ? 'room-checked text-white' : 'bg-hex-DFE1E5 text-black-59'}}"
+      class="px-32rpx rounded-28rpx text-28 leading-56rpx mt-16rpx mr-32rpx {{ item.roomId === deviceInfo.roomId ? 'room-checked text-white' : 'bg-hex-DFE1E5 text-black-59'}}"
       bind:tap="selectRoom"
       data-index="{{index}}"
       >{{ item.roomName }}</text

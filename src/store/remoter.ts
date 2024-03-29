@@ -1,6 +1,6 @@
 import { observable, runInAction } from 'mobx-miniprogram'
 import { storage, isDevMode } from '../utils/index'
-import { deviceConfig } from '../config/remoter'
+import { COLORTEMP_RANGE, deviceConfig } from '../config/remoter'
 
 const MOCK_DEVICES = [
   {
@@ -12,6 +12,34 @@ const MOCK_DEVICES = [
     deviceName: '吸顶灯Mock',
     deviceType: '13',
     deviceModel: '01',
+    saved: true,
+    actionStatus: true,
+    defaultAction: 0,
+    DISCOVERED: 0,
+  },
+  {
+    dragId: '112233445569',
+    orderNum: 1,
+    deviceId: '0',
+    addr: '112233445569',
+    devicePic: '/assets/img/remoter/bathHeater.png',
+    deviceName: '风扇灯智能款Mock',
+    deviceType: '13',
+    deviceModel: '02',
+    saved: true,
+    actionStatus: true,
+    defaultAction: 0,
+    DISCOVERED: 0,
+  },
+  {
+    dragId: '100101041280',
+    orderNum: 1,
+    deviceId: '0',
+    addr: '100101041280',
+    devicePic: '/assets/img/remoter/bathHeater.png',
+    deviceName: '风扇灯基础款Mock',
+    deviceType: '13',
+    deviceModel: '03',
     saved: true,
     actionStatus: true,
     defaultAction: 0,
@@ -73,13 +101,13 @@ const MOCK_DEVICES = [
     defaultAction: 0,
     DISCOVERED: 0,
   },
-] as Remoter.DeviceItem[]
+] as Remoter.DeviceRx[]
 
 // 设备列表缓存键名
 const RM_KEY = 'remoterListLS'
 
 // 保存数据到缓存，只保存指定的键
-export const storeRmList = (list: Remoter.DeviceItem[], key = RM_KEY) => {
+export const storeRmList = (list: Remoter.DeviceRx[], key = RM_KEY) => {
   const filterList = list.map((r) => ({
     orderNum: r.orderNum,
     addr: r.addr,
@@ -95,7 +123,7 @@ export const storeRmList = (list: Remoter.DeviceItem[], key = RM_KEY) => {
 
 export const remoterStore = observable({
   // 我的设备列表，只需要保存部分属性
-  remoterList: [] as Remoter.DeviceItem[],
+  remoterList: [] as Remoter.DeviceRx[],
 
   // 当前详情页 addr
   curAddr: '',
@@ -117,12 +145,12 @@ export const remoterStore = observable({
     return this.remoterList.map((device) => device.deviceName)
   },
 
-  get remoterMap(): Record<string, Remoter.DeviceItem> {
+  get remoterMap(): Record<string, Remoter.DeviceRx> {
     return Object.fromEntries(this.remoterList.map((device) => [device.addr, device]))
   },
 
   // 我的设备列表，用于列表视图展示
-  get remoterViewList(): Remoter.DeviceItem[] {
+  get remoterViewList(): Remoter.DeviceRx[] {
     const list = [...this.remoterList]
     return list
       .map((device) => {
@@ -130,7 +158,7 @@ export const remoterStore = observable({
         const config = deviceConfig[deviceType][deviceModel]
         if (!config) {
           console.log('device config NOT EXISTED IN remoterViewList')
-          return {} as Remoter.DeviceItem
+          return {} as Remoter.DeviceRx
         }
         const { devicePic, actions } = config
         return {
@@ -146,14 +174,14 @@ export const remoterStore = observable({
   },
 
   // 当前遥控器信息
-  get curRemoter(): Remoter.DeviceDetail {
+  get curRemoter(): Remoter.DeviceRx {
     if (!this.curAddr) {
-      return {} as Remoter.DeviceDetail
+      return {} as Remoter.DeviceRx
     }
     const device = this.remoterMap[this.curAddr] || {}
     const { deviceModel, deviceType } = device
     if (!deviceModel || !deviceType) {
-      return {} as Remoter.DeviceDetail
+      return {} as Remoter.DeviceRx
     }
     const config = deviceConfig[deviceType][deviceModel] || {}
 
@@ -163,16 +191,58 @@ export const remoterStore = observable({
     }
   },
 
+  /**
+   * 当前设备的色温范围
+   */
+  get curColortempRange(): number[] {
+    const { deviceModel, deviceType, deviceAttr } = this.curRemoter ?? {}
+    const { COLORTEMP_MAX, COLORTEMP_MIN } = deviceAttr ?? {}
+
+    // 设备广播值不存在时，使用本地默认值
+    if (!COLORTEMP_MIN || !COLORTEMP_MAX) {
+      return COLORTEMP_RANGE[`${deviceType}${deviceModel}`]
+    }
+
+    return [COLORTEMP_MIN, COLORTEMP_MAX]
+  },
+
   // 当前遥控器索引
   get curRemoterIndex(): number {
     const { remoterList, curAddr } = this
     return remoterList.findIndex((d) => d.addr === curAddr)
   },
 
+  // // 是否有夜灯模式
+  // get hasNightLamp(): boolean {
+  //   const { deviceModel, deviceType } = this.curRemoter
+  //   if (!deviceModel || !deviceType) {
+  //     return false
+  //   }
+  //   return deviceType === '13' && deviceModel === '01'
+  // },
+
+  // // 是否有风扇功能
+  // get hasFan(): boolean {
+  //   const { deviceModel, deviceType } = this.curRemoter
+  //   if (!deviceModel || !deviceType) {
+  //     return false
+  //   }
+  //   return deviceType === '13' && deviceModel === '02'
+  // },
+
+  // 是否有调色调亮度功能
+  get hasColorBright(): boolean {
+    const { deviceModel, deviceType } = this.curRemoter
+    if (!deviceModel || !deviceType) {
+      return false
+    }
+    return deviceType === '13' && (deviceModel === '01' || deviceModel === '02')
+  },
+
   // 从本地缓存初始化/重置【我的设备】列表
   retrieveRmStore() {
     const defaultList = isDevMode() ? MOCK_DEVICES : [] // 是否开启模拟数据，用于模型器样式调整
-    const list = (storage.get(RM_KEY) ?? defaultList) as Remoter.DeviceItem[]
+    const list = (storage.get(RM_KEY) ?? defaultList) as Remoter.DeviceRx[]
 
     runInAction(() => {
       this.remoterList = list
@@ -194,21 +264,22 @@ export const remoterStore = observable({
       const isDiscovered = rListIds.includes(addr)
       const actionKey = actions[defaultAction].key ?? ''
 
-      let actionStatus
+      let actionStatus, rd
       if (isDiscovered) {
-        const rd = recoveredList.find((d) => d.addr === addr)
-        const { deviceAttr } = rd!
+        rd = recoveredList.find((d) => d.addr === addr) ?? ({} as Remoter.DeviceRx)
+        const { deviceAttr } = rd
         actionStatus = deviceAttr[actionKey]
       }
 
       return {
         ...device,
+        ...rd,
         actionStatus,
         DISCOVERED: isDiscovered ? 1 : 0,
       }
     })
 
-    console.log('renewRmState', list)
+    // console.log('renewRmState', list)
     runInAction(() => {
       this.remoterList = list
     })
@@ -257,7 +328,7 @@ export const remoterStore = observable({
   },
 
   // 整体更新【我的设备】列表，并保存到本地缓存 // TODO 过滤元素，优化类型定义
-  saveRmStore(list: Remoter.DeviceItem[]) {
+  saveRmStore(list: Remoter.DeviceRx[]) {
     runInAction(() => {
       this.remoterList = list
     })
@@ -265,7 +336,7 @@ export const remoterStore = observable({
   },
 
   // 添加新的设备 // TODO 过滤元素，优化类型定义
-  addRemoter(device: Remoter.DeviceItem) {
+  addRemoter(device: Remoter.DeviceRx) {
     const list = [...this.remoterList, device]
     storeRmList(list)
     runInAction(() => {
@@ -276,6 +347,6 @@ export const remoterStore = observable({
 
 export const remoterBinding = {
   store: remoterStore,
-  fields: ['hasRemoter', 'remoterViewList', 'curRemoter'],
+  fields: ['hasRemoter', 'hasColorBright', 'remoterViewList', 'curRemoter', 'remoterList'],
   actions: [],
 }

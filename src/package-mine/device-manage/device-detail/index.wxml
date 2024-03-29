@@ -67,6 +67,14 @@
           </van-cell>
 
           <van-cell
+            wx:if="{{deviceInfo.deviceType === 1}}"
+            title="网关子设备"
+            border="{{true}}"
+            is-link
+            bind:click="toSubDeviceList"
+          ></van-cell>
+
+          <van-cell
             wx:if="{{isSubDeviceOrGateway}}"
             title="Mac 地址"
             value="{{mac}}"
@@ -115,8 +123,8 @@
     type="warning"
     custom-class="delete-btn"
     bind:click="handleDeviceDelete"
-    >删除设备</van-button
-  >
+    >删除设备
+  </van-button>
 </view>
 
 <van-toast id="van-toast" />

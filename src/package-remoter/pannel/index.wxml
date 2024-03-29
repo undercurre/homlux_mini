@@ -14,7 +14,7 @@
     <!-- 工厂产测模式 -->
     <div
       class="img-wrapper"
-      bind:tap="toggleAddr"
+      bind:tap="toggleFactoryMode"
       wx:if="{{isDebugMode}}"
     >
       <text class="text-18rpx mr-10rpx">{{curAddrText}}</text>

@@ -3,6 +3,8 @@ import { runInAction } from 'mobx-miniprogram'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+
+// TODO 精简bindings
 import {
   othersBinding,
   roomBinding,
@@ -13,6 +15,7 @@ import {
   othersStore,
   roomStore,
   deviceStore,
+  sceneStore,
 } from '../../store/index'
 import {
   storage,
@@ -24,6 +27,7 @@ import {
   strUtil,
   delay,
   Logger,
+  isLightOn,
 } from '../../utils/index'
 import {
   MAX_DEVICES_USING_WS,
@@ -31,6 +35,7 @@ import {
   PRO_TYPE,
   ROOM_CARD_H,
   ROOM_CARD_M,
+  ROOM_CARD_TOP,
   defaultImgDir,
 } from '../../config/index'
 import { allDevicePowerControl, updateRoomSort, updateDefaultHouse, changeUserHouse } from '../../apis/index'
@@ -103,7 +108,9 @@ ComponentWithComputed({
       y: 0,
       index: -1,
     } as PosType,
+    touchClientY: 0,
     scrollTop: 0,
+    lightSummary: {} as Record<string, { lightCount: number; lightOnCount: number }>, // 灯总数、亮灯数统计，按房间id
     _scrolledWhenMoving: false, // 拖拽时，被动发生了滚动
     _lastClientY: 0, // 上次触控采样时 的Y坐标
     _isFirstShow: true, // 是否首次加载
@@ -185,10 +192,17 @@ ComponentWithComputed({
       }
     },
     async onShow() {
+      // 房间选择恢复默认
+      if (roomStore.currentRoomId) {
+        roomStore.setCurrentRoom('')
+      }
+
       if (!this.data._isFirstShow || this.data._from === 'addDevice') {
-        homeStore.updateRoomCardList()
+        await homeStore.updateRoomCardList()
       }
       this.data._isFirstShow = false
+
+      this.updateLightCount()
 
       setTimeout(() => {
         this.acceptShare()
@@ -203,25 +217,44 @@ ComponentWithComputed({
 
       emitter.off('wsReceive')
       emitter.on('wsReceive', (res) => {
-        if (res.result.eventType === 'device_property') {
-          // 如果有传更新的状态数据过来，直接更新store
-          if (res.result.eventData.event && res.result.eventData.deviceId && res.result.eventData.modelName) {
-            const device = deviceStore.allRoomDeviceList.find(
-              (device) => device.deviceId === res.result.eventData.deviceId,
-            )
-            if (device) {
-              runInAction(() => {
-                device.mzgdPropertyDTOList[res.result.eventData.modelName] = {
-                  ...device.mzgdPropertyDTOList[res.result.eventData.modelName],
-                  ...res.result.eventData.event,
-                }
-              })
-
-              this.updateRoomCard()
-
-              // 直接更新store里的数据，更新完退出回调函数
+        const { eventType, eventData } = res.result
+        if (eventType === 'device_property') {
+          // 设备状态上报，更新亮灯数
+          if (
+            typeof eventData.event?.power !== 'number' ||
+            !eventData.deviceId ||
+            eventData.deviceId.length > 16 || // 灯组、房间
+            !eventData.modelName
+          ) {
+            return
+          }
+          // console.log('设备数：', deviceStore.allRoomDeviceFlattenList.length)
+          if (eventData.modelName === 'light' || eventData.modelName.indexOf('wallSwitch') > -1) {
+            let { lightOnCount = 0 } = this.data.lightSummary[eventData.roomId] ?? {}
+            const uniId = `${eventData.deviceId}:${eventData.modelName}`
+            const device = deviceStore.allRoomDeviceFlattenList.find((d) => {
+              if (d.proType === PRO_TYPE.switch) {
+                return d.uniId === uniId
+              }
+              return d.deviceId === eventData.deviceId
+            })
+            if (!device) {
               return
             }
+            const oldPower = isLightOn(device) // 查找设备旧的值，如果有变化才更新
+            // console.log('[匹配到设备]oldPower', oldPower)
+
+            if (!oldPower && eventData.event.power === 1) {
+              lightOnCount++
+            } else if (oldPower && eventData.event.power === 0) {
+              lightOnCount = Math.max(0, lightOnCount - 1) // 防止异常上报导致小于0
+            }
+            // FIXME 更新store数据以便比对，但不依赖store更新视图
+            device.mzgdPropertyDTOList[eventData.modelName].power = eventData.event.power
+
+            this.setData({
+              [`lightSummary.${eventData.roomId}.lightOnCount`]: lightOnCount,
+            })
           }
         }
         // Perf: ws消息很多，改用白名单过滤
@@ -231,33 +264,46 @@ ComponentWithComputed({
             WSEventType.device_replace,
             WSEventType.device_online_status,
             WSEventType.device_offline_status,
+            WSEventType.screen_online_status_sub_device,
+            WSEventType.screen_online_status_wifi_device,
             WSEventType.bind_device,
             WSEventType.scene_device_result_status,
             WSEventType.group_device_result_status,
-          ].includes(res.result.eventType)
+          ].includes(eventType)
         ) {
           this.updateRoomDataThrottle()
         }
       })
+    },
 
-      // 房间选择恢复默认
-      if (roomStore.currentRoomIndex) {
-        runInAction(() => {
-          roomStore.currentRoomIndex = 0
-        })
-      }
+    // 更新灯总数、亮灯数统计
+    updateLightCount() {
+      const { lightSummary } = this.data
+      roomStore.roomList.forEach((room) => {
+        lightSummary[room.roomId] = {
+          lightCount: 0,
+          lightOnCount: 0,
+        }
+      })
+      deviceStore.allRoomDeviceFlattenList.forEach((device) => {
+        if (device.deviceType !== 4 && (device.proType === PRO_TYPE.switch || device.proType === PRO_TYPE.light)) {
+          lightSummary[device.roomId].lightCount++
+        }
+        if (isLightOn(device)) {
+          lightSummary[device.roomId].lightOnCount++
+        }
+      })
+      console.log('[updateLightCount]lightSummary', lightSummary)
+      this.setData({ lightSummary })
     },
 
     // 节流更新房间卡片信息
-    updateRoomDataThrottle: throttle(function (this: IAnyObject) {
-      homeStore.updateRoomCardList()
+    updateRoomDataThrottle: throttle(async function (this: IAnyObject) {
+      await homeStore.updateRoomCardList()
+      await sceneStore.updateAllRoomSceneList()
+      this.updateLightCount()
       this.autoRefreshDevice()
     }, 3000),
-
-    // 节流更新房间卡片信息
-    updateRoomCard: throttle(() => {
-      roomStore.updateRoomCardLightOnNum()
-    }, 2000),
 
     /**
      * @description 生成房间位置
@@ -273,7 +319,7 @@ ComponentWithComputed({
           roomPos[room.roomId] = {
             index,
             // 正在拖的卡片，不改变位置
-            y: currentIndex === index ? this.data.roomPos[room.roomId].y : accumulatedY,
+            y: currentIndex === index ? this.data.roomPos[room.roomId].y : accumulatedY + this.data.touchClientY,
           }
           // 若场景列表为空，或正在拖动，则使用 ROOM_CARD_M
           accumulatedY += !room.sceneList.length || isMoving === true ? ROOM_CARD_M : ROOM_CARD_H
@@ -290,6 +336,8 @@ ComponentWithComputed({
           accumulatedY,
         })
       }
+
+      // console.log('[currentIndex]', currentIndex, '[roomPos]', Object.values(roomPos))
     },
 
     acceptShare() {
@@ -356,6 +404,8 @@ ComponentWithComputed({
 
                   // 刷新房间和设备列表
                   homeStore.updateRoomCardList()
+
+                  this.updateLightCount()
                 })
               })
             })
@@ -483,14 +533,23 @@ ComponentWithComputed({
      */
     async handleAllOff() {
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
-      const _old_light_on_in_house = roomStore.lightOnInHouse // 控制前的亮灯数
+      // 控制前的亮灯数
+      let light_on_in_house = 0,
+        light_on_after_seconds = 0
+      for (const roomId in this.data.lightSummary) {
+        if (this.data.lightSummary[roomId].lightCount) light_on_in_house++
+      }
       allDevicePowerControl({ houseId: homeStore.currentHomeId, onOff: 0 })
 
       await delay(3000)
+      for (const roomId in this.data.lightSummary) {
+        if (this.data.lightSummary[roomId].lightCount) light_on_after_seconds++
+      }
+
       wx.reportEvent('home_all_off', {
         house_id: homeStore.currentHomeId,
-        light_on_in_house: _old_light_on_in_house,
-        light_on_after_seconds: roomStore.lightOnInHouse,
+        light_on_in_house,
+        light_on_after_seconds,
       })
     },
     /**
@@ -556,10 +615,20 @@ ComponentWithComputed({
       const index = this.data.roomPos[rid].index
 
       const diffData = {} as IAnyObject
+      let touchClientY = 0
+      roomStore.roomList
+        .sort((a, b) => this.data.roomPos[a.roomId]?.index - this.data.roomPos[b.roomId]?.index)
+        .forEach((room, _i) => {
+          if (_i < index && room.sceneList.length) {
+            touchClientY += ROOM_CARD_M
+          }
+        })
+
+      diffData.touchClientY = touchClientY
       diffData.isMoving = true
       diffData.placeholder = {
         index,
-        y: getPos(index),
+        y: getPos(index) + this.data.touchClientY,
       }
 
       console.log('[movableTouchStart] diffData: ', diffData)
@@ -576,8 +645,7 @@ ComponentWithComputed({
      * 拖拽时触发的卡片移动效果
      */
     movableChangeThrottle: throttle(function (this: IAnyObject, e: WechatMiniprogram.TouchEvent) {
-      const TOP_HEIGHT = 170
-      const posY = (e.detail.y || e.touches[0]?.clientY) - TOP_HEIGHT + this.data.scrollTop
+      const posY = (e.detail.y || e.touches[0]?.clientY) - ROOM_CARD_TOP + this.data.scrollTop - this.data.touchClientY
       const targetOrder = getIndex(posY)
       if (this.data.placeholder.index === targetOrder) {
         return
@@ -594,7 +662,7 @@ ComponentWithComputed({
       const isForward = oldOrder < targetOrder
       const diffData = {} as IAnyObject
       diffData[`placeholder.index`] = targetOrder
-      diffData[`placeholder.y`] = getPos(targetOrder)
+      diffData[`placeholder.y`] = getPos(targetOrder) + this.data.touchClientY
 
       // 更新联动卡片的位置
       let moveCount = 0
@@ -606,7 +674,7 @@ ComponentWithComputed({
         ) {
           ++moveCount
           const dOrderNum = isForward ? _orderNum - 1 : _orderNum + 1
-          diffData[`roomPos.${room.roomId}.y`] = getPos(dOrderNum)
+          diffData[`roomPos.${room.roomId}.y`] = getPos(dOrderNum) + this.data.touchClientY
           diffData[`roomPos.${room.roomId}.index`] = dOrderNum
 
           // 减少遍历消耗
@@ -619,7 +687,7 @@ ComponentWithComputed({
       // 直接更新被拖拽卡片位置
       if (this.data._scrolledWhenMoving || this.data._system.indexOf('iOS') > -1) {
         const rid = e.currentTarget.dataset.rid
-        diffData[`roomPos.${rid}.y`] = getPos(targetOrder)
+        diffData[`roomPos.${rid}.y`] = getPos(targetOrder) + this.data.touchClientY
       }
 
       // 更新被拖拽卡片的排序num
@@ -638,7 +706,7 @@ ComponentWithComputed({
 
       console.log('[movableChange] diffData:', diffData)
       this.setData(diffData)
-    }, 50),
+    }, 500),
 
     movableTouchMove(e: WechatMiniprogram.TouchEvent) {
       this.movableChangeThrottle(e)
@@ -652,6 +720,7 @@ ComponentWithComputed({
 
       const diffData = {} as IAnyObject
       diffData.isMoving = false
+      diffData.touchClientY = 0
 
       // 修正卡片位置
       diffData[`roomPos.${e.currentTarget.dataset.rid}.y`] = dpos
@@ -718,8 +787,10 @@ ComponentWithComputed({
         clearTimeout(this.data._timeId)
       }
 
-      this.data._timeId = setTimeout(() => {
-        homeStore.updateRoomCardList()
+      this.data._timeId = setTimeout(async () => {
+        await homeStore.updateRoomCardList()
+
+        this.updateLightCount()
         this.autoRefreshDevice()
       }, NO_WS_REFRESH_INTERVAL)
     },

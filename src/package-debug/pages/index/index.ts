@@ -1,4 +1,6 @@
+import { allDevicePowerControl } from '../../../apis/index'
 import pageBehavior from '../../../behaviors/pageBehaviors'
+import { homeStore } from '../../../store/index'
 import {
   storage,
   setCurrentEnv,
@@ -7,6 +9,8 @@ import {
   closeWebSocket,
   isWsConnected,
 } from '../../../utils/index'
+
+let auto_timer = null as number | null
 
 Component({
   behaviors: [pageBehavior],
@@ -21,6 +25,7 @@ Component({
   data: {
     envVersion: 'release', // 当前小程序版本，体验版or 正式环境
     curEnv: 'prod', // 当前选择的云端环境
+    _trialIndex: 0,
     version: '', // 生产环境版本号
     isWsOn: isWsConnected(),
   },
@@ -40,6 +45,14 @@ Component({
    * 组件的方法列表
    */
   methods: {
+    onUnload() {
+      console.log('[debug page unload]')
+      if (auto_timer) {
+        clearInterval(auto_timer)
+        auto_timer = null
+      }
+    },
+
     /**
      * 切换云端环境，开发用
      */
@@ -70,6 +83,37 @@ Component({
       } else {
         closeWebSocket()
       }
+    },
+    // 调试用，自动执行全开全关
+    trailFunc(MAX_COUNT = 20) {
+      const INTERVAL = 5000
+      let count = 0
+      auto_timer = setInterval(() => {
+        console.log(`第${count + 1}次执行`)
+
+        if (++count >= MAX_COUNT && auto_timer) {
+          clearInterval(auto_timer)
+          auto_timer = null
+        }
+
+        allDevicePowerControl({ houseId: homeStore.currentHomeId, onOff: 1 })
+
+        setTimeout(() => allDevicePowerControl({ houseId: homeStore.currentHomeId, onOff: 0 }), INTERVAL)
+      }, INTERVAL * 2)
+    },
+    toggleTrials() {
+      const length = 5
+      const itemList = Array.from({ length }, (_, k) => `执行${(k + 1) * 10}次`)
+      wx.showActionSheet({
+        itemList,
+        success: (res) => {
+          const maxCount = (res.tapIndex + 1) * 10
+          this.trailFunc(maxCount)
+        },
+        fail(res) {
+          console.log(res.errMsg)
+        },
+      })
     },
   },
 })
