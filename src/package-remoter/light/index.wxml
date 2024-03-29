@@ -44,7 +44,7 @@
     </mx-tab>
     <mx-tab title="色温">
       <view class="tab-page-r flex-center" style="height: 680rpx;">
-        <view class="v-slider-bor" 
+        <view class="v-slider-bor v-slider-bg" 
           style="opacity: {{isBriSliderDisable ? 0.6 : 1}};">
           <van-slider
             value="{{101 - curColorTempPercent}}"
