@@ -2,7 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { deviceStore, homeBinding, roomBinding } from '../../store/index'
-import { emitter } from '../../utils/index'
+import { emitter, Logger } from '../../utils/index'
 import { StatusType } from './typings'
 import { addGroup, renameGroup, delGroup, updateGroup, retryGroup } from '../../apis/device'
 
@@ -105,7 +105,7 @@ ComponentWithComputed({
         const index = this.data.deviceList.findIndex((device) => device.deviceId === result.devId)
         const isSuccess = result.errCode === 0
 
-        console.log('emitter====', result.devId, index)
+        Logger.debug('[绑定结果上报]设备ID：', result.devId, `第${index}条上报`)
 
         diffData[`deviceList[${index}].status`] = isSuccess ? 'success' : 'failed'
 
