@@ -349,6 +349,7 @@ export class BleClient {
     // 若panId为65535（0xFFFF），无效,导致无法成功配网，强制改为0
     if (panId === 65535) {
       panId = 0
+      extPanId = ''
     }
 
     let parameter = [0x00, channel]
