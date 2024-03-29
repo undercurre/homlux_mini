@@ -499,14 +499,16 @@ ComponentWithComputed({
     },
     onPickTimeConfirm() {
       this.closePopup()
-      const hour = this.data.hourArr[this.data.pickerIndexTemp[0]]
-      if (hour == 0) {
-        this.sendBluetoothCMD([CMD['FAN_DELAY_OFF_CANCEL']])
-      } else {
-        const key = `FAN_DELAY_OFF_${hour}`
-        const para = CMD[key]
-        if (para != undefined && para != null) this.sendBluetoothCMD([CMD[key]])
-      }
+      setTimeout(() => {
+        const hour = this.data.hourArr[this.data.pickerIndexTemp[0]]
+        if (hour == 0) {
+          this.sendBluetoothCMD([CMD['FAN_DELAY_OFF_CANCEL']])
+        } else {
+          const key = `FAN_DELAY_OFF_${hour}`
+          const para = CMD[key]
+          if (para != undefined && para != null) this.sendBluetoothCMD([CMD[key]])
+        }
+      }, 200);
     },
     onTimePickChange(e: any) {
       const indexs = e.detail.value

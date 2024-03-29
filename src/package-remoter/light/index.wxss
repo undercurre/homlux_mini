@@ -165,6 +165,8 @@
   height: 540rpx;
   border-radius: 52rpx;
   overflow: hidden;
+}
+.v-slider-bg{
   background-image: linear-gradient(0deg, #FCE9B1 0%, #FBF0D2 33%, #D5DAEC 66%, #7C9DF8 100%);
 }
 .bri-slder-tab-V{

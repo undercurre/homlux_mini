@@ -353,7 +353,11 @@ ComponentWithComputed({
       if (list[index].key == 'POWER') {
         this.sendBluetoothCMD([CMD['LIGHT_LAMP']])
       } else if (list[index].key == 'NIGHT') {
-        this.sendBluetoothCMD([CMD['LIGHT_NIGHT_LAMP']])
+        if (list[index].isOn) {
+          this.sendBluetoothCMD([CMD['LIGHT_LAMP']])
+        } else {
+          this.sendBluetoothCMD([CMD['LIGHT_NIGHT_LAMP']])
+        }
       }
     },
     onTabClick(e: any) {
