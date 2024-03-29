@@ -128,16 +128,16 @@ ComponentWithComputed({
     /**
      * @description 可被删除
      * 设备数量大于1
-     * 非智慧屏开关
+     * 非智慧屏开关，非网关
      */
     canDelete(data) {
-      const noScreen = data.editSelectList.every((uId: string) => {
+      const noScreenOrGateway = data.editSelectList.every((uId: string) => {
         const deviceId = uId.split(':')[0]
         const device = deviceStore.deviceMap[deviceId]
-        return !SCREEN_PID.includes(device.productId)
+        return !SCREEN_PID.includes(device.productId) && device.proType !== PRO_TYPE.gateway
       })
 
-      return noScreen && data.editSelectList?.length && data.editSelectList?.length <= MAX_MOVE_CARDS
+      return noScreenOrGateway && data.editSelectList?.length && data.editSelectList?.length <= MAX_MOVE_CARDS
     },
     editDeviceNameTitle(data) {
       return data.editProType === PRO_TYPE.switch ? '面板名称' : '设备名称'
