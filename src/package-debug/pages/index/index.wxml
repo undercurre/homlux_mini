@@ -7,10 +7,11 @@
 <view class="h-24rpx"> </view>
 <van-cell-group inset>
   <van-cell
-    title="切换环境【{{curEnv}}】"
+    title="切换环境"
     is-link
     center
     bind:click="toggleEnv"
+    value="当前环境：{{curEnv}}"
   />
   <van-cell
     title="添加虚拟设备"
@@ -40,5 +41,6 @@
     is-link
     center
     bind:click="toggleTrials"
+    value="{{count ? '第' + count + '次执行' : ''}}"
   />
 </van-cell-group>

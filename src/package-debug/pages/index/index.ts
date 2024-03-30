@@ -8,6 +8,7 @@ import {
   startWebsocketService,
   closeWebSocket,
   isWsConnected,
+  Logger,
 } from '../../../utils/index'
 
 let auto_timer = null as number | null
@@ -25,9 +26,9 @@ Component({
   data: {
     envVersion: 'release', // 当前小程序版本，体验版or 正式环境
     curEnv: 'prod', // 当前选择的云端环境
-    _trialIndex: 0,
     version: '', // 生产环境版本号
     isWsOn: isWsConnected(),
+    count: 0, // 第N次执行
   },
 
   lifetimes: {
@@ -87,13 +88,17 @@ Component({
     // 调试用，自动执行全开全关
     trailFunc(MAX_COUNT = 20) {
       const INTERVAL = 5000
-      let count = 0
       auto_timer = setInterval(() => {
-        console.log(`第${count + 1}次执行`)
-
-        if (++count >= MAX_COUNT && auto_timer) {
+        this.setData({
+          count: this.data.count + 1,
+        })
+        Logger.trace(`第${this.data.count + 1}次执行`)
+        if (this.data.count > MAX_COUNT && auto_timer) {
           clearInterval(auto_timer)
           auto_timer = null
+          this.setData({
+            count: 0,
+          })
         }
 
         allDevicePowerControl({ houseId: homeStore.currentHomeId, onOff: 1 })
