@@ -116,6 +116,7 @@ ComponentWithComputed({
     _isFirstShow: true, // 是否首次加载
     _from: '', // 页面进入来源
     _timeId: null as null | number,
+    _timer: 0, // 记录加载时间点
   },
   computed: {
     currentHomeName(data) {
@@ -192,6 +193,7 @@ ComponentWithComputed({
       }
     },
     async onShow() {
+      this.data._timer = Date.now()
       // 房间选择恢复默认
       if (roomStore.currentRoomId) {
         roomStore.setCurrentRoom('')
@@ -274,6 +276,9 @@ ComponentWithComputed({
           this.updateRoomDataThrottle()
         }
       })
+    },
+    onReady() {
+      console.log('[Index onReady] 耗时', `${Date.now() - this.data._timer}ms`)
     },
 
     // 更新灯总数、亮灯数统计

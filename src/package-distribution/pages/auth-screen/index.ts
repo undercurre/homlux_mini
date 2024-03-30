@@ -4,6 +4,7 @@ import { authQrcode } from '../../../apis/index'
 import { userStore } from '../../../store/index'
 import cacheData from '../../common/cacheData'
 import { productImgDir, PRODUCT_ID } from '../../../config/index'
+import { strUtil } from '../../../utils/index'
 
 Component({
   behaviors: [pageBehavior],
@@ -53,7 +54,9 @@ Component({
           message: '授权成功',
           onClose: () => {
             wx.reLaunch({
-              url: cacheData.pageEntry || '/pages/index/index',
+              url: strUtil.getUrlWithParams(cacheData.pageEntry || '/pages/index/index', {
+                from: 'addDevice',
+              }),
             })
           },
         })
