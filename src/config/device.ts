@@ -12,6 +12,9 @@ export const NO_WS_REFRESH_INTERVAL = 20000
 // 遇到更新延迟标志时，延迟的时长（ms）
 export const NO_UPDATE_INTERVAL = 10000
 
+// 最多可以移动和删除的设备数（按卡片计数）
+export const MAX_MOVE_CARDS = 20
+
 /**
  * @name 设备卡片更新时间阈值
  * @description 等待时间小于这个值的，均不即时更新，与后面的更新合并，或到到队列清空时一起更新

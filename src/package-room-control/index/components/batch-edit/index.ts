@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { getModelName, PRO_TYPE, SCREEN_PID } from '../../../../config/index'
+import { getModelName, PRO_TYPE, SCREEN_PID, MAX_MOVE_CARDS } from '../../../../config/index'
 import { waitingBatchDeleteDevice, batchUpdate, renameGroup } from '../../../../apis/index'
 import { deviceBinding, deviceStore, homeStore, roomBinding, roomStore } from '../../../../store/index'
 import Toast from '@vant/weapp/toast/toast'
@@ -8,8 +8,6 @@ import Dialog from '@vant/weapp/dialog/dialog'
 import { storage, checkInputNameIllegal, emitter, showLoading, hideLoading } from '../../../../utils/index'
 
 let timeId: number
-
-const MAX_MOVE_CARDS = 20 // 最多可以移动和删除的设备数（按卡片计数）
 
 ComponentWithComputed({
   options: {},
