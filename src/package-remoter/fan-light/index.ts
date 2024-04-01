@@ -19,6 +19,7 @@ import {
   // stopAdvertising,
   BleService,
 } from '../../utils/remoterUtils'
+import { hideLoading, showLoading } from '../../utils/system'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
 import Toast from '@vant/weapp/toast/toast'
@@ -412,7 +413,7 @@ ComponentWithComputed({
         if (key === 'NATURN' || key === 'DIR' || key === 'TIMER') {
           Toast('风扇未开启')
         } else if (key === 'BRI' || key === 'COL') {
-          Toast('灯未开启')
+          Toast('照明未开启')
         } else if (key === 'DISPLAY') {
           Toast('灯开启后，屏显将自动开启')
         }
@@ -447,6 +448,7 @@ ComponentWithComputed({
         this.setData({
           isShowTimePicker: true,
           popupIndex: index,
+          pickerIndexTemp: this.data.curTimePickerIndex
         })
       }
     },
@@ -498,9 +500,11 @@ ComponentWithComputed({
       this.sendBluetoothCMD([CMD['LIGHT_COLOR_TEMP'], this.percent2Rang(this.data.curColorTempPercent)])
     },
     onPickTimeConfirm() {
-      this.closePopup()
+      showLoading('加载中')
       setTimeout(() => {
-        const hour = this.data.hourArr[this.data.pickerIndexTemp[0]]
+        hideLoading()
+        this.closePopup()
+        const hour = this.data.hourArr[this.data.curTimePickerIndex[0]]
         if (hour == 0) {
           this.sendBluetoothCMD([CMD['FAN_DELAY_OFF_CANCEL']])
         } else {
@@ -508,7 +512,7 @@ ComponentWithComputed({
           const para = CMD[key]
           if (para != undefined && para != null) this.sendBluetoothCMD([CMD[key]])
         }
-      }, 200);
+      }, 1200);
     },
     onTimePickChange(e: any) {
       const indexs = e.detail.value
