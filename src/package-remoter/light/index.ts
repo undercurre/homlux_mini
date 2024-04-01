@@ -338,7 +338,6 @@ ComponentWithComputed({
       const index = e.currentTarget.dataset.index
       const list = this.data.bottomList
       if (!list[index].isEnable) return
-      const clickIsOn = list[index].isOn
       list[index].isOn = !list[index].isOn
       this.setData({
         bottomList: list,
@@ -354,11 +353,7 @@ ComponentWithComputed({
       if (list[index].key == 'POWER') {
         this.sendBluetoothCMD([CMD['LIGHT_LAMP']])
       } else if (list[index].key == 'NIGHT') {
-        if (clickIsOn) {
-          this.sendBluetoothCMD([CMD['LIGHT_LAMP']])
-        } else {
-          this.sendBluetoothCMD([CMD['LIGHT_NIGHT_LAMP']])
-        }
+        this.sendBluetoothCMD([CMD['LIGHT_NIGHT_LAMP']])
       }
     },
     onTabClick(e: any) {
