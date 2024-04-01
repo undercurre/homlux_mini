@@ -356,9 +356,11 @@ ComponentWithComputed({
             break
           }
         }
-        let hour = Math.ceil(status.DELAY_OFF / 60)
-        hour = hour > 6 ? 6 : hour
-        timeIndex = [hour]
+        if (!this.data.isShowTimePicker) {
+          let hour = Math.ceil(status.DELAY_OFF / 60)
+          hour = hour > 6 ? 6 : hour
+          timeIndex = [hour]
+        }
       }
 
       this.setData({
