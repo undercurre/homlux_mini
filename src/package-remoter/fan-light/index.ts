@@ -348,7 +348,7 @@ ComponentWithComputed({
             if (status.DELAY_OFF > 0) {
               const hour = Math.floor(status.DELAY_OFF / 60)
               const min = status.DELAY_OFF % 60
-              btns[i].name = `剩余${hour > 10 ? '' : '0'}${hour}:${min > 10 ? '' : '0'}${min}`
+              btns[i].name = `剩余${hour >= 10 ? '' : '0'}${hour}:${min >= 10 ? '' : '0'}${min}`
             } else {
               btns[i].name = '风扇定时'
             }

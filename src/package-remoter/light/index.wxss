@@ -171,8 +171,8 @@
 }
 .bri-slder-tab-V{
   margin-top: 50rpx;
-  width: 64rpx;
-  height: 24rpx;
+  width: 80rpx;
+  height: 64rpx;
 }
 .col-slder-tab-V{
   margin-top: 20rpx;
