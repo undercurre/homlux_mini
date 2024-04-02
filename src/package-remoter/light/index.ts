@@ -282,6 +282,7 @@ ComponentWithComputed({
         btnList: btns,
         bottomList: bottom,
         curBrightnessPercent: bri,
+        briDragTemp: bri,
         curColorTempPercent: col,
       })
       this.updateViewEn()

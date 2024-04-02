@@ -232,24 +232,15 @@ ComponentWithComputed({
       }
       this.data._timer = now
 
-      const { addr, actions, defaultAction, deviceType, deviceModel } = e.detail
+      const { addr, actions, defaultAction } = e.detail
       // const addr = '18392c0c5566' // 模拟遥控器mac
 
       // HACK 特殊的照明按钮反转处理
-      let { key } = actions[defaultAction]
+      const { key } = actions[defaultAction]
       if (key === 'LIGHT_LAMP') {
         this.data._lastPowerKey = this.data._lastPowerKey === `${key}_OFF` ? `${key}_ON` : `${key}_OFF`
         // this.data._lastPowerKey = key
-      } else if (key === 'LIGHT_NIGHT_LAMP') {
-        if (deviceType === '13' && deviceModel === '01') {
-          remoterStore.setAddr(addr)
-          const status = remoterStore.curRemoter.deviceAttr
-          if (status && status.LIGHT_NIGHT_LAMP == true) {
-            key = 'LIGHT_LAMP'
-          }
-        }
       }
-      console.log('lmn>>>CMD key=', key)
       const payload = remoterProtocol.generalCmdString([CMD[key]])
 
       // 建立BLE外围设备服务端
