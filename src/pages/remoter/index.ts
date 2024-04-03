@@ -366,11 +366,15 @@ ComponentWithComputed({
             }
             return device.deviceType === deviceType
           }).length
-          const uniqueType = deviceType === '13' ? `${deviceType}${deviceModel}` : deviceType
+          let uniqueType = deviceType
+          if (deviceType === '13') {
+            if (deviceModel === '02' || deviceModel === '03') uniqueType = '1302'
+            else uniqueType = `${deviceType}${deviceModel}`
+          }
           const newDeviceCount = newDeviceCountMap[uniqueType] ?? 0
           newDeviceCountMap[uniqueType] = newDeviceCount + 1
 
-          const deviceNameSuffix = savedDeviceCount + newDeviceCount
+          const deviceNameSuffix = savedDeviceCount + newDeviceCountMap[uniqueType]
 
           // 如果设备名已存在，则加上编号后缀，以避免同名混淆 // TODO 更名后仍和已保存的名字后缀存在一样的情况，未处理
           // const hasSavedName = remoterStore.deviceNames.includes(config.deviceName)
