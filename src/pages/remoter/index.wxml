@@ -126,23 +126,22 @@
     </movable-view>
   </movable-area> -->
 
-  <drag
-    id="drag"
-    list-data="{{remoterViewList}}"
-    item-height="{{216}}"
-    scroll-top="{{scrollTop}}"
-    generic:item="card"
-    bind:cardTap="handleCardTap"
-    bind:controlTap="handleControlTap"
-    bind:sortend="handleSortEnd"
-  ></drag>
-
-  <view class="w-full flex-center pb-40rpx mt-20rpx">
-    <template
-      is="btn"
-      data="{{ isSeeking: isSeeking }}"
-    ></template>
+  <view class="drag-wrap" style="height: {{remoterViewList.length * 216 + 120}}rpx;">
+    <drag
+      id="drag"
+      list-data="{{remoterViewList}}"
+      item-height="{{216}}"
+      scroll-top="{{scrollTop}}"
+      generic:item="card"
+      bind:cardTap="handleCardTap"
+      bind:controlTap="handleControlTap"
+      bind:sortend="handleSortEnd"
+    ></drag>
+    <view class="scan-block flex-center">
+      <template is="btn" data="{{ isSeeking: isSeeking }}"></template>
+    </view>
   </view>
+  
   <view class="list-bottom-placeholder"> </view>
 </scroll-view>
 
