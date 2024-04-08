@@ -22,6 +22,9 @@ import mqtt from './lib/mqtt.min.js' // 暂时只能使用4.2.1版本，高版�
 // TODO 统一配置和管理 storage key
 App<IAppOption>({
   async onLaunch() {
+    const appBaseInfo = wx.getAppBaseInfo()
+    console.debug('appBaseInfo', appBaseInfo)
+
     // 加载svg数据
     this.globalData.svgs = svgs
 

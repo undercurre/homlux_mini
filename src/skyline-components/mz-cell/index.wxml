@@ -1,0 +1,41 @@
+<view
+  class="cell"
+  bind:tap="onClick"
+>
+  <view class="cell-content  {{ border ? 'border' : ''}}">
+    <image
+      wx:if="{{icon}}"
+      src="{{icon}}"
+      class="icon"
+      mode="scaleToFill"
+    />
+
+    <span class="cell-left">
+      <slot wx:if="{{!title && !label}}"></slot>
+      <text
+        wx:if="{{title}}"
+        class="title"
+        >{{ title }}</text
+      >
+      <text
+        wx:if="{{label}}"
+        class="label"
+        >{{ label }}</text
+      >
+    </span>
+
+    <span class="cell-right">
+      <text
+        wx:if="{{value}}"
+        class="value"
+        >{{ value }}</text
+      >
+      <image
+        wx:if="{{isLink}}"
+        src="../assets/arrow-right.png"
+        class="link"
+        mode="scaleToFill"
+      />
+    </span>
+  </view>
+</view>

@@ -1,0 +1,57 @@
+.button {
+  --button-default-color: #a2a2a2;
+  --button-default-border-color: #a2a2a2;
+  --button-info-border-color: #555659;
+  --button-info-background-color: #555659;
+  --button-primary-background-color: linear-gradient(165deg, #468cfb 0%, #6ba3fc 100%);
+  --button-danger-background-color: linear-gradient(270deg, #f68aa9 13%, #ef6586 92%);
+  --button-plain-background-color: transparent;
+  --button-large-font-size: 36rpx;
+  --button-large-height: 88rpx;
+}
+
+.button {
+  display: inline-block;
+  padding-left: 30rpx;
+  padding-right: 30rpx;
+  border: 0;
+  color: #fff;
+  background: var(--button-primary-background-color);
+  border-radius: 24rpx;
+  font-size: var(--button-large-font-size);
+  line-height: var(--button-large-height);
+}
+
+.button::after {
+  border: 0;
+}
+
+.button.block {
+  display: block;
+}
+
+.button--plain {
+  background: #fff;
+}
+.button--plain.button--primary {
+  color: #488fff;
+}
+
+.button--plain.button--danger {
+  color: #ff3849;
+}
+
+.size-small {
+  font-size: 26rpx;
+  line-height: 56rpx;
+}
+
+.size-normal {
+  font-size: 28rpx;
+  line-height: 64rpx;
+}
+
+.size-large {
+  font-size: var(--button-large-font-size);
+  line-height: var(--button-large-height);
+}

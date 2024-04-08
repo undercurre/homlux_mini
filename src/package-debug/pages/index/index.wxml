@@ -43,4 +43,12 @@
     bind:click="toggleTrials"
     value="{{count ? '第' + count + '次执行' : ''}}"
   />
+
+  <van-cell
+    title="Skyline Demo"
+    is-link
+    center
+    link-type="navigateTo"
+    url="/package-debug/pages/skyline-demo/index"
+  />
 </van-cell-group>

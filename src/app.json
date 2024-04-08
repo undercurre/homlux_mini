@@ -1,4 +1,25 @@
 {
+  "tabBar": {
+    "custom": true,
+    "color": "#7A7E83",
+    "selectedColor": "#3cc51f",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "全屋"
+      },
+      {
+        "pagePath": "pages/remoter/index",
+        "text": "遥控器"
+      },
+      {
+        "pagePath": "pages/mine/index",
+        "text": "我的"
+      }
+    ]
+  },
   "pages": ["pages/start/index", "pages/index/index", "pages/login/index", "pages/mine/index", "pages/remoter/index"],
   "subpackages": [
     {
@@ -50,7 +71,12 @@
     },
     {
       "root": "package-debug",
-      "pages": ["pages/index/index", "pages/homos-debug/index", "pages/add-virtual-device/index"]
+      "pages": [
+        "pages/index/index",
+        "pages/homos-debug/index",
+        "pages/add-virtual-device/index",
+        "pages/skyline-demo/index"
+      ]
     },
     {
       "root": "package-auth",
@@ -101,23 +127,6 @@
       "network": "all",
       "packages": ["package-distribution-meiju", "package-auth"]
     }
-  },
-  "tabBar": {
-    "custom": true,
-    "list": [
-      {
-        "pagePath": "pages/index/index",
-        "text": "首页"
-      },
-      {
-        "pagePath": "pages/remoter/index",
-        "text": "遥控器"
-      },
-      {
-        "pagePath": "pages/mine/index",
-        "text": "我的"
-      }
-    ]
   },
   "lazyCodeLoading": "requiredComponents",
   "usingComponents": {

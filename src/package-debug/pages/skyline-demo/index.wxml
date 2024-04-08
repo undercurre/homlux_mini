@@ -1,0 +1,84 @@
+<view class="h-100vh flex flex-col bg-hex-f2f2f2">
+  <nav-bar
+    title="Skyline Demo"
+    left-arrow
+    bind:leftTap="goBack"
+  ></nav-bar>
+
+  <view class="m-24rpx">与Vant UI组件api保持一致 </view>
+
+  <scroll-view
+    type="list"
+    scroll-y
+    enhanced
+    show-scrollbar="{{false}}"
+    class="h-60vh grow shrink"
+  >
+    <view class="m-24rpx">mz-cell</view>
+
+    <mz-cell-group
+      class="mt-24rpx"
+      inset
+    >
+      <mz-cell
+        icon="/assets/img/mine/home.png"
+        title="家庭管理"
+        is-link
+        border="{{true}}"
+        bind:click="toClick"
+      />
+
+      <mz-cell
+        title="家庭管理"
+        is-link
+        border="{{false}}"
+        bind:click="toClick"
+      />
+    </mz-cell-group>
+
+    <mz-cell
+      class="mt-24rpx"
+      icon="/assets/img/mine/home.png"
+      title="家庭管理"
+      is-link
+      border="{{false}}"
+      bind:click="toClick"
+    />
+
+    <view class="m-24rpx">mz-button</view>
+
+    <mz-button
+      block
+      class="mt-24rpx"
+      type="danger"
+      plain
+      size="large"
+      bind:click="toClick"
+      >danger</mz-button
+    >
+
+    <mz-button
+      block
+      class="mt-24rpx"
+      type="primary"
+      plain
+      size="large"
+      bind:click="toClick"
+      >primary</mz-button
+    >
+
+    <mz-button
+      class="mt-24rpx"
+      type="danger"
+      bind:click="toClick"
+      >danger</mz-button
+    >
+
+    <mz-button
+      class="mt-24rpx"
+      type="primary"
+      bind:click="toClick"
+      >primary</mz-button
+    >
+  </scroll-view>
+</view>

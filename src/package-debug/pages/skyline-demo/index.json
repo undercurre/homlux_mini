@@ -1,10 +1,7 @@
 {
   "styleIsolation": "apply-shared",
   "component": true,
-  "renderer": "webview",
-  "rendererOptions": {
-    "skyline": {}
-  },
+  "renderer": "skyline",
   "componentFramework": "glass-easel",
   "usingComponents": {
     "mz-button": "/skyline-components/mz-button/index",

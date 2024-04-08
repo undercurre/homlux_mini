@@ -1,5 +1,14 @@
-/* custom-tab-bar/index.wxss */
 .tab-bar {
+  position: absolute;
+  box-sizing: border-box;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: row;
+  padding-top: 8rpx;
+  padding-bottom: 96rpx;
+  pointer-events: auto;
   border-top: 1rpx solid #eeeeee;
   border-top-left-radius: 48rpx;
   border-top-right-radius: 48rpx;

@@ -2,14 +2,37 @@
   "description": "项目私有配置文件。此文件中的内容将覆盖 project.config.json 中的相同字段。项目的改动优先同步到此文件中。详见文档：https://developers.weixin.qq.com/miniprogram/dev/devtools/projectconfig.html",
   "projectname": "HomLux",
   "setting": {
-    "compileHotReLoad": true,
+    "compileHotReLoad": false,
     "urlCheck": false,
-    "bigPackageSizeSupport": true
+    "bigPackageSizeSupport": true,
+    "skylineRenderEnable": true
   },
-  "libVersion": "3.0.2",
+  "libVersion": "3.4.0",
   "condition": {
     "miniprogram": {
       "list": [
+        {
+          "name": "skyline-demo",
+          "pathName": "package-debug/pages/skyline-demo/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null,
+          "partialCompile": {
+            "enabled": true,
+            "pages": []
+          }
+        },
+        {
+          "name": "我的",
+          "pathName": "pages/mine/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null,
+          "partialCompile": {
+            "enabled": true,
+            "pages": []
+          }
+        },
         {
           "name": "绑定家庭",
           "pathName": "package-distribution/pages/bind-home/index",
@@ -56,13 +79,6 @@
         {
           "name": "连接设备页面（美居）",
           "pathName": "package-distribution-meiju/pages/linkDevice/linkDevice",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "我的",
-          "pathName": "pages/mine/index",
           "query": "",
           "launchMode": "default",
           "scene": null

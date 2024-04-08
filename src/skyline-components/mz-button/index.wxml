@@ -1,0 +1,28 @@
+<button
+  data-detail="{{ dataset }}"
+  class="button button--{{type}} size-{{size}} {{plain ? 'button--plain' : ''}} {{block ? 'block' : ''}}"
+  hover-class="{{ disabled || loading ? '' : 'button-active'}}"
+  loading="{{loading}}"
+  form-type="{{ formType }}"
+  open-type="{{ disabled || loading || openType }}"
+  business-id="{{ businessId }}"
+  session-from="{{ sessionFrom }}"
+  send-message-title="{{ sendMessageTitle }}"
+  send-message-path="{{ sendMessagePath }}"
+  send-message-img="{{ sendMessageImg }}"
+  show-message-card="{{ showMessageCard }}"
+  app-parameter="{{ appParameter }}"
+  aria-label="{{ ariaLabel }}"
+  bindtap="{{ disabled || loading ? '' : 'onClick' }}"
+  bindgetuserinfo="onGetUserInfo"
+  bindcontact="onContact"
+  bindgetphonenumber="onGetPhoneNumber"
+  binderror="onError"
+  bindlaunchapp="onLaunchApp"
+  bindopensetting="onOpenSetting"
+  bindchooseavatar="onChooseAvatar"
+>
+  <view class="van-button__text">
+    <slot />
+  </view>
+</button>

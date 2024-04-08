@@ -52,6 +52,11 @@ Component({
       (storage.get<number>('statusBarHeight') as number) +
       (storage.get<number>('navigationBarHeight') as number) +
       'px',
+    renderer: 'webview',
+  },
+
+  lifetimes: {
+    ready() {},
   },
 
   /**
