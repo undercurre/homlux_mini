@@ -1,6 +1,5 @@
 import { storage, goHome } from '../../utils/index'
 
-// components/custom-nav-bar/index.ts
 Component({
   options: {},
   /**
@@ -56,7 +55,11 @@ Component({
   },
 
   lifetimes: {
-    ready() {},
+    ready() {
+      this.setData({
+        renderer: (this as any).renderer,
+      })
+    },
   },
 
   /**
