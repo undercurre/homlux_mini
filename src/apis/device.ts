@@ -158,10 +158,10 @@ export async function controlDevice(
   },
   option?: { loading?: boolean },
 ) {
-  const { deviceType, inputData } = data
+  const { inputData } = data
 
   // 仅子设备需要判断是否局域网控制
-  if (deviceType === 2 && homOs.isSupportLan({ deviceId: inputData[0].devId })) {
+  if (homOs.isSupportLan({ deviceId: inputData[0].devId })) {
     const localRes = await homOs.deviceControl({
       deviceId: inputData[0].devId,
       actions: inputData.map((item) => {
