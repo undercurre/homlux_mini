@@ -1,8 +1,6 @@
 {
   "styleIsolation": "apply-shared",
   "component": true,
-  "renderer": "skyline",
-  "componentFramework": "glass-easel",
   "usingComponents": {
     "mz-button": "/skyline-components/mz-button/index",
     "mz-cell-group": "/skyline-components/mz-cell-group/index",
