@@ -165,5 +165,16 @@
       "desc": "本应用访问位置信息，用于获取天气信息提示等功能"
     }
   },
-  "requiredPrivateInfos": ["getFuzzyLocation"]
+  "requiredPrivateInfos": ["getFuzzyLocation"],
+  "renderer": "webview",
+  "componentFramework": "exparser",
+  "rendererOptions": {
+    "skyline": {
+      "disableABTest": true,
+      "sdkVersionBegin": "3.0.0",
+      "sdkVersionEnd": "15.255.255",
+      "defaultDisplayBlock": true,
+      "defaultContentBox": true
+    }
+  }
 }
