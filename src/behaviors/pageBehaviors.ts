@@ -63,6 +63,7 @@ export default BehaviorWithComputed({
     // },
   },
   computed: {
+    // TODO: 待废弃，该behavior没有直接引用homeStore，隐藏依赖了homeStore
     isCreator(data) {
       if (data.currentHomeDetail) {
         return data.currentHomeDetail.houseUserAuth === userRole.creator

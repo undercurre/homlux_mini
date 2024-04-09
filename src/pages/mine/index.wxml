@@ -61,7 +61,7 @@
           bind:click="toPage"
         />
         <mz-cell
-          wx:if="{{!isVisitor}}"
+          wx:if="{{isManager}}"
           icon="/assets/img/mine/deviceReplace.png"
           title="设备替换"
           is-link

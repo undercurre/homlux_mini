@@ -1,11 +1,11 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { logout, storage, strUtil } from '../../utils/index'
-import { userBinding, userStore } from '../../store/index'
+import { userBinding, userStore, homeBinding } from '../../store/index'
 import { defaultImgDir } from '../../config/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 
 Component({
-  behaviors: [BehaviorWithStore({ storeBindings: [userBinding] }), pageBehavior],
+  behaviors: [BehaviorWithStore({ storeBindings: [userBinding, homeBinding] }), pageBehavior],
   /**
    * 页面的初始数据
    */
