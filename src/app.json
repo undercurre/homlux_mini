@@ -166,8 +166,6 @@
     }
   },
   "requiredPrivateInfos": ["getFuzzyLocation"],
-  "renderer": "webview",
-  "componentFramework": "exparser",
   "rendererOptions": {
     "skyline": {
       "disableABTest": true,

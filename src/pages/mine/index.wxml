@@ -26,7 +26,7 @@
       </view>
     </view>
 
-    <view class="pb-140rpx">
+    <view class="pb-240rpx">
       <mz-cell-group inset>
         <mz-cell
           icon="/assets/img/mine/home.png"
