@@ -40,8 +40,6 @@ Component({
       deviceCategory: '/package-mine/device-category/index',
       setting: '/package-mine/setting/index',
     },
-    isLogin: false,
-    userInfo: {},
   },
   pageLifetimes: {
     show() {
@@ -51,10 +49,7 @@ Component({
         })
       }
 
-      this.setData({
-        isLogin: userStore.isLogin,
-        userInfo: userStore.userInfo,
-      })
+      console.debug('isLogin', this.data.isLogin)
     },
   },
   methods: {

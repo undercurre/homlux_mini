@@ -1,5 +1,5 @@
 <view
-  class="flex flex-col page-bg h-100vh pb-200rpx"
+  class="flex flex-col page-bg h-100vh pb-200rpx box-border"
   style="background-image: url({{defaultImgDir}}/bg.jpg);"
 >
   <nav-bar background="transparent"></nav-bar>
@@ -26,7 +26,7 @@
       </view>
     </view>
 
-    <view class="pb-240rpx">
+    <view class="pb-40rpx">
       <mz-cell-group inset>
         <mz-cell
           icon="/assets/img/mine/home.png"

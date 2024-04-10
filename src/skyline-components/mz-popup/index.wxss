@@ -1,0 +1,6 @@
+.cell-group {
+  margin: 24rpx;
+  background-color: white;
+  border-radius: 32rpx;
+  overflow: hidden;
+}

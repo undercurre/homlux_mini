@@ -10,7 +10,9 @@ Component({
   /**
    * 组件的初始数据
    */
-  data: {},
+  data: {
+    show: false,
+  },
 
   lifetimes: {
     ready() {},
@@ -21,6 +23,16 @@ Component({
   methods: {
     toClick() {
       console.log('toClick')
+    },
+    openPopup() {
+      this.setData({
+        show: true,
+      })
+    },
+    closePopup() {
+      this.setData({
+        show: false,
+      })
     },
   },
 })

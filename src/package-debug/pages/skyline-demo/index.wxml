@@ -14,6 +14,7 @@
     show-scrollbar="{{false}}"
     class="h-60vh grow shrink"
   >
+    <view class="border-black border-t-2 border-solid"></view>
     <view class="m-24rpx">mz-cell</view>
 
     <mz-cell-group
@@ -45,6 +46,7 @@
       bind:click="toClick"
     />
 
+    <view class="border-black border-t-2 border-solid"></view>
     <view class="m-24rpx">mz-button</view>
 
     <mz-button
@@ -79,6 +81,18 @@
       type="primary"
       bind:click="toClick"
       >primary</mz-button
+    >
+
+    <view class="border-black border-t-2 border-solid"></view>
+    <view class="m-24rpx">Popup</view>
+
+    <mz-button
+      block
+      class="mt-24rpx"
+      plain
+      size="large"
+      bind:click="openPopup"
+      >打开Popup</mz-button
     >
   </scroll-view>
 </view>

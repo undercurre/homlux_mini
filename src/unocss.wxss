@@ -50,7 +50,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .py-6rpx{padding-top:6rpx;padding-bottom:6rpx;}
 .py-96rpx{padding-top:96rpx;padding-bottom:96rpx;}
 .pb-100rpx{padding-bottom:100rpx;}
-.pb-140rpx{padding-bottom:140rpx;}
 .pb-16rpx{padding-bottom:16rpx;}
 .pb-200rpx{padding-bottom:200rpx;}
 .pb-20rpx{padding-bottom:20rpx;}
@@ -254,6 +253,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .border-b-1,
 .border-b-1rpx{border-bottom-width:1rpx;}
 .border-b-1px{border-bottom-width:1px;}
+.border-t-2{border-top-width:2rpx;}
 .border-blue,
 .border-hex-488FFF{--un-border-opacity:1;border-color:rgba(72,143,255,var(--un-border-opacity));}
 .border-hex-d3d3d3{--un-border-opacity:1;border-color:rgba(211,211,211,var(--un-border-opacity));}
