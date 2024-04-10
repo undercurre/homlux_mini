@@ -1,5 +1,5 @@
-// skyline-components/mz-cell/index.ts
 Component({
+  externalClasses: ['value-class'],
   /**
    * 组件的属性列表
    */
@@ -27,7 +27,17 @@ Component({
   /**
    * 组件的初始数据
    */
-  data: {},
+  data: {
+    cellLeftStyle: '',
+  },
+
+  observers: {
+    titleStyle: function (titleStyle) {
+      this.setData({
+        cellLeftStyle: titleStyle,
+      })
+    },
+  },
 
   /**
    * 组件的方法列表

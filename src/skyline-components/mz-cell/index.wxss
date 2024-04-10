@@ -26,13 +26,13 @@
 }
 
 .title {
-  font-size: 32rpx;
+  font-size: 32rpx !important;
   color: #27282a;
 }
 
 .label {
   font-size: 28rpx;
-  color: #555659;
+  color: #555659 !important;
   opacity: 0.5;
 }
 
@@ -46,7 +46,8 @@
 }
 
 .value {
-  font-size: 32px;
+  text-align: right;
+  font-size: 32rpx !important;
   color: #666666;
 }
 

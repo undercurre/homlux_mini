@@ -9,25 +9,32 @@
       class="icon"
       mode="scaleToFill"
     />
+    <slot
+      wx:else
+      name="icon"
+    />
 
-    <span class="cell-left">
+    <span
+      class="cell-left"
+      style="{{cellLeftStyle}}"
+    >
       <slot wx:if="{{!title && !label}}"></slot>
-      <text
+      <view
         wx:if="{{title}}"
         class="title"
-        >{{ title }}</text
+        >{{ title }}</view
       >
-      <text
+      <view
         wx:if="{{label}}"
         class="label"
-        >{{ label }}</text
+        >{{ label }}</view
       >
     </span>
 
     <span class="cell-right">
       <text
         wx:if="{{value}}"
-        class="value"
+        class="value value-class"
         >{{ value }}</text
       >
       <image

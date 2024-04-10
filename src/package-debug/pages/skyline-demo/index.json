@@ -6,6 +6,7 @@
   "usingComponents": {
     "mz-button": "/skyline-components/mz-button/index",
     "mz-cell-group": "/skyline-components/mz-cell-group/index",
-    "mz-cell": "/skyline-components/mz-cell/index"
+    "mz-cell": "/skyline-components/mz-cell/index",
+    "mz-popup": "/skyline-components/mz-popup/index"
   }
 }
