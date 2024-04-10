@@ -1,0 +1,10 @@
+<view
+  class="wrapper"
+  bind:tap="onClick"
+>
+  <long-press-gesture-handler on-gesture-event="handleLongPress">
+    <item id="moved-box">
+      <slot></slot>
+    </item>
+  </long-press-gesture-handler>
+</view>
