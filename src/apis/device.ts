@@ -215,6 +215,11 @@ export async function sendDevice(
   let params
   let promise
 
+  // 灯类控制，全局加上灯光渐变时间（ms）
+  if (data.proType === PRO_TYPE.light) {
+    property.time = 500
+  }
+
   switch (data.deviceType) {
     case 2: {
       const method =

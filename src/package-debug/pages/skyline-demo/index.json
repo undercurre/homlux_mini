@@ -3,10 +3,12 @@
   "component": true,
   "renderer": "skyline",
   "componentFramework": "glass-easel",
+  "disableScroll": true,
   "usingComponents": {
     "mz-button": "/skyline-components/mz-button/index",
     "mz-cell-group": "/skyline-components/mz-cell-group/index",
     "mz-cell": "/skyline-components/mz-cell/index",
-    "mz-popup": "/skyline-components/mz-popup/index"
+    "mz-popup": "/skyline-components/mz-popup/index",
+    "mz-movable": "/skyline-components/mz-movable/index"
   }
 }
