@@ -87,7 +87,8 @@ ComponentWithComputed({
     },
 
     async onLoadmore() {
-      if(this.data._isLoadingMore || this.data.isAllLogs || this.data.isRefreshing || !this.data.autoSceneLogLength) return
+      if (this.data._isLoadingMore || this.data.isAllLogs || this.data.isRefreshing || !this.data.autoSceneLogLength)
+        return
       this.data._isLoadingMore = true
       const logRes = await queryAutoSceneLogByHouseId({
         houseId: homeStore.currentHomeId,
