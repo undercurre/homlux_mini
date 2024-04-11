@@ -1,0 +1,8 @@
+.item {
+  position: absolute;
+  left: 0;
+  right: 0;
+  /* hack 缩小容器尺寸不影响拖动功能，能最大程度减不同实例间的冲突 */
+  width: 10px;
+  height: 10px;
+}

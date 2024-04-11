@@ -12,6 +12,13 @@
     "miniprogram": {
       "list": [
         {
+          "name": "movable-demo",
+          "pathName": "package-debug/pages/movable-demo/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "skyline-demo",
           "pathName": "package-debug/pages/skyline-demo/index",
           "query": "",

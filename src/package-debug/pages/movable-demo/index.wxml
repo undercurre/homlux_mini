@@ -1,0 +1,21 @@
+<scroll-view
+  type="list"
+  style="margin-top: 180rpx; height: 60vh"
+  show-scrollbar="{{false}}"
+  scroll-y
+>
+  <view
+    class="movearea"
+    style="height:{{moveareaHeight}}px"
+  >
+    <mz-movable
+      generic:item="my-box"
+      wx:for="{{list}}"
+      data-index="{{index}}"
+      bind:dragBegin="dragBegin"
+      origin="{{item}}"
+      class="moveitem {{ index === currentIndex ? 'z-100' : 'z-1' }}"
+      >[{{index}}]{{item}}</mz-movable
+    >
+  </view>
+</scroll-view>

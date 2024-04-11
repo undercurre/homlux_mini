@@ -75,7 +75,8 @@
         "pages/index/index",
         "pages/homos-debug/index",
         "pages/add-virtual-device/index",
-        "pages/skyline-demo/index"
+        "pages/skyline-demo/index",
+        "pages/movable-demo/index"
       ]
     },
     {
