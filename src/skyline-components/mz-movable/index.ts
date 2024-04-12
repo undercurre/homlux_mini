@@ -155,16 +155,24 @@ Component({
           break
         }
 
-        case State.ACTIVE:
-          this.data._x.value = this.data.hasBound
-            ? Math.min(Math.max(e.translationX + originX, this.data.bound.left), this.data.bound.right)
-            : e.translationX + originX
-          this.data._y.value = this.data.hasBound
-            ? Math.min(Math.max(e.translationY + originY, this.data.bound.top), this.data.bound.bottom)
-            : e.translationY + originY
+        case State.ACTIVE: {
+          const newX = Math.round(e.translationX + originX)
+          if (this.data._x.value !== newX) {
+            this.data._x.value = this.data.hasBound
+              ? Math.min(Math.max(newX, this.data.bound.left), this.data.bound.right)
+              : newX
+          }
+
+          const newY = Math.round(e.translationY + originY)
+          if (this.data._y.value !== newY) {
+            this.data._y.value = this.data.hasBound
+              ? Math.min(Math.max(newY, this.data.bound.top), this.data.bound.bottom)
+              : newY
+          }
 
           // console.log('handleLongPress State.ACTIVE', this.data._offset.value, this.data.bound)
           break
+        }
 
         case State.END:
           // 暂存坐标
