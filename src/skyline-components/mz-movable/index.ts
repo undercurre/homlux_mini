@@ -1,5 +1,5 @@
 // skyline-components/mz-movable/index.ts
-const { runOnJS } = wx.worklet
+const { runOnJS, Easing, timing } = wx.worklet
 
 enum State {
   // 手势未识别
@@ -24,18 +24,68 @@ Component({
       type: Boolean,
       value: true,
     },
+    // 位置变化时是否使用动画
+    animation: {
+      type: Boolean,
+      value: true,
+    },
+    // 动画生效时的持续时间
+    duration: {
+      type: Number,
+      value: 300,
+    },
     // 初始位置
-    origin: {
-      type: Array,
-      value: [0, 0],
-      observer([x, y]) {
-        if (this.data._origin) {
-          this.data._origin.value = { x, y }
+    x: {
+      type: Number,
+      value: 0,
+      observer(x) {
+        console.log('observer x', x)
+        if (!this.data._originX || this.data._originX.value === x) {
+          return
         }
-        if (this.data._offset) {
-          this.data._offset.value = { x, y }
+
+        this.data._originX.value = x
+        if (this.data.animation) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          this.data._x.value = timing(x, {
+            duration: this.data.duration,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            easing: Easing.ease,
+          })
+        } else {
+          this.data._x.value = x
         }
       },
+    },
+    y: {
+      type: Number,
+      value: 0,
+      observer(y) {
+        if (!this.data._originY || this.data._originY.value === y) {
+          return
+        }
+
+        this.data._originY.value = y
+        if (this.data.animation) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          this.data._y.value = timing(y, {
+            duration: this.data.duration,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            easing: Easing.ease,
+          })
+        } else {
+          this.data._y.value = y
+        }
+      },
+    },
+    // 是否限制拖动边界
+    hasBound: {
+      type: Boolean,
+      value: false,
     },
     // 边界
     bound: {
@@ -44,7 +94,7 @@ Component({
         top: 0,
         left: 0,
         right: 300,
-        bottom: 600,
+        bottom: 9999,
       },
     },
   },
@@ -53,22 +103,26 @@ Component({
    * 组件的初始数据
    */
   data: {
-    text: 'debug',
-    _offset: { value: { x: 0, y: 0 } },
-    _origin: { value: { x: 0, y: 0 } },
+    _x: { value: 0 },
+    _y: { value: 0 },
+    _originX: { value: 0 },
+    _originY: { value: 0 },
   },
 
   lifetimes: {
     attached() {
-      this.data._offset = wx.worklet.shared({ x: this.data.origin[0], y: this.data.origin[1] })
-      this.data._origin = wx.worklet.shared({ x: this.data.origin[0], y: this.data.origin[1] })
+      this.data._originX = wx.worklet.shared(this.data.x)
+      this.data._originY = wx.worklet.shared(this.data.y)
+      this.data._x = wx.worklet.shared(this.data.x)
+      this.data._y = wx.worklet.shared(this.data.y)
+
       this.applyAnimatedStyle('#moved-box', () => {
         'worklet'
         return {
-          transform: `translateX(${this.data._offset.value.x}px) translateY(${this.data._offset.value.y}px) `,
+          transform: `translateX(${this.data._x.value}px) translateY(${this.data._y.value}px) `,
         }
       })
-      console.log('movable wrapper attached', this.data._offset.value)
+      console.log('movable wrapper attached', this.data._x.value, this.data._y.value)
     },
   },
 
@@ -84,8 +138,10 @@ Component({
     handleLongPress(e: { state: State; translationX: number; translationY: number }) {
       'worklet'
 
-      let { x, y } = this.data._offset.value
-      const { x: originalX, y: originalY } = this.data._origin.value
+      const x = this.data._x.value
+      const y = this.data._y.value
+      const originX = this.data._originX.value
+      const originY = this.data._originY.value
 
       switch (e.state) {
         case State.BEGIN: {
@@ -100,23 +156,29 @@ Component({
         }
 
         case State.ACTIVE:
-          x = Math.min(Math.max(e.translationX + originalX, this.data.bound.left), this.data.bound.right)
-          y = Math.min(Math.max(e.translationY + originalY, this.data.bound.top), this.data.bound.bottom)
-          this.data._offset.value = { x, y }
+          this.data._x.value = this.data.hasBound
+            ? Math.min(Math.max(e.translationX + originX, this.data.bound.left), this.data.bound.right)
+            : e.translationX + originX
+          this.data._y.value = this.data.hasBound
+            ? Math.min(Math.max(e.translationY + originY, this.data.bound.top), this.data.bound.bottom)
+            : e.translationY + originY
 
           // console.log('handleLongPress State.ACTIVE', this.data._offset.value, this.data.bound)
           break
 
         case State.END:
           // 暂存坐标
-          this.data._origin.value = { x, y }
+          this.data._originX.value = x
+          this.data._originY.value = y
+          runOnJS(this.triggerEvent.bind(this))('dragEnd', { x, y })
+
           // console.log('handleLongPress State.END', this.data._offset.value)
           break
 
         default:
           break
       }
-      // console.log('handleLongPress End', e.state, e.translationX, e.translationY, { x, y, originalX, originalY })
+      console.log('handleLongPress', e.state, e.translationX, e.translationY, { x, y, originX, originY })
     },
   },
 })

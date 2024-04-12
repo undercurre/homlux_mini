@@ -3,6 +3,7 @@
   style="margin-top: 180rpx; height: 60vh"
   show-scrollbar="{{false}}"
   scroll-y
+  enable-passive
 >
   <view
     class="movearea"
@@ -11,9 +12,12 @@
     <mz-movable
       generic:item="my-box"
       wx:for="{{list}}"
-      data-index="{{index}}"
+      bind:tap="cardTap"
       bind:dragBegin="dragBegin"
-      origin="{{item}}"
+      bind:dragEnd="dragEnd"
+      data-index="{{index}}"
+      x="{{item[0]}}"
+      y="{{item[1]}}"
       class="moveitem {{ index === currentIndex ? 'z-100' : 'z-1' }}"
       >[{{index}}]{{item}}</mz-movable
     >

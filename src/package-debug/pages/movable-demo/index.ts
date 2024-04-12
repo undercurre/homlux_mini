@@ -11,15 +11,14 @@ Component({
    */
   data: {
     list: [] as [number, number][],
-    cardPos: [0, 0],
-    currentIndex: 0,
+    currentIndex: -1,
     moveareaHeight: CARD_H,
   },
 
   lifetimes: {
     ready() {
       const list = [] as [number, number][]
-      for (let i = 0; i < 18; ++i) {
+      for (let i = 0; i < 11; ++i) {
         list.push([(i % 4) * CARD_W, Math.floor(i / 4) * CARD_H])
         this.setData({ list })
       }
@@ -28,20 +27,33 @@ Component({
       })
     },
   },
+
   /**
    * 组件的方法列表
    */
   methods: {
-    cardTap() {
+    cardTap(e: { target: { dataset: { index: number } } }) {
+      const { index } = e.target.dataset
+      const item = this.data.list[index]
       this.setData({
-        cardPos: [100, 200],
+        [`list[${index}]`]: [item[0] + 10, item[1] + 50],
+        currentIndex: index,
       })
-      console.log('[cardTap]', this.data.cardPos)
+      console.log('[cardTap]', item)
     },
     dragBegin(e: { target: { dataset: { index: number } } }) {
       const { index } = e.target.dataset
       this.setData({ currentIndex: index })
-      console.log('[dragBegin]', index)
+      console.log('[dragBegin]index:', index)
+    },
+    dragEnd(e: { target: { dataset: { index: number } }; detail: { x: number; y: number } }) {
+      const { index } = e.target.dataset
+      const { x, y } = e.detail
+      this.setData({
+        [`list[${index}]`]: [x, y],
+        currentIndex: -1,
+      })
+      console.log('[dragEnd]index:', index, e.detail)
     },
   },
 })
