@@ -209,6 +209,10 @@ ComponentWithComputed({
         let page = 'pannel'
         if (deviceType === '13') {
           page = deviceModel === '01' ? 'light' : 'fan-light'
+        } else if (deviceType === '26') {
+          page = 'bath'
+        } else if (deviceType === '40') {
+          page = 'cool-bath'
         }
         wx.navigateTo({
           url: `/package-remoter/${page}/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceModel=${deviceModel}&addr=${addr}`,

@@ -108,13 +108,20 @@ const _parsePayload = (payload: string, deviceType: string, deviceModel?: string
     }
     return res
   }
-  if (deviceType === '26') {
+  if (deviceType === '26' || deviceType === '40') {
     return {
-      BATH_WARM: !!(rxU16[4] & BIT_5),
-      BATH_WIND: !!(rxU16[4] & BIT_2),
-      BATH_VENTILATE: !!(rxU16[4] & BIT_1),
+      BATH_LAMP: !!rxU16[1],
+      BATH_BRIGHT: rxU16[2],
+      BATH_NIGHT_LAMP: !!rxU16[3],
       BATH_DRY: !!(rxU16[4] & BIT_0),
-      BATH_LAMP: !!(rxU16[1] & BIT_0),
+      BATH_VENTILATE: !!(rxU16[4] & BIT_1),
+      BATH_WIND: !!(rxU16[4] & BIT_2),
+      BATH_WARM_SOFT: !!(rxU16[4] & BIT_3),
+      BATH_WARM_STRONG: !!(rxU16[4] & BIT_4),
+      BATH_WARM_UP: !!(rxU16[4] & BIT_5),
+      BATH_AUTO: !!(rxU16[4] & BIT_6),
+      BATH_TEMPERATURE: rxU16[5],
+      BATH_TEMPERATURE_ENV: rxU16[6]
     }
   }
   return {}
