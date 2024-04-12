@@ -87,12 +87,12 @@ Component({
         }
       },
     },
-    // 是否限制拖动边界
-    hasBound: {
+    // 超过可移动区域后，是否还可以移动
+    outOfBounds: {
       type: Boolean,
-      value: false,
+      value: true,
     },
-    // 边界
+    // 边界（可移动区域）
     bound: {
       type: Object,
       value: {
@@ -163,16 +163,16 @@ Component({
         case State.ACTIVE: {
           const newX = Math.round(e.translationX + originX)
           if (this.data._x.value !== newX && (this.data.direction === 'all' || this.data.direction === 'horizontal')) {
-            this.data._x.value = this.data.hasBound
-              ? Math.min(Math.max(newX, this.data.bound.left), this.data.bound.right)
-              : newX
+            this.data._x.value = this.data.outOfBounds
+              ? newX
+              : Math.min(Math.max(newX, this.data.bound.left), this.data.bound.right)
           }
 
           const newY = Math.round(e.translationY + originY)
           if (this.data._y.value !== newY && (this.data.direction === 'all' || this.data.direction === 'vertical')) {
-            this.data._y.value = this.data.hasBound
-              ? Math.min(Math.max(newY, this.data.bound.top), this.data.bound.bottom)
-              : newY
+            this.data._y.value = this.data.outOfBounds
+              ? newY
+              : Math.min(Math.max(newY, this.data.bound.top), this.data.bound.bottom)
           }
 
           // console.log('handleLongPress State.ACTIVE', this.data._offset.value, this.data.bound)
