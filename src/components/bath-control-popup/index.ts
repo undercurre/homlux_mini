@@ -2,7 +2,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import { sendDevice } from '../../apis/index'
-import { PRO_TYPE } from '../../config/index'
+import { NO_SYNC_DEVICE_STATUS, PRO_TYPE } from '../../config/index'
 
 type BtnItem = {
   text: string
@@ -300,7 +300,7 @@ ComponentWithComputed({
       this.data._canSyncCloudData = false
       this.data._controlTimer = setTimeout(() => {
         this.data._canSyncCloudData = true
-      }, 5000)
+      }, NO_SYNC_DEVICE_STATUS)
 
       const res = await sendDevice({
         deviceId: this.data.deviceInfo.deviceId,
