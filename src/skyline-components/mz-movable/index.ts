@@ -34,6 +34,11 @@ Component({
       type: Number,
       value: 300,
     },
+    // 移动方向，属性值有all vertical horizontal none
+    direction: {
+      type: String,
+      value: 'none',
+    },
     // 初始位置
     x: {
       type: Number,
@@ -157,14 +162,14 @@ Component({
 
         case State.ACTIVE: {
           const newX = Math.round(e.translationX + originX)
-          if (this.data._x.value !== newX) {
+          if (this.data._x.value !== newX && (this.data.direction === 'all' || this.data.direction === 'horizontal')) {
             this.data._x.value = this.data.hasBound
               ? Math.min(Math.max(newX, this.data.bound.left), this.data.bound.right)
               : newX
           }
 
           const newY = Math.round(e.translationY + originY)
-          if (this.data._y.value !== newY) {
+          if (this.data._y.value !== newY && (this.data.direction === 'all' || this.data.direction === 'vertical')) {
             this.data._y.value = this.data.hasBound
               ? Math.min(Math.max(newY, this.data.bound.top), this.data.bound.bottom)
               : newY

@@ -16,6 +16,7 @@
       bind:dragBegin="dragBegin"
       bind:dragEnd="dragEnd"
       data-index="{{index}}"
+      direction="vertical"
       x="{{item[0]}}"
       y="{{item[1]}}"
       class="moveitem {{ index === currentIndex ? 'z-100' : 'z-1' }}"

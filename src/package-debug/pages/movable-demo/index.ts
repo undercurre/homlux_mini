@@ -18,7 +18,7 @@ Component({
   lifetimes: {
     ready() {
       const list = [] as [number, number][]
-      for (let i = 0; i < 11; ++i) {
+      for (let i = 0; i < 118; ++i) {
         list.push([(i % 4) * CARD_W, Math.floor(i / 4) * CARD_H])
         this.setData({ list })
       }
@@ -51,7 +51,6 @@ Component({
       const { x, y } = e.detail
       this.setData({
         [`list[${index}]`]: [x, y],
-        currentIndex: -1,
       })
       console.log('[dragEnd]index:', index, e.detail)
     },
