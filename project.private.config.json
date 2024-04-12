@@ -12,6 +12,17 @@
     "miniprogram": {
       "list": [
         {
+          "name": "家庭管理",
+          "pathName": "package-mine/home-manage/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null,
+          "partialCompile": {
+            "enabled": true,
+            "pages": []
+          }
+        },
+        {
           "name": "skyline-demo",
           "pathName": "package-debug/pages/skyline-demo/index",
           "query": "",
@@ -79,13 +90,6 @@
         {
           "name": "连接设备页面（美居）",
           "pathName": "package-distribution-meiju/pages/linkDevice/linkDevice",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "家庭管理",
-          "pathName": "package-mine/home-manage/index",
           "query": "",
           "launchMode": "default",
           "scene": null

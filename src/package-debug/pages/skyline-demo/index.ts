@@ -12,6 +12,7 @@ Component({
    */
   data: {
     show: false,
+    disabled: false,
   },
 
   lifetimes: {
@@ -21,6 +22,11 @@ Component({
    * 组件的方法列表
    */
   methods: {
+    toggleDisabled() {
+      this.setData({
+        disabled: !this.data.disabled,
+      })
+    },
     toClick() {
       console.log('toClick')
     },

@@ -9,10 +9,10 @@
 
 .cell-content {
   padding-bottom: 32rpx;
-  display: flex !important;
+  display: flex;
   flex-direction: row;
-  align-items: center !important;
-  justify-content: flex-start !important;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .icon {
@@ -22,32 +22,32 @@
 }
 
 .cell-left {
-  display: flex !important;
+  display: flex;
 }
 
 .title {
-  font-size: 32rpx !important;
+  font-size: 32rpx;
   color: #27282a;
 }
 
 .label {
   font-size: 28rpx;
-  color: #555659 !important;
+  color: #555659;
   opacity: 0.5;
 }
 
 .cell-right {
-  display: flex !important;
+  display: flex;
   flex-grow: 1;
   flex-direction: row;
-  align-items: center !important;
+  align-items: center;
   padding-left: 32rpx;
   justify-content: flex-end;
 }
 
 .value {
   text-align: right;
-  font-size: 32rpx !important;
+  font-size: 32rpx;
   color: #666666;
 }
 

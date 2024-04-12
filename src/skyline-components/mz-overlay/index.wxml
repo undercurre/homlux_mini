@@ -1,0 +1,9 @@
+<mz-transition
+  show="{{ show }}"
+  custom-class="overlay"
+  custom-style="z-index: {{ zIndex }}; {{ customStyle }}"
+  bind:tap="onClick"
+  catch:touchmove="noop"
+>
+  <slot></slot>
+</mz-transition>

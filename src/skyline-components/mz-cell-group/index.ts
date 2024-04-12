@@ -1,4 +1,3 @@
-// skyline-components/mz-cell/index.ts
 Component({
   /**
    * 组件的属性列表

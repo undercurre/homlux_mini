@@ -1,6 +1,6 @@
 {
   "component": true,
   "usingComponents": {
-    "mz-overlay": "../mz-overlay/index"
+    "mz-transition": "../mz-transition/index"
   }
 }

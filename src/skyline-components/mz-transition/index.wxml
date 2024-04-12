@@ -1,0 +1,13 @@
+<wxs
+  src="./index.wxs"
+  module="computed"
+/>
+
+<view
+  wx:if="{{ inited }}"
+  class="transition custom-class {{classes}}"
+  style="{{ computed.rootStyle({ display }) }}"
+  bind:transitionend="onTransitionEnd"
+>
+  <slot />
+</view>

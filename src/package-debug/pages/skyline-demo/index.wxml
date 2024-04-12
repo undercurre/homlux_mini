@@ -71,6 +71,8 @@
     <view class="border-black border-t-2 border-solid"></view>
     <view class="m-24rpx">mz-button</view>
 
+    <mz-button size="large">取消</mz-button>
+
     <mz-button
       block
       class="mt-24rpx"
@@ -88,6 +90,7 @@
       plain
       size="large"
       bind:click="toClick"
+      customStyle="background-color: #fff;"
       >primary</mz-button
     >
 
@@ -126,3 +129,55 @@
     >
   </scroll-view>
 </view>
+
+<mz-popup
+  round
+  show="{{ show }}"
+  bind:close="closePopup"
+  position="bottom"
+  closeable
+>
+  <view class="pb-100rpx">
+    <text class="block pt-48rpx pb-64rpx text-center leading-50rpx text-36 text-black-2a font-medium">新建家庭</text>
+
+    <text class="block pl-48rpx pb-32rpx text-28">家庭名称</text>
+
+    <view class="mx-32rpx">
+      <text>请输入家庭名称</text>
+      <!-- <van-field
+        value="{{ homeInfoEdited.houseName }}"
+        placeholder="请输入家庭名称"
+        custom-style="padding: 32rpx 32rpx;background-color: #F6FAFD;border-radius: 24rpx;"
+        clearable="{{true}}"
+        focus="{{isFocus}}"
+        bind:change="changeHouseName"
+        border="{{false}}"
+      >
+      </van-field> -->
+
+      <mz-button
+        class="mt-24rpx"
+        type="primary"
+        bind:click="toggleDisabled"
+        >toggleDisabled</mz-button
+      >
+    </view>
+
+    <view class="flex flex-row pt-80rpx px-32rpx">
+      <mz-button
+        class="grow"
+        size="large"
+        bind:click="closePopup"
+        >取消</mz-button
+      >
+      <view class="w-46rpx"></view>
+      <mz-button
+        class="grow"
+        size="large"
+        type="primary"
+        disabled="{{disabled}}"
+        >确定</mz-button
+      >
+    </view>
+  </view>
+</mz-popup>

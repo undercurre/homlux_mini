@@ -20,7 +20,7 @@ Component({
     },
     type: {
       type: String,
-      value: 'primary',
+      value: 'default',
     },
     size: {
       type: String,
