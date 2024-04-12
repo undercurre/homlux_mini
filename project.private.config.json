@@ -12,6 +12,13 @@
     "miniprogram": {
       "list": [
         {
+          "name": "movable-demo",
+          "pathName": "package-debug/pages/movable-demo/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "家庭管理",
           "pathName": "package-mine/home-manage/index",
           "query": "",

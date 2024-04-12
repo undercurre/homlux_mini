@@ -1,4 +1,5 @@
 // skyline-components/mz-movable/index.ts
+const { runOnJS } = wx.worklet
 
 enum State {
   // 手势未识别
@@ -23,7 +24,29 @@ Component({
       type: Boolean,
       value: true,
     },
-    titleStyle: String,
+    // 初始位置
+    origin: {
+      type: Array,
+      value: [0, 0],
+      observer([x, y]) {
+        if (this.data._origin) {
+          this.data._origin.value = { x, y }
+        }
+        if (this.data._offset) {
+          this.data._offset.value = { x, y }
+        }
+      },
+    },
+    // 边界
+    bound: {
+      type: Object,
+      value: {
+        top: 0,
+        left: 0,
+        right: 300,
+        bottom: 600,
+      },
+    },
   },
 
   /**
@@ -37,8 +60,8 @@ Component({
 
   lifetimes: {
     attached() {
-      this.data._offset = wx.worklet.shared({ x: 0, y: 0 })
-      this.data._origin = wx.worklet.shared({ x: 0, y: 0 })
+      this.data._offset = wx.worklet.shared({ x: this.data.origin[0], y: this.data.origin[1] })
+      this.data._origin = wx.worklet.shared({ x: this.data.origin[0], y: this.data.origin[1] })
       this.applyAnimatedStyle('#moved-box', () => {
         'worklet'
         return {
@@ -54,41 +77,40 @@ Component({
    */
   methods: {
     onClick() {
-      console.log('movable wrapper click')
-      this.triggerEvent('movableClick')
+      // console.log('movable wrapper click')
+      // this.triggerEvent('movableClick')
     },
+
     handleLongPress(e: { state: State; translationX: number; translationY: number }) {
       'worklet'
 
-      const { x, y } = this.data._offset.value
+      let { x, y } = this.data._offset.value
       const { x: originalX, y: originalY } = this.data._origin.value
 
       switch (e.state) {
         case State.BEGIN: {
           if (wx.vibrateShort && this.data.vibrate) {
-            wx.worklet.runOnJS(wx.vibrateShort)({
+            runOnJS(wx.vibrateShort)({
               type: 'heavy',
             })
           }
+          runOnJS(this.triggerEvent.bind(this))('dragBegin')
+
           break
         }
 
         case State.ACTIVE:
-          this.data._offset.value = {
-            x: e.translationX + originalX,
-            y: e.translationY + originalY,
-          }
-          console.log('handleLongPress State.ACTIVE', this.data._offset.value)
+          x = Math.min(Math.max(e.translationX + originalX, this.data.bound.left), this.data.bound.right)
+          y = Math.min(Math.max(e.translationY + originalY, this.data.bound.top), this.data.bound.bottom)
+          this.data._offset.value = { x, y }
+
+          // console.log('handleLongPress State.ACTIVE', this.data._offset.value, this.data.bound)
           break
 
         case State.END:
           // 暂存坐标
-          this.data._origin.value = {
-            x,
-            y,
-          }
-          console.log('handleLongPress State.END', this.data._offset.value)
-
+          this.data._origin.value = { x, y }
+          // console.log('handleLongPress State.END', this.data._offset.value)
           break
 
         default:
