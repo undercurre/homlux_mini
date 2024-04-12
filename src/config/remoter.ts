@@ -662,8 +662,8 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
         },
       ],
     },
-    // Y10W系列 // 00011111 温度可调，色温可调
-    '1f': {
+    // Y10W系列 // 00010111 温度可调，色温可调
+    '17': {
       deviceName: '浴霸',
       devicePic: '/assets/img/remoter/bathHeater.png',
       showTemperature: false, // TODO 暂时不予实现
