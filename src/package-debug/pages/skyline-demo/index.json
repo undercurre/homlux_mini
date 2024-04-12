@@ -9,7 +9,7 @@
     "mz-cell-group": "/skyline-components/mz-cell-group/index",
     "mz-cell": "/skyline-components/mz-cell/index",
     "mz-popup": "/skyline-components/mz-popup/index",
-    "mz-overlay": "/skyline-components/mz-overlay/index",
+    "mz-toast": "/skyline-components/mz-toast/index",
     "mz-movable": "/skyline-components/mz-movable/index"
   }
 }

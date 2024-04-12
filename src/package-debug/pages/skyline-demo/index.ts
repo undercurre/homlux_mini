@@ -1,4 +1,5 @@
 import pageBehavior from '../../../behaviors/pageBehaviors'
+import Toast from '../../../skyline-components/mz-toast/toast'
 
 Component({
   behaviors: [pageBehavior],
@@ -38,6 +39,11 @@ Component({
     closePopup() {
       this.setData({
         show: false,
+      })
+    },
+    showToast() {
+      Toast({
+        message: '请至少保留一个创建的家庭',
       })
     },
   },

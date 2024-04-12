@@ -120,6 +120,15 @@
       >打开Popup</mz-button
     >
 
+    <view class="border-black border-t-2 border-solid"></view>
+    <view class="m-24rpx">mz-toast</view>
+
+    <mz-button
+      size="large"
+      bind:tap="showToast"
+      >showToast</mz-button
+    >
+
     <view class="m-24rpx">mz-movable</view>
 
     <view class="movearea">
@@ -127,6 +136,8 @@
     </view>
   </scroll-view>
 </view>
+
+<mz-toast id="mz-toast" />
 
 <mz-popup
   round

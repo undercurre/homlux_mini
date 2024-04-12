@@ -51,6 +51,7 @@ declare namespace WechatMiniprogram.Component {
  */
 type ValueOf<T> = T[keyof T]
 
+// 任意方法类型
 type FunctionType = (...args: unknown[]) => unknown
 
 declare module 'weapp-qrcode-canvas-2d'
