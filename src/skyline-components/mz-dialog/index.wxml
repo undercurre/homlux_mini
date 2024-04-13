@@ -65,6 +65,8 @@
 
       <mz-button
         wx:else
+        plain
+        type="danger"
         size="large"
         class="mz-dialog__button"
         loading="{{ loading.confirm }}"
