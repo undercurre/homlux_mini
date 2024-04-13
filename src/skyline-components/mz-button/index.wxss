@@ -41,7 +41,7 @@
   align-items: center;
   border-radius: var(--button-border-radius);
   box-sizing: border-box;
-  display: inline-flex;
+  display: flex;
   font-size: var(--button-default-font-size, 16px);
   height: var(--button-default-height, 44px);
   justify-content: center;
@@ -54,6 +54,8 @@
 }
 
 .mz-button:before {
+  box-sizing: border-box;
+  display: flex;
   background-color: #000;
   border: inherit;
   border-color: #000;
@@ -69,6 +71,8 @@
 }
 
 .mz-button:after {
+  box-sizing: border-box;
+  display: flex;
   border-width: 0;
 }
 
@@ -176,7 +180,8 @@
 }
 
 .button__text {
-  display: inline;
+  box-sizing: border-box;
+  display: flex;
 }
 
 .mz-button--hairline {

@@ -129,6 +129,15 @@
       >showToast</mz-button
     >
 
+    <view class="border-black border-t-2 border-solid"></view>
+    <view class="m-24rpx">mz-dialog</view>
+
+    <mz-button
+      size="large"
+      bind:tap="showDialog"
+      >showDialog</mz-button
+    >
+
     <view class="m-24rpx">mz-movable</view>
 
     <view class="movearea">
@@ -138,6 +147,8 @@
 </view>
 
 <mz-toast id="mz-toast" />
+
+<mz-dialog id="mz-dialog" />
 
 <mz-popup
   round

@@ -1,5 +1,7 @@
 <view
   class="cell"
+  hover-class="van-cell--hover"
+  hover-stay-time="70"
   bind:tap="onClick"
 >
   <view class="cell-content  {{ border ? 'border' : ''}}">

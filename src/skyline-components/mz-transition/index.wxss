@@ -1,4 +1,6 @@
 .transition {
+  display: block;
+  box-sizing: border-box;
   transition-timing-function: ease;
   transition-duration: 300ms;
 }
