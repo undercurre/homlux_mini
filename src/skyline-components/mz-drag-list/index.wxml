@@ -1,0 +1,49 @@
+<wxs
+  module="handler"
+  src="./index.wxs"
+></wxs>
+<!-- <view bind:tap="toggleDragging">button</view> -->
+<view
+  id="list-wrapper"
+  class="drag-list-wrapper drag-list-wrapper-class"
+  list="{{list}}"
+  style="{{wrapStyle}}"
+  baseData="{{baseData}}"
+  updating="{{updating}}"
+  change:updating="{{handler.updatingObserver}}"
+  change:list="{{handler.listObserver}}"
+  change:baseData="{{handler.baseDataObserver}}"
+>
+  <!-- <view  class="item" wx:for="{{list}}" id="ID{{item.id}}" wx:key="id"  data-index="{{index}}" style="width: 100%" bind:longpress="{{handler.longPress}}" catch:touchmove="{{dragging ? handler.touchMove : ''}}" catch:touchend="{{dragging ? handler.touchEnd : ''}}"> -->
+  <view
+    class="item"
+    wx:for="{{list}}"
+    id="ID{{item.id}}"
+    wx:key="id"
+  >
+    <!-- <vertical-drag-gesture-handler data-id="{{item.id}}" worklet:ongesture="longPress"> -->
+    <long-press-gesture-handler
+      data-id="{{item.id}}"
+      data-sortKey="{{item.sortKey}}"
+      worklet:ongesture="longPress"
+    >
+      <item
+        data-index="{{index}}"
+        item="{{item}}"
+        bind:click="itemClick"
+      />
+    </long-press-gesture-handler>
+    <!-- </vertical-drag-gesture-handler> -->
+  </view>
+</view>
+<root-portal
+  style="position: relative"
+  wx:if="{{true}}"
+  enable="{{dragging}}"
+>
+  <item
+    style="width: 100%; position: absolute"
+    id="tempItem"
+    item="{{curDragItem}}"
+  />
+</root-portal>

@@ -1,0 +1,25 @@
+.drag-list-wrapper {
+  position: relative;
+  z-index: 5000;
+}
+.drag-list-wrapper .item {
+  position: absolute;
+  z-index: 5000;
+  top: 0;
+  left: 0;
+  background-color: blue;
+  width: 100%;
+  opacity: 0;
+}
+.drag-list-wrapper .item.tran {
+  transition: top 0.3s;
+  z-index: 5000;
+}
+.drag-list-wrapper .item.cur {
+  transition: none !important;
+  position: fixed;
+  z-index: 5000;
+}
+.drag-list-wrapper .item.fixed {
+  z-index: 0 !important;
+}
