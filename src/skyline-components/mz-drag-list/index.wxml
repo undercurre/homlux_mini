@@ -1,7 +1,3 @@
-<wxs
-  module="handler"
-  src="./index.wxs"
-></wxs>
 <!-- <view bind:tap="toggleDragging">button</view> -->
 <view
   id="list-wrapper"
