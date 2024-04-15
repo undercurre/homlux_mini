@@ -1,7 +1,4 @@
 {
   "component": true,
-  "componentGenerics": {
-    "item": true
-  },
   "usingComponents": {}
 }

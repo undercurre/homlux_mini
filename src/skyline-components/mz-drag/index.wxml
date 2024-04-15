@@ -1,0 +1,28 @@
+<scroll-view
+  type="list"
+  style="height: {{scrollHeight}}"
+  show-scrollbar="{{false}}"
+  scroll-y
+  enable-passive
+>
+  <view
+    class="movearea"
+    style="height:{{moveareaHeight}}px"
+    wx:if="{{list.length}}"
+  >
+    <mz-movable
+      wx:for="{{list}}"
+      key="{{index}}"
+      bind:dragClick="cardTap"
+      bind:dragBegin="dragBegin"
+      bind:dragEnd="dragEnd"
+      data-index="{{index}}"
+      direction="{{direction}}"
+      x="{{item[0]}}"
+      y="{{item[1]}}"
+      class="moveitem {{ index === currentIndex ? 'z-100' : 'z-1' }}"
+    >
+      <item>[{{index}}]{{item}}</item>
+    </mz-movable>
+  </view>
+</scroll-view>

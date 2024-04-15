@@ -1,11 +1,9 @@
-<long-press-gesture-handler
-  bind:tap="onClick"
-  worklet:ongesture="handleLongPress"
->
-  <item
+<long-press-gesture-handler worklet:ongesture="handleLongPress">
+  <view
     class="item"
-    id="moved-box"
+    bind:tap="onClick"
+    id="box-{{key}}"
   >
     <slot></slot>
-  </item>
+  </view>
 </long-press-gesture-handler>

@@ -141,7 +141,9 @@
     <view class="m-24rpx">mz-movable</view>
 
     <view class="movearea">
-      <mz-movable generic:item="mz-button">长按拖动</mz-movable>
+      <mz-movable direction="all">
+        <mz-button type="primary">长按拖动</mz-button>
+      </mz-movable>
     </view>
   </scroll-view>
 </view>

@@ -1,5 +1,5 @@
 // skyline-components/mz-movable/index.ts
-const { runOnJS, Easing, timing } = wx.worklet
+import { runOnJS, Easing, timing } from '../common/worklet'
 
 enum State {
   // 手势未识别
@@ -19,6 +19,7 @@ Component({
    * 组件的属性列表
    */
   properties: {
+    key: String,
     // 开始拖动时，振动反馈
     vibrate: {
       type: Boolean,
@@ -44,47 +45,16 @@ Component({
       type: Number,
       value: 0,
       observer(x) {
-        console.log('observer x', x)
-        if (!this.data._originX || this.data._originX.value === x) {
-          return
-        }
-
         this.data._originX.value = x
-        if (this.data.animation) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          this.data._x.value = timing(x, {
-            duration: this.data.duration,
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            easing: Easing.ease,
-          })
-        } else {
-          this.data._x.value = x
-        }
+        this.posTransfer(x, this.data.y)
       },
     },
     y: {
       type: Number,
       value: 0,
       observer(y) {
-        if (!this.data._originY || this.data._originY.value === y) {
-          return
-        }
-
         this.data._originY.value = y
-        if (this.data.animation) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          this.data._y.value = timing(y, {
-            duration: this.data.duration,
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            easing: Easing.ease,
-          })
-        } else {
-          this.data._y.value = y
-        }
+        this.posTransfer(this.data.x, y)
       },
     },
     // 超过可移动区域后，是否还可以移动
@@ -121,13 +91,14 @@ Component({
       this.data._x = wx.worklet.shared(this.data.x)
       this.data._y = wx.worklet.shared(this.data.y)
 
-      this.applyAnimatedStyle('#moved-box', () => {
+      // console.log('movable wrapper attached', `#box-${this.data.key}`)
+
+      this.applyAnimatedStyle(`#box-${this.data.key}`, () => {
         'worklet'
         return {
           transform: `translateX(${this.data._x.value}px) translateY(${this.data._y.value}px) `,
         }
       })
-      console.log('movable wrapper attached', this.data._x.value, this.data._y.value)
     },
   },
 
@@ -135,11 +106,34 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    onClick() {
-      // console.log('movable wrapper click')
-      // this.triggerEvent('movableClick')
-    },
+    // 动态变更坐标位置
+    posTransfer(x: number, y: number) {
+      console.log('[posTransfer]', x, y)
+      if (this.data._originX?.value !== x || this.data._originY?.value !== y) {
+        if (this.data.animation) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          this.data._x.value = timing(x, {
+            duration: this.data.duration,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            easing: Easing.ease,
+          })
 
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          this.data._y.value = timing(y, {
+            duration: this.data.duration,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            easing: Easing.ease,
+          })
+        } else {
+          this.data._x.value = x
+          this.data._y.value = y
+        }
+      }
+    },
     handleLongPress(e: { state: State; translationX: number; translationY: number }) {
       'worklet'
 
@@ -151,9 +145,7 @@ Component({
       switch (e.state) {
         case State.BEGIN: {
           if (wx.vibrateShort && this.data.vibrate) {
-            runOnJS(wx.vibrateShort)({
-              type: 'heavy',
-            })
+            runOnJS(wx.vibrateShort)({ type: 'heavy' })
           }
           runOnJS(this.triggerEvent.bind(this))('dragBegin')
 
@@ -191,7 +183,11 @@ Component({
         default:
           break
       }
-      console.log('handleLongPress', e.state, e.translationX, e.translationY, { x, y, originX, originY })
+      // console.log('handleLongPress', e.state, e.translationX, e.translationY, { x, y })
+    },
+    onClick() {
+      console.log('onClick')
+      this.triggerEvent('dragClick')
     },
   },
 })
