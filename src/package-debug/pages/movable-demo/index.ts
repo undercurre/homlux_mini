@@ -18,7 +18,7 @@ Component({
   lifetimes: {
     ready() {
       const demoList = []
-      for (let i = 0; i < 18; ++i) {
+      for (let i = 0; i < 118; ++i) {
         demoList.push({ name: `box-${i}` })
       }
       this.setData({ demoList })

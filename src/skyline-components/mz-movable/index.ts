@@ -109,7 +109,7 @@ Component({
     // 动态变更坐标位置
     posTransfer(x: number, y: number) {
       if (this.data._x?.value !== x) {
-        console.log('[posTransfer x]', x, this.data._x?.value)
+        // console.log('[posTransfer x]', x, this.data._x?.value)
 
         if (this.data.animation) {
           this.data._x.value = timing(
@@ -129,7 +129,7 @@ Component({
         }
       }
       if (this.data._y?.value !== y) {
-        console.log('[posTransfer y]', y, this.data._y?.value)
+        // console.log('[posTransfer y]', y, this.data._y?.value)
 
         if (this.data.animation) {
           this.data._y.value = timing(

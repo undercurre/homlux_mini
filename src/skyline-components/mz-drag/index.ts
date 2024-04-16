@@ -3,22 +3,25 @@ Component({
    * 组件的属性列表
    */
   properties: {
+    cols: {
+      type: Number,
+      value: 1,
+    },
     // 可拖动元素列表
-    // TODO n个元素的计算
     movableList: {
       type: Array,
       observer(data) {
         if (!data?.length) {
           return
         }
-        const { itemWidth, itemHeight } = this.data
+        const { itemWidth, itemHeight, cols } = this.data
         this.setData({
           list: data.map((item, i) => ({
             ...item,
-            pos: [(i % 4) * itemWidth, Math.floor(i / 4) * itemHeight],
+            pos: [(i % cols) * itemWidth, Math.floor(i / cols) * itemHeight],
             order: i,
           })),
-          moveareaHeight: itemHeight * Math.ceil(data.length / 4),
+          moveareaHeight: itemHeight * Math.ceil(data.length / cols),
         })
       },
     },
@@ -88,11 +91,11 @@ Component({
     },
     /**
      * 根据索引计算坐标位置
-     * @param n 每行n个
      * @returns [x, y]
      */
-    getPos(i: number, n = 4) {
-      return [(i % n) * this.data.itemWidth, Math.floor(i / 4) * this.data.itemHeight]
+    getPos(i: number) {
+      const { cols } = this.data
+      return [(i % cols) * this.data.itemWidth, Math.floor(i / cols) * this.data.itemHeight]
     },
     cardTap(e: { target: { dataset: { index: number } } }) {
       const { index } = e.target.dataset
