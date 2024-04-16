@@ -4,6 +4,6 @@
     bind:cardTap="cardTap"
     item-height="{{itemHeight}}"
     item-width="{{itemWidth}}"
-    movable-list="{{list}}"
+    movable-list="{{demoList}}"
   ></mz-drag
 ></view>
