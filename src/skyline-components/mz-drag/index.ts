@@ -46,8 +46,13 @@ Component({
     getIndex(x: number, y: number) {
       const { movableList, itemHeight, itemWidth } = this.data
 
-      if (movableList?.length === 1) {
-        return 1
+      // 没有元素
+      if (!movableList?.length) {
+        return -1
+      }
+      // 只有一个元素
+      if (movableList.length === 1) {
+        return 0
       }
       const _x = Math.max(x, 0)
       const _y = Math.max(y, 0)
@@ -55,11 +60,17 @@ Component({
       for (const key in movableList) {
         const index = parseInt(key)
         const cur = movableList[index]
-        if (_y >= cur[1] && _y < cur[1] + itemHeight && _x >= cur[0] && _x < cur[0] + itemWidth) {
+        if (
+          _y >= cur[1] - itemHeight / 2 &&
+          _y < cur[1] + itemHeight / 2 &&
+          _x >= cur[0] - itemWidth / 2 &&
+          _x < cur[0] + itemWidth / 2
+        ) {
           return index
         }
       }
-      return -1
+      // 遍历所有元素都找不到，返回最大索引
+      return movableList.length - 1
     },
     cardTap(e: { target: { dataset: { index: number } } }) {
       const { index } = e.target.dataset
@@ -75,12 +86,17 @@ Component({
     dragEnd(e: { target: { dataset: { index: number } }; detail: { x: number; y: number } }) {
       const { index } = e.target.dataset
       const { x, y } = e.detail
+      this.setData({
+        [`list[${index}]`]: [x, y],
+      })
+
+      // 位置修正
       const fixedIndex = this.getIndex(x, y)
       const [_x, _y] = fixedIndex === -1 ? [0, 0] : this.data.movableList[fixedIndex]
       this.setData({
         [`list[${index}]`]: [_x, _y],
       })
-      console.log('[dragEnd]index:', index, e.detail, fixedIndex, _x, _y)
+      console.log('[dragEnd]index:', index, { x, y }, fixedIndex, { _x, _y })
     },
   },
 })

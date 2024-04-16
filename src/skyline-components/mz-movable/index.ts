@@ -45,16 +45,16 @@ Component({
       type: Number,
       value: 0,
       observer(x) {
-        this.data._originX.value = x
         this.posTransfer(x, this.data.y)
+        this.data._originX.value = x
       },
     },
     y: {
       type: Number,
       value: 0,
       observer(y) {
-        this.data._originY.value = y
         this.posTransfer(this.data.x, y)
+        this.data._originY.value = y
       },
     },
     // 超过可移动区域后，是否还可以移动
@@ -108,29 +108,43 @@ Component({
   methods: {
     // 动态变更坐标位置
     posTransfer(x: number, y: number) {
-      console.log('[posTransfer]', x, y)
-      if (this.data._originX?.value !== x || this.data._originY?.value !== y) {
-        if (this.data.animation) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          this.data._x.value = timing(x, {
-            duration: this.data.duration,
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            easing: Easing.ease,
-          })
+      if (this.data._x?.value !== x) {
+        console.log('[posTransfer x]', x)
 
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          this.data._y.value = timing(y, {
-            duration: this.data.duration,
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            easing: Easing.ease,
-          })
+        if (this.data.animation) {
+          this.data._x.value = timing(
+            x,
+            {
+              duration: this.data.duration,
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              easing: Easing.ease,
+            },
+            () => {
+              'worklet'
+            },
+          )
         } else {
           this.data._x.value = x
-          this.data._y.value = y
+        }
+      }
+      if (this.data._y?.value !== y) {
+        console.log('[posTransfer y]', y)
+        if (this.data.animation) {
+          this.data._y.value = timing(
+            y,
+            {
+              duration: this.data.duration,
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              easing: Easing.ease,
+            },
+            () => {
+              'worklet'
+            },
+          )
+        } else {
+          this.data._x.value = y
         }
       }
     },
@@ -143,6 +157,7 @@ Component({
       const originY = this.data._originY.value
 
       switch (e.state) {
+        // 长按开始
         case State.BEGIN: {
           if (wx.vibrateShort && this.data.vibrate) {
             runOnJS(wx.vibrateShort)({ type: 'heavy' })
@@ -152,25 +167,26 @@ Component({
           break
         }
 
+        // 长按继续（拖动中）
         case State.ACTIVE: {
           const newX = Math.round(e.translationX + originX)
-          if (this.data._x.value !== newX && (this.data.direction === 'all' || this.data.direction === 'horizontal')) {
+          if (x !== newX && (this.data.direction === 'all' || this.data.direction === 'horizontal')) {
             this.data._x.value = this.data.outOfBounds
               ? newX
               : Math.min(Math.max(newX, this.data.bound.left), this.data.bound.right)
           }
 
           const newY = Math.round(e.translationY + originY)
-          if (this.data._y.value !== newY && (this.data.direction === 'all' || this.data.direction === 'vertical')) {
+          if (y !== newY && (this.data.direction === 'all' || this.data.direction === 'vertical')) {
             this.data._y.value = this.data.outOfBounds
               ? newY
               : Math.min(Math.max(newY, this.data.bound.top), this.data.bound.bottom)
           }
 
-          // console.log('handleLongPress State.ACTIVE', this.data._offset.value, this.data.bound)
           break
         }
 
+        // 松手
         case State.END:
           // 暂存坐标
           this.data._originX.value = x
