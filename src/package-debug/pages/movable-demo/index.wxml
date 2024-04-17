@@ -1,26 +1,10 @@
-<scroll-view
-  type="list"
-  style="margin-top: 180rpx; height: 60vh"
-  show-scrollbar="{{false}}"
-  scroll-y
-  enable-passive
->
-  <view
-    class="movearea"
-    style="height:{{moveareaHeight}}px"
-  >
-    <mz-movable
-      generic:item="my-box"
-      wx:for="{{list}}"
-      bind:tap="cardTap"
-      bind:dragBegin="dragBegin"
-      bind:dragEnd="dragEnd"
-      data-index="{{index}}"
-      direction="vertical"
-      x="{{item[0]}}"
-      y="{{item[1]}}"
-      class="moveitem {{ index === currentIndex ? 'z-100' : 'z-1' }}"
-      >[{{index}}]{{item}}</mz-movable
-    >
-  </view>
-</scroll-view>
+<view style="margin-top: 180rpx">
+  <mz-drag
+    generic:item="my-box"
+    bind:cardTap="cardTap"
+    cols="{{4}}"
+    item-height="{{itemHeight}}"
+    item-width="{{itemWidth}}"
+    movable-list="{{demoList}}"
+  ></mz-drag
+></view>

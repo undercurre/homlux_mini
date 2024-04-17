@@ -1,5 +1,5 @@
 // skyline-components/mz-movable/index.ts
-const { runOnJS, Easing, timing } = wx.worklet
+import { runOnJS, Easing, timing } from '../common/worklet'
 
 enum State {
   // 手势未识别
@@ -19,6 +19,7 @@ Component({
    * 组件的属性列表
    */
   properties: {
+    key: String,
     // 开始拖动时，振动反馈
     vibrate: {
       type: Boolean,
@@ -44,47 +45,16 @@ Component({
       type: Number,
       value: 0,
       observer(x) {
-        console.log('observer x', x)
-        if (!this.data._originX || this.data._originX.value === x) {
-          return
-        }
-
+        this.posTransfer(x, this.data.y)
         this.data._originX.value = x
-        if (this.data.animation) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          this.data._x.value = timing(x, {
-            duration: this.data.duration,
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            easing: Easing.ease,
-          })
-        } else {
-          this.data._x.value = x
-        }
       },
     },
     y: {
       type: Number,
       value: 0,
       observer(y) {
-        if (!this.data._originY || this.data._originY.value === y) {
-          return
-        }
-
+        this.posTransfer(this.data.x, y)
         this.data._originY.value = y
-        if (this.data.animation) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          this.data._y.value = timing(y, {
-            duration: this.data.duration,
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            easing: Easing.ease,
-          })
-        } else {
-          this.data._y.value = y
-        }
       },
     },
     // 超过可移动区域后，是否还可以移动
@@ -121,13 +91,14 @@ Component({
       this.data._x = wx.worklet.shared(this.data.x)
       this.data._y = wx.worklet.shared(this.data.y)
 
-      this.applyAnimatedStyle('#moved-box', () => {
+      // console.log('movable wrapper attached', `#box-${this.data.key}`)
+
+      this.applyAnimatedStyle(`#box-${this.data.key}`, () => {
         'worklet'
         return {
           transform: `translateX(${this.data._x.value}px) translateY(${this.data._y.value}px) `,
         }
       })
-      console.log('movable wrapper attached', this.data._x.value, this.data._y.value)
     },
   },
 
@@ -135,11 +106,49 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    onClick() {
-      // console.log('movable wrapper click')
-      // this.triggerEvent('movableClick')
-    },
+    // 动态变更坐标位置
+    posTransfer(x: number, y: number) {
+      if (this.data._x?.value !== x) {
+        // console.log('[posTransfer x]', x, this.data._x?.value)
 
+        if (this.data.animation) {
+          this.data._x.value = timing(
+            x,
+            {
+              duration: this.data.duration,
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              easing: Easing.ease,
+            },
+            () => {
+              'worklet'
+            },
+          )
+        } else {
+          this.data._x.value = x
+        }
+      }
+      if (this.data._y?.value !== y) {
+        // console.log('[posTransfer y]', y, this.data._y?.value)
+
+        if (this.data.animation) {
+          this.data._y.value = timing(
+            y,
+            {
+              duration: this.data.duration,
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              easing: Easing.ease,
+            },
+            () => {
+              'worklet'
+            },
+          )
+        } else {
+          this.data._x.value = y
+        }
+      }
+    },
     handleLongPress(e: { state: State; translationX: number; translationY: number }) {
       'worklet'
 
@@ -149,36 +158,36 @@ Component({
       const originY = this.data._originY.value
 
       switch (e.state) {
+        // 长按开始
         case State.BEGIN: {
           if (wx.vibrateShort && this.data.vibrate) {
-            runOnJS(wx.vibrateShort)({
-              type: 'heavy',
-            })
+            runOnJS(wx.vibrateShort)({ type: 'heavy' })
           }
           runOnJS(this.triggerEvent.bind(this))('dragBegin')
 
           break
         }
 
+        // 长按继续（拖动中）
         case State.ACTIVE: {
           const newX = Math.round(e.translationX + originX)
-          if (this.data._x.value !== newX && (this.data.direction === 'all' || this.data.direction === 'horizontal')) {
+          if (x !== newX && (this.data.direction === 'all' || this.data.direction === 'horizontal')) {
             this.data._x.value = this.data.outOfBounds
               ? newX
               : Math.min(Math.max(newX, this.data.bound.left), this.data.bound.right)
           }
 
           const newY = Math.round(e.translationY + originY)
-          if (this.data._y.value !== newY && (this.data.direction === 'all' || this.data.direction === 'vertical')) {
+          if (y !== newY && (this.data.direction === 'all' || this.data.direction === 'vertical')) {
             this.data._y.value = this.data.outOfBounds
               ? newY
               : Math.min(Math.max(newY, this.data.bound.top), this.data.bound.bottom)
           }
 
-          // console.log('handleLongPress State.ACTIVE', this.data._offset.value, this.data.bound)
           break
         }
 
+        // 松手
         case State.END:
           // 暂存坐标
           this.data._originX.value = x
@@ -191,7 +200,11 @@ Component({
         default:
           break
       }
-      console.log('handleLongPress', e.state, e.translationX, e.translationY, { x, y, originX, originY })
+      // console.log('handleLongPress', e.state, e.translationX, e.translationY, { x, y })
+    },
+    onClick() {
+      console.log('onClick')
+      this.triggerEvent('dragClick')
     },
   },
 })
