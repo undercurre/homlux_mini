@@ -1,5 +1,6 @@
 /* eslint-disable */
-var REGEXP = getRegExp('^-?d+(.d+)?$')
+// prettier-ignore
+var REGEXP = getRegExp('^-?\d+(.\d+)?$')
 
 function addUnit(value) {
   if (value == null) {
