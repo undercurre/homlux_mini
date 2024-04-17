@@ -143,6 +143,24 @@
     <view class="movearea">
       <mz-movable generic:item="mz-button">长按拖动</mz-movable>
     </view>
+
+    <view class="border-black border-t-2 border-solid"></view>
+    <view class="m-24rpx">mz-tab</view>
+    <mz-tabs
+      active="{{ tabActive }}"
+      bind:change="onRoomChange"
+      animated
+      swipeable
+    >
+      <mz-tab
+        style="flex: 1"
+        wx:for="{{roomTab}}"
+        wx:key="roomId"
+        title="{{item.roomName}}"
+        name="{{item.roomId}}"
+        >{{item.roomName}}--{{item.roomId}}</mz-tab
+      >
+    </mz-tabs>
   </scroll-view>
 </view>
 

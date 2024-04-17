@@ -15,6 +15,12 @@ Component({
   data: {
     show: false,
     disabled: false,
+    roomTab: Array.from({ length: 9 }, (_, i) => ({
+      roomName: `卧室${i + 1}`,
+      roomId: `room${i + 1}`,
+      name: `room${i + 1}`,
+    })),
+    tabActive: 'room2',
   },
 
   lifetimes: {
@@ -53,6 +59,12 @@ Component({
       }).catch(() => 'cancel')
 
       console.log('delHome', res)
+    },
+    onRoomChange(event: { detail: { name: string } }) {
+      console.log('onRoomChange', event)
+      this.setData({
+        tabActive: event.detail.name,
+      })
     },
   },
 })

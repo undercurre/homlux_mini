@@ -20,6 +20,8 @@
     "mz-popup": "/skyline-components/mz-popup/index",
     "mz-toast": "/skyline-components/mz-toast/index",
     "mz-dialog": "/skyline-components/mz-dialog/index",
-    "mz-movable": "/skyline-components/mz-movable/index"
+    "mz-movable": "/skyline-components/mz-movable/index",
+    "mz-tabs": "/skyline-components/mz-tabs/index",
+    "mz-tab": "/skyline-components/mz-tab/index"
   }
 }
