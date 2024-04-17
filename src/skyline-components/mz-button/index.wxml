@@ -11,6 +11,7 @@
   data-detail="{{ dataset }}"
   class="custom-class {{ utils.bem('button', [type, size, { block, round, plain, square, loading, disabled, hairline, unclickable: disabled || loading }]) }} {{ hairline ? 'mz-hairline--surround' : '' }}"
   hover-class="{{ disabled || loading ? '' : 'mz-button--active hover-class'}}"
+  style="{{ computed.rootStyle({ plain, color, customStyle }) }}"
   loading="{{loading}}"
   form-type="{{ formType }}"
   open-type="{{ disabled || loading || openType }}"

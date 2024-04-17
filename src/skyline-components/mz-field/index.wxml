@@ -1,0 +1,56 @@
+<wxs
+  src="../wxs/utils.wxs"
+  module="utils"
+/>
+<wxs
+  src="./index.wxs"
+  module="computed"
+/>
+
+<view
+  class="mz-field custom-class"
+  custom-style="{{ customStyle }}"
+>
+  <view class="{{ utils.bem('field__body', [type]) }}">
+    <include
+      wx:if="{{ type === 'textarea' }}"
+      src="./textarea.wxml"
+    />
+    <include
+      wx:else
+      src="./input.wxml"
+    />
+
+    <image
+      wx:if="{{ showClear }}"
+      src="../assets/clear.png"
+      class="mz-field-clear"
+      bind:tap="onClear"
+    />
+    <view
+      class="mz-field__icon-container"
+      bind:tap="onClickIcon"
+    >
+      <slot name="right-icon" />
+      <slot name="icon" />
+    </view>
+  </view>
+
+  <view class="mz-field__button">
+    <slot name="button" />
+  </view>
+  <label
+    for="{{ name }}"
+    wx:if="{{ showWordLimit && maxlength }}"
+    class="mz-field__word-limit"
+  >
+    <text class="{{ utils.bem('field__word-num', { full: value.length >= maxlength }) }}">{{ value.length >= maxlength ? maxlength : value.length }}/{{ maxlength }}</text>
+  </label>
+  <label
+    for="{{ name }}"
+    wx:if="{{ errorMessage }}"
+    class="{{ utils.bem('field__error-message', [errorMessageAlign, { disabled, error }]) }}"
+  >
+    {{ errorMessage }}
+  </label>
+</view>

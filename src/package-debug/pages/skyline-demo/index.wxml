@@ -15,6 +15,44 @@
     class="h-60vh grow shrink"
   >
     <view class="border-black border-t-2 border-solid"></view>
+    <view class="m-24rpx">mz-field</view>
+
+    <mz-field
+      value="{{ inputValue }}"
+      placeholder="请输入家庭名称"
+      clearable="{{true}}"
+      focus="{{isFocus}}"
+      bind:change="changeName"
+      show-word-limit
+      maxlength="12"
+      border="{{false}}"
+    >
+    </mz-field>
+
+    <view class="p-20rpx bg-white">
+      <mz-field
+        value="{{ inputValue }}"
+        placeholder="请选择Wi-Fi"
+        custom-style="background-color: transparent;"
+        clearable="{{true}}"
+        bind:change="changeName"
+        border="{{false}}"
+      >
+        <mz-button
+          slot="button"
+          type="primary"
+          custom-style="background-color: transparent;"
+          plain
+          bind:click="toggleWifi"
+          loading="{{isRequestSystemWifiList}}"
+          disabled="{{isRequestSystemWifiList}}"
+        >
+          切换Wi-Fi
+        </mz-button>
+      </mz-field>
+    </view>
+
+    <view class="border-black border-t-2 border-solid"></view>
     <view class="m-24rpx">mz-cell</view>
 
     <mz-cell-group
@@ -47,6 +85,7 @@
         border
         value="执行失败"
       >
+        <view slot="right">right</view>
         <view
           slot="icon"
           class="rounded-32rpx p-16rpx mr-32rpx"
@@ -56,6 +95,7 @@
             src="/assets/img/mine/home.png"
           ></image>
         </view>
+        <view>默认</view>
       </mz-cell>
     </mz-cell-group>
 
@@ -166,16 +206,6 @@
 
     <view class="mx-32rpx">
       <text>请输入家庭名称</text>
-      <!-- <van-field
-        value="{{ homeInfoEdited.houseName }}"
-        placeholder="请输入家庭名称"
-        custom-style="padding: 32rpx 32rpx;background-color: #F6FAFD;border-radius: 24rpx;"
-        clearable="{{true}}"
-        focus="{{isFocus}}"
-        bind:change="changeHouseName"
-        border="{{false}}"
-      >
-      </van-field> -->
 
       <mz-button
         class="mt-24rpx"

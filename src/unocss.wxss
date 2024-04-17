@@ -9,6 +9,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .p-10rpx{padding:10rpx;}
 .p-12rpx{padding:12rpx;}
 .p-16rpx{padding:16rpx;}
+.p-20rpx{padding:20rpx;}
 .p-24rpx{padding:24rpx;}
 .p-32rpx{padding:32rpx;}
 .p-4rpx{padding:4rpx;}
