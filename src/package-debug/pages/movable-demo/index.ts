@@ -12,16 +12,16 @@ Component({
   data: {
     itemHeight: CARD_H,
     itemWidth: CARD_W,
-    list: [] as [number, number][],
+    demoList: [] as { name: string }[],
   },
 
   lifetimes: {
     ready() {
-      const list = [] as [number, number][]
-      for (let i = 0; i < 18; ++i) {
-        list.push([(i % 4) * CARD_W, Math.floor(i / 4) * CARD_H])
+      const demoList = []
+      for (let i = 0; i < 118; ++i) {
+        demoList.push({ name: `box-${i}` })
       }
-      this.setData({ list })
+      this.setData({ demoList })
     },
   },
 
@@ -32,12 +32,12 @@ Component({
     cardTap(e: { detail: number }) {
       const index = e.detail
       console.log('[draglist cardTap]', index)
-      const item = this.data.list[index]
+      // const item = this.data.demoList[index]
 
-      // 定义一个移位操作
-      this.setData({
-        [`list[${index}]`]: [item[0] + 10, item[1] + 50],
-      })
+      // // 定义一个移位操作
+      // this.setData({
+      //   [`demoList[${index}]`]: [item[0] + 10, item[1] + 50],
+      // })
     },
   },
 })

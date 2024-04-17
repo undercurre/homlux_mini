@@ -3,13 +3,25 @@ Component({
    * 组件的属性列表
    */
   properties: {
+    cols: {
+      type: Number,
+      value: 1,
+    },
     // 可拖动元素列表
     movableList: {
       type: Array,
-      observer(val) {
+      observer(data) {
+        if (!data?.length) {
+          return
+        }
+        const { itemWidth, itemHeight, cols } = this.data
         this.setData({
-          list: [...val],
-          moveareaHeight: this.data.itemHeight * Math.ceil(val.length / 4), // TODO
+          list: data.map((item, i) => ({
+            ...item,
+            pos: [(i % cols) * itemWidth, Math.floor(i / cols) * itemHeight],
+            order: i,
+          })),
+          moveareaHeight: itemHeight * Math.ceil(data.length / cols),
         })
       },
     },
@@ -33,7 +45,7 @@ Component({
    * 组件的初始数据
    */
   data: {
-    list: [] as [number, number][],
+    list: [] as { name: string; pos: [number, number]; order: number }[],
     currentIndex: -1,
     moveareaHeight: 0,
   },
@@ -42,24 +54,48 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    // 根据坐标计算索引
+    /**
+     * 根据坐标位置计算索引
+     * @returns index
+     */
     getIndex(x: number, y: number) {
-      const { movableList, itemHeight, itemWidth } = this.data
+      const { list, itemHeight, itemWidth } = this.data
 
-      if (movableList?.length === 1) {
-        return 1
+      // 没有元素
+      if (!list?.length) {
+        return -1
       }
+      // 只有一个元素
+      if (list.length === 1) {
+        return 0
+      }
+
+      // 修正超出区域的情况
       const _x = Math.max(x, 0)
       const _y = Math.max(y, 0)
 
-      for (const key in movableList) {
+      for (const key in list) {
         const index = parseInt(key)
-        const cur = movableList[index]
-        if (_y >= cur[1] && _y < cur[1] + itemHeight && _x >= cur[0] && _x < cur[0] + itemWidth) {
+        const cur = this.getPos(index)
+        if (
+          _y >= cur[1] - itemHeight / 2 &&
+          _y < cur[1] + itemHeight / 2 &&
+          _x >= cur[0] - itemWidth / 2 &&
+          _x < cur[0] + itemWidth / 2
+        ) {
           return index
         }
       }
-      return -1
+      // 遍历所有元素都找不到，返回最大索引
+      return list.length - 1
+    },
+    /**
+     * 根据索引计算坐标位置
+     * @returns [x, y]
+     */
+    getPos(i: number) {
+      const { cols } = this.data
+      return [(i % cols) * this.data.itemWidth, Math.floor(i / cols) * this.data.itemHeight]
     },
     cardTap(e: { target: { dataset: { index: number } } }) {
       const { index } = e.target.dataset
@@ -75,12 +111,40 @@ Component({
     dragEnd(e: { target: { dataset: { index: number } }; detail: { x: number; y: number } }) {
       const { index } = e.target.dataset
       const { x, y } = e.detail
-      const fixedIndex = this.getIndex(x, y)
-      const [_x, _y] = fixedIndex === -1 ? [0, 0] : this.data.movableList[fixedIndex]
       this.setData({
-        [`list[${index}]`]: [_x, _y],
+        [`list[${index}].pos`]: [x, y],
       })
-      console.log('[dragEnd]index:', index, e.detail, fixedIndex, _x, _y)
+
+      // 新排序
+      const newOrder = this.getIndex(x, y)
+
+      // console.log('[dragEnd]index:', index, { x, y }, newOrder)
+
+      // 更新联动卡片
+      const oldOrder = this.data.list[index].order
+      const isForward = oldOrder < newOrder // 是否向前移动（队列末端为前）
+      const diffData = {} as IAnyObject
+
+      for (const i in this.data.list) {
+        const { order } = this.data.list[i]
+        if (
+          (isForward && order > oldOrder && order <= newOrder) ||
+          (!isForward && order >= newOrder && order < oldOrder)
+        ) {
+          const target = isForward ? order - 1 : order + 1
+          diffData[`list[${i}].pos`] = this.getPos(target)
+          diffData[`list[${i}].order`] = target
+        }
+      }
+
+      // 修正被拖元素的位置
+      if (newOrder >= 0) {
+        diffData[`list[${index}].pos`] = this.getPos(newOrder)
+        diffData[`list[${index}].order`] = newOrder
+      }
+
+      this.setData(diffData)
+      console.log('[dragEnd]diffData', diffData)
     },
   },
 })

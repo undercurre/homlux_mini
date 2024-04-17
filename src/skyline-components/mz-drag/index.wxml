@@ -18,11 +18,11 @@
       bind:dragEnd="dragEnd"
       data-index="{{index}}"
       direction="{{direction}}"
-      x="{{item[0]}}"
-      y="{{item[1]}}"
+      x="{{item.pos[0]}}"
+      y="{{item.pos[1]}}"
       class="moveitem {{ index === currentIndex ? 'z-100' : 'z-1' }}"
     >
-      <item>[{{index}}]{{item}}</item>
+      <item>{{item.name}}[{{item.order}}]</item>
     </mz-movable>
   </view>
 </scroll-view>
