@@ -37,7 +37,7 @@ ComponentWithComputed({
     },
     gearBtnConfig: {
       isEnable: true,
-      isTopOn: true,
+      isTopOn: false,
       isBottomOn: false
     },
     btnList: [
@@ -83,8 +83,8 @@ ComponentWithComputed({
         isOn: false,
         isEnable: true,
         isMode: true,
-        iconOn: '/package-remoter/assets/newUI/dirOn.png',
-        iconOff: '/package-remoter/assets/newUI/dirOff.png',
+        iconOn: '/package-remoter/assets/newUI/dryOn.png',
+        iconOff: '/package-remoter/assets/newUI/dryOff.png',
       },
       {
         key: 'SWING',
@@ -153,7 +153,16 @@ ComponentWithComputed({
       return data.isBLEConnected ? '#25CF42' : '#979EAD'
     },
     connectedText(data) {
-      return data.isBLEConnected ? '已连接' : '未连接'
+      if (!data.isBLEConnected) return '未连接'
+      const list = data.btnList
+      const arr = []
+      if (data.gearBtnConfig.isTopOn) arr.push('强暖')
+      else if (data.gearBtnConfig.isBottomOn) arr.push('弱暖')
+      for (let i = 0; i < list.length; i++) {
+        if (list[i].isMode && list[i].isOn) arr.push(list[i].name)
+      }
+      if (arr.length === 0) return '已连接'
+      else return arr.join('|')
     }
   },
   methods: {

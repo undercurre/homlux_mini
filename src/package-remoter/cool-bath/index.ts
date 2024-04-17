@@ -39,6 +39,7 @@ ComponentWithComputed({
         name: '换气',
         isOn: false,
         isEnable: true,
+        isMode: true,
         iconOn: '/package-remoter/assets/newUI/ventOn.png',
         iconOff: '/package-remoter/assets/newUI/ventOff.png',
       },
@@ -47,6 +48,7 @@ ComponentWithComputed({
         name: '摆风',
         isOn: false,
         isEnable: true,
+        isMode: false,
         iconOn: '/package-remoter/assets/newUI/swingOn.png',
         iconOff: '/package-remoter/assets/newUI/swingOff.png',
       },
@@ -55,6 +57,7 @@ ComponentWithComputed({
         name: '负离子',
         isOn: false,
         isEnable: true,
+        isMode: false,
         iconOn: '/package-remoter/assets/newUI/anionOn.png',
         iconOff: '/package-remoter/assets/newUI/anionOff.png',
       },
@@ -63,6 +66,7 @@ ComponentWithComputed({
         name: '延时关',
         isOn: false,
         isEnable: true,
+        isMode: false,
         iconOn: '/package-remoter/assets/newUI/delayOn.png',
         iconOff: '/package-remoter/assets/newUI/delayOff.png',
       }
@@ -131,7 +135,16 @@ ComponentWithComputed({
       return data.isBLEConnected ? '#25CF42' : '#979EAD'
     },
     connectedText(data) {
-      return data.isBLEConnected ? '已连接' : '未连接'
+      if (!data.isBLEConnected) return '未连接'
+      const list = data.btnList
+      const arr = []
+      if (data.gearBtnConfig.isTopOn) arr.push('强风')
+      else if (data.gearBtnConfig.isBottomOn) arr.push('弱风')
+      for (let i = 0; i < list.length; i++) {
+        if (list[i].isMode && list[i].isOn) arr.push(list[i].name)
+      }
+      if (arr.length === 0) return '已连接'
+      else return arr.join('|')
     }
   },
   methods: {
