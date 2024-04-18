@@ -46,7 +46,7 @@ Component({
       value: 0,
       observer(x) {
         this.posTransfer(x, this.data.y)
-        this.data._originX.value = x
+        this.data._lastX.value = x
       },
     },
     y: {
@@ -54,7 +54,7 @@ Component({
       value: 0,
       observer(y) {
         this.posTransfer(this.data.x, y)
-        this.data._originY.value = y
+        this.data._lastY.value = y
       },
     },
     // 超过可移动区域后，是否还可以移动
@@ -78,18 +78,30 @@ Component({
    * 组件的初始数据
    */
   data: {
+    // 组件当前坐标
     _x: { value: 0 },
     _y: { value: 0 },
+    // 上一次移动结束时的坐标
+    _lastX: { value: 0 },
+    _lastY: { value: 0 },
+    // 本次移动开始时的坐标
     _originX: { value: 0 },
     _originY: { value: 0 },
+    // 正在被动移动中
+    _settingX: { value: false },
+    _settingY: { value: false },
   },
 
   lifetimes: {
     attached() {
       this.data._originX = wx.worklet.shared(this.data.x)
       this.data._originY = wx.worklet.shared(this.data.y)
+      this.data._lastX = wx.worklet.shared(this.data.x)
+      this.data._lastY = wx.worklet.shared(this.data.y)
       this.data._x = wx.worklet.shared(this.data.x)
       this.data._y = wx.worklet.shared(this.data.y)
+      this.data._settingX = wx.worklet.shared(false)
+      this.data._settingY = wx.worklet.shared(false)
 
       // console.log('movable wrapper attached', `#box-${this.data.key}`)
 
@@ -108,8 +120,10 @@ Component({
   methods: {
     // 动态变更坐标位置
     posTransfer(x: number, y: number) {
-      if (this.data._x?.value !== x) {
+      if (this.data._x?.value !== x && !this.data._settingX.value) {
         // console.log('[posTransfer x]', x, this.data._x?.value)
+
+        this.data._settingX.value = true
 
         if (this.data.animation) {
           this.data._x.value = timing(
@@ -122,14 +136,18 @@ Component({
             },
             () => {
               'worklet'
+              this.data._settingX.value = false
             },
           )
         } else {
           this.data._x.value = x
+          this.data._settingX.value = false
         }
       }
-      if (this.data._y?.value !== y) {
+      if (this.data._y?.value !== y && !this.data._settingY.value) {
         // console.log('[posTransfer y]', y, this.data._y?.value)
+
+        this.data._settingY.value = true
 
         if (this.data.animation) {
           this.data._y.value = timing(
@@ -142,20 +160,29 @@ Component({
             },
             () => {
               'worklet'
+              this.data._settingY.value = false
             },
           )
         } else {
-          this.data._x.value = y
+          this.data._y.value = y
+          this.data._settingY.value = false
         }
       }
     },
-    handleLongPress(e: { state: State; translationX: number; translationY: number }) {
+    handleLongPress(e: {
+      state: State
+      translationX: number
+      translationY: number
+      absoluteX: number
+      absoluteY: number
+    }) {
       'worklet'
 
       const x = this.data._x.value
       const y = this.data._y.value
-      const originX = this.data._originX.value
-      const originY = this.data._originY.value
+      const lastX = this.data._lastX.value
+      const lastY = this.data._lastY.value
+      // console.log('handleLongPress trigger', e.state, { x, y })
 
       switch (e.state) {
         // 长按开始
@@ -164,25 +191,31 @@ Component({
             runOnJS(wx.vibrateShort)({ type: 'heavy' })
           }
           runOnJS(this.triggerEvent.bind(this))('dragBegin')
+          this.data._originX.value = e.absoluteX
+          this.data._originY.value = e.absoluteY
 
           break
         }
 
         // 长按继续（拖动中）
         case State.ACTIVE: {
-          const newX = Math.round(e.translationX + originX)
+          const translationX = e.absoluteX - this.data._originX.value
+          const translationY = e.absoluteY - this.data._originY.value
+          const newX = Math.round(translationX + lastX)
           if (x !== newX && (this.data.direction === 'all' || this.data.direction === 'horizontal')) {
             this.data._x.value = this.data.outOfBounds
               ? newX
               : Math.min(Math.max(newX, this.data.bound.left), this.data.bound.right)
           }
 
-          const newY = Math.round(e.translationY + originY)
+          const newY = Math.round(translationY + lastY)
           if (y !== newY && (this.data.direction === 'all' || this.data.direction === 'vertical')) {
             this.data._y.value = this.data.outOfBounds
               ? newY
               : Math.min(Math.max(newY, this.data.bound.top), this.data.bound.bottom)
           }
+
+          runOnJS(this.triggerEvent.bind(this))('dragMove', [e.absoluteX, e.absoluteY, newX, newY])
 
           break
         }
@@ -190,17 +223,16 @@ Component({
         // 松手
         case State.END:
           // 暂存坐标
-          this.data._originX.value = x
-          this.data._originY.value = y
+          this.data._lastX.value = x
+          this.data._lastY.value = y
           runOnJS(this.triggerEvent.bind(this))('dragEnd', { x, y })
 
-          // console.log('handleLongPress State.END', this.data._offset.value)
+          console.log('handleLongPress State.END', { x, y })
           break
 
         default:
           break
       }
-      // console.log('handleLongPress', e.state, e.translationX, e.translationY, { x, y })
     },
     onClick() {
       console.log('onClick')
