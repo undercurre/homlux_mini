@@ -494,10 +494,13 @@ ComponentWithComputed({
       const index = e.currentTarget.dataset.index
       const list = this.data.bottomList
       if (!list[index].isEnable) return
-      list[index].isOn = !list[index].isOn
-      this.setData({
-        bottomList: list,
-      })
+      const lastPowerOn = list[0].isOn
+      if (!this.data.isBLEConnected || lastPowerOn) {
+        list[index].isOn = !list[index].isOn
+        this.setData({
+          bottomList: list,
+        })
+      }
       if (!this.data.isBLEConnected) {
         setTimeout(() => {
           list[index].isOn = false
@@ -507,7 +510,7 @@ ComponentWithComputed({
         }, 300)
       }
       if (list[index].key == 'POWER') {
-        if (this.data.isBLEConnected) {
+        if (this.data.isBLEConnected && !lastPowerOn) {
           this.setData({
             isShowPopup: true
           })
@@ -521,6 +524,7 @@ ComponentWithComputed({
       }
     },
     onPopupSelect(e: any) {
+      this.closePopup()
       const key = e.currentTarget.dataset.key
       if (key === 'HEAT') {
         if (this.data.tempType === 1) this.sendBluetoothCMD([CMD['BATH_WARM_UP']])
