@@ -1,0 +1,42 @@
+.mz-switch {
+  background-color: var(--switch-background-color, #c8c7cc);
+  border: var(--switch-border, none);
+  border-radius: var(--switch-node-size, 50rpx);
+  box-sizing: border-box;
+  display: flex;
+  height: var(--switch-height, 50rpx);
+  position: relative;
+  transition-property: background-color;
+  transition-duration: var(--switch-transition-duration, 0.3s);
+  width: var(--switch-width, 96rpx);
+  padding: var(--switch-padding, 7.5rpx);
+}
+.mz-switch__node {
+  background-color: var(--switch-node-background-color, #fff);
+  border-radius: 100%;
+  box-shadow: var(--switch-node-box-shadow, none);
+  height: var(--switch-node-size, 35rpx);
+  transition-property: transform;
+  transition-duration: var(--switch-transition-duration, 0.3s);
+  transition-timing-function: cubic-bezier(0.3, 1.05, 0.4, 1.05);
+  width: var(--switch-node-size, 35rpx);
+  z-index: var(--switch-node-z-index, 1);
+}
+.mz-switch__loading {
+  height: 50%;
+  left: 25%;
+  position: absolute !important;
+  top: 25%;
+  width: 50%;
+}
+.mz-switch--on {
+  background-color: var(--switch-on-background-color, #488fff);
+}
+.mz-switch--on .mz-switch__node {
+  transform: translateX(
+    calc(var(--switch-width, 96rpx) - 2 * var(--switch-padding, 7.5rpx) - var(--switch-node-size, 35rpx))
+  );
+}
+.mz-switch--disabled {
+  opacity: var(--switch-disabled-opacity, 0.4);
+}

@@ -203,6 +203,13 @@
         >{{item.roomName}}--{{item.roomId}}</mz-tab
       >
     </mz-tabs>
+    <view class="border-black border-t-2 border-solid"></view>
+    <view class="m-24rpx">mz-switch</view>
+    <mz-switch
+      checked="{{ switchStatus }}"
+      bind:change="toggleSwitch"
+    />
+    <view class="h-48"></view>
   </scroll-view>
 </view>
 

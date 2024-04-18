@@ -21,6 +21,7 @@ Component({
       name: `room${i + 1}`,
     })),
     tabActive: 'room2',
+    switchStatus: false,
   },
 
   lifetimes: {
@@ -65,6 +66,10 @@ Component({
       this.setData({
         tabActive: event.detail.name,
       })
+    },
+    toggleSwitch(e: { detail: boolean }) {
+      console.log('toggleSwitch', e)
+      this.setData({ switchStatus: e.detail })
     },
   },
 })
