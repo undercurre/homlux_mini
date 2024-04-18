@@ -131,7 +131,6 @@
   },
   "lazyCodeLoading": "requiredComponents",
   "usingComponents": {
-    "van-button": "@vant/weapp/button/index",
     "nav-bar": "/components/custom-nav-bar/index"
   },
   "window": {

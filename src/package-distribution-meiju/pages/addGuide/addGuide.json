@@ -1,5 +1,6 @@
 {
   "usingComponents": {
+    "van-button": "@vant/weapp/button/index",
     "van-toast": "@vant/weapp/toast/index",
     "sure-center-dialog": "/package-distribution-meiju/component/sure-center-dialog/sure-center-dialog",
     "mx-dialog": "/miniprogram_npm/m-ui/mx-dialog/index"
