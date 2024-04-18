@@ -41,7 +41,8 @@
   margin-right: 24rpx;
 }
 .connect-block {
-  width: 208rpx;
+  padding-left: 32rpx;
+  padding-right: 32rpx;
   height: 72rpx;
   border-radius: 36rpx;
   margin-top: 46rpx;

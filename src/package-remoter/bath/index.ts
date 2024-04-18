@@ -162,7 +162,7 @@ ComponentWithComputed({
         if (list[i].isMode && list[i].isOn) arr.push(list[i].name)
       }
       if (arr.length === 0) return '已连接'
-      else return arr.join('|')
+      else return arr.join(' | ')
     }
   },
   methods: {
@@ -320,34 +320,34 @@ ComponentWithComputed({
       let isAllClose = true
       for (let i = 0; i < btns.length; i++) {
         if (btns[i].key === 'HEAT') {
-          if (status.BATH_WARM_UP) {
-            btns[i].isOn = true
-            isAllClose = false
+          if (status.BATH_WARM_UP != undefined) {
+            btns[i].isOn = status.BATH_WARM_UP
+            if (status.BATH_WARM_UP) isAllClose = false
           }
         } else if (btns[i].key === 'BATH') {
-          if (status.BATH_AUTO) {
-            btns[i].isOn = true
-            isAllClose = false
+          if (status.BATH_AUTO != undefined) {
+            btns[i].isOn = status.BATH_AUTO
+            if (status.BATH_AUTO) isAllClose = false
           }
         } else if (btns[i].key === 'VENT') {
-          if (status.BATH_VENTILATE) {
-            btns[i].isOn = true
-            isAllClose = false
+          if (status.BATH_VENTILATE != undefined) {
+            btns[i].isOn = status.BATH_VENTILATE
+            if (status.BATH_VENTILATE) isAllClose = false
           }
         } else if (btns[i].key === 'BLOW') {
-          if (status.BATH_WIND) {
-            btns[i].isOn = true
-            isAllClose = false
+          if (status.BATH_WIND != undefined) {
+            btns[i].isOn = status.BATH_WIND
+            if (status.BATH_WIND) isAllClose = false
           }
         } else if (btns[i].key === 'DRY') {
-          if (status.BATH_DRY) {
-            btns[i].isOn = true
-            isAllClose = false
+          if (status.BATH_DRY != undefined) {
+            btns[i].isOn = status.BATH_DRY
+            if (status.BATH_DRY) isAllClose = false
           }
         } else if (btns[i].key === 'SWING') {
-          if (status.BATH_SWING) {
-            btns[i].isOn = true
-            isAllClose = false
+          if (status.BATH_SWING != undefined) {
+            btns[i].isOn = status.BATH_SWING
+            if (status.BATH_SWING) isAllClose = false
           }
         }
       }

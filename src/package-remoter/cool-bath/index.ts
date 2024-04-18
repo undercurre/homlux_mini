@@ -274,14 +274,14 @@ ComponentWithComputed({
       }
       for (let i = 0; i < btns.length; i++) {
         if (btns[i].key === 'VENT') {
-          if (status.BATH_VENTILATE) {
-            btns[i].isOn = true
-            isAllClose = false
+          if (status.BATH_VENTILATE != undefined) {
+            btns[i].isOn = status.BATH_VENTILATE
+            if (status.BATH_VENTILATE) isAllClose = false
           }
         } else if (btns[i].key === 'SWING') {
-          if (status.BATH_SWING) {
-            btns[i].isOn = true
-            isAllClose = false
+          if (status.BATH_SWING != undefined) {
+            btns[i].isOn = status.BATH_SWING
+            if (status.BATH_SWING) isAllClose = false
           }
         }
       }
