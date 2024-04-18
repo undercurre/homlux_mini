@@ -1,6 +1,11 @@
 {
   "component": true,
   "usingComponents": {
+    "van-toast": "@vant/weapp/toast/index",
+    "van-dialog": "@vant/weapp/dialog/index",
+    "svg-icon": "/components/svg-icon/index",
+    "van-cell-group": "@vant/weapp/cell-group/index",
+    "van-cell": "@vant/weapp/cell/index",
     "edit-name-popup": "./components/edit-name-popup/index",
     "select-device": "./components/select-device/index"
   }

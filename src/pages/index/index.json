@@ -1,8 +1,13 @@
 {
   "component": true,
   "usingComponents": {
+    "van-toast": "@vant/weapp/toast/index",
+    "van-dialog": "@vant/weapp/dialog/index",
+    "svg-icon": "/components/svg-icon/index",
+    "home-select-menu": "/components/home-select-menu/index",
     "room-card": "./components/room-card/index",
     "add-menu": "./components/add-menu/index",
+    "add-room": "/components/add-room/index",
     "van-skeleton": "@vant/weapp/skeleton/index"
   },
   "navigationStyle": "custom"

@@ -2,6 +2,10 @@
   "component": true,
   "styleIsolation": "apply-shared",
   "usingComponents": {
+    "van-toast": "@vant/weapp/toast/index",
+    "van-popup": "@vant/weapp/popup/index",
+    "van-cell-group": "@vant/weapp/cell-group/index",
+    "van-cell": "@vant/weapp/cell/index",
     "van-picker": "@vant/weapp/picker/index"
   }
 }

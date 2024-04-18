@@ -1,5 +1,6 @@
 {
   "usingComponents": {
+    "svg-icon": "/components/svg-icon/index",
     "van-cell": "@vant/weapp/cell/index",
     "van-cell-group": "@vant/weapp/cell-group/index"
   }

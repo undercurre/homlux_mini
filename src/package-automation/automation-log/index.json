@@ -4,6 +4,7 @@
   "componentFramework": "glass-easel",
   "styleIsolation": "apply-shared",
   "usingComponents": {
+    "van-toast": "@vant/weapp/toast/index",
     "mz-cell-group": "/skyline-components/mz-cell-group/index",
     "mz-cell": "/skyline-components/mz-cell/index"
   }

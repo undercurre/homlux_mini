@@ -1,5 +1,8 @@
 {
   "usingComponents": {
+    "van-toast": "@vant/weapp/toast/index",
+    "van-cell-group": "@vant/weapp/cell-group/index",
+    "van-cell": "@vant/weapp/cell/index",
     "tips-box": "/components/tips-box/index",
     "steps": "./components/steps/index",
     "select-device": "./components/select-device/index",

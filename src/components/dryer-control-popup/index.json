@@ -2,6 +2,8 @@
   "component": true,
   "styleIsolation": "apply-shared",
   "usingComponents": {
+    "van-toast": "@vant/weapp/toast/index",
+    "van-popup": "@vant/weapp/popup/index",
     "mz-round-button": "/components/mz-round-button/index",
     "mz-icon-button": "/components/mz-icon-button/index"
   }

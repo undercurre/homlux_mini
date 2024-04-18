@@ -2,6 +2,8 @@
   "component": true,
   "styleIsolation": "apply-shared",
   "usingComponents": {
+    "van-toast": "@vant/weapp/toast/index",
+    "van-popup": "@vant/weapp/popup/index",
     "drop-button": "../../components/drop-button/index",
     "mz-slider": "/components/mz-slider/index",
     "van-picker": "@vant/weapp/picker/index",

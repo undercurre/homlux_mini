@@ -1,6 +1,8 @@
 {
   "component": true,
   "usingComponents": {
+    "van-toast": "@vant/weapp/toast/index",
+    "van-field": "@vant/weapp/field/index",
     "edit-icon-popup": "./components/edit-icon-popup/index",
     "edit-timeConditions-popup": "./components/edit-timeConditions-popup/index",
     "edit-delay-popup": "./components/edit-delay-popup/index",
@@ -15,6 +17,8 @@
     "dryer-control-popup": "/components/dryer-control-popup/index",
     "edit-sensor-popup": "./components/edit-sensor-popup/index",
     "van-dialog": "@vant/weapp/dialog/index",
+    "van-cell-group": "@vant/weapp/cell-group/index",
+    "van-cell": "@vant/weapp/cell/index",
     "cell": "./components/cell/index",
     "cell-default": "./components/cell-default/index",
     "drag": "/components/drag/index",

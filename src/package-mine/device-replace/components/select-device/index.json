@@ -2,7 +2,8 @@
   "component": true,
   "styleIsolation": "apply-shared",
   "usingComponents": {
-    "device-card": "../../../../components/device-card/index",
+    "device-card": "/components/device-card/index",
+    "van-popup": "@vant/weapp/popup/index",
     "room-tabs": "../../../../components/room-tabs/index"
   }
 }

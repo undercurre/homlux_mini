@@ -1,6 +1,10 @@
 {
   "component": true,
   "usingComponents": {
+    "van-toast": "@vant/weapp/toast/index",
+    "van-dialog": "@vant/weapp/dialog/index",
+    "van-cell-group": "@vant/weapp/cell-group/index",
+    "van-cell": "@vant/weapp/cell/index",
     "edit-laundry-popup": "./components/edit-laundry-popup/index",
     "edit-name-popup": "./components/edit-name-popup/index",
     "edit-room-popup": "./components/edit-room-popup/index",

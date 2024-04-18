@@ -1,6 +1,7 @@
 {
   "component": true,
   "usingComponents": {
+    "van-dialog": "@vant/weapp/dialog/index",
     "tips-box": "/components/tips-box/index",
     "mz-loading": "/components/mz-loading/index",
     "mz-progress": "/components/mz-progress/index"

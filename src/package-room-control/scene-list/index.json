@@ -1,6 +1,7 @@
 {
   "component": true,
   "usingComponents": {
+    "van-toast": "@vant/weapp/toast/index",
     "cell": "./cell/index",
     "drag": "/components/drag/index"
   }

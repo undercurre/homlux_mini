@@ -1,5 +1,7 @@
 {
   "usingComponents": {
+    "van-toast": "@vant/weapp/toast/index",
+    "van-dialog": "@vant/weapp/dialog/index",
     "mz-button": "../components/mz-button/index",
     "mz-button-bottom": "../components/mz-button-bottom/index"
   }

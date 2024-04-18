@@ -1,14 +1,11 @@
 import { envMap, setEnv } from '../config/index'
 import { storage } from './storage'
-import { Logger } from './log'
 // import QQMapWX from '../lib/qqmap-wx-jssdk'
 // import { QQMapConfig } from '../config/index'
 
 const deviceInfo = wx.getDeviceInfo()
-Logger.debug('deviceInfo', deviceInfo)
 
 const accountInfo = wx.getAccountInfoSync()
-Logger.debug('accountInfo', accountInfo)
 
 /**
  * 返回小程序首页

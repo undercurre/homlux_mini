@@ -2,6 +2,9 @@
   "component": true,
   "styleIsolation": "apply-shared",
   "usingComponents": {
+    "van-toast": "@vant/weapp/toast/index",
+    "van-dialog": "@vant/weapp/dialog/index",
+    "van-popup": "@vant/weapp/popup/index",
     "select-card-popup": "../../../../components/select-card-popup/index",
     "van-icon": "@vant/weapp/icon/index"
   }
