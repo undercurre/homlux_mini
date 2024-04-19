@@ -340,16 +340,23 @@ ComponentWithComputed({
         temp = this.tempLimit(status.BATH_TEMPERATURE)
       }
       let isAllClose = true
+      let isShowTemp = false
       for (let i = 0; i < btns.length; i++) {
         if (btns[i].key === 'HEAT') {
           if (status.BATH_WARM_UP != undefined) {
             btns[i].isOn = status.BATH_WARM_UP
-            if (status.BATH_WARM_UP) isAllClose = false
+            if (status.BATH_WARM_UP) {
+              isAllClose = false
+              isShowTemp = true
+            }
           }
         } else if (btns[i].key === 'BATH') {
           if (status.BATH_AUTO != undefined) {
             btns[i].isOn = status.BATH_AUTO
-            if (status.BATH_AUTO) isAllClose = false
+            if (status.BATH_AUTO) {
+              isAllClose = false
+              isShowTemp = true
+            }
           }
         } else if (btns[i].key === 'VENT') {
           if (status.BATH_VENTILATE != undefined) {
@@ -372,6 +379,10 @@ ComponentWithComputed({
             btns[i].isOn = status.BATH_DRY
             if (status.BATH_DRY) isAllClose = false
           }
+        } else if (btns[i].key === 'SWING') {
+          if (status.BATH_SWING != undefined) {
+            btns[i].isOn = status.BATH_SWING
+          }
         }
       }
       bottom[0].isOn = !isAllClose
@@ -382,7 +393,7 @@ ComponentWithComputed({
         bottom[2].isOn = status.BATH_NIGHT_LAMP
       }
       this.setData({
-        curTemp: temp,
+        curTemp: isShowTemp ? temp : '--',
         btnList: btns,
         bottomList: bottom
       })
@@ -484,7 +495,7 @@ ComponentWithComputed({
       this.setData({
         btnList: list,
       })
-      if (!this.data.isBLEConnected || list[index].key === 'SWING') {
+      if (!this.data.isBLEConnected) {
         setTimeout(() => {
           list[index].isOn = false
           this.setData({
