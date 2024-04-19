@@ -45,6 +45,11 @@
         class="link"
         mode="scaleToFill"
       />
+
+      <slot
+        wx:else
+        name="right-icon"
+      />
     </span>
   </view>
 </view>
