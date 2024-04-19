@@ -218,10 +218,20 @@ ComponentWithComputed({
         }
         if (btns[i].isMode) popBtns.push(btns[i])
       }
+      const bottom = this.data.bottomList
+      const showBottom = []
+      for (let i = 0; i < bottom.length; i++) {
+        if (bottom[i].key === 'NIGHT') {
+          if (support.night) showBottom.push(bottom[i])
+        } else {
+          showBottom.push(bottom[i])
+        }
+      }
       this.setData({
         tempType : support.temperatrue ? 1 : 2,
         btnList: showBtns,
-        popSelectMode: popBtns
+        popSelectMode: popBtns,
+        bottomList: showBottom
       })
     },
     getSupportByModel() {
@@ -232,7 +242,8 @@ ComponentWithComputed({
         swing: !!(model & 0x02),
         radar: !!(model & 0x04),
         colorful: !!(model & 0x08),
-        DC: !!(model & 0x10)
+        DC: !!(model & 0x10),
+        night: !!(model & 0x20)
       }
     },
     onUnload() {
@@ -372,7 +383,7 @@ ComponentWithComputed({
       if (status.BATH_LAMP != undefined) {
         bottom[1].isOn = status.BATH_LAMP
       }
-      if (status.BATH_NIGHT_LAMP != undefined) {
+      if (status.BATH_NIGHT_LAMP != undefined && bottom.length > 2) {
         bottom[2].isOn = status.BATH_NIGHT_LAMP
       }
       this.setData({
