@@ -47,6 +47,7 @@ ComponentWithComputed({
         isOn: false,
         isEnable: true,
         isMode: true,
+        gear: -1,
         iconOn: '/package-remoter/assets/newUI/lowHeatOn.png',
         iconOff: '/package-remoter/assets/newUI/lowHeatOff.png',
       },
@@ -56,6 +57,7 @@ ComponentWithComputed({
         isOn: false,
         isEnable: true,
         isMode: true,
+        gear: -1,
         iconOn: '/package-remoter/assets/newUI/bathOn.png',
         iconOff: '/package-remoter/assets/newUI/bathOff.png',
       },
@@ -65,6 +67,7 @@ ComponentWithComputed({
         isOn: false,
         isEnable: true,
         isMode: true,
+        gear: -1,
         iconOn: '/package-remoter/assets/newUI/ventOn.png',
         iconOff: '/package-remoter/assets/newUI/ventOff.png',
       },
@@ -74,6 +77,7 @@ ComponentWithComputed({
         isOn: false,
         isEnable: true,
         isMode: true,
+        gear: -1,
         iconOn: '/package-remoter/assets/newUI/blowOn.png',
         iconOff: '/package-remoter/assets/newUI/blowOff.png',
       },
@@ -83,6 +87,7 @@ ComponentWithComputed({
         isOn: false,
         isEnable: true,
         isMode: true,
+        gear: -1,
         iconOn: '/package-remoter/assets/newUI/dryOn.png',
         iconOff: '/package-remoter/assets/newUI/dryOff.png',
       },
@@ -92,18 +97,20 @@ ComponentWithComputed({
         isOn: false,
         isEnable: true,
         isMode: false,
+        gear: -1,
         iconOn: '/package-remoter/assets/newUI/swingOn.png',
         iconOff: '/package-remoter/assets/newUI/swingOff.png',
       },
-      {
-        key: 'DELAY',
-        name: '延时关',
-        isOn: false,
-        isEnable: true,
-        isMode: false,
-        iconOn: '/package-remoter/assets/newUI/delayOn.png',
-        iconOff: '/package-remoter/assets/newUI/delayOff.png',
-      }
+      // {
+      //   key: 'DELAY',
+      //   name: '延时关',
+      //   isOn: false,
+      //   isEnable: true,
+      //   isMode: false,
+      //   gear: -1,
+      //   iconOn: '/package-remoter/assets/newUI/delayOn.png',
+      //   iconOff: '/package-remoter/assets/newUI/delayOff.png',
+      // }
     ],
     bottomList: [
       {
@@ -159,7 +166,10 @@ ComponentWithComputed({
       if (data.gearBtnConfig.isTopOn) arr.push('强暖')
       else if (data.gearBtnConfig.isBottomOn) arr.push('弱暖')
       for (let i = 0; i < list.length; i++) {
-        if (list[i].isMode && list[i].isOn) arr.push(list[i].name)
+        if (list[i].isMode && list[i].isOn) {
+          if (list[i].gear > 0 ) arr.push(`${list[i].name}${list[i].gear}档`)
+          else arr.push(list[i].name)
+        }
       }
       if (arr.length === 0) return '已连接'
       else return arr.join(' | ')
@@ -194,6 +204,7 @@ ComponentWithComputed({
     },
     configBtns() {
       const support = this.getSupportByModel()
+      console.log('lmn>>>support=', JSON.stringify(support))
       const btns = this.data.btnList
       const showBtns = []
       const popBtns = []
@@ -215,7 +226,7 @@ ComponentWithComputed({
     },
     getSupportByModel() {
       if (this.data.devModel === '') return {}
-      const model = parseInt(this.data.devModel)
+      const model = parseInt(this.data.devModel, 16)
       return {
         temperatrue: !!(model & 0x01),
         swing: !!(model & 0x02),
@@ -334,10 +345,16 @@ ComponentWithComputed({
             btns[i].isOn = status.BATH_VENTILATE
             if (status.BATH_VENTILATE) isAllClose = false
           }
+          if (status.VENT_GEAR != undefined) {
+            btns[i].gear = status.VENT_GEAR
+          }
         } else if (btns[i].key === 'BLOW') {
           if (status.BATH_WIND != undefined) {
             btns[i].isOn = status.BATH_WIND
             if (status.BATH_WIND) isAllClose = false
+          }
+          if (status.BLOW_GEAR != undefined) {
+            btns[i].gear = status.BLOW_GEAR
           }
         } else if (btns[i].key === 'DRY') {
           if (status.BATH_DRY != undefined) {

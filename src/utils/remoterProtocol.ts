@@ -121,7 +121,9 @@ const _parsePayload = (payload: string, deviceType: string, deviceModel?: string
       BATH_WARM_UP: !!(rxU16[4] & BIT_5),
       BATH_AUTO: !!(rxU16[4] & BIT_6),
       BATH_TEMPERATURE: rxU16[5],
-      BATH_TEMPERATURE_ENV: rxU16[6]
+      BATH_TEMPERATURE_ENV: rxU16[6],
+      BLOW_GEAR: rxU16[8] & 0x07,
+      VENT_GEAR: rxU16[9] & 0x07
     }
   }
   return {}
