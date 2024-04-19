@@ -265,12 +265,12 @@ Component({
       Promise.all([getAllRect(this, '.mz-tab'), getRect(this, '.mz-tabs__nav')]).then((_a: IAnyObject) => {
         const tabRects = _a[0],
           navRect = _a[1]
-        const tabRect = tabRects[currentIndex]
         const offsetLeft = tabRects.slice(0, currentIndex).reduce((prev: number, curr: { width: number }) => {
           return prev + curr.width
         }, 0)
         this.setData({
-          scrollLeft: offsetLeft - (navRect.width - tabRect.width) / 2,
+          scrollLeft: offsetLeft - navRect.width / 2 <= 0 ? 0 : offsetLeft - navRect.width / 2,
+          currentIndex,
         })
         if (!scrollWithAnimation) {
           nextTick(() => {
