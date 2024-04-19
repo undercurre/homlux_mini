@@ -210,7 +210,7 @@ ComponentWithComputed({
         if (deviceType === '13') {
           page = deviceModel === '01' ? 'light' : 'fan-light'
         } else if (deviceType === '26') {
-          if (deviceModel === '1' || deviceModel === '3' || deviceModel === '17') page = 'bath'
+          if (deviceModel === '1' || deviceModel === '3' || deviceModel === '37') page = 'bath'
         } else if (deviceType === '40') {
           if (deviceModel === '3') page = 'cool-bath'
         }

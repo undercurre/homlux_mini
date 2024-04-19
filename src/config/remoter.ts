@@ -663,7 +663,7 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
       ],
     },
     // Y10W系列 // 00010111 温度可调，色温可调
-    '17': {
+    '37': {
       deviceName: '浴霸',
       devicePic: '/assets/img/remoter/bathHeater.png',
       showTemperature: false, // TODO 暂时不予实现
@@ -779,8 +779,8 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
       mList: [
         {
           key: 'KITCHEN_WIND_STRONG',
-          icon: '/package-remoter/assets/scene91.png',
-          iconActive: '/package-remoter/assets/scene90.png',
+          icon: '/package-remoter/assets/oldHighWindOff.png',
+          iconActive: '/package-remoter/assets/oldHighWindOn.png',
           name: '强吹风',
         },
         {
@@ -797,8 +797,8 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
         },
         {
           key: 'BATH_SWING',
-          icon: '/package-remoter/assets/sceneA1.png',
-          iconActive: '/package-remoter/assets/sceneA0.png',
+          icon: '/package-remoter/assets/oldSwingOff.png',
+          iconActive: '/package-remoter/assets/oldSwingOn.png',
           name: '摆风',
         },
       ],
@@ -855,8 +855,8 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
       mList: [
         {
           key: 'KITCHEN_WIND_STRONG',
-          icon: '/package-remoter/assets/scene91.png',
-          iconActive: '/package-remoter/assets/scene90.png',
+          icon: '/package-remoter/assets/oldHighWindOff.png',
+          iconActive: '/package-remoter/assets/oldHighWindOn.png',
           name: '强吹风',
         },
         {
@@ -873,8 +873,8 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
         },
         {
           key: 'BATH_SWING',
-          icon: '/package-remoter/assets/sceneA1.png',
-          iconActive: '/package-remoter/assets/sceneA0.png',
+          icon: '/package-remoter/assets/oldSwingOff.png',
+          iconActive: '/package-remoter/assets/oldSwingOn.png',
           name: '摆风',
         },
       ],

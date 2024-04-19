@@ -372,11 +372,6 @@ ComponentWithComputed({
             btns[i].isOn = status.BATH_DRY
             if (status.BATH_DRY) isAllClose = false
           }
-        } else if (btns[i].key === 'SWING') {
-          if (status.BATH_SWING != undefined) {
-            btns[i].isOn = status.BATH_SWING
-            if (status.BATH_SWING) isAllClose = false
-          }
         }
       }
       bottom[0].isOn = !isAllClose
@@ -489,7 +484,7 @@ ComponentWithComputed({
       this.setData({
         btnList: list,
       })
-      if (!this.data.isBLEConnected) {
+      if (!this.data.isBLEConnected || list[index].key === 'SWING') {
         setTimeout(() => {
           list[index].isOn = false
           this.setData({
@@ -509,8 +504,6 @@ ComponentWithComputed({
         this.sendBluetoothCMD([CMD['BATH_DRY']])
       } else if (key === 'SWING') {
         this.sendBluetoothCMD([CMD['BATH_SWING']])
-      } else if (key === 'DELAY') {
-        // this.sendBluetoothCMD([CMD['BATH_SWING']])
       }
     },
     goToDevManage() {

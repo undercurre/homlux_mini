@@ -61,15 +61,15 @@ ComponentWithComputed({
         iconOn: '/package-remoter/assets/newUI/anionOn.png',
         iconOff: '/package-remoter/assets/newUI/anionOff.png',
       },
-      {
-        key: 'DELAY',
-        name: '延时关',
-        isOn: false,
-        isEnable: true,
-        isMode: false,
-        iconOn: '/package-remoter/assets/newUI/delayOn.png',
-        iconOff: '/package-remoter/assets/newUI/delayOff.png',
-      }
+      // {
+      //   key: 'DELAY',
+      //   name: '延时关',
+      //   isOn: false,
+      //   isEnable: true,
+      //   isMode: false,
+      //   iconOn: '/package-remoter/assets/newUI/delayOn.png',
+      //   iconOff: '/package-remoter/assets/newUI/delayOff.png',
+      // }
     ],
     bottomList: [
       {
@@ -278,18 +278,13 @@ ComponentWithComputed({
             btns[i].isOn = status.BATH_VENTILATE
             if (status.BATH_VENTILATE) isAllClose = false
           }
-        } else if (btns[i].key === 'SWING') {
-          if (status.BATH_SWING != undefined) {
-            btns[i].isOn = status.BATH_SWING
-            if (status.BATH_SWING) isAllClose = false
-          }
         }
       }
       bottom[0].isOn = !isAllClose
       if (status.BATH_LAMP != undefined) {
         bottom[1].isOn = status.BATH_LAMP
       }
-      if (status.BATH_NIGHT_LAMP != undefined) {
+      if (status.BATH_NIGHT_LAMP != undefined && bottom.length > 2) {
         bottom[2].isOn = status.BATH_NIGHT_LAMP
       }
       this.setData({
@@ -358,7 +353,7 @@ ComponentWithComputed({
       this.setData({
         btnList: list,
       })
-      if (!this.data.isBLEConnected) {
+      if (!this.data.isBLEConnected || list[index].key === 'SWING') {
         setTimeout(() => {
           list[index].isOn = false
           this.setData({
@@ -372,8 +367,6 @@ ComponentWithComputed({
         this.sendBluetoothCMD([CMD['BATH_SWING']])
       } else if (key === 'ANION') {
         // this.sendBluetoothCMD([CMD['BATH_SWING']])
-      } else if (key === 'DELAY') {
-        // this.sendBluetoothCMD([CMD['BATH_SWING']])
       }
     },
     goToDevManage() {
@@ -385,10 +378,13 @@ ComponentWithComputed({
       const index = e.currentTarget.dataset.index
       const list = this.data.bottomList
       if (!list[index].isEnable) return
-      list[index].isOn = !list[index].isOn
-      this.setData({
-        bottomList: list,
-      })
+      const lastPowerOn = list[0].isOn
+      if (!this.data.isBLEConnected || lastPowerOn) {
+        list[index].isOn = !list[index].isOn
+        this.setData({
+          bottomList: list,
+        })
+      }
       if (!this.data.isBLEConnected) {
         setTimeout(() => {
           list[index].isOn = false
@@ -398,7 +394,7 @@ ComponentWithComputed({
         }, 300)
       }
       if (list[index].key == 'POWER') {
-        if (this.data.isBLEConnected) {
+        if (this.data.isBLEConnected && !lastPowerOn) {
           this.setData({
             isShowPopup: true
           })
