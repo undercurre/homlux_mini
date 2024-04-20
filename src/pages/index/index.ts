@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { runInAction } from 'mobx-miniprogram'
-import Toast from '@vant/weapp/toast/toast'
-import Dialog from '@vant/weapp/dialog/dialog'
+import Toast from '../../skyline-components/mz-toast/toast'
+import Dialog from '../../skyline-components/mz-dialog/dialog'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 
 // TODO 精简bindings
@@ -16,6 +16,7 @@ import {
   roomStore,
   deviceStore,
   sceneStore,
+  userStore,
 } from '../../store/index'
 import {
   storage,
@@ -71,19 +72,18 @@ ComponentWithComputed({
   ],
   data: {
     defaultImgDir,
+    navigationBarHeight: (storage.get('navigationBarHeight') as number) + 'px',
     navigationBarAndStatusBarHeight:
-      (storage.get<number>('statusBarHeight') as number) +
-      (storage.get<number>('navigationBarHeight') as number) +
-      'px',
+      (storage.get('statusBarHeight') as number) + (storage.get('navigationBarHeight') as number) + 'px',
     // 状态栏高度
-    statusBarHeight: storage.get<number>('statusBarHeight') + 'px',
+    statusBarHeight: storage.get('statusBarHeight') + 'px',
     // 可滚动区域高度
     scrollViewHeight:
-      (storage.get<number>('windowHeight') as number) -
-      (storage.get<number>('statusBarHeight') as number) -
-      (storage.get<number>('bottomBarHeight') as number) - // IPX
+      (storage.get('windowHeight') as number) -
+      (storage.get('statusBarHeight') as number) -
+      (storage.get('bottomBarHeight') as number) - // IPX
       90 - // 开关、添加按钮
-      (storage.get<number>('navigationBarHeight') as number),
+      (storage.get('navigationBarHeight') as number),
     _system: storage.get('system') as string,
     selectHomeMenu: {
       x: '0px',
@@ -97,7 +97,6 @@ ComponentWithComputed({
     },
     allOnBtnTap: false,
     allOffBtnTap: false,
-    showAddNewRoom: false,
     showHomeSelect: false,
     loading: true,
     _isAcceptShare: false, // 是否已经触发过接受分享逻辑
@@ -111,6 +110,12 @@ ComponentWithComputed({
     touchClientY: 0,
     scrollTop: 0,
     lightSummary: {} as Record<string, { lightCount: number; lightOnCount: number }>, // 灯总数、亮灯数统计，按房间id
+    isLogin: false,
+    isCreator: false,
+    isManager: false,
+    currentHomeName: '', // 当前房间名称
+    isShowHomeControl: false, // 是否显示全局控制开关（需要有灯或者开关）
+    roomList: [] as Room.RoomInfo[],
     _scrolledWhenMoving: false, // 拖拽时，被动发生了滚动
     _lastClientY: 0, // 上次触控采样时 的Y坐标
     _isFirstShow: true, // 是否首次加载
@@ -119,30 +124,23 @@ ComponentWithComputed({
     _timer: 0, // 记录加载时间点
   },
   computed: {
-    currentHomeName(data) {
-      if (data.currentHomeDetail && data.currentHomeDetail.houseName) {
-        if (data.currentHomeDetail.houseName.length > 6) {
-          return data.currentHomeDetail.houseName.slice(0, 6) + '...'
-        }
-        return data.currentHomeDetail?.houseName
-      }
-      return ''
-    },
-    // 家庭是否有设备
-    hasDevice(data) {
-      if (data.allRoomDeviceList) {
-        return data.allRoomDeviceList.length
-      }
-      return false
-    },
+    // currentHomeName() {
+    //   if (homeStore.currentHomeDetail && homeStore.currentHomeDetail.houseName) {
+    //     if (homeStore.currentHomeDetail.houseName.length > 6) {
+    //       return homeStore.currentHomeDetail.houseName.slice(0, 6) + '...'
+    //     }
+    //     return homeStore.currentHomeDetail?.houseName
+    //   }
+    //   return ''
+    // },
     // 是否显示全局控制开关（需要有灯或者开关）
-    isShowHomeControl(data) {
-      if (!data.allRoomDeviceList?.length) {
-        return false
-      }
-      const lightTypes = [PRO_TYPE.light, PRO_TYPE.switch, PRO_TYPE.bathHeat, PRO_TYPE.clothesDryingRack] as string[]
-      return data.allRoomDeviceList.some((device: Device.DeviceItem) => lightTypes.includes(device.proType))
-    },
+    // isShowHomeControl() {
+    //   if (!deviceStore.allRoomDeviceList?.length) {
+    //     return false
+    //   }
+    //   const lightTypes = [PRO_TYPE.light, PRO_TYPE.switch, PRO_TYPE.bathHeat, PRO_TYPE.clothesDryingRack] as string[]
+    //   return deviceStore.allRoomDeviceList.some((device: Device.DeviceItem) => lightTypes.includes(device.proType))
+    // },
   },
   watch: {
     isInit(data) {
@@ -151,9 +149,9 @@ ComponentWithComputed({
         this.setData({ loading: !data })
       }
     },
-    roomList() {
-      this.renewRoomPos()
-    },
+    // roomList() {
+    //   this.renewRoomPos()
+    // },
   },
 
   methods: {
@@ -279,6 +277,54 @@ ComponentWithComputed({
     },
     onReady() {
       console.log('[Index onReady] 耗时', `${Date.now() - this.data._timer}ms`)
+
+      this.init()
+    },
+
+    // TODO 确保数据响应
+    async init() {
+      await delay(1000)
+
+      let currentHomeName = ''
+      if (homeStore.currentHomeDetail && homeStore.currentHomeDetail.houseName) {
+        if (homeStore.currentHomeDetail.houseName.length > 6) {
+          currentHomeName = homeStore.currentHomeDetail.houseName.slice(0, 6) + '...'
+        }
+        currentHomeName = homeStore.currentHomeDetail?.houseName
+      }
+      console.log('[init]', {
+        roomList: JSON.parse(JSON.stringify(roomStore.roomList)),
+        // isLogin: userStore.isLogin,
+        // isCreator: homeStore.isCreator,
+        // isManger: homeStore.isManager,
+        // hasDevice: deviceStore.allRoomDeviceList?.length,
+        // currentHomeName,
+        // isShowHomeControl:
+        //   !!deviceStore.allRoomDeviceList?.length &&
+        //   deviceStore.allRoomDeviceList.some((device: Device.DeviceItem) =>
+        //     ([PRO_TYPE.light, PRO_TYPE.switch, PRO_TYPE.bathHeat, PRO_TYPE.clothesDryingRack] as string[]).includes(
+        //       device.proType,
+        //     ),
+        //   ),
+      })
+      this.setData({
+        isLogin: userStore.isLogin,
+        isCreator: homeStore.isCreator,
+        isManger: homeStore.isManager,
+        hasDevice: deviceStore.allRoomDeviceList?.length,
+        currentHomeName,
+        roomList: JSON.parse(JSON.stringify(roomStore.roomList)),
+        isShowHomeControl:
+          !!deviceStore.allRoomDeviceList?.length &&
+          deviceStore.allRoomDeviceList.some((device: Device.DeviceItem) =>
+            ([PRO_TYPE.light, PRO_TYPE.switch, PRO_TYPE.bathHeat, PRO_TYPE.clothesDryingRack] as string[]).includes(
+              device.proType,
+            ),
+          ),
+      })
+
+      // TODO
+      this.renewRoomPos()
     },
 
     // 更新灯总数、亮灯数统计
@@ -585,16 +631,9 @@ ComponentWithComputed({
       if (!this.data.selectHomeMenu.isShow && this.data.addMenu.isShow) {
         diffData['addMenu.isShow'] = false
       }
+      console.log('handleShowHomeSelectMenu', diffData)
 
       this.setData(diffData)
-    },
-    /**
-     * 隐藏添加房间popup
-     */
-    handleHideAddNewRoom() {
-      this.setData({
-        showAddNewRoom: false,
-      })
     },
 
     showAddMenu() {
