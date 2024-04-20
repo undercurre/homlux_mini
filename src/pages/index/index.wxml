@@ -1,8 +1,3 @@
-<wxs
-  module="handler"
-  src="./index.wxs"
-></wxs>
-
 <!-- 背景 -->
 <view
   class="bg-z-index absolute left-0 top-0 w-100vw h-100vh"
@@ -26,14 +21,14 @@
     >
       <!-- 全屋开关 -->
       <view class="ml-24rpx">
-        <view
-          class="bg-hex-ffffff_42 w-180rpx h-80rpx rounded-40rpx flex items-center text-hex-2b4067 flex-center"
+        <mz-button
           wx:if="{{isShowHomeControl}}"
-          bindtap="{{handler.handleAllOff}}"
-          id="all-off"
+          bind:click="handleAllOff"
+          type="primary"
+          custom-class="allOffBtn"
+          round
+          >一键关灯</mz-button
         >
-          <text class="text-28rpx font-semibold">一键关灯</text>
-        </view>
       </view>
 
       <view
