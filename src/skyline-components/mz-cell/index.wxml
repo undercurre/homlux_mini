@@ -28,7 +28,7 @@
       >
       <view
         wx:if="{{label}}"
-        class="label"
+        class="label label-class"
         >{{ label }}</view
       >
     </span>

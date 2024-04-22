@@ -91,7 +91,7 @@
   padding-right: 8px;
 }
 .mz-tabs__scroll {
-  background-color: var(--tabs-nav-background-color, #fff);
+  background-color: var(--tabs-nav-background-color, transparent);
   overflow: auto;
 }
 .mz-tabs__scroll--line {

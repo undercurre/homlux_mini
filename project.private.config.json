@@ -12,7 +12,14 @@
     "miniprogram": {
       "list": [
         {
-          "name": "movable-demo",
+          "name": "【局部编译】首页",
+          "pathName": "pages/index/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "【局部编译】movable",
           "pathName": "package-debug/pages/movable-demo/index",
           "query": "",
           "launchMode": "default",
