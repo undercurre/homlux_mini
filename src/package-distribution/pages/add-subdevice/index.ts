@@ -87,7 +87,7 @@ ComponentWithComputed({
         })
         .catch((error) => error)
 
-      console.log('openBleRes', openBleRes)
+      Logger.log('openBleRes', openBleRes)
 
       // 监听扫描到新设备事件
       wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
@@ -133,7 +133,7 @@ ComponentWithComputed({
       }
 
       this.data._hasFound = true
-      console.log('Device Found', device, msgObj)
+      Logger.log('Device Found', device, msgObj)
 
       wx.stopBluetoothDevicesDiscovery()
 
