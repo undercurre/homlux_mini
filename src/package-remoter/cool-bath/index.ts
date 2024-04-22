@@ -266,17 +266,21 @@ ComponentWithComputed({
       let isAllClose = true
       if (status.KITCHEN_WIND_STRONG != undefined) {
         gear.isTopOn = status.KITCHEN_WIND_STRONG
-        isAllClose = !status.KITCHEN_WIND_STRONG
+        if (status.KITCHEN_WIND_STRONG) isAllClose = false
       }
       if (status.KITCHEN_WIND_SOFT != undefined) {
         gear.isBottomOn = status.KITCHEN_WIND_SOFT
-        isAllClose = !status.KITCHEN_WIND_SOFT
+        if (status.KITCHEN_WIND_SOFT) isAllClose = false
       }
       for (let i = 0; i < btns.length; i++) {
         if (btns[i].key === 'VENT') {
           if (status.BATH_VENTILATE != undefined) {
             btns[i].isOn = status.BATH_VENTILATE
             if (status.BATH_VENTILATE) isAllClose = false
+          }
+        } else if (btns[i].key === 'SWING') {
+          if (status.BATH_SWING != undefined) {
+            btns[i].isOn = status.BATH_SWING
           }
         }
       }
@@ -353,7 +357,7 @@ ComponentWithComputed({
       this.setData({
         btnList: list,
       })
-      if (!this.data.isBLEConnected || list[index].key === 'SWING') {
+      if (!this.data.isBLEConnected) {
         setTimeout(() => {
           list[index].isOn = false
           this.setData({

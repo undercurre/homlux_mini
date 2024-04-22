@@ -336,10 +336,21 @@ ComponentWithComputed({
       let temp = this.data.curTemp
       const btns = this.data.btnList
       const bottom = this.data.bottomList
+      const gear = this.data.gearBtnConfig
       if (status.BATH_TEMPERATURE != undefined) {
         temp = this.tempLimit(status.BATH_TEMPERATURE)
       }
       let isAllClose = true
+      if (this.data.tempType == 2) {
+        if (status.BATH_WARM_STRONG != undefined) {
+          gear.isTopOn = status.BATH_WARM_STRONG
+          if (status.BATH_WARM_STRONG) isAllClose = false
+        }
+        if (status.BATH_WARM_SOFT != undefined) {
+          gear.isBottomOn = status.BATH_WARM_SOFT
+          if (status.BATH_WARM_SOFT) isAllClose = false
+        }
+      }
       let isShowTemp = false
       for (let i = 0; i < btns.length; i++) {
         if (btns[i].key === 'HEAT') {
@@ -395,7 +406,8 @@ ComponentWithComputed({
       this.setData({
         curTemp: isShowTemp ? temp : '--',
         btnList: btns,
-        bottomList: bottom
+        bottomList: bottom,
+        gearBtnConfig: gear
       })
       this.updateViewEn()
     },
