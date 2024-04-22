@@ -220,11 +220,22 @@
     </view>
 
     <view class="border-black border-t-2 border-solid">
+      <view class="m-24rpx">mz-pop-menu</view>
+      <mz-button
+        size="large"
+        bind:tap="handlePopMenu"
+        >handlePopMenu</mz-button
+      >
+    </view>
+
+    <view class="border-black border-t-2 border-solid">
       <view class="m-24rpx">mz-movable</view>
 
-      <view class="movearea">
+      <view class="movearea flex grow">
         <mz-movable direction="all">
-          <mz-button type="primary">长按拖动</mz-button>
+          <view class="rounded-12rpx border-black border border-solid w-300 h-92 flex grow">
+            <text>长按拖动</text>
+          </view>
         </mz-movable>
       </view>
     </view>

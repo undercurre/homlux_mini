@@ -12,7 +12,8 @@
     "home-select-menu": "/components/home-select-menu/index",
     "room-card": "./components/room-card/index",
     "add-menu": "./components/add-menu/index",
-    "van-skeleton": "@vant/weapp/skeleton/index"
+    "van-skeleton": "@vant/weapp/skeleton/index",
+    "mz-pop-menu": "/skyline-components/mz-pop-menu/index"
   },
   "navigationStyle": "custom"
 }

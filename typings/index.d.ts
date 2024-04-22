@@ -31,7 +31,7 @@ declare namespace WechatMiniprogram.Component {
      */
     applyAnimatedStyle(
       selector: string,
-      updater: () => Record<string, string>,
+      updater: () => Record<string, string | number>,
       userConfig?: { immediate: boolean; flush: 'sync' | 'async' },
       callback?: (res: { styleId: number }) => void,
     ): void

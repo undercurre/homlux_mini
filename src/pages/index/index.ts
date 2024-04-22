@@ -113,7 +113,10 @@ ComponentWithComputed({
     isLogin: false,
     isCreator: false,
     isManager: false,
+    showPopMenu: false,
+    homeList: [] as Home.IHomeItem[],
     currentHomeName: '', // 当前房间名称
+    currentHomeId: '',
     isShowHomeControl: false, // 是否显示全局控制开关（需要有灯或者开关）
     roomList: [] as Room.RoomInfo[],
     _scrolledWhenMoving: false, // 拖拽时，被动发生了滚动
@@ -141,6 +144,22 @@ ComponentWithComputed({
     //   const lightTypes = [PRO_TYPE.light, PRO_TYPE.switch, PRO_TYPE.bathHeat, PRO_TYPE.clothesDryingRack] as string[]
     //   return deviceStore.allRoomDeviceList.some((device: Device.DeviceItem) => lightTypes.includes(device.proType))
     // },
+    homeMenuList(data) {
+      if (!data.homeList?.length) {
+        return []
+      }
+      const list = (data.homeList as Home.IHomeItem[])
+        .sort((_: Home.IHomeItem, b: Home.IHomeItem) => (b.defaultHouseFlag ? 1 : -1))
+        .map((home) => ({
+          ...home,
+          key: home.houseId,
+          name: home.houseName?.length > 6 ? home.houseName.slice(0, 6) + '...' : home.houseName,
+          checked: home.houseId === data.currentHomeId,
+          tag: home.defaultHouseFlag ? '创建' : '',
+        }))
+
+      return list
+    },
   },
   watch: {
     isInit(data) {
@@ -275,44 +294,48 @@ ComponentWithComputed({
         }
       })
     },
-    onReady() {
+    async onReady() {
       console.log('[Index onReady] 耗时', `${Date.now() - this.data._timer}ms`)
 
+      await delay(1000)
       this.init()
     },
 
     // TODO 确保数据响应
     async init() {
-      await delay(1000)
-
       let currentHomeName = ''
-      if (homeStore.currentHomeDetail && homeStore.currentHomeDetail.houseName) {
+      if (homeStore.currentHomeDetail?.houseName) {
         if (homeStore.currentHomeDetail.houseName.length > 6) {
           currentHomeName = homeStore.currentHomeDetail.houseName.slice(0, 6) + '...'
         }
         currentHomeName = homeStore.currentHomeDetail?.houseName
       }
-      console.log('[init]', {
-        roomList: JSON.parse(JSON.stringify(roomStore.roomList)),
-        // isLogin: userStore.isLogin,
-        // isCreator: homeStore.isCreator,
-        // isManger: homeStore.isManager,
-        // hasDevice: deviceStore.allRoomDeviceList?.length,
-        // currentHomeName,
-        // isShowHomeControl:
-        //   !!deviceStore.allRoomDeviceList?.length &&
-        //   deviceStore.allRoomDeviceList.some((device: Device.DeviceItem) =>
-        //     ([PRO_TYPE.light, PRO_TYPE.switch, PRO_TYPE.bathHeat, PRO_TYPE.clothesDryingRack] as string[]).includes(
-        //       device.proType,
-        //     ),
-        //   ),
-      })
+      // console.log('[init]', {
+      //   roomList: JSON.parse(JSON.stringify(roomStore.roomList)),
+      // isLogin: userStore.isLogin,
+      // isCreator: homeStore.isCreator,
+      // isManger: homeStore.isManager,
+      // hasDevice: deviceStore.allRoomDeviceList?.length,
+      // currentHomeName,
+      // isShowHomeControl:
+      //   !!deviceStore.allRoomDeviceList?.length &&
+      //   deviceStore.allRoomDeviceList.some((device: Device.DeviceItem) =>
+      //     ([PRO_TYPE.light, PRO_TYPE.switch, PRO_TYPE.bathHeat, PRO_TYPE.clothesDryingRack] as string[]).includes(
+      //       device.proType,
+      //     ),
+      //   ),
+      // })
+      let homeList
+      if (homeStore.homeList?.length) {
+        homeList = homeStore.homeList as Home.IHomeItem[]
+      }
       this.setData({
         isLogin: userStore.isLogin,
         isCreator: homeStore.isCreator,
         isManger: homeStore.isManager,
         hasDevice: deviceStore.allRoomDeviceList?.length,
         currentHomeName,
+        currentHomeId: homeStore.currentHomeId,
         roomList: JSON.parse(JSON.stringify(roomStore.roomList)),
         isShowHomeControl:
           !!deviceStore.allRoomDeviceList?.length &&
@@ -321,10 +344,33 @@ ComponentWithComputed({
               device.proType,
             ),
           ),
+        homeList,
       })
 
       // TODO
       this.renewRoomPos()
+    },
+
+    handlePopMenu() {
+      this.setData({
+        showPopMenu: !this.data.showPopMenu,
+      })
+    },
+
+    async handleHomeTap(e: { detail: string }) {
+      const houseId = e.detail
+
+      console.log('handleHomeTap', e)
+      this.triggerEvent('select', { houseId })
+      const res = await updateDefaultHouse(houseId)
+
+      if (res.success) {
+        await homeStore.homeInit()
+      }
+      this.init()
+      this.setData({
+        showPopMenu: false,
+      })
     },
 
     // 更新灯总数、亮灯数统计

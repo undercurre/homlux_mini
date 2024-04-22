@@ -14,6 +14,7 @@ Component({
    */
   data: {
     show: false,
+    showPopMenu: false,
     disabled: false,
     roomTab: Array.from({ length: 9 }, (_, i) => ({
       roomName: `卧室${i + 1}`,
@@ -34,6 +35,11 @@ Component({
     toggleDisabled() {
       this.setData({
         disabled: !this.data.disabled,
+      })
+    },
+    handlePopMenu() {
+      this.setData({
+        showPopMenu: true,
       })
     },
     toClick() {
