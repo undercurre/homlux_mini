@@ -14,7 +14,8 @@ page {
 }
 
 .list-bottom-placeholder {
-  height: calc(env(safe-area-inset-bottom) + 64rpx);
+  width: 750rpx;
+  height: 200rpx;
 }
 
 .placeholder {
