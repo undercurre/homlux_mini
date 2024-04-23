@@ -1,4 +1,4 @@
-import Toast from '@vant/weapp/toast/toast'
+import Toast from '../../skyline-components/mz-toast/toast'
 import { login } from '../../apis/index'
 import { homeStore, othersStore, userStore } from '../../store/index'
 import { storage, showLoading, hideLoading, Logger } from '../../utils/index'
@@ -27,14 +27,18 @@ Component({
     },
 
     handleLoginTap() {
+      console.debug('handleLoginTap')
       if (!this.data.isAgree) {
         Toast('请同意协议')
         return
       }
     },
 
-    handleLoginClick(e: { detail: { code: string } }) {
-      if (!e.detail.code) {
+    handleLoginClick(e: { detail: { code: string } & { detail: { code: string } } }) {
+      console.debug('handleLoginClick', e)
+      const code = e.detail.code || e.detail.detail.code // 微信bug，兼容skyline模式，返回的detail数据结构不一致
+
+      if (!code) {
         Toast('取消登录')
         return
       }
@@ -51,7 +55,7 @@ Component({
                 console.log('getFuzzyLocation-complete', locationRes)
                 const params = {
                   jsCode: res.code,
-                  code: e.detail.code,
+                  code: code,
                 }
 
                 if (!locationRes.errno) {
