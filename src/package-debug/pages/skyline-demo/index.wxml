@@ -267,6 +267,20 @@
       />
     </view>
 
+    <view class="section">
+      <view class="m-24rpx">mz-checkbox</view>
+      <mz-checkbox
+        value="{{ switchStatus }}"
+        bind:change="toggleSwitch"
+      />
+
+      <mz-checkbox
+        label="标签"
+        value="{{ switchStatus }}"
+        bind:change="toggleSwitch"
+      />
+    </view>
+
     <view class="h-48"></view>
   </scroll-view>
 </view>

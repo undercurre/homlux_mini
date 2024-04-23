@@ -1,12 +1,13 @@
-<!--pages/login/index.wxml-->
 <view
-  class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7"
+  class="absolute left-0 top-0 w-100vw h-100vh bg-hex-eef2f7"
   style="z-index: -1"
 ></view>
+
 <nav-bar
   left-arrow
   bind:leftTap="goBack"
 ></nav-bar>
+
 <view
   class="flex-col-center w-750rpx"
   style="margin-top: {{marginTop}}px;"
@@ -22,12 +23,9 @@
   >
 </view>
 
-<view class="fixed left-0 bottom-0">
+<view class="absolute w-100vw left-0 bottom-0">
   <view class="mx-74rpx">
-    <van-checkbox
-      custom-class="items-start_el_"
-      use-icon-slot
-      class="text-24rpx"
+    <mz-checkbox
       value="{{ isAgree }}"
       bind:change="onAgreeClick"
     >
@@ -55,15 +53,10 @@
           >《美的照明权限列表》</text
         >
       </text>
-      <image
-        class="h-36 w-36"
-        slot="icon"
-        src="{{ isAgree ? checkImg : uncheckImg }}"
-      />
-    </van-checkbox>
+    </mz-checkbox>
   </view>
   <view class="px-32rpx mt-50rpx mb-128rpx">
-    <van-button
+    <mz-button
       open-type="getPhoneNumber|agreePrivacyAuthorization"
       bindtap="handleLoginTap"
       bindgetphonenumber="handleLoginClick"
@@ -71,9 +64,9 @@
       disabled="{{!isAgree}}"
       type="primary"
       size="large"
-      >快速登录</van-button
+      >快速登录</mz-button
     >
   </view>
 </view>
 
-<van-toast id="van-toast" />
+<mz-toast id="mz-toast" />
