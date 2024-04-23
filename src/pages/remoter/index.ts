@@ -350,12 +350,16 @@ ComponentWithComputed({
       const newDeviceCountMap = {} as IAnyObject
       recoveredList.forEach((item) => {
         const isSavedDevice = remoterStore.deviceAddrs.includes(item!.addr)
+        const deviceType = item!.deviceType
+        const deviceModel = item!.deviceModel
+        let cusRSSI = this.data.MIN_RSSI
+        if (deviceType === '13' && deviceModel === '01') {
+          cusRSSI = -100
+        }
         if (
-          item!.RSSI >= this.data.MIN_RSSI && // 过滤弱信号设备
+          item!.RSSI >= cusRSSI && // 过滤弱信号设备
           !isSavedDevice // 排除已在我的设备列表的设备
         ) {
-          const deviceType = item!.deviceType
-          const deviceModel = item!.deviceModel
           const config = deviceConfig[deviceType][deviceModel]
 
           if (!config) {
