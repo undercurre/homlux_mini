@@ -5,6 +5,10 @@ Component({
   properties: {
     show: Boolean,
     customStyle: String,
+    rootPortal: {
+      type: Boolean,
+      value: false,
+    },
     zIndex: {
       type: Number,
       value: 1,

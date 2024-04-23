@@ -14,7 +14,7 @@
     show-scrollbar="{{false}}"
     class="h-60vh grow shrink"
   >
-    <view class="border-black border-t-2 border-solid">
+    <view class="section">
       <view class="m-24rpx">mz-field</view>
 
       <mz-field
@@ -53,7 +53,7 @@
       </view>
     </view>
 
-    <view class="border-black border-t-2 border-solid">
+    <view class="section">
       <view class="m-24rpx">mz-cell</view>
 
       <mz-cell-group
@@ -145,7 +145,7 @@
       />
     </view>
 
-    <view class="border-black border-t-2 border-solid">
+    <view class="section">
       <view class="m-24rpx">mz-button</view>
 
       <mz-button size="large">取消</mz-button>
@@ -186,7 +186,7 @@
       >
     </view>
 
-    <view class="border-black border-t-2 border-solid">
+    <view class="section">
       <view class="m-24rpx">Popup</view>
 
       <mz-button
@@ -199,7 +199,7 @@
       >
     </view>
 
-    <view class="border-black border-t-2 border-solid">
+    <view class="section">
       <view class="m-24rpx">mz-toast</view>
 
       <mz-button
@@ -209,7 +209,7 @@
       >
     </view>
 
-    <view class="border-black border-t-2 border-solid">
+    <view class="section">
       <view class="m-24rpx">mz-dialog</view>
 
       <mz-button
@@ -219,7 +219,7 @@
       >
     </view>
 
-    <view class="border-black border-t-2 border-solid">
+    <view class="section">
       <view class="m-24rpx">mz-pop-menu</view>
       <mz-button
         size="large"
@@ -228,7 +228,7 @@
       >
     </view>
 
-    <view class="border-black border-t-2 border-solid">
+    <view class="section">
       <view class="m-24rpx">mz-movable</view>
 
       <view class="movearea flex grow">
@@ -240,7 +240,7 @@
       </view>
     </view>
 
-    <view class="border-black border-t-2 border-solid">
+    <view class="section">
       <view class="m-24rpx">mz-tab</view>
       <mz-tabs
         active="{{ tabActive }}"
@@ -259,7 +259,7 @@
       </mz-tabs>
     </view>
 
-    <view class="border-black border-t-2 border-solid">
+    <view class="section">
       <view class="m-24rpx">mz-switch</view>
       <mz-switch
         checked="{{ switchStatus }}"

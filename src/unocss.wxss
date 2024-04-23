@@ -241,7 +241,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .bg-hex-fff,
 .bg-white{--un-bg-opacity:1;background-color:rgba(255,255,255,var(--un-bg-opacity));}
 .bg-hex-FFF4F4{--un-bg-opacity:1;background-color:rgba(255,244,244,var(--un-bg-opacity));}
-.bg-hex-ffffff_42{background-color:rgba(255,255,255,0.42);}
 .bg-red{--un-bg-opacity:1;background-color:rgba(255,56,73,var(--un-bg-opacity));}
 .bg-transparent{background-color:transparent;}
 .border{border-width:1px;}
@@ -254,7 +253,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .border-b-1,
 .border-b-1rpx{border-bottom-width:1rpx;}
 .border-b-1px{border-bottom-width:1px;}
-.border-t-2{border-top-width:2rpx;}
 .border-blue,
 .border-hex-488FFF{--un-border-opacity:1;border-color:rgba(72,143,255,var(--un-border-opacity));}
 .border-hex-d3d3d3{--un-border-opacity:1;border-color:rgba(211,211,211,var(--un-border-opacity));}
@@ -271,7 +269,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .rounded-24rpx{border-radius:24rpx;}
 .rounded-28rpx{border-radius:28rpx;}
 .rounded-32rpx{border-radius:32rpx;}
-.rounded-40rpx{border-radius:40rpx;}
 .rounded-55rpx{border-radius:55rpx;}
 .rounded-999{border-radius:7992rpx;}
 .rounded-full{border-radius:9999px;}
@@ -345,7 +342,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .text-hex-1a1a1c{--un-text-opacity:1;color:rgba(26,26,28,var(--un-text-opacity));}
 .text-hex-1e2c46,
 .text-hex-1E2C46{--un-text-opacity:1;color:rgba(30,44,70,var(--un-text-opacity));}
-.text-hex-2b4067{--un-text-opacity:1;color:rgba(43,64,103,var(--un-text-opacity));}
 .text-hex-333333{--un-text-opacity:1;color:rgba(51,51,51,var(--un-text-opacity));}
 .text-hex-353535{--un-text-opacity:1;color:rgba(53,53,53,var(--un-text-opacity));}
 .text-hex-373cdf{--un-text-opacity:1;color:rgba(55,60,223,var(--un-text-opacity));}
@@ -418,7 +414,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .h-140rpx{height:140rpx;}
 .h-144rpx{height:144rpx;}
 .h-146rpx{height:146rpx;}
-.h-152rpx{height:152rpx;}
 .h-160rpx{height:160rpx;}
 .h-168rpx{height:168rpx;}
 .h-180rpx{height:180rpx;}
@@ -447,7 +442,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .h-32,
 .h-32rpx{height:32rpx;}
 .h-332rpx{height:332rpx;}
-.h-336rpx{height:336rpx;}
 .h-34rpx{height:34rpx;}
 .h-35rpx{height:35rpx;}
 .h-36{height:36rpx;}
