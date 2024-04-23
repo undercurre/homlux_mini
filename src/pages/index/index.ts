@@ -154,6 +154,17 @@ ComponentWithComputed({
     // },
   },
 
+  pageLifetimes: {
+    show() {
+      if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+        console.debug('index-getTabBar')
+        this.getTabBar().setData({
+          selected: 0,
+        })
+      }
+    },
+  },
+
   methods: {
     // 生命周期或者其他钩子
     async onLoad(query: { from?: string }) {
@@ -162,12 +173,6 @@ ComponentWithComputed({
       if (!othersStore.defaultPage) {
         wx.reLaunch({
           url: `/pages/start/index`,
-        })
-      }
-      // 更新tabbar状态
-      if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-        this.getTabBar().setData({
-          selected: 0,
         })
       }
       if (othersStore.isInit) {

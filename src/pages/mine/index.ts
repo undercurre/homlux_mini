@@ -1,6 +1,6 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { logout, storage, strUtil } from '../../utils/index'
-import { userBinding, userStore, homeBinding } from '../../store/index'
+import { userBinding, userStore, homeBinding, homeStore } from '../../store/index'
 import { defaultImgDir } from '../../config/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 
@@ -40,6 +40,9 @@ Component({
       deviceCategory: '/package-mine/device-category/index',
       setting: '/package-mine/setting/index',
     },
+    userInfo: {},
+    isLogin: false,
+    isManager: false,
   },
   pageLifetimes: {
     show() {
@@ -49,7 +52,11 @@ Component({
         })
       }
 
-      console.debug('isLogin', this.data.isLogin)
+      this.setData({
+        userInfo: userStore.userInfo,
+        isLogin: userStore.isLogin,
+        isManager: homeStore.isManager,
+      })
     },
   },
   methods: {

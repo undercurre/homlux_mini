@@ -1,5 +1,5 @@
 <view
-  class="flex flex-col page-bg h-100vh pb-200rpx box-border"
+  class="flex flex-col page-bg h-100vh box-border"
   style="background-image: url({{defaultImgDir}}/bg.jpg);"
 >
   <nav-bar background="transparent"></nav-bar>
@@ -129,5 +129,7 @@
         >
       </view>
     </view>
+
+    <view class="pb-200rpx"></view>
   </scroll-view>
 </view>
