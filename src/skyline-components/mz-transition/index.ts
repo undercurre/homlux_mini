@@ -15,7 +15,9 @@ Component({
   /**
    * 组件的属性列表
    */
-  properties: {},
+  properties: {
+    customStyle: String,
+  },
 
   /**
    * 组件的初始数据

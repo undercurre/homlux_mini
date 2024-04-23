@@ -6,7 +6,7 @@
 <view
   wx:if="{{ inited }}"
   class="transition custom-class {{classes}}"
-  style="{{ computed.rootStyle({ display }) }}"
+  style="{{ computed.rootStyle({ display }) }}; {{ customStyle }}"
   bind:transitionend="onTransitionEnd"
 >
   <slot />

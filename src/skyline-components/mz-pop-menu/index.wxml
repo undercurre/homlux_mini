@@ -1,7 +1,6 @@
 <mz-overlay
   show="{{ isShow }}"
-  z-index="{{ 120 }}"
-  custom-style="backgroundColor: 'transparent'"
+  custom-style="background-color: transparent;"
   bind:click="onClickOverlay"
 />
 
