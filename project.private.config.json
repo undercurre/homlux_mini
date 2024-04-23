@@ -12,6 +12,17 @@
     "miniprogram": {
       "list": [
         {
+          "name": "启动页",
+          "pathName": "pages/start/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null,
+          "partialCompile": {
+            "enabled": true,
+            "pages": []
+          }
+        },
+        {
           "name": "登录页面",
           "pathName": "pages/login/index",
           "query": "",
