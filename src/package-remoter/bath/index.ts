@@ -101,6 +101,16 @@ ComponentWithComputed({
         iconOn: '/package-remoter/assets/newUI/swingOn.png',
         iconOff: '/package-remoter/assets/newUI/swingOff.png',
       },
+      {
+        key: 'ANION',
+        name: '负离子',
+        isOn: false,
+        isEnable: true,
+        isMode: false,
+        gear: -1,
+        iconOn: '/package-remoter/assets/newUI/anionOn.png',
+        iconOff: '/package-remoter/assets/newUI/anionOff.png',
+      },
       // {
       //   key: 'DELAY',
       //   name: '延时关',
@@ -213,6 +223,8 @@ ComponentWithComputed({
           if (support.temperatrue) showBtns.push(btns[i])
         } else if (btns[i].key === 'SWING') {
           if (support.swing) showBtns.push(btns[i])
+        } else if (btns[i].key === 'ANION') {
+          if (support.anion) showBtns.push(btns[i])
         } else {
           showBtns.push(btns[i])
         }
@@ -243,7 +255,9 @@ ComponentWithComputed({
         radar: !!(model & 0x04),
         colorful: !!(model & 0x08),
         DC: !!(model & 0x10),
-        night: !!(model & 0x20)
+        night: !!(model & 0x20),
+        anion: !!(model & 0x40),
+        tvoc: !!(model & 0x80)
       }
     },
     onUnload() {
@@ -394,6 +408,10 @@ ComponentWithComputed({
           if (status.BATH_SWING != undefined) {
             btns[i].isOn = status.BATH_SWING
           }
+        } else if (btns[i].key === 'ANION') {
+          if (status.BATH_ANION != undefined) {
+            btns[i].isOn = status.BATH_ANION
+          }
         }
       }
       bottom[0].isOn = !isAllClose
@@ -527,6 +545,8 @@ ComponentWithComputed({
         this.sendBluetoothCMD([CMD['BATH_DRY']])
       } else if (key === 'SWING') {
         this.sendBluetoothCMD([CMD['BATH_SWING']])
+      } else if (key === 'ANION') {
+        this.sendBluetoothCMD([CMD['BATH_ANION']])
       }
     },
     goToDevManage() {

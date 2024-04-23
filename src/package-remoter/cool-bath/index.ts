@@ -163,6 +163,7 @@ ComponentWithComputed({
         isNeedConnectBLE: remoterStore.curRemoter.version >= 2,
         devStatus: remoterStore.curRemoter.deviceAttr || {},
       })
+      this.configBtns()
       this.updateView()
 
       const bleInited = await initBleCapacity()
@@ -172,6 +173,48 @@ ComponentWithComputed({
       // 建立BLE外围设备服务端
       this.data._bleServer = await createBleServer()
       if (this.data.isNeedConnectBLE) this.start()
+    },
+    configBtns() {
+      const support = this.getSupportByModel()
+      console.log('lmn>>>support=', JSON.stringify(support))
+      const btns = this.data.btnList
+      const showBtns = []
+      for (let i = 0; i < btns.length; i++) {
+        if (btns[i].key === 'SWING') {
+          if (support.swing) showBtns.push(btns[i])
+        } else if (btns[i].key === 'ANION') {
+          if (support.anion) showBtns.push(btns[i])
+        } else {
+          showBtns.push(btns[i])
+        }
+      }
+      const bottom = this.data.bottomList
+      const showBottom = []
+      for (let i = 0; i < bottom.length; i++) {
+        if (bottom[i].key === 'NIGHT') {
+          if (support.night) showBottom.push(bottom[i])
+        } else {
+          showBottom.push(bottom[i])
+        }
+      }
+      this.setData({
+        btnList: showBtns,
+        bottomList: showBottom
+      })
+    },
+    getSupportByModel() {
+      if (this.data.devModel === '') return {}
+      const model = parseInt(this.data.devModel, 16)
+      return {
+        temperatrue: !!(model & 0x01),
+        swing: !!(model & 0x02),
+        radar: !!(model & 0x04),
+        colorful: !!(model & 0x08),
+        DC: !!(model & 0x10),
+        night: !!(model & 0x20),
+        anion: !!(model & 0x40),
+        tvoc: !!(model & 0x80)
+      }
     },
     onUnload() {
       clearTimeout(this.data.conTimer)
@@ -282,6 +325,10 @@ ComponentWithComputed({
           if (status.BATH_SWING != undefined) {
             btns[i].isOn = status.BATH_SWING
           }
+        } else if (btns[i].key === 'ANION') {
+          if (status.BATH_ANION != undefined) {
+            btns[i].isOn = status.BATH_ANION
+          }
         }
       }
       bottom[0].isOn = !isAllClose
@@ -370,7 +417,7 @@ ComponentWithComputed({
       } else if (key === 'SWING') {
         this.sendBluetoothCMD([CMD['BATH_SWING']])
       } else if (key === 'ANION') {
-        // this.sendBluetoothCMD([CMD['BATH_SWING']])
+        this.sendBluetoothCMD([CMD['BATH_ANION']])
       }
     },
     goToDevManage() {

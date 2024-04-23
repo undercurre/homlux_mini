@@ -964,6 +964,10 @@ export const CMD: Record<string, number> = {
   BATH_TEMPERATURE_ADD: 0x88, // 温度+
   BATH_TEMPERATURE_SUB: 0x81, // 温度-
   BATH_WARM_UP: 0x8c, // 取暖
+  BATH_DELAY_CLOSE: 0x41, // 延时关
+  BATH_RADAR: 0x42, //人感
+  BATH_ANION: 0x43, //负离子
+  BATH_TVOC: 0x44, //异味感应
 
   // 凉霸（其余指令同浴霸）
   KITCHEN_WIND_STRONG: 0x02, // 强吹风
