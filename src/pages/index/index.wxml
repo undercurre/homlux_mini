@@ -50,7 +50,7 @@
     <view
       class="flex w-full relative"
       style="{{'height:' + navigationBarHeight}}"
-      bind:tap="handleShowHomeSelectMenu"
+      bind:tap="handlePopMenu"
       wx:if="{{currentHomeName}}"
     >
       <view class="absolute top-8rpx left-32rpx">
@@ -209,13 +209,24 @@
   </view>
 </view>
 
-<home-select-menu
+<!-- TODO handleHomeSelect renewRoomPos -->
+<!-- <home-select-menu
   x="{{selectHomeMenu.x}}"
   y="{{selectHomeMenu.y}}"
   isShow="{{selectHomeMenu.isShow}}"
   bind:select="handleHomeSelect"
   bind:afterSelected="renewRoomPos"
-></home-select-menu>
+></home-select-menu> -->
+
+<mz-pop-menu
+  isShow="{{showPopMenu}}"
+  class="z-120"
+  y="{{200}}"
+  bind:menuTap="handleHomeTap"
+  bind:overlayClick="handleHomeTap"
+  menuList="{{homeMenuList}}"
+></mz-pop-menu>
+
 <add-menu
   right="{{addMenu.right}}"
   y="{{addMenu.y}}"

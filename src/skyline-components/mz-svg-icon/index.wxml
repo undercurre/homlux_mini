@@ -1,6 +1,6 @@
-<!--components/icon/icon.wxml-->
+<!--/skyline-components/mz-svg-icon/icon.wxml-->
 <image
   class="{{class}}"
   style="color: {{color}}; width: {{width}}; height: {{height}};"
   src="{{iconUrl}}"
-/>
+></image>
