@@ -459,6 +459,7 @@ ComponentWithComputed({
       }
     },
     onPopupSelect(e: any) {
+      this.closePopup()
       const key = e.currentTarget.dataset.key
       if (key === 'HIGH') {
         this.sendBluetoothCMD([CMD['KITCHEN_WIND_STRONG']])

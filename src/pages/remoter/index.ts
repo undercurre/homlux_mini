@@ -210,7 +210,7 @@ ComponentWithComputed({
         if (deviceType === '13') {
           page = deviceModel === '01' ? 'light' : 'fan-light'
         } else if (deviceType === '26') {
-          if (deviceModel === '01' || deviceModel === '03' || deviceModel === '37') page = 'bath'
+          if (deviceModel === '01' || deviceModel === '03' || deviceModel === '77') page = 'bath'
         } else if (deviceType === '40') {
           if (deviceModel === '03') page = 'cool-bath'
         }
@@ -375,8 +375,8 @@ ComponentWithComputed({
             if (deviceModel === '02' || deviceModel === '03') uniqueType = '1302'
             else uniqueType = `${deviceType}${deviceModel}`
           }
-          const newDeviceCount = newDeviceCountMap[uniqueType] ?? 0
-          newDeviceCountMap[uniqueType] = newDeviceCount + 1
+          if (newDeviceCountMap[uniqueType] == undefined) newDeviceCountMap[uniqueType] = -1
+          newDeviceCountMap[uniqueType]++
 
           const deviceNameSuffix = savedDeviceCount + newDeviceCountMap[uniqueType]
 
@@ -385,7 +385,7 @@ ComponentWithComputed({
           // const hasFoundName = foundList.findIndex((d) => d.deviceName === config.deviceName) > -1
           const deviceName = deviceNameSuffix ? config.deviceName + deviceNameSuffix : config.deviceName
 
-          console.log({ savedDeviceCount, newDeviceCount }, newDeviceCountMap)
+          console.log(`lmn>>>发现新设备::品类=${deviceType}/型号=${deviceModel},命名=>${deviceName}`)
 
           // 更新发现设备列表
           foundList.push({
