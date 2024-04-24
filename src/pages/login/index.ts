@@ -27,7 +27,6 @@ Component({
     },
 
     handleLoginTap() {
-      console.debug('handleLoginTap')
       if (!this.data.isAgree) {
         Toast('请同意协议')
         return
@@ -35,7 +34,7 @@ Component({
     },
 
     handleLoginClick(e: { detail: { code: string } & { detail: { code: string } } }) {
-      console.debug('handleLoginClick', e)
+      console.log('handleLoginClick', e)
       const code = e.detail.code || e.detail.detail.code // 微信bug，兼容skyline模式，返回的detail数据结构不一致
 
       if (!code) {
