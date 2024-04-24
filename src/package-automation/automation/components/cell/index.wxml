@@ -1,44 +1,37 @@
-<view class="h-180rpx">
-  <van-cell-group
-    inset
+<view class="cell-box">
+  <mz-cell
     custom-class="cell"
+    label="{{linkDesc}}"
+    title="{{sceneName}}"
+    label-class="cell-lable"
     border="{{ false }}"
+    clickable
+    center
+    data-item="{{item.data}}"
+    bind:click="toEditScene"
   >
-    <van-cell
-      border="{{ false }}"
-      clickable
-      center
-      data-item="{{item.data}}"
-      bind:click="handleToSetting"
+    <view
+      slot="icon"
+      class="rounded-32rpx p-16rpx mr-16rpx flex"
     >
-      <view
-        slot="title"
-        class="flex items-center h-100rpx"
-      >
-        <image
-          src="https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/auto-scene/{{item.data.sceneIcon}}.png"
-          class="w-64 h-64 bg-hex-F5F5F5 rounded-full"
-        />
-        <view class="flex flex-col items-start ml-24rpx">
-          <text class="text-32rpx text-hex-353535 font-medium mt-5rpx">{{sceneName}}</text>
-          <view class="flex items-center mt-12rpx">
-            <!-- <image src="/assets/img/base/link.png" class="w-32rpx h-32rpx" /> -->
-            <text class="text-26rpx text-hex-6e6f74 font-normal truncate">{{linkDesc}}</text>
-          </view>
-        </view>
+      <!-- HACK:开发者工具中会一直发请求 -->
+      <image
+        wx:if="{{icon}}"
+        class="w-64 h-64 bg-hex-F5F5F5 rounded-full"
+        src="https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/auto-scene/{{icon}}.png"
+      ></image>
+    </view>
+
+    <view
+      slot="right-icon"
+      class="btn-raw w-110rpx h-64rpx relative rounded-24rpx flex-center"
+      data-item="{{item.data}}"
+      catchtap="handleExecScene"
+    >
+      <text class="text-blue text-28rpx">执行</text>
+      <view class="absolute left-0 top-0 opacity-0 w-full h-full flex-center rounded-24rpx {{tapAnimate?'btn-tap':''}}">
+        <text class="text-hex-fff text-28rpx">执行</text>
       </view>
-      <view
-        slot="right-icon"
-        class="btn-raw w-110rpx h-64rpx relative rounded-24rpx flex-center"
-        data-item="{{item.data}}"
-        catchtap="handleExecScene"
-      >
-        <text class="text-blue text-28rpx">执行</text>
-        <view class="absolute left-0 top-0 opacity-0 w-full h-full flex-center rounded-24rpx {{tapAnimate?'btn-tap':''}}">
-          <text class="text-hex-fff text-28rpx">执行</text>
-        </view>
-      </view>
-      <!-- <van-button slot="right-icon" data-item="{{item.data}}" catchtap="handleExecScene" custom-class="exec-btn" type="default">执行</van-button> -->
-    </van-cell>
-  </van-cell-group>
+    </view>
+  </mz-cell>
 </view>

@@ -1,5 +1,12 @@
 declare namespace Scene {
   /**
+   * 在场景首页展示的的场景列表项
+   */
+  interface SceneListItem extends SceneItem {
+    dragId: string // 拖拽排序时使用的id
+    linkName: string // 标识该场景已关联到哪个设备
+  }
+  /**
    * 查询房间的场景列表项
    */
   interface SceneItem extends SceneBase {

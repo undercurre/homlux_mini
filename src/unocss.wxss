@@ -51,6 +51,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .py-6rpx{padding-top:6rpx;padding-bottom:6rpx;}
 .py-96rpx{padding-top:96rpx;padding-bottom:96rpx;}
 .pb-100rpx{padding-bottom:100rpx;}
+.pb-106rpx{padding-bottom:106rpx;}
 .pb-16rpx{padding-bottom:16rpx;}
 .pb-200rpx{padding-bottom:200rpx;}
 .pb-20rpx{padding-bottom:20rpx;}
@@ -624,7 +625,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .top-0{top:0rpx;}
 .top-15{top:15rpx;}
 .top-16rpx{top:16rpx;}
-.top-174rpx{top:174rpx;}
 .top-29rpx{top:29rpx;}
 .top-46rpx{top:46rpx;}
 .top-8rpx{top:8rpx;}

@@ -1,16 +1,17 @@
 {
   "component": true,
+  "renderer": "skyline",
+  "componentFramework": "glass-easel",
+  "styleIsolation": "apply-shared",
   "usingComponents": {
-    "van-button": "@vant/weapp/button/index",
-    "van-toast": "@vant/weapp/toast/index",
-    "van-cell-group": "@vant/weapp/cell-group/index",
-    "van-cell": "@vant/weapp/cell/index",
-    "van-icon": "@vant/weapp/icon/index",
-    "van-switch": "@vant/weapp/switch/index",
+    "mz-toast": "../../skyline-components/mz-toast/index",
+    "mz-cell-group": "../../skyline-components/mz-cell-group/index",
+    "mz-cell": "../../skyline-components/mz-cell/index",
+    "mz-switch": "../../skyline-components/mz-switch/index",
     "marvels-switch": "components/marvels-switch/index",
     "cell": "./components/cell/index",
-    "drag": "../../components/drag/index",
-    "van-tab": "@vant/weapp/tab/index",
-    "van-tabs": "@vant/weapp/tabs/index"
+    "mz-drag-list": "../../skyline-components/mz-drag-list/index",
+    "mz-tab": "../../skyline-components/mz-tab/index",
+    "mz-tabs": "../../skyline-components/mz-tabs/index"
   }
 }
