@@ -1,5 +1,5 @@
 <view
-  class="cell"
+  class="cell custom-class"
   hover-class="van-cell--hover"
   hover-stay-time="70"
   bind:tap="onClick"

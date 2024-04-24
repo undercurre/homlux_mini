@@ -1,4 +1,4 @@
-<view class="cell-group">
+<view class="cell-group custom-class">
   <view
     wx:if="{{ title }}"
     class=""
