@@ -9,7 +9,7 @@ Component({
   },
   behaviors: [touchBehavior],
 
-  externalClasses: ['nav-class', 'tab-class', 'tab-active-class', 'line-class', 'wrap-class'],
+  externalClasses: ['custom-class', 'nav-class', 'tab-class', 'tab-active-class', 'line-class', 'wrap-class'],
   relations: {
     '../mz-tab/index': {
       type: 'descendant',
