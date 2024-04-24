@@ -17,14 +17,9 @@
   duration="{{ duration }}"
   bind:click="onClickOverlay"
   lock-scroll="{{ lockScroll }}"
-  root-portal="{{ rootPortal }}"
+  root-portal="{{ true }}"
 />
 
-<root-portal wx:if="{{ rootPortal }}">
+<root-portal enable="{{rootPortal}}">
   <include src="./popup.wxml" />
 </root-portal>
-
-<include
-  wx:else
-  src="./popup.wxml"
-/>

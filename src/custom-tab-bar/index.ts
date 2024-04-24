@@ -27,13 +27,19 @@ Component({
       },
     ],
   },
+
   /**
    * 组件的方法列表
    */
   methods: {
     switchTab(data: { currentTarget: { dataset: { index: number; path: string } } }) {
+      const { index, path } = data.currentTarget.dataset
+      if (index === this.data.selected) {
+        return
+      }
+
       wx.switchTab({
-        url: data.currentTarget.dataset.path,
+        url: path,
       })
     },
   },

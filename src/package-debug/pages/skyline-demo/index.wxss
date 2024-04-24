@@ -7,3 +7,7 @@
   min-height: 300rpx;
   background-color: #fff;
 }
+
+.section {
+  border-top: 2rpx solid #000;
+}

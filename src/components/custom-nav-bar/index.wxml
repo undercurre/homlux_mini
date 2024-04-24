@@ -1,4 +1,3 @@
-<!--components/custom-nav-bar/index.wxml-->
 <view
   wx:if="{{!disabled}}"
   class="{{renderer === 'webview' ? 'fixed' : 'absolute'}} w-full left-0 top-0"

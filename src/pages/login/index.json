@@ -1,9 +1,22 @@
 {
+  "styleIsolation": "apply-shared",
   "component": true,
+  "renderer": "skyline",
+  "componentFramework": "glass-easel",
+  "disableScroll": true,
+  "rendererOptions": {
+    "skyline": {
+      "disableABTest": true,
+      "sdkVersionBegin": "3.0.0",
+      "sdkVersionEnd": "15.255.255",
+      "defaultDisplayBlock": false,
+      "defaultContentBox": false
+    }
+  },
   "usingComponents": {
-    "van-button": "@vant/weapp/button/index",
-    "van-toast": "@vant/weapp/toast/index",
-    "van-checkbox": "@vant/weapp/checkbox/index"
+    "mz-button": "/skyline-components/mz-button/index",
+    "mz-toast": "/skyline-components/mz-toast/index",
+    "mz-checkbox": "/skyline-components/mz-checkbox/index"
   },
   "navigationStyle": "custom"
 }

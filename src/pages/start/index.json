@@ -1,8 +1,11 @@
 {
+  "styleIsolation": "apply-shared",
   "component": true,
+  "renderer": "skyline",
+  "componentFramework": "glass-easel",
+  "disableScroll": true,
   "usingComponents": {
-    "van-button": "@vant/weapp/button/index",
-    "van-checkbox": "@vant/weapp/checkbox/index"
-  },
-  "navigationStyle": "custom"
+    "mz-button": "/skyline-components/mz-button/index",
+    "mz-checkbox": "/skyline-components/mz-checkbox/index"
+  }
 }
