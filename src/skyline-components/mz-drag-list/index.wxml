@@ -38,7 +38,7 @@
   enable="{{dragging}}"
 >
   <item
-    style="width: 100%; position: absolute"
+    style="width: 100%; position: absolute; opacity: 0"
     id="tempItem"
     item="{{curDragItem}}"
   />

@@ -2,6 +2,7 @@ import { shared, timing, runOnJS } from '../common/worklet'
 type listItem = {
   id: string
   sortKey: number
+  realSortKey: number
   tempSortKey: number
   data: IAnyObject
 }
@@ -52,6 +53,8 @@ Component({
     _preStartKey: -1,
     _preEndKey: -1,
     _autoMoveTimerId: null as null | number,
+    _itemStyle: {} as IAnyObject, // 所有item 样式
+    _tempItemStyle: {} as IAnyObject, // 假象item 样式
 
     /* 渲染数据 */
     wrapStyle: '', // item-wrap 样式
@@ -90,6 +93,7 @@ Component({
         data: item,
         sortKey: index,
         tempSortKey: index,
+        realSortKey: index,
       })
       // 遍历数据源增加扩展项, 以用作排序使用
       listData.forEach((item, index) => {
@@ -104,18 +108,19 @@ Component({
         },
         () => {
           // 绑定动画
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          this.itemStyle = Object.create({})
+          // this.itemStyle = Object.create({})
           this.data.list.forEach((item) => {
-            const top = shared((100 / this.data._baseData.rows) * item.sortKey)
+            // const top = shared((100 / this.data._baseData.rows) * item.sortKey)
+            const translationY = shared(0)
             const opacity = shared(1)
             this.applyAnimatedStyle(
               `#ID${item.id}`,
               () => {
                 'worklet'
                 return {
-                  top: top.value + '%',
+                  // top: top.value + '%',
+                  transform: `translateY(${translationY.value}%)`,
+
                   opacity: opacity.value,
                   // backgroundColor: opacity.value ? "red" : "green",
                 }
@@ -123,24 +128,27 @@ Component({
               },
               { immediate: true, flush: 'async' },
             )
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            this.itemStyle[item.id] = { top, opacity }
+            // top.value = timing((100 / this.data._baseData.rows) * item.sortKey, {
+            //   duration: 300,
+            // })
+            this.data._itemStyle[item.id] = { translationY, opacity }
           })
           const tempItemTop = shared(0)
+          const tempItemOpacity = shared(0)
           this.applyAnimatedStyle(
             '#tempItem',
             () => {
               'worklet'
               return {
                 top: tempItemTop.value + 'px',
+                opacity: tempItemOpacity.value,
               }
             },
             { immediate: true, flush: 'async' },
           )
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          this.tempItemTop = tempItemTop
+          this.data._tempItemStyle = { tempItemTop, tempItemOpacity }
+          // this.tempItemTop = tempItemTop
+          // this.tempItemOpacity = tempItemOpacity
           console.log(this)
         },
       )
@@ -224,14 +232,12 @@ Component({
       this.data._scrollTopReady = false
       // 如果已经在 drag 中则禁止操作, 防止多指触发 drag 动作
       if (isDragging && this.data.dragging) return
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      this.itemStyle[dataset.id].opacity.value = isDragging ? 0 : 1
+      this.data._itemStyle[dataset.id].opacity.value = isDragging ? 0.5 : 1
       // let curDragItem = {data:{},id:'',sortKey:-1,tempSortKey:-1}
       // if(isDragging){
       //   curDragItem = this.data.list.find((item) => item.id === dataset.id)
       // }
-
+      this.data._tempItemStyle.tempItemOpacity.value = isDragging ? 1 : 0.5
       // console.log('狗屎', curDragItem);
 
       this.setData(
@@ -265,7 +271,7 @@ Component({
                 item.sortKey = item.tempSortKey
               })
               this.triggerEvent('sortend', {
-                data: this.data.list,
+                listData: this.data.list,
               })
               console.log('aaaaaaaaaa', this.data._preEndKey, this.data.list)
             }
@@ -275,9 +281,8 @@ Component({
     },
     setTempItemValue(value: number) {
       // console.log(this.tempItemTop, value)
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      this.tempItemTop.value = value - this.data._baseData.itemHeight / 2
+      this.data._tempItemStyle.tempItemTop.value = value - this.data._baseData.itemHeight / 2
+      // this.tempItemTop.value = value - this.data._baseData.itemHeight / 2
     },
     isOutRange(cY: number) {
       return cY < this.data._baseData.realTopSize || cY > this.data._baseData.realBottomSize
@@ -381,14 +386,20 @@ Component({
         } else if (sKey > eKey && tKey >= eKey && tKey < sKey) {
           ++tKey
         }
-        // if (item.tempSortKey !== tKey) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        this.itemStyle[item.id].top.value = timing((100 / this.data._baseData.rows) * tKey, {
-          duration: 100,
-        })
+        // if (item.tempSortKey !== rKey) {
+
+        // item.realSortKey = item.realSortKey + rKey
+
+        this.data._itemStyle[item.id].translationY.value = timing(
+          (tKey - item.realSortKey) * 100,
+          {
+            duration: 100,
+          },
+          () => {
+            'worklet'
+          },
+        )
         if (item.tempSortKey !== tKey) item.tempSortKey = tKey
-        // }
       })
     },
 
