@@ -221,6 +221,7 @@
 <mz-pop-menu
   isShow="{{showPopMenu}}"
   class="z-120"
+  x="{{30}}"
   y="{{200}}"
   bind:menuTap="handleHomeTap"
   bind:overlayClick="handleHomeTap"

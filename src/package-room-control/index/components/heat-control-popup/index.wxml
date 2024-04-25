@@ -1,4 +1,4 @@
-<van-popup
+<mz-popup
   show="{{ show }}"
   z-index="1002"
   round
@@ -77,7 +77,7 @@
       </view>
 
       <view class="pt-64rpx pb-16rpx px-8rpx">
-        <mz-slider
+        <!-- <mz-slider
           disabled="{{disabledSlider}}"
           bind:slideEnd="handleBtnTap"
           bind:slideChange="handleSlideChange"
@@ -93,7 +93,7 @@
             slot="button"
             class="slider-button"
           />
-        </mz-slider>
+        </mz-slider> -->
       </view>
 
       <view class="flex justify-between">
@@ -104,6 +104,6 @@
 
     <view class="h-96rpx"></view>
   </view>
-</van-popup>
+</mz-popup>
 
-<van-toast id="van-toast" />
+<mz-toast id="mz-toast" />

@@ -14,7 +14,7 @@ import {
 import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { sendDevice, execScene, saveDeviceOrder, queryGroup, queryAuthGetStatus } from '../../apis/index'
-import Toast from '@vant/weapp/toast/toast'
+import Toast from '../../skyline-components/mz-toast/toast'
 import {
   storage,
   emitter,

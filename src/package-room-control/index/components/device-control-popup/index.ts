@@ -24,8 +24,8 @@ import {
   delSwitchAndSwitchAssociated,
   getSensorLogs,
 } from '../../../../apis/index'
-import Toast from '@vant/weapp/toast/toast'
-import Dialog from '@vant/weapp/dialog/dialog'
+import Toast from '../../../../skyline-components/mz-toast/toast'
+import Dialog from '../../../../skyline-components/mz-dialog/dialog'
 import pageBehavior from '../../../../behaviors/pageBehaviors'
 import { runInAction } from 'mobx-miniprogram'
 

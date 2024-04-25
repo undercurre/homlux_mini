@@ -2,7 +2,7 @@
   "component": true,
   "styleIsolation": "apply-shared",
   "usingComponents": {
-    "van-toast": "@vant/weapp/toast/index",
-    "van-dialog": "@vant/weapp/dialog/index"
+    "mz-toast": "/skyline-components/mz-toast/index",
+    "mz-dialog": "/skyline-components/mz-dialog/index"
   }
 }
