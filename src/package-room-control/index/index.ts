@@ -152,7 +152,7 @@ ComponentWithComputed({
     colorTempFormatter(data) {
       const { maxColorTemp, minColorTemp } = data.roomLight
       return (value: number) => {
-        return `${(value / 100) * (maxColorTemp - minColorTemp) + minColorTemp}K`
+        return `${Math.round((value / 100) * (maxColorTemp - minColorTemp) + minColorTemp)}K`
       }
     },
     // 房间灯光可控状态
