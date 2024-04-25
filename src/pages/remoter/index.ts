@@ -208,7 +208,7 @@ ComponentWithComputed({
         this.data._holdBleScan = true
         let page = 'pannel'
         if (deviceType === '13') {
-          page = deviceModel === '01' ? 'light' : 'fan-light'
+          page = deviceModel === '01' || deviceModel === '04' ? 'light' : 'fan-light'
         } else if (deviceType === '26') {
           if (deviceModel === '01' || deviceModel === '03' || deviceModel === '77') page = 'bath'
         } else if (deviceType === '40') {
@@ -347,13 +347,13 @@ ComponentWithComputed({
 
       // 用户主动搜索，刷新发现列表
       const foundList = [] as Remoter.DeviceDetail[]
-      const newDeviceCountMap = {} as IAnyObject
+      const suffixArr = {} as Record<string, number[]>
       recoveredList.forEach((item) => {
         const isSavedDevice = remoterStore.deviceAddrs.includes(item!.addr)
         const deviceType = item!.deviceType
         const deviceModel = item!.deviceModel
         let cusRSSI = this.data.MIN_RSSI
-        if (deviceType === '13' && deviceModel === '01') {
+        if (deviceType === '13' && deviceModel === '04') {
           cusRSSI = -100
         }
         if (
@@ -367,28 +367,32 @@ ComponentWithComputed({
             return
           }
 
-          // 同默认名字设备的数量，包括已保存、新发现
-          const savedDeviceCount = remoterStore.remoterList.filter((device) => {
-            if (device.deviceType === '13') {
-              return device.deviceType === deviceType && device.deviceModel === deviceModel
+          const nameKey = config.deviceName
+          if (suffixArr[nameKey] == undefined) {
+            const names = remoterStore.deviceNames
+            for (let i = 0; i < names.length; i++) {
+              if (names[i].includes(nameKey)) {
+                const numStr = names[i].replace(nameKey, '')
+                let suffix = 0
+                if (numStr) suffix = parseInt(numStr) || -1
+                if (suffix < 0) continue
+                if (suffixArr[nameKey] == undefined) suffixArr[nameKey] = [suffix]
+                else suffixArr[nameKey].push(suffix)
+              }
             }
-            return device.deviceType === deviceType
-          }).length
-          let uniqueType = deviceType
-          if (deviceType === '13') {
-            if (deviceModel === '02' || deviceModel === '03') uniqueType = '1302'
-            else uniqueType = `${deviceType}${deviceModel}`
           }
-          if (newDeviceCountMap[uniqueType] == undefined) newDeviceCountMap[uniqueType] = -1
-          newDeviceCountMap[uniqueType]++
-
-          const deviceNameSuffix = savedDeviceCount + newDeviceCountMap[uniqueType]
-
-          // 如果设备名已存在，则加上编号后缀，以避免同名混淆 // TODO 更名后仍和已保存的名字后缀存在一样的情况，未处理
-          // const hasSavedName = remoterStore.deviceNames.includes(config.deviceName)
-          // const hasFoundName = foundList.findIndex((d) => d.deviceName === config.deviceName) > -1
-          const deviceName = deviceNameSuffix ? config.deviceName + deviceNameSuffix : config.deviceName
-
+          let devSuffix = 0
+          if (suffixArr[nameKey] != undefined) {
+            const arr = suffixArr[nameKey]
+            for (let i = 0; i < arr.length; i++) {
+              if (arr.includes(devSuffix)) devSuffix++
+              else {
+                suffixArr[nameKey].push(devSuffix)
+                break
+              }
+            }
+          }
+          const deviceName = devSuffix ? nameKey + devSuffix : nameKey
           console.log(`lmn>>>发现新设备::品类=${deviceType}/型号=${deviceModel},命名=>${deviceName}`)
 
           // 更新发现设备列表
@@ -474,7 +478,7 @@ ComponentWithComputed({
     },
     rssiToggle() {
       let rssi = this.data.MIN_RSSI - 5
-      if (rssi < -80) {
+      if (rssi < -100) {
         rssi = -50
       }
       this.setData({ MIN_RSSI: rssi })

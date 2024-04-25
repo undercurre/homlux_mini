@@ -25,6 +25,7 @@ ComponentWithComputed({
     _bleService: null as BleService | null,
     isNeedConnectBLE: false,
     isBLEConnected: false,
+    isNeedUpdate: true,
     devType: '',
     devModel: '',
     devAddr: '',
@@ -161,6 +162,7 @@ ComponentWithComputed({
         devModel: deviceModel,
         devAddr: addr,
         isNeedConnectBLE: remoterStore.curRemoter.version >= 2,
+        isNeedUpdate: remoterStore.curRemoter.version >= 2,
         devStatus: remoterStore.curRemoter.deviceAttr || {},
       })
       this.configBtns()
@@ -302,6 +304,7 @@ ComponentWithComputed({
       this.updateViewEn()
     },
     updateView() {
+      if (!this.data.isNeedUpdate) return
       const status = this.data.devStatus
       const btns = this.data.btnList
       const bottom = this.data.bottomList
@@ -346,6 +349,7 @@ ComponentWithComputed({
       this.updateViewEn()
     },
     updateViewEn() {
+      if (!this.data.isNeedUpdate) return
       const bottom = this.data.bottomList
       const btns = this.data.btnList
       const gear = this.data.gearBtnConfig

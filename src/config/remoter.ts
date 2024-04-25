@@ -79,6 +79,20 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
         },
       ],
     },
+    '04': {
+      deviceName: '吸顶灯',
+      devicePic: '/assets/img/remoter/ceilLight.png',
+      actions: [
+        {
+          key: 'LIGHT_LAMP',
+          name: '照明',
+        },
+        {
+          key: 'LIGHT_NIGHT_LAMP',
+          name: '夜灯',
+        },
+      ],
+    },
   },
   '26': {
     // Q30系列 // 0001 不支持摆风，可调温
