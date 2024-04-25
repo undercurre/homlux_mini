@@ -25,7 +25,7 @@ ComponentWithComputed({
     _bleService: null as BleService | null,
     isNeedConnectBLE: false,
     isBLEConnected: false,
-    isNeedUpdate: true,
+    isNeedUpdate: false,
     devType: '',
     devModel: '',
     devAddr: '',
