@@ -120,10 +120,14 @@ export async function startWebsocketService() {
     // 发生错误一般由于网络问题，先检查网络可访问性
     await verifyNetwork()
 
-    // 可能短时间内连续触发多次onError
     Logger.error('socket错误onError：', err, 'socketTask', socketTask)
     isConnecting = false
-    closeWebSocket(3000, 'socket错误') // ws报错重连
+    const closeRes = await closeWebSocket(3000, 'socket错误') // ws报错重连
+
+    // 进入小程序后socket从未成功连接(连接报错,如tls错误\断网的情况),关闭socket会失败,无法通过关闭回调进行重连,需要额外增加sokcet重试逻辑
+    if (!closeRes) {
+      delayConnectWS(30000)
+    }
   })
 }
 
@@ -173,7 +177,7 @@ function onSocketClose(e: WechatMiniprogram.SocketTaskOnCloseCallbackResult) {
   }
 }
 
-export function closeWebSocket(code = 1000, reason = '正常主动关闭') {
+export function closeWebSocket(code = 1000, reason = '正常主动关闭'): Promise<boolean> {
   // 关闭socket，需要把之前相关socket变量重置
   isConnecting = false
   clearTimeout(connectTimeId) // 取消准备重连的计时器

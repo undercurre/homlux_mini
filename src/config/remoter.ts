@@ -79,6 +79,20 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
         },
       ],
     },
+    '04': {
+      deviceName: '吸顶灯',
+      devicePic: '/assets/img/remoter/ceilLight.png',
+      actions: [
+        {
+          key: 'LIGHT_LAMP',
+          name: '照明',
+        },
+        {
+          key: 'LIGHT_NIGHT_LAMP',
+          name: '夜灯',
+        },
+      ],
+    },
   },
   '26': {
     // Q30系列 // 0001 不支持摆风，可调温
@@ -662,6 +676,114 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
         },
       ],
     },
+    // Y10W系列 // 00010111 温度可调，色温可调
+    '77': {
+      deviceName: '浴霸',
+      devicePic: '/assets/img/remoter/bathHeater.png',
+      showTemperature: false, // TODO 暂时不予实现
+      joystick: {
+        up: {
+          key: 'BATH_BRIGHT_PLUS',
+          icon: '/package-remoter/assets/bright1.png',
+          iconActive: '/package-remoter/assets/bright0.png',
+        },
+        right: {
+          key: 'BATH_TEMPERATURE_ADD',
+          icon: '/package-remoter/assets/temp3.png',
+          iconActive: '/package-remoter/assets/temp2.png',
+        },
+        down: {
+          key: 'BATH_BRIGHT_MINUS',
+          icon: '/package-remoter/assets/bright3.png',
+          iconActive: '/package-remoter/assets/bright2.png',
+        },
+        left: {
+          key: 'BATH_TEMPERATURE_SUB',
+          icon: '/package-remoter/assets/temp1.png',
+          iconActive: '/package-remoter/assets/temp0.png',
+        },
+        middle: {
+          key: 'FACTORY',
+        },
+      },
+      mList: [
+        // {
+        //   key: 'TEMPERATURE_SETTING_ADD',
+        //   name: '温度+',
+        // },
+        // {
+        //   key: 'TEMPERATURE_SETTING_SUB',
+        //   name: '温度-',
+        // },
+        {
+          key: 'BATH_WARM_UP',
+          icon: '/package-remoter/assets/scene01.png',
+          iconActive: '/package-remoter/assets/scene00.png',
+          name: '取暖',
+        },
+        {
+          key: 'BATH_WIND',
+          icon: '/package-remoter/assets/scene91.png',
+          iconActive: '/package-remoter/assets/scene90.png',
+          name: '吹风',
+        },
+        {
+          key: 'BATH_VENTILATE',
+          icon: '/package-remoter/assets/sceneA1.png',
+          iconActive: '/package-remoter/assets/sceneA0.png',
+          name: '换气',
+        },
+        {
+          key: 'BATH_DRY',
+          icon: '/package-remoter/assets/sceneB1.png',
+          iconActive: '/package-remoter/assets/sceneB0.png',
+          name: '干燥',
+        },
+        {
+          key: 'BATH_AUTO',
+          icon: '/package-remoter/assets/scene81.png',
+          iconActive: '/package-remoter/assets/scene80.png',
+          name: '安心沐浴',
+          btnWidth: '654rpx',
+        },
+      ],
+      bList: [
+        {
+          key: 'BATH_LAMP',
+          icon: '/package-remoter/assets/power1.png',
+          iconActive: '/package-remoter/assets/power0.png',
+          name: '照明',
+        },
+        {
+          key: 'BATH_ALL_OFF',
+          icon: '/package-remoter/assets/power1.png',
+          iconActive: '/package-remoter/assets/power0.png',
+          name: '待机',
+        },
+      ],
+      actions: [
+        {
+          key: 'BATH_LAMP',
+          name: '照明',
+        },
+        {
+          key: 'BATH_ALL_OFF',
+          name: '待机',
+        },
+        {
+          key: 'BATH_WIND',
+          name: '吹风',
+        },
+        {
+          key: 'BATH_VENTILATE',
+          name: '换气',
+        },
+        {
+          key: 'BATH_DRY',
+          name: '干燥',
+        },
+      ],
+    },
   },
   '40': {
     // L8、B8 // 0011 支持摆风，电控无法区分L8和B8（B8带小夜灯）
@@ -671,8 +793,8 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
       mList: [
         {
           key: 'KITCHEN_WIND_STRONG',
-          icon: '/package-remoter/assets/scene91.png',
-          iconActive: '/package-remoter/assets/scene90.png',
+          icon: '/package-remoter/assets/oldHighWindOff.png',
+          iconActive: '/package-remoter/assets/oldHighWindOn.png',
           name: '强吹风',
         },
         {
@@ -689,8 +811,8 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
         },
         {
           key: 'BATH_SWING',
-          icon: '/package-remoter/assets/sceneA1.png',
-          iconActive: '/package-remoter/assets/sceneA0.png',
+          icon: '/package-remoter/assets/oldSwingOff.png',
+          iconActive: '/package-remoter/assets/oldSwingOn.png',
           name: '摆风',
         },
       ],
@@ -747,8 +869,8 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
       mList: [
         {
           key: 'KITCHEN_WIND_STRONG',
-          icon: '/package-remoter/assets/scene91.png',
-          iconActive: '/package-remoter/assets/scene90.png',
+          icon: '/package-remoter/assets/oldHighWindOff.png',
+          iconActive: '/package-remoter/assets/oldHighWindOn.png',
           name: '强吹风',
         },
         {
@@ -765,8 +887,8 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
         },
         {
           key: 'BATH_SWING',
-          icon: '/package-remoter/assets/sceneA1.png',
-          iconActive: '/package-remoter/assets/sceneA0.png',
+          icon: '/package-remoter/assets/oldSwingOff.png',
+          iconActive: '/package-remoter/assets/oldSwingOn.png',
           name: '摆风',
         },
       ],
@@ -856,6 +978,10 @@ export const CMD: Record<string, number> = {
   BATH_TEMPERATURE_ADD: 0x88, // 温度+
   BATH_TEMPERATURE_SUB: 0x81, // 温度-
   BATH_WARM_UP: 0x8c, // 取暖
+  BATH_DELAY_CLOSE: 0x41, // 延时关
+  BATH_RADAR: 0x42, //人感
+  BATH_ANION: 0x43, //负离子
+  BATH_TVOC: 0x44, //异味感应
 
   // 凉霸（其余指令同浴霸）
   KITCHEN_WIND_STRONG: 0x02, // 强吹风
@@ -868,7 +994,7 @@ export const CMD: Record<string, number> = {
   END: 0x00,
 
   // 断开连接
-  DISCONNECT: 0xFE,
+  DISCONNECT: 0xfe,
 }
 
 // 下拉选项配置

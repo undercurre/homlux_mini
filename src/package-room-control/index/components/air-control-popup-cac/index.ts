@@ -2,7 +2,14 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '../../../../skyline-components/mz-toast/toast'
 import { sendDevice } from '../../../../apis/index'
-import { CAC_MODE, CAC_FA_WINDSPEED, MODE_ICON_MAP, WIND_ICON_MAP, proName } from '../../../../config/index'
+import {
+  CAC_MODE,
+  CAC_FA_WINDSPEED,
+  MODE_ICON_MAP,
+  WIND_ICON_MAP,
+  proName,
+  NO_SYNC_DEVICE_STATUS,
+} from '../../../../config/index'
 
 ComponentWithComputed({
   options: {
@@ -186,7 +193,7 @@ ComponentWithComputed({
       this.data._canSyncCloudData = false
       this.data._controlTimer = setTimeout(() => {
         this.data._canSyncCloudData = true
-      }, 2000)
+      }, NO_SYNC_DEVICE_STATUS)
 
       const res = await sendDevice({
         deviceId: this.data.deviceInfo.deviceId,
