@@ -3,8 +3,8 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { getModelName, PRO_TYPE, SCREEN_PID, MAX_MOVE_CARDS } from '../../../../config/index'
 import { waitingBatchDeleteDevice, batchUpdate, renameGroup } from '../../../../apis/index'
 import { deviceBinding, deviceStore, homeStore, roomBinding, roomStore } from '../../../../store/index'
-import Toast from '@vant/weapp/toast/toast'
-import Dialog from '@vant/weapp/dialog/dialog'
+import Toast from '../../../../skyline-components/mz-toast/toast'
+import Dialog from '../../../../skyline-components/mz-dialog/dialog'
 import { storage, checkInputNameIllegal, emitter, showLoading, hideLoading } from '../../../../utils/index'
 
 let timeId: number

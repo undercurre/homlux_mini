@@ -1,4 +1,4 @@
-<van-popup
+<mz-popup
   show="{{ show }}"
   position="bottom"
   round
@@ -248,7 +248,7 @@
       </view>
     </view>
   </view>
-</van-popup>
+</mz-popup>
 
 <!-- 关联列表（场景列表 or 设备列表）弹窗 -->
 <select-card-popup
@@ -265,9 +265,9 @@
   tipsText="{{selectLinkType === 'light' ? '关联不同网关灯/灯组时控制可能会存在延时' : ''}}"
 />
 
-<van-toast id="van-toast" />
-<van-dialog
-  id="van-dialog"
+<mz-toast id="mz-toast" />
+<mz-dialog
+  id="mz-dialog"
   confirm-button-color="#27282A"
   cancel-button-color="#27282A"
 />

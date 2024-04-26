@@ -2,8 +2,8 @@
   "component": true,
   "styleIsolation": "apply-shared",
   "usingComponents": {
-    "van-toast": "@vant/weapp/toast/index",
-    "van-popup": "@vant/weapp/popup/index",
+    "mz-toast": "/skyline-components/mz-toast/index",
+    "mz-popup": "/skyline-components/mz-popup/index",
     "mz-slider": "/components/mz-slider/index",
     "icon-button": "../../components/icon-button/index"
   }

@@ -1,4 +1,4 @@
-<van-popup
+<mz-popup
   show="{{ show }}"
   z-index="1002"
   round
@@ -74,15 +74,15 @@
       </view>
 
       <view wx:if="{{isShowConfirm}}">
-        <van-button
+        <mz-button
           type="primary"
           size="large"
           bind:click="handleConfirm"
-          >确定</van-button
+          >确定</mz-button
         >
       </view>
     </view>
   </view>
-</van-popup>
+</mz-popup>
 
-<van-toast id="van-toast" />
+<mz-toast id="mz-toast" />

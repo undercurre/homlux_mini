@@ -85,7 +85,7 @@
     </view>
   </view>
 
-  <van-popup
+  <mz-popup
     show="{{ showEditName }}"
     z-index="2000"
     round
@@ -104,7 +104,7 @@
           <text class="text-28rpx text-black-2a ml-48rpx mt-68rpx">按键名称</text>
         </view>
         <view class="flex-1 mt-32rpx w-686rpx">
-          <van-field
+          <mz-field
             model:value="{{ editSwitchName }}"
             maxlength="{{30}}"
             placeholder="请输入按键名称"
@@ -112,14 +112,14 @@
             clearable="{{true}}"
             border="{{false}}"
           >
-          </van-field>
+          </mz-field>
         </view>
       </block>
       <view class="flex w-750rpx mt-56rpx">
         <text class="text-28rpx text-black-2a ml-48rpx">{{editDeviceNameTitle}}</text>
       </view>
       <view class="flex-1 mt-32rpx w-686rpx mb-126rpx">
-        <van-field
+        <mz-field
           model:value="{{ editDeviceName }}"
           maxlength="{{30}}"
           placeholder="请输入{{editDeviceNameTitle}}"
@@ -127,7 +127,7 @@
           clearable="{{true}}"
           border="{{false}}"
         >
-        </van-field>
+        </mz-field>
       </view>
 
       <template
@@ -135,9 +135,9 @@
         data="{{disabled: editNameDisable}}"
       />
     </view>
-  </van-popup>
+  </mz-popup>
 
-  <van-popup
+  <mz-popup
     show="{{ showEditRoom }}"
     round
     position="bottom"
@@ -169,8 +169,8 @@
         data="{{disabled: editRoomDisable}}"
       />
     </view>
-  </van-popup>
+  </mz-popup>
 
-  <van-toast id="van-toast" />
-  <van-dialog id="van-dialog" />
+  <mz-toast id="mz-toast" />
+  <mz-dialog id="mz-dialog" />
 </view>

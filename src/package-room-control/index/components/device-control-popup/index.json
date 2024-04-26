@@ -2,9 +2,9 @@
   "component": true,
   "styleIsolation": "apply-shared",
   "usingComponents": {
-    "van-toast": "@vant/weapp/toast/index",
-    "van-dialog": "@vant/weapp/dialog/index",
-    "van-popup": "@vant/weapp/popup/index",
+    "mz-toast": "/skyline-components/mz-toast/index",
+    "mz-dialog": "/skyline-components/mz-dialog/index",
+    "mz-popup": "/skyline-components/mz-popup/index",
     "select-card-popup": "../../../../components/select-card-popup/index",
     "mz-slider": "/components/mz-slider/index",
     "curtain-slider": "/components/curtain-slider/index",

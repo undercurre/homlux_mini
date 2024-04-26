@@ -1,7 +1,5 @@
 {
   "component": true,
   "styleIsolation": "apply-shared",
-  "usingComponents": {
-    "van-toast": "@vant/weapp/toast/index"
-  }
+  "usingComponents": {}
 }
