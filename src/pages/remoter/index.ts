@@ -348,7 +348,8 @@ ComponentWithComputed({
       // 用户主动搜索，刷新发现列表
       const foundList = [] as Remoter.DeviceDetail[]
       const suffixArr = {} as Record<string, number[]>
-      recoveredList.forEach((item) => {
+      for (let j = 0; j < recoveredList.length; j++) {
+        const item = recoveredList[j]
         const isSavedDevice = remoterStore.deviceAddrs.includes(item!.addr)
         const deviceType = item!.deviceType
         const deviceModel = item!.deviceModel
@@ -364,7 +365,7 @@ ComponentWithComputed({
 
           if (!config) {
             console.log('config NOT EXISTED in onBluetoothDeviceFound')
-            return
+            continue
           }
 
           const nameKey = config.deviceName
@@ -382,7 +383,9 @@ ComponentWithComputed({
             }
           }
           let devSuffix = 0
-          if (suffixArr[nameKey] != undefined) {
+          if (suffixArr[nameKey] == undefined) {
+            suffixArr[nameKey] = [devSuffix]
+          } else {
             const arr = suffixArr[nameKey]
             for (let i = 0; i < arr.length; i++) {
               if (arr.includes(devSuffix)) devSuffix++
@@ -410,7 +413,7 @@ ComponentWithComputed({
             DISCOVERED: 1,
           })
         }
-      })
+      }
 
       this.setData({ foundList })
     },
