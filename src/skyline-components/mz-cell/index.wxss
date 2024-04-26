@@ -27,6 +27,7 @@
 
 .cell-left {
   display: flex;
+  flex-direction: column;
 }
 
 .title {
