@@ -117,7 +117,7 @@
           </view>
           <view
             slot="title"
-            class="w-384rpx h-44rpx cell-title"
+            class="h-44rpx cell-title"
           >
             <text>disabled</text>
           </view>

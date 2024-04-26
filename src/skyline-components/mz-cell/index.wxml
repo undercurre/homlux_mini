@@ -16,7 +16,7 @@
       name="icon"
     />
 
-    <span
+    <view
       class="cell-left"
       style="{{cellLeftStyle}}"
     >
@@ -31,9 +31,9 @@
         class="label label-class"
         >{{ label }}</view
       >
-    </span>
+    </view>
 
-    <span class="cell-right">
+    <view class="cell-right">
       <text
         wx:if="{{value}}"
         class="value value-class"
@@ -50,6 +50,6 @@
         wx:else
         name="right-icon"
       />
-    </span>
+    </view>
   </view>
 </view>
