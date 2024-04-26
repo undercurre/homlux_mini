@@ -387,7 +387,7 @@ ComponentWithComputed({
             suffixArr[nameKey] = [devSuffix]
           } else {
             const arr = suffixArr[nameKey]
-            for (let i = 0; i < arr.length; i++) {
+            for (let i = 0; i < arr.length + 1; i++) {
               if (arr.includes(devSuffix)) devSuffix++
               else {
                 suffixArr[nameKey].push(devSuffix)
