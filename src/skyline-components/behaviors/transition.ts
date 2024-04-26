@@ -14,7 +14,7 @@ export default Behavior({
   properties: {
     show: {
       type: Boolean,
-      value: true,
+      value: false,
     },
     duration: {
       type: Number,
@@ -39,7 +39,7 @@ export default Behavior({
 
   observers: {
     show: function (show) {
-      console.log('observers-show', show, 'this.data.show', this.data.show)
+      console.log('transition-observers-show', show, 'this.data.show', this.data.show)
       show ? this.enter() : this.leave()
     },
   },

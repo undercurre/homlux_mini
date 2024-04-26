@@ -3,7 +3,10 @@ Component({
    * 组件的属性列表
    */
   properties: {
-    show: Boolean,
+    show: {
+      type: Boolean,
+      value: false,
+    },
     customStyle: String,
     rootPortal: {
       type: Boolean,

@@ -12,6 +12,17 @@
     "miniprogram": {
       "list": [
         {
+          "name": "调试首页",
+          "pathName": "package-debug/pages/index/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null,
+          "partialCompile": {
+            "enabled": true,
+            "pages": []
+          }
+        },
+        {
           "name": "启动页",
           "pathName": "pages/start/index",
           "query": "",
