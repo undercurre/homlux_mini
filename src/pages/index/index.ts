@@ -365,7 +365,6 @@ ComponentWithComputed({
     async handleHomeTap(e: { detail: string }) {
       const houseId = e.detail
 
-      console.log('handleHomeTap', e)
       this.triggerEvent('select', { houseId })
       const res = await updateDefaultHouse(houseId)
 

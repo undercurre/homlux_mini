@@ -224,7 +224,7 @@
   x="{{30}}"
   y="{{200}}"
   bind:menuTap="handleHomeTap"
-  bind:overlayClick="handleHomeTap"
+  bind:overlayClick="handlePopMenu"
   menuList="{{homeMenuList}}"
 ></mz-pop-menu>
 
