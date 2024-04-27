@@ -141,10 +141,7 @@
                       src="https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/auto-scene/{{item.sceneIcon}}.png"
                     ></image>
                   </view>
-                  <view
-                    slot="right-icon"
-                    class="pt-12rpx"
-                  >
+                  <view slot="right-icon">
                     <view hover-stop-propagation="true">
                       <mz-switch
                         checked="{{item.isEnabled === '1'}}"
