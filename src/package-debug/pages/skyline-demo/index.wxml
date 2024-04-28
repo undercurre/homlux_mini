@@ -281,6 +281,15 @@
       />
     </view>
 
+    <view class="section">
+      <view class="m-24rpx">mz-picker</view>
+      <mz-picker
+        columns="{{ columns }}"
+        visible-item-count="{{3}}"
+        bind:change="onPickerChange"
+      />
+    </view>
+
     <view class="h-48"></view>
   </scroll-view>
 </view>

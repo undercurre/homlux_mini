@@ -23,6 +23,7 @@ Component({
     })),
     tabActive: 'room2',
     switchStatus: false,
+    columns: ['广州', '深圳', '佛山', '中山', '珠海', '肇庆', '清远'],
   },
 
   lifetimes: {
@@ -76,6 +77,11 @@ Component({
     toggleSwitch(e: { detail: boolean }) {
       console.log('toggleSwitch', e)
       this.setData({ switchStatus: e.detail })
+    },
+    onPickerChange(event: { detail: { value: string; index: number } }) {
+      console.log('onPickerChange', event)
+      const { value, index } = event.detail
+      Toast(`当前值：${value}, 当前索引：${index}`)
     },
   },
 })
