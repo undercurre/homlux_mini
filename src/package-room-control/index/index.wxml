@@ -369,10 +369,10 @@
     <view class="h-80rpx"></view>
   </view>
 </mz-dialog>
-<!-- 
+
 <device-auth-dialog
   device-id="{{deviceIdForQueryAuth}}"
   is-show="{{showAuthDialog}}"
   bind:success="handleAuthSuccess"
   bind:cancel="handleAuthCancel"
-></device-auth-dialog> -->
+></device-auth-dialog>
