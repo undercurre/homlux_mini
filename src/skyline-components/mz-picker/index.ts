@@ -50,8 +50,8 @@ Component({
       value: [],
     },
     unitTranslationX: {
-      type: Number,
-      value: 32,
+      type: Array,
+      value: [32],
     },
   },
   data: {

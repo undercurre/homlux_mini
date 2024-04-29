@@ -105,6 +105,7 @@
 .mz-picker__columns {
   display: flex;
   position: relative;
+  padding: var(--picker-columns-padding, 0 64px);
 }
 .mz-picker__column {
   z-index: 2;

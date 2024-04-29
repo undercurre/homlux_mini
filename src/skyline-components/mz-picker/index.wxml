@@ -43,7 +43,7 @@
       <text
         wx:for="{{unit}}"
         class="unit"
-        style="{{ computed.unitStyle({ unitTranslationX }) }}"
+        style="{{ computed.unitStyle({ index, unitTranslationX }) }}"
         >{{item}}</text
       >
     </view>
