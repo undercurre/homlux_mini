@@ -68,9 +68,11 @@ Component({
   methods: {
     noop: function () {},
     setColumns: function () {
-      const columns = this.data._simple ? [{ values: this.data.columns }] : this.data.columns
+      const columns = this.data._simple
+        ? [{ values: this.data.columns, defaultIndex: this.data.defaultIndex }]
+        : this.data.columns
       const stack = columns.map((column, index) => {
-        return this.setColumnValues(index, column.values)
+        return this.setColumnValues(index, column.values, column.defaultIndex)
       })
       return Promise.all(stack)
     },
@@ -137,18 +139,19 @@ Component({
       return (this.data._children[index] || {}).data?.options
     },
     // set options of column by index
-    setColumnValues: function (index: number, options: any, needReset = true) {
+    setColumnValues: function (index: number, options: any, defaultIndex: number, needReset = true) {
       const column = this.data._children[index]
       if (column == null) {
         return Promise.reject(new Error('setColumnValues: 对应列不存在'))
       }
-      const isSame = JSON.stringify(column.data.options) === JSON.stringify(options)
+      const isSame =
+        JSON.stringify(column.data.options) === JSON.stringify(options) && column.data.currentIndex === defaultIndex
       if (isSame) {
         return Promise.resolve()
       }
       return column.setData({ options: options }, () => {
         if (needReset) {
-          column.setIndex(0)
+          column.setIndex(defaultIndex)
         }
       })
     },
