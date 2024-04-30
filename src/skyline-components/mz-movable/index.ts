@@ -14,12 +14,23 @@ enum State {
   CANCELLED = 4,
 }
 
+type GestureEvent = {
+  state: State
+  absoluteX: number
+  absoluteY: number
+}
+
 Component({
   /**
    * 组件的属性列表
    */
   properties: {
     key: String,
+    // 拖动模式，属性值 pan | longpress
+    trigger: {
+      type: String,
+      value: 'longpress',
+    },
     // 开始拖动时，振动反馈
     vibrate: {
       type: Boolean,
@@ -35,7 +46,7 @@ Component({
       type: Number,
       value: 300,
     },
-    // 移动方向，属性值有all vertical horizontal none
+    // 移动方向，属性值有all | vertical | horizontal | none
     direction: {
       type: String,
       value: 'none',
@@ -169,15 +180,8 @@ Component({
         }
       }
     },
-    handleLongPress(e: {
-      state: State
-      translationX: number
-      translationY: number
-      absoluteX: number
-      absoluteY: number
-    }) {
+    handleMove(e: GestureEvent) {
       'worklet'
-
       const x = this.data._x.value
       const y = this.data._y.value
       const lastX = this.data._lastX.value
@@ -233,6 +237,16 @@ Component({
         default:
           break
       }
+    },
+    handlePan(e: GestureEvent) {
+      'worklet'
+      if (this.data.trigger === 'pan') {
+        this.handleMove(e)
+      }
+    },
+    handleLongPress(e: GestureEvent) {
+      'worklet'
+      this.handleMove(e)
     },
     onClick() {
       console.log('onClick')
