@@ -180,13 +180,17 @@ Component({
         }
       }
     },
+    /**
+     * 拖动事件处理方法
+     * @param e 为兼容长按及pan，使用绝对位置数值
+     */
     handleMove(e: GestureEvent) {
       'worklet'
       const x = this.data._x.value
       const y = this.data._y.value
       const lastX = this.data._lastX.value
       const lastY = this.data._lastY.value
-      // console.log('handleLongPress trigger', e.state, { x, y })
+      // console.log('MOVE trigger', e.state, { x, y })
 
       switch (e.state) {
         // 长按开始
@@ -231,7 +235,7 @@ Component({
           this.data._lastY.value = y
           runOnJS(this.triggerEvent.bind(this))('dragEnd', { x, y })
 
-          console.log('handleLongPress State.END', { x, y })
+          console.log('MOVE State.END', { x, y })
           break
 
         default:

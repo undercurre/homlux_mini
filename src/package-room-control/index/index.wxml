@@ -91,7 +91,7 @@
           src="/package-room-control/assets/img/bright.png"
           class="w-48rpx h-48rpx"
         />
-        <!-- <mz-slider
+        <mz-slider
           disabled="{{!hasRoomLightOn}}"
           catch:slideChange="handleLevelChange"
           catch:slideEnd="handleLevelEnd"
@@ -102,6 +102,7 @@
           use-button-slot
           data-min="{{1}}"
           data-is-btn-inset="{{false}}"
+          key="roomBrightness"
           data-key="roomBrightness"
           data-show-toast="{{true}}"
         >
@@ -110,7 +111,7 @@
             src="/package-room-control/assets/img/btn.png"
             class="w-72rpx h-72rpx"
           />
-        </mz-slider> -->
+        </mz-slider>
       </view>
 
       <!-- 全房间色温控制 -->
@@ -122,7 +123,7 @@
           src="/package-room-control/assets/img/colorTemp.png"
           class="w-48rpx h-48rpx"
         />
-        <!-- <mz-slider
+        <mz-slider
           disabled="{{!hasRoomLightOn}}"
           catch:slideChange="handleColorTempChange"
           catch:slideEnd="handleColorTempEnd"
@@ -132,6 +133,7 @@
           bar-height="{{16}}"
           use-button-slot
           data-is-btn-inset="{{false}}"
+          key="roomColorTemp"
           data-key="roomColorTemp"
           data-show-toast="{{true}}"
           formatter="{{colorTempFormatter}}"
@@ -141,7 +143,7 @@
             src="/package-room-control/assets/img/btn.png"
             class="w-72rpx h-72rpx"
           />
-        </mz-slider> -->
+        </mz-slider>
       </view>
     </block>
   </view>
@@ -256,12 +258,12 @@
   bind:close="cancelCheckAndPops"
 ></dryer-control-popup>
 
-<air-control-popup
+<!-- <air-control-popup
   show="{{controlType === '0xAC'}}"
   isShowSetting="{{true}}"
   deviceInfo="{{checkedDeviceInfo}}"
   bind:close="cancelCheckAndPops"
-></air-control-popup>
+></air-control-popup> -->
 
 <air-control-popup-cac
   show="{{controlType === '0xCC'}}"
@@ -295,14 +297,14 @@
   bind:lightStatusChange="refreshLightStatus"
 ></device-control-popup>
 
-<batch-edit
+<!-- <batch-edit
   bind:updateDevice="updateQueue"
   bind:updateList="reloadDeviceListThrottle"
   bind:close="exitEditMode"
   bind:selectAll="editSelectAll"
   editSelectMode="{{editSelectMode}}"
   editSelectList="{{editSelectList}}"
-></batch-edit>
+></batch-edit> -->
 
 <mz-toast id="mz-toast" />
 
