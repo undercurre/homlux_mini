@@ -11,3 +11,21 @@
 .section {
   border-top: 2rpx solid #000;
 }
+
+.slider-box {
+  align-items: center;
+  justify-content: center;
+  padding: 12rpx 6rpx;
+  margin-bottom: 12rpx;
+}
+
+.slider-brightness-bar {
+  box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.16);
+  width: 600rpx;
+}
+
+.slider-color-temp-bar {
+  background-image: linear-gradient(90deg, #ffdf7e 2%, #fff6e5 50%, #98b2fd 97%) !important;
+  box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.16);
+  width: 600rpx;
+}

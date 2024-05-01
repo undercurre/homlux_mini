@@ -290,6 +290,50 @@
       />
     </view>
 
+    <view class="section">
+      <view class="m-24rpx">mz-slider</view>
+      <view class="slider-box">
+        <mz-slider
+          disabled="{{false}}"
+          value="{{0}}"
+          custom-class="slider-brightness-bar"
+          active-color="linear-gradient(90deg, rgba(80, 127, 255, 1) 0%, #ffffff 100%)"
+          bar-height="{{16}}"
+          use-button-slot
+          data-min="{{1}}"
+          data-is-btn-inset="{{false}}"
+          key="roomBrightness"
+          data-key="roomBrightness"
+          data-show-toast="{{true}}"
+        >
+          <image
+            slot="button"
+            src="/package-room-control/assets/img/btn.png"
+            class="w-72rpx h-72rpx"
+          />
+        </mz-slider>
+      </view>
+      <view class="slider-box">
+        <mz-slider
+          disabled="{{false}}"
+          value="{{0}}"
+          custom-class="slider-color-temp-bar"
+          active-color="rgba(0,0,0,0)"
+          bar-height="{{16}}"
+          use-button-slot
+          data-is-btn-inset="{{false}}"
+          key="roomColorTemp"
+          data-key="roomColorTemp"
+          data-show-toast="{{true}}"
+        >
+          <image
+            slot="button"
+            src="/package-room-control/assets/img/btn.png"
+            class="w-72rpx h-72rpx"
+          />
+        </mz-slider>
+      </view>
+    </view>
     <view class="h-48"></view>
   </scroll-view>
 </view>
