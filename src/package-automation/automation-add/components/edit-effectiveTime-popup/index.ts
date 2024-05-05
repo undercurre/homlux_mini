@@ -1,9 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 
 ComponentWithComputed({
-  options: {
-    pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
-  },
   /**
    * 组件的属性列表
    */
@@ -48,16 +45,13 @@ ComponentWithComputed({
   data: {
     showTimePopup: false, //展示场景生效时间段开始结束时间设置弹窗
     timeType: 'start', //start设置开始时间 end设置结束时间
-    _timeValue: [0, 0],
   },
   computed: {
     timeValue(data) {
       if (data.timeType === 'start') {
-        const value = data.startTime.split(':').map((item: string) => Number(item))
-        return value
+        return data.startTime
       } else {
-        const value = data.endTime.split(':').map((item: string) => Number(item))
-        return value
+        return data.endTime
       }
     },
     endTimeDesc(data) {
@@ -99,16 +93,9 @@ ComponentWithComputed({
     /* 弹窗自身方法 end */
     /* 设置场景生效时间段开始结束时间 start */
     handleTimeShow(e: { currentTarget: { dataset: { type: string } } }) {
-      console.log(e)
-
       this.setData({
         showTimePopup: true,
         timeType: e.currentTarget.dataset.type,
-      })
-    },
-    handleTimeChange(e: { detail: number[] }) {
-      this.setData({
-        _timeValue: e.detail,
       })
     },
     handleTimeClose() {
@@ -116,15 +103,14 @@ ComponentWithComputed({
         showTimePopup: false,
       })
     },
-    handleTimeConfirm() {
-      const value = this.data._timeValue.map((item) => String(item).padStart(2, '0'))
+    handleTimeConfirm(e: { detail: string }) {
       if (this.data.timeType === 'start') {
         this.setData({
-          startTime: value.join(':'),
+          startTime: e.detail,
         })
       } else {
         this.setData({
-          endTime: value.join(':'),
+          endTime: e.detail,
         })
       }
       this.setData({

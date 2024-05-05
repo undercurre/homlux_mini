@@ -2,6 +2,6 @@
   "component": true,
   "styleIsolation": "apply-shared",
   "usingComponents": {
-    "van-cell-group": "@vant/weapp/cell-group/index"
+    "mz-cell-group": "../../../../skyline-components/mz-cell-group/index"
   }
 }
