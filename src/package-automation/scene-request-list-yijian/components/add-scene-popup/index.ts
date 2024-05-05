@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import Toast from '@vant/weapp/toast/toast'
-import Dialog from '@vant/weapp/dialog/dialog'
+import Toast from '../../../../skyline-components/mz-toast/toast'
+import Dialog from '../../../../skyline-components/mz-dialog/dialog'
 import {
   updateScene,
   getRelLampInfo,
