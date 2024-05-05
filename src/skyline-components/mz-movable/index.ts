@@ -26,7 +26,7 @@ Component({
    */
   properties: {
     key: String,
-    // 拖动模式，属性值 pan | longpress
+    // 拖动模式，属性值 all | pan | longpress
     trigger: {
       type: String,
       value: 'longpress',
@@ -190,22 +190,26 @@ Component({
       const y = this.data._y.value
       const lastX = this.data._lastX.value
       const lastY = this.data._lastY.value
-      // console.log('MOVE trigger', e.state, { x, y })
+      console.log('MOVE trigger', e.state, e.absoluteX, { x, y })
 
       switch (e.state) {
-        // 长按开始
+        // 拖动识别，保存初始值
+        case State.POSSIBLE: {
+          this.data._originX.value = e.absoluteX
+          this.data._originY.value = e.absoluteY
+          break
+        }
+        // 拖动开始
         case State.BEGIN: {
           if (wx.vibrateShort && this.data.vibrate) {
             runOnJS(wx.vibrateShort)({ type: 'heavy' })
           }
           runOnJS(this.triggerEvent.bind(this))('dragBegin')
-          this.data._originX.value = e.absoluteX
-          this.data._originY.value = e.absoluteY
 
           break
         }
 
-        // 长按继续（拖动中）
+        // 拖动继续（拖动中）
         case State.ACTIVE: {
           const translationX = e.absoluteX - this.data._originX.value
           const translationY = e.absoluteY - this.data._originY.value
@@ -244,13 +248,15 @@ Component({
     },
     handlePan(e: GestureEvent) {
       'worklet'
-      if (this.data.trigger === 'pan') {
+      if (this.data.trigger === 'pan' || this.data.trigger === 'all') {
         this.handleMove(e)
       }
     },
     handleLongPress(e: GestureEvent) {
       'worklet'
-      this.handleMove(e)
+      if (this.data.trigger === 'longpress' || this.data.trigger === 'all') {
+        this.handleMove(e)
+      }
     },
     onClick() {
       console.log('onClick')
