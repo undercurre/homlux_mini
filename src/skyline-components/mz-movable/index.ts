@@ -82,6 +82,9 @@ Component({
         right: 375,
         bottom: 9999,
       },
+      observer(v) {
+        this.data._bound.value = v as { top: number; left: number; right: number; bottom: number }
+      },
     },
   },
 
@@ -101,6 +104,8 @@ Component({
     // 正在被动移动中
     _settingX: { value: false },
     _settingY: { value: false },
+    // 边界
+    _bound: { value: { top: 0, left: 0, right: 0, bottom: 0 } },
   },
 
   lifetimes: {
@@ -113,6 +118,7 @@ Component({
       this.data._y = wx.worklet.shared(this.data.y)
       this.data._settingX = wx.worklet.shared(false)
       this.data._settingY = wx.worklet.shared(false)
+      this.data._bound = wx.worklet.shared(this.data.bound)
 
       // console.log('movable wrapper attached', `#box-${this.data.key}`)
 
@@ -217,14 +223,14 @@ Component({
           if (x !== newX && (this.data.direction === 'all' || this.data.direction === 'horizontal')) {
             this.data._x.value = this.data.outOfBounds
               ? newX
-              : Math.min(Math.max(newX, this.data.bound.left), this.data.bound.right)
+              : Math.min(Math.max(newX, this.data._bound.value.left), this.data._bound.value.right)
           }
 
           const newY = Math.round(translationY + lastY)
           if (y !== newY && (this.data.direction === 'all' || this.data.direction === 'vertical')) {
             this.data._y.value = this.data.outOfBounds
               ? newY
-              : Math.min(Math.max(newY, this.data.bound.top), this.data.bound.bottom)
+              : Math.min(Math.max(newY, this.data._bound.value.top), this.data._bound.value.bottom)
           }
 
           runOnJS(this.triggerEvent.bind(this))('dragMove', [
