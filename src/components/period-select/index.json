@@ -2,9 +2,6 @@
   "component": true,
   "styleIsolation": "apply-shared",
   "usingComponents": {
-    "van-cell-group": "@vant/weapp/cell-group/index",
-    "van-cell": "@vant/weapp/cell/index",
-    "van-radio": "@vant/weapp/radio/index",
-    "van-radio-group": "@vant/weapp/radio-group/index"
+    "mz-cell-group": "../../skyline-components/mz-cell-group/index"
   }
 }
