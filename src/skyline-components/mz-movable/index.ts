@@ -79,7 +79,7 @@ Component({
       value: {
         top: 0,
         left: 0,
-        right: 300,
+        right: 375,
         bottom: 9999,
       },
     },
@@ -227,8 +227,12 @@ Component({
               : Math.min(Math.max(newY, this.data.bound.top), this.data.bound.bottom)
           }
 
-          runOnJS(this.triggerEvent.bind(this))('dragMove', [e.absoluteX, e.absoluteY, newX, newY])
-
+          runOnJS(this.triggerEvent.bind(this))('dragMove', [
+            e.absoluteX,
+            e.absoluteY,
+            this.data._x.value,
+            this.data._y.value,
+          ])
           break
         }
 
