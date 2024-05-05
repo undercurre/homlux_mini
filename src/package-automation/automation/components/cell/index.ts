@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '../../../../skyline-components/mz-toast/toast'
 import { execScene } from '../../../../apis/index'
-import { homeStore, roomStore } from '../../../../store/index'
+import { homeStore } from '../../../../store/index'
 import { strUtil } from '../../../../utils/strUtil'
 
 ComponentWithComputed({
@@ -67,12 +67,11 @@ ComponentWithComputed({
         Toast('执行失败')
       }
     },
-    toEditScene(e: WechatMiniprogram.TouchEvent) {
+    toEditScene() {
       if (homeStore.isManager) {
         wx.navigateTo({
           url: strUtil.getUrlWithParams('/package-automation/automation-add/index', {
-            yijianSceneId: e.currentTarget.dataset.item.sceneId,
-            roomid: roomStore.currentRoomId,
+            sceneInfo: JSON.stringify(this.data.item.data),
           }),
         })
       } else {

@@ -129,7 +129,7 @@
                   center
                   border="{{false}}"
                   clickable
-                  data-autosceneid="{{item.sceneId}}"
+                  data-sceneinfo="{{item}}"
                   bind:click="toEditAutoScene"
                 >
                   <view
