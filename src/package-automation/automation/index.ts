@@ -83,7 +83,8 @@ ComponentWithComputed({
     async getAutoSceneList() {
       await autosceneStore.updateAllRoomAutoSceneList()
       this.setData({
-        autoSceneList: autosceneStore.allRoomAutoSceneListComputed,
+        //skyline不认识mobx对象的数据
+        autoSceneList: JSON.parse(JSON.stringify(autosceneStore.allRoomAutoSceneListComputed)),
       })
     },
     // 场景类型变更
@@ -151,9 +152,10 @@ ComponentWithComputed({
       Object.keys(allRoomScene).forEach((roomId) => {
         allRoomScene[roomId].sort((a, b) => a.orderNum - b.orderNum)
       })
+      //skyline不认识mobx对象的数据
       this.setData(
         {
-          allRoomScene,
+          allRoomScene: JSON.parse(JSON.stringify(allRoomScene)),
         },
         () => {
           if (this.data.selectedRoomId) return
@@ -231,30 +233,17 @@ ComponentWithComputed({
         })
       }
     },
-    toEditAutoScene(e: { currentTarget: { dataset: { autosceneid: string } } }) {
+    toEditAutoScene(e: { currentTarget: { dataset: { sceneinfo: AutoScene.AutoSceneItem } } }) {
       if (homeStore.isManager) {
-        const { autosceneid } = e.currentTarget.dataset
+        const { sceneinfo } = e.currentTarget.dataset
+        wx.navigateTo({
+          url: strUtil.getUrlWithParams(this.data.urls.sceneEdit, { sceneInfo: JSON.stringify(sceneinfo) }),
+        })
+      } else {
+        Toast('您当前身份为访客，无法编辑场景')
+      }
+    },
 
-        wx.navigateTo({
-          url: strUtil.getUrlWithParams(this.data.urls.sceneEdit, { autosceneid }),
-        })
-      } else {
-        Toast('您当前身份为访客，无法编辑场景')
-      }
-    },
-    toEditYijianScene(e: { currentTarget: { dataset: { sceneid: string } } }) {
-      if (homeStore.isManager) {
-        const { sceneid } = e.currentTarget.dataset
-        wx.navigateTo({
-          url: strUtil.getUrlWithParams(this.data.urls.sceneEdit, {
-            yijianSceneId: sceneid,
-            roomid: roomStore.currentRoomId,
-          }),
-        })
-      } else {
-        Toast('您当前身份为访客，无法编辑场景')
-      }
-    },
     handleScroll(e: { detail: { scrollTop: number } }) {
       this.setData({
         'scrollInfo.scrollTop': e.detail.scrollTop,

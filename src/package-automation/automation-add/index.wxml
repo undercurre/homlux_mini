@@ -1,69 +1,66 @@
 <!-- 背景 -->
-<view class="w-100vw h-100vh fixed left-0 top-0 bg-hex-f4f8ff bg-z-index-1"></view>
+<view class="w-100vw h-100vh absolute left-0 top-0 bg-hex-f4f8ff bg-z-index-1"></view>
 <view
-  class="fixed left-0 top-0 w-100vw h-50vh bg-z-index"
+  class="absolute left-0 top-0 w-100vw h-50vh bg-z-index"
   style="background: linear-gradient(180deg, rgba(87, 105, 255, 0.1) 0%, rgba(87, 105, 255, 0) 100%)"
 ></view>
-<!-- 遮住顶部 -->
-<view
-  style="height: {{navigationBarAndStatusBarHeight}};"
-  class="fixed left-0 top-0 z-110 overflow-hidden w-750rpx"
->
-  <view class="w-100vw h-100vh absolute left-0 top-0 bg-hex-f4f8ff z-111"></view>
-  <view
-    class="absolute left-0 top-0 w-100vw h-50vh z-112"
-    style="background: linear-gradient(180deg, rgba(87, 105, 255, 0.1) 0%, rgba(87, 105, 255, 0) 100%)"
-  ></view>
-</view>
-<nav-bar
-  title="{{autoSceneId ? '编辑场景' : '创建场景'}}"
-  z-index="{{113}}"
-  left-arrow
-  bind:leftTap="goBack"
-></nav-bar>
-
-<view class="flex flex-col items-center">
+<view class="h-100vh flex flex-col">
   <!-- 标题 -->
+  <nav-bar
+    title="{{autoSceneId || yijianSceneId ? '编辑场景' : '创建场景'}}"
+    z-index="{{113}}"
+    left-arrow
+    bind:leftTap="goBack"
+  ></nav-bar>
   <view
-    class="flex-1 w-750rpx"
+    class="flex flex-col flex-1 w-full box-border relative"
     id="content"
   >
-    <view class="h-32rpx scroll-top"></view>
-    <view class="flex flex-row items-center justify-between mx-32rpx">
-      <view
-        class="h-110rpx w-110rpx relative bg-hex-fff rounded-55rpx"
-        bindtap="handleEditIconShow"
-      >
-        <image
-          class="absolute top-15 left-16 h-80rpx w-80rpx bg-hex-F5F5F5 rounded-full"
-          src="{{sceneImgDir}}/{{sceneIcon}}.png"
-        />
-        <view class="absolute bottom-0 left-15 h-32rpx w-80rpx border-1rpx border-solid border-hex-488FFF bg-white leading-28rpx text-center rounded-18rpx">
-          <text class="text-22rpx text-hex-488FFF">编辑</text>
-        </view>
-      </view>
-      <van-field
-        value="{{sceneName}}"
-        size="large"
-        placeholder="给场景取个名字"
-        maxlength="15"
-        clearable="{{true}}"
-        placeholder-style="text-align: center;"
-        custom-style="padding: 24rpx 40rpx;border-radius: 32rpx;width:530rpx;height:96rpx;text-align:center;"
-        bind:input="inputAutoSceneName"
-        border="{{false}}"
-      >
-      </van-field>
-    </view>
-    <view class="h-32rpx"></view>
+    <view class="h-24rpx"></view>
     <scroll-view
-      enable-flex
-      scroll-x
+      id="ScrollView"
+      type="list"
+      scroll-y
       enhanced
       show-scrollbar="{{false}}"
-      class="w-full h-56rpx flex"
+      class="box-border flex-1"
+      scroll-top="{{scrollInfo.scrollTop}}"
     >
-      <view class="flex flex-1 justify-start">
+      <view class="h-110rpx flex flex-row items-center justify-between px-32rpx">
+        <view
+          class="h-110rpx w-110rpx relative flex items-center justify-center bg-hex-fff rounded-55rpx"
+          bindtap="handleEditIconShow"
+        >
+          <image
+            class="h-80rpx w-80rpx bg-hex-F5F5F5 rounded-full"
+            src="{{sceneImgDir}}/{{sceneIcon}}.png"
+          />
+          <view class="absolute bottom-0 h-32rpx w-80rpx border-1rpx border-solid border-hex-488FFF bg-white leading-28rpx text-center rounded-18rpx">
+            <text class="text-22rpx text-hex-488FFF">编辑</text>
+          </view>
+        </view>
+        <view class="ml-32rpx flex-1">
+          <mz-field
+            custom-class="mz-field-custom"
+            value="{{sceneName}}"
+            size="large"
+            placeholder="给场景取个名字"
+            maxlength="15"
+            clearable="{{true}}"
+            bind:input="inputAutoSceneName"
+            border="{{false}}"
+          >
+          </mz-field>
+        </view>
+      </view>
+      <view class="h-32rpx"></view>
+      <scroll-view
+        scroll-x
+        enhanced
+        type="list"
+        show-scrollbar="{{false}}"
+        class="w-full h-56rpx"
+      >
         <view class="w-32rpx"></view>
         <view
           class="w-120rpx h-56rpx round-28rpx bg-white flex-center text-28rpx text-hex-555659 mr-32rpx rounded-28rpx"
@@ -74,122 +71,120 @@
         >
           <text>{{item}}</text>
         </view>
-      </view>
-    </scroll-view>
-    <van-cell-group
-      inset
-      wx:if="{{opearationType === 'auto' && sceneDeviceConditionsFlatten.length && !timeCondition.time}}"
-    >
-      <van-cell
-        border="{{false}}"
-        clickable="{{true}}"
-        bind:click="handleEffectiveTimeShow"
+      </scroll-view>
+      <mz-cell-group
+        inset
+        wx:if="{{opearationType === 'auto' && sceneDeviceConditionsFlatten.length && !timeCondition.time}}"
       >
-        <view class="flex items-center justify-between">
+        <view
+          class="flex flex-row justify-between items-center bg-hex-fff p-32rpx"
+          hover-class="cell-hover"
+          hover-stay-time="70"
+          bindtap="handleEffectiveTimeShow"
+        >
           <text class="text-32rpx text-hex-27282A text-left">生效时间</text>
-          <view class="flex flex-col items-end">
-            <text
-              wx:if="{{!isAllday}}"
-              class="text-28rpx text-hex-555659 text-right"
-              >{{effectiveTime.startTime+'-'+endTimeDesc}}</text
-            >
-            <text class="{{!isAllday || timePeriodDesc.length > 14  ? 'text-24rpx' : 'text-32rpx'}} text-hex-a2a2a2 text-right">{{timePeriodDesc}}</text>
-          </view>
-        </view>
-        <view
-          slot="right-icon"
-          class="flex items-center ml-12rpx"
-        >
-          <image
-            class="w-32rpx h-32rpx"
-            src="../../assets/img/base/arrow-right.png"
-          />
-        </view>
-      </van-cell>
-    </van-cell-group>
-    <view class="h-48rpx mt-64rpx mb-36rpx mx-48rpx flex justify-between align-center">
-      <text class="text-40rpx font-medium text-hex-1a1a1c leading-48rpx">如果</text>
-      <!-- <image wx:if="{{sceneDeviceConditionsFlatten.length && !timeCondition.time}}" class="w-48 h-48" src="/package-automation/assets/imgs/automation/add.png" bindtap="addSensorPopup"></image> -->
-    </view>
-    <van-cell-group inset>
-      <van-cell
-        border="{{false}}"
-        clickable="{{true}}"
-        bind:click="handleConditionShow"
-        wx:if="{{!sceneDeviceConditionsFlatten.length}}"
-      >
-        <view class="flex items-center justify-center">
-          <view class="flex flex-row items-center h-96rpx">
+          <view class="flex flex-row items-center">
+            <view class="flex flex-col">
+              <text
+                wx:if="{{!isAllday}}"
+                class="text-28rpx text-hex-555659 text-right"
+                >{{effectiveTime.startTime+'-'+endTimeDesc}}</text
+              >
+              <text class="{{!isAllday || timePeriodDesc.length > 14  ? 'text-24rpx' : 'text-32rpx'}} text-hex-a2a2a2 text-right">{{timePeriodDesc}}</text>
+            </view>
             <image
-              class="w-56 h-56 mr-38rpx"
-              src="/package-automation/assets/imgs/automation/add.png"
-            ></image>
-            <text class="text-32rpx text-hex-555659">添加条件</text>
-          </view>
-        </view>
-      </van-cell>
-      <view wx:else>
-        <view
-          class="flex flex-row items-center bg-hex-fff rounded-32rpx px-40rpx py-32rpx mb-24rpx relative"
-          wx:for="{{sceneDeviceConditionsFlatten}}"
-          bindtap="handleAutoSceneConditionEdit"
-          data-productId="{{item.productId}}"
-          data-index="{{index}}"
-          wx:key="uniId"
-        >
-          <view class="w-72 h-72 rounded-full">
-            <image
-              src="{{item.pic}}"
-              class="w-72 h-72"
+              class="w-32rpx h-32rpx ml-12rpx"
+              src="../../assets/img/base/arrow-right.png"
             />
           </view>
-
-          <view class="flex flex-col items-start ml-32rpx">
-            <text class="text-32rpx text-black-2a font-medium leading-none mt-10rpx">{{item.name}}</text>
-            <view class="flex flex-row flex-wrap gap-x-16rpx gap-y-16rpx text-26 text-black-tips mt-22rpx">
-              <text
-                class="px-24rpx bg-hex-F4F5F8 rounded-32rpx leading-56rpx h-56rpx"
-                wx:for="{{item.desc}}"
-                wx:key="index"
-                >{{item}}</text
-              >
+        </view>
+      </mz-cell-group>
+      <!-- 条件模块 -->
+      <view>
+        <view class="h-48rpx mt-64rpx mb-36rpx mx-48rpx flex justify-between align-center">
+          <text class="text-40rpx font-medium text-hex-1a1a1c leading-48rpx">如果</text>
+          <!-- 暂时不用，之后可能有用 -->
+          <!-- <image wx:if="{{sceneDeviceConditionsFlatten.length && !timeCondition.time}}" class="w-48 h-48" src="/package-automation/assets/imgs/automation/add.png" bindtap="addSensorPopup"></image> -->
+        </view>
+        <mz-cell-group inset>
+          <view
+            wx:if="{{!sceneDeviceConditionsFlatten.length}}"
+            class="flex flex-row justify-center items-center bg-hex-fff rounded-32rpx py-32rpx mb-24rpx"
+            hover-class="cell-hover"
+            hover-stay-time="70"
+            bindtap="handleConditionShow"
+          >
+            <view class="flex flex-row items-center h-96rpx">
+              <image
+                class="w-56 h-56 mr-38rpx"
+                src="/package-automation/assets/imgs/automation/add.png"
+              ></image>
+              <text class="text-32rpx text-hex-555659">添加条件</text>
             </view>
           </view>
+          <view wx:else>
+            <view
+              class="flex flex-row items-center bg-hex-fff rounded-32rpx px-40rpx py-32rpx mb-24rpx relative"
+              wx:for="{{sceneDeviceConditionsFlatten}}"
+              bindtap="handleAutoSceneConditionEdit"
+              data-productId="{{item.productId}}"
+              data-index="{{index}}"
+              wx:key="uniId"
+            >
+              <view class="w-72 h-72 rounded-full">
+                <image
+                  src="{{item.pic}}"
+                  class="w-72 h-72"
+                />
+              </view>
 
-          <view
-            wx:if="{{!isDefaultYijianScene}}"
-            class="px-24rpx py-16rpx absolute right-0 top-0"
-            catchtap="handleConditionDelete"
-            data-index="{{index}}"
-            data-info="{{item}}"
-          >
-            <image
-              src="/assets/img/base/delete.png"
-              class="w-40 h-40"
-            />
+              <view class="flex flex-col items-start ml-32rpx">
+                <text class="text-32rpx text-black-2a font-medium leading-none mt-10rpx">{{item.name}}</text>
+                <view class="flex flex-row flex-wrap gap-x-16rpx gap-y-16rpx text-26 text-black-tips mt-22rpx">
+                  <text
+                    class="px-24rpx bg-hex-F4F5F8 rounded-32rpx leading-56rpx h-56rpx"
+                    wx:for="{{item.desc}}"
+                    wx:key="index"
+                    >{{item}}</text
+                  >
+                </view>
+              </view>
+
+              <view
+                wx:if="{{!isDefaultYijianScene}}"
+                class="px-24rpx py-16rpx absolute right-0 top-0"
+                catchtap="handleConditionDelete"
+                data-index="{{index}}"
+                data-info="{{item}}"
+              >
+                <image
+                  src="/assets/img/base/delete.png"
+                  class="w-40 h-40"
+                />
+              </view>
+            </view>
           </view>
-        </view>
+        </mz-cell-group>
       </view>
-    </van-cell-group>
-    <view class="h-48rpx mt-64rpx mb-36rpx mx-48rpx flex justify-between align-center">
-      <text class="text-40rpx font-medium text-hex-1a1a1c leading-48rpx">就执行</text>
-      <image
-        wx:if="{{sceneDeviceActionsFlatten.length && !isDefaultYijianScene}}"
-        class="w-48 h-48"
-        src="/package-automation/assets/imgs/automation/add.png"
-        bindtap="handleActionShow"
-      ></image>
-    </view>
-    <van-cell-group
-      inset
-      wx:if="{{!sceneDeviceActionsFlatten.length}}"
-    >
-      <van-cell
-        border="{{false}}"
-        clickable="{{true}}"
-        bind:click="handleActionShow"
+      <view class="h-48rpx mt-64rpx mb-36rpx mx-48rpx flex justify-between align-center">
+        <text class="text-40rpx font-medium text-hex-1a1a1c leading-48rpx">就执行</text>
+        <image
+          wx:if="{{sceneDeviceActionsFlatten.length && !isDefaultYijianScene}}"
+          class="w-48 h-48"
+          src="/package-automation/assets/imgs/automation/add.png"
+          bindtap="handleActionShow"
+        ></image>
+      </view>
+      <mz-cell-group
+        inset
+        wx:if="{{!sceneDeviceActionsFlatten.length}}"
       >
-        <view class="flex items-center justify-center">
+        <view
+          class="flex flex-row justify-center items-center bg-hex-fff rounded-32rpx py-32rpx mb-24rpx"
+          hover-class="cell-hover"
+          hover-stay-time="70"
+          bindtap="handleActionShow"
+        >
           <view class="flex flex-row items-center h-96rpx">
             <image
               class="w-56 h-56 mr-38rpx"
@@ -198,40 +193,38 @@
             <text class="text-32rpx text-hex-555659">执行动作</text>
           </view>
         </view>
-      </van-cell>
-    </van-cell-group>
+      </mz-cell-group>
 
-    <view wx:else>
-      <drag
-        wx:if="{{!isDefaultYijianScene}}"
-        id="drag"
-        list-data="{{sceneDeviceActionsFlatten}}"
-        scroll-top="{{scrollTop}}"
-        item-height="{{208}}"
-        generic:item="cell"
-        bind:actionEdit="handleAutoSceneActionEdit"
-        bind:actionDelete="handleActionDelete"
-        bind:sortend="handleSortEnd"
-      ></drag>
-      <drag
-        wx:if="{{isDefaultYijianScene}}"
-        id="drag"
-        list-data="{{sceneDeviceActionsFlatten}}"
-        scroll-top="{{scrollTop}}"
-        item-height="{{208}}"
-        generic:item="cell-default"
-        bind:actionEdit="handleAutoSceneActionEdit"
-        bind:actionDelete="handleActionDelete"
-        bind:sortend="handleSortEnd"
-      ></drag>
-      <view style="height: calc(116rpx + env(safe-area-inset-bottom))"></view>
-    </view>
+      <view wx:else>
+        <mz-drag-list
+          wx:if="{{!isDefaultYijianScene}}"
+          id="drag"
+          list-data="{{sceneDeviceActionsFlatten}}"
+          item-height="{{208}}"
+          topSize="{{scrollInfo.topSize}}"
+          bottomSize="{{scrollInfo.bottomSize}}"
+          generic:item="cell"
+          bind:itemClick="onItemClick"
+          bind:sortend="handleSortEnd"
+          bind:scroll="handleScroll"
+        ></mz-drag-list>
+        <!-- <drag wx:if="{{!isDefaultYijianScene}}" id="drag" list-data="{{sceneDeviceActionsFlatten}}" scroll-top="{{scrollTop}}" item-height="{{208}}" generic:item="cell" bind:actionEdit="handleAutoSceneActionEdit" bind:actionDelete="handleActionDelete" bind:sortend="handleSortEnd"></drag> -->
+        <view wx:if="{{isDefaultYijianScene}}">
+          <block
+            wx:for="{{sceneDeviceActionsFlatten}}"
+            wx:key="id"
+          >
+            <cell-default item="{{item}}"></cell-default>
+          </block>
+        </view>
+      </view>
+    </scroll-view>
   </view>
   <view
-    class="fixed bottom-0 flex flex-row pt-30rpx justify-between w-750rpx px-32rpx box-border z-400 bg-hex-f4f8ff"
+    class="flex justify-between items-center px-32rpx"
     style="height: calc(146rpx + env(safe-area-inset-bottom))"
   >
-    <van-button
+    <mz-button
       wx:if="{{autoSceneId || yijianSceneId}}"
       custom-class="double-btn"
       custom-style="border: 2rpx solid #A2A2A2;"
@@ -239,26 +232,22 @@
       bind:click="handleAutoSceneDelete"
     >
       <text class="text-36rpx text-black-tips">删除</text>
-    </van-button>
-    <van-button
+    </mz-button>
+    <mz-button
       type="primary"
       custom-class="{{autoSceneId || yijianSceneId ? 'double-btn' : 'single-btn'}}"
       disabled="{{!(autoSceneId || yijianSceneId)&&(sceneDeviceActionsLength === 0 || sceneDeviceConditionsFlatten.length === 0)}}"
       bind:click="handleSave"
     >
       <text class="text-36rpx">{{ okBtnText }}</text>
-    </van-button>
+    </mz-button>
   </view>
 </view>
-
-<edit-effectiveTime-popup
-  show="{{showEffectiveTimePopup}}"
-  startTime="{{effectiveTime.startTime}}"
-  endTime="{{effectiveTime.endTime}}"
-  periodType="{{effectiveTime.timeType}}"
-  week="{{effectiveTime.timePeriod}}"
-  bind:close="handleEffectiveTimeClose"
-  bind:confirm="handleEffectiveTimeConfirm"
+<edit-icon-popup
+  value="{{sceneIcon}}"
+  show="{{showEditIconPopup}}"
+  bind:close="handleEditIconClose"
+  bind:confirm="handleEditIconConfirm"
 />
 <add-condition-popup
   show="{{showEditConditionPopup}}"
@@ -266,23 +255,10 @@
   bind:close="handleConditionClose"
   bind:conditionClicked="onConditionClicked"
 />
-<edit-room-popup
-  value="{{roomId}}"
-  show="{{showEditRoomPopup}}"
-  bind:close="handleSceneRoomEditCancel"
-  bind:cancel="handleRoomReturn"
-  bind:confirm="handleSceneRoomEditConfirm"
-/>
 <add-action-popup
   show="{{showEditActionPopup}}"
   bind:close="handleActionClose"
   bind:actionClicked="onActionClicked"
-/>
-<edit-icon-popup
-  value="{{sceneIcon}}"
-  show="{{showEditIconPopup}}"
-  bind:close="handleEditIconClose"
-  bind:confirm="handleEditIconConfirm"
 />
 <edit-timeConditions-popup
   show="{{showTimeConditionPopup}}"
@@ -299,6 +275,22 @@
   bind:close="handleDelayClose"
   bind:confirm="handleDelayConfirm"
   bind:cancel="handleDelayReturn"
+/>
+<edit-room-popup
+  value="{{roomId}}"
+  show="{{showEditRoomPopup}}"
+  bind:close="handleSceneRoomEditCancel"
+  bind:cancel="handleRoomReturn"
+  bind:confirm="handleSceneRoomEditConfirm"
+/>
+<edit-effectiveTime-popup
+  show="{{showEffectiveTimePopup}}"
+  startTime="{{effectiveTime.startTime}}"
+  endTime="{{effectiveTime.endTime}}"
+  periodType="{{effectiveTime.timeType}}"
+  week="{{effectiveTime.timePeriod}}"
+  bind:close="handleEffectiveTimeClose"
+  bind:confirm="handleEffectiveTimeConfirm"
 />
 <select-card-popup
   show="{{showSelectCardPopup}}"
@@ -320,6 +312,18 @@
   bind:confirm="handleSceneDeviceEditConfirm"
   bind:close="handleEditPopupClose"
 ></edit-device-action-popup>
+<edit-sensor-popup
+  show="{{showEditSensorPopup}}"
+  productId="{{editingSensorType}}"
+  checkList="{{editingSensorAbility}}"
+  controlAction="{{editingSensorProperty}}"
+  bind:confirm="handleEditSensorConfirm"
+  bind:close="handleEditSensorClose"
+></edit-sensor-popup>
+
+<!-- 
+TODO：未验证
+ -->
 <light-control-popup
   show="{{showEditPopup === '0x13'}}"
   title="{{sceneEditTitle}}"
@@ -359,17 +363,10 @@
   bind:confirm="handleSceneEditConfirm"
   bind:close="handleEditPopupClose"
 ></dryer-control-popup>
-<edit-sensor-popup
-  show="{{showEditSensorPopup}}"
-  productId="{{editingSensorType}}"
-  checkList="{{editingSensorAbility}}"
-  controlAction="{{editingSensorProperty}}"
-  bind:confirm="handleEditSensorConfirm"
-  bind:close="handleEditSensorClose"
-></edit-sensor-popup>
-<van-toast id="van-toast" />
-<van-dialog
-  id="van-dialog"
+
+<mz-toast id="mz-toast" />
+<mz-dialog
+  id="mz-dialog"
   confirm-button-color="{{dialogConfirmBtnColor}}"
   cancel-button-color="#27282A"
 />

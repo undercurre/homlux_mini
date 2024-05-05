@@ -1,20 +1,51 @@
-<import src="/commons/templates/popup.wxml" />
-<van-popup show="{{ show }}" z-index="1002" round position="bottom" bind:close="handleClose" safe-area-inset-bottom="{{false}}" closeable catchtouchmove="blank">
-  <view class="w-750rpx h-1090rpx relative flex flex-col items-center">
-    <template is="title" data="{{title: '修改场景图标'}}" />
+<mz-popup
+  show="{{ show }}"
+  z-index="1002"
+  round
+  position="bottom"
+  bind:close="handleClose"
+  safe-area-inset-bottom="{{false}}"
+  closeable
+  catchtouchmove="blank"
+>
+  <view class="w-750rpx h-1064rpx relative flex flex-col items-center">
+    <text class="h-50rpx text-36rpx text-black-2a mt-48rpx font-medium">修改场景图标</text>
 
-    <view class="h-80rpx"></view>
-
-    <view class="flex-1 w-654rpx" id="content">
-      <scroll-view enhanced show-scrollbar="{{false}}" scroll-y="{{true}}" style="height: 656rpx">
-        <view class="grid grid-rows-4 grid-cols-4 gap-x-48rpx gap-y-48rpx">
-          <view data-scene="{{item}}" bindtap="handleSceneIconTap" wx:for="{{autoSceneIconList}}" wx:key="index" class="w-128rpx h-128rpx rounded-32rpx bg-hex-f6fafd box-border flex-center" style="border: 4rpx solid {{icon === item?'#488FFF':'transparent'}};">
-            <image class="w-72rpx h-72rpx" src="{{sceneImgDir}}/{{item}}.png" mode="" />
-          </view>
+    <view
+      class="flex-1 w-654rpx mt-32rpx"
+      id="content"
+    >
+      <view class="flex flex-wrap justify-between">
+        <view
+          data-scene="{{item}}"
+          bindtap="handleSceneIconTap"
+          wx:for="{{autoSceneIconList}}"
+          wx:key="index"
+          class="w-128rpx h-128rpx rounded-32rpx bg-hex-f6fafd box-border flex-center mx-12rpx my-24rpx"
+          style="border: 4rpx solid {{icon === item?'#488FFF':'transparent'}};"
+        >
+          <image
+            class="w-72rpx h-72rpx"
+            src="{{sceneImgDir}}/{{item}}.png"
+            mode=""
+          />
         </view>
-      </scroll-view>
+      </view>
+    </view>
+    <view class="h-96rpx"></view>
+
+    <view class="flex gap-46rpx justify-center w-686rpx">
+      <mz-button
+        type="primary"
+        class="grow"
+        size="large"
+        disabled="{{disabled}}"
+        bind:click="handleConfirm"
+        custom-class="btn-class-fix"
+        >确定</mz-button
+      >
     </view>
 
-    <template is="bottom-btn" />
+    <view class="h-96rpx"></view>
   </view>
-</van-popup>
+</mz-popup>

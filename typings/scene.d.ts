@@ -78,7 +78,7 @@ declare namespace Scene {
      * 例如："controlEvent":[{"modelName":'wallSwitch1',"buttonScene":1}]
      * buttonScene 电控所需参数，目前固定为1
      */
-    controlEvent: { modelName: string; buttonScene: number }[]
+    controlEvent: IAnyObject[]
     /** 设备id */
     deviceId: string
   }

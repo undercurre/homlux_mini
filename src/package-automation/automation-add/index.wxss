@@ -9,3 +9,12 @@
   width: 686rpx !important;
   height: 88rpx !important;
 }
+
+.mz-field-custom {
+  border-radius: 32rpx !important;
+  height: 96rpx !important;
+  background-color: #fff !important;
+}
+.cell-hover {
+  background-color: #f2f3f5;
+}
