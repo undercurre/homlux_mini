@@ -24,6 +24,7 @@ Component({
     tabActive: 'room2',
     switchStatus: false,
     columns: ['广州', '深圳', '佛山', '中山', '珠海', '肇庆', '清远'],
+    brightness: 80,
   },
 
   lifetimes: {
@@ -82,6 +83,11 @@ Component({
       console.log('onPickerChange', event)
       const { value, index } = event.detail
       Toast(`当前值：${value}, 当前索引：${index}`)
+    },
+    fixBrightness() {
+      this.setData({
+        brightness: Math.round(Math.random() * 100),
+      })
     },
   },
 })

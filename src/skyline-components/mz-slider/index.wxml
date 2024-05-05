@@ -1,10 +1,3 @@
-<wxs
-  module="handler"
-  src="./index.wxs"
-></wxs>
-
-<!-- bind:touchstart="{{disabled ? '': handler.onTouchstart}}" catch:touchmove="{{disabled ? '': handler.onTouchmove}}" bind:touchend="{{disabled ? '': handler.onTouchend}}" -->
-
 <view
   id="mz-slider"
   class="relative custom-class mz-slider {{ disabled ? 'mz-slider--disabled' : '' }}"
@@ -34,9 +27,15 @@
 
   <mz-movable
     direction="horizontal"
-    trigger="pan"
+    trigger="all"
     key="{{key}}"
+    vibrate="{{false}}"
+    x="{{initX}}"
+    outOfBounds="{{false}}"
+    bound="{{bound}}"
+    bind:dragBegin="dragBegin"
     bind:dragMove="dragMove"
+    bind:dragEnd="dragEnd"
   >
     <view
       id="button"
@@ -55,13 +54,12 @@
     </view>
   </mz-movable>
 
-  <!-- <view
+  <view
     wx:if="{{showToast}}"
-    id="slider-toast"
+    id="slider-toast--{{key}}"
     class="slider-toast"
-    style="opacity: 0; pointer-events: none"
   >
-    <text class="text-white text-26">{{ formattedValue }}</text>
-    <view class="arrow absolute w-0 h-0"></view>
-  </view> -->
+    <text class="toast-text">{{ formattedValue }}</text>
+    <view class="arrow"></view>
+  </view>
 </view>

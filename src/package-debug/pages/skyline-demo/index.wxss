@@ -16,7 +16,9 @@
   align-items: center;
   justify-content: center;
   padding: 12rpx 6rpx;
+  margin-left: 60rpx;
   margin-bottom: 12rpx;
+  height: 72rpx;
 }
 
 .slider-brightness-bar {

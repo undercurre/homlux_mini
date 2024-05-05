@@ -1,5 +1,6 @@
 /* @import '../common/index.wxss'; */
 .mz-slider {
+  position: relative;
   background-color: #eff0f3;
   border-radius: 24rpx;
 }
@@ -34,17 +35,28 @@
 .slider-toast {
   position: absolute;
   background: rgba(0, 0, 0, 0.72);
-  padding: 10rpx 16rpx;
-  top: -80rpx;
-  border-radius: 18rpx;
+  padding: 12rpx 14rpx;
+  top: -66rpx;
+  left: -8rpx;
+  border-radius: 12rpx;
+  transition: 'opacity 0.3s';
+  pointer-events: none;
+}
+
+.toast-text {
+  color: #fff;
+  font-size: 26rpx;
 }
 
 .arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
   border-top: 8rpx solid #454546;
   border-bottom: 8rpx solid transparent;
   border-left: 8rpx solid transparent;
   border-right: 8rpx solid transparent;
-  top: 62rpx;
+  top: 40rpx;
   left: 50%;
   margin-left: -4rpx;
 }

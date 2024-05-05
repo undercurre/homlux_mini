@@ -210,7 +210,7 @@ Component({
           if (wx.vibrateShort && this.data.vibrate) {
             runOnJS(wx.vibrateShort)({ type: 'heavy' })
           }
-          runOnJS(this.triggerEvent.bind(this))('dragBegin')
+          runOnJS(this.triggerEvent.bind(this))('dragBegin', { x, y })
 
           break
         }
