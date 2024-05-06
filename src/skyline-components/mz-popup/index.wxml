@@ -7,8 +7,6 @@
   module="computed"
 />
 
-<import src="./popup.wxml" />
-
 <mz-overlay
   wx:if="{{ overlay }}"
   show="{{ show }}"
@@ -17,7 +15,7 @@
   duration="{{ duration }}"
   bind:click="onClickOverlay"
   lock-scroll="{{ lockScroll }}"
-  root-portal="{{ true }}"
+  root-portal="{{ rootPortal }}"
 />
 
 <root-portal enable="{{rootPortal}}">

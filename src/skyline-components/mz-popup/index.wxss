@@ -13,6 +13,7 @@
   overflow: hidden;
   position: fixed;
   transition-timing-function: ease;
+  transition-duration: 300ms;
 }
 
 .mz-popup--center {

@@ -13,7 +13,8 @@ Component({
    * 组件的初始数据
    */
   data: {
-    show: false,
+    showPopup: false,
+    showPopup2: false,
     showPopMenu: false,
     disabled: false,
     roomTab: Array.from({ length: 9 }, (_, i) => ({
@@ -46,15 +47,12 @@ Component({
     toClick() {
       console.log('toClick')
     },
-    openPopup() {
-      this.setData({
-        show: true,
-      })
-    },
-    closePopup() {
-      this.setData({
-        show: false,
-      })
+    togglePopup(event: WechatMiniprogram.BaseEvent) {
+      const data = {} as IAnyObject
+      const key = event.currentTarget.dataset.key as 'showPopup' | 'showPopup2'
+
+      data[key] = !this.data[key]
+      this.setData(data)
     },
     showToast() {
       Toast({
@@ -69,6 +67,12 @@ Component({
       console.log('delHome', res)
     },
     onRoomChange(event: { detail: { name: string } }) {
+      console.log('onRoomChange', event)
+      this.setData({
+        tabActive: event.detail.name,
+      })
+    },
+    hange(event: { detail: { name: string } }) {
       console.log('onRoomChange', event)
       this.setData({
         tabActive: event.detail.name,
