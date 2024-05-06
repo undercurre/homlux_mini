@@ -32,14 +32,10 @@ ComponentWithComputed({
     roomId: '',
     showEditRoomPopup: false,
     adviceSceneNameList: adviceSceneNameList,
-    navigationBarAndStatusBarHeight:
-      (storage.get<number>('statusBarHeight') as number) +
-      (storage.get<number>('navigationBarHeight') as number) +
-      'px',
-    _sceneInfo: {} as Scene.SceneItem, //待编辑的一键场景
-    _autosceneInfo: {} as AutoScene.AutoSceneItem, //待编辑的自动化
+    _sceneInfo: {} as Scene.SceneItem, //原有的一键场景
+    _autosceneInfo: {} as AutoScene.AutoSceneItem, //原有的自动化
     yijianSceneId: '',
-    isDefaultYijianScene: true, //是否是一键场景
+    isDefaultYijianScene: false, //是否是一键场景
     autoSceneId: '',
     sceneIcon: 'icon-1',
     sceneName: '',
@@ -234,7 +230,7 @@ ComponentWithComputed({
       }
       const currentSceneInfo = JSON.parse(sceneInfo) as AutoScene.AutoSceneItem | Scene.SceneItem
       if (currentSceneInfo.conditionType) {
-        //自动场景
+        console.log('自动场景')
         const sensorlinkSelectList = [] as Scene.DeviceCondition[]
         const autoSceneInfo = currentSceneInfo as AutoScene.AutoSceneItem
         this.data._autosceneInfo = autoSceneInfo
@@ -383,7 +379,7 @@ ComponentWithComputed({
           },
         )
       } else {
-        //手动场景
+        console.log('手动场景')
         const sceneInfo = currentSceneInfo as Scene.SceneItem
         this.data._sceneInfo = sceneInfo
         this.setData({
@@ -489,7 +485,7 @@ ComponentWithComputed({
             sceneDeviceActionsFlatten: tempSceneDeviceActionsFlatten,
           },
           () => {
-            this.updateSceneDeviceActionsFlatten()
+            this.updateSceneDeviceActionsFlatten(false)
             this.updateSceneDeviceConditionsFlatten()
           },
         )
@@ -1122,6 +1118,7 @@ ComponentWithComputed({
           showTimeConditionPopup: true,
         })
       } else if (action.productId === 'touch') {
+        if (this.data.isDefaultYijianScene) return
         this.setData({
           showEditRoomPopup: true,
         })
@@ -1265,10 +1262,6 @@ ComponentWithComputed({
     },
 
     async handleSave() {
-      if (this.data.opearationType === 'yijian' && this.data.yijianSceneId) {
-        this.updateYijianScene()
-        return
-      }
       if (this.data.opearationType === 'yijian') {
         this.go2dispatch()
         return
@@ -1351,27 +1344,9 @@ ComponentWithComputed({
 
         return
       }
-      if (!this.data.sceneName) {
-        Toast({
-          message: '场景名不能为空',
-          zIndex: 99999,
-        })
-        return
-      }
-      if (checkInputNameIllegal(this.data.sceneName)) {
-        Toast({
-          message: '场景名称不能用特殊符号或表情',
-          zIndex: 99999,
-        })
-        return
-      }
-      if (this.data.sceneName.length > 15) {
-        Toast({
-          message: '场景名称不能超过15个字符',
-          zIndex: 99999,
-        })
-        return
-      }
+      // 检查场景名是否合法
+      const isLegal = this.isSceneNameLegal(this.data.sceneName)
+      if (!isLegal) return
 
       const newSceneData = {
         conditionType: '1',
@@ -1537,7 +1512,7 @@ ComponentWithComputed({
           message: this.data.autoSceneId ? '更新失败' : '创建失败',
         })
       } else {
-        autosceneStore.updateAllRoomAutoSceneList()
+        emitter.emit('sceneEdit')
         Toast({
           message: this.data.autoSceneId ? '更新成功' : '创建成功',
           onClose: () => {
@@ -1546,118 +1521,108 @@ ComponentWithComputed({
         })
       }
     },
-    async updateYijianScene() {
-      if (this.data.sceneDeviceActionsFlatten.length === 0) {
-        // 删完actions按照删除场景处理
-        Dialog.confirm({
-          title: '清空操作将会删除场景，确定删除该场景？',
-        }).then(async () => {
-          const res = await deleteScene(this.data._sceneInfo.sceneId)
-          if (res.success) {
-            emitter.emit('sceneEdit')
-            homeStore.updateRoomCardList()
-            wx.navigateBack()
-          } else {
-            Toast({ message: '删除失败', zIndex: 9999 })
-          }
-        })
-        return
-      }
-
-      // 准备好数据内存
-      const data = {
-        sceneId: this.data._sceneInfo.sceneId,
-        updateType: '0',
-        conditionType: '0',
-        roomId: this.data.roomId,
-      } as Scene.UpdateSceneDto
-      // 检查场景名字是否变更
-      if (this.data.sceneName !== this.data._sceneInfo.sceneName) {
-        data.sceneName = this.data.sceneName
-      }
-      // 检查场景icon是否变更
-      if (this.data.sceneIcon !== this.data._sceneInfo.sceneIcon) {
-        data.sceneIcon = this.data.sceneIcon
-      }
-
-      if (this.data._isEditAction) {
-        data.deviceActions = []
-        data.updateType = data.updateType === '0' ? '1' : data.updateType === '2' ? '4' : '5'
-
-        // 场景动作数据统一在scene-request-list页面处理
-        storage.set('scene_data', data)
-        storage.set('sceneDeviceActionsFlatten', this.data.sceneDeviceActionsFlatten)
-
-        // 需要更新结果的情况，需要跳转页面等待上报结果
-        wx.redirectTo({
-          url: strUtil.getUrlWithParams('/package-automation/scene-request-list-yijian/index', {
-            sceneId: data.sceneId,
-          }),
-        })
-
-        return
-      }
-
-      const res = await updateScene(data)
-      if (res.success) {
-        emitter.emit('sceneEdit')
-        homeStore.updateRoomCardList()
-        Toast({ message: '修改成功', zIndex: 9999 })
-        wx.navigateBack()
-      } else {
-        Toast({ message: '修改失败', zIndex: 9999 })
-      }
-    },
     async go2dispatch() {
       // 检查场景名是否合法
-      if (!this.data.sceneName) {
-        Toast({
-          message: '场景名不能为空',
-          zIndex: 99999,
-        })
-        return
-      }
-      if (checkInputNameIllegal(this.data.sceneName)) {
-        Toast({
-          message: '场景名称不能用特殊符号或表情',
-          zIndex: 99999,
-        })
-        return
-      }
-      if (this.data.sceneName.length > 15) {
-        Toast({
-          message: '场景名称不能超过15个字符',
-          zIndex: 99999,
-        })
-        return
-      }
-      // 场景动作数据统一在scene-request-list页面处理
-
-      const newSceneData = {
-        conditionType: '0',
-        deviceActions: [],
-        deviceConditions: [],
-        houseId: homeStore.currentHomeDetail.houseId,
-        roomId: this.data.roomId === '' ? roomStore.currentRoomId : this.data.roomId,
-        sceneIcon: this.data.sceneIcon,
-        sceneName: this.data.sceneName,
-        sceneType: '0',
-        orderNum: 0,
-      } as Scene.AddSceneDto
-
-      // 将新场景排到最后,orderNum可能存在跳号的情况
-      sceneStore.sceneList.forEach((scene) => {
-        if (scene.orderNum && scene.orderNum >= newSceneData.orderNum) {
-          newSceneData.orderNum = scene.orderNum + 1
+      const isLegal = this.isSceneNameLegal(this.data.sceneName)
+      if (!isLegal) return
+      if (this.data.yijianSceneId) {
+        //编辑
+        if (this.data.sceneDeviceActionsFlatten.length === 0) {
+          // 删完actions按照删除场景处理
+          Dialog.confirm({
+            title: '清空操作将会删除场景，确定删除该场景？',
+          }).then(async () => {
+            const res = await deleteScene(this.data._sceneInfo.sceneId)
+            if (res.success) {
+              emitter.emit('sceneEdit')
+              homeStore.updateRoomCardList()
+              wx.navigateBack()
+            } else {
+              Toast({ message: '删除失败', zIndex: 9999 })
+            }
+          })
+          return
         }
-      })
+        // 准备好数据内存
+        const data = {
+          sceneId: this.data._sceneInfo.sceneId,
+          updateType: '0',
+          conditionType: '0',
+          roomId: this.data.roomId,
+        } as Scene.UpdateSceneDto
+        let _isEditIconOrName = false
+        // 检查场景名字是否变更
+        if (this.data.sceneName !== this.data._sceneInfo.sceneName) {
+          data.sceneName = this.data.sceneName
+          _isEditIconOrName = true
+        }
+        // 检查场景icon是否变更
+        if (this.data.sceneIcon !== this.data._sceneInfo.sceneIcon) {
+          data.sceneIcon = this.data.sceneIcon
+          _isEditIconOrName = true
+        }
 
-      storage.set('scene_data', newSceneData)
-      storage.set('sceneDeviceActionsFlatten', this.data.sceneDeviceActionsFlatten)
+        if (this.data._isEditAction) {
+          data.deviceActions = []
+          data.updateType = '1'
 
-      wx.navigateTo({
-        url: '/package-automation/scene-request-list-yijian/index',
-      })
+          // 场景动作数据统一在scene-request-list页面处理
+          storage.set('scene_data', data)
+          storage.set('sceneDeviceActionsFlatten', this.data.sceneDeviceActionsFlatten)
+          console.log('scene_data11111', this.data.sceneDeviceActionsFlatten)
+
+          // 需要更新结果的情况，需要跳转页面等待上报结果
+          wx.redirectTo({
+            url: strUtil.getUrlWithParams('/package-automation/scene-request-list-yijian/index', {
+              sceneId: data.sceneId,
+            }),
+          })
+
+          return
+        }
+        if (!_isEditIconOrName) {
+          //全都没更改过则直接返回
+          wx.navigateBack()
+          return
+        }
+        const res = await updateScene(data)
+        if (res.success) {
+          emitter.emit('sceneEdit')
+          homeStore.updateRoomCardList()
+          Toast({ message: '修改成功', zIndex: 9999 })
+          wx.navigateBack()
+        } else {
+          Toast({ message: '修改失败', zIndex: 9999 })
+        }
+      } else {
+        //新建
+        // 场景动作数据统一在scene-request-list页面处理
+        const newSceneData = {
+          conditionType: '0',
+          deviceActions: [],
+          deviceConditions: [],
+          houseId: homeStore.currentHomeDetail.houseId,
+          roomId: this.data.roomId === '' ? roomStore.currentRoomId : this.data.roomId,
+          sceneIcon: this.data.sceneIcon,
+          sceneName: this.data.sceneName,
+          sceneType: '0',
+          orderNum: 0,
+        } as Scene.AddSceneDto
+
+        // 将新场景排到最后,orderNum可能存在跳号的情况
+        sceneStore.sceneList.forEach((scene) => {
+          if (scene.orderNum && scene.orderNum >= newSceneData.orderNum) {
+            newSceneData.orderNum = scene.orderNum + 1
+          }
+        })
+
+        storage.set('scene_data', newSceneData)
+        storage.set('sceneDeviceActionsFlatten', this.data.sceneDeviceActionsFlatten)
+
+        wx.redirectTo({
+          url: '/package-automation/scene-request-list-yijian/index',
+        })
+      }
     },
     async handleAutoSceneDelete() {
       if (this.data.autoSceneId) {
@@ -1741,6 +1706,31 @@ ComponentWithComputed({
       } else if (type === 'actionEdit') {
         this.handleAutoSceneActionEdit(data as number)
       }
+    },
+    // 检查场景名是否合法
+    isSceneNameLegal(sceneName: string) {
+      if (!sceneName) {
+        Toast({
+          message: '场景名不能为空',
+          zIndex: 99999,
+        })
+        return false
+      }
+      if (checkInputNameIllegal(sceneName)) {
+        Toast({
+          message: '场景名称不能用特殊符号或表情',
+          zIndex: 99999,
+        })
+        return false
+      }
+      if (sceneName.length > 15) {
+        Toast({
+          message: '场景名称不能超过15个字符',
+          zIndex: 99999,
+        })
+        return false
+      }
+      return true
     },
   },
 })

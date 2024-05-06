@@ -434,8 +434,4 @@ Component({
       this.triggerEvent('itemClick', e.detail)
     },
   },
-  ready() {
-    // prof: 感觉没什么用，暂时注释
-    // this.init()
-  },
 })

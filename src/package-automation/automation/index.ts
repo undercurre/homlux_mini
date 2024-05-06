@@ -69,9 +69,8 @@ ComponentWithComputed({
       // 监听场景修改，主动更新一键场景列表
       emitter.off('sceneEdit')
       emitter.on('sceneEdit', () => {
-        sceneStore.updateAllRoomSceneList().then(() => {
-          this.getSceneList()
-        })
+        this.getSceneList()
+        this.getAutoSceneList()
       })
     },
   },

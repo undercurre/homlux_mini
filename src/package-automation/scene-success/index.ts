@@ -16,7 +16,7 @@ Component({
     go2SceneIndex() {
       emitter.emit('sceneEdit')
       wx.navigateBack({
-        delta: 3,
+        delta: 1,
       })
     },
   },
