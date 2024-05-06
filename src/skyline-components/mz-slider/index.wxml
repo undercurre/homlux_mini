@@ -9,20 +9,33 @@
     class="mz-slider-bar"
     style="background:{{activeColor}}"
   >
-    <view
-      id="button"
-      wx:if="{{isBtnInset}}"
-      class="button px-12rpx"
+    <!-- <mz-movable
+      direction="horizontal"
+      trigger="all"
+      key="{{key}}"
+      vibrate="{{false}}"
+      x="{{initX}}"
+      outOfBounds="{{false}}"
+      bound="{{bound}}"
+      bind:dragBegin="dragBegin"
+      bind:dragMove="dragMove"
+      bind:dragEnd="dragEnd"
     >
-      <slot
-        wx:if="{{ useButtonSlot }}"
-        name="button"
-      ></slot>
       <view
-        wx:else
-        class="mz-slider-button"
-      ></view>
-    </view>
+        wx:if="{{isBtnInset}}"
+        id="button"
+        class="inset-wrapper px-12rpx"
+      >
+        <slot
+          wx:if="{{ useButtonSlot }}"
+          name="button"
+        ></slot>
+        <view
+          wx:else
+          class="mz-slider-button"
+        ></view>
+      </view>
+    </mz-movable> -->
   </view>
 
   <mz-movable
@@ -38,10 +51,8 @@
     bind:dragEnd="dragEnd"
   >
     <view
-      id="button"
-      wx:if="{{!isBtnInset}}"
-      class="button button-outset"
-      style="top: {{btnTop}}"
+      class="button-wrapper"
+      style="{{btnStyle}}"
     >
       <slot
         wx:if="{{ useButtonSlot }}"

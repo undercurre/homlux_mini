@@ -311,6 +311,14 @@
           />
         </mz-slider>
       </view>
+      <mz-button
+        block
+        class="mt-24rpx"
+        plain
+        size="large"
+        bind:click="fixBrightness"
+        >改变亮度({{brightness}})</mz-button
+      >
       <view class="slider-box">
         <mz-slider
           disabled="{{false}}"
@@ -330,15 +338,33 @@
           />
         </mz-slider>
       </view>
-
-      <mz-button
-        block
-        class="mt-24rpx"
-        plain
-        size="large"
-        bind:click="fixBrightness"
-        >改变亮度({{brightness}})</mz-button
-      >
+      <view class="slider-box">
+        <mz-slider
+          disabled="{{false}}"
+          value="{{50}}"
+          btn-width="{{40}}"
+          btn-height="{{40}}"
+          custom-class="slider-inset"
+          active-color="linear-gradient(90deg, rgba(80,127,255,0.8) 5%, rgba(116,153,255,0.18) 100%)"
+          key="deviceBrightness"
+        >
+        </mz-slider>
+        <mz-slider
+          disabled="{{false}}"
+          value="{{70}}"
+          use-button-slot
+          btn-height="{{52}}"
+          btn-width="{{80}}"
+          custom-class="slider-color-temp-bar"
+          active-color="rgba(0,0,0,0)"
+          data-key="deviceColorTemp"
+        >
+          <view
+            slot="button"
+            class="slider-button"
+          />
+        </mz-slider>
+      </view>
     </view>
 
     <view class="h-48"></view>

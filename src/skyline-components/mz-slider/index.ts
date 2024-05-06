@@ -79,16 +79,20 @@ ComponentWithComputed({
       return data.formatter(data.showValue) ?? ''
     },
     btnOffsetX(data) {
-      return -rpx2px(data.btnWidth / 2)
+      const { isBtnInset } = data
+      return isBtnInset ? -rpx2px(data.btnWidth) : -rpx2px(data.btnWidth / 2)
+    },
+    btnStyle(data) {
+      const { btnWidth, btnHeight, barHeight } = data
+      const btnTop = -barHeight / 2 - btnHeight / 2
+      return `top: ${btnTop}rpx; width: ${btnWidth}rpx;`
     },
   },
 
   lifetimes: {
     attached() {
-      // 将 dataset 数据传到组件变量中 // TODO 改回属性
       const diffData = {
         initX: this.data.btnOffsetX,
-        btnTop: this.data.barHeight / 2 - this.data.btnHeight / 2 + 'rpx',
       } as IAnyObject
 
       this.setData(diffData)
@@ -122,17 +126,20 @@ ComponentWithComputed({
         .exec((res) => {
           const barWidth = res[0]?.width ?? 100
           const initX = Math.round((barWidth / 100) * this.data.value) + this.data.btnOffsetX
-          this.data._x.value = initX - this.data.btnOffsetX
+          const left = this.data.isBtnInset ? 0 : this.data.btnOffsetX
+          const right = barWidth + this.data.btnOffsetX
           this.setData({
             barWidth,
             initX,
             bound: {
               top: 0,
-              left: this.data.btnOffsetX,
-              right: barWidth + this.data.btnOffsetX,
+              left,
+              right,
               bottom: 0,
             },
           })
+
+          this.data._x.value = initX - this.data.btnOffsetX
         })
     },
   },
