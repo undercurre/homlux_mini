@@ -1,12 +1,37 @@
-<import src="/commons/templates/popup.wxml" />
-<van-popup show="{{ show }}" z-index="1002" round position="bottom" bind:close="handleClose" closeable catchtouchmove="blank">
-  <view class="w-750rpx h-600rpx relative flex flex-col items-center">
-    <template is="title" data="{{title}}" />
-    <view class="h-52rpx"></view>
-    <time-picker-view value="{{value}}" bind:change="timeChange"></time-picker-view>
-    <view class="h-62rpx"></view>
-    <view class="flex w-686rpx gap-x-46rpx">
-      <van-button type="primary" class="flex-1" size="large" bind:click="handleConfirm">确定</van-button>
+<mz-popup
+  show="{{ show }}"
+  z-index="1002"
+  round
+  position="bottom"
+  bind:close="handleClose"
+  closeable
+  catchtouchmove="blank"
+>
+  <view class="w-750rpx h-560rpx relative flex flex-col items-center">
+    <text class="h-50rpx text-36rpx text-black-2a mt-48rpx font-medium">{{title}}</text>
+    <view class="h-32rpx"></view>
+    <view class="w-full">
+      <scroll-view
+        type="list"
+        style="height: 132px"
+      >
+        <mz-picker
+          columns="{{pickerColumns}}"
+          unit="{{['分', '秒']}}"
+          unitTranslationX="{{[48, 0]}}"
+          visible-item-count="{{3}}"
+          bind:change="timeChange"
+        ></mz-picker>
+      </scroll-view>
+    </view>
+    <view class="flex w-686rpx mt-52rpx">
+      <mz-button
+        type="primary"
+        class="flex-1"
+        size="large"
+        bind:click="handleConfirm"
+        >确定</mz-button
+      >
     </view>
   </view>
-</van-popup>
+</mz-popup>

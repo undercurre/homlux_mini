@@ -23,7 +23,7 @@ function frameStyle(data) {
 
 function unitStyle(data) {
   return style({
-    transform: 'translateX(' + addUnit(data.unitTranslationX) + ')',
+    transform: 'translateX(' + addUnit(data.unitTranslationX[data.index]) + ')',
   })
 }
 

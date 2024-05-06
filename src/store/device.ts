@@ -1,6 +1,6 @@
 import { observable, runInAction } from 'mobx-miniprogram'
 import { queryAllDevice, querySubDeviceList } from '../apis/device'
-import { PRO_TYPE } from '../config/index'
+import { PRO_TYPE, PRODUCT_ID } from '../config/index'
 import { homeStore } from './home'
 import { roomStore } from './room'
 import { sceneStore } from './scene'
@@ -92,6 +92,20 @@ export const deviceStore = observable({
       })
     })
     return map
+  },
+
+  get allRoomSensorList(): Device.DeviceItem[] {
+    const sensorList = deviceStore.allRoomDeviceList.filter((item) => item.proType === PRO_TYPE.sensor)
+    sensorList.forEach((item) => {
+      if (item.productId === PRODUCT_ID.humanSensor) {
+        item.property = { occupancy: 1, modelName: 'irDetector' }
+      } else if (item.productId === PRODUCT_ID.doorSensor) {
+        item.property = { doorStatus: 1, modelName: 'magnet' }
+      } else {
+        item.property = { buttonClicked: 1, modelName: 'freepad' }
+      }
+    })
+    return sensorList
   },
 
   /**

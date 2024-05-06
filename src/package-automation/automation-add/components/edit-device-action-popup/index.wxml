@@ -1,6 +1,5 @@
-<import src="/commons/templates/popup.wxml" />
 <wxs module="tools"> function slice(arr, start) { return arr.slice(start); } module.exports = { slice: slice } </wxs>
-<van-popup
+<mz-popup
   show="{{ show }}"
   z-index="1002"
   round
@@ -10,83 +9,73 @@
   catchtouchmove="blank"
 >
   <view class="w-750rpx relative flex flex-col items-center">
-    <template
-      is="title"
-      data="{{title}}"
-    />
+    <text class="h-50rpx text-36rpx text-black-2a mt-48rpx font-medium">{{title}}</text>
+
     <view
       class="w-686rpx mt-48rpx"
       wx:if="{{cellList.length}}"
     >
-      <van-cell-group
-        inset
-        border="{{false}}"
-      >
-        <van-cell
-          border="{{false}}"
-          custom-class="{{cellList[0].disabled ? 'cell-disabled' : 'cell'}}"
-          center
+      <mz-cell-group inset>
+        <view
+          class="{{cellList[0].disabled ? 'cell-disabled' : 'cell'}}  px-32rpx "
           data-item="{{cellList[0]}}"
-          bind:click="cellClicked"
+          bindtap="cellClicked"
         >
-          <text
-            slot="title"
-            class="cell-title {{cellList[0].disabled ? 'disabled' : ''}}"
-            >{{cellList[0].title}}</text
-          >
-          <text class="cell-value {{cellList[0].disabled ? 'disabled' : ''}}">{{cellList[0].value}}</text>
-          <image
-            slot="right-icon"
-            class="cell-right-icon {{cellList[0].disabled ? 'disabled' : ''}}"
-            src="../../../../assets/img/home/more.png"
-          ></image>
-        </van-cell>
-      </van-cell-group>
-      <van-cell-group
+          <view class="flex flex-row justify-between items-center py-32rpx">
+            <text class="cell-title {{cellList[0].disabled ? 'disabled' : ''}}">{{cellList[0].title}}</text>
+            <view class="flex flex-row items-center">
+              <text class="cell-value {{cellList[0].disabled ? 'disabled' : ''}}">{{cellList[0].value}}</text>
+              <image
+                class="cell-right-icon {{cellList[0].disabled ? 'disabled' : ''}}"
+                src="../../../../assets/img/home/more.png"
+              ></image>
+            </view>
+          </view>
+        </view>
+      </mz-cell-group>
+      <mz-cell-group
         inset
         border="{{false}}"
       >
-        <van-cell
+        <view
           wx:for="{{tools.slice(cellList, 1)}}"
           wx:key="index"
-          border="{{index !== cellList.length - 2}}"
-          custom-class="{{item.disabled ? 'cell-disabled' : 'cell'}} cell-border"
-          center
+          class="{{item.disabled ? 'cell-disabled' : 'cell'}}  px-32rpx "
           data-item="{{item}}"
-          bind:click="cellClicked"
+          bindtap="cellClicked"
         >
-          <text
-            slot="title"
-            class="cell-title {{item.disabled ? 'disabled' : ''}}"
-            >{{item.title}}</text
-          >
-          <text class="cell-value {{item.disabled ? 'disabled' : ''}}">{{item.value}}</text>
-          <image
-            slot="right-icon"
-            class="cell-right-icon {{cellList[0].disabled ? 'disabled' : ''}}"
-            src="../../../../assets/img/home/more.png"
-          ></image>
-        </van-cell>
-      </van-cell-group>
+          <view class="flex flex-row justify-between items-center py-32rpx border-b-hex-fff border-b-solid {{index !== cellList.length - 2 ? 'border-b-0' : 'border-b-1px'}}">
+            <text class="cell-title {{item.disabled ? 'disabled' : ''}}">{{item.title}}</text>
+            <view class="flex flex-row items-center">
+              <text class="cell-value {{item.disabled ? 'disabled' : ''}}">{{item.value}}</text>
+              <image
+                class="cell-right-icon {{item.disabled ? 'disabled' : ''}}"
+                src="../../../../assets/img/home/more.png"
+              ></image>
+            </view>
+          </view>
+        </view>
+      </mz-cell-group>
     </view>
     <view class="h-62rpx"></view>
-    <view class="flex w-686rpx gap-x-46rpx mb-38rpx">
-      <van-button
+    <view class="flex w-686rpx mb-38rpx">
+      <mz-button
         class="flex-1"
         size="large"
         bind:click="handleTry"
-        >试一试</van-button
+        >试一试</mz-button
       >
-      <van-button
+      <view class="w-46rpx"></view>
+      <mz-button
         type="primary"
         class="flex-1"
         size="large"
         bind:click="handleConfirm"
-        >确定</van-button
+        >确定</mz-button
       >
     </view>
   </view>
-</van-popup>
+</mz-popup>
 <picker-view-popup
   show="{{showPropertyPopup}}"
   dataInfo="{{editingPropertyInfo}}"
@@ -94,4 +83,4 @@
   bind:close="onPropertyPopupClose"
   bind:cancel="onPropertyPopupClose"
 ></picker-view-popup>
-<van-toast id="van-toast" />
+<mz-toast id="mz-toast" />

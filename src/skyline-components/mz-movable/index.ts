@@ -14,12 +14,23 @@ enum State {
   CANCELLED = 4,
 }
 
+type GestureEvent = {
+  state: State
+  absoluteX: number
+  absoluteY: number
+}
+
 Component({
   /**
    * 组件的属性列表
    */
   properties: {
     key: String,
+    // 拖动模式，属性值 all | pan | longpress
+    trigger: {
+      type: String,
+      value: 'longpress',
+    },
     // 开始拖动时，振动反馈
     vibrate: {
       type: Boolean,
@@ -35,7 +46,7 @@ Component({
       type: Number,
       value: 300,
     },
-    // 移动方向，属性值有all vertical horizontal none
+    // 移动方向，属性值有all | vertical | horizontal | none
     direction: {
       type: String,
       value: 'none',
@@ -68,8 +79,11 @@ Component({
       value: {
         top: 0,
         left: 0,
-        right: 300,
+        right: 375,
         bottom: 9999,
+      },
+      observer(v) {
+        this.data._bound.value = v as { top: number; left: number; right: number; bottom: number }
       },
     },
   },
@@ -90,6 +104,8 @@ Component({
     // 正在被动移动中
     _settingX: { value: false },
     _settingY: { value: false },
+    // 边界
+    _bound: { value: { top: 0, left: 0, right: 0, bottom: 0 } },
   },
 
   lifetimes: {
@@ -102,6 +118,7 @@ Component({
       this.data._y = wx.worklet.shared(this.data.y)
       this.data._settingX = wx.worklet.shared(false)
       this.data._settingY = wx.worklet.shared(false)
+      this.data._bound = wx.worklet.shared(this.data.bound)
 
       // console.log('movable wrapper attached', `#box-${this.data.key}`)
 
@@ -169,35 +186,36 @@ Component({
         }
       }
     },
-    handleLongPress(e: {
-      state: State
-      translationX: number
-      translationY: number
-      absoluteX: number
-      absoluteY: number
-    }) {
+    /**
+     * 拖动事件处理方法
+     * @param e 为兼容长按及pan，使用绝对位置数值
+     */
+    handleMove(e: GestureEvent) {
       'worklet'
-
       const x = this.data._x.value
       const y = this.data._y.value
       const lastX = this.data._lastX.value
       const lastY = this.data._lastY.value
-      // console.log('handleLongPress trigger', e.state, { x, y })
+      console.log('MOVE trigger', e.state, e.absoluteX, { x, y })
 
       switch (e.state) {
-        // 长按开始
+        // 拖动识别，保存初始值
+        case State.POSSIBLE: {
+          this.data._originX.value = e.absoluteX
+          this.data._originY.value = e.absoluteY
+          break
+        }
+        // 拖动开始
         case State.BEGIN: {
           if (wx.vibrateShort && this.data.vibrate) {
             runOnJS(wx.vibrateShort)({ type: 'heavy' })
           }
-          runOnJS(this.triggerEvent.bind(this))('dragBegin')
-          this.data._originX.value = e.absoluteX
-          this.data._originY.value = e.absoluteY
+          runOnJS(this.triggerEvent.bind(this))('dragBegin', { x, y })
 
           break
         }
 
-        // 长按继续（拖动中）
+        // 拖动继续（拖动中）
         case State.ACTIVE: {
           const translationX = e.absoluteX - this.data._originX.value
           const translationY = e.absoluteY - this.data._originY.value
@@ -205,18 +223,22 @@ Component({
           if (x !== newX && (this.data.direction === 'all' || this.data.direction === 'horizontal')) {
             this.data._x.value = this.data.outOfBounds
               ? newX
-              : Math.min(Math.max(newX, this.data.bound.left), this.data.bound.right)
+              : Math.min(Math.max(newX, this.data._bound.value.left), this.data._bound.value.right)
           }
 
           const newY = Math.round(translationY + lastY)
           if (y !== newY && (this.data.direction === 'all' || this.data.direction === 'vertical')) {
             this.data._y.value = this.data.outOfBounds
               ? newY
-              : Math.min(Math.max(newY, this.data.bound.top), this.data.bound.bottom)
+              : Math.min(Math.max(newY, this.data._bound.value.top), this.data._bound.value.bottom)
           }
 
-          runOnJS(this.triggerEvent.bind(this))('dragMove', [e.absoluteX, e.absoluteY, newX, newY])
-
+          runOnJS(this.triggerEvent.bind(this))('dragMove', [
+            e.absoluteX,
+            e.absoluteY,
+            this.data._x.value,
+            this.data._y.value,
+          ])
           break
         }
 
@@ -227,11 +249,23 @@ Component({
           this.data._lastY.value = y
           runOnJS(this.triggerEvent.bind(this))('dragEnd', { x, y })
 
-          console.log('handleLongPress State.END', { x, y })
+          console.log('MOVE State.END', { x, y })
           break
 
         default:
           break
+      }
+    },
+    handlePan(e: GestureEvent) {
+      'worklet'
+      if (this.data.trigger === 'pan' || this.data.trigger === 'all') {
+        this.handleMove(e)
+      }
+    },
+    handleLongPress(e: GestureEvent) {
+      'worklet'
+      if (this.data.trigger === 'longpress' || this.data.trigger === 'all') {
+        this.handleMove(e)
       }
     },
     onClick() {

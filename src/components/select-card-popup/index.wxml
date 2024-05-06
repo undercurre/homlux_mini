@@ -39,6 +39,7 @@
       enhanced
       show-scrollbar="{{false}}"
       scroll-x
+      type="list"
       class="mt-48rpx h-60rpx w-750rpx flex"
       enable-flex
     >
@@ -65,6 +66,7 @@
     <scroll-view
       class="grow h-600"
       enhanced
+      type="list"
       show-scrollbar="{{false}}"
       scroll-y
     >

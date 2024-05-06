@@ -193,6 +193,7 @@
         <block wx:if="{{logListView.length}}">
           <view class="log-step"></view>
           <scroll-view
+            type="list"
             scroll-y
             enhanced
             show-scrollbar="{{false}}"

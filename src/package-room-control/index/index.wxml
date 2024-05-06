@@ -1,8 +1,8 @@
 <page-meta page-style="{{ showBeforeAddScenePopup || showAddScenePopup ? 'overflow: hidden;' : '' }}" />
 <!-- 背景 -->
-<view class="w-100vw h-100vh fixed left-0 top-0 bg-hex-f4f8ff bg-z-index-1"></view>
+<view class="w-100vw h-100vh absolute left-0 top-0 bg-hex-f4f8ff bg-z-index-1"></view>
 <view
-  class="fixed left-0 top-0 w-100vw h-50vh bg-z-index"
+  class="absolute left-0 top-0 w-100vw h-50vh bg-z-index"
   style="background: linear-gradient(180deg, rgba(87, 105, 255, 0.1) 0%, rgba(87, 105, 255, 0) 100%)"
 ></view>
 
@@ -14,10 +14,10 @@
   <!-- 标题 -->
   <nav-bar
     title="{{title}}"
-    z-index="{{113}}"
     left-arrow
     bind:leftTap="goBack"
     disabled="{{opacity === 0}}"
+    style="z-index: 100"
   ></nav-bar>
   <!-- 家庭无设备，或只有网关 -->
   <view
@@ -41,7 +41,7 @@
 
   <!-- 场景 -->
   <view
-    class="tool-box fixed"
+    class="tool-box absolute z-1"
     style="padding-top: {{toolboxTop}}px; height: {{toolboxTop + toolboxContentHeight}}px;"
   >
     <view class="scene-box {{roomHasLight ? 'scene-border-bottom' : ''}}">
@@ -91,7 +91,7 @@
           src="/package-room-control/assets/img/bright.png"
           class="w-48rpx h-48rpx"
         />
-        <!-- <mz-slider
+        <mz-slider
           disabled="{{!hasRoomLightOn}}"
           catch:slideChange="handleLevelChange"
           catch:slideEnd="handleLevelEnd"
@@ -102,6 +102,7 @@
           use-button-slot
           data-min="{{1}}"
           data-is-btn-inset="{{false}}"
+          key="roomBrightness"
           data-key="roomBrightness"
           data-show-toast="{{true}}"
         >
@@ -110,7 +111,7 @@
             src="/package-room-control/assets/img/btn.png"
             class="w-72rpx h-72rpx"
           />
-        </mz-slider> -->
+        </mz-slider>
       </view>
 
       <!-- 全房间色温控制 -->
@@ -122,7 +123,7 @@
           src="/package-room-control/assets/img/colorTemp.png"
           class="w-48rpx h-48rpx"
         />
-        <!-- <mz-slider
+        <mz-slider
           disabled="{{!hasRoomLightOn}}"
           catch:slideChange="handleColorTempChange"
           catch:slideEnd="handleColorTempEnd"
@@ -132,6 +133,7 @@
           bar-height="{{16}}"
           use-button-slot
           data-is-btn-inset="{{false}}"
+          key="roomColorTemp"
           data-key="roomColorTemp"
           data-show-toast="{{true}}"
           formatter="{{colorTempFormatter}}"
@@ -141,7 +143,7 @@
             src="/package-room-control/assets/img/btn.png"
             class="w-72rpx h-72rpx"
           />
-        </mz-slider> -->
+        </mz-slider>
       </view>
     </block>
   </view>
@@ -256,12 +258,12 @@
   bind:close="cancelCheckAndPops"
 ></dryer-control-popup>
 
-<air-control-popup
+<!-- <air-control-popup
   show="{{controlType === '0xAC'}}"
   isShowSetting="{{true}}"
   deviceInfo="{{checkedDeviceInfo}}"
   bind:close="cancelCheckAndPops"
-></air-control-popup>
+></air-control-popup> -->
 
 <air-control-popup-cac
   show="{{controlType === '0xCC'}}"
@@ -295,14 +297,14 @@
   bind:lightStatusChange="refreshLightStatus"
 ></device-control-popup>
 
-<batch-edit
+<!-- <batch-edit
   bind:updateDevice="updateQueue"
   bind:updateList="reloadDeviceListThrottle"
   bind:close="exitEditMode"
   bind:selectAll="editSelectAll"
   editSelectMode="{{editSelectMode}}"
   editSelectList="{{editSelectList}}"
-></batch-edit>
+></batch-edit> -->
 
 <mz-toast id="mz-toast" />
 

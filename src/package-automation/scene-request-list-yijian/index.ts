@@ -20,10 +20,10 @@ ComponentWithComputed({
   data: {
     opearationType: 'add', // add创建edit编辑
     sceneId: '',
-    isDefault: false,
     _sceneData: {} as Scene.AddSceneDto | Scene.UpdateSceneDto,
     deviceList: Array<Device.DeviceItem>(),
     linkSwitchPopup: false,
+    _timer: 0,
   },
 
   computed: {
@@ -34,26 +34,11 @@ ComponentWithComputed({
       return data.deviceList.filter((item) => item.status === 'success').length
     },
     tipsText(data) {
-      let text = '配置完成'
+      let text = '正在将一键场景数据下发至设备，请稍后…'
 
-      if (data.successNum < data.deviceList.length && data.finishNum === data.deviceList.length) {
-        Dialog.confirm({
-          title: '创建失败',
-          message: '部分设备配置一键场景失败，请确保所有设备在线后重试',
-          showCancelButton: false,
-          confirmButtonText: '我知道了',
-        })
-          .then(() => {
-            // on confirm
-          })
-          .catch(() => {
-            // on cancel
-          })
-      }
-
-      if (data.finishNum !== data.deviceList.length) {
+      if (data.finishNum === data.deviceList.length) {
         // text = `正在将场景配置下发至设备（${data.finishNum}/${data.deviceList.length}）…`
-        text = '正在将一键场景数据下发至设备，请稍后…'
+        text = '配置完成'
       }
 
       return text
@@ -72,17 +57,6 @@ ComponentWithComputed({
 
       const selectIdList = sceneDeviceActionsFlatten.map((item) => item.uniId)
 
-      // 找到这个sceneInfo
-      if (pageParams.sceneId) {
-        const curSceneInfo = sceneStore.allRoomSceneList.find(
-          (item) => item.sceneId === pageParams.sceneId,
-        ) as Scene.SceneItem
-        this.data.isDefault = curSceneInfo.isDefault === '1'
-        this.setData({
-          isDefault: curSceneInfo.isDefault === '1',
-        })
-      }
-
       const deviceList = deviceStore.allRoomDeviceFlattenList
         .filter((item) => selectIdList.includes(item.uniId))
         .map((item) => {
@@ -90,10 +64,10 @@ ComponentWithComputed({
             ;(item.pic = item.switchInfoDTOList[0]?.pic),
               (item.deviceName = `${item.switchInfoDTOList[0].switchName} | ${item.deviceName}`)
           }
-
+          // 2024.5.6经与云端沟通，目前仅zigbee灯需要接收状态
           return {
             ...item,
-            status: this.data.isDefault ? 'success' : 'waiting',
+            status: item.proType === PRO_TYPE.light ? 'waiting' : 'success',
           }
         })
 
@@ -170,16 +144,23 @@ ComponentWithComputed({
       })
 
       emitter.on('scene_device_result_status', (data) => {
-        console.log('scene_device_result_status', data)
+        // 2024.5.6经与云端沟通，目前仅zigbee灯需要接收状态
+        if (!data.modelName.toLowerCase().includes('light')) return
+        console.log('有用的scene_device_result_status', data)
+
         const device = this.data.deviceList.find(
           (item) => item.uniId === data.devId || item.uniId === `${data.devId}:${data.modelName}`,
         )
 
         if (device) {
           device.status = data.errCode === 0 ? 'success' : 'fail'
-          this.setData({
-            deviceList,
-          })
+          //避免频繁更新
+          this.data._timer && clearTimeout(this.data._timer)
+          this.data._timer = setTimeout(() => {
+            this.setData({
+              deviceList,
+            })
+          }, 1000)
         }
       })
       this.setData({
@@ -203,14 +184,32 @@ ComponentWithComputed({
             }
           })
 
-          this.setData({
-            deviceList,
-          })
+          this.setData(
+            {
+              deviceList,
+            },
+            () => {
+              if (
+                this.data.successNum < this.data.deviceList.length &&
+                this.data.finishNum === this.data.deviceList.length
+              ) {
+                Dialog.confirm({
+                  title: '创建失败',
+                  message: '部分设备配置一键场景失败，请确保所有设备在线后重试',
+                  showCancelButton: false,
+                  confirmButtonText: '我知道了',
+                })
+                  .then(() => {
+                    // on confirm
+                  })
+                  .catch(() => {
+                    // on cancel
+                  })
+              }
+            },
+          )
         }, 30000)
       } else {
-        // Toast({
-        //   message: '创建失败',
-        // })
         Dialog.confirm({
           title: '创建失败',
           message: '部分设备配置一键场景失败，请确保所有设备在线后重试',
@@ -248,7 +247,7 @@ ComponentWithComputed({
         wx.navigateBack()
         emitter.emit('sceneEdit')
       } else {
-        wx.navigateTo({ url: '/package-automation/scene-success/index' })
+        wx.redirectTo({ url: '/package-automation/scene-success/index' })
       }
     },
     linkSwitch() {
@@ -282,7 +281,6 @@ ComponentWithComputed({
         deviceActions,
         sceneId,
       })
-      // FIXME: 重试失败后应将wating状态重置为fail
       if (res.success) {
         setTimeout(() => {
           this.data.deviceList.forEach((item) => {
@@ -298,6 +296,15 @@ ComponentWithComputed({
       } else {
         Toast({
           message: '重试失败',
+        })
+        this.data.deviceList.forEach((item) => {
+          if (item.status === 'waiting') {
+            item.status = 'fail'
+          }
+        })
+
+        this.setData({
+          deviceList,
         })
       }
     },

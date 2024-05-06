@@ -1,5 +1,5 @@
 <import src="/commons/templates/secondaryPopup.wxml" />
-<van-popup
+<mz-popup
   show="{{ show }}"
   z-index="1002"
   round
@@ -8,19 +8,32 @@
   catchtouchmove="blank"
 >
   <view class="w-750rpx h-600rpx relative flex flex-col items-center">
-    <template
-      is="title"
-      data="{{title:dataInfo.title}}"
-    />
+    <text class="w-750rpx h-92rpx text-32rpx text-hex-999999 leading-92rpx text-center border-b-1px border-b-hex-EEF2F7 border-b-solid">{{dataInfo.title}}</text>
+
     <view class="h-52rpx"></view>
-    <time-picker-view
-      value="{{value}}"
-      colFir="{{dataList}}"
-      colSec="{{[]}}"
-      colFirUnit=""
-      bind:change="valueChange"
-    ></time-picker-view>
+    <scroll-view
+      type="list"
+      style="height: 132px"
+    >
+      <mz-picker
+        columns="{{pickerColumns}}"
+        default-index="{{value}}"
+        visible-item-count="{{3}}"
+        bind:change="valueChange"
+      ></mz-picker>
+    </scroll-view>
     <view class="h-62rpx"></view>
-    <template is="bottom-btn" />
+    <view class="flex justify-between items-end w-750rpx h-112rpx bg-hex-f9f9f9">
+      <view
+        class="h-96rpx w-374rpx leading-96rpx text-center secondary-popup-btn"
+        bindtap="handleCancel"
+        >取消</view
+      >
+      <view
+        class="h-96rpx w-374rpx leading-96rpx text-center secondary-popup-btn"
+        bindtap="handleConfirm"
+        >确定</view
+      >
+    </view>
   </view>
-</van-popup>
+</mz-popup>

@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "mz-movable": "/skyline-components/mz-movable/index"
+  }
+}

@@ -11,6 +11,7 @@ type baseData = {
   windowHeight: number
   realTopSize: number
   realBottomSize: number
+  wrapTopSize: number
   rows: number
   itemHeight: number
   maxScrollTop: number
@@ -70,6 +71,7 @@ Component({
      */
     init() {
       const { windowHeight, platform } = wx.getSystemInfoSync()
+      console.log('sssdsdsds', this.data.topSize, this.data.bottomSize)
 
       Object.assign(this.data._baseData, {
         platform: platform,
@@ -166,14 +168,31 @@ Component({
         if (!res || !res[0]) {
           return
         }
+        console.log('wwwwwwwwwwww', res[0])
+
         Object.assign(this.data._baseData, {
           itemHeight: res[0].height,
+          wrapTopSize: res[0].top,
           maxScrollTop:
-            this.data._baseData.rows * res[0].height -
+            this.data._baseData.rows * res[0].height +
+            (res[0].top - this.data._baseData.realTopSize) -
             (this.data._baseData.realBottomSize - this.data._baseData.realTopSize),
         })
+        console.log(
+          '为什么',
+          this.data._baseData.rows,
+          res[0].height,
+          res[0].top,
+          this.data._baseData.realBottomSize,
+          this.data._baseData.realTopSize,
+        )
 
-        console.log('this.data.baseData22', this.data._baseData)
+        console.log(
+          'this.data.baseData22',
+          this.data._baseData,
+          this.data._baseData.rows * res[0].height,
+          this.data._baseData.realBottomSize - this.data._baseData.realTopSize,
+        )
 
         this.setData({
           wrapStyle: `height: ${this.data._baseData.rows * this.data._baseData.itemHeight}px`,
@@ -213,7 +232,7 @@ Component({
 
     longPress(evt: { state: number; currentTarget: { dataset: { id: string; sortkey: number } }; absoluteY: number }) {
       'worklet'
-      console.log(evt)
+      // console.log(evt)
       // console.log(this);
 
       if (evt.state === 1) {
@@ -258,6 +277,7 @@ Component({
                 console.log('res', res)
                 this.data._scrollTop =
                   this.data._baseData.realTopSize +
+                  (this.data._baseData.wrapTopSize - this.data._baseData.realTopSize) +
                   this.data.curDragItem.sortKey * this.data._baseData.itemHeight -
                   res[0].top
                 this.data._scrollTopReady = true
@@ -314,6 +334,8 @@ Component({
         evt.absoluteY > this.data._baseData.realBottomSize &&
         this.data._scrollTop <= this.data._baseData.maxScrollTop
       ) {
+        console.log('看一下', this.data._scrollTop, this.data._baseData.maxScrollTop)
+
         if (this.data._autoMoveTimerId === null) {
           this.data._autoMoveTimerId = setInterval(() => {
             if (this.data._scrollTop >= this.data._baseData.maxScrollTop) {
@@ -340,21 +362,21 @@ Component({
       }
       const startKey = this.data.curDragItem.sortKey
       const endKey = Math.round(
-        (this.data._scrollTop + (absoluteY - this.data._baseData.itemHeight / 2) - this.data._baseData.realTopSize) /
+        (this.data._scrollTop + (absoluteY - this.data._baseData.itemHeight / 2) - this.data._baseData.wrapTopSize) /
           this.data._baseData.itemHeight,
       )
       // console.log(this.data.scrollTop,evt.absoluteY,this.data.topSize,this.data.itemHeight,(this.data.scrollTop + (evt.absoluteY) - this.data.topSize) / this.data.itemHeight);
       // console.log(startKey, endKey, this.data._preEndKey, startKey === endKey);
-      console.log(
-        '钱钱钱',
-        Math.round(
-          (this.data._scrollTop + (absoluteY - this.data._baseData.itemHeight / 2) - this.data._baseData.realTopSize) /
-            this.data._baseData.itemHeight,
-        ),
-        (this.data._scrollTop + (absoluteY - this.data._baseData.itemHeight / 2) - this.data._baseData.realTopSize) /
-          this.data._baseData.itemHeight,
-      )
-      console.log('哇哇哇', this.data._scrollTop, absoluteY, direction)
+      // console.log(
+      //   '钱钱钱',
+      //   Math.round(
+      //     (this.data._scrollTop + (absoluteY - this.data._baseData.itemHeight / 2) - this.data._baseData.realTopSize) /
+      //       this.data._baseData.itemHeight,
+      //   ),
+      //   (this.data._scrollTop + (absoluteY - this.data._baseData.itemHeight / 2) - this.data._baseData.realTopSize) /
+      //     this.data._baseData.itemHeight,
+      // )
+      // console.log('哇哇哇', this.data._scrollTop, absoluteY, direction)
 
       // 防止拖拽过程中发生乱序问题
       if (
@@ -408,9 +430,8 @@ Component({
         item.sortKey = item.tempSortKey
       })
     },
-  },
-  ready() {
-    // prof: 感觉没什么用，暂时注释
-    // this.init()
+    onItemClick(e: { detail: IAnyObject }) {
+      this.triggerEvent('itemClick', e.detail)
+    },
   },
 })

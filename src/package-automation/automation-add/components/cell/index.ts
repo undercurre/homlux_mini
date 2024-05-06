@@ -1,6 +1,4 @@
-import { ComponentWithComputed } from 'miniprogram-computed'
-
-ComponentWithComputed({
+Component({
   options: {},
   /**
    * 组件的属性列表
@@ -12,8 +10,6 @@ ComponentWithComputed({
     },
   },
 
-  computed: {},
-
   /**
    * 组件的初始数据
    */
@@ -24,10 +20,12 @@ ComponentWithComputed({
    */
   methods: {
     handleActionEdit(e: WechatMiniprogram.TouchEvent) {
-      this.triggerEvent('actionEdit', e.currentTarget.dataset.index)
+      console.log('hh')
+
+      this.triggerEvent('itemClick', { type: 'actionEdit', data: e.currentTarget.dataset.index })
     },
     handleActionDelete(e: WechatMiniprogram.TouchEvent) {
-      this.triggerEvent('actionDelete', e.currentTarget.dataset.dragid)
+      this.triggerEvent('itemClick', { type: 'actionDelete', data: e.currentTarget.dataset.dragid })
     },
   },
 })

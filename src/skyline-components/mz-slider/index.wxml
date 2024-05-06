@@ -1,0 +1,76 @@
+<view
+  id="mz-slider"
+  class="relative custom-class mz-slider {{ disabled ? 'mz-slider--disabled' : '' }}"
+  style="background:{{ inactiveColor }}; height: {{barHeight}}rpx; line-height:  {{barHeight}}rpx;"
+  value="{{value}}"
+>
+  <view
+    id="active-bar--{{key}}"
+    class="mz-slider-bar"
+    style="background:{{activeColor}}"
+  >
+    <!-- <mz-movable
+      direction="horizontal"
+      trigger="all"
+      key="{{key}}"
+      vibrate="{{false}}"
+      x="{{initX}}"
+      outOfBounds="{{false}}"
+      bound="{{bound}}"
+      bind:dragBegin="dragBegin"
+      bind:dragMove="dragMove"
+      bind:dragEnd="dragEnd"
+    >
+      <view
+        wx:if="{{isBtnInset}}"
+        id="button"
+        class="inset-wrapper px-12rpx"
+      >
+        <slot
+          wx:if="{{ useButtonSlot }}"
+          name="button"
+        ></slot>
+        <view
+          wx:else
+          class="mz-slider-button"
+        ></view>
+      </view>
+    </mz-movable> -->
+  </view>
+
+  <mz-movable
+    direction="horizontal"
+    trigger="all"
+    key="{{key}}"
+    vibrate="{{false}}"
+    x="{{initX}}"
+    outOfBounds="{{false}}"
+    bound="{{bound}}"
+    bind:dragBegin="dragBegin"
+    bind:dragMove="dragMove"
+    bind:dragEnd="dragEnd"
+  >
+    <view
+      class="button-wrapper"
+      style="{{btnStyle}}"
+    >
+      <slot
+        wx:if="{{ useButtonSlot }}"
+        name="button"
+      ></slot>
+      <view
+        wx:else
+        class="mz-slider-button"
+      ></view>
+    </view>
+  </mz-movable>
+
+  <view
+    wx:if="{{showToast}}"
+    id="slider-toast--{{key}}"
+    class="slider-toast"
+  >
+    <text class="toast-text">{{ formattedValue }}</text>
+    <view class="arrow"></view>
+  </view>
+</view>

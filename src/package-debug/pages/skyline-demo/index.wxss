@@ -11,3 +11,38 @@
 .section {
   border-top: 2rpx solid #000;
 }
+
+.slider-box {
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12rpx;
+  min-height: 72rpx;
+}
+
+.slider-brightness-bar {
+  box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.16);
+  width: 600rpx;
+}
+
+.slider-color-temp-bar {
+  background-image: linear-gradient(90deg, #ffdf7e 2%, #fff6e5 50%, #98b2fd 97%) !important;
+  box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.16);
+  width: 600rpx;
+}
+
+.slider-inset {
+  width: 600rpx;
+}
+
+.slider-button {
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 52rpx;
+  border: 3rpx solid #ffffff;
+  background-image: linear-gradient(30deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 60%) !important;
+  box-shadow: 3px 3px 6px 0px rgba(0, 0, 0, 0.1);
+}
+
+.slider-color-temp-bar {
+  background-image: linear-gradient(90deg, #ffde78 0%, #fff4d9 35%, #fff7e8 55%, #93affe 100%) !important;
+}

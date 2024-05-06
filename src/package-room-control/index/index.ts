@@ -26,6 +26,7 @@ import {
   verifyNetwork,
   Logger,
   strUtil,
+  delay,
 } from '../../utils/index'
 import {
   maxColorTemp,
@@ -145,6 +146,9 @@ ComponentWithComputed({
     },
     _timeId: null as null | number, // 自动刷新定时
     _delayTimeId: null as null | number, // 延时更新定时
+    title: '',
+    sceneListInBar: [] as Scene.SceneItem[],
+    canAddDevice: false,
   },
 
   computed: {
@@ -174,23 +178,24 @@ ComponentWithComputed({
       const { devicePageList } = data
       return devicePageList?.length > 1 || (devicePageList?.length === 1 && devicePageList[0].length > 0)
     },
-    title(data) {
-      return data.currentRoom?.roomName ?? ''
-    },
-    sceneListInBar(data) {
-      if (data.sceneList) {
-        return data.sceneList.slice(0, 4)
-      }
-      return []
-    },
-    deviceIdTypeMap(data): Record<string, string> {
-      if (data.deviceList?.length) {
-        return Object.fromEntries(
-          data.deviceList.map((device: DeviceCard) => [device.deviceId, proName[device.proType]]),
-        )
-      }
-      return {}
-    },
+    // title(data) {
+    //   return data.currentRoom?.roomName ?? ''
+    // },
+    // sceneListInBar(data) {
+    //   if (data.sceneList) {
+    //     return data.sceneList.slice(0, 4)
+    //   }
+    //   return []
+    // },
+    // DESERTED 过时代码
+    // deviceIdTypeMap(data): Record<string, string> {
+    //   if (data.deviceList?.length) {
+    //     return Object.fromEntries(
+    //       data.deviceList.map((device: DeviceCard) => [device.deviceId, proName[device.proType]]),
+    //     )
+    //   }
+    //   return {}
+    // },
     // 设备批量选择按钮文字
     allSelectBtnText(data) {
       return data.checkedList && data.checkedList.length > 0 ? '全不选' : '全选'
@@ -206,9 +211,9 @@ ComponentWithComputed({
       )
     },
     // 判断是否是创建者或者管理员，其他角色不能添加设备
-    canAddDevice(data) {
-      return data.isCreator || data.isAdmin
-    },
+    // canAddDevice(data) {
+    //   return data.isCreator || data.isAdmin
+    // },
     // 可滚动区域高度
     scrollViewHeight(data) {
       let baseHeight =
@@ -237,8 +242,8 @@ ComponentWithComputed({
     },
     // 设备卡片可移动区域高度
     movableAreaHeight(data) {
-      const { deviceFlattenList } = data
-      return Math.ceil((deviceFlattenList?.length ?? 4) / 4) * 236
+      const { devicePageList } = data
+      return Math.ceil((devicePageList?.length ?? 4) / 4) * 236
     },
   },
 
@@ -366,6 +371,19 @@ ComponentWithComputed({
             url: '/pages/index/index',
           })
         }
+      })
+    },
+
+    async onReady() {
+      await delay(1000)
+      this.init()
+    },
+
+    init() {
+      this.setData({
+        title: roomStore.currentRoom?.roomName ?? '',
+        sceneListInBar: sceneStore.sceneList?.length ? sceneStore.sceneList.slice(0, 4) : [],
+        canAddDevice: homeStore.isManager,
       })
     },
 

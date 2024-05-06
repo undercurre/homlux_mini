@@ -1,11 +1,10 @@
 <!-- 背景 -->
-<view class="w-100vw h-100vh fixed left-0 top-0 bg-hex-f4f8ff bg-z-index-1"></view>
+<view class="w-100vw h-100vh absolute left-0 top-0 bg-hex-f4f8ff bg-z-index-1"></view>
 <view
-  class="fixed left-0 top-0 w-100vw h-50vh bg-z-index"
+  class="absolute left-0 top-0 w-100vw h-50vh bg-z-index"
   style="background: linear-gradient(180deg, rgba(87, 105, 255, 0.1) 0%, rgba(87, 105, 255, 0) 100%)"
 ></view>
-
-<view class="page-container flex flex-col h-screen">
+<view class="h-100vh flex flex-col">
   <!-- 标题 -->
   <nav-bar
     title="创建场景"
@@ -16,10 +15,11 @@
 
   <!-- 设备卡片列表 -->
   <scroll-view
+    type="list"
     scroll-y
     enhanced
     show-scrollbar="{{false}}"
-    class="h-500 grow px-24rpx mt-48rpx pb-16rpx box-border"
+    class="flex-1 px-24rpx mt-48rpx pb-16rpx box-border"
   >
     <view
       wx:for="{{deviceList}}"
@@ -56,10 +56,10 @@
     </view>
   </scroll-view>
   <view
-    class="flex flex-row justify-between px-32rpx"
     wx:if="{{finishNum === deviceList.length}}"
+    class="flex flex-row justify-between px-32rpx mt-32rpx mb-48rpx"
   >
-    <van-button
+    <mz-button
       wx:if="{{successNum < deviceList.length}}"
       custom-class="double-btn"
       custom-style="border: 2rpx solid #A2A2A2;"
@@ -67,14 +67,14 @@
       bind:click="linkSwitch"
     >
       <text class="text-36rpx text-black-tips">跳过</text>
-    </van-button>
-    <van-button
+    </mz-button>
+    <mz-button
       type="primary"
       custom-class="{{successNum < deviceList.length ? 'double-btn' : 'single-btn'}}"
       bind:click="{{ successNum === deviceList.length ? 'linkSwitch' : 'retry'}}"
     >
       <text class="text-36rpx">{{ successNum === deviceList.length ? '下一步' : '重试'}}</text>
-    </van-button>
+    </mz-button>
   </view>
 </view>
 
@@ -86,8 +86,8 @@
   bind:confirm="handleShowAddSceneSuccess"
 />
 
-<van-toast id="van-toast" />
-<van-dialog
-  id="van-dialog"
+<mz-toast id="mz-toast" />
+<mz-dialog
+  id="mz-dialog"
   confirm-button-color="#488FFF"
 />

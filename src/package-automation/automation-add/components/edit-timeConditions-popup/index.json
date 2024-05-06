@@ -2,9 +2,9 @@
   "component": true,
   "styleIsolation": "apply-shared",
   "usingComponents": {
-    "van-button": "@vant/weapp/button/index",
-    "van-popup": "@vant/weapp/popup/index",
-    "time-picker-view": "../../../../components/time-picker-view/index",
+    "mz-button": "../../../../skyline-components/mz-button/index",
+    "mz-popup": "../../../../skyline-components/mz-popup/index",
+    "mz-picker": "../../../../skyline-components/mz-picker/index",
     "period-select": "../../../../components/period-select/index"
   }
 }
