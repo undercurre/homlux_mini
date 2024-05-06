@@ -1,5 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { isNullOrUnDef } from '../../utils/index'
+import { rpx2px } from '../../utils/index'
 
 ComponentWithComputed({
   externalClasses: ['custom-class'],
@@ -16,13 +16,36 @@ ComponentWithComputed({
     activeColor: String,
     inactiveColor: String,
     key: String,
+    // 滑条取值（%）
     value: {
       type: Number,
       value: 1,
+      observer(v) {
+        if (this.data.barWidth) {
+          const _width = Math.round((this.data.barWidth / 100) * v)
+          const initX = _width + this.data.btnOffsetX
+          this.data._x.value = _width // TODO 加上动画
+          this.setData({ initX, showValue: v })
+        }
+      },
+    },
+    // 按钮是否在滑条容器内
+    isBtnInset: {
+      type: Boolean,
+      value: true,
+    },
+    // 是否显示拖动提示
+    showToast: {
+      type: Boolean,
+      value: false,
     },
     barHeight: {
       type: Number,
       value: 80,
+    },
+    btnWidth: {
+      type: Number,
+      value: 72,
     },
     btnHeight: {
       type: Number,
@@ -42,34 +65,41 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
+    initX: 0,
     _x: { value: 0 },
-    isBtnInset: true,
-    showToast: false,
+    _toast_opacity: { value: 0 },
+    _toast_x: { value: 0 },
+    showValue: 0,
+    bound: {},
+    barWidth: 100,
   },
 
   computed: {
     formattedValue(data) {
-      return data.formatter(data.value) ?? ''
+      return data.formatter(data.showValue) ?? ''
+    },
+    btnOffsetX(data) {
+      const { isBtnInset } = data
+      return isBtnInset ? -rpx2px(data.btnWidth) : -rpx2px(data.btnWidth / 2)
+    },
+    btnStyle(data) {
+      const { btnWidth, btnHeight, barHeight } = data
+      const btnTop = -barHeight / 2 - btnHeight / 2
+      return `top: ${btnTop}rpx; width: ${btnWidth}rpx;`
     },
   },
 
   lifetimes: {
     attached() {
-      // 将 dataset 数据传到组件变量中
       const diffData = {
-        btnTop: this.data.barHeight / 2 - this.data.btnHeight / 2 + 'rpx',
+        initX: this.data.btnOffsetX,
       } as IAnyObject
-
-      if (!isNullOrUnDef(this.dataset.isBtnInset)) {
-        diffData.isBtnInset = this.dataset.isBtnInset
-      }
-      if (!isNullOrUnDef(this.dataset.showToast)) {
-        diffData.showToast = this.dataset.showToast
-      }
 
       this.setData(diffData)
 
-      this.data._x = wx.worklet.shared(0)
+      this.data._x = wx.worklet.shared(this.data.btnOffsetX)
+      this.data._toast_opacity = wx.worklet.shared(0)
+      this.data._toast_x = wx.worklet.shared(0)
 
       this.applyAnimatedStyle(`#active-bar--${this.data.key}`, () => {
         'worklet'
@@ -77,34 +107,82 @@ ComponentWithComputed({
           width: `${this.data._x.value}px`,
         }
       })
+
+      if (this.data.showToast) {
+        this.applyAnimatedStyle(`#slider-toast--${this.data.key}`, () => {
+          'worklet'
+          return {
+            opacity: this.data._toast_opacity.value,
+            transform: `translateX(${this.data._toast_x.value}px)`,
+          }
+        })
+      }
+    },
+    ready() {
+      // 修改边界
+      this.createSelectorQuery()
+        .select('#mz-slider')
+        .boundingClientRect()
+        .exec((res) => {
+          const barWidth = res[0]?.width ?? 100
+          const initX = Math.round((barWidth / 100) * this.data.value) + this.data.btnOffsetX
+          const left = this.data.isBtnInset ? 0 : this.data.btnOffsetX
+          const right = barWidth + this.data.btnOffsetX
+          this.setData({
+            barWidth,
+            initX,
+            bound: {
+              top: 0,
+              left,
+              right,
+              bottom: 0,
+            },
+          })
+
+          this.data._x.value = initX - this.data.btnOffsetX
+        })
     },
   },
   /**
    * 组件的方法列表
    */
   methods: {
+    // TODO
     valueChange(e: { value: number }) {
       this.setData({
-        value: e.value,
+        showValue: e.value,
       })
       this.triggerEvent('slideChange', this.data.value)
     },
-    handleEnd(e: { value: number }) {
+    dragEnd(e: { detail: { x: number } }) {
+      'worklet'
+      console.log('dragBegin', e)
       this.setData({
-        value: e.value,
+        showValue: Math.round((e.detail.x / this.data.barWidth) * 100),
       })
-      this.triggerEvent('slideEnd', this.data.value)
+      if (this.data.showToast) {
+        this.data._toast_opacity.value = 0
+      }
+      // this.triggerEvent('slideEnd', this.data.value)
     },
-    touchstart(e: { value: number }) {
-      this.setData({
-        value: e.value,
-      })
-      this.triggerEvent('slideStart', this.data.value)
+    dragBegin(e: { detail: { x: number } }) {
+      'worklet'
+      console.log('dragBegin', e)
+      if (this.data.showToast) {
+        this.data._toast_opacity.value = 1
+        this.data._toast_x.value = e.detail.x
+      }
+      // TODO 节流setData
+      // this.triggerEvent('slideStart', this.data.value)
     },
     dragMove(e: { detail: number[] }) {
       'worklet'
-      console.log('dragMove', e.detail[2])
-      this.data._x.value = e.detail[2]
+      // console.log('dragMove', e.detail[2])
+      this.data._x.value = e.detail[2] - this.data.btnOffsetX
+      if (this.data.showToast) {
+        this.data._toast_opacity.value = 1
+        this.data._toast_x.value = e.detail[2]
+      }
     },
   },
 })
