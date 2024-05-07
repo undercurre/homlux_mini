@@ -1,4 +1,3 @@
-<!-- <view bind:tap="toggleDragging">button</view> -->
 <view
   id="list-wrapper"
   class="drag-list-wrapper drag-list-wrapper-class"
@@ -10,14 +9,12 @@
   change:list="{{handler.listObserver}}"
   change:baseData="{{handler.baseDataObserver}}"
 >
-  <!-- <view  class="item" wx:for="{{list}}" id="ID{{item.id}}" wx:key="id"  data-index="{{index}}" style="width: 100%" bind:longpress="{{handler.longPress}}" catch:touchmove="{{dragging ? handler.touchMove : ''}}" catch:touchend="{{dragging ? handler.touchEnd : ''}}"> -->
   <view
     class="item"
     wx:for="{{list}}"
     id="ID{{item.id}}"
     wx:key="id"
   >
-    <!-- <vertical-drag-gesture-handler data-id="{{item.id}}" worklet:ongesture="longPress"> -->
     <long-press-gesture-handler
       data-id="{{item.id}}"
       data-sortKey="{{item.sortKey}}"
@@ -29,7 +26,6 @@
         bind:itemClick="onItemClick"
       />
     </long-press-gesture-handler>
-    <!-- </vertical-drag-gesture-handler> -->
   </view>
 </view>
 <root-portal
