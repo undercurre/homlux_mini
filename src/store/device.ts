@@ -97,6 +97,7 @@ export const deviceStore = observable({
   get allRoomSensorList(): Device.DeviceItem[] {
     const sensorList = deviceStore.allRoomDeviceList.filter((item) => item.proType === PRO_TYPE.sensor)
     sensorList.forEach((item) => {
+      item.uniId = item.deviceId
       if (item.productId === PRODUCT_ID.humanSensor) {
         item.property = { occupancy: 1, modelName: 'irDetector' }
       } else if (item.productId === PRODUCT_ID.doorSensor) {

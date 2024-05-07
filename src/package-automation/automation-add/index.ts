@@ -46,7 +46,6 @@ ComponentWithComputed({
       startTime: '00:00',
       endTime: '23:59',
     },
-    // contentHeight: 0,
     showEditIconPopup: false, //展示编辑场景图标popup
     showEditConditionPopup: false, //展示添加条件popup
     showEditActionPopup: false, //展示添加执行动作popup
@@ -57,10 +56,6 @@ ComponentWithComputed({
     sceneEditTitle: '',
     sceneEditInfo: {} as IAnyObject,
 
-    //场景和设备的组合列表
-    // list: [] as (Device.DeviceItem | Scene.SceneItem)[],
-    //场景列表
-    sceneList: [] as Scene.SceneItem[],
     //设备列表 //除网关智慧屏和传感器
     deviceList: [] as Device.DeviceItem[],
     //传感器列表
@@ -69,7 +64,7 @@ ComponentWithComputed({
     sceneDevicelinkSelectList: [] as string[],
     tempSceneDevicelinkSelectedList: [] as string[],
     /** 已选中的传感器 */
-    sensorlinkSelectList: [] as Scene.DeviceCondition[],
+    sensorlinkSelectList: [] as string[],
     selectCardType: 'device', //设备卡片：'device'  场景卡片： 'scene'  传感器卡片：'sensor'
     showSelectCardPopup: false,
     /** 将当前场景里多路的action拍扁 */
@@ -110,7 +105,7 @@ ComponentWithComputed({
       if (data.selectCardType === 'scene') {
         return sceneStore.allRoomSceneList
       } else if (data.selectCardType === 'sensor') {
-        return deviceStore.allRoomSensorList
+        return data.sensorList
       } else {
         return data.deviceList.filter((item) => !data.sceneDevicelinkSelectList.includes(item.uniId))
       }
@@ -168,11 +163,8 @@ ComponentWithComputed({
       return data.autoSceneId ? '确定' : '设置好了'
     },
   },
-  /**
-   * 组件的方法列表
-   */
-  methods: {
-    async onLoad() {
+  lifetimes: {
+    async ready() {
       this.createSelectorQuery()
         .select('#ScrollView')
         .boundingClientRect()
@@ -195,6 +187,7 @@ ComponentWithComputed({
         deviceList: deviceStore.allRoomDeviceFlattenList.filter(
           (item) => item.proType !== PRO_TYPE.gateway && item.proType !== PRO_TYPE.sensor,
         ),
+        sensorList: deviceStore.allRoomSensorList,
       })
       const { autosceneid, roomid, yijianSceneId, sceneInfo } = getCurrentPageParams()
       console.log(
@@ -231,7 +224,7 @@ ComponentWithComputed({
       const currentSceneInfo = JSON.parse(sceneInfo) as AutoScene.AutoSceneItem | Scene.SceneItem
       if (currentSceneInfo.conditionType) {
         console.log('自动场景')
-        const sensorlinkSelectList = [] as Scene.DeviceCondition[]
+        const sensorlinkSelectList = [] as string[]
         const autoSceneInfo = currentSceneInfo as AutoScene.AutoSceneItem
         this.data._autosceneInfo = autoSceneInfo
         this.setData({
@@ -249,10 +242,7 @@ ComponentWithComputed({
         if (autoSceneInfo.deviceConditions.length) {
           //暂时设备只有传感器条件
           autoSceneInfo.deviceConditions.forEach((action) => {
-            const index = deviceStore.allRoomSensorList.findIndex((item) => item.deviceId === action.deviceId)
-            if (index !== -1) {
-              sensorlinkSelectList.push({ deviceId: action.deviceId, controlEvent: action.controlEvent })
-            }
+            sensorlinkSelectList.push(action.deviceId)
           })
         } else {
           //时间条件
@@ -491,7 +481,11 @@ ComponentWithComputed({
         )
       }
     },
-
+  },
+  /**
+   * 组件的方法列表
+   */
+  methods: {
     inputAutoSceneName(e: { detail: string }) {
       this.setData({
         sceneName: e.detail || '',
@@ -774,9 +768,7 @@ ComponentWithComputed({
       const listType =
         this.data.selectCardType === 'sensor' ? 'sensorlinkSelectList' : 'tempSceneDevicelinkSelectedList'
       // 取消选择逻辑
-      const index = this.data[listType].findIndex(
-        (item) => item === selectId || (item as Scene.DeviceCondition).deviceId === selectId,
-      )
+      const index = this.data[listType].findIndex((item) => item === selectId)
       if (index > -1) {
         this.data[listType].splice(index, 1)
         this.setData({
@@ -804,11 +796,13 @@ ComponentWithComputed({
           tempSceneDevicelinkSelectedList: [...this.data['tempSceneDevicelinkSelectedList'], selectId],
         })
       }
+      console.log('handleSelectCardSelect', e, e.detail)
+
       if (this.data.selectCardType === 'sensor') {
         //传感器只单选
-        const sensor = deviceStore.allRoomSensorList.find((item) => item.deviceId === selectId)
+        console.log('handleSelectCardSelect', e, e.detail)
         this.setData({
-          sensorlinkSelectList: sensor ? [{ deviceId: sensor.deviceId, controlEvent: [{ ...sensor.property }] }] : [],
+          sensorlinkSelectList: [e.detail],
         })
       }
     },
@@ -1022,14 +1016,10 @@ ComponentWithComputed({
           type: 6,
         })
       }
-
       //已选中的传感器
       const sensorSelected = this.data.sensorlinkSelectList
-        .map((selected) => {
-          return deviceStore.allRoomSensorList.find((item) => item.deviceId === selected.deviceId)
-        })
-        .filter((item) => item !== undefined) as Device.DeviceItem[]
-
+        .map((id) => this.data.sensorList.find((item) => item.deviceId === id))
+        .filter((obj) => obj !== undefined) as Device.DeviceItem[]
       sensorSelected.forEach((item) => {
         sceneDeviceConditionsFlatten.push({
           uniId: item.deviceId,
@@ -1263,7 +1253,7 @@ ComponentWithComputed({
 
     async handleSave() {
       if (this.data.opearationType === 'yijian') {
-        this.go2dispatch()
+        this.editYijianScene()
         return
       }
       // 判断是否有非法重复的动作
@@ -1404,14 +1394,6 @@ ComponentWithComputed({
       console.log('sceneDeviceActionsFlatten保存', this.data.sceneDeviceActionsFlatten)
       console.log('sceneDeviceConditionsFlatten保存', this.data.sceneDeviceConditionsFlatten)
 
-      // storage.set('autoscene_data', newSceneData)
-      // storage.set('autosceneDeviceActionsFlatten', this.data.sceneDeviceActionsFlatten)
-      // storage.set('autosceneDeviceConditionsFlatten', this.data.sceneDeviceConditionsFlatten)
-
-      // wx.navigateTo({
-      //   url: '/package-automation/automation-request-list/index',
-      // })
-
       // 处理发送请求的deviceActions字段数据
       const deviceMap = deviceStore.allRoomDeviceMap
       this.data.sceneDeviceActionsFlatten.forEach((action) => {
@@ -1521,7 +1503,7 @@ ComponentWithComputed({
         })
       }
     },
-    async go2dispatch() {
+    async editYijianScene() {
       // 检查场景名是否合法
       const isLegal = this.isSceneNameLegal(this.data.sceneName)
       if (!isLegal) return
@@ -1667,6 +1649,8 @@ ComponentWithComputed({
     },
     /* 执行结果拖拽相关方法 start */
     handleScroll(e: { detail: { scrollTop: number } }) {
+      console.log('eeeeehandleScroll')
+
       this.setData({
         'scrollInfo.scrollTop': e.detail.scrollTop,
       })

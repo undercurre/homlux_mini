@@ -1,4 +1,4 @@
-import Toast from '@vant/weapp/toast/toast'
+import Toast from '../../skyline-components/mz-toast/toast'
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { autosceneStore, deviceStore, homeStore, roomStore, sceneStore } from '../../store/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
