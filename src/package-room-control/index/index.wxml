@@ -55,10 +55,10 @@
         >场景</text
       >
       <view
-        class="flex flex-1 justify-end items-center"
+        class="flex flex-1 flex-row justify-end items-center"
         bind:tap="handleSceneTap"
       >
-        <view class="mr-38rpx flex">
+        <view class="mr-38rpx flex flex-row">
           <view
             class="scene-icon p-4rpx bg-hex-fff rounded-999"
             wx:for="{{sceneListInBar}}"
@@ -93,18 +93,16 @@
         />
         <mz-slider
           disabled="{{!hasRoomLightOn}}"
-          catch:slideChange="handleLevelChange"
           catch:slideEnd="handleLevelEnd"
           value="{{roomLight.brightness}}"
           custom-class="slider-brightness-bar"
           active-color="linear-gradient(90deg, rgba(80, 127, 255, 1) 0%, #ffffff 100%)"
           bar-height="{{16}}"
           use-button-slot
-          data-min="{{1}}"
-          data-is-btn-inset="{{false}}"
+          min="{{1}}"
+          is-btn-inset="{{false}}"
           key="roomBrightness"
-          data-key="roomBrightness"
-          data-show-toast="{{true}}"
+          show-toast="{{true}}"
         >
           <image
             slot="button"
@@ -125,17 +123,15 @@
         />
         <mz-slider
           disabled="{{!hasRoomLightOn}}"
-          catch:slideChange="handleColorTempChange"
           catch:slideEnd="handleColorTempEnd"
           value="{{roomLight.colorTemperature}}"
           custom-class="slider-color-temp-bar"
           active-color="rgba(0,0,0,0)"
           bar-height="{{16}}"
           use-button-slot
-          data-is-btn-inset="{{false}}"
+          is-btn-inset="{{false}}"
           key="roomColorTemp"
-          data-key="roomColorTemp"
-          data-show-toast="{{true}}"
+          show-toast="{{true}}"
           formatter="{{colorTempFormatter}}"
         >
           <image

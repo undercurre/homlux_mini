@@ -5,6 +5,11 @@
   "renderer": "skyline",
   "componentFramework": "glass-easel",
   "disableScroll": true,
+  "rendererOptions": {
+    "skyline": {
+      "defaultDisplayBlock": false
+    }
+  },
   "usingComponents": {
     "mz-button": "/skyline-components/mz-button/index",
     "mz-toast": "/skyline-components/mz-toast/index",

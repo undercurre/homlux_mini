@@ -199,10 +199,17 @@ ComponentWithComputed({
     sliderMove(e: WechatMiniprogram.TouchEvent) {
       this.handleSlider(e.changedTouches[0].pageX)
     },
-    sliderEnd() {
+    sliderEnd(e: WechatMiniprogram.TouchEvent) {
       if (this.data.showToast && this.data._toast_opacity.value) {
         this.data._toast_opacity.value = 0
       }
+      const activedWidth = Math.min(
+        this.data.barWidth,
+        Math.max(this.data.btnOffsetX, e.changedTouches[0].pageX - this.data.barLeft),
+      )
+      const _value = this.widthToValue(activedWidth)
+
+      this.triggerEvent('slideEnd', _value)
     },
     dragEnd(e: { detail: { x: number } }) {
       'worklet'
