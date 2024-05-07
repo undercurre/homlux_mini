@@ -93,5 +93,10 @@ Component({
         brightness: Math.round(Math.random() * 100),
       })
     },
+    slideEnd(e: { detail: number }) {
+      this.setData({
+        brightness: e.detail,
+      })
+    },
   },
 })

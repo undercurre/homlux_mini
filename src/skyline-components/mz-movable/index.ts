@@ -1,21 +1,8 @@
 // skyline-components/mz-movable/index.ts
-import { runOnJS, Easing, timing } from '../common/worklet'
-
-enum State {
-  // 手势未识别
-  POSSIBLE = 0,
-  // 手势已识别
-  BEGIN = 1,
-  // 连续手势活跃状态
-  ACTIVE = 2,
-  // 手势终止
-  END = 3,
-  // 手势取消
-  CANCELLED = 4,
-}
+import { runOnJS, Easing, timing, GestureState } from '../common/worklet'
 
 type GestureEvent = {
-  state: State
+  state: GestureState
   absoluteX: number
   absoluteY: number
 }
@@ -196,17 +183,17 @@ Component({
       const y = this.data._y.value
       const lastX = this.data._lastX.value
       const lastY = this.data._lastY.value
-      console.log('MOVE trigger', e.state, e.absoluteX, { x, y })
+      // console.log('MOVE trigger', e.state, e.absoluteX, { x, y })
 
       switch (e.state) {
         // 拖动识别，保存初始值
-        case State.POSSIBLE: {
+        case GestureState.POSSIBLE: {
           this.data._originX.value = e.absoluteX
           this.data._originY.value = e.absoluteY
           break
         }
         // 拖动开始
-        case State.BEGIN: {
+        case GestureState.BEGIN: {
           if (wx.vibrateShort && this.data.vibrate) {
             runOnJS(wx.vibrateShort)({ type: 'heavy' })
           }
@@ -216,7 +203,7 @@ Component({
         }
 
         // 拖动继续（拖动中）
-        case State.ACTIVE: {
+        case GestureState.ACTIVE: {
           const translationX = e.absoluteX - this.data._originX.value
           const translationY = e.absoluteY - this.data._originY.value
           const newX = Math.round(translationX + lastX)
@@ -243,13 +230,13 @@ Component({
         }
 
         // 松手
-        case State.END:
+        case GestureState.END:
           // 暂存坐标
           this.data._lastX.value = x
           this.data._lastY.value = y
           runOnJS(this.triggerEvent.bind(this))('dragEnd', { x, y })
 
-          console.log('MOVE State.END', { x, y })
+          console.log('MOVE GestureState.END', { x, y })
           break
 
         default:
