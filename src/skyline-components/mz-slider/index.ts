@@ -83,6 +83,7 @@ ComponentWithComputed({
     _value: 0, // 用于内部计算的值
     bound: {}, // 滑动区域
     barWidth: 300, // 滑动条总宽度
+    toastWidth: 80, // 提示宽度
     barLeft: 0, // 滑动条左边距
     _dragging: false, // 滑动柄已拖拽中（防止手势冲突）
   },
@@ -161,6 +162,16 @@ ComponentWithComputed({
 
           this.data._actived_x.value = _value
         })
+      if (this.data.showToast) {
+        this.createSelectorQuery()
+          .select(`#slider-toast--${this.data.key}`)
+          .boundingClientRect()
+          .exec((res) => {
+            console.log(`#slider-toast--${this.data.key}`, res[0])
+            const toastWidth = res[0]?.width ?? 80
+            this.setData({ toastWidth })
+          })
+      }
     },
   },
   /**
@@ -177,7 +188,7 @@ ComponentWithComputed({
       this.data._actived_x.value = activedWidth
       if (this.data.showToast) {
         this.data._toast_opacity.value = 1
-        this.data._toast_x.value = activedWidth
+        this.data._toast_x.value = activedWidth - this.data.toastWidth / 2
       }
     },
     // 直接点击滑动条
@@ -216,7 +227,7 @@ ComponentWithComputed({
       this.data._actived_x.value = activedWidth
       if (this.data.showToast) {
         this.data._toast_opacity.value = 1
-        this.data._toast_x.value = activedWidth
+        this.data._toast_x.value = activedWidth - this.data.toastWidth / 2
         const _value = this.widthToValue(activedWidth)
         runOnJS(this.setData.bind(this))({
           _value,
@@ -230,7 +241,7 @@ ComponentWithComputed({
       const activedWidth = e.detail[2] + this.data.btnOffsetX
       this.data._actived_x.value = activedWidth
       if (this.data.showToast) {
-        this.data._toast_x.value = activedWidth
+        this.data._toast_x.value = activedWidth - this.data.toastWidth / 2
         const _value = this.widthToValue(activedWidth)
         runOnJS(this.setData.bind(this))({
           _value,
