@@ -1,37 +1,37 @@
-<view class="cell-box">
-  <mz-cell
-    custom-class="cell"
-    label="{{linkDesc}}"
-    title="{{sceneName}}"
-    label-class="cell-lable"
-    border="{{ false }}"
-    clickable
-    center
-    data-item="{{item.data}}"
-    bind:click="toEditScene"
-  >
+<view class="px-24rpx py-12rpx">
+  <tap-gesture-handler worklet:ongesture="toEditScene">
     <view
-      slot="icon"
-      class="rounded-32rpx p-16rpx mr-16rpx flex"
+      class="flex flex-row items-center bg-hex-fff rounded-32rpx px-40rpx py-32rpx relative"
+      hover-class="cell--hover"
+      hover-stay-time="70"
     >
-      <!-- HACK:开发者工具中会一直发请求 -->
-      <image
-        wx:if="{{icon}}"
-        class="w-64 h-64 bg-hex-F5F5F5 rounded-full"
-        src="https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/auto-scene/{{icon}}.png"
-      ></image>
-    </view>
+      <view class="cell-content">
+        <view class="flex flex-row items-center">
+          <view class="rounded-32rpx p-16rpx mr-16rpx">
+            <!-- HACK:开发者工具中会一直发请求 -->
+            <image
+              wx:if="{{icon}}"
+              class="w-64 h-64 bg-hex-F5F5F5 rounded-full"
+              src="https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com/homlux/auto-scene/{{icon}}.png"
+            ></image>
+          </view>
 
-    <view
-      slot="right-icon"
-      class="btn-raw w-110rpx h-64rpx relative rounded-24rpx flex-center"
-      data-item="{{item.data}}"
-      catchtap="handleExecScene"
-    >
-      <text class="text-blue text-28rpx">执行</text>
-      <view class="absolute left-0 top-0 opacity-0 w-full h-full flex-center rounded-24rpx {{tapAnimate?'btn-tap':''}}">
-        <text class="text-hex-fff text-28rpx">执行</text>
+          <view class="flex flex-col">
+            <view class="title">{{ sceneName }}</view>
+            <view class="label">{{ linkDesc }}</view>
+          </view>
+        </view>
+        <view class="cell-right">
+          <tap-gesture-handler worklet:ongesture="handleExecScene">
+            <view class="btn-raw w-110rpx h-64rpx relative rounded-24rpx flex-center">
+              <text class="text-blue text-28rpx">执行</text>
+              <view class="absolute left-0 top-0 opacity-0 w-full h-full flex-center rounded-24rpx {{tapAnimate?'btn-tap':''}}">
+                <text class="text-hex-fff text-28rpx">执行</text>
+              </view>
+            </view>
+          </tap-gesture-handler>
+        </view>
       </view>
     </view>
-  </mz-cell>
+  </tap-gesture-handler>
 </view>

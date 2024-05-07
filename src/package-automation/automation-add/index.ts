@@ -1128,10 +1128,10 @@ ComponentWithComputed({
      * @param e
      * @returns
      */
-    handleAutoSceneActionEdit(index: number) {
-      // const index = e.detail
-      const action = this.data.sceneDeviceActionsFlatten[index]
+    handleAutoSceneActionEdit(dragId: string) {
+      const action = this.data.sceneDeviceActionsFlatten.find((item) => item.dragId === dragId)
       console.log('handleAutoSceneActionEdit', action)
+      if (!action) return
       if (action.type === 6) {
         this.setData({
           delay: action.value.delayTime,
@@ -1688,7 +1688,7 @@ ComponentWithComputed({
       if (type === 'actionDelete') {
         this.handleActionDelete(data as string)
       } else if (type === 'actionEdit') {
-        this.handleAutoSceneActionEdit(data as number)
+        this.handleAutoSceneActionEdit(data as string)
       }
     },
     // 检查场景名是否合法

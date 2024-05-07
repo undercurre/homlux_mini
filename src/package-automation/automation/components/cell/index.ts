@@ -3,6 +3,7 @@ import Toast from '../../../../skyline-components/mz-toast/toast'
 import { execScene } from '../../../../apis/index'
 import { homeStore } from '../../../../store/index'
 import { strUtil } from '../../../../utils/strUtil'
+import { runOnJS } from '../../../../skyline-components/common/worklet'
 
 ComponentWithComputed({
   options: {},
@@ -50,7 +51,11 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    async handleExecScene(e: WechatMiniprogram.TouchEvent) {
+    handleExecScene() {
+      'worklet'
+      runOnJS(this.handleExecSceneJS.bind(this))()
+    },
+    async handleExecSceneJS() {
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
       this.setData({
         tapAnimate: true,
@@ -60,7 +65,7 @@ ComponentWithComputed({
           tapAnimate: false,
         })
       }, 700)
-      const res = await execScene(e.currentTarget.dataset.item.sceneId)
+      const res = await execScene(this.data.item.data.sceneId)
       if (res.success) {
         Toast('执行成功')
       } else {
@@ -68,6 +73,10 @@ ComponentWithComputed({
       }
     },
     toEditScene() {
+      'worklet'
+      runOnJS(this.toEditSceneJS.bind(this))()
+    },
+    toEditSceneJS() {
       if (homeStore.isManager) {
         wx.navigateTo({
           url: strUtil.getUrlWithParams('/package-automation/automation-add/index', {
