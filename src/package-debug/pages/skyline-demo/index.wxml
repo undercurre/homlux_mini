@@ -194,8 +194,39 @@
         class="mt-24rpx"
         plain
         size="large"
-        bind:click="openPopup"
+        data-key="showPopup"
+        bind:click="togglePopup"
         >打开Popup</mz-button
+      >
+
+      <mz-button
+        block
+        class="mt-24rpx"
+        plain
+        size="large"
+        data-key="showPopup2"
+        bind:click="togglePopup"
+        >打开Popup2</mz-button
+      >
+
+      <mz-button
+        block
+        class="mt-24rpx"
+        plain
+        size="large"
+        data-key="showVanPopup"
+        bind:click="togglePopup"
+        >打开Van Popup</mz-button
+      >
+
+      <mz-button
+        block
+        class="mt-24rpx"
+        plain
+        size="large"
+        data-key="showVanPopup2"
+        bind:click="togglePopup"
+        >打开Van Popup2</mz-button
       >
     </view>
 
@@ -299,10 +330,11 @@
           active-color="linear-gradient(90deg, rgba(80, 127, 255, 1) 0%, #ffffff 100%)"
           bar-height="{{16}}"
           use-button-slot
-          data-min="{{1}}"
+          min="{{50}}"
           is-btn-inset="{{false}}"
           key="roomBrightness"
           show-toast="{{true}}"
+          bind:slideEnd="slideEnd"
         >
           <image
             slot="button"
@@ -317,7 +349,7 @@
         plain
         size="large"
         bind:click="fixBrightness"
-        >改变亮度({{brightness}})</mz-button
+        >改变亮度({{brightness}}%)(min:50)</mz-button
       >
       <view class="slider-box">
         <mz-slider
@@ -377,19 +409,17 @@
 
 <mz-popup
   round
-  show="{{ show }}"
-  bind:close="closePopup"
+  show="{{ showPopup }}"
+  data-key="showPopup"
+  bind:close="togglePopup"
   position="bottom"
+  rootPortal
   closeable
 >
   <view class="pb-100rpx">
-    <text class="block pt-48rpx pb-64rpx text-center leading-50rpx text-36 text-black-2a font-medium">新建家庭</text>
-
-    <text class="block pl-48rpx pb-32rpx text-28">家庭名称</text>
+    <text class="block pt-48rpx pb-64rpx text-center leading-50rpx text-36 text-black-2a font-medium">第一个Popup</text>
 
     <view class="mx-32rpx">
-      <text>请输入家庭名称</text>
-
       <mz-button
         class="mt-24rpx"
         type="primary"
@@ -402,7 +432,8 @@
       <mz-button
         class="grow"
         size="large"
-        bind:click="closePopup"
+        data-key="showPopup"
+        bind:click="togglePopup"
         >取消</mz-button
       >
       <view class="w-46rpx"></view>
@@ -410,6 +441,43 @@
         class="grow"
         size="large"
         type="primary"
+        data-key="showPopup2"
+        bind:click="togglePopup"
+        >确定</mz-button
+      >
+    </view>
+  </view>
+</mz-popup>
+
+<mz-popup
+  round
+  show="{{ showPopup2 }}"
+  data-key="showPopup2"
+  bind:close="togglePopup"
+  position="bottom"
+  rootPortal
+  closeable
+>
+  <view class="pb-100rpx bg-red">
+    <text class="block pt-48rpx pb-64rpx text-center leading-50rpx text-36 text-black-2a font-medium">第2个Popup</text>
+
+    <text class="block pl-48rpx pb-32rpx text-28">家庭名称</text>
+
+    <view class="flex flex-row pt-80rpx px-32rpx">
+      <mz-button
+        class="grow"
+        size="large"
+        data-key="showPopup2"
+        bind:click="togglePopup"
+        >取消</mz-button
+      >
+      <view class="w-46rpx"></view>
+      <mz-button
+        class="grow"
+        size="large"
+        type="primary"
+        data-key="showVanPopup2"
+        bind:click="togglePopup"
         disabled="{{disabled}}"
         >确定</mz-button
       >
