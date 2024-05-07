@@ -26,7 +26,7 @@ ComponentWithComputed({
           return
         }
         // 响应外部设值，改变滑动柄位置
-        const activedWidth = Math.round((this.data.barWidth / 100) * v)
+        const activedWidth = Math.round((this.data.barWidth / this.data.valueSpan) * (v - this.data.min))
         const btnX = activedWidth - this.data.btnOffsetX
         this.setData({ btnX })
         this.data._actived_x.value = activedWidth
@@ -53,6 +53,14 @@ ComponentWithComputed({
     btnHeight: {
       type: Number,
       value: 72,
+    },
+    min: {
+      type: Number,
+      value: 0,
+    },
+    max: {
+      type: Number,
+      value: 100,
     },
     /**
      * @description toast内容格式化器
@@ -96,6 +104,11 @@ ComponentWithComputed({
       const btnTop = -barHeight / 2 - btnHeight / 2
       return `top: ${btnTop}rpx; width: ${btnWidth}rpx;`
     },
+    // 值跨度
+    valueSpan(data) {
+      const { min, max } = data
+      return max - min
+    },
   },
 
   lifetimes: {
@@ -130,8 +143,8 @@ ComponentWithComputed({
           // console.log('#mz-slider', res[0])
           const barWidth = res[0]?.width ?? 300
           const barLeft = res[0]?.left ?? 0
-          const activedWidth = Math.round((barWidth / 100) * this.data.value)
-          const btnX = activedWidth - this.data.btnOffsetX
+          const _value = this.widthToValue(barWidth)
+          const btnX = _value - this.data.btnOffsetX
           const left = this.data.isBtnInset ? 0 : -this.data.btnOffsetX
           const right = barWidth - this.data.btnOffsetX
           this.setData({
@@ -146,7 +159,7 @@ ComponentWithComputed({
             },
           })
 
-          this.data._actived_x.value = activedWidth
+          this.data._actived_x.value = _value
         })
     },
   },
@@ -218,15 +231,16 @@ ComponentWithComputed({
       this.data._actived_x.value = activedWidth
       if (this.data.showToast) {
         this.data._toast_x.value = activedWidth
-        const _value = Math.round((activedWidth / this.data.barWidth) * 100)
+        const _value = this.widthToValue(activedWidth)
         runOnJS(this.setData.bind(this))({
           _value,
         })
       }
     },
-    widthToValue(activedWidth: number) {
-      const { barWidth } = this.data
-      return Math.round((activedWidth / barWidth) * 100)
+    // 计算激活部分，宽度->值
+    widthToValue(w: number) {
+      const { barWidth, min, valueSpan } = this.data
+      return Math.round((w / barWidth) * valueSpan) + min
     },
   },
 })

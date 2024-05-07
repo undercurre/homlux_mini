@@ -330,7 +330,7 @@
           active-color="linear-gradient(90deg, rgba(80, 127, 255, 1) 0%, #ffffff 100%)"
           bar-height="{{16}}"
           use-button-slot
-          data-min="{{1}}"
+          min="{{50}}"
           is-btn-inset="{{false}}"
           key="roomBrightness"
           show-toast="{{true}}"
@@ -349,7 +349,7 @@
         plain
         size="large"
         bind:click="fixBrightness"
-        >改变亮度({{brightness}}%)</mz-button
+        >改变亮度({{brightness}}%)(min:50)</mz-button
       >
       <view class="slider-box">
         <mz-slider
