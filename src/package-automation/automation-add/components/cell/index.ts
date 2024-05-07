@@ -1,3 +1,4 @@
+import { runOnJS } from '../../../../skyline-components/common/worklet'
 Component({
   options: {},
   /**
@@ -20,12 +21,17 @@ Component({
    */
   methods: {
     handleActionEdit(e: WechatMiniprogram.TouchEvent) {
-      console.log('hh')
-
-      this.triggerEvent('itemClick', { type: 'actionEdit', data: e.currentTarget.dataset.index })
+      'worklet'
+      console.log('handleActionEdit', e)
+      runOnJS(this.triggerEvent.bind(this))('itemClick', { type: 'actionEdit', data: e.currentTarget.dataset.index })
+      // this.triggerEvent('itemClick', { type: 'actionEdit', data: e.currentTarget.dataset.index })
     },
     handleActionDelete(e: WechatMiniprogram.TouchEvent) {
-      this.triggerEvent('itemClick', { type: 'actionDelete', data: e.currentTarget.dataset.dragid })
+      'worklet'
+      console.log('handleActionDelete', e)
+      runOnJS(this.triggerEvent.bind(this))('itemClick', { type: 'actionDelete', data: e.currentTarget.dataset.dragid })
+
+      // this.triggerEvent('itemClick', { type: 'actionDelete', data: e.currentTarget.dataset.dragid })
     },
   },
 })

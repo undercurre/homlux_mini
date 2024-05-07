@@ -36,7 +36,9 @@
   background: rgba(0, 0, 0, 0.72);
   padding: 12rpx 14rpx;
   top: -66rpx;
-  left: -8rpx;
+  width: 90rpx;
+  left: -45rpx;
+  text-align: center;
   border-radius: 12rpx;
   transition: 'opacity 0.3s';
   pointer-events: none;
@@ -44,7 +46,7 @@
 
 .toast-text {
   color: #fff;
-  font-size: 26rpx;
+  font-size: 24rpx;
 }
 
 .arrow {
@@ -57,5 +59,5 @@
   border-right: 8rpx solid transparent;
   top: 40rpx;
   left: 50%;
-  margin-left: -4rpx;
+  margin-left: -8rpx;
 }

@@ -90,7 +90,12 @@ Component({
     },
     fixBrightness() {
       this.setData({
-        brightness: Math.round(Math.random() * 100),
+        brightness: 50 + Math.round(Math.random() * 50),
+      })
+    },
+    slideEnd(e: { detail: number }) {
+      this.setData({
+        brightness: e.detail,
       })
     },
   },
