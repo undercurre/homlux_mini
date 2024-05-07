@@ -127,7 +127,7 @@ ComponentWithComputed({
         .select('#mz-slider')
         .boundingClientRect()
         .exec((res) => {
-          console.log('#mz-slider', res[0])
+          // console.log('#mz-slider', res[0])
           const barWidth = res[0]?.width ?? 300
           const barLeft = res[0]?.left ?? 0
           const activedWidth = Math.round((barWidth / 100) * this.data.value)
@@ -154,20 +154,10 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    // 直接点击滑动条
-    sliderStart(e: WechatMiniprogram.TouchEvent) {
-      const activedWidth = e.changedTouches[0].pageX - this.data.barLeft
-      const btnX = activedWidth - this.data.btnOffsetX
+    handleSlider(pageX: number) {
       if (this.data._dragging) return
-      console.log('[sliderStart]', e)
-      this.setData({ btnX })
-      this.data._actived_x.value = activedWidth
-    },
-    // 直接点击滑动条后拖动
-    sliderMove(e: WechatMiniprogram.TouchEvent) {
-      if (this.data._dragging) return
-      // console.log('[sliderMove]', e)
-      const activedWidth = e.changedTouches[0].pageX - this.data.barLeft
+      // console.log('[handleSlider]', e)
+      const activedWidth = Math.min(this.data.barWidth, Math.max(this.data.btnOffsetX, pageX - this.data.barLeft))
       const btnX = activedWidth - this.data.btnOffsetX
       const _value = this.widthToValue(activedWidth)
       this.setData({ btnX, _value })
@@ -176,6 +166,14 @@ ComponentWithComputed({
         this.data._toast_opacity.value = 1
         this.data._toast_x.value = activedWidth
       }
+    },
+    // 直接点击滑动条
+    sliderStart(e: WechatMiniprogram.TouchEvent) {
+      this.handleSlider(e.changedTouches[0].pageX)
+    },
+    // 直接点击滑动条后拖动
+    sliderMove(e: WechatMiniprogram.TouchEvent) {
+      this.handleSlider(e.changedTouches[0].pageX)
     },
     sliderEnd() {
       if (this.data.showToast && this.data._toast_opacity.value) {
