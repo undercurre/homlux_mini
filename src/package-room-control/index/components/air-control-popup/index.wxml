@@ -77,17 +77,17 @@
       </view>
 
       <view class="py-64rpx px-8rpx">
-        <!-- <mz-slider
+        <mz-slider
           wx:if="{{show}}"
           disabled="{{disabledSlider}}"
           bind:slideEnd="handleBtnTap"
           bind:slideChange="handleSlideChange"
           value="{{temperature}}"
           barHeight="36"
-          data-min="{{minTemp}}"
-          data-max="{{maxTemp}}"
+          min="{{minTemp}}"
+          max="{{maxTemp}}"
           active-color="#488FFF"
-          data-key="temperature"
+          key="temperature"
           data-step="{{0.5}}"
           use-button-slot
         >
@@ -95,7 +95,7 @@
             slot="button"
             class="slider-button"
           />
-        </mz-slider> -->
+        </mz-slider>
       </view>
 
       <view class="flex flex-row justify-evenly items-center rounded-24rpx bg-hex-f7f8f9 mt-30rpx">
