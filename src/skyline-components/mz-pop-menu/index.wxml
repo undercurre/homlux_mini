@@ -1,11 +1,8 @@
-<mz-overlay
-  show="{{ isShow }}"
-  z-index="{{ 200 }}"
-  bind:click="onClickOverlay"
-  custom-style="background-color: transparent;"
-  lock-scroll="{{ true }}"
-  root-portal="{{ true }}"
-/>
+<view
+  wx:if="{{isShow}}"
+  class="overlay"
+  bind:tap="onClickOverlay"
+></view>
 
 <view
   id="menu"
