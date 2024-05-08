@@ -1280,7 +1280,7 @@ ComponentWithComputed({
         return
       }
       // 只有创建者或者管理员能够进入编辑模式
-      if (!this.data.isCreator && !this.data.isAdmin) {
+      if (!this.data.canAddDevice) {
         return
       }
 

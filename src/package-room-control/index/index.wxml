@@ -254,12 +254,12 @@
   bind:close="cancelCheckAndPops"
 ></dryer-control-popup>
 
-<!-- <air-control-popup
+<air-control-popup
   show="{{controlType === '0xAC'}}"
   isShowSetting="{{true}}"
   deviceInfo="{{checkedDeviceInfo}}"
   bind:close="cancelCheckAndPops"
-></air-control-popup> -->
+></air-control-popup>
 
 <air-control-popup-cac
   show="{{controlType === '0xCC'}}"
@@ -293,14 +293,14 @@
   bind:lightStatusChange="refreshLightStatus"
 ></device-control-popup>
 
-<!-- <batch-edit
+<batch-edit
   bind:updateDevice="updateQueue"
   bind:updateList="reloadDeviceListThrottle"
   bind:close="exitEditMode"
   bind:selectAll="editSelectAll"
   editSelectMode="{{editSelectMode}}"
   editSelectList="{{editSelectList}}"
-></batch-edit> -->
+></batch-edit>
 
 <mz-toast id="mz-toast" />
 

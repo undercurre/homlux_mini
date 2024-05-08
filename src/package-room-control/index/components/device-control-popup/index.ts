@@ -54,8 +54,14 @@ ComponentWithComputed({
 
         // 初始化可控变量
         if (device.proType === PRO_TYPE.light) {
-          if (!isNullOrUnDef(prop.brightness)) diffData['lightInfoInner.brightness'] = prop.brightness
-          if (!isNullOrUnDef(prop.colorTemperature)) diffData['lightInfoInner.colorTemperature'] = prop.colorTemperature
+          if (!isNullOrUnDef(prop.brightness)) {
+            diffData['lightInfoInner.brightness'] = prop.brightness
+            diffData['lightInfoView.brightness'] = prop.brightness
+          }
+          if (!isNullOrUnDef(prop.colorTemperature)) {
+            diffData['lightInfoInner.colorTemperature'] = prop.colorTemperature
+            diffData['lightInfoView.colorTemperature'] = prop.colorTemperature
+          }
         } else if (device.proType === PRO_TYPE.curtain) {
           diffData.curtainInfo = {
             position: prop.curtain_position,
@@ -102,7 +108,13 @@ ComponentWithComputed({
   data: {
     defaultImgDir,
     show: false,
+    // 灯信息，用于组件传值，与云端同步
     lightInfoInner: {
+      brightness: 10,
+      colorTemperature: 20,
+    },
+    // 灯信息，用于视图显示，与设置同步，与lightInfoInner隔离以免循环计算
+    lightInfoView: {
       brightness: 10,
       colorTemperature: 20,
     },
@@ -134,11 +146,11 @@ ComponentWithComputed({
 
   computed: {
     colorTempK(data) {
-      if (!data.lightInfoInner?.colorTemperature) {
+      if (!data.lightInfoView?.colorTemperature) {
         return data.minColorTemp
       }
       return Math.round(
-        (data.lightInfoInner.colorTemperature / 100) * (data.maxColorTemp - data.minColorTemp) + data.minColorTemp,
+        (data.lightInfoView.colorTemperature / 100) * (data.maxColorTemp - data.minColorTemp) + data.minColorTemp,
       )
     },
 
@@ -779,12 +791,12 @@ ComponentWithComputed({
     },
     async handleLevelDrag(e: { detail: number }) {
       this.setData({
-        'lightInfoInner.brightness': e.detail,
+        'lightInfoView.brightness': e.detail,
       })
     },
     async handleLevelChange(e: { detail: number }) {
       this.setData({
-        'lightInfoInner.brightness': e.detail,
+        'lightInfoView.brightness': e.detail,
       })
       this.lightSendDeviceControl('brightness')
       this.triggerEvent('lightStatusChange')
@@ -792,14 +804,14 @@ ComponentWithComputed({
     handleColorTempChange(e: { detail: number }) {
       console.log('handleColorTempChange', e.detail)
       this.setData({
-        'lightInfoInner.colorTemperature': e.detail,
+        'lightInfoView.colorTemperature': e.detail,
       })
       this.lightSendDeviceControl('colorTemperature')
       this.triggerEvent('lightStatusChange')
     },
     handleColorTempDrag(e: { detail: number }) {
       this.setData({
-        'lightInfoInner.colorTemperature': e.detail,
+        'lightInfoView.colorTemperature': e.detail,
       })
     },
 
