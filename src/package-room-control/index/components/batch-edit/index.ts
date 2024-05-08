@@ -2,7 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { getModelName, PRO_TYPE, SCREEN_PID, MAX_MOVE_CARDS } from '../../../../config/index'
 import { waitingBatchDeleteDevice, batchUpdate, renameGroup } from '../../../../apis/index'
-import { deviceBinding, deviceStore, homeStore, roomBinding, roomStore } from '../../../../store/index'
+import { deviceBinding, deviceStore, homeStore, roomStore } from '../../../../store/index'
 import Toast from '../../../../skyline-components/mz-toast/toast'
 import Dialog from '../../../../skyline-components/mz-dialog/dialog'
 import { storage, checkInputNameIllegal, emitter, showLoading, hideLoading } from '../../../../utils/index'
@@ -12,7 +12,7 @@ let timeId: number
 ComponentWithComputed({
   options: {},
 
-  behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding, roomBinding] })],
+  behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding] })],
 
   properties: {
     editSelectList: {
@@ -23,57 +23,7 @@ ComponentWithComputed({
       type: Boolean,
       value: false,
       observer(value) {
-        if (value) {
-          this.animate(
-            '#bottom',
-            [
-              {
-                translateY: '100%',
-              },
-              {
-                translateY: '0%',
-              },
-            ],
-            100,
-          )
-          this.animate(
-            '#top',
-            [
-              {
-                translateY: '-100%',
-              },
-              {
-                translateY: '0%',
-              },
-            ],
-            100,
-          )
-        } else {
-          this.animate(
-            '#bottom',
-            [
-              {
-                translateY: '0%',
-              },
-              {
-                translateY: '100%',
-              },
-            ],
-            100,
-          )
-          this.animate(
-            '#top',
-            [
-              {
-                translateY: '0%',
-              },
-              {
-                translateY: '-100%',
-              },
-            ],
-            100,
-          )
-        }
+        console.log('editSelectMode', value)
       },
     },
   },
@@ -159,10 +109,8 @@ ComponentWithComputed({
    */
   data: {
     navigationBarAndStatusBarHeight:
-      (storage.get<number>('statusBarHeight') as number) +
-      (storage.get<number>('navigationBarHeight') as number) +
-      'px',
-    navigationBarHeight: (storage.get<number>('navigationBarHeight') as number) + 'px',
+      (storage.get('statusBarHeight') as number) + (storage.get('navigationBarHeight') as number) + 'px',
+    // navigationBarHeight: (storage.get('navigationBarHeight') as number) + 'px',
     showEditName: false,
     isEditSwitchName: false,
     editDeviceName: '',
@@ -173,10 +121,15 @@ ComponentWithComputed({
     showConfirmDelete: false,
     moveWaitlist: [] as string[],
     moveFailCount: 0,
+    roomList: [] as roomInfo[],
   },
 
   lifetimes: {
-    ready() {},
+    async ready() {
+      this.setData({
+        roomList: [...roomStore.roomList],
+      })
+    },
     detached() {
       if (timeId) {
         clearTimeout(timeId)
@@ -234,7 +187,7 @@ ComponentWithComputed({
             this.triggerEvent('updateList')
           }
         })
-        .catch((e) => console.log(e))
+        .catch((e) => console.log('catch', e))
     },
     handleEditNamePopup() {
       if (!this.data.canEditName) {

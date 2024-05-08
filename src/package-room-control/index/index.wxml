@@ -293,14 +293,14 @@
   bind:lightStatusChange="refreshLightStatus"
 ></device-control-popup>
 
-<!-- <batch-edit
+<batch-edit
   bind:updateDevice="updateQueue"
   bind:updateList="reloadDeviceListThrottle"
   bind:close="exitEditMode"
   bind:selectAll="editSelectAll"
   editSelectMode="{{editSelectMode}}"
   editSelectList="{{editSelectList}}"
-></batch-edit> -->
+></batch-edit>
 
 <mz-toast id="mz-toast" />
 
