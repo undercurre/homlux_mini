@@ -22,17 +22,26 @@ Component({
     },
     // 初始位置
     x: {
-      type: Number,
-      value: 0,
+      type: String,
+      value: '0rpx',
     },
     y: {
-      type: Number,
-      value: 0,
+      type: String,
+      value: '0rpx',
     },
     // 最小宽度，FIXME scroll-view下无法自动横向延伸？
     width: {
       type: Number,
-      value: 300,
+      value: 350,
+    },
+    height: {
+      type: Number,
+      value: 480,
+    },
+    // 上箭头的左边距
+    arrowX: {
+      type: Number,
+      value: 32,
     },
     isShow: {
       type: Boolean,
@@ -51,14 +60,14 @@ Component({
    * 组件的初始数据
    */
   data: {
-    _scale: { value: 0 },
+    _scale: { value: 0.8 },
     _opacity: { value: 0 },
     reverseArrow: false,
   },
 
   lifetimes: {
     attached() {
-      this.data._scale = wx.worklet.shared(0)
+      this.data._scale = wx.worklet.shared(0.8)
       this.data._opacity = wx.worklet.shared(0)
 
       this.applyAnimatedStyle('#menu', () => {
@@ -120,7 +129,7 @@ Component({
       }
     },
     hideMenu() {
-      this.menuTransfer(0, 0)
+      this.menuTransfer(0.8, 0)
     },
     showMenu() {
       this.menuTransfer(1, 1)

@@ -86,14 +86,37 @@ ComponentWithComputed({
       (storage.get('navigationBarHeight') as number),
     _system: storage.get('system') as string,
     selectHomeMenu: {
-      x: '0px',
-      y: '0px',
+      x: '30rpx',
+      y: '200rpx',
       isShow: false,
     },
     addMenu: {
-      right: '0px',
-      y: '0px',
+      x: '420rpx',
+      y: (storage.get('statusBarHeight') as number) + (storage.get('navigationBarHeight') as number) + 60 + 'px',
+      arrowX: 220,
+      height: 300,
       isShow: false,
+      list: [
+        {
+          name: '添加设备',
+          key: 'device',
+          icon: 'add',
+          value: '/package-distribution/pages/choose-device/index',
+        },
+        {
+          name: '创建场景',
+          key: 'auto',
+          icon: 'auto',
+          value: '/package-automation/automation-add/index',
+        },
+        // TODO 权限区分
+        {
+          name: '连接其它平台',
+          key: 'platform',
+          icon: 'auth',
+          value: '/package-auth/pages/index/index',
+        },
+      ],
     },
     allOnBtnTap: false,
     allOffBtnTap: false,
@@ -113,7 +136,6 @@ ComponentWithComputed({
     isLogin: false,
     isCreator: false,
     isManager: false,
-    showPopMenu: false,
     homeList: [] as Home.IHomeItem[],
     currentHomeName: '', // 当前房间名称
     currentHomeId: '',
@@ -152,6 +174,7 @@ ComponentWithComputed({
         .sort((_: Home.IHomeItem, b: Home.IHomeItem) => (b.defaultHouseFlag ? 1 : -1))
         .map((home) => ({
           ...home,
+          value: home.houseId,
           key: home.houseId,
           name: home.houseName?.length > 6 ? home.houseName.slice(0, 6) + '...' : home.houseName,
           checked: home.houseId === data.currentHomeId,
@@ -206,7 +229,6 @@ ComponentWithComputed({
     },
     onHide() {
       // 隐藏之前展示的下拉菜单
-      this.hideMenu()
       emitter.off('wsReceive')
 
       if (this.data._timeId) {
@@ -356,12 +378,16 @@ ComponentWithComputed({
       this.renewRoomPos()
     },
 
-    handlePopMenu() {
+    handleHomeMenu() {
       this.setData({
-        showPopMenu: !this.data.showPopMenu,
+        'selectHomeMenu.isShow': !this.data.selectHomeMenu.isShow,
       })
     },
-
+    handleAddMenu() {
+      this.setData({
+        'addMenu.isShow': !this.data.addMenu.isShow,
+      })
+    },
     async handleHomeTap(e: { detail: string }) {
       const houseId = e.detail
 
@@ -373,8 +399,16 @@ ComponentWithComputed({
       }
       this.init()
       this.setData({
-        showPopMenu: false,
+        'selectHomeMenu.isShow': false,
       })
+    },
+    handleAddTap(e: { detail: string }) {
+      // console.log('handleAddTap', e)
+      this.setData({
+        'addMenu.isShow': false,
+      })
+      const url = e.detail
+      wx.navigateTo({ url })
     },
 
     // 更新灯总数、亮灯数统计
@@ -604,13 +638,6 @@ ComponentWithComputed({
       this.data._isAcceptShare = true
     },
 
-    // 收起所有菜单
-    hideMenu() {
-      this.setData({
-        'selectHomeMenu.isShow': false,
-        'addMenu.isShow': false,
-      })
-    },
     /**
      * 跳转到登录页
      */
@@ -687,18 +714,7 @@ ComponentWithComputed({
     },
 
     showAddMenu() {
-      this.setData({
-        addMenu: {
-          right: '25rpx',
-          y:
-            (storage.get<number>('statusBarHeight') as number) +
-            (storage.get<number>('navigationBarHeight') as number) +
-            50 +
-            'px',
-          isShow: !this.data.addMenu.isShow,
-        },
-        'selectHomeMenu.isShow': false,
-      })
+      this.setData({ 'addMenu.isShow': true })
     },
 
     // 开始拖拽
