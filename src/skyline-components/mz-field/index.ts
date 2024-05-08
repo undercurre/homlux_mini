@@ -171,7 +171,7 @@ Component({
     emitChange(detail: InputDetails) {
       const { extraEventParams } = this.data
 
-      this.setData({ innerValue: detail.value })
+      this.setData({ value: detail.value })
 
       let result: InputDetails | undefined
 

@@ -18,11 +18,10 @@
       <view class="m-24rpx">mz-field</view>
 
       <mz-field
-        value="{{ inputValue }}"
+        model:value="{{ inputValue }}"
         placeholder="请输入家庭名称"
         clearable="{{true}}"
         focus="{{isFocus}}"
-        bind:change="changeName"
         show-word-limit
         maxlength="12"
         border="{{false}}"
@@ -35,7 +34,6 @@
           placeholder="请选择Wi-Fi"
           custom-style="background-color: transparent;"
           clearable="{{true}}"
-          bind:change="changeName"
           border="{{false}}"
         >
           <mz-button
@@ -148,7 +146,11 @@
     <view class="section">
       <view class="m-24rpx">mz-button</view>
 
-      <mz-button size="large">取消</mz-button>
+      <mz-button
+        size="large"
+        disabled="{{switchStatus}}"
+        >取消</mz-button
+      >
 
       <mz-button
         block
@@ -156,6 +158,7 @@
         type="danger"
         plain
         size="large"
+        disabled="{{switchStatus}}"
         bind:click="toClick"
         >danger</mz-button
       >
@@ -167,6 +170,7 @@
         plain
         size="large"
         bind:click="toClick"
+        disabled="{{switchStatus}}"
         customStyle="background-color: #fff;"
         >primary</mz-button
       >
@@ -175,6 +179,7 @@
         class="mt-24rpx"
         type="danger"
         bind:click="toClick"
+        disabled="{{switchStatus}}"
         >danger</mz-button
       >
 
@@ -182,6 +187,7 @@
         class="mt-24rpx"
         type="primary"
         bind:click="toClick"
+        disabled="{{switchStatus}}"
         >primary</mz-button
       >
     </view>
@@ -207,26 +213,6 @@
         data-key="showPopup2"
         bind:click="togglePopup"
         >打开Popup2</mz-button
-      >
-
-      <mz-button
-        block
-        class="mt-24rpx"
-        plain
-        size="large"
-        data-key="showVanPopup"
-        bind:click="togglePopup"
-        >打开Van Popup</mz-button
-      >
-
-      <mz-button
-        block
-        class="mt-24rpx"
-        plain
-        size="large"
-        data-key="showVanPopup2"
-        bind:click="togglePopup"
-        >打开Van Popup2</mz-button
       >
     </view>
 

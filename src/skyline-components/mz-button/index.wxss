@@ -14,7 +14,6 @@
   --button-warning-border-color: transparent;
   --button-line-height: 20px;
   --button-border-width: 1px;
-  --button-disabled-opacity: 0.5;
 
   --button-default-color: #a2a2a2;
   --button-default-border-color: #a2a2a2;
@@ -172,7 +171,7 @@
 }
 
 .mz-button--disabled {
-  opacity: var(--button-disabled-opacity, 0.5);
+  opacity: 0.5;
 }
 
 .button__text {
