@@ -43,7 +43,9 @@ type Events = {
   }
   // 从websocket接受到信息 end
   deviceEdit: void
-  sceneEdit: void
+  sceneEdit: {
+    sceneType: string
+  }
   homeInfoEdit: void
   invite_user_house: void
   scene_device_result_status: {

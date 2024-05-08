@@ -370,7 +370,7 @@ ComponentWithComputed({
         this.setData({
           showLinkPopup: false,
         })
-        emitter.emit('sceneEdit')
+        emitter.emit('sceneEdit', { sceneType: 'yijian' })
         if (this.data.linkSwitch) {
           Toast({ message: '关联成功', zIndex: 9999 })
         }
