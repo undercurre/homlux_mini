@@ -62,6 +62,11 @@ ComponentWithComputed({
       type: Number,
       value: 100,
     },
+    // 触发拖拽事件时的节流时间
+    throttleTime: {
+      type: Number,
+      value: 150,
+    },
     /**
      * @description toast内容格式化器
      * @default 默认显示百分比
@@ -86,6 +91,7 @@ ComponentWithComputed({
     toastWidth: 80, // 提示宽度
     barLeft: 0, // 滑动条左边距
     _dragging: false, // 滑动柄已拖拽中（防止手势冲突）
+    timeout_timer: null as null | number, // 节流定时器
   },
 
   computed: {
@@ -190,6 +196,13 @@ ComponentWithComputed({
         this.data._toast_opacity.value = 1
         this.data._toast_x.value = activedWidth - this.data.toastWidth / 2
       }
+      // 节流触发移动事件
+      if (!this.data.timeout_timer) {
+        this.data.timeout_timer = setTimeout(() => {
+          this.triggerEvent('slideChange', _value)
+          this.data.timeout_timer = null
+        }, this.data.throttleTime)
+      }
     },
     // 直接点击滑动条
     sliderStart(e: WechatMiniprogram.TouchEvent) {
@@ -242,17 +255,24 @@ ComponentWithComputed({
       }
       // this.triggerEvent('slideStart', this.data.value)
     },
-    // TODO 节流setData；滑球偏移的问题
+    // FIXME 滑球与手指稍偏移的问题
     dragMove(e: { detail: number[] }) {
       'worklet'
       const activedWidth = e.detail[2] + this.data.btnOffsetX
       this.data._actived_x.value = activedWidth
+      const _value = this.widthToValue(activedWidth)
       if (this.data.showToast) {
         this.data._toast_x.value = activedWidth - this.data.toastWidth / 2
-        const _value = this.widthToValue(activedWidth)
         runOnJS(this.setData.bind(this))({
           _value,
         })
+      }
+      // 节流触发移动事件
+      if (!this.data.timeout_timer) {
+        this.data.timeout_timer = setTimeout(() => {
+          runOnJS(this.triggerEvent.bind(this))('slideChange', _value)
+          this.data.timeout_timer = null
+        }, this.data.throttleTime)
       }
     },
     // 计算激活部分，宽度->值

@@ -40,7 +40,7 @@
         wx:if="{{deviceInfo.proType==='0x13'}}"
         class="flex flex-col w-750rpx mb-22rpx"
       >
-        <text class="text-32rpx mt-70rpx ml-48rpx {{deviceProp.power ? 'text-black-59' : 'text-hex-a2a2a2'}}">亮度 | {{lightInfoInner.brightness}}%</text>
+        <text class="text-32rpx mt-70rpx ml-48rpx {{deviceProp.power ? 'text-black-59' : 'text-hex-a2a2a2'}}">亮度 | {{lightInfoView.brightness}}%</text>
         <view class="px-48rpx pt-28rpx">
           <mz-slider
             catch:tap="sliderTap"
@@ -48,9 +48,11 @@
             catch:slideChange="handleLevelDrag"
             disabled="{{!deviceProp.power}}"
             value="{{lightInfoInner.brightness}}"
-            data-min="{{1}}"
+            btn-width="{{40}}"
+            btn-height="{{40}}"
+            min="{{1}}"
             active-color="linear-gradient(90deg, rgba(80,127,255,0.8) 5%, rgba(116,153,255,0.18) 100%)"
-            data-key="brightness"
+            key="brightness"
           >
           </mz-slider>
         </view>
@@ -64,9 +66,11 @@
             disabled="{{!deviceProp.power}}"
             value="{{lightInfoInner.colorTemperature}}"
             use-button-slot
+            btn-height="{{52}}"
+            btn-width="{{80}}"
             custom-class="slider-color-temp-bar"
             active-color="rgba(0,0,0,0)"
-            data-key="colorTemp"
+            key="colorTemp"
           >
             <view
               slot="button"
