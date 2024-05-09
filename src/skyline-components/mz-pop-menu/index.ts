@@ -60,14 +60,14 @@ Component({
    * 组件的初始数据
    */
   data: {
-    _scale: { value: 0.8 },
+    _scale: { value: 0 },
     _opacity: { value: 0 },
     reverseArrow: false,
   },
 
   lifetimes: {
     attached() {
-      this.data._scale = wx.worklet.shared(0.8)
+      this.data._scale = wx.worklet.shared(0)
       this.data._opacity = wx.worklet.shared(0)
 
       this.applyAnimatedStyle('#menu', () => {
@@ -129,7 +129,7 @@ Component({
       }
     },
     hideMenu() {
-      this.menuTransfer(0.8, 0)
+      this.menuTransfer(0, 0)
     },
     showMenu() {
       this.menuTransfer(1, 1)

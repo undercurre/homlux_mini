@@ -227,6 +227,7 @@
   y="{{addMenu.y}}"
   arrowX="{{addMenu.arrowX}}"
   height="{{addMenu.height}}"
+  width="{{addMenu.width}}"
   menuList="{{addMenu.list}}"
   bind:menuTap="handleAddTap"
   bind:overlayClick="handleAddMenu"

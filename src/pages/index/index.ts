@@ -91,9 +91,10 @@ ComponentWithComputed({
       isShow: false,
     },
     addMenu: {
-      x: '420rpx',
+      x: '430rpx',
       y: (storage.get('statusBarHeight') as number) + (storage.get('navigationBarHeight') as number) + 60 + 'px',
-      arrowX: 220,
+      arrowX: 236,
+      width: 300,
       height: 300,
       isShow: false,
       list: [
