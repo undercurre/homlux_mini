@@ -194,12 +194,13 @@ ComponentWithComputed({
         this.data._toast_opacity.value = 1
         this.data._toast_x.value = activedWidth - this.data.toastWidth / 2
       }
+      const btnX = activedWidth - this.data.btnOffsetX
+      this.setData({ btnX })
       // 节流触发移动事件
       if (!this.data.timeout_timer) {
         this.data.timeout_timer = setTimeout(() => {
-          const btnX = activedWidth - this.data.btnOffsetX
           const _value = this.widthToValue(activedWidth)
-          this.setData({ btnX, _value })
+          this.setData({ _value })
           this.triggerEvent('slideChange', _value)
           this.data.timeout_timer = null
         }, this.data.throttleTime)
