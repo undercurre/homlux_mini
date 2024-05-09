@@ -428,6 +428,7 @@
         size="large"
         type="primary"
         data-key="showPopup2"
+        disabled="{{disabled}}"
         bind:click="togglePopup"
         >确定</mz-button
       >

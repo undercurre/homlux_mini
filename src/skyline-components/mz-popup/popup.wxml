@@ -13,11 +13,11 @@
   style="{{ computed.popupStyle({ zIndex, currentDuration, display, customStyle }) }}"
   bind:transitionend="onTransitionEnd"
 >
-  <slot />
   <image
     wx:if="{{ closeable }}"
     src="../assets/close.png"
     class="close-icon-class popup__close-icon popup__close-icon--{{ closeIconPosition }}"
     bind:tap="onClickCloseIcon"
   ></image>
+  <slot />
 </view>
