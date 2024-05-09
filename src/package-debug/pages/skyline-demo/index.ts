@@ -13,6 +13,7 @@ Component({
    * 组件的初始数据
    */
   data: {
+    showDialog: false,
     inputValue: '',
     showPopup: false,
     showPopup2: false,

@@ -35,7 +35,7 @@
   </view>
 
   <view
-    wx:elif="{{ showCancelButton || showConfirmButton }}"
+    wx:if="{{ showCancelButton || showConfirmButton }}"
     class="mz-hairline--top mz-dialog__footer"
   >
     <block wx:if="{{ showCancelButton }}">

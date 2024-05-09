@@ -234,6 +234,13 @@
         bind:tap="showDialog"
         >showDialog</mz-button
       >
+
+      <mz-button
+        size="large"
+        data-key="showDialog"
+        bind:tap="togglePopup"
+        >showDialog1</mz-button
+      >
     </view>
 
     <view class="section">
@@ -391,7 +398,23 @@
 
 <mz-toast id="mz-toast" />
 
-<mz-dialog id="mz-dialog" />
+<mz-dialog
+  id="mz-dialog"
+  confirm-button-text="我知道了"
+  confirm-button-color="#488FFF"
+/>
+
+<mz-dialog
+  use-slot
+  title="离线"
+  show="{{ showDialog }}"
+  confirm-button-color="#488FFF"
+  confirmButtonText="我知道了"
+  data-key="showDialog"
+  bind:close="togglePopup"
+>
+  <mz-cell title="sdfsfsff"></mz-cell>
+</mz-dialog>
 
 <mz-popup
   round

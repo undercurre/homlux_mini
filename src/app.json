@@ -66,8 +66,8 @@
       "pages": ["index/index", "scene-edit/index", "scene-request-list/index", "scene-list/index", "group/index"]
     },
     {
-      "root": "package-protocol",
-      "pages": ["protocol-show/index", "protocol-list/index"]
+      "root": "package-about",
+      "pages": ["pages/protocol-show/index", "pages/about/index", "pages/subdevice-scan/index"]
     },
     {
       "root": "package-debug",

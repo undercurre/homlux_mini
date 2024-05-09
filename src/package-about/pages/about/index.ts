@@ -1,7 +1,8 @@
-import pageBehavior from '../../behaviors/pageBehaviors'
-import { storage } from '../../utils/index'
-import meta from '../../meta'
+import pageBehavior from '../../../behaviors/pageBehaviors'
+import { storage } from '../../../utils/index'
+import meta from '../../../meta'
 
+const isDebug = false
 Component({
   behaviors: [pageBehavior],
   /**
@@ -13,6 +14,7 @@ Component({
    * 组件的初始数据
    */
   data: {
+    isDebug, // 状态缓存至小程序被销毁，通过isDebug外部变量缓存
     list: [
       {
         title: '美的照明隐私协议',
@@ -47,6 +49,8 @@ Component({
       }
       const info = wx.getAccountInfoSync()
 
+      console.debug('getAccountInfoSync', info)
+
       this.setData({
         envVersion: info.miniProgram.envVersion,
         curEnv: storage.get(`${info.miniProgram.envVersion}_env`) as string,
@@ -60,7 +64,7 @@ Component({
   methods: {
     handleTap(e: WechatMiniprogram.TouchEvent) {
       wx.navigateTo({
-        url: '/package-protocol/protocol-show/index?protocal=' + e.currentTarget.dataset.value,
+        url: '/package-about/pages/protocol-show/index?protocal=' + e.currentTarget.dataset.value,
       })
     },
 

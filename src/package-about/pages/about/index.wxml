@@ -31,17 +31,24 @@
   </block>
 
   <van-cell
-    wx:if="{{envVersion === 'release' && version}}"
     title="版本号"
     value="v{{version}}"
     center
     border="{{false}}"
   />
   <van-cell
-    wx:elif="{{envVersion !== 'release' && releaseTime}}"
+    wx:if="{{envVersion !== 'release' && releaseTime}}"
     title="发布时间"
     value="{{releaseTime}}"
     center
     border="{{false}}"
+  />
+
+  <van-cell
+    wx:if="{{isdebug}}"
+    title="子设备产测"
+    is-link
+    center
+    bind:click="toDebugUtil"
   />
 </van-cell-group>

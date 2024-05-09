@@ -42,7 +42,7 @@ HomLux小程序
     ├── store // 全局状态
     ├── package-distribution // 配网相关页面分包（添加设备、附近设备、连接wifi等）
     ├── package-mine // 我的相关页面分包（家庭管理、房间管理、设备管理、OTA、语音控制、设备替换）
-    ├── package-room-protocol // 用户协议列表和协议展示分包
+    ├── package-about // 关于模块
     ├── package-room-control // 房间相关页面分包（房间页面控制设备、场景列表、场景管理）
     ├── package-distribution-meiju // 美居配网相关页面分包
     ├── package-auth // 第三方授权相关页面分包
