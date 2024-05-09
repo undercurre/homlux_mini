@@ -22,7 +22,8 @@ ComponentWithComputed({
       type: Number,
       value: 1,
       observer(v) {
-        if (!this.data.barWidth) {
+        // 若设值相同，则跳过，以免循环响应
+        if (!this.data.barWidth || v === this.data._value) {
           return
         }
         // 响应外部设值，改变滑动柄位置
@@ -188,9 +189,6 @@ ComponentWithComputed({
       if (this.data._dragging) return
       // console.log('[handleSlider]', e)
       const activedWidth = Math.min(this.data.barWidth, Math.max(this.data.btnOffsetX, pageX - this.data.barLeft))
-      const btnX = activedWidth - this.data.btnOffsetX
-      const _value = this.widthToValue(activedWidth)
-      this.setData({ btnX, _value })
       this.data._actived_x.value = activedWidth
       if (this.data.showToast) {
         this.data._toast_opacity.value = 1
@@ -199,6 +197,9 @@ ComponentWithComputed({
       // 节流触发移动事件
       if (!this.data.timeout_timer) {
         this.data.timeout_timer = setTimeout(() => {
+          const btnX = activedWidth - this.data.btnOffsetX
+          const _value = this.widthToValue(activedWidth)
+          this.setData({ btnX, _value })
           this.triggerEvent('slideChange', _value)
           this.data.timeout_timer = null
         }, this.data.throttleTime)
@@ -245,13 +246,13 @@ ComponentWithComputed({
       })
       const activedWidth = e.detail.x + this.data.btnOffsetX
       this.data._actived_x.value = activedWidth
+      const _value = this.widthToValue(activedWidth)
+      runOnJS(this.setData.bind(this))({
+        _value,
+      })
       if (this.data.showToast) {
         this.data._toast_opacity.value = 1
         this.data._toast_x.value = activedWidth - this.data.toastWidth / 2
-        const _value = this.widthToValue(activedWidth)
-        runOnJS(this.setData.bind(this))({
-          _value,
-        })
       }
       // this.triggerEvent('slideStart', this.data.value)
     },
@@ -260,16 +261,17 @@ ComponentWithComputed({
       'worklet'
       const activedWidth = e.detail[2] + this.data.btnOffsetX
       this.data._actived_x.value = activedWidth
-      const _value = this.widthToValue(activedWidth)
+
       if (this.data.showToast) {
         this.data._toast_x.value = activedWidth - this.data.toastWidth / 2
-        runOnJS(this.setData.bind(this))({
-          _value,
-        })
       }
       // 节流触发移动事件
       if (!this.data.timeout_timer) {
         this.data.timeout_timer = setTimeout(() => {
+          const _value = this.widthToValue(activedWidth)
+          runOnJS(this.setData.bind(this))({
+            _value,
+          })
           runOnJS(this.triggerEvent.bind(this))('slideChange', _value)
           this.data.timeout_timer = null
         }, this.data.throttleTime)
