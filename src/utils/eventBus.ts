@@ -73,6 +73,9 @@ type Events = {
   }
   // 删除遥控器
   remoterChanged: void
+
+  // HACK store binding 失效时，从store中同步数据
+  pageDataSync: void
 }
 
 export const WSEventType = {

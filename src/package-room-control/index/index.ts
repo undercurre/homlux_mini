@@ -375,11 +375,11 @@ ComponentWithComputed({
     },
 
     async onReady() {
-      await delay(1000)
-      this.init()
+      await delay(0)
+      this.pageDataSync()
     },
 
-    init() {
+    pageDataSync() {
       this.setData({
         title: roomStore.currentRoom?.roomName ?? '',
         sceneListInBar: sceneStore.sceneList?.length ? sceneStore.sceneList.slice(0, 4) : [],

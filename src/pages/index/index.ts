@@ -247,6 +247,9 @@ ComponentWithComputed({
       if (!this.data._isFirstShow || this.data._from === 'addDevice') {
         await homeStore.updateRoomCardList()
       }
+      if (othersStore.isInit) {
+        this.pageDataSync('onShow')
+      }
       this.data._isFirstShow = false
 
       this.updateLightCount()
@@ -323,14 +326,14 @@ ComponentWithComputed({
       })
     },
     async onReady() {
+      emitter.on('pageDataSync', () => {
+        this.pageDataSync('on emitter')
+      })
       console.log('[Index onReady] 耗时', `${Date.now() - this.data._timer}ms`)
-
-      await delay(1000)
-      this.init()
     },
 
     // TODO 确保数据响应
-    async init() {
+    async pageDataSync(type?: string) {
       let currentHomeName = ''
       if (homeStore.currentHomeDetail?.houseName) {
         if (homeStore.currentHomeDetail.houseName.length > 6) {
@@ -338,21 +341,21 @@ ComponentWithComputed({
         }
         currentHomeName = homeStore.currentHomeDetail?.houseName
       }
-      // console.log('[init]', {
-      //   roomList: JSON.parse(JSON.stringify(roomStore.roomList)),
-      // isLogin: userStore.isLogin,
-      // isCreator: homeStore.isCreator,
-      // isManger: homeStore.isManager,
-      // hasDevice: deviceStore.allRoomDeviceList?.length,
-      // currentHomeName,
-      // isShowHomeControl:
-      //   !!deviceStore.allRoomDeviceList?.length &&
-      //   deviceStore.allRoomDeviceList.some((device: Device.DeviceItem) =>
-      //     ([PRO_TYPE.light, PRO_TYPE.switch, PRO_TYPE.bathHeat, PRO_TYPE.clothesDryingRack] as string[]).includes(
-      //       device.proType,
-      //     ),
-      //   ),
-      // })
+      console.log(type ?? '', '[active pageDataSync]', {
+        roomList: JSON.parse(JSON.stringify(roomStore.roomList)),
+        isLogin: userStore.isLogin,
+        isCreator: homeStore.isCreator,
+        isManager: homeStore.isManager,
+        hasDevice: deviceStore.allRoomDeviceList?.length,
+        currentHomeName,
+        isShowHomeControl:
+          !!deviceStore.allRoomDeviceList?.length &&
+          deviceStore.allRoomDeviceList.some((device: Device.DeviceItem) =>
+            ([PRO_TYPE.light, PRO_TYPE.switch, PRO_TYPE.bathHeat, PRO_TYPE.clothesDryingRack] as string[]).includes(
+              device.proType,
+            ),
+          ),
+      })
       let homeList
       if (homeStore.homeList?.length) {
         homeList = homeStore.homeList as Home.IHomeItem[]
@@ -360,7 +363,7 @@ ComponentWithComputed({
       this.setData({
         isLogin: userStore.isLogin,
         isCreator: homeStore.isCreator,
-        isManger: homeStore.isManager,
+        isManager: homeStore.isManager,
         hasDevice: deviceStore.allRoomDeviceList?.length,
         currentHomeName,
         currentHomeId: homeStore.currentHomeId,
@@ -373,10 +376,11 @@ ComponentWithComputed({
             ),
           ),
         homeList,
+        loading: false,
       })
 
       // TODO
-      this.renewRoomPos()
+      // this.renewRoomPos()
     },
 
     handleHomeMenu() {
@@ -398,7 +402,7 @@ ComponentWithComputed({
       if (res.success) {
         await homeStore.homeInit()
       }
-      this.init()
+      this.pageDataSync('handleHomeTap')
       this.setData({
         'selectHomeMenu.isShow': false,
       })
