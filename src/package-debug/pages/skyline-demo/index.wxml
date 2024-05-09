@@ -398,11 +398,7 @@
 
 <mz-toast id="mz-toast" />
 
-<mz-dialog
-  id="mz-dialog"
-  confirm-button-text="我知道了"
-  confirm-button-color="#488FFF"
-/>
+<mz-dialog id="mz-dialog" />
 
 <mz-dialog
   use-slot

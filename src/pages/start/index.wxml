@@ -60,9 +60,8 @@
   >
     <mz-button
       class="w-full"
-      bindtap="handleDefaultPage"
+      bind:click="handleDefaultPage"
       block
-      disabled="{{!defaultPage}}"
       type="primary"
       size="large"
       >设置为默认主页</mz-button
