@@ -4,7 +4,7 @@
   "usingComponents": {
     "mz-toast": "/skyline-components/mz-toast/index",
     "mz-popup": "/skyline-components/mz-popup/index",
-    "mz-slider": "/components/mz-slider/index",
+    "mz-slider": "/skyline-components/mz-slider/index",
     "icon-button": "../../components/icon-button/index"
   }
 }

@@ -1,9 +1,8 @@
-import { ComponentWithComputed } from 'miniprogram-computed'
-import Toast from '@vant/weapp/toast/toast'
+import Toast from '../../skyline-components/mz-toast/toast'
 import { PRO_TYPE } from '../../config/index'
 import { sendDevice } from '../../apis/index'
 
-ComponentWithComputed({
+Component({
   options: {
     pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
   },

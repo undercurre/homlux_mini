@@ -3,6 +3,8 @@
   position: relative;
   background-color: #eff0f3;
   border-radius: 24rpx;
+  display: flex;
+  flex-direction: column;
 }
 
 .mz-slider-bar {

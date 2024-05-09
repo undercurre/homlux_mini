@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import Toast from '@vant/weapp/toast/toast'
-import Dialog from '@vant/weapp/dialog/dialog'
+import Toast from '../../skyline-components/mz-toast/toast'
+import Dialog from '../../skyline-components/mz-dialog/dialog'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { storage, emitter, getCurrentPageParams } from '../../utils/index'
 import { addScene, retryScene, updateScene } from '../../apis/index'
@@ -243,9 +243,14 @@ ComponentWithComputed({
       })
     },
     handleShowAddSceneSuccess() {
+      emitter.emit('sceneEdit', { sceneType: 'yijian' })
       if (this.data.opearationType === 'edit') {
-        wx.navigateBack()
-        emitter.emit('sceneEdit')
+        Toast({
+          message: '更新成功',
+          onClose: () => {
+            wx.navigateBack()
+          },
+        })
       } else {
         wx.redirectTo({ url: '/package-automation/scene-success/index' })
       }

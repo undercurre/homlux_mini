@@ -54,8 +54,12 @@ ComponentWithComputed({
 
         // 初始化可控变量
         if (device.proType === PRO_TYPE.light) {
-          if (!isNullOrUnDef(prop.brightness)) diffData['lightInfoInner.brightness'] = prop.brightness
-          if (!isNullOrUnDef(prop.colorTemperature)) diffData['lightInfoInner.colorTemperature'] = prop.colorTemperature
+          if (!isNullOrUnDef(prop.brightness)) {
+            diffData['lightInfoInner.brightness'] = prop.brightness
+          }
+          if (!isNullOrUnDef(prop.colorTemperature)) {
+            diffData['lightInfoInner.colorTemperature'] = prop.colorTemperature
+          }
         } else if (device.proType === PRO_TYPE.curtain) {
           diffData.curtainInfo = {
             position: prop.curtain_position,
@@ -102,6 +106,7 @@ ComponentWithComputed({
   data: {
     defaultImgDir,
     show: false,
+    // 灯信息，用于组件传值同步
     lightInfoInner: {
       brightness: 10,
       colorTemperature: 20,
