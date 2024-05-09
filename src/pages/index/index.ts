@@ -252,8 +252,6 @@ ComponentWithComputed({
       }
       this.data._isFirstShow = false
 
-      this.updateLightCount()
-
       setTimeout(() => {
         this.acceptShare()
       }, 1000)
@@ -378,6 +376,8 @@ ComponentWithComputed({
         homeList,
         loading: false,
       })
+
+      this.updateLightCount()
 
       // TODO
       // this.renewRoomPos()
