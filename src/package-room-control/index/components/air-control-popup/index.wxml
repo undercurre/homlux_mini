@@ -83,7 +83,9 @@
           bind:slideEnd="handleBtnTap"
           bind:slideChange="handleSlideChange"
           value="{{temperature}}"
-          barHeight="36"
+          bar-height="36"
+          btn-width="36"
+          btn-height="36"
           min="{{minTemp}}"
           max="{{maxTemp}}"
           active-color="#488FFF"
@@ -93,8 +95,10 @@
         >
           <view
             slot="button"
-            class="slider-button"
-          />
+            class="slider-button-wrapper"
+          >
+            <view class="slider-button"></view>
+          </view>
         </mz-slider>
       </view>
 

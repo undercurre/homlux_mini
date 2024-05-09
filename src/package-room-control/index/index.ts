@@ -233,12 +233,19 @@ ComponentWithComputed({
       return data.roomHasLight ? 150 : 60
     },
     /**
-     * 是否打开控制面板（除浴霸和晾衣）
+     * 是否打开控制面板
      * TODO 将灯和开关控制也解耦出来
      */
     isShowCommonControl(data) {
       const { controlType } = data
-      return controlType && controlType !== PRO_TYPE.bathHeat && controlType !== PRO_TYPE.clothesDryingRack
+      return (
+        controlType &&
+        (controlType === PRO_TYPE.light ||
+          controlType === PRO_TYPE.switch ||
+          controlType === PRO_TYPE.gateway ||
+          controlType === PRO_TYPE.curtain ||
+          controlType === PRO_TYPE.sensor)
+      )
     },
     // 设备卡片可移动区域高度
     movableAreaHeight(data) {
