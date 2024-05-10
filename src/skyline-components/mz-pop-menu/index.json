@@ -1,0 +1,7 @@
+{
+  "styleIsolation": "apply-shared",
+  "component": true,
+  "usingComponents": {
+    "mz-svg-icon": "/skyline-components/mz-svg-icon/index"
+  }
+}

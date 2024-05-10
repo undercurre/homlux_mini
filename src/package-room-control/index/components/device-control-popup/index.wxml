@@ -1,4 +1,4 @@
-<van-popup
+<mz-popup
   show="{{ show }}"
   position="bottom"
   round
@@ -48,9 +48,11 @@
             catch:slideChange="handleLevelDrag"
             disabled="{{!deviceProp.power}}"
             value="{{lightInfoInner.brightness}}"
-            data-min="{{1}}"
+            btn-width="{{40}}"
+            btn-height="{{40}}"
+            min="{{1}}"
             active-color="linear-gradient(90deg, rgba(80,127,255,0.8) 5%, rgba(116,153,255,0.18) 100%)"
-            data-key="brightness"
+            key="brightness"
           >
           </mz-slider>
         </view>
@@ -64,9 +66,11 @@
             disabled="{{!deviceProp.power}}"
             value="{{lightInfoInner.colorTemperature}}"
             use-button-slot
+            btn-height="{{52}}"
+            btn-width="{{80}}"
             custom-class="slider-color-temp-bar"
             active-color="rgba(0,0,0,0)"
-            data-key="colorTemp"
+            key="colorTemp"
           >
             <view
               slot="button"
@@ -193,6 +197,7 @@
         <block wx:if="{{logListView.length}}">
           <view class="log-step"></view>
           <scroll-view
+            type="list"
             scroll-y
             enhanced
             show-scrollbar="{{false}}"
@@ -248,7 +253,7 @@
       </view>
     </view>
   </view>
-</van-popup>
+</mz-popup>
 
 <!-- 关联列表（场景列表 or 设备列表）弹窗 -->
 <select-card-popup
@@ -265,9 +270,9 @@
   tipsText="{{selectLinkType === 'light' ? '关联不同网关灯/灯组时控制可能会存在延时' : ''}}"
 />
 
-<van-toast id="van-toast" />
-<van-dialog
-  id="van-dialog"
+<mz-toast id="mz-toast" />
+<mz-dialog
+  id="mz-dialog"
   confirm-button-color="#27282A"
   cancel-button-color="#27282A"
 />

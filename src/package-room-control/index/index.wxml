@@ -1,8 +1,8 @@
 <page-meta page-style="{{ showBeforeAddScenePopup || showAddScenePopup ? 'overflow: hidden;' : '' }}" />
 <!-- 背景 -->
-<view class="w-100vw h-100vh fixed left-0 top-0 bg-hex-f4f8ff bg-z-index-1"></view>
+<view class="w-100vw h-100vh absolute left-0 top-0 bg-hex-f4f8ff bg-z-index-1"></view>
 <view
-  class="fixed left-0 top-0 w-100vw h-50vh bg-z-index"
+  class="absolute left-0 top-0 w-100vw h-50vh bg-z-index"
   style="background: linear-gradient(180deg, rgba(87, 105, 255, 0.1) 0%, rgba(87, 105, 255, 0) 100%)"
 ></view>
 
@@ -14,10 +14,10 @@
   <!-- 标题 -->
   <nav-bar
     title="{{title}}"
-    z-index="{{113}}"
     left-arrow
     bind:leftTap="goBack"
     disabled="{{opacity === 0}}"
+    style="z-index: 100"
   ></nav-bar>
   <!-- 家庭无设备，或只有网关 -->
   <view
@@ -29,19 +29,19 @@
       class="w-300rpx h-300rpx mt-240rpx"
     ></image>
     <text class="text-black-59 text-28rpx mt-48rpx text-center leading-48rpx">{{'房间内还未添加\n可控制的设备'}}</text>
-    <van-button
+    <mz-button
       wx:if="{{canAddDevice}}"
       type="primary"
       class="mt-240rpx w-686rpx"
       size="large"
       bind:click="handleAddDevice"
       >立即添加
-    </van-button>
+    </mz-button>
   </view>
 
   <!-- 场景 -->
   <view
-    class="tool-box fixed"
+    class="tool-box absolute z-1"
     style="padding-top: {{toolboxTop}}px; height: {{toolboxTop + toolboxContentHeight}}px;"
   >
     <view class="scene-box {{roomHasLight ? 'scene-border-bottom' : ''}}">
@@ -55,10 +55,10 @@
         >场景</text
       >
       <view
-        class="flex flex-1 justify-end items-center"
+        class="flex flex-1 flex-row justify-end items-center"
         bind:tap="handleSceneTap"
       >
-        <view class="mr-38rpx flex">
+        <view class="mr-38rpx flex flex-row">
           <view
             class="scene-icon p-4rpx bg-hex-fff rounded-999"
             wx:for="{{sceneListInBar}}"
@@ -72,12 +72,12 @@
             </view>
           </view>
         </view>
-        <van-button
+        <mz-button
           catchtap="handleCollect"
           custom-class="fav-btn"
           type="primary"
           >创建场景
-        </van-button>
+        </mz-button>
       </view>
     </view>
 
@@ -93,17 +93,16 @@
         />
         <mz-slider
           disabled="{{!hasRoomLightOn}}"
-          catch:slideChange="handleLevelChange"
           catch:slideEnd="handleLevelEnd"
           value="{{roomLight.brightness}}"
           custom-class="slider-brightness-bar"
           active-color="linear-gradient(90deg, rgba(80, 127, 255, 1) 0%, #ffffff 100%)"
           bar-height="{{16}}"
           use-button-slot
-          data-min="{{1}}"
-          data-is-btn-inset="{{false}}"
-          data-key="roomBrightness"
-          data-show-toast="{{true}}"
+          min="{{1}}"
+          is-btn-inset="{{false}}"
+          key="roomBrightness"
+          show-toast="{{true}}"
         >
           <image
             slot="button"
@@ -124,16 +123,15 @@
         />
         <mz-slider
           disabled="{{!hasRoomLightOn}}"
-          catch:slideChange="handleColorTempChange"
           catch:slideEnd="handleColorTempEnd"
           value="{{roomLight.colorTemperature}}"
           custom-class="slider-color-temp-bar"
           active-color="rgba(0,0,0,0)"
           bar-height="{{16}}"
           use-button-slot
-          data-is-btn-inset="{{false}}"
-          data-key="roomColorTemp"
-          data-show-toast="{{true}}"
+          is-btn-inset="{{false}}"
+          key="roomColorTemp"
+          show-toast="{{true}}"
           formatter="{{colorTempFormatter}}"
         >
           <image
@@ -154,6 +152,7 @@
     <view class="w-720rpx">
       <!-- 设备卡片列表 bindscroll="onPageScroll" 暂时禁用-->
       <scroll-view
+        type="list"
         scroll-y
         enhanced
         show-scrollbar="{{false}}"
@@ -161,56 +160,36 @@
         scroll-top="{{scrollTop}}"
         scroll-with-animation="{{true}}"
       >
-        <movable-area
-          wx:if="{{devicePageList.length}}"
-          style="height: {{movableAreaHeight}}rpx; width: 600rpx;"
+        <view
+          wx:for="{{devicePageList}}"
+          wx:for-item="group"
+          wx:key="g"
+          wx:for-index="g"
+          class="flex flex-row flex-wrap"
         >
-          <!-- 拖动占位符 -->
-          <!-- <movable-view wx:if="{{isMoving}}" x="{{placeholder.x}}" y="{{placeholder.y}}" direction="all" class="z-1">
-            <view class="w-160rpx h-216rpx rounded-32rpx ml-10rpx mt-16rpx border border-solid border-blue opacity-25"></view>
-          </movable-view> -->
-
           <view
-            wx:for="{{devicePageList}}"
-            wx:for-item="group"
-            wx:key="g"
-            wx:for-index="g"
-            class="flex flex-row flex-wrap"
+            wx:for="{{group}}"
+            wx:key="uniId"
+            data-index="{{index}}"
+            data-group="{{g}}"
+            data-ordernum="{{item.orderNum}}"
           >
-            <movable-view
-              wx:for="{{group}}"
-              wx:key="uniId"
-              data-index="{{index}}"
-              data-group="{{g}}"
-              data-ordernum="{{item.orderNum}}"
-              x="{{item.x}}"
-              y="{{item.y}}"
-              direction="all"
-              friction="{{999}}"
-              damping="{{100}}"
-              bind:longpress="movableTouchStart"
-              bind:touchend="movableTouchEnd"
-              catch:change="movableChange"
-              class="{{ index === placeholder.index && g === placeholder.groupIndex ? 'z-100' : 'z-1' }}"
-              disabled="{{!isMoving}}"
-            >
-              <device-card
-                class="w-180rpx pb-16rpx pt-16rpx flex justify-center {{editSelectMode && (index !== placeholder.index || g !== placeholder.groupIndex) ? 'shake' : ''}}"
-                showControl="{{!editSelectMode}}"
-                showShadow
-                showGradientBg
-                edit-mode="{{editSelectMode}}"
-                device-info="{{item}}"
-                data-item="{{item}}"
-                select="{{item.select}}"
-                bind:controlTap="queryAuthBeforeControlTap"
-                bind:cardTap="handleCardTap"
-                bind:offlineTap="handleShowDeviceOffline"
-                bind:longPress="handleLongpress"
-              />
-            </movable-view>
+            <device-card
+              class="w-180rpx pb-16rpx pt-16rpx flex justify-center {{editSelectMode && (index !== placeholder.index || g !== placeholder.groupIndex) ? 'shake' : ''}}"
+              showControl="{{!editSelectMode}}"
+              showShadow
+              showGradientBg
+              edit-mode="{{editSelectMode}}"
+              device-info="{{item}}"
+              data-item="{{item}}"
+              select="{{item.select}}"
+              bind:controlTap="queryAuthBeforeControlTap"
+              bind:cardTap="handleCardTap"
+              bind:offlineTap="handleShowDeviceOffline"
+              bind:longPress="handleLongpress"
+            />
           </view>
-        </movable-area>
+        </view>
 
         <van-skeleton
           wx:if="{{!deviceListInited}}"
@@ -242,7 +221,7 @@
           class="flex-col-center pt-40rpx pb-20rpx"
           wx:if="{{roomHasDevice}}"
         >
-          <van-button
+          <mz-button
             wx:if="{{canAddDevice}}"
             type="default"
             color="rgba(255,255,255,0.60)"
@@ -253,7 +232,7 @@
             data-url="/package-distribution/pages/choose-device/index"
           >
             <text class="text-26rpx text-hex-555659">添加设备</text>
-          </van-button>
+          </mz-button>
         </view>
       </scroll-view>
     </view>
@@ -323,9 +302,9 @@
   editSelectList="{{editSelectList}}"
 ></batch-edit>
 
-<van-toast id="van-toast" />
+<mz-toast id="mz-toast" />
 
-<van-dialog
+<mz-dialog
   use-slot
   title="{{offlineDevice.deviceName}}离线"
   show="{{ showDeviceOffline }}"
@@ -387,7 +366,7 @@
     </view>
     <view class="h-80rpx"></view>
   </view>
-</van-dialog>
+</mz-dialog>
 
 <device-auth-dialog
   device-id="{{deviceIdForQueryAuth}}"

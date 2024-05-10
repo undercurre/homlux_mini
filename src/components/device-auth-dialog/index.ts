@@ -1,5 +1,5 @@
-import Toast from '@vant/weapp/toast/toast'
-import Dialog from '@vant/weapp/dialog/dialog'
+import Toast from '../../skyline-components/mz-toast/toast'
+import Dialog from '../../skyline-components/mz-dialog/dialog'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { confirmDeviceAuth, queryAuthGetStatus, queryDeviceSpecifiedInfo } from '../../apis/index'
 import { homeStore } from '../../store/index'

@@ -1,17 +1,8 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import {
-  CMD,
-  FACTORY_ADDR,
-} from '../../config/remoter'
-import {
-  initBleCapacity,
-} from '../../utils/index'
+import { CMD, FACTORY_ADDR } from '../../config/remoter'
+import { initBleCapacity } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
-import {
-  createBleServer,
-  bleAdvertising,
-  BleService,
-} from '../../utils/remoterUtils'
+import { createBleServer, bleAdvertising, BleService } from '../../utils/remoterUtils'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
 // import Toast from '@vant/weapp/toast/toast'
@@ -34,12 +25,12 @@ ComponentWithComputed({
     tempBtnConfig: {
       isEnable: true,
       isLeftOn: false,
-      isRightOn: false
+      isRightOn: false,
     },
     gearBtnConfig: {
       isEnable: true,
       isTopOn: false,
-      isBottomOn: false
+      isBottomOn: false,
     },
     btnList: [
       {
@@ -147,7 +138,7 @@ ComponentWithComputed({
         isEnable: true,
         iconOn: '/package-remoter/assets/newUI/nightOn.png',
         iconOff: '/package-remoter/assets/newUI/nightOff.png',
-      }
+      },
     ],
     isShowPopup: false,
     popSelectMode: [] as any[],
@@ -178,13 +169,13 @@ ComponentWithComputed({
       else if (data.gearBtnConfig.isBottomOn) arr.push('弱暖')
       for (let i = 0; i < list.length; i++) {
         if (list[i].isMode && list[i].isOn) {
-          if (list[i].gear > 0 ) arr.push(`${list[i].name}${list[i].gear}档`)
+          if (list[i].gear > 0) arr.push(`${list[i].name}${list[i].gear}档`)
           else arr.push(list[i].name)
         }
       }
       if (arr.length === 0) return '已连接'
       else return arr.join(' | ')
-    }
+    },
   },
   methods: {
     goBack() {
@@ -242,10 +233,10 @@ ComponentWithComputed({
         }
       }
       this.setData({
-        tempType : support.temperatrue ? 1 : 2,
+        tempType: support.temperatrue ? 1 : 2,
         btnList: showBtns,
         popSelectMode: popBtns,
-        bottomList: showBottom
+        bottomList: showBottom,
       })
     },
     getSupportByModel() {
@@ -259,7 +250,7 @@ ComponentWithComputed({
         DC: !!(model & 0x10),
         night: !!(model & 0x20),
         anion: !!(model & 0x40),
-        tvoc: !!(model & 0x80)
+        tvoc: !!(model & 0x80),
       }
     },
     onUnload() {
@@ -428,7 +419,7 @@ ComponentWithComputed({
         curTemp: isShowTemp ? temp : '--',
         btnList: btns,
         bottomList: bottom,
-        gearBtnConfig: gear
+        gearBtnConfig: gear,
       })
       this.updateViewEn()
     },
@@ -440,14 +431,14 @@ ComponentWithComputed({
       const bottom = this.data.bottomList
       const btns = this.data.btnList
       const tempConfig = this.data.tempBtnConfig
-      const isDisable= !bottom[0].isOn && this.data.isBLEConnected
+      const isDisable = !bottom[0].isOn && this.data.isBLEConnected
       tempConfig.isEnable = !isDisable
       for (let i = 0; i < btns.length; i++) {
         btns[i].isEnable = !isDisable
       }
       this.setData({
         tempBtnConfig: tempConfig,
-        btnList: btns
+        btnList: btns,
       })
     },
     onTempLeftClick() {
@@ -456,15 +447,15 @@ ComponentWithComputed({
       config.isLeftOn = true
       config.isRightOn = false
       this.setData({
-        tempBtnConfig: config
+        tempBtnConfig: config,
       })
       setTimeout(() => {
         config.isLeftOn = false
         config.isRightOn = false
         this.setData({
-          tempBtnConfig: config
+          tempBtnConfig: config,
         })
-      }, 300);
+      }, 300)
       this.sendBluetoothCMD([CMD['BATH_TEMPERATURE_ADD']])
     },
     onTempRightClick() {
@@ -473,49 +464,49 @@ ComponentWithComputed({
       config.isLeftOn = false
       config.isRightOn = true
       this.setData({
-        tempBtnConfig: config
+        tempBtnConfig: config,
       })
       setTimeout(() => {
         config.isLeftOn = false
         config.isRightOn = false
         this.setData({
-          tempBtnConfig: config
+          tempBtnConfig: config,
         })
-      }, 300);
+      }, 300)
       this.sendBluetoothCMD([CMD['BATH_TEMPERATURE_SUB']])
     },
     onGearTopClick() {
       const config = this.data.gearBtnConfig
       if (!config.isEnable) return
-      config.isTopOn= true
+      config.isTopOn = true
       config.isBottomOn = false
       this.setData({
-        gearBtnConfig: config
+        gearBtnConfig: config,
       })
       setTimeout(() => {
         config.isTopOn = false
         config.isBottomOn = false
         this.setData({
-          gearBtnConfig: config
+          gearBtnConfig: config,
         })
-      }, 300);
+      }, 300)
       this.sendBluetoothCMD([CMD['BATH_WARM_STRONG']])
     },
     onGearBottomClick() {
       const config = this.data.gearBtnConfig
       if (!config.isEnable) return
-      config.isTopOn= false
+      config.isTopOn = false
       config.isBottomOn = true
       this.setData({
-        gearBtnConfig: config
+        gearBtnConfig: config,
       })
       setTimeout(() => {
         config.isTopOn = false
         config.isBottomOn = false
         this.setData({
-          gearBtnConfig: config
+          gearBtnConfig: config,
         })
-      }, 300);
+      }, 300)
       this.sendBluetoothCMD([CMD['BATH_WARM_SOFT']])
     },
     onBtnListClick(e: any) {
@@ -580,7 +571,7 @@ ComponentWithComputed({
       if (list[index].key == 'POWER') {
         if (this.data.isBLEConnected && !lastPowerOn) {
           this.setData({
-            isShowPopup: true
+            isShowPopup: true,
           })
         } else {
           this.sendBluetoothCMD([CMD['BATH_ALL_OFF']])
@@ -609,7 +600,7 @@ ComponentWithComputed({
     },
     closePopup() {
       this.setData({
-        isShowPopup: false
+        isShowPopup: false,
       })
     },
     percent2Rang(percent: number) {

@@ -1,8 +1,13 @@
 {
   "component": true,
+  "renderer": "skyline",
+  "componentFramework": "glass-easel",
+  "styleIsolation": "apply-shared",
   "usingComponents": {
+    "mz-button": "../../skyline-components/mz-button/index",
+    "mz-toast": "../../skyline-components/mz-toast/index",
     "mz-loading": "../../components/mz-loading/index",
-    "van-dialog": "@vant/weapp/dialog/index",
+    "mz-dialog": "../../skyline-components/mz-dialog/index",
     "add-scene-popup": "components/add-scene-popup/index"
   }
 }

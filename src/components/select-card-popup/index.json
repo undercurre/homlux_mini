@@ -2,6 +2,9 @@
   "component": true,
   "styleIsolation": "apply-shared",
   "usingComponents": {
+    "mz-button": "/skyline-components/mz-button/index",
+    "device-card": "/components/device-card/index",
+    "mz-popup": "/skyline-components/mz-popup/index",
     "scene-card": "./scene-card/index"
   }
 }

@@ -127,7 +127,7 @@ const _parsePayload = (payload: string, deviceType: string, deviceModel?: string
       BATH_SWING: !!(rxU16[7] & BIT_4),
       BATH_ANION: !!(rxU16[7] & BIT_6),
       BLOW_GEAR: rxU16[8] & 0x07,
-      VENT_GEAR: rxU16[9] & 0x07
+      VENT_GEAR: rxU16[9] & 0x07,
     }
   }
   return {}
@@ -162,13 +162,13 @@ const _createBluetoothProtocol = (params: { addr: string; data: string; opcode?:
   return buffer
 }
 
-const _analysisBluetoothProtocol = (params: { addr: string, dataArr: number[] }) => {
+const _analysisBluetoothProtocol = (params: { addr: string; dataArr: number[] }) => {
   const { addr, dataArr } = params
   if (dataArr.length < 3) return []
   if (dataArr[0] != dataArr.length - 1) return []
-  const encryptIndex = (dataArr[1] & 0xF0) >> 4
+  const encryptIndex = (dataArr[1] & 0xf0) >> 4
   const payload = dataArr.slice(2)
-  const hexArr = payload.map(item => {
+  const hexArr = payload.map((item) => {
     return ('00' + item.toString(16)).slice(-2)
   })
   return cryptoUtils.enCodeData(hexArr.join(''), addr, encryptIndex)
@@ -395,5 +395,5 @@ export default {
   handleBluetoothResponse: _handleBluetoothResponse,
   handleBleResponse: _handleBleResponse,
   generalCmdString: _generalCmdString,
-  parsePayload: _parsePayload
+  parsePayload: _parsePayload,
 }

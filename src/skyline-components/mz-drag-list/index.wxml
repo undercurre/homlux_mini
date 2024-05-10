@@ -1,0 +1,41 @@
+<view
+  id="list-wrapper"
+  class="drag-list-wrapper drag-list-wrapper-class"
+  list="{{list}}"
+  style="{{wrapStyle}}"
+  baseData="{{baseData}}"
+  updating="{{updating}}"
+  change:updating="{{handler.updatingObserver}}"
+  change:list="{{handler.listObserver}}"
+  change:baseData="{{handler.baseDataObserver}}"
+>
+  <view
+    class="item"
+    wx:for="{{list}}"
+    id="ID{{item.id}}"
+    wx:key="id"
+  >
+    <long-press-gesture-handler
+      data-id="{{item.id}}"
+      data-sortKey="{{item.sortKey}}"
+      worklet:ongesture="longPress"
+    >
+      <item
+        data-index="{{index}}"
+        item="{{item}}"
+        bind:itemClick="onItemClick"
+      />
+    </long-press-gesture-handler>
+  </view>
+</view>
+<root-portal
+  style="position: relative"
+  wx:if="{{true}}"
+  enable="{{dragging}}"
+>
+  <item
+    style="width: 100%; position: absolute; opacity: 0"
+    id="tempItem"
+    item="{{curDragItem}}"
+  />
+</root-portal>

@@ -1,6 +1,6 @@
 // src\package-room-control\index\components\heat-control-popup\index.ts
 import { ComponentWithComputed } from 'miniprogram-computed'
-import Toast from '@vant/weapp/toast/toast'
+import Toast from '../../../../skyline-components/mz-toast/toast'
 import { sendDevice } from '../../../../apis/index'
 import { NO_SYNC_DEVICE_STATUS, proName } from '../../../../config/index'
 

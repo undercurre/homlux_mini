@@ -1,15 +1,3 @@
-// @ts-nocheck
-const minutes = []
-const seconds = []
-
-for (let i = 0; i <= 10; i++) {
-  minutes.push(String(i).padStart(2, '0'))
-}
-
-for (let i = 0; i <= 59; i++) {
-  seconds.push(String(i).padStart(2, '0'))
-}
-
 Component({
   options: {},
   /**
@@ -19,33 +7,18 @@ Component({
     show: {
       type: Boolean,
       value: false,
-      observer(value) {
-        if (value) {
-          this.setData({
-            icon: this.data.value,
-          })
-        }
-      },
     },
     value: {
-      type: Array,
-      value: [0, 0],
-    },
-    showCancel: {
-      type: Boolean,
-      value: true,
-    },
-    cancelText: {
-      type: String,
-      value: '上一步',
-    },
-    showConfirm: {
-      type: Boolean,
-      value: true,
-    },
-    confirmText: {
-      type: String,
-      value: '确定',
+      type: Number,
+      value: 0,
+      observer: function (newVal) {
+        const minute = Math.trunc(newVal / 60)
+        const second = Math.trunc(newVal % 60)
+        this.setData({
+          'pickerColumns[0].defaultIndex': minute,
+          'pickerColumns[1].defaultIndex': second,
+        })
+      },
     },
   },
 
@@ -53,8 +26,16 @@ Component({
    * 组件的初始数据
    */
   data: {
-    minutes,
-    seconds,
+    pickerColumns: [
+      {
+        values: Array.from({ length: 11 }, (_, i) => `${i < 10 ? '0' : ''}${i}`),
+        defaultIndex: 0,
+      },
+      {
+        values: Array.from({ length: 60 }, (_, i) => `${i < 10 ? '0' : ''}${i}`),
+        defaultIndex: 0,
+      },
+    ],
   },
 
   /**
@@ -70,9 +51,12 @@ Component({
     handleCancel() {
       this.triggerEvent('cancel')
     },
-    timeChange(e: { detail: number[] }) {
+    timeChange(e: { detail: { value: string[] } }) {
+      const min = parseInt(e.detail.value[0])
+      const sec = parseInt(e.detail.value[1])
+      const value = min * 60 + sec
       this.setData({
-        value: e.detail,
+        value,
       })
     },
     blank() {},

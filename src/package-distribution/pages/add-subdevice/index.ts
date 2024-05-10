@@ -87,14 +87,14 @@ ComponentWithComputed({
         })
         .catch((error) => error)
 
-      console.log('openBleRes', openBleRes)
+      Logger.log('openBleRes', openBleRes)
 
       // 监听扫描到新设备事件
       wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
         const deviceList = res.devices.filter((item) => {
           let flag = false
-          // localName为homlux_ble且没有被发现过的
-          if (item.localName && item.localName.includes('homlux_ble')) {
+          // localName为homlux_ble、homlux且没有被发现过的
+          if (item.localName && ['homlux_ble', 'homlux'].includes(item.localName)) {
             flag = true
           }
 
@@ -133,7 +133,7 @@ ComponentWithComputed({
       }
 
       this.data._hasFound = true
-      console.log('Device Found', device, msgObj)
+      Logger.log('Device Found', device, msgObj)
 
       wx.stopBluetoothDevicesDiscovery()
 

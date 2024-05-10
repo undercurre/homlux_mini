@@ -1,4 +1,4 @@
-<van-popup
+<mz-popup
   show="{{ show }}"
   z-index="1002"
   round
@@ -74,11 +74,11 @@
           bind:slideEnd="handleBtnTap"
           bind:slideChange="handleSlideChange"
           value="{{currentWindLevel}}"
-          barHeight="36"
-          data-min="{{1}}"
-          data-max="{{3}}"
+          bar-height="36"
+          min="{{1}}"
+          max="{{3}}"
           active-color="#488FFF"
-          data-key="windSpeedSlider"
+          key="windSpeedSlider"
           use-button-slot
         >
           <view
@@ -96,6 +96,6 @@
 
     <view class="h-96rpx"></view>
   </view>
-</van-popup>
+</mz-popup>
 
-<van-toast id="van-toast" />
+<mz-toast id="mz-toast" />

@@ -1,0 +1,11 @@
+{
+  "component": true,
+  "renderer": "skyline",
+  "componentFramework": "glass-easel",
+  "disableScroll": true,
+  "usingComponents": {
+    "mz-movable": "/skyline-components/mz-movable/index",
+    "mz-drag": "/skyline-components/mz-drag/index",
+    "my-box": "./my-box/index"
+  }
+}

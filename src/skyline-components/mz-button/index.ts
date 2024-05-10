@@ -1,4 +1,5 @@
 Component({
+  externalClasses: ['custom-class'],
   /**
    * 组件的属性列表
    */
@@ -20,7 +21,7 @@ Component({
     },
     type: {
       type: String,
-      value: 'primary',
+      value: 'default',
     },
     size: {
       type: String,

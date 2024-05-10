@@ -41,11 +41,11 @@ ComponentWithComputed({
       const eventChannel = this.getOpenerEventChannel()
       eventChannel.on('createGroup', async (data) => {
         const deviceList = data.lightList.map((deviceId: string) => ({
-          ...deviceStore.deviceMap[deviceId],
+          ...deviceStore.allRoomDeviceMap[deviceId],
           status: 'processing',
         }))
 
-        console.log(data.lightList, deviceList, deviceStore.deviceMap)
+        console.log(data.lightList, deviceList, deviceStore.allRoomDeviceMap)
 
         this.setData({
           deviceList,
@@ -80,7 +80,7 @@ ComponentWithComputed({
           })
 
         // 超时控制
-        const TIME_OUT = Math.min(Math.max(8000, this.data.deviceList.length * 1000), 120000)
+        const TIME_OUT = Math.min(Math.max(15000, this.data.deviceList.length * 1000), 120000)
         timeoutId = setTimeout(() => {
           timeoutId = null
           if (this.data.deviceList.length !== this.data.successList.length) {

@@ -1,5 +1,11 @@
 {
   "component": true,
   "styleIsolation": "apply-shared",
-  "usingComponents": {}
+  "usingComponents": {
+    "mz-button": "/skyline-components/mz-button/index",
+    "mz-toast": "/skyline-components/mz-toast/index",
+    "mz-dialog": "/skyline-components/mz-dialog/index",
+    "mz-field": "/skyline-components/mz-field/index",
+    "mz-popup": "/skyline-components/mz-popup/index"
+  }
 }

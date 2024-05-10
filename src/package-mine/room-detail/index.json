@@ -1,5 +1,10 @@
 {
   "usingComponents": {
+    "van-button": "@vant/weapp/button/index",
+    "van-toast": "@vant/weapp/toast/index",
+    "add-room": "/components/add-room/index",
+    "van-cell-group": "@vant/weapp/cell-group/index",
+    "van-cell": "@vant/weapp/cell/index",
     "van-dialog": "@vant/weapp/dialog/index"
   }
 }

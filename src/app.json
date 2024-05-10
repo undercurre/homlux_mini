@@ -63,11 +63,11 @@
     },
     {
       "root": "package-room-control",
-      "pages": ["index/index", "scene-edit/index", "scene-request-list/index", "scene-list/index", "group/index"]
+      "pages": ["index/index", "group/index"]
     },
     {
-      "root": "package-protocol",
-      "pages": ["protocol-show/index", "protocol-list/index"]
+      "root": "package-about",
+      "pages": ["pages/protocol-show/index", "pages/about/index", "pages/subdevice-scan/index"]
     },
     {
       "root": "package-debug",
@@ -75,7 +75,8 @@
         "pages/index/index",
         "pages/homos-debug/index",
         "pages/add-virtual-device/index",
-        "pages/skyline-demo/index"
+        "pages/skyline-demo/index",
+        "pages/movable-demo/index"
       ]
     },
     {
@@ -100,14 +101,7 @@
     },
     {
       "root": "package-remoter",
-      "pages": [
-        "pannel/index",
-        "light/index",
-        "setting/index",
-        "fan-light/index",
-        "bath/index",
-        "cool-bath/index"
-      ]
+      "pages": ["pannel/index", "light/index", "setting/index", "fan-light/index", "bath/index", "cool-bath/index"]
     },
     {
       "root": "package-distribution-meiju",
@@ -137,20 +131,7 @@
   },
   "lazyCodeLoading": "requiredComponents",
   "usingComponents": {
-    "van-button": "@vant/weapp/button/index",
-    "van-overlay": "@vant/weapp/overlay/index",
-    "van-cell": "@vant/weapp/cell/index",
-    "van-slider": "@vant/weapp/slider/index",
-    "van-popup": "@vant/weapp/popup/index",
-    "van-cell-group": "@vant/weapp/cell-group/index",
-    "van-dialog": "@vant/weapp/dialog/index",
-    "van-toast": "@vant/weapp/toast/index",
-    "nav-bar": "./components/custom-nav-bar/index",
-    "home-select-menu": "./components/home-select-menu/index",
-    "add-room": "./components/add-room/index",
-    "svg-icon": "./components/svg-icon/index",
-    "van-field": "@vant/weapp/field/index",
-    "device-card": "./components/device-card/index"
+    "nav-bar": "/components/custom-nav-bar/index"
   },
   "window": {
     "navigationStyle": "custom",
@@ -179,7 +160,7 @@
       "sdkVersionBegin": "3.0.0",
       "sdkVersionEnd": "15.255.255",
       "defaultDisplayBlock": true,
-      "defaultContentBox": true
+      "defaultContentBox": false
     }
   }
 }

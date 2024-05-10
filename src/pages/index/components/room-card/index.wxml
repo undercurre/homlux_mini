@@ -18,6 +18,7 @@
     wx:if="{{showScene && sceneList.length > 0}}"
   >
     <scroll-view
+      type="list"
       enable-flex
       scroll-x
       enhanced

@@ -50,6 +50,7 @@ page {
   --toast-border-radius: 46rpx;
   --toast-font-size: 32rpx;
   --toast-line-height: 44rpx;
+  --toast-max-width: 80%;
   /* toast end */
 
   /* switch start */
@@ -70,10 +71,6 @@ page {
   --dialog-header-font-weight: 600;
   --dialog-header-isolated-padding: 48rpx 64rpx;
   /* dialog end */
-
-  /* toast start */
-  --toast-max-width: 80%;
-  /* toast start */
 }
 
 /* button start */

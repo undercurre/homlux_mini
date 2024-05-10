@@ -1,0 +1,28 @@
+<view
+  wx:if="{{ showToolbar }}"
+  class="mz-picker__toolbar toolbar-class"
+>
+  <view
+    class="mz-picker__cancel"
+    hover-class="mz-picker__cancel--hover"
+    hover-stay-time="70"
+    data-type="cancel"
+    bindtap="emit"
+  >
+    {{ cancelButtonText }}
+  </view>
+  <view
+    wx:if="{{ title }}"
+    class="mz-picker__title mz-ellipsis"
+    >{{ title }}</view
+  >
+  <view
+    class="mz-picker__confirm"
+    hover-class="mz-picker__confirm--hover"
+    hover-stay-time="70"
+    data-type="confirm"
+    bindtap="emit"
+  >
+    {{ confirmButtonText }}
+  </view>
+</view>

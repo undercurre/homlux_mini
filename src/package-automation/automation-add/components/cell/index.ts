@@ -1,6 +1,5 @@
-import { ComponentWithComputed } from 'miniprogram-computed'
-
-ComponentWithComputed({
+import { runOnJS } from '../../../../skyline-components/common/worklet'
+Component({
   options: {},
   /**
    * 组件的属性列表
@@ -12,8 +11,6 @@ ComponentWithComputed({
     },
   },
 
-  computed: {},
-
   /**
    * 组件的初始数据
    */
@@ -24,10 +21,17 @@ ComponentWithComputed({
    */
   methods: {
     handleActionEdit(e: WechatMiniprogram.TouchEvent) {
-      this.triggerEvent('actionEdit', e.currentTarget.dataset.index)
+      'worklet'
+      console.log('handleActionEdit', e)
+      runOnJS(this.triggerEvent.bind(this))('itemClick', { type: 'actionEdit', data: e.currentTarget.dataset.index })
+      // this.triggerEvent('itemClick', { type: 'actionEdit', data: e.currentTarget.dataset.index })
     },
     handleActionDelete(e: WechatMiniprogram.TouchEvent) {
-      this.triggerEvent('actionDelete', e.currentTarget.dataset.dragid)
+      'worklet'
+      console.log('handleActionDelete', e)
+      runOnJS(this.triggerEvent.bind(this))('itemClick', { type: 'actionDelete', data: e.currentTarget.dataset.dragid })
+
+      // this.triggerEvent('itemClick', { type: 'actionDelete', data: e.currentTarget.dataset.dragid })
     },
   },
 })

@@ -2,7 +2,10 @@
   "component": true,
   "styleIsolation": "apply-shared",
   "usingComponents": {
-    "select-card-popup": "../../../../components/select-card-popup/index",
-    "van-icon": "@vant/weapp/icon/index"
+    "mz-button": "../../../../skyline-components/mz-button/index",
+    "mz-toast": "../../../../skyline-components/mz-toast/index",
+    "mz-dialog": "../../../../skyline-components/mz-dialog/index",
+    "mz-popup": "../../../../skyline-components/mz-popup/index",
+    "select-card-popup": "../../../../components/select-card-popup/index"
   }
 }

@@ -2,6 +2,9 @@
   "component": true,
   "styleIsolation": "apply-shared",
   "usingComponents": {
+    "mz-button": "../../skyline-components/mz-button/index",
+    "mz-toast": "../../skyline-components/mz-toast/index",
+    "mz-popup": "../../skyline-components/mz-popup/index",
     "curtain-slider": "/components/curtain-slider/index"
   }
 }

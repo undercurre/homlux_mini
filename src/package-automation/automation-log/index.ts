@@ -22,6 +22,7 @@ ComponentWithComputed({
     isRefreshing: false,
     isAllLogs: false,
     _tempLog: [] as AutoScene.AutoSceneLog[],
+    _isLoadingMore: false,
   },
 
   computed: {
@@ -35,7 +36,6 @@ ComponentWithComputed({
           logsMap[date] = [{ ...item, actionTime: dayjs(item.reportAt).format('HH:mm') }]
         }
       })
-      console.log('logsMap', logsMap)
 
       return logsMap
     },
@@ -56,7 +56,6 @@ ComponentWithComputed({
           isAllLogs: logRes.result.length < 50,
         })
       }
-      console.log('日志', logRes)
 
       wx.createSelectorQuery()
         .select('#content')
@@ -88,10 +87,14 @@ ComponentWithComputed({
     },
 
     async onLoadmore() {
+      if (this.data._isLoadingMore || this.data.isAllLogs || this.data.isRefreshing || !this.data.autoSceneLogLength)
+        return
+      this.data._isLoadingMore = true
       const logRes = await queryAutoSceneLogByHouseId({
         houseId: homeStore.currentHomeId,
         reportTs: this.data._tempLog[this.data._tempLog.length - 1].reportTs,
       })
+      this.data._isLoadingMore = false
       if (logRes.success) {
         this.setData({
           _tempLog: this.data._tempLog.concat(logRes.result),

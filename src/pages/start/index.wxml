@@ -1,4 +1,3 @@
-<!--pages/login/index.wxml-->
 <view
   class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7"
   style="z-index: -1"
@@ -31,10 +30,11 @@
           class="rounded-32rpx shot"
           src="{{ shots.img0 }}"
         />
-        <image
-          class="h-48 w-48 mt-40rpx"
-          slot="icon"
-          src="{{ defaultPage === 'index' ? checkImg : uncheckImg }}"
+
+        <mz-checkbox
+          class="mt-48rpx"
+          iconSize="24"
+          value="{{defaultPage === 'index'}}"
         />
       </view>
       <view
@@ -46,10 +46,10 @@
           class="rounded-32rpx shot"
           src="{{ shots.img1 }}"
         />
-        <image
-          class="h-48 w-48 mt-48rpx"
-          slot="icon"
-          src="{{ defaultPage === 'remoter' ? checkImg : uncheckImg }}"
+        <mz-checkbox
+          class="mt-48rpx"
+          iconSize="24"
+          value="{{defaultPage === 'remoter'}}"
         />
       </view>
     </view>
@@ -58,14 +58,13 @@
     class="fixed bottom-0 flex flex-row pt-30rpx w-full px-32rpx box-border"
     style="height: calc(146rpx + env(safe-area-inset-bottom))"
   >
-    <van-button
+    <mz-button
       class="w-full"
-      bindtap="handleDefaultPage"
+      bind:click="handleDefaultPage"
       block
-      disabled="{{!defaultPage}}"
       type="primary"
       size="large"
-      >设置为默认主页</van-button
+      >设置为默认主页</mz-button
     >
   </view>
 </view>

@@ -14,7 +14,7 @@ import {
 import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { sendDevice, execScene, saveDeviceOrder, queryGroup, queryAuthGetStatus } from '../../apis/index'
-import Toast from '@vant/weapp/toast/toast'
+import Toast from '../../skyline-components/mz-toast/toast'
 import {
   storage,
   emitter,
@@ -26,6 +26,7 @@ import {
   verifyNetwork,
   Logger,
   strUtil,
+  delay,
 } from '../../utils/index'
 import {
   maxColorTemp,
@@ -145,6 +146,9 @@ ComponentWithComputed({
     },
     _timeId: null as null | number, // 自动刷新定时
     _delayTimeId: null as null | number, // 延时更新定时
+    title: '',
+    sceneListInBar: [] as Scene.SceneItem[],
+    canAddDevice: false,
   },
 
   computed: {
@@ -152,7 +156,7 @@ ComponentWithComputed({
     colorTempFormatter(data) {
       const { maxColorTemp, minColorTemp } = data.roomLight
       return (value: number) => {
-        return `${(value / 100) * (maxColorTemp - minColorTemp) + minColorTemp}K`
+        return `${Math.round((value / 100) * (maxColorTemp - minColorTemp) + minColorTemp)}K`
       }
     },
     // 房间灯光可控状态
@@ -174,23 +178,24 @@ ComponentWithComputed({
       const { devicePageList } = data
       return devicePageList?.length > 1 || (devicePageList?.length === 1 && devicePageList[0].length > 0)
     },
-    title(data) {
-      return data.currentRoom?.roomName ?? ''
-    },
-    sceneListInBar(data) {
-      if (data.sceneList) {
-        return data.sceneList.slice(0, 4)
-      }
-      return []
-    },
-    deviceIdTypeMap(data): Record<string, string> {
-      if (data.deviceList?.length) {
-        return Object.fromEntries(
-          data.deviceList.map((device: DeviceCard) => [device.deviceId, proName[device.proType]]),
-        )
-      }
-      return {}
-    },
+    // title(data) {
+    //   return data.currentRoom?.roomName ?? ''
+    // },
+    // sceneListInBar(data) {
+    //   if (data.sceneList) {
+    //     return data.sceneList.slice(0, 4)
+    //   }
+    //   return []
+    // },
+    // DESERTED 过时代码
+    // deviceIdTypeMap(data): Record<string, string> {
+    //   if (data.deviceList?.length) {
+    //     return Object.fromEntries(
+    //       data.deviceList.map((device: DeviceCard) => [device.deviceId, proName[device.proType]]),
+    //     )
+    //   }
+    //   return {}
+    // },
     // 设备批量选择按钮文字
     allSelectBtnText(data) {
       return data.checkedList && data.checkedList.length > 0 ? '全不选' : '全选'
@@ -206,9 +211,9 @@ ComponentWithComputed({
       )
     },
     // 判断是否是创建者或者管理员，其他角色不能添加设备
-    canAddDevice(data) {
-      return data.isCreator || data.isAdmin
-    },
+    // canAddDevice(data) {
+    //   return data.isCreator || data.isAdmin
+    // },
     // 可滚动区域高度
     scrollViewHeight(data) {
       let baseHeight =
@@ -228,17 +233,24 @@ ComponentWithComputed({
       return data.roomHasLight ? 150 : 60
     },
     /**
-     * 是否打开控制面板（除浴霸和晾衣）
+     * 是否打开控制面板
      * TODO 将灯和开关控制也解耦出来
      */
     isShowCommonControl(data) {
       const { controlType } = data
-      return controlType && controlType !== PRO_TYPE.bathHeat && controlType !== PRO_TYPE.clothesDryingRack
+      return (
+        controlType &&
+        (controlType === PRO_TYPE.light ||
+          controlType === PRO_TYPE.switch ||
+          controlType === PRO_TYPE.gateway ||
+          controlType === PRO_TYPE.curtain ||
+          controlType === PRO_TYPE.sensor)
+      )
     },
     // 设备卡片可移动区域高度
     movableAreaHeight(data) {
-      const { deviceFlattenList } = data
-      return Math.ceil((deviceFlattenList?.length ?? 4) / 4) * 236
+      const { devicePageList } = data
+      return Math.ceil((devicePageList?.length ?? 4) / 4) * 236
     },
   },
 
@@ -366,6 +378,19 @@ ComponentWithComputed({
             url: '/pages/index/index',
           })
         }
+      })
+    },
+
+    async onReady() {
+      await delay(0)
+      this.pageDataSync()
+    },
+
+    pageDataSync() {
+      this.setData({
+        title: roomStore.currentRoom?.roomName ?? '',
+        sceneListInBar: sceneStore.sceneList?.length ? sceneStore.sceneList.slice(0, 4) : [],
+        canAddDevice: homeStore.isManager,
       })
     },
 
@@ -1262,7 +1287,7 @@ ComponentWithComputed({
         return
       }
       // 只有创建者或者管理员能够进入编辑模式
-      if (!this.data.isCreator && !this.data.isAdmin) {
+      if (!this.data.canAddDevice) {
         return
       }
 
@@ -1313,21 +1338,11 @@ ComponentWithComputed({
         url: `/package-distribution/pages/wifi-connect/index?type=changeWifi&sn=${gateway.sn}`,
       })
     },
-    handleLevelChange(e: { detail: number }) {
-      this.setData({
-        'roomLight.brightness': e.detail,
-      })
-    },
     handleLevelEnd(e: { detail: number }) {
       this.setData({
         'roomLight.brightness': e.detail,
       })
       this.lightSendDeviceControl('brightness')
-    },
-    handleColorTempChange(e: { detail: number }) {
-      this.setData({
-        'roomLight.colorTemperature': e.detail,
-      })
     },
     handleColorTempEnd(e: { detail: number }) {
       this.setData({

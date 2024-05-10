@@ -1,4 +1,4 @@
-.container-pg{
+.container-pg {
   width: 750rpx;
   min-height: 100vh;
   position: relative;
@@ -9,7 +9,7 @@
   background-color: transparent;
   z-index: 100;
 }
-.flex-center{
+.flex-center {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -29,12 +29,12 @@
   left: 0;
   top: 0;
 }
-.title-block{
+.title-block {
   width: 370rpx;
   height: 88rpx;
   flex-direction: row;
 }
-.dot-block{
+.dot-block {
   width: 14rpx;
   height: 14rpx;
   border-radius: 7rpx;
@@ -58,7 +58,7 @@
   height: 260rpx;
   margin-top: 80rpx;
 }
-.btn-item{
+.btn-item {
   height: 168rpx;
   width: 170rpx;
   flex-direction: column;
@@ -66,11 +66,11 @@
 .btn-con {
   width: 112rpx;
   height: 112rpx;
-  box-shadow: 0px 0px 12px 0px rgba(0,0,0,0.04);
+  box-shadow: 0px 0px 12px 0px rgba(0, 0, 0, 0.04);
   border-radius: 36rpx;
   margin-bottom: 30rpx;
 }
-.inner-block{
+.inner-block {
   height: 168rpx;
   width: 750rpx;
   flex-direction: row;
@@ -78,13 +78,13 @@
   justify-content: space-evenly;
   align-items: center;
 }
-.bottom-btn{
+.bottom-btn {
   width: 96rpx;
   height: 96rpx;
   border-radius: 48rpx;
   margin-bottom: 16rpx;
 }
-.pup-block{
+.pup-block {
   width: 750rpx;
   position: relative;
   display: flex;
@@ -92,12 +92,12 @@
   justify-content: flex-start;
   align-items: center;
 }
-.popup-title{
+.popup-title {
   color: #555659;
   width: 638rpx;
   margin-top: 22rpx;
 }
-.high-select{
+.high-select {
   transform: scale(0.9);
   transition: 0.2s;
   animation: scaleAnimation 0.2s ease-in-out;
@@ -119,7 +119,7 @@
   width: 200rpx;
   height: 266rpx;
   background-color: #ffffff;
-  box-shadow: 0px 0px 12px 0px rgba(0,0,0,0.04);
+  box-shadow: 0px 0px 12px 0px rgba(0, 0, 0, 0.04);
   flex-direction: column;
 }
 .gear-btn-top {
@@ -131,12 +131,12 @@
   border-bottom-right-radius: 52rpx;
   margin-top: 1px;
 }
-.gear-icon{
+.gear-icon {
   width: 64rpx;
   height: 64rpx;
   margin-bottom: 24rpx;
 }
-.high-select-2{
+.high-select-2 {
   transform: scale(0.96);
   transition: 0.2s;
   animation: scaleAnimation 0.2s ease-in-out;
@@ -151,7 +151,7 @@
 .icon-block {
   width: 96rpx;
   height: 96rpx;
-  background-color: #F1F5FA;
+  background-color: #f1f5fa;
   border-radius: 32rpx;
   margin-bottom: 24rpx;
 }

@@ -2,9 +2,9 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { getModelName, PRO_TYPE, SCREEN_PID, MAX_MOVE_CARDS } from '../../../../config/index'
 import { waitingBatchDeleteDevice, batchUpdate, renameGroup } from '../../../../apis/index'
-import { deviceBinding, deviceStore, homeStore, roomBinding, roomStore } from '../../../../store/index'
-import Toast from '@vant/weapp/toast/toast'
-import Dialog from '@vant/weapp/dialog/dialog'
+import { deviceBinding, deviceStore, homeStore, roomStore } from '../../../../store/index'
+import Toast from '../../../../skyline-components/mz-toast/toast'
+import Dialog from '../../../../skyline-components/mz-dialog/dialog'
 import { storage, checkInputNameIllegal, emitter, showLoading, hideLoading } from '../../../../utils/index'
 
 let timeId: number
@@ -12,7 +12,7 @@ let timeId: number
 ComponentWithComputed({
   options: {},
 
-  behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding, roomBinding] })],
+  behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding] })],
 
   properties: {
     editSelectList: {
@@ -23,57 +23,7 @@ ComponentWithComputed({
       type: Boolean,
       value: false,
       observer(value) {
-        if (value) {
-          this.animate(
-            '#bottom',
-            [
-              {
-                translateY: '100%',
-              },
-              {
-                translateY: '0%',
-              },
-            ],
-            100,
-          )
-          this.animate(
-            '#top',
-            [
-              {
-                translateY: '-100%',
-              },
-              {
-                translateY: '0%',
-              },
-            ],
-            100,
-          )
-        } else {
-          this.animate(
-            '#bottom',
-            [
-              {
-                translateY: '0%',
-              },
-              {
-                translateY: '100%',
-              },
-            ],
-            100,
-          )
-          this.animate(
-            '#top',
-            [
-              {
-                translateY: '0%',
-              },
-              {
-                translateY: '-100%',
-              },
-            ],
-            100,
-          )
-        }
+        console.log('editSelectMode', value)
       },
     },
   },
@@ -159,10 +109,8 @@ ComponentWithComputed({
    */
   data: {
     navigationBarAndStatusBarHeight:
-      (storage.get<number>('statusBarHeight') as number) +
-      (storage.get<number>('navigationBarHeight') as number) +
-      'px',
-    navigationBarHeight: (storage.get<number>('navigationBarHeight') as number) + 'px',
+      (storage.get('statusBarHeight') as number) + (storage.get('navigationBarHeight') as number) + 'px',
+    // navigationBarHeight: (storage.get('navigationBarHeight') as number) + 'px',
     showEditName: false,
     isEditSwitchName: false,
     editDeviceName: '',
@@ -173,10 +121,15 @@ ComponentWithComputed({
     showConfirmDelete: false,
     moveWaitlist: [] as string[],
     moveFailCount: 0,
+    roomList: [] as roomInfo[],
   },
 
   lifetimes: {
-    ready() {},
+    async ready() {
+      this.setData({
+        roomList: [...roomStore.roomList],
+      })
+    },
     detached() {
       if (timeId) {
         clearTimeout(timeId)
@@ -234,7 +187,7 @@ ComponentWithComputed({
             this.triggerEvent('updateList')
           }
         })
-        .catch((e) => console.log(e))
+        .catch((e) => console.log('catch', e))
     },
     handleEditNamePopup() {
       if (!this.data.canEditName) {
@@ -343,8 +296,8 @@ ComponentWithComputed({
           }
 
           // TODO 只有WIFI设备时，不需要超时检测逻辑
-          // 超时后检查云端上报，是否已成功移动完毕 5~120s
-          const TIME_OUT = Math.min(Math.max(5000, this.data.moveWaitlist.length * 1000), 120000)
+          // 超时后检查云端上报，是否已成功移动完毕 15~120s
+          const TIME_OUT = Math.min(Math.max(15000, this.data.moveWaitlist.length * 1000), 120000)
 
           showLoading('正在移动设备房间，请稍候')
           timeId = setTimeout(async () => {

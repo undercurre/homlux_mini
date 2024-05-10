@@ -1,4 +1,4 @@
-<van-popup
+<mz-popup
   show="{{ show }}"
   z-index="1002"
   round
@@ -83,18 +83,22 @@
           bind:slideEnd="handleBtnTap"
           bind:slideChange="handleSlideChange"
           value="{{temperature}}"
-          barHeight="36"
-          data-min="{{minTemp}}"
-          data-max="{{maxTemp}}"
+          bar-height="36"
+          btn-width="36"
+          btn-height="36"
+          min="{{minTemp}}"
+          max="{{maxTemp}}"
           active-color="#488FFF"
-          data-key="temperature"
+          key="temperature"
           data-step="{{0.5}}"
           use-button-slot
         >
           <view
             slot="button"
-            class="slider-button"
-          />
+            class="slider-button-wrapper"
+          >
+            <view class="slider-button"></view>
+          </view>
         </mz-slider>
       </view>
 
@@ -125,9 +129,9 @@
 
     <view class="h-96rpx"></view>
   </view>
-</van-popup>
+</mz-popup>
 <import src="/commons/templates/secondaryPopup.wxml" />
-<van-popup
+<mz-popup
   show="{{ isShowPicker }}"
   z-index="1002"
   round
@@ -151,6 +155,6 @@
     <view class="h-62rpx"></view>
     <template is="bottom-btn" />
   </view>
-</van-popup>
+</mz-popup>
 
-<van-toast id="van-toast" />
+<mz-toast id="mz-toast" />

@@ -18,8 +18,15 @@ ComponentWithComputed({
       },
     },
     value: {
-      type: Array,
-      value: [0, 0],
+      type: String,
+      value: '10:00',
+      observer: function (newVal) {
+        const [hour, minute] = newVal.split(':')
+        this.setData({
+          'pickerColumns[0].defaultIndex': parseInt(hour),
+          'pickerColumns[1].defaultIndex': parseInt(minute),
+        })
+      },
     },
     type: {
       type: String,
@@ -30,7 +37,18 @@ ComponentWithComputed({
   /**
    * 组件的初始数据
    */
-  data: {},
+  data: {
+    pickerColumns: [
+      {
+        values: Array.from({ length: 24 }, (_, i) => `${i < 10 ? '0' : ''}${i}`),
+        defaultIndex: 10,
+      },
+      {
+        values: Array.from({ length: 60 }, (_, i) => `${i < 10 ? '0' : ''}${i}`),
+        defaultIndex: 0,
+      },
+    ],
+  },
 
   computed: {
     title(data) {
@@ -45,14 +63,18 @@ ComponentWithComputed({
     handleClose() {
       this.triggerEvent('close')
     },
-    handleConfirm(e: { detail: number[] }) {
-      this.triggerEvent('confirm', e.detail)
+    handleConfirm() {
+      this.triggerEvent('confirm', this.data.value)
     },
     handleCancel() {
       this.triggerEvent('cancel')
     },
-    timeChange(e: { detail: number[] }) {
-      this.triggerEvent('change', e.detail)
+    timeChange(e: { detail: { value: string[] } }) {
+      const value = e.detail.value.join(':')
+      this.setData({
+        value,
+      })
+      // this.triggerEvent('change', e.detail)
     },
     blank() {},
   },

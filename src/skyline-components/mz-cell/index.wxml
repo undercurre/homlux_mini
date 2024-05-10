@@ -1,5 +1,7 @@
 <view
-  class="cell"
+  class="cell custom-class"
+  hover-class="van-cell--hover"
+  hover-stay-time="70"
   bind:tap="onClick"
 >
   <view class="cell-content  {{ border ? 'border' : ''}}">
@@ -9,25 +11,32 @@
       class="icon"
       mode="scaleToFill"
     />
+    <slot
+      wx:else
+      name="icon"
+    />
 
-    <span class="cell-left">
+    <view
+      class="cell-left"
+      style="{{cellLeftStyle}}"
+    >
       <slot wx:if="{{!title && !label}}"></slot>
-      <text
+      <view
         wx:if="{{title}}"
         class="title"
-        >{{ title }}</text
+        >{{ title }}</view
       >
-      <text
+      <view
         wx:if="{{label}}"
-        class="label"
-        >{{ label }}</text
+        class="label label-class"
+        >{{ label }}</view
       >
-    </span>
+    </view>
 
-    <span class="cell-right">
+    <view class="cell-right">
       <text
         wx:if="{{value}}"
-        class="value"
+        class="value value-class"
         >{{ value }}</text
       >
       <image
@@ -36,6 +45,11 @@
         class="link"
         mode="scaleToFill"
       />
-    </span>
+
+      <slot
+        wx:else
+        name="right-icon"
+      />
+    </view>
   </view>
 </view>

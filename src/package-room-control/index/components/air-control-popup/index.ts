@@ -1,8 +1,8 @@
 // src\package-room-control\index\components\air-control-popup\index.ts
 import { ComponentWithComputed } from 'miniprogram-computed'
-import Toast from '@vant/weapp/toast/toast'
+import Toast from '../../../../skyline-components/mz-toast/toast'
 import { sendDevice } from '../../../../apis/index'
-import { AC_MODE, NO_SYNC_DEVICE_STATUS } from '../../../../config/index'
+import { AC_MODE, NO_SYNC_DEVICE_STATUS, PRO_TYPE } from '../../../../config/index'
 import { transferWindSpeedProperty } from '../../../../utils/index'
 
 ComponentWithComputed({
@@ -29,7 +29,7 @@ ComponentWithComputed({
       type: Object,
       value: {},
       observer(value) {
-        if (value && this.data._canSyncCloudData) {
+        if (value && this.data._canSyncCloudData && value.proType === PRO_TYPE.airConditioner) {
           this.setData({
             propView: value as Device.DeviceItem & Device.mzgdPropertyDTO,
           })

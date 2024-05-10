@@ -1,6 +1,4 @@
-import { ComponentWithComputed } from 'miniprogram-computed'
-
-ComponentWithComputed({
+Component({
   options: {},
   /**
    * 组件的属性列表
@@ -13,6 +11,13 @@ ComponentWithComputed({
     time: {
       type: String,
       value: '10:00',
+      observer: function (newVal) {
+        const [hour, minute] = newVal.split(':')
+        this.setData({
+          'pickerColumns[0].defaultIndex': parseInt(hour),
+          'pickerColumns[1].defaultIndex': parseInt(minute),
+        })
+      },
     },
     periodType: {
       type: String,
@@ -40,12 +45,17 @@ ComponentWithComputed({
   /**
    * 组件的初始数据
    */
-  data: {},
-  computed: {
-    timeValue(data) {
-      const value = data.time.split(':').map((item: string) => Number(item))
-      return value
-    },
+  data: {
+    pickerColumns: [
+      {
+        values: Array.from({ length: 24 }, (_, i) => `${i < 10 ? '0' : ''}${i}`),
+        defaultIndex: 10,
+      },
+      {
+        values: Array.from({ length: 60 }, (_, i) => `${i < 10 ? '0' : ''}${i}`),
+        defaultIndex: 0,
+      },
+    ],
   },
   /**
    * 组件的方法列表
@@ -60,13 +70,12 @@ ComponentWithComputed({
     handleConfirm() {
       this.triggerEvent('confirm', { time: this.data.time, periodType: this.data.periodType, week: this.data.week })
     },
-    timeChange(e: { detail: number[] }) {
-      const value = e.detail.map((item) => String(item).padStart(2, '0'))
+    timeChange(e: { detail: { value: string[] } }) {
+      const time = e.detail.value.join(':')
       this.setData({
-        time: value.join(':'),
+        time,
       })
-
-      this.triggerEvent('change', this.data.time)
+      // this.triggerEvent('change', time)
     },
     /* 周期设置 start */
     periodChange(e: { detail: string }) {

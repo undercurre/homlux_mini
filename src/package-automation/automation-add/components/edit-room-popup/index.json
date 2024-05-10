@@ -1,5 +1,8 @@
 {
   "component": true,
   "styleIsolation": "apply-shared",
-  "usingComponents": {}
+  "usingComponents": {
+    "mz-button": "../../../../skyline-components/mz-button/index",
+    "mz-popup": "../../../../skyline-components/mz-popup/index"
+  }
 }

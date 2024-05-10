@@ -1,4 +1,4 @@
-import { ComponentWithComputed } from 'miniprogram-computed'
+import { timing } from '../../skyline-components/common/worklet'
 
 enum sensorProductId {
   Value1 = 'midea.ir.201',
@@ -6,8 +6,7 @@ enum sensorProductId {
   Value3 = 'midea.freepad.001.201',
 }
 
-ComponentWithComputed({
-  externalClasses: ['custom-class'],
+Component({
   /**
    * 组件的属性列表
    */
@@ -48,53 +47,58 @@ ComponentWithComputed({
         { name: '长按', ability: { buttonClicked: 3, modelName: 'freepad' } },
       ],
     },
-  },
-  computed: {
-    checkedIndex(data) {
-      return data.abilityList[data.productId as sensorProductId].findIndex((item) => {
-        return item.name === data.checkList[0]
-      })
-    },
-    list(data) {
-      return data.abilityList[data.productId as sensorProductId]
-    },
+    top: { value: 0 },
+    checkedIndex: 0,
+    list: [] as IAnyObject[],
   },
 
-  observers: {},
+  observers: {
+    'productId, checkList': function (productId, checkList) {
+      this.setData(
+        {
+          checkedIndex: this.data.abilityList[productId as sensorProductId]?.findIndex((item) => {
+            return item.name === checkList[0]
+          }),
+          list: this.data.abilityList[productId as sensorProductId],
+        },
+        () => {
+          this.data.top.value = this.data.checkedIndex * 96
+        },
+      )
+    },
+  },
   lifetimes: {
-    attached() {},
-    ready() {},
-    detached() {},
+    attached() {
+      this.data.top = wx.worklet.shared(this.data.checkedIndex * 96)
+      this.applyAnimatedStyle('#slider', () => {
+        'worklet'
+        return {
+          top: this.data.top.value + 'rpx',
+        }
+      })
+    },
   },
   /**
    * 组件的方法列表
    */
   methods: {
-    async handleOnOffChange(e: WechatMiniprogram.TouchEvent) {
-      if (e.currentTarget.dataset.item.name === this.data.checkList[0]) {
-        return
-      }
-
-      this.animate(
-        '#slider',
-        [
-          {
-            top: this.data.checkedIndex * 96 + 'rpx',
-          },
-          {
-            top: e.currentTarget.dataset.index * 96 + 'rpx',
-          },
-        ],
-        100,
+    handleOnOffChange(e: WechatMiniprogram.TouchEvent) {
+      const { index } = e.currentTarget.dataset
+      this.data.top.value = timing(
+        index * 96,
+        {
+          duration: 100,
+        },
         () => {
-          //先设置原style，再清除动画样式避免样式造成闪烁问题
-          this.setData({
-            checkList: [e.currentTarget.dataset.item.name],
-          })
-          this.triggerEvent('change', e.currentTarget.dataset.item)
-          this.clearAnimation('#slider', () => {})
+          'worklet'
         },
       )
+      this.setData({
+        checkedIndex: this.data.abilityList[this.data.productId as sensorProductId].findIndex((item) => {
+          return item.name === e.currentTarget.dataset.item.name
+        }),
+      })
+      this.triggerEvent('change', e.currentTarget.dataset.item)
     },
   },
 })

@@ -1,5 +1,8 @@
-// skyline-components/mz-cell/index.ts
 Component({
+  options: {
+    multipleSlots: true, // 在组件定义时的选项中启用多slot支持
+  },
+  externalClasses: ['custom-class', 'value-class', 'label-class'],
   /**
    * 组件的属性列表
    */
@@ -27,7 +30,17 @@ Component({
   /**
    * 组件的初始数据
    */
-  data: {},
+  data: {
+    cellLeftStyle: '',
+  },
+
+  observers: {
+    titleStyle: function (titleStyle) {
+      this.setData({
+        cellLeftStyle: titleStyle,
+      })
+    },
+  },
 
   /**
    * 组件的方法列表

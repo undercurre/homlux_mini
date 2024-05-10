@@ -1,5 +1,8 @@
 {
   "usingComponents": {
+    "van-toast": "@vant/weapp/toast/index",
+    "van-cell-group": "@vant/weapp/cell-group/index",
+    "van-cell": "@vant/weapp/cell/index",
     "home-select-menu": "../../components/home-select-menu/index",
     "van-action-sheet": "@vant/weapp/action-sheet/index",
     "transfer-home-popup": "./components/transfer-home-popup/index"

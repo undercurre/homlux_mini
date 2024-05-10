@@ -1,6 +1,6 @@
-// src\package-room-control\index\components\air-control-popup-cac\index.ts
+// package-room-control\index\components\air-control-popup-cac\index.ts
 import { ComponentWithComputed } from 'miniprogram-computed'
-import Toast from '@vant/weapp/toast/toast'
+import Toast from '../../../../skyline-components/mz-toast/toast'
 import { sendDevice } from '../../../../apis/index'
 import {
   CAC_MODE,

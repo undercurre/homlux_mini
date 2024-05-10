@@ -3,16 +3,20 @@
   padding: 32rpx 40rpx 0;
 }
 
+.van-cell--hover {
+  background-color: #f2f3f5;
+}
+
 .border {
   border-bottom: 1rpx solid #eef2f7;
 }
 
 .cell-content {
   padding-bottom: 32rpx;
-  display: flex !important;
+  display: flex;
   flex-direction: row;
-  align-items: center !important;
-  justify-content: flex-start !important;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .icon {
@@ -22,7 +26,8 @@
 }
 
 .cell-left {
-  display: flex !important;
+  display: flex;
+  flex-direction: column;
 }
 
 .title {
@@ -37,16 +42,17 @@
 }
 
 .cell-right {
-  display: flex !important;
+  display: flex;
   flex-grow: 1;
   flex-direction: row;
-  align-items: center !important;
+  align-items: center;
   padding-left: 32rpx;
   justify-content: flex-end;
 }
 
 .value {
-  font-size: 32px;
+  text-align: right;
+  font-size: 32rpx;
   color: #666666;
 }
 

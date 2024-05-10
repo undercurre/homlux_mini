@@ -1,5 +1,8 @@
 {
   "usingComponents": {
+    "van-button": "@vant/weapp/button/index",
+    "van-field": "@vant/weapp/field/index",
+    "svg-icon": "/components/svg-icon/index",
     "bottom-button": "/package-distribution-meiju/pages/addDevice/pages/component/bottom-button/bottom-button",
     "custom-dialog": "/package-distribution-meiju/pages/addDevice/pages/component/custom-dialog/custom-dialog",
     "mx-dialog": "/miniprogram_npm/m-ui/mx-dialog/index",

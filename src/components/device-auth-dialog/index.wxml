@@ -1,4 +1,4 @@
-<van-dialog
+<mz-dialog
   id="van-dialog"
   use-slot
   show-cancel-button="{{status !== 'success'}}"
@@ -29,6 +29,6 @@
       src="{{tipImgUrl}}"
     ></image>
   </view>
-</van-dialog>
+</mz-dialog>
 
-<van-toast id="van-toast" />
+<mz-toast id="mz-toast" />

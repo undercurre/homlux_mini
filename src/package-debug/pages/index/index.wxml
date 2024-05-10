@@ -51,4 +51,11 @@
     link-type="navigateTo"
     url="/package-debug/pages/skyline-demo/index"
   />
+  <van-cell
+    title="Movable Demo"
+    is-link
+    center
+    link-type="navigateTo"
+    url="/package-debug/pages/movable-demo/index"
+  />
 </van-cell-group>

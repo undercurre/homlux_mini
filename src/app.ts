@@ -107,13 +107,12 @@ App<IAppOption>({
       return
     }
 
+    startWebsocketService()
     // 首次进入有onLaunch不必加载
     // homOS本地控制要求场景数据保持尽可能实时，需要小程序回到前台刷新场景和设备列表数据
     if (!firstOnShow) {
       // 后面的接口依赖获取当前家庭Id
       await homeStore.updateHomeInfo({ isInit: false }, { isDefaultErrorTips: false })
-
-      startWebsocketService()
 
       // 全屋设备、场景数据加载
       deviceStore.updateAllRoomDeviceList(homeStore.currentHomeId, { isDefaultErrorTips: false })

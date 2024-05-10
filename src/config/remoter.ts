@@ -994,7 +994,7 @@ export const CMD: Record<string, number> = {
   END: 0x00,
 
   // 断开连接
-  DISCONNECT: 0xFE,
+  DISCONNECT: 0xfe,
 }
 
 // 下拉选项配置

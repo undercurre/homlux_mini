@@ -3,9 +3,31 @@
   "component": true,
   "renderer": "skyline",
   "componentFramework": "glass-easel",
+  "disableScroll": true,
+  "rendererOptions": {
+    "skyline": {
+      "disableABTest": true,
+      "sdkVersionBegin": "3.0.0",
+      "sdkVersionEnd": "15.255.255",
+      "defaultDisplayBlock": false,
+      "defaultContentBox": false
+    }
+  },
   "usingComponents": {
     "mz-button": "/skyline-components/mz-button/index",
     "mz-cell-group": "/skyline-components/mz-cell-group/index",
-    "mz-cell": "/skyline-components/mz-cell/index"
+    "mz-cell": "/skyline-components/mz-cell/index",
+    "mz-pop-menu": "/skyline-components/mz-pop-menu/index",
+    "mz-popup": "/skyline-components/mz-popup/index",
+    "mz-toast": "/skyline-components/mz-toast/index",
+    "mz-field": "/skyline-components/mz-field/index",
+    "mz-dialog": "/skyline-components/mz-dialog/index",
+    "mz-movable": "/skyline-components/mz-movable/index",
+    "mz-tabs": "/skyline-components/mz-tabs/index",
+    "mz-tab": "/skyline-components/mz-tab/index",
+    "mz-checkbox": "/skyline-components/mz-checkbox/index",
+    "mz-switch": "/skyline-components/mz-switch/index",
+    "mz-picker": "/skyline-components/mz-picker/index",
+    "mz-slider": "/skyline-components/mz-slider/index"
   }
 }

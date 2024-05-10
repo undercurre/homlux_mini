@@ -1,0 +1,26 @@
+<mz-overlay
+  wx:if="{{ mask || forbidClick }}"
+  show="{{ show }}"
+  z-index="{{ zIndex }}"
+  custom-style="{{ mask ? '' : 'background-color: transparent;' }}"
+/>
+<mz-transition
+  show="{{ show }}"
+  custom-style="z-index: {{ zIndex }}"
+  custom-class="mz-toast__container"
+>
+  <view
+    class="mz-toast mz-toast--{{ (type === 'text' || type === 'html') ? 'text' : 'icon' }} mz-toast--{{ position }}"
+    catch:touchmove="noop"
+  >
+    <!-- text only -->
+    <text wx:if="{{ type === 'text' }}">{{ message }}</text>
+
+    <!-- html only -->
+    <rich-text
+      wx:elif="{{ type === 'html' }}"
+      nodes="{{ message }}"
+    ></rich-text>
+    <slot />
+  </view>
+</mz-transition>

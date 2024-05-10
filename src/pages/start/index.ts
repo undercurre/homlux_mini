@@ -8,8 +8,6 @@ ComponentWithComputed({
   behaviors: [pageBehavior],
 
   data: {
-    checkImg: '/assets/img/base/check.png',
-    uncheckImg: '/assets/img/base/uncheck.png',
     shots: {
       img0: `${ossDomain}/homlux/shot0.png`,
       img1: `${ossDomain}/homlux/shot1.png`,

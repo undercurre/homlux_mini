@@ -1,7 +1,17 @@
+<wxs
+  src="../wxs/utils.wxs"
+  module="utils"
+/>
+<wxs
+  src="./index.wxs"
+  module="computed"
+/>
+
 <button
   data-detail="{{ dataset }}"
-  class="button button--{{type}} size-{{size}} {{plain ? 'button--plain' : ''}} {{block ? 'block' : ''}}"
-  hover-class="{{ disabled || loading ? '' : 'button-active'}}"
+  class="custom-class {{ utils.bem('button', [type, size, { block, round, plain, square, loading, disabled, hairline, unclickable: disabled || loading }]) }} {{ hairline ? 'mz-hairline--surround' : '' }}"
+  hover-class="{{ disabled || loading ? '' : 'mz-button--active hover-class'}}"
+  style="{{ computed.rootStyle({ plain, color, customStyle }) }}"
   loading="{{loading}}"
   form-type="{{ formType }}"
   open-type="{{ disabled || loading || openType }}"
@@ -22,7 +32,7 @@
   bindopensetting="onOpenSetting"
   bindchooseavatar="onChooseAvatar"
 >
-  <view class="van-button__text">
+  <view class="mz-button__text">
     <slot />
   </view>
 </button>

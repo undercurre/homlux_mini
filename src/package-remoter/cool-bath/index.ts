@@ -1,17 +1,8 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import {
-  CMD,
-  FACTORY_ADDR,
-} from '../../config/remoter'
-import {
-  initBleCapacity,
-} from '../../utils/index'
+import { CMD, FACTORY_ADDR } from '../../config/remoter'
+import { initBleCapacity } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
-import {
-  createBleServer,
-  bleAdvertising,
-  BleService,
-} from '../../utils/remoterUtils'
+import { createBleServer, bleAdvertising, BleService } from '../../utils/remoterUtils'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
 // import Toast from '@vant/weapp/toast/toast'
@@ -32,7 +23,7 @@ ComponentWithComputed({
     gearBtnConfig: {
       isEnable: true,
       isTopOn: false,
-      isBottomOn: false
+      isBottomOn: false,
     },
     btnList: [
       {
@@ -96,7 +87,7 @@ ComponentWithComputed({
         isEnable: true,
         iconOn: '/package-remoter/assets/newUI/nightOn.png',
         iconOff: '/package-remoter/assets/newUI/nightOff.png',
-      }
+      },
     ],
     isShowPopup: false,
     popSelectMode: [
@@ -147,7 +138,7 @@ ComponentWithComputed({
       }
       if (arr.length === 0) return '已连接'
       else return arr.join('|')
-    }
+    },
   },
   methods: {
     goBack() {
@@ -202,7 +193,7 @@ ComponentWithComputed({
       }
       this.setData({
         btnList: showBtns,
-        bottomList: showBottom
+        bottomList: showBottom,
       })
     },
     getSupportByModel() {
@@ -216,7 +207,7 @@ ComponentWithComputed({
         DC: !!(model & 0x10),
         night: !!(model & 0x20),
         anion: !!(model & 0x40),
-        tvoc: !!(model & 0x80)
+        tvoc: !!(model & 0x80),
       }
     },
     onUnload() {
@@ -350,7 +341,7 @@ ComponentWithComputed({
       this.setData({
         gearBtnConfig: gear,
         btnList: btns,
-        bottomList: bottom
+        bottomList: bottom,
       })
       this.updateViewEn()
     },
@@ -359,48 +350,48 @@ ComponentWithComputed({
       const bottom = this.data.bottomList
       const btns = this.data.btnList
       const gear = this.data.gearBtnConfig
-      const isDisable= !bottom[0].isOn && this.data.isBLEConnected
+      const isDisable = !bottom[0].isOn && this.data.isBLEConnected
       gear.isEnable = !isDisable
       for (let i = 0; i < btns.length; i++) {
         btns[i].isEnable = !isDisable
       }
       this.setData({
         gearBtnConfig: gear,
-        btnList: btns
+        btnList: btns,
       })
     },
     onGearTopClick() {
       const config = this.data.gearBtnConfig
       if (!config.isEnable) return
-      config.isTopOn= true
+      config.isTopOn = true
       config.isBottomOn = false
       this.setData({
-        gearBtnConfig: config
+        gearBtnConfig: config,
       })
       setTimeout(() => {
         config.isTopOn = false
         config.isBottomOn = false
         this.setData({
-          gearBtnConfig: config
+          gearBtnConfig: config,
         })
-      }, 300);
+      }, 300)
       this.sendBluetoothCMD([CMD['KITCHEN_WIND_STRONG']])
     },
     onGearBottomClick() {
       const config = this.data.gearBtnConfig
       if (!config.isEnable) return
-      config.isTopOn= false
+      config.isTopOn = false
       config.isBottomOn = true
       this.setData({
-        gearBtnConfig: config
+        gearBtnConfig: config,
       })
       setTimeout(() => {
         config.isTopOn = false
         config.isBottomOn = false
         this.setData({
-          gearBtnConfig: config
+          gearBtnConfig: config,
         })
-      }, 300);
+      }, 300)
       this.sendBluetoothCMD([CMD['KITCHEN_WIND_SOFT']])
     },
     onBtnListClick(e: any) {
@@ -457,7 +448,7 @@ ComponentWithComputed({
       if (list[index].key == 'POWER') {
         if (this.data.isBLEConnected && !lastPowerOn) {
           this.setData({
-            isShowPopup: true
+            isShowPopup: true,
           })
         } else {
           this.sendBluetoothCMD([CMD['BATH_ALL_OFF']])
@@ -481,7 +472,7 @@ ComponentWithComputed({
     },
     closePopup() {
       this.setData({
-        isShowPopup: false
+        isShowPopup: false,
       })
     },
     percent2Rang(percent: number) {
