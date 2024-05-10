@@ -4,7 +4,6 @@ import meta from '../../../meta'
 
 let isDebug = false
 let debugTimeId = 0
-console.debug('isDebug', isDebug)
 
 Component({
   behaviors: [pageBehavior],
@@ -45,8 +44,6 @@ Component({
 
   lifetimes: {
     ready() {
-      console.debug('ready---isDebug', isDebug)
-
       if (meta?.datetime) {
         this.setData({
           releaseTime: meta.datetime,
@@ -55,6 +52,7 @@ Component({
       const info = wx.getAccountInfoSync()
 
       this.setData({
+        isDebug,
         envVersion: info.miniProgram.envVersion,
         curEnv: storage.get(`${info.miniProgram.envVersion}_env`) as string,
         version: info.miniProgram.version,
@@ -78,7 +76,7 @@ Component({
         console.log('isDebug')
         isDebug = true
         this.setData({ isDebug })
-      }, 5000)
+      }, 10000)
     },
 
     touchVersionEnd() {

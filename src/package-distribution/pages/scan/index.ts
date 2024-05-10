@@ -16,6 +16,7 @@ import {
   showNoNetTips,
   showLoading,
   strUtil,
+  isValidHomluxLink,
 } from '../../../utils/index'
 import { checkDevice, getGwNetworkInfo, getUploadFileForOssInfo, queryWxImgQrCode } from '../../../apis/index'
 import { actionScanResult, checkUrlType as isMideaQrCode } from '../../common/meijuScanCodeApi'
@@ -110,7 +111,7 @@ ComponentWithComputed({
 
         Logger.log('scanUrl', scanUrl)
 
-        if (!this.isValidLink(scanUrl)) {
+        if (!isValidHomluxLink(scanUrl)) {
           Toast('无效二维码')
           return
         }
@@ -592,16 +593,6 @@ ComponentWithComputed({
       })
     },
 
-    /**
-     * 检查是否有效的二维码链接
-     * @param url
-     */
-    isValidLink(url: string) {
-      const pageParams = strUtil.getUrlParams(url) as IAnyObject
-
-      return url.includes('meizgd.com/homlux/qrCode.html') && ['01', '02', '10'].includes(pageParams.mode)
-    },
-
     async handleScanUrl(url: string) {
       try {
         this.setData({
@@ -610,7 +601,7 @@ ComponentWithComputed({
 
         Logger.debug('handleScanUrl', url)
 
-        if (this.isValidLink(url)) {
+        if (isValidHomluxLink(url)) {
           const pageParams = strUtil.getUrlParams(url)
 
           Logger.log('scanParams', pageParams)

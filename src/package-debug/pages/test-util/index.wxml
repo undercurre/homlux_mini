@@ -11,7 +11,7 @@
       title="子设备起网"
       is-link
       center
-      bind:click="startZigbee"
+      bind:click="startScan"
     />
   </mz-cell-group>
 </view>

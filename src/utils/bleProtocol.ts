@@ -48,6 +48,16 @@ export const ZIGBEE_ROLE = {
   entry: 0x02, // 作为已存在的自组网络的入网节点，供新节点加入
 }
 
+// 蓝牙广播数据
+export interface IAdData {
+  brand: string
+  isConfig: string
+  mac: string
+  zigbeeMac: string
+  proType: string
+  bluetoothPid: string
+  protocolVersion: string
+}
 export class BleClient {
   mac: string
   key = ''
@@ -486,7 +496,7 @@ export class BleClient {
 }
 
 export const bleUtil = {
-  transferBroadcastData(advertisData: ArrayBuffer) {
+  transferBroadcastData(advertisData: ArrayBuffer): IAdData {
     const msgStr = strUtil.ab2hex(advertisData)
     const protocolVersion = msgStr.slice(-2)
     const macStr = parseInt(protocolVersion) >= 4 ? msgStr.slice(8, 24) : msgStr.slice(6, 22)
