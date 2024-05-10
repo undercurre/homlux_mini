@@ -92,7 +92,6 @@ ComponentWithComputed({
     editingSensorProperty: { occupancy: 1, modelName: 'irDetector' } as IAnyObject,
     editingUniId: '',
     editingDelayId: '',
-    scrollTop: 0,
     scrollInfo: {
       scrollTop: 0,
       topSize: 0,
@@ -165,39 +164,13 @@ ComponentWithComputed({
   },
   lifetimes: {
     async ready() {
-      this.createSelectorQuery()
-        .select('#ScrollView')
-        .boundingClientRect()
-        .exec((res) => {
-          console.log('createSelectorQuery', res)
-          if (!res || !res[0]) {
-            return
-          }
-          this.setData(
-            {
-              'scrollInfo.topSize': res[0].top,
-              'scrollInfo.bottomSize': res[0].bottom,
-            },
-            () => {
-              console.log('准备好嘞', this.data.scrollInfo)
-            },
-          )
-        })
       this.setData({
         deviceList: deviceStore.allRoomDeviceFlattenList.filter(
           (item) => item.proType !== PRO_TYPE.gateway && item.proType !== PRO_TYPE.sensor,
         ),
         sensorList: deviceStore.allRoomSensorList,
       })
-      const { autosceneid, roomid, yijianSceneId, sceneInfo } = getCurrentPageParams()
-      console.log(
-        '接收到roomid',
-        autosceneid,
-        roomid,
-        yijianSceneId,
-        JSON.parse(JSON.stringify(deviceStore.allRoomSensorList)),
-      )
-      console.log('接收到test', JSON.parse(sceneInfo), deviceStore.allRoomDeviceFlattenList)
+      const { roomid, sceneInfo } = getCurrentPageParams()
       if (!sceneInfo && !roomid) {
         // 新建场景
         return
@@ -862,6 +835,7 @@ ComponentWithComputed({
       )
     },
     updateSceneDeviceActionsFlatten(isEditAction = true) {
+      console.log('updateSceneDeviceActionsFlatten')
       const tempSceneDeviceActionsFlatten = this.data.sceneDeviceActionsFlatten as AutoScene.AutoSceneFlattenAction[]
 
       //删除取消选中的设备和场景 //可选多设备改造后无需删除
@@ -869,31 +843,11 @@ ComponentWithComputed({
       //   const index = this.data.linkSelectList.findIndex((id) => id === item.uniId)
       //   return index !== -1 || item.type === 6
       // })
-
+      const sceneDeviceActionsFlattenIds = this.data.sceneDeviceActionsFlatten.map((item) => item.uniId)
       //从后面插入已选中的设备和场景
-      // console.log('设备列表', this.data.deviceList)
       this.data.sceneDevicelinkSelectList.forEach((id) => {
-        if (
-          this.data.opearationType === 'yijian' &&
-          this.data.sceneDeviceActionsFlatten.map((item) => item.uniId).includes(id)
-        ) {
+        if (this.data.opearationType === 'yijian' && sceneDeviceActionsFlattenIds.includes(id)) {
           return
-          // 在自动化的时候，找到队列中最后一个相同的设备，看他后面有没有延时，有就不return，没有就依旧return
-          // const deviceCondition = (element: AutoScene.AutoSceneFlattenAction) => element.uniId === id;
-          // const delayCondition = (element: AutoScene.AutoSceneFlattenAction) => element.type === 6;
-          // const lastDeviceIndex = this.data.sceneDeviceActionsFlatten.reduceRight((lastIndex: number, currentElement: AutoScene.AutoSceneFlattenAction, currentIndex: number) => {
-          //   if (lastIndex === -1 && deviceCondition(currentElement)) {
-          //     return currentIndex
-          //   }
-          //   return lastIndex
-          // }, -1)
-          // const lastDelayIndex = this.data.sceneDeviceActionsFlatten.reduceRight((lastIndex: number, currentElement: AutoScene.AutoSceneFlattenAction, currentIndex: number) => {
-          //   if (lastIndex === -1 && delayCondition(currentElement)) {
-          //     return currentIndex
-          //   }
-          //   return lastIndex
-          // }, -1)
-          // if (lastDelayIndex > lastDeviceIndex && this.data.opearationType === 'auto') { } else { return }
         }
         //每次选中的都push到最后
         const device = this.data.deviceList.find((item) => item.uniId === id)
@@ -963,19 +917,47 @@ ComponentWithComputed({
       const sceneDeviceActionsFlatten = tempSceneDeviceActionsFlatten.map((item, index) => {
         return { ...item, orderNum: index }
       })
-      this.setData({
-        sceneDeviceActionsFlatten,
-        _isEditAction: isEditAction,
-        sceneDevicelinkSelectList: this.data.opearationType === 'auto' ? [] : this.data.sceneDevicelinkSelectList,
-        tempSceneDevicelinkSelectedList:
-          this.data.opearationType === 'auto' ? [] : this.data.tempSceneDevicelinkSelectedList,
-      })
+      this.setData(
+        {
+          sceneDeviceActionsFlatten,
+          _isEditAction: isEditAction,
+          sceneDevicelinkSelectList: this.data.opearationType === 'auto' ? [] : this.data.sceneDevicelinkSelectList,
+          tempSceneDevicelinkSelectedList:
+            this.data.opearationType === 'auto' ? [] : this.data.tempSceneDevicelinkSelectedList,
+        },
+        async () => {
+          // 防止场景为空，drag为null·
+          const drag = this.selectComponent('#drag')
+          if (drag) {
+            if (this.data.scrollInfo.bottomSize === 0) {
+              const res: Array<IAnyObject> = await new Promise((resolve) => {
+                wx.createSelectorQuery()
+                  .select('#ScrollView')
+                  .boundingClientRect()
+                  .exec((res) => {
+                    console.log('createSelectorQuery', res)
+                    resolve(res)
+                  })
+              })
 
-      // 防止场景为空，drag为null·
-      if (!this.data.isDefaultYijianScene && sceneDeviceActionsFlatten.length) {
-        const drag = this.selectComponent('#drag')
-        drag.init()
-      }
+              if (!res || !res[0]) {
+                return
+              }
+              this.setData(
+                {
+                  'scrollInfo.topSize': res[0].top,
+                  'scrollInfo.bottomSize': res[0].bottom,
+                },
+                () => {
+                  drag.init()
+                },
+              )
+            } else {
+              drag.updateList()
+            }
+          }
+        },
+      )
     },
     /* 条件方法 start */
     updateSceneDeviceConditionsFlatten() {
@@ -1668,8 +1650,6 @@ ComponentWithComputed({
     },
     /* 执行结果拖拽相关方法 start */
     handleScroll(e: { detail: { scrollTop: number } }) {
-      console.log('eeeeehandleScroll')
-
       this.setData({
         'scrollInfo.scrollTop': e.detail.scrollTop,
       })

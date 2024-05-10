@@ -66,7 +66,7 @@ Component({
   methods: {
     /**
      *  初始化函数
-     *  {listData, topSize, bottomSize, itemHeight} 参数改变需要手动调用初始化方法
+     *  {topSize, bottomSize, itemHeight} 参数改变需要手动调用初始化方法
      */
     init() {
       const { windowHeight, platform } = wx.getSystemInfoSync()
@@ -165,6 +165,63 @@ Component({
           wrapStyle: `height: ${this.data._baseData.rows * this.data._baseData.itemHeight}px`,
         })
       })
+    },
+    /**
+     *  数据更新函数
+     *  listData的数据发生变化时需要需要手动调用该方法
+     */
+    updateList() {
+      const { listData = [] } = this.data
+      const rows = Math.ceil(listData.length)
+      if (rows !== this.data._baseData.rows) {
+        Object.assign(this.data._baseData, {
+          rows,
+          maxScrollTop:
+            rows * this.data._baseData.itemHeight +
+            (this.data._baseData.wrapTopSize - this.data._baseData.realTopSize) -
+            (this.data._baseData.realBottomSize - this.data._baseData.realTopSize),
+        })
+        this.setData({
+          wrapStyle: `height: ${rows * this.data._baseData.itemHeight}px`,
+        })
+      }
+
+      const list = [] as listItem[]
+      const delItem = (item: IAnyObject, index: number) => ({
+        id: item.dragId,
+        data: item,
+        sortKey: index,
+        tempSortKey: index,
+        realSortKey: index,
+      })
+      // 遍历数据源增加扩展项, 以用作排序使用
+      listData.forEach((item, index) => {
+        list.push(delItem(item, index))
+      })
+      this.setData(
+        {
+          list,
+        },
+        () => {
+          // 绑定动画
+          this.data.list.forEach((item) => {
+            const translationY = shared(0)
+            const opacity = shared(1)
+            this.applyAnimatedStyle(
+              `#ID${item.id}`,
+              () => {
+                'worklet'
+                return {
+                  transform: `translateY(${translationY.value}%)`,
+                  opacity: opacity.value,
+                }
+              },
+              { immediate: true, flush: 'async' },
+            )
+            this.data._itemStyle[item.id] = { translationY, opacity }
+          })
+        },
+      )
     },
     vibrate() {
       if (this.data._baseData.platform !== 'devtools') wx.vibrateShort({ type: 'heavy' })
