@@ -1028,8 +1028,9 @@ ComponentWithComputed({
 
     handleSceneTap() {
       wx.navigateTo({
-        //  url: '/package-room-control/scene-list/index',
-        url: '/package-automation/automation/index',
+        url: strUtil.getUrlWithParams('/package-automation/automation/index', {
+          selectedRoomId: roomStore.currentRoomId,
+        }),
       })
     },
     /** 点击创建场景按钮回调 */
