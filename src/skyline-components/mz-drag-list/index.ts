@@ -51,7 +51,6 @@ Component({
     _baseData: {} as baseData,
     _scrollTop: 0,
     _scrollTopReady: false,
-    _preStartKey: -1,
     _preEndKey: -1,
     _autoMoveTimerId: null as null | number,
     _itemStyle: {} as IAnyObject, // 所有item 样式

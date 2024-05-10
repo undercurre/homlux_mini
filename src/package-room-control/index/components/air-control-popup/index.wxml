@@ -77,25 +77,29 @@
       </view>
 
       <view class="py-64rpx px-8rpx">
-        <!-- <mz-slider
+        <mz-slider
           wx:if="{{show}}"
           disabled="{{disabledSlider}}"
           bind:slideEnd="handleBtnTap"
           bind:slideChange="handleSlideChange"
           value="{{temperature}}"
-          barHeight="36"
-          data-min="{{minTemp}}"
-          data-max="{{maxTemp}}"
+          bar-height="36"
+          btn-width="36"
+          btn-height="36"
+          min="{{minTemp}}"
+          max="{{maxTemp}}"
           active-color="#488FFF"
-          data-key="temperature"
-          data-step="{{0.5}}"
+          key="temperature"
+          step="{{0.5}}"
           use-button-slot
         >
           <view
             slot="button"
-            class="slider-button"
-          />
-        </mz-slider> -->
+            class="slider-button-wrapper"
+          >
+            <view class="slider-button"></view>
+          </view>
+        </mz-slider>
       </view>
 
       <view class="flex flex-row justify-evenly items-center rounded-24rpx bg-hex-f7f8f9 mt-30rpx">
@@ -126,7 +130,6 @@
     <view class="h-96rpx"></view>
   </view>
 </mz-popup>
-<import src="/commons/templates/secondaryPopup.wxml" />
 <mz-popup
   show="{{ isShowPicker }}"
   z-index="1002"
@@ -136,10 +139,7 @@
   catchtouchmove="blank"
 >
   <view class="w-750rpx h-600rpx relative flex flex-col items-center">
-    <template
-      is="title"
-      data="{{title:pickerTitle}}"
-    />
+    <text class="w-750rpx h-92rpx text-32rpx text-hex-999999 leading-92rpx text-center border-b-1px border-b-hex-EEF2F7 border-b-solid">{{pickerTitle}}</text>
     <view class="h-52rpx"></view>
     <time-picker-view
       value="{{[pickerIndex]}}"
@@ -149,7 +149,18 @@
       bind:change="onPickerChange"
     ></time-picker-view>
     <view class="h-62rpx"></view>
-    <template is="bottom-btn" />
+    <view class="flex justify-between items-end w-750rpx h-112rpx bg-hex-f9f9f9">
+      <view
+        class="h-96rpx w-374rpx leading-96rpx text-center secondary-popup-btn"
+        bindtap="handleCancel"
+        >取消</view
+      >
+      <view
+        class="h-96rpx w-374rpx leading-96rpx text-center secondary-popup-btn"
+        bindtap="handleConfirm"
+        >确定</view
+      >
+    </view>
   </view>
 </mz-popup>
 

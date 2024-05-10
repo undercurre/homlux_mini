@@ -43,7 +43,9 @@ type Events = {
   }
   // 从websocket接受到信息 end
   deviceEdit: void
-  sceneEdit: void
+  sceneEdit: {
+    sceneType: string
+  }
   homeInfoEdit: void
   invite_user_house: void
   scene_device_result_status: {
@@ -71,6 +73,9 @@ type Events = {
   }
   // 删除遥控器
   remoterChanged: void
+
+  // HACK store binding 失效时，从store中同步数据
+  pageDataSync: void
 }
 
 export const WSEventType = {

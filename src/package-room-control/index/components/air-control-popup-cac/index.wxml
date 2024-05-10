@@ -83,11 +83,11 @@
           bind:slideEnd="handleBtnTap"
           bind:slideChange="handleSlideChange"
           value="{{temperature}}"
-          barHeight="36"
-          data-min="{{minTemp}}"
-          data-max="{{maxTemp}}"
+          bar-height="36"
+          min="{{minTemp}}"
+          max="{{maxTemp}}"
           active-color="#488FFF"
-          data-key="targetTemperature"
+          key="targetTemperature"
           use-button-slot
         >
           <view

@@ -47,7 +47,7 @@ ComponentWithComputed({
   lifetimes: {
     attached() {
       // 加载一键场景列表
-      this.getSceneList()
+      this.getSceneList(false)
       // 加载自动化列表
       this.getAutoSceneList()
     },
@@ -68,16 +68,22 @@ ComponentWithComputed({
 
       // 监听场景修改，主动更新一键场景列表
       emitter.off('sceneEdit')
-      emitter.on('sceneEdit', () => {
-        this.getSceneList()
-        this.getAutoSceneList()
+      emitter.on('sceneEdit', ({ sceneType }) => {
+        if (sceneType === 'auto') {
+          this.getAutoSceneList()
+        }
+        if (sceneType === 'yijian') {
+          this.getSceneList()
+        }
       })
     },
   },
   methods: {
-    async getSceneList() {
-      await sceneStore.updateAllRoomSceneList()
-      this.updateSceneList()
+    async getSceneList(req = true) {
+      if (req) {
+        await sceneStore.updateAllRoomSceneList()
+      }
+      this.updateSceneList(req)
     },
     async getAutoSceneList() {
       await autosceneStore.updateAllRoomAutoSceneList()
@@ -117,7 +123,7 @@ ComponentWithComputed({
       )
     },
 
-    updateSceneList() {
+    updateSceneList(updateDrag: boolean) {
       const allRoomScene = {} as Record<string, Scene.SceneListItem[]>
       const deviceMap = deviceStore.allRoomDeviceMap
 
@@ -157,6 +163,9 @@ ComponentWithComputed({
           allRoomScene: JSON.parse(JSON.stringify(allRoomScene)),
         },
         () => {
+          if (updateDrag) {
+            this.onRoomChange({ detail: { name: this.data.selectedRoomId } })
+          }
           if (this.data.selectedRoomId) return
           // 在房间里跳转到场景页时使用
           const { selectedRoomId = '' } = getCurrentPageParams()

@@ -86,14 +86,38 @@ ComponentWithComputed({
       (storage.get('navigationBarHeight') as number),
     _system: storage.get('system') as string,
     selectHomeMenu: {
-      x: '0px',
-      y: '0px',
+      x: '30rpx',
+      y: '200rpx',
       isShow: false,
     },
     addMenu: {
-      right: '0px',
-      y: '0px',
+      x: '430rpx',
+      y: (storage.get('statusBarHeight') as number) + (storage.get('navigationBarHeight') as number) + 60 + 'px',
+      arrowX: 236,
+      width: 300,
+      height: 300,
       isShow: false,
+      list: [
+        {
+          name: '添加设备',
+          key: 'device',
+          icon: 'add',
+          value: '/package-distribution/pages/choose-device/index',
+        },
+        {
+          name: '创建场景',
+          key: 'auto',
+          icon: 'auto',
+          value: '/package-automation/automation-add/index',
+        },
+        // TODO 权限区分
+        {
+          name: '连接其它平台',
+          key: 'platform',
+          icon: 'auth',
+          value: '/package-auth/pages/index/index',
+        },
+      ],
     },
     allOnBtnTap: false,
     allOffBtnTap: false,
@@ -113,7 +137,6 @@ ComponentWithComputed({
     isLogin: false,
     isCreator: false,
     isManager: false,
-    showPopMenu: false,
     homeList: [] as Home.IHomeItem[],
     currentHomeName: '', // 当前房间名称
     currentHomeId: '',
@@ -152,6 +175,7 @@ ComponentWithComputed({
         .sort((_: Home.IHomeItem, b: Home.IHomeItem) => (b.defaultHouseFlag ? 1 : -1))
         .map((home) => ({
           ...home,
+          value: home.houseId,
           key: home.houseId,
           name: home.houseName?.length > 6 ? home.houseName.slice(0, 6) + '...' : home.houseName,
           checked: home.houseId === data.currentHomeId,
@@ -206,7 +230,6 @@ ComponentWithComputed({
     },
     onHide() {
       // 隐藏之前展示的下拉菜单
-      this.hideMenu()
       emitter.off('wsReceive')
 
       if (this.data._timeId) {
@@ -224,9 +247,10 @@ ComponentWithComputed({
       if (!this.data._isFirstShow || this.data._from === 'addDevice') {
         await homeStore.updateRoomCardList()
       }
+      if (othersStore.isInit) {
+        this.pageDataSync('onShow')
+      }
       this.data._isFirstShow = false
-
-      this.updateLightCount()
 
       setTimeout(() => {
         this.acceptShare()
@@ -300,14 +324,14 @@ ComponentWithComputed({
       })
     },
     async onReady() {
+      emitter.on('pageDataSync', () => {
+        this.pageDataSync('on emitter')
+      })
       console.log('[Index onReady] 耗时', `${Date.now() - this.data._timer}ms`)
-
-      await delay(1000)
-      this.init()
     },
 
     // TODO 确保数据响应
-    async init() {
+    async pageDataSync(type?: string) {
       let currentHomeName = ''
       if (homeStore.currentHomeDetail?.houseName) {
         if (homeStore.currentHomeDetail.houseName.length > 6) {
@@ -315,21 +339,21 @@ ComponentWithComputed({
         }
         currentHomeName = homeStore.currentHomeDetail?.houseName
       }
-      // console.log('[init]', {
-      //   roomList: JSON.parse(JSON.stringify(roomStore.roomList)),
-      // isLogin: userStore.isLogin,
-      // isCreator: homeStore.isCreator,
-      // isManger: homeStore.isManager,
-      // hasDevice: deviceStore.allRoomDeviceList?.length,
-      // currentHomeName,
-      // isShowHomeControl:
-      //   !!deviceStore.allRoomDeviceList?.length &&
-      //   deviceStore.allRoomDeviceList.some((device: Device.DeviceItem) =>
-      //     ([PRO_TYPE.light, PRO_TYPE.switch, PRO_TYPE.bathHeat, PRO_TYPE.clothesDryingRack] as string[]).includes(
-      //       device.proType,
-      //     ),
-      //   ),
-      // })
+      console.log(type ?? '', '[active pageDataSync]', {
+        roomList: JSON.parse(JSON.stringify(roomStore.roomList)),
+        isLogin: userStore.isLogin,
+        isCreator: homeStore.isCreator,
+        isManager: homeStore.isManager,
+        hasDevice: deviceStore.allRoomDeviceList?.length,
+        currentHomeName,
+        isShowHomeControl:
+          !!deviceStore.allRoomDeviceList?.length &&
+          deviceStore.allRoomDeviceList.some((device: Device.DeviceItem) =>
+            ([PRO_TYPE.light, PRO_TYPE.switch, PRO_TYPE.bathHeat, PRO_TYPE.clothesDryingRack] as string[]).includes(
+              device.proType,
+            ),
+          ),
+      })
       let homeList
       if (homeStore.homeList?.length) {
         homeList = homeStore.homeList as Home.IHomeItem[]
@@ -337,7 +361,7 @@ ComponentWithComputed({
       this.setData({
         isLogin: userStore.isLogin,
         isCreator: homeStore.isCreator,
-        isManger: homeStore.isManager,
+        isManager: homeStore.isManager,
         hasDevice: deviceStore.allRoomDeviceList?.length,
         currentHomeName,
         currentHomeId: homeStore.currentHomeId,
@@ -350,18 +374,25 @@ ComponentWithComputed({
             ),
           ),
         homeList,
+        loading: false,
       })
+
+      this.updateLightCount()
 
       // TODO
-      this.renewRoomPos()
+      // this.renewRoomPos()
     },
 
-    handlePopMenu() {
+    handleHomeMenu() {
       this.setData({
-        showPopMenu: !this.data.showPopMenu,
+        'selectHomeMenu.isShow': !this.data.selectHomeMenu.isShow,
       })
     },
-
+    handleAddMenu() {
+      this.setData({
+        'addMenu.isShow': !this.data.addMenu.isShow,
+      })
+    },
     async handleHomeTap(e: { detail: string }) {
       const houseId = e.detail
 
@@ -371,10 +402,18 @@ ComponentWithComputed({
       if (res.success) {
         await homeStore.homeInit()
       }
-      this.init()
+      this.pageDataSync('handleHomeTap')
       this.setData({
-        showPopMenu: false,
+        'selectHomeMenu.isShow': false,
       })
+    },
+    handleAddTap(e: { detail: string }) {
+      // console.log('handleAddTap', e)
+      this.setData({
+        'addMenu.isShow': false,
+      })
+      const url = e.detail
+      wx.navigateTo({ url })
     },
 
     // 更新灯总数、亮灯数统计
@@ -604,13 +643,6 @@ ComponentWithComputed({
       this.data._isAcceptShare = true
     },
 
-    // 收起所有菜单
-    hideMenu() {
-      this.setData({
-        'selectHomeMenu.isShow': false,
-        'addMenu.isShow': false,
-      })
-    },
     /**
      * 跳转到登录页
      */
@@ -687,18 +719,7 @@ ComponentWithComputed({
     },
 
     showAddMenu() {
-      this.setData({
-        addMenu: {
-          right: '25rpx',
-          y:
-            (storage.get<number>('statusBarHeight') as number) +
-            (storage.get<number>('navigationBarHeight') as number) +
-            50 +
-            'px',
-          isShow: !this.data.addMenu.isShow,
-        },
-        'selectHomeMenu.isShow': false,
-      })
+      this.setData({ 'addMenu.isShow': true })
     },
 
     // 开始拖拽

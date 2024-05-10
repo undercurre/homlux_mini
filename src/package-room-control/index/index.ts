@@ -233,12 +233,19 @@ ComponentWithComputed({
       return data.roomHasLight ? 150 : 60
     },
     /**
-     * 是否打开控制面板（除浴霸和晾衣）
+     * 是否打开控制面板
      * TODO 将灯和开关控制也解耦出来
      */
     isShowCommonControl(data) {
       const { controlType } = data
-      return controlType && controlType !== PRO_TYPE.bathHeat && controlType !== PRO_TYPE.clothesDryingRack
+      return (
+        controlType &&
+        (controlType === PRO_TYPE.light ||
+          controlType === PRO_TYPE.switch ||
+          controlType === PRO_TYPE.gateway ||
+          controlType === PRO_TYPE.curtain ||
+          controlType === PRO_TYPE.sensor)
+      )
     },
     // 设备卡片可移动区域高度
     movableAreaHeight(data) {
@@ -375,11 +382,11 @@ ComponentWithComputed({
     },
 
     async onReady() {
-      await delay(1000)
-      this.init()
+      await delay(0)
+      this.pageDataSync()
     },
 
-    init() {
+    pageDataSync() {
       this.setData({
         title: roomStore.currentRoom?.roomName ?? '',
         sceneListInBar: sceneStore.sceneList?.length ? sceneStore.sceneList.slice(0, 4) : [],
@@ -1021,8 +1028,9 @@ ComponentWithComputed({
 
     handleSceneTap() {
       wx.navigateTo({
-        //  url: '/package-room-control/scene-list/index',
-        url: '/package-automation/automation/index',
+        url: strUtil.getUrlWithParams('/package-automation/automation/index', {
+          selectedRoomId: roomStore.currentRoomId,
+        }),
       })
     },
     /** 点击创建场景按钮回调 */
@@ -1280,7 +1288,7 @@ ComponentWithComputed({
         return
       }
       // 只有创建者或者管理员能够进入编辑模式
-      if (!this.data.isCreator && !this.data.isAdmin) {
+      if (!this.data.canAddDevice) {
         return
       }
 

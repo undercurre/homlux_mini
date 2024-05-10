@@ -5,10 +5,22 @@
   font-weight: 600;
 }
 
+.slider-button-wrapper {
+  padding: 8rpx;
+}
+
 .slider-button {
   width: 20rpx;
   height: 20rpx;
   border-radius: 10rpx;
   margin-right: -2rpx;
   background-color: #ffffff;
+}
+
+.secondary-popup-btn {
+  background-color: #ffffff;
+}
+
+.secondary-popup-btn:active {
+  background-color: #e7e8e9;
 }

@@ -1494,7 +1494,7 @@ ComponentWithComputed({
           message: this.data.autoSceneId ? '更新失败' : '创建失败',
         })
       } else {
-        emitter.emit('sceneEdit')
+        emitter.emit('sceneEdit', { sceneType: 'auto' })
         Toast({
           message: this.data.autoSceneId ? '更新成功' : '创建成功',
           onClose: () => {
@@ -1516,9 +1516,14 @@ ComponentWithComputed({
           }).then(async () => {
             const res = await deleteScene(this.data._sceneInfo.sceneId)
             if (res.success) {
-              emitter.emit('sceneEdit')
+              emitter.emit('sceneEdit', { sceneType: 'yijian' })
               homeStore.updateRoomCardList()
-              wx.navigateBack()
+              Toast({
+                message: '删除成功',
+                onClose: () => {
+                  wx.navigateBack()
+                },
+              })
             } else {
               Toast({ message: '删除失败', zIndex: 9999 })
             }
@@ -1569,12 +1574,16 @@ ComponentWithComputed({
         }
         const res = await updateScene(data)
         if (res.success) {
-          emitter.emit('sceneEdit')
+          emitter.emit('sceneEdit', { sceneType: 'yijian' })
           homeStore.updateRoomCardList()
-          Toast({ message: '修改成功', zIndex: 9999 })
-          wx.navigateBack()
+          Toast({
+            message: '更新成功',
+            onClose: () => {
+              wx.navigateBack()
+            },
+          })
         } else {
-          Toast({ message: '修改失败', zIndex: 9999 })
+          Toast({ message: '更新失败', zIndex: 9999 })
         }
       } else {
         //新建
@@ -1619,8 +1628,13 @@ ComponentWithComputed({
 
         const delRes = await deleteScene(this.data.autoSceneId)
         if (delRes.success) {
-          await autosceneStore.updateAllRoomAutoSceneList()
-          wx.navigateBack()
+          emitter.emit('sceneEdit', { sceneType: 'auto' })
+          Toast({
+            message: '删除成功',
+            onClose: () => {
+              wx.navigateBack()
+            },
+          })
         } else {
           Toast({ message: '删除失败', zIndex: 9999 })
         }
@@ -1638,9 +1652,14 @@ ComponentWithComputed({
 
         const delRes = await deleteScene(this.data._sceneInfo.sceneId)
         if (delRes.success) {
-          emitter.emit('sceneEdit')
+          emitter.emit('sceneEdit', { sceneType: 'yijian' })
           homeStore.updateRoomCardList()
-          wx.navigateBack()
+          Toast({
+            message: '删除成功',
+            onClose: () => {
+              wx.navigateBack()
+            },
+          })
         } else {
           Toast({ message: '删除失败', zIndex: 9999 })
         }
