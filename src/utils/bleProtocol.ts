@@ -1,4 +1,4 @@
-import { aesUtil, delay, isAndroid, Logger, strUtil } from '../../utils/index'
+import { aesUtil, delay, isAndroid, Logger, strUtil } from './index'
 
 // 定义了与BLE通路相关的所有事件/动作/命令的集合；其值域及表示意义为：对HOMLUX设备主控与app之间可能的各种操作的概括分类
 export const CmdTypeMap = {

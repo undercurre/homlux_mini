@@ -1,0 +1,11 @@
+{
+  "styleIsolation": "apply-shared",
+  "component": true,
+  "renderer": "skyline",
+  "componentFramework": "glass-easel",
+  "disableScroll": true,
+  "usingComponents": {
+    "mz-cell-group": "/skyline-components/mz-cell-group/index",
+    "mz-cell": "/skyline-components/mz-cell/index"
+  }
+}

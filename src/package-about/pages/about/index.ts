@@ -2,7 +2,10 @@ import pageBehavior from '../../../behaviors/pageBehaviors'
 import { storage } from '../../../utils/index'
 import meta from '../../../meta'
 
-const isDebug = false
+let isDebug = false
+let debugTimeId = 0
+console.debug('isDebug', isDebug)
+
 Component({
   behaviors: [pageBehavior],
   /**
@@ -42,14 +45,14 @@ Component({
 
   lifetimes: {
     ready() {
+      console.debug('ready---isDebug', isDebug)
+
       if (meta?.datetime) {
         this.setData({
           releaseTime: meta.datetime,
         })
       }
       const info = wx.getAccountInfoSync()
-
-      console.debug('getAccountInfoSync', info)
 
       this.setData({
         envVersion: info.miniProgram.envVersion,
@@ -62,6 +65,27 @@ Component({
    * 组件的方法列表
    */
   methods: {
+    toTestUtil() {
+      wx.navigateTo({
+        url: '/package-debug/pages/test-util/index',
+      })
+    },
+
+    touchVersionStart() {
+      console.log('touchVersionStart')
+      // 长按10s出现调试功能
+      debugTimeId = setTimeout(() => {
+        console.log('isDebug')
+        isDebug = true
+        this.setData({ isDebug })
+      }, 5000)
+    },
+
+    touchVersionEnd() {
+      console.log('touchVersionEnd')
+      clearTimeout(debugTimeId)
+    },
+
     handleTap(e: WechatMiniprogram.TouchEvent) {
       wx.navigateTo({
         url: '/package-about/pages/protocol-show/index?protocal=' + e.currentTarget.dataset.value,

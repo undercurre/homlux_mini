@@ -1,6 +1,6 @@
 import { observable, runInAction } from 'mobx-miniprogram'
 import { Logger, throttle, unique } from '../../utils/index'
-import { BleClient, bleUtil } from '../common/bleProtocol'
+import { BleClient, bleUtil } from '../../utils/bleProtocol'
 import { deviceBinding, roomBinding } from '../../store/index'
 import { batchCheckDevice, batchGetProductInfoByBPid } from '../../apis/index'
 import { checkedDeviceListTest } from '../../config/test'

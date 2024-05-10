@@ -21,6 +21,29 @@
     bind:click="handleTap"
   ></van-cell>
 
+  <van-cell
+    title="版本号"
+    value="v{{version}}"
+    center
+    bind:touchstart="touchVersionStart"
+    bind:touchend="touchVersionEnd"
+  />
+
+  <van-cell
+    wx:if="{{envVersion !== 'release' && releaseTime}}"
+    title="发布时间"
+    value="{{releaseTime}}"
+    center
+  />
+
+  <van-cell
+    wx:if="{{isDebug}}"
+    title="产测工具"
+    is-link
+    center
+    bind:click="toTestUtil"
+  />
+
   <block wx:if="{{envVersion !== 'release'}}">
     <van-cell
       title="调试工具【{{curEnv}}】"
@@ -29,26 +52,4 @@
       bind:click="toDebugUtil"
     />
   </block>
-
-  <van-cell
-    title="版本号"
-    value="v{{version}}"
-    center
-    border="{{false}}"
-  />
-  <van-cell
-    wx:if="{{envVersion !== 'release' && releaseTime}}"
-    title="发布时间"
-    value="{{releaseTime}}"
-    center
-    border="{{false}}"
-  />
-
-  <van-cell
-    wx:if="{{isdebug}}"
-    title="子设备产测"
-    is-link
-    center
-    bind:click="toDebugUtil"
-  />
 </van-cell-group>

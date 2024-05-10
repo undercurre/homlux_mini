@@ -3,7 +3,7 @@
   "projectname": "HomLux",
   "setting": {
     "compileHotReLoad": false,
-    "urlCheck": false,
+    "urlCheck": true,
     "bigPackageSizeSupport": true,
     "skylineRenderEnable": true
   },
@@ -11,6 +11,17 @@
   "condition": {
     "miniprogram": {
       "list": [
+        {
+          "name": "产测工具",
+          "pathName": "package-debug/pages/test-util/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null,
+          "partialCompile": {
+            "enabled": true,
+            "pages": []
+          }
+        },
         {
           "name": "关于",
           "pathName": "package-about/pages/about/index",

@@ -67,7 +67,7 @@
     },
     {
       "root": "package-about",
-      "pages": ["pages/protocol-show/index", "pages/about/index", "pages/subdevice-scan/index"]
+      "pages": ["pages/protocol-show/index", "pages/about/index"]
     },
     {
       "root": "package-debug",
@@ -76,7 +76,8 @@
         "pages/homos-debug/index",
         "pages/add-virtual-device/index",
         "pages/skyline-demo/index",
-        "pages/movable-demo/index"
+        "pages/movable-demo/index",
+        "pages/test-util/index"
       ]
     },
     {
