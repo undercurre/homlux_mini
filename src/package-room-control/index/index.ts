@@ -1058,7 +1058,7 @@ ComponentWithComputed({
         return
       }
       // 不在编辑状态，如果是WIFI设备
-      else if (e.detail.deviceType === 3) {
+      else if (e.detail.deviceType === 3 && e.detail.onLineStatus) {
         const { deviceId } = e.detail
         const res = await queryAuthGetStatus({ houseId: homeStore.currentHomeId, deviceId })
         // 若设备未确权、待确权，则弹出指引弹窗
@@ -1188,7 +1188,7 @@ ComponentWithComputed({
      */
     async queryAuthBeforeControlTap(e: { detail: DeviceCard }) {
       // 如果是WIFI设备
-      if (e.detail.deviceType === 3) {
+      if (e.detail.deviceType === 3 && e.detail.onLineStatus) {
         const { deviceId } = e.detail
         const res = await queryAuthGetStatus({ houseId: homeStore.currentHomeId, deviceId })
         // 若设备未确权、待确权，则弹出指引弹窗
