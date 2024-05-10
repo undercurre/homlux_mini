@@ -52,20 +52,6 @@ ComponentWithComputed({
       this.getAutoSceneList()
     },
     ready() {
-      this.createSelectorQuery()
-        .select('#ScrollView')
-        .boundingClientRect()
-        .exec((res) => {
-          console.log('createSelectorQuery', res)
-          if (!res || !res[0]) {
-            return
-          }
-          this.setData({
-            'scrollInfo.topSize': res[0].top,
-            'scrollInfo.bottomSize': res[0].bottom,
-          })
-        })
-
       // 监听场景修改，主动更新一键场景列表
       emitter.off('sceneEdit')
       emitter.on('sceneEdit', ({ sceneType }) => {
@@ -112,12 +98,36 @@ ComponentWithComputed({
         {
           selectedRoomId: event.detail.name,
         },
-        () => {
-          const { allRoomScene, selectedRoomId } = this.data
+        async () => {
           // 防止场景为空，drag为null·
-          if (allRoomScene[selectedRoomId] && allRoomScene[selectedRoomId].length) {
-            const drag = this.selectComponent('#yijian')
-            if (drag) drag.init()
+          const drag = this.selectComponent('#yijian')
+          if (drag) {
+            if (this.data.scrollInfo.bottomSize === 0) {
+              const res: Array<IAnyObject> = await new Promise((resolve) => {
+                wx.createSelectorQuery()
+                  .select('#ScrollView')
+                  .boundingClientRect()
+                  .exec((res) => {
+                    console.log('createSelectorQuery', res)
+                    resolve(res)
+                  })
+              })
+
+              if (!res || !res[0]) {
+                return
+              }
+              this.setData(
+                {
+                  'scrollInfo.topSize': res[0].top,
+                  'scrollInfo.bottomSize': res[0].bottom,
+                },
+                () => {
+                  drag.init()
+                },
+              )
+            } else {
+              drag.updateList()
+            }
           }
         },
       )
