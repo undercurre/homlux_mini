@@ -1,5 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { rpx2px } from '../../utils/index'
+import { delay, rpx2px } from '../../utils/index'
 import { runOnJS } from '../common/worklet'
 
 ComponentWithComputed({
@@ -22,6 +22,8 @@ ComponentWithComputed({
       type: Number,
       value: 1,
       observer(v) {
+        console.log('observer v:', v, '_value:', this.data._value)
+
         // 若设值相同，则跳过，以免循环响应
         if (!this.data.barWidth || v === this.data._value) {
           return
@@ -29,7 +31,9 @@ ComponentWithComputed({
         // 响应外部设值，改变滑动柄位置
         const activedWidth = Math.round((this.data.barWidth / this.data.valueSpan) * (v - this.data.min))
         const btnX = activedWidth - this.data.btnOffsetX
-        this.setData({ btnX })
+        const _value = this.widthToValue(activedWidth)
+        console.log('observer 2', btnX, _value)
+        this.setData({ btnX, _value })
         this.data._actived_x.value = activedWidth
       },
     },
@@ -62,6 +66,10 @@ ComponentWithComputed({
     max: {
       type: Number,
       value: 100,
+    },
+    step: {
+      type: Number,
+      value: 1,
     },
     // 触发拖拽事件时的节流时间
     throttleTime: {
@@ -142,7 +150,8 @@ ComponentWithComputed({
         })
       }
     },
-    ready() {
+    async ready() {
+      await delay(150) // 防取值失败
       // 修改边界
       this.createSelectorQuery()
         .select('#mz-slider')
@@ -151,14 +160,14 @@ ComponentWithComputed({
           // console.log('#mz-slider', res[0])
           const barWidth = res[0]?.width ?? 300
           const barLeft = res[0]?.left ?? 0
-          const _value = this.widthToValue(barWidth)
-          const btnX = _value - this.data.btnOffsetX
+          // const _value = this.widthToValue(barWidth)
+          // const btnX = _value - this.data.btnOffsetX
           const left = this.data.isBtnInset ? 0 : -this.data.btnOffsetX
           const right = barWidth - this.data.btnOffsetX
           this.setData({
             barWidth,
             barLeft,
-            btnX,
+            // btnX,
             bound: {
               top: 0,
               left,
@@ -167,14 +176,14 @@ ComponentWithComputed({
             },
           })
 
-          this.data._actived_x.value = _value
+          // this.data._actived_x.value = _value
         })
       if (this.data.showToast) {
         this.createSelectorQuery()
           .select(`#slider-toast--${this.data.key}`)
           .boundingClientRect()
           .exec((res) => {
-            console.log(`#slider-toast--${this.data.key}`, res[0])
+            // console.log(`#slider-toast--${this.data.key}`, res[0])
             const toastWidth = res[0]?.width ?? 80
             this.setData({ toastWidth })
           })
@@ -202,6 +211,7 @@ ComponentWithComputed({
           const _value = this.widthToValue(activedWidth)
           this.setData({ _value })
           this.triggerEvent('slideChange', _value)
+          console.log('[handleSlider]slideChange', _value)
           this.data.timeout_timer = null
         }, this.data.throttleTime)
       }
@@ -212,9 +222,12 @@ ComponentWithComputed({
     },
     // 直接点击滑动条后拖动
     sliderMove(e: WechatMiniprogram.TouchEvent) {
+      if (this.data._dragging) return
       this.handleSlider(e.changedTouches[0].pageX)
     },
     sliderEnd(e: WechatMiniprogram.TouchEvent) {
+      if (this.data._dragging) return
+
       if (this.data.showToast && this.data._toast_opacity.value) {
         this.data._toast_opacity.value = 0
       }
@@ -223,6 +236,7 @@ ComponentWithComputed({
         Math.max(this.data.btnOffsetX, e.changedTouches[0].pageX - this.data.barLeft),
       )
       const _value = this.widthToValue(activedWidth)
+      this.setData({ _value })
 
       this.triggerEvent('slideEnd', _value)
     },
@@ -238,6 +252,9 @@ ComponentWithComputed({
       }
       const _value = this.widthToValue(activedWidth)
       runOnJS(this.triggerEvent.bind(this))('slideEnd', _value)
+      runOnJS(this.setData.bind(this))({
+        _value,
+      })
     },
     dragBegin(e: { detail: { x: number } }) {
       'worklet'
@@ -273,6 +290,7 @@ ComponentWithComputed({
           runOnJS(this.setData.bind(this))({
             _value,
           })
+          console.log('[dragMove]slideChange', _value)
           runOnJS(this.triggerEvent.bind(this))('slideChange', _value)
           this.data.timeout_timer = null
         }, this.data.throttleTime)
@@ -280,8 +298,17 @@ ComponentWithComputed({
     },
     // 计算激活部分，宽度->值
     widthToValue(w: number) {
-      const { barWidth, min, valueSpan } = this.data
-      return Math.round((w / barWidth) * valueSpan) + min
+      const { barWidth, min, valueSpan, step } = this.data
+      console.log(
+        'widthToValue',
+        w,
+        barWidth,
+        min,
+        valueSpan,
+        step,
+        Math.round(((w / barWidth) * valueSpan) / step) * step + min,
+      )
+      return Math.round(((w / barWidth) * valueSpan) / step) * step + min
     },
   },
 })
