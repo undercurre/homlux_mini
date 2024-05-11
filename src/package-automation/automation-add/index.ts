@@ -102,7 +102,7 @@ ComponentWithComputed({
   computed: {
     list(data) {
       if (data.selectCardType === 'scene') {
-        return sceneStore.allRoomSceneList
+        return JSON.parse(JSON.stringify(sceneStore.allRoomSceneList))
       } else if (data.selectCardType === 'sensor') {
         return data.sensorList
       } else {
@@ -769,11 +769,13 @@ ComponentWithComputed({
           tempSceneDevicelinkSelectedList: [...this.data['tempSceneDevicelinkSelectedList'], selectId],
         })
       }
-      console.log('handleSelectCardSelect', e, e.detail)
-
+      if (this.data.selectCardType === 'scene') {
+        this.setData({
+          tempSceneDevicelinkSelectedList: [...this.data['tempSceneDevicelinkSelectedList'], selectId],
+        })
+      }
       if (this.data.selectCardType === 'sensor') {
         //传感器只单选
-        console.log('handleSelectCardSelect', e, e.detail)
         this.setData({
           sensorlinkSelectList: [e.detail],
         })
@@ -785,9 +787,7 @@ ComponentWithComputed({
       })
     },
     handleSelectCardReturn() {
-      this.setData({
-        showSelectCardPopup: false,
-      })
+      this.handleSelectCardClose()
       if (this.data.selectCardType === 'sensor') {
         this.handleConditionShow()
       } else {
