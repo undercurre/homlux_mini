@@ -1,7 +1,9 @@
 import type { Action } from './dialog'
+import { button } from '../behaviors/button'
 import { toPromise } from '../common/utils'
 
 Component({
+  behaviors: [button],
   options: {
     multipleSlots: true, // 在组件定义时的选项中启用多slot支持
   },
@@ -23,9 +25,7 @@ Component({
       value: 'default',
     },
     confirmButtonId: String,
-    className: String,
     customStyle: String,
-    asyncClose: Boolean,
     messageAlign: String,
     beforeClose: null,
     overlayStyle: String,
@@ -127,8 +127,8 @@ Component({
     handleAction(action: Action) {
       this.triggerEvent(action, { dialog: this })
 
-      const { asyncClose, beforeClose } = this.data
-      if (!asyncClose && !beforeClose) {
+      const { beforeClose } = this.data
+      if (!beforeClose) {
         this.close(action)
         return
       }
