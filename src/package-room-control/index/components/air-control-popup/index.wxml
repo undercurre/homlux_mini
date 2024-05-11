@@ -90,6 +90,7 @@
           max="{{maxTemp}}"
           active-color="#488FFF"
           key="temperature"
+          data-key="temperature"
           step="{{0.5}}"
           use-button-slot
         >

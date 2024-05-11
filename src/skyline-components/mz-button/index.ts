@@ -1,4 +1,7 @@
+import { button } from '../behaviors/button'
+
 Component({
+  behaviors: [button, 'wx://form-field-button'],
   externalClasses: ['custom-class'],
   /**
    * 组件的属性列表
@@ -32,7 +35,6 @@ Component({
       value: '20px',
     },
     color: String,
-    openType: String,
   },
 
   /**
@@ -46,6 +48,7 @@ Component({
   methods: {
     onClick(event: WechatMiniprogram.BaseEvent) {
       this.triggerEvent('click', event)
+      // @ts-ignore
       const { openType } = this.data
       if (openType === 'getUserInfo') {
         wx.getUserProfile({

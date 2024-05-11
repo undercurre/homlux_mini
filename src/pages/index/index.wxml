@@ -232,9 +232,5 @@
   bind:overlayClick="handleAddMenu"
 ></mz-pop-menu>
 
-<add-room
-  show="{{showAddNewRoom}}"
-  bind:close="handleHideAddNewRoom"
-></add-room>
 <mz-toast id="mz-toast" />
 <mz-dialog id="mz-dialog" />

@@ -66,7 +66,6 @@ Component({
 
   observers: {
     value: function (value) {
-      console.log('field:value', value)
       if (value !== this.data.innerValue) {
         this.setData({ innerValue: value })
       }

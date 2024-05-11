@@ -15,16 +15,8 @@ interface DialogOptions {
   overlay?: boolean
   selector?: string
   ariaLabel?: string
-  /**
-   * @deprecated use custom-class instead
-   */
-  className?: string
   customStyle?: string
   transition?: string
-  /**
-   * @deprecated use beforeClose instead
-   */
-  asyncClose?: boolean
   beforeClose?: null | ((action: Action) => Promise<void | boolean> | void)
   businessId?: number
   sessionFrom?: string
@@ -52,8 +44,6 @@ const defaultOptions: DialogOptions = {
   zIndex: 100,
   overlay: true,
   selector: '#mz-dialog',
-  className: '',
-  asyncClose: false,
   beforeClose: null,
   transition: 'scale',
   customStyle: '',
