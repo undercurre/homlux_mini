@@ -279,20 +279,19 @@ ComponentWithComputed({
 
     async onShow() {
       Logger.log('room-onShow, _firstShow', this.data._firstShow)
+      // 验证网络状态
+      await verifyNetwork()
+      // 加载数据
+      if (!isConnect()) {
+        this.updateQueue({ isRefresh: true, onLineStatus: 0 })
+      }
       // 首次进入
-      if (this.data._firstShow && this.data._from !== 'addDevice') {
+      else if (this.data._firstShow && this.data._from !== 'addDevice') {
         this.updateQueue({ isRefresh: true })
         // sceneStore.updateAllRoomSceneList()
         this.queryGroupInfo()
         this.autoRefreshDevice()
         this.data._firstShow = false
-      }
-      // 从别的页面返回，或从挂起状态恢复
-      else {
-        // 验证网络状态
-        await verifyNetwork()
-        // 加载数据
-        this.reloadData()
       }
 
       emitter.on('deviceListRetrieve', () => {
