@@ -298,6 +298,7 @@
   cardType="{{cardType}}"
   list="{{list}}"
   selectList="{{linkSelectList}}"
+  isSingleSelect="{{selectCardType === 'sensor'}}"
   showCancel="{{(selectCardType !== 'sensor'||!sceneDeviceConditionsFlatten.length) && opearationType === 'auto'}}"
   bind:select="handleSelectCardSelect"
   bind:handleOfflineTap="handleSelectCardOfflineTap"

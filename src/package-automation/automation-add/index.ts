@@ -62,7 +62,6 @@ ComponentWithComputed({
     sensorList: [] as Device.DeviceItem[],
     /** 已选中设备或场景 TODO */
     sceneDevicelinkSelectList: [] as string[],
-    tempSceneDevicelinkSelectedList: [] as string[],
     /** 已选中的传感器 */
     sensorlinkSelectList: [] as string[],
     selectCardType: 'device', //设备卡片：'device'  场景卡片： 'scene'  传感器卡片：'sensor'
@@ -151,7 +150,7 @@ ComponentWithComputed({
       if (data.selectCardType === 'sensor') {
         return data.sensorlinkSelectList
       } else {
-        return data.tempSceneDevicelinkSelectedList
+        return data.sceneDevicelinkSelectList
       }
     },
     //只包含场景和设备的动作列表长度
@@ -168,7 +167,7 @@ ComponentWithComputed({
         deviceList: deviceStore.allRoomDeviceFlattenList.filter(
           (item) => item.proType !== PRO_TYPE.gateway && item.proType !== PRO_TYPE.sensor,
         ),
-        sensorList: deviceStore.allRoomSensorList,
+        sensorList: JSON.parse(JSON.stringify(deviceStore.allRoomSensorList)),
       })
       const { roomid, sceneInfo } = getCurrentPageParams()
       if (!sceneInfo && !roomid) {
@@ -734,21 +733,7 @@ ComponentWithComputed({
     handleSelectCardOfflineTap() {
       Toast({ message: '设备已离线', zIndex: 9999 })
     },
-    async handleSelectCardSelect(e: { detail: string }) {
-      console.log('handleSelectCardSelect', e, e.detail)
-      const selectId = e.detail
-
-      const listType =
-        this.data.selectCardType === 'sensor' ? 'sensorlinkSelectList' : 'tempSceneDevicelinkSelectedList'
-      // 取消选择逻辑
-      const index = this.data[listType].findIndex((item) => item === selectId)
-      if (index > -1) {
-        this.data[listType].splice(index, 1)
-        this.setData({
-          [`${listType}`]: [...this.data[listType]],
-        })
-        return
-      }
+    handleSelectCardSelect(e: { detail: string }) {
       if (this.data.selectCardType === 'device') {
         const allRoomDeviceMap = deviceStore.allRoomDeviceFlattenMap
         const device = allRoomDeviceMap[e.detail]
@@ -765,20 +750,6 @@ ComponentWithComputed({
               switchInfoDTOList: device.switchInfoDTOList,
             })
         }
-        this.setData({
-          tempSceneDevicelinkSelectedList: [...this.data['tempSceneDevicelinkSelectedList'], selectId],
-        })
-      }
-      if (this.data.selectCardType === 'scene') {
-        this.setData({
-          tempSceneDevicelinkSelectedList: [...this.data['tempSceneDevicelinkSelectedList'], selectId],
-        })
-      }
-      if (this.data.selectCardType === 'sensor') {
-        //传感器只单选
-        this.setData({
-          sensorlinkSelectList: [e.detail],
-        })
       }
     },
     handleSelectCardClose() {
@@ -794,28 +765,28 @@ ComponentWithComputed({
         this.handleActionShow()
       }
     },
-    async handleSelectCardConfirm() {
+    async handleSelectCardConfirm(e: { detail: { selectList: string[] } }) {
+      console.log('handleSelectCardConfirm', e)
       this.setData({
         showSelectCardPopup: false,
       })
       if (this.data.selectCardType === 'sensor') {
-        this.updateSceneDeviceConditionsFlatten()
-        this.setData({
-          _isEditCondition: true,
-        })
+        this.setData(
+          {
+            _isEditCondition: true,
+            sensorlinkSelectList: e.detail.selectList,
+          },
+          () => {
+            this.updateSceneDeviceConditionsFlatten()
+          },
+        )
       } else {
         this.setData(
           {
-            sceneDevicelinkSelectList: [
-              ...this.data['sceneDevicelinkSelectList'],
-              ...this.data['tempSceneDevicelinkSelectedList'],
-            ],
+            sceneDevicelinkSelectList: e.detail.selectList,
           },
           () => {
             this.updateSceneDeviceActionsFlatten()
-            this.setData({
-              tempSceneDevicelinkSelectedList: [],
-            })
           },
         )
       }
@@ -922,8 +893,6 @@ ComponentWithComputed({
           sceneDeviceActionsFlatten,
           _isEditAction: isEditAction,
           sceneDevicelinkSelectList: this.data.opearationType === 'auto' ? [] : this.data.sceneDevicelinkSelectList,
-          tempSceneDevicelinkSelectedList:
-            this.data.opearationType === 'auto' ? [] : this.data.tempSceneDevicelinkSelectedList,
         },
         async () => {
           // 防止场景为空，drag为null·
