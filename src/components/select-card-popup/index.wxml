@@ -1,8 +1,3 @@
-<wxs
-  src="/commons/wxs/util.wxs"
-  module="module"
-/>
-
 <mz-popup
   show="{{ show }}"
   z-index="1002"
@@ -47,10 +42,10 @@
         <view class="w-50rpx"></view>
         <view class="flex min-w-650rpx justify-start">
           <view
-            wx:for="{{roomListComputed}}"
+            wx:for="{{roomList}}"
             wx:key="roomId"
             class="flex-col-center {{index!==0?'ml-90rpx': ''}}"
-            data-item="{{item}}"
+            data-roomid="{{item.roomId}}"
             bindtap="handleRoomSelect"
           >
             <text class="{{roomSelect === item.roomId ? 'text-32rpx text-black-2a' : 'text-28rpx text-hex-555659'}} whitespace-nowrap">{{item.roomName}}</text>
@@ -70,31 +65,37 @@
       show-scrollbar="{{false}}"
       scroll-y
     >
-      <view class="w-750rpx flex-col-center">
+      <view
+        class="w-750rpx flex-col-center"
+        wx:if="loaded"
+      >
         <view
-          wx:if="{{cardType==='scene'}}"
-          class="w-686rpx grid grid-cols-2 gap-x-20rpx"
+          wx:if="{{cardTypeUI==='scene'}}"
+          class="w-686rpx flex flex-row flex-wrap justify-between"
         >
           <scene-card
-            class="mt-24rpx"
-            wx:for="{{listComputed}}"
+            class="mb-24rpx"
+            wx:for="{{allRoomItem[roomSelect]}}"
             wx:key="sceneId"
             bind:cardTap="handleCardTap"
             scene-info="{{item}}"
-            select="{{module.includes(selectList, item.sceneId)}}"
+            select="{{isSingleSelect ? curItemSelectId === item.sceneId : item.checked}}"
+            data-index="{{ index }}"
           />
         </view>
         <view
           wx:else
-          class="w-686rpx grid grid-cols-4 gap-x-20rpx gap-y-24rpx"
+          class="w-720rpx flex flex-row flex-wrap"
         >
           <device-card
-            wx:for="{{listComputed}}"
+            class="mb-24rpx mx-10rpx"
+            wx:for="{{allRoomItem[roomSelect]}}"
             wx:key="uniId"
+            data-index="{{ index }}"
             bind:cardTap="handleCardTap"
             device-info="{{item}}"
             showSpecialBg="{{false}}"
-            select="{{module.includes(selectList, item.uniId)}}"
+            select="{{isSingleSelect ? curItemSelectId === item.deviceId : item.checked}}"
             bind:offlineTap="handleOfflineTap"
           />
         </view>
@@ -102,7 +103,7 @@
     </scroll-view>
 
     <view class="h-96rpx"></view>
-    <view class="flex w-686rpx gap-x-46rpx">
+    <view class="flex w-686rpx">
       <mz-button
         wx:if="{{showCancel}}"
         class="flex-1"
@@ -110,7 +111,10 @@
         bind:click="handleCancel"
         >{{ cancelText }}
       </mz-button>
-
+      <view
+        class="w-46rpx"
+        wx:if="{{showCancel && showConfirm }}"
+      ></view>
       <mz-button
         wx:if="{{showConfirm}}"
         type="primary"
