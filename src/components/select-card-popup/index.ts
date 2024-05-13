@@ -92,6 +92,7 @@ Component({
           }
           this.setData({
             roomSelect,
+            tabIndex: this.data.roomList.findIndex((room) => room.roomId === roomSelect),
           })
         }
       },
