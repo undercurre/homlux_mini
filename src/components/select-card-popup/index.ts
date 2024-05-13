@@ -140,6 +140,7 @@ Component({
     roomList: [] as Room.RoomInfo[],
     cardTypeUI: 'device',
     curItemSelectId: '', // 仅isSingleSelect为true时有用
+    tabIndex: 0,
   },
 
   /**
@@ -148,7 +149,7 @@ Component({
   methods: {
     updateList() {
       const selectListSet = new Set(this.data.selectList)
-      const allRoomItem = this.data.list.reduce(
+      const allRoomItemMap = this.data.list.reduce(
         (acc: Map<string, (CheckedDeviceItem | CheckedSceneItem)[]>, item: Scene.SceneItem | Device.DeviceItem) => {
           const roomId = item.roomId
           if (acc.has(roomId)) {
@@ -170,11 +171,14 @@ Component({
         },
         new Map<string, (Device.DeviceItem | Scene.SceneItem)[]>(),
       )
-      const roomIdSet = new Set(allRoomItem.keys())
+      const roomIdSet = new Set(allRoomItemMap.keys())
       const roomList = roomStore.roomList.filter((room) => roomIdSet.has(room.roomId))
-
+      const sortedAllRoomItem = {} as Record<string, (CheckedDeviceItem | CheckedSceneItem)[]>
+      roomList.forEach((room) => {
+        sortedAllRoomItem[room.roomId] = allRoomItemMap.get(room.roomId)
+      })
       this.setData({
-        allRoomItem: Object.fromEntries(allRoomItem),
+        allRoomItem: sortedAllRoomItem,
         roomList,
         cardTypeUI: this.data.cardType,
       })
@@ -218,6 +222,15 @@ Component({
     handleRoomSelect(e: WechatMiniprogram.TouchEvent) {
       this.setData({
         roomSelect: e.currentTarget.dataset.roomid,
+        tabIndex: e.currentTarget.dataset.index,
+      })
+    },
+    onTabChanged(e: { detail: { current: number; source: string } }) {
+      const { current } = e.detail
+
+      this.setData({
+        roomSelect: this.data.roomList[current].roomId,
+        tabIndex: current,
       })
     },
     blank() {},
