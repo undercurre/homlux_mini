@@ -284,6 +284,7 @@ ComponentWithComputed({
       // 加载数据
       if (!isConnect()) {
         this.updateQueue({ isRefresh: true, onLineStatus: 0 })
+        deviceStore.updateAllRoomDeviceOnLineStatus(false)
       }
       // 首次进入
       else if (this.data._firstShow && this.data._from !== 'addDevice') {
@@ -309,7 +310,8 @@ ComponentWithComputed({
         }
 
         if (eventType === WSEventType.updateHomeDataLanInfo) {
-          this.updateQueue({ isRefresh: true })
+          const isConnected = isConnect()
+          this.updateQueue({ isRefresh: true, onLineStatus: isConnected ? 1 : 0 })
           return
         }
 
@@ -456,6 +458,7 @@ ComponentWithComputed({
       // 未连接网络，所有设备直接设置为离线
       if (!isConnect()) {
         this.updateQueue({ isRefresh: true, onLineStatus: 0 })
+        deviceStore.updateAllRoomDeviceOnLineStatus(false)
         return
       }
 
@@ -481,6 +484,7 @@ ComponentWithComputed({
       // 未连接网络，所有设备直接设置为离线
       if (!isConnect()) {
         this.updateQueue({ isRefresh: true, onLineStatus: 0 })
+        deviceStore.updateAllRoomDeviceOnLineStatus(false)
         return
       }
 

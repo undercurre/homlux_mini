@@ -179,6 +179,26 @@ export const deviceStore = observable({
       deviceStore.allRoomDeviceList = allRoomDeviceList
     })
   },
+  /**
+   * 更新全屋设备的在离线状态
+   */
+  updateAllRoomDeviceOnLineStatus(isOnLine = true, isUpdateUI = false) {
+    const allRoomDeviceList = deviceStore.allRoomDeviceList.map((item) => {
+      return {
+        ...item,
+        onLineStatus: isOnLine ? 1 : 0,
+      }
+    })
+
+    if (!isUpdateUI) {
+      deviceStore.allRoomDeviceList = allRoomDeviceList
+      return
+    }
+
+    runInAction(() => {
+      deviceStore.allRoomDeviceList = allRoomDeviceList
+    })
+  },
 })
 
 export const deviceBinding = {
