@@ -3,24 +3,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.mz-multi-ellipsis--l2 {
-  -webkit-line-clamp: 2;
-}
-.mz-multi-ellipsis--l2,
-.mz-multi-ellipsis--l3 {
-  -webkit-box-orient: vertical;
-  display: -webkit-box;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.mz-multi-ellipsis--l3 {
-  -webkit-line-clamp: 3;
-}
-.mz-clearfix::after {
-  clear: both;
-  content: '';
-  display: table;
-}
 .mz-hairline,
 .mz-hairline--bottom,
 .mz-hairline--left,
@@ -76,7 +58,6 @@
 .mz-tab__pane {
   width: 100%;
   flex: 1 !important;
-  -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
   overflow-y: auto;
 }
