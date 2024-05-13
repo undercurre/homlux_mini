@@ -40,9 +40,6 @@
       class="swiper-list"
       current="{{tabIndex}}"
       bind:change="onTabChanged"
-      worklet:onscrollstart="onTabTransition"
-      worklet:onscrollupdate="onTabTransition"
-      worklet:onscrollend="onTabTransitionEnd"
       duration="{{100}}"
       cache-extent="1"
     >
@@ -84,7 +81,6 @@
               <mz-drag-list
                 id="yijian"
                 list-data="{{allRoomScene[selectedRoomId]}}"
-                item-height="{{180}}"
                 topSize="{{scrollInfo.topSize}}"
                 bottomSize="{{scrollInfo.bottomSize}}"
                 generic:item="cell"

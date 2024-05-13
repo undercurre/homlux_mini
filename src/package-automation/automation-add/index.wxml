@@ -200,7 +200,6 @@
           wx:if="{{!isDefaultYijianScene}}"
           id="drag"
           list-data="{{sceneDeviceActionsFlatten}}"
-          item-height="{{208}}"
           topSize="{{scrollInfo.topSize}}"
           bottomSize="{{scrollInfo.bottomSize}}"
           generic:item="cell"

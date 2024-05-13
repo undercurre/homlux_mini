@@ -2,7 +2,6 @@
   id="list-wrapper"
   class="drag-list-wrapper drag-list-wrapper-class"
   list="{{list}}"
-  style="{{wrapStyle}}"
   baseData="{{baseData}}"
   updating="{{updating}}"
   change:updating="{{handler.updatingObserver}}"

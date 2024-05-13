@@ -40,11 +40,6 @@ Component({
       type: Number,
       value: 0,
     },
-    itemHeight: {
-      // 每个 item 高度, 用于计算 item-wrap 高度
-      type: Number,
-      value: 0,
-    },
   },
   data: {
     /* 未渲染数据 */
@@ -57,7 +52,6 @@ Component({
     _tempItemStyle: {} as IAnyObject, // 假象item 样式
 
     /* 渲染数据 */
-    wrapStyle: '', // item-wrap 样式
     list: [] as listItem[], // 渲染数据列
     curDragItem: {} as listItem,
     dragging: false,
@@ -66,7 +60,7 @@ Component({
   methods: {
     /**
      *  初始化函数
-     *  {topSize, bottomSize, itemHeight} 参数改变需要手动调用初始化方法
+     *  {topSize, bottomSize} 参数改变需要手动调用初始化方法
      */
     init() {
       const { windowHeight, platform } = wx.getSystemInfoSync()
@@ -102,7 +96,6 @@ Component({
       this.setData(
         {
           list,
-          wrapStyle: `height: ${this.data._baseData.rows * this.data.itemHeight}rpx`,
         },
         () => {
           // 绑定动画
@@ -161,9 +154,6 @@ Component({
             (res[0].top - this.data._baseData.realTopSize) -
             (this.data._baseData.realBottomSize - this.data._baseData.realTopSize),
         })
-        this.setData({
-          wrapStyle: `height: ${this.data._baseData.rows * this.data._baseData.itemHeight}px`,
-        })
       })
     },
     /**
@@ -180,9 +170,6 @@ Component({
             rows * this.data._baseData.itemHeight +
             (this.data._baseData.wrapTopSize - this.data._baseData.realTopSize) -
             (this.data._baseData.realBottomSize - this.data._baseData.realTopSize),
-        })
-        this.setData({
-          wrapStyle: `height: ${rows * this.data._baseData.itemHeight}px`,
         })
       }
 
