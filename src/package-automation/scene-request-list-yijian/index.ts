@@ -176,7 +176,11 @@ ComponentWithComputed({
         this.setData({
           sceneId: pageParams.sceneId || res.result.sceneId,
         })
-
+        let time = 30000
+        const deviceListLength = this.data.deviceList.length
+        if (deviceListLength > 20) {
+          time = time + Math.round((deviceListLength - 20) / 10) * 5000
+        }
         setTimeout(() => {
           this.data.deviceList.forEach((item) => {
             if (item.status === 'waiting') {
@@ -208,7 +212,7 @@ ComponentWithComputed({
               }
             },
           )
-        }, 30000)
+        }, time)
       } else {
         Dialog.confirm({
           title: '创建失败',
@@ -287,6 +291,11 @@ ComponentWithComputed({
         sceneId,
       })
       if (res.success) {
+        let time = 30000
+        const deviceListLength = this.data.deviceList.length
+        if (deviceListLength > 20) {
+          time = time + Math.round((deviceListLength - 20) / 10) * 5000
+        }
         setTimeout(() => {
           this.data.deviceList.forEach((item) => {
             if (item.status === 'waiting') {
@@ -297,7 +306,7 @@ ComponentWithComputed({
           this.setData({
             deviceList,
           })
-        }, 30000)
+        }, time)
       } else {
         Toast({
           message: '重试失败',
