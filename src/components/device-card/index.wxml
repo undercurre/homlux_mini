@@ -44,7 +44,7 @@
     <!-- 附加描述，暂时只用于显示面板名称 -->
     <view
       catch:tap="handleMiddleTap"
-      class="absolute text-center w-full top-90rpx pt-20rpx"
+      class="absolute text-center w-full top-100rpx pt-20rpx"
       wx:if="{{deviceType==='switch' && (showControl || showBtnDetail)}}"
     >
       <text class="text-20rpx text-black-tips">{{bottomDesc}}</text>
