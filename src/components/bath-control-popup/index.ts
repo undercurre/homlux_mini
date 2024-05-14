@@ -178,6 +178,10 @@ ComponentWithComputed({
       const width = isSceneSetting ? '170rpx' : '280rpx'
       return `height: 112rpx; width: ${width}; border-radius: 32rpx; background-color: #f7f8f9;`
     },
+    // 是否局域网可控
+    isLanCtl(data) {
+      return !data.deviceInfo.onLineStatus && data.deviceInfo.canLanCtrl
+    },
   },
 
   lifetimes: {

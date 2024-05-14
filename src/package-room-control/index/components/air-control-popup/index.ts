@@ -153,6 +153,10 @@ ComponentWithComputed({
         return 'wind_auto'
       }
     },
+    // 是否局域网可控
+    isLanCtl(data) {
+      return !data.deviceInfo.onLineStatus && data.deviceInfo.canLanCtrl
+    },
   },
 
   lifetimes: {
