@@ -20,7 +20,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .px-11rpx{padding-left:11rpx;padding-right:11rpx;}
 .px-120rpx{padding-left:120rpx;padding-right:120rpx;}
 .px-12rpx{padding-left:12rpx;padding-right:12rpx;}
-.px-15rpx{padding-left:15rpx;padding-right:15rpx;}
 .px-16rpx{padding-left:16rpx;padding-right:16rpx;}
 .px-24rpx{padding-left:24rpx;padding-right:24rpx;}
 .px-26rpx{padding-left:26rpx;padding-right:26rpx;}
@@ -71,6 +70,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .pb-96rpx{padding-bottom:96rpx;}
 .pl-10rpx{padding-left:10rpx;}
 .pl-12rpx{padding-left:12rpx;}
+.pl-15rpx{padding-left:15rpx;}
 .pl-16rpx{padding-left:16rpx;}
 .pl-32rpx{padding-left:32rpx;}
 .pl-40rpx{padding-left:40rpx;}
