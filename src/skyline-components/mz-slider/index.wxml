@@ -1,6 +1,6 @@
 <view
   id="mz-slider"
-  class="relative custom-class mz-slider {{ disabled ? 'mz-slider--disabled' : '' }}"
+  class="custom-class mz-slider {{ disabled ? 'mz-slider--disabled' : '' }}"
   style="background:{{ inactiveColor }}; height: {{barHeight}}rpx; line-height:  {{barHeight}}rpx;"
   value="{{value}}"
   catch:touchstart="sliderStart"
@@ -16,33 +16,20 @@
   </view>
 
   <!-- 滑动柄 -->
-  <mz-movable
-    direction="horizontal"
-    trigger="all"
-    key="{{key}}"
-    vibrate="{{false}}"
-    animation="{{false}}"
-    x="{{btnX}}"
-    outOfBounds="{{false}}"
-    bound="{{bound}}"
-    bind:dragBegin="dragBegin"
-    bind:dragMove="dragMove"
-    bind:dragEnd="dragEnd"
+  <view
+    id="handler--{{key}}"
+    class="button-wrapper"
+    style="{{btnStyle}}"
   >
+    <slot
+      wx:if="{{ useButtonSlot }}"
+      name="button"
+    ></slot>
     <view
-      class="button-wrapper"
-      style="{{btnStyle}}"
-    >
-      <slot
-        wx:if="{{ useButtonSlot }}"
-        name="button"
-      ></slot>
-      <view
-        wx:else
-        class="mz-slider-button"
-      ></view>
-    </view>
-  </mz-movable>
+      wx:else
+      class="mz-slider-button"
+    ></view>
+  </view>
 
   <!-- 提示 -->
   <view

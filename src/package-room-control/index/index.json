@@ -5,15 +5,6 @@
   "renderer": "skyline",
   "componentFramework": "glass-easel",
   "disableScroll": true,
-  "rendererOptions": {
-    "skyline": {
-      "disableABTest": true,
-      "sdkVersionBegin": "3.0.0",
-      "sdkVersionEnd": "15.255.255",
-      "defaultDisplayBlock": false,
-      "defaultContentBox": false
-    }
-  },
   "usingComponents": {
     "mz-button": "/skyline-components/mz-button/index",
     "mz-toast": "/skyline-components/mz-toast/index",
