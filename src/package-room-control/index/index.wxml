@@ -149,7 +149,7 @@
     wx:if="{{roomHasDevice}}"
     class="w-750rpx flex flex-col items-center"
   >
-    <view class="w-720rpx">
+    <view class="w-722rpx">
       <!-- 设备卡片列表 bindscroll="onPageScroll" 暂时禁用-->
       <scroll-view
         type="list"

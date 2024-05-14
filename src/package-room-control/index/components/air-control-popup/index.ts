@@ -235,12 +235,15 @@ ComponentWithComputed({
       }
     },
     // 温度滑条拖动过程
-    handleSlideChange(e: WechatMiniprogram.CustomEvent) {
+    handleSlideChange(e: { detail: number }) {
+      const temperature = Math.floor(e.detail)
+      const small_temperature = e.detail - temperature
       const { propView } = this.data
       this.setData({
         propView: {
           ...propView,
-          temperature: e.detail,
+          temperature,
+          small_temperature,
         },
       })
     },

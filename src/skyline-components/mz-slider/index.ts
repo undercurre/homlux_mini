@@ -1,6 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { delay, rpx2px } from '../../utils/index'
-import { runOnJS } from '../common/worklet'
+import { delay, isNotExist, rpx2px, throttle } from '../../utils/index'
 
 ComponentWithComputed({
   externalClasses: ['custom-class'],
@@ -22,19 +21,18 @@ ComponentWithComputed({
       type: Number,
       value: 1,
       observer(v) {
-        console.log('observer v:', v, '_value:', this.data._value)
-
-        // 若设值相同，则跳过，以免循环响应
-        if (!this.data.barWidth || v === this.data._value) {
+        // 若初始化未完成 || 设值相同，则跳过，以免循环响应
+        if (!this.data.barWidth || v === this.data.innerVal || isNotExist(this.data.valueSpan)) {
           return
         }
+        console.log('observer v:', v, '->', this.data.innerVal)
+
         // 响应外部设值，改变滑动柄位置
         const activedWidth = Math.round((this.data.barWidth / this.data.valueSpan) * (v - this.data.min))
-        const btnX = activedWidth - this.data.btnOffsetX
-        const _value = this.widthToValue(activedWidth)
-        console.log('observer 2', btnX, _value)
-        this.setData({ btnX, _value })
+        const innerVal = this.widthToValue(activedWidth)
+        this.setData({ innerVal })
         this.data._actived_x.value = activedWidth
+        this.data._btn_x.value = this.data.btnX
       },
     },
     // 按钮是否在滑条容器内
@@ -90,53 +88,83 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    btnX: 0, // 滑动柄位置
     _actived_x: { value: 0 }, // 激活部分宽度
+    _btn_x: { value: 0 }, // 按钮位置
     _toast_opacity: { value: 0 },
     _toast_x: { value: 0 },
-    _value: 0, // 用于内部计算的值
-    bound: {}, // 滑动区域
+    innerVal: 0, // 用于内部计算的值
+    bound: { left: 0, right: 0 }, // 滑动区域
     barWidth: 300, // 滑动条总宽度
     toastWidth: 80, // 提示宽度
     barLeft: 0, // 滑动条左边距
-    _dragging: false, // 滑动柄已拖拽中（防止手势冲突）
     timeout_timer: null as null | number, // 节流定时器
   },
 
   computed: {
     formattedValue(data) {
-      return data.formatter(data._value) ?? ''
+      return data.formatter(data.innerVal) ?? ''
     },
-    /**
-     * @description 因滑动柄本身的占位，造成的偏移值
-     * 滑动条宽 - ${btnOffsetX} = 滑动柄横坐标
-     */
-    btnOffsetX(data) {
-      const { isBtnInset, btnWidth } = data
-      return isBtnInset ? rpx2px(btnWidth) : rpx2px(btnWidth / 2)
+    btnWidthPx(data) {
+      return rpx2px(data.btnWidth)
     },
+    // 按钮初始样式
     btnStyle(data) {
-      const { btnWidth, btnHeight, barHeight } = data
-      const btnTop = -barHeight / 2 - btnHeight / 2
-      return `top: ${btnTop}rpx; width: ${btnWidth}rpx;`
+      const { btnWidth, barHeight, btnHeight } = data
+      const btnTop = barHeight / 2 - btnHeight / 2
+      return `left: 0rpx; top: ${btnTop}rpx; width: ${btnWidth}rpx; height: ${btnHeight}rpx`
     },
     // 值跨度
     valueSpan(data) {
       const { min, max } = data
       return max - min
     },
+    // 可用的滑动条宽度（activedWidth范围）
+    availableBarWidth(data) {
+      const { barWidth, isBtnInset, btnWidthPx } = data
+      if (!barWidth) return 0
+      return isBtnInset ? barWidth - btnWidthPx : barWidth
+    },
+    // 根据innerVal，自动转换的对应宽度
+    v2w(data) {
+      const { availableBarWidth, valueSpan, innerVal, min } = data
+      return Math.round((availableBarWidth / valueSpan) * (innerVal - min))
+    },
+    // 计算按钮位置偏移后的激活态宽度
+    activedWidth(data) {
+      const { isBtnInset, v2w, btnWidthPx } = data
+      return isBtnInset ? v2w + btnWidthPx : v2w
+    },
+    // 计算按钮X轴位置
+    btnX(data) {
+      const { isBtnInset, v2w, btnWidthPx } = data
+      return isBtnInset ? v2w : v2w - btnWidthPx / 2
+    },
+    // 计算提示X轴位置
+    toastX(data) {
+      const { activedWidth, toastWidth } = data
+      return activedWidth - toastWidth / 2
+    },
   },
 
   lifetimes: {
     attached() {
       this.data._actived_x = wx.worklet.shared(0)
+      this.data._btn_x = wx.worklet.shared(0)
       this.data._toast_opacity = wx.worklet.shared(0)
       this.data._toast_x = wx.worklet.shared(0)
 
+      // 滑条激活部分
       this.applyAnimatedStyle(`#active-bar--${this.data.key}`, () => {
         'worklet'
         return {
           width: `${this.data._actived_x.value}px`,
+        }
+      })
+      // 滑动按钮
+      this.applyAnimatedStyle(`#handler--${this.data.key}`, () => {
+        'worklet'
+        return {
+          transform: `translateX(${this.data._btn_x.value}px)`,
         }
       })
 
@@ -151,32 +179,28 @@ ComponentWithComputed({
       }
     },
     async ready() {
-      await delay(150) // 防取值失败
-      // 修改边界
+      await delay(150) // 延迟检索元素，防取值失败
       this.createSelectorQuery()
         .select('#mz-slider')
         .boundingClientRect()
         .exec((res) => {
-          // console.log('#mz-slider', res[0])
+          const { isBtnInset, btnWidthPx, value } = this.data
           const barWidth = res[0]?.width ?? 300
           const barLeft = res[0]?.left ?? 0
-          // const _value = this.widthToValue(barWidth)
-          // const btnX = _value - this.data.btnOffsetX
-          const left = this.data.isBtnInset ? 0 : -this.data.btnOffsetX
-          const right = barWidth - this.data.btnOffsetX
+          const left = isBtnInset ? btnWidthPx : 0
+          const right = barWidth
           this.setData({
+            innerVal: value,
             barWidth,
             barLeft,
-            // btnX,
             bound: {
-              top: 0,
               left,
               right,
-              bottom: 0,
             },
           })
 
-          // this.data._actived_x.value = _value
+          this.data._actived_x.value = this.data.activedWidth
+          this.data._btn_x.value = this.data.btnX
         })
       if (this.data.showToast) {
         this.createSelectorQuery()
@@ -194,121 +218,51 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    handleSlider(pageX: number) {
-      if (this.data._dragging) return
-      // console.log('[handleSlider]', e)
-      const activedWidth = Math.min(this.data.barWidth, Math.max(this.data.btnOffsetX, pageX - this.data.barLeft))
-      this.data._actived_x.value = activedWidth
+    // 节流触发移动事件
+    handleSliderThrottle: throttle(function (this: IAnyObject, pageX: number) {
+      const clickX = Math.min(this.data.bound.right, Math.max(this.data.bound.left, pageX - this.data.barLeft))
+
+      const innerVal = this.widthToValue(clickX)
+      this.setData({ innerVal })
+      this.data._actived_x.value = this.data.activedWidth
+      this.data._btn_x.value = this.data.btnX
       if (this.data.showToast) {
-        this.data._toast_opacity.value = 1
-        this.data._toast_x.value = activedWidth - this.data.toastWidth / 2
+        this.data._toast_x.value = this.data.toastX
       }
-      const btnX = activedWidth - this.data.btnOffsetX
-      this.setData({ btnX })
-      // 节流触发移动事件
-      if (!this.data.timeout_timer) {
-        this.data.timeout_timer = setTimeout(() => {
-          const _value = this.widthToValue(activedWidth)
-          this.setData({ _value })
-          this.triggerEvent('slideChange', _value)
-          console.log('[handleSlider]slideChange', _value)
-          this.data.timeout_timer = null
-        }, this.data.throttleTime)
-      }
-    },
+      this.triggerEvent('slideChange', innerVal)
+      console.log('[handleSlider]slideChange', innerVal)
+    }, 150),
     // 直接点击滑动条
     sliderStart(e: WechatMiniprogram.TouchEvent) {
-      this.handleSlider(e.changedTouches[0].pageX)
+      if (this.data.showToast) {
+        this.data._toast_opacity.value = 1
+      }
+      this.handleSliderThrottle(e.changedTouches[0].pageX)
     },
     // 直接点击滑动条后拖动
     sliderMove(e: WechatMiniprogram.TouchEvent) {
-      if (this.data._dragging) return
-      this.handleSlider(e.changedTouches[0].pageX)
+      this.handleSliderThrottle(e.changedTouches[0].pageX)
     },
     sliderEnd(e: WechatMiniprogram.TouchEvent) {
-      if (this.data._dragging) return
-
-      if (this.data.showToast && this.data._toast_opacity.value) {
+      if (this.data.showToast) {
         this.data._toast_opacity.value = 0
       }
-      const activedWidth = Math.min(
-        this.data.barWidth,
-        Math.max(this.data.btnOffsetX, e.changedTouches[0].pageX - this.data.barLeft),
+      const clickX = Math.min(
+        this.data.bound.right,
+        Math.max(this.data.bound.left, e.changedTouches[0].pageX - this.data.barLeft),
       )
-      const _value = this.widthToValue(activedWidth)
-      this.setData({ _value })
+      const innerVal = this.widthToValue(clickX)
+      this.setData({ innerVal })
+      this.data._actived_x.value = this.data.activedWidth
+      this.data._btn_x.value = this.data.btnX
 
-      this.triggerEvent('slideEnd', _value)
-    },
-    dragEnd(e: { detail: { x: number } }) {
-      'worklet'
-      // console.log('[dragEnd]', e)
-      runOnJS(this.setData.bind(this))({
-        _dragging: false,
-      })
-      const activedWidth = e.detail.x + this.data.btnOffsetX
-      if (this.data.showToast) {
-        this.data._toast_opacity.value = 0
-      }
-      const _value = this.widthToValue(activedWidth)
-      runOnJS(this.triggerEvent.bind(this))('slideEnd', _value)
-      runOnJS(this.setData.bind(this))({
-        _value,
-      })
-    },
-    dragBegin(e: { detail: { x: number } }) {
-      'worklet'
-      // console.log('[dragBegin]', e)
-      runOnJS(this.setData.bind(this))({
-        _dragging: true,
-      })
-      const activedWidth = e.detail.x + this.data.btnOffsetX
-      this.data._actived_x.value = activedWidth
-      const _value = this.widthToValue(activedWidth)
-      runOnJS(this.setData.bind(this))({
-        _value,
-      })
-      if (this.data.showToast) {
-        this.data._toast_opacity.value = 1
-        this.data._toast_x.value = activedWidth - this.data.toastWidth / 2
-      }
-      // this.triggerEvent('slideStart', this.data.value)
-    },
-    // FIXME 滑球与手指稍偏移的问题
-    dragMove(e: { detail: number[] }) {
-      'worklet'
-      const activedWidth = e.detail[2] + this.data.btnOffsetX
-      this.data._actived_x.value = activedWidth
-
-      if (this.data.showToast) {
-        this.data._toast_x.value = activedWidth - this.data.toastWidth / 2
-      }
-      // 节流触发移动事件
-      if (!this.data.timeout_timer) {
-        this.data.timeout_timer = setTimeout(() => {
-          const _value = this.widthToValue(activedWidth)
-          runOnJS(this.setData.bind(this))({
-            _value,
-          })
-          console.log('[dragMove]slideChange', _value)
-          runOnJS(this.triggerEvent.bind(this))('slideChange', _value)
-          this.data.timeout_timer = null
-        }, this.data.throttleTime)
-      }
+      this.triggerEvent('slideEnd', innerVal)
     },
     // 计算激活部分，宽度->值
     widthToValue(w: number) {
-      const { barWidth, min, valueSpan, step } = this.data
-      console.log(
-        'widthToValue',
-        w,
-        barWidth,
-        min,
-        valueSpan,
-        step,
-        Math.round(((w / barWidth) * valueSpan) / step) * step + min,
-      )
-      return Math.round(((w / barWidth) * valueSpan) / step) * step + min
+      const { availableBarWidth, min, valueSpan, step, isBtnInset, btnWidthPx } = this.data
+      const _w = isBtnInset ? w - btnWidthPx : w
+      return Math.round(((_w / availableBarWidth) * valueSpan) / step) * step + min
     },
   },
 })

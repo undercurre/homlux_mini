@@ -1,10 +1,11 @@
 /* @import '../common/index.wxss'; */
 .mz-slider {
+  display: flex;
   position: relative;
   background-color: #eff0f3;
   border-radius: 24rpx;
-  display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 .mz-slider-bar {
@@ -26,6 +27,7 @@
 }
 
 .button-wrapper {
+  display: flex;
   position: absolute;
   top: 0;
   left: 0;
