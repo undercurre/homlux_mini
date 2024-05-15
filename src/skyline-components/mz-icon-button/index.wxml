@@ -1,10 +1,3 @@
-<!-- <wxs
-  module="handler"
-  src="./index.wxs"
-></wxs> -->
-<!-- bind:touchstart="{{handler.touchStart}}"
-    bind:touchend="{{handler.touchEnd}}" -->
-
 <view
   class="mz-button flex-col-center {{ disabled ? 'disabled' : '' }}"
   bind:touchstart="handleTouchStart"
@@ -13,22 +6,25 @@
   <view
     id="iconWrapper"
     class="icon-wrapper"
+    style="{{wrapperStyle}}"
   >
     <image
       id="icon"
       class="icon"
+      style="{{imageStyle}}"
       src="{{icon}}"
     ></image>
     <image
       wx:if="{{iconActive}}"
       id="iconActive"
-      class="iconActive"
+      class="icon-active"
+      style="{{imageStyle}}"
       src="{{iconActive}}"
-      style="opacity: 0"
     ></image>
   </view>
   <view
     class="text"
+    style="color: {{textColor}};"
     wx:if="{{text}}"
     >{{text}}</view
   >
