@@ -25,13 +25,14 @@ ComponentWithComputed({
         if (!this.data.barWidth || v === this.data.innerVal || isNotExist(this.data.valueSpan)) {
           return
         }
-        console.log('observer v:', v, '->', this.data.innerVal)
+        console.log('observer value:', this.data.innerVal, '->', v)
 
         // 响应外部设值，改变滑动柄位置
         const activedWidth = Math.round((this.data.barWidth / this.data.valueSpan) * (v - this.data.min))
         const innerVal = this.widthToValue(activedWidth)
         this.setData({ innerVal })
-        this.data._actived_x.value = activedWidth
+
+        this.data._actived_x.value = this.data.activedWidth
         this.data._btn_x.value = this.data.btnX
       },
     },
@@ -220,6 +221,7 @@ ComponentWithComputed({
   methods: {
     // 节流触发移动事件
     handleSliderThrottle: throttle(function (this: IAnyObject, pageX: number) {
+      if (this.data.disabled) return
       const clickX = Math.min(this.data.bound.right, Math.max(this.data.bound.left, pageX - this.data.barLeft))
 
       const innerVal = this.widthToValue(clickX)
@@ -232,18 +234,19 @@ ComponentWithComputed({
       this.triggerEvent('slideChange', innerVal)
       console.log('[handleSlider]slideChange', innerVal)
     }, 150),
-    // 直接点击滑动条
+    // 点击滑动条
     sliderStart(e: WechatMiniprogram.TouchEvent) {
       if (this.data.showToast) {
         this.data._toast_opacity.value = 1
       }
       this.handleSliderThrottle(e.changedTouches[0].pageX)
     },
-    // 直接点击滑动条后拖动
+    // 点击滑动条后拖动
     sliderMove(e: WechatMiniprogram.TouchEvent) {
       this.handleSliderThrottle(e.changedTouches[0].pageX)
     },
     sliderEnd(e: WechatMiniprogram.TouchEvent) {
+      if (this.data.disabled) return
       if (this.data.showToast) {
         this.data._toast_opacity.value = 0
       }
