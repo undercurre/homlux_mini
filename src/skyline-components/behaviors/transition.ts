@@ -68,24 +68,25 @@ export default Behavior({
         this.data.status = 'enter'
         this.triggerEvent('before-enter')
 
-        if (this.data.status !== 'enter') {
-          return
-        }
-
-        this.triggerEvent('enter')
-        this.setData({
-          display: true,
-          inited: true,
-          classes: classNames.enter,
-        })
-
         requestAnimationFrame(() => {
           if (this.data.status !== 'enter') {
             return
           }
-          this.data.transitionEnded = false
-          this.setData({ classes: classNames['enter-to'] })
-          resolve()
+          this.triggerEvent('enter')
+          this.setData({
+            display: true,
+            inited: true,
+            classes: classNames.enter,
+          })
+
+          requestAnimationFrame(() => {
+            if (this.data.status !== 'enter') {
+              return
+            }
+            this.data.transitionEnded = false
+            this.setData({ classes: classNames['enter-to'] })
+            resolve()
+          })
         })
       })
     },
