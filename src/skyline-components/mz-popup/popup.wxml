@@ -8,7 +8,7 @@
 />
 
 <view
-  wx:if="{{ inited }}"
+  wx:show="{{ show }}"
   class="custom-class {{ classes }} {{ utils.bem('popup', [position, { round, safe: safeAreaInsetBottom, safeTop: safeAreaInsetTop, safeTabBar: safeAreaTabBar }]) }}"
   style="{{ computed.popupStyle({ zIndex, currentDuration, display, customStyle }) }}"
   bind:transitionend="onTransitionEnd"

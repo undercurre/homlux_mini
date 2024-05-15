@@ -200,7 +200,6 @@ ComponentWithComputed({
   pageLifetimes: {
     show() {
       if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-        console.debug('index-getTabBar')
         this.getTabBar().setData({
           selected: 0,
         })
