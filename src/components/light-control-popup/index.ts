@@ -24,23 +24,13 @@ ComponentWithComputed({
       type: Boolean,
       observer(value) {
         if (value) {
-          if (this.data.lightInfo.power) {
-            this.setData({
-              power: this.data.lightInfo.power,
-              brightness: this.data.lightInfo.brightness ?? 1,
-              colorTemperature: this.data.lightInfo.colorTemperature ?? 0,
-              _brightness: this.data.lightInfo.brightness ?? 1,
-              _colorTemperature: this.data.lightInfo.colorTemperature ?? 0,
-            })
-          } else {
-            this.setData({
-              power: this.data.lightInfo.power,
-              brightness: this.data.lightInfo.brightness ?? 1,
-              colorTemperature: this.data.lightInfo.colorTemperature ?? 0,
-              _brightness: this.data.lightInfo.brightness ?? 1,
-              _colorTemperature: this.data.lightInfo.colorTemperature ?? 0,
-            })
-          }
+          this.setData({
+            power: this.data.lightInfo.power,
+            brightness: this.data.lightInfo.brightness ?? 1,
+            colorTemperature: this.data.lightInfo.colorTemperature ?? 0,
+            _brightness: this.data.lightInfo.brightness ?? 1,
+            _colorTemperature: this.data.lightInfo.colorTemperature ?? 0,
+          })
         }
       },
     },
