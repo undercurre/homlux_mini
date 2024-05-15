@@ -7,7 +7,7 @@
     "mz-popup": "/skyline-components/mz-popup/index",
     "drop-button": "../../components/drop-button/index",
     "mz-slider": "/skyline-components/mz-slider/index",
-    "van-picker": "@vant/weapp/picker/index",
+    "mz-picker": "/skyline-components/mz-picker/index",
     "icon-button": "../../components/icon-button/index"
   }
 }

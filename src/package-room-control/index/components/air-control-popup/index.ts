@@ -86,7 +86,7 @@ ComponentWithComputed({
         },
       ],
     } as Record<string, IAnyObject[]>,
-    pickerColumns: Array.from({ length: 10 }) as string[], //HACK:初始化pickerColumns时如果长度不足会导致首次选项错误
+    pickerColumns: [] as string[],
     step: 0.5,
     minTemp: 17,
     maxTemp: 30,
@@ -295,8 +295,8 @@ ComponentWithComputed({
       console.log(e)
       const { pickerList, pickerType } = this.data
       this.setData({
-        pickerIndex: e.detail[0],
-        pickerValue: pickerList[pickerType][e.detail[0]].value,
+        pickerIndex: e.detail.index,
+        pickerValue: pickerList[pickerType][e.detail.index].value,
       })
     },
     handleCancel() {
