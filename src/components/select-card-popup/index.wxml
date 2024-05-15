@@ -93,7 +93,7 @@
           </view>
           <view
             wx:else
-            class="px-15rpx flex flex-row flex-wrap"
+            class="pl-15rpx flex flex-row flex-wrap"
           >
             <!-- HACK skyline直接使用roomItem会导致不响应setDate -->
             <device-card

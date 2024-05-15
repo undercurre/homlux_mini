@@ -86,7 +86,7 @@ ComponentWithComputed({
         },
       ],
     } as Record<string, IAnyObject[]>,
-    pickerColumns: Array.from({ length: 10 }) as string[], //HACK:初始化pickerColumns时如果长度不足会导致首次选项错误
+    pickerColumns: [] as string[],
     step: 0.5,
     minTemp: 17,
     maxTemp: 30,
@@ -152,6 +152,10 @@ ComponentWithComputed({
       } else {
         return 'wind_auto'
       }
+    },
+    // 是否局域网可控
+    isLanCtl(data) {
+      return !data.deviceInfo.onLineStatus && data.deviceInfo.canLanCtrl
     },
   },
 
@@ -235,12 +239,15 @@ ComponentWithComputed({
       }
     },
     // 温度滑条拖动过程
-    handleSlideChange(e: WechatMiniprogram.CustomEvent) {
+    handleSlideChange(e: { detail: number }) {
+      const temperature = Math.floor(e.detail)
+      const small_temperature = e.detail - temperature
       const { propView } = this.data
       this.setData({
         propView: {
           ...propView,
-          temperature: e.detail,
+          temperature,
+          small_temperature,
         },
       })
     },
@@ -288,8 +295,8 @@ ComponentWithComputed({
       console.log(e)
       const { pickerList, pickerType } = this.data
       this.setData({
-        pickerIndex: e.detail[0],
-        pickerValue: pickerList[pickerType][e.detail[0]].value,
+        pickerIndex: e.detail.index,
+        pickerValue: pickerList[pickerType][e.detail.index].value,
       })
     },
     handleCancel() {

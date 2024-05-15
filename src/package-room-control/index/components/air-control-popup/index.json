@@ -8,6 +8,6 @@
     "drop-button": "../../components/drop-button/index",
     "mz-slider": "/skyline-components/mz-slider/index",
     "icon-button": "../../components/icon-button/index",
-    "time-picker-view": "../../../../components/time-picker-view/index"
+    "mz-picker": "/skyline-components/mz-picker/index"
   }
 }

@@ -139,7 +139,7 @@
     <text class="h-50rpx text-36rpx text-black-2a mt-48rpx font-medium">{{pickerTitle}}</text>
 
     <view class="w-750rpx">
-      <!-- <van-picker
+      <!-- <mz-picker
         columns="{{ pickerColumns }}"
         default-index="{{pickerIndex}}"
         bind:change="onPickerChange"

@@ -393,18 +393,21 @@ ComponentWithComputed({
       })
     },
     async handleHomeTap(e: { detail: string }) {
+      this.setData({
+        'selectHomeMenu.isShow': false,
+      })
+
       const houseId = e.detail
 
       this.triggerEvent('select', { houseId })
+      showLoading()
       const res = await updateDefaultHouse(houseId)
 
       if (res.success) {
         await homeStore.homeInit()
       }
       this.pageDataSync('handleHomeTap')
-      this.setData({
-        'selectHomeMenu.isShow': false,
-      })
+      hideLoading()
     },
     handleAddTap(e: { detail: string }) {
       // console.log('handleAddTap', e)

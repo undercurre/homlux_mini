@@ -91,6 +91,10 @@ export function isNullOrUnDef(val: unknown): val is null | undefined {
   return isUnDef(val) || isNull(val)
 }
 
+export function isNotExist(val: unknown): val is null | undefined {
+  return isNullOrUnDef(val) || Number.isNaN(val)
+}
+
 // 是否空对象
 export function isEmptyObject(obj: object): boolean {
   return Object.keys(obj).length === 0 && obj.constructor === Object
