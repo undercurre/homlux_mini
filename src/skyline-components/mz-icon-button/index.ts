@@ -1,9 +1,11 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
+import { runOnJS, Easing, timing, GestureState } from '../common/worklet'
+
+type GestureEvent = {
+  state: GestureState
+}
 
 ComponentWithComputed({
-  options: {
-    styleIsolation: 'apply-shared',
-  },
   properties: {
     disabled: Boolean,
     icon: {
@@ -28,14 +30,12 @@ ComponentWithComputed({
   computed: {},
 
   methods: {
-    handleTouchStart() {
-      // if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
-    },
-    handleLongPress(e: WechatMiniprogram.TouchEvent) {
-      this.triggerEvent('longpress', e.detail)
-    },
-    handleTouchEnd(e: WechatMiniprogram.TouchEvent) {
-      this.triggerEvent('touchend', e.detail)
+    handleTap(e: GestureEvent) {
+      'worklet'
+      console.log('handleTap', e)
+      if (e.state === GestureState.CANCELLED) {
+        return
+      }
     },
   },
 })

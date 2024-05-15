@@ -36,10 +36,10 @@
       <text class="text-hex-555659 text-24 ml-32rpx">当前设备仅支持局域网控制，请检查您的网络！</text>
     </view>
 
-    <view class="w-686rpx">
+    <view class="flex flex-col w-686rpx">
       <view class="flex flex-row justify-between items-center px-32rpx">
         <!-- 温度减 -->
-        <icon-button
+        <mz-icon-button
           disabled="{{disabledMinus}}"
           isOn="{{false}}"
           size="{{74}}"
@@ -52,7 +52,7 @@
           data-rebound="{{true}}"
           bind:touchstart="handleBtnTap"
           data-key="minus"
-        ></icon-button>
+        ></mz-icon-button>
 
         <view>
           <view class="flex flex-row justify-center items-start mt-64rpx">
@@ -71,7 +71,7 @@
         </view>
 
         <!-- 温度加 -->
-        <icon-button
+        <mz-icon-button
           disabled="{{disabledPlus}}"
           isOn="{{false}}"
           size="{{74}}"
@@ -84,12 +84,13 @@
           data-rebound="{{true}}"
           bind:touchstart="handleBtnTap"
           data-key="plus"
-        ></icon-button>
+        ></mz-icon-button>
       </view>
 
-      <view class="py-64rpx px-8rpx">
+      <view class="flex flex-1 h-200 flex-center">
         <mz-slider
           wx:if="{{show}}"
+          class="flex-1"
           disabled="{{disabledSlider}}"
           bind:slideEnd="handleBtnTap"
           bind:slideChange="handleSlideChange"
