@@ -5,25 +5,32 @@
 <!-- bind:touchstart="{{handler.touchStart}}"
     bind:touchend="{{handler.touchEnd}}" -->
 
-<tap-gesture-handler worklet:ongesture="handleTap">
-  <view class="mz-button flex-col-center {{ disabled ? 'disabled' : '' }}">
-    <view class="icon-wrapper">
-      <image
-        class="icon"
-        src="{{icon}}"
-      ></image>
-      <image
-        wx:if="{{iconActive}}"
-        class="iconActive"
-        src="{{iconActive}}"
-        style="opacity: 0"
-      ></image>
-    </view>
-    <view
-      class="text"
-      wx:if="{{text}}"
-      >{{text}}</view
-    >
-    <slot></slot>
+<view
+  class="mz-button flex-col-center {{ disabled ? 'disabled' : '' }}"
+  bind:touchstart="handleTouchStart"
+  bind:touchend="handleTouchEnd"
+>
+  <view
+    id="iconWrapper"
+    class="icon-wrapper"
+  >
+    <image
+      id="icon"
+      class="icon"
+      src="{{icon}}"
+    ></image>
+    <image
+      wx:if="{{iconActive}}"
+      id="iconActive"
+      class="iconActive"
+      src="{{iconActive}}"
+      style="opacity: 0"
+    ></image>
   </view>
-</tap-gesture-handler>
+  <view
+    class="text"
+    wx:if="{{text}}"
+    >{{text}}</view
+  >
+  <slot></slot>
+</view>

@@ -41,7 +41,6 @@
         <!-- 温度减 -->
         <mz-icon-button
           disabled="{{disabledMinus}}"
-          isOn="{{false}}"
           size="{{74}}"
           round="{{37}}"
           bgColor="#f7f8f9"
@@ -49,8 +48,7 @@
           icon="/package-room-control/assets/img/minus.png"
           iconActive="/package-room-control/assets/img/minusOn.png"
           textColor="#a2a2a2"
-          data-rebound="{{true}}"
-          bind:touchstart="handleBtnTap"
+          bind:btnTouchStart="handleBtnTap"
           data-key="minus"
         ></mz-icon-button>
 
@@ -73,7 +71,6 @@
         <!-- 温度加 -->
         <mz-icon-button
           disabled="{{disabledPlus}}"
-          isOn="{{false}}"
           size="{{74}}"
           round="{{37}}"
           bgColor="#f7f8f9"
@@ -81,8 +78,7 @@
           icon="/package-room-control/assets/img/plus.png"
           iconActive="/package-room-control/assets/img/plusOn.png"
           textColor="#a2a2a2"
-          data-rebound="{{true}}"
-          bind:touchstart="handleBtnTap"
+          bind:btnTouchStart="handleBtnTap"
           data-key="plus"
         ></mz-icon-button>
       </view>
