@@ -355,7 +355,7 @@ ComponentWithComputed({
         const deviceModel = item!.deviceModel
         let cusRSSI = this.data.MIN_RSSI
         if (deviceType === '13' && deviceModel === '04') {
-          cusRSSI = -80
+          cusRSSI = -70
         }
         if (
           item!.RSSI >= cusRSSI && // 过滤弱信号设备
@@ -402,6 +402,7 @@ ComponentWithComputed({
           foundList.push({
             deviceId: item!.deviceId,
             addr: item!.addr,
+            version: item!.version,
             devicePic: config.devicePic,
             actions: config.actions,
             deviceName,
