@@ -405,6 +405,7 @@ ComponentWithComputed({
 
       if (res.success) {
         await homeStore.homeInit()
+        sceneStore.updateAllRoomSceneList()
       }
       this.pageDataSync('handleHomeTap')
       hideLoading()
