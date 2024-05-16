@@ -1,5 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { timing, Easing } from '../common/worklet'
+import { delay } from '../../utils/index'
 
 ComponentWithComputed({
   properties: {
@@ -40,11 +40,39 @@ ComponentWithComputed({
       type: String,
       value: '#cccccc',
     },
+    // 初始开关状态
+    isOn: {
+      type: Boolean,
+      value: false,
+      observer(v) {
+        console.log('observer isOn', v)
+        // !! 暂不支持即时响应外部值，因控制的时效性，容易造成按钮状态错乱
+        // if (this.data.innerOn === v) return
+        // this.setData({ innerOn: v })
+      },
+    },
+    // 松手后，UI状态是否回弹
+    rebound: {
+      type: Boolean,
+      value: false,
+    },
+    // 回弹模式激活状态最短持续时间
+    interval: {
+      type: Number,
+      value: 150,
+    },
+    // 图标文字排列方向 column | row
+    direction: {
+      type: String,
+      value: 'column',
+    },
+    // 按钮文本
     text: {
       type: String,
       value: '',
     },
-    isOn: {
+    // 按钮文本在按钮背景内部
+    textInset: {
       type: Boolean,
       value: false,
     },
@@ -54,48 +82,49 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    _btn_opacity: { value: 1 },
-    _bg_color: { value: '' },
+    innerOn: false, // 内部开关状态
   },
 
   lifetimes: {
-    attached() {
-      if (this.data.iconActive) {
-        this.data._btn_opacity = wx.worklet.shared(1)
-        this.data._bg_color = wx.worklet.shared(this.data.bgColor)
-
-        this.applyAnimatedStyle('#icon', () => {
-          'worklet'
-          return {
-            opacity: this.data._btn_opacity.value,
-          }
-        })
-        this.applyAnimatedStyle('#iconActive', () => {
-          'worklet'
-          return {
-            opacity: 1 - this.data._btn_opacity.value,
-          }
-        })
-        this.applyAnimatedStyle('#iconWrapper', () => {
-          'worklet'
-          return {
-            'background-color': this.data._bg_color.value,
-          }
-        })
-      }
+    ready() {
+      this.setData({ innerOn: this.data.isOn })
     },
   },
 
   computed: {
-    imageStyle(data) {
+    imagePos(data) {
       const { imageSize } = data
       return `width: ${imageSize}rpx; height: ${imageSize}rpx;
       margin-left: -${imageSize / 2}rpx; margin-top: -${imageSize / 2}rpx;`
     },
-    wrapperStyle(data) {
-      const { wrapperWidth, wrapperHeight, round, bgColor, bgColorActive, isOn } = data
-      const _bgColor = isOn ? bgColorActive : bgColor
+    imageStyle(data) {
+      const { innerOn, imagePos } = data
+      return `${imagePos} opacity: ${innerOn ? 0 : 1}`
+    },
+    imageActiveStyle(data) {
+      const { innerOn, imagePos } = data
+      return `${imagePos} opacity: ${innerOn ? 1 : 0}`
+    },
+    iconWrapperStyle(data) {
+      const { textInset, wrapperWidth, wrapperHeight, round, bgColor, bgColorActive, innerOn } = data
+      if (textInset) return ''
+
+      // 如果文本在按钮背景外，则设置图标包围样式
+      const _bgColor = innerOn ? bgColorActive : bgColor
       return `width: ${wrapperWidth}rpx; height: ${wrapperHeight}rpx; border-radius: ${round}rpx; background-color: ${_bgColor};`
+    },
+    btnWrapperStyle(data) {
+      const { textInset, direction, wrapperWidth, wrapperHeight, round, bgColor, bgColorActive, innerOn } = data
+
+      if (!textInset) return `flex-direction: ${direction};`
+
+      // 如果文本在按钮背景内，则设置按钮整体包围样式
+      const _bgColor = innerOn ? bgColorActive : bgColor
+      let style = `flex-direction: ${direction};  border-radius: ${round}rpx; background-color: ${_bgColor}; padding: 0 20rpx;`
+      if (wrapperWidth) style += `width: ${wrapperWidth}rpx;`
+      if (wrapperHeight) style += `height: ${wrapperHeight}rpx; `
+
+      return style
     },
   },
 
@@ -104,46 +133,19 @@ ComponentWithComputed({
       this.triggerEvent('btnTouchStart', e.detail)
 
       if (this.data.disabled) return
-
-      this.data._bg_color.value = this.data.bgColorActive
-      if (this.data.iconActive) {
-        this.data._btn_opacity.value = timing(
-          0,
-          {
-            duration: 150,
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            easing: Easing.ease,
-          },
-          () => {
-            'worklet'
-          },
-        )
-      }
-
-      // if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
+      if (!this.data.iconActive) return
+      // TODO 动画效果
+      this.setData({ innerOn: !this.data.innerOn })
     },
 
-    handleTouchEnd(e: WechatMiniprogram.TouchEvent) {
+    async handleTouchEnd(e: WechatMiniprogram.TouchEvent) {
       this.triggerEvent('btnTouchEnd', e.detail)
 
-      if (this.data.disabled) return
+      if (this.data.disabled || !this.data.rebound) return
+      if (!this.data.iconActive) return
 
-      this.data._bg_color.value = this.data.bgColor
-      if (this.data.iconActive) {
-        this.data._btn_opacity.value = timing(
-          1,
-          {
-            duration: 150,
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            easing: Easing.ease,
-          },
-          () => {
-            'worklet'
-          },
-        )
-      }
+      await delay(this.data.interval)
+      this.setData({ innerOn: !this.data.innerOn })
     },
   },
 })

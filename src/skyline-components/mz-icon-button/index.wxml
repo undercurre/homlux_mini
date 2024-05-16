@@ -1,12 +1,13 @@
 <view
-  class="mz-button flex-col-center {{ disabled ? 'disabled' : '' }}"
+  class="mz-button {{ disabled ? 'disabled' : '' }}"
+  style="{{btnWrapperStyle}}"
   bind:touchstart="handleTouchStart"
   bind:touchend="handleTouchEnd"
 >
   <view
     id="iconWrapper"
     class="icon-wrapper"
-    style="{{wrapperStyle}}"
+    style="{{iconWrapperStyle}}"
   >
     <image
       id="icon"
@@ -18,7 +19,7 @@
       wx:if="{{iconActive}}"
       id="iconActive"
       class="icon-active"
-      style="{{imageStyle}}"
+      style="{{imageActiveStyle}}"
       src="{{iconActive}}"
     ></image>
   </view>
