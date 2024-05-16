@@ -1190,8 +1190,12 @@ ComponentWithComputed({
      * @param e 设备属性
      */
     async queryAuthBeforeControlTap(e: { detail: DeviceCard }) {
-      // 如果是WIFI设备
-      if (e.detail.deviceType === 3 && e.detail.onLineStatus) {
+      // 如果是WIFI设备，设备在线
+      if (
+        e.detail.deviceType === 3 &&
+        e.detail.onLineStatus &&
+        (e.detail.authStatus === 1 || e.detail.authStatus === 2)
+      ) {
         const { deviceId } = e.detail
         const res = await queryAuthGetStatus({ houseId: homeStore.currentHomeId, deviceId })
         // 若设备未确权、待确权，则弹出指引弹窗
