@@ -1,6 +1,7 @@
 {
   "styleIsolation": "apply-shared",
   "component": true,
+  "navigationStyle": "custom",
   "renderer": "skyline",
   "componentFramework": "glass-easel",
   "disableScroll": true,
@@ -13,6 +14,5 @@
     "custom-tab-bar": "/custom-tab-bar/index",
     "van-skeleton": "@vant/weapp/skeleton/index",
     "mz-pop-menu": "/skyline-components/mz-pop-menu/index"
-  },
-  "navigationStyle": "custom"
+  }
 }
