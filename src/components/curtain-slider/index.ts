@@ -75,7 +75,6 @@ Component({
   methods: {
     drag(evt: { state: number; absoluteX: number; deltaX: number }) {
       'worklet'
-      console.log(evt)
       const { state, absoluteX, deltaX } = evt
       if (state === 3 || state === 4) {
         runOnJS(this.dragEnd.bind(this))()
