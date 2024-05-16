@@ -41,7 +41,9 @@
         <!-- 温度减 -->
         <mz-icon-button
           disabled="{{disabledMinus}}"
-          size="{{74}}"
+          imageSize="{{32}}"
+          wrapperWidth="{{74}}"
+          wrapperHeight="{{74}}"
           round="{{37}}"
           bgColor="#f7f8f9"
           bgColorActive="#cccccc"
@@ -71,8 +73,10 @@
         <!-- 温度加 -->
         <mz-icon-button
           disabled="{{disabledPlus}}"
-          size="{{74}}"
-          round="{{37}}"
+          imageSize="{{32}}"
+          wrapperWidth="{{74}}"
+          wrapperHeight="{{74}}"
+          round="{{47}}"
           bgColor="#f7f8f9"
           bgColorActive="#cccccc"
           icon="/package-room-control/assets/img/plus.png"

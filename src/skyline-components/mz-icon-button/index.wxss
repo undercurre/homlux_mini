@@ -1,24 +1,25 @@
 .icon-wrapper {
   position: relative;
-  width: 74rpx;
-  height: 74rpx;
+  width: 80rpx;
+  height: 80rpx;
   border-radius: 48rpx;
   background-color: #f1f5fa;
 }
 
 .icon,
-.iconActive {
+.icon-active {
   position: absolute;
-  width: 32rpx;
-  height: 32rpx;
-  left: 21rpx;
-  top: 21rpx;
+  width: 64rpx;
+  height: 64rpx;
+  left: 50%;
+  top: 50%;
 }
 
 .text {
   margin-top: 16rpx;
   font-size: 24rpx;
   color: #555659;
+  text-align: center;
 }
 
 .disabled {
