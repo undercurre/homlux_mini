@@ -35,7 +35,7 @@
           <image
             wx:if="{{checkIndex === index}}"
             slot="right-icon"
-            src="/assets/img/member-manage/tick.png"
+            src="/assets/img/base/checked.png"
             class="w-48 h-48"
           ></image>
         </van-cell>

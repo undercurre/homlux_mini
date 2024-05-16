@@ -1,0 +1,37 @@
+.mz-button {
+  /* height: 80rpx; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* background-color: #eff0f3; */
+  /* border-radius: 40rpx;
+  padding: 0 20rpx; */
+}
+
+.icon-wrapper {
+  position: relative;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 48rpx;
+  background-color: #f1f5fa;
+}
+
+.icon,
+.icon-active {
+  position: absolute;
+  width: 64rpx;
+  height: 64rpx;
+  left: 50%;
+  top: 50%;
+}
+
+.text {
+  margin-top: 16rpx;
+  font-size: 24rpx;
+  color: #555659;
+  text-align: center;
+}
+
+.disabled {
+  opacity: 0.5;
+}

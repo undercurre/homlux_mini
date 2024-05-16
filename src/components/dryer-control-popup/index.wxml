@@ -59,10 +59,12 @@
           data-key="{{item.key}}"
           data-disabled="{{item.disabled}}"
           isOn="{{item.on}}"
-          size="{{80}}"
+          imageSize="{{32}}"
+          wrapperWidth="{{74}}"
+          wrapperHeight="{{74}}"
           round="{{20}}"
           textColor="#a2a2a2"
-          bind:touchstart="handleBtnTap"
+          bind:btnTouchStart="handleBtnTap"
         ></mz-icon-button>
       </view>
 
@@ -80,7 +82,7 @@
           size="{{64}}"
           textColor="#a2a2a2"
           textWidth="{{item.textWidth || '50rpx'}}"
-          bind:touchstart="handleBtnTap"
+          bind:btnTouchStart="handleBtnTap"
         ></mz-round-button>
       </view>
 

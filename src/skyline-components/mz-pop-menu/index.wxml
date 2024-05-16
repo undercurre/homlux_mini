@@ -38,14 +38,11 @@
           class="text-20rpx text-white bg-hex-a2a2a2 px-8rpx rounded-999 ml-10rpx shrink-0"
           >{{item.tag}}</view
         >
-        <mz-svg-icon
+        <image
           wx:if="{{item.checked}}"
-          class="ml-18rpx"
-          name="icon-park:check"
-          width="40rpx"
-          height="40rpx"
-          color="#d2d2d2"
-        />
+          src="/assets/img/base/checked2.png"
+          class="w-40 h-40"
+        ></image>
       </view>
       <view
         class="bg-hex-717171 w-full h-1rpx"

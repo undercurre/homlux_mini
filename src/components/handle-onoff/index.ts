@@ -8,9 +8,28 @@ Component({
       value: false,
       observer: function (newVal) {
         if (this.data.vertical) {
-          this.data.top.value = newVal ? 0 : 50
+          //HACK: 直接赋值会导致控制前动画不到位
+          this.data.top.value = timing(
+            newVal ? 0 : 50,
+            {
+              duration: 30,
+            },
+            () => {
+              'worklet'
+            },
+          )
+          // this.data.top.value = newVal ? 0 : 50
         } else {
-          this.data.left.value = newVal ? 0 : 50
+          this.data.left.value = timing(
+            newVal ? 0 : 50,
+            {
+              duration: 30,
+            },
+            () => {
+              'worklet'
+            },
+          )
+          // this.data.left.value = newVal ? 0 : 50
         }
       },
     },

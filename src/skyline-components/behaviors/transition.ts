@@ -15,6 +15,7 @@ export default Behavior({
     show: {
       type: Boolean,
       value: false,
+      observer: 'observeShow',
     },
     duration: {
       type: Number,
@@ -35,66 +36,90 @@ export default Behavior({
     classes: '',
     display: false,
     transitionEnded: true,
-  },
-
-  observers: {
-    show: function (show) {
-      console.log('transition-observers-show', show, 'this.data.show', this.data.show)
-      show ? this.enter() : this.leave()
-    },
+    enterFinishedPromise: null,
+  } as {
+    inited: boolean
+    status: string
+    classes: string
+    display: boolean
+    transitionEnded: boolean
+    enterFinishedPromise: Promise<void> | null
   },
 
   /**
    * 组件的方法列表
    */
   methods: {
+    observeShow(value: boolean, old: boolean) {
+      if (value === old) {
+        return
+      }
+
+      value ? this.enter() : this.leave()
+    },
+
     enter() {
-      const { name } = this.data
-      const classNames = getClassNames(name)
-      this.data.status = 'enter'
-      this.triggerEvent('before-enter')
-      requestAnimationFrame(() => {
-        if (this.data.status !== 'enter') {
-          return
-        }
-        this.triggerEvent('enter')
-        this.setData({
-          inited: true,
-          display: true,
-          classes: classNames.enter,
-        })
+      if (this.data.enterFinishedPromise) return
+
+      this.data.enterFinishedPromise = new Promise((resolve) => {
+        const { name } = this.data
+        const classNames = getClassNames(name)
+
+        this.data.status = 'enter'
+        this.triggerEvent('before-enter')
+
         requestAnimationFrame(() => {
           if (this.data.status !== 'enter') {
             return
           }
-          this.data.transitionEnded = false
-          this.setData({ classes: classNames['enter-to'] })
+          this.triggerEvent('enter')
+          this.setData({
+            display: true,
+            inited: true,
+            classes: classNames.enter,
+          })
+
+          requestAnimationFrame(() => {
+            if (this.data.status !== 'enter') {
+              return
+            }
+            this.data.transitionEnded = false
+            this.setData({ classes: classNames['enter-to'] })
+            resolve()
+          })
         })
       })
     },
     leave() {
-      if (!this.data.display) {
-        return
-      }
-      const { name } = this.data
-      const classNames = getClassNames(name)
-      this.data.status = 'leave'
-      this.triggerEvent('before-leave')
-      requestAnimationFrame(() => {
-        if (this.data.status !== 'leave') {
+      if (!this.data.enterFinishedPromise) return
+      this.data.enterFinishedPromise.then(() => {
+        if (!this.data.display) {
           return
         }
-        this.triggerEvent('leave')
-        this.setData({
-          classes: classNames.leave,
-        })
+
+        const { name } = this.data
+        const classNames = getClassNames(name)
+        this.data.status = 'leave'
+        this.triggerEvent('before-leave')
         requestAnimationFrame(() => {
           if (this.data.status !== 'leave') {
             return
           }
-          this.data.transitionEnded = false
-          setTimeout(() => this.onTransitionEnd(), this.data.duration)
-          this.setData({ classes: classNames['leave-to'] })
+          this.triggerEvent('leave')
+          this.setData({
+            classes: classNames.leave,
+          })
+          requestAnimationFrame(() => {
+            if (this.data.status !== 'leave') {
+              return
+            }
+            this.data.transitionEnded = false
+            setTimeout(() => {
+              this.onTransitionEnd()
+              this.data.enterFinishedPromise = null
+            }, this.data.duration)
+            this.setData({ classes: classNames['leave-to'] })
+          })
         })
       })
     },

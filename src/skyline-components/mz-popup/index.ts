@@ -19,6 +19,9 @@ Component({
     closeable: Boolean,
     customStyle: String,
     overlayStyle: String,
+    transition: {
+      type: String,
+    },
     zIndex: {
       type: Number,
       value: 100,
@@ -63,7 +66,7 @@ Component({
   data: {},
 
   observers: {
-    position: function () {
+    'position, transition': function () {
       this.observeClass()
     },
   },
@@ -84,10 +87,10 @@ Component({
       }
     },
     observeClass() {
-      const { position } = this.data
+      const { position, transition } = this.data
 
       const updateData: { [key: string]: unknown } = {
-        name: position,
+        name: transition || position,
       }
 
       this.setData(updateData)

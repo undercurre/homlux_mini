@@ -53,16 +53,19 @@
         <mz-icon-button
           wx:for="{{btnList}}"
           wx:key="key"
+          data-key="{{item.key}}"
           icon="{{item.icon}}"
           iconActive="{{item.iconActive}}"
           text="{{item.text}}"
-          data-key="{{item.key}}"
-          data-rebound="{{item.rebound}}"
+          rebound="{{item.rebound}}"
           isOn="{{item.on}}"
-          size="{{80}}"
+          imageSize="{{64}}"
+          wrapperWidth="{{80}}"
+          wrapperHeight="{{80}}"
+          bgColorActive="#488fff"
           round="{{20}}"
           textColor="#a2a2a2"
-          bind:touchstart="handleModeTap"
+          bind:btnTouchStart="handleModeTap"
         ></mz-icon-button>
       </view>
 
@@ -75,12 +78,17 @@
           text="{{item.text}}"
           data-key="{{item.key}}"
           isOn="{{item.on}}"
-          data-rebound="{{item.rebound}}"
+          rebound="{{item.rebound}}"
           btnStyle="{{largeBtnStyle}}"
-          size="{{64}}"
+          imageSize="{{64}}"
           textColor="#a2a2a2"
+          bgColorActive="#488fff"
           textWidth="50rpx"
-          bind:touchstart="handleLightModeTap"
+          wrapperHeight="{{80}}"
+          round="{{40}}"
+          direction="row"
+          bind:btnTouchStart="handleLightModeTap"
+          textInset
         ></mz-round-button>
       </view>
 

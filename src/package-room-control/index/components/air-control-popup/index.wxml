@@ -36,23 +36,24 @@
       <text class="text-hex-555659 text-24 ml-32rpx">当前设备仅支持局域网控制，请检查您的网络！</text>
     </view>
 
-    <view class="w-686rpx">
+    <view class="flex flex-col w-686rpx">
       <view class="flex flex-row justify-between items-center px-32rpx">
         <!-- 温度减 -->
-        <icon-button
+        <mz-icon-button
           disabled="{{disabledMinus}}"
-          isOn="{{false}}"
-          size="{{74}}"
+          imageSize="{{32}}"
+          wrapperWidth="{{74}}"
+          wrapperHeight="{{74}}"
+          rebound="{{true}}"
           round="{{37}}"
           bgColor="#f7f8f9"
           bgColorActive="#cccccc"
           icon="/package-room-control/assets/img/minus.png"
           iconActive="/package-room-control/assets/img/minusOn.png"
           textColor="#a2a2a2"
-          data-rebound="{{true}}"
-          bind:touchstart="handleBtnTap"
+          bind:btnTouchStart="handleBtnTap"
           data-key="minus"
-        ></icon-button>
+        ></mz-icon-button>
 
         <view>
           <view class="flex flex-row justify-center items-start mt-64rpx">
@@ -71,25 +72,27 @@
         </view>
 
         <!-- 温度加 -->
-        <icon-button
+        <mz-icon-button
           disabled="{{disabledPlus}}"
-          isOn="{{false}}"
-          size="{{74}}"
-          round="{{37}}"
+          imageSize="{{32}}"
+          wrapperWidth="{{74}}"
+          wrapperHeight="{{74}}"
+          rebound="{{true}}"
+          round="{{47}}"
           bgColor="#f7f8f9"
           bgColorActive="#cccccc"
           icon="/package-room-control/assets/img/plus.png"
           iconActive="/package-room-control/assets/img/plusOn.png"
           textColor="#a2a2a2"
-          data-rebound="{{true}}"
-          bind:touchstart="handleBtnTap"
+          bind:btnTouchStart="handleBtnTap"
           data-key="plus"
-        ></icon-button>
+        ></mz-icon-button>
       </view>
 
-      <view class="py-64rpx px-8rpx">
+      <view class="flex flex-1 h-200 flex-center">
         <mz-slider
           wx:if="{{show}}"
+          class="flex-1"
           disabled="{{disabledSlider}}"
           bind:slideEnd="handleBtnTap"
           bind:slideChange="handleSlideChange"
@@ -153,13 +156,12 @@
   <view class="w-750rpx h-600rpx relative flex flex-col items-center">
     <text class="w-750rpx h-92rpx text-32rpx text-hex-999999 leading-92rpx text-center border-b-1px border-b-hex-EEF2F7 border-b-solid">{{pickerTitle}}</text>
     <view class="h-52rpx"></view>
-    <time-picker-view
-      value="{{[pickerIndex]}}"
-      colFir="{{pickerColumns}}"
-      colSec="{{[]}}"
-      colFirUnit=""
+    <mz-picker
+      columns="{{ pickerColumns }}"
+      defaultIndex="{{ pickerIndex }}"
+      visible-item-count="{{3}}"
       bind:change="onPickerChange"
-    ></time-picker-view>
+    ></mz-picker>
     <view class="h-62rpx"></view>
     <view class="flex justify-between items-end w-750rpx h-112rpx bg-hex-f9f9f9">
       <view

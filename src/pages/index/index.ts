@@ -179,7 +179,7 @@ ComponentWithComputed({
           key: home.houseId,
           name: home.houseName?.length > 6 ? home.houseName.slice(0, 6) + '...' : home.houseName,
           checked: home.houseId === data.currentHomeId,
-          tag: home.defaultHouseFlag ? '创建' : '',
+          tag: home.houseCreatorFlag ? '创建' : '',
         }))
 
       return list
@@ -200,7 +200,6 @@ ComponentWithComputed({
   pageLifetimes: {
     show() {
       if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-        console.debug('index-getTabBar')
         this.getTabBar().setData({
           selected: 0,
         })
@@ -406,6 +405,7 @@ ComponentWithComputed({
 
       if (res.success) {
         await homeStore.homeInit()
+        sceneStore.updateAllRoomSceneList()
       }
       this.pageDataSync('handleHomeTap')
       hideLoading()

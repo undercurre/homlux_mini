@@ -14,7 +14,8 @@
     <curtain-slider
       class="mt-68rpx"
       value="{{curtain_position}}"
-      bind:change="handleChange"
+      catch:change="handleChange"
+      catch:slideEnd="handleChange"
     ></curtain-slider>
     <view class="h-96rpx"></view>
     <view class="w-560rpx">

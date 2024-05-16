@@ -108,6 +108,7 @@ declare namespace Device {
       maxColorTemp: number
       minColorTemp: number
     }
+    authStatus?: 0 | 1 | 2 | 3 // 0 已确权 1 待确权  2 未确权  3 不支持确权
   }
 
   interface MzgdPropertyDTO {

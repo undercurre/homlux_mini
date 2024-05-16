@@ -80,7 +80,6 @@ ComponentWithComputed({
     generateQrCode(canvas: IAnyObject) {
       const url = 'https://web.meizgd.com/homlux/qrCode.html?' + this.getShareParams({ expire: 300 })
 
-      console.debug('二维码链接：', url)
       const img = canvas.createImage()
       img.src = '../../assets/img/login/logo.png'
 

@@ -157,7 +157,6 @@ Component({
 
       const res = await client.startZigbeeNet({})
 
-      console.debug('startZigbeeNet', res)
       if (res.success) {
         wx.showToast({
           title: '进入配网状态成功',
