@@ -1066,7 +1066,11 @@ ComponentWithComputed({
         return
       }
       // 不在编辑状态，如果是WIFI设备
-      else if (e.detail.deviceType === 3 && e.detail.onLineStatus) {
+      else if (
+        e.detail.deviceType === 3 &&
+        e.detail.onLineStatus &&
+        (e.detail.authStatus === 1 || e.detail.authStatus === 2)
+      ) {
         const { deviceId } = e.detail
         const res = await queryAuthGetStatus({ houseId: homeStore.currentHomeId, deviceId })
         // 若设备未确权、待确权，则弹出指引弹窗
