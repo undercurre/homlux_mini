@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { getModelName, PRO_TYPE, SCREEN_PID, MAX_MOVE_CARDS } from '../../../../config/index'
-import { waitingBatchDeleteDevice, batchUpdate, renameGroup } from '../../../../apis/index'
+import { waitingBatchDeleteDevice, batchUpdate, renameGroup, saveDeviceOrder } from '../../../../apis/index'
 import { deviceBinding, deviceStore, homeStore, roomStore } from '../../../../store/index'
 import Toast from '../../../../skyline-components/mz-toast/toast'
 import Dialog from '../../../../skyline-components/mz-dialog/dialog'
@@ -126,6 +126,7 @@ ComponentWithComputed({
     roomId: '',
     showConfirmDelete: false,
     moveWaitlist: [] as string[],
+    movedlist: [] as string[], // 移动成功的列表
     moveFailCount: 0,
     roomList: [] as roomInfo[],
   },
@@ -510,12 +511,14 @@ ComponentWithComputed({
         this.handleClose()
 
         emitter.on('group_device_result_status', (result) => {
-          if (result.errCode !== 0) {
-            this.data.moveFailCount++
-          }
           const uniId = `${result.devId}:${result.modelName}`
           const finishedIndex = this.data.moveWaitlist.findIndex((item) => item === uniId)
-          this.data.moveWaitlist.splice(finishedIndex, 1)
+          const movedItem = this.data.moveWaitlist.splice(finishedIndex, 1)
+          if (result.errCode !== 0) {
+            this.data.moveFailCount++
+          } else {
+            this.data.movedlist.push(...movedItem)
+          }
 
           if (!this.data.moveWaitlist.length) {
             if (this.data.moveFailCount) {
@@ -523,8 +526,55 @@ ComponentWithComputed({
             } else {
               this.handleMoveFinish()
             }
+
+            // 遍历处理完一次移动，一次性重新排序
+            this.resetDeviceOrder(this.data.movedlist)
           }
         })
+      }
+    },
+    // 处理成功移动的设备在新房间的排序
+    async resetDeviceOrder(uniIds: string[]) {
+      const RESET_ORDER = '999' // 放到最后面
+      const deviceOrderData = {
+        deviceInfoByDeviceVoList: [],
+      } as Device.OrderSaveData
+      const switchOrderData = {
+        deviceInfoByDeviceVoList: [],
+      } as Device.OrderSaveData
+
+      for (const uniId of uniIds) {
+        const deviceId = uniId.split(':')[0]
+
+        const device = deviceStore.allRoomDeviceMap[deviceId]
+        console.log('[resetDeviceOrder]', device)
+        if (device.proType !== PRO_TYPE.switch) {
+          deviceOrderData.deviceInfoByDeviceVoList.push({
+            deviceId,
+            houseId: homeStore.currentHomeId,
+            roomId: this.data.roomId,
+            orderNum: RESET_ORDER,
+            type: device.deviceType === 4 ? '2' : '0', // 灯组为2，普通设备为0
+          })
+        }
+        // 若开关按键参与排序，需要按 type: '1' 再保存
+        else {
+          switchOrderData.deviceInfoByDeviceVoList.push({
+            deviceId,
+            houseId: homeStore.currentHomeId,
+            roomId: this.data.roomId,
+            orderNum: String(device.orderNum),
+            switchId: device.switchInfoDTOList[0].switchId,
+            type: '1',
+          })
+        }
+      }
+
+      if (deviceOrderData.deviceInfoByDeviceVoList.length) {
+        await saveDeviceOrder(deviceOrderData)
+      }
+      if (switchOrderData.deviceInfoByDeviceVoList.length) {
+        await saveDeviceOrder(switchOrderData)
       }
     },
     handleRoomSelect(e: { currentTarget: { dataset: { id: string } } }) {
