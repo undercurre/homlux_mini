@@ -294,6 +294,10 @@ ComponentWithComputed({
         this.autoRefreshDevice()
         this.data._firstShow = false
       }
+      // HACK 其他情况还是要刷新一下
+      else {
+        this.reloadDeviceListThrottle()
+      }
 
       emitter.on('deviceListRetrieve', () => {
         console.log('deviceListRetrieve，isConnect', isConnect())
@@ -366,6 +370,7 @@ ComponentWithComputed({
           [
             WSEventType.device_replace,
             WSEventType.group_upt,
+            WSEventType.group_add,
             // WSEventType.group_device_result_status,
             // WSEventType.device_del,
             WSEventType.bind_device,
