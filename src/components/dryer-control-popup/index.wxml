@@ -53,10 +53,10 @@
         <mz-icon-button
           wx:for="{{btnList}}"
           wx:key="key"
+          data-key="{{item.key}}"
           icon="{{item.icon}}"
           iconActive="{{item.iconActive}}"
           text="{{item.text}}"
-          data-key="{{item.key}}"
           data-disabled="{{item.disabled}}"
           isOn="{{item.on}}"
           imageSize="{{32}}"
@@ -69,21 +69,26 @@
       </view>
 
       <view class="flex flex-row justify-between mt-32rpx mb-64rpx">
-        <mz-round-button
+        <mz-icon-button
+          disabled="{{item.disabled}}"
           wx:for="{{largeBtnList}}"
           wx:key="key"
           icon="{{item.icon}}"
           iconActive="{{item.iconActive}}"
           text="{{item.text}}"
           data-key="{{item.key}}"
-          data-disabled="{{item.disabled}}"
           isOn="{{item.on}}"
-          btnStyle="{{largeBtnStyle}}"
-          size="{{64}}"
+          rebound="{{item.rebound}}"
+          textSize="{{28}}"
           textColor="#a2a2a2"
-          textWidth="{{item.textWidth || '50rpx'}}"
+          imageSize="{{64}}"
+          wrapperWidth="{{wrapperWidth}}"
+          wrapperHeight="{{112}}"
+          round="{{32}}"
+          direction="row"
           bind:btnTouchStart="handleBtnTap"
-        ></mz-round-button>
+          textInset
+        ></mz-icon-button>
       </view>
 
       <view wx:if="{{isShowConfirm}}">

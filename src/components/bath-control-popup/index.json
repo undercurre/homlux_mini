@@ -5,7 +5,6 @@
     "mz-button": "/skyline-components/mz-button/index",
     "mz-toast": "/skyline-components/mz-toast/index",
     "mz-popup": "/skyline-components/mz-popup/index",
-    "mz-round-button": "/components/mz-round-button/index",
     "mz-icon-button": "/skyline-components/mz-icon-button/index"
   }
 }

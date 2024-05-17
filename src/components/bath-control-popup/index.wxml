@@ -70,7 +70,8 @@
       </view>
 
       <view class="flex flex-row justify-between mt-32rpx mb-64rpx">
-        <mz-round-button
+        <mz-icon-button
+          disabled="{{item.disabled}}"
           wx:for="{{largeBtnList}}"
           wx:key="key"
           icon="{{item.icon}}"
@@ -79,17 +80,17 @@
           data-key="{{item.key}}"
           isOn="{{item.on}}"
           rebound="{{item.rebound}}"
-          btnStyle="{{largeBtnStyle}}"
-          imageSize="{{64}}"
+          textSize="{{28}}"
           textColor="#a2a2a2"
           bgColorActive="#488fff"
-          textWidth="50rpx"
-          wrapperHeight="{{80}}"
-          round="{{40}}"
+          imageSize="{{64}}"
+          wrapperWidth="{{wrapperWidth}}"
+          wrapperHeight="{{112}}"
+          round="{{32}}"
           direction="row"
           bind:btnTouchStart="handleLightModeTap"
           textInset
-        ></mz-round-button>
+        ></mz-icon-button>
       </view>
 
       <view wx:if="{{isShowConfirm}}">

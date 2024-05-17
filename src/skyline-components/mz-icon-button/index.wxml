@@ -25,7 +25,7 @@
   </view>
   <view
     class="text"
-    style="color: {{textColor}};"
+    style="{{textStyle}}"
     wx:if="{{text}}"
     >{{text}}</view
   >

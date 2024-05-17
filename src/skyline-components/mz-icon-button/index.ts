@@ -18,7 +18,7 @@ ComponentWithComputed({
     },
     wrapperWidth: {
       type: Number,
-      value: 80,
+      value: 0,
     },
     wrapperHeight: {
       type: Number,
@@ -27,10 +27,6 @@ ComponentWithComputed({
     round: {
       type: Number,
       value: 48,
-    },
-    textColor: {
-      type: String,
-      value: '#555659',
     },
     bgColor: {
       type: String,
@@ -71,10 +67,27 @@ ComponentWithComputed({
       type: String,
       value: '',
     },
+    textColor: {
+      type: String,
+      value: '#555659',
+    },
+    textColorActive: {
+      type: String,
+      value: '#ffffff',
+    },
     // 按钮文本在按钮背景内部
     textInset: {
       type: Boolean,
       value: false,
+    },
+    textSize: {
+      type: Number,
+      value: 24,
+    },
+    // 文本与图标的间距
+    textMargin: {
+      type: Number,
+      value: 16,
     },
   },
 
@@ -121,8 +134,17 @@ ComponentWithComputed({
       // 如果文本在按钮背景内，则设置按钮整体包围样式
       const _bgColor = innerOn ? bgColorActive : bgColor
       let style = `flex-direction: ${direction};  border-radius: ${round}rpx; background-color: ${_bgColor}; padding: 0 20rpx;`
-      if (wrapperWidth) style += `width: ${wrapperWidth}rpx;`
+      if (wrapperWidth) style += wrapperWidth ? `width: ${wrapperWidth}rpx;` : ''
       if (wrapperHeight) style += `height: ${wrapperHeight}rpx; `
+
+      return style
+    },
+    textStyle(data) {
+      const { direction, textColor, textColorActive, textMargin, textSize, innerOn, textInset } = data
+      const _color = textInset && innerOn ? textColorActive : textColor
+
+      let style = `color: ${_color}; font-size: ${textSize}rpx;`
+      style += direction === 'row' ? `margin-left: ${textMargin}rpx;` : `margin-top: ${textMargin}rpx;`
 
       return style
     },

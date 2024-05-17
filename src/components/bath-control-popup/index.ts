@@ -173,10 +173,9 @@ ComponentWithComputed({
       })
       return res
     },
-    largeBtnStyle(data) {
+    wrapperWidth(data) {
       const { isSceneSetting } = data
-      const width = isSceneSetting ? '170rpx' : '280rpx'
-      return `height: 112rpx; width: ${width}; border-radius: 32rpx; background-color: #f7f8f9;`
+      return isSceneSetting ? 210 : 320
     },
     // 是否局域网可控
     isLanCtl(data) {
