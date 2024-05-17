@@ -153,7 +153,7 @@ ComponentWithComputed({
     // TODO 处理分组解散的交互提示
     handleDeleteDialog() {
       if (!this.data.hasGateway) {
-        Toast('网关类设备需在\n[家庭管理]-[设备管理]中删除')
+        Toast('网关类设备需在设备管理中删除')
         return
       }
       if (!this.data.selectedAmountInRange) {
