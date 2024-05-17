@@ -171,6 +171,7 @@ ComponentWithComputed({
           key,
         }
       })
+      console.log('largeBtnList', res)
       return res
     },
     wrapperWidth(data) {

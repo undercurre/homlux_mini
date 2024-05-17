@@ -41,10 +41,8 @@ ComponentWithComputed({
       type: Boolean,
       value: false,
       observer(v) {
-        console.log('observer isOn', v)
-        // !! 暂不支持即时响应外部值，因控制的时效性，容易造成按钮状态错乱
-        // if (this.data.innerOn === v) return
-        // this.setData({ innerOn: v })
+        if (this.data.innerOn === v) return
+        this.setData({ innerOn: v })
       },
     },
     // 松手后，UI状态是否回弹
@@ -99,9 +97,7 @@ ComponentWithComputed({
   },
 
   lifetimes: {
-    ready() {
-      this.setData({ innerOn: this.data.isOn })
-    },
+    ready() {},
   },
 
   computed: {
@@ -157,7 +153,9 @@ ComponentWithComputed({
       if (this.data.disabled) return
       if (!this.data.iconActive) return
       // TODO 动画效果
-      this.setData({ innerOn: !this.data.innerOn })
+      if (this.data.rebound) {
+        this.setData({ innerOn: !this.data.innerOn })
+      }
     },
 
     async handleTouchEnd(e: WechatMiniprogram.TouchEvent) {
@@ -167,7 +165,9 @@ ComponentWithComputed({
       if (!this.data.iconActive) return
 
       await delay(this.data.interval)
-      this.setData({ innerOn: !this.data.innerOn })
+      if (this.data.rebound) {
+        this.setData({ innerOn: !this.data.innerOn })
+      }
     },
   },
 })
