@@ -38,6 +38,7 @@
   line-height: var(--dialog-header-line-height, 24px);
   padding-top: var(--dialog-header-padding-top, 24px);
   text-align: center;
+  justify-content: center;
   font-size: 36rpx;
   color: #27282a;
 }
