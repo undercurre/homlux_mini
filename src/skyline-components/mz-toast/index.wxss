@@ -41,7 +41,7 @@
 .mz-toast--text {
   min-width: var(--toast-text-min-width, 96px);
   padding: var(--toast-text-padding, 8px 12px);
-  text-align: justify;
+  text-align: center;
 }
 
 .mz-toast--icon {
