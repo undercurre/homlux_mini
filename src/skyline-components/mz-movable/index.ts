@@ -183,7 +183,7 @@ Component({
       const y = this.data._y.value
       const lastX = this.data._lastX.value
       const lastY = this.data._lastY.value
-      // console.log('MOVE trigger', e.state, e.absoluteX, { x, y })
+      console.log('MOVE trigger', e.state, e.absoluteX, e.absoluteY, { x, y })
 
       switch (e.state) {
         // 拖动识别，保存初始值
@@ -194,6 +194,9 @@ Component({
         }
         // 拖动开始
         case GestureState.BEGIN: {
+          this.data._originX.value = e.absoluteX
+          this.data._originY.value = e.absoluteY
+
           if (wx.vibrateShort && this.data.vibrate) {
             runOnJS(wx.vibrateShort)({ type: 'heavy' })
           }
