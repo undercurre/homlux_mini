@@ -308,6 +308,12 @@ ComponentWithComputed({
       emitter.on('wsReceive', async (e) => {
         const { eventType, eventData } = e.result
 
+        // 特别地，绑定设备的消息无法带房间id
+        if (eventType === WSEventType.bind_device) {
+          this.reloadDeviceListThrottle(e)
+          return
+        }
+
         // 过滤非本房间的消息
         if (eventData.roomId && eventData.roomId !== roomStore.currentRoomId) {
           return
@@ -373,7 +379,6 @@ ComponentWithComputed({
             WSEventType.group_add,
             // WSEventType.group_device_result_status,
             // WSEventType.device_del,
-            WSEventType.bind_device,
           ].includes(eventType)
         ) {
           this.reloadDeviceListThrottle(e)
