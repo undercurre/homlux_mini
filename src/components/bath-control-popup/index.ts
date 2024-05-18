@@ -3,6 +3,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '../../skyline-components/mz-toast/toast'
 import { sendDevice } from '../../apis/index'
 import { NO_SYNC_DEVICE_STATUS, PRO_TYPE } from '../../config/index'
+import { isEmptyObject } from '../../utils/is'
 
 type BtnItem = {
   text: string
@@ -171,7 +172,6 @@ ComponentWithComputed({
           key,
         }
       })
-      console.log('largeBtnList', res)
       return res
     },
     wrapperWidth(data) {
@@ -349,6 +349,11 @@ ComponentWithComputed({
         actionsData.light_mode = lightModeOn.join(',')
       }
       console.log('handleConfirm', actionsData)
+
+      if (isEmptyObject(actionsData)) {
+        Toast({ message: '至少选择一种操作', zIndex: 9999 })
+        return
+      }
 
       this.triggerEvent('confirm', actionsData)
     },
