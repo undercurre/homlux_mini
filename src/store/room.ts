@@ -27,7 +27,10 @@ export const roomStore = observable({
     runInAction(() => {
       if (id) {
         roomStore.currentRoomId = id
-        deviceStore.deviceList = deviceStore.allRoomDeviceList.filter((device) => device.roomId === id)
+        if (deviceStore.deviceTimestamp < deviceStore.allRoomDeviceTimestamp) {
+          deviceStore.deviceList = deviceStore.allRoomDeviceList.filter((device) => device.roomId === id)
+          deviceStore.deviceTimestamp = deviceStore.allRoomDeviceTimestamp
+        }
         deviceStore.updateAllRoomDeviceListLanStatus(false)
       }
       // 重置为默认房间，不必刷新房间列表

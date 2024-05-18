@@ -12,11 +12,13 @@ export const deviceStore = observable({
    * 全屋设备
    */
   allRoomDeviceList: [] as Device.DeviceItem[],
+  allRoomDeviceTimestamp: 0,
 
   /**
    * 当前房间设备
    */
   deviceList: [] as Device.DeviceItem[],
+  deviceTimestamp: 0,
 
   /**
    * deviceId -> device 映射
@@ -41,6 +43,7 @@ export const deviceStore = observable({
    * @description 房间设备拍扁列表
    */
   get deviceFlattenList(): Device.DeviceItem[] {
+    console.log('get deviceFlattenList trigger', this.deviceList.length)
     return deviceFlatten(this.deviceList)
   },
   // 当前房间灯组数量
@@ -115,7 +118,7 @@ export const deviceStore = observable({
    */
   async updateAllRoomDeviceList(houseId: string = homeStore.currentHomeId, options?: IApiRequestOption) {
     const res = await queryAllDevice(houseId, options)
-    const { roomId = '0' } = roomStore.currentRoom
+    const { currentRoomId = '' } = roomStore
     if (!res.success) {
       console.log('加载全屋设备失败！', res)
       return
@@ -123,9 +126,11 @@ export const deviceStore = observable({
 
     runInAction(() => {
       deviceStore.allRoomDeviceList = res.result
+      deviceStore.allRoomDeviceTimestamp = res.timestamp
 
-      if (roomId && res.result?.length) {
-        deviceStore.deviceList = res.result.filter((device) => device.roomId === roomId)
+      if (currentRoomId && res.result?.length) {
+        deviceStore.deviceList = res.result.filter((device) => device.roomId === currentRoomId)
+        deviceStore.deviceTimestamp = res.timestamp
       }
 
       this.updateAllRoomDeviceListLanStatus(false)
@@ -148,6 +153,7 @@ export const deviceStore = observable({
 
     runInAction(() => {
       deviceStore.deviceList = res.result
+      deviceStore.deviceTimestamp = res.timestamp
       this.updateAllRoomDeviceListLanStatus(false)
     })
   },
