@@ -36,6 +36,7 @@ export const roomStore = observable({
       // 重置为默认房间，不必刷新房间列表
       else if (this.roomList?.length) {
         roomStore.currentRoomId = this.roomList[0].roomId
+        deviceStore.deviceTimestamp = 0
       }
     })
   },
