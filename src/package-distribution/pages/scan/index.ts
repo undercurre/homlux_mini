@@ -824,8 +824,11 @@ ComponentWithComputed({
 
       if (queryInfo.success) {
         networkInfo = {
+          // @ts-ignore
           channel: queryInfo.result.channel,
+          // @ts-ignore
           panId: queryInfo.result.panId,
+          // @ts-ignore
           extPanId: queryInfo.result.extPanId,
         }
       }
@@ -855,8 +858,11 @@ ComponentWithComputed({
 
       if (queryInfo.success) {
         networkInfo = {
+          // @ts-ignore
           channel: queryInfo.result.channel,
+          // @ts-ignore
           panId: queryInfo.result.panId,
+          // @ts-ignore
           extPanId: queryInfo.result.extPanId,
         }
       }
