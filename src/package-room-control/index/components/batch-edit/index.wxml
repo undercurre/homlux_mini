@@ -21,6 +21,7 @@
 
 <mz-popup
   show="{{ editSelectMode }}"
+  zIndex="{{999}}"
   position="top"
   round
   bind:close="handleClose"
@@ -31,8 +32,8 @@
     style="height: {{navigationBarAndStatusBarHeight}};"
   >
     <view
-      class="flex-center mx-32rpx my-10rpx flex-row"
-      bindtap="handleAllSelectToggle"
+      class="flex-center mx-32rpx mt-64rpx flex-row"
+      bind:tap="handleAllSelectToggle"
     >
       <image
         src="/assets/img/base/{{isAllSelect?'check2':'uncheck2'}}.png"
