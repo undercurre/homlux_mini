@@ -110,6 +110,7 @@ ComponentWithComputed({
       (storage.get<number>('navigationBarHeight') as number) +
       'px',
     toolboxTop: (storage.get('statusBarHeight') as number) + (storage.get('navigationBarHeight') as number), // 工具栏上边补白
+    showPerfLog: (storage.get('show_perf_log') as boolean) ?? false,
     /** 展示点中离线设备弹窗 */
     showDeviceOffline: false,
     /** 点击的离线设备的信息 */
@@ -262,8 +263,7 @@ ComponentWithComputed({
       Logger.log('[room-onLoad]', query)
       this.data._from = query.from ?? ''
 
-      const info = wx.getAccountInfoSync()
-      if (info.miniProgram.envVersion !== 'release') {
+      if (this.data.showPerfLog) {
         this.setUpdatePerformanceListener({ withDataPaths: true }, (res) => {
           Logger.debug(
             '[Performance]',

@@ -28,6 +28,7 @@ Component({
     curEnv: 'prod', // 当前选择的云端环境
     version: '', // 生产环境版本号
     isWsOn: isWsConnected(),
+    showPerfLog: (storage.get('show_perf_log') as boolean) ?? false,
     count: 0, // 第N次执行
   },
 
@@ -84,6 +85,10 @@ Component({
       } else {
         closeWebSocket()
       }
+    },
+    togglePerfLog({ detail }: { detail: boolean }) {
+      this.setData({ showPerfLog: detail })
+      storage.set('show_perf_log', detail, null)
     },
     // 调试用，自动执行全开全关
     trailFunc(MAX_COUNT = 20) {
