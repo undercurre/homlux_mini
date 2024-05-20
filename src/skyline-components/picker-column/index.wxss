@@ -3,9 +3,11 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .mz-multi-ellipsis--l2 {
   -webkit-line-clamp: 2;
 }
+
 .mz-multi-ellipsis--l2,
 .mz-multi-ellipsis--l3 {
   -webkit-box-orient: vertical;
@@ -13,14 +15,17 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .mz-multi-ellipsis--l3 {
   -webkit-line-clamp: 3;
 }
-.mz-clearfix:after {
+
+.mz-clearfix::after {
   clear: both;
   content: '';
   display: table;
 }
+
 .mz-hairline,
 .mz-hairline--bottom,
 .mz-hairline--left,
@@ -30,13 +35,14 @@
 .mz-hairline--top-bottom {
   position: relative;
 }
-.mz-hairline--bottom:after,
-.mz-hairline--left:after,
-.mz-hairline--right:after,
-.mz-hairline--surround:after,
-.mz-hairline--top-bottom:after,
-.mz-hairline--top:after,
-.mz-hairline:after {
+
+.mz-hairline--bottom::after,
+.mz-hairline--left::after,
+.mz-hairline--right::after,
+.mz-hairline--surround::after,
+.mz-hairline--top-bottom::after,
+.mz-hairline--top::after,
+.mz-hairline::after {
   border: 0 solid #ebedf0;
   bottom: -50%;
   box-sizing: border-box;
@@ -49,37 +55,47 @@
   transform: scale(0.5);
   transform-origin: center;
 }
-.mz-hairline--top:after {
+
+.mz-hairline--top::after {
   border-top-width: 1px;
 }
-.mz-hairline--left:after {
+
+.mz-hairline--left::after {
   border-left-width: 1px;
 }
-.mz-hairline--right:after {
+
+.mz-hairline--right::after {
   border-right-width: 1px;
 }
-.mz-hairline--bottom:after {
+
+.mz-hairline--bottom::after {
   border-bottom-width: 1px;
 }
-.mz-hairline--top-bottom:after {
+
+.mz-hairline--top-bottom::after {
   border-width: 1px 0;
 }
-.mz-hairline--surround:after {
+
+.mz-hairline--surround::after {
   border-width: 1px;
 }
+
 .mz-picker-column {
   color: var(--picker-option-text-color, #000);
   font-size: var(--picker-option-font-size, 18px);
   overflow: hidden;
   text-align: center;
 }
+
 .mz-picker-column__item {
   padding: 0 5px;
 }
+
 .mz-picker-column__item--selected {
   color: var(--picker-option-selected-text-color, #323233);
   font-weight: var(--font-weight-bold, 500);
 }
+
 .mz-picker-column__item--disabled {
   opacity: var(--picker-option-disabled-opacity, 0.3);
 }

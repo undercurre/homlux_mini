@@ -96,6 +96,7 @@ page {
   background-color: #fff !important;
   color: #ff3849 !important;
 }
+
 .switch-index--btn-class-fix {
   background-color: #488fff !important;
   border-radius: 32rpx !important;
@@ -105,7 +106,7 @@ page {
 /* button end */
 
 /* cell start */
-.van-cell:after {
+.van-cell::after {
   border-bottom: 1rpx solid #ddd !important;
 }
 
@@ -139,6 +140,7 @@ page {
 .van-toast--text {
   text-align: justify;
 }
+
 .van-dialog__header {
   font-size: 36rpx;
   color: #27282a;
@@ -203,4 +205,5 @@ page {
 .van-checkbox__icon-wrap {
   display: inline-flex;
 }
+
 /* checkbox end */

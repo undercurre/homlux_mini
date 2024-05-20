@@ -175,7 +175,7 @@
   font-weight: 400;
 }
 
-#meiju .scan-hint::after {
+#meiju .scan-hint:::after {
   display: block;
   content: '';
   position: absolute;
@@ -312,7 +312,8 @@
   line-height: 72rpx;
   /* color: #000000; */
   padding-left: 56rpx;
-  font-weight: bold; /* kkk add */
+  font-weight: bold;
+  /* kkk add */
 }
 
 #meiju .content-item {
@@ -534,10 +535,10 @@
   /* 按钮背景颜色 */
 }
 
-#meiju .mx-hairline--right:after {
+#meiju .mx-hairline--right::after {
 }
 
-#meiju .mx-hairline--top:after {
+#meiju .mx-hairline--top::after {
 }
 
 #meiju
@@ -749,7 +750,7 @@
   width: 100%;
 }
 
-#meiju .check-addGuide::after {
+#meiju .check-addGuide:::after {
   content: '';
   display: inline-block;
   width: 12rpx;
@@ -1443,7 +1444,7 @@
   margin-bottom: 32rpx;
 }
 
-#meiju .weui-actionsheet__title:after {
+#meiju .weui-actionsheet__title::after {
   /* 1px */
   border-bottom: 1px solid #f2f2f2;
 }
@@ -2038,7 +2039,7 @@
   color: #333333;
 }
 
-#meiju .combined-result-room::before {
+#meiju .combined-result-room:::before {
   content: '';
   position: absolute;
   top: 11rpx;
