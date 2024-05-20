@@ -76,7 +76,8 @@ Component({
         console.log('isDebug')
         isDebug = true
         this.setData({ isDebug })
-      }, 10000)
+        wx.showToast({ title: '已进入产测模式' })
+      }, 5000)
     },
 
     touchVersionEnd() {
