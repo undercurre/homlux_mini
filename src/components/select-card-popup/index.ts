@@ -36,9 +36,7 @@ Component({
     list: {
       type: Array,
       value: [],
-      observer() {
-        this.updateList()
-      },
+      observer() {},
     },
     /**
      * 选中的设备的uniId
@@ -57,45 +55,6 @@ Component({
     show: {
       type: Boolean,
       value: false,
-      observer(value) {
-        if (!value) return
-        if (this.data.isSingleSelect) {
-          this.setData({
-            curItemSelectId: this.data.selectList[0] || '',
-          })
-        }
-        if (this.data.roomList.length) {
-          let roomSelect = roomStore.currentRoom?.roomId
-
-          if (this.data.roomList.findIndex((item) => item.roomId === roomSelect) < 0) {
-            roomSelect = this.data.roomList[0].roomId
-          }
-
-          if (this.data.selectList.length) {
-            let selectItem = { roomId: '' }
-            this.data.selectList.forEach((id: string) => {
-              if (selectItem === undefined || !selectItem.roomId) {
-                selectItem = this.data.list.find(
-                  (item: Device.DeviceItem & Scene.SceneItem) => item.sceneId === id || item.uniId === id,
-                )
-              }
-            })
-
-            if (selectItem && selectItem.roomId) {
-              roomSelect = selectItem.roomId
-            } else {
-              roomSelect = this.data.roomList[0].roomId
-            }
-          }
-          if (this.data.defaultRoomId) {
-            roomSelect = this.data.defaultRoomId
-          }
-          this.setData({
-            roomSelect,
-            tabIndex: this.data.roomList.findIndex((room) => room.roomId === roomSelect),
-          })
-        }
-      },
     },
     /** 展示类型：light switch scene */
     cardType: {
@@ -128,6 +87,50 @@ Component({
     isSingleSelect: {
       type: Boolean,
       value: false,
+    },
+  },
+  observers: {
+    'show, list'(show, list) {
+      if (!show || !list?.length) return
+
+      this.updateList()
+
+      if (this.data.isSingleSelect) {
+        this.setData({
+          curItemSelectId: this.data.selectList[0] || '',
+        })
+      }
+      if (this.data.roomList.length) {
+        let roomSelect = roomStore.currentRoom?.roomId
+
+        if (this.data.roomList.findIndex((item) => item.roomId === roomSelect) < 0) {
+          roomSelect = this.data.roomList[0].roomId
+        }
+
+        if (this.data.selectList.length) {
+          let selectItem = { roomId: '' }
+          this.data.selectList.forEach((id: string) => {
+            if (selectItem === undefined || !selectItem.roomId) {
+              selectItem = list.find(
+                (item: Device.DeviceItem & Scene.SceneItem) => item.sceneId === id || item.uniId === id,
+              )
+            }
+          })
+
+          if (selectItem && selectItem.roomId) {
+            roomSelect = selectItem.roomId
+          } else {
+            roomSelect = this.data.roomList[0].roomId
+          }
+        }
+        if (this.data.defaultRoomId) {
+          roomSelect = this.data.defaultRoomId
+        }
+        this.setData({
+          roomSelect,
+          tabIndex: this.data.roomList.findIndex((room) => room.roomId === roomSelect),
+        })
+      }
     },
   },
 
@@ -178,6 +181,7 @@ Component({
       roomList.forEach((room) => {
         sortedAllRoomItem[room.roomId] = allRoomItemMap.get(room.roomId)
       })
+      console.log('roomList', roomList)
       this.setData({
         allRoomItem: sortedAllRoomItem,
         roomList,
