@@ -175,7 +175,7 @@
   font-weight: 400;
 }
 
-#meiju .scan-hint:::after {
+#meiju .scan-hint::after {
   display: block;
   content: '';
   position: absolute;
@@ -750,7 +750,7 @@
   width: 100%;
 }
 
-#meiju .check-addGuide:::after {
+#meiju .check-addGuide::after {
   content: '';
   display: inline-block;
   width: 12rpx;
@@ -2039,7 +2039,7 @@
   color: #333333;
 }
 
-#meiju .combined-result-room:::before {
+#meiju .combined-result-room::before {
   content: '';
   position: absolute;
   top: 11rpx;
