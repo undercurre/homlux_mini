@@ -535,25 +535,27 @@ ComponentWithComputed({
     },
     // 处理成功移动的设备在新房间的排序
     async resetDeviceOrder(uniIds: string[]) {
-      const RESET_ORDER = '999' // 放到最后面
       const deviceOrderData = {
         deviceInfoByDeviceVoList: [],
       } as Device.OrderSaveData
       const switchOrderData = {
         deviceInfoByDeviceVoList: [],
       } as Device.OrderSaveData
+      const targetRoomList = deviceStore.allRoomDeviceFlattenList.filter((d) => d.roomId === this.data.roomId)
+      let lastOrderNum = targetRoomList.length
 
       for (const uniId of uniIds) {
         const deviceId = uniId.split(':')[0]
-
         const device = deviceStore.allRoomDeviceMap[deviceId]
         console.log('[resetDeviceOrder]', device)
+
+        lastOrderNum = lastOrderNum + 1 // 放到最后面
         if (device.proType !== PRO_TYPE.switch) {
           deviceOrderData.deviceInfoByDeviceVoList.push({
             deviceId,
             houseId: homeStore.currentHomeId,
             roomId: this.data.roomId,
-            orderNum: RESET_ORDER,
+            orderNum: String(lastOrderNum),
             type: device.deviceType === 4 ? '2' : '0', // 灯组为2，普通设备为0
           })
         }
@@ -563,7 +565,7 @@ ComponentWithComputed({
             deviceId,
             houseId: homeStore.currentHomeId,
             roomId: this.data.roomId,
-            orderNum: String(device.orderNum),
+            orderNum: String(lastOrderNum),
             switchId: device.switchInfoDTOList[0].switchId,
             type: '1',
           })
