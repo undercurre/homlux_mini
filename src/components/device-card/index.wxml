@@ -7,14 +7,8 @@
   <!-- IOS 下card-clip会把box-shadow同时剪裁掉，故增加一层处理 -->
   <view class="flex-col-center relative overflow-hidden card-clip w-160rpx h-216rpx rounded-32rpx">
     <!-- 单选和编辑选择，选中状态均使用描边样式 -->
-    <view
-      id="selected-border"
-      class="w-160rpx h-216rpx absolute left-0 top-0 box-border select-border rounded-32rpx bg-hex-fff"
-    ></view>
-    <view
-      id="card-bg"
-      class="w-160rpx h-216rpx rounded-32rpx box-border {{bgStyle}}"
-    ></view>
+    <view class="w-160rpx h-216rpx absolute left-0 top-0 box-border select-border rounded-32rpx bg-hex-fff {{borderStyle}}"></view>
+    <view class="w-160rpx h-216rpx rounded-32rpx box-border {{bgStyle}}"></view>
 
     <!-- 顶部标题 -->
     <view class="absolute left-0 top-16rpx w-160rpx flex-center">

@@ -14,10 +14,7 @@ ComponentWithComputed({
     select: {
       type: Boolean,
       value: false,
-      observer(v) {
-        this.data._border_opacity.value = v ? 1 : 0
-        this.data._bg_opacity.value = v ? 0 : 1
-      },
+      observer() {},
     },
     editMode: {
       type: Boolean,
@@ -73,31 +70,25 @@ ComponentWithComputed({
         .boundingClientRect()
         .exec((res) => (this.data._clientRect = res[0]))
     },
-    attached() {
-      this.data._border_opacity = wx.worklet.shared(0)
-      this.data._bg_opacity = wx.worklet.shared(1)
-
-      this.applyAnimatedStyle('#selected-border', () => {
-        'worklet'
-        return {
-          opacity: this.data._border_opacity.value,
-        }
-      })
-      this.applyAnimatedStyle('#card-bg', () => {
-        'worklet'
-        return {
-          opacity: this.data._bg_opacity.value,
-        }
-      })
-    },
   },
 
   computed: {
+    borderStyle(data) {
+      const { select } = data
+      return select ? 'opacity-100' : 'opacity-0'
+    },
     bgStyle(data) {
-      const { isGroup, showSpecialBg, showGradientBg } = data
-      if (isGroup && showSpecialBg) return 'show-group-bg white-border'
-      if (showGradientBg) return 'show-control-bg white-border'
-      return 'bg-hex-f9fbfe'
+      const { isGroup, showSpecialBg, showGradientBg, select } = data
+      const opacity = select ? 'opacity-0' : 'opacity-100'
+      let style = opacity
+      if (isGroup && showSpecialBg) {
+        style += ' show-group-bg white-border'
+      } else if (showGradientBg) {
+        style += ' show-control-bg white-border'
+      } else {
+        style += ' bg-hex-f9fbfe'
+      }
+      return style
     },
     picUrl(data) {
       if (data.isLoadImgError) {
