@@ -24,6 +24,7 @@ ComponentWithComputed({
     deviceList: Array<Device.DeviceItem>(),
     linkSwitchPopup: false,
     _timer: 0,
+    _downTimer: 0,
   },
 
   computed: {
@@ -157,9 +158,31 @@ ComponentWithComputed({
           //避免频繁更新
           this.data._timer && clearTimeout(this.data._timer)
           this.data._timer = setTimeout(() => {
-            this.setData({
-              deviceList,
-            })
+            this.setData(
+              {
+                deviceList,
+              },
+              () => {
+                if (this.data.finishNum === this.data.deviceList.length) {
+                  clearTimeout(this.data.__downTimer)
+                  this.data._downTimer = 0
+                  if (this.data.successNum < this.data.deviceList.length) {
+                    Dialog.confirm({
+                      title: '创建失败',
+                      message: '部分设备配置一键场景失败，请确保所有设备在线后重试',
+                      showCancelButton: false,
+                      confirmButtonText: '我知道了',
+                    })
+                      .then(() => {
+                        // on confirm
+                      })
+                      .catch(() => {
+                        // on cancel
+                      })
+                  }
+                }
+              },
+            )
           }, 1000)
         }
       })
@@ -181,7 +204,9 @@ ComponentWithComputed({
         if (deviceListLength > 20) {
           time = time + Math.round((deviceListLength - 20) / 10) * 5000
         }
-        setTimeout(() => {
+        this.data.__downTimer = setTimeout(() => {
+          clearTimeout(this.data.__downTimer)
+          this.data._downTimer = 0
           this.data.deviceList.forEach((item) => {
             if (item.status === 'waiting') {
               item.status = 'fail'
@@ -296,16 +321,39 @@ ComponentWithComputed({
         if (deviceListLength > 20) {
           time = time + Math.round((deviceListLength - 20) / 10) * 5000
         }
-        setTimeout(() => {
+        this.data.__downTimer = setTimeout(() => {
+          clearTimeout(this.data.__downTimer)
+          this.data._downTimer = 0
           this.data.deviceList.forEach((item) => {
             if (item.status === 'waiting') {
               item.status = 'fail'
             }
           })
 
-          this.setData({
-            deviceList,
-          })
+          this.setData(
+            {
+              deviceList,
+            },
+            () => {
+              if (
+                this.data.successNum < this.data.deviceList.length &&
+                this.data.finishNum === this.data.deviceList.length
+              ) {
+                Dialog.confirm({
+                  title: '创建失败',
+                  message: '部分设备配置一键场景失败，请确保所有设备在线后重试',
+                  showCancelButton: false,
+                  confirmButtonText: '我知道了',
+                })
+                  .then(() => {
+                    // on confirm
+                  })
+                  .catch(() => {
+                    // on cancel
+                  })
+              }
+            },
+          )
         }, time)
       } else {
         Toast({
