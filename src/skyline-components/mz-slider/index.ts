@@ -233,7 +233,7 @@ ComponentWithComputed({
       }
       this.triggerEvent('slideChange', innerVal)
       console.log('[handleSlider]slideChange', innerVal)
-    }, 150),
+    }, 50),
     // 点击滑动条
     sliderStart(e: WechatMiniprogram.TouchEvent) {
       if (this.data.showToast) {
