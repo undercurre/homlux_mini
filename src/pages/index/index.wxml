@@ -135,7 +135,7 @@
   <view class="tabbar-placeholder"></view>
 
   <!-- 加载中 -->
-  <view
+  <!-- <view
     wx:if="{{loading}}"
     id="skeleton"
   >
@@ -171,7 +171,7 @@
         row-class="rounded-32rpx h-304rpx_el_"
       />
     </view>
-  </view>
+  </view> -->
 </block>
 
 <!-- 未登录 -->

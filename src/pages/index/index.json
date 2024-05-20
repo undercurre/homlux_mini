@@ -12,7 +12,6 @@
     "mz-svg-icon": "/skyline-components/mz-svg-icon/index",
     "room-card": "./components/room-card/index",
     "custom-tab-bar": "/custom-tab-bar/index",
-    "van-skeleton": "@vant/weapp/skeleton/index",
     "mz-pop-menu": "/skyline-components/mz-pop-menu/index"
   }
 }
