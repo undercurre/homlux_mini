@@ -59,7 +59,7 @@
   border-bottom: 8rpx solid transparent;
   border-left: 8rpx solid transparent;
   border-right: 8rpx solid transparent;
-  top: 40rpx;
+  top: 38rpx;
   left: 50%;
   margin-left: -8rpx;
 }

@@ -14,6 +14,10 @@ ComponentWithComputed({
     select: {
       type: Boolean,
       value: false,
+      observer(v) {
+        this.data._border_opacity.value = v ? 1 : 0
+        this.data._bg_opacity.value = v ? 0 : 1
+      },
     },
     editMode: {
       type: Boolean,
@@ -59,6 +63,8 @@ ComponentWithComputed({
     isProcessing: false,
     _clientRect: {} as IAnyObject,
     isLoadImgError: false,
+    _border_opacity: { value: 0 },
+    _bg_opacity: { value: 1 },
   },
   lifetimes: {
     ready() {
@@ -67,10 +73,32 @@ ComponentWithComputed({
         .boundingClientRect()
         .exec((res) => (this.data._clientRect = res[0]))
     },
-    detached() {},
+    attached() {
+      this.data._border_opacity = wx.worklet.shared(0)
+      this.data._bg_opacity = wx.worklet.shared(1)
+
+      this.applyAnimatedStyle('#selected-border', () => {
+        'worklet'
+        return {
+          opacity: this.data._border_opacity.value,
+        }
+      })
+      this.applyAnimatedStyle('#card-bg', () => {
+        'worklet'
+        return {
+          opacity: this.data._bg_opacity.value,
+        }
+      })
+    },
   },
 
   computed: {
+    bgStyle(data) {
+      const { isGroup, showSpecialBg, showGradientBg } = data
+      if (isGroup && showSpecialBg) return 'show-group-bg white-border'
+      if (showGradientBg) return 'show-control-bg white-border'
+      return 'bg-hex-f9fbfe'
+    },
     picUrl(data) {
       if (data.isLoadImgError) {
         return `/assets/img/offline/default-device.png`

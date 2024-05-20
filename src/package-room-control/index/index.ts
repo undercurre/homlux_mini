@@ -263,7 +263,7 @@ ComponentWithComputed({
       this.data._from = query.from ?? ''
 
       const info = wx.getAccountInfoSync()
-      if (info.miniProgram.envVersion === 'develop') {
+      if (info.miniProgram.envVersion !== 'release') {
         this.setUpdatePerformanceListener({ withDataPaths: true }, (res) => {
           Logger.debug(
             '[Performance]',
