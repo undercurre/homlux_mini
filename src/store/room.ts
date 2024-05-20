@@ -27,7 +27,7 @@ export const roomStore = observable({
     runInAction(() => {
       if (id) {
         roomStore.currentRoomId = id
-        if (deviceStore.deviceTimestamp < deviceStore.allRoomDeviceTimestamp) {
+        if (deviceStore.deviceTimestamp <= deviceStore.allRoomDeviceTimestamp) {
           deviceStore.deviceList = deviceStore.allRoomDeviceList.filter((device) => device.roomId === id)
           deviceStore.deviceTimestamp = deviceStore.allRoomDeviceTimestamp
         }
