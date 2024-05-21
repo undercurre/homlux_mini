@@ -459,15 +459,19 @@ ComponentWithComputed({
             })
             this.handleClose()
             // await homeStore.updateRoomCardList()
-            this.triggerEvent('updateDevice', device)
 
             // 如果修改的是面板名称，则需要同时更新面板其余的按键对应的卡片
             if (type === '0') {
-              deviceStore.deviceFlattenList.forEach((_device) => {
-                if (_device.deviceId === deviceId && _device.switchInfoDTOList[0].switchId !== switchId) {
-                  this.triggerEvent('updateDevice', _device)
+              deviceStore.deviceFlattenList.forEach((d) => {
+                if (d.deviceId === deviceId) {
+                  this.triggerEvent('updateDevice', {
+                    ...d,
+                    deviceName: device.deviceName,
+                  })
                 }
               })
+            } else {
+              this.triggerEvent('updateDevice', device)
             }
           } else {
             Toast({
