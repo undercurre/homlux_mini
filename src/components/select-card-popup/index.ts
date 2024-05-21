@@ -181,7 +181,6 @@ Component({
       roomList.forEach((room) => {
         sortedAllRoomItem[room.roomId] = allRoomItemMap.get(room.roomId)
       })
-      console.log('roomList', roomList)
       this.setData({
         allRoomItem: sortedAllRoomItem,
         roomList,
