@@ -99,12 +99,6 @@ ComponentWithComputed({
     isAllSelect(data) {
       return deviceStore.deviceFlattenList.length === data.editSelectList.length
     },
-    editNameDisable(data) {
-      if (data.editProType === PRO_TYPE.switch) {
-        return !data.editDeviceName || !data.editSwitchName
-      }
-      return !data.editDeviceName
-    },
     editRoomDisable(data) {
       return roomStore.currentRoomId === data.roomId
     },

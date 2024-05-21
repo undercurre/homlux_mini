@@ -153,10 +153,7 @@
       </mz-field>
     </view>
 
-    <template
-      is="bottom-btn"
-      data="{{disabled: editNameDisable}}"
-    />
+    <template is="bottom-btn" />
   </view>
 </mz-popup>
 
