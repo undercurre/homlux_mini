@@ -25,6 +25,7 @@
         show-word-limit
         maxlength="12"
         border="{{false}}"
+        bind:confirm="inputConfim"
       >
       </mz-field>
 
@@ -418,7 +419,6 @@
   data-key="showPopup"
   bind:close="togglePopup"
   position="bottom"
-  rootPortal
   closeable
 >
   <view class="pb-100rpx">
@@ -430,6 +430,25 @@
         type="primary"
         bind:click="toggleDisabled"
         >toggleDisabled</mz-button
+      >
+
+      <mz-button
+        size="large"
+        bind:tap="showToast"
+        >showToast</mz-button
+      >
+
+      <mz-button
+        size="large"
+        bind:tap="showDialog"
+        >showDialog</mz-button
+      >
+
+      <mz-button
+        size="large"
+        data-key="showDialog"
+        bind:tap="togglePopup"
+        >showDialog1</mz-button
       >
     </view>
 

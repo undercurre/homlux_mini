@@ -37,6 +37,9 @@ Component({
    * 组件的方法列表
    */
   methods: {
+    inputConfim(event: WechatMiniprogram.BaseEvent) {
+      console.log('inputConfim', event)
+    },
     toggleDisabled() {
       this.setData({
         disabled: !this.data.disabled,

@@ -41,7 +41,7 @@ const defaultOptions: DialogOptions = {
   width: null,
   theme: 'default',
   message: '',
-  zIndex: 100,
+  zIndex: 2000,
   overlay: true,
   selector: '#mz-dialog',
   beforeClose: null,
