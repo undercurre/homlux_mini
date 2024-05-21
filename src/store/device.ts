@@ -6,6 +6,7 @@ import { roomStore } from './room'
 import { sceneStore } from './scene'
 import homOs from 'js-homos'
 import { IApiRequestOption, deviceFlatten } from '../utils/index'
+import { emitter } from '../utils/eventBus'
 
 export const deviceStore = observable({
   /**
@@ -131,6 +132,7 @@ export const deviceStore = observable({
       if (currentRoomId && res.result?.length) {
         deviceStore.deviceList = res.result.filter((device) => device.roomId === currentRoomId)
         deviceStore.deviceTimestamp = res.timestamp
+        emitter.emit('roomDeviceSync')
       }
 
       this.updateAllRoomDeviceListLanStatus(false)
