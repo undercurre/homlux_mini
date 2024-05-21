@@ -1376,7 +1376,7 @@ ComponentWithComputed({
     },
     handleRoomLightTouch() {
       if (!this.data.hasRoomLightOn) {
-        Toast('控制房间色温和亮度前至少开启一盏灯')
+        Toast('控制房间色温和亮度前请先开启灯')
       }
     },
     async lightSendDeviceControl(type: 'colorTemperature' | 'brightness') {
