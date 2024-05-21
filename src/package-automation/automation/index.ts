@@ -47,7 +47,7 @@ ComponentWithComputed({
   lifetimes: {
     attached() {
       // 加载一键场景列表
-      this.getSceneList(false)
+      this.getSceneList(true)
       // 加载自动化列表
       this.getAutoSceneList()
     },
@@ -65,11 +65,12 @@ ComponentWithComputed({
     },
   },
   methods: {
-    async getSceneList(req = true) {
-      if (req) {
-        await sceneStore.updateAllRoomSceneList()
+    async getSceneList(isInit = false) {
+      if (isInit) {
+        this.updateSceneList(false)
       }
-      this.updateSceneList(req)
+      await sceneStore.updateAllRoomSceneList()
+      this.updateSceneList(true)
     },
     async getAutoSceneList() {
       await autosceneStore.updateAllRoomAutoSceneList()
