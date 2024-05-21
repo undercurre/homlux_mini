@@ -264,6 +264,10 @@ Component({
           } else {
             if (!isDragging) {
               this.data._preEndKey = -1
+              if (this.data._autoMoveTimerId !== null) {
+                clearInterval(this.data._autoMoveTimerId)
+                this.data._autoMoveTimerId = null
+              }
               this.data.list.forEach((item) => {
                 item.sortKey = item.tempSortKey
               })
