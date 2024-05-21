@@ -50,14 +50,11 @@
     >
       <view class="absolute top-8rpx left-32rpx">
         <text class="text-hex-1e2c46 text-48rpx font-semibold">{{currentHomeName}}</text>
-        <mz-svg-icon
+        <image
           id="homeSelectArrow"
-          class="absolute home-select-arrow"
-          color="#1E2C46"
-          name="material-symbols:arrow-drop-down-rounded"
-          width="48rpx"
-          height="48rpx"
-        />
+          src="/assets/img/base/down.png"
+          class="absolute home-select-arrow w-48 h-48"
+        ></image>
       </view>
     </view>
   </nav-bar>

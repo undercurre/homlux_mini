@@ -9,7 +9,6 @@
     "mz-button": "/skyline-components/mz-button/index",
     "mz-toast": "/skyline-components/mz-toast/index",
     "mz-dialog": "/skyline-components/mz-dialog/index",
-    "mz-svg-icon": "/skyline-components/mz-svg-icon/index",
     "room-card": "./components/room-card/index",
     "custom-tab-bar": "/custom-tab-bar/index",
     "mz-pop-menu": "/skyline-components/mz-pop-menu/index"
