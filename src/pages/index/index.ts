@@ -142,6 +142,7 @@ ComponentWithComputed({
     currentHomeId: '',
     isShowHomeControl: false, // 是否显示全局控制开关（需要有灯或者开关）
     roomList: [] as Room.RoomInfo[],
+    isInit: false,
     _scrolledWhenMoving: false, // 拖拽时，被动发生了滚动
     _lastClientY: 0, // 上次触控采样时 的Y坐标
     _isFirstShow: true, // 是否首次加载
@@ -345,6 +346,7 @@ ComponentWithComputed({
         isManager: homeStore.isManager,
         hasDevice: deviceStore.allRoomDeviceList?.length,
         currentHomeName,
+        isInit: true,
         isShowHomeControl:
           !!deviceStore.allRoomDeviceList?.length &&
           deviceStore.allRoomDeviceList.some((device: Device.DeviceItem) =>
@@ -365,6 +367,7 @@ ComponentWithComputed({
         currentHomeName,
         currentHomeId: homeStore.currentHomeId,
         roomList: JSON.parse(JSON.stringify(roomStore.roomList)),
+        isInit: true,
         isShowHomeControl:
           !!deviceStore.allRoomDeviceList?.length &&
           deviceStore.allRoomDeviceList.some((device: Device.DeviceItem) =>

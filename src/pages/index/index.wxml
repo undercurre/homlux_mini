@@ -121,11 +121,11 @@
         <text class="text-32rpx text-black-59 mt-44rpx mb-32rpx">尚未添加设备</text>
         <text class="text-24rpx text-black-59 mb-224rpx opacity-40">立即添加设备，开启智慧照明</text>
         <mz-button
+          wx:if="{{isInit && isManager}}"
           bind:click="goToWhenConnected"
           data-url="/package-distribution/pages/choose-device/index"
           color="linear-gradient(165deg, #468CFB 0%, #6BA3FC 100%)"
           custom-class="add-immediately-btn"
-          wx:if="{{isInit && !hasDevice && (isCreator || isAdmin)}}"
         >
           <text class="text-white text-36rpx font-normal">添加智能设备</text>
         </mz-button>
