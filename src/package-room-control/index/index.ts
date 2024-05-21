@@ -46,6 +46,7 @@ import {
   SCREEN_PID,
   ZHONGHONG_PID,
 } from '../../config/index'
+// import homOs from 'js-homos'
 
 type DeviceCard = Device.DeviceItem & {
   x: string
@@ -712,7 +713,7 @@ ComponentWithComputed({
             ...getPos(index),
             // !! 重排orderNum，从0开始
             // TRICK 排序过程orderNum代替index使用，而不必改变数组的真实索引
-            orderNum: index,
+            orderNum: index + 1,
             type: proName[device.proType],
             select: this.data.checkedList.includes(device.uniId) || this.data.editSelectList.includes(device.uniId),
             linkSceneName: this.getLinkSceneName(device),
@@ -1156,8 +1157,9 @@ ComponentWithComputed({
     },
 
     handleCardCommonTap(e: { detail: DeviceCard }) {
-      console.log('e.detail', e.detail)
+      // console.log('e.detail', e.detail)
       const { uniId } = e.detail // 灯的 deviceId===uniId
+      // console.log('isSupportLan', uniId, homOs.isSupportLan({ deviceId: uniId }))
       const isChecked = this.data.checkedList.includes(uniId) // 点击卡片前，卡片是否选中
       const toCheck = !isChecked // 本次点击需执行的选中状态
 
@@ -1374,7 +1376,7 @@ ComponentWithComputed({
     },
     handleRoomLightTouch() {
       if (!this.data.hasRoomLightOn) {
-        Toast('控制房间色温和亮度前至少开启一盏灯')
+        Toast('控制房间色温和亮度前请先开启灯')
       }
     },
     async lightSendDeviceControl(type: 'colorTemperature' | 'brightness') {

@@ -236,7 +236,7 @@ ComponentWithComputed({
     }, 50),
     // 点击滑动条
     sliderStart(e: WechatMiniprogram.TouchEvent) {
-      if (this.data.showToast) {
+      if (this.data.showToast && !this.data.disabled) {
         this.data._toast_opacity.value = 1
       }
       this.handleSliderThrottle(e.changedTouches[0].pageX)

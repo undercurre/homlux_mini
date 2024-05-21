@@ -99,12 +99,6 @@ ComponentWithComputed({
     isAllSelect(data) {
       return deviceStore.deviceFlattenList.length === data.editSelectList.length
     },
-    editNameDisable(data) {
-      if (data.editProType === PRO_TYPE.switch) {
-        return !data.editDeviceName || !data.editSwitchName
-      }
-      return !data.editDeviceName
-    },
     editRoomDisable(data) {
       return roomStore.currentRoomId === data.roomId
     },
@@ -375,19 +369,46 @@ ComponentWithComputed({
         if (this.data.editProType === PRO_TYPE.switch) {
           // 校验名字合法性
           if (checkInputNameIllegal(this.data.editSwitchName)) {
-            Toast('按键名称不能用特殊符号或表情')
+            Toast({
+              message: '按键名称不能用特殊符号或表情',
+              zIndex: 9999,
+            })
+
             return
           }
           if (checkInputNameIllegal(this.data.editDeviceName)) {
-            Toast('设备名称不能用特殊符号或表情')
+            Toast({
+              message: '设备名称不能用特殊符号或表情',
+              zIndex: 9999,
+            })
             return
           }
           if (this.data.editSwitchName.length > 5) {
-            Toast('按键名称不能超过5个字符')
+            Toast({
+              message: '按键名称不能超过5个字符',
+              zIndex: 9999,
+            })
             return
           }
           if (this.data.editDeviceName.length > 6) {
-            Toast('面板名称不能超过6个字符')
+            Toast({
+              message: '面板名称不能超过6个字符',
+              zIndex: 9999,
+            })
+            return
+          }
+          if (!this.data.editSwitchName.length) {
+            Toast({
+              message: '请输入按键名称',
+              zIndex: 9999,
+            })
+            return
+          }
+          if (!this.data.editDeviceName.length) {
+            Toast({
+              message: '请输入面板名称',
+              zIndex: 9999,
+            })
             return
           }
           const [deviceId, switchId] = uniId.split(':')
@@ -438,15 +459,19 @@ ComponentWithComputed({
             })
             this.handleClose()
             // await homeStore.updateRoomCardList()
-            this.triggerEvent('updateDevice', device)
 
             // 如果修改的是面板名称，则需要同时更新面板其余的按键对应的卡片
             if (type === '0') {
-              deviceStore.deviceFlattenList.forEach((_device) => {
-                if (_device.deviceId === deviceId && _device.switchInfoDTOList[0].switchId !== switchId) {
-                  this.triggerEvent('updateDevice', _device)
+              deviceStore.deviceFlattenList.forEach((d) => {
+                if (d.deviceId === deviceId) {
+                  this.triggerEvent('updateDevice', {
+                    ...d,
+                    deviceName: device.deviceName,
+                  })
                 }
               })
+            } else {
+              this.triggerEvent('updateDevice', device)
             }
           } else {
             Toast({
@@ -463,13 +488,27 @@ ComponentWithComputed({
           }
 
           if (checkInputNameIllegal(this.data.editDeviceName)) {
-            Toast('设备名称不能用特殊符号或表情')
+            Toast({
+              message: '设备名称不能用特殊符号或表情',
+              zIndex: 9999,
+            })
             return
           }
           if (this.data.editDeviceName.length > 6) {
-            Toast('设备名称不能超过6个字符')
+            Toast({
+              message: '设备名称不能超过6个字符',
+              zIndex: 9999,
+            })
             return
           }
+          if (!this.data.editDeviceName.length) {
+            Toast({
+              message: '请输入设备名称',
+              zIndex: 9999,
+            })
+            return
+          }
+
           const res =
             device.deviceType === 4
               ? // 灯组
@@ -542,7 +581,7 @@ ComponentWithComputed({
         deviceInfoByDeviceVoList: [],
       } as Device.OrderSaveData
       const targetRoomList = deviceStore.allRoomDeviceFlattenList.filter((d) => d.roomId === this.data.roomId)
-      let lastOrderNum = targetRoomList.length
+      let lastOrderNum = targetRoomList.length + 1
 
       for (const uniId of uniIds) {
         const deviceId = uniId.split(':')[0]
