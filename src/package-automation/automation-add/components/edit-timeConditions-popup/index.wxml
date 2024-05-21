@@ -37,7 +37,7 @@
       </view>
     </scroll-view>
 
-    <view class="w-686rpx mt-32rpx flex flex-row justify-between">
+    <view class="w-686rpx mx-32rpx flex flex-row justify-between">
       <mz-button
         class="flex-1"
         size="large"

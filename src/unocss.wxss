@@ -50,7 +50,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .py-6rpx{padding-top:6rpx;padding-bottom:6rpx;}
 .py-96rpx{padding-top:96rpx;padding-bottom:96rpx;}
 .pb-100rpx{padding-bottom:100rpx;}
-.pb-106rpx{padding-bottom:106rpx;}
 .pb-16rpx{padding-bottom:16rpx;}
 .pb-200rpx{padding-bottom:200rpx;}
 .pb-20rpx{padding-bottom:20rpx;}
@@ -111,7 +110,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .mx-48rpx{margin-left:48rpx;margin-right:48rpx;}
 .mx-74rpx{margin-left:74rpx;margin-right:74rpx;}
 .mx-auto{margin-left:auto;margin-right:auto;}
-.my-10rpx{margin-top:10rpx;margin-bottom:10rpx;}
 .my-12rpx{margin-top:12rpx;margin-bottom:12rpx;}
 .my-20rpx{margin-top:20rpx;margin-bottom:20rpx;}
 .my-24rpx{margin-top:24rpx;margin-bottom:24rpx;}

@@ -76,7 +76,7 @@
           class="box-border flex-1"
           scroll-top="{{scrollInfo.scrollTop}}"
         >
-          <view style="opacity: {{selectedRoomId ? 1 : 0}};">
+          <view style="opacity: {{selectedRoomId ? 1 : 0}}">
             <view wx:if="{{allRoomScene[selectedRoomId] && allRoomScene[selectedRoomId].length}}">
               <mz-drag-list
                 id="yijian"
@@ -101,6 +101,7 @@
             </view>
           </view>
         </scroll-view>
+        <view class="h-32rpx"></view>
       </swiper-item>
       <!-- 自动场景 -->
       <swiper-item catchtouchmove="true">
@@ -111,7 +112,7 @@
           show-scrollbar="{{false}}"
           class="box-border h-full"
         >
-          <view class="pb-106rpx">
+          <view class="pb-30rpx">
             <view wx:if="{{autoSceneList.length}}">
               <mz-cell-group
                 wx:for="{{autoSceneList}}"
