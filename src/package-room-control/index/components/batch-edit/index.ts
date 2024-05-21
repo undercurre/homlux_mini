@@ -583,7 +583,7 @@ ComponentWithComputed({
         deviceInfoByDeviceVoList: [],
       } as Device.OrderSaveData
       const targetRoomList = deviceStore.allRoomDeviceFlattenList.filter((d) => d.roomId === this.data.roomId)
-      let lastOrderNum = targetRoomList.length
+      let lastOrderNum = targetRoomList.length + 1
 
       for (const uniId of uniIds) {
         const deviceId = uniId.split(':')[0]
