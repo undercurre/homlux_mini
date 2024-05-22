@@ -584,14 +584,12 @@ ComponentWithComputed({
       let lastOrderNum = targetRoomList.length + 1
 
       for (const uniId of uniIds) {
-        const deviceId = uniId.split(':')[0]
-        const device = deviceStore.allRoomDeviceMap[deviceId]
-        console.log('[resetDeviceOrder]', device)
+        const device = deviceStore.allRoomDeviceFlattenMap[uniId]
 
         lastOrderNum = lastOrderNum + 1 // 放到最后面
         if (device.proType !== PRO_TYPE.switch) {
           deviceOrderData.deviceInfoByDeviceVoList.push({
-            deviceId,
+            deviceId: device.deviceId,
             houseId: homeStore.currentHomeId,
             roomId: this.data.roomId,
             orderNum: String(lastOrderNum),
@@ -601,7 +599,7 @@ ComponentWithComputed({
         // 若开关按键参与排序，需要按 type: '1' 再保存
         else {
           switchOrderData.deviceInfoByDeviceVoList.push({
-            deviceId,
+            deviceId: device.deviceId,
             houseId: homeStore.currentHomeId,
             roomId: this.data.roomId,
             orderNum: String(lastOrderNum),
