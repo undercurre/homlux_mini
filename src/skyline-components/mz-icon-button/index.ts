@@ -87,6 +87,10 @@ ComponentWithComputed({
       type: Number,
       value: 16,
     },
+    fontWeight: {
+      type: String,
+      value: '',
+    },
   },
 
   /**
@@ -101,6 +105,10 @@ ComponentWithComputed({
   },
 
   computed: {
+    hasIcon(data) {
+      const { icon, iconActive } = data
+      return icon || iconActive
+    },
     imagePos(data) {
       const { imageSize } = data
       return `width: ${imageSize}rpx; height: ${imageSize}rpx;
@@ -136,11 +144,13 @@ ComponentWithComputed({
       return style
     },
     textStyle(data) {
-      const { direction, textColor, textColorActive, textMargin, textSize, innerOn, textInset } = data
+      const { direction, textColor, textColorActive, textMargin, textSize, innerOn, textInset, hasIcon } = data
       const _color = textInset && innerOn ? textColorActive : textColor
 
       let style = `color: ${_color}; font-size: ${textSize}rpx;`
-      style += direction === 'row' ? `margin-left: ${textMargin}rpx;` : `margin-top: ${textMargin}rpx;`
+      if (hasIcon) {
+        style += direction === 'row' ? `margin-left: ${textMargin}rpx;` : `margin-top: ${textMargin}rpx;`
+      }
 
       return style
     },
@@ -151,7 +161,6 @@ ComponentWithComputed({
       this.triggerEvent('btnTouchStart', e.detail)
 
       if (this.data.disabled) return
-      if (!this.data.iconActive) return
       // TODO 动画效果
       if (this.data.rebound) {
         this.setData({ innerOn: !this.data.innerOn })
@@ -162,7 +171,6 @@ ComponentWithComputed({
       this.triggerEvent('btnTouchEnd', e.detail)
 
       if (this.data.disabled || !this.data.rebound) return
-      if (!this.data.iconActive) return
 
       await delay(this.data.interval)
       if (this.data.rebound) {
