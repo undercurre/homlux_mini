@@ -17,14 +17,22 @@
     >
       <!-- 全屋开关 -->
       <view class="ml-24rpx">
-        <mz-button
+        <mz-icon-button
           wx:if="{{isShowHomeControl}}"
-          bind:click="handleAllOff"
-          type="primary"
-          custom-class="allOffBtn"
-          round
-          >一键关灯</mz-button
-        >
+          text="一键关灯"
+          wrapperWidth="{{200}}"
+          wrapperHeight="{{80}}"
+          textSize="{{28}}"
+          round="{{40}}"
+          bgColor="rgba(255,255,255,0.42)"
+          bgColorActive="#488fff"
+          textColor="#2b4067"
+          fontWeight="bold"
+          bind:btnTouchStart="handleAllOff"
+          data-key="minus"
+          rebound
+          textInset
+        ></mz-icon-button>
       </view>
       <view
         wx:if="{{isManager || !loading}}"

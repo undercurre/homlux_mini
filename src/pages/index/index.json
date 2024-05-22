@@ -7,6 +7,7 @@
   "disableScroll": true,
   "usingComponents": {
     "mz-button": "/skyline-components/mz-button/index",
+    "mz-icon-button": "/skyline-components/mz-icon-button/index",
     "mz-toast": "/skyline-components/mz-toast/index",
     "mz-dialog": "/skyline-components/mz-dialog/index",
     "room-card": "./components/room-card/index",
