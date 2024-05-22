@@ -87,7 +87,7 @@ ComponentWithComputed({
     _system: storage.get('system') as string,
     selectHomeMenu: {
       x: '30rpx',
-      y: '200rpx',
+      y: (storage.get('statusBarHeight') as number) + (storage.get('navigationBarHeight') as number) + 10 + 'px',
       isShow: false,
     },
     addMenu: {
@@ -109,13 +109,6 @@ ComponentWithComputed({
           key: 'auto',
           icon: 'auto',
           value: '/package-automation/automation-add/index',
-        },
-        // TODO 权限区分
-        {
-          name: '连接其它平台',
-          key: 'platform',
-          icon: 'auth',
-          value: '/package-auth/pages/index/index',
         },
       ],
     },
@@ -339,27 +332,12 @@ ComponentWithComputed({
         }
         currentHomeName = homeStore.currentHomeDetail?.houseName
       }
-      console.log(type ?? '', '[active pageDataSync]', {
-        roomList: JSON.parse(JSON.stringify(roomStore.roomList)),
-        isLogin: userStore.isLogin,
-        isCreator: homeStore.isCreator,
-        isManager: homeStore.isManager,
-        hasDevice: deviceStore.allRoomDeviceList?.length,
-        currentHomeName,
-        isInit: true,
-        isShowHomeControl:
-          !!deviceStore.allRoomDeviceList?.length &&
-          deviceStore.allRoomDeviceList.some((device: Device.DeviceItem) =>
-            ([PRO_TYPE.light, PRO_TYPE.switch, PRO_TYPE.bathHeat, PRO_TYPE.clothesDryingRack] as string[]).includes(
-              device.proType,
-            ),
-          ),
-      })
+
       let homeList
       if (homeStore.homeList?.length) {
         homeList = homeStore.homeList as Home.IHomeItem[]
       }
-      this.setData({
+      const diffData = {
         isLogin: userStore.isLogin,
         isCreator: homeStore.isCreator,
         isManager: homeStore.isManager,
@@ -377,9 +355,23 @@ ComponentWithComputed({
           ),
         homeList,
         loading: false,
-      })
+      } as IAnyObject
+      if (homeStore.isCreator) {
+        diffData['addMenu.list'] = [
+          ...this.data.addMenu.list,
+          {
+            name: '连接其它平台',
+            key: 'platform',
+            icon: 'auth',
+            value: '/package-auth/pages/index/index',
+          },
+        ]
+      }
+      this.setData(diffData)
 
       this.updateLightCount()
+
+      console.log(type ?? '', '[active pageDataSync]', diffData)
 
       // TODO
       // this.renewRoomPos()

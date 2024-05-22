@@ -207,24 +207,26 @@
 ></home-select-menu> -->
 
 <mz-pop-menu
-  isShow="{{selectHomeMenu.isShow}}"
+  is-show="{{selectHomeMenu.isShow}}"
   class="z-120"
   x="{{selectHomeMenu.x}}"
   y="{{selectHomeMenu.y}}"
-  menuList="{{homeMenuList}}"
+  menu-list="{{homeMenuList}}"
+  transform-origin="left top"
   bind:menuTap="handleHomeTap"
   bind:overlayClick="handleHomeMenu"
 ></mz-pop-menu>
 
 <mz-pop-menu
-  isShow="{{addMenu.isShow}}"
+  is-show="{{addMenu.isShow}}"
   class="z-120"
   x="{{addMenu.x}}"
   y="{{addMenu.y}}"
   arrowX="{{addMenu.arrowX}}"
   height="{{addMenu.height}}"
   width="{{addMenu.width}}"
-  menuList="{{addMenu.list}}"
+  menu-list="{{addMenu.list}}"
+  transform-origin="right top"
   bind:menuTap="handleAddTap"
   bind:overlayClick="handleAddMenu"
 ></mz-pop-menu>
