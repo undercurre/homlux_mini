@@ -1,15 +1,37 @@
-import { getRect } from '../../utils/index'
+import { timing } from '../../skyline-components/common/worklet'
 
 Component({
-  externalClasses: ['custom-class'],
-  /**
-   * 组件的属性列表
-   */
   properties: {
     // disabled: Boolean,
     power: {
       type: Boolean,
       value: false,
+      observer: function (newVal) {
+        if (this.data.vertical) {
+          //HACK: 直接赋值会导致控制前动画不到位
+          this.data.top.value = timing(
+            newVal ? 0 : 50,
+            {
+              duration: 30,
+            },
+            () => {
+              'worklet'
+            },
+          )
+          // this.data.top.value = newVal ? 0 : 50
+        } else {
+          this.data.left.value = timing(
+            newVal ? 0 : 50,
+            {
+              duration: 30,
+            },
+            () => {
+              'worklet'
+            },
+          )
+          // this.data.left.value = newVal ? 0 : 50
+        }
+      },
     },
     vertical: {
       type: Boolean,
@@ -17,66 +39,65 @@ Component({
     },
   },
 
-  /**
-   * 组件的初始数据
-   */
-  data: {},
-
-  observers: {},
-  lifetimes: {
-    attached() {},
-    ready() {},
-    detached() {},
+  data: {
+    top: { value: 0 },
+    left: { value: 0 },
   },
-  /**
-   * 组件的方法列表
-   */
+  lifetimes: {
+    attached() {
+      if (this.data.vertical) {
+        this.data.top = wx.worklet.shared(this.data.power ? 0 : 50)
+        this.applyAnimatedStyle('#slider', () => {
+          'worklet'
+          return {
+            top: this.data.top.value + '%',
+          }
+        })
+      } else {
+        this.data.left = wx.worklet.shared(this.data.power ? 0 : 50)
+        this.applyAnimatedStyle('#slider', () => {
+          'worklet'
+          return {
+            left: this.data.left.value + '%',
+          }
+        })
+      }
+    },
+  },
   methods: {
-    async handleOnOffChange(e: WechatMiniprogram.TouchEvent) {
+    handleOnOffChange(e: WechatMiniprogram.TouchEvent) {
       if (e.currentTarget.dataset.value === this.data.power) {
         return
       }
-      const { width } = await getRect(this, '#slider')
-
-      if (this.data.vertical) {
-        this.animate(
-          '#slider',
-          [
-            {
-              top: e.currentTarget.dataset.value ? '96rpx' : '0',
-            },
-            {
-              top: e.currentTarget.dataset.value ? '0' : '96rpx',
-            },
-          ],
-          100,
+      // HACK 无法在动画结束后的worklet函数调用setData、triggerEvent方法
+      setTimeout(() => {
+        this.setData(
+          {
+            power: e.currentTarget.dataset.value,
+          },
           () => {
-            //先设置原style，再清除动画样式避免样式造成闪烁问题
-            this.setData({
-              power: e.currentTarget.dataset.value,
-            })
-            this.triggerEvent('change', this.data.power)
-            this.clearAnimation('#slider', () => {})
+            this.triggerEvent('change', e.currentTarget.dataset.value)
+          },
+        )
+      }, 100)
+      if (this.data.vertical) {
+        this.data.top.value = timing(
+          e.currentTarget.dataset.value ? 0 : 50,
+          {
+            duration: 100,
+          },
+          () => {
+            'worklet'
           },
         )
       } else {
-        this.animate(
-          '#slider',
-          [
-            {
-              left: e.currentTarget.dataset.value ? width + 'px' : '0',
-            },
-            {
-              left: e.currentTarget.dataset.value ? '0' : width + 'px',
-            },
-          ],
-          100,
+        this.data.left.value = timing(
+          e.currentTarget.dataset.value ? 0 : 50,
+          {
+            duration: 100,
+          },
           () => {
-            this.setData({
-              power: e.currentTarget.dataset.value,
-            })
-            this.triggerEvent('change', this.data.power)
-            this.clearAnimation('#slider', () => {})
+            'worklet'
           },
         )
       }

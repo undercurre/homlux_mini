@@ -73,7 +73,7 @@ ComponentWithComputed({
             deviceId: device.deviceId,
             modelName,
             gatewayId: device.gatewayId,
-            property: { power: power, time: 500 }, // time 500为灯光渐变时间，灯专用
+            property: { power: power },
           })
         }
       }

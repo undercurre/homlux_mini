@@ -130,7 +130,7 @@
         <image style="height: 48rpx; width: 48rpx;" src="/package-remoter/assets/newUI/close.png"></image>
       </view>
 
-      <text class="unit-h text-28rpx font-normal" style="left: 420rpx; opacity: {{curTimePickerIndex[0] == 0 ? 0 : 1}};">小时</text>
+      <text class="unit-h text-28rpx font-normal" style="left: 420rpx; opacity: {{pickerIndexTemp[0] == 0 ? 0 : 1}};">小时</text>
       <view class="pick-block flex-center">
         <picker-view indicator-style="height: 56rpx;"
           style="width: 500rpx; height: 360rpx;"

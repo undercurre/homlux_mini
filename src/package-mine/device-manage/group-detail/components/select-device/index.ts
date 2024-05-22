@@ -59,8 +59,6 @@ ComponentWithComputed({
       const device = this.data.lightList[index]
       const oldSelect = device.select
 
-      console.debug('handleCardTap', device)
-
       if (!oldSelect) {
         //只有开关面板和zigbee灯需要下发找一找
         if (

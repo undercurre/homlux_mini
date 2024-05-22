@@ -7,10 +7,11 @@
 <view class="h-24rpx"> </view>
 <van-cell-group inset>
   <van-cell
-    title="切换环境【{{curEnv}}】"
+    title="切换环境"
     is-link
     center
     bind:click="toggleEnv"
+    value="当前环境：{{curEnv}}"
   />
   <van-cell
     title="添加虚拟设备"
@@ -27,6 +28,14 @@
     url="/package-debug/pages/homos-debug/index"
   />
 
+  <van-cell title="是否输出性能日志">
+    <view slot="right-icon">
+      <van-switch
+        checked="{{ showPerfLog }}"
+        bind:change="togglePerfLog"
+      />
+    </view>
+  </van-cell>
   <van-cell title="云端websocket连接">
     <view slot="right-icon">
       <van-switch
@@ -40,5 +49,21 @@
     is-link
     center
     bind:click="toggleTrials"
+    value="{{count ? '第' + count + '次执行' : ''}}"
+  />
+
+  <van-cell
+    title="Skyline Demo"
+    is-link
+    center
+    link-type="navigateTo"
+    url="/package-debug/pages/skyline-demo/index"
+  />
+  <van-cell
+    title="Movable Demo"
+    is-link
+    center
+    link-type="navigateTo"
+    url="/package-debug/pages/movable-demo/index"
   />
 </van-cell-group>

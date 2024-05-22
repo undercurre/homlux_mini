@@ -1,9 +1,4 @@
-<wxs
-  src="/commons/wxs/util.wxs"
-  module="module"
-/>
-
-<van-popup
+<mz-popup
   show="{{ show }}"
   z-index="1002"
   round
@@ -39,17 +34,19 @@
       enhanced
       show-scrollbar="{{false}}"
       scroll-x
-      class="mt-48rpx h-60rpx w-750rpx flex"
+      type="list"
+      class="mt-48rpx mb-42rpx h-60rpx w-750rpx flex"
       enable-flex
     >
       <view class="flex">
         <view class="w-50rpx"></view>
         <view class="flex min-w-650rpx justify-start">
           <view
-            wx:for="{{roomListComputed}}"
+            wx:for="{{roomList}}"
             wx:key="roomId"
             class="flex-col-center {{index!==0?'ml-90rpx': ''}}"
-            data-item="{{item}}"
+            data-roomid="{{item.roomId}}"
+            data-index="{{index}}"
             bindtap="handleRoomSelect"
           >
             <text class="{{roomSelect === item.roomId ? 'text-32rpx text-black-2a' : 'text-28rpx text-hex-555659'}} whitespace-nowrap">{{item.roomName}}</text>
@@ -60,67 +57,81 @@
       </view>
     </scroll-view>
 
-    <view class="h-44rpx"></view>
-
-    <scroll-view
-      class="grow h-600"
-      enhanced
-      show-scrollbar="{{false}}"
-      scroll-y
+    <swiper
+      class="w-full flex-1"
+      current="{{tabIndex}}"
+      bind:change="onTabChanged"
+      duration="{{100}}"
+      cache-extent="1"
     >
-      <view class="w-750rpx flex-col-center">
-        <view
-          wx:if="{{cardType==='scene'}}"
-          class="w-686rpx grid grid-cols-2 gap-x-20rpx"
+      <swiper-item
+        class="flex"
+        wx:for="{{allRoomItem}}"
+        wx:for-item="roomItem"
+        wx:for-index="roomIndex"
+        wx:key="roomIndex"
+      >
+        <scroll-view
+          enhanced
+          type="list"
+          show-scrollbar="{{false}}"
+          scroll-y
         >
-          <scene-card
-            class="mt-24rpx"
-            wx:for="{{listComputed}}"
-            wx:key="sceneId"
-            bind:cardTap="handleCardTap"
-            scene-info="{{item}}"
-            select="{{module.includes(selectList, item.sceneId)}}"
-          />
-        </view>
-        <view
-          wx:else
-          class="w-686rpx grid grid-cols-4 gap-x-20rpx gap-y-24rpx"
-        >
-          <device-card
-            wx:for="{{listComputed}}"
-            wx:key="uniId"
-            bind:cardTap="handleCardTap"
-            device-info="{{item}}"
-            showSpecialBg="{{false}}"
-            select="{{module.includes(selectList, item.uniId)}}"
-            bind:offlineTap="handleOfflineTap"
-          />
-        </view>
-      </view>
-    </scroll-view>
-
-    <view class="h-96rpx"></view>
-    <view class="flex w-686rpx gap-x-46rpx">
-      <van-button
+          <view
+            wx:if="{{cardTypeUI==='scene'}}"
+            class="px-32rpx flex flex-row flex-wrap justify-between"
+          >
+            <scene-card
+              class="mb-24rpx"
+              wx:for="{{roomItem}}"
+              wx:key="sceneId"
+              bind:cardTap="handleCardTap"
+              scene-info="{{item}}"
+              select="{{isSingleSelect ? curItemSelectId === item.sceneId : item.checked}}"
+              data-index="{{ index }}"
+            />
+          </view>
+          <view
+            wx:else
+            class="pl-15rpx flex flex-row flex-wrap"
+          >
+            <!-- HACK skyline直接使用roomItem会导致不响应setDate -->
+            <device-card
+              class="mb-24rpx mx-10rpx"
+              wx:for="{{allRoomItem[roomIndex]}}"
+              wx:key="uniId"
+              data-index="{{ index }}"
+              data-checked="{{ item.checked }}"
+              bind:cardTap="handleCardTap"
+              device-info="{{item}}"
+              showSpecialBg="{{false}}"
+              select="{{isSingleSelect ? curItemSelectId === item.uniId : item.checked}}"
+              bind:offlineTap="handleOfflineTap"
+            />
+          </view>
+        </scroll-view>
+      </swiper-item>
+    </swiper>
+    <view class="flex w-686rpx mt-32rpx mb-96rpx">
+      <mz-button
         wx:if="{{showCancel}}"
         class="flex-1"
         size="large"
         bind:click="handleCancel"
         >{{ cancelText }}
-      </van-button>
-
-      <van-button
+      </mz-button>
+      <view
+        class="w-46rpx"
+        wx:if="{{showCancel && showConfirm }}"
+      ></view>
+      <mz-button
         wx:if="{{showConfirm}}"
         type="primary"
         class="flex-1"
         size="large"
         bind:click="handleConfirm"
         >{{ confirmText }}
-      </van-button>
+      </mz-button>
     </view>
-
-    <view class="h-96rpx"></view>
   </view>
-
-  <van-toast id="van-toast" />
-</van-popup>
+</mz-popup>

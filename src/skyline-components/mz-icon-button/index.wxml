@@ -1,0 +1,33 @@
+<view
+  class="mz-button {{ disabled ? 'disabled' : '' }}"
+  style="{{btnWrapperStyle}}"
+  bind:touchstart="handleTouchStart"
+  bind:touchend="handleTouchEnd"
+>
+  <view
+    id="iconWrapper"
+    class="icon-wrapper"
+    style="{{iconWrapperStyle}}"
+  >
+    <image
+      id="icon"
+      class="icon"
+      style="{{imageStyle}}"
+      src="{{icon}}"
+    ></image>
+    <image
+      wx:if="{{iconActive}}"
+      id="iconActive"
+      class="icon-active"
+      style="{{imageActiveStyle}}"
+      src="{{iconActive}}"
+    ></image>
+  </view>
+  <view
+    class="text"
+    style="{{textStyle}}"
+    wx:if="{{text}}"
+    >{{text}}</view
+  >
+  <slot></slot>
+</view>

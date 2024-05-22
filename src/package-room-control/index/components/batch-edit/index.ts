@@ -1,20 +1,18 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { getModelName, PRO_TYPE, SCREEN_PID } from '../../../../config/index'
-import { waitingBatchDeleteDevice, batchUpdate, renameGroup } from '../../../../apis/index'
-import { deviceBinding, deviceStore, homeStore, roomBinding, roomStore } from '../../../../store/index'
-import Toast from '@vant/weapp/toast/toast'
-import Dialog from '@vant/weapp/dialog/dialog'
+import { getModelName, PRO_TYPE, SCREEN_PID, MAX_MOVE_CARDS } from '../../../../config/index'
+import { waitingBatchDeleteDevice, batchUpdate, renameGroup, saveDeviceOrder } from '../../../../apis/index'
+import { deviceBinding, deviceStore, homeStore, roomStore } from '../../../../store/index'
+import Toast from '../../../../skyline-components/mz-toast/toast'
+import Dialog from '../../../../skyline-components/mz-dialog/dialog'
 import { storage, checkInputNameIllegal, emitter, showLoading, hideLoading } from '../../../../utils/index'
 
 let timeId: number
 
-const MAX_MOVE_CARDS = 20 // 最多可以移动和删除的设备数（按卡片计数）
-
 ComponentWithComputed({
   options: {},
 
-  behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding, roomBinding] })],
+  behaviors: [BehaviorWithStore({ storeBindings: [deviceBinding] })],
 
   properties: {
     editSelectList: {
@@ -25,57 +23,7 @@ ComponentWithComputed({
       type: Boolean,
       value: false,
       observer(value) {
-        if (value) {
-          this.animate(
-            '#bottom',
-            [
-              {
-                translateY: '100%',
-              },
-              {
-                translateY: '0%',
-              },
-            ],
-            100,
-          )
-          this.animate(
-            '#top',
-            [
-              {
-                translateY: '-100%',
-              },
-              {
-                translateY: '0%',
-              },
-            ],
-            100,
-          )
-        } else {
-          this.animate(
-            '#bottom',
-            [
-              {
-                translateY: '0%',
-              },
-              {
-                translateY: '100%',
-              },
-            ],
-            100,
-          )
-          this.animate(
-            '#top',
-            [
-              {
-                translateY: '0%',
-              },
-              {
-                translateY: '-100%',
-              },
-            ],
-            100,
-          )
-        }
+        console.log('editSelectMode', value)
       },
     },
   },
@@ -131,25 +79,25 @@ ComponentWithComputed({
      * 非智慧屏开关，非网关
      */
     canDelete(data) {
+      const { hasGateway, selectedAmountInRange } = data
+      return hasGateway && selectedAmountInRange
+    },
+    selectedAmountInRange(data) {
+      return data.editSelectList?.length && data.editSelectList?.length <= MAX_MOVE_CARDS
+    },
+    hasGateway(data) {
       const noScreenOrGateway = data.editSelectList.every((uId: string) => {
         const deviceId = uId.split(':')[0]
         const device = deviceStore.deviceMap[deviceId]
         return !SCREEN_PID.includes(device.productId) && device.proType !== PRO_TYPE.gateway
       })
-
-      return noScreenOrGateway && data.editSelectList?.length && data.editSelectList?.length <= MAX_MOVE_CARDS
+      return noScreenOrGateway
     },
     editDeviceNameTitle(data) {
       return data.editProType === PRO_TYPE.switch ? '面板名称' : '设备名称'
     },
     isAllSelect(data) {
       return deviceStore.deviceFlattenList.length === data.editSelectList.length
-    },
-    editNameDisable(data) {
-      if (data.editProType === PRO_TYPE.switch) {
-        return !data.editDeviceName || !data.editSwitchName
-      }
-      return !data.editDeviceName
     },
     editRoomDisable(data) {
       return roomStore.currentRoomId === data.roomId
@@ -161,10 +109,8 @@ ComponentWithComputed({
    */
   data: {
     navigationBarAndStatusBarHeight:
-      (storage.get<number>('statusBarHeight') as number) +
-      (storage.get<number>('navigationBarHeight') as number) +
-      'px',
-    navigationBarHeight: (storage.get<number>('navigationBarHeight') as number) + 'px',
+      (storage.get('statusBarHeight') as number) + (storage.get('navigationBarHeight') as number) + 'px',
+    // navigationBarHeight: (storage.get('navigationBarHeight') as number) + 'px',
     showEditName: false,
     isEditSwitchName: false,
     editDeviceName: '',
@@ -174,11 +120,17 @@ ComponentWithComputed({
     roomId: '',
     showConfirmDelete: false,
     moveWaitlist: [] as string[],
+    movedlist: [] as string[], // 移动成功的列表
     moveFailCount: 0,
+    roomList: [] as roomInfo[],
   },
 
   lifetimes: {
-    ready() {},
+    async ready() {
+      this.setData({
+        roomList: [...roomStore.roomList],
+      })
+    },
     detached() {
       if (timeId) {
         clearTimeout(timeId)
@@ -195,7 +147,11 @@ ComponentWithComputed({
     },
     // TODO 处理分组解散的交互提示
     handleDeleteDialog() {
-      if (!this.data.canDelete) {
+      if (!this.data.hasGateway) {
+        Toast('网关类设备需在设备管理中删除')
+        return
+      }
+      if (!this.data.selectedAmountInRange) {
         Toast(`最多同时删除${MAX_MOVE_CARDS}个设备`)
         return
       }
@@ -236,7 +192,7 @@ ComponentWithComputed({
             this.triggerEvent('updateList')
           }
         })
-        .catch((e) => console.log(e))
+        .catch((e) => console.log('catch', e))
     },
     handleEditNamePopup() {
       if (!this.data.canEditName) {
@@ -345,8 +301,8 @@ ComponentWithComputed({
           }
 
           // TODO 只有WIFI设备时，不需要超时检测逻辑
-          // 超时后检查云端上报，是否已成功移动完毕 5~120s
-          const TIME_OUT = Math.min(Math.max(5000, this.data.moveWaitlist.length * 1000), 120000)
+          // 超时后检查云端上报，是否已成功移动完毕 15~120s
+          const TIME_OUT = Math.min(Math.max(15000, this.data.moveWaitlist.length * 1000), 120000)
 
           showLoading('正在移动设备房间，请稍候')
           timeId = setTimeout(async () => {
@@ -413,19 +369,46 @@ ComponentWithComputed({
         if (this.data.editProType === PRO_TYPE.switch) {
           // 校验名字合法性
           if (checkInputNameIllegal(this.data.editSwitchName)) {
-            Toast('按键名称不能用特殊符号或表情')
+            Toast({
+              message: '按键名称不能用特殊符号或表情',
+              zIndex: 9999,
+            })
+
             return
           }
           if (checkInputNameIllegal(this.data.editDeviceName)) {
-            Toast('设备名称不能用特殊符号或表情')
+            Toast({
+              message: '设备名称不能用特殊符号或表情',
+              zIndex: 9999,
+            })
             return
           }
           if (this.data.editSwitchName.length > 5) {
-            Toast('按键名称不能超过5个字符')
+            Toast({
+              message: '按键名称不能超过5个字符',
+              zIndex: 9999,
+            })
             return
           }
           if (this.data.editDeviceName.length > 6) {
-            Toast('面板名称不能超过6个字符')
+            Toast({
+              message: '面板名称不能超过6个字符',
+              zIndex: 9999,
+            })
+            return
+          }
+          if (!this.data.editSwitchName.length) {
+            Toast({
+              message: '请输入按键名称',
+              zIndex: 9999,
+            })
+            return
+          }
+          if (!this.data.editDeviceName.length) {
+            Toast({
+              message: '请输入面板名称',
+              zIndex: 9999,
+            })
             return
           }
           const [deviceId, switchId] = uniId.split(':')
@@ -476,15 +459,19 @@ ComponentWithComputed({
             })
             this.handleClose()
             // await homeStore.updateRoomCardList()
-            this.triggerEvent('updateDevice', device)
 
             // 如果修改的是面板名称，则需要同时更新面板其余的按键对应的卡片
             if (type === '0') {
-              deviceStore.deviceFlattenList.forEach((_device) => {
-                if (_device.deviceId === deviceId && _device.switchInfoDTOList[0].switchId !== switchId) {
-                  this.triggerEvent('updateDevice', _device)
+              deviceStore.deviceFlattenList.forEach((d) => {
+                if (d.deviceId === deviceId) {
+                  this.triggerEvent('updateDevice', {
+                    ...d,
+                    deviceName: device.deviceName,
+                  })
                 }
               })
+            } else {
+              this.triggerEvent('updateDevice', device)
             }
           } else {
             Toast({
@@ -501,13 +488,27 @@ ComponentWithComputed({
           }
 
           if (checkInputNameIllegal(this.data.editDeviceName)) {
-            Toast('设备名称不能用特殊符号或表情')
+            Toast({
+              message: '设备名称不能用特殊符号或表情',
+              zIndex: 9999,
+            })
             return
           }
           if (this.data.editDeviceName.length > 6) {
-            Toast('设备名称不能超过6个字符')
+            Toast({
+              message: '设备名称不能超过6个字符',
+              zIndex: 9999,
+            })
             return
           }
+          if (!this.data.editDeviceName.length) {
+            Toast({
+              message: '请输入设备名称',
+              zIndex: 9999,
+            })
+            return
+          }
+
           const res =
             device.deviceType === 4
               ? // 灯组
@@ -549,12 +550,14 @@ ComponentWithComputed({
         this.handleClose()
 
         emitter.on('group_device_result_status', (result) => {
-          if (result.errCode !== 0) {
-            this.data.moveFailCount++
-          }
           const uniId = `${result.devId}:${result.modelName}`
           const finishedIndex = this.data.moveWaitlist.findIndex((item) => item === uniId)
-          this.data.moveWaitlist.splice(finishedIndex, 1)
+          const movedItem = this.data.moveWaitlist.splice(finishedIndex, 1)
+          if (result.errCode !== 0) {
+            this.data.moveFailCount++
+          } else {
+            this.data.movedlist.push(...movedItem)
+          }
 
           if (!this.data.moveWaitlist.length) {
             if (this.data.moveFailCount) {
@@ -562,8 +565,57 @@ ComponentWithComputed({
             } else {
               this.handleMoveFinish()
             }
+
+            // 遍历处理完一次移动，一次性重新排序
+            this.resetDeviceOrder(this.data.movedlist)
           }
         })
+      }
+    },
+    // 处理成功移动的设备在新房间的排序
+    async resetDeviceOrder(uniIds: string[]) {
+      const deviceOrderData = {
+        deviceInfoByDeviceVoList: [],
+      } as Device.OrderSaveData
+      const switchOrderData = {
+        deviceInfoByDeviceVoList: [],
+      } as Device.OrderSaveData
+      const targetRoomList = deviceStore.allRoomDeviceFlattenList.filter((d) => d.roomId === this.data.roomId)
+      let lastOrderNum = targetRoomList.length + 1
+
+      for (const uniId of uniIds) {
+        const deviceId = uniId.split(':')[0]
+        const device = deviceStore.allRoomDeviceMap[deviceId]
+        console.log('[resetDeviceOrder]', device)
+
+        lastOrderNum = lastOrderNum + 1 // 放到最后面
+        if (device.proType !== PRO_TYPE.switch) {
+          deviceOrderData.deviceInfoByDeviceVoList.push({
+            deviceId,
+            houseId: homeStore.currentHomeId,
+            roomId: this.data.roomId,
+            orderNum: String(lastOrderNum),
+            type: device.deviceType === 4 ? '2' : '0', // 灯组为2，普通设备为0
+          })
+        }
+        // 若开关按键参与排序，需要按 type: '1' 再保存
+        else {
+          switchOrderData.deviceInfoByDeviceVoList.push({
+            deviceId,
+            houseId: homeStore.currentHomeId,
+            roomId: this.data.roomId,
+            orderNum: String(lastOrderNum),
+            switchId: device.switchInfoDTOList[0].switchId,
+            type: '1',
+          })
+        }
+      }
+
+      if (deviceOrderData.deviceInfoByDeviceVoList.length) {
+        await saveDeviceOrder(deviceOrderData)
+      }
+      if (switchOrderData.deviceInfoByDeviceVoList.length) {
+        await saveDeviceOrder(switchOrderData)
       }
     },
     handleRoomSelect(e: { currentTarget: { dataset: { id: string } } }) {

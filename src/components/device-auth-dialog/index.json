@@ -1,5 +1,8 @@
 {
   "component": true,
   "styleIsolation": "apply-shared",
-  "usingComponents": {}
+  "usingComponents": {
+    "mz-toast": "/skyline-components/mz-toast/index",
+    "mz-dialog": "/skyline-components/mz-dialog/index"
+  }
 }

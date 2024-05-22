@@ -35,7 +35,9 @@
             disabled="{{isBriSliderDisable}}"
             bind:change="onBriSliderChange"
             bind:drag="onBriSliderDrag">
-            <image slot="button" src="/package-remoter/assets/newUI/barH.png" class="bri-slder-tab-V"/>
+            <view slot="button" class="bri-slder-tab-V flex-center">
+              <image style="height: 64rpx; width: 80rpx; margin-top: 50rpx;" src="/package-remoter/assets/newUI/barH.png"/>
+            </view>
           </van-slider>
           <text class="bri-val-text text-36rpx font-normal"
             style="color: {{ sliderBriTextColor }};">{{isBriDraging ? briDragTemp : curBrightnessPercent}}%</text>

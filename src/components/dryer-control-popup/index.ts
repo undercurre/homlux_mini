@@ -1,8 +1,8 @@
 // src\components\dryer-control-popup\index.ts
 import { ComponentWithComputed } from 'miniprogram-computed'
-import Toast from '@vant/weapp/toast/toast'
+import Toast from '../../skyline-components/mz-toast/toast'
 import { sendDevice } from '../../apis/index'
-import { PRO_TYPE } from '../../config/index'
+import { NO_SYNC_DEVICE_STATUS, PRO_TYPE } from '../../config/index'
 
 type BtnItem = {
   text: string
@@ -158,10 +158,13 @@ ComponentWithComputed({
       })
       return res
     },
-    largeBtnStyle(data) {
+    wrapperWidth(data) {
       const { isSceneSetting } = data
-      const width = isSceneSetting ? '170rpx' : '280rpx'
-      return `height: 112rpx; width: ${width}; border-radius: 32rpx; background-color: #f7f8f9;`
+      return isSceneSetting ? 210 : 320
+    },
+    // 是否局域网可控
+    isLanCtl(data) {
+      return !data.deviceInfo.onLineStatus && data.deviceInfo.canLanCtrl
     },
   },
 
@@ -313,7 +316,7 @@ ComponentWithComputed({
       this.data._canSyncCloudData = false
       this.data._controlTimer = setTimeout(() => {
         this.data._canSyncCloudData = true
-      }, 2000)
+      }, NO_SYNC_DEVICE_STATUS)
 
       const res = await sendDevice({
         deviceId: this.data.deviceInfo.deviceId,

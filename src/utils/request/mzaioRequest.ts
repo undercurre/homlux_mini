@@ -9,6 +9,7 @@ type mzaioResponseRowData<T extends AnyResType = AnyResType> = {
   msg: string
   success: boolean
   result: T
+  timestamp: number
 }
 
 export interface IApiRequestOption {

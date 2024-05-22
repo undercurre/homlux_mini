@@ -94,7 +94,7 @@ const _parsePayload = (payload: string, deviceType: string, deviceModel?: string
       LIGHT_COLOR_TEMP: rxU16[6], // 当前色温
     }
     // 不同灯的专有属性
-    if (deviceModel === '01') {
+    if (deviceModel === '01' || deviceModel === '04') {
       res.DELAY_OFF = rxU16[7] // 延时关灯剩余分钟数，0表示延时关灯失效
       res.LIGHT_NIGHT_LAMP = rxU16[8] === 0x06 // 小夜灯状态，0x06代表开启，0x9表示助眠状态
       res.LIGHT_SCENE_SLEEP = rxU16[8] === 0x09
@@ -108,13 +108,26 @@ const _parsePayload = (payload: string, deviceType: string, deviceModel?: string
     }
     return res
   }
-  if (deviceType === '26') {
+  if (deviceType === '26' || deviceType === '40') {
     return {
-      BATH_WARM: !!(rxU16[4] & BIT_5),
-      BATH_WIND: !!(rxU16[4] & BIT_2),
-      BATH_VENTILATE: !!(rxU16[4] & BIT_1),
+      BATH_LAMP: !!rxU16[1],
+      BATH_BRIGHT: rxU16[2],
+      BATH_NIGHT_LAMP: !!rxU16[3],
       BATH_DRY: !!(rxU16[4] & BIT_0),
-      BATH_LAMP: !!(rxU16[1] & BIT_0),
+      BATH_VENTILATE: !!(rxU16[4] & BIT_1),
+      BATH_WIND: !!(rxU16[4] & BIT_2),
+      KITCHEN_WIND_STRONG: !!(rxU16[4] & BIT_2),
+      BATH_WARM_SOFT: !!(rxU16[4] & BIT_3),
+      BATH_WARM_STRONG: !!(rxU16[4] & BIT_4),
+      BATH_WARM_UP: !!(rxU16[4] & BIT_5),
+      BATH_AUTO: !!(rxU16[4] & BIT_6),
+      KITCHEN_WIND_SOFT: !!(rxU16[4] & BIT_7),
+      BATH_TEMPERATURE: rxU16[5],
+      BATH_TEMPERATURE_ENV: rxU16[6],
+      BATH_SWING: !!(rxU16[7] & BIT_4),
+      BATH_ANION: !!(rxU16[7] & BIT_6),
+      BLOW_GEAR: rxU16[8] & 0x07,
+      VENT_GEAR: rxU16[9] & 0x07,
     }
   }
   return {}
@@ -149,13 +162,13 @@ const _createBluetoothProtocol = (params: { addr: string; data: string; opcode?:
   return buffer
 }
 
-const _analysisBluetoothProtocol = (params: { addr: string, dataArr: number[] }) => {
+const _analysisBluetoothProtocol = (params: { addr: string; dataArr: number[] }) => {
   const { addr, dataArr } = params
   if (dataArr.length < 3) return []
   if (dataArr[0] != dataArr.length - 1) return []
-  const encryptIndex = (dataArr[1] & 0xF0) >> 4
+  const encryptIndex = (dataArr[1] & 0xf0) >> 4
   const payload = dataArr.slice(2)
-  const hexArr = payload.map(item => {
+  const hexArr = payload.map((item) => {
     return ('00' + item.toString(16)).slice(-2)
   })
   return cryptoUtils.enCodeData(hexArr.join(''), addr, encryptIndex)
@@ -382,5 +395,5 @@ export default {
   handleBluetoothResponse: _handleBluetoothResponse,
   handleBleResponse: _handleBleResponse,
   generalCmdString: _generalCmdString,
-  parsePayload: _parsePayload
+  parsePayload: _parsePayload,
 }

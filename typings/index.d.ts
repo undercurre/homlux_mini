@@ -23,6 +23,24 @@ type ConfigWithEnv<T> = Record<ENV_TYPE, T>
 declare namespace WechatMiniprogram.Component {
   interface InstanceMethods<D extends DataOption> {
     goBack(): void
+
+    /**
+     * 绑定由 worklet 驱动的样式到相应的节点，详见 [worklet 动画](https://developers.weixin.qq.com/miniprogram/dev/framework/runtime/skyline/worklet.html)
+     *
+     * 最低基础库版本：[`2.29.0`](https://developers.weixin.qq.com/miniprogram/dev/framework/compatibility.html)
+     */
+    applyAnimatedStyle(
+      selector: string,
+      updater: () => Record<string, string | number>,
+      userConfig?: { immediate: boolean; flush: 'sync' | 'async' },
+      callback?: (res: { styleId: number }) => void,
+    ): void
+    /**
+     * 清除节点上 worklet 驱动样式的绑定关系
+     *
+     * 最低基础库版本：[`2.30.1`](https://developers.weixin.qq.com/miniprogram/dev/framework/compatibility.html)
+     */
+    clearAnimatedStyle(selector: string, styleIds: number[], callback?: () => void): void
   }
 }
 
@@ -32,5 +50,8 @@ declare namespace WechatMiniprogram.Component {
  * 又或者const obj = {a: 1, b: '2', c: true} as const   ValueOf<typeof obj> => 1 | '2' | true
  */
 type ValueOf<T> = T[keyof T]
+
+// 任意方法类型
+type FunctionType = (...args: unknown[]) => unknown
 
 declare module 'weapp-qrcode-canvas-2d'

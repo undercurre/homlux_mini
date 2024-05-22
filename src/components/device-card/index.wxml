@@ -7,18 +7,8 @@
   <!-- IOS 下card-clip会把box-shadow同时剪裁掉，故增加一层处理 -->
   <view class="flex-col-center relative overflow-hidden card-clip w-160rpx h-216rpx rounded-32rpx">
     <!-- 单选和编辑选择，选中状态均使用描边样式 -->
-    <view
-      wx:if="{{select}}"
-      class="w-160rpx h-216rpx absolute left-0 top-0 box-border select-border rounded-32rpx bg-hex-fff"
-    ></view>
-    <view
-      wx:elif="{{isGroup && showSpecialBg}}"
-      class="w-160rpx h-216rpx rounded-32rpx box-border show-group-bg white-border}}"
-    ></view>
-    <view
-      wx:else
-      class="w-160rpx h-216rpx rounded-32rpx box-border {{showGradientBg?'show-control-bg white-border':'bg-hex-f9fbfe'}}"
-    ></view>
+    <view class="w-160rpx h-216rpx absolute left-0 top-0 box-border select-border rounded-32rpx bg-hex-fff {{borderStyle}}"></view>
+    <view class="w-160rpx h-216rpx rounded-32rpx box-border {{bgStyle}}"></view>
 
     <!-- 顶部标题 -->
     <view class="absolute left-0 top-16rpx w-160rpx flex-center">
@@ -44,7 +34,7 @@
     <!-- 附加描述，暂时只用于显示面板名称 -->
     <view
       catch:tap="handleMiddleTap"
-      class="absolute text-center w-full top-90rpx pt-20rpx"
+      class="absolute text-center w-full top-100rpx pt-20rpx"
       wx:if="{{deviceType==='switch' && (showControl || showBtnDetail)}}"
     >
       <text class="text-20rpx text-black-tips">{{bottomDesc}}</text>
@@ -98,5 +88,3 @@
     </view>
   </view>
 </view>
-
-<van-toast id="van-toast" />

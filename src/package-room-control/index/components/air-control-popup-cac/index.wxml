@@ -1,4 +1,4 @@
-<van-popup
+<mz-popup
   show="{{ show }}"
   z-index="1002"
   round
@@ -28,20 +28,20 @@
     <view class="w-686rpx">
       <view class="flex flex-row justify-between items-center px-32rpx">
         <!-- 温度减 -->
-        <icon-button
+        <mz-icon-button
           disabled="{{disabledMinus}}"
-          isOn="{{false}}"
-          size="{{74}}"
+          imageSize="{{32}}"
+          wrapperWidth="{{74}}"
+          wrapperHeight="{{74}}"
           round="{{37}}"
           bgColor="#f7f8f9"
           bgColorActive="#cccccc"
           icon="/package-room-control/assets/img/minus.png"
           iconActive="/package-room-control/assets/img/minusOn.png"
           textColor="#a2a2a2"
-          data-rebound="{{true}}"
-          bind:touchstart="handleBtnTap"
+          bind:btnTouchStart="handleBtnTap"
           data-key="minus"
-        ></icon-button>
+        ></mz-icon-button>
 
         <view>
           <view class="flex flex-row justify-center items-start mt-64rpx">
@@ -60,20 +60,20 @@
         </view>
 
         <!-- 温度加 -->
-        <icon-button
+        <mz-icon-button
           disabled="{{disabledPlus}}"
-          isOn="{{false}}"
-          size="{{74}}"
+          imageSize="{{32}}"
+          wrapperWidth="{{74}}"
+          wrapperHeight="{{74}}"
           round="{{37}}"
           bgColor="#f7f8f9"
           bgColorActive="#cccccc"
           icon="/package-room-control/assets/img/plus.png"
           iconActive="/package-room-control/assets/img/plusOn.png"
           textColor="#a2a2a2"
-          data-rebound="{{true}}"
-          bind:touchstart="handleBtnTap"
+          bind:btnTouchStart="handleBtnTap"
           data-key="plus"
-        ></icon-button>
+        ></mz-icon-button>
       </view>
 
       <view class="py-64rpx px-8rpx">
@@ -83,11 +83,11 @@
           bind:slideEnd="handleBtnTap"
           bind:slideChange="handleSlideChange"
           value="{{temperature}}"
-          barHeight="36"
-          data-min="{{minTemp}}"
-          data-max="{{maxTemp}}"
+          bar-height="36"
+          min="{{minTemp}}"
+          max="{{maxTemp}}"
           active-color="#488FFF"
-          data-key="targetTemperature"
+          key="targetTemperature"
           use-button-slot
         >
           <view
@@ -124,9 +124,9 @@
 
     <view class="h-96rpx"></view>
   </view>
-</van-popup>
+</mz-popup>
 
-<van-popup
+<mz-popup
   show="{{ isShowPicker }}"
   round
   position="bottom"
@@ -139,33 +139,33 @@
     <text class="h-50rpx text-36rpx text-black-2a mt-48rpx font-medium">{{pickerTitle}}</text>
 
     <view class="w-750rpx">
-      <van-picker
+      <!-- <mz-picker
         columns="{{ pickerColumns }}"
         default-index="{{pickerIndex}}"
         bind:change="onPickerChange"
-      />
+      /> -->
     </view>
 
     <view class="h-96rpx"></view>
     <view class="flex w-686rpx gap-x-46rpx">
-      <van-button
+      <mz-button
         class="flex-1"
         size="large"
         bind:click="handlePickerClose"
-        >取消</van-button
+        >取消</mz-button
       >
 
-      <van-button
+      <mz-button
         type="primary"
         class="flex-1"
         size="large"
         bind:click="handlePickerConfirm"
-        >确认</van-button
+        >确认</mz-button
       >
     </view>
 
     <view class="h-96rpx"></view>
   </view>
-</van-popup>
+</mz-popup>
 
-<van-toast id="van-toast" />
+<mz-toast id="mz-toast" />

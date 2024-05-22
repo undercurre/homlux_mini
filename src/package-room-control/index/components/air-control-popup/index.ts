@@ -1,8 +1,8 @@
 // src\package-room-control\index\components\air-control-popup\index.ts
 import { ComponentWithComputed } from 'miniprogram-computed'
-import Toast from '@vant/weapp/toast/toast'
+import Toast from '../../../../skyline-components/mz-toast/toast'
 import { sendDevice } from '../../../../apis/index'
-import { AC_MODE } from '../../../../config/index'
+import { AC_MODE, NO_SYNC_DEVICE_STATUS, PRO_TYPE } from '../../../../config/index'
 import { transferWindSpeedProperty } from '../../../../utils/index'
 
 ComponentWithComputed({
@@ -29,7 +29,7 @@ ComponentWithComputed({
       type: Object,
       value: {},
       observer(value) {
-        if (value && this.data._canSyncCloudData) {
+        if (value && this.data._canSyncCloudData && value.proType === PRO_TYPE.airConditioner) {
           this.setData({
             propView: value as Device.DeviceItem & Device.mzgdPropertyDTO,
           })
@@ -86,7 +86,7 @@ ComponentWithComputed({
         },
       ],
     } as Record<string, IAnyObject[]>,
-    pickerColumns: Array.from({ length: 10 }) as string[], //HACK:初始化pickerColumns时如果长度不足会导致首次选项错误
+    pickerColumns: [] as string[],
     step: 0.5,
     minTemp: 17,
     maxTemp: 30,
@@ -152,6 +152,10 @@ ComponentWithComputed({
       } else {
         return 'wind_auto'
       }
+    },
+    // 是否局域网可控
+    isLanCtl(data) {
+      return !data.deviceInfo.onLineStatus && data.deviceInfo.canLanCtrl
     },
   },
 
@@ -220,7 +224,7 @@ ComponentWithComputed({
       this.data._canSyncCloudData = false
       this.data._controlTimer = setTimeout(() => {
         this.data._canSyncCloudData = true
-      }, 2000)
+      }, NO_SYNC_DEVICE_STATUS)
 
       const res = await sendDevice({
         deviceId: this.data.deviceInfo.deviceId,
@@ -235,12 +239,15 @@ ComponentWithComputed({
       }
     },
     // 温度滑条拖动过程
-    handleSlideChange(e: WechatMiniprogram.CustomEvent) {
+    handleSlideChange(e: { detail: number }) {
+      const temperature = Math.floor(e.detail)
+      const small_temperature = e.detail - temperature
       const { propView } = this.data
       this.setData({
         propView: {
           ...propView,
-          temperature: e.detail,
+          temperature,
+          small_temperature,
         },
       })
     },
@@ -288,8 +295,8 @@ ComponentWithComputed({
       console.log(e)
       const { pickerList, pickerType } = this.data
       this.setData({
-        pickerIndex: e.detail[0],
-        pickerValue: pickerList[pickerType][e.detail[0]].value,
+        pickerIndex: e.detail.index,
+        pickerValue: pickerList[pickerType][e.detail.index].value,
       })
     },
     handleCancel() {

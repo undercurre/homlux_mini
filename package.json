@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "keywords": [],
-  "author": "Wyatex",
+  "author": "",
   "license": "ISC",
   "scripts": {
     "prepare": "husky install",
@@ -16,11 +16,11 @@
     "getIconify": "esno build/getIconify json=../iconify.json path=./src/assets/svg/iconify.ts"
   },
   "dependencies": {
-    "@vant/weapp": "^1.10.18",
+    "@vant/weapp": "^1.11.4",
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.7",
     "fast-deep-equal": "^2.0.1",
-    "js-homos": "^0.2.9",
+    "js-homos": "^0.2.10",
     "lottie-miniprogram": "^1.0.12",
     "m-miniBaseSDK": "^1.0.5",
     "m-miniCommonSDK": "^1.0.8",
@@ -50,7 +50,7 @@
     "esno": "^0.16.3",
     "husky": "^8.0.3",
     "lint-staged": "^14.0.1",
-    "miniprogram-api-typings": "^3.12.0",
+    "miniprogram-api-typings": "^3.12.2",
     "prettier": "^2.8.8",
     "typescript": "^4.9.5",
     "unocss": "^0.48.5",

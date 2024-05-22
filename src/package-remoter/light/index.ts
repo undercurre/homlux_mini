@@ -282,6 +282,7 @@ ComponentWithComputed({
         btnList: btns,
         bottomList: bottom,
         curBrightnessPercent: bri,
+        briDragTemp: bri,
         curColorTempPercent: col,
       })
       this.updateViewEn()
@@ -353,11 +354,7 @@ ComponentWithComputed({
       if (list[index].key == 'POWER') {
         this.sendBluetoothCMD([CMD['LIGHT_LAMP']])
       } else if (list[index].key == 'NIGHT') {
-        if (list[index].isOn) {
-          this.sendBluetoothCMD([CMD['LIGHT_LAMP']])
-        } else {
-          this.sendBluetoothCMD([CMD['LIGHT_NIGHT_LAMP']])
-        }
+        this.sendBluetoothCMD([CMD['LIGHT_NIGHT_LAMP']])
       }
     },
     onTabClick(e: any) {

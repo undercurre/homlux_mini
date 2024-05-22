@@ -2,6 +2,8 @@
   "component": true,
   "styleIsolation": "apply-shared",
   "usingComponents": {
+    "van-button": "@vant/weapp/button/index",
+    "svg-icon": "/components/svg-icon/index",
     "dropdown-menu": "./components/dropdown-menu/index"
   }
 }

@@ -1,4 +1,4 @@
-<van-popup
+<mz-popup
   show="{{ show }}"
   z-index="1002"
   round
@@ -28,9 +28,8 @@
     <view class="w-686rpx">
       <view class="flex flex-row justify-between items-center px-32rpx">
         <!-- 风档减 -->
-        <icon-button
+        <mz-icon-button
           disabled="{{disabledMinus}}"
-          isOn="{{false}}"
           size="{{74}}"
           round="{{37}}"
           bgColor="#f7f8f9"
@@ -38,10 +37,9 @@
           icon="/package-room-control/assets/img/minus.png"
           iconActive="/package-room-control/assets/img/minusOn.png"
           textColor="#a2a2a2"
-          data-rebound="{{true}}"
-          bind:touchstart="handleBtnTap"
+          bind:btnTouchStart="handleBtnTap"
           data-key="minus"
-        ></icon-button>
+        ></mz-icon-button>
 
         <view>
           <view class="flex flex-row justify-center items-end my-64rpx">
@@ -52,9 +50,8 @@
         </view>
 
         <!-- 风档加 -->
-        <icon-button
+        <mz-icon-button
           disabled="{{disabledPlus}}"
-          isOn="{{false}}"
           size="{{74}}"
           round="{{37}}"
           bgColor="#f7f8f9"
@@ -62,10 +59,9 @@
           icon="/package-room-control/assets/img/plus.png"
           iconActive="/package-room-control/assets/img/plusOn.png"
           textColor="#a2a2a2"
-          data-rebound="{{true}}"
-          bind:touchstart="handleBtnTap"
+          bind:btnTouchStart="handleBtnTap"
           data-key="plus"
-        ></icon-button>
+        ></mz-icon-button>
       </view>
 
       <view class="pt-64rpx pb-16rpx px-8rpx">
@@ -74,11 +70,11 @@
           bind:slideEnd="handleBtnTap"
           bind:slideChange="handleSlideChange"
           value="{{currentWindLevel}}"
-          barHeight="36"
-          data-min="{{1}}"
-          data-max="{{3}}"
+          bar-height="36"
+          min="{{1}}"
+          max="{{3}}"
           active-color="#488FFF"
-          data-key="windSpeedSlider"
+          key="windSpeedSlider"
           use-button-slot
         >
           <view
@@ -96,6 +92,6 @@
 
     <view class="h-96rpx"></view>
   </view>
-</van-popup>
+</mz-popup>
 
-<van-toast id="van-toast" />
+<mz-toast id="mz-toast" />

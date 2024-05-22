@@ -1,0 +1,23 @@
+<wxs
+  src="../wxs/utils.wxs"
+  module="utils"
+/>
+<wxs
+  src="./index.wxs"
+  module="computed"
+/>
+
+<mz-overlay
+  wx:if="{{ overlay }}"
+  show="{{ show }}"
+  z-index="{{ zIndex }}"
+  custom-style="{{ overlayStyle }}"
+  duration="{{ duration }}"
+  bind:click="onClickOverlay"
+  lock-scroll="{{ lockScroll }}"
+  root-portal="{{ rootPortal }}"
+/>
+
+<root-portal enable="{{rootPortal}}">
+  <include src="./popup.wxml" />
+</root-portal>

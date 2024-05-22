@@ -1,4 +1,4 @@
-<view class="mz-button flex items-center justify-evenly {{ disabled ? 'disabled' : '' }}">
+<view class="mz-button flex flex-row items-center justify-evenly {{ disabled ? 'disabled' : '' }}">
   <image
     class="icon ml-40rpx"
     src="{{icon}}"

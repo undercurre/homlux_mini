@@ -1,5 +1,7 @@
 {
   "usingComponents": {
+    "van-button": "@vant/weapp/button/index",
+    "svg-icon": "/components/svg-icon/index",
     "van-popup": "@vant/weapp/popup/index",
     "van-toast": "@vant/weapp/toast/index",
     "van-cell": "@vant/weapp/cell/index",

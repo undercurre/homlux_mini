@@ -1,4 +1,4 @@
-import { emitter, storage } from '../../utils/index'
+import { storage } from '../../utils/index'
 
 // package-automation/scene-success/index.ts
 Component({
@@ -14,9 +14,8 @@ Component({
 
   methods: {
     go2SceneIndex() {
-      emitter.emit('sceneEdit')
       wx.navigateBack({
-        delta: 3,
+        delta: 1,
       })
     },
   },

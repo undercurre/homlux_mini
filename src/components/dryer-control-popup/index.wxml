@@ -1,4 +1,4 @@
-<van-popup
+<mz-popup
   show="{{ show }}"
   z-index="1002"
   round
@@ -25,6 +25,17 @@
       </view>
     </view>
 
+    <view
+      class="offline-tips"
+      wx:if="{{isLanCtl}}"
+    >
+      <image
+        class="w-36 h-36 ml-48rpx"
+        src="/assets/img/base/info.png"
+      ></image>
+      <text class="text-hex-555659 text-24 ml-32rpx">当前设备仅支持局域网控制，请检查您的网络！</text>
+    </view>
+
     <view class="w-686rpx">
       <block wx:if="{{!isSceneSetting}}">
         <view class="flex flex-row justify-center items-end mt-64rpx">
@@ -42,47 +53,54 @@
         <mz-icon-button
           wx:for="{{btnList}}"
           wx:key="key"
+          data-key="{{item.key}}"
           icon="{{item.icon}}"
           iconActive="{{item.iconActive}}"
           text="{{item.text}}"
-          data-key="{{item.key}}"
           data-disabled="{{item.disabled}}"
           isOn="{{item.on}}"
-          size="{{80}}"
+          imageSize="{{32}}"
+          wrapperWidth="{{74}}"
+          wrapperHeight="{{74}}"
           round="{{20}}"
           textColor="#a2a2a2"
-          bind:touchstart="handleBtnTap"
+          bind:btnTouchStart="handleBtnTap"
         ></mz-icon-button>
       </view>
 
       <view class="flex flex-row justify-between mt-32rpx mb-64rpx">
-        <mz-round-button
+        <mz-icon-button
+          disabled="{{item.disabled}}"
           wx:for="{{largeBtnList}}"
           wx:key="key"
           icon="{{item.icon}}"
           iconActive="{{item.iconActive}}"
           text="{{item.text}}"
           data-key="{{item.key}}"
-          data-disabled="{{item.disabled}}"
           isOn="{{item.on}}"
-          btnStyle="{{largeBtnStyle}}"
-          size="{{64}}"
+          rebound="{{item.rebound}}"
+          textSize="{{28}}"
           textColor="#a2a2a2"
-          textWidth="{{item.textWidth || '50rpx'}}"
-          bind:touchstart="handleBtnTap"
-        ></mz-round-button>
+          imageSize="{{64}}"
+          wrapperWidth="{{wrapperWidth}}"
+          wrapperHeight="{{112}}"
+          round="{{32}}"
+          direction="row"
+          bind:btnTouchStart="handleBtnTap"
+          textInset
+        ></mz-icon-button>
       </view>
 
       <view wx:if="{{isShowConfirm}}">
-        <van-button
+        <mz-button
           type="primary"
           size="large"
           bind:click="handleConfirm"
-          >确定</van-button
+          >确定</mz-button
         >
       </view>
     </view>
   </view>
-</van-popup>
+</mz-popup>
 
-<van-toast id="van-toast" />
+<mz-toast id="mz-toast" />

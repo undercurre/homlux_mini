@@ -1,5 +1,7 @@
 {
   "component": true,
   "styleIsolation": "apply-shared",
-  "usingComponents": {}
+  "usingComponents": {
+    "mz-cell-group": "../../../../skyline-components/mz-cell-group/index"
+  }
 }

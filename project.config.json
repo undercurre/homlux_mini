@@ -43,7 +43,8 @@
     ],
     "ignoreUploadUnusedFiles": true,
     "ignoreDevUnusedFiles": false,
-    "condition": false
+    "condition": false,
+    "compileWorklet": true
   },
   "srcMiniprogramRoot": "src/",
   "miniprogramRoot": "src/",
@@ -66,5 +67,7 @@
   "scripts": {
     "beforeCompile": "node ./build/releaseTime.js",
     "beforePreview": "node ./build/releaseTime.js"
-  }
+  },
+  "projectname": "HomLux",
+  "libVersion": "3.4.0"
 }

@@ -3,7 +3,7 @@ import { PRO_TYPE } from '../../../../config/index'
 import { AC_MODE, CAC_FA_WINDSPEED, CAC_MODE } from '../../../../config/index'
 import { transferWindSpeedProperty } from '../../../../utils/index'
 import { sendDevice } from '../../../../apis/index'
-import Toast from '@vant/weapp/toast/toast'
+import Toast from '../../../../skyline-components/mz-toast/toast'
 
 ComponentWithComputed({
   options: {

@@ -24,8 +24,8 @@ import {
   delSwitchAndSwitchAssociated,
   getSensorLogs,
 } from '../../../../apis/index'
-import Toast from '@vant/weapp/toast/toast'
-import Dialog from '@vant/weapp/dialog/dialog'
+import Toast from '../../../../skyline-components/mz-toast/toast'
+import Dialog from '../../../../skyline-components/mz-dialog/dialog'
 import pageBehavior from '../../../../behaviors/pageBehaviors'
 import { runInAction } from 'mobx-miniprogram'
 
@@ -54,8 +54,12 @@ ComponentWithComputed({
 
         // 初始化可控变量
         if (device.proType === PRO_TYPE.light) {
-          if (!isNullOrUnDef(prop.brightness)) diffData['lightInfoInner.brightness'] = prop.brightness
-          if (!isNullOrUnDef(prop.colorTemperature)) diffData['lightInfoInner.colorTemperature'] = prop.colorTemperature
+          if (!isNullOrUnDef(prop.brightness)) {
+            diffData['lightInfoInner.brightness'] = prop.brightness
+          }
+          if (!isNullOrUnDef(prop.colorTemperature)) {
+            diffData['lightInfoInner.colorTemperature'] = prop.colorTemperature
+          }
         } else if (device.proType === PRO_TYPE.curtain) {
           diffData.curtainInfo = {
             position: prop.curtain_position,
@@ -102,6 +106,7 @@ ComponentWithComputed({
   data: {
     defaultImgDir,
     show: false,
+    // 灯信息，用于组件传值同步
     lightInfoInner: {
       brightness: 10,
       colorTemperature: 20,
@@ -137,7 +142,9 @@ ComponentWithComputed({
       if (!data.lightInfoInner?.colorTemperature) {
         return data.minColorTemp
       }
-      return (data.lightInfoInner.colorTemperature / 100) * (data.maxColorTemp - data.minColorTemp) + data.minColorTemp
+      return Math.round(
+        (data.lightInfoInner.colorTemperature / 100) * (data.maxColorTemp - data.minColorTemp) + data.minColorTemp,
+      )
     },
 
     // 是否关联智能开关，模板语法不支持Array.includes,改为通过计算属性控制

@@ -2,9 +2,12 @@
   "component": true,
   "styleIsolation": "apply-shared",
   "usingComponents": {
+    "mz-button": "/skyline-components/mz-button/index",
+    "mz-toast": "/skyline-components/mz-toast/index",
+    "mz-popup": "/skyline-components/mz-popup/index",
     "drop-button": "../../components/drop-button/index",
-    "mz-slider": "/components/mz-slider/index",
-    "van-picker": "@vant/weapp/picker/index",
-    "icon-button": "../../components/icon-button/index"
+    "mz-slider": "/skyline-components/mz-slider/index",
+    "mz-picker": "/skyline-components/mz-picker/index",
+    "mz-icon-button": "/skyline-components/mz-icon-button/index"
   }
 }

@@ -2,8 +2,11 @@
   "component": true,
   "styleIsolation": "apply-shared",
   "usingComponents": {
+    "mz-toast": "/skyline-components/mz-toast/index",
+    "mz-dialog": "/skyline-components/mz-dialog/index",
+    "mz-popup": "/skyline-components/mz-popup/index",
     "select-card-popup": "../../../../components/select-card-popup/index",
-    "mz-slider": "/components/mz-slider/index",
+    "mz-slider": "/skyline-components/mz-slider/index",
     "curtain-slider": "/components/curtain-slider/index",
     "tips-box": "/components/tips-box/index"
   }

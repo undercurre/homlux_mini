@@ -1,0 +1,38 @@
+<wxs
+  src="../wxs/utils.wxs"
+  module="utils"
+/>
+<wxs
+  src="./index.wxs"
+  module="computed"
+/>
+
+<button
+  data-detail="{{ dataset }}"
+  class="custom-class {{ utils.bem('button', [type, size, { block, round, plain, square, loading, disabled, hairline, unclickable: disabled || loading }]) }} {{ hairline ? 'mz-hairline--surround' : '' }}"
+  hover-class="{{ disabled || loading ? '' : 'mz-button--active hover-class'}}"
+  style="{{ computed.rootStyle({ plain, color, customStyle }) }}"
+  loading="{{loading}}"
+  form-type="{{ formType }}"
+  open-type="{{ disabled || loading || openType }}"
+  business-id="{{ businessId }}"
+  session-from="{{ sessionFrom }}"
+  send-message-title="{{ sendMessageTitle }}"
+  send-message-path="{{ sendMessagePath }}"
+  send-message-img="{{ sendMessageImg }}"
+  show-message-card="{{ showMessageCard }}"
+  app-parameter="{{ appParameter }}"
+  aria-label="{{ ariaLabel }}"
+  bindtap="{{ disabled || loading ? '' : 'onClick' }}"
+  bindgetuserinfo="onGetUserInfo"
+  bindcontact="onContact"
+  bindgetphonenumber="onGetPhoneNumber"
+  binderror="onError"
+  bindlaunchapp="onLaunchApp"
+  bindopensetting="onOpenSetting"
+  bindchooseavatar="onChooseAvatar"
+>
+  <view class="mz-button__text">
+    <slot />
+  </view>
+</button>

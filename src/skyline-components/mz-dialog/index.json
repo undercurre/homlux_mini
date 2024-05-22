@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "mz-button": "../mz-button/index",
+    "mz-popup": "../mz-popup/index"
+  }
+}

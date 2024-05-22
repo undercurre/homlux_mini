@@ -2,7 +2,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, roomBinding, deviceBinding } from '../../../store/index'
 import { strUtil, getCurrentPageParams, emitter, Logger } from '../../../utils/index'
-import { BleClient, bleUtil } from '../../common/bleProtocol'
+import { BleClient, bleUtil, IAdData } from '../../../utils/bleProtocol'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
 import { sendCmdAddSubdevice, bindDevice, isDeviceOnline, batchGetProductInfoByBPid } from '../../../apis/index'
 import { defaultImgDir, productImgDir } from '../../../config/index'
@@ -87,22 +87,45 @@ ComponentWithComputed({
         })
         .catch((error) => error)
 
-      console.log('openBleRes', openBleRes)
+      Logger.log('openBleRes', openBleRes)
 
       // 监听扫描到新设备事件
       wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
         const deviceList = res.devices.filter((item) => {
           let flag = false
-          // localName为homlux_ble且没有被发现过的
-          if (item.localName && item.localName.includes('homlux_ble')) {
+          // localName为homlux_ble、homlux且没有被发现过的
+          if (item.localName && ['homlux_ble', 'homlux'].includes(item.localName)) {
             flag = true
           }
 
           return flag
         })
-        deviceList.forEach((item) => {
-          this.handleBleDeviceInfo(item)
-        })
+
+        for (const item of deviceList) {
+          const msgObj = bleUtil.transferBroadcastData(item.advertisData)
+          const targetMac = this.data.pageParams.mac // 云端的是zigbee模块的mac
+
+          // 防止不同时间段回调的onBluetoothDeviceFound导致的重复执行
+          if (this.data._hasFound) {
+            console.error('已执行过发现目标蓝牙设备，中断流程')
+            break
+          }
+
+          if (targetMac !== msgObj.zigbeeMac) {
+            continue
+          }
+
+          this.data._hasFound = true
+          Logger.log('Device Found', item, msgObj)
+
+          wx.stopBluetoothDevicesDiscovery()
+          this.handleBleDeviceInfo({
+            ...item,
+            ...msgObj,
+          })
+
+          break
+        }
       })
 
       // 开始搜寻附近的蓝牙外围设备
@@ -119,26 +142,9 @@ ComponentWithComputed({
     /**
      * 检查是否目标设备
      */
-    async handleBleDeviceInfo(device: WechatMiniprogram.BlueToothDevice) {
-      const msgObj = bleUtil.transferBroadcastData(device.advertisData)
-      const targetMac = this.data.pageParams.mac // 云端的是zigbee模块的mac
-
-      if (targetMac !== msgObj.zigbeeMac) {
-        return false
-      }
-
-      if (this.data._hasFound) {
-        console.error('重复发现目标蓝牙设备')
-        return false
-      }
-
-      this.data._hasFound = true
-      console.log('Device Found', device, msgObj)
-
-      wx.stopBluetoothDevicesDiscovery()
-
+    async handleBleDeviceInfo(device: WechatMiniprogram.BlueToothDevice & IAdData) {
       const productInfoRes = await batchGetProductInfoByBPid({
-        mzgdBluetoothVoList: [{ proType: msgObj.proType, bluetoothPid: msgObj.bluetoothPid }],
+        mzgdBluetoothVoList: [{ proType: device.proType, bluetoothPid: device.bluetoothPid }],
       })
 
       if (!productInfoRes.success && productInfoRes.result.length) {
@@ -165,16 +171,16 @@ ComponentWithComputed({
 
       const bleDevice: IBleDevice = {
         deviceUuid: device.deviceId,
-        mac: msgObj.mac,
+        mac: device.mac,
         zigbeeMac: this.data.pageParams.mac,
         icon: this.data.pageParams.deviceIcon,
         name: this.data.pageParams.deviceName,
         client: new BleClient({
-          mac: msgObj.mac,
+          mac: device.mac,
           deviceUuid: device.deviceId,
           modelId: this.data.pageParams.modelId,
           proType: this.data.pageParams.proType,
-          protocolVersion: msgObj.protocolVersion,
+          protocolVersion: device.protocolVersion,
         }),
         roomId: '',
         roomName: '',

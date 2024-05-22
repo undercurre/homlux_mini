@@ -2,7 +2,9 @@
   "component": true,
   "styleIsolation": "apply-shared",
   "usingComponents": {
-    "mz-round-button": "/components/mz-round-button/index",
-    "mz-icon-button": "/components/mz-icon-button/index"
+    "mz-button": "/skyline-components/mz-button/index",
+    "mz-toast": "/skyline-components/mz-toast/index",
+    "mz-popup": "/skyline-components/mz-popup/index",
+    "mz-icon-button": "/skyline-components/mz-icon-button/index"
   }
 }

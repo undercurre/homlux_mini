@@ -1,0 +1,11 @@
+<view class="cell-group custom-class">
+  <view
+    wx:if="{{ title }}"
+    class=""
+  >
+    {{ title }}
+  </view>
+  <view>
+    <slot></slot>
+  </view>
+</view>

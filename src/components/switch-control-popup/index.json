@@ -2,6 +2,8 @@
   "component": true,
   "styleIsolation": "apply-shared",
   "usingComponents": {
+    "mz-toast": "../../skyline-components/mz-toast/index",
+    "mz-popup": "../../skyline-components/mz-popup/index",
     "handle-onoff": "/components/handle-onoff/index"
   }
 }

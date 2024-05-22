@@ -1,0 +1,62 @@
+.cell {
+  background-color: #fff;
+  padding: 32rpx 40rpx 0;
+}
+
+.van-cell--hover {
+  background-color: #f2f3f5;
+}
+
+.border {
+  border-bottom: 1rpx solid #eef2f7;
+}
+
+.cell-content {
+  padding-bottom: 32rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.icon {
+  width: 48rpx;
+  height: 48rpx;
+  margin-right: 32rpx;
+}
+
+.cell-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 32rpx;
+  color: #27282a;
+}
+
+.label {
+  font-size: 28rpx;
+  color: #555659;
+  opacity: 0.5;
+}
+
+.cell-right {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: row;
+  align-items: center;
+  padding-left: 32rpx;
+  justify-content: flex-end;
+}
+
+.value {
+  text-align: right;
+  font-size: 32rpx;
+  color: #666666;
+}
+
+.link {
+  width: 32rpx;
+  height: 32rpx;
+}

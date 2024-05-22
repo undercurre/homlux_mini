@@ -1,6 +1,5 @@
 import { storage, goHome } from '../../utils/index'
 
-// components/custom-nav-bar/index.ts
 Component({
   options: {},
   /**
@@ -52,6 +51,15 @@ Component({
       (storage.get<number>('statusBarHeight') as number) +
       (storage.get<number>('navigationBarHeight') as number) +
       'px',
+    renderer: 'webview',
+  },
+
+  lifetimes: {
+    ready() {
+      this.setData({
+        renderer: (this as any).renderer,
+      })
+    },
   },
 
   /**

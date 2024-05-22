@@ -1,0 +1,43 @@
+<view
+  id="mz-slider"
+  class="custom-class mz-slider {{ disabled ? 'mz-slider--disabled' : '' }}"
+  style="background:{{ inactiveColor }}; height: {{barHeight}}rpx; line-height:  {{barHeight}}rpx;"
+  value="{{value}}"
+  catch:touchstart="sliderStart"
+  catch:touchmove="sliderMove"
+  catch:touchend="sliderEnd"
+>
+  <!-- 激活样式 -->
+  <view
+    id="active-bar--{{key}}"
+    class="mz-slider-bar"
+    style="background:{{activeColor}}"
+  >
+  </view>
+
+  <!-- 滑动柄 -->
+  <view
+    id="handler--{{key}}"
+    class="button-wrapper"
+    style="{{btnStyle}}"
+  >
+    <slot
+      wx:if="{{ useButtonSlot }}"
+      name="button"
+    ></slot>
+    <view
+      wx:else
+      class="mz-slider-button"
+    ></view>
+  </view>
+
+  <!-- 提示 -->
+  <view
+    wx:if="{{showToast}}"
+    id="slider-toast--{{key}}"
+    class="slider-toast"
+  >
+    <text class="toast-text">{{ formattedValue }}</text>
+    <view class="arrow"></view>
+  </view>
+</view>

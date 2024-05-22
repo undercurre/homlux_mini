@@ -1,0 +1,3 @@
+<view class="box">
+  <span class="text"><slot></slot></span>
+</view>

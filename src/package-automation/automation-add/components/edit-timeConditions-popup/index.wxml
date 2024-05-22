@@ -1,21 +1,57 @@
-<import src="/commons/templates/popup.wxml" />
-<van-popup show="{{ show }}" z-index="1002" round position="bottom" bind:close="handleClose" closeable catchtouchmove="blank">
+<mz-popup
+  show="{{ show }}"
+  z-index="1002"
+  round
+  position="bottom"
+  bind:close="handleClose"
+  closeable
+  catchtouchmove="blank"
+>
   <view class="w-750rpx h-1200rpx relative flex flex-col items-center">
-    <template is="title" data="{{title: '选择时间'}}" />
+    <text class="h-50rpx text-36rpx text-black-2a mt-48rpx font-medium">选择时间</text>
 
-    <scroll-view enhanced show-scrollbar="{{true}}" scroll-y="{{true}}" style="height: 990rpx">
+    <scroll-view
+      type="list"
+      enhanced
+      show-scrollbar="{{true}}"
+      bounces="{{false}}"
+      scroll-y="{{true}}"
+      style="height: 990rpx"
+    >
       <view class="h-18rpx"></view>
-      <time-picker-view value="{{timeValue}}" bind:change="timeChange"></time-picker-view>
+      <mz-picker
+        columns="{{pickerColumns}}"
+        unit="{{['时', '分']}}"
+        unitTranslationX="{{[48, 0]}}"
+        visible-item-count="{{3}}"
+        bind:change="timeChange"
+      ></mz-picker>
       <view class="mt-38rpx w-750rpx px-11rpx box-border py-1rpx">
         <text class="ml-58rpx text-32rpx font-medium text-hex-27282a">重复设置</text>
-        <period-select week="{{week}}" radio="{{periodType}}" bind:periodChange="periodChange" bind:weekChange="weekChange"></period-select>
+        <period-select
+          week="{{week}}"
+          radio="{{periodType}}"
+          bind:periodChange="periodChange"
+          bind:weekChange="weekChange"
+        ></period-select>
       </view>
     </scroll-view>
 
-    <view class="flex w-686rpx gap-x-46rpx">
-      <van-button class="flex-1" size="large" bind:click="handleCancel">上一步</van-button>
-
-      <van-button type="primary" class="flex-1" size="large" bind:click="handleConfirm">确定</van-button>
+    <view class="w-686rpx mx-32rpx flex flex-row justify-between">
+      <mz-button
+        class="flex-1"
+        size="large"
+        bind:click="handleCancel"
+        >上一步</mz-button
+      >
+      <view class="w-46rpx"></view>
+      <mz-button
+        type="primary"
+        class="flex-1"
+        size="large"
+        bind:click="handleConfirm"
+        >确定</mz-button
+      >
     </view>
   </view>
-</van-popup>
+</mz-popup>

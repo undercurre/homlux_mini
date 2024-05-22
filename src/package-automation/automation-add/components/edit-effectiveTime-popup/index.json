@@ -2,7 +2,10 @@
   "component": true,
   "styleIsolation": "apply-shared",
   "usingComponents": {
-    "time-picker-view": "../../../../components/time-picker-view/index",
+    "mz-button": "../../../../skyline-components/mz-button/index",
+    "mz-popup": "../../../../skyline-components/mz-popup/index",
+    "mz-cell-group": "../../../../skyline-components/mz-cell-group/index",
+    "mz-cell": "../../../../skyline-components/mz-cell/index",
     "period-select": "../../../../components/period-select/index",
     "edit-time-popup": "../edit-time-popup/index"
   }

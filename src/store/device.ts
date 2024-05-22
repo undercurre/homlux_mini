@@ -1,22 +1,25 @@
 import { observable, runInAction } from 'mobx-miniprogram'
 import { queryAllDevice, querySubDeviceList } from '../apis/device'
-import { PRO_TYPE } from '../config/index'
+import { PRO_TYPE, PRODUCT_ID } from '../config/index'
 import { homeStore } from './home'
 import { roomStore } from './room'
 import { sceneStore } from './scene'
 import homOs from 'js-homos'
 import { IApiRequestOption, deviceFlatten } from '../utils/index'
+import { emitter } from '../utils/eventBus'
 
 export const deviceStore = observable({
   /**
    * 全屋设备
    */
   allRoomDeviceList: [] as Device.DeviceItem[],
+  allRoomDeviceTimestamp: 0,
 
   /**
    * 当前房间设备
    */
   deviceList: [] as Device.DeviceItem[],
+  deviceTimestamp: 0,
 
   /**
    * deviceId -> device 映射
@@ -41,6 +44,7 @@ export const deviceStore = observable({
    * @description 房间设备拍扁列表
    */
   get deviceFlattenList(): Device.DeviceItem[] {
+    console.log('get deviceFlattenList trigger', this.deviceList.length)
     return deviceFlatten(this.deviceList)
   },
   // 当前房间灯组数量
@@ -94,13 +98,28 @@ export const deviceStore = observable({
     return map
   },
 
+  get allRoomSensorList(): Device.DeviceItem[] {
+    const sensorList = deviceStore.allRoomDeviceList.filter((item) => item.proType === PRO_TYPE.sensor)
+    sensorList.forEach((item) => {
+      item.uniId = item.deviceId
+      if (item.productId === PRODUCT_ID.humanSensor) {
+        item.property = { occupancy: 1, modelName: 'irDetector' }
+      } else if (item.productId === PRODUCT_ID.doorSensor) {
+        item.property = { doorStatus: 1, modelName: 'magnet' }
+      } else {
+        item.property = { buttonClicked: 1, modelName: 'freepad' }
+      }
+    })
+    return sensorList
+  },
+
   /**
    * 更新全屋设备列表
    * FIXME 只有非首次app.onShow时才执行
    */
   async updateAllRoomDeviceList(houseId: string = homeStore.currentHomeId, options?: IApiRequestOption) {
     const res = await queryAllDevice(houseId, options)
-    const { roomId = '0' } = roomStore.currentRoom
+    const { currentRoomId = '' } = roomStore
     if (!res.success) {
       console.log('加载全屋设备失败！', res)
       return
@@ -108,9 +127,12 @@ export const deviceStore = observable({
 
     runInAction(() => {
       deviceStore.allRoomDeviceList = res.result
+      deviceStore.allRoomDeviceTimestamp = res.timestamp
 
-      if (roomId && res.result?.length) {
-        deviceStore.deviceList = res.result.filter((device) => device.roomId === roomId)
+      if (currentRoomId && res.result?.length) {
+        deviceStore.deviceList = res.result.filter((device) => device.roomId === currentRoomId)
+        deviceStore.deviceTimestamp = res.timestamp
+        emitter.emit('roomDeviceSync')
       }
 
       this.updateAllRoomDeviceListLanStatus(false)
@@ -133,6 +155,7 @@ export const deviceStore = observable({
 
     runInAction(() => {
       deviceStore.deviceList = res.result
+      deviceStore.deviceTimestamp = res.timestamp
       this.updateAllRoomDeviceListLanStatus(false)
     })
   },
@@ -152,6 +175,26 @@ export const deviceStore = observable({
       return {
         ...item,
         canLanCtrl,
+      }
+    })
+
+    if (!isUpdateUI) {
+      deviceStore.allRoomDeviceList = allRoomDeviceList
+      return
+    }
+
+    runInAction(() => {
+      deviceStore.allRoomDeviceList = allRoomDeviceList
+    })
+  },
+  /**
+   * 更新全屋设备的在离线状态
+   */
+  updateAllRoomDeviceOnLineStatus(isOnLine = true, isUpdateUI = false) {
+    const allRoomDeviceList = deviceStore.allRoomDeviceList.map((item) => {
+      return {
+        ...item,
+        onLineStatus: isOnLine ? 1 : 0,
       }
     })
 

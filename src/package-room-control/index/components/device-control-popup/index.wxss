@@ -27,6 +27,7 @@
   border-radius: 52rpx;
   border: 3rpx solid #ffffff;
   background-image: linear-gradient(30deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 60%) !important;
+  box-shadow: 3px 3px 6px 0px rgba(0, 0, 0, 0.1);
 }
 
 .slider-color-temp-bar {
@@ -46,6 +47,7 @@
   position: absolute;
   top: 0;
 }
+
 .slider-button {
   width: 52rpx;
   height: 52rpx;
@@ -53,6 +55,7 @@
   border: 3rpx solid #ffffff;
   background-image: linear-gradient(30deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 60%) !important;
 }
+
 .log-item {
   position: relative;
   display: flex;
@@ -67,6 +70,7 @@
   margin-top: 32rpx;
   margin-left: 100rpx;
 }
+
 .log-step {
   position: absolute;
   left: 40rpx;
@@ -80,6 +84,7 @@
     rgba(219, 227, 235, 0) 100%
   );
 }
+
 .circle {
   position: absolute;
   left: -72rpx;
@@ -99,9 +104,11 @@
   0% {
     background-color: transparent;
   }
+
   30% {
     background-color: rgba(0, 0, 0, 0.06);
   }
+
   100% {
     background-color: transparent;
   }
@@ -111,20 +118,13 @@
   background-image: linear-gradient(142deg, #eae8ff 21%, #f7f9ff 92%);
   border-radius: 24rpx;
 }
+
 .link-light {
   background-image: linear-gradient(141deg, #fbeccf 36%, #fef9ee 100%);
   border-radius: 24rpx;
 }
+
 .link-scene {
   background-image: linear-gradient(138deg, #d1e3fd 7%, #f7f9ff 93%);
   border-radius: 24rpx;
-}
-.offline-tips {
-  display: flex;
-  align-items: center;
-  height: 76rpx;
-  line-height: 76rpx;
-  width: 750rpx;
-  margin-top: 30rpx;
-  background-color: rgba(72, 143, 255, 0.1);
 }

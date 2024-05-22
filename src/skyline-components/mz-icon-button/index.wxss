@@ -1,0 +1,29 @@
+.mz-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon-wrapper {
+  position: relative;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 48rpx;
+}
+
+.icon,
+.icon-active {
+  position: absolute;
+  width: 64rpx;
+  height: 64rpx;
+  left: 50%;
+  top: 50%;
+}
+
+.text {
+  text-align: center;
+}
+
+.disabled {
+  opacity: 0.5;
+}

@@ -24,19 +24,13 @@ ComponentWithComputed({
       type: Boolean,
       observer(value) {
         if (value) {
-          if (this.data.lightInfo.power) {
-            this.setData({
-              power: this.data.lightInfo.power,
-              brightness: this.data.lightInfo.brightness ?? 1,
-              colorTemperature: this.data.lightInfo.colorTemperature ?? 0,
-            })
-          } else {
-            this.setData({
-              power: this.data.lightInfo.power,
-              brightness: this.data.lightInfo.brightness ?? 1,
-              colorTemperature: this.data.lightInfo.colorTemperature ?? 0,
-            })
-          }
+          this.setData({
+            power: this.data.lightInfo.power,
+            brightness: this.data.lightInfo.brightness ?? 1,
+            colorTemperature: this.data.lightInfo.colorTemperature ?? 0,
+            _brightness: this.data.lightInfo.brightness ?? 1,
+            _colorTemperature: this.data.lightInfo.colorTemperature ?? 0,
+          })
         }
       },
     },
@@ -71,16 +65,19 @@ ComponentWithComputed({
     power: 0,
     brightness: 1,
     colorTemperature: 0,
+    //由于mz-slider组件不能修改原传入值，否则造成跳动，所以只能多做一个备份值
+    _brightness: 1,
+    _colorTemperature: 0,
   },
 
   computed: {
     levelShow(data) {
-      return data.brightness
+      return data._brightness
     },
     colorTempShow(data) {
       const { maxColorTemp, minColorTemp } = data.lightInfo.colorTempRange || data.lightInfo
 
-      return (data.colorTemperature / 100) * (maxColorTemp - minColorTemp) + minColorTemp
+      return (data._colorTemperature / 100) * (maxColorTemp - minColorTemp) + minColorTemp
     },
   },
 
@@ -115,8 +112,8 @@ ComponentWithComputed({
         this.data.power
           ? {
               power: this.data.power,
-              brightness: this.data.brightness,
-              colorTemperature: this.data.colorTemperature,
+              brightness: this.data._brightness,
+              colorTemperature: this.data._colorTemperature,
             }
           : {
               power: this.data.power,
@@ -130,8 +127,8 @@ ComponentWithComputed({
         this.data.power
           ? {
               power: this.data.power,
-              brightness: this.data.brightness,
-              colorTemperature: this.data.colorTemperature,
+              brightness: this.data._brightness,
+              colorTemperature: this.data._colorTemperature,
             }
           : {
               power: this.data.power,
@@ -151,37 +148,37 @@ ComponentWithComputed({
     },
     handleLevelDrag(e: { detail: number }) {
       this.setData({
-        brightness: e.detail,
+        _brightness: e.detail,
       })
 
       if (this.data.isControl) {
-        this.controlSubDevice({ brightness: this.data.brightness })
+        this.controlSubDevice({ brightness: this.data._brightness })
       }
     },
     handleLevelChange(e: { detail: number }) {
       this.setData({
-        brightness: e.detail,
+        _brightness: e.detail,
       })
 
       if (this.data.isControl) {
-        this.controlSubDevice({ brightness: this.data.brightness })
+        this.controlSubDevice({ brightness: this.data._brightness })
       }
     },
     handleColorTempChange(e: { detail: number }) {
       this.setData({
-        colorTemperature: e.detail,
+        _colorTemperature: e.detail,
       })
 
       if (this.data.isControl) {
-        this.controlSubDevice({ colorTemperature: this.data.colorTemperature })
+        this.controlSubDevice({ colorTemperature: this.data._colorTemperature })
       }
     },
     handleColorTempDrag(e: { detail: number }) {
       this.setData({
-        colorTemperature: e.detail,
+        _colorTemperature: e.detail,
       })
 
-      this.controlSubDevice({ colorTemperature: this.data.colorTemperature })
+      this.controlSubDevice({ colorTemperature: this.data._colorTemperature })
       this.handleChange()
     },
   },

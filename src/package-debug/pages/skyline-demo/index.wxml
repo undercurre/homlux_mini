@@ -1,0 +1,511 @@
+<view class="h-100vh flex flex-col bg-hex-f2f2f2">
+  <nav-bar
+    title="Skyline Demo"
+    left-arrow
+    bind:leftTap="goBack"
+  ></nav-bar>
+
+  <view class="m-24rpx">与Vant UI组件api保持一致 </view>
+
+  <scroll-view
+    type="list"
+    scroll-y
+    enhanced
+    show-scrollbar="{{false}}"
+    class="h-60vh grow shrink"
+  >
+    <view class="section">
+      <view class="m-24rpx">mz-field</view>
+
+      <mz-field
+        model:value="{{ inputValue }}"
+        placeholder="请输入家庭名称"
+        clearable="{{true}}"
+        focus="{{isFocus}}"
+        show-word-limit
+        maxlength="12"
+        border="{{false}}"
+        bind:confirm="inputConfim"
+      >
+      </mz-field>
+
+      <view class="p-20rpx bg-white">
+        <mz-field
+          value="{{ inputValue }}"
+          placeholder="请选择Wi-Fi"
+          custom-style="background-color: transparent;"
+          clearable="{{true}}"
+          border="{{false}}"
+        >
+          <mz-button
+            slot="button"
+            type="primary"
+            custom-style="background-color: transparent;"
+            plain
+            bind:click="toggleWifi"
+            loading="{{isRequestSystemWifiList}}"
+            disabled="{{isRequestSystemWifiList}}"
+          >
+            切换Wi-Fi
+          </mz-button>
+        </mz-field>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="m-24rpx">mz-cell</view>
+
+      <mz-cell-group
+        class="mt-24rpx"
+        inset
+      >
+        <mz-cell
+          icon="/assets/img/mine/home.png"
+          title="家庭管理"
+          is-link
+          border="{{true}}"
+          bind:click="toClick"
+        />
+
+        <mz-cell
+          title="家庭管理"
+          is-link
+          border
+          value="测试"
+          bind:click="toClick"
+        />
+
+        <mz-cell
+          value-class="cell-value"
+          wx:key="id"
+          title="sceneName"
+          label="actionTime"
+          center
+          title-style="font-weight: 500;flex:2;"
+          border
+          value="执行失败"
+        >
+          <view slot="right">right</view>
+          <view
+            slot="icon"
+            class="rounded-32rpx p-16rpx mr-32rpx"
+          >
+            <image
+              class="w-72 h-72 bg-hex-F5F5F5 rounded-full"
+              src="/assets/img/mine/home.png"
+            ></image>
+          </view>
+          <view>默认</view>
+        </mz-cell>
+
+        <mz-cell
+          label="switch"
+          label-class="cell-lable"
+          center
+          border="{{false}}"
+          clickable
+        >
+          <view
+            slot="icon"
+            class="rounded-32rpx p-16rpx mr-16rpx flex"
+          >
+            <image
+              class="w-64 h-64 bg-hex-F5F5F5 rounded-full"
+              src="/assets/img/mine/home.png"
+            ></image>
+          </view>
+          <view
+            slot="title"
+            class="h-44rpx cell-title"
+          >
+            <text>disabled</text>
+          </view>
+          <view
+            slot="right-icon"
+            class="pt-12rpx"
+          >
+            <view hover-stop-propagation="true">
+              <mz-switch
+                checked="{{switchStatus}}"
+                bind:change="toggleSwitch"
+              />
+            </view>
+          </view>
+        </mz-cell>
+      </mz-cell-group>
+
+      <mz-cell
+        class="mt-24rpx"
+        icon="/assets/img/mine/home.png"
+        title="家庭管理"
+        is-link
+        border="{{false}}"
+        bind:click="toClick"
+      />
+    </view>
+
+    <view class="section">
+      <view class="m-24rpx">mz-button</view>
+
+      <mz-button
+        size="large"
+        disabled="{{switchStatus}}"
+        >取消</mz-button
+      >
+
+      <mz-button
+        block
+        class="mt-24rpx"
+        type="danger"
+        plain
+        size="large"
+        disabled="{{switchStatus}}"
+        bind:click="toClick"
+        >danger</mz-button
+      >
+
+      <mz-button
+        block
+        class="mt-24rpx"
+        type="primary"
+        plain
+        size="large"
+        bind:click="toClick"
+        disabled="{{switchStatus}}"
+        customStyle="background-color: #fff;"
+        >primary</mz-button
+      >
+
+      <mz-button
+        class="mt-24rpx"
+        type="danger"
+        bind:click="toClick"
+        disabled="{{switchStatus}}"
+        >danger</mz-button
+      >
+
+      <mz-button
+        class="mt-24rpx"
+        type="primary"
+        bind:click="toClick"
+        disabled="{{switchStatus}}"
+        >primary</mz-button
+      >
+    </view>
+
+    <view class="section">
+      <view class="m-24rpx">Popup</view>
+
+      <mz-button
+        block
+        class="mt-24rpx"
+        plain
+        size="large"
+        data-key="showPopup"
+        bind:click="togglePopup"
+        >打开Popup</mz-button
+      >
+
+      <mz-button
+        block
+        class="mt-24rpx"
+        plain
+        size="large"
+        data-key="showPopup2"
+        bind:click="togglePopup"
+        >打开Popup2</mz-button
+      >
+    </view>
+
+    <view class="section">
+      <view class="m-24rpx">mz-toast</view>
+
+      <mz-button
+        size="large"
+        bind:tap="showToast"
+        >showToast</mz-button
+      >
+    </view>
+
+    <view class="section">
+      <view class="m-24rpx">mz-dialog</view>
+
+      <mz-button
+        size="large"
+        bind:tap="showDialog"
+        >showDialog</mz-button
+      >
+
+      <mz-button
+        size="large"
+        data-key="showDialog"
+        bind:tap="togglePopup"
+        >showDialog1</mz-button
+      >
+    </view>
+
+    <view class="section">
+      <view class="m-24rpx">mz-pop-menu</view>
+      <mz-button
+        size="large"
+        bind:tap="handlePopMenu"
+        >handlePopMenu</mz-button
+      >
+    </view>
+
+    <view class="section">
+      <view class="m-24rpx">mz-movable</view>
+
+      <view class="movearea flex grow">
+        <mz-movable direction="all">
+          <view class="rounded-12rpx border-black border border-solid w-300 h-92 flex grow">
+            <text>长按拖动</text>
+          </view>
+        </mz-movable>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="m-24rpx">mz-tab</view>
+      <mz-tabs
+        active="{{ tabActive }}"
+        bind:change="onRoomChange"
+        animated
+        swipeable
+      >
+        <mz-tab
+          style="flex: 1"
+          wx:for="{{roomTab}}"
+          wx:key="roomId"
+          title="{{item.roomName}}"
+          name="{{item.roomId}}"
+          >{{item.roomName}}--{{item.roomId}}</mz-tab
+        >
+      </mz-tabs>
+    </view>
+
+    <view class="section">
+      <view class="m-24rpx">mz-switch</view>
+      <mz-switch
+        checked="{{ switchStatus }}"
+        bind:change="toggleSwitch"
+      />
+    </view>
+
+    <view class="section">
+      <view class="m-24rpx">mz-checkbox</view>
+      <mz-checkbox
+        value="{{ switchStatus }}"
+        bind:change="toggleSwitch"
+      />
+
+      <mz-checkbox
+        label="标签"
+        value="{{ switchStatus }}"
+        bind:change="toggleSwitch"
+      />
+    </view>
+
+    <view class="section">
+      <view class="m-24rpx">mz-picker</view>
+      <mz-picker
+        columns="{{ columns }}"
+        visible-item-count="{{3}}"
+        bind:change="onPickerChange"
+      />
+    </view>
+    <view class="section">
+      <view class="m-24rpx">mz-slider</view>
+      <view class="slider-box">
+        <mz-slider
+          disabled="{{false}}"
+          value="{{brightness}}"
+          custom-class="slider-brightness-bar"
+          active-color="linear-gradient(90deg, rgba(80, 127, 255, 1) 0%, #ffffff 100%)"
+          bar-height="{{16}}"
+          use-button-slot
+          min="{{50}}"
+          is-btn-inset="{{false}}"
+          key="roomBrightness"
+          show-toast="{{true}}"
+          bind:slideEnd="slideEnd"
+        >
+          <image
+            slot="button"
+            src="/package-room-control/assets/img/btn.png"
+            class="w-72rpx h-72rpx"
+          />
+        </mz-slider>
+      </view>
+      <mz-button
+        block
+        class="mt-24rpx"
+        plain
+        size="large"
+        bind:click="fixBrightness"
+        >改变亮度({{brightness}}%)(min:50)</mz-button
+      >
+      <view class="slider-box">
+        <mz-slider
+          disabled="{{false}}"
+          value="{{0}}"
+          custom-class="slider-color-temp-bar"
+          active-color="rgba(0,0,0,0)"
+          bar-height="{{16}}"
+          use-button-slot
+          is-btn-inset="{{false}}"
+          key="roomColorTemp"
+          show-toast="{{true}}"
+        >
+          <image
+            slot="button"
+            src="/package-room-control/assets/img/btn.png"
+            class="w-72rpx h-72rpx"
+          />
+        </mz-slider>
+      </view>
+      <view class="slider-box">
+        <mz-slider
+          disabled="{{false}}"
+          value="{{50}}"
+          btn-width="{{40}}"
+          btn-height="{{40}}"
+          custom-class="slider-inset"
+          active-color="linear-gradient(90deg, rgba(80,127,255,0.8) 5%, rgba(116,153,255,0.18) 100%)"
+          key="deviceBrightness"
+        >
+        </mz-slider>
+        <mz-slider
+          disabled="{{false}}"
+          value="{{70}}"
+          use-button-slot
+          btn-height="{{52}}"
+          btn-width="{{80}}"
+          custom-class="slider-color-temp-bar"
+          active-color="rgba(0,0,0,0)"
+          data-key="deviceColorTemp"
+        >
+          <view
+            slot="button"
+            class="slider-button"
+          />
+        </mz-slider>
+      </view>
+    </view>
+
+    <view class="h-48"></view>
+  </scroll-view>
+</view>
+
+<mz-toast id="mz-toast" />
+
+<mz-dialog id="mz-dialog" />
+
+<mz-dialog
+  use-slot
+  title="离线"
+  show="{{ showDialog }}"
+  confirm-button-color="#488FFF"
+  confirmButtonText="我知道了"
+  data-key="showDialog"
+  bind:close="togglePopup"
+>
+  <mz-cell title="sdfsfsff"></mz-cell>
+</mz-dialog>
+
+<mz-popup
+  round
+  show="{{ showPopup }}"
+  data-key="showPopup"
+  bind:close="togglePopup"
+  position="bottom"
+  closeable
+>
+  <view class="pb-100rpx">
+    <text class="block pt-48rpx pb-64rpx text-center leading-50rpx text-36 text-black-2a font-medium">第一个Popup</text>
+
+    <view class="mx-32rpx">
+      <mz-button
+        class="mt-24rpx"
+        type="primary"
+        bind:click="toggleDisabled"
+        >toggleDisabled</mz-button
+      >
+
+      <mz-button
+        size="large"
+        bind:tap="showToast"
+        >showToast</mz-button
+      >
+
+      <mz-button
+        size="large"
+        bind:tap="showDialog"
+        >showDialog</mz-button
+      >
+
+      <mz-button
+        size="large"
+        data-key="showDialog"
+        bind:tap="togglePopup"
+        >showDialog1</mz-button
+      >
+    </view>
+
+    <view class="flex flex-row pt-80rpx px-32rpx">
+      <mz-button
+        class="grow"
+        size="large"
+        data-key="showPopup"
+        bind:click="togglePopup"
+        >取消</mz-button
+      >
+      <view class="w-46rpx"></view>
+      <mz-button
+        class="grow"
+        size="large"
+        type="primary"
+        data-key="showPopup2"
+        disabled="{{disabled}}"
+        bind:click="togglePopup"
+        >确定</mz-button
+      >
+    </view>
+  </view>
+</mz-popup>
+
+<mz-popup
+  round
+  show="{{ showPopup2 }}"
+  data-key="showPopup2"
+  bind:close="togglePopup"
+  position="bottom"
+  rootPortal
+  closeable
+>
+  <view class="pb-100rpx bg-red">
+    <text class="block pt-48rpx pb-64rpx text-center leading-50rpx text-36 text-black-2a font-medium">第2个Popup</text>
+
+    <text class="block pl-48rpx pb-32rpx text-28">家庭名称</text>
+
+    <view class="flex flex-row pt-80rpx px-32rpx">
+      <mz-button
+        class="grow"
+        size="large"
+        data-key="showPopup2"
+        bind:click="togglePopup"
+        >取消</mz-button
+      >
+      <view class="w-46rpx"></view>
+      <mz-button
+        class="grow"
+        size="large"
+        type="primary"
+        data-key="showVanPopup2"
+        bind:click="togglePopup"
+        disabled="{{disabled}}"
+        >确定</mz-button
+      >
+    </view>
+  </view>
+</mz-popup>

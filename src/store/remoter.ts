@@ -253,35 +253,32 @@ export const remoterStore = observable({
   renewRmState(recoveredList: Remoter.DeviceRx[]) {
     const rListIds = recoveredList.map((r) => r!.addr)
 
-    const list = this.remoterList.map((device) => {
-      const { deviceModel, deviceType, addr, defaultAction } = device
+    const result = [] as Remoter.DeviceRx[]
+    for (let i = 0; i < this.remoterList.length; i++) {
+      const { deviceModel, deviceType, addr, defaultAction } = this.remoterList[i]
+      if (deviceConfig[deviceType] == undefined) continue
+      if (deviceConfig[deviceType][deviceModel] == undefined) continue
       const config = deviceConfig[deviceType][deviceModel]
-      if (!config) {
-        console.log(`renewRmState 保存的设备[${deviceType}][${deviceModel}]不存在`)
-        return device
-      }
       const { actions } = config
       const isDiscovered = rListIds.includes(addr)
       const actionKey = actions[defaultAction].key ?? ''
-
       let actionStatus, rd
       if (isDiscovered) {
         rd = recoveredList.find((d) => d.addr === addr) ?? ({} as Remoter.DeviceRx)
         const { deviceAttr } = rd
         actionStatus = deviceAttr[actionKey]
       }
-
-      return {
-        ...device,
+      result.push({
+        ...this.remoterList[i],
         ...rd,
         actionStatus,
         DISCOVERED: isDiscovered ? 1 : 0,
-      }
-    })
+      })
+    }
 
     // console.log('renewRmState', list)
     runInAction(() => {
-      this.remoterList = list
+      this.remoterList = result
     })
   },
 

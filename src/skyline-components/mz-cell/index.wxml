@@ -1,0 +1,55 @@
+<view
+  class="cell custom-class"
+  hover-class="van-cell--hover"
+  hover-stay-time="70"
+  bind:tap="onClick"
+>
+  <view class="cell-content  {{ border ? 'border' : ''}}">
+    <image
+      wx:if="{{icon}}"
+      src="{{icon}}"
+      class="icon"
+      mode="scaleToFill"
+    />
+    <slot
+      wx:else
+      name="icon"
+    />
+
+    <view
+      class="cell-left"
+      style="{{cellLeftStyle}}"
+    >
+      <slot wx:if="{{!title && !label}}"></slot>
+      <view
+        wx:if="{{title}}"
+        class="title"
+        >{{ title }}</view
+      >
+      <view
+        wx:if="{{label}}"
+        class="label label-class"
+        >{{ label }}</view
+      >
+    </view>
+
+    <view class="cell-right">
+      <text
+        wx:if="{{value}}"
+        class="value value-class"
+        >{{ value }}</text
+      >
+      <image
+        wx:if="{{isLink}}"
+        src="../assets/arrow-right.png"
+        class="link"
+        mode="scaleToFill"
+      />
+
+      <slot
+        wx:else
+        name="right-icon"
+      />
+    </view>
+  </view>
+</view>

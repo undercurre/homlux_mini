@@ -1,0 +1,16 @@
+.checkbox {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+}
+.icon {
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+
+.label {
+  padding-left: 12rpx;
+  font-size: 26rpx;
+  color: #555659;
+}

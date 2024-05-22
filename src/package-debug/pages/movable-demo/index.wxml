@@ -1,0 +1,10 @@
+<view style="margin-top: 180rpx">
+  <mz-drag
+    generic:item="my-box"
+    bind:cardTap="cardTap"
+    cols="{{4}}"
+    item-height="{{itemHeight}}"
+    item-width="{{itemWidth}}"
+    movable-list="{{demoList}}"
+  ></mz-drag
+></view>

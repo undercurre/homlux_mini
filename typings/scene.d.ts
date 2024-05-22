@@ -1,5 +1,12 @@
 declare namespace Scene {
   /**
+   * 在场景首页展示的的场景列表项
+   */
+  interface SceneListItem extends SceneItem {
+    dragId: string // 拖拽排序时使用的id
+    linkName: string // 标识该场景已关联到哪个设备
+  }
+  /**
    * 查询房间的场景列表项
    */
   interface SceneItem extends SceneBase {
@@ -71,7 +78,7 @@ declare namespace Scene {
      * 例如："controlEvent":[{"modelName":'wallSwitch1',"buttonScene":1}]
      * buttonScene 电控所需参数，目前固定为1
      */
-    controlEvent: { modelName: string; buttonScene: number }[]
+    controlEvent: IAnyObject[]
     /** 设备id */
     deviceId: string
   }

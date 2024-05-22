@@ -208,7 +208,11 @@ ComponentWithComputed({
         this.data._holdBleScan = true
         let page = 'pannel'
         if (deviceType === '13') {
-          page = deviceModel === '01' ? 'light' : 'fan-light'
+          page = deviceModel === '01' || deviceModel === '04' ? 'light' : 'fan-light'
+        } else if (deviceType === '26') {
+          if (deviceModel === '01' || deviceModel === '03' || deviceModel === '77') page = 'bath'
+        } else if (deviceType === '40') {
+          if (deviceModel === '03') page = 'cool-bath'
         }
         wx.navigateTo({
           url: `/package-remoter/${page}/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceModel=${deviceModel}&addr=${addr}`,
@@ -232,24 +236,15 @@ ComponentWithComputed({
       }
       this.data._timer = now
 
-      const { addr, actions, defaultAction, deviceType, deviceModel } = e.detail
+      const { addr, actions, defaultAction } = e.detail
       // const addr = '18392c0c5566' // 模拟遥控器mac
 
       // HACK 特殊的照明按钮反转处理
-      let { key } = actions[defaultAction]
+      const { key } = actions[defaultAction]
       if (key === 'LIGHT_LAMP') {
         this.data._lastPowerKey = this.data._lastPowerKey === `${key}_OFF` ? `${key}_ON` : `${key}_OFF`
         // this.data._lastPowerKey = key
-      } else if (key === 'LIGHT_NIGHT_LAMP') {
-        if (deviceType === '13' && deviceModel === '01') {
-          remoterStore.setAddr(addr)
-          const status = remoterStore.curRemoter.deviceAttr
-          if (status && status.LIGHT_NIGHT_LAMP == true) {
-            key = 'LIGHT_LAMP'
-          }
-        }
       }
-      console.log('lmn>>>CMD key=', key)
       const payload = remoterProtocol.generalCmdString([CMD[key]])
 
       // 建立BLE外围设备服务端
@@ -352,46 +347,62 @@ ComponentWithComputed({
 
       // 用户主动搜索，刷新发现列表
       const foundList = [] as Remoter.DeviceDetail[]
-      const newDeviceCountMap = {} as IAnyObject
-      recoveredList.forEach((item) => {
+      const suffixArr = {} as Record<string, number[]>
+      for (let j = 0; j < recoveredList.length; j++) {
+        const item = recoveredList[j]
         const isSavedDevice = remoterStore.deviceAddrs.includes(item!.addr)
+        const deviceType = item!.deviceType
+        const deviceModel = item!.deviceModel
+        let cusRSSI = this.data.MIN_RSSI
+        if (deviceType === '13' && deviceModel === '04') {
+          cusRSSI = -70
+        }
         if (
-          item!.RSSI >= this.data.MIN_RSSI && // 过滤弱信号设备
+          item!.RSSI >= cusRSSI && // 过滤弱信号设备
           !isSavedDevice // 排除已在我的设备列表的设备
         ) {
-          const deviceType = item!.deviceType
-          const deviceModel = item!.deviceModel
           const config = deviceConfig[deviceType][deviceModel]
 
           if (!config) {
             console.log('config NOT EXISTED in onBluetoothDeviceFound')
-            return
+            continue
           }
 
-          // 同默认名字设备的数量，包括已保存、新发现
-          const savedDeviceCount = remoterStore.remoterList.filter((device) => {
-            if (device.deviceType === '13') {
-              return device.deviceType === deviceType && device.deviceModel === deviceModel
+          const nameKey = config.deviceName
+          if (suffixArr[nameKey] == undefined) {
+            const names = remoterStore.deviceNames
+            for (let i = 0; i < names.length; i++) {
+              if (names[i].includes(nameKey)) {
+                const numStr = names[i].replace(nameKey, '')
+                let suffix = 0
+                if (numStr) suffix = parseInt(numStr) || -1
+                if (suffix < 0) continue
+                if (suffixArr[nameKey] == undefined) suffixArr[nameKey] = [suffix]
+                else suffixArr[nameKey].push(suffix)
+              }
             }
-            return device.deviceType === deviceType
-          }).length
-          const uniqueType = deviceType === '13' ? `${deviceType}${deviceModel}` : deviceType
-          const newDeviceCount = newDeviceCountMap[uniqueType] ?? 0
-          newDeviceCountMap[uniqueType] = newDeviceCount + 1
-
-          const deviceNameSuffix = savedDeviceCount + newDeviceCount
-
-          // 如果设备名已存在，则加上编号后缀，以避免同名混淆 // TODO 更名后仍和已保存的名字后缀存在一样的情况，未处理
-          // const hasSavedName = remoterStore.deviceNames.includes(config.deviceName)
-          // const hasFoundName = foundList.findIndex((d) => d.deviceName === config.deviceName) > -1
-          const deviceName = deviceNameSuffix ? config.deviceName + deviceNameSuffix : config.deviceName
-
-          console.log({ savedDeviceCount, newDeviceCount }, newDeviceCountMap)
+          }
+          let devSuffix = 0
+          if (suffixArr[nameKey] == undefined) {
+            suffixArr[nameKey] = [devSuffix]
+          } else {
+            const arr = suffixArr[nameKey]
+            for (let i = 0; i < arr.length + 1; i++) {
+              if (arr.includes(devSuffix)) devSuffix++
+              else {
+                suffixArr[nameKey].push(devSuffix)
+                break
+              }
+            }
+          }
+          const deviceName = devSuffix ? nameKey + devSuffix : nameKey
+          console.log(`lmn>>>发现新设备::品类=${deviceType}/型号=${deviceModel},命名=>${deviceName}`)
 
           // 更新发现设备列表
           foundList.push({
             deviceId: item!.deviceId,
             addr: item!.addr,
+            version: item!.version,
             devicePic: config.devicePic,
             actions: config.actions,
             deviceName,
@@ -403,7 +414,7 @@ ComponentWithComputed({
             DISCOVERED: 1,
           })
         }
-      })
+      }
 
       this.setData({ foundList })
     },
@@ -471,7 +482,7 @@ ComponentWithComputed({
     },
     rssiToggle() {
       let rssi = this.data.MIN_RSSI - 5
-      if (rssi < -80) {
+      if (rssi < -100) {
         rssi = -50
       }
       this.setData({ MIN_RSSI: rssi })

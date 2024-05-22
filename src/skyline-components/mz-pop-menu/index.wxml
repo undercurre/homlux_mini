@@ -1,0 +1,68 @@
+<view
+  wx:if="{{isShow}}"
+  class="overlay"
+  bind:tap="onClickOverlay"
+></view>
+
+<view
+  id="menu"
+  class="bg absolute py-10rpx px-24rpx rounded-32rpx"
+  style="left: {{x}}; top: {{y}}; min-width: {{width}}rpx"
+>
+  <!-- 超过5个使用滑动 -->
+  <scroll-view
+    type="list"
+    scroll-y="{{menuList.length > 5}}"
+    show-scrollbar="{{false}}"
+    class="flex"
+    style="height: {{height}}rpx"
+    bind:scrolltolower="scrollToLower"
+    bind:scrolltoupper="scrollToUpper"
+  >
+    <view
+      class="flex flex-col items-start items-stretch"
+      bind:tap="handleMenuTap"
+      wx:for="{{menuList}}"
+      wx:key="key"
+      data-value="{{item.value}}"
+    >
+      <view class="h-96rpx flex items-center">
+        <image
+          wx:if="{{item.icon}}"
+          src="/assets/img/base/{{item.icon}}.png"
+          class="w-48rpx h-48rpx"
+        ></image>
+        <text class="p-10rpx text-white text-28rpx leading-none {{item.tag ? '' : 'grow'}}">{{item.name}}</text>
+        <view
+          wx:if="{{item.tag}}"
+          class="text-20rpx text-white bg-hex-a2a2a2 px-8rpx rounded-999 shrink-0 ml-10rpx"
+          >{{item.tag}}</view
+        >
+        <image
+          wx:if="{{item.checked}}"
+          src="/assets/img/base/checked2.png"
+          class="w-40 h-40 ml-18rpx"
+        ></image>
+      </view>
+      <view
+        class="bg-hex-717171 w-full h-1rpx"
+        wx:if="{{index !== menuList.length - 1}}"
+      ></view>
+    </view>
+  </scroll-view>
+
+  <view
+    wx:if="{{menuList.length > 5}}"
+    class="h-32rpx flex-center"
+  >
+    <image
+      class="w-32rpx h-32rpx {{ reverseArrow ? 'rotate-180' : ''}}"
+      src="/assets/img/base/arrow-down2.png"
+    ></image>
+  </view>
+
+  <view
+    class="arrow absolute top-0 w-0 h-0"
+    style="left: {{arrowX}}rpx"
+  ></view>
+</view>

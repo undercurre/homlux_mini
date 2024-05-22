@@ -1,8 +1,8 @@
 // src\package-room-control\index\components\heat-control-popup\index.ts
 import { ComponentWithComputed } from 'miniprogram-computed'
-import Toast from '@vant/weapp/toast/toast'
+import Toast from '../../../../skyline-components/mz-toast/toast'
 import { sendDevice } from '../../../../apis/index'
-import { proName } from '../../../../config/index'
+import { NO_SYNC_DEVICE_STATUS, proName } from '../../../../config/index'
 
 ComponentWithComputed({
   options: {
@@ -123,7 +123,7 @@ ComponentWithComputed({
       this.data._canSyncCloudData = false
       this.data._controlTimer = setTimeout(() => {
         this.data._canSyncCloudData = true
-      }, 2000)
+      }, NO_SYNC_DEVICE_STATUS)
 
       const res = await sendDevice({
         deviceId: this.data.deviceInfo.deviceId,

@@ -312,7 +312,8 @@
   line-height: 72rpx;
   /* color: #000000; */
   padding-left: 56rpx;
-  font-weight: bold; /* kkk add */
+  font-weight: bold;
+  /* kkk add */
 }
 
 #meiju .content-item {
@@ -534,10 +535,10 @@
   /* 按钮背景颜色 */
 }
 
-#meiju .mx-hairline--right:after {
+#meiju .mx-hairline--right::after {
 }
 
-#meiju .mx-hairline--top:after {
+#meiju .mx-hairline--top::after {
 }
 
 #meiju
@@ -1443,7 +1444,7 @@
   margin-bottom: 32rpx;
 }
 
-#meiju .weui-actionsheet__title:after {
+#meiju .weui-actionsheet__title::after {
   /* 1px */
   border-bottom: 1px solid #f2f2f2;
 }

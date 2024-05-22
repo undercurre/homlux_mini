@@ -1,3 +1,5 @@
+import { strUtil } from './index'
+
 const toString = Object.prototype.toString
 
 /**
@@ -89,7 +91,21 @@ export function isNullOrUnDef(val: unknown): val is null | undefined {
   return isUnDef(val) || isNull(val)
 }
 
+export function isNotExist(val: unknown): val is null | undefined {
+  return isNullOrUnDef(val) || Number.isNaN(val)
+}
+
 // 是否空对象
 export function isEmptyObject(obj: object): boolean {
   return Object.keys(obj).length === 0 && obj.constructor === Object
+}
+
+/**
+ * 检查是否有效的Homlux二维码链接
+ * @param url
+ */
+export function isValidHomluxLink(url: string) {
+  const pageParams = strUtil.getUrlParams(url) as IAnyObject
+
+  return url.includes('meizgd.com/homlux/qrCode.html') && ['01', '02', '10'].includes(pageParams.mode)
 }

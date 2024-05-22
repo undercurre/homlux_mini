@@ -1,6 +1,5 @@
-import { ComponentWithComputed } from 'miniprogram-computed'
 import { scenePropertyOptions } from '../../../../config/index'
-ComponentWithComputed({
+Component({
   options: {},
   /**
    * 组件的属性列表
@@ -16,21 +15,19 @@ ComponentWithComputed({
         if (typeof value === 'object') {
           if (Object.keys(value).length == 0) {
             this.setData({
-              value: [0],
+              value: 0,
+              pickerColumns: [],
             })
           } else {
             const tempValue = scenePropertyOptions[value.propertyKey as keyof typeof scenePropertyOptions].findIndex(
               (item) => item.value === value.value,
             )
-            if (tempValue < 0) {
-              this.setData({
-                value: [0],
-              })
-            } else {
-              this.setData({
-                value: [tempValue],
-              })
-            }
+            this.setData({
+              value: tempValue < 0 ? 0 : tempValue,
+              pickerColumns: scenePropertyOptions[value.propertyKey as keyof typeof scenePropertyOptions].map(
+                (item) => item.title,
+              ),
+            })
           }
         }
       },
@@ -41,15 +38,8 @@ ComponentWithComputed({
    * 组件的初始数据
    */
   data: {
-    value: [0],
-  },
-  computed: {
-    dataList(data) {
-      if (Object.keys(data.dataInfo).length == 0) return []
-      return scenePropertyOptions[data.dataInfo.propertyKey as keyof typeof scenePropertyOptions].map(
-        (item) => item.title,
-      )
-    },
+    value: 0,
+    pickerColumns: [] as IAnyObject,
   },
   /**
    * 组件的方法列表
@@ -64,9 +54,9 @@ ComponentWithComputed({
     handleCancel() {
       this.triggerEvent('cancel')
     },
-    valueChange(e: { detail: number[] }) {
+    valueChange(e: { detail: { index: number } }) {
       const valueInfo =
-        scenePropertyOptions[this.data.dataInfo.propertyKey as keyof typeof scenePropertyOptions][e.detail[0]]
+        scenePropertyOptions[this.data.dataInfo.propertyKey as keyof typeof scenePropertyOptions][e.detail.index]
 
       this.setData({
         'dataInfo.value': valueInfo.value,

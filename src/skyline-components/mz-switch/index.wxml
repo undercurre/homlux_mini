@@ -1,0 +1,16 @@
+<wxs
+  src="../wxs/utils.wxs"
+  module="utils"
+/>
+<wxs
+  src="./index.wxs"
+  module="computed"
+/>
+
+<view
+  class="{{ utils.bem('switch', { on: checked === activeValue, disabled }) }} custom-class"
+  style="{{ computed.rootStyle({ checked, activeColor, inactiveColor, activeValue }) }}"
+  bind:tap="onClick"
+>
+  <view class="mz-switch__node node-class"></view>
+</view>

@@ -1,6 +1,6 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { logout, storage, strUtil } from '../../utils/index'
-import { userBinding, homeBinding, userStore } from '../../store/index'
+import { userBinding, userStore, homeBinding, homeStore } from '../../store/index'
 import { defaultImgDir } from '../../config/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 
@@ -36,16 +36,13 @@ Component({
       deviceReplace: '/package-mine/device-replace/index',
       feedback: '/package-mine/feedback/index',
       help: '/package-mine/help/list/index',
-      about: '/package-protocol/protocol-list/index',
+      about: '/package-about/pages/about/index',
       deviceCategory: '/package-mine/device-category/index',
       setting: '/package-mine/setting/index',
     },
-    scrollViewHeight:
-      (storage.get('windowHeight') as number) -
-      (storage.get('statusBarHeight') as number) -
-      (storage.get('navigationBarHeight') as number) -
-      (storage.get('bottomBarHeight') as number) +
-      'px',
+    userInfo: {},
+    isLogin: false,
+    isManager: false,
   },
   pageLifetimes: {
     show() {
@@ -54,6 +51,12 @@ Component({
           selected: 2,
         })
       }
+
+      this.setData({
+        userInfo: userStore.userInfo,
+        isLogin: userStore.isLogin,
+        isManager: homeStore.isManager,
+      })
     },
   },
   methods: {

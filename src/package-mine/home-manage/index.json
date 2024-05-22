@@ -1,5 +1,11 @@
 {
   "usingComponents": {
+    "van-button": "@vant/weapp/button/index",
+    "van-field": "@vant/weapp/field/index",
+    "svg-icon": "/components/svg-icon/index",
+    "van-popup": "@vant/weapp/popup/index",
+    "van-cell-group": "@vant/weapp/cell-group/index",
+    "van-cell": "@vant/weapp/cell/index",
     "van-toast": "@vant/weapp/toast/index",
     "van-dialog": "@vant/weapp/dialog/index",
     "home-select-menu": "../../components/home-select-menu/index",

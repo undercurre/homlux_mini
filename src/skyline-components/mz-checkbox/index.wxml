@@ -1,0 +1,16 @@
+<view
+  class="checkbox"
+  bind:tap="onClick"
+>
+  <image
+    class="icon"
+    style="width: {{iconSize}}px;height: {{iconSize}}px;"
+    src="../assets/{{ value ? 'check' : 'uncheck' }}.png"
+  />
+
+  <view class="label">
+    <text wx:if="{{label}}">{{ label }}</text>
+
+    <slot wx:else></slot>
+  </view>
+</view>

@@ -1,0 +1,56 @@
+<wxs
+  src="./index.wxs"
+  module="computed"
+/>
+
+<view class="mz-picker custom-class">
+  <include
+    wx:if="{{ toolbarPosition === 'top' }}"
+    src="./toolbar.wxml"
+  />
+
+  <view
+    class="mz-picker__columns"
+    style="{{ computed.columnsStyle({ itemHeight, visibleItemCount }) }}"
+    catch:touchmove="noop"
+  >
+    <picker-column
+      class="mz-picker__column"
+      wx:for="{{ computed.columns(columns) }}"
+      wx:key="index"
+      data-index="{{ index }}"
+      custom-class="column-class"
+      value-key="{{ valueKey }}"
+      initial-options="{{ item.values }}"
+      default-index="{{ item.defaultIndex || defaultIndex }}"
+      item-height="{{ itemHeight }}"
+      visible-item-count="{{ visibleItemCount }}"
+      active-class="active-class"
+      bind:change="onChange"
+    />
+    <view
+      class="mz-picker__mask mz-picker__mask--top"
+      style="{{ computed.maskStyle({ itemHeight, visibleItemCount }) }}"
+    />
+    <view
+      class="mz-picker__mask mz-picker__mask--bottom"
+      style="{{ computed.maskStyle({ itemHeight, visibleItemCount }) }}"
+    />
+    <view
+      class="mz-picker__frame mz-picker__frame--bg"
+      style="{{ computed.frameStyle({ itemHeight }) }}"
+    >
+      <text
+        wx:for="{{unit}}"
+        class="unit"
+        style="{{ computed.unitStyle({ index, unitTranslationX }) }}"
+        >{{item}}</text
+      >
+    </view>
+  </view>
+
+  <include
+    wx:if="{{ toolbarPosition === 'bottom' }}"
+    src="./toolbar.wxml"
+  />
+</view>

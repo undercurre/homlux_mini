@@ -1,5 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { proName, PRO_TYPE, defaultImgDir, getModelName } from '../../config/index'
+import { proName, PRO_TYPE, getModelName } from '../../config/index'
 import { throttle } from '../../utils/index'
 
 const CONTROL_INTERVAL = 3000 // 开关操作间隔时间
@@ -14,6 +14,7 @@ ComponentWithComputed({
     select: {
       type: Boolean,
       value: false,
+      observer() {},
     },
     editMode: {
       type: Boolean,
@@ -59,6 +60,8 @@ ComponentWithComputed({
     isProcessing: false,
     _clientRect: {} as IAnyObject,
     isLoadImgError: false,
+    _border_opacity: { value: 0 },
+    _bg_opacity: { value: 1 },
   },
   lifetimes: {
     ready() {
@@ -67,13 +70,29 @@ ComponentWithComputed({
         .boundingClientRect()
         .exec((res) => (this.data._clientRect = res[0]))
     },
-    detached() {},
   },
 
   computed: {
+    borderStyle(data) {
+      const { select } = data
+      return select ? 'opacity-100' : 'opacity-0'
+    },
+    bgStyle(data) {
+      const { isGroup, showSpecialBg, showGradientBg, select } = data
+      const opacity = select ? 'opacity-0' : 'opacity-100'
+      let style = opacity
+      if (isGroup && showSpecialBg) {
+        style += ' show-group-bg white-border'
+      } else if (showGradientBg) {
+        style += ' show-control-bg white-border'
+      } else {
+        style += ' bg-hex-f9fbfe'
+      }
+      return style
+    },
     picUrl(data) {
       if (data.isLoadImgError) {
-        return `${defaultImgDir}/default-device.png`
+        return `/assets/img/offline/default-device.png`
       }
       if (data.deviceInfo.proType === PRO_TYPE.switch && data.showBtnDetail) {
         return data.deviceInfo?.switchInfoDTOList[0]?.pic

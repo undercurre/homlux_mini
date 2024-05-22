@@ -158,12 +158,13 @@ export async function controlDevice(
   },
   option?: { loading?: boolean },
 ) {
-  const { deviceType, inputData } = data
+  const { inputData, deviceType, deviceId } = data
 
-  // 仅子设备需要判断是否局域网控制
-  if (deviceType === 2 && homOs.isSupportLan({ deviceId: inputData[0].devId })) {
+  // 需要判断是否局域网控制,wifi设备和网关子设备的数据deviceId定义不一致，子设备的deviceId指的是网关ID
+  const targetDeviceId = deviceType === 2 ? inputData[0].devId : deviceId
+  if (homOs.isSupportLan({ deviceId: targetDeviceId })) {
     const localRes = await homOs.deviceControl({
-      deviceId: inputData[0].devId,
+      deviceId: targetDeviceId,
       actions: inputData.map((item) => {
         // 由于传多余的属性，网关端会报错，需要去除多余的属性
         const deviceProperty = Object.assign({}, item)
@@ -213,6 +214,11 @@ export async function sendDevice(
   const property = data.property
   let params
   let promise
+
+  // 灯类控制，全局加上灯光渐变时间（ms）
+  if (data.proType === PRO_TYPE.light) {
+    property.time = 500
+  }
 
   switch (data.deviceType) {
     case 2: {

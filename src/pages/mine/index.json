@@ -1,6 +1,13 @@
 {
+  "styleIsolation": "apply-shared",
   "component": true,
+  "renderer": "skyline",
+  "componentFramework": "glass-easel",
+  "disableScroll": true,
   "usingComponents": {
-    "van-icon": "@vant/weapp/icon/index"
+    "mz-button": "/skyline-components/mz-button/index",
+    "mz-cell-group": "/skyline-components/mz-cell-group/index",
+    "mz-cell": "/skyline-components/mz-cell/index",
+    "custom-tab-bar": "/custom-tab-bar/index"
   }
 }

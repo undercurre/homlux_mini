@@ -18,6 +18,7 @@
     wx:if="{{showScene && sceneList.length > 0}}"
   >
     <scroll-view
+      type="list"
       enable-flex
       scroll-x
       enhanced
@@ -32,7 +33,7 @@
           data-value="{{item.sceneId}}"
           catch:tap="handleSceneTap"
           catch:longpress="doNothing"
-          class="overflow-hidden card-clip relative w-144rpx h-168rpx rounded-24rpx flex flex-col justify-center items-center bg-hex-eff0f3 shrink-0 {{index===0?'':'ml-22rpx'}}"
+          class="overflow-hidden relative w-144rpx h-168rpx rounded-24rpx flex flex-col justify-center items-center bg-hex-eff0f3 shrink-0 {{index===0?'':'ml-22rpx'}}"
         >
           <view class="flex-col-center">
             <view class="rounded-999 bg-white">
@@ -46,7 +47,7 @@
           <view
             wx:if="{{sceneClickId === item.sceneId}}"
             class="absolute left-80rpx w-250rpx h-250rpx rounded-999 ripple-bg"
-            style="animation: ripple-{{onOff ? 'on' : 'off'}} 1s ease forwards;"
+            style="animation: ripple-ani 1s ease forwards"
           ></view>
         </view>
         <view class="w-32rpx"></view>

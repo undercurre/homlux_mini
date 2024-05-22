@@ -1,0 +1,17 @@
+/* eslint-disable */
+var style = require('../wxs/style.wxs')
+
+function popupStyle(data) {
+  return style([
+    {
+      'z-index': data.zIndex,
+      'border-radius': '32rpx',
+    },
+    data.display ? null : 'display: none',
+    data.customStyle,
+  ])
+}
+
+module.exports = {
+  popupStyle: popupStyle,
+}

@@ -1,9 +1,7 @@
-import { homeBinding, roomBinding, roomStore } from '../../../../store/index'
-import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import { roomStore } from '../../../../store/index'
 
 Component({
   options: {},
-  behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, roomBinding] })],
   /**
    * 组件的属性列表
    */
@@ -15,12 +13,9 @@ Component({
       type: Boolean,
       observer(value) {
         if (value) {
-          console.log(
-            '显示选择房间',
-            roomStore.roomList.find((item) => item.roomId === this.data.value),
-          )
           this.setData({
             roomSelect: this.data.value,
+            roomList: JSON.parse(JSON.stringify(roomStore.roomList)),
           })
         }
       },
@@ -32,6 +27,7 @@ Component({
    */
   data: {
     roomSelect: '',
+    roomList: [] as Room.RoomInfo[],
   },
 
   /**
