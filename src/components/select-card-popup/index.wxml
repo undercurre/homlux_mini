@@ -105,7 +105,7 @@
               bind:cardTap="handleCardTap"
               device-info="{{item}}"
               showSpecialBg="{{false}}"
-              select="{{isSingleSelect ? curItemSelectId === item.deviceId : item.checked}}"
+              select="{{isSingleSelect ? curItemSelectId === item.uniId : item.checked}}"
               bind:offlineTap="handleOfflineTap"
             />
           </view>

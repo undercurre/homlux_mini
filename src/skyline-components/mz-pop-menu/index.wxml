@@ -32,16 +32,16 @@
           src="/assets/img/base/{{item.icon}}.png"
           class="w-48rpx h-48rpx"
         ></image>
-        <text class="p-10rpx text-white text-28rpx leading-none">{{item.name}}</text>
+        <text class="p-10rpx text-white text-28rpx leading-none {{item.tag ? '' : 'grow'}}">{{item.name}}</text>
         <view
           wx:if="{{item.tag}}"
-          class="text-20rpx text-white bg-hex-a2a2a2 px-8rpx rounded-999 ml-10rpx shrink-0"
+          class="text-20rpx text-white bg-hex-a2a2a2 px-8rpx rounded-999 shrink-0 ml-10rpx"
           >{{item.tag}}</view
         >
         <image
           wx:if="{{item.checked}}"
           src="/assets/img/base/checked2.png"
-          class="w-40 h-40"
+          class="w-40 h-40 ml-18rpx"
         ></image>
       </view>
       <view
