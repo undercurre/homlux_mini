@@ -100,7 +100,7 @@ ComponentWithComputed({
       return deviceStore.deviceFlattenList.length === data.editSelectList.length
     },
     editRoomDisable(data) {
-      return roomStore.currentRoomId === data.roomId
+      return roomStore.currentRoomId === data.targetRoomId
     },
   },
 
@@ -117,7 +117,7 @@ ComponentWithComputed({
     editSwitchName: '',
     editProType: '',
     showEditRoom: false,
-    roomId: '',
+    targetRoomId: '',
     showConfirmDelete: false,
     moveWaitlist: [] as string[],
     movedlist: [] as string[], // 移动成功的列表
@@ -233,7 +233,7 @@ ComponentWithComputed({
       }
       this.setData({
         showEditRoom: true,
-        roomId: device.roomId,
+        targetRoomId: device.roomId,
       })
     },
     handleCreateGroup() {
@@ -285,7 +285,7 @@ ComponentWithComputed({
             map[deviceId] = {
               deviceId,
               houseId: homeStore.currentHomeId,
-              roomId: this.data.roomId,
+              roomId: this.data.targetRoomId,
               type: '1',
               deviceType,
             }
@@ -582,7 +582,7 @@ ComponentWithComputed({
       } as Device.OrderSaveData
 
       // 新房间设备排序码重置
-      const targetRoomList = deviceStore.allRoomDeviceFlattenList.filter((d) => d.roomId === this.data.roomId)
+      const targetRoomList = deviceStore.allRoomDeviceFlattenList.filter((d) => d.roomId === this.data.targetRoomId)
       targetRoomList.forEach((device, index) => {
         if (device.proType !== PRO_TYPE.switch) {
           deviceOrderData.deviceInfoByDeviceVoList.push({
@@ -616,7 +616,7 @@ ComponentWithComputed({
           deviceOrderData.deviceInfoByDeviceVoList.push({
             deviceId: device.deviceId,
             houseId: homeStore.currentHomeId,
-            roomId: this.data.roomId,
+            roomId: this.data.targetRoomId,
             orderNum: String(lastOrderNum),
             type: device.deviceType === 4 ? '2' : '0', // 灯组为2，普通设备为0
           })
@@ -626,7 +626,7 @@ ComponentWithComputed({
           switchOrderData.deviceInfoByDeviceVoList.push({
             deviceId: device.deviceId,
             houseId: homeStore.currentHomeId,
-            roomId: this.data.roomId,
+            roomId: this.data.targetRoomId,
             orderNum: String(lastOrderNum),
             switchId: device.switchInfoDTOList[0].switchId,
             type: '1',
@@ -643,7 +643,7 @@ ComponentWithComputed({
     },
     handleRoomSelect(e: { currentTarget: { dataset: { id: string } } }) {
       this.setData({
-        roomId: e.currentTarget.dataset.id,
+        targetRoomId: e.currentTarget.dataset.id,
       })
     },
     // 初始化等待移动的列表
