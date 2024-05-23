@@ -572,7 +572,7 @@ ComponentWithComputed({
         })
       }
     },
-    // 处理成功移动的设备在新房间的排序
+    // 处理新房间的设备排序
     async resetDeviceOrder(uniIds: string[]) {
       const deviceOrderData = {
         deviceInfoByDeviceVoList: [],
@@ -580,9 +580,34 @@ ComponentWithComputed({
       const switchOrderData = {
         deviceInfoByDeviceVoList: [],
       } as Device.OrderSaveData
-      const targetRoomList = deviceStore.allRoomDeviceFlattenList.filter((d) => d.roomId === this.data.roomId)
-      let lastOrderNum = targetRoomList.length + 1
 
+      // 新房间设备排序码重置
+      const targetRoomList = deviceStore.allRoomDeviceFlattenList.filter((d) => d.roomId === this.data.roomId)
+      targetRoomList.forEach((device, index) => {
+        if (device.proType !== PRO_TYPE.switch) {
+          deviceOrderData.deviceInfoByDeviceVoList.push({
+            deviceId: device.deviceId,
+            houseId: homeStore.currentHomeId,
+            roomId: device.roomId,
+            orderNum: String(index + 1),
+            type: device.deviceType === 4 ? '2' : '0', // 灯组为2，普通设备为0
+          })
+        }
+        // 若开关按键参与排序，需要按 type: '1' 再保存
+        else {
+          switchOrderData.deviceInfoByDeviceVoList.push({
+            deviceId: device.deviceId,
+            houseId: homeStore.currentHomeId,
+            roomId: device.roomId,
+            orderNum: String(index + 1),
+            switchId: device.switchInfoDTOList[0].switchId,
+            type: '1',
+          })
+        }
+      })
+
+      // 成功移动的设备在新房间排序
+      let lastOrderNum = targetRoomList.length + 1
       for (const uniId of uniIds) {
         const device = deviceStore.allRoomDeviceFlattenMap[uniId]
 
