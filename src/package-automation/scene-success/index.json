@@ -1,5 +1,9 @@
 {
+  "component": true,
+  "renderer": "skyline",
+  "componentFramework": "glass-easel",
+  "styleIsolation": "apply-shared",
   "usingComponents": {
-    "van-button": "@vant/weapp/button/index"
+    "mz-button": "../../skyline-components/mz-button/index"
   }
 }
