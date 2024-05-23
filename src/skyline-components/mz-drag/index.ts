@@ -1,3 +1,5 @@
+import { throttle } from '../../utils/index'
+
 Component({
   /**
    * 组件的属性列表
@@ -46,7 +48,8 @@ Component({
    */
   data: {
     list: [] as { name: string; pos: [number, number]; order: number }[],
-    currentIndex: -1,
+    currentIndex: -1, // 当前拖动的元素索引
+    placeholder: -1, // 临时占位的排序号
     moveareaHeight: 0,
   },
 
@@ -87,7 +90,7 @@ Component({
         }
       }
       // 遍历所有元素都找不到，返回最大索引
-      return list.length - 1
+      return -1
     },
     /**
      * 根据索引计算坐标位置
@@ -97,35 +100,75 @@ Component({
       const { cols } = this.data
       return [(i % cols) * this.data.itemWidth, Math.floor(i / cols) * this.data.itemHeight]
     },
-    cardTap(e: { target: { dataset: { index: number } } }) {
+    // 点击事件处理
+    dragClick(e: { target: { dataset: { index: number } } }) {
       const { index } = e.target.dataset
       this.setData({ currentIndex: index })
 
-      this.triggerEvent('cardTap', index)
+      this.triggerEvent('dragClick', index)
     },
     dragBegin(e: { target: { dataset: { index: number } } }) {
       const { index } = e.target.dataset
-      this.setData({ currentIndex: index })
+      const { order } = this.data.list[index]
+      this.setData({
+        currentIndex: index,
+        placeholder: order,
+      })
       console.log('[dragBegin]index:', index)
     },
-    dragEnd(e: { target: { dataset: { index: number } }; detail: { x: number; y: number } }) {
+    dragMove(e: { target: { dataset: { index: number } }; detail: number[] }) {
+      this.dragMoveThrottle(e.target.dataset.index, [e.detail[2], e.detail[3]])
+    },
+    dragMoveThrottle: throttle(
+      function (this: IAnyObject, index: number, [x, y]: [number, number]) {
+        // console.log('dragMoveThrottle', index, x, y)
+        this.handleReorder(index, [x, y])
+      },
+      150, // 节流时间间隔，若太短，会导致运动中的联动卡片过多，出现异常空位
+      true,
+      false,
+    ),
+    dragEnd(e: { target: { dataset: { index: number } } }) {
       const { index } = e.target.dataset
-      const { x, y } = e.detail
-      this.setData({
-        [`list[${index}].pos`]: [x, y],
-      })
+      const newOrder = this.data.placeholder
+      console.log(`[dragEnd]->${newOrder}`)
 
+      if (newOrder < 0) return
+
+      // 修正被拖元素的位置
+      const diffData = {} as IAnyObject
+      diffData[`list[${index}].pos`] = this.getPos(newOrder)
+      diffData[`list[${index}].order`] = newOrder
+
+      // 修正联动元素的位置
+      // for (const i in this.data.list) {
+      //   const item = this.data.list[i]
+      //   const pos = this.getPos(item.order)
+      //   // if (pos[0] !== item.pos[0] || pos[1] !== item.pos[1]) {
+      //   diffData[`list[${i}].pos`] = pos
+      //   // }
+      // }
+      console.log('[dragEnd]diffData', diffData)
+      this.setData(diffData)
+
+      this.data.placeholder = -1
+    },
+    // 处理排序操作
+    handleReorder(index: number, [x, y]: [number, number]) {
       // 新排序
+      const oldOrder = this.data.placeholder
       const newOrder = this.getIndex(x, y)
+      if (newOrder === oldOrder || newOrder === -1) return
+      console.log(`[handleReorder]${oldOrder}->${newOrder}`)
 
-      // console.log('[dragEnd]index:', index, { x, y }, newOrder)
-
-      // 更新联动卡片
-      const oldOrder = this.data.list[index].order
       const isForward = oldOrder < newOrder // 是否向前移动（队列末端为前）
       const diffData = {} as IAnyObject
 
+      // 更新联动卡片
       for (const i in this.data.list) {
+        // 拖动中的卡片不需要处理
+        if (parseInt(i) === index) continue
+
         const { order } = this.data.list[i]
         if (
           (isForward && order > oldOrder && order <= newOrder) ||
@@ -137,14 +180,10 @@ Component({
         }
       }
 
-      // 修正被拖元素的位置
-      if (newOrder >= 0) {
-        diffData[`list[${index}].pos`] = this.getPos(newOrder)
-        diffData[`list[${index}].order`] = newOrder
-      }
+      diffData.placeholder = newOrder
 
-      this.setData(diffData)
-      console.log('[dragEnd]diffData', diffData)
+      wx.nextTick(() => this.setData(diffData))
+      console.log('[handleReorder]diffData', diffData)
     },
   },
 })
