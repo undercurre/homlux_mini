@@ -305,6 +305,11 @@ ComponentWithComputed({
         this.reloadDataThrottle()
       })
 
+      // 当全屋列表更新时，房间列表数据也主动同步
+      emitter.on('roomDeviceSync', () => {
+        this.updateQueue({ isRefresh: true })
+      })
+
       // ws消息处理
       emitter.on('wsReceive', async (e) => {
         const { eventType, eventData } = e.result
