@@ -273,6 +273,7 @@ ComponentWithComputed({
         this.setData({
           isSeeking: true,
         })
+        clearTimeout(this.data._time_id_end)
         this.data._time_id_end = setTimeout(
           () =>
             this.setData({
