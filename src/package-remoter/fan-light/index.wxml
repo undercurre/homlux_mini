@@ -7,7 +7,7 @@
     </view>
   </nav-bar>
 
-  <view class="connect-block flex-center">
+  <view class="connect-block flex-center" style="opacity: {{isNeedConnectBLE ? 1 : 0}};">
     <text class="text-28rpx font-normal">{{connectedText}}</text>
   </view>
 

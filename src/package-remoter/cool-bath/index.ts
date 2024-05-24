@@ -108,7 +108,6 @@ ComponentWithComputed({
       },
     ],
     conTimer: null as any,
-    updateTimer: null as any,
     tryConnectCnt: 0,
   },
   watch: {
@@ -212,7 +211,6 @@ ComponentWithComputed({
     },
     onUnload() {
       clearTimeout(this.data.conTimer)
-      clearTimeout(this.data.updateTimer)
       if (this.data.isBLEConnected) {
         this.data._bleService?.close()
       }
@@ -284,14 +282,10 @@ ComponentWithComputed({
     receiveBluetoothData(data: string) {
       const status = remoterProtocol.parsePayload(data.slice(2), this.data.devType, this.data.devModel)
       console.log('lmn>>>receiveBluetoothData::status=', JSON.stringify(status))
-      clearTimeout(this.data.updateTimer)
-      const timer = setTimeout(() => {
-        this.updateView()
-      }, 300);
       this.setData({
-        devStatus: status,
-        updateTimer: timer
+        devStatus: status
       })
+      this.updateView()
     },
     bluetoothConnectChange(isConnected: boolean) {
       console.log('lmn>>>bluetoothConnectChange::isConnected=', isConnected)
