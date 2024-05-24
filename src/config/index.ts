@@ -60,3 +60,25 @@ export const envMap = {
   trial: 'sit',
   release: 'prod',
 } as const
+
+// 首页添加设备菜单项配置
+export const MENU_ADD_DEVICE = {
+  name: '添加设备',
+  key: 'device',
+  icon: 'add',
+  value: '/package-distribution/pages/choose-device/index',
+}
+
+export const MENU_ADD_AUTOMATION = {
+  name: '创建场景',
+  key: 'auto',
+  icon: 'auto',
+  value: '/package-automation/automation-add/index',
+}
+
+export const MENU_ADD_PLATFORM = {
+  name: '连接其它平台',
+  key: 'platform',
+  icon: 'auth',
+  value: '/package-auth/pages/index/index',
+}

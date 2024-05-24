@@ -1,23 +1,8 @@
-import { ComponentWithComputed } from 'miniprogram-computed'
 import { runInAction } from 'mobx-miniprogram'
 import Toast from '../../skyline-components/mz-toast/toast'
 import Dialog from '../../skyline-components/mz-dialog/dialog'
-import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-
-// TODO 精简bindings
-import {
-  othersBinding,
-  roomBinding,
-  userBinding,
-  homeBinding,
-  deviceBinding,
-  homeStore,
-  othersStore,
-  roomStore,
-  deviceStore,
-  sceneStore,
-  userStore,
-} from '../../store/index'
+import { ComponentWithStore } from 'mobx-miniprogram-bindings'
+import { homeStore, othersStore, roomStore, deviceStore, sceneStore, userStore } from '../../store/index'
 import {
   storage,
   throttle,
@@ -32,6 +17,9 @@ import {
 } from '../../utils/index'
 import {
   MAX_DEVICES_USING_WS,
+  MENU_ADD_AUTOMATION,
+  MENU_ADD_DEVICE,
+  MENU_ADD_PLATFORM,
   NO_WS_REFRESH_INTERVAL,
   PRO_TYPE,
   ROOM_CARD_H,
@@ -62,14 +50,38 @@ function getIndex(y: number) {
   return Math.max(0, Math.min(maxIndex, Math.floor((y + ROOM_CARD_M / 2) / ROOM_CARD_M)))
 }
 
-ComponentWithComputed({
+ComponentWithStore({
   options: {
     pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
   },
-  behaviors: [
-    BehaviorWithStore({ storeBindings: [othersBinding, roomBinding, userBinding, homeBinding, deviceBinding] }),
-    pageBehavior,
+  storeBindings: [
+    {
+      store: deviceStore,
+      fields: ['allRoomDeviceList'],
+      actions: {},
+    },
+    {
+      store: homeStore,
+      fields: ['homeList', 'currentHomeDetail', 'isCreator', 'isManager', 'currentHomeId'],
+      actions: {},
+    },
+    {
+      store: roomStore,
+      fields: ['roomList'],
+      actions: {},
+    },
+    {
+      store: userStore,
+      fields: ['isLogin'],
+      actions: {},
+    },
+    {
+      store: othersStore,
+      fields: ['isInit'],
+      actions: {},
+    },
   ],
+  behaviors: [pageBehavior],
   data: {
     defaultImgDir,
     navigationBarHeight: (storage.get('navigationBarHeight') as number) + 'px',
@@ -97,20 +109,7 @@ ComponentWithComputed({
       width: 300,
       height: 300,
       isShow: false,
-      list: [
-        {
-          name: '添加设备',
-          key: 'device',
-          icon: 'add',
-          value: '/package-distribution/pages/choose-device/index',
-        },
-        {
-          name: '创建场景',
-          key: 'auto',
-          icon: 'auto',
-          value: '/package-automation/automation-add/index',
-        },
-      ],
+      list: [],
     },
     allOnBtnTap: false,
     allOffBtnTap: false,
@@ -127,15 +126,12 @@ ComponentWithComputed({
     touchClientY: 0,
     scrollTop: 0,
     lightSummary: {} as Record<string, { lightCount: number; lightOnCount: number }>, // 灯总数、亮灯数统计，按房间id
-    isLogin: false,
-    isCreator: false,
-    isManager: false,
+    hasDevice: false,
     homeList: [] as Home.IHomeItem[],
+    homeMenuList: [] as Home.IHomeItem[], // 家庭选择菜单数据
+    currentHomeIndex: 0,
     currentHomeName: '', // 当前房间名称
-    currentHomeId: '',
     isShowHomeControl: false, // 是否显示全局控制开关（需要有灯或者开关）
-    roomList: [] as Room.RoomInfo[],
-    isInit: false,
     _scrolledWhenMoving: false, // 拖拽时，被动发生了滚动
     _lastClientY: 0, // 上次触控采样时 的Y坐标
     _isFirstShow: true, // 是否首次加载
@@ -143,52 +139,62 @@ ComponentWithComputed({
     _timeId: null as null | number,
     _timer: 0, // 记录加载时间点
   },
-  computed: {
-    // currentHomeName() {
-    //   if (homeStore.currentHomeDetail && homeStore.currentHomeDetail.houseName) {
-    //     if (homeStore.currentHomeDetail.houseName.length > 6) {
-    //       return homeStore.currentHomeDetail.houseName.slice(0, 6) + '...'
-    //     }
-    //     return homeStore.currentHomeDetail?.houseName
-    //   }
-    //   return ''
-    // },
-    // 是否显示全局控制开关（需要有灯或者开关）
-    // isShowHomeControl() {
-    //   if (!deviceStore.allRoomDeviceList?.length) {
-    //     return false
-    //   }
-    //   const lightTypes = [PRO_TYPE.light, PRO_TYPE.switch, PRO_TYPE.bathHeat, PRO_TYPE.clothesDryingRack] as string[]
-    //   return deviceStore.allRoomDeviceList.some((device: Device.DeviceItem) => lightTypes.includes(device.proType))
-    // },
-    homeMenuList(data) {
-      if (!data.homeList?.length) {
-        return []
+  observers: {
+    'homeList,currentHomeId'(homeList: Home.IHomeItem[], currentHomeId: string) {
+      let res
+      if (!homeList?.length) {
+        res = []
       }
-      const list = (data.homeList as Home.IHomeItem[])
-        .sort((_: Home.IHomeItem, b: Home.IHomeItem) => (b.defaultHouseFlag ? 1 : -1))
+      res = homeList
+        .sort((_, b) => (b.defaultHouseFlag ? 1 : -1))
         .map((home) => ({
           ...home,
           value: home.houseId,
           key: home.houseId,
           name: home.houseName?.length > 6 ? home.houseName.slice(0, 6) + '...' : home.houseName,
-          checked: home.houseId === data.currentHomeId,
+          checked: home.houseId === currentHomeId,
           tag: home.houseCreatorFlag ? '创建' : '',
         }))
-
-      return list
+      this.setData({ homeMenuList: res })
     },
-  },
-  watch: {
-    isInit(data) {
-      // 如果已初始化，但仍在loading
-      if (this.data.loading && data) {
-        this.setData({ loading: !data })
+    currentHomeDetail(homeDetail) {
+      let { houseName = '' } = homeDetail ?? {}
+      if (houseName.length > 6) {
+        houseName = houseName.slice(0, 6) + '...'
+      }
+      this.setData({
+        currentHomeName: houseName,
+      })
+    },
+    allRoomDeviceList(allDevice: Device.DeviceItem[]) {
+      this.setData({
+        hasDevice: !!allDevice?.length,
+        isShowHomeControl:
+          !!allDevice?.length &&
+          allDevice.some((device) =>
+            ([PRO_TYPE.light, PRO_TYPE.switch, PRO_TYPE.bathHeat, PRO_TYPE.clothesDryingRack] as string[]).includes(
+              device.proType,
+            ),
+          ),
+      })
+    },
+    isInit(isInit) {
+      if (this.data.loading && isInit) {
+        this.setData({
+          loading: false,
+        })
+      }
+      if (isInit) {
+        this.updateLightCount()
       }
     },
-    // roomList() {
-    //   this.renewRoomPos()
-    // },
+    isCreator(isCreator) {
+      this.setData({
+        'addMenu.list': isCreator
+          ? [MENU_ADD_DEVICE, MENU_ADD_AUTOMATION, MENU_ADD_PLATFORM]
+          : [MENU_ADD_DEVICE, MENU_ADD_AUTOMATION],
+      })
+    },
   },
 
   pageLifetimes: {
@@ -209,11 +215,6 @@ ComponentWithComputed({
       if (!othersStore.defaultPage) {
         wx.reLaunch({
           url: `/pages/start/index`,
-        })
-      }
-      if (othersStore.isInit) {
-        this.setData({
-          loading: false,
         })
       }
       if (this.data._timeId) {
@@ -240,9 +241,7 @@ ComponentWithComputed({
       if (!this.data._isFirstShow || this.data._from === 'addDevice') {
         await homeStore.updateRoomCardList()
       }
-      if (othersStore.isInit) {
-        this.pageDataSync('onShow')
-      }
+
       this.data._isFirstShow = false
 
       setTimeout(() => {
@@ -317,64 +316,7 @@ ComponentWithComputed({
       })
     },
     async onReady() {
-      emitter.on('pageDataSync', () => {
-        this.pageDataSync('on emitter')
-      })
       console.log('[Index onReady] 耗时', `${Date.now() - this.data._timer}ms`)
-    },
-
-    // TODO 确保数据响应
-    async pageDataSync(type?: string) {
-      let currentHomeName = ''
-      if (homeStore.currentHomeDetail?.houseName) {
-        if (homeStore.currentHomeDetail.houseName.length > 6) {
-          currentHomeName = homeStore.currentHomeDetail.houseName.slice(0, 6) + '...'
-        }
-        currentHomeName = homeStore.currentHomeDetail?.houseName
-      }
-
-      let homeList
-      if (homeStore.homeList?.length) {
-        homeList = homeStore.homeList as Home.IHomeItem[]
-      }
-      const diffData = {
-        isLogin: userStore.isLogin,
-        isCreator: homeStore.isCreator,
-        isManager: homeStore.isManager,
-        hasDevice: deviceStore.allRoomDeviceList?.length,
-        currentHomeName,
-        currentHomeId: homeStore.currentHomeId,
-        roomList: JSON.parse(JSON.stringify(roomStore.roomList)),
-        isInit: true,
-        isShowHomeControl:
-          !!deviceStore.allRoomDeviceList?.length &&
-          deviceStore.allRoomDeviceList.some((device: Device.DeviceItem) =>
-            ([PRO_TYPE.light, PRO_TYPE.switch, PRO_TYPE.bathHeat, PRO_TYPE.clothesDryingRack] as string[]).includes(
-              device.proType,
-            ),
-          ),
-        homeList,
-        loading: false,
-      } as IAnyObject
-      if (homeStore.isCreator) {
-        diffData['addMenu.list'] = [
-          ...this.data.addMenu.list,
-          {
-            name: '连接其它平台',
-            key: 'platform',
-            icon: 'auth',
-            value: '/package-auth/pages/index/index',
-          },
-        ]
-      }
-      this.setData(diffData)
-
-      this.updateLightCount()
-
-      console.log(type ?? '', '[active pageDataSync]', diffData)
-
-      // TODO
-      // this.renewRoomPos()
     },
 
     handleHomeMenu() {
@@ -402,7 +344,6 @@ ComponentWithComputed({
         await homeStore.homeInit()
         sceneStore.updateAllRoomSceneList()
       }
-      this.pageDataSync('handleHomeTap')
       hideLoading()
     },
     handleAddTap(e: { detail: string }) {
@@ -508,8 +449,8 @@ ComponentWithComputed({
       if (token && type && type !== 'transferHome' && houseId && time) {
         this.data._isAcceptShare = true
         console.log(`lmn>>>邀请参数:token=${token}/type=${type}/houseId=${houseId}/time=${time}/shareId=${shareId}`)
-        for (let i = 0; i < homeBinding.store.homeList.length; i++) {
-          if (homeBinding.store.homeList[i].houseId == houseId) {
+        for (let i = 0; i < homeStore.homeList.length; i++) {
+          if (homeStore.homeList[i].houseId == houseId) {
             console.log('lmn>>>已经在该家庭')
             return
           }
@@ -526,7 +467,7 @@ ComponentWithComputed({
             zIndex: 9999,
           })
         } else {
-          homeBinding.store
+          homeStore
             .inviteMember(houseId, parseInt(type), shareId)
             .then(() => {
               console.log('lmn>>>邀请成功')
@@ -595,7 +536,7 @@ ComponentWithComputed({
         return
       }
 
-      const home = homeBinding.store.homeList.find((item) => item.houseId === houseId && item.houseCreatorFlag)
+      const home = homeStore.homeList.find((item) => item.houseId === houseId && item.houseCreatorFlag)
 
       if (home) {
         console.log('当前用户已经是对应家庭的创建者')
@@ -623,7 +564,7 @@ ComponentWithComputed({
       if (res.success) {
         await updateDefaultHouse(houseId)
 
-        await homeBinding.store.updateHomeInfo()
+        await homeStore.updateHomeInfo()
 
         Dialog.confirm({
           title: '你已成为当前家庭的创建者',
