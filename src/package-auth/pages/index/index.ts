@@ -56,6 +56,13 @@ ComponentWithComputed({
           confirmButtonText: '我知道了',
         })
         return
+      } else if (!homeStore.isCreator) {
+        Dialog.alert({
+          title: '仅Homlux家庭创建者可以查看、修改美居授权信息',
+          showCancelButton: false,
+          confirmButtonText: '我知道了',
+        })
+        return
       }
 
       const url = this.data.isMeijuAuth ? this.data.urls.deviceList : this.data.urls.meiju
