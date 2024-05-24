@@ -177,9 +177,9 @@
           wx:key="roomId"
           data-id="{{item.roomId}}"
           bindtap="handleRoomSelect"
-          class="mt-16rpx mr-32rpx rounded-999 px-40rpx py-10rpx flex flex-row flex-center {{item.roomId === roomId ? 'bg-select' : 'bg-hex-dfe1e5'}}"
+          class="mt-16rpx mr-32rpx rounded-999 px-40rpx py-10rpx flex flex-row flex-center {{item.roomId === targetRoomId ? 'bg-select' : 'bg-hex-dfe1e5'}}"
         >
-          <text class="text-28rpx text-normal {{item.roomId === roomId ? 'text-white' : 'text-black-59'}}">{{item.roomName}}</text>
+          <text class="text-28rpx text-normal {{item.roomId === targetRoomId ? 'text-white' : 'text-black-59'}}">{{item.roomName}}</text>
         </view>
       </view>
     </view>
