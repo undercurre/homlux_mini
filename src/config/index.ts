@@ -13,6 +13,10 @@ export const mzaioDomain: ConfigWithEnv<string> = {
   prod: 'https://mzaio.meizgd.com',
 }
 
+export function getCurrentMzaioDomain() {
+  return mzaioDomain[getEnv()]
+}
+
 export const mzaioBaseURL: ConfigWithEnv<string> = {
   dev: `${mzaioDomain.dev}/mzaio`,
   sit: `${mzaioDomain.sit}/mzaio`,
