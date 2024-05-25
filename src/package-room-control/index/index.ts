@@ -1,16 +1,5 @@
-import { ComponentWithComputed } from 'miniprogram-computed'
-import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import {
-  userBinding,
-  roomBinding,
-  deviceBinding,
-  sceneBinding,
-  homeBinding,
-  deviceStore,
-  sceneStore,
-  roomStore,
-  homeStore,
-} from '../../store/index'
+import { ComponentWithStore } from 'mobx-miniprogram-bindings'
+import { deviceStore, sceneStore, roomStore, homeStore } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { sendDevice, execScene, saveDeviceOrder, queryGroup, queryAuthGetStatus } from '../../apis/index'
@@ -26,7 +15,6 @@ import {
   verifyNetwork,
   Logger,
   strUtil,
-  delay,
 } from '../../utils/index'
 import {
   maxColorTemp,
@@ -83,10 +71,29 @@ function getIndex(x: number, y: number) {
   return Math.min(ix + 4 * iy, maxIndex)
 }
 
-ComponentWithComputed({
-  behaviors: [
-    BehaviorWithStore({ storeBindings: [userBinding, roomBinding, deviceBinding, sceneBinding, homeBinding] }),
-    pageBehavior,
+ComponentWithStore({
+  behaviors: [pageBehavior],
+  storeBindings: [
+    {
+      store: deviceStore,
+      fields: ['deviceFlattenList'],
+      actions: {},
+    },
+    {
+      store: homeStore,
+      fields: ['isManager'],
+      actions: {},
+    },
+    {
+      store: roomStore,
+      fields: ['currentRoom'],
+      actions: {},
+    },
+    {
+      store: sceneStore,
+      fields: ['sceneList'],
+      actions: {},
+    },
   ],
   /**
    * 页面的初始数据
@@ -94,6 +101,7 @@ ComponentWithComputed({
   data: {
     sceneImgDir,
     defaultImgDir,
+    loading: true,
     _firstShow: true, // 是否首次进入
     _from: '', // 页面进入来源
     _updating: false, // 列表更新中标志
@@ -150,109 +158,86 @@ ComponentWithComputed({
     _delayTimeId: null as null | number, // 延时更新定时
     title: '',
     sceneListInBar: [] as Scene.SceneItem[],
-    canAddDevice: false,
+    // eslint-disable-next-line
+    colorTempFormatter: (_: number) => {}, // 房间亮度toast格式化
+    hasRoomLightOn: false, // 房间灯光可控状态
+    roomHasLight: false, // 房间存在可显示的灯具
+    roomHasDevice: false, // 房间存在可显示的设备
+    allSelectBtnText: '', // 设备批量选择按钮文字
+    isLightSelectSome: false, // 是否选中灯具有，包括一个或多个
+    toolboxContentHeight: 60, // 工具栏内容区域高度
+    scrollViewHeight: '0px', // 可滚动区域高度
+    movableAreaHeight: 0, // 设备卡片可移动区域高度
+    isShowCommonControl: false, // 是否打开控制面板
   },
-
-  computed: {
-    // 房间亮度toast格式化
-    colorTempFormatter(data) {
-      const { maxColorTemp, minColorTemp } = data.roomLight
-      return (value: number) => {
-        return `${Math.round((value / 100) * (maxColorTemp - minColorTemp) + minColorTemp)}K`
-      }
+  observers: {
+    currentRoom(currentRoom) {
+      this.setData({
+        title: currentRoom?.roomName ?? '',
+      })
     },
-    // 房间灯光可控状态
-    hasRoomLightOn(data) {
-      const { devicePageList } = data
-      const flag = devicePageList.some((g) =>
+    roomLight(roomLight) {
+      const { maxColorTemp, minColorTemp } = roomLight
+      this.setData({
+        colorTempFormatter: (value: number) =>
+          `${Math.round((value / 100) * (maxColorTemp - minColorTemp) + minColorTemp)}K`,
+      })
+    },
+    // TODO 优化监听规则
+    'devicePageList.**, editSelectMode'(devicePageList: DeviceCard[][], editSelectMode) {
+      const hasRoomLightOn = devicePageList.some((g) =>
         g.some((d) => !!(d.proType === PRO_TYPE.light && d.mzgdPropertyDTOList['light'].power)),
       )
-      return flag
-    },
-    // 房间存在可显示的灯具
-    roomHasLight(data) {
-      const { devicePageList } = data
-      const flag = devicePageList.some((g) => g.some((d) => !!(d.proType === PRO_TYPE.light)))
-      return flag
-    },
-    // 房间存在可显示的设备
-    roomHasDevice(data) {
-      const { devicePageList } = data
-      return devicePageList?.length > 1 || (devicePageList?.length === 1 && devicePageList[0].length > 0)
-    },
-    // title(data) {
-    //   return data.currentRoom?.roomName ?? ''
-    // },
-    // sceneListInBar(data) {
-    //   if (data.sceneList) {
-    //     return data.sceneList.slice(0, 4)
-    //   }
-    //   return []
-    // },
-    // DESERTED 过时代码
-    // deviceIdTypeMap(data): Record<string, string> {
-    //   if (data.deviceList?.length) {
-    //     return Object.fromEntries(
-    //       data.deviceList.map((device: DeviceCard) => [device.deviceId, proName[device.proType]]),
-    //     )
-    //   }
-    //   return {}
-    // },
-    // 设备批量选择按钮文字
-    allSelectBtnText(data) {
-      return data.checkedList && data.checkedList.length > 0 ? '全不选' : '全选'
-    },
-    /** 是否有选中灯，一个或多个（单击选中） */
-    isLightSelectSome(data) {
-      if (!data.checkedList || data.checkedList.length === 0) {
-        return false
-      }
-      const { deviceMap } = deviceStore
-      return data.checkedList.some(
-        (uniId: string) => uniId.indexOf(':') === -1 && deviceMap[uniId].proType === PRO_TYPE.light,
-      )
-    },
-    // 判断是否是创建者或者管理员，其他角色不能添加设备
-    // canAddDevice(data) {
-    //   return data.isCreator || data.isAdmin
-    // },
-    // 可滚动区域高度
-    scrollViewHeight(data) {
+      const roomHasLight = devicePageList.some((g) => g.some((d) => !!(d.proType === PRO_TYPE.light)))
+      const roomHasDevice = devicePageList?.length > 1 || (devicePageList?.length === 1 && devicePageList[0].length > 0)
+      const toolboxContentHeight = roomHasLight ? 150 : 60
+      const movableAreaHeight = Math.ceil((devicePageList?.length ?? 4) / 4) * 236
       let baseHeight =
         (storage.get('windowHeight') as number) -
         (storage.get('statusBarHeight') as number) -
         (storage.get('navigationBarHeight') as number) -
         (storage.get('bottomBarHeight') as number) -
-        data.toolboxContentHeight // 场景
-      // 编辑弹框高度
-      if (data.editSelectMode) {
+        this.data.toolboxContentHeight
+      if (editSelectMode) {
         baseHeight -= rpx2px(298)
       }
-      return baseHeight + 'px'
+      const scrollViewHeight = baseHeight + 'px'
+      console.log('[observers]devicePageList', devicePageList, editSelectMode)
+      this.setData({
+        hasRoomLightOn,
+        roomHasLight,
+        roomHasDevice,
+        toolboxContentHeight,
+        movableAreaHeight,
+        scrollViewHeight,
+      })
     },
-    // 工具栏内容区域高度
-    toolboxContentHeight(data) {
-      return data.roomHasLight ? 150 : 60
-    },
-    /**
-     * 是否打开控制面板
-     * TODO 将灯和开关控制也解耦出来
-     */
-    isShowCommonControl(data) {
-      const { controlType } = data
-      return (
-        controlType &&
-        (controlType === PRO_TYPE.light ||
-          controlType === PRO_TYPE.switch ||
-          controlType === PRO_TYPE.gateway ||
-          controlType === PRO_TYPE.curtain ||
-          controlType === PRO_TYPE.sensor)
+    checkedList(checkedList) {
+      const { deviceMap } = deviceStore
+      const allSelectBtnText = checkedList?.length > 0 ? '全不选' : '全选'
+      const isLightSelectSome = checkedList?.some(
+        (uniId: string) => uniId.indexOf(':') === -1 && deviceMap[uniId].proType === PRO_TYPE.light,
       )
+      this.setData({
+        allSelectBtnText,
+        isLightSelectSome,
+      })
     },
-    // 设备卡片可移动区域高度
-    movableAreaHeight(data) {
-      const { devicePageList } = data
-      return Math.ceil((devicePageList?.length ?? 4) / 4) * 236
+    controlType(controlType) {
+      this.setData({
+        isShowCommonControl:
+          controlType &&
+          (controlType === PRO_TYPE.light ||
+            controlType === PRO_TYPE.switch ||
+            controlType === PRO_TYPE.gateway ||
+            controlType === PRO_TYPE.curtain ||
+            controlType === PRO_TYPE.sensor),
+      })
+    },
+    sceneList(sceneList) {
+      this.setData({
+        sceneListInBar: sceneList?.slice(0, 4) ?? [],
+      })
     },
   },
 
@@ -399,15 +384,8 @@ ComponentWithComputed({
     },
 
     async onReady() {
-      await delay(0)
-      this.pageDataSync()
-    },
-
-    pageDataSync() {
       this.setData({
-        title: roomStore.currentRoom?.roomName ?? '',
-        sceneListInBar: sceneStore.sceneList?.length ? sceneStore.sceneList.slice(0, 4) : [],
-        canAddDevice: homeStore.isManager,
+        loading: false,
       })
     },
 
@@ -1316,7 +1294,7 @@ ComponentWithComputed({
         return
       }
       // 只有创建者或者管理员能够进入编辑模式
-      if (!this.data.canAddDevice) {
+      if (!this.data.isManager) {
         return
       }
 
