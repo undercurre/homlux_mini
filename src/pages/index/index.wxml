@@ -6,7 +6,7 @@
   ></image>
 </view>
 
-<block wx:if="{{isLogin && !loading}}">
+<block wx:if="{{isLogin && isInit}}">
   <view
     style="height: calc(120rpx + {{navigationBarAndStatusBarHeight}});"
     class="absolute left-0 top-0 z-110 overflow-hidden w-750rpx"
@@ -141,7 +141,7 @@
 </block>
 
 <!-- 未登录 -->
-<view wx:if="{{!isLogin && !loading}}">
+<view wx:if="{{!isLogin}}">
   <view
     class="fixed z-201 left-0 w-750rpx flex flex-col"
     style="top: {{statusBarHeight}};"

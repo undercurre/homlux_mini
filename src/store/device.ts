@@ -147,7 +147,7 @@ export const deviceStore = observable({
     roomId: string = roomStore.currentRoomId,
     options?: IApiRequestOption,
   ) {
-    const res = await querySubDeviceList({ houseId, roomId }, options)
+    const res = await querySubDeviceList({ houseId, roomId }, { ...options, loading: true })
     if (!res.success) {
       console.log('加载房间设备失败！', res)
       return
