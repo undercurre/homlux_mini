@@ -183,34 +183,37 @@ ComponentWithStore({
           `${Math.round((value / 100) * (maxColorTemp - minColorTemp) + minColorTemp)}K`,
       })
     },
-    // TODO 优化监听规则
+    // 节流减少触发频率
     'devicePageList.**, editSelectMode'(devicePageList: DeviceCard[][], editSelectMode) {
-      const hasRoomLightOn = devicePageList.some((g) =>
-        g.some((d) => !!(d.proType === PRO_TYPE.light && d.mzgdPropertyDTOList['light'].power)),
-      )
-      const roomHasLight = devicePageList.some((g) => g.some((d) => !!(d.proType === PRO_TYPE.light)))
-      const roomHasDevice = devicePageList?.length > 1 || (devicePageList?.length === 1 && devicePageList[0].length > 0)
-      const toolboxContentHeight = roomHasLight ? 150 : 60
-      const movableAreaHeight = Math.ceil((devicePageList?.length ?? 4) / 4) * 236
-      let baseHeight =
-        (storage.get('windowHeight') as number) -
-        (storage.get('statusBarHeight') as number) -
-        (storage.get('navigationBarHeight') as number) -
-        (storage.get('bottomBarHeight') as number) -
-        this.data.toolboxContentHeight
-      if (editSelectMode) {
-        baseHeight -= rpx2px(298)
-      }
-      const scrollViewHeight = baseHeight + 'px'
-      console.log('[observers]devicePageList', devicePageList, editSelectMode)
-      this.setData({
-        hasRoomLightOn,
-        roomHasLight,
-        roomHasDevice,
-        toolboxContentHeight,
-        movableAreaHeight,
-        scrollViewHeight,
-      })
+      throttle(() => {
+        console.log('[observers]devicePageList')
+        const hasRoomLightOn = devicePageList.some((g) =>
+          g.some((d) => !!(d.proType === PRO_TYPE.light && d.mzgdPropertyDTOList['light'].power)),
+        )
+        const roomHasLight = devicePageList.some((g) => g.some((d) => !!(d.proType === PRO_TYPE.light)))
+        const roomHasDevice =
+          devicePageList?.length > 1 || (devicePageList?.length === 1 && devicePageList[0].length > 0)
+        const toolboxContentHeight = roomHasLight ? 150 : 60
+        const movableAreaHeight = Math.ceil((devicePageList?.length ?? 4) / 4) * 236
+        let baseHeight =
+          (storage.get('windowHeight') as number) -
+          (storage.get('statusBarHeight') as number) -
+          (storage.get('navigationBarHeight') as number) -
+          (storage.get('bottomBarHeight') as number) -
+          this.data.toolboxContentHeight
+        if (editSelectMode) {
+          baseHeight -= rpx2px(298)
+        }
+        const scrollViewHeight = baseHeight + 'px'
+        this.setData({
+          hasRoomLightOn,
+          roomHasLight,
+          roomHasDevice,
+          toolboxContentHeight,
+          movableAreaHeight,
+          scrollViewHeight,
+        })
+      }, 50).bind(this)()
     },
     checkedList(checkedList) {
       const { deviceMap } = deviceStore
@@ -269,12 +272,17 @@ ComponentWithStore({
       verifyNetwork() // 先主动查一次；不等待结果
 
       // 首次进入
-      if (this.data._firstShow) {
-        this.reloadDeviceListThrottle()
-        this.data._firstShow = false
-      } else {
-        this.reloadDataThrottle()
+      if (this.data._firstShow && this.data._from !== 'addDevice') {
+        this.updateQueue({ isRefresh: true })
+        this.queryGroupInfo()
+        this.autoRefreshDevice()
       }
+      // 如果从配网页面返回
+      else {
+        this.reloadDeviceList()
+      }
+
+      this.data._firstShow = false
 
       emitter.on('deviceListRetrieve', () => {
         console.log('deviceListRetrieve，isConnect', isConnect())
@@ -804,11 +812,10 @@ ComponentWithStore({
         }
 
         this.data._delayUpdateFlag = true
-        Logger.log('_delayUpdateFlag', this.data._delayUpdateFlag)
         this.data._delayTimeId = setTimeout(() => {
           this.data._delayUpdateFlag = false
           this.data._delayTimeId = null
-          Logger.log('_delayUpdateFlag', this.data._delayUpdateFlag)
+          Logger.log('setTimeout _delayUpdateFlag', this.data._delayUpdateFlag)
         }, NO_UPDATE_INTERVAL)
 
         this.updateDeviceList(diff)
