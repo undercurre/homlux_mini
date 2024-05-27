@@ -31,7 +31,7 @@ export const roomStore = observable({
           deviceStore.deviceList = deviceStore.allRoomDeviceList.filter((device) => device.roomId === id)
           deviceStore.deviceTimestamp = deviceStore.allRoomDeviceTimestamp
         }
-        deviceStore.updateAllRoomDeviceListLanStatus(false)
+        deviceStore.updateAllRoomDeviceListLanStatus()
       }
       // 重置为默认房间，不必刷新房间列表
       else if (this.roomList?.length) {
