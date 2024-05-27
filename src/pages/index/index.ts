@@ -114,7 +114,6 @@ ComponentWithStore({
     allOnBtnTap: false,
     allOffBtnTap: false,
     showHomeSelect: false,
-    loading: true,
     _isAcceptShare: false, // 是否已经触发过接受分享逻辑
     isMoving: false,
     roomPos: {} as Record<string, PosType>,
@@ -179,16 +178,6 @@ ComponentWithStore({
       })
     },
     isInit(isInit) {
-      console.log('observers', isInit, this.data.loading)
-      if (this.data.loading && isInit) {
-        hideLoading()
-
-        this.setData({
-          loading: false,
-        })
-      } else {
-        showLoading()
-      }
       if (isInit) {
         this.updateLightCount()
       }
@@ -252,11 +241,6 @@ ComponentWithStore({
       setTimeout(() => {
         this.acceptShare()
       }, 1000)
-      if (!othersStore.isInit) {
-        this.setData({
-          loading: true,
-        })
-      }
 
       this.autoRefreshDevice()
 
