@@ -85,10 +85,10 @@ export const homeStore = observable({
     } else {
       Logger.log('[无本地缓存，或缓存已过期]')
     }
-
-    await this.updateHomeInfo({ isInit: true })
-
-    othersStore.setIsInit(true)
+    if (isConnect()) {
+      await this.updateHomeInfo({ isInit: true })
+      othersStore.setIsInit(true)
+    }
   },
 
   /**
