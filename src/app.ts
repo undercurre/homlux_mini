@@ -55,7 +55,7 @@ App<IAppOption>({
 
     // 监听网络状态
     networkStatusListen()
-    await verifyNetwork() // 可能网络状态会不变更，先主动查一次
+    verifyNetwork() // 先主动查一次
 
     // 如果用户已经登录，开始请求数据[用户][家庭列表、全屋房间、全屋设备]
     if (isLogon()) {

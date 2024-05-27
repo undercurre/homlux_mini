@@ -34,7 +34,7 @@ import {
   SCREEN_PID,
   ZHONGHONG_PID,
 } from '../../config/index'
-// import homOs from 'js-homos'
+import homOs from 'js-homos'
 
 type DeviceCard = Device.DeviceItem & {
   x: string
@@ -265,24 +265,15 @@ ComponentWithStore({
 
     async onShow() {
       Logger.log('room-onShow, _firstShow', this.data._firstShow)
-      // 验证网络状态
-      await verifyNetwork()
-      // 加载数据
-      if (!isConnect()) {
-        this.updateQueue({ isRefresh: true, onLineStatus: 0 })
-        deviceStore.updateAllRoomDeviceOnLineStatus(false)
-      }
+
+      verifyNetwork() // 先主动查一次；不等待结果
+
       // 首次进入
-      else if (this.data._firstShow && this.data._from !== 'addDevice') {
-        this.updateQueue({ isRefresh: true })
-        // sceneStore.updateAllRoomSceneList()
-        this.queryGroupInfo()
-        this.autoRefreshDevice()
-        this.data._firstShow = false
-      }
-      // HACK 其他情况还是要刷新一下
-      else {
+      if (this.data._firstShow) {
         this.reloadDeviceListThrottle()
+        this.data._firstShow = false
+      } else {
+        this.reloadDataThrottle()
       }
 
       emitter.on('deviceListRetrieve', () => {
@@ -457,20 +448,17 @@ ComponentWithStore({
       }
 
       try {
-        await Promise.all([this.reloadDeviceListThrottle(), sceneStore.updateAllRoomSceneList(), this.queryGroupInfo()])
+        this.reloadDeviceListThrottle()
 
-        this.updateQueue({ isRefresh: true })
+        sceneStore.updateAllRoomSceneList()
+
+        this.queryGroupInfo()
 
         this.autoRefreshDevice()
       } finally {
         wx.stopPullDownRefresh()
       }
     },
-
-    // 节流更新房间各种关联信息
-    reloadDataThrottle: throttle(function (this: IAnyObject) {
-      this.reloadData()
-    }, 4000),
 
     // 只单独更新列表
     async reloadDeviceList() {
@@ -483,10 +471,16 @@ ComponentWithStore({
       }
 
       await deviceStore.updateRoomDeviceList()
+
       this.updateQueue({ isRefresh: true })
 
       this.queryGroupInfo()
     },
+
+    // 节流更新房间各种关联信息
+    reloadDataThrottle: throttle(function (this: IAnyObject) {
+      this.reloadData()
+    }, 4000),
 
     // 节流更新设备列表
     reloadDeviceListThrottle: throttle(function (this: IAnyObject) {
@@ -526,6 +520,8 @@ ComponentWithStore({
       this.clearJobs()
     },
     handleShowDeviceOffline(e: { detail: DeviceCard }) {
+      console.log('isSupportLan', e.detail.deviceId, homOs.isSupportLan({ deviceId: e.detail.deviceId }))
+
       const deviceInfo = e.detail
 
       this.setData({
@@ -1142,7 +1138,7 @@ ComponentWithStore({
     handleCardCommonTap(e: { detail: DeviceCard }) {
       // console.log('e.detail', e.detail)
       const { uniId } = e.detail // 灯的 deviceId===uniId
-      // console.log('isSupportLan', uniId, homOs.isSupportLan({ deviceId: uniId }))
+      console.log('isSupportLan', e.detail.deviceId, homOs.isSupportLan({ deviceId: e.detail.deviceId }))
       const isChecked = this.data.checkedList.includes(uniId) // 点击卡片前，卡片是否选中
       const toCheck = !isChecked // 本次点击需执行的选中状态
 
