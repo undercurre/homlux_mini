@@ -213,7 +213,7 @@ ComponentWithComputed({
           const v2 = ['01', '03', '77', '22', '66', '27', '6f']
           if (v2.includes(deviceModel)) page = 'bath'
         } else if (deviceType === '40') {
-          const v2 = ['03', '23', '63', 'e7']
+          const v2 = ['03', '07', '23', '63', 'e7']
           if (v2.includes(deviceModel)) page = 'cool-bath'
         }
         wx.navigateTo({
