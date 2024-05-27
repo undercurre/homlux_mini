@@ -6,7 +6,7 @@
   ></image>
 </view>
 
-<block wx:if="{{isLogin}}">
+<block wx:if="{{isLogin && !loading}}">
   <view
     style="height: calc(120rpx + {{navigationBarAndStatusBarHeight}});"
     class="absolute left-0 top-0 z-110 overflow-hidden w-750rpx"
@@ -35,7 +35,7 @@
         ></mz-icon-button>
       </view>
       <view
-        wx:if="{{isManager || !loading}}"
+        wx:if="{{isManager}}"
         class="mr-36rpx mt-8rpx"
         data-mark="addIcon"
         id="addIcon"
@@ -138,49 +138,10 @@
     </view>
   </view>
   <view class="tabbar-placeholder"></view>
-
-  <!-- 加载中 -->
-  <!-- <view
-    wx:if="{{loading}}"
-    id="skeleton"
-  >
-    <view class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7 z-200"></view>
-    <view
-      class="fixed z-201 left-0 w-750rpx flex flex-col"
-      style="top: {{statusBarHeight}};"
-    >
-      <van-skeleton
-        row="1"
-        row-width="40%"
-        row-class="rounded-28rpx h-76rpx_el_"
-      />
-      <van-skeleton
-        class="mt-22rpx"
-        row="1"
-        row-width="240rpx"
-        row-class="rounded-999 h-78rpx_el_"
-      />
-      <van-skeleton
-        class="mt-36rpx"
-        row="1"
-        row-class="rounded-32rpx h-304rpx_el_"
-      />
-      <van-skeleton
-        class="mt-32rpx"
-        row="1"
-        row-class="rounded-32rpx h-304rpx_el_"
-      />
-      <van-skeleton
-        class="mt-32rpx"
-        row="1"
-        row-class="rounded-32rpx h-304rpx_el_"
-      />
-    </view>
-  </view> -->
 </block>
 
 <!-- 未登录 -->
-<view wx:if="{{!isLogin}}">
+<view wx:if="{{!isLogin && !loading}}">
   <view
     class="fixed z-201 left-0 w-750rpx flex flex-col"
     style="top: {{statusBarHeight}};"

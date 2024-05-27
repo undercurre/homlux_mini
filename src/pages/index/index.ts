@@ -179,10 +179,15 @@ ComponentWithStore({
       })
     },
     isInit(isInit) {
+      console.log('observers', isInit, this.data.loading)
       if (this.data.loading && isInit) {
+        hideLoading()
+
         this.setData({
           loading: false,
         })
+      } else {
+        showLoading()
       }
       if (isInit) {
         this.updateLightCount()
