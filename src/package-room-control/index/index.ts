@@ -528,7 +528,7 @@ ComponentWithStore({
       this.clearJobs()
     },
     handleShowDeviceOffline(e: { detail: DeviceCard }) {
-      console.log('isSupportLan', e.detail.deviceId, homOs.isSupportLan({ deviceId: e.detail.deviceId }))
+      console.log('isSupportLan', e.detail, homOs.isSupportLan({ deviceId: e.detail.deviceId }))
 
       const deviceInfo = e.detail
 
@@ -1342,8 +1342,9 @@ ComponentWithStore({
       }
       wx.navigateTo({ url: '/package-distribution/pages/choose-device/index' })
     },
+    // ! 目前只有网关离线卡片会有重新联网操作
     handleRebindGateway() {
-      const gateway = deviceStore.allRoomDeviceMap[this.data.offlineDevice.gatewayId]
+      const gateway = deviceStore.allRoomDeviceMap[this.data.offlineDevice.deviceId]
       wx.navigateTo({
         url: `/package-distribution/pages/wifi-connect/index?type=changeWifi&sn=${gateway.sn}`,
       })
