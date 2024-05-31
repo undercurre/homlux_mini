@@ -247,8 +247,10 @@ ComponentWithStore({
       emitter.off('wsReceive')
       emitter.on('wsReceive', (res) => {
         const { eventType, eventData } = res.result
+
+        // 设备状态上报
         if (eventType === 'device_property') {
-          // 设备状态上报，更新亮灯数
+          // 过滤不需要处理的上报：开关状态、设备id、modelName 缺失；灯组、房间上报
           if (
             typeof eventData.event?.power !== 'number' ||
             !eventData.deviceId ||
@@ -259,7 +261,9 @@ ComponentWithStore({
           }
           // console.log('设备数：', deviceStore.allRoomDeviceFlattenList.length)
           if (eventData.modelName === 'light' || eventData.modelName.indexOf('wallSwitch') > -1) {
-            let { lightOnCount = 0 } = this.data.lightSummary[eventData.roomId] ?? {}
+            const lightSummary = this.data.lightSummary[eventData.roomId] ?? {}
+            let { lightOnCount = 0 } = lightSummary
+            const { lightCount = 0 } = lightSummary
             const uniId = `${eventData.deviceId}:${eventData.modelName}`
             const device = deviceStore.allRoomDeviceFlattenList.find((d) => {
               if (d.proType === PRO_TYPE.switch) {
@@ -274,7 +278,7 @@ ComponentWithStore({
             // console.log('[匹配到设备]oldPower', oldPower)
 
             if (!oldPower && eventData.event.power === 1) {
-              lightOnCount++
+              lightOnCount = Math.min(lightCount, lightOnCount + 1) // 防止异常上报导致大于最大值
             } else if (oldPower && eventData.event.power === 0) {
               lightOnCount = Math.max(0, lightOnCount - 1) // 防止异常上报导致小于0
             }
