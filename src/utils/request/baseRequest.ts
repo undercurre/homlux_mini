@@ -1,3 +1,4 @@
+import homOs from 'js-homos'
 import { hideLoading, showLoading, Logger, showNoNetTips } from '../index'
 
 export type BaseRequestOptions<T extends AnyResType> = WechatMiniprogram.RequestOption<T> & {
@@ -72,7 +73,6 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       // 是否打印请求结果
       if (requestOption.log) {
         const cost_time = Date.now() - start
-
         Logger.console(`✔ ${requestOption.url} 用时 ${cost_time} ms\n`, result.data)
       }
 
@@ -95,7 +95,9 @@ const baseRequest: BaseRequest = function <T extends AnyResType = AnyResType>(re
       }
 
       if (requestOption.isDefaultErrorTips) {
-        showNoNetTips()
+        const isLinkHost = homOs.isHostConnected()
+        // 连接Host时不提示网络异常
+        !isLinkHost && showNoNetTips()
       }
 
       const data = failHandler ? failHandler(err) : (err as unknown as T)

@@ -92,7 +92,7 @@ export const privacyPolicy = `
 <p class="MsoListParagraph" style="margin-left:66px">
     <span style=";font-family:宋体">1.11<span style="font:9px &#39;Times New Roman&#39;">&nbsp; </span>美智光电小程序可能会调用您的设备权限，以下是调用权限对应的业务功能、我们调用的目的，以及调用权限向您询问的情况。</span>
 </p>
-<table width="503">
+<table width="340" style="font-size:12px">
     <tbody>
         <tr style=";height:61px" class="firstRow">
             <td width="98" style="border: 1px solid windowtext; background: white; padding: 0px 7px;">

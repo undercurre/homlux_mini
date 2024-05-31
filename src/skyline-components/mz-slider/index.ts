@@ -25,7 +25,7 @@ ComponentWithComputed({
         if (!this.data.barWidth || v === this.data.innerVal || isNotExist(this.data.valueSpan)) {
           return
         }
-        console.log('observer value:', this.data.innerVal, '->', v)
+        // console.log('observer value:', this.data.innerVal, '->', v)
 
         // 响应外部设值，改变滑动柄位置
         const activedWidth = Math.round((this.data.barWidth / this.data.valueSpan) * (v - this.data.min))

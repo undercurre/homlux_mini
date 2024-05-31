@@ -1,7 +1,8 @@
 // skyline-components/mz-pop-menu/index.ts
+import { ComponentWithComputed } from 'miniprogram-computed'
 import { Easing, timing } from '../common/worklet'
 
-Component({
+ComponentWithComputed({
   /**
    * 组件的属性列表
    */
@@ -29,11 +30,17 @@ Component({
       type: String,
       value: '0rpx',
     },
+    // 弹出动画原点
+    transformOrigin: {
+      type: String,
+      value: 'center top',
+    },
     // 最小宽度，FIXME scroll-view下无法自动横向延伸？
     width: {
       type: Number,
       value: 350,
     },
+    // 最大高度
     height: {
       type: Number,
       value: 480,
@@ -65,6 +72,15 @@ Component({
     reverseArrow: false,
   },
 
+  computed: {
+    composedHeight(data) {
+      const ITEM_HEIGHT = 96
+      const { height, menuList } = data
+      const listHeight = menuList.length * ITEM_HEIGHT
+      return Math.min(height, listHeight)
+    },
+  },
+
   lifetimes: {
     attached() {
       this.data._scale = wx.worklet.shared(0)
@@ -75,7 +91,7 @@ Component({
         return {
           transform: `scale(${this.data._scale.value})`,
           opacity: this.data._opacity.value,
-          transformOrigin: 'center top',
+          transformOrigin: this.data.transformOrigin,
         }
       })
     },
@@ -129,7 +145,7 @@ Component({
       }
     },
     hideMenu() {
-      this.menuTransfer(0, 0)
+      this.menuTransfer(0.8, 0)
     },
     showMenu() {
       this.menuTransfer(1, 1)

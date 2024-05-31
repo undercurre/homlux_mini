@@ -5,6 +5,7 @@
   bind:touchend="handleTouchEnd"
 >
   <view
+    wx:if="{{hasIcon}}"
     id="iconWrapper"
     class="icon-wrapper"
     style="{{iconWrapperStyle}}"
@@ -25,7 +26,7 @@
   </view>
   <view
     class="text"
-    style="{{textStyle}}"
+    style="{{textStyle}};{{fontWeight}};"
     wx:if="{{text}}"
     >{{text}}</view
   >

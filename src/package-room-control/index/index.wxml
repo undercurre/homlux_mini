@@ -21,7 +21,7 @@
   ></nav-bar>
   <!-- 家庭无设备，或只有网关 -->
   <view
-    wx:if="{{!roomHasDevice}}"
+    wx:if="{{!roomHasDevice && !loading}}"
     class="w-full flex flex-col items-center"
   >
     <image
@@ -30,7 +30,7 @@
     ></image>
     <text class="text-black-59 text-28rpx mt-48rpx text-center leading-48rpx">{{'房间内还未添加\n可控制的设备'}}</text>
     <mz-button
-      wx:if="{{canAddDevice}}"
+      wx:if="{{isManager}}"
       type="primary"
       class="mt-240rpx w-686rpx"
       size="large"
@@ -191,38 +191,13 @@
           </view>
         </view>
 
-        <!-- <van-skeleton
-          wx:if="{{!deviceListInited}}"
-          row="1"
-          row-width="700rpx"
-          row-class="mt-16rpx rounded-32rpx skeleton_fix"
-        />
-        <van-skeleton
-          wx:if="{{!deviceListInited}}"
-          row="1"
-          row-width="700rpx"
-          row-class="mt-32rpx rounded-32rpx skeleton_fix"
-        />
-        <van-skeleton
-          wx:if="{{!deviceListInited}}"
-          row="1"
-          row-width="700rpx"
-          row-class="mt-32rpx rounded-32rpx skeleton_fix"
-        />
-        <van-skeleton
-          wx:if="{{!deviceListInited}}"
-          row="1"
-          row-width="700rpx"
-          row-class="mt-32rpx rounded-32rpx skeleton_fix"
-        /> -->
-
         <!-- 有列表时的添加按钮 -->
         <view
           class="flex-col-center pt-40rpx pb-20rpx"
           wx:if="{{roomHasDevice}}"
         >
           <mz-button
-            wx:if="{{canAddDevice}}"
+            wx:if="{{isManager}}"
             type="default"
             color="rgba(255,255,255,0.60)"
             size="small"

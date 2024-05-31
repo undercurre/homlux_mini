@@ -6,7 +6,7 @@
   ></image>
 </view>
 
-<block wx:if="{{isLogin}}">
+<block wx:if="{{isLogin && isInit}}">
   <view
     style="height: calc(120rpx + {{navigationBarAndStatusBarHeight}});"
     class="absolute left-0 top-0 z-110 overflow-hidden w-750rpx"
@@ -17,17 +17,25 @@
     >
       <!-- 全屋开关 -->
       <view class="ml-24rpx">
-        <mz-button
+        <mz-icon-button
           wx:if="{{isShowHomeControl}}"
-          bind:click="handleAllOff"
-          type="primary"
-          custom-class="allOffBtn"
-          round
-          >一键关灯</mz-button
-        >
+          text="一键关灯"
+          wrapperWidth="{{200}}"
+          wrapperHeight="{{80}}"
+          textSize="{{28}}"
+          round="{{40}}"
+          bgColor="rgba(255,255,255,0.42)"
+          bgColorActive="#488fff"
+          textColor="#2b4067"
+          fontWeight="bold"
+          bind:btnTouchStart="handleAllOff"
+          data-key="minus"
+          rebound
+          textInset
+        ></mz-icon-button>
       </view>
       <view
-        wx:if="{{isManager || !loading}}"
+        wx:if="{{isManager}}"
         class="mr-36rpx mt-8rpx"
         data-mark="addIcon"
         id="addIcon"
@@ -130,45 +138,6 @@
     </view>
   </view>
   <view class="tabbar-placeholder"></view>
-
-  <!-- 加载中 -->
-  <!-- <view
-    wx:if="{{loading}}"
-    id="skeleton"
-  >
-    <view class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7 z-200"></view>
-    <view
-      class="fixed z-201 left-0 w-750rpx flex flex-col"
-      style="top: {{statusBarHeight}};"
-    >
-      <van-skeleton
-        row="1"
-        row-width="40%"
-        row-class="rounded-28rpx h-76rpx_el_"
-      />
-      <van-skeleton
-        class="mt-22rpx"
-        row="1"
-        row-width="240rpx"
-        row-class="rounded-999 h-78rpx_el_"
-      />
-      <van-skeleton
-        class="mt-36rpx"
-        row="1"
-        row-class="rounded-32rpx h-304rpx_el_"
-      />
-      <van-skeleton
-        class="mt-32rpx"
-        row="1"
-        row-class="rounded-32rpx h-304rpx_el_"
-      />
-      <van-skeleton
-        class="mt-32rpx"
-        row="1"
-        row-class="rounded-32rpx h-304rpx_el_"
-      />
-    </view>
-  </view> -->
 </block>
 
 <!-- 未登录 -->
@@ -207,24 +176,26 @@
 ></home-select-menu> -->
 
 <mz-pop-menu
-  isShow="{{selectHomeMenu.isShow}}"
+  is-show="{{selectHomeMenu.isShow}}"
   class="z-120"
   x="{{selectHomeMenu.x}}"
   y="{{selectHomeMenu.y}}"
-  menuList="{{homeMenuList}}"
+  menu-list="{{homeMenuList}}"
+  transform-origin="left top"
   bind:menuTap="handleHomeTap"
   bind:overlayClick="handleHomeMenu"
 ></mz-pop-menu>
 
 <mz-pop-menu
-  isShow="{{addMenu.isShow}}"
+  is-show="{{addMenu.isShow}}"
   class="z-120"
   x="{{addMenu.x}}"
   y="{{addMenu.y}}"
   arrowX="{{addMenu.arrowX}}"
   height="{{addMenu.height}}"
   width="{{addMenu.width}}"
-  menuList="{{addMenu.list}}"
+  menu-list="{{addMenu.list}}"
+  transform-origin="right top"
   bind:menuTap="handleAddTap"
   bind:overlayClick="handleAddMenu"
 ></mz-pop-menu>

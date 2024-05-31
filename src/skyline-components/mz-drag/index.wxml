@@ -13,8 +13,9 @@
     <mz-movable
       wx:for="{{list}}"
       key="{{index}}"
-      bind:dragClick="cardTap"
+      bind:dragClick="dragClick"
       bind:dragBegin="dragBegin"
+      bind:dragMove="dragMove"
       bind:dragEnd="dragEnd"
       data-index="{{index}}"
       direction="{{direction}}"

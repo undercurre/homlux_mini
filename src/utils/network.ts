@@ -15,9 +15,10 @@ export async function verifyNetwork() {
   // HACK 安卓和IOS返回不一致
   const newStatus =
     res.msg.indexOf('timeout') === -1 && res.msg.indexOf('time out') === -1 && res.msg.indexOf('UNREACHABLE') === -1
-  Logger.log('API连网状态验证:', res, isConnectStatus, '->', newStatus)
+  Logger.log('API联网状态验证:', res, isConnectStatus, '->', newStatus)
 
   if (newStatus !== isConnectStatus) {
+    Logger.debug('[联网状态变化]', res)
     isConnectStatus = newStatus
     emitter.emit('networkStatusChange', {
       networkType,
@@ -40,7 +41,7 @@ export function isWeakNet() {
 }
 
 const networkListener = (res: WechatMiniprogram.OnNetworkStatusChangeListenerResult) => {
-  Logger.debug('网络状态变化:', res)
+  Logger.debug('[网络状态变化]', res)
 
   networkType = res.networkType
 
@@ -61,7 +62,7 @@ const networkListener = (res: WechatMiniprogram.OnNetworkStatusChangeListenerRes
 }
 
 const networkWeakListener = (res: WechatMiniprogram.OnNetworkWeakChangeListenerResult) => {
-  Logger.debug('弱网状态变化:', res)
+  Logger.debug('[弱网状态变化]', res)
   weakNet = res.weakNet
   networkType = res.networkType
 }

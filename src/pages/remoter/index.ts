@@ -208,11 +208,13 @@ ComponentWithComputed({
         this.data._holdBleScan = true
         let page = 'pannel'
         if (deviceType === '13') {
-          page = deviceModel === '01' || deviceModel === '04' ? 'light' : 'fan-light'
+          page = deviceModel === '01' || deviceModel === '04' || deviceModel === '05' ? 'light' : 'fan-light'
         } else if (deviceType === '26') {
-          if (deviceModel === '01' || deviceModel === '03' || deviceModel === '77') page = 'bath'
+          const v2 = ['01', '03', '77', '22', '66', '27', '6f']
+          if (v2.includes(deviceModel)) page = 'bath'
         } else if (deviceType === '40') {
-          if (deviceModel === '03') page = 'cool-bath'
+          const v2 = ['03', '07', '23', '63', 'e7']
+          if (v2.includes(deviceModel)) page = 'cool-bath'
         }
         wx.navigateTo({
           url: `/package-remoter/${page}/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceModel=${deviceModel}&addr=${addr}`,
@@ -271,6 +273,7 @@ ComponentWithComputed({
         this.setData({
           isSeeking: true,
         })
+        clearTimeout(this.data._time_id_end)
         this.data._time_id_end = setTimeout(
           () =>
             this.setData({
@@ -354,8 +357,9 @@ ComponentWithComputed({
         const deviceType = item!.deviceType
         const deviceModel = item!.deviceModel
         let cusRSSI = this.data.MIN_RSSI
-        if (deviceType === '13' && deviceModel === '04') {
-          cusRSSI = -70
+        if (deviceType === '13') {
+          if (deviceModel === '04') cusRSSI = -70
+          else if (deviceModel === '05') cusRSSI = -60
         }
         if (
           item!.RSSI >= cusRSSI && // 过滤弱信号设备
