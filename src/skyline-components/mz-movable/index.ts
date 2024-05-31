@@ -31,7 +31,7 @@ Component({
     // 动画生效时的持续时间
     duration: {
       type: Number,
-      value: 300,
+      value: 100,
     },
     // 移动方向，属性值有all | vertical | horizontal | none
     direction: {
@@ -42,18 +42,10 @@ Component({
     x: {
       type: Number,
       value: 0,
-      observer(x) {
-        this.posTransfer(x, this.data.y)
-        this.data._lastX.value = x
-      },
     },
     y: {
       type: Number,
       value: 0,
-      observer(y) {
-        this.posTransfer(this.data.x, y)
-        this.data._lastY.value = y
-      },
     },
     // 超过可移动区域后，是否还可以移动
     outOfBounds: {
@@ -72,6 +64,14 @@ Component({
       observer(v) {
         this.data._bound.value = v as { top: number; left: number; right: number; bottom: number }
       },
+    },
+  },
+
+  observers: {
+    'x, y'(x, y) {
+      this.posTransfer(x, y)
+      this.data._lastX.value = x
+      this.data._lastY.value = y
     },
   },
 
@@ -124,7 +124,7 @@ Component({
   methods: {
     // 动态变更坐标位置
     posTransfer(x: number, y: number) {
-      if (this.data._x?.value !== x && !this.data._settingX.value) {
+      if (!this.data._settingX.value) {
         // console.log('[posTransfer x]', x, this.data._x?.value)
 
         this.data._settingX.value = true
@@ -148,7 +148,7 @@ Component({
           this.data._settingX.value = false
         }
       }
-      if (this.data._y?.value !== y && !this.data._settingY.value) {
+      if (!this.data._settingY.value) {
         // console.log('[posTransfer y]', y, this.data._y?.value)
 
         this.data._settingY.value = true
@@ -183,7 +183,7 @@ Component({
       const y = this.data._y.value
       const lastX = this.data._lastX.value
       const lastY = this.data._lastY.value
-      console.log('MOVE trigger', e.state, e.absoluteX, e.absoluteY, { x, y })
+      // console.log('MOVE trigger', e.state, e.absoluteX, e.absoluteY, { x, y })
 
       switch (e.state) {
         // 拖动识别，保存初始值

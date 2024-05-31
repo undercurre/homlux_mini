@@ -6,7 +6,7 @@ import { deviceBinding, homeBinding, roomBinding } from '../../../store/index'
 import { getCurrentPageParams, isAndroid, isAndroid10Plus, Logger, strUtil } from '../../../utils/index'
 import { WifiSocket } from '../../common/wifiProtocol'
 import { stepListForBind, stepListForChangeWiFi } from './conifg'
-import { defaultImgDir } from '../../../config/index'
+import { defaultImgDir, getCurrentMzaioDomain } from '../../../config/index'
 
 let start = 0
 
@@ -349,7 +349,7 @@ ComponentWithComputed({
       const params = getCurrentPageParams()
 
       const begin = Date.now()
-      const data: IAnyObject = { method: gatewayStatus.method }
+      const data: IAnyObject = { method: gatewayStatus.method, url: getCurrentMzaioDomain() }
 
       if (data.method === 'wifi') {
         data.ssid = params.wifiSSID

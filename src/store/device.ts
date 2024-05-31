@@ -135,7 +135,7 @@ export const deviceStore = observable({
         emitter.emit('roomDeviceSync')
       }
 
-      this.updateAllRoomDeviceListLanStatus(false)
+      this.updateAllRoomDeviceListLanStatus()
     })
   },
 
@@ -147,7 +147,7 @@ export const deviceStore = observable({
     roomId: string = roomStore.currentRoomId,
     options?: IApiRequestOption,
   ) {
-    const res = await querySubDeviceList({ houseId, roomId }, options)
+    const res = await querySubDeviceList({ houseId, roomId }, { ...options, loading: true })
     if (!res.success) {
       console.log('加载房间设备失败！', res)
       return
@@ -156,14 +156,14 @@ export const deviceStore = observable({
     runInAction(() => {
       deviceStore.deviceList = res.result
       deviceStore.deviceTimestamp = res.timestamp
-      this.updateAllRoomDeviceListLanStatus(false)
+      this.updateAllRoomDeviceListLanStatus()
     })
   },
 
   /**
    * 更新全屋设备列表的局域网状态
    */
-  updateAllRoomDeviceListLanStatus(isUpdateUI = true) {
+  updateAllRoomDeviceListLanStatus() {
     const allRoomDeviceList = deviceStore.allRoomDeviceList.map((item) => {
       const { deviceId, updateStamp } = item
 
@@ -178,11 +178,6 @@ export const deviceStore = observable({
       }
     })
 
-    if (!isUpdateUI) {
-      deviceStore.allRoomDeviceList = allRoomDeviceList
-      return
-    }
-
     runInAction(() => {
       deviceStore.allRoomDeviceList = allRoomDeviceList
     })
@@ -190,18 +185,13 @@ export const deviceStore = observable({
   /**
    * 更新全屋设备的在离线状态
    */
-  updateAllRoomDeviceOnLineStatus(isOnLine = true, isUpdateUI = false) {
+  updateAllRoomDeviceOnLineStatus(isOnLine = true) {
     const allRoomDeviceList = deviceStore.allRoomDeviceList.map((item) => {
       return {
         ...item,
         onLineStatus: isOnLine ? 1 : 0,
       }
     })
-
-    if (!isUpdateUI) {
-      deviceStore.allRoomDeviceList = allRoomDeviceList
-      return
-    }
 
     runInAction(() => {
       deviceStore.allRoomDeviceList = allRoomDeviceList

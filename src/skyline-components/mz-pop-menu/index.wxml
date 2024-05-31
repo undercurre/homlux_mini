@@ -15,7 +15,7 @@
     scroll-y="{{menuList.length > 5}}"
     show-scrollbar="{{false}}"
     class="flex"
-    style="height: {{height}}rpx"
+    style="height: {{composedHeight}}rpx"
     bind:scrolltolower="scrollToLower"
     bind:scrolltoupper="scrollToUpper"
   >

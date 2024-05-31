@@ -1,5 +1,4 @@
 import { observable, runInAction } from 'mobx-miniprogram'
-import { emitter } from '../utils/eventBus'
 
 export const othersStore = observable({
   isInit: false,
@@ -9,7 +8,6 @@ export const othersStore = observable({
     runInAction(() => {
       this.isInit = value
     })
-    emitter.emit('pageDataSync')
   },
 
   setDefaultPage(value: string) {
