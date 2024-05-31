@@ -504,6 +504,7 @@ ComponentWithStore({
       // 解除监听
       emitter.off('wsReceive')
       emitter.off('deviceListRetrieve')
+      emitter.off('roomDeviceSync')
 
       if (this.data._wait_timeout) {
         clearTimeout(this.data._wait_timeout)
