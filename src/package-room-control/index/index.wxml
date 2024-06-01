@@ -160,22 +160,15 @@
         scroll-top="{{scrollTop}}"
         scroll-with-animation="{{true}}"
       >
-        <view
-          wx:for="{{devicePageList}}"
-          wx:for-item="group"
-          wx:key="g"
-          wx:for-index="g"
-          class="flex flex-row flex-wrap"
-        >
+        <view class="flex flex-row flex-wrap">
           <view
-            wx:for="{{group}}"
+            wx:for="{{deviceCardList}}"
             wx:key="uniId"
             data-index="{{index}}"
-            data-group="{{g}}"
             data-ordernum="{{item.orderNum}}"
           >
             <device-card
-              class="w-180rpx pb-16rpx pt-16rpx flex justify-center {{editSelectMode && (index !== placeholder.index || g !== placeholder.groupIndex) ? 'shake' : ''}}"
+              class="w-180rpx pb-16rpx pt-16rpx flex justify-center {{editSelectMode && (index !== placeholder.index) ? 'shake' : ''}}"
               showControl="{{!editSelectMode}}"
               showShadow
               showGradientBg
