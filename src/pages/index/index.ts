@@ -224,6 +224,12 @@ ComponentWithStore({
         clearTimeout(this.data._timeId)
         this.data._timeId = null
       }
+
+      // 隐藏可能弹出的菜单
+      this.setData({
+        'selectHomeMenu.isShow': false,
+        'addMenu.isShow': false,
+      })
     },
     async onShow() {
       this.data._timer = Date.now()
