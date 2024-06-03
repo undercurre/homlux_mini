@@ -2,11 +2,14 @@
   "component": true,
   "usingComponents": {
     "van-button": "@vant/weapp/button/index",
+    "van-switch": "@vant/weapp/switch/index",
     "van-toast": "@vant/weapp/toast/index",
     "van-dialog": "@vant/weapp/dialog/index",
     "van-cell-group": "@vant/weapp/cell-group/index",
     "van-cell": "@vant/weapp/cell/index",
     "edit-name-popup": "./components/edit-name-popup/index",
-    "van-action-sheet": "@vant/weapp/action-sheet/index"
+    "van-action-sheet": "@vant/weapp/action-sheet/index",
+    "mx-button": "/miniprogram_npm/m-ui/mx-button/index",
+    "mx-popup": "/miniprogram_npm/m-ui/mx-popup/index"
   }
 }

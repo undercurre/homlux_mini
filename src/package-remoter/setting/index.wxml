@@ -10,35 +10,78 @@
       <van-cell is-link
         bind:click="handleDeviceNameEditPopup" 
         title="设备名称"
+        border="{{true}}"
         value="{{curRemoter.deviceName}}" 
         custom-class="cus-cell"></van-cell>
-    </van-cell-group>
 
-    <van-cell-group inset>
       <van-cell is-link
         title="首页开关"
         value="{{curRemoter.actions[curRemoter.defaultAction].name}}"
+        border="{{true}}"
+        bind:click="toSetting"
+        custom-class="cus-cell"></van-cell>
+
+      <van-cell is-link
+        wx:if="{{deviceType === '17'}}"
+        title="一键晾衣高度"
+        value="{{heightArr[curPickerIndex[0]]}}cm"
         border="{{false}}"
-        bind:click="toSetting" 
+        bind:click="onClothesHeightClick"
         custom-class="cus-cell"></van-cell>
     </van-cell-group>
 
-    <!-- <van-cell-group inset>
-      <van-cell title="按钮震动反馈" border="{{false}}" bind:click=""></van-cell>
-    </van-cell-group> -->
+    <van-cell-group inset wx:if="{{deviceType === '17'}}">
+      <van-cell
+        wx:for="{{customOption}}"
+        wx:key="index"
+        title="{{item.name}}"
+        border="{{true}}"
+        custom-class="cus-cell">
+          <van-switch 
+            slot="right-icon" 
+            custom-class="cell-switch" 
+            checked="{{item.isOn}}" 
+            bind:change="onCustomSwitchClick" 
+            data-index="{{index}}" data-key="{{item.key}}"/>
+      </van-cell>
+    </van-cell-group>
   </view>
-
-  <!-- <view class="flex flex-1 flex-col justify-end">
-    <view bind:tap="handleDeviceUnbind">
-      <text class="text-hex-a2a2a2 text-32">解绑遥控器</text>
-    </view>
-  </view> -->
 
   <!-- 隔开一点距离 -->
   <view class="h-40rpx"></view>
   <!-- 底部按钮 -->
   <van-button size="large" type="warning" custom-class="delete-btn" bind:click="handleDeviceDelete">删除设备</van-button>
   <view class="h-96rpx"></view>
+
+  <mx-popup round show="{{isShowPicker}}" position="bottom" bind:close="closePopup">
+    <view class="pup-block" style="height: 700rpx;">
+      <text class="text-36rpx font-semibold" style="margin-top: 42rpx; margin-bottom: 42rpx;">一键晾衣高度</text>
+      <view class="popup-close" bind:tap="closePopup">
+        <image style="height: 48rpx; width: 48rpx;" src="/package-remoter/assets/newUI/close.png"></image>
+      </view>
+
+      <text class="unit-h text-28rpx font-normal" style="left: 420rpx;">cm</text>
+      <view class="pick-block flex-center">
+        <picker-view indicator-style="height: 56rpx;"
+          style="width: 500rpx; height: 360rpx;"
+          value="{{ curPickerIndex }}"
+          bindchange="onPickChange"
+          bindpickend='onPickEnd'>
+          <picker-view-column>
+            <view wx:for="{{ heightArr }}"
+              wx:key="key"
+              class="picker-cloumn-text"
+              style="font-size: 40rpx;">{{item}}</view>
+          </picker-view-column>
+        </picker-view>
+      </view>
+
+      <mx-button 
+        custom-style="width: 686rpx; margin-top: 40rpx"
+        color="linear-gradient(90deg, #468CFB 0%, #6BA3FC 100%)"
+        type="default" bind:click="onPickTimeConfirm">确定</mx-button>
+    </view>
+  </mx-popup>
 </view>
 
 <van-toast id="van-toast" />

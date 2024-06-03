@@ -215,6 +215,8 @@ ComponentWithComputed({
         } else if (deviceType === '40') {
           const v2 = ['03', '07', '23', '63', 'e7']
           if (v2.includes(deviceModel)) page = 'cool-bath'
+        } else if (deviceType === '17') {
+          page = 'clothes'
         }
         wx.navigateTo({
           url: `/package-remoter/${page}/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceModel=${deviceModel}&addr=${addr}`,
