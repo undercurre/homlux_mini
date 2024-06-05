@@ -193,21 +193,20 @@ Component({
 
       const { checked, id = '' } = allRoomItem[roomSelect][index]
       const selectListSet = new Set(this.data.selectList)
-      if (this.data.isSingleSelect) {
+
+      if (checked) {
+        selectListSet.delete(id)
+      } else if (this.data.isSingleSelect) {
         selectListSet.clear()
         selectListSet.add(id)
       } else {
-        if (checked) {
-          selectListSet.delete(id)
-        } else {
-          selectListSet.add(id)
-        }
+        selectListSet.add(id)
       }
 
       this.data.selectList = Array.from(selectListSet)
       this.setData({
         [`allRoomItem.${this.data.roomSelect}[${index}].checked`]: !checked,
-        curItemSelectId: id,
+        curItemSelectId: this.data.selectList?.length ? id : '',
       })
       this.triggerEvent('select', e.detail.sceneId || e.detail.uniId)
     },
