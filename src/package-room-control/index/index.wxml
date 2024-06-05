@@ -168,6 +168,7 @@
             data-ordernum="{{item.orderNum}}"
           >
             <device-card
+              wx:if="{{item}}"
               class="w-180rpx pb-16rpx pt-16rpx flex justify-center {{editSelectMode && (index !== placeholder.index) ? 'shake' : ''}}"
               showControl="{{!editSelectMode}}"
               showShadow

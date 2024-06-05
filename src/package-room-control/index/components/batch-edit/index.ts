@@ -609,7 +609,8 @@ ComponentWithComputed({
       // 成功移动的设备在新房间排序
       let lastOrderNum = targetRoomList.length + 1
       for (const uniId of uniIds) {
-        const device = deviceStore.allRoomDeviceFlattenMap[uniId]
+        const deviceId = uniId.split(':')[0]
+        const device = deviceStore.allRoomDeviceFlattenMap[uniId] ?? deviceStore.allRoomDeviceFlattenMap[deviceId]
 
         lastOrderNum = lastOrderNum + 1 // 放到最后面
         if (device.proType !== PRO_TYPE.switch) {
