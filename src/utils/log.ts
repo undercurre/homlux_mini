@@ -9,7 +9,7 @@ const log = wx.getRealtimeLogManager()
 export const Logger = {
   debug(...args: unknown[]) {
     console.debug(`${dayjs().format('HH:mm:ss.SSS')} |`, ...args)
-    log.info(args)
+    log.warn(args)
   },
   console(...args: unknown[]) {
     console.log(...args)

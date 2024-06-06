@@ -1,4 +1,5 @@
 import { envMap, setEnv } from '../config/index'
+import { Logger } from './log'
 import { storage } from './storage'
 // import QQMapWX from '../lib/qqmap-wx-jssdk'
 // import { QQMapConfig } from '../config/index'
@@ -141,7 +142,7 @@ export function isRelease() {
  */
 export function setCurrentEnv(env?: ENV_TYPE) {
   const info = wx.getAccountInfoSync()
-  const { envVersion } = info.miniProgram
+  const { envVersion, version } = info.miniProgram
   const storageKey = `${envVersion}_env`
   let envStr = env ?? (storage.get(storageKey) as ENV_TYPE)
 
@@ -150,7 +151,11 @@ export function setCurrentEnv(env?: ENV_TYPE) {
   }
 
   storage.set(storageKey, envStr)
-  console.log('当前环境：', envStr)
+  Logger.debug('小程序环境：', envVersion)
+  if (envVersion === 'release') {
+    Logger.debug('小程序版本：', version)
+  }
+  Logger.debug('云端环境：', envStr)
   setEnv(envStr)
 }
 
