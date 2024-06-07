@@ -1,7 +1,6 @@
 .movearea {
   position: relative;
   margin-left: 20rpx;
-  background-color: #f0f0f0;
 }
 
 .z-1 {
