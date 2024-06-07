@@ -133,3 +133,5 @@
     <view class="pb-200rpx"></view>
   </scroll-view>
 </view>
+
+<custom-tab-bar select-index="2"></custom-tab-bar>
