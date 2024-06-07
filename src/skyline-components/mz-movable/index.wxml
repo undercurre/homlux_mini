@@ -2,10 +2,10 @@
   <pan-gesture-handler worklet:ongesture="handlePan">
     <view
       class="item"
-      bind:tap="onClick"
+      bind:cardTap="dragClick"
       id="box-{{key}}"
     >
-      <slot></slot>
+      <slot bind:cardTap="dragClick"></slot>
     </view>
   </pan-gesture-handler>
 </long-press-gesture-handler>

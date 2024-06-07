@@ -1,19 +1,18 @@
 <scroll-view
   type="list"
-  style="height: {{scrollHeight}}"
+  style="width: 100%; height: {{scrollHeight}}"
   show-scrollbar="{{false}}"
   scroll-y
   enable-passive
 >
   <view
     class="movearea"
-    style="height:{{moveareaHeight}}px"
+    style="width: 100%; height:{{moveareaHeight}}px"
     wx:if="{{list.length}}"
   >
     <mz-movable
       wx:for="{{list}}"
       key="{{index}}"
-      bind:dragClick="dragClick"
       bind:dragBegin="dragBegin"
       bind:dragMove="dragMove"
       bind:dragEnd="dragEnd"
@@ -21,9 +20,16 @@
       direction="{{direction}}"
       x="{{item.pos[0]}}"
       y="{{item.pos[1]}}"
+      draggable="{{item.draggable}}"
       class="moveitem {{ index === currentIndex ? 'z-100' : 'z-1' }}"
     >
-      <item>{{item.name}}[{{item.order}}]</item>
+      <!-- {{item.name}}[{{item.order}}] -->
+      <item
+        bind:cardTap="cardTap"
+        card-info="{{item}}"
+        edit-mode="{{editMode}}"
+      ></item>
     </mz-movable>
   </view>
+  <slot name="bottom"></slot>
 </scroll-view>
