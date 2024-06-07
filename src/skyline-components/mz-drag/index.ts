@@ -29,6 +29,9 @@ Component({
         })
       },
     },
+    // 是否处于编辑模式 // ! 目前是否能拖动与编辑模式无内在关联，只是业务逻辑需要
+    editMode: Boolean,
+
     // 单个元素的占位宽度（含边距）
     itemWidth: Number,
     // 单个元素的占位高度（含边距）
@@ -119,6 +122,8 @@ Component({
       })
       this.data._originOrder = orderNum
       console.log('⇅ [dragBegin]index:', index)
+
+      this.triggerEvent('dragBegin', this.data.list[index])
     },
     dragMove(e: { target: { dataset: { index: number } }; detail: number[] }) {
       this.dragMoveThrottle(e.target.dataset.index, [e.detail[2], e.detail[3]])

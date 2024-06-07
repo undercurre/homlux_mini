@@ -21,7 +21,7 @@ ComponentWithComputed({
      * @param select 是否显示选中样式，包括单选和多选
      * TODO 替换为更通用的属性名 cardInfo
      */
-    deviceInfo: {
+    cardInfo: {
       type: Object,
       observer() {},
     },
@@ -73,38 +73,38 @@ ComponentWithComputed({
       return !data.editMode
     },
     showShadow(data) {
-      return data.deviceInfo.showShadow
+      return data.cardInfo.showShadow
     },
     showSpecialBg(data) {
-      return data.deviceInfo.showSpecialBg ?? true // 默认值为true
+      return data.cardInfo.showSpecialBg ?? true // 默认值为true
     },
     showGradientBg(data) {
-      return data.deviceInfo.showGradientBg
+      return data.cardInfo.showGradientBg
     },
     showBtnDetail(data) {
-      return data.deviceInfo.showBtnDetail ?? true // 默认值为true
+      return data.cardInfo.showBtnDetail ?? true // 默认值为true
     },
     select(data) {
-      return data.deviceInfo.select
+      return data.cardInfo.select
     },
     picUrl(data) {
       if (data.isLoadImgError) {
         return `/assets/img/offline/default-device.png`
       }
-      if (data.deviceInfo.proType === PRO_TYPE.switch && data.showBtnDetail) {
-        return data.deviceInfo?.switchInfoDTOList[0]?.pic
-      } else if (data.deviceInfo?.pic) {
-        return data.deviceInfo.pic
+      if (data.cardInfo.proType === PRO_TYPE.switch && data.showBtnDetail) {
+        return data.cardInfo?.switchInfoDTOList[0]?.pic
+      } else if (data.cardInfo?.pic) {
+        return data.cardInfo.pic
       }
       return ''
     },
     controlBtnPic(data) {
-      if (data.deviceInfo.proType === PRO_TYPE.gateway) {
+      if (data.cardInfo.proType === PRO_TYPE.gateway) {
         return ''
       }
       // 窗帘，位置大于0即为开启
-      else if (data.deviceInfo.proType === PRO_TYPE.curtain) {
-        const pos = data.deviceInfo.mzgdPropertyDTOList['curtain'].curtain_position
+      else if (data.cardInfo.proType === PRO_TYPE.curtain) {
+        const pos = data.cardInfo.mzgdPropertyDTOList['curtain'].curtain_position
         const isClosed = pos === '0'
         if (data.isProcessing) {
           return isClosed ? '/assets/img/base/curtain-opening.png' : '/assets/img/base/curtain-closing.png'
@@ -112,21 +112,21 @@ ComponentWithComputed({
         return isClosed ? '/assets/img/base/curtain-open.png' : '/assets/img/base/curtain-close.png'
       }
       // 面板
-      else if (data.deviceInfo.proType === PRO_TYPE.switch) {
+      else if (data.cardInfo.proType === PRO_TYPE.switch) {
         // ! 确保带有switchInfoDTOList
-        const switchId = data.deviceInfo.switchInfoDTOList[0]?.switchId
-        if (!switchId || !data.deviceInfo.mzgdPropertyDTOList[switchId]) {
+        const switchId = data.cardInfo.switchInfoDTOList[0]?.switchId
+        if (!switchId || !data.cardInfo.mzgdPropertyDTOList[switchId]) {
           // 万一设备没有开关属性，不显示
           return ''
         }
-        return data.deviceInfo.mzgdPropertyDTOList[switchId].power
+        return data.cardInfo.mzgdPropertyDTOList[switchId].power
           ? '/assets/img/base/power-on.png'
           : '/assets/img/base/power-off.png'
       }
       // PRO_TYPE中已定义的，包括灯及灯组、空调等
-      else if (Object.keys(proName).includes(data.deviceInfo.proType)) {
-        const modeName = getModelName(data.deviceInfo.proType, data.deviceInfo.productId)
-        return data.deviceInfo.mzgdPropertyDTOList[modeName].power
+      else if (Object.keys(proName).includes(data.cardInfo.proType)) {
+        const modeName = getModelName(data.cardInfo.proType, data.cardInfo.productId)
+        return data.cardInfo.mzgdPropertyDTOList[modeName].power
           ? '/assets/img/base/power-on.png'
           : '/assets/img/base/power-off.png'
       }
@@ -135,58 +135,58 @@ ComponentWithComputed({
     topTitle(data) {
       // 如果是开关，deviceName显示开关名称
       let name
-      if (data.deviceInfo.proType === PRO_TYPE.switch && data.showBtnDetail) {
-        const switchInfo = data.deviceInfo.switchInfoDTOList[0]
+      if (data.cardInfo.proType === PRO_TYPE.switch && data.showBtnDetail) {
+        const switchInfo = data.cardInfo.switchInfoDTOList[0]
         name = switchInfo.switchName ?? '按键' + switchInfo.switchId
       } else {
-        name = data.deviceInfo.deviceName
+        name = data.cardInfo.deviceName
       }
       return name.length > 5 ? name.slice(0, 2) + '...' + name.slice(-2) : name
     },
     bottomDesc(data) {
-      return data.deviceInfo.deviceName.length > 5
-        ? data.deviceInfo.deviceName.slice(0, 2) + '...' + data.deviceInfo.deviceName.slice(-2)
-        : data.deviceInfo.deviceName
+      return data.cardInfo.deviceName.length > 5
+        ? data.cardInfo.deviceName.slice(0, 2) + '...' + data.cardInfo.deviceName.slice(-2)
+        : data.cardInfo.deviceName
     },
     deviceType(data) {
-      return proName[data.deviceInfo.proType]
+      return proName[data.cardInfo.proType]
     },
     /** 开关面板名称 */
     switchDeviceName(data) {
-      return data.deviceInfo.deviceName.slice(0, 5)
+      return data.cardInfo.deviceName.slice(0, 5)
     },
 
     // 设备是否可控
     // !! 需要使用双否定将undefined null值转换为boolean，以免视图显示中判断异常
     canCtrl(data) {
-      return !!(data.deviceInfo.onLineStatus || data.deviceInfo.canLanCtrl)
+      return !!(data.cardInfo.onLineStatus || data.cardInfo.canLanCtrl)
     },
 
     // 设备是灯组
     isGroup(data) {
-      return data.deviceInfo.deviceType === 4
+      return data.cardInfo.deviceType === 4
     },
     // 设备是传感器，显示电量状态
     lowBattery(data) {
-      if (data.deviceInfo.proType === PRO_TYPE.sensor) {
-        const modelName = getModelName(PRO_TYPE.sensor, data.deviceInfo.productId)
-        const prop = data.deviceInfo.mzgdPropertyDTOList[modelName]
+      if (data.cardInfo.proType === PRO_TYPE.sensor) {
+        const modelName = getModelName(PRO_TYPE.sensor, data.cardInfo.productId)
+        const prop = data.cardInfo.mzgdPropertyDTOList[modelName]
         return !!prop?.batteryAlarmState
       }
       return false
     },
     // 特定设备，显示工作状态
     isRunning(data) {
-      const modelName = getModelName(data.deviceInfo.proType, data.deviceInfo.productId)
-      const prop = data.deviceInfo.mzgdPropertyDTOList[modelName]
-      if (data.deviceInfo.proType === PRO_TYPE.bathHeat) {
+      const modelName = getModelName(data.cardInfo.proType, data.cardInfo.productId)
+      const prop = data.cardInfo.mzgdPropertyDTOList[modelName]
+      if (data.cardInfo.proType === PRO_TYPE.bathHeat) {
         return (
           prop?.mode === 'heating' ||
           prop?.mode === 'blowing' ||
           prop?.mode === 'ventilation' ||
           prop?.light_mode !== 'close_all'
         )
-      } else if (data.deviceInfo.proType === PRO_TYPE.clothesDryingRack) {
+      } else if (data.cardInfo.proType === PRO_TYPE.clothesDryingRack) {
         return prop?.location_status !== 'upper_limit' || prop?.light === 'on'
       }
       return false
@@ -194,10 +194,10 @@ ComponentWithComputed({
     // 在卡片上有控制按钮的
     hasControl(data) {
       return (
-        data.deviceInfo.proType !== PRO_TYPE.gateway &&
-        data.deviceInfo.proType !== PRO_TYPE.sensor &&
-        data.deviceInfo.proType !== PRO_TYPE.bathHeat &&
-        data.deviceInfo.proType !== PRO_TYPE.clothesDryingRack
+        data.cardInfo.proType !== PRO_TYPE.gateway &&
+        data.cardInfo.proType !== PRO_TYPE.sensor &&
+        data.cardInfo.proType !== PRO_TYPE.bathHeat &&
+        data.cardInfo.proType !== PRO_TYPE.clothesDryingRack
       )
     },
   },
@@ -207,16 +207,16 @@ ComponentWithComputed({
    */
   methods: {
     handleCardTap() {
-      const { deviceInfo, _clientRect, canCtrl } = this.data
+      const { cardInfo, _clientRect, canCtrl } = this.data
       if (canCtrl) {
         this.triggerEvent('cardTap', {
-          ...deviceInfo,
+          ...cardInfo,
           clientRect: _clientRect,
           type: 'card',
         })
       } else {
         this.triggerEvent('cardTap', {
-          ...deviceInfo,
+          ...cardInfo,
           clientRect: _clientRect,
           type: 'offline',
         })
@@ -267,22 +267,22 @@ ComponentWithComputed({
 
       // emit 事件，发送指令等
       this.triggerEvent('cardTap', {
-        ...this.data.deviceInfo,
+        ...this.data.cardInfo,
         clientRect: this.data._clientRect,
         type: 'control',
       })
 
       // 状态反转
       let power = false
-      if (this.data.deviceInfo.proType === PRO_TYPE.light) {
-        const modelName = this.data.deviceInfo.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1'
-        power = !this.data.deviceInfo.mzgdPropertyDTOList[modelName].power
-      } else if (this.data.deviceInfo.proType === PRO_TYPE.switch) {
-        const { switchId } = this.data.deviceInfo.switchInfoDTOList[0]
-        power = !this.data.deviceInfo.mzgdPropertyDTOList[switchId]?.power
+      if (this.data.cardInfo.proType === PRO_TYPE.light) {
+        const modelName = this.data.cardInfo.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1'
+        power = !this.data.cardInfo.mzgdPropertyDTOList[modelName].power
+      } else if (this.data.cardInfo.proType === PRO_TYPE.switch) {
+        const { switchId } = this.data.cardInfo.switchInfoDTOList[0]
+        power = !this.data.cardInfo.mzgdPropertyDTOList[switchId]?.power
 
         // 未确定用途，暂时注释
-        // if (this.data.deviceInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
+        // if (this.data.cardInfo.mzgdPropertyDTOList[switchId].ButtonMode === 2) {
         //   return
         // }
       }

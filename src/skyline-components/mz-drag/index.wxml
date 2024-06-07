@@ -26,7 +26,8 @@
       <!-- {{item.name}}[{{item.order}}] -->
       <item
         bind:cardTap="cardTap"
-        device-info="{{item}}"
+        card-info="{{item}}"
+        edit-mode="{{editMode}}"
       ></item>
     </mz-movable>
   </view>

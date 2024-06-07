@@ -46,14 +46,14 @@
       catch:tap="handlePowerTap"
     >
       <view
-        wx:if="{{deviceInfo.linkSceneName}}"
+        wx:if="{{cardInfo.linkSceneName}}"
         class="flex-center mb-22rpx"
       >
         <image
           src="/assets/img/base/scene-switch-btn.png"
           class="w-22rpx h-22rpx mt-4rpx"
         />
-        <text class="text-blue text-24rpx leading-none ml-4rpx">{{deviceInfo.linkSceneName}}</text>
+        <text class="text-blue text-24rpx leading-none ml-4rpx">{{cardInfo.linkSceneName}}</text>
       </view>
       <image
         wx:else
