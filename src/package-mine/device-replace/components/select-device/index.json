@@ -3,7 +3,7 @@
   "styleIsolation": "apply-shared",
   "usingComponents": {
     "van-button": "@vant/weapp/button/index",
-    "device-card": "/skyline-components/mz-device-card/index",
+    "device-card": "/components/device-card/index",
     "van-popup": "@vant/weapp/popup/index",
     "room-tabs": "../../../../components/room-tabs/index"
   }

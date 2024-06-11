@@ -9,6 +9,7 @@
 .show-control-bg {
   background-image: linear-gradient(180deg, #f2f5fc 10%, #ffffff 74%);
 }
+
 .show-group-bg {
   background-image: linear-gradient(180deg, #fffaef 10%, #ffffff 74%);
 }
@@ -21,6 +22,7 @@
   border: 3rpx solid #fff;
 }
 
+/* TODO 待精简旧的开关动画 */
 .ripple-off {
   background-image: linear-gradient(180deg, #858892 0%, #a0a2ab 96%);
 }
@@ -34,10 +36,12 @@
     transform: translateY(250rpx) translateX(-50%);
     opacity: 0.8;
   }
+
   80% {
     transform: translateY(0) translateX(-50%);
     opacity: 0.3;
   }
+
   100% {
     transform: translateY(0) translateX(-50%);
     opacity: 0;
@@ -49,12 +53,42 @@
     transform: translateY(250rpx) translateX(-50%);
     opacity: 0.8;
   }
+
   80% {
     transform: translateY(0) translateX(-50%);
     opacity: 0.3;
   }
+
   100% {
     transform: translateY(0) translateX(-50%);
     opacity: 0;
+  }
+}
+
+/* 抖动 */
+
+.shake {
+  animation: 2s linear 1s alternate infinite shake;
+}
+
+@keyframes shake {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  5% {
+    transform: rotate(-4deg);
+  }
+
+  10% {
+    transform: rotate(0deg);
+  }
+
+  15% {
+    transform: rotate(4deg);
+  }
+
+  20% {
+    transform: rotate(0deg);
   }
 }

@@ -1,8 +1,7 @@
 <view
   id="card"
-  class="{{showShadow?'card-shadow':''}} w-160rpx h-216rpx rounded-32rpx"
-  catchtap="handleCardTap"
-  bind:longpress="handleLongPress"
+  class="{{showShadow?'card-shadow':''}} {{editMode?'shake':''}} w-160rpx h-216rpx rounded-32rpx mb-16rpx mt-16rpx justify-center"
+  catch:tap="handleCardTap"
 >
   <!-- IOS 下card-clip会把box-shadow同时剪裁掉，故增加一层处理 -->
   <view class="flex-col-center relative overflow-hidden card-clip w-160rpx h-216rpx rounded-32rpx">
@@ -47,14 +46,14 @@
       catch:tap="handlePowerTap"
     >
       <view
-        wx:if="{{deviceInfo.linkSceneName}}"
+        wx:if="{{cardInfo.linkSceneName}}"
         class="flex-center mb-22rpx"
       >
         <image
           src="/assets/img/base/scene-switch-btn.png"
           class="w-22rpx h-22rpx mt-4rpx"
         />
-        <text class="text-blue text-24rpx leading-none ml-4rpx">{{deviceInfo.linkSceneName}}</text>
+        <text class="text-blue text-24rpx leading-none ml-4rpx">{{cardInfo.linkSceneName}}</text>
       </view>
       <image
         wx:else
