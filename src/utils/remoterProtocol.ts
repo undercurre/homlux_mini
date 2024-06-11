@@ -94,7 +94,7 @@ const _parsePayload = (payload: string, deviceType: string, deviceModel?: string
       LIGHT_COLOR_TEMP: rxU16[6], // 当前色温
     }
     // 不同灯的专有属性
-    if (deviceModel === '01' || deviceModel === '04') {
+    if (deviceModel === '01' || deviceModel === '04' || deviceModel === '05') {
       res.DELAY_OFF = rxU16[7] // 延时关灯剩余分钟数，0表示延时关灯失效
       res.LIGHT_NIGHT_LAMP = rxU16[8] === 0x06 // 小夜灯状态，0x06代表开启，0x9表示助眠状态
       res.LIGHT_SCENE_SLEEP = rxU16[8] === 0x09
