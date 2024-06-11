@@ -161,6 +161,7 @@
         scroll-height="{{scrollViewHeight}}"
         item-height="{{itemHeight}}"
         item-width="{{itemWidth}}"
+        config="{{cardListConfig}}"
         edit-mode="{{editMode}}"
         movable-list="{{deviceCardList}}"
         bind:dragBegin="handleEditMode"

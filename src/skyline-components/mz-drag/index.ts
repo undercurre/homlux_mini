@@ -8,6 +8,14 @@ Component({
    * 组件的属性列表
    */
   properties: {
+    /**
+     * 样式相关配置
+     * @param draggable 是否可拖动
+     * @param 其余配置传入抽象节点
+     */
+    config: {
+      type: Object,
+    },
     cols: {
       type: Number,
       value: 1,

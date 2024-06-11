@@ -20,14 +20,16 @@
       direction="{{direction}}"
       x="{{item.pos[0]}}"
       y="{{item.pos[1]}}"
-      draggable="{{item.draggable}}"
+      draggable="{{config.draggable}}"
       class="moveitem {{ index === currentIndex ? 'z-100' : 'z-1' }}"
     >
       <!-- {{item.name}}[{{item.order}}] -->
       <item
         bind:cardTap="cardTap"
+        config="{{config}}"
         card-info="{{item}}"
         edit-mode="{{editMode}}"
+        select="{{item.select}}"
       ></item>
     </mz-movable>
   </view>

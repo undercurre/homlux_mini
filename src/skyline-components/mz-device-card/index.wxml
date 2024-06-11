@@ -1,6 +1,6 @@
 <view
   id="card"
-  class="{{showShadow?'card-shadow':''}} {{editMode?'shake':''}} w-160rpx h-216rpx rounded-32rpx pb-16rpx pt-16rpx justify-center"
+  class="{{showShadow?'card-shadow':''}} {{editMode?'shake':''}} w-160rpx h-216rpx rounded-32rpx mb-16rpx mt-16rpx justify-center"
   catch:tap="handleCardTap"
 >
   <!-- IOS 下card-clip会把box-shadow同时剪裁掉，故增加一层处理 -->

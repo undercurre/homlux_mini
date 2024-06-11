@@ -145,6 +145,9 @@ Component({
     cardTypeUI: 'device',
     curItemSelectId: '', // 仅isSingleSelect为true时有用
     tabIndex: 0,
+    cardListConfig: {
+      showSpecialBg: false,
+    },
   },
 
   /**
@@ -187,7 +190,16 @@ Component({
         cardTypeUI: this.data.cardType,
       })
     },
-    handleCardTap(e: { detail: { uniId?: string; sceneId?: string }; currentTarget: { dataset: { index: number } } }) {
+    handleCardTap(e: {
+      detail: { uniId?: string; sceneId?: string; type: string }
+      currentTarget: { dataset: { index: number } }
+    }) {
+      const { type } = e.detail
+      if (type === 'offline') {
+        this.triggerEvent('handleOfflineTap', e.detail.sceneId || e.detail.uniId)
+        return
+      }
+
       const { index } = e.currentTarget.dataset
       const { roomSelect, allRoomItem } = this.data
 
@@ -209,9 +221,6 @@ Component({
         curItemSelectId: this.data.selectList?.length ? id : '',
       })
       this.triggerEvent('select', e.detail.sceneId || e.detail.uniId)
-    },
-    handleOfflineTap(e: { detail: { uniId?: string; sceneId?: string } }) {
-      this.triggerEvent('handleOfflineTap', e.detail.sceneId || e.detail.uniId)
     },
     handleClose() {
       this.triggerEvent('close')

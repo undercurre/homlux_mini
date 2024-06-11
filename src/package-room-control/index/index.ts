@@ -111,6 +111,12 @@ ComponentWithStore({
     _cardEventType: '' as 'card' | 'control', // 触发确权前的操作类型
     // 设备卡片列表
     deviceCardList: [] as DeviceCard[],
+    cardListConfig: {
+      draggable: true,
+      showShadow: true,
+      showGradientBg: true,
+      showControl: true,
+    },
     /** 待创建面板的设备选择弹出框 */
     // scrollTop: 0,
     checkedList: [] as string[], // 已选择设备的id列表
@@ -181,6 +187,7 @@ ComponentWithStore({
           toolboxContentHeight,
           movableAreaHeight,
           scrollViewHeight,
+          'cardListConfig.showControl': !editMode,
         })
       }, 50).bind(this)()
     },
@@ -665,12 +672,7 @@ ComponentWithStore({
             const select = this.data.checkedList.includes(device.uniId)
             return {
               ...device,
-              // 样式配配置相关
-              draggable: true,
-              showShadow: true,
-              showGradientBg: true,
-              showControl: !this.data.editMode,
-              // !! 重排orderNum，从0开始
+              // !! 重排orderNum，从1开始
               // TRICK 排序过程orderNum代替index使用，而不必改变数组的真实索引
               orderNum: index + 1,
               type: proName[device.proType],

@@ -101,12 +101,10 @@
               wx:for="{{allRoomItem[roomIndex]}}"
               wx:key="uniId"
               data-index="{{ index }}"
-              data-checked="{{ item.checked }}"
               bind:cardTap="handleCardTap"
-              device-info="{{item}}"
-              showSpecialBg="{{false}}"
+              card-info="{{item}}"
+              config="{{cardListConfig}}"
               select="{{isSingleSelect ? curItemSelectId === item.uniId : item.checked}}"
-              bind:offlineTap="handleOfflineTap"
             />
           </view>
         </scroll-view>

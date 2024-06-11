@@ -13,17 +13,36 @@ ComponentWithComputed({
    */
   properties: {
     /**
+     * 样式相关的统一配置，不频繁地更新
      * @param showShadow 是否带投影
      * @param showGradientBg 是否带渐变背景
      * @param showSpecialBg 是否启用特殊背景（如灯组）
-     * @param showControl 是否显示控制图标（如电源开关）
      * @param showBtnDetail 是否显示开关按键名称及图标
+     * @param showControl 是否显示控制图标（如电源开关）
+     */
+    config: {
+      type: Object,
+      value: {
+        showShadow: false,
+        showGradientBg: false,
+        showSpecialBg: true,
+        showControl: false,
+        showBtnDetail: true,
+      },
+    },
+    /**
+     * 业务相关属性，可能动态地更新
      * @param select 是否显示选中样式，包括单选和多选
-     * TODO 替换为更通用的属性名 cardInfo
      */
     cardInfo: {
       type: Object,
+      value: {},
       observer() {},
+    },
+    // 是否选中
+    select: {
+      type: Boolean,
+      value: false,
     },
     editMode: Boolean,
   },
@@ -70,22 +89,19 @@ ComponentWithComputed({
       return style
     },
     showControl(data) {
-      return !data.editMode
+      return data.config?.showControl ?? false
     },
     showShadow(data) {
-      return data.cardInfo.showShadow
+      return data.config?.showShadow ?? false
     },
     showSpecialBg(data) {
-      return data.cardInfo.showSpecialBg ?? true // 默认值为true
+      return data.config?.showSpecialBg ?? true // 默认值为true
     },
     showGradientBg(data) {
-      return data.cardInfo.showGradientBg
+      return data.config?.showGradientBg ?? false
     },
     showBtnDetail(data) {
-      return data.cardInfo.showBtnDetail ?? true // 默认值为true
-    },
-    select(data) {
-      return data.cardInfo.select
+      return data.config?.showBtnDetail ?? true // 默认值为true
     },
     picUrl(data) {
       if (data.isLoadImgError) {

@@ -30,6 +30,9 @@ ComponentWithComputed({
     allRoomDeviceList: Array<Device.DeviceItem>(),
     checkedDevice: {},
     roomSelect: '0',
+    cardListConfig: {
+      showBtnDetail: false,
+    },
   },
 
   computed: {
