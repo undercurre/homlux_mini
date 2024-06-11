@@ -1,5 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
+import Toast from '@vant/weapp/toast/toast'
 import { roomBinding, deviceBinding } from '../../../../../store/index'
 import { PRO_TYPE, SCREEN_PID } from '../../../../../config/index'
 import { findDevice } from '../../../../../apis/index'
@@ -54,7 +55,16 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    handleCardTap(e: { currentTarget: { dataset: { index: number } } }) {
+    handleCardTap(e: WechatMiniprogram.CustomEvent) {
+      const { type } = e.detail
+      if (type === 'offline') {
+        Toast({
+          message: '设备已离线',
+          zIndex: 99999,
+        })
+        return
+      }
+
       const { index } = e.currentTarget.dataset
       const device = this.data.lightList[index]
       const oldSelect = device.select
