@@ -706,11 +706,11 @@ ComponentWithStore({
 
         // 直接清空旧列表，再重新加载会引起闪烁，此处只清空‘旧列表比新列表多出的项’
         if (oldListLength > newListLength) {
+          const diffData = {} as IAnyObject
           for (let index = newListLength; index < oldListLength; ++index) {
-            const diffData = {} as IAnyObject
-            diffData[`deviceCardList[${index}]`] = null
-            this.setData(diffData)
+            diffData[`deviceCardList[${index}]`] = ''
           }
+          this.setData(diffData)
         }
 
         if (!this.data.deviceListInited) {

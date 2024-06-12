@@ -28,11 +28,19 @@ Component({
           return
         }
         const { itemWidth, itemHeight, cols } = this.data
-        this.setData({
-          list: data.map((item, i) => ({
+        const list = []
+        for (const index in data) {
+          const i = parseInt(index)
+          const item = data[i]
+          if (!item || !Object.keys(item).length) continue
+
+          list.push({
             ...item,
             pos: [(i % cols) * itemWidth, Math.floor(i / cols) * itemHeight],
-          })),
+          })
+        }
+        this.setData({
+          list,
           moveareaHeight: itemHeight * Math.ceil(data.length / cols),
         })
       },
