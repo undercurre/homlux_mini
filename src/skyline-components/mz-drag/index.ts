@@ -41,7 +41,7 @@ Component({
         }
         this.setData({
           list,
-          moveareaHeight: itemHeight * Math.ceil(data.length / cols),
+          moveareaHeight: itemHeight * Math.ceil(list.length / cols),
         })
       },
     },

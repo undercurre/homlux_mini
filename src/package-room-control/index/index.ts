@@ -47,6 +47,7 @@ type DeviceCard = Device.DeviceItem & {
   timestamp: number // 加入队列时打上的时间戳
   isScreen?: boolean
   isZhongHong?: boolean
+  deleted: boolean
 }
 
 ComponentWithStore({
@@ -143,7 +144,6 @@ ComponentWithStore({
     isLightSelectSome: false, // 是否选中灯具有，包括一个或多个
     toolboxContentHeight: 60, // 工具栏内容区域高度
     scrollViewHeight: '0px', // 可滚动区域高度
-    movableAreaHeight: 0, // 设备卡片可移动区域高度
     isShowCommonControl: false, // 是否打开控制面板
   },
   observers: {
@@ -162,14 +162,14 @@ ComponentWithStore({
     'deviceCardList.**, editMode'(deviceCardList: DeviceCard[], editMode) {
       // 节流减少触发频率
       throttle(() => {
-        console.log('[observers]deviceCardList')
-        const hasRoomLightOn = deviceCardList.some(
+        const deviceList = deviceCardList.filter((d) => !d.deleted)
+        console.log('[observers]deviceList', deviceList)
+        const hasRoomLightOn = deviceList.some(
           (d) => !!(d.proType === PRO_TYPE.light && d.mzgdPropertyDTOList['light'].power),
         )
-        const roomHasLight = deviceCardList.some((d) => !!(d.proType === PRO_TYPE.light))
-        const roomHasDevice = !!deviceCardList?.length
+        const roomHasLight = deviceList.some((d) => !!(d.proType === PRO_TYPE.light))
+        const roomHasDevice = !!deviceList?.length
         const toolboxContentHeight = roomHasLight ? 150 : 60
-        const movableAreaHeight = Math.ceil((deviceCardList?.length ?? 4) / 4) * 236
         let baseHeight =
           (storage.get('windowHeight') as number) -
           (storage.get('statusBarHeight') as number) -
@@ -185,7 +185,6 @@ ComponentWithStore({
           roomHasLight,
           roomHasDevice,
           toolboxContentHeight,
-          movableAreaHeight,
           scrollViewHeight,
           'cardListConfig.showControl': !editMode,
         })
