@@ -32,7 +32,7 @@ Component({
         for (const index in data) {
           const i = parseInt(index)
           const item = data[i]
-          if (!item || !Object.keys(item).length) continue
+          if (!item || item.deleted) continue
 
           list.push({
             ...item,

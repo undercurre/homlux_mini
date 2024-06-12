@@ -708,7 +708,7 @@ ComponentWithStore({
         if (oldListLength > newListLength) {
           const diffData = {} as IAnyObject
           for (let index = newListLength; index < oldListLength; ++index) {
-            diffData[`deviceCardList[${index}]`] = ''
+            diffData[`deviceCardList[${index}]`] = { deleted: true }
           }
           this.setData(diffData)
         }
