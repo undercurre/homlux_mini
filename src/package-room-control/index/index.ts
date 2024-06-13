@@ -820,6 +820,7 @@ ComponentWithStore({
       }
     },
 
+    // 保存排序结果
     async handleSortSaving(e: { detail: DeviceCard[] }) {
       const deviceOrderData = {
         deviceInfoByDeviceVoList: [],
@@ -828,7 +829,12 @@ ComponentWithStore({
         deviceInfoByDeviceVoList: [],
       } as Device.OrderSaveData
 
-      for (const device of e.detail) {
+      const diffData = {} as IAnyObject
+
+      for (const index in e.detail) {
+        const device = e.detail[index]
+        if (device.orderNum === this.data.deviceCardList[index].orderNum) continue
+
         if (device.proType !== PRO_TYPE.switch) {
           deviceOrderData.deviceInfoByDeviceVoList.push({
             deviceId: device.deviceId,
@@ -849,6 +855,7 @@ ComponentWithStore({
             type: '1',
           })
         }
+        diffData[`deviceCardList[${index}].orderNum`] = device.orderNum
       }
       if (deviceOrderData.deviceInfoByDeviceVoList.length) {
         await saveDeviceOrder(deviceOrderData)
@@ -856,6 +863,9 @@ ComponentWithStore({
       if (switchOrderData.deviceInfoByDeviceVoList.length) {
         await saveDeviceOrder(switchOrderData)
       }
+      // 统一视图列表变量
+      this.setData(diffData)
+      // console.log('[handleSortSaving]', diffData)
     },
 
     handleSceneTap() {

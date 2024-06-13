@@ -23,22 +23,27 @@ Component({
     // 可拖动元素列表
     movableList: {
       type: Array,
-      observer(data) {
-        if (!data?.length) {
+      observer(movableList) {
+        if (!movableList?.length) {
           return
         }
         const { itemWidth, itemHeight, cols } = this.data
         const list = []
-        for (const index in data) {
-          const i = parseInt(index)
-          const item = data[i]
+
+        // 更新已存在的项
+        for (const item of movableList) {
+          // 过滤已标记删除的内容
           if (!item || item.deleted) continue
 
+          // 补充位置数据
+          const i = item.orderNum - 1
           list.push({
             ...item,
             pos: [(i % cols) * itemWidth, Math.floor(i / cols) * itemHeight],
           })
         }
+
+        // console.log('[drag observer] list:', list)
         this.setData({
           list,
           moveareaHeight: itemHeight * Math.ceil(list.length / cols),
@@ -70,11 +75,19 @@ Component({
    * 组件的初始数据
    */
   data: {
-    list: [] as { name: string; uniId: string; pos: [number, number]; orderNum: number; tag: string }[],
+    list: [] as {
+      name: string
+      uniId: string
+      pos: [number, number]
+      orderNum: number
+      tag: string
+      deleted: boolean
+    }[],
     currentIndex: -1, // 当前拖动的元素索引
     placeholder: -1, // 临时占位（上轮联动结束时）的排序号
     moveareaHeight: 0,
     _originOrder: -1, // 被拖动元素，拖动开始前的排序号
+    _inited: false,
   },
 
   /**
