@@ -821,7 +821,10 @@ ComponentWithStore({
     },
 
     // 保存排序结果
-    async handleSortSaving(e: { detail: DeviceCard[] }) {
+    async handleSortSaving(e: { detail: { isMoved: boolean; list: DeviceCard[] } }) {
+      const { isMoved, list } = e.detail
+      if (!isMoved) return // 未移动，不作保存
+
       const deviceOrderData = {
         deviceInfoByDeviceVoList: [],
       } as Device.OrderSaveData
@@ -831,8 +834,8 @@ ComponentWithStore({
 
       const diffData = {} as IAnyObject
 
-      for (const index in e.detail) {
-        const device = e.detail[index]
+      for (const index in list) {
+        const device = list[index]
         if (device.orderNum === this.data.deviceCardList[index].orderNum) continue
 
         if (device.proType !== PRO_TYPE.switch) {

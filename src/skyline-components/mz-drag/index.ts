@@ -57,8 +57,6 @@ Component({
     itemWidth: Number,
     // 单个元素的占位高度（含边距）
     itemHeight: Number,
-    // 可移动区域宽度
-    moveareaWidth: Number,
     // 滚动高度
     scrollHeight: {
       type: String,
@@ -190,9 +188,8 @@ Component({
 
       // 未实际产生移动的，不触发事件
       const isMoved = newOrder !== this.data._originOrder
-      if (isMoved) {
-        this.triggerEvent('dragEnd', this.data.list)
-      }
+
+      this.triggerEvent('dragEnd', { isMoved, list: this.data.list })
 
       console.log('⇅ [dragEnd]diffData', diffData, 'isMoved', isMoved)
     },
