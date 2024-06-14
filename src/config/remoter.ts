@@ -1527,10 +1527,6 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
           key: 'CLOTHES_LIGHT',
           name: '照明',
         },
-        {
-          key: 'CLOTHES_ONE_KEY',
-          name: '一键晾衣',
-        },
       ],
     }
   }
