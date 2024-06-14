@@ -16,6 +16,7 @@ ComponentWithComputed({
     contentHeight: 0,
     otaData: [{}],
     isUpdating: false,
+    hasUpdate: false,
     fromDevice: false,
     _pollingTimer: 0,
   },
@@ -56,6 +57,7 @@ ComponentWithComputed({
       const isSuccess = await otaStore.updateList()
       if (isSuccess) {
         this.setData({
+          hasUpdate: otaStore.otaProductList.length > 0,
           isUpdating: otaStore.otaProductList.some((product) => product.updateStatus === 1),
           autoUpdate: !!otaStore.jobStatus,
         })
