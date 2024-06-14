@@ -32,14 +32,16 @@ ComponentWithComputed({
     },
     /**
      * 业务相关属性，可能动态地更新
-     * @param select 是否显示选中样式，包括单选和多选
+     * @param deleted 是否已被删除
      */
     cardInfo: {
       type: Object,
-      value: {},
+      value: {
+        deleted: false,
+      },
       observer() {},
     },
-    // 是否选中
+    //  是否显示选中样式，包括单选和多选
     select: {
       type: Boolean,
       value: false,
@@ -157,10 +159,10 @@ ComponentWithComputed({
       } else {
         name = data.cardInfo.deviceName
       }
-      return name.length > 5 ? name.slice(0, 2) + '...' + name.slice(-2) : name
+      return name?.length > 5 ? name.slice(0, 2) + '...' + name.slice(-2) : name
     },
     bottomDesc(data) {
-      return data.cardInfo.deviceName.length > 5
+      return data.cardInfo.deviceName?.length > 5
         ? data.cardInfo.deviceName.slice(0, 2) + '...' + data.cardInfo.deviceName.slice(-2)
         : data.cardInfo.deviceName
     },
@@ -169,7 +171,7 @@ ComponentWithComputed({
     },
     /** 开关面板名称 */
     switchDeviceName(data) {
-      return data.cardInfo.deviceName.slice(0, 5)
+      return data.cardInfo.deviceName?.slice(0, 5)
     },
 
     // 设备是否可控

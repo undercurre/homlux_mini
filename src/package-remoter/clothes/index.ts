@@ -271,6 +271,10 @@ ComponentWithComputed({
           action = '已暂停'
         }
       }
+      if (status.CLOTHES_MOTOR_LOCATION !== undefined) {
+        if (status.CLOTHES_MOTOR_LOCATION === 1) action = '已到顶'
+        else if (status.CLOTHES_MOTOR_LOCATION === 2) action = '已到底'
+      }
       if (status.CLOTHES_ONE_KEY != undefined) {
         for (let i = 0; i < btns.length; i++) {
           if (btns[i].key === 'ONEKEY') {

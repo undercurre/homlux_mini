@@ -146,6 +146,7 @@ const _parsePayload = (payload: string, deviceType: string, deviceModel?: string
       CLOTHES_BRIGHT: rxU16[4],
       CLOTHES_DELAY_LIGHT_TIME: rxU16[5],
       CLOTHES_SET_HEIGHT: rxU16[6],
+      CLOTHES_MOTOR_LOCATION: rxU16[7],
       CLOTHES_NOBODY_LIGHT_TIME: (rxU16[8] << 8) + rxU16[9],
       CLOTHES_NOBODY_UP_TIME: (rxU16[10] << 8) + rxU16[11],
       CLOTHES_DIS_TIME: rxU16[12],

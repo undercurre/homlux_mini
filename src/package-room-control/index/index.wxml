@@ -157,7 +157,6 @@
         generic:item="device-card"
         bind:cardTap="cardTap"
         cols="{{4}}"
-        movearea-width="750rpx"
         scroll-height="{{scrollViewHeight}}"
         item-height="{{itemHeight}}"
         item-width="{{itemWidth}}"
