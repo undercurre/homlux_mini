@@ -73,32 +73,29 @@
   <view class="flex flex-col">
     <!-- 主体内容 -->
     <view
-      class="flex flex-1 w-full box-border"
+      class="w-750rpx"
       id="content"
     >
-      <!-- 有设备时显示 FIXME 拖拽时不能滚动 -->
-      <scroll-view
-        type="list"
-        scroll-y="{{!isMoving}}"
-        show-scrollbar="{{false}}"
-        class="flex flex-col items-between mx-24rpx"
+      <!-- 有设备时显示 -->
+      <mz-drag
         wx:if="{{hasDevice}}"
-        style="height: {{scrollViewHeight}}px;"
-        scroll-top="{{scrollTop}}"
-        scroll-with-animation="{{true}}"
+        generic:item="room-card"
+        cols="{{1}}"
+        scroll-height="{{scrollViewHeight}}"
+        item-height="{{roomCardHeight}}"
+        item-width="{{ROOM_CARD_W}}"
+        has-size-change
+        config="{{cardListConfig}}"
+        edit-mode="{{editMode}}"
+        direction="vertical"
+        movable-list="{{roomCardList}}"
+        bind:dragBegin="handleDragBegin"
+        bind:dragEnd="handleSortSaving"
       >
-        <!-- 顶开上面的内容高度 -->
-        <view class="h-24rpx"></view>
-        <!-- 房间卡片列表 -->
-        <room-card
-          wx:for="{{roomList}}"
-          wx:key="roomId"
-          room-info="{{item}}"
-          room-light-summary="{{lightSummary[item.roomId]}}"
-          data-room="{{item.roomId}}"
-          bind:sceneSelect="handleSceneSelect"
-        ></room-card>
-        <view class="w-full flex-center mt-12rpx">
+        <view
+          slot="bottom"
+          class="w-full flex-center mt-12rpx mb-64rpx"
+        >
           <mz-button
             type="default"
             color="rgba(255,255,255,0.60)"
@@ -111,9 +108,8 @@
             <text class="text-26rpx text-hex-555659">房间管理</text>
           </mz-button>
         </view>
-        <!-- 顶开下面的内容高度 -->
-        <view class="h-64rpx"></view>
-      </scroll-view>
+      </mz-drag>
+
       <!-- 无设备时显示 -->
       <view
         wx:else

@@ -188,7 +188,7 @@ ComponentWithStore({
           scrollViewHeight,
           'cardListConfig.showControl': !editMode,
         })
-      }, 50).bind(this)()
+      }, 500).bind(this)()
     },
     checkedList(checkedList) {
       const { deviceMap } = deviceStore
@@ -821,7 +821,7 @@ ComponentWithStore({
     },
 
     // 保存排序结果
-    async handleSortSaving(e: { detail: { isMoved: boolean; list: DeviceCard[] } }) {
+    async handleSortSaving(e: WechatMiniprogram.CustomEvent<{ isMoved: boolean; list: DeviceCard[] }>) {
       const { isMoved, list } = e.detail
       if (!isMoved) return // 未移动，不作保存
 

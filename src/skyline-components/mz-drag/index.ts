@@ -1,4 +1,4 @@
-import { throttle } from '../../utils/index'
+import { delay, Logger, throttle } from '../../utils/index'
 
 Component({
   options: {
@@ -23,32 +23,7 @@ Component({
     // 可拖动元素列表
     movableList: {
       type: Array,
-      observer(movableList) {
-        if (!movableList?.length) {
-          return
-        }
-        const { itemWidth, itemHeight, cols } = this.data
-        const list = []
-
-        // 更新已存在的项
-        for (const item of movableList) {
-          // 过滤已标记删除的内容
-          if (!item || item.deleted) continue
-
-          // 补充位置数据
-          const i = item.orderNum - 1
-          list.push({
-            ...item,
-            pos: [(i % cols) * itemWidth, Math.floor(i / cols) * itemHeight],
-          })
-        }
-
-        // console.log('[drag observer] list:', list)
-        this.setData({
-          list,
-          moveareaHeight: itemHeight * Math.ceil(list.length / cols),
-        })
-      },
+      value: [],
     },
     // 是否处于编辑模式 // ! 目前是否能拖动与编辑模式无内在关联，只是业务逻辑需要
     editMode: Boolean,
@@ -57,6 +32,11 @@ Component({
     itemWidth: Number,
     // 单个元素的占位高度（含边距）
     itemHeight: Number,
+    // 元素是否有动态尺寸变化
+    hasSizeChange: {
+      type: Boolean,
+      value: false,
+    },
     // 滚动高度
     scrollHeight: {
       type: String,
@@ -66,6 +46,28 @@ Component({
     direction: {
       type: String,
       value: 'all',
+    },
+  },
+
+  observers: {
+    'movableList.**,itemHeight'(_, itemHeight) {
+      console.log('[drag observer]', this.data.editMode, this.data._inited)
+
+      // 如果未初始化，则直接初始化并忽略后续逻辑
+      if (!this.data._inited) {
+        this.data._inited = true
+        this.data._itemHeight = itemHeight
+        this.initList()
+        return
+      }
+
+      // 如项目高度变化触发，则不进行列表初始化，由用户操作后进行列表初始化
+      if (itemHeight !== this.data._itemHeight) {
+        this.data._itemHeight = itemHeight
+        return
+      }
+
+      throttle(() => this.initList(), 50).bind(this)()
     },
   },
 
@@ -81,22 +83,48 @@ Component({
       tag: string
       deleted: boolean
     }[],
-    currentIndex: -1, // 当前拖动的元素索引
-    placeholder: -1, // 临时占位（上轮联动结束时）的排序号
+    currentIndex: -1, // 当前拖动的元素索引，从0开始
+    placeholder: -1, // 临时占位（上轮联动结束时）的排序号，从1开始
     moveareaHeight: 0,
-    _originOrder: -1, // 被拖动元素，拖动开始前的排序号
+    _originOrder: -1, // 被拖动元素，拖动开始前的排序号，从1开始
     _inited: false,
+    _itemHeight: 0,
   },
 
-  /**
-   * 组件的方法列表
-   */
   methods: {
+    /** 初始化列表 */
+    initList() {
+      const { itemWidth, cols, movableList, itemHeight } = this.data
+      const list = []
+
+      // 索引号可能与排序号不对应，先排序，避免界面跳动
+      // movableList.sort((a, b) => a.orderNum - b.orderNum)
+      console.log('[initList movableList]', movableList)
+
+      // 更新已存在的项
+      for (const item of movableList) {
+        // 过滤已标记删除的内容
+        if (!item || item.deleted) continue
+
+        // 补充位置数据
+        const i = item.orderNum - 1
+        list.push({
+          ...item,
+          pos: [(i % cols) * itemWidth, Math.floor(i / cols) * itemHeight],
+        })
+      }
+
+      this.setData({
+        list,
+        moveareaHeight: itemHeight * Math.ceil(list.length / cols),
+      })
+      Logger.trace('[initList]', list)
+    },
     /**
      * 根据坐标位置计算索引
-     * @returns index
+     * @returns order （从1开始）
      */
-    getIndex(x: number, y: number) {
+    getOrder(x: number, y: number) {
       const { list, itemHeight, itemWidth } = this.data
 
       // 没有元素
@@ -105,7 +133,7 @@ Component({
       }
       // 只有一个元素
       if (list.length === 1) {
-        return 0
+        return 1
       }
 
       // 修正超出区域的情况
@@ -113,28 +141,28 @@ Component({
       const _y = Math.max(y, 0)
 
       for (const key in list) {
-        const index = parseInt(key)
-        const cur = this.getPos(index)
+        const order = parseInt(key) + 1
+        const cur = this.getPos(order)
         if (
           _y >= cur[1] - itemHeight / 2 &&
           _y < cur[1] + itemHeight / 2 &&
           _x >= cur[0] - itemWidth / 2 &&
           _x < cur[0] + itemWidth / 2
         ) {
-          return index
+          return order
         }
       }
       // 遍历所有元素都找不到，返回最大索引
       return -1
     },
     /**
-     * 根据索引（从1开始）计算坐标位置
+     * 根据排序（从1开始）计算坐标位置
      * @returns [x, y]
      */
-    getPos(key: number) {
-      const i = key - 1
+    getPos(order: number) {
+      const index = order - 1
       const { cols } = this.data
-      return [(i % cols) * this.data.itemWidth, Math.floor(i / cols) * this.data.itemHeight]
+      return [(index % cols) * this.data.itemWidth, Math.floor(index / cols) * this.data.itemHeight]
     },
     // 点击事件处理
     cardTap(e: WechatMiniprogram.CustomEvent) {
@@ -151,6 +179,8 @@ Component({
       console.log('⇅ [dragBegin]index:', index)
 
       this.triggerEvent('dragBegin', this.data.list[index])
+
+      if (this.data.hasSizeChange) this.initList()
     },
     dragMove(e: { target: { dataset: { index: number } }; detail: number[] }) {
       this.dragMoveThrottle(e.target.dataset.index, [e.detail[2], e.detail[3]])
@@ -163,7 +193,7 @@ Component({
       true,
       false,
     ),
-    dragEnd(e: { target: { dataset: { index: number } } }) {
+    async dragEnd(e: { target: { dataset: { index: number } } }) {
       const { index } = e.target.dataset
       const newOrder = this.data.placeholder
       this.data.placeholder = -1
@@ -184,14 +214,19 @@ Component({
       //   diffData[`list[${i}].pos`] = pos
       //   // }
       // }
-      this.setData(diffData)
+      this.setData(diffData, async () => {
+        if (this.data.hasSizeChange) {
+          await delay(160) // 确保上次150ms动画完成
+          this.initList()
+        }
+      })
 
       // 未实际产生移动的，不触发事件
       const isMoved = newOrder !== this.data._originOrder
 
       this.triggerEvent('dragEnd', { isMoved, list: this.data.list })
 
-      console.log('⇅ [dragEnd]diffData', diffData, 'isMoved', isMoved)
+      Logger.trace('⇅ [dragEnd]diffData', diffData, 'isMoved', isMoved)
     },
     // 处理排序操作
     handleReorder(index: number, [x, y]: [number, number]) {
@@ -199,7 +234,7 @@ Component({
 
       // 新排序
       const oldOrder = this.data.placeholder
-      const newOrder = this.getIndex(x, y)
+      const newOrder = this.getOrder(x, y)
       if (newOrder === oldOrder || newOrder === -1) return
       console.log(`⇅ [handleReorder]${oldOrder}->${newOrder}`)
 
@@ -232,12 +267,13 @@ Component({
         }
       }
 
-      // !! 若目标位置卡片Tag不一致，以下代码亦不必执行
+      // !! 若目标位置卡片Tag不一致，程序在上面循环中跳出，以下代码不必执行
 
       // 暂存目标位置，以便下轮联动或结束拖拽时处理
       diffData.placeholder = newOrder
 
-      wx.nextTick(() => this.setData(diffData))
+      this.setData(diffData)
+
       console.log('⇅ [handleReorder]diffData', diffData)
     },
   },

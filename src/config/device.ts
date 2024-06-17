@@ -27,6 +27,7 @@ export const CARD_REFRESH_TIME = 1000
 // 卡片尺寸
 export const CARD_W = rpx2px(180)
 export const CARD_H = rpx2px(236)
+export const ROOM_CARD_W = rpx2px(702)
 export const ROOM_CARD_H = rpx2px(336)
 export const ROOM_CARD_M = rpx2px(152) // 折叠后高度
 export const ROOM_CARD_TOP = 170 // 列表顶部距离

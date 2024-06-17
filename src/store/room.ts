@@ -68,13 +68,14 @@ export const roomStore = observable({
       }
 
       runInAction(() => {
-        roomStore.roomList = res.result.roomInfoList.map((room) => ({
+        roomStore.roomList = res.result.roomInfoList.map((room, index) => ({
           roomId: room.roomInfo.roomId,
           groupId: room.roomInfo.groupId,
           roomIcon: room.roomInfo.roomIcon || 'drawing-room',
           roomName: room.roomInfo.roomName,
           sceneList: room.roomSceneList,
           deviceNum: room.roomInfo.deviceNum,
+          orderNum: index + 1,
         }))
       })
     }
