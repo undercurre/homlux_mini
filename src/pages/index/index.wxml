@@ -82,9 +82,9 @@
         generic:item="room-card"
         cols="{{1}}"
         scroll-height="{{scrollViewHeight}}"
-        item-height="{{roomCardHeight}}"
+        item-height-large="{{ROOM_CARD_H}}"
+        item-height="{{ROOM_CARD_M}}"
         item-width="{{ROOM_CARD_W}}"
-        has-size-change
         config="{{cardListConfig}}"
         edit-mode="{{editMode}}"
         direction="vertical"

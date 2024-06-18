@@ -32,11 +32,8 @@ Component({
     itemWidth: Number,
     // 单个元素的占位高度（含边距）
     itemHeight: Number,
-    // 元素是否有动态尺寸变化
-    hasSizeChange: {
-      type: Boolean,
-      value: false,
-    },
+    // 单个元素的非拖动态占位高度（含边距）
+    itemHeightLarge: Number,
     // 滚动高度
     scrollHeight: {
       type: String,
@@ -50,8 +47,17 @@ Component({
   },
 
   observers: {
+    // !! 注意此项计算优先进行
+    'itemHeight,itemHeightLarge,editMode'(itemHeight, itemHeightLarge, editMode) {
+      const hasSizeChange = itemHeight !== itemHeightLarge && !!itemHeightLarge
+      const useAccumulatedY = hasSizeChange && !editMode
+      this.setData({
+        hasSizeChange,
+        useAccumulatedY,
+      })
+    },
     'movableList.**,itemHeight'(_, itemHeight) {
-      console.log('[drag observer]', this.data.editMode, this.data._inited)
+      console.log('[drag observer]', this.data.movableList)
 
       // 如果未初始化，则直接初始化并忽略后续逻辑
       if (!this.data._inited) {
@@ -82,35 +88,55 @@ Component({
       orderNum: number
       tag: string
       deleted: boolean
+      slimSize: boolean
     }[],
     currentIndex: -1, // 当前拖动的元素索引，从0开始
     placeholder: -1, // 临时占位（上轮联动结束时）的排序号，从1开始
     moveareaHeight: 0,
+    hasSizeChange: false, // 元素是否有动态尺寸变化
+    useAccumulatedY: false, // 纵向坐标是否使用累加值计算法
     _originOrder: -1, // 被拖动元素，拖动开始前的排序号，从1开始
     _inited: false,
     _itemHeight: 0,
   },
 
   methods: {
-    /** 初始化列表 */
+    /**
+     * 初始化列表
+     * 索引号可能与排序号不对应，对已有列表，先逐项进行差异更新，避免界面跳动
+     */
     initList() {
-      const { itemWidth, cols, movableList, itemHeight } = this.data
-
-      // 索引号可能与排序号不对应，对已有列表，先逐项进行差异更新，避免界面跳动
+      const { itemWidth, cols, movableList, itemHeight, itemHeightLarge } = this.data
+      let accumulatedY = 0
       const list = []
-      for (const item of this.data.list) {
+
+      for (const index in this.data.list) {
+        const item = this.data.list[index]
         const newItem = movableList.find((ele) => ele.id === item.id)
 
         // 过滤已删除的内容
         if (!newItem || newItem.deleted) continue
 
         const i = item.orderNum - 1
-        list.push({
+        const itemData = {
           ...item,
           ...newItem,
-          // 更新位置数据
-          pos: [(i % cols) * itemWidth, Math.floor(i / cols) * itemHeight],
-        })
+        } as IAnyObject
+
+        // 纵坐标计算
+        let itemY = 0
+        if (this.data.useAccumulatedY) {
+          itemY = accumulatedY
+          accumulatedY += item.slimSize ? itemHeight : itemHeightLarge
+        } else {
+          itemY = Math.floor(i / cols) * itemHeight
+        }
+
+        // 当前拖拽中的元素，不更新位置数据
+        if (parseInt(index) !== this.data.currentIndex) {
+          itemData.pos = [(i % cols) * itemWidth, itemY]
+        }
+        list.push(itemData)
 
         // 标记新列表中已添加
         newItem.added = true
@@ -122,16 +148,25 @@ Component({
         if (item.deleted || item.added) continue
 
         const i = item.orderNum - 1
+        // 纵坐标计算
+        let itemY = 0
+        if (this.data.useAccumulatedY) {
+          itemY = accumulatedY
+          accumulatedY += item.slimSize ? itemHeight : itemHeightLarge
+        } else {
+          itemY = Math.floor(i / cols) * itemHeight
+        }
+
         list.push({
           ...item,
           // 补充位置数据
-          pos: [(i % cols) * itemWidth, Math.floor(i / cols) * itemHeight],
+          pos: [(i % cols) * itemWidth, itemY],
         })
       }
 
       this.setData({
         list,
-        moveareaHeight: itemHeight * Math.ceil(list.length / cols),
+        moveareaHeight: this.data.useAccumulatedY ? accumulatedY : itemHeight * Math.ceil(list.length / cols),
       })
       Logger.trace('[initList]', list)
     },
@@ -220,6 +255,7 @@ Component({
       const diffData = {} as IAnyObject
       diffData[`list[${index}].pos`] = this.getPos(newOrder)
       diffData[`list[${index}].orderNum`] = newOrder
+      diffData[`currentIndex`] = -1
 
       // DESERTED 修正联动元素的位置
       // for (const i in this.data.list) {

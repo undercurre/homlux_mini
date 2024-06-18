@@ -63,7 +63,8 @@ ComponentWithStore({
   behaviors: [pageBehavior],
   data: {
     ROOM_CARD_W,
-    roomCardHeight: ROOM_CARD_H,
+    ROOM_CARD_H,
+    ROOM_CARD_M,
     defaultImgDir,
     navigationBarHeight: (storage.get('navigationBarHeight') as number) + 'px',
     navigationBarAndStatusBarHeight:
@@ -166,11 +167,6 @@ ComponentWithStore({
         'addMenu.list': isCreator
           ? [MENU_ADD_DEVICE, MENU_ADD_AUTOMATION, MENU_ADD_PLATFORM]
           : [MENU_ADD_DEVICE, MENU_ADD_AUTOMATION],
-      })
-    },
-    editMode(editMode) {
-      this.setData({
-        roomCardHeight: editMode ? ROOM_CARD_M : ROOM_CARD_H,
       })
     },
     'roomList,lightSummary'(roomList: roomInfo[], lightSummary) {

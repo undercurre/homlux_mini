@@ -76,6 +76,7 @@ export const roomStore = observable({
           sceneList: room.roomSceneList,
           deviceNum: room.roomInfo.deviceNum,
           orderNum: index + 1,
+          slimSize: !room.roomSceneList?.length, // 没有场景，显示小尺寸卡片
         }))
       })
     }
