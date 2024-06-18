@@ -77,7 +77,7 @@ Component({
   data: {
     list: [] as {
       name: string
-      uniId: string
+      id: string
       pos: [number, number]
       orderNum: number
       tag: string
@@ -95,21 +95,33 @@ Component({
     /** 初始化列表 */
     initList() {
       const { itemWidth, cols, movableList, itemHeight } = this.data
+
+      // 索引号可能与排序号不对应，对已有列表，先逐项进行差异更新，避免界面跳动
       const list = []
+      for (const item of this.data.list) {
+        const newItem = movableList.find((ele) => ele.id === item.id)
 
-      // 索引号可能与排序号不对应，先排序，避免界面跳动
-      // movableList.sort((a, b) => a.orderNum - b.orderNum)
-      console.log('[initList movableList]', movableList)
+        // 过滤已删除的内容
+        if (!newItem || newItem.deleted) continue
 
-      // 更新已存在的项
-      for (const item of movableList) {
-        // 过滤已标记删除的内容
-        if (!item || item.deleted) continue
+        list.push({
+          ...item,
+          ...newItem,
+        })
 
-        // 补充位置数据
+        // 标记新列表中已添加
+        newItem.added = true
+      }
+
+      // 添加剩余的新增项
+      for (const item of this.data.movableList) {
+        // 过滤已删除、已添加的内容
+        if (item.deleted || item.added) continue
+
         const i = item.orderNum - 1
         list.push({
           ...item,
+          // 补充位置数据
           pos: [(i % cols) * itemWidth, Math.floor(i / cols) * itemHeight],
         })
       }

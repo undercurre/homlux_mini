@@ -671,6 +671,7 @@ ComponentWithStore({
             const select = this.data.checkedList.includes(device.uniId)
             return {
               ...device,
+              id: device.uniId,
               // !! 重排orderNum，从1开始
               // TRICK 排序过程orderNum代替index使用，而不必改变数组的真实索引
               orderNum: index + 1,

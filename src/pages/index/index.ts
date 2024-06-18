@@ -177,6 +177,7 @@ ComponentWithStore({
       const roomCardList = roomList.map((room) => ({
         ...room,
         ...lightSummary[room.roomId],
+        id: room.roomId,
       }))
       this.setData({ roomCardList })
     },
@@ -630,13 +631,12 @@ ComponentWithStore({
 
       // 移动过才需要更新数据
       if (isMoved) {
-        // const roomMap = Object.fromEntries(list.map((room) => [room.roomId, room]))
+        const roomMap = Object.fromEntries(list.map((room) => [room.roomId, room]))
         const roomSortData = [] as Room.RoomSort[]
 
         for (const index in this.data.roomCardList) {
           const { roomId } = this.data.roomCardList[index]
-          const { orderNum } = list[index]
-          // const { orderNum } = roomMap[roomId] // !! index 与 orderNum 的对应关系已发生改变
+          const { orderNum } = roomMap[roomId] // !! index 与 orderNum 的对应关系可能已发生改变
           diffData[`roomCardList[${index}].orderNum`] = orderNum
           roomSortData.push({
             roomId,
