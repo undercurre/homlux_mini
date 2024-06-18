@@ -104,9 +104,12 @@ Component({
         // 过滤已删除的内容
         if (!newItem || newItem.deleted) continue
 
+        const i = item.orderNum - 1
         list.push({
           ...item,
           ...newItem,
+          // 更新位置数据
+          pos: [(i % cols) * itemWidth, Math.floor(i / cols) * itemHeight],
         })
 
         // 标记新列表中已添加
