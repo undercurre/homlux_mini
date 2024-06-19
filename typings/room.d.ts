@@ -30,6 +30,10 @@ type roomInfo = {
    * 房间场景列表
    */
   sceneList: Scene.SceneItem[]
+  /**
+   * 排序码
+   */
+  orderNum: number
 }
 declare namespace Room {
   /**
