@@ -7,7 +7,7 @@
     "bigPackageSizeSupport": true,
     "skylineRenderEnable": true
   },
-  "libVersion": "3.4.3",
+  "libVersion": "3.4.6",
   "condition": {
     "miniprogram": {
       "list": [
