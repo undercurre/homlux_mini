@@ -1,9 +1,12 @@
 <scroll-view
   type="list"
+  id="scroller"
   style="width: 100%; height: {{scrollHeight}}"
   show-scrollbar="{{false}}"
   scroll-y
   enable-passive
+  bind:scroll="handleScroll"
+  scroll-top="{{scrollTop}}"
 >
   <view
     class="movearea"

@@ -95,21 +95,46 @@ Component({
     moveareaHeight: 0,
     hasSizeChange: false, // 元素是否有动态尺寸变化
     useAccumulatedY: false, // 纵向坐标是否使用累加值计算法
+    scrollTop: 0,
+    scrollHeightRes: 0,
     _originOrder: -1, // 被拖动元素，拖动开始前的排序号，从1开始
     _inited: false,
     _itemHeight: 0,
   },
 
+  lifetimes: {
+    ready() {
+      this.createSelectorQuery()
+        .select('#scroller')
+        .boundingClientRect()
+        .exec((res) => {
+          this.data.scrollHeightRes = res[0].height - 100 // 减去按钮占位及边距
+        })
+    },
+  },
+
   methods: {
     /**
      * 初始化列表
-     * 索引号可能与排序号不对应，对已有列表，先逐项进行差异更新，避免界面跳动
+     * 索引号可能与排序号不对应，注意避免变更物理索引引起的界面跳动
      */
-    initList() {
+    async initList() {
       const { itemWidth, cols, movableList, itemHeight, itemHeightLarge } = this.data
       let accumulatedY = 0
-      const list = []
 
+      // useAccumulatedY 模式下，需要提前计算位置映射，id -> posY
+      const posMap = {} as IAnyObject
+      if (this.data.useAccumulatedY) {
+        // 复制一个重排序列表，避免影响已有列表
+        const sortedList = [...this.data.list].sort((a, b) => a.orderNum - b.orderNum)
+        for (const item of sortedList) {
+          posMap[item.id] = accumulatedY
+          accumulatedY += item.slimSize ? itemHeight : itemHeightLarge
+        }
+      }
+
+      const diffData = {} as IAnyObject
+      const list = []
       for (const index in this.data.list) {
         const item = this.data.list[index]
         const newItem = movableList.find((ele) => ele.id === item.id)
@@ -124,16 +149,16 @@ Component({
         } as IAnyObject
 
         // 纵坐标计算
-        let itemY = 0
-        if (this.data.useAccumulatedY) {
-          itemY = accumulatedY
-          accumulatedY += item.slimSize ? itemHeight : itemHeightLarge
-        } else {
-          itemY = Math.floor(i / cols) * itemHeight
-        }
+        const itemY = this.data.useAccumulatedY ? posMap[item.id] : Math.floor(i / cols) * itemHeight
 
-        // 当前拖拽中的元素，不更新位置数据
-        if (parseInt(index) !== this.data.currentIndex) {
+        // 当前拖拽中的元素，按按拖拽位置及滚动偏移量计算位置
+        if (parseInt(index) === this.data.currentIndex && this.data.hasSizeChange) {
+          const newScrollTop = Math.max(i * itemHeight - this.data.scrollHeightRes, 0)
+          itemData.pos = [item.pos[0], item.pos[1] - this.data.scrollTop + newScrollTop]
+          diffData.scrollTop = newScrollTop
+        }
+        // 非拖拽中的元素，按排序计算位置
+        else {
           itemData.pos = [(i % cols) * itemWidth, itemY]
         }
         list.push(itemData)
@@ -163,12 +188,11 @@ Component({
           pos: [(i % cols) * itemWidth, itemY],
         })
       }
+      diffData.list = list
+      diffData.moveareaHeight = this.data.useAccumulatedY ? accumulatedY : itemHeight * Math.ceil(list.length / cols)
 
-      this.setData({
-        list,
-        moveareaHeight: this.data.useAccumulatedY ? accumulatedY : itemHeight * Math.ceil(list.length / cols),
-      })
-      Logger.trace('[initList]', list)
+      this.setData(diffData)
+      Logger.trace('[initList]diffData', diffData)
     },
     /**
      * 根据坐标位置计算索引
@@ -326,6 +350,12 @@ Component({
       this.setData(diffData)
 
       console.log('⇅ [handleReorder]diffData', diffData)
+    },
+
+    // 页面滚动
+    handleScroll(e: { detail: { scrollTop: number } }) {
+      const { scrollTop } = e.detail
+      this.data.scrollTop = scrollTop
     },
   },
 })
