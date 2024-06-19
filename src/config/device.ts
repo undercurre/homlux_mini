@@ -92,7 +92,7 @@ export const PRODUCT_ID = {
   zhonghong_heat: 'zhonghong.heat.001', // 485地暖
   zhonghong_air: 'zhonghong.air.001', // 485新风
   zhonghong_cac: 'zhonghong.cac.002', // 485空调
-  knob: 'midea.knob.001.003',
+  knob: 'midea.knob.001.003', // 一路旋钮面板
 }
 
 // 旋钮开关pid
