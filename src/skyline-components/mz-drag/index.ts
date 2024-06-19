@@ -96,7 +96,8 @@ Component({
     hasSizeChange: false, // 元素是否有动态尺寸变化
     useAccumulatedY: false, // 纵向坐标是否使用累加值计算法
     scrollTop: 0,
-    scrollHeightRes: 0,
+    _scrollHeightRes: 0,
+    _touchY: 0,
     _originOrder: -1, // 被拖动元素，拖动开始前的排序号，从1开始
     _inited: false,
     _itemHeight: 0,
@@ -108,7 +109,7 @@ Component({
         .select('#scroller')
         .boundingClientRect()
         .exec((res) => {
-          this.data.scrollHeightRes = res[0].height - 100 // 减去按钮占位及边距
+          this.data._scrollHeightRes = res[0].height
         })
     },
   },
@@ -151,11 +152,17 @@ Component({
         // 纵坐标计算
         const itemY = this.data.useAccumulatedY ? posMap[item.id] : Math.floor(i / cols) * itemHeight
 
-        // 当前拖拽中的元素，按按拖拽位置及滚动偏移量计算位置
+        // 当前拖拽中的元素，按拖拽位置及滚动偏移量计算位置
         if (parseInt(index) === this.data.currentIndex && this.data.hasSizeChange) {
-          const newScrollTop = Math.max(i * itemHeight - this.data.scrollHeightRes, 0)
+          const marginBottom = 120 // 按钮占位及边距
+          // ! 新的滚动位置：0 ~ i个卡片高度-滚动区域高度+触摸位置 ~ 列表高度-可滚动区域高度
+          const newScrollTop = Math.min(
+            Math.max(i * itemHeight - this.data._scrollHeightRes + this.data._touchY + marginBottom, 0),
+            movableList.length * itemHeight - this.data._scrollHeightRes,
+          )
           itemData.pos = [item.pos[0], item.pos[1] - this.data.scrollTop + newScrollTop]
           diffData.scrollTop = newScrollTop
+          console.log('[reset scrollTop]max:', movableList.length * itemHeight, '-', this.data._scrollHeightRes)
         }
         // 非拖拽中的元素，按排序计算位置
         else {
@@ -242,7 +249,7 @@ Component({
     cardTap(e: WechatMiniprogram.CustomEvent) {
       this.triggerEvent('cardTap', e.detail)
     },
-    dragBegin(e: { target: { dataset: { index: number } } }) {
+    dragBegin(e: WechatMiniprogram.CustomEvent<{ x: number; y: number }, IAnyObject, { index: number }>) {
       const { index } = e.target.dataset
       const { orderNum } = this.data.list[index]
       this.setData({
@@ -250,13 +257,14 @@ Component({
         placeholder: orderNum,
       })
       this.data._originOrder = orderNum
-      console.log('⇅ [dragBegin]index:', index)
+      console.log('⇅ [dragBegin]', e)
 
       this.triggerEvent('dragBegin', this.data.list[index])
 
+      this.data._touchY = e.detail.y - this.data.scrollTop
       if (this.data.hasSizeChange) this.initList()
     },
-    dragMove(e: { target: { dataset: { index: number } }; detail: number[] }) {
+    dragMove(e: WechatMiniprogram.CustomEvent<number[], IAnyObject, { index: number }>) {
       this.dragMoveThrottle(e.target.dataset.index, [e.detail[2], e.detail[3]])
     },
     dragMoveThrottle: throttle(
@@ -267,7 +275,7 @@ Component({
       true,
       false,
     ),
-    async dragEnd(e: { target: { dataset: { index: number } } }) {
+    async dragEnd(e: WechatMiniprogram.CustomEvent<IAnyObject, IAnyObject, { index: number }>) {
       const { index } = e.target.dataset
       const newOrder = this.data.placeholder
       this.data.placeholder = -1
@@ -353,7 +361,9 @@ Component({
     },
 
     // 页面滚动
-    handleScroll(e: { detail: { scrollTop: number } }) {
+    handleScroll(e: WechatMiniprogram.CustomEvent<{ scrollTop: number }>) {
+      if (!this.data.hasSizeChange) return
+
       const { scrollTop } = e.detail
       this.data.scrollTop = scrollTop
     },
