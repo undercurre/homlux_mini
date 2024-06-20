@@ -99,7 +99,6 @@ ComponentWithStore({
     showHomeSelect: false,
     _isAcceptShare: false, // 是否已经触发过接受分享逻辑
     editMode: false,
-    scrollTop: 0,
     lightSummary: {} as Record<string, { lightCount: number; lightOnCount: number }>, // 灯总数、亮灯数统计，按房间id
     hasDevice: false,
     homeList: [] as Home.IHomeItem[],
@@ -111,8 +110,6 @@ ComponentWithStore({
     cardListConfig: {
       draggable: true,
     },
-    _scrolledWhenMoving: false, // 拖拽时，被动发生了滚动
-    _lastClientY: 0, // 上次触控采样时 的Y坐标
     _isFirstShow: true, // 是否首次加载
     _from: '', // 页面进入来源
     _timeId: null as null | number,

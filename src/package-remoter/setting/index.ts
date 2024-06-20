@@ -88,12 +88,10 @@ ComponentWithComputed({
         .then(() => {
           Toast('删除成功')
           remoterStore.removeCurRemoter()
+          emitter.emit('remoterChanged')
 
           wx.navigateBack({
-            delta: 2,
-            complete() {
-              emitter.emit('remoterChanged')
-            },
+            delta: 2
           })
         })
         .catch(() => {})
