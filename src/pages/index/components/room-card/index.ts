@@ -52,7 +52,7 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    handleSceneTap(e: { currentTarget: { dataset: { value: string } } }) {
+    handleSceneTap(e: WechatMiniprogram.CustomEvent<IAnyObject, IAnyObject, { value: string }>) {
       if (this.data.sceneClickId) {
         return
       }
@@ -74,11 +74,13 @@ ComponentWithComputed({
         url: '/package-room-control/index/index',
       })
     },
-    handleTap() {
+    handleTapWorklet() {
       'worklet'
-      console.log('[handleTap]')
       runOnJS(this.handleCardTap.bind(this))()
     },
-    doNothing() {},
+    handleSceneTapWorklet(e: WechatMiniprogram.CustomEvent) {
+      'worklet'
+      runOnJS(this.handleSceneTap.bind(this))(e)
+    },
   },
 })
