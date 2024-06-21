@@ -51,7 +51,6 @@
 
       <view class="flex flex-row justify-evenly rounded-32rpx bg-hex-f7f8f9 mt-30rpx py-24rpx">
         <mz-icon-button
-          disabled="{{item.disabled}}"
           wx:for="{{btnList}}"
           wx:key="key"
           data-key="{{item.key}}"
@@ -65,6 +64,7 @@
           bgColorActive="#488fff"
           round="{{20}}"
           textColor="#a2a2a2"
+          textColorActive="#488fff"
           bind:btnTouchStart="handleBtnTap"
         ></mz-icon-button>
       </view>
