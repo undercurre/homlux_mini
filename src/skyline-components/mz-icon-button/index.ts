@@ -144,8 +144,8 @@ ComponentWithComputed({
       return style
     },
     textStyle(data) {
-      const { direction, textColor, textColorActive, textMargin, textSize, innerOn, textInset, hasIcon } = data
-      const _color = textInset && innerOn ? textColorActive : textColor
+      const { direction, textColor, textColorActive, textMargin, textSize, innerOn, hasIcon } = data
+      const _color = innerOn ? textColorActive : textColor
 
       let style = `color: ${_color}; font-size: ${textSize}rpx;`
       if (hasIcon) {

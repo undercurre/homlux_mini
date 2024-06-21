@@ -170,7 +170,7 @@
         <view
           slot="bottom"
           class="flex-col-center pt-40rpx pb-20rpx"
-          wx:if="{{roomHasDevice}}"
+          wx:if="{{roomHasDevice && !editMode}}"
         >
           <mz-button
             wx:if="{{isManager}}"

@@ -175,7 +175,7 @@ ComponentWithStore({
           (storage.get('statusBarHeight') as number) -
           (storage.get('navigationBarHeight') as number) -
           (storage.get('bottomBarHeight') as number) -
-          this.data.toolboxContentHeight
+          toolboxContentHeight
         if (editMode) {
           baseHeight -= rpx2px(298)
         }

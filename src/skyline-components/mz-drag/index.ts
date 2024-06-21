@@ -88,6 +88,7 @@ Component({
       orderNum: number
       tag: string
       deleted: boolean
+      added: boolean
       slimSize: boolean
     }[],
     currentIndex: -1, // 当前拖动的元素索引，从0开始
@@ -136,17 +137,24 @@ Component({
 
       const diffData = {} as IAnyObject
       const list = []
+      let deleted = 0 // 已删除卡片计数
       for (const index in this.data.list) {
         const item = this.data.list[index]
         const newItem = movableList.find((ele) => ele.id === item.id)
 
         // 过滤已删除的内容
-        if (!newItem || newItem.deleted) continue
+        if (!newItem || newItem.deleted || newItem.added) {
+          deleted++
+          delete posMap[item.id]
+          accumulatedY -= item.slimSize ? itemHeight : itemHeightLarge
+          continue
+        }
 
-        const i = item.orderNum - 1
+        const i = item.orderNum - 1 - deleted
         const itemData = {
           ...item,
           ...newItem,
+          orderNum: item.orderNum - deleted,
         } as IAnyObject
 
         // 纵坐标计算
