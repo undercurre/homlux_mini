@@ -145,6 +145,8 @@ Component({
         // 过滤已删除的内容
         if (!newItem || newItem.deleted || newItem.added) {
           deleted++
+          delete posMap[item.id]
+          accumulatedY -= item.slimSize ? itemHeight : itemHeightLarge
           continue
         }
 
