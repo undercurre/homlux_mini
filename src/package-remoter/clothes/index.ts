@@ -267,7 +267,10 @@ ComponentWithComputed({
           gear.isBottomOn = true
           action = '下降中'
         } else if (status.CLOTHES_ACTION === 0) {
-          gear.isMiddleOn = true
+          if (status.CLOTHES_MOTOR_LOCATION !== undefined) {
+            if (status.CLOTHES_MOTOR_LOCATION === 1 || status.CLOTHES_MOTOR_LOCATION === 2) gear.isMiddleOn = false
+            else gear.isMiddleOn = true
+          } else gear.isMiddleOn = true
           action = '已暂停'
         }
       }
