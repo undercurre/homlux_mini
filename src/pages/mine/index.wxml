@@ -73,6 +73,7 @@
           title="设置"
           is-link
           data-url="{{urls.setting}}"
+          data-auth="no"
           bind:click="toPage"
         />
       </mz-cell-group>
