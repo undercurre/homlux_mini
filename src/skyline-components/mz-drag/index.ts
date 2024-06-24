@@ -70,7 +70,7 @@ Component({
     'movableList.**,itemHeight'(_, itemHeight) {
       console.log('[drag observer]', this.data.movableList)
 
-      // 如果未初始化，则直接初始化并忽略后续逻辑
+      // 只初始化，忽略后续逻辑
       if (!this.data._inited) {
         this.data._inited = true
         this.data._itemHeight = itemHeight
@@ -84,7 +84,8 @@ Component({
         return
       }
 
-      throttle(() => this.initList(), 50).bind(this)()
+      // 列表变更触发
+      throttle(() => this.initList(true), 50).bind(this)()
     },
   },
 
@@ -122,7 +123,7 @@ Component({
      * 初始化列表
      * 索引号可能与排序号不对应，注意避免变更物理索引引起的界面跳动
      */
-    async initList() {
+    async initList(isListTrigger = false) {
       const { itemWidth, cols, movableList, itemHeight, itemHeightLarge } = this.data
       let accumulatedY = 0
 
@@ -146,7 +147,6 @@ Component({
       let orderNum = 0
       for (const index in this.data.list) {
         const item = this.data.list[index]
-        orderNum = item.orderNum - deleted
         const newItem = newList.find((ele) => ele.id === item.id)
 
         // 过滤已删除的内容
@@ -156,6 +156,8 @@ Component({
           accumulatedY -= item.slimSize ? itemHeight : itemHeightLarge
           continue
         }
+
+        orderNum = isListTrigger ? newItem.orderNum : item.orderNum - deleted
 
         const i = orderNum - 1
         const itemData = {
@@ -191,23 +193,23 @@ Component({
       } // for
 
       // 添加剩余的新增项
-      for (const item of newList) {
+      for (const newItem of newList) {
         // 过滤已删除、已添加的内容
-        if (item.deleted || item.added) continue
+        if (newItem.deleted || newItem.added) continue
 
-        orderNum++
+        orderNum = isListTrigger ? newItem.orderNum : orderNum + 1
         const i = orderNum - 1
         // 纵坐标计算
         let itemY = 0
         if (this.data.useAccumulatedY) {
           itemY = accumulatedY
-          accumulatedY += item.slimSize ? itemHeight : itemHeightLarge
+          accumulatedY += newItem.slimSize ? itemHeight : itemHeightLarge
         } else {
           itemY = Math.floor(i / cols) * itemHeight
         }
 
         list.push({
-          ...item,
+          ...newItem,
           // 补充位置数据
           orderNum,
           pos: [(i % cols) * itemWidth, itemY],
