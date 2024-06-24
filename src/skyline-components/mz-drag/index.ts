@@ -143,8 +143,10 @@ Component({
       const diffData = {} as IAnyObject
       const list = []
       let deleted = 0 // 已删除卡片计数
+      let orderNum = 0
       for (const index in this.data.list) {
         const item = this.data.list[index]
+        orderNum = item.orderNum - deleted
         const newItem = newList.find((ele) => ele.id === item.id)
 
         // 过滤已删除的内容
@@ -155,11 +157,11 @@ Component({
           continue
         }
 
-        const i = item.orderNum - 1 - deleted
+        const i = orderNum - 1
         const itemData = {
           ...item,
           ...newItem,
-          orderNum: item.orderNum - deleted,
+          orderNum,
         } as IAnyObject
 
         // 纵坐标计算
@@ -186,14 +188,15 @@ Component({
 
         // 标记新列表中已添加
         newItem.added = true
-      }
+      } // for
 
       // 添加剩余的新增项
       for (const item of newList) {
         // 过滤已删除、已添加的内容
         if (item.deleted || item.added) continue
 
-        const i = item.orderNum - 1
+        orderNum++
+        const i = orderNum - 1
         // 纵坐标计算
         let itemY = 0
         if (this.data.useAccumulatedY) {
@@ -206,6 +209,7 @@ Component({
         list.push({
           ...item,
           // 补充位置数据
+          orderNum,
           pos: [(i % cols) * itemWidth, itemY],
         })
       }
