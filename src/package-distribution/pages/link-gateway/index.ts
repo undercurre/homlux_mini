@@ -6,7 +6,7 @@ import { deviceBinding, homeBinding, roomBinding } from '../../../store/index'
 import { getCurrentPageParams, isAndroid, isAndroid10Plus, Logger, strUtil } from '../../../utils/index'
 import { WifiSocket } from '../../common/wifiProtocol'
 import { stepListForBind, stepListForChangeWiFi } from './conifg'
-import { defaultImgDir, getCurrentMzaioDomain } from '../../../config/index'
+import { defaultImgDir, getMzaioDomain, isHttpsDomain } from '../../../config/index'
 
 let start = 0
 
@@ -349,7 +349,9 @@ ComponentWithComputed({
       const params = getCurrentPageParams()
 
       const begin = Date.now()
-      const data: IAnyObject = { method: gatewayStatus.method, url: getCurrentMzaioDomain() }
+      const domain = getMzaioDomain()
+      // flag=0代表网关走https， 1走http
+      const data: IAnyObject = { method: gatewayStatus.method, url: domain, flag: !isHttpsDomain() ? 1 : 0 }
 
       if (data.method === 'wifi') {
         data.ssid = params.wifiSSID
@@ -394,7 +396,14 @@ ComponentWithComputed({
     async changeWifi() {
       const params = getCurrentPageParams()
 
-      const data: IAnyObject = { ssid: params.wifiSSID, passwd: params.wifiPassword }
+      const domain = getMzaioDomain()
+      // flag=0代表网关走https， 1走http
+      const data: IAnyObject = {
+        ssid: params.wifiSSID,
+        passwd: params.wifiPassword,
+        url: domain,
+        flag: !isHttpsDomain() ? 1 : 0,
+      }
 
       const res = await this.data._socket.sendCmd({
         topic: '/gateway/net/change', //指令名称
