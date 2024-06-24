@@ -327,6 +327,7 @@ ComponentWithStore({
       if (res.success) {
         await homeStore.homeInit()
         sceneStore.updateAllRoomSceneList()
+        this.updateLightCount()
       }
       hideLoading()
     },
