@@ -1,5 +1,16 @@
 import { delay, Logger, throttle } from '../../utils/index'
 
+type CardItem = {
+  name: string
+  id: string
+  pos: [number, number]
+  orderNum: number
+  tag: string
+  deleted: boolean
+  added: boolean
+  slimSize: boolean
+}
+
 Component({
   options: {
     pureDataPattern: /^_/,
@@ -23,7 +34,7 @@ Component({
     // 可拖动元素列表
     movableList: {
       type: Array,
-      value: [],
+      value: [] as CardItem[],
     },
     // 是否处于编辑模式 // ! 目前是否能拖动与编辑模式无内在关联，只是业务逻辑需要
     editMode: Boolean,
@@ -81,16 +92,7 @@ Component({
    * 组件的初始数据
    */
   data: {
-    list: [] as {
-      name: string
-      id: string
-      pos: [number, number]
-      orderNum: number
-      tag: string
-      deleted: boolean
-      added: boolean
-      slimSize: boolean
-    }[],
+    list: [] as CardItem[],
     currentIndex: -1, // 当前拖动的元素索引，从0开始
     placeholder: -1, // 临时占位（上轮联动结束时）的排序号，从1开始
     moveareaHeight: 0,
@@ -135,12 +137,15 @@ Component({
         }
       }
 
+      const newList = JSON.parse(JSON.stringify(movableList)) as CardItem[]
+      console.log('initList|newList', newList)
+
       const diffData = {} as IAnyObject
       const list = []
       let deleted = 0 // 已删除卡片计数
       for (const index in this.data.list) {
         const item = this.data.list[index]
-        const newItem = movableList.find((ele) => ele.id === item.id)
+        const newItem = newList.find((ele) => ele.id === item.id)
 
         // 过滤已删除的内容
         if (!newItem || newItem.deleted || newItem.added) {
@@ -166,11 +171,11 @@ Component({
           // ! 新的滚动位置：0 ~ i个卡片高度-滚动区域高度+触摸位置 ~ 列表高度-可滚动区域高度
           const newScrollTop = Math.min(
             Math.max(i * itemHeight - this.data._scrollHeightRes + this.data._touchY + marginBottom, 0),
-            movableList.length * itemHeight - this.data._scrollHeightRes,
+            newList.length * itemHeight - this.data._scrollHeightRes,
           )
           itemData.pos = [item.pos[0], item.pos[1] - this.data.scrollTop + newScrollTop]
           diffData.scrollTop = newScrollTop
-          console.log('[reset scrollTop]max:', movableList.length * itemHeight, '-', this.data._scrollHeightRes)
+          console.log('[reset scrollTop]max:', newList.length * itemHeight, '-', this.data._scrollHeightRes)
         }
         // 非拖拽中的元素，按排序计算位置
         else {
@@ -183,7 +188,7 @@ Component({
       }
 
       // 添加剩余的新增项
-      for (const item of this.data.movableList) {
+      for (const item of newList) {
         // 过滤已删除、已添加的内容
         if (item.deleted || item.added) continue
 
