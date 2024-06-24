@@ -169,9 +169,10 @@ Component({
         if (parseInt(index) === this.data.currentIndex && this.data.hasSizeChange) {
           const marginBottom = 120 // 按钮占位及边距
           // ! 新的滚动位置：0 ~ i个卡片高度-滚动区域高度+触摸位置 ~ 列表高度-可滚动区域高度
-          const newScrollTop = Math.min(
-            Math.max(i * itemHeight - this.data._scrollHeightRes + this.data._touchY + marginBottom, 0),
-            newList.length * itemHeight - this.data._scrollHeightRes,
+          const maxScrollTop = i * itemHeight - this.data._scrollHeightRes + this.data._touchY + marginBottom
+          const newScrollTop = Math.max(
+            0,
+            Math.min(maxScrollTop, newList.length * itemHeight - this.data._scrollHeightRes),
           )
           itemData.pos = [item.pos[0], item.pos[1] - this.data.scrollTop + newScrollTop]
           diffData.scrollTop = newScrollTop
