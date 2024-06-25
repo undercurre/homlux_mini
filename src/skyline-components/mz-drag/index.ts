@@ -85,7 +85,7 @@ Component({
       }
 
       // 列表变更触发
-      throttle(() => this.initList(true), 50).bind(this)()
+      this.initListThrottle(true)
     },
   },
 
@@ -119,6 +119,9 @@ Component({
   },
 
   methods: {
+    initListThrottle: throttle(function (this: IAnyObject, isListTrigger: boolean) {
+      this.initList(isListTrigger)
+    }, 1000),
     /**
      * 初始化列表
      * 索引号可能与排序号不对应，注意避免变更物理索引引起的界面跳动

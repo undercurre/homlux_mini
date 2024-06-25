@@ -160,35 +160,32 @@ ComponentWithStore({
       })
     },
     'deviceCardList.**, editMode'(deviceCardList: DeviceCard[], editMode) {
-      // 节流减少触发频率
-      throttle(() => {
-        const deviceList = deviceCardList.filter((d) => !d.deleted)
-        console.log('[observers]deviceList', deviceList)
-        const hasRoomLightOn = deviceList.some(
-          (d) => !!(d.proType === PRO_TYPE.light && d.mzgdPropertyDTOList['light'].power),
-        )
-        const roomHasLight = deviceList.some((d) => !!(d.proType === PRO_TYPE.light))
-        const roomHasDevice = !!deviceList?.length
-        const toolboxContentHeight = roomHasLight ? 150 : 60
-        let baseHeight =
-          (storage.get('windowHeight') as number) -
-          (storage.get('statusBarHeight') as number) -
-          (storage.get('navigationBarHeight') as number) -
-          (storage.get('bottomBarHeight') as number) -
-          toolboxContentHeight
-        if (editMode) {
-          baseHeight -= rpx2px(298)
-        }
-        const scrollViewHeight = baseHeight + 'px'
-        this.setData({
-          hasRoomLightOn,
-          roomHasLight,
-          roomHasDevice,
-          toolboxContentHeight,
-          scrollViewHeight,
-          'cardListConfig.showControl': !editMode,
-        })
-      }, 500).bind(this)()
+      const deviceList = deviceCardList.filter((d) => !d.deleted)
+      Logger.trace('[observers]deviceList', deviceList)
+      const hasRoomLightOn = deviceList.some(
+        (d) => !!(d.proType === PRO_TYPE.light && d.mzgdPropertyDTOList['light'].power),
+      )
+      const roomHasLight = deviceList.some((d) => !!(d.proType === PRO_TYPE.light))
+      const roomHasDevice = !!deviceList?.length
+      const toolboxContentHeight = roomHasLight ? 150 : 60
+      let baseHeight =
+        (storage.get('windowHeight') as number) -
+        (storage.get('statusBarHeight') as number) -
+        (storage.get('navigationBarHeight') as number) -
+        (storage.get('bottomBarHeight') as number) -
+        toolboxContentHeight
+      if (editMode) {
+        baseHeight -= rpx2px(298)
+      }
+      const scrollViewHeight = baseHeight + 'px'
+      this.setData({
+        hasRoomLightOn,
+        roomHasLight,
+        roomHasDevice,
+        toolboxContentHeight,
+        scrollViewHeight,
+        'cardListConfig.showControl': !editMode,
+      })
     },
     checkedList(checkedList) {
       const { deviceMap } = deviceStore
