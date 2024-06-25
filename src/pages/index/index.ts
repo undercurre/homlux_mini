@@ -166,7 +166,7 @@ ComponentWithStore({
           : [MENU_ADD_DEVICE, MENU_ADD_AUTOMATION],
       })
     },
-    'roomList,lightSummary'(roomList: roomInfo[], lightSummary) {
+    'roomList,lightSummary.**'(roomList: roomInfo[], lightSummary) {
       const roomCardList = roomList.map((room) => ({
         ...room,
         ...lightSummary[room.roomId],
@@ -281,10 +281,7 @@ ComponentWithStore({
             })
 
             // 节流主动刷新
-            throttle(async () => {
-              await deviceStore.updateAllRoomDeviceList()
-              this.updateLightCount()
-            }, 10000).bind(this)()
+            this.updateLightCountThrottle()
           }
         }
         // Perf: ws消息很多，改用白名单过滤
@@ -374,6 +371,16 @@ ComponentWithStore({
       this.updateLightCount()
       this.autoRefreshDevice()
     }, 3000),
+
+    // 节流更新灯组统计
+    updateLightCountThrottle: throttle(
+      async function (this: IAnyObject) {
+        await deviceStore.updateAllRoomDeviceList()
+        this.updateLightCount()
+      },
+      10000,
+      false, // 不立即触发首次
+    ),
 
     acceptShare() {
       if (!this.data.isLogin) {
