@@ -222,8 +222,10 @@ export const deviceFlatten = function (originList: Device.DeviceItem[]) {
       return -1
     } else if (a.orderNum !== b.orderNum) {
       return a.orderNum - b.orderNum
-    } else {
+    } else if (a.createdTime !== b.createdTime) {
       return a.createdTime?.localeCompare(b.createdTime)
+    } else {
+      return a.uniId?.localeCompare(b.uniId)
     }
   })
 }
