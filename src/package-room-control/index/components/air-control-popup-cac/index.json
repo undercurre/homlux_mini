@@ -7,7 +7,7 @@
     "mz-popup": "/skyline-components/mz-popup/index",
     "drop-button": "../../components/drop-button/index",
     "mz-slider": "/skyline-components/mz-slider/index",
-    "mz-picker": "/skyline-components/mz-picker/index",
-    "mz-icon-button": "/skyline-components/mz-icon-button/index"
+    "mz-icon-button": "/skyline-components/mz-icon-button/index",
+    "mz-picker": "/skyline-components/mz-picker/index"
   }
 }

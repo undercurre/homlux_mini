@@ -3,6 +3,10 @@
   font-weight: 600;
 }
 
+.slider-button-wrapper {
+  padding: 8rpx;
+}
+
 .slider-button {
   width: 20rpx;
   height: 20rpx;

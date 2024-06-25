@@ -25,12 +25,25 @@
       </view>
     </view>
 
+    <view
+      class="offline-tips"
+      wx:if="{{isLanCtl}}"
+    >
+      <image
+        class="w-36 h-36 ml-48rpx"
+        src="/assets/img/base/info.png"
+      ></image>
+      <text class="text-hex-555659 text-24 ml-32rpx">当前设备仅支持局域网控制，请检查您的网络！</text>
+    </view>
+
     <view class="w-686rpx">
       <view class="flex flex-row justify-between items-center px-32rpx">
         <!-- 风档减 -->
         <mz-icon-button
           disabled="{{disabledMinus}}"
-          size="{{74}}"
+          imageSize="{{32}}"
+          wrapperWidth="{{74}}"
+          wrapperHeight="{{74}}"
           round="{{37}}"
           bgColor="#f7f8f9"
           bgColorActive="#cccccc"
@@ -52,7 +65,9 @@
         <!-- 风档加 -->
         <mz-icon-button
           disabled="{{disabledPlus}}"
-          size="{{74}}"
+          imageSize="{{32}}"
+          wrapperWidth="{{74}}"
+          wrapperHeight="{{74}}"
           round="{{37}}"
           bgColor="#f7f8f9"
           bgColorActive="#cccccc"
@@ -64,13 +79,16 @@
         ></mz-icon-button>
       </view>
 
-      <view class="pt-64rpx pb-16rpx px-8rpx">
+      <view class="flex flex-1 h-200 flex-center">
         <mz-slider
+          class="flex-1"
           disabled="{{disabledSlider}}"
           bind:slideEnd="handleBtnTap"
           bind:slideChange="handleSlideChange"
           value="{{currentWindLevel}}"
           bar-height="36"
+          btn-width="36"
+          btn-height="36"
           min="{{1}}"
           max="{{3}}"
           active-color="#488FFF"
@@ -79,8 +97,10 @@
         >
           <view
             slot="button"
-            class="slider-button"
-          />
+            class="slider-button-wrapper"
+          >
+            <view class="slider-button"></view>
+          </view>
         </mz-slider>
       </view>
       <view class="flex justify-between px-16rpx">

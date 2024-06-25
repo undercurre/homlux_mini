@@ -156,12 +156,15 @@
   <view class="w-750rpx h-600rpx relative flex flex-col items-center">
     <text class="w-750rpx h-92rpx text-32rpx text-hex-999999 leading-92rpx text-center border-b-1px border-b-hex-EEF2F7 border-b-solid">{{pickerTitle}}</text>
     <view class="h-52rpx"></view>
-    <mz-picker
-      columns="{{ pickerColumns }}"
-      defaultIndex="{{ pickerIndex }}"
-      visible-item-count="{{3}}"
-      bind:change="onPickerChange"
-    ></mz-picker>
+    <view class="w-750rpx">
+      <mz-picker
+        columns="{{ pickerColumns }}"
+        defaultIndex="{{ pickerIndex }}"
+        visible-item-count="{{3}}"
+        bind:change="onPickerChange"
+      ></mz-picker>
+    </view>
+
     <view class="h-62rpx"></view>
     <view class="flex justify-between items-end w-750rpx h-112rpx bg-hex-f9f9f9">
       <view

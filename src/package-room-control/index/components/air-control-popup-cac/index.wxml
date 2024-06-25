@@ -25,6 +25,17 @@
       </view>
     </view>
 
+    <view
+      class="offline-tips"
+      wx:if="{{isLanCtl}}"
+    >
+      <image
+        class="w-36 h-36 ml-48rpx"
+        src="/assets/img/base/info.png"
+      ></image>
+      <text class="text-hex-555659 text-24 ml-32rpx">当前设备仅支持局域网控制，请检查您的网络！</text>
+    </view>
+
     <view class="w-686rpx">
       <view class="flex flex-row justify-between items-center px-32rpx">
         <!-- 温度减 -->
@@ -76,14 +87,17 @@
         ></mz-icon-button>
       </view>
 
-      <view class="py-64rpx px-8rpx">
+      <view class="flex flex-1 h-200 flex-center">
         <mz-slider
           wx:if="{{show}}"
+          class="flex-1"
           disabled="{{disabledSlider}}"
           bind:slideEnd="handleBtnTap"
           bind:slideChange="handleSlideChange"
           value="{{temperature}}"
           bar-height="36"
+          btn-width="36"
+          btn-height="36"
           min="{{minTemp}}"
           max="{{maxTemp}}"
           active-color="#488FFF"
@@ -92,8 +106,10 @@
         >
           <view
             slot="button"
-            class="slider-button"
-          />
+            class="slider-button-wrapper"
+          >
+            <view class="slider-button"></view>
+          </view>
         </mz-slider>
       </view>
 
@@ -128,43 +144,37 @@
 
 <mz-popup
   show="{{ isShowPicker }}"
+  z-index="1002"
   round
   position="bottom"
   bind:close="handlePickerClose"
-  closeable
-  safe-area-inset-bottom="{{false}}"
-  z-index="1002"
+  catchtouchmove="blank"
 >
-  <view class="w-750rpx flex flex-col items-center">
-    <text class="h-50rpx text-36rpx text-black-2a mt-48rpx font-medium">{{pickerTitle}}</text>
-
+  <view class="w-750rpx h-600rpx relative flex flex-col items-center">
+    <text class="w-750rpx h-92rpx text-32rpx text-hex-999999 leading-92rpx text-center border-b-1px border-b-hex-EEF2F7 border-b-solid">{{pickerTitle}}</text>
+    <view class="h-52rpx"></view>
     <view class="w-750rpx">
-      <!-- <mz-picker
+      <mz-picker
         columns="{{ pickerColumns }}"
         default-index="{{pickerIndex}}"
+        visible-item-count="{{3}}"
         bind:change="onPickerChange"
-      /> -->
+      />
     </view>
 
-    <view class="h-96rpx"></view>
-    <view class="flex w-686rpx gap-x-46rpx">
-      <mz-button
-        class="flex-1"
-        size="large"
-        bind:click="handlePickerClose"
-        >取消</mz-button
+    <view class="h-62rpx"></view>
+    <view class="flex justify-between items-end w-750rpx h-112rpx bg-hex-f9f9f9">
+      <view
+        class="h-96rpx w-374rpx leading-96rpx text-center secondary-popup-btn"
+        bindtap="handlePickerClose"
+        >取消</view
       >
-
-      <mz-button
-        type="primary"
-        class="flex-1"
-        size="large"
-        bind:click="handlePickerConfirm"
-        >确认</mz-button
+      <view
+        class="h-96rpx w-374rpx leading-96rpx text-center secondary-popup-btn"
+        bindtap="handlePickerConfirm"
+        >确定</view
       >
     </view>
-
-    <view class="h-96rpx"></view>
   </view>
 </mz-popup>
 
