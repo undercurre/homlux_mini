@@ -279,6 +279,12 @@ ComponentWithStore({
             this.setData({
               [`lightSummary.${eventData.roomId}.lightOnCount`]: lightOnCount,
             })
+
+            // 节流主动刷新
+            throttle(async () => {
+              await deviceStore.updateAllRoomDeviceList()
+              this.updateLightCount()
+            }, 10000).bind(this)()
           }
         }
         // Perf: ws消息很多，改用白名单过滤
