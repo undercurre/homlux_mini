@@ -93,6 +93,7 @@
           max="{{3}}"
           active-color="#488FFF"
           key="windSpeedSlider"
+          data-key="windSpeedSlider"
           use-button-slot
         >
           <view

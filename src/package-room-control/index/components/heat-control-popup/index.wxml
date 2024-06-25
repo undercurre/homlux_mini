@@ -101,6 +101,7 @@
           max="{{maxTemp}}"
           active-color="#488FFF"
           key="targetTemperature"
+          data-key="targetTemperature"
           use-button-slot
         >
           <view
