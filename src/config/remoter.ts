@@ -1521,7 +1521,7 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
   '17': {
     '01': {
       deviceName: '晾衣机',
-      devicePic: '/assets/img/remoter/ceilLight.png',
+      devicePic: '/assets/img/remoter/clothes.png',
       actions: [
         {
           key: 'CLOTHES_LIGHT',
@@ -1602,6 +1602,8 @@ export const CMD: Record<string, number> = {
   CLOTHES_PAUSE: 0x09, //暂停
   CLOTHES_DOWN: 0x8c, //下降
   CLOTHES_ONE_KEY: 0x1c, //一键晾衣
+  CLOTHES_ONE_KEY_START: 0x1d, //开始设置一键晾衣
+  CLOTHES_ONE_KEY_END: 0x1e, //完成设置一键晾衣
   CLOTHES_SET_HEIGHT: 0x1f, //设置晾衣高度
   CLOTHES_DIS: 0x80, //消毒
   CLOTHES_DRY_MODE: 0x81, //干衣模式

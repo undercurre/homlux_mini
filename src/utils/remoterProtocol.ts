@@ -132,7 +132,9 @@ const _parsePayload = (payload: string, deviceType: string, deviceModel?: string
   }
   if (deviceType === '17') {
     return {
-      CLOTHES_DRY_MODE: rxU16[0],
+      CLOTHES_HEAT_DRY: !!(rxU16[0] & BIT_0),
+      CLOTHES_WIND_DRY: !!(rxU16[0] & BIT_1),
+      CLOTHES_IS_SETTING_HEIGHT: !!(rxU16[0] & BIT_2),
       CLOTHES_ACTION: rxU16[1],
       CLOTHES_LIGHT: !!(rxU16[2] & BIT_0),
       CLOTHES_DIS: !!(rxU16[2] & BIT_1),

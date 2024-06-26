@@ -150,7 +150,7 @@
 
   <mx-popup round show="{{isShowTimePicker}}" position="bottom" bind:close="closePopup">
     <view class="pup-block" style="height: 700rpx;">
-      <text class="text-36rpx font-semibold" style="margin-top: 42rpx; margin-bottom: 42rpx;">延时关灯</text>
+      <text class="text-36rpx font-semibold" style="margin-top: 42rpx; margin-bottom: 42rpx;">延时关</text>
       <view class="popup-close" bind:tap="closePopup">
         <image style="height: 48rpx; width: 48rpx;" src="/package-remoter/assets/newUI/close.png"></image>
       </view>

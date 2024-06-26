@@ -24,7 +24,7 @@
       <van-cell is-link
         wx:if="{{deviceType === '17'}}"
         title="一键晾衣高度"
-        value="{{heightArr[curPickerIndex[0]]}}cm"
+        value="{{curShowHeight}}"
         border="{{false}}"
         bind:click="onClothesHeightClick"
         custom-class="cus-cell"></van-cell>
@@ -54,13 +54,23 @@
   <view class="h-96rpx"></view>
 
   <mx-popup round show="{{isShowPicker}}" position="bottom" bind:close="closePopup">
-    <view class="pup-block" style="height: 700rpx;">
+    <image style="width: 750rpx; height: 320rpx; display: flex; position: absolute; left: 0; top: 0;" src="/package-remoter/assets/newUI/oneKeyBg.png"></image>
+    <view class="pup-block" style="height: 660rpx;">
       <text class="text-36rpx font-semibold" style="margin-top: 42rpx; margin-bottom: 42rpx;">一键晾衣高度</text>
       <view class="popup-close" bind:tap="closePopup">
         <image style="height: 48rpx; width: 48rpx;" src="/package-remoter/assets/newUI/close.png"></image>
       </view>
 
-      <text class="unit-h text-28rpx font-normal" style="left: 420rpx;">cm</text>
+      <image style="width: 434rpx; height: 144rpx; margin-top: 36rpx;" src="/package-remoter/assets/newUI/clothesDev.png"></image>
+
+      <text class="text-36rpx" style="margin-top: 36rpx;" wx:if="{{curOneKeySettingStep === 1 || curOneKeySettingStep === 2}}">{{curOneKeySettingStep === 1 ? '上升中' : '下降中'}}</text>
+
+      <text class="text-28rpx" style="margin-top: 48rpx; color: #a2a2a2; width: 640rpx; text-align: center;" wx:if="{{curOneKeySettingStep === 0}}">点击“开始设置”按钮，等待晾衣机复位完成后，在晾杆下降过程中点击“完成设置”按钮，则确认一键晾衣高度</text>
+
+      <text class="text-28rpx" style="margin-top: 48rpx; color: #a2a2a2; width: 640rpx; text-align: center;" wx:if="{{curOneKeySettingStep === 1}}">晾衣机正在复位中，请稍后…</text>
+      <text class="text-28rpx" style="margin-top: 48rpx; color: #a2a2a2; width: 640rpx; text-align: center;" wx:if="{{curOneKeySettingStep === 2}}">选择合适下降高度，点击“完成设置”</text>
+
+      <!-- <text class="unit-h text-28rpx font-normal" style="left: 420rpx;">cm</text>
       <view class="pick-block flex-center">
         <picker-view indicator-style="height: 56rpx;"
           style="width: 500rpx; height: 360rpx;"
@@ -74,12 +84,14 @@
               style="font-size: 40rpx;">{{item}}</view>
           </picker-view-column>
         </picker-view>
-      </view>
+      </view> -->
 
-      <mx-button 
+      <mx-button
         custom-style="width: 686rpx; margin-top: 40rpx"
         color="linear-gradient(90deg, #468CFB 0%, #6BA3FC 100%)"
-        type="default" bind:click="onPickTimeConfirm">确定</mx-button>
+        type="default"
+        disabled="{{curOneKeySettingStep === 1}}"
+        bind:click="onOneKeyStepClick">{{curOneKeySettingStep === 0 ? '开始设置' : '完成设置'}}</mx-button>
     </view>
   </mx-popup>
 </view>

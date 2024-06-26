@@ -10,7 +10,7 @@ import dataBus from '../utils/dataBus'
 import { CMD } from '../../config/remoter'
 
 const heightArr = []
-for (let i = 0; i <= 120; i+=5) {
+for (let i = 10; i <= 120; i+=10) {
   heightArr.push(i)
 }
 
@@ -29,9 +29,11 @@ ComponentWithComputed({
     isShowPicker: false,
     curPickerIndex: [0],
     pickerIndexTemp: [0],
+    curShowHeight: '--',
     customOption: [
       { key: 'SLOWUP', name: '轻抬上升', isOn: false }
-    ]
+    ],
+    curOneKeySettingStep: 0 // 0-开始设置，1-上升复位中，2-下降待完成中
   },
   methods: {
     async onLoad(query: { deviceType: string; deviceModel: string; addr: string }) {
@@ -107,14 +109,10 @@ ComponentWithComputed({
     },
     updateView(status: any) {
       console.log('lmn>>>dev status=', JSON.stringify(status))
-      if (status.CLOTHES_SET_HEIGHT !== undefined && !this.data.isShowPicker) {
-        let pickIndex = this.data.curPickerIndex
+      if (status.CLOTHES_SET_HEIGHT !== undefined) {
         const height = status.CLOTHES_SET_HEIGHT
-        if (height >=0 && height <= 120) {
-          pickIndex = [Math.floor(height / 5)]
-        }
         this.setData({
-          curPickerIndex: pickIndex
+          curShowHeight: height === 0 ? '未设置' : `${height}cm`
         })
       }
 
@@ -127,8 +125,20 @@ ComponentWithComputed({
           }
         }
       }
+
+      let step = this.data.curOneKeySettingStep
+      if (status.CLOTHES_IS_SETTING_HEIGHT !== undefined && status.CLOTHES_ACTION !== undefined) {
+        if (!status.CLOTHES_IS_SETTING_HEIGHT) {
+          step = 0
+        } else {
+          if (status.CLOTHES_ACTION === 1) step = 1
+          else if (status.CLOTHES_ACTION === 2) step = 2
+        }
+      }
+
       this.setData({
-        customOption: option
+        customOption: option,
+        curOneKeySettingStep: step
       })
     },
     sendBluetoothCMD(paramsArr?: number[]) {
@@ -158,15 +168,25 @@ ComponentWithComputed({
         })
       }, 100)
     },
-    onPickTimeConfirm() {
-      showLoading('加载中')
-      setTimeout(() => {
-        hideLoading()
-        this.closePopup()
-        const height = this.data.heightArr[this.data.curPickerIndex[0]]
-        this.sendBluetoothCMD([CMD['CLOTHES_SET_HEIGHT'], height]);
-      }, 1000);
+    onOneKeyStepClick() {
+      if (this.data.curOneKeySettingStep === 0) {
+        this.sendBluetoothCMD([CMD['CLOTHES_ONE_KEY_START']]);
+      } else if (this.data.curOneKeySettingStep === 2) {
+        this.sendBluetoothCMD([CMD['CLOTHES_ONE_KEY_END']]);
+      }
     },
+    // onPickTimeConfirm() {
+    //   showLoading('加载中')
+    //   setTimeout(() => {
+    //     hideLoading()
+    //     this.closePopup()
+    //     const height = this.data.heightArr[this.data.curPickerIndex[0]]
+    //     this.setData({
+    //       curShowHeight: `${height}cm`
+    //     })
+    //     this.sendBluetoothCMD([CMD['CLOTHES_SET_HEIGHT'], height]);
+    //   }, 1000);
+    // },
     onCustomSwitchClick(e: any) {
       const index = e.currentTarget.dataset.index
       const option = this.data.customOption
