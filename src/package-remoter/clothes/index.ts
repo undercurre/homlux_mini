@@ -7,6 +7,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
 import { hideLoading, showLoading } from '../../utils/system'
 import dataBus from '../utils/dataBus'
+import Toast from '@vant/weapp/dist/toast/toast'
 // import Toast from '@vant/weapp/toast/toast'
 
 const minuteArr = []
@@ -101,7 +102,8 @@ ComponentWithComputed({
     isShowTimePicker: false,
     minuteArr,
     curTimePickerIndex: [0],
-    pickerIndexTemp: [0]
+    pickerIndexTemp: [0],
+    curOneKeyHeight: 0
   },
   watch: {
     curRemoter(value) {
@@ -308,6 +310,12 @@ ComponentWithComputed({
       if (status.CLOTHES_BRIGHT !== undefined) {
         percent = status.CLOTHES_BRIGHT < 20 ? 20 : status.CLOTHES_BRIGHT > 100 ? 100 : status.CLOTHES_BRIGHT
       }
+
+      if (status.CLOTHES_SET_HEIGHT !== undefined) {
+        this.setData({
+          curOneKeyHeight: status.CLOTHES_SET_HEIGHT
+        })
+      }
       
       this.setData({
         gearBtnConfig: gear,
@@ -405,6 +413,10 @@ ComponentWithComputed({
         return
       }
       if (key === 'ONEKEY') {
+        if (this.data.curOneKeyHeight === 0) {
+          Toast('请先设置一键晾衣高度');
+          return
+        }
         list[index].isOn = !list[index].isOn
         this.setData({
           btnList: list,

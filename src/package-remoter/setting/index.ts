@@ -112,7 +112,7 @@ ComponentWithComputed({
       if (status.CLOTHES_SET_HEIGHT !== undefined) {
         const height = status.CLOTHES_SET_HEIGHT
         this.setData({
-          curShowHeight: height === 0 ? '未设置' : `${height}cm`
+          curShowHeight: height === 0 ? '未设置' : '已设置'
         })
       }
 
@@ -173,6 +173,7 @@ ComponentWithComputed({
         this.sendBluetoothCMD([CMD['CLOTHES_ONE_KEY_START']]);
       } else if (this.data.curOneKeySettingStep === 2) {
         this.sendBluetoothCMD([CMD['CLOTHES_ONE_KEY_END']]);
+        this.closePopup();
       }
     },
     // onPickTimeConfirm() {
