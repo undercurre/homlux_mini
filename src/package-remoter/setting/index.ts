@@ -5,12 +5,11 @@ import Toast from '@vant/weapp/toast/toast'
 import { emitter } from '../../utils/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
-import { hideLoading, showLoading } from '../../utils/system'
 import dataBus from '../utils/dataBus'
 import { CMD } from '../../config/remoter'
 
 const heightArr = []
-for (let i = 10; i <= 120; i+=10) {
+for (let i = 10; i <= 120; i += 10) {
   heightArr.push(i)
 }
 
@@ -30,10 +29,8 @@ ComponentWithComputed({
     curPickerIndex: [0],
     pickerIndexTemp: [0],
     curShowHeight: '--',
-    customOption: [
-      { key: 'SLOWUP', name: '轻抬上升', isOn: false }
-    ],
-    curOneKeySettingStep: 0 // 0-开始设置，1-上升复位中，2-下降待完成中
+    customOption: [{ key: 'SLOWUP', name: '轻抬上升', isOn: false }],
+    curOneKeySettingStep: 0, // 0-开始设置，1-上升复位中，2-下降待完成中
   },
   methods: {
     async onLoad(query: { deviceType: string; deviceModel: string; addr: string }) {
@@ -93,7 +90,7 @@ ComponentWithComputed({
           emitter.emit('remoterChanged')
 
           wx.navigateBack({
-            delta: 2
+            delta: 2,
           })
         })
         .catch(() => {})
@@ -112,7 +109,7 @@ ComponentWithComputed({
       if (status.CLOTHES_SET_HEIGHT !== undefined) {
         const height = status.CLOTHES_SET_HEIGHT
         this.setData({
-          curShowHeight: height === 0 ? '未设置' : '已设置'
+          curShowHeight: height === 0 ? '未设置' : '已设置',
         })
       }
 
@@ -138,7 +135,7 @@ ComponentWithComputed({
 
       this.setData({
         customOption: option,
-        curOneKeySettingStep: step
+        curOneKeySettingStep: step,
       })
     },
     sendBluetoothCMD(paramsArr?: number[]) {
@@ -152,7 +149,7 @@ ComponentWithComputed({
     },
     onClothesHeightClick() {
       this.setData({
-        isShowPicker: true
+        isShowPicker: true,
       })
     },
     onPickChange(e: any) {
@@ -170,10 +167,10 @@ ComponentWithComputed({
     },
     onOneKeyStepClick() {
       if (this.data.curOneKeySettingStep === 0) {
-        this.sendBluetoothCMD([CMD['CLOTHES_ONE_KEY_START']]);
+        this.sendBluetoothCMD([CMD['CLOTHES_ONE_KEY_START']])
       } else if (this.data.curOneKeySettingStep === 2) {
-        this.sendBluetoothCMD([CMD['CLOTHES_ONE_KEY_END']]);
-        this.closePopup();
+        this.sendBluetoothCMD([CMD['CLOTHES_ONE_KEY_END']])
+        this.closePopup()
       }
     },
     // onPickTimeConfirm() {
@@ -193,12 +190,12 @@ ComponentWithComputed({
       const option = this.data.customOption
       option[index].isOn = !option[index].isOn
       this.setData({
-        customOption: option
+        customOption: option,
       })
       const key = e.currentTarget.dataset.key
       if (key === 'SLOWUP') {
-        this.sendBluetoothCMD([CMD['CLOTHES_SLOW_UP']]);
+        this.sendBluetoothCMD([CMD['CLOTHES_SLOW_UP']])
       }
-    }
+    },
   },
 })
