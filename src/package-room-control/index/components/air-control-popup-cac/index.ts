@@ -236,9 +236,12 @@ ComponentWithComputed({
       if (key === 'mode' && this.data.disabledMode) {
         return
       }
+      const currentValue = this.data.propView[key]
+      const pickerIndex = this.data.cacPickerList[key].findIndex((item) => item.value === currentValue)
       this.setData({
         isShowPicker: true,
         pickerType: key,
+        pickerIndex: pickerIndex > -1 ? pickerIndex : this.data.pickerIndex,
       })
     },
 
