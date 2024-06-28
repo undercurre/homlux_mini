@@ -297,7 +297,8 @@ Component({
       } as IAnyObject
 
       const { select } = this.data.list[index]
-      if (typeof select === 'boolean') {
+      // （进入编辑模式）首次拖动的同时，选中当前卡片
+      if (!this.data.editMode && typeof select === 'boolean') {
         diffData[`list[${index}].select`] = !select
       }
 
