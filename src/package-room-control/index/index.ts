@@ -777,6 +777,8 @@ ComponentWithStore({
      * @param e 设备属性 | 包裹在事件中的设备属性 | 空对象（表示全量更新）| 不传值则执行下一个
      */
     async updateQueue(e?: (DeviceCard & { detail?: DeviceCard }) | Optional<DeviceCard>) {
+      if (this.data.editMode) return // 拖拽过程不更新 // TODO 只是排序不更新
+
       if (e) {
         let device: DeviceCard
 
