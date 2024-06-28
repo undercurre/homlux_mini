@@ -266,8 +266,23 @@ ComponentWithStore({
         this.updateQueue({ isRefresh: true })
       })
 
+      emitter.on('device_property', (eventData: IAnyObject) => {
+        if (!eventData.isMqtt) return
+
+        const device = {} as DeviceCard
+        device.deviceId = eventData.deviceId
+        device.mzgdPropertyDTOList = {}
+        device.mzgdPropertyDTOList[eventData.modelName] = {
+          ...eventData.event,
+        }
+        // console.log('☄ [index][isMqtt]', device)
+
+        this.updateQueue(device)
+      })
+
       // ws消息处理
       emitter.on('wsReceive', async (e) => {
+        // console.log('☄ [index]wsReceive', e)
         const { eventType, eventData } = e.result
 
         // 特别地，绑定设备的消息无法带房间id
@@ -477,6 +492,7 @@ ComponentWithStore({
       emitter.off('wsReceive')
       emitter.off('deviceListRetrieve')
       emitter.off('roomDeviceSync')
+      emitter.off('device_property')
 
       if (this.data._wait_timeout) {
         clearTimeout(this.data._wait_timeout)
@@ -583,9 +599,19 @@ ComponentWithStore({
 
           // 如果mzgdPropertyDTOList、switchInfoDTOList字段存在，则覆盖更新
           if (device!.mzgdPropertyDTOList) {
-            const newVal = {
-              ...originDevice.mzgdPropertyDTOList[modelName],
-              ...device?.mzgdPropertyDTOList[modelName],
+            let newVal
+            // 485设备，拆分为多条单属性上报
+            const cache = this.data._diffCards.data[`deviceCardList[${index}].mzgdPropertyDTOList.${modelName}`]
+            if (cache) {
+              newVal = {
+                ...cache,
+                ...device?.mzgdPropertyDTOList[modelName],
+              }
+            } else {
+              newVal = {
+                ...originDevice.mzgdPropertyDTOList[modelName],
+                ...device?.mzgdPropertyDTOList[modelName],
+              }
             }
 
             this.data._diffCards.data[`deviceCardList[${index}].mzgdPropertyDTOList.${modelName}`] = newVal
@@ -975,7 +1001,7 @@ ComponentWithStore({
       }
 
       // 选择样式渲染
-      this.toSelect(uniId)
+      // this.toSelect(uniId)
 
       this.setData({
         checkedList: list,
@@ -1010,13 +1036,13 @@ ComponentWithStore({
       const toCheck = !isChecked // 本次点击需执行的选中状态
 
       // 取消旧选择
-      if (toCheck && this.data.checkedList.length) {
-        const oldCheckedId = this.data.checkedList[0]
-        this.toSelect(oldCheckedId)
-      }
+      // if (toCheck && this.data.checkedList.length) {
+      // const oldCheckedId = this.data.checkedList[0]
+      // this.toSelect(oldCheckedId)
+      // }
 
       // 选择样式渲染
-      this.toSelect(uniId)
+      // this.toSelect(uniId)
 
       const diffData = {} as IAnyObject
 
@@ -1176,7 +1202,7 @@ ComponentWithStore({
       }
       this.setData(diffData)
 
-      this.toSelect(device.uniId, true)
+      // this.toSelect(device.uniId, true)
 
       // 弹起popup后，选中卡片滚动到视图中央，以免被遮挡
       // this.setData({

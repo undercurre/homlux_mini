@@ -9,6 +9,7 @@ type CardItem = {
   deleted: boolean
   added: boolean
   slimSize: boolean
+  select?: boolean
 }
 
 Component({
@@ -66,6 +67,9 @@ Component({
         hasSizeChange,
         useAccumulatedY,
       })
+      if (!editMode) {
+        this.initList()
+      }
     },
     'movableList.**,itemHeight'(_, itemHeight) {
       console.log('[drag observer]', this.data.movableList)
@@ -166,6 +170,8 @@ Component({
         const itemData = {
           ...item,
           ...newItem,
+          select: this.data.editMode || item.select === null ? item.select : false, // 若编辑状态，或select未设定，则不变；否则设为true
+          y: accumulatedY,
           orderNum,
         } as IAnyObject
 
@@ -271,14 +277,32 @@ Component({
     // 点击事件处理
     cardTap(e: WechatMiniprogram.CustomEvent) {
       this.triggerEvent('cardTap', e.detail)
+
+      const { index } = e.currentTarget.dataset
+      const { select } = this.data.list[index]
+      console.log('cardTap', index, select)
+      if (typeof select !== 'boolean') return
+
+      // 处理选择样式渲染逻辑
+      this.setData({
+        [`list[${index}].select`]: !select,
+      })
     },
     dragBegin(e: WechatMiniprogram.CustomEvent<{ x: number; y: number }, IAnyObject, { index: number }>) {
       const { index } = e.target.dataset
       const { orderNum } = this.data.list[index]
-      this.setData({
+      const diffData = {
         currentIndex: index,
         placeholder: orderNum,
-      })
+      } as IAnyObject
+
+      const { select } = this.data.list[index]
+      if (typeof select === 'boolean') {
+        diffData[`list[${index}].select`] = !select
+      }
+
+      this.setData(diffData)
+
       this.data._originOrder = orderNum
       console.log('⇅ [dragBegin]', e)
 

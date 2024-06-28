@@ -16,7 +16,7 @@
     <mz-movable
       wx:for="{{list}}"
       key="{{index}}"
-      bind:dragBegin="dragBegin"
+      catch:dragBegin="dragBegin"
       bind:dragMove="dragMove"
       bind:dragEnd="dragEnd"
       data-index="{{index}}"
@@ -29,6 +29,7 @@
       <!-- {{item.name}}[{{item.order}}] -->
       <item
         bind:cardTap="cardTap"
+        data-index="{{index}}"
         config="{{config}}"
         card-info="{{item}}"
         edit-mode="{{editMode}}"

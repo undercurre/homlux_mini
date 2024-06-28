@@ -12,6 +12,8 @@ import {
   verifyNetwork,
   isLogon,
   getCurrentPageUrl,
+  showLoading,
+  hideLoading,
 } from './utils/index'
 import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore, sceneStore, userStore } from './store/index'
@@ -60,11 +62,13 @@ App<IAppOption>({
     // 如果用户已经登录，开始请求数据[用户][家庭列表、全屋房间、全屋设备]
     if (isLogon()) {
       try {
+        showLoading()
         userStore.setIsLogin(true)
         const start = Date.now()
         Logger.trace('[数据初始化开始]')
         await Promise.all([userStore.updateUserInfo(), homeStore.homeInit(), sceneStore.updateAllRoomSceneList()])
         Logger.trace('[数据初始化完成] 耗时', `${Date.now() - start}ms`)
+        hideLoading()
       } catch (e) {
         Logger.error('appOnLaunch-err:', e)
       }
