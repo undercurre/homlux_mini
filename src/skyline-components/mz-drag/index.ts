@@ -278,10 +278,11 @@ Component({
     cardTap(e: WechatMiniprogram.CustomEvent) {
       this.triggerEvent('cardTap', e.detail)
 
+      const { type } = e.detail
       const { index } = e.currentTarget.dataset
       const { select } = this.data.list[index]
-      console.log('cardTap', index, select)
-      if (typeof select !== 'boolean') return
+      console.log('cardTap', index, select, type)
+      if (typeof select !== 'boolean' || type !== 'card') return
 
       // 处理选择样式渲染逻辑
       this.setData({

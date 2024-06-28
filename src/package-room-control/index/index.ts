@@ -1220,6 +1220,8 @@ ComponentWithStore({
         checkedList: [],
       })
       this.editSelectAll({ detail: false })
+
+      this.reloadDeviceList()
     },
 
     async handleAddDevice() {
