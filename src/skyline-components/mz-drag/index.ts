@@ -170,6 +170,8 @@ Component({
         const itemData = {
           ...item,
           ...newItem,
+          select: this.data.editMode || item.select === null ? item.select : false, // 若编辑状态，或select未设定，则不变；否则设为true
+          y: accumulatedY,
           orderNum,
         } as IAnyObject
 
