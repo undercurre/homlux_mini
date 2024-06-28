@@ -52,13 +52,17 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    handleSceneTap(e: WechatMiniprogram.CustomEvent<IAnyObject, IAnyObject, { value: string }>) {
+    handleSceneTap(e: WechatMiniprogram.CustomEvent<IAnyObject, IAnyObject, { index: string }>) {
       if (this.data.sceneClickId) {
         return
       }
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
+      const { sceneId } = this.data.cardInfo.sceneList[e.currentTarget.dataset.index]
+      execScene(sceneId)
+
+      // 交互效果
       this.setData({
-        sceneClickId: e.currentTarget.dataset.value,
+        sceneClickId: sceneId,
       })
 
       setTimeout(() => {
@@ -66,7 +70,6 @@ ComponentWithComputed({
           sceneClickId: '',
         })
       }, 1050)
-      execScene(e.currentTarget.dataset.value)
     },
     handleCardTap() {
       roomStore.setCurrentRoom(this.data.cardInfo.roomId)

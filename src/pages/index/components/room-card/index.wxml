@@ -33,7 +33,7 @@
           >
             <tap-gesture-handler
               worklet:ongesture="handleSceneTapWorklet"
-              data-value="{{item.sceneId}}"
+              data-index="{{index}}"
             >
               <view class="overflow-hidden relative w-144rpx h-168rpx rounded-24rpx flex flex-col justify-center items-center bg-hex-eff0f3 shrink-0 {{index===0?'':'ml-22rpx'}}">
                 <view class="flex-col-center">
