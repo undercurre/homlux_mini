@@ -183,13 +183,17 @@ Component({
      */
     handleMove(e: GestureEvent) {
       'worklet'
-      if (!this.data.draggable) return
 
       const x = this.data._x.value
       const y = this.data._y.value
       const lastX = this.data._lastX.value
       const lastY = this.data._lastY.value
       // console.log('MOVE trigger', e.state, e.absoluteX, e.absoluteY, { x, y })
+
+      if (!this.data.draggable) {
+        runOnJS(this.triggerEvent.bind(this))('dragBegin', { x, y })
+        return
+      }
 
       switch (e.state) {
         // 拖动识别，保存初始值
