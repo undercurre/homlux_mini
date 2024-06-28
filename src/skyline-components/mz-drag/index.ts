@@ -146,7 +146,11 @@ Component({
       }
 
       const newList = JSON.parse(JSON.stringify(movableList)) as CardItem[]
-      console.log('initList|newList', newList)
+      console.log(
+        'initList|newList',
+        // @ts-ignore
+        newList.map((d: Device) => [d.deviceName, d.orderNum]),
+      )
 
       const diffData = {} as IAnyObject
       const list = []
@@ -228,7 +232,10 @@ Component({
       diffData.moveareaHeight = this.data.useAccumulatedY ? accumulatedY : itemHeight * Math.ceil(list.length / cols)
 
       this.setData(diffData)
-      Logger.trace('[initList]diffData', diffData)
+      Logger.trace(
+        '[initList]diffData',
+        diffData.list.map((d: Device.DeviceItem) => [d.deviceName, d.orderNum]),
+      )
     },
     /**
      * 根据坐标位置计算索引
@@ -282,7 +289,7 @@ Component({
       const { index } = e.currentTarget.dataset
       const { select } = this.data.list[index]
       console.log('cardTap', index, select, type)
-      if (typeof select !== 'boolean' || type !== 'card') return
+      if (typeof select !== 'boolean' || type === 'control') return
 
       // 处理选择样式渲染逻辑
       this.setData({
