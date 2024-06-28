@@ -113,7 +113,7 @@ ComponentWithStore({
     // 设备卡片列表
     deviceCardList: [] as DeviceCard[],
     cardListConfig: {
-      draggable: true,
+      draggable: false,
       showShadow: true,
       showGradientBg: true,
       showControl: true,
