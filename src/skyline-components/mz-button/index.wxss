@@ -44,7 +44,6 @@
   padding: 0;
   position: relative;
   text-align: center;
-  transition: opacity 0.2s;
   vertical-align: middle;
 }
 
@@ -172,6 +171,9 @@
 
 .mz-button--disabled {
   opacity: 0.5;
+}
+.mz-button--notdisabled {
+  opacity: 1;
 }
 
 .button__text {
