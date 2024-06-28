@@ -24,7 +24,7 @@ ComponentWithComputed({
       return !data.editMode
     },
     sceneList(data) {
-      return data.cardInfo.sceneList.map((scene: Scene.SceneBase) => {
+      return data.cardInfo?.sceneList?.map((scene: Scene.SceneBase) => {
         return {
           ...scene,
           sceneName: scene.sceneName.slice(0, 4),
@@ -32,7 +32,7 @@ ComponentWithComputed({
       })
     },
     hasBottomPadding(data) {
-      return data.cardInfo.sceneList.length > 0 && !data.editMode
+      return data.cardInfo?.sceneList?.length > 0 && !data.editMode
     },
     desc(data) {
       const { lightCount, lightOnCount } = data.cardInfo ?? {}

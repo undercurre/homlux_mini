@@ -52,13 +52,13 @@ export const roomStore = observable({
         const hasLight = deviceStore.allRoomDeviceList?.some(
           (device) => device.roomId === room.roomInfo.roomId && device.proType === PRO_TYPE.light,
         )
-        room.roomSceneList.sort((a, b) => a.orderNum - b.orderNum) // 统一排序
+        room.roomSceneList?.sort((a, b) => a.orderNum - b.orderNum) // 统一排序
         if (!hasSwitch && !hasLight) {
           // 四个默认场景都去掉
-          room.roomSceneList = room.roomSceneList.filter((scene) => scene.isDefault === '0')
+          room.roomSceneList = room.roomSceneList?.filter((scene) => scene.isDefault === '0')
         } else if (hasSwitch && !hasLight) {
           // 只有开关，去掉默认的明亮、柔和
-          room.roomSceneList = room.roomSceneList.filter((scene) => !['2', '3'].includes(scene.defaultType))
+          room.roomSceneList = room.roomSceneList?.filter((scene) => !['2', '3'].includes(scene.defaultType))
         }
       })
 
