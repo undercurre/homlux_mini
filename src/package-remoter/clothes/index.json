@@ -1,5 +1,6 @@
 {
   "usingComponents": {
+    "van-toast": "@vant/weapp/toast/index",
     "van-picker": "@vant/weapp/picker/index",
     "mz-slider": "/components/mz-slider/index",
     "mz-button": "../components/mz-button/index",
