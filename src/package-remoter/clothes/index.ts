@@ -7,8 +7,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
 import { hideLoading, showLoading } from '../../utils/system'
 import dataBus from '../utils/dataBus'
-import Toast from '@vant/weapp/dist/toast/toast'
-// import Toast from '@vant/weapp/toast/toast'
+import Toast from '@vant/weapp/toast/toast'
 
 const minuteArr = []
 for (let i = 0; i <= 180; i+=5) {
