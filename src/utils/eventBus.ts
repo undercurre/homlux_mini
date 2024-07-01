@@ -76,7 +76,12 @@ type Events = {
 
   // HACK 从store中同步设备数据（暂只用于房间页）
   roomDeviceSync: void
-}
+} & Record<
+  keyof typeof WSEventType,
+  {
+    isMqtt: boolean
+  }
+>
 
 export const WSEventType = {
   device_property: 'device_property', // 设备状态更新
@@ -129,9 +134,9 @@ emitter.on('msgPush', (res) => {
   }
 
   // Logger.console('☄ 推送消息：', res, eventType)
-
-  emitter.emit(eventType as any, eventData)
+  emitter.emit(eventType, { ...eventData, isMqtt: res.source === 'mqtt' })
   emitter.emit('wsReceive', res)
+  // console.log('☄ [eventBus]wsReceive', res)
 
   // 全局加上进入家庭的消息提示（暂时方案）
   if (eventType === 'invite_user_house' && eventData) {

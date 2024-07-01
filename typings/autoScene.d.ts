@@ -33,6 +33,10 @@ declare namespace AutoScene {
      * 场景名称
      */
     sceneName: string
+    /**
+     * 场景类别，0-手动场景，1-自动场景
+     */
+    sceneCategory: string
   }
   /** 拍扁的条件集合 */
   interface AutoSceneFlattenCondition {

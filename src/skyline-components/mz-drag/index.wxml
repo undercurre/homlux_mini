@@ -1,29 +1,41 @@
 <scroll-view
   type="list"
-  style="height: {{scrollHeight}}"
+  id="scroller"
+  style="width: 100%; height: {{scrollHeight}}"
   show-scrollbar="{{false}}"
   scroll-y
   enable-passive
+  bind:scroll="handleScroll"
+  scroll-top="{{scrollTop}}"
 >
   <view
     class="movearea"
-    style="height:{{moveareaHeight}}px"
+    style="width: 100%; height:{{moveareaHeight}}px"
     wx:if="{{list.length}}"
   >
     <mz-movable
       wx:for="{{list}}"
       key="{{index}}"
-      bind:dragClick="dragClick"
-      bind:dragBegin="dragBegin"
-      bind:dragMove="dragMove"
-      bind:dragEnd="dragEnd"
+      catch:dragBegin="dragBegin"
+      catch:dragMove="dragMove"
+      catch:dragEnd="dragEnd"
       data-index="{{index}}"
       direction="{{direction}}"
       x="{{item.pos[0]}}"
       y="{{item.pos[1]}}"
+      draggable="{{config.draggable}}"
       class="moveitem {{ index === currentIndex ? 'z-100' : 'z-1' }}"
     >
-      <item>{{item.name}}[{{item.order}}]</item>
+      <!-- {{item.name}}[{{item.order}}] -->
+      <item
+        bind:cardTap="cardTap"
+        data-index="{{index}}"
+        config="{{config}}"
+        card-info="{{item}}"
+        edit-mode="{{editMode}}"
+        select="{{item.select}}"
+      ></item>
     </mz-movable>
   </view>
+  <slot name="bottom"></slot>
 </scroll-view>

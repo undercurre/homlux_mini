@@ -8,8 +8,8 @@
 
 <!-- 页面主体，全屏幕点击捕获 -->
 <view
-  bindtap="handleScreenTap"
-  bindtouchmove="handleScreenTap"
+  bind:tap="handleScreenTap"
+  bind:touchmove="handleScreenTap"
 >
   <!-- 标题 -->
   <nav-bar
@@ -149,52 +149,28 @@
     wx:if="{{roomHasDevice}}"
     class="w-750rpx flex flex-col items-center"
   >
-    <view class="w-722rpx">
-      <!-- 设备卡片列表 bindscroll="onPageScroll" 暂时禁用-->
-      <scroll-view
-        type="list"
-        scroll-y
-        enhanced
-        show-scrollbar="{{false}}"
-        style="height: {{ scrollViewHeight }}; margin-top: {{toolboxContentHeight}}px"
-        scroll-top="{{scrollTop}}"
-        scroll-with-animation="{{true}}"
+    <view
+      class="w-750rpx"
+      style="margin-top: {{toolboxContentHeight}}px"
+    >
+      <mz-drag
+        generic:item="device-card"
+        bind:cardTap="cardTap"
+        cols="{{4}}"
+        scroll-height="{{scrollViewHeight}}"
+        item-height="{{itemHeight}}"
+        item-width="{{itemWidth}}"
+        config="{{cardListConfig}}"
+        edit-mode="{{editMode}}"
+        movable-list="{{deviceCardList}}"
+        bind:dragBegin="handleEditMode"
+        bind:dragEnd="handleSortSaving"
       >
-        <view
-          wx:for="{{devicePageList}}"
-          wx:for-item="group"
-          wx:key="g"
-          wx:for-index="g"
-          class="flex flex-row flex-wrap"
-        >
-          <view
-            wx:for="{{group}}"
-            wx:key="uniId"
-            data-index="{{index}}"
-            data-group="{{g}}"
-            data-ordernum="{{item.orderNum}}"
-          >
-            <device-card
-              class="w-180rpx pb-16rpx pt-16rpx flex justify-center {{editSelectMode && (index !== placeholder.index || g !== placeholder.groupIndex) ? 'shake' : ''}}"
-              showControl="{{!editSelectMode}}"
-              showShadow
-              showGradientBg
-              edit-mode="{{editSelectMode}}"
-              device-info="{{item}}"
-              data-item="{{item}}"
-              select="{{item.select}}"
-              bind:controlTap="queryAuthBeforeControlTap"
-              bind:cardTap="handleCardTap"
-              bind:offlineTap="handleShowDeviceOffline"
-              bind:longPress="handleLongpress"
-            />
-          </view>
-        </view>
-
         <!-- 有列表时的添加按钮 -->
         <view
+          slot="bottom"
           class="flex-col-center pt-40rpx pb-20rpx"
-          wx:if="{{roomHasDevice}}"
+          wx:if="{{roomHasDevice && !editMode}}"
         >
           <mz-button
             wx:if="{{isManager}}"
@@ -209,7 +185,7 @@
             <text class="text-26rpx text-hex-555659">添加设备</text>
           </mz-button>
         </view>
-      </scroll-view>
+      </mz-drag>
     </view>
   </view>
 </view>
@@ -273,8 +249,8 @@
   bind:updateList="reloadDeviceListThrottle"
   bind:close="exitEditMode"
   bind:selectAll="editSelectAll"
-  editSelectMode="{{editSelectMode}}"
-  editSelectList="{{editSelectList}}"
+  editSelectMode="{{editMode}}"
+  editSelectList="{{checkedList}}"
 ></batch-edit>
 
 <mz-toast id="mz-toast" />

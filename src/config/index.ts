@@ -13,8 +13,13 @@ export const mzaioDomain: ConfigWithEnv<string> = {
   prod: 'https://mzaio.meizgd.com',
 }
 
-export function getCurrentMzaioDomain() {
+export function getMzaioDomain() {
   return mzaioDomain[getEnv()]
+}
+
+export function isHttpsDomain() {
+  const domain = getMzaioDomain()
+  return domain.includes('https')
 }
 
 export const mzaioBaseURL: ConfigWithEnv<string> = {

@@ -2,7 +2,6 @@
   <pan-gesture-handler worklet:ongesture="handlePan">
     <view
       class="item"
-      bind:tap="onClick"
       id="box-{{key}}"
     >
       <slot></slot>

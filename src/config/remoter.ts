@@ -1518,6 +1518,18 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
       ],
     },
   },
+  '17': {
+    '01': {
+      deviceName: '晾衣机',
+      devicePic: '/assets/img/remoter/clothes.png',
+      actions: [
+        {
+          key: 'CLOTHES_LIGHT',
+          name: '照明',
+        },
+      ],
+    }
+  }
 }
 
 // 控制指令
@@ -1582,6 +1594,29 @@ export const CMD: Record<string, number> = {
   // 凉霸（其余指令同浴霸）
   KITCHEN_WIND_STRONG: 0x02, // 强吹风
   KITCHEN_WIND_SOFT: 0x03, // 吹风（弱风）
+
+  // 晾衣机
+  CLOTHES_LIGHT: 0x06, //开/关灯
+  CLOTHES_BRIGHT: 0x51, //亮度
+  CLOTHES_UP: 0x0c, //上升
+  CLOTHES_PAUSE: 0x09, //暂停
+  CLOTHES_DOWN: 0x8c, //下降
+  CLOTHES_ONE_KEY: 0x1c, //一键晾衣
+  CLOTHES_ONE_KEY_START: 0x1d, //开始设置一键晾衣
+  CLOTHES_ONE_KEY_END: 0x1e, //完成设置一键晾衣
+  CLOTHES_SET_HEIGHT: 0x1f, //设置晾衣高度
+  CLOTHES_DIS: 0x80, //消毒
+  CLOTHES_DRY_MODE: 0x81, //干衣模式
+  CLOTHES_DELAY_LIGHT_TIME: 0x82, //延迟关灯/分钟
+
+  CLOTHES_NOBODY_LIGHT_OFF: 0x83, //无人灭灯功能开/关
+  CLOTHES_NOBODY_LIGHT_TIME: 0x84, //无人延时灭灯时间/秒
+
+  CLOTHES_NOBODY_UP: 0x85, //无人升顶功能开/关
+  CLOTHES_NOBODY_UP_TIME: 0x86, //无人延时升顶时间/秒
+
+  CLOTHES_OFFLINE_VOICE: 0x87, //离线语音功能开/关
+  CLOTHES_SLOW_UP: 0x88, //轻抬上升功能开/关
 
   // 厂测指令（调试用）
   FACTORY: 0x13,

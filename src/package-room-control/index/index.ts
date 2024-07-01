@@ -47,28 +47,7 @@ type DeviceCard = Device.DeviceItem & {
   timestamp: number // 加入队列时打上的时间戳
   isScreen?: boolean
   isZhongHong?: boolean
-}
-
-/**
- * 根据index计算坐标位置
- * @returns {x, y}
- */
-function getPos(index: number): Record<'x' | 'y', string> {
-  // console.log('getPos', index)
-  const x = `${(index % 4) * CARD_W}px`
-  const y = `${Math.floor(index / 4) * CARD_H}px`
-  return { x, y }
-}
-
-/**
- * 根据坐标位置计算index
- * @returns index
- */
-function getIndex(x: number, y: number) {
-  const maxIndex = deviceStore.deviceFlattenList.length - 1 // 防止越界
-  const ix = Math.floor((x + CARD_W / 2) / CARD_W)
-  const iy = Math.floor((y + CARD_H / 2) / CARD_H)
-  return Math.min(ix + 4 * iy, maxIndex)
+  deleted: boolean
 }
 
 ComponentWithStore({
@@ -99,6 +78,8 @@ ComponentWithStore({
    * 页面的初始数据
    */
   data: {
+    itemHeight: CARD_H,
+    itemWidth: CARD_W,
     sceneImgDir,
     defaultImgDir,
     loading: true,
@@ -129,24 +110,20 @@ ComponentWithStore({
     showAuthDialog: false, // 显示确权弹层
     deviceIdForQueryAuth: '', // 用于确权的设备id
     _cardEventType: '' as 'card' | 'control', // 触发确权前的操作类型
-    // 设备卡片列表，二维数组
-    devicePageList: [] as DeviceCard[][],
+    // 设备卡片列表
+    deviceCardList: [] as DeviceCard[],
+    cardListConfig: {
+      draggable: false,
+      showShadow: true,
+      showGradientBg: true,
+      showControl: true,
+    },
     /** 待创建面板的设备选择弹出框 */
     // scrollTop: 0,
     checkedList: [] as string[], // 已选择设备的id列表
-    editSelectList: [] as string[], // 编辑状态下，已勾选的设备id列表
-    editSelectMode: false, // 是否编辑状态
+    editMode: false, // 是否编辑状态
     checkedDeviceInfo: {} as DeviceCard, // 选中设备的数据
     deviceListInited: false, // 设备列表是否初始化完毕
-    isMoving: false, // 是否正在拖拽中
-    hasMoved: false, // 排序变更过
-    placeholder: {
-      orderNum: -1, // 占位符当前对应的排序
-      index: -1, // 占位符当前对应元素的数据索引
-      groupIndex: -1,
-      x: '',
-      y: '',
-    },
     roomLight: {
       brightness: 0,
       colorTemperature: 0,
@@ -167,7 +144,6 @@ ComponentWithStore({
     isLightSelectSome: false, // 是否选中灯具有，包括一个或多个
     toolboxContentHeight: 60, // 工具栏内容区域高度
     scrollViewHeight: '0px', // 可滚动区域高度
-    movableAreaHeight: 0, // 设备卡片可移动区域高度
     isShowCommonControl: false, // 是否打开控制面板
   },
   observers: {
@@ -183,37 +159,33 @@ ComponentWithStore({
           `${Math.round((value / 100) * (maxColorTemp - minColorTemp) + minColorTemp)}K`,
       })
     },
-    // 节流减少触发频率
-    'devicePageList.**, editSelectMode'(devicePageList: DeviceCard[][], editSelectMode) {
-      throttle(() => {
-        console.log('[observers]devicePageList')
-        const hasRoomLightOn = devicePageList.some((g) =>
-          g.some((d) => !!(d.proType === PRO_TYPE.light && d.mzgdPropertyDTOList['light'].power)),
-        )
-        const roomHasLight = devicePageList.some((g) => g.some((d) => !!(d.proType === PRO_TYPE.light)))
-        const roomHasDevice =
-          devicePageList?.length > 1 || (devicePageList?.length === 1 && devicePageList[0].length > 0)
-        const toolboxContentHeight = roomHasLight ? 150 : 60
-        const movableAreaHeight = Math.ceil((devicePageList?.length ?? 4) / 4) * 236
-        let baseHeight =
-          (storage.get('windowHeight') as number) -
-          (storage.get('statusBarHeight') as number) -
-          (storage.get('navigationBarHeight') as number) -
-          (storage.get('bottomBarHeight') as number) -
-          this.data.toolboxContentHeight
-        if (editSelectMode) {
-          baseHeight -= rpx2px(298)
-        }
-        const scrollViewHeight = baseHeight + 'px'
-        this.setData({
-          hasRoomLightOn,
-          roomHasLight,
-          roomHasDevice,
-          toolboxContentHeight,
-          movableAreaHeight,
-          scrollViewHeight,
-        })
-      }, 50).bind(this)()
+    'deviceCardList.**, editMode'(deviceCardList: DeviceCard[], editMode) {
+      const deviceList = deviceCardList.filter((d) => !d.deleted)
+      Logger.trace('[observers]deviceList', deviceList)
+      const hasRoomLightOn = deviceList.some(
+        (d) => !!(d.proType === PRO_TYPE.light && d.mzgdPropertyDTOList['light'].power),
+      )
+      const roomHasLight = deviceList.some((d) => !!(d.proType === PRO_TYPE.light))
+      const roomHasDevice = !!deviceList?.length
+      const toolboxContentHeight = roomHasLight ? 150 : 60
+      let baseHeight =
+        (storage.get('windowHeight') as number) -
+        (storage.get('statusBarHeight') as number) -
+        (storage.get('navigationBarHeight') as number) -
+        (storage.get('bottomBarHeight') as number) -
+        toolboxContentHeight
+      if (editMode) {
+        baseHeight -= rpx2px(298)
+      }
+      const scrollViewHeight = baseHeight + 'px'
+      this.setData({
+        hasRoomLightOn,
+        roomHasLight,
+        roomHasDevice,
+        toolboxContentHeight,
+        scrollViewHeight,
+        'cardListConfig.showControl': !editMode,
+      })
     },
     checkedList(checkedList) {
       const { deviceMap } = deviceStore
@@ -294,8 +266,23 @@ ComponentWithStore({
         this.updateQueue({ isRefresh: true })
       })
 
+      emitter.on('device_property', (eventData: IAnyObject) => {
+        if (!eventData.isMqtt) return
+
+        const device = {} as DeviceCard
+        device.deviceId = eventData.deviceId
+        device.mzgdPropertyDTOList = {}
+        device.mzgdPropertyDTOList[eventData.modelName] = {
+          ...eventData.event,
+        }
+        // console.log('☄ [index][isMqtt]', device)
+
+        this.updateQueue(device)
+      })
+
       // ws消息处理
       emitter.on('wsReceive', async (e) => {
+        // console.log('☄ [index]wsReceive', e)
         const { eventType, eventData } = e.result
 
         // 特别地，绑定设备的消息无法带房间id
@@ -504,6 +491,8 @@ ComponentWithStore({
       // 解除监听
       emitter.off('wsReceive')
       emitter.off('deviceListRetrieve')
+      emitter.off('roomDeviceSync')
+      emitter.off('device_property')
 
       if (this.data._wait_timeout) {
         clearTimeout(this.data._wait_timeout)
@@ -580,105 +569,111 @@ ComponentWithStore({
         const device = e as DeviceCard
         let originDevice: DeviceCard
 
-        for (const groupIndex in this.data.devicePageList) {
-          const index = this.data.devicePageList[groupIndex].findIndex((d: DeviceCard) => {
-            if (d.proType === PRO_TYPE.switch) {
-              return d.uniId === device!.uniId
-            } else {
-              return d.deviceId === device!.deviceId
+        const index = this.data.deviceCardList.findIndex((d: DeviceCard) => {
+          if (d.proType === PRO_TYPE.switch) {
+            return d.uniId === device!.uniId
+          } else {
+            return d.deviceId === device!.deviceId
+          }
+        })
+
+        if (index !== -1) {
+          originDevice = this.data.deviceCardList[index]
+          // const diffData = {} as IAnyObject
+          // Review 细致到字段的diff
+          const renderList = ['deviceName', 'onLineStatus'] // 需要刷新界面的字段
+
+          renderList.forEach((key) => {
+            const newVal = _get(device!, key)
+            const originVal = _get(originDevice, key)
+            // 进一步检查，过滤确实有更新的字段
+            if (newVal !== undefined && newVal !== originVal) {
+              this.data._diffCards.data[`deviceCardList[${index}].${key}`] = newVal
             }
           })
 
-          if (index !== -1) {
-            originDevice = this.data.devicePageList[groupIndex][index]
-            // const diffData = {} as IAnyObject
-            // Review 细致到字段的diff
-            const renderList = ['deviceName', 'onLineStatus'] // 需要刷新界面的字段
+          const modelName =
+            originDevice.proType === PRO_TYPE.switch
+              ? originDevice.uniId.split(':')[1]
+              : getModelName(originDevice.proType, originDevice.productId)
 
-            renderList.forEach((key) => {
-              const newVal = _get(device!, key)
-              const originVal = _get(originDevice, key)
-              // 进一步检查，过滤确实有更新的字段
-              if (newVal !== undefined && newVal !== originVal) {
-                this.data._diffCards.data[`devicePageList[${groupIndex}][${index}].${key}`] = newVal
+          // 如果mzgdPropertyDTOList、switchInfoDTOList字段存在，则覆盖更新
+          if (device!.mzgdPropertyDTOList) {
+            let newVal
+            // 485设备，拆分为多条单属性上报
+            const cache = this.data._diffCards.data[`deviceCardList[${index}].mzgdPropertyDTOList.${modelName}`]
+            if (cache) {
+              newVal = {
+                ...cache,
+                ...device?.mzgdPropertyDTOList[modelName],
               }
-            })
-
-            const modelName =
-              originDevice.proType === PRO_TYPE.switch
-                ? originDevice.uniId.split(':')[1]
-                : getModelName(originDevice.proType, originDevice.productId)
-
-            // 如果mzgdPropertyDTOList、switchInfoDTOList字段存在，则覆盖更新
-            if (device!.mzgdPropertyDTOList) {
-              const newVal = {
+            } else {
+              newVal = {
                 ...originDevice.mzgdPropertyDTOList[modelName],
                 ...device?.mzgdPropertyDTOList[modelName],
               }
-
-              this.data._diffCards.data[`devicePageList[${groupIndex}][${index}].mzgdPropertyDTOList.${modelName}`] =
-                newVal
-            }
-            // 更新面板、按键信息
-            if (device!.switchInfoDTOList) {
-              const newVal = {
-                ...originDevice.switchInfoDTOList[0],
-                ...device?.switchInfoDTOList[0],
-              }
-              this.data._diffCards.data[`devicePageList[${groupIndex}][${index}].switchInfoDTOList[0]`] = newVal
-            }
-            // 更新场景关联信息
-            const linkSceneName = this.getLinkSceneName({
-              ...device!,
-              proType: originDevice.proType, // 补充关键字段
-            })
-            if (linkSceneName !== originDevice.linkSceneName) {
-              this.data._diffCards.data[`devicePageList[${groupIndex}][${index}].linkSceneName`] = linkSceneName
             }
 
-            // 如果控制弹框为显示状态，则同步选中设备的状态
-            // 因为【灯】异常推送较多，暂时不对弹框中的设备状态进行更新
-            // 因为【窗帘】需要等待轨道运行，推送迟缓，不对弹框中的设备状态进行更新
-            if (
-              device!.mzgdPropertyDTOList &&
-              this.data.checkedList.includes(originDevice!.deviceId) &&
-              originDevice!.select &&
-              (originDevice.proType === PRO_TYPE.bathHeat || originDevice.proType === PRO_TYPE.clothesDryingRack)
-            ) {
-              const newVal = {
-                ...originDevice,
-                ...device,
-                ...device.mzgdPropertyDTOList[modelName], // 设备属性扁平化（一维、冗余），以便与场景弹框统一逻辑
-              }
-              this.data._diffCards.data.checkedDeviceInfo = newVal
+            this.data._diffCards.data[`deviceCardList[${index}].mzgdPropertyDTOList.${modelName}`] = newVal
+          }
+          // 更新面板、按键信息
+          if (device!.switchInfoDTOList) {
+            const newVal = {
+              ...originDevice.switchInfoDTOList[0],
+              ...device?.switchInfoDTOList[0],
             }
+            this.data._diffCards.data[`deviceCardList[${index}].switchInfoDTOList[0]`] = newVal
+          }
+          // 更新场景关联信息
+          const linkSceneName = this.getLinkSceneName({
+            ...device!,
+            proType: originDevice.proType, // 补充关键字段
+          })
+          if (linkSceneName !== originDevice.linkSceneName) {
+            this.data._diffCards.data[`deviceCardList[${index}].linkSceneName`] = linkSceneName
+          }
 
-            // 处理更新逻辑
-            if (Object.keys(this.data._diffCards.data).length) {
-              const now = new Date().getTime()
-              if (!this.data._diffCards.created) {
-                this.data._diffCards.created = now
+          // 如果控制弹框为显示状态，则同步选中设备的状态
+          // 因为【灯】异常推送较多，暂时不对弹框中的设备状态进行更新
+          // 因为【窗帘】需要等待轨道运行，推送迟缓，不对弹框中的设备状态进行更新
+          if (
+            device!.mzgdPropertyDTOList &&
+            this.data.checkedList.includes(originDevice!.deviceId) &&
+            originDevice!.select &&
+            (originDevice.proType === PRO_TYPE.bathHeat || originDevice.proType === PRO_TYPE.clothesDryingRack)
+          ) {
+            const newVal = {
+              ...originDevice,
+              ...device,
+              ...device.mzgdPropertyDTOList[modelName], // 设备属性扁平化（一维、冗余），以便与场景弹框统一逻辑
+            }
+            this.data._diffCards.data.checkedDeviceInfo = newVal
+          }
+
+          // 处理更新逻辑
+          if (Object.keys(this.data._diffCards.data).length) {
+            const now = new Date().getTime()
+            if (!this.data._diffCards.created) {
+              this.data._diffCards.created = now
+            }
+            const wait = now - this.data._diffCards.created
+            if (wait >= CARD_REFRESH_TIME && device.timestamp) {
+              // 先清空已有的更新等待
+              if (this.data._wait_timeout) {
+                clearTimeout(this.data._wait_timeout)
+                this.data._wait_timeout = null
               }
-              const wait = now - this.data._diffCards.created
-              if (wait >= CARD_REFRESH_TIME && device.timestamp) {
-                // 先清空已有的更新等待
-                if (this.data._wait_timeout) {
-                  clearTimeout(this.data._wait_timeout)
-                  this.data._wait_timeout = null
-                }
-                this.setData(this.data._diffCards.data)
-                this.data._diffCards = {
-                  data: {},
-                  created: 0,
-                }
-                Logger.debug('▤ [%s, %s] 更新完成，已等待 %sms', groupIndex, index, wait)
-              } else {
-                console.log('▤ [%s, %s] 更新推迟，已等待 %sms', groupIndex, index, wait)
+              this.setData(this.data._diffCards.data)
+              this.data._diffCards = {
+                data: {},
+                created: 0,
               }
+              Logger.debug('▤ [%s] 更新完成，已等待 %sms', index, wait)
             } else {
-              console.log('▤ [%s, %s] diffData为空，不必更新', groupIndex, index)
+              console.log('▤ [%s] 更新推迟，已等待 %sms', index, wait)
             }
-            break // 找到就中断
+          } else {
+            console.log('▤ [%s] diffData为空，不必更新', index)
           }
         }
       }
@@ -695,17 +690,21 @@ ComponentWithStore({
         const _list = flattenList
           // 接口返回开关面板数据以设备为一个整体，需要前端拆开后排序
           // 补充字段
-          .map((device, index) => ({
-            ...device,
-            ...getPos(index),
-            // !! 重排orderNum，从0开始
-            // TRICK 排序过程orderNum代替index使用，而不必改变数组的真实索引
-            orderNum: index + 1,
-            type: proName[device.proType],
-            select: this.data.checkedList.includes(device.uniId) || this.data.editSelectList.includes(device.uniId),
-            linkSceneName: this.getLinkSceneName(device),
-            onLineStatus: e.onLineStatus ?? device.onLineStatus, // 传参数直接设置指定的在线离线状态
-          }))
+          .map((device, index) => {
+            const select = this.data.checkedList.includes(device.uniId)
+            return {
+              ...device,
+              id: device.uniId,
+              // !! 重排orderNum，从1开始
+              // TRICK 排序过程orderNum代替index使用，而不必改变数组的真实索引
+              orderNum: index + 1,
+              type: proName[device.proType],
+              tag: device.deviceType === 4 ? 'group' : 'single', // 可排序标识
+              select,
+              linkSceneName: this.getLinkSceneName(device),
+              onLineStatus: e.onLineStatus ?? device.onLineStatus, // 传参数直接设置指定的在线离线状态
+            }
+          })
 
         if (!this.data.deviceListInited) {
           Logger.debug('▤ [updateDeviceList] 列表初始化')
@@ -715,24 +714,26 @@ ComponentWithStore({
           Logger.debug('▤ [updateDeviceList] 列表重新加载')
         }
 
-        const oldListPageLength = this.data.devicePageList.length
-        const newListPageLength = Math.ceil(_list.length / LIST_PAGE)
+        const oldListLength = this.data.deviceCardList.length
+        const newListLength = _list.length
 
-        // 拆分为二维数组，以便分页渲染
+        // 分批渲染
         for (let groupIndex = 0; _list.length > 0; ++groupIndex) {
           const group = _list.splice(0, LIST_PAGE)
           const diffData = {} as IAnyObject
-          diffData[`devicePageList[${groupIndex}]`] = group
+          for (let index = 0; index < group.length; ++index) {
+            diffData[`deviceCardList[${index + groupIndex * LIST_PAGE}]`] = group[index]
+          }
           this.setData(diffData)
         }
 
-        // 直接清空旧列表，再重新加载会引导闪烁，此处只清空‘旧列表比新列表多出的项’
-        if (oldListPageLength > newListPageLength) {
-          for (let groupIndex = newListPageLength; groupIndex < oldListPageLength; ++groupIndex) {
-            const diffData = {} as IAnyObject
-            diffData[`devicePageList[${groupIndex}]`] = []
-            this.setData(diffData)
+        // 直接清空旧列表，再重新加载会引起闪烁，此处只清空‘旧列表比新列表多出的项’
+        if (oldListLength > newListLength) {
+          const diffData = {} as IAnyObject
+          for (let index = newListLength; index < oldListLength; ++index) {
+            diffData[`deviceCardList[${index}]`] = { deleted: true }
           }
+          this.setData(diffData)
         }
 
         if (!this.data.deviceListInited) {
@@ -741,7 +742,7 @@ ComponentWithStore({
           })
         }
 
-        Logger.debug('▤ [updateDeviceList] 列表更新完成', this.data.devicePageList)
+        Logger.debug('▤ [updateDeviceList] 列表更新完成', this.data.deviceCardList)
       }
 
       // 模拟堵塞任务执行
@@ -776,6 +777,8 @@ ComponentWithStore({
      * @param e 设备属性 | 包裹在事件中的设备属性 | 空对象（表示全量更新）| 不传值则执行下一个
      */
     async updateQueue(e?: (DeviceCard & { detail?: DeviceCard }) | Optional<DeviceCard>) {
+      if (this.data.editMode) return // 拖拽过程不更新 // TODO 只是排序不更新
+
       if (e) {
         let device: DeviceCard
 
@@ -834,155 +837,19 @@ ComponentWithStore({
      * @param toCheck 可选，若指定则设为指定状态；若不指定则置反
      */
     toSelect(uniId: string, toCheck?: boolean) {
-      for (const groupIndex in this.data.devicePageList) {
-        const group = this.data.devicePageList[groupIndex]
-        const index = group.findIndex((d) => d.uniId === uniId)
-        if (index !== -1) {
-          const diffData = {} as IAnyObject
-          diffData[`devicePageList[${groupIndex}][${index}].select`] = toCheck ?? !group[index].select
-          console.log(diffData)
-          this.setData(diffData)
-          break
-        }
-      }
-    },
-
-    // 开始拖拽，初始化placeholder
-    movableTouchStart(e: WechatMiniprogram.TouchEvent) {
-      const orderNum = e.currentTarget.dataset.ordernum // ! 注意大小写
-      const groupIndex = e.currentTarget.dataset.group
-      const index = e.currentTarget.dataset.index
-
-      const diffData = {} as IAnyObject
-      diffData.isMoving = true
-      diffData.placeholder = {
-        ...getPos(orderNum),
-        orderNum,
-        groupIndex,
-        index,
-      }
-      console.log('⇅ [movableTouchStart]', diffData)
-
-      this.setData(diffData)
-    },
-
-    /**
-     * 拖拽时触发的卡片移动效果
-     */
-    movableChangeThrottle: throttle(function (this: IAnyObject, e: WechatMiniprogram.TouchEvent) {
-      const targetOrder = getIndex(e.detail.x, e.detail.y)
-      const oldOrder = this.data.placeholder.orderNum
-      // 如果拖动目标是灯组所在的位置
-      if (
-        deviceStore.groupCount && // 有灯组
-        ((targetOrder < deviceStore.groupCount && oldOrder >= deviceStore.groupCount) || // 非灯组不能移入灯组
-          (oldOrder < deviceStore.groupCount && targetOrder >= deviceStore.groupCount)) // 灯组不能移入非灯组
-      ) {
-        return
-      }
-
-      if (this.data.placeholder.orderNum !== targetOrder) {
-        // 节流操作，可能导致movableTouchEnd后仍有movableChange需要执行，丢弃掉
-        if (oldOrder < 0) {
-          return
-        }
-        console.log('⇅ [movableChange] %d-->%d', oldOrder, targetOrder, e)
-
-        // 更新placeholder的位置
-        const dPos = getPos(targetOrder)
+      const index = this.data.deviceCardList.findIndex((d) => d.uniId === uniId)
+      if (index !== -1) {
         const diffData = {} as IAnyObject
-        diffData[`placeholder.orderNum`] = targetOrder
-        diffData[`placeholder.x`] = dPos.x
-        diffData[`placeholder.y`] = dPos.y
-
-        // 更新联动卡片的位置
-        let moveCount = 0
-        for (const groupIndex in this.data.devicePageList) {
-          const group = this.data.devicePageList[groupIndex]
-          for (const index in group) {
-            const _orderNum = group[index].orderNum // 暂存排序
-            const isForward = oldOrder < targetOrder // 是否向前移动（队列末端为前）
-            if (
-              (isForward && _orderNum > oldOrder && _orderNum <= targetOrder) ||
-              (!isForward && _orderNum >= targetOrder && _orderNum < oldOrder)
-            ) {
-              ++moveCount
-              const dOrderNum = isForward ? _orderNum - 1 : _orderNum + 1
-              const dpos = getPos(dOrderNum)
-              diffData[`devicePageList[${groupIndex}][${index}].x`] = dpos.x
-              diffData[`devicePageList[${groupIndex}][${index}].y`] = dpos.y
-              diffData[`devicePageList[${groupIndex}][${index}].orderNum`] = dOrderNum
-
-              // 减少遍历消耗
-              if (moveCount >= Math.abs(targetOrder - oldOrder)) {
-                break
-              }
-            }
-            if (moveCount >= Math.abs(targetOrder - oldOrder)) {
-              break
-            }
-          }
-        }
-
-        // 更新被拖拽卡片的排序num
-        const groupIndex = this.data.placeholder.groupIndex
-        const index = this.data.placeholder.index
-        diffData[`devicePageList[${groupIndex}][${index}].orderNum`] = targetOrder
+        diffData[`deviceCardList[${index}].select`] = toCheck ?? !this.data.deviceCardList[index].select
         console.log(diffData)
         this.setData(diffData)
-
-        this.data.hasMoved = true
-      }
-    }, 50),
-
-    movableChange(e: WechatMiniprogram.TouchEvent) {
-      if (e.detail.source === 'touch' || e.detail.source === 'friction') {
-        this.movableChangeThrottle(e)
       }
     },
 
-    movableTouchEnd() {
-      if (!this.data.isMoving) {
-        return
-      }
-      const groupIndex = this.data.placeholder.groupIndex
-      const index = this.data.placeholder.index
-      const dpos = getPos(this.data.placeholder.orderNum)
-
-      const diffData = {} as IAnyObject
-      diffData.isMoving = false
-      // 修正卡片位置
-      diffData[`devicePageList[${groupIndex}][${index}].x`] = dpos.x
-      diffData[`devicePageList[${groupIndex}][${index}].y`] = dpos.y
-      diffData[`placeholder.orderNum`] = -1
-      diffData[`placeholder.index`] = -1
-      diffData[`placeholder.groupIndex`] = -1
-
-      this.setData(diffData)
-      console.log('⇅ [movableTouchEnd]', diffData)
-
-      setTimeout(() => this.resetPos(), 500)
-      this.handleSortSaving()
-    },
-    // 修正可能出现的卡片错位
-    resetPos() {
-      const diffData = {} as IAnyObject
-      for (const groupIndex in this.data.devicePageList) {
-        const group = this.data.devicePageList[groupIndex]
-        for (const index in group) {
-          const { orderNum } = group[index]
-          const dpos = getPos(orderNum)
-          diffData[`devicePageList[${groupIndex}][${index}].x`] = dpos.x
-          diffData[`devicePageList[${groupIndex}][${index}].y`] = dpos.y
-        }
-      }
-      this.setData(diffData)
-    },
-    async handleSortSaving() {
-      if (!this.data.hasMoved) {
-        return
-      }
-      this.data.hasMoved = false
+    // 保存排序结果
+    async handleSortSaving(e: WechatMiniprogram.CustomEvent<{ isMoved: boolean; list: DeviceCard[] }>) {
+      const { isMoved, list } = e.detail
+      if (!isMoved) return // 未移动，不作保存
 
       const deviceOrderData = {
         deviceInfoByDeviceVoList: [],
@@ -991,32 +858,33 @@ ComponentWithStore({
         deviceInfoByDeviceVoList: [],
       } as Device.OrderSaveData
 
-      for (const groupIndex in this.data.devicePageList) {
-        const group = this.data.devicePageList[groupIndex]
-        for (const index in group) {
-          const device = group[index]
-          console.log('[handleSortSaving]', device, index)
-          if (device.proType !== PRO_TYPE.switch) {
-            deviceOrderData.deviceInfoByDeviceVoList.push({
-              deviceId: device.deviceId,
-              houseId: homeStore.currentHomeId,
-              roomId: device.roomId,
-              orderNum: String(device.orderNum),
-              type: device.deviceType === 4 ? '2' : '0', // 灯组为2，普通设备为0
-            })
-          }
-          // 若开关按键参与排序，需要按 type: '1' 再保存
-          else {
-            switchOrderData.deviceInfoByDeviceVoList.push({
-              deviceId: device.deviceId,
-              houseId: homeStore.currentHomeId,
-              roomId: device.roomId,
-              orderNum: String(device.orderNum),
-              switchId: device.switchInfoDTOList[0].switchId,
-              type: '1',
-            })
-          }
+      const diffData = {} as IAnyObject
+
+      for (const index in list) {
+        const device = list[index]
+        if (device.orderNum === this.data.deviceCardList[index].orderNum) continue
+
+        if (device.proType !== PRO_TYPE.switch) {
+          deviceOrderData.deviceInfoByDeviceVoList.push({
+            deviceId: device.deviceId,
+            houseId: homeStore.currentHomeId,
+            roomId: device.roomId,
+            orderNum: String(device.orderNum),
+            type: device.deviceType === 4 ? '2' : '0', // 灯组为2，普通设备为0
+          })
         }
+        // 若开关按键参与排序，需要按 type: '1' 再保存
+        else {
+          switchOrderData.deviceInfoByDeviceVoList.push({
+            deviceId: device.deviceId,
+            houseId: homeStore.currentHomeId,
+            roomId: device.roomId,
+            orderNum: String(device.orderNum),
+            switchId: device.switchInfoDTOList[0].switchId,
+            type: '1',
+          })
+        }
+        diffData[`deviceCardList[${index}].orderNum`] = device.orderNum
       }
       if (deviceOrderData.deviceInfoByDeviceVoList.length) {
         await saveDeviceOrder(deviceOrderData)
@@ -1024,6 +892,9 @@ ComponentWithStore({
       if (switchOrderData.deviceInfoByDeviceVoList.length) {
         await saveDeviceOrder(switchOrderData)
       }
+      // 统一视图列表变量
+      this.setData(diffData)
+      // console.log('[handleSortSaving]', diffData)
     },
 
     handleSceneTap() {
@@ -1048,12 +919,31 @@ ComponentWithStore({
     },
 
     /**
+     * 区分控制卡片事件，是直接控制，还是点卡片呼出弹窗
+     * TODO 进一步简化事件间的调用关系，尽量扁平，减少多层嵌套
+     */
+    cardTap(e: { detail: DeviceCard & { clientRect: WechatMiniprogram.ClientRect; type: string } }) {
+      const { type } = e.detail
+      if (this.data.editMode) {
+        this.handleCardTap(e)
+        return
+      }
+      if (type === 'offline') {
+        this.handleShowDeviceOffline(e)
+      } else if (type === 'card') {
+        this.handleCardTap(e)
+      } else if (type === 'control') {
+        this.queryAuthBeforeControlTap(e)
+      }
+    },
+
+    /**
      * @description 卡片点击事件处理
      * @param e 设备属性
      */
     async handleCardTap(e: { detail: DeviceCard & { clientRect: WechatMiniprogram.ClientRect } }) {
       // 如果在编辑状态，则选择或取消选择卡片
-      if (this.data.editSelectMode) {
+      if (this.data.editMode) {
         this.handleCardEditSelect(e)
         return
       }
@@ -1099,8 +989,8 @@ ComponentWithStore({
     handleCardEditSelect(e: { detail: DeviceCard }) {
       const device = e.detail
       const { uniId } = device
-      const toCheck = !this.data.editSelectList.includes(uniId)
-      const list = [...this.data.editSelectList]
+      const toCheck = !this.data.checkedList.includes(uniId)
+      const list = [...this.data.checkedList]
 
       // 未选中，则追加到已选中列表
       if (toCheck) {
@@ -1113,10 +1003,10 @@ ComponentWithStore({
       }
 
       // 选择样式渲染
-      this.toSelect(uniId)
+      // this.toSelect(uniId)
 
       this.setData({
-        editSelectList: list,
+        checkedList: list,
       })
 
       console.log('handleCardEditSelect', list)
@@ -1129,15 +1019,13 @@ ComponentWithStore({
     editSelectAll(e: { detail: boolean }) {
       const toCheckAll = e.detail
       const diffData = {} as IAnyObject
-      diffData.editSelectList = toCheckAll ? deviceStore.deviceFlattenList.map((device) => device.uniId) : []
-      for (const groupIndex in this.data.devicePageList) {
-        this.data.devicePageList[groupIndex].forEach((device, index) => {
-          // 如果状态已是一样，则不放diff，减少数据的变更
-          if (device.select !== toCheckAll) {
-            diffData[`devicePageList[${groupIndex}][${index}].select`] = toCheckAll
-          }
-        })
-      }
+      diffData.checkedList = toCheckAll ? deviceStore.deviceFlattenList.map((device) => device.uniId) : []
+      this.data.deviceCardList.forEach((device, index) => {
+        // 如果状态已是一样，则不放diff，减少数据的变更
+        if (device.select !== toCheckAll) {
+          diffData[`deviceCardList[${index}].select`] = toCheckAll
+        }
+      })
 
       this.setData(diffData)
     },
@@ -1150,13 +1038,13 @@ ComponentWithStore({
       const toCheck = !isChecked // 本次点击需执行的选中状态
 
       // 取消旧选择
-      if (toCheck && this.data.checkedList.length) {
-        const oldCheckedId = this.data.checkedList[0]
-        this.toSelect(oldCheckedId)
-      }
+      // if (toCheck && this.data.checkedList.length) {
+      // const oldCheckedId = this.data.checkedList[0]
+      // this.toSelect(oldCheckedId)
+      // }
 
       // 选择样式渲染
-      this.toSelect(uniId)
+      // this.toSelect(uniId)
 
       const diffData = {} as IAnyObject
 
@@ -1290,10 +1178,10 @@ ComponentWithStore({
         controlType: '',
       })
     },
-    // 长按选择，进入编辑状态
-    handleLongpress(e: { detail: DeviceCard & { clientRect: WechatMiniprogram.ClientRect } }) {
+    // 进入拖动模式的同时，进入编辑状态
+    handleEditMode(e: { detail: DeviceCard & { clientRect: WechatMiniprogram.ClientRect } }) {
       // 已是编辑状态，不重复操作
-      if (this.data.editSelectMode) {
+      if (this.data.editMode) {
         return
       }
       // 只有创建者或者管理员能够进入编辑模式
@@ -1305,10 +1193,10 @@ ComponentWithStore({
       const diffData = {} as IAnyObject
 
       // 进入编辑模式
-      diffData.editSelectMode = true
+      diffData.editMode = true
 
       // 选中当前长按卡片
-      diffData.editSelectList = [device.uniId]
+      diffData.checkedList = [device.uniId]
 
       // 取消普通选择
       if (this.data.checkedList?.length) {
@@ -1316,22 +1204,24 @@ ComponentWithStore({
       }
       this.setData(diffData)
 
-      this.toSelect(device.uniId, true)
+      // this.toSelect(device.uniId, true)
 
       // 弹起popup后，选中卡片滚动到视图中央，以免被遮挡
       // this.setData({
       //   scrollTop: this.data.scrollTop + e.detail.clientRect.top - this.data.scrollViewHeight / 2,
       // })
 
-      console.log('handleLongpress', e, diffData)
+      console.log('handleEditMode', e.detail, diffData)
     },
 
     exitEditMode() {
       this.setData({
-        editSelectMode: false,
-        editSelectList: [],
+        editMode: false,
+        checkedList: [],
       })
       this.editSelectAll({ detail: false })
+
+      this.reloadDeviceList()
     },
 
     async handleAddDevice() {

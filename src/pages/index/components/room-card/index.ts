@@ -2,31 +2,29 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { execScene } from '../../../../apis/scene'
 import { roomStore } from '../../../../store/index'
 import { sceneImgDir } from '../../../../config/index'
+import { runOnJS } from '../../../../skyline-components/common/worklet'
 
 ComponentWithComputed({
   /**
    * 组件的属性列表
    */
   properties: {
-    roomInfo: {
+    cardInfo: {
       type: Object,
       observer() {},
     },
-    isMoving: {
+    editMode: {
       type: Boolean,
       value: false,
-    },
-    roomLightSummary: {
-      type: Object,
     },
   },
 
   computed: {
     showScene(data) {
-      return !data.isMoving
+      return !data.editMode
     },
     sceneList(data) {
-      return data.roomInfo.sceneList.map((scene: Scene.SceneBase) => {
+      return data.cardInfo?.sceneList?.map((scene: Scene.SceneBase) => {
         return {
           ...scene,
           sceneName: scene.sceneName.slice(0, 4),
@@ -34,10 +32,10 @@ ComponentWithComputed({
       })
     },
     hasBottomPadding(data) {
-      return data.roomInfo.sceneList.length > 0 && !data.isMoving
+      return data.cardInfo?.sceneList?.length > 0 && !data.editMode
     },
     desc(data) {
-      const { lightCount, lightOnCount } = data.roomLightSummary ?? {}
+      const { lightCount, lightOnCount } = data.cardInfo ?? {}
       return lightOnCount ? `${lightOnCount}盏灯亮起` : lightCount > 0 ? '灯全部关闭' : ''
     },
   },
@@ -54,13 +52,17 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    handleSceneTap(e: { currentTarget: { dataset: { value: string } } }) {
+    handleSceneTap(e: WechatMiniprogram.CustomEvent<IAnyObject, IAnyObject, { index: string }>) {
       if (this.data.sceneClickId) {
         return
       }
       if (wx.vibrateShort) wx.vibrateShort({ type: 'heavy' })
+      const { sceneId } = this.data.cardInfo.sceneList[e.currentTarget.dataset.index]
+      execScene(sceneId)
+
+      // 交互效果
       this.setData({
-        sceneClickId: e.currentTarget.dataset.value,
+        sceneClickId: sceneId,
       })
 
       setTimeout(() => {
@@ -68,15 +70,20 @@ ComponentWithComputed({
           sceneClickId: '',
         })
       }, 1050)
-      execScene(e.currentTarget.dataset.value)
     },
     handleCardTap() {
-      roomStore.setCurrentRoom(this.data.roomInfo.roomId)
-
+      roomStore.setCurrentRoom(this.data.cardInfo.roomId)
       wx.navigateTo({
         url: '/package-room-control/index/index',
       })
     },
-    doNothing() {},
+    handleTapWorklet() {
+      'worklet'
+      runOnJS(this.handleCardTap.bind(this))()
+    },
+    handleSceneTapWorklet(e: WechatMiniprogram.CustomEvent) {
+      'worklet'
+      runOnJS(this.handleSceneTap.bind(this))(e)
+    },
   },
 })

@@ -41,11 +41,11 @@ ComponentWithComputed({
       const eventChannel = this.getOpenerEventChannel()
       eventChannel.on('createGroup', async (data) => {
         const deviceList = data.lightList.map((deviceId: string) => ({
-          ...deviceStore.allRoomDeviceMap[deviceId],
+          ...deviceStore.deviceMap[deviceId],
           status: 'processing',
         }))
 
-        console.log(data.lightList, deviceList, deviceStore.allRoomDeviceMap)
+        console.log(data.lightList, deviceList, deviceStore.deviceMap)
 
         this.setData({
           deviceList,

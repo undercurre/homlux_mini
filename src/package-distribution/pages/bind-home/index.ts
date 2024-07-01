@@ -53,6 +53,8 @@ ComponentWithComputed({
 
       const res = await queryDeviceInfoByDeviceId({ deviceId: pageParams.deviceId }, { loading: true })
 
+      Logger.log('queryDeviceInfoByDeviceId', res)
+
       if (res.success) {
         this.setData({
           deviceInfo: {

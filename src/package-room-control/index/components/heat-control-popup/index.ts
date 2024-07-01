@@ -145,7 +145,7 @@ ComponentWithComputed({
       this.setData({
         propView: {
           ...propView,
-          temperature: e.detail,
+          targetTemperature: e.detail,
         },
       })
     },

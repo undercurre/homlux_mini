@@ -9,6 +9,7 @@
     "mz-button": "/skyline-components/mz-button/index",
     "mz-toast": "/skyline-components/mz-toast/index",
     "mz-dialog": "/skyline-components/mz-dialog/index",
+    "mz-drag": "/skyline-components/mz-drag/index",
     "device-card": "/components/device-card/index",
     "device-control-popup": "./components/device-control-popup/index",
     "bath-control-popup": "/components/bath-control-popup/index",

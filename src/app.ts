@@ -12,6 +12,8 @@ import {
   verifyNetwork,
   isLogon,
   getCurrentPageUrl,
+  showLoading,
+  hideLoading,
 } from './utils/index'
 import svgs from './assets/svg/index'
 import { deviceStore, homeStore, othersStore, sceneStore, userStore } from './store/index'
@@ -31,7 +33,7 @@ App<IAppOption>({
     // 获取状态栏、顶部栏、底部栏高度
     setNavigationBarAndBottomBarHeight()
 
-    homOs.init({ mqttLib: mqtt, isDebug: true, isNativeLog: true })
+    homOs.init({ mqttLib: mqtt, isDebug: true })
 
     // 从缓存中读取默认首页
     const defaultPage = (storage.get<string>('defaultPage') ?? '') as string
@@ -44,7 +46,7 @@ App<IAppOption>({
     reaction(
       () => homeStore.currentHomeDetail.houseId,
       async () => {
-        Logger.debug('reaction -> homeStore.currentHomeDetail.houseId', homeStore.currentHomeDetail.houseId)
+        Logger.log('reaction -> homeStore.currentHomeDetail.houseId', homeStore.currentHomeDetail.houseId)
         await closeWebSocket()
         startWebsocketService()
 
@@ -60,11 +62,13 @@ App<IAppOption>({
     // 如果用户已经登录，开始请求数据[用户][家庭列表、全屋房间、全屋设备]
     if (isLogon()) {
       try {
+        showLoading()
         userStore.setIsLogin(true)
         const start = Date.now()
         Logger.trace('[数据初始化开始]')
         await Promise.all([userStore.updateUserInfo(), homeStore.homeInit(), sceneStore.updateAllRoomSceneList()])
         Logger.trace('[数据初始化完成] 耗时', `${Date.now() - start}ms`)
+        hideLoading()
       } catch (e) {
         Logger.error('appOnLaunch-err:', e)
       }

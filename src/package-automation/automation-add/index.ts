@@ -194,7 +194,7 @@ ComponentWithComputed({
         return
       }
       const currentSceneInfo = JSON.parse(sceneInfo) as AutoScene.AutoSceneItem | Scene.SceneItem
-      if (currentSceneInfo.conditionType) {
+      if (currentSceneInfo.sceneCategory === '1') {
         console.log('自动场景')
         const sensorlinkSelectList = [] as string[]
         const autoSceneInfo = currentSceneInfo as AutoScene.AutoSceneItem

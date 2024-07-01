@@ -7,6 +7,7 @@ import { deviceConfig, MIN_RSSI, CMD, FREQUENCY_TIME, SEEK_INTERVAL, SEEK_TIMEOU
 import { defaultImgDir } from '../../config/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
+import Toast from '@vant/weapp/toast/toast'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [remoterBinding] }), pageBehaviors],
@@ -181,6 +182,7 @@ ComponentWithComputed({
         foundList: this.data.foundList,
       })
       await this.initDrag() // 设备列表增加了要刷新
+      Toast('添加成功')
 
       // 发现列表已空，占位符显示2秒
       if (!this.data.foundList.length) {
@@ -210,11 +212,13 @@ ComponentWithComputed({
         if (deviceType === '13') {
           page = deviceModel === '01' || deviceModel === '04' || deviceModel === '05' ? 'light' : 'fan-light'
         } else if (deviceType === '26') {
-          const v2 = ['01', '03', '77', '22', '66', '27', '6f']
+          const v2 = ['01', '03', '07', '77', '22', '66', '27', '6f']
           if (v2.includes(deviceModel)) page = 'bath'
         } else if (deviceType === '40') {
           const v2 = ['03', '07', '23', '63', 'e7']
           if (v2.includes(deviceModel)) page = 'cool-bath'
+        } else if (deviceType === '17') {
+          page = 'clothes'
         }
         wx.navigateTo({
           url: `/package-remoter/${page}/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceModel=${deviceModel}&addr=${addr}`,
@@ -278,6 +282,7 @@ ComponentWithComputed({
           () =>
             this.setData({
               isSeeking: false,
+              canShowNotFound: true,
             }),
           SEEK_TIMEOUT,
         )
@@ -351,6 +356,8 @@ ComponentWithComputed({
       // 用户主动搜索，刷新发现列表
       const foundList = [] as Remoter.DeviceDetail[]
       const suffixArr = {} as Record<string, number[]>
+      const deviceInfo = wx.getDeviceInfo()
+      const isIOS = deviceInfo.platform === 'ios'
       for (let j = 0; j < recoveredList.length; j++) {
         const item = recoveredList[j]
         const isSavedDevice = remoterStore.deviceAddrs.includes(item!.addr)
@@ -358,8 +365,15 @@ ComponentWithComputed({
         const deviceModel = item!.deviceModel
         let cusRSSI = this.data.MIN_RSSI
         if (deviceType === '13') {
-          if (deviceModel === '04') cusRSSI = -70
+          if (deviceModel === '02' || deviceModel === '03') {
+            if (isIOS) cusRSSI = -80
+            else cusRSSI = -75
+          } else if (deviceModel === '04') cusRSSI = -70
           else if (deviceModel === '05') cusRSSI = -60
+        } else if (deviceType === '26') {
+          if (deviceModel === '0f' || deviceModel === '6f') {
+            if (isIOS) cusRSSI = -68
+          }
         }
         if (
           item!.RSSI >= cusRSSI && // 过滤弱信号设备

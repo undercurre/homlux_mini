@@ -412,10 +412,6 @@ ComponentWithComputed({
         isReady = systemSetting.locationEnabled
       }
 
-      if (this.data.scanType === 'subdevice') {
-        isReady = isReady && bleDevicesStore.discovering
-      }
-
       // 必须等待初始化好或者非处于扫码状态后才能扫码
       if (!isReady || this.data.isScan) {
         return

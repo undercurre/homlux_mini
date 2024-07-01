@@ -5,6 +5,13 @@ import Toast from '@vant/weapp/toast/toast'
 import { emitter } from '../../utils/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
+import dataBus from '../utils/dataBus'
+import { CMD } from '../../config/remoter'
+
+const heightArr = []
+for (let i = 10; i <= 120; i += 10) {
+  heightArr.push(i)
+}
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [remoterBinding] }), pageBehaviors],
@@ -15,16 +22,25 @@ ComponentWithComputed({
     showEditNamePopup: false,
     isShowSetting: false,
     fastSwitchName: '照明开关',
+    deviceType: '',
+    deviceModel: '',
+    heightArr,
+    isShowPicker: false,
+    curPickerIndex: [0],
+    pickerIndexTemp: [0],
+    curShowHeight: '--',
+    customOption: [{ key: 'SLOWUP', name: '轻抬上升', isOn: false }],
+    curOneKeySettingStep: 0, // 0-开始设置，1-上升复位中，2-下降待完成中
   },
-
-  computed: {},
-
   methods: {
     async onLoad(query: { deviceType: string; deviceModel: string; addr: string }) {
       const { deviceType, deviceModel, addr } = query
       this.setData({ deviceType, deviceModel, addr })
-    },
 
+      dataBus.on('DEVSTATUS', (e) => {
+        this.updateView(e)
+      })
+    },
     handleDeviceNameEditPopup() {
       this.setData({
         showEditNamePopup: true,
@@ -71,12 +87,10 @@ ComponentWithComputed({
         .then(() => {
           Toast('删除成功')
           remoterStore.removeCurRemoter()
+          emitter.emit('remoterChanged')
 
           wx.navigateBack({
             delta: 2,
-            complete() {
-              emitter.emit('remoterChanged')
-            },
           })
         })
         .catch(() => {})
@@ -89,6 +103,99 @@ ComponentWithComputed({
           Toast('解绑成功')
         })
         .catch(() => {})
+    },
+    updateView(status: any) {
+      console.log('lmn>>>dev status=', JSON.stringify(status))
+      if (status.CLOTHES_SET_HEIGHT !== undefined) {
+        const height = status.CLOTHES_SET_HEIGHT
+        this.setData({
+          curShowHeight: height === 0 ? '未设置' : '已设置',
+        })
+      }
+
+      const option = this.data.customOption
+      if (status.CLOTHES_SLOW_UP !== undefined) {
+        for (let i = 0; i < option.length; i++) {
+          if (option[i].key === 'SLOWUP') {
+            option[i].isOn = status.CLOTHES_SLOW_UP
+            break
+          }
+        }
+      }
+
+      let step = this.data.curOneKeySettingStep
+      if (status.CLOTHES_IS_SETTING_HEIGHT !== undefined && status.CLOTHES_ACTION !== undefined) {
+        if (!status.CLOTHES_IS_SETTING_HEIGHT) {
+          step = 0
+        } else {
+          if (status.CLOTHES_ACTION === 1) step = 1
+          else if (status.CLOTHES_ACTION === 2) step = 2
+        }
+      }
+
+      this.setData({
+        customOption: option,
+        curOneKeySettingStep: step,
+      })
+    },
+    sendBluetoothCMD(paramsArr?: number[]) {
+      if (!paramsArr || paramsArr.length == 0) return
+      dataBus.emit('DEVSEND', paramsArr)
+    },
+    closePopup() {
+      this.setData({
+        isShowPicker: false,
+      })
+    },
+    onClothesHeightClick() {
+      this.setData({
+        isShowPicker: true,
+      })
+    },
+    onPickChange(e: any) {
+      const indexs = e.detail.value
+      this.setData({
+        pickerIndexTemp: indexs,
+      })
+    },
+    onPickEnd() {
+      setTimeout(() => {
+        this.setData({
+          curPickerIndex: this.data.pickerIndexTemp,
+        })
+      }, 100)
+    },
+    onOneKeyStepClick() {
+      if (this.data.curOneKeySettingStep === 0) {
+        this.sendBluetoothCMD([CMD['CLOTHES_ONE_KEY_START']])
+      } else if (this.data.curOneKeySettingStep === 2) {
+        this.sendBluetoothCMD([CMD['CLOTHES_ONE_KEY_END']])
+        this.closePopup()
+      }
+    },
+    // onPickTimeConfirm() {
+    //   showLoading('加载中')
+    //   setTimeout(() => {
+    //     hideLoading()
+    //     this.closePopup()
+    //     const height = this.data.heightArr[this.data.curPickerIndex[0]]
+    //     this.setData({
+    //       curShowHeight: `${height}cm`
+    //     })
+    //     this.sendBluetoothCMD([CMD['CLOTHES_SET_HEIGHT'], height]);
+    //   }, 1000);
+    // },
+    onCustomSwitchClick(e: any) {
+      const index = e.currentTarget.dataset.index
+      const option = this.data.customOption
+      option[index].isOn = !option[index].isOn
+      this.setData({
+        customOption: option,
+      })
+      const key = e.currentTarget.dataset.key
+      if (key === 'SLOWUP') {
+        this.sendBluetoothCMD([CMD['CLOTHES_SLOW_UP']])
+      }
     },
   },
 })

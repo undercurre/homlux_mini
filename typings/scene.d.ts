@@ -52,6 +52,10 @@ declare namespace Scene {
      * 场景更新时间
      */
     updateStamp: number
+    /**
+     * 场景类别，0-手动场景，1-自动场景
+     */
+    sceneCategory: string
   }
   /** 结果集合 */
   interface DeviceAction {

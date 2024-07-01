@@ -94,7 +94,7 @@ const _parsePayload = (payload: string, deviceType: string, deviceModel?: string
       LIGHT_COLOR_TEMP: rxU16[6], // 当前色温
     }
     // 不同灯的专有属性
-    if (deviceModel === '01' || deviceModel === '04') {
+    if (deviceModel === '01' || deviceModel === '04' || deviceModel === '05') {
       res.DELAY_OFF = rxU16[7] // 延时关灯剩余分钟数，0表示延时关灯失效
       res.LIGHT_NIGHT_LAMP = rxU16[8] === 0x06 // 小夜灯状态，0x06代表开启，0x9表示助眠状态
       res.LIGHT_SCENE_SLEEP = rxU16[8] === 0x09
@@ -128,6 +128,32 @@ const _parsePayload = (payload: string, deviceType: string, deviceModel?: string
       BATH_ANION: !!(rxU16[7] & BIT_6),
       BLOW_GEAR: rxU16[8] & 0x07,
       VENT_GEAR: rxU16[9] & 0x07,
+    }
+  }
+  if (deviceType === '17') {
+    return {
+      CLOTHES_HEAT_DRY: !!(rxU16[0] & BIT_0),
+      CLOTHES_WIND_DRY: !!(rxU16[0] & BIT_1),
+      CLOTHES_IS_SETTING_HEIGHT: !!(rxU16[0] & BIT_2),
+      CLOTHES_ACTION: rxU16[1],
+      CLOTHES_LIGHT: !!(rxU16[2] & BIT_0),
+      CLOTHES_DIS: !!(rxU16[2] & BIT_1),
+      CLOTHES_ONE_KEY: !!(rxU16[2] & BIT_2),
+      CLOTHES_RADAR_BODY: !!(rxU16[2] & BIT_3),
+      CLOTHES_SLOW_UP: !!(rxU16[2] & BIT_4),
+      CLOTHES_NOBODY_LIGHT_OFF: !!(rxU16[2] & BIT_5),
+      CLOTHES_NOBODY_UP: !!(rxU16[2] & BIT_6),
+      CLOTHES_OFFLINE_VOICE: !!(rxU16[2] & BIT_7),
+      ERROR_CODE: rxU16[3],
+      CLOTHES_BRIGHT: rxU16[4],
+      CLOTHES_DELAY_LIGHT_TIME: rxU16[5],
+      CLOTHES_SET_HEIGHT: rxU16[6],
+      CLOTHES_MOTOR_LOCATION: rxU16[7],
+      CLOTHES_NOBODY_LIGHT_TIME: (rxU16[8] << 8) + rxU16[9],
+      CLOTHES_NOBODY_UP_TIME: (rxU16[10] << 8) + rxU16[11],
+      CLOTHES_DIS_TIME: rxU16[12],
+      CLOTHES_WIND_TIME: rxU16[13],
+      CLOTHES_HEAT_TIME: rxU16[14],
     }
   }
   return {}

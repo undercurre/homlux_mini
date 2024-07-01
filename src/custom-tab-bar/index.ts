@@ -1,4 +1,17 @@
 Component({
+  properties: {
+    selectIndex: {
+      type: Number,
+      observer(newValue, old) {
+        console.debug('observer,selectIndex', newValue, old)
+        if (newValue) {
+          this.setData({
+            selected: newValue,
+          })
+        }
+      },
+    },
+  },
   /**
    * 组件的初始数据
    */

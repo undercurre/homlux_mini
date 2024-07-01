@@ -18,6 +18,8 @@ Component({
       type: String,
       value: 'longpress',
     },
+    // 是否可拖动
+    draggable: Boolean,
     // 开始拖动时，振动反馈
     vibrate: {
       type: Boolean,
@@ -124,6 +126,8 @@ Component({
   methods: {
     // 动态变更坐标位置
     posTransfer(x: number, y: number) {
+      if (!this.data.draggable) return
+
       if (!this.data._settingX.value) {
         // console.log('[posTransfer x]', x, this.data._x?.value)
 
@@ -179,11 +183,17 @@ Component({
      */
     handleMove(e: GestureEvent) {
       'worklet'
+
       const x = this.data._x.value
       const y = this.data._y.value
       const lastX = this.data._lastX.value
       const lastY = this.data._lastY.value
       // console.log('MOVE trigger', e.state, e.absoluteX, e.absoluteY, { x, y })
+
+      if (!this.data.draggable) {
+        runOnJS(this.triggerEvent.bind(this))('dragBegin', { x, y })
+        return
+      }
 
       switch (e.state) {
         // 拖动识别，保存初始值
@@ -257,10 +267,6 @@ Component({
       if (this.data.trigger === 'longpress' || this.data.trigger === 'all') {
         this.handleMove(e)
       }
-    },
-    onClick() {
-      console.log('onClick')
-      this.triggerEvent('dragClick')
     },
   },
 })

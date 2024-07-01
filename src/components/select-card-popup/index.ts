@@ -145,6 +145,9 @@ Component({
     cardTypeUI: 'device',
     curItemSelectId: '', // 仅isSingleSelect为true时有用
     tabIndex: 0,
+    cardListConfig: {
+      showSpecialBg: false,
+    },
   },
 
   /**
@@ -187,32 +190,37 @@ Component({
         cardTypeUI: this.data.cardType,
       })
     },
-    handleCardTap(e: { detail: { uniId?: string; sceneId?: string }; currentTarget: { dataset: { index: number } } }) {
+    handleCardTap(e: {
+      detail: { uniId?: string; sceneId?: string; type: string }
+      currentTarget: { dataset: { index: number } }
+    }) {
+      const { type } = e.detail
+      if (type === 'offline') {
+        this.triggerEvent('handleOfflineTap', e.detail.sceneId || e.detail.uniId)
+        return
+      }
+
       const { index } = e.currentTarget.dataset
       const { roomSelect, allRoomItem } = this.data
 
       const { checked, id = '' } = allRoomItem[roomSelect][index]
       const selectListSet = new Set(this.data.selectList)
-      if (this.data.isSingleSelect) {
+
+      if (checked) {
+        selectListSet.delete(id)
+      } else if (this.data.isSingleSelect) {
         selectListSet.clear()
         selectListSet.add(id)
       } else {
-        if (checked) {
-          selectListSet.delete(id)
-        } else {
-          selectListSet.add(id)
-        }
+        selectListSet.add(id)
       }
 
       this.data.selectList = Array.from(selectListSet)
       this.setData({
         [`allRoomItem.${this.data.roomSelect}[${index}].checked`]: !checked,
-        curItemSelectId: id,
+        curItemSelectId: this.data.selectList?.length ? id : '',
       })
       this.triggerEvent('select', e.detail.sceneId || e.detail.uniId)
-    },
-    handleOfflineTap(e: { detail: { uniId?: string; sceneId?: string } }) {
-      this.triggerEvent('handleOfflineTap', e.detail.sceneId || e.detail.uniId)
     },
     handleClose() {
       this.triggerEvent('close')

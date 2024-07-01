@@ -53,12 +53,12 @@
 
 <template name="notFoundMsg">
   <view class="mt-130rpx w-654rpx">
-    <text class="text-32rpx text-hex-27282a">请确认以下信息再试试：</text>
+    <text class="text-32rpx text-hex-27282a">请确认一下信息再试试：</text>
   </view>
   <view class="mt-20rpx w-654rpx leading-56rpx">
-    <text class="block text-24rpx text-hex-a2a2a2">1、请确认附近是否有美的牌吸顶灯、风扇灯、浴霸；</text>
-    <text class="block text-24rpx text-hex-a2a2a2">2、请确认设备是否正在被他人使用；</text>
-    <text class="block text-24rpx text-hex-a2a2a2">3、请确认您的微信是否升级到8.0或以上版本；</text>
+    <text class="block text-24rpx text-hex-a2a2a2">1、是否美的智控款吸顶灯、风扇灯、浴霸、凉霸、晾衣机；</text>
+    <text class="block text-24rpx text-hex-a2a2a2">2、建议您在设备的附近2-5米距离内使用；</text>
+    <text class="block text-24rpx text-hex-a2a2a2">3、您的微信是否升级到8.0或以上版本；</text>
     <text class="block text-24rpx text-hex-a2a2a2">4、部分手机需要打开“定位服务”和微信“位置信息权限”；</text>
   </view>
 </template>

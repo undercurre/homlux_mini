@@ -102,7 +102,7 @@
     },
     {
       "root": "package-remoter",
-      "pages": ["pannel/index", "light/index", "setting/index", "fan-light/index", "bath/index", "cool-bath/index"]
+      "pages": ["pannel/index", "light/index", "setting/index", "fan-light/index", "bath/index", "cool-bath/index", "clothes/index"]
     },
     {
       "root": "package-distribution-meiju",

@@ -83,29 +83,3 @@
   height: 210rpx !important;
   transform: translateX(-28rpx);
 }
-
-.shake {
-  animation: 2s linear 1s alternate infinite shake;
-}
-
-@keyframes shake {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  5% {
-    transform: rotate(-4deg);
-  }
-
-  10% {
-    transform: rotate(0deg);
-  }
-
-  15% {
-    transform: rotate(4deg);
-  }
-
-  20% {
-    transform: rotate(0deg);
-  }
-}

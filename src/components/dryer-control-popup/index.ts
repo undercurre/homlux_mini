@@ -147,7 +147,7 @@ ComponentWithComputed({
         // 照明关闭，则【关灯】按钮点亮
         const on = key === 'laundry' ? prop['laundry'] === 'on' : prop['light'] === key
         // 未设置晾衣高度，则一键晾衣按钮禁用
-        const disabled = key === 'laundry' && !data.custom_height
+        const disabled = key === 'laundry' && !prop.custom_height
 
         return {
           ...largeBtnMap[key],

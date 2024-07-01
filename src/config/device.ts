@@ -27,6 +27,7 @@ export const CARD_REFRESH_TIME = 1000
 // 卡片尺寸
 export const CARD_W = rpx2px(180)
 export const CARD_H = rpx2px(236)
+export const ROOM_CARD_W = rpx2px(702)
 export const ROOM_CARD_H = rpx2px(336)
 export const ROOM_CARD_M = rpx2px(152) // 折叠后高度
 export const ROOM_CARD_TOP = 170 // 列表顶部距离
@@ -92,7 +93,7 @@ export const PRODUCT_ID = {
   zhonghong_heat: 'zhonghong.heat.001', // 485地暖
   zhonghong_air: 'zhonghong.air.001', // 485新风
   zhonghong_cac: 'zhonghong.cac.002', // 485空调
-  knob: 'midea.knob.001.003',
+  knob: 'midea.knob.001.003', // 一路旋钮面板
 }
 
 // 旋钮开关pid
