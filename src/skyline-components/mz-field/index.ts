@@ -131,9 +131,16 @@ Component({
       this.triggerEvent('click-input', event.detail)
     },
 
+    refocus() {
+      this.setData({
+        focus: true,
+      })
+    },
+
     onClear() {
       this.setData({ innerValue: '' })
       this.setShowClear()
+      this.refocus() // 重新聚焦，解决点击清空按钮后键盘自动收起，失焦的问题
 
       wx.nextTick(() => {
         this.emitChange({ value: '' })
@@ -191,12 +198,12 @@ Component({
 
     setShowClear() {
       // @ts-ignore
-      const { clearable, readonly, clearTrigger, focused, value } = this.data
+      const { clearable, readonly, clearTrigger, focused, innerValue } = this.data
 
       let showClear = false
 
       if (clearable && !readonly) {
-        const hasValue = !!value
+        const hasValue = !!innerValue
         const trigger = clearTrigger === 'always' || (clearTrigger === 'focus' && focused)
 
         showClear = hasValue && trigger
