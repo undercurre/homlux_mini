@@ -20,20 +20,22 @@ export const roomStore = observable({
   },
 
   /**
-   * 设置当前房间id，同步筛选当前房间的设备列表
+   * 设置当前房间
    * @param id 要设置的房间id
    */
   setCurrentRoom(id: string) {
     runInAction(() => {
+      // 指定房间id（用户操作）
       if (id) {
         roomStore.currentRoomId = id
+        // 比较更新时间戳；若非最新，则按全屋设备列表，筛选出当前房间的设备列表
         if (deviceStore.deviceTimestamp <= deviceStore.allRoomDeviceTimestamp) {
           deviceStore.deviceList = deviceStore.allRoomDeviceList.filter((device) => device.roomId === id)
           deviceStore.deviceTimestamp = deviceStore.allRoomDeviceTimestamp
         }
         deviceStore.updateAllRoomDeviceListLanStatus()
       }
-      // 重置为默认房间，不必刷新房间列表
+      // 设置为默认房间（列表第一个）；同时重置更新时间戳，以便下次进入房间时刷新
       else if (this.roomList?.length) {
         roomStore.currentRoomId = this.roomList[0].roomId
         deviceStore.deviceTimestamp = 0
@@ -62,11 +64,6 @@ export const roomStore = observable({
         }
       })
 
-      // 默认房间值未设置
-      if (!this.currentRoomId) {
-        this.setCurrentRoom('')
-      }
-
       runInAction(() => {
         roomStore.roomList = res.result.roomInfoList.map((room, index) => ({
           roomId: room.roomInfo.roomId,
@@ -79,6 +76,11 @@ export const roomStore = observable({
           slimSize: !room.roomSceneList?.length, // 没有场景，显示小尺寸卡片
         }))
       })
+
+      // 若默认房间值未设置，则设置为房间列表第一个
+      if (!this.currentRoomId) {
+        this.setCurrentRoom('')
+      }
     }
   },
 })
