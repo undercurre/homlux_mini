@@ -112,10 +112,6 @@
   right: var(--popup-close-icon-margin, 16px);
 }
 
-.popup__close-icon:active {
-  opacity: 0.6;
-}
-
 .scale-enter-active,
 .scale-leave-active {
   transition-property: opacity, transform;
