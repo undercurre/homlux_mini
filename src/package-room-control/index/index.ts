@@ -1220,6 +1220,14 @@ ComponentWithStore({
         checkedList: [],
       })
       this.editSelectAll({ detail: false })
+    },
+
+    exitEditModeAndReload() {
+      this.setData({
+        editMode: false,
+        checkedList: [],
+      })
+      this.editSelectAll({ detail: false })
 
       this.reloadDeviceList()
     },

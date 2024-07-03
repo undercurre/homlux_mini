@@ -24,7 +24,6 @@
   z-index="2000"
   position="top"
   round
-  bind:close="handleClose"
   overlay="{{false}}"
 >
   <view
@@ -102,7 +101,7 @@
   <view class="w-750rpx h-2rpx bg-hex-ddd"></view>
   <view
     class="w-full h-88 flex-center flex-row"
-    bindtap="handleClose"
+    bind:tap="handleClose"
   >
     <text class="text-28rpx text-blue font-semibold">完成</text>
   </view>

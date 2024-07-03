@@ -273,6 +273,14 @@ ComponentWithComputed({
       })
       this.triggerEvent('close')
     },
+    handleFinish() {
+      this.setData({
+        showEditName: false,
+        showEditRoom: false,
+      })
+
+      this.triggerEvent('finish')
+    },
     handleClose() {
       this.setData({
         showEditName: false,

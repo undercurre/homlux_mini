@@ -248,6 +248,7 @@
   bind:updateDevice="updateQueue"
   bind:updateList="reloadDeviceListThrottle"
   bind:close="exitEditMode"
+  bind:finish="exitEditModeAndReload"
   bind:selectAll="editSelectAll"
   editSelectMode="{{editMode}}"
   editSelectList="{{checkedList}}"
