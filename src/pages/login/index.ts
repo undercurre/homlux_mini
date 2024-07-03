@@ -1,6 +1,6 @@
 import Toast from '../../skyline-components/mz-toast/toast'
 import { login } from '../../apis/index'
-import { homeStore, othersStore, userStore } from '../../store/index'
+import { homeStore, othersStore, sceneStore, userStore } from '../../store/index'
 import { storage, showLoading, hideLoading, Logger } from '../../utils/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 
@@ -89,6 +89,7 @@ Component({
         userStore.setIsLogin(true)
         othersStore.setIsInit(false)
         homeStore.homeInit()
+        sceneStore.updateAllRoomSceneList()
         wx.switchTab({
           url: '/pages/index/index',
         })
