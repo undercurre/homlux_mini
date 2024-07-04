@@ -20,18 +20,13 @@ ComponentWithComputed({
   },
 
   computed: {
-    showScene(data) {
-      return !data.editMode
-    },
     sceneList(data) {
-      return data.cardInfo?.sceneList?.map((scene: Scene.SceneBase) => {
-        return {
-          ...scene,
-          sceneName: scene.sceneName.slice(0, 4),
-        }
-      })
+      return data.cardInfo?.sceneList?.map((scene: Scene.SceneBase) => ({
+        ...scene,
+        sceneName: scene.sceneName.slice(0, 4),
+      }))
     },
-    hasBottomPadding(data) {
+    isLargeSize(data) {
       return data.cardInfo?.sceneList?.length > 0 && !data.editMode
     },
     desc(data) {
