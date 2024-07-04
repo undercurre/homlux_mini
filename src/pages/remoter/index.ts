@@ -212,7 +212,7 @@ ComponentWithComputed({
         if (deviceType === '13') {
           page = deviceModel === '01' || deviceModel === '04' || deviceModel === '05' ? 'light' : 'fan-light'
         } else if (deviceType === '26') {
-          const v2 = ['01', '03', '07', '77', '22', '66', '27', '6f']
+          const v2 = ['01', '02', '03', '07', '77', '22', '66', '27', '6f']
           if (v2.includes(deviceModel)) page = 'bath'
         } else if (deviceType === '40') {
           const v2 = ['03', '07', '23', '63', 'e7']
@@ -369,10 +369,15 @@ ComponentWithComputed({
             if (isIOS) cusRSSI = -80
             else cusRSSI = -75
           } else if (deviceModel === '04') cusRSSI = -70
-          else if (deviceModel === '05') cusRSSI = -60
+          else if (deviceModel === '05') {
+            if (isIOS) cusRSSI = -63
+            else cusRSSI = -60
+          }
         } else if (deviceType === '26') {
           if (deviceModel === '0f' || deviceModel === '6f') {
             if (isIOS) cusRSSI = -68
+          } else if (deviceModel === '66') {
+            if (isIOS) cusRSSI = -66
           }
         }
         if (

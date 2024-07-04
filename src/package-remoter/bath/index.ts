@@ -483,13 +483,15 @@ ComponentWithComputed({
       this.setData({
         gearBtnConfig: config,
       })
-      setTimeout(() => {
-        config.isTopOn = false
-        config.isBottomOn = false
-        this.setData({
-          gearBtnConfig: config,
-        })
-      }, 300)
+      if (!this.data.isBLEConnected) {
+        setTimeout(() => {
+          config.isTopOn = false
+          config.isBottomOn = false
+          this.setData({
+            gearBtnConfig: config,
+          })
+        }, 300)
+      }
       this.sendBluetoothCMD([CMD['BATH_WARM_STRONG']])
     },
     onGearBottomClick() {
@@ -500,13 +502,15 @@ ComponentWithComputed({
       this.setData({
         gearBtnConfig: config,
       })
-      setTimeout(() => {
-        config.isTopOn = false
-        config.isBottomOn = false
-        this.setData({
-          gearBtnConfig: config,
-        })
-      }, 300)
+      if (!this.data.isBLEConnected) {
+        setTimeout(() => {
+          config.isTopOn = false
+          config.isBottomOn = false
+          this.setData({
+            gearBtnConfig: config,
+          })
+        }, 300)
+      }
       this.sendBluetoothCMD([CMD['BATH_WARM_SOFT']])
     },
     onBtnListClick(e: any) {
