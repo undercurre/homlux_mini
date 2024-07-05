@@ -3,7 +3,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { initBleCapacity, storage, unique, isNullOrUnDef, emitter, delay, Logger } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import { createBleServer, bleAdvertising } from '../../utils/remoterUtils'
-import { deviceConfig, MIN_RSSI, CMD, FREQUENCY_TIME, SEEK_INTERVAL, SEEK_TIMEOUT } from '../../config/remoter'
+import { deviceConfig, deviceConfigV2, MIN_RSSI, CMD, FREQUENCY_TIME, SEEK_INTERVAL, SEEK_TIMEOUT } from '../../config/remoter'
 import { defaultImgDir } from '../../config/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
@@ -197,7 +197,7 @@ ComponentWithComputed({
 
     // 点击设备卡片
     async handleCardTap(e: WechatMiniprogram.TouchEvent) {
-      const { deviceType, deviceModel, saved, addr } = e.detail
+      const { deviceType, deviceModel, saved, addr, isV2, functionDes } = e.detail
       if (isNullOrUnDef(deviceType) || isNullOrUnDef(deviceModel)) {
         return
       }
@@ -208,21 +208,32 @@ ComponentWithComputed({
       // 跳转到控制页
       else {
         this.data._holdBleScan = true
-        let page = 'pannel'
-        if (deviceType === '13') {
-          page = deviceModel === '01' || deviceModel === '04' || deviceModel === '05' ? 'light' : 'fan-light'
-        } else if (deviceType === '26') {
-          const v2 = ['01', '02', '03', '07', '77', '22', '66', '27', '6f']
-          if (v2.includes(deviceModel)) page = 'bath'
-        } else if (deviceType === '40') {
-          const v2 = ['03', '07', '23', '63', 'e7']
-          if (v2.includes(deviceModel)) page = 'cool-bath'
-        } else if (deviceType === '17') {
-          page = 'clothes'
+        if (isV2) {
+          let page = null
+          if (deviceType === '26') {
+            page = 'bath'
+          }
+          if (!page) return
+          wx.navigateTo({
+            url: `/package-remoter/${page}/index?deviceType=${deviceType}&functionDes=${functionDes}&addr=${addr}`,
+          })
+        } else {
+          let page = 'pannel'
+          if (deviceType === '13') {
+            page = deviceModel === '01' || deviceModel === '04' || deviceModel === '05' ? 'light' : 'fan-light'
+          } else if (deviceType === '26') {
+            const v2 = ['01', '02', '03', '07', '77', '22', '66', '27', '6f']
+            if (v2.includes(deviceModel)) page = 'bath'
+          } else if (deviceType === '40') {
+            const v2 = ['03', '07', '23', '63', 'e7']
+            if (v2.includes(deviceModel)) page = 'cool-bath'
+          } else if (deviceType === '17') {
+            page = 'clothes'
+          }
+          wx.navigateTo({
+            url: `/package-remoter/${page}/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceModel=${deviceModel}&addr=${addr}`,
+          })
         }
-        wx.navigateTo({
-          url: `/package-remoter/${page}/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceModel=${deviceModel}&addr=${addr}`,
-        })
       }
     },
     // 点击设备按钮
@@ -364,28 +375,36 @@ ComponentWithComputed({
         const deviceType = item!.deviceType
         const deviceModel = item!.deviceModel
         let cusRSSI = this.data.MIN_RSSI
-        if (deviceType === '13') {
-          if (deviceModel === '02' || deviceModel === '03') {
-            if (isIOS) cusRSSI = -80
-            else cusRSSI = -75
-          } else if (deviceModel === '04') cusRSSI = -70
-          else if (deviceModel === '05') {
-            if (isIOS) cusRSSI = -63
-            else cusRSSI = -60
-          }
-        } else if (deviceType === '26') {
-          if (deviceModel === '0f' || deviceModel === '6f') {
-            if (isIOS) cusRSSI = -68
-          } else if (deviceModel === '66') {
-            if (isIOS) cusRSSI = -66
+        if (item!.isV2) {
+          cusRSSI = item!.deviceRSSI
+        } else {
+          if (deviceType === '13') {
+            if (deviceModel === '02' || deviceModel === '03') {
+              if (isIOS) cusRSSI = -80
+              else cusRSSI = -75
+            } else if (deviceModel === '04') cusRSSI = -70
+            else if (deviceModel === '05') {
+              if (isIOS) cusRSSI = -63
+              else cusRSSI = -60
+            }
+          } else if (deviceType === '26') {
+            if (deviceModel === '0f' || deviceModel === '6f') {
+              if (isIOS) cusRSSI = -68
+            } else if (deviceModel === '66') {
+              if (isIOS) cusRSSI = -66
+            }
           }
         }
         if (
           item!.RSSI >= cusRSSI && // 过滤弱信号设备
           !isSavedDevice // 排除已在我的设备列表的设备
         ) {
-          const config = deviceConfig[deviceType][deviceModel]
-
+          let config = null
+          if (item!.isV2) {
+            config = deviceConfigV2[deviceType] || null
+          } else {
+            config = deviceConfig[deviceType][deviceModel] || null
+          }
           if (!config) {
             console.log('config NOT EXISTED in onBluetoothDeviceFound')
             continue
@@ -435,6 +454,8 @@ ComponentWithComputed({
             saved: false,
             defaultAction: 0,
             DISCOVERED: 1,
+            isV2: item!.isV2,
+            functionDes: item!.functionDes
           })
         }
       }

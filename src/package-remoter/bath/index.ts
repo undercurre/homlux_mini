@@ -42,6 +42,7 @@ ComponentWithComputed({
         gear: -1,
         iconOn: '/package-remoter/assets/newUI/lowHeatOn.png',
         iconOff: '/package-remoter/assets/newUI/lowHeatOff.png',
+        level: -1,
       },
       {
         key: 'BATH',
@@ -52,6 +53,7 @@ ComponentWithComputed({
         gear: -1,
         iconOn: '/package-remoter/assets/newUI/bathOn.png',
         iconOff: '/package-remoter/assets/newUI/bathOff.png',
+        level: -1,
       },
       {
         key: 'VENT',
@@ -62,6 +64,7 @@ ComponentWithComputed({
         gear: -1,
         iconOn: '/package-remoter/assets/newUI/ventOn.png',
         iconOff: '/package-remoter/assets/newUI/ventOff.png',
+        level: -1,
       },
       {
         key: 'BLOW',
@@ -72,6 +75,7 @@ ComponentWithComputed({
         gear: -1,
         iconOn: '/package-remoter/assets/newUI/blowOn.png',
         iconOff: '/package-remoter/assets/newUI/blowOff.png',
+        level: -1,
       },
       {
         key: 'DRY',
@@ -82,6 +86,18 @@ ComponentWithComputed({
         gear: -1,
         iconOn: '/package-remoter/assets/newUI/dryOn.png',
         iconOff: '/package-remoter/assets/newUI/dryOff.png',
+        level: -1,
+      },
+      {
+        key: 'SMELL',
+        name: '异味感应',
+        isOn: false,
+        isEnable: true,
+        isMode: false,
+        gear: -1,
+        iconOn: '/package-remoter/assets/newUI/smellOn.png',
+        iconOff: '/package-remoter/assets/newUI/smellOff.png',
+        level: -1,
       },
       {
         key: 'SWING',
@@ -92,6 +108,7 @@ ComponentWithComputed({
         gear: -1,
         iconOn: '/package-remoter/assets/newUI/swingOn.png',
         iconOff: '/package-remoter/assets/newUI/swingOff.png',
+        level: -1,
       },
       {
         key: 'ANION',
@@ -102,6 +119,7 @@ ComponentWithComputed({
         gear: -1,
         iconOn: '/package-remoter/assets/newUI/anionOn.png',
         iconOff: '/package-remoter/assets/newUI/anionOff.png',
+        level: -1,
       },
       // {
       //   key: 'DELAY',
@@ -144,6 +162,12 @@ ComponentWithComputed({
     popSelectMode: [] as any[],
     conTimer: null as any,
     tryConnectCnt: 0,
+    isShowLevelPopup: false,
+    levelPopupOption: [
+      { name: '高档', value: 3, isSelect: true },
+      { name: '中档', value: 2, isSelect: false },
+      { name: '低档', value: 1, isSelect: false },
+    ]
   },
   watch: {
     curRemoter(value) {
@@ -218,6 +242,8 @@ ComponentWithComputed({
           if (support.swing) showBtns.push(btns[i])
         } else if (btns[i].key === 'ANION') {
           if (support.anion) showBtns.push(btns[i])
+        } else if (btns[i].key === 'SMELL') {
+          if (support.smell) showBtns.push(btns[i])
         } else {
           showBtns.push(btns[i])
         }
@@ -251,6 +277,7 @@ ComponentWithComputed({
         night: !!(model & 0x20),
         anion: !!(model & 0x40),
         tvoc: !!(model & 0x80),
+        smell: false
       }
     },
     onUnload() {
@@ -520,6 +547,12 @@ ComponentWithComputed({
       if (!list[index].isEnable) {
         return
       }
+      if (key === 'SMELL') {
+        this.setData({
+          isShowLevelPopup: true
+        })
+        return
+      }
       list[index].isOn = !list[index].isOn
       this.setData({
         btnList: list,
@@ -602,9 +635,22 @@ ComponentWithComputed({
         this.sendBluetoothCMD([CMD['BATH_DRY']])
       }
     },
+    onPopupLevelSelect(e: any) {
+      this.closePopup()
+      const val = e.currentTarget.dataset.value
+      const option = this.data.levelPopupOption
+      option.forEach(item => {
+        item.isSelect = item.value === val
+      });
+      this.setData({
+        levelPopupOption: option
+      })
+      this.sendBluetoothCMD([CMD['BATH_TVOC'], val])
+    },
     closePopup() {
       this.setData({
         isShowPopup: false,
+        isShowLevelPopup: false
       })
     },
     percent2Rang(percent: number) {
