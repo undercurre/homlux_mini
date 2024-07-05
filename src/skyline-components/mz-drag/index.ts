@@ -139,8 +139,9 @@ Component({
       const posMap = {} as IAnyObject
       if (this.data.useAccumulatedY) {
         // 复制一个重排序列表，避免影响已有列表
-        const sortedList =
-          (positive ? [...movableList] : [...this.data.list]).sort((a, b) => a.orderNum - b.orderNum) ?? []
+        const sortedList = [...this.data.list]?.sort((a, b) => a.orderNum - b.orderNum) ?? []
+        // const sortedList =
+        //   (positive ? [...movableList] : [...this.data.list])?.sort((a, b) => a.orderNum - b.orderNum) ?? []
         for (const item of sortedList) {
           posMap[item.id] = accumulatedY
           accumulatedY += item.slimSize ? itemHeight : itemHeightLarge
