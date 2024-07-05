@@ -16,7 +16,7 @@ import {
   hideLoading,
 } from './utils/index'
 import svgs from './assets/svg/index'
-import { deviceStore, homeStore, othersStore, sceneStore, userStore } from './store/index'
+import { homeStore, othersStore, sceneStore, userStore } from './store/index'
 import { reaction } from 'mobx-miniprogram'
 import homOs from 'js-homos'
 import mqtt from './lib/mqtt.min.js' // 暂时只能使用4.2.1版本，高版本有bug，判断错运行环境
@@ -24,10 +24,10 @@ import mqtt from './lib/mqtt.min.js' // 暂时只能使用4.2.1版本，高版�
 // TODO 统一配置和管理 storage key
 App<IAppOption>({
   async onLaunch() {
-    // 加载svg数据
+    // DESERTED 加载svg数据
     this.globalData.svgs = svgs
 
-    // 设备运行环境
+    // 设备云端运行环境
     setCurrentEnv()
 
     // 获取状态栏、顶部栏、底部栏高度
@@ -112,16 +112,9 @@ App<IAppOption>({
     }
 
     startWebsocketService()
-    // 首次进入有onLaunch不必加载
-    // homOS本地控制要求场景数据保持尽可能实时，需要小程序回到前台刷新场景和设备列表数据
-    if (!firstOnShow) {
-      // 后面的接口依赖获取当前家庭Id
-      await homeStore.updateHomeInfo({ isInit: false }, { isDefaultErrorTips: false })
 
-      // 全屋设备、场景数据加载
-      deviceStore.updateAllRoomDeviceList(homeStore.currentHomeId, { isDefaultErrorTips: false })
-      sceneStore.updateAllRoomSceneList(homeStore.currentHomeId, { isDefaultErrorTips: false })
-    }
+    // 全屋场景数据加载（其余数据刷新放在 Index.onShow） // Hack 预加载场景数据，避免进入场景页面时异常
+    sceneStore.updateAllRoomSceneList(homeStore.currentHomeId, { isDefaultErrorTips: false })
   },
 
   onHide() {

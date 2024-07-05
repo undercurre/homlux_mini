@@ -223,8 +223,12 @@ ComponentWithStore({
         roomStore.setCurrentRoom('')
       }
 
+      // 首次onShow，有App.onLaunch初始化加载
       if (!this.data._isFirstShow || this.data._from === 'addDevice') {
+        // updateHomeInfo 先加载后面的接口依赖获取当前家庭Id
+        await homeStore.updateHomeInfo({ isInit: false }, { isDefaultErrorTips: false })
         await homeStore.updateRoomCardList()
+        this.updateLightCount()
       }
 
       this.data._isFirstShow = false
@@ -367,7 +371,6 @@ ComponentWithStore({
     // 节流更新房间卡片信息
     updateRoomDataThrottle: throttle(async function (this: IAnyObject) {
       await homeStore.updateRoomCardList()
-      await sceneStore.updateAllRoomSceneList()
       this.updateLightCount()
       this.autoRefreshDevice()
     }, 3000),
