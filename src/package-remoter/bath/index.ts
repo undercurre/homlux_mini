@@ -20,6 +20,7 @@ ComponentWithComputed({
     devType: '',
     devModel: '',
     devAddr: '',
+    devFunDes: '',
     tempType: 1,
     curTemp: '--' as string | number,
     tempBtnConfig: {
@@ -205,18 +206,20 @@ ComponentWithComputed({
     goBack() {
       wx.navigateBack()
     },
-    async onLoad(query: { deviceType: string; deviceModel: string; addr: string }) {
+    async onLoad(query: { deviceType: string; deviceModel: string; addr: string, functionDes: string }) {
       console.log('lmn>>>query=', JSON.stringify(query))
-      const { addr, deviceType, deviceModel } = query
+      const { addr, deviceType, deviceModel, functionDes } = query
       remoterStore.setAddr(addr)
       console.log('lmn>>>curRemoter=', JSON.stringify(remoterStore.curRemoter))
+      const isV2 = functionDes !== undefined && functionDes.length > 0
       this.setData({
         devType: deviceType,
         devModel: deviceModel,
         devAddr: addr,
-        isNeedConnectBLE: remoterStore.curRemoter.version >= 2,
-        isNeedUpdate: remoterStore.curRemoter.version >= 2,
+        isNeedConnectBLE: remoterStore.curRemoter.version >= 2 || isV2,
+        isNeedUpdate: remoterStore.curRemoter.version >= 2 || isV2,
         devStatus: remoterStore.curRemoter.deviceAttr || {},
+        devFunDes: functionDes || ''
       })
       this.configBtns()
       this.updateView()
@@ -230,7 +233,7 @@ ComponentWithComputed({
       if (this.data.isNeedConnectBLE) this.start()
     },
     configBtns() {
-      const support = this.getSupportByModel()
+      const support = this.getFunSupport()
       console.log('lmn>>>support=', JSON.stringify(support))
       const btns = this.data.btnList
       const showBtns = []
@@ -265,7 +268,33 @@ ComponentWithComputed({
         bottomList: showBottom,
       })
     },
-    getSupportByModel() {
+    getFunSupport() {
+      if (this.data.devFunDes) {
+        const funArr = []
+        const funStr = this.data.devFunDes
+        for (let i = 0; i < funStr.length; i += 2) {
+          funArr.push(parseInt(funStr.slice(i, i + 2), 16))
+        }
+        let byte0 = {}
+        if (funArr.length > 0) {
+          byte0 = {
+            temperatrue: !!(funArr[0] & 0x01),
+            swing: !!(funArr[0] & 0x02),
+            radar: !!(funArr[0] & 0x04),
+            colorful: !!(funArr[0] & 0x08),
+            DC: !!(funArr[0] & 0x10),
+            night: !!(funArr[0] & 0x20),
+            anion: !!(funArr[0] & 0x40),
+          }
+        }
+        let byte1 = {}
+        if (funArr.length > 1) {
+          byte1 = {
+            smell: !!(funArr[1] & 0x01)
+          }
+        }
+        return {...byte0, ...byte1}
+      }
       if (this.data.devModel === '') return {}
       const model = parseInt(this.data.devModel, 16)
       return {
@@ -276,8 +305,7 @@ ComponentWithComputed({
         DC: !!(model & 0x10),
         night: !!(model & 0x20),
         anion: !!(model & 0x40),
-        tvoc: !!(model & 0x80),
-        smell: false
+        smell: !!(model & 0x80)
       }
     },
     onUnload() {
@@ -351,7 +379,12 @@ ComponentWithComputed({
       }
     },
     receiveBluetoothData(data: string) {
-      const status = remoterProtocol.parsePayload(data.slice(2), this.data.devType, this.data.devModel)
+      let status = {}
+      if (this.data.devFunDes) {
+        status = remoterProtocol.parsePayloadV2(data, this.data.devType)
+      } else {
+        status = remoterProtocol.parsePayload(data.slice(2), this.data.devType, this.data.devModel)
+      }
       console.log('lmn>>>receiveBluetoothData::status=', JSON.stringify(status))
       this.setData({
         devStatus: status,
@@ -433,6 +466,17 @@ ComponentWithComputed({
           if (status.BATH_ANION != undefined) {
             btns[i].isOn = status.BATH_ANION
           }
+        } else if (btns[i].key === 'SMELL') {
+          if (status.BATH_TVOC != undefined) {
+            btns[i].level = status.BATH_ANION ? 1 : 0
+          }
+          const levelPopup = this.data.levelPopupOption
+          levelPopup.forEach(item => {
+            item.isSelect = item.value === btns[i].level
+          });
+          this.setData({
+            levelPopupOption: levelPopup
+          })
         }
       }
       bottom[0].isOn = !isAllClose
