@@ -120,11 +120,16 @@
           <view
             class="btn-con flex-center"
             hover-class="{{item.isEnable ? 'high-select' : ''}}"
-            style="background-color: {{item.isOn ? '#488FFF' : '#ffffff'}}; opacity: {{item.isEnable ? 1 : 0.4}};"
+            style="background-color: {{item.isOn ? '#488FFF' : '#ffffff'}}; opacity: {{item.isEnable ? 1 : 0.4}}; position: relative;"
           >
             <image
               style="width: 64rpx; height: 64rpx"
               src="{{item.isOn ? item.iconOn : item.iconOff}}"
+            ></image>
+            <image
+              wx:if="{{item.level > 0}}"
+              style="width: 48rpx; height: 4rpx; position: absolute; left: 34rpx; bottom: 10rpx;"
+              src="{{item.level === 1 ? '/package-remoter/assets/newUI/level1.png' : item.level === 2 ? '/package-remoter/assets/newUI/level2.png' : '/package-remoter/assets/newUI/level3.png'}}"
             ></image>
           </view>
           <text
@@ -236,6 +241,35 @@
           style="color: #232323"
           >取消</text
         >
+      </view>
+    </view>
+  </mx-popup>
+
+  <mx-popup
+    round
+    show="{{isShowLevelPopup}}"
+    position="bottom"
+    bind:close="closePopup"
+  >
+    <view class="pup-block" style="height: 440rpx">
+      <view class="flex-center" style="width: 750rpx; height: 336rpx; flex-direction: column;">
+        <view 
+          wx:for="{{levelPopupOption}}" 
+          class="flex-center" 
+          style="width: 750rpx; height: 112rpx; position: relative;"
+          wx:key="key"
+          data-value="{{item.value}}"
+          bind:tap="onPopupLevelSelect"
+        >
+          <text class="text-32rpx font-normal" style="color: #27282A;">{{item.name}}</text>
+          <image wx:if="{{item.isSelect}}" style="width: 48rpx; height: 48rpx; position: absolute; top: 32rpx; right: 214rpx;" src="/package-remoter/assets/newUI/checkBlue.png"></image>
+          <view style="width: 750rpx; height: 1px; background-color: #f2f2f2; position: absolute; left: 0; bottom: 0;"></view>
+        </view>
+      </view>
+
+      <view style="width: 750rpx; height: 16rpx; background-color: #f2f2f2"></view>
+      <view class="flex-center" style="width: 750rpx; height: 96rpx" bind:tap="closePopup">
+        <text class="text-32rpx font-normal" style="color: #232323">取消</text>
       </view>
     </view>
   </mx-popup>

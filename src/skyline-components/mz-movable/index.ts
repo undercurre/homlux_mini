@@ -63,9 +63,6 @@ Component({
         right: 375,
         bottom: 9999,
       },
-      observer(v) {
-        this.data._bound.value = v as { top: number; left: number; right: number; bottom: number }
-      },
     },
   },
 
@@ -74,6 +71,10 @@ Component({
       this.posTransfer(x, y)
       this.data._lastX.value = x
       this.data._lastY.value = y
+    },
+    bound(v) {
+      if (!v) return
+      this.data._bound.value = v as { top: number; left: number; right: number; bottom: number }
     },
   },
 
@@ -94,7 +95,7 @@ Component({
     _settingX: { value: false },
     _settingY: { value: false },
     // 边界
-    _bound: { value: { top: 0, left: 0, right: 0, bottom: 0 } },
+    _bound: { value: { top: 0, left: 0, right: 375, bottom: 9999 } },
   },
 
   lifetimes: {

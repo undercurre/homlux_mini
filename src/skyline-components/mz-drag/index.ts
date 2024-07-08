@@ -123,14 +123,15 @@ Component({
   },
 
   methods: {
-    initListThrottle: throttle(function (this: IAnyObject, isListTrigger: boolean) {
-      this.initList(isListTrigger)
+    initListThrottle: throttle(function (this: IAnyObject, positive: boolean) {
+      this.initList(positive)
     }, 1000),
     /**
      * 初始化列表
      * 索引号可能与排序号不对应，注意避免变更物理索引引起的界面跳动
+     * @param positive 如果被动触发初始化，即外部列表数据变更，则按外部列表排序；如果内部操作主动触发，则保持原列表排序
      */
-    async initList(isListTrigger = false) {
+    async initList(positive = false) {
       const { itemWidth, cols, movableList, itemHeight, itemHeightLarge } = this.data
       let accumulatedY = 0
 
@@ -139,6 +140,8 @@ Component({
       if (this.data.useAccumulatedY) {
         // 复制一个重排序列表，避免影响已有列表
         const sortedList = [...this.data.list]?.sort((a, b) => a.orderNum - b.orderNum) ?? []
+        // const sortedList =
+        //   (positive ? [...movableList] : [...this.data.list])?.sort((a, b) => a.orderNum - b.orderNum) ?? []
         for (const item of sortedList) {
           posMap[item.id] = accumulatedY
           accumulatedY += item.slimSize ? itemHeight : itemHeightLarge
@@ -147,9 +150,10 @@ Component({
 
       const newList = JSON.parse(JSON.stringify(movableList)) as CardItem[]
       console.log(
-        'initList|newList',
+        'initList|newList order',
         // @ts-ignore
-        newList.map((d: Device) => [d.deviceName, d.orderNum]),
+        newList.map((d: Device) => [d.deviceName ?? d.roomName, d.orderNum]),
+        posMap,
       )
 
       const diffData = {} as IAnyObject
@@ -160,7 +164,7 @@ Component({
         const item = this.data.list[index]
         const newItem = newList.find((ele) => ele.id === item.id)
 
-        // 过滤已删除的内容
+        // 过滤已删除的内容（在新列表中不存在 || 带有已删除已添加标记）
         if (!newItem || newItem.deleted || newItem.added) {
           deleted++
           delete posMap[item.id]
@@ -168,14 +172,13 @@ Component({
           continue
         }
 
-        orderNum = isListTrigger ? newItem.orderNum : item.orderNum - deleted
+        orderNum = positive ? newItem.orderNum : item.orderNum - deleted
 
         const i = orderNum - 1
         const itemData = {
           ...item,
           ...newItem,
           // select: this.data.editMode || item.select === null ? item.select : false, // 若编辑状态，或select未设定，则不变；否则设为true
-          y: accumulatedY,
           orderNum,
         } as IAnyObject
 
@@ -210,7 +213,7 @@ Component({
         // 过滤已删除、已添加的内容
         if (newItem.deleted || newItem.added) continue
 
-        orderNum = isListTrigger ? newItem.orderNum : orderNum + 1
+        orderNum = positive ? newItem.orderNum : orderNum + 1
         const i = orderNum - 1
         // 纵坐标计算
         let itemY = 0
@@ -232,10 +235,7 @@ Component({
       diffData.moveareaHeight = this.data.useAccumulatedY ? accumulatedY : itemHeight * Math.ceil(list.length / cols)
 
       this.setData(diffData)
-      Logger.trace(
-        '[initList]diffData',
-        diffData.list.map((d: Device.DeviceItem) => [d.deviceName, d.orderNum]),
-      )
+      Logger.trace('[initList]diffData', diffData.list)
     },
     /**
      * 根据坐标位置计算索引

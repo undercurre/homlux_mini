@@ -1,5 +1,5 @@
 import cryptoUtils from './remoterCrypto'
-import { DEFAULT_ENCRYPT, deviceConfig } from '../config/remoter'
+import { DEFAULT_ENCRYPT, deviceConfig, deviceConfigV2 } from '../config/remoter'
 
 // bit位定义
 export const BIT_0 = 0x01 << 0 //1     0x01
@@ -13,6 +13,7 @@ export const BIT_7 = 0x01 << 7 //128    0x80
 
 // 遥控器支持设备列表
 const SUPPORT_LIST = Object.keys(deviceConfig)
+const SUPPORT_LIST_V2 = Object.keys(deviceConfigV2)
 
 /**
  * @description 小程序扫描蓝牙回调处理函数
@@ -22,26 +23,81 @@ const _searchDeviceCallBack = (device: WechatMiniprogram.BlueToothDevice) => {
   if (!device.advertisData) return
   const advertisData = cryptoUtils.ab2hex(device.advertisData)
   const manufacturerId = advertisData.slice(0, 4)
-  const deviceType = manufacturerId.slice(2)
-  //	筛选指定设备
-  if (!SUPPORT_LIST.includes(deviceType.toLocaleUpperCase())) return
-  const VBCV = advertisData.slice(4, 6)
-  const encryptFlag = advertisData.slice(6, 8)
-  const addr = advertisData.slice(8, 20)
-  const deviceModel = advertisData.slice(20, 22)
-  const payload = advertisData.slice(22) // 按调整后的协议，从第11字节开始
+  const isV2 = manufacturerId === '06a8'
+  let deviceType
+  if (isV2) {
+    const advertisDataArr = Array.from(new Uint8Array(device.advertisData))
+    const typeVal = advertisDataArr[3] & 0x0f
+    if (typeVal === 0) deviceType = '26'
+    else if (typeVal === 1) deviceType = '40'
+    else if (typeVal === 2) deviceType = '13a'
+    else if (typeVal === 3) deviceType = '13b'
+    else if (typeVal === 4) deviceType = '17'
+    else return
+    if (!SUPPORT_LIST_V2.includes(deviceType.toLocaleUpperCase())) return
 
-  return {
-    fullAdvertistData: advertisData.slice(0),
-    ...device,
-    manufacturerId,
-    deviceType,
-    ..._parseVBCV(VBCV),
-    ..._parseEncryptFlag(encryptFlag),
-    addr,
-    deviceModel,
-    payload,
-    deviceAttr: _parsePayload(payload, deviceType, deviceModel),
+    const devRssi = (advertisDataArr[3] & 0x70) >> 4
+    const rssiArr = [-90, -85, -80, -75, -70, -65, -60, -55]
+    const addr = advertisData.slice(10, 22)
+
+    let isEnd = false
+    const funCodeArr = []
+    for (let i = 0; !isEnd; i++) {
+      if (11 + i > advertisDataArr.length - 1) break
+      const funCode = advertisDataArr[11 + i]
+      funCodeArr.push(funCode)
+      isEnd = (funCode & 0x80) === 0
+    }
+    const funCodeStrArr = funCodeArr.map((item) => {
+      return ('00' + item.toString(16)).slice(-2)
+    })
+    const payload = advertisData.slice(22 + funCodeArr.length * 2)
+
+    return {
+      fullAdvertistData: advertisData.slice(0),
+      ...device,
+      manufacturerId,
+      deviceType,
+      version: 2,
+      src: (advertisDataArr[4] & 0x08) >> 3,
+      BTP: ((advertisDataArr[4] & 0x04) >> 2) === 1,
+      connect: ((advertisDataArr[4] & 0x02) >> 1) === 1,
+      visibility: (advertisDataArr[4] & 0x01) === 1,
+      encryptType: 0,
+      encryptIndex: (advertisDataArr[4] & 0xf0) >> 4,
+      addr,
+      deviceModel: '0',
+      payload,
+      deviceAttr: _parsePayloadV2(payload, deviceType),
+      deviceRSSI: rssiArr[devRssi],
+      isV2: true,
+      functionDes: funCodeStrArr.join('')
+    }
+  } else {
+    deviceType = manufacturerId.slice(2)
+    if (!SUPPORT_LIST.includes(deviceType.toLocaleUpperCase())) return
+
+    const VBCV = advertisData.slice(4, 6)
+    const encryptFlag = advertisData.slice(6, 8)
+    const addr = advertisData.slice(8, 20)
+    const deviceModel = advertisData.slice(20, 22)
+    const payload = advertisData.slice(22) // 按调整后的协议，从第11字节开始
+
+    return {
+      fullAdvertistData: advertisData.slice(0),
+      ...device,
+      manufacturerId,
+      deviceType,
+      ..._parseVBCV(VBCV),
+      ..._parseEncryptFlag(encryptFlag),
+      addr,
+      deviceModel,
+      payload,
+      deviceAttr: _parsePayload(payload, deviceType, deviceModel),
+      deviceRSSI: 0,
+      isV2: false,
+      functionDes: ''
+    }
   }
 }
 
@@ -156,6 +212,74 @@ const _parsePayload = (payload: string, deviceType: string, deviceModel?: string
       CLOTHES_HEAT_TIME: rxU16[14],
     }
   }
+  return {}
+}
+
+const _parsePayloadV2 = (payload: string, deviceType: string) => {
+  const rxBuf = new ArrayBuffer(payload.length)
+  const rxU16 = new Uint16Array(rxBuf)
+  for (let i = 0; i < payload.length / 2; ++i) {
+    rxU16[i] = parseInt(payload.slice(i * 2, i * 2 + 2), 16)
+  }
+  if (deviceType === '13a') {
+    const colMinIndex = rxU16[1] & 0x0f
+    const colMaxIndex = (rxU16[1] & 0xf0) >> 4
+    let colMin = 3000
+    let colMax = 5700
+    if (colMinIndex === 0x01) colMin = 3000
+    if (colMaxIndex === 0x10) colMax = 5700
+    return {
+      LIGHT_LAMP: !!(rxU16[0] & BIT_0), // 开关
+      LIGHT_NIGHT_LAMP: !!(rxU16[0] & BIT_1), // 小夜灯状态
+      LIGHT_SCENE_SLEEP: !!(rxU16[0] & BIT_2), // 助眠开关
+      COLORTEMP_MIN: colMin, // 色温最小值
+      COLORTEMP_MAX: colMax, // 色温最大值
+      LIGHT_BRIGHT: rxU16[2], // 当前亮度
+      LIGHT_COLOR_TEMP: rxU16[3], // 当前色温
+      DELAY_OFF: rxU16[4], // 延时关灯剩余分钟数，0表示延时关灯失效
+    }
+  }
+  // if (deviceType === '13b') {
+  //   return {
+  //     LIGHT_LAMP: !!(rxU16[0] & BIT_0), // 开关
+  //     COLORTEMP_MIN: (rxU16[1] << 8) + rxU16[2], // 色温最小值
+  //     COLORTEMP_MAX: (rxU16[3] << 8) + rxU16[4], // 色温最大值
+  //     LIGHT_BRIGHT: rxU16[5], // 当前亮度
+  //     LIGHT_COLOR_TEMP: rxU16[6], // 当前色温
+  //     DELAY_OFF: (rxU16[7] << 8) + rxU16[8], // 延时关风扇剩余分钟数
+  //     FAN_SWITCH: !!(rxU16[9] & BIT_0), // 风扇开关状态
+  //     FAN_NEGATIVE: !!(rxU16[9] & BIT_1), // 风扇是否反转状态
+  //     FAN_NATURE: !!(rxU16[9] & BIT_2), // 风扇自然风状态
+  //     CLOSE_DISPLAY: !!(rxU16[9] & BIT_4), // 屏显
+  //     SPEED: rxU16[10] // 风扇档位
+  //   }
+  // }
+  if (deviceType === '26') {
+    return {
+      BATH_LAMP: !!rxU16[0],
+      BATH_BRIGHT: rxU16[1],
+      BATH_NIGHT_LAMP: !!rxU16[2],
+      BATH_DRY: !!(rxU16[3] & BIT_0),
+      BATH_VENTILATE: !!(rxU16[3] & BIT_1),
+      BATH_WIND: !!(rxU16[3] & BIT_2),
+      KITCHEN_WIND_STRONG: !!(rxU16[3] & BIT_2),
+      BATH_WARM_SOFT: !!(rxU16[3] & BIT_3),
+      BATH_WARM_STRONG: !!(rxU16[3] & BIT_4),
+      BATH_WARM_UP: !!(rxU16[3] & BIT_5),
+      BATH_AUTO: !!(rxU16[3] & BIT_6),
+      KITCHEN_WIND_SOFT: !!(rxU16[3] & BIT_7),
+      BATH_TEMPERATURE: rxU16[4],
+      BATH_TEMPERATURE_ENV: rxU16[5],
+      BATH_SWING: !!(rxU16[6] & BIT_4),
+      BATH_ANION: !!(rxU16[6] & BIT_6),
+      BLOW_GEAR: rxU16[7] & 0x07,
+      VENT_GEAR: rxU16[8] & 0x07,
+      BATH_DELAY_CLOSE: rxU16[9]
+    }
+  }
+  // if (deviceType === '17') {
+  //   return {}
+  // }
   return {}
 }
 
@@ -422,4 +546,5 @@ export default {
   handleBleResponse: _handleBleResponse,
   generalCmdString: _generalCmdString,
   parsePayload: _parsePayload,
+  parsePayloadV2: _parsePayloadV2,
 }

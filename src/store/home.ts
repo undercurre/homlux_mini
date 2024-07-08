@@ -164,7 +164,7 @@ export const homeStore = observable({
    */
   async updateRoomCardList() {
     await deviceStore.updateAllRoomDeviceList()
-    await roomStore.updateRoomList()
+    await roomStore.updateRoomList() // 最后刷新
     this.saveHomeDate()
   },
 
