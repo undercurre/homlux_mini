@@ -52,3 +52,15 @@ export async function authQrcode(qrcode: string) {
     },
   })
 }
+
+/**
+ * 保存用户消息订阅
+ */
+export async function saveWxSubscribe(params: { openId: string; templateIdList: string[] }) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: false,
+    url: '/v1/mzgdApi/mzgdUserWxSubscribe',
+    data: params,
+  })
+}

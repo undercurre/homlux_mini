@@ -7,10 +7,21 @@
     "bigPackageSizeSupport": true,
     "skylineRenderEnable": true
   },
-  "libVersion": "3.4.6",
+  "libVersion": "3.4.9",
   "condition": {
     "miniprogram": {
       "list": [
+        {
+          "name": "成员管理",
+          "pathName": "package-mine/pages/member-manage/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null,
+          "partialCompile": {
+            "enabled": true,
+            "pages": []
+          }
+        },
         {
           "name": "产测工具",
           "pathName": "package-debug/pages/test-util/index",

@@ -11,6 +11,9 @@ export const userStore = observable({
     wxId: '',
     sex: 0,
   } as User.UserInfo,
+
+  openId: '',
+
   isLogin: false,
 
   logout() {
@@ -26,6 +29,8 @@ export const userStore = observable({
       }
       this.isLogin = false
     })
+
+    this.openId = ''
   },
 
   setIsLogin(value: boolean) {

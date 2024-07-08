@@ -2,10 +2,10 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import drawQrcode from 'weapp-qrcode-canvas-2d'
 import Toast from '@vant/weapp/toast/toast'
-import pageBehaviors from '../../behaviors/pageBehaviors'
-import { homeBinding, userBinding } from '../../store/index'
-import { ShareImgUrl } from '../../config/index'
-import { getShareId } from '../../apis/index'
+import pageBehaviors from '../../../behaviors/pageBehaviors'
+import { homeBinding, userBinding } from '../../../store/index'
+import { ShareImgUrl } from '../../../config/index'
+import { getShareId } from '../../../apis/index'
 
 ComponentWithComputed({
   options: {

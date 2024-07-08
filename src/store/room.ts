@@ -3,7 +3,7 @@ import { queryRoomList } from '../apis/index'
 import { PRO_TYPE } from '../config/index'
 import { deviceStore } from './device'
 import { homeStore } from './home'
-import { IApiRequestOption } from '../utils/index'
+import { IApiRequestOption, Logger } from '../utils/index'
 
 export const roomStore = observable({
   /**
@@ -44,6 +44,11 @@ export const roomStore = observable({
   },
 
   async updateRoomList(options?: IApiRequestOption) {
+    if (!homeStore.currentHomeId) {
+      Logger.error('updateRoomList缺少houseId参数')
+      return
+    }
+
     const res = await queryRoomList(homeStore.currentHomeId, options)
     if (res.success) {
       res.result.roomInfoList.forEach((room) => {

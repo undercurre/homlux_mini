@@ -42,12 +42,12 @@
       "root": "package-mine",
       "pages": [
         "home-manage/index",
-        "home-transfer/index",
+        "pages/home-transfer/index",
         "room-manage/index",
         "room-detail/index",
-        "member-manage/index",
+        "pages/member-manage/index",
         "device-replace/index",
-        "ota/index",
+        "pages/ota/index",
         "setting/index",
         "device-manage/index",
         "device-manage/device-detail/index",
@@ -102,7 +102,15 @@
     },
     {
       "root": "package-remoter",
-      "pages": ["pannel/index", "light/index", "setting/index", "fan-light/index", "bath/index", "cool-bath/index", "clothes/index"]
+      "pages": [
+        "pannel/index",
+        "light/index",
+        "setting/index",
+        "fan-light/index",
+        "bath/index",
+        "cool-bath/index",
+        "clothes/index"
+      ]
     },
     {
       "root": "package-distribution-meiju",

@@ -1,11 +1,11 @@
 // package-mine/home-manage/components/transfer-home/index.ts
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { homeBinding, homeStore } from '../../../../store/index'
-import { changeUserHouse, queryHouseUserList } from '../../../../apis/index'
-import { emitter, goHome } from '../../../../utils/index'
+import { homeBinding, homeStore } from '../../../../../store/index'
+import { changeUserHouse, queryHouseUserList } from '../../../../../apis/index'
+import { emitter, goHome } from '../../../../../utils/index'
 import Dialog from '@vant/weapp/dialog/dialog'
 import Toast from '@vant/weapp/toast/toast'
-import { defaultImgDir } from '../../../../config/index'
+import { defaultImgDir } from '../../../../../config/index'
 
 Component({
   options: {},

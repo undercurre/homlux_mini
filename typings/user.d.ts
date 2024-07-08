@@ -2,13 +2,9 @@
 declare namespace User {
   interface UserLoginRes {
     /**
-     * 头像
+     * openId
      */
-    headImageUrl?: string
-    /**
-     * 昵称
-     */
-    nickName?: string
+    openId: string
     /**
      * 手机号
      */

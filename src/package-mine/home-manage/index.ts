@@ -197,7 +197,7 @@ ComponentWithComputed({
       }
 
       wx.navigateTo({
-        url: '/package-mine/home-transfer/index',
+        url: '/package-mine/pages/home-transfer/index',
       })
     },
 

@@ -1,8 +1,9 @@
 import Toast from '../../skyline-components/mz-toast/toast'
-import { login } from '../../apis/index'
+import { login, saveWxSubscribe } from '../../apis/index'
 import { homeStore, othersStore, sceneStore, userStore } from '../../store/index'
 import { storage, showLoading, hideLoading, Logger } from '../../utils/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
+import { LOGIN_TEMPLATE_ID_LIST } from '../../config/index'
 
 // pages/login/index.ts
 Component({
@@ -15,6 +16,8 @@ Component({
     checkImg: '/assets/img/base/check.png',
     uncheckImg: '/assets/img/base/uncheck.png',
     marginTop: 0,
+    _hasRequestSubscribeMessage: false,
+    _tmplIds: [] as string[], // 已经授权成功的模板列表
   },
 
   methods: {
@@ -26,10 +29,40 @@ Component({
       })
     },
 
-    handleLoginTap() {
+    async handleLoginTap() {
       if (!this.data.isAgree) {
         Toast('请同意协议')
         return
+      }
+
+      const msgRes = await wx
+        .requestSubscribeMessage({
+          tmplIds: LOGIN_TEMPLATE_ID_LIST,
+        })
+        .catch((err) => err)
+
+      Logger.debug('requestSubscribeMessage', msgRes)
+
+      this.data._hasRequestSubscribeMessage = true
+
+      // 订阅通过需要记录授权的模板id，用于登录后记录到云端
+      if (msgRes.errMsg.includes('ok')) {
+        for (const key in msgRes) {
+          if (msgRes[key] === 'accept') {
+            this.data._tmplIds.push(key)
+          }
+        }
+      }
+
+      this.saveWxSubscribe()
+    },
+
+    async saveWxSubscribe() {
+      Logger.debug('saveWxSubscribe')
+      if (userStore.openId && this.data._hasRequestSubscribeMessage) {
+        const res = await saveWxSubscribe({ openId: userStore.openId, templateIdList: this.data._tmplIds })
+
+        Logger.debug('saveWxSubscribe', res)
       }
     },
 
@@ -82,14 +115,17 @@ Component({
     async login(data: { jsCode: string; code: string; lat?: number; lon?: number }) {
       const loginRes = await login(data)
       if (loginRes.success && loginRes.result) {
-        console.log('loginRes', loginRes)
+        Logger.log('loginRes', loginRes)
         storage.set('token', loginRes.result.token, null)
+        userStore.openId = loginRes.result.openId
 
+        this.saveWxSubscribe()
         await userStore.updateUserInfo()
         userStore.setIsLogin(true)
         othersStore.setIsInit(false)
         homeStore.homeInit()
         sceneStore.updateAllRoomSceneList()
+
         wx.switchTab({
           url: '/pages/index/index',
         })

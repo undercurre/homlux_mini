@@ -25,7 +25,7 @@ Component({
       {
         icon: '/assets/img/mine/member.png',
         text: '成员管理',
-        url: '/package-mine/member-manage/index',
+        url: '/package-mine/pages/member-manage/index',
       },
     ],
     urls: {

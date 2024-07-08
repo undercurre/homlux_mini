@@ -1,11 +1,11 @@
 // package-mine/hoom-manage/index.ts
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
-import pageBehaviors from '../../behaviors/pageBehaviors'
-import { homeBinding, userBinding } from '../../store/index'
-import { storage } from '../../utils/storage'
-import { emitter } from '../../utils/eventBus'
-import { ShareImgUrl } from '../../config/index'
+import pageBehaviors from '../../../behaviors/pageBehaviors'
+import { homeBinding, userBinding } from '../../../store/index'
+import { storage } from '../../../utils/storage'
+import { emitter } from '../../../utils/eventBus'
+import { ShareImgUrl } from '../../../config/index'
 
 ComponentWithComputed({
   options: {},

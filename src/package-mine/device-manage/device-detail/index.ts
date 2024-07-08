@@ -52,6 +52,9 @@ ComponentWithComputed({
     isSubDevice(data) {
       return data.deviceInfo.deviceType === 2
     },
+    isScreen(data) {
+      return SCREEN_PID.includes(data.deviceInfo.productId)
+    },
     isSubDeviceOrGateway(data) {
       return [1, 2].includes(data.deviceInfo.deviceType)
     },
@@ -193,7 +196,7 @@ ComponentWithComputed({
     handleToOTA() {
       if (!this.data.canEditDevice) return
       wx.navigateTo({
-        url: '/package-mine/ota/index?fromDevice=1',
+        url: '/package-mine/pages/ota/index?fromDevice=1',
       })
     },
     handleDeviceDelete() {
