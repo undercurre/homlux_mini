@@ -268,19 +268,9 @@
     <view class="section">
       <view class="m-24rpx">mz-tab</view>
       <mz-tabs
-        active="{{ tabActive }}"
+        tabs="{{roomTab}}"
         bind:change="onRoomChange"
-        animated
-        swipeable
       >
-        <mz-tab
-          style="flex: 1"
-          wx:for="{{roomTab}}"
-          wx:key="roomId"
-          title="{{item.roomName}}"
-          name="{{item.roomId}}"
-          >{{item.roomName}}--{{item.roomId}}</mz-tab
-        >
       </mz-tabs>
     </view>
 

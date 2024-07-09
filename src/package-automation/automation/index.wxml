@@ -49,22 +49,9 @@
         catchtouchmove="true"
       >
         <mz-tabs
-          custom-class="tabs"
-          tab-active-class="tab-active"
-          tab-class="tab-common"
-          active="{{ selectedRoomId }}"
-          color="#488FFF"
-          line-width="21"
-          line-height="4"
+          tabs="{{roomTab}}"
           bind:change="onRoomChange"
         >
-          <mz-tab
-            wx:for="{{roomTab}}"
-            wx:key="roomId"
-            class="flex-1"
-            title="{{item.roomName}}"
-            name="{{item.roomId}}"
-          ></mz-tab>
         </mz-tabs>
 
         <scroll-view
