@@ -1,12 +1,12 @@
-// package-mine/hoom-manage/index.ts
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
+import { runInAction } from 'mobx-miniprogram'
+import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
-import { homeBinding, userBinding } from '../../../store/index'
-import { storage } from '../../../utils/storage'
+import { homeBinding, userBinding, homeStore } from '../../../store/index'
 import { emitter } from '../../../utils/eventBus'
 import { ShareImgUrl } from '../../../config/index'
-import { getShareId } from '../../../apis/index'
+import { getShareId, updateHouseUserAuth, inviteHouseUserForMobile } from '../../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -20,54 +20,61 @@ ComponentWithComputed({
   data: {
     isShowPopup: false, // 是否弹窗
     isEditRole: false, // 是否编辑角色
+    selectAction: 'BE_VIS', // 当前选择的选项key
     memberList: [] as object[],
-    actionList: [
-      {
-        key: 'SET_ADMIN',
-        text: '设为管理员',
-        label: '与创建者相同的设备/场景管理权限',
-        isCheck: false,
-        isShow: false,
-      },
-      {
-        key: 'CEL_ADMIN',
-        text: '取消管理员',
-        isCheck: false,
-        isShow: false,
-      },
-      {
-        key: 'DEL_MEM',
-        text: '移除该成员',
-        isCheck: false,
-        isShow: false,
-      },
-      {
-        key: 'BE_MEM',
-        text: '成为管理员',
-        label: '与创建者相同的设备/场景管理权限',
-        isCheck: false,
-        isShow: false,
-      },
-      {
-        key: 'BE_VIS',
-        text: '成为访客',
-        label: '仅可使用设备与场景',
-        isCheck: false,
-        isShow: false,
-      },
-    ],
     curClickUserItem: null as any,
-    curOptionItem: null as any,
-    curUser: { userHouseAuth: 3 } as Home.HouseUserItem,
-    isNeedShare: false,
     isAdmin: false,
     isVisitor: false,
     _shareId: '',
+    _invite_type: '',
   },
 
   computed: {
     popupTitle(data) {
       return data.isEditRole ? '权限管理' : '邀请成员'
+    },
+    actionList(data) {
+      // 创建者：1 管理员：2 游客：3
+      let actionList: { key: string; text: string; label?: string }[] = []
+
+      if (data.isEditRole) {
+        const editUserRole = data.curClickUserItem?.roleCode
+
+        if (homeStore.isCreator && editUserRole === 2) {
+          actionList.push({
+            key: 'CEL_ADMIN',
+            text: '取消管理员',
+          })
+        }
+
+        if (homeStore.isCreator && editUserRole === 3) {
+          actionList.push({
+            key: 'SET_ADMIN',
+            text: '设为管理员',
+            label: '与创建者相同的设备/场景管理权限',
+          })
+        }
+
+        actionList.push({
+          key: 'DEL_MEM',
+          text: '移除该成员',
+        })
+      } else {
+        actionList = [
+          {
+            key: 'BE_MEM',
+            text: '成为管理员',
+            label: '与创建者相同的设备/场景管理权限',
+          },
+          {
+            key: 'BE_VIS',
+            text: '成为访客',
+            label: '仅可使用设备与场景',
+          },
+        ]
+      }
+
+      return actionList
     },
   },
 
@@ -81,7 +88,6 @@ ComponentWithComputed({
         this.initData()
       })
     },
-    moved: function () {},
     detached: function () {
       emitter.off('invite_user_house')
     },
@@ -114,9 +120,8 @@ ComponentWithComputed({
             isCanEdit: false,
           })
           this.setData({
-            curUser: curUser,
-            isAdmin: curUser.userHouseAuth === 2,
-            isVisitor: curUser.userHouseAuth === 3,
+            isAdmin: homeStore.currentHomeDetail.houseUserAuth === 2,
+            isVisitor: !homeStore.isManager,
           })
         }
         list.forEach((item: Home.HouseUserItem) => {
@@ -135,8 +140,9 @@ ComponentWithComputed({
         this.setData({ memberList: result })
       }
     },
+    // 判断当前用户是否可以编辑其他用户的角色
     canIEditOther(mySelf = 0, other: number) {
-      //创建者：1 管理员：2 游客：3
+      // 创建者：1 管理员：2 游客：3
       if (mySelf === other) return false
       if (mySelf === 1) return true
       return false
@@ -144,90 +150,19 @@ ComponentWithComputed({
     onUserItemClick(data: any) {
       const item = data.currentTarget.dataset.item
       if (!item.isCanEdit) return
-      this.configPopupRoleOption(this.data.curUser.userHouseAuth, item.roleCode)
       this.setData({
+        isShowPopup: true,
         isEditRole: true,
         curClickUserItem: item,
-        isNeedShare: false,
       })
-    },
-    configPopupRoleOption(mySelf: number, other: number) {
-      //创建者：1 管理员：2 游客：3
-      const actionList = this.data.actionList
-      actionList.forEach((item) => {
-        if (mySelf === 1) {
-          if (other === 2 && (item.key === 'CEL_ADMIN' || item.key === 'DEL_MEM')) {
-            item.isCheck = false
-            item.isShow = true
-          } else if (other === 3 && (item.key === 'SET_ADMIN' || item.key === 'DEL_MEM')) {
-            item.isCheck = false
-            item.isShow = true
-          } else {
-            item.isCheck = false
-            item.isShow = false
-          }
-        } else if (mySelf == 2) {
-          if (other === 3 && (item.key === 'SET_ADMIN' || item.key === 'DEL_MEM')) {
-            item.isCheck = false
-            item.isShow = true
-          } else {
-            item.isCheck = false
-            item.isShow = false
-          }
-        } else {
-          item.isCheck = false
-          item.isShow = false
-        }
-      })
-      this.setData({
-        actionList: actionList,
-        popupTitle: '权限管理',
-      })
-    },
-    configPopupInviteOption() {
-      const actionList = this.data.actionList
-      actionList.forEach((item) => {
-        if (item.key === 'BE_MEM' || item.key === 'BE_VIS') {
-          item.isCheck = false
-          item.isShow = true
-        } else {
-          item.isCheck = false
-          item.isShow = false
-        }
-      })
-      this.setData({
-        actionList: actionList,
-      })
-    },
-    clearOptionList() {
-      const actionList = this.data.actionList
-      actionList.forEach((item) => {
-        item.isCheck = false
-        item.isShow = false
-      })
-      this.setData({ actionList: actionList })
-    },
-    setPopupOptionPick(key: string) {
-      const actionList = this.data.actionList
-      actionList.forEach((item) => {
-        if (item.key === key) {
-          item.isCheck = true
-        } else {
-          item.isCheck = false
-        }
-      })
-      this.setData({ actionList: actionList })
     },
     hidePopup() {
       this.setData({
         isShowPopup: false,
-        curClickUserItem: null,
-        curOptionItem: null,
+        selectAction: '',
       })
-      setTimeout(() => {
-        this.clearOptionList()
-      }, 300)
     },
+    // 获取新的shareId
     async updateShareId() {
       const res = await getShareId({ houseId: homeBinding.store.currentHomeId })
 
@@ -237,43 +172,75 @@ ComponentWithComputed({
     },
     onInviteMemberClick() {
       this.updateShareId()
-      this.configPopupInviteOption()
-
-      const item = this.data.actionList.find((item) => {
-        return item.key === 'BE_VIS'
+      // 初始化邀请成员的默认选项
+      this.setData({
+        isShowPopup: true,
+        isEditRole: false,
+        selectAction: 'BE_VIS',
       })
-      this.setData({ isShowPopup: true, curOptionItem: item })
-      this.setPopupOptionPick('BE_VIS')
-
-      if (this.data.isAdmin) {
-        this.setData({
-          isEditRole: false,
-          curClickUserItem: null,
-          isNeedShare: true,
-        })
-        this.onComfirmClick()
-      } else {
-        this.setData({
-          isEditRole: true,
-          curClickUserItem: null,
-          isNeedShare: true,
-        })
-      }
     },
     onPopupClick(data: any) {
       const item = data.currentTarget.dataset.item
-      this.setData({ curOptionItem: item })
-      this.setPopupOptionPick(item.key)
+      this.setData({ selectAction: item.key })
     },
+    /**
+     * 手机号邀请
+     */
+    async inviteByMobile() {
+      this.setData({
+        isShowPopup: false,
+      })
+      const modalRes = await wx
+        .showModal({
+          title: '邀请手机号',
+          editable: true,
+        })
+        .catch((err) => err)
+
+      console.log('inviteByMobile', modalRes)
+
+      if (modalRes.confirm) {
+        const text = modalRes.content
+
+        const key = this.data.selectAction
+        let type = 3
+        if (key === 'BE_MEM') {
+          type = 2
+        }
+
+        const res = await inviteHouseUserForMobile(
+          {
+            mobilePhone: text,
+            houseId: homeStore.currentHomeId,
+            houseUserAuth: type,
+            subscribeType: 1,
+          },
+          { loading: true },
+        )
+
+        console.log('inviteHouseUserForMobile', res)
+
+        if (res.success) {
+          Toast('邀请发送成功')
+        } else {
+          Toast('邀请发送失败')
+        }
+      }
+    },
+
+    /**
+     * 微信邀请
+     */
+    inviteByWechat() {
+      this.hidePopup()
+    },
+    /**
+     * 微信邀请
+     */
     onComfirmClick() {
-      console.log(
-        'lmn>>>选择用户:' +
-          JSON.stringify(this.data.curClickUserItem) +
-          '/选择操作:' +
-          JSON.stringify(this.data.curOptionItem),
-      )
-      if (this.data.curClickUserItem && this.data.curOptionItem) {
-        const key = this.data.curOptionItem.key
+      console.log('选择用户:', this.data.curClickUserItem, '/选择操作:', this.data.selectAction)
+      const key = this.data.selectAction
+      if (this.data.curClickUserItem) {
         if (key === 'SET_ADMIN') {
           this.changeUserRole(this.data.curClickUserItem.id, 2)
         } else if (key === 'CEL_ADMIN') {
@@ -281,35 +248,44 @@ ComponentWithComputed({
         } else if (key === 'DEL_MEM') {
           this.deleteUser(this.data.curClickUserItem.id)
         }
-      } else if (this.data.curOptionItem) {
-        const key = this.data.curOptionItem.key
-        if (key === 'BE_MEM') {
-          storage.set('invite_type', '2')
-        } else if (key === 'BE_VIS') {
-          storage.set('invite_type', '3')
-        }
       }
-      this.setData({
-        curClickUserItem: null,
-        curOptionItem: null,
-      })
-      setTimeout(() => {
-        this.setData({ isEditRole: false })
-        this.clearOptionList()
-        emitter.emit('homeInfoEdit')
-      }, 300)
     },
+
     changeUserRole(userId: string, auth: Home.UserRole) {
-      homeBinding.store.updateMemberAuth(userId, auth).then(() => {
+      this.updateMemberAuth(userId, auth).then(() => {
+        this.hidePopup()
         this.updateView()
         emitter.emit('homeInfoEdit')
       })
     },
     deleteUser(userId: string) {
       homeBinding.store.deleteMember(userId).then(() => {
+        this.hidePopup()
         this.updateView()
         emitter.emit('homeInfoEdit')
       })
+    },
+
+    /**
+     * 更改家庭成员权限
+     * 家庭成员权限，创建者：1 管理员：2 游客：3
+     */
+    async updateMemberAuth(userId: string, auth: Home.UserRole) {
+      const res = await updateHouseUserAuth({ userId, auth, houseId: homeStore.currentHomeId }, { loading: true })
+      if (res.success) {
+        runInAction(() => {
+          for (let i = 0; i < homeStore.homeMemberInfo.houseUserList.length; i++) {
+            if (userId === homeStore.homeMemberInfo.houseUserList[i].userId) {
+              const map = ['', '创建者', '管理员', '访客']
+              homeStore.homeMemberInfo.houseUserList[i].userHouseAuth = auth
+              homeStore.homeMemberInfo.houseUserList[i].userHouseAuthName = map[auth]
+            }
+          }
+        })
+        return
+      } else {
+        return Promise.reject('设置权限失败')
+      }
     },
     updateShareSetting() {
       wx.updateShareMenu({
@@ -327,13 +303,15 @@ ComponentWithComputed({
     onShareAppMessage() {
       const promise = new Promise((resolve) => {
         setTimeout(() => {
-          const type = storage.get('invite_type', '3')
-          const time = new Date()
+          const key = this.data.selectAction
+          let type = '3'
+          if (key === 'BE_MEM') {
+            type = '2'
+          }
+          const expireTime = new Date().valueOf() + 86400 * 1000 // 过期时间
           resolve({
             title: '邀请你加入我的家庭',
-            path: `/pages/index/index?type=${type}&houseId=${
-              homeBinding.store.currentHomeId
-            }&time=${time.valueOf()}&shareId=${this.data._shareId}`,
+            path: `/pages/index/index?type=${type}&houseId=${homeBinding.store.currentHomeId}&expireTime=${expireTime}&shareId=${this.data._shareId}`,
             imageUrl: ShareImgUrl,
           })
         }, 500)

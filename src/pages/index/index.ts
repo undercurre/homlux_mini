@@ -403,28 +403,30 @@ ComponentWithStore({
     inviteMember() {
       const enterOption = wx.getEnterOptionsSync()
 
-      if (enterOption.scene != 1007 && enterOption.scene != 1044) {
+      if (enterOption.scene != 1007 && enterOption.scene != 1044 && enterOption.scene != 1014) {
         return
       }
       const enterQuery = enterOption.query
       const token = storage.get('token', '')
       const type = enterQuery.type as string
       const houseId = enterQuery.houseId as string
-      const time = enterQuery.time as string
+      const expireTime = parseInt(enterQuery.expireTime)
       const shareId = enterQuery.shareId as string
-      if (token && type && type !== 'transferHome' && houseId && time) {
+      if (token && type && type !== 'transferHome' && houseId && expireTime) {
         this.data._isAcceptShare = true
-        console.log(`lmn>>>邀请参数:token=${token}/type=${type}/houseId=${houseId}/time=${time}/shareId=${shareId}`)
+        console.log(
+          `家庭邀请参数:token=${token}/type=${type}/houseId=${houseId}/expireTime=${expireTime}/shareId=${shareId}`,
+        )
         for (let i = 0; i < homeStore.homeList.length; i++) {
           if (homeStore.homeList[i].houseId == houseId) {
-            console.log('lmn>>>已经在该家庭')
+            console.log('已经在该家庭')
             return
           }
         }
         const now = new Date().valueOf()
         // 邀请链接一天单次有效
-        if (now - parseInt(time) > 86400000) {
-          console.log('lmn>>>邀请超时')
+        if (now > expireTime) {
+          console.log('邀请超时')
           Dialog.confirm({
             title: '邀请过期',
             message: '该邀请已过期，请联系邀请者重新邀请',

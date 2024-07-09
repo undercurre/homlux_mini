@@ -3,7 +3,6 @@ import {
   getHomeList,
   queryUserHouseInfo,
   queryHouseUserList,
-  updateHouseUserAuth,
   deleteHouseUser,
   inviteHouseUser,
   saveOrUpdateUserHouseInfo,
@@ -198,33 +197,10 @@ export const homeStore = observable({
   },
 
   /**
-   * 更改家庭成员权限
-   * 家庭成员权限，创建者：1 管理员：2 游客：3
-   */
-  async updateMemberAuth(userId: string, auth: Home.UserRole) {
-    const res = await updateHouseUserAuth({ userId, auth, houseId: this.currentHomeId })
-    if (res.success) {
-      runInAction(() => {
-        for (let i = 0; i < homeStore.homeMemberInfo.houseUserList.length; i++) {
-          if (userId === homeStore.homeMemberInfo.houseUserList[i].userId) {
-            if (homeStore.homeMemberInfo.houseUserList[i].userHouseAuth === 1) continue
-            const map = ['', '创建者', '管理员', '访客']
-            homeStore.homeMemberInfo.houseUserList[i].userHouseAuth = auth
-            homeStore.homeMemberInfo.houseUserList[i].userHouseAuthName = map[auth]
-          }
-        }
-      })
-      return
-    } else {
-      return Promise.reject('设置权限失败')
-    }
-  },
-
-  /**
    * 删除家庭成员
    */
   async deleteMember(userId: string) {
-    const res = await deleteHouseUser({ houseId: this.currentHomeId, userId })
+    const res = await deleteHouseUser({ houseId: this.currentHomeId, userId }, { loading: true })
     if (res.success) {
       runInAction(() => {
         for (let i = 0; i < homeStore.homeMemberInfo.houseUserList.length; i++) {
@@ -335,7 +311,6 @@ export const homeBinding = {
     'updateHomeList',
     // 'updateCurrentHomeDetail',
     'updateHomeMemberList',
-    'updateMemberAuth',
     'deleteMember',
     'updateHomeNameOrLocation',
   ],

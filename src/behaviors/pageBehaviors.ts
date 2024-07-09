@@ -63,19 +63,30 @@ export default BehaviorWithComputed({
     // },
   },
   computed: {
-    // TODO: 待废弃，该behavior没有直接引用homeStore，隐藏依赖了homeStore
+    /**
+     * @deprecated
+     * 待废弃，该属性没有直接引用homeStore，隐藏依赖了homeStore
+     */
     isCreator(data) {
       if (data.currentHomeDetail) {
         return data.currentHomeDetail.houseUserAuth === userRole.creator
       }
       return false
     },
+    /**
+     * @deprecated
+     * 待废弃，该属性没有直接引用homeStore，隐藏依赖了homeStore
+     */
     isAdmin(data) {
       if (data.currentHomeDetail) {
         return data.currentHomeDetail.houseUserAuth === userRole.admin
       }
       return false
     },
+    /**
+     * @deprecated
+     * 待废弃，该属性没有直接引用homeStore，隐藏依赖了homeStore
+     */
     isVisitor(data) {
       if (data.currentHomeDetail) {
         return data.currentHomeDetail.houseUserAuth === userRole.visitor
