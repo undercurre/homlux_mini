@@ -215,7 +215,7 @@ ComponentWithComputed({
           }
           if (!page) return
           wx.navigateTo({
-            url: `/package-remoter/${page}/index?deviceType=${deviceType}&functionDes=${functionDes}&addr=${addr}`,
+            url: `/package-remoter/${page}/index?deviceType=${deviceType}&deviceModel=${deviceModel}&addr=${addr}&functionDes=${functionDes}`,
           })
         } else {
           let page = 'pannel'
@@ -231,7 +231,7 @@ ComponentWithComputed({
             page = 'clothes'
           }
           wx.navigateTo({
-            url: `/package-remoter/${page}/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceModel=${deviceModel}&addr=${addr}`,
+            url: `/package-remoter/${page}/index?deviceType=${deviceType}&deviceModel=${deviceModel}&addr=${addr}&functionDes=${functionDes}`,
           })
         }
       }

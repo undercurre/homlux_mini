@@ -272,6 +272,7 @@ const _parsePayloadV2 = (payload: string, deviceType: string) => {
       BATH_TEMPERATURE_ENV: rxU16[5],
       BATH_SWING: !!(rxU16[6] & BIT_4),
       BATH_ANION: !!(rxU16[6] & BIT_6),
+      BATH_TVOC: !!(rxU16[6] & BIT_7),
       BLOW_GEAR: rxU16[7] & 0x07,
       VENT_GEAR: rxU16[8] & 0x07,
       BATH_DELAY_CLOSE: rxU16[9]
