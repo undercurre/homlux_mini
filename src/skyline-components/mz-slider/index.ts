@@ -1,5 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { delay, isNotExist, rpx2px, throttle } from '../../utils/index'
+import { delay, rpx2px, throttle } from '../../utils/index'
 
 ComponentWithComputed({
   externalClasses: ['custom-class'],
@@ -21,17 +21,21 @@ ComponentWithComputed({
       type: Number,
       value: 1,
       observer(v) {
-        // 若初始化未完成 || 设值相同，则跳过，以免循环响应
-        if (!this.data.barWidth || v === this.data.innerVal || isNotExist(this.data.valueSpan)) {
+        // 若初始化未完成，则跳过 || 设值相同，也跳过，以免循环响应
+        if (!this.data.barWidth || v === this.data.innerVal) {
           return
         }
-        // console.log('observer value:', this.data.innerVal, '->', v)
 
         // 响应外部设值，改变滑动柄位置
         const { isBtnInset, barWidth, min } = this.data
         const availableBarWidth = isBtnInset ? barWidth - this.data.btnWidthPx : barWidth
-        const activedWidth = Math.round((availableBarWidth / this.data.valueSpan) * (v - min)) + this.data.btnWidthPx
+        const v2w = Math.round((availableBarWidth / this.data.valueSpan) * (v - min))
+        const activedWidth = isBtnInset ? v2w + this.data.btnWidthPx : v2w
         const innerVal = this.widthToValue(activedWidth)
+        console.log('[observer] value', this.data.innerVal, '->', v, {
+          activedWidth,
+          valueSpan: this.data.valueSpan,
+        })
         this.setData({ innerVal })
 
         this.data._actived_x.value = this.data.activedWidth
@@ -98,54 +102,58 @@ ComponentWithComputed({
     innerVal: 0, // 用于内部计算的值
     bound: { left: 0, right: 0 }, // 滑动区域
     barWidth: 300, // 滑动条总宽度
+    btnWidthPx: rpx2px(72),
+    availableBarWidth: 300, // 可用的滑动条宽度（activedWidth范围）
+    valueSpan: 100, // 值跨度
+    v2w: 0, // 根据innerVal，自动转换的对应宽度
+    activedWidth: 0, // 计算按钮位置偏移后的激活态宽度
+    btnX: 0, // 计算按钮X轴位置
+    toastX: 0, // 计算提示X轴位置
     toastWidth: 80, // 提示宽度
     barLeft: 0, // 滑动条左边距
     timeout_timer: null as null | number, // 节流定时器
+  },
+
+  observers: {
+    'btnWidth,barWidth,toastWidth,isBtnInset,min,max,innerVal'(
+      btnWidth,
+      barWidth,
+      toastWidth,
+      isBtnInset,
+      min,
+      max,
+      innerVal,
+    ) {
+      if (innerVal < min || innerVal > max) return // 避免越界
+      const btnWidthPx = rpx2px(btnWidth)
+      const availableBarWidth = isBtnInset ? barWidth - btnWidthPx : barWidth
+      const valueSpan = max - min
+      const v2w = Math.round((availableBarWidth / valueSpan) * (innerVal - min))
+      const activedWidth = isBtnInset ? v2w + btnWidthPx : v2w
+      const btnX = isBtnInset ? v2w : v2w - btnWidthPx / 2
+      const toastX = activedWidth - toastWidth / 2
+
+      this.setData({
+        btnWidthPx,
+        availableBarWidth,
+        valueSpan,
+        v2w,
+        activedWidth,
+        btnX,
+        toastX,
+      })
+    },
   },
 
   computed: {
     formattedValue(data) {
       return data.formatter(data.innerVal) ?? ''
     },
-    btnWidthPx(data) {
-      return rpx2px(data.btnWidth)
-    },
     // 按钮初始样式
     btnStyle(data) {
       const { btnWidth, barHeight, btnHeight } = data
       const btnTop = barHeight / 2 - btnHeight / 2
       return `left: 0rpx; top: ${btnTop}rpx; width: ${btnWidth}rpx; height: ${btnHeight}rpx`
-    },
-    // 值跨度
-    valueSpan(data) {
-      const { min, max } = data
-      return max - min
-    },
-    // 可用的滑动条宽度（activedWidth范围）
-    availableBarWidth(data) {
-      const { barWidth, isBtnInset, btnWidthPx } = data
-      if (!barWidth) return 0
-      return isBtnInset ? barWidth - btnWidthPx : barWidth
-    },
-    // 根据innerVal，自动转换的对应宽度
-    v2w(data) {
-      const { availableBarWidth, valueSpan, innerVal, min } = data
-      return Math.round((availableBarWidth / valueSpan) * (innerVal - min))
-    },
-    // 计算按钮位置偏移后的激活态宽度
-    activedWidth(data) {
-      const { isBtnInset, v2w, btnWidthPx } = data
-      return isBtnInset ? v2w + btnWidthPx : v2w
-    },
-    // 计算按钮X轴位置
-    btnX(data) {
-      const { isBtnInset, v2w, btnWidthPx } = data
-      return isBtnInset ? v2w : v2w - btnWidthPx / 2
-    },
-    // 计算提示X轴位置
-    toastX(data) {
-      const { activedWidth, toastWidth } = data
-      return activedWidth - toastWidth / 2
     },
   },
 
