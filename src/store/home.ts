@@ -8,7 +8,6 @@ import {
   inviteHouseUser,
   saveOrUpdateUserHouseInfo,
   updateDefaultHouse,
-  getShareId,
   queryLocalKey,
 } from '../apis/index'
 import { asyncStorage, storage, Logger, IApiRequestOption, isConnect } from '../utils/index'
@@ -27,8 +26,6 @@ export const homeStore = observable({
   currentHomeDetail: {} as Home.IHomeDetail,
 
   homeMemberInfo: {} as Home.HomeMemberInfo,
-
-  shareId: '',
 
   /**
    * 退出登录时清空数据
@@ -252,21 +249,6 @@ export const homeStore = observable({
       return
     } else {
       return Promise.reject(res)
-    }
-  },
-
-  /**
-   * 获取分享连接ID
-   */
-  async getInviteShareId() {
-    const res = await getShareId({ houseId: this.currentHomeId })
-    if (res.success) {
-      runInAction(() => {
-        homeBinding.store.shareId = res.result.shareId
-      })
-      return
-    } else {
-      return Promise.reject('获取分享链接失败')
     }
   },
 

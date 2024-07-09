@@ -5,6 +5,9 @@ import { defaultImgDir } from '../../config/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 
 Component({
+  options: {
+    pureDataPattern: /^_/,
+  },
   behaviors: [BehaviorWithStore({ storeBindings: [userBinding, homeBinding] }), pageBehavior],
   /**
    * 页面的初始数据

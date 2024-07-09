@@ -6,16 +6,20 @@ import { homeBinding, userBinding } from '../../../store/index'
 import { storage } from '../../../utils/storage'
 import { emitter } from '../../../utils/eventBus'
 import { ShareImgUrl } from '../../../config/index'
+import { getShareId } from '../../../apis/index'
 
 ComponentWithComputed({
-  options: {},
+  options: {
+    pureDataPattern: /^_/,
+  },
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding, userBinding] }), pageBehaviors],
 
   /**
    * 页面的初始数据
    */
   data: {
-    isEditRole: false,
+    isShowPopup: false, // 是否弹窗
+    isEditRole: false, // 是否编辑角色
     memberList: [] as object[],
     actionList: [
       {
@@ -58,10 +62,14 @@ ComponentWithComputed({
     isNeedShare: false,
     isAdmin: false,
     isVisitor: false,
-    popupTitle: '权限管理',
+    _shareId: '',
   },
 
-  computed: {},
+  computed: {
+    popupTitle(data) {
+      return data.isEditRole ? '权限管理' : '邀请成员'
+    },
+  },
 
   lifetimes: {
     // 生命周期函数，可以为函数，或一个在 methods 段中定义的方法名
@@ -84,7 +92,6 @@ ComponentWithComputed({
       homeBinding.store.updateHomeMemberList().then(() => {
         this.updateView()
       })
-      homeBinding.store.getInviteShareId()
     },
     updateView() {
       if (homeBinding.store.homeMemberInfo.houseUserList.length === 0) return
@@ -190,7 +197,6 @@ ComponentWithComputed({
       })
       this.setData({
         actionList: actionList,
-        popupTitle: '邀请成员',
       })
     },
     clearOptionList() {
@@ -214,7 +220,7 @@ ComponentWithComputed({
     },
     hidePopup() {
       this.setData({
-        isEditRole: false,
+        isShowPopup: false,
         curClickUserItem: null,
         curOptionItem: null,
       })
@@ -222,13 +228,21 @@ ComponentWithComputed({
         this.clearOptionList()
       }, 300)
     },
+    async updateShareId() {
+      const res = await getShareId({ houseId: homeBinding.store.currentHomeId })
+
+      if (res.success) {
+        this.data._shareId = res.result.shareId
+      }
+    },
     onInviteMemberClick() {
+      this.updateShareId()
       this.configPopupInviteOption()
 
       const item = this.data.actionList.find((item) => {
         return item.key === 'BE_VIS'
       })
-      this.setData({ curOptionItem: item })
+      this.setData({ isShowPopup: true, curOptionItem: item })
       this.setPopupOptionPick('BE_VIS')
 
       if (this.data.isAdmin) {
@@ -317,15 +331,9 @@ ComponentWithComputed({
           const time = new Date()
           resolve({
             title: '邀请你加入我的家庭',
-            path:
-              '/pages/index/index?type=' +
-              type +
-              '&houseId=' +
-              homeBinding.store.currentHomeId +
-              '&time=' +
-              time.valueOf() +
-              '&shareId=' +
-              homeBinding.store.shareId,
+            path: `/pages/index/index?type=${type}&houseId=${
+              homeBinding.store.currentHomeId
+            }&time=${time.valueOf()}&shareId=${this.data._shareId}`,
             imageUrl: ShareImgUrl,
           })
         }, 500)

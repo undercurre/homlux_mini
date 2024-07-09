@@ -7,6 +7,9 @@ import { LOGIN_TEMPLATE_ID_LIST } from '../../config/index'
 
 // pages/login/index.ts
 Component({
+  options: {
+    pureDataPattern: /^_/,
+  },
   behaviors: [pageBehavior],
   /**
    * 页面的初始数据
