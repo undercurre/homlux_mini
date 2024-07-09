@@ -320,6 +320,8 @@ ComponentWithStore({
 
           this.updateQueue(device)
 
+          this.refreshLightStatusThrottle()
+
           return
         }
         // 更新设备在线状态
@@ -377,6 +379,8 @@ ComponentWithStore({
 
     // 响应控制弹窗中单灯/灯组的控制变化，直接按本地设备列表数值以及设置值，刷新房间灯的状态
     refreshLightStatus() {
+      if (!this.data.roomHasLight) return
+
       let sumOfBrightness = 0,
         sumOfColorTemp = 0,
         count = 0,
@@ -414,6 +418,11 @@ ComponentWithStore({
         'roomLight.colorTemperature': colorTemperature,
       })
     },
+
+    // 节流更新空间灯信息
+    refreshLightStatusThrottle: throttle(function (this: IAnyObject) {
+      this.refreshLightStatus()
+    }, 2000),
 
     // 查询房间分组详情
     async queryGroupInfo() {
