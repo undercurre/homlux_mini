@@ -191,6 +191,7 @@ ComponentWithComputed({
       this.setData({
         isShowPopup: false,
         isEnterMobile: true,
+        mobile: '',
       })
     },
 
