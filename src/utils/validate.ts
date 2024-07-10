@@ -13,3 +13,12 @@ export function isDeviceWifi(SSID: string) {
 
   return deviceWifiReg.test(SSID)
 }
+
+/**
+ * 校验是否合法手机号
+ */
+export function isMobile(mobile: string) {
+  const reg = /^(?:(?:\+\|00)86)?1\d{10}$/
+
+  return reg.test(mobile)
+}

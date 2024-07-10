@@ -3,7 +3,7 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
 import { homeBinding, userBinding, homeStore } from '../../../store/index'
-import { emitter } from '../../../utils/eventBus'
+import { emitter, isMobile } from '../../../utils/index'
 import { ShareImgUrl } from '../../../config/index'
 import {
   getShareId,
@@ -30,8 +30,18 @@ ComponentWithComputed({
     curClickUserItem: null as any,
     isAdmin: false,
     isVisitor: false,
+    isEnterMobile: false,
+    mobile: '',
     _shareId: '',
     _invite_type: '',
+    // dialog异步关闭回调事件
+    beforeInvite(action: string) {
+      // 为阻止dialog弹窗确定按钮默认关闭
+      if (action === 'confirm') {
+        return false
+      }
+      return true
+    },
   },
 
   computed: {
@@ -177,45 +187,53 @@ ComponentWithComputed({
     /**
      * 手机号邀请
      */
-    async inviteByMobile() {
+    inviteByMobile() {
       this.setData({
         isShowPopup: false,
+        isEnterMobile: true,
       })
-      const modalRes = await wx
-        .showModal({
-          title: '邀请手机号',
-          editable: true,
+    },
+
+    cancelInviteMobile() {
+      console.log('cancelInviteMobile')
+      this.setData({
+        isEnterMobile: false,
+      })
+    },
+
+    async confirmInviteMobile() {
+      console.log('confirmInviteMobile')
+      const { mobile, selectAction } = this.data
+
+      if (!isMobile(mobile)) {
+        Toast({ message: '请输入有效的手机号', zIndex: 9999 })
+        return
+      }
+
+      let type = 3
+      if (selectAction === 'BE_MEM') {
+        type = 2
+      }
+
+      const res = await inviteHouseUserForMobile(
+        {
+          mobilePhone: mobile,
+          houseId: homeStore.currentHomeId,
+          houseUserAuth: type,
+          subscribeType: 1,
+        },
+        { loading: true },
+      )
+
+      console.log('inviteHouseUserForMobile', res)
+
+      if (res.success) {
+        Toast('邀请发送成功')
+        this.setData({
+          isEnterMobile: false,
         })
-        .catch((err) => err)
-
-      console.log('inviteByMobile', modalRes)
-
-      if (modalRes.confirm) {
-        const text = modalRes.content
-
-        const key = this.data.selectAction
-        let type = 3
-        if (key === 'BE_MEM') {
-          type = 2
-        }
-
-        const res = await inviteHouseUserForMobile(
-          {
-            mobilePhone: text,
-            houseId: homeStore.currentHomeId,
-            houseUserAuth: type,
-            subscribeType: 1,
-          },
-          { loading: true },
-        )
-
-        console.log('inviteHouseUserForMobile', res)
-
-        if (res.success) {
-          Toast('邀请发送成功')
-        } else {
-          Toast('邀请发送失败')
-        }
+      } else {
+        Toast(res.msg || '邀请发送失败')
       }
     },
 
