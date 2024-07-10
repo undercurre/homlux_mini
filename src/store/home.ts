@@ -2,8 +2,6 @@ import { observable, runInAction } from 'mobx-miniprogram'
 import {
   getHomeList,
   queryUserHouseInfo,
-  queryHouseUserList,
-  deleteHouseUser,
   inviteHouseUser,
   saveOrUpdateUserHouseInfo,
   updateDefaultHouse,
@@ -23,8 +21,6 @@ export const homeStore = observable({
 
   /** 当前家庭详细信息 */
   currentHomeDetail: {} as Home.IHomeDetail,
-
-  homeMemberInfo: {} as Home.HomeMemberInfo,
 
   /**
    * 退出登录时清空数据
@@ -182,41 +178,6 @@ export const homeStore = observable({
   },
 
   /**
-   * 更新家庭成员列表
-   */
-  async updateHomeMemberList() {
-    const res = await queryHouseUserList({ houseId: this.currentHomeId })
-    if (res.success) {
-      runInAction(() => {
-        homeStore.homeMemberInfo = res.result
-      })
-      return
-    } else {
-      return Promise.reject('获取成员信息失败')
-    }
-  },
-
-  /**
-   * 删除家庭成员
-   */
-  async deleteMember(userId: string) {
-    const res = await deleteHouseUser({ houseId: this.currentHomeId, userId }, { loading: true })
-    if (res.success) {
-      runInAction(() => {
-        for (let i = 0; i < homeStore.homeMemberInfo.houseUserList.length; i++) {
-          if (userId === homeStore.homeMemberInfo.houseUserList[i].userId) {
-            homeStore.homeMemberInfo.houseUserList.splice(i, 1)
-            break
-          }
-        }
-      })
-      return
-    } else {
-      return Promise.reject('删除家庭成员失败')
-    }
-  },
-
-  /**
    * 邀请家庭成员
    */
   async inviteMember(houseId: string, auth: number, shareId: string) {
@@ -310,8 +271,6 @@ export const homeBinding = {
     'updateHomeInfo',
     'updateHomeList',
     // 'updateCurrentHomeDetail',
-    'updateHomeMemberList',
-    'deleteMember',
     'updateHomeNameOrLocation',
   ],
 }

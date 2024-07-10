@@ -1,12 +1,17 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { runInAction } from 'mobx-miniprogram'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
 import { homeBinding, userBinding, homeStore } from '../../../store/index'
 import { emitter } from '../../../utils/eventBus'
 import { ShareImgUrl } from '../../../config/index'
-import { getShareId, updateHouseUserAuth, inviteHouseUserForMobile } from '../../../apis/index'
+import {
+  getShareId,
+  updateHouseUserAuth,
+  inviteHouseUserForMobile,
+  queryHouseUserList,
+  deleteHouseUser,
+} from '../../../apis/index'
 
 ComponentWithComputed({
   options: {
@@ -35,7 +40,7 @@ ComponentWithComputed({
     },
     actionList(data) {
       // 创建者：1 管理员：2 游客：3
-      let actionList: { key: string; text: string; label?: string }[] = []
+      const actionList: { key: string; text: string; label?: string }[] = []
 
       if (data.isEditRole) {
         const editUserRole = data.curClickUserItem?.roleCode
@@ -60,18 +65,18 @@ ComponentWithComputed({
           text: '移除该成员',
         })
       } else {
-        actionList = [
-          {
+        if (homeStore.isCreator) {
+          actionList.push({
             key: 'BE_MEM',
             text: '成为管理员',
             label: '与创建者相同的设备/场景管理权限',
-          },
-          {
-            key: 'BE_VIS',
-            text: '成为访客',
-            label: '仅可使用设备与场景',
-          },
-        ]
+          })
+        }
+        actionList.push({
+          key: 'BE_VIS',
+          text: '成为访客',
+          label: '仅可使用设备与场景',
+        })
       }
 
       return actionList
@@ -85,7 +90,7 @@ ComponentWithComputed({
       this.initData()
 
       emitter.on('invite_user_house', () => {
-        this.initData()
+        this.queryMemberList()
       })
     },
     detached: function () {
@@ -95,49 +100,35 @@ ComponentWithComputed({
 
   methods: {
     initData() {
-      homeBinding.store.updateHomeMemberList().then(() => {
-        this.updateView()
+      this.setData({
+        isAdmin: homeStore.currentHomeDetail.houseUserAuth === 2,
+        isVisitor: !homeStore.isManager,
       })
+      this.queryMemberList()
     },
-    updateView() {
-      if (homeBinding.store.homeMemberInfo.houseUserList.length === 0) return
-      const curUserId = userBinding.store.userInfo.userId
-      const result: object[] = []
-      const list = homeBinding.store.homeMemberInfo.houseUserList.sort((a, b) => {
-        return a.userHouseAuth - b.userHouseAuth
-      })
-      if (list) {
-        const curUser = list.find((item: Home.HouseUserItem) => {
-          return item.userId === curUserId
-        })
-        if (curUser) {
-          result.push({
-            icon: curUser.headImageUrl,
-            name: curUser.userName,
-            role: curUser.userHouseAuthName,
-            id: curUser.userId,
-            roleCode: curUser.userHouseAuth,
-            isCanEdit: false,
+    async queryMemberList() {
+      const res = await queryHouseUserList({ houseId: homeStore.currentHomeId }, { loading: true })
+      if (res.success) {
+        const list = res.result.houseUserList
+          .sort((a, b) => {
+            return a.userHouseAuth - b.userHouseAuth // 按角色权限高低排序
           })
-          this.setData({
-            isAdmin: homeStore.currentHomeDetail.houseUserAuth === 2,
-            isVisitor: !homeStore.isManager,
-          })
-        }
-        list.forEach((item: Home.HouseUserItem) => {
-          if (curUser?.userId !== item.userId) {
-            const isCanEdit = this.canIEditOther(curUser?.userHouseAuth, item.userHouseAuth)
-            result.push({
+          .map((item) => {
+            return {
               icon: item.headImageUrl,
               name: item.userName,
               role: item.userHouseAuthName,
               id: item.userId,
               roleCode: item.userHouseAuth,
-              isCanEdit: isCanEdit,
-            })
-          }
+              isCanEdit: this.canIEditOther(homeStore.currentHomeDetail.houseUserAuth, item.userHouseAuth),
+            }
+          })
+
+        this.setData({
+          memberList: list,
         })
-        this.setData({ memberList: result })
+      } else {
+        Toast('获取成员信息失败')
       }
     },
     // 判断当前用户是否可以编辑其他用户的角色
@@ -254,16 +245,22 @@ ComponentWithComputed({
     changeUserRole(userId: string, auth: Home.UserRole) {
       this.updateMemberAuth(userId, auth).then(() => {
         this.hidePopup()
-        this.updateView()
+        this.queryMemberList()
         emitter.emit('homeInfoEdit')
       })
     },
-    deleteUser(userId: string) {
-      homeBinding.store.deleteMember(userId).then(() => {
+    /**
+     * 删除家庭成员
+     */
+    async deleteUser(userId: string) {
+      const res = await deleteHouseUser({ houseId: homeStore.currentHomeId, userId }, { loading: true })
+      if (res.success) {
         this.hidePopup()
-        this.updateView()
+        this.queryMemberList()
         emitter.emit('homeInfoEdit')
-      })
+      } else {
+        Toast('删除家庭成员失败')
+      }
     },
 
     /**
@@ -273,18 +270,9 @@ ComponentWithComputed({
     async updateMemberAuth(userId: string, auth: Home.UserRole) {
       const res = await updateHouseUserAuth({ userId, auth, houseId: homeStore.currentHomeId }, { loading: true })
       if (res.success) {
-        runInAction(() => {
-          for (let i = 0; i < homeStore.homeMemberInfo.houseUserList.length; i++) {
-            if (userId === homeStore.homeMemberInfo.houseUserList[i].userId) {
-              const map = ['', '创建者', '管理员', '访客']
-              homeStore.homeMemberInfo.houseUserList[i].userHouseAuth = auth
-              homeStore.homeMemberInfo.houseUserList[i].userHouseAuthName = map[auth]
-            }
-          }
-        })
-        return
+        this.queryMemberList()
       } else {
-        return Promise.reject('设置权限失败')
+        Toast('设置权限失败')
       }
     },
     updateShareSetting() {

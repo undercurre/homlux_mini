@@ -12,7 +12,7 @@ import {
   queryUserThirdPartyInfo,
   delDeviceSubscribe,
 } from '../../apis/index'
-import { strUtil, checkInputNameIllegal, emitter } from '../../utils/index'
+import { strUtil, checkInputNameIllegal, emitter, delay } from '../../utils/index'
 
 ComponentWithComputed({
   options: {},
@@ -82,11 +82,9 @@ ComponentWithComputed({
     ready: async function () {
       console.log('home manage ==== ready')
       homeStore.updateHomeInfo()
-      homeBinding.store.updateHomeMemberList()
 
       emitter.on('homeInfoEdit', () => {
         homeStore.updateHomeInfo()
-        homeBinding.store.updateHomeMemberList()
       })
 
       emitter.on('invite_user_house', () => {
@@ -189,6 +187,8 @@ ComponentWithComputed({
           return
         }
 
+        await delay(500) // 强行延时，避免2个弹窗连续调用，第一个弹窗的消失事件会影响第二个弹窗，导致后面的弹窗无法正常显示
+
         const deBindRes = await this.deBindMeiju()
 
         if (!deBindRes?.success) {
@@ -208,7 +208,7 @@ ComponentWithComputed({
 
       if (dialogRes === 'cancel') return
 
-      const res = await delDeviceSubscribe(homeStore.currentHomeId)
+      const res = await delDeviceSubscribe(homeStore.currentHomeId, { loading: true })
       if (res.success) {
         Toast('已解除绑定')
 
