@@ -131,3 +131,25 @@
 </van-popup>
 
 <van-toast id="van-toast" />
+
+<van-dialog
+  use-slot
+  title="邀请手机号"
+  show="{{ isEnterMobile }}"
+  show-cancel-button
+  confirm-button-color="#27282A"
+  bind:cancel="cancelInviteMobile"
+  bind:confirm="confirmInviteMobile"
+  before-close="{{beforeInvite}}"
+>
+  <view class="m-32rpx">
+    <van-field
+      model:value="{{ mobile }}"
+      placeholder="请输入邀请手机号"
+      custom-style="padding: 32rpx 32rpx;background-color: #F6FAFD;border-radius: 24rpx;"
+      clearable="{{true}}"
+      border="{{false}}"
+    >
+    </van-field>
+  </view>
+</van-dialog>
