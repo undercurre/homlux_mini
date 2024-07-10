@@ -128,57 +128,48 @@ Component({
     }, 1000),
     /**
      * 初始化列表
-     * 索引号可能与排序号不对应，注意避免变更物理索引引起的界面跳动
+     * 索引号可能与排序号不对应，外部触发更新（positive）时要注意避免变更oldList物理索引，而引起界面跳动
      * @param positive 如果被动触发初始化，即外部列表数据变更，则按外部列表排序；如果内部操作主动触发，则保持原列表排序
      */
     async initList(positive = false) {
       const { itemWidth, cols, movableList, itemHeight, itemHeightLarge } = this.data
-      let accumulatedY = 0
+      const oldList = JSON.parse(JSON.stringify(this.data.list)) as CardItem[]
+      const newList = JSON.parse(JSON.stringify(movableList)) as CardItem[]
 
-      // useAccumulatedY 模式下，需要提前计算位置映射，id -> posY
+      // useAccumulatedY 模式下，提前计算位置映射，id -> posY
       const posMap = {} as IAnyObject
+      let accumulatedY = 0
       if (this.data.useAccumulatedY) {
-        // 复制一个重排序列表，避免影响已有列表
-        const sortedList = [...this.data.list]?.sort((a, b) => a.orderNum - b.orderNum) ?? []
-        // const sortedList =
-        //   (positive ? [...movableList] : [...this.data.list])?.sort((a, b) => a.orderNum - b.orderNum) ?? []
+        const sortedList = (positive ? newList : oldList)?.sort((a, b) => a.orderNum - b.orderNum) ?? []
         for (const item of sortedList) {
           posMap[item.id] = accumulatedY
           accumulatedY += item.slimSize ? itemHeight : itemHeightLarge
         }
       }
 
-      const newList = JSON.parse(JSON.stringify(movableList)) as CardItem[]
-      console.log(
-        'initList|newList order',
-        // @ts-ignore
-        newList.map((d: Device) => [d.deviceName ?? d.roomName, d.orderNum]),
-        posMap,
-      )
+      console.log('initList|newList order', positive ? '[positive]' : '[active]', posMap)
 
       const diffData = {} as IAnyObject
       const list = []
       let deleted = 0 // 已删除卡片计数
       let orderNum = 0
-      for (const index in this.data.list) {
-        const item = this.data.list[index]
+
+      // 遍历旧列表，对照新列表进行更新或者删除
+      for (const index in oldList) {
+        const item = oldList[index]
         const newItem = newList.find((ele) => ele.id === item.id)
 
         // 过滤已删除的内容（在新列表中不存在 || 带有已删除已添加标记）
         if (!newItem || newItem.deleted || newItem.added) {
           deleted++
-          delete posMap[item.id]
-          accumulatedY -= item.slimSize ? itemHeight : itemHeightLarge
           continue
         }
 
         orderNum = positive ? newItem.orderNum : item.orderNum - deleted
 
         const i = orderNum - 1
-        const itemData = {
-          ...item,
-          ...newItem,
-          // select: this.data.editMode || item.select === null ? item.select : false, // 若编辑状态，或select未设定，则不变；否则设为true
+        const mergedItem = {
+          ...(positive ? newItem : item),
           orderNum,
         } as IAnyObject
 
@@ -194,15 +185,15 @@ Component({
             0,
             Math.min(maxScrollTop, newList.length * itemHeight - this.data._scrollHeightRes),
           )
-          itemData.pos = [item.pos[0], item.pos[1] - this.data.scrollTop + newScrollTop]
+          mergedItem.pos = [item.pos[0], item.pos[1] - this.data.scrollTop + newScrollTop]
           diffData.scrollTop = newScrollTop
           console.log('[reset scrollTop]max:', newList.length * itemHeight, '-', this.data._scrollHeightRes)
         }
         // 非拖拽中的元素，按排序计算位置
         else {
-          itemData.pos = [(i % cols) * itemWidth, itemY]
+          mergedItem.pos = [(i % cols) * itemWidth, itemY]
         }
-        list.push(itemData)
+        list.push(mergedItem)
 
         // 标记新列表中已添加
         newItem.added = true
@@ -216,13 +207,7 @@ Component({
         orderNum = positive ? newItem.orderNum : orderNum + 1
         const i = orderNum - 1
         // 纵坐标计算
-        let itemY = 0
-        if (this.data.useAccumulatedY) {
-          itemY = accumulatedY
-          accumulatedY += newItem.slimSize ? itemHeight : itemHeightLarge
-        } else {
-          itemY = Math.floor(i / cols) * itemHeight
-        }
+        const itemY = this.data.useAccumulatedY ? posMap[newItem.id] : Math.floor(i / cols) * itemHeight
 
         list.push({
           ...newItem,
@@ -231,6 +216,7 @@ Component({
           pos: [(i % cols) * itemWidth, itemY],
         })
       }
+
       diffData.list = list
       diffData.moveareaHeight = this.data.useAccumulatedY ? accumulatedY : itemHeight * Math.ceil(list.length / cols)
 
