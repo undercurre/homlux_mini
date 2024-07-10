@@ -1207,13 +1207,7 @@ ComponentWithStore({
       // 选中当前长按卡片
       diffData.checkedList = [device.uniId]
 
-      // 取消普通选择
-      if (this.data.checkedList?.length) {
-        this.handleScreenTap()
-      }
       this.setData(diffData)
-
-      // this.toSelect(device.uniId, true)
 
       // 弹起popup后，选中卡片滚动到视图中央，以免被遮挡
       // this.setData({
@@ -1228,7 +1222,8 @@ ComponentWithStore({
         editMode: false,
         checkedList: [],
       })
-      this.editSelectAll({ detail: false })
+
+      this.updateQueue({ isRefresh: true })
     },
 
     exitEditModeAndReload() {
@@ -1236,7 +1231,6 @@ ComponentWithStore({
         editMode: false,
         checkedList: [],
       })
-      this.editSelectAll({ detail: false })
 
       this.reloadDeviceList()
     },
