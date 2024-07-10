@@ -268,7 +268,7 @@
   catch:cancel="handleLinkPopupReturn"
   catch:handleOfflineTap="handleOfflineTap"
   tipsText="{{selectLinkType === 'light' ? '关联不同网关灯/灯组时控制可能会存在延时' : ''}}"
-  isSingleSelect
+  isSingleSelect="{{selectLinkType === 'light'}}"
 />
 
 <mz-toast id="mz-toast" />
