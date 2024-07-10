@@ -104,6 +104,7 @@ Component({
     hasSizeChange: false, // 元素是否有动态尺寸变化
     useAccumulatedY: false, // 纵向坐标是否使用累加值计算法
     scrollTop: 0,
+    _moving: false, // 是否正在拖动
     _scrollHeightRes: 0,
     _touchY: 0,
     _originOrder: -1, // 被拖动元素，拖动开始前的排序号，从1开始
@@ -269,13 +270,17 @@ Component({
     },
     // 点击事件处理
     cardTap(e: WechatMiniprogram.CustomEvent) {
+      if (this.data._moving) {
+        this.data._moving = false
+        return
+      }
       this.triggerEvent('cardTap', e.detail)
 
       const { type } = e.detail
       const { index } = e.currentTarget.dataset
       const { select } = this.data.list[index]
       console.log('cardTap', index, select, type)
-      if (typeof select !== 'boolean' || type === 'control') return
+      if (typeof select !== 'boolean' || type === 'control' || (type === 'offline' && !this.data.editMode)) return
 
       // 处理选择样式渲染逻辑
       this.setData({
@@ -298,6 +303,7 @@ Component({
 
       this.setData(diffData)
 
+      this.data._moving = true
       this.data._originOrder = orderNum
       console.log('⇅ [dragBegin]', e)
 
@@ -321,6 +327,7 @@ Component({
       const { index } = e.target.dataset
       const newOrder = this.data.placeholder
       this.data.placeholder = -1
+
       console.log(`⇅ [dragEnd]->${newOrder}`)
 
       if (newOrder < 0) return
@@ -350,6 +357,10 @@ Component({
       const isMoved = newOrder !== this.data._originOrder
 
       this.triggerEvent('dragEnd', { isMoved, list: this.data.list })
+
+      await delay(160) // 确保拖拽操作已结束，屏蔽tap事件
+
+      this.data._moving = false
 
       Logger.trace('⇅ [dragEnd]diffData', diffData, 'isMoved', isMoved)
     },
