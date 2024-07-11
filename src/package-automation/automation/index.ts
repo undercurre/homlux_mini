@@ -37,8 +37,8 @@ ComponentWithComputed({
     roomTab() {
       const tempRoomList = roomStore.roomList.map((item) => {
         return {
-          roomId: item.roomId,
-          roomName: item.roomName,
+          id: item.roomId,
+          title: item.roomName,
         }
       })
       return tempRoomList
@@ -94,10 +94,10 @@ ComponentWithComputed({
         })
       }
     },
-    onRoomChange(event: { detail: { name: string } }) {
+    onRoomChange(event: { detail: { selectedId: string } }) {
       this.setData(
         {
-          selectedRoomId: event.detail.name,
+          selectedRoomId: event.detail.selectedId,
         },
         async () => {
           // 防止场景为空，drag为null·
@@ -175,17 +175,17 @@ ComponentWithComputed({
         },
         () => {
           if (updateDrag) {
-            this.onRoomChange({ detail: { name: this.data.selectedRoomId } })
+            this.onRoomChange({ detail: { selectedId: this.data.selectedRoomId } })
           }
           if (this.data.selectedRoomId) return
           // 在房间里跳转到场景页时使用
           const { selectedRoomId = '' } = getCurrentPageParams()
           this.setData(
             {
-              selectedRoomId: selectedRoomId || this.data.roomTab[0]?.roomId || '',
+              selectedRoomId: selectedRoomId || this.data.roomTab[0]?.id || '',
             },
             () => {
-              this.onRoomChange({ detail: { name: this.data.selectedRoomId } })
+              this.onRoomChange({ detail: { selectedId: this.data.selectedRoomId } })
             },
           )
         },

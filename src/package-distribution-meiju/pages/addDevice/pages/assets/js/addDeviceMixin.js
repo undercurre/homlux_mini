@@ -284,7 +284,7 @@ module.exports = Behavior({
       })
       Promise.race([timeoutPromise, this.checkApExists(sn, forceValidRandomCode, randomCode, timeout)])
         .then((resp) => {
-          Logger.console('查询设备是否连上云', resp)
+          Logger.log('newAgainGetAPExists查询设备是否连上云', resp)
           if (resp.success && resp.result.applianceList?.length) {
             callBack && callBack(resp.result.applianceList[0])
           } else {
@@ -295,7 +295,7 @@ module.exports = Behavior({
                 this.newAgainGetAPExists(sn, forceValidRandomCode, randomCode, timeout, callBack, callFail)
               }, 3000)
             } else {
-              Logger.console('请求超时', resp)
+              Logger.log('请求超时', resp)
               let time = 5000
               if (
                 (resp.errMsg && resp.errMsg.includes('ERR_NAME_NOT_RESOLVED')) ||
@@ -318,7 +318,7 @@ module.exports = Behavior({
       console.log('this.data.isStopGetExists===', this.data.isStopGetExists)
       this.checkApExists(sn, !!randomCode, randomCode)
         .then((resp) => {
-          console.log('查询设备是否连上云', resp)
+          Logger.log('againGetAPExists查询设备是否连上云', resp)
           if (resp.success && resp.result.available) {
             console.log('resolve------------')
             callBack && callBack(resp.result)
