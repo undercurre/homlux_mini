@@ -215,6 +215,15 @@ ComponentWithComputed({
           //暂时设备只有传感器条件
           autoSceneInfo.deviceConditions.forEach((action) => {
             sensorlinkSelectList.push(action.deviceId)
+            try {
+              const sensor = this.data.sensorList.find((item) => item.uniId === action.deviceId)
+              sensor!.property = action.controlEvent[0]
+              this.setData({
+                sensorList: [...this.data.sensorList],
+              })
+            } catch (error) {
+              console.error(error)
+            }
           })
         } else {
           //时间条件
