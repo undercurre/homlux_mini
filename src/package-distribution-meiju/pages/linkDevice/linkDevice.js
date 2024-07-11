@@ -180,7 +180,7 @@ Component({
         app.addDeviceInfo.apUtils = await require.async('../assets/asyncSubpackages/apUtils.js')
         this.apUtils = app.addDeviceInfo.apUtils
       }
-      console.log('addDeviceInfo====', app.addDeviceInfo)
+      Logger.log('addDeviceInfo====', app.addDeviceInfo)
       let negType = 2
       let isDirectCon
       let systemInfo //系统信息
@@ -654,6 +654,7 @@ Component({
     // ap配网udp数据解析
     getApLinkData() {
       const { moduleVersion, sn8, mac, sonTypeH, sonTypeL } = this.data.udpAdData
+
       let a0 = sonTypeH + '' + sonTypeL
       a0 = parseInt(a0, 16)
       app.addDeviceInfo.a0 = a0 // 截取主设备a0
@@ -664,7 +665,7 @@ Component({
       this.data.btMac = mac
       let key = app.globalData.userData.key
       this.data.sn = this.apUtils.enCodeSn(this.data.udpAdData.sn, key, appKey)
-      Logger.console('udpAdData=========', this.data.udpAdData, this.data.sn)
+      Logger.log('getApLinkData, udpAdData=========', this.data.udpAdData, this.data.sn)
       if (this.data.udpAdData.sn) {
         this.data.plainSn = asiiCode2Str(hexString2Uint8Array(this.data.udpAdData.sn))
         app.addDeviceInfo.plainSn = this.data.plainSn
@@ -705,7 +706,7 @@ Component({
      */
     tcpOnMessage(res) {
       const decodeMsg = this.apUtils.decode2body(ab2hex(res.message))
-      Logger.log('tcp消息响应\n', decodeMsg)
+      Logger.log('【美居配网】tcp消息响应\n', decodeMsg)
       // 组合设备（0074指令）模组回报
       if (decodeMsg.type === '8074') {
         this.isTcpRespond0074 = true
@@ -767,13 +768,13 @@ Component({
         //配网指令上行
         let code = parseInt(decodeMsg.body, 16)
         if (code == 0) {
-          console.log('模组响应收到wifi信息')
+          Logger.log('模组响应收到wifi信息')
           this.data.deviceRecWifiInfo = true
           this.finishTcp()
         } else {
           //两次配网同样的错误才会响应 wb01
-          console.log('8070 配网响应错误：', this.apUtils.linkAPerrorMsg[code])
-          console.log('8070 响应错误码:', app.addDeviceInfo.errorCode)
+          Logger.log('8070 配网响应错误：', this.apUtils.linkAPerrorMsg[code])
+          Logger.log('8070 响应错误码:', app.addDeviceInfo.errorCode)
           this.goLinkDeviceFailPage(180004)
         }
       }
@@ -1763,7 +1764,7 @@ Component({
             console.error(error)
           }
 
-          Logger.console('绑定成功')
+          Logger.log('绑定成功')
           if (bindRes) {
             this.setData({
               curStep: 3,
@@ -2053,7 +2054,7 @@ Component({
       })
     },
     async bindDeviceToHome(bindInfo) {
-      console.log(
+      Logger.log(
         'bindDeviceToHome开始绑定设备',
         this.data.deviceId,
         'bindInfo',
@@ -2079,7 +2080,7 @@ Component({
         verificationCode: app.addDeviceInfo.verificationCode,
       })
 
-      console.log('bindMideaDevice', res)
+      Logger.log('bindMideaDevice', res)
 
       await queryAuthGetStatus({ houseId: homeStore.currentHomeId, deviceId: this.data.deviceId })
 

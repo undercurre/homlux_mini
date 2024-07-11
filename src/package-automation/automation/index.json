@@ -11,7 +11,6 @@
     "marvels-switch": "components/marvels-switch/index",
     "cell": "./components/cell/index",
     "mz-drag-list": "../../skyline-components/mz-drag-list/index",
-    "mz-tab": "../../skyline-components/mz-tab/index",
-    "mz-tabs": "../../skyline-components/mz-tabs/index"
+    "mz-tabs": "../../components/mz-tabs/index"
   }
 }

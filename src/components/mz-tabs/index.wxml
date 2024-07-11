@@ -1,0 +1,28 @@
+<!--components/mz-tabs/index.wxml-->
+<view class="tab-container">
+  <scroll-view
+    class="tab-list"
+    type="list"
+    scroll-x
+    scroll-left="{{ scrollLeft }}"
+    show-scrollbar="{{false}}"
+    bounces="{{false}}"
+    scroll-with-animation="{{true}}"
+  >
+    <view class="tab-list-container">
+      <view
+        wx:for="{{tabs}}"
+        wx:key="title"
+        class="tab-item {{selectedTab === index ? 'active' : ''}}"
+        data-tab="{{index}}"
+        bindtap="onTapTab"
+      >
+        <view>{{ item.title }}</view>
+      </view>
+      <view
+        class="tab-border"
+        style="transform: translateX({{translateX}}px)"
+      ></view>
+    </view>
+  </scroll-view>
+</view>
