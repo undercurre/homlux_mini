@@ -161,9 +161,9 @@ ComponentWithStore({
     },
     'deviceCardList.**, editMode'(deviceCardList: DeviceCard[], editMode) {
       const deviceList = deviceCardList.filter((d) => !d.deleted)
-      Logger.trace('[observers]deviceList', deviceList)
+      Logger.trace('[observers] deviceList', deviceList)
       const hasRoomLightOn = deviceList.some(
-        (d) => !!(d.proType === PRO_TYPE.light && d.mzgdPropertyDTOList['light'].power),
+        (d) => !!(d.proType === PRO_TYPE.light && d.onLineStatus === 1 && d.mzgdPropertyDTOList['light'].power),
       )
       const roomHasLight = deviceList.some((d) => !!(d.proType === PRO_TYPE.light))
       const roomHasDevice = !!deviceList?.length
@@ -184,6 +184,10 @@ ComponentWithStore({
         roomHasDevice,
         toolboxContentHeight,
         scrollViewHeight,
+      })
+    },
+    editMode(editMode) {
+      this.setData({
         'cardListConfig.showControl': !editMode,
       })
     },
@@ -343,12 +347,24 @@ ComponentWithStore({
             deviceInRoom.onLineStatus = status
           })
           // 更新视图
-          const modelName = getModelName(deviceInRoom.proType, deviceInRoom.productId)
-          const device = {} as DeviceCard
-          device.deviceId = deviceId
-          device.uniId = modelName ? `${deviceId}:${modelName}` : deviceId
-          device.onLineStatus = status
-          this.updateQueue(device)
+          if (deviceInRoom.proType === PRO_TYPE.switch) {
+            // 开关面板的在线状态是整体上报，需要拆分
+            deviceInRoom.switchInfoDTOList?.map((dto) => {
+              const modelName = dto.switchId
+              const device = {} as DeviceCard
+              device.deviceId = deviceId
+              device.uniId = modelName ? `${deviceId}:${modelName}` : deviceId
+              device.onLineStatus = status
+              this.updateQueue(device)
+            })
+          } else {
+            const modelName = getModelName(deviceInRoom.proType, deviceInRoom.productId)
+            const device = {} as DeviceCard
+            device.deviceId = deviceId
+            device.uniId = modelName ? `${deviceId}:${modelName}` : deviceId
+            device.onLineStatus = status
+            this.updateQueue(device)
+          }
         }
         // 节流更新本地数据
         else if (
@@ -677,12 +693,12 @@ ComponentWithStore({
                 data: {},
                 created: 0,
               }
-              Logger.debug('▤ [%s] 更新完成，已等待 %sms', index, wait)
+              Logger.debug(`▤ [卡片-${index}] 更新完成，已等待 ${wait}ms`)
             } else {
-              console.log('▤ [%s] 更新推迟，已等待 %sms', index, wait)
+              console.log(`▤ [卡片-${index}] 更新推迟，已等待 ${wait}ms`)
             }
           } else {
-            console.log('▤ [%s] diffData为空，不必更新', index)
+            console.log(`▤ [卡片-${index}] diffData为空，不必更新`)
           }
         }
       }
@@ -772,7 +788,7 @@ ComponentWithStore({
         }
         this.data._wait_timeout = setTimeout(() => {
           this.setData(this.data._diffCards.data)
-          console.log('▤ 清空更新队列', this.data._diffCards.data)
+          console.log('▤ 更新完毕，清空队列', this.data._diffCards.data)
           this.data._diffCards = {
             data: {},
             created: 0,

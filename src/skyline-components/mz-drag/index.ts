@@ -68,17 +68,17 @@ Component({
         useAccumulatedY,
       })
       if (!editMode) {
-        this.initList()
+        this.initListThrottle()
       }
     },
-    'movableList.**,itemHeight'(_, itemHeight) {
+    'movableList,itemHeight'(_, itemHeight) {
       console.log('[drag observer]', this.data.movableList)
 
       // 只初始化，忽略后续逻辑
       if (!this.data._inited) {
         this.data._inited = true
         this.data._itemHeight = itemHeight
-        this.initList()
+        this.initListThrottle()
         return
       }
 
@@ -126,11 +126,11 @@ Component({
   methods: {
     initListThrottle: throttle(function (this: IAnyObject, positive: boolean) {
       this.initList(positive)
-    }, 1000),
+    }, 300),
     /**
      * 初始化列表
      * 索引号可能与排序号不对应，外部触发更新（positive）时要注意避免变更oldList物理索引，而引起界面跳动
-     * @param positive 如果被动触发初始化，即外部列表数据变更，则按外部列表排序；如果内部操作主动触发，则保持原列表排序
+     * @param positive 如果被动触发更新，即外部列表数据变更，则按外部列表排序；如果初始化，或主动操作触发更新，则保持原列表排序
      */
     async initList(positive = false) {
       const { itemWidth, cols, movableList, itemHeight, itemHeightLarge } = this.data
@@ -147,8 +147,6 @@ Component({
           accumulatedY += item.slimSize ? itemHeight : itemHeightLarge
         }
       }
-
-      console.log('initList|newList order', positive ? '[positive]' : '[active]', posMap)
 
       const diffData = {} as IAnyObject
       const list = []
@@ -222,7 +220,7 @@ Component({
       diffData.moveareaHeight = this.data.useAccumulatedY ? accumulatedY : itemHeight * Math.ceil(list.length / cols)
 
       this.setData(diffData)
-      Logger.trace('[initList]diffData', diffData.list)
+      Logger.trace('[initList]', positive ? '[positive]' : '[active]', diffData.list)
     },
     /**
      * 根据坐标位置计算索引
@@ -310,7 +308,7 @@ Component({
       this.triggerEvent('dragBegin', this.data.list[index])
 
       this.data._touchY = e.detail.y - this.data.scrollTop
-      if (this.data.hasSizeChange) this.initList()
+      if (this.data.hasSizeChange) this.initList(true)
     },
     dragMove(e: WechatMiniprogram.CustomEvent<number[], IAnyObject, { index: number }>) {
       this.dragMoveThrottle(e.target.dataset.index, [e.detail[2], e.detail[3]])
@@ -349,7 +347,7 @@ Component({
       this.setData(diffData, async () => {
         if (this.data.hasSizeChange) {
           await delay(160) // 确保上次150ms动画完成
-          this.initList()
+          this.initList(true)
         }
       })
 

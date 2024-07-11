@@ -44,7 +44,6 @@ export const deviceStore = observable({
    * @description 房间设备拍扁列表
    */
   get deviceFlattenList(): Device.DeviceItem[] {
-    console.log('get deviceFlattenList trigger', this.deviceList.length)
     return deviceFlatten(this.deviceList)
   },
   // 当前房间灯组数量

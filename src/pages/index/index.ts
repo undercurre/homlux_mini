@@ -403,7 +403,11 @@ ComponentWithStore({
     inviteMember() {
       const enterOption = wx.getEnterOptionsSync()
 
-      if (enterOption.scene != 1007 && enterOption.scene != 1044 && enterOption.scene != 1014) {
+      if (
+        enterOption.scene != 1007 && // 单人聊天会话中的小程序消息卡片
+        enterOption.scene != 1044 && // 带 shareTicket 的小程序消息卡片
+        enterOption.scene != 1194 // URL Link
+      ) {
         return
       }
       const enterQuery = enterOption.query
