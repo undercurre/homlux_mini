@@ -163,7 +163,7 @@ ComponentWithStore({
       const deviceList = deviceCardList.filter((d) => !d.deleted)
       Logger.trace('[observers] deviceList', deviceList)
       const hasRoomLightOn = deviceList.some(
-        (d) => !!(d.proType === PRO_TYPE.light && d.mzgdPropertyDTOList['light'].power),
+        (d) => !!(d.proType === PRO_TYPE.light && d.onLineStatus === 1 && d.mzgdPropertyDTOList['light'].power),
       )
       const roomHasLight = deviceList.some((d) => !!(d.proType === PRO_TYPE.light))
       const roomHasDevice = !!deviceList?.length
@@ -693,12 +693,12 @@ ComponentWithStore({
                 data: {},
                 created: 0,
               }
-              Logger.debug(`▤ [${index}] 更新完成，已等待 ${wait}ms`)
+              Logger.debug(`▤ [卡片-${index}] 更新完成，已等待 ${wait}ms`)
             } else {
-              console.log(`▤ [${index}] 更新推迟，已等待 ${wait}ms`)
+              console.log(`▤ [卡片-${index}] 更新推迟，已等待 ${wait}ms`)
             }
           } else {
-            console.log(`▤ [${index}] diffData为空，不必更新`)
+            console.log(`▤ [卡片-${index}] diffData为空，不必更新`)
           }
         }
       }
