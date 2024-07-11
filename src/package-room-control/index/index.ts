@@ -161,7 +161,7 @@ ComponentWithStore({
     },
     'deviceCardList.**, editMode'(deviceCardList: DeviceCard[], editMode) {
       const deviceList = deviceCardList.filter((d) => !d.deleted)
-      Logger.trace('[observers]deviceList', deviceList)
+      Logger.trace('[observers] deviceList', deviceList)
       const hasRoomLightOn = deviceList.some(
         (d) => !!(d.proType === PRO_TYPE.light && d.mzgdPropertyDTOList['light'].power),
       )
@@ -184,6 +184,10 @@ ComponentWithStore({
         roomHasDevice,
         toolboxContentHeight,
         scrollViewHeight,
+      })
+    },
+    editMode(editMode) {
+      this.setData({
         'cardListConfig.showControl': !editMode,
       })
     },
