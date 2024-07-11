@@ -189,7 +189,7 @@
       <!-- 传感器日志 -->
       <view
         wx:if="{{deviceInfo.proType==='0xBC'}}"
-        class="w-full h-full flex-col-center relative"
+        class="w-686rpx h-full flex-col-center relative"
       >
         <view>
           <text class="text-26 text-hex-666666">设备日志</text>
