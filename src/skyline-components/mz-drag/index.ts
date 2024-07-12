@@ -294,6 +294,7 @@ Component({
       } as IAnyObject
 
       const { select } = this.data.list[index]
+
       // （进入编辑模式）首次拖动的同时，选中当前卡片
       if (!this.data.editMode && typeof select === 'boolean') {
         diffData[`list[${index}].select`] = !select
@@ -301,13 +302,16 @@ Component({
 
       this.setData(diffData)
 
-      this.data._moving = true
-      this.data._originOrder = orderNum
-      console.log('⇅ [dragBegin]', e)
+      console.log(`⇅ [dragBegin][${index}] draggable: ${this.data.config.draggable}`)
 
       this.triggerEvent('dragBegin', this.data.list[index])
 
+      if (!this.data.config.draggable) return
+
+      this.data._moving = true
+      this.data._originOrder = orderNum
       this.data._touchY = e.detail.y - this.data.scrollTop
+
       if (this.data.hasSizeChange) this.initList(true)
     },
     dragMove(e: WechatMiniprogram.CustomEvent<number[], IAnyObject, { index: number }>) {

@@ -191,8 +191,8 @@ Component({
       const lastY = this.data._lastY.value
       // console.log('MOVE trigger', e.state, e.absoluteX, e.absoluteY, { x, y })
 
-      if (!this.data.draggable && e.state === GestureState.BEGIN) {
-        runOnJS(this.triggerEvent.bind(this))('dragBegin', { x, y })
+      if (!this.data.draggable) {
+        if (e.state === GestureState.BEGIN) runOnJS(this.triggerEvent.bind(this))('dragBegin', { x, y })
         return
       }
 
